@@ -326,6 +326,7 @@ public class GffLocatCod extends GffChrUnion
 
 			} catch (Exception e) {
 				System.out.println("peakAnnoFilter error");
+				continue;
 			}
 			//本基因/上一个基因
 			String[] tmpPeakAnnotation=new String[imputLength+5];//最后结果需要保存输入的所有信息
