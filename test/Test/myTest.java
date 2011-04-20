@@ -26,11 +26,8 @@ import com.novelBio.base.genome.gffOperate.GffHashPlantGene;
 public class myTest {
 	public static void main(String[] args) throws Exception 
 	{ 
-		GffHashPlantGene gffHashPlantGene = new GffHashPlantGene();
-		gffHashPlantGene.GeneName = "LOC_Os\\d{2}g\\d{5}";
-		gffHashPlantGene.splitmRNA = "(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";
-		gffHashPlantGene.ReadGffarray("/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/Noname1test.txt");
-		gffHashPlantGene.getGeneStructureLength();
+		String aa = "sfefes";
+		String[] bb = aa.split("");
 		System.out.println("ok");
 	}
 	

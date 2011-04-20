@@ -33,7 +33,7 @@ public class ComTxt {
 	 * @param file2FirstLine 第二个文件从第几行开始读，包含标题行  为实际行
 	 * @param file1ColNum 第一个文件比较第几列 实际列
 	 * @param file2ColNum 第二个文件比较第几列 实际列
-	 * @param sepReg 比较行用什么正则表达式进行分割
+	 * @param sepReg 比较行用什么正则表达式进行分割,<b>如果sepReg 为“” 那么就不切割</b>
 	 * @param outPutFile 输出文件
 	 * @param outInfo
 	 * @throws Exception
@@ -72,7 +72,15 @@ public class ComTxt {
 		Hashtable<String, String[]> hashCompFile2 = new Hashtable<String, String[]>();		
 		for (int i = 1; i < strFile1.length; i++)
 		{
-			String[] file1Key=strFile1[i][file1ColNum].split(sepReg);
+			String[] file1Key = null;
+			if (sepReg.equals("")) {
+				file1Key = new String[1];
+				file1Key[0] = strFile1[i][file1ColNum].trim();
+			}
+			else {
+				file1Key= strFile1[i][file1ColNum].trim().split(sepReg);
+			}
+			
 			for (int j = 0; j < file1Key.length; j++) 
 			{
 				if (file1Key[j].trim().equals("")) 
@@ -85,7 +93,15 @@ public class ComTxt {
 		
 		for (int i = 1; i < strFile2.length; i++)
 		{
-			String[] file2Key=strFile2[i][file2ColNum].split(sepReg);
+			String[] file2Key = null;
+			if (sepReg.equals("")) {
+				file2Key = new String[1];
+				file2Key[0] = strFile2[i][file2ColNum].trim();
+			}
+			else {
+				file2Key=strFile2[i][file2ColNum].trim().split(sepReg);
+			}
+ 
 			for (int j = 0; j < file2Key.length; j++) 
 			{
 				if (file2Key[j].trim().equals("")) 
@@ -102,7 +118,14 @@ public class ComTxt {
 		for (int i = 1; i < strFile1.length; i++)
 		{
 			boolean flagFind = false;//看是否找到
-			String[] file1Key = strFile1[i][file1ColNum].split(sepReg);
+			String[] file1Key = null;
+			if (sepReg.equals("")) {
+				file1Key = new String[1];
+				file1Key[0] = strFile1[i][file1ColNum].trim();
+			}
+			else {
+				file1Key= strFile1[i][file1ColNum].trim().split(sepReg);
+			}
 			for (int j = 0; j < file1Key.length; j++) 
 			{
 				String[] tmpFile2 = hashCompFile2.get(file1Key[j].trim());
@@ -122,7 +145,14 @@ public class ComTxt {
 		for (int i = 1; i < strFile2.length; i++)
 		{
 			boolean flagFind = false;//看是否找到
-			String[] file2Key = strFile2[i][file2ColNum].split(sepReg);
+			String[] file2Key = null;
+			if (sepReg.equals("")) {
+				file2Key = new String[1];
+				file2Key[0] = strFile2[i][file2ColNum].trim();
+			}
+			else {
+				file2Key=strFile2[i][file2ColNum].trim().split(sepReg);
+			}
 			for (int j = 0; j < file2Key.length; j++) 
 			{
 				String[] tmpFile1 = hashCompFile1.get(file2Key[j].trim());
