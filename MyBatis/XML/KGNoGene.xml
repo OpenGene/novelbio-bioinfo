@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="KGNoGen">
+	<resultMap id="compInfoMap" type="KGNCompInfo">
+		<result property="kegID" column="kegID"/>
+		<result property="usualName" column="usualName"/>
+		<result property="formula" column="formula"/>
+	</resultMap>
+	<select id="selectCompInfo" parameterType="KGNIdkeg" resultMap="compInfoMap">
+		select *
+		from kgComp
+		where kegID = #{kegID}
+	</select>
+	<insert id="insertCompInfo" parameterType="KGNCompInfo">
+		insert into kgComp (kegID,usualName,formula,mass,remark,comment)
+		values (#{kegID},#{usualName},#{formula},#{mass},#{remark},#{comment})
+	</insert>
+	<update id="updateCompInfo" parameterType="KGNCompInfo">
+		update kgComp set
+		<set>
+			<if test="kegID !=null">
+				 kegID=#{kegID},
+			</if>
+			<if test="usualName !=null">
+				usualName = #{usualName},
+			</if>
+			<if test="formula !=null">
+				formula=#{formula},
+			</if>
+			<if test="mass !=null and mass != 0">
+				mass = #{mass},
+			</if>
+			<if test="remark !=null ">
+				remark = #{remark},
+			</if>
+			<if test="comment !=null ">
+				comment = #{comment}
+			</if>
+		</set>
+		where kegID = #{kegID}
+	</update>
+	
+	
+	<resultMap id="idKegMap" type="KGNIdKeg">
+		<result property="kegID" column="kegID"/>
+		<result property="attribute" column="attribute"/>
+		<result property="usualName" column="usualName"/>
+	</resultMap>
+	<select id="selectIdKeg" parameterType="KGNIdKeg" resultMap="idKegMap">
+		select *
+		from idKeg
+		<where>
+			<if test="kegID != null and kegID != '' ">
+				 kegID = #{kegID}
+			</if>
+			<if test="usualName !=null and usualName != '' ">
+				and usualName = #{usualName}
+			</if>
+		</where>
+	</select>
+	<insert id="insertIdKeg" parameterType="KGNIdKeg">
+		insert into idKeg (kegID,attribute,usualName)
+		values (#{kegID},#{attribute},#{usualName})
+	</insert>
+	<update id="updateIdKeg" parameterType="KGNIdKeg">
+		update idKeg set
+		<set>
+			<if test="kegID !=null">
+				 kegID = #{kegID},
+			</if>
+			<if test="usualName !=null">
+				usualName = #{usualName},
+			</if>
+			<if test="attribute !=null">
+				attribute = #{attribute}
+			</if>
+		</set>
+		<where>
+			<if test="kegID != null and kegID != '' ">
+				 kegID = #{kegID}
+			</if>
+			<if test="usualName !=null and usualName != '' ">
+				and usualName = #{usualName}
+			</if>
+		</where>
+	</update>
+</mapper>

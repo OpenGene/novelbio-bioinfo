@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration    
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"    
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">  
+    
+<configuration>
+	<typeAliases>
+	<!--KEGG aliases-->
+		<typeAlias alias="KGentry" type="entity.kegg.KGentry" />
+		<typeAlias alias="KGpathway" type="entity.kegg.KGpathway" />
+		<typeAlias alias="KGreaction" type="entity.kegg.KGreaction" />
+		<typeAlias alias="KGrelation" type="entity.kegg.KGrelation" />
+		<typeAlias alias="KGsubstrate" type="entity.kegg.KGsubstrate" />
+		<typeAlias alias="KGpathRelation" type="entity.kegg.KGpathRelation" />
+	<!--KEGG ID convert aliases-->
+		<typeAlias alias="KGIDgen2Keg" type="entity.kegg.KGIDgen2Keg" />
+		<typeAlias alias="KGIDkeg2Ko" type="entity.kegg.KGIDkeg2Ko" />
+	<!--KEGG complex query aliases-->
+		<typeAlias alias="NCBIID" type="entity.friceDB.NCBIID" />
+		<typeAlias alias="KGCgen2Ko" type="entity.kegg.KGCgen2Ko" />
+		<typeAlias alias="KGCgen2Entry" type="entity.kegg.KGCgen2Entry" />
+		<typeAlias alias="KGCentry2Gen" type="entity.kegg.KGCentry2Gen" />
+		<typeAlias alias="KGCKo2Gen" type="entity.kegg.KGCKo2Gen" />
+	<!--KEGG No Gene query aliases-->
+		<typeAlias alias="KGNCompInfo" type="entity.kegg.noGene.KGNCompInfo" />
+		<typeAlias alias="KGNIdKeg" type="entity.kegg.noGene.KGNIdKeg" />
+	</typeAliases>
+	<environments default="KEGG">
+		<environment id="KEGG">
+			<transactionManager type="JDBC"/>
+			<dataSource type="POOLED">
+				<property name="driver" value="com.mysql.jdbc.Driver"/>
+				<property name="url" value="jdbc:mysql://localhost:3306/FriceKEGG"/>
+				<property name="username" value="root"/>
+				<property name="password" value=""/>
+				<property name="poolMaximumIdleConnections" value="5"/>
+				<property name="poolMaximumActiveConnections" value="5"/>
+				<property name="poolMaximumCheckoutTime" value="20000"/>
+			</dataSource>
+		</environment>
+	</environments>
+<mappers>
+	<mapper resource="XML/KGMLSingleTable.xml"/>
+	<mapper resource="XML/KEGIDcnvSingle.xml"/>
+	<mapper resource="XML/KGNoGene.xml"/>
+	<mapper resource="XML/KGCquery.xml"/>
+</mappers>
+</configuration>

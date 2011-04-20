@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Wed Mar 16 11:27:35 CST 2011
+onejar.license.required=false
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=true
+jarname=/home/zong0jie/\u684C\u9762/NovelBioGO.jar
+manifest.mergeall=true
+manifest.mainclass=GO.execute.runGOphp
+manifest.file=<createnew>
+jarname.isextern=true
+onejar.expand=
+excludes=
+includes=
