@@ -26,13 +26,27 @@ import com.novelBio.base.cmd.CmdOperateGUI;
 import com.novelBio.base.dataOperate.TxtReadandWrite;
 import com.novelBio.base.genome.getChrSequence.ChrStringHash;
 import com.novelBio.base.genome.gffOperate.GffHashPlantGene;
+import com.novelBio.chIPSeq.preprocess.MapPeak;
+import com.novelBio.chIPSeq.preprocess.QualityCol;
+import com.novelBio.tools.formatConvert.bedFormat.Soap2Bed;
 
 
 
 public class myTest {
 	public static void main(String[] args) throws Exception 
 	{
-		CmdOperate cmdOperate = new CmdOperate("sh /media/winE/NBC/tmpPaper/aaa.sh");
-		cmdOperate.doInBackground();
+		MapPeak.sortBedFile("/media/winE/bioinformaticsTools/soapTmpFile/test","/media/winE/bioinformaticsTools/soapTmpFile/test/K0_comb", 1, "/media/winE/bioinformaticsTools/soapTmpFile/test/K0_combSort", 2,3);
+		long readsNum = 0;
+		TxtReadandWrite txt = new TxtReadandWrite();
+		txt.setParameter("/media/winE/bioinformaticsTools/soapTmpFile/K0.fq/K0.fq", false, true);
+		BufferedReader reader = txt.readfile();
+		while (reader.readLine()!=null) {
+			readsNum++;
+		}
+		readsNum = readsNum/4;
+		ArrayList<String[]> lsResult = QualityCol.calCover("/media/winE/bioinformaticsTools/soapTmpFile/test/K0_combSort", "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/statisticInfo/chrLengthInfo.txt", readsNum, false, false, "");
+		txt.setParameter("/media/winE/bioinformaticsTools/soapTmpFile/test/K0report.txt", true, false);
+		txt.ExcelWrite(lsResult, "\t", 1, 1);
+		txt.close();
 	}
 }
