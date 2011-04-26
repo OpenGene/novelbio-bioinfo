@@ -41,7 +41,7 @@ public class MapPeak {
 		cmd = soapPath + " -a "+inputFile1;
 		cmd = cmd + " -D " +indexFile; 
 		cmd = cmd + " -o " +outFile3; 
-		cmd = cmd +  " -r 0 -v 2 ";
+		cmd = cmd +  " -r 0 -v 2 -p 7 ";
 		if (inputFile2 != null && !inputFile2.trim().equals("")) {
 			cmd = cmd + " -b " + inputFile2 + " -m "+minInsert+" -x "+maxInsert;
 		}
