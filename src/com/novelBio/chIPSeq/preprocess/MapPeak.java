@@ -52,7 +52,32 @@ public class MapPeak {
 		}
 		return readsNum;
 	}
-	
+	/**
+	 * 指定bed文件，以及需要排序的列数，产生排序结果
+	 * @param bedFile
+	 * @param arg
+	 * @throws Exception
+	 */
+	public static void sortBedFile(String path,String bedFile,int chrID, String sortBedFile,int...arg) throws Exception {
+		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
+		String cmd = "sort";
+		if (chrID != 0) {
+			cmd = cmd + " -k"+chrID+","+chrID+" ";
+		}
+		for (int i : arg) {
+			cmd = cmd + " -k"+i+","+i+"n ";
+		}
+		cmd = cmd + bedFile + " > " + sortBedFile;
+		
+		TxtReadandWrite txtcmd = new TxtReadandWrite();
+		txtcmd.setParameter(path+"/.sort.sh", true, false);
+		txtcmd.writefile(cmd);
+		String cmd2 = "sh "+path+"/.sort.sh";
+		
+		CmdOperate cmdOperate = new CmdOperate(cmd2);
+		cmdOperate.doInBackground();
+		FileOperate.delFile(path+"/.sort.sh");
+	}
 	/**
 	 * 本方法内部含有ascII的质量控制
 	 * 将soap转化为bed文件，只有当为pear-end的时候，并且需要将单双链分开的时候才用这个。
@@ -74,7 +99,7 @@ public class MapPeak {
 			System.out.println("MapPeak.copeMapSolexa 没有相应的代码");
 		}
 		else {
-			Soap2Bed.getBed2Macs(SE, soapFile, outPut1, outCombFile1, outError);
+			Soap2Bed.copeSope2Bed(SE, soapFile, outPut1, outCombFile1, outError);
 		}
 	}
 	
@@ -84,7 +109,7 @@ public class MapPeak {
 	 * @param bedTreat 实验
 	 * @param bedCol 对照
 	 * @param species 物种，用于effective genome size，有hs，mm，dm，ce，os
-	 * @param outFile
+	 * @param outFile 目标文件夹，不用加"/"
 	 * @throws Exception 
 	 */
 	public static void peakCalMacs(String bedTreat,String bedCol,String species, String outFilePath ,String prix) throws Exception 

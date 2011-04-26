@@ -49,9 +49,9 @@ public class QualityCol {
 		TxtReadandWrite txtFragmentFile = new TxtReadandWrite();
 		txtFragmentFile.setParameter(FragmentFile, false, true);
 		//chrID与该chrID所mapping到的reads数量
-		HashMap<String, Integer> hashChrReadsNum = new HashMap<String, Integer>();
+		HashMap<String, int[]> hashChrReadsNum = new HashMap<String,int[]>();
 		int totalMappedReads = 0;
-		int chrMappedReads = 0;
+		int[] chrMappedReads = new int[2];//仅仅为了值传递，数据保存在[0]中
 		int tmpLocStart = 0; int tmpLocEnd = 0;//用来计算coverage
 		String content = ""; String chrID = "";
 		BufferedReader readBed = txtbed.readfile();
@@ -63,14 +63,14 @@ public class QualityCol {
 			
 			if (!ss[0].trim().equals(chrID)) {
 				chrID = ss[0].trim();
-				chrMappedReads = 0;
+				chrMappedReads = new int[2];
 				if (chrID.equals("")) {//跳过最开始的chrID
 					continue;
 				}
 				hashChrReadsNum.put(chrID.toUpperCase(), chrMappedReads);
 				tmpLocStart = 0; tmpLocEnd = 0;//用来计算coverage
 			}
-			totalMappedReads ++; chrMappedReads++;
+			totalMappedReads ++; chrMappedReads[0]++;
 			////////////////// fragment 的长度分布文件   ////////////////////////////////////////////////////////////////
 			if (calFragLen) //如果要计算fragment的分布，那么就将fragment的长度记录在txt文本中，最后调用R来计算长度分布
 			{
@@ -95,19 +95,19 @@ public class QualityCol {
 		
 		
 		int[] colID = {1,2};
-		String[][] chrIDLen = ExcelTxtRead.readtxtExcel(chrLenFile, "\t", colID, 2, -1);
+		String[][] chrIDLen = ExcelTxtRead.readtxtExcel(chrLenFile, "\t", colID, 1, -1);
 		
 		long chrLengthAll = 0; long readsAll = 0;
 		///////////////////////// 计算总数 ////////////////////////////////////////////////////////////////////////////
 		for (String[] strings : chrIDLen) {
 			String tmpChrID = strings[0].trim().toUpperCase();
 			//如果chrLen文本中有这个ChrID而测序文件中没有，那么就跳过
-			Integer tmpChrReads = hashChrReadsNum.get(tmpChrID);
+			int[] tmpChrReads = hashChrReadsNum.get(tmpChrID);
 			if (tmpChrReads == null) {
 				continue;
 			}
 			chrLengthAll = chrLengthAll + Long.parseLong(strings[1]);
-			readsAll = readsAll + tmpChrReads;
+			readsAll = readsAll + tmpChrReads[0];
 		}
 		//////////////////////////  mapping 率计算  //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		String[] strMapTitle = new String[6];
@@ -132,13 +132,13 @@ public class QualityCol {
 		for (String[] strings : chrIDLen) {
 			String tmpChrID = strings[0].trim().toUpperCase();
 			//如果chrLen文本中有这个ChrID而测序文件中没有，那么就跳过
-			Integer tmpChrReads = hashChrReadsNum.get(tmpChrID);
+			int[] tmpChrReads = hashChrReadsNum.get(tmpChrID);
 			if (tmpChrReads == null) {
 				continue;
 			}
 			long chrLen = Long.parseLong(strings[1]);
 			String[] tmpMapRate = new String[3];
-			tmpMapRate[0] = tmpChrID; tmpMapRate[1] = (double)tmpChrReads/(double)readsAll + ""; 
+			tmpMapRate[0] = tmpChrID; tmpMapRate[1] = (double)tmpChrReads[0]/(double)readsAll + ""; 
 			tmpMapRate[2] = (double)chrLen/(double)chrLengthAll + "";
 			lsChrLen.add(tmpMapRate);
 		}

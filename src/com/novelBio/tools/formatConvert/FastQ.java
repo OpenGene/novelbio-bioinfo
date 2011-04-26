@@ -43,6 +43,6 @@ public class FastQ {
 				}
 			}
 		}
-		return null;
+		return qNum;
 	}
 }

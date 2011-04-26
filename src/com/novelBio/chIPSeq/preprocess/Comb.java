@@ -133,7 +133,7 @@ public class Comb {
 		}
 		boolean SETreat = true;
 	if (TreatFile2 != null && !TreatFile2.trim().equals("")) {
-			SETreat = true;
+			SETreat = false;
 		}
 		boolean SECol = true;
 		if (ColFile2 != null && !ColFile2.trim().equals("")) {
@@ -160,10 +160,15 @@ public class Comb {
 		String outPutCol = null;
 		String outCombCol = null;
 		String errorCol = null;
-		Soap2Bed.getBed2Macs(SETreat, outFile, outPutTreat, outCombTreat, errorTreat);
+		Soap2Bed.copeSope2Bed(SETreat, outFile, outPutTreat, outCombTreat, errorTreat);
+		String outCombTreatSort = outFilePath+"bedFile/"+prix+"_Treat_Cal_Sort.bed";
+		MapPeak.sortBedFile(thisFilePath,outCombTreat, 1, outCombTreatSort, 2,3);
+		
+		
+		
 		//QC
 		TxtReadandWrite txtQC = new TxtReadandWrite();
-		ArrayList<String[]> lsQCTreat = QualityCol.calCover(outCombTreat, chrLenFile, ReadsNumTreat, !SETreat, false, null);
+		ArrayList<String[]> lsQCTreat = QualityCol.calCover(outCombTreatSort, chrLenFile, ReadsNumTreat, !SETreat, false, null);
 		txtQC.setParameter(outFilePath+prix+"_mapping_SummaryTreat", true, false);
 		txtQC.ExcelWrite(lsQCTreat, "\t", 1, 1);
 
@@ -171,14 +176,18 @@ public class Comb {
 			outPutCol = outFilePath+"bedFile/"+prix+"_Col_macs.bed";
 			outCombCol = outFilePath+"bedFile/"+prix+"_Col_Cal.bed";
 			errorCol = outFilePath+"bedFile/"+prix+"_Col_error";
-			Soap2Bed.getBed2Macs(SECol, outCol, outPutCol, outCombCol, errorCol);
+			Soap2Bed.copeSope2Bed(SECol, outCol, outPutCol, outCombCol, errorCol);
+			String outCombColSort = outFilePath+"bedFile/"+prix+"_Col_Cal_Sort.bed";
+			MapPeak.sortBedFile(outFilePath,outCombCol, 1, outCombColSort, 2,3);
+			
+			
 			//QC
-			ArrayList<String[]> lsQCCol = QualityCol.calCover(outCombCol, chrLenFile, ReadsNumCol, !SECol, false, null);
+			ArrayList<String[]> lsQCCol = QualityCol.calCover(outCombColSort, chrLenFile, ReadsNumCol, !SECol, false, null);
 			txtQC.setParameter(outFilePath+prix+"_mapping_SummaryCol", true, false);
 			txtQC.ExcelWrite(lsQCCol, "\t", 1, 1);
 		}
 		//peakcalling
 		FileOperate.createFolder(outFilePath+"peakCalling");
-		MapPeak.peakCalMacs(outPutTreat, outPutCol, species, outFilePath+"peakCalling", prix);
+		MapPeak.peakCalMacs(outFilePath, outPutCol, species, outFilePath+"peakCalling", prix);
 	}
 }

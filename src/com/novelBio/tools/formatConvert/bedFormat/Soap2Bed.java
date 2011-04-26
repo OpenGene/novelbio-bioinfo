@@ -132,7 +132,7 @@ public class Soap2Bed {
 	 * @param error 双端才有的，单端随便设
 	 * @throws Exception 
 	 */
-	public static void getBed2Macs(boolean SE, String soapFile,String outPut,String outComb,String error) throws Exception {
+	public static void copeSope2Bed(boolean SE, String soapFile,String outPut,String outComb,String error) throws Exception {
 		FastQ.setFastQoffset(NovelBioConst.FASTQ_ILLUMINA);
 		if (SE) {
 			getBed2MacsSE(soapFile, outPut, outComb);
@@ -160,7 +160,7 @@ public class Soap2Bed {
 		TxtReadandWrite txtOutLong = new TxtReadandWrite();
 		txtOutLong.setParameter(outLong, true, false);
 		
-		String[] string = txtSoap.readFirstLine().split("\t");
+		String[] string = txtSoap.readFirstLines(1).get(0).split("\t");
 		int bpLength = string[1].trim().length();
 		
 		
