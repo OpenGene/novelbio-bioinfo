@@ -88,7 +88,6 @@ public class TxtReadandWrite {
 	}
 	
 	/**
-	 * @param path输入文件名
 	 * @return 返回 String，读完不用关闭Buffer流
 	 * @throws Exception
 	 */
@@ -98,6 +97,27 @@ public class TxtReadandWrite {
 		Charset thisCharset = Charset.forName(charset);
 		return Files.readFirstLine(txtfile, thisCharset);
 	}
+	
+	/**
+	 * @param Num 读取前几列，实际列。如果文本没有那么多列，那么只读取所有列
+	 * @return 返回 String，读完不用关闭Buffer流
+	 * @throws Exception
+	 */
+	public ArrayList<String> readFirstLines(int Num) throws Exception {
+		ArrayList<String> lsResult = new ArrayList<String>();
+		BufferedReader read = readfile();
+		String content = ""; int rownum = 1;
+		// 先跳过前面的好多行
+		while ((content = read.readLine()) != null) {
+			if (rownum > Num) {
+				break;
+			}
+			lsResult.add(content);
+			rownum ++;
+		}
+		return lsResult;
+	}
+	
 	/**
 	 * 关闭buffer流
 	 * 
@@ -249,6 +269,7 @@ public class TxtReadandWrite {
 			rowNum++;
 			content2 = content;
 		}
+		
 		if (content2.equals(""))
 		{
 			readasexcel.close();
@@ -273,7 +294,6 @@ public class TxtReadandWrite {
 	 */
 	public int ExcelColumns(String sep) throws Exception {
 		int excelRows = ExcelRows();
-		int columnNum = 0;
 		BufferedReader readasexcel = readfile();
 		int colNum=0;
 		for (int i = 0; i < excelRows - 1; i++) {
@@ -301,7 +321,6 @@ public class TxtReadandWrite {
 		if (setRow > excelRows) {
 			setRow = excelRows;
 		}
-		int columnNum = 0;
 		BufferedReader readasexcel = readfile();
 		for (int i = 0; i < setRow - 1; i++) {
 			readasexcel.readLine();
@@ -345,7 +364,7 @@ public class TxtReadandWrite {
 
 	/**
 	 * 将规则的txt文本按照excel的方法读取
-	 * 
+	 * 最后一行即使没东西也会用""表示
 	 * @param sep
 	 *            txt文本的分割符,为正则表达式，tab是"\t"
 	 * @param rowStartNum
@@ -403,7 +422,7 @@ public class TxtReadandWrite {
 
 	/**
 	 * 将规则的txt文本按照excel的方法读取,自动跳过空行
-	 * 
+	 * 最后一行为空行的话会保留
 	 * @param sep
 	 *            txt文本的分割符,为正则表达式，tab是"\t"
 	 * @param rowStartNum

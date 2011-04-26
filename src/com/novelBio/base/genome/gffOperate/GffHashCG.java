@@ -136,6 +136,7 @@ public class GffHashCG extends GffHash
 			   LOCIDList.add(gffDetail.locString);
 			   LOCChrHashIDList.add(gffDetail.locString);
 		}
+		   txtgff.close();
 		 /////////////////////////////////////////////////////////////////////////////////////////////////
 	   	return Chrhash;//返回这个LOCarray信息
 	}

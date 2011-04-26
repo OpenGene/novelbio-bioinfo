@@ -13,7 +13,8 @@ public class NovelBioConst {
 	public final static String DBINFO_AFFY_RICE_31 = "affyRice31";
 	public final static String DBINFO_SYMBOL = "symbol";
 	public final static String DBINFO_NIAS_FLCDNA = "NIAS_FLcDNA";	
-	
+	public final static String FASTQ_SANGER = "sanger";
+	public final static String FASTQ_ILLUMINA = "Illumina";
 	/////////////////////////////////////基因组信息///////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 *  基因的Gff的类型，有UCSC和TIGR等，TIGR还没加入
@@ -88,41 +89,7 @@ public class NovelBioConst {
 	 *  RapDB的水稻基因gff3文件
 	 */
 	public final static String GENOME_PATH_RICE_TIGR_GFF_GENE = GENOME_PATH_RICE_TIGR+"all.gff3Cope";
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	//////////////////////////////////R系列//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 *  "/media/winE/Bioinformatics/R/practice_script/platform/"

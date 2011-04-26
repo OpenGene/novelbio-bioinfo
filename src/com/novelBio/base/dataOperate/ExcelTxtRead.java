@@ -52,16 +52,17 @@ public class ExcelTxtRead {
 	 */
 	public static String[][] readtxtExcel(String txtFile,String sep,int[] columnID,int rowStart,int rowEnd) throws Exception 
 	{
-		TxtReadandWrite txtlOperate=new TxtReadandWrite();
-		txtlOperate.setParameter(txtFile, false,true);
+		TxtReadandWrite txtOperate=new TxtReadandWrite();
+		txtOperate.setParameter(txtFile, false,true);
 		if (rowEnd==-1) 
-			rowEnd=txtlOperate.ExcelRows();
+			rowEnd=txtOperate.ExcelRows();
 
 		ArrayList<String[][]> lstmpResult=new ArrayList<String[][]>();
 		for (int i = 0; i < columnID.length; i++) {
-			String[][] tmpresult=txtlOperate.ExcelRead(sep,rowStart, columnID[i], rowEnd, columnID[i]);
+			String[][] tmpresult=txtOperate.ExcelRead(sep,rowStart, columnID[i], rowEnd, columnID[i]);
 			lstmpResult.add(tmpresult);
 		}
+		txtOperate.close();
 		return ArrayOperate.combCol(lstmpResult);
 	}
 	
@@ -93,6 +94,8 @@ public class ExcelTxtRead {
 			txtOutput.writefile(content+"\n",false);
 		}
     	txtOutput.writefile("",true);
+    	txtInputFile.close();
+    	txtOutput.close();
 	}
 	
     
@@ -122,6 +125,7 @@ public class ExcelTxtRead {
 			int txtRowNum = txt.ExcelRows();
 			ls1=txt.ExcelRead(sep, firstlinels1, 1,txtRowNum , -1, 1);//从目标行读取
 		}
+		txt.close();
 		return ls1;
 	}
 	

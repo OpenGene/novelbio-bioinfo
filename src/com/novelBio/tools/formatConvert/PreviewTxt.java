@@ -17,7 +17,7 @@ import com.novelBio.base.dataOperate.TxtReadandWrite;
 public class PreviewTxt
 {
 	/**
-	 * g给定文本，读取前指定行并写入新文本
+	 * 给定文本，读取前指定行并写入新文本
 	 * @param fileName
 	 * @param outPut
 	 * @throws Exception
@@ -57,7 +57,7 @@ public class PreviewTxt
 		
 	}
 	/**
-	 * g给定文本，读取前指定行并写入新文本
+	 * 给定文本，读取前指定行并写入新文本，用于预览文本
 	 * @param fileName
 	 * @param outPut
 	 * @throws Exception

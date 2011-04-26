@@ -144,6 +144,7 @@ public class GffHashPeak extends GffHash{
 			for (GffDetail gffDetail : LOCList) {
 				LOCChrHashIDList.add(gffDetail.locString);
 			}
+			txtPeakInfo.close();
 			//System.out.println(mm);
 			return Chrhash;
 

@@ -23,7 +23,6 @@ import com.novelBio.base.dataOperate.TxtReadandWrite;
  */
 public class GffHashUCSCgene extends GffHash
 {
-
 	/**
 	 * 最底层读取gff的方法，本方法只能读取UCSCknown gene<br>
 	 * 输入Gff文件，最后获得两个哈希表和一个list表,读取时从第二行读起<br/>
@@ -154,6 +153,7 @@ public class GffHashUCSCgene extends GffHash
 		for (GffDetail gffDetail : LOCList) {
 			LOCChrHashIDList.add(gffDetail.locString);
 		}
+		txtGffRead.close();
 		return Chrhash;
 	}
 	

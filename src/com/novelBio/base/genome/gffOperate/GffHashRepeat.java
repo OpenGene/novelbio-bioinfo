@@ -91,8 +91,9 @@ public class GffHashRepeat extends GffHash{
 		   for (GffDetail gffDetail : LOCList) {
 			   LOCChrHashIDList.add(gffDetail.locString);
 		   }
+		   txtgff.close();
 		 /////////////////////////////////////////////////////////////////////////////////////////////////
-	   	return Chrhash;//返回这个LOCarray信息
+		   return Chrhash;//返回这个LOCarray信息
 	}
 	
 	/**

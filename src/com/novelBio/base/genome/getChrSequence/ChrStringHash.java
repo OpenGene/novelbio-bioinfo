@@ -45,14 +45,14 @@ public class ChrStringHash {
 	 * 哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10
 	 * 哈希表的值是染色体的序列，其中无空格
 	 */
-	static Hashtable<String, RandomAccessFile> hashChrSeqFile;
+	static HashMap<String, RandomAccessFile> hashChrSeqFile;
 	
 	/**
 	 * 将染色体信息读入哈希表,按照BufferedReader保存，并返回
 	 * 哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10
 	 * 哈希表的值是染色体的序列，其中无空格
 	 */
-	static Hashtable<String, BufferedReader> hashBufChrSeqFile;
+	static HashMap<String, BufferedReader> hashBufChrSeqFile;
 	
 	
 	/**
@@ -116,8 +116,8 @@ public class ChrStringHash {
 			 chrFilePath = chrFilePath + File.separator;  
 		 }  
 		ArrayList<String[]> chrFile=FileOperate.getFoldFileName(chrFilePath, "\\bchr\\w*", "*");
-		hashChrSeqFile=new Hashtable<String, RandomAccessFile>();
-		hashBufChrSeqFile=new Hashtable<String, BufferedReader>();
+		hashChrSeqFile=new HashMap<String, RandomAccessFile>();
+		hashBufChrSeqFile=new HashMap<String, BufferedReader>();
 
 		for (int i = 0; i < chrFile.size(); i++) 
 		{
@@ -344,6 +344,29 @@ public class ChrStringHash {
 	{
 		return hashBufChrSeqFile.get(chrID.toLowerCase());
 	}
+	
+	public static long getEffGenomeSize() throws IOException {
+		long effGenomSize = 0;
+		for(Map.Entry<String,BufferedReader> entry:hashBufChrSeqFile.entrySet())
+		{
+			String chrID = entry.getKey();
+			BufferedReader chrReader = entry.getValue();
+			String content = "";
+			while ((content = chrReader.readLine()) != null) {
+				if (content.startsWith(">")) {
+					continue;
+				}
+				String tmp = content.trim().replace("N", "").replace("n", "");
+				effGenomSize = effGenomSize + tmp.length();
+			}
+		}
+		
+		
+		
+		
+		return effGenomSize;
+	}
+	
 	/**
 	 * 本Chr文件每一行的长度
 	 * @return
