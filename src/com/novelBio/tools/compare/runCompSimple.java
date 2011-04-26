@@ -12,7 +12,9 @@ public class runCompSimple {
 	public static void main(String[] args) {
 		String thisFilePath=null;
 		try {
-			thisFilePath = runCompSimple.class.getResource("/").toURI().getPath();
+			thisFilePath = getProjectPath();
+			//thisFilePath = runCompSimple.class.getResource("/").toURI().getPath();
+			System.out.println(thisFilePath);
 			//thisFilePath= "/home/zong0jie/×ÀÃæ/CDG/Compare/XYLCompare/eee/";
 			//thisFilePath=thisFilePath.substring(1);
 		} catch (Exception e1) {
@@ -33,5 +35,18 @@ public class runCompSimple {
 			e.printStackTrace();
 		}
 	}
-
+	 public static String getProjectPath() {
+		 java.net.URL url = runCompSimple.class.getProtectionDomain().getCodeSource().getLocation();
+		 String filePath = null;
+		 try {
+		 filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
+		 } catch (Exception e) {
+		 e.printStackTrace();
+		 }
+		 if (filePath.endsWith(".jar"))
+		 filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
+		 java.io.File file = new java.io.File(filePath);
+		 filePath = file.getAbsolutePath();
+		 return filePath;
+		 }
 }
