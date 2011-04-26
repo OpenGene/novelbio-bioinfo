@@ -12,27 +12,38 @@ import com.novelBio.tools.formatConvert.bedFormat.Soap2Bed;
 
 public class Comb {
 	public static void main(String[] args) {
+		String filePath = getProjectPath();
+		System.out.println(filePath);
 		try {
-			combMapPeak();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	/**
-	 * 整合分析
-	 * @throws Exception 
-	 */
-	public static void combMapPeak() throws Exception {
-		String thisFilePath=null;
-		try {
-			thisFilePath = runCompSimple.class.getResource("/").toURI().getPath();
-			//thisFilePath= "/home/zong0jie/桌面/CDG/Compare/XYLCompare/eee/";
-			//thisFilePath=thisFilePath.substring(1);
+			combMapPeak(filePath);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}//这个不乱码;
+
+	}
+	 public static String getProjectPath() {
+		 java.net.URL url = Comb.class.getProtectionDomain().getCodeSource().getLocation();
+		 String filePath = null;
+		 try {
+		 filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
+		 } catch (Exception e) {
+		 e.printStackTrace();
+		 }
+		 if (filePath.endsWith(".jar"))
+		 filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
+		 java.io.File file = new java.io.File(filePath);
+		 filePath = file.getAbsolutePath();
+		 return filePath;
+		 }
+		 
+	/**
+	 * 整合分析
+	 * @throws Exception 
+	 */
+	public static void combMapPeak(String filePath) throws Exception {
+		String thisFilePath=filePath;
+
 		String IndexFile = "";
 		String soapFile = "";
 		//读取配置文件
