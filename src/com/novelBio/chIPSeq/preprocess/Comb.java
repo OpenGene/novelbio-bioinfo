@@ -73,31 +73,58 @@ public class Comb {
 		String species = null;
 		String TreatFile1 = null;String TreatFile2 = null;
 		String ColFile1 = null;String ColFile2 = null;
-		String outFilePath = null;String prix = null;
+		String outFilePath = null;String prix = "";
 		//读取配置文件，species有 hs，os，mm，dm，ce
 		txtConf.setParameter(thisFilePath+"/Param.txt", false, true);
 		ArrayList<String[]> lsConf2 = txtConf.ExcelRead("\t", 1, 1, txtConf.ExcelRows(), txtConf.ExcelColumns("\t"), 0);
 		for (String[] strings : lsConf2) {
 			if (strings[0].equals("species")) {
-				species = strings[1].trim();
+				try {
+					species = strings[1].trim();
+				} catch (Exception e) {
+				}
+				
 			}
 			if (strings[0].equals("TreatFile1")) {
-				TreatFile1 = strings[1].trim();
+				try {
+					TreatFile1 = strings[1].trim();
+				} catch (Exception e) {
+				}
+				
 			}
 			if (strings[0].equals("TreatFile2")) {
-				TreatFile2 = strings[1].trim();
+				try {
+					TreatFile2 = strings[1].trim();
+				} catch (Exception e) {
+				}
+				
 			}
 			if (strings[0].equals("ColFile1")) {
-				ColFile1 = strings[1].trim();
+				try {
+					ColFile1 = strings[1].trim();
+				} catch (Exception e) {
+				}
+				
 			}
 			if (strings[0].equals("ColFile2")) {
-				ColFile2 = strings[1].trim();
+				try {
+					ColFile2 = strings[1].trim();
+				} catch (Exception e) {
+				}
+				
 			}
 			else if (strings[0].equals("outFilePath")) {
-				outFilePath = strings[1].trim()+"/";
+				try {
+					outFilePath = strings[1].trim()+"/";
+				} catch (Exception e) {
+				}
+				
 			}
 			else if (strings[0].equals("prix")) {
-				prix = strings[1].trim();
+				try {
+					prix = strings[1].trim();
+				} catch (Exception e) {
+				}
 			}
 		}
 		boolean Col = false;
