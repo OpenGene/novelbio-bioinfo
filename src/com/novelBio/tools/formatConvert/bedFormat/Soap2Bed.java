@@ -58,15 +58,15 @@ public class Soap2Bed {
 			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 			//tmpPrespre only save content while ss[0].split("#/")[1].equals("1")
 			//只需要判断#/1即可，如果#/1为正，则mapping到正链上，否则mapping到负链上
-			if (ss[0].split("/")[1].equals("1")) {
+			if (ss[0].trim().endsWith("1")) {
 				tmpcontent = content;
 				tmpresPre = ss;
 				tmpPrespre = tmpres;
 				continue;
 			}
 			//只有当#/1和#/2的方向相反才是正确的测序结果。因为solexa测序的结果就是一正一负
-			if ((ss[0].split("/")[1].equals("2")&&ss[6].equals("-"))
-					&& tmpresPre[0].split("#/")[1].equals("1")&&tmpresPre[6].equals("+")
+			if ((ss[0].trim().endsWith("2")&&ss[6].equals("-"))
+					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("+")
 			)
 			{
 				////////////////////////////////////////////////序列质量////////////////////////////////////////////////
@@ -86,8 +86,8 @@ public class Soap2Bed {
 				}
 				txtoutCombFile1.writefile(ss[7]+"\t"+startLoc+"\t"+endLoc+"\n");
 			}
-			else if ((ss[0].split("#/")[1].equals("2")&&ss[6].equals("+"))
-					&& tmpresPre[0].split("#/")[1].equals("1")&&tmpresPre[6].equals("-")
+			else if ((ss[0].trim().endsWith("2")&&ss[6].equals("+"))
+					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("-")
 			)
 			{
 				/////////////////////////////////////////////////序列质量////////////////////////////////////////////////
@@ -231,15 +231,15 @@ public class Soap2Bed {
 			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 			//tmpPrespre only save content while ss[0].split("#/")[1].equals("1")
 			//只需要判断#/1即可，如果#/1为正，则mapping到正链上，否则mapping到负链上
-			if (ss[0].split("#/")[1].equals("1")) {
+			if (ss[0].trim().endsWith("1")) {
 				tmpcontent = content;
 				tmpresPre = ss;
 				tmpPrespre = tmpres;
 				continue;
 			}
 			//只有当#/1和#/2的方向相反才是正确的测序结果。因为solexa测序的结果就是一正一负
-			if ((ss[0].split("#/")[1].equals("2")&&ss[6].equals("-"))
-					&& tmpresPre[0].split("#/")[1].equals("1")&&tmpresPre[6].equals("+")
+			if ((ss[0].trim().endsWith("2")&&ss[6].equals("-"))
+					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("+")
 			)
 			{
 				/////////////////////////////////////////////////序列质量////////////////////////////////////////////////
@@ -259,8 +259,8 @@ public class Soap2Bed {
 				}
 				txtOutComb.writefile(ss[7]+"\t"+startLoc+"\t"+endLoc+"\n");
 			}
-			else if ((ss[0].split("#/")[1].equals("2")&&ss[6].equals("+"))
-					&& tmpresPre[0].split("#/")[1].equals("1")&&tmpresPre[6].equals("-")
+			else if ((ss[0].trim().endsWith("2")&&ss[6].equals("+"))
+					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("-")
 			)
 			{
 				/////////////////////////////////////////////////序列质量////////////////////////////////////////////////
