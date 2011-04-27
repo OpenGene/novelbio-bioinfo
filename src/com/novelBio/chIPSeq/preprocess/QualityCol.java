@@ -47,7 +47,10 @@ public class QualityCol {
 		TxtReadandWrite txtbed = new TxtReadandWrite();
 		txtbed.setParameter(bedFile, false, true);
 		TxtReadandWrite txtFragmentFile = new TxtReadandWrite();
-		txtFragmentFile.setParameter(FragmentFile, false, true);
+		if (calFragLen) {
+			txtFragmentFile.setParameter(FragmentFile, false, true);
+		}
+		
 		//chrID与该chrID所mapping到的reads数量
 		HashMap<String, int[]> hashChrReadsNum = new HashMap<String,int[]>();
 		int totalMappedReads = 0;
