@@ -192,6 +192,6 @@ public class Comb {
 		}
 		//peakcalling
 		FileOperate.createFolder(outFilePath+"peakCalling");
-		MapPeak.peakCalMacs(outFilePath, outPutCol, species, outFilePath+"peakCalling", prix);
+		MapPeak.peakCalMacs(thisFilePath,outPutTreat, outPutCol, species, outFilePath+"peakCalling", prix);
 	}
 }

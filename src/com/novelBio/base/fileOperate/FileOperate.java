@@ -376,7 +376,7 @@ public class FileOperate {
 	                byte[] buffer = new byte[1444];
 	                while((byteread = inStream.read(buffer)) != -1){
 	                    bytesum += byteread; //字节数 文件大小
-	                    System.out.println(bytesum);
+	                    //System.out.println(bytesum);
 	                    fs.write(buffer, 0, byteread);
 	                }
 	                inStream.close();
@@ -460,8 +460,10 @@ public class FileOperate {
 	    }
 
 	    /**
-	     * 移动文件，如果新地址有同名文件，则不移动并返回
-	     * 注意：新文件夹后不要加\\
+	     * 移动文件，如果新地址有同名文件，则不移动并返回<br>
+	      * 可以创建一级新文件夹<br>
+	     * 如果没有文件则返回<br>
+	     * 注意：新文件夹后不要加\\<br>
 	     * @param oldPath 文件路径
 	     * @param newPath 新文件所在的文件夹
 	     * @return
@@ -473,8 +475,10 @@ public class FileOperate {
 	    }
 	    
 	    /**
-	     * 移动文件，如果新地址有同名文件，则不移动并返回
-	     * 注意：新文件夹后不要加\\
+	     * 移动文件，如果新地址有同名文件，则不移动并返回<br>
+	     * 可以创建一级新文件夹<br>
+	     * 如果没有文件则返回<br>
+	     * 注意：新文件夹后不要加\\<br>
 	     * @param oldPath 文件路径
 	     * @param newPath 新文件所在的文件夹
 	     * @param newName 新文件的文件名
@@ -489,6 +493,9 @@ public class FileOperate {
 	    	//文件新（目标）地址
 	    	//new一个新文件夹
 	    	File fnewpath = new File(newPath);
+	    	if (!oldFile.exists()) {
+				return;
+			}
 	    	//判断文件夹是否存在
 	    	if(!fnewpath.exists())
 	    	fnewpath.mkdirs();//创建新文件
@@ -499,7 +506,10 @@ public class FileOperate {
            	 return;
            	// fnew.delete();
             }
-	    	oldFile.renameTo(fnew);
+	    	if (!oldFile.renameTo(fnew)) {
+	    		copyFile(oldPath, newPath +newName);
+	    		oldFile.delete();
+	    	}
 	    }
 	    
 	    /**
@@ -550,7 +560,10 @@ public class FileOperate {
 	            	 continue;
 	            	// fnew.delete();
 	             }
-	             files[i].renameTo(fnew);
+	          	if (!files[i].renameTo(fnew)) {
+		    		copyFile(files[i].getAbsolutePath(), fnew.getAbsolutePath());
+		    		files[i].delete();
+		    	} 
 	          }
 	      } catch (Exception e) {
 	    	  throw e;

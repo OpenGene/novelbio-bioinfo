@@ -115,7 +115,7 @@ public class MapPeak {
 	 * @param outFile 目标文件夹，不用加"/"
 	 * @throws Exception 
 	 */
-	public static void peakCalMacs(String bedTreat,String bedCol,String species, String outFilePath ,String prix) throws Exception 
+	public static void peakCalMacs(String thisPath, String bedTreat,String bedCol,String species, String outFilePath ,String prix) throws Exception 
 	{
 		String effge = "";
 		String col = "";
@@ -130,13 +130,21 @@ public class MapPeak {
 			col = " -c " + bedCol + " ";
 		}
 		if (prix !=null && !prix.trim().equals("")) {
-			name = " -n prix";
+			name = " -n "+prix;
 		}
 		String cmd = "macs14 -t "+bedTreat +col+name + effge + "-w";
 		TxtReadandWrite txtCmd = new TxtReadandWrite();
 		txtCmd.setParameter(outFilePath+"/macs.sh", true, false);
+		txtCmd.writefile(cmd);
 		CmdOperate cmdOperate = new CmdOperate("sh "+outFilePath+"/macs.sh");
 		cmdOperate.doInBackground();
+		FileOperate.moveFile(thisPath+"/"+prix+"_peaks.xls", outFilePath);
+		FileOperate.moveFile(thisPath+"/"+prix+"_peaks.bed", outFilePath+"/TmpPeakInfo/");
+		FileOperate.moveFile(thisPath+"/"+prix+"_negative_peaks.xls", outFilePath+"/TmpPeakInfo/");
+		FileOperate.moveFile(thisPath+"/"+prix+"_model.r", outFilePath+"/TmpPeakInfo/");
+		FileOperate.moveFile(thisPath+"/"+prix+"_diag.xls", outFilePath+"/TmpPeakInfo/");
+		FileOperate.moveFile(thisPath+"/"+prix+"_summits.bed", outFilePath+"/TmpPeakInfo/");
+		FileOperate.moveFolder(thisPath+"/"+prix+"_MACS_wiggle", outFilePath+"/TmpPeakInfo/");
 		FileOperate.delFile(outFilePath+"/macs.sh");
 	}
 	
