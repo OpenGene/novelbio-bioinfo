@@ -310,4 +310,19 @@ public class Soap2Bed {
 		txtOuterror.close();
 	}
 	
+	/**
+	 * 给定solexa用soap的mapping结果，获得序列的fastQ行
+	 * @return
+	 * @throws Exception 
+	 */
+	public static ArrayList<String> getSoapFastQStr(String soapFile) throws Exception {
+		TxtReadandWrite txtSoap = new TxtReadandWrite();
+		txtSoap.setParameter(soapFile, false, true);
+		ArrayList<String> lsSoap= txtSoap.readFirstLines(1000);
+		ArrayList<String> lsFastQ = new ArrayList<String>();
+		for (String string : lsSoap) {
+			lsFastQ.add(string.split("\t")[2]);
+		}
+		return lsFastQ;
+	}
 }

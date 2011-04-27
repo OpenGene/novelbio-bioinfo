@@ -1,5 +1,12 @@
 package com.novelBio.tools.formatConvert;
 
+import java.util.List;
+
+import org.apache.commons.math.stat.StatUtils;
+import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math.stat.descriptive.rank.Min;
+import org.apache.commons.math.util.MathUtils;
+
 import com.novelBio.generalConf.NovelBioConst;
 
 public class FastQ {
@@ -20,7 +27,44 @@ public class FastQ {
 			System.out.println("FastQ.copeFastQ ,没有指定offset");
 		}
 	}
-	
+	/**
+	 * 给定一系列的fastQ格式，猜测该fastQ是属于sanger还是solexa
+	 * @param lsFastQ :每一个string 就是一个fastQ
+	 */
+	public static String guessFastOFormat(List<String> lsFastQ) {
+		double min25 = 70; double max75 = 70;
+		DescriptiveStatistics desStat = new DescriptiveStatistics();
+		for (String string : lsFastQ)
+		{
+			if (string.trim().equals("")) {
+				continue;
+			}
+			char[] fastq = string.toCharArray();
+			for (int i = 0; i < fastq.length; i++) {
+				desStat.addValue((double)fastq[i]);
+			}
+		}
+		min25 = desStat.getPercentile(5);
+		max75 = desStat.getPercentile(90);
+		if (min25 < 59) {
+			setFastQoffset(NovelBioConst.FASTQ_SANGER);
+			return NovelBioConst.FASTQ_SANGER;
+		}
+		if (max75 > 95) {
+			setFastQoffset(NovelBioConst.FASTQ_ILLUMINA);
+			return NovelBioConst.FASTQ_ILLUMINA;
+		}
+		//如果前两个都没搞定，后面还能判定
+		if (desStat.getMin() < 59) {
+			setFastQoffset(NovelBioConst.FASTQ_SANGER);
+			return NovelBioConst.FASTQ_SANGER;
+		}
+		if (desStat.getMax() > 103) {
+			setFastQoffset(NovelBioConst.FASTQ_ILLUMINA);
+			return NovelBioConst.FASTQ_ILLUMINA;
+		}
+		return NovelBioConst.FASTQ_ILLUMINA;
+	}
 	/**
 	 * 给定一行fastQ的ascII码，同时指定一系列的Q值，返回asc||小于该Q值的char有多少
 	 * 按照Qvalue输入的顺序，输出就是相应的int[]
