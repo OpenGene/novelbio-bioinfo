@@ -45,7 +45,7 @@ public class Soap2Bed {
 		TxtReadandWrite txtOuterror = new TxtReadandWrite();
 		txtOuterror.setParameter(outError, true, false);
 		//获得测序长度
-		String[] string = txtSoap.readFirstLine().split("\t");
+		String[] string = txtSoap.readFirstLines(1).get(0).split("\t");
 		int bpLength = string[1].trim().length();
  
 		String content = "";
@@ -58,14 +58,14 @@ public class Soap2Bed {
 			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 			//tmpPrespre only save content while ss[0].split("#/")[1].equals("1")
 			//只需要判断#/1即可，如果#/1为正，则mapping到正链上，否则mapping到负链上
-			if (ss[0].split("#/")[1].equals("1")) {
+			if (ss[0].split("/")[1].equals("1")) {
 				tmpcontent = content;
 				tmpresPre = ss;
 				tmpPrespre = tmpres;
 				continue;
 			}
 			//只有当#/1和#/2的方向相反才是正确的测序结果。因为solexa测序的结果就是一正一负
-			if ((ss[0].split("#/")[1].equals("2")&&ss[6].equals("-"))
+			if ((ss[0].split("/")[1].equals("2")&&ss[6].equals("-"))
 					&& tmpresPre[0].split("#/")[1].equals("1")&&tmpresPre[6].equals("+")
 			)
 			{
@@ -215,7 +215,7 @@ public class Soap2Bed {
 		TxtReadandWrite txtOuterror = new TxtReadandWrite();
 		txtOuterror.setParameter(outError, true, false);
 		
-		String[] string = txtSoap.readFirstLine().split("\t");
+		String[] string = txtSoap.readFirstLines(1).get(0).split("\t");
 		int bpLength = string[1].trim().length();
 		
 		
