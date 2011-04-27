@@ -46,6 +46,7 @@ public class Comb {
 
 		String IndexFile = "";
 		String soapFile = "";
+		String fastQ = "";
 		//读取配置文件
 		//配置文件格式，第一行soap程序的路径
 		//第二行到结束： species \t ChrLenFile \t IndexFile \n
@@ -64,6 +65,9 @@ public class Comb {
 			if (ss[0].trim().equals("soap")) {
 				soapFile = ss[1];
 				continue;
+			}
+			if (ss[0].trim().equals("FastQ")) {
+				fastQ = ss[1];
 			}
 			hashConf.put(ss[0], ss);
 		}
@@ -160,7 +164,7 @@ public class Comb {
 		String outPutCol = null;
 		String outCombCol = null;
 		String errorCol = null;
-		Soap2Bed.copeSope2Bed(SETreat, outFile, outPutTreat, outCombTreat, errorTreat);
+		Soap2Bed.copeSope2Bed(fastQ,SETreat, outFile, outPutTreat, outCombTreat, errorTreat);
 		String outCombTreatSort = outFilePath+"bedFile/"+prix+"_Treat_Cal_Sort.bed";
 		MapPeak.sortBedFile(thisFilePath,outCombTreat, 1, outCombTreatSort, 2,3);
 		
@@ -176,7 +180,7 @@ public class Comb {
 			outPutCol = outFilePath+"bedFile/"+prix+"_Col_macs.bed";
 			outCombCol = outFilePath+"bedFile/"+prix+"_Col_Cal.bed";
 			errorCol = outFilePath+"bedFile/"+prix+"_Col_error";
-			Soap2Bed.copeSope2Bed(SECol, outCol, outPutCol, outCombCol, errorCol);
+			Soap2Bed.copeSope2Bed(fastQ,SECol, outCol, outPutCol, outCombCol, errorCol);
 			String outCombColSort = outFilePath+"bedFile/"+prix+"_Col_Cal_Sort.bed";
 			MapPeak.sortBedFile(outFilePath,outCombCol, 1, outCombColSort, 2,3);
 			

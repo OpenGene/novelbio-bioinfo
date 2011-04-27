@@ -28,8 +28,14 @@ public class Soap2Bed {
 	 * @param outError 输出错误信息，也就是两个 #/1或两个#/2连在一起的情况
 	 * @throws Exception
 	 */
-	public static void getBed2Macs(String soapFile,String outPut1, String outCombFile1, String outPut2,String outCombFile2,String outError) throws Exception {
-		FastQ.setFastQoffset(NovelBioConst.FASTQ_ILLUMINA);
+	public static void getBed2Macs(String fastQ,String soapFile,String outPut1, String outCombFile1, String outPut2,String outCombFile2,String outError) throws Exception {
+		if (fastQ.trim().toLowerCase().equals("sanger")) {
+			fastQ = NovelBioConst.FASTQ_SANGER;
+		}
+		else if (fastQ.trim().toLowerCase().equals("illumina")) {
+			fastQ = NovelBioConst.FASTQ_ILLUMINA;
+		}
+		FastQ.setFastQoffset(fastQ);
 		TxtReadandWrite txtSoap = new TxtReadandWrite();
 		txtSoap.setParameter(soapFile, false, true);
 		TxtReadandWrite txtOut1 = new TxtReadandWrite();
@@ -53,6 +59,9 @@ public class Soap2Bed {
 		String tmpcontent=""; String tmp = "";String tmpPrespre = "";
 		String[] tmpresPre =null;
 		while ((content = readSoap.readLine()) != null) {
+			if (content.trim().equals("")) {
+				continue;
+			}
 			String[] ss = content.split("\t");
 			//soap文件的格式是 chrID 坐标 无论mapping到正负链，该坐标都是起点，都是要向后加上bpLength-1的，
 			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
@@ -132,8 +141,14 @@ public class Soap2Bed {
 	 * @param error 双端才有的，单端随便设
 	 * @throws Exception 
 	 */
-	public static void copeSope2Bed(boolean SE, String soapFile,String outPut,String outComb,String error) throws Exception {
-		FastQ.setFastQoffset(NovelBioConst.FASTQ_ILLUMINA);
+	public static void copeSope2Bed(String fastQ,boolean SE, String soapFile,String outPut,String outComb,String error) throws Exception {
+		if (fastQ.trim().toLowerCase().equals("sanger")) {
+			fastQ = NovelBioConst.FASTQ_SANGER;
+		}
+		else if (fastQ.trim().toLowerCase().equals("illumina")) {
+			fastQ = NovelBioConst.FASTQ_ILLUMINA;
+		}
+		FastQ.setFastQoffset(fastQ);
 		if (SE) {
 			getBed2MacsSE(soapFile, outPut, outComb);
 		}
@@ -167,6 +182,9 @@ public class Soap2Bed {
 		String content = "";
 		BufferedReader readSoap = txtSoap.readfile();
 		while ((content = readSoap.readLine()) != null) {
+			if (content.trim().equals("")) {
+				continue;
+			}
 			String[] ss = content.split("\t");
 			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 			txtOut1.writefile(tmpres+"\n");
@@ -225,7 +243,9 @@ public class Soap2Bed {
 		String tmpcontent=""; String tmp = "";String tmpPrespre = "";
 		String[] tmpresPre =null;
 		while ((content = readSoap.readLine()) != null) {
-
+			if (content.trim().equals("")) {
+				continue;
+			}
 			String[] ss = content.split("\t");
 			//soap文件的格式是 chrID 坐标 无论mapping到正负链，该坐标都是起点，都是要向后加上bpLength-1的，
 			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];

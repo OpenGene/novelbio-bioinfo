@@ -53,7 +53,6 @@ public class MapPeak {
 		if (inputFile2 != null) {
 			readsNum = readsNum*2;
 		}
-		cmdOperate.wait();
 		return readsNum;
 	}
 	/**
@@ -95,15 +94,15 @@ public class MapPeak {
 	 * @param outError 输出错误信息，也就是两个 #/1或两个#/2连在一起的情况
 	 * @throws Exception
 	 */
-	public static void copeMapSolexa(boolean SE, boolean sepChain, String soapFile,String outPut1, String outCombFile1, String outPut2,String outCombFile2,String outError) throws Exception {
+	public static void copeMapSolexa(String fastQ,boolean SE, boolean sepChain, String soapFile,String outPut1, String outCombFile1, String outPut2,String outCombFile2,String outError) throws Exception {
 		if (!SE && sepChain) {
-			Soap2Bed.getBed2Macs(soapFile, outPut1, outCombFile1, outPut2, outCombFile2, outError);
+			Soap2Bed.getBed2Macs(fastQ,soapFile, outPut1, outCombFile1, outPut2, outCombFile2, outError);
 		}
 		else if (SE && sepChain) {
 			System.out.println("MapPeak.copeMapSolexa 没有相应的代码");
 		}
 		else {
-			Soap2Bed.copeSope2Bed(SE, soapFile, outPut1, outCombFile1, outError);
+			Soap2Bed.copeSope2Bed(fastQ,SE, soapFile, outPut1, outCombFile1, outError);
 		}
 	}
 	
