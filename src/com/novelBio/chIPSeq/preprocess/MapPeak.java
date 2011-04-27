@@ -43,13 +43,17 @@ public class MapPeak {
 		cmd = cmd + " -o " +outFile3; 
 		cmd = cmd +  " -r 0 -v 2 -p 7 ";
 		if (inputFile2 != null && !inputFile2.trim().equals("")) {
-			cmd = cmd + " -b " + inputFile2 + " -m "+minInsert+" -x "+maxInsert;
+			cmd = cmd + " -b " + inputFile2;
+			cmd = cmd+ " -2 "+ outFile3+"_SEout "+" -m "+minInsert+" -x "+maxInsert;
+			
 		}
+		System.out.println(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.doInBackground();
 		if (inputFile2 != null) {
 			readsNum = readsNum*2;
 		}
+		cmdOperate.wait();
 		return readsNum;
 	}
 	/**
