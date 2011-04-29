@@ -130,7 +130,7 @@ public class Comb {
 		}
 		boolean Col = false;
 		if (ColFile1 != null && !ColFile1.trim().equals("")) {
-			Col = true;
+			Col = true; 
 		}
 		boolean SETreat = true;
 	if (TreatFile2 != null && !TreatFile2.trim().equals("")) {
