@@ -387,7 +387,7 @@ public class PathEnrichNew {
 					flagFind = true;
 				}
 				if (flagFind) {
-					return hashPath2Gen;
+					continue;
 				}
 			}
 			//compound
@@ -432,16 +432,16 @@ public class PathEnrichNew {
 						FisherTest.addHashInfo(hashPath2Gen,lsKGentry.get(i).getPathName(),tmpGeneInfoSub);
 					}
 				}
-				return hashPath2Gen;
+				continue;
 			}
 		    //UniProtID≤È—Ø
 		    else if (dbType.equals("uniID")) {
 				
 			}
-		    return hashPath2Gen;
+		    continue;
 		}
-		System.out.println("pathEnrichNew.getPath2Keg error");
-		return null;
+		//System.out.println("pathEnrichNew.getPath2Keg error");
+		return hashPath2Gen;
 	}
 
 	

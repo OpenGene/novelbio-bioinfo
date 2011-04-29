@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.text.MaskFormatter;
+
 import com.novelBio.base.dataStructure.MathComput;
 import com.novelBio.base.genome.getChrSequence.ChrSearch;
 import com.novelBio.base.genome.getChrSequence.ChrStringHash;
@@ -18,6 +20,7 @@ import com.novelBio.base.genome.gffOperate.GffDetail;
 import com.novelBio.base.genome.gffOperate.GffDetailUCSCgene;
 import com.novelBio.base.genome.gffOperate.GffHash;
 import com.novelBio.base.genome.gffOperate.GffHashCG;
+import com.novelBio.base.genome.gffOperate.GffHashGene;
 import com.novelBio.base.genome.gffOperate.GffHashPeak;
 import com.novelBio.base.genome.gffOperate.GffHashPlantGene;
 import com.novelBio.base.genome.gffOperate.GffHashRepeat;
@@ -333,7 +336,7 @@ public class GffChrUnion {
 	 */
 	public ArrayList<Long> getGeneStructureLength()
 	{
-		return ((GffHashUCSCgene)gffHash).getGeneStructureLength();
+		return ((GffHashGene)gffHash).getGeneStructureLength();
 	}
 
 	
@@ -753,7 +756,7 @@ public class GffChrUnion {
 	 @SuppressWarnings({ "unchecked" })
 	 private void setHashGenePeakInfo(ArrayList<ArrayList<String[]>> lsReadsInfo) 
 	 {
-		 GffHashUCSCgene gffHashUCSCgene=(GffHashUCSCgene)gffHash;
+		 GffHash gffHashgene = gffHash;
 		 
 		 //getGeneInfo(1, "", 12, 21);
 		 for(int i=0;i<lsReadsInfo.size();i++)
@@ -769,7 +772,7 @@ public class GffChrUnion {
 			 if (!lsTmp.get(0)[0].equals("")) 
 			 {
 				 String tmpGeneID=lsTmp.get(0)[0].split("/")[0];
-				 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashUCSCgene.LOCsearch(tmpGeneID);
+				 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashgene.LOCsearch(tmpGeneID);
 				 lsLongestSplit=(ArrayList<Integer>)(gffDetailUCSCgene.getLongestSplit().get(1));
 				 int exonNum= (lsLongestSplit.size()-2)/2;//最长转录本包含多少个外显子
 				 if (hashGenePeakInfo.containsKey(lsTmp.get(0)[0]))
@@ -891,7 +894,7 @@ public class GffChrUnion {
 	  * 输入peak所覆盖的基因的情况，同时指定条件和切割份数，返回该条件和切割份数下的reads密度值,已经经过了校正
 	  * 校正方法是：获得reads密度*fold数/总reads数/涉及到的gene数
 	  * @param lsReadsInfo getGeneInfo方法返回的结果
-	  * @param range 统计时tss左右两边的距离，就是说画出tss左右两边多少的距离，这个最好与UpstreamTSSbp相一致，UpstreamTSSbp在这里用来定义，在这个区域内有peak则将该tss加入统计
+	  * @param range 统计时tss左右两边的距离，就是说画出tss左右两边多少的距离，这个最好与UpstreamTSSbp和DownstreamTss相一致，UpstreamTSSbp和DownstreamTss在这里用来划定区域，在这个区域内有peak则将该tss加入统计
 	  * @param gffHashUCSCgene 
 	  * @return 返回该区域上有peak覆盖的所有tss上reads的累加情况
 	  */
@@ -899,7 +902,7 @@ public class GffChrUnion {
 	private double[] getTssRange(int range, int binNum) 
 	 {
 		 tmpGeneNum = 0;
-		 GffHashUCSCgene gffHashUCSCgene=(GffHashUCSCgene)gffHash;
+		 GffHash gffHashGene=gffHash;
 		 Iterator iter = hashGenePeakInfo.entrySet().iterator();
 		 double[] binResult=new double[binNum];//清空binResult
 		 ArrayList<double[]> lsTss = new ArrayList<double[]>();
@@ -913,7 +916,7 @@ public class GffChrUnion {
 			 
 			 if (lsGeneInfo.get(0)[0]!=0) 
 			 {
-				 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashUCSCgene.LOCsearch(tmpGeneID);
+				 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashGene.LOCsearch(tmpGeneID);
 
 				 int startNum=0; int endNum=0;
 				 if (gffDetailUCSCgene.cis5to3) 
@@ -953,7 +956,7 @@ public class GffChrUnion {
 	  * 输入peak所覆盖的基因的情况，同时指定条件和切割份数，返回该条件和切割份数下的reads密度值,已经经过了校正
 	  * 校正方法是：获得reads密度*fold数/总reads数/涉及到的gene数
 	  * @param lsReadsInfo getGeneInfo方法返回的结果
-	  * @param range 统计时tss左右两边的距离，就是说画出tss左右两边多少的距离，这个最好与UpstreamTSSbp相一致，UpstreamTSSbp在这里用来定义，在这个区域内有peak则将该tss加入统计
+	  * @param range 统计时tss左右两边的距离，就是说画出tss左右两边多少的距离，这个最好与UpstreamTSSbp和DownstreamTss相一致，UpstreamTSSbp和DownstreamTss在这里用来划定区域，在这个区域内有peak则将该tss加入统计
 	  * @param gffHashUCSCgene 
 	  * @return 返回该区域上有peak覆盖的所有tss上reads的情况的数组
 	  */
@@ -961,7 +964,7 @@ public class GffChrUnion {
 	private double[][] getTssRangeArray(int range, int binNum) 
 	 {
 		 tmpGeneNum = 0;
-		 GffHashUCSCgene gffHashUCSCgene=(GffHashUCSCgene)gffHash;
+		 GffHash gffHashGene = gffHash;
 		 Iterator iter = hashGenePeakInfo.entrySet().iterator();
 		 double[] binResult=new double[binNum];//清空binResult
 		 ArrayList<double[]> lsTss = new ArrayList<double[]>();
@@ -975,7 +978,7 @@ public class GffChrUnion {
 			 
 			 if (lsGeneInfo.get(0)[0]!=0) 
 			 {
-				 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashUCSCgene.LOCsearch(tmpGeneID);
+				 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashGene.LOCsearch(tmpGeneID);
 
 				 int startNum=0; int endNum=0;
 				 if (gffDetailUCSCgene.cis5to3) 
@@ -1027,7 +1030,7 @@ public class GffChrUnion {
 	  * 输入peak所覆盖的基因的情况，同时指定条件和切割份数，返回该条件和切割份数下的reads密度值,已经经过了校正
 	  * 校正方法是：获得reads密度*fold数/总reads数/涉及到的gene数
 	  * @param lsReadsInfo getGeneInfo方法返回的结果
-	  * @param range 统计时tss左右两边的距离，就是说画出tss左右两边多少的距离，这个最好与UpstreamTSSbp相一致，UpstreamTSSbp在这里用来定义，在这个区域内有peak则将该tss加入统计
+	  * @param range 统计时tss左右两边的距离，就是说画出tss左右两边多少的距离，这个最好与UpstreamTSSbp和DownstreamTss相一致，UpstreamTSSbp和DownstreamTss在这里用来划定区域，在这个区域内有peak则将该tss加入统计
 	  * @param gffHashUCSCgene 
 	  * @return 返回该区域上有peak覆盖的所有tss上reads的累加情况
 	  */
@@ -1036,7 +1039,7 @@ public class GffChrUnion {
 	 {
 		 tmpGeneNum = 0;
 		 
-		 GffHashUCSCgene gffHashUCSCgene=(GffHashUCSCgene)gffHash;
+		 GffHash gffHashGene=gffHash;
 		 //将输入的geneID中重复的geneID进行合并，得到唯一的GeneID
 		 double[] binResult=new double[binNum];//清空binResult
 		 ArrayList<double[]> lsTss = new ArrayList<double[]>();
@@ -1044,7 +1047,7 @@ public class GffChrUnion {
 		 for (int i = 0; i < geneID.length; i++)
 		 {
 			 //这里可以考虑将输入的geneID进入数据库转换成refseqID
-			 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashUCSCgene.LOCsearch(geneID[i]);
+			 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashGene.LOCsearch(geneID[i]);
 			 if (gffDetailUCSCgene == null) {
 				continue;
 			}
@@ -1097,7 +1100,7 @@ public class GffChrUnion {
 	  */
 	 public double[] getGeneEndRange(String[] geneID,int range, int binNum) 
 	 {
-		 GffHashUCSCgene gffHashUCSCgene=(GffHashUCSCgene)gffHash;
+		 GffHash gffHashGene=gffHash;
 		 //将输入的geneID中重复的geneID进行合并，得到唯一的GeneID
 		 tmpGeneNum = 0;
 		 double[] binResult=null;//清空binResult
@@ -1106,7 +1109,7 @@ public class GffChrUnion {
 		 for (int i = 0; i < geneID.length; i++)
 		 {
 			 //这里可以考虑将输入的geneID进入数据库转换成refseqID
-			 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashUCSCgene.LOCsearch(geneID[i]);
+			 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashGene.LOCsearch(geneID[i]);
 			 if (gffDetailUCSCgene == null) {
 				continue;
 			}
@@ -1152,16 +1155,16 @@ public class GffChrUnion {
 	  * 指定单个geneID，注意是RefSeq内的geneID，也就是说，该ID必须在gff文件中出现过。如果没初见过，那么就跳过。然而因为在处理的时候已经将同一基因的多个转录本进行了合并，所以最后获得的是最长转录本的信息
 	  * 输入peak所覆盖的基因的情况，同时指定条件和切割份数，返回该条件和切割份数下的reads密度值,不进行矫正
 	  * @param lsReadsInfo getGeneInfo方法返回的结果
-	  * @param range 统计时tss左右两边的距离，就是说画出tss左右两边多少的距离，这个最好与UpstreamTSSbp相一致，UpstreamTSSbp在这里用来定义，在这个区域内有peak则将该tss加入统计
+	  * @param range 统计时tss左右两边的距离，就是说画出tss左右两边多少的距离，这个最好与UpstreamTSSbp和DownstreamTss相一致，UpstreamTSSbp和DownstreamTss在这里用来划定区域，在这个区域内有peak则将该tss加入统计
 	  * @param gffHashUCSCgene 
 	  * @return 返回该区域上有peak覆盖的所有tss上reads的累加情况，如果没查到，就返回null
 	  */
 	 @SuppressWarnings("unchecked")
 	public double[] getTssRange(String geneID, int range, int binNum) 
 	 {
-		 GffHashUCSCgene gffHashUCSCgene=(GffHashUCSCgene)gffHash;
+		 GffHash gffHashGene=gffHash;
 		//这里可以考虑将输入的geneID进入数据库转换成refseqID
-		 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashUCSCgene.LOCsearch(geneID);
+		 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashGene.LOCsearch(geneID);
 		 if (gffDetailUCSCgene == null) {
 			return null;
 		}
@@ -1205,9 +1208,9 @@ public class GffChrUnion {
 	  */
 	 public double[] getGeneEndRange(String geneID,int range, int binNum) 
 	 {
-		 GffHashUCSCgene gffHashUCSCgene=(GffHashUCSCgene)gffHash;
+		 GffHash gffHashGene=gffHash;
 		 //这里可以考虑将输入的geneID进入数据库转换成refseqID
-		 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashUCSCgene.LOCsearch(geneID);
+		 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashGene.LOCsearch(geneID);
 		 if (gffDetailUCSCgene == null) {
 			return null;
 		}
@@ -1244,13 +1247,13 @@ public class GffChrUnion {
 	  * 在hashGenePeakInfo已经存在的情况下
 	  * 输入peak所覆盖的基因的情况，同时指定条件和切割份数，返回该条件和切割份数下的reads密度值
 	  * @param lsReadsInfo getGeneInfo方法返回的结果
-	  * @param range 统计时tss左右两边的距离，就是说画出tss左右两边多少的距离，这个最好与UpstreamTSSbp相一致，UpstreamTSSbp在这里用来定义，在这个区域内有peak则将该tss加入统计
+	  * @param range 统计时tss左右两边的距离，就是说画出tss左右两边多少的距离，这个最好与UpstreamTSSbp和DownstreamTss相一致，UpstreamTSSbp和DownstreamTss在这里用来划定区域，在这个区域内有peak则将该tss加入统计
 	  * @param gffHashUCSCgene 
 	  * @return 返回该区域上有peak覆盖的所有tss上reads的累加情况
 	  */
 	 private double[] getGeneEndRange(int range, int binNum) 
 	 {
-		 GffHashUCSCgene gffHashUCSCgene=(GffHashUCSCgene)gffHash;
+		 GffHash gffHashGene=gffHash;
 		 Iterator iter = hashGenePeakInfo.entrySet().iterator();
 		 double[] binResult = null;//清空binResult
 		 tmpGeneNum = 0;
@@ -1264,7 +1267,7 @@ public class GffChrUnion {
 			 double[] tmpGeneEndBin=null;
 			 if (lsGeneInfo.get(3)[0]!=0) 
 			 {
-				 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashUCSCgene.LOCsearch(tmpGeneID);
+				 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashGene.LOCsearch(tmpGeneID);
 				 int startNum=0; int endNum=0;
 				 if (gffDetailUCSCgene.cis5to3) 
 				 {
@@ -1305,13 +1308,13 @@ public class GffChrUnion {
 	  * 在hashGenePeakInfo已经存在的情况下
 	  * 输入peak所覆盖的基因的情况，同时指定条件和切割份数，返回该条件和切割份数下的reads密度值
 	  * @param lsReadsInfo getGeneInfo方法返回的结果
-	  * @param range 统计时tss左右两边的距离，就是说画出tss左右两边多少的距离，这个最好与UpstreamTSSbp相一致，UpstreamTSSbp在这里用来定义，在这个区域内有peak则将该tss加入统计
+	  * @param range 统计时tss左右两边的距离，就是说画出tss左右两边多少的距离，这个最好与UpstreamTSSbp和DownstreamTss相一致，UpstreamTSSbp和DownstreamTss在这里用来划定区域，在这个区域内有peak则将该tss加入统计
 	  * @param gffHashUCSCgene 
 	  * @return 返回该区域上有peak覆盖的所有tss上reads的累加情况
 	  */
 	 private double[][] getGeneEndRangeArray(int range, int binNum) 
 	 {
-		 GffHashUCSCgene gffHashUCSCgene=(GffHashUCSCgene)gffHash;
+		 GffHash gffHashGene=gffHash;
 		 Iterator iter = hashGenePeakInfo.entrySet().iterator();
 		 double[] binResult = null;//清空binResult
 		 tmpGeneNum = 0;
@@ -1325,7 +1328,7 @@ public class GffChrUnion {
 			 double[] tmpGeneEndBin=null;
 			 if (lsGeneInfo.get(3)[0]!=0) 
 			 {
-				 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashUCSCgene.LOCsearch(tmpGeneID);
+				 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashGene.LOCsearch(tmpGeneID);
 				 int startNum=0; int endNum=0;
 				 if (gffDetailUCSCgene.cis5to3) 
 				 {
@@ -1366,7 +1369,7 @@ public class GffChrUnion {
 	 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		  /**
 		   * 给定peak的两个端点，返回这两个端点内部所涉及到的基因及具体情况，目前仅支持UCSCgene，可以扩展为CG等<br>
-		   * 首先要设定UpStreamTSSbp：peak处在tss左右的UpStreamTSSbp范围内则将该基因计入统计<br>
+		   * 首先要设定UpStreamTSSbp和DownstreamTss，UpstreamTSSbp和DownstreamTss在这里用来划定区域，peak在此范围内则将该基因计入统计<br>
 		   * 然后要设定GeneEnd3UTR：peak处在GeneEnd左右的GeneEnd3UTR范围内则将该基因计入统计<br>
 		   * 注意所谓涉及到tss区域，表示peak能够覆盖到TSS两侧的UpstreamTSSbp距离
 		   * 后面在填充HashGenepeakInfo的时候会合并同一个基因的信息
@@ -1420,7 +1423,7 @@ public class GffChrUnion {
 				  if (startCodInfo.begincis5to3) //基因正向
 				  {
 					  //////TSS设定//////////
-					  if(startCodInfo.distancetoLOCStart[0]<UpStreamTSSbp)
+					  if(startCodInfo.distancetoLOCStart[0]<DownStreamTssbp)
 					  {
 						  tss[0]="TSS";
 						  tss[1]="right";
@@ -1434,7 +1437,7 @@ public class GffChrUnion {
 					  if (endCodInfo.insideLOC && endCodInfo.LOCID[0].equals(startCodInfo.LOCID[0])) 
 					  {
 						  ///////GeneEnd设定///////////////////
-						  if (endCodInfo.distancetoLOCEnd[0]<GeneEnd3UTR)
+						  if (Math.abs(endCodInfo.distancetoLOCEnd[0])<GeneEnd3UTR)
 						  {
 							  geneEnd[0]="GeneEnd";
 							  geneEnd[1]="left";
@@ -1531,7 +1534,7 @@ public class GffChrUnion {
 				  else //基因反向 
 				  {
 					  ///////GeneEnd设定///////////////////
-					  if (startCodInfo.distancetoLOCEnd[0]<GeneEnd3UTR)
+					  if (Math.abs(startCodInfo.distancetoLOCEnd[0])<GeneEnd3UTR)
 					  {
 						  geneEnd[0]="GeneEnd";
 						  geneEnd[1]="left";
@@ -1545,7 +1548,7 @@ public class GffChrUnion {
 					  /////////// peak 在 一 个 基 因 内 ///////////////////////////////////////////////////////////////
 					  if (endCodInfo.insideLOC && endCodInfo.LOCID[0].equals(startCodInfo.LOCID[0])) 
 					  {
-						  if (endCodInfo.distancetoLOCStart[0]<UpStreamTSSbp)
+						  if (endCodInfo.distancetoLOCStart[0]<DownStreamTssbp)
 						  {
 							  tss[0]="TSS";
 							  tss[1]="right";
@@ -1710,7 +1713,7 @@ public class GffChrUnion {
 						  tss[0]="TSS";
 						  tss[1]="both";
 						  //////到本基因终点的设定//////////
-						  if(endCodInfo.distancetoLOCEnd[0]<GeneEnd3UTR)
+						  if(Math.abs(endCodInfo.distancetoLOCEnd[0])<GeneEnd3UTR)
 						  {
 							  geneEnd[0]="GeneEnd";
 							  geneEnd[1]="left";
@@ -1773,7 +1776,7 @@ public class GffChrUnion {
 					  else
 					  {
 						  //////到本基因终点的设定//////////
-						  if(endCodInfo.distancetoLOCStart[0]<UpStreamTSSbp)
+						  if(endCodInfo.distancetoLOCStart[0]<DownStreamTssbp)
 						  {
 							  tss[0]="TSS";
 							  tss[1]="right";

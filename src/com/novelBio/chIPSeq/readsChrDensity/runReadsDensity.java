@@ -15,23 +15,23 @@ public class runReadsDensity
 	 */
 	public static void main(String[] args) {
 		///**mouse
-		String parentFile="/media/winE/NBC/Project/ChIPSeq_CDG110330/mapping/";
-		String resultFile = "/media/winE/NBC/Project/ChIPSeq_CDG110330/result/readsInChr/";
+		String parentFile="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/mapping/";
+		String resultFile = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/readsInChr/";
 		int invNum=10;
 		int tagLength=300;//考虑自动获取
 		try {
 			
-			String mapFFile=parentFile+"FT5sort.bed";
+			String mapFFile=parentFile+"CSA_Treat_Cal_Sort.bed";
 			String mapRFile="";
-			String prix = "FT5";
+			String prix = "CSA";
 			String sep="\t"; 
 			
 			ReadsDensity aaaDensity=new ReadsDensity();
 			aaaDensity.maxresolution = 10000;
-			aaaDensity.prepare(mapFFile,mapRFile,NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, sep, 1, 2,3, invNum,tagLength);
+			aaaDensity.prepare(mapFFile,mapRFile,NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, sep, 1, 2,3, invNum,tagLength);
 //			aaaDensity.prepare(mapFFile,mapRFile,chrFilePath,rworkSpaceString, sep, 0, 1,2, invNum,tagLength);
 			aaaDensity.getAllChrDist();
-			FileOperate.moveFoldFile(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS,resultFile,prix);
+			FileOperate.moveFoldFile(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS,resultFile,prix,true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

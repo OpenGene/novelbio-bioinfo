@@ -23,7 +23,7 @@ public class GenomeBasePrepare {
 	/**
 	 * 如果某个值设置为""，则该值不设置
 	 * @param chrFilePath
-	 * @param colMap mapping 文件中 chr 起点 终点的位置
+	 * @param colMap mapping 文件中 chr 起点 终点的位置,如果 mapFilePath没有，那么就设为null
 	 * 常规bed文件 1，2，3
 	 * 王从茂的文件，0，1，2
 	 * @param gffClass 待实例化的Gffhash子类，只能有 "TIGR","CG","UCSC","Peak","Repeat"这几种
@@ -31,13 +31,13 @@ public class GenomeBasePrepare {
 	 * @param mapFilePath 默认10bp的间隔计数
 	 */
 	public static void  prepare(String chrFilePath,int[] colMap,String gffClass,String gffFilePath,String mapFilePath) {
-		if (!chrFilePath.trim().equals("")) {
+		if (chrFilePath != null && !chrFilePath.trim().equals("")) {
 			gffLocatCod.loadChr(chrFilePath);
 		}
-		if (!gffFilePath.trim().equals("")) {
+		if (gffFilePath != null && !gffFilePath.trim().equals("")) {
 			gffLocatCod.loadGff(gffClass,gffFilePath);
 		}
-		if (!mapFilePath.trim().equals("")) {
+		if (mapFilePath != null && !mapFilePath.trim().equals("")) {
 			gffLocatCod.loadMap(mapFilePath, chrFilePath, sep, colMap[0], colMap[1], colMap[2], invNum, 0);
 		}
 	}

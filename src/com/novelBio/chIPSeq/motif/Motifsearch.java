@@ -112,7 +112,8 @@ public class Motifsearch {
 	) throws Exception
 	{
 		ArrayList<Integer> lsResult = new ArrayList<Integer>();
-		ArrayList<String> lsPeakSeq = GetSeq.getPeakSeq(Gffclass, gfffilename, chrPah, peaklength, condition, txtFilepeakFile, sep, columnID, rowStart, rowEnd,false);
+		GetSeq.prepare(chrPah, null, Gffclass, gfffilename, "");
+		ArrayList<String> lsPeakSeq = GetSeq.getPeakSeq(peaklength, condition, txtFilepeakFile, sep, columnID, rowStart, rowEnd, false);//(Gffclass, gfffilename, chrPah, peaklength, condition, txtFilepeakFile, sep, columnID, rowStart, rowEnd,false);
 		for (String string : lsPeakSeq) {
 			ArrayList<String[]> lstmpResult = Patternlocation.getPatLoc(string, motifReg, false);
 			for (String[] strings : lstmpResult) {
@@ -160,7 +161,7 @@ public class Motifsearch {
 		txtMotifDensityParam.writefile("Peak Summit"+"\n");
 		txtMotifDensityParam.writefile("Motif Density"+"\n");
 		RDensity();
-		FileOperate.moveFoldFile(NovelBioConst.R_WORKSPACE_DENSITY, resultPath, resultPrix);
+		FileOperate.moveFoldFile(NovelBioConst.R_WORKSPACE_DENSITY, resultPath, resultPrix,true);
 	}
 	
 	/**

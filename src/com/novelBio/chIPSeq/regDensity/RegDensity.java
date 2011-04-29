@@ -85,7 +85,7 @@ public class RegDensity extends GenomeBasePrepare
 			geneID2[i] = geneID[i][0];
 		}
 		
-		gffLocatCod.setUpstreamTSSbp(tssRegion);
+		gffLocatCod.setUpstreamTSSbp(tssRegion);gffLocatCod.setDownStreamTssbp(tssRegion);
 		gffLocatCod.setGeneEnd3UTR(geneEndRegion);
 		double[] TssDensity=gffLocatCod.getTssRange(geneID2, range, binNum);
  
@@ -97,8 +97,8 @@ public class RegDensity extends GenomeBasePrepare
 			tssReadandWrite.writefile(range+""); 
 		} catch (Exception e) { 	e.printStackTrace(); }
 		try {density("Tss");	} catch (Exception e) {	e.printStackTrace();}
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_EXCEL, resultFilePath,prefix+"tss.txt");
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_PIC, resultFilePath,prefix+"TSSReads.jpg");
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_EXCEL, resultFilePath,prefix+"tss.txt",true);
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_PIC, resultFilePath,prefix+"TSSReads.jpg",true);
 		
 		TxtReadandWrite txtTmpGenNum = new TxtReadandWrite();
 		//写入该区域进行统计的基因数目
@@ -144,8 +144,8 @@ public class RegDensity extends GenomeBasePrepare
 		geneEndReadandWrite.setParameter(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_PARAM, true,false);
 		try { geneEndReadandWrite.writefile(range+""); 	} catch (Exception e) { 	e.printStackTrace(); }
 		try {density("GeneEnd");	} catch (Exception e) {	e.printStackTrace();}
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_GENEEND_EXCEL, resultFilePath,prefix+"geneEnd2.txt");
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_GENEEND_PIC, resultFilePath,prefix+"GeneEndReads.jpg");
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_GENEEND_EXCEL, resultFilePath,prefix+"geneEnd2.txt",true);
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_GENEEND_PIC, resultFilePath,prefix+"GeneEndReads.jpg",true);
 		TxtReadandWrite txtTmpGenNum = new TxtReadandWrite();
 		//写入该区域进行统计的基因数目
 		 if (!resultFilePath.endsWith(File.separator)) {  
@@ -173,7 +173,7 @@ public class RegDensity extends GenomeBasePrepare
 	 */
 	public void getGeneNameTssDensity(String geneName,int range,String prefix,int binNum,String resultFilePath) throws Exception {
 		
-		gffLocatCod.setUpstreamTSSbp(tssRegion);
+		gffLocatCod.setUpstreamTSSbp(tssRegion);gffLocatCod.setDownStreamTssbp(tssRegion);
 		gffLocatCod.setGeneEnd3UTR(geneEndRegion);
 		double[] TssDensity=gffLocatCod.getTssRange(geneName, range, binNum);
  
@@ -185,8 +185,8 @@ public class RegDensity extends GenomeBasePrepare
 			tssReadandWrite.writefile(range+""); 
 		} catch (Exception e) { 	e.printStackTrace(); }
 		try {density("Tss");	} catch (Exception e) {	e.printStackTrace();}
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_EXCEL, resultFilePath,prefix+"tss.txt");
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_PIC, resultFilePath,prefix+"TSSReads.jpg");
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_EXCEL, resultFilePath,prefix+"tss.txt",true);
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_PIC, resultFilePath,prefix+"TSSReads.jpg",true);
 		
 		TxtReadandWrite txtTmpGenNum = new TxtReadandWrite();
 		//写入该区域进行统计的基因数目
@@ -222,8 +222,8 @@ public class RegDensity extends GenomeBasePrepare
 		geneEndReadandWrite.setParameter(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_PARAM, true,false);
 		try { geneEndReadandWrite.writefile(range+""); 	} catch (Exception e) { 	e.printStackTrace(); }
 		try {density("GeneEnd");	} catch (Exception e) {	e.printStackTrace();}
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_GENEEND_EXCEL, resultFilePath,prefix+"geneEnd2.txt");
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_GENEEND_PIC, resultFilePath,prefix+"GeneEndReads.jpg");
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_GENEEND_EXCEL, resultFilePath,prefix+"geneEnd2.txt",true);
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_GENEEND_PIC, resultFilePath,prefix+"GeneEndReads.jpg",true);
 		TxtReadandWrite txtTmpGenNum = new TxtReadandWrite();
 		//写入该区域进行统计的基因数目
 		 if (!resultFilePath.endsWith(File.separator)) {  
@@ -250,7 +250,7 @@ public class RegDensity extends GenomeBasePrepare
 	 */
 	private void getTssDensity(int range,int binNum,String resultFilePath,String prefix) {
 		
-		gffLocatCod.setUpstreamTSSbp(tssRegion);
+		gffLocatCod.setUpstreamTSSbp(tssRegion);gffLocatCod.setDownStreamTssbp(tssRegion);
 		gffLocatCod.setGeneEnd3UTR(geneEndRegion);
 		double[] TssDensity=gffLocatCod.getUCSCTssRange(LocInfo, range, binNum);
  
@@ -262,8 +262,8 @@ public class RegDensity extends GenomeBasePrepare
 			tssReadandWrite.writefile(range+""); 
 		} catch (Exception e) { 	e.printStackTrace(); }
 		try {density("Tss");	} catch (Exception e) {	e.printStackTrace();}
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_EXCEL, resultFilePath,prefix+"tss.txt");
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_PIC, resultFilePath,prefix+"TSSReads.jpg");
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_EXCEL, resultFilePath,prefix+"tss.txt",true);
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_PIC, resultFilePath,prefix+"TSSReads.jpg",true);
 		
 		TxtReadandWrite txtTmpGenNum = new TxtReadandWrite();
 		//写入该区域进行统计的基因数目
@@ -295,8 +295,8 @@ public class RegDensity extends GenomeBasePrepare
 		geneEndReadandWrite.setParameter(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_PARAM, true,false);
 		try { geneEndReadandWrite.writefile(range+""); 	} catch (Exception e) { 	e.printStackTrace(); }
 		try {density("GeneEnd");	} catch (Exception e) {	e.printStackTrace();}
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_GENEEND_EXCEL, resultFilePath,prefix+"geneEnd2.txt");
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_GENEEND_PIC, resultFilePath,prefix+"GeneEndReads.jpg");
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_GENEEND_EXCEL, resultFilePath,prefix+"geneEnd2.txt",true);
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_GENEEND_PIC, resultFilePath,prefix+"GeneEndReads.jpg",true);
 		TxtReadandWrite txtTmpGenNum = new TxtReadandWrite();
 		//写入该区域进行统计的基因数目
 		 if (!resultFilePath.endsWith(File.separator)) {  
@@ -342,7 +342,7 @@ public class RegDensity extends GenomeBasePrepare
 	 */
 	private void getTssDensityHeatMap(int range,int binNum,String resultFilePath,String prefix) {
 		
-		gffLocatCod.setUpstreamTSSbp(tssRegion);
+		gffLocatCod.setUpstreamTSSbp(tssRegion);gffLocatCod.setDownStreamTssbp(tssRegion);
 		gffLocatCod.setGeneEnd3UTR(geneEndRegion);
 		double[][] TssDensity=gffLocatCod.getUCSCTssRangeArray(LocInfo, range, binNum);
 		HeatChart map = new HeatChart(TssDensity,0,2);

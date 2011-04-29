@@ -20,6 +20,7 @@ public class NovelBioConst {
 	 *  基因的Gff的类型，有UCSC和TIGR等，TIGR还没加入
 	 */
 	public final static String GENOME_GFF_TYPE_UCSC = "UCSC";
+	public final static String GENOME_GFF_TYPE_TIGR = "TIGR";
 	/**
 	 *  基因组路径
 	 */
@@ -82,13 +83,21 @@ public class NovelBioConst {
 	 */
 	public final static String GENOME_PATH_RICE_RAPDB_GFF_GENE = GENOME_PATH_RICE_RAPDB+"RAP_genes.gff3";
 	/**
-	 *  RapDB路径
+	 *  TIGRrice的路径
 	 */
 	public final static String GENOME_PATH_RICE_TIGR = GENOME_PATH_RICE+"TIGRRice/";
 	/**
-	 *  RapDB的水稻基因gff3文件
+	 *  TIGRrice的水稻基因gff3文件
 	 */
 	public final static String GENOME_PATH_RICE_TIGR_GFF_GENE = GENOME_PATH_RICE_TIGR+"all.gff3Cope";
+	/**
+	 *  TIGRrice的水稻基因序列文件夹
+	 */
+	public final static String GENOME_PATH_RICE_TIGR_CHROM = GENOME_PATH_RICE_TIGR+"ChromFa/";
+	/**
+	 *  TIGRrice的水稻统计信息
+	 */
+	public final static String GENOME_PATH_RICE_TIGR_STATISTIC = GENOME_PATH_RICE_TIGR+"statisticInof/";
 
 	//////////////////////////////////R系列//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
@@ -138,6 +147,10 @@ public class NovelBioConst {
 	 * topGo的包含elimFisher的结果table文件
 	 */
 	public final static String R_WORKSPACE_TOPGO_GORESULT = R_WORKSPACE_TOPGO + "GoResult.txt";
+	/**
+	 * topGo的包含elimFisher的图片
+	 */
+	public final static String R_WORKSPACE_TOPGO_GOMAP = R_WORKSPACE_TOPGO + "tGOall_elim_10_def.pdf";
 	/**
 	 * topGo的包含elimFisher的结果table文件
 	 * 每个GO里面所含有的背景基因
@@ -239,15 +252,17 @@ public class NovelBioConst {
 	 */
 	public final static String R_WORKSPACE_DENSITY = R_WORKSPACE + "NormalDensity/";
 	/**
-	 * R的density计算的参数文件，保存本次计算的数据来源和数量，可用于计算motif在指定序列上的分布
+	 * R的density计算的参数文件，保存本次计算的数据来源和数量，可用于计算motif在指定序列上的分布和Peak在TSS分布<br>
+	 * 第一行大标题第二行xtitle，第三行ytitle
 	 */
 	public final static String R_WORKSPACE_DENSITY_PARAM = R_WORKSPACE_DENSITY + "param.txt";
 	/**
-	 * R的density计算的计算文件，保存本次计算的数据，可用于计算motif在指定序列上的分布
+	 * R的density计算的计算文件，保存本次计算的数据，可用于计算motif在指定序列上的分布<br>
+	 * 数据每行一个，写成一列，没有标题
 	 */
 	public final static String R_WORKSPACE_DENSITY_DATA = R_WORKSPACE_DENSITY + "data.txt";
 	/**
-	 * R的density计算的计算文件，保存本次计算的数据，可用于计算motif在指定序列上的分布
+	 * R的density计算的脚本
 	 */
 	public final static String R_WORKSPACE_DENSITY_RSCRIPT = R_WORKSPACE + "NormalDensity.R";
 	/**

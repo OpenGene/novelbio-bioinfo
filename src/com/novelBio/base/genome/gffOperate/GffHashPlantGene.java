@@ -30,7 +30,7 @@ import com.novelBio.base.dataOperate.TxtReadandWrite;
  * 
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
-public class GffHashPlantGene extends GffHash{
+public class GffHashPlantGene extends GffHashGene{
 	
 
 

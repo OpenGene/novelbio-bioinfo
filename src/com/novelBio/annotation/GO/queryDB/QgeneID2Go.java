@@ -341,6 +341,9 @@ public class QgeneID2Go {
 		///////////÷±Ω”≤È’“///////////////////////////////////
 		for (String[] strings : lsAccID)
 		{
+			if (strings[2].equals("LOC_Os01g54230")) {
+				System.out.println("test");
+			}
 			Gene2GoInfo Qgene2GoInfo =null;
 			Uni2GoInfo Quni2GoInfo = null;
 			

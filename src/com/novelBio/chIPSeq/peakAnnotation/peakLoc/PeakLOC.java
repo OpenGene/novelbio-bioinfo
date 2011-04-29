@@ -11,6 +11,7 @@ import com.novelBio.base.dataStructure.ArrayOperate;
 import com.novelBio.base.dataStructure.MathComput;
 import com.novelBio.base.genome.GffLocatCod;
 import com.novelBio.base.genome.gffOperate.GffHashUCSCgene;
+import com.novelBio.base.plot.Rplot;
 import com.novelBio.chIPSeq.prepare.GenomeBasePrepare;
 
 
@@ -23,22 +24,34 @@ import com.novelBio.chIPSeq.prepare.GenomeBasePrepare;
 public class PeakLOC extends GenomeBasePrepare{
 	
 	/**
+	 * 
 	 * peak定位，并写入文本文件，只获得2k上游以及50bp内的位点
 	 * @param gfffilename gff文件
-	 * @param txtFilepeakFile peak文件,注意第一行是title，必须要有的
+	 * @param txtFilepeakFile
 	 * @param sep 分隔符
 	 * @param columnID 读取peak文件的哪几列，需要指定ChrID和summit位点
 	 * @param rowStart 从第几行读起
 	 * @param rowEnd 读到第几行为止
 	 * @param txtresultfilename 写入文件的路径与文件名
 	 * @throws Exception
+	 * @param txtFilepeakFile  peak文件,注意第一行是title，必须要有的
+	 * @param sep 分隔符
+	 * @param columnID 读取peak文件的哪几列，需要指定ChrID和summit位点
+	 * @param rowStartt 从第几行读起
+	 * @param rowEnd 读到第几行为止
+	 * @param excelFile 写入文件的路径与文件名
+	 * @param Region 定位区域int 3 0:UpstreamTSSbp 1:DownStreamTssbp 2:GeneEnd3UTR
+	 * null 为默认，up3k down
+	 * @throws Exception
 	 */
-	public static void locatDetail(String txtFilepeakFile,String sep,int[] columnID,int rowStart,int rowEnd,String excelFile) throws Exception 
+	public static void locatDetail(String txtFilepeakFile,String sep,int[] columnID,int rowStart,int rowEnd,String excelFile,int[] Region) throws Exception 
 	{
 		String[][] LOCIDInfo=ExcelTxtRead.readtxtExcel(txtFilepeakFile, sep, columnID, rowStart, rowEnd);
-		gffLocatCod.setUpstreamTSSbp(5000);
-		gffLocatCod.setDownStreamTssbp(5000);
-		gffLocatCod.setGeneEnd3UTR(5000);
+		if (Region != null) {
+			gffLocatCod.setUpstreamTSSbp(Region[0]);
+			gffLocatCod.setDownStreamTssbp(Region[1]);
+			gffLocatCod.setGeneEnd3UTR(Region[2]);
+		}
 		
 		ArrayList<String[]>LOCDetail=gffLocatCod.peakAnnotationEN(LOCIDInfo);		
 		/**
@@ -127,7 +140,8 @@ public class PeakLOC extends GenomeBasePrepare{
 	
 	
 	/**
-	 * peak定位，并写入文本文件
+	 * too detail so not useful, using locatDetail instead<br>
+	 * peak定位，并写入文本文件，得到的数据可以用来画直方图
 	 * @param gfffilename gff文件
 	 * @param txtFilepeakFile peak文件
 	 * @param sep 分隔符
@@ -137,6 +151,7 @@ public class PeakLOC extends GenomeBasePrepare{
 	 * @param txtresultfilename 写入文件的路径与文件名
 	 * @throws Exception
 	 */
+	@Deprecated
 	public static void locatstatistic(String txtFilepeakFile,String sep,int[] columnID,int rowStart,int rowEnd,String txtresultfilename) throws Exception 
 	{
 		String[][] LOCIDInfo=ExcelTxtRead.readtxtExcel(txtFilepeakFile, sep, columnID, rowStart, rowEnd);
@@ -174,6 +189,44 @@ public class PeakLOC extends GenomeBasePrepare{
 		result.ExcelWrite(LOCDetail, sep, 1, 1);
 	}
 	
+	/**
+	 * 画Tss和GeneEnd的Peak级别图
+	 * @param gfffilename gff文件
+	 * @param txtFilepeakFile peak文件
+	 * @param sep 分隔符
+	 * @param columnID 读取peak文件的哪几列，需要指定ChrID和summit位点
+	 * @param rowStart 从第几行读起
+	 * @param rowEnd 读到第几行为止 如果rowEnd=-1，则一直读到文件结尾
+	 * @param txtresultfilename 写入文件的路径与文件名
+	 * @throws Exception
+	 */
+	public static void histTssGeneEnd (String txtFilepeakFile,String sep,int[] columnID,int rowStart,int rowEnd,String resultPath, String resultPrix) throws Exception 
+	{
+		String[][] LOCIDInfo=ExcelTxtRead.readtxtExcel(txtFilepeakFile, sep, columnID, rowStart, rowEnd);
+		
+		ArrayList<String[]> LOCDetail=gffLocatCod.peakAnnotationDetail(LOCIDInfo);
+		ArrayList<Double> lsTss = new ArrayList<Double>();ArrayList<Double> lsGeneEnd= new ArrayList<Double>();
+		for (String[] strings : LOCDetail) {
+			try {
+				lsTss.add(Double.parseDouble(strings[14]));
+			} catch (Exception e) {}
+			try {
+				lsGeneEnd.add(Double.parseDouble(strings[16]));
+			} catch (Exception e) {}
+		}
+		double[] tss = new double[lsTss.size()];	double[] geneEnd = new double[lsGeneEnd.size()];
+		for (int i = 0; i < lsTss.size(); i++) {
+			tss[i] = lsTss.get(i);
+		}
+		for (int i = 0; i < lsGeneEnd.size(); i++) {
+			geneEnd[i] = lsGeneEnd.get(i);
+		}
+		Rplot.plotHist(tss, -10000, 10000, "Peak Near Tss", "Tss Region", "Peak Density", resultPath, resultPrix+"_Tss");
+		Rplot.plotHist(geneEnd, -10000, 10000, "Peak Near GeneEnd", "GeneEnd Region", "Peak Density", resultPath, resultPrix+"_GeneEnd");
+	}
+	
+	
+	
 	
 	/**
 	 * 获得Intron/Exon等统计信息，用来画柱状图的
@@ -198,8 +251,6 @@ public class PeakLOC extends GenomeBasePrepare{
 		background[5]=chrLength-background[0]-background[1]-background[2]-background[3]-background[4];
 		return MathComput.batStatistic(peakInfo, background, item, "PeakInfo", "GenomeBackGround");
 	}
-	
-	
 	
 	
 	

@@ -234,7 +234,7 @@ public class GffLocatCod extends GffChrUnion
 				}
 				else
 				{
-					if(tmpresult.geneChrHashListNum[0]!=-1&&Math.abs(tmpresult.distancetoLOCStart[0])<=UpStreamTSSbp)
+					if(tmpresult.geneChrHashListNum[0]!=-1&&Math.abs(tmpresult.distancetoLOCStart[0]) <= UpStreamTSSbp)
 					{
 						tmpPeakAnnotation[4]=tmpresult.LOCID[1];
 						if (Math.abs(tmpresult.distancetoLOCStart[0])>=10000) 
@@ -322,7 +322,8 @@ public class GffLocatCod extends GffChrUnion
 			GffCodInfoUCSCgene tmpresult=null;
 			try {
 				String chrID = LOCIDInfo.get(i)[colChrID].toLowerCase();
-				tmpresult=(GffCodInfoUCSCgene)gffSearch.searchLocation(LOCIDInfo.get(i)[colChrID].toLowerCase(), Integer.parseInt(LOCIDInfo.get(i)[colSummit]), gffHash);
+				int summit = Integer.parseInt(LOCIDInfo.get(i)[colSummit]);
+				tmpresult=(GffCodInfoUCSCgene)gffSearch.searchLocation(chrID, summit, gffHash);
 
 			} catch (Exception e) {
 				System.out.println("peakAnnoFilter error");
@@ -335,7 +336,11 @@ public class GffLocatCod extends GffChrUnion
 				tmpPeakAnnotation[j]="";//全部设置为""
 			}
 			for (int j = 0; j < imputLength; j++) {
-				tmpPeakAnnotation[j] = LOCIDInfo.get(i)[j];
+				try {
+					tmpPeakAnnotation[j] = LOCIDInfo.get(i)[j];
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 			}
 			//下一个基因
 			boolean downGene = false;
@@ -345,7 +350,11 @@ public class GffLocatCod extends GffChrUnion
 				tmpPeakAnnotation2[j]="";//全部设置为""
 			}
 			for (int j = 0; j < imputLength; j++) {
-				tmpPeakAnnotation2[j] = LOCIDInfo.get(i)[j];
+				try {
+					tmpPeakAnnotation2[j] = LOCIDInfo.get(i)[j];
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 			}
 			
 			//////////////////////	//////////////////////	//////////////////////	//////////////////////	//////////////////////	//////////////////////	//////////////////////	//////////////////////	//////////////////////	//////////////////////	//////////////////////	//////////////////////	//////////////////////	//////////////////////	//////////////////////	//////////////////////	
@@ -470,7 +479,7 @@ public class GffLocatCod extends GffChrUnion
 					if (!tmpPeakAnnotation[imputLength+0].trim().equals("")) {
 						sep = "///";
 					}
-					if (tmpresult.distancetoLOCEnd[0] < filterGenEnd[0])
+					if (Math.abs(tmpresult.distancetoLOCEnd[0]) < filterGenEnd[0])
 					{
 						geneEnd = true;
 						if (!tmpPeakAnnotation[imputLength].contains(tmpresult.LOCID[0])) 
@@ -637,6 +646,9 @@ public class GffLocatCod extends GffChrUnion
 		for (int i = 0; i < LOCIDInfo.length; i++)
 		{
 			GffCodInfoUCSCgene tmpresult=null; String chrID = LOCIDInfo[i][0].toLowerCase(); int summit = Integer.parseInt(LOCIDInfo[i][1]);
+			if (summit == 26842076) {
+				System.out.println("sss");
+			}
 			try {
 				tmpresult = (GffCodInfoUCSCgene)gffSearch.searchLocation(chrID, summit, gffHash);
 			} catch (Exception e) {
@@ -678,13 +690,8 @@ public class GffLocatCod extends GffChrUnion
 				{
 					if(tmpresult.geneChrHashListNum[0]!=-1&&Math.abs(tmpresult.distancetoLOCEnd[0])<=GeneEnd3UTR)
 					{
-						peakStatistic[5][1]=Integer.parseInt(peakStatistic[5][1])+1+"";
+						peakStatistic[1][1]=Integer.parseInt(peakStatistic[1][1])+1+"";
 						continue;//距离上个基因在GeneEnd3UTR内
-					}
-					else 
-					{
-						peakStatistic[5][1]=Integer.parseInt(peakStatistic[5][1])+1+"";
-						continue;//InterGenic
 					}
 				}
 				else if (!tmpresult.begincis5to3) 
@@ -693,10 +700,6 @@ public class GffLocatCod extends GffChrUnion
 					{
 						peakStatistic[4][1]=Integer.parseInt(peakStatistic[4][1])+1+"";
 						continue;
-					}
-					else {
-						peakStatistic[5][1]=Integer.parseInt(peakStatistic[5][1])+1+"";
-						continue;//InterGenic
 					}
 				}
 				//与下个基因的关系
@@ -707,24 +710,16 @@ public class GffLocatCod extends GffChrUnion
 						peakStatistic[4][1]=Integer.parseInt(peakStatistic[4][1])+1+"";
 						continue;
 					}
-					else {
-						peakStatistic[5][1]=Integer.parseInt(peakStatistic[5][1])+1+"";
-						continue;//InterGenic
-					}
 				}
 				else if(!tmpresult.endcis5to3)
 				{
 					if(tmpresult.geneChrHashListNum[1]!=-1&&Math.abs(tmpresult.distancetoLOCEnd[1])<=GeneEnd3UTR)
 					{			 
-						peakStatistic[5][1]=Integer.parseInt(peakStatistic[5][1])+1+"";
-						continue;//InterGenic
-					}
-					else 
-					{
-						peakStatistic[5][1]=Integer.parseInt(peakStatistic[5][1])+1+"";
+						peakStatistic[1][1]=Integer.parseInt(peakStatistic[1][1])+1+"";
 						continue;//InterGenic
 					}
 				}
+				peakStatistic[5][1]=Integer.parseInt(peakStatistic[5][1])+1+"";
 			}
 		}
 		return peakStatistic;
@@ -865,21 +860,24 @@ public class GffLocatCod extends GffChrUnion
 				}
 				tmpPeakAnnotation[14]=tmpresult.distancetoLOCStart[0]+"";
 				tmpPeakAnnotation[15]=tmpresult.codToATG[0]+"";
-				tmpPeakAnnotation[16]=tmpresult.distancetoLOCEnd[0]+"";
+				//这里要反向，在基因内为负号，基因外为正号
+				tmpPeakAnnotation[16]=-tmpresult.distancetoLOCEnd[0]+"";
 			}
 			else
 			{
 				tmpPeakAnnotation[2]="基因间";
 			
-				int tmpUpend=100000000;int tmpUpstart=100000000;
-				int tmpDownend=100000000;int tmpDownstart=100000000;
+				int tmpUpend=100000000;int tmpUpstart=100000000; int tmpUpATG = 100000000;
+				int tmpDownend=100000000;int tmpDownstart=100000000; int tmpDownATG = 100000000;
+				
 				//和上个条目起点/终点距离
 				if (tmpresult.geneChrHashListNum[0]!=-1) {
 					if (tmpresult.begincis5to3) {
-						tmpUpend=tmpresult.distancetoLOCEnd[0];
+						tmpUpend=-tmpresult.distancetoLOCEnd[0];
 					}
 					else {
 						tmpUpstart=tmpresult.distancetoLOCStart[0];
+						tmpUpATG = tmpresult.codToATG[0];
 					}
 				}
 				
@@ -888,25 +886,23 @@ public class GffLocatCod extends GffChrUnion
 					if(tmpresult.endcis5to3)
 					{
 						tmpDownstart=tmpresult.distancetoLOCStart[1];
+						tmpDownATG = tmpresult.codToATG[1];
 					}
 					else {
-						tmpDownend=tmpresult.distancetoLOCEnd[1];
+						tmpDownend=-tmpresult.distancetoLOCEnd[1];
 					}
 				}
-
-				if (Math.abs(tmpresult.codToATG[0])<Math.abs(tmpresult.codToATG[1]))
-					tmpPeakAnnotation[15]=tmpresult.codToATG[0]+"";
+				//取两者之间小的那个ATG
+				if (Math.abs(tmpUpATG)<Math.abs(tmpDownATG))
+					tmpPeakAnnotation[15]=tmpUpATG+"";
 				else 
-					tmpPeakAnnotation[15]=tmpresult.codToATG[1]+"";
-				
-				
-				
-				//取两者之间小的那个
+					tmpPeakAnnotation[15]=tmpDownATG+"";
+				//GeneEnd
 				if (Math.abs(tmpUpend)<Math.abs(tmpDownend)) 
 					tmpPeakAnnotation[16]=tmpUpend+"";
 				else 
 					tmpPeakAnnotation[16]=tmpDownend+"";
-				
+				//TSS
 				if (Math.abs(tmpUpstart)<Math.abs(tmpDownstart)) 
 					tmpPeakAnnotation[14]=tmpUpstart+"";
 				else 

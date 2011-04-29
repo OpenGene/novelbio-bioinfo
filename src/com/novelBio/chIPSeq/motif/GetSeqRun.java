@@ -45,15 +45,16 @@ public class GetSeqRun {
 		
 		try {
 			//peak信息，以文本形式保存
-			String txtFilepeakFile= "/media/winE/NBC/Project/ChIPSeq_CDG110330/result/annotation/FT5_macsPeak_peaksSort.xls";
+			String txtFilepeakFile= "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/annotation/CSAnovelbio_annotationFiltered.txt";
 			//输出文本
-			String txtresultfilename="/media/winE/NBC/Project/ChIPSeq_CDG110330/result/motif/FT5160.txt";//
-			int condition=0; //condition 0:按照peak在gff里的情况提取，也就是基因内按基因方向，基因外正向 1: 通通提取正向 2: 通通提取反向
+			String txtresultfilename="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/motif/CSAFilter80.txt";//
+			int condition=1; //condition 0:按照peak在gff里的情况提取，也就是基因内按基因方向，基因外正向 1: 通通提取正向 2: 通通提取反向
 			int[] columnID=new int[2]; //读取哪几列，用int[]保存，列可以有间隔，现在读取这两列，0：chrID，1:peakSummit
 			columnID[0]=1;
 			columnID[1]=6;
 			int peaklength=80; //peak左右两端长度
-			GetSeq.getPeakSeq(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, 
+			GetSeq.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,null, NovelBioConst.GENOME_GFF_TYPE_TIGR, NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, "");
+			GetSeq.getPeakSeq(
 					peaklength, condition, txtFilepeakFile, sep, columnID, rowStart, rowEnd, txtresultfilename);
 		} catch (Exception e) {			e.printStackTrace();	}
 		

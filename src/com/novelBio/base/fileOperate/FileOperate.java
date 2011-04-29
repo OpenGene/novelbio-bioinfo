@@ -50,9 +50,28 @@ public class FileOperate {
 	     }
 	     return st;     
 	    }
-	    
-	    
-	    
+	    /**
+	     * 给定路径名，返回其上一层路径，不带"/"
+	     * 可以给定不存在的路径
+	     * @param fileName
+	     * @return
+	     */
+	    public static String getParentName(String fileName) {
+			File file = new File(fileName);
+			return file.getParent();
+		}
+	    /**
+	     * 给定路径名，返回其名字
+	     * 如给定/home/zong0jie/和/home/zong0jie
+	     * 都返回zong0jie
+	     * 可以给定不存在的路径
+	     * @param fileName
+	     * @return
+	     */
+	    public static String getName(String fileName) {
+			File file = new File(fileName);
+			return file.getName();
+		}
 	    /**
 	     * 获取文件夹下所有文件名与后缀,不包含路径
 	     * 	     * 如果文件不存在则返回null<br>
@@ -354,23 +373,28 @@ public class FileOperate {
 
 
 	    /**
-	     * 复制单个文件,如果要复制的地方已经存在，则返回
+	     * 复制单个文件
 	     * @param oldPathFile 准备复制的文件源
 	     * @param newPathFile 拷贝到新绝对路径带文件名
+	     * @param cover 是否覆盖
 	     * @return
 	     */
-	    public static void copyFile(String oldPathFile, String newPathFile) {
+	    public static boolean copyFile(String oldPathFile, String newPathFile,boolean cover) {
 	        try {
 	            int bytesum = 0;
 	            int byteread = 0;
 	            File oldfile = new File(oldPathFile);
-	            File newfle= new File(newPathFile);
-	            if(newfle.exists())
-	            {
-	            	return;
-	            }
+	            File newfile= new File(newPathFile);
+
 	            if (oldfile.exists()) 
 	            { //文件存在时
+		            if(newfile.exists())
+		            {
+		            	if (!cover) {
+							return false;
+						}
+		            	newfile.delete();
+		            }
 	                InputStream inStream = new FileInputStream(oldPathFile); //读入原文件
 	                FileOutputStream fs = new FileOutputStream(newPathFile);
 	                byte[] buffer = new byte[1444];
@@ -380,9 +404,14 @@ public class FileOperate {
 	                    fs.write(buffer, 0, byteread);
 	                }
 	                inStream.close();
+	                return true;
 	            }
+	           else {
+				return false;
+	           }
 	        }catch (Exception e) {
 	            message = ("复制单个文件操作出错");
+	            return false;
 	        }
 	    }
 	    
@@ -393,7 +422,7 @@ public class FileOperate {
 	     * @param newPath 指定绝对路径的新目录
 	     * @return
 	     */
-	    public static void copyFolder(String oldPath, String newPath) {
+	    public static void copyFolder(String oldPath, String newPath, boolean cover) {
 	    	 if (!newPath.endsWith(File.separator)) {  
 	    		 newPath = newPath + File.separator;  
 		         }  
@@ -413,7 +442,10 @@ public class FileOperate {
 	                	File targetfile=new File(newPath + (temp.getName()).toString());
 	                	 if(targetfile.exists())
 	     	            {
-	     	            	continue;
+	                		 if (!cover) {
+	                			 continue;
+							}
+	     	            	targetfile.delete();
 	     	            }
 	                    FileInputStream input = new FileInputStream(temp);
 	                    FileOutputStream output = new FileOutputStream(newPath + (temp.getName()).toString());
@@ -428,7 +460,7 @@ public class FileOperate {
 	                    input.close();
 	                }
 	                if(temp.isDirectory()){//如果是子文件夹
-	                    copyFolder(oldPath+"/"+file[i],newPath+"/"+file[i]);
+	                    copyFolder(oldPath+"/"+file[i],newPath+"/"+file[i],cover);
 	                }
 	            }
 	        }catch (Exception e) {
@@ -468,10 +500,10 @@ public class FileOperate {
 	     * @param newPath 新文件所在的文件夹
 	     * @return
 	     */
-	    public static void moveFile(String oldPath, String newPath) {
+	    public static void moveFile(String oldPath, String newPath,boolean cover) {
 	    	//文件原地址
 	    	File oldFile = new File(oldPath);
-	    	moveFile(oldPath, newPath, oldFile.getName());
+	    	moveFile(oldPath, newPath, oldFile.getName(),cover);
 	    }
 	    
 	    /**
@@ -482,9 +514,10 @@ public class FileOperate {
 	     * @param oldPath 文件路径
 	     * @param newPath 新文件所在的文件夹
 	     * @param newName 新文件的文件名
+	     * @param cover 是否覆盖
 	     * @return
 	     */
-	    public static void moveFile(String oldPath, String newPath, String newName) {
+	    public static void moveFile(String oldPath, String newPath, String newName,boolean cover) {
 	    	 if (!newPath.endsWith(File.separator)) {  
 	    		 newPath = newPath + File.separator;  
 		         }  
@@ -503,12 +536,14 @@ public class FileOperate {
 	    	File fnew = new File(newPath +newName);
 	    	if (fnew.exists()) 
             {
-           	 return;
-           	// fnew.delete();
+	    		if (!cover) {
+	    			 return;
+				}
+	    		fnew.delete();
             }
 	    	if (!oldFile.renameTo(fnew)) {
-	    		copyFile(oldPath, newPath +newName);
-	    		oldFile.delete();
+	    		if(copyFile(oldPath, newPath +newName,cover))
+	    			oldFile.delete();
 	    	}
 	    }
 	    
@@ -517,9 +552,11 @@ public class FileOperate {
 	    * 如果新文件夹不存在，就创建新文件夹，不过似乎只能创建一级文件夹。移动顺利则返回true
 	    * @param oldfolderfile 要移动的文件目录,目录都无所谓加不加"/"
 	    * @param newfolderfile    目标文件目录
+	    * @param prix 在文件前加上的前缀
+	    * @param cover 是否覆盖
 	    * @throws Exception
 	    */
-	    public static boolean moveFoldFile(String oldfolderfile,String newfolderfile,String prix) throws Exception 
+	    public static boolean moveFoldFile(String oldfolderfile,String newfolderfile,String prix,boolean cover) throws Exception 
 	    {
 	        //如果sPath不以文件分隔符结尾，自动添加文件分隔符  
 	        if (!oldfolderfile.endsWith(File.separator)) {  
@@ -544,26 +581,31 @@ public class FileOperate {
 	          {
 	        	if (files[i].isDirectory()) //如果子文件是文件夹，则递归调用本函数，精彩的用法！！
 	        	{
-	        		ok=moveFoldFile(files[i].getPath(),newfolderfile + files[i].getName(),prix);
+	        		ok=moveFoldFile(files[i].getPath(),newfolderfile + files[i].getName(),prix,cover);
 	        				  // 成功，删除原文件
-//	        		if(ok)
-//	        		{
-//	        			files[i].delete();
-//	        		}
+	        		if(ok)
+	        		{
+	        			files[i].delete();
+	        		}
 	        		continue;
 	        	}
 	            File fnew = new File(newfolderfile +prix+ files[i].getName());
 	       // 目标文件夹下存在的话，不变
 	             if (fnew.exists()) 
 	             {
-	            	 ok=false;
-	            	 continue;
-	            	// fnew.delete();
+	            	 if (!cover) {
+	            		 ok=false;
+		            	 continue;
+					}
+	            	 fnew.delete();
 	             }
 	          	if (!files[i].renameTo(fnew)) {
-		    		copyFile(files[i].getAbsolutePath(), fnew.getAbsolutePath());
-		    		files[i].delete();
-		    	} 
+		    		if(copyFile(files[i].getAbsolutePath(), fnew.getAbsolutePath(),cover))
+		    			files[i].delete();
+		    		else {
+						ok = false;
+					}
+		    	}
 	          }
 	      } catch (Exception e) {
 	    	  throw e;
@@ -577,20 +619,17 @@ public class FileOperate {
 	     * 这个和moveFoldFile方法貌似没啥区别一样，不过会把原文件夹删除
 	     * @param oldPath
 	     * @param newPath 没有会创建一个文件夹，但是好像只能创建一级文件夹
+	      * @param cover 是否覆盖
 	     * @return
 	     */
-	    public static void moveFolder(String oldPath, String newPath) 
-	    {  boolean ok=false;
+	    public static void moveFolder(String oldPath, String newPath,boolean cover) 
+	    {
 	    	try {
-	    		ok=moveFoldFile(oldPath, newPath,"");
+	    		moveFoldFile(oldPath, newPath,"",cover);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	       if(ok) 
-	       {
-	    	   delFolder(oldPath);    
-	       }
 	    }
 	    public String getMessage(){
 	        return this.message;

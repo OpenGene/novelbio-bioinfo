@@ -48,9 +48,9 @@ public class SymbolDespRun {
 			
 			int rowStart=2;
 
-			cdg.getRefSymbDesp(txtFile, columnRead, rowStart, columnRead);
-			cdg.getRefSymbDesp(txtFile, columnRead-2, rowStart, columnRead-2);
-			cdg.getRefSymbDesp(txtFile, columnRead-4, rowStart, columnRead-4);
+			cdg.getRefSymbDesp(10090,txtFile, columnRead, rowStart, columnRead);
+			cdg.getRefSymbDesp(10090,txtFile, columnRead-2, rowStart, columnRead-2);
+			cdg.getRefSymbDesp(10090,txtFile, columnRead-4, rowStart, columnRead-4);
 		} catch (Exception e) {   e.printStackTrace();   }
 		try {    
 			
@@ -69,9 +69,9 @@ public class SymbolDespRun {
 			
 			int rowStart=2;
 
-			cdg.getRefSymbDesp(txtFile, columnRead, rowStart, columnRead);
-			cdg.getRefSymbDesp(txtFile, columnRead-2, rowStart, columnRead-2);
-			cdg.getRefSymbDesp(txtFile, columnRead-4, rowStart, columnRead-4);
+			cdg.getRefSymbDesp(10090,txtFile, columnRead, rowStart, columnRead);
+			cdg.getRefSymbDesp(10090,txtFile, columnRead-2, rowStart, columnRead-2);
+			cdg.getRefSymbDesp(10090,txtFile, columnRead-4, rowStart, columnRead-4);
 		} catch (Exception e) {   e.printStackTrace();   }
 try {    
 			
@@ -90,9 +90,9 @@ try {
 			
 			int rowStart=2;
 
-			cdg.getRefSymbDesp(txtFile, columnRead, rowStart, columnRead);
-			cdg.getRefSymbDesp(txtFile, columnRead-2, rowStart, columnRead-2);
-			cdg.getRefSymbDesp(txtFile, columnRead-4, rowStart, columnRead-4);
+			cdg.getRefSymbDesp(10090,txtFile, columnRead, rowStart, columnRead);
+			cdg.getRefSymbDesp(10090,txtFile, columnRead-2, rowStart, columnRead-2);
+			cdg.getRefSymbDesp(10090,txtFile, columnRead-4, rowStart, columnRead-4);
 		} catch (Exception e) {   e.printStackTrace();   }
 try {    
 			
@@ -111,9 +111,9 @@ try {
 			
 			int rowStart=2;
 
-			cdg.getRefSymbDesp(txtFile, columnRead, rowStart, columnRead);
-			cdg.getRefSymbDesp(txtFile, columnRead-2, rowStart, columnRead-2);
-			cdg.getRefSymbDesp(txtFile, columnRead-4, rowStart, columnRead-4);
+			cdg.getRefSymbDesp(10090,txtFile, columnRead, rowStart, columnRead);
+			cdg.getRefSymbDesp(10090,txtFile, columnRead-2, rowStart, columnRead-2);
+			cdg.getRefSymbDesp(10090,txtFile, columnRead-4, rowStart, columnRead-4);
 		} catch (Exception e) {   e.printStackTrace();   }
 		System.out.println("ok");
 

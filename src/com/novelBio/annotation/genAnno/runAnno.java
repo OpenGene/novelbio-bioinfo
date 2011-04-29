@@ -3,29 +3,18 @@ package com.novelBio.annotation.genAnno;
 public class runAnno {
 	public static void main(String[] args) 
 	{
-		annoGeneID();
+		anno();
 	}
 	//添加注释
 	public static void anno() {
-		String parentFile = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/单核晚期三倍变化/单核晚期三倍变化/";
+		String parentFile = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/annotation/";
 		try {
-			AnnoQuery.anno(parentFile+"DWKYvs9522.xls",0,1,false,9606,1e-10);
+			AnnoQuery.anno(parentFile+"CSAnovelbio_annotationFiltered.xls",0,11,false,9606,1e-10);
 //			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
 		} catch (Exception e) {
 			e.printStackTrace()	;
 		}
-		try {
-			AnnoQuery.anno(parentFile+"DWKYvsBY.xls",0,1,false,9606,1e-10);
-//			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
-		} catch (Exception e) {
-			e.printStackTrace()	;
-		}
-		try {
-			AnnoQuery.anno(parentFile+"DWBYvs9522.xls",0,1,false,9606,1e-10);
-//			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
-		} catch (Exception e) {
-			e.printStackTrace()	;
-		}
+
 	}
 	
 	//添加geneID，用于两列取交集用的

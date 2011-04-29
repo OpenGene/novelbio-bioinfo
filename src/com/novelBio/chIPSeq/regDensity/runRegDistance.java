@@ -20,30 +20,30 @@ public class runRegDistance {
 		 int[] colMap = new int[3]; colMap[0] = 1; colMap[1] =2; colMap[2] =3; //mapping 文件中 chr 起点 终点的位置 常规bed文件 1，2，3 王从茂的文件，0，1，2
 		 int rowStart = 2;
 		 int rowEnd = -1;
-		 int binNum = 20; //精度
+		 int binNum = 5; //精度
 		 int range = 10000;//上下游多少距离
-		 String mapparentFIle="/media/winE/NBC/Project/ChIPSeq_CDG110330/mapping/";
-		 String PeakparentFile = "/media/winE/NBC/Project/ChIPSeq_CDG110330/result/annotation/";
+		 String mapparentFIle="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/mapping/";
+		 String PeakparentFile = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/annotation/";
 		try {
-			String mapFilePath=mapparentFIle+"FT5sort.bed";
+			String mapFilePath=mapparentFIle+"CSA_Treat_Cal_Sort.bed";
 			
-			String txtPeakFile= PeakparentFile + "FT5_macsPeak_peaks.xls";
+			String txtPeakFile= PeakparentFile + "CSA sepis peak Filter.xls";
 			
-			String resultpath = "/media/winE/NBC/Project/ChIPSeq_CDG110330/result/regionReads/";
-			String resultPrefix = "FT5";
+			String resultpath = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/regionReads/";
+			String resultPrefix = "CSA sepis peak Filter";
 			
 			RegDensity tssDistance=new RegDensity();
 			
 //			int[] colMap = new int[3];colMap[0] = 0; colMap[1] =1; colMap[2] =2;//王从茂的bed
 			tssDistance.setInvNum(binNum);
-			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
 //			String geneFIle = "/home/zong0jie/桌面/CDG/CDG20110201/CTvsmT3/IntersectionResults/InterSectionGeneName.xls";
 //			tssDistance.getGeneNameTssDensity(geneFIle, 10000, 10000, "/media/winE/Bioinformatics/R/practice_script/platform/", resultpath, resultPrefix);
 //			tssDistance.getGeneNameGeneEndDensity(geneFIle, 10000, 10000, "/media/winE/Bioinformatics/R/practice_script/platform/", resultpath, resultPrefix);
 			
 			tssDistance.getPeakInfo(txtPeakFile, columnID, rowStart, rowEnd);	
-			tssDistance.getRegionDensityHeatMap("GeneEnd",range, range*2/binNum,resultpath,resultPrefix);
-			tssDistance.getRegionDensityHeatMap("Tss",range,range*2/binNum,resultpath,resultPrefix);
+			tssDistance.getRegionDensity("GeneEnd",range, range*2/binNum,resultpath,resultPrefix);
+			tssDistance.getRegionDensity("Tss",range,range*2/binNum,resultpath,resultPrefix);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}

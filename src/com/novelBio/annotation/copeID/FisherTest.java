@@ -111,8 +111,13 @@ public class FisherTest {
 		{
 			String ItemID = entry.getKey();
 			ArrayList<T> lsGeneID = entry.getValue();
-			
-			 String[] strItemInfo = itemInfo.getItemName(ItemID);
+			String[] strItemInfo = null;
+			try {
+				strItemInfo = itemInfo.getItemName(ItemID);
+			} catch (Exception e) {
+				System.out.println("error");
+			}
+			 
 			 
 			 String[] tmpResult=new String[strItemInfo.length+5];
 			    tmpResult[0]=ItemID;

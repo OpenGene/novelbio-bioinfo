@@ -179,7 +179,7 @@ public class PixivOperate
 		   //FileOperate.changeFileName(oldfilename, newfilename);//文件改名
 		   //FileOperate.moveFile(filepath+"/"+newfilename, newPath+"/"+filename[1]);//移动文件
 		   
-		   FileOperate.moveFile(oldfilename, newPath+"/"+filename[1]);//移动文件
+		   FileOperate.moveFile(oldfilename, newPath+"/"+filename[1],false);//移动文件
 		   /////FileOperate.changeFileName(newPath+"/"+filename[1]+"/"+file[i], newfilename);//文件改名
 		   
 		   System.out.println(name+filename[0]);

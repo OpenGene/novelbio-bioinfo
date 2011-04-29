@@ -58,7 +58,7 @@ public class Comb {
 		HashMap<String, String[]> hashConf = new HashMap<String, String[]>();
 		while ((content = reader.readLine()) != null) {
 			content = content.trim();
-			if (content.startsWith("#")) {
+			if (content.startsWith("#")||content.trim().equals("")) {
 				continue;
 			}
 			String[] ss = content.split("\t");

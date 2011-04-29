@@ -14,22 +14,22 @@ public class PeakOverlap
 	public static void main(String[] args) {
 
 		try {
-			String parentFile1 = "/media/winE/NBC/Project/ChIPSeq_CDG110330/result/annotation/";
-			 String filePlus=parentFile1+"FT5_macsPeak_peaks.xls";
+			String parentFile1 = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/annotation/";
+			 String fileMinus=parentFile1+"CSA_peaks.xls";
 			 
 			 String parentFile2 = "/media/winE/NBC/Project/ChIPSeq_CDG101101CT/result/annotation/";
-			 String fileMinus=parentFile2+"CT.filt_peaks.xls";
+			 String  filePlus=parentFile1+"CSA sepis peak Filter.xls";
 			/**
 			 * 每个peakOverlap的细节
 			 */
-			 String parentFile3 = "/media/winE/NBC/Project/ChIPSeq_CDG110330/result/compare/";
-			 String txtPeakOverlapFile=parentFile3+"CT2FT5.txt";
+			 String parentFile3 = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/annotation/";
+			 String txtPeakOverlapFile=parentFile3+"sipes2macs.txt";
 			/**
 			 * PeakOVerlap的总体评价
 			 */
-			 String txtPeakOverlapStatisticFile=parentFile3+"CT2FT5Statistic.txt";
-			PeakOverLap(fileMinus,filePlus,txtPeakOverlapFile);
-		    PeakStatistic( "CT","FT5",fileMinus,filePlus,txtPeakOverlapStatisticFile);
+			 String txtPeakOverlapStatisticFile=parentFile3+"sipes2macsStatistic.txt";
+			//PeakOverLap(filePlus,fileMinus,txtPeakOverlapFile);
+		    PeakStatistic("SIPeS", "Macs",filePlus,fileMinus,txtPeakOverlapStatisticFile);
 		} catch (Exception e) {}
 		System.gc();
 		

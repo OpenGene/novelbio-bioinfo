@@ -138,13 +138,13 @@ public class MapPeak {
 		txtCmd.writefile(cmd);
 		CmdOperate cmdOperate = new CmdOperate("sh "+outFilePath+"/macs.sh");
 		cmdOperate.doInBackground();
-		FileOperate.moveFile(thisPath+"/"+prix+"_peaks.xls", outFilePath);
-		FileOperate.moveFile(thisPath+"/"+prix+"_peaks.bed", outFilePath+"/TmpPeakInfo/");
-		FileOperate.moveFile(thisPath+"/"+prix+"_negative_peaks.xls", outFilePath+"/TmpPeakInfo/");
-		FileOperate.moveFile(thisPath+"/"+prix+"_model.r", outFilePath+"/TmpPeakInfo/");
-		FileOperate.moveFile(thisPath+"/"+prix+"_diag.xls", outFilePath+"/TmpPeakInfo/");
-		FileOperate.moveFile(thisPath+"/"+prix+"_summits.bed", outFilePath+"/TmpPeakInfo/");
-		FileOperate.moveFolder(thisPath+"/"+prix+"_MACS_wiggle", outFilePath+"/TmpPeakInfo/");
+		FileOperate.moveFile(thisPath+"/"+prix+"_peaks.xls", outFilePath,true);
+		FileOperate.moveFile(thisPath+"/"+prix+"_peaks.bed", outFilePath+"/TmpPeakInfo/",true);
+		FileOperate.moveFile(thisPath+"/"+prix+"_negative_peaks.xls", outFilePath+"/TmpPeakInfo/",true);
+		FileOperate.moveFile(thisPath+"/"+prix+"_model.r", outFilePath+"/TmpPeakInfo/",true);
+		FileOperate.moveFile(thisPath+"/"+prix+"_diag.xls", outFilePath+"/TmpPeakInfo/",true);
+		FileOperate.moveFile(thisPath+"/"+prix+"_summits.bed", outFilePath+"/TmpPeakInfo/",true);
+		FileOperate.moveFolder(thisPath+"/"+prix+"_MACS_wiggle", outFilePath+"/TmpPeakInfo/",true);
 		FileOperate.delFile(outFilePath+"/macs.sh");
 	}
 	

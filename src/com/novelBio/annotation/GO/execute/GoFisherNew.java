@@ -1,6 +1,7 @@
 package com.novelBio.annotation.GO.execute;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -128,7 +129,7 @@ public class GoFisherNew {
 	 * @throws Exception
 	 */
 	public static void getGoRunElim(String geneFileXls,boolean sepID,String GOClass,int[] colID, double up,double down,String backGroundFile,int QtaxID,
-			boolean blast, int StaxID,double evalue, String resultExcel2003,String[] prix,int NumGo) throws Exception
+			boolean blast, int StaxID,double evalue, String resultExcel2003,String resultPicName,String[] prix,int NumGo) throws Exception
 	{
 		colID[0]--;colID[1]--;
 		ExcelOperate excelGeneID = new ExcelOperate();
@@ -165,12 +166,18 @@ public class GoFisherNew {
 			excelResult.WriteExcel(prix[0]+"GoAnalysis", 1, 1, lsResult.get(0), true);
 			excelResult.WriteExcel(prix[0]+"GO2Gene", 1, 1,lsResult.get(1) , true);
 			excelResult.WriteExcel(prix[0]+"Gene2GO", 1, 1,lsResult.get(2) , true);
+
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, 
+					FileOperate.getParentName(resultPicName), FileOperate.getName(resultPicName)+prix[0]+".pdf",true);
+			
 		}
 		if (lsGeneDownCope.size()>0) {
 			ArrayList<ArrayList<String[]>> lsResult =getElimFisher(prix[1],lsGeneDownCope, lsGeneBG, GOClass, sepID, QtaxID, blast, StaxID, evalue,NumGo);
 			excelResult.WriteExcel(prix[1]+"GoAnalysis", 1, 1, lsResult.get(0), true);
 			excelResult.WriteExcel(prix[1]+"GO2Gene", 1, 1,lsResult.get(1) , true);
 			excelResult.WriteExcel(prix[1]+"Gene2GO", 1, 1,lsResult.get(2) , true);
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, 
+					FileOperate.getParentName(resultPicName), FileOperate.getName(resultPicName)+prix[0]+".pdf",true);
 		}
 	}
 

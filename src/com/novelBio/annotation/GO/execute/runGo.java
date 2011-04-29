@@ -85,16 +85,16 @@ public class runGo {
 	 */
 	public static void goanalysisElim() {
 
-		String file="/media/winE/NBC/Project/Microarray_YXF110318/";
+		String file="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/GO/";
 		String backGroundFile=file + "AffyPigBG.txt";
 		try {
-			String fileName = "601vs603";			
+			String fileName = "CSAnovelbio_annotationFiltered";			
 			String geneFile=file+fileName+".xls";
 			String GOClass = "P";
 			int[] colID = new int[2];colID[0] = 1; colID[1] = 6;
 			
-			int QtaxID = 9823;
-			boolean blast = true;
+			int QtaxID = 0;
+			boolean blast = false;
 			int StaxID = 9606;
 			double evalue = 1e-10;
 			String resultExcel2003 = file +fileName+"GOanalysis.xls";
@@ -110,26 +110,27 @@ public class runGo {
 	 */
 	public static void goanalysisElimNew() {
 
-		String file="/media/winE/NBC/Project/Microarray_JH110127/GO/";
-		String backGroundFile=file + "BG.txt";
+		String file="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/GO/";
+		String backGroundFile=file + "TigrGeneBG2";
 		String[] prix = new String[2];
-		prix[0] = "JH";
+		prix[0] = "CSA";
 //		prix[0] = "up";
 		prix[1] = "down";
 		try {
-			String fileName = "dif-gene";			
+			String fileName = "CSAnovelbio_annotationFiltered";			
 			String geneFile=file+fileName+".xls";
 			String GOClass = "P";
 			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
 			double up = 1;
 			double down = -1;
 			boolean sepID = false;
-			int QtaxID = 10090;
+			int QtaxID = 0;
 			boolean blast = false;
 			int StaxID = 9606;
 			double evalue = 1e-10;
 			String resultExcel2003 = file +fileName+"elimGOCombID.xls";
-			GoFisherNew.getGoRunElim(geneFile, sepID, GOClass, colID, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003, prix,1000);
+			String resultGoMap = file + fileName+"GOmap";
+			GoFisherNew.getGoRunElim(geneFile, sepID, GOClass, colID, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003,resultGoMap, prix,1000);
 			System.out.println("ok");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -143,20 +144,20 @@ public class runGo {
 	 */
 	public static void goanalysisNBCNew() {
 
-		String file="/media/winE/NBC/Project/Microarray_CDG110415/";
-		String backGroundFile=file + "mouseAffyBG.txt";
+		String file="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/GO/";
+		String backGroundFile=file + "TigrGeneBG2";
 		String[] prix = new String[2];
-		prix[0] = "up";
+		prix[0] = "CSA";
 		prix[1] = "down";
 		try {
-			String fileName = "≤Ó“Ïª˘“Ú2";			
+			String fileName = "CSAnovelbio_annotationFiltered";			
 			String geneFile=file+fileName+".xls";
 			String GOClass = "P";
 			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
 			double up = 1.5;
 			double down = 0.667;
 			boolean sepID = false;
-			int QtaxID = 10090;
+			int QtaxID = 0;
 			boolean blast = false;
 			int StaxID = 9606;
 			double evalue = 1e-10;

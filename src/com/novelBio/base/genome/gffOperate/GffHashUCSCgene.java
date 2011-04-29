@@ -21,7 +21,7 @@ import com.novelBio.base.dataOperate.TxtReadandWrite;
  * @author zong0jie
  *
  */
-public class GffHashUCSCgene extends GffHash
+public class GffHashUCSCgene extends GffHashGene
 {
 	/**
 	 * 最底层读取gff的方法，本方法只能读取UCSCknown gene<br>

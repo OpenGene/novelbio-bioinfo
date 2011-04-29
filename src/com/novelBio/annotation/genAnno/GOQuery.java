@@ -577,7 +577,7 @@ public class GOQuery {
 			else 
 				gene2Go[2] = AnnoQuery.getUniGenName(gene2Go[1]);
 			
-			if (tmpGeneGoInfo != null && (tmpGeneGoInfo[3].equals(GOClass) || tmpGeneGoInfo[3].equals(""))) {
+			if (tmpGeneGoInfo != null && !tmpGeneGoInfo[1].trim().equals("") && (tmpGeneGoInfo[3].equals(GOClass) || GOClass.equals(""))) {
 				
 				gene2Go[4] = tmpGeneGoInfo[1];
 				gene2Go[5] = tmpGeneGoInfo[2];
@@ -636,7 +636,7 @@ public class GOQuery {
 		else 
 			strGene2Go[0]=uni2GoInfo.getUniID();
 		
-		strGene2Go[1]="";
+		strGene2Go[1]=""; int NumGO = 0;//这个专门用来计数得到了几个GOID
 		for (int j = 0; j < lsUniGoInfos.size(); j++) 
 		{
 			String[] tmpGeneGoInfo = hashGo2Term.get(lsUniGoInfos.get(j).getGOID());
@@ -662,20 +662,21 @@ public class GOQuery {
 			else 
 				uni2Go[2] = AnnoQuery.getUniGenName(uni2Go[1]);
 			
-			if (tmpGeneGoInfo != null && (tmpGeneGoInfo[3].equals(GOClass) || tmpGeneGoInfo[3].equals(""))) {
+			if  (tmpGeneGoInfo != null && !tmpGeneGoInfo[1].trim().equals("") && (tmpGeneGoInfo[3].equals(GOClass) || GOClass.equals(""))) {
 				uni2Go[4] = tmpGeneGoInfo[1];
 				uni2Go[5] = tmpGeneGoInfo[2];
 				uni2Go[6] = lsUniGoInfos.get(j).getEvidence();
 				lsGoResult.add(uni2Go);
 				//装入lsUniGene2Go
-				if (j == 0) 
+				if (NumGO == 0) 
 					strGene2Go[1] = tmpGeneGoInfo[1];
 				else
 					strGene2Go[1] = strGene2Go[1]+","+ tmpGeneGoInfo[1];
+				NumGO ++;
 			}
 		}
-		
-		if (lsUniGene2Go != null) 
+ 
+		if (lsUniGene2Go != null && NumGO > 0) 
 			lsUniGene2Go.add(strGene2Go);
 		
 		return lsGoResult;
