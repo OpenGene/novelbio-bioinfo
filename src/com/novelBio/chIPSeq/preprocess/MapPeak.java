@@ -25,7 +25,7 @@ public class MapPeak {
 	 * @param minInsert 最小插入片段，20好了
 	 * @param maxInsert 最大插入片段，400好了
 	 * @throws Exception
-	 * @return 返回reads的总数，也就是测序量，双端的话会乘以2
+	 * @return 返回reads的总数，也就是测序量，<b>双端的话不乘以2</b>
 	 */
 	public static long mapSoap(String soapPath, String inputFile1,String inputFile2,String indexFile,String outFile3,int minInsert, int maxInsert) throws Exception {
 		TxtReadandWrite txtInput = new TxtReadandWrite();
@@ -36,6 +36,7 @@ public class MapPeak {
 		while ((content = readInput.readLine()) != null ){
 				readsNum++;
 		}
+		//每四行一个fastQ条目
 		readsNum = readsNum/4;
 		String cmd = "";
 		cmd = soapPath + " -a "+inputFile1;
@@ -50,9 +51,10 @@ public class MapPeak {
 		System.out.println(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.doInBackground();
-		if (inputFile2 != null) {
-			readsNum = readsNum*2;
-		}
+//		//双端加倍
+//		if (inputFile2 != null) {
+//			readsNum = readsNum*2;
+//		}
 		return readsNum;
 	}
 	/**

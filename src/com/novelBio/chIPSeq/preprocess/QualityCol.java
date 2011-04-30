@@ -3,6 +3,7 @@ package com.novelBio.chIPSeq.preprocess;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.novelBio.base.dataOperate.ExcelTxtRead;
 import com.novelBio.base.dataOperate.TxtReadandWrite;
@@ -31,7 +32,7 @@ public class QualityCol {
 	 * chr1 \t 249250622<br>
 	 * chr19 \t 59128984<br>
 	 * <b>本文件中没有的chrID不会进入计算，譬如若本文件中没有chrm，那么就不会计算chrm的mapping率</b>
-	 * @param allReadNum 所有reads的数量，这个由mapping的结果文件读出，然后进入该方法。<b>如果是PE，那么输入的allReadNum要加倍的，本方法不进行加倍操作</b>
+	 * @param allReadNum 所有reads的数量，这个由mapping的结果文件读出，然后进入该方法。<b>如果是PE，那么输入的allReadNum不要加倍，本方法不进行加倍操作</b>
 	 * @param PE 是否是双端测序，如果是的话，由于输入的bedFile是将两个reads合并的文件，所以bed文件中mapping的reads要乘以2
 	 * @param calFragLen 是否计算Fragment的长度分布
 	 * @param 当calFragLen为true时才会生成，是fragment的分布文件，用R读取
@@ -52,17 +53,18 @@ public class QualityCol {
 		}
 		
 		//chrID与该chrID所mapping到的reads数量
-		HashMap<String, int[]> hashChrReadsNum = new HashMap<String,int[]>();
+		LinkedHashMap<String, int[]> hashChrReadsNum = new LinkedHashMap<String,int[]>();
 		int totalMappedReads = 0;
 		int[] chrMappedReads = new int[2];//仅仅为了值传递，数据保存在[0]中
 		int tmpLocStart = 0; int tmpLocEnd = 0;//用来计算coverage
 		String content = ""; String chrID = "";
 		BufferedReader readBed = txtbed.readfile();
 		long coverage = 0;
+		long depth = 0 ;
 		while ((content = readBed.readLine()) != null) {
 			String[] ss = content.split("\t");
 			int Locstart = Integer.parseInt(ss[1]); int Locend = Integer.parseInt(ss[2]); 
-			
+			depth = depth + Locend - Locstart + 1;
 			
 			if (!ss[0].trim().equals(chrID)) {
 				chrID = ss[0].trim();
@@ -113,18 +115,20 @@ public class QualityCol {
 			readsAll = readsAll + tmpChrReads[0];
 		}
 		//////////////////////////  mapping 率计算  //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		String[] strMapTitle = new String[6];
-		strMapTitle[0] = "Raw reads number";  strMapTitle[1] = "Unique mapped reads"; strMapTitle[2] = "Mapping rate (%)";
-		strMapTitle[3] = "Effective reads length"; strMapTitle[4] = "Genome length"; strMapTitle[5] = "Coverage";
+		String[] strMapTitle = new String[8];
+		strMapTitle[0] = "Raw reads number";  strMapTitle[1] = "Unique mapped reads"; 
+		strMapTitle[2] = "Mapping rate (%)";strMapTitle[3] = "Genome length";
+		strMapTitle[4] = "Mapped reads length"; strMapTitle[5] = "Depth"; 
+		strMapTitle[6] = "Effective reads length";  strMapTitle[7] = "Coverage";
 		String[] strMap = new String[6];
 		strMap[0] = allReadNum+ ""; 
-		if (PE) 
-			strMap[1] = totalMappedReads*2 + "";
-		else 
+//		if (PE) 
+//			strMap[1] = totalMappedReads*2 + "";
+//		else 
 			strMap[1] = totalMappedReads + "";
-		strMap[2] = Double.parseDouble(strMap[1])/allReadNum + "";  
-		strMap[3] = coverage + "";  strMap[4] = chrLengthAll + "";  
-		strMap[5] = (double)coverage/(double)chrLengthAll + ""; 
+		strMap[2] = Double.parseDouble(strMap[1])/allReadNum + ""; strMap[3] = chrLengthAll + "";  
+		strMap[4] = depth + ""; strMap[5] = (double)depth/(double)chrLengthAll + ""; 
+		strMap[6] = coverage + ""; strMap[7] = (double)coverage/(double)chrLengthAll + ""; 
 		lsChrLen.add(strMapTitle);
 		lsChrLen.add(strMap);
 		/////////////////////// 每个chrID上的reads的mapping比率 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
