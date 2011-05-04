@@ -4,8 +4,7 @@
 	<classpathentry kind="src" path="MyBatis"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="src" path="NovelBioBase/src/main/java"/>
-	<classpathentry excluding="main/java/" kind="src" path="NovelBioBase/src"/>
+	<classpathentry kind="src" path="Base/src/main/java"/>
 	<classpathentry kind="lib" path="/ExternalJar/apacheMath/commons-math-2.1.jar"/>
 	<classpathentry kind="lib" path="/ExternalJar/cpdetector_1.0.8_binary/ext/antlr-2.7.4.jar"/>
 	<classpathentry kind="lib" path="/ExternalJar/cpdetector_1.0.8_binary/ext/chardet-1.0.jar"/>
