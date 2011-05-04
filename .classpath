@@ -2,10 +2,12 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="src" path="MyBatis"/>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="Base/src/main/java"/>
 	<classpathentry kind="src" path="Base/src/test/java"/>
+	<classpathentry kind="src" path="analysis/src/java"/>
+	<classpathentry kind="src" path="analysis/src/test/java"/>
+	<classpathentry kind="src" path="DataBase/src/main/java"/>
+	<classpathentry kind="src" path="DataBase/src/test/java"/>
 	<classpathentry kind="lib" path="/ExternalJar/apacheMath/commons-math-2.1.jar"/>
 	<classpathentry kind="lib" path="/ExternalJar/cpdetector_1.0.8_binary/ext/antlr-2.7.4.jar"/>
 	<classpathentry kind="lib" path="/ExternalJar/cpdetector_1.0.8_binary/ext/chardet-1.0.jar"/>
