@@ -1,4 +1,4 @@
-package novelbiotest;
+package nbcbasetest;
 
 public class test {
 
