@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 
+import org.apache.ibatis.migration.commands.NewCommand;
+
 
 
 /**
@@ -31,7 +33,16 @@ public class GffDetailUCSCgene extends GffDetail
 	 */
 	private ArrayList<ArrayList<Integer>> splitList=new ArrayList<ArrayList<Integer>>();//存储可变剪接的mRNA
 	
+	private ArrayList<Boolean> lsSplitCis5to3 = new ArrayList<Boolean>();
 
+	/**
+	 * 指定最后一个转录本的方向。
+	 * 这个主要在UCSC中使用，因为UCSC中有极少部分一个基因中同时存在正向和反向序列，所以用这个来标记每个转录本的方向
+	 */
+	public void addCis5to3(boolean cis5to3)
+	{
+		lsSplitCis5to3.add(cis5to3);
+	}
 	
 	/**
 	 * 给最后一个转录本添加exon坐标，其中exonList的第一项是该转录本的Coding region start，第二项是该转录本的Coding region end.<br>
@@ -116,7 +127,9 @@ public class GffDetailUCSCgene extends GffDetail
 	 * 顺序储存同一基因不同转录本的名字，与splitList相对应
 	 */
 	private ArrayList<String> lssplitName=new ArrayList<String>();
-	
+	/**
+	 * 顺序储存同一基因不同转录本的名字，与splitList相对应
+	 */
 	public void addSplitName(String splitName) {
 		lssplitName.add(splitName);
 	}
@@ -137,8 +150,8 @@ public class GffDetailUCSCgene extends GffDetail
      */
 	public ArrayList<String> getLsSplitename() {
 		return lssplitName;
-		
 	}
+	
     /**
      * 给定编号(从0开始，编号不是转录本的具体ID)<br>
      * 返回某个转录本，其中第一项是该转录本的Coding region start，第二项是该转录本的Coding region end.注意这两个都与基因方向无关，永远第一项小于第二项<br>
@@ -160,9 +173,8 @@ public class GffDetailUCSCgene extends GffDetail
     {  
     	return splitList.get(lssplitName.indexOf(splitID));//include one special loc start number to end number	
     }
-    
     /**
-     * 获得该基因中最长的一条转录本名称和具体信息
+     * 获得该基因中最长的一条转录本名称和方向
      * @return 返回一个ArrayList-object
      * 第一个用 String 接收，是该转录本的名称
      * 第二个用ArrayList-Integer接收，是该转录本的具体信息
@@ -173,14 +185,65 @@ public class GffDetailUCSCgene extends GffDetail
 	public ArrayList<Object> getLongestSplit() 
 	{
 		ArrayList<Object> result=new ArrayList<Object>();
+		int longsplitID = getLongestSplitNum();
+		String splitName=lssplitName.get(longsplitID);
+		ArrayList<Integer> splitresult=splitList.get(longsplitID);
+		result.add(splitName);
+		result.add(splitresult);
+		return result;
+	}
+   
+	
+    /**
+     * 给定编号(从0开始，编号不是转录本的具体ID)<br>
+     * 返回某个转录本的方向	，这个主要在UCSC中使用，
+     * 因为UCSC中有极少部分一个基因中同时存在正向和反向序列，所以用这个来标记每个转录本的方向
+     */
+    public boolean getCis5to3(int splitnum)
+    {  
+    	return lsSplitCis5to3.get(splitnum);//include one special loc start number to end number	
+    }
+    
+    /**
+     * 给定转录本名(UCSC里实际上是基因名)<br>
+     * 返回某个转录本的方向	，这个主要在UCSC中使用，
+     * 因为UCSC中有极少部分一个基因中同时存在正向和反向序列，所以用这个来标记每个转录本的方向
+     */
+    public boolean getCis5to3(String splitID)
+    {  
+    	return lsSplitCis5to3.get(lssplitName.indexOf(splitID));//include one special loc start number to end number	
+    }
+    
+    /**
+     * 获得该基因中最长的一条转录本名称和具体信息
+     * @return 返回一个ArrayList-object
+     * 第一个用 String 接收，是该转录本的名称
+     * 第二个用ArrayList-Integer接收，是该转录本的具体信息
+     * 其中第一项是该转录本的Coding region start，第二项是该转录本的Coding region end.注意这两个都与基因方向无关，永远第一项小于第二项<br>
+     * 从第三项开始是exon的信息，exon成对出现，第一个exon坐标是该转录本的转录起点，最后一个exon坐标是该转录本的转录终点<br>
+     * 不管怎么加都是从小加到大<br>
+     */
+	public boolean getLongestSplitCis5to3() 
+	{
+		int longsplitID = getLongestSplitNum();
+		return lsSplitCis5to3.get(longsplitID);
+	}
+	
+	
+	  /**
+     * 获得该基因中最长的一条转录本编号，由该编号能够到splitList中获得相应的转录本信息
+     * @return 返回一个ArrayList-object
+     * 第一个用 String 接收，是该转录本的名称<br>
+     * 第二个用ArrayList-Integer接收，是该转录本的具体信息<br>
+     * 其中第一项是该转录本的Coding region start，第二项是该转录本的Coding region end.注意这两个都与基因方向无关，永远第一项小于第二项<br>
+     * 从第三项开始是exon的信息，exon成对出现，第一个exon坐标是该转录本的转录起点，最后一个exon坐标是该转录本的转录终点<br>
+     */
+	public int getLongestSplitNum() 
+	{
 		if(splitList.size()==1)
 		{
-			result.add(lssplitName.get(0));
-			result.add(splitList.get(0));
-			return result;
+			return 0;
 		}
-		
-		
 		ArrayList<Integer> lslength=new ArrayList<Integer>();
 		for(int i=0;i<splitList.size();i++)
 		{
@@ -192,16 +255,8 @@ public class GffDetailUCSCgene extends GffDetail
 			if(lslength.get(i)>max)
 				max=lslength.get(i);
 		}
-		
-		int longsplitID=lslength.indexOf(max);
-		ArrayList<Integer> splitresult=splitList.get(longsplitID);
-		int splitID=splitList.indexOf(splitresult);
-		String splitName=lssplitName.get(splitID);
-		result.add(splitName);
-		result.add(splitresult);
-		return result;
+		return lslength.indexOf(max);
 	}
-	
 	
 	
     /**
@@ -334,32 +389,6 @@ public class GffDetailUCSCgene extends GffDetail
 		return -1000000;
 	}
 	
-	  /**
-     * 获得该基因中最长的一条转录本编号，由该编号能够到splitList中获得相应的转录本信息
-     * @return 返回一个ArrayList-object
-     * 第一个用 String 接收，是该转录本的名称<br>
-     * 第二个用ArrayList-Integer接收，是该转录本的具体信息<br>
-     * 其中第一项是该转录本的Coding region start，第二项是该转录本的Coding region end.注意这两个都与基因方向无关，永远第一项小于第二项<br>
-     * 从第三项开始是exon的信息，exon成对出现，第一个exon坐标是该转录本的转录起点，最后一个exon坐标是该转录本的转录终点<br>
-     */
-	public int getLongestSplitNum() 
-	{
-		if(splitList.size()==1)
-		{
-			return 0;
-		}
-		ArrayList<Integer> lslength=new ArrayList<Integer>();
-		for(int i=0;i<splitList.size();i++)
-		{
-			ArrayList<Integer>  subsplit=splitList.get(i);
-			lslength.add(subsplit.get(subsplit.size()-1)-subsplit.get(2));
-		}
-		int max=lslength.get(0);
-		for (int i = 0; i < lslength.size(); i++) {
-			if(lslength.get(i)>max)
-				max=lslength.get(i);
-		}
-		return lslength.indexOf(max);
-	}
+
 
 }

@@ -20,7 +20,7 @@ import com.novelBio.base.fileOperate.FileOperate;
 
 
 /**
- * 本类专门用来装染色体的信息
+ * 本类专门用来装染色体的信息,使用前必须将每行的换行符限定为"\n",有小工具能用
  */
 class ChrString {
 	public String chrname;
@@ -215,7 +215,7 @@ public class ChrStringHash {
 			RandomAccessFile chrRASeqFile=hashChrSeqFile.get(chrID.toLowerCase());//判断文件是否存在
 			if (chrRASeqFile==null)
 			{
-				return "底层染色体格式错误或者无该染色体";
+				return "ChrStringHash.getSeq: 底层染色体格式错误或者无该染色体";
 			}
 			
 			
@@ -248,16 +248,16 @@ public class ChrStringHash {
 			 */
 		        if (startlocation<1||startRealCod>=lengthChrSeq||endlocation<1||endRealCod>=lengthChrSeq)
 		        {
-		        	return "染色体坐标错误";
+		        	return "ChrStringHash.getSeq: 染色体坐标错误";
 		        }
 			   
 		        if(endlocation<=startlocation)
 		        {
-		        	return "坐标错误";
+		        	return "ChrStringHash.getSeq: 坐标错误";
 		        }
 		        if(endlocation-startlocation>20000)
 		        {
-		        	return "最多提取20000bp";
+		        	return "ChrStringHash.getSeq: 最多提取20000bp";
 		        }
 
 
@@ -344,7 +344,15 @@ public class ChrStringHash {
 	{
 		return hashBufChrSeqFile.get(chrID.toLowerCase());
 	}
-	
+	/**
+	 * 获得每条染色体对应的bufferedreader类，方便从头读取
+	 * @param chrID
+	 * @return
+	 */
+	public static HashMap<String, BufferedReader> getBufChrSeq()
+	{
+		return hashBufChrSeqFile;
+	}
 	public static long getEffGenomeSize() throws IOException {
 		long effGenomSize = 0;
 		for(Map.Entry<String,BufferedReader> entry:hashBufChrSeqFile.entrySet())

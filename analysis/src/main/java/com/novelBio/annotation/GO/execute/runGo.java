@@ -19,8 +19,8 @@ public class runGo {
 			//UpDateFriceDB.upDateNCBIID("/media/winE/Bioinformatics/Agilent/猪/agilentPig.txt", "/media/winE/Bioinformatics/Agilent/猪/out2");
 			//blastgoanalysis();
 //			goanalysisElim();
-			goanalysisElimNew();
-		//	goanalysisQM();
+//			goanalysisElimNew();
+			goanalysisNBCNew();
 			System.out.println("ok");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -110,27 +110,27 @@ public class runGo {
 	 */
 	public static void goanalysisElimNew() {
 
-		String file="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/GO/";
-		String backGroundFile=file + "TigrGeneBG2";
+		String file="/media/winE/NBC/Project/Microarray_WFL110423/王凤良 基因芯片/王凤良 基因芯片/chip result/GO/";
+		String backGroundFile=file + "hg18refseqBGwithDuplication.txt";
 		String[] prix = new String[2];
-		prix[0] = "CSA";
+		prix[0] = "532";
 //		prix[0] = "up";
-		prix[1] = "down";
+		prix[1] = "635";
 		try {
-			String fileName = "CSAnovelbio_annotationFiltered";			
+			String fileName = "WFL";			
 			String geneFile=file+fileName+".xls";
 			String GOClass = "P";
 			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
 			double up = 1;
 			double down = -1;
 			boolean sepID = false;
-			int QtaxID = 0;
+			int QtaxID = 9606;
 			boolean blast = false;
 			int StaxID = 9606;
 			double evalue = 1e-10;
 			String resultExcel2003 = file +fileName+"elimGOCombID.xls";
 			String resultGoMap = file + fileName+"GOmap";
-			GoFisherNew.getGoRunElim(geneFile, sepID, GOClass, colID, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003,resultGoMap, prix,1000);
+			GoFisherNew.getGoRunElim(geneFile, sepID, GOClass, colID, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003,resultGoMap, prix,300);
 			System.out.println("ok");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -144,20 +144,20 @@ public class runGo {
 	 */
 	public static void goanalysisNBCNew() {
 
-		String file="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/GO/";
-		String backGroundFile=file + "TigrGeneBG2";
+		String file="/media/winE/NBC/Project/Microarray_WFL110423/王凤良 基因芯片/王凤良 基因芯片/chip result/GO/";
+		String backGroundFile=file + "hg18refseqBGwithDuplication.txt";
 		String[] prix = new String[2];
-		prix[0] = "CSA";
-		prix[1] = "down";
+		prix[0] = "532";
+		prix[1] = "635";
 		try {
-			String fileName = "CSAnovelbio_annotationFiltered";			
+			String fileName = "WFL";			
 			String geneFile=file+fileName+".xls";
 			String GOClass = "P";
 			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
 			double up = 1.5;
 			double down = 0.667;
 			boolean sepID = false;
-			int QtaxID = 0;
+			int QtaxID = 9606;
 			boolean blast = false;
 			int StaxID = 9606;
 			double evalue = 1e-10;

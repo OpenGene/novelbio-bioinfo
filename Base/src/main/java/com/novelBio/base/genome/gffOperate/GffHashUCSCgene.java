@@ -101,7 +101,7 @@ public class GffHashUCSCgene extends GffHashGene
 				}
 				*/
 				//将本基因(转录本)的ID装入locString中
-				lastGffdetailUCSCgene.locString=lastGffdetailUCSCgene.locString+"/"+geneInfo[0];
+				lastGffdetailUCSCgene.locString = lastGffdetailUCSCgene.locString+"/"+geneInfo[0];
 				lastGffdetailUCSCgene.addSplitName(geneInfo[0]);
 				//添加一个转录本，然后将相应信息:
 				//第一项是该转录本的Coding region start，第二项是该转录本的Coding region end,从第三项开始是该转录本的Exon坐标信息
@@ -111,6 +111,14 @@ public class GffHashUCSCgene extends GffHashGene
 				for (int i = 0; i < exonCount; i++) {
 					lastGffdetailUCSCgene.addExon(Integer.parseInt(exonStarts[i]));
 					lastGffdetailUCSCgene.addExon(Integer.parseInt(exonEnds[i]));
+				}
+				if(geneInfo[2].equals("+"))
+				{
+					lastGffdetailUCSCgene.addCis5to3(true);
+				}
+				else
+				{
+					lastGffdetailUCSCgene.addCis5to3(false);
 				}
 				//将基因(转录本ID)装入LOCList
 				LOCIDList.add(geneInfo[0]);
@@ -128,9 +136,16 @@ public class GffHashUCSCgene extends GffHashGene
 			gffDetailUCSCgene.ChrID=chrnametmpString;
 			//正反向
 			if(geneInfo[2].equals("+"))
+			{
 				gffDetailUCSCgene.cis5to3=true;
+				gffDetailUCSCgene.addCis5to3(true);
+			}
 			else
+			{
 				gffDetailUCSCgene.cis5to3=false;
+				gffDetailUCSCgene.addCis5to3(false);
+			}
+				
 			gffDetailUCSCgene.locString=geneInfo[0];
 			gffDetailUCSCgene.numberstart=Integer.parseInt(geneInfo[3]);
 			gffDetailUCSCgene.numberend=Integer.parseInt(geneInfo[4]);

@@ -16,10 +16,12 @@ public class GenomeBasePrepare {
 	 * 设定读取的最小片段间隔，默认为10，也就是10bp精度
 	 * @param invNum
 	 */
-	public void setInvNum(int invNum) {
-		this.invNum = invNum;
+	public static void setInvNum(int thisInvNum) {
+		invNum = thisInvNum;
 	}
-	
+	public static GffLocatCod getGffLocatCod() {
+		return gffLocatCod;
+	}
 	/**
 	 * 如果某个值设置为""，则该值不设置
 	 * @param chrFilePath

@@ -50,8 +50,7 @@ public class GetSeq extends GenomeBasePrepare
 			txtresult.writefile("方向为反向");
 			txtresult.writefile("\r\n");
 		}
-		
-		ArrayList<String> lsresult=	getPeakSeq( peaklength, condition, txtFilepeakFile, sep,columnID,rowStart, rowEnd,true);
+		ArrayList<String> lsresult=	getPeakSeq(LOCIDInfo, peaklength, condition, true);
 		txtresult.writefile(lsresult);
 	}
 
@@ -76,7 +75,23 @@ public class GetSeq extends GenomeBasePrepare
 			String sep,int[] columnID,int rowStart,int rowEnd,boolean chrInfo) throws Exception 
 	{
 		String[][] LOCIDInfo=ExcelTxtRead.readtxtExcel(txtFilepeakFile, sep, columnID, rowStart, rowEnd); 
-		
+		return getPeakSeq(LOCIDInfo, peaklength, condition, chrInfo);
+	}
+	/**
+	 * 指定染色体坐标点，提取该染色体坐标左右peaklength的序列
+	 * 使用前先用prepare准备，需要Gffclass,gfffilename和chrPah
+	 * @param LOCIDInfo 染色体坐标信息，string-2：0：chrID，1：具体坐标
+	 * @param peaklength peak左右两端长度
+	 * @param condition 
+	 * 0:按照peak在gff里的情况提取，也就是基因内按基因方向，基因外正向
+	 * 1: 通通提取正向
+	 * 2: 通通提取反向
+	 * @param chrInfo 是否记录chrID信息，false不记录chrID的信息
+	 * @throws Exception
+	 * @return  ArrayList-String 每个peak的序列
+	 */
+	public static ArrayList<String> getPeakSeq(String[][] LOCIDInfo,int peaklength,int condition,boolean chrInfo) throws Exception 
+	{		
 		ArrayList<String> lsresult=new ArrayList<String>();
 		//String filter2="[AGC]A[GCA]A[ACG][AG][ACG][AG]|[AGC][AG][GCA]A[ACG][AG][ACG]A|[AGC]A[GCA]A[ACG][AG][ACG][AG]";
 		//String filter3="[AGC]A[GCA]A[ACG][AG][ACG]A";
@@ -111,8 +126,6 @@ public class GetSeq extends GenomeBasePrepare
 			}
 			
 			*/
-			
-			
 		}
 		return lsresult;
 	}

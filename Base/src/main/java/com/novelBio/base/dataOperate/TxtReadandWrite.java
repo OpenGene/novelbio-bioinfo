@@ -669,9 +669,26 @@ public class TxtReadandWrite {
 	public void close() {
 		try {
 			filewriter.flush();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+		}
+		try {
 			fileread.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+		}
+		try {
 			bufread.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+		}
+		try {
 			bufwriter.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+		}
+		try {
 			filewriter.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

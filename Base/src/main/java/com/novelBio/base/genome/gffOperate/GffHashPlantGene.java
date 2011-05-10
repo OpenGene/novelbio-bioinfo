@@ -20,7 +20,7 @@ import com.novelBio.base.dataOperate.TxtReadandWrite;
  * 获得Gff的基因数组信息,本类必须实例化才能使用<br/>
  * 输入Gff文件，最后获得两个哈希表和一个list表,
  * 结构如下：<br/>
- * 1.hash（ChrID）--ChrList--GffDetail(GffDetail类,实际是GffDetailGene子类)<br/>
+ * 1.hash（ChrID）--ChrList--GffDetail(GffDetail类,实际是GffDetailUCSCgene子类)<br/>
  *   其中ChrID为小写，代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
  * chr格式，全部小写 chr1,chr2,chr11<br/>
  * 
@@ -31,11 +31,6 @@ import com.novelBio.base.dataOperate.TxtReadandWrite;
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
 public class GffHashPlantGene extends GffHashGene{
-	
-
-
-	
-
 	/**
 	 * 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  "AT\\w{1}G\\d{5}"
 	 * 水稻是 "LOC_Os\\d{2}g\\d{5}";
@@ -120,6 +115,7 @@ public class GffHashPlantGene extends GffHashGene{
        	   {
 			   if (mRNAsplit) {
 				   //将上一组mRNA的信息装入
+				   //如果上一组mRNA没有CDS，那么CDS的长度实际上就是0，那么CDS的起点和终点就是一样的，都是mRNA的end位点
 				   if (cdsStart < 0 && cdsEnd <0) {
 					   cdsStart = mRNAend;
 					   cdsEnd = mRNAend;
@@ -169,6 +165,7 @@ public class GffHashPlantGene extends GffHashGene{
        	    */
 		   else if (ss[2].equals("mRNA")) 
 		   {
+			   //如果刚刚读取的是一个mRNA的话
 			   if (mRNAsplit) {
 				   //将上一组mRNA的信息装入
 				   if (cdsStart < 0 && cdsEnd <0) {
@@ -190,6 +187,14 @@ public class GffHashPlantGene extends GffHashGene{
 				   //添加一个转录本，然后将相应信息:
 				   //第一项是该转录本的Coding region start，第二项是该转录本的Coding region end,从第三项开始是该转录本的Exon坐标信息
 				   gffDetailLOC.addsplitlist();
+				   //添加该转录本的方向，不过水稻的方向都和本基因相同
+				   if (ss[6].equals("+")) {
+					   gffDetailLOC.addCis5to3(true);
+				   }
+				  else {
+					  gffDetailLOC.addCis5to3(false);
+				  }
+				   
 				   //仿照UCSC的做法，如果是一个非编码的mRNA，那么cdsStart = cdsEnd = mRNAend
 				   mRNAstart = Integer.parseInt(ss[3]); mRNAend = Integer.parseInt(ss[4]); 
 				   cdsStart = -100; cdsEnd = -100;
@@ -220,7 +225,7 @@ public class GffHashPlantGene extends GffHashGene{
 			   //5UTR过去了
 			   UTR5start = false;
 			   UTR5end = true;//5UTR会有结束
-			   mRNAsplit = true;//全新的基因，将其归位false
+			   mRNAsplit = true;//该转录本最后需要总结
 			   CDSstart = true; 
 		   }
 		   else if (ss[2].equals("CDS"))
@@ -268,7 +273,7 @@ public class GffHashPlantGene extends GffHashGene{
 				   }
 				   CDSend = true;
 			   }
-			   mRNAsplit = true;//全新的基因，将其归位false
+			   mRNAsplit = true;//该转录本最后需要总结
 		   }
 		   else if (ss[2].equals("three_prime_UTR")) 
 		   {

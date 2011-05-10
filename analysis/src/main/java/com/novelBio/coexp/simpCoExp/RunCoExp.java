@@ -8,7 +8,7 @@ public class RunCoExp {
 	
 	public static void main(String[] args) {
 		
-		String parentFIle = "/media/winE/NBC/Project/Microarray_QY110318/coexpression/";
+		String parentFIle = "/media/winE/NBC/Project/Microarray_WFL110423/王凤良 基因芯片/王凤良 基因芯片/chip result/src2trg/";
 
 //	try {
 //			String excelFile = parentFIle+"共表达数据V.xls";
@@ -36,20 +36,12 @@ public class RunCoExp {
 
 		//   /** 计算degree
 	try {
-			String excelFile = parentFIle+"共表达数据SCoexpFilter.xls";
+			String excelFile = parentFIle+"WFTrgno.xls";
 			String outFile = parentFIle+"CoexpSDegree.xls";
 			SimpCoExp.getCoExpDegree(excelFile,9606,outFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		try {
-			String excelFile = parentFIle+"共表达数据VCoexpFilter.xls";
-			String outFile = parentFIle+"CoexpVDegree.xls";
-			SimpCoExp.getCoExpDegree(excelFile,9606,outFile);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
 	}
 	
 	

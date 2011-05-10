@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import com.novelBio.base.dataOperate.ExcelOperate;
+import com.novelBio.base.dataOperate.ExcelTxtRead;
 import com.novelBio.base.dataOperate.TxtReadandWrite;
 import com.novelBio.base.dataStructure.Patternlocation;
 import com.novelBio.base.fileOperate.FileOperate;
@@ -145,7 +147,7 @@ public class Motifsearch {
 	 * @throws Exception
 	 * @return  ArrayList-String 每个peak的序列
 	 */
-	public void getSummitMotifDensity(String Gffclass, String gfffilename,String chrPah,int peaklength,int condition,String txtFilepeakFile,String sep
+	public void getMotifSummitDensity(String Gffclass, String gfffilename,String chrPah,int peaklength,int condition,String txtFilepeakFile,String sep
 			,int[] columnID,int rowStart,int rowEnd,
 			String motifReg,String resultPath,String resultPrix
 			) throws Exception
@@ -162,6 +164,45 @@ public class Motifsearch {
 		txtMotifDensityParam.writefile("Motif Density"+"\n");
 		RDensity();
 		FileOperate.moveFoldFile(NovelBioConst.R_WORKSPACE_DENSITY, resultPath, resultPrix,true);
+	}
+	
+	/**
+	 * @param Gffclass 待读取的gffhash的类，目前只能有 "TIGR","CG","UCSC","Peak","Repeat"这几种
+	 * @param gfffilename gff文件
+	 * @param chrPah chr文件夹
+	 * @param length tss向上延生长度
+	 * @param excelLoc 含有LOC的excel文件
+	 * @param columnID 读取哪几列，用int[]保存，列可以有间隔，现在读取一列，0：LOCID
+	 * @param writeCol 写入第几列
+	 * @param rowStart 从第几列读取
+	 * @param rowEnd 读到第几列 如果rowEnd=-1，则一直读到sheet1文件结尾
+	 * @param motifReg motif的正则表达式
+	 * @throws Exception
+	 */
+	public void getMotifDetail(String Gffclass, String gfffilename,String chrPah,int length,String excelLoc
+			,int[] columnID,int writeCol, int rowStart, int rowEnd,
+			String motifReg
+			) throws Exception
+	{
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		GetSeq.prepare(chrPah, null, Gffclass, gfffilename, "");
+		String[][] LOCIDInfo=ExcelTxtRead.readExcel(excelLoc, columnID, rowStart, rowEnd);
+		for (String[] strings : LOCIDInfo) {
+			if (strings[0].equals("LOC_Os04g59380")) {
+				System.out.println("aaa");
+			}
+			String upstream = GetSeq.getGffLocatCod().getUpGenSeq(strings[0], length, true, true, Gffclass);
+			ArrayList<String[]> lstmpResult = Patternlocation.getPatLoc(upstream, motifReg, false);
+			String[] tmpResult = new String[lstmpResult.size()*2];
+			for (int i = 0; i < lstmpResult.size(); i++) {
+				tmpResult[i*2] = lstmpResult.get(i)[0];
+				tmpResult[i*2+1] =  lstmpResult.get(i)[2];
+			}
+			lsResult.add(tmpResult);
+		}
+		ExcelOperate excel = new ExcelOperate();
+		excel.openExcel(excelLoc);
+		excel.WriteExcel(true,rowStart, writeCol, lsResult);
 	}
 	
 	/**

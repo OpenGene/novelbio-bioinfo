@@ -19,60 +19,33 @@ import java.util.regex.Pattern;
 
 import org.tc33.jheatchart.HeatChart;
 
-import com.google.common.base.Splitter;
-import com.google.common.io.Files;
-import com.novelBio.base.cmd.CmdOperate;
-import com.novelBio.base.cmd.CmdOperateGUI;
 import com.novelBio.base.dataOperate.TxtReadandWrite;
-import com.novelBio.base.fileOperate.FileOperate;
+import com.novelBio.base.genome.getChrSequence.ChrSearch;
 import com.novelBio.base.genome.getChrSequence.ChrStringHash;
-import com.novelBio.base.genome.gffOperate.GffHashPlantGene;
-import com.novelBio.chIPSeq.preprocess.Comb;
-import com.novelBio.chIPSeq.preprocess.MapPeak;
-import com.novelBio.chIPSeq.preprocess.QualityCol;
-import com.novelBio.tools.formatConvert.bedFormat.Soap2Bed;
+import com.novelBio.generalConf.NovelBioConst;
+
+import DAO.FriceDAO.DaoFSNCBIID;
+
+
+
+import entity.friceDB.NCBIID;
 
 
 
 public class myTest {
-	public static void main(String[] args) throws Exception 
-	{
-		String thisPath = "/media/winD/fedora/workspace/NBCplatform/"; String prix = "CSA";
-		String outFilePath = "/media/winE/bioinformaticsTools/soapTmpFile/bedFile/peakCalling";
-		System.out.println(thisPath);
-		File fileOld = new File("/media/winD/fedora/workspace/NBCplatform/CSA_peaks.xls");
-		File filenew = new File("/media/winE/bioinformaticsTools/soapTmpFile/bedFile/peakCalling/CSA_peaks.xls");
-		fileOld.renameTo(filenew);
-		FileOperate.moveFile(thisPath+"/"+prix+"_peaks.xls", outFilePath);
-		FileOperate.moveFile(thisPath+"/"+prix+"_peaks.bed", outFilePath+"/TmpPeakInfo/");
-		FileOperate.moveFile(thisPath+"/"+prix+"_negative_peaks.xls", outFilePath+"/TmpPeakInfo/");
-		FileOperate.moveFile(thisPath+"/"+prix+"_model.r", outFilePath+"/TmpPeakInfo/");
-		FileOperate.moveFile(thisPath+"/"+prix+"_diag.xls", outFilePath+"/TmpPeakInfo/");
-		FileOperate.moveFile(thisPath+"/"+prix+"_summits.bed", outFilePath+"/TmpPeakInfo/");
-		FileOperate.moveFolder(thisPath+"/"+prix+"_MACS_wiggle", outFilePath+"/TmpPeakInfo/"+prix+"_MACS_wiggle");
-//		FileOperate.delFile(outFilePath+"/macs.sh");
-		CmdOperate cm = new CmdOperate("pwd");
-		cm.doInBackground();
-//		MapPeak.peakCalMacs(outPutTreat, outPutCol, "os", outFilePath, "CSA");
+	/**
+	 * @param args
+	 * @throws Exception 
+	 */
+	public static void main(String[] args) throws Exception {
+		double a = Math.log10(16)/Math.log10(2);
+		System.out.println(a);
 	}
 	
 	
 	
 	
 	
-	 public static String getProjectPath() {
-		 java.net.URL url = Comb.class.getProtectionDomain().getCodeSource().getLocation();
-		 String filePath = null;
-		 try {
-		 filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
-		 } catch (Exception e) {
-		 e.printStackTrace();
-		 }
-		 if (filePath.endsWith(".jar"))
-		 filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
-		 java.io.File file = new java.io.File(filePath);
-		 filePath = file.getAbsolutePath();
-		 return filePath;
-		 }
+	
 	 
 }

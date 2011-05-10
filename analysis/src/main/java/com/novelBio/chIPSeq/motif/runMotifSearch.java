@@ -8,11 +8,10 @@ public class runMotifSearch {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		getMotifDensity();   
+		getMotifDetail();   
 		
 	}
 
-	
 	public static void getChrMotif() {
 		Motifsearch cdg=new Motifsearch();
 		String chrFilePath="/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/chromFa";
@@ -27,14 +26,14 @@ public class runMotifSearch {
 	 */
 	public static void getMotifDensity() {
 		Motifsearch cdg=new Motifsearch();
-		String motifRex="CCCCCCCC";
+		String motifRex="CCAAA";
 		String FileParent = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/annotation/";
-		String txtpeakFile = FileParent + "CSAnovelbio_annotationFiltered.txt";
-		int[] columnID = new int[]{1,6};
+		String txtpeakFile = FileParent + "CSAnovelbio_annotationFilteredNew.txt";
+		int[] columnID = new int[]{2,7};
 		int rowStart = 2;
 		int rowEnd = -1;
 		String resultPath = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/motif/";
-		String resultPrix = "MEME_CSA_CCCCCCCCCC...";
+		String resultPrix = "MEME_CSA_CCAAA";
 		int peakLength = 2000;
 		try { 
 			String gfffilename = "";//NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ;
@@ -42,9 +41,30 @@ public class runMotifSearch {
 			int condition = 1;//0:按照peak在gff里的情况提取，也就是基因内按基因方向，基因外正向 1: 通通提取正向 2: 通通提取反向
 			String sep = "\t";
 			
-			cdg.getSummitMotifDensity(NovelBioConst.GENOME_GFF_TYPE_TIGR, gfffilename, chrPah, peakLength/2, condition, txtpeakFile, sep, columnID, rowStart, rowEnd, motifRex, resultPath, resultPrix);
+			cdg.getMotifSummitDensity(NovelBioConst.GENOME_GFF_TYPE_TIGR, gfffilename, chrPah, peakLength/2, condition, txtpeakFile, sep, columnID, rowStart, rowEnd, motifRex, resultPath, resultPrix);
 		} catch (Exception e) { 	e.printStackTrace(); }
 	}
 	
+	/**
+	 * 选定OC文件，指定Tss上游长度，获得motif信息
+	 */
+	public static void getMotifDetail() {
+		Motifsearch cdg=new Motifsearch();
+		String motifRex="\\w{5}GCCGCC|GGCGGC\\w{5}";
+		String FileParent = "/media/winE/NBC/Project/Project_ZDB_Lab/GXC/";
+		String excelLoc = FileParent + "quidongzitique2.xls";
+		int[] columnID = new int[]{2};
+		int rowStart = 2;
+		int rowEnd = -1;
+		int writeCol = 4;
+		int Length = 2000;
+		try { 
+			String gfffilename = NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE;//NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ;
+			String chrPah = NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM;
+			cdg.getMotifDetail(NovelBioConst.GENOME_GFF_TYPE_TIGR, gfffilename, chrPah, Length, excelLoc, columnID, writeCol, rowStart, rowEnd, motifRex);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
 	
 }

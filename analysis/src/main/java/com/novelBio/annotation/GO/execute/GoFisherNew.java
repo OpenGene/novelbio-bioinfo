@@ -332,7 +332,7 @@ public class GoFisherNew {
 		//≈≈–Ú
         Collections.sort(lsGoResult,new Comparator<String[]>(){
             public int compare(String[] arg0, String[] arg1) {
-            	Double a=Double.parseDouble(arg0[colPvalue]); Double b=Double.parseDouble(arg1[colPvalue]);
+            	Double a=Double.parseDouble(arg0[colPvalue].replace("<", "")); Double b=Double.parseDouble(arg1[colPvalue].replace("<", ""));
                 return a.compareTo(b);
             }
         });

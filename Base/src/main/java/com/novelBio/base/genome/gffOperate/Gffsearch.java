@@ -2,6 +2,8 @@ package com.novelBio.base.genome.gffOperate;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *  给定某个坐标位点返回具体的LOC编号以及定位
@@ -175,22 +177,35 @@ public abstract class Gffsearch {
 	/**
 	 * 单坐标查找
 	 * 输入ChrID，单个坐标，以及GffHash类<br>
-	 *  chr格式，全部小写 chr1,chr2,chr11<br>
+	 *  ,chr采用正则表达式抓取，无所谓大小写，会自动转变为小写, chr1,chr2,chr11<br>
 	 * 获得基因信息-存储在GffCoordiatesInfo类中<br>
 	 * 按照想要的结果，用不同的GffCodInfo子类接收<br>
 	 * 如用GffsearchGene搜索则用GffCodinfoGene接收
 	 */
 	public GffCodInfo searchLocation(String ChrID, int Coordinate, GffHash gffHash)
 	{
-		Hashtable<String, ArrayList<GffDetail>> LocHash=gffHash.getChrhash();;
-		ArrayList<GffDetail> Loclist = LocHash.get(ChrID.toLowerCase());//某一条染色体的信息
-	    if (Loclist==null)
-	    {
-	    	GffCodInfo cordInsideGeneInfo=new GffCodInfoGene();
-	    	cordInsideGeneInfo.result=false;
-	    	return cordInsideGeneInfo;
-	    }
-		return searchLocation(Coordinate,Loclist); 
+		 String Chrpatten="Chr\\w+";//Chr1， chr2， chr11的形式,注意还有chrx之类的，chr里面可以带"_"，所以说不能用"_"分割chr与字符
+		 /**
+		  * 判断Chr格式是否正确，是否是有效的染色体
+		  */
+		 Pattern pattern =Pattern.compile(Chrpatten, Pattern.CASE_INSENSITIVE);  //flags - 匹配标志，可能包括 CASE_INSENSITIVE、MULTILINE、DOTALL、UNICODE_CASE、 CANON_EQ、UNIX_LINES、LITERAL 和 COMMENTS 的位掩码  // CASE_INSENSITIVE,大小写不敏感，MULTILINE 多行
+		 Matcher matcher; 
+		 matcher = pattern.matcher(ChrID);
+		 if(!matcher.find())
+		 {
+			 return null;
+		 }
+		 ChrID=matcher.group().toLowerCase();
+		 
+		 Hashtable<String, ArrayList<GffDetail>> LocHash=gffHash.getChrhash();;
+		 ArrayList<GffDetail> Loclist = LocHash.get(ChrID);//某一条染色体的信息
+		 if (Loclist==null)
+		 {
+			 GffCodInfo cordInsideGeneInfo=new GffCodInfoGene();
+			 cordInsideGeneInfo.result=false;
+			 return cordInsideGeneInfo;
+		 }
+		 return searchLocation(Coordinate,Loclist); 
 	}
 	
 	

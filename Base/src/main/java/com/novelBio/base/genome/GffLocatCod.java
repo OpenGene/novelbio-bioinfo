@@ -11,7 +11,8 @@ import com.novelBio.base.genome.gffOperate.GffHashUCSCgene;
 import com.novelBio.base.genome.gffOperate.GffsearchUCSCgene;
 
 
-/**
+/** 
+ *  其中的ChrFa读取时候，必须将每行的换行符限定为"\n",有小工具能用
  * 将目标定位到染色体具体位置做Annotation，同时也可统计内含子外显子等信息
  * @author zong0jie
  *

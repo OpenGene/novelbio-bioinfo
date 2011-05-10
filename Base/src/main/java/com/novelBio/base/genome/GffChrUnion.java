@@ -32,6 +32,7 @@ import com.novelBio.base.genome.gffOperate.GffsearchPeak;
 import com.novelBio.base.genome.gffOperate.GffsearchRepeat;
 import com.novelBio.base.genome.gffOperate.GffsearchUCSCgene;
 import com.novelBio.base.genome.mappingOperate.MapReads;
+import com.novelBio.generalConf.NovelBioConst;
 
 
 
@@ -39,7 +40,11 @@ import com.novelBio.base.genome.mappingOperate.MapReads;
 
 
  
-
+/**
+ * 其中的ChrFa读取时候，必须将每行的换行符限定为"\n",有小工具能用
+ * @author zong0jie
+ *
+ */
 public class GffChrUnion {
 	
 
@@ -204,21 +209,18 @@ public class GffChrUnion {
 	
 
 	////////////////////////////////////提   取   序   列//////////////////////////////////////////////////////////////////////////
-	
-	
-
 	/**
-	 * 输入LOCID和上游长度，返回获得的上游序列与item起点的距离，指定是否要考虑序列正反向
-	 * @param LOCID item名，各个igffHash有不同的LOCID名
+	 * 输入Item和上游长度，返回获得的上游序列与item起点的距离，指定是否要考虑序列正反向
+	 * @param LOCID item名，各个gffHash有不同的LOCID名
 	 * @param length
 	 * @param considerDirection 考虑正反向
-	 * @param direction 如果不考虑正反向，那么true返回全局正向,false返回全局反向,
+	 * @param direction 如果不考虑正反向，那么true返回全局正向,false返回全局反向。否则返回该基因正向/反向。
 	 * 如果考虑正反向，那么true返回该基因正向，false返回该基因反向
 	 * @return
 	 */
-	public String getUpSseq(String LOCID,int length,boolean considerDirection,boolean direction)
+	public String getUpItemSeq(String Item,int length,boolean considerDirection,boolean direction)
 	{
-		GffDetail locinfo = Gffsearch.LOCsearch(LOCID, gffHash);
+		GffDetail locinfo = Gffsearch.LOCsearch(Item, gffHash);
 		if(locinfo==null)
 			 return null;
 			int StartNum=0;
@@ -249,12 +251,60 @@ public class GffChrUnion {
 				}
 			}
 	}
-	
+	/**
+	 * 输入geneID和上游长度，返回获得的上游序列与gene的Tss起点的距离，指定是否要考虑序列正反向。
+	 * 注意gene一定是GffDetailUCSCgene，目前TIGR，TAIR和UCSC都是这个类
+	 * @param LOCID item名，注意该LOCID必须在gff文件中出现，所以如果给定gene symbol的话，就要考虑数据库再建一个表，专门用于symobl和gffID的对应
+	 * @param length
+	 * @param considerDirection 考虑正反向
+	 * @param direction 如果不考虑正反向，那么true返回全局正向,false返回全局反向。否则返回该基因正向/反向。
+	 * @param GffClass 目前有TIGR,TAIR,UCSC这三个
+	 * 如果考虑正反向，那么true返回该基因正向，false返回该基因反向
+	 * @return
+	 */
+	public String getUpGenSeq(String LOCID,int length,boolean considerDirection,boolean direction,String GffClass)
+	{
+		if (GffClass.equals(NovelBioConst.GENOME_GFF_TYPE_TIGR)) {
+			return getUpItemSeq(LOCID, length, considerDirection, direction);
+		}
+		GffDetailUCSCgene locinfo = (GffDetailUCSCgene)Gffsearch.LOCsearch(LOCID, gffHash);
+		if(locinfo==null)
+			 return null;
+		int StartNum=0;
+		if(considerDirection)//考虑正反向，返回的都是本基因的正向
+		{
+			if(locinfo.getCis5to3(LOCID))
+			{
+				StartNum = locinfo.getExonlist(LOCID).get(2);
+				return	ChrSearch.getSeq(direction,locinfo.ChrID, StartNum-length, StartNum);
+			}
+			else 
+			{
+				ArrayList<Integer> lsExon = locinfo.getExonlist(LOCID);
+				StartNum = lsExon.get(lsExon.size()-1);
+				return	ChrSearch.getSeq(!direction,locinfo.ChrID, StartNum, StartNum+length);
+			}
+		}
+		else //不考虑正反向，返回的就是默认正向或反向
+		{
+			if(locinfo.getCis5to3(LOCID))
+			{
+				StartNum=locinfo.getExonlist(LOCID).get(2);
+				return	ChrSearch.getSeq(direction,locinfo.ChrID, StartNum-length, StartNum);
+			}
+			else 
+			{
+				ArrayList<Integer> lsExon = locinfo.getExonlist(LOCID);
+				StartNum = lsExon.get(lsExon.size()-1);
+				return	ChrSearch.getSeq(direction,locinfo.ChrID, StartNum, StartNum+length);
+			}
+		}	
+	}
 	/**
 	 * 输入染色体序号，坐标，坐标两边长度，返回该坐标的左右两边序列
 	 * 当坐标在基因内部时，考虑条目的方向,如果在基因间，则返回正链<br>
 	 * 所谓坐标在基因内部，指坐标在条目上游UpstreamTSSbp到下游GeneEnd3UTR之间的区域
-	 * @param ChrID
+	 * @param ChrID ,chr采用正则表达式抓取，无所谓大小写，会自动转变为小写
 	 * @param codloc peak坐标
 	 * @param lenght peak左右两端长度
 	 * @param condition 为 0,1,2 三种情况<br>

@@ -41,7 +41,7 @@ public class ChrSearch extends ChrStringHash
 	 }
   
   /**
-   * 给出peak位点，查找指定范围的sequence,chr无所谓大小写，会自动转变为小写
+   * 给出peak位点，查找指定范围的sequence,chr采用正则表达式抓取，无所谓大小写，会自动转变为小写
    * @param chr, 
    * @param peaklocation peak summit点坐标
    * @param region peak左右的范围
@@ -60,14 +60,17 @@ public class ChrSearch extends ChrStringHash
 	    {
 	    	return "ReadSite染色体格式错误";
 	    }
+	    else {
+			chr = matcher.group().toLowerCase();
+		}
 	    int startnum=peaklocation-region;
 	    int endnum=peaklocation+region;
-		return ChrStringHash.getSeq(cisseq,chr.toLowerCase(), startnum, endnum);	
+		return ChrStringHash.getSeq(cisseq,chr, startnum, endnum);	
   }
   
   /**
    * 给出染色体编号位置和方向返回序列
-   * @param chrlocation染色体编号方向如：Chr:1000-2000,自动将chrID小写
+   * @param chrlocation染色体编号方向如：Chr:1000-2000,自动将chrID小写,chrID采用正则表达式抓取，无所谓大小写，会自动转变为小写
    * @param cisseq方向，true:正向 false:反向互补
    */
   public static String getSeq(String chrlocation, boolean cisseq)
