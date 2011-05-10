@@ -1,10 +1,10 @@
-package DAO.KEGGDAO;
+package com.novelbio.database.DAO.KEGGDAO;
 
 import java.util.ArrayList;
 import org.apache.ibatis.session.SqlSession;
 
-import entity.kegg.KGreaction;
-import util.Util;
+import com.novelbio.database.entity.kegg.KGreaction;
+import com.novelbio.database.util.Util;
 
 public class DaoKReaction {
 

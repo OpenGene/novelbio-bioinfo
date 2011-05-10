@@ -1,6 +1,8 @@
-package entity.kegg;
+package com.novelbio.database.entity.kegg;
 
 import java.util.ArrayList;
+
+
 
 /**
  * 用NCBIID对象查找 IDgen2Keg、IDkeg2Ko、entry三张表

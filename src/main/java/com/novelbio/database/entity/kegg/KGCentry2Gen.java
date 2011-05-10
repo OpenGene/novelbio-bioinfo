@@ -1,6 +1,8 @@
-package entity.kegg;
+package com.novelbio.database.entity.kegg;
 
 import java.util.ArrayList;
+
+
 
 public class KGCentry2Gen {
 	/**

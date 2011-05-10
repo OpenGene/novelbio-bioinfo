@@ -1,4 +1,4 @@
-package entity.friceDB;
+package com.novelbio.database.entity.friceDB;
 
 import java.util.Date;
 

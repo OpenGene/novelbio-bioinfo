@@ -1,4 +1,4 @@
-package entity.kegg.noGene;
+package com.novelbio.database.entity.kegg.noGene;
 
 public class KGNIdKeg {
 	private String kegID;

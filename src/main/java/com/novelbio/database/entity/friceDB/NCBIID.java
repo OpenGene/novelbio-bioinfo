@@ -1,4 +1,4 @@
-package entity.friceDB;
+package com.novelbio.database.entity.friceDB;
 
 public class NCBIID {
     private int taxID;

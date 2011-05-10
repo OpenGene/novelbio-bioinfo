@@ -32,7 +32,7 @@ import com.novelBio.base.genome.gffOperate.GffsearchPeak;
 import com.novelBio.base.genome.gffOperate.GffsearchRepeat;
 import com.novelBio.base.genome.gffOperate.GffsearchUCSCgene;
 import com.novelBio.base.genome.mappingOperate.MapReads;
-import com.novelBio.generalConf.NovelBioConst;
+import com.novelbio.generalConf.NovelBioConst;
 
 
 

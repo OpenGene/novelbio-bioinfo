@@ -1,12 +1,14 @@
-package DAO.FriceDAO;
+package com.novelbio.database.DAO.FriceDAO;
 
 import java.util.ArrayList;
 
 import org.apache.ibatis.session.SqlSession;
 
-import util.Util;
-import entity.friceDB.BlastInfo;
-import entity.friceDB.Gene2Go;
+import com.novelbio.database.entity.friceDB.BlastInfo;
+import com.novelbio.database.util.Util;
+
+
+
 
 public class DaoFSBlastInfo {
 

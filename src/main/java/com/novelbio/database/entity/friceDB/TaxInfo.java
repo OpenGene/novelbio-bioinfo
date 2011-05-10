@@ -1,4 +1,4 @@
-package entity.friceDB;
+package com.novelbio.database.entity.friceDB;
 /**
  * 有关taxID的表格
  * @author zong0jie

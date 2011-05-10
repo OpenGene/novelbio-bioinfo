@@ -1,16 +1,11 @@
-package execute;
+package com.novelbio.database.execute;
 
 import java.util.ArrayList;
 
 import com.novelBio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.entity.friceDB.NCBIID;
 
 
-import DAO.FriceDAO.DaoFSGene2Go;
-
-import entity.friceDB.Gene2Go;
-import entity.friceDB.Gene2GoInfo;
-import entity.friceDB.GeneInfo;
-import entity.friceDB.NCBIID;
 
 
 public class UserTest {

@@ -1,4 +1,4 @@
-package entity.friceDB;
+package com.novelbio.database.entity.friceDB;
 
 public class UniGene2Go {
 	private String uniProtID;

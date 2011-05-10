@@ -1,4 +1,4 @@
-package util;
+package com.novelbio.database.util;
 
 import java.io.IOException;
 import java.io.Reader;

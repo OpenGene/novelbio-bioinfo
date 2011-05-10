@@ -22,7 +22,7 @@ import org.tc33.jheatchart.HeatChart;
 import com.novelBio.base.dataOperate.TxtReadandWrite;
 import com.novelBio.base.genome.getChrSequence.ChrSearch;
 import com.novelBio.base.genome.getChrSequence.ChrStringHash;
-import com.novelBio.generalConf.NovelBioConst;
+import com.novelbio.generalConf.NovelBioConst;
 
 import DAO.FriceDAO.DaoFSNCBIID;
 

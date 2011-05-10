@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.novelBio.base.dataOperate.TxtReadandWrite;
 import com.novelBio.base.fileOperate.FileOperate;
-import com.novelBio.generalConf.NovelBioConst;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class Rplot {
 	/**

@@ -1,14 +1,12 @@
-package DAO.FriceDAO;
+package com.novelbio.database.DAO.FriceDAO;
 
 import java.util.ArrayList;
 
 import org.apache.ibatis.session.SqlSession;
 
-import util.Util;
-import entity.friceDB.Gene2GoInfo;
-import entity.friceDB.NCBIID;
-import entity.friceDB.Uni2GoInfo;
-import entity.friceDB.UniProtID;
+import com.novelbio.database.entity.friceDB.*;
+import com.novelbio.database.util.Util;
+
 
 public class DaoFCGene2GoInfo {
 	/**

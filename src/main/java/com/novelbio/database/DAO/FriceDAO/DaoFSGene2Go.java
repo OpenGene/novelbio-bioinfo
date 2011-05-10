@@ -1,4 +1,4 @@
-package DAO.FriceDAO;
+package com.novelbio.database.DAO.FriceDAO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,8 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
  
 
-import util.Util;
-import entity.friceDB.Gene2Go;
-import entity.friceDB.Gene2GoInfo;
-import entity.friceDB.GeneInfo;
+import com.novelbio.database.entity.friceDB.*;
+import com.novelbio.database.util.Util;
 
 public class DaoFSGene2Go {
 

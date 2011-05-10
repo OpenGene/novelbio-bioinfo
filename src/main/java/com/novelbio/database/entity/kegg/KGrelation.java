@@ -1,4 +1,4 @@
-package entity.kegg;
+package com.novelbio.database.entity.kegg;
 
 /**
  * 两个entry可能有多个作用方法，譬如binding和activation同时存在那么这个就出现两次

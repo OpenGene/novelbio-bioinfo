@@ -1,15 +1,10 @@
-package DAO.KEGGDAO;
+package com.novelbio.database.DAO.KEGGDAO;
 
 import org.apache.ibatis.session.SqlSession;
 
-import util.Util;
-import entity.friceDB.NCBIID;
-import entity.kegg.KGCKo2Gen;
-import entity.kegg.KGCentry2Gen;
-import entity.kegg.KGIDkeg2Ko;
-import entity.kegg.KGCgen2Entry;
-import entity.kegg.KGCgen2Ko;
-import entity.kegg.KGentry;
+import com.novelbio.database.entity.kegg.*;
+import com.novelbio.database.entity.friceDB.*;
+import com.novelbio.database.util.Util;
 
 public class DaoKCdetail {
 	/**

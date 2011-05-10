@@ -1,4 +1,4 @@
-package entity.kegg;
+package com.novelbio.database.entity.kegg;
 
 public class KGIDkeg2Ko {
 	/**

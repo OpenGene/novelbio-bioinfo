@@ -1,12 +1,13 @@
-package DAO.KEGGDAO;
+package com.novelbio.database.DAO.KEGGDAO;
 
 import java.util.ArrayList;
 
 import org.apache.ibatis.session.SqlSession;
 
-import entity.kegg.KGpathway;
+import com.novelbio.database.entity.kegg.KGpathway;
+import com.novelbio.database.util.Util;
 
-import util.Util;
+
 public class DaoKPathway {
 
 	

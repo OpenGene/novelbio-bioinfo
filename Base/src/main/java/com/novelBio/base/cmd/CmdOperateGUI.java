@@ -14,10 +14,10 @@ import javax.swing.SwingWorker;
 
 
 import com.google.common.base.Splitter;
-import com.novelBio.annotation.genAnno.AnnoQuery;
 import com.novelBio.base.dataOperate.ExcelOperate;
 import com.novelBio.base.dataOperate.TxtReadandWrite;
-import com.novelBio.guiRun.BlastGUI.GUI.GUIBlast;
+import com.novelbio.annotation.genAnno.AnnoQuery;
+import com.novelbio.guiRun.BlastGUI.GUI.GUIBlast;
 
 
 /**
