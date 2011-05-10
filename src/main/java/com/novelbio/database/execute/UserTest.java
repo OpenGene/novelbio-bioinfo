@@ -2,7 +2,7 @@ package com.novelbio.database.execute;
 
 import java.util.ArrayList;
 
-import com.novelBio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.entity.friceDB.NCBIID;
 
 
