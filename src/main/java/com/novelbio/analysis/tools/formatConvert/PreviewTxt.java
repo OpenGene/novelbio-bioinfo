@@ -35,12 +35,10 @@ public class PreviewTxt
 
 			int count = 0;
 			ArrayList<String> lsResult = new ArrayList<String>();
-			@Override
 			public ArrayList<String> getResult() {
 				return lsResult;
 			}
 
-			@Override
 			public boolean processLine(String arg0) throws IOException {
 				lsResult.add(arg0);
 				count++;

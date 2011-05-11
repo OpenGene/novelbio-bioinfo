@@ -1,1 +1,156 @@
-Unexpected error.  File contents could not be restored from local history during undo/redo.
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="KGCquery">
+<!-- query GenID2Ko -->
+	<resultMap id = "gene2Ko" type = "KGCgen2Ko">
+		<id property = "geneID" column = "geneID" />
+		<result property="keggID" column="keggID" />
+		<collection property="lsKgiDkeg2Kos" javaType="ArrayList" ofType="KGIDkeg2Ko" column="{keggID = keggID,taxID = taxID}" select="selectKeg2Ko" />
+	</resultMap> 
+	<resultMap id = "keg2Ko" type = "KGIDkeg2Ko">
+		<id property = "keggID" column = "keggID" />
+	</resultMap>
+	<select id="selectGen2Ko" parameterType="NCBIID" resultMap="gene2Ko">
+		select *
+		from IDgen2Keg
+		<where>
+			<if test="geneID !=null and geneID !=0">
+				 geneID = #{geneID}
+			</if>
+			<if test="taxID !=null and taxID != 0">
+				and taxID = #{taxID}
+			</if>
+		</where>
+	</select>
+	<select id="selectKeg2Ko" parameterType="HashMap" resultMap="keg2Ko">
+		select *
+		from IDkeg2Ko
+		<where>
+			<if test="keggID !=null">
+				 keggID = #{keggID}
+			</if>
+			<if test="taxID !=null and taxID != 0">
+				and taxID = #{taxID}
+			</if>
+		</where>	
+	</select>
+	
+<!-- query GenID2Entry -->
+	<resultMap id = "gene2Entry" type = "KGCgen2Entry">
+		<id property = "geneID" column = "geneID" />
+		<result property="keggID" column="keggID" />
+		<collection property="lsKGentries" javaType="ArrayList" ofType="KGentry" column="{name = keggID,taxID = taxID}" select="selectKeg2Entry" />
+	</resultMap> 
+	<resultMap id = "keg2Entry" type = "KGentry">
+		<id property = "keggID" column = "keggID" />
+	</resultMap>
+	<select id="selectGen2Entry" parameterType="NCBIID" resultMap="gene2Entry">
+		select *
+		from IDgen2Keg
+		<where>
+			<if test="geneID !=null and geneID !=0">
+				 geneID = #{geneID}
+			</if>
+			<if test="taxID !=null and taxID != 0">
+				and taxID = #{taxID}
+			</if>
+		</where>
+	</select>
+	<select id="selectKeg2Entry" parameterType="HashMap" resultMap="keg2Entry">
+		select *
+		from entry
+		<where>
+			<if test="name !=null">
+				 name = #{name}
+			</if>
+			<if test="taxID !=null and taxID != 0">
+				and taxID = #{taxID}
+			</if>
+		</where>	
+	</select>
+	
+<!-- use Ko to get GeneID -->
+	<resultMap id="Ko2Keg" type="KGCKo2Gen">
+		<id property="Ko" column="Ko" />
+		<result property="keggID" column="keggID" />
+		<collection property="lsKgIDgen2Keg" javaType="ArrayList" ofType="KGIDgen2Keg" column="{keggID = keggID,taxID = taxID}" select="selectKeg2Gen" />
+	</resultMap>
+	<resultMap id="Keg2GeneID" type="KGIDgen2Keg">
+		<id property="geneID" column="geneID" />
+	</resultMap>
+	<select id="selectKo2Gen" parameterType="KGIDkeg2Ko" resultMap="Ko2Keg">
+		select *
+		from IDkeg2Ko
+		<where>
+			<if test="Ko !=null">
+				 Ko = #{Ko}
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and taxID=#{taxID}
+			</if>
+			<if test="keggID !=null">
+				and taxID=#{keggID}
+			</if>
+		</where>
+	</select>
+	<select id="selectKeg2Gen" parameterType="HashMap" resultMap="Keg2GeneID">
+		select *
+		from IDgen2Keg
+		<where>
+			<if test="keggID !=null">
+				 keggID=#{keggID}
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and taxID=#{taxID}
+			</if>
+		</where>
+	</select>
+	
+	<!-- use KGentry's Ko and taxID to get GeneID -->
+	<resultMap id="kgEntry2geneID" type="KGCentry2Gen">
+		<id property="name" column="name" />
+		<result property="linkEntry" column="link"/>
+		<!-- see how to associate 2 condition -->
+		<association property="kgIDgen2Keg" column="{keggID = name,taxID = taxID }" javaType="KGIDgen2Keg" select="selectKeg2Gen2" />
+	</resultMap>
+	<resultMap id="Keg2GeneID2" type="KGIDgen2Keg">
+		<id property="keggID" column="keggID" />
+		<result property="geneID" column="geneID" />
+	</resultMap>
+	<select id="selectEntry2Gen" parameterType="KGentry" resultMap="kgEntry2geneID">
+		select *
+		from entry
+		<where>
+			<if test="name !=null ">
+				 name = #{name}
+			</if>
+			<if test="id !=null and id !=0">
+				and ID = #{id}
+			</if>
+			<if test="parentID !=null and parentID !=0">
+				and parentID = #{parentID}
+			</if>
+			<if test="pathName !=null">
+				and pathName = #{pathName}
+			</if>
+			<if test="taxID !=null and taxID != 0">
+				and taxID = #{taxID}
+			</if>
+		</where>
+	</select>
+	<select id="selectKeg2Gen2" parameterType="HashMap" resultMap="Keg2GeneID2">
+		select *
+		from IDgen2Keg
+		<where>
+			<if test="keggID !=null">
+				 keggID=#{keggID}
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and taxID=#{taxID}
+			</if>
+		</where>
+	</select>
+</mapper>
+ 

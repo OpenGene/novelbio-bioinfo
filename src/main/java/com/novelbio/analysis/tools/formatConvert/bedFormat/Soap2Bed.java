@@ -4,25 +4,27 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelBio.base.dataOperate.ExcelTxtRead;
-import com.novelBio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.tools.formatConvert.FastQ;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-
-/**
- * ???娉???ㄥ???scII??川????? * @author zong0jie
- *
+ /**
+ * 本方法内部含有ascII的质量控制
+ * @author zong0jie
  */
 public class Soap2Bed {
-	
-	/**
-	 * 灏?oap杞??涓?ed??欢锛?????涓?ear-end??????骞朵????灏???????????????ㄨ?涓??
-	 * ???娉???ㄥ???scII??川?????	 * ???娴??绔?5bp
+
+/**
+	 * 将soap转化为bed文件，只有当为pear-end的时候，并且需要将单双链分开的时候才用这个。
+	 * 本方法内部含有ascII的质量控制
+	 * 假设测双端45bp
 	 * @param soapFile 
-	 * @param outPut1 杈??#/1搴????????涓??璧风?45bp锛??琛????5bp
-	 * @param outCombFile1 杈??#/1搴?????骞讹?涓??璧风?缁????ragment?垮害锛??浜???㈢???	 * @param outPut2 杈??#/2搴????????涓??璧风?45bp锛??琛????5bp
-	 * @param outCombFile2 杈??#/2搴?????骞讹?涓??璧风?缁????ragment?垮害锛??浜???㈢???	 * @param outError 杈?????淇℃?锛??灏辨?涓や釜 #/1??袱涓?/2杩??涓?捣?????	 * @throws Exception
+	 * @param outPut1 输出#/1序列的坐标，一行起点45bp，一行终点45bp
+	 * @param outCombFile1 输出#/1序列的合并，一行起点终点共fragment长度，用于后面画图
+	 * @param outPut2 输出#/2序列的坐标，一行起点45bp，一行终点45bp
+	 * @param outCombFile2 输出#/2序列的合并，一行起点终点共fragment长度，用于后面画图
+	 * @param outError 输出错误信息，也就是两个 #/1或两个#/2连在一起的情况
+	 * @throws Exception
 	 */
 	public static void getBed2Macs(String fastQ,String soapFile,String outPut1, String outCombFile1, String outPut2,String outCombFile2,String outError) throws Exception {
 		if (fastQ.trim().toLowerCase().equals("sanger")) {
@@ -46,10 +48,10 @@ public class Soap2Bed {
 		
 		TxtReadandWrite txtOuterror = new TxtReadandWrite();
 		txtOuterror.setParameter(outError, true, false);
-		//?峰?娴???垮害
+		//获得测序长度
 		String[] string = txtSoap.readFirstLines(1).get(0).split("\t");
 		int bpLength = string[1].trim().length();
- 
+               //soap文件的格式是 chrID 坐标 无论mapping到正负链，该坐标都是起点，都是要向后加上bpLength-1的，
 		String content = "";
 		BufferedReader readSoap = txtSoap.readfile();
 		String tmpcontent=""; String tmp = "";String tmpPrespre = "";
@@ -59,21 +61,22 @@ public class Soap2Bed {
 				continue;
 			}
 			String[] ss = content.split("\t");
-			//soap??欢???寮?? chrID ??? ???mapping?版?璐??锛??????芥?璧风?锛???????????bpLength-1???
+			//soap文件的格式是 chrID 坐标 无论mapping到正负链，该坐标都是起点，都是要向后加上bpLength-1的，
 			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 			//tmpPrespre only save content while ss[0].split("#/")[1].equals("1")
-			//???瑕????/1?冲?锛????/1涓烘?锛??mapping?版??句?锛????apping?拌??句?
+			//只需要判断#/1即可，如果#/1为正，则mapping到正链上，否则mapping到负链上
 			if (ss[0].trim().endsWith("1")) {
 				tmpcontent = content;
 				tmpresPre = ss;
 				tmpPrespre = tmpres;
 				continue;
 			}
-			//???褰?/1??/2????????????纭??娴??缁?????涓?olexa娴???????氨???姝ｄ?璐?			if ((ss[0].trim().endsWith("2")&&ss[6].equals("-"))
+			//只有当#/1和#/2的方向相反才是正确的测序结果。因为solexa测序的结果就是一正一负		
+			if ((ss[0].trim().endsWith("2")&&ss[6].equals("-"))
 					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("+")
 			)
 			{
-				////////////////////////////////////////////////搴??璐ㄩ?////////////////////////////////////////////////
+				////////////////////////////////////////////////序列质量////////////////////////////////////////////////
 				int[] bpQ1 = FastQ.copeFastQ(ss[2], 10,13);
 				int[] bpQ2 = FastQ.copeFastQ(tmpresPre[2], 10,13);
 				if ((bpQ1[0] > bpLength/10 || bpQ1[1] > bpLength/5) && (bpQ2[0] > bpLength/10 || bpQ2[1] > bpLength/5)  ) {
@@ -94,7 +97,7 @@ public class Soap2Bed {
 					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("-")
 			)
 			{
-				/////////////////////////////////////////////////搴??璐ㄩ?////////////////////////////////////////////////
+				/////////////////////////////////////////////////序列质量////////////////////////////////////////////////
 				int[] bpQ1 = FastQ.copeFastQ(ss[2], 10,13);
 				int[] bpQ2 = FastQ.copeFastQ(tmpresPre[2], 10,13);
 				if ((bpQ1[0] > bpLength/10 || bpQ1[1] > bpLength/5) && (bpQ2[0] > bpLength/10 || bpQ2[1] > bpLength/5)  ) {
@@ -125,12 +128,17 @@ public class Soap2Bed {
 	}
 	
 	
+
 	/**
-	* 灏?oap杞??涓?ed??欢锛??浜?E锛???哄?姝ｈ??炬????
-	* ???娉???ㄥ???scII??川?????	* @param SE true: ???   false: ???
+	* 将soap转化为bed文件，用于SE，不区分正负链时候做
+	* 本方法内部含有ascII的质量控制
+	* @param SE true: 单端   false: 双端
 	 * @param soapFile 
-	 * @param bpLength 娴???垮害
-	 * @param outPut macs???浠讹?浠????eads?????	 * @param outComb ?ㄤ?????????apping??欢锛??绔??reads?????寤剁???50bp锛??绔?????绔??搴??骞?	 * @param error ??????????????究璁?	 * @throws Exception 
+	 * @param bpLength 测序长度
+	 * @param outPut macs的文件，仅仅是reads的结果
+	 * @param outComb 用于后期分析的mapping文件，单端将reads向3‘端延生至350bp，双端则是双端长度合并
+	 * @param error 双端才有的，单端随便设
+	 * @throws Exception 
 	 */
 	public static void copeSope2Bed(String fastQ,boolean SE, String soapFile,String outPut,String outComb,String error) throws Exception {
 		if (fastQ.trim().toLowerCase().equals("sanger")) {
@@ -151,10 +159,11 @@ public class Soap2Bed {
 	
 	
 	/**
-	 * 灏?oap杞??涓?ed??欢锛??浜?E锛???哄?姝ｈ??炬????
+	 * 将soap转化为bed文件，用于SE，不区分正负链时候做
 	 * @param soapFile
-	 * @param bpLength 娴???垮害
-	 * @param outPut1 macs???浠讹?浠????eads?????	 * @param outLong ?ㄤ?????????apping??欢锛??涓??reads?????寤剁???50bp
+	 * @param bpLength 测序长度
+	 * @param outPut1 macs的文件，仅仅是reads的结果
+	 * @param outLong 用于后期分析的mapping文件，这个将reads向3‘端延生至350bp
 	 * @throws Exception
 	 */
 	private static void getBed2MacsSE(String soapFile,String outPut1,String outLong) throws Exception {
@@ -179,7 +188,7 @@ public class Soap2Bed {
 			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 			txtOut1.writefile(tmpres+"\n");
 			if (ss[6].equals("+")) {
-//////////////////////////////////////////////////搴??璐ㄩ?////////////////////////////////////////////////
+//////////////////////////////////////////////////序列质量////////////////////////////////////////////////
 				int[] bpQ1 = FastQ.copeFastQ(ss[2], 10,13);
 				if (bpQ1[0] > bpLength/10 || bpQ1[1] > bpLength/5  ) {
 					continue;
@@ -189,7 +198,7 @@ public class Soap2Bed {
 				txtOutLong.writefile(tmpres2+"\n");
 			}
 			else {
-				//////////////////////////////////////////////////搴??璐ㄩ?////////////////////////////////////////////////
+//////////////////////////////////////////////////序列质量////////////////////////////////////////////////
 				int[] bpQ1 = FastQ.copeFastQ(ss[2], 10,13);
 				if (bpQ1[0] > bpLength/10 || bpQ1[1] > bpLength/5  ) {
 					continue;
@@ -205,10 +214,10 @@ public class Soap2Bed {
 	}
 	
 	/**
-	 * 灏?oap杞??涓?ed??欢锛??浜?E锛???哄?姝ｈ??炬????
+	 * 将soap转化为bed文件，用于PE，不区分正负链时候做
 	 * @param soapFile
-	 * @param bpLength 娴???垮害
-	 * @param outPut1 ?ㄤ?????????apping??欢锛??涓??????垮害??苟
+	 * @param bpLength 测序长度
+	 * @param outPut1 用于后期分析的mapping文件，这个将双端长度合并
 	 * @param outCombine 
 	 * @throws Exception
 	 */
@@ -237,21 +246,22 @@ public class Soap2Bed {
 				continue;
 			}
 			String[] ss = content.split("\t");
-			//soap??欢???寮?? chrID ??? ???mapping?版?璐??锛??????芥?璧风?锛???????????bpLength-1???
+			//soap文件的格式是 chrID 坐标 无论mapping到正负链，该坐标都是起点，都是要向后加上bpLength-1的，
 			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 			//tmpPrespre only save content while ss[0].split("#/")[1].equals("1")
-			//???瑕????/1?冲?锛????/1涓烘?锛??mapping?版??句?锛????apping?拌??句?
+			//只需要判断#/1即可，如果#/1为正，则mapping到正链上，否则mapping到负链上
 			if (ss[0].trim().endsWith("1")) {
 				tmpcontent = content;
 				tmpresPre = ss;
 				tmpPrespre = tmpres;
 				continue;
 			}
-			//???褰?/1??/2????????????纭??娴??缁?????涓?olexa娴???????氨???姝ｄ?璐?			if ((ss[0].trim().endsWith("2")&&ss[6].equals("-"))
+			//只有当#/1和#/2的方向相反才是正确的测序结果。因为solexa测序的结果就是一正一负
+			if ((ss[0].trim().endsWith("2")&&ss[6].equals("-"))
 					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("+")
 			)
 			{
-				/////////////////////////////////////////////////搴??璐ㄩ?////////////////////////////////////////////////
+			/////////////////////////////////////////////////序列质量////////////////////////////////////////////////
 				int[] bpQ1 = FastQ.copeFastQ(ss[2], 10,13);
 				int[] bpQ2 = FastQ.copeFastQ(tmpresPre[2], 10,13);
 				if ((bpQ1[0] > bpLength/10 || bpQ1[1] > bpLength/5) && (bpQ2[0] > bpLength/10 || bpQ2[1] > bpLength/5)  ) {
@@ -272,7 +282,7 @@ public class Soap2Bed {
 					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("-")
 			)
 			{
-				/////////////////////////////////////////////////搴??璐ㄩ?////////////////////////////////////////////////
+				/////////////////////////////////////////////////序列质量////////////////////////////////////////////////
 				int[] bpQ1 = FastQ.copeFastQ(ss[2], 10,13);
 				int[] bpQ2 = FastQ.copeFastQ(tmpresPre[2], 10,13);
 				if ((bpQ1[0] > bpLength/10 || bpQ1[1] > bpLength/5) && (bpQ2[0] > bpLength/10 || bpQ2[1] > bpLength/5)  ) {
@@ -300,7 +310,8 @@ public class Soap2Bed {
 	}
 	
 	/**
-	 * 缁??solexa??oap??apping缁??锛??寰?????fastQ琛?	 * @return
+	 * 给定solexa用soap的mapping结果，获得序列的fastQ行
+	 * @return
 	 * @throws Exception 
 	 */
 	public static ArrayList<String> getSoapFastQStr(String soapFile) throws Exception {

@@ -6,10 +6,9 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.novelBio.base.dataOperate.TxtReadandWrite;
-import com.novelBio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataOperate.WebFetch;
 
- 
 /**
  * 比较这两个网站，哪个图多选择哪个网站
  * @author zong0jie

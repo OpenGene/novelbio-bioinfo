@@ -1,6 +1,4 @@
 package com.novelbio.base.dataOperate;
-
-
 import info.monitorenter.cpdetector.CharsetPrinter;
 
 import java.io.BufferedReader;
@@ -106,7 +104,6 @@ public class TxtRW {
 		{
 			ArrayList<String[]> lsResult = new ArrayList<String[]>();
 			int rowCount = 0;
-			@Override
 			public boolean processLine(String line) throws IOException {
 				
 				
@@ -114,7 +111,6 @@ public class TxtRW {
 				return true;
 			}
 
-			@Override
 			public ArrayList<String[]> getResult() {
 				// TODO Auto-generated method stub
 				return null;
