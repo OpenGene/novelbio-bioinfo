@@ -6,11 +6,11 @@ public class UniProtID {
 		private String accessID;
 		private String dbInfo;
 		
-		public long getTaxID() {
+		public int getTaxID() {
 			return taxID;
 		}
-		public void setTaxID(int taxID) {
-			this.taxID = taxID;
+		public void setTaxID(int l) {
+			this.taxID = l;
 		}
 
 		public String getUniID() {

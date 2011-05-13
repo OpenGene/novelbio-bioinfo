@@ -1,4 +1,4 @@
-package com.novelbio.analysis.upDateDB.dataBase;
+package com.novelbio.database.upDateDB.dataBase;
 
 
 import java.io.BufferedReader;
@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
@@ -29,7 +30,7 @@ import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
 
 
-public class UpDateFriceDBFile {
+public class UpDateNBCDBFile {
 	/**
 	 * 专门处理Gene2Go的表
 	 * 将含有固定TaxID的gene2Go表插入数据库，插入时采用以下方法
@@ -39,15 +40,11 @@ public class UpDateFriceDBFile {
 	 * @author zong0jie
 	 *
 	 */
-	public static void upDateGenetoGo(String gene2GoFile) throws Exception
+	public static void upDateGene2Go(String gene2GoFile) throws Exception
 	{
 		TxtReadandWrite txtgene2Go=new TxtReadandWrite();
 		txtgene2Go.setParameter(gene2GoFile,false,true);
 		BufferedReader gene2GoReader=txtgene2Go.readfile();
-		
-		
-		DaoFSGene2Go friceDAO=new DaoFSGene2Go();
-		
 		String content="";
 		int i=0;
 		while ((content=gene2GoReader.readLine())!=null) 
@@ -64,34 +61,45 @@ public class UpDateFriceDBFile {
 			else 
 				gene2GoInfo.setReference("PMID:"+ss[6]);
 			
-	
+			if (ss[7].equals("Function")) {
+				ss[7] = "F";
+			}
+			else if (ss[7].equals("Process")) {
+				ss[7] = "P";
+			}
+			else if (ss[7].equals("Component")) {
+				ss[7] = "C";
+			}
 			gene2GoInfo.setFunction(ss[7]);
 			gene2GoInfo.setDataBase("NCBI");
-			Gene2Go gene2GoInfo2=friceDAO.queryGene2Go(gene2GoInfo);
+			Gene2Go gene2GoInfo2=DaoFSGene2Go.queryGene2Go(gene2GoInfo);
 			if (gene2GoInfo2==null) 
 			{
-				friceDAO.InsertGene2Go(gene2GoInfo);
+				DaoFSGene2Go.InsertGene2Go(gene2GoInfo);
 			}
 			else {
 				//如果已经含有相应的GOID，那么看evidence是否也含有了，没有的话就upDate
-				if(!gene2GoInfo2.getEvidence().contains(gene2GoInfo.getEvidence()))
+				if(gene2GoInfo2.getEvidence() !=null 
+						&& !gene2GoInfo2.getEvidence().trim().equals("")
+						&& !gene2GoInfo2.getEvidence().contains(gene2GoInfo.getEvidence()))
 				{
 					gene2GoInfo.setEvidence(gene2GoInfo.getEvidence()+"/"+gene2GoInfo2.getEvidence());
-					friceDAO.upDateGene2Go(gene2GoInfo);
+					DaoFSGene2Go.upDateGene2Go(gene2GoInfo);
 				}
 			}
 			i++;
 			if (i%10000==0) {
 				System.out.println(i);
 			}
-			
 		}
+		txtgene2Go.close();
 	}
 	
 	
 	
 	/**
 	 * 将NCBIID类型的表插入数据库
+	 * 物种 \t  NCBIGeneID \t  accessID \t  DataBaseInfo \n
 	 * 待导入的结果中的geneID可能含有： geneID//geneID//geneID<br>
 	 * 注意一定要分开。也就是如果一个accID对应多个geneID，那么就将这两个geneID都插入NCBIID
 	 * 用geneID和accessID一起去查找NCBIID表
@@ -100,39 +108,52 @@ public class UpDateFriceDBFile {
 	 * @author zong0jie
 	 *
 	 */
-	public static void upDateNCBIID(String NCBIIDfile) throws Exception
+	public static void upDateNCBIID(String NCBIIDfile,boolean updateDBINFO) throws Exception
 	{
 		TxtReadandWrite txtNCBIID=new TxtReadandWrite();
 		txtNCBIID.setParameter(NCBIIDfile,false,true);
 		BufferedReader ncbiReader=txtNCBIID.readfile();
-		DaoFSNCBIID friceDAO=new DaoFSNCBIID();
 		
 		String content="";
 		int i=0;
 		while ((content=ncbiReader.readLine())!=null) 
 		{
 			String[] ss = content.split("\t");
-			NCBIID ncbiid = new NCBIID();
-			ncbiid.setAccID(ss[2]);
-			ArrayList<NCBIID> lsNcbiids =friceDAO.queryLsNCBIID(ncbiid);
-			if (lsNcbiids != null && lsNcbiids.size() > 0) //如果数据库中已经有了
-			{
-				continue;
-			}
 			String[] ssGeneID = ss[1].split("//");
+			//多个geneID分别都试一遍
 			for (String string : ssGeneID) 
 			{
+				NCBIID ncbiid = new NCBIID();
 				ncbiid.setTaxID(Integer.parseInt(ss[0]));
 				ncbiid.setGeneId((long)Double.parseDouble(string));
-				ncbiid.setDBInfo(ss[3]);
-				friceDAO.InsertNCBIID(ncbiid);
-				i++;
+				ncbiid.setAccID(ss[2]); 
+				//如果搜到了，那么看是否需要更新DBINFO
+				ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+				if (lsNcbiids != null && lsNcbiids.size() > 0) 
+				{
+					//如果需要更新dbinfo，那么看现有的dbinfo是否和老的一样，如果不一样的话，才更新
+					if (updateDBINFO && !lsNcbiids.get(0).getDBInfo().equals(ss[3])) 
+					{
+						ncbiid.setDBInfo(ss[3]);
+						DaoFSNCBIID.upDateNCBIID(ncbiid);
+						i++;
+					}
+					else
+						continue;
+				}
+				else
+				{
+					ncbiid.setDBInfo(ss[3]);
+					DaoFSNCBIID.InsertNCBIID(ncbiid);
+					i++;
+				}
 			}
-			
 			if (i%10000==0) {
 				System.out.println(i);
 			}
 		}
+		System.out.println(i);
+		txtNCBIID.close();
 	}
 	
 	/**
@@ -154,9 +175,7 @@ public class UpDateFriceDBFile {
 		
 		TxtReadandWrite txtnoFindFile=new TxtReadandWrite();
 		txtnoFindFile.setParameter(noFindFile, true, false);
-		
-		DaoFSNCBIID friceDAO=new DaoFSNCBIID();
-		
+			
 		String content="";
 		int i=0;
 		while ((content=ncbiReader.readLine())!=null) 
@@ -165,24 +184,22 @@ public class UpDateFriceDBFile {
 			NCBIID ncbiid=new NCBIID();
 			
 			ncbiid.setGeneId((long)Double.parseDouble(ss[1]));//先用geneID搜
-			ArrayList<NCBIID> lsncbiid=friceDAO.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsncbiid=DaoFSNCBIID.queryLsNCBIID(ncbiid);
 			if (lsncbiid==null||lsncbiid.size()==0) 
 			{
 				txtnoFindFile.writefile(content+"\n");
 				continue;
 			}
-			
-			
-			
+
 			ncbiid.setAccID(ss[2]);
 			
 			//geneID和 accID两个一起查看是否能查到
-			NCBIID ncbiid2=friceDAO.queryNCBIID(ncbiid);
+			NCBIID ncbiid2=DaoFSNCBIID.queryNCBIID(ncbiid);
 			if (ncbiid2==null) 
 			{
 				ncbiid.setTaxID(Integer.parseInt(ss[0]));
 				ncbiid.setDBInfo(ss[3]);
-				friceDAO.InsertNCBIID(ncbiid);
+				DaoFSNCBIID.InsertNCBIID(ncbiid);
 			}
 			else {
 				continue;
@@ -192,47 +209,132 @@ public class UpDateFriceDBFile {
 				System.out.println(i);
 			}
 		}
+		txtNCBIID.close();
+		txtnoFindFile.close();
 	}
 	
-	
-	
 	/**
-	 * 将UniProtID类型的表插入数据库
-	 * 时采用以下方法
-	 * 用geneID和accessID一起去查找NCBIID表
-	 * 如果没有，直接插入
+	 * 将gene_refseq_uniprotkb_collab.txt 的表插入数据库，首先用refseq搜NCBIID，搜到的得到其geneID，然后与uniID一起查找NCBIID表并插入<br>
+	 * 时采用以下方法<br>
+	 * <b>首先用refseq搜NCBIID</b>，如果找到了
+	 * 用geneID和uniID一起去查找NCBIID表，如果没找到，则插入<br>
+	 * 
+	 * <b>如果用refseq没找到，那么跳过</b><br>
 	 * 如果有跳过
 	 * @author zong0jie
 	 *
 	 */
-	public static void upDateUniProtID(String UniProtIDfile) throws Exception
+	public static void upDateNCBIIDRef2Uni(String Ref2Unifile) throws Exception
+	{
+		TxtReadandWrite txtRef2Uni=new TxtReadandWrite();
+		txtRef2Uni.setParameter(Ref2Unifile,false,true);
+		BufferedReader ncbiReader=txtRef2Uni.readfile();
+			
+		String content="";
+		int i=0;
+		while ((content=ncbiReader.readLine())!=null) 
+		{
+			String[] ss=content.split("\t");
+			NCBIID ncbiid=new NCBIID();
+			
+			ncbiid.setAccID(ss[0]);//先用refseq搜
+			ArrayList<NCBIID> lsncbiid=DaoFSNCBIID.queryLsNCBIID(ncbiid);
+			if (lsncbiid==null||lsncbiid.size()==0) 
+			{
+				continue;
+			}
+			long geneID = lsncbiid.get(0).getGeneId();
+			int taxID = lsncbiid.get(0).getTaxID();
+			ncbiid.setGeneId(geneID);
+			ncbiid.setAccID(ss[1]);
+			
+			//geneID和 uniID两个一起查看是否能查到，能查到就跳过，查不到就插入
+			NCBIID ncbiid2=DaoFSNCBIID.queryNCBIID(ncbiid);
+			if (ncbiid2==null) 
+			{
+				ncbiid.setTaxID(taxID);
+				ncbiid.setDBInfo(NovelBioConst.DBINFO_UNIPROT_UNIID);
+				DaoFSNCBIID.InsertNCBIID(ncbiid);
+				i++;
+			}
+			else {
+				continue;
+			}
+			
+			if (i%10000==0) {
+				System.out.println(i);
+			}
+		}
+		System.out.println(i);
+	}
+	
+	
+	/**
+	 * 将UniProtID类型的表插入数据库
+	 * @param UniProtIDfile
+	 * @param NCBIID 是否插入NCBIID表，
+	 * true：将UniProtID表的accID查找NCBI表，找不到的写入文本
+	 * false：直接将UniProtID表插入uniID表
+	 * @throws Exception
+	 */
+	public static void upDateUniProtID(String UniProtIDfile,boolean NCBIID,String outUniProtIDfile) throws Exception
 	{
 		TxtReadandWrite txtUniProtID=new TxtReadandWrite();
 		txtUniProtID.setParameter(UniProtIDfile,false,true);
 		BufferedReader uniProtReader=txtUniProtID.readfile();
-		
-		DaoFSUniProtID friceDAO=new DaoFSUniProtID();
-		
+				
+		TxtReadandWrite txtOutUniProt = new TxtReadandWrite();
+		if (NCBIID) {
+			txtOutUniProt.setParameter(outUniProtIDfile, true,false);
+		}
 		String content="";
 		int i=0;
 		while ((content=uniProtReader.readLine())!=null) 
 		{
 			String[] ss=content.split("\t");
-			UniProtID uniProtid=new UniProtID();
-			uniProtid.setTaxID(Integer.parseInt(ss[0]));
-			uniProtid.setUniID(ss[1]);
-			uniProtid.setAccID(ss[2]);
-			uniProtid.setDBInfo(ss[3]);
-  
-			UniProtID uniProtid2=friceDAO.queryUniProtID(uniProtid);
-			if (uniProtid2==null) 
+			int taxID = Integer.parseInt(ss[0]);
+			if (NCBIID)
 			{
-				friceDAO.InsertUniProtID(uniProtid);
+				//先查找NCBIID表
+				NCBIID ncbiid = new NCBIID();
+				ncbiid.setTaxID(taxID);
+				ncbiid.setAccID(ss[1]);
+				ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+				if (lsNcbiids != null && lsNcbiids.size()>0) 
+				{
+					//查到的话，再用本列真正的accID去查NCBIID表，如果没查到，那么插入
+					long geneID = lsNcbiids.get(0).getGeneId();
+					ncbiid.setGeneId(geneID);
+					ncbiid.setAccID(ss[2]);
+					ArrayList<NCBIID> lsNcbiids2 = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+					if (lsNcbiids2 == null || lsNcbiids2.size() == 0) {
+						ncbiid.setDBInfo(ss[3]);
+						DaoFSNCBIID.InsertNCBIID(ncbiid);
+						i++;
+					}
+					continue;
+				}
+				else {
+					txtOutUniProt.writefile(content + "\n");
+				}
 			}
-			else {
-				continue;
+			else 
+			{
+				UniProtID uniProtid=new UniProtID();
+				uniProtid.setTaxID(Integer.parseInt(ss[0]));
+				uniProtid.setUniID(ss[1]);
+				uniProtid.setAccID(ss[2]);
+				ArrayList<UniProtID> lsuniProtid2=DaoFSUniProtID.queryLsUniProtID(uniProtid);
+				if (lsuniProtid2==null || lsuniProtid2.size() == 0) 
+				{
+					uniProtid.setDBInfo(ss[3]);
+					DaoFSUniProtID.InsertUniProtID(uniProtid);
+					i++;
+				}
+				else {
+					continue;
+				}
 			}
-			i++;
 			if (i%10000==0) {
 				System.out.println(i);
 			}
@@ -256,9 +358,6 @@ public class UpDateFriceDBFile {
 		txtGeneInfo.setParameter(GeneInfoFile,false,true);
 		BufferedReader ncbiReader=txtGeneInfo.readfile();
 		
-		
-		DaoFSGeneInfo friceDAO=new DaoFSGeneInfo();
-		
 		String content="";
 		int i=0;
 		while ((content=ncbiReader.readLine())!=null) 
@@ -271,10 +370,10 @@ public class UpDateFriceDBFile {
 			geneInfo.setSymNome(ss[10]);geneInfo.setFullName(ss[11]);geneInfo.setNomStat(ss[12]);geneInfo.setOtherDesign(ss[13]);
 			geneInfo.setModDate(ss[14]);
 
-			GeneInfo geneInfo2=friceDAO.queryGeneInfo(geneInfo);
+			GeneInfo geneInfo2=DaoFSGeneInfo.queryGeneInfo(geneInfo);
 			if (geneInfo2==null)
 			{
-				friceDAO.InsertGeneInfo(geneInfo);
+				DaoFSGeneInfo.InsertGeneInfo(geneInfo);
 			}
 			else {
 				continue;

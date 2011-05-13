@@ -1,4 +1,4 @@
-package com.novelbio.analysis.upDateDB.dataBase;
+package com.novelbio.database.upDateDB.dataBase;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package com.novelbio.analysis.upDateDB.gOextract;
+package com.novelbio.database.upDateDB.gOextract;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;

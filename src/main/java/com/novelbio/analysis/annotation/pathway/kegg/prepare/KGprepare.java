@@ -62,6 +62,8 @@ public class KGprepare {
 		return geneID2;
 	}
 	/**
+	 * @deprecated
+	 * 用 CopeID的removeDot方法代替
 	 *  首先除去空格
 	 * 如果类似XM_002121.1类型，那么将.1去除
 	 * @param accID

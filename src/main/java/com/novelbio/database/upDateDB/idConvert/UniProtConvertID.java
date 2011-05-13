@@ -1,9 +1,11 @@
-package com.novelbio.analysis.upDateDB.idConvert;
+package com.novelbio.database.upDateDB.idConvert;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import com.novelbio.analysis.annotation.copeID.CopeID;
+import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
@@ -21,47 +23,61 @@ public class UniProtConvertID {
 	 */
 	public static void uniProtIdMapSelectGeneID(String pathUniMap,String modifiedFile) throws Exception
 	{
-		TxtReadandWrite uniProt=new TxtReadandWrite();
-		uniProt.setParameter(pathUniMap,false, true);
+		TxtReadandWrite txtuniProt=new TxtReadandWrite();
+		txtuniProt.setParameter(pathUniMap,false, true);
 		
-		TxtReadandWrite uniProtModify=new TxtReadandWrite();
-		uniProtModify.setParameter(modifiedFile, true,false);
+		TxtReadandWrite txtuniProtModify=new TxtReadandWrite();
+		txtuniProtModify.setParameter(modifiedFile, true,false);
 		
 		
 		
-		BufferedReader reader=uniProt.readfile();
+		BufferedReader reader=txtuniProt.readfile();
 		String content="";
 		reader.readLine();
 		while((content=reader.readLine())!=null)
 		{
 			String[] tmp=content.split("\t");
-			
+			//如果geneID不存在
 			if (tmp[2].trim().equals("")||tmp[2].trim().equals("-"))
 			{
-				continue;
-			}
-			
-			if (!tmp[0].trim().equals("-")&&!tmp[0].trim().equals("")) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
+				//看refseq是否存在，不存在就跳过
+				if (tmp[3].trim().equals("")||tmp[2].trim().equals("-")) {
 					continue;
 				}
+				//如果refseq存在，用refseq去搜NCBIID，搜到了就把geneID装到tmp[2]里面，多个geneID用;隔开
+				else {
+					NCBIID ncbiid = new NCBIID();
+					tmp[3] = CopeID.removeDot(tmp[3]);
+					ncbiid.setAccID(tmp[3]); ncbiid.setTaxID(Integer.parseInt(tmp[13]));
+					ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+					if (lsNcbiids != null && lsNcbiids.size() > 0) 
+					{
+						tmp[2] = lsNcbiids.get(0).getGeneId()+"";
+						for (int i = 1; i < lsNcbiids.size(); i++) {
+							tmp[2] = tmp[2] + ";"+lsNcbiids.get(i).getGeneId();
+						}
+					}
+					else {
+						continue;
+					}
+				}
+			}
+			if (tmp[13].trim().equals("")) {
+				System.out.println("UniProtConvertID taxID 不存在  ");
+				continue;
+			}
+			if (!tmp[0].trim().equals("-")&&!tmp[0].trim().equals("")) {
 				String[] tmptwo=tmp[2].split(";");
 				for (int i = 0; i < tmptwo.length; i++) {
-					String newtmp = tmp[13]+"\t"+tmptwo[i].trim()+"\t"+tmp[0]+"\t"+"unpAC"+"\n";
-					uniProtModify.writefile(newtmp, false);
+					String newtmp = tmp[13]+"\t"+tmptwo[i].trim()+"\t"+tmp[0]+"\t"+NovelBioConst.DBINFO_UNIPROT_UNIID+"\n";
+					txtuniProtModify.writefile(newtmp, false);
 				}
 			}
 			if ((!tmp[1].trim().equals("-")&&!tmp[1].trim().equals("")) ) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-				
 				String[] tmptwo=tmp[2].split(";");
 				for (int i = 0; i < tmptwo.length; i++) {
-					String newtmp = tmp[13]+"\t"+tmptwo[i].trim()+"\t"+tmp[1]+"\t"+"unpID"+"\n";
-					uniProtModify.writefile(newtmp, false);
+					String newtmp = tmp[13]+"\t"+tmptwo[i].trim()+"\t"+tmp[1]+"\t"+NovelBioConst.DBINFO_UNIPROT_UNIPROTKB_ID+"\n";
+					txtuniProtModify.writefile(newtmp, false);
 				}
 			}
 			
@@ -69,11 +85,6 @@ public class UniProtConvertID {
 				continue;
 			}
 			if ((!tmp[7].trim().equals("-")&&!tmp[7].trim().equals("")) ) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-				
 				
 				String[] tmp2=tmp[7].split(";");
 				for (int i = 0; i < tmp2.length; i++) {
@@ -82,13 +93,11 @@ public class UniProtConvertID {
 					{
 						continue;
 					}
-					
 					String[] tmptwo=tmp[2].split(";");
 					for (int j = 0; j < tmptwo.length; j++) {
-						String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+"IPI"+"\n";;
-						uniProtModify.writefile(newtmp, false);
+						String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_IPI+"\n";;
+						txtuniProtModify.writefile(newtmp, false);
 					}
- 
 				}
 			}
 			
@@ -96,11 +105,6 @@ public class UniProtConvertID {
 				continue;
 			}
 			if ((!tmp[11].trim().equals("-")&&!tmp[11].trim().equals("")) ) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-				
 				String[] tmp2=tmp[11].split(";");
 				for (int i = 0; i < tmp2.length; i++) {
 					String tmpp=tmp2[i].trim();
@@ -110,8 +114,8 @@ public class UniProtConvertID {
 					}
 					String[] tmptwo=tmp[2].split(";");
 					for (int j = 0; j < tmptwo.length; j++) {
-						String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+"UniParc"+"\n";
-						uniProtModify.writefile(newtmp, false);
+						String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_UNIPROT_UNIPARC+"\n";
+						txtuniProtModify.writefile(newtmp, false);
 					}
   				}
 			}
@@ -121,11 +125,6 @@ public class UniProtConvertID {
 			}
 			
 			if ((!tmp[12].trim().equals("-")&&!tmp[12].trim().equals("")) ) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-				
 				String[] tmp2=tmp[12].split(";");
 				for (int i = 0; i < tmp2.length; i++) {
 					String tmpp=tmp2[i].trim();
@@ -135,8 +134,8 @@ public class UniProtConvertID {
 					}
 					String[] tmptwo=tmp[2].split(";");
 					for (int j = 0; j < tmptwo.length; j++) {
-						String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+"PIR"+"\n";
-						uniProtModify.writefile(newtmp, false);
+						String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_PIR+"\n";
+						txtuniProtModify.writefile(newtmp, false);
 					}
  		
 				}
@@ -147,11 +146,6 @@ public class UniProtConvertID {
 			}
 			
 			if ((!tmp[15].trim().equals("-")&&!tmp[15].trim().equals("")) ) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-				
 				String[] tmp2=tmp[15].split(";");
 				for (int i = 0; i < tmp2.length; i++) {
 					String tmpp=tmp2[i].trim();
@@ -161,8 +155,8 @@ public class UniProtConvertID {
 					}
 					String[] tmptwo=tmp[2].split(";");
 					for (int j = 0; j < tmptwo.length; j++) {
-						String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+"UniGene"+"\n";
-						uniProtModify.writefile(newtmp, false);
+						String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_UNIPROT_UNIGENE+"\n";
+						txtuniProtModify.writefile(newtmp, false);
 					}
  		
 				}
@@ -172,13 +166,7 @@ public class UniProtConvertID {
 				continue;
 			}
  
-
 				if ((!tmp[17].trim().equals("-")&&!tmp[17].trim().equals("")) ) {
-					if (tmp[13].trim().equals("")) {
-						System.out.println("tax=  ");
-						continue;
-					}
-					
 					
 					String[] tmp2=tmp[17].split(";");
 					for (int i = 0; i < tmp2.length; i++) {
@@ -193,8 +181,8 @@ public class UniProtConvertID {
 						}
 						String[] tmptwo=tmp[2].split(";");
 						for (int j = 0; j < tmptwo.length; j++) {
-							String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+"EMBL"+"\n";
-							uniProtModify.writefile(newtmp, false);
+							String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_EMBL+"\n";
+							txtuniProtModify.writefile(newtmp, false);
 						}
  					}
 				}
@@ -205,12 +193,6 @@ public class UniProtConvertID {
 				}
 	 
 			if ((!tmp[18].trim().equals("-")&&!tmp[18].trim().equals("")) ) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-				
-				
 				String[] tmp2=tmp[18].split(";");
 				for (int i = 0; i < tmp2.length; i++) {
 					String tmpp=tmp2[i].trim();
@@ -224,8 +206,8 @@ public class UniProtConvertID {
 					}
 					String[] tmptwo=tmp[2].split(";");
 					for (int j = 0; j < tmptwo.length; j++) {
-						String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+"EMBLCDS"+"\n";
-						uniProtModify.writefile(newtmp, false);
+						String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_EMBL_CDS+"\n";
+						txtuniProtModify.writefile(newtmp, false);
 					}
 				}
 			}
@@ -235,12 +217,6 @@ public class UniProtConvertID {
 			}
  
 		if ((!tmp[19].trim().equals("-")&&!tmp[19].trim().equals("")) ) {
-			if (tmp[13].trim().equals("")) {
-				System.out.println("tax=  ");
-				continue;
-			}
-			
-			
 			String[] tmp2=tmp[19].split(";");
 			for (int i = 0; i < tmp2.length; i++) {
 				String tmpp=tmp2[i].trim();
@@ -254,8 +230,8 @@ public class UniProtConvertID {
 				}
 				String[] tmptwo=tmp[2].split(";");
 				for (int j = 0; j < tmptwo.length; j++) {
-					String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+"Ensembl_Gene"+"\n";
-					uniProtModify.writefile(newtmp, false);
+					String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_ENSEMBL+"\n";
+					txtuniProtModify.writefile(newtmp, false);
 				}
 			}
 		}
@@ -266,12 +242,6 @@ public class UniProtConvertID {
 		}
 		
 		if ((!tmp[20].trim().equals("-")&&!tmp[20].trim().equals("")) ) {
-			if (tmp[13].trim().equals("")) {
-				System.out.println("tax=  ");
-				continue;
-			}
-			
-			
 			String[] tmp2=tmp[20].split(";");
 			for (int i = 0; i < tmp2.length; i++) {
 				String tmpp=tmp2[i].trim();
@@ -285,8 +255,8 @@ public class UniProtConvertID {
 				}
 				String[] tmptwo=tmp[2].split(";");
 				for (int j = 0; j < tmptwo.length; j++) {
-					String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+"Ensembl_RNA"+"\n";
-					uniProtModify.writefile(newtmp, false);
+					String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_ENSEMBL_TRS+"\n";
+					txtuniProtModify.writefile(newtmp, false);
 				}
 			}
 		}
@@ -297,12 +267,6 @@ public class UniProtConvertID {
 		}
 		
 		if ((!tmp[21].trim().equals("-")&&!tmp[21].trim().equals("")) ) {
-			if (tmp[13].trim().equals("")) {
-				System.out.println("tax=  ");
-				continue;
-			}
-			
-			
 			String[] tmp2=tmp[21].split(";");
 			for (int i = 0; i < tmp2.length; i++) {
 				String tmpp=tmp2[i].trim();
@@ -316,74 +280,63 @@ public class UniProtConvertID {
 				}
 				String[] tmptwo=tmp[2].split(";");
 				for (int j = 0; j < tmptwo.length; j++) {
-					String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+"Ensembl_PRO"+"\n";
-					uniProtModify.writefile(newtmp, false);
+					String newtmp = tmp[13]+"\t"+tmptwo[j].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_ENSEMBL_PRO+"\n";
+					txtuniProtModify.writefile(newtmp, false);
 				}
 			}
 		}
 		}
-		uniProtModify.writefile("",true);
+		txtuniProtModify.writefile("",true);
+		txtuniProt.close();
+		txtuniProtModify.close();
 	}
 	
 
 	
 	/**
 	 * 处理Uniprot的idmapping_selected.tab表
-	 * 导出其中的ID信息，按照
+	 *  将原始表中所有不包含geneID的行全部提取出来，格式如下：
 	 * 物种 \t  SwissProtID \t  accessID \t  DataBaseInfo \n
 	 * 的格式
 	 * @throws Exception 
 	 */
-	public static void uniProtIdMapSelectDSwissPort(String pathUniMap,String modifiedFile) throws Exception
+	public static void uniProtIdMapSelectDUniID(String pathUniMap,String modifiedFile) throws Exception
 	{
-		TxtReadandWrite uniProt=new TxtReadandWrite();
-		uniProt.setParameter(pathUniMap,false, true);
+		TxtReadandWrite txtuniProt=new TxtReadandWrite();
+		txtuniProt.setParameter(pathUniMap,false, true);
 		
-		TxtReadandWrite uniProtModify=new TxtReadandWrite();
-		uniProtModify.setParameter(modifiedFile, true,false);
+		TxtReadandWrite txtuniProtModify=new TxtReadandWrite();
+		txtuniProtModify.setParameter(modifiedFile, true,false);
 		
 		
 		
-		BufferedReader reader=uniProt.readfile();
+		BufferedReader reader=txtuniProt.readfile();
 		String content="";
 		reader.readLine();
 		while((content=reader.readLine())!=null)
 		{
 			String[] tmp=content.split("\t");
-			
+			//有geneID的就跳过
+			if (!tmp[2].trim().equals("") && !tmp[2].trim().equals("-")) {
+				continue;
+			}
+			if (tmp[13].trim().equals("")) {
+				System.out.println("UniProtConvertID taxID 不存在  ");
+				continue;
+			}
 			if (!tmp[0].trim().equals("-")&&!tmp[0].trim().equals("")) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-		
-
-					String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmp[0]+"\t"+"unpAC"+"\n";
-					uniProtModify.writefile(newtmp, false);
-				
+				String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmp[0]+"\t"+NovelBioConst.DBINFO_UNIPROT_UNIID+"\n";
+				txtuniProtModify.writefile(newtmp, false);
 			}
 			if ((!tmp[1].trim().equals("-")&&!tmp[1].trim().equals("")) ) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-				
- 
-					String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmp[1]+"\t"+"unpID"+"\n";
-					uniProtModify.writefile(newtmp, false);
-			 
+				String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmp[1]+"\t"+NovelBioConst.DBINFO_UNIPROT_UNIID+"\n";
+				txtuniProtModify.writefile(newtmp, false);
 			}
 			
 			if (tmp.length<8) {
 				continue;
 			}
 			if ((!tmp[7].trim().equals("-")&&!tmp[7].trim().equals("")) ) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-				
-				
 				String[] tmp2=tmp[7].split(";");
 				for (int i = 0; i < tmp2.length; i++) {
 					String tmpp=tmp2[i].trim();
@@ -391,12 +344,8 @@ public class UniProtConvertID {
 					{
 						continue;
 					}
-					
-	 
-						String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+"IPI"+"\n";;
-						uniProtModify.writefile(newtmp, false);
-				 
- 
+					String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_IPI+"\n";;
+					txtuniProtModify.writefile(newtmp, false);
 				}
 			}
 			
@@ -404,11 +353,6 @@ public class UniProtConvertID {
 				continue;
 			}
 			if ((!tmp[11].trim().equals("-")&&!tmp[11].trim().equals("")) ) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-				
 				String[] tmp2=tmp[11].split(";");
 				for (int i = 0; i < tmp2.length; i++) {
 					String tmpp=tmp2[i].trim();
@@ -416,10 +360,8 @@ public class UniProtConvertID {
 					{
 						continue;
 					}
-	 
-						String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+"UniParc"+"\n";
-						uniProtModify.writefile(newtmp, false);
-				 
+					String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_UNIPROT_UNIPARC+"\n";
+					txtuniProtModify.writefile(newtmp, false);
   				}
 			}
 			
@@ -428,11 +370,6 @@ public class UniProtConvertID {
 			}
 			
 			if ((!tmp[12].trim().equals("-")&&!tmp[12].trim().equals("")) ) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-				
 				String[] tmp2=tmp[12].split(";");
 				for (int i = 0; i < tmp2.length; i++) {
 					String tmpp=tmp2[i].trim();
@@ -440,11 +377,8 @@ public class UniProtConvertID {
 					{
 						continue;
 					}
-	 
-						String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+"PIR"+"\n";
-						uniProtModify.writefile(newtmp, false);
-				 
- 		
+					String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_PIR+"\n";
+					txtuniProtModify.writefile(newtmp, false);
 				}
 			}
 			
@@ -453,11 +387,6 @@ public class UniProtConvertID {
 			}
 			
 			if ((!tmp[15].trim().equals("-")&&!tmp[15].trim().equals("")) ) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-				
 				String[] tmp2=tmp[15].split(";");
 				for (int i = 0; i < tmp2.length; i++) {
 					String tmpp=tmp2[i].trim();
@@ -465,56 +394,36 @@ public class UniProtConvertID {
 					{
 						continue;
 					}
- 
-						String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+"UniGene"+"\n";
-						uniProtModify.writefile(newtmp, false);
-		 
- 		
+					String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_UNIPROT_UNIGENE+"\n";
+					txtuniProtModify.writefile(newtmp, false);
 				}
 			}
 			
 			if (tmp.length<18) {
 				continue;
 			}
- 
-
-				if ((!tmp[17].trim().equals("-")&&!tmp[17].trim().equals("")) ) {
-					if (tmp[13].trim().equals("")) {
-						System.out.println("tax=  ");
+			if ((!tmp[17].trim().equals("-")&&!tmp[17].trim().equals("")) ) {
+				String[] tmp2=tmp[17].split(";");
+				for (int i = 0; i < tmp2.length; i++) {
+					String tmpp=tmp2[i].trim();
+					if (tmpp.equals("")||tmpp.equals("-")) 
+					{
 						continue;
 					}
-					
-					
-					String[] tmp2=tmp[17].split(";");
-					for (int i = 0; i < tmp2.length; i++) {
-						String tmpp=tmp2[i].trim();
-						if (tmpp.equals("")||tmpp.equals("-")) 
-						{
-							continue;
-						}
-						if (tmpp.contains(".")) 
-						{
-							tmpp=tmpp.substring(0, tmpp.indexOf("."));
-						}
-	 
-							String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+"EMBL"+"\n";
-							uniProtModify.writefile(newtmp, false);
-					 
- 					}
-				}
-
+					if (tmpp.contains(".")) 
+					{
+						tmpp=tmpp.substring(0, tmpp.indexOf("."));
+					}
+					String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_EMBL+"\n";
+					txtuniProtModify.writefile(newtmp, false);
+					}
+			}	
 		
-				if (tmp.length<19) {
-					continue;
-				}
-	 
+			if (tmp.length<19) {
+				continue;
+			}
+			
 			if ((!tmp[18].trim().equals("-")&&!tmp[18].trim().equals("")) ) {
-				if (tmp[13].trim().equals("")) {
-					System.out.println("tax=  ");
-					continue;
-				}
-				
-				
 				String[] tmp2=tmp[18].split(";");
 				for (int i = 0; i < tmp2.length; i++) {
 					String tmpp=tmp2[i].trim();
@@ -526,10 +435,8 @@ public class UniProtConvertID {
 					{
 						tmpp=tmpp.substring(0, tmpp.indexOf("."));
 					}
- 
-						String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+"EMBLCDS"+"\n";
-						uniProtModify.writefile(newtmp, false);
-			 
+					String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+ NovelBioConst.DBINFO_EMBL_CDS+"\n";
+					txtuniProtModify.writefile(newtmp, false);
 				}
 			}
 			
@@ -538,12 +445,6 @@ public class UniProtConvertID {
 			}
  
 		if ((!tmp[19].trim().equals("-")&&!tmp[19].trim().equals("")) ) {
-			if (tmp[13].trim().equals("")) {
-				System.out.println("tax=  ");
-				continue;
-			}
-			
-			
 			String[] tmp2=tmp[19].split(";");
 			for (int i = 0; i < tmp2.length; i++) {
 				String tmpp=tmp2[i].trim();
@@ -555,25 +456,15 @@ public class UniProtConvertID {
 				{
 					tmpp=tmpp.substring(0, tmpp.indexOf("."));
 				}
- 
-					String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+"Ensembl_Gene"+"\n";
-					uniProtModify.writefile(newtmp, false);
-		 
+				String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_ENSEMBL+"\n";
+				txtuniProtModify.writefile(newtmp, false);
 			}
 		}
-			
 		
 		if (tmp.length<21) {
 			continue;
 		}
-		
 		if ((!tmp[20].trim().equals("-")&&!tmp[20].trim().equals("")) ) {
-			if (tmp[13].trim().equals("")) {
-				System.out.println("tax=  ");
-				continue;
-			}
-			
-			
 			String[] tmp2=tmp[20].split(";");
 			for (int i = 0; i < tmp2.length; i++) {
 				String tmpp=tmp2[i].trim();
@@ -585,10 +476,8 @@ public class UniProtConvertID {
 				{
 					tmpp=tmpp.substring(0, tmpp.indexOf("."));
 				}
- 
-					String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+"Ensembl_RNA"+"\n";
-					uniProtModify.writefile(newtmp, false);
-		 
+				String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_ENSEMBL_TRS+"\n";
+				txtuniProtModify.writefile(newtmp, false);
 			}
 		}
 			
@@ -598,12 +487,6 @@ public class UniProtConvertID {
 		}
 		
 		if ((!tmp[21].trim().equals("-")&&!tmp[21].trim().equals("")) ) {
-			if (tmp[13].trim().equals("")) {
-				System.out.println("tax=  ");
-				continue;
-			}
-			
-			
 			String[] tmp2=tmp[21].split(";");
 			for (int i = 0; i < tmp2.length; i++) {
 				String tmpp=tmp2[i].trim();
@@ -615,14 +498,15 @@ public class UniProtConvertID {
 				{
 					tmpp=tmpp.substring(0, tmpp.indexOf("."));
 				}
- 
-					String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+"Ensembl_PRO"+"\n";
-					uniProtModify.writefile(newtmp, false);
+				String newtmp = tmp[13]+"\t"+tmp[0].trim()+"\t"+tmpp+"\t"+NovelBioConst.DBINFO_ENSEMBL_PRO+"\n";
+				txtuniProtModify.writefile(newtmp, false);
 		 
 			}
 		}
 		}
-		uniProtModify.writefile("",true);
+		txtuniProtModify.writefile("",true);
+		txtuniProt.close();
+		txtuniProtModify.close();
 	}
 	
 	
@@ -663,6 +547,7 @@ public class UniProtConvertID {
 			}
 		}
 		outputReadandWrite.writefile("", true);
+		taxIDrReadandWrite.close();
 	}
 	
 	
@@ -720,14 +605,19 @@ public class UniProtConvertID {
 			}
 		}
 		outputReadandWrite.writefile("", true);
+		taxIDrReadandWrite.close();
 	}
 	
 	/**
-	 * 将gene_association.goa_uniprot文件去重复、提取TaxID、去掉文件最开始的IPI后，做以下工作
+	 * 将gene_association.goa_uniprot文件去重复、提取TaxID、去掉文件最开始的IPI后，做以下工作<br>
 	 * 将每一行的， 第2列：基因的UniProtID，第3列：Symbol，第10列Description，第11列Synonym, 连同第13列Taxon_ID<br>
-	 * 向NCBIID和UniProtID两个表比对，比上NCBI后，将本列所有数据整理为两个文件 1. taxID \t geneID \t accessID \t DataBase \n  和    2. taxID \t geneID \t symbol \t discription \t Synonym \n 
-	 * 较表 UniProtID, 将本列所有数据整理为两个文件 1. taxID \t UniProtID \t accessID \t DataBase \n 装入UniProtID和   2. taxID \t geneID \t symbol \t discription \t Synonym \n 装入UniGeneInfo
-	 * 如果有一个swiss对应多个geneID的情况，多个geneID都更新，UniProt也一样
+	 * 向NCBIID和UniProtID两个表比对，比上NCBI后，将本列所有数据整理为两个文件<br>
+	 *  1. taxID \t geneID \t accessID \t DataBase \n  和<br>
+	 *  2. taxID \t geneID \t symbol \t discription \t Synonym \n <br>
+	 * 较表 UniProtID, 将本列所有数据整理为两个文件 <br>
+	 * 1. taxID \t UniProtID \t accessID \t DataBase \n 装入UniProtID和  <br>
+	 *  2. taxID \t geneID \t symbol \t discription \t Synonym \n 装入UniGeneInfo<br>
+	 * 如果有一个swiss对应多个geneID的情况，多个geneID都更新，UniProt也一样<br>
 	 * @throws Exception 
 	 */
 	public static void getUniProtGoInfo(String inputFile,String outNCBIID,String outGeneInfo, String outUniProtID, String outUniGeneInfo,String remain) throws Exception 

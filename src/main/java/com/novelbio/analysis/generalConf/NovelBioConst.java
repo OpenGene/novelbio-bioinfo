@@ -1,18 +1,73 @@
 package com.novelbio.analysis.generalConf;
 
 public class NovelBioConst {
+	public  final static String DBINFO_NCBI = "NCBI";
 	public  final static String DBINFO_NCBIID = "NCBIID";
 	public final static String DBINFO_UNIPROTID = "UniProtID";
 	public  final static String DBINFO_NCBI_ACC_GenralID = "NCBI";
 	public final static String DBINFO_NCBI_ACC_REFSEQ = "RefSeq";
+	/**
+	 * RefSeq的蛋白ID
+	 */
+	public final static String DBINFO_NCBI_ACC_REFSEQ_PROTEIN = "RefSeq_protein";
+	/**
+	 * RefSeq的RNAID
+	 */
+	public final static String DBINFO_NCBI_ACC_REFSEQ_RNA = "RefSeq_RNA";
+	/**
+	 * RefSeq的DNAID
+	 */
+	public final static String DBINFO_NCBI_ACC_REFSEQ_DNA = "RefSeq_DNA";
+	/**
+	 * 在UCSC的GFF文件中出现的RefSeqID
+	 */
+	public final static String DBINFO_NCBI_ACC_REFSEQ_UCSC_GFF = "RefSeq_UCSC_GFF";
+	/**
+	 * NCBIID中最普通的DBINFO ID
+	 */
 	public final static String DBINFO_NCBI_ACC_PROGI = "proteinGI";
-	public final static String DBINFO_UNIPROT_GenralID = "UniProt";
+	/**
+	 * NCBIID中最普通的DBINFO ID
+	 */
+	public final static String DBINFO_NCBI_ACC_PROAC = "proteinAC";
+	/**
+	 * NCBIID中最普通的DBINFO ID
+	 */
+	public final static String DBINFO_NCBI_ACC_RNAAC = "rnaAC";
+	/**
+	 * NCBIID中最普通的DBINFO ID
+	 */
+	public final static String DBINFO_NCBI_ACC_GENEAC = "geneAC";
+	/**
+	 * UniProtDB中的uniIDkey表
+	 */
+	public final static String DBINFO_UNIPROT_UNIID = "UniProt";
+	public final static String DBINFO_UNIPROT_UNIPROTKB_ID = "UniProtKB_ID";
+	public final static String DBINFO_UNIPROT_UNIPARC = "UniParc";
+	public final static String DBINFO_UNIPROT_UNIGENE = "UniGene";
+	public final static String DBINFO_UNIPROT_GenralID = "UniProtID";
+	public final static String DBINFO_PIR = "PIR";
+	public  final static String DBINFO_EMBL = "EMBL";
+	public  final static String DBINFO_EMBL_CDS = "EMBL_CDS";
 	public final static String DBINFO_RICE_TIGR = "TIGRrice";
 	public final static String DBINFO_RICE_RAPDB = "RapDB";
 	public final static String DBINFO_RICE_IRGSP = "IRGSP";
 	public final static String DBINFO_AFFY_RICE_31 = "affyRice31";
-	public final static String DBINFO_SYMBOL = "symbol";
-	public final static String DBINFO_NIAS_FLCDNA = "NIAS_FLcDNA";	
+	public final static String DBINFO_AFFY_HUMAN_U133_PLUS2 = "affy_hsa_U133Plus2";
+	public final static String DBINFO_AFFY_MOUSE_430_2 = "affy_mm_430_2";
+	public final static String DBINFO_AFFY_PIG = "affy_ssc";
+	public final static String DBINFO_AFFY_COW = "affy_bta";
+	public final static String DBINFO_AFFY_ATH = "affy_ATH1-121501";
+	public final static String DBINFO_SYMBOL = "Symbol";
+	public final static String DBINFO_SYNONYMS = "Synonyms";
+	
+	public final static String DBINFO_NIAS_FLCDNA = "NIAS_FLcDNA";
+	public final static String DBINFO_ENSEMBL ="Ensembl";
+	public final static String DBINFO_ENSEMBL_TRS ="Ensembl_TRS";
+	public final static String DBINFO_ENSEMBL_PRO ="Ensembl_PRO";
+	public final static String DBINFO_ENSEMBL_GENE ="Ensembl_Gene";
+	public final static String DBINFO_ENSEMBL_RNA ="Ensembl_RNA";
+	public final static String DBINFO_IPI = "IPI";	
 	public final static String FASTQ_SANGER = "sanger";
 	public final static String FASTQ_ILLUMINA = "Illumina";
 	/////////////////////////////////////基因组信息///////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-package com.novelbio.analysis.upDateDB.execute;
+package com.novelbio.database.upDateDB.execute;
 
 import java.awt.Container;
 import java.io.BufferedReader;
@@ -12,12 +12,12 @@ import java.util.HashSet;
 
 import javax.net.ssl.SSLContext;
 
-import com.novelbio.analysis.upDateDB.dataBase.UpDateFriceDB;
-import com.novelbio.analysis.upDateDB.gOextract.AffyChipGO;
-import com.novelbio.analysis.upDateDB.gOextract.UniProtGo;
-import com.novelbio.analysis.upDateDB.idConvert.RiceID;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.upDateDB.dataBase.UpDateFriceDB;
+import com.novelbio.database.upDateDB.gOextract.AffyChipGO;
+import com.novelbio.database.upDateDB.gOextract.UniProtGo;
+import com.novelbio.database.upDateDB.idConvert.RiceID;
 public class runIDconvert {
 
 	/**

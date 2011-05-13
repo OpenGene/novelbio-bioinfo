@@ -1,4 +1,4 @@
-package com.novelbio.analysis.upDateDB.idConvert;
+package com.novelbio.database.upDateDB.idConvert;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;

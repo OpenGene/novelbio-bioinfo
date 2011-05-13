@@ -1,7 +1,7 @@
 package com.novelbio.analysis.coexp.simpCoExp;
 
-import com.novelbio.analysis.upDateDB.dataBase.UpDateFriceDB;
 import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.database.upDateDB.dataBase.UpDateFriceDB;
 
 
 public class RunCoExp {

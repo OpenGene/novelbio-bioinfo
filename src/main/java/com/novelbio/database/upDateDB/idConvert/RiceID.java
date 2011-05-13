@@ -1,4 +1,4 @@
-package com.novelbio.analysis.upDateDB.idConvert;
+package com.novelbio.database.upDateDB.idConvert;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +14,6 @@ import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.analysis.upDateDB.dataBase.UpDateFriceDB;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFSGeneInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
@@ -24,6 +23,7 @@ import com.novelbio.database.entity.friceDB.GeneInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.upDateDB.dataBase.UpDateFriceDB;
 
 
 public class RiceID {
@@ -66,7 +66,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] = KGprepare.removeDot(tmpAcc[i]);
+							tmpRapID[0] = CopeID.removeDot(tmpAcc[i]);
 							tmpRapID[1] = NovelBioConst.DBINFO_RICE_RAPDB;
 							lsAccIDInfo.add(tmpRapID);
 						}
@@ -76,7 +76,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] = KGprepare.removeDot( tmpAcc[j]);
+							tmpRapID[0] = CopeID.removeDot( tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_RICE_RAPDB;
 							lsAccIDInfo.add(tmpRapID);
 						}
@@ -86,7 +86,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  KGprepare.removeDot( tmpAcc[j]);
+							tmpRapID[0] =  CopeID.removeDot( tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_NCBIID;
 							lsAccIDInfo.add(tmpRapID);
 						}
@@ -96,7 +96,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  KGprepare.removeDot(tmpAcc[j]);
+							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_SYMBOL;
 							lsAccIDInfo.add(tmpRapID);
 						}
@@ -107,7 +107,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  KGprepare.removeDot(tmpAcc[j]);
+							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_RICE_IRGSP;
 							lsAccIDInfo.add(0,tmpRapID);
 						}
@@ -117,7 +117,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  KGprepare.removeDot(tmpAcc[j]);
+							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_NIAS_FLCDNA;
 							lsAccIDInfo.add(tmpRapID);
 						}
@@ -138,7 +138,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  KGprepare.removeDot(tmpAcc[j]);
+							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_NCBIID;
 							lsAccIDInfo.add(tmpRapID);
 						}
@@ -216,17 +216,17 @@ public class RiceID {
 			/////////×°Èëlist///////////
 			ArrayList<String[]> lstmpLOC = new ArrayList<String[]>();
 			String[] tmpLOC2Info1 = new String[2];
-			tmpLOC2Info1[0] = KGprepare.removeDot(tmpID[0]);tmpLOC2Info1[1] = NovelBioConst.DBINFO_RICE_IRGSP;
+			tmpLOC2Info1[0] = CopeID.removeDot(tmpID[0]);tmpLOC2Info1[1] = NovelBioConst.DBINFO_RICE_IRGSP;
 			lstmpLOC.add(tmpLOC2Info1);
 			
 			for (String string : tmpLOC) {
 				String[] tmpLOC2Info2 = new String[2];
-				tmpLOC2Info2[0] = KGprepare.removeDot(string);tmpLOC2Info2[1] = NovelBioConst.DBINFO_RICE_TIGR;
+				tmpLOC2Info2[0] = CopeID.removeDot(string);tmpLOC2Info2[1] = NovelBioConst.DBINFO_RICE_TIGR;
 				lstmpLOC.add(tmpLOC2Info2);
 			}
 			////////////////////////////
 			
-			NCBIID ncbiid = new NCBIID();ncbiid.setAccID(KGprepare.removeDot(tmpID[0])); ncbiid.setTaxID(39947);
+			NCBIID ncbiid = new NCBIID();ncbiid.setAccID(CopeID.removeDot(tmpID[0])); ncbiid.setTaxID(39947);
 			UniProtID uniProtID = new UniProtID(); uniProtID.setAccID(ncbiid.getAccID()); uniProtID.setTaxID(39947);
 			long geneID = 0;  String uniID = null;
 			
@@ -372,7 +372,7 @@ public class RiceID {
 			long geneID = 0; String uniID = null;
 			for (int i = 1; i < tmpID.length; i++) {
 				NCBIID ncbiid = new NCBIID();
-				ncbiid.setAccID(KGprepare.removeDot(tmpID[i])); ncbiid.setTaxID(39947);
+				ncbiid.setAccID(CopeID.removeDot(tmpID[i])); ncbiid.setTaxID(39947);
 				ArrayList<NCBIID> lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);
 				if (lsNcbiid != null && lsNcbiid.size()>0)
 				{
@@ -384,7 +384,7 @@ public class RiceID {
 			{
 				for (int i = 1; i < tmpID.length; i++) {
 					UniProtID uniProtID = new UniProtID();
-					uniProtID.setAccID(KGprepare.removeDot(tmpID[i])); uniProtID.setTaxID(39947);
+					uniProtID.setAccID(CopeID.removeDot(tmpID[i])); uniProtID.setTaxID(39947);
 					ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
 					if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 					{
@@ -398,7 +398,7 @@ public class RiceID {
 			for (int i = 0; i < tmpID.length; i++) 
 			{
 				String[] tmpLOC2Info2 = new String[2];
-				tmpLOC2Info2[0] = KGprepare.removeDot(tmpID[i]);
+				tmpLOC2Info2[0] = CopeID.removeDot(tmpID[i]);
 				if (i == 0) {
 					tmpLOC2Info2[1] = NovelBioConst.DBINFO_AFFY_RICE_31;
 				}
@@ -451,7 +451,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] = KGprepare.removeDot(tmpAcc[i]);
+							tmpRapID[0] = CopeID.removeDot(tmpAcc[i]);
 							tmpRapID[1] = NovelBioConst.DBINFO_RICE_RAPDB;
 							lsAccIDInfo.add(tmpRapID);
 						}
@@ -461,7 +461,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] = KGprepare.removeDot( tmpAcc[j]);
+							tmpRapID[0] = CopeID.removeDot( tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_RICE_RAPDB;
 							lsAccIDInfo.add(tmpRapID);
 						}
@@ -471,7 +471,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  KGprepare.removeDot( tmpAcc[j]);
+							tmpRapID[0] =  CopeID.removeDot( tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_NCBIID;
 							lsAccIDInfo.add(tmpRapID);
 						}
@@ -481,7 +481,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  KGprepare.removeDot(tmpAcc[j]);
+							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_SYMBOL;
 							lsAccIDInfo.add(tmpRapID);
 							
@@ -498,7 +498,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  KGprepare.removeDot(tmpAcc[j]);
+							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_RICE_IRGSP;
 							lsAccIDInfo.add(0,tmpRapID);
 						}
@@ -508,7 +508,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  KGprepare.removeDot(tmpAcc[j]);
+							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_NIAS_FLCDNA;
 							lsAccIDInfo.add(tmpRapID);
 						}
@@ -529,7 +529,7 @@ public class RiceID {
 						String[] tmpAcc = tmp.split(",");
 						for (int j = 0; j < tmpAcc.length; j++) {
 							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  KGprepare.removeDot(tmpAcc[j]);
+							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_NCBIID;
 							lsAccIDInfo.add(tmpRapID);
 						}

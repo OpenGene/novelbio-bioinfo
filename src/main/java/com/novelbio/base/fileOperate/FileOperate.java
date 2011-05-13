@@ -75,13 +75,6 @@ public class FileOperate {
 	    /**
 	     * 获取文件夹下所有文件名与后缀,不包含路径
 	     * 	     * 如果文件不存在则返回null<br>
-	     * 如果不是文件夹，则返回该文件名<br>
-	     * @param filePath 目录路径,最后不要加\\或/
-	     * @param filename 指定包含的文件名，是正则表达式 ，如 "*",正则表达式无视大小写
-	     * @param suffix 指定包含的后缀名，是正则表达式<br>
-	     *  文件 wfese.fse.fe认作 "wfese.fse"和"fe"<br>
-	     *  文件 wfese.fse.认作	"wfese.fse."和""<br>
-	     *  文件 wfese 认作 "wfese"和""<br>
 	     * @param filePath 目录路径,最后不要加\\或/
 	     * @return arraylist 里面是string[2] 1:文件名     2：后缀
 	     */

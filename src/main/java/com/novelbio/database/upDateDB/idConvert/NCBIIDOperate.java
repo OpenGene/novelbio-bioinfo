@@ -1,9 +1,12 @@
-package com.novelbio.analysis.upDateDB.idConvert;
+package com.novelbio.database.upDateDB.idConvert;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashSet;
 
+import com.novelbio.analysis.annotation.copeID.CopeID;
+import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
+import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 
@@ -33,34 +36,21 @@ public class NCBIIDOperate
 		while((content=reader.readLine())!=null)
 		{
 			String[] tmp=content.split("\t");
-			if (tmp[3].contains(".")) 
-			{
-				tmp[3]=tmp[3].substring(0, tmp[3].indexOf("."));
-			}
-			if (tmp[5].contains(".")) 
-			{
-				tmp[5]=tmp[5].substring(0, tmp[5].indexOf("."));
-			}
-			if (tmp[6].contains(".")) 
-			{
-				tmp[6]=tmp[6].substring(0, tmp[6].indexOf("."));
-			}
-			if (tmp[7].contains(".")) 
-			{
-				tmp[7]=tmp[7].substring(0, tmp[7].indexOf("."));
-			}
-			
+			tmp[3] = CopeID.removeDot(tmp[3]);
+			tmp[5] = CopeID.removeDot(tmp[3]);
+			tmp[6] = CopeID.removeDot(tmp[3]);
+			tmp[7] = CopeID.removeDot(tmp[3]);
 			
 			if (!tmp[3].equals("-")) {
-				String newtmp = tmp[0]+"\t"+tmp[1]+"\t"+tmp[3]+"\t"+"rnAC"+"\n";
+				String newtmp = tmp[0]+"\t"+tmp[1]+"\t"+tmp[3]+"\t"+NovelBioConst.DBINFO_NCBI_ACC_RNAAC+"\n";
 				gene2accIDModify.writefile(newtmp, false);
 			}
 			if (!tmp[5].equals("-")) {
-				String newtmp = tmp[0]+"\t"+ tmp[1]+"\t"+tmp[5]+"\t"+"prAC"+"\n";
+				String newtmp = tmp[0]+"\t"+ tmp[1]+"\t"+tmp[5]+"\t"+NovelBioConst.DBINFO_NCBI_ACC_PROAC+"\n";
 				gene2accIDModify.writefile(newtmp, false);
 			}
 			if (!tmp[6].equals("-")) {
-				String newtmp2 = tmp[0]+"\t"+  tmp[1]+"\t"+tmp[6]+"\t"+"prGI"+"\n";
+				String newtmp2 = tmp[0]+"\t"+  tmp[1]+"\t"+tmp[6]+"\t"+NovelBioConst.DBINFO_NCBI_ACC_PROGI+"\n";
 				gene2accIDModify.writefile(newtmp2, false);
 			}
 			if (!tmp[7].equals("-")) {
@@ -108,6 +98,7 @@ public class NCBIIDOperate
 	
 	
 	/**
+	  * @deprecated
 	 * 处理NCBI的gene2accessionID表,最后获得geneID2Tax
 	 * 这个现在不用了，因为考虑把geneID2Tax直接放在NCBIID中
 	 * @throws Exception 
@@ -175,15 +166,15 @@ public class NCBIIDOperate
 			*/
 			
 			if (!tmp[2].trim().equals("-")) {
-				String newtmp = tmp[0]+"\t"+ tmp[1]+"\t"+tmp[2].trim()+"\t"+"Ensembl_Gene"+"\n";
+				String newtmp = tmp[0]+"\t"+ tmp[1]+"\t"+tmp[2].trim()+"\t"+NovelBioConst.DBINFO_ENSEMBL_GENE + "\n";
 				gene2ensebIDModify.writefile(newtmp, false);
 			}
 			if (!tmp[4].trim().equals("-")) {
-				String newtmp = tmp[0]+"\t"+ tmp[1]+"\t"+tmp[4].trim()+"\t"+"Ensembl_RNA"+"\n";
+				String newtmp = tmp[0]+"\t"+ tmp[1]+"\t"+tmp[4].trim()+"\t"+NovelBioConst.DBINFO_ENSEMBL_RNA + "\n";
 				gene2ensebIDModify.writefile(newtmp, false);
 			}
 			if (!tmp[6].trim().equals("-")) {
-				String newtmp = tmp[0]+"\t"+ tmp[1]+"\t"+tmp[6].trim()+"\t"+"Ensembl_PRO"+"\n";
+				String newtmp = tmp[0]+"\t"+ tmp[1]+"\t"+tmp[6].trim()+"\t"+NovelBioConst.DBINFO_ENSEMBL_PRO + "\n";
 				gene2ensebIDModify.writefile(newtmp, false);
 			}
 		}
@@ -219,14 +210,16 @@ public class NCBIIDOperate
 	 * 目的是获得geneID与refSeq状态的对应表
 	 * @throws Exception 
 	 */
-	public static void gene2ref(String pathGene2ref,String modifiedFile) throws Exception
+	public static void gene2ref(String pathGene2ref,String modifiedFile,String refseqIDfile) throws Exception
 	{
-		TxtReadandWrite gene2refID=new TxtReadandWrite();
+		TxtReadandWrite gene2refID = new TxtReadandWrite();
 		gene2refID.setParameter(pathGene2ref, false,true);
 		
-		TxtReadandWrite gene2refIDModify=new TxtReadandWrite();
+		TxtReadandWrite gene2refIDModify = new TxtReadandWrite();
 		gene2refIDModify.setParameter(modifiedFile, true,false);
 		
+		TxtReadandWrite txtgene2refID =new TxtReadandWrite();
+		txtgene2refID.setParameter(refseqIDfile, true,false);
 		
 		
 		BufferedReader reader=gene2refID.readfile();
@@ -236,9 +229,20 @@ public class NCBIIDOperate
 		{
 			String[] tmp=content.split("\t");
  
-			String newtmp = tmp[1]+"\t"+tmp[2]+"\n";
+			String newtmp = tmp[0]+"\t"+ tmp[1]+"\t"+tmp[2]+"\n";
 			gene2refIDModify.writefile(newtmp, false);
- 
+			if (!tmp[3].equals("-")) {
+				String refseq = tmp[0]+"\t"+tmp[1]+"\t"+tmp[3]+"\t"+NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_RNA+"\n";
+				txtgene2refID.writefile(refseq);
+			}
+			if (!tmp[5].equals("-")) {
+				String refseq = tmp[0]+"\t"+tmp[1]+"\t"+tmp[5]+"\t"+NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_PROTEIN +"\n";
+				txtgene2refID.writefile(refseq);
+			}
+			if (!tmp[7].equals("-")) {
+				String refseq = tmp[0]+"\t"+tmp[1]+"\t"+tmp[7]+"\t"+NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_DNA+"\n";
+				txtgene2refID.writefile(refseq);
+			}
 		}
 		gene2refIDModify.writefile("",true);
 	}

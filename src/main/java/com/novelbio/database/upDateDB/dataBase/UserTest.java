@@ -1,4 +1,4 @@
-package com.novelbio.analysis.upDateDB.dataBase;
+package com.novelbio.database.upDateDB.dataBase;
 
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
 import com.novelbio.database.entity.friceDB.Gene2GoInfo;

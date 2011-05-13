@@ -1,7 +1,11 @@
 package com.novelbio.analysis.annotation.GO.execute;
 
+import java.util.ArrayList;
+
 import com.novelbio.analysis.annotation.GO.queryDB.QBlastGO;
 import com.novelbio.analysis.annotation.GO.queryDB.QGenID2GoInfoSepID;
+import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 
 public class runGo {
 
@@ -20,7 +24,7 @@ public class runGo {
 			//blastgoanalysis();
 //			goanalysisElim();
 //			goanalysisElimNew();
-			goanalysisNBCNew();
+			goanalysisElimNew();
 			System.out.println("ok");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -110,32 +114,75 @@ public class runGo {
 	 */
 	public static void goanalysisElimNew() {
 
-		String file="/media/winE/NBC/Project/Microarray_WFL110423/王凤良 基因芯片/王凤良 基因芯片/chip result/GO/";
-		String backGroundFile=file + "hg18refseqBGwithDuplication.txt";
-		String[] prix = new String[2];
-		prix[0] = "532";
-//		prix[0] = "up";
-		prix[1] = "635";
+try {
+	String file="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/GO/zhanghuiGO/张辉GOmap 途径分析";
+	String backGroundFile=file + "/riceAffyBG.txt";
+	ArrayList<String[]> lsExcelFileName = FileOperate.getFoldFileName( file,"*", "xls");
+	String[] prix = new String[2];
+	prix[0] = "ZH";
+//prix[0] = "up";
+prix[1] = "000";
+	for (String[] strings : lsExcelFileName) {
 		try {
-			String fileName = "WFL";			
-			String geneFile=file+fileName+".xls";
-			String GOClass = "P";
-			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
-			double up = 1;
-			double down = -1;
-			boolean sepID = false;
-			int QtaxID = 9606;
-			boolean blast = false;
-			int StaxID = 9606;
-			double evalue = 1e-10;
-			String resultExcel2003 = file +fileName+"elimGOCombID.xls";
-			String resultGoMap = file + fileName+"GOmap";
-			GoFisherNew.getGoRunElim(geneFile, sepID, GOClass, colID, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003,resultGoMap, prix,300);
-			System.out.println("ok");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String excelName = file + "/" +strings[0]+"."+strings[1];
+		String GOClass = "P";
+		int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
+		double up = 1;
+		double down = -1;
+		boolean sepID = false;
+		int QtaxID = 0;
+		boolean blast = false;
+		int StaxID = 9606;
+		double evalue = 1e-10;
+		String resultExcel2003 = file +"/"+strings[0]+"elimGOCombID.xls";
+		String resultGoMap = file +"/"+ strings[0]+"GOmap";
+		GoFisherNew.getGoRunElim(excelName, sepID, GOClass, colID, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003,resultGoMap, prix,300);
+		System.out.println("ok");
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+	
+	}
+	
+} catch (Exception e) {
+	// TODO: handle exception
+}
+
+		
+		
+		
+		
+		
+		
+//		String file="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/GO/zhanghuiGO/张辉GOmap 途径分析";
+//		String backGroundFile=file + "hg18refseqBGwithDuplication.txt";
+//		String[] prix = new String[2];
+//		prix[0] = "532";
+////		prix[0] = "up";
+//		prix[1] = "635";
+//		
+//		try {
+//			String fileName = "WFL";			
+//			String geneFile=file+fileName+".xls";
+//			String GOClass = "P";
+//			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
+//			double up = 1;
+//			double down = -1;
+//			boolean sepID = false;
+//			int QtaxID = 9606;
+//			boolean blast = false;
+//			int StaxID = 9606;
+//			double evalue = 1e-10;
+//			String resultExcel2003 = file +fileName+"elimGOCombID.xls";
+//			String resultGoMap = file + fileName+"GOmap";
+//			GoFisherNew.getGoRunElim(geneFile, sepID, GOClass, colID, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003,resultGoMap, prix,300);
+//			System.out.println("ok");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 	}
 	

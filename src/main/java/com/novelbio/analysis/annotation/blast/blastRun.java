@@ -1,7 +1,7 @@
 package com.novelbio.analysis.annotation.blast;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.analysis.upDateDB.dataBase.UpDateFriceDB;
+import com.novelbio.database.upDateDB.dataBase.UpDateFriceDB;
 
 
 public class blastRun {
