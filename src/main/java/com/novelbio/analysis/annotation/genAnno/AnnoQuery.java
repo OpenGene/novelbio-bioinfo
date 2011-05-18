@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
+import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
@@ -71,7 +72,7 @@ public class AnnoQuery {
 				geneAno[i][j] = lsgenAno.get(i-1)[j];
 			}
 		}
-		String[][] dataResult = ArrayOperate.combStrArray(geneInfo, geneAno, colNum+1);
+		String[][] dataResult = ArrayOperate.combArray(geneInfo, geneAno, colNum+1);
 		excelAnno.WriteExcel(1, 1, dataResult);
 	}	
 	/**
@@ -124,7 +125,7 @@ public class AnnoQuery {
 				geneAno[i][j] = lsgenAno.get(i-1)[j];
 			}
 		}
-		String[][] dataResult = ArrayOperate.combStrArray(geneInfo, geneAno, colNum+1);
+		String[][] dataResult = ArrayOperate.combArray(geneInfo, geneAno, colNum+1);
 		excelAnno.WriteExcel(1, 1, dataResult);
 	}
 	
@@ -135,7 +136,7 @@ public class AnnoQuery {
 	 * 给定queryID，返回具体信息,先查找NCBIID表，没找到就查Uniprot表
 	 * @param accID queryID
 	 * @param taxID 物种ID，如果不是Symbol，可以为0
-	 * @param blast 是否blast
+	 * @param blast 是否blast blast仅针对ncbi数据库
 	 * @param StaxID blast的目标物种ID
 	 * @param evalue blast的evalue值
 	 * @return
@@ -181,102 +182,40 @@ public class AnnoQuery {
 		boolean uniprotFlag  = false;
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setAccID(accID); ncbiid.setTaxID(taxID);
-		ArrayList<Gene2GoInfo> lsGene2GoInfo = DaoFCGene2GoInfo.queryLsGeneDetail(ncbiid);
-		ArrayList<Uni2GoInfo> lsUni2GoInfos = null;
-		//先查ncbiid
-		if (lsGene2GoInfo != null && lsGene2GoInfo.size() > 0)
-		{
+		ArrayList<String> lsAccID = getNCBIUni(accID, taxID);
+		if (lsAccID.get(0).equals("geneID")) {
+			long geneID = Integer.parseInt(lsAccID.get(1));
+			geneAno = getGenInfo(geneID);
 			ncbiFlag = true;
-			if (lsGene2GoInfo.get(0).getGeneInfo() != null ) 
-			{
-				geneAno[0] = lsGene2GoInfo.get(0).getGeneInfo().getSymbol().split("//")[0];
-				geneAno[1] = lsGene2GoInfo.get(0).getGeneInfo().getDescription();
-			}
-			else {
-				geneAno[0] = getGenName(lsGene2GoInfo.get(0).getGeneId());
-			}
 		}
-		//查不到查uniprotID
-		else 
-		{
-			UniProtID uniProtID = new UniProtID();
-			uniProtID.setAccID(accID); uniProtID.setTaxID(taxID);
-			lsUni2GoInfos = DaoFCGene2GoInfo.queryLsUniDetail(uniProtID);
-			if (lsUni2GoInfos != null && lsUni2GoInfos.size() > 0) 
-			{
-				if ( lsUni2GoInfos.get(0).getUniGeneInfo() != null) {
-					uniprotFlag = true;
-					geneAno[0] = lsUni2GoInfos.get(0).getUniGeneInfo().getSymbol().split("//")[0];
-					geneAno[1] = lsUni2GoInfos.get(0).getUniGeneInfo().getDescription();
-				}
-				else {
-					geneAno[0] = getUniGenName(lsUni2GoInfos.get(0).getUniID());
-				}
-			}
+		else if (lsAccID.get(0).equals("uniID")) {
+			geneAno = getUniGenInfo(lsAccID.get(1));
+			uniprotFlag = true;
 		}
+		
 		//blast的时候不用设置taxID
 		if (blast) {
 			//如果ncbiid存在
-			if (ncbiFlag) {
-				BlastInfo blastInfo = new BlastInfo();
-				blastInfo.setQueryID(lsGene2GoInfo.get(0).getGeneId()+"");
-				blastInfo.setQueryTax(taxID);
-				blastInfo.setSubjectTax(StaxID);
-				ArrayList<BlastInfo> lsSblastInfos = DaoFSBlastInfo.queryLsBlastInfo(blastInfo);
-				//如果有blast的结果
-				if (lsSblastInfos != null && lsSblastInfos.size()>0 && lsSblastInfos.get(0).getEvalue()<=evalue) 
-				{
-					long subID = Long.parseLong(lsSblastInfos.get(0).getSubjectID());
-					GeneInfo geneInfoS = new GeneInfo(); geneInfoS.setGeneID(subID);
-					GeneInfo geneInfoSub = DaoFSGeneInfo.queryGeneInfo(geneInfoS);
-					if (geneInfoSub != null) {
-						geneAno[2] = StaxID+""; geneAno[3] =  lsSblastInfos.get(0).getEvalue() + "";
-						geneAno[4] = geneInfoSub.getSymbol().split("//")[0];
-						geneAno[5] = geneInfoSub.getDescription();
-					}
-				}
+			BlastInfo blastInfo = new BlastInfo();
+			if (ncbiFlag || uniprotFlag) {
+				blastInfo.setQueryID(lsAccID.get(1));
 			}
-			//如果uniprotID存在
-			else	if (uniprotFlag) 
-			{
-				BlastInfo blastInfo = new BlastInfo();
-				blastInfo.setQueryID(lsUni2GoInfos.get(0).getUniID());
-				blastInfo.setQueryTax(taxID);
-				blastInfo.setSubjectTax(StaxID);
-				ArrayList<BlastInfo> lsSblastInfos = DaoFSBlastInfo.queryLsBlastInfo(blastInfo);
-				//如果有blast的结果
-				if (lsSblastInfos != null && lsSblastInfos.size()>0 && lsSblastInfos.get(0).getEvalue()<=evalue) 
-				{
-					long subID = Long.parseLong(lsSblastInfos.get(0).getSubjectID());
-					GeneInfo geneInfoS = new GeneInfo(); geneInfoS.setGeneID(subID);
-					GeneInfo geneInfoSub = DaoFSGeneInfo.queryGeneInfo(geneInfoS);
-					if (geneInfoSub != null) {
-						geneAno[2] = StaxID+""; geneAno[3] =  lsSblastInfos.get(0).getEvalue() + "";
-						geneAno[4] = geneInfoSub.getSymbol().split("//")[0];
-						geneAno[5] = geneInfoSub.getDescription();
-					}
-				}
-			}
-			//如果都没有,直接拿accID去blast库搜索
-			else 
-			{
-				BlastInfo blastInfo = new BlastInfo();
+			else {
 				blastInfo.setQueryID(accID);
+				blastInfo.setQueryTax(taxID);
+				blastInfo.setSubjectTax(StaxID);
+			}
 				ArrayList<BlastInfo> lsSblastInfos = DaoFSBlastInfo.queryLsBlastInfo(blastInfo);
 				//如果有blast的结果
 				if (lsSblastInfos != null && lsSblastInfos.size()>0 && lsSblastInfos.get(0).getEvalue()<=evalue) 
 				{
 					long subID = Long.parseLong(lsSblastInfos.get(0).getSubjectID());
-					GeneInfo geneInfoS = new GeneInfo(); geneInfoS.setGeneID(subID);
-					GeneInfo geneInfoSub = DaoFSGeneInfo.queryGeneInfo(geneInfoS);
-					if (geneInfoSub != null) {
-						geneAno[2] = StaxID+""; geneAno[3] =  lsSblastInfos.get(0).getEvalue() + "";
-						geneAno[4] = geneInfoSub.getSymbol().split("//")[0];
-						geneAno[5] = geneInfoSub.getDescription();
-					}
+					String[] subGenInfo = getGenInfo(subID);
+					geneAno[2] = StaxID+""; geneAno[3] =  lsSblastInfos.get(0).getEvalue() + "";
+					geneAno[4] = subGenInfo[0];
+					geneAno[5] = subGenInfo[1];
 				}
 			}
-		}
 		return geneAno;
 	}
 	
@@ -321,6 +260,7 @@ public class AnnoQuery {
 	/**
 	 * 给定一个accessID，如果该access是NCBIID，则返回NCBIID的geneID
 	 * 如果是uniprotID，则返回Uniprot的UniID
+	 * 如果输入得到了两个以上的accID，那么跳过数据库为DBINFO_SYNONYMS的项目
 	 * @param accID 输入的accID
 	 * @param taxID 物种ID，如果不知道就设置为0，只要不是symbol都可以为0
 	 * @return arraylist-string:0:为"geneID"或"uniID"或"accID"，1-之后：具体的geneID 或 UniID或accID<br>
@@ -339,7 +279,13 @@ public class AnnoQuery {
 		{
 			lsResult.add(ncbiFlag);
 			for (NCBIID ncbiid2 : lsNcbiids) {
+				if (ncbiid2.getDBInfo().equals(NovelBioConst.DBINFO_SYNONYMS)) {
+					continue;
+				}
 				lsResult.add(ncbiid2.getGeneId()+"");
+			}
+			if (lsResult.size() <= 1) {
+				lsResult.add(lsNcbiids.get(0).getGeneId()+"");
 			}
 			return lsResult;
 		}
@@ -353,7 +299,13 @@ public class AnnoQuery {
 			{
 				lsResult.add(uniprotFlag);
 				for (UniProtID uniProtID2 : lsUniProtIDs) {
+					if (uniProtID2.getDBInfo().equals(NovelBioConst.DBINFO_SYNONYMS)) {
+						continue;
+					}
 					lsResult.add(uniProtID2.getUniID());
+				}
+				if (lsResult.size() <= 1) {
+					lsResult.add(lsUniProtIDs.get(0).getUniID()+"");
 				}
 				return lsResult;
 			}

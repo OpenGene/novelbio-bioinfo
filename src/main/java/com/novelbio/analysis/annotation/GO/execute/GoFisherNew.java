@@ -80,11 +80,11 @@ public class GoFisherNew {
 			if (hashID2GeneID.containsKey(geneID[i][colID[1]].trim())) 
 			{
 				ArrayList<String> lsGeneID = hashID2GeneID.get(geneID[i][colID[1]].trim());
-				lsGeneID.add(KGprepare.removeDot(geneID[i][colID[0]].trim()));
+				lsGeneID.add(CopeID.removeDot(geneID[i][colID[0]].trim()));
 			}
 			else {
 				ArrayList<String> lsGeneID = new ArrayList<String>();
-				lsGeneID.add(KGprepare.removeDot(geneID[i][colID[0]].trim()));
+				lsGeneID.add(CopeID.removeDot(geneID[i][colID[0]].trim()));
 				hashID2GeneID.put(geneID[i][colID[1]].trim(), lsGeneID);
 			}
 		}
@@ -643,7 +643,6 @@ public class GoFisherNew {
 		
 		ArrayList<String[]> lsGene2GoBG = lsGoInfoBG.get(1);
 		ArrayList<String[]> lsFisherResult = FisherTest.getFisherResult(lsGene2Go, lsGene2GoBG, new ItemInfo() {
-			@Override
 			public String[] getItemName(String ItemID) {
 				HashMap<String, String[]> hashGo2Term = GOQuery.getHashGo2Term();
 				String[] goTerm = new String[1];

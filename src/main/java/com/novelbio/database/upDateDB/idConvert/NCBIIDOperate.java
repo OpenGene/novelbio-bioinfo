@@ -37,9 +37,9 @@ public class NCBIIDOperate
 		{
 			String[] tmp=content.split("\t");
 			tmp[3] = CopeID.removeDot(tmp[3]);
-			tmp[5] = CopeID.removeDot(tmp[3]);
-			tmp[6] = CopeID.removeDot(tmp[3]);
-			tmp[7] = CopeID.removeDot(tmp[3]);
+			tmp[5] = CopeID.removeDot(tmp[5]);
+			tmp[6] = CopeID.removeDot(tmp[6]);
+			tmp[7] = CopeID.removeDot(tmp[7]);
 			
 			if (!tmp[3].equals("-")) {
 				String newtmp = tmp[0]+"\t"+tmp[1]+"\t"+tmp[3]+"\t"+NovelBioConst.DBINFO_NCBI_ACC_RNAAC+"\n";
@@ -206,9 +206,13 @@ public class NCBIIDOperate
 	}
 	
 	/**
+	 * 
 	 * 处理NCBI的gene2refID表,把第一列和第二列提取出来
 	 * 目的是获得geneID与refSeq状态的对应表
-	 * @throws Exception 
+	 * @param pathGene2ref 输入gene2refseq
+	 * @param modifiedFile geneID与refSeq状态的对应表
+	 * @param refseqIDfile taxID \t geneID \t accID \t DBINFO \n
+	 * @throws Exception
 	 */
 	public static void gene2ref(String pathGene2ref,String modifiedFile,String refseqIDfile) throws Exception
 	{
@@ -228,7 +232,9 @@ public class NCBIIDOperate
 		while((content=reader.readLine())!=null)
 		{
 			String[] tmp=content.split("\t");
- 
+			tmp[3] = CopeID.removeDot(tmp[3]);
+			tmp[5] = CopeID.removeDot(tmp[7]);
+			tmp[7] = CopeID.removeDot(tmp[7]);
 			String newtmp = tmp[0]+"\t"+ tmp[1]+"\t"+tmp[2]+"\n";
 			gene2refIDModify.writefile(newtmp, false);
 			if (!tmp[3].equals("-")) {
@@ -245,6 +251,9 @@ public class NCBIIDOperate
 			}
 		}
 		gene2refIDModify.writefile("",true);
+		txtgene2refID.close();
+		gene2refID.close();
+		gene2refIDModify.close();
 	}
 	
 	

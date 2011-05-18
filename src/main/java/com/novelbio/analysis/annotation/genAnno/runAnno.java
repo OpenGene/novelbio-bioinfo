@@ -7,16 +7,16 @@ public class runAnno {
 	}
 	//添加注释
 	public static void anno() {
-		String parentFile = "/media/winE/NBC/Project/Microarray_WFL110423/王凤良 基因芯片/王凤良 基因芯片/chip result/annotation/";
+		String parentFile = "/media/winE/NBC/Project/Project_CDG_Lab/Microarray_WYR110516/";
  
 		try {
-			AnnoQuery.anno(parentFile+"C_vs_N_635_ratio_peaks_Filter.xls",9606,7,false,9606,1e-10,"/");
+			AnnoQuery.anno(parentFile+"Cotex KO VS WT.xls",10090,1,false,9606,1e-10,"");
 //			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
 		} catch (Exception e) {
 			e.printStackTrace()	;
 		}
 		try {
-			AnnoQuery.anno(parentFile+"C_vs_N_532_ratio_peaks_Filter.xls",9606,7,false,9606,1e-10,"/");
+			AnnoQuery.anno(parentFile+"HYP KO VS WT.xls",10090,1,false,9606,1e-10,"");
 //			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
 		} catch (Exception e) {
 			e.printStackTrace()	;

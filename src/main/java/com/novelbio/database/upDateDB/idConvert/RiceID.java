@@ -6,7 +6,9 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,7 +60,8 @@ public class RiceID {
 				String tmpInfo = content.split("\t")[8];
 				String[] tmpID = tmpInfo.split(";");
 				//装载accID与相应数据库的list
-				ArrayList<String[]> lsAccIDInfo = new ArrayList<String[]>();
+				ArrayList<String[]> lsAccIDInfo = new ArrayList<String[]>(); //保存全部的要导入数据库的信息,自动去重复
+				ArrayList<String[]> lsAccIDInfo2 = new ArrayList<String[]>(); //保存查找的信息，就是说譬如DBINFO_NIAS_FLCDNA等不用来查找
 				for (int i = 0; i < tmpID.length; i++) 
 				{
 					if (tmpID[i].contains("ID=")){
@@ -69,6 +72,7 @@ public class RiceID {
 							tmpRapID[0] = CopeID.removeDot(tmpAcc[i]);
 							tmpRapID[1] = NovelBioConst.DBINFO_RICE_RAPDB;
 							lsAccIDInfo.add(tmpRapID);
+							lsAccIDInfo2.add(tmpRapID);
 						}
 					}
 					else if (tmpID[i].contains("Name=")) {
@@ -79,6 +83,7 @@ public class RiceID {
 							tmpRapID[0] = CopeID.removeDot( tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_RICE_RAPDB;
 							lsAccIDInfo.add(tmpRapID);
+							lsAccIDInfo2.add(tmpRapID);
 						}
 					}
 					else if (tmpID[i].contains("Alias=")) {
@@ -88,7 +93,7 @@ public class RiceID {
 							String[] tmpRapID =new String[2];
 							tmpRapID[0] =  CopeID.removeDot( tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_NCBIID;
-							lsAccIDInfo.add(tmpRapID);
+							lsAccIDInfo2.add(tmpRapID);
 						}
 					}
 					else if (tmpID[i].contains("Gene_symbols=")) {
@@ -109,7 +114,8 @@ public class RiceID {
 							String[] tmpRapID =new String[2];
 							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
 							tmpRapID[1] = NovelBioConst.DBINFO_RICE_IRGSP;
-							lsAccIDInfo.add(0,tmpRapID);
+							lsAccIDInfo.add(tmpRapID);
+							lsAccIDInfo2.add(0,tmpRapID);
 						}
 					}
 					else if (tmpID[i].contains("NIAS_FLcDNA=")) {
@@ -122,7 +128,6 @@ public class RiceID {
 							lsAccIDInfo.add(tmpRapID);
 						}
 					}
-				
 					else if (tmpID[i].contains("ORF_evidence=")) {
 						String tmp = tmpID[i].split("=")[1];
 						String[] tmpAcc = tmp.split(",");
@@ -130,17 +135,8 @@ public class RiceID {
 							String[] tmpRapID =new String[2];
 							tmpRapID[0] =  tmpAcc[j].replaceAll("\\(.*\\)", "").trim();
 							tmpRapID[1] = NovelBioConst.DBINFO_UNIPROT_GenralID;
-							lsAccIDInfo.add(tmpRapID);
-						}
-					}
-					else if (tmpID[i].contains("Expression=")) {
-						String tmp = tmpID[i].split("=")[1];
-						String[] tmpAcc = tmp.split(",");
-						for (int j = 0; j < tmpAcc.length; j++) {
-							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
-							tmpRapID[1] = NovelBioConst.DBINFO_NCBIID;
-							lsAccIDInfo.add(tmpRapID);
+//							lsAccIDInfo.add(tmpRapID); 
+							lsAccIDInfo2.add(tmpRapID);
 						}
 					}
 				}
@@ -148,7 +144,7 @@ public class RiceID {
 				long GeneID = 0;
 				String uniID = null;
 				////////////////获得geneID或UniProtID//////////
-				for (String[] strings : lsAccIDInfo) 
+				for (String[] strings : lsAccIDInfo2) 
 				{
 					//先设定uniprotID
 					if (insertUniID && strings[1].equals(NovelBioConst.DBINFO_RICE_IRGSP)) {
@@ -177,7 +173,7 @@ public class RiceID {
 					}
 				}
 				//////////////////////////////////////////
-				boolean insert = UpDateFriceDB.upDateNCBIUniID(GeneID, uniID, 39947, lsAccIDInfo, NovelBioConst.DBINFO_RICE_RAPDB,NovelBioConst.DBINFO_RICE_IRGSP);
+				boolean insert = UpDateFriceDB.upDateNCBIUniID(GeneID, uniID, 39947,false, lsAccIDInfo, NovelBioConst.DBINFO_RICE_RAPDB,NovelBioConst.DBINFO_RICE_IRGSP);
 				if (!insert) {
 					txtOutFile.writefile(content + "\n");
 				}
@@ -233,7 +229,7 @@ public class RiceID {
 			//先搜索ncbiid表格,RapDB和Tigr都搜一下
 			ArrayList<NCBIID> lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);//先用RapDB的ID搜，然后用TigrID搜
 			if (lsNcbiid == null || lsNcbiid.size()<1) {
-				ncbiid = new NCBIID();ncbiid.setAccID(lstmpLOC.get(1)[0]);
+				ncbiid = new NCBIID();ncbiid.setAccID(lstmpLOC.get(1)[0]);ncbiid.setTaxID(39947);
 				lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);
 			}
 			////////////////////
@@ -246,7 +242,7 @@ public class RiceID {
 				//开始搜UniProtID表
 				ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);//先用RapDB的ID搜，然后用TigrID搜
 				if (lsUniProtIDs == null || lsUniProtIDs.size()<1) {
-					uniProtID = new UniProtID(); uniProtID.setAccID(lstmpLOC.get(1)[0]);
+					uniProtID = new UniProtID(); uniProtID.setAccID(lstmpLOC.get(1)[0]);uniProtID.setTaxID(39947);
 					lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
 				}
 				if (lsUniProtIDs != null && lsUniProtIDs.size()>0) 
@@ -260,7 +256,7 @@ public class RiceID {
 				}
 			}
 			//////开始倒入//////////////////////////////
-			UpDateFriceDB.upDateNCBIUniID(geneID, uniID, 39947, lstmpLOC, NovelBioConst.DBINFO_RICE_IRGSP, NovelBioConst.DBINFO_RICE_TIGR);		
+			UpDateFriceDB.upDateNCBIUniID(geneID, uniID, 39947,false, lstmpLOC, NovelBioConst.DBINFO_RICE_IRGSP, NovelBioConst.DBINFO_RICE_TIGR);		
 		}
 		txtOutFile.close();
 		txtRap2MSU.close();
@@ -411,7 +407,7 @@ public class RiceID {
 				lstmpLOC.add(tmpLOC2Info2);
 			}
 			//////////////////////////////////////////
-			boolean insert = UpDateFriceDB.upDateNCBIUniID(geneID, uniID, 39947, lstmpLOC, NovelBioConst.DBINFO_AFFY_RICE_31,NovelBioConst.DBINFO_RICE_RAPDB,NovelBioConst.DBINFO_RICE_IRGSP);
+			boolean insert = UpDateFriceDB.upDateNCBIUniID(geneID, uniID, 39947,false,lstmpLOC, NovelBioConst.DBINFO_AFFY_RICE_31,NovelBioConst.DBINFO_RICE_RAPDB,NovelBioConst.DBINFO_RICE_IRGSP);
 			if (!insert) {
 				txtOutFile.writefile(content + "\n");
 			}
@@ -667,7 +663,7 @@ public class RiceID {
 				continue;
 			
 			String[] ssLOC = ss[8].split(";");
-			String LOCID = ssLOC[2].split("=")[1];
+			String LOCID = ssLOC[ssLOC.length-1].split("=")[1];
 			
 			ArrayList<String> lsaccID = AnnoQuery.getNCBIUni(LOCID, 39947);
 			
@@ -680,7 +676,7 @@ public class RiceID {
 					String[] tmpAccIDInfo = new String[2];
 					tmpAccIDInfo[0] = LOCID; tmpAccIDInfo[1] = NovelBioConst.DBINFO_RICE_TIGR;
 					lsAccIDInfo.add(tmpAccIDInfo);
-					UpDateFriceDB.upDateNCBIUniID(Long.parseLong(lsaccID.get(i)), null, 39947, lsAccIDInfo, NovelBioConst.DBINFO_RICE_TIGR);
+					UpDateFriceDB.upDateNCBIUniID(Long.parseLong(lsaccID.get(i)), null, 39947,false, lsAccIDInfo, NovelBioConst.DBINFO_RICE_TIGR);
 				}
 			}
 			if (dbType.equals("uniID")) {
@@ -690,7 +686,7 @@ public class RiceID {
 					String[] tmpAccIDInfo = new String[2];
 					tmpAccIDInfo[0] = LOCID; tmpAccIDInfo[1] = NovelBioConst.DBINFO_RICE_TIGR;
 					lsAccIDInfo.add(tmpAccIDInfo);
-					UpDateFriceDB.upDateNCBIUniID(0, lsaccID.get(i), 39947, lsAccIDInfo, NovelBioConst.DBINFO_RICE_TIGR);
+					UpDateFriceDB.upDateNCBIUniID(0, lsaccID.get(i), 39947,false, lsAccIDInfo, NovelBioConst.DBINFO_RICE_TIGR);
 				}
 			}
 			if (dbType.equals("accID")) {
@@ -699,7 +695,7 @@ public class RiceID {
 					String[] tmpAccIDInfo = new String[2];
 					tmpAccIDInfo[0] = LOCID; tmpAccIDInfo[1] = NovelBioConst.DBINFO_RICE_TIGR;
 					lsAccIDInfo.add(tmpAccIDInfo);
-					UpDateFriceDB.upDateNCBIUniID(0,lsaccID.get(1), 39947, lsAccIDInfo, NovelBioConst.DBINFO_RICE_TIGR);
+					UpDateFriceDB.upDateNCBIUniID(0,lsaccID.get(1), 39947,false, lsAccIDInfo, NovelBioConst.DBINFO_RICE_TIGR);
 				}
 				else {
 					txtOutFile.writefile(content+"\n");

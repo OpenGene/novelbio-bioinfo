@@ -155,7 +155,6 @@ public class PathEnrichNew {
 		ArrayList<String[]> lsFisherResult = FisherTest.getFisherResult(hashGene, geneUpNum, hashBGgene, geneBackGroundNum, 
 				new ItemInfo() 
 		{
-			@Override
 			public String[] getItemName(String ItemID) {
 				String[] tmpInfo = new String[1];
 			    KGpathway path2Term=new KGpathway(); path2Term.setPathName(ItemID);

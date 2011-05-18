@@ -1,6 +1,7 @@
 package com.novelbio.database.upDateDB.dataBase;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -27,11 +28,14 @@ public class UpDateFriceDB {
 	 * @param geneID 如果geneID不为0，插入NCBIID数据库
 	 * @param uniID 如果uniID不为null，插入uniProtID数据库
 	 * 注意如果uniID和geneID并存，那么优先考虑geneID
+	 * @param taxID
+	 * @param considerGeneID 是否将geneID进入查询，因为有些gene对上不止一个geneID，而有的不是，所以如果只是常规的基因就不能考虑geneID
+	 * 而染色体的accID就需要考虑geneID
 	 * @param lsAccIDInfo 一组accID的信息 list-string[2] 0:accID 1:DataBaseInfo
 	 * @param arStrings 指定的databaseInfo
 	 * @return 插入返回true，没有能够插入，也就是没找到，返回false
 	 */
-	public static boolean upDateNCBIUniID(long GeneID, String uniID,int taxID,List<String[]> lsAccIDInfo,String ...arStrings)
+	public static boolean upDateNCBIUniID(long GeneID, String uniID,int taxID,boolean considerGeneID,Collection<String[]> lsAccIDInfo,String ...arStrings)
 	{
 		HashSet<String> hashDBInfo = new HashSet<String>();
 		for (String string : arStrings) {
@@ -43,7 +47,11 @@ public class UpDateFriceDB {
 			for (String[] strings : lsAccIDInfo) 
 			{
 				NCBIID ncbiid = new NCBIID();
-				ncbiid.setAccID(strings[0]);ncbiid.setTaxID(taxID);
+				ncbiid.setAccID(strings[0]);
+				ncbiid.setTaxID(taxID);
+				if (considerGeneID) {
+					ncbiid.setGeneId(GeneID);
+				}
 				ArrayList<NCBIID> lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);
 				if (lsNcbiid != null && lsNcbiid.size()>0)
 				{
@@ -55,10 +63,10 @@ public class UpDateFriceDB {
 				}
 				else
 				{
-					//当输入rapdb的gff时候将这个去除注释
-					if (strings[1].equals(NovelBioConst.DBINFO_UNIPROT_GenralID)) {
-						continue;
-					}
+//					//当输入rapdb的gff时候将这个去除注释
+//					if (strings[1].equals(NovelBioConst.DBINFO_UNIPROT_GenralID)) {
+//						continue;
+//					}
 					
 					ncbiid.setGeneId(GeneID);ncbiid.setDBInfo(strings[1]);
 					ncbiid.setTaxID(taxID);
@@ -73,6 +81,9 @@ public class UpDateFriceDB {
 			{
 				UniProtID uniProtID = new UniProtID();
 				uniProtID.setAccID(strings[0]);uniProtID.setTaxID(taxID);
+				if (considerGeneID) {
+					uniProtID.setUniID(uniID);
+				}
 				ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
 				if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 				{

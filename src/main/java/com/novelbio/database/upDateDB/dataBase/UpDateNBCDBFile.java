@@ -5,9 +5,12 @@ import java.io.BufferedReader;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
+import com.novelbio.analysis.annotation.genAnno.GOQuery;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
@@ -47,35 +50,36 @@ public class UpDateNBCDBFile {
 		BufferedReader gene2GoReader=txtgene2Go.readfile();
 		String content="";
 		int i=0;
+		HashMap<String, String[]> goInfo = GOQuery.getHashGo2Term();
+		
 		while ((content=gene2GoReader.readLine())!=null) 
 		{
 			String[] ss=content.split("\t");
+			String[] thisgoInfo = goInfo.get(ss[2].trim());
+			if (thisgoInfo == null) {
+				continue;
+			}
+			String goID = thisgoInfo[1];
+			String goFunction = thisgoInfo[3];
+			String goTerm = thisgoInfo[2];
 			Gene2Go gene2GoInfo=new Gene2Go();
 			gene2GoInfo.setGeneId(Long.parseLong(ss[1]));
-			gene2GoInfo.setGOID(ss[2]);
+			gene2GoInfo.setGOID(goID);
 			gene2GoInfo.setEvidence(ss[3]);
 			gene2GoInfo.setQualifier(ss[4]);
-			gene2GoInfo.setGOTerm(ss[5]);
+			gene2GoInfo.setGOTerm( goTerm);
 			if(ss[6].equals("-"))
 				gene2GoInfo.setReference(ss[6]);
 			else 
 				gene2GoInfo.setReference("PMID:"+ss[6]);
 			
-			if (ss[7].equals("Function")) {
-				ss[7] = "F";
-			}
-			else if (ss[7].equals("Process")) {
-				ss[7] = "P";
-			}
-			else if (ss[7].equals("Component")) {
-				ss[7] = "C";
-			}
-			gene2GoInfo.setFunction(ss[7]);
+			gene2GoInfo.setFunction(goFunction);
 			gene2GoInfo.setDataBase("NCBI");
 			Gene2Go gene2GoInfo2=DaoFSGene2Go.queryGene2Go(gene2GoInfo);
 			if (gene2GoInfo2==null) 
 			{
 				DaoFSGene2Go.InsertGene2Go(gene2GoInfo);
+				i++;
 			}
 			else {
 				//如果已经含有相应的GOID，那么看evidence是否也含有了，没有的话就upDate
@@ -83,12 +87,13 @@ public class UpDateNBCDBFile {
 						&& !gene2GoInfo2.getEvidence().trim().equals("")
 						&& !gene2GoInfo2.getEvidence().contains(gene2GoInfo.getEvidence()))
 				{
-					gene2GoInfo.setEvidence(gene2GoInfo.getEvidence()+"/"+gene2GoInfo2.getEvidence());
+					gene2GoInfo.setEvidence(gene2GoInfo.getEvidence()+"//"+gene2GoInfo2.getEvidence());
 					DaoFSGene2Go.upDateGene2Go(gene2GoInfo);
+					i++;
 				}
 			}
-			i++;
-			if (i%10000==0) {
+			
+			if (i>0 && i%10000==0) {
 				System.out.println(i);
 			}
 		}
@@ -155,7 +160,53 @@ public class UpDateNBCDBFile {
 		System.out.println(i);
 		txtNCBIID.close();
 	}
-	
+	/**
+	 * 将芯片探针和nr数据库blast后处理得到的NCBIID类型的表插入数据库
+	 * 物种 \t  NCBIGeneID \t  accessID \t  DataBaseInfo \n
+	 * 待导入的结果中的geneID可能含有： geneID//geneID//geneID<br>
+	 * 注意一定要分开。也就是如果一个accID对应多个geneID，那么就将这两个geneID都插入NCBIID
+	 * 用geneID和accessID一起去查找NCBIID表
+	 * 如果没有，直接插入
+	 * 如果有跳过
+	 * @author zong0jie
+	 *
+	 */
+	public static void upDateNCBIIDBlast(String NCBIIDfile) throws Exception
+	{
+		TxtReadandWrite txtNCBIID=new TxtReadandWrite();
+		txtNCBIID.setParameter(NCBIIDfile,false,true);
+		BufferedReader ncbiReader=txtNCBIID.readfile();
+		
+		String content="";
+		int i=0;
+		while ((content=ncbiReader.readLine())!=null) 
+		{
+			String[] ss = content.split("\t");
+			long ssGeneID = (long)Double.parseDouble(ss[1]);
+			//多个geneID分别都试一遍
+				NCBIID ncbiid = new NCBIID();
+				ncbiid.setTaxID(Integer.parseInt(ss[0]));
+				ncbiid.setAccID(ss[2]); 
+				//如果搜到了，那么看是否需要更新DBINFO
+				ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+				if (lsNcbiids != null && lsNcbiids.size() > 0) 
+				{
+					continue;
+				}
+				else
+				{
+					ncbiid.setGeneId(ssGeneID);
+					ncbiid.setDBInfo(ss[3]);
+					DaoFSNCBIID.InsertNCBIID(ncbiid);
+					i++;
+				}
+			if (i%10000==0) {
+				System.out.println(i);
+			}
+		}
+		System.out.println(i);
+		txtNCBIID.close();
+	}
 	/**
 	 * 将NCBIID类型的表插入数据库，这个是当NCBIID很全面的时候，有时候affy芯片里面有一些geneID是已经过期的ID，这时候这种ID就要舍去
 	 * 时采用以下方法
@@ -335,7 +386,7 @@ public class UpDateNBCDBFile {
 					continue;
 				}
 			}
-			if (i%10000==0) {
+			if (i>0&&i%10000==0) {
 				System.out.println(i);
 			}
 		}
@@ -401,10 +452,7 @@ public class UpDateNBCDBFile {
 		TxtReadandWrite txtGeneInfo=new TxtReadandWrite();
 		txtGeneInfo.setParameter(GeneInfoFile,false,true);
 		BufferedReader ncbiReader=txtGeneInfo.readfile();
-		
-		
-		DaoFSGeneInfo friceDAO=new DaoFSGeneInfo();
-		
+				
 		String content="";
 		int i=0;
 		while ((content=ncbiReader.readLine())!=null) 
@@ -429,20 +477,31 @@ public class UpDateNBCDBFile {
 				geneInfo.setSynonyms("");
 			}
 			
-			GeneInfo geneInfo2=friceDAO.queryGeneInfo(geneInfo);
+			GeneInfo geneInfo2=DaoFSGeneInfo.queryGeneInfo(geneInfo);
 			
 			if (geneInfo2==null)
 			{
-				friceDAO.InsertGeneInfo(geneInfo);
+				DaoFSGeneInfo.InsertGeneInfo(geneInfo);
 			}
 			else {
 				boolean flag=false;
-				if (!geneInfo2.getSymbol().contains(geneInfo.getSymbol())) {
-					geneInfo2.setSymbol(geneInfo2.getSymbol()+"//"+geneInfo.getSymbol().trim());
+				if (!geneInfo2.getSymbol().contains(geneInfo.getSymbol().trim()))
+				{
+					if (!geneInfo2.getSymbol().trim().equals("")) {
+						geneInfo2.setSymbol(geneInfo2.getSymbol().trim()+"//"+geneInfo.getSymbol().trim());
+					}
+					else {
+						geneInfo2.setSymbol(geneInfo.getSymbol().trim());
+					}
 					flag=true;
 				}
-				if (!geneInfo2.getDescription().contains(geneInfo.getDescription())) {
-					 geneInfo2.setDescription(geneInfo2.getDescription()+"//"+geneInfo.getDescription());
+				if (!geneInfo2.getDescription().contains(geneInfo.getDescription().trim())) {
+					if (!geneInfo2.getDescription().trim().equals("")) {
+						geneInfo2.setDescription(geneInfo2.getDescription().trim()+"//"+geneInfo.getDescription().trim());
+					}
+					else {
+						geneInfo2.setDescription(geneInfo.getDescription().trim());
+					}
 					 flag=true;
 				}
 				if (geneInfo.getSynonyms()!=null) {
@@ -450,7 +509,12 @@ public class UpDateNBCDBFile {
 					for (int j = 0; j < synonyms.length; j++) {
 						if (!geneInfo2.getSynonyms().contains(synonyms[j].trim()))
 						{
-							geneInfo2.setSynonyms(geneInfo2.getSynonyms()+"|"+synonyms[j].trim());
+							if (!geneInfo2.getSynonyms().trim().equals("")) {
+								geneInfo2.setSynonyms(geneInfo2.getSynonyms().trim()+"|"+synonyms[j].trim());
+							}
+							else {
+								geneInfo2.setSynonyms(synonyms[j].trim());
+							}
 							if (synonyms[j].trim().equals("HLA-")) {
 								System.out.println("test");
 								
@@ -461,10 +525,11 @@ public class UpDateNBCDBFile {
 				}
 				if(flag)
 				{
-					 friceDAO.upDateGeneInfo(geneInfo2);
+					DaoFSGeneInfo.upDateGeneInfo(geneInfo2);
+					i++;
 				}
 			}
-			i++;
+			
 			if (i%10000==0) {
 				System.out.println(i);
 			}
@@ -488,9 +553,6 @@ public class UpDateNBCDBFile {
 		txtGeneInfo.setParameter(GeneInfoFile,false,true);
 		BufferedReader ncbiReader=txtGeneInfo.readfile();
 		
-		
-		DaoFSUniGeneInfo friceDAO=new DaoFSUniGeneInfo();
-		
 		String content="";
 		int i=0;
 		while ((content=ncbiReader.readLine())!=null) 
@@ -512,11 +574,11 @@ public class UpDateNBCDBFile {
 				uniGeneInfo.setSynonyms("");
 			}
 			
-			UniGeneInfo uniGeneInfo2=friceDAO.queryUniGeneInfo(uniGeneInfo);
+			UniGeneInfo uniGeneInfo2=DaoFSUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 			
 			if (uniGeneInfo2==null)
 			{
-				friceDAO.InsertUniGeneInfo(uniGeneInfo);
+				DaoFSUniGeneInfo.InsertUniGeneInfo(uniGeneInfo);
 			}
 			else 
 			{
@@ -527,12 +589,22 @@ public class UpDateNBCDBFile {
 					uniGeneInfo2.setSynonyms("");
 				}
 				boolean flag=false;
-				if (!uniGeneInfo2.getSymbol().contains(uniGeneInfo.getSymbol())) {
-					uniGeneInfo2.setSymbol(uniGeneInfo2.getSymbol()+"//"+uniGeneInfo.getSymbol());
+				if (!uniGeneInfo2.getSymbol().contains(uniGeneInfo.getSymbol().trim())) {
+					if (uniGeneInfo2.getSymbol().trim().equals("")) {
+						uniGeneInfo2.setSymbol(uniGeneInfo.getSymbol().trim());
+					}
+					else {
+						uniGeneInfo2.setSymbol(uniGeneInfo2.getSymbol().trim()+"//"+uniGeneInfo.getSymbol().trim());
+					}
 					flag=true;
 				}
-				if (!uniGeneInfo2.getDescription().contains(uniGeneInfo.getDescription())) {
-					uniGeneInfo2.setDescription(uniGeneInfo2.getDescription()+"//"+uniGeneInfo.getDescription());
+				if (!uniGeneInfo2.getDescription().contains(uniGeneInfo.getDescription().trim())) {
+					if (uniGeneInfo2.getDescription().trim().equals("")) {
+						uniGeneInfo2.setDescription(uniGeneInfo.getDescription().trim());
+					}
+					else {
+						uniGeneInfo2.setDescription(uniGeneInfo2.getDescription().trim()+"//"+uniGeneInfo.getDescription().trim());
+					}
 					 flag=true;
 				}
 				if (uniGeneInfo.getSynonyms()!=null) {
@@ -540,17 +612,23 @@ public class UpDateNBCDBFile {
 					for (int j = 0; j < synonyms.length; j++) {
 						if (!uniGeneInfo2.getSynonyms().contains(synonyms[j].trim()))
 						{
-							uniGeneInfo2.setSynonyms(uniGeneInfo2.getSynonyms()+"|"+synonyms[j].trim());
+							if (uniGeneInfo2.getSynonyms().trim().equals("")) {
+								uniGeneInfo2.setSynonyms(synonyms[j].trim());
+							}
+							else {
+								uniGeneInfo2.setSynonyms(uniGeneInfo2.getSynonyms().trim()+"|"+synonyms[j].trim());
+							}
 							flag=true;
 						}
 					}
 				}
 				if(flag)
 				{
-					 friceDAO.upDateUniGeneInfo(uniGeneInfo2);
+					DaoFSUniGeneInfo.upDateUniGeneInfo(uniGeneInfo2);
+					i++;
 				}
 			}
-			i++;
+		
 			if (i%10000==0) {
 				System.out.println(i);
 			}
@@ -566,75 +644,90 @@ public class UpDateNBCDBFile {
 	 * @throws Exception 
 	 */
 	public static void upDateGene2GoUniProtgene_associationgoa_uniprot(String uniGOfile) throws Exception {
+		HashMap<String, String[]> hashGoInfo = GOQuery.getHashGo2Term();
 		TxtReadandWrite txtGene2GO=new TxtReadandWrite();
 		txtGene2GO.setParameter(uniGOfile,false,true);
 		BufferedReader ncbiReader=txtGene2GO.readfile();
 		String content="";
-		DaoFSNCBIID ncbiidDao=new DaoFSNCBIID();
-		DaoFSGene2Go gene2GoDao=new DaoFSGene2Go();
-		DaoFSUniGene2Go uniGene2GoDao=new DaoFSUniGene2Go();
 		int mm=0;
+		int noneGoInfo = 0; //GoTerm中没有的GOID的数量
 		while ((content=ncbiReader.readLine())!=null) 
 		{
 			String[] ss=content.split("\t");
+			if (ss.length == 0) {
+				continue;
+			}
+			String[] GoInfo = hashGoInfo.get(ss[4].trim());
+			if (GoInfo == null) {
+				noneGoInfo++;
+				System.out.println(noneGoInfo);
+			}
+			String GoID = GoInfo[1];
+			String goTerm = GoInfo[2];
+			String goFuncition = GoInfo[3];
+			
 			NCBIID ncbiid=new NCBIID();
 			int taxID=Integer.parseInt(ss[12].split("\\|")[0].split(":")[1]);//本列的taxID
 			ncbiid.setAccID(ss[1]);ncbiid.setTaxID(taxID);
-			ArrayList<NCBIID> lsNcbiids=ncbiidDao.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsNcbiids=DaoFSNCBIID.queryLsNCBIID(ncbiid);
 			if (lsNcbiids.size()>0)//能和NCBIID对应上去，也就是说能够找到GeneID，那么将其装入gene2Go表
 			{
 				for (int i = 0; i < lsNcbiids.size(); i++)   //一个基因可能会有多个geneID
 				{
+					
+
 					Gene2Go gene2Go=new Gene2Go();
 					gene2Go.setGeneId(lsNcbiids.get(i).getGeneId());
-					gene2Go.setGOID(ss[4].trim());gene2Go.setQualifier(ss[3].trim());gene2Go.setReference(ss[5]);gene2Go.setEvidence(ss[6]);gene2Go.setFunction(ss[8]);gene2Go.setDataBase("UniProt");
-					Gene2Go gene2Go2 = gene2GoDao.queryGene2Go(gene2Go);
+					gene2Go.setGOID(GoID);gene2Go.setQualifier(ss[3].trim());gene2Go.setReference(ss[5]);gene2Go.setEvidence(ss[6]);gene2Go.setFunction(goFuncition);
+					gene2Go.setGOTerm(goTerm);
+					gene2Go.setDataBase(NovelBioConst.DBINFO_UNIPROT_UNIID);
+					Gene2Go gene2Go2 = DaoFSGene2Go.queryGene2Go(gene2Go);
 					if (gene2Go2!=null) //如果已经存在了，那么考虑下是否升级
 					{
 						boolean update=false;
 						if (gene2Go2.getEvidence()!=null&&gene2Go.getEvidence()!=null&&!gene2Go2.getEvidence().contains(gene2Go.getEvidence())) {
-							gene2Go2.setEvidence(gene2Go2.getEvidence()+"/"+gene2Go.getEvidence());
+							gene2Go2.setEvidence(gene2Go2.getEvidence()+"//"+gene2Go.getEvidence());
 							update=true;
 						}
 						if (gene2Go2.getReference()!=null&&gene2Go.getReference()!=null&&!gene2Go2.getReference().contains(gene2Go.getReference())) {
-							gene2Go2.setReference(gene2Go2.getReference()+"/"+gene2Go.getReference());
+							gene2Go2.setReference(gene2Go2.getReference()+"//"+gene2Go.getReference());
 							update=true;
 						}
 						if (update) {
-							gene2GoDao.upDateGene2Go(gene2Go2);
+							DaoFSGene2Go.upDateGene2Go(gene2Go2);
 						}
 					}
 					else //如果没有，则升级
 					{
-						gene2GoDao.InsertGene2Go(gene2Go);
+						DaoFSGene2Go.InsertGene2Go(gene2Go);
 					}
 				}
 			}
 			else //将其装入UniGene2Go表
 			{
 				UniGene2Go uniGene2Go=new UniGene2Go();
-				uniGene2Go.setUniProtID(ss[1].trim());uniGene2Go.setGOID(ss[4].trim());uniGene2Go.setQualifier(ss[3].trim());uniGene2Go.setReference(ss[5]);
-				uniGene2Go.setEvidence(ss[6]);uniGene2Go.setFunction(ss[8]);uniGene2Go.setDataBase("UniProt");
-				
-				UniGene2Go uniGene2Go2 = uniGene2GoDao.queryUniGene2Go(uniGene2Go);
+				uniGene2Go.setUniProtID(ss[1].trim());uniGene2Go.setGOID(GoID);uniGene2Go.setQualifier(ss[3].trim());uniGene2Go.setReference(ss[5]);
+				uniGene2Go.setEvidence(ss[6]);uniGene2Go.setFunction(goFuncition);uniGene2Go.setDataBase("UniProt");
+				uniGene2Go.setGOTerm(goTerm);
+				UniGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
 				if (uniGene2Go2!=null) //如果已经存在了，那么考虑下是否升级
 				{
 					boolean update=false;
 					if (uniGene2Go.getEvidence()!=null&&uniGene2Go.getEvidence()!=null&&!uniGene2Go2.getEvidence().contains(uniGene2Go.getEvidence())) {
-						uniGene2Go2.setEvidence(uniGene2Go2.getEvidence()+"/"+uniGene2Go.getEvidence());
+						uniGene2Go2.setEvidence(uniGene2Go2.getEvidence()+"//"+uniGene2Go.getEvidence());
 						update=true;
 					}
 					if (uniGene2Go2.getReference()!=null&&uniGene2Go.getReference()!=null&&!uniGene2Go2.getReference().contains(uniGene2Go.getReference())) {
-						uniGene2Go2.setReference(uniGene2Go2.getReference()+"/"+uniGene2Go.getReference());
+						uniGene2Go2.setReference(uniGene2Go2.getReference()+"//"+uniGene2Go.getReference());
 						update=true;
 					}
 					if (update) {
-						uniGene2GoDao.upDateUniGene2Go(uniGene2Go2);
+						DaoFSUniGene2Go.upDateUniGene2Go(uniGene2Go2);
 					}
 				}
 				else //如果没有，则升级
 				{
-					uniGene2GoDao.InsertUniGene2Go(uniGene2Go);
+					DaoFSUniGene2Go.InsertUniGene2Go(uniGene2Go);
 				}
 			}
 			
@@ -661,9 +754,7 @@ public class UpDateNBCDBFile {
 		TxtReadandWrite txtGoTerm=new TxtReadandWrite();
 		txtGoTerm.setParameter(Go2Termfile,false,true);
 		BufferedReader go2TermReader=txtGoTerm.readfile();
-		
-		DaoFSGo2Term friceDAO=new DaoFSGo2Term();
-		
+				
 		String content="";
 		int i=0;
 		while ((content=go2TermReader.readLine())!=null) 
@@ -674,13 +765,14 @@ public class UpDateNBCDBFile {
 			{
 				Go2Term go2Term=new Go2Term();
 				go2Term.setGoIDQuery(ss[0].trim());
-				Go2Term go2Term2=friceDAO.queryGo2Term(go2Term);
+				Go2Term go2Term2=DaoFSGo2Term.queryGo2Term(go2Term);
 				if (go2Term2==null) {
 					go2Term.setGoID(ss[0].trim());
 					go2Term.setGoIDQuery(ss[0].trim());
 					go2Term.setGoTerm(ss[2].trim());
 					go2Term.setGoFunction(ss[3].trim());
-					friceDAO.InsertGo2Term(go2Term);
+					DaoFSGo2Term.InsertGo2Term(go2Term);
+					i++;
 				}
 			}
 			else 
@@ -690,29 +782,29 @@ public class UpDateNBCDBFile {
 				{
 					Go2Term go2Term=new Go2Term();
 					go2Term.setGoIDQuery(ss2[j].trim());
-					Go2Term go2Term2=friceDAO.queryGo2Term(go2Term);
+					Go2Term go2Term2=DaoFSGo2Term.queryGo2Term(go2Term);
 					if (go2Term2==null) {
 						go2Term.setGoID(ss[0].trim());
 						go2Term.setGoIDQuery(ss2[j].trim());
 						go2Term.setGoTerm(ss[2].trim());
 						go2Term.setGoFunction(ss[3].trim());
-						friceDAO.InsertGo2Term(go2Term);
+						DaoFSGo2Term.InsertGo2Term(go2Term);
+						i++;
 					}
 				}
 				Go2Term go2Term=new Go2Term();
 				go2Term.setGoIDQuery(ss[0].trim());
-				Go2Term go2Term2=friceDAO.queryGo2Term(go2Term);
+				Go2Term go2Term2=DaoFSGo2Term.queryGo2Term(go2Term);
 				if (go2Term2==null) {
 					go2Term.setGoID(ss[0].trim());
 					go2Term.setGoIDQuery(ss[0].trim());
 					go2Term.setGoTerm(ss[2].trim());
 					go2Term.setGoFunction(ss[3].trim());
-					friceDAO.InsertGo2Term(go2Term);
+					DaoFSGo2Term.InsertGo2Term(go2Term);
+					i++;
 				}
 			}
 			
-	
-			i++;
 			if (i%10000==0) {
 				System.out.println(i);
 			}
@@ -792,9 +884,297 @@ public class UpDateNBCDBFile {
 			}
 		}
 	}
+		
+	/**
+	 * 读取gene_association.goa_uniprot文件，获得里面第13列的taxID信息
+	 * 将所有含有需要TaxID的行全部提取出来
+	 * @throws Exception 
+	 */
+	public static void getUniProtGoInfoTaxIDgene_associationgoa_uniprot(String taxIDfile, String inputFile, String outputFile) throws Exception 
+	{
+		TxtReadandWrite taxIDrReadandWrite=new TxtReadandWrite();
+		taxIDrReadandWrite.setParameter(taxIDfile, false,true);
+		HashSet<String> hashTaxID=new HashSet<String>();
+		BufferedReader Taxreader=taxIDrReadandWrite.readfile();
+		String content="";
+		while ((content=Taxreader.readLine())!=null) 
+		{
+			String[] ss=content.split("\t");
+			hashTaxID.add(ss[0]);
+		}
+		
+		TxtReadandWrite inputReadandWrite=new TxtReadandWrite();
+		inputReadandWrite.setParameter(inputFile,false, true);
+		
+		TxtReadandWrite outputReadandWrite=new TxtReadandWrite();
+		outputReadandWrite.setParameter(outputFile, true,false);
+		
+		BufferedReader inputrReader=inputReadandWrite.readfile();
+		inputrReader.readLine();
+		String content2="";
+		while((content2=inputrReader.readLine())!=null)
+		{
+			String[] ss=content2.split("\t");
+			String[]ss2=null;
+			if (ss[0].equals("IPI")) {
+				continue;
+			}
+			
+			if (ss[12].contains("|")) 
+			{
+				System.out.println(content2);
+				ss2=ss[12].split("\\|");
+				ss2=ss2[0].split(":");
+			}
+			else {
+				ss2=ss[12].split(":");
+			}
+			String ss3=null;
+			try {
+				 ss3=Integer.parseInt(ss2[1])+"";
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("error   "+content2);
+			}
+			
+			if (hashTaxID.contains(ss3)) 
+			{
+				outputReadandWrite.writefile(content2+"\n", false);
+			}
+		}
+		outputReadandWrite.writefile("", true);
+		taxIDrReadandWrite.close();
+	}
 	
-	
-	
+	/**
+	 * 将gene_association.goa_uniprot文件去重复、提取TaxID、去掉文件最开始的IPI后，做以下工作<br>
+	 * 将每一行的， 第2列：基因的UniProtID，第3列：Symbol，第10列Description，第11列Synonym, 连同第13列Taxon_ID<br>
+	 * 向NCBIID和UniProtID两个表比对，比上NCBI后，将本列所有数据整理为两个文件<br>
+	 *  1. taxID \t geneID \t accessID \t DataBase \n  和<br>
+	 *  2. taxID \t geneID \t symbol \t discription \t Synonym \n <br>
+	 * 较表 UniProtID, 将本列所有数据整理为两个文件 <br>
+	 * 1. taxID \t UniProtID \t accessID \t DataBase \n 装入UniProtID和  <br>
+	 *  2. taxID \t geneID \t symbol \t discription \t Synonym \n 装入UniGeneInfo<br>
+	 * 如果有一个swiss对应多个geneID的情况，多个geneID都更新，UniProt也一样<br>
+	 * @throws Exception 
+	 */
+	public static void getUniProtGoInfogene_associationgoa_uniprot(String inputFile,String outNCBIID,String outGeneInfo, String outUniProtID, String outUniGeneInfo,String remain) throws Exception 
+	{
+		TxtReadandWrite txtInput=new TxtReadandWrite(); txtInput.setParameter(inputFile, false, true);
+		TxtReadandWrite txtOutNCBIID=new TxtReadandWrite();txtOutNCBIID.setParameter(outNCBIID, true, false);
+		TxtReadandWrite txtOutGeneInfo=new TxtReadandWrite();txtOutGeneInfo.setParameter(outGeneInfo, true, false);
+		TxtReadandWrite txtOutUniProtID=new TxtReadandWrite();txtOutUniProtID.setParameter(outUniProtID, true, false);
+		TxtReadandWrite txtOutUniGeneInfo=new TxtReadandWrite();txtOutUniGeneInfo.setParameter(outUniGeneInfo, true, false);
+		TxtReadandWrite txtRemain=new TxtReadandWrite();txtRemain.setParameter(remain, true, false);
+		BufferedReader inputReader=txtInput.readfile();
+		
+		DaoFSUniProtID uniProtIDDao=new DaoFSUniProtID();
+		
+		String content="";
+		int[] index=new int[3];index[0]=1;index[1]=2;index[2]=10;
+		String[] DBInfo=new String[3]; DBInfo[0]=NovelBioConst.DBINFO_UNIPROT_UNIID;DBInfo[1]=NovelBioConst.DBINFO_SYMBOL;DBInfo[2]=NovelBioConst.DBINFO_SYNONYMS;
+		ArrayList<NCBIID> lsResultNcbiid=null;
+		ArrayList<NCBIID> tmplsResultNcbiid=null;
+		ArrayList<UniProtID> lsResultUniProtID=null;
+		ArrayList<UniProtID> tmplsResultUniProtID=null;
+		while ((content=inputReader.readLine())!=null) {
+			String ss[]=content.split("\t");
+			int taxID=Integer.parseInt(ss[12].split("\\|")[0].split(":")[1]);//本列的taxID
+			int NCBIflag=0;//标记是否查到NCBIID表，用taxID和accessID找NCBIID表。如果没找到，设为0，找到一个1，找到多个2
+			int UniProtflag=0;//标记是否查到UniProt表，用taxID和accessID找UniProtIID表。如果没找到，设为0，找到一个1，找到多个2
+			tmplsResultNcbiid=null;//先清空
+			tmplsResultUniProtID=null;
+			//////////////////////首先查找NCBIID表/////////////////////////////////////
+			for (int i = 0; i < 3; i++) {
+				String[] ssTmp=ss[index[i]].split("\\|");
+		
+				for (int j = 0; j < ssTmp.length; j++) 
+				{
+					String sstmpid=ssTmp[j].trim();
+					//将其中的
+					if (sstmpid.equals("")) {
+						continue;
+					}
+					if (sstmpid.contains("Em:")) {
+						sstmpid=sstmpid.substring(sstmpid.indexOf(":")+1, sstmpid.indexOf("."));
+					}
+					NCBIID ncbiid=new NCBIID();
+					ncbiid.setTaxID(taxID);ncbiid.setAccID(sstmpid);
+					lsResultNcbiid=DaoFSNCBIID.queryLsNCBIID(ncbiid);
+					if (lsResultNcbiid.size()==1)
+					{
+						NCBIflag=1;break;
+					}
+					else if (lsResultNcbiid.size()>1)
+					{
+						NCBIflag=2;System.out.println(taxID+" "+sstmpid+"           "+ss[1]+"    NCBI");
+						tmplsResultNcbiid=lsResultNcbiid;//当找到了>=2个基因时，将结果放在这个  tmplsResultNcbiid 里面，并不跳出，本步设计原因：当lsResultNcbiid.size()=1时
+						//直接跳出，下面也可以进行，但是如果部分是>=2个基因，部分没有，那么后面 	NCBIID ncbiidRes=lsResultNcbiid.get(0); 语句可能会出错，这时候就用 tmplsResultNcbiid 来代替，注意可以用=，虽然是引用传递，但是后面lsResultNcbiid会赋给新值
+					}
+				}
+
+				if (NCBIflag == 1)//在ncbi表中找到了唯一的一条记录
+					break;
+			}
+			if (NCBIflag == 2) {
+				System.out.println(taxID+"  Reallyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "+"    NCBI");
+			}
+			if (NCBIflag >= 1) 
+			{
+				NCBIID ncbiidRes = null;
+				if (lsResultNcbiid.size()>0) {
+					ncbiidRes = lsResultNcbiid.get(0);
+					String resultTmp = ncbiidRes.getTaxID()+"\t" + ncbiidRes.getGeneId();
+					for (int i = 0; i < 3; i++)
+					{
+						String[] ssTmp = ss[index[i]].split("\\|");
+						for (int j = 0; j < ssTmp.length; j++) 
+						{
+							String sstmpid = ssTmp[j].trim();
+							//将其中的
+							if (sstmpid.equals("")) {
+								continue;
+							}
+							if (sstmpid.contains("Em:")) {
+								sstmpid = sstmpid.substring(sstmpid.indexOf(":")+1, sstmpid.indexOf("."));
+							}
+							String resultID=resultTmp+"\t"+sstmpid+"\t"+DBInfo[i]+"\n";
+							txtOutNCBIID.writefile(resultID, false);
+						}
+					}
+					String resultInfo=resultTmp+"\t"+ss[2]+"\t"+ss[9]+"\t"+ss[10]+"\n";
+					txtOutGeneInfo.writefile(resultInfo,false);
+				}
+				else {
+					for (int m = 0; m < tmplsResultNcbiid.size(); m++) {
+						ncbiidRes=tmplsResultNcbiid.get(m);
+						String resultTmp=ncbiidRes.getTaxID()+"\t"+ncbiidRes.getGeneId();
+						for (int i = 0; i < 3; i++)
+						{
+							String[] ssTmp=ss[index[i]].split("\\|");
+							for (int j = 0; j < ssTmp.length; j++) 
+							{
+								String sstmpid=ssTmp[j].trim();
+								//将其中的
+								if (sstmpid.equals("")) {
+									continue;
+								}
+								if (sstmpid.contains("Em:")) {
+									sstmpid=sstmpid.substring(sstmpid.indexOf(":")+1, sstmpid.indexOf("."));
+								}
+								String resultID=resultTmp+"\t"+sstmpid+"\t"+DBInfo[i]+"\n";
+								txtOutNCBIID.writefile(resultID, false);
+							}
+						}
+						String resultInfo=resultTmp+"\t"+ss[2]+"\t"+ss[9]+"\t"+ss[10]+"\n";
+						txtOutGeneInfo.writefile(resultInfo,false);
+					}
+				}
+				continue;//不执行下面的UniProt查找数据库了
+			}
+			
+			
+			
+			/////////////////////////如果NCBIID表没有查到，那么查UniProt表/////////////////////////////////////////
+			for (int i = 0; i < 3; i++) {
+				String[] ssTmp=ss[index[i]].split("\\|");
+		
+				for (int j = 0; j < ssTmp.length; j++) 
+				{
+					String sstmpid=ssTmp[j].trim();
+					//将其中的
+					if (sstmpid.equals("")) {
+						continue;
+					}
+					if (sstmpid.contains("Em:")) {
+						sstmpid=sstmpid.substring(sstmpid.indexOf(":")+1, sstmpid.indexOf("."));
+					}
+					UniProtID uniProtID=new UniProtID();
+					uniProtID.setTaxID(taxID);uniProtID.setAccID(sstmpid);
+					lsResultUniProtID=uniProtIDDao.queryLsUniProtID(uniProtID);
+					if (lsResultUniProtID.size()==1)
+					{
+						UniProtflag=1;break;
+					}
+					else if (lsResultUniProtID.size()>1)
+					{
+						UniProtflag=2;System.out.println(taxID+"   "+sstmpid+"           "+ss[1]+"     uniprot");
+						tmplsResultUniProtID=lsResultUniProtID;//当找到了>=2个基因时，将结果放在这个  tmplsResultNcbiid 里面，并不跳出，本步设计原因：当lsResultNcbiid.size()=1时
+						//直接跳出，下面也可以进行，但是如果部分是>=2个基因，部分没有，那么后面 	NCBIID ncbiidRes=lsResultNcbiid.get(0); 语句可能会出错，这时候就用 tmplsResultNcbiid 来代替，注意可以用=，虽然是引用传递，但是后面lsResultNcbiid会赋给新值
+			
+					}
+				}
+
+				if (UniProtflag==1)//在ncbi表中找到了唯一的一条记录
+					break;
+			}
+			if (UniProtflag==2) {
+				System.out.println(taxID+"  Reallyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "+"    UniProt");
+			}
+			if (UniProtflag>=1) 
+			{
+				UniProtID  uniProtIDRes=null;
+				if (lsResultUniProtID.size()>0) {
+					 uniProtIDRes=lsResultUniProtID.get(0);
+						String resultTmp=uniProtIDRes.getTaxID()+"\t"+uniProtIDRes.getUniID();
+						for (int i = 0; i < 3; i++)
+						{
+							String[] ssTmp=ss[index[i]].split("\\|");
+							for (int j = 0; j < ssTmp.length; j++) 
+							{
+								String sstmpid=ssTmp[j].trim();
+								//将其中的
+								if (sstmpid.equals("")) {
+									continue;
+								}
+								if (sstmpid.contains("Em:")) {
+									sstmpid=sstmpid.substring(sstmpid.indexOf(":")+1, sstmpid.indexOf("."));
+								}
+								String resultID=resultTmp+"\t"+sstmpid+"\t"+DBInfo[i]+"\n";
+								txtOutUniProtID.writefile(resultID, false);
+							}
+						}
+						String resultInfo=resultTmp+"\t"+ss[2]+"\t"+ss[9]+"\t"+ss[10]+"\n";
+						txtOutUniGeneInfo.writefile(resultInfo,false);
+				}
+				else {
+					for (int m = 0; m < tmplsResultUniProtID.size(); m++) {
+						uniProtIDRes=tmplsResultUniProtID.get(m);
+						String resultTmp=uniProtIDRes.getTaxID()+"\t"+uniProtIDRes.getUniID();
+						for (int i = 0; i < 3; i++)
+						{
+							String[] ssTmp=ss[index[i]].split("\\|");
+							for (int j = 0; j < ssTmp.length; j++) 
+							{
+								String sstmpid=ssTmp[j].trim();
+								//将其中的
+								if (sstmpid.equals("")) {
+									continue;
+								}
+								if (sstmpid.contains("Em:")) {
+									sstmpid=sstmpid.substring(sstmpid.indexOf(":")+1, sstmpid.indexOf("."));
+								}
+								String resultID=resultTmp+"\t"+sstmpid+"\t"+DBInfo[i]+"\n";
+								txtOutUniProtID.writefile(resultID, false);
+							}
+						}
+						String resultInfo=resultTmp+"\t"+ss[2]+"\t"+ss[9]+"\t"+ss[10]+"\n";
+						txtOutUniGeneInfo.writefile(resultInfo,false);
+					}
+				}
+				continue;
+			}
+			txtRemain.writefile(content+"\n");
+		}
+		txtOutGeneInfo.writefile("", true);
+		txtOutNCBIID.writefile("", true);
+		txtOutUniGeneInfo.writefile("", true);
+		txtOutUniProtID.writefile("", true);
+		txtRemain.writefile("", true);
+	}
+		
+		
+		
 	
 	
 	
