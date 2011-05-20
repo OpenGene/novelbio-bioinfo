@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
+import com.novelbio.database.service.ServAnno;
 
 /**
  * 专门对基因的ID做一些处理的类<br>
@@ -68,15 +69,19 @@ public class CopeID {
 	 * 保存输入的accID，去重复用的
 	 */
 	static HashSet<String> hashAccID = new HashSet<String>();
+	
 	/**
 	 * 保存输入的geneID，去重复用的
 	 */
 	static HashSet<String> hashGenID = new HashSet<String>();
+	
 	/**
 	 * 输入 accID，taxID,accID最好之前做一下trim
 	 * 因为很常见的一个accID会对应多个geneID，所以是返回list
 	 * @param accID
 	 * @param taxID 如果accID不是symbol，taxID可以为0
+	 * @param sepID 是否分开ID
+	 * @param hashGeneID2AccID 每个geneID 对应的 accID列表，在合并ID时用到
 	 * @return
 	 * arraylist-string[3]
 	 * 0: ID类型："geneID"或"uniID"或"accID"<br>
@@ -98,7 +103,7 @@ public class CopeID {
 		//////////////////////////////////////////////////////////////////////////////////////////////
 		ArrayList<String[]> lsAccResult = new ArrayList<String[]>();
 		
-		ArrayList<String> lsaccID = AnnoQuery.getNCBIUni(accID, taxID);
+		ArrayList<String> lsaccID = ServAnno.getNCBIUni(accID, taxID);
 		String type = lsaccID.get(0);
 		 for (int i = 1 ; i<lsaccID.size();i++) {
 			 String accID2;
@@ -150,6 +155,7 @@ public class CopeID {
 	/**
 	 * 给定一系列accID，以及taxID, 将这一系列的accID去重复后整合成一个list,其中一个accID对应多个geneID的情况已经考虑进去
 	 * 结果可以进行go以及pathway的分析
+	 * 如果colAccID.size() == 0；直接返回一个空的结果，就是size==0,但不是null
 	 * @param condition 指定条件，譬如上调，下调或背景
 	 * @param colAccID 一系列的accID，最好是list形式
 	 * @param taxID
@@ -168,6 +174,9 @@ public class CopeID {
 		hashAccID = new HashSet<String>();
 		hashGenID = new HashSet<String>();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		if (colAccID.size() == 0) {
+			return lsResult;
+		}
 		HashMap<String, String> hashGeneID2AccID = new HashMap<String, String>();
 		hashCondGeneID2AccID.put(condition, hashGeneID2AccID);
 		for (String string : colAccID) {

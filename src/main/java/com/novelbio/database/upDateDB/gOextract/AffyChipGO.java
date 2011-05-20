@@ -16,6 +16,8 @@ import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
+import com.novelbio.database.service.ServAnno;
+import com.novelbio.database.service.ServGo;
 import com.novelbio.database.upDateDB.idConvert.NCBIIDOperate;
 
 
@@ -66,7 +68,7 @@ public class AffyChipGO {
 		String[][] affyInfo = excelAffy.ReadExcel(rowstart, 1, excelAffy.getRowCount(), excelAffy.getColCount());
 
 		for (int i = 0; i < affyInfo.length; i++) {
-			ArrayList<String> lsAccID = AnnoQuery.getNCBIUni(affyInfo[i][0], taxID);
+			ArrayList<String> lsAccID = ServAnno.getNCBIUni(affyInfo[i][0], taxID);
 			if (lsAccID.get(0).equals("accID")) {
 				continue;
 			}
@@ -219,7 +221,7 @@ public class AffyChipGO {
 		TxtReadandWrite txtgene2Go=new TxtReadandWrite();
 		txtgene2Go.setParameter(Affygene2GoFile,false,true);
 		BufferedReader gene2GoReader=txtgene2Go.readfile();
-		HashMap<String, String[]> hashGo2Term = GOQuery.getHashGo2Term();
+		HashMap<String, String[]> hashGo2Term = ServGo.getHashGo2Term();
 		String content="";
 		int i=0;
 		while ((content=gene2GoReader.readLine())!=null) 
@@ -267,7 +269,7 @@ public class AffyChipGO {
 		TxtReadandWrite txtgene2Go=new TxtReadandWrite();
 		txtgene2Go.setParameter(Affygene2GoFile,false,true);
 		BufferedReader gene2GoReader=txtgene2Go.readfile();
-		HashMap<String, String[]> hashGo2Term = GOQuery.getHashGo2Term();
+		HashMap<String, String[]> hashGo2Term = ServGo.getHashGo2Term();
 		String content="";
 		int i=0;
 		while ((content=gene2GoReader.readLine())!=null) 

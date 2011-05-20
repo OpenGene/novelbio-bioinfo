@@ -1,6 +1,7 @@
 package com.novelbio.test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.TreeSet;
 
 import org.openxmlformats.schemas.presentationml.x2006.main.SldDocument;
@@ -14,9 +15,9 @@ public class mytest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		TreeSet<String> ls = new TreeSet<String>();
-		ls.
-		}
-	
+		HashMap< String, String> aa = new HashMap<String, String>();
+		aa.put("", "fswefse");
+		System.out.println(aa.get(""));
+	}
 
 }

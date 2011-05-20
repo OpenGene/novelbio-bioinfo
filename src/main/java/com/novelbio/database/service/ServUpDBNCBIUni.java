@@ -1,4 +1,4 @@
-package com.novelbio.database.DAO;
+package com.novelbio.database.service;
 
 import java.util.ArrayList;
 
@@ -7,7 +7,7 @@ import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniProtID;
 
-public class SvDBNCBIUni {
+public class ServUpDBNCBIUni {
 	/**
 	 * 给定NCBIID，首先用taxID和accID在NCBIID表中检查是否存在，如果存在是否修改DBInfo，也就是是否升级DBinfo
 	 * 这时候geneID是从数据库中获得的，所以不会改变geneID

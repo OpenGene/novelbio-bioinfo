@@ -2,17 +2,13 @@ package com.novelbio.database.upDateDB.idConvert;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.novelbio.analysis.annotation.copeID.CopeID;
-import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.ExcelOperate;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.DAO.SvDBNCBIUni;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.service.ServAnno;
+import com.novelbio.database.service.ServUpDBNCBIUni;
 
 
 /**
@@ -139,13 +135,13 @@ public class AffyIDmodify
 					ncbiid.setAccID(affyInfo[i][0]); ncbiid.setDBInfo(dbinfo);
 					ncbiid.setGeneId(geneID);
 					ncbiid.setTaxID(taxID);
-					SvDBNCBIUni.upDateNCBIUni(ncbiid, true,false);
+					ServUpDBNCBIUni.upDateNCBIUni(ncbiid, true,false);
 					String[] ss = affyInfo[i][10].split("///");
 					for (String string2 : ss) {
 						ncbiid.setAccID(string2.trim()); ncbiid.setDBInfo(dbinfo);
 						ncbiid.setGeneId(geneID);
 						ncbiid.setTaxID(taxID);
-						SvDBNCBIUni.upDateNCBIUni(ncbiid,true, false);
+						ServUpDBNCBIUni.upDateNCBIUni(ncbiid,true, false);
 					}
 				}
 			}
@@ -164,7 +160,7 @@ public class AffyIDmodify
 		String[] result = new String[2];
 		result[0] = "accID";result[1] = "";
 		if (affyInfo!=null && !affyInfo.equals("---") && !affyInfo.trim().equals("")) {
-			ArrayList<String> lsInfo = AnnoQuery.getNCBIUni(CopeID.removeDot(affyInfo), taxID);
+			ArrayList<String> lsInfo = ServAnno.getNCBIUni(CopeID.removeDot(affyInfo), taxID);
 			if(!lsInfo.get(0).equals("accID"))
 			{
 				result[0] = lsInfo.get(0);
@@ -192,7 +188,7 @@ public class AffyIDmodify
 					ncbiid.setAccID(CopeID.removeDot(string)); ncbiid.setDBInfo(dbinfo);
 					ncbiid.setGeneId(Integer.parseInt(affyIDinfo[1]));
 					ncbiid.setTaxID(taxID);
-					SvDBNCBIUni.upDateNCBIUni(ncbiid, geneID,true);
+					ServUpDBNCBIUni.upDateNCBIUni(ncbiid, geneID,true);
 				}
 				
 			}
@@ -203,7 +199,7 @@ public class AffyIDmodify
 					uniProtID.setAccID(CopeID.removeDot(string)); uniProtID.setDBInfo(dbinfo);
 					uniProtID.setTaxID(taxID);
 					uniProtID.setUniID(affyIDinfo[1]);
-					SvDBNCBIUni.upDateNCBIUni(uniProtID, geneID,true);
+					ServUpDBNCBIUni.upDateNCBIUni(uniProtID, geneID,true);
 				}
 			}
 		

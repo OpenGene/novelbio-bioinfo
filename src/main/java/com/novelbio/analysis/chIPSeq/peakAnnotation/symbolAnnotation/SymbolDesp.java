@@ -7,6 +7,7 @@ import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.service.ServAnno;
 
 
 public class SymbolDesp 
@@ -70,7 +71,7 @@ public class SymbolDesp
 			////////////////////////////////////////直接搜数据库///////////////////////////////////////////////////
 			for (int j = 0; j < tmpRefID.length; j++)
 			{
-				String[] tmpAnno = AnnoQuery.getAnno(tmpRefID[j].trim(), taxID, false, 0, 0);
+				String[] tmpAnno = ServAnno.getAnno(tmpRefID[j].trim(), taxID, false, 0, 0);
 				String symbol = tmpAnno[0];
 				String description = tmpAnno[1];
 				if (tmpresult[1].contains(symbol.trim())) 

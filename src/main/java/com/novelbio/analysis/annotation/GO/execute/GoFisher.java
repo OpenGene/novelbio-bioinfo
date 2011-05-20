@@ -13,6 +13,7 @@ import com.novelbio.analysis.annotation.GO.queryDB.QBlastGO;
 import com.novelbio.analysis.annotation.GO.queryDB.QGenID2GoInfo;
 import com.novelbio.analysis.annotation.GO.queryDB.QGenID2GoInfoSepID;
 import com.novelbio.analysis.annotation.blast.blastRun;
+import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -393,11 +394,11 @@ public class GoFisher {
 			if (hashID2GeneID.containsKey(geneID[i][colID[1]].trim())) 
 			{
 				ArrayList<String> lsGeneID = hashID2GeneID.get(geneID[i][colID[1]].trim());
-				lsGeneID.add(KGprepare.removeDot(geneID[i][colID[0]].trim()));
+				lsGeneID.add(CopeID.removeDot(geneID[i][colID[0]].trim()));
 			}
 			else {
 				ArrayList<String> lsGeneID = new ArrayList<String>();
-				lsGeneID.add(KGprepare.removeDot(geneID[i][colID[0]].trim()));
+				lsGeneID.add(CopeID.removeDot(geneID[i][colID[0]].trim()));
 				hashID2GeneID.put(geneID[i][colID[1]].trim(), lsGeneID);
 			}
 		}
@@ -440,10 +441,10 @@ public class GoFisher {
 		ArrayList<String> lsGeneDown = new ArrayList<String>();
 		for (int i = 0; i < geneID.length; i++) {
 			if (Double.parseDouble(geneID[i][colID[1]])<=down) {
-				lsGeneDown.add(KGprepare.removeDot(geneID[i][colID[0]]));
+				lsGeneDown.add(CopeID.removeDot(geneID[i][colID[0]]));
 			}
 			else if (Double.parseDouble(geneID[i][colID[1]])>=up) {
-				lsGeneUp.add(KGprepare.removeDot(geneID[i][colID[0]]));
+				lsGeneUp.add(CopeID.removeDot(geneID[i][colID[0]]));
 			}
 		}
 		String[] geneDownID = new String[lsGeneDown.size()];

@@ -26,46 +26,22 @@ public class Blast2GeneInfo {
 		return this.queryUni2GoInfo;
 	}
 	
-	double identities=0;
+	BlastInfo blastInfo;
 	/**
 	 * 初值为0;
 	 * @param identities
 	 */
-	public void setIdentities(double identities) 
+	public void setBlastInfo(BlastInfo blastInfo) 
 	{
-		this.identities=identities;
+		this.blastInfo=blastInfo;
 	}
 	/**
 	 * 初值为0;
 	 */
-	public double getIdentities() {
-		return this.identities;
+	public BlastInfo getBlastInfo() {
+		return this.blastInfo;
 	}
 	
-	double evalue=100;
-	/**
-	 * 初值为100
-	 * @param evalue
-	 */
-	public void setEvalue(double evalue) 
-	{
-		this.evalue=evalue;
-	}
-	/**
-	 * 初值为100
-	 */
-	public double getEvalue() {
-		return this.evalue;
-	}
-	
-	String blastDate;
-	public void setBlastDate(String blastDate) 
-	{
-		this.blastDate=blastDate;
-	}
-	public String getBlastDate() {
-		return this.blastDate;
-	}
 	
 	/**
 	 * 比对到的基因的详细信息

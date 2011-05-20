@@ -17,6 +17,7 @@ import com.novelbio.database.entity.kegg.KGCgen2Ko;
 import com.novelbio.database.entity.kegg.KGIDkeg2Ko;
 import com.novelbio.database.entity.kegg.KGentry;
 import com.novelbio.database.entity.kegg.KGpathway;
+import com.novelbio.database.service.ServAnno;
 
 public class KegPathQuery {
 	
@@ -54,11 +55,11 @@ public class KegPathQuery {
 		HashSet<String> hashPahID = new HashSet<String>();
 		ArrayList<String[]> lsPathInfo = new ArrayList<String[]>();
 		
-		String[] anno = AnnoQuery.getAnno(accID, taxID, blast, subTaxID, evalue);
+		String[] anno = ServAnno.getAnno(accID, taxID, blast, subTaxID, evalue);
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setAccID(accID); ncbiid.setTaxID(taxID);
 		ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
-		if (lsNcbiids != null && lsNcbiids.size()>1) {
+		if (lsNcbiids != null && lsNcbiids.size()>=1) {
 			ncbiid = lsNcbiids.get(0);
 		}
 		KGen2Path kGen2Path = qKegPath(ncbiid, blast, subTaxID, evalue);
@@ -159,7 +160,7 @@ if test="taxID !=null and taxID !=0"
 and taxID=#{taxID}
 /if
 	 * 可以设定是否需要进行blast，不过就算设定了blast，如果本基因含有pathway那还是不进行blast
-	 * @param ncbiid 最好能同时含有 accID和geneID两项
+	 * @param ncbiid 必须含有geneID，最好含有taxID
 	 * @param blast
 	 * @param subTaxID 需要查找的物种
 	 * @param evalue 只有当blast为true时才起作用，当evalue<=设定值时才会考虑blast获得的KO值

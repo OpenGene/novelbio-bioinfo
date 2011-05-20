@@ -78,6 +78,7 @@ public class GUIBlast extends javax.swing.JFrame {
 	private JRadioButton jRadioButtonGO;
 	private ButtonGroup buttonGroup1;
 	private JScrollPane jScrlGOTable;
+	private JComboBox jComGOClassSelect;
 	private JLabel jLabelTax;
 	private JComboBox jCobTaxSelect;
 	private JLabel jLbGOandPath;
@@ -106,6 +107,9 @@ public class GUIBlast extends javax.swing.JFrame {
 	static GUIBlast inst;
 	static int QtaxID = 0;//查询物种ID
 	static int StaxID = 9606;//blast物种ID
+	String GoClass = "";
+	
+	
 	/**
 	 * 一次最多查询的个数
 	 */
@@ -209,6 +213,7 @@ public class GUIBlast extends javax.swing.JFrame {
 			{
 				jChBlast = new JCheckBox();
 				jChBlast.setText("blast2human");
+				jChBlast.setMargin(new java.awt.Insets(0, 0, 0, 0));
 			}
 			{
 				jScrollPane1 = new JScrollPane();
@@ -219,34 +224,31 @@ public class GUIBlast extends javax.swing.JFrame {
 					    .addComponent(jLbGeneID, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
 					    .addComponent(jBtnGetFile, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
 					    .addComponent(getJLblCond(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(getJCobTaxSelect(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
+					    .addComponent(getJCobTaxSelect(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 					    .addComponent(getJLabelTax(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 					.addGroup(thisLayout.createParallelGroup()
 					    .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
 					        .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 230, GroupLayout.PREFERRED_SIZE)
 					        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					        .addGroup(thisLayout.createParallelGroup()
-					            .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					                .addGroup(thisLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-					                    .addComponent(getJBtnSaveAno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					                    .addComponent(getJBtnAnno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-					                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					                .addComponent(getJSeparator1(), GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE)
-					                .addGap(11))
-					            .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					                .addGap(18)
-					                .addComponent(jChBlast, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))))
+					        .addGroup(thisLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+					            .addComponent(jChBlast, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+					            .addComponent(getJBtnSaveAno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+					            .addComponent(getJBtnAnno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+					        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+					        .addComponent(getJSeparator1(), GroupLayout.PREFERRED_SIZE, 6, GroupLayout.PREFERRED_SIZE)
+					        .addGap(6))
 					    .addComponent(jScroxTxtGeneID, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 274, GroupLayout.PREFERRED_SIZE))
 					.addGroup(thisLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 					    .addComponent(getJBtnSaveGO(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 					    .addComponent(getJRadioButtonGO(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 					    .addComponent(getJRadioButtonPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 					    .addComponent(getJBtnGoPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(getJLbGOandPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+					    .addComponent(getJLbGOandPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+					    .addComponent(getJCmbGOClassSelect(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					.addComponent(getJScrlGOTable(), 0, 265, Short.MAX_VALUE)
-					.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+					.addComponent(getJScrlGOTable(), GroupLayout.PREFERRED_SIZE, 264, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 1, Short.MAX_VALUE)
 					.addComponent(getJProgressBar1(), GroupLayout.PREFERRED_SIZE, 9, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(24, 24));
 				thisLayout.setHorizontalGroup(thisLayout.createParallelGroup()
@@ -256,44 +258,47 @@ public class GUIBlast extends javax.swing.JFrame {
 					.addGroup(thisLayout.createSequentialGroup()
 					    .addGap(7)
 					    .addGroup(thisLayout.createParallelGroup()
-					        .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					            .addComponent(getJLbGOandPath(), GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE)
-					            .addGap(0, 652, Short.MAX_VALUE))
 					        .addGroup(thisLayout.createSequentialGroup()
 					            .addGroup(thisLayout.createParallelGroup()
-					                .addComponent(jScroxTxtGeneID, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 199, GroupLayout.PREFERRED_SIZE)
+					                .addComponent(getJLbGOandPath(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 205, GroupLayout.PREFERRED_SIZE)
+					                .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
+					                    .addComponent(jScroxTxtGeneID, GroupLayout.PREFERRED_SIZE, 199, GroupLayout.PREFERRED_SIZE)
+					                    .addGap(6))
 					                .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
 					                    .addComponent(jLbGeneID, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
-					                    .addComponent(jBtnGetFile, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)))
-					            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+					                    .addComponent(jBtnGetFile, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
+					                    .addGap(6)))
 					            .addGroup(thisLayout.createParallelGroup()
 					                .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					                    .addComponent(jChBlast, GroupLayout.PREFERRED_SIZE, 119, GroupLayout.PREFERRED_SIZE)
-					                    .addGap(11)
+					                    .addComponent(getJBtnGoPath(), GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
+					                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 					                    .addGroup(thisLayout.createParallelGroup()
 					                        .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					                            .addGroup(thisLayout.createParallelGroup()
-					                                .addComponent(getJBtnGoPath(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
-					                                .addComponent(getJBtnAnno(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE))
-					                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-					                            .addComponent(getJRadioButtonGO(), GroupLayout.PREFERRED_SIZE, 143, GroupLayout.PREFERRED_SIZE)
+					                            .addComponent(getJRadioButtonGO(), GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE)
 					                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					                            .addComponent(getJRadioButtonPath(), GroupLayout.PREFERRED_SIZE, 145, GroupLayout.PREFERRED_SIZE)
-					                            .addGap(45)
+					                            .addComponent(getJCmbGOClassSelect(), 0, 200, Short.MAX_VALUE)
+					                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+					                            .addComponent(getJRadioButtonPath(), GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
+					                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 					                            .addGroup(thisLayout.createParallelGroup()
-					                                .addGroup(thisLayout.createSequentialGroup()
-					                                    .addComponent(getJBtnSaveGO(), GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
-					                                .addGroup(thisLayout.createSequentialGroup()
-					                                    .addComponent(getJBtnSaveAno(), GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)))
-					                            .addGap(0, 58, Short.MAX_VALUE))
-					                        .addComponent(getJSeparator1(), GroupLayout.Alignment.LEADING, 0, 596, Short.MAX_VALUE)))
+					                                .addComponent(getJBtnSaveGO(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
+					                                .addComponent(getJBtnSaveAno(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
+					                            .addGap(47))
+					                        .addComponent(getJSeparator1(), GroupLayout.Alignment.LEADING, 0, 625, Short.MAX_VALUE)))
 					                .addComponent(jScrollPane1, GroupLayout.Alignment.LEADING, 0, 726, Short.MAX_VALUE)
 					                .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					                    .addGap(26)
-					                    .addComponent(getJLblCond(), GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE)
-					                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+					                    .addGroup(thisLayout.createParallelGroup()
+					                        .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
+					                            .addGap(24)
+					                            .addComponent(getJLblCond(), GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE))
+					                        .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
+					                            .addComponent(jChBlast, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
+					                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+					                            .addComponent(getJBtnAnno(), GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
+					                            .addGap(122)))
+					                    .addGap(0, 17, Short.MAX_VALUE)
 					                    .addComponent(getJLabelTax(), GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
-					                    .addComponent(getJCobTaxSelect(), 0, 237, Short.MAX_VALUE))))
+					                    .addComponent(getJCobTaxSelect(), GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE))))
 					        .addComponent(getJScrlGOTable(), GroupLayout.Alignment.LEADING, 0, 931, Short.MAX_VALUE))
 					    .addContainerGap()));
 			pack();
@@ -408,6 +413,12 @@ public class GUIBlast extends javax.swing.JFrame {
 			jRadioButtonGO.setText("GeneOntology");
 			jRadioButtonGO.setSelected(true);
 			buttonGroup1.add(jRadioButtonGO);
+			jRadioButtonGO.setMargin(new java.awt.Insets(2, 0, 2, 0));
+			jRadioButtonGO.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					jComGOClassSelect.setEnabled(true);
+				}
+			});
 		}
 		return jRadioButtonGO;
 	}
@@ -417,6 +428,12 @@ public class GUIBlast extends javax.swing.JFrame {
 			jRadioButtonPath = new JRadioButton();
 			jRadioButtonPath.setText("KEGG Pathway");
 			buttonGroup1.add(jRadioButtonPath);
+			jRadioButtonPath.setMargin(new java.awt.Insets(2, 0, 2, 0));
+			jRadioButtonPath.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					jComGOClassSelect.setEnabled(false);
+				}
+			});
 		}
 		return jRadioButtonPath;
 	}
@@ -569,7 +586,7 @@ public class GUIBlast extends javax.swing.JFrame {
 								jTabFGoandPath.setModel(jTabGoandPath);
 							}
 						}
-						ctrlGo = new CtrlGo(blast, QtaxID, StaxID, 1e-10, inst);
+						ctrlGo = new CtrlGo(blast, QtaxID, StaxID, 1e-10, inst,GoClass);
 						ctrlGo.prepare(lsGenID2);
 						ctrlGo.execute();
 						//ctrlAnno.done();
@@ -772,8 +789,25 @@ public class GUIBlast extends javax.swing.JFrame {
 		}
 	}
 	
-
-
+	public JComboBox getJCmbGOClassSelect() {
+		if(jComGOClassSelect == null) {
+			ComboBoxModel jCmbGOClassSelectModel = 
+				new DefaultComboBoxModel(
+						new String[] { "Biological Process", "Molecular Function","Cellular Component","All" });
+			jComGOClassSelect = new JComboBox();
+			jComGOClassSelect.setModel(jCmbGOClassSelectModel);
+			GoClass = (String) jComGOClassSelect.getSelectedItem();
+			GoClass =CtrlOther.getGoClass(GoClass);
+			jComGOClassSelect.addActionListener(new ActionListener() 
+			{
+				public void actionPerformed(ActionEvent evt) {
+					GoClass = (String) jComGOClassSelect.getSelectedItem();
+					GoClass =CtrlOther.getGoClass(GoClass);
+				}
+			});
+		}
+		return jComGOClassSelect;
+	}
 
 	NBCJDialog nbcjDialog;
 	

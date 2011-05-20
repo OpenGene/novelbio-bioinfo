@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import com.novelbio.analysis.annotation.GO.queryDB.QBlastGO;
 import com.novelbio.analysis.annotation.GO.queryDB.QGenID2GoInfo;
 import com.novelbio.analysis.annotation.GO.queryDB.QGenID2GoInfoSepID;
 import com.novelbio.analysis.annotation.GO.queryDB.QgeneID2Go;
@@ -28,6 +27,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.service.ServGo;
 
 
 
@@ -62,7 +62,7 @@ public class GoFisherNew {
 	 * @param blast
 	 * @param StaxID
 	 * @param evalue
-	 * @param resultExcel2003 不要加后缀xls，程序自动添加，在文件名和xls之间程序会添加上“_组ID”
+	 * @param resultExcel2003 不要加后缀els，程序自动添加，在文件名和xls之间程序会添加上“_组ID”
 	 * @throws Exception
 	 */
 	public static void getGoRunElim(String geneFileXls,String GOClass,int[] colID,String backGroundFile,int QtaxID,
@@ -111,7 +111,7 @@ public class GoFisherNew {
 	 * @param sepID
 	 * @param GOClass P: biological Process F:molecular Function C: cellular Component
 	 * 	 * <b>注意是实际列</b>
-	 * @param colID 选择差异基因中的哪两列。0：accID，1：foldChange
+	 * @param colID 选择差异基因中的哪两列。0：accID，1：foldChange。如果col[0] == col[1] 那么说明不考虑差异列
 	 * @param up
 	 * @param down
 	 * @param backGroundFile
@@ -137,12 +137,16 @@ public class GoFisherNew {
 		ArrayList<String> lsGeneUp = new ArrayList<String>();
 		ArrayList<String> lsGeneDown = new ArrayList<String>();
 		for (int i = 0; i < geneID.length; i++) {
-			if (Double.parseDouble(geneID[i][colID[1]])<=down) {
+			if (colID[1] == colID[0]) {
+				lsGeneUp.add(geneID[i][colID[0]]);
+			}
+			else if (Double.parseDouble(geneID[i][colID[1]])<=down) {
 				lsGeneDown.add(geneID[i][colID[0]]);
 			}
 			else if (Double.parseDouble(geneID[i][colID[1]])>=up) {
 				lsGeneUp.add(geneID[i][colID[0]]);
 			}
+			
 		}
 		
 		ArrayList<String[]> lsBGIDAll = ExcelTxtRead.getFileToList(backGroundFile, 1, "\t");
@@ -644,7 +648,7 @@ public class GoFisherNew {
 		ArrayList<String[]> lsGene2GoBG = lsGoInfoBG.get(1);
 		ArrayList<String[]> lsFisherResult = FisherTest.getFisherResult(lsGene2Go, lsGene2GoBG, new ItemInfo() {
 			public String[] getItemName(String ItemID) {
-				HashMap<String, String[]> hashGo2Term = GOQuery.getHashGo2Term();
+				HashMap<String, String[]> hashGo2Term = ServGo.getHashGo2Term();
 				String[] goTerm = new String[1];
 				goTerm[0] = hashGo2Term.get(ItemID)[2];
 				return goTerm;

@@ -326,7 +326,7 @@ public class QBlastGO {
 				//在blast表里面存在
 				if (blastInforesult!=null) 
 				{
-					blast2GeneInfo.setIdentities(blastInforesult.getIdentities());blast2GeneInfo.setEvalue(blastInforesult.getEvalue());blast2GeneInfo.setBlastDate(blastInforesult.getBlastDate());
+					blast2GeneInfo.setBlastInfo(blastInforesult);
 					//用blast的subjectGeneID去查找NCBIID表/UniProtID表
 					try {
 						long SubjectGeneID=Long.parseLong(blastInforesult.getSubjectID());
@@ -366,7 +366,7 @@ public class QBlastGO {
 					BlastInfo blastInforesult2=DaoFSBlastInfo.queryBlastInfo(blastInfo2);
 					if (blastInforesult2!=null) 
 					{
-						blast2GeneInfo.setIdentities(blastInforesult2.getIdentities());blast2GeneInfo.setEvalue(blastInforesult2.getEvalue());blast2GeneInfo.setBlastDate(blastInforesult2.getBlastDate());
+						blast2GeneInfo.setBlastInfo(blastInfo2);//.setIdentities(blastInforesult2.getIdentities());blast2GeneInfo.setEvalue(blastInforesult2.getEvalue());blast2GeneInfo.setBlastDate(blastInforesult2.getBlastDate());
 						//用blast的subjectGeneID去查找NCBIID表/UniProtID表
 						try {
 							long SubjectGeneID=Long.parseLong(blastInforesult2.getSubjectID());
@@ -407,7 +407,7 @@ public class QBlastGO {
 				BlastInfo blastInforesult2=DaoFSBlastInfo.queryBlastInfo(blastInfo3);
 				if (blastInforesult2!=null) 
 				{
-					blast2GeneInfo.setIdentities(blastInforesult2.getIdentities());blast2GeneInfo.setEvalue(blastInforesult2.getEvalue());blast2GeneInfo.setBlastDate(blastInforesult2.getBlastDate());
+					blast2GeneInfo.setBlastInfo(blastInforesult2);
 					//用blast的subjectGeneID去查找NCBIID表/UniProtID表
 					try {
 						long SubjectGeneID=Long.parseLong(blastInforesult2.getSubjectID());
@@ -500,14 +500,14 @@ public class QBlastGO {
 				else 
 					flag[1][1]=0;
 			}
-			if (Sgene2GoInfo!=null&&blast2GeneInfo.getEvalue()<=evalue) {
+			if (Sgene2GoInfo!=null&&blast2GeneInfo.getBlastInfo().getEvalue()<=evalue) {
 				flag[2][0]=1;
 				if (Sgene2GoInfo.getLsGOInfo()!=null)
 					flag[2][1]=Sgene2GoInfo.getLsGOInfo().size();
 				else 
 					flag[2][1]=0;
 			}
-			else if (Suni2GoInfo!=null&&blast2GeneInfo.getEvalue()<=evalue) {
+			else if (Suni2GoInfo!=null&&blast2GeneInfo.getBlastInfo().getEvalue()<=evalue) {
 				flag[3][0]=1;
 				if (Suni2GoInfo.getLsUniGOInfo()!=null)
 					flag[3][1]=Suni2GoInfo.getLsUniGOInfo().size();
@@ -568,18 +568,18 @@ public class QBlastGO {
 					
 				}
 				///////////////////////////////////////////////////
-				if (blast2GeneInfo.getEvalue()<=evalue&&blast2GeneInfo.getSubjectGene2GoInfo()!=null) 
+				if (blast2GeneInfo.getBlastInfo().getEvalue()<=evalue&&blast2GeneInfo.getSubjectGene2GoInfo()!=null) 
 				 {
-					tmpBlastInfo[6]=blast2GeneInfo.getEvalue()+"";
+					tmpBlastInfo[6]=blast2GeneInfo.getBlastInfo().getEvalue()+"";
 					tmpBlastInfo[7]=blast2GeneInfo.getSubjectGene2GoInfo().getTaxID()+"";
 					tmpBlastInfo[8]=blast2GeneInfo.getSubjectGene2GoInfo().getGeneId()+"";
 					GeneInfo tmpGeneInfo=blast2GeneInfo.getSubjectGene2GoInfo().getGeneInfo();
 					if(tmpGeneInfo!=null&&tmpGeneInfo.getSymbol()!=null)
 						tmpBlastInfo[9]=tmpGeneInfo.getSymbol().split("//")[0];
 				}
-				else if (blast2GeneInfo.getEvalue()<=evalue&&blast2GeneInfo.getSubjectUni2GoInfo()!=null)
+				else if (blast2GeneInfo.getBlastInfo().getEvalue()<=evalue&&blast2GeneInfo.getSubjectUni2GoInfo()!=null)
 				{
-					tmpBlastInfo[6]=blast2GeneInfo.getEvalue()+"";
+					tmpBlastInfo[6]=blast2GeneInfo.getBlastInfo().getEvalue()+"";
 					tmpBlastInfo[7]=blast2GeneInfo.getSubjectUni2GoInfo().getTaxID()+"";
 					tmpBlastInfo[8]=blast2GeneInfo.getSubjectUni2GoInfo().getUniID();
 					UniGeneInfo tmpUniGeneInfo=blast2GeneInfo.getSubjectUni2GoInfo().getUniGeneInfo();
@@ -645,9 +645,9 @@ public class QBlastGO {
 						}
 					}
 					///////////////////////////////////////////////////
-					if (blast2GeneInfo.getEvalue()<evalue&&blast2GeneInfo.getSubjectGene2GoInfo()!=null) 
+					if (blast2GeneInfo.getBlastInfo().getEvalue()<evalue&&blast2GeneInfo.getSubjectGene2GoInfo()!=null) 
 					 {
-						tmpBlastInfo[6]=blast2GeneInfo.getEvalue()+"";
+						tmpBlastInfo[6]=blast2GeneInfo.getBlastInfo().getEvalue()+"";
 						tmpBlastInfo[7]=blast2GeneInfo.getSubjectGene2GoInfo().getTaxID()+"";
 						tmpBlastInfo[8]=blast2GeneInfo.getSubjectGene2GoInfo().getGeneId()+"";
 						GeneInfo tmpGeneInfo=blast2GeneInfo.getSubjectGene2GoInfo().getGeneInfo();
@@ -665,8 +665,8 @@ public class QBlastGO {
 							}
 						}
 					}
-					else if (blast2GeneInfo.getEvalue()<evalue&&blast2GeneInfo.getSubjectUni2GoInfo()!=null) {
-						tmpBlastInfo[6]=blast2GeneInfo.getEvalue()+"";
+					else if (blast2GeneInfo.getBlastInfo().getEvalue()<evalue&&blast2GeneInfo.getSubjectUni2GoInfo()!=null) {
+						tmpBlastInfo[6]=blast2GeneInfo.getBlastInfo().getEvalue()+"";
 						tmpBlastInfo[7]=blast2GeneInfo.getSubjectUni2GoInfo().getTaxID()+"";
 						tmpBlastInfo[8]=blast2GeneInfo.getSubjectUni2GoInfo().getUniID();
 						UniGeneInfo tmpUniGeneInfo=blast2GeneInfo.getSubjectUni2GoInfo().getUniGeneInfo();
@@ -753,14 +753,14 @@ public class QBlastGO {
 				else 
 					flag[1][1]=0;
 			}
-			if (Sgene2GoInfo!=null&&blast2GeneInfo.getEvalue()<=evalue) {
+			if (Sgene2GoInfo!=null&&blast2GeneInfo.getBlastInfo().getEvalue()<=evalue) {
 				flag[2][0]=1;
 				if (Sgene2GoInfo.getLsGOInfo()!=null)
 					flag[2][1]=Sgene2GoInfo.getLsGOInfo().size();
 				else 
 					flag[2][1]=0;
 			}
-			else if (Suni2GoInfo!=null&&blast2GeneInfo.getEvalue()<=evalue) {
+			else if (Suni2GoInfo!=null&&blast2GeneInfo.getBlastInfo().getEvalue()<=evalue) {
 				flag[3][0]=1;
 				if (Suni2GoInfo.getLsUniGOInfo()!=null)
 					flag[3][1]=Suni2GoInfo.getLsUniGOInfo().size();
@@ -819,7 +819,7 @@ public class QBlastGO {
 					}
 				}
 				///////////////////////////////////////////////////
-				if (blast2GeneInfo.getEvalue()<=evalue&&blast2GeneInfo.getSubjectGene2GoInfo()!=null) 
+				if (blast2GeneInfo.getBlastInfo().getEvalue()<=evalue&&blast2GeneInfo.getSubjectGene2GoInfo()!=null) 
 				 {
 					GeneInfo tmpGeneInfo=blast2GeneInfo.getSubjectGene2GoInfo().getGeneInfo();
 					if(tmpGeneInfo!=null&&tmpGeneInfo.getSymbol()!=null)
@@ -835,7 +835,7 @@ public class QBlastGO {
 					}
 					
 				}
-				else if (blast2GeneInfo.getEvalue()<=evalue&&blast2GeneInfo.getSubjectUni2GoInfo()!=null)
+				else if (blast2GeneInfo.getBlastInfo().getEvalue()<=evalue&&blast2GeneInfo.getSubjectUni2GoInfo()!=null)
 				{
 					UniGeneInfo tmpUniGeneInfo=blast2GeneInfo.getSubjectUni2GoInfo().getUniGeneInfo();
 					if(tmpUniGeneInfo!=null&&tmpUniGeneInfo.getSymbol()!=null)
@@ -945,7 +945,7 @@ public class QBlastGO {
 						}
 					}
 					///////////////////////////////////////////////////
-					if (blast2GeneInfo.getEvalue()<evalue&&blast2GeneInfo.getSubjectGene2GoInfo()!=null) 
+					if (blast2GeneInfo.getBlastInfo().getEvalue()<evalue&&blast2GeneInfo.getSubjectGene2GoInfo()!=null) 
 					 {
 						GeneInfo tmpGeneInfo=blast2GeneInfo.getSubjectGene2GoInfo().getGeneInfo();
 						if(tmpGeneInfo!=null&&tmpGeneInfo.getSymbol()!=null)
@@ -981,7 +981,7 @@ public class QBlastGO {
 							}
 						}
 					}
-					else if (blast2GeneInfo.getEvalue()<evalue&&blast2GeneInfo.getSubjectUni2GoInfo()!=null)
+					else if (blast2GeneInfo.getBlastInfo().getEvalue()<evalue&&blast2GeneInfo.getSubjectUni2GoInfo()!=null)
 					{
 						UniGeneInfo tmpUniGeneInfo=blast2GeneInfo.getSubjectUni2GoInfo().getUniGeneInfo();
 						if(tmpUniGeneInfo!=null&&tmpUniGeneInfo.getSymbol()!=null)

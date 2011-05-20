@@ -13,6 +13,7 @@ import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.service.ServAnno;
 
 
 
@@ -103,7 +104,7 @@ public class CtrlAnno extends SwingWorker<ArrayList<String[]>, ProgressData>
 			String geneID = lsGeneID.get(i).trim();
 		
 			try {
-				String[] tmpAnno = AnnoQuery.getAnno(geneID, taxID, blast, StaxID, evalue);
+				String[] tmpAnno = ServAnno.getAnno(geneID, taxID, blast, StaxID, evalue);
 				if (tmpAnno == null) {
 					tmpAnno = new String[length];
 					for (int j = 0; j < tmpAnno.length; j++) {

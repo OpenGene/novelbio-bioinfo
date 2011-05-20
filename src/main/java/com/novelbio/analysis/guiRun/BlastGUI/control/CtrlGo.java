@@ -11,6 +11,7 @@ import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.GOQuery;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.service.ServGo;
 
 
 public class CtrlGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo>
@@ -50,13 +51,13 @@ public class CtrlGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo>
 	 * @param evalue
 	 * @param guiBlast
 	 */
-	public CtrlGo(boolean blast, int taxID, int StaxID, double evalue,GUIBlast guiBlast) {
+	public CtrlGo(boolean blast, int taxID, int StaxID, double evalue,GUIBlast guiBlast,String GOclass) {
 		this.blast = blast;
 		this.taxID = taxID;
 		this.StaxID = StaxID;
 		this.evalue = evalue;
 		this.guiBlast =guiBlast;
-		
+		this.GoClass = GOclass;
 	}
 
 	List<String> lsGeneID = null;
@@ -120,7 +121,7 @@ public class CtrlGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo>
 						strings2 = new String[9];
 						int m = 0;
 						for (int k = 0; k < lstmpAnno.get(0).length; k++) {
-							if (k == 1 || k == 5 || k == 7 || k== 8 || k==12) {
+							if (k == 1 || k==3 || k == 6 || k== 8 || k==9 || k == 11 || k == 14) {
 								continue;
 							}
 							strings2[m] =  lstmpAnno.get(j)[k]; m++;
@@ -131,7 +132,7 @@ public class CtrlGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo>
 						strings2 = new String[4];
 						int m = 0;
 						for (int k = 0; k <  lstmpAnno.get(0).length; k++) {
-							if (k == 1) {
+							if (k == 1 || k == 3 || k == 6) {
 								continue;
 							}
 							strings2[m] =  lstmpAnno.get(j)[k]; m++;

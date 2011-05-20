@@ -18,6 +18,8 @@ import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.service.ServAnno;
+import com.novelbio.database.service.ServGo;
 
 public class UniProtConvertID {
 
@@ -608,7 +610,7 @@ public class UniProtConvertID {
 	 */
 	public static void upDateUniGo(String inputFile) throws Exception 
 	{
-		HashMap<String, String[]> goInfo = GOQuery.getHashGo2Term();
+		HashMap<String, String[]> goInfo = ServGo.getHashGo2Term();
 		
 		TxtReadandWrite inputReadandWrite=new TxtReadandWrite();
 		inputReadandWrite.setParameter(inputFile,false, true);
@@ -628,7 +630,7 @@ public class UniProtConvertID {
 				String GoID = thisgoInfo[1];
 				String goFun = thisgoInfo[3];
 				String goTerm = thisgoInfo[2];
-				ArrayList<String> lsAccID = AnnoQuery.getNCBIUni(ss[0], Integer.parseInt(ss[13]));
+				ArrayList<String> lsAccID = ServAnno.getNCBIUni(ss[0], Integer.parseInt(ss[13]));
 				if (lsAccID.get(0).equals("geneID")) {
 					for (int i = 1; i < lsAccID.size(); i++) {
 						Gene2Go gene2Go = new Gene2Go();

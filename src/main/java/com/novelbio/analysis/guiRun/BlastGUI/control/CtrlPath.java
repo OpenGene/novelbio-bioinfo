@@ -108,6 +108,7 @@ public class CtrlPath extends SwingWorker<ArrayList<String[]>, ProgressDataPath>
 				publish(progressData);
 				lsDesp.addAll(lstmpAnno);
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 		

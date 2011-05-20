@@ -31,6 +31,7 @@ import com.novelbio.database.entity.friceDB.TaxInfo;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
 import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.service.ServGo;
 
 
 public class UpDateNBCDBFile {
@@ -50,7 +51,7 @@ public class UpDateNBCDBFile {
 		BufferedReader gene2GoReader=txtgene2Go.readfile();
 		String content="";
 		int i=0;
-		HashMap<String, String[]> goInfo = GOQuery.getHashGo2Term();
+		HashMap<String, String[]> goInfo = ServGo.getHashGo2Term();
 		
 		while ((content=gene2GoReader.readLine())!=null) 
 		{
@@ -644,7 +645,7 @@ public class UpDateNBCDBFile {
 	 * @throws Exception 
 	 */
 	public static void upDateGene2GoUniProtgene_associationgoa_uniprot(String uniGOfile) throws Exception {
-		HashMap<String, String[]> hashGoInfo = GOQuery.getHashGo2Term();
+		HashMap<String, String[]> hashGoInfo = ServGo.getHashGo2Term();
 		TxtReadandWrite txtGene2GO=new TxtReadandWrite();
 		txtGene2GO.setParameter(uniGOfile,false,true);
 		BufferedReader ncbiReader=txtGene2GO.readfile();

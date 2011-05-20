@@ -114,74 +114,74 @@ public class runGo {
 	 */
 	public static void goanalysisElimNew() {
 
-//try {
-//	String file="/media/winE/NBC/Project/Project_CDG_Lab/Microarray_WYR110516";
-//	String backGroundFile=file + "/mouseAffyBG.txt";
-//	ArrayList<String[]> lsExcelFileName = FileOperate.getFoldFileName( file,"*", "xls");
-//	String[] prix = new String[2];
-////	prix[0] = "Cotex KO VS WT";
-//	prix[0] = "up";
-//	prix[1] = "down";
-//	for (String[] strings : lsExcelFileName) {
-//		try {
-//		String excelName = file + "/" +strings[0]+"."+strings[1];
-//		String GOClass = "P";
-//		int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
-//		double up = 1;
-//		double down = -1;
-//		boolean sepID = false;
-//		int QtaxID = 10090;
-//		boolean blast = false;
-//		int StaxID = 9606;
-//		double evalue = 1e-10;
-//		String resultExcel2003 = file +"/"+strings[0]+"elimGOCombID.xls";
-//		String resultGoMap = file +"/"+ strings[0]+"GOmap";
-//		GoFisherNew.getGoRunElim(excelName, sepID, GOClass, colID, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003,resultGoMap, prix,300);
-//		System.out.println("ok");
-//	} catch (Exception e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	}
-//	
-//	
-//	}
-//	
-//} catch (Exception e) {
-//	// TODO: handle exception
-//}
+try {
+	String file="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/GO/20110519 ÖØÐÂGO·ÖÎö";
+	String backGroundFile=file + "/riceAffyBG.txt";
+	ArrayList<String[]> lsExcelFileName = FileOperate.getFoldFileName( file,"*", "xls");
+	String[] prix = new String[2];
+//	prix[0] = "Cotex KO VS WT";
+	prix[0] = "";
+	prix[1] = "down";
+	for (String[] strings : lsExcelFileName) {
+		try {
+		String excelName = file + "/" +strings[0]+"."+strings[1];
+		String GOClass = "P";
+		int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
+		double up = 0.5;
+		double down = -1;
+		boolean sepID = false;
+		int QtaxID = 39947;
+		boolean blast = false;
+		int StaxID = 9606;
+		double evalue = 1e-10;
+		String resultExcel2003 = file +"/"+strings[0]+"elimGOCombID.xls";
+		String resultGoMap = file +"/"+ strings[0]+"GOmap";
+		GoFisherNew.getGoRunElim(excelName, sepID, GOClass, colID, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003,resultGoMap, prix,300);
+		System.out.println("ok");
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+	
+	}
+	
+} catch (Exception e) {
+	e.printStackTrace();
+}
 
 		
 		
 		
-		
-		
-		String file="/media/winE/NBC/Project/Project_CDG_Lab/Microarray_WYR110516/";
-		String backGroundFile=file + "mouseAffyBG.txt";
-		String[] prix = new String[2];
-		prix[0] = "up";
+//		
+//		
+//		String file="/media/winE/NBC/Project/Project_CDG_Lab/Microarray_WYR110516/";
+//		String backGroundFile=file + "mouseAffyBG.txt";
+//		String[] prix = new String[2];
 //		prix[0] = "up";
-		prix[1] = "down";
-		
-		try {
-			String fileName = "HYP KO VS WT";			
-			String geneFile=file+fileName+".xls";
-			String GOClass = "P";
-			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
-			double up = 1;
-			double down = -1;
-			boolean sepID = false;
-			int QtaxID = 10090;
-			boolean blast = false;
-			int StaxID = 9606;
-			double evalue = 1e-10;
-			String resultExcel2003 = file +fileName+"elimGOCombID.xls";
-			String resultGoMap = file + fileName+"GOmap";
-			GoFisherNew.getGoRunElim(geneFile, sepID, GOClass, colID, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003,resultGoMap, prix,300);
-			System.out.println("ok");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+////		prix[0] = "up";
+//		prix[1] = "down";
+//		
+//		try {
+//			String fileName = "HYP KO VS WT";			
+//			String geneFile=file+fileName+".xls";
+//			String GOClass = "P";
+//			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
+//			double up = 1;
+//			double down = -1;
+//			boolean sepID = false;
+//			int QtaxID = 10090;
+//			boolean blast = false;
+//			int StaxID = 9606;
+//			double evalue = 1e-10;
+//			String resultExcel2003 = file +fileName+"elimGOCombID.xls";
+//			String resultGoMap = file + fileName+"GOmap";
+//			GoFisherNew.getGoRunElim(geneFile, sepID, GOClass, colID, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003,resultGoMap, prix,300);
+//			System.out.println("ok");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 	}
 	

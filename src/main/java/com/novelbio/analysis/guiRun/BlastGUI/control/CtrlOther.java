@@ -27,4 +27,24 @@ public class CtrlOther {
 		}
 		return hashTaxID;
 	}
+	
+	/**
+	 * 指定GoClass的全名，返回某个GOclass
+	 */
+	public static String getGoClass(String goClass) 
+	{
+		if (goClass.equals("Biological Process")) {
+			return "P";
+		}
+		else if (goClass.equals("Molecular Function")) {
+			return "F";
+		}
+		else if (goClass.equals("Cellular Component")) {
+			return "C";
+		}
+		else {
+			return "";
+		}
+	}
+	
 }

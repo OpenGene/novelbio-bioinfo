@@ -9,6 +9,7 @@ import com.novelbio.analysis.annotation.genAnno.GOQuery;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
+import com.novelbio.database.entity.friceDB.Blast2GeneInfo;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.Gene2GoInfo;
@@ -16,6 +17,9 @@ import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.Uni2GoInfo;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.service.ServAnno;
+import com.novelbio.database.service.ServBlastInfo;
+import com.novelbio.database.service.ServGo;
 
 
 
@@ -49,7 +53,7 @@ public class QgeneID2Go {
 	{
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		String[] genInfo = new String[3];
-		String[] geneAnoInfo = AnnoQuery.getGenInfo(ncbiid.getGeneId());
+		String[] geneAnoInfo = ServAnno.getGenInfo(ncbiid.getGeneId());
 		if (ncbiid.getAccID() == null || ncbiid.getAccID().equals("")) {
 			genInfo[0] = ncbiid.getGeneId()+"";
 		}
@@ -59,7 +63,7 @@ public class QgeneID2Go {
 		genInfo[1] = geneAnoInfo[0];genInfo[2] = geneAnoInfo[1];
 		lsResult.add(genInfo);
 		///////////////////////////////////////////////////////////////////////////////////////////////////
-		ArrayList<Gene2Go> lsGene2Gos = GOQuery.getGen2Go(ncbiid);
+		ArrayList<Gene2Go> lsGene2Gos = ServGo.getGen2Go(ncbiid);
 		
 		if (lsGene2Gos != null && lsGene2Gos.size()>0) {
 			String[] goID = new String[lsGene2Gos.size()];
@@ -91,7 +95,7 @@ public class QgeneID2Go {
 	{
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		String[] genInfo = new String[3];
-		String[] geneAnoInfo = AnnoQuery.getUniGenInfo(uniProtID.getUniID());
+		String[] geneAnoInfo = ServAnno.getUniGenInfo(uniProtID.getUniID());
 		if (uniProtID.getAccID() == null || uniProtID.getAccID().equals("")) {
 			genInfo[0] = uniProtID.getUniID();
 		}
@@ -101,7 +105,7 @@ public class QgeneID2Go {
 		genInfo[1] = geneAnoInfo[0];genInfo[2] = geneAnoInfo[1];
 		lsResult.add(genInfo);
 		///////////////////////////////////////////////////////////////////////////////////////////////////
-		ArrayList<UniGene2Go> lsuniGene2Gos = GOQuery.getUniGen2Go(uniProtID);
+		ArrayList<UniGene2Go> lsuniGene2Gos = ServGo.getUniGen2Go(uniProtID);
 		
 		if (lsuniGene2Gos != null && lsuniGene2Gos.size()>0) {
 			String[] goID = new String[lsuniGene2Gos.size()];
@@ -115,41 +119,7 @@ public class QgeneID2Go {
 		return lsResult;
 	}
 
-	/**
-	 * @param genInfo
-	 * 0: ID类型："geneID"或"uniID"或"accID"<br>
-	 * 1: accID<br>
-	 * 2: 具体转换的ID<br>
-	 * @param taxID
-	 * @param sep
-	 * @return
-	 */
-	public static Gene2GoInfo getGen2GoInfo(String[] genInfo,int taxID)
-	{
-			NCBIID ncbiid = new NCBIID();
-			ncbiid.setAccID(genInfo[1]);
-			ncbiid.setGeneId(Long.parseLong(genInfo[2]));
-			ncbiid.setTaxID(taxID);
-			return DaoFCGene2GoInfo.queryGeneDetail(ncbiid);
-	}
-	
-	/**
-	 * @param genInfo
-	 * 0: ID类型："geneID"或"uniID"或"accID"<br>
-	 * 1: accID<br>
-	 * 2: 具体转换的ID<br>
-	 * @param taxID
-	 * @param sep
-	 * @return
-	 */
-	public static Uni2GoInfo getUni2GenGoInfo(String[] genInfo,int taxID)
-	{
-		UniProtID uniProtID = new UniProtID();
-		uniProtID.setAccID(genInfo[1]);
-		uniProtID.setUniID(genInfo[2]);
-		uniProtID.setTaxID(taxID);
-		return DaoFCGene2GoInfo.queryUniDetail(uniProtID);
-	}
+
 	
 	/**
 	 * @param genInfo
@@ -199,36 +169,7 @@ public class QgeneID2Go {
 		return lsGenGoInfo;
 	}
 	
-	/**
-	 * @param genInfo
-	 * 0: ID类型："geneID"或"uniID"或"accID"<br>
-	 * 1: accID<br>
-	 * 2: 具体转换的ID<br>
-	 * @param taxID
-	 * @param sep
-	 * @return
-	 * 返回blast的信息
-	 */
-	public static BlastInfo getBlastInfo(String[] genInfo,int QtaxID,int StaxID,double evalue)
-	{
-		BlastInfo blastInfo = null;
-		if (genInfo[0].equals("geneID")) {
-			NCBIID ncbiid = new NCBIID();
-			 ncbiid.setGeneId(Long.parseLong(genInfo[2])); ncbiid.setTaxID(QtaxID);
-			 blastInfo = AnnoQuery.getBlastInfo(ncbiid, evalue, StaxID);
-		}
-		else if (genInfo[0].equals("uniID")) {
-			UniProtID uniProtID = new UniProtID();
-			uniProtID.setUniID(genInfo[2]); uniProtID.setTaxID(QtaxID);
-			blastInfo = AnnoQuery.getBlastInfo(uniProtID, evalue, StaxID);
-		}
-		else
-		{
-			String accID = genInfo[1];
-			blastInfo =AnnoQuery.getBlastInfo(accID, evalue, StaxID);
-		}
-		return blastInfo;
-	}
+
 	
 	/**
 	 *  先用CopeID类对输入的geneID做一个整理，包括ID预处理以及合并等，得到的list结果进入该方法做GO的查询<br>
@@ -289,7 +230,8 @@ public class QgeneID2Go {
 	 * 
 	 * 
 	 */
-	public static ArrayList<ArrayList<String[]>> getGenGoInfo(ArrayList<String[]> lsAccID, int QtaxID,String GOClass,boolean sepID,boolean blast,double evalue, int StaxID) 
+	public static ArrayList<ArrayList<String[]>> getGenGoInfo(ArrayList<String[]> lsAccID, int QtaxID,String GOClass,
+			boolean sepID,boolean blast,double evalue, int StaxID) 
 	{
 		/**
 		 * 保存本基因和blast的信息
@@ -335,55 +277,12 @@ public class QgeneID2Go {
 		///////////直接查找///////////////////////////////////
 		for (String[] strings : lsAccID)
 		{
-			Gene2GoInfo Qgene2GoInfo =null;
-			Uni2GoInfo Quni2GoInfo = null;
-			
-			if (strings[0].equals("geneID")) {
-				Qgene2GoInfo = getGen2GoInfo(strings, QtaxID);
-			}
-			else if(strings[0].equals("uniID"))
-			{
-				Quni2GoInfo = getUni2GenGoInfo(strings, QtaxID);
-			}
-			else if(strings[0].equals("accID")) {
-				Qgene2GoInfo = new Gene2GoInfo();
-				Qgene2GoInfo.setQuaryID(strings[2]);
-			}
-			Gene2GoInfo QBlastGene2GoInfo =null;
-			Uni2GoInfo QBlastUni2GoInfo = null;
-			
-			BlastInfo blastInfo = null;
-			if (blast)
-			{
-				ArrayList<String[]> lsBlastGenGoInfo = null;
-				///////////////搜索blast信息/////////////////////////////////
-				blastInfo = getBlastInfo(strings, QtaxID, StaxID, evalue);
-				////////////////搜到blast信息后，再回去找geneInfo/////////////////////////////////////////
-				if (blastInfo != null && blastInfo.getEvalue()<=evalue)
-				{
-					String tab = blastInfo.getSubjectTab();
-					String[] genInfo = new String[3];
-					genInfo[2] = blastInfo.getSubjectID();
-					if (tab.equals("NCBIID")) 
-					{
-						genInfo[1] = AnnoQuery.getGenName(Long.parseLong(genInfo[2]));
-						genInfo[0] = "geneID";
-						QBlastGene2GoInfo = getGen2GoInfo(genInfo, StaxID);
-					}
-					else 
-					{
-						genInfo[1] = AnnoQuery.getUniGenName(genInfo[2]);
-						genInfo[0] = "uniID";
-						QBlastUni2GoInfo = getUni2GenGoInfo(genInfo, StaxID);
-					}
-				}
-			}
-
+			Blast2GeneInfo blast2GeneInfo = ServBlastInfo.getBlastGen2Go(strings, QtaxID, blast, StaxID, evalue);
 			if (blast) {
-				ArrayList<String[]> tmpInfo = GOQuery.copeBlastInfo(Qgene2GoInfo, Quni2GoInfo, QBlastGene2GoInfo, QBlastUni2GoInfo, blastInfo, evalue, GOClass, sepID, lsGene2Go, true);
+				ArrayList<String[]> tmpInfo = GOQuery.copeBlastInfo(blast2GeneInfo, evalue, GOClass, sepID, lsGene2Go, true);
 				if (tmpInfo != null) {
 					lsGene2GoInfo.addAll(tmpInfo);
-					lsGo2Gene.addAll(GOQuery.copeBlastInfoSimple(Qgene2GoInfo, Quni2GoInfo, QBlastGene2GoInfo, QBlastUni2GoInfo, blastInfo, evalue, GOClass, sepID, null, true));
+					lsGo2Gene.addAll(GOQuery.copeBlastInfoSimple(blast2GeneInfo, evalue, GOClass, sepID, null, true));
 				}
 			}
 			else
@@ -391,11 +290,11 @@ public class QgeneID2Go {
 				ArrayList<String[]> tmpInfo = null;
 				if (strings[0].equals("geneID")) 
 				{
-					tmpInfo = GOQuery.getGene2GoInfo(Qgene2GoInfo, lsGene2Go, sepID, GOClass);
+					tmpInfo = GOQuery.copeGenUni2GoInfo(blast2GeneInfo.getQueryGene2GoInfo(), lsGene2Go, sepID, GOClass);
 				}
 				else if(strings[0].equals("uniID"))
 				{
-					tmpInfo = GOQuery.getUni2GoInfo(Quni2GoInfo, lsGene2Go, sepID, GOClass);
+					tmpInfo = GOQuery.copeGenUni2GoInfo(blast2GeneInfo.getQueryUniGene2GoInfo(), lsGene2Go, sepID, GOClass);
 				}
 				if (tmpInfo != null) 
 					lsGene2GoInfo.addAll(tmpInfo);

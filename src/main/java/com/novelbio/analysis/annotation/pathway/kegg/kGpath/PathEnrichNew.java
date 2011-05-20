@@ -30,6 +30,7 @@ import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.kegg.KGentry;
 import com.novelbio.database.entity.kegg.KGpathway;
 import com.novelbio.database.entity.kegg.noGene.KGNIdKeg;
+import com.novelbio.database.service.ServAnno;
 
 /**
  * 给定基因，返回每个基因所在的Pathway和Pathway数量，方便做Pathway富集检验
@@ -270,7 +271,7 @@ public class PathEnrichNew {
 								     &&kGen2Path.getKGCgen2Entry().getLsKGentries().size() > 0)
 				{
 					//////////////////获得本基因的geneInfo///////////////////////////////////
-					String[] anno = AnnoQuery.getGenInfo(geneID);
+					String[] anno = ServAnno.getGenInfo(geneID);
 					if (anno != null) {
 						symbol = anno[0]; description = anno[1];
 					}
@@ -320,7 +321,7 @@ public class PathEnrichNew {
 					////////////////////////////只有当gene含有pathway时，才会将该基因进行计数///////////////////////////////////
 					hashGeneNum.add(accID);
 					//////////////////获得本基因的geneInfo///////////////////////////////////
-					String[] anno = AnnoQuery.getGenInfo(geneID);
+					String[] anno = ServAnno.getGenInfo(geneID);
 					symbol = anno[0]; description = anno[1];
 					/////////////////////////////////////////////////////////////////////////////////////////
 					String thisevalue = kGen2Path.getBlastInfo().getEvalue()+"";
@@ -329,13 +330,13 @@ public class PathEnrichNew {
 					if (kGen2Path.getBlastInfo().getSubjectTab().equals("NCBIID")) {
 						Long subGeneID = Long.parseLong(kGen2Path.getBlastInfo().getSubjectID());
 						symbol2 = ""; description2 = "";
-						String[] anno2 = AnnoQuery.getGenInfo(subGeneID);
+						String[] anno2 = ServAnno.getGenInfo(subGeneID);
 						symbol2 = anno2[0]; description = anno2[1];
 					}
 					else if (kGen2Path.getBlastInfo().getSubjectTab().equals("UniprotID")) {
 						String subUniID = kGen2Path.getBlastInfo().getSubjectID();
 						symbol2 = ""; description2 = "";
-						String[] anno2 = AnnoQuery.getUniGenInfo(subUniID);
+						String[] anno2 = ServAnno.getUniGenInfo(subUniID);
 						symbol2 = anno2[0]; description = anno2[1];
 					}
 					/////////////////////////////////////////////////////////////////////////////////////////////////////////

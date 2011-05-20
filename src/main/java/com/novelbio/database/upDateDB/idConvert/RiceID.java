@@ -25,6 +25,7 @@ import com.novelbio.database.entity.friceDB.GeneInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.service.ServAnno;
 import com.novelbio.database.upDateDB.dataBase.UpDateFriceDB;
 
 
@@ -665,7 +666,7 @@ public class RiceID {
 			String[] ssLOC = ss[8].split(";");
 			String LOCID = ssLOC[ssLOC.length-1].split("=")[1];
 			
-			ArrayList<String> lsaccID = AnnoQuery.getNCBIUni(LOCID, 39947);
+			ArrayList<String> lsaccID = ServAnno.getNCBIUni(LOCID, 39947);
 			
 			String dbType = lsaccID.get(0);
 			if (dbType.equals("geneID")) 
@@ -738,7 +739,7 @@ public class RiceID {
 			
 			String description = URLDecoder.decode(ssLOC[1].split("=")[1], enc);//文件中含有%20C等符号，用url解码
 			
-			ArrayList<String> lsaccID = AnnoQuery.getNCBIUni(LOCID, 39947);
+			ArrayList<String> lsaccID = ServAnno.getNCBIUni(LOCID, 39947);
 			
 			String dbType = lsaccID.get(0);
 			if (dbType.equals("geneID")) {
@@ -817,7 +818,7 @@ public class RiceID {
 		{
 			String[] ss = content.split("\t");
 			String LocID = ss[0].trim();
-			ArrayList<String> lsAccInfo = AnnoQuery.getNCBIUni(LocID, 39947);
+			ArrayList<String> lsAccInfo = ServAnno.getNCBIUni(LocID, 39947);
 			if (lsAccInfo.get(0).equals("geneID"))
 			{
 				for (int i = 1; i < lsAccInfo.size(); i++)
