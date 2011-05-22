@@ -140,9 +140,7 @@ public class GffHashCG extends GffHash
 		 /////////////////////////////////////////////////////////////////////////////////////////////////
 	   	return Chrhash;//返回这个LOCarray信息
 	}
-	
-	
-	
+
 	/**
 	 * 返回CG比例，以hash表形式返回
 	 * @return
@@ -169,24 +167,5 @@ public class GffHashCG extends GffHash
 		}
 		return hashCGLength;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

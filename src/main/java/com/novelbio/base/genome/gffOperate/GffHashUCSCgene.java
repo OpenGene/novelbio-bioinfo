@@ -24,6 +24,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 public class GffHashUCSCgene extends GffHashGene
 {
 	/**
+	 * @Override
 	 * 最底层读取gff的方法，本方法只能读取UCSCknown gene<br>
 	 * 输入Gff文件，最后获得两个哈希表和一个list表,读取时从第二行读起<br/>
 	 * 结构如下：<br/>
@@ -40,8 +41,7 @@ public class GffHashUCSCgene extends GffHashGene
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起： NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
-	@Override
-	public Hashtable<String, ArrayList<GffDetail>> ReadGffarray(String gfffilename) throws Exception {
+	public Hashtable<String, ArrayList<GffDetail>> ReadGffarray(String gfffilename) throws Exception{
 		
 		//实例化四个表
 		locHashtable =new Hashtable<String, GffDetail>();//存储每个LOCID和其具体信息的对照表

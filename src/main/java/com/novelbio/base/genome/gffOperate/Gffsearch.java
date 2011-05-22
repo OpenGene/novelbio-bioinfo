@@ -14,10 +14,7 @@ import java.util.regex.Pattern;
  *
  */
 public abstract class Gffsearch {
-	
-	
-	
-	
+
 	/**
 	 * 双坐标查找
 	 * 输入ChrID，两个坐标(可以不分大小)，以及GffHash类<br>

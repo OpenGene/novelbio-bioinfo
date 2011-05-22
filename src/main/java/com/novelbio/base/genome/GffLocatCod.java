@@ -238,11 +238,11 @@ public class GffLocatCod extends GffChrUnion
 					if(tmpresult.geneChrHashListNum[0]!=-1&&Math.abs(tmpresult.distancetoLOCStart[0]) <= UpStreamTSSbp)
 					{
 						tmpPeakAnnotation[4]=tmpresult.LOCID[1];
-						if (Math.abs(tmpresult.distancetoLOCStart[0])>=10000) 
+						if (Math.abs(tmpresult.distancetoLOCStart[0]) > 5000) 
 						{
 							tmpPeakAnnotation[5]="InterGenic_";
 						}
-						else if (Math.abs(tmpresult.distancetoLOCStart[0])<10000&&Math.abs(tmpresult.distancetoLOCStart[0])>=5000) {
+						else if (Math.abs(tmpresult.distancetoLOCStart[0]) <= 5000&&Math.abs(tmpresult.distancetoLOCStart[0])>1000) {
 							tmpPeakAnnotation[5]="Distal Promoter_";
 						}
 						else
@@ -258,11 +258,11 @@ public class GffLocatCod extends GffChrUnion
 					if(tmpresult.geneChrHashListNum[1]!=-1&&Math.abs(tmpresult.distancetoLOCStart[1])<=UpStreamTSSbp)
 					{
 						tmpPeakAnnotation[6]=tmpresult.LOCID[2];
-						if (Math.abs(tmpresult.distancetoLOCStart[1])>=10000) 
+						if (Math.abs(tmpresult.distancetoLOCStart[1]) > 5000) 
 						{
 							tmpPeakAnnotation[7]="InterGenic_";
 						}
-						else if (Math.abs(tmpresult.distancetoLOCStart[1])<10000&&Math.abs(tmpresult.distancetoLOCStart[1])>=5000) {
+						else if (Math.abs(tmpresult.distancetoLOCStart[1])<=5000&&Math.abs(tmpresult.distancetoLOCStart[1])>1000) {
 							tmpPeakAnnotation[7]="Distal Promoter_";
 						}
 						else

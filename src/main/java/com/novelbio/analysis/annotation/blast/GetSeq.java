@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 /**
@@ -59,7 +60,7 @@ public class GetSeq {
 			for (int j = 0; j < ss2.length; j++)
 			{
 				String string2 = ss2[j];
-				String accID = KGprepare.removeDot(string2);
+				String accID = CopeID.removeDot(string2);
 				String geneID = hashAcc2GenID.get(accID);
 				if (geneID == null) 
 					continue;
@@ -79,7 +80,7 @@ public class GetSeq {
 		}
 		if (minGeneIDsub >= 0) {
 			String tmpAccID = lsGeneID.get(minGenID).split("\\|")[minGeneIDsub];
-			tmpAccID = KGprepare.removeDot(tmpAccID);
+			tmpAccID = CopeID.removeDot(tmpAccID);
 			String resultGeneID = hashAcc2GenID.get(tmpAccID);
 			if (resultGeneID.split("//").length <= maxGeneIDNum) 
 				return resultGeneID;
