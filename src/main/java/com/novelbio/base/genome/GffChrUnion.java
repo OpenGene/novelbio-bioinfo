@@ -6,10 +6,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.text.MaskFormatter;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataStructure.MathComput;
@@ -28,7 +24,6 @@ import com.novelbio.base.genome.gffOperate.GffHashRepeat;
 import com.novelbio.base.genome.gffOperate.GffHashUCSCgene;
 import com.novelbio.base.genome.gffOperate.Gffsearch;
 import com.novelbio.base.genome.gffOperate.GffsearchCG;
-import com.novelbio.base.genome.gffOperate.GffsearchGene;
 import com.novelbio.base.genome.gffOperate.GffsearchPeak;
 import com.novelbio.base.genome.gffOperate.GffsearchRepeat;
 import com.novelbio.base.genome.gffOperate.GffsearchUCSCgene;
