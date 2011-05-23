@@ -7,8 +7,8 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.openxmlformats.schemas.presentationml.x2006.main.SldDocument;
 
-import com.novelbio.base.dataOperate.ExcelOperate;
-import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.genome.gffOperate.GffHashUCSCgene;
+
 
 public class mytest {
 
@@ -19,6 +19,8 @@ public class mytest {
         Logger logger  =  Logger.getLogger(mytest. class );
         logger.debug( " debug " );
         logger.error( " error " );
+		System.out.println("fesfe");
+		GffHashUCSCgene gffHashUCSCgene;
 	}
 
 }

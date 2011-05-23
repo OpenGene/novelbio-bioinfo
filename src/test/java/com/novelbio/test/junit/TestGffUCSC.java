@@ -11,14 +11,11 @@ import org.junit.Test;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.genome.gffOperate.GffCodInfoUCSCgene;
-import com.novelbio.base.genome.gffOperate.GffDetail;
-import com.novelbio.base.genome.gffOperate.GffHash;
 import com.novelbio.base.genome.gffOperate.GffHashUCSCgene;
 import com.novelbio.base.genome.gffOperate.GffsearchUCSCgene;
 
 public class TestGffUCSC  extends TestCase{
-	
-	GffHash gffHashUCSC;
+	GffHashUCSCgene gffHashUCSC;
 	GffsearchUCSCgene gffsearchUCSCgene;
 	GffCodInfoUCSCgene gffCodInfoUCSCgenechr1_1385068;
 	@Before
@@ -30,7 +27,7 @@ public class TestGffUCSC  extends TestCase{
 		gffCodInfoUCSCgenechr1_1385068 = (GffCodInfoUCSCgene) gffsearchUCSCgene.searchLocation("chr1", 1385068, gffHashUCSC);
 	}
 	@Test
-	public void test()
+	public void test1()
 	{
 		assertEquals(true,gffCodInfoUCSCgenechr1_1385068.begincis5to3);
 		assertEquals(false,gffCodInfoUCSCgenechr1_1385068.endcis5to3);
@@ -46,10 +43,32 @@ public class TestGffUCSC  extends TestCase{
 		assertEquals(0, gffCodInfoUCSCgenechr1_1385068.distancetoLOCStart[0]);
 		assertEquals(-1, gffCodInfoUCSCgenechr1_1385068.distancetoLOCStart[1]);
 		
-		assertEquals(-1, gffCodInfoUCSCgenechr1_1385068.geneDetail);
+//		assertEquals(-1, gffCodInfoUCSCgenechr1_1385068.geneDetail);
 		
 		
 	}
+	@Test
+	public void test2()
+	{
+		assertEquals(true,gffCodInfoUCSCgenechr1_1385068.begincis5to3);
+		assertEquals(false,gffCodInfoUCSCgenechr1_1385068.endcis5to3);
+		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.insideLOC);
+		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.result);
+		
+		assertEquals(-995, gffCodInfoUCSCgenechr1_1385068.codToATG[0]);
+		assertEquals(-1000000000, gffCodInfoUCSCgenechr1_1385068.codToATG[1]);
+		
+		assertEquals(20470, gffCodInfoUCSCgenechr1_1385068.distancetoLOCEnd[0]);
+		assertEquals(-1, gffCodInfoUCSCgenechr1_1385068.distancetoLOCEnd[1]);
+		
+		assertEquals(0, gffCodInfoUCSCgenechr1_1385068.distancetoLOCStart[0]);
+		assertEquals(-1, gffCodInfoUCSCgenechr1_1385068.distancetoLOCStart[1]);
+		assertEquals(1, gffCodInfoUCSCgenechr1_1385068.distancetoLOCStart[0]);
+		assertEquals(-1, gffCodInfoUCSCgenechr1_1385068.geneDetail);
+		
+	}
+ 
+	
 	
 	@After
 	public void  clear() {
