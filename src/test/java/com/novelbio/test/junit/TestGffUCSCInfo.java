@@ -14,7 +14,7 @@ import com.novelbio.base.genome.gffOperate.GffCodInfoUCSCgene;
 import com.novelbio.base.genome.gffOperate.GffHashUCSCgene;
 import com.novelbio.base.genome.gffOperate.GffsearchUCSCgene;
 
-public class TestGffUCSC  extends TestCase{
+public class TestGffUCSCInfo extends TestCase{
 	GffHashUCSCgene gffHashUCSC;
 	GffsearchUCSCgene gffsearchUCSCgene;
 	GffCodInfoUCSCgene gffCodInfoUCSCgenechr1_1385068;
@@ -42,10 +42,6 @@ public class TestGffUCSC  extends TestCase{
 		
 		assertEquals(0, gffCodInfoUCSCgenechr1_1385068.distancetoLOCStart[0]);
 		assertEquals(-1, gffCodInfoUCSCgenechr1_1385068.distancetoLOCStart[1]);
-		
-//		assertEquals(-1, gffCodInfoUCSCgenechr1_1385068.geneDetail);
-		
-		
 	}
 	@Test
 	public void test2()
@@ -63,9 +59,6 @@ public class TestGffUCSC  extends TestCase{
 		
 		assertEquals(0, gffCodInfoUCSCgenechr1_1385068.distancetoLOCStart[0]);
 		assertEquals(-1, gffCodInfoUCSCgenechr1_1385068.distancetoLOCStart[1]);
-		assertEquals(1, gffCodInfoUCSCgenechr1_1385068.distancetoLOCStart[0]);
-		assertEquals(-1, gffCodInfoUCSCgenechr1_1385068.geneDetail);
-		
 	}
  
 	
