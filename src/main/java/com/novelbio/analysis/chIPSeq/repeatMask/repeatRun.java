@@ -110,7 +110,7 @@ public class repeatRun {
 	 */
 	public static void RepeatBackground()
 	{
-		
+		String repeatFile = "";
 		try {
 			ArrayList<String[]> result=RepeatMask.getStaticInfo(repeatFile);
 			TxtReadandWrite repeatbackGround=new TxtReadandWrite();

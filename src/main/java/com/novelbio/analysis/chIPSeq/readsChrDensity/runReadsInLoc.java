@@ -22,7 +22,7 @@ public class runReadsInLoc {
 		int tagLength=300;
 		String rworkSpaceString="/media/winE/Bioinformatics/R/practice_script/platform";
 		ReadsDensity readsLoc =new ReadsDensity();
-		readsLoc.prepare(mapFFile,mapRFile,chrFilePath,rworkSpaceString, sep, 0, 1, 2, invNum,tagLength);
+		readsLoc.prepare(mapFFile, mapRFile, chrFilePath, sep, 0, 1, 2, invNum, tagLength);//(mapFFile,mapRFile,chrFilePath,rworkSpaceString, sep, 0, 1, 2, invNum,tagLength);
 		double[] readsDensity = readsLoc.getLocReadsFigure("chr14", 32836868, 32846478, 4);
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
 		txtReadandWrite.setParameter("/media/winE/NBC/Project/ChIPSeq_CDG101101/mapping/mCE/readsLoc.txt", true, false);

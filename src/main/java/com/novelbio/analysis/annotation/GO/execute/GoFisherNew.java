@@ -1,26 +1,17 @@
 package com.novelbio.analysis.annotation.GO.execute;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 
-import com.novelbio.analysis.annotation.GO.queryDB.QGenID2GoInfo;
-import com.novelbio.analysis.annotation.GO.queryDB.QGenID2GoInfoSepID;
 import com.novelbio.analysis.annotation.GO.queryDB.QgeneID2Go;
-import com.novelbio.analysis.annotation.blast.blastRun;
 import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.annotation.copeID.FisherTest;
 import com.novelbio.analysis.annotation.copeID.ItemInfo;
-import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
-import com.novelbio.analysis.annotation.genAnno.GOQuery;
-import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -97,7 +88,7 @@ public class GoFisherNew {
 			for (int i = 0; i < TmpgeneID.length; i++) {
 				TmpgeneID[i] = lsGeneID.get(i);
 			}
-			getElimFisher(TmpgeneID, GOClass,backGroundFile ,QtaxID, blast,StaxID,evalue,resultExcel2003+"_"+keyID+".xls", "");
+//			getElimFisher(TmpgeneID, GOClass,backGroundFile ,QtaxID, blast,StaxID,evalue,resultExcel2003+"_"+keyID+".xls", "");
 		}
 	}
 	
@@ -177,7 +168,7 @@ public class GoFisherNew {
 			excelResult.WriteExcel(prix[1]+"GO2Gene", 1, 1,lsResult.get(1) , true);
 			excelResult.WriteExcel(prix[1]+"Gene2GO", 1, 1,lsResult.get(2) , true);
 			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, 
-					FileOperate.getParentName(resultPicName), FileOperate.getName(resultPicName)+prix[1]+".pdf",true);
+					FileOperate.getParentName(resultPicName), FileOperate.getName(resultPicName)+prix[0]+".pdf",true);
 		}
 	}
 
@@ -493,11 +484,11 @@ public class GoFisherNew {
 			if (hashID2GeneID.containsKey(geneID[i][colID[1]].trim())) 
 			{
 				ArrayList<String> lsGeneID = hashID2GeneID.get(geneID[i][colID[1]].trim());
-				lsGeneID.add(KGprepare.removeDot(geneID[i][colID[0]].trim()));
+				lsGeneID.add(CopeID.removeDot(geneID[i][colID[0]].trim()));
 			}
 			else {
 				ArrayList<String> lsGeneID = new ArrayList<String>();
-				lsGeneID.add(KGprepare.removeDot(geneID[i][colID[0]].trim()));
+				lsGeneID.add(CopeID.removeDot(geneID[i][colID[0]].trim()));
 				hashID2GeneID.put(geneID[i][colID[1]].trim(), lsGeneID);
 			}
 		}
@@ -510,7 +501,7 @@ public class GoFisherNew {
 			for (int i = 0; i < TmpgeneID.length; i++) {
 				TmpgeneID[i] = lsGeneID.get(i);
 			}
-			getFisher( QtaxID, TmpgeneID, GOClass, backGroundFile, resultExcel2003+"_"+keyID+".xls", "", blast,StaxID,evaule, true);
+//			getFisher( QtaxID, TmpgeneID, GOClass, backGroundFile, resultExcel2003+"_"+keyID+".xls", "", blast,StaxID,evaule, true);
 		}
 	}
 

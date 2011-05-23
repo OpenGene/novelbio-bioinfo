@@ -3,7 +3,6 @@ package com.novelbio.analysis.annotation.GO.execute;
 import java.util.ArrayList;
 
 import com.novelbio.analysis.annotation.GO.queryDB.QBlastGO;
-import com.novelbio.analysis.annotation.GO.queryDB.QGenID2GoInfoSepID;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -33,57 +32,57 @@ public class runGo {
 	}
  
 	
-	/**
-	 * elimFisher聚类分组GO分析，用R的topGO包
-	 */
-	public static void goanalysisCluster() {
-
-		try {
-			QGenID2GoInfoSepID qGenID2GoInfo=new QGenID2GoInfoSepID();
-			String file="/home/zong0jie/桌面/tmp/cdtmp/LCY/";
-			String geneFile=file+"受试药物趋势.xls";
-			String GOClass = "P";
-			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
-			String backGroundFile=file+"BG.txt";
-			int QtaxID = 0;
-			boolean blast = false;
-			int StaxID = 9606;
-			double evalue = 1e-10;
-			String resultExcel2003 = file +"受试药物趋势";
- 			GoFisher.getGoRunElim(geneFile, GOClass, colID, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003);
-			System.out.println("ok");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * 其明聚类分组GO分析，用其明算法
-	 */
-	public static void goanalysisClusterQM() {
-
-		try {
-			QGenID2GoInfoSepID qGenID2GoInfo=new QGenID2GoInfoSepID();
-			String file="/media/winE/NBC/Project/ChIPSeq_CDG101101/result/GO/";
-			String geneFile=file+"WYRmR1Allpvalue0.001Maxpilup20FR.xls";
-			String GOClass = "P";
-			String taxIDfile = file+"taxID.txt";
-			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
-			String backGroundFile=file+"BG.txt";
-			int QtaxID = 0;
-			boolean blast = false;
-			int StaxID = 9606;
-			double evalue = 1e-10;
-			String resultExcel2003 = file +"阳性药物趋势";
-			GoFisher.getGoRunQM(geneFile, GOClass, colID, backGroundFile, taxIDfile, false, resultExcel2003);
-			System.out.println("ok");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
+//	/**
+//	 * elimFisher聚类分组GO分析，用R的topGO包
+//	 */
+//	public static void goanalysisCluster() {
+//
+//		try {
+//			QGenID2GoInfoSepID qGenID2GoInfo=new QGenID2GoInfoSepID();
+//			String file="/home/zong0jie/桌面/tmp/cdtmp/LCY/";
+//			String geneFile=file+"受试药物趋势.xls";
+//			String GOClass = "P";
+//			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
+//			String backGroundFile=file+"BG.txt";
+//			int QtaxID = 0;
+//			boolean blast = false;
+//			int StaxID = 9606;
+//			double evalue = 1e-10;
+//			String resultExcel2003 = file +"受试药物趋势";
+// 			GoFisher.getGoRunElim(geneFile, GOClass, colID, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003);
+//			System.out.println("ok");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//	
+//	/**
+//	 * 其明聚类分组GO分析，用其明算法
+//	 */
+//	public static void goanalysisClusterQM() {
+//
+//		try {
+//			QGenID2GoInfoSepID qGenID2GoInfo=new QGenID2GoInfoSepID();
+//			String file="/media/winE/NBC/Project/ChIPSeq_CDG101101/result/GO/";
+//			String geneFile=file+"WYRmR1Allpvalue0.001Maxpilup20FR.xls";
+//			String GOClass = "P";
+//			String taxIDfile = file+"taxID.txt";
+//			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
+//			String backGroundFile=file+"BG.txt";
+//			int QtaxID = 0;
+//			boolean blast = false;
+//			int StaxID = 9606;
+//			double evalue = 1e-10;
+//			String resultExcel2003 = file +"阳性药物趋势";
+////			GoFisher.getGoRunQM(geneFile, GOClass, colID, backGroundFile, taxIDfile, false, resultExcel2003);
+//			System.out.println("ok");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//	
 	/**
 	 * 常规GO分析，用R的topGO包
 	 */
@@ -217,55 +216,55 @@ try {
 	}
 	
 	
-	/**
-	 * 常规Blast2GO分析，用R的topGO包
-	 */
-	public static void Blast2Goanalysis() {
-
-		try {
-			QBlastGO qBlastGO=new QBlastGO();
-			String file="/media/winE/NBC/Project/";
-			String geneFile=file+"targetGene.xls";
-			String backGroundFile=file+"down.txt";
-			String taxIDfile=file+"taxID.txt";
-			String resultGeneGofile = file +"down2Go.txt";
-			String resultBGGofile = file + "BG2Go.txt";
-			String resultGeneIDfile = file + "downRgeneID.txt";
-			qBlastGO.goAnalysis(geneFile, backGroundFile, taxIDfile, resultGeneGofile, resultBGGofile, resultGeneIDfile);
-			System.out.println("ok");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	/**
+//	 * 常规Blast2GO分析，用R的topGO包
+//	 */
+//	public static void Blast2Goanalysis() {
+//
+//		try {
+//			QBlastGO qBlastGO=new QBlastGO();
+//			String file="/media/winE/NBC/Project/";
+//			String geneFile=file+"targetGene.xls";
+//			String backGroundFile=file+"down.txt";
+//			String taxIDfile=file+"taxID.txt";
+//			String resultGeneGofile = file +"down2Go.txt";
+//			String resultBGGofile = file + "BG2Go.txt";
+//			String resultGeneIDfile = file + "downRgeneID.txt";
+//			qBlastGO.goAnalysis(geneFile, backGroundFile, taxIDfile, resultGeneGofile, resultBGGofile, resultGeneIDfile);
+//			System.out.println("ok");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	
 	
-	/**
-	 * 陈岱的建议GO方法
-	 */
-	public static void goanalysisQM() {
- 
-		try {
-			String filePath="/media/winE/NBC/Project/Microarray_QY110318/";
-			String fileName = "QY-DIFGENE";
-			String geneFileXls=filePath+fileName+".xls";
-			String resultfile = filePath +fileName+"QMGO.xls";
-			String backGroundFile=filePath+"Human U133 Plus 2.0 BG3.txt";
-			int QtaxID = 9606;
-			String GOClass = "P";
-			int[] colID = new int[2];colID[0] = 1; colID[1] = 8;
-			double up = 2; double down = 0.5;
-			boolean blast = false;
-			int StaxID = 9606;
-			double evalue = 1e-10;
-			GoFisherNew.getGoRunNBC(QtaxID, geneFileXls, GOClass, colID, up, down, backGroundFile, resultfile, blast, StaxID, evalue, true);
-			System.out.println("ok");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
+//	/**
+//	 * 陈岱的建议GO方法
+//	 */
+//	public static void goanalysisQM() {
+// 
+//		try {
+//			String filePath="/media/winE/NBC/Project/Microarray_QY110318/";
+//			String fileName = "QY-DIFGENE";
+//			String geneFileXls=filePath+fileName+".xls";
+//			String resultfile = filePath +fileName+"QMGO.xls";
+//			String backGroundFile=filePath+"Human U133 Plus 2.0 BG3.txt";
+//			int QtaxID = 9606;
+//			String GOClass = "P";
+//			int[] colID = new int[2];colID[0] = 1; colID[1] = 8;
+//			double up = 2; double down = 0.5;
+//			boolean blast = false;
+//			int StaxID = 9606;
+//			double evalue = 1e-10;
+//			GoFisherNew.getGoRunNBC(QtaxID, geneFileXls, GOClass, colID, up, down, backGroundFile, resultfile, blast, StaxID, evalue, true);
+//			System.out.println("ok");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//	}
 
 }
