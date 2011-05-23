@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.openxmlformats.schemas.presentationml.x2006.main.SldDocument;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
@@ -15,9 +16,9 @@ public class mytest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		HashMap< String, String> aa = new HashMap<String, String>();
-		aa.put("", "fswefse");
-		System.out.println(aa.get(""));
+        Logger logger  =  Logger.getLogger(mytest. class );
+        logger.debug( " debug " );
+        logger.error( " error " );
 	}
 
 }
