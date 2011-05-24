@@ -1,15 +1,17 @@
-package com.novelbio.database.upDateDB;
+package com.novelbio.database.updatedb;
+
+import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.upDateDB.dataBase.UpDateNBCDBFile;
-import com.novelbio.database.upDateDB.gOextract.AffyChipGO;
-import com.novelbio.database.upDateDB.idConvert.AffyIDmodify;
-import com.novelbio.database.upDateDB.idConvert.GeneInfoTaxIDgetSymbol;
-import com.novelbio.database.upDateDB.idConvert.NCBIIDOperate;
-import com.novelbio.database.upDateDB.idConvert.RiceID;
-import com.novelbio.database.upDateDB.idConvert.UniProtConvertID;
+import com.novelbio.database.updatedb.dataBase.UpDateNBCDBFile;
+import com.novelbio.database.updatedb.gOextract.AffyChipGO;
+import com.novelbio.database.updatedb.idConvert.AffyIDmodify;
+import com.novelbio.database.updatedb.idConvert.GeneInfoTaxIDgetSymbol;
+import com.novelbio.database.updatedb.idConvert.NCBIIDOperate;
+import com.novelbio.database.updatedb.idConvert.RiceID;
+import com.novelbio.database.updatedb.idConvert.UniProtConvertID;
 
 /**
  * 自动化升级数据库
@@ -17,17 +19,17 @@ import com.novelbio.database.upDateDB.idConvert.UniProtConvertID;
  *
  */
 public class RunUpDateDB {
-
+	/**
+	 * update log
+	 */
+    Logger logger  =  Logger.getLogger(RunUpDateDB. class );
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		upDate();
 	}
-	
-	
-	
-	
+
 	/**
 	 * agilent没有导入，也是需要1.导入数据表 2.blast并导入
 	 */
@@ -54,7 +56,7 @@ public class RunUpDateDB {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String Ref2Uni = fold + "gene_refseq_uniprotkb_collab.txt";
 			String outUniIDmapSelectUniIDnone = fold + "outUniIDmapSelectUniIDnone";//先用outUniIDmapSelectUniID查找NCBIID，没找到的写入该文本
-//			upDateNCBIID(taxIDFile, outGen2AccTaxID, outGen2EnsembTaxID, outUniIDmapSelectNCBIID, Ref2Uni, outUniIDmapSelectUniID, outUniIDmapSelectUniIDnone);
+			upDateNCBIID(taxIDFile, outGen2AccTaxID, outGen2EnsembTaxID, outUniIDmapSelectNCBIID, Ref2Uni, outUniIDmapSelectUniID, outUniIDmapSelectUniIDnone);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String geneInfoFile = fold + "gene_info";
 			String taxGeneInfoFile = fold + "taxGeneInfoFile";
@@ -99,7 +101,7 @@ public class RunUpDateDB {
 			String affyidtolocid ="/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/affyidtolocidnew.txt";
 			String gffTigrRice ="/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/all.gff3Cope";
 			String tigrGoSlim ="/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/all.GOSlim_assignment";
-			upDateRice(NovelBioConst.GENOME_PATH_RICE_RAPDB_GFF_GENE, Rap2MSUFile, affyidtolocid, gffTigrRice, tigrGoSlim);
+//			upDateRice(NovelBioConst.GENOME_PATH_RICE_RAPDB_GFF_GENE, Rap2MSUFile, affyidtolocid, gffTigrRice, tigrGoSlim);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

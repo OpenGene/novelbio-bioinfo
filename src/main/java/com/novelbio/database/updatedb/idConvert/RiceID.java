@@ -1,4 +1,4 @@
-package com.novelbio.database.upDateDB.idConvert;
+package com.novelbio.database.updatedb.idConvert;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +26,7 @@ import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
 import com.novelbio.database.service.ServAnno;
-import com.novelbio.database.upDateDB.dataBase.UpDateFriceDB;
+import com.novelbio.database.updatedb.dataBase.UpDateFriceDB;
 
 
 public class RiceID {

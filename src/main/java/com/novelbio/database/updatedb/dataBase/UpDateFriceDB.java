@@ -1,4 +1,4 @@
-package com.novelbio.database.upDateDB.dataBase;
+package com.novelbio.database.updatedb.dataBase;
 
 import java.util.ArrayList;
 import java.util.Collection;

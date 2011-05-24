@@ -1,4 +1,4 @@
-package com.novelbio.database.upDateDB.gOextract;
+package com.novelbio.database.updatedb.gOextract;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
 import com.novelbio.database.service.ServAnno;
 import com.novelbio.database.service.ServGo;
-import com.novelbio.database.upDateDB.idConvert.NCBIIDOperate;
+import com.novelbio.database.updatedb.idConvert.NCBIIDOperate;
 
 
 

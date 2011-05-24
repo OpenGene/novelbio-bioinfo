@@ -1,8 +1,8 @@
-package com.novelbio.database.upDateDB.dataBase;
+package com.novelbio.database.updatedb.dataBase;
 
 import com.novelbio.analysis.annotation.blast.Blast2DB;
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.database.upDateDB.idConvert.RiceID;
+import com.novelbio.database.updatedb.idConvert.RiceID;
 
 
 public class runUpDate {
