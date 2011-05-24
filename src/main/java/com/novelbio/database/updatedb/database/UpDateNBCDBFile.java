@@ -1,4 +1,4 @@
-package com.novelbio.database.updatedb.dataBase;
+package com.novelbio.database.updatedb.database;
 
 
 import java.io.BufferedReader;

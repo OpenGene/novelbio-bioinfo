@@ -1,4 +1,4 @@
-package com.novelbio.database.updatedb.idConvert;
+package com.novelbio.database.updatedb.idconvert;
 
 import java.io.BufferedReader;
 import java.io.IOException;

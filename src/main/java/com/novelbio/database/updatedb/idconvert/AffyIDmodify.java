@@ -1,4 +1,4 @@
-package com.novelbio.database.updatedb.idConvert;
+package com.novelbio.database.updatedb.idconvert;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -5,13 +5,13 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.updatedb.dataBase.UpDateNBCDBFile;
-import com.novelbio.database.updatedb.gOextract.AffyChipGO;
-import com.novelbio.database.updatedb.idConvert.AffyIDmodify;
-import com.novelbio.database.updatedb.idConvert.GeneInfoTaxIDgetSymbol;
-import com.novelbio.database.updatedb.idConvert.NCBIIDOperate;
-import com.novelbio.database.updatedb.idConvert.RiceID;
-import com.novelbio.database.updatedb.idConvert.UniProtConvertID;
+import com.novelbio.database.updatedb.database.UpDateNBCDBFile;
+import com.novelbio.database.updatedb.goextract.AffyChipGO;
+import com.novelbio.database.updatedb.idconvert.AffyIDmodify;
+import com.novelbio.database.updatedb.idconvert.GeneInfoTaxIDgetSymbol;
+import com.novelbio.database.updatedb.idconvert.NCBIIDOperate;
+import com.novelbio.database.updatedb.idconvert.RiceID;
+import com.novelbio.database.updatedb.idconvert.UniProtConvertID;
 
 /**
  * 自动化升级数据库

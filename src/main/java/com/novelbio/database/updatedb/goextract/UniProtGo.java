@@ -1,4 +1,4 @@
-package com.novelbio.database.updatedb.gOextract;
+package com.novelbio.database.updatedb.goextract;
 
 import java.io.BufferedReader;
 
