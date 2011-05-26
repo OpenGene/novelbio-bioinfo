@@ -36,18 +36,34 @@
         <property name="username" value="root"/>
         <property name="password" value=""/>
     </bean>
+    <!-- define the SqlSessionFactory, notice that configLocation is not needed when you use MapperFactoryBean -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="configLocation" value="classpath:NBCConf.xml" />
+                <!-- mapper和resultmap配置路径 -->
+        <property name="mapperLocations">
+            <list>
+                <!-- 表示在com.hoo.resultmap包或以下所有目录中，以-resultmap.xml结尾所有文件 -->
+                <value>classpath:XML/FriceNCBIID.xml</value>
+            </list>
+        </property>
+    </bean>
+    
     
     <!-- transaction manager, use JtaTransactionManager for global tx -->
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
     </bean>
+    
+	<bean class = "org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
 
-    <!-- enable autowire -->
+    
+    <!-- enable autowire 
     <context:annotation-config />
-
-    <!-- enable transaction demarcation with annotations -->
+-->
+    <!-- enable transaction demarcation with annotations 
     <tx:annotation-driven />
-
+-->
   <!-- 单独配置一个Mapper； 这种模式就是得给每个mapper接口配置一个bean -->
      <!--
     <bean id="friceNCBIID" class="org.mybatis.spring.mapper.MapperFactoryBean">
@@ -56,27 +72,16 @@
     </bean>
      -->
      
-    <!-- 通过扫描的模式，扫描目录在com/hoo/mapper目录下，所有的mapper都继承SqlMapper接口的接口， 这样一个bean就可以了 -->
+    <!-- 通过扫描的模式，扫描目录在com/hoo/mapper目录下，所有的mapper都继承SqlMapper接口的接口， 这样一个bean就可以了 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.novelbio.dao"/>
     </bean>
-    
+    -->
 
-    <!-- define the SqlSessionFactory, notice that configLocation is not needed when you use MapperFactoryBean -->
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource" />
-        <property name="configLocation" value="classpath:FriceConf.xml" />
-                <!-- mapper和resultmap配置路径 -->
-        <property name="mapperLocations">
-            <list>
-                <!-- 表示在com.hoo.resultmap包或以下所有目录中，以-resultmap.xml结尾所有文件 -->
-                <value>classpath:XML/*.xml</value>
-            </list>
-        </property>
-    </bean>
-      <!-- 自动探测 enable component scanning (beware that this does not enable mapper scanning!)    --> 
+
+      <!-- 自动探测 enable component scanning (beware that this does not enable mapper scanning!)    
     <context:component-scan base-package="com.novelbio.mvtest" />
-  
+  --> 
       <!--
 	<bean id="daotest" class="com.novelbio.mvtest.Daotest">
 		<property name="friceNCBIID" ref="friceNCBIID" />
