@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright 2010 The myBatis Team
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:aop="http://www.springframework.org/schema/aop"
+     xmlns:tx="http://www.springframework.org/schema/tx"
+     xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+     xmlns:context="http://www.springframework.org/schema/context"
+     xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+     
+ 	<!-- 将url请求映射到相应的控制器(POJO)上，譬如将test视图映射到TestController控制器上,不用注解时采用。有2后，这句就不需要了 
+	<bean class = "org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
+	-->
+ 	
+ 	<!-- 1对web包中的所有类进行扫描，以完成Bean创建和自动依赖注入的功能 -->
+ 	<context:component-scan base-package="com.novelbio.web" />
+ 	
+ 	<!-- 2启动Spring MVC的注解功能，完成请求和注解POJO的映射
+ 	 它负责根据 Bean 中的 Spring MVC 注解对 Bean 进行加工处理，使这些 Bean 变成控制器并映射特定的 URL 请求 -->
+ 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+ 	
+ 	<!-- 3将逻辑视图名映射到jsp页面上，譬如creat view的结果直接后面加上.jsp -->
+ 	<bean id = "viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
+ 	p:prefix="/WEB-INF/jsp/"  p:suffix = ".jsp" />
+ 	
+ 	
+   
+</beans>
