@@ -51,16 +51,16 @@ public class TestController extends AbstractController {
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse resp) throws Exception 
 	{
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
-		txtReadandWrite.setParameter("/media/winE/Bioinformatics/Kegg/genes/organisms/ath/ath_cazy.list", false, true);
-		BufferedReader aaString = txtReadandWrite.readfile();
-		String aa=aaString.readLine();
-		
+//		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
+//		txtReadandWrite.setParameter("/media/winE/Bioinformatics/Kegg/genes/organisms/ath/ath_cazy.list", false, true);
+//		BufferedReader aaString = txtReadandWrite.readfile();
+//		String aa=aaString.readLine();
+//		
 		String message = ServletRequestUtils.getRequiredStringParameter(req, PARAM_MSG);
 		increaseCounter();
 		ModelAndView mav = new ModelAndView("test");
 		//ModelAndView mav = new ModelAndView();//默认添加test控制器视图
-		mav.addObject("message", aa);
+		mav.addObject("message", message);
 		mav.addObject("counter", counter);
 		System.out.println(mav.getViewName());
 		return mav;

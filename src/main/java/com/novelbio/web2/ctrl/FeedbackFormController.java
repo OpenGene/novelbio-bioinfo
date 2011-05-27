@@ -1,41 +1,32 @@
-package com.novelbio.web.ctrl;
+package com.novelbio.web2.ctrl;
+
 import java.util.regex.Pattern;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.SimpleFormController;
 
 import com.novelbio.web.model.Feedback;
-@Controller
-@RequestMapping("/test2.htm")   
-public class FeedbackCtrl {
 
-	@RequestMapping
-	public ModelAndView getQuest() {
-		ModelAndView mav = new ModelAndView("test2");
-		return mav;
+public class FeedbackFormController extends SimpleFormController {
+	public FeedbackFormController() {
+		setCommandClass(Feedback.class);
+		setValidator(new FeedbackFormValidator());
+		setCommandName("feedback");
+		setSuccessView("redirect:albums.htm");
+		setFormView("feedbackform");
 	}
 
-	
-//	@RequestMapping(params = "method=createTopic",method = RequestMethod.POST)      
-//	public ModelAndView onSubmit(Object command) throws Exception {
-//		logger.info("The following data was submitted: " + command);
-//		return super.onSubmit(command);
-//	}
+	@Override
+	protected ModelAndView onSubmit(Object command) throws Exception {
+		logger.info("The following data was submitted: " + command);
+		return super.onSubmit(command);
+	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	class FeedbackFormValidator implements Validator {
 		private final Pattern pattern = Pattern.compile(".+@.+\\.[a-z]+");
 

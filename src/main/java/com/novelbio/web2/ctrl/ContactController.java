@@ -1,4 +1,4 @@
-   package com.novelbio.web.ctrl;  
+   package com.novelbio.web2.ctrl;  
      
    import org.springframework.beans.factory.annotation.Autowired;  
    import org.springframework.stereotype.Controller;  
