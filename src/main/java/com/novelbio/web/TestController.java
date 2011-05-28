@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,13 +22,13 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 //所以 @Controller 注解是不可缺少的。
 //也可以是@Component，如果采用<bean class = "org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
 //那么必须是@Component
-@Controller
+@Component
 
 //真正让 BbtForumController 具备 Spring MVC Controller 功能的是 @RequestMapping 这个注解。
 //@RequestMapping 可以标注在类定义处，将 Controller 和特定请求关联起来；
 //还可以标注在方法签名处，以便进一步对请求进行分流。
 //在本处，我们让 TestController 关联“/test.htm”的请求，必须添加("/test.htm")
-@RequestMapping("/test.htm")
+//@RequestMapping("/test.htm")
 //如果采用@RequestMapping("/test.htm")，spring.xml中配置：<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 //如果不用，spring.xml中配置：<bean class = "org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
 //我觉得用@RequestMapping好，方便后期修改controller的时候不需要修改请求名
@@ -51,11 +53,13 @@ public class TestController extends AbstractController {
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse resp) throws Exception 
 	{
+
 //		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
 //		txtReadandWrite.setParameter("/media/winE/Bioinformatics/Kegg/genes/organisms/ath/ath_cazy.list", false, true);
 //		BufferedReader aaString = txtReadandWrite.readfile();
 //		String aa=aaString.readLine();
 //		
+
 		String message = ServletRequestUtils.getRequiredStringParameter(req, PARAM_MSG);
 		increaseCounter();
 		ModelAndView mav = new ModelAndView("test");

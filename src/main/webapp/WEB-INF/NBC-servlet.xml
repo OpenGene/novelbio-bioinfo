@@ -6,12 +6,21 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd   
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd   
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">   
-      
+     <!--
+    <bean class = "org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
+  	-->  
+       <!-- Load messages -->  
+     <bean id="messageSource"  
+         class="org.springframework.context.support.ResourceBundleMessageSource"  
+       p:basenames="errors"/>  
+  
+  	
   	<!--<context:annotation-config />    --> 
 	 <!--把标记了@Controller注解的类转换为bean   --> 
 	<context:component-scan base-package="com.novelbio.web" />     
-       
-     <!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射     --> 
+
+     <!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射    -->  
+
      <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />     
          
         <!-- 对模型视图名称的解析，即在模型视图名称添加前后缀 -->     

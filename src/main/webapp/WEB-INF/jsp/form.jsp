@@ -18,9 +18,9 @@
    <h1>Contact Us</h1>  
      
    <%-- Give command object a meaningful name instead of using default name, 'command' --%>  
-   <form:form commandName="userMessage">  
+   <form:form commandName="user">  
        <div class="form-item">  
-           <div class="form-label">Your name:</div>  
+           <div class="form-label">Your aaaaaaaaaaaname:</div>  
            <form:input path="name" size="40" cssErrorClass="form-error-field"/>  
            <div class="form-error-message"><form:errors path="name"/></div>  
        </div>  
