@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+
+import com.novelbio.web.model.User;
 @Component
 public class UserValidator implements Validator {
 	private static final Pattern EMAIL_PATTERN = Pattern // ①合法Email正则表达式

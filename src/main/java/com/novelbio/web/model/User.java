@@ -1,12 +1,14 @@
-package com.novelbio.web;
+package com.novelbio.web.model;
 
-  
+import org.springframework.stereotype.Component;
+
+@Component
 public final class User {  
       
 
     private String name;  
       
-
+ 
     private String email;  
       
  
