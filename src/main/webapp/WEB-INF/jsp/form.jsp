@@ -20,7 +20,7 @@
    <%-- Give command object a meaningful name instead of using default name, 'command' --%>  
    <form:form commandName="user">  
        <div class="form-item">  
-           <div class="form-label">Your aaaaaaaaaaaname:</div>  
+           <div class="form-label">Your name:</div>  
            <form:input path="name" size="40" cssErrorClass="form-error-field"/>  
            <div class="form-error-message"><form:errors path="name"/></div>  
        </div>  
@@ -33,7 +33,7 @@
            <div class="form-label">Your message:</div>  
            <form:textarea path="text" rows="12" cols="60" cssErrorClass="form-error-field"/>  
            <div class="form-error-message"><form:errors path="text"/></div>  
-       </div>  
+       </div>
        <div class="form-item">  
            <input type="submit" value="Submit" />  
        </div>  

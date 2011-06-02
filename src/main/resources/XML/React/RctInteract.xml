@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.mapper.react.MapRctInteract">
+	
+	<resultMap id="RctInteract" type="RctInteract">
+	</resultMap>
+	<select id="qRctInteract" parameterType="RctInteract" resultMap="RctInteract">
+		select *
+		from rctinteract
+		<where>
+			<if test="taxID !=0 and taxID !=null">
+				and taxID = #{taxID} 
+			</if>
+			<if test="geneID1 !=null and geneID1 != '' ">
+				geneID1 = #{geneID1} 
+			</if>
+			<if test="geneID2 !=null and geneID2 != '' ">
+				geneID2 = #{geneID2} 
+			</if>
+			<if test="dbInfo1 !=null and dbInfo1 != '' ">
+				dbInfo1 = #{dbInfo1} 
+			</if>
+			<if test="dbInfo2 !=null and dbInfo2 != '' ">
+				dbInfo2 = #{dbInfo2} 
+			</if>
+	    </where> 
+	</select>
+	
+	<select id="qLsRctInteracts" parameterType="RctInteract" resultMap="RctInteract">
+		select *
+		select *
+		from rctinteract
+		<where>
+			<if test="taxID !=0 and taxID !=null">
+				and taxID = #{taxID} 
+			</if>
+			<if test="geneID1 !=null and geneID1 != '' ">
+				geneID1 = #{geneID1} 
+			</if>
+			<if test="geneID2 !=null and geneID2 != '' ">
+				geneID2 = #{geneID2} 
+			</if>
+			<if test="dbInfo1 !=null and dbInfo1 != '' ">
+				dbInfo1 = #{dbInfo1} 
+			</if>
+			<if test="dbInfo2 !=null and dbInfo2 != '' ">
+				dbInfo2 = #{dbInfo2} 
+			</if>
+	    </where> 
+	</select>
+	
+	<insert id="instRctInteract" parameterType="RctInteract">
+		insert into rctinteract (taxID,genID1,dbInfo1,genID2,dbInfo2,interaction,ictContext,pubmed)
+		values (#{taxID},#{genID1},#{dbInfo1},#{genID2},#{dbInfo2},#{interaction},#{ictContext},#{pubmed})
+	</insert>
+	
+	<update id="updbRctInteract" parameterType="RctInteract">
+		update rctinteract
+		<set>
+			<if test="taxID !=0 and taxID !=null">
+				and taxID = #{taxID} 
+			</if>
+			<if test="geneID1 !=null and geneID1 != '' ">
+				geneID1 = #{geneID1} 
+			</if>
+			<if test="geneID2 !=null and geneID2 != '' ">
+				geneID2 = #{geneID2} 
+			</if>
+			<if test="dbInfo1 !=null and dbInfo1 != '' ">
+				dbInfo1 = #{dbInfo1} 
+			</if>
+			<if test="dbInfo2 !=null and dbInfo2 != '' ">
+				dbInfo2 = #{dbInfo2} 
+			</if>
+			<if test="interaction !=null and interaction != '' ">
+				interaction = #{interaction} 
+			</if>
+			<if test="ictContext !=null and ictContext != '' ">
+				ictContext = #{ictContext} 
+			</if>
+			<if test="pubmed !=null and pubmed != '' ">
+				pubmed = #{pubmed} 
+			</if>
+		</set>
+		<where>
+			<if test="taxID !=0 and taxID !=null">
+				and taxID = #{taxID} 
+			</if>
+			<if test="geneID1 !=null and geneID1 != '' ">
+				geneID1 = #{geneID1} 
+			</if>
+			<if test="geneID2 !=null and geneID2 != '' ">
+				geneID2 = #{geneID2} 
+			</if>
+			<if test="dbInfo1 !=null and dbInfo1 != '' ">
+				dbInfo1 = #{dbInfo1} 
+			</if>
+			<if test="dbInfo2 !=null and dbInfo2 != '' ">
+				dbInfo2 = #{dbInfo2} 
+			</if>
+	    </where> 
+	</update>
+</mapper>

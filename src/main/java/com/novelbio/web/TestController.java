@@ -7,10 +7,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.mvc.AbstractWizardFormController;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 /**
@@ -32,7 +34,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 //如果采用@RequestMapping("/test.htm")，spring.xml中配置：<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 //如果不用，spring.xml中配置：<bean class = "org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
 //我觉得用@RequestMapping好，方便后期修改controller的时候不需要修改请求名
-public class TestController extends AbstractController {
+public class TestController extends AbstractWizardFormController {
 	/**
 	* Stores the counter value. This will only work when the controller is a
 	* singleton. The application context should be used to make this more
@@ -74,6 +76,13 @@ public class TestController extends AbstractController {
 	*/
 	private void increaseCounter() {
 		counter++;
+	}
+	@Override
+	protected ModelAndView processFinish(HttpServletRequest arg0,
+			HttpServletResponse arg1, Object arg2, BindException arg3)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 

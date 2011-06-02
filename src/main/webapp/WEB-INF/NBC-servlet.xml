@@ -19,11 +19,67 @@
 	 <!--把标记了@Controller注解的类转换为bean   --> 
 	<context:component-scan base-package="com.novelbio.web" />     
 
-     <!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射    -->  
+     <!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射    -->
 
-     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />     
-         
-        <!-- 对模型视图名称的解析，即在模型视图名称添加前后缀 -->     
-        <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"     
-           p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" />        
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+
+	<!-- JSP配置：对模型视图名称的解析，即在模型视图名称添加前后缀 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" />
+
+	<!-- velocity配置：对模型视图名称的解析，即在模型视图名称添加前后缀 
+	VelocityConfigurer负责在Spring中设置Velocity引擎。
+	这里，我们通过属性resourceLoaderPath告诉 Velocity到哪里寻找它的模板。
+	我们建议将模板放到WEB-INF的某个子目录下面，这样可以保证这些模板不能被直接访问-->
+	<bean id="velocityConfigurer"
+		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="resourceLoaderPath">
+			<value>WEB-INF/velocity/</value>
+		</property>
+		<property name="velocityProperties">
+			
+			<!-- 可以注意到velocityProperties属性使用一个<props>元素来设置多个属性。
+			在这里可以设置的属性与一个典型的 Velocity应用中通过“velocity.properties”文件设置的属性是一样的。
+			缺省地，Velocity的#foreach循环维护一个名为$velocityCount的循环计数器，该计数器在第一轮循环开始时从1开始计数。
+			但这里我们设置属性 directive.foreach.counter.name为loopCounter，
+			因此将使用$loopCounter来引用循环计数器。我们也通过设置属性directive.foreach.counter.initial.value为0使循环计数器由零开始计数。
+			（想知道关于 Velocity配置属性的信息，请参考Velocity开发者指南http://jakarta.apache.org/velocity/developer-guide.html。） -->
+			<props>
+				<prop key="directive.foreach.counter.name">loopCounter</prop>
+				<prop key="directive.foreach.counter.initial.value">0</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- 要使用Velocity模板视图，你必须做的最后一件事情是配置一个视图解析器。
+	具体地说，需要以如下方式在Spring上下文配置中声明一个 VelocityViewResolver Bean： 
+	
+	VelocityViewResolver和Velocity的关系与 InternalResourceViewResolver和JSP的关系相似。
+	正如InternalResourceViewResolver，它使用 prefix属性和suffix属性由视图的逻辑名构造出模板文件的路径。
+	这里我们仅仅设置suffix属性为“.vm”扩展名。
+	由于模板目录的路径已经通过VelocityConfigurer的resourceLoaderPath属性配置好了，因此这里不需要设置前缀。
+	注意：这里把Bean的ID设置为viewResolver。这一点很重要，因为我们并没有配置DispatcherServlet检测所有的视图解析器。
+	如果要同时使用多个视图解析器，则你很可能需要将这个ID改成某个更合适的名字（并且是惟一的），比如 velocityViewResolver。-->
+	
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="suffix">
+			<value>.vm</value>
+		</property>
+		<!-- 尽管应用已经配置成可以渲染Velocity视图了，但我们还有一些杂七杂八的问题需要解决。
+		当你比较程序清单9.1中的couseList.vm 和courseList.jsp时，会注意到courseList.vm没有像 courseList.jsp一样对课程的ID、开始日期和结束日期进行格式化。
+		在courseList.jsp中，课程ID显示为一个6位定长的前面以零补齐的数字，而所有的日期以完整格式显示。
+		为了完成courseList.vm，你需要对它作进一步的调整，对ID和日期属性进行格式化。
+		VTL并不直接支持日期和数字的格式化，而是通过提供日期和时间的工具类来支持格式化。
+		为了允许使用这些工具，你需要告诉 VelocityViewResolver在模板中暴露它们时使用的属性名。
+		这些属性名是通过 VelocityViewResolver的dateToolAttribute和numberToolAttribute属性来规定的： -->
+    	<property name="dateToolAttribute">
+     		<value>dateTool</value>
+		</property>
+		<property name="numberToolAttribute">
+     		<value>numberTool</value>
+    	</property>
+
+	</bean>
   </beans>  

@@ -7,16 +7,28 @@ public class runAnno {
 	}
 	//Ìí¼Ó×¢ÊÍ
 	public static void anno() {
-		String parentFile = "/media/winE/NBC/Project/Project_CDG_Lab/Microarray_WYR110516/";
+		String parentFile = "/home/zong0jie/×ÀÃæ/xly/";
  
 		try {
-			AnnoQuery.anno(parentFile+"Cotex KO VS WT.xls",10090,1,false,9606,1e-10,"");
+			AnnoQuery.anno(parentFile+"k0_peakFilter.xls",10090,10,false,9606,1e-10,"/");
 //			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
 		} catch (Exception e) {
 			e.printStackTrace()	;
 		}
 		try {
-			AnnoQuery.anno(parentFile+"HYP KO VS WT.xls",10090,1,false,9606,1e-10,"");
+			AnnoQuery.anno(parentFile+"k4_peakFilter.xls",10090,10,false,9606,1e-10,"/");
+//			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
+		} catch (Exception e) {
+			e.printStackTrace()	;
+		}
+		try {
+			AnnoQuery.anno(parentFile+"W0_peakFilter.xls",10090,10,false,9606,1e-10,"/");
+//			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
+		} catch (Exception e) {
+			e.printStackTrace()	;
+		}
+		try {
+			AnnoQuery.anno(parentFile+"W4_peakFilter.xls",10090,10,false,9606,1e-10,"/");
 //			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
 		} catch (Exception e) {
 			e.printStackTrace()	;

@@ -97,7 +97,7 @@ public class RunUpDateDB {
 //			upDateAffyGo(AffyFileCow, NovelBioConst.DBINFO_AFFY_COW, 9913);
 //			upDateAffyGo(AffyFilePig, NovelBioConst.DBINFO_AFFY_PIG, 9823);
 //			upDateAffyGo(AffyFileRice, NovelBioConst.DBINFO_AFFY_RICE_31, 39947);
-			upDateAffyGo(AffyFileArabdopsis, NovelBioConst.DBINFO_AFFY_ATH, 3702);
+//			upDateAffyGo(AffyFileArabdopsis, NovelBioConst.DBINFO_AFFY_ATH, 3702);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String Rap2MSUFile ="/media/winE/Bioinformatics/GenomeData/Rice/RapDB/RAP-MSU.txt";
 			String affyidtolocid ="/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/affyidtolocidnew.txt";
