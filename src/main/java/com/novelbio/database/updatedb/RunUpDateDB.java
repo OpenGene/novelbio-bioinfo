@@ -99,11 +99,31 @@ public class RunUpDateDB {
 //			upDateAffyGo(AffyFileRice, NovelBioConst.DBINFO_AFFY_RICE_31, 39947);
 //			upDateAffyGo(AffyFileArabdopsis, NovelBioConst.DBINFO_AFFY_ATH, 3702);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+			
+			
 			String Rap2MSUFile ="/media/winE/Bioinformatics/GenomeData/Rice/RapDB/RAP-MSU.txt";
 			String affyidtolocid ="/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/affyidtolocidnew.txt";
 			String gffTigrRice ="/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/all.gff3Cope";
 			String tigrGoSlim ="/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/all.GOSlim_assignment";
-			upDateRice(NovelBioConst.GENOME_PATH_RICE_RAPDB_GFF_GENE, Rap2MSUFile, affyidtolocid, gffTigrRice, tigrGoSlim);
+//			upDateRice(NovelBioConst.GENOME_PATH_RICE_RAPDB_GFF_GENE, Rap2MSUFile, affyidtolocid, gffTigrRice, tigrGoSlim);
+			
+			
+			String agilentBta1 = "/media/winE/Bioinformatics/Agilent/caw/AgilentBta015354.txt";
+			UpDateNBCDBFile.upDateNCBIIDBlast(agilentBta1);
+			
+			String agilentBta2 = "/media/winE/Bioinformatics/Agilent/caw/AgilentBta023647.txt";
+			UpDateNBCDBFile.upDateNCBIIDBlast(agilentBta2);
+			
+			String blastFile1 = "/media/winE/Bioinformatics/BLAST/result/cow/cope/btaAgilent2Refseq061130";
+			String blastFile2 = "/media/winE/Bioinformatics/BLAST/result/cow/cope/btaAgilent2Refseq0904";
+			UpDateNBCDBFile.upDateNCBIIDBlast(blastFile1);
+			UpDateNBCDBFile.upDateNCBIIDBlast(blastFile2);
+			
+			
+			
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
