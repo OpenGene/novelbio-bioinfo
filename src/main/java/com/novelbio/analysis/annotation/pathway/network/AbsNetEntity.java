@@ -84,7 +84,7 @@ public class AbsNetEntity {
 	/**
 	 * 该节点包括若干个UniProtID
 	 */
-	public ArrayList<UniProtID> getLsUniProtIDs() {
+	public HashSet<UniProtID> getLsUniProtIDs() {
 		return hashUniProtIDs;
 	}
 	/**
