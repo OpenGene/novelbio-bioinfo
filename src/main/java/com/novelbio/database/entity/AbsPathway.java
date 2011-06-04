@@ -7,7 +7,6 @@ public class AbsPathway {
 	 */
 	protected String pathName;
 	
-	
 	/**
 	 * ko/ec/[org prefix].  example:<br>
 	 * <b>ko</b>   the reference pathway map represented by KO identifiers<br>
@@ -52,6 +51,7 @@ public class AbsPathway {
 	{
 		return this.org;
 	}
+	
 	/**
 	 * already trim()
 	 * ko/ec/[org prefix].  example:<br>
