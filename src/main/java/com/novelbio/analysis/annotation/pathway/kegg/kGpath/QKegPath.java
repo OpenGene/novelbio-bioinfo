@@ -9,7 +9,7 @@ import java.util.Map;
 
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGen2Path;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGng2Path;
-import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGpathScr2Trg;
+import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;

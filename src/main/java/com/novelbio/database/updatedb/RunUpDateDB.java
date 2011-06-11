@@ -68,6 +68,7 @@ public class RunUpDateDB {
 			String gene_associationgoa_unipro = fold + "gene_association.goa_uniprot";
 			String taxgene_associationgoa_unipro = fold + "taxgene_associationgoa_unipro";
 //			upDateUniIDgene_associationgoa_uniprot(taxIDFile, gene_associationgoa_unipro, taxgene_associationgoa_unipro, taxGeneInfoFile);
+			UpDateNBCDBFile.upDateGeneInfo(taxGeneInfoFile);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String affyFold = "/media/winE/Bioinformatics/Affymetrix/";
 			String AffyFileHuman = affyFold + "Human/Human Genome U133 Plus 2.0/HG-U133_Plus_2.na31.annot.csv/HG-U133_Plus_2.na31.annotModify.xls";
@@ -110,15 +111,15 @@ public class RunUpDateDB {
 			
 			
 			String agilentBta1 = "/media/winE/Bioinformatics/Agilent/caw/AgilentBta015354.txt";
-			UpDateNBCDBFile.upDateNCBIIDBlast(agilentBta1);
+//			UpDateNBCDBFile.upDateNCBIIDBlast(agilentBta1);
 			
 			String agilentBta2 = "/media/winE/Bioinformatics/Agilent/caw/AgilentBta023647.txt";
-			UpDateNBCDBFile.upDateNCBIIDBlast(agilentBta2);
+//			UpDateNBCDBFile.upDateNCBIIDBlast(agilentBta2);
 			
 			String blastFile1 = "/media/winE/Bioinformatics/BLAST/result/cow/cope/btaAgilent2Refseq061130";
 			String blastFile2 = "/media/winE/Bioinformatics/BLAST/result/cow/cope/btaAgilent2Refseq0904";
-			UpDateNBCDBFile.upDateNCBIIDBlast(blastFile1);
-			UpDateNBCDBFile.upDateNCBIIDBlast(blastFile2);
+//			UpDateNBCDBFile.upDateNCBIIDBlast(blastFile1);
+//			UpDateNBCDBFile.upDateNCBIIDBlast(blastFile2);
 			
 			
 			

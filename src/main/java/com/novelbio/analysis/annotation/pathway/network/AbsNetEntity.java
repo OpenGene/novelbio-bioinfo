@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.base.genome.gffOperate.GffDetail;
 import com.novelbio.database.entity.AbsPathway;
 import com.novelbio.database.entity.friceDB.NCBIID;
@@ -19,7 +20,7 @@ import com.novelbio.database.entity.friceDB.UniProtID;
  * @author zong0jie
  *
  */
-public class AbsNetEntity {
+public abstract class AbsNetEntity {
 	/**
 	 * 以下是本entity大概属于什么类别
 	 */
@@ -34,14 +35,9 @@ public class AbsNetEntity {
 	public static String DBINFO_REACTOME = "Reactome";
 
 	/**
-	 * 该节点包括若干个NCBIID
+	 * 该节点包括若干个CopedID
 	 */
-	HashSet<NCBIID> hashNcbiids = new HashSet<NCBIID>();
-	
-	/**
-	 * 该节点包括若干个UniProtID
-	 */
-	HashSet<UniProtID> hashUniProtIDs = new HashSet<UniProtID>();
+	HashSet<CopedID> hashCopedIDs = new HashSet<CopedID>();
 	
 	/**
 	 * 该节点所在的pathway信息
@@ -68,31 +64,17 @@ public class AbsNetEntity {
 	
 	
 	/**
-	 * 该节点包括若干个NCBIID
+	 * 该节点包括若干个CopedID
 	 */
-	public HashSet<NCBIID> getLsNcbiids() {
-		return hashNcbiids;
+	public HashSet<CopedID> getHashCopedIDs() {
+		return hashCopedIDs;
 	}
 	/**
-	 * 该节点包括若干个NCBIID
+	 * 该节点包括若干个CopedID
 	 */
-	public void addNcbiids(NCBIID ncbiid)
+	public void addCopedID(CopedID copedID)
 	{
-		hashNcbiids.add(ncbiid);
-	}
-	
-	/**
-	 * 该节点包括若干个UniProtID
-	 */
-	public HashSet<UniProtID> getLsUniProtIDs() {
-		return hashUniProtIDs;
-	}
-	/**
-	 * 该节点包括若干个UniProtID
-	 */
-	public void addLsUniProtIDs(UniProtID uniProtID)
-	{
-		hashUniProtIDs.add(uniProtID);
+		hashCopedIDs.add(copedID);
 	}
 	
 	/**
@@ -154,8 +136,6 @@ public class AbsNetEntity {
 	{
 		this.lsDataBase.add(DBinfo);
 	}
-	
-	
 	/**
 	 * 数值应该是AbsNetEntity中ENTITY中的一员，可以是化合物，基因，药物等，按照需要可以添加
 	 * 只有当flag=ENTITY_GENE时，才会有lsNcbiids或lsUniProtIDs
@@ -171,7 +151,6 @@ public class AbsNetEntity {
 	{
 		this.flag = flag;
 	}
-
 	/**
 	 * 	仅比较两个AbsNetEntity的entityID是否相同。但是当entityID.trim()为""时，都忽略
 	 */
@@ -188,7 +167,6 @@ public class AbsNetEntity {
 		}
 		return entityID.equals(otherObj.entityID) ;
 	}
-	
 	/**
 	 * 	仔细比较两个AbsNetEntity是否相同
 	 * 不过也只是比较entityID，flag，lsNcbiids和lsUniProtIDs是否一致
@@ -201,19 +179,22 @@ public class AbsNetEntity {
 			return false;
 		
 		//NCBIID已经重写过equals方法了，只比较geneID是否一致
-		if (!hashNcbiids.equals(otherObj.getLsNcbiids()))
-			return false;
-		
-		//UniProtID已经重写过equals方法了，只比较UniID是否一致
-		if (!hashUniProtIDs.equals(otherObj.getLsUniProtIDs()))
+		if (!hashCopedIDs.equals(otherObj.getHashCopedIDs()))
 			return false;
 		
 		//比较所处在的数据库是否一致
 		if (!lsDataBase.equals(otherObj.getDataBaseInfo()))
 			return false;
 		
-		return false;
+		return true;
 	}
+	
+	public int hashCode()
+	{
+		int hashCode = hashCopedIDs.hashCode() + lsDataBase.hashCode();
+		return hashCode;
+	}
+	
 	/**
 	 * 用来保存
 	 */
@@ -227,7 +208,7 @@ public class AbsNetEntity {
 	 * @param entityID
 	 * @return
 	 */
-	public ArrayList<AbsNetEntity> getLsAbsNetEntity(String entityID) {
+	public static ArrayList<AbsNetEntity> getLsAbsNetEntity(String entityID) {
 		return hashAbsNetEntity.get(entityID.trim());
 	}
 	
@@ -237,7 +218,7 @@ public class AbsNetEntity {
 	 * 如果hash表中有该节点的list，比较该节点信息与该list中的其他元素，如果都不相同，就加入该节点
 	 * @param absNetEntity
 	 */
-	public void addAbsNetEntity(AbsNetEntity absNetEntity) {
+	public static void addAbsNetEntity(AbsNetEntity absNetEntity) {
 		if (hashAbsNetEntity.get(absNetEntity.getEntityID()) == null) {
 			ArrayList<AbsNetEntity> lsAbsNetEntities = new ArrayList<AbsNetEntity>();
 			lsAbsNetEntities.add(absNetEntity);
@@ -252,9 +233,17 @@ public class AbsNetEntity {
 		}
 	}
 	
-	public void cleanHash() {
+	/**
+	 * 清空hash表
+	 */
+	public static void cleanHash() {
 		hashAbsNetEntity = new HashMap<String, ArrayList<AbsNetEntity>>();
 	}
 	
+	/**
+	 * 给定某个节点，在对应的pathway中查找它的相关节点
+	 * @return
+	 */
+	public abstract ArrayList<AbsNetRelate> getRelate(boolean blast, int StaxID, double evalue);
 	
 }

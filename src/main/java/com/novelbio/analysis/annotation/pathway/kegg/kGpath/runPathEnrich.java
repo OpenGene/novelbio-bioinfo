@@ -8,17 +8,17 @@ public class runPathEnrich {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String parentFile = "/media/winE/NBC/Project/Project_ZDB_Lab/XCX/GO/";
-		String backGroundFile=parentFile + "riceAffyBG.txt";
+		String parentFile = "/home/zong0jie/桌面/";
+		String backGroundFile="/media/winE/Bioinformatics/GenomeData/human/UCSChg19RefseqDuplicateID.txt";
 		try {
-			String fileName = "stage9-BYvs9522";			
+			String fileName = "长海任博士";			
 			String geneFile=parentFile+fileName+".xls";
 			String resultExcel2003 = parentFile +fileName+"PathanalysisComb.xls";
 			int[] colID = new int[2]; colID[0] = 1; colID[1] = 2;
 			double up = 1;
 			double down = 1;
 			boolean blast = false;
-			int queryTaxID = 39947;
+			int queryTaxID = 9606;
 			int subTaxID = 9606;
 			double evalue = 1e-5;
 			boolean sepID = false;
@@ -32,14 +32,14 @@ public class runPathEnrich {
 			e.printStackTrace();
 		}
 		try {
-			String fileName = "stage11-BYvs9522";			
+			String fileName = "miR-100-TargetScan";			
 			String geneFile=parentFile+fileName+".xls";
 			String resultExcel2003 = parentFile +fileName+"PathanalysisComb.xls";
 			int[] colID = new int[2]; colID[0] = 1; colID[1] = 2;
 			double up = 1;
 			double down = 1;
 			boolean blast = false;
-			int queryTaxID = 39947;
+			int queryTaxID = 9606;
 			int subTaxID = 9606;
 			double evalue = 1e-5;
 			boolean sepID = false;

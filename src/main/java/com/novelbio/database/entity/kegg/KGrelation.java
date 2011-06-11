@@ -1,5 +1,8 @@
 package com.novelbio.database.entity.kegg;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * 两个entry可能有多个作用方法，譬如binding和activation同时存在那么这个就出现两次
  * @author zong0jie
@@ -262,4 +265,84 @@ public class KGrelation {
 	{
 		this.subtypeValue=subtypeValue.trim();
 	}
+	
+	public static int FLAG_ENTRYID_UNKNOWN = 0;
+	public static int FLAG_ENTRYID1 = 1;
+	public static int FLAG_ENTRYID2 = 2;
+	int flagID = FLAG_ENTRYID_UNKNOWN;
+	public void setFlag(int FLAG_ENTRYID) {
+		flagID = FLAG_ENTRYID;
+	}
+	
+	public int getFlag() {
+		return flagID;
+	}
+	
+	/**
+	 * 判断两个KGrelation是否相同，只需要比较entry1和entry2即可
+	 * 还没写好
+	 * @return
+	 */
+	private boolean equalsSimp(Object obj)
+	{
+		return false;
+	}
+	
+	
+	/**
+	 * 因为有些relation中有这种情况：entry1、entry2完全一致，就是subtype不一致，这个就是将一致的entry1、entry2去冗余的
+	 * 去除冗余后，将subtype用//分割开
+	 * @param lsKGrelations
+	 * @return
+	 */
+	public static HashMap<String, KGrelation> removeRep(ArrayList<KGrelation> lsKGrelations) 
+	{
+		/////////////////////////////////////////因为有些relation中有这种情况：entry1、entry2完全一致，就是subtype不一致，这个就是将一致的entry1、entry2去冗余的////////////////////////////////////////////////////////////////
+		HashMap<String, KGrelation> hashPathID2KGRelation = new HashMap<String, KGrelation>();
+		for (int i = 0; i < lsKGrelations.size(); i++) 
+		{
+			KGrelation tmpKGrelation = lsKGrelations.get(i);
+			//因为entryID1都是一样的，所以不考虑entryID1
+			String key = tmpKGrelation.getPathName() + tmpKGrelation.getEntry2ID(); //pathName和entryID2两个在一起是独一无二的了，用这个连城string作为key，以此来去重复，否则的话要在KGrelation类中重写hash码
+			if (hashPathID2KGRelation.containsKey(key)) 
+			{
+				//如果出现重复的entry1和entry2对， 那么将subtypeName和subtypeValue附加在后面
+				KGrelation kGrelationtmp = hashPathID2KGRelation.get(key);
+				if ( kGrelationtmp.getSubtypeName().equals( tmpKGrelation.getSubtypeName() )  ) {
+					continue;
+				}
+				kGrelationtmp.setSubtypeName(kGrelationtmp.getSubtypeName()+ "//" + tmpKGrelation.getSubtypeName());
+				kGrelationtmp.setSubtypeValue(kGrelationtmp.getSubtypeValue()+ "//" + tmpKGrelation.getSubtypeValue());
+			}
+			else 
+			{
+				hashPathID2KGRelation.put(key, tmpKGrelation);
+			}
+		}
+		return hashPathID2KGRelation;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

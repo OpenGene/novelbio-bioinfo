@@ -8,6 +8,14 @@ import java.util.Date;
  *
  */
 public class BlastInfo {
+	/**
+	 * blast的subject来自于NCBIID表
+	 */
+	public static String SUBJECT_TAB_NCBIID = "NCBIID";
+	/**
+	 * blast的subject来自于UniprotID表
+	 */
+	public static String SUBJECT_TAB_UNIPROTID = "UniprotID";
 	
 	private String queryID;
 	/**

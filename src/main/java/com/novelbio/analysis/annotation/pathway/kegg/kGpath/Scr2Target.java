@@ -3,9 +3,7 @@ package com.novelbio.analysis.annotation.pathway.kegg.kGpath;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-
-import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGpathScr2Trg;
-import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
+import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFSGeneInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
@@ -191,17 +189,24 @@ public class Scr2Target {
 				GeneInfo qgeneInfo = new GeneInfo(); qgeneInfo.setGeneID(Long.parseLong(qGenKegInfo[1]));
 				GeneInfo geneInfoSub = DaoFSGeneInfo.queryGeneInfo(qgeneInfo);
 				//如果没有symbol
-				if (geneInfoSub.getSymbol() == null || geneInfoSub.getSymbol().trim().equals("") || geneInfoSub.getSymbol().trim().equals("-")) 
+				if (geneInfoSub == null || geneInfoSub.getSymbol() == null || geneInfoSub.getSymbol().trim().equals("") || geneInfoSub.getSymbol().trim().equals("-")) 
 				{
 					NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[1])); 
 					queryGenInfo[0] = DaoFSNCBIID.queryLsNCBIID(ncbiid).get(0).getAccID();
+					if (geneInfoSub == null) {
+						queryGenInfo[2] = "";
+					}
+					else {
+						queryGenInfo[2] = geneInfoSub.getDescription();
+					}
 				}
 				else 
 				{
 					queryGenInfo[0] = geneInfoSub.getSymbol().split("//")[0];
+					queryGenInfo[2] = geneInfoSub.getDescription();
 				}
 				queryGenInfo[1] = QtaxID + "";
-				queryGenInfo[2] = geneInfoSub.getDescription();
+				
 			}
 			else if (qGenKegInfo[7] != null) 
 			{
@@ -211,6 +216,11 @@ public class Scr2Target {
 					qgeneInfo.setGeneID(Long.parseLong(qGenKegInfo[1]));
 					GeneInfo geneInfoSub = DaoFSGeneInfo.queryGeneInfo(qgeneInfo);
 					//如果没有symbol
+					if (geneInfoSub == null) {
+						System.out.println("error");
+					}
+					
+					
 					if (geneInfoSub == null || geneInfoSub.getSymbol() == null || geneInfoSub.getSymbol().trim().equals("") || geneInfoSub.getSymbol().trim().equals("-")) 
 					{
 						NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[1])); 
@@ -355,34 +365,5 @@ public class Scr2Target {
 		txtReadandWrite.setParameter(resultFIleAttribute, true, false);
 		txtReadandWrite.ExcelWrite(lsAttribute, "\t", 1, 1);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

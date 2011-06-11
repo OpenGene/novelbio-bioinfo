@@ -1,4 +1,4 @@
-package com.novelbio.analysis.annotation.pathway.kegg.pathEntity;
+package com.novelbio.analysis.annotation.pathway.network;
 
 import java.util.ArrayList;
 

@@ -19,7 +19,7 @@ public class ServBlastInfo {
 	 * @param taxID
 	 * @param sep
 	 * @return
-	 * 返回blast的信息
+	 * 返回blast的信息，如果没有就返回null
 	 */
 	public static BlastInfo getBlastInfo(String[] genInfo,int QtaxID,int StaxID,double evalue)
 	{
