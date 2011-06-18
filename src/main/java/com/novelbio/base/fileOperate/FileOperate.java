@@ -635,6 +635,9 @@ public class FileOperate {
 	     */
 	    public static boolean isFileExist(String fileName)
 	    {
+	    	if (fileName == null) {
+				return false;
+			}
 	    	 File file=new File(fileName);
 	    	 if (!file.exists()) {//没有文件，则返回空
 	    		 return false;
