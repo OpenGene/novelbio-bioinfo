@@ -3,12 +3,21 @@ package com.novelbio.analysis.seq.mapping;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public abstract class Seq {
 	TxtReadandWrite txtSeqFile = new TxtReadandWrite();
 	String seqFile = "";
 	int block = 1;
+	
+	/**
+	 * fastQ文件里面的序列数量
+	 */
+	int seqNum = -1;
+	
+	private static Logger logger = Logger.getLogger(Seq.class);  
 	/**
 	 * 
 	 * @param seqFile
@@ -18,7 +27,30 @@ public abstract class Seq {
 		this.seqFile = seqFile;
 		this.block = block;
 	}
-	
+	public String getFileName() {
+		return seqFile;
+	}
+	/**
+	 * 获得序列的数量，不管双端单端，都只返回一端的测序数量，也就是fragment的数量
+	 * 如果返回小于0，说明出错
+	 * @throws Exception 
+	 */
+	public int getSeqNum(){
+		if (seqNum >= 0) {
+			return seqNum;
+		}
+		txtSeqFile.setParameter(seqFile, false, true);
+		int readsNum = 0;
+		try {
+			readsNum =  txtSeqFile.ExcelRows()/block;
+			txtSeqFile.close();
+		} catch (Exception e) {
+			logger.error(seqFile + " may not exist " + e.toString());
+			return -1;
+		}
+		seqNum = readsNum;
+		return seqNum;
+	}
 	/**
 	 * 梯度提取序列Gradient
 	 * @param block 

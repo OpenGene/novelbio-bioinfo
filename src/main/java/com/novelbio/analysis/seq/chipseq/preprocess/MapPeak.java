@@ -109,7 +109,9 @@ public class MapPeak {
 	}
 	
 	/**
-	 * 
+	 * 默认参数
+	 * String pvale = " -p 1e-3 ";
+	 * String fold = " -m 5, --mfold=200 ";
 	 * 用macs的方法进行peak calling
 	 * @param bedTreat 实验
 	 * @param bedCol 对照
@@ -122,6 +124,8 @@ public class MapPeak {
 		String effge = "";
 		String col = "";
 		String name = "";
+		String pvale = " -p 1e-3 ";
+		String fold = " -m 5, --mfold=200 ";
 		if (species.equals("os")) {
 			effge = " -g 2.6e8 ";
 		}
@@ -134,7 +138,7 @@ public class MapPeak {
 		if (prix !=null && !prix.trim().equals("")) {
 			name = " -n "+prix;
 		}
-		String cmd = "macs14 -t "+bedTreat +col+name + effge + "-w";
+		String cmd = "macs14 -t "+bedTreat +col+name + effge + fold + pvale + "-w";
 		TxtReadandWrite txtCmd = new TxtReadandWrite();
 		txtCmd.setParameter(outFilePath+"/macs.sh", true, false);
 		txtCmd.writefile(cmd);

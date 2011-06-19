@@ -877,9 +877,6 @@ public class UpDateNBCDBFile {
 	{
 		TxtReadandWrite txtTaxID=new TxtReadandWrite();
 		txtTaxID.setParameter(taxIDfile, false, true);
-		BufferedReader readerTaxID=txtTaxID.readfile();
-		String content="";
-		DaoFSBlastInfo daoSBlastInfo=new DaoFSBlastInfo();
 		String[][] taxInfo=txtTaxID.ExcelRead("\t", 1, 1, txtTaxID.ExcelRows(), txtTaxID.ExcelColumns("\t"));
 		for (int i = 0; i < taxInfo.length; i++) {
 			TaxInfo taxID=new TaxInfo();

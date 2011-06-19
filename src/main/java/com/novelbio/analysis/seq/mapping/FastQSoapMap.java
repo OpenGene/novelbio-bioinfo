@@ -13,7 +13,7 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class FastQSoapMap extends FastQ implements Mapping{
+public class FastQSoapMap extends Mapping{
 	/**
 	 * 结果文件路径
 	 */
@@ -38,7 +38,7 @@ public class FastQSoapMap extends FastQ implements Mapping{
 	 * 分别为fileFilterOut_1和fileFilterOut_2
 	 * @return 返回已经过滤好的FastQSoapMap，其实里面也就是换了两个FastQ文件而已，mapping结果文件不变。
 	 * 所以不需要指定新的mapping文件
-	 * @throws Exception 
+	 * 出错返回null
 	 */
 	public FastQSoapMap filterReads(String fileFilterOut) 
 	{
@@ -49,6 +49,7 @@ public class FastQSoapMap extends FastQ implements Mapping{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.error("filter reads error:" + e.toString());
+			return null;
 		}
 		FastQSoapMap fastQSoapMap= new FastQSoapMap(fastQ.seqFile, fastQ.seqFile2, offset, quality, outFileName, SoapExePath,IndexFile);
 		return fastQSoapMap;
@@ -312,11 +313,101 @@ public class FastQSoapMap extends FastQ implements Mapping{
 		lsBedSeqs.add(new BedSeq(outCombine));
 		lsBedSeqs.add(new BedSeq(outError));
 		return lsBedSeqs;
-		
-		
 	}
 	
 	
+	/**
+	 * 将soap转化为bed文件，只有当为pear-end的时候，并且需要将单双链分开的时候才用这个。
+	 * 本方法内部含有ascII的质量控制
+	 * 假设测双端45bp
+	 * @param soapFile 
+	 * @param outPut1 输出#/1序列的坐标，一行起点45bp，一行终点45bp
+	 * @param outCombFile1 输出#/1序列的合并，一行起点终点共fragment长度，用于后面画图
+	 * @param outPut2 输出#/2序列的坐标，一行起点45bp，一行终点45bp
+	 * @param outCombFile2 输出#/2序列的合并，一行起点终点共fragment长度，用于后面画图
+	 * @param outError 输出错误信息，也就是两个 #/1或两个#/2连在一起的情况
+	 * @throws Exception
+	 */
+	public void getBed2Macs(String outPut1, String outCombFile1, String outPut2,String outCombFile2,String outError) throws Exception {
+		
+		TxtReadandWrite txtSoap = new TxtReadandWrite();
+		txtSoap.setParameter(outFileName, false, true);
+		TxtReadandWrite txtOut1 = new TxtReadandWrite();
+		txtOut1.setParameter(outPut1, true, false);
+		TxtReadandWrite txtoutCombFile1 = new TxtReadandWrite();
+		txtoutCombFile1.setParameter(outCombFile1, true, false);
+		
+		TxtReadandWrite txtOut2 = new TxtReadandWrite();
+		txtOut2.setParameter(outPut2, true, false);
+		TxtReadandWrite txtoutCombFile2 = new TxtReadandWrite();
+		txtoutCombFile2.setParameter(outCombFile2, true, false);
+		
+		TxtReadandWrite txtOuterror = new TxtReadandWrite();
+		txtOuterror.setParameter(outError, true, false);
+		//获得测序长度
+		String[] string = txtSoap.readFirstLines(1).get(0).split("\t");
+		int bpLength = string[1].trim().length();
+               //soap文件的格式是 chrID 坐标 无论mapping到正负链，该坐标都是起点，都是要向后加上bpLength-1的，
+		String content = "";
+		BufferedReader readSoap = txtSoap.readfile();
+		String tmpcontent=""; String tmp = "";String tmpPrespre = "";
+		String[] tmpresPre =null;
+		while ((content = readSoap.readLine()) != null) {
+			if (content.trim().equals("")) {
+				continue;
+			}
+			String[] ss = content.split("\t");
+			//soap文件的格式是 chrID 坐标 无论mapping到正负链，该坐标都是起点，都是要向后加上bpLength-1的，
+			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
+			//tmpPrespre only save content while ss[0].split("#/")[1].equals("1")
+			//只需要判断#/1即可，如果#/1为正，则mapping到正链上，否则mapping到负链上
+			if (ss[0].trim().endsWith("1")) {
+				tmpcontent = content;
+				tmpresPre = ss;
+				tmpPrespre = tmpres;
+				continue;
+			}
+			//只有当#/1和#/2的方向相反才是正确的测序结果。因为solexa测序的结果就是一正一负		
+			if ((ss[0].trim().endsWith("2")&&ss[6].equals("-"))
+					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("+")
+			)
+			{
+				txtOut1.writefile(tmpPrespre+"\n"+tmpres+"\n");
+				long startLoc = 0; long endLoc = 0; long tmpPre = Long.parseLong(tmpresPre[8]); long tmpSS = Long.parseLong(ss[8]);  
+				if (tmpPre<tmpSS) {
+					startLoc = tmpPre; endLoc = tmpSS + bpLength-1;
+				}
+				else {
+					startLoc = tmpSS; endLoc = tmpPre + bpLength-1;
+				}
+				txtoutCombFile1.writefile(ss[7]+"\t"+startLoc+"\t"+endLoc+"\n");
+			}
+			else if ((ss[0].trim().endsWith("2")&&ss[6].equals("+"))
+					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("-")
+			)
+			{
+				txtOut2.writefile(tmpPrespre+"\n"+tmpres+"\n");
+				long startLoc = 0; long endLoc = 0; long tmpPre = Long.parseLong(tmpresPre[8]); long tmpSS = Long.parseLong(ss[8]);  
+				if (tmpPre<tmpSS) {
+					startLoc = tmpPre; endLoc = tmpSS + bpLength-1;
+				}
+				else {
+					startLoc = tmpSS; endLoc = tmpPre + bpLength-1;
+				}
+				txtoutCombFile2.writefile(ss[7]+"\t"+startLoc+"\t"+endLoc+"\n");
+			}
+			else {
+				txtOuterror.writefile(tmpcontent+"\n"+content+"\n");
+			}
+		}
+		txtOut1.close();
+		txtOut2.close();
+		txtoutCombFile1.close();
+		txtoutCombFile2.close();
+		txtOuterror.close();
+		txtSoap.close();
+		
+	}
 	
 	
 	

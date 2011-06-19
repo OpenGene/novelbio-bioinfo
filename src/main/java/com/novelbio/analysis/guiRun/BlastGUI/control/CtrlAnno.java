@@ -9,6 +9,7 @@ import javax.swing.SwingWorker;
 
 
 import com.google.common.base.Splitter;
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast;
 import com.novelbio.base.dataOperate.ExcelOperate;
@@ -65,7 +66,7 @@ public class CtrlAnno extends SwingWorker<ArrayList<String[]>, ProgressData>
 	 * @return
 	 * @throws Exception
 	 */
-	public int prepare(String fileName,String splitRegx, int colNum) throws Exception {
+	public int prepare(String splitRegx, int colNum) throws Exception {
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
 		ArrayList<String[]> lsGeneInfo = txtReadandWrite.ExcelRead(splitRegx, 1, 1, txtReadandWrite.ExcelRows(), 1, 1);
 		for (String[] strings : lsGeneInfo) {
@@ -104,7 +105,13 @@ public class CtrlAnno extends SwingWorker<ArrayList<String[]>, ProgressData>
 			String geneID = lsGeneID.get(i).trim();
 		
 			try {
-				String[] tmpAnno = ServAnno.getAnno(geneID, taxID, blast, StaxID, evalue);
+				CopedID copedID = new CopedID(geneID, taxID, false);
+			
+				
+				
+				
+//				String[] tmpAnno = ServAnno.getAnno(geneID, taxID, blast, StaxID, evalue);
+				String[] tmpAnno = copedID.getAnno(blast, StaxID, evalue);
 				if (tmpAnno == null) {
 					tmpAnno = new String[length];
 					for (int j = 0; j < tmpAnno.length; j++) {
@@ -141,7 +148,9 @@ public class CtrlAnno extends SwingWorker<ArrayList<String[]>, ProgressData>
 				publish(progressData);
 				lsDesp.add(tmpanno3);
 //				Thread.sleep(100);
-			} catch (Exception e) {
+			} catch (Exception e)
+			{
+				e.printStackTrace();
 			}
 		}
 		

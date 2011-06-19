@@ -7,32 +7,15 @@ public class runAnno {
 	}
 	//添加注释
 	public static void anno() {
-		String parentFile = "/home/zong0jie/桌面/xly/";
+		String parentFile = "/home/zong0jie/桌面/";
  
 		try {
-			AnnoQuery.anno(parentFile+"k0_peakFilter.xls",10090,10,false,9606,1e-10,"/");
-//			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
+			AnnoQuery.anno(parentFile+"9522趋势总表.xls",39947,1,false,9606,1e-10,"/");
+			AnnoQuery.anno(parentFile+"BY趋势总表.xls",39947,1,false,9606,1e-10,"/");
 		} catch (Exception e) {
 			e.printStackTrace()	;
 		}
-		try {
-			AnnoQuery.anno(parentFile+"k4_peakFilter.xls",10090,10,false,9606,1e-10,"/");
-//			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
-		} catch (Exception e) {
-			e.printStackTrace()	;
-		}
-		try {
-			AnnoQuery.anno(parentFile+"W0_peakFilter.xls",10090,10,false,9606,1e-10,"/");
-//			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
-		} catch (Exception e) {
-			e.printStackTrace()	;
-		}
-		try {
-			AnnoQuery.anno(parentFile+"W4_peakFilter.xls",10090,10,false,9606,1e-10,"/");
-//			AnnoQuery.anno(parentFile+"heterovswt.xls",0,1,false,9606,1e-10);
-		} catch (Exception e) {
-			e.printStackTrace()	;
-		}
+ 
 	}
 	
 	//添加geneID，用于两列取交集用的

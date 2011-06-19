@@ -9,9 +9,13 @@ import org.apache.log4j.Logger;
 import org.openxmlformats.schemas.presentationml.x2006.main.SldDocument;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
+import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
+import com.novelbio.analysis.seq.chipseq.preprocess.Comb;
+import com.novelbio.analysis.seq.mapping.BedSeq;
 import com.novelbio.analysis.seq.mapping.FastQ;
 import com.novelbio.base.genome.gffOperate.GffHashUCSCgene;
 import com.novelbio.database.entity.friceDB.NCBIID;
+import com.novelbio.database.updatedb.database.UpDateNBCDBFile;
 
 public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);  
@@ -20,11 +24,13 @@ public class mytest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		int rowAllNum = 402;
-		HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
-		Integer i = 1;
-		int  j = 1;
-		System.out.println(i == j);
+		try {
+			UpDateNBCDBFile.upDateTaxID("/media/winE/Bioinformatics/UpDateDB/常见物种IDKEGG.txt");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

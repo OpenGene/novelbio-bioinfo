@@ -69,7 +69,7 @@ public class CopedID {
 		else
 			accID = removeDot(accID);
 		
-		ArrayList<String> lsaccID = ServAnno.getNCBIUni(accID, taxID);
+		ArrayList<String> lsaccID = ServAnno.getNCBIUniTax(accID, taxID);
 		String idType = lsaccID.get(0); taxID = Integer.parseInt(lsaccID.get(1));
 		String tmpGenID = lsaccID.get(2);
 		setInfo(accID, idType, taxID, tmpGenID);
@@ -251,7 +251,7 @@ public class CopedID {
 		}
 		if (idType.equals(IDTYPE_ACCID)) {
 			description = "";
-			symbol = accID;
+			symbol = "";
 		}
 		else if(idType.equals(IDTYPE_GENEID)){
 			String[]  symbDesp = ServAnno.getGenInfo(Integer.parseInt(getGenUniID()));
@@ -337,6 +337,42 @@ public class CopedID {
 		return false;
 	}
 
+	/**
+	 * 如果blast * 0:symbol 1:description 2:subjectTaxID 3:evalue 4:symbol 5:description 如果不blast 0:symbol 1:description
+	 * @return
+	 */
+	public String[] getAnno( boolean blast, int StaxID, double evalue) {
+		String[] tmpAnno = null;
+		if (blast) {
+			tmpAnno = new String[6];
+			for (int i = 0; i < tmpAnno.length; i++) {
+				tmpAnno[i] = "";
+			}
+			
+			tmpAnno[0] = getSymbo(); tmpAnno[1] = getDescription(); tmpAnno[2] = StaxID + ""; 
+			CopedID copedIDBlast = getBlastCopedID(StaxID, evalue);
+			if (copedIDBlast != null) {
+				tmpAnno[3] = evalue + "";
+				tmpAnno[4] = copedIDBlast.getSymbo();
+				tmpAnno[5] = copedIDBlast.getDescription();
+			}
+		}
+		else {
+			tmpAnno = new String[2];
+			for (int i = 0; i < tmpAnno.length; i++) {
+				tmpAnno[i] = "";
+			}
+			tmpAnno[0] = getSymbo(); tmpAnno[1] = getDescription(); 
+		}
+		
+		
+		
+		return tmpAnno;
+	}
+	
+	
+	
+	
 	/**
 	 * 重写hashcode
 	 */

@@ -46,11 +46,6 @@ public class FastQ extends Seq{
 	int quality = 20;
 	
 	/**
-	 * fastQ文件里面的序列数量
-	 */
-	int seqNum = -1;
-	
-	/**
 	 * fastQ里面asc||码的指标与个数
 	 */
 	HashMap<Integer, Integer> hashFastQFilter = new HashMap<Integer, Integer>();
@@ -162,24 +157,7 @@ public class FastQ extends Seq{
 	}
 	
 	
-	/**
-	 * 获得序列的数量，不管双端单端，都只返回一端的测序数量，也就是fragment的数量
-	 * @throws Exception 
-	 */
-	public int getSeqNum(){
-		if (seqNum >= 0) {
-			return seqNum;
-		}
-		txtSeqFile.setParameter(seqFile, false, true);
-		int readsNum = 0;
-		try {
-			readsNum =  txtSeqFile.ExcelRows()/block;
-			txtSeqFile.close();
-		} catch (Exception e) {
-		}
-		seqNum = readsNum;
-		return seqNum;
-	}
+
 	
 	/**
 	 * 指定阈值，将fastQ文件进行过滤处理并产生新文件，那么本类的文件也会替换成新的文件
