@@ -24,8 +24,9 @@ public class mytest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		BedSeq bedSeq = new BedSeq("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/mapping/GSM531964_PHF8Filter.bed");
 		try {
-			UpDateNBCDBFile.upDateTaxID("/media/winE/Bioinformatics/UpDateDB/常见物种IDKEGG.txt");
+			bedSeq.extend(300, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/mapping/GSM531964_PHF8Filter_extend.bed");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -19,29 +19,27 @@ public class PeakAnno {
 				"/media/winE/Bioinformatics/GenomeData/human/hg18refseqUCSCsortUsing.txt", "");
 		System.out.println("prepare ok");
 		annotation();
-
 	}
-	
 	
 	/**
 	 * peak Annotation
 	 */
 	public static void  annotation() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/Microarray_WFL110423/王凤良 基因芯片/王凤良 基因芯片/chip result/annotation/";
+		String ParentFile="/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/PeakCalling/";
 		int[] columnID=new int[2];
 		columnID[0]=1;
-		columnID[1]=4;
-		int taxID = 9606;
+		columnID[1]=6;
+		int taxID = 10090;
 		//定位区域
 		int[] region = new int[3];//0:UpstreamTSSbp 1:DownStreamTssbp 2:GeneEnd3UTR
-		region[0] = 5000; region[1] = 3000; region[2] = 100;
+		region[0] = 5000; region[1] = 5000; region[2] = 1000;
 		try {
-			 String FpeaksFile=ParentFile+"C_vs_N_635_ratio_peaks.txt";
-			 String FannotationFile=ParentFile+"C_vs_N_635_ratio_peaks_annotation.xls";
+			 String FpeaksFile=ParentFile+"PHF8_peaks.txt";
+			 String FannotationFile=ParentFile+"PHF8_peaks_annotation.txt";
 			 String FPeakHist = ParentFile; String resultPrix ="";
 			 String statistics = ParentFile+ "statistics.txt";
-//			 PeakLOC.histTssGeneEnd(FpeaksFile, "\t", columnID, 2, -1, FPeakHist, resultPrix);
+			 PeakLOC.histTssGeneEnd(FpeaksFile, "\t", columnID, 2, -1, FPeakHist, resultPrix);
 			 
 //			 PeakLOC.locatstatistic(FannotationFile, "\t", columnID, 2, -1, statistics);
 			 

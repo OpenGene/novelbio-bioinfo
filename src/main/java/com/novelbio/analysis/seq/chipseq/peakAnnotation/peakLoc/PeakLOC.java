@@ -25,7 +25,6 @@ public class PeakLOC extends GenomeBasePrepare{
 	
 	/**
 	 * 
-	 * peak定位，并写入文本文件，只获得2k上游以及50bp内的位点
 	 * @param gfffilename gff文件
 	 * @param txtFilepeakFile
 	 * @param sep 分隔符

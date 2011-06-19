@@ -19,11 +19,6 @@ import com.novelbio.base.genome.gffOperate.GffsearchUCSCgene;
  */
 public class GffLocatCod extends GffChrUnion
 {
- 
-	 
-	
- 
-	
 	/**
 	 * 给定二维数组,计算出每个peakLOC所在的基因，针对UCSCknown gene以及refseq
 	 * @param LOCIDInfo <br>
@@ -781,8 +776,6 @@ public class GffLocatCod extends GffChrUnion
 			tmpPeakAnnotation[1]=LOCIDInfo[i][1];
 			//////////////////////////////////////////////////////////////////////////////////////////////
 			//如果在基因内
-			
-			
 			if (tmpresult.insideLOC) 
 			{
 				tmpPeakAnnotation[2]="基因内";

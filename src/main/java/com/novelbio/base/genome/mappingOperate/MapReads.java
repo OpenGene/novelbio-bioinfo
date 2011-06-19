@@ -26,7 +26,6 @@ public class MapReads {
 	 * 用来保存每个染色体中的基因坐标-invNum精度里面的reads数目
 	 * chrID(小写)--short[]
 	 * 其中short[]从1开始，0记录了short的长度，但是会溢出所以不准。
-	 *  
 	 */
 	 Hashtable<String, int[]> hashChrBpReads=new Hashtable<String, int[]>();
 	
@@ -63,14 +62,11 @@ public class MapReads {
 		//所谓结算就是说每隔invNum的bp就把这invNumbp内每个bp的Reads叠加数取平均或中位数，保存进chrBpReads中
 		colChrID--;colStartNum--;colEndNum--;
 		invNum=thisinvNum;
-		
 		/////////////////////////////////////////获得每条染色体的长度并保存在hashChrLength中////////////////////////////////////////////////////
 		ChrSearch.setChrFilePath(chrFilePath);
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
 		int[] chrBpReads=null;//保存每个bp的reads累计数
 		int[] SumChrBpReads=null;//直接从0开始记录，1代表第二个invNum,也和实际相同
-		
 		/////////////////读文件的准备工作///////////////////////////////////////////////////
 		TxtReadandWrite txtmap=new TxtReadandWrite();
 		txtmap.setParameter(mapFile,false, true);
@@ -86,25 +82,19 @@ public class MapReads {
 		while ((content=bufmap.readLine())!=null) 
 		{
 			String[] tmp=content.split(sep);
-			
 			///////////////////当每列里面含有chrID的时候///////////////////////////////////
 			if (colChrID>=0) 
 			{
 				if (tmp[colChrID].trim().toLowerCase().equals("chrm")) {
 					continue;
 				}
-				
 				if (!tmp[colChrID].trim().toLowerCase().equals(lastChr)) //出现了新的chrID，则开始剪切老的chrBpReads,然后新建chrBpReads，最后装入哈希表
 				{
 					if (!lastChr.equals("")) //前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
 					{
 						sumChrBp(chrBpReads, 1, SumChrBpReads);
 					}
-					
 					lastChr=tmp[colChrID].trim().toLowerCase();//实际这是新出现的ChrID
-				
-					
-					
 					//////////////////释放内存，感觉加上这段有点用，本来内存到1.2g，加了后降到990m///////////////////////////
 					System.out.println(lastChr);
 					chrBpReads=null;//看看能不能释放掉内存
@@ -118,8 +108,6 @@ public class MapReads {
 					//为方便，0位记录总长度。这样实际bp就是实际长度
 					int SumLength=chrBpReads.length/invNum+1;//保证不会溢出，这里是要让SumChrBpReads长一点
 					SumChrBpReads=new int[SumLength];//直接从0开始记录，1代表第二个invNum,也和实际相同
-					
-					
 					 ////////////将新出现的chr装入哈希表////////////////////////////////
 					hashChrBpReads.put(lastChr, SumChrBpReads);//将新出现的chrID和新建的SumChrBpReads装入hash表
 					
@@ -127,9 +115,6 @@ public class MapReads {
 					String[] tmpChrLen=new String[2];
 					tmpChrLen[0]=lastChr;tmpChrLen[1]=chrLength+"";
 					lsChrLength.add(tmpChrLen);
-					
-					
-					
 				}
 			}
 			//////////////////////////假设为fasta格式，每个染色体一个>chrID接下来才是mapping坐标///////////////////////////////////
@@ -149,15 +134,15 @@ public class MapReads {
 					 {
 						 sumChrBp(chrBpReads, 1, SumChrBpReads);
 					 }
-					
-						//////////////////释放内存，感觉加上这段有点用，本来内存到1.2g，加了后降到990m///////////////////////////
-						System.out.println(lastChr);
-						chrBpReads=null;//看看能不能释放掉内存
-						System.gc();//显式调用gc
-						/////////chrBpReads设定/////////////////////////
-						
-					 /////////////chrBpReads设定////////////////////////////////////////////////////////////////////////////////////
-					
+
+					//////////////////释放内存，感觉加上这段有点用，本来内存到1.2g，加了后降到990m///////////////////////////
+					System.out.println(lastChr);
+					chrBpReads = null;// 看看能不能释放掉内存
+					System.gc();// 显式调用gc
+					/////////chrBpReads设定/////////////////////////
+
+					/////////////chrBpReads设定////////////////////////////////////////////////////////////////////////////////////
+
 					 int chrLength=(int) ChrSearch.getChrLength(lastChr);
 					 chrBpReads=new int[chrLength+1];//同样为方便，0位记录总长度。这样实际bp就是实际长度
 					 chrBpReads[0]=(int) chrLength;//会溢出所以不能看
@@ -184,6 +169,10 @@ public class MapReads {
 				continue;
 			}
 			for (int i = tmpStart; i <= tmpEnd; i++) {//直接计算实际起点和实际终点
+				//如果bed文件中的坐标大于ref基因的坐标，那么就跳出
+				if (i >= chrBpReads.length) {
+					break;
+				}
 				chrBpReads[i]++;
 				if (chrBpReads[i]<0) 
 				{

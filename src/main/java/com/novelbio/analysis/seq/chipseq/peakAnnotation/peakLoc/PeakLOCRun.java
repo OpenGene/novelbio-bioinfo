@@ -19,15 +19,15 @@ public class PeakLOCRun {
 		columnID[0]=1;
 		columnID[1]=2;
 		columnID[2]=3;
-		PeakLOC.prepare("",null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
+		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 				"/media/winE/Bioinformatics/GenomeData/human/hg18refseqUCSCsortUsing.txt", "");
 		System.out.println("prepare ok");
-		filterPeak();
+//		filterPeak();
 		//annotation();
 		//histData();
 		System.out.println(" ok");
 		try {
-		//	statisticNum();
+			statisticNum();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();																																																																																																																																																																																																																																																														
@@ -146,15 +146,15 @@ public class PeakLOCRun {
 	 */
 	public static void statisticNum() 
 	{
-		String ParentFile="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/annotation/";
-		String resultParentFile = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/GeneStructure/";
+		String ParentFile="/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/annotation/";
+		String resultParentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/GeneStructure/";
 		int[] columnID=new int[2];
 		columnID[0]=1;
 		columnID[1]=6;
 		String[][] intronExonStatistic;
 		try {
-			String FpeaksFile=ParentFile+"CSA sepis peak Filter.xls";
-			String prix = "CSA sepis peak Filter";
+			String FpeaksFile=ParentFile+"PHF8_peaks.txt";
+			String prix = "PHF8";
 			
 			
 			String genestructureBar = prix + "bar.jpg";

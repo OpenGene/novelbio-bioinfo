@@ -97,6 +97,10 @@ public class NovelBioConst {
 	 */
 	public final static String GENOME_PATH_UCSC_HG19_GFF_REFSEQ = GENOME_PATH_UCSC_HG19+"hg19_refSeqSortUsingNoChrM.txt";
 	/**
+	 *  UCSC_hg19的RefSeq的Gff文件，已经排过序，不包含线粒体
+	 */
+	public final static String GENOME_PATH_UCSC_HG18_GFF_REFSEQ = GENOME_PATH+"/human/hg18refseqUCSCsortUsing.txt";
+	/**
 	 *  UCSC_hg19的repeak的Gff文件，已经排过序
 	 */
 	public final static String GENOME_PATH_UCSC_HG19_GFF_REPEAT = GENOME_PATH_UCSC_HG19+"rmsk.txt";

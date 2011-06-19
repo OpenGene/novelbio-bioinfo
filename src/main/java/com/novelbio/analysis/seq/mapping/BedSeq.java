@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.web.ContactController;
 
 /**
  * bed格式的文件，统统用来处理bed文件
@@ -101,6 +102,44 @@ public class BedSeq extends Seq{
 		return false;
 	}
 	
+	/**
+	 * 如果bed文件的坐标太短，根据正负链延长坐标至指定位置<br>
+	 * 标准bed文件格式为：chr1  \t  7345  \t  7370  \t  25  \t  52  \t  - <br>
+	 * 必须有第六列
+	 * @throws Exception 
+	 * @throws Exception 
+	 */
+	public void extend(int extendTo, String outFileName) throws Exception
+	{
+		txtSeqFile.setParameter(seqFile, false, true);
+		BufferedReader reader = txtSeqFile.readfile();
+		
+		TxtReadandWrite txtOut = new TxtReadandWrite();
+		txtOut.setParameter(outFileName, true, false);
+		
+		String content = "";
+		while ((content = reader.readLine()) != null) {
+			String[] ss = content.split("\t");
+			int end = Integer.parseInt(ss[2]); int start = Integer.parseInt(ss[1]);
+			if ((end - start )< 0) {logger.error("Bed 文件出错，有一列的终点小于起点"+content); }
+			
+			if ((end - start) < extendTo ) {
+				if (ss[5].equals("+")) {
+					ss[2] = start + extendTo + "";
+				}
+				else {
+					ss[1] = end - extendTo + ""; 
+				}
+			}
+			String contString = "";
+			for (int i = 0; i < ss.length-1; i++) {
+				contString = contString+ss[i] + "\t";
+			}
+			contString = contString + ss[ss.length -1];
+			txtOut.writefile(contString+"\n");
+		}
+		
+	}
 	/**
 	 * 没有实现，需要子类覆盖
 	 * @param bedTreat 实验

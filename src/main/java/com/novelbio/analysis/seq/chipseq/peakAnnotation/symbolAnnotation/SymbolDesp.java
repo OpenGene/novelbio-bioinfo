@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.chipseq.peakAnnotation.symbolAnnotation;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -71,7 +72,8 @@ public class SymbolDesp
 			////////////////////////////////////////直接搜数据库///////////////////////////////////////////////////
 			for (int j = 0; j < tmpRefID.length; j++)
 			{
-				String[] tmpAnno = ServAnno.getAnno(tmpRefID[j].trim(), taxID, false, 0, 0);
+				CopedID copedID = new CopedID(tmpRefID[j], taxID, false);
+				String[] tmpAnno = copedID.getAnno(false, 0, 0);
 				String symbol = tmpAnno[0];
 				String description = tmpAnno[1];
 				if (tmpresult[1].contains(symbol.trim())) 
