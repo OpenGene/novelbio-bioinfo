@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.analysis.seq.genome.GffChrUnion;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.genome.GffChrUnion;
 
 
  

@@ -6,10 +6,10 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.novelbio.analysis.seq.genome.GffToCG;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashCG;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashRepeat;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.genome.GffToCG;
-import com.novelbio.base.genome.gffOperate.GffHashCG;
-import com.novelbio.base.genome.gffOperate.GffHashRepeat;
 
 
 public class CpG 

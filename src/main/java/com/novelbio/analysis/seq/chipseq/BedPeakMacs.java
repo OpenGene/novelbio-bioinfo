@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.chipseq;
 
-import com.novelbio.analysis.seq.mapping.BedSeq;
+import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -14,7 +14,7 @@ public class BedPeakMacs extends BedSeq{
 	
 	public BedPeakMacs filter(String filterOut) throws Exception {
 		BedSeq bedSeq = super.filter(filterOut);
-		return new BedPeakMacs(bedSeq.getFileName());
+		return new BedPeakMacs(bedSeq.getSeqFile());
 	}
 	
 	
@@ -28,7 +28,7 @@ public class BedPeakMacs extends BedSeq{
 	 */
 	public BedPeakMacs sortBedFile(int chrID, String sortBedFile,int...arg) throws Exception {
 		super.sortBedFile(chrID, sortBedFile, arg);
-		return new BedPeakMacs(super.getFileName());
+		return new BedPeakMacs(super.getSeqFile());
 	}
 	
 	/**
@@ -60,7 +60,7 @@ public class BedPeakMacs extends BedSeq{
 		if (prix !=null && !prix.trim().equals("")) {
 			name = " -n "+prix;
 		}
-		String cmd = "macs14 -t "+getFileName() +col+name + effge + mfole + pvalue + "-w";
+		String cmd = "macs14 -t "+getSeqFile() +col+name + effge + mfole + pvalue + "-w";
 		TxtReadandWrite txtCmd = new TxtReadandWrite();
 		txtCmd.setParameter(outFilePath+"/macs.sh", true, false);
 		txtCmd.writefile(cmd);

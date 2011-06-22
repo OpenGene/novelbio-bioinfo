@@ -1,4 +1,8 @@
 package com.novelbio.analysis.seq.mapping;
+
+import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FastQ;
+
 /**
  * 准备进行mapping的fastQ文件
  * @author zong0jie

@@ -10,12 +10,12 @@ import com.novelbio.analysis.seq.chipseq.peakAnnotation.peakLoc.PeakLOC;
 import com.novelbio.analysis.seq.chipseq.peakAnnotation.symbolAnnotation.SymbolDesp;
 import com.novelbio.analysis.seq.chipseq.prepare.GenomeBasePrepare;
 import com.novelbio.analysis.seq.chipseq.regDensity.RegDensity;
+import com.novelbio.analysis.seq.genome.GffLocatCod;
+import com.novelbio.analysis.seq.genome.GffToCG;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.genome.GffLocatCod;
-import com.novelbio.base.genome.GffToCG;
 
 
 public class Pipline extends GenomeBasePrepare{

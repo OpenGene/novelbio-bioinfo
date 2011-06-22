@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import org.apache.taglibs.standard.lang.jstl.NullLiteral;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.chipseq.preprocess.MapPeak;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -51,7 +53,7 @@ public class FastQSoapMap extends Mapping{
 			logger.error("filter reads error:" + e.toString());
 			return null;
 		}
-		FastQSoapMap fastQSoapMap= new FastQSoapMap(fastQ.seqFile, fastQ.seqFile2, offset, quality, outFileName, SoapExePath,IndexFile);
+		FastQSoapMap fastQSoapMap= new FastQSoapMap(fastQ.getSeqFile(), fastQ.getSeqFile2(), getOffset(), getQuality(), outFileName, SoapExePath,IndexFile);
 		return fastQSoapMap;
 	}
 
@@ -147,12 +149,12 @@ public class FastQSoapMap extends Mapping{
 	 */
 	private void mapSoap(int minInsert, int maxInsert) throws Exception {
 		String cmd = "";
-		cmd = SoapExePath + " -a "+seqFile;
+		cmd = SoapExePath + " -a "+getSeqFile();
 		cmd = cmd + " -D " +this.IndexFile; 
 		cmd = cmd + " -o " +outFileName; 
 		cmd = cmd +  " -r 0 -v 2 -p 7 ";
-		if (booPairEnd) {
-			cmd = cmd + " -b " + seqFile2;
+		if (getBooPairEnd()) {
+			cmd = cmd + " -b " + getSeqFile2();
 			cmd = cmd+ " -2 "+ outFileName+"_SEout "+" -m "+minInsert+" -x "+maxInsert;
 		}
 		System.out.println(cmd);
@@ -175,7 +177,7 @@ public class FastQSoapMap extends Mapping{
 
 	 */
 	public ArrayList<BedSeq> copeSope2Bed(String outPut,String outComb,String error) throws Exception {
-		if (booPairEnd) {
+		if (getBooPairEnd()) {
 			return getBed2MacsPE(outFileName, outPut, outComb, error);
 		}
 		else {

@@ -3,9 +3,9 @@ package com.novelbio.analysis.seq.chipseq.prepare;
 import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.chipseq.cGIsland.CpG;
+import com.novelbio.analysis.seq.genome.GffChrUnion;
+import com.novelbio.analysis.seq.genome.GffLocatCod;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.genome.GffChrUnion;
-import com.novelbio.base.genome.GffLocatCod;
 
 
 public class GenomeBasePrepare {

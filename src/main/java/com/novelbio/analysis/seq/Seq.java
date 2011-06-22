@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.mapping;
+package com.novelbio.analysis.seq;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
@@ -6,7 +6,14 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-
+/**
+ * 读取测序文件的类。
+ * 测序文件有固定的格式，与Fasta格式不同。
+ * fasta格式只要开头有>即可，而本类读取的测序文件每行都要有固定的含义，
+ * 也就是每条序列都有固定的行数
+ * @author zong0jie
+ *
+ */
 public abstract class Seq {
 	TxtReadandWrite txtSeqFile = new TxtReadandWrite();
 	String seqFile = "";
@@ -27,7 +34,7 @@ public abstract class Seq {
 		this.seqFile = seqFile;
 		this.block = block;
 	}
-	public String getFileName() {
+	public String getSeqFile() {
 		return seqFile;
 	}
 	/**

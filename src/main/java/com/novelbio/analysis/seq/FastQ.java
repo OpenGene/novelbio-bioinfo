@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.mapping;
+package com.novelbio.analysis.seq;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ public class FastQ extends Seq{
 	
 	int offset = 0;
 	boolean booPairEnd = false;
+	//有时候有两个fastQ文件，这个仅仅在双端测序的时候出现，这时候需要协同过滤
 	String seqFile2 = null;
 	public static int QUALITY_LOW = 10;
 	public static int QUALITY_MIDIAN = 20;
@@ -49,8 +50,39 @@ public class FastQ extends Seq{
 	 * fastQ里面asc||码的指标与个数
 	 */
 	HashMap<Integer, Integer> hashFastQFilter = new HashMap<Integer, Integer>();
-	
-	
+	/**
+	 * 返回第二个FastQ文件的文件名
+	 * 如果没有则返回null
+	 * @return
+	 */
+	public String getSeqFile2() {
+		return seqFile2;
+	}
+	/**
+	 * 返回FastQ的格式位移，一般是
+	 * FASTQ_SANGER_OFFSET
+	 * 或
+	 * FASTQ_ILLUMINA_OFFSET
+	 * @return
+	 */
+	public int getOffset() {
+		return offset;
+	}
+	/**
+	 * 返回文件设定的过滤质量
+	 * @return
+	 */
+	public int getQuality()
+	{
+		return quality;
+	}
+	/**
+	 * 返回是否是双端测序的FastQ文件，其实也就是看是否有两个FastQ文件
+	 * @return
+	 */
+	public boolean getBooPairEnd() {
+		return booPairEnd;
+	}
 	/**
 	 * 输入前先判断文件是否存在,最好能判断两个文件是否是同一个测序的两端
 	 * 那么可以判断是否为fastQ格式和fasQ格式第一行是否一致

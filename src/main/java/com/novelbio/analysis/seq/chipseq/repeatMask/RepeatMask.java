@@ -7,10 +7,10 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.novelbio.analysis.seq.genome.GffToRepeat;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashRepeat;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashUCSCgene;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.genome.GffToRepeat;
-import com.novelbio.base.genome.gffOperate.GffHashRepeat;
-import com.novelbio.base.genome.gffOperate.GffHashUCSCgene;
 
 
 public class RepeatMask {

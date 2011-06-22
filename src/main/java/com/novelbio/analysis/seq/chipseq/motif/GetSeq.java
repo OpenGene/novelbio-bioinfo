@@ -6,9 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.novelbio.analysis.seq.chipseq.prepare.GenomeBasePrepare;
+import com.novelbio.analysis.seq.genome.GffChrUnion;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.genome.GffChrUnion;
 
 public class GetSeq extends GenomeBasePrepare
 {

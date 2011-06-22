@@ -2,12 +2,12 @@ package com.novelbio.analysis.seq.chipseq.readsChrDensity;
 
 import java.util.ArrayList;
 
+import com.novelbio.analysis.seq.genome.GffChrUnion;
+import com.novelbio.analysis.seq.genome.GffPeakOverlap;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetail;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashPeak;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.genome.GffChrUnion;
-import com.novelbio.base.genome.GffPeakOverlap;
-import com.novelbio.base.genome.gffOperate.GffDetail;
-import com.novelbio.base.genome.gffOperate.GffHashPeak;
-import com.novelbio.base.genome.mappingOperate.MapReads;
 
 
 
