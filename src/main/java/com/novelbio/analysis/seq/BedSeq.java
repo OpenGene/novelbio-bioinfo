@@ -15,7 +15,7 @@ import com.novelbio.web.ContactController;
  * @author zong0jie
  *
  */
-public class BedSeq extends Seq{	
+public class BedSeq extends SeqComb{	
 	private static Logger logger = Logger.getLogger(BedSeq.class);  
 	
 	public BedSeq(String bedFile) {

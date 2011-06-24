@@ -722,14 +722,15 @@ public class GUIBlast extends javax.swing.JFrame {
 		if(jCobTaxSelect == null) {
 			final HashMap<String, Integer> hashTaxID = CtrlOther.getSpecies();
 			
-			String[] speciesarray = new String[hashTaxID.size()+1];
+//			String[] speciesarray = new String[hashTaxID.size()+1];
+			String[] speciesarray = new String[hashTaxID.size()];
 			int i = 0;
 			Set<String> keys = hashTaxID.keySet();
 			for(String key:keys)
 			{
 				speciesarray[i] = key; i++;
 			}
-			speciesarray[i] = "test";
+//			speciesarray[i] = "test";
 			ComboBoxModel jCobTaxSelectModel = 
 				new DefaultComboBoxModel(speciesarray);
 			jCobTaxSelect = new JComboBox();

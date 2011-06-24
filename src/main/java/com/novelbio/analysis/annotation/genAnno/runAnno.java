@@ -7,15 +7,12 @@ public class runAnno {
 	}
 	//添加注释
 	public static void anno() {
-		String parentFile = "/home/zong0jie/桌面/";
- 
+		String parentFile = "/media/winE/NBC/Project/Project_CDG_Lab/Microarray_XLY110623/";
 		try {
-			AnnoQuery.anno(parentFile+"9522趋势总表.xls",39947,1,false,9606,1e-10,"/");
-			AnnoQuery.anno(parentFile+"BY趋势总表.xls",39947,1,false,9606,1e-10,"/");
+			AnnoQuery.anno(parentFile+"Leg fc2_annotation.xls",10090,1,false,9606,1e-10,"/");
 		} catch (Exception e) {
 			e.printStackTrace()	;
 		}
- 
 	}
 	
 	//添加geneID，用于两列取交集用的

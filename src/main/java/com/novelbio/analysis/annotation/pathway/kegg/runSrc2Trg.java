@@ -22,9 +22,9 @@ public class runSrc2Trg {
 		boolean blast = false;
 		int StaxID = 9606;
 		try {
-			String readExcel = parentFIle + "Book1.xls";
-			String scr2trg = parentFIle + "Book1Trgnoblast.txt";
-			String attr = parentFIle + "Book1Attrnoblast.txt";
+			String readExcel = parentFIle + "InterSection.xls";
+			String scr2trg = parentFIle + "InterSectiontrg.txt";
+			String attr = parentFIle + "InterSectionatttxt";
 			String[] accID = KGprepare.getAccID(1, 1,readExcel);
 			Scr2Target.getGene2RelateKo("",accID,scr2trg,
 					attr , QtaxID, blast, StaxID, 1e-5);

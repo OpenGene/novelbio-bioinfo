@@ -43,10 +43,11 @@ public class KGprepare {
 		return geneID2;
 	}
 	/**
+	 * 
 	 * 读取指定excel2003文本，获得geneID信息数组, 如果类似XM_002121.1类型，那么将.1去除
-	 * @param accIDFile 文本名
 	 * @param rowStartNum 从第几行开始读
 	 * @param colNum geneID在第几列
+	 * @param accIDFile 文本名
 	 * @return
 	 * @throws Exception
 	 */

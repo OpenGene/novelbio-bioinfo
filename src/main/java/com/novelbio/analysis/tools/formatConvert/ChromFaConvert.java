@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.novelbio.analysis.seq.genome.getChrSequence.ChrStringHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.genome.getChrSequence.ChrStringHash;
 
 public class ChromFaConvert {
 

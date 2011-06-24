@@ -60,7 +60,7 @@ public class BedPeakMacs extends BedSeq{
 		if (prix !=null && !prix.trim().equals("")) {
 			name = " -n "+prix;
 		}
-		String cmd = "macs14 -t "+getSeqFile() +col+name + effge + mfole + pvalue + "-w";
+		String cmd = "macs14 -t "+getSeqFile() +col+name + effge + mfole + pvalue ;//+ "-w";
 		TxtReadandWrite txtCmd = new TxtReadandWrite();
 		txtCmd.setParameter(outFilePath+"/macs.sh", true, false);
 		txtCmd.writefile(cmd);
@@ -68,12 +68,12 @@ public class BedPeakMacs extends BedSeq{
 		CmdOperate cmdOperate = new CmdOperate("sh "+outFilePath+"/macs.sh");
 		cmdOperate.doInBackground();
 		FileOperate.moveFile(thisPath+"/"+prix+"_peaks.xls", outFilePath,true);
-		FileOperate.moveFile(thisPath+"/"+prix+"_peaks.bed", outFilePath+"/TmpPeakInfo/",true);
-		FileOperate.moveFile(thisPath+"/"+prix+"_negative_peaks.xls", outFilePath+"/TmpPeakInfo/",true);
-		FileOperate.moveFile(thisPath+"/"+prix+"_model.r", outFilePath+"/TmpPeakInfo/",true);
-		FileOperate.moveFile(thisPath+"/"+prix+"_diag.xls", outFilePath+"/TmpPeakInfo/",true);
-		FileOperate.moveFile(thisPath+"/"+prix+"_summits.bed", outFilePath+"/TmpPeakInfo/",true);
-		FileOperate.moveFolder(thisPath+"/"+prix+"_MACS_wiggle", outFilePath+"/TmpPeakInfo/",true);
+		FileOperate.moveFile(thisPath+"/"+prix+"_peaks.bed", outFilePath+"/TmpPeakInfo",true);
+		FileOperate.moveFile(thisPath+"/"+prix+"_negative_peaks.xls", outFilePath+"/TmpPeakInfo"+prix+"/",true);
+		FileOperate.moveFile(thisPath+"/"+prix+"_model.r", outFilePath+"/TmpPeakInfo"+prix+"/",true);
+		FileOperate.moveFile(thisPath+"/"+prix+"_diag.xls", outFilePath+"/TmpPeakInfo"+prix+"/",true);
+		FileOperate.moveFile(thisPath+"/"+prix+"_summits.bed", outFilePath+"/TmpPeakInfo"+prix+"/",true);
+		FileOperate.moveFolder(thisPath+"/"+prix+"_MACS_wiggle", outFilePath+"/TmpPeakInfo"+prix+"/",true);
 		FileOperate.delFile(outFilePath+"/macs.sh");
 	}
 

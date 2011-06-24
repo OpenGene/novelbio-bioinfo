@@ -108,26 +108,19 @@ public class PeakLOCRun {
 	 */
 	public static void  filterPeak() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/Microarray_WFL110423/王凤良 基因芯片/王凤良 基因芯片/chip result/annotation/";
-		int colChrID = 1; int colSummit = 4;
+		String ParentFile="/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/annotation/";
+		int colChrID = 1; int colSummit = 6;
 		int rowStart = 1; 
-		int[] filterTss = new int[2]; filterTss[0] = 5000; filterTss[1] = 3000;
-		int[] filterGenEnd = new int[2]; filterGenEnd[0] = 0; filterGenEnd[1] = 0;
+		int[] filterTss = new int[2]; filterTss[0] = -1000; filterTss[1] = 1500;
+		int[] filterGenEnd = new int[2]; filterGenEnd[0] = -1000; filterGenEnd[1] = 1000;
 		boolean filterGeneBody = false;
 		boolean filter5UTR = false;
 		boolean filter3UTR = false;
 		boolean filterExon = false;
 		boolean filterIntron = false;
 		try {
-			String txtFile=ParentFile+"C_vs_N_532_ratio_peaks.txt";
-			String excelResultFile=ParentFile+"C_vs_N_532_ratio_peaks_Filter.xls";
-			PeakLOC.filterPeak(txtFile, "\t", colChrID, colSummit, rowStart, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron, excelResultFile);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			String txtFile=ParentFile+"C_vs_N_635_ratio_peaks.txt";
-			String excelResultFile=ParentFile+"C_vs_N_635_ratio_peaks_Filter.xls";
+			String txtFile=ParentFile+"PHF8_peaks.txt";
+			String excelResultFile=ParentFile+"PHF8_peaks_Filter.xls";
 			PeakLOC.filterPeak(txtFile, "\t", colChrID, colSummit, rowStart, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron, excelResultFile);
 		} catch (Exception e) {
 			e.printStackTrace();

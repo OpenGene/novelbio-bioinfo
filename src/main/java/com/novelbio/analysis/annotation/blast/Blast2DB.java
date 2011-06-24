@@ -13,9 +13,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.novelbio.analysis.annotation.copeID.CopeID;
+import com.novelbio.analysis.seq.SeqFastaHash;
+import com.novelbio.analysis.seq.SeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fastaSeqRead.FastaSeqStringHash;
-import com.novelbio.base.fastaSeqRead.SeqInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
 import com.novelbio.database.entity.friceDB.NCBIID;
 
@@ -87,8 +87,8 @@ public class Blast2DB {
 	public static void prepareSeqGetGeneID(String fastaFile,boolean CaseChange,String regx,Boolean append, String output,boolean getNoName) throws Exception 
 	{
 
-		Hashtable<String, SeqInfo> hashSeq=FastaSeqStringHash.readfile(fastaFile, CaseChange, regx, append);
-		ArrayList<String> lsSeqName=FastaSeqStringHash.lsSeqName;
+		Hashtable<String, SeqFasta> hashSeq=SeqFastaHash.readfile(fastaFile, CaseChange, regx, append);
+		ArrayList<String> lsSeqName=SeqFastaHash.lsSeqName;
 		
 		TxtReadandWrite txtOutput=new TxtReadandWrite();
 		txtOutput.setParameter(output, true, false);
@@ -96,7 +96,7 @@ public class Blast2DB {
 		Hashtable<String, String> hashWrit=new Hashtable<String, String>();
 		
 		for (int i = 0; i < lsSeqName.size(); i++) {
-			SeqInfo seqInfo=hashSeq.get(lsSeqName.get(i));
+			SeqFasta seqInfo=hashSeq.get(lsSeqName.get(i));
 			//搜索数据库，将序列名转变为geneID
 			//将重复序列名中的"<"符号去除
 			NCBIID ncbiid=new NCBIID(); ncbiid.setAccID(seqInfo.SeqName.replace("<", ""));
@@ -273,7 +273,7 @@ public class Blast2DB {
 		TxtReadandWrite txtOut=new TxtReadandWrite();
 		txtOut.setParameter(output, true, false);
 		
-		FastaSeqStringHash.readfile(Bfile, false, "", false);
+		SeqFastaHash.readfile(Bfile, false, "", false);
 		
 		BufferedReader readerA=txtA.readfile();
 		String content="";
@@ -284,7 +284,7 @@ public class Blast2DB {
 				if (hashA2B.containsKey(ss[0])) 
 				{
 					if (Double.parseDouble(hashA2B.get(ss[0])[1])==Double.parseDouble(ss[10])) {
-						if (   FastaSeqStringHash.getsequence(hashA2B.get(ss[0])[0], true).length()  <  FastaSeqStringHash.getsequence(ss[1], true).length() ) {
+						if (   SeqFastaHash.getsequence(hashA2B.get(ss[0])[0], true).length()  <  SeqFastaHash.getsequence(ss[1], true).length() ) {
 							String[] tmpInfo = new String[2];
 							tmpInfo[0] = ss[1]; tmpInfo[1] = ss[10];
 							hashA2B.put(ss[0], tmpInfo);

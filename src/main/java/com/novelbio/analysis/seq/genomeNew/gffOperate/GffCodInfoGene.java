@@ -10,10 +10,14 @@ import java.util.ArrayList;
  * @author Zong jie
  *
  */
-public class GffCodInfoGene extends GffCodInfo
+public class GffCodInfoGene extends GffCodAbs
 {
-		
-	
+	GffCodInfoGene(String chrID, int Coordinate) {
+		super(chrID, Coordinate);
+		// TODO Auto-generated constructor stub
+	}
+
+
 	/**
 	 * 当Coordinate在基因间时，
 	 * 本list用来装载Coordinate与后一个基因不同转录本的起点或终点的距离
@@ -113,4 +117,16 @@ public class GffCodInfoGene extends GffCodInfo
         CordtGeneInfo[4]=end;//到该内含子/外显子的终点距离，，5‘UTR为到ATG， 3’UTR为到gene尾部距离
         GeneInfo.add(CordtGeneInfo);//装入list
     }
+
+	@Override
+	protected void SearchLOCinside(ArrayList<GffDetail> loclist, int i, int j) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void SearchLOCoutside(ArrayList<GffDetail> loclist, int i, int j) {
+		// TODO Auto-generated method stub
+		
+	}
 }

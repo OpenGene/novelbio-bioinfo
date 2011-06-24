@@ -20,12 +20,12 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  *
  */
-public class FastQ extends Seq{
+public class FastQ extends SeqComb{
 
 	static int FASTQ_SANGER_OFFSET = 33;
 	static int FASTQ_ILLUMINA_OFFSET = 64;
 
-	private static Logger logger = Logger.getLogger(FastQ.class);  
+	private static Logger logger = Logger.getLogger(FastQ.class);
 
 	TxtReadandWrite txtSeqFile2 = new TxtReadandWrite();
 	

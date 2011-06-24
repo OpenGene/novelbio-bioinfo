@@ -14,7 +14,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  * @author zong0jie
  *
  */
-public abstract class Seq {
+public abstract class SeqComb {
 	TxtReadandWrite txtSeqFile = new TxtReadandWrite();
 	String seqFile = "";
 	int block = 1;
@@ -24,13 +24,13 @@ public abstract class Seq {
 	 */
 	int seqNum = -1;
 	
-	private static Logger logger = Logger.getLogger(Seq.class);  
+	private static Logger logger = Logger.getLogger(SeqComb.class);  
 	/**
 	 * 
 	 * @param seqFile
 	 * @param block 每个序列占几行，譬如fastQ文件每个序列占4行
 	 */
-	public Seq(String seqFile, int block) {
+	public SeqComb(String seqFile, int block) {
 		this.seqFile = seqFile;
 		this.block = block;
 	}

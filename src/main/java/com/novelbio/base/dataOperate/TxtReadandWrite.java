@@ -81,10 +81,14 @@ public class TxtReadandWrite {
 	 * @throws Exception
 	 */
 	public List<String> readfileLs() throws Exception {
-		CharsetPrinter cha = new CharsetPrinter();
-		String charset = cha.guessEncoding(txtfile);
-		Charset thisCharset = Charset.forName(charset);
-		return Files.readLines(txtfile, thisCharset);
+		ArrayList<String> lsResult = new ArrayList<String>();
+		BufferedReader read = readfile();
+		String content = "";
+		// 先跳过前面的好多行
+		while ((content = read.readLine()) != null) {
+			lsResult.add(content);
+		}
+		return lsResult;
 	}
 	
 	/**
@@ -92,10 +96,9 @@ public class TxtReadandWrite {
 	 * @throws Exception
 	 */
 	public String readFirstLine() throws Exception {
-		CharsetPrinter cha = new CharsetPrinter();
-		String charset = cha.guessEncoding(txtfile);
-		Charset thisCharset = Charset.forName(charset);
-		return Files.readFirstLine(txtfile, thisCharset);
+		BufferedReader read = readfile();
+		// 先跳过前面的好多行
+		return  read.readLine();
 	}
 	
 	/**

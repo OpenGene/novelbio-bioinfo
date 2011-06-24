@@ -22,8 +22,8 @@ public class runGo {
 			//UpDateFriceDB.upDateNCBIID("/media/winE/Bioinformatics/Agilent/猪/agilentPig.txt", "/media/winE/Bioinformatics/Agilent/猪/out2");
 			//blastgoanalysis();
 //			goanalysisElim();
-			goanalysisElimNew();
-//			goanalysisNBCNew();
+//			goanalysisElimNew();
+			goanalysisNBCNew();
 			System.out.println("ok");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -154,22 +154,22 @@ public class runGo {
 		
 		
 		
-		String file="/media/winE/NBC/Project/Project_ZDB_Lab/ZH/GO/";
-		String backGroundFile=file + "riceAffyBG.txt";
+		String file="/media/winE/NBC/Project/Project_CDG_Lab/Microarray_XLY110623/";
+		String backGroundFile=file + "mouseAffyBG.txt";
 		String[] prix = new String[2];
-		prix[0] = "";
+		prix[0] = "up";
 //		prix[0] = "up";
 		prix[1] = "down";
 		
 		try {
-			String fileName = "1949个探针";			
+			String fileName = "Leg fc2";			
 			String geneFile=file+fileName+".xls";
 			String GOClass = "P";
-			int[] colID = new int[2];colID[0] = 1; colID[1] = 1;
-			double up = 1;
-			double down = -1;
+			int[] colID = new int[2];colID[0] = 1; colID[1] = 6;
+			double up = 1.9;
+			double down = 0.6;
 			boolean sepID = false;
-			int QtaxID = 39947;
+			int QtaxID = 10090;
 			boolean blast = false;
 			int StaxID = 9606;
 			double evalue = 1e-10;
@@ -189,24 +189,24 @@ public class runGo {
 	 */
 	public static void goanalysisNBCNew() {
 
-		String file="/media/winE/NBC/Project/Microarray_WFL110423/王凤良 基因芯片/王凤良 基因芯片/chip result/GO/";
+		String file = "/media/winE/NBC/Project/MiRNA_XHY110624/";
 		String backGroundFile=file + "hg18refseqBGwithDuplication.txt";
 		String[] prix = new String[2];
-		prix[0] = "532";
+		prix[0] = "";
 		prix[1] = "635";
 		try {
-			String fileName = "WFL";			
+			String fileName = "靶基因对应表";			
 			String geneFile=file+fileName+".xls";
 			String GOClass = "P";
-			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
-			double up = 1.5;
-			double down = 0.667;
+			int[] colID = new int[2];colID[0] = 5; colID[1] = 4;
+			double up = 0;
+			double down = -1;
 			boolean sepID = false;
 			int QtaxID = 9606;
 			boolean blast = false;
 			int StaxID = 9606;
 			double evalue = 1e-10;
-			String resultExcel2003 = file +fileName+"NBCNewGOCombID2.xls";
+			String resultExcel2003 = file +fileName+"NBCNewGOCombID.xls";
 			GoFisherNew.getGoRunNBC(geneFile, sepID, GOClass, colID, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003, prix);
 			System.out.println("ok");
 		} catch (Exception e) {

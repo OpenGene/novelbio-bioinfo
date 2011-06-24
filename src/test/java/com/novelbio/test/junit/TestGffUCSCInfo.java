@@ -10,9 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.base.genome.gffOperate.GffCodInfoUCSCgene;
-import com.novelbio.base.genome.gffOperate.GffHashUCSCgene;
-import com.novelbio.base.genome.gffOperate.GffsearchUCSCgene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodInfoUCSCgene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashUCSCgene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffsearchUCSCgene;
 
 public class TestGffUCSCInfo extends TestCase{
 	GffHashUCSCgene gffHashUCSC;

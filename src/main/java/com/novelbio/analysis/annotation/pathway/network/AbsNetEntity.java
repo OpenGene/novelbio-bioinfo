@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
-import com.novelbio.base.genome.gffOperate.GffDetail;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetail;
 import com.novelbio.database.entity.AbsPathway;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniProtID;
