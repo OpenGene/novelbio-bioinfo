@@ -26,7 +26,7 @@ import org.apache.ibatis.migration.commands.NewCommand;
  * 本基因转录方向<br>
  * 本类中的几个方法都和Gff基因有关<br>
  */
-public class GffDetailUCSCgene extends GffDetail
+public class GffDetailUCSCgene extends GffDetailAbs
 {
 	/**
 	 * 顺序储存同一基因的不同转录本坐标，相应转录本名字保存在splitName中

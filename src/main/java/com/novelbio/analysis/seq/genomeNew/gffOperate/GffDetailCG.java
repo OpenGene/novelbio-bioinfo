@@ -21,7 +21,7 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
  * @author zong0jie
  *
  */
-public class GffDetailCG extends GffDetail
+public class GffDetailCG extends GffDetailAbs
 {
 	/**
 	 * CpG³¤¶È

@@ -3,8 +3,6 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import com.novelbio.database.entity.kegg.noUseKGCentry2Ko2Gen;
-
 /**
  * 双坐标
  * @author zong0jie
@@ -15,11 +13,11 @@ public abstract class GffCodAbsDu {
 	GffCodAbs gffCodAbs1 = null;
 	GffCodAbs gffCodAbs2 = null;
 	//保存左端点的gffdetail
-	GffDetail gffDetail1 = null;
+	GffDetailAbs gffDetail1 = null;
 	//保存右端点的gffdetail
-	GffDetail gffDetail2 = null;
+	GffDetailAbs gffDetail2 = null;
 	//两个端点之间的gffdetail
-	ArrayList<GffDetail> lsgffDetailsMid = new ArrayList<GffDetail>();
+	ArrayList<GffDetailAbs> lsgffDetailsMid = new ArrayList<GffDetailAbs>();
 	/**
 	 * peak与左端Item交集时，交集在左端Item中所占的比例
 	 */
@@ -100,14 +98,14 @@ public abstract class GffCodAbsDu {
 	 * 返回两个坐标中间夹着的的GffDetail，覆盖成相应的GffDetail类
 	 * @return
 	 */
-	public abstract ArrayList<GffDetail> getLsGffDetailMid();
+	public abstract ArrayList<? extends GffDetailAbs> getLsGffDetailMid();
 	
 	/**
 	 * 双坐标查找 输入相关的GffHash类，然后填充相关信息<br>
 	 */
 	public void searchLocation(GffHash gffHash) {
-		Hashtable<String, ArrayList<GffDetail>> LocHash = gffHash.getChrhash();
-		ArrayList<GffDetail> Loclist = LocHash.get(gffCodAbs1.getChrID().toLowerCase());// 某一条染色体的信息
+		Hashtable<String, ArrayList<? extends GffDetailAbs>> LocHash = gffHash.getChrhash();
+		ArrayList<? extends GffDetailAbs> Loclist = LocHash.get(gffCodAbs1.getChrID().toLowerCase());// 某一条染色体的信息
 		gffCodAbs1.searchLocation(gffHash);
 		gffCodAbs2.searchLocation(gffHash);
 		/**
@@ -180,7 +178,7 @@ public abstract class GffCodAbsDu {
 		if ((Cod2ID - Cod1ID) > 1)// 把Cod1ID和Cod2ID之间的所有条目的GffDetail装入LstGffCodInfo
 		{
 			for (int i = 1; i < (Cod2ID - Cod1ID); i++) {
-				GffDetail gffDetail = Loclist.get(Cod1ID + i);
+				GffDetailAbs gffDetail = Loclist.get(Cod1ID + i);
 				lsgffDetailsMid.add(gffDetail);
 			}
 		}

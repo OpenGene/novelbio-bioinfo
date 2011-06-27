@@ -12,7 +12,7 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
  * @author zong0jie
  *
  */
-public class GffDetail {
+public abstract class GffDetailAbs {
 	/**
 	 * LOCID£¬<br>
 	 * Ë®µ¾£ºLOC_Os01g01110<br>
@@ -60,7 +60,7 @@ public class GffDetail {
 		
 		if (getClass() != obj.getClass()) return false;
 		
-		GffDetail otherObj = (GffDetail)obj;
+		GffDetailAbs otherObj = (GffDetailAbs)obj;
 		
 		return locString.equals(otherObj.locString) && 
 		numberend == otherObj.numberend && 

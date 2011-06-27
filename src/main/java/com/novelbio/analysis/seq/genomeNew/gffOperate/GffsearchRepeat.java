@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class GffsearchRepeat extends Gffsearch{
 
 	@Override
-	protected GffCodInfo SearchLOCoutside(int Coordinate, ArrayList<GffDetail> Genlist, int beginnum, int endnum) {
+	protected GffCodInfo SearchLOCoutside(int Coordinate, ArrayList<GffDetailAbs> Genlist, int beginnum, int endnum) {
 
 		GffDetailRepeat endnumlist=null;
 		GffDetailRepeat beginnumlist=null;
@@ -41,7 +41,7 @@ public class GffsearchRepeat extends Gffsearch{
 	}
 
 	@Override
-	protected GffCodInfo SearchLOCinside(int Coordinate, ArrayList<GffDetail> Genlist, int beginnum, int endnum) {
+	protected GffCodInfo SearchLOCinside(int Coordinate, ArrayList<GffDetailAbs> Genlist, int beginnum, int endnum) {
 
 		GffDetailRepeat LOCdetial=(GffDetailRepeat) Genlist.get(beginnum);
 		GffCodInfo GffCGInfo=new GffCodInfo();

@@ -49,10 +49,19 @@ public class AnnoQuery {
 			String[] accID = null;
 			if (regx.equals("")) {
 				accID = new String[1];
-				accID[0] =CopeID.removeDot(geneInfo[i][colNum]);
+				try {
+					accID[0] = CopeID.removeDot(geneInfo[i][colNum]);
+				} catch (Exception e) {
+					accID[0] = "error";
+				}
 			}
 			else {
-				accID = geneInfo[i][colNum].split(regx);
+				try {
+					accID = geneInfo[i][colNum].split(regx);
+				} catch (Exception e) {
+					accID[0] = "error";
+				}
+				
 			}
 			String thisaccID = accID[0];
 			for (int j = 0; j < accID.length; j++) {

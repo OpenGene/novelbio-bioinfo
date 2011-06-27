@@ -1,11 +1,12 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
-public class GffCodCG extends GffCodAbs{
+import java.util.ArrayList;
 
-	protected GffCodCG(String chrID, int Coordinate) {
+public class GffCodPeak  extends GffCodAbs{
+
+	GffCodPeak(String chrID, int Coordinate) {
 		super(chrID, Coordinate);
 		// TODO Auto-generated constructor stub
 	}
 
-	
 }

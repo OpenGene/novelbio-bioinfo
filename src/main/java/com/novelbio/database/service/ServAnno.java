@@ -172,7 +172,7 @@ public class ServAnno {
 				}
 				lsResult.add(ncbiid2.getGeneId()+"");
 			}
-			if (lsResult.size() <= 1) {
+			if (lsResult.size() <= 2) {
 				lsResult.add(lsNcbiids.get(0).getGeneId()+"");
 			}
 			return lsResult;
@@ -192,7 +192,7 @@ public class ServAnno {
 					}
 					lsResult.add(uniProtID2.getUniID());
 				}
-				if (lsResult.size() <= 1) {
+				if (lsResult.size() <= 2) {
 					lsResult.add(lsUniProtIDs.get(0).getUniID()+"");
 				}
 				return lsResult;

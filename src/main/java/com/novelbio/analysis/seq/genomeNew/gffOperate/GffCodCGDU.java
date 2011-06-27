@@ -33,7 +33,7 @@ public class GffCodCGDU extends GffCodAbsDu{
 	}
 
 	@Override
-	public ArrayList<GffDetail> getLsGffDetailMid() {
+	public ArrayList<GffDetailAbs> getLsGffDetailMid() {
 		// TODO Auto-generated method stub
 		return null;
 	}

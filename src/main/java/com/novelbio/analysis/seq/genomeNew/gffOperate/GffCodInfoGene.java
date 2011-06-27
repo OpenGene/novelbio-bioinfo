@@ -119,13 +119,13 @@ public class GffCodInfoGene extends GffCodAbs
     }
 
 	@Override
-	protected void SearchLOCinside(ArrayList<GffDetail> loclist, int i, int j) {
+	protected void SearchLOCinside(ArrayList<GffDetailAbs> loclist, int i, int j) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	protected void SearchLOCoutside(ArrayList<GffDetail> loclist, int i, int j) {
+	protected void SearchLOCoutside(ArrayList<GffDetailAbs> loclist, int i, int j) {
 		// TODO Auto-generated method stub
 		
 	}

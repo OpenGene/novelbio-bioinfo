@@ -29,11 +29,11 @@ public class GffHashRepeat extends GffHash{
 	 * @throws Exception 
 	 */
 	@Override
-	public Hashtable<String, ArrayList<GffDetail>> ReadGffarray(String gfffilename) throws Exception {
+	public Hashtable<String, ArrayList<GffDetailAbs>> ReadGffarray(String gfffilename) throws Exception {
 
 		  //实例化三个表
-		   locHashtable =new Hashtable<String, GffDetail>();//存储每个LOCID和其具体信息的对照表
-		   Chrhash=new Hashtable<String, ArrayList<GffDetail>>();//一个哈希表来存储每条染色体
+		   locHashtable =new Hashtable<String, GffDetailAbs>();//存储每个LOCID和其具体信息的对照表
+		   Chrhash=new Hashtable<String, ArrayList<GffDetailAbs>>();//一个哈希表来存储每条染色体
 		   LOCIDList=new ArrayList<String>();//顺序存储每个基因号，这个打算用于提取随机基因号
 		   LOCChrHashIDList=new ArrayList<String>();
 		   //为读文件做准备
@@ -44,7 +44,7 @@ public class GffHashRepeat extends GffHash{
 		   String[] ss = null;//存储分割数组的临时变量
 		   String content="";
 		   //临时变量
-		   ArrayList<GffDetail> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+		   ArrayList<GffDetailAbs> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 		   String chrnametmpString=""; //染色体的临时名字
 		   
 		   reader.readLine();//跳过第一行
@@ -59,11 +59,11 @@ public class GffHashRepeat extends GffHash{
 				   if(LOCList!=null)//如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
 				   {
 					   LOCList.trimToSize();
-					   for (GffDetail gffDetail : LOCList) {
+					   for (GffDetailAbs gffDetail : LOCList) {
 						   LOCChrHashIDList.add(gffDetail.locString);
 					   }
 				   }
-				   LOCList=new ArrayList<GffDetail>();//新建一个LOCList并放入Chrhash
+				   LOCList=new ArrayList<GffDetailAbs>();//新建一个LOCList并放入Chrhash
 				   Chrhash.put(chrnametmpString, LOCList);
 			   }
 			  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ public class GffHashRepeat extends GffHash{
 		   }
 		   /////////////////////////////////////////////////////////////////////////////////////////////
 		   LOCList.trimToSize();
-		   for (GffDetail gffDetail : LOCList) {
+		   for (GffDetailAbs gffDetail : LOCList) {
 			   LOCChrHashIDList.add(gffDetail.locString);
 		   }
 		   txtgff.close();

@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
-public class GffDetailRepeat extends GffDetail
+public class GffDetailRepeat extends GffDetailAbs
 {
 	/**
 	 * 重复序列的名字

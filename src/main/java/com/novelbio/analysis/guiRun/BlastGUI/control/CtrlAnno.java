@@ -106,10 +106,6 @@ public class CtrlAnno extends SwingWorker<ArrayList<String[]>, ProgressData>
 		
 			try {
 				CopedID copedID = new CopedID(geneID, taxID, false);
-			
-				
-				
-				
 //				String[] tmpAnno = ServAnno.getAnno(geneID, taxID, blast, StaxID, evalue);
 				String[] tmpAnno = copedID.getAnno(blast, StaxID, evalue);
 				if (tmpAnno == null) {
@@ -139,9 +135,7 @@ public class CtrlAnno extends SwingWorker<ArrayList<String[]>, ProgressData>
 				else {
 					tmpanno3 =  tmpanno2;
 				}
-				
-				
-				
+
 				ProgressData progressData = new ProgressData();
 				progressData.rowNum = i;
 				progressData.tmpInfo = tmpanno3;
