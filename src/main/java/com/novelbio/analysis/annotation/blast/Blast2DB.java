@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 
 import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.seq.SeqFastaHash;
-import com.novelbio.analysis.seq.SeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
 import com.novelbio.database.entity.friceDB.NCBIID;
@@ -84,7 +83,7 @@ public class Blast2DB {
 	 *  @param getNoName 如果发现数据库中找不到名字的序列，是否需要保留下来,true:保留 false:跳过
 	 * @throws Exception 
 	 */
-	public static void prepareSeqGetGeneID(String fastaFile,boolean CaseChange,String regx,Boolean append, String output,boolean getNoName) throws Exception 
+	public void prepareSeqGetGeneID(String fastaFile,boolean CaseChange,String regx,Boolean append, String output,boolean getNoName) throws Exception 
 	{
 
 		Hashtable<String, SeqFasta> hashSeq=SeqFastaHash.readfile(fastaFile, CaseChange, regx, append);

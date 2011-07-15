@@ -233,11 +233,12 @@ public class PeakLOC extends GenomeBasePrepare{
 	 * @return
 	 * @throws Exception 
 	 */
-	public static String[][] getPeakStaticInfo(String txtFilepeakFile,String sep,int[] columnID,int rowStart,int rowEnd) throws Exception 
+	public static String[][] getPeakStaticInfo(int upBp,String txtFilepeakFile,String sep,int[] columnID,int rowStart,int rowEnd) throws Exception 
 	{
 		String[][] LOCIDInfo=ExcelTxtRead.readtxtExcel(txtFilepeakFile, sep, columnID, rowStart, rowEnd);
+		gffLocatCod.setUpstreamTSSbp(upBp);
 		String[][]  gffPeakstaticInfo=gffLocatCod.peakStatistic(LOCIDInfo);
-		ArrayList<Long>  gffstaticInfo=gffLocatCod.getGeneStructureLength();
+		ArrayList<Long>  gffstaticInfo=gffLocatCod.getGeneStructureLength(upBp);
 		String[] item=new String[gffPeakstaticInfo.length];
 		long[] peakInfo=new long[gffPeakstaticInfo.length];
 		long[] background=new long[gffPeakstaticInfo.length];
@@ -261,9 +262,9 @@ public class PeakLOC extends GenomeBasePrepare{
 	 * @return
 	 * @throws Exception 
 	 */
-	public static ArrayList<String[]> getStaticInfo() throws Exception 
+	public static ArrayList<String[]> getStaticInfo(int upBp) throws Exception 
 	{
-		ArrayList<Long>  gffstaticInfo=gffLocatCod.getGeneStructureLength();
+		ArrayList<Long>  gffstaticInfo=gffLocatCod.getGeneStructureLength(upBp);
 		ArrayList<String[]> lsresult=new ArrayList<String[]>();
 			String[] tmpresult0=new String[2];
 			tmpresult0[0]="allGeneLength"; tmpresult0[1]=gffstaticInfo.get(0)+"";
@@ -281,7 +282,7 @@ public class PeakLOC extends GenomeBasePrepare{
 			tmpresult4[0]="all3UTRLength"; tmpresult4[1]=gffstaticInfo.get(4)+"";
 			lsresult.add(tmpresult4);
 			String[] tmpresult5=new String[2];
-			tmpresult5[0]="allup2kLength"; tmpresult5[1]=gffstaticInfo.get(5)+"";
+			tmpresult5[0]="allup"+upBp+"Length"; tmpresult5[1]=gffstaticInfo.get(5)+"";
 			lsresult.add(tmpresult5);
 			return lsresult;
 	}

@@ -5,5 +5,9 @@ import java.util.Hashtable;
 
 public abstract class GffHashGene extends GffHash
 {
-	public abstract ArrayList<Long> getGeneStructureLength();
+	/**
+	 * @param upBp Tss上游多少bp
+	 * @return
+	 */
+	public abstract ArrayList<Long> getGeneStructureLength(int upBp);
 }

@@ -80,7 +80,7 @@ public class TxtReadandWrite {
 	 * @return 返回List<String>，读完不用关闭Buffer流
 	 * @throws Exception
 	 */
-	public List<String> readfileLs() throws Exception {
+	public ArrayList<String> readfileLs() throws Exception {
 		ArrayList<String> lsResult = new ArrayList<String>();
 		BufferedReader read = readfile();
 		String content = "";
@@ -144,7 +144,15 @@ public class TxtReadandWrite {
 		filewriter.write(content);
 		filewriter.flush();
 	}
-
+	/**
+	 * 写入并换行
+	 * @param content
+	 *            ，要写入文件内容
+	 * @throws Exception
+	 */
+	public void writefileln(String content) throws Exception {
+		filewriter.write(content+"\n");
+	}
 	/**
 	 * @param content
 	 *            ，要写入文件内容,并考虑是否刷新--也就是直接写入文件而不是进入缓存

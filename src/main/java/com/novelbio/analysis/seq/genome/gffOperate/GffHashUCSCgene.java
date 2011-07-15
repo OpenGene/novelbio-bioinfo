@@ -185,7 +185,7 @@ public class GffHashUCSCgene extends GffHashGene
 	 * @return 
 	 */
 	@SuppressWarnings("unchecked")
-	public ArrayList<Long> getGeneStructureLength()
+	public ArrayList<Long> getGeneStructureLength(int upBp)
 	{
 		ArrayList<Long> lsbackground=new ArrayList<Long>();
 		
@@ -195,7 +195,7 @@ public class GffHashUCSCgene extends GffHashGene
 		long allExonLength=0;
 		long all5UTRLength=0;
 		long all3UTRLength=0;
-		long allup2kLength=0;
+		long allupLength=0;
 
 		int errorNum=0;//看UCSC中有多少基因的TSS不是最长转录本的起点
 		/////////////////////正   式   计   算//////////////////////////////////////////
@@ -208,7 +208,7 @@ public class GffHashUCSCgene extends GffHashGene
 		    //一条一条染色体的去检查内含子和外显子的长度
 		    ArrayList<GffDetail> val = ( ArrayList<GffDetail>)entry.getValue();
 		    int chrLOCNum=val.size();
-		    allup2kLength=allup2kLength+chrLOCNum*2000;
+		    allupLength=allupLength+chrLOCNum*upBp;
 		    for (int i = 0; i < chrLOCNum; i++) 
 			{
 		    	long leftUTR=0;
@@ -307,12 +307,148 @@ public class GffHashUCSCgene extends GffHashGene
 		lsbackground.add(all3UTRLength);
 		lsbackground.add(allExonLength);
 		lsbackground.add(allIntronLength);
-		lsbackground.add(allup2kLength);
+		lsbackground.add(allupLength);
 		lsbackground.add(allGeneLength);
 		System.out.println("getGeneStructureLength: 看UCSC中有多少基因的TSS不是最长转录本的起点"+errorNum);
 		return lsbackground;
 		
 	}
 	
-	
+	/**
+	 * 	返回外显子总长度，内含子总长度等信息
+	 * 有问题
+	 * 为一个ArrayList-Integer
+	 * 0: all5UTRLength <br>
+	 * 1: all3UTRLength <br>
+	 * 2: allExonLength 不包括5UTR和3UTR的长度 <br> 
+	 * 3: allIntronLength <br>
+	 * 4: allGeneLength <br>
+	 * @return 
+	 */
+	@SuppressWarnings("unchecked")
+	public ArrayList<ArrayList<Integer>> getGeneStructureDestrib()
+	{
+		ArrayList<ArrayList<Integer>> lsbackground=new ArrayList<ArrayList<Integer>>();
+		
+		long ChrLength=0;
+		ArrayList<Integer> allGeneLength= new ArrayList<Integer>();
+		ArrayList<Integer> lsIntronLength = new ArrayList<Integer>();
+		ArrayList<Integer> lsExonLength = new ArrayList<Integer>();
+		ArrayList<Integer>  all5UTRLength= new ArrayList<Integer>();
+		ArrayList<Integer>  all3UTRLength= new ArrayList<Integer>();
+
+		int errorNum=0;//看UCSC中有多少基因的TSS不是最长转录本的起点
+		/////////////////////正   式   计   算//////////////////////////////////////////
+		
+		
+		Iterator iter = Chrhash.entrySet().iterator();
+		while (iter.hasNext()) 
+		{
+		    Map.Entry entry = (Map.Entry) iter.next();
+		    //一条一条染色体的去检查内含子和外显子的长度
+		    ArrayList<GffDetail> val = ( ArrayList<GffDetail>)entry.getValue();
+		    int chrLOCNum=val.size();
+		    for (int i = 0; i < chrLOCNum; i++) 
+			{
+		    	int leftUTR=0;
+		    	int rightUTR=0;
+				GffDetailUCSCgene tmpUCSCgene=(GffDetailUCSCgene)val.get(i);
+				
+				allGeneLength.add(tmpUCSCgene.numberend-tmpUCSCgene.numberstart);
+			//获得最长的转录本
+				ArrayList<Object>  lstmpSplitInfo=tmpUCSCgene.getLongestSplit();
+				ArrayList<Integer> lstmpSplit=(ArrayList<Integer>)lstmpSplitInfo.get(1);
+				
+				///////////////////////看UCSC中有多少基因的TSS不是最长转录本的起点//////////////////////////
+				if ((tmpUCSCgene.cis5to3&&lstmpSplit.get(2)>tmpUCSCgene.numberstart) || ( !tmpUCSCgene.cis5to3&& lstmpSplit.get(lstmpSplit.size()-1)<tmpUCSCgene.numberend )){
+					errorNum++;
+				}
+				
+				
+				/////////////////////////////////////////////////////////////////////////////////////////////////
+				
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				///////////////////////// 内 含 子 加 和 ////////////////////////////////////////
+				for (int j = 4; j < lstmpSplit.size(); j=j+2) //0,1   2,3  4,5  6,7  8,9
+				{
+					lsIntronLength.add(lstmpSplit.get(j)-lstmpSplit.get(j-1));
+				}
+				//////////////////////////////5UTR、外显子、3UTR 加和////////////////////////////////////////////////////
+				int exonSize=lstmpSplit.size();                  // start  2,3   4,0,5   6,7  8,9   10,1,11  12,13 end
+				leftUTR=lstmpSplit.get(2)-tmpUCSCgene.numberstart;
+				rightUTR=tmpUCSCgene.numberend-lstmpSplit.get(exonSize-1);
+				for (int j = 3; j <exonSize;j=j+2) //0,1   2,3  4,5  6,7  8,9
+				{
+					//转录起点在外显子后
+					if(lstmpSplit.get(j)<=lstmpSplit.get(0))
+					{
+						leftUTR=leftUTR+(lstmpSplit.get(j)-lstmpSplit.get(j-1));
+						continue;
+					}
+					//转录起点在外显子中
+					if (lstmpSplit.get(j)>lstmpSplit.get(0)&&lstmpSplit.get(j-1)<=lstmpSplit.get(0) ) 
+					{
+						leftUTR=leftUTR+(lstmpSplit.get(0)-lstmpSplit.get(j-1));
+						//转录终点在同一个外显子中
+						if (lstmpSplit.get(j)>=lstmpSplit.get(1)&&lstmpSplit.get(j-1)<lstmpSplit.get(1)) 
+						{
+							rightUTR=rightUTR+(lstmpSplit.get(j)-lstmpSplit.get(1));
+							lsExonLength.add(lstmpSplit.get(1)-lstmpSplit.get(0));
+						}
+						else 
+						{
+							lsExonLength.add(lstmpSplit.get(j)-lstmpSplit.get(0));
+						}
+						continue;
+					}
+					//转录起点在外显子前，转录终点在外显子后
+					if(lstmpSplit.get(j-1)>lstmpSplit.get(0)&&lstmpSplit.get(j)<lstmpSplit.get(1))
+					{
+						lsExonLength.add(lstmpSplit.get(j)-lstmpSplit.get(j-1));
+						continue;
+					}
+					
+					
+					//转录终点在外显子中
+					if (lstmpSplit.get(j)>=lstmpSplit.get(1)&&lstmpSplit.get(j-1)<lstmpSplit.get(1)) 
+					{    //转录起点在同一个外显子中
+						if(lstmpSplit.get(j)>lstmpSplit.get(0)&&lstmpSplit.get(j-1)<=lstmpSplit.get(0))
+						{
+							continue;//上面已经计算过了
+						}
+						else 
+						{
+							rightUTR=rightUTR+(lstmpSplit.get(j)-lstmpSplit.get(1));
+							lsExonLength.add(lstmpSplit.get(1)-lstmpSplit.get(j-1));
+						}
+						continue;
+					}
+					//转录终点在外显子前
+					if (lstmpSplit.get(j-1)>=lstmpSplit.get(1)) 
+					{
+						rightUTR=rightUTR+(lstmpSplit.get(j)-lstmpSplit.get(j-1));
+						continue;
+					}
+				}
+				if (tmpUCSCgene.cis5to3) 
+				{
+					all5UTRLength.add(leftUTR);
+					all3UTRLength.add(rightUTR);
+				}
+				else 
+				{
+					all5UTRLength.add(rightUTR);
+					all3UTRLength.add(leftUTR);
+				}
+			}
+		}
+		lsbackground.add(all5UTRLength);
+		lsbackground.add(all3UTRLength);
+		lsbackground.add(lsExonLength);
+		lsbackground.add(lsIntronLength);
+		lsbackground.add(allGeneLength);
+		System.out.println("getGeneStructureLength: 看UCSC中有多少基因的TSS不是最长转录本的起点"+errorNum);
+		return lsbackground;
+		
+	}
 }

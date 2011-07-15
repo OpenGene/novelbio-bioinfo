@@ -159,7 +159,7 @@ public class GoFisherNew {
 			excelResult.WriteExcel(prix[0]+"Gene2GO", 1, 1,lsResult.get(2) , true);
 
 			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, 
-					FileOperate.getParentName(resultPicName), FileOperate.getName(resultPicName)+prix[0]+".pdf",true);
+					FileOperate.getParentPathName(resultPicName), FileOperate.getFileName(resultPicName)+prix[0]+".pdf",true);
 			
 		}
 		if (lsGeneDownCope.size()>0) {
@@ -168,7 +168,7 @@ public class GoFisherNew {
 			excelResult.WriteExcel(prix[1]+"GO2Gene", 1, 1,lsResult.get(1) , true);
 			excelResult.WriteExcel(prix[1]+"Gene2GO", 1, 1,lsResult.get(2) , true);
 			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, 
-					FileOperate.getParentName(resultPicName), FileOperate.getName(resultPicName)+prix[1]+".pdf",true);
+					FileOperate.getParentPathName(resultPicName), FileOperate.getFileName(resultPicName)+prix[1]+".pdf",true);
 		}
 	}
 

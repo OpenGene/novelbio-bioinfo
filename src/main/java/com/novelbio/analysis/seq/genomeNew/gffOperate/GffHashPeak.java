@@ -315,11 +315,11 @@ public class GffHashPeak extends GffHash{
 	{
 		GffCodPeak gffCodPeak = new GffCodPeak(chrID, Coordinate);
 		GffDetailPeak LOCdetial=(GffDetailPeak)loclist.get(begNum);
-		gffCodPeak.result=true;
+		gffCodPeak.booFindCod=true;
 		gffCodPeak.insideLOC=true;
 		
 		gffCodPeak.LOCID[0]=LOCdetial.locString;//本基因的ID
-		gffCodPeak.begincis5to3=LOCdetial.cis5to3;//一直为正
+		gffCodPeak.thiscis5to3=LOCdetial.cis5to3;//一直为正
 		gffCodPeak.LOCID[0]=LOCdetial.locString;//本基因的ID
 		if(LOCdetial.cis5to3)
 		{
@@ -344,15 +344,15 @@ public class GffHashPeak extends GffHash{
 		GffDetailPeak endnumlist=null;
 		GffDetailPeak beginnumlist= null;
 				
-		gffCodPeak.result=true;
+		gffCodPeak.booFindCod=true;
 		gffCodPeak.insideLOC=false;
 		
 		if (beginnum!=-1) {
 			beginnumlist= (GffDetailPeak)loclist.get(beginnum);
 			gffCodPeak.LOCID[1]=beginnumlist.locString;//上个基因的ID
-			gffCodPeak.begincis5to3=beginnumlist.cis5to3;//一直为正
+			gffCodPeak.thiscis5to3=beginnumlist.cis5to3;//一直为正
 			 //与前一个基因转录起点和终点的距离
-			if(gffCodPeak.begincis5to3)
+			if(gffCodPeak.thiscis5to3)
 	        {//当基因正向时，与TSS距离为正数，与End为负数        |>----->------*
 				gffCodPeak.distancetoLOCStart[0]=Math.abs(Coordinate-beginnumlist.numberstart);
 				gffCodPeak.distancetoLOCEnd[0]=-Math.abs(Coordinate-beginnumlist.numberend);
@@ -366,9 +366,9 @@ public class GffHashPeak extends GffHash{
 		if (endnum!=-1) {
 			endnumlist=(GffDetailPeak)loclist.get(endnum);
 			gffCodPeak.LOCID[2]=endnumlist.locString;//下个基因的ID
-			gffCodPeak.endcis5to3=endnumlist.cis5to3;//一直为正
+			gffCodPeak.downCis5to3=endnumlist.cis5to3;//一直为正
 			//与后一个基因转录起点和终点的距离
-	        if(gffCodPeak.endcis5to3)
+	        if(gffCodPeak.downCis5to3)
 	        {//当基因正向时，与TSS距离为负数，与End为正数         *---|>----->----
 	        	gffCodPeak.distancetoLOCStart[1]=-Math.abs(Coordinate-endnumlist.numberstart);
 	        	gffCodPeak.distancetoLOCEnd[1]=Math.abs(Coordinate-endnumlist.numberend);

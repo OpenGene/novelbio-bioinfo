@@ -480,7 +480,7 @@ public class GffLocatCod extends GffChrUnion
 						geneEnd = true;
 						if (!tmpPeakAnnotation[imputLength].contains(tmpresult.LOCID[0])) 
 							tmpPeakAnnotation[imputLength] = tmpPeakAnnotation[imputLength] + sep + tmpresult.LOCID[0];
-						tmpPeakAnnotation[imputLength+1]=tmpPeakAnnotation[imputLength+1] + sep +"GeneEnd:"+tmpresult.distancetoLOCStart[0]+ "bp DownStreamOfGeneEnd";
+						tmpPeakAnnotation[imputLength+1]=tmpPeakAnnotation[imputLength+1] + sep +"GeneEnd:"+tmpresult.distancetoLOCEnd[0]+ "bp to GeneEnd";
 					}
 				}
 			}
@@ -635,20 +635,21 @@ public class GffLocatCod extends GffChrUnion
 		String[][] peakStatistic=new String[6][2];
 		//初始化
 		peakStatistic[0][0]="5UTR";peakStatistic[1][0]="3UTR";peakStatistic[2][0]="Exon";
-		peakStatistic[3][0]="Intron";peakStatistic[4][0]="Up3k";peakStatistic[5][0]="InterGenic";
+		peakStatistic[3][0]="Intron";peakStatistic[4][0]="Up"+(double)UpStreamTSSbp/1000 + "K";peakStatistic[5][0]="InterGenic";
 		peakStatistic[0][1]="0";peakStatistic[1][1]="0";peakStatistic[2][1]="0";
 		peakStatistic[3][1]="0";peakStatistic[4][1]="0";peakStatistic[5][1]="0";
 		
 		for (int i = 0; i < LOCIDInfo.length; i++)
 		{
-			GffCodInfoUCSCgene tmpresult=null; String chrID = LOCIDInfo[i][0].toLowerCase(); int summit = Integer.parseInt(LOCIDInfo[i][1]);
-			if (summit == 26842076) {
-				System.out.println("sss");
-			}
+			GffCodInfoUCSCgene tmpresult=null;String chrID = LOCIDInfo[i][0].toLowerCase(); int summit = Integer.parseInt(LOCIDInfo[i][1]);
 			try {
+				if (summit == 4332972) {
+					System.out.println("error");
+				}
+				
 				tmpresult = (GffCodInfoUCSCgene)gffSearch.searchLocation(chrID, summit, gffHash);
 			} catch (Exception e) {
-				System.out.println("peakStatistic"+LOCIDInfo[i][0].toLowerCase()+" " + LOCIDInfo[i][1]);
+				System.out.println("peakStatistic "+LOCIDInfo[i][0].toLowerCase()+" " + LOCIDInfo[i][1]);
 				continue;
 			}
 		
@@ -761,10 +762,14 @@ public class GffLocatCod extends GffChrUnion
 			try {
 				String LOCID=LOCIDInfo[i][0].toLowerCase();
 				int LOCcod=Integer.parseInt(LOCIDInfo[i][1]);
+				if (LOCcod == 2336086) {
+					System.out.println("error");
+				}
 				 tmpresult=(GffCodInfoUCSCgene)gffSearch.searchLocation(LOCID, LOCcod, gffHash);
 			} catch (Exception e) {
 				String test=LOCIDInfo[i][1];
 				System.out.println(test);
+				continue;
 			}
 			////////////////// 都 赋 空 值 /////////////////////////////////
 			String[] tmpPeakAnnotation=new String[17];

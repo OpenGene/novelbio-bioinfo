@@ -189,17 +189,17 @@ public class runGo {
 	 */
 	public static void goanalysisNBCNew() {
 
-		String file = "/media/winE/NBC/Project/MiRNA_XHY110624/";
-		String backGroundFile=file + "hg18refseqBGwithDuplication.txt";
+		String file = "/media/winE/NBC/Project/MiRNA_DrZ110701/";
+		String backGroundFile=file + "UCSChg19RefseqDuplicateID.txt";
 		String[] prix = new String[2];
 		prix[0] = "";
 		prix[1] = "635";
 		try {
-			String fileName = "靶基因对应表";			
+			String fileName = "Targetscan";
 			String geneFile=file+fileName+".xls";
 			String GOClass = "P";
-			int[] colID = new int[2];colID[0] = 5; colID[1] = 4;
-			double up = 0;
+			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
+			double up = 1;
 			double down = -1;
 			boolean sepID = false;
 			int QtaxID = 9606;

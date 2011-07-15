@@ -165,7 +165,8 @@ public class GffChrUnion {
 		 }
 		 try {
 			gffHash.ReadGffarray(Gfffilename);
-		} catch (Exception e) {e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	 }
 	
@@ -367,6 +368,7 @@ public class GffChrUnion {
 
 	
 	/**
+	 * 设定Tss上游多少bp
 	 * 	返回外显子总长度，内含子总长度等信息
 	 * 有问题
 	 * 为一个ArrayList-Integer
@@ -379,9 +381,9 @@ public class GffChrUnion {
 	 * 6: allGeneLength <br>
 	 * @return 
 	 */
-	public ArrayList<Long> getGeneStructureLength()
+	public ArrayList<Long> getGeneStructureLength(int upBp)
 	{
-		return ((GffHashGene)gffHash).getGeneStructureLength();
+		return ((GffHashGene)gffHash).getGeneStructureLength(upBp);
 	}
 
 	

@@ -86,9 +86,9 @@ public class GffHashCG extends GffHash
 					   Collections.sort(LOCList,new Comparator<GffDetailAbs>(){
 				            public int compare(GffDetailAbs arg0, GffDetailAbs arg1) {
 				                int Compareresult;
-				            	if(arg0.numberstart<arg1.numberstart)
+				            	if(arg0.getNumStart()<arg1.getNumStart())
 				            		Compareresult=-1;
-				            	else if (arg0.numberstart==arg1.numberstart) 
+				            	else if (arg0.getNumStart()==arg1.getNumStart()) 
 				            		Compareresult=0;
 				            	else 
 				            		Compareresult=1;
@@ -97,8 +97,8 @@ public class GffHashCG extends GffHash
 				        });
 					   //排序完后把CG号装入LOCIDList
 					   for (GffDetailAbs gffDetail : LOCList) {
-						   LOCIDList.add(gffDetail.locString);
-						   LOCChrHashIDList.add(gffDetail.locString);
+						   LOCIDList.add(gffDetail.getLocString());
+						   LOCChrHashIDList.add(gffDetail.getLocString());
 					   }
 				   }
 				   LOCList=new ArrayList<GffDetailAbs>();//新建一个LOCList并放入Chrhash
@@ -106,12 +106,9 @@ public class GffHashCG extends GffHash
 			   }
 			  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			   //每一行就是一个CG
-			   GffDetailCG gffGCtmpDetail=new GffDetailCG();
-			   gffGCtmpDetail.ChrID=chrnametmpString;//是小写的
-			   gffGCtmpDetail.cis5to3=true;
-			   gffGCtmpDetail.locString=ss[0]+"_"+ss[1]+"_"+ss[4]+"_"+ss[2];
-			   gffGCtmpDetail.numberstart=Integer.parseInt(ss[2]);
-			   gffGCtmpDetail.numberend=Integer.parseInt(ss[3]);
+			   GffDetailCG gffGCtmpDetail=new GffDetailCG(chrnametmpString, ss[0]+"_"+ss[1]+"_"+ss[4]+"_"+ss[2], true);
+			   gffGCtmpDetail.numberstart =Integer.parseInt(ss[2]);
+			   gffGCtmpDetail.numberend = Integer.parseInt(ss[3]);
 			   gffGCtmpDetail.lengthCpG=Integer.parseInt(ss[5]);
 			   gffGCtmpDetail.numCpG=Integer.parseInt(ss[6]);
 			   gffGCtmpDetail.numGC=Integer.parseInt(ss[7]);
@@ -120,7 +117,7 @@ public class GffHashCG extends GffHash
 			   gffGCtmpDetail.obsExp=Double.parseDouble(ss[10]);
 			   //装入LOCList和locHashtable
 			   LOCList.add(gffGCtmpDetail);  
-			   locHashtable.put(gffGCtmpDetail.locString, gffGCtmpDetail);
+			   locHashtable.put(gffGCtmpDetail.getLocString(), gffGCtmpDetail);
 		   }
 		   /////////////////////////////////////////////////////////////////////////////////////////////
 		   LOCList.trimToSize();
@@ -138,8 +135,8 @@ public class GffHashCG extends GffHash
 	            }});
 		 //排序完后装入LOCIDList
 		   for (GffDetailAbs gffDetail : LOCList) {
-			   LOCIDList.add(gffDetail.locString);
-			   LOCChrHashIDList.add(gffDetail.locString);
+			   LOCIDList.add(gffDetail.getLocString());
+			   LOCChrHashIDList.add(gffDetail.getLocString());
 		}
 		   txtgff.close();
 		 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,68 +169,6 @@ public class GffHashCG extends GffHash
 		return hashCGLength;
 	}
 
-	
-	
-	/**
-	 * 当位点处于基因外部时的具体查找,返回GffCodInfo实例化对象
-	 * @param Coordinate 坐标
-	 * @param Genlist 某条染色体的list表
-	 * @param beginnum本基因的序号
-	 * @param endnum下一个基因的序号
-	 * 如果坐标前/后没有相应的基因，那么相应的LOCID为null
-	 */
-	@Override
-	protected  GffCodAbs SearchLOCoutside(ArrayList<GffDetailAbs> Genlist,int beginnum,int endnum,String chrID, int Coordinate)
-	{
-		GffCodCG gffCodCG = new GffCodCG(chrID, Coordinate);
-		GffDetailCG beginnumlist=null;
-		GffDetailCG endnumlist=null;		
-		gffCodCG.result=true;
-		gffCodCG.insideLOC=false;
-		
-		if (beginnum!=-1) {
-			beginnumlist=(GffDetailCG) Genlist.get(beginnum);
-			gffCodCG.LOCID[1]=beginnumlist.locString;//上个基因的ID
-			gffCodCG.begincis5to3=beginnumlist.cis5to3;//一直为正
-			gffCodCG.distancetoLOCEnd[0]=Math.abs(Coordinate-beginnumlist.numberend);
-			gffCodCG.distancetoLOCStart[0]=Math.abs(Coordinate-beginnumlist.numberstart);
-		}
-		if (endnum!=-1) {
-			endnumlist=(GffDetailCG) Genlist.get(endnum);
-			gffCodCG.LOCID[2]=endnumlist.locString;//下个基因的ID
-			gffCodCG.endcis5to3=endnumlist.cis5to3;//一直为正
-			gffCodCG.distancetoLOCEnd[1]=-Math.abs(Coordinate-endnumlist.numberend);
-			gffCodCG.distancetoLOCStart[1]=-Math.abs(Coordinate-endnumlist.numberstart);
-		}
-		return gffCodCG;
-	}
-	
-	/**
-	 * 当位点处于基因内部时的具体查找,返回GffCodInfo实例化对象
-	 * @param Coordinate 坐标
-	 * @param Genlist 某条染色体的list表
-	 * @param beginnum本基因的序号
-	 * @param endnum下一个基因的序号
-	 */
-	@Override
-	protected  GffCodAbs SearchLOCinside(ArrayList<GffDetailAbs> Genlist,int beginnum,int endnum,String chrID, int Coordinate)
-	{
-		GffCodCG gffCodCG = new GffCodCG(chrID, Coordinate);
-		GffDetailCG LOCdetial=(GffDetailCG) Genlist.get(beginnum);		
-		gffCodCG.result=true;
-		gffCodCG.insideLOC=true;
-		
-		gffCodCG.LOCID[0]=LOCdetial.locString;//本基因的ID
-		gffCodCG.begincis5to3=LOCdetial.cis5to3;//一直为正
-		
-		gffCodCG.distancetoLOCStart[0]=Math.abs(Coordinate-LOCdetial.numberstart);//到本基因起点的位置
-		gffCodCG.distancetoLOCStart[1]=-1;
-		
-		gffCodCG.distancetoLOCEnd[0]=Math.abs(Coordinate-LOCdetial.numberend);//到本基因起点的位置
-		gffCodCG.distancetoLOCEnd[1]=-1;
-		return gffCodCG;
-	}
-
 	@Override
 	public GffDetailCG LOCsearch(String LOCID) {
 		return (GffDetailCG) locHashtable.get(LOCID);
@@ -243,15 +178,10 @@ public class GffHashCG extends GffHash
 	public GffDetailCG LOCsearch(String chrID, int LOCNum) {
 		return (GffDetailCG) Chrhash.get(chrID).get(LOCNum);
 	}
-	/**
-	 * 单坐标查找 输入ChrID，单个坐标，以及GffHash类<br>
-	 * ,chr采用正则表达式抓取，无所谓大小写，会自动转变为小写, chr1,chr2,chr11<br>
-	 * @param chrID
-	 * @param Coordinate
-	 * @return
-	 * 没找到就返回null
-	 */
+
+	@Override
 	public GffCodCG searchLoc(String chrID, int Coordinate) {
-		return (GffCodCG) searchLocation(chrID, Coordinate); 
+		GffCodCG gffCodCG = new GffCodCG(chrID, Coordinate, this);
+		return gffCodCG;
 	}
 }

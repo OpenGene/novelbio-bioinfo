@@ -16,8 +16,10 @@ public class PeakAnno {
 		columnID[0]=1;
 		columnID[1]=2;
 		columnID[2]=3;
-		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
-				"/media/winE/Bioinformatics/GenomeData/human/hg18refseqUCSCsortUsing.txt", "");
+//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
+//				"/media/winE/Bioinformatics/GenomeData/human/hg18refseqUCSCsortUsing.txt", "");
+		PeakLOC.prepare("/media/winE/Bioinformatics/GenomeData/Arabidopsis/ChromFaRaw",null,NovelBioConst.GENOME_GFF_TYPE_TAIR,
+				"/media/winE/Bioinformatics/GenomeData/Arabidopsis/TAIR9_GFF3_genes.gff", "");
 		System.out.println("prepare ok");
 		annotation();
 	}
@@ -27,48 +29,23 @@ public class PeakAnno {
 	 */
 	public static void  annotation() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/PeakCalling/";
-		String geneStructurePath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/GeneStructure";
+		String ParentFile="/media/winE/NBC/Project/Project_ZDB_Lab/XJ/ChIP-chip数据2011.06/ChIP-chip数据2011.06/";
+		String geneStructurePath = "/media/winE/NBC/Project/Project_ZDB_Lab/XJ/ChIP-chip数据2011.06/geneStructure";
 		int[] columnID=new int[2];
 		columnID[0]=1;
-		columnID[1]=6;
-		int taxID = 10090;
+		columnID[1]=4;
+		int taxID = 3702;
 		//定位区域
 		int[] region = new int[3];//0:UpstreamTSSbp 1:DownStreamTssbp 2:GeneEnd3UTR
-		region[0] = 5000; region[1] = 5000; region[2] = 1000;
+		region[0] = 1000; region[1] = 1000; region[2] = 100;
+		int upBp = 1000;
 		try {
-			 String FpeaksFile=ParentFile+"PHF8_RNAi_peaks_Summit.xls";
-			 String FannotationFile=ParentFile+"PHF8_RNAi_peaks_annotation.txt";
-			 String FPeakHist = ParentFile; String resultPrix ="PHF8_RNAi";
+			 String FpeaksFile=ParentFile+"chersD.txt";
+			 String FannotationFile=ParentFile+"chersD_annotation.txt";
+			 String FPeakHist = ParentFile; String resultPrix ="chersD";
 			 PeakLOC.histTssGeneEnd(FpeaksFile, "\t", columnID, 2, -1, FPeakHist, resultPrix);
 			 
-			 statisticNum(FpeaksFile, geneStructurePath, resultPrix);
-			 
-			 PeakLOC.locatDetail(FpeaksFile, "\t", columnID,2, -1, FannotationFile,region);
-			 
-			 TxtReadandWrite txtReadandWrite=new TxtReadandWrite();
-				txtReadandWrite.setParameter(FannotationFile, false, true);
-				int columnNum=0;
-				try {
-					columnNum = txtReadandWrite.ExcelColumns("\t");
-				} catch (Exception e2) {
-				}
-				int columnRead=columnNum-1;
-				int rowStart=2;
-				SymbolDesp.getRefSymbDesp(taxID,FannotationFile, columnRead, rowStart, columnRead);
-				SymbolDesp.getRefSymbDesp(taxID,FannotationFile, columnRead-2, rowStart, columnRead-2);
-				SymbolDesp.getRefSymbDesp(taxID,FannotationFile, columnRead-4, rowStart, columnRead-4);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			 String FpeaksFile=ParentFile+"PHF8_RNAi_control_peaks_Summit.xls";
-			 String FannotationFile=ParentFile+"PHF8_RNAi_control_peaks_annotation.txt";
-			 String FPeakHist = ParentFile; String resultPrix ="PHF8_RNAi_control";
-			 PeakLOC.histTssGeneEnd(FpeaksFile, "\t", columnID, 2, -1, FPeakHist, resultPrix);
-			 
-			 statisticNum(FpeaksFile, geneStructurePath, resultPrix);
+			 statisticNum(upBp,FpeaksFile, columnID,geneStructurePath, resultPrix);
 			 
 			 PeakLOC.locatDetail(FpeaksFile, "\t", columnID,2, -1, FannotationFile,region);
 			 
@@ -96,26 +73,18 @@ public class PeakAnno {
 	 * 内含子外显子数量统计
 	 * @throws Exception
 	 */
-	public static void statisticNum(String peaksFile, String resultParentFile,String prix) throws Exception 
+	public static void statisticNum(int upBp,String peaksFile, int[] columnID, String resultParentFile,String prix) throws Exception 
 	{
-		int[] columnID=new int[2];
-		columnID[0] = 1;
-		columnID[1] = 6;
 		String[][] intronExonStatistic;
 		String genestructureBar = prix + "bar.jpg";
 		String genestructureStatistic = prix + "geneStructure";
-		intronExonStatistic = PeakLOC.getPeakStaticInfo(peaksFile, "\t",
-				columnID, 2, -1);
+		intronExonStatistic = PeakLOC.getPeakStaticInfo(upBp,peaksFile, "\t",columnID, 2, -1);
 		TxtReadandWrite txtstatistic = new TxtReadandWrite();
-		txtstatistic.setParameter(
-				NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, true, false);
+		txtstatistic.setParameter(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, true, false);
 		txtstatistic.ExcelWrite(intronExonStatistic, "\t");
 		barPlot();
-		FileOperate.moveFile(
-				NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_RESULT_PIC,
-				resultParentFile, genestructureBar, true);
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE,
-				resultParentFile, genestructureStatistic, true);
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_RESULT_PIC,resultParentFile, genestructureBar, true);
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE,resultParentFile, genestructureStatistic, true);
 
 	}
 	/**

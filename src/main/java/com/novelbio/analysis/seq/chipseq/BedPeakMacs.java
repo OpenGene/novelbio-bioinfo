@@ -12,8 +12,8 @@ public class BedPeakMacs extends BedSeq{
 		// TODO Auto-generated constructor stub
 	}
 	
-	public BedPeakMacs filter(String filterOut) throws Exception {
-		BedSeq bedSeq = super.filter(filterOut);
+	public BedPeakMacs filterWYR(String filterOut) throws Exception {
+		BedSeq bedSeq = super.filterWYR(filterOut);
 		return new BedPeakMacs(bedSeq.getSeqFile());
 	}
 	

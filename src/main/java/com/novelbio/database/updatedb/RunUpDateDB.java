@@ -142,7 +142,7 @@ public class RunUpDateDB {
 	) {
 		String method = "RunUpDateDB.copeNCBIID";
 		//NCBIID¥¶¿Ì
-		String parentNCBIFile = FileOperate.getParentName(pathGene2accessionID);
+		String parentNCBIFile = FileOperate.getParentPathName(pathGene2accessionID);
 	
 
 			String modGen2Acc = parentNCBIFile+ "/gene2accIDmodify";
@@ -266,7 +266,7 @@ public class RunUpDateDB {
 	public static void upDateNCBIIDSymbol(String taxIDFile,String geneInfoFile,String taxGeneInfoFile) throws Exception
 	{
 		NCBIIDOperate.tableGetTaxID(taxIDFile, geneInfoFile, taxGeneInfoFile);
-		String parentNCBIFile = FileOperate.getParentName(geneInfoFile);
+		String parentNCBIFile = FileOperate.getParentPathName(geneInfoFile);
 		String modUniIDmapSelect = parentNCBIFile+ "/modSymbol";
 		GeneInfoTaxIDgetSymbol.getSymbol(taxGeneInfoFile, modUniIDmapSelect);
 		UpDateNBCDBFile.upDateNCBIID(modUniIDmapSelect, false);
@@ -287,7 +287,7 @@ public class RunUpDateDB {
 	public static void upDateUniIDgene_associationgoa_uniprot(String taxIDFile,String gene_associationgoa_unipro,String taxgene_associationgoa_unipro,
 			String taxGeneInfoFile
 			) throws Exception {
-		String fold = FileOperate.getParentName(gene_associationgoa_unipro)+"/";
+		String fold = FileOperate.getParentPathName(gene_associationgoa_unipro)+"/";
 		UpDateNBCDBFile.getUniProtGoInfoTaxIDgene_associationgoa_uniprot(taxIDFile, gene_associationgoa_unipro, taxgene_associationgoa_unipro);
 		System.out.println(taxgene_associationgoa_unipro+ " ok");
 		String outUniqGene_associationgoa_unipro = fold+ "outUniqGene_associationgoa_unipro";
@@ -322,7 +322,7 @@ public class RunUpDateDB {
 			String taxuniIDmapSelect) throws Exception {
 //		UpDateNBCDBFile.upDateGoTerm(goterm);
 		
-		String parentNCBIFile = FileOperate.getParentName(gene2GoFile);
+		String parentNCBIFile = FileOperate.getParentPathName(gene2GoFile);
 		String taxGeneInfoFile = parentNCBIFile+ "/taxGene2GoFile";
 //		NCBIIDOperate.tableGetTaxID(taxIDfile, gene2GoFile, taxGeneInfoFile);
 		System.out.println(taxGeneInfoFile+ " ok");
@@ -335,7 +335,7 @@ public class RunUpDateDB {
 	}
 	public static void upDateAffyGo(String affyFile,String affyDBInfo,int taxID) throws Exception
 	{
-		String fold = FileOperate.getParentName(affyFile)+"/";
+		String fold = FileOperate.getParentPathName(affyFile)+"/";
 		String outputGo = fold +affyDBInfo +"OutputGo";
 		String outputUniGo = fold +affyDBInfo +"OutputUniGo";
 		AffyChipGO.getInfo(affyFile, 2, outputGo, outputUniGo, affyDBInfo, taxID);
@@ -358,7 +358,7 @@ public class RunUpDateDB {
 //		String tigrGoSlim ="/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/all.GOSlim_assignment";
 		
 
-		String fold = FileOperate.getParentName(gffRapDB)+"/";
+		String fold = FileOperate.getParentPathName(gffRapDB)+"/";
 		String outFile = fold+"out";
 		try {
 			RiceID.getAffyID2LOC(affyidtolocid, outFile);

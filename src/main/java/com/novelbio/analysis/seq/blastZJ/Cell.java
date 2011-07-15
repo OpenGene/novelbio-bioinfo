@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.blast;
+package com.novelbio.analysis.seq.blastZJ;
 
 /**
  * @author Paul Reiners
@@ -6,7 +6,7 @@ package com.novelbio.analysis.seq.blast;
  */
 public class Cell {
    private Cell prevCell;
-   private int score;
+   private double score;
    private int row;
    private int col;
    /**
@@ -32,14 +32,14 @@ public class Cell {
     * @param score
     *           the score to set
     */
-   public void setScore(int score) {
+   public void setScore(double score) {
       this.score = score;
    }
 
    /**
     * @return the score
     */
-   public int getScore() {
+   public double getScore() {
       return score;
    }
 
@@ -109,8 +109,8 @@ public class Cell {
 	/**
 	 * 添加一个gap
 	 */
-	public void gapNumAdd() {
-		gapNum++;
+	public void setGapNum(int gapNum) {
+		this.gapNum = gapNum;
 	}
 	/**
 	 * 获得之前几个gap
@@ -118,6 +118,21 @@ public class Cell {
 	 */
 	public int getGapNum() {
 		return gapNum;
+	}
+	/**
+	 * 
+	 * @param cellPrev 
+	 * @param space 第一个空位的罚分
+	 * @param gapDegrade 空位罚分的递减，按照指数下降的递减，底数为gapDegrade
+	 * @return
+	 */
+	public double getGapScore(Cell cellPrev, int space,double gapDegrade) {
+		return space*Math.pow(gapDegrade,-cellPrev.getGapNum());	
+//		
+//		if (cellPrev.getGapNum() == 0) {
+//			return space;
+//		}
+//		return 1/Math.pow(space,cellPrev.getGapNum()+1);
 	}
 	
 	   /**
@@ -138,13 +153,6 @@ public class Cell {
 			gradientAll = gradientAll * (1-gradientAllStart) + gradientAllStart;
 			return gradientAll;
 		}
-	
-	
-	
-	
-	
-	
-	
 	
 	   /**
 	    * 经过校正的分数，用于拼接

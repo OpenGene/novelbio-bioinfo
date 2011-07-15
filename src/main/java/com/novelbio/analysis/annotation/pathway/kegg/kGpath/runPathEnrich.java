@@ -8,13 +8,13 @@ public class runPathEnrich {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String parentFile = "/media/winE/NBC/Project/MiRNA_XHY110624/";
-		String backGroundFile=parentFile + "hg18refseqBGwithDuplication.txt";
+		String parentFile = "/media/winE/NBC/Project/MiRNA_DrZ110701/";
+		String backGroundFile=parentFile + "UCSChg19RefseqDuplicateID.txt";
 		try {
-			String fileName = "靶基因对应表";			
+			String fileName = "Targetscan";			
 			String geneFile=parentFile+fileName+".xls";
 			String resultExcel2003 = parentFile +fileName+"PathanalysisComb.xls";
-			int[] colID = new int[2]; colID[0] = 5; colID[1] = 4;
+			int[] colID = new int[2]; colID[0] = 1; colID[1] = 2;
 			double up = 0;
 			double down = -1;
 			boolean blast = false;

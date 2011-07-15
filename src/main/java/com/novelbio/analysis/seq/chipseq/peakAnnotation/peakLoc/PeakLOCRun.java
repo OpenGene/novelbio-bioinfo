@@ -19,15 +19,15 @@ public class PeakLOCRun {
 		columnID[0]=1;
 		columnID[1]=2;
 		columnID[2]=3;
-		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
-				"/media/winE/Bioinformatics/GenomeData/human/hg18refseqUCSCsortUsing.txt", "");
+		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
+				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
 		System.out.println("prepare ok");
-//		filterPeak();
+		filterPeak();
 		//annotation();
 		//histData();
 		System.out.println(" ok");
 		try {
-			statisticNum();
+//			statisticNum();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();																																																																																																																																																																																																																																																														
@@ -108,19 +108,20 @@ public class PeakLOCRun {
 	 */
 	public static void  filterPeak() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/annotation/";
+		String ParentFile="/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/result/annotation/";
 		int colChrID = 1; int colSummit = 6;
 		int rowStart = 1; 
-		int[] filterTss = new int[2]; filterTss[0] = -1000; filterTss[1] = 1500;
-		int[] filterGenEnd = new int[2]; filterGenEnd[0] = -1000; filterGenEnd[1] = 1000;
+		int[] filterTss = new int[2]; filterTss[0] = 500; filterTss[1] = 2000;
+		int[] filterGenEnd = new int[2]; filterGenEnd[0] = 0; filterGenEnd[1] = 0;
+		filterGenEnd = null;
 		boolean filterGeneBody = false;
 		boolean filter5UTR = false;
 		boolean filter3UTR = false;
 		boolean filterExon = false;
 		boolean filterIntron = false;
 		try {
-			String txtFile=ParentFile+"PHF8_peaks.txt";
-			String excelResultFile=ParentFile+"PHF8_peaks_Filter.xls";
+			String txtFile=ParentFile+"H3K4me3_peaks.xls";
+			String excelResultFile=ParentFile+"H3K4me3_peaks_Filter0.5-2.xls";
 			PeakLOC.filterPeak(txtFile, "\t", colChrID, colSummit, rowStart, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron, excelResultFile);
 		} catch (Exception e) {
 			e.printStackTrace();

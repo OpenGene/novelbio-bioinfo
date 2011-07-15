@@ -19,15 +19,12 @@ public abstract class GffCodAbs {
 	 * 构造函数赋初值
 	 */
 	protected  GffCodAbs(String chrID, int Coordinate,GffHash gffHash) {
-		distancetoLOCStart[0] = -1000000000;
-		distancetoLOCEnd[0] = -1000000000;
 		geneChrHashListNum[0] = -1000000000;
-		distancetoLOCStart[1] = -1000000000;
-		distancetoLOCEnd[1] = -1000000000;
 		geneChrHashListNum[1] = -1000000000;
 		this.chrID = chrID;
 		this.Coordinate = Coordinate;
 		this.gffHash = gffHash;
+		searchLocation();
 	}
 	
 	String chrID = "";
@@ -49,13 +46,13 @@ public abstract class GffCodAbs {
 	/**
 	 * 坐标是否查到 查找到/没找到
 	 */
-	protected boolean result = false;
+	protected boolean booFindCod = false;
 	/**
 	 * 是否成功找到cod
 	 * @return
 	 */
 	public boolean findCod() {
-		return result;
+		return booFindCod;
 	}
 	/**
 	 * 定位情况 条目内/条目外
@@ -67,74 +64,59 @@ public abstract class GffCodAbs {
 	public boolean locatInfo() {
 		return insideLOC;
 	}
+	
+	
 	/**
-	 * 本条目/上一个条目的方向
+	 * 上一个条目的方向
 	 */
-	protected boolean begincis5to3 = false;
+	private boolean upCis5to3 = false;
 	/**
-	 * 本条目/上一个条目的方向
+	 * 上一个条目的方向
 	 */
-	public boolean getBiginCis5to3() {
-		return begincis5to3;
+	public boolean getUpCis5to3() {
+		return upCis5to3;
+	}
+	
+	/**
+	 * 本条目的方向
+	 */
+	private boolean thiscis5to3 = false;
+	/**
+	 * 本条目的方向
+	 */
+	public boolean getThisCis5to3() {
+		return thiscis5to3;
 	}
 	
 	/**
 	 * 下一个条目的方向，仅当坐标位于条目间时
 	 */
-	protected boolean endcis5to3 = false;
-
+	protected boolean downCis5to3 = false;
 	/**
-	 * 基因LOCID，为chrHash里面的编号，注意：本编号不一定与LOCIDlist里的编号相同！目前仅在UCSCgene中不同，
-	 * UCSCgene要先通过split("/")切割才能进入locHashtable查找 在 0：本条目编号 1: 上个条目编号 2：下个条目编号
-	 * 如果坐标前/后没有相应的基因(譬如坐标在最前端)，那么相应的LOCID为null
+	 * 下一个条目的方向，仅当坐标位于条目间时
 	 */
-	protected String[] LOCID = new String[3];
+	public boolean getDownCis5to3() {
+		return downCis5to3;
+	}
 
 	/**
-	 * 坐标到条目起点的位置,考虑正反向<br/>
-	 * 为int[2]：<br>
-	 * <b>如果是条目内</b><br>
-	 * 0:坐标为和本条目起点的距离，都是正号<br>
-	 * 1：-1<br>
-	 * <br>
-	 * <b>如果是条目间，是与上下项目的距离，但是如果没有上/下项目，则相应项为0</b><br>
-	 * 0:坐标和上个条目起点的距离<br>
-	 * 如果上个条目为正向，则为正号+<br>
-	 * 如果上个条目为反向，则为负号-<br>
-	 * <br>
-	 * 1:坐标和下个条目起点的距离<br>
-	 * 如果下个基因为正向，则为负号-<br/>
-	 * 如果下个基因为反向，则为正号+<br/>
-	 */
-	protected int[] distancetoLOCStart = new int[2];
-
-	/**
-	 * 坐标到条目终点的位置，考虑正反向<br/>
-	 * 为int[2]：<br>
-	 * <b>如果是条目内</b><br>
-	 * 0:坐标为和本条目终点的距离，都是正号<br>
-	 * 1：-1<br>
-	 * <br>
-	 * <b>如果是条目间，是与上/下项目的距离，但是如果没有上/下项目，则相应项为0
-	 * 所以先要看有没有上/下项目。用geneChrHashListNum看，如果相应值为-1，则说明没有该项</b><br>
-	 * 0:坐标和上个条目终点的距离<br>
-	 * 如果上个条目为正向，则为负号-<br>
-	 * 如果上个条目为反向，则为正号+<br>
-	 * <br>
-	 * 1:坐标和下个条目终点的距离<br>
-	 * 如果下个条目为正向，则为正号+<br/>
-	 * 如果下个条目为反向，则为负号-<br/>
-	 */
-	protected int[] distancetoLOCEnd = new int[2];
-
-	/**
-	 * 0: 如果在条目内，为本条目的具体信息<br>
-	 * 如果在条目间，为上个条目的具体信息，如果没有则为null(譬如定位在最前端)<br>
+	 * 为上个条目的具体信息，如果没有则为null(譬如定位在最前端)<br>
 	 * 1: 如果在条目内，为下个条目的具体信息<br>
-	 * 如果在条目间，为下个条目的具体信息，如果没有则为null(譬如定位在最后端)
+	 * 如果在条目间，为下个条目的具体信息，如果没有则为null(譬如定位在最前端)
 	 */
-	protected GffDetailAbs[] geneDetail = new GffDetailAbs[2];
-
+	private GffDetailAbs gffDetailUp = null;
+	
+	/**
+	 *  如果在条目内，为本条目的具体信息，没有定位在基因内则为null<br>
+	 */
+	private GffDetailAbs gffDetailThis = null;
+	
+	/**
+	 * 为下个条目的具体信息，如果没有则为null(譬如定位在最后端)
+	 */
+	private GffDetailAbs gffDetailDown = null;
+	
+	
 	/**
 	 * 首先看上个基因与下个基因 0: 如果在条目内，为本条目在ChrHash-list中的编号，从0开始<br>
 	 * 如果在条目间，为上个条目在ChrHash-list中的编号，从0开始，<b>如果上个条目不存在，则为-1</b><br>
@@ -143,6 +125,102 @@ public abstract class GffCodAbs {
 	 */
 	protected int[] geneChrHashListNum = new int[2];
 
-	
+	/**
+	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
+	 * 没找到就返回null
+	 */
+	protected void searchLocation() {
+		ArrayList<GffDetailAbs> Loclist =  gffHash.getChrhash().get(chrID);// 某一条染色体的信息
+		if (Loclist == null) {
+			booFindCod = false;
+		}
+		String[] locationString = new String[5];
+		locationString[0] = "GffCodInfo_searchLocation error";
+		locationString[1] = "GffCodInfo_searchLocation error";
+		int[] locInfo = LocPosition();// 二分法查找peaknum的定位
+		if (locInfo[0] == 1) // 定位在基因内
+		{
+			gffDetailThis = Loclist.get(locInfo[1]); gffDetailThis.setCoord(Coordinate);
+			if (locInfo[1] - 1 >= 0) {
+				gffDetailUp =  Loclist.get(locInfo[1]-1);
+				gffDetailUp.setCoord(Coordinate);
+			}
+			if (locInfo[2] != -1) {
+				gffDetailDown = Loclist.get(locInfo[2]);
+				gffDetailDown.setCoord(Coordinate);
+			}
+		} else if (locInfo[0] == 2) {
+			if (locInfo[1] >= 0) {
+				gffDetailUp =  Loclist.get(locInfo[1]);
+				gffDetailUp.setCoord(Coordinate);
+			}
+			if (locInfo[2] != -1) {
+				gffDetailDown = Loclist.get(locInfo[2]);
+				gffDetailDown.setCoord(Coordinate);
+			}
+		}
+	}
 
+	/**
+	 * 二分法查找location所在的位点,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
+	 * 返回一个int[3]数组，<br>
+	 * 0: 1-基因内 2-基因外<br>
+	 * 1：本基因序号（定位在基因内） / 上个基因的序号(定位在基因外) -1表示前面没有基因<br>
+	 * 2：下个基因的序号 -1表示后面没有基因
+	 */
+	private int[] LocPosition() {
+		ArrayList<GffDetailAbs> Loclist =  gffHash.getChrhash().get(chrID);// 某一条染色体的信息
+		if (Loclist == null) {
+			booFindCod = false;
+			return null;
+		}
+		int[] LocInfo = new int[3];
+		int endnum = 0;
+		endnum = Loclist.size() - 1;
+		int beginnum = 0;
+		int number = 0;
+		// 在第一个Item之前
+		if (Coordinate < Loclist.get(beginnum).getNumStart()) {
+			LocInfo[0] = 2;
+			LocInfo[1] = -1;
+			LocInfo[2] = 0;
+			return LocInfo;
+		}
+		// 在最后一个Item之后
+		else if (Coordinate > Loclist.get(endnum).getNumStart()) {
+			LocInfo[1] = endnum;
+			LocInfo[2] = -1;
+			if (Coordinate < Loclist.get(endnum).getNumStart()) {
+				LocInfo[0] = 1;
+				return LocInfo;
+			} else {
+				LocInfo[0] = 2;
+				return LocInfo;
+			}
+		}
+		do {
+			number = (beginnum + endnum + 1) / 2;// 3/2=1,5/2=2
+			if (Coordinate == Loclist.get(number).getNumStart()) {
+				beginnum = number;
+				endnum = number + 1;
+				break;
+			}
+			else if (Coordinate < Loclist.get(number).getNumStart()
+					&& number != 0) {
+				endnum = number;
+			} else {
+				beginnum = number;
+			}
+		} while ((endnum - beginnum) > 1);
+		LocInfo[1] = beginnum;
+		LocInfo[2] = endnum;
+		if (Coordinate <= Loclist.get(beginnum).getNumStart())// 不知道会不会出现PeakNumber比biginnum小的情况
+		{ // location在基因内部
+			LocInfo[0] = 1;
+			return LocInfo;
+		}
+		// location在基因外部
+		LocInfo[0] = 2;
+		return LocInfo;
+	}
 }

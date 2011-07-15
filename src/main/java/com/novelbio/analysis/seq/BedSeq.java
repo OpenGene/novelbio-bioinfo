@@ -30,7 +30,7 @@ public class BedSeq extends SeqComb{
 	 * @throws Exception
 	 */
 	public BedSeq sortBedFile(int chrID, String sortBedFile,int...arg) throws Exception {
-		String path = FileOperate.getParentName(seqFile);
+		String path = FileOperate.getParentPathName(seqFile);
 		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
 		String cmd = "sort";
 		if (chrID != 0) {
@@ -53,10 +53,36 @@ public class BedSeq extends SeqComb{
 	
 	
 	/**
+	 * 专门给徐龙勇的GSM307618过滤的文件，
+	 * chr11   79993182        79993208        -       2119.5.3904     0       CTTGGGGCAGAAGAGCCCTTGCAGCC
+	 第六列 必须 <= 2
+	 * @throws Exception 
+	 */
+	public BedSeq filterXLY(String filterOut) throws Exception {
+		txtSeqFile.setParameter(seqFile, false, true);
+		BufferedReader reader   = txtSeqFile.readfile();
+		
+		TxtReadandWrite txtOut = new TxtReadandWrite();
+		txtOut.setParameter(filterOut, true, false);
+		
+		String content = "";
+		while ((content = reader.readLine())!=null) {
+			String[] ss = content.split("\t");
+			if (Integer.parseInt(ss[5]) <= 2) {
+				txtOut.writefile(content + "\n");
+			}
+		}
+		BedSeq bedSeq = new BedSeq(filterOut);
+		return bedSeq;
+	}
+	
+	
+	
+	/**
 	 * 专门给王彦儒的GSM531964_PHF8.bed过滤的文件，
 	 * @throws Exception 
 	 */
-	public BedSeq filter(String filterOut) throws Exception {
+	public BedSeq filterWYR(String filterOut) throws Exception {
 		txtSeqFile.setParameter(seqFile, false, true);
 		BufferedReader reader   = txtSeqFile.readfile();
 		
@@ -138,8 +164,45 @@ public class BedSeq extends SeqComb{
 			contString = contString + ss[ss.length -1];
 			txtOut.writefile(contString+"\n");
 		}
+	}
+	
+	/**
+	 * 从含有序列的bed文件获得fastQ文件
+	 * @param colSeqNum 序列文件在第几列，实际列
+	 * @param outFileName fastQ文件全名（包括路径）
+	 * @throws Exception
+	 */
+	public void getFastQ(int colSeqNum, String outFileName)
+	{
+		colSeqNum--;
+		txtSeqFile.setParameter(seqFile, false, true);
+		BufferedReader reader;
+		try {
+			reader = txtSeqFile.readfile();
+			TxtReadandWrite txtOut = new TxtReadandWrite();
+			txtOut.setParameter(outFileName, true, false);
+			String content = "";
+			//质量列,一百个
+			String qstring = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+			qstring = qstring + qstring + qstring + qstring + qstring + qstring + qstring + qstring + qstring;
+			while ((content = reader.readLine()) != null) {
+				String[] ss = content.split("\t");
+				txtOut.writefileln("@A80TF3ABXX:6:1:1223:2180#/1");
+				txtOut.writefileln(ss[colSeqNum]);
+				txtOut.writefileln("+");
+				txtOut.writefileln(qstring.substring(0,ss[colSeqNum].length()));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 	}
+	
+	
+	
+	
 	/**
 	 * 没有实现，需要子类覆盖
 	 * @param bedTreat 实验

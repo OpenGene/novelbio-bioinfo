@@ -11,8 +11,8 @@ import java.util.ArrayList;
  */
 public class GffCodInfoUCSCgene extends GffCodAbs
 {
-	GffCodInfoUCSCgene(String chrID, int Coordinate) {
-		super(chrID, Coordinate);
+	GffCodInfoUCSCgene(String chrID, int Coordinate, GffHashGene gffHashGene) {
+		super(chrID, Coordinate, gffHashGene);
 		// TODO Auto-generated constructor stub
 	}
 

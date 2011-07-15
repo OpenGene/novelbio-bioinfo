@@ -160,8 +160,8 @@ public abstract class GffHashGene extends GffHash
 			int beginnum, int endnum, String chrID, int Coordinate) {
 		GffCodInfoUCSCgene gffCodInfoUCSCgene = new GffCodInfoUCSCgene(chrID, Coordinate);
 		GffDetailUCSCgene LOCdetial=(GffDetailUCSCgene) loclist.get(beginnum);
-		gffCodInfoUCSCgene.result=true;//找到位置
-		gffCodInfoUCSCgene.begincis5to3=LOCdetial.cis5to3;//本基因方向
+		gffCodInfoUCSCgene.booFindCod=true;//找到位置
+		gffCodInfoUCSCgene.thiscis5to3=LOCdetial.cis5to3;//本基因方向
 		gffCodInfoUCSCgene.insideLOC=true;//在基因内
 		gffCodInfoUCSCgene.LOCID[0]=LOCdetial.locString;//本基因的ID
 		if(LOCdetial.cis5to3)
@@ -211,9 +211,9 @@ public abstract class GffHashGene extends GffHash
 		gffCodInfoUCSCgene.codToATG[1]=1000000000;
 
 		flag=false;
-		if (gffCodInfoUCSCgene.begincis5to3 ) 
+		if (gffCodInfoUCSCgene.thiscis5to3 ) 
 			gffCodInfoUCSCgene.codToATG[0]=Coordinate-longSplitExon.get(0);
-		else if (!gffCodInfoUCSCgene.begincis5to3)
+		else if (!gffCodInfoUCSCgene.thiscis5to3)
 			gffCodInfoUCSCgene.codToATG[0]=longSplitExon.get(1)-Coordinate;
 			
 		gffCodInfoUCSCgene.codToATG[1]=-1000000000;
@@ -527,7 +527,7 @@ public abstract class GffHashGene extends GffHash
 		GffDetailUCSCgene endnumlist = null;
 		GffDetailUCSCgene beginnumlist = null;
 
-		gffCodInfoUCSCgene.result = true;// 找到位置
+		gffCodInfoUCSCgene.booFindCod = true;// 找到位置
 		gffCodInfoUCSCgene.insideLOC = false;// 在基因间
 
 		gffCodInfoUCSCgene.codToATG[0] = 1000000000;
@@ -535,10 +535,10 @@ public abstract class GffHashGene extends GffHash
 
 		if (beginnum != -1) {
 			beginnumlist = (GffDetailUCSCgene) loclist.get(beginnum);
-			gffCodInfoUCSCgene.begincis5to3 = beginnumlist.cis5to3;// 上个基因方向
+			gffCodInfoUCSCgene.thiscis5to3 = beginnumlist.cis5to3;// 上个基因方向
 			gffCodInfoUCSCgene.LOCID[1] = beginnumlist.locString;// 上个基因的ID
 			// 与前一个基因转录起点和终点的距离
-			if (gffCodInfoUCSCgene.begincis5to3) {// 当基因正向时，与TSS距离为正数，与End为负数 |>----->------*
+			if (gffCodInfoUCSCgene.thiscis5to3) {// 当基因正向时，与TSS距离为正数，与End为负数 |>----->------*
 				gffCodInfoUCSCgene.distancetoLOCStart[0] = Math.abs(Coordinate
 						- beginnumlist.numberstart);
 				gffCodInfoUCSCgene.distancetoLOCEnd[0] = -Math.abs(Coordinate
@@ -553,19 +553,19 @@ public abstract class GffHashGene extends GffHash
 			ArrayList<Object> longSplitExonInfo = beginnumlist.getLongestSplit();// 获得最长转录本的信息
 			ArrayList<Integer> longSplitExon = (ArrayList<Integer>) longSplitExonInfo.get(1);
 
-			if (gffCodInfoUCSCgene.begincis5to3)
+			if (gffCodInfoUCSCgene.thiscis5to3)
 				gffCodInfoUCSCgene.codToATG[0] = Coordinate - longSplitExon.get(0);
-			else if (!gffCodInfoUCSCgene.begincis5to3)
+			else if (!gffCodInfoUCSCgene.thiscis5to3)
 				gffCodInfoUCSCgene.codToATG[0] = longSplitExon.get(1) - Coordinate;
 		}
 
 		if (endnum != -1) {
 			endnumlist = (GffDetailUCSCgene) loclist.get(endnum);
-			gffCodInfoUCSCgene.endcis5to3 = endnumlist.cis5to3;// 下个基因方向
+			gffCodInfoUCSCgene.downCis5to3 = endnumlist.cis5to3;// 下个基因方向
 			gffCodInfoUCSCgene.LOCID[2] = endnumlist.locString;// 下个基因的ID
 			// 与后一个基因转录起点和终点的距离
 			// 与后一个基因转录起点和终点的距离
-			if (gffCodInfoUCSCgene.endcis5to3) {// 当基因正向时，与TSS距离为负数，与End为正数 *---|>----->----
+			if (gffCodInfoUCSCgene.downCis5to3) {// 当基因正向时，与TSS距离为负数，与End为正数 *---|>----->----
 				gffCodInfoUCSCgene.distancetoLOCStart[1] = -Math.abs(Coordinate
 						- endnumlist.numberstart);
 				gffCodInfoUCSCgene.distancetoLOCEnd[1] = Math.abs(Coordinate
@@ -580,9 +580,9 @@ public abstract class GffHashGene extends GffHash
 			ArrayList<Object> longSplitExonInfo = endnumlist.getLongestSplit();// 获得最长转录本的信息
 			ArrayList<Integer> longSplitExon = (ArrayList<Integer>) longSplitExonInfo.get(1);
 
-			if (gffCodInfoUCSCgene.begincis5to3)
+			if (gffCodInfoUCSCgene.thiscis5to3)
 				gffCodInfoUCSCgene.codToATG[1] = Coordinate - longSplitExon.get(0);
-			else if (!gffCodInfoUCSCgene.begincis5to3)
+			else if (!gffCodInfoUCSCgene.thiscis5to3)
 				gffCodInfoUCSCgene.codToATG[1] = longSplitExon.get(1) - Coordinate;
 		}
 		return gffCodInfoUCSCgene;

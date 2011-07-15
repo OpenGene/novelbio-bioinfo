@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.chipseq.peakAnnotation.PeakAnno;
 import com.novelbio.analysis.seq.chipseq.peakAnnotation.peakLoc.PeakLOC;
 import com.novelbio.analysis.seq.chipseq.preprocess.Comb;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.test.mytest;
 
 public class Pipline {
@@ -21,31 +22,42 @@ public class Pipline {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String outPath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/PeakCalling";
-		
+		String outPath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/result/peakcalling";
 		try {
-			String parentPath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/mapping/GSM531966_H3K9me1_PHF8_RNAi_control.bed/";
-			String prix = "PHF8_RNAi_control";
-//			String file = parentPath + "GSM531966_H3K9me1_PHF8_RNAi_control.bed";
-//			String Outfile = parentPath + "GSM531966_H3K9me1_PHF8_RNAi_control_Filter.bed";
-//			String outBedFileExtend = parentPath + "GSM531966_H3K9me1_PHF8_RNAi_control_Filter_extend.bed";
-//			filterBed(file, Outfile, outBedFileExtend,200);
-//			peakCalling(Outfile,outPath,prix);
+			String parentPath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/mapping/";
+			String prix = "RPol2";
+			String file = parentPath + "GSM307623_ES.RPol2.aligned.txt";
+			String Outfile = parentPath + "GSM307623_ES.RPol2.aligned_filter.txt";
+			String outBedFileExtend = parentPath + "GSM307623_ES.RPol2.aligned_filter_extend.txt";
+			filterBed(file, Outfile, outBedFileExtend,200);
+			peakCalling(Outfile,outPath,prix);
+			addSumMid(outPath+"/"+prix+"_peaks.xls", outPath+"/"+prix+"_peaks_Summit.xls");
+		}
+		catch (Exception e) {}
+		try {
+			String parentPath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/mapping/";
+			String prix = "H3K4me3";
+			String file = parentPath + "GSM307618_ES.H3K4me3.aligned.txt";
+			String Outfile = parentPath + "GSM307618_ES.H3K4me3.aligned_filter.txt";
+			String outBedFileExtend = parentPath + "GSM307618_ES.H3K4me3.aligned_filter_extend.txt";
+			filterBed(file, Outfile, outBedFileExtend,200);
+			peakCalling(Outfile,outPath,prix);
+			addSumMid(outPath+"/"+prix+"_peaks.xls", outPath+"/"+prix+"_peaks_Summit.xls");
+		}
+		catch (Exception e) {}
+		try {
+			String parentPath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/mapping/";
+			String prix = "H3K27me3";
+			String file = parentPath + "GSM307619_ES.H3K27me3.aligned.txt";
+			String Outfile = parentPath + "GSM307619_ES.H3K27me3.aligned_filter.txt";
+			String outBedFileExtend = parentPath + "GSM307619_ES.H3K27me3.aligned_filter_extend.txt";
+			filterBed(file, Outfile, outBedFileExtend,200);
+			peakCalling(Outfile,outPath,prix);
 			addSumMid(outPath+"/"+prix+"_peaks.xls", outPath+"/"+prix+"_peaks_Summit.xls");
 		}
 		catch (Exception e) {}
 		
-		try {
-//			String parentPath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/mapping/GSM531965_H3K9me1_PHF8_RNAi.bed/";
-			String prix = "PHF8_RNAi";
-//			String file = parentPath + "GSM531965_H3K9me1_PHF8_RNAi.bed";
-//			String Outfile = parentPath + "GSM531965_H3K9me1_PHF8_RNAi_Filter.bed";
-//			String outBedFileExtend = parentPath + "GSM531965_H3K9me1_PHF8_RNAi_Filter_extend.bed";
-//			filterBed(file, Outfile, outBedFileExtend,200);
-//			peakCalling(Outfile,outPath,prix);
-			addSumMid(outPath+"/"+prix+"_peaks.xls",outPath+"/"+prix +"_peaks_Summit.xls");
-		}
-		catch (Exception e) {}
+		
 	}
 	
 	/**
@@ -58,7 +70,7 @@ public class Pipline {
 		
 		BedSeq bedSeq = new BedSeq(inBedFile);
 		try {
-			bedSeq = bedSeq.filter(outBedFile1);
+			bedSeq = bedSeq.filterXLY(outBedFile1);
 			bedSeq.extend(extendLen, outBedFileExtend);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

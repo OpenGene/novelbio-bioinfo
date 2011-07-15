@@ -52,11 +52,13 @@ public class FileOperate {
 	    }
 	    /**
 	     * 给定路径名，返回其上一层路径，不带"/"
+	     * 如给定 /wer/fw4e/sr/frw/s3er.txt
+	     * 返回 /wer/fw4e/sr/frw
 	     * 可以给定不存在的路径
 	     * @param fileName
 	     * @return
 	     */
-	    public static String getParentName(String fileName) {
+	    public static String getParentPathName(String fileName) {
 			File file = new File(fileName);
 			return file.getParent();
 		}
@@ -68,9 +70,33 @@ public class FileOperate {
 	     * @param fileName
 	     * @return
 	     */
-	    public static String getName(String fileName) {
+	    public static String getFileName(String fileName) {
 			File file = new File(fileName);
 			return file.getName();
+		}
+	    /**
+	     * 给定路径名，返回其名字,不带后缀名<br>
+	     * 如给定/home/zong0jie.aa.txt/和/home/zong0jie.aa.txt<br>
+	     * 都返回zong0jie.aa  和  txt<br>
+	     * 可以给定不存在的路径<br>
+	     * @param fileName
+	     * @return string[2] 0:文件名 1:文件后缀
+	     */
+	    public static String[] getFileNameSep(String fileName) {
+	    	String[] result = new String[2];
+	    	
+			File file = new File(fileName);
+			String filename = file.getName();
+			int endDot = filename.lastIndexOf(".");
+			if (endDot > 0) {
+				result[0] = (String) filename.subSequence(0, endDot);
+				result[1] = (String) filename.subSequence(endDot+1,filename.length());
+			}
+			else {
+				result[0] = filename;
+				result[1] = "";
+			}
+			return result;
 		}
 	    /**
 	     * 获取文件夹下所有文件名与后缀,不包含路径

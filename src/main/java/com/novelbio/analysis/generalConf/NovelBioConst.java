@@ -76,6 +76,7 @@ public class NovelBioConst {
 	 */
 	public final static String GENOME_GFF_TYPE_UCSC = "UCSC";
 	public final static String GENOME_GFF_TYPE_TIGR = "TIGR";
+	public final static String GENOME_GFF_TYPE_TAIR = "TAIR";
 	/**
 	 *  基因组路径
 	 */

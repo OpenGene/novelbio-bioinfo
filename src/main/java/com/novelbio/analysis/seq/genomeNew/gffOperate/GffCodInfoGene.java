@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class GffCodInfoGene extends GffCodAbs
 {
 	GffCodInfoGene(String chrID, int Coordinate) {
-		super(chrID, Coordinate);
+		super(chrID, Coordinate, gffHash);
 		// TODO Auto-generated constructor stub
 	}
 

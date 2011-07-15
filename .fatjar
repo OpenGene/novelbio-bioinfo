@@ -1,12 +1,12 @@
 #Fat Jar Configuration File
-#Tue Apr 26 17:38:54 CST 2011
+#Fri Jun 24 22:56:33 CST 2011
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=true
 jarname=/home/zong0jie/\u684C\u9762/NovelBioChIP.jar
 manifest.mergeall=true
-manifest.mainclass=com.novelBio.chIPSeq.preprocess.Comb
+manifest.mainclass=com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast
 manifest.file=<createnew>
 jarname.isextern=true
 onejar.expand=

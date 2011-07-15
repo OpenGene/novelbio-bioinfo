@@ -3,6 +3,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -41,6 +43,39 @@ public class GffHashPlantGene extends GffHashGene{
 	 * 可变剪接mRNA的正则，水稻是："(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";，默认拟南芥" (?<=AT\\w{1}G\\d{5}\\.)\\d"
 	 */
 	public String splitmRNA="(?<=AT\\w{1}G\\d{5}\\.)\\d";
+	/**
+	 * mRNA类似名
+	 */
+	private static HashSet<String> hashmRNA = new HashSet<String>();
+	/**
+	 * gene类似名
+	 */
+	private static HashSet<String> hashgene = new HashSet<String>();
+	/**
+	 * 设定mRNA和gene的类似名，在gff文件里面出现的
+	 */
+	private void setHashName() {
+		if (hashmRNA.isEmpty()) {
+			hashmRNA.add("mRNA_TE_gene");
+			hashmRNA.add("mRNA");
+			hashmRNA.add("miRNA");
+			hashmRNA.add("tRNA");
+			hashmRNA.add("pseudogenic_transcript");
+			hashmRNA.add("snoRNA");
+			hashmRNA.add("snRNA");
+			hashmRNA.add("rRNA");
+			hashmRNA.add("ncRNA");
+		}
+		
+		if (hashgene.isEmpty()) {
+			hashgene.add("gene");
+			hashgene.add("transposable_element_gene");
+			hashgene.add("pseudogene");
+		}
+		
+		
+	}
+	
 	
 	/**
 	 * 最底层读取gff的方法，本方法只能读取UCSCknown gene<br>
@@ -61,6 +96,7 @@ public class GffHashPlantGene extends GffHashGene{
 	 */
    public  Hashtable<String, ArrayList<GffDetail>>  ReadGffarray(String gfffilename) throws Exception
    {
+	   setHashName();
 		//实例化四个表
 		locHashtable =new Hashtable<String, GffDetail>();//存储每个LOCID和其具体信息的对照表
 		Chrhash=new Hashtable<String, ArrayList<GffDetail>>();//一个哈希表来存储每条染色体
@@ -84,13 +120,24 @@ public class GffHashPlantGene extends GffHashGene{
 	   boolean UTR5start = false; boolean UTR3start = false; boolean UTR5end = false; boolean UTR3end = false;
 	   boolean CDSstart = false; boolean CDSend = false; boolean mRNAsplit = false;//是否结束了一个mRNA
 	   int cdsStart = -100; int cdsEnd = -100; int mRNAstart = -100;  int mRNAend = -100; 
+	   boolean ncRNA = false;
 	   GffDetailUCSCgene gffDetailLOC= null;
 	   while((content=reader.readLine())!=null)//读到结尾
 	   {
+			
+		   if (content.contains("ID=AT1G12720.1;Parent=AT1G12720;")) {
+			System.out.println("test");
+		}
 		   if(content.charAt(0)=='#')
 		   {
 			   continue;
 		   }
+		   //////////////////需要进行替换的地方/////////////////////////////////////////////////////////////
+		   if (ncRNA) {
+			   content = content.replace("pseudogenic_exon", "CDS");
+			   content = content.replace("exon", "CDS");
+			//////////////////////////////////////////////////////////////////////////////
+		}
 		   String[] ss=content.split("\t");//按照tab分开
 		   chrnametmpString=ss[0].toLowerCase();//小写的chrID
 		 //新的染色体
@@ -111,7 +158,7 @@ public class GffHashPlantGene extends GffHashGene{
 		   /**
 		    * 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中
 		    */
-		   if (ss[2].equals("gene")) //when read the # and the line contains gene, it means the new LOC
+		   if (hashgene.contains(ss[2])) //when read the # and the line contains gene, it means the new LOC
        	   {
 			   if (mRNAsplit) {
 				   //将上一组mRNA的信息装入
@@ -125,7 +172,13 @@ public class GffHashPlantGene extends GffHashGene{
 				   if (cdsStart <0 || cdsEnd<0 || cdsStart > cdsEnd) {
 					   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.locString);
 				   }
-				   mRNAsplit = false;//全新的基因，将其归位false
+				   mRNAsplit = false;//全新的基因，将其归位false\
+				   if (!ss[2].equals("gene")) {
+					   ncRNA = true;
+				   }
+				   else {
+					ncRNA = false;
+				}
 			   }
 			   /**
 			    * 每当出现一个新的Chr，那么就将这个Chr加入哈希表
@@ -163,8 +216,11 @@ public class GffHashPlantGene extends GffHashGene{
        	    * 一旦出现了mRNA，就要开始指定5UTR，3UTR，CDS的起点和终止
        	    *
        	    */
-		   else if (ss[2].equals("mRNA")) 
+		   else if (hashmRNA.contains(ss[2])) 
 		   {
+			   if (!ss[2].equals("mRNA")) {
+				ncRNA = true;
+			   }
 			   //如果刚刚读取的是一个mRNA的话
 			   if (mRNAsplit) {
 				   //将上一组mRNA的信息装入
@@ -205,6 +261,7 @@ public class GffHashPlantGene extends GffHashGene{
 			   //重置标签，表示在5UTR和CDS的前面了，那么在后面 if 遇到的的就是第一个UTR或第一个CDS
        		   UTR5start = true; 
        		   CDSstart = true;
+       		   
      	   }
 		   
 		   //遇到5UTR
@@ -220,13 +277,14 @@ public class GffHashPlantGene extends GffHashGene{
 			   {
 				   gffDetailLOC.addExon(0,Integer.parseInt(ss[4]),false);
 				   gffDetailLOC.addExon(0,Integer.parseInt(ss[3]),false);//添加子坐标,从小加到大
-				  
+				   
 			   }
 			   //5UTR过去了
 			   UTR5start = false;
 			   UTR5end = true;//5UTR会有结束
 			   mRNAsplit = true;//该转录本最后需要总结
 			   CDSstart = true; 
+			   ncRNA = false;
 		   }
 		   else if (ss[2].equals("CDS"))
 		   {
@@ -235,11 +293,21 @@ public class GffHashPlantGene extends GffHashGene{
 				   if (UTR5end) 
 				   {
 					   if (gffDetailLOC.cis5to3) {
-						   gffDetailLOC.addExon(-1,Integer.parseInt(ss[3]),true);
+						   try {
+							   gffDetailLOC.addExon(-1,Integer.parseInt(ss[3]),true);
+						} catch (Exception e) {
+							System.out.println(content);
+						}
+						   
 						   gffDetailLOC.addExon(Integer.parseInt(ss[4]));//添加子坐标,从小加到大
 					   }
 					   else {
-						   gffDetailLOC.addExon(0,Integer.parseInt(ss[4]),true);//添加子坐标，从小加到大
+						   try {
+							   gffDetailLOC.addExon(0,Integer.parseInt(ss[4]),true);//添加子坐标，从小加到大
+						} catch (Exception e) {
+							System.out.println(content);
+						}
+						  
 						   gffDetailLOC.addExon(0,Integer.parseInt(ss[3]),false);
 					   }
 					   UTR5start = false;
@@ -286,7 +354,12 @@ public class GffHashPlantGene extends GffHashGene{
 				   }
 				   else//反着装
 				   {
-					   gffDetailLOC.addExon(0,Integer.parseInt(ss[4]),true);
+					   try {
+						   gffDetailLOC.addExon(0,Integer.parseInt(ss[4]),true);
+					} catch (Exception e) {
+						System.out.println(content);
+					}
+					   
 					   gffDetailLOC.addExon(0,Integer.parseInt(ss[3]),false);//添加子坐标,从小加到大
 				   }
 				   UTR5end = false; 
@@ -309,8 +382,12 @@ public class GffHashPlantGene extends GffHashGene{
 			   UTR3start = false;
 			   UTR3end = true;//5UTR会有结束
 			   mRNAsplit = true;//全新的基因，将其归位false
+			   ncRNA = false;
 		   }
-	   }
+		   else if (!ss[2].equals("protein") && !ss[2].equals("exon")) {
+			System.out.println(ss[2]);
+		}
+   }
 	   if (mRNAsplit) {
 		   //将上一组mRNA的信息装入
 		   if (cdsStart < 0 && cdsEnd <0) {
@@ -342,12 +419,12 @@ public class GffHashPlantGene extends GffHashGene{
 	 * 1: all3UTRLength <br>
 	 * 2: allExonLength 不包括5UTR和3UTR的长度 <br> 
 	 * 3: allIntronLength <br>
-	 * 4: allup2kLength <br>
+	 * 4: allupLength <br>
 	 * 5: allGeneLength <br>
 	 * @return 
 	 */
 	@SuppressWarnings("unchecked")
-	public ArrayList<Long> getGeneStructureLength()
+	public ArrayList<Long> getGeneStructureLength(int upBp)
 	{
 		ArrayList<Long> lsbackground=new ArrayList<Long>();
 		
@@ -357,7 +434,7 @@ public class GffHashPlantGene extends GffHashGene{
 		long allExonLength=0;
 		long all5UTRLength=0;
 		long all3UTRLength=0;
-		long allup2kLength=0;
+		long allupLength=0;
 
 		int errorNum=0;//看UCSC中有多少基因的TSS不是最长转录本的起点
 		/////////////////////正   式   计   算//////////////////////////////////////////
@@ -370,7 +447,7 @@ public class GffHashPlantGene extends GffHashGene{
 		    //一条一条染色体的去检查内含子和外显子的长度
 		    ArrayList<GffDetail> val = ( ArrayList<GffDetail>)entry.getValue();
 		    int chrLOCNum=val.size();
-		    allup2kLength=allup2kLength+chrLOCNum*2000;
+		    allupLength=allupLength+chrLOCNum*upBp;
 		    for (int i = 0; i < chrLOCNum; i++) 
 			{
 		    	long leftUTR=0;
@@ -469,13 +546,175 @@ public class GffHashPlantGene extends GffHashGene{
 		lsbackground.add(all3UTRLength);
 		lsbackground.add(allExonLength);
 		lsbackground.add(allIntronLength);
-		lsbackground.add(allup2kLength);
+		lsbackground.add(allupLength);
 		lsbackground.add(allGeneLength);
 		System.out.println("getGeneStructureLength: 看UCSC中有多少基因的TSS不是最长转录本的起点"+errorNum);
 		return lsbackground;
 		
 	}
-	
+	/**
+	 * 	返回外显子总长度，内含子总长度等信息
+	 * 有问题
+	 * 为一个ArrayList-Integer
+	 * 0: all5UTRLength <br>
+	 * 1: all3UTRLength <br>
+	 * 2: allExonLength 不包括5UTR和3UTR的长度 <br> 
+	 * 3: allIntronLength <br>
+	 * 4: allGeneLength <br>
+	 * @return 
+	 */
+	@SuppressWarnings("unchecked")
+	public ArrayList<ArrayList<Integer>> getGeneStructureDestrib()
+	{
+		ArrayList<ArrayList<Integer>> lsbackground=new ArrayList<ArrayList<Integer>>();
+		
+		long ChrLength=0;
+		ArrayList<Integer> allGeneLength= new ArrayList<Integer>();
+		ArrayList<Integer> lsIntronLength = new ArrayList<Integer>();
+		ArrayList<Integer> lsExonLength = new ArrayList<Integer>();
+		ArrayList<Integer>  all5UTRLength= new ArrayList<Integer>();
+		ArrayList<Integer>  all3UTRLength= new ArrayList<Integer>();
+
+		int errorNum=0;//看UCSC中有多少基因的TSS不是最长转录本的起点
+		/////////////////////正   式   计   算//////////////////////////////////////////
+		
+		
+		Iterator iter = Chrhash.entrySet().iterator();
+		while (iter.hasNext()) 
+		{
+		    Map.Entry entry = (Map.Entry) iter.next();
+		    //一条一条染色体的去检查内含子和外显子的长度
+		    ArrayList<GffDetail> val = ( ArrayList<GffDetail>)entry.getValue();
+		    int chrLOCNum=val.size();
+		    for (int i = 0; i < chrLOCNum; i++) 
+			{
+		    	int leftUTR=0;
+		    	int rightUTR=0;
+				GffDetailUCSCgene tmpUCSCgene=(GffDetailUCSCgene)val.get(i);
+				
+				allGeneLength.add(tmpUCSCgene.numberend-tmpUCSCgene.numberstart);
+			//获得最长的转录本
+				ArrayList<Object>  lstmpSplitInfo = null;
+				ArrayList<Integer> lstmpSplit= null;
+				try {
+					lstmpSplitInfo=tmpUCSCgene.getLongestSplit();
+					lstmpSplit=(ArrayList<Integer>)lstmpSplitInfo.get(1);
+				} catch (Exception e) {
+					continue;
+				}
+				
+				
+				
+				///////////////////////看UCSC中有多少基因的TSS不是最长转录本的起点//////////////////////////
+				try {
+					if ((tmpUCSCgene.cis5to3&&lstmpSplit.get(2)>tmpUCSCgene.numberstart) || ( !tmpUCSCgene.cis5to3&& lstmpSplit.get(lstmpSplit.size()-1)<tmpUCSCgene.numberend )){
+						errorNum++;
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
+				
+				
+				/////////////////////////////////////////////////////////////////////////////////////////////////
+				
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				///////////////////////// 内 含 子 加 和 ////////////////////////////////////////
+				for (int j = 4; j < lstmpSplit.size(); j=j+2) //0,1   2,3  4,5  6,7  8,9
+				{
+					lsIntronLength.add(lstmpSplit.get(j)-lstmpSplit.get(j-1));
+				}
+				//////////////////////////////5UTR、外显子、3UTR 加和////////////////////////////////////////////////////
+				int exonSize=lstmpSplit.size();                  // start  2,3   4,0,5   6,7  8,9   10,1,11  12,13 end
+				try {
+					leftUTR=lstmpSplit.get(2)-tmpUCSCgene.numberstart;
+				} catch (Exception e) {
+					leftUTR = -1;
+				}
+				try {
+					rightUTR=tmpUCSCgene.numberend-lstmpSplit.get(exonSize-1);
+				} catch (Exception e) {
+					rightUTR = -1;
+				}
+				
+				for (int j = 3; j <exonSize;j=j+2) //0,1   2,3  4,5  6,7  8,9
+				{
+					//转录起点在外显子后
+					if(lstmpSplit.get(j)<=lstmpSplit.get(0))
+					{
+						leftUTR=leftUTR+(lstmpSplit.get(j)-lstmpSplit.get(j-1));
+						continue;
+					}
+					//转录起点在外显子中
+					if (lstmpSplit.get(j)>lstmpSplit.get(0)&&lstmpSplit.get(j-1)<=lstmpSplit.get(0) ) 
+					{
+						leftUTR=leftUTR+(lstmpSplit.get(0)-lstmpSplit.get(j-1));
+						//转录终点在同一个外显子中
+						if (lstmpSplit.get(j)>=lstmpSplit.get(1)&&lstmpSplit.get(j-1)<lstmpSplit.get(1)) 
+						{
+							rightUTR=rightUTR+(lstmpSplit.get(j)-lstmpSplit.get(1));
+							lsExonLength.add(lstmpSplit.get(1)-lstmpSplit.get(0));
+						}
+						else 
+						{
+							lsExonLength.add(lstmpSplit.get(j)-lstmpSplit.get(0));
+						}
+						continue;
+					}
+					//转录起点在外显子前，转录终点在外显子后
+					if(lstmpSplit.get(j-1)>lstmpSplit.get(0)&&lstmpSplit.get(j)<lstmpSplit.get(1))
+					{
+						lsExonLength.add(lstmpSplit.get(j)-lstmpSplit.get(j-1));
+						continue;
+					}
+					
+					
+					//转录终点在外显子中
+					if (lstmpSplit.get(j)>=lstmpSplit.get(1)&&lstmpSplit.get(j-1)<lstmpSplit.get(1)) 
+					{    //转录起点在同一个外显子中
+						if(lstmpSplit.get(j)>lstmpSplit.get(0)&&lstmpSplit.get(j-1)<=lstmpSplit.get(0))
+						{
+							continue;//上面已经计算过了
+						}
+						else 
+						{
+							rightUTR=rightUTR+(lstmpSplit.get(j)-lstmpSplit.get(1));
+							lsExonLength.add(lstmpSplit.get(1)-lstmpSplit.get(j-1));
+						}
+						continue;
+					}
+					//转录终点在外显子前
+					if (lstmpSplit.get(j-1)>=lstmpSplit.get(1)) 
+					{
+						rightUTR=rightUTR+(lstmpSplit.get(j)-lstmpSplit.get(j-1));
+						continue;
+					}
+				}
+				if (tmpUCSCgene.cis5to3) 
+				{
+					if (leftUTR >= 0) {
+						all5UTRLength.add(leftUTR);
+					}
+					if (rightUTR >= 0) {
+						all3UTRLength.add(rightUTR);
+						}
+				}
+				else 
+				{
+					all5UTRLength.add(rightUTR);
+					all3UTRLength.add(leftUTR);
+				}
+			}
+		}
+		lsbackground.add(all5UTRLength);
+		lsbackground.add(all3UTRLength);
+		lsbackground.add(lsExonLength);
+		lsbackground.add(lsIntronLength);
+		lsbackground.add(allGeneLength);
+		System.out.println("getGeneStructureLength: 看UCSC中有多少基因的TSS不是最长转录本的起点"+errorNum);
+		return lsbackground;
+		
+	}
 }
 
 

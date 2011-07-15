@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.dataStructure.ArrayOperate;
 
 
@@ -16,6 +18,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
  *
  */
 public class ExcelTxtRead {
+	private static final Logger logger = Logger.getLogger(ExcelTxtRead.class);
 	/**
 	 * 指定excel文件，以及需要读取的列和行
 	 * @param excelFile 待读取的excel文件

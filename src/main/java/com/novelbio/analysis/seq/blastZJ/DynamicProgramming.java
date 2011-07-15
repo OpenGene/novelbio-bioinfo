@@ -1,6 +1,6 @@
-package com.novelbio.analysis.seq.blast;
+package com.novelbio.analysis.seq.blastZJ;
 
-import com.novelbio.analysis.seq.blast.Cell;
+import com.novelbio.analysis.seq.blastZJ.Cell;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 /**
@@ -21,10 +21,10 @@ public abstract class DynamicProgramming {
       scoreTable = new Cell[sequence2.length() + 1][sequence1.length() + 1];
    }
 
-   public int[][] getScoreTable() {
+   public double[][] getScoreTable() {
       ensureTableIsFilledIn();
 
-      int[][] matrix = new int[scoreTable.length][scoreTable[0].length];
+      double[][] matrix = new double[scoreTable.length][scoreTable[0].length];
       for (int i = 0; i < matrix.length; i++) {
          for (int j = 0; j < matrix[i].length; j++) {
             matrix[i][j] = scoreTable[i][j].getScore();
@@ -130,7 +130,7 @@ public abstract class DynamicProgramming {
 	               } else {
 	                  toPrint = " ";
 	               }
-	               int score = currentCell.getScore();
+	               int score = (int)currentCell.getScore();
 	               String s = String.format("%1$3d", score);
 	               toPrint += s;
 	               txtMatrix.writefile(toPrint);
