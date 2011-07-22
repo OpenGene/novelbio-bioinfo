@@ -61,7 +61,7 @@ public class SplitCope {
 	 */
 	private String getSplitInfo(String geneID,double filter) {
 		
-		GtfDetailCufIso gtfDetailCufIso = gtfHashCufIso.LOCsearch(geneID);
+		GtfDetailCufIso gtfDetailCufIso = gtfHashCufIso.searchLOC(geneID);
 		if (gtfDetailCufIso == null) {
 			return null;
 		}

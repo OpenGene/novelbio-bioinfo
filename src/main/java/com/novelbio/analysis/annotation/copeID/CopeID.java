@@ -180,7 +180,7 @@ public class CopeID {
 		HashMap<String, String> hashGeneID2AccID = new HashMap<String, String>();
 		hashCondGeneID2AccID.put(condition, hashGeneID2AccID);
 		for (String string : colAccID) {
-			if (string.trim().equals("")) {
+			if (string == null || string.trim().equals("")) {
 				continue;
 			}
 			ArrayList<String[]> lsTmp = combainID(removeDot(string), taxID,sepID,hashGeneID2AccID);

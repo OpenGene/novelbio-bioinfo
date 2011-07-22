@@ -54,6 +54,7 @@ import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlOther;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlPath;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
+import com.novelbio.base.gui.CtrlNormal;
 
 
 
@@ -720,7 +721,7 @@ public class GUIBlast extends javax.swing.JFrame {
 	}
 	private JComboBox getJCobTaxSelect() {
 		if(jCobTaxSelect == null) {
-			final HashMap<String, Integer> hashTaxID = CtrlOther.getSpecies();
+			final HashMap<String, Integer> hashTaxID = CtrlNormal.getSpecies();
 			
 			String[] speciesarray = new String[hashTaxID.size()+1];
 //			String[] speciesarray = new String[hashTaxID.size()];

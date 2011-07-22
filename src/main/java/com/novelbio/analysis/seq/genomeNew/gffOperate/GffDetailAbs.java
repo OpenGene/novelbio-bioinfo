@@ -33,7 +33,7 @@ public abstract class GffDetailAbs {
 	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
 	 * peak: peak起点_peak终点
 	 */
-	protected String locString=""; //loc name
+	protected String locString = ""; //loc name
 	
 	
 	/**
@@ -42,7 +42,7 @@ public abstract class GffDetailAbs {
 	 * @GffHashItem
 	 * 条目起点,起点位置总是小于终点，无视条目方向
 	 */
-	protected int numberstart=-1000000000; // loc start number 
+	protected int numberstart = -1000000000; // loc start number 
 	
 	/**
 	 * @GffHashGene
@@ -50,7 +50,7 @@ public abstract class GffDetailAbs {
 	 * @GffHashItem
 	 * 条目终点，终点位置总是大于起点，无视条目方向
 	 */
-	protected int numberend=-1000000000; //loc end number
+	protected int numberend = -1000000000; //loc end number
 	
 	/**
 	 * 染色体编号，都小写
@@ -59,7 +59,7 @@ public abstract class GffDetailAbs {
 	/**
 	 * 转录方向，假设同一基因不管多少转录本都同一转录方向
 	 */
-	protected boolean cis5to3=true; 
+	protected boolean cis5to3 = true; 
 	/**
 	 * 
 	 * 没有就设定为""或null

@@ -9,6 +9,11 @@ import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.print.attribute.standard.Sides;
+
+import org.apache.log4j.Logger;
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
+
 import com.novelbio.analysis.seq.genome.getChrSequence.ChrSearch;
 import com.novelbio.analysis.seq.genome.getChrSequence.ChrStringHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -21,7 +26,7 @@ import com.novelbio.base.dataStructure.MathComput;
  *
  */
 public class MapReads {
-	
+	private static Logger logger = Logger.getLogger(MapReads.class);
 	/**
 	 * 用来保存每个染色体中的基因坐标-invNum精度里面的reads数目
 	 * chrID(小写)--short[]
@@ -34,34 +39,81 @@ public class MapReads {
 	 */
 	 ArrayList<String[]> lsChrLength=new ArrayList<String[]>();
 	 int invNum=10;
-	 int tagLength=400;//由ReadMapFile方法赋值
+	 int tagLength=300;//由ReadMapFile方法赋值
+	 String sep = "\t";
+	 /**
+	  * 该mapping文件mapping的具体序列文件夹
+	  */
+	 String chrFilePath = "";
+	 /**
+	  * 具体的mapping文件
+	  */
+	 String mapFile = "";
+	 /**
+	  * ChrID所在的列
+	  */
+	 int colChrID = 1;
+	 /**
+	  * 起点所在的列
+	  */
+	 int colStartNum = 2;
+	 /**
+	  * 终点所在的列
+	  */
+	 int colEndNum = 3;
 	/**
-	 * 设定双端readsTag拼起来后长度的估算值，目前solexa双端送样长度大概是400bp，不用太精确
+	 * 设定双端readsTag拼起来后长度的估算值，目前solexa双端送样长度大概是300bp，不用太精确
+	 * 默认300
 	 * 这个是方法：getReadsDensity来算reads密度的东西
 	 * @param readsTagLength
 	 */
 	public  void setTagLength(int thisTagLength) {
 		tagLength=thisTagLength;
 	}
-
 	/**
-	 * 当输入为macs的bed文件时，自动跳过chrm项目
-	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。注意，mapping文件中的chrID和chrLengthFile中的chrID要一致，否则会出错
-	 * @param mapFile mapping的结果文件，一般为bed格式
-	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
-	 * @param colChrID ChrID在第几列，从1开始,如果chrID<=0，则将采用王丛茂的格式读取
-	 * @param colStartNum mapping起点在第几列，从1开始
-	 * @param colEndNum mapping终点在第几列，从1开始
+	 * mapFile 里面用什么分隔符进行分隔的，默认是"\t"
+	 */
+	public void setSep(String sep) {
+		this.sep = sep;
+	}
+	/**
+	 * 设定坐标文件中ChrID和 起点，终点的列数
+	 * @param colChrID ChrID所在的列
+	 * @param colStartNum 起点所在的
+	 * @param colEndNum 终点所在的列
+	 */
+	public void setColNum(int colChrID,int colStartNum,int colEndNum)
+	{
+		this.colChrID = colChrID;
+		this.colStartNum = colStartNum;
+		this.colEndNum = colEndNum;
+	}
+	
+	/**
+	 * 
 	 * @param invNum 每隔多少位计数
-	 * @return ReadsNum 总共多少reads，用于标准化计算
+	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
+	 * @param mapFile mapping的结果文件，一般为bed格式
+	 */
+	public MapReads(int invNum, String chrFilePath, String mapFile) 
+	{
+		this.invNum = invNum;
+		this.chrFilePath = chrFilePath;
+		this.mapFile = mapFile;
+	}
+	/**
+	 * 
+	 * 当输入为macs的bed文件时，自动<b>跳过chrm项目</b><br>
+	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。注意，mapping文件中的chrID和chrLengthFile中的chrID要一致，否则会出错
+	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
+	 * @return
 	 * @throws Exception
 	 */
-	public  long  ReadMapFile(String mapFile,String chrFilePath,String sep,int colChrID,int colStartNum,int colEndNum,int thisinvNum) throws Exception 
+	public  long  ReadMapFile(boolean uniqReads) throws Exception 
 	{
 		long ReadsNum = 0;
 		//所谓结算就是说每隔invNum的bp就把这invNumbp内每个bp的Reads叠加数取平均或中位数，保存进chrBpReads中
 		colChrID--;colStartNum--;colEndNum--;
-		invNum=thisinvNum;
 		/////////////////////////////////////////获得每条染色体的长度并保存在hashChrLength中////////////////////////////////////////////////////
 		ChrSearch.setChrFilePath(chrFilePath);
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +131,7 @@ public class MapReads {
 		int tmpEnd = 0;
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		//先假设mapping结果已经排序好，并且染色体已经分开好。
-		while ((content=bufmap.readLine())!=null) 
+		while ((content = bufmap.readLine()) != null) 
 		{
 			String[] tmp=content.split(sep);
 			///////////////////当每列里面含有chrID的时候///////////////////////////////////
@@ -94,15 +146,15 @@ public class MapReads {
 					{
 						sumChrBp(chrBpReads, 1, SumChrBpReads);
 					}
-					lastChr=tmp[colChrID].trim().toLowerCase();//实际这是新出现的ChrID
+					lastChr = tmp[colChrID].trim().toLowerCase();//实际这是新出现的ChrID
 					//////////////////释放内存，感觉加上这段有点用，本来内存到1.2g，加了后降到990m///////////////////////////
 					System.out.println(lastChr);
 					chrBpReads=null;//看看能不能释放掉内存
 					System.gc();//显式调用gc
 					/////////chrBpReads设定/////////////////////////
-					int chrLength=(int) ChrSearch.getChrLength(lastChr);
-					chrBpReads=new int[chrLength+1];//同样为方便，0位记录总长度。这样实际bp就是实际长度
-					chrBpReads[0]=(int) chrLength;//会溢出所以不能看
+					int chrLength = (int) ChrSearch.getChrLength(lastChr);
+					chrBpReads = new int[chrLength + 1];//同样为方便，0位记录总长度。这样实际bp就是实际长度
+					chrBpReads[0] = (int) chrLength;//会溢出所以不能看
 					////////////SumChrBpReads设定//////////////////////////////////
 					//这个不是很精确，最后一位可能不准，但是实际应用中无所谓了,
 					//为方便，0位记录总长度。这样实际bp就是实际长度
@@ -112,8 +164,8 @@ public class MapReads {
 					hashChrBpReads.put(lastChr, SumChrBpReads);//将新出现的chrID和新建的SumChrBpReads装入hash表
 					
 					/////////////将每一条序列长度装入lsChrLength///////////////////
-					String[] tmpChrLen=new String[2];
-					tmpChrLen[0]=lastChr;tmpChrLen[1]=chrLength+"";
+					String[] tmpChrLen = new String[2];
+					tmpChrLen[0] = lastChr; tmpChrLen[1] = chrLength + "";
 					lsChrLength.add(tmpChrLen);
 				}
 			}
@@ -165,7 +217,7 @@ public class MapReads {
 			tmpStart=Integer.parseInt(tmp[colStartNum]);//本reads 的起点
 			tmpEnd=Integer.parseInt(tmp[colEndNum]);//本reads的终点
 			//如果本reads和上一个reads相同，则认为是线性扩增，跳过
-			if (tmpStart == tmpStartOld && tmpEnd == tmpEndOld) {
+			if (tmpStart == tmpStartOld && tmpEnd == tmpEndOld && uniqReads) {
 				continue;
 			}
 			for (int i = tmpStart; i <= tmpEnd; i++) {//直接计算实际起点和实际终点
@@ -212,14 +264,20 @@ public class MapReads {
 	 */
 	private  void sumChrBp(int[] chrBpReads,int type,int[] SumChrBpReads) 
 	{
-		 int SumLength=chrBpReads.length/invNum-1;//保证不会溢出，因为java默认除数直接忽略小数而不是四舍五入
-		 for (int i = 0; i < SumLength; i++) 
+		 int SumLength = chrBpReads.length/invNum - 1;//保证不会溢出，因为java默认除数直接忽略小数而不是四舍五入
+		 if (invNum == 1) {
+			for (int i = 0; i < SumLength; i++) {
+				SumChrBpReads[i] = chrBpReads[i+1];
+			}
+			return;
+		}
+		 for (int i = 0; i < SumLength; i++)
 		 {
 			 int[] tmpSumReads=new int[invNum];//将总的chrBpReads里的每一段提取出来
-			 int sumStart=i*invNum+1;int k=0;//k是里面tmpSumReads的下标，实际下标就行，不用-1
-			 for (int j =sumStart; j <sumStart+invNum; j++) 
+			 int sumStart=i*invNum + 1; int k=0;//k是里面tmpSumReads的下标，实际下标就行，不用-1
+			 for (int j = sumStart; j < sumStart + invNum; j++) 
 			 {
-				 tmpSumReads[k]=chrBpReads[j];
+				 tmpSumReads[k] = chrBpReads[j];
 				 k++;
 			 }
 			 if (type==0) //每隔一段区域取样，建议每隔10bp取样，取中位数
@@ -231,23 +289,41 @@ public class MapReads {
 		 }
 	}
 	
-	
-
-	
 	/**
 	 * 输入坐标区间，和每个区间的bp数，返回该段区域内reads的数组
 	 * 定位到两个端点所在的 读取invNum区间，然后计算新的invNum区间，如果该染色体在mapping时候不存在，则返回null
 	 * @param thisInvNum 每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数
+	 * 如果invNum ==1 && thisInvNum == 1，结果会很精确
 	 * @param chrID 一定要小写
 	 * @param startNum 起点坐标，为实际起点
 	 * @param endNum 终点坐标，为实际终点
+	 * 如果(endNum - startNum + 1) / thisInvNum >0.7，则将binNum设置为1
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 * @return
 	 */
 	public  double[] getRengeInfo(int thisInvNum,String chrID,int startNum,int endNum,int type)
 	{
-		int binNum=(endNum-startNum)/thisInvNum;
-		return getRengeInfo( chrID, startNum, endNum, binNum,type);
+		//不需要分割了
+		if (invNum == 1 && thisInvNum == 1) {
+			double[] result = new double[endNum - startNum + 1];
+			startNum--; endNum--;
+			int[] invNumReads = hashChrBpReads.get(chrID.toLowerCase());
+			int k = 0;
+			for (int i = startNum; i <= endNum; i++) {
+				result[k] = invNumReads[i];
+				k++;
+			}
+			return result;
+		}
+		double binNum = (double)(endNum - startNum + 1) / thisInvNum;
+		int binNumFinal = 0;
+		if (binNum - (int)binNum >= 0.7) {
+			binNumFinal = (int)binNum + 1;
+		}
+		else {
+			binNumFinal = (int)binNum;
+		}
+		return getRengeInfo( chrID, startNum, endNum, binNumFinal,type);
 	}
 	
 	
@@ -263,48 +339,39 @@ public class MapReads {
 	 */
 	public  double[] getRengeInfo(String chrID,int startNum,int endNum,int binNum,int type) 
 	{
-		int[] invNumReads=hashChrBpReads.get(chrID.toLowerCase());
-		if (invNumReads==null) 
+		int[] invNumReads = hashChrBpReads.get(chrID.toLowerCase());
+		if (invNumReads == null) 
 		{
 			return null;
 		}
-		startNum--;endNum--;
+		startNum--; endNum--;
 		////////////////确定要提取区域的左端点和右端点/////////////////////////////////
-		int leftNum=0;//在invNumReads中的实际起点
-		int rightNum=0;//在invNumReads中的实际终点
+		int leftNum = 0;//在invNumReads中的实际起点
+		int rightNum = 0;//在invNumReads中的实际终点
 
-		leftNum=startNum/invNum;
-		double leftBias=(double)startNum/invNum-leftNum;//最左边分隔到起点的距离比值
-		double rightBias=0;
+		leftNum = startNum/invNum;
+		double leftBias = (double)startNum/invNum-leftNum;//最左边分隔到起点的距离比值
+		double rightBias = 0;
 		if (endNum%invNum==0) 
-			rightNum=endNum/invNum-1;//前提是java小数转成int通通直接去掉小数点
+			rightNum = endNum/invNum-1;//前提是java小数转成int通通直接去掉小数点
 		else 
 		{
-			rightNum=endNum/invNum;//前提是java小数转成int通通直接去掉小数点
-			rightBias=(double)endNum/invNum-rightNum;//最右边分隔到终点的距离比值
+			rightNum = endNum/invNum;//前提是java小数转成int通通直接去掉小数点
+			rightBias = rightNum + 1 - (double)endNum/invNum;//最右边分隔到终点的距离比值
 		}
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		int[] tmpRegReads=new int[rightNum-leftNum+1];
+		int[] tmpRegReads=new int[rightNum - leftNum + 1];
 		int k=0;
 		try {
 			for (int i = leftNum; i <= rightNum; i++) {
-				tmpRegReads[k]=invNumReads[i];
+				tmpRegReads[k] = invNumReads[i];
 				k++;
-		}
+			}
 		} catch (Exception e) {
-		  System.out.println("error");
+			logger.error("下标越界"+e.toString());
 		}
-	
 		return MathComput.mySpline(tmpRegReads, binNum,leftBias,rightBias,type);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 	/**
 	 * 给定染色体，与起点和终点，返回该染色体上tag的密度分布，如果该染色体在mapping时候不存在，则返回null
 	 * @param chrID 
@@ -323,7 +390,6 @@ public class MapReads {
 			startLoc=1;
 		if(endLoc==-1)
 			endLoc=(int) ChrSearch.getChrLength(chrID);
-		Hashtable<String, int[]>aaaHashtable=hashChrBpReads;
 		double[] tmpReadsNum= getRengeInfo(tagBinLength, chrID, startLoc, endLoc,1);
 	/**	for (int i = 0; i < tmpReadsNum.length; i++) {
 			if(tmpReadsNum[i]>1)
@@ -336,10 +402,6 @@ public class MapReads {
 		double[] resultTagDensityNum=MathComput.mySpline(tmpReadsNum, binNum, 0, 0, 2);
 		return resultTagDensityNum;
 	}
-	
-	
-
-	
 	/**
 	 * 获得Mapping文件中最长和最短chr的长度
 	 * @param chrID
@@ -355,9 +417,105 @@ public class MapReads {
 		return result;
 	}
 	
-	
-	
-	
+	/**
+	 *  用于mRNA的计算
+	 * 输入坐标区间，需要划分的块数，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
+	 * 定位到两个端点所在的 读取invNum区间，然后计算新的invNum区间
+	 * @param chrID 一定要小写
+	 * @param startNum 起点坐标，为实际起点 <b>必须在外显子中</b>
+	 * @param endNum 终点坐标，为实际终点 <b>必须在内含子中</b>
+	 * @param binNum 待分割的区域数目<b>当binNum为-1时，不进行总结，直接返回invNum统计的结果，返回的结果不等长</b>
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 * @param lsIsoform 该区域的转录本情况，<b>输入的坐标必须在该转录本的外显子上</b>
+	 * @return 结果需要根据正反向做反向
+	 */
+	public double[] getRengeInfo(String chrID,int startNum,int endNum,int binNum,int type,ArrayList<int[]> lsIsoform) {
+		boolean cis5to3 = true;
+		ArrayList<double[]> lsExonInfo = new ArrayList<double[]>();
+		/**
+		 * 如果lsIsoform中int[0]<int[1]说明正向
+		 * 如果lsIsoform中int[1]<int[0]说明反向
+		 */
+		for (int[] is : lsIsoform) {
+			if (is[0] < is[1]) {
+				break;
+			}
+			else if (is[0] > is[1]) {
+				cis5to3 = false;
+			}
+			else {
+				logger.error("转录本中外显子的起点和终点坐标一样"+is[0]+" "+is[1]);
+			}
+		}
+		if (cis5to3) {
+			for (int[] is : lsIsoform) {
+				double[] range = null;
+				// 0---start----1-----end
+				if (startNum > is[1]) {
+					continue;
+				}
+				else if (startNum >= is[0] && startNum <= is[1] && endNum > is[1]) {
+					range = getRengeInfo(invNum, chrID,startNum, is[1], type);
+				}
+				else if (startNum >= is[0] && endNum <= is[1]) {
+					range = getRengeInfo(invNum, chrID,startNum, endNum, type);
+				}
+				else if (startNum < is[0] && endNum > is[1]) {
+					range = getRengeInfo(invNum, chrID,is[0], is[1], type);
+				}
+				else if (startNum < is[0] && endNum >= is[0] && endNum <= is[1]) {
+					range = getRengeInfo(invNum, chrID,is[0], endNum, type);
+				}
+				else if (endNum < is[0]) {
+					break;
+				}
+				lsExonInfo.add(range);
+			}
+		}
+		else {
+			for (int i = lsIsoform.size() - 1; i >= 0; i--) {
+				int[] is = lsIsoform.get(i);
+				double[] range = null;
+				if (startNum > is[0]) {
+					continue;
+				}
+				else if (startNum >= is[1] && startNum <= is[0] && endNum > is[0]) {
+					range = getRengeInfo(invNum, chrID,startNum, is[0], type);
+				}
+				else if (startNum >= is[1] && endNum <= is[0]) {
+					range = getRengeInfo(invNum, chrID,startNum, endNum, type);
+				}
+				else if (startNum < is[1] && endNum > is[0]) {
+					range = getRengeInfo(invNum, chrID,is[1], is[0], type);
+				}
+				else if (startNum < is[1] && endNum >= is[1] && endNum <= is[0]) {
+					range = getRengeInfo(invNum, chrID,is[1], endNum, type);
+				}
+				else if (endNum < is[1]) {
+					break;
+				}
+				lsExonInfo.add(range);
+			}
+		}
+		int num = 0;
+		for (double[] ds : lsExonInfo) {
+			num = num + ds.length;
+		}
+		double[] result = new double[num];
+		int i = 0;
+		for (double[] ds : lsExonInfo) {
+			for (double d : ds) {
+				result[i] = d;
+				i++;
+			}
+		}
+		if (binNum == -1) {
+			return result;
+		}
+		
+		double[] resultTagDensityNum=MathComput.mySpline(result, binNum, 0, 0, 0);
+		return resultTagDensityNum;
+	}
 	
 	
 	

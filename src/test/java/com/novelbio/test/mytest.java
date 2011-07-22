@@ -1,6 +1,7 @@
 package com.novelbio.test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.apache.log4j.Logger;
 
@@ -15,7 +16,9 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashUCSCgene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchUCSCgene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashPeak;
 import com.novelbio.analysis.seq.rnaseq.SplitCope;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.plot.Rplot;
 import com.novelbio.test.testextend.b;
 
@@ -30,7 +33,14 @@ public class mytest {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) {
-		WZFfastq();
+		int a = 2;
+		if (a > 3) {
+			System.out.println("a<3");
+		}
+		else if ( a == 2) {
+			System.out.println("a == 2");
+		}
+		
 	}
 	
 	

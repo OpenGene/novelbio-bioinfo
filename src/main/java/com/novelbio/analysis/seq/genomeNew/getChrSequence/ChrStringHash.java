@@ -82,8 +82,8 @@ public class ChrStringHash {
 	 * 其中chrID一直为小写
 	 * 
 	 * @param chrFilePath
+	 * @throws Exception 
 	 * @throws IOException
-	 * @throws FileNotFoundException
 	 */
 	public ChrStringHash(String chrFilePath) throws Exception {
 		if (compMap == null) {

@@ -25,8 +25,6 @@ public class MathComput {
 			sum=sum+unsortNum[i];
 		}
 		int avg=sum/length;
-		if(avg>32767)
-			System.out.println("avg总结时溢出  "+avg);
 		return avg;
 	}
 	
@@ -61,8 +59,6 @@ public class MathComput {
 			med=(unsortNum[length/2-1]+unsortNum[length/2])/2;
 		else 
 			med=unsortNum[length/2];
-		if(med>32767)
-			System.out.println("med总结时溢出");
 		return med;
 	}
 	
@@ -153,7 +149,9 @@ public class MathComput {
 	 * @param treatNum invNum里面的bp具体值
 	 * @param binNum 后面要生成的分割的块数
 	 * @param startBias 从起点的多少开始 为 0,1之间的小数，表示从第一个值的几分之几开始
-	 * @param endBias 到终点的多少结束  为 0,1之间的小数，表示到最后一个值的几分之几结束
+	 * @param endBias 到终点的多少结束  为 0,1之间的小数，表示到 (结束位点到终点的距离/每个单元的长度)
+	 * 0-*--|---1---------2--------3----------4----------5---------6----|--*-7
+	 * 星号标记的地方
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 * @return
 	 */

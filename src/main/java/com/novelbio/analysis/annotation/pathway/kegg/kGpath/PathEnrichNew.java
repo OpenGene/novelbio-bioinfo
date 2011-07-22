@@ -77,14 +77,20 @@ public class PathEnrichNew {
 		ArrayList<String> lsGeneUp = new ArrayList<String>();
 		ArrayList<String> lsGeneDown = new ArrayList<String>();
 		for (int i = 0; i < geneID.length; i++) {
-			if (Double.parseDouble(geneID[i][colID[1]])<=down) {
-				lsGeneDown.add(geneID[i][colID[0]]);
-			}
-			else if (Double.parseDouble(geneID[i][colID[1]])>=up) {
+			if (colID[0] == colID[1]) {
 				lsGeneUp.add(geneID[i][colID[0]]);
+				continue;
+			}
+			else
+			{
+				if (Double.parseDouble(geneID[i][colID[1]])<=down) {
+					lsGeneDown.add(geneID[i][colID[0]]);
+				}
+				else if (Double.parseDouble(geneID[i][colID[1]])>=up) {
+					lsGeneUp.add(geneID[i][colID[0]]);
+				}
 			}
 		}
-		
 		ArrayList<String[]> lsBGIDAll = ExcelTxtRead.getFileToList(bgFile, 1, "\t");
 		ArrayList<String> lsBGID = new ArrayList<String>();
 		for (String[] strings : lsBGIDAll) {

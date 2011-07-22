@@ -575,6 +575,7 @@ public class GoFisherNew {
 	}
 	
 	/**
+	 * 外面不要调用这个
 	 * @param condition 是分析哪个时期的信息 譬如上调，下调 或 背景，要和前面对应
 	 * @param lsAccID 经过整理的accID<br>
 	 * * arraylist-string[3]<br>
@@ -623,7 +624,7 @@ public class GoFisherNew {
 	 * title[5]="subjectSymbol“<br>
 		title[6]="P-Value";title[7]="FDR";title[8]="Enrichment";title[9]="(-log2P)<br>
 	 */
-	private static ArrayList<ArrayList<String[]>> getNBCFisher(String condition,ArrayList<String[]> lsAccID,ArrayList<String[]> lsBGAccID,String GOClass,boolean sepID,int QtaxID,
+	public static ArrayList<ArrayList<String[]>> getNBCFisher(String condition,ArrayList<String[]> lsAccID,ArrayList<String[]> lsBGAccID,String GOClass,boolean sepID,int QtaxID,
 			boolean blast,int StaxID,double evalue) throws Exception
 	{
 		///////////////////  获得数据  ////////////////////////////////////////////////////////////

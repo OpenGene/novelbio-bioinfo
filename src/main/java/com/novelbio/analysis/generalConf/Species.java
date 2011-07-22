@@ -20,6 +20,24 @@ public class Species {
 	 * 名字写法规范，物种名缩写--也就是KEGG的缩写方法，下划线，物种版本 
 	 */
 	/**
+	 * 人类
+	 */
+	public final static String HUMAN = "human";
+	/**
+	 * 小鼠
+	 */
+	public final static String MOUSE = "mouse";
+
+	/**
+	 * 拟南芥
+	 */
+	public final static String ARABIDOPSIS = "arabidopsis";
+	/**
+	 * 水稻
+	 */
+	public final static String RICE = "rice";
+	
+	/**
 	 * 人类第19版本
 	 */
 	public final static String HUMAN_HG19 = "human_ucsc_hg19";

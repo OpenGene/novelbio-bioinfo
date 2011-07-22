@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
@@ -24,7 +25,7 @@ public class GtfHashCufIso extends GffHash{
 	 */
 	@Override
 	protected void ReadGffarray(String gfffilename) throws Exception {
-		locHashtable = new Hashtable<String, GffDetailAbs>();
+		locHashtable = new HashMap<String, GffDetailAbs>();
 		LOCIDList = new ArrayList<String>();
 		TxtReadandWrite txtIso = new TxtReadandWrite();
 		txtIso.setParameter(gfffilename, false, true);
@@ -61,41 +62,25 @@ public class GtfHashCufIso extends GffHash{
 		}
 		
 	}
-
+	/**
+	 * 没用，不要使用
+	 */
 	@Override
-	public GtfDetailCufIso LOCsearch(String LOCID) {
+	public GtfDetailCufIso searchLOC(String LOCID) {
 		return (GtfDetailCufIso) locHashtable.get(LOCID);
 	}
 	/**
 	 * 没用，不要使用
 	 */
 	@Override
-	public GtfDetailCufIso LOCsearch(String chrID, int LOCNum) {
+	public GtfDetailCufIso searchLOC(String chrID, int LOCNum) {
 		return (GtfDetailCufIso) Chrhash.get(chrID).get(LOCNum);
 	}
 	/**
 	 * 没有，不要使用
 	 */
 	@Override
-	public GffCodAbs searchLoc(String chrID, int Coordinate) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	/**
-	 * 没用，不要使用
-	 */
-	@Override
-	protected GffCodAbs SearchLOCinside(ArrayList<GffDetailAbs> loclist,
-			int beginnum, int endnum, String chrID, int Coordinate) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	/**
-	 * 没用，不要使用
-	 */
-	@Override
-	protected GffCodAbs SearchLOCoutside(ArrayList<GffDetailAbs> loclist,
-			int beginnum, int endnum, String chrID, int Coordinate) {
+	public GffCodAbs setGffCodAbs(String chrID, int Coordinate) {
 		// TODO Auto-generated method stub
 		return null;
 	}

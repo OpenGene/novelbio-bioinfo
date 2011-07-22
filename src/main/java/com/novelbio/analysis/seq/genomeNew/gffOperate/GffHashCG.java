@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,8 +56,8 @@ public class GffHashCG extends GffHash
 	public void ReadGffarray(String gfffilename) throws Exception 
 	{
 		  //实例化三个表
-		   locHashtable =new Hashtable<String, GffDetailAbs>();//存储每个LOCID和其具体信息的对照表
-		   Chrhash = new Hashtable<String, ArrayList<GffDetailAbs>>();//一个哈希表来存储每条染色体
+		   locHashtable =new HashMap<String, GffDetailAbs>();//存储每个LOCID和其具体信息的对照表
+		   Chrhash = new HashMap<String, ArrayList<GffDetailAbs>>();//一个哈希表来存储每条染色体
 		   LOCIDList = new ArrayList<String>();//顺序存储每个基因号，这个打算用于提取随机基因号
 		   LOCChrHashIDList = new ArrayList<String>();//顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID
 		   //为读文件做准备
@@ -169,19 +170,20 @@ public class GffHashCG extends GffHash
 		return hashCGLength;
 	}
 
+	
+	
 	@Override
-	public GffDetailCG LOCsearch(String LOCID) {
+	public GffDetailCG searchLOC(String LOCID) {
 		return (GffDetailCG) locHashtable.get(LOCID);
 	}
 
 	@Override
-	public GffDetailCG LOCsearch(String chrID, int LOCNum) {
+	public GffDetailCG searchLOC(String chrID, int LOCNum) {
 		return (GffDetailCG) Chrhash.get(chrID).get(LOCNum);
 	}
 
 	@Override
-	public GffCodCG searchLoc(String chrID, int Coordinate) {
-		GffCodCG gffCodCG = new GffCodCG(chrID, Coordinate, this);
-		return gffCodCG;
+	protected GffCodCG setGffCodAbs(String chrID, int Coordinate) {
+		return new GffCodCG(chrID, Coordinate);
 	}
 }

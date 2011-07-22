@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,18 +30,19 @@ public abstract class GffHash {
 	}
 	
 	/**
-	 * 哈希表LOC--LOC细节<br/>
-	 * 用于快速将LOC编号对应到LOC的细节
-	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的条目编号 <br/>
+	 * 哈希表LOC--LOC细节<br>
+	 * 用于快速将LOC编号对应到LOC的细节<br>
+	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的条目编号 <br>
+	  * 会有有多个LOCID共用一个区域的情况，所以有多个不同的LOCID指向同一个GffdetailUCSCgene<br>
 	 */
-	protected Hashtable<String,GffDetailAbs> locHashtable;
+	protected HashMap<String,GffDetailAbs> locHashtable;
 	
 	/**
 	 * 返回哈希表 LOC--LOC细节<br/>
 	 * 用于快速将LOC编号对应到LOC的细节
 	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的基因编号 <br/>
 	 */
-	public Hashtable<String,GffDetailAbs> getLocHashtable() {
+	public HashMap<String,GffDetailAbs> getLocHashtable() {
 		return locHashtable;
 	}
 	
@@ -84,7 +86,7 @@ public abstract class GffHash {
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	protected Hashtable<String,ArrayList<GffDetailAbs>> Chrhash;
+	protected HashMap<String,ArrayList<GffDetailAbs>> Chrhash;
 	
 	/**
 	 * 返回真正的查找用hash表<br>
@@ -94,11 +96,123 @@ public abstract class GffHash {
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	protected Hashtable<String,ArrayList<GffDetailAbs>> getChrhash()
+	protected HashMap<String,ArrayList<GffDetailAbs>> getChrhash()
 	{
 		return Chrhash;
 	}
 	
+	/**
+	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
+	 * 没找到就返回null
+	 */
+	public GffCodAbs searchLocation(String chrID, int Coordinate) {
+		ArrayList<GffDetailAbs> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
+		if (Loclist == null) {
+			return null;
+		}
+		String[] locationString = new String[5];
+		locationString[0] = "GffCodInfo_searchLocation error";
+		locationString[1] = "GffCodInfo_searchLocation error";
+		int[] locInfo = LocPosition(chrID, Coordinate);// 二分法查找peaknum的定位
+		if (locInfo == null) {
+			return null;
+		}
+		GffCodAbs gffCodAbs = setGffCodAbs(chrID, Coordinate);
+		if (locInfo[0] == 1) // 定位在基因内
+		{
+			gffCodAbs.gffDetailThis = Loclist.get(locInfo[1]); 
+			gffCodAbs.gffDetailThis.setCoord(Coordinate);
+			gffCodAbs.booFindCod = true;
+			gffCodAbs.ChrHashListNumThis = locInfo[1];
+			gffCodAbs.insideLOC = true;
+			if (locInfo[1] - 1 >= 0) {
+				gffCodAbs.gffDetailUp =  Loclist.get(locInfo[1]-1);
+				gffCodAbs.gffDetailUp.setCoord(Coordinate);
+				gffCodAbs.ChrHashListNumUp = locInfo[1]-1;
+				
+			}
+			if (locInfo[2] != -1) {
+				gffCodAbs.gffDetailDown = Loclist.get(locInfo[2]);
+				gffCodAbs.gffDetailDown.setCoord(Coordinate);
+				gffCodAbs.ChrHashListNumDown = locInfo[2];
+			}
+		} else if (locInfo[0] == 2) {
+			gffCodAbs.insideLOC = false;
+			if (locInfo[1] >= 0) {
+				gffCodAbs.gffDetailUp =  Loclist.get(locInfo[1]);
+				gffCodAbs.gffDetailUp.setCoord(Coordinate);
+				gffCodAbs.ChrHashListNumUp = locInfo[1];		
+			}
+			if (locInfo[2] != -1) {
+				gffCodAbs.gffDetailDown = Loclist.get(locInfo[2]);
+				gffCodAbs.gffDetailDown.setCoord(Coordinate);
+				gffCodAbs.ChrHashListNumDown = locInfo[2];
+			}
+		}
+		return gffCodAbs;
+	}
+
+	/**
+	 * 二分法查找location所在的位点,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
+	 * 返回一个int[3]数组，<br>
+	 * 0: 1-基因内 2-基因外<br>
+	 * 1：本基因序号（定位在基因内） / 上个基因的序号(定位在基因外) -1表示前面没有基因<br>
+	 * 2：下个基因的序号 -1表示后面没有基因
+	 */
+	private int[] LocPosition(String chrID, int Coordinate) {
+		ArrayList<GffDetailAbs> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
+		if (Loclist == null) {
+			return null;
+		}
+		int[] LocInfo = new int[3];
+		int endnum = 0;
+		endnum = Loclist.size() - 1;
+		int beginnum = 0;
+		int number = 0;
+		// 在第一个Item之前
+		if (Coordinate < Loclist.get(beginnum).getNumStart()) {
+			LocInfo[0] = 2;
+			LocInfo[1] = -1;
+			LocInfo[2] = 0;
+			return LocInfo;
+		}
+		// 在最后一个Item之后
+		else if (Coordinate > Loclist.get(endnum).getNumStart()) {
+			LocInfo[1] = endnum;
+			LocInfo[2] = -1;
+			if (Coordinate < Loclist.get(endnum).getNumStart()) {
+				LocInfo[0] = 1;
+				return LocInfo;
+			} else {
+				LocInfo[0] = 2;
+				return LocInfo;
+			}
+		}
+		do {
+			number = (beginnum + endnum + 1) / 2;// 3/2=1,5/2=2
+			if (Coordinate == Loclist.get(number).getNumStart()) {
+				beginnum = number;
+				endnum = number + 1;
+				break;
+			}
+			else if (Coordinate < Loclist.get(number).getNumStart()
+					&& number != 0) {
+				endnum = number;
+			} else {
+				beginnum = number;
+			}
+		} while ((endnum - beginnum) > 1);
+		LocInfo[1] = beginnum;
+		LocInfo[2] = endnum;
+		if (Coordinate <= Loclist.get(beginnum).getNumStart())// 不知道会不会出现PeakNumber比biginnum小的情况
+		{ // location在基因内部
+			LocInfo[0] = 1;
+			return LocInfo;
+		}
+		// location在基因外部
+		LocInfo[0] = 2;
+		return LocInfo;
+	}
 	
 	/**
 	 * @本方法需要被覆盖
@@ -126,7 +240,7 @@ public abstract class GffHash {
 	 * @param LOCID 给定某LOC的名称，注意名称是一个短的名字，譬如在UCSC基因中，不是locstring那种好几个基因连在一起的名字，而是单个的短的名字
 	 * @return 返回该LOCID的具体GffDetail信息，用相应的GffDetail类接收
 	 */
-	public abstract GffDetailAbs LOCsearch(String LOCID);
+	public abstract GffDetailAbs searchLOC(String LOCID);
 	
 	/**
 	 * 需要覆盖
@@ -136,7 +250,7 @@ public abstract class GffHash {
 	 * @param LOCNum 该染色体上待查寻LOC的int序号
 	 * @return  返回该LOCID的具体GffDetail信息，用相应的GffDetail类接收
 	 */
-	public abstract GffDetailAbs LOCsearch(String chrID,int LOCNum);
+	public abstract GffDetailAbs searchLOC(String chrID,int LOCNum);
 	
 	/**
 	 * 给定某个LOCID，返回该LOC在某条染色体中的位置序号号，第几位<br>
@@ -159,18 +273,12 @@ public abstract class GffHash {
 	}
 	
 	/**
-	 * return searchLocation(chrID, Coordinate);
-	 * 
-	 * 单坐标查找 输入ChrID，单个坐标，以及GffHash类<br>
-	 * ,chr采用正则表达式抓取，无所谓大小写，会自动转变为小写, chr1,chr2,chr11<br>
-	 * 只要将chrhash、坐标传入相应的GffCod类即可
-	 * @param chrID
-	 * @param Coordinate
-	 * @return
-	 * 没找到就返回null
+	 * 简单的new 一个GffCodAbs然后设置chrID和Coordinate参数就行<br>
+	 * exmple:<br>
+	 * return new GffCodCG(chrID, Coordinate);<br>
 	 */
-	public abstract GffCodAbs searchLoc(String chrID, int Coordinate);
+	protected abstract GffCodAbs setGffCodAbs(String chrID, int Coordinate);
 	
-
+	
 
 }

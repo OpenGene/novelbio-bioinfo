@@ -4,12 +4,18 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 
 public class GffHashRepeat extends GffHash{
+
+	public GffHashRepeat(String gfffilename) {
+		super(gfffilename);
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * 最底层读取gff的方法，本方法只能读取UCSCRepeat文件<br>
@@ -29,11 +35,10 @@ public class GffHashRepeat extends GffHash{
 	 * @throws Exception 
 	 */
 	@Override
-	public Hashtable<String, ArrayList<GffDetailAbs>> ReadGffarray(String gfffilename) throws Exception {
-
+	public void ReadGffarray(String gfffilename) throws Exception {
 		  //实例化三个表
-		   locHashtable =new Hashtable<String, GffDetailAbs>();//存储每个LOCID和其具体信息的对照表
-		   Chrhash=new Hashtable<String, ArrayList<GffDetailAbs>>();//一个哈希表来存储每条染色体
+		   locHashtable =new HashMap<String, GffDetailAbs>();//存储每个LOCID和其具体信息的对照表
+		   Chrhash=new HashMap<String, ArrayList<GffDetailAbs>>();//一个哈希表来存储每条染色体
 		   LOCIDList=new ArrayList<String>();//顺序存储每个基因号，这个打算用于提取随机基因号
 		   LOCChrHashIDList=new ArrayList<String>();
 		   //为读文件做准备
@@ -68,15 +73,9 @@ public class GffHashRepeat extends GffHash{
 			   }
 			  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			   //每一行就是一个repeat
-			   GffDetailRepeat gffRepeatmpDetail=new GffDetailRepeat();
-			   gffRepeatmpDetail.ChrID=chrnametmpString;//是小写的
-			   gffRepeatmpDetail.locString=ss[5]+"_"+ss[6]+"_"+ss[9];
+			   GffDetailRepeat gffRepeatmpDetail=new GffDetailRepeat(chrnametmpString, ss[5]+"_"+ss[6]+"_"+ss[9], ss[9].equals("+"));
 			   gffRepeatmpDetail.numberstart=Integer.parseInt(ss[6]);
 			   gffRepeatmpDetail.numberend=Integer.parseInt(ss[7]);
-			   if(ss[9].equals("+"))
-				   gffRepeatmpDetail.cis5to3=true;
-			   else 
-				   gffRepeatmpDetail.cis5to3=false;
 			   //装入LOCList和locHashtable
 			   
 			   gffRepeatmpDetail.repeatFamily=ss[12];
@@ -93,7 +92,6 @@ public class GffHashRepeat extends GffHash{
 		   }
 		   txtgff.close();
 		 /////////////////////////////////////////////////////////////////////////////////////////////////
-		   return Chrhash;//返回这个LOCarray信息
 	}
 	
 	/**
@@ -121,6 +119,21 @@ public class GffHashRepeat extends GffHash{
 			}
 		}
 		return hashRepeatLength;
+	}
+
+	@Override
+	public GffDetailRepeat searchLOC(String LOCID) {
+		return (GffDetailRepeat) locHashtable.get(LOCID);
+	}
+
+	@Override
+	public GffDetailRepeat searchLOC(String chrID, int LOCNum) {
+		return (GffDetailRepeat) Chrhash.get(chrID).get(LOCNum);
+	}
+
+	@Override
+	protected GffCodRepeat setGffCodAbs(String chrID, int Coordinate) {
+		return new GffCodRepeat(chrID, Coordinate);
 	}
 
 }

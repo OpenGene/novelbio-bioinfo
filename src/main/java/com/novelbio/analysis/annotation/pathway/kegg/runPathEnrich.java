@@ -1,24 +1,25 @@
-package com.novelbio.analysis.annotation.pathway.kegg.kGpath;
+package com.novelbio.analysis.annotation.pathway.kegg;
 
 import java.util.ArrayList;
 
-public class runPathEnrich {
+import com.novelbio.analysis.annotation.pathway.kegg.kGpath.PathEnrichNew;
 
+public class runPathEnrich {
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String parentFile = "/media/winE/NBC/Project/MiRNA_DrZ110701/";
-		String backGroundFile=parentFile + "UCSChg19RefseqDuplicateID.txt";
+		String parentFile = "/home/zong0jie/×ÀÃæ/";
+		String backGroundFile="/media/winE/Bioinformatics/GenomeData/mouse/mouseRefSeqBG.txt";
 		try {
-			String fileName = "Targetscan";			
+			String fileName = "145°Ð»ùÒò";			
 			String geneFile=parentFile+fileName+".xls";
 			String resultExcel2003 = parentFile +fileName+"PathanalysisComb.xls";
-			int[] colID = new int[2]; colID[0] = 1; colID[1] = 2;
+			int[] colID = new int[2]; colID[0] = 1; colID[1] = 1;
 			double up = 0;
 			double down = -1;
 			boolean blast = false;
-			int queryTaxID = 9606;
+			int queryTaxID = 10090;
 			int subTaxID = 9606;
 			double evalue = 1e-5;
 			boolean sepID = false;
