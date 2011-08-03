@@ -160,11 +160,14 @@ public class NovelBioConst {
 	public final static String GENOME_PATH_RICE_TIGR_STATISTIC = GENOME_PATH_RICE_TIGR+"statisticInof/";
 
 	//////////////////////////////////R系列//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public final static String R_SCRIPT = "Rscript ";
+//	public final static String R_SCRIPT = "c:/tools/R2_13/bin/Rscript ";
 	/**
 	 *  "/media/winE/Bioinformatics/R/practice_script/platform/"
 	 */
 	public final static String R_WORKSPACE = "/media/winE/Bioinformatics/R/practice_script/platform/";
 	
+//	public final static String R_WORKSPACE = "D:/Library/R//";
 	
 	
 	/////////////////////////////常规Fisher/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
