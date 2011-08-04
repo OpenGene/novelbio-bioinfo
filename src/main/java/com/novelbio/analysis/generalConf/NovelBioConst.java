@@ -174,7 +174,11 @@ public class NovelBioConst {
 	/**
 	 * 常规Fisher的输入文件
 	 */
-	public final static String R_WORKSPACE_Fisher_Info = R_WORKSPACE + "Fisher/Info.txt";
+	public final static String R_WORKSPACE_FISHER = R_WORKSPACE + "Fisher/";
+	/**
+	 * 常规Fisher的输入文件
+	 */
+	public final static String R_WORKSPACE_FISHER_INFO = R_WORKSPACE_FISHER + "Info.txt";
 	/**
 	 * 常规Fisher的计算脚本
 	 */
@@ -182,7 +186,7 @@ public class NovelBioConst {
 	/**
 	 * 常规Fisher的结果文件
 	 */
-	public final static String R_WORKSPACE_Fisher_Result = R_WORKSPACE + "Fisher/Analysis.txt";
+	public final static String R_WORKSPACE_FISHER_RESULT = R_WORKSPACE_FISHER + "Analysis.txt";
 	///////////////////////////TopGo的ElimFisher/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * topGo的文件夹
