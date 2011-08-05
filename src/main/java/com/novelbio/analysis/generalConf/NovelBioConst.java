@@ -161,14 +161,14 @@ public class NovelBioConst {
 
 	//////////////////////////////////R系列//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public final static String R_SCRIPT = "Rscript ";
-//	public final static String R_SCRIPT = "c:/tools/R2_13/bin/Rscript ";
+
 	/**
 	 *  "/media/winE/Bioinformatics/R/practice_script/platform/"
 	 */
 	public final static String R_WORKSPACE = "/media/winE/Bioinformatics/R/practice_script/platform/";
 	
 //	public final static String R_WORKSPACE = "D:/Library/R//";
-	
+//	public final static String R_SCRIPT = "c:/tools/R2_13/bin/Rscript ";
 	
 	/////////////////////////////常规Fisher/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
