@@ -99,7 +99,13 @@ public class GffDetailGene extends GffDetailAbs
 	 */
 	protected void addATGUAG(int atg, int uag)
 	{
+
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
+		if (Math.abs(atg - uag)<=1) {
+			gffGeneIsoInfo.mRNA = false;
+			atg = Math.min(atg, uag);
+			uag = Math.min(atg, uag);
+		}
 		if (cis5to3) {
 			gffGeneIsoInfo.ATGsite = Math.min(atg, uag);
 			gffGeneIsoInfo.UAGsite = Math.max(atg, uag);
@@ -113,7 +119,7 @@ public class GffDetailGene extends GffDetailAbs
 	 * 直接添加转录本，之后用addcds()方法给该转录本添加exon
 	 */
 	protected void addsplitlist(String splitName) {
-		GffGeneIsoInfo gffGeneIsoInfo = new GffGeneIsoInfo(splitName);
+		GffGeneIsoInfo gffGeneIsoInfo = new GffGeneIsoInfo(splitName,cis5to3,this);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 		lsIsoName.add(splitName);
 	}
@@ -127,14 +133,14 @@ public class GffDetailGene extends GffDetailAbs
      * 给定编号(从0开始，编号不是转录本的具体ID)<br>
      * 返回某个转录本的具体信息
      */
-    public GffGeneIsoInfo getExonlist(int splitnum)
+    public GffGeneIsoInfo getIsolist(int splitnum)
     {  
     	return lsGffGeneIsoInfos.get(splitnum);//include one special loc start number to end number	
     }
     /**
      * 给定转录本名(UCSC里实际上是基因名)<br>
      */
-    public GffGeneIsoInfo getExonlist(String splitID)
+    public GffGeneIsoInfo getIsolist(String splitID)
     {  
     	return lsGffGeneIsoInfos.get(lsIsoName.indexOf(splitID));//include one special loc start number to end number	
     }
@@ -148,7 +154,7 @@ public class GffDetailGene extends GffDetailAbs
 			ArrayList<int[]> lsExon = gffGeneIsoInfo.getIsoInfo();
 			lslength.add(Math.abs(lsExon.get(0)[0] - lsExon.get(lsExon.size()-1)[1]));
 		}
-		int max = lslength.get(0); int id = -1;
+		int max = lslength.get(0); int id = 0;
 		for (int i = 0; i < lslength.size(); i++) {
 			if (lslength.get(i) > max)
 			{
@@ -169,17 +175,23 @@ public class GffDetailGene extends GffDetailAbs
 		return lsGffGeneIsoInfos.get(id);
 	}
 	/**
-	 * 用坐标查找具体的转录本信息
+	 * 用坐标查找具体的转录本信息，如果坐标信息相同，则返回以前的信息
 	 * @param coord
 	 */
 	public ArrayList<GffGeneIsoSearch> getCoordSearchLs() {
-		if (lsGffGeneIsoInfoSearch != null) {
+		if (lsGffGeneIsoInfoSearch != null && coord == lsGffGeneIsoInfoSearch.get(0).getCoord()) {
 			return lsGffGeneIsoInfoSearch;
 		}
 		lsGffGeneIsoInfoSearch = new ArrayList<GffGeneIsoSearch>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			GffGeneIsoSearchCis gffGeneIsoSearchCis = new GffGeneIsoSearchCis(gffGeneIsoInfo, coord);
-			lsGffGeneIsoInfoSearch.add(gffGeneIsoSearchCis);
+			GffGeneIsoSearch gffGeneIsoSearch = null;
+			if (cis5to3) {
+				gffGeneIsoSearch = new GffGeneIsoSearchCis(gffGeneIsoInfo, coord);
+			}
+			else {
+				gffGeneIsoSearch = new GffGeneIsoSearchTrans(gffGeneIsoInfo, coord);
+			}
+			lsGffGeneIsoInfoSearch.add(gffGeneIsoSearch);
 		}
 		return lsGffGeneIsoInfoSearch;
 	}
@@ -192,7 +204,14 @@ public class GffDetailGene extends GffDetailAbs
 		int id = getLongestSplitID();
 		return lsGffGeneIsoSearchs.get(id);
 	}
-	
+	/**
+	 * 用坐标查找具体的转录本信息
+	 * @param coord
+	 */
+	public GffGeneIsoSearch getCoordSearchName(String splitName) {
+		ArrayList<GffGeneIsoSearch> lsGffGeneIsoSearchs = getCoordSearchLs();
+		return lsGffGeneIsoSearchs.get(lsIsoName.indexOf(splitName));
+	}
     /**
      * 获得该基因中最长的一条转录本的部分区域的信息。已经考虑过开闭区间问题
      * @param type 指定为INTRON,UTR5等，是该类的常量里面的数值
@@ -209,10 +228,10 @@ public class GffDetailGene extends GffDetailAbs
 		int exonNum = lsExon.size();
 		//TODO 如果超出需要返回0
 		if (type.equals(INTRON)) {
-			return Math.abs(lsExon.get(num)[0] - lsExon.get(num-1)[1] - 1);
+			return Math.abs(lsExon.get(num)[0] - lsExon.get(num-1)[1]) - 1;
 		}
 		if (type.equals(EXON)) {
-			return Math.abs(lsExon.get(num)[1] - lsExon.get(num)[0] + 1);
+			return Math.abs(lsExon.get(num)[1] - lsExon.get(num)[0]) + 1;
 		}
 		if (type.equals(UTR5)) 
 		{

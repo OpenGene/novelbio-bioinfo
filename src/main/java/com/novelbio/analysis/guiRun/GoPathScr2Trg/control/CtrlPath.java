@@ -6,25 +6,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.HiddenAction;
-
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.annotation.GO.execute.GoFisherNew;
-import com.novelbio.analysis.annotation.GO.queryDB.QgeneID2Go;
 import com.novelbio.analysis.annotation.copeID.CopeID;
+import com.novelbio.analysis.annotation.pathway.kegg.kGpath.PathEnrichNew;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.CopyOfGUIanalysisSimple;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class CtrlGO {
-	private static final Logger logger = Logger.getLogger(CtrlGO.class);
+public class CtrlPath {
+	private static final Logger logger = Logger.getLogger(CtrlPath.class);
 	/**
 	 * 用单例模式
 	 */
-	private static CtrlGO ctrlGO = null;
+	private static CtrlPath ctrlPath = null;
 		/**
 		 * 是否需要blast
 		 */
@@ -43,16 +41,15 @@ public class CtrlGO {
 		double evalue = 100;
 
 		String geneFileXls = "";
-		String GOClass = "";
 		int[] colID = new int[2];
 		String backGroundFile = "";
 		String resultExcel2003 = "";
 		double up= -1;
 		double down = -1;
 		boolean sepID = false;
-		boolean elimGo = false;
-		String[] prix = new String[2];
 		boolean cluster = false;
+		
+		String[] prix = new String[2];
 		/**
 		 * 结果
 		 */
@@ -69,14 +66,22 @@ public class CtrlGO {
 		public ArrayList<ArrayList<String[]>> getLsResultDown() {
 			return lsResultDown;
 		}
-		public HashMap<String,ArrayList<ArrayList<String[]>>> getHashResult() {
-			return hashResultGene;
+		/**
+		 * @param blast
+		 * @param taxID
+		 * @param StaxID
+		 * @param evalue
+		 * @param guiBlast
+		 */
+		public static CtrlPath getInstance(String geneFileXls,int colAccID,int colFC,double up, double down,String backGroundFile,int QtaxID,
+				boolean blast, int StaxID,double evalue) {
+			ctrlPath = new CtrlPath(geneFileXls, colAccID, colFC, up, down, backGroundFile, QtaxID, blast, StaxID, evalue);
+			return ctrlPath;
 		}
+		
 		/**
 		 * 
-		 * @param elimGo
 		 * @param geneFileXls
-		 * @param GOClass
 		 * @param colAccID
 		 * @param colFC
 		 * @param up
@@ -88,75 +93,23 @@ public class CtrlGO {
 		 * @param evalue
 		 * @return
 		 */
-		public static CtrlGO getInstance(boolean elimGo,String geneFileXls,String GOClass,int colAccID,int colFC,double up, double down,String backGroundFile,int QtaxID,
+		public static CtrlPath getInstance(String geneFileXls,int colAccID,int colFC,String backGroundFile,int QtaxID,
 				boolean blast, int StaxID,double evalue) {
-			ctrlGO = new CtrlGO(elimGo,geneFileXls, GOClass, colAccID, colFC, up, down, backGroundFile, QtaxID, blast, StaxID, evalue);
-			return ctrlGO;
-		}
-		
-		/**
-		 * 
-		 * @param elimGo
-		 * @param geneFileXls
-		 * @param GOClass
-		 * @param colAccID
-		 * @param colFC
-		 * @param backGroundFile
-		 * @param QtaxID
-		 * @param blast
-		 * @param StaxID
-		 * @param evalue
-		 * @return
-		 */
-		public static CtrlGO getInstance(boolean elimGo,String geneFileXls,String GOClass,int colAccID,int colFC,String backGroundFile,int QtaxID,
-				boolean blast, int StaxID,double evalue) {
-			ctrlGO = new CtrlGO(elimGo,geneFileXls, GOClass, colAccID, colFC,backGroundFile, QtaxID, blast, StaxID, evalue);
-			return ctrlGO;
-		}
-		
-		/**
-		 * 
-		 * @param elimGo
-		 * @param geneFileXls
-		 * @param GOClass
-		 * @param colAccID
-		 * @param colFC
-		 * @param backGroundFile
-		 * @param QtaxID
-		 * @param blast
-		 * @param StaxID
-		 * @param evalue
-		 */
-		private  CtrlGO(boolean elimGo, String geneFileXls,String GOClass,int colAccID,int colFC,String backGroundFile,int QtaxID,
-				boolean blast, int StaxID,double evalue) {
-			this.elimGo = elimGo;
-			this.blast = blast;
-			this.QtaxID = QtaxID;
-			this.StaxID = StaxID;
-			this.evalue = evalue;
-			this.geneFileXls = geneFileXls;
-			this.GOClass = GOClass;
-			this.colID[0] = colAccID;
-			this.colID[1] = colFC;
-			this.backGroundFile = backGroundFile;
-			this.up = 0;
-			this.down = 0;
-			this.cluster = true;
+			ctrlPath = new CtrlPath(geneFileXls, colAccID, colFC, backGroundFile, QtaxID, blast, StaxID, evalue);
+			return ctrlPath;
 		}
 		
 		
 		
 		
 		
-		public static CtrlGO getCtrlGoUsed()
+		public static CtrlPath getCtrlPathUsed()
 		{
-			return ctrlGO;
+			return ctrlPath;
 		}
 		/**
 		 * 
-		 * @param elimGo
 		 * @param geneFileXls
-		 * @param GOClass
 		 * @param colAccID
 		 * @param colFC
 		 * @param up
@@ -167,15 +120,13 @@ public class CtrlGO {
 		 * @param StaxID
 		 * @param evalue
 		 */
-		private  CtrlGO(boolean elimGo, String geneFileXls,String GOClass,int colAccID,int colFC,double up, double down,String backGroundFile,int QtaxID,
+		private  CtrlPath(String geneFileXls,int colAccID,int colFC,double up, double down,String backGroundFile,int QtaxID,
 				boolean blast, int StaxID,double evalue) {
-			this.elimGo = elimGo;
 			this.blast = blast;
 			this.QtaxID = QtaxID;
 			this.StaxID = StaxID;
 			this.evalue = evalue;
 			this.geneFileXls = geneFileXls;
-			this.GOClass = GOClass;
 			this.colID[0] = colAccID;
 			this.colID[1] = colFC;
 			this.backGroundFile = backGroundFile;
@@ -183,20 +134,51 @@ public class CtrlGO {
 			this.down = down;
 			this.cluster = false;
 		}
-		
-		public void doInBackGround() {
+		/**
+		 * 
+		 * @param geneFileXls
+		 * @param colAccID
+		 * @param colFC
+		 * @param up
+		 * @param down
+		 * @param backGroundFile
+		 * @param QtaxID
+		 * @param blast
+		 * @param StaxID
+		 * @param evalue
+		 */
+		private  CtrlPath(String geneFileXls,int colAccID,int colFC,String backGroundFile,int QtaxID,
+				boolean blast, int StaxID,double evalue) {
+			this.blast = blast;
+			this.QtaxID = QtaxID;
+			this.StaxID = StaxID;
+			this.evalue = evalue;
+			this.geneFileXls = geneFileXls;
+			this.colID[0] = colAccID;
+			this.colID[1] = colFC;
+			this.backGroundFile = backGroundFile;
+			this.cluster = true;
+		}
+		HashMap<String,ArrayList<ArrayList<String[]>>> hashResultGene = null;
+		public HashMap<String,ArrayList<ArrayList<String[]>>> getHashResult() {
+			return hashResultGene;
+		}
+		public void doInBackground()
+		{
 			try {
 				if (cluster) {
 					doInBackgroundCluster();
 				}
 				else {
-					doInBackgroundNormGO();
+					doInBackgroundNorm();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		public void saveFile(String excelPath) {
+		
+		public void save(String excelPath)
+		{
 			if (cluster) {
 				saveExcelCluster(excelPath);
 			}
@@ -205,35 +187,7 @@ public class CtrlGO {
 			}
 		}
 		
-	public void saveExcelCluster(String excelPath) {
-		this.resultExcel2003 = excelPath;
-		ExcelOperate excelResult = new ExcelOperate();
-		String filePath = FileOperate.getParentPathName(excelPath) + "/"
-				+ FileOperate.getFileNameSep(excelPath)[0];
-
-		if (hashResultGene.size() > 0) {
-			for (Entry<String, ArrayList<ArrayList<String[]>>> entry : hashResultGene.entrySet()) {
-				String key = entry.getKey();
-				ArrayList<ArrayList<String[]>> value = entry.getValue();
-				excelResult.openExcel(filePath + key + ".xls");
-				if (!elimGo) {
-					excelResult.WriteExcel(key + "GoAnalysis", 1, 1,value.get(0), true);
-					excelResult.WriteExcel(key + "Gene2GO", 1, 1,value.get(1), true);
-					if (blast) {
-						excelResult.WriteExcel(key + "GO2Gene", 1, 1,value.get(2), true);
-					}
-				}
-				else {
-					excelResult.WriteExcel(prix[0]+"GoAnalysis", 1, 1, value.get(0), true);
-					excelResult.WriteExcel(prix[0]+"GO2Gene", 1, 1,value.get(1) , true);
-					excelResult.WriteExcel(prix[0]+"Gene2GO", 1, 1,value.get(2) , true);
-					FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP+key, 
-							FileOperate.getParentPathName(excelPath), FileOperate.getFileNameSep(excelPath)[0]+key+"GoMap.pdf",true);
-				}
-			}
-		}
-	}
-		HashMap<String,ArrayList<ArrayList<String[]>>> hashResultGene = null;
+		
 		/**
 		 * 给定文件，和文件分割符，以及第几列，获得该列的基因ID
 		 * @param fileName
@@ -273,27 +227,37 @@ public class CtrlGO {
 				lsBGID.add(strings[0]);
 			}
 			ArrayList<String[]> lsGeneBG = CopeID.getGenID("BG",lsBGID, QtaxID,sepID);
-			ArrayList<ArrayList<String[]>> lsBGGenGoInfo = QgeneID2Go.getGenGoInfo(lsGeneBG, QtaxID, GOClass, sepID, blast, evalue, StaxID);
+			HashMap<String, ArrayList<String[]>> hashBGgene = PathEnrichNew.getPath2Keg(lsGeneBG,QtaxID,blast,StaxID,evalue);
+			int GeneBGNum = PathEnrichNew.gethashGeneNum().size();
 			for(Entry<String, ArrayList<String>> entry:hashGene.entrySet())
 			{
 				String key = entry.getKey();
 				ArrayList<String> value = entry.getValue();
 				ArrayList<String[]> lsGeneTmpCope = CopeID.getGenID(key,value, QtaxID,sepID);
 				ArrayList<ArrayList<String[]>> lstmp = null;
-				try {
-					if (elimGo) 
-					{
-						lstmp = GoFisherNew.getElimFisher(key, lsGeneTmpCope, lsBGGenGoInfo, GOClass, sepID, QtaxID, blast, StaxID, evalue, 300);
-					}
-					else
-					{
-						lstmp = GoFisherNew.getNBCFisher(key,lsGeneTmpCope, lsBGGenGoInfo, GOClass, sepID, QtaxID, blast, StaxID, evalue);
-					}
+				lstmp = PathEnrichNew.getPathEnrich(key, lsGeneTmpCope, hashBGgene, sepID, QtaxID, blast, StaxID, evalue,GeneBGNum);
+				if (lstmp != null) {
 					hashResultGene.put(key, lstmp);
-				} catch (Exception e) {
-					logger.error("本class没有GO：文件名 "+geneFileXls+"cluster"+ key );
 				}
-				
+				else {
+					logger.error("本class没有Path：文件名 "+geneFileXls+"cluster"+ key );
+				}
+			}
+		}
+		public void saveExcelCluster(String excelPath) {
+			this.resultExcel2003 = excelPath;
+			ExcelOperate excelResult = new ExcelOperate();
+			String filePath = FileOperate.getParentPathName(excelPath) + "/"
+					+ FileOperate.getFileNameSep(excelPath)[0];
+
+			if (hashResultGene.size() > 0) {
+				for (Entry<String, ArrayList<ArrayList<String[]>>> entry : hashResultGene.entrySet()) {
+					String key = entry.getKey();
+					ArrayList<ArrayList<String[]>> value = entry.getValue();
+					excelResult.openExcel(filePath + key + ".xls");
+					excelResult.WriteExcel(key+"PathAnalysis", 1, 1, value.get(0), true);
+					excelResult.WriteExcel(key+"Gene2Path", 1, 1,value.get(1) , true);
+				}
 			}
 		}
 		
@@ -301,37 +265,13 @@ public class CtrlGO {
 			this.resultExcel2003 = excelPath;
 			ExcelOperate excelResult = new ExcelOperate();
 			excelResult.openExcel(resultExcel2003);
-			if (!elimGo) {
-				if (lsResultUp.size() > 0) {
-					excelResult.WriteExcel(prix[0]+"GoAnalysis", 1, 1, lsResultUp.get(0), true);
-					excelResult.WriteExcel(prix[0]+"Gene2GO", 1, 1,lsResultUp.get(1) , true);
-					if (blast) {
-						excelResult.WriteExcel(prix[0]+"GO2Gene", 1, 1,lsResultUp.get(2) , true);
-					}
-				}
-				if (lsResultDown.size() > 0) {
-					excelResult.WriteExcel(prix[1]+"GoAnalysis", 1, 1, lsResultDown.get(0), true);
-					excelResult.WriteExcel(prix[1]+"Gene2GO", 1, 1,lsResultDown.get(1) , true);
-					if (blast) {
-						excelResult.WriteExcel(prix[0]+"GO2Gene", 1, 1,lsResultDown.get(2) , true);
-					}
-				}
+			if (lsResultUp.size() > 0) {
+				excelResult.WriteExcel(prix[0]+"PathAnalysis", 1, 1, lsResultUp.get(0), true);
+				excelResult.WriteExcel(prix[0]+"Gene2Path", 1, 1,lsResultUp.get(1) , true);
 			}
-			else {
-				if (lsResultUp.size() > 0) {
-					excelResult.WriteExcel(prix[0]+"GoAnalysis", 1, 1, lsResultUp.get(0), true);
-					excelResult.WriteExcel(prix[0]+"GO2Gene", 1, 1,lsResultUp.get(1) , true);
-					excelResult.WriteExcel(prix[0]+"Gene2GO", 1, 1,lsResultUp.get(2) , true);
-					FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP+prix[0], 
-							FileOperate.getParentPathName(excelPath), FileOperate.getFileNameSep(excelPath)[0]+prix[0]+"GoMap.pdf",true);
-				}
-				if (lsResultDown.size() > 0) {
-					excelResult.WriteExcel(prix[1]+"GoAnalysis", 1, 1, lsResultDown.get(0), true);
-					excelResult.WriteExcel(prix[1]+"GO2Gene", 1, 1,lsResultDown.get(1) , true);
-					excelResult.WriteExcel(prix[1]+"Gene2GO", 1, 1,lsResultDown.get(2) , true);
-					FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP+prix[1], 
-							FileOperate.getParentPathName(excelPath), FileOperate.getFileNameSep(excelPath)[0]+prix[1]+"GoMap.pdf",true);
-				}
+			if (lsResultDown.size() > 0) {
+				excelResult.WriteExcel(prix[1]+"PathAnalysis", 1, 1, lsResultDown.get(0), true);
+				excelResult.WriteExcel(prix[1]+"Gene2Path", 1, 1,lsResultDown.get(1) , true);
 			}
 		}
 		/**
@@ -340,14 +280,15 @@ public class CtrlGO {
 		 * @return
 		 * @throws Exception 
 		 */
-		public void doInBackgroundNormGO() throws Exception
+		public void doInBackgroundNorm() throws Exception
 		{
 			lsResultUp = null;
 			lsResultDown = null;
 			hashResultGene = null;
 			prix[0] = "up";
 			prix[1] = "down";
-			FileOperate.delAllFile(NovelBioConst.R_WORKSPACE_TOPGO);
+
+			
 			colID[0]--;colID[1]--;
 			ExcelOperate excelGeneID = new ExcelOperate();
 			excelGeneID.openExcel(geneFileXls);
@@ -378,25 +319,13 @@ public class CtrlGO {
 			ArrayList<String[]> lsGeneUpCope = CopeID.getGenID(prix[0],lsGeneUp, QtaxID,sepID);
 			ArrayList<String[]> lsGeneDownCope = CopeID.getGenID(prix[1],lsGeneDown, QtaxID,sepID);
 			ArrayList<String[]> lsGeneBG = CopeID.getGenID("BG",lsBGID, QtaxID,sepID);
-			ArrayList<ArrayList<String[]>> lsBGGenGoInfo = QgeneID2Go.getGenGoInfo(lsGeneBG, QtaxID, GOClass, sepID, blast, evalue, StaxID);
+			HashMap<String, ArrayList<String[]>> hashBGgene = PathEnrichNew.getPath2Keg(lsGeneBG,QtaxID,blast,StaxID,evalue);
+			int GeneBGNum = PathEnrichNew.gethashGeneNum().size();
 			if (lsGeneUpCope.size()>0) {
-				if (elimGo) 
-					lsResultUp =	GoFisherNew.getElimFisher(prix[0], lsGeneUpCope, lsBGGenGoInfo, GOClass, sepID, QtaxID, blast, StaxID, evalue, 300);				
-				else 
-					lsResultUp = GoFisherNew.getNBCFisher(prix[0],lsGeneUpCope, lsBGGenGoInfo, GOClass, sepID, QtaxID, blast, StaxID, evalue);
+				lsResultUp = PathEnrichNew.getPathEnrich(prix[0],lsGeneUpCope, hashBGgene, sepID, QtaxID, blast, StaxID, evalue,GeneBGNum);
 			}
 			if (lsGeneDownCope.size()>0) {
-				if (elimGo) 
-					lsResultDown =	GoFisherNew.getElimFisher(prix[1], lsGeneDownCope, lsBGGenGoInfo, GOClass, sepID, QtaxID, blast, StaxID, evalue, 300);				
-				else
-					lsResultDown = GoFisherNew.getNBCFisher(prix[1],lsGeneDownCope, lsBGGenGoInfo, GOClass, sepID, QtaxID, blast, StaxID, evalue);
+				lsResultDown = PathEnrichNew.getPathEnrich(prix[1],lsGeneDownCope, hashBGgene, sepID, QtaxID, blast, StaxID, evalue,GeneBGNum);
 			}
-		}	
-}
-
-
-class ProgressData
-{
-	public int rowNum;
-	public String[] tmpInfo;
+		}
 }

@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 专门将数据整理成适合进行fisher检验的格式，并且进行fisher检验
@@ -215,18 +216,18 @@ public class FisherTest {
 	 * @throws Exception
 	 */
 	public static ArrayList<String[]> doFisherTest(List<String[]> lsGOinfo) throws Exception {
-		 
+		if (lsGOinfo.size() == 0) {
+			return null;
+		}
+		FileOperate.delAllFile(NovelBioConst.R_WORKSPACE_FISHER);
 		int colNum = lsGOinfo.get(0).length; colNum = colNum - 5;
-		
 		TxtReadandWrite txtGoInfo=new TxtReadandWrite();
-		txtGoInfo.setParameter(NovelBioConst.R_WORKSPACE_Fisher_Info, true, false);
+		txtGoInfo.setParameter(NovelBioConst.R_WORKSPACE_FISHER_INFO, true, false);
 		int column[]=new int[4]; column[0] = colNum + 1; column[1]= colNum + 2; column[2] = colNum + 3; column[3] = colNum + 4;
 		txtGoInfo.ExcelWrite(lsGOinfo, "\t", column, true, 1, 1);
-		
 		callR();
-		
 		TxtReadandWrite txtRresult=new TxtReadandWrite();
-		txtRresult.setParameter(NovelBioConst.R_WORKSPACE_Fisher_Result, false, true);
+		txtRresult.setParameter(NovelBioConst.R_WORKSPACE_FISHER_RESULT, false, true);
 		
 		String[][] RFisherResult=txtRresult.ExcelRead("\t", 2, 2, txtRresult.ExcelRows(), txtRresult.ExcelColumns(2, "\t"));
 		ArrayList<String[]> lsFisherResult=new ArrayList<String[]>();
@@ -262,7 +263,7 @@ public class FisherTest {
 	}
 	private static void callR() throws Exception{
 		//这个就是相对路径，必须在当前文件夹下运行
-		String command="Rscript "+NovelBioConst.R_WORKSPACE_FISHER_SCRIPT;
+		String command= NovelBioConst.R_SCRIPT+NovelBioConst.R_WORKSPACE_FISHER_SCRIPT;
 		Runtime   r=Runtime.getRuntime();
 		Process p = r.exec(command);
 		p.waitFor();

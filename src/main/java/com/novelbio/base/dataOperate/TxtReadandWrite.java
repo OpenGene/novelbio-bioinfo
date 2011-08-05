@@ -151,7 +151,8 @@ public class TxtReadandWrite {
 	 * @throws Exception
 	 */
 	public void writefileln(String content) throws Exception {
-		filewriter.write(content+"\n");
+		filewriter.write(content);
+		filewriter.write("\n");
 	}
 	/**
 	 * @param content
@@ -518,15 +519,19 @@ public class TxtReadandWrite {
 	 *            txt文本的分割符,为正则表达式，tab是"\t"
 	 * @throws Exception
 	 */
-	public void ExcelWrite(String[][] content, String sep) throws Exception {
+	public<T> void ExcelWrite(T[][] content, String sep) throws Exception {
+		String tmp = "";
 		for (int i = 0; i < content.length; i++) {
 			for (int j = 0; j < content[0].length; j++) {
 				if (content[i][j] == null)
-					content[i][j] = "";
+					tmp = "";
+				else {
+					tmp = content[i][j].toString();
+				}
 				if (j < (content[0].length - 1)) {
-					filewriter.write(content[i][j] + sep);
+					filewriter.write(tmp + sep);
 				} else {
-					filewriter.write(content[i][j]);
+					filewriter.write(tmp);
 				}
 			}
 			filewriter.write("\r\n");// 换行

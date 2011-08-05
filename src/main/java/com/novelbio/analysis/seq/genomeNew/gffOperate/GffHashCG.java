@@ -30,9 +30,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  */
 public class GffHashCG extends GffHash
 {	
-	public GffHashCG(String gfffilename) throws Exception {
-		super(gfffilename);
-	}
 
 	/**
 	 * 最底层读取gff的方法<br>

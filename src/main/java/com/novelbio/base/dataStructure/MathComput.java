@@ -27,9 +27,47 @@ public class MathComput {
 		int avg=sum/length;
 		return avg;
 	}
-	
-	
-	
+	/**
+	 * 输入数据，获得平均数
+	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * 用于获得每10个bp的tag堆积数的中位数
+	 * @return
+	 */
+	public static double mean(double[] unsortNum)
+	{
+		double length=unsortNum.length;
+		double sum=0;
+		for(int i=1;i<length;i++)
+		{
+			sum=sum+unsortNum[i];
+		}
+		double avg=sum/length;
+		return avg;
+	}
+	/**
+	 * 输入数据，获得和
+	 * @param Num
+	 * @return
+	 */
+	public static	double sum(double[] Num) {
+		double sum = 0;
+		for (double d : Num) {
+			sum = sum + d;
+		}
+		return sum;
+	}
+	/**
+	 * 输入数据，获得和
+	 * @param Num
+	 * @return
+	 */
+	public static	int sum(int[] Num) {
+		int sum = 0;
+		for (int d : Num) {
+			sum = sum + d;
+		}
+		return sum;
+	}
 	/**
 	 * 输入数据，获得中位数, 用于10
 	 * 采用插入排序法，据说对于小规模数据效率还不错
@@ -301,52 +339,7 @@ public class MathComput {
 		}
 		return resultBinValue;
 	}
-	
-	/**
-	 * 颠倒数组，直接性将传入的数组倒置，不返回东西
-	 * @param array
-	 */
-	public static void convertArray(int[] array) 
-	{
-		int tmpValue=0;
-		int arrayLength=array.length;
-		for (int i = 0; i < arrayLength/2; i++) {
-			tmpValue=array[arrayLength-1-i];
-			array[arrayLength-1-i]=array[i];
-			array[i]=tmpValue;
-		}
-	}
-	
-	/**
-	 * 颠倒数组，直接性将传入的数组倒置，不返回东西
-	 * @param array
-	 */
-	public static void convertArray(double[] array) 
-	{
-		double tmpValue=0;
-		int arrayLength=array.length;
-		for (int i = 0; i < arrayLength/2; i++) {
-			tmpValue=array[arrayLength-1-i];
-			array[arrayLength-1-i]=array[i];
-			array[i]=tmpValue;
-		}
-	}
-	
-	/**
-	 * 颠倒数组，直接性将传入的数组倒置，不返回东西
-	 * @param array
-	 */
-	public static<T> void convertArray(T[] array) 
-	{
-		T tmpValue=null;
-		int arrayLength=array.length;
-		for (int i = 0; i < arrayLength/2; i++) {
-			tmpValue=array[arrayLength-1-i];
-			array[arrayLength-1-i]=array[i];
-			array[i]=tmpValue;
-		}
-	}
-	
+
 	/**
 	 * 将 aArray与bArray相加，最后结果保存在aArray中
 	 * 如果bArray==null，则直接返回aArray，但是会system.out.println报错

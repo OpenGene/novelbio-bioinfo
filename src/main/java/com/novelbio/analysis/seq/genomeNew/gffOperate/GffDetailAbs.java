@@ -95,7 +95,7 @@ public abstract class GffDetailAbs {
 	/**
 	 * 染色体坐标，会计算该点与本GffDetailAbs起点和终点的距离
 	 */
-	protected void setCoord(int coord) {
+	public void setCoord(int coord) {
 		this.coord = coord;
 	}
 	/**

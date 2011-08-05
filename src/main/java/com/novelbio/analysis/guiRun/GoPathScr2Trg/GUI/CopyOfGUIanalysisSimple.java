@@ -622,7 +622,7 @@ public class CopyOfGUIanalysisSimple extends javax.swing.JFrame {
 		String backGroundFile = jTxtBGGo.getText();
 		boolean blast = jChkBlastGo.isSelected();
 		double evalue = 1e-10;
-		CtrlGO ctrlGO = CtrlGO.getInstance(geneFileXls, GOClass, colAccID, colFC, up, down, backGroundFile, QtaxID, blast, StaxID, evalue, this);
+		CtrlGO ctrlGO = CtrlGO.getInstance(geneFileXls, GOClass, colAccID, colFC, up, down, backGroundFile, QtaxID, blast, StaxID, evalue);
 		try {
 			ctrlGO.doInBackground();
 		} catch (Exception e) {

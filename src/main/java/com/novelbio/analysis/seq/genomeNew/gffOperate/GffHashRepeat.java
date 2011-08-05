@@ -12,11 +12,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class GffHashRepeat extends GffHash{
 
-	public GffHashRepeat(String gfffilename) {
-		super(gfffilename);
-		// TODO Auto-generated constructor stub
-	}
-
 	/**
 	 * 最底层读取gff的方法，本方法只能读取UCSCRepeat文件<br>
 	 * 输入Gff文件，最后获得两个哈希表和一个list表,读取时从第二行读起<br/>

@@ -7,13 +7,16 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
+import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.GOQuery;
-import com.novelbio.analysis.annotation.genAnno.KegPathQuery;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast;
+import com.novelbio.analysis.guiRun.BlastGUI.GUI.GuiBlastJpanel;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.service.ServGo;
 
 
-public class CtrlPath extends SwingWorker<ArrayList<String[]>, ProgressDataPath> {
-
+public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo>
+{
 
 	/**
 	 * 是否需要blast
@@ -39,8 +42,8 @@ public class CtrlPath extends SwingWorker<ArrayList<String[]>, ProgressDataPath>
 	/**
 	 * 界面对象
 	 */
-	GUIBlast guiBlast;
-	
+//	GUIBlast guiBlast;
+	GuiBlastJpanel guiBlast;
 	/**
 	 * 
 	 * @param blast
@@ -49,15 +52,16 @@ public class CtrlPath extends SwingWorker<ArrayList<String[]>, ProgressDataPath>
 	 * @param evalue
 	 * @param guiBlast
 	 */
-	public CtrlPath(boolean blast, int taxID, int StaxID, double evalue,GUIBlast guiBlast) {
+//	public CtrlBlastGo(boolean blast, int taxID, int StaxID, double evalue,GUIBlast guiBlast,String GOclass) {
+	public CtrlBlastGo(boolean blast, int taxID, int StaxID, double evalue,GuiBlastJpanel guiBlast,String GOclass) {
 		this.blast = blast;
 		this.taxID = taxID;
 		this.StaxID = StaxID;
 		this.evalue = evalue;
 		this.guiBlast =guiBlast;
-		
+		this.GoClass = GOclass;
 	}
-	
+
 	List<String> lsGeneID = null;
  
 	
@@ -87,11 +91,12 @@ public class CtrlPath extends SwingWorker<ArrayList<String[]>, ProgressDataPath>
 		else 
 			length = 5; 
 		
-		for (int i = 0; i<lsGeneID.size(); i++) {
+		for (int i = 0; i<lsGeneID.size(); i++)
+		{
 			String geneID = lsGeneID.get(i).trim();
-		
+			ArrayList<String[]> lsTmpInfo = new ArrayList<String[]>();
 			try {
-				ArrayList<String[]> lstmpAnno = KegPathQuery.getGenPath(geneID, taxID, blast, StaxID, evalue);
+				ArrayList<String[]> lstmpAnno = GOQuery.getLsGeneGo(geneID,taxID,GoClass, blast, evalue, 9606);
 				if (lstmpAnno == null || lstmpAnno.size()<1) {
 					String[] tmp = new String[length];
 					for (int j = 0; j < tmp.length; j++) {
@@ -102,13 +107,46 @@ public class CtrlPath extends SwingWorker<ArrayList<String[]>, ProgressDataPath>
 					lstmpAnno.add(tmp);
 				}
 	
-				ProgressDataPath progressData  = new ProgressDataPath();
+				ProgressDataGo progressData  = new ProgressDataGo();
 				progressData.rowNum = i;
-				progressData.lsInfo = lstmpAnno;
+				for (int j = 0; j < lstmpAnno.size(); j++) {
+					
+				// (String[] strings : lstmpAnno) 
+				
+					//结果中包含了第2列和第9列的geneID信息
+					//没有blast为stirng[5]
+					//blast为string[13]
+					String[] strings2 =null;
+					
+					if(blast)
+					{
+						strings2 = new String[9];
+						int m = 0;
+						for (int k = 0; k < lstmpAnno.get(0).length; k++) {
+							if (k == 1 || k==3 || k == 6 || k== 8 || k==9 || k == 11 || k == 14) {
+								continue;
+							}
+							strings2[m] =  lstmpAnno.get(j)[k]; m++;
+						}
+					}
+					else 
+					{
+						strings2 = new String[4];
+						int m = 0;
+						for (int k = 0; k <  lstmpAnno.get(0).length; k++) {
+							if (k == 1 || k == 3 || k == 6) {
+								continue;
+							}
+							strings2[m] =  lstmpAnno.get(j)[k]; m++;
+						}
+					}
+					lsTmpInfo.add(strings2);
+					lsDesp.add(strings2);
+				}
+				progressData.lsInfo = lsTmpInfo;
 				publish(progressData);
-				lsDesp.addAll(lstmpAnno);
+//				lsDesp.addAll(lstmpAnno);
 			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 		
@@ -116,16 +154,16 @@ public class CtrlPath extends SwingWorker<ArrayList<String[]>, ProgressDataPath>
 	}
 	
 	@Override
-	public void process(List<ProgressDataPath> data)
+	public void process(List<ProgressDataGo> data)
 	{
 		if (isCancelled()) {
 			return;
 		}
-		for (ProgressDataPath ProgressDataPath : data) {
-			if (guiBlast.getJProgressBar1().getValue()<ProgressDataPath.rowNum) {
-				guiBlast.getJProgressBar1().setValue(ProgressDataPath.rowNum);
+		for (ProgressDataGo progressDataGo : data) {
+			if (guiBlast.getJProgressBar1().getValue()<progressDataGo.rowNum) {
+				guiBlast.getJProgressBar1().setValue(progressDataGo.rowNum);
 			}
-			for (String[] strings: ProgressDataPath.lsInfo) 
+			for (String[] strings: progressDataGo.lsInfo) 
 			{
 				guiBlast.getJTabGoandPath().addRow(strings);
 			}
@@ -148,9 +186,9 @@ public class CtrlPath extends SwingWorker<ArrayList<String[]>, ProgressDataPath>
 			e.printStackTrace();
 		}
 	}
-
 }
-class ProgressDataPath
+
+class ProgressDataGo
 {
 	int rowNum=0;
 	ArrayList<String[]> lsInfo = null;

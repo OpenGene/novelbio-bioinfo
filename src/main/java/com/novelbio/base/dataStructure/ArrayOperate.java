@@ -239,4 +239,51 @@ public class ArrayOperate {
 		}
 		return lsResult;
 	}
+	
+	
+	/**
+	 * 颠倒数组，直接性将传入的数组倒置，不返回东西
+	 * @param array
+	 */
+	public static void convertArray(int[] array) 
+	{
+		int tmpValue=0;
+		int arrayLength=array.length;
+		for (int i = 0; i < arrayLength/2; i++) {
+			tmpValue=array[arrayLength-1-i];
+			array[arrayLength-1-i]=array[i];
+			array[i]=tmpValue;
+		}
+	}
+	
+	/**
+	 * 颠倒数组，直接性将传入的数组倒置，不返回东西
+	 * @param array
+	 */
+	public static void convertArray(double[] array) 
+	{
+		double tmpValue=0;
+		int arrayLength=array.length;
+		for (int i = 0; i < arrayLength/2; i++) {
+			tmpValue=array[arrayLength-1-i];
+			array[arrayLength-1-i]=array[i];
+			array[i]=tmpValue;
+		}
+	}
+	
+	/**
+	 * 颠倒数组，直接性将传入的数组倒置，不返回东西
+	 * @param array
+	 */
+	public static<T> void convertArray(T[] array) 
+	{
+		T tmpValue=null;
+		int arrayLength=array.length;
+		for (int i = 0; i < arrayLength/2; i++) {
+			tmpValue=array[arrayLength-1-i];
+			array[arrayLength-1-i]=array[i];
+			array[i]=tmpValue;
+		}
+	}
+	
 }

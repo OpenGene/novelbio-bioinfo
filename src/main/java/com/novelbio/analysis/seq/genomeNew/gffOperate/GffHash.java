@@ -18,17 +18,42 @@ import org.apache.log4j.Logger;
  */
 public abstract class GffHash {	
 	
-	Logger logger = Logger.getLogger(GffHash.class);
-	public GffHash(String gfffilename) {
-		try {
-			ReadGffarray(gfffilename);
-		} catch (Exception e) {
-			logger.error("read file error"+gfffilename);
-			e.printStackTrace();
-		}
-		
+	/**
+	 * 起点默认为开区间
+	 */
+	int startRegion = 1;
+	/**
+	 * 起点是否为闭区间，不是则为开区间，<br>
+	 * False: 开区间的意思是，24表示从0开始计数的24位，也就是实际的25位<br>
+	 * True: 闭区间的意思是，24就代表第24位<br>
+	 * UCSC的默认文件的起点是开区间
+	 */
+	public void setStartRegion(boolean region) {
+		if (region) 
+			this.startRegion = 0;
+		else 
+			this.startRegion = 1;
+	}
+	/**
+	 * 终点默认为闭区间
+	 */
+	int endRegion = 0;
+	/**
+	 * 起点是否为闭区间，不是则为开区间，<br>
+	 * False: 开区间的意思是，24表示从0开始计数的24位，也就是实际的25位<br>
+	 * True: 闭区间的意思是，24就代表第24位<br>
+	 * UCSC的默认文件的终点是闭区间间
+	 */
+	public void setEndRegion(boolean region) {
+		if (region) 
+			this.endRegion = 0;
+		else 
+			this.endRegion = 1;
 	}
 	
+	
+	
+	Logger logger = Logger.getLogger(GffHash.class);
 	/**
 	 * 哈希表LOC--LOC细节<br>
 	 * 用于快速将LOC编号对应到LOC的细节<br>
@@ -204,7 +229,7 @@ public abstract class GffHash {
 		} while ((endnum - beginnum) > 1);
 		LocInfo[1] = beginnum;
 		LocInfo[2] = endnum;
-		if (Coordinate <= Loclist.get(beginnum).getNumStart())// 不知道会不会出现PeakNumber比biginnum小的情况
+		if (Coordinate <= Loclist.get(beginnum).getNumEnd())// 不知道会不会出现PeakNumber比biginnum小的情况
 		{ // location在基因内部
 			LocInfo[0] = 1;
 			return LocInfo;
@@ -231,7 +256,7 @@ public abstract class GffHash {
 	 * （LOCID）--LOCIDList，按顺序保存LOCID,只能用于随机查找基因，不建议通过其获得某基因的序号<br/>
 	 * @throws Exception 
 	 */
-	protected abstract void ReadGffarray(String gfffilename) throws Exception;
+	public abstract void ReadGffarray(String gfffilename) throws Exception;
 
 	/**
 	 * 需要覆盖

@@ -12,13 +12,14 @@ import com.google.common.base.Splitter;
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast;
+import com.novelbio.analysis.guiRun.BlastGUI.GUI.GuiBlastJpanel;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.service.ServAnno;
 
 
 
-public class CtrlAnno extends SwingWorker<ArrayList<String[]>, ProgressData>
+public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData>
 {
 	/**
 	 * 是否需要blast
@@ -40,8 +41,8 @@ public class CtrlAnno extends SwingWorker<ArrayList<String[]>, ProgressData>
 	/**
 	 * 界面对象
 	 */
-	GUIBlast guiBlast;
-	
+//	GUIBlast guiBlast;
+	GuiBlastJpanel guiBlast;
 	/**
 	 * 
 	 * @param blast
@@ -50,7 +51,8 @@ public class CtrlAnno extends SwingWorker<ArrayList<String[]>, ProgressData>
 	 * @param evalue
 	 * @param guiBlast
 	 */
-	public CtrlAnno(boolean blast, int taxID, int StaxID, double evalue,GUIBlast guiBlast) {
+//	public CtrlBlastAnno(boolean blast, int taxID, int StaxID, double evalue,GUIBlast guiBlast) {
+	public CtrlBlastAnno(boolean blast, int taxID, int StaxID, double evalue,GuiBlastJpanel guiBlast) {
 		this.blast = blast;
 		this.taxID = taxID;
 		this.StaxID = StaxID;

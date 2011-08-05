@@ -30,7 +30,7 @@ import com.novelbio.database.service.ServGo;
 public class GoFisherNew {
 	
 //	static String Rworkspace="/media/winE/Bioinformatics/R/practice_script/platform/";
-	
+
 	/**
 	 * 需要和R脚本中的路径相统一
 	 */
@@ -42,7 +42,7 @@ public class GoFisherNew {
 //	static String Rresult="/media/winE/Bioinformatics/R/practice_script/platform/GoFisher/GOAnalysis.txt";
 
 	/**
-	 * 用ElimFisher的方法进行Cluster的GO分析，
+	 * 用ElimFisher的方法进行Cluster的GO分析，没做好
 	 * @param geneFileXls
 	 * @param GOClass   P: biological Process F:molecular Function C: cellular Component
 	 * @param colID 选择差异基因中的哪两列。0：accID，1：ID
@@ -118,6 +118,7 @@ public class GoFisherNew {
 	public static void getGoRunElim(String geneFileXls,boolean sepID,String GOClass,int[] colID, double up,double down,String backGroundFile,int QtaxID,
 			boolean blast, int StaxID,double evalue, String resultExcel2003,String resultPicName,String[] prix,int NumGo) throws Exception
 	{
+		FileOperate.delAllFile(NovelBioConst.R_WORKSPACE_TOPGO);
 		colID[0]--;colID[1]--;
 		ExcelOperate excelGeneID = new ExcelOperate();
 		excelGeneID.openExcel(geneFileXls);
@@ -151,28 +152,31 @@ public class GoFisherNew {
 		
 		ExcelOperate excelResult = new ExcelOperate();
 		excelResult.openExcel(resultExcel2003);
+		ArrayList<ArrayList<String[]>> lsBGGenGoInfo = QgeneID2Go.getGenGoInfo(lsGeneBG, QtaxID, GOClass, sepID, blast, evalue, StaxID);
 		
 		if (lsGeneUpCope.size()>0) {
-			ArrayList<ArrayList<String[]>> lsResult = getElimFisher(prix[0],lsGeneUpCope, lsGeneBG, GOClass, sepID, QtaxID, blast, StaxID, evalue,NumGo);
+			ArrayList<ArrayList<String[]>> lsResult = getElimFisher(prix[0],lsGeneUpCope, lsBGGenGoInfo, GOClass, sepID, QtaxID, blast, StaxID, evalue,NumGo);
 			excelResult.WriteExcel(prix[0]+"GoAnalysis", 1, 1, lsResult.get(0), true);
 			excelResult.WriteExcel(prix[0]+"GO2Gene", 1, 1,lsResult.get(1) , true);
 			excelResult.WriteExcel(prix[0]+"Gene2GO", 1, 1,lsResult.get(2) , true);
 
-			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, 
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP+prix[0], 
 					FileOperate.getParentPathName(resultPicName), FileOperate.getFileName(resultPicName)+prix[0]+".pdf",true);
-			
 		}
 		if (lsGeneDownCope.size()>0) {
-			ArrayList<ArrayList<String[]>> lsResult =getElimFisher(prix[1],lsGeneDownCope, lsGeneBG, GOClass, sepID, QtaxID, blast, StaxID, evalue,NumGo);
+			
+			
+			ArrayList<ArrayList<String[]>> lsResult =getElimFisher(prix[1],lsGeneDownCope, lsBGGenGoInfo, GOClass, sepID, QtaxID, blast, StaxID, evalue,NumGo);
 			excelResult.WriteExcel(prix[1]+"GoAnalysis", 1, 1, lsResult.get(0), true);
 			excelResult.WriteExcel(prix[1]+"GO2Gene", 1, 1,lsResult.get(1) , true);
 			excelResult.WriteExcel(prix[1]+"Gene2GO", 1, 1,lsResult.get(2) , true);
-			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, 
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP+prix[1], 
 					FileOperate.getParentPathName(resultPicName), FileOperate.getFileName(resultPicName)+prix[1]+".pdf",true);
 		}
 	}
 
 	/**
+	 * 生成的gomap图重命名为NovelBioConst.R_WORKSPACE_TOPGO_GOMAP+condition
 	 * @param condition 是分析哪个时期的信息 譬如上调，下调 或 背景，要和前面对应
 	 * @param lsAccID 经过整理的accID<br>
 	 * * arraylist-string[3]<br>
@@ -217,8 +221,9 @@ public class GoFisherNew {
 						title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";title2[3]="GOID";<br>
 			title2[4]="GOTerm";title2[5]="Evidenc<br>
 	 */
-	private static ArrayList<ArrayList<String[]>> getElimFisher(String condition, ArrayList<String[]>  lsAccID,ArrayList<String[]>  lsBGAccID,String GOClass, boolean sepID,int QtaxID,boolean blast, int StaxID,double evalue,int NumGOID) throws Exception
+	public static ArrayList<ArrayList<String[]>> getElimFisher(String condition, ArrayList<String[]>  lsAccID,ArrayList<ArrayList<String[]>> lsBGGenGoInfo,String GOClass, boolean sepID,int QtaxID,boolean blast, int StaxID,double evalue,int NumGOID) throws Exception
 	{
+		
 		//获得差异基因列表，geneInfo列表
 		String[] strGeneID = null;
 		ArrayList<ArrayList<String[]>> lsGenGoInfo = QgeneID2Go.getGenGoInfo(lsAccID, QtaxID, GOClass, sepID, blast, evalue, StaxID);
@@ -246,7 +251,7 @@ public class GoFisherNew {
 			lsGo2Gene = lsGenGoInfo.get(2); //这个只有在NBCfisher中才会使用
 		}
 		
-		ArrayList<ArrayList<String[]>> lsBGGenGoInfo = QgeneID2Go.getGenGoInfo(lsBGAccID, QtaxID, GOClass, sepID, blast, evalue, StaxID);
+		
 		ArrayList<String[]> lsBGGene2Go = lsBGGenGoInfo.get(1);//gene go,go,go信息
 		
 		
@@ -282,6 +287,8 @@ public class GoFisherNew {
 		txtTopGoBG.close();
 		//////////////////////////////////////////////////////////////////////
 		RElimFisher();
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, 
+				FileOperate.getParentPathName(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP), FileOperate.getFileName(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP)+condition,true);
 		//GOID对应GeneID的hash表
 		Hashtable<String,ArrayList<String>> hashGO2Gene = getGo2GeneBG( NovelBioConst.R_WORKSPACE_TOPGO_GOINFO);
 		ArrayList<String> lsGeneID = new ArrayList<String>();
@@ -289,6 +296,9 @@ public class GoFisherNew {
 			lsGeneID.add(strGeneID[i]);
 		}
 		ArrayList<String[]> lsResultTable = getElimFisherTable(NovelBioConst.R_WORKSPACE_TOPGO_GORESULT);
+		
+		
+		
 		//////////////////////将结果中的每一个GO都获得其相应的Gene并在arrayList中保存/////////////////////////////////////////////
 		/**
 		 * 0:GOID
@@ -370,8 +380,8 @@ public class GoFisherNew {
 	
 	private static void RElimFisher() throws Exception{
 		//这个就是相对路径，必须在当前文件夹下运行
-		String command="Rscript "+NovelBioConst.R_WORKSPACE_TOPGO_RSCRIPT;
-		Runtime   r=Runtime.getRuntime();
+		String command=NovelBioConst.R_SCRIPT + NovelBioConst.R_WORKSPACE_TOPGO_RSCRIPT;
+		Runtime r=Runtime.getRuntime();
 		Process p = r.exec(command);
 		p.waitFor();
 	}
@@ -506,7 +516,7 @@ public class GoFisherNew {
 	}
 
 	/**
-	 * 	 * 用ElimFisher的方法进行GO分析
+	 * 	 * 用NBC的方法进行GO分析
 	 * @param geneFileXls
 	 * @param sepID
 	 * @param GOClass P: biological Process F:molecular Function C: cellular Component
@@ -555,9 +565,10 @@ public class GoFisherNew {
 		
 		ExcelOperate excelResult = new ExcelOperate();
 		excelResult.openExcel(resultExcel2003);
-		
+		ArrayList<ArrayList<String[]>> lsGoInfoBG = QgeneID2Go.getGenGoInfo(lsGeneBG, QtaxID, GOClass, sepID, blast, evalue, StaxID);
+
 		if (lsGeneUpCope.size()>0) {
-			ArrayList<ArrayList<String[]>> lsResult = getNBCFisher(prix[0],lsGeneUpCope, lsGeneBG, GOClass, sepID, QtaxID, blast, StaxID, evalue);
+			ArrayList<ArrayList<String[]>> lsResult = getNBCFisher(prix[0],lsGeneUpCope, lsGoInfoBG, GOClass, sepID, QtaxID, blast, StaxID, evalue);
 			excelResult.WriteExcel(prix[0]+"GoAnalysis", 1, 1, lsResult.get(0), true);
 			excelResult.WriteExcel(prix[0]+"Gene2GO", 1, 1,lsResult.get(1) , true);
 			if (blast) {
@@ -565,7 +576,7 @@ public class GoFisherNew {
 			}
 		}
 		if (lsGeneDownCope.size()>0) {
-			ArrayList<ArrayList<String[]>> lsResult =getNBCFisher(prix[1],lsGeneDownCope, lsGeneBG, GOClass, sepID, QtaxID, blast, StaxID, evalue);
+			ArrayList<ArrayList<String[]>> lsResult =getNBCFisher(prix[1],lsGeneDownCope, lsGoInfoBG, GOClass, sepID, QtaxID, blast, StaxID, evalue);
 			excelResult.WriteExcel(prix[1]+"GoAnalysis", 1, 1, lsResult.get(0), true);
 			excelResult.WriteExcel(prix[1]+"Gene2GO", 1, 1,lsResult.get(1) , true);
 			if (blast) {
@@ -624,19 +635,17 @@ public class GoFisherNew {
 	 * title[5]="subjectSymbol“<br>
 		title[6]="P-Value";title[7]="FDR";title[8]="Enrichment";title[9]="(-log2P)<br>
 	 */
-	public static ArrayList<ArrayList<String[]>> getNBCFisher(String condition,ArrayList<String[]> lsAccID,ArrayList<String[]> lsBGAccID,String GOClass,boolean sepID,int QtaxID,
+	public static ArrayList<ArrayList<String[]>> getNBCFisher(String condition,ArrayList<String[]> lsAccID, ArrayList<ArrayList<String[]>> lsGoInfoBG,String GOClass,boolean sepID,int QtaxID,
 			boolean blast,int StaxID,double evalue) throws Exception
 	{
 		///////////////////  获得数据  ////////////////////////////////////////////////////////////
 		ArrayList<ArrayList<String[]>> lsGoInfo = QgeneID2Go.getGenGoInfo(lsAccID, QtaxID, GOClass, sepID, blast, evalue, StaxID);
-		ArrayList<ArrayList<String[]>> lsGoInfoBG = QgeneID2Go.getGenGoInfo(lsBGAccID, QtaxID, GOClass, sepID, blast, evalue, StaxID);
 		ArrayList<String[]> lsGeneInfo = lsGoInfo.get(0);
 		ArrayList<String[]> lsGene2Go =  lsGoInfo.get(1);
 		ArrayList<String[]> lsGo2Gen = null;
 		if (blast) {
 			lsGo2Gen = lsGoInfo.get(2);
 		}
-		
 		ArrayList<String[]> lsGene2GoBG = lsGoInfoBG.get(1);
 		ArrayList<String[]> lsFisherResult = FisherTest.getFisherResult(lsGene2Go, lsGene2GoBG, new ItemInfo() {
 			public String[] getItemName(String ItemID) {

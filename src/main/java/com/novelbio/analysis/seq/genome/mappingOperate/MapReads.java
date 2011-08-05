@@ -216,7 +216,7 @@ public class MapReads {
 		 for (int i = 0; i < SumLength; i++) 
 		 {
 			 int[] tmpSumReads=new int[invNum];//将总的chrBpReads里的每一段提取出来
-			 int sumStart=i*invNum+1;int k=0;//k是里面tmpSumReads的下标，实际下标就行，不用-1
+			 int sumStart = i*invNum + 1;int k=0;//k是里面tmpSumReads的下标，实际下标就行，不用-1
 			 for (int j =sumStart; j <sumStart+invNum; j++) 
 			 {
 				 tmpSumReads[k]=chrBpReads[j];

@@ -36,20 +36,27 @@ public class GffGeneIsoInfo {
 	public static final int COD_LOCUTR_OUT = 0;	
 	
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
-	public GffGeneIsoInfo(String IsoName) {
+	public GffGeneIsoInfo(String IsoName,boolean cis5to3, GffDetailGene gffDetailGene) {
 		this.IsoName = IsoName;
+		this.cis5to3 = cis5to3;
+		this.gffDetailGene = gffDetailGene;
 	}
+	
+//	/**
+//	 * 仅仅初始化给查找时用
+//	 * @param IsoName
+//	 * @param lsIsoform
+//	 */
+//	protected GffGeneIsoInfo(String IsoName, ArrayList<int[]> lsIsoform, boolean cis5to3) {
+//		this.IsoName = IsoName;
+//		this.lsIsoform = lsIsoform;
+//		this.cis5to3 = cis5to3;
+//	}
 	/**
 	 * 仅仅初始化给查找时用
 	 * @param IsoName
 	 * @param lsIsoform
 	 */
-	protected GffGeneIsoInfo(String IsoName, ArrayList<int[]> lsIsoform, boolean cis5to3) {
-		this.IsoName = IsoName;
-		this.lsIsoform = lsIsoform;
-		this.cis5to3 = cis5to3;
-	}
-	
 	protected GffGeneIsoInfo(GffGeneIsoInfo gffGeneIsoInfo) {
 		this.ATGsite = gffGeneIsoInfo.ATGsite;
 		this.cis5to3 = gffGeneIsoInfo.cis5to3;
@@ -57,8 +64,26 @@ public class GffGeneIsoInfo {
 		this.lengthIso = gffGeneIsoInfo.lengthIso;
 		this.lsIsoform = gffGeneIsoInfo.lsIsoform;
 		this.UAGsite = gffGeneIsoInfo.UAGsite;
+		this.mRNA = gffGeneIsoInfo.mRNA;
+		this.gffDetailGene = gffGeneIsoInfo.gffDetailGene;
+	}
+	GffDetailGene gffDetailGene;
+	public GffDetailGene getThisGffDetailGene() {
+		return gffDetailGene;
 	}
 	boolean cis5to3 = true;
+	public boolean isCis5to3() {
+		return cis5to3;
+	}
+	protected boolean mRNA = true;
+	/**
+	 * 是否是mRNA有atg和uag，
+	 * 暂时只能使用UCSCgene
+	 * @return
+	 */
+	public boolean ismRNA() {
+		return mRNA;
+	}
 	
 	/**
 	 * 该转录本的ATG的第一个字符坐标，从1开始计数
@@ -208,24 +233,15 @@ public class GffGeneIsoInfo {
 	 * @return
 	 */
 	public int getTSSsite() {
-		if (cis5to3) {
-			return lsIsoform.get(0)[0];
-		}
-		else {
-			return lsIsoform.get(lsIsoform.size() -1)[1];
-		}
+		return lsIsoform.get(0)[0];
 	}
 	/**
 	 * 该转录本的Coding region end的最后一个字符坐标，从1开始计数，是闭区间
 	 * @return
 	 */
 	public int getTESsite() {
-		if (!cis5to3) {
-			return lsIsoform.get(0)[0];
-		}
-		else {
-			return lsIsoform.get(lsIsoform.size() -1)[1];
-		}
+		return lsIsoform.get(lsIsoform.size() -1)[1];
+		
 	}
 	/**
 	 * 获得5UTR的长度

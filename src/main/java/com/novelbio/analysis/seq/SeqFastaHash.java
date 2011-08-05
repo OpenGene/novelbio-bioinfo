@@ -39,6 +39,15 @@ public class SeqFastaHash {
 	 */
 	public ArrayList<String> lsSeqName;
 	
+	public HashMap<String, Long> hashLength = new HashMap<String, Long>();
+	/**
+	 * 返回该seq组里面每条序列的长度
+	 * @return
+	 */
+	public HashMap<String,Long> getHashLength() {
+		return this.hashLength;
+	}
+	
 	/**
 	 * 读取序列文件，将序列保存入Seqhash哈希表<br/>
 	 * 读取完毕后，生成<br/>
@@ -117,6 +126,7 @@ public class SeqFastaHash {
 		if (tmpSeq == null) {
 			hashSeq.put(seqFasta.getSeqName(), seqFasta);
 			lsSeqName.add(seqFasta.getSeqName());
+			hashLength.put(seqFasta.getSeqName(), (long) seq.length());
 		} else {// 对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
 			if (append)
 			 { //连续向后加上"<"直到hash中没有这条名字为止，然后装入hash表
@@ -126,12 +136,14 @@ public class SeqFastaHash {
 				 }
 				 hashSeq.put(seqFasta.getSeqName(), seqFasta);
 				 lsSeqName.add(seqFasta.getSeqName());
+				 hashLength.put(seqFasta.getSeqName(), (long) seq.length());
 			 }
 			 else 
 			 {
 				if (tmpSeq.getSeq().length()<seqFasta.getSeq().length()) 
 				{
 					hashSeq.put(seqFasta.getSeqName(), seqFasta);
+					hashLength.put(seqFasta.getSeqName(), (long) seq.length());
 					//因为已经有了同名的序列，所以 lsSeqName 中不需要添加新的名字
 				}
 			}
@@ -143,17 +155,18 @@ public class SeqFastaHash {
 	 * @param SeqID 序列名称
 	 * @param chr 序列参数之序列名，用来在哈希表中查找具体某条序列
 	 * @param cisseq序列正反向，蛋白序列就输true
+	 * 如果没有序列则返回null
 	 */
 	public String getsequence(String SeqID,boolean cisseq) 
 	{
-	    if (cisseq)
-	    {
-	    	return hashSeq.get(SeqID).getSeq();
-	    }
-	    else 
-	    {
-		  return hashSeq.get(SeqID).getSeqRC();	
+		if (hashSeq.containsKey(SeqID)) {
+			if (cisseq) {
+				return hashSeq.get(SeqID).getSeq();
+			} else {
+				return hashSeq.get(SeqID).getSeqRC();
+			}
 		}
+	   return null;
 	}
 	
 	/**
@@ -188,6 +201,24 @@ public class SeqFastaHash {
 			return "没有该序列 " +seqID;
 		}
 		return targetChr.getsequence(startlocation, endlocation);
+	}
+	
+	/**
+	 * 比较两个序列是否一致，计数不一致的碱基数
+	 * 从头开始比较，可以有空格
+	 */
+	public static int compare2Seq(String seq1, String seq2) {
+		char[] chrSeq1 = seq1.trim().toLowerCase().toCharArray();
+		char[] chrSeq2 = seq2.trim().toLowerCase().toCharArray();
+		int result = 0;
+		int i = Math.min(chrSeq1.length, chrSeq2.length);
+		for (int j = 0; j < i; j++) {
+			if (chrSeq1[j] != chrSeq2[j]) {
+				result ++ ;
+			}
+		}
+		result = result + Math.max(chrSeq1.length, chrSeq2.length) - i;
+		return result;
 	}
 }
 
@@ -343,6 +374,8 @@ class SeqFasta {
 		return recomseq.toString();
 	}
 
+	
+	
 }
 
 

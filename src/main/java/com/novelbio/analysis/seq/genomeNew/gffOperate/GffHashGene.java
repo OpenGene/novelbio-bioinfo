@@ -9,10 +9,6 @@ import java.util.Map.Entry;
 
 public abstract class GffHashGene extends GffHash
 {
-	public GffHashGene(String gfffilename) throws Exception {
-		super(gfffilename);
-		// TODO Auto-generated constructor stub
-	}
 	/**
 	 * 	返回外显子总长度，内含子总长度等信息，只统计最长转录本的信息
 	 * 有问题

@@ -196,7 +196,7 @@ public abstract class SeqComb {
 	 * 返回该tag的第一个碱基在序列上的位置，从0开始记数
 	 * 也就是该polyA前面有多少个碱基，可以直接用substring(0,return)来截取
 	 */
-	public static int polyATrim(String seqIn, int numMM) {
+	public static int trimPolyA(String seqIn, int numMM) {
 		seqIn = seqIn.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		int numMismatch = 0; int numA = 0;
@@ -214,6 +214,7 @@ public abstract class SeqComb {
 				return i+con;//把最后不是a的还的加回去
 			}
 		}
+		System.out.println(seqIn);
 		return -1;
 	}
 	

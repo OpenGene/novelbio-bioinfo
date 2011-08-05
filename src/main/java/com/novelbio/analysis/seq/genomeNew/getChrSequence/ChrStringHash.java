@@ -47,7 +47,7 @@ public class ChrStringHash {
 	/**
 	 * 保存chrID和chrLength的对应关系
 	 */
-	Hashtable<String, Long> hashChrLength = new Hashtable<String, Long>();
+	HashMap<String, Long> hashChrLength = new HashMap<String, Long>();
 
 	/**
 	 * 碱基互补配对表
@@ -85,7 +85,22 @@ public class ChrStringHash {
 	 * @throws Exception 
 	 * @throws IOException
 	 */
-	public ChrStringHash(String chrFilePath) throws Exception {
+	public ChrStringHash(String chrFilePath) 
+	{
+		try {
+			setChrFile(chrFilePath);
+		} catch (Exception e) {
+			logger.error("读取序列文件出错 "+chrFilePath);
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * 设定序列文件夹
+	 * @throws FileNotFoundException 
+	 */
+	private void setChrFile(String chrFilePath) throws Exception
+	{
+
 		if (compMap == null) {
 			compmapFill();
 		}
@@ -124,8 +139,8 @@ public class ChrStringHash {
 			hashBufChrSeqFile.put(chrFileName[0].toLowerCase(), bufChrSeq);
 		}
 		getChrLength();
+	
 	}
-
 	private void getChrLength() throws IOException {
 		Iterator iter = hashChrSeqFile.entrySet().iterator();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();// 存放最后结果
@@ -189,7 +204,8 @@ public class ChrStringHash {
 		startlocation--;
 		RandomAccessFile chrRASeqFile = hashChrSeqFile.get(chrID.toLowerCase());// 判断文件是否存在
 		if (chrRASeqFile == null) {
-			return "ChrStringHash.getSeq: 底层染色体格式错误或者无该染色体";
+			logger.error( "无该染色体: "+ chrID);
+			return null;
 		}
 		int startrowBias = 0;
 		int endrowBias = 0;
@@ -212,20 +228,20 @@ public class ChrStringHash {
 		/**
 		 * 如果位点超过了范围，那么修正位点
 		 */
-		if (startlocation < 1 || startRealCod >= lengthChrSeq
+		if (startlocation < 0 || startRealCod >= lengthChrSeq
 				|| endlocation < 1 || endRealCod >= lengthChrSeq) {
-			logger.error(chrID + startlocation + " " + endlocation + " 染色体坐标错误");
-			return "ChrStringHash.getSeq: 染色体坐标错误";
+			logger.error(chrID + " " + startlocation + " " + endlocation + " 染色体坐标错误");
+			return null;
 		}
 
 		if (endlocation <= startlocation) {
-			logger.error(chrID + startlocation + " " + endlocation + " 体坐标错误");
-			return "ChrStringHash.getSeq: 坐标错误";
-		}
-		if (endlocation - startlocation > 20000) {
-			logger.error(chrID + startlocation + " " + endlocation
+			logger.error(chrID + " "+ startlocation + " " + endlocation + " 体坐标错误");
+			return null;
+			}
+		if (endlocation - startlocation > 200000) {
+			logger.error(chrID + " " + startlocation + " " + endlocation
 					+ " 最多提取20000bp");
-			return "ChrStringHash.getSeq: 最多提取20000bp";
+			return null;
 		}
 		// 定到目标坐标
 		StringBuilder sequence = new StringBuilder();
@@ -249,7 +265,7 @@ public class ChrStringHash {
 
 	/**
 	 * * 输入染色体list信息 输入序列坐标以及是否为反向互补,其中ChrID为 chr1，chr2，chr10类型 返回序列
-	 * 
+	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
 	 * @param cisseq
 	 *            正反向
 	 * @param chrID
@@ -268,7 +284,10 @@ public class ChrStringHash {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if (cisseq) {
+		if (sequence == null) {
+			return null;
+		}
+		if (cisseq ) {
 			return sequence;
 		} else {
 			return resCompSeq(sequence, compMap);
@@ -276,8 +295,8 @@ public class ChrStringHash {
 	}
 
 	/**
-	 * 给出染色体编号位置和方向返回序列
-	 * 
+	 * 给出染色体编号位置和方向返回序列<br>
+	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
 	 * @param chrlocation染色体编号方向如
 	 *            ：Chr:1000-2000,自动将chrID小写,chrID采用正则表达式抓取，无所谓大小写，会自动转变为小写
 	 * @param cisseq方向
@@ -291,7 +310,8 @@ public class ChrStringHash {
 		Matcher matcher;
 		matcher = pattern.matcher(chrlocation);
 		if (!matcher.find()) {
-			return "ReadSite染色体格式错误";
+			logger.error("ReadSite染色体格式错误"+ chrlocation);
+			return null;
 		}
 		String chr = matcher.group();
 
@@ -310,14 +330,15 @@ public class ChrStringHash {
 		}
 		if (i > 2 || location[1] <= location[0]) {
 			logger.error(chrlocation + " " + cisseq + " 染色体位置错误");
-			return chrlocation + " " + cisseq + " 染色体位置错误";
+			return null;
 		}
 		return getSeq(cisseq, chr.toLowerCase(), location[0], location[1]);
 	}
 
 	/**
 	 * 给出peak位点，查找指定范围的sequence,chr采用正则表达式抓取，无所谓大小写，会自动转变为小写
-	 * 
+	 * <br>
+	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
 	 * @param chr
 	 *            ,
 	 * @param peaklocation
@@ -417,10 +438,10 @@ public class ChrStringHash {
 
 	/**
 	 * 返回chrID和chrLength的对应关系
-	 * 
+	 * chrID通通小写
 	 * @return
 	 */
-	public Hashtable<String, Long> getHashChrLength() {
+	public HashMap<String, Long> getHashChrLength() {
 		return hashChrLength;
 	}
 
@@ -478,4 +499,80 @@ public class ChrStringHash {
 		}
 		return chrLengtharray;
 	}
+	
+	
+	/**
+	 * <br>
+	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
+	 * @param cisseq 正反向
+	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
+	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
+	 */
+	public String getSeq(boolean cisseq, String chrID,ArrayList<int[]> lsInfo, boolean getIntron) {
+		if (!hashChrSeqFile.containsKey(chrID.toLowerCase())) {
+			logger.error("没有该染色体： "+chrID);
+			return null;
+		}
+		
+		String result = ""; boolean cis5to3 = true;
+		int[] exon1 = lsInfo.get(0);
+		if (exon1[0] > exon1[1]) {
+			cis5to3 = false;
+		}
+		if (cis5to3) {
+			for (int i = 0; i < lsInfo.size(); i++) {
+				int[] exon = lsInfo.get(i);
+				try {	
+					result = result + getSeq(chrID, exon[0], exon[1]).toUpperCase(); 
+					if (getIntron && i < lsInfo.size()-1) {
+						result = result + getSeq(chrID,exon[1]+1, lsInfo.get(i+1)[0]-1).toLowerCase();
+					}
+				} catch (IOException e) {e.printStackTrace();}
+			}
+		}
+		else {
+			for (int i = lsInfo.size() - 1; i >= 0; i--) {
+				int[] exon = lsInfo.get(i);
+				try {	
+					result = result + getSeq(chrID, exon[1], exon[0]).toUpperCase(); 
+					if (getIntron && i > 0) {
+						result = result + getSeq(chrID,exon[0] + 1, lsInfo.get(i-1)[1] - 1).toLowerCase();
+					}
+				} catch (IOException e) {e.printStackTrace();}
+			}
+		}
+		if (!cisseq) {
+			result = resCompSeq(result, compMap);
+		}
+		return result;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

@@ -13,6 +13,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.annotation.copeID.FisherTest;
 import com.novelbio.analysis.annotation.copeID.ItemInfo;
@@ -38,7 +41,7 @@ import com.novelbio.database.service.ServAnno;
  *
  */
 public class PathEnrichNew {
-	
+	private static final Logger logger = Logger.getLogger(PathEnrichNew.class);
 	
 	/**
 	 * 保存每个探针对应的symbol/accessID，description和pathway,最开始得到的时候没加标题
@@ -56,20 +59,24 @@ public class PathEnrichNew {
 	 */
 	static ArrayList<String[]> lsGeneInfo;
 	
-	
 	/**
 	 * 在getPath2Keg时生成，返回当时那个输入的ArrayList<String[]> lsAcc2GenID
 	 * 中所有含有pathway的基因，用于作为fisher检验的数量值。
 	 */
 	static HashSet<String>hashGeneNum;
 	
+	public static HashSet<String> gethashGeneNum() {
+		return hashGeneNum;
+	}
 	
+	static String geneFile = "";
 	
 	public static void getPathRun(String geneFileXls, int QtaxID, int[] colID,boolean sepID, double up,double down,String[] prix,String bgFile,String resultExcel2003,boolean blast,double evalue,int subTaxID) throws Exception
 	{
 		colID[0]--;colID[1]--;
 		ExcelOperate excelGeneID = new ExcelOperate();
 		excelGeneID.openExcel(geneFileXls);
+		geneFile = geneFileXls;
 		int rowCount = excelGeneID.getRowCount();
 		int colCount = excelGeneID.getColCount(2);
 		String[][] geneID = excelGeneID.ReadExcel(2, 1,rowCount, colCount);
@@ -100,15 +107,17 @@ public class PathEnrichNew {
 		ArrayList<String[]> lsGeneDownCope = CopeID.getGenID(prix[1],lsGeneDown, QtaxID,sepID);
 		ArrayList<String[]> lsGeneBG = CopeID.getGenID("BG",lsBGID, QtaxID,sepID);
 		
+		HashMap<String, ArrayList<String[]>> hashBGgene = getPath2Keg(lsGeneBG,QtaxID,blast,subTaxID,evalue);
+		int geneBackGroundNum = hashGeneNum.size();
 		ExcelOperate excelResult = new ExcelOperate();
 		excelResult.openExcel(resultExcel2003);
 		if (lsGeneUpCope.size()>0) {
-			ArrayList<ArrayList<String[]>> lsResult = getPathEnrich(prix[0],lsGeneUpCope, lsGeneBG, sepID,QtaxID, blast, subTaxID,evalue);
+			ArrayList<ArrayList<String[]>> lsResult = getPathEnrich(prix[0],lsGeneUpCope, hashBGgene, sepID,QtaxID, blast, subTaxID,evalue,geneBackGroundNum);
 			excelResult.WriteExcel(prix[0]+"PathAnalysis", 1, 1, lsResult.get(0), true);
 			excelResult.WriteExcel(prix[0]+"Gene2Path", 1, 1, lsResult.get(1), true);
 		}
 		if (lsGeneDownCope.size()>0) {
-			ArrayList<ArrayList<String[]>> lsResult = getPathEnrich(prix[1],lsGeneDownCope, lsGeneBG, sepID,QtaxID, blast, subTaxID,evalue);
+			ArrayList<ArrayList<String[]>> lsResult = getPathEnrich(prix[1],lsGeneDownCope, hashBGgene, sepID,QtaxID, blast, subTaxID,evalue,geneBackGroundNum);
 			excelResult.WriteExcel(prix[1]+"PathAnalysis", 1, 1, lsResult.get(0), true);
 			excelResult.WriteExcel(prix[1]+"Gene2Path", 1, 1, lsResult.get(1), true);
 		}
@@ -118,7 +127,6 @@ public class PathEnrichNew {
 	
 	
 	/**
-	 * 
 	 * @param lsGene
 	 *  arrayList-string[3] :
 0: ID类型："geneID"或"uniID"或"accID"
@@ -134,7 +142,8 @@ public class PathEnrichNew {
 	 * @param blast
 	 * @param subTaxID
 	 * @param evalue
-	 * @return ArrayList-ArrayList-String[]
+	 * @return 没有就返回null <br> 
+	 * ArrayList-ArrayList-String[]
 	 * 两个arraylist
 	 * 第一个：lsFisherResult
 	 * title[0]="PathID";title[1]="PathTitle";title[2]="DifGene";title[3]="AllDifGene";title[4]="GeneInPathID";
@@ -150,15 +159,15 @@ public class PathEnrichNew {
 	 * 
 	 * @throws Exception
 	 */
-	public static ArrayList<ArrayList<String[]>> getPathEnrich(String condition,ArrayList<String[]> lsGene, ArrayList<String[]> lsBG,boolean sepID,int queryTaxID,boolean blast, int subTaxID,double evalue) throws Exception
+	public static ArrayList<ArrayList<String[]>> getPathEnrich(String condition,ArrayList<String[]> lsGene, HashMap<String, ArrayList<String[]>> hashBGgene,boolean sepID,int queryTaxID,boolean blast, int subTaxID,double evalue, int geneBackGroundNum) throws Exception
 	{
 		HashMap<String, ArrayList<String[]>> hashGene = getPath2Keg(lsGene, queryTaxID, blast, subTaxID, evalue);
+		if (hashGene == null || hashGene.size() == 0) {
+			return null;
+		}
 		int geneUpNum = hashGeneNum.size(); 
 		ArrayList<String[]> lsThisGeneInfo = lsGeneInfo;
-
-		HashMap<String, ArrayList<String[]>> hashBGgene = getPath2Keg(lsBG,queryTaxID,blast,subTaxID,evalue);
-		int geneBackGroundNum = hashGeneNum.size();
-		
+				
 		ArrayList<String[]> lsFisherResult = FisherTest.getFisherResult(hashGene, geneUpNum, hashBGgene, geneBackGroundNum, 
 				new ItemInfo() 
 		{
@@ -170,6 +179,10 @@ public class PathEnrichNew {
 				return tmpInfo;
 			}
 		});
+		if (lsFisherResult == null) {
+			logger.error("Hash表有基因但是 Fisher检验没有结果，文件： "+ geneFile+" ，条件： "+condition);
+			return null;
+		}
 		ArrayList<String[]> lsPathInfoResult = ArrayOperate.combArrayListHash(lsFisherResult, lsThisGeneInfo, 0, 2);
 		
 		
@@ -251,7 +264,7 @@ public class PathEnrichNew {
 	 * @param evalue
 	 * @return
 	 */
-	private static HashMap<String, ArrayList<String[]>> getPath2Keg(ArrayList<String[]> lsAcc2GenID,int queryTaxID,boolean blast, int subTaxID,double evalue) 
+	public static HashMap<String, ArrayList<String[]>> getPath2Keg(ArrayList<String[]> lsAcc2GenID,int queryTaxID,boolean blast, int subTaxID,double evalue) 
 	{
 		lsGeneInfo = new ArrayList<String[]>();
 		hashGeneNum =new HashSet<String>();

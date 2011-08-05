@@ -173,19 +173,16 @@ public class Soap2Bed {
 		txtOut1.setParameter(outPut1, true, false);
 		TxtReadandWrite txtOutLong = new TxtReadandWrite();
 		txtOutLong.setParameter(outLong, true, false);
-		
-		String[] string = txtSoap.readFirstLines(1).get(0).split("\t");
-		int bpLength = string[1].trim().length();
-		
-		
 		String content = "";
 		BufferedReader readSoap = txtSoap.readfile();
 		while ((content = readSoap.readLine()) != null) {
 			if (content.trim().equals("")) {
 				continue;
 			}
+			
 			String[] ss = content.split("\t");
-			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
+			int bpLength = ss[1].trim().length();
+			String tmpres = ss[7] + "\t"+ (Integer.parseInt(ss[8]) - 1) +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 			txtOut1.writefile(tmpres+"\n");
 			if (ss[6].equals("+")) {
 //////////////////////////////////////////////////序列质量////////////////////////////////////////////////
@@ -194,7 +191,7 @@ public class Soap2Bed {
 					continue;
 				}
 ////////////////////////////////////////////////////////////////////////////////////////////////			
-				String tmpres2 = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+349)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
+				String tmpres2 = ss[7] + "\t"+ (Integer.parseInt(ss[8]) - 1) +"\t"+ (Long.parseLong(ss[8])+299)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 				txtOutLong.writefile(tmpres2+"\n");
 			}
 			else {
@@ -204,7 +201,7 @@ public class Soap2Bed {
 					continue;
 				}
 ////////////////////////////////////////////////////////////////////////////////////////////////
-				String tmpres2 = ss[7] + "\t"+ (Long.parseLong(ss[8])+bpLength-350) +"\t"+(Long.parseLong(ss[8])+bpLength-1) +"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
+				String tmpres2 = ss[7] + "\t"+ (Long.parseLong(ss[8])+bpLength-301) +"\t"+(Long.parseLong(ss[8])+bpLength-1) +"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 				txtOutLong.writefile(tmpres2+"\n");
 			}
 		}
@@ -231,12 +228,7 @@ public class Soap2Bed {
 		
 		TxtReadandWrite txtOuterror = new TxtReadandWrite();
 		txtOuterror.setParameter(outError, true, false);
-		
-		String[] string = txtSoap.readFirstLines(1).get(0).split("\t");
-		int bpLength = string[1].trim().length();
-		
-		
-		
+	
 		String content = "";
 		BufferedReader readSoap = txtSoap.readfile();
 		String tmpcontent=""; String tmp = "";String tmpPrespre = "";
@@ -246,6 +238,7 @@ public class Soap2Bed {
 				continue;
 			}
 			String[] ss = content.split("\t");
+			int bpLength = ss[1].trim().length();
 			//soap文件的格式是 chrID 坐标 无论mapping到正负链，该坐标都是起点，都是要向后加上bpLength-1的，
 			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+bpLength-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 			//tmpPrespre only save content while ss[0].split("#/")[1].equals("1")

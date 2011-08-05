@@ -41,8 +41,12 @@ public class GffHashPlantGene extends GffHashGene{
 	 * Species.ARABIDOPSIS和DB.equals(Species.RICE
 	 * @throws Exception
 	 */
-	public GffHashPlantGene(String gfffilename, String DB) throws Exception {
-		super(gfffilename);
+	public GffHashPlantGene(String DB) throws Exception {
+		setDB(DB);
+	}
+	
+	private void setDB(String DB)
+	{
 		if (DB.equals(Species.ARABIDOPSIS)) {
 			GeneName="AT\\w{1}G\\d{5}";
 			splitmRNA="(?<=AT\\w{1}G\\d{5}\\.)\\d";
@@ -51,9 +55,7 @@ public class GffHashPlantGene extends GffHashGene{
 			GeneName="LOC_Os\\d{2}g\\d{5}";
 			splitmRNA="(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";
 		}
-		// TODO Auto-generated constructor stub
 	}
-
 	/**
 	 * 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  "AT\\w{1}G\\d{5}"
 	 * 水稻是 "LOC_Os\\d{2}g\\d{5}";
@@ -114,7 +116,7 @@ public class GffHashPlantGene extends GffHashGene{
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起： NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
-   protected void ReadGffarray(String gfffilename) throws Exception
+   public void ReadGffarray(String gfffilename) throws Exception
    {
 	   setHashName();
 		// 实例化四个表

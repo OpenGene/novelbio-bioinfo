@@ -8,6 +8,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 
 /**
+ * 本开闭区间已经设定
+ * UCSC的默认文件的起点是开区间，终点为闭区间。水稻拟南芥的还没有设定开闭区间
  * 专门读取UCSC的gene坐标文件,读取时从第二行读起
  * 读取完毕后可统计内含子外显子的数目
  * group:Genes and Gene Prediction Tracks
@@ -19,10 +21,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  */
 public class GffHashUCSCgene extends GffHashGene
 {
-	public GffHashUCSCgene(String gfffilename) throws Exception {
-		super(gfffilename);
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @Override
@@ -42,7 +40,7 @@ public class GffHashUCSCgene extends GffHashGene
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起，用斜线分割"/"： NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
-	protected void ReadGffarray(String gfffilename) throws Exception {
+	public void ReadGffarray(String gfffilename) throws Exception {
 
 		// 实例化四个表
 		Chrhash = new HashMap<String, ArrayList<GffDetailAbs>>();// 一个哈希表来存储每条染色体
@@ -87,13 +85,13 @@ public class GffHashUCSCgene extends GffHashGene
 					&& // 如果转录本方向不同，那就新开一个转录本
 					geneInfo[2].equals("+") == (lastGffdetailUCSCgene = (GffDetailGene) LOCList.get(LOCList.size() - 1)).cis5to3
 					&&
-					Integer.parseInt(geneInfo[3]) < lastGffdetailUCSCgene.numberend)
+					Integer.parseInt(geneInfo[3])+startRegion < lastGffdetailUCSCgene.numberend)
 			{
 				// 修改基因起点和终点
-				if (Integer.parseInt(geneInfo[3]) < lastGffdetailUCSCgene.numberstart)
-					lastGffdetailUCSCgene.numberstart = Integer.parseInt(geneInfo[3]);
-				if (Integer.parseInt(geneInfo[4]) > lastGffdetailUCSCgene.numberend)
-					lastGffdetailUCSCgene.numberend = Integer.parseInt(geneInfo[4]);
+				if (Integer.parseInt(geneInfo[3])+startRegion < lastGffdetailUCSCgene.numberstart)
+					lastGffdetailUCSCgene.numberstart = Integer.parseInt(geneInfo[3])+startRegion;
+				if (Integer.parseInt(geneInfo[4])+endRegion > lastGffdetailUCSCgene.numberend)
+					lastGffdetailUCSCgene.numberend = Integer.parseInt(geneInfo[4])+endRegion;
 
 				// 将本基因(转录本)的ID装入locString中
 				lastGffdetailUCSCgene.locString = lastGffdetailUCSCgene.locString + "/" + geneInfo[0];
@@ -101,11 +99,11 @@ public class GffHashUCSCgene extends GffHashGene
 				// 添加一个转录本，然后将相应信息:
 				// 第一项是该转录本的Coding region start，第二项是该转录本的Coding region
 				// end,从第三项开始是该转录本的Exon坐标信息
-				lastGffdetailUCSCgene.addATGUAG(Integer.parseInt(geneInfo[5]),Integer.parseInt(geneInfo[6]));
+				lastGffdetailUCSCgene.addATGUAG(Integer.parseInt(geneInfo[5])+startRegion,Integer.parseInt(geneInfo[6])+endRegion);
 				
 				int exonCount = Integer.parseInt(geneInfo[7]);
 				for (int i = 0; i < exonCount; i++) {
-					lastGffdetailUCSCgene.addExonUCSC(Integer.parseInt(exonStarts[i]), Integer.parseInt(exonEnds[i]));
+					lastGffdetailUCSCgene.addExonUCSC(Integer.parseInt(exonStarts[i])+startRegion, Integer.parseInt(exonEnds[i])+endRegion);
 				}
 				// 将基因(转录本ID)装入LOCList
 				LOCIDList.add(geneInfo[0]);
@@ -120,16 +118,16 @@ public class GffHashUCSCgene extends GffHashGene
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			// 添加新基因
 			GffDetailGene gffDetailUCSCgene = new GffDetailGene(chrnametmpString, geneInfo[0], geneInfo[2].equals("+"));
-			gffDetailUCSCgene.numberstart = Integer.parseInt(geneInfo[3]);
-			gffDetailUCSCgene.numberend = Integer.parseInt(geneInfo[4]);
+			gffDetailUCSCgene.numberstart = Integer.parseInt(geneInfo[3])+startRegion;
+			gffDetailUCSCgene.numberend = Integer.parseInt(geneInfo[4])+endRegion;
 			gffDetailUCSCgene.addsplitlist(geneInfo[0]);
 			// 添加一个转录本，然后将相应信息:
 			// 第一项是该转录本的Coding region start，第二项是该转录本的Coding region
 			// end,从第三项开始是该转录本的Exon坐标信息
-			gffDetailUCSCgene.addATGUAG(Integer.parseInt(geneInfo[5]),Integer.parseInt(geneInfo[6]));
+			gffDetailUCSCgene.addATGUAG(Integer.parseInt(geneInfo[5])+startRegion,Integer.parseInt(geneInfo[6])+endRegion);
 			int exonCount = Integer.parseInt(geneInfo[7]);
 			for (int i = 0; i < exonCount; i++) {
-				gffDetailUCSCgene.addExonUCSC(Integer.parseInt(exonStarts[i]),Integer.parseInt(exonEnds[i]));
+				gffDetailUCSCgene.addExonUCSC(Integer.parseInt(exonStarts[i])+startRegion,Integer.parseInt(exonEnds[i])+endRegion);
 			}
 			LOCList.add(gffDetailUCSCgene);
 			LOCIDList.add(geneInfo[0]);

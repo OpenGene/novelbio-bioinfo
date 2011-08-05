@@ -1,28 +1,19 @@
 package com.novelbio.analysis.guiRun.BlastGUI.GUI;
 
-import java.awt.BorderLayout;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
-
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -34,6 +25,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -41,13 +33,10 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
-
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.SwingUtilities;
 
-import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastAnno;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastGo;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlOther;
@@ -55,8 +44,6 @@ import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastPath;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.gui.CtrlNormal;
-
-
 
 
 /**
@@ -71,7 +58,7 @@ import com.novelbio.base.gui.CtrlNormal;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class GUIBlast extends javax.swing.JFrame {
+public class GuiBlastJpanel extends JPanel{
 	private JTextArea jTxtGenID;
 	private JLabel jLbGeneID;
 	private JScrollPane jScrollPane1;
@@ -90,13 +77,8 @@ public class GUIBlast extends javax.swing.JFrame {
 	private JButton jBtnSaveGO;
 	private JSeparator jSeparator1;
 	private JButton jBtnSaveAno;
-	private JMenu jMenu2;
 
-	private JMenuItem jMenuItem2;
 	private AbstractAction abstractAction1;
-	private JMenuItem jMenuOpenFile;
-	private JMenu jMenu1;
-	private JMenuBar jMenuBar1;
 	private JButton jBtnGetFile;
 	private JCheckBox jChBlast;
 	private JTable jTabFAnno;
@@ -105,253 +87,67 @@ public class GUIBlast extends javax.swing.JFrame {
 	private DefaultTableModel jTabAnno;
 	private DefaultTableModel jTabGoandPath;
 	
-	static GUIBlast inst;
 	static int QtaxID = 0;//查询物种ID
 	static int StaxID = 9606;//blast物种ID
 	String GoClass = "";
 	
+	static GuiBlastJpanel guiBlastJpanel;
 	
 	/**
 	 * 一次最多查询的个数
 	 */
 	static int numLimit = 100000;
 	
-	/**
-	* Auto-generated main method to display this JFrame
-	*/
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				inst = new GUIBlast();
-				inst.setLocationRelativeTo(null);
-				inst.setVisible(true);
-				inst.setTitle("NovelBio DataBase Query System");
-				Image im = Toolkit.getDefaultToolkit().getImage("/media/winE/NBC/宣传/LOGO/favicon.png");
-				inst.setIconImage(im);
-				
-				//inst.setMinimumSize(new Dimension(500,100));
-			}
-		});
-	}
-	
-	public GUIBlast() {
-		super();
-		initGUI();
-	}
-	
-	private void initGUI() {
-		try {
-			buttonGroup1 = new ButtonGroup();
-			GroupLayout thisLayout = new GroupLayout((JComponent)getContentPane());
-			getContentPane().setLayout(thisLayout);
-			//用这个就无法通过点击小红叉来关闭窗口
-			setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-			this.setResizable(true);
-			this.setMinimumSize(new java.awt.Dimension(900, 600));
-			this.addWindowListener(new WindowAdapter() {
-				public void windowClosing(WindowEvent evt) {
-					if ((ctrlAnno != null && !ctrlAnno.isDone())
-							|| ctrlGo != null && !ctrlGo.isDone()
-							|| ctrlPath != null && !ctrlPath.isDone()
-							) {
-						int sel = JOptionPane.showConfirmDialog(null,"Are you sure to exit?", "confirm exit", JOptionPane.YES_NO_OPTION);
-						if (sel == JOptionPane.YES_OPTION) {
-							try {
-								ctrlAnno.cancel(true);
-								ctrlGo.cancel(true);
-								ctrlPath.cancel(true);
-							} catch (Exception e) {}
-							evt.getWindow().dispose();
-							System.exit(0);
-						}
-					}
-					else {
-						evt.getWindow().dispose();
-						System.exit(0);
-					}
-					thisWindowClosing(evt);
-				}
-			});
-			{
-				jMenuBar1 = new JMenuBar();
-				setJMenuBar(jMenuBar1);
-				{
-					jMenu1 = new JMenu();
-					jMenuBar1.add(jMenu1);
-					jMenuBar1.add(getJMenu2());
-					jMenu1.setText("File");
-					{
-						jMenuOpenFile = new JMenuItem();
-						jMenu1.add(jMenuOpenFile);
- 						jMenuOpenFile.setText("OpenFile");
-						jMenuOpenFile.setAction(getAbstractAction1());
-					}
-				}
-			}
-			
-			
-			{
-				jScroxTxtGeneID = new JScrollPane();
-				{
-					jTxtGenID = new JTextArea();
-					jScroxTxtGeneID.setViewportView(jTxtGenID);
-					//jTxtGenID.setPreferredSize(new java.awt.Dimension(173, 247));
-				}
-			}
-			{
-				jLbGeneID = new JLabel();
-				jLbGeneID.setText("Enter GeneID");
-			}
-			{
-				jBtnGetFile = new JButton();
-				jBtnGetFile.setText("OpenFile");
-				jBtnGetFile.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent evt) {
-						setJTxtFrame();
-					}
-				});
-			}
-			{
-				jChBlast = new JCheckBox();
-				jChBlast.setText("blast2human");
-				jChBlast.setMargin(new java.awt.Insets(0, 0, 0, 0));
-			}
-			{
-				jScrollPane1 = new JScrollPane();
-				jScrlGOTable = new JScrollPane();
-			}
-				thisLayout.setVerticalGroup(thisLayout.createSequentialGroup()
-					.addGroup(thisLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-					    .addComponent(jLbGeneID, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(jBtnGetFile, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(getJLblCond(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(getJCobTaxSelect(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(getJLabelTax(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					.addGroup(thisLayout.createParallelGroup()
-					    .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					        .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 230, GroupLayout.PREFERRED_SIZE)
-					        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					        .addGroup(thisLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-					            .addComponent(jChBlast, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-					            .addComponent(getJBtnSaveAno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					            .addComponent(getJBtnAnno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-					        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					        .addComponent(getJSeparator1(), GroupLayout.PREFERRED_SIZE, 6, GroupLayout.PREFERRED_SIZE)
-					        .addGap(6))
-					    .addComponent(jScroxTxtGeneID, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 274, GroupLayout.PREFERRED_SIZE))
-					.addGroup(thisLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-					    .addComponent(getJBtnSaveGO(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(getJRadioButtonGO(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(getJRadioButtonPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(getJBtnGoPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(getJLbGOandPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-					    .addComponent(getJCmbGOClassSelect(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					.addComponent(getJScrlGOTable(), GroupLayout.PREFERRED_SIZE, 264, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 1, Short.MAX_VALUE)
-					.addComponent(getJProgressBar1(), GroupLayout.PREFERRED_SIZE, 9, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(24, 24));
-				thisLayout.setHorizontalGroup(thisLayout.createParallelGroup()
-					.addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					    .addComponent(getJProgressBar1(), 0, 938, Short.MAX_VALUE)
-					    .addContainerGap())
-					.addGroup(thisLayout.createSequentialGroup()
-					    .addGap(7)
-					    .addGroup(thisLayout.createParallelGroup()
-					        .addGroup(thisLayout.createSequentialGroup()
-					            .addGroup(thisLayout.createParallelGroup()
-					                .addComponent(getJLbGOandPath(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 205, GroupLayout.PREFERRED_SIZE)
-					                .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					                    .addComponent(jScroxTxtGeneID, GroupLayout.PREFERRED_SIZE, 199, GroupLayout.PREFERRED_SIZE)
-					                    .addGap(6))
-					                .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					                    .addComponent(jLbGeneID, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
-					                    .addComponent(jBtnGetFile, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
-					                    .addGap(6)))
-					            .addGroup(thisLayout.createParallelGroup()
-					                .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					                    .addComponent(getJBtnGoPath(), GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
-					                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					                    .addGroup(thisLayout.createParallelGroup()
-					                        .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					                            .addComponent(getJRadioButtonGO(), GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE)
-					                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					                            .addComponent(getJCmbGOClassSelect(), 0, 200, Short.MAX_VALUE)
-					                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					                            .addComponent(getJRadioButtonPath(), GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
-					                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					                            .addGroup(thisLayout.createParallelGroup()
-					                                .addComponent(getJBtnSaveGO(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
-					                                .addComponent(getJBtnSaveAno(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
-					                            .addGap(47))
-					                        .addComponent(getJSeparator1(), GroupLayout.Alignment.LEADING, 0, 625, Short.MAX_VALUE)))
-					                .addComponent(jScrollPane1, GroupLayout.Alignment.LEADING, 0, 726, Short.MAX_VALUE)
-					                .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					                    .addGroup(thisLayout.createParallelGroup()
-					                        .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					                            .addGap(24)
-					                            .addComponent(getJLblCond(), GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE))
-					                        .addGroup(GroupLayout.Alignment.LEADING, thisLayout.createSequentialGroup()
-					                            .addComponent(jChBlast, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
-					                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					                            .addComponent(getJBtnAnno(), GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
-					                            .addGap(122)))
-					                    .addGap(0, 17, Short.MAX_VALUE)
-					                    .addComponent(getJLabelTax(), GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
-					                    .addComponent(getJCobTaxSelect(), GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE))))
-					        .addComponent(getJScrlGOTable(), GroupLayout.Alignment.LEADING, 0, 931, Short.MAX_VALUE))
-					    .addContainerGap()));
-			pack();
-			this.setSize(960, 697);
-		} catch (Exception e) {
-		    //add your error handling code here
-			e.printStackTrace();
+	public static GuiBlastJpanel getGuiBlastJpanel() 
+	{
+		if (guiBlastJpanel == null) {
+			guiBlastJpanel = new GuiBlastJpanel();
+			GroupLayout jPanBlastLayout = new GroupLayout((JComponent)guiBlastJpanel);
+			guiBlastJpanel.setLayout(jPanBlastLayout);
+
+
+			guiBlastJpanel.setPreferredSize(new java.awt.Dimension(1046, 630));
+			guiBlastJpanel.setAlignmentX(0.0f);
+			guiBlastJpanel.setComponent();
+			guiBlastJpanel.setGroup(jPanBlastLayout);
 		}
+		return guiBlastJpanel;
 	}
-	//菜单上的文件选择项
-	private AbstractAction getAbstractAction1() {
-		if(abstractAction1 == null) {
-			abstractAction1 = new AbstractAction("OpenFile", null) {
-				public void actionPerformed(ActionEvent evt) 
-				{
+	private void setComponent() {
+		buttonGroup1 = new ButtonGroup();
+		{
+			jScroxTxtGeneID = new JScrollPane();
+			{
+				jTxtGenID = new JTextArea();
+				jScroxTxtGeneID.setViewportView(jTxtGenID);
+				//jTxtGenID.setPreferredSize(new java.awt.Dimension(173, 247));
+			}
+		}
+		{
+			jLbGeneID = new JLabel();
+			jLbGeneID.setText("Enter GeneID");
+		}
+		{
+			jBtnGetFile = new JButton();
+			jBtnGetFile.setText("OpenFile");
+			jBtnGetFile.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
 					setJTxtFrame();
 				}
-			};
-		}
-		return abstractAction1;
-	}
-	
-	private JMenu getJMenu2() {
-		if(jMenu2 == null) {
-			jMenu2 = new JMenu();
-			jMenu2.setText("Help");
-			jMenu2.add(getJMenuItem2());
-		}
-		return jMenu2;
-	}
-	
-	private JMenuItem getJMenuItem2() {
-		if(jMenuItem2 == null) {
-			jMenuItem2 = new JMenuItem();
-			jMenuItem2.setText("About");
-			jMenuItem2.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) 
-				{
-					if (nbcjDialog ==null) {
-						nbcjDialog = new NBCJDialog(GUIBlast.this);
-					}
-					
-					nbcjDialog.setVisible(true);
-					
-				}
 			});
 		}
-		return jMenuItem2;
+		{
+			jChBlast = new JCheckBox();
+			jChBlast.setText("blast2human");
+			jChBlast.setMargin(new java.awt.Insets(0, 0, 0, 0));
+		}
+		{
+			jScrollPane1 = new JScrollPane();
+			jScrlGOTable = new JScrollPane();
+		}
+	
 	}
 	
-
-
 	public JButton getJBtnSaveAno() {
 		if(jBtnSaveAno == null) {
 			jBtnSaveAno = new JButton();
@@ -398,6 +194,94 @@ public class GUIBlast extends javax.swing.JFrame {
 		}
 		return jBtnSaveGO;
 	}
+	
+	private void setGroup(GroupLayout jPanBlastLayout) {
+		jPanBlastLayout.setVerticalGroup(jPanBlastLayout.createSequentialGroup()
+				.addGroup(jPanBlastLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+				    .addComponent(jLbGeneID, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+				    .addComponent(jBtnGetFile, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+				    .addComponent(getJLblCond(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				    .addComponent(getJCobTaxSelect(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				    .addComponent(getJLabelTax(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(jPanBlastLayout.createParallelGroup()
+				    .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+				        .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 230, GroupLayout.PREFERRED_SIZE)
+				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				        .addGroup(jPanBlastLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+				            .addComponent(jChBlast, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+				            .addComponent(getJBtnSaveAno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				            .addComponent(getJBtnAnno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				        .addComponent(getJSeparator1(), GroupLayout.PREFERRED_SIZE, 6, GroupLayout.PREFERRED_SIZE)
+				        .addGap(6))
+				    .addComponent(jScroxTxtGeneID, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 274, GroupLayout.PREFERRED_SIZE))
+				.addGroup(jPanBlastLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+				    .addComponent(getJBtnSaveGO(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				    .addComponent(getJRadioButtonGO(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				    .addComponent(getJRadioButtonPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				    .addComponent(getJBtnGoPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				    .addComponent(getJLbGOandPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				    .addComponent(getJCmbGOClassSelect(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(getJScrlGOTable(), GroupLayout.PREFERRED_SIZE, 264, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 1, Short.MAX_VALUE)
+				.addComponent(getJProgressBar1(), GroupLayout.PREFERRED_SIZE, 9, GroupLayout.PREFERRED_SIZE)
+				.addContainerGap());
+			jPanBlastLayout.setHorizontalGroup(jPanBlastLayout.createParallelGroup()
+				.addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+				    .addComponent(getJProgressBar1(), 0, 1034, Short.MAX_VALUE)
+				    .addContainerGap())
+				.addGroup(jPanBlastLayout.createSequentialGroup()
+				    .addGap(7)
+				    .addGroup(jPanBlastLayout.createParallelGroup()
+				        .addGroup(jPanBlastLayout.createSequentialGroup()
+				            .addGroup(jPanBlastLayout.createParallelGroup()
+				                .addComponent(getJLbGOandPath(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 205, GroupLayout.PREFERRED_SIZE)
+				                .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+				                    .addComponent(jScroxTxtGeneID, GroupLayout.PREFERRED_SIZE, 199, GroupLayout.PREFERRED_SIZE)
+				                    .addGap(6))
+				                .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+				                    .addComponent(jLbGeneID, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
+				                    .addComponent(jBtnGetFile, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
+				                    .addGap(6)))
+				            .addGroup(jPanBlastLayout.createParallelGroup()
+				                .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+				                    .addComponent(getJBtnGoPath(), GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
+				                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				                    .addGroup(jPanBlastLayout.createParallelGroup()
+				                        .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+				                            .addComponent(getJRadioButtonGO(), GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE)
+				                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				                            .addComponent(getJCmbGOClassSelect(), 0, 296, Short.MAX_VALUE)
+				                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				                            .addComponent(getJRadioButtonPath(), GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
+				                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				                            .addGroup(jPanBlastLayout.createParallelGroup()
+				                                .addComponent(getJBtnSaveGO(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
+				                                .addComponent(getJBtnSaveAno(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
+				                            .addGap(47))
+				                        .addComponent(getJSeparator1(), GroupLayout.Alignment.LEADING, 0, 721, Short.MAX_VALUE)))
+				                .addComponent(jScrollPane1, GroupLayout.Alignment.LEADING, 0, 822, Short.MAX_VALUE)
+				                .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+				                    .addGroup(jPanBlastLayout.createParallelGroup()
+				                        .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+				                            .addGap(24)
+				                            .addComponent(getJLblCond(), GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE))
+				                        .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+				                            .addComponent(jChBlast, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
+				                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				                            .addComponent(getJBtnAnno(), GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
+				                            .addGap(122)))
+				                    .addGap(0, 113, Short.MAX_VALUE)
+				                    .addComponent(getJLabelTax(), GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+				                    .addComponent(getJCobTaxSelect(), GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE)
+				                    .addGap(6))))
+				        .addComponent(getJScrlGOTable(), GroupLayout.Alignment.LEADING, 0, 1027, Short.MAX_VALUE))
+				    .addContainerGap()));
+	}
+	
+	
 	
 	public JProgressBar getJProgressBar1() {
 		if(jProgressBar1 == null) {
@@ -508,7 +392,7 @@ public class GUIBlast extends javax.swing.JFrame {
 								jTabFAnno.setModel(jTabAnno);
 							}
 						}
-						ctrlAnno = new CtrlBlastAnno(blast, QtaxID, StaxID, 1e-10, inst);
+						ctrlAnno = new CtrlBlastAnno(blast, QtaxID, StaxID, 1e-10, guiBlastJpanel);
 						ctrlAnno.prepare(lsGenID2);
 						ctrlAnno.execute();
 						
@@ -587,7 +471,7 @@ public class GUIBlast extends javax.swing.JFrame {
 								jTabFGoandPath.setModel(jTabGoandPath);
 							}
 						}
-						ctrlGo = new CtrlBlastGo(blast, QtaxID, StaxID, 1e-10, inst,GoClass);
+						ctrlGo = new CtrlBlastGo(blast, QtaxID, StaxID, 1e-10, guiBlastJpanel,GoClass);
 						ctrlGo.prepare(lsGenID2);
 						ctrlGo.execute();
 						//ctrlAnno.done();
@@ -622,7 +506,7 @@ public class GUIBlast extends javax.swing.JFrame {
 								jTabFGoandPath.setModel(jTabGoandPath);
 							}
 						}
-						ctrlPath = new CtrlBlastPath(blast, QtaxID, StaxID, 1e-10, inst);
+						ctrlPath = new CtrlBlastPath(blast, QtaxID, StaxID, 1e-10, guiBlastJpanel);
 						ctrlPath.prepare(lsGenID2);
 						ctrlPath.execute();
 						//ctrlAnno.done();
@@ -812,5 +696,4 @@ public class GUIBlast extends javax.swing.JFrame {
 	}
 
 	NBCJDialog nbcjDialog;
-	
 }

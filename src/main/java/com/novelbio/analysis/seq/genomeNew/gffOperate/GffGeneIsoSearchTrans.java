@@ -5,61 +5,11 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-public class GffGeneIsoSearchTans extends GffGeneIsoSearch{
-	private static final Logger logger = Logger.getLogger(GffGeneIsoSearchTans.class);
-	public GffGeneIsoSearchTans(GffGeneIsoInfo gffGeneIsoInfo, int coord) {
+public class GffGeneIsoSearchTrans extends GffGeneIsoSearch{
+	private static final Logger logger = Logger.getLogger(GffGeneIsoSearchTrans.class);
+	public GffGeneIsoSearchTrans(GffGeneIsoInfo gffGeneIsoInfo, int coord) {
 		super(gffGeneIsoInfo, coord);
 		// TODO Auto-generated constructor stub
-	}
-
-	@Override
-	protected void codSearchNum() {
-
-		if (    coord < lsIsoform.get(0)[0] || 
-				coord > lsIsoform.get(lsIsoform.size()-1)[1]  )  	{
-			codLoc = COD_LOC_OUT;
-		}
-		//    5-1  5-0    4-1  4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1 0-tss  cood
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		cod2ATG = ATGsite -coord; //  GTAnnnC   CnnngtA
-		cod2UAG = UAGsite - coord; //GaunnC    CnnGAU
-		cod2TSS = lsIsoform.get(0)[0] - coord;
-		cod2TES =  lsIsoform.get(lsIsoform.size() - 1)[1] - coord;
-		boolean flag = false; //false表示coord比最后一个外显子的最后一位还大，也就是下面的循环没有能将flag设置为true,那就是3UTR，并且设为在外显子
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		if (codLoc == COD_LOC_OUT) {
-			return;
-		}
-		for(int i = 0; i < lsIsoform.size(); i++)  //一个一个Exon的检查
-		{
-			if (coord > lsIsoform.get(lsIsoform.size()-1)[0]) {
-				 logger.error("coord is out of the isoform, but the codLoc is: "+codLoc+" coord: "+ coord + IsoName);
-			}
-			//		    5-1 cood 5-0    4-1 uag 4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			if(coord >= lsIsoform.get(i)[1] && coord <= lsIsoform.get(i)[0]) {
-				flag = true;
-				codLoc = COD_LOC_EXON;
-				numExIntron = i + 1;
-				if (coord > ATGsite) { // 坐标大于atg，在5‘UTR中,也是在外显子中
-					codLocUTR = COD_LOCUTR_5UTR;
-				}
-				if (coord < UAGsite) { // 大于cds起始区，在3‘UTR中
-					codLocUTR = COD_LOCUTR_3UTR;
-				}
-				break;// 跳出本转录本的检查，开始上一层的循环，检查下一个转录本
-			}
-			//		    5-1 5-0  cood  4-1 uag 4-0     3-1 3-0         2-1 2-0    1-1 gta 1-0    0-1 0-tss  cood
-			else if (i <= lsIsoform.size() - 2 && coord < lsIsoform.get(i)[1] && coord > lsIsoform.get(i+1)[0])
-			{
-				flag=true; codLoc = COD_LOC_INTRON;
-				numExIntron = i + 1;
-				break; // 跳出本转录本的检查，开始上一层的循环，检查下一个转录本
-			}
-		}
-		if (flag == false) {    //比最后一个外显子的最后一位还大，也就是上面的循环没有能将flag设置为true,那就是3UTR，并且设为在外显子
-			logger.error("coord is out of the isoform, but the codLoc is: "+codLoc+" coord: "+ coord + IsoName);
-		}
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	}
 
 	@Override
@@ -144,7 +94,7 @@ public class GffGeneIsoSearchTans extends GffGeneIsoSearch{
 		int NumExon = numExIntron - 1; //实际数量减去1，方法内用该变量运算
 		cod2TSSmRNA = 0; cod2TESmRNA = 0;
 		//  5-1 5-0    4-1 cood  4-0     3-1 uag 3-0           2-1 2-0       1-1 cood 1-0       0-1 0-tss  cood
-		for (int i = 0; i < NumExon; i--) {
+		for (int i = 0; i < NumExon; i++) {
 			cod2TSSmRNA = cod2TSSmRNA + lsIsoform.get(i)[0] - lsIsoform.get(i)[1] +1;
 		}
 		cod2TSSmRNA = cod2TSSmRNA + cod2ExInStart;
@@ -168,27 +118,38 @@ public class GffGeneIsoSearchTans extends GffGeneIsoSearch{
 		}
 		//当coord在ATG下游时,为正数
 		if (codLocUTR != COD_LOCUTR_5UTR) {
-			//  5-1 5-0    4-1 cood  4-0     3-1 gau 3-0           2-1 cood 2-0       1-1 gta 1-0       0-1 0-tss  cood
-			for (int i = 0; i < NumExon; i++) {
-				if (lsIsoform.get(i)[1] > ATGsite) {
-					continue;
-				}
-				if (lsIsoform.get(i)[0] >= ATGsite && lsIsoform.get(i)[1] <= ATGsite) {
-					cod2ATGmRNA = ATGsite - lsIsoform.get(i)[1] + 1; // Atgnn   nnnnC
-					continue;
-				}
-				cod2ATGmRNA = cod2ATGmRNA + lsIsoform.get(i)[0] - lsIsoform.get(i)[1] +1;
+			if (NumExon  == getLocExInNum(ATGsite) - 1) {
+				cod2ATGmRNA = -(coord - ATGsite);
 			}
-			cod2ATGmRNA = cod2ATGmRNA + cod2ExInStart;
+			else {
+				//  5-1 5-0    4-1 cood  4-0     3-1 gau 3-0           2-1 cood 2-0       1-1 gta 1-0       0-1 0-tss  cood
+				for (int i = 0; i < NumExon; i++) {
+					if (lsIsoform.get(i)[1] > ATGsite) {
+						continue;
+					}
+					if (lsIsoform.get(i)[0] >= ATGsite && lsIsoform.get(i)[1] <= ATGsite) {
+						cod2ATGmRNA = ATGsite - lsIsoform.get(i)[1] + 1; // Atgnn   nnnnC
+						continue;
+					}
+					cod2ATGmRNA = cod2ATGmRNA + lsIsoform.get(i)[0] - lsIsoform.get(i)[1] +1;
+				}
+				cod2ATGmRNA = cod2ATGmRNA + cod2ExInStart;
+			}
+
 		}
 		//当coord在UAG上游时,为负数
 		if (codLocUTR != COD_LOCUTR_3UTR) {
+				if (NumExon  == getLocExInNum(UAGsite) - 1) {
+					cod2UAGmRNA = -(coord - UAGsite);
+					return;
+				}
+				
 			//  5-1 5-0    4-1 cood  4-0     3-1 gau 3-0           2-1 2-0       1-1 cood 1-0       0-1 0-tss  cood
 			for (int i = NumExon + 1; i < lsIsoform.size(); i++) {
-				if (lsIsoform.get(i)[0] > UAGsite) {
+				if (lsIsoform.get(i)[0] < UAGsite) {
 					break;
 				}
-				if (lsIsoform.get(i)[0] <= UAGsite && lsIsoform.get(i)[1] >= UAGsite) {
+				if (lsIsoform.get(i)[0] >= UAGsite && lsIsoform.get(i)[1] <= UAGsite) {
 					cod2UAGmRNA = cod2UAGmRNA + lsIsoform.get(i)[0] - UAGsite + 1; // Gaunn nnn nnC
 					break;
 				}
@@ -198,15 +159,15 @@ public class GffGeneIsoSearchTans extends GffGeneIsoSearch{
 		}
 	}
 	/**
-	 * 保存某个坐标和所在的内含子外显子数目
-	 */
-	HashMap<Integer, Integer> hashLocExInNum = new HashMap<Integer, Integer>();
-	/**
-	 * @param location 该点坐标
+	 * @param location 该点坐标在第几个外显子或内含子中
 	 * @return
 	 */
+	@Override
 	protected int getLocExInNum(int location) {
-		if (hashLocExInNum.containsKey(location)) {
+		if (hashLocExInNum == null) {
+			hashLocExInNum = new HashMap<Integer, Integer>();
+		}
+		else if (hashLocExInNum.containsKey(location)) {
 			return hashLocExInNum.get(location);
 		}
 
@@ -232,16 +193,16 @@ public class GffGeneIsoSearchTans extends GffGeneIsoSearch{
 		return 0;
 	}
 	/**
-	 * 保存某个坐标到所在的内含子/外显子起点的距离
-	 */
-	HashMap<Integer, Integer> hashLocExInStart = new HashMap<Integer, Integer>();
-	/**
 	 * 坐标到外显子/内含子 起点距离
 	 * @param location 坐标
 	 *  * 该点在外显子中为正数，在内含子中为负数，为实际数目
 	 */
+	@Override
 	protected int getLoc2ExInStart(int location) {
-		if (hashLocExInStart.containsKey(location)) {
+		if (hashLocExInStart == null) {
+			hashLocExInStart = new HashMap<Integer, Integer>();
+		}
+		else if (hashLocExInStart.containsKey(location)) {
 			return hashLocExInStart.get(location);
 		}
 		int loc2ExInStart = -1000000000;   int exIntronNum = getLocExInNum(location); 	int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
@@ -258,17 +219,18 @@ public class GffGeneIsoSearchTans extends GffGeneIsoSearch{
 		}
 		return loc2ExInStart;
 	}
-	/**
-	 * 保存某个坐标到所在的内含子/外显子终点的距离
-	 */
-	HashMap<Integer, Integer> hashLocExInEnd = new HashMap<Integer, Integer>();
+
 	/**
 	 * 坐标到外显子/内含子 终点距离
 	 * @param location 坐标
 	 *  * 该点在外显子中为正数，在内含子中为负数，为实际数目
 	 */
+	@Override
 	protected int getLoc2ExInEnd(int location) {
-		if (hashLocExInEnd.containsKey(location)) {
+		if (hashLocExInEnd == null) {
+			hashLocExInEnd = new HashMap<Integer, Integer>();
+		}
+		else if (hashLocExInEnd.containsKey(location)) {
 			return hashLocExInEnd.get(location);
 		}
 		int loc2ExInEnd = -1000000000; int exIntronNum = getLocExInNum(location); int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
@@ -286,47 +248,14 @@ public class GffGeneIsoSearchTans extends GffGeneIsoSearch{
 	}
 	
 	/**
-	 * 两个坐标之间的距离，mRNA层面，当loc1在loc2上游时，返回负数，当loc1在loc2下游时，返回正数
-	 * 要求这两个坐标都在exon上.如果不符合，则返回-1000000000
-	 * @param loc1 第一个坐标
-	 * @param loc2 第二个坐标
-	 */
-	protected int locDistance(int loc1, int loc2) {
-		//注意大小是反的
-		int locSmall = Math.max(loc1, loc2);  int locBig = Math.min(loc1, loc2);
-		int locSmallExInNum = getLocExInNum(locSmall); int locBigExInNum = getLocExInNum(locBig);
-		
-		int distance = -1000000000;
-		
-		if (locSmallExInNum <= 0 || locBigExInNum <= 0) {
-			return distance;
-		}
-		
-		locSmallExInNum--; locBigExInNum--;
-		if (locSmallExInNum == locBigExInNum) {
-			distance = locSmall - locBig;
-		}
-		else {
-//		    5-1 big 5-0    4-1 4-0     3-1 small 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			distance = getLoc2ExInEnd(locSmall) + getLoc2ExInStart(locBig);
-			for (int i = locSmallExInNum + 1; i <= locBigExInNum - 1; i++) {
-				distance = distance + lsIsoform.get(i)[0] -lsIsoform.get(i)[1] + 1;
-			}
-		}
-		if (loc1 > loc2) {
-			return -distance;
-		}
-		return distance;
-	}
-	
-	/**
 	 * 返回距离loc有num Bp的坐标，在mRNA层面，在loc上游时num 为负数
 	 * 在loc下游时num为正数
 	 * 如果num Bp外就没有基因了，则返回-1；
 	 * @param mRNAnum
 	 * NnnnLoc 为4位，当N与Loc重合时为0
 	 */
-	public int getATGdistanceSiteTrans(int location, int mRNAnum) {
+	@Override
+	public int getLocdistanceSite(int location, int mRNAnum) {
 		if (getLocExInNum(location) <= 0) {
 			return -1;
 		}
@@ -342,7 +271,7 @@ public class GffGeneIsoSearchTans extends GffGeneIsoSearch{
 					int[] tmpExon = lsIsoform.get(i);
 					// 一个一个外显子的向前遍历
 					if (remain - (tmpExon[0] - tmpExon[1] + 1) > 0) {
-						remain = remain - (tmpExon[1] - tmpExon[0] + 1);
+						remain = remain - (tmpExon[0] - tmpExon[1] + 1);
 						continue;
 					}
 					else {
@@ -362,8 +291,8 @@ public class GffGeneIsoSearchTans extends GffGeneIsoSearch{
 				for (int i = exonNum + 1; i < lsIsoform.size(); i++) {
 					int[] tmpExon = lsIsoform.get(i);
 					// 一个一个外显子的向前遍历
-					if (remain - (tmpExon[1] - tmpExon[0] + 1) > 0) {
-						remain = remain - (tmpExon[1] - tmpExon[0] + 1);
+					if (remain - (tmpExon[0] - tmpExon[1] + 1) > 0) {
+						remain = remain - (tmpExon[0] - tmpExon[1] + 1);
 						continue;
 					}
 					else {
@@ -374,4 +303,14 @@ public class GffGeneIsoSearchTans extends GffGeneIsoSearch{
 			}
 		}
 	}
+
+	@Override
+	protected void setCod2SiteAbs() {
+		cod2ATG =  ATGsite - coord; //CnnnATG    AtgnC
+		cod2UAG = UAGsite - coord; //CnuaG    UAGnnnC
+		cod2TSS = getTSSsite() - coord;
+		cod2TES = getTESsite() - coord;
+		
+	}
+
 }

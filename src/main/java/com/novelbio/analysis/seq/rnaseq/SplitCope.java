@@ -102,12 +102,6 @@ public class SplitCope {
 		if (!(addCol>=2&&addRow>=2)) {
 			return null;
 		}
-		
-		
-		
-		
-		
-		
 		String result = "";
 		for (int i = 0; i < lsIsoExp.size(); i++) {
 			String[] expStrings = lsIsoExp.get(i);

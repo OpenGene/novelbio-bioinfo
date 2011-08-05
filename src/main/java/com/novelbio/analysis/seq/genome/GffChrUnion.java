@@ -27,6 +27,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffsearchPeak;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchRepeat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchUCSCgene;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 
 
@@ -986,7 +987,7 @@ public class GffChrUnion {
 						 System.out.println(gffDetailUCSCgene.ChrID);
 						continue;
 					}
-					 MathComput.convertArray(tmpTssBin);
+					 ArrayOperate.convertArray(tmpTssBin);
 				 }
 				 tmpGeneNum++;
 				 lsTss.add(tmpTssBin);
@@ -1048,7 +1049,7 @@ public class GffChrUnion {
 						 System.out.println(gffDetailUCSCgene.ChrID);
 						continue;
 					}
-					 MathComput.convertArray(tmpTssBin);
+					 ArrayOperate.convertArray(tmpTssBin);
 				 }
 				 tmpGeneNum++;
 				 lsTss.add(tmpTssBin);
@@ -1124,7 +1125,7 @@ public class GffChrUnion {
 					 System.out.println(gffDetailUCSCgene.ChrID);
 					continue;
 				}
-				 MathComput.convertArray(tmpTssBin);
+				 ArrayOperate.convertArray(tmpTssBin);
 			 }
 			 tmpGeneNum++;
 			 lsTss.add(tmpTssBin);	
@@ -1185,7 +1186,7 @@ public class GffChrUnion {
 					 System.out.println(gffDetailUCSCgene.ChrID);
 					continue;
 				}
-				 MathComput.convertArray(tmpGeneEndBin);
+				 ArrayOperate.convertArray(tmpGeneEndBin);
 			 }
 			 tmpGeneNum++;
 			 lsGeneEnd.add(tmpGeneEndBin);
@@ -1238,7 +1239,7 @@ public class GffChrUnion {
 				 System.out.println(gffDetailUCSCgene.ChrID);
 				 return null;
 			}
-			 MathComput.convertArray(tmpTssBin);
+			 ArrayOperate.convertArray(tmpTssBin);
 		 }
 		 return tmpTssBin;
 	 }
@@ -1283,7 +1284,7 @@ public class GffChrUnion {
 				 System.out.println(gffDetailUCSCgene.ChrID);
 				return null;
 			}
-			 MathComput.convertArray(tmpGeneEndBin);
+			 ArrayOperate.convertArray(tmpGeneEndBin);
 		 }	
 		 return tmpGeneEndBin;
 	 }
@@ -1336,7 +1337,7 @@ public class GffChrUnion {
 						 System.out.println(gffDetailUCSCgene.ChrID);
 						continue;
 					}
-					 MathComput.convertArray(tmpGeneEndBin);
+					 ArrayOperate.convertArray(tmpGeneEndBin);
 				 }
 				 tmpGeneNum++;
 				lsGeneEnd.add(tmpGeneEndBin);
@@ -1397,7 +1398,7 @@ public class GffChrUnion {
 						 System.out.println(gffDetailUCSCgene.ChrID);
 						continue;
 					}
-					 MathComput.convertArray(tmpGeneEndBin);
+					 ArrayOperate.convertArray(tmpGeneEndBin);
 				 }
 				 tmpGeneNum++;
 				lsGeneEnd.add(tmpGeneEndBin);
