@@ -38,7 +38,6 @@ public class LastzAlign {
 	
 	HashMap<String, Integer> hashSeqLen = new HashMap<String, Integer>();
 	
-	
 	/**
 	 * 指定align文本，读取信息
 	 */
@@ -79,13 +78,6 @@ public class LastzAlign {
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
-	
 	/**
 	 * 获得所有序列的区间范围
 	 */
@@ -93,21 +85,7 @@ public class LastzAlign {
 		
 		//TODO: 设定序列长度
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
-
 
 /**
  * 保存最后筛选结果的类
@@ -163,51 +141,113 @@ class alignResult
 	 * @param lsAlignInfoRaw
 	 */
 	public void analysis(ArrayList<AlignInfo> lsAlignInfoRaw) {
+		if (judgeAlignInfo(lsAlignInfoRaw))
+		{
+			booAssemble = false;
+			return;
+		}
+		if (lsAlignInfoRaw.size() == 1) {
+			
+			将各项都填充好，然后返回
+			return;
+			
+		}
 		Collections.sort(lsAlignInfoRaw);
-		Graph<AlignInfo, AlignTogether> dircteWightGraph = new DirectedSparseGraph<AlignInfo, AlignTogether>();
+		DirectedSparseGraph<AlignInfo, AlignTogether> dircteWightGraph = new DirectedSparseGraph<AlignInfo, AlignTogether>();
 		
 		for (AlignInfo alignInfo : lsAlignInfoRaw) {
 			dircteWightGraph.addVertex(alignInfo);
 		}
-		for (int i = 0; i < lsAlignInfoRaw.size(); i++) {
-			for (int j = i; j < lsAlignInfoRaw.size(); j++) {
+		
+		for (int i = 0; i < lsAlignInfoRaw.size()-1; i++) {
+			for (int j = i+1; j < lsAlignInfoRaw.size(); j++) {
 				AlignInfo alignInfoStart = lsAlignInfoRaw.get(i);
 				AlignInfo alignInfoEnd = lsAlignInfoRaw.get(j);
-				if (alignInfoStart.getAlignEnd2() > alignInfoEnd.getAlignEnd2()) {
+				if (alignInfoStart.getAlignEnd2() >= alignInfoEnd.getAlignEnd2()) {
 					continue;
 				}
 				dircteWightGraph.addEdge(new AlignTogether(alignInfoStart, alignInfoEnd), alignInfoStart, alignInfoEnd);
 			}
 		}
+		ArrayList<AlignTogether> lsresult = calLongestPath(lsAlignInfoRaw, dircteWightGraph, 5);
 		
+		
+	}
+
+	
+	private void setParam(ArrayList<AlignTogether> lsAlignTogethers) {
+		AlignInfo alignInfoStart = lsAlignTogethers.get(0).getAlignInfoStart();
+		AlignInfo alignInfoEnd = lsAlignTogethers.get(lsAlignTogethers.size()-1).getAlignInfoEnd();
+		if (alignInfoStart.getAlignLen2() < seq2Len*0.2) {
+			booStartConfirm = false;
+		}
+		if (alignInfoEnd.getAlignLen2() <  seq2Len*0.2) {
+			booEndConfirm = false;
+		}
+		startSeq1 = alignInfoStart.getAlignStart1();
+		startSeq2 = alignInfoStart.getAlignStart2();
+		endSeq1 = alignInfoEnd.getAlignEnd1();
+		endSeq2 = alignInfoEnd.getAlignEnd2();
+		lsAlignInfo.add(alignInfoStart);
+		如果只有一个align，也就是lsAlignTogethers只有第一个的一半则么版
+		for (int i = 0; i < lsAlignTogethers.size(); i++) {
+			lsAlignInfo.add(lsAlignTogethers.get(i).getAlignInfoEnd());
+		}
 		
 		
 	}
 	
+	
+	
+	
+	
 	/**
 	 * 判断输入的ArrayList-AlignInfo 是否合理，主要判断依据是，
-	 * 最大的两个片段如果是重叠的--在任意一条链上有超过70%重叠，而在另一条链上距离超过query链的长度，那么就需要人工判断了
+	 * 最大的两个片段如果是重叠的--在任意一条链上有超过60%重叠，而在另一条链上距离超过query链的长度，那么就需要人工判断了
 	 * @param lsAlignInfoRaw 已经排过序了
 	 * @return
 	 */
 	private boolean judgeAlignInfo(ArrayList<AlignInfo> lsAlignInfoRaw) {
+		if (lsAlignInfoRaw.size() <= 1) {
+			return true;
+		}
 		Collections.sort(lsAlignInfoRaw, new Comp());
-		
+		AlignInfo alignInfo1 = lsAlignInfoRaw.get(0);
+		AlignInfo alignInfo2 = lsAlignInfoRaw.get(1);
+		double persentage = (double)Math.abs(alignInfo1.getAlignLen2() - alignInfo2.getAlignLen2())/Math.max(alignInfo1.getAlignLen2(),alignInfo2.getAlignLen2());
+		if (persentage >= 0.6) {//两个重叠超过0.6
+			//第一条reads
+			if (alignInfo1.getAlignStart1() < alignInfo2.getAlignStart1() && alignInfo2.getAlignStart1() - alignInfo1.getAlignEnd1()> seq2Len ) {
+				return false;
+			}
+			else if (alignInfo1.getAlignStart1() > alignInfo2.getAlignStart1() && alignInfo1.getAlignStart1() - alignInfo2.getAlignEnd1()> seq2Len) {
+				return false;
+			}
+		}
 		return true;
 	}
-	
-	
-	
-	
-	
-	
-	private void calLongestPath(ArrayList<AlignInfo> lsAlignInfoRaw,DirectedSparseGraph<AlignInfo, AlignTogether> directedSparseGraph,int seed)
+	/**
+	 * 选择排名靠前的几条align作为seed，组建最长align，并找出这些中最长的一条align，并返回
+	 * @param lsAlignInfoRaw
+	 * @param directedSparseGraph
+	 * @param seed 选择最长的几条align
+	 * @return
+	 */
+	private ArrayList<AlignTogether> calLongestPath(ArrayList<AlignInfo> lsAlignInfoRaw,DirectedSparseGraph<AlignInfo, AlignTogether> directedSparseGraph,int seed)
 	{
+		HashMap<Integer, ArrayList<AlignTogether>> hashResult = new HashMap<Integer, ArrayList<AlignTogether>>();
+		ArrayList<Integer> lsScore = new ArrayList<Integer>();//保存每个align组合的打分
 		//按照score进行排序
 		Collections.sort(lsAlignInfoRaw, new Comp());
 		for (int i = 0; i < Math.min(seed,lsAlignInfoRaw.size()); i++) {
-
+			ArrayList<AlignTogether> lsAlignTogethersTmp = getLongestPath(lsAlignInfoRaw.get(i), directedSparseGraph);
+			int score = calScore(lsAlignTogethersTmp);
+			hashResult.put(score, lsAlignTogethersTmp);
+			lsScore.add(score);
 		}
+		Collections.sort(lsScore);
+		return hashResult.get(lsScore.get(0));
+		
 	}
 	/**
 	 * 计算某个align的分数，分数越高说明越可信
