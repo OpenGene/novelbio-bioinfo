@@ -11,397 +11,28 @@ import java.util.Comparator;
 import org.apache.log4j.Logger;
 import org.tc33.jheatchart.HeatChart;
 
-import com.novelbio.analysis.generalConf.Species;
-import com.novelbio.analysis.seq.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHash;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashCG;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashPlantGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashRepeat;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashUCSCgene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsRefSeq;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
-
-
-
-
-
- 
 /**
  * 其中的ChrFa读取时候，必须将每行的换行符限定为"\n",有小工具能用
+ * 
  * @author zong0jie
- *
+ * 
  */
-public class GffChrUnionHanYanRefSeq {
-	
+public class GffChrUnionHanYanRefSeq extends GffChrHanYan{
 
 private static Logger logger = Logger.getLogger(GffChrUnionHanYanRefSeq.class);
-//////////////////////////////////////////////////参数设定/////////////////////////////////////////////////////////
 
-	/**
-	 * 设定基因的转录起点TSS上游长度，默认为3000bp
-	 */
-	static int UpStreamTSSbp=3000;
-	
-	/**
-	 * 设定基因的转录起点下游长度，默认为2000bp
-	 */
-	static int DownStreamTssbp=2000;
-	/**
-	 * 设定基因的转录起点TSS上游长度，默认为3000bp
-	 * 最后统计时，在TSS上游之内的peak会计算进基因内
-	 */
-	public void setDownStreamTssbp(int downStreamTssbp) {
-		DownStreamTssbp = downStreamTssbp;
+	public GffChrUnionHanYanRefSeq(String gffClass, String GffFile,
+				String ChrFilePath, int taxID) {
+			super(gffClass, GffFile, ChrFilePath, taxID);
 	}
 	
-	/**
-	 * 设定基因的转录起点TSS上游长度，默认为3000bp
-	 * 最后统计时，在TSS上游之内的peak会计算进基因内
-	 */
-	public void setUpstreamTSSbp(int upstreamTSSbp) {
-		UpStreamTSSbp = upstreamTSSbp;
-	}
-	
-	/**
-	 * 用来校正reads数量的参数，因为如果tss附近reads直接除以ReadsNum会很小，不方便后续画图
-	 * 这时候最好能够乘上一个比较大的数字做矫正，这个数字应该比较接近测序量，这里设定为一百万
-	 */
-	static int fold=1000000;
-	
-	/**
-	 * 设定基因结尾向外延伸的长度，默认为100bp
-	 * 就是说将基因结束点向后延伸100bp，认为是3’UTR
-	 * 那么在统计peak区域的时候，如果这段区域里面没有被peak所覆盖，则不统计该区域内reads的情况
-	 */
-	static int GeneEnd3UTR = 100;
-	/**
-	 * 设定基因结尾向外延伸的长度，默认为100bp
-	 * 就是说将基因结束点向后延伸100bp，认为是3’UTR,最后统计时，在基因尾部之内的peak会计算进基因内 
-	 * 那么在统计peak区域的时候，如果这段区域里面没有被peak所覆盖，则不统计该区域内reads的情况
-	 */
-	public void setGeneEnd3UTR(int geneEnd3UTR) {
-		GeneEnd3UTR = geneEnd3UTR;
-	}
-	
-	/**
-	 * 设定motif的花式，默认为CANNTG
-	 */
-	public String motifregex = "CA\\w{2}TG";
-	
-	
-	////////////////////////////////////////////用到的类/////////////////////////////////////////////////////////
- 
-	/**
-	 * 本类用到的一个gffHash，用来读取gff文件
-	 */
-	protected GffHash gffHash;
-	/**
-	 * 本类用到的一个mapreads，用来处理map文件
-	 */
-	protected MapReadsRefSeq mapReads=null;
-	/**
-	 * 本类用到的一个ChrStringHash，用来读取序列
-	 */
-	protected ChrStringHash chrStringHash=null;
-	/**
-	 * 读取refseq序列
-	 */
-	protected SeqFastaHash seqFastaHash = null;
-	/**
-	 * mapping到的reads的数量
-	 */
-	protected long readsNum = 0;
-	
-	
-	///////////////////////////////////////////准备工作 Loading 方   法////////////////////////////////////////////////////////////
-	/**
-	 * 指定相应的待实例化Gffhash子类
-	 * 读取相应的gff文件
-	 * @param gffClass 待实例化的Gffhash子类，只能有 "TIGR","TAIR","CG","UCSC","Repeat"这几种<br>
-	 * 以后根据新添加的gffhash子类这里要继续添加<br>
-	 * @param Gfffilename
-	 * @throws Exception 
-	 */
-	 public void loadGff(String gffClass,String Gfffilename) throws Exception
-	 {
-		 if (gffClass.equals("TIGR")) {
-			 gffHash=new GffHashPlantGene(Species.RICE);
-		 }
-		 if (gffClass.equals("TAIR")) {
-			 gffHash=new GffHashPlantGene(Species.ARABIDOPSIS);
-		 }
-		 else if (gffClass.equals("CG")) {
-			 gffHash=new GffHashCG();
-		 }
-		 else if (gffClass.equals("UCSC")) {
-			 gffHash=new GffHashUCSCgene();
-		 }
-		 else if (gffClass.equals("Repeat")) {
-			 gffHash=new GffHashRepeat();
-		 }
-		gffHash.ReadGffarray(Gfffilename);
-	 }
-	
-	/**
-	 * 设定含有序列信息的文件夹，文件夹内应该每个染色体一个fasta文件的序列。最后生成一个哈希表-序列信息<br>
-	 * <b>文件夹最后无所谓加不加"/"或"\\"</b>
-	 * 具体信息见ChrStringHash类
-	 * @param Chrfilename
-	 */
-	public void loadChr(String ChrFilePath) 
-	{
-	   try { chrStringHash = new ChrStringHash(ChrFilePath); } catch (Exception e) {e.printStackTrace();} 
-	}
-	/**
-	 * 设定含有序列信息的文件夹，文件夹内应该每个染色体一个fasta文件的序列。最后生成一个哈希表-序列信息<br>
-	 * <b>文件夹最后无所谓加不加"/"或"\\"</b>
-	 * 具体信息见ChrStringHash类
-	 * @param Chrfilename
-	 */
-	public void loadSeq(String SeqPath) 
-	{
-	  seqFastaHash = new SeqFastaHash();
-	  try {
-		seqFastaHash.readfile(SeqPath, true, "", false);
-	} catch (Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	}
-	/**
-	 * 
-	  * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。
-	 * @param mapFile mapping的结果文件，一般为bed格式
-	 * @param startRegion bed文件的第一个值是否为开区间
-	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
-	 * @param invNum 每隔多少位计数
-	 * @param tagLength 设定双端readsTag拼起来后长度的估算值，大于20才会进行设置。目前solexa双端送样长度大概是200-400bp，不用太精确 ,默认是400
-	 * @param uniqReads 同一位点的重复是否仅保留一个
-	 * @param colUnique UniqueMapping的标记在哪一列
-	 * @param cis5To3 是否挑选某一个方向的reads
-	 */
-	public void loadMap(String mapFile,int startRegion,String chrFilePath,int invNum,int tagLength, boolean uniqReads,
-			int startCod, int colUnique,Boolean cis5To3, boolean uniqMapping) 
-	{
-		mapReads=new MapReadsRefSeq(invNum, chrFilePath, false, mapFile);
-		mapReads.setstartRegion(startRegion);
-		try {
-			if (tagLength > 20) {
-				mapReads.setTagLength(tagLength);
-			}
-			readsNum = mapReads.ReadMapFile(uniqReads, startCod, colUnique, uniqMapping, cis5To3);
-		} catch (Exception e) {	e.printStackTrace();	}
-	}
-	
-	/////////////////////////////////////   韩燕的项目   //////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public void drawHeatMap(String resultFilePath, String prefix, int AtgUp, int AtgDown,int normalizedType) throws Exception {
-		resultFilePath = FileOperate.addSep(resultFilePath);
-		ArrayList<String> lsgenID = gffHash.getLOCChrHashIDList();
-		ArrayList<String> lsgeneIDresult = new ArrayList<String>();
-		for (String string : lsgenID) {
-			lsgeneIDresult.add(string.split("/")[0]);
-		}
-		ArrayList<SeqInfo> lsResult = getATGDensity(lsgeneIDresult, AtgUp,  AtgDown, -1, normalizedType);
-		if (AtgUp <= 0) {
-			AtgUp = atgAlign;
-		}
-		
-		
-		String[][] GeneEndDensity = new String[lsResult.size()][lsResult.get(0).atg.length+1];
-		for (int i = 0; i < GeneEndDensity.length; i++) {
-			for (int j = 1; j < GeneEndDensity[0].length; j++) {
-				GeneEndDensity[i][j] = lsResult.get(i).atg[j-1] + "";
-			}
-		}
-		for (int i = 0; i < GeneEndDensity.length; i++) {
-			GeneEndDensity[i][0] = lsResult.get(i).seqName;
-		}
-		
-		double[][] GeneEndDensity2 = new double[lsResult.size()][lsResult.get(0).atg.length];
-		for (int i = 0; i < GeneEndDensity2.length; i++) {
-			for (int j = 0; j < GeneEndDensity2[0].length; j++) {
-				GeneEndDensity2[i][j] = lsResult.get(i).atg[j];
-			}
-		}
-		System.out.println("进行分析的基因数目：" + GeneEndDensity.length);
-		HeatChart map = new HeatChart(GeneEndDensity2,0,40);
-		map.setTitle("ATGsit: "+ AtgUp+1 );
-		map.setXAxisLabel("X Axis");
-		map.setYAxisLabel("Y Axis");
-//		int[] aa = new String[]{"a","b","c","d","e","f"};
-		map.setXValues(-20, 1);
-		String[] yvalue = new String[GeneEndDensity2.length];
-		for (int i = 0; i < yvalue.length; i++) {
-			yvalue[i] = "";
-		}
-		map.setYValues(yvalue);
-		Dimension bb = new Dimension();
-		bb.setSize(12, 0.05);
-		map.setCellSize(bb );
-		//Output the chart to a file.
-		Color colorHigh = Color.BLUE;
-		Color colorDown = Color.WHITE;
-		//map.setBackgroundColour(color);
-		map.setHighValueColour(colorHigh);
-		map.setLowValueColour(colorDown);
-		try {
-			map.saveToFile(new File(resultFilePath+prefix+"Atg.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("图片的高度像素为： "+map.getChartSize().getHeight());
-		
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
-		txtReadandWrite.setParameter(resultFilePath+prefix+"Atgmatrix.txt", true, false);
-		txtReadandWrite.ExcelWrite(GeneEndDensity, "\t");
-	}
-	
-	int atgAlign = 0;
-	int maxUTR5 = 0;
-	/**
-	 * @param lsGeneID
-	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0
-	 */
-	private ArrayList<SeqInfo> getATGDensity(ArrayList<String> lsGeneID,int AtgUp, int AtgDown, int filled, int normlizType) {
-		GffHashGene gffHashGene = (GffHashGene)gffHash;
-		ArrayList<SeqInfo> lsAtg = new ArrayList<SeqInfo>();
-		for (String string : lsGeneID) {
-			SeqInfo seqInfo = new SeqInfo();
-			GffDetailGene gffDetailGene = gffHashGene.searchLOC(string);
-			GffGeneIsoSearch gffGeneIsoSearch = gffDetailGene.getCoordSearchLongest();
-			if (gffGeneIsoSearch.ismRNA()) {
-				seqInfo.atg = getReadsInfo(string,gffGeneIsoSearch,normlizType);
-				if (seqInfo.atg == null) {
-					logger.error("本基因没有相应的信息："+gffGeneIsoSearch.getThisGffDetailGene().getChrID()+" "+ 
-							gffGeneIsoSearch.getTSSsite() +"  " +gffGeneIsoSearch.getTESsite() +"  "+gffGeneIsoSearch.getIsoName());
-					continue;
-				}
-				seqInfo.seqName = string;
-				lsAtg.add(seqInfo);
-			}
-		}
-		return setMatrix(lsAtg, AtgUp, AtgDown, filled);
-	}
-	/**
-	 * 仅仅针对韩燕做的分析，按照5UTR的长度进行排序，从小到大排列，然后
-	 * @param lsAtg key 5UTR的长度，value，总共序列的长度，第一位为atg绝对位点
-	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0
-	 */
-	private ArrayList<SeqInfo> setMatrix(ArrayList<SeqInfo> lsAtg, int AtgUp, int AtgDown, int filled) {
-		int maxGeneBody = 0;
-		atgAlign = getAtgAlign(lsAtg);//要用atg做alignment的，内部还进行了排序
-		for (SeqInfo ds : lsAtg) {
-			if (ds.atg.length-1 - ds.atg[0] > maxGeneBody) {
-				maxGeneBody = (int) (ds.atg.length-1 - ds.atg[0]);
-			}
-		}
-		ArrayList<SeqInfo> lsdouble = new ArrayList<SeqInfo>();
-		for (SeqInfo ds : lsAtg) {
-			SeqInfo tmpResult = setDouble(ds, atgAlign, maxGeneBody, AtgUp, AtgDown, filled);
-			lsdouble.add(tmpResult);
-		}
-		return lsdouble;
-	}
-	/**
-	 * 获得最大atg位点的值
-	 * @param lsAtg value，总共序列的长度，第一位为atg绝对位点
-	 * @return
-	 */
-	public int getAtgAlign( ArrayList<SeqInfo> lsAtg) {
-		//从大到小排列
-		Collections.sort(lsAtg, new Comparator<SeqInfo>() {
-			@Override
-			public int compare(SeqInfo o1, SeqInfo o2) {
-				if (o1.atg[0] < o2.atg[0]) {
-					return 1;
-				}
-				else if (o1.atg[0] == o2.atg[0]) {
-					return 0;
-				}
-				else {
-					return -1;
-				}
-			}
-		});
-		return (int) lsAtg.get(0).atg[0];
-	}
-	
-	
-	/**
-	 * 将输入的数组重排列
-	 * @param input 输入数组，第一位为atg绝对位点,也就是需要对齐的位点
-	 * @param alignATGSite 最长ATG的位点的前一位，需要对齐位点前面的长度--最长的那个有多长
-	 * @param ATGbody Atg下游总共多长，不包括Atg位点,需要对齐位点的下游有多长
-	 * @param atgUp 选取ATG上游多少bp，不包括ATG位点 -1为全选 最后对齐位点的上游多少bo，不包括对起位点
-	 * @param alignDown 选取ATG下游多少bp,不包括ATG位点。 -1为全选 选取对齐位点的下游多少bp，不包括对齐位点
-	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0 空位用什么填充
-	 * @return
-	 */
-	public static SeqInfo setDouble(SeqInfo input, int alignATGSite, int ATGbody ,int atgUp, int alignDown,int filled ) {
-		int atgOld = (int)input.atg[0];
-		int bias = alignATGSite - atgOld;
-		double[] tmpresult = null;
-		if (alignDown > 0) {
-			if (atgUp > 0) 
-				tmpresult = new double[atgUp+alignDown+1];
-			else 
-				tmpresult = new double[alignATGSite+alignDown+1];
-		}
-		else {
-			if (atgUp > 0) 
-				tmpresult = new double[atgUp+ATGbody+1];
-			else 
-				tmpresult = new double[alignATGSite+ATGbody];			
-		}
-		//用-1充满数组
-		for (int i = 0; i < tmpresult.length; i++) {
-			tmpresult[i] = filled;
-		}
-		//正式计算	
-		if (atgUp < 0) {
-			for (int i = 0; i < input.atg.length-1; i++) {
-				if (i+bias >= tmpresult.length) {
-					break;
-				}
-				tmpresult[i+bias] = input.atg[i+1];
-			}
-		}
-		else {
-			if (atgOld > atgUp) {
-				int k = 0;
-				for (int i = atgOld - atgUp; i < input.atg.length-1; i++) {
-					 if (k >= tmpresult.length) {
-							break;
-					 }
-					 tmpresult[k] = input.atg[i+1];
-					 k++;
-				}
-			}
-			else {
-				int k = 1;
-				for (int i = atgUp - atgOld; i < tmpresult.length; i++) {
-					if (k >= input.atg.length) {
-						break;
-					}
-					tmpresult[i] = input.atg[k];
-					k++;
-				}
-			}
-		}
-		SeqInfo seqInfo = new SeqInfo();
-		seqInfo.atg = tmpresult;
-		seqInfo.seqName = input.seqName;
-		return seqInfo;
-	}
 	/**
 	 *	给定转录本，返回该转录本的mRNA水平坐标
 	 * @param chrID
@@ -409,7 +40,7 @@ private static Logger logger = Logger.getLogger(GffChrUnionHanYanRefSeq.class);
 	 * @return
 	 * double[] 0: atg位点,绝对位点，1-结束 从tss到tes的每个位点的reads数目
 	 */
-	private double[] getReadsInfo(String geneID, GffGeneIsoSearch gffGeneIsoSearch, int normalizeType) {
+	protected double[] getReadsInfo(String geneID, GffGeneIsoSearch gffGeneIsoSearch, int normalizeType) {
 		int geneLength = 0;
 		try {
 			geneLength = seqFastaHash.getHashLength().get(geneID.toLowerCase()).intValue();
@@ -429,12 +60,19 @@ private static Logger logger = Logger.getLogger(GffChrUnionHanYanRefSeq.class);
 		}
 		return isoResult;
 	}
-	
 	/////////////////////////////////////   韩燕的项目   //////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-}
-class SeqInfo
-{
-	public double[] atg;
-	public String seqName = "";
+
+	@Override
+	public void loadMap(String mapFile, int startRegion, String chrFilePath,
+			int invNum, int tagLength, boolean uniqReads, int startCod,
+			int colUnique, Boolean cis5To3, boolean uniqMapping) {
+		mapReads = new MapReads(invNum, chrFilePath, mapFile);
+		mapReads.setstartRegion(startRegion);
+		try {
+			if (tagLength > 20) {
+				mapReads.setTagLength(tagLength);
+			}
+			readsNum = mapReads.ReadMapFile(uniqReads, startCod, colUnique, uniqMapping, cis5To3);
+		} catch (Exception e) {	e.printStackTrace();	}
+	}
 }

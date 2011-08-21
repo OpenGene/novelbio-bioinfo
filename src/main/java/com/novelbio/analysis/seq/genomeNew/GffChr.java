@@ -13,6 +13,7 @@ import org.tc33.jheatchart.HeatChart;
 
 import com.novelbio.analysis.generalConf.Species;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHash;
@@ -22,6 +23,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashPlantGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashRepeat;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashUCSCgene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -37,10 +39,10 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  *
  */
-public class CopyOfGffChrUnion {
+public abstract class GffChr {
 	
 
-private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
+private static Logger logger = Logger.getLogger(GffChr.class);
 //////////////////////////////////////////////////参数设定/////////////////////////////////////////////////////////
 
 	/**
@@ -110,11 +112,45 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 	 */
 	protected ChrStringHash chrStringHash=null;
 	/**
+	 * 读取refseq序列
+	 */
+	protected SeqFastaHash seqFastaHash = null;
+	/**
 	 * mapping到的reads的数量
 	 */
 	protected long readsNum = 0;
+	/**
+	 * Gff文件
+	 */
+	String GffFile = "";
 	
 	
+	/**
+	 * 指定相应的待实例化Gffhash子类
+	 * 读取相应的gff文件
+	 * @param gffClass 待实例化的Gffhash子类，只能有 "TIGR","TAIR","CG","UCSC","Repeat"这几种<br>
+	 * 以后根据新添加的gffhash子类这里要继续添加<br>
+	 * @param Gfffilename
+	 * @throws Exception 
+	 */
+	public GffChr(String gffClass,String GffFile, String ChrFilePath, int taxID)
+	{
+		if (FileOperate.isFile(GffFile)) {
+			 try {
+					loadGff(gffClass, GffFile, taxID);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		if (FileOperate.isFile(ChrFilePath)) {
+			loadSeq(ChrFilePath);
+		}
+		if (FileOperate.isFileDirectory(ChrFilePath)) {
+			loadChr(ChrFilePath);
+		}
+	}
+
 	///////////////////////////////////////////准备工作 Loading 方   法////////////////////////////////////////////////////////////
 	/**
 	 * 指定相应的待实例化Gffhash子类
@@ -124,7 +160,7 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 	 * @param Gfffilename
 	 * @throws Exception 
 	 */
-	 public void loadGff(String gffClass,String Gfffilename) throws Exception
+	 private void loadGff(String gffClass,String Gfffilename, int taxID) throws Exception
 	 {
 		 if (gffClass.equals("TIGR")) {
 			 gffHash=new GffHashPlantGene(Species.RICE);
@@ -136,7 +172,7 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 			 gffHash=new GffHashCG();
 		 }
 		 else if (gffClass.equals("UCSC")) {
-			 gffHash=new GffHashUCSCgene();
+			 gffHash=new GffHashUCSCgene(taxID);
 		 }
 		 else if (gffClass.equals("Repeat")) {
 			 gffHash=new GffHashRepeat();
@@ -150,32 +186,26 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 	 * 具体信息见ChrStringHash类
 	 * @param Chrfilename
 	 */
-	public void loadChr(String ChrFilePath) 
+	private void loadChr(String ChrFilePath) 
 	{
 	   try { chrStringHash = new ChrStringHash(ChrFilePath); } catch (Exception e) {e.printStackTrace();} 
 	}
-	
 	/**
-	 * 
-	  * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。
-	 * @param mapFile mapping的结果文件，一般为bed格式
-	 * @param startRegion bed文件的第一个值是否为开区间
-	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
-	 * @param invNum 每隔多少位计数
-	 * @param tagLength 设定双端readsTag拼起来后长度的估算值，大于20才会进行设置。目前solexa双端送样长度大概是200-400bp，不用太精确 ,默认是400
-	 * @param uniqReads 同一位点的重复是否仅保留一个
+	 * 设定含有序列信息的文件夹，文件夹内应该每个染色体一个fasta文件的序列。最后生成一个哈希表-序列信息<br>
+	 * <b>文件夹最后无所谓加不加"/"或"\\"</b>
+	 * 具体信息见ChrStringHash类
+	 * @param Chrfilename
 	 */
-	public void loadMap(String mapFile,int startRegion,String chrFilePath,int invNum,int tagLength, boolean uniqReads, int startCod) 
+	private void loadSeq(String SeqPath) 
 	{
-		mapReads=new MapReads(invNum, chrFilePath, mapFile);
-		mapReads.setstartRegion(startRegion);
+		seqFastaHash = new SeqFastaHash();
 		try {
-			if (tagLength > 20) {
-				mapReads.setTagLength(tagLength);
-			}
-			readsNum = mapReads.ReadMapFile(uniqReads, startCod);
-		} catch (Exception e) {	e.printStackTrace();	}
+			seqFastaHash.readfile(SeqPath, true, "", false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+
 	
 	/////////////////////////////////////   韩燕的项目   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public void drawHeatMap(String resultFilePath, String prefix, int AtgUp, int AtgDown,int normalizedType) throws Exception {
@@ -185,23 +215,26 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 		for (String string : lsgenID) {
 			lsgeneIDresult.add(string.split("/")[0]);
 		}
-		ArrayList<double[]> lsResult = getATGDensity(lsgeneIDresult, AtgUp,  AtgDown, -1, normalizedType);
+		ArrayList<SeqInfo> lsResult = getATGDensity(lsgeneIDresult, AtgUp,  AtgDown, -1, normalizedType);
 		if (AtgUp <= 0) {
 			AtgUp = atgAlign;
 		}
 		
 		
-		Double[][] GeneEndDensity = new Double[lsResult.size()][lsResult.get(0).length];
+		String[][] GeneEndDensity = new String[lsResult.size()][lsResult.get(0).atg.length+1];
 		for (int i = 0; i < GeneEndDensity.length; i++) {
-			for (int j = 0; j < GeneEndDensity[0].length; j++) {
-				GeneEndDensity[i][j] = lsResult.get(i)[j];
+			for (int j = 1; j < GeneEndDensity[0].length; j++) {
+				GeneEndDensity[i][j] = lsResult.get(i).atg[j-1] + "";
 			}
 		}
+		for (int i = 0; i < GeneEndDensity.length; i++) {
+			GeneEndDensity[i][0] = lsResult.get(i).seqName;
+		}
 		
-		double[][] GeneEndDensity2 = new double[lsResult.size()][lsResult.get(0).length];
+		double[][] GeneEndDensity2 = new double[lsResult.size()][lsResult.get(0).atg.length];
 		for (int i = 0; i < GeneEndDensity2.length; i++) {
 			for (int j = 0; j < GeneEndDensity2[0].length; j++) {
-				GeneEndDensity2[i][j] = lsResult.get(i)[j];
+				GeneEndDensity2[i][j] = lsResult.get(i).atg[j];
 			}
 		}
 		System.out.println("进行分析的基因数目：" + GeneEndDensity.length);
@@ -244,20 +277,22 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 	 * @param lsGeneID
 	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0
 	 */
-	private ArrayList<double[]> getATGDensity(ArrayList<String> lsGeneID,int AtgUp, int AtgDown, int filled, int normlizType) {
+	private ArrayList<SeqInfo> getATGDensity(ArrayList<String> lsGeneID,int AtgUp, int AtgDown, int filled, int normlizType) {
 		GffHashGene gffHashGene = (GffHashGene)gffHash;
-		ArrayList<double[]> lsAtg = new ArrayList<double[]>();
+		ArrayList<SeqInfo> lsAtg = new ArrayList<SeqInfo>();
 		for (String string : lsGeneID) {
+			SeqInfo seqInfo = new SeqInfo();
 			GffDetailGene gffDetailGene = gffHashGene.searchLOC(string);
 			GffGeneIsoSearch gffGeneIsoSearch = gffDetailGene.getCoordSearchLongest();
 			if (gffGeneIsoSearch.ismRNA()) {
-				double[] tmpResult = getReadsInfo(gffGeneIsoSearch,normlizType);
-				if (tmpResult == null) {
+				seqInfo.atg = getReadsInfo(string,gffGeneIsoSearch,normlizType);
+				if (seqInfo.atg == null) {
 					logger.error("本基因没有相应的信息："+gffGeneIsoSearch.getThisGffDetailGene().getChrID()+" "+ 
 							gffGeneIsoSearch.getTSSsite() +"  " +gffGeneIsoSearch.getTESsite() +"  "+gffGeneIsoSearch.getIsoName());
 					continue;
 				}
-				lsAtg.add(tmpResult);
+				seqInfo.seqName = string;
+				lsAtg.add(seqInfo);
 			}
 		}
 		return setMatrix(lsAtg, AtgUp, AtgDown, filled);
@@ -267,17 +302,17 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 	 * @param lsAtg key 5UTR的长度，value，总共序列的长度，第一位为atg绝对位点
 	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0
 	 */
-	private ArrayList<double[]> setMatrix(ArrayList<double[]> lsAtg, int AtgUp, int AtgDown, int filled) {
+	private ArrayList<SeqInfo> setMatrix(ArrayList<SeqInfo> lsAtg, int AtgUp, int AtgDown, int filled) {
 		int maxGeneBody = 0;
 		atgAlign = getAtgAlign(lsAtg);//要用atg做alignment的，内部还进行了排序
-		for (double[] ds : lsAtg) {
-			if (ds.length-1 - ds[0] > maxGeneBody) {
-				maxGeneBody = (int) (ds.length-1 - ds[0]);
+		for (SeqInfo ds : lsAtg) {
+			if (ds.atg.length-1 - ds.atg[0] > maxGeneBody) {
+				maxGeneBody = (int) (ds.atg.length-1 - ds.atg[0]);
 			}
 		}
-		ArrayList<double[]> lsdouble = new ArrayList<double[]>();
-		for (double[] ds : lsAtg) {
-			double[] tmpResult = setDouble(ds, atgAlign, maxGeneBody, AtgUp, AtgDown, filled);
+		ArrayList<SeqInfo> lsdouble = new ArrayList<SeqInfo>();
+		for (SeqInfo ds : lsAtg) {
+			SeqInfo tmpResult = setDouble(ds, atgAlign, maxGeneBody, AtgUp, AtgDown, filled);
 			lsdouble.add(tmpResult);
 		}
 		return lsdouble;
@@ -287,15 +322,15 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 	 * @param lsAtg value，总共序列的长度，第一位为atg绝对位点
 	 * @return
 	 */
-	public int getAtgAlign( ArrayList<double[]> lsAtg) {
+	public int getAtgAlign( ArrayList<SeqInfo> lsAtg) {
 		//从大到小排列
-		Collections.sort(lsAtg, new Comparator<double[]>() {
+		Collections.sort(lsAtg, new Comparator<SeqInfo>() {
 			@Override
-			public int compare(double[] o1, double[] o2) {
-				if (o1[0] < o2[0]) {
+			public int compare(SeqInfo o1, SeqInfo o2) {
+				if (o1.atg[0] < o2.atg[0]) {
 					return 1;
 				}
-				else if (o1[0] == o2[0]) {
+				else if (o1.atg[0] == o2.atg[0]) {
 					return 0;
 				}
 				else {
@@ -303,7 +338,7 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 				}
 			}
 		});
-		return (int) lsAtg.get(0)[0];
+		return (int) lsAtg.get(0).atg[0];
 	}
 	
 	
@@ -317,8 +352,8 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0 空位用什么填充
 	 * @return
 	 */
-	public static double[] setDouble(double[] input, int alignATGSite, int ATGbody ,int atgUp, int alignDown,int filled ) {
-		int atgOld = (int)input[0];
+	public static SeqInfo setDouble(SeqInfo input, int alignATGSite, int ATGbody ,int atgUp, int alignDown,int filled ) {
+		int atgOld = (int)input.atg[0];
 		int bias = alignATGSite - atgOld;
 		double[] tmpresult = null;
 		if (alignDown > 0) {
@@ -339,36 +374,39 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 		}
 		//正式计算	
 		if (atgUp < 0) {
-			for (int i = 0; i < input.length-1; i++) {
+			for (int i = 0; i < input.atg.length-1; i++) {
 				if (i+bias >= tmpresult.length) {
 					break;
 				}
-				tmpresult[i+bias] = input[i+1];
+				tmpresult[i+bias] = input.atg[i+1];
 			}
 		}
 		else {
 			if (atgOld > atgUp) {
 				int k = 0;
-				for (int i = atgOld - atgUp; i < input.length-1; i++) {
+				for (int i = atgOld - atgUp; i < input.atg.length-1; i++) {
 					 if (k >= tmpresult.length) {
 							break;
 					 }
-					 tmpresult[k] = input[i+1];
+					 tmpresult[k] = input.atg[i+1];
 					 k++;
 				}
 			}
 			else {
 				int k = 1;
 				for (int i = atgUp - atgOld; i < tmpresult.length; i++) {
-					if (k >= input.length) {
+					if (k >= input.atg.length) {
 						break;
 					}
-					tmpresult[i] = input[k];
+					tmpresult[i] = input.atg[k];
 					k++;
 				}
 			}
 		}
-		return tmpresult;
+		SeqInfo seqInfo = new SeqInfo();
+		seqInfo.atg = tmpresult;
+		seqInfo.seqName = input.seqName;
+		return seqInfo;
 	}
 	/**
 	 *	给定转录本，返回该转录本的mRNA水平坐标
@@ -377,19 +415,19 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 	 * @return
 	 * double[] 0: atg位点,绝对位点，1-结束 从tss到tes的每个位点的reads数目
 	 */
-	private double[] getReadsInfo(GffGeneIsoSearch gffGeneIsoSearch, int normalizeType) {
-		ArrayList<int[]> lsiso = gffGeneIsoSearch.getIsoInfo();
-		if (lsiso == null || lsiso.size() == 0) {
+	private double[] getReadsInfo(String geneID, GffGeneIsoSearch gffGeneIsoSearch, int normalizeType) {
+		int geneLength = 0;
+		try {
+			geneLength = seqFastaHash.getHashLength().get(geneID.toLowerCase()).intValue();
+		} catch (Exception e) {
 			return null;
 		}
-		double[] iso = mapReads.getRengeInfo(gffGeneIsoSearch.getThisGffDetailGene().getChrID(), -1, 0, lsiso);
-		mapReads.normDouble(iso, normalizeType);
+		
+		double[] iso = mapReads.getRengeInfo(1, geneID.toLowerCase(), 1, geneLength, 0);
 		if (iso == null) {
 			return null;
 		}
-		if (!gffGeneIsoSearch.isCis5to3()) {
-			ArrayOperate.convertArray(iso);
-		}
+		mapReads.normDouble(iso, normalizeType);
 		double[] isoResult = new double[iso.length+1];
 		isoResult[0] = gffGeneIsoSearch.getLocDistance(gffGeneIsoSearch.getATGSsite(), gffGeneIsoSearch.getTSSsite());
 		for (int i = 0; i < iso.length; i++) {
@@ -400,4 +438,9 @@ private static Logger logger = Logger.getLogger(CopyOfGffChrUnion.class);
 	
 	/////////////////////////////////////   韩燕的项目   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+}
+class SeqInfo
+{
+	public double[] atg;
+	public String seqName = "";
 }

@@ -8,24 +8,37 @@ public class runAnno {
       = Logger.getLogger(runAnno.class);
 	public static void main(String[] args) 
 	{
-//		anno();
-		annoGeneID();
+		anno();
+//		annoGeneID();
 	}
 	//ÃÌº”◊¢ Õ
 	public static void anno() {
-		String parentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/result/annotation/";
+		String parentFile = "/home/zong0jie/◊¿√Ê/hiv interaction/hiv interaction/";
 		try {
-			AnnoQuery.anno(parentFile+"H3K4me3_peaks_Filter1.5k_1.8k.xls",10090,10,false,9606,1e-10,"/");
-		} catch (Exception e) {
-			e.printStackTrace()	;
-		}
-		try {
-			AnnoQuery.anno(parentFile+"H3K27me3_peaks_Filter2k_3k.xls",10090,10,false,9606,1e-10,"/");
-		} catch (Exception e) {
-			e.printStackTrace()	;
-		}
-		try {
-			AnnoQuery.anno(parentFile+"H3K27me3_peaks_Filter2k_3k.xls",10090,6,false,9606,1e-10,"/");
+			AnnoQuery.anno(parentFile+"gag_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+			AnnoQuery.anno(parentFile+"gag_results.xls", 0,3, false, 9606, 1e-10, "");
+			
+			AnnoQuery.anno(parentFile+"nef_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+			AnnoQuery.anno(parentFile+"nef_results.xls", 0,3, false, 9606, 1e-10, "");
+			
+			AnnoQuery.anno(parentFile+"pol_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+			AnnoQuery.anno(parentFile+"pol_results.xls", 0,3, false, 9606, 1e-10, "");
+			
+			AnnoQuery.anno(parentFile+"rev_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+			AnnoQuery.anno(parentFile+"rev_results.xls", 0,3, false, 9606, 1e-10, "");
+			
+			AnnoQuery.anno(parentFile+"tat_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+			AnnoQuery.anno(parentFile+"tat_results.xls", 0,3, false, 9606, 1e-10, "");
+			
+			AnnoQuery.anno(parentFile+"vif_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+			AnnoQuery.anno(parentFile+"vif_results.xls", 0,3, false, 9606, 1e-10, "");
+			
+			AnnoQuery.anno(parentFile+"vpr_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+			AnnoQuery.anno(parentFile+"vpr_results.xls", 0,3, false, 9606, 1e-10, "");
+			
+			AnnoQuery.anno(parentFile+"vpu_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+			AnnoQuery.anno(parentFile+"vpu_results.xls", 0,3, false, 9606, 1e-10, "");
+//			AnnoQuery.annoGeneID2symbol(parentFile+"gag_results.xls",9606,3,false,9606,1e-10);
 		} catch (Exception e) {
 			e.printStackTrace()	;
 		}

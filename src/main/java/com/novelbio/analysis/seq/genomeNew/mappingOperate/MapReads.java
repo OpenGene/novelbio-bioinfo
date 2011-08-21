@@ -5,19 +5,15 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.print.attribute.standard.Sides;
-
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
-
-import com.novelbio.analysis.seq.genome.getChrSequence.ChrSearch;
-import com.novelbio.analysis.seq.genome.getChrSequence.ChrStringHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 不考虑内存限制的编
@@ -36,16 +32,12 @@ public class MapReads {
 	 * 也就是将每个点除以测序深度
 	 */
 	public static final int NORMALIZATION_ALL_READS = 256;
-	
-	
-	
 	/**
 	 * 用来保存每个染色体中的基因坐标-invNum精度里面的reads数目
 	 * chrID(小写)--int[]
 	 * 直接从0开始记录，1代表第二个invNum,也和实际相同
 	 */
 	 Hashtable<String, int[]> hashChrBpReads=new Hashtable<String, int[]>();
-	
 	/**
 	 * 用来保存mapping文件中出现过的每个chr 的长度
 	 */
@@ -54,9 +46,9 @@ public class MapReads {
 	 int tagLength=300;//由ReadMapFile方法赋值
 	 String sep = "\t";
 	 /**
-	  * 该mapping文件mapping的具体序列文件夹
+	  * 序列信息,名字都为小写
 	  */
-	 String chrFilePath = "";
+	 HashMap<String, Long> hashChrLen = new HashMap<String, Long>();
 	 /**
 	  * 具体的mapping文件
 	  */
@@ -64,19 +56,19 @@ public class MapReads {
 	 /**
 	  * ChrID所在的列
 	  */
-	 int colChrID = 1;
+	 int colChrID = 0;
 	 /**
 	  * 起点所在的列
 	  */
-	 int colStartNum = 2;
+	 int colStartNum = 1;
 	 /**
 	  * 终点所在的列
 	  */
-	 int colEndNum = 3;
+	 int colEndNum = 2;
 	 /**
 	  * 方向列,bed文件一般在第六列
 	  */
-	 int colCis5To3 = 6;
+	 int colCis5To3 = 5;
 	 /**
 	  * 起点是否为开区间
 	  * 我通过Soap生成的bed文件是0
@@ -93,6 +85,18 @@ public class MapReads {
 	  */
 	 int colSplit = -1;
 	 /**
+	  * 剪接列的起点等：如0,34,68，如果没有则小于0, 从bam转到的bed文件中才有的列，主要在RNA-Seq中使用
+	  * 为第12列
+	  */
+	 int splitStart = -1;
+	 
+	 public void setSplit( int colSplit, int splitStart)
+	 {
+		 colSplit--; splitStart--;
+		 this.colSplit = colSplit;
+		 this.splitStart = splitStart;
+	 }
+	 /**
 	  * 总共有多少reads参与了mapping，这个从ReadMapFile才能得到。
 	  */
 	 long allReadsNum = 0;
@@ -102,8 +106,6 @@ public class MapReads {
 	 public long getAllReadsNum() {
 		return allReadsNum;
 	}
-	 
-	 
 	/**
 	 * 设定双端readsTag拼起来后长度的估算值，目前solexa双端送样长度大概是300bp，不用太精确
 	 * 默认300
@@ -142,6 +144,7 @@ public class MapReads {
 	 */
 	public void setColNum(int colChrID,int colStartNum,int colEndNum, int colCis5To3)
 	{
+		colChrID--; colStartNum--;colEndNum--;colCis5To3--;
 		this.colChrID = colChrID;
 		this.colStartNum = colStartNum;
 		this.colEndNum = colEndNum;
@@ -149,247 +152,135 @@ public class MapReads {
 	}
 	
 	/**
-	 * 
 	 * @param invNum 每隔多少位计数
 	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
 	 * @param mapFile mapping的结果文件，一般为bed格式
+	 * @param regx 序列名的正则表达式，null不设定 读取Chr文件夹的时候默认设定了 "\\bchr\\w*"
 	 */
-	public MapReads(int invNum, String chrFilePath, String mapFile) 
+	public MapReads(int invNum, String chrFilePath, String mapFile, String regx) 
 	{
+		hashChrLen = new HashMap<String, Long>();
+		SeqHash seqHash = null; 
 		this.invNum = invNum;
-		this.chrFilePath = chrFilePath;
+		if (FileOperate.isFile(chrFilePath)) 
+			seqHash = new SeqFastaHash(chrFilePath);
+		if (FileOperate.isFileDirectory(chrFilePath)) 
+			seqHash = new ChrStringHash(chrFilePath);
+		seqHash.setInfo(true,regx, false, "");
+		seqHash.setFile();
+		hashChrLen = seqHash.getHashChrLength();
 		this.mapFile = mapFile;
 	}
+	
+	
 	/**
-	 * 
+	 * @param chrLenFile 给定文件，指定每条染色体的长度<br>
+	 * 文件格式为： chrID \t chrLen   如 chr1 \t  23456
+	 * @param invNum 每隔多少位计数
+	 * @param mapFile mapping的结果文件，一般为bed格式
+	 */
+	public MapReads(String chrLenFile,int invNum, String mapFile) 
+	{
+		hashChrLen = new HashMap<String, Long>();
+		this.invNum = invNum;
+		TxtReadandWrite txtChrLen = new TxtReadandWrite();
+		try {
+			ArrayList<String> lsChrLen = txtChrLen.readfileLs();
+			for (String string : lsChrLen) {
+				String[] ss = string.split("\t");
+				hashChrLen.put(ss[0], Long.parseLong(ss[1]));
+			}
+		} catch (Exception e) {
+			logger.error("no chrLenFile file");
+			e.printStackTrace();
+		}
+		this.mapFile = mapFile;
+	}
+	
+	/**
 	 * 当输入为macs的bed文件时，自动<b>跳过chrm项目</b><br>
+	 * 所有chr项目都小写
 	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。注意，mapping文件中的chrID和chrLengthFile中的chrID要一致，否则会出错
 	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
 	 * @param startCod 从起点开始读取几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
+	 * @param colUnique Unique的reads在哪一列
+	 * @param booUniqueMapping 重复的reads是否只选择一条
+	 * @param cis5to3 是否仅选取某一方向的reads，null不考虑
 	 * @return 返回所有mapping的reads数量
 	 * @throws Exception
 	 */
-	public  long  ReadMapFile(boolean uniqReads,int startCod) throws Exception 
+	public  long  ReadMapFile(boolean uniqReads, int startCod, int colUnique, boolean booUniqueMapping, Boolean cis5to3) throws Exception 
 	{
-		if (startCod > 0 && colCis5To3 < 1) {
+		colUnique--;
+		if (startCod > 0 && colCis5To3 < 0) {
 			logger.error("不能设定startCod，因为没有设定方向列");
 			return -1;
 		}
 //		看一下startRegion是否起作用
-		long ReadsNum = 0;
+		long[] ReadsNum = new long[1];
 		//所谓结算就是说每隔invNum的bp就把这invNumbp内每个bp的Reads叠加数取平均或中位数，保存进chrBpReads中
-		colChrID--;colStartNum--;colEndNum--;colSplit--;colCis5To3--;
 		/////////////////////////////////////////获得每条染色体的长度并保存在hashChrLength中////////////////////////////////////////////////////
-		ChrSearch.setChrFilePath(chrFilePath);
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		int[] chrBpReads=null;//保存每个bp的reads累计数
 		int[] SumChrBpReads=null;//直接从0开始记录，1代表第二个invNum,也和实际相同
 		/////////////////读文件的准备工作///////////////////////////////////////////////////
 		TxtReadandWrite txtmap=new TxtReadandWrite();
 		txtmap.setParameter(mapFile,false, true);
 		BufferedReader bufmap=txtmap.readfile();
-		String content="";
-		String lastChr="";
-
+		String content=""; String lastChr="";
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		//先假设mapping结果已经排序好，并且染色体已经分开好。
-		boolean flag = true;//当没有该染色体时标记为false并且跳过所有该染色体上的坐标
-		int tmpStartOld = 0; int tmpEndOld = 0;
-		while ((content = bufmap.readLine()) != null) 
-		{
-			String[] tmp=content.split(sep);
-			///////////////////当每列里面含有chrID的时候///////////////////////////////////
-			if (colChrID>=0) 
+		boolean flag = true;// 当没有该染色体时标记为false并且跳过所有该染色体上的坐标
+		int[] tmpOld = new int[2]; int count = 0;
+		while ((content = bufmap.readLine()) != null) {
+			String[] tmp = content.split(sep);
+			if (!tmp[colChrID].trim().toLowerCase().equals(lastChr)) // 出现了新的chrID，则开始剪切老的chrBpReads,然后新建chrBpReads，最后装入哈希表
 			{
-//				if (tmp[colChrID].trim().toLowerCase().equals("chrm")) {
-//					continue;
-//				}
-				if (!tmp[colChrID].trim().toLowerCase().equals(lastChr)) //出现了新的chrID，则开始剪切老的chrBpReads,然后新建chrBpReads，最后装入哈希表
-				{
-					if (!lastChr.equals("") && flag) //前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
-					{
-						sumChrBp(chrBpReads, 1, SumChrBpReads);
-					}
-					lastChr = tmp[colChrID].trim().toLowerCase();//实际这是新出现的ChrID
-					//////////////////释放内存，感觉加上这段有点用，本来内存到1.2g，加了后降到990m///////////////////////////
-					System.out.println(lastChr);
-					chrBpReads=null;//看看能不能释放掉内存
-					System.gc();//显式调用gc
-					int chrLength = 0;
-					/////////chrBpReads设定/////////////////////////
-					try {
-						chrLength = (int) ChrSearch.getChrLength(lastChr);
-						flag = true;
-					} catch (Exception e) {
-						flag = false;
-						continue;
-					}
-					
-					chrBpReads = new int[chrLength + 1];//同样为方便，0位记录总长度。这样实际bp就是实际长度
-					chrBpReads[0] = (int) chrLength;//会溢出所以不能看
-					////////////SumChrBpReads设定//////////////////////////////////
-					//这个不是很精确，最后一位可能不准，但是实际应用中无所谓了,
-					//为方便，0位记录总长度。这样实际bp就是实际长度
-					int SumLength=chrBpReads.length/invNum+1;//保证不会溢出，这里是要让SumChrBpReads长一点
-					SumChrBpReads=new int[SumLength];//直接从0开始记录，1代表第二个invNum,也和实际相同
-					 ////////////将新出现的chr装入哈希表////////////////////////////////
-					hashChrBpReads.put(lastChr, SumChrBpReads);//将新出现的chrID和新建的SumChrBpReads装入hash表
-					
-					/////////////将每一条序列长度装入lsChrLength///////////////////
-					String[] tmpChrLen = new String[2];
-					tmpChrLen[0] = lastChr; tmpChrLen[1] = chrLength + "";
-					lsChrLength.add(tmpChrLen);
+				tmpOld = new int[2];//更新 tmpOld
+				if (!lastChr.equals("") && flag){ // 前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
+					sumChrBp(chrBpReads, 1, SumChrBpReads);
 				}
-			}
-			//////////////////////////假设为fasta格式，每个染色体一个>chrID接下来才是mapping坐标///////////////////////////////////
-			else 
-			{
-				if(content.startsWith(">"))
-				{
-					 Pattern pattern =Pattern.compile("chr\\w+", Pattern.CASE_INSENSITIVE);  //flags - 匹配标志，可能包括 CASE_INSENSITIVE、MULTILINE、DOTALL、UNICODE_CASE、 CANON_EQ、UNIX_LINES、LITERAL 和 COMMENTS 的位掩码  // CASE_INSENSITIVE,大小写不敏感，MULTILINE 多行
-					 Matcher matcher;//matcher.groupCount() 返回此匹配器模式中的捕获组数。
-					 matcher = pattern.matcher(content);     
-					 if (matcher.find()) 
-						 lastChr=matcher.group().toLowerCase();//小写
-					 else 
-						System.out.println("error");
-					
-					 if (!hashChrBpReads.isEmpty()) //说明里面已经有东西了，那么现在开始总结
-					 {
-						 sumChrBp(chrBpReads, 1, SumChrBpReads);
-					 }
-
-					//////////////////释放内存，感觉加上这段有点用，本来内存到1.2g，加了后降到990m///////////////////////////
+				lastChr = tmp[colChrID].trim().toLowerCase();// 实际这是新出现的ChrID
+				// ////////////////释放内存，感觉加上这段有点用，本来内存到1.2g，加了后降到990m///////////////////////////
+				if (count%200 == 0) {
 					System.out.println(lastChr);
-					chrBpReads = null;// 看看能不能释放掉内存
-					System.gc();// 显式调用gc
-					/////////chrBpReads设定/////////////////////////
-
-					/////////////chrBpReads设定////////////////////////////////////////////////////////////////////////////////////
-
-					 int chrLength=(int) ChrSearch.getChrLength(lastChr);
-					 chrBpReads=new int[chrLength+1];//同样为方便，0位记录总长度。这样实际bp就是实际长度
-					 chrBpReads[0]=(int) chrLength;//会溢出所以不能看
-					 ////////////SumChrBpReads设定//////////////////////////////////
-					 //这个不是很精确，最后一位可能不准，但是实际应用中无所谓了,
-					 //为方便，0位记录总长度。这样实际bp就是实际长度
-					 int SumLength=chrBpReads.length/invNum+1;//保证不会溢出，这里是要让SumChrBpReads长一点
-					 SumChrBpReads=new int[SumLength];//直接从0开始记录，1代表第二个invNum,也和实际相同
-					 ////////////将新出现的chr装入哈希表////////////////////////////////
-					 hashChrBpReads.put(lastChr, SumChrBpReads);//将新出现的chrID和新建的SumChrBpReads装入hash表
-					 /////////////将每一条序列长度装入lsChrLength///////////////////
-					 String[] tmpChrLen=new String[2];
-					 tmpChrLen[0]=lastChr;tmpChrLen[1]=chrLength+"";
-					 lsChrLength.add(tmpChrLen);
-					 continue;
 				}
+//				chrBpReads = null;// 看看能不能释放掉内存
+//				System.gc();// 显式调用gc
+				int chrLength = 0;
+				// ///////chrBpReads设定/////////////////////////
+				try {
+					chrLength =  hashChrLen.get(lastChr).intValue();
+					flag = true;
+				} catch (Exception e) {
+					logger.error("出现未知chrID "+lastChr);
+					flag = false; continue;
+				}
+
+				chrBpReads = new int[chrLength + 1];// 同样为方便，0位记录总长度。这样实际bp就是实际长度
+				chrBpReads[0] = (int) chrLength;
+				// //////////SumChrBpReads设定//////////////////////////////////
+				// 这个不是很精确，最后一位可能不准，但是实际应用中无所谓了,为方便，0位记录总长度。这样实际bp就是实际长度
+				int SumLength = chrBpReads.length / invNum + 1;// 保证不会溢出，这里是要让SumChrBpReads长一点
+				SumChrBpReads = new int[SumLength];// 直接从0开始记录，1代表第二个invNum,也和实际相同
+				// //////////将新出现的chr装入哈希表////////////////////////////////
+				hashChrBpReads.put(lastChr, SumChrBpReads);// 将新出现的chrID和新建的SumChrBpReads装入hash表
+				// ///////////将每一条序列长度装入lsChrLength///////////////////
+				String[] tmpChrLen = new String[2];
+				tmpChrLen[0] = lastChr;
+				tmpChrLen[1] = chrLength + "";
+				lsChrLength.add(tmpChrLen);
 			}
 			////////////////////按照位点加和chrBpReads////////////////////////////////
-			if (flag == false) {
+			if (flag == false) //没有该基因则跳过
 				continue;
+			if (!booUniqueMapping || Integer.parseInt(tmp[colUnique]) <= 1) {
+				tmpOld = addLoc(tmp, uniqReads, tmpOld, startCod, cis5to3, chrBpReads,ReadsNum);
 			}
-			int tmpStart = 0;
-			int tmpEnd = 0;
-			int tmpStart2 = 0; int tmpEnd2 = 0;
-			
-			tmpStart=Integer.parseInt(tmp[colStartNum]) + startRegion;//本reads 的起点
-			tmpEnd = Integer.parseInt(tmp[colEndNum]) + endRegion;//本reads的终点
-			//如果本reads和上一个reads相同，则认为是线性扩增，跳过
-			if (uniqReads && tmpStart == tmpStartOld && tmpEnd == tmpEndOld ) {
-				continue;
-			}
-			else {
-				tmpStartOld = tmpStart ;
-				tmpEndOld =  tmpEnd;
-			}
-			boolean cis5to3 = true;
-			if (colCis5To3 >= 0) {
-				cis5to3 = tmp[colCis5To3].trim().equals("+");
-			}
-			//如果没有可变剪接
-			if (colSplit <= 0 ||  !tmp[colSplit].contains(",")) {
-//				如果顺式
-				if (cis5to3) {
-					if (startCod > 0 && tmpStart + startCod - 1 < tmpEnd) {
-						tmpEnd = tmpStart + startCod - 1;
-					}
-				}
-				else {
-					if (startCod > 0 && tmpEnd - startCod +1 > tmpStart) {
-						tmpStart = tmpEnd - startCod +1;
-					}
-				}
-			}
-			else {
-				String[] tmpSplit = tmp[colSplit].split(",");
-				tmpEnd = tmpStart + Integer.parseInt(tmpSplit[0]) - startRegion;
-				if (cis5to3) {
-					if (startCod > 0 && tmpStart + startCod - 1 < tmpEnd) {
-						tmpEnd = tmpStart + startCod - 1;
-					}
-					else {
-						tmpEnd2 = Integer.parseInt(tmp[colEndNum]) + endRegion;
-						tmpStart2 = tmpEnd2 - Integer.parseInt(tmpSplit[1]) - endRegion + startRegion;
-						int remain = startCod - (tmpEnd - tmpStart + 1);
-						if (startCod>0 && remain > 0) {
-							if (tmpEnd2 - tmpStart2 + 1 > remain) {
-								tmpEnd2 = tmpStart2 + remain - 1;
-							}
-						}
-					}
-				}
-				else {
-					tmpEnd2 = Integer.parseInt(tmp[colEndNum]) + endRegion;
-					tmpStart2 = tmpEnd2 - Integer.parseInt(tmpSplit[1]) - endRegion + startRegion;
-					if (startCod > 0 &&  tmpEnd2 - startCod +1 > tmpStart2) {
-						tmpStart2 = tmpEnd2 - startCod +1;
-						tmpStart = 0; tmpEnd = -1;
-					}
-					else {
-						int remain = startCod - (tmpEnd2 - tmpStart2 + 1);
-						if (startCod>0 && remain > 0) {
-							if (tmpEnd - tmpStart + 1 > remain) {
-								tmpStart = tmpEnd - remain + 1;
-							}
-						}
-					}
-				}
-			}
-
-			
-			for (int i = tmpStart; i <= tmpEnd; i++) {//直接计算实际起点和实际终点
-				//如果bed文件中的坐标大于ref基因的坐标，那么就跳出
-				if (i >= chrBpReads.length) {
-					break;
-				}
-				chrBpReads[i]++;
-				if (chrBpReads[i]<0) 
-				{
-					System.out.println("单碱基溢出");
-				}
-			}
-			if (tmpStart2 >0) {
-				for (int i = tmpStart2; i <= tmpEnd2; i++) {//直接计算实际起点和实际终点
-					//如果bed文件中的坐标大于ref基因的坐标，那么就跳出
-					if (i >= chrBpReads.length) {
-						break;
-					}
-					chrBpReads[i]++;
-					if (chrBpReads[i]<0) 
-					{
-						System.out.println("单碱基溢出");
-					}
-				}
-			}
-			
-			ReadsNum++;
 		}
-		
 		///////////////////循环结束后还要将最后一次的内容做总结////////////////////////////////////
 		if (flag) {
 			sumChrBp(chrBpReads, 1, SumChrBpReads);
 		}
-		 
 		 ////////////////////////////把lsChrLength按照chrLen从小到大进行排序/////////////////////////////////////////////////////////////////////////////
 		  Collections.sort(lsChrLength,new Comparator<String[]>(){
 	            public int compare(String[] arg0, String[] arg1)
@@ -403,218 +294,97 @@ public class MapReads {
 	            }
 	        });
 		  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		  allReadsNum = ReadsNum;
-		  return ReadsNum;
+		  allReadsNum = ReadsNum[0];
+		  return ReadsNum[0];
 	}
-	
+	/**
+	 * 具体加和的处理方法
+	 * 给定一行信息，将具体内容加到对应的坐标上
+	 * @param tmp 本行分割后的信息
+	 * @param uniqReads 同一位点叠加后是否读取
+	 * @param tmpOld 上一组的起点终点，用于判断是否是在同一位点叠加
+	 * @param startCod 只截取前面一段的长度
+	 * @param cis5to3 是否只选取某一个方向的序列，也就是其他方向的序列会被过滤，不参与叠加
+	 * @param chrBpReads 具体需要叠加的染色体信息
+	 * @param readsNum 记录总共mapping的reads数量，为了能够传递下去，采用数组方式
+	 * @return
+	 * 本位点的信息，用于下一次判断是否是同一位点
+	 */
+	protected int[] addLoc(String[] tmp,boolean uniqReads,int[] tmpOld,int startCod, Boolean cis5to3, int[] chrBpReads, long[] readsNum) {
+		boolean cis5to3This = true;
+		if (colCis5To3 >= 0) {
+			cis5to3This = tmp[colCis5To3].trim().equals("+");
+		}
+		if (cis5to3 != null && cis5to3This != cis5to3.booleanValue()) {
+			return tmpOld;
+		}
+		
+		int[] tmpStartEnd = new int[2];
+		
+		tmpStartEnd[0] = Integer.parseInt(tmp[colStartNum]) + startRegion;//本reads 的起点
+		tmpStartEnd[1] = Integer.parseInt(tmp[colEndNum]) + endRegion;//本reads的终点
+
+		
+		//如果本reads和上一个reads相同，则认为是线性扩增，跳过
+		if (uniqReads && tmpStartEnd[0] == tmpOld[0] && tmpStartEnd[1] == tmpOld[1] ) {
+			return tmpOld;
+		}
+
+		ArrayList<int[]> lsadd = null;
+		//如果没有可变剪接
+		if (colSplit >= 0 && splitStart >=0) {
+			lsadd = getStartEndLoc(tmpStartEnd[0], tmpStartEnd[1], tmp[colSplit], tmp[splitStart]);
+			lsadd = setStartCod(lsadd, startCod, cis5to3This);
+		}
+		else {
+			lsadd = getStartEndLoc(tmpStartEnd[0], tmpStartEnd[1], null,null);
+			lsadd = setStartCod(lsadd, startCod, cis5to3This);
+		}
+		addChrLoc(chrBpReads, lsadd);
+		readsNum[0]++;
+		return tmpStartEnd;
+	}
 	
 	/**
-	 * 
-	 * 当输入为macs的bed文件时，自动<b>跳过chrm项目</b><br>
-	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。注意，mapping文件中的chrID和chrLengthFile中的chrID要一致，否则会出错
-	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
-	 * @param startCod 从起点开始读取几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
-	 * @return 返回所有mapping的reads数量
-	 * @throws Exception
+	 * 给定一条序列的坐标信息，以及本次需要累加的坐标区域
+	 * 将该区域的坐标累加到目的坐标上去
+	 * @param chrLoc 坐标位点，0为坐标长度，1开始为具体坐标，所以chrLoc[123] 就是实际123位的坐标
+	 * @param lsAddLoc 间断的坐标区域，为int[2] 的list，譬如 100-250，280-300这样子，注意提供的坐标都是闭区间，所以首位两端都要加上
 	 */
-	public  long  ReadMapFileRepeat(boolean uniqReads,int startCod, int colRepeat) throws Exception 
+	protected void addChrLoc(int[] chrLoc, ArrayList<int[]> lsAddLoc)
 	{
-		if (startCod > 0 && colCis5To3 < 1) {
-			logger.error("不能设定startCod，因为没有设定方向列");
-			return -1;
-		}
-//		看一下startRegion是否起作用
-		long ReadsNum = 0;
-		//所谓结算就是说每隔invNum的bp就把这invNumbp内每个bp的Reads叠加数取平均或中位数，保存进chrBpReads中
-		colChrID--;colStartNum--;colEndNum--;colSplit--;colCis5To3--;colRepeat--;
-		/////////////////////////////////////////获得每条染色体的长度并保存在hashChrLength中////////////////////////////////////////////////////
-		ChrSearch.setChrFilePath(chrFilePath);
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		double[] chrBpReads=null;//保存每个bp的reads累计数
-		int[] SumChrBpReads=null;//直接从0开始记录，1代表第二个invNum,也和实际相同
-		/////////////////读文件的准备工作///////////////////////////////////////////////////
-		TxtReadandWrite txtmap=new TxtReadandWrite();
-		txtmap.setParameter(mapFile,false, true);
-		BufferedReader bufmap=txtmap.readfile();
-		String content="";
-		String lastChr="";
-
-		////////////////////////////////////////////////////////////////////////////////////////////////
-		//先假设mapping结果已经排序好，并且染色体已经分开好。
-		boolean flag = true;//当没有该染色体时标记为false并且跳过所有该染色体上的坐标
-		int tmpStartOld = 0; int tmpEndOld = 0;
-		while ((content = bufmap.readLine()) != null) 
-		{
-			String[] tmp=content.split(sep);
-				if (!tmp[colChrID].trim().toLowerCase().equals(lastChr)) //出现了新的chrID，则开始剪切老的chrBpReads,然后新建chrBpReads，最后装入哈希表
-				{
-					if (!lastChr.equals("") && flag) //前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
-					{
-						sumChrBp(chrBpReads, 1, SumChrBpReads);
-					}
-					lastChr = tmp[colChrID].trim().toLowerCase();//实际这是新出现的ChrID
-					//////////////////释放内存，感觉加上这段有点用，本来内存到1.2g，加了后降到990m///////////////////////////
-					System.out.println(lastChr);chrBpReads=null;//看看能不能释放掉内存
-					System.gc();//显式调用gc
-					int chrLength = 0;
-					/////////chrBpReads设定/////////////////////////
-					try {
-						chrLength = (int) ChrSearch.getChrLength(lastChr);
-						flag = true;
-					} catch (Exception e) {
-						flag = false;
-						continue;
-					}
-					chrBpReads = new double[chrLength + 1];//同样为方便，0位记录总长度。这样实际bp就是实际长度
-					chrBpReads[0] = (int) chrLength;//会溢出所以不能看
-					////////////SumChrBpReads设定//////////////////////////////////
-					//这个不是很精确，最后一位可能不准，但是实际应用中无所谓了,
-					//为方便，0位记录总长度。这样实际bp就是实际长度
-					int SumLength=chrBpReads.length/invNum+1;//保证不会溢出，这里是要让SumChrBpReads长一点
-					SumChrBpReads=new int[SumLength];//直接从0开始记录，1代表第二个invNum,也和实际相同
-					 ////////////将新出现的chr装入哈希表////////////////////////////////
-					hashChrBpReads.put(lastChr, SumChrBpReads);//将新出现的chrID和新建的SumChrBpReads装入hash表
-					
-					/////////////将每一条序列长度装入lsChrLength///////////////////
-					String[] tmpChrLen = new String[2];
-					tmpChrLen[0] = lastChr; tmpChrLen[1] = chrLength + "";
-					lsChrLength.add(tmpChrLen);
-				}
-			////////////////////按照位点加和chrBpReads////////////////////////////////
-			if (flag == false) {//当没有该染色体时标记为false并且跳过所有该染色体上的坐标
-				continue;
-			}
-			int tmpStart = 0;
-			int tmpEnd = 0;
-			int tmpStart2 = 0; int tmpEnd2 = 0;
-			
-			tmpStart = Integer.parseInt(tmp[colStartNum]) + startRegion;//本reads 的起点
-			tmpEnd = Integer.parseInt(tmp[colEndNum]) + endRegion;//本reads的终点
-			//如果本reads和上一个reads相同，则认为是线性扩增，跳过
-			if (uniqReads && tmpStart == tmpStartOld && tmpEnd == tmpEndOld ) {
-				continue;
-			}
-			else {
-				tmpStartOld = tmpStart ;
-				tmpEndOld =  tmpEnd;
-			}
-			boolean cis5to3 = true;
-			if (colCis5To3 >= 0) {
-				cis5to3 = tmp[colCis5To3].trim().equals("+");
-			}
-			//如果没有可变剪接
-			if (colSplit <= 0 ||  !tmp[colSplit].contains(",")) {
-//				如果顺式
-				if (cis5to3) {
-					if (startCod > 0 && tmpStart + startCod - 1 < tmpEnd) {
-						tmpEnd = tmpStart + startCod - 1;
-					}
-				}
-				else {
-					if (startCod > 0 && tmpEnd - startCod +1 > tmpStart) {
-						tmpStart = tmpEnd - startCod +1;
-					}
-				}
-			}
-			else {
-				String[] tmpSplit = tmp[colSplit].split(",");
-				tmpEnd = tmpStart + Integer.parseInt(tmpSplit[0]) - startRegion;
-				if (cis5to3) {
-					if (startCod > 0 && tmpStart + startCod - 1 < tmpEnd) {
-						tmpEnd = tmpStart + startCod - 1;
-					}
-					else {
-						tmpEnd2 = Integer.parseInt(tmp[colEndNum]) + endRegion;
-						tmpStart2 = tmpEnd2 - Integer.parseInt(tmpSplit[1]) - endRegion + startRegion;
-						int remain = startCod - (tmpEnd - tmpStart + 1);
-						if (startCod>0 && remain > 0) {
-							if (tmpEnd2 - tmpStart2 + 1 > remain) {
-								tmpEnd2 = tmpStart2 + remain - 1;
-							}
-						}
-					}
-				}
-				else {
-					tmpEnd2 = Integer.parseInt(tmp[colEndNum]) + endRegion;
-					tmpStart2 = tmpEnd2 - Integer.parseInt(tmpSplit[1]) - endRegion + startRegion;
-					if (startCod > 0 &&  tmpEnd2 - startCod +1 > tmpStart2) {
-						tmpStart2 = tmpEnd2 - startCod +1;
-						tmpStart = 0; tmpEnd = -1;
-					}
-					else {
-						int remain = startCod - (tmpEnd2 - tmpStart2 + 1);
-						if (startCod>0 && remain > 0) {
-							if (tmpEnd - tmpStart + 1 > remain) {
-								tmpStart = tmpEnd - remain + 1;
-							}
-						}
-					}
-				}
-			}
-
-			int repeat = Integer.parseInt(tmp[colRepeat]);
-			for (int i = tmpStart; i <= tmpEnd; i++) {//直接计算实际起点和实际终点
-				//如果bed文件中的坐标大于ref基因的坐标，那么就跳出
-				if (i >= chrBpReads.length) {
+		for (int[] is : lsAddLoc) {
+			for (int i = is[0]; i <= is[1]; i++) {
+				if (i >= chrLoc.length) {
+					logger.error("超出范围："+ i);
 					break;
 				}
-				chrBpReads[i]++;
-				if (chrBpReads[i]<0) 
-				{
-					System.out.println("单碱基溢出");
-				}
+				chrLoc[i]++;
 			}
-			if (tmpStart2 >0) {
-				for (int i = tmpStart2; i <= tmpEnd2; i++) {//直接计算实际起点和实际终点
-					//如果bed文件中的坐标大于ref基因的坐标，那么就跳出
-					if (i >= chrBpReads.length) {
-						break;
-					}
-					chrBpReads[i]++;
-					if (chrBpReads[i]<0) 
-					{
-						System.out.println("单碱基溢出");
-					}
-				}
-			}
-			
-			ReadsNum++;
 		}
-		
-		///////////////////循环结束后还要将最后一次的内容做总结////////////////////////////////////
-		if (flag) {
-			sumChrBp(chrBpReads, 1, SumChrBpReads);
-		}
-		 
-		 ////////////////////////////把lsChrLength按照chrLen从小到大进行排序/////////////////////////////////////////////////////////////////////////////
-		  Collections.sort(lsChrLength,new Comparator<String[]>(){
-	            public int compare(String[] arg0, String[] arg1)
-	            {
-	               if( Integer.parseInt(arg0[1])<Integer.parseInt(arg1[1]))
-	            	   return -1;
-	            else if (Integer.parseInt(arg0[1])==Integer.parseInt(arg1[1])) 
-					return 0;
-	             else 
-					return 1;
-	            }
-	        });
-		  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		  allReadsNum = ReadsNum;
-		  return ReadsNum;
 	}
+	
 
 	/**
 	 * Chr1	5242	5444	A80W3KABXX:8:44:8581:122767#GGCTACAT/2	255	-	5242	5444	255,0,0	2	30,20,40	0,120,160
 	 * @param start 起点坐标 5242，绝对坐标闭区间
 	 * @param end 终点坐标 5444，绝对坐标闭区间
-	 * @param col 分割情况 30,20,40
+	 * @param split 分割情况 30,20,40
+	 * @param splitStart 每个分割点的起点 0,35,68
 	 * @return 返回一组start和end
 	 * 根据间隔进行区分
 	 */
-	private ArrayList<int[]> getStartEndLoc(int start, int end, String split, String splitStart) {
+	protected ArrayList<int[]> getStartEndLoc(int start, int end, String split, String splitStart) {
 		ArrayList<int[]> lsStartEnd = new ArrayList<int[]>();
-		String[] splitLen = split.split(",");
-		String[] splitLoc = splitStart.split(",");
+		if (split == null || split.equals("") || !split.contains(",")) {
+			int[] startend = new int[2];
+			startend[0] = start;
+			startend[1] = end;
+			lsStartEnd.add(startend);
+			return lsStartEnd;
+		}
+		String[] splitLen = split.trim().split(",");
+		String[] splitLoc = splitStart.trim().split(",");
 		for (int i = 0; i < splitLen.length; i++) {
 			int[] startend = new int[2];
 			startend[0] = start + Integer.parseInt(splitLoc[i]);
@@ -630,7 +400,10 @@ public class MapReads {
 	 * @return 如果cis5to3 = True，那么正着截取startCod长度的序列
 	 * 如果cis5to3 = False，那么反着截取startCod长度的序列
 	 */
-	private ArrayList<int[]> setStartCod(ArrayList<int[]> lsStartEnd, int StartCodLen, boolean cis5to3) {
+	protected ArrayList<int[]> setStartCod(ArrayList<int[]> lsStartEnd, int StartCodLen, boolean cis5to3) {
+		if (StartCodLen <= 0) {
+			return lsStartEnd;
+		}
 		ArrayList<int[]> lsResult = new ArrayList<int[]>();
 		if (cis5to3) {
 			for (int i = 0; i < lsStartEnd.size(); i++) {
@@ -665,16 +438,6 @@ public class MapReads {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	/**
 	 * 给定chrBpReads，将chrBpReads里面的值按照invNum区间放到SumChrBpReads里面
 	 * 因为是引用传递，里面修改了SumChrBpReads后，外面会变掉
@@ -683,7 +446,7 @@ public class MapReads {
 	 * @param type 取值类型，中位数或平均值，0中位数，1均值 其他的默认中位数
 	 * @param SumChrBpReads 将每个区间内的
 	 */
-	private  void sumChrBp(int[] chrBpReads,int type,int[] SumChrBpReads) 
+	protected void sumChrBp(int[] chrBpReads,int type,int[] SumChrBpReads) 
 	{
 		 int SumLength = chrBpReads.length/invNum - 1;//保证不会溢出，因为java默认除数直接忽略小数而不是四舍五入
 		 if (invNum == 1) {
@@ -710,6 +473,7 @@ public class MapReads {
 		 }
 	}
 	/**
+	 * 考虑将非unique mapping的reads进行减分处理
 	 * 给定chrBpReads，将chrBpReads里面的值按照invNum区间放到SumChrBpReads里面
 	 * 因为是引用传递，里面修改了SumChrBpReads后，外面会变掉
 	 * @param chrBpReads 每个碱基的reads累计值
@@ -717,7 +481,7 @@ public class MapReads {
 	 * @param type 取值类型，中位数或平均值，0中位数，1均值 其他的默认中位数
 	 * @param SumChrBpReads 将每个区间内的
 	 */
-	private  void sumChrBp(double[] chrBpReads,int type,int[] SumChrBpReads) 
+	protected void sumChrBp(double[] chrBpReads,int type,int[] SumChrBpReads) 
 	{
 		 int SumLength = chrBpReads.length/invNum - 1;//保证不会溢出，因为java默认除数直接忽略小数而不是四舍五入
 		 if (invNum == 1) {
@@ -839,7 +603,7 @@ public class MapReads {
 	}
 	/**
 	 * 给定染色体，与起点和终点，返回该染色体上tag的密度分布，如果该染色体在mapping时候不存在，则返回null
-	 * @param chrID 
+	 * @param chrID 小写
 	 * @param startLoc 起点坐标，为实际起点
 	 * @param endLoc 当终点为-1时，则直到染色体的结尾。
 	 * @param binNum 待分割的块数
@@ -854,7 +618,7 @@ public class MapReads {
 		if (startLoc==0) 
 			startLoc=1;
 		if(endLoc==-1)
-			endLoc=(int) ChrSearch.getChrLength(chrID);
+			endLoc=hashChrLen.get(chrID).intValue();
 		double[] tmpReadsNum= getRengeInfo(tagBinLength, chrID, startLoc, endLoc,1);
 	/**	for (int i = 0; i < tmpReadsNum.length; i++) {
 			if(tmpReadsNum[i]>1)

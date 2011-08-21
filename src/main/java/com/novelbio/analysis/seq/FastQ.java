@@ -246,11 +246,10 @@ public class FastQ extends SeqComb {
 		} else {
 			txtOutFile.setParameter(fileFilterOut.trim() + "_1", true, false);
 		}
-		TxtReadandWrite txtOutFile2 = null;
+		TxtReadandWrite txtOutFile2 = new TxtReadandWrite();;
 		if (booPairEnd) {
 			txtSeqFile2.setParameter(seqFile2, false, true);
 			readerSeq2 = txtSeqFile2.readfile();
-			txtOutFile2 = new TxtReadandWrite();
 			txtOutFile2.setParameter(fileFilterOut.trim() + "_2", true, false);
 		}
 		setFastQFormat();
@@ -598,7 +597,7 @@ public class FastQ extends SeqComb {
 						tmpresult1 = tmpresult1 + "\n" + content1;
 					}
 				}
-				else {
+				if (barInfo != null) {
 					txtTmp1 = hashBarcodeTxt.get(barInfo[0]);
 					tmpresult1 = tmpresult1 + "\n" + content1.substring(barInfo[1].length());
 					if (booPairEnd) {
@@ -606,8 +605,6 @@ public class FastQ extends SeqComb {
 						tmpresult2 = tmpresult2 + "\n" + content2.substring(barInfo[1].length());
 					}
 				}
-				
-			
 				count++;
 				continue;
 			}
@@ -831,8 +828,9 @@ public class FastQ extends SeqComb {
 	
 	/**
 	 * 指定阈值，将fastQ文件过滤polyA，目前只能针对单端右侧的polyA
+	 * 
+	 * @param filterNum 序列最短多长，建议22
 	 * @return 返回已经过滤好的FastQ，其实里面也就是换了两个FastQ文件而已
-	 * @return filterNum 序列最短多长，建议22
 	 * @throws Exception
 	 */
 	public FastQ trimPolyA(int filterNum,String fileFilterOut) throws Exception {

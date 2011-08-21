@@ -1,7 +1,5 @@
 package com.novelbio.base.dataOperate;
 
-import info.monitorenter.cpdetector.CharsetPrinter;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,9 +9,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-
-
-import com.google.common.io.Files;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import com.novelbio.base.fileOperate.FileOperate;
 /**
  * 使用前先用setParameter设置
  * 使用完毕后调用close关闭流
@@ -22,12 +20,24 @@ import com.google.common.io.Files;
  */
 public class TxtReadandWrite {
 
+	@Deprecated
+	public TxtReadandWrite () {
+		
+	}
+	public TxtReadandWrite (String filepath, boolean createNew) {
+		if (createNew) {
+			setParameter(filepath, createNew, false);
+		}
+		else {
+			setParameter(filepath, createNew, true);
+		}
+	}
+	
 	File txtfile;
 	FileReader fileread;
 	FileWriter filewriter;
 	BufferedReader bufread;
 	BufferedWriter bufwriter;
-	String filepath;// 得到文本文件的路径
 
 	/**
 	 * 
@@ -80,13 +90,18 @@ public class TxtReadandWrite {
 	 * @return 返回List<String>，读完不用关闭Buffer流
 	 * @throws Exception
 	 */
-	public ArrayList<String> readfileLs() throws Exception {
+	public ArrayList<String> readfileLs(){
+
 		ArrayList<String> lsResult = new ArrayList<String>();
-		BufferedReader read = readfile();
 		String content = "";
-		// 先跳过前面的好多行
-		while ((content = read.readLine()) != null) {
-			lsResult.add(content);
+		try {
+			BufferedReader read = readfile();
+			// 先跳过前面的好多行
+			while ((content = read.readLine()) != null) {
+				lsResult.add(content);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 		return lsResult;
 	}
@@ -154,6 +169,27 @@ public class TxtReadandWrite {
 		filewriter.write(content);
 		filewriter.write("\n");
 	}
+	
+	/**
+	 * 写入并将写入的序列换行，目前只能写入ascII文本
+	 * @param content 输入的string，是没有换行的那种
+	 * @param length 每多少行进行换行
+	 * @throws Exception
+	 */
+	public void writefilePerLine(String content, int length) {
+		try {
+			char[] mychar = content.toCharArray();
+			for (int i = 0; i < mychar.length; i++) {
+				if (i>0 && i%length == 0) {
+					filewriter.write("\n");
+				}
+				filewriter.write(mychar[i]);
+			}
+			filewriter.flush();
+		} catch (Exception e) {
+		}
+	}
+	
 	/**
 	 * @param content
 	 *            ，要写入文件内容,并考虑是否刷新--也就是直接写入文件而不是进入缓存
@@ -213,7 +249,53 @@ public class TxtReadandWrite {
 		}
 		filewriter.flush();
 	}
-
+	/**
+	 * 指定正则表达式，将文本中含有该正则表达式的行全部删除
+	 * @param regx
+	 */
+	public void delLines(String regx, boolean isregx) {
+		String tmpFileName = txtfile.getAbsolutePath()+"TmpOfZJJAVA";
+		TxtReadandWrite txtNewFile = new TxtReadandWrite(tmpFileName,true);
+		Pattern pattern =Pattern.compile(regx, Pattern.CASE_INSENSITIVE);  //flags - 匹配标志，可能包括 CASE_INSENSITIVE、MULTILINE、DOTALL、UNICODE_CASE、 CANON_EQ、UNIX_LINES、LITERAL 和 COMMENTS 的位掩码  // CASE_INSENSITIVE,大小写不敏感，MULTILINE 多行
+		Matcher matcher;//matcher.groupCount() 返回此匹配器模式中的捕获组数。
+		try {
+			String content = "";
+			readfile();
+			while ((content = bufread.readLine()) != null) {
+				if (isregx) {
+					matcher = pattern.matcher(content);
+					if (matcher.find()) {
+						continue;
+					}
+				}
+				else {
+					if (content.contains(regx)) {
+						continue;
+					}
+				}
+				txtNewFile.writefileln(content);
+			}
+			txtNewFile.close();
+			FileOperate.delFile(txtfile.getAbsolutePath());
+			FileOperate.changeFileName(tmpFileName, FileOperate.getFileName(txtfile.getAbsolutePath()),true);	
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			fileread.close();
+		} catch (Exception e) {
+		}
+		try {
+			filewriter.close();
+		} catch (Exception e) {
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取,默认每行20个元素，用空格隔开
 	 * 

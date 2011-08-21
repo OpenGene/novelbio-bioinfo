@@ -28,7 +28,13 @@ public class FastQSoapMap extends Mapping{
 	 * 索引文件
 	 */
 	String IndexFile = "";
-		
+	
+	/**
+	 * 是否仅mapping unique序列
+	 */
+	boolean uniqMapping = true;
+	
+	
 	private static Logger logger = Logger.getLogger(FastQSoapMap.class);  
 	
 	/**
@@ -60,19 +66,24 @@ public class FastQSoapMap extends Mapping{
 	
 	
 	/**
+	 * 双端只做unique mapping
 	 * @param seqFile1
 	 * @param seqFile2 没有就写null
 	 * @param FastQFormateOffset
 	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
 	 * @param outFilePath 结果文件路径
-	 * @param SoapExePath soap程序的路径
+	 * @param SoapExePath soap程序的全路径
 	 * @param IndexFile
 	 */
 	public FastQSoapMap(String seqFile1, String seqFile2,
 			int FastQFormateOffset, int QUALITY,String outFilePath,String SoapExePath, String IndexFile) {
 		super(seqFile1, seqFile2, FastQFormateOffset, QUALITY);
+		if (seqFile2==null || seqFile2.trim().equals("")) {
+			uniqMapping = true;
+		}
 		this.outFileName = outFilePath;
 		this.IndexFile = IndexFile;
+		this.SoapExePath = SoapExePath;
 	}
 
 	/**
@@ -84,10 +95,12 @@ public class FastQSoapMap extends Mapping{
 	 * @param IndexFile
 	 */
 	public FastQSoapMap(String seqFile1,
-			int FastQFormateOffset, int QUALITY,String outFilePath,String SoapExePath, String IndexFile) {
+			int FastQFormateOffset, int QUALITY,String outFilePath,String SoapExePath, String IndexFile,boolean uniqMapping) {
 		super(seqFile1, null, FastQFormateOffset, QUALITY);
+		this.uniqMapping = uniqMapping;
 		this.outFileName = outFilePath;
 		this.IndexFile = IndexFile;
+		this.SoapExePath = SoapExePath;
 	}
 	
 	/**
@@ -99,24 +112,26 @@ public class FastQSoapMap extends Mapping{
 	 * @param IndexFile
 	 */
 	public FastQSoapMap(String seqFile1
-			, int QUALITY,String outFilePath,String SoapExePath, String IndexFile) {
+			, int QUALITY,String outFilePath,String SoapExePath, String IndexFile,boolean uniqMapping) {
 		super(seqFile1, QUALITY);
 		this.outFileName = outFilePath;
+		this.uniqMapping = uniqMapping;
 		this.IndexFile = IndexFile;
+		this.SoapExePath = SoapExePath;
 	}
 	
-	/**
-	 * @param FastQFormateOffset
-	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
-	 * @param outFilePath 结果文件路径
-	 * @param SoapExePath soap程序的路径
-	 * @param IndexFile
-	 */
-	public FastQSoapMap(String outFilePath) {
-		super(null, QUALITY_MIDIAN);
-		this.outFileName = outFilePath;
-	}
-	
+//	/**
+//	 * @param FastQFormateOffset
+//	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
+//	 * @param outFilePath 结果文件路径
+//	 * @param SoapExePath soap程序的路径
+//	 * @param IndexFile
+//	 */
+//	public FastQSoapMap(String outFilePath) {
+//		super(null, QUALITY_MIDIAN);
+//		this.outFileName = outFilePath;
+//	}
+//	
 	
 	/**
 	 * 将本seqFile进行mapping分析，做mapping之前先要进行过滤处理，mapping后直接转化成bed文件返回
@@ -152,7 +167,13 @@ public class FastQSoapMap extends Mapping{
 		cmd = SoapExePath + " -a "+getSeqFile();
 		cmd = cmd + " -D " +this.IndexFile; 
 		cmd = cmd + " -o " +outFileName; 
-		cmd = cmd +  " -r 0 -v 2 -p 7 ";
+		if (uniqMapping) {
+			cmd = cmd +  " -r 0 ";
+		}
+		else {
+			cmd = cmd +  " -r 2 ";
+		}
+		cmd = cmd +  " -v 2 -p 7 ";
 		if (getBooPairEnd()) {
 			cmd = cmd + " -b " + getSeqFile2();
 			cmd = cmd+ " -2 "+ outFileName+"_SEout "+" -m "+minInsert+" -x "+maxInsert;
@@ -163,22 +184,22 @@ public class FastQSoapMap extends Mapping{
 	}
 
 	/**
-	* 将soap转化为bed文件，用于SE，不区分正负链时候做
+	* 将soap转化为标准bed文件，左端为开区间，不区分正负链时候做
 	* 本方法内部含有ascII的质量控制
 	* @param SE true: 单端   false: 双端
 	 * @param soapFile 
 	 * @param bpLength 测序长度
 	 * @param outPut macs的文件，仅仅是reads的结果
 	 * @param outComb 用于后期分析的mapping文件，单端将reads向3‘端延生至350bp，双端则是双端长度合并
-	 * @param error 双端才有的，单端随便设
+	 * @param outError 双端才有的,错误序列输出文件，单端随便设
 	 * @throws Exception 
 	 * @return 单端：返回ArrayList-BedSeq 第一个是单端的bed文件，第二个是变长的bed文件，用于作图<br>
 	 * 双端：返回ArrayList-BedSeq 第一个是单端的bed文件，第二个是变长的bed文件，用于作图，第三个是出错信息
 
 	 */
-	public ArrayList<BedSeq> copeSope2Bed(String outPut,String outComb,String error) throws Exception {
+	public ArrayList<BedSeq> copeSope2Bed(String outPut,String outComb,String outError) throws Exception {
 		if (getBooPairEnd()) {
-			return getBed2MacsPE(outFileName, outPut, outComb, error);
+			return getBed2MacsPE(outFileName, outPut, outComb, outError);
 		}
 		else {
 			return getBed2MacsSE(outFileName, outPut, outComb);
@@ -212,14 +233,14 @@ public class FastQSoapMap extends Mapping{
 			}
 			String[] ss = content.split("\t");
 			
-			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+ss[1].length()-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
+			String tmpres = ss[7] + "\t"+ (Long.parseLong(ss[8])-1) +"\t"+ (Long.parseLong(ss[8])+ss[1].length()-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 			txtOut1.writefile(tmpres+"\n");
 			if (ss[6].equals("+")) {		
-				String tmpres2 = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+349)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
+				String tmpres2 = ss[7] + "\t"+ (Long.parseLong(ss[8])-1) +"\t"+ (Long.parseLong(ss[8])+249)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 				txtOutLong.writefile(tmpres2+"\n");
 			}
 			else {
-				String tmpres2 = ss[7] + "\t"+ (Long.parseLong(ss[8])+ss[1].length()-350) +"\t"+(Long.parseLong(ss[8])+ss[1].length()-1) +"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
+				String tmpres2 = ss[7] + "\t"+ (Long.parseLong(ss[8])+ss[1].length()-251) +"\t"+(Long.parseLong(ss[8])+ss[1].length()-1) +"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 				txtOutLong.writefile(tmpres2+"\n");
 			}
 		}
@@ -256,7 +277,7 @@ public class FastQSoapMap extends Mapping{
 		
 		String content = "";
 		BufferedReader readSoap = txtSoap.readfile();
-		String tmpcontent=""; String tmp = "";String tmpPrespre = "";
+		String tmpcontent=""; String tmpPrespre = "";
 		String[] tmpresPre =null;
 		while ((content = readSoap.readLine()) != null) {
 			if (content.trim().equals("")) {
@@ -264,13 +285,13 @@ public class FastQSoapMap extends Mapping{
 			}
 			String[] ss = content.split("\t");
 			//soap文件的格式是 chrID 坐标 无论mapping到正负链，该坐标都是起点，都是要向后加上bpLength-1的，
-			String tmpres = ss[7] + "\t"+ ss[8] +"\t"+ (Long.parseLong(ss[8])+ss[1].length()-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
+			String tmpres = ss[7] + "\t"+ (Long.parseLong(ss[8])-1) +"\t"+ (Long.parseLong(ss[8])+ss[1].length()-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 			//tmpPrespre only save content while ss[0].split("#/")[1].equals("1")
 			//只需要判断#/1即可，如果#/1为正，则mapping到正链上，否则mapping到负链上
 			if (ss[0].trim().endsWith("1")) {
 				tmpcontent = content;
-				tmpresPre = ss;
-				tmpPrespre = tmpres;
+				tmpresPre = ss; //上一条的ss，上一条序列用 "\t" 分割
+				tmpPrespre = tmpres; //上一条整理好的序列
 				continue;
 			}
 			//只有当#/1和#/2的方向相反才是正确的测序结果。因为solexa测序的结果就是一正一负
@@ -279,28 +300,30 @@ public class FastQSoapMap extends Mapping{
 			)
 			{
 				txtOut1.writefile(tmpPrespre+"\n"+tmpres+"\n");
-				long startLoc = 0; long endLoc = 0; long tmpPre = Long.parseLong(tmpresPre[8]); long tmpSS = Long.parseLong(ss[8]);  
+				long startLoc = 0; long endLoc = 0; long tmpPre = Long.parseLong(tmpresPre[8]) - 1; long tmpSS = Long.parseLong(ss[8]) - 1;  
 				if (tmpPre<tmpSS) {
-					startLoc = tmpPre; endLoc = tmpSS + ss[1].length()-1;
+					startLoc = tmpPre; endLoc = tmpSS + ss[1].length();
 				}
 				else {
-					startLoc = tmpSS; endLoc = tmpPre + tmpresPre[1].length() - 1;
+					logger.error("正向mapping，第2条序列在第1条reads前： "+tmpres+"分割"+content);
+					startLoc = tmpSS; endLoc = tmpPre + tmpresPre[1].length();
 				}
-				txtOutComb.writefile(ss[7]+"\t"+startLoc+"\t"+endLoc+"\n");
+				txtOutComb.writefile(ss[7]+"\t"+startLoc+"\t"+endLoc+"\t+"+"\n");
 			}
 			else if ((ss[0].trim().endsWith("2")&&ss[6].equals("+"))
 					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("-")
 			)
 			{
 				txtOut1.writefile(tmpPrespre+"\n"+tmpres+"\n");
-				long startLoc = 0; long endLoc = 0; long tmpPre = Long.parseLong(tmpresPre[8]); long tmpSS = Long.parseLong(ss[8]);  
+				long startLoc = 0; long endLoc = 0; long tmpPre = Long.parseLong(tmpresPre[8]) - 1; long tmpSS = Long.parseLong(ss[8]) - 1;  
 				if (tmpPre<tmpSS) {
-					startLoc = tmpPre; endLoc = tmpSS + ss[1].length()-1;
+					logger.error("反向mapping，第1条序列在第2条reads前： "+tmpres+"分割"+content);
+					startLoc = tmpPre; endLoc = tmpSS + ss[1].length();
 				}
 				else {
-					startLoc = tmpSS; endLoc = tmpPre + tmpresPre[1].length() - 1;
+					startLoc = tmpSS; endLoc = tmpPre + tmpresPre[1].length();
 				}
-				txtOutComb.writefile(ss[7]+"\t"+startLoc+"\t"+endLoc+"\n");
+				txtOutComb.writefile(ss[7]+"\t"+startLoc+"\t"+endLoc+"\t-"+"\n");
 			}
 			else {
 				txtOuterror.writefile(tmpcontent+"\n"+content+"\n");
@@ -320,7 +343,6 @@ public class FastQSoapMap extends Mapping{
 	
 	/**
 	 * 将soap转化为bed文件，只有当为pear-end的时候，并且需要将单双链分开的时候才用这个。
-	 * 本方法内部含有ascII的质量控制
 	 * 假设测双端45bp
 	 * @param soapFile 
 	 * @param outPut1 输出#/1序列的坐标，一行起点45bp，一行终点45bp

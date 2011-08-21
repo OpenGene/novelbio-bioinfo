@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -113,7 +115,7 @@ public class ExcelTxtRead {
 	public static ArrayList<String[]> getFileToList(String File,int firstlinels1, String sep) throws Exception 
 	{
 		ArrayList<String[]> ls1=null;ArrayList<String[]> ls2=null;
-		TxtReadandWrite txt = new TxtReadandWrite();
+		TxtReadandWrite txt = new TxtReadandWrite(File,false);
 		
 		try {
 			ExcelOperate excel = new ExcelOperate();
@@ -124,7 +126,6 @@ public class ExcelTxtRead {
 		}
 		
 		if (ls1 == null || ls1.size()<1) {
-			txt.setParameter(File, false,true);
 			int txtRowNum = txt.ExcelRows();
 			ls1=txt.ExcelRead(sep, firstlinels1, 1,txtRowNum , -1, 1);//从目标行读取
 		}
@@ -132,11 +133,38 @@ public class ExcelTxtRead {
 		return ls1;
 	}
 	
-    
-    
+	/**
+	 * 给定文件，xls2003/txt，获得它们的信息，用arraylist-string[]保存
+	 * @param File 文件名
+	 * @param firstlinels1 从第几行开始读去
+	 * @param sep 如果是txt的话，间隔是什么
+	 * @return
+	 * @throws Exception
+	 */
+	public static String[][] getFileToArray(String File,int firstlinels1, String sep)
+	{
+		String[][] ls1=null;
+		TxtReadandWrite txt = new TxtReadandWrite(File,false);
+		
+		try {
+			ExcelOperate excel = new ExcelOperate();
+			excel.openExcel(File);
+			ls1 = excel.ReadExcel(firstlinels1, 1, excel.getRowCount(), excel.getColCount(2));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 
-	
-	
+		if (ls1 == null || ls1.length<1) {
+			try {
+				int txtRowNum = txt.ExcelRows();
+				ls1=txt.ExcelRead(sep, firstlinels1, 1,txtRowNum , txt.ExcelColumns(2, sep));//从目标行读取
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		txt.close();
+		return ls1;
+	}
 	
 	
 	

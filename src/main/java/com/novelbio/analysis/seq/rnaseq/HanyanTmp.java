@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.chipseq.preprocess.Comb;
-import com.novelbio.analysis.seq.genomeNew.CopyOfGffChrUnion;
+import com.novelbio.analysis.seq.genomeNew.GffChrHanYanChrom;
 import com.novelbio.analysis.seq.genomeNew.GffChrUnionHanYanRefSeq;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -71,11 +71,12 @@ public class HanyanTmp {
 	
 	 
 	public static void testHanyan() throws Exception {
-		CopyOfGffChrUnion gffChrUnion = new CopyOfGffChrUnion();
+		GffChrHanYanChrom gffChrUnion = new GffChrHanYanChrom();
 		gffChrUnion.loadChr(hashConf.get("ChromFa"));
 		gffChrUnion.loadGff(NovelBioConst.GENOME_GFF_TYPE_UCSC, hashConf.get("GFF"));
 		gffChrUnion.loadMap(hashConf.get("BedFile"),Integer.parseInt(hashConf.get("startRegion")),
 				hashConf.get("ChromFa"), Integer.parseInt(hashConf.get("invNum")), 100, hashConf.get("uniqReads").equals("True"),Integer.parseInt(hashConf.get("startCode")));
+		
 		String gene = hashConf.get("NormalizedType");
 		int normalizedType = 0;
 		if (gene.trim().equals("PER_GENE")) {
@@ -93,10 +94,8 @@ public class HanyanTmp {
 			booFilterCis5to3 = hashConf.get("filterCis5to3").equals("+");
 		}
 		
-		GffChrUnionHanYanRefSeq gffChrUnion = new GffChrUnionHanYanRefSeq();
-		gffChrUnion.loadSeq(hashConf.get("ChromFa"));
-		gffChrUnion.loadChr(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
-		gffChrUnion.loadGff(NovelBioConst.GENOME_GFF_TYPE_UCSC, hashConf.get("GFF"));
+		GffChrUnionHanYanRefSeq gffChrUnion = new GffChrUnionHanYanRefSeq(NovelBioConst.GENOME_GFF_TYPE_UCSC,
+				hashConf.get("GFF"), hashConf.get("ChromFa"),9606);
 		gffChrUnion.loadMap(hashConf.get("BedFile"),Integer.parseInt(hashConf.get("startRegion")),
 				hashConf.get("ChromFa"), Integer.parseInt(hashConf.get("invNum")), 100, hashConf.get("uniqReads").equals("True"),
 				Integer.parseInt(hashConf.get("startCode")), Integer.parseInt(hashConf.get("colUnique")),

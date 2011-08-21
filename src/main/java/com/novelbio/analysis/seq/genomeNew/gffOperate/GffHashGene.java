@@ -2,13 +2,63 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.novelbio.analysis.annotation.copeID.CopedID;
+import com.novelbio.test.testextend.a;
+
 public abstract class GffHashGene extends GffHash
 {
+	int taxID = 0;
+	public GffHashGene(int taxID) {
+		this.taxID = taxID;
+	}
+	public GffHashGene() {
+	}
+	/**
+	 * 哈希表geneID--LOC细节<br>
+	 * 用于快速将geneID编号对应到LOC的细节<br>
+	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的条目编号 <br>
+	 */
+	private HashMap<String,GffDetailGene> hashGeneIDGffDetail;
+	
+	/**
+	 * 哈希表geneID--LOC细节<br>
+	 * 用于快速将geneID编号对应到LOC的细节<br>
+	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的条目编号 <br>
+	 */
+	public HashMap<String,GffDetailGene> getHashGeneIDGffDetail() {
+		if (hashGeneIDGffDetail == null) {
+			hashGeneIDGffDetail = new HashMap<String, GffDetailGene>();
+			for (Entry<String, GffDetailAbs> entry : locHashtable.entrySet()) {
+				String accID = entry.getKey();
+				CopedID copedID = new CopedID(accID, taxID, false);
+				hashGeneIDGffDetail.put(copedID.getGenUniID(), (GffDetailGene) entry.getValue());
+			}
+		}
+		return hashGeneIDGffDetail;
+	}
+	
+	/**
+	 * 输入基因名/geneID，返回基因的坐标信息等
+	 * @param accID
+	 * @return
+	 */
+	public GffDetailGene getGeneDetail(String accID) {
+		GffDetailGene gffDetailGene = (GffDetailGene) locHashtable.get(accID);
+		if (gffDetailGene == null) {
+			gffDetailGene = getHashGeneIDGffDetail().get(accID);
+		}
+		if (gffDetailGene == null) {
+			CopedID copedID = new CopedID(accID, taxID, false);
+			gffDetailGene = getHashGeneIDGffDetail().get(copedID.getGenUniID());
+		}
+		return gffDetailGene;
+	}
 	/**
 	 * 	返回外显子总长度，内含子总长度等信息，只统计最长转录本的信息
 	 * 有问题

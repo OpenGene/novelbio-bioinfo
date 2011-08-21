@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genome;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -26,9 +27,12 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffsearchCG;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchPeak;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchRepeat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchUCSCgene;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileOperate;
 
 
 
@@ -194,9 +198,33 @@ public class GffChrUnion {
 	 */
 	public void loadMap(String mapFile,String chrFilePath,String sep,int colChrID,int colStartNum,int colEndNum,int invNum,int tagLength) 
 	{
-		mapReads=new MapReads();
+		
+		mapReads=new MapReads(5, chrFilePath, mapFile,null);
 		try {
-			readsNum = mapReads.ReadMapFile(mapFile, chrFilePath, sep, colChrID, colStartNum, colEndNum, invNum);
+			readsNum = mapReads.ReadMapFile(false, -1, 0, true, null);//(mapFile, chrFilePath, sep, colChrID, colStartNum, colEndNum, invNum);
+			if (tagLength>20) {
+				mapReads.setTagLength(tagLength);
+			}
+			
+		} catch (Exception e) {	e.printStackTrace();	}
+	}
+	
+	/**
+	  * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。
+	 * @param mapFile mapping的结果文件，一般为bed格式
+	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
+	 * @param regx 序列名的正则表达式，null不设定 读取Chr文件夹的时候默认设定了 "\\bchr\\w*"
+	 * @param colChrID ChrID在第几列，从1开始
+	 * @param colStartNum mapping起点在第几列，从1开始
+	 * @param colEndNum mapping终点在第几列，从1开始
+	 * @param invNum 每隔多少位计数
+	 * @param tagLength 设定双端readsTag拼起来后长度的估算值，大于20才会进行设置。目前solexa双端送样长度大概是200-400bp，不用太精确 ,默认是400
+	 */
+	public void loadMap(String mapFile,String chrFilePath,String regx,String sep,int colChrID,int colStartNum,int colEndNum,int invNum,int tagLength) 
+	{
+		mapReads=new MapReads(invNum, chrFilePath, mapFile,regx);
+		try {
+			readsNum = mapReads.ReadMapFile(false, -1, 0, false, null);//(mapFile, chrFilePath, sep, colChrID, colStartNum, colEndNum, invNum);
 			if (tagLength>20) {
 				mapReads.setTagLength(tagLength);
 			}

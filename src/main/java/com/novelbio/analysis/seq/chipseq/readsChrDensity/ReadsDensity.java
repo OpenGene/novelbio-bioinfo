@@ -2,9 +2,14 @@ package com.novelbio.analysis.seq.chipseq.readsChrDensity;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genome.GffChrUnion;
+import com.novelbio.analysis.seq.genome.getChrSequence.ChrSearch;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -13,9 +18,26 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 public class ReadsDensity
 {
-	String RhistFile="MyReadsHist.R";
 	GffChrUnion gffChrUnion=new GffChrUnion();
-	GffChrUnion gffChrUnion2=null;;
+	GffChrUnion gffChrUnion2=null;
+	
+	SeqHash seqHash = null;
+	/**
+	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
+	 * @param regx 序列名的正则表达式，null不设定 读取Chr文件夹的时候默认设定了 "\\bchr\\w*"
+	 */
+	private SeqHash getSeqInfo(String chrFilePath, String regx) 
+	{
+		SeqHash seqHash = null; 
+		if (FileOperate.isFile(chrFilePath)) 
+			seqHash = new SeqFastaHash(chrFilePath);
+		if (FileOperate.isFileDirectory(chrFilePath)) 
+			seqHash = new ChrStringHash(chrFilePath);
+		seqHash.setInfo(true,regx, false, "");
+		seqHash.setFile();
+		return seqHash;
+	}
+	
 	int maxresolution =10000;
 	/**
 	 * 对于macs的结果bed文件，首先需要进行排序
@@ -31,6 +53,7 @@ public class ReadsDensity
 	 */
 	public void prepare(String mapFile,String mapFile2,String chrFilePath,String sep,int colChrID,int colStartNum,int colEndNum,int invNum,int tagLength) 
 	{
+		seqHash = getSeqInfo(chrFilePath, "");
 		gffChrUnion.loadMap(mapFile, chrFilePath, sep, colChrID, colStartNum, colEndNum, invNum,tagLength);
 		if (!mapFile2.trim().equals("")) {
 			gffChrUnion2=new GffChrUnion();
@@ -38,6 +61,27 @@ public class ReadsDensity
 		}
 	}
 	
+	/**
+	 * 对于macs的结果bed文件，首先需要进行排序
+	 * sort -k1,1 -k2,2n test #第一列起第一列终止排序，第二列起第二列终止按数字排序
+	 * @param mapFile mapping文件
+	 * @param mapFile2 当为""时，不读。如果有第二个mapping文件，这个主要是考虑正负链分开时的情况。所以不会有mapFile3了
+	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，文件夹最后无所谓加不加"/"或"\\"
+	 * @param sep 
+	 * @param colChrID chrID在第几列
+	 * @param colStartNum 坐标起点在第几列
+	 * @param colEndNum 坐标终点在第几列
+	 * @param invNum 最后每个间隔为几个bp
+	 */
+	public void prepare(String mapFile,String mapFile2,String chrFilePath,String regx,String sep,int colChrID,int colStartNum,int colEndNum,int invNum,int tagLength) 
+	{
+		seqHash = getSeqInfo(chrFilePath, "");
+		gffChrUnion.loadMap(mapFile, chrFilePath,regx, sep, colChrID, colStartNum, colEndNum, invNum,tagLength);
+		if (!mapFile2.trim().equals("")) {
+			gffChrUnion2=new GffChrUnion();
+			gffChrUnion2.loadMap(mapFile2, chrFilePath,regx, sep, colChrID, colStartNum, colEndNum, invNum, tagLength);
+		}
+	}
 	public double[] getLocReadsFigure(String chrID,int locStart,int locEnd,int resolution) 
 	{
 		return gffChrUnion.getRangReadsDist(chrID, locStart, locEnd,resolution);
@@ -49,8 +93,7 @@ public class ReadsDensity
 	 */
 	public void getAllChrDist() throws Exception 
 	{
-		ArrayList<String[]> chrlengthInfo=gffChrUnion.getChrLengthInfo();
-	
+		ArrayList<String[]> chrlengthInfo=seqHash.getChrLengthInfo();
 		for (int i = chrlengthInfo.size()-1; i>=0; i--) {
 			getChrDist(chrlengthInfo.get(i)[0], maxresolution);
 		}
@@ -67,9 +110,9 @@ public class ReadsDensity
 	 */
 	private void getChrDist(String chrID,int maxresolution) throws Exception
 	{
-		int[] resolution=gffChrUnion.getChrRes(chrID, maxresolution);
+		int[] resolution=seqHash.getChrRes(chrID, maxresolution);
 		double[] chrReads=gffChrUnion.getReadsDensity(chrID.toLowerCase(), 1, -1, resolution.length);
-		long chrLength =gffChrUnion.getChrLength(chrID.toLowerCase());
+		long chrLength =seqHash.getChrLength(chrID);
 		if (chrReads!=null)
 		{
 			TxtReadandWrite txtRparamater=new TxtReadandWrite();
@@ -77,7 +120,7 @@ public class ReadsDensity
 			txtRparamater.setParameter(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_PARAM,true, false);
 			txtRparamater.writefile("Item"+"\t"+"Info"+"\r\n");//必须要加上的，否则R读取会有问题
 			txtRparamater.writefile("tihsresolution"+"\t"+chrLength+"\r\n");
-			txtRparamater.writefile("maxresolution"+"\t"+gffChrUnion.getThreshodChrLength()[1]+"\r\n");
+			txtRparamater.writefile("maxresolution"+"\t"+seqHash.getChrLenMax()+"\r\n");
 			txtRparamater.writefile("ChrID"+"\t"+chrID+"\r\n");
 			
 			

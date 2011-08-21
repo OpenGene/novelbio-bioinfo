@@ -50,10 +50,12 @@ public class GffHashPlantGene extends GffHashGene{
 		if (DB.equals(Species.ARABIDOPSIS)) {
 			GeneName="AT\\w{1}G\\d{5}";
 			splitmRNA="(?<=AT\\w{1}G\\d{5}\\.)\\d";
+			this.taxID = 3702;
 		}
 		else if (DB.equals(Species.RICE)) {
 			GeneName="LOC_Os\\d{2}g\\d{5}";
 			splitmRNA="(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";
+			this.taxID = 39947;
 		}
 	}
 	/**

@@ -18,11 +18,11 @@ public class runSrc2Trg {
 	public static void main(String[] args) {
 		String parentFIle = "/home/zong0jie/桌面/";
 
-		int QtaxID = 9606;
+		int QtaxID = 10090;
 		boolean blast = false;
 		int StaxID = 9606;
 		try {
-			String readExcel = parentFIle + "ZONG.xls";
+			String readExcel = parentFIle + "显著Pathway包含基因.xls";
 			String scr2trg = parentFIle + "InterSectiontrg.txt";
 			String attr = parentFIle + "InterSectionatttxt";
 			String[] accID = KGprepare.getAccID(1, 1,readExcel);

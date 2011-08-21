@@ -1,7 +1,11 @@
 package com.novelbio.base.dataStructure;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.math.stat.StatUtils;
@@ -131,6 +135,43 @@ public class MathComput {
 		return med;
 	}
 	
+	/**
+	 * 输入数据，获得最接近中位数的那个数, 用于10
+	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * @return
+	 */
+	public static double medianLike(double[] unsortNum)
+	{
+		double med=-100;
+		double tmp=-10000;
+		int length=unsortNum.length;
+		for(int i=1;i<length;i++)
+		{
+			tmp=unsortNum[i];
+			int j=i;
+			for(;j>0;j--)
+			{
+				if(tmp<unsortNum[j-1])
+				{
+					unsortNum[j]=unsortNum[j-1];
+				}
+				else break;
+			}
+			unsortNum[j]= tmp;
+		}
+		if (length%2==0){
+			med=(unsortNum[length/2-1]+unsortNum[length/2])/2;
+			if (Math.abs(unsortNum[length/2-1] - med) <= Math.abs(unsortNum[length/2] - med)) {
+				return unsortNum[length/2-1];
+			}
+			else {
+				return unsortNum[length/2];
+			}
+			
+		}
+		else 
+			return unsortNum[length/2];
+	}
 	
 	
 	/**
@@ -395,6 +436,7 @@ public class MathComput {
 		return result;
 	}
 	
+
 	/**
 	 * 给定pvaule，获得相应的fdr，用R来计算的<br>
 	 * 使用R的workspace目前在  /media/winE/Bioinformatics/R/practice_script/platform/pvalue2fdr/  中
@@ -402,7 +444,7 @@ public class MathComput {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static ArrayList<Double> pvalue2Fdr(ArrayList<Double> lsPvalue) throws Exception {
+	public static ArrayList<Double> pvalue2FdrR(ArrayList<Double> lsPvalue) throws Exception {
 		TxtReadandWrite txtPvalue = new TxtReadandWrite();
 		txtPvalue.setParameter("/media/winE/Bioinformatics/R/practice_script/platform/pvalue2fdr/pvalue.txt", true, false);
 		double[] tmpDouble = new double[lsPvalue.size()];
@@ -531,6 +573,63 @@ public class MathComput {
 		}
 		return result;
 	}
+//////////////////////////// java 版的 fdr 计算， BH 方法 //////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * 给定pvaule，获得相应的fdr，用java来计算的<br>
+	 * @param lsPvalue
+	 * @return
+	 * @throws Exception 
+	 */
+	public static ArrayList<Double> pvalue2Fdr(ArrayList<Double> lsPvalue) {
+		ArrayList<Double[]> lsPvalueInfo = new ArrayList<Double[]>();
+		for (int i = 0; i < lsPvalue.size(); i++) {
+			Double[] dou = new Double[2];
+			dou[0] = (double) i;
+			dou[1] = lsPvalue.get(i);
+			lsPvalueInfo.add(dou);
+		}
+		HashMap<Integer, Double> hashResult = getFDR(lsPvalueInfo);
+		ArrayList<Double> lsResult = new ArrayList<Double>();
+		for (int i = 0; i < lsPvalue.size(); i++) {
+			lsResult.add(hashResult.get(i));
+		}
+		return lsResult;
+	}
 	
+	private static HashMap<Integer, Double> getFDR(ArrayList<Double[]> lsPvalue) {
+		// ordening the pvalues.
+		Collections.sort(lsPvalue, new Comparator<Double[]>() {
+			@Override
+			public int compare(Double[] o1, Double[] o2) {
+				if (o1[1] < o2[1])
+					return -1;
+				else if (o1[1] == o2[1])
+					return 0;
+				else
+					return 1;
+			}
+		});
+		double[] ordenedPvalues = new double[lsPvalue.size()];
+		double[] adjustedPvalues = new double[lsPvalue.size()];
+		for (int i = 0; i < ordenedPvalues.length; i++) {
+			ordenedPvalues[i] = lsPvalue.get(i)[1];
+		}
+		
+		HashMap<Integer, Double> hashResult = new HashMap<Integer, Double>();
+		// calculating adjusted p-values.
+		double min = 1;
+		double mkprk;
+		for (int i = ordenedPvalues.length; i > 0; i--) {
+			mkprk = ordenedPvalues.length * ordenedPvalues[i - 1] / i;
+			if (mkprk < min) {
+				min = mkprk;
+			}
+			adjustedPvalues[i - 1] = min;
+		}
+		for (int i = 0; i < adjustedPvalues.length; i++) {
+			hashResult.put(lsPvalue.get(i)[0].intValue(), adjustedPvalues[i]);
+		}
+		return hashResult;
+	}
 	
 }

@@ -69,7 +69,23 @@ public class FileOperate {
 		File file = new File(fileName);
 		return file.getParent();
 	}
-
+	/**
+	 * 给定文件名，加上后缀
+	 * @param fileName 可以包含路径，如果包含路径，则返回全部路径名和后缀。
+	 * 如果已有后缀，则不添加。
+	 * @suffix 待添加的后缀名
+	 * @return
+	 */
+	public static String addSuffix(String fileName,String suffix) {
+		String[] thisFileName = getFileNameSep(fileName);
+		if (thisFileName[1].equals(suffix)) {
+			return fileName;
+		}
+		if (fileName.endsWith(".")) {
+			return fileName + suffix;
+		}
+		return fileName+"."+suffix;
+	}
 	/**
 	 * 给定路径名，返回其名字 如给定/home/zong0jie/和/home/zong0jie 都返回zong0jie 可以给定不存在的路径
 	 * 
@@ -490,20 +506,34 @@ public class FileOperate {
 	 * @return
 	 */
 	public static void changeFileName(String oldName, String newName) {
+		changeFileName(oldName, newName,false);
+	}
+	/**
+	 * 文件改名,如果已有同名文件存在，则不改名并返回
+	 * 
+	 * @param oldName
+	 *            包含全部路径的文件名
+	 * @param newName
+	 *            要修改的文件名,不包含路径
+	 * @return
+	 */
+	public static void changeFileName(String oldName, String newName,boolean cover) {
 		// 文件原地址
 		File oldFile = new File(oldName);
 		// 文件新（目标）地址
 
 		File fnew = new File(oldFile.getParentFile() + File.separator + newName);
-		if (fnew.exists()) // 如果有文件存在，则不变
+		if (fnew.exists()&&!cover) // 如果有文件存在，则不变
 		{
 			return;
 			// fnew.delete();
 		}
+		else {
+			fnew.delete();
+		}
 		oldFile.renameTo(fnew);
-
 	}
-
+	
 	/**
 	 * 移动文件，如果新地址有同名文件，则不移动并返回<br>
 	 * 可以创建一级新文件夹<br>
@@ -666,13 +696,44 @@ public class FileOperate {
 			return false;
 		}
 		File file = new File(fileName);
-		if (!file.exists()) {// 没有文件，则返回空
-			return false;
-		} else {
+		if (file.exists()) {// 没有文件，则返回空
 			return true;
+		} else {
+			return false;
 		}
 	}
-
+	/**
+	 * 判断文件是否为文件夹
+	 * @param fileName
+	 * @return
+	 */
+	public static boolean isFileDirectory(String fileName) {
+		if (fileName == null) {
+			return false;
+		}
+		File file = new File(fileName);
+		if (file.isDirectory()) {// 没有文件，则返回空
+			return true;
+		} else {
+			return false;
+		}
+	}
+	/**
+	 * 判断文件是否为文件
+	 * @param fileName
+	 * @return
+	 */
+	public static boolean isFile(String fileName) {
+		if (fileName == null) {
+			return false;
+		}
+		File file = new File(fileName);
+		if (file.isFile()) {// 没有文件，则返回空
+			return true;
+		} else {
+			return false;
+		}
+	}
 	/**
 	 * 删除单个文件
 	 * 
@@ -754,7 +815,11 @@ public class FileOperate {
 			}
 		}
 	}
-
+	/**
+	 * 添加文件分割符
+	 * @param path
+	 * @return
+	 */
 	public static String addSep(String path) {
 		if (!path.endsWith(File.separator)) {
 			path = path + File.separator;

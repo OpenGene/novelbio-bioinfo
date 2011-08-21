@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
  * @LOCIDList 顺序存储每个基因号或条目号
  */
 public abstract class GffHash {	
-	
 	/**
 	 * 起点默认为开区间
 	 */

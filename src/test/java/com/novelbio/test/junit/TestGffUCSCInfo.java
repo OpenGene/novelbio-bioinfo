@@ -27,7 +27,8 @@ public class TestGffUCSCInfo extends TestCase{
 	public void setUp() throws Exception
 	{
 		//UCSC test
-		gffHashUCSC = new GffHashUCSCgene(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+		gffHashUCSC = new GffHashUCSCgene(9606);
+		gffHashUCSC.ReadGffarray(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		gffCodInfoUCSCgenechr1_1385068 = (GffCodGene) gffHashUCSC.searchLocation("chr1", 1385069);//
 		lsAllLoc = gffHashUCSC.getLOCIDList();
 		hashGffDetail = gffHashUCSC.getLocHashtable();
@@ -39,7 +40,7 @@ public class TestGffUCSCInfo extends TestCase{
 		assertEquals("NM_022834/NM_199121",gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().getLocString());
 		assertEquals(true,gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().getCis5to3());
 		assertEquals(true,gffCodInfoUCSCgenechr1_1385068.getGffDetailDown().getCis5to3());
-		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.locatInfo());
+		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.isInsideLoc());
 		assertEquals(-995, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getCoordSearchLongest().getCod2ATG());
 		assertEquals(-18841, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getCoordSearchLongest().getCod2UAG());
 		assertEquals(-20469, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getCoordSearchLongest().getCod2Tes());

@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 
 public class GUIFileOpen  extends JFrame {
 	/**
@@ -39,7 +40,7 @@ public class GUIFileOpen  extends JFrame {
 		chooser.setFileFilter(filter);
 		int returnVal = chooser.showSaveDialog(getParent());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			return chooser.getSelectedFile().getAbsolutePath();
+			return FileOperate.addSuffix(chooser.getSelectedFile().getAbsolutePath(),extensions[0]);
 		}
 		return null;
 	}

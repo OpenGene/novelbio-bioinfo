@@ -45,29 +45,29 @@ public class RunUpDateDB {
 			String pathGen2Refseq = fold + "gene2refseq";
 			String outGen2RefStat = fold + "outTaxgene2refseq";
 			String outGen2RefID = fold + "outTaxGen2RefID";
-//			copeNCBIID(taxIDFile, pathGene2accessionID, outGen2AccTaxID, 
-//					pathGene2enseb, outGen2EnsembTaxID, pathGen2Refseq, outGen2RefStat, outGen2RefID);
+			copeNCBIID(taxIDFile, pathGene2accessionID, outGen2AccTaxID, 
+					pathGene2enseb, outGen2EnsembTaxID, pathGen2Refseq, outGen2RefStat, outGen2RefID);
 			System.out.println("copeNCBIID OK");
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String uniIDmapSelect = fold + "idmapping_selected.tab";
 			String taxuniIDmapSelect = fold + "taxuniIDmapSelect";
 			String outUniIDmapSelectNCBIID = fold + "outUniIDmapSelectNCBIID";
 			String outUniIDmapSelectUniID =  fold + "outUniIDmapSelectUniID";
-//		copeUniID(taxIDFile, uniIDmapSelect, taxuniIDmapSelect, outUniIDmapSelectNCBIID, outUniIDmapSelectUniID);
+		copeUniID(taxIDFile, uniIDmapSelect, taxuniIDmapSelect, outUniIDmapSelectNCBIID, outUniIDmapSelectUniID);
 		
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String Ref2Uni = fold + "gene_refseq_uniprotkb_collab.txt";
 			String outUniIDmapSelectUniIDnone = fold + "outUniIDmapSelectUniIDnone";//先用outUniIDmapSelectUniID查找NCBIID，没找到的写入该文本
-//			upDateNCBIID(taxIDFile, outGen2AccTaxID, outGen2EnsembTaxID, outUniIDmapSelectNCBIID, Ref2Uni, outUniIDmapSelectUniID, outUniIDmapSelectUniIDnone);
+			upDateNCBIID(taxIDFile, outGen2AccTaxID, outGen2EnsembTaxID, outUniIDmapSelectNCBIID, Ref2Uni, outUniIDmapSelectUniID, outUniIDmapSelectUniIDnone);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String geneInfoFile = fold + "gene_info";
 			String taxGeneInfoFile = fold + "taxGeneInfoFile";
-//			upDateNCBIIDSymbol(taxIDFile, geneInfoFile, taxGeneInfoFile);
-//			upDateUniID(outUniIDmapSelectUniIDnone);
+			upDateNCBIIDSymbol(taxIDFile, geneInfoFile, taxGeneInfoFile);
+			upDateUniID(outUniIDmapSelectUniIDnone);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String gene_associationgoa_unipro = fold + "gene_association.goa_uniprot";
 			String taxgene_associationgoa_unipro = fold + "taxgene_associationgoa_unipro";
-//			upDateUniIDgene_associationgoa_uniprot(taxIDFile, gene_associationgoa_unipro, taxgene_associationgoa_unipro, taxGeneInfoFile);
+			upDateUniIDgene_associationgoa_uniprot(taxIDFile, gene_associationgoa_unipro, taxgene_associationgoa_unipro, taxGeneInfoFile);
 			UpDateNBCDBFile.upDateGeneInfo(taxGeneInfoFile);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String affyFold = "/media/winE/Bioinformatics/Affymetrix/";

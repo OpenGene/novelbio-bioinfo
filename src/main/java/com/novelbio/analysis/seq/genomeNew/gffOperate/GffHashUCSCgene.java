@@ -22,6 +22,11 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 public class GffHashUCSCgene extends GffHashGene
 {
 
+	public GffHashUCSCgene(int taxID) {
+		super(taxID);
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * @Override
 	 * 最底层读取gff的方法，本方法只能读取UCSCknown gene<br>

@@ -6,30 +6,38 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
+import javax.swing.tree.ExpandVetoException;
+
+import org.apache.commons.math.stat.correlation.PearsonsCorrelation;
 import org.apache.log4j.Logger;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.CopyOfGUIanalysisSimple;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.SeqComb;
-import com.novelbio.analysis.seq.SeqFastaHash;
 import com.novelbio.analysis.seq.blastZJ.Cell;
 import com.novelbio.analysis.seq.blastZJ.LongestCommonSubsequence;
 import com.novelbio.analysis.seq.blastZJ.SmithWaterman;
 
-import com.novelbio.analysis.seq.genomeNew.CopyOfGffChrUnion;
+import com.novelbio.analysis.seq.genomeNew.GffChrChIP;
+import com.novelbio.analysis.seq.genomeNew.GffChrHanYanChrom;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashUCSCgene;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.mapping.FastQSoapMap;
 import com.novelbio.analysis.tools.formatConvert.bedFormat.Soap2Bed;
+import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.MathComput;
 
 
 
@@ -42,18 +50,59 @@ public class mytest {
 	 * @param args
 	 * @throws Exception 
 	 */
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		Soap2Bed soap2Bed = new Soap2Bed();
-		String parString = "/media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/";
-		soap2Bed.copeSope2Bed("illumina", true, parString+"mid_Nu.fasta", parString + "midResult", parString + "notUse", null);
-		soap2Bed.copeSope2Bed("illumina", true, parString+"small_Nu.fasta", parString + "smallResult", parString + "notUse", null);
+		SeqFastaHash seqFastaHash = new SeqFastaHash("/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT2/denovo/TGACTkmer60.scafSeq");
+		
+		seqFastaHash.writeFileSep("/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT2/denovo/", "TGACTsep", new int[]{10000,-1}, true, 100);
+		
 	}
 	
 	
+	
+	
+	
+	private static void testFdrFunction() throws Exception {
+		ArrayList<Double> lsinput = new ArrayList<Double>();
+		ExcelOperate exOperate = new ExcelOperate();
+		exOperate.openExcel("/media/winE/NBC/Project/QPCR_YK110803/5vs5vs5/杨克差异基因8-14.xls");
+		String[][] pvalue = exOperate.ReadExcel(2, 6, exOperate.getRowCount(), 6);
+		for (int i = 0; i < pvalue.length; i++) {
+			lsinput.add(Double.parseDouble(pvalue[i][0]));
+		}
+		
+		
+		
+		ArrayList<Double> ls1 = MathComput.pvalue2Fdr(lsinput);
+		ArrayList<Double> ls2 = MathComput.pvalue2FdrR(lsinput);
+		TxtReadandWrite txtLs1 = new TxtReadandWrite("/media/winE/NBC/Project/QPCR_YK110803/5vs5vs5/ls1.txt", true);
+		TxtReadandWrite txtLs2 = new TxtReadandWrite("/media/winE/NBC/Project/QPCR_YK110803/5vs5vs5/ls2.txt", true);
+		txtLs1.writefile(ls1);
+		txtLs2.writefile(ls2);
+		txtLs1.close();
+		txtLs2.close();
+		System.out.println("ok");
+	}
 	public static void AthIntron() throws Exception {
-		
-		
-		
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
+		txtReadandWrite.setParameter("/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/s_3_sep_filter_high.fasta_1", false, true);
+		BufferedReader reader = txtReadandWrite.readfile();
+		String content = "";
+		while ((content = reader.readLine()) != null) {
+			if (content.contains("HWUSI-EAS1734:0007:3:2:16063:6943:0/1")) {
+				System.out.println(content);
+				System.out.println(reader.readLine());
+				System.out.println(reader.readLine());
+				System.out.println(reader.readLine());
+				System.out.println(reader.readLine());
+				System.out.println(reader.readLine());
+				System.out.println(reader.readLine());
+				System.out.println(reader.readLine());
+				System.out.println(reader.readLine());
+				System.out.println(reader.readLine());
+				System.out.println(reader.readLine());
+			}
+		}
 	}
 	
 	public static void blast() {
@@ -71,12 +120,12 @@ public class mytest {
 		}
 	}
 	public static void WZFfastq() {
-		String parentPath = "/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/猪链球菌-2003/猪链球菌-2003/raw_reads/s_3_fastq.txt/";
+		String parentPath = "/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/";
 		String seq1 = parentPath + "s_3_sep_filter_high.fasta_1";
 		String seq2 = parentPath + "s_3_sep_filter_high.fasta_2";
 		FastQ fastQ = new FastQ(seq1, seq2,FastQ.FASTQ_ILLUMINA_OFFSET,FastQ.QUALITY_HIGM);
 		try {
-			fastQ.filterBarcode("/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/猪链球菌-2003/猪链球菌-2003/raw_reads/s_3_fastq.txt/barcod.fastq", 1, 
+			fastQ.filterBarcode("/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/sf/barcodTest.fastq", 1, 
 					"GTCAT","GTCAT","CATGT","CATGT","TGACT","TGACT");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -98,11 +147,7 @@ public class mytest {
 //		System.out.println(a);
 //	}
 //	
-	
-	
 
-	
-	
 	/**
 	 * 看看bed文件里面有没有外显子剪接信息
 	 * @throws Exception 
@@ -147,7 +192,6 @@ public class mytest {
 		System.out.println("all Gene: "+geneNum );
 		System.out.println(" Gene20: "+gene20bp );
 		System.out.println("Gene0: "+geneNun );
-	
 	}
 	
 	/**
@@ -177,8 +221,6 @@ public class mytest {
 		}
 		System.out.println(treeIntron.first());
 		System.out.println(treeIntron.last());
-		
-		
 	}
 	
 	
@@ -328,6 +370,96 @@ public class mytest {
 		}
 		txtReadandWrite.close();
 	}
+	
+	/**
+	 * 给韩燕做mapping和后期数据整合分析
+	 */
+	public void mappingHanyan() {
+
+		String IndexFile = "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/soap_refseq/RefSeqFromChr.fa.index";
+		String parentFile = "/media/winE/NBC/Project/Project_HY_Lab/TSC2+KO/";
+		try {
+			FastQSoapMap fastQSoapMap = new FastQSoapMap(parentFile+"TSC2KOBarcode_small.fq", FastQ.QUALITY_MIDIAN, parentFile +"TSC2KOsmallMap.fq", "soap", IndexFile,false);
+			fastQSoapMap.mapReads();
+			fastQSoapMap.copeSope2Bed(parentFile+"TSC2KOsmall.bed", parentFile+"nouse.bed", "aaa");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			FastQSoapMap fastQSoapMap = new FastQSoapMap(parentFile+"TSC2KOBarcode_mid.fq", FastQ.QUALITY_MIDIAN, parentFile +"TSC2KOmidMap.fq", "soap", IndexFile,false);
+			fastQSoapMap.mapReads();
+			fastQSoapMap.copeSope2Bed(parentFile+"TSC2KOmid.bed", parentFile+"nouse.bed", "aaa");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			FastQSoapMap fastQSoapMap = new FastQSoapMap(parentFile+"TSC2KOBarcode_large.fq", FastQ.QUALITY_MIDIAN, parentFile +"TSC2KOlargeMap.fq", "soap", IndexFile,false);
+			fastQSoapMap.mapReads();
+			fastQSoapMap.copeSope2Bed(parentFile+"TSC2KOlarge.bed", parentFile+"nouse.bed", "aaa");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void snpfilter() throws Exception {
+		String filePath = "/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/sf/";
+		String snpPath = filePath + "TGACTsoapsnp";
+		String snpOutPath = filePath + "TGACTsoapsnpOut2";
+		
+		TxtReadandWrite txtFile = new TxtReadandWrite(snpPath, false);
+		TxtReadandWrite txtOut = new TxtReadandWrite(snpOutPath, true);
+		
+		BufferedReader reader = txtFile.readfile();
+		String content = "";
+		while ((content = reader.readLine()) != null) {
+			String[] ss = content.split("\t");
+			if (!ss[2].equals(ss[5])) {
+				txtOut.writefileln(content);
+			}
+			else if (Double.parseDouble(ss[14]) < 0.2) {
+				txtOut.writefileln(content);
+			}
+		}
+		txtFile.close();
+		txtOut.close();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

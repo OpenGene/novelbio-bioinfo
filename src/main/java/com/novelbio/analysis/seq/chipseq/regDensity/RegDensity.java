@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.math.stat.StatUtils;
 import org.apache.commons.math.util.MathUtils;
 import org.tc33.jheatchart.HeatChart;
 
@@ -322,76 +323,54 @@ public class RegDensity extends GenomeBasePrepare
 	 * @param RworkSpace 
 	 */
 	public void getRegionDensityHeatMap(String type,int range,int binNum,String resultFilePath,String prefix) {
+		double[][] Density= null;
 		if (type.equals("Tss")) {
-			getTssDensityHeatMap(range, binNum,resultFilePath,prefix);
+			Density=gffLocatCod.getUCSCTssRangeArray(LocInfo, range, binNum);
 		}
 		else if (type.equals("GeneEnd")) {
-			getGeneEndDensityHeatMap(range, binNum,resultFilePath,prefix);
+			Density=gffLocatCod.getUCSCGeneEndRangeArray(LocInfo, range, binNum);
 		}
+		getDensityHeatMap(Density, range, binNum,resultFilePath,prefix, type);
 	}
 	
 	
 	/**
+	 * 
 	 * 根据Peak文件做出TSS图
+	 * @param TssDensity 左右两端的坐标信息
 	 * @param range Tss两端区域
 	 * @param binNum 分割分数
-	 * @param figure 图片路径
-	 * @param RworkSpace 
 	 * @param resultFilePath 保存至哪个文件夹
 	 * @param prefix 文件名前缀
+	 * @param regix 后缀
 	 */
-	private void getTssDensityHeatMap(int range,int binNum,String resultFilePath,String prefix) {
+	private void getDensityHeatMap(double[][] TssDensity, int range,int binNum,String resultFilePath,String prefix, String regix) {
 		
 		gffLocatCod.setUpstreamTSSbp(tssRegion);gffLocatCod.setDownStreamTssbp(tssRegion);
 		gffLocatCod.setGeneEnd3UTR(geneEndRegion);
-		double[][] TssDensity=gffLocatCod.getUCSCTssRangeArray(LocInfo, range, binNum);
-		HeatChart map = new HeatChart(TssDensity,0,2);
-		map.setTitle("This is my heat chart title");
-		map.setXAxisLabel("X Axis");
-		map.setYAxisLabel("Y Axis");
-
-		String[] aa = new String[]{"a","b","c","d","e","f"};
-		map.setXValues(aa);
-		Dimension bb = new Dimension();
-		bb.setSize(1, 0.01);
-		map.setCellSize(bb );
-		//Output the chart to a file.
-		Color colorblue = Color.BLACK;
-		Color colorRed = Color.WHITE;
-		//map.setBackgroundColour(color);
-		map.setHighValueColour(colorblue);
-		map.setLowValueColour(colorRed);
 		
-		try {
-			map.saveToFile(new File(resultFilePath+prefix+"Tss.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		double[] tssValue = new double[TssDensity.length*TssDensity[0].length];
+		int k = 0;
+		for (double[] tss : TssDensity) {
+			for (double d : tss) {
+				tssValue[k] = d; k++;
+			}
 		}
-		System.out.println(map.getChartSize().getHeight());
-	}
-	
-	/**
-	 * 根据Peak文件做出TSS图
-	 * @param range Tss两端区域
-	 * @param binNum 分割分数
-	 * @param figure 图片路径
-	 * @param RworkSpace 
-	 * @param resultFilePath 保存至哪个文件夹
-	 * @param prefix 文件名前缀
-	 */
-	private void getGeneEndDensityHeatMap(int range,int binNum,String resultFilePath,String prefix) {
+		System.out.println(StatUtils.percentile(tssValue, 95));
 		
-		gffLocatCod.setUpstreamTSSbp(tssRegion);
-		gffLocatCod.setGeneEnd3UTR(geneEndRegion);
-		double[][] GeneEndDensity=gffLocatCod.getUCSCGeneEndRangeArray(LocInfo, range, binNum);
-		HeatChart map = new HeatChart(GeneEndDensity,0,3);
+//		HeatChart map = new HeatChart(TssDensity,0,StatUtils.percentile(tssValue, 95));
+		HeatChart map = new HeatChart(TssDensity,0,50);
 		map.setTitle("This is my heat chart title");
 		map.setXAxisLabel("X Axis");
 		map.setYAxisLabel("Y Axis");
-
+		
 		String[] aa = new String[]{"a","b","c","d","e","f"};
 		map.setXValues(aa);
+		String[] nn = new String[TssDensity.length];
+		for (int i = 0; i < nn.length; i++) {
+			nn[i] = "";
+		}
+		map.setYValues(nn);
 		Dimension bb = new Dimension();
 		bb.setSize(1, 0.01);
 		map.setCellSize(bb );
@@ -402,15 +381,13 @@ public class RegDensity extends GenomeBasePrepare
 		map.setHighValueColour(colorblue);
 		map.setLowValueColour(colorRed);
 		try {
-			map.saveToFile(new File(resultFilePath+prefix+"GeneEnd.png"));
+			map.saveToFile(new File(resultFilePath+prefix+regix+".png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println(map.getChartSize().getHeight());
 	}
-	
-	
 	
 	
 	/**

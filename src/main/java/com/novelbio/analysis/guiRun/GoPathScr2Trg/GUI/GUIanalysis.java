@@ -43,11 +43,11 @@ import com.novelbio.analysis.guiRun.BlastGUI.GUI.GuiBlastJpanel;
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
 public class GUIanalysis extends javax.swing.JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6809702573230604814L;
 	private JTabbedPane jTabbedPane1;
-	private JPanel jPanPath;
-	private JPanel jPanSrctrg;
-	private JPanel jPanCoExp;
-	private JButton jButton1;
 	private GuiGoJPanel guiGoJPanel;
 	private GuiPathJpanel guiPathJpanel;
 	private GuiBlastJpanel guiBlastJpanel;

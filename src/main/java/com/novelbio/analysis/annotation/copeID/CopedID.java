@@ -21,12 +21,11 @@ import com.novelbio.database.service.ServBlastInfo;
  * 当都不存在时，认为相同
  * HashCode的设定和这个类似
  * @author zong0jie
- *
  */
 public class CopedID {
-	public static String IDTYPE_ACCID = "accID"; 
-	public static String IDTYPE_GENEID = "geneID"; 
-	public static String IDTYPE_UNIID = "uniID"; 
+	public final static String IDTYPE_ACCID = "accID"; 
+	public final static String IDTYPE_GENEID = "geneID"; 
+	public final static String IDTYPE_UNIID = "uniID"; 
 
 	/**
 	 * 物种id
@@ -56,24 +55,7 @@ public class CopedID {
 	 */
 	protected CopedID() {
 	}
-	/**
-	 * 设定初始值，会自动去数据库查找accID并，完成填充本类。
-	 * 不过只能产生一个CopedID，如果觉得一个accID要产生多个geneID，那么可以选择getLsCopedID方法
-	 * @param accID 如果类似XM_002121.1类型，那么将.1去除
-	 * @param taxID
-	 * @param blastType 具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
-	 */
-	public CopedID(String accID,int taxID,boolean blastType) {
-		if (blastType)
-			accID = getBlastAccID(accID);
-		else
-			accID = removeDot(accID);
-		
-		ArrayList<String> lsaccID = ServAnno.getNCBIUniTax(accID, taxID);
-		String idType = lsaccID.get(0); taxID = Integer.parseInt(lsaccID.get(1));
-		String tmpGenID = lsaccID.get(2);
-		setInfo(accID, idType, taxID, tmpGenID);
-	}
+ 
 
 	/**
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
@@ -90,7 +72,24 @@ public class CopedID {
 		this.idType = idType;
 		this.taxID = taxID;
 	}
-	
+	/**
+	 * 设定初始值，会自动去数据库查找accID并，完成填充本类。
+	 * <b>如果基因的IDtype是accID，那么该基因很可能不存在，那么看下blast的相关信息，如果blast也没有，那么就不存在了</b>
+	 * 不过只能产生一个CopedID，如果觉得一个accID要产生多个geneID，那么可以选择getLsCopedID方法
+	 * @param accID 如果类似XM_002121.1类型，那么将.1去除
+	 * @param taxID
+	 * @param blastType 具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
+	 */
+	public CopedID(String accID,int taxID,boolean blastType) {
+		if (blastType)
+			accID = getBlastAccID(accID);
+		else
+			accID = removeDot(accID);
+		ArrayList<String> lsaccID = ServAnno.getNCBIUniTax(accID, taxID);
+		String idType = lsaccID.get(0); taxID = Integer.parseInt(lsaccID.get(1));
+		String tmpGenID = lsaccID.get(2);
+		setInfo(accID, idType, taxID, tmpGenID);
+	}
 	/**
 	 * 设定初始值，会自动去数据库查找accID并完成填充本类。
 	 * @param accID 如果类似XM_002121.1类型，那么将.1去除

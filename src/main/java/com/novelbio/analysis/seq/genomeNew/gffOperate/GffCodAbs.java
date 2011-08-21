@@ -55,7 +55,7 @@ public abstract class GffCodAbs {
 	/**
 	 * 定位情况 条目内/条目外
 	 */
-	public boolean locatInfo() {
+	public boolean isInsideLoc() {
 		return insideLOC;
 	}
 

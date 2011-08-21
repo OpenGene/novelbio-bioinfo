@@ -217,8 +217,6 @@ public class ChrStringHash {
 			{
 				return "ChrStringHash.getSeq: 底层染色体格式错误或者无该染色体";
 			}
-			
-			
 			int startrowBias=0;
 			int endrowBias=0;
 			//设定到0位
@@ -229,9 +227,6 @@ public class ChrStringHash {
 			int lengthChrID=-1;
 			if (fastaID.contains(">")) 
 				lengthChrID=fastaID.length();//第一行，有>号的长度
-
-				
-			
 			
 			long lengthChrSeq=chrRASeqFile.length();
 			
