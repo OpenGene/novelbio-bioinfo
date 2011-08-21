@@ -25,7 +25,7 @@ public class TestJung {
         g.addEdge(12,yahoo, ebay);
         g.addEdge(5,ebay, novelbio);
         g.addEdge(8,amazon, novelbio);
-		Collection<Integer> ls = g.findEdgeSet(yahoo, amazon);
+		List<Integer> ls = (List<Integer>) g.getInEdges(amazon);
 		System.out.println("aaa");
 		
 		

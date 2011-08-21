@@ -141,7 +141,7 @@ public class SimpCoExp {
 	 * @param pearsonCutOff
 	 * @param pvalueCutOff
 	 * @param outFile
-	 * @param filterNoDB
+	 * @param filterNoDB 是否将没有db的过滤掉
 	 * @throws Exception
 	 */
 	private static void getData(String[][] rawData,int taxID,double pvalueCutOff,String outFile, boolean filterNoDB) throws Exception 
@@ -162,7 +162,7 @@ public class SimpCoExp {
 		
 		
 		//获得pearson算好的内容，第一列为基因，第二列为基因，第三列：pearson值，第四列 pvalue，第五列 fdr，注意后续处理要去除其中的引号
-		ArrayList<String[]> lsCoExpValue = calCoExp(lsCoexpInfo, pvalueCutOff);
+		ArrayList<String[]> lsCoExpValue = calCoExp(lsCoexpInfo, pvalueCutOff,filterNoDB);
 		//安pvalue排序
         Collections.sort(lsCoExpValue,new Comparator<String[]>(){
 			public int compare(String[] arg0, String[] arg1) {
@@ -205,7 +205,7 @@ public class SimpCoExp {
 	 * 获得pearson算好的内容，第一列为基因，第二列为基因，第三列：pearson值，第四列 pvalue，第五列 fdr，注意后续处理要去除其中的引号
 	 * @param lsCoexpGenInfos
 	 */
-	private static ArrayList<String[]> calCoExp(List<CoexpGenInfo> lsCoexpGenInfos , double pvalueFilter) {
+	private static ArrayList<String[]> calCoExp(List<CoexpGenInfo> lsCoexpGenInfos , double pvalueFilter,boolean filterNoDB) {
 		int length = lsCoexpGenInfos.size();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		CoexPair.setFirst(lsCoexpGenInfos);
@@ -217,10 +217,17 @@ public class SimpCoExp {
 					continue;
 				}
 				String[] tmpresult = new String[4];
+				if (!filterNoDB) {
+					tmpresult[0] = lsCoexpGenInfos.get(i).getCopedID().getAccID();
+					tmpresult[1] = lsCoexpGenInfos.get(j).getCopedID().getAccID();
+				}
+				else {
+					tmpresult[0] = lsCoexpGenInfos.get(i).getCopedID().getSymbo();
+					tmpresult[1] = lsCoexpGenInfos.get(j).getCopedID().getSymbo();
+				}
 //				tmpresult[0] = lsCoexpGenInfos.get(i).getCopedID().getSymbo();
 //				tmpresult[1] = lsCoexpGenInfos.get(j).getCopedID().getSymbo();
-				tmpresult[0] = lsCoexpGenInfos.get(i).getCopedID().getSymbo();
-				tmpresult[1] = lsCoexpGenInfos.get(j).getCopedID().getSymbo();
+
 				tmpresult[2] = coexPair.getCorValue()+"";
 				tmpresult[3] = coexPair.getPvalue()+"";
 				lsResult.add(tmpresult);

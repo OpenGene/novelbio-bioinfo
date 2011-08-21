@@ -1,12 +1,12 @@
 #Fat Jar Configuration File
-#Fri Jun 24 22:56:33 CST 2011
+#Tue Aug 09 23:03:16 CST 2011
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=true
-jarname=/home/zong0jie/\u684C\u9762/NovelBioChIP.jar
+jarname=/home/zong0jie/\u684C\u9762/NbcTools.jar
 manifest.mergeall=true
-manifest.mainclass=com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast
+manifest.mainclass=com.novelbio.analysis.tools.repeatdel.NewJFrame
 manifest.file=<createnew>
 jarname.isextern=true
 onejar.expand=

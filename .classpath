@@ -13,5 +13,9 @@
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="lib/appFramework-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/jnlp.jar"/>
+	<classpathentry kind="lib" path="/ExternalJar/jgrapht-0.8.2/jgrapht-jdk1.6.jar" sourcepath="/ExternalJar/jgrapht-0.8.2/src"/>
 	<classpathentry kind="output" path="target/classes"/>
+	<referencedentry kind="lib" path="/ExternalJar/jgrapht-0.8.2/lib/jgraph.jar" sourcepath="/ExternalJar/jgrapht-0.8.2/src"/>
 </classpath>

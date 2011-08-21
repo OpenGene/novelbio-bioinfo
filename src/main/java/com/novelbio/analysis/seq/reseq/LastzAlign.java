@@ -3,9 +3,16 @@ package com.novelbio.analysis.seq.reseq;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.util.CollectionUtils;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import edu.uci.ics.jung.graph.Graph;
 
 public class LastzAlign {
 	/**
@@ -83,7 +90,7 @@ public class LastzAlign {
 	 * 获得所有序列的区间范围
 	 */
 	public void setSeqLen() {
-		aaa
+		
 		//TODO: 设定序列长度
 	}
 	
@@ -157,23 +164,124 @@ class alignResult
 	 */
 	public void analysis(ArrayList<AlignInfo> lsAlignInfoRaw) {
 		Collections.sort(lsAlignInfoRaw);
+		Graph<AlignInfo, AlignTogether> dircteWightGraph = new DirectedSparseGraph<AlignInfo, AlignTogether>();
+		
 		for (AlignInfo alignInfo : lsAlignInfoRaw) {
-			
+			dircteWightGraph.addVertex(alignInfo);
 		}
-		
-		
-		
+		for (int i = 0; i < lsAlignInfoRaw.size(); i++) {
+			for (int j = i; j < lsAlignInfoRaw.size(); j++) {
+				AlignInfo alignInfoStart = lsAlignInfoRaw.get(i);
+				AlignInfo alignInfoEnd = lsAlignInfoRaw.get(j);
+				if (alignInfoStart.getAlignEnd2() > alignInfoEnd.getAlignEnd2()) {
+					continue;
+				}
+				dircteWightGraph.addEdge(new AlignTogether(alignInfoStart, alignInfoEnd), alignInfoStart, alignInfoEnd);
+			}
+		}
 		
 		
 		
 	}
 	
-	private void copeAlign(AlignInfo alignInfo)
+	/**
+	 * 判断输入的ArrayList-AlignInfo 是否合理，主要判断依据是，
+	 * 最大的两个片段如果是重叠的--在任意一条链上有超过70%重叠，而在另一条链上距离超过query链的长度，那么就需要人工判断了
+	 * @param lsAlignInfoRaw 已经排过序了
+	 * @return
+	 */
+	private boolean judgeAlignInfo(ArrayList<AlignInfo> lsAlignInfoRaw) {
+		Collections.sort(lsAlignInfoRaw, new Comp());
+		
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	private void calLongestPath(ArrayList<AlignInfo> lsAlignInfoRaw,DirectedSparseGraph<AlignInfo, AlignTogether> directedSparseGraph,int seed)
 	{
-		if (alignInfo.get) {
-			
+		//按照score进行排序
+		Collections.sort(lsAlignInfoRaw, new Comp());
+		for (int i = 0; i < Math.min(seed,lsAlignInfoRaw.size()); i++) {
+
 		}
 	}
+	/**
+	 * 计算某个align的分数，分数越高说明越可信
+	 * @return
+	 */
+	private int calScore(ArrayList<AlignTogether> lsAlignTogethers)
+	{
+		int score = lsAlignTogethers.get(0).getAlignInfoStart().getScore();
+		for (AlignTogether alignTogether : lsAlignTogethers) {
+			score = score + alignTogether.getScore() + alignTogether.getAlignInfoEnd().getScore();
+		}
+		return score;
+	}
+
+	private ArrayList<AlignTogether> getLongestPath(AlignInfo alignInfoFirst,DirectedSparseGraph<AlignInfo, AlignTogether> directedSparseGraph) {
+		ArrayList<AlignTogether> lsAlignTogethersUp = new ArrayList<AlignTogether>();
+		ArrayList<AlignTogether> lsAlignTogethersDown = new ArrayList<AlignTogether>();
+		AlignTogether alignTogetherTmp = null;
+		while ((alignTogetherTmp = calLNextBigPath(alignInfoFirst, directedSparseGraph, true)) != null) {
+			lsAlignTogethersDown.add(alignTogetherTmp);
+			alignInfoFirst = alignTogetherTmp.getAlignInfoEnd();
+		}
+		
+		while ((alignTogetherTmp = calLNextBigPath(alignInfoFirst, directedSparseGraph, false)) != null) {
+			lsAlignTogethersUp.add(0,alignTogetherTmp);
+			alignInfoFirst = alignTogetherTmp.getAlignInfoStart();
+		}
+		lsAlignTogethersUp.addAll(lsAlignTogethersDown);
+		return lsAlignTogethersUp;
+	}
+	
+	
+	/**
+	 * 指定一个alignInfo，返回该有向图中，该节点上游/下游最大的一条边。
+	 * 如果没有则返回null
+	 * @param alignInfo
+	 * @param directedSparseGraph
+	 * @param Down true, 该点的下游， false，该点的上游
+	 * @return
+	 */
+	private AlignTogether calLNextBigPath(AlignInfo alignInfo, DirectedSparseGraph<AlignInfo, AlignTogether> directedSparseGraph, boolean Down) {
+		List<AlignTogether> lsAlignTogether = new ArrayList<AlignTogether>();
+		Collection<AlignTogether> colAlign = null;
+		if (Down) 
+			colAlign = directedSparseGraph.getOutEdges(alignInfo);
+		else
+			colAlign = directedSparseGraph.getInEdges(alignInfo);
+		if (colAlign == null || colAlign.size() == 0) {
+			return null;
+		}
+		for (AlignTogether alignTogether2 : colAlign) {
+			lsAlignTogether.add(alignTogether2);
+		}
+		Collections.sort(lsAlignTogether);
+		return lsAlignTogether.get(lsAlignTogether.size() - 1);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**本序列和原始序列有交叠，只有突出来的部分大于该值才会计入计算 <br>
 	 * -------------------------<br>
 	 *  -----------------------------------------------<br>
@@ -181,66 +289,13 @@ class alignResult
 	 */
 	private static final int LEN_OVERLAP_OUT = 5000;
 	
-	/**
-	 * 研究目的序列是否已经在里面了，如果不在，是否要加上去
-	 * @param start
-	 * @param end
-	 */
-	private void setInterval(int start1, int end1, int start2, int end2) {
-		/**
-		 * 第一步
-		 */
-		if (startSeq1 == 0 && endSeq1 ==0) {
-			startSeq1 = start1; endSeq1 = end1;
-			startSeq2 = start2; endSeq2 = end2;
-			if (start2 == 1) {
-				booStartConfirm = true;
-				booEndConfirm = true;
-			}
-		}
-		
-		
-		
-		
-		/**本序列包含在原始序列内
-		 *           --------------------------
-		 *                     -----------
-		 */
-		if (start2 >= startSeq2 && end2 <= endSeq2) {
-			return;
-		}
-		
-		
-		/**本序列和原始序列有交叠
-		 * -------------------------
-		 *                    -----------------------------
-		 */
-		else if (start2 >= startSeq2 && end2 >= endSeq2) {
-			if (end2 - endSeq2 > LEN_OVERLAP_OUT) {
-				if (condition) {
-					
-				}
-				return;
-			}
-			else {
-				return;
-			}
-			
-		}
-		
-		
-		
-		
-		return;
-	}
-	
 }
 
 
 /**
  * lastz中alignment 的信息
  * 用之前先用setTitle设定标题
- * 内置排序比较，首先比较score，然后比较alignLen长度
+ * 内置排序比较，按照query序列起点进行排序
  * @author zong0jie
  *
  */
@@ -325,7 +380,6 @@ class AlignInfo implements Comparable<AlignInfo>
 		}
 	}
 	private void setInfo(String title, String value) {
-
 		if (title.equals("score")) {
 			this.score = Integer.parseInt(value);
 		}
@@ -388,18 +442,21 @@ class AlignInfo implements Comparable<AlignInfo>
 		return score;
 	}
 
+	/**
+	 * 按照alignstart2和alignEnd2排序
+	 */
 	@Override
 	public int compareTo(AlignInfo o) {
-		if (score< o.getScore()) 
+		if (alignStart2 < o.getAlignStart2()) 
 			return -1;
-		else if (score > o.getScore()) {
+		else if (alignStart2 > o.getAlignStart2()) {
 			return 1;
 		}
 		else {
-			if (alignLen1 + alignLen2 < o.getAlignLen1() + o.getAlignEnd2()) {
+			if (alignEnd2 < o.getAlignEnd2()) {
 				return -1;
 			}
-			else if (alignLen1 + alignLen2 == o.getAlignLen1() + o.getAlignEnd2()) {
+			else if (alignEnd2 == o.getAlignEnd2()) {
 				return 0;
 			}
 			else {
@@ -408,3 +465,96 @@ class AlignInfo implements Comparable<AlignInfo>
 		}
 	}
 }
+
+class Comp implements Comparator<AlignInfo>
+{
+	@Override
+	public int compare(AlignInfo o1, AlignInfo o2) {
+		if (o1.getScore() < o2.getScore())
+			return -1;
+		else if (o1.getScore() > o2.getScore()) {
+			return 1;
+		} else {
+			if (o1.getAlignLen1() + o1.getAlignLen2() < o2.getAlignLen1()
+					+ o2.getAlignEnd2()) {
+				return -1;
+			} else if (o1.getAlignLen1() + o1.getAlignLen2() == o2
+					.getAlignLen1() + o2.getAlignEnd2()) {
+				return 0;
+			} else {
+				return 1;
+			}
+		}
+	}
+}
+
+
+/**
+ * 两个align连在一起的一组
+ * @author zong0jie
+ *
+ */
+class AlignTogether implements Comparable<AlignTogether>
+{
+	AlignInfo alignInfoStart = null;
+	AlignInfo alignInfoEnd = null;
+	double score = 0;
+	/**
+	 * 在模板链上，两个align首尾相距的距离
+	 */
+	int alignDist1 = 0;
+	/**
+	 * 在query链上，两个align首尾相距的距离
+	 */
+	int alignDist2 = 0;
+	public AlignTogether(AlignInfo alignInfoStart, AlignInfo alignInfoEnd) {
+		this.alignInfoStart = alignInfoStart;
+		this.alignInfoEnd = alignInfoEnd;
+		alignDist1 = alignInfoStart.alignEnd1 - alignInfoEnd.alignStart1;
+		alignDist2 = alignInfoStart.alignEnd2 - alignInfoEnd.alignStart2; 
+		setEdgeScore();
+	}
+	/**
+	 * 获得两个align之间的分数，为负数，两个链离的越远分数越低，gap的计算方法为
+	 * 1一个gap为1，第二个为0.95，第三个为0.90，这么加起来
+	 */
+	private void setEdgeScore()
+	{
+		for (int i = 0; i < Math.abs(alignDist1); i++) {
+			score = score + 2/(1+ (double)i*0.001);
+		}
+		for (int i = 0; i < Math.abs(alignDist2); i++) {
+			score = score + 2/(1+ (double)i*0.001);
+		}
+	}
+	
+	public AlignInfo getAlignInfoStart() {
+		return alignInfoStart;
+	}
+	public AlignInfo getAlignInfoEnd() {
+		return alignInfoEnd;
+	}
+	public int getAlignDist1() {
+		return alignDist1;
+	}
+	public int getAlignDist2() {
+		return alignDist2;
+	}
+	/**
+	 * 获得分数，为负数
+	 * @return
+	 */
+	public int getScore() {
+		return -(int)score;
+	}
+	@Override
+	public int compareTo(AlignTogether o) {
+		Integer a = alignInfoStart.score + alignInfoEnd.score + getScore();
+		Integer b = o.getAlignInfoStart().getScore() + o.getAlignInfoEnd().getScore() + o.getScore();
+		return a.compareTo(b);
+	}
+	
+	
+}
+
+
