@@ -35,7 +35,7 @@ public class DaoFSUniGene2Go {
 	/**
 	 * 用Gene2GoInfo类去查找Gene2Go表
 	 * 主要是来看本列是否已经存在了
-	 * 用geneID和goID去查找数据库
+	 * 用uniID和goID去查找数据库
 	 * @param GeneID
 	 * @return
 	 */

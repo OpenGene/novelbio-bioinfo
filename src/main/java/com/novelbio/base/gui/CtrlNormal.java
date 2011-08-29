@@ -21,7 +21,7 @@ public class CtrlNormal {
 		ArrayList<TaxInfo> lsTaxID = DaoFSTaxID.queryLsTaxInfo(taxInfo);
 		HashMap<String, Integer> hashTaxID = new HashMap<String, Integer>();
 		for (TaxInfo taxInfo2 : lsTaxID) {
-			if (taxInfo2.getAbbr().trim().equals("")) {
+			if (taxInfo2.getAbbr() == null || taxInfo2.getAbbr().trim().equals("")) {
 				continue;
 			}
 			hashTaxID.put(taxInfo2.getLatin().trim(), taxInfo2.getTaxID());

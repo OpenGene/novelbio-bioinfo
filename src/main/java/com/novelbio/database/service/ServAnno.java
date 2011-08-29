@@ -341,6 +341,74 @@ public class ServAnno {
 			return lsNcbiids.get(0);
 		}
 	}
+	/**
+	 * 获得指定数据库的accID，譬如可以指定数据库为TAIR等，
+	 * 数据库名称：在NovelBioConst类中
+	 * @param geneUniID
+	 * @param idTpye
+	 * @param taxID
+	 * @param dbInfo
+	 * @return
+	 */
+	public static String getAccIDInfo(String geneUniID, String idTpye ,int taxID, String dbInfo) {
+		if (idTpye.equals(CopedID.IDTYPE_ACCID)) {
+			return null;
+		}
+		else if (idTpye.equals(CopedID.IDTYPE_GENEID)){
+			NCBIID ncbiid = getNCBIID(Long.parseLong(geneUniID), taxID, dbInfo);
+			if (ncbiid != null) {
+				return ncbiid.getAccID();
+			}
+		}
+		else if (idTpye.equals(CopedID.IDTYPE_UNIID)) {
+			UniProtID uniProtID = getUniProtID(geneUniID, taxID, dbInfo);
+			if (uniProtID != null) {
+				return uniProtID.getAccID();
+			}
+		}
+			return null;
+	}
+	
+	
+	/**
+	 * @param geneID
+	 * @param taxID
+	 * @return 如果能搜到NCBIID，就返回第一个NCBIID。如果搜不到，就返回null
+	 */
+	private static NCBIID getNCBIID(long geneID,int taxID,String dbInfo) {
+		NCBIID ncbiid = new NCBIID();
+		ncbiid.setGeneId(geneID);ncbiid.setTaxID(taxID);
+		if (!dbInfo.trim().equals("")) {
+			ncbiid.setDBInfo(dbInfo);
+		}
+		ArrayList<NCBIID> lsNcbiids= DaoFSNCBIID.queryLsNCBIID(ncbiid);
+		if (lsNcbiids == null || lsNcbiids.size() < 1) {
+			return null;
+		}
+		else {
+			return lsNcbiids.get(0);
+		}
+	}
+	/**
+	 * @param uniID
+	 * @param taxID
+	 * @return 如果能搜到UniProtID，就返回第一个UniProtID。如果搜不到，就返回null
+	 */
+	private static UniProtID getUniProtID(String uniID,int taxID, String dbInfo) {
+		UniProtID uniProtID = new UniProtID();
+		uniProtID.setUniID(uniID);uniProtID.setTaxID(taxID);
+		if (!dbInfo.trim().equals("")) {
+			uniProtID.setDBInfo(dbInfo);
+		}
+		ArrayList<UniProtID> lsUniProtIDs= DaoFSUniProtID.queryLsUniProtID(uniProtID);
+		if (lsUniProtIDs == null || lsUniProtIDs.size() < 1) {
+			return null;
+		}
+		else {
+			return lsUniProtIDs.get(0);
+		}
+	}
+	
 	
 	/**
 	 * @param uniID

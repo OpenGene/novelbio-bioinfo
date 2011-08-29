@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.novelbio.analysis.annotation.copeID.CopeID;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
@@ -83,11 +84,12 @@ public class Blast2DB {
 	 *  @param getNoName 如果发现数据库中找不到名字的序列，是否需要保留下来,true:保留 false:跳过
 	 * @throws Exception 
 	 */
-	public void prepareSeqGetGeneID(String fastaFile,boolean CaseChange,String regx,Boolean append, String output,boolean getNoName) throws Exception 
+	public static void prepareSeqGetGeneID(String fastaFile,boolean CaseChange,String regx,Boolean append, String output,boolean getNoName) throws Exception 
 	{
-
-		Hashtable<String, SeqFasta> hashSeq=SeqFastaHash.readfile(fastaFile, CaseChange, regx, append);
-		ArrayList<String> lsSeqName=SeqFastaHash.lsSeqName;
+		SeqFastaHash seqFastaHash = new SeqFastaHash(fastaFile);
+		seqFastaHash.setInfo(CaseChange, regx, append);
+		seqFastaHash.setFile();
+		ArrayList<String> lsSeqName= seqFastaHash.lsSeqName;//SeqFastaHash..lsSeqName;
 		
 		TxtReadandWrite txtOutput=new TxtReadandWrite();
 		txtOutput.setParameter(output, true, false);
@@ -95,10 +97,10 @@ public class Blast2DB {
 		Hashtable<String, String> hashWrit=new Hashtable<String, String>();
 		
 		for (int i = 0; i < lsSeqName.size(); i++) {
-			SeqFasta seqInfo=hashSeq.get(lsSeqName.get(i));
+			SeqFasta seqInfo=seqFastaHash.getSeqFasta(lsSeqName.get(i));
 			//搜索数据库，将序列名转变为geneID
 			//将重复序列名中的"<"符号去除
-			NCBIID ncbiid=new NCBIID(); ncbiid.setAccID(seqInfo.SeqName.replace("<", ""));
+			NCBIID ncbiid=new NCBIID(); ncbiid.setAccID(seqInfo.getSeqName());
 			DaoFSNCBIID daoSNCBIID=new DaoFSNCBIID();
 			ArrayList<NCBIID> lsNcbiids=daoSNCBIID.queryLsNCBIID(ncbiid);
 			if (lsNcbiids==null||lsNcbiids.size()==0) {
@@ -121,6 +123,45 @@ public class Blast2DB {
 				hashWrit.put(geneID, seqInfo.SeqSequence);
 			}
 
+		}
+		Iterator iter = hashWrit.entrySet().iterator();
+		while (iter.hasNext()) {
+		    Map.Entry entry = (Map.Entry) iter.next();
+		    String key = (String) entry.getKey();
+		    String val = (String) entry.getValue();
+			txtOutput.writefile(">"+key+"\n",false);
+			txtOutput.writefile(val+"\n",false);
+		}
+		txtOutput.writefile("",true);
+	}
+	
+	/**
+	 * 给定正则表达式来抓取名称中需要的ID。如果regx.equals("")，那么默认抓取全部名字<br>
+	 * 当regx="(?<=ref\\|)\\w+(?=\\.{0,1}\\d{0,1})"时，抓取 <br>
+	 *  >gi|215277009|ref|NR_024540.1| Homo sapiens WAS protein family homolog 5 pseudogene (WASH5P), non-coding RNA 中的 NR_024540 <br>
+	 *  并将序列记为 >NR_024540
+	 *  如果有同名序列，保留长的
+	 *  @param fastaFile 文件名
+	 *  @param CaseChange 是否修改为小写
+	 *  @param regx 正则表达式
+	 *  @param append 重复序列是否添加进去
+	 *  @param output 导出序列
+	 * @throws Exception 
+	 */
+	public static void getSeqForBlast(String fastaFile,boolean CaseChange,String regx,Boolean append, String output) throws Exception 
+	{
+		SeqFastaHash seqFastaHash = new SeqFastaHash(fastaFile);
+		seqFastaHash.setInfo(CaseChange, regx, append);
+		seqFastaHash.setFile();
+		ArrayList<String> lsSeqName= seqFastaHash.getLsSeqName();//SeqFastaHash..lsSeqName;
+		
+		TxtReadandWrite txtOutput=new TxtReadandWrite(output, true);
+		
+		Hashtable<String, String> hashWrit=new Hashtable<String, String>();
+		
+		for (int i = 0; i < lsSeqName.size(); i++) {
+			SeqFasta seqInfo=seqFastaHash.getSeqFasta(lsSeqName.get(i));
+			hashWrit.put(seqInfo.getSeqName(), seqInfo.getSeq());
 		}
 		Iterator iter = hashWrit.entrySet().iterator();
 		while (iter.hasNext()) {
@@ -205,11 +246,8 @@ public class Blast2DB {
 		}
 		**/
 
-		TxtReadandWrite txtBlastResult=new TxtReadandWrite();
-		txtBlastResult.setParameter(blastResultFile, false, true);
-		
-		TxtReadandWrite txtResult=new TxtReadandWrite();
-		txtResult.setParameter(output, true, false);
+		TxtReadandWrite txtBlastResult=new TxtReadandWrite(blastResultFile, false);
+		TxtReadandWrite txtResult=new TxtReadandWrite(output, true);
 		
 		BufferedReader reader=txtBlastResult.readfile();
 		String content="";

@@ -18,13 +18,13 @@ public class runSrc2Trg {
 	public static void main(String[] args) {
 		String parentFIle = "/home/zong0jie/桌面/";
 
-		int QtaxID = 10090;
+		int QtaxID = 9606;
 		boolean blast = false;
 		int StaxID = 9606;
 		try {
-			String readExcel = parentFIle + "显著Pathway包含基因.xls";
-			String scr2trg = parentFIle + "InterSectiontrg.txt";
-			String attr = parentFIle + "InterSectionatttxt";
+			String readExcel = parentFIle + "GO与PATHWAY交集.xls";
+			String scr2trg = parentFIle + "GO与PATHWAY交集InterSectiontrg.txt";
+			String attr = parentFIle + "GO与PATHWAY交集InterSectionatttxt";
 			String[] accID = KGprepare.getAccID(1, 1,readExcel);
 			Scr2Target.getGene2RelateKo("",accID,scr2trg,
 					attr , QtaxID, blast, StaxID, 1e-5);

@@ -420,10 +420,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="subjectDB != null">
 				subjectDB = #{subjectDB},
 			</if>
-			<if test="identities != null and identities != 0">
+			<if test="identities != null">
 				identities = #{identities},
 			</if>
-			<if test="evalue != null and evalue != 0">
+			<if test="evalue != null">
 				evalue = #{evalue},
 			</if>
 			<if test="blastDate != null">
@@ -434,7 +434,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</set>
 		<where>
-			<if test="queryID != null and queryID != 0">
+			<if test="queryID != null">
 				queryID = #{queryID}
 			</if>
 			<if test="queryTax != null and queryTax != 0">

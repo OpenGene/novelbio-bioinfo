@@ -38,7 +38,9 @@ public class TxtReadandWrite {
 	FileWriter filewriter;
 	BufferedReader bufread;
 	BufferedWriter bufwriter;
-
+	public String getFileName() {
+		return txtfile.getAbsolutePath();
+	}
 	/**
 	 * 
 	 * @param filepath
@@ -155,9 +157,14 @@ public class TxtReadandWrite {
 	 *            ，要写入文件内容
 	 * @throws Exception
 	 */
-	public void writefile(String content) throws Exception {
-		filewriter.write(content);
-		filewriter.flush();
+	public void writefile(String content) {
+		try {
+			filewriter.write(content);
+			filewriter.flush();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 	}
 	/**
 	 * 写入并换行
@@ -165,9 +172,14 @@ public class TxtReadandWrite {
 	 *            ，要写入文件内容
 	 * @throws Exception
 	 */
-	public void writefileln(String content) throws Exception {
-		filewriter.write(content);
-		filewriter.write("\n");
+	public void writefileln(String content) {
+		try {
+			filewriter.write(content);
+			filewriter.write("\n");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 	}
 	
 	/**

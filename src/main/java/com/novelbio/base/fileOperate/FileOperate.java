@@ -159,6 +159,7 @@ public class FileOperate {
 		String name = ""; // 文件名
 		String houzhuiming = ""; // 后缀名
 		String[] filenamefinal;
+		filePath = deleteSep(filePath);
 		if (filename.equals("*")) {
 			filename = ".*";
 		}
@@ -821,8 +822,22 @@ public class FileOperate {
 	 * @return
 	 */
 	public static String addSep(String path) {
+		path = path.trim();
 		if (!path.endsWith(File.separator)) {
 			path = path + File.separator;
+		}
+		return path;
+	}
+	
+	/**
+	 * 添加文件分割符
+	 * @param path
+	 * @return
+	 */
+	public static String deleteSep(String path) {
+		path = path.trim();
+		if (path.endsWith(File.separator)) {
+			path = path.substring(0, path.length() -1);
 		}
 		return path;
 	}

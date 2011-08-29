@@ -62,6 +62,7 @@ public class ChrStringHash extends SeqHash{
 	public ChrStringHash(String chrFilePath) 
 	{
 		super(chrFilePath,"\\bchr\\w*");
+		setFile();
 	}
 	/**
 	 * 设定序列文件夹

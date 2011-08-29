@@ -28,12 +28,15 @@ import com.novelbio.analysis.seq.blastZJ.SmithWaterman;
 import com.novelbio.analysis.seq.genomeNew.GffChrChIP;
 import com.novelbio.analysis.seq.genomeNew.GffChrHanYanChrom;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashUCSCgene;
 import com.novelbio.analysis.seq.mapping.FastQSoapMap;
+import com.novelbio.analysis.seq.reseq.LastzAlign;
+import com.novelbio.analysis.seq.reseq.ModifySeq;
 import com.novelbio.analysis.tools.formatConvert.bedFormat.Soap2Bed;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -52,15 +55,13 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		SeqFastaHash seqFastaHash = new SeqFastaHash("/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT2/denovo/TGACTkmer60.scafSeq");
-		
-		seqFastaHash.writeFileSep("/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT2/denovo/", "TGACTsep", new int[]{10000,-1}, true, 100);
-		
+		SeqFastaHash seqFastaHash = new SeqFastaHash("/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT2/resultResq/seqWithScalFoldSoapmer60_Velvet_5th.txt");
+		SeqFasta seqFasta = seqFastaHash.getSeqFastaAll().get(0);
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite("/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT2/resultResq/statistic", true);
+		ArrayList<String[]> lsresult = seqFasta.getSeqInfo();
+		txtReadandWrite.ExcelWrite(lsresult, "\t", 1, 1);
+	
 	}
-	
-	
-	
-	
 	
 	private static void testFdrFunction() throws Exception {
 		ArrayList<Double> lsinput = new ArrayList<Double>();
@@ -70,8 +71,6 @@ public class mytest {
 		for (int i = 0; i < pvalue.length; i++) {
 			lsinput.add(Double.parseDouble(pvalue[i][0]));
 		}
-		
-		
 		
 		ArrayList<Double> ls1 = MathComput.pvalue2Fdr(lsinput);
 		ArrayList<Double> ls2 = MathComput.pvalue2FdrR(lsinput);

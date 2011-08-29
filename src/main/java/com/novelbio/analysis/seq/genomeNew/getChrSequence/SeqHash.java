@@ -42,6 +42,7 @@ public abstract class SeqHash {
 	
 	String chrFile = "";
 	
+
 	
 	/**
 	 * 设定常规信息
@@ -173,7 +174,9 @@ public abstract class SeqHash {
 		}
 		return chrLengtharray;
 	}
-	
+	/**
+	 * 具体读取文件
+	 */
 	public void setFile()
 	{
 		try {

@@ -8,6 +8,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.updatedb.database.UpDateNBCDBFile;
 import com.novelbio.database.updatedb.goextract.AffyChipGO;
 import com.novelbio.database.updatedb.idconvert.AffyIDmodify;
+import com.novelbio.database.updatedb.idconvert.ArabidopsisTair;
 import com.novelbio.database.updatedb.idconvert.GeneInfoTaxIDgetSymbol;
 import com.novelbio.database.updatedb.idconvert.NCBIIDOperate;
 import com.novelbio.database.updatedb.idconvert.RiceID;
@@ -45,30 +46,30 @@ public class RunUpDateDB {
 			String pathGen2Refseq = fold + "gene2refseq";
 			String outGen2RefStat = fold + "outTaxgene2refseq";
 			String outGen2RefID = fold + "outTaxGen2RefID";
-			copeNCBIID(taxIDFile, pathGene2accessionID, outGen2AccTaxID, 
-					pathGene2enseb, outGen2EnsembTaxID, pathGen2Refseq, outGen2RefStat, outGen2RefID);
-			System.out.println("copeNCBIID OK");
+//			copeNCBIID(taxIDFile, pathGene2accessionID, outGen2AccTaxID, 
+//					pathGene2enseb, outGen2EnsembTaxID, pathGen2Refseq, outGen2RefStat, outGen2RefID);
+//			System.out.println("copeNCBIID OK");
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String uniIDmapSelect = fold + "idmapping_selected.tab";
 			String taxuniIDmapSelect = fold + "taxuniIDmapSelect";
 			String outUniIDmapSelectNCBIID = fold + "outUniIDmapSelectNCBIID";
 			String outUniIDmapSelectUniID =  fold + "outUniIDmapSelectUniID";
-		copeUniID(taxIDFile, uniIDmapSelect, taxuniIDmapSelect, outUniIDmapSelectNCBIID, outUniIDmapSelectUniID);
+//		copeUniID(taxIDFile, uniIDmapSelect, taxuniIDmapSelect, outUniIDmapSelectNCBIID, outUniIDmapSelectUniID);
 		
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String Ref2Uni = fold + "gene_refseq_uniprotkb_collab.txt";
 			String outUniIDmapSelectUniIDnone = fold + "outUniIDmapSelectUniIDnone";//先用outUniIDmapSelectUniID查找NCBIID，没找到的写入该文本
-			upDateNCBIID(taxIDFile, outGen2AccTaxID, outGen2EnsembTaxID, outUniIDmapSelectNCBIID, Ref2Uni, outUniIDmapSelectUniID, outUniIDmapSelectUniIDnone);
+//			upDateNCBIID(taxIDFile, outGen2AccTaxID, outGen2EnsembTaxID, outUniIDmapSelectNCBIID, Ref2Uni, outUniIDmapSelectUniID, outUniIDmapSelectUniIDnone);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String geneInfoFile = fold + "gene_info";
 			String taxGeneInfoFile = fold + "taxGeneInfoFile";
-			upDateNCBIIDSymbol(taxIDFile, geneInfoFile, taxGeneInfoFile);
-			upDateUniID(outUniIDmapSelectUniIDnone);
+//			upDateNCBIIDSymbol(taxIDFile, geneInfoFile, taxGeneInfoFile);
+//			upDateUniID(outUniIDmapSelectUniIDnone);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String gene_associationgoa_unipro = fold + "gene_association.goa_uniprot";
 			String taxgene_associationgoa_unipro = fold + "taxgene_associationgoa_unipro";
-			upDateUniIDgene_associationgoa_uniprot(taxIDFile, gene_associationgoa_unipro, taxgene_associationgoa_unipro, taxGeneInfoFile);
-			UpDateNBCDBFile.upDateGeneInfo(taxGeneInfoFile);
+//			upDateUniIDgene_associationgoa_uniprot(taxIDFile, gene_associationgoa_unipro, taxgene_associationgoa_unipro, taxGeneInfoFile);
+//			UpDateNBCDBFile.upDateGeneInfo(taxGeneInfoFile);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String affyFold = "/media/winE/Bioinformatics/Affymetrix/";
 			String AffyFileHuman = affyFold + "Human/Human Genome U133 Plus 2.0/HG-U133_Plus_2.na31.annot.csv/HG-U133_Plus_2.na31.annotModify.xls";
@@ -91,7 +92,7 @@ public class RunUpDateDB {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String goterm = fold + "GO.terms_alt_ids";
 			String gene2GoFile = fold + "gene2go";
-//			upDateGen2Go(goterm, taxIDFile, gene2GoFile, taxgene_associationgoa_unipro, taxuniIDmapSelect);
+			upDateGen2Go(goterm, taxIDFile, gene2GoFile, taxgene_associationgoa_unipro, taxuniIDmapSelect);
 //			
 //			upDateAffyGo(AffyFileHuman, NovelBioConst.DBINFO_AFFY_HUMAN_U133_PLUS2, 9606);
 //			upDateAffyGo(AffyFileMouse, NovelBioConst.DBINFO_AFFY_MOUSE_430_2, 10090);
@@ -122,6 +123,14 @@ public class RunUpDateDB {
 //			UpDateNBCDBFile.upDateNCBIIDBlast(blastFile2);
 			
 			
+			///////////////////////////////升级拟南芥数据库///////////////////////////////////////////////////////////////////////////////////////////////////
+			String tairAccID2NCBI = "/home/zong0jie/桌面/tairDB/idconvert/TAIR10_Locus_cDNA_associations";
+			String tairAccID2UniID = "/home/zong0jie/桌面/tairDB/idconvert/AGI2Uniprot.20101118";
+			String tairDescrip = "/home/zong0jie/桌面/tairDB/TAIR10_functional_descriptions.xls";
+			String tairGo = "/home/zong0jie/桌面/tairDB/ATH_GO_GOSLIM.txt/ATH_GO_GOSLIM.txt";
+			
+			
+			AthTAIR(tairAccID2NCBI, tairAccID2UniID, tairDescrip, tairGo);
 			
 			
 			
@@ -320,7 +329,7 @@ public class RunUpDateDB {
 	
 	public static void upDateGen2Go(String goterm,String taxIDfile,String gene2GoFile,String taxgene_associationgoa_unipro,
 			String taxuniIDmapSelect) throws Exception {
-//		UpDateNBCDBFile.upDateGoTerm(goterm);
+		UpDateNBCDBFile.upDateGoTerm(goterm);
 		
 		String parentNCBIFile = FileOperate.getParentPathName(gene2GoFile);
 		String taxGeneInfoFile = parentNCBIFile+ "/taxGene2GoFile";
@@ -328,9 +337,9 @@ public class RunUpDateDB {
 		System.out.println(taxGeneInfoFile+ " ok");
 //		UpDateNBCDBFile.upDateGene2Go(taxGeneInfoFile);
 		System.out.println(taxGeneInfoFile+ " ok");
-		UpDateNBCDBFile.upDateGene2GoUniProtgene_associationgoa_uniprot(taxgene_associationgoa_unipro);
+//		UpDateNBCDBFile.upDateGene2GoUniProtgene_associationgoa_uniprot(taxgene_associationgoa_unipro);
 		System.out.println(taxgene_associationgoa_unipro+ " ok");
-		UniProtConvertID.upDateUniGo(taxuniIDmapSelect);
+//		UniProtConvertID.upDateUniGo(taxuniIDmapSelect);
 		System.out.println(taxuniIDmapSelect+ " ok");
 	}
 	public static void upDateAffyGo(String affyFile,String affyDBInfo,int taxID) throws Exception
@@ -345,6 +354,7 @@ public class RunUpDateDB {
 		AffyChipGO.upDateGenetoUniGo(outputUniGo);
 		System.out.println(outputUniGo+ " ok");
 	}
+	
 	public static void upDateRice(
 			String gffRapDB,
 			String Rap2MSUFile,
@@ -397,7 +407,22 @@ public class RunUpDateDB {
 	}
 	
 	
-	
+	public static void AthTAIR(String tairAccID2NCBI, String tairAccID2UniID, String tairDescrip, String tairGo) {
+		ArabidopsisTair arabidopsisTair = new ArabidopsisTair();
+//		arabidopsisTair.updateID(tairAccID2NCBI);
+//		arabidopsisTair.updateID(tairAccID2UniID);
+//		arabidopsisTair.addGenInfo(tairDescrip);
+		try {
+			arabidopsisTair.addGO(tairGo);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+	}
 	
 	
 	

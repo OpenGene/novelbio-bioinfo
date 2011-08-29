@@ -49,7 +49,18 @@ public class NovelBioConst {
 	public final static String DBINFO_PIR = "PIR";
 	public  final static String DBINFO_EMBL = "EMBL";
 	public  final static String DBINFO_EMBL_CDS = "EMBL_CDS";
+	/**
+	 * TAIRµÄAT±àºÅ
+	 */
+	public final static String DBINFO_ATH_TAIR = "TAIRath";
+	
+	/**
+	 * 7Î»OsºÅ
+	 */
 	public final static String DBINFO_RICE_TIGR = "TIGRrice";
+	/**
+	 * 9Î»OsºÅ
+	 */
 	public final static String DBINFO_RICE_RAPDB = "RapDB";
 	public final static String DBINFO_RICE_IRGSP = "IRGSP";
 	public final static String DBINFO_AFFY_RICE_31 = "affyRice31";

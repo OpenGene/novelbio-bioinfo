@@ -96,7 +96,7 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 			String geneID = lsGeneID.get(i).trim();
 			ArrayList<String[]> lsTmpInfo = new ArrayList<String[]>();
 			try {
-				ArrayList<String[]> lstmpAnno = GOQuery.getLsGeneGo(geneID,taxID,GoClass, blast, evalue, 9606);
+				ArrayList<String[]> lstmpAnno = GOQuery.getLsGeneGo(geneID,taxID,GoClass, blast, evalue, StaxID);
 				if (lstmpAnno == null || lstmpAnno.size()<1) {
 					String[] tmp = new String[length];
 					for (int j = 0; j < tmp.length; j++) {

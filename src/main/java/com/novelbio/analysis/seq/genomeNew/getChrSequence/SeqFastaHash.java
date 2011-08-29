@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map.Entry;
@@ -22,22 +23,47 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 本类用来将读取fasta文本，返回Hash表。key-序列名-小写，value-序列信息
+ * 将序列名中的空格全部换为下划线
  * 一个类就是一个fasta文件
  * 作者：宗杰 20090617
  */
 
 public class SeqFastaHash extends SeqHash {
-	
+	/**
+	 * 默认序列名改成小写
+	 * @param chrFile
+	 */
 	public SeqFastaHash(String chrFile) {
 		super(chrFile,"");
 		setFile();
 	}
-	public SeqFastaHash(String chrFile, String regx) {
+	/**
+	 * 默认序列名改成小写
+	 * @param chrFile
+	 * @param TOLOWCASE 是否将序列改为小写,True小写，false大写， null不变
+	 */
+	public SeqFastaHash(String chrFile, Boolean TOLOWCASE) {
+		super(chrFile,"");
+		this.TOLOWCASE = TOLOWCASE;
+		setFile();
+	}
+	
+	/**
+	 * 默认序列名改成小写
+	 * @param chrFile
+	 * @param regx
+	 * @param TOLOWCASE 是否将序列改为小写,True小写，false大写， null不变
+	 */
+	public SeqFastaHash(String chrFile, String regx, Boolean TOLOWCASE) {
 		super(chrFile,regx);
+		this.TOLOWCASE = TOLOWCASE;
 		setFile();
 	}
 	private static Logger logger = Logger.getLogger(SeqFastaHash.class);  
 	
+	public ArrayList<String> getLsSeqName() {
+		return lsSeqName;
+	}
 	/**
 	 * 将序列信息读入哈希表并返回<br>
 	 * 哈希表的键是序列名，根据情况不改变大小写或改为小写<br>
@@ -58,6 +84,7 @@ public class SeqFastaHash extends SeqHash {
 		this.append = append;
 	}
 	
+	Boolean TOLOWCASE = null;
 	
 	/**
 	 * 读取序列文件，将序列保存入Seqhash哈希表<br/>
@@ -88,7 +115,7 @@ public class SeqFastaHash extends SeqHash {
 			if (content.trim().startsWith(">"))// 当读到一条序列时，给序列起名字
 			{
 				if (Seq != null) {
-					putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append);
+					putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append,TOLOWCASE);
 					SeqStringBuilder = new StringBuilder();// 清空
 				}
 				Seq = new SeqFasta();
@@ -96,9 +123,9 @@ public class SeqFastaHash extends SeqHash {
 				// //////////////是否改变序列名字的大小写//////////////////////////////////////////////
 				if (CaseChange)
 					tmpSeqName = content.trim().substring(1).trim()
-							.toLowerCase();// substring(1)，去掉>符号，然后统统改成小写
+							.toLowerCase().replace(" ", "_");// substring(1)，去掉>符号，然后统统改成小写
 				else
-					tmpSeqName = content.trim().substring(1).trim();// substring(1)，去掉>符号，不变大小写
+					tmpSeqName = content.trim().substring(1).trim().replace(" ", "_");// substring(1)，去掉>符号，不变大小写
 				// ///////////////用正则表达式抓取序列名中的特定字符////////////////////////////////////////////////
 				if (regx.trim().equals("")) {
 					Seq.setSeqName(tmpSeqName);
@@ -116,8 +143,7 @@ public class SeqFastaHash extends SeqHash {
 			SeqStringBuilder.append(content.replace(" ", ""));
 		}
 		// /////////离开循环后，再做一次总结/////////////////////
-		Seq.setSeq(SeqStringBuilder.toString());
-		putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append);
+		putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append,TOLOWCASE);
 	}
 
 	/**
@@ -128,7 +154,15 @@ public class SeqFastaHash extends SeqHash {
 	 * @param seq
 	 * @param append
 	 */
-	private void putSeqFastaInHash(SeqFasta seqFasta, String seq, boolean append) {
+	private void putSeqFastaInHash(SeqFasta seqFasta, String seq, boolean append, Boolean TOLOWCASE) {
+		if (TOLOWCASE != null) {
+			if (TOLOWCASE == true) {
+				seq = seq.toLowerCase();
+			}
+			else {
+				seq = seq.toUpperCase();
+			}
+		}
 		seqFasta.setSeq(seq);
 		SeqFasta tmpSeq = hashSeq.get(seqFasta.getSeqName());// 看是否有同名的序列出现
 		// 如果没有同名序列，直接装入hash表
@@ -192,6 +226,26 @@ public class SeqFastaHash extends SeqHash {
 		}
 		return targetChr.getsequence((int)startlocation, (int)endlocation);
 	}
+	/**
+	 * 输入序列名
+	 * 输入序列坐标，起点和终点
+	 * 返回序列
+	 */
+	public SeqFasta getSeqFasta(String seqID) 
+	{ 
+		return hashSeq.get(seqID);
+	}
+	/**
+	 * 返回全部序列
+	 */
+	public ArrayList<SeqFasta>  getSeqFastaAll()
+	{
+		ArrayList<SeqFasta> lsresult = new ArrayList<SeqFasta>();
+		for (SeqFasta seqFasta : hashSeq.values()) {
+			lsresult.add(seqFasta);
+		}
+		return lsresult;
+	}
 	
 	/**
 	 * 比较两个序列是否一致，计数不一致的碱基数
@@ -219,28 +273,44 @@ public class SeqFastaHash extends SeqHash {
 	 * int[2] :0：下限，小于0表示没有下限
 	 * 1：上限，小于0表示没有上限
 	 * 上限必须大于等于下限，如果上限小于下限，则报错
-	 * @param sepFile
+	 * @param sepFile 是否分为不同文件保存
 	 * @param writelen
 	 */
 	public void writeFileSep(String filePath, String prix, int[] len, boolean sepFile, int writelen)
 	{
 		filePath = FileOperate.addSep(filePath);
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(filePath + prix + ".fasta", true);
-		
+		TxtReadandWrite txtResultSeqName = new TxtReadandWrite(filePath + prix + "seqName.txt", true);
+		TxtReadandWrite txtReadandWrite = null;
+		if (!sepFile) {
+			txtReadandWrite = new TxtReadandWrite(filePath + prix + ".fasta", true);
+			txtResultSeqName.writefileln(txtReadandWrite.getFileName());
+		}
+
 		for (Entry<String, SeqFasta> entry : hashSeq.entrySet()) {
 			String seqName = entry.getKey();
 			SeqFasta seqFasta = entry.getValue();
 			if (testSeqLen(seqFasta.getSeq().length(), len))//长度在目标范围内
 			{
 				if (sepFile) {
+					
 					TxtReadandWrite txtReadandWrite2 = new TxtReadandWrite(filePath + prix + seqFasta.getSeqName().replace(" ", "_")+".fasta", true);
+					txtReadandWrite2.writefileln(">"+seqFasta.getSeqName().trim().replace(" ", "_"));
 					txtReadandWrite2.writefilePerLine(seqFasta.getSeq(), writelen);
+					txtResultSeqName.writefileln(txtReadandWrite2.getFileName());
+					txtReadandWrite2.close();
 				}
 				else {
+					txtReadandWrite.writefileln(">"+seqFasta.getSeqName().trim().replace(" ", "_"));
 					txtReadandWrite.writefilePerLine(seqFasta.getSeq(), writelen);
+					txtReadandWrite.writefileln("");
 				}
 			}
 		}
+		if (!sepFile) {
+			txtReadandWrite.close();
+		}
+		
+		txtResultSeqName.close();
 	}
 	
 	/**

@@ -96,7 +96,7 @@ public class DaoFSBlastInfo {
 		return lsBlastInfos;
 	}
 	
-	public static void InsertGene2Go(BlastInfo blastInfo){
+	public static void InsertBlastInfo(BlastInfo blastInfo){
 		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
  		try
 		{
@@ -128,7 +128,7 @@ update BlastInfo <br>
 			/if<br>
 	    /where <br>
 	 */
-	public static void upDateGene2Go(BlastInfo blastInfo){
+	public static void upDateBlastInfo(BlastInfo blastInfo){
 		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
  		try
 		{

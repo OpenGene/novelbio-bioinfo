@@ -50,6 +50,8 @@ public class CopedID {
 	BlastInfo blastInfo = null;
 	
 	KegGenEntryKO kegGenEntryKO = null;
+	
+	double evalue = 10;
 	/**
 	 * 外部不要通过该方法new
 	 */
@@ -72,6 +74,10 @@ public class CopedID {
 		this.idType = idType;
 		this.taxID = taxID;
 	}
+	
+	
+	
+	
 	/**
 	 * 设定初始值，会自动去数据库查找accID并，完成填充本类。
 	 * <b>如果基因的IDtype是accID，那么该基因很可能不存在，那么看下blast的相关信息，如果blast也没有，那么就不存在了</b>
@@ -112,6 +118,16 @@ public class CopedID {
 		 }
 		 return lsCopedIDs;
 	}
+	/**
+	 * 指定一个dbInfo，返回该dbInfo所对应的accID，没有则返回null
+	 * @param dbInfo
+	 * @return
+	 */
+	public String getAccIDDBinfo(String dbInfo)
+	{
+		return ServAnno.getAccIDInfo(genUniID, idType, taxID, dbInfo);
+	}
+	
 	
 	/**
 	 * 获得本copedID blast到对应物种的blastInfo信息，没有就返回null
@@ -127,6 +143,7 @@ public class CopedID {
 			genInfo[2] = getGenUniID();
 			blastInfo = ServBlastInfo.getBlastInfo(genInfo, getTaxID(), StaxID, evalue);
 		}
+		this.evalue = blastInfo.getEvalue();
 		return blastInfo;
 	}
 	/**
@@ -148,6 +165,7 @@ public class CopedID {
 			idType = CopedID.IDTYPE_UNIID;
 		}
 		CopedID copedID = new CopedID(idType,blastInfo.getSubjectID(), StaxID);
+		this.evalue = blastInfo.getEvalue();
 		return copedID;
 	}
 	
@@ -351,7 +369,7 @@ public class CopedID {
 			tmpAnno[0] = getSymbo(); tmpAnno[1] = getDescription(); tmpAnno[2] = StaxID + ""; 
 			CopedID copedIDBlast = getBlastCopedID(StaxID, evalue);
 			if (copedIDBlast != null) {
-				tmpAnno[3] = evalue + "";
+				tmpAnno[3] = this.evalue + "";
 				tmpAnno[4] = copedIDBlast.getSymbo();
 				tmpAnno[5] = copedIDBlast.getDescription();
 			}

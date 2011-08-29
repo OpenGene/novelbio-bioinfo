@@ -37,6 +37,7 @@ import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastAnno;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastGo;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlOther;
@@ -88,7 +89,7 @@ public class GuiBlastJpanel extends JPanel{
 	private DefaultTableModel jTabGoandPath;
 	
 	static int QtaxID = 0;//查询物种ID
-	static int StaxID = 9606;//blast物种ID
+	static int StaxID = 3702;//blast物种ID
 	String GoClass = "";
 	
 	static GuiBlastJpanel guiBlastJpanel;
@@ -423,14 +424,17 @@ public class GuiBlastJpanel extends JPanel{
 						}
 						lsGenID.add(queryID[i]);
 					}
-					List<String> lsGenID2 = null;
+					List<String> lsGenID2 = new ArrayList<String>();
+					for (String string : lsGenID) {
+						lsGenID2.add(CopedID.removeDot(string));
+					}
+					
+					
 					//////////////////一次只能读取3000个
 					if (lsGenID.size()>numLimit) {
 						JOptionPane.showMessageDialog(null, "To ensure the stability of the database, the gene number of each query is limited in 3000.", "alert", JOptionPane.INFORMATION_MESSAGE); 
-						lsGenID2 = lsGenID.subList(0, numLimit);
+						lsGenID2 = lsGenID2.subList(0, numLimit);
 					}
-					else
-						lsGenID2 = lsGenID;
 					///////////////各种设置
 					///////////////各种设置///////////////
 					//设置进度条

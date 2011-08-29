@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.GOQuery;
 import com.novelbio.analysis.generalConf.NovelBioConst;
@@ -35,6 +38,7 @@ import com.novelbio.database.service.ServGo;
 
 
 public class UpDateNBCDBFile {
+	private static Logger logger = Logger.getLogger(UpDateNBCDBFile.class);
 	/**
 	 * 专门处理Gene2Go的表
 	 * 将含有固定TaxID的gene2Go表插入数据库，插入时采用以下方法
@@ -833,8 +837,7 @@ public class UpDateNBCDBFile {
 	 */
 	public static void upDateBlastInfo(String blast2InfoFile,String subjectTab) throws Exception
 	{
-		TxtReadandWrite txtBInfo=new TxtReadandWrite();
-		txtBInfo.setParameter(blast2InfoFile, false, true);
+		TxtReadandWrite txtBInfo=new TxtReadandWrite(blast2InfoFile, false);
 		BufferedReader readerBInfo=txtBInfo.readfile();
 		String content="";
 		while ((content=readerBInfo.readLine())!=null) 
@@ -855,15 +858,68 @@ public class UpDateNBCDBFile {
 			{
 				if(!blastInfo2.getSubjectID().equals(blastInfo.getSubjectID())&&blastInfo2.getEvalue()>blastInfo.getEvalue()) 
 				{
-					DaoFSBlastInfo.upDateGene2Go(blastInfo);
+					DaoFSBlastInfo.upDateBlastInfo(blastInfo);
 				}
 				continue;
 			}
-			DaoFSBlastInfo.InsertGene2Go(blastInfo);
+			DaoFSBlastInfo.InsertBlastInfo(blastInfo);
 		}
 	}
 	
-	
+	/**
+	 * 将Blast整理好的结果插入BlastInfo中
+	 * 插入时采用如下方法
+	 * 用queryID，queryTax和subjectTax搜索数据库，如果没找到，则插入。如果找到，则先看subjectID是否一致，如果不一致，则比较evalue。如果新加入的evalue更小，则升级数据库
+	 * 如果有跳过
+	 * @author zong0jie
+	 * @param blast2InfoFile blast文件
+	 * @param subjectTab blast到的目的物种是在哪个表中，是NCBIID还是UniProtID
+	 *
+	 */
+	public static void upDateBlastInfo(String blast2InfoFile) throws Exception
+	{
+		TxtReadandWrite txtBInfo=new TxtReadandWrite(blast2InfoFile, false);
+		BufferedReader readerBInfo=txtBInfo.readfile();
+		String content="";
+		while ((content=readerBInfo.readLine())!=null) 
+		{
+			String[] ss=content.split("\t");
+			CopedID copedIDQ = new CopedID(ss[0], Integer.parseInt(ss[1]), false);
+			CopedID copedIDS = new CopedID(ss[3], Integer.parseInt(ss[4]), false);
+			
+			BlastInfo blastInfo=new BlastInfo();
+			blastInfo.setQueryID(copedIDQ.getGenUniID());blastInfo.setQueryTax(copedIDQ.getTaxID());blastInfo.setSubjectTax(copedIDS.getTaxID());
+			//Date date=(Date) new SimpleDateFormat("yyyy-MM-dd").parse(ss[8]);
+			blastInfo.setBlastDate(ss[8]);//这个不会用于查询
+			
+			BlastInfo blastInfo2=DaoFSBlastInfo.queryBlastInfo(blastInfo);
+
+			blastInfo.setQueryDB(ss[2]);
+			blastInfo.setSubjectID(copedIDS.getGenUniID());
+			blastInfo.setSubjectDB(ss[5]);
+			blastInfo.setIdentities(Double.parseDouble(ss[6]));
+			blastInfo.setEvalue(Double.parseDouble(ss[7]));
+			if (copedIDS.getIDtype().equals(CopedID.IDTYPE_GENEID)) {
+				blastInfo.setSubjectTab(BlastInfo.SUBJECT_TAB_NCBIID);
+			}
+			else if (copedIDS.getIDtype().equals(CopedID.IDTYPE_UNIID)) {
+				blastInfo.setSubjectTab(BlastInfo.SUBJECT_TAB_UNIPROTID);
+			}
+			else {
+				logger.error("subject have unknown id: "+copedIDS.getAccID());
+			}
+			
+			if (blastInfo2!=null)
+			{
+				if(!blastInfo2.getSubjectID().equals(blastInfo.getSubjectID())&&blastInfo2.getEvalue()>blastInfo.getEvalue()) 
+				{
+					DaoFSBlastInfo.upDateBlastInfo(blastInfo);
+				}
+				continue;
+			}
+			DaoFSBlastInfo.InsertBlastInfo(blastInfo);
+		}
+	}
 	
 	
 	/**
