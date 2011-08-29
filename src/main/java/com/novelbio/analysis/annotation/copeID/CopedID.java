@@ -143,7 +143,9 @@ public class CopedID {
 			genInfo[2] = getGenUniID();
 			blastInfo = ServBlastInfo.getBlastInfo(genInfo, getTaxID(), StaxID, evalue);
 		}
-		this.evalue = blastInfo.getEvalue();
+		if (blastInfo != null) {
+			this.evalue = blastInfo.getEvalue();
+		}
 		return blastInfo;
 	}
 	/**
