@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
+import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 
 public class UniProtGo {
@@ -132,7 +133,7 @@ public class UniProtGo {
 			gene2GoInfo.setGOID(ss[2]);
 			gene2GoInfo.setDataBase(ss[3]);
 			
-			Gene2Go gene2GoInfo2=friceDAO.queryGene2Go(gene2GoInfo);
+			AGene2Go gene2GoInfo2=friceDAO.queryGene2Go(gene2GoInfo);
 			if (gene2GoInfo2==null)
 			{
 				friceDAO.InsertGene2Go(gene2GoInfo);

@@ -22,15 +22,15 @@ public class runRegDistance {
 		 int rowEnd = -1;
 		 int binNum = 5; //精度
 		 int range = 5000;//上下游多少距离
-		 String mapparentFIle="/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/";
-		 String PeakparentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/peakCalling/";
+		 String mapparentFIle="/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/Cell_Dpy30/mapping/";
+		 String PeakparentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/Cell_Dpy30/peakcalling/";
 		try {
-			String mapFilePath=mapparentFIle+"k0_extend_sort.bed";
+			String mapFilePath=mapparentFIle+"Dpy-30SortLen.bed";
 			
-			String txtPeakFile= PeakparentFile + "k0_macsPeak_peaks.xls";
+			String txtPeakFile= PeakparentFile + "Dpy-30_peaks.xls";
 			
-			String resultpath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/";
-			String resultPrefix = "test";
+			String resultpath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/Cell_Dpy30/readsRegion/";
+			String resultPrefix = "Dpy-30";
 			
 			RegDensity tssDistance=new RegDensity();
 			
@@ -45,6 +45,7 @@ public class runRegDistance {
 //			tssDistance.getRegionDensity("GeneEnd",range, range*2/binNum,resultpath,resultPrefix);
 			tssDistance.getRegionDensity("Tss",range,range*2/binNum,resultpath,resultPrefix);
 			tssDistance.getRegionDensityHeatMap("Tss", range, range*2/binNum, resultpath, resultPrefix+"heatmap");
+			tssDistance.getRegionDensity("GeneEnd",range, range*2/binNum,resultpath,resultPrefix);
 			tssDistance.getRegionDensityHeatMap("GeneEnd", range, range*2/binNum, resultpath, resultPrefix+"heatmap");
 		} catch (Exception e) {
 			// TODO: handle exception

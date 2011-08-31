@@ -4,6 +4,7 @@ package com.novelbio.analysis.seq.chipseq.peakAnnotation.peakLoc;
 import java.util.ArrayList;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.analysis.seq.chipseq.peakAnnotation.symbolAnnotation.SymbolDesp;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -108,10 +109,11 @@ public class PeakLOCRun {
 	 */
 	public static void  filterPeak() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/result/annotation/";
+		String ParentFile="/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/Cell_Dpy30/peakcalling/";
+		int taxID = 10090;
 		int colChrID = 1; int colSummit = 6;
 		int rowStart = 1; 
-		int[] filterTss = new int[2]; filterTss[0] = 500; filterTss[1] = 2000;
+		int[] filterTss = new int[2]; filterTss[0] = 1250; filterTss[1] = 12500;
 		int[] filterGenEnd = new int[2]; filterGenEnd[0] = 0; filterGenEnd[1] = 0;
 		filterGenEnd = null;
 		boolean filterGeneBody = false;
@@ -120,9 +122,17 @@ public class PeakLOCRun {
 		boolean filterExon = false;
 		boolean filterIntron = false;
 		try {
-			String txtFile=ParentFile+"H3K4me3_peaks.xls";
-			String excelResultFile=ParentFile+"H3K4me3_peaks_Filter0.5-2.xls";
-			PeakLOC.filterPeak(txtFile, "\t", colChrID, colSummit, rowStart, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron, excelResultFile);
+			String txtFile=ParentFile+"Dpy-30_peaks.txt";
+			String excelResultFile=ParentFile+"Dpy-30_peaks_Filter-1250-+1250.txt";
+//			PeakLOC.filterPeak(txtFile, "\t", colChrID, colSummit, rowStart, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron, excelResultFile);
+			int columnNum=0;
+			 TxtReadandWrite txtReadandWrite=new TxtReadandWrite(excelResultFile, false);
+			try {
+				columnNum = txtReadandWrite.ExcelColumns("\t");
+			} catch (Exception e2) {
+			}
+			int columnRead=columnNum-1;
+			SymbolDesp.getRefSymbDesp(taxID,excelResultFile, columnRead, rowStart, columnRead);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

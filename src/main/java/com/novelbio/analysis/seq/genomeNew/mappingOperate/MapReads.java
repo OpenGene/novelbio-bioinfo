@@ -273,7 +273,7 @@ public class MapReads {
 			////////////////////按照位点加和chrBpReads////////////////////////////////
 			if (flag == false) //没有该基因则跳过
 				continue;
-			if (!booUniqueMapping || Integer.parseInt(tmp[colUnique]) <= 1) {
+			if (!booUniqueMapping || colUnique < 0 || Integer.parseInt(tmp[colUnique]) <= 1) {
 				tmpOld = addLoc(tmp, uniqReads, tmpOld, startCod, cis5to3, chrBpReads,ReadsNum);
 			}
 		}

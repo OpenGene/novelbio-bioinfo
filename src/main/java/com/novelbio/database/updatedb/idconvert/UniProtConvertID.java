@@ -14,6 +14,7 @@ import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
+import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
@@ -639,7 +640,7 @@ public class UniProtConvertID {
 						gene2Go.setGOID(GoID);
 						gene2Go.setGOTerm(goTerm);
 						gene2Go.setGeneId(Long.parseLong(lsAccID.get(i)));
-						Gene2Go gene2Go2 = DaoFSGene2Go.queryGene2Go(gene2Go);
+						AGene2Go gene2Go2 = DaoFSGene2Go.queryGene2Go(gene2Go);
 						if (gene2Go2==null) //如果已经存在了，那么考虑下是否升级
 						{
 							DaoFSGene2Go.InsertGene2Go(gene2Go);
@@ -654,7 +655,7 @@ public class UniProtConvertID {
 						uniGene2Go.setGOID(GoID);
 						uniGene2Go.setGOTerm(goTerm);
 						uniGene2Go.setUniProtID(lsAccID.get(i));
-						UniGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
+						AGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
 						if (uniGene2Go2==null) //如果已经存在了，那么考虑下是否升级
 						{
 							DaoFSUniGene2Go.InsertUniGene2Go(uniGene2Go);

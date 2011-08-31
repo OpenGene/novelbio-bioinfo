@@ -3,6 +3,8 @@ package com.novelbio.analysis.seq.genome;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodInfoUCSCgene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailUCSCgene;
@@ -19,6 +21,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffsearchUCSCgene;
  */
 public class GffLocatCod extends GffChrUnion
 {
+	private static Logger logger = Logger.getLogger(GffLocatCod.class);
 	/**
 	 * 给定二维数组,计算出每个peakLOC所在的基因，针对UCSCknown gene以及refseq
 	 * @param LOCIDInfo <br>
@@ -316,13 +319,16 @@ public class GffLocatCod extends GffChrUnion
 			//所以只有当peak处在UTR内部时，这两个mark才会标记 
 			boolean UTR5  = false; boolean UTR3 = false;
 			GffCodInfoUCSCgene tmpresult=null;
+			if (LOCIDInfo.get(i).length < colSummit+1) {
+				continue;
+			}
 			try {
 				String chrID = LOCIDInfo.get(i)[colChrID].toLowerCase();
 				int summit = Integer.parseInt(LOCIDInfo.get(i)[colSummit]);
 				tmpresult=(GffCodInfoUCSCgene)gffSearch.searchLocation(chrID, summit, gffHash);
 
 			} catch (Exception e) {
-				System.out.println("peakAnnoFilter error");
+				logger.error("peak annotation error:"+LOCIDInfo.get(i)[colChrID].toLowerCase() +"  "+ LOCIDInfo.get(i)[colSummit]);
 				continue;
 			}
 			//本基因/上一个基因

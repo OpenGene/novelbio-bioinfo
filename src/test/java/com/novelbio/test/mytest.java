@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.CopyOfGUIanalysisSimple;
 import com.novelbio.analysis.seq.BedSeq;
@@ -38,9 +39,12 @@ import com.novelbio.analysis.seq.mapping.FastQSoapMap;
 import com.novelbio.analysis.seq.reseq.LastzAlign;
 import com.novelbio.analysis.seq.reseq.ModifySeq;
 import com.novelbio.analysis.tools.formatConvert.bedFormat.Soap2Bed;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
+import com.novelbio.database.entity.friceDB.Gene2Go;
 
 
 
@@ -55,12 +59,8 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		SeqFastaHash seqFastaHash = new SeqFastaHash("/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT2/resultResq/seqWithScalFoldSoapmer60_Velvet_5th.txt");
-		SeqFasta seqFasta = seqFastaHash.getSeqFastaAll().get(0);
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite("/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT2/resultResq/statistic", true);
-		ArrayList<String[]> lsresult = seqFasta.getSeqInfo();
-		txtReadandWrite.ExcelWrite(lsresult, "\t", 1, 1);
-	
+		CopedID copedID2 = new CopedID("at1g01110", 3702, false);
+		System.out.println(copedID2.getDescription());
 	}
 	
 	private static void testFdrFunction() throws Exception {

@@ -25,6 +25,7 @@ import com.novelbio.database.DAO.FriceDAO.DaoFSTaxID;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniGeneInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
+import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.GeneInfo;
@@ -80,7 +81,7 @@ public class UpDateNBCDBFile {
 			
 			gene2GoInfo.setFunction(goFunction);
 			gene2GoInfo.setDataBase("NCBI");
-			Gene2Go gene2GoInfo2=DaoFSGene2Go.queryGene2Go(gene2GoInfo);
+			Gene2Go gene2GoInfo2=(Gene2Go) DaoFSGene2Go.queryGene2Go(gene2GoInfo);
 			if (gene2GoInfo2==null) 
 			{
 				DaoFSGene2Go.InsertGene2Go(gene2GoInfo);
@@ -567,7 +568,7 @@ public class UpDateNBCDBFile {
 		{
 			String[] ss=content.split("\t");
 			UniGeneInfo uniGeneInfo=new UniGeneInfo();
-			uniGeneInfo.setGeneID(ss[1]);
+			uniGeneInfo.setUniProtID(ss[1]);
 			uniGeneInfo.setSymbol(ss[2]);
 			if (ss.length>3) {
 				uniGeneInfo.setDescription(ss[3]);
@@ -694,7 +695,7 @@ public class UpDateNBCDBFile {
 					gene2Go.setGOID(GoID);gene2Go.setQualifier(ss[3].trim());gene2Go.setReference(ss[5]);gene2Go.setEvidence(ss[6]);gene2Go.setFunction(goFuncition);
 					gene2Go.setGOTerm(goTerm);
 					gene2Go.setDataBase(NovelBioConst.DBINFO_UNIPROT_UNIID);
-					Gene2Go gene2Go2 = DaoFSGene2Go.queryGene2Go(gene2Go);
+					AGene2Go gene2Go2 = DaoFSGene2Go.queryGene2Go(gene2Go);
 					if (gene2Go2!=null) //如果已经存在了，那么考虑下是否升级
 					{
 						boolean update=false;
@@ -707,7 +708,7 @@ public class UpDateNBCDBFile {
 							update=true;
 						}
 						if (update) {
-							DaoFSGene2Go.upDateGene2Go(gene2Go2);
+							DaoFSGene2Go.upDateGene2Go((Gene2Go) gene2Go2);
 						}
 					}
 					else //如果没有，则升级
@@ -722,7 +723,7 @@ public class UpDateNBCDBFile {
 				uniGene2Go.setUniProtID(ss[1].trim());uniGene2Go.setGOID(GoID);uniGene2Go.setQualifier(ss[3].trim());uniGene2Go.setReference(ss[5]);
 				uniGene2Go.setEvidence(ss[6]);uniGene2Go.setFunction(goFuncition);uniGene2Go.setDataBase("UniProt");
 				uniGene2Go.setGOTerm(goTerm);
-				UniGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
+				AGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
 				if (uniGene2Go2!=null) //如果已经存在了，那么考虑下是否升级
 				{
 					boolean update=false;
@@ -735,7 +736,7 @@ public class UpDateNBCDBFile {
 						update=true;
 					}
 					if (update) {
-						DaoFSUniGene2Go.upDateUniGene2Go(uniGene2Go2);
+						DaoFSUniGene2Go.upDateUniGene2Go((UniGene2Go) uniGene2Go2);
 					}
 				}
 				else //如果没有，则升级

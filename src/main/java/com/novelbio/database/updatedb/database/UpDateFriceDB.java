@@ -14,6 +14,7 @@ import com.novelbio.database.DAO.FriceDAO.DaoFSGo2Term;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
+import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.Go2Term;
 import com.novelbio.database.entity.friceDB.NCBIID;
@@ -178,7 +179,7 @@ public class UpDateFriceDB {
 			gene2Go.setFunction(function);
 			gene2Go.setGeneId(GeneID);
 			gene2Go.setGOTerm(term);
-			Gene2Go gene2Go2 = DaoFSGene2Go.queryGene2Go(gene2Go);
+			Gene2Go gene2Go2 = (Gene2Go) DaoFSGene2Go.queryGene2Go(gene2Go);
 			if (gene2Go2 != null)
 			{
 				return true;
@@ -198,7 +199,7 @@ public class UpDateFriceDB {
 			uniGene2Go.setFunction(function);
 			uniGene2Go.setUniProtID(uniID);
 			uniGene2Go.setGOTerm(term);
-			UniGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
+			AGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
 			if (uniGene2Go2 != null) {
 				return true;
 			}
@@ -246,7 +247,7 @@ public class UpDateFriceDB {
 			gene2Go.setFunction(function);
 			gene2Go.setGeneId(GeneID);
 			gene2Go.setGOTerm(term);
-			Gene2Go gene2Go2 = DaoFSGene2Go.queryGene2Go(gene2Go);
+			Gene2Go gene2Go2 = (Gene2Go) DaoFSGene2Go.queryGene2Go(gene2Go);
 			if (gene2Go2 != null)
 			{
 				if (gene2Go2.getDataBase() != null && !gene2Go2.getDataBase().contains( gene2Go.getDataBase())) 
@@ -296,7 +297,7 @@ public class UpDateFriceDB {
 			uniGene2Go.setFunction(function);
 			uniGene2Go.setUniProtID(uniID);
 			uniGene2Go.setGOTerm(term);
-			UniGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
+			AGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
 			if (uniGene2Go2 != null) {
 				
 				
@@ -323,7 +324,7 @@ public class UpDateFriceDB {
 				else {
 					uniGene2Go2.setQualifier(uniGene2Go.getQualifier());
 				}
-				DaoFSUniGene2Go.upDateUniGene2Go(uniGene2Go2);
+				DaoFSUniGene2Go.upDateUniGene2Go((UniGene2Go) uniGene2Go2);
 				
 				return true;
 			}

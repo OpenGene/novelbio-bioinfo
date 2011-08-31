@@ -154,7 +154,7 @@ public class ServAnno {
 	 * @param accID 输入的accID,没有内置去空格去点
 	 * @param taxID 物种ID，如果不知道就设置为0，只要不是symbol都可以为0
 	 * @return arraylist-string:0:为"geneID"或"uniID"或"accID"，1:taxID，2-之后：具体的geneID 或 UniID或accID<br>
-	 * 没查到就返回accID-accID
+	 * 没查到就返回accID-taxID-accID
 	 */
 	public static ArrayList<String> getNCBIUniTax(String accID,int taxID) {
 		ArrayList<String> lsResult = new ArrayList<String>();
@@ -306,7 +306,7 @@ public class ServAnno {
 			return null;
 		}
 		UniGeneInfo uniGeneInfo = new UniGeneInfo();
-		uniGeneInfo.setGeneID(uniID);
+		uniGeneInfo.setUniProtID(uniID);
 		UniGeneInfo uniGeneInfo2 = DaoFSUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 		
 		String[] result = new String[2];
@@ -443,7 +443,7 @@ public class ServAnno {
 	 */
 	public static UniGeneInfo getUniGenInfo(UniProtID uniProtID) {
 		UniGeneInfo uniGeneInfo = new UniGeneInfo();
-		uniGeneInfo.setGeneID(uniProtID.getUniID());
+		uniGeneInfo.setUniProtID(uniProtID.getUniID());
 		return DaoFSUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 	}
 }

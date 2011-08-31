@@ -5,9 +5,9 @@ import java.util.Date;
 /**
  * 
  * @author zong0jie
- *
+ * 按照evalue从小到大排序
  */
-public class BlastInfo {
+public class BlastInfo implements Comparable<BlastInfo>{
 	/**
 	 * blast的subject来自于NCBIID表
 	 */
@@ -165,6 +165,15 @@ public class BlastInfo {
 	 */
 	public String getSubjectTab() {
 		return this.subjectTab;
+	}
+	/**
+	 * 按照evalue从小到大排序
+	 */
+	@Override
+	public int compareTo(BlastInfo o) {
+		Double evalueThis = evalue;
+		Double evalueO = o.getEvalue();
+		return evalueThis.compareTo(evalueO);
 	}
 
 }

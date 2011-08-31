@@ -4,18 +4,8 @@ package com.novelbio.database.entity.friceDB;
  * @author zong0jie
  *
  */
-public class UniProtID {
-	   private int taxID;
+public class UniProtID extends AgeneUniID{
 		private String uniID;
-		private String accessID;
-		private String dbInfo;
-		
-		public int getTaxID() {
-			return taxID;
-		}
-		public void setTaxID(int l) {
-			this.taxID = l;
-		}
 
 		public String getUniID() {
 			return uniID;
@@ -24,19 +14,6 @@ public class UniProtID {
 			this.uniID =uniID;
 		}
 		
-		public String getAccID() {
-			return accessID;
-		}
-		public void setAccID(String accessID) {
-			this.accessID = accessID;
-		}  
-		
-		public String getDBInfo() {
-			return dbInfo;
-		}
-		public void setDBInfo(String dbInfo) {
-			this.dbInfo = dbInfo;
-		}
 		
 		/**
 		 * 只要两个uniprotID的UniID相同，就认为这两个uniprotID相同
@@ -61,6 +38,14 @@ public class UniProtID {
 		 */
 		public int hashCode(){ 
 			return uniID.hashCode(); 
+		}
+		@Override
+		public String getGenUniID() {
+			return uniID;
+		}
+		@Override
+		public void setGenUniID(String genUniID) {
+			setUniID(genUniID);
 		}
 		
 }

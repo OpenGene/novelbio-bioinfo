@@ -95,7 +95,7 @@ public class ArabidopsisTair {
 			else if(copedID.getIDtype().equals(CopedID.IDTYPE_UNIID) )
 			{
 				UniGeneInfo uniGeneInfo = new UniGeneInfo();
-				uniGeneInfo.setGeneID(copedID.getGenUniID());
+				uniGeneInfo.setUniProtID(copedID.getGenUniID());
 				
 				UniGeneInfo uniGeneInfoResult = DaoFSUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 				

@@ -13,6 +13,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
+import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
@@ -239,7 +240,7 @@ public class AffyChipGO {
 			gene2GoInfo.setFunction(goFun);
 			gene2GoInfo.setDataBase(ss[5]);
 			
-			Gene2Go gene2GoInfo2=DaoFSGene2Go.queryGene2Go(gene2GoInfo);
+			Gene2Go gene2GoInfo2=(Gene2Go) DaoFSGene2Go.queryGene2Go(gene2GoInfo);
 			if (gene2GoInfo2==null)
 			{
 				DaoFSGene2Go.InsertGene2Go(gene2GoInfo);
@@ -287,7 +288,7 @@ public class AffyChipGO {
 			gene2GoInfo.setFunction(goFun);
 			gene2GoInfo.setDataBase(ss[5]);
 			
-			UniGene2Go gene2GoInfo2=DaoFSUniGene2Go.queryUniGene2Go(gene2GoInfo);
+			AGene2Go gene2GoInfo2=DaoFSUniGene2Go.queryUniGene2Go(gene2GoInfo);
 			if (gene2GoInfo2==null)
 			{
 				DaoFSUniGene2Go.InsertUniGene2Go(gene2GoInfo);

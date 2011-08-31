@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -264,9 +265,8 @@ public class FisherTest {
 	private static void callR() throws Exception{
 		//这个就是相对路径，必须在当前文件夹下运行
 		String command= NovelBioConst.R_SCRIPT+NovelBioConst.R_WORKSPACE_FISHER_SCRIPT;
-		Runtime   r=Runtime.getRuntime();
-		Process p = r.exec(command);
-		p.waitFor();
+		CmdOperate cmdOperate = new CmdOperate(command);
+		cmdOperate.doInBackground();
 	}
 	
 }

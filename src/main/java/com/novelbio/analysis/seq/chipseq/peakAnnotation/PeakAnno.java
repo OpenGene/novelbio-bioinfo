@@ -16,10 +16,10 @@ public class PeakAnno {
 		columnID[0]=1;
 		columnID[1]=2;
 		columnID[2]=3;
-//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
-//				"/media/winE/Bioinformatics/GenomeData/human/hg18refseqUCSCsortUsing.txt", "");
-		PeakLOC.prepare("/media/winE/Bioinformatics/GenomeData/Arabidopsis/ChromFaRaw",null,NovelBioConst.GENOME_GFF_TYPE_TAIR,
-				"/media/winE/Bioinformatics/GenomeData/Arabidopsis/TAIR9_GFF3_genes.gff", "");
+		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
+				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
+//		PeakLOC.prepare("/media/winE/Bioinformatics/GenomeData/Arabidopsis/ChromFaRaw",null,NovelBioConst.GENOME_GFF_TYPE_TAIR,
+//				"/media/winE/Bioinformatics/GenomeData/Arabidopsis/TAIR9_GFF3_genes.gff", "");
 		System.out.println("prepare ok");
 		annotation();
 	}
@@ -29,20 +29,20 @@ public class PeakAnno {
 	 */
 	public static void  annotation() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/Project_ZDB_Lab/XJ/ChIP-chip数据2011.06/ChIP-chip数据2011.06/";
-		String geneStructurePath = "/media/winE/NBC/Project/Project_ZDB_Lab/XJ/ChIP-chip数据2011.06/geneStructure";
+		String ParentFile="/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/Cell_Dpy30/peakcalling/";
+		String geneStructurePath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/Cell_Dpy30/GeneStructure";
 		int[] columnID=new int[2];
 		columnID[0]=1;
-		columnID[1]=4;
-		int taxID = 3702;
+		columnID[1]=6;
+		int taxID = 10090;
 		//定位区域
 		int[] region = new int[3];//0:UpstreamTSSbp 1:DownStreamTssbp 2:GeneEnd3UTR
-		region[0] = 1000; region[1] = 1000; region[2] = 100;
-		int upBp = 1000;
+		region[0] = 3000; region[1] = 1500; region[2] = 100;
+		int upBp = 3000;
 		try {
-			 String FpeaksFile=ParentFile+"chersD.txt";
-			 String FannotationFile=ParentFile+"chersD_annotation.txt";
-			 String FPeakHist = ParentFile; String resultPrix ="chersD";
+			 String FpeaksFile=ParentFile+"Dpy-30_peaks.txt";
+			 String FannotationFile=ParentFile+"Dpy-30_annotation.txt";
+			 String FPeakHist = ParentFile; String resultPrix ="Dpy-30";
 			 PeakLOC.histTssGeneEnd(FpeaksFile, "\t", columnID, 2, -1, FPeakHist, resultPrix);
 			 
 			 statisticNum(upBp,FpeaksFile, columnID,geneStructurePath, resultPrix);

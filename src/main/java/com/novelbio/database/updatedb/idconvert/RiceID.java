@@ -600,7 +600,7 @@ public class RiceID {
 				}
 				else if (GeneID ==0 && uniID != null) {
 					UniGeneInfo uniGeneInfo = new UniGeneInfo();
-					uniGeneInfo.setGeneID(uniID);
+					uniGeneInfo.setUniProtID(uniID);
 					UniGeneInfo uniGeneInfo2 = DaoFSUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 					if (uniGeneInfo2 == null) //数据库中没有，就插入
 					{
@@ -773,7 +773,7 @@ public class RiceID {
 				for (int i = 1; i < lsaccID.size(); i++) 
 				{
 					UniGeneInfo uniGeneInfo = new UniGeneInfo();
-					uniGeneInfo.setGeneID(lsaccID.get(i));
+					uniGeneInfo.setUniProtID(lsaccID.get(i));
 					UniGeneInfo uniGeneInfo2 = DaoFSUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 					if (uniGeneInfo2 == null) {
 						uniGeneInfo.setSymbol(LOCID); uniGeneInfo.setDescription(description);

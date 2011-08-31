@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
@@ -13,6 +14,7 @@ import com.novelbio.database.DAO.FriceDAO.DaoFSGo2Term;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
+import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.Blast2GeneInfo;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.Gene2Go;
@@ -103,6 +105,9 @@ public class ServGo {
 		long GeneID = ncbiid.getGeneId();
 		return DaoFSGene2Go.queryGene2Go(GeneID);
 	}
+
+	
+	
 	
 	/**
 	 * @param uniProtID uniID Ù–‘±ÿ–Î”–

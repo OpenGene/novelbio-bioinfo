@@ -89,7 +89,7 @@ public class GuiBlastJpanel extends JPanel{
 	private DefaultTableModel jTabGoandPath;
 	
 	static int QtaxID = 0;//查询物种ID
-	static int StaxID = 3702;//blast物种ID
+	static int StaxID = 9606;//blast物种ID
 	String GoClass = "";
 	
 	static GuiBlastJpanel guiBlastJpanel;

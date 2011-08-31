@@ -5,18 +5,8 @@ package com.novelbio.database.entity.friceDB;
  * @author zong0jie
  *
  */
-public class NCBIID {
-    private int taxID;
+public class NCBIID extends AgeneUniID{
 	private long geneID;
-	private String accessID;
-	private String dbInfo;
-	
-	public int getTaxID() {
-		return taxID;
-	}
-	public void setTaxID(int taxID) {
-		this.taxID = taxID;
-	}
 
 	public long getGeneId() {
 		return geneID;
@@ -25,19 +15,6 @@ public class NCBIID {
 		this.geneID = geneID;
 	}
 	
-	public String getAccID() {
-		return accessID;
-	}
-	public void setAccID(String accessID) {
-		this.accessID = accessID;
-	}  
-	
-	public String getDBInfo() {
-		return dbInfo;
-	}
-	public void setDBInfo(String dbInfo) {
-		this.dbInfo = dbInfo;
-	}
 	
 	/**
 	 * 只要两个ncbiid的geneID相同，就认为这两个NCBIID相同
@@ -62,6 +39,14 @@ public class NCBIID {
 	 */
 	public int hashCode(){ 
 		return Long.valueOf(geneID).hashCode(); 
+	}
+	@Override
+	public String getGenUniID() {
+		return geneID + "";
+	}
+	@Override
+	public void setGenUniID(String genUniID) {
+		setGeneId(Long.parseLong(genUniID));
 	}
 	
 }

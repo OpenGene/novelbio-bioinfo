@@ -13,6 +13,7 @@ import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.annotation.copeID.FisherTest;
 import com.novelbio.analysis.annotation.copeID.ItemInfo;
 import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -381,9 +382,8 @@ public class GoFisherNew {
 	private static void RElimFisher() throws Exception{
 		//这个就是相对路径，必须在当前文件夹下运行
 		String command=NovelBioConst.R_SCRIPT + NovelBioConst.R_WORKSPACE_TOPGO_RSCRIPT;
-		Runtime r=Runtime.getRuntime();
-		Process p = r.exec(command);
-		p.waitFor();
+		CmdOperate cmdOperate = new CmdOperate(command);
+		cmdOperate.doInBackground();
 	}
 	/**
 	 * 读取RGoInfo文件，将里面的GO2Gene的信息保存为ArrayList--ArrayList-String

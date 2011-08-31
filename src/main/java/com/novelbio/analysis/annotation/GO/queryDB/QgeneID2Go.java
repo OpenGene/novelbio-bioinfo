@@ -9,6 +9,7 @@ import com.novelbio.analysis.annotation.genAnno.GOQuery;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
+import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.Blast2GeneInfo;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.Gene2Go;

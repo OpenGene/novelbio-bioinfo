@@ -201,7 +201,7 @@ public class GffChrUnion {
 		
 		mapReads=new MapReads(5, chrFilePath, mapFile,null);
 		try {
-			readsNum = mapReads.ReadMapFile(false, -1, 0, true, null);//(mapFile, chrFilePath, sep, colChrID, colStartNum, colEndNum, invNum);
+			readsNum = mapReads.ReadMapFile(true, -1, 0, false, null);//(mapFile, chrFilePath, sep, colChrID, colStartNum, colEndNum, invNum);
 			if (tagLength>20) {
 				mapReads.setTagLength(tagLength);
 			}
