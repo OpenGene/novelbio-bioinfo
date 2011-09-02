@@ -109,14 +109,14 @@ public class PeakLOC extends GenomeBasePrepare{
 	 * @param filter3UTR 是否处于3UTR中
 	 * @param filterExon 是否处于外显子中
 	 * @param filterIntron 是否处于内含子中
-	 * @param excelResultFile 保存文件
+	 * @param txtResultFile 保存文件
 	 * 0-n:输入的loc信息<br>
 	 * n+1: 基因名<br>
 	 * n+2: 基因信息<br>
 	 */
 	public static void filterPeak(String txtFile,String sep,int colChrID,int colSummit,int rowStart,
 			int[] filterTss, int[] filterGenEnd, boolean filterGeneBody, boolean filter5UTR, boolean filter3UTR, boolean filterExon,boolean filterIntron,
-			String excelResultFile) throws Exception 
+			String txtResultFile) throws Exception 
 	{
 		TxtReadandWrite txtPeakFile = new TxtReadandWrite(); txtPeakFile.setParameter(txtFile, false, true);
 		ArrayList<String[]> LOCIDInfo = txtPeakFile.ExcelRead(sep, rowStart, 1, txtPeakFile.ExcelRows(), txtPeakFile.ExcelColumns(rowStart, sep), -1);
@@ -130,9 +130,12 @@ public class PeakLOC extends GenomeBasePrepare{
 		List<String[]> lsQuery = LOCIDInfo.subList(1, LOCIDInfo.size()-1);
 		ArrayList<String[]> LOCDetail=gffLocatCod.peakAnnoFilter(lsQuery, colChrID, colSummit, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron);
 		LOCDetail.add(0, titleNew);
-		ExcelOperate excelResult = new ExcelOperate();
-		excelResult.openExcel(excelResultFile);
-		excelResult.WriteExcel(true, 1, 1, LOCDetail);
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(txtResultFile, true);
+		txtReadandWrite.ExcelWrite(LOCDetail, "\t", 1, 1);
+//		ExcelOperate excelResult = new ExcelOperate();
+//		excelResult.openExcel(excelResultFile);
+//		txtReadandWrite.WriteExcel(true, 1, 1, LOCDetail);
+		txtReadandWrite.close();
 	}
 	
 	

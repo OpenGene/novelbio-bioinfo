@@ -17,6 +17,7 @@ import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValue
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.copeID.CopedID;
+import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.CopyOfGUIanalysisSimple;
 import com.novelbio.analysis.seq.BedSeq;
@@ -59,8 +60,9 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		CopedID copedID2 = new CopedID("at1g01110", 3702, false);
-		System.out.println(copedID2.getDescription());
+		KeggInfo keggInfo = new KeggInfo(CopedID.IDTYPE_GENEID, "100037287", 9823);
+		System.out.println(keggInfo.getKegID());
+		System.out.println(keggInfo.getLsKegPath().get(0).getPathName());
 	}
 	
 	private static void testFdrFunction() throws Exception {

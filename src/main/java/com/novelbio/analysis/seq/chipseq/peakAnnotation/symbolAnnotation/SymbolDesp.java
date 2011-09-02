@@ -168,7 +168,7 @@ public class SymbolDesp
 			result[i][0]=tmp2[1];result[i][1]=tmp2[2];
 		}
 		
-		String[][] resultFinal=ArrayOperate.combStrArray(RefID2, result, ColumnWrite);
+		String[][] resultFinal=ArrayOperate.combArray(RefID2, result, ColumnWrite);
 		txtReadandWrite.setParameter(txtFile, true, false);
 		txtReadandWrite.ExcelWrite(resultFinal, "\t");
 		

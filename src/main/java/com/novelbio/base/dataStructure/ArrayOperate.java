@@ -2,10 +2,14 @@ package com.novelbio.base.dataStructure;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class ArrayOperate {
 	
@@ -285,5 +289,34 @@ public class ArrayOperate {
 			array[i]=tmpValue;
 		}
 	}
-	
+	/**
+	 * 将hashmap的key提取出来
+	 * @param <K> key
+	 * @param <V> value
+	 * @param hashMap
+	 */
+	public static<K,V> ArrayList<K> getArrayListKey(HashMap<K, V> hashMap) {
+		ArrayList<K> lsResult = new ArrayList<K>();
+		Set<K> keys = hashMap.keySet();
+		for(K key:keys)
+		{
+			lsResult.add(key);
+		}
+		return lsResult;
+	}
+	/**
+	 * 将hashmap的value提取出来
+	 * @param <K> key
+	 * @param <V> value
+	 * @param hashMap
+	 */
+	public static<K,V> ArrayList<V> getArrayListValue(HashMap<K, V> hashMap) {
+		ArrayList<V> lsResult = new ArrayList<V>();
+		Collection<V> values = hashMap.values();
+		for(V value:values)
+		{
+			lsResult.add(value);
+		}
+		return lsResult;
+	}
 }

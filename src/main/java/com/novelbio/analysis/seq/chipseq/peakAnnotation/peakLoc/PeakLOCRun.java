@@ -21,10 +21,14 @@ public class PeakLOCRun {
 		columnID[1]=2;
 		columnID[2]=3;
 		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
-				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
+				"/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm8/D__mm8_refseq_all_field.txt", "");
+		
+//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
+//				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
+		
 		System.out.println("prepare ok");
 		filterPeak();
-		//annotation();
+//		annotation();
 		//histData();
 		System.out.println(" ok");
 		try {
@@ -84,15 +88,15 @@ public class PeakLOCRun {
 	 */
 	public static void  annotation() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/Microarray_WFL110423/王凤良 基因芯片/王凤良 基因芯片/chip result/annotation/";
+		String ParentFile="/media/winE/NBC/Project/MethyArray_MXY110901/rawdata/";
 		int[] columnID=new int[2];
 		columnID[0]=1;
-		columnID[1]=4;
+		columnID[1]=12;
 		int[] region = new int[3];
-		region[0] = 5000; region[1] = 3000; region[2] = 300;
+		region[0] = 5000; region[1] = 3000; region[2] = 200;
 		try {
-			 String FpeaksFile=ParentFile+"C_vs_N_532_ratio_peaks.txt";
-			 String FannotationFile=ParentFile+"C_vs_N_532_ratio_peaks_Annotation.txt";
+			 String FpeaksFile=ParentFile+"AMS_All.xls";
+			 String FannotationFile=ParentFile+"AMS_All_Annotation.xls";
 			 PeakLOC.locatDetail(FpeaksFile, "\t", columnID,2, -1, FannotationFile,region);
 			// String RpeaksFile=ParentFile+"RPeak Information.xls";
 			// String RannotationFile=ParentFile+"RPeak_annotation5k.xls";
@@ -109,11 +113,11 @@ public class PeakLOCRun {
 	 */
 	public static void  filterPeak() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/Cell_Dpy30/peakcalling/";
+		String ParentFile="/media/winE/NBC/Project/MethyArray_MXY110901/rawdata/";
 		int taxID = 10090;
-		int colChrID = 1; int colSummit = 6;
+		int colChrID = 1; int colSummit = 12;
 		int rowStart = 1; 
-		int[] filterTss = new int[2]; filterTss[0] = 1250; filterTss[1] = 12500;
+		int[] filterTss = new int[2]; filterTss[0] = 5000; filterTss[1] = 5000;
 		int[] filterGenEnd = new int[2]; filterGenEnd[0] = 0; filterGenEnd[1] = 0;
 		filterGenEnd = null;
 		boolean filterGeneBody = false;
@@ -122,9 +126,9 @@ public class PeakLOCRun {
 		boolean filterExon = false;
 		boolean filterIntron = false;
 		try {
-			String txtFile=ParentFile+"Dpy-30_peaks.txt";
-			String excelResultFile=ParentFile+"Dpy-30_peaks_Filter-1250-+1250.txt";
-//			PeakLOC.filterPeak(txtFile, "\t", colChrID, colSummit, rowStart, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron, excelResultFile);
+			String txtFile=ParentFile+"AMS_All.xls";
+			String excelResultFile=ParentFile+"AMS_All_Filter.xls";
+			PeakLOC.filterPeak(txtFile, "\t", colChrID, colSummit, rowStart, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron, excelResultFile);
 			int columnNum=0;
 			 TxtReadandWrite txtReadandWrite=new TxtReadandWrite(excelResultFile, false);
 			try {

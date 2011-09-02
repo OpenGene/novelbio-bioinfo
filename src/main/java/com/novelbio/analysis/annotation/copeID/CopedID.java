@@ -8,9 +8,11 @@ import java.util.HashSet;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
+import com.novelbio.database.DAO.FriceDAO.DaoFSTaxID;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
+import com.novelbio.database.entity.friceDB.TaxInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
 import com.novelbio.database.service.ServAnno;
 
@@ -359,4 +361,26 @@ public class CopedID implements ImpleCopedID{
 		return lsResult;
 	}
 
+	
+	/**
+	 * 读取数据库中的taxID表，将其中的species读取出来并保存为taxID,speciesInfo
+	 * @return
+	 * HashMap - key:Integer taxID
+	 * value: 0: Kegg缩写 1：拉丁名
+	 */
+	public static HashMap<Integer, String[]> getSpecies() 
+	{
+		TaxInfo taxInfo = new TaxInfo();
+		ArrayList<TaxInfo> lsTaxID = DaoFSTaxID.queryLsTaxInfo(taxInfo);
+		HashMap<Integer,String[]> hashTaxID = new HashMap<Integer, String[]>();
+		for (TaxInfo taxInfo2 : lsTaxID) {
+			if (taxInfo2.getAbbr() == null || taxInfo2.getAbbr().trim().equals("")) {
+				continue;
+			}
+			
+			hashTaxID.put( taxInfo2.getTaxID(),new String[]{taxInfo2.getAbbr(),taxInfo2.getLatin()});
+		}
+		return hashTaxID;
+	}
+	
 }

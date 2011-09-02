@@ -174,8 +174,12 @@ public abstract class AbsCopedID implements ImpleCopedID{
 	protected abstract void setGenInfo();
 	
 	protected void setSymbolDescrip() {
-		if (geneInfo != null || symbol != null || idType.equals(CopedID.IDTYPE_ACCID)) {
+		if (geneInfo != null || symbol != null ) {
 			return;
+		}
+		if ( idType.equals(CopedID.IDTYPE_ACCID)) {
+			symbol = "";
+			description = "";
 		}
 		setGenInfo();
 		if (geneInfo == null) {
@@ -253,8 +257,38 @@ public abstract class AbsCopedID implements ImpleCopedID{
 	 */
 	protected abstract AgeneUniID getGenUniID(String genUniID, String dbInfo);
 
+	/**
+	 * 如果blast * 0:symbol 1:description 2:subjectTaxID 3:evalue 4:symbol 5:description 如果不blast 0:symbol 1:description
+	 * @return
+	 */
+	public String[] getAnno( boolean blast, int StaxID, double evalue) {
+		String[] tmpAnno = null;
+		if (blast) {
+			tmpAnno = new String[6];
+			for (int i = 0; i < tmpAnno.length; i++) {
+				tmpAnno[i] = "";
+			}
+			tmpAnno[0] = getSymbo(); tmpAnno[1] = getDescription(); tmpAnno[2] = StaxID + ""; 
+			CopedID copedIDBlast = getBlastCopedID(StaxID, evalue);
+			if (copedIDBlast != null) {
+				tmpAnno[3] = this.evalue + "";
+				tmpAnno[4] = copedIDBlast.getSymbo();
+				tmpAnno[5] = copedIDBlast.getDescription();
+			}
+		}
+		else {
+			tmpAnno = new String[2];
+			for (int i = 0; i < tmpAnno.length; i++) {
+				tmpAnno[i] = "";
+			}
+			tmpAnno[0] = getSymbo(); tmpAnno[1] = getDescription(); 
+		}
+		return tmpAnno;
+	}
 
 	/////////////////////////////  重写equals等  ////////////////////////////////////
+
+	
 	/**
 	 * 只要两个ncbiid的geneID相同，就认为这两个NCBIID相同
 	 * 但是如果geneID为0，也就是NCBIID根本没有初始化，那么直接返回false
@@ -297,40 +331,6 @@ public abstract class AbsCopedID implements ImpleCopedID{
 		return false;
 	}
 
-	/**
-	 * 如果blast * 0:symbol 1:description 2:subjectTaxID 3:evalue 4:symbol 5:description 如果不blast 0:symbol 1:description
-	 * @return
-	 */
-	public String[] getAnno( boolean blast, int StaxID, double evalue) {
-		String[] tmpAnno = null;
-		if (blast) {
-			tmpAnno = new String[6];
-			for (int i = 0; i < tmpAnno.length; i++) {
-				tmpAnno[i] = "";
-			}
-			tmpAnno[0] = getSymbo(); tmpAnno[1] = getDescription(); tmpAnno[2] = StaxID + ""; 
-			CopedID copedIDBlast = getBlastCopedID(StaxID, evalue);
-			if (copedIDBlast != null) {
-				tmpAnno[3] = this.evalue + "";
-				tmpAnno[4] = copedIDBlast.getSymbo();
-				tmpAnno[5] = copedIDBlast.getDescription();
-			}
-		}
-		else {
-			tmpAnno = new String[2];
-			for (int i = 0; i < tmpAnno.length; i++) {
-				tmpAnno[i] = "";
-			}
-			tmpAnno[0] = getSymbo(); tmpAnno[1] = getDescription(); 
-		}
-		
-		
-		
-		return tmpAnno;
-	}
-	
-	
-	
 	
 	/**
 	 * 重写hashcode
