@@ -179,7 +179,7 @@ public class MapReads {
 	{
 		hashChrLen = new HashMap<String, Long>();
 		this.invNum = invNum;
-		TxtReadandWrite txtChrLen = new TxtReadandWrite();
+		TxtReadandWrite txtChrLen = new TxtReadandWrite(chrLenFile, false);
 		try {
 			ArrayList<String> lsChrLen = txtChrLen.readfileLs();
 			for (String string : lsChrLen) {
