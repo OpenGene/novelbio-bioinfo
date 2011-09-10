@@ -8,13 +8,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
 import org.apache.log4j.Logger;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHashAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 不考虑内存限制的编
