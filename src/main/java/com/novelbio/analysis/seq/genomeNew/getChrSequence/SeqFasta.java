@@ -367,7 +367,23 @@ public class SeqFasta {
 	}
 	
 	
-	
+	/**
+	 * 比较两个序列是否一致，计数不一致的碱基数
+	 * 从头开始比较，可以有空格
+	 */
+	public static int compare2Seq(String seq1, String seq2) {
+		char[] chrSeq1 = seq1.trim().toLowerCase().toCharArray();
+		char[] chrSeq2 = seq2.trim().toLowerCase().toCharArray();
+		int result = 0;
+		int i = Math.min(chrSeq1.length, chrSeq2.length);
+		for (int j = 0; j < i; j++) {
+			if (chrSeq1[j] != chrSeq2[j]) {
+				result ++ ;
+			}
+		}
+		result = result + Math.max(chrSeq1.length, chrSeq2.length) - i;
+		return result;
+	}
 	
 	
 	

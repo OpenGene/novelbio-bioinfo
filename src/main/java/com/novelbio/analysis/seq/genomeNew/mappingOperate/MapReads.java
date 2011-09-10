@@ -10,6 +10,7 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHashAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
@@ -160,14 +161,9 @@ public class MapReads {
 	public MapReads(int invNum, String chrFilePath, String mapFile, String regx) 
 	{
 		hashChrLen = new HashMap<String, Long>();
-		SeqHashAbs seqHash = null; 
+		SeqHash seqHash = null; 
 		this.invNum = invNum;
-		if (FileOperate.isFile(chrFilePath)) 
-			seqHash = new SeqFastaHash(chrFilePath);
-		if (FileOperate.isFileDirectory(chrFilePath)) 
-			seqHash = new ChrStringHash(chrFilePath);
-		seqHash.setInfo(true,regx, false, "");
-		seqHash.setFile();
+		seqHash = new SeqHash(chrFilePath, regx);
 		hashChrLen = seqHash.getHashChrLength();
 		this.mapFile = mapFile;
 	}

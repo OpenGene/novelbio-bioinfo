@@ -18,9 +18,6 @@ import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-
-
-
 /**
  * 本类用来将读取fasta文本，返回Hash表。key-序列名-小写，value-序列信息
  * 将序列名中的空格全部换为下划线
@@ -29,12 +26,24 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 
 public class SeqFastaHash extends SeqHashAbs {
+	/**
+	 * @param chrFile
+	 * @param regx 序列名的正则表达式，null不设定
+	 * @param CaseChange 是否将序列名改为小写，默认为true
+	 * @param append 对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
+	 * false：如果出现重名序列，则用长的序列去替换短的序列，默认为false
+	 */
+	public SeqFastaHash(String chrFile, String regx, boolean CaseChange,
+			boolean append) {
+		super(chrFile, regx, CaseChange);
+		this.append = append;
+		setFile();
+	}
+	
+	
 	private static Logger logger = Logger.getLogger(SeqFastaHash.class);  
 
-	
-	public ArrayList<String> getLsSeqName() {
-		return lsSeqName;
-	}
+
 	/**
 	 * 将序列信息读入哈希表并返回<br>
 	 * 哈希表的键是序列名，根据情况不改变大小写或改为小写<br>
@@ -42,15 +51,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	 */
 	public HashMap<String,SeqFasta> hashSeq;
 	
-	/**
-	 * 将序列名称按顺序读入list
-	 */
-	public ArrayList<String> lsSeqName;
-	
-	boolean append;
-	public void setInfo(boolean append) {
-		this.append = append;
-	}
+	boolean append = false;
 
 	/**
 	 * 读取序列文件，将序列保存入Seqhash哈希表<br/>
@@ -150,6 +151,7 @@ public class SeqFastaHash extends SeqHashAbs {
 			}
 		 }
 	}
+	
 	/**
 	 * 输入序列信息：序列名,正反向
 	 * 返回序列
@@ -184,6 +186,7 @@ public class SeqFastaHash extends SeqHashAbs {
 		}
 		return targetChr.getsequence((int)startlocation, (int)endlocation);
 	}
+	
 	/**
 	 * 输入序列名
 	 * 输入序列坐标，起点和终点
@@ -205,23 +208,7 @@ public class SeqFastaHash extends SeqHashAbs {
 		return lsresult;
 	}
 	
-	/**
-	 * 比较两个序列是否一致，计数不一致的碱基数
-	 * 从头开始比较，可以有空格
-	 */
-	public static int compare2Seq(String seq1, String seq2) {
-		char[] chrSeq1 = seq1.trim().toLowerCase().toCharArray();
-		char[] chrSeq2 = seq2.trim().toLowerCase().toCharArray();
-		int result = 0;
-		int i = Math.min(chrSeq1.length, chrSeq2.length);
-		for (int j = 0; j < i; j++) {
-			if (chrSeq1[j] != chrSeq2[j]) {
-				result ++ ;
-			}
-		}
-		result = result + Math.max(chrSeq1.length, chrSeq2.length) - i;
-		return result;
-	}
+
 	
 	/**
 	 * 将指定长度的序列写入文本，主要用于做lastz分析,后缀名通通改为.fasta
@@ -281,7 +268,6 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * @return
 	 */
 	public static boolean testSeqLen(int seqlen, int[] len) {
-		
 		if (len[1] > 0 && len[1] < len[0]) {
 			logger.error("要求输出序列的长度上限不能小于下限");
 		}
@@ -314,23 +300,6 @@ public class SeqFastaHash extends SeqHashAbs {
 			}
 		}
 	}
-		
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

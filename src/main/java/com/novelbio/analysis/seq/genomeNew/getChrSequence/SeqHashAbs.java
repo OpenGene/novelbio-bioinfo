@@ -16,8 +16,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public abstract class SeqHashAbs implements SeqHashInt{
 	private static Logger logger = Logger.getLogger(SeqHashAbs.class);
-	
-	String Chrpatten = "Chr\\w+";
 	/**
 	 * 保存chrID和chrLength的对应关系
 	 */
@@ -26,13 +24,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * 从小到大排列chrLength的list
 	 */
 	ArrayList<String[]> lsChrLen = null;
-	/**
-	 * 结果的文件是否转化为大小写
-	 * True：小写
-	 * False：大写
-	 * null：不变
-	 */
-	Boolean TOLOWCASE = null;
+
 	/**
 	 * 给碱基对照哈希表赋值 目前有A-T， G-C，N-N 的对应关系（包括了大小写的对应） 将来可能要添加新的
 	 */
@@ -48,29 +40,52 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * 是否将序列名改为小写
 	 */
 	boolean CaseChange = true;
+//	/**
+//	 * @param chrFilePath
+//	 */
+//	public SeqHashAbs(String chrFile) 
+//	{
+//		this.chrFile = chrFile;
+//	}
+//	
+//	/**
+//	 * @param chrFile
+//	 * @param regx 序列名的正则表达式，null不设定
+//	 * @param TOLOWCASE 是否将序列结果改为小写 True：小写，False：大写，null不变
+//	 */
+//	public SeqHashAbs(String chrFile, String regx, Boolean TOLOWCASE) 
+//	{
+//		this.chrFile = chrFile;
+//		this.regx = regx;
+//		this.TOLOWCASE = TOLOWCASE;
+//	}
 	/**
-	 * @param chrFilePath
-	 * @throws Exception 
-	 * @throws IOException
-	 */
-	public SeqHashAbs(String chrFile) 
-	{
-		this.chrFile = chrFile;
-	}
-	
-	/**
-	 * @param chrFilePath
+	 * 
+	 * @param chrFile
 	 * @param regx 序列名的正则表达式，null不设定
-	 * @throws Exception 
-	 * @throws IOException
+	 * @param CaseChange 是否将序列名改为小写
+	 * @param TOLOWCASE 是否将序列结果改为小写 True：小写，False：大写，null不变
 	 */
-	public SeqHashAbs(String chrFile, String regx, Boolean TOLOWCASE) 
+	public SeqHashAbs(String chrFile, String regx,boolean CaseChange) 
 	{
 		this.chrFile = chrFile;
-		this.regx = regx;
-		this.TOLOWCASE = TOLOWCASE;
+		if (regx != null) {
+			this.regx = regx;
+		}
+		this.CaseChange = CaseChange;
 	}
 	
+	/**
+	 * 将序列名称按顺序读入list
+	 */
+	public ArrayList<String> lsSeqName;
+	/**
+	 * 获得所有序列的名字
+	 * @return
+	 */
+	public ArrayList<String> getLsSeqName() {
+		return lsSeqName;
+	}
 	/**
 	 * 返回chrID和chrLength的对应关系
 	 * chrID通通小写
@@ -164,7 +179,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	/**
 	 * 具体读取文件
 	 */
-	public void setFile()
+	protected void setFile()
 	{
 		try {
 			setChrFile();
@@ -211,7 +226,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	public String getSeq(String chrID, long startlocation, long endlocation)
 	{
 		try {
-			return getSeqCase(getSeqInfo(chrID, startlocation, endlocation), TOLOWCASE);
+			return getSeqInfo(chrID, startlocation, endlocation);
 		} catch (IOException e) {
 			return null;
 		}
@@ -245,48 +260,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	}
 
 	/**
-	 * 给出染色体编号位置和方向返回序列<br>
-	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
-	 * @param chrlocation染色体编号方向如
-	 *            ：Chr:1000-2000,自动将chrID小写,chrID采用正则表达式抓取，无所谓大小写，会自动转变为小写
-	 * @param cisseq方向
-	 *            ，true:正向 false:反向互补
-	 */
-	public String getSeq(String chrlocation, boolean cisseq) {
-		/**
-		 * 判断Chr格式是否正确，是否是有效的染色体
-		 */
-		Pattern pattern = Pattern.compile(Chrpatten, Pattern.CASE_INSENSITIVE);
-		Matcher matcher;
-		matcher = pattern.matcher(chrlocation);
-		if (!matcher.find()) {
-			logger.error("ReadSite染色体格式错误"+ chrlocation);
-			return null;
-		}
-		String chr = matcher.group();
-
-		/**
-		 * 获取起始位点和终止位点
-		 */
-		Pattern patternnumber = Pattern.compile("(?<!\\w)\\d+(?!\\w)",
-				Pattern.CASE_INSENSITIVE);
-		Matcher matchernumber;
-		matchernumber = patternnumber.matcher(chrlocation);
-		int[] location = new int[2];
-		int i = 0;
-		while (matchernumber.find()) {
-			location[i] = Integer.parseInt(matchernumber.group());
-			i++;
-		}
-		if (i > 2 || location[1] <= location[0]) {
-			logger.error(chrlocation + " " + cisseq + " 染色体位置错误");
-			return null;
-		}
-		return getSeq(cisseq, chr.toLowerCase(), location[0], location[1]);
-	}
-
-	/**
-	 * 给出peak位点，查找指定范围的sequence,chr采用正则表达式抓取，无所谓大小写，会自动转变为小写
+	 * 给出peak位点，查找指定范围的sequence，根据CaseChange改变大小写
 	 * <br>
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
 	 * @param chr
@@ -298,20 +272,10 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @param cisseq
 	 *            true:正向链 false：反向互补链
 	 */
-
 	public String getSeq(String chr, int peaklocation, int region,
 			boolean cisseq) {
-		/**
-		 * 判断Chr格式是否正确，是否是有效的染色体
-		 */
-		Pattern pattern = Pattern.compile(Chrpatten, Pattern.CASE_INSENSITIVE);
-		Matcher matcher; // matcher.groupCount() 返回此匹配器模式中的捕获组数。
-		matcher = pattern.matcher(chr);
-		if (!matcher.find()) {
-			logger.error(chr + " " + peaklocation + " " + region + " 染色体格式错误");
-			return "ReadSite染色体格式错误";
-		} else {
-			chr = matcher.group().toLowerCase();
+		if (CaseChange) {
+			chr = chr.toLowerCase();
 		}
 		int startnum = peaklocation - region;
 		int endnum = peaklocation + region;
@@ -319,7 +283,6 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	}
 
 	/**
-	 * <br>
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
 	 * @param cisseq 正反向
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
@@ -348,7 +311,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 					if (getIntron && i < lsInfo.size()-1) {
 						result = result + getSeq(chrID,exon[1]+1, lsInfo.get(i+1)[0]-1).toLowerCase();
 					}
-				} catch (IOException e) {e.printStackTrace();}
+				} catch (Exception e) {e.printStackTrace();}
 			}
 		}
 		else {
@@ -359,30 +322,16 @@ public abstract class SeqHashAbs implements SeqHashInt{
 					if (getIntron && i > 0) {
 						result = result + getSeq(chrID,exon[0] + 1, lsInfo.get(i-1)[1] - 1).toLowerCase();
 					}
-				} catch (IOException e) {e.printStackTrace();}
+				} catch (Exception e) {e.printStackTrace();}
 			}
 		}
 		if (!cisseq) {
-			result = resCompSeq(result, getCompmap());
+			result = SeqFasta.reservecom(result);
 		}
 		return result;
 	}
 	
-	/**
-	 * 根据TOLOWCASE的选项，返回相应的seq序列
-	 * @param seq
-	 * @param TOLOWCASE null：不变，false：大写，true：小写
-	 * @return
-	 */
-	protected String getSeqCase(String seq, Boolean TOLOWCASE)
-	{
-		if (TOLOWCASE == null) {
-			return seq;
-		}
-		else {
-			return TOLOWCASE.equals(true) ?  seq.toLowerCase() :  seq.toUpperCase();
-		}
-	}
+
 	
 	
 }

@@ -6,16 +6,6 @@ import java.util.HashMap;
 
 public interface SeqHashInt {
 	/**
-	 * 设定常规信息
-	 * @param CaseChange 是否将序列名转变为小写
-	 * @param regx 序列名的正则表达式，在读取ChromFa文件夹时使用，用于抓取文件夹中的所有序列文件，null不设定
-	 * 读取Chr文件夹的时候默认设定了 "\\bchr\\w*"
-	 * @param append 读取ChrID的时候没用
-	 * @param chrPattern 当输入类似chr1:1123-4567数据时将chr1提取出来的正则表达式
-	 */
-	public void setInfo(boolean CaseChange, String regx,boolean append, String chrPattern) ;
-	
-	/**
 	 * 返回chrID和chrLength的对应关系
 	 * chrID通通小写
 	 * @return
@@ -55,10 +45,6 @@ public interface SeqHashInt {
 	 * @param maxresolution
 	 */
 	public int[] getChrRes(String chrID, int maxresolution) throws Exception ;
-	/**
-	 * 具体读取文件
-	 */
-	public void setFile();
 	
 	/**
 	 * 当设定Chr文件后，可以将序列长度输出到文件 输出文件为 chrID(小写)+“\t”+chrLength+换行 不是顺序输出
@@ -85,19 +71,9 @@ public interface SeqHashInt {
 	 * @return
 	 */
 	public String getSeq(boolean cisseq, String chrID, long startlocation, long endlocation);
-
+	
 	/**
-	 * 给出染色体编号位置和方向返回序列<br>
-	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
-	 * @param chrlocation染色体编号方向如
-	 *            ：Chr:1000-2000,自动将chrID小写,chrID采用正则表达式抓取，无所谓大小写，会自动转变为小写
-	 * @param cisseq方向
-	 *            ，true:正向 false:反向互补
-	 */
-	public String getSeq(String chrlocation, boolean cisseq);
-
-	/**
-	 * 给出peak位点，查找指定范围的sequence,chr采用正则表达式抓取，无所谓大小写，会自动转变为小写
+	 * 给出peak位点，查找指定范围的sequence，根据CaseChange改变大小写
 	 * <br>
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
 	 * @param chr
@@ -109,15 +85,9 @@ public interface SeqHashInt {
 	 * @param cisseq
 	 *            true:正向链 false：反向互补链
 	 */
-
 	public String getSeq(String chr, int peaklocation, int region,
 			boolean cisseq);
 
-	/**
-	 * 输入序列，互补对照表 获得反向互补序列
-	 */
-	public String resCompSeq(String sequence,
-			HashMap<Character, Character> complementmap);
 	/**
 	 * <br>
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
@@ -127,5 +97,9 @@ public interface SeqHashInt {
 	 */
 	public String getSeq(boolean cisseq, String chrID,ArrayList<int[]> lsInfo, boolean getIntron);
 	
-
+	/**
+	 * 获得所有序列的名字
+	 * @return
+	 */
+	public ArrayList<String> getLsSeqName();
 }

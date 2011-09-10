@@ -26,7 +26,25 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class ChrStringHash extends SeqHashAbs{
 	private static Logger logger = Logger.getLogger(ChrStringHash.class);
-	String Chrpatten = "Chr\\w+";
+
+	/**
+	 * 随机硬盘读取染色体文件的方法 注意
+	 * 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
+	 * 一个文本保存一条染色体，以fasta格式保存，每个文本以">"开头，然后接下来每行固定的碱基数(如UCSC为50个，TIGRRice为60个)
+	 * 文本文件名(不考虑后缀名，当然没有后缀名也行)应该是待查找的chrID
+	 * 最后本类生成一个Hashtable--chrID(String)---SeqFile(RandomAccessFile)表<br>
+	 * 和一个Hashtable--chrID(String)---SeqFile(BufferedReader)表<br>
+	 * @param chrFilePath
+	 * @param regx 一般为"\\bchr\\w*"， 用该正则表达式去查找文件名中含有Chr的文件，每一个文件就认为是一个染色体
+	 * @param CaseChange 是否将序列名转化为小写，一般转为小写
+	 */
+	public ChrStringHash(String chrFilePath,String regx, boolean CaseChange) 
+	{
+//		super(chrFilePath, "\\bchr\\w*", TOLOWCASE);
+		super(chrFilePath, regx, CaseChange);
+		setFile();
+	}
+	
 	/**
 	 * 将染色体信息读入哈希表,按照RandomAccessFile保存，并返回 哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10
 	 * 哈希表的值是染色体的序列，其中无空格
@@ -46,33 +64,14 @@ public class ChrStringHash extends SeqHashAbs{
 	int lengthRow = 0;
 
 	
-	/**
-	 * 随机硬盘读取染色体文件的方法 注意
-	 * 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
-	 * 一个文本保存一条染色体，以fasta格式保存，每个文本以">"开头，然后接下来每行固定的碱基数(如UCSC为50个，TIGRRice为60个)
-	 * 文本文件名(不考虑后缀名，当然没有后缀名也行)应该是待查找的chrID
-	 * 最后本类生成一个Hashtable--chrID(String)---SeqFile(RandomAccessFile)表<br>
-	 * 和一个Hashtable--chrID(String)---SeqFile(BufferedReader)表<br>
-	 * 其中chrID一直为小写
-	 * 
-	 * @param chrFilePath
-	 * @throws Exception 
-	 * @throws IOException
-	 */
-	public ChrStringHash(String chrFilePath) 
-	{
-		super(chrFilePath, "\\bchr\\w*", TOLOWCASE);
-		setFile();
-	}
+	
 	/**
 	 * 设定序列文件夹
 	 * @throws FileNotFoundException 
 	 */
 	protected void setChrFile() throws Exception
 	{
-		if (!chrFile.endsWith(File.separator)) {
-			chrFile = chrFile + File.separator;
-		}
+		chrFile = FileOperate.addSep(chrFile);
 		ArrayList<String[]> lsChrFile = FileOperate.getFoldFileName(chrFile,
 				regx, "*");
 		hashChrSeqFile = new HashMap<String, RandomAccessFile>();
@@ -84,7 +83,7 @@ public class ChrStringHash extends SeqHashAbs{
 			BufferedReader bufChrSeq = null;
 			String[] chrFileName = lsChrFile.get(i);
 			String fileNam = "";
-
+			lsSeqName.add(chrFileName[0]);
 			if (chrFileName[1].equals(""))
 				fileNam = chrFile + chrFileName[0];
 			else
@@ -251,6 +250,4 @@ public class ChrStringHash extends SeqHashAbs{
 		return lengthRow;
 	}
 
-
-	
 }
