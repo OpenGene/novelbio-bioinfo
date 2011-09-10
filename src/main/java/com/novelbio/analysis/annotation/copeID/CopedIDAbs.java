@@ -246,7 +246,7 @@ public abstract class CopedIDAbs implements CopedIDInt{
 		}
 		else {
 			symbol = geneInfo.getSymbol().split("//")[0];
-			description = geneInfo.getDescription();
+			description = geneInfo.getDescription().replaceAll("\"", "");
 		}
 		if (symbol.equals("")) {
 			symbol = getGenName(getGenUniID(), databaseType);
@@ -331,7 +331,7 @@ public abstract class CopedIDAbs implements CopedIDInt{
 			if (copedIDBlast != null) {
 				tmpAnno[3] = this.evalue + "";
 				tmpAnno[4] = copedIDBlast.getSymbo();
-				tmpAnno[5] = copedIDBlast.getDescription();
+				tmpAnno[5] = copedIDBlast.getDescription().replaceAll("\"", "");
 			}
 		}
 		else {
