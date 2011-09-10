@@ -24,7 +24,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 本类用来将染色体的名字，序列装入染色体类，并且是以Hash表形式返回 目前本类中仅仅含有静态方法 同时用来提取某段位置的序列 和提取反向重复序列
  * 作者：宗杰 20090617
  */
-public class ChrStringHash extends SeqHash{
+public class ChrStringHash extends SeqHashAbs{
 	private static Logger logger = Logger.getLogger(ChrStringHash.class);
 	String Chrpatten = "Chr\\w+";
 	/**
@@ -61,7 +61,7 @@ public class ChrStringHash extends SeqHash{
 	 */
 	public ChrStringHash(String chrFilePath) 
 	{
-		super(chrFilePath,"\\bchr\\w*");
+		super(chrFilePath, "\\bchr\\w*", TOLOWCASE);
 		setFile();
 	}
 	/**
@@ -141,7 +141,7 @@ public class ChrStringHash extends SeqHash{
 	 * 
 	 * @throws IOException
 	 */
-	public String getSeq(String chrID, long startlocation, long endlocation)
+	protected String getSeqInfo(String chrID, long startlocation, long endlocation)
 			throws IOException {
 		startlocation--;
 		RandomAccessFile chrRASeqFile = hashChrSeqFile.get(chrID.toLowerCase());// 判断文件是否存在

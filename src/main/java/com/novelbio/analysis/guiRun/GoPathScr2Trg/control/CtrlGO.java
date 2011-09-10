@@ -358,6 +358,9 @@ public class CtrlGO {
 			ArrayList<String> lsGeneUp = new ArrayList<String>();
 			ArrayList<String> lsGeneDown = new ArrayList<String>();
 			for (int i = 0; i < geneID.length; i++) {
+				if (geneID[i] == null || geneID[i][colID[0]] == null || geneID[i][colID[0]].trim().equals("")) {
+					continue;
+				}
 				if (colID[0] == colID[1]) {
 					lsGeneUp.add(geneID[i][colID[0]]);
 					continue;

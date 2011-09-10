@@ -1,9 +1,12 @@
 package com.novelbio.database.updatedb;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.updatedb.database.UpDateNBCDBFile;
 import com.novelbio.database.updatedb.goextract.AffyChipGO;
@@ -13,6 +16,7 @@ import com.novelbio.database.updatedb.idconvert.GeneInfoTaxIDgetSymbol;
 import com.novelbio.database.updatedb.idconvert.NCBIIDOperate;
 import com.novelbio.database.updatedb.idconvert.RiceID;
 import com.novelbio.database.updatedb.idconvert.UniProtConvertID;
+import com.novelbio.database.updatedb.idconvert.Yeast;
 
 /**
  * 自动化升级数据库
@@ -48,7 +52,7 @@ public class RunUpDateDB {
 			String outGen2RefID = fold + "outTaxGen2RefID";
 //			copeNCBIID(taxIDFile, pathGene2accessionID, outGen2AccTaxID, 
 //					pathGene2enseb, outGen2EnsembTaxID, pathGen2Refseq, outGen2RefStat, outGen2RefID);
-//			System.out.println("copeNCBIID OK");
+			System.out.println("copeNCBIID OK");
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String uniIDmapSelect = fold + "idmapping_selected.tab";
 			String taxuniIDmapSelect = fold + "taxuniIDmapSelect";
@@ -92,7 +96,7 @@ public class RunUpDateDB {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String goterm = fold + "GO.terms_alt_ids";
 			String gene2GoFile = fold + "gene2go";
-			upDateGen2Go(goterm, taxIDFile, gene2GoFile, taxgene_associationgoa_unipro, taxuniIDmapSelect);
+//			upDateGen2Go(goterm, taxIDFile, gene2GoFile, taxgene_associationgoa_unipro, taxuniIDmapSelect);
 //			
 //			upDateAffyGo(AffyFileHuman, NovelBioConst.DBINFO_AFFY_HUMAN_U133_PLUS2, 9606);
 //			upDateAffyGo(AffyFileMouse, NovelBioConst.DBINFO_AFFY_MOUSE_430_2, 10090);
@@ -130,8 +134,19 @@ public class RunUpDateDB {
 			String tairGo = "/home/zong0jie/桌面/tairDB/ATH_GO_GOSLIM.txt/ATH_GO_GOSLIM.txt";
 			
 			
-			AthTAIR(tairAccID2NCBI, tairAccID2UniID, tairDescrip, tairGo);
+//			AthTAIR(tairAccID2NCBI, tairAccID2UniID, tairDescrip, tairGo);
 			
+			
+			
+			////////////////   酿 酒 酵 母   ////////////////////////////////
+			String DBxREF = "/home/zong0jie/桌面/yeast/dbxref.tab.Modify.txt";
+			String SGD_featuresFile = "/home/zong0jie/桌面/yeast/SGD_features.tab.txt";
+			String gene_association = "/home/zong0jie/桌面/yeast/gene_association.sgd/gene_association.sgd";
+//			SGD(DBxREF, SGD_featuresFile, gene_association);
+			//////////////  毕 赤 酵 母  ///////////////////////////////////
+			String pipasfunction1009 = "/home/zong0jie/桌面/yeast/Pichia/pipas_function-1009.txt";
+			String Pichia_GS115GO_0509 = "/home/zong0jie/桌面/yeast/Pichia/Pichia_GS115.GO_0509/Pichia_GS115.GO_0509";
+			PPA( pipasfunction1009,  Pichia_GS115GO_0509);
 			
 			
 		} catch (Exception e) {
@@ -152,35 +167,53 @@ public class RunUpDateDB {
 		String method = "RunUpDateDB.copeNCBIID";
 		//NCBIID处理
 		String parentNCBIFile = FileOperate.getParentPathName(pathGene2accessionID);
-	
-
-			String modGen2Acc = parentNCBIFile+ "/gene2accIDmodify";
+		
+		
+		String modGen2Acc = parentNCBIFile+ "/Taxgene2accID";
+		try {
+			NCBIIDOperate.tableGetTaxID(taxIDFile, pathGene2accessionID, modGen2Acc);
+			System.out.println(modGen2Acc+" ok");
+		} catch (Exception e) {
+			logupdate.fatal(method+".tableGetTaxID error:"+ taxIDFile);
+		}
+		
+		try {
+			NCBIIDOperate.gene2acID(modGen2Acc, outGen2AccTaxID);
+			System.out.println(outGen2AccTaxID+" ok");
+		} catch (Exception e) {
+			logupdate.fatal(method+".gene2acID error:"+ pathGene2accessionID);
+		}
+		
+		
+//			String modGen2Acc = parentNCBIFile+ "/gene2accIDmodify";
+//			try {
+//				NCBIIDOperate.gene2acID(pathGene2accessionID, modGen2Acc);
+//				System.out.println(modGen2Acc+" ok");
+//			} catch (Exception e) {
+//				logupdate.fatal(method+".gene2acID error:"+ pathGene2accessionID);
+//			}
+//			try {
+//				NCBIIDOperate.tableGetTaxID(taxIDFile, modGen2Acc, outGen2AccTaxID);
+//				System.out.println(outGen2AccTaxID+" ok");
+//			} catch (Exception e) {
+//				logupdate.fatal(method+".tableGetTaxID error:"+ taxIDFile);
+//			}
+//			
+			String modGen2Ens = parentNCBIFile+ "/Taxgene2ensemb";
 			try {
-				NCBIIDOperate.gene2acID(pathGene2accessionID, modGen2Acc);
-				System.out.println(modGen2Acc+" ok");
-			} catch (Exception e) {
-				logupdate.fatal(method+".gene2acID error:"+ pathGene2accessionID);
-			}
-			try {
-				NCBIIDOperate.tableGetTaxID(taxIDFile, modGen2Acc, outGen2AccTaxID);
-				System.out.println(outGen2AccTaxID+" ok");
-			} catch (Exception e) {
-				logupdate.fatal(method+".tableGetTaxID error:"+ taxIDFile);
-			}
-			
-			String modGen2Ens = parentNCBIFile+ "/gene2ensembmodify";
-			try {
-				NCBIIDOperate.gene2enseb(pathGene2enseb, modGen2Ens);
+				NCBIIDOperate.tableGetTaxID(taxIDFile, pathGene2enseb, modGen2Ens);
 				System.out.println(modGen2Ens+" ok");
-			} catch (Exception e) {
-				logupdate.fatal(method + ".gene2enseb error:"+ pathGene2enseb);
-			}
-			try {
-				NCBIIDOperate.tableGetTaxID(taxIDFile, modGen2Ens, outGen2EnsembTaxID);
-				System.out.println(outGen2EnsembTaxID+" ok");
 			} catch (Exception e) {
 				logupdate.fatal(method + ".tableGetTaxID error:"+ taxIDFile);
 			}
+			
+			try {
+				NCBIIDOperate.gene2enseb(modGen2Ens, outGen2EnsembTaxID);
+				System.out.println(outGen2EnsembTaxID+" ok");
+			} catch (Exception e) {
+				logupdate.fatal(method + ".gene2enseb error:"+ pathGene2enseb);
+			}
+
 			
 			String modGen2RefStat = parentNCBIFile+ "/gene2RefseqStatmodify";
 			String modGen2RefID = parentNCBIFile+ "/gene2RefIDmodify";
@@ -333,13 +366,13 @@ public class RunUpDateDB {
 		
 		String parentNCBIFile = FileOperate.getParentPathName(gene2GoFile);
 		String taxGeneInfoFile = parentNCBIFile+ "/taxGene2GoFile";
-//		NCBIIDOperate.tableGetTaxID(taxIDfile, gene2GoFile, taxGeneInfoFile);
+		NCBIIDOperate.tableGetTaxID(taxIDfile, gene2GoFile, taxGeneInfoFile);
 		System.out.println(taxGeneInfoFile+ " ok");
-//		UpDateNBCDBFile.upDateGene2Go(taxGeneInfoFile);
+		UpDateNBCDBFile.upDateGene2Go(taxGeneInfoFile);
 		System.out.println(taxGeneInfoFile+ " ok");
-//		UpDateNBCDBFile.upDateGene2GoUniProtgene_associationgoa_uniprot(taxgene_associationgoa_unipro);
+		UpDateNBCDBFile.upDateGene2GoUniProtgene_associationgoa_uniprot(taxgene_associationgoa_unipro);
 		System.out.println(taxgene_associationgoa_unipro+ " ok");
-//		UniProtConvertID.upDateUniGo(taxuniIDmapSelect);
+		UniProtConvertID.upDateUniGo(taxuniIDmapSelect);
 		System.out.println(taxuniIDmapSelect+ " ok");
 	}
 	public static void upDateAffyGo(String affyFile,String affyDBInfo,int taxID) throws Exception
@@ -409,20 +442,36 @@ public class RunUpDateDB {
 	
 	public static void AthTAIR(String tairAccID2NCBI, String tairAccID2UniID, String tairDescrip, String tairGo) {
 		ArabidopsisTair arabidopsisTair = new ArabidopsisTair();
-//		arabidopsisTair.updateID(tairAccID2NCBI);
-//		arabidopsisTair.updateID(tairAccID2UniID);
-//		arabidopsisTair.addGenInfo(tairDescrip);
+		arabidopsisTair.updateID(tairAccID2NCBI);
+		arabidopsisTair.updateID(tairAccID2UniID);
+		arabidopsisTair.addGenInfo(tairDescrip);
 		try {
 			arabidopsisTair.addGO(tairGo);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
-		
 	}
+	
+	public static void SGD(String DBxREF, String SGD_featuresFile, String gene_association)
+	{
+//		Yeast.copeID(DBxREF, DBxREF+"out",false);
+//		Yeast.copeID(DBxREF+"out",DBxREF+"out2",true);
+//		Yeast.copeID(SGD_featuresFile);
+//		Yeast.setGO(gene_association);
+	}
+	
+	public static void PPA(String pipasfunction1009, String Pichia_GS115GO_0509)
+	{
+//		Yeast.PpaID(pipasfunction1009);
+		Yeast.PpaGO(Pichia_GS115GO_0509);
+	}
+
+	
+	
+	
+	
+	
 	
 	
 	

@@ -36,6 +36,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import org.jdesktop.application.Application;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastAnno;
@@ -67,6 +68,7 @@ public class GuiBlastJpanel extends JPanel{
 	private JRadioButton jRadioButtonGO;
 	private ButtonGroup buttonGroup1;
 	private JScrollPane jScrlGOTable;
+	private JComboBox jCmbSpeciesBlast;
 	private JComboBox jComGOClassSelect;
 	private JLabel jLabelTax;
 	private JComboBox jCobTaxSelect;
@@ -78,8 +80,6 @@ public class GuiBlastJpanel extends JPanel{
 	private JButton jBtnSaveGO;
 	private JSeparator jSeparator1;
 	private JButton jBtnSaveAno;
-
-	private AbstractAction abstractAction1;
 	private JButton jBtnGetFile;
 	private JCheckBox jChBlast;
 	private JTable jTabFAnno;
@@ -89,31 +89,30 @@ public class GuiBlastJpanel extends JPanel{
 	private DefaultTableModel jTabGoandPath;
 	
 	static int QtaxID = 0;//查询物种ID
+//	static int StaxID = 4932;//blast物种ID
 	static int StaxID = 9606;//blast物种ID
 	String GoClass = "";
-	
-	static GuiBlastJpanel guiBlastJpanel;
 	
 	/**
 	 * 一次最多查询的个数
 	 */
 	static int numLimit = 100000;
 	
-	public static GuiBlastJpanel getGuiBlastJpanel() 
-	{
-		if (guiBlastJpanel == null) {
-			guiBlastJpanel = new GuiBlastJpanel();
-			GroupLayout jPanBlastLayout = new GroupLayout((JComponent)guiBlastJpanel);
-			guiBlastJpanel.setLayout(jPanBlastLayout);
+	GuiBlastJpanel jBlastJpanel = null;
+	public GuiBlastJpanel() {
+			GroupLayout jPanBlastLayout = new GroupLayout((JComponent)this);
+			setLayout(jPanBlastLayout);
+			
 
-
-			guiBlastJpanel.setPreferredSize(new java.awt.Dimension(1046, 630));
-			guiBlastJpanel.setAlignmentX(0.0f);
-			guiBlastJpanel.setComponent();
-			guiBlastJpanel.setGroup(jPanBlastLayout);
-		}
-		return guiBlastJpanel;
+			this.setPreferredSize(new java.awt.Dimension(1046, 630));
+			setAlignmentX(0.0f);
+			setComponent();
+			setGroup(jPanBlastLayout);
+			Application.getInstance().getContext().getResourceMap(getClass()).injectComponents(this);
+			jBlastJpanel = this;
+		
 	}
+	
 	private void setComponent() {
 		buttonGroup1 = new ButtonGroup();
 		{
@@ -139,8 +138,9 @@ public class GuiBlastJpanel extends JPanel{
 		}
 		{
 			jChBlast = new JCheckBox();
-			jChBlast.setText("blast2human");
+			;
 			jChBlast.setMargin(new java.awt.Insets(0, 0, 0, 0));
+			jChBlast.setName("jChBlast");
 		}
 		{
 			jScrollPane1 = new JScrollPane();
@@ -212,11 +212,13 @@ public class GuiBlastJpanel extends JPanel{
 				        .addGroup(jPanBlastLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				            .addComponent(jChBlast, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
 				            .addComponent(getJBtnSaveAno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				            .addComponent(getJBtnAnno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+				            .addComponent(getJBtnAnno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+				            .addComponent(getJCmbSpeciesBlast(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE))
 				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				        .addComponent(getJSeparator1(), GroupLayout.PREFERRED_SIZE, 6, GroupLayout.PREFERRED_SIZE)
-				        .addGap(6))
+				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))
 				    .addComponent(jScroxTxtGeneID, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 274, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addGroup(jPanBlastLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				    .addComponent(getJBtnSaveGO(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 				    .addComponent(getJRadioButtonGO(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -228,58 +230,60 @@ public class GuiBlastJpanel extends JPanel{
 				.addComponent(getJScrlGOTable(), GroupLayout.PREFERRED_SIZE, 264, GroupLayout.PREFERRED_SIZE)
 				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 1, Short.MAX_VALUE)
 				.addComponent(getJProgressBar1(), GroupLayout.PREFERRED_SIZE, 9, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap());
+				.addGap(6));
 			jPanBlastLayout.setHorizontalGroup(jPanBlastLayout.createParallelGroup()
-				.addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-				    .addComponent(getJProgressBar1(), 0, 1034, Short.MAX_VALUE)
-				    .addContainerGap())
-				.addGroup(jPanBlastLayout.createSequentialGroup()
-				    .addGap(7)
-				    .addGroup(jPanBlastLayout.createParallelGroup()
-				        .addGroup(jPanBlastLayout.createSequentialGroup()
-				            .addGroup(jPanBlastLayout.createParallelGroup()
-				                .addComponent(getJLbGOandPath(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 205, GroupLayout.PREFERRED_SIZE)
-				                .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-				                    .addComponent(jScroxTxtGeneID, GroupLayout.PREFERRED_SIZE, 199, GroupLayout.PREFERRED_SIZE)
-				                    .addGap(6))
-				                .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-				                    .addComponent(jLbGeneID, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
-				                    .addComponent(jBtnGetFile, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
-				                    .addGap(6)))
-				            .addGroup(jPanBlastLayout.createParallelGroup()
-				                .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-				                    .addComponent(getJBtnGoPath(), GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
-				                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				                    .addGroup(jPanBlastLayout.createParallelGroup()
-				                        .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-				                            .addComponent(getJRadioButtonGO(), GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE)
-				                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				                            .addComponent(getJCmbGOClassSelect(), 0, 296, Short.MAX_VALUE)
-				                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				                            .addComponent(getJRadioButtonPath(), GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
-				                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				                            .addGroup(jPanBlastLayout.createParallelGroup()
-				                                .addComponent(getJBtnSaveGO(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
-				                                .addComponent(getJBtnSaveAno(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
-				                            .addGap(47))
-				                        .addComponent(getJSeparator1(), GroupLayout.Alignment.LEADING, 0, 721, Short.MAX_VALUE)))
-				                .addComponent(jScrollPane1, GroupLayout.Alignment.LEADING, 0, 822, Short.MAX_VALUE)
-				                .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-				                    .addGroup(jPanBlastLayout.createParallelGroup()
-				                        .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-				                            .addGap(24)
-				                            .addComponent(getJLblCond(), GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE))
-				                        .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-				                            .addComponent(jChBlast, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE)
-				                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				                            .addComponent(getJBtnAnno(), GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
-				                            .addGap(122)))
-				                    .addGap(0, 113, Short.MAX_VALUE)
-				                    .addComponent(getJLabelTax(), GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
-				                    .addComponent(getJCobTaxSelect(), GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE)
-				                    .addGap(6))))
-				        .addComponent(getJScrlGOTable(), GroupLayout.Alignment.LEADING, 0, 1027, Short.MAX_VALUE))
-				    .addContainerGap()));
+			.addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+			    .addComponent(getJProgressBar1(), 0, 1034, Short.MAX_VALUE)
+			    .addContainerGap())
+			.addGroup(jPanBlastLayout.createSequentialGroup()
+			    .addGap(7)
+			    .addGroup(jPanBlastLayout.createParallelGroup()
+			        .addGroup(jPanBlastLayout.createSequentialGroup()
+			            .addGroup(jPanBlastLayout.createParallelGroup()
+			                .addComponent(getJLbGOandPath(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 205, GroupLayout.PREFERRED_SIZE)
+			                .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+			                    .addComponent(jScroxTxtGeneID, GroupLayout.PREFERRED_SIZE, 199, GroupLayout.PREFERRED_SIZE)
+			                    .addGap(6))
+			                .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+			                    .addComponent(jLbGeneID, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
+			                    .addComponent(jBtnGetFile, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
+			                    .addGap(6)))
+			            .addGroup(jPanBlastLayout.createParallelGroup()
+			                .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+			                    .addComponent(getJBtnGoPath(), GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
+			                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+			                    .addGroup(jPanBlastLayout.createParallelGroup()
+			                        .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+			                            .addComponent(getJRadioButtonGO(), GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE)
+			                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+			                            .addComponent(getJCmbGOClassSelect(), 0, 296, Short.MAX_VALUE)
+			                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+			                            .addComponent(getJRadioButtonPath(), GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
+			                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+			                            .addGroup(jPanBlastLayout.createParallelGroup()
+			                                .addComponent(getJBtnSaveGO(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
+			                                .addComponent(getJBtnSaveAno(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
+			                            .addGap(47))
+			                        .addComponent(getJSeparator1(), GroupLayout.Alignment.LEADING, 0, 721, Short.MAX_VALUE)))
+			                .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+			                    .addGroup(jPanBlastLayout.createParallelGroup()
+			                        .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+			                            .addComponent(jChBlast, GroupLayout.PREFERRED_SIZE, 67, GroupLayout.PREFERRED_SIZE)
+			                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+			                            .addComponent(getJCmbSpeciesBlast(), 0, 227, Short.MAX_VALUE)
+			                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+			                            .addComponent(getJBtnAnno(), GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE))
+			                        .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
+			                            .addGap(24)
+			                            .addComponent(getJLblCond(), GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE)
+			                            .addGap(66)))
+			                    .addGap(0, 41, GroupLayout.PREFERRED_SIZE)
+			                    .addComponent(getJLabelTax(), GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+			                    .addComponent(getJCobTaxSelect(), GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE)
+			                    .addGap(6))
+			                .addComponent(jScrollPane1, GroupLayout.Alignment.LEADING, 0, 822, Short.MAX_VALUE)))
+			        .addComponent(getJScrlGOTable(), GroupLayout.Alignment.LEADING, 0, 1027, Short.MAX_VALUE))
+			    .addContainerGap()));
 	}
 	
 	
@@ -393,7 +397,7 @@ public class GuiBlastJpanel extends JPanel{
 								jTabFAnno.setModel(jTabAnno);
 							}
 						}
-						ctrlAnno = new CtrlBlastAnno(blast, QtaxID, StaxID, 1e-10, guiBlastJpanel);
+						ctrlAnno = new CtrlBlastAnno(blast, QtaxID, StaxID, 1e-10,jBlastJpanel );
 						ctrlAnno.prepare(lsGenID2);
 						ctrlAnno.execute();
 						
@@ -475,7 +479,7 @@ public class GuiBlastJpanel extends JPanel{
 								jTabFGoandPath.setModel(jTabGoandPath);
 							}
 						}
-						ctrlGo = new CtrlBlastGo(blast, QtaxID, StaxID, 1e-10, guiBlastJpanel,GoClass);
+						ctrlGo = new CtrlBlastGo(blast, QtaxID, StaxID, 1e-10, jBlastJpanel,GoClass);
 						ctrlGo.prepare(lsGenID2);
 						ctrlGo.execute();
 						//ctrlAnno.done();
@@ -510,7 +514,7 @@ public class GuiBlastJpanel extends JPanel{
 								jTabFGoandPath.setModel(jTabGoandPath);
 							}
 						}
-						ctrlPath = new CtrlBlastPath(blast, QtaxID, StaxID, 1e-10, guiBlastJpanel);
+						ctrlPath = new CtrlBlastPath(blast, QtaxID, StaxID, 1e-10, jBlastJpanel);
 						ctrlPath.prepare(lsGenID2);
 						ctrlPath.execute();
 						//ctrlAnno.done();
@@ -698,6 +702,74 @@ public class GuiBlastJpanel extends JPanel{
 		}
 		return jComGOClassSelect;
 	}
+	
+	private JComboBox getJCmbSpeciesBlast() {
+//		if(jCmbSpeciesBlast == null) {
+//			ComboBoxModel jCmbSpeciesBlastModel = 
+//				new DefaultComboBoxModel(
+//						new String[] { "Item One", "Item Two" });
+//			jCmbSpeciesBlast = new JComboBox();
+//			jCmbSpeciesBlast.setModel(jCmbSpeciesBlastModel);
+//		}
+//		return jCmbSpeciesBlast;
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+		
+
+		if(jCmbSpeciesBlast == null) {
+			final HashMap<String, Integer> hashTaxID = CtrlNormal.getSpecies();
+			
+			String[] speciesarray = new String[hashTaxID.size()];
+			int i = 0;
+			Set<String> keys = hashTaxID.keySet();
+			for(String key:keys)
+			{
+				speciesarray[i] = key; i++;
+			}
+			ComboBoxModel jCobTaxSelectModel = 
+				new DefaultComboBoxModel(speciesarray);
+			jCmbSpeciesBlast = new JComboBox();
+			jCmbSpeciesBlast.setModel(jCobTaxSelectModel);
+			String species = (String) jCmbSpeciesBlast.getSelectedItem();
+			if (hashTaxID.get(species) == null) {
+				StaxID = 0;
+			}
+			else {
+				StaxID =hashTaxID.get(species);
+			}
+			jCmbSpeciesBlast.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					String species = (String) jCmbSpeciesBlast.getSelectedItem();
+					if (hashTaxID.get(species) == null) {
+						StaxID = 0;
+					}
+					else {
+						StaxID =hashTaxID.get(species);
+					}
+				}
+			});
+		}
+		return jCmbSpeciesBlast;
+	
+	}
+
+//	private void initGUI() {
+//		try {
+//			{
+//				this.setPreferredSize(new java.awt.Dimension(754, 388));
+//			}
+//		} catch(Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	NBCJDialog nbcjDialog;
 }

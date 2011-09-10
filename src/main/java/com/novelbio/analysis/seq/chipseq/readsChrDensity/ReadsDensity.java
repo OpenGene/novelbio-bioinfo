@@ -9,7 +9,7 @@ import com.novelbio.analysis.seq.genome.GffChrUnion;
 import com.novelbio.analysis.seq.genome.getChrSequence.ChrSearch;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHashAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -21,14 +21,14 @@ public class ReadsDensity
 	GffChrUnion gffChrUnion=new GffChrUnion();
 	GffChrUnion gffChrUnion2=null;
 	
-	SeqHash seqHash = null;
+	SeqHashAbs seqHash = null;
 	/**
 	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
 	 * @param regx 序列名的正则表达式，null不设定 读取Chr文件夹的时候默认设定了 "\\bchr\\w*"
 	 */
-	private SeqHash getSeqInfo(String chrFilePath, String regx) 
+	private SeqHashAbs getSeqInfo(String chrFilePath, String regx) 
 	{
-		SeqHash seqHash = null; 
+		SeqHashAbs seqHash = null; 
 		if (FileOperate.isFile(chrFilePath)) 
 			seqHash = new SeqFastaHash(chrFilePath);
 		if (FileOperate.isFileDirectory(chrFilePath)) 

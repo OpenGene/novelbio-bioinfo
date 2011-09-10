@@ -119,7 +119,7 @@ public class PeakLOC extends GenomeBasePrepare{
 			String txtResultFile) throws Exception 
 	{
 		TxtReadandWrite txtPeakFile = new TxtReadandWrite(); txtPeakFile.setParameter(txtFile, false, true);
-		ArrayList<String[]> LOCIDInfo = txtPeakFile.ExcelRead(sep, rowStart, 1, txtPeakFile.ExcelRows(), txtPeakFile.ExcelColumns(rowStart, sep), -1);
+		ArrayList<String[]> LOCIDInfo = txtPeakFile.ExcelRead(sep, rowStart, 1, txtPeakFile.ExcelRows(), txtPeakFile.ExcelColumns(sep), -1);
 		String[] title = LOCIDInfo.get(0);
 		String[] titleNew = new String[title.length + 2];
 		for (int i = 0; i < title.length; i++) {

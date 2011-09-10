@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.novelbio.database.entity.friceDB.AgeneUniID;
 
-public class CopedIDacc extends AbsCopedID{
+public class CopedIDacc extends CopedIDAbs{
 	 
 
 	

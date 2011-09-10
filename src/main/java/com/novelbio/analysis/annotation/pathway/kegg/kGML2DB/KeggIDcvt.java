@@ -37,7 +37,7 @@ public class KeggIDcvt {
 		while ((content=reader.readLine())!=null) 
 		{
 			String[] ss=content.split("\t"); 
-			long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").trim());
+			long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim());
 			NCBIID ncbiid=new NCBIID();
 			ncbiid.setGeneId(geneID);
 			ArrayList<NCBIID> lsNcbiids=DaoFSNCBIID.queryLsNCBIID(ncbiid);
@@ -59,7 +59,10 @@ public class KeggIDcvt {
 			String kegID=ss[0];long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").trim());
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
 			kgiDgen2Keg.setGeneID(geneID);kgiDgen2Keg.setKeggID(kegID);kgiDgen2Keg.setTaxID(TaxID);
-			DaoKIDgen2Keg.InsertKGIDgen2Keg(kgiDgen2Keg);
+			if (DaoKIDgen2Keg.queryLsKGIDgen2Keg(kgiDgen2Keg) == null || DaoKIDgen2Keg.queryLsKGIDgen2Keg(kgiDgen2Keg).size() == 0) {
+				DaoKIDgen2Keg.InsertKGIDgen2Keg(kgiDgen2Keg);
+			}
+			
 		}
 	}
 	
@@ -103,7 +106,9 @@ public class KeggIDcvt {
 			String kegID=ss[0];String ko=ss[1].trim();
 			KGIDkeg2Ko kgDkeg2Ko=new KGIDkeg2Ko();
 			kgDkeg2Ko.setKeggID(kegID);kgDkeg2Ko.setKo(ko);kgDkeg2Ko.setTaxID(TaxID);
-			DaoKIDKeg2Ko.InsertKGIDkeg2Ko(kgDkeg2Ko);
+			if (DaoKIDKeg2Ko.queryLsKGIDkeg2Ko(kgDkeg2Ko) == null || DaoKIDKeg2Ko.queryLsKGIDkeg2Ko(kgDkeg2Ko).size() == 0) {
+				DaoKIDKeg2Ko.InsertKGIDkeg2Ko(kgDkeg2Ko);
+			}
 		}
 	}
 	

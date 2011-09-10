@@ -2,9 +2,11 @@ package com.novelbio.analysis.annotation.pathway.kegg.pathEntity;
 
 import java.util.ArrayList;
 
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.database.DAO.KEGGDAO.DaoKIDgen2Keg;
 import com.novelbio.database.DAO.KEGGDAO.DaoKNIdKeg;
 import com.novelbio.database.entity.kegg.KGIDgen2Keg;
+import com.novelbio.database.entity.kegg.KGpathway;
 import com.novelbio.database.entity.kegg.noGene.KGNIdKeg;
 
 public class KeggInfoAccID extends KeggInfoAbs{
@@ -41,4 +43,6 @@ public class KeggInfoAccID extends KeggInfoAbs{
 	{
 		return null;
 	}
+
+
 }

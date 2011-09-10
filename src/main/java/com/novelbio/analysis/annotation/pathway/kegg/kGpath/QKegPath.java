@@ -85,10 +85,15 @@ and taxID=#{taxID}
 			if(blastInfo2!=null&&blastInfo2.getEvalue()<=evalue)
 			{
 				int queryTaxID=blastInfo2.getQueryTax();
-				kGen2Path.setBlastInfo(blastInfo2);
 				//用blast到的geneID去搜索kegg数据库,获得subject的KO信息
 				NCBIID ncbiidSubject = new NCBIID();
-				ncbiidSubject.setGeneId(Integer.parseInt(blastInfo2.getSubjectID()));
+				try {
+					ncbiidSubject.setGeneId(Integer.parseInt(blastInfo2.getSubjectID()));
+				} catch (Exception e) {
+					return kGen2Path;
+				}
+				kGen2Path.setBlastInfo(blastInfo2);
+				
 				KGCgen2Ko kgCgen2Ko = DaoKCdetail.queryGen2Ko(ncbiidSubject);
 				ArrayList<KGentry> lsKGentriesSubject=null;
 				//如果找到ko了

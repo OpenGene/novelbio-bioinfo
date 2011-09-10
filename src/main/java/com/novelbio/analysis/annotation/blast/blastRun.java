@@ -17,7 +17,9 @@ public class blastRun {
 //			Blast2DB.getSeqForBlast("/home/zong0jie/×ÀÃæ/tairDB/seq/TAIR10_pep_20101214", false, "AT\\wG\\d{5}", false, "/home/zong0jie/×ÀÃæ/tairDB/seq/TAIR10_pep_Modify");
 //			Blast2DB.copeBlastResult("/media/winE/Bioinformatics/BLAST/result/rice/tigrrice2tairath", 39947, 3702, NovelBioConst.DBINFO_RICE_TIGR, NovelBioConst.DBINFO_ATH_TAIR, 
 //					"/media/winE/Bioinformatics/BLAST/result/rice/tigrrice2tairath_modify", false, null);
-			UpDateNBCDBFile.upDateBlastInfo("/media/winE/Bioinformatics/BLAST/result/rice/tigrrice2tairath_modify");
+//			Blast2DB.copeBlastResult("/media/winE/Bioinformatics/BLAST/result/Pichia/pichia2SSC.txt", 644223, 4932, NovelBioConst.DBINFO_PPA_NCBI_ID, 
+//					NovelBioConst.DBINFO_SSC_ID, "/media/winE/Bioinformatics/BLAST/result/Pichia/pichia2SSC_Coped.txt", false, null);
+			UpDateNBCDBFile.upDateBlastInfo("/media/winE/Bioinformatics/BLAST/result/Pichia/pichia2SSC_Coped.txt");
 			System.out.println("ok");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

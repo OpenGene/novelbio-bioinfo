@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,6 +17,8 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -42,7 +45,8 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
 	 * @param invNum 每隔多少位计数
 	 * @param tagLength 设定双端readsTag拼起来后长度的估算值，大于20才会进行设置。目前solexa双端送样长度大概是200-400bp，不用太精确 ,默认是400
-	 * @param uniqReads 同一位点的重复是否仅保留一个
+	 * @param startCod uniqReads 同一位点的重复是否仅保留一个
+	 * @param 从起点开始读取几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
 	 * @param colUnique UniqueMapping的标记在哪一列
 	 * @param cis5To3 是否挑选某一个方向的reads
 	 */
@@ -80,7 +84,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		}
 		System.out.println("进行分析的基因数目：" + GeneEndDensity.length);
 		HeatChart map = new HeatChart(GeneEndDensity2,0,200);
-		map.setTitle("ATGsit: "+ AtgUp+1 );
+		map.setTitle("ATGsit: "+ (AtgUp/3 +1) );
 		map.setXAxisLabel("X Axis");
 		map.setYAxisLabel("Y Axis");
 //		int[] aa = new String[]{"a","b","c","d","e","f"};
@@ -141,11 +145,15 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	/**
 	 * 仅仅针对韩燕做的分析，按照5UTR的长度进行排序，从小到大排列，然后
 	 * @param lsAtg key 5UTR的长度，value，总共序列的长度，第一位为atg绝对位点
+	 * @param AtgUp 选取ATG上游多少bp，不包括ATG位点 -1为全选 最后对齐位点的上游多少bp，不包括对起位点
+	 * @param AtgDown 选取ATG下游多少bp,不包括ATG位点。 -1为全选 选取对齐位点的下游多少bp，不包括对齐位点
 	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0
 	 */
 	protected ArrayList<SeqInfo> setMatrix(ArrayList<SeqInfo> lsAtg, int AtgUp, int AtgDown, int filled) {
 		int maxGeneBody = 0;
+		//获得最长的UTR长度
 		atgAlign = getAtgAlign(lsAtg);//要用atg做alignment的，内部还进行了排序
+		//获得最长的ATG下游长度,不包括ATG位点
 		for (SeqInfo ds : lsAtg) {
 			if (ds.atg.length-1 - ds.atg[0] > maxGeneBody) {
 				maxGeneBody = (int) (ds.atg.length-1 - ds.atg[0]);
@@ -153,11 +161,43 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		}
 		ArrayList<SeqInfo> lsdouble = new ArrayList<SeqInfo>();
 		for (SeqInfo ds : lsAtg) {
+			//此时的SeqInfo第一位就是实际的第一位，不是atgsite了
 			SeqInfo tmpResult = setDouble(ds, atgAlign, maxGeneBody, AtgUp, AtgDown, filled);
 			lsdouble.add(tmpResult);
 		}
+		//////////////////////
+		combineLoc(lsdouble, AtgUp,atgAlign);
+		
+		//////////////////////
 		return lsdouble;
 	}
+	/**
+	 * 将三个碱基合并为1个coding
+	 * @param AtgUp 选取ATG上游多少bp，不包括ATG位点 -1为全选 最后对齐位点的上游多少bo，不包括对起位点
+	 * @param AlignATGSite 最长ATG的位点的绝对位置，需要对齐位点前面的长度
+	 */
+	private  void combineLoc(ArrayList<SeqInfo> lsdouble, int AtgUp, int AlignATGSite)
+	{
+		//此时的SeqInfo第一位就是实际的第一位，不是atgsite了
+		
+		ArrayList<SeqInfo> lsResult = new ArrayList<SeqInfo>();
+		
+		for (SeqInfo seqInfo : lsdouble) {
+			
+			if (AtgUp > 0) {
+				seqInfo.atg = MathComput.mySpline(seqInfo.atg, 3, AtgUp%3 + 1, 3);
+			}
+			else {
+				seqInfo.atg = MathComput.mySpline(seqInfo.atg, 3, (AlignATGSite-1)%3, 3);
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
 	/**
 	 * 获得最大atg位点的值
 	 * @param lsAtg value，总共序列的长度，第一位为atg绝对位点
@@ -186,7 +226,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	/**
 	 * 将输入的数组重排列
 	 * @param input 输入数组，第一位为atg绝对位点,也就是需要对齐的位点
-	 * @param alignATGSite 最长ATG的位点的前一位，需要对齐位点前面的长度--最长的那个有多长
+	 * @param alignATGSite 最长ATG的位点的绝对位置，需要对齐位点前面的长度
 	 * @param ATGbody Atg下游总共多长，不包括Atg位点,需要对齐位点的下游有多长
 	 * @param atgUp 选取ATG上游多少bp，不包括ATG位点 -1为全选 最后对齐位点的上游多少bo，不包括对起位点
 	 * @param alignDown 选取ATG下游多少bp,不包括ATG位点。 -1为全选 选取对齐位点的下游多少bp，不包括对齐位点
@@ -201,7 +241,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 			if (atgUp > 0) 
 				tmpresult = new double[atgUp+alignDown+1];
 			else 
-				tmpresult = new double[alignATGSite+alignDown+1];
+				tmpresult = new double[alignATGSite+alignDown];
 		}
 		else {
 			if (atgUp > 0) 
@@ -225,7 +265,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		else {
 			if (atgOld > atgUp) {
 				int k = 0;
-				for (int i = atgOld - atgUp; i < input.atg.length-1; i++) {
+				for (int i = atgOld - atgUp - 1; i < input.atg.length-1; i++) {
 					 if (k >= tmpresult.length) {
 							break;
 					 }
@@ -235,7 +275,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 			}
 			else {
 				int k = 1;
-				for (int i = atgUp - atgOld; i < tmpresult.length; i++) {
+				for (int i = atgUp - atgOld + 1; i < tmpresult.length; i++) {
 					if (k >= input.atg.length) {
 						break;
 					}
@@ -249,6 +289,73 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		seqInfo.seqName = input.seqName;
 		return seqInfo;
 	}
+	
+	
+	/**
+	 * 将输入的数组重排列
+	 * @param input 输入数组，第一位为atg绝对位点,也就是需要对齐的位点
+	 * @param alignATGSite 最长ATG的位点的绝对位置，需要对齐位点前面的长度
+	 * @param ATGbody Atg下游总共多长，不包括Atg位点,需要对齐位点的下游有多长
+	 * @param atgUp 选取ATG上游多少bp，不包括ATG位点 -1为全选 最后对齐位点的上游多少bo，不包括对起位点
+	 * @param alignDown 选取ATG下游多少bp,不包括ATG位点。 -1为全选 选取对齐位点的下游多少bp，不包括对齐位点
+	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0 空位用什么填充
+	 * @return
+	 */
+	public static double[] setDouble(double[] atg, int alignATGSite, int ATGbody ,int atgUp, int alignDown,int filled ) {
+		int atgOld = (int)atg[0];
+		int bias = alignATGSite - atgOld;
+		double[] tmpresult = null;
+		if (alignDown > 0) {
+			if (atgUp > 0) 
+				tmpresult = new double[atgUp+alignDown+1];
+			else 
+				tmpresult = new double[alignATGSite+alignDown];
+		}
+		else {
+			if (atgUp > 0) 
+				tmpresult = new double[atgUp+ATGbody+1];
+			else 
+				tmpresult = new double[alignATGSite+ATGbody];			
+		}
+		//用-1充满数组
+		for (int i = 0; i < tmpresult.length; i++) {
+			tmpresult[i] = filled;
+		}
+		//正式计算	
+		if (atgUp < 0) {
+			for (int i = 0; i < atg.length-1; i++) {
+				if (i+bias >= tmpresult.length) {
+					break;
+				}
+				tmpresult[i+bias] = atg[i+1];
+			}
+		}
+		else {
+			if (atgOld > atgUp) {
+				int k = 0;
+				for (int i = atgOld - atgUp - 1; i < atg.length-1; i++) {
+					 if (k >= tmpresult.length) {
+							break;
+					 }
+					 tmpresult[k] = atg[i+1];
+					 k++;
+				}
+			}
+			else {
+				int k = 1;
+				for (int i = atgUp - atgOld + 1; i < tmpresult.length; i++) {
+					if (k >= atg.length) {
+						break;
+					}
+					tmpresult[i] = atg[k];
+					k++;
+				}
+			}
+		}
+		return tmpresult;
+	}
+	
+	
 	/**
 	 *	给定转录本，返回该转录本的mRNA水平坐标
 	 * @param chrID

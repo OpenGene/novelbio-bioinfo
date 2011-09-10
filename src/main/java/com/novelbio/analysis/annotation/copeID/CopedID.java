@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
+import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
 import com.novelbio.database.DAO.FriceDAO.DaoFSTaxID;
@@ -14,6 +15,7 @@ import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.TaxInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.entity.kegg.KGpathway;
 import com.novelbio.database.service.ServAnno;
 
 /**
@@ -25,12 +27,12 @@ import com.novelbio.database.service.ServAnno;
  * 
  * @author zong0jie
  */
-public class CopedID implements ImpleCopedID{
+public class CopedID implements CopedIDInt{
 	public final static String IDTYPE_ACCID = "accID"; 
 	public final static String IDTYPE_GENEID = "geneID";
 	public final static String IDTYPE_UNIID = "uniID";
 
-	private AbsCopedID copedID;
+	private CopedIDAbs copedID;
 
 	/**
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
@@ -160,8 +162,8 @@ public class CopedID implements ImpleCopedID{
 	
 	
 	@Override
-	public BlastInfo getBlastInfo(int StaxID, double evalue) {
-		return copedID.getBlastInfo(StaxID, evalue);
+	public BlastInfo setBlastInfo(int StaxID, double evalue) {
+		return copedID.setBlastInfo(StaxID, evalue);
 	}
 
 	@Override
@@ -169,11 +171,6 @@ public class CopedID implements ImpleCopedID{
 		return copedID.getBlastCopedID(StaxID, evalue);
 	}
 
-	@Override
-	public ArrayList<CopedID> getBlastCopedID(double evalue, int... StaxID) {
-		return copedID.getBlastCopedID(evalue, StaxID);
-	}
-	
 	@Override
 	public String getIDtype() {
 		return copedID.getIDtype();
@@ -221,7 +218,39 @@ public class CopedID implements ImpleCopedID{
 	public String[] getAnno(boolean blast, int StaxID, double evalue) {
 		return copedID.getAnno(blast, StaxID, evalue);
 	}
+	@Override
+	public KeggInfo getKeggInfo() {
+		return copedID.getKeggInfo();
+	}
 
+	@Override
+	public ArrayList<CopedID> getBlastLsCopedID() {
+		return copedID.getBlastLsCopedID();
+	}
+
+	@Override
+	public ArrayList<KGpathway> getBlastKegPath() {
+		return copedID.getBlastKegPath();
+	}
+
+	@Override
+	public ArrayList<KGpathway> getBlastKegPath(CopedID copedID) {
+		return copedID.getBlastKegPath(copedID);
+	}
+
+	@Override
+	public ArrayList<KGpathway> getKegPath() {
+		return copedID.getKegPath();
+	}
+
+	@Override
+	public void setBlastLsInfo(double evalue, int... StaxID) {
+		copedID.setBlastLsInfo(evalue,StaxID);
+	}
+
+	
+	
+	
 	/////////////////////////////  static 方法  ////////////////////////////////////
 	/**
 	 * blast的结果可能类似dbj|AK240418.1|
@@ -382,5 +411,8 @@ public class CopedID implements ImpleCopedID{
 		}
 		return hashTaxID;
 	}
+
+
+
 	
 }

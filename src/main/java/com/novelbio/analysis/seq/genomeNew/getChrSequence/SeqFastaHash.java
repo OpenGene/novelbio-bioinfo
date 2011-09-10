@@ -28,38 +28,9 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 作者：宗杰 20090617
  */
 
-public class SeqFastaHash extends SeqHash {
-	/**
-	 * 默认序列名改成小写
-	 * @param chrFile
-	 */
-	public SeqFastaHash(String chrFile) {
-		super(chrFile,"");
-		setFile();
-	}
-	/**
-	 * 默认序列名改成小写
-	 * @param chrFile
-	 * @param TOLOWCASE 是否将序列改为小写,True小写，false大写， null不变
-	 */
-	public SeqFastaHash(String chrFile, Boolean TOLOWCASE) {
-		super(chrFile,"");
-		this.TOLOWCASE = TOLOWCASE;
-		setFile();
-	}
-	
-	/**
-	 * 默认序列名改成小写
-	 * @param chrFile
-	 * @param regx
-	 * @param TOLOWCASE 是否将序列改为小写,True小写，false大写， null不变
-	 */
-	public SeqFastaHash(String chrFile, String regx, Boolean TOLOWCASE) {
-		super(chrFile,regx);
-		this.TOLOWCASE = TOLOWCASE;
-		setFile();
-	}
+public class SeqFastaHash extends SeqHashAbs {
 	private static Logger logger = Logger.getLogger(SeqFastaHash.class);  
+
 	
 	public ArrayList<String> getLsSeqName() {
 		return lsSeqName;
@@ -76,16 +47,11 @@ public class SeqFastaHash extends SeqHash {
 	 */
 	public ArrayList<String> lsSeqName;
 	
-	boolean CaseChange = true;
 	boolean append;
-	public void setInfo(boolean CaseChange, String regx,boolean append) {
-		this.CaseChange = CaseChange;
-		this.regx = regx;
+	public void setInfo(boolean append) {
 		this.append = append;
 	}
-	
-	Boolean TOLOWCASE = null;
-	
+
 	/**
 	 * 读取序列文件，将序列保存入Seqhash哈希表<br/>
 	 * 读取完毕后，生成<br/>
@@ -115,7 +81,7 @@ public class SeqFastaHash extends SeqHash {
 			if (content.trim().startsWith(">"))// 当读到一条序列时，给序列起名字
 			{
 				if (Seq != null) {
-					putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append,TOLOWCASE);
+					putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append);
 					SeqStringBuilder = new StringBuilder();// 清空
 				}
 				Seq = new SeqFasta();
@@ -143,7 +109,7 @@ public class SeqFastaHash extends SeqHash {
 			SeqStringBuilder.append(content.replace(" ", ""));
 		}
 		// /////////离开循环后，再做一次总结/////////////////////
-		putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append,TOLOWCASE);
+		putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append);
 	}
 
 	/**
@@ -154,15 +120,7 @@ public class SeqFastaHash extends SeqHash {
 	 * @param seq
 	 * @param append
 	 */
-	private void putSeqFastaInHash(SeqFasta seqFasta, String seq, boolean append, Boolean TOLOWCASE) {
-		if (TOLOWCASE != null) {
-			if (TOLOWCASE == true) {
-				seq = seq.toLowerCase();
-			}
-			else {
-				seq = seq.toUpperCase();
-			}
-		}
+	private void putSeqFastaInHash(SeqFasta seqFasta, String seq, boolean append) {
 		seqFasta.setSeq(seq);
 		SeqFasta tmpSeq = hashSeq.get(seqFasta.getSeqName());// 看是否有同名的序列出现
 		// 如果没有同名序列，直接装入hash表
@@ -204,7 +162,7 @@ public class SeqFastaHash extends SeqHash {
 	{
 		if (hashSeq.containsKey(SeqID)) {
 			if (cisseq) {
-				return hashSeq.get(SeqID).getSeq();
+				return hashSeq.get(SeqID).getSeq().toLowerCase();
 			} else {
 				return hashSeq.get(SeqID).getSeqRC();
 			}
@@ -217,7 +175,7 @@ public class SeqFastaHash extends SeqHash {
 	 * 输入序列坐标，起点和终点
 	 * 返回序列
 	 */
-	public String getSeq(String seqID, long startlocation, long endlocation) throws IOException 
+	protected String getSeqInfo(String seqID, long startlocation, long endlocation) throws IOException 
 	{ 
 		SeqFasta targetChr=hashSeq.get(seqID);
 		if (targetChr == null) {

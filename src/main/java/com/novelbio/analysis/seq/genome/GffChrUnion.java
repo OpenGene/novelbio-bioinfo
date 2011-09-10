@@ -28,7 +28,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffsearchPeak;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchRepeat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchUCSCgene;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHashAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;

@@ -21,7 +21,7 @@ public class PeakLOCRun {
 		columnID[1]=2;
 		columnID[2]=3;
 		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
-				"/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm8/D__mm8_refseq_all_field.txt", "");
+				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
 		
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 //				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
@@ -113,9 +113,9 @@ public class PeakLOCRun {
 	 */
 	public static void  filterPeak() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/MethyArray_MXY110901/rawdata/";
+		String ParentFile="/media/winE/NBC/Project/MethyArray_QZL110907/";
 		int taxID = 10090;
-		int colChrID = 1; int colSummit = 12;
+		int colChrID = 1; int colSummit = 5;
 		int rowStart = 1; 
 		int[] filterTss = new int[2]; filterTss[0] = 5000; filterTss[1] = 5000;
 		int[] filterGenEnd = new int[2]; filterGenEnd[0] = 0; filterGenEnd[1] = 0;
@@ -126,13 +126,14 @@ public class PeakLOCRun {
 		boolean filterExon = false;
 		boolean filterIntron = false;
 		try {
-			String txtFile=ParentFile+"AMS_All.xls";
-			String excelResultFile=ParentFile+"AMS_All_Filter.xls";
+			String txtFile=ParentFile+"KC190 VS UN12D_Cope.txt";
+			String excelResultFile=ParentFile+"KC190 VS UN12D_Cope_filter.txt";
 			PeakLOC.filterPeak(txtFile, "\t", colChrID, colSummit, rowStart, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron, excelResultFile);
 			int columnNum=0;
 			 TxtReadandWrite txtReadandWrite=new TxtReadandWrite(excelResultFile, false);
 			try {
-				columnNum = txtReadandWrite.ExcelColumns("\t");
+				columnNum = txtReadandWrite.ExcelColumns(2,"\t");
+				System.out.println(columnNum);
 			} catch (Exception e2) {
 			}
 			int columnRead=columnNum-1;

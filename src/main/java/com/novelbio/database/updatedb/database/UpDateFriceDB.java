@@ -8,17 +8,23 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.annotation.copeID.CopeID;
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
+import com.novelbio.database.DAO.FriceDAO.DaoFSGeneInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSGo2Term;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
+import com.novelbio.database.DAO.FriceDAO.DaoFSUniGeneInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.AGene2Go;
+import com.novelbio.database.entity.friceDB.AGeneInfo;
 import com.novelbio.database.entity.friceDB.Gene2Go;
+import com.novelbio.database.entity.friceDB.GeneInfo;
 import com.novelbio.database.entity.friceDB.Go2Term;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
+import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
 
 
@@ -28,14 +34,17 @@ public class UpDateFriceDB {
 	 * 指定一些ID，找出他们的geneID或UniID、
 	 * 主要是方便upDateNCBIUniID的使用
 	 * @param taxID 物种ID
-	 * @param tmpID 给定ID，可以给定一系列
+	 * @param tmpID 给定ID，可以给定一系列，如果给定的是null或""，会自动跳过
 	 * @return
 	 * string-2 0:geneID, ==0 说明没找到 1: UniID == null 或"" 说明没找到
 	 */
 	public static String[] getGeneUniID( int taxID,String... tmpID) {
 		long geneID = 0;
 		String uniID = "";
-		for (int i = 1; i < tmpID.length; i++) {
+		for (int i = 0; i < tmpID.length; i++) {
+			if (tmpID[i] == null || tmpID[i].trim().equals("")) {
+				continue;
+			}
 			NCBIID ncbiid = new NCBIID();
 			ncbiid.setAccID(CopeID.removeDot(tmpID[i])); ncbiid.setTaxID(taxID);
 			ArrayList<NCBIID> lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);
@@ -47,7 +56,10 @@ public class UpDateFriceDB {
 		}
 		if (geneID ==0 )
 		{
-			for (int i = 1; i < tmpID.length; i++) {
+			for (int i = 0; i < tmpID.length; i++) {
+				if (tmpID[i] == null || tmpID[i].trim().equals("")) {
+					continue;
+				}
 				UniProtID uniProtID = new UniProtID();
 				uniProtID.setAccID(CopeID.removeDot(tmpID[i])); uniProtID.setTaxID(taxID);
 				ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
@@ -76,7 +88,7 @@ public class UpDateFriceDB {
 	 * @param taxID
 	 * @param considerGeneID 是否将geneID进入查询，因为有些gene对上不止一个geneID，而有的不是，所以如果只是常规的基因就不能考虑geneID
 	 * 而染色体的accID就需要考虑geneID
-	 * @param lsAccIDInfo 一组accID的信息 list-string[2] 0:accID 1:DataBaseInfo
+	 * @param lsAccIDInfo 一组accID的信息 list-string[2] 0:accID 1:DataBaseInfo 如果accID == nul 或 ""l，直接跳过
 	 * @param arStrings 指定的databaseInfo
 	 * @return 插入返回true，没有能够插入，也就是没找到，返回false
 	 */
@@ -91,8 +103,11 @@ public class UpDateFriceDB {
 		{
 			for (String[] strings : lsAccIDInfo) 
 			{
+				if (strings[0] == null || strings[0].trim().equals("")) {
+					continue;
+				}
 				NCBIID ncbiid = new NCBIID();
-				ncbiid.setAccID(strings[0]);
+				ncbiid.setAccID(CopedID.removeDot(strings[0]));
 				ncbiid.setTaxID(taxID);
 				if (considerGeneID) {
 					ncbiid.setGeneId(GeneID);
@@ -124,8 +139,11 @@ public class UpDateFriceDB {
 		else if (GeneID == 0 && uniID != null && !uniID.trim().equals("")) {
 			for (String[] strings : lsAccIDInfo) 
 			{
+				if (strings[0] == null || strings[0].trim().equals("")) {
+					continue;
+				}
 				UniProtID uniProtID = new UniProtID();
-				uniProtID.setAccID(strings[0]);uniProtID.setTaxID(taxID);
+				uniProtID.setAccID(CopedID.removeDot(strings[0])); uniProtID.setTaxID(taxID);
 				if (considerGeneID) {
 					uniProtID.setUniID(uniID);
 				}
@@ -250,27 +268,27 @@ public class UpDateFriceDB {
 			Gene2Go gene2Go2 = (Gene2Go) DaoFSGene2Go.queryGene2Go(gene2Go);
 			if (gene2Go2 != null)
 			{
-				if (gene2Go2.getDataBase() != null && !gene2Go2.getDataBase().contains( gene2Go.getDataBase())) 
+				if (gene2Go2.getDataBase() != null && gene2Go.getDataBase() != null && !gene2Go2.getDataBase().contains( gene2Go.getDataBase())) 
 					gene2Go2.setDataBase(gene2Go2.getDataBase().replace("-", "") + gene2Go.getDataBase());
-				else 
+				else if  (gene2Go2.getDataBase() == null)
 					gene2Go2.setDataBase( gene2Go.getDataBase());
 				
-				if (gene2Go2.getEvidence() != null && !gene2Go2.getEvidence().contains( gene2Go.getEvidence())) {
+				if (gene2Go2.getEvidence() != null && gene2Go.getEvidence() != null && !gene2Go2.getEvidence().contains( gene2Go.getEvidence())) {
 					gene2Go2.setEvidence(gene2Go2.getEvidence().replace("-", "") + gene2Go.getEvidence());
 				}
-				else {
+				else if  (gene2Go2.getEvidence() == null) {
 					gene2Go2.setEvidence(gene2Go.getEvidence());
 				}
-				if (gene2Go2.getReference() != null&& !gene2Go2.getReference().contains( gene2Go.getReference())) {
+				if (gene2Go2.getReference() != null && gene2Go.getReference()!= null && !gene2Go2.getReference().contains( gene2Go.getReference())) {
 					gene2Go2.setReference(gene2Go2.getReference().replace("-", "") + gene2Go.getReference());
 				}
-				else {
+				else if  (gene2Go2.getReference() == null) {
 					gene2Go2.setReference(gene2Go.getReference());
 				}
-				if (gene2Go2.getQualifier() != null&& !gene2Go2.getQualifier().contains( gene2Go.getQualifier())) {
+				if (gene2Go2.getQualifier() != null&& gene2Go.getQualifier() != null && !gene2Go2.getQualifier().contains( gene2Go.getQualifier())) {
 					gene2Go2.setQualifier(gene2Go2.getQualifier().replace("-", "") + gene2Go.getQualifier());
 				}
-				else {
+				else if  (gene2Go2.getQualifier() == null) {
 					gene2Go2.setQualifier(gene2Go.getQualifier());
 				}
 				
@@ -284,7 +302,7 @@ public class UpDateFriceDB {
 			}
 		}
 		//再装uniGene2GO
-		else if (uniID != null) 
+		else if (uniID != null && !uniID.equals("")) 
 		{
 			UniGene2Go uniGene2Go = new UniGene2Go();
 			uniGene2Go.setGOID(goID);
@@ -301,27 +319,29 @@ public class UpDateFriceDB {
 			if (uniGene2Go2 != null) {
 				
 				
-				if (uniGene2Go2.getDataBase() != null && !uniGene2Go2.getDataBase().contains( uniGene2Go.getDataBase())) 
+				if (uniGene2Go2.getDataBase() != null &&uniGene2Go.getDataBase()!=null && !uniGene2Go2.getDataBase().contains( uniGene2Go.getDataBase())) 
 					uniGene2Go2.setDataBase(uniGene2Go2.getDataBase().replace("-", "") + uniGene2Go.getDataBase());
-				else 
+				else if (uniGene2Go2.getDataBase() == null) {
 					uniGene2Go2.setDataBase( uniGene2Go.getDataBase());
+				}
+					
 				
-				if (uniGene2Go2.getEvidence() != null && !uniGene2Go2.getEvidence().contains( uniGene2Go.getEvidence())) {
+				if (uniGene2Go2.getEvidence() != null && uniGene2Go.getEvidence() != null && !uniGene2Go2.getEvidence().contains( uniGene2Go.getEvidence())) {
 					uniGene2Go2.setEvidence(uniGene2Go2.getEvidence().replace("-", "") + uniGene2Go.getEvidence());
 				}
-				else {
+				else if(uniGene2Go2.getEvidence() == null){
 					uniGene2Go2.setEvidence(uniGene2Go.getEvidence());
 				}
-				if (uniGene2Go2.getReference() != null && !uniGene2Go2.getReference().contains( uniGene2Go.getReference())) {
+				if (uniGene2Go2.getReference() != null && uniGene2Go.getReference() != null && !uniGene2Go2.getReference().contains( uniGene2Go.getReference())) {
 					uniGene2Go2.setReference(uniGene2Go2.getReference().replace("-", "") + uniGene2Go.getReference());
 				}
-				else {
+				else  if(uniGene2Go2.getReference() == null){
 					uniGene2Go2.setReference(uniGene2Go.getReference());
 				}
-				if (uniGene2Go2.getQualifier() != null && !uniGene2Go2.getQualifier().contains( uniGene2Go.getQualifier())) {
+				if (uniGene2Go2.getQualifier() != null && uniGene2Go.getQualifier() != null && !uniGene2Go2.getQualifier().contains( uniGene2Go.getQualifier())) {
 					uniGene2Go2.setQualifier(uniGene2Go2.getQualifier().replace("-", "") + uniGene2Go.getQualifier());
 				}
-				else {
+				else  if(uniGene2Go2.getQualifier() == null){
 					uniGene2Go2.setQualifier(uniGene2Go.getQualifier());
 				}
 				DaoFSUniGene2Go.upDateUniGene2Go((UniGene2Go) uniGene2Go2);
@@ -340,7 +360,38 @@ public class UpDateFriceDB {
 	
 	
 	
-	
+	public static void upDateGenInfo(AGeneInfo aGeneInfo)
+	{
+		if(aGeneInfo.getIDType().equals(CopedID.IDTYPE_GENEID))
+		{
+			GeneInfo geneInfo = new GeneInfo();
+			geneInfo.setGeneID(Long.parseLong(aGeneInfo.getGeneUniID()));
+			GeneInfo geneInfoS = DaoFSGeneInfo.queryGeneInfo(geneInfo);
+			if (geneInfoS == null) {
+				DaoFSGeneInfo.InsertGeneInfo((GeneInfo) aGeneInfo);
+			}
+			else {
+				DaoFSGeneInfo.upDateGeneInfo((GeneInfo) aGeneInfo);
+			}
+		}
+		else if (aGeneInfo.getIDType().equals(CopedID.IDTYPE_UNIID)) {
+			UniGeneInfo geneInfo = new UniGeneInfo();
+			geneInfo.setUniProtID(aGeneInfo.getGeneUniID());
+			UniGeneInfo geneInfoS = DaoFSUniGeneInfo.queryUniGeneInfo(geneInfo);
+			if (geneInfoS == null) {
+				DaoFSUniGeneInfo.InsertUniGeneInfo((UniGeneInfo) aGeneInfo);
+			}
+			else {
+				DaoFSUniGeneInfo.upDateUniGeneInfo((UniGeneInfo) aGeneInfo);
+			}
+		}
+		else {
+			logger.error("出错，没见过的IDType");
+		}
+		
+		
+		
+	}
 	
 	
 	

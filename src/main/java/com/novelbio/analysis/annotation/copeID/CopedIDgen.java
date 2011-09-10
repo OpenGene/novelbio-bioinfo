@@ -6,7 +6,7 @@ import com.novelbio.database.entity.friceDB.AgeneUniID;
 import com.novelbio.database.entity.friceDB.GeneInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 
-public class CopedIDgen extends AbsCopedID{
+public class CopedIDgen extends CopedIDAbs{
 	/**
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
 	 * 

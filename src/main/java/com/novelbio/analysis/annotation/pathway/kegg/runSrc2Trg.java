@@ -2,6 +2,7 @@ package com.novelbio.analysis.annotation.pathway.kegg;
 
 import com.novelbio.analysis.annotation.pathway.kegg.kGpath.Scr2Target;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
+import com.novelbio.base.fileOperate.FileOperate;
 
 
 /**
@@ -16,15 +17,18 @@ public class runSrc2Trg {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String parentFIle = "/home/zong0jie/桌面/";
+		String parentFIle = "/home/zong0jie/桌面/test2/";
 
-		int QtaxID = 9606;
-		boolean blast = false;
-		int StaxID = 9606;
+		int QtaxID = 644223;
+		boolean blast = true;
+		int StaxID = 4932;
 		try {
-			String readExcel = parentFIle + "GO与PATHWAY交集.xls";
-			String scr2trg = parentFIle + "GO与PATHWAY交集InterSectiontrg.txt";
-			String attr = parentFIle + "GO与PATHWAY交集InterSectionatttxt";
+			String readExcel = parentFIle + "差异基因-5.xls";
+			
+			
+			
+			String scr2trg = parentFIle + FileOperate.getFileNameSep(readExcel)[0]+"InterSectiontrg.txt";
+			String attr = parentFIle + FileOperate.getFileNameSep(readExcel)[0]+"InterSectionatt.txt";
 			String[] accID = KGprepare.getAccID(1, 1,readExcel);
 			Scr2Target.getGene2RelateKo("",accID,scr2trg,
 					attr , QtaxID, blast, StaxID, 1e-5);

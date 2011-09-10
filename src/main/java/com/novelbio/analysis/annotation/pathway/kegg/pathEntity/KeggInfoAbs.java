@@ -66,6 +66,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	private ArrayList<KGentry> lskGentries = null;
 	/**
 	 * 返回该geneID所对应的KGentry
+	 * 此时会清空blast的结果
 	 * @return
 	 */
 	public ArrayList<KGentry> getKgGentries() {
@@ -73,6 +74,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 			lskGentries = KGentry.getLsEntity(getKegID());
 			boolskGentries = true;
 		}
+		hashKegEntities = new HashSet<KGentry>();
 		for (KGentry kGentry : lskGentries) {
 			if (!hashKegEntities.contains(kGentry)) {
 				hashKegEntities.add(kGentry);
@@ -80,6 +82,21 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		}
 		return lskGentries;
 	}
+	
+	/**
+	 * 输入blast到的CopedIDs
+	 * 返回该geneID所对应的KGentry
+	 * @return
+	 */
+	public ArrayList<KGentry> getLsKgGentries(CopedID...copedIDs) {
+		getKgGentries();
+		for (CopedID copedID : copedIDs) {
+			List<String> lsKO = copedID.getKeggInfo().getLsKo();
+			getBlastQInfo(lsKO);
+		}
+		return ArrayOperate.getArrayListValue(hashKegEntities);
+	}
+	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////
 	boolean boolsKgiDkeg2Kos = false;
@@ -119,23 +136,70 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		return lsKO;
 	}
 	
+
 	/**
-	 * 如果本类是人类等注释全面物种的KG，那么这个存储blast的query物种信息，也就是mapping到query物种的entry
+	 * 如果本类是人类等注释全面物种的KG，那么这个存储本身以及blast的query物种信息，也就是mapping到query物种的entry
 	 */
-	private ArrayList<KGentry> lsQKegEntities = null;
-	
 	private HashSet<KGentry> hashKegEntities = new HashSet<KGentry>();
 	/**
+	 * 输入blast到的copedIDs，可以是多个
+	 * 返回最后的KGentry结果，包括没有blast的结果
+	 * @param lscopedIDs
+	 * @return
+	 */
+	public ArrayList<KGpathway> getLsKegPath(ArrayList<CopedID> lscopedIDs)
+	{
+		getKgGentries();
+		for (CopedID copedID : lscopedIDs) {
+			List<String> lsKO = copedID.getKeggInfo().getLsKo();
+			getBlastQInfo(lsKO);
+		}
+		ArrayList<KGpathway> lsKGpathways = new ArrayList<KGpathway>();
+		if (hashKegEntities != null) {
+			lsKGpathways = getLsKegPath(hashKegEntities);
+		}
+		return lsKGpathways;
+	}
+	/**
+	 * 获得该accID对应的所有不重复的keggpathway对象
+	 * <b>不进行blast</b>
+	 * @return
+	 */
+	public ArrayList<KGpathway> getLsKegPath() {
+		 getKgGentries();
+		ArrayList<KGpathway> lsKGpathways = new ArrayList<KGpathway>();
+		if (hashKegEntities != null) {
+			lsKGpathways = getLsKegPath(hashKegEntities);
+		}
+		return lsKGpathways;
+	}
+	
+	private ArrayList<KGpathway> getLsKegPath(Collection<KGentry> lsKGentries) {
+		if (lsKGentries == null) {
+			return null;
+		}
+		//用来去冗余，根据pathName进行去冗余
+		HashMap<String, KGpathway> hashPath = new HashMap<String, KGpathway>();
+		for (KGentry kGentry : lsKGentries) {
+			KGpathway kGpathwayQ = new KGpathway(); kGpathwayQ.setPathName(kGentry.getPathName());
+			KGpathway kGpathway = DaoKPathway.queryKGpathway(kGpathwayQ);
+			hashPath.put(kGpathway.getPathName(), kGpathway);
+		}
+		return ArrayOperate.getArrayListValue(hashPath);
+	}
+	
+	/**
 	 * 将通过blast获得的KO list放入，获得本物种相应的KGentry list
+	 * 实际就是用另一个copedID的KeggInfo的lsKO放入其中
 	 * 如果没有就返回null
 	 * accID需要将其覆盖，因为理论上accID只有希望对应component
 	 */
-	public ArrayList<KGentry> getBlastQInfo(List<String> lsKO)
+	private void getBlastQInfo(List<String> lsKO)
 	{
 		if (lsKO == null) {
-			return null;
+			return;
 		}
-		lsQKegEntities = new ArrayList<KGentry>();
+		ArrayList<KGentry> lsQKegEntities = new ArrayList<KGentry>();
 		for (String ko : lsKO) {
 			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();  kgiDkeg2Ko.setKo(ko); kgiDkeg2Ko.setTaxID(taxID);
 			ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = DaoKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
@@ -162,43 +226,15 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 			lsQKegEntities.addAll(lskGentriesTmp);
 		}
 		if (lsQKegEntities.size() < 1 ) {
-			return null;
+			return;
 		}
 		for (KGentry kGentry : lsQKegEntities) {
 			if (!hashKegEntities.contains(kGentry)) {
 				hashKegEntities.add(kGentry);
 			}
 		}
-		return lsQKegEntities;
 	}
-	/**
-	 * 获得该accID对应的所有不重复的keggpathway对象
-	 * <b>如果要用blast的结果，需要先执行getBlastQInfo方法</b>，也就是用另一个copedid的方法获得对应的lsQKegEntities信息<br>
-	 * <b>但是如果本基因已经有了pathway信息，那么就不进行blast</b>
-	 * @return
-	 */
-	public ArrayList<KGpathway> getLsKegPath() {如何将blast集成进来还需商榷
-		 getKgGentries();
-		ArrayList<KGpathway> lsKGpathways = new ArrayList<KGpathway>();
-		if (hashKegEntities != null) {
-			lsKGpathways = getLsKegPath(hashKegEntities);
-		}
-		return lsKGpathways;
-	}
-	
-	private ArrayList<KGpathway> getLsKegPath(Collection<KGentry> lsKGentries) {
-		if (lsKGentries == null) {
-			return null;
-		}
-		//用来去冗余，根据pathName进行去冗余
-		HashMap<String, KGpathway> hashPath = new HashMap<String, KGpathway>();
-		for (KGentry kGentry : lsKGentries) {
-			KGpathway kGpathwayQ = new KGpathway(); kGpathwayQ.setPathName(kGentry.getPathName());
-			KGpathway kGpathway = DaoKPathway.queryKGpathway(kGpathwayQ);
-			hashPath.put(kGpathway.getPathName(), kGpathway);
-		}
-		return ArrayOperate.getArrayListValue(hashPath);
-	}
+
 	
 	/**
 	 * 还有做Relation方面的工作

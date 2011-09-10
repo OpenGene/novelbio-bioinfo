@@ -8,7 +8,7 @@ public abstract class AGeneInfo {
 	private String dbXrefs;
 	private String chromosome;
 	private String mapLocation;
-	
+	private String idType;
 	private String description;
 	private String typeOfGene;
 	private String symNome;
@@ -19,6 +19,17 @@ public abstract class AGeneInfo {
 	
 	public abstract String getGeneUniID();
 	public abstract void setGeneUniID(String geneUniID);
+	
+	public String getIDType() {
+		return idType;
+	}
+	/**
+	 * CopedIDµÄidTpye
+	 * @param idType
+	 */
+	public void setIDType(String idType) {
+		this.idType = idType;
+	}
 	
 	public String getSymbol() {
 		return symbol;

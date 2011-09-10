@@ -10,7 +10,7 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHashAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -160,7 +160,7 @@ public class MapReads {
 	public MapReads(int invNum, String chrFilePath, String mapFile, String regx) 
 	{
 		hashChrLen = new HashMap<String, Long>();
-		SeqHash seqHash = null; 
+		SeqHashAbs seqHash = null; 
 		this.invNum = invNum;
 		if (FileOperate.isFile(chrFilePath)) 
 			seqHash = new SeqFastaHash(chrFilePath);
@@ -202,7 +202,7 @@ public class MapReads {
 	 * 所有chr项目都小写
 	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。注意，mapping文件中的chrID和chrLengthFile中的chrID要一致，否则会出错
 	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
-	 * @param startCod 从起点开始读取几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
+	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
 	 * @param colUnique Unique的reads在哪一列
 	 * @param booUniqueMapping 重复的reads是否只选择一条
 	 * @param cis5to3 是否仅选取某一方向的reads，null不考虑

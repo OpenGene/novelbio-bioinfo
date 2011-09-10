@@ -49,6 +49,15 @@ public class NovelBioConst {
 	public final static String DBINFO_PIR = "PIR";
 	public  final static String DBINFO_EMBL = "EMBL";
 	public  final static String DBINFO_EMBL_CDS = "EMBL_CDS";
+	public  final static String DBINFO_PPA_ID = "Pichia_ID";
+	/**
+	 * 这个是最常用的毕赤酵母的ID
+	 */
+	public  final static String DBINFO_PPA_NCBI_ID = "Pichia_NCBI_ID";
+	/**
+	 * 这个是最常用的酿酒酵母的ID
+	 */
+	public  final static String DBINFO_SSC_ID = "S. cerevisiaeID";
 	/**
 	 * TAIR的AT编号
 	 */
@@ -58,6 +67,8 @@ public class NovelBioConst {
 	 * 7位Os号
 	 */
 	public final static String DBINFO_RICE_TIGR = "TIGRrice";
+
+	
 	/**
 	 * 9位Os号
 	 */

@@ -48,13 +48,17 @@ public class KeggInfo implements KeggInfoInter{
 	}
 
 	@Override
-	public ArrayList<KGentry> getBlastQInfo(List<String> lsKO) {
-		return keggInfoAbs.getBlastQInfo(lsKO);
-	}
-
-	@Override
 	public ArrayList<KGpathway> getLsKegPath() {
 		return keggInfoAbs.getLsKegPath();
+	}
+	@Override
+	public ArrayList<KGpathway> getLsKegPath(ArrayList<CopedID> lscopedIDs) {
+		return keggInfoAbs.getLsKegPath(lscopedIDs);
+	}
+	@Override
+	public ArrayList<KGentry> getLsKgGentries(CopedID... copedIDs) {
+		// TODO Auto-generated method stub
+		return keggInfoAbs.getLsKgGentries(copedIDs);
 	}
 
 }

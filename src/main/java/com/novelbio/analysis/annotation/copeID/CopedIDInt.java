@@ -2,9 +2,11 @@ package com.novelbio.analysis.annotation.copeID;
 
 import java.util.ArrayList;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
+import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo;
 import com.novelbio.database.entity.friceDB.BlastInfo;
+import com.novelbio.database.entity.kegg.KGpathway;
 
-public interface ImpleCopedID {
+public interface CopedIDInt {
 	
 	
 	/**
@@ -13,7 +15,7 @@ public interface ImpleCopedID {
 	 * @param evalue
 	 * @return
 	 */
-	public BlastInfo getBlastInfo(int StaxID, double evalue);
+	public BlastInfo setBlastInfo(int StaxID, double evalue);
 	
 	
 	/**
@@ -23,14 +25,6 @@ public interface ImpleCopedID {
 	 * @return
 	 */
 	public CopedID getBlastCopedID(int StaxID,double evalue) ;
-	/**
-	 * 给定一系列的目标物种的taxID，获得CopedIDlist
-	 * 如果没有结果，直接返回null
-	 * @param evalue
-	 * @param StaxID
-	 * @return
-	 */
-	public ArrayList<CopedID> getBlastCopedID(double evalue, int... StaxID);
 	
 	/**
 	 * idType，必须是IDTYPE中的一种
@@ -83,5 +77,44 @@ public interface ImpleCopedID {
 	 * @return
 	 */
 	public String[] getAnno( boolean blast, int StaxID, double evalue) ;
-	
+	/**
+	 * 获得相应的KeggInfo信息
+	 * @return
+	 */
+	public KeggInfo getKeggInfo();
+	/**
+	 * blast多个物种
+	 * 首先要设定blast的目标
+	 * 用方法： setBlastInfo(double evalue, int... StaxID)
+	 * 给定一系列的目标物种的taxID，获得CopedIDlist
+	 * 如果没有结果，直接返回null
+	 * @param evalue
+	 * @param StaxID
+	 * @return
+	 */
+	public ArrayList<CopedID> getBlastLsCopedID();
+	/**
+	 * 	blast多个物种
+	 * 首先设定blast的物种
+	 * 用方法： setBlastInfo(double evalue, int... StaxID)
+	 * 获得经过blast的KegPath
+	 */
+	public ArrayList<KGpathway> getBlastKegPath();
+	/**
+	 * blast单个物种
+	 * 给定blast到的copedID，用 getBlastCopedID(int StaxID,double evalue) 方法获得
+	 * 用方法： setBlastInfo(double evalue, int... StaxID)
+	 * 获得经过blast的KegPath
+	 */
+	public ArrayList<KGpathway> getBlastKegPath(CopedID copedID);
+	/**
+	 * 获得该copedID的KegPath
+	 */
+	public ArrayList<KGpathway> getKegPath();
+	/**
+	 * 设定多个物种进行blast
+	 * @param evalue
+	 * @param StaxID
+	 */
+	public void setBlastLsInfo(double evalue, int... StaxID);
 }

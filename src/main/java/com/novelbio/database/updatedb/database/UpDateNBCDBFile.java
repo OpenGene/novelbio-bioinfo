@@ -874,7 +874,6 @@ public class UpDateNBCDBFile {
 	 * 如果有跳过
 	 * @author zong0jie
 	 * @param blast2InfoFile blast文件
-	 * @param subjectTab blast到的目的物种是在哪个表中，是NCBIID还是UniProtID
 	 *
 	 */
 	public static void upDateBlastInfo(String blast2InfoFile) throws Exception

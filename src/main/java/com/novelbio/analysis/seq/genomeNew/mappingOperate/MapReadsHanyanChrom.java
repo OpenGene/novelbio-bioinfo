@@ -33,7 +33,7 @@ public class MapReadsHanyanChrom extends MapReads{
 	 */
 	public MapReadsHanyanChrom(int invNum, String chrFilePath, String mapFile,GffHashGene gffHashGene) 
 	{
-		super(invNum, chrFilePath, mapFile);
+		super(invNum, chrFilePath, mapFile, "");
 		this.gffHashGene = gffHashGene;
 	}
 

@@ -198,12 +198,7 @@ private static Logger logger = Logger.getLogger(GffChr.class);
 	 */
 	private void loadSeq(String SeqPath) 
 	{
-		seqFastaHash = new SeqFastaHash();
-		try {
-			seqFastaHash.readfile(SeqPath, true, "", false);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		seqFastaHash = new SeqFastaHash(SeqPath);
 	}
 
 	
@@ -418,7 +413,7 @@ private static Logger logger = Logger.getLogger(GffChr.class);
 	private double[] getReadsInfo(String geneID, GffGeneIsoSearch gffGeneIsoSearch, int normalizeType) {
 		int geneLength = 0;
 		try {
-			geneLength = seqFastaHash.getHashLength().get(geneID.toLowerCase()).intValue();
+			geneLength = seqFastaHash.getHashChrLength().get(geneID.toLowerCase()).intValue();
 		} catch (Exception e) {
 			return null;
 		}
@@ -441,6 +436,9 @@ private static Logger logger = Logger.getLogger(GffChr.class);
 }
 class SeqInfo
 {
+	/**
+	 * double[] 0: atg位点,绝对位点，1-结束 从tss到tes的每个位点的reads数目
+	 */
 	public double[] atg;
 	public String seqName = "";
 }

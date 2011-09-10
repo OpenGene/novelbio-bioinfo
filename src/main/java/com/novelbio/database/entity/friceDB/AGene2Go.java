@@ -23,6 +23,9 @@ public abstract class AGene2Go {
 		return evidence;
 	}
 	public void setEvidence(String evidence) {
+		if (evidence == null || evidence.trim().equals("")) {
+			return;
+		}
 		this.evidence = evidence;
 	}
 	

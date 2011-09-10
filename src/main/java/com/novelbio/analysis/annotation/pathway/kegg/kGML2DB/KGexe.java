@@ -8,6 +8,7 @@ public class KGexe {
 	public static void main(String[] args) {
 		try {
 		
+			
 		//	KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/dre");
 		//	KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/bta");
 //			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/metabolic/organisms/ath");
@@ -27,11 +28,17 @@ public class KGexe {
 
 
 			//KeggIDcvt.upDateGen2Keg("/media/winE/Bioinformatics/Kegg/genes/bta/bta_ncbi-geneid.list");
-
-			KeggIDcvt.upDateGen2Keg("/home/zong0jie/桌面/ath_ncbi-geneid.list");
-		//	KeggIDcvt.upDateKegCompound("/media/winE/Bioinformatics/Kegg/compound/compound");
-			KeggIDcvt.upDateKeg2Ko("/home/zong0jie/桌面/ath_ko.list");
-
+//			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/metabolic/organisms/ppa");
+//			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/ppa");
+//			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/metabolic/organisms/sce");
+//			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/sce");
+			
+			KeggIDcvt.upDateGen2Keg("/home/zong0jie/桌面/yeast/sce_ncbi-geneid.list");
+			KeggIDcvt.upDateKeg2Ko("/home/zong0jie/桌面/yeast/sce_ko.list");
+			
+			KeggIDcvt.upDateGen2Keg("/home/zong0jie/桌面/yeast/ppa_ncbi-geneid.list");
+			KeggIDcvt.upDateKeg2Ko("/home/zong0jie/桌面/yeast/ppa_ko.list");
+			
 			System.out.println("ok");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

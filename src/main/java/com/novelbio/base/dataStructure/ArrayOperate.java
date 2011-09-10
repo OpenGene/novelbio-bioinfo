@@ -294,8 +294,12 @@ public class ArrayOperate {
 	 * @param <K> key
 	 * @param <V> value
 	 * @param hashMap
+	 * 	 * 没有返回null
 	 */
 	public static<K,V> ArrayList<K> getArrayListKey(HashMap<K, V> hashMap) {
+		if (hashMap == null || hashMap.size() == 0) {
+			return null;
+		}
 		ArrayList<K> lsResult = new ArrayList<K>();
 		Set<K> keys = hashMap.keySet();
 		for(K key:keys)
@@ -309,8 +313,12 @@ public class ArrayOperate {
 	 * @param <K> key
 	 * @param <V> value
 	 * @param hashMap
+	 * 	 * 没有返回null
 	 */
 	public static<K,V> ArrayList<V> getArrayListValue(HashMap<K, V> hashMap) {
+		if (hashMap == null || hashMap.size() == 0) {
+			return null;
+		}
 		ArrayList<V> lsResult = new ArrayList<V>();
 		Collection<V> values = hashMap.values();
 		for(V value:values)
@@ -319,4 +327,24 @@ public class ArrayOperate {
 		}
 		return lsResult;
 	}
+	
+	/**
+	 * 将hashset的value提取出来
+	 * @param <K> key
+	 * @param hashset
+	 * 没有返回null
+	 */
+	public static<K> ArrayList<K> getArrayListValue(HashSet<K> hashset) {
+		if (hashset == null || hashset.size() == 0) {
+			return null;
+		}
+		
+		ArrayList<K> lsResult = new ArrayList<K>();
+		for(K value:hashset)
+		{
+			lsResult.add(value);
+		}
+		return lsResult;
+	}
+	
 }

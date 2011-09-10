@@ -3,6 +3,7 @@ package com.novelbio.analysis.annotation.pathway.kegg.kGML2DB;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
@@ -30,19 +31,26 @@ import com.novelbio.database.entity.kegg.KGsubstrate;
  */
 public class KGML2DB 
 {
+	private static Logger logger = Logger.getLogger(KGML2DB.class);
 	/**
 	 * 将KGML导入数据库
 	 * @param filePath
 	 * @throws Exception
 	 */
-	public static void readKGML(String filePath) throws Exception 
+	public static void readKGML(String filePath)
 	{
 		ArrayList<String[]> lsKGML=FileOperate.getFoldFileName(filePath, "*", "xml");
 		Serializer serializer = new Persister();
 		for (int i = 0; i < lsKGML.size(); i++) {
 			File source = new File(filePath+"/"+lsKGML.get(i)[0]+"."+lsKGML.get(i)[1]);
-			KGML example = serializer.read(KGML.class, source);
-			kgml2DB(example);
+			System.out.println(source.getAbsolutePath());
+			try {
+				KGML example = serializer.read(KGML.class, source);
+				kgml2DB(example);
+			} catch (Exception e) {
+				logger.error("文件出错："+source.getAbsolutePath());
+			}
+			
 		}
 	}
 	

@@ -416,7 +416,7 @@ public class TxtReadandWrite {
 	 * 按照excel方法读取文本时使用，用于 获得txt文本指定行的列数
 	 * 
 	 * @param setRow
-	 *            指定行数，如果指定行超过文本最大行，则将指定行设为最大行。
+	 *            指定行数，为实际行数，如果指定行超过文本最大行，则将指定行设为最大行。
 	 * @param sep
 	 *            该行的分隔符，为正则表达式，tab为"\t"
 	 * @return 返回指定行的列数

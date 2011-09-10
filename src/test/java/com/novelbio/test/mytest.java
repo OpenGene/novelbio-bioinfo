@@ -15,6 +15,7 @@ import org.apache.commons.math.stat.correlation.PearsonsCorrelation;
 import org.apache.log4j.Logger;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 
+import com.novelbio.analysis.annotation.blast.Blast2DB;
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo;
@@ -60,9 +61,7 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		KeggInfo keggInfo = new KeggInfo(CopedID.IDTYPE_GENEID, "100037287", 9823);
-		System.out.println(keggInfo.getKegID());
-		System.out.println(keggInfo.getLsKegPath().get(0).getPathName());
+		Blast2DB.getSeqForBlast("/media/winE/Bioinformatics/BLAST/DataBase/sscProtein/orf_trans_all.fasta", false, "(?<=SGDID:)S\\d+", false, "/media/winE/Bioinformatics/BLAST/DataBase/sscProtein/orf_trans_all.fasta_blast");
 	}
 	
 	private static void testFdrFunction() throws Exception {

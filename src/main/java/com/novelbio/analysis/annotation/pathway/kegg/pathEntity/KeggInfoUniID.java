@@ -1,6 +1,10 @@
 package com.novelbio.analysis.annotation.pathway.kegg.pathEntity;
 
+import java.util.ArrayList;
+
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.database.entity.kegg.KGIDgen2Keg;
+import com.novelbio.database.entity.kegg.KGpathway;
 
 public class KeggInfoUniID extends KeggInfoAbs{
 	

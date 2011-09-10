@@ -80,7 +80,7 @@ public class GUIanalysis extends javax.swing.JFrame {
 				jTabbedPane1 = new JTabbedPane();
 				getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
 				jTabbedPane1.setPreferredSize(new java.awt.Dimension(1035, 682));
-				guiBlastJpanel = GuiBlastJpanel.getGuiBlastJpanel();
+				guiBlastJpanel = new GuiBlastJpanel();
 				jTabbedPane1.addTab("DataBase", null, guiBlastJpanel, null);
 				
 				guiGoJPanel= new GuiGoJPanel();
