@@ -6,11 +6,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.fileOperate.FileOperate;
 /**
  * 使用前先用setParameter设置
@@ -19,7 +21,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  *
  */
 public class TxtReadandWrite {
-
+	private static Logger logger = Logger.getLogger(TxtReadandWrite.class);
 	@Deprecated
 	public TxtReadandWrite () {
 		
@@ -702,20 +704,31 @@ public class TxtReadandWrite {
 	 * @throws Exception
 	 */
 	public void ExcelWrite(List<String[]> content, String sep,
-			int rowStartNum, int columnStartNum) throws Exception {
-		for (int i = 0; i < content.size(); i++) {
-			for (int j = 0; j < content.get(i).length; j++) {
-				if (content.get(i)[j] == null)
-					content.get(i)[j] = "";
-				if (j < (content.get(i).length - 1)) {
-					filewriter.write(content.get(i)[j] + sep);
-				} else {
-					filewriter.write(content.get(i)[j]);
-				}
-			}
-			filewriter.write("\r\n");// 换行
+			int rowStartNum, int columnStartNum) {
+		if (content == null || content.size() == 0) {
+			return;
 		}
-		filewriter.flush();// 写入文本
+		try {
+			for (int i = 0; i < content.size(); i++) {
+				for (int j = 0; j < content.get(i).length; j++) {
+					if (content.get(i)[j] == null)
+						content.get(i)[j] = "";
+					if (j < (content.get(i).length - 1)) {
+						filewriter.write(content.get(i)[j] + sep);
+					} else {
+						filewriter.write(content.get(i)[j]);
+					}
+				}
+				filewriter.write("\r\n");// 换行
+			}
+			filewriter.flush();// 写入文本
+		} catch (Exception e) {
+			logger.error("write list data error:"+getFileName());
+			
+		}
+	
+		
+		
 	}
 
 	/**

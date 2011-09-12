@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.genomeNew;
 import java.util.List;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -22,7 +22,7 @@ public class GffChrChIP extends GffChr{
 	 * 没有则返回null
 	 */
 	public String[] getGeneRegion(String accID,int region) {
-		GffHashGene gffHashGene = (GffHashGene) gffHash;
+		GffHashGeneAbs gffHashGene = (GffHashGeneAbs) gffHash;
 		GffDetailGene gffDetailGene = gffHashGene.getGeneDetail(accID);
 		if (gffDetailGene == null) {
 			return null;

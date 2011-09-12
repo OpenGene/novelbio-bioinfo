@@ -13,7 +13,7 @@ import org.tc33.jheatchart.HeatChart;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;

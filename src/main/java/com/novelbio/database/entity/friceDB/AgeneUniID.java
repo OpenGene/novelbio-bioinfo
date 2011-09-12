@@ -1,5 +1,9 @@
 package com.novelbio.database.entity.friceDB;
-
+/**
+ * 重写了equal和hash
+ * 只要两个ncbiid的geneID相同，就认为这两个NCBIID相同
+ * 但是如果geneID为0，也就是NCBIID根本没有初始化，那么直接返回false
+ */
 public abstract class AgeneUniID {
     private int taxID;
 	private String accessID;
@@ -47,7 +51,7 @@ public abstract class AgeneUniID {
 			return false;
 		}
 		
-		if (getGenUniID().equals(0) || otherObj.getGenUniID().equals("0") ) {
+		if (getGenUniID().equals("0") || otherObj.getGenUniID().equals("0") ) {
 			return false;
 		}
 		

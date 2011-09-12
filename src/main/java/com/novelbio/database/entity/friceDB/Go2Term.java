@@ -34,5 +34,7 @@ public class Go2Term {
 	public void setGoFunction(String GoFunction) {
 		this.GoFunction = GoFunction;
 	}
-
+	
+	
+	
 }

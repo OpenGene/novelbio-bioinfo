@@ -18,10 +18,10 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashCG;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashPlantGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGenePlant;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashRepeat;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashUCSCgene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneUCSC;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -163,16 +163,16 @@ private static Logger logger = Logger.getLogger(GffChr.class);
 	 private void loadGff(String gffClass,String Gfffilename, int taxID) throws Exception
 	 {
 		 if (gffClass.equals("TIGR")) {
-			 gffHash=new GffHashPlantGene(Species.RICE);
+			 gffHash=new GffHashGenePlant(Species.RICE);
 		 }
 		 if (gffClass.equals("TAIR")) {
-			 gffHash=new GffHashPlantGene(Species.ARABIDOPSIS);
+			 gffHash=new GffHashGenePlant(Species.ARABIDOPSIS);
 		 }
 		 else if (gffClass.equals("CG")) {
 			 gffHash=new GffHashCG();
 		 }
 		 else if (gffClass.equals("UCSC")) {
-			 gffHash=new GffHashUCSCgene(taxID);
+			 gffHash=new GffHashGeneUCSC(taxID);
 		 }
 		 else if (gffClass.equals("Repeat")) {
 			 gffHash=new GffHashRepeat();
@@ -273,7 +273,7 @@ private static Logger logger = Logger.getLogger(GffChr.class);
 	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0
 	 */
 	private ArrayList<SeqInfo> getATGDensity(ArrayList<String> lsGeneID,int AtgUp, int AtgDown, int filled, int normlizType) {
-		GffHashGene gffHashGene = (GffHashGene)gffHash;
+		GffHashGeneAbs gffHashGene = (GffHashGeneAbs)gffHash;
 		ArrayList<SeqInfo> lsAtg = new ArrayList<SeqInfo>();
 		for (String string : lsGeneID) {
 			SeqInfo seqInfo = new SeqInfo();

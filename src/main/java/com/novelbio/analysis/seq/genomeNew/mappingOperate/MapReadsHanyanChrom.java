@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 
@@ -24,14 +24,14 @@ import com.novelbio.base.dataStructure.MathComput;
  */
 public class MapReadsHanyanChrom extends MapReads{
 	private static Logger logger = Logger.getLogger(MapReadsHanyanChrom.class);
-	GffHashGene gffHashGene = null;
+	GffHashGeneAbs gffHashGene = null;
 	/**
 	 * 
 	 * @param invNum 每隔多少位计数
 	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
 	 * @param mapFile mapping的结果文件，一般为bed格式
 	 */
-	public MapReadsHanyanChrom(int invNum, String chrFilePath, String mapFile,GffHashGene gffHashGene) 
+	public MapReadsHanyanChrom(int invNum, String chrFilePath, String mapFile,GffHashGeneAbs gffHashGene) 
 	{
 		super(invNum, chrFilePath, mapFile, "");
 		this.gffHashGene = gffHashGene;

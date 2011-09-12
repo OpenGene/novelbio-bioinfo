@@ -52,13 +52,12 @@ public class KeggInfo implements KeggInfoInter{
 		return keggInfoAbs.getLsKegPath();
 	}
 	@Override
-	public ArrayList<KGpathway> getLsKegPath(ArrayList<CopedID> lscopedIDs) {
-		return keggInfoAbs.getLsKegPath(lscopedIDs);
+	public ArrayList<KGpathway> getLsKegPath(ArrayList<? extends KeggInfoInter> ls_keggInfo) {
+		return keggInfoAbs.getLsKegPath(ls_keggInfo);
 	}
 	@Override
-	public ArrayList<KGentry> getLsKgGentries(CopedID... copedIDs) {
-		// TODO Auto-generated method stub
-		return keggInfoAbs.getLsKgGentries(copedIDs);
+	public ArrayList<KGentry> getLsKgGentries(ArrayList<? extends KeggInfoInter> ls_keggInfo) {
+		return keggInfoAbs.getLsKgGentries(ls_keggInfo);
 	}
 
 }

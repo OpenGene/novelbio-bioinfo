@@ -11,7 +11,7 @@ import com.novelbio.analysis.seq.genomeNew.GffChrHanYanChrom;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashUCSCgene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneUCSC;
 
 public class TestGffChrUnion extends TestCase {
 	double[] input;

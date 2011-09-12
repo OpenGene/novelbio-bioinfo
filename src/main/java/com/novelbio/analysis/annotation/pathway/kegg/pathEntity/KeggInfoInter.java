@@ -49,12 +49,12 @@ public interface KeggInfoInter {
 	 * 返回该geneID所对应的KGentry
 	 * @return
 	 */
-	public ArrayList<KGentry> getLsKgGentries(CopedID...copedIDs);
+	public ArrayList<KGentry> getLsKgGentries(ArrayList<? extends KeggInfoInter> ls_keggInfo);
 	/**
 	 * 输入blast到的copedIDs，可以是多个
 	 * 返回最后的KGentry结果，包括没有blast的结果
 	 * @param lscopedIDs
 	 * @return
 	 */
-	public ArrayList<KGpathway> getLsKegPath(ArrayList<CopedID> lscopedIDs);
+	public ArrayList<KGpathway> getLsKegPath(ArrayList<? extends KeggInfoInter> ls_keggInfo);
 }

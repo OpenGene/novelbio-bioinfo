@@ -15,10 +15,10 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailAbs;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashUCSCgene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneUCSC;
 
 public class TestGffUCSCInfo extends TestCase{
-	GffHashUCSCgene gffHashUCSC;
+	GffHashGeneUCSC gffHashUCSC;
 	GffCodGene gffCodInfoUCSCgenechr1_1385068;
 	ArrayList<String> lsAllLoc;
 	HashMap<String, GffDetailAbs> hashGffDetail;
@@ -27,7 +27,7 @@ public class TestGffUCSCInfo extends TestCase{
 	public void setUp() throws Exception
 	{
 		//UCSC test
-		gffHashUCSC = new GffHashUCSCgene(9606);
+		gffHashUCSC = new GffHashGeneUCSC(9606);
 		gffHashUCSC.ReadGffarray(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		gffCodInfoUCSCgenechr1_1385068 = (GffCodGene) gffHashUCSC.searchLocation("chr1", 1385069);//
 		lsAllLoc = gffHashUCSC.getLOCIDList();

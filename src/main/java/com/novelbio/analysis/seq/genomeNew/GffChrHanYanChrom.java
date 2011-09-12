@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
@@ -35,7 +35,7 @@ public GffChrHanYanChrom(String gffClass, String GffFile, String ChrFilePath, in
 public void loadMap(String mapFile,int startRegion,String chrFilePath,int invNum,int tagLength, boolean uniqReads,
 		int startCod, int colUnique,Boolean cis5To3, boolean uniqMapping) 
 {
-	mapReads=new MapReadsHanyanChrom(invNum, chrFilePath, mapFile,(GffHashGene)gffHash);
+	mapReads=new MapReadsHanyanChrom(invNum, chrFilePath, mapFile,(GffHashGeneAbs)gffHash);
 	mapReads.setstartRegion(startRegion);
 	try {
 		if (tagLength > 20) {

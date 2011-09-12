@@ -3,7 +3,6 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 
@@ -19,10 +18,10 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  * @author zong0jie
  *
  */
-public class GffHashUCSCgene extends GffHashGene
+public class GffHashGeneUCSC extends GffHashGeneAbs
 {
 
-	public GffHashUCSCgene(int taxID) {
+	public GffHashGeneUCSC(int taxID) {
 		super(taxID);
 		// TODO Auto-generated constructor stub
 	}

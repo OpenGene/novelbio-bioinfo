@@ -370,7 +370,12 @@ public abstract class CopedIDAbs implements CopedIDInt{
 	 */
 	public ArrayList<KGpathway> getBlastKegPath() {
 		getKeggInfo();
-		return keggInfo.getLsKegPath(getBlastLsCopedID());
+		ArrayList<KeggInfo> lskeggInfo = new ArrayList<KeggInfo>();
+		ArrayList<CopedID> lsBlastCopedIDs = getBlastLsCopedID();
+		for (CopedID copedID : lsBlastCopedIDs) {
+			lskeggInfo.add(copedID.getKeggInfo());
+		}
+		return keggInfo.getLsKegPath(lskeggInfo);
 	}
 	
 	/**
@@ -381,9 +386,9 @@ public abstract class CopedIDAbs implements CopedIDInt{
 	 */
 	public ArrayList<KGpathway> getBlastKegPath(CopedID copedID) {
 		getKeggInfo();
-		ArrayList<CopedID> lsCopedIDs = new ArrayList<CopedID>();
-		lsCopedIDs.add(copedID);
-		return keggInfo.getLsKegPath(lsCopedIDs);
+		ArrayList<KeggInfo> lskeggInfo = new ArrayList<KeggInfo>();
+		lskeggInfo.add(copedID.getKeggInfo());
+		return keggInfo.getLsKegPath(lskeggInfo);
 	}
 	
 	/////////////////////////////  ÷ÿ–¥equalsµ»  ////////////////////////////////////

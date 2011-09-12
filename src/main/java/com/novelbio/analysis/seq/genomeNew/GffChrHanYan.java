@@ -14,7 +14,7 @@ import org.tc33.jheatchart.HeatChart;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -123,7 +123,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0
 	 */
 	private ArrayList<SeqInfo> getATGDensity(ArrayList<String> lsGeneID,int AtgUp, int AtgDown, int filled, int normlizType) {
-		GffHashGene gffHashGene = (GffHashGene)gffHash;
+		GffHashGeneAbs gffHashGene = (GffHashGeneAbs)gffHash;
 		ArrayList<SeqInfo> lsAtg = new ArrayList<SeqInfo>();
 		for (String string : lsGeneID) {
 			SeqInfo seqInfo = new SeqInfo();

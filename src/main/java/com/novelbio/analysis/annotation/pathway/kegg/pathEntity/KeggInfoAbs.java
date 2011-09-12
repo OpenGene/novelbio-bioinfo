@@ -34,7 +34,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 */
 	protected String genUniAccID = "";
 	
-	static HashMap<Integer, String[]> hashTaxID = CopedID.getSpecies();
+//	static HashMap<Integer, String[]> hashTaxID = CopedID.getSpecies();
 	/**
 	 * geneID或UniID或AccID
 	 * 如果是AccID，那么一定是没有GeneID和UniID的
@@ -88,11 +88,10 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 * 返回该geneID所对应的KGentry
 	 * @return
 	 */
-	public ArrayList<KGentry> getLsKgGentries(CopedID...copedIDs) {
+	public ArrayList<KGentry> getLsKgGentries(ArrayList<? extends KeggInfoInter> ls_keggInfo) {
 		getKgGentries();
-		for (CopedID copedID : copedIDs) {
-			List<String> lsKO = copedID.getKeggInfo().getLsKo();
-			getBlastQInfo(lsKO);
+		for (KeggInfoInter keggInfo : ls_keggInfo) {
+			getBlastQInfo(keggInfo.getLsKo());
 		}
 		return ArrayOperate.getArrayListValue(hashKegEntities);
 	}
@@ -147,12 +146,11 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 * @param lscopedIDs
 	 * @return
 	 */
-	public ArrayList<KGpathway> getLsKegPath(ArrayList<CopedID> lscopedIDs)
+	public ArrayList<KGpathway> getLsKegPath(ArrayList<? extends KeggInfoInter> ls_keggInfo)
 	{
 		getKgGentries();
-		for (CopedID copedID : lscopedIDs) {
-			List<String> lsKO = copedID.getKeggInfo().getLsKo();
-			getBlastQInfo(lsKO);
+		for (KeggInfoInter keggInfo : ls_keggInfo) {
+			getBlastQInfo(keggInfo.getLsKo());
 		}
 		ArrayList<KGpathway> lsKGpathways = new ArrayList<KGpathway>();
 		if (hashKegEntities != null) {
@@ -160,6 +158,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		}
 		return lsKGpathways;
 	}
+	
 	/**
 	 * 获得该accID对应的所有不重复的keggpathway对象
 	 * <b>不进行blast</b>

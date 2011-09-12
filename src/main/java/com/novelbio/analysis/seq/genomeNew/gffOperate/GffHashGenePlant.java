@@ -34,14 +34,14 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  * 
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
-public class GffHashPlantGene extends GffHashGene{
+public class GffHashGenePlant extends GffHashGeneAbs{
 	/**
 	 * @param gfffilename
 	 * @param Species 水稻还是拟南芥，只有这两个选择 在Species类中的常量
 	 * Species.ARABIDOPSIS和DB.equals(Species.RICE
 	 * @throws Exception
 	 */
-	public GffHashPlantGene(String DB) throws Exception {
+	public GffHashGenePlant(String DB) throws Exception {
 		setDB(DB);
 	}
 	
@@ -97,8 +97,6 @@ public class GffHashPlantGene extends GffHashGene{
 			hashgene.add("transposable_element_gene");
 			hashgene.add("pseudogene");
 		}
-		
-		
 	}
 	
 	/**
