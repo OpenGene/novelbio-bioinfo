@@ -6,7 +6,11 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-
+/**
+ * 保存Dindel软件得到的信息，每一行一个DindelInfo 类
+ * @author zong0jie
+ *
+ */
 public class DindelInfo implements Comparable<DindelInfo>{
 	/**
 	 * 目标链的名字
@@ -25,9 +29,6 @@ public class DindelInfo implements Comparable<DindelInfo>{
 	{
 		setParam(value);
 	}
-	
-	
-	
 	public int getStart() {
 		return startSeq;
 	}

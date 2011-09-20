@@ -5,7 +5,7 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class BedPeakMacs extends BedSeq{
+public class BedPeakMacs extends BedSeq implements PeakCalling{
 
 	public BedPeakMacs(String bedFile) {
 		super(bedFile);
@@ -42,7 +42,7 @@ public class BedPeakMacs extends BedSeq{
 	 * @throws Exception
 	 */
 	public void peakCallling(String thisPath, String bedCol,
-			String species, String outFilePath, String prix) throws Exception {
+			String species, String outFilePath, String prix) {
 		String effge = "";
 		String col = "";
 		String name = "";

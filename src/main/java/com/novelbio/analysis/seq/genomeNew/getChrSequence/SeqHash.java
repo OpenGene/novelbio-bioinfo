@@ -3,11 +3,15 @@ package com.novelbio.analysis.seq.genomeNew.getChrSequence;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
+import org.apache.log4j.Logger;
+
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SeqHash implements SeqHashInt{
-
+private static Logger logger = Logger.getLogger(SeqHash.class);
 	/**
 	 * @param chrFile 序列文件或序列文件夹
 	 * @param regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，则用该正则表达式提取含有该文件名的文件
@@ -90,10 +94,10 @@ public class SeqHash implements SeqHashInt{
 	 */
 	Boolean TOLOWCASE = null;
 	@Override
-	public HashMap<String, Long> getHashChrLength() {
+	public LinkedHashMap<String, Long> getHashChrLength() {
 		return seqHashAbs.getHashChrLength();
 	}
-
+	
 	@Override
 	public ArrayList<String[]> getChrLengthInfo() {
 		seqHashAbs.getChrLengthInfo();
@@ -154,13 +158,15 @@ public class SeqHash implements SeqHashInt{
 			boolean getIntron) {
 		return getSeqCase(seqHashAbs.getSeq(cisseq, chrID, lsInfo, getIntron),TOLOWCASE);
 	}
+
+	//////////////////////  static method  ////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 根据TOLOWCASE的选项，返回相应的seq序列
 	 * @param seq
 	 * @param TOLOWCASE null：不变，false：大写，true：小写
 	 * @return
 	 */
-	static private String getSeqCase(String seq, Boolean TOLOWCASE)
+	private static String getSeqCase(String seq, Boolean TOLOWCASE)
 	{
 		if (TOLOWCASE == null) {
 			return seq;
@@ -170,5 +176,49 @@ public class SeqHash implements SeqHashInt{
 		}
 	}
 
+	/**
+	 * 判断输入的长度是否在目的区间内，闭区间
+	 * @param seqlen 输入序列的长度
+	 * @param len
+	 * 	int[2] :0：下限，小于0表示没有下限
+	 * 1：上限，小于0表示没有上限
+	 * 上限必须大于等于下限，如果上限小于下限，则报错
+	 * @return
+	 */
+	public static boolean testSeqLen(int seqlen, int[] len) {
+		if (len[1] > 0 && len[1] < len[0]) {
+			logger.error("要求输出序列的长度上限不能小于下限");
+		}
+		
+		if (len[0] <= 0) { //无下限
+			if (len[1] <= 0)  //无上限
+				return true;
+			else { //有上限
+				if (seqlen <= len[1])  //长度小于等于上限
+					return true;
+				else
+					// 长度大于上限
+					return false;
+			}
+		}
+		else // 有下限
+		{
+			if (seqlen < len[0]) //长度小于下限
+				return false;
+			else {  //长度大于下限
+				if (len[1] > 0) { //有上限
+					if (seqlen <= len[1]) //长度小于上限
+						return true;
+					else
+						return false;
+				}
+				else {
+					return true;
+				}
+			}
+		}
+	}
 
+
+	
 }

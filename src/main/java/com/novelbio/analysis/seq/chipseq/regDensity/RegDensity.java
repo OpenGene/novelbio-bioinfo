@@ -7,14 +7,13 @@ import java.io.IOException;
 
 import org.apache.commons.math.stat.StatUtils;
 import org.apache.commons.math.util.MathUtils;
-import org.tc33.jheatchart.HeatChart;
-
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.chipseq.prepare.GenomeBasePrepare;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.java.HeatChart;
 
 
 public class RegDensity extends GenomeBasePrepare

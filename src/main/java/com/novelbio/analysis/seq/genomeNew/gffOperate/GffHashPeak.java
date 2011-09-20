@@ -17,7 +17,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  * @author zong0jie
  *
  */
-public class GffHashPeak extends GffHash{
+public class GffHashPeak extends GffHash<GffDetailPeak,GffCodPeak>{
 	
 	boolean peakcis = false;
 	int colChrID = -1;
@@ -103,11 +103,11 @@ public class GffHashPeak extends GffHash{
 	        });
 		//////////////////////////正式读取，类似GffUCSC的读取方法///////////////////////
 	 	//实例化三个表
-			locHashtable =new HashMap<String, GffDetailAbs>();//存储每个LOCID和其具体信息的对照表
-			Chrhash=new HashMap<String, ArrayList<GffDetailAbs>>();//一个哈希表来存储每条染色体
+			locHashtable =new HashMap<String, GffDetailPeak>();//存储每个LOCID和其具体信息的对照表
+			Chrhash=new HashMap<String, ArrayList<GffDetailPeak>>();//一个哈希表来存储每条染色体
 			LOCIDList=new ArrayList<String>();//顺序存储每个peak号，不管是否重叠
 			LOCChrHashIDList=new ArrayList<String>();//
-			ArrayList<GffDetailAbs> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+			ArrayList<GffDetailPeak> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 			
 			String chrnametmpString="";
 			int tmppeakstart=-1;
@@ -126,11 +126,11 @@ public class GffHashPeak extends GffHash{
 					{
 						LOCList.trimToSize();
 						 //把peak名称顺序装入LOCIDList
-						   for (GffDetailAbs gffDetail : LOCList) {
+						   for (GffDetailPeak gffDetail : LOCList) {
 							   LOCChrHashIDList.add(gffDetail.locString);
 						   }
 					}
-					LOCList=new ArrayList<GffDetailAbs>();//新建一个LOCList并放入Chrhash
+					LOCList=new ArrayList<GffDetailPeak>();//新建一个LOCList并放入Chrhash
 					Chrhash.put(chrnametmpString, LOCList);
 				}
 				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +138,7 @@ public class GffHashPeak extends GffHash{
 				
 				//添加重叠peak
 				//看本peak的起点是否小于上个peak的终点，如果小于，则说明本peak和上个peak连续
-				GffDetailAbs lastGffdetailpeak;
+				GffDetailPeak lastGffdetailpeak;
 				LOCIDList.add(tmppeakstart+"_"+tmppeakend);//添加入LOCIDList
 				if(LOCList.size()>0 && tmppeakstart < (lastGffdetailpeak = LOCList.get(LOCList.size()-1)).numberend )
 				{   //修改基因起点和终点
@@ -173,19 +173,11 @@ public class GffHashPeak extends GffHash{
 				locHashtable.put(gffdetailpeak.locString, gffdetailpeak);
 			}
 			LOCList.trimToSize();
-			for (GffDetailAbs gffDetail : LOCList) {
+			for (GffDetailPeak gffDetail : LOCList) {
 				LOCChrHashIDList.add(gffDetail.locString);
 			}
 			txtPeakInfo.close();
 			//System.out.println(mm);
-	}
-	@Override
-	public GffDetailPeak searchLOC(String LOCID) {
-		return (GffDetailPeak) locHashtable.get(LOCID);
-	}
-	@Override
-	public GffDetailPeak searchLOC(String chrID, int LOCNum) {
-		return (GffDetailPeak) Chrhash.get(chrID).get(LOCNum);
 	}
 	@Override
 	protected GffCodPeak setGffCodAbs(String chrID, int Coordinate) {

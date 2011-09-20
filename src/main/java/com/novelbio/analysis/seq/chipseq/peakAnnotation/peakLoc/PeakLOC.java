@@ -138,9 +138,6 @@ public class PeakLOC extends GenomeBasePrepare{
 		txtReadandWrite.close();
 	}
 	
-	
-	
-	
 	/**
 	 * too detail so not useful, using locatDetail instead<br>
 	 * peak定位，并写入文本文件，得到的数据可以用来画直方图
@@ -290,4 +287,30 @@ public class PeakLOC extends GenomeBasePrepare{
 			return lsresult;
 	}
 
+	
+	
+	public static void filterRegion(String txtFile,String sep,int colChrID,int rowStart, int colStart, int colEnd,String txtResultFile) throws Exception 
+	{
+		TxtReadandWrite txtPeakFile = new TxtReadandWrite(txtFile, false);
+		ArrayList<String[]> LOCIDInfo = txtPeakFile.ExcelRead(sep, rowStart, 1, txtPeakFile.ExcelRows(), txtPeakFile.ExcelColumns(sep), -1);
+		String[] title = LOCIDInfo.get(0);
+		String[] titleNew = new String[title.length + 2];
+		for (int i = 0; i < title.length; i++) {
+			titleNew[i] = title[i];
+		}
+		titleNew[title.length] = "AccID";
+		titleNew[title.length+1] = "Location";
+		List<String[]> lsQuery = LOCIDInfo.subList(1, LOCIDInfo.size()-1);
+		ArrayList<String[]> LOCDetail=gffLocatCod.regionAnnoFilter(lsQuery, colChrID, colStart, colEnd);//.peakAnnoFilter(lsQuery, colChrID, colSummit, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron);
+		LOCDetail.add(0, titleNew);
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(txtResultFile, true);
+		txtReadandWrite.ExcelWrite(LOCDetail, "\t", 1, 1);
+//		ExcelOperate excelResult = new ExcelOperate();
+//		excelResult.openExcel(excelResultFile);
+//		txtReadandWrite.WriteExcel(true, 1, 1, LOCDetail);
+		txtReadandWrite.close();
+	}
+	
+	
+	
 }

@@ -17,7 +17,11 @@ import com.novelbio.base.fileOperate.FileOperate;
 import edu.uci.ics.jung.algorithms.scoring.HITS.Scores;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
-
+/**
+ * 保存LastZ得到的信息，每一行一个lastZ类
+ * @author zong0jie
+ *
+ */
 public class LastzAlign {
 	Logger logger = Logger.getLogger(LastzAlign.class);
 	/**

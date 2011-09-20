@@ -17,13 +17,13 @@ public class runSrc2Trg {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String parentFIle = "/home/zong0jie/桌面/test2/";
+		String parentFIle = "/home/zong0jie/桌面/";
 
-		int QtaxID = 644223;
-		boolean blast = true;
+		int QtaxID = 10090;
+		boolean blast = false;
 		int StaxID = 4932;
 		try {
-			String readExcel = parentFIle + "差异基因-5.xls";
+			String readExcel = parentFIle + "网络构建.xls";
 			
 			
 			

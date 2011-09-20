@@ -33,12 +33,12 @@ public class FastQ extends SeqComb {
 	public static int FASTQ_SANGER_OFFSET = 33;
 	public static int FASTQ_ILLUMINA_OFFSET = 64;
 
-	TxtReadandWrite txtSeqFile2 = new TxtReadandWrite();
+	private TxtReadandWrite txtSeqFile2 = new TxtReadandWrite();
 
-	int offset = 0;
-	boolean booPairEnd = false;
+	private int offset = 0;
+	private boolean booPairEnd = false;
 	// 有时候有两个fastQ文件，这个仅仅在双端测序的时候出现，这时候需要协同过滤
-	String seqFile2 = null;
+	private String seqFile2 = null;
 	public static int QUALITY_LOW = 10;
 	public static int QUALITY_MIDIAN = 20;
 	/**
@@ -49,15 +49,15 @@ public class FastQ extends SeqComb {
 	/**
 	 * FastQ文件的第四行是序列的质量行，所以为4-1 = 3
 	 */
-	int QCline = 3;
+	private int QCline = 3;
 	/**
 	 * 第一条reads的长度
 	 */
-	int readsLen = 0;
+	private int readsLen = 0;
 	/**
 	 * 默认中等质量控制
 	 */
-	int quality = 20;
+	private int quality = QUALITY_MIDIAN;
 
 	/**
 	 * fastQ里面asc||码的指标与个数
@@ -114,7 +114,7 @@ public class FastQ extends SeqComb {
 	 * 
 	 * @return
 	 */
-	public boolean getBooPairEnd() {
+	public boolean isPairEnd() {
 		return booPairEnd;
 	}
 
@@ -138,7 +138,7 @@ public class FastQ extends SeqComb {
 		readsLen = lsreads.get(3).trim().length();
 		return readsLen;
 	}
-
+	
 	private void setHashFastQFilter(int QUALITY) {
 		if (QUALITY == QUALITY_HIGM) {
 			quality = QUALITY;
@@ -154,6 +154,12 @@ public class FastQ extends SeqComb {
 		} else if (QUALITY == QUALITY_MIDIAN
 				|| QUALITY == QUALITY_MIDIAN_PAIREND) {
 			quality = QUALITY;
+			hashFastQFilter.put(2, 1);
+			hashFastQFilter.put(10, 2);
+			hashFastQFilter.put(13, 6);
+			hashFastQFilter.put(20, 10);
+		}
+		else {
 			hashFastQFilter.put(2, 1);
 			hashFastQFilter.put(10, 2);
 			hashFastQFilter.put(13, 6);
@@ -178,7 +184,7 @@ public class FastQ extends SeqComb {
 	public FastQ(String seqFile1, String seqFile2, int FastQFormateOffset,
 			int QUALITY) {
 		super(seqFile1, 4);// fastQ一般4行为一个序列
-		if (seqFile2!= null && FileOperate.isFileExist(seqFile2.trim())) {
+		if (seqFile2 != null && !seqFile2.trim().equals("") && FileOperate.isFileExist(seqFile2.trim())) {
 			booPairEnd = true;
 			this.seqFile2 = seqFile2;
 		}
@@ -187,7 +193,7 @@ public class FastQ extends SeqComb {
 		} else if (FastQFormateOffset == FASTQ_ILLUMINA_OFFSET) {
 			offset = 64;
 		} else {
-			offset = 0;
+			setFastQFormat();
 		}
 
 		setHashFastQFilter(QUALITY);
@@ -198,17 +204,10 @@ public class FastQ extends SeqComb {
 	 * 
 	 * @param seqFile1
 	 * @param seqFile2
-	 * @param QUALITY
+	 * @param QUALITY FastQ.Quality
 	 */
 	public FastQ(String seqFile1, String seqFile2, int QUALITY) {
-		super(seqFile1, 4);// fastQ一般4行为一个序列
-		if (FileOperate.isFileExist(seqFile2.trim())) {
-			booPairEnd = true;
-			this.seqFile2 = seqFile2;
-		}
-		offset = 0;
-		setHashFastQFilter(QUALITY);
-
+		this(seqFile1, seqFile2, 0, QUALITY);
 	}
 
 	/**
@@ -218,11 +217,19 @@ public class FastQ extends SeqComb {
 	 * @param QUALITY
 	 */
 	public FastQ(String seqFile1, int QUALITY) {
-		super(seqFile1, 4);// fastQ一般4行为一个序列
-		offset = 0;
-		setHashFastQFilter(QUALITY);
+		this(seqFile1, null, QUALITY);
 	}
 
+	public FastQ filterReads(String fileFilterOut) {
+		try {
+			return filterReadsExp( fileFilterOut);
+		} catch (Exception e) {
+			logger.error("filter Error: "+ fileFilterOut);
+			return null;
+		}
+	}
+	
+	
 	/**
 	 * 指定阈值，将fastQ文件进行过滤处理并产生新文件，那么本类的文件也会替换成新的文件
 	 * 
@@ -235,7 +242,7 @@ public class FastQ extends SeqComb {
 	 * @return 返回已经过滤好的FastQ，其实里面也就是换了两个FastQ文件而已
 	 * @throws Exception
 	 */
-	public FastQ filterReads(String fileFilterOut) throws Exception {
+	private FastQ filterReadsExp(String fileFilterOut) throws Exception {
 		txtSeqFile.setParameter(seqFile, false, true);
 		BufferedReader readerSeq = txtSeqFile.readfile();
 		BufferedReader readerSeq2 = null;
@@ -378,18 +385,24 @@ public class FastQ extends SeqComb {
 	 */
 	private ArrayList<String> getLsFastQSeq(int Num) {
 		txtSeqFile.setParameter(seqFile, false, true);
-		ArrayList<String> lsreads = null;
 		ArrayList<String> lsResult = new ArrayList<String>();
 		try {
-			lsreads = txtSeqFile.readFirstLines(Num * block);
+			String content = "";
+			BufferedReader reader = txtSeqFile.readfile(); int thisnum = 0;
+			while ((content = reader.readLine()) != null && thisnum < Num) {
+				if (thisnum%4 == QCline) {
+					if (content.contains("BBB")) {
+						thisnum ++;
+						continue;
+					}
+					lsResult.add(content);
+				}
+				thisnum ++;
+			}
 		} catch (Exception e) {
 			logger.error(seqFile + " may not exits");
 			return null;
 		}
-		for (int i = QCline; i < lsreads.size(); i = i + block) {
-			lsResult.add(lsreads.get(i));
-		}
-		lsreads.clear();
 		return lsResult;
 	}
 
@@ -473,23 +486,23 @@ public class FastQ extends SeqComb {
 	// ////////////////// barcode 筛选序列
 	// ///////////////////////////////////////////////////////////////////////////////////
 
-	/**
-	 * 将序列按照barcode分割成几个不同的文件，并分别保存为相关的文件名
-	 * 
-	 * @param outFilePrix
-	 * @param barcodeAndName
-	 *            一个barcode序列--自动转换为大写，一个barcode名字 所以barcodeAndName必须是一个偶数长度的数组
-	 */
-	public void sepBarCode(String outFilePrix, String... barcodeAndName) {
-		if (barcodeAndName.length % 2 != 0) {
-			String out = "";
-			for (String string : barcodeAndName) {
-				out = out + string + "  ";
-			}
-			logger.error(outFilePrix + " barcode 输入错误: " + out);
-		}
-		setHashBarCode(barcodeAndName);
-	}
+//	/**
+//	 * 将序列按照barcode分割成几个不同的文件，并分别保存为相关的文件名
+//	 * 
+//	 * @param outFilePrix
+//	 * @param barcodeAndName
+//	 *            一个barcode序列--自动转换为大写，一个barcode名字 所以barcodeAndName必须是一个偶数长度的数组
+//	 */
+//	public void sepBarCode(String outFilePrix, String... barcodeAndName) {
+//		if (barcodeAndName.length % 2 != 0) {
+//			String out = "";
+//			for (String string : barcodeAndName) {
+//				out = out + string + "  ";
+//			}
+//			logger.error(outFilePrix + " barcode 输入错误: " + out);
+//		}
+//		setHashBarCode(barcodeAndName);
+//	}
 
 	/**
 	 * 指定输出的文件全名，自动将路径最后的文件名设置为前缀 如输入OutFilePathPrix为 : /usr/local/bar.txt 文件名为:
@@ -826,6 +839,15 @@ public class FastQ extends SeqComb {
 		txtSeqFile2.close();
 	}
 	
+	
+	public FastQ trimPolyA(int filterNum,String fileFilterOut) {
+		try {
+			return trimPolyAExp(filterNum, fileFilterOut);
+		} catch (Exception e) {
+			logger.error("trimPolyA error:" + fileFilterOut);
+			return null;
+		}
+	}
 	/**
 	 * 指定阈值，将fastQ文件过滤polyA，目前只能针对单端右侧的polyA
 	 * 
@@ -833,7 +855,7 @@ public class FastQ extends SeqComb {
 	 * @return 返回已经过滤好的FastQ，其实里面也就是换了两个FastQ文件而已
 	 * @throws Exception
 	 */
-	public FastQ trimPolyA(int filterNum,String fileFilterOut) throws Exception {
+	private FastQ trimPolyAExp(int filterNum,String fileFilterOut) throws Exception {
 		txtSeqFile.setParameter(seqFile, false, true);
 		BufferedReader readerSeq = txtSeqFile.readfile();
 		
@@ -945,5 +967,7 @@ public class FastQ extends SeqComb {
 		txtFasta1.close();
 		txtFasta2.close();
 	}
+
+
 
 }

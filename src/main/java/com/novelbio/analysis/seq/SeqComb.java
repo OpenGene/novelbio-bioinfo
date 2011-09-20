@@ -15,14 +15,14 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  *
  */
 public abstract class SeqComb {
-	TxtReadandWrite txtSeqFile = new TxtReadandWrite();
-	String seqFile = "";
-	int block = 1;
+	protected TxtReadandWrite txtSeqFile = new TxtReadandWrite();
+	protected String seqFile = "";
+	protected int block = 1;
 	
 	/**
 	 * fastQ文件里面的序列数量
 	 */
-	int seqNum = -1;
+	private int seqNum = -1;
 	
 	private static Logger logger = Logger.getLogger(SeqComb.class);  
 	/**

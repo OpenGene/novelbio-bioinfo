@@ -13,11 +13,11 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
  *
  */
 public abstract class GffDetailAbs {
-
+	
 	/**
 	 * 该条目在List-GffDetail中的具体位置
 	 */
-	protected int itemNum = -10;
+	protected int itemNum = GffCodAbs.LOC_ORIGINAL;
 	/**
 	 * 该条目在List-GffDetail中的具体位置
 	 */
@@ -42,7 +42,7 @@ public abstract class GffDetailAbs {
 	 * @GffHashItem
 	 * 条目起点,起点位置总是小于终点，无视条目方向
 	 */
-	protected int numberstart = -1000000000; // loc start number 
+	protected int numberstart = GffCodAbs.LOC_ORIGINAL; // loc start number 
 	
 	/**
 	 * @GffHashGene
@@ -50,7 +50,7 @@ public abstract class GffDetailAbs {
 	 * @GffHashItem
 	 * 条目终点，终点位置总是大于起点，无视条目方向
 	 */
-	protected int numberend = -1000000000; //loc end number
+	protected int numberend = GffCodAbs.LOC_ORIGINAL; //loc end number
 	
 	/**
 	 * 染色体编号，都小写
@@ -82,7 +82,7 @@ public abstract class GffDetailAbs {
 	/**
 	 * 染色体坐标，会计算该点与本GffDetailAbs起点和终点的距离
 	 */
-	protected int coord = -100;
+	protected int coord = GffCodAbs.LOC_ORIGINAL;
 	/**
 	 * 坐标与基因起点的距离，考虑正反向
 	 */

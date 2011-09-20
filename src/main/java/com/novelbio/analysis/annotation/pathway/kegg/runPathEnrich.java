@@ -10,9 +10,9 @@ public class runPathEnrich {
 	 */
 	public static void main(String[] args) {
 		String parentFile = "/home/zong0jie/桌面/";
-		String backGroundFile="/media/winE/Bioinformatics/GenomeData/human/UCSChg19RefseqDuplicateID.txt";
+		String backGroundFile="/media/winE/Bioinformatics/GenomeData/mouse/mouseRefSeqBG.txt";
 		try {
-			String fileName = "TARGETGENE";			
+			String fileName = "MicroRNA的预测靶基因";
 			String geneFile=parentFile+fileName+".xls";
 			String resultExcel2003 = parentFile +fileName+"PathanalysisComb.xls";
 			int[] colID = new int[2]; colID[0] = 1; colID[1] = 1;

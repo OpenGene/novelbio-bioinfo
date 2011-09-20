@@ -8,12 +8,6 @@ import java.util.HashMap;
  *
  */
 public interface GffHashGeneInf  {
-	/**
-	 * 哈希表geneID--LOC细节<br>
-	 * 用于快速将geneID编号对应到LOC的细节<br>
-	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的条目编号 <br>
-	 */
-	public HashMap<String,GffDetailGene> getHashGeneIDGffDetail();
 	
 	/**
 	 * 输入基因名/geneID，返回基因的坐标信息等
@@ -34,24 +28,6 @@ public interface GffHashGeneInf  {
 	 * @return 
 	 */
 	public ArrayList<Long> getGeneStructureLength(int upBp);
-	/**
-	 * 需要覆盖
-	 * 查找某个特定LOC的信息
-	 * {return locHashtable.get(LOCID);}
-	 * @param LOCID 给定某LOC的名称，注意名称是一个短的名字，譬如在UCSC基因中，不是locstring那种好几个基因连在一起的名字，而是单个的短的名字
-	 * @return 返回该LOCID的具体GffDetail信息，用相应的GffDetail类接收
-	 */
-	public GffDetailGene searchLOC(String LOCID);
-	
-	/**
-	 * 需要覆盖
-	 * {return Chrhash.get(chrID).get(LOCNum);}
-	 * 给定chrID和该染色体上的位置，返回GffDetail信息
-	 * @param chrID 小写
-	 * @param LOCNum 该染色体上待查寻LOC的int序号
-	 * @return  返回该LOCID的具体GffDetail信息，用相应的GffDetail类接收
-	 */
-	public GffDetailGene searchLOC(String chrID,int LOCNum);
 
 	/**
 	 * 起点是否为闭区间，不是则为开区间，<br>
@@ -61,12 +37,6 @@ public interface GffHashGeneInf  {
 	 */
 	public void setEndRegion(boolean region);
 	
-	/**
-	 * 返回哈希表 LOC--LOC细节<br/>
-	 * 用于快速将LOC编号对应到LOC的细节
-	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的基因编号 <br/>
-	 */
-	public HashMap<String,GffDetailGene> getLocHashtable();
 	
 	/**
 	 * 返回List顺序存储每个基因号或条目号，这个打算用于提取随机基因号。
@@ -84,11 +54,6 @@ public interface GffHashGeneInf  {
 	public ArrayList<String> getLOCChrHashIDList();
 	
 	
-	/**
-	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
-	 * 没找到就返回null
-	 */
-	public GffCodGene searchLocation(String chrID, int Coordinate);
 	
 	/**
 	 * @本方法需要被覆盖

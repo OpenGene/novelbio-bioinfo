@@ -3,7 +3,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -49,21 +49,21 @@ private static Logger logger = Logger.getLogger(GffChrHanYanChrom.class);
 //////////////////////////////////////////////////参数设定/////////////////////////////////////////////////////////
 	@Override
 	protected double[] getReadsInfo(String geneID,
-			GffGeneIsoSearch gffGeneIsoSearch, int normalizeType) {
-		ArrayList<int[]> lsiso = gffGeneIsoSearch.getIsoInfo();
+			GffGeneIsoInfo gffGeneIsoInfo, int normalizeType) {
+		ArrayList<int[]> lsiso = gffGeneIsoInfo.getIsoInfo();
 		if (lsiso == null || lsiso.size() == 0) {
 			return null;
 		}
-		double[] iso = mapReads.getRengeInfo(gffGeneIsoSearch.getThisGffDetailGene().getChrID(), -1, 0, lsiso);
+		double[] iso = mapReads.getRengeInfo(gffGeneIsoInfo.getThisGffDetailGene().getChrID(), -1, 0, lsiso);
 		mapReads.normDouble(iso, normalizeType);
 		if (iso == null) {
 			return null;
 		}
-		if (!gffGeneIsoSearch.isCis5to3()) {
+		if (!gffGeneIsoInfo.isCis5to3()) {
 			ArrayOperate.convertArray(iso);
 		}
 		double[] isoResult = new double[iso.length+1];
-		isoResult[0] = gffGeneIsoSearch.getLocDistance(gffGeneIsoSearch.getATGSsite(), gffGeneIsoSearch.getTSSsite());
+		isoResult[0] = gffGeneIsoInfo.getLocDistance(gffGeneIsoInfo.getATGSsite(), gffGeneIsoInfo.getTSSsite());
 		for (int i = 0; i < iso.length; i++) {
 			isoResult[i+1] = iso[i];
 		}

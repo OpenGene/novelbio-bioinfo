@@ -26,6 +26,22 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 
 public class SeqFastaHash extends SeqHashAbs {
+	Boolean TOLOWCASE = null;
+	
+	
+	/**
+	 * @param chrFile
+	 * @param regx 序列名的正则表达式，null不设定
+	 * @param CaseChange 是否将序列名改为小写，默认为true
+	 * @param append 对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
+	 * false：如果出现重名序列，则用长的序列去替换短的序列，默认为false
+	 */
+	public SeqFastaHash(String chrFile) {
+		super(chrFile, "", true);
+		setFile();
+	}
+	
+	
 	/**
 	 * @param chrFile
 	 * @param regx 序列名的正则表达式，null不设定
@@ -39,7 +55,21 @@ public class SeqFastaHash extends SeqHashAbs {
 		this.append = append;
 		setFile();
 	}
-	
+	/**
+	 * @param chrFile
+	 * @param regx 序列名的正则表达式，null不设定
+	 * @param CaseChange 是否将序列名改为小写，默认为true
+	 * @param append 对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
+	 * @param TOLOWCASE  是否将序列转化为小写 True：小写，False：大写，null不变 默认为null
+	 * false：如果出现重名序列，则用长的序列去替换短的序列，默认为false
+	 */
+	public SeqFastaHash(String chrFile, String regx, boolean CaseChange,
+			boolean append,Boolean TOLOWCASE) {
+		super(chrFile, regx, CaseChange);
+		this.append = append;
+		this.TOLOWCASE = TOLOWCASE;
+		setFile();
+	}
 	
 	private static Logger logger = Logger.getLogger(SeqFastaHash.class);  
 
@@ -122,6 +152,9 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * @param append
 	 */
 	private void putSeqFastaInHash(SeqFasta seqFasta, String seq, boolean append) {
+		if (TOLOWCASE != null) {
+			seq = (TOLOWCASE == true ? seq.toLowerCase() : seq.toUpperCase());
+		}
 		seqFasta.setSeq(seq);
 		SeqFasta tmpSeq = hashSeq.get(seqFasta.getSeqName());// 看是否有同名的序列出现
 		// 如果没有同名序列，直接装入hash表
@@ -232,9 +265,8 @@ public class SeqFastaHash extends SeqHashAbs {
 		}
 
 		for (Entry<String, SeqFasta> entry : hashSeq.entrySet()) {
-			String seqName = entry.getKey();
 			SeqFasta seqFasta = entry.getValue();
-			if (testSeqLen(seqFasta.getSeq().length(), len))//长度在目标范围内
+			if (SeqHash.testSeqLen(seqFasta.getSeq().length(), len))//长度在目标范围内
 			{
 				if (sepFile) {
 					
@@ -258,49 +290,7 @@ public class SeqFastaHash extends SeqHashAbs {
 		txtResultSeqName.close();
 	}
 	
-	/**
-	 * 判断输入的长度是否在目的区间内，闭区间
-	 * @param seqlen 
-	 * @param len
-	 * 	int[2] :0：下限，小于0表示没有下限
-	 * 1：上限，小于0表示没有上限
-	 * 上限必须大于等于下限，如果上限小于下限，则报错
-	 * @return
-	 */
-	public static boolean testSeqLen(int seqlen, int[] len) {
-		if (len[1] > 0 && len[1] < len[0]) {
-			logger.error("要求输出序列的长度上限不能小于下限");
-		}
-		
-		if (len[0] <= 0) { //无下限
-			if (len[1] <= 0)  //无上限
-				return true;
-			else { //有上限
-				if (seqlen <= len[1])  //长度小于等于上限
-					return true;
-				else
-					// 长度大于上限
-					return false;
-			}
-		}
-		else // 有下限
-		{
-			if (seqlen < len[0]) //长度小于下限
-				return false;
-			else {  //长度大于下限
-				if (len[1] > 0) { //有上限
-					if (seqlen <= len[1]) //长度小于上限
-						return true;
-					else
-						return false;
-				}
-				else {
-					return true;
-				}
-			}
-		}
-	}
-	
+
 	
 	
 	

@@ -36,7 +36,7 @@ import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlGO;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.CtrlNormal;
-import com.novelbio.base.gui.DoubleOnlyDoc;
+import com.novelbio.base.gui.NumberOnlyDoc;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.NumOnlyDoc;
 
@@ -206,7 +206,7 @@ public class CopyOfGUIanalysisSimple extends javax.swing.JFrame {
 					}
 					{
 						jTxtUpValueGo = new JTextField();
-						jTxtUpValueGo.setDocument(new DoubleOnlyDoc());
+						jTxtUpValueGo.setDocument(new NumberOnlyDoc());
 						jTxtUpValueGo.addKeyListener(new KeyAdapter() {
 							public void keyTyped(KeyEvent evt) {
 								String old = jTxtUpValueGo.getText();
@@ -223,7 +223,7 @@ public class CopyOfGUIanalysisSimple extends javax.swing.JFrame {
 					}
 					{
 						jTxtDownValueGo = new JTextField();
-						jTxtDownValueGo.setDocument(new DoubleOnlyDoc());
+						jTxtDownValueGo.setDocument(new NumberOnlyDoc());
 						jTxtDownValueGo.addKeyListener(new KeyAdapter() {
 							public void keyTyped(KeyEvent evt) {
 								String old = jTxtDownValueGo.getText();

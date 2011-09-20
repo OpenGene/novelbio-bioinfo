@@ -4,13 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodInfoGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodInfoUCSCgene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailUCSCgene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHash;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashUCSCgene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffsearchUCSCgene;
 
 
 /** 
@@ -283,6 +279,113 @@ public class GffLocatCod extends GffChrUnion
 		}
 		return lspeakAnnotation;
 	}
+	
+	
+	
+	
+	
+	public ArrayList<String[]> regionAnnoFilter(List<String[]> LOCIDInfo,int colChrID,int colStart, int colEnd) {
+		int imputLength = LOCIDInfo.get(0).length;
+		colChrID--; colStart--;colEnd--;
+		ArrayList<String[]> lspeakAnnotation=new ArrayList<String[]>();
+		for (int i = 0; i < LOCIDInfo.size(); i++)
+		{
+			GffCodInfoUCSCgene tmpresult=null;
+			if (LOCIDInfo.get(i).length < colStart+1 || LOCIDInfo.get(i).length < colEnd+1) 
+				continue;
+			ArrayList<Object> lsObj= null;
+			try {
+				String chrID = LOCIDInfo.get(i)[colChrID].toLowerCase();
+				int start = Integer.parseInt(LOCIDInfo.get(i)[colStart]);
+				int end = Integer.parseInt(LOCIDInfo.get(i)[colEnd]);
+				lsObj=gffSearch.searchLocation(chrID, start, end, gffHash);
+
+			} catch (Exception e) {
+				logger.error("peak annotation error:"+LOCIDInfo.get(i)[colChrID].toLowerCase() +"  "+ LOCIDInfo.get(i)[colStart]);
+				continue;
+			}
+			//本基因/上一个基因
+			String[] tmpPeakAnnotation=new String[imputLength+5];//最后结果需要保存输入的所有信息
+			//////////////////////////////////////////////////////////////////////////////
+			for (int j = 0; j < tmpPeakAnnotation.length; j++) {
+				tmpPeakAnnotation[j]="";//全部设置为""
+			}
+			for (int j = 0; j < imputLength; j++) {
+				try {
+					tmpPeakAnnotation[j] = LOCIDInfo.get(i)[j];
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+			Object[] aa = (Object[]) lsObj.get(0);
+			if (aa[0] != null) {
+				try {
+					GffCodInfoUCSCgene gffCodInfoUCSCgene1 = (GffCodInfoUCSCgene) aa[0];
+					if (gffCodInfoUCSCgene1.insideLOC)
+					{
+						tmpPeakAnnotation[imputLength] = gffCodInfoUCSCgene1.LOCID[0];
+						tmpPeakAnnotation[imputLength+1] = (gffCodInfoUCSCgene1.GeneInfo.get(0)[0] == 1 ? "in exon, Num:" : "in intron, Num:") + gffCodInfoUCSCgene1.GeneInfo.get(0)[1];
+					}
+				} catch (Exception e) {
+					GffCodInfoGene gffCodInfoUCSCgene1 = (GffCodInfoGene) aa[0];
+					if (gffCodInfoUCSCgene1.insideLOC)
+					{
+						tmpPeakAnnotation[imputLength] = gffCodInfoUCSCgene1.LOCID[0];
+						tmpPeakAnnotation[imputLength+1] = (gffCodInfoUCSCgene1.GeneInfo.get(0)[0] == 1 ? "in exon, Num:" : "in intron, Num:") + gffCodInfoUCSCgene1.GeneInfo.get(0)[1];
+					}
+				}
+			}
+		
+			String genName = "";
+			for (int j = 2; j < lsObj.size() - 1; j++) {
+				GffDetailUCSCgene gffDetailUCSCgene = (GffDetailUCSCgene) lsObj.get(j);
+				if (genName.equals(""))
+					genName = gffDetailUCSCgene.locString;
+				else
+					genName = genName + "///"+ gffDetailUCSCgene.locString;
+			}
+			tmpPeakAnnotation[imputLength+2] = genName;
+			
+			Object[] aa2 = (Object[]) lsObj.get(1);
+			if (aa2[0] != null) {
+				try {
+					GffCodInfoUCSCgene gffCodInfoUCSCgene2 = (GffCodInfoUCSCgene) aa2[0];
+					if (gffCodInfoUCSCgene2.insideLOC)
+					{
+						tmpPeakAnnotation[imputLength+3] = gffCodInfoUCSCgene2.LOCID[0];
+						tmpPeakAnnotation[imputLength+4] = (gffCodInfoUCSCgene2.GeneInfo.get(0)[0] == 1 ? "in exon, Num:" : "in intron, Num:") + gffCodInfoUCSCgene2.GeneInfo.get(0)[1];
+					}
+				} catch (Exception e) {
+					GffCodInfoGene gffCodInfoUCSCgene2 = (GffCodInfoGene) aa2[0];
+					if (gffCodInfoUCSCgene2.insideLOC)
+					{
+						tmpPeakAnnotation[imputLength+3] = gffCodInfoUCSCgene2.LOCID[0];
+						tmpPeakAnnotation[imputLength+4] = (gffCodInfoUCSCgene2.GeneInfo.get(0)[0] == 1 ? "in exon, Num:" : "in intron, Num:") + gffCodInfoUCSCgene2.GeneInfo.get(0)[1];
+					}
+				}
+			}
+			
+			
+			lspeakAnnotation.add(tmpPeakAnnotation);
+			
+		}
+		return lspeakAnnotation;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	/**

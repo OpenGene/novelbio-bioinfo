@@ -7,7 +7,7 @@ import org.apache.ibatis.migration.commands.NewCommand;
 
 import com.novelbio.analysis.seq.BedSeq;
 
-public class FastQRNASeq extends Mapping{
+public class FastQRNASeq extends FastQMapAbs{
 	String species = "";
 	
 	
@@ -62,6 +62,16 @@ public class FastQRNASeq extends Mapping{
 		cmd = cmd + " -G /media/winE/Bioinformatics/GenomeData/Arabidopsis\\ TAIR9/TAIR10GFF/TAIR10_GTF3_genes.gtf ";
 		return null;
 	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }
 

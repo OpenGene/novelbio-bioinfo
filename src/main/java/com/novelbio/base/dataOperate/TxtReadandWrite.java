@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -111,6 +112,26 @@ public class TxtReadandWrite {
 	}
 	
 	/**
+	 * 去除空格后文件的字符长度，不是文件大小，而是含有多少文字
+	 * @return
+	 */
+	public long getTxtLen() {
+		int Result = 0;
+		String content = "";
+		// 先跳过前面的好多行
+		try {
+			BufferedReader read = readfile();
+			while ((content = read.readLine()) != null) {
+				Result = Result + content.trim().length();
+			}
+		} catch (Exception e) {
+			logger.error("读取出错");
+			e.printStackTrace();
+		}
+		return Result;
+	}
+
+	/**
 	 * @return 返回 String，读完不用关闭Buffer流
 	 * @throws Exception
 	 */
@@ -137,6 +158,7 @@ public class TxtReadandWrite {
 			lsResult.add(content);
 			rownum ++;
 		}
+		clone();
 		return lsResult;
 	}
 	
@@ -177,13 +199,24 @@ public class TxtReadandWrite {
 	public void writefileln(String content) {
 		try {
 			filewriter.write(content);
-			filewriter.write("\n");
+			filewriter.write("\r\n");
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
 	}
-	
+	/**
+	 * 写入并换行
+	 * @param content
+	 *            ，要写入文件内容
+	 * @throws Exception
+	 */
+	public void writefileln() {
+		try {
+			filewriter.write("\r\n");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
 	/**
 	 * 写入并将写入的序列换行，目前只能写入ascII文本
 	 * @param content 输入的string，是没有换行的那种
@@ -195,7 +228,7 @@ public class TxtReadandWrite {
 			char[] mychar = content.toCharArray();
 			for (int i = 0; i < mychar.length; i++) {
 				if (i>0 && i%length == 0) {
-					filewriter.write("\n");
+					filewriter.write("\r\n");
 				}
 				filewriter.write(mychar[i]);
 			}
@@ -608,6 +641,41 @@ public class TxtReadandWrite {
 		return result;
 	}
 
+	
+	
+	
+	/**
+	 * 给定一个两列文件，将其中的结果按照Key-value导出
+	 * 如果一列为空，如为很多空格，则跳过，如果有重复列，选择后出现的列
+	 * @param chrLenFile
+	 * @param keyCase key的大小写。 null 不改变大小写，false 小写，true大写
+	 * @return
+	 * 没东西则返回null
+	 */
+	public LinkedHashMap<String, String> getKey2Value(String sep, Boolean keyCase) {
+		LinkedHashMap<String, String> lkhashResult = new LinkedHashMap<String, String>();
+		ArrayList<String> lstmp = readfileLs();
+		for (String string : lstmp) {
+			if (string == null || string.trim().equals("")) {
+				continue;
+			}
+			String[] ss = string.trim().split("\t");
+			if (keyCase != null) {
+				 ss[0] = keyCase == true ? ss[0].toUpperCase():ss[0].toLowerCase();  
+			}
+			if (ss.length < 2) {
+				lkhashResult.put(ss[0], "");
+			}
+			else {
+				lkhashResult.put(ss[0], ss[1]);
+			}
+		}
+		if (lkhashResult.size() == 0) {
+			return null;
+		}
+		return lkhashResult;
+	}
+	
 	/**
 	 * 将数据按照excel的方法写入string[][],null和""都不写入，最后写入一个换行
 	 * 

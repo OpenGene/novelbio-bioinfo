@@ -63,7 +63,7 @@ public abstract class CopedIDAbs implements CopedIDInt{
 	KegGenEntryKO kegGenEntryKO = null;
 	
 	AGeneInfo geneInfo = null;
-	ArrayList<AGene2Go> lsGene2Gos = null;
+//	ArrayList<AGene2Go> lsGene2Gos = null;
 	
 	String databaseType = "";
 	

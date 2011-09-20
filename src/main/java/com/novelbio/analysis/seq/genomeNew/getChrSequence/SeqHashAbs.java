@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +21,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	/**
 	 * 保存chrID和chrLength的对应关系
 	 */
-	HashMap<String, Long> hashChrLength = new HashMap<String, Long>();
+	LinkedHashMap<String, Long> hashChrLength = new LinkedHashMap<String, Long>();
 	/**
 	 * 从小到大排列chrLength的list
 	 */
@@ -62,14 +64,14 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	/**
 	 * 
 	 * @param chrFile
-	 * @param regx 序列名的正则表达式，null不设定
+	 * @param regx 序列名的正则表达式，null和"   "都不设定
 	 * @param CaseChange 是否将序列名改为小写
 	 * @param TOLOWCASE 是否将序列结果改为小写 True：小写，False：大写，null不变
 	 */
 	public SeqHashAbs(String chrFile, String regx,boolean CaseChange) 
 	{
 		this.chrFile = chrFile;
-		if (regx != null) {
+		if (regx != null && !regx.trim().equals("")) {
 			this.regx = regx;
 		}
 		this.CaseChange = CaseChange;
@@ -91,7 +93,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * chrID通通小写
 	 * @return
 	 */
-	public HashMap<String, Long> getHashChrLength() {
+	public LinkedHashMap<String, Long> getHashChrLength() {
 		return hashChrLength;
 	}
 	/**
@@ -330,8 +332,31 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		}
 		return result;
 	}
-	
-
+	/**
+	 * 按顺序提取闭区间序列，每一个区段保存为一个SeqFasta对象
+	 * SeqFasta的名字为chrID:起点坐标-终点坐标 都是闭区间
+	 * @param chrID 序列ID
+	 * @param lsInfo 具体的区间
+	 * @return
+	 */
+	public ArrayList<SeqFasta> getRegionSeqFasta(List<LocInfo> lsLocInfos) {
+		ArrayList<SeqFasta> lsSeqfasta = new ArrayList<SeqFasta>();
+		for (LocInfo locInfo : lsLocInfos) {
+			String myChrID = locInfo.getChrID();
+			if (CaseChange) {
+				myChrID = myChrID.toLowerCase();
+			}
+			if (!hashChrLength.containsKey(myChrID)) {
+				logger.error("没有该染色体： "+ locInfo.getChrID());
+				return null;
+			}
+			SeqFasta seqFasta = new SeqFasta(locInfo.getChrID()+":"+locInfo.getStartLoc()+"-"+ locInfo.getEndLoc(),
+					getSeq(myChrID, locInfo.getStartLoc(),
+							locInfo.getEndLoc()), locInfo.isCis5to3());
+			lsSeqfasta.add(seqFasta);
+		}
+		return lsSeqfasta;
+	}
 	
 	
 }

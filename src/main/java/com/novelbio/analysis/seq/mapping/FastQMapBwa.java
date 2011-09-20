@@ -1,0 +1,255 @@
+package com.novelbio.analysis.seq.mapping;
+
+import java.util.Date;
+
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.log4j.Logger;
+
+import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.base.cmd.CMDcallback;
+import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
+
+/**
+ * 在set里面有很多参数可以设定，不设定就用默认
+ * @author zong0jie
+ *
+ */
+public class FastQMapBwa extends FastQMapAbs{
+	/**
+	 * 在此大小以下的genome直接读入内存以帮助快速mapping
+	 * 单位，KB
+	 * 似乎该值双端才有用
+	 */
+	private static final int GENOME_SIZE_IN_MEMORY = 500000;
+	private static Logger logger = Logger.getLogger(FastQMapSoap.class);  
+	/**
+	 * @param fastQ
+	 * @param outFileName 结果文件名
+	 * @param uniqMapping 是否uniqmapping，单端才有的参数
+	 */
+	protected FastQMapBwa(FastQ fastQ, String outFileName, boolean uniqMapping ) 
+	{
+		 this(fastQ.getSeqFile(), fastQ.getSeqFile2(),fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
+	}
+	
+	/**
+	 * 双端只做unique mapping
+	 * @param seqFile1
+	 * @param seqFile2 没有就写null
+	 * @param FastQFormateOffset
+	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
+	 * @param outFileName 结果文件名
+	 * @param uniqMapping 是否uniqmapping，单端才有的参数
+	 * @param IndexFile
+	 */
+	public FastQMapBwa(String seqFile1, String seqFile2,
+			int FastQFormateOffset, int QUALITY,String outFileName, boolean uniqMapping) {
+		super(seqFile1, seqFile2, FastQFormateOffset, QUALITY);
+		this.uniqMapping = uniqMapping;
+		
+		this.outFileName = outFileName;
+	}
+
+	/**
+	 * @param seqFile1
+	 * @param FastQFormateOffset
+	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
+	 * @param outFilePath 结果文件名
+	 * @param IndexFile
+	 */
+	public FastQMapBwa(String seqFile1,
+			int FastQFormateOffset, int QUALITY,String outFileName, boolean uniqMapping) {
+		super(seqFile1, null, FastQFormateOffset, QUALITY);
+		this.uniqMapping = uniqMapping;
+		this.outFileName = outFileName;
+	}
+	
+	/**
+	 * @param seqFile1
+	 * @param FastQFormateOffset
+	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
+	 * @param outFilePath 结果文件名
+	 * @param IndexFile
+	 */
+	public FastQMapBwa(String seqFile1
+			, int QUALITY,String outFileName, boolean uniqMapping) {
+		super(seqFile1, QUALITY);
+		this.outFileName = outFileName;
+		this.uniqMapping = uniqMapping;
+	}
+	
+	/**
+	 * 先filterReads，得到过滤后的FastQ文件后，再mapping，
+	 * 指定阈值，将fastQ文件进行过滤处理并产生新文件，那么本类的文件也会替换成新的文件
+	 * @param Qvalue_Num 二维数组 每一行代表一个Qvalue 以及最多出现的个数
+	 * int[0][0] = 13  int[0][1] = 7 :表示质量低于Q13的个数小于7个
+	 * @param fileFilterOut 结果文件后缀，如果指定的fastQ有两个文件，那么最后输出两个fileFilterOut<br>
+	 * 分别为fileFilterOut_1和fileFilterOut_2
+	 * @return 返回已经过滤好的FastQSoapMap，其实里面也就是换了两个FastQ文件而已，mapping结果文件不变。
+	 * 所以不需要指定新的mapping文件
+	 * 出错返回null
+	 */
+	protected FastQMapBwa createFastQMap(FastQ fastQ) 
+	{
+		FastQMapBwa fastQSoapMap= new FastQMapBwa(fastQ.getSeqFile(), fastQ.getSeqFile2(), fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
+		return fastQSoapMap;
+	}
+	
+	
+	
+	
+	private int gapLength = 3;
+	/**
+	 * 默认gap为3，如果是indel查找的话，设置到5或者6比较合适
+	 * @param gapLength
+	 */
+	public void setGapLength(int gapLength) {
+		this.gapLength = gapLength;
+	}
+	/**
+	 * 参数设定不能用于solid
+	 */
+	@Override
+	public void mapReads() {
+		IndexMake();
+//		linux命令如下
+//		bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT.fastq > TGACT.sai
+//		bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT2.fastq > TGACT2.sai
+//		bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai TGACT2.sai barcod_TGACT.fastq 
+		
+		
+		String cmd = ""; cmd = ExePath + " aln ";
+		cmd = cmd + "-n 0.05 "; //5%的错误率
+		cmd = cmd + "-o 1 "; //一个gap
+		cmd = cmd + "-e " + gapLength + " "; //该gap最多5bp长
+		cmd = cmd + "-l 25 "; //种子长度
+		cmd = cmd + "-t 4 "; //4个线程
+		cmd = cmd + "-O 10 "; //Gap open penalty. gap罚分
+		if (getOffset() == FASTQ_ILLUMINA_OFFSET) {
+			cmd = cmd + "-I "; //Illumina 的偏移
+		}
+		
+		String sai1 = FileOperate.changeFileSuffix(getSeqFile(),"_1","sai");
+		sai1 = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(sai1)[0] + ".sai"; 
+		String cmd1 = cmd + chrFile + " " + getSeqFile() + " > " + sai1;
+		System.out.println(cmd1);
+		CmdOperate cmdOperate = new CmdOperate(cmd1);
+		cmdOperate.doInBackground("bwaMapping1");
+		
+		String sai2 = "";
+		if (isPairEnd()) {
+			sai2 = FileOperate.changeFileSuffix(getSeqFile2(),"_2","sai");
+			sai2 = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(sai2)[0] + ".sai"; 
+			String cmd2 = cmd + chrFile + " " + getSeqFile2() + " > " + sai2;
+			System.out.println(cmd2);
+			cmdOperate = new CmdOperate(cmd2);
+			cmdOperate.doInBackground("bwaMapping2");
+		}
+	
+		////////////////////////这里设定了将基因组读入内存的限制///////////////////////////////////////////////////////////////////
+//		双端
+//		bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai 
+//		TGACT2.sai barcod_TGACT.fastq barcod_TGACT2.fastq > TGACT.sam
+		if (isPairEnd()) {
+			cmd = "bwa sampe " + "-a " + maxInsert;
+			if (FileOperate.getFileSize(chrFile) < GENOME_SIZE_IN_MEMORY) {
+				cmd = cmd + " -P ";//将基因组读入内存
+			}
+			cmd = cmd + " -n 10 -N 10 ";
+			cmd = cmd + chrFile + " " + sai1 + " "  + sai2 + " "  + getSeqFile() + " "  + getSeqFile2();
+			cmd = cmd + " > " + outFileName;
+		}
+		else {
+			if (uniqMapping) {
+				cmd = "bwa samse " + "-n 1 ";
+			}
+			else {
+				cmd = "bwa samse " + "-n 100 ";
+			}
+			cmd = cmd + chrFile + " " + sai1 + " "  + getSeqFile();
+			cmd = cmd + " > " + outFileName;
+		}
+		System.out.println(cmd);
+		cmdOperate = new CmdOperate(cmd);
+		cmdOperate.doInBackground("bwaMappingSAI");
+
+	}
+	/**
+	 * 返回bed文件，如果是双端就返回双端的bed文件
+	 * 如果是单端就返回延长的bed文件，默认延长至extendTo bp
+	 * @return
+	 */
+	@Override
+	public BedSeq getBedFile(String bedFile) {
+		if (!FileOperate.isFileExist(outFileName)) { 
+			mapReads();
+		}
+		SAMtools saMtools = new SAMtools(outFileName, isPairEnd(), 25);
+		if (isPairEnd()) {
+			return saMtools.sam2bed(bedFile, uniqMapping);
+		}
+		else {
+			BedSeq bedSeq = saMtools.sam2bed(bedFile+"raw", uniqMapping);
+			return bedSeq.extend(extendTo, bedFile);
+		}
+	}
+	
+	/**
+	 * 强制返回单端的bed文件，用于给macs找peak用
+	 * @return
+	 */
+	@Override
+	public BedSeq getBedFileSE(String bedFile) {
+		if (!FileOperate.isFileExist(outFileName)) { 
+			mapReads();
+		}
+		SAMtools saMtools = new SAMtools(outFileName, false, 25);
+		return saMtools.sam2bed(bedFile, uniqMapping);
+		
+	}
+	
+	/**
+	 * 根据基因组大小判断采用哪种编码方式
+	 * @return 已经在前后预留空格，直接添加上idex就好
+	 * 小于500MB的用 -a is
+	 * 大于500MB的用 -a bwtsw
+	 */
+	private String getChrLen()
+	{
+		TxtReadandWrite txt = new TxtReadandWrite(chrFile, false);
+		long size = (long) FileOperate.getFileSize(chrFile);
+		if (size/1024 > 500) {
+			return " -a bwtsw ";
+		}
+		else {
+			return " -a is ";
+		}
+	}
+
+	@Override
+	protected void IndexMake() {
+//		linux命令如下 
+//	 	bwa index -p prefix -a algoType -c  chrFile
+//		-c 是solid用
+		if (FileOperate.isFileExist(chrFile + ".bwt") == true) {
+			return;
+		}
+		String cmd = ExePath + " index ";
+		cmd = cmd + getChrLen();//用哪种算法
+		//TODO :考虑是否自动判断为solid
+		cmd = cmd + chrFile;
+		System.out.println(cmd);
+		CmdOperate cmdOperate = new CmdOperate(cmd);
+		cmdOperate.doInBackground("bwaMakeIndex");
+	}
+	
+	
+	
+	
+	
+}

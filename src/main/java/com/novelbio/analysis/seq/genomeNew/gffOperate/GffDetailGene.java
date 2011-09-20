@@ -39,14 +39,20 @@ public class GffDetailGene extends GffDetailAbs
 	 */
 	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
 	/**
-	 * 顺序存储查找后的每个转录本的的坐标情况
-	 */
-	private ArrayList<GffGeneIsoSearch> lsGffGeneIsoInfoSearch = null;//存储可变剪接的mRNA
-	/**
 	 * 顺序存储每个转录本的名字
 	 */
 	private ArrayList<String> lsIsoName = new ArrayList<String>();
 	
+	public void setCoord(int coord) {
+		this.coord = coord;
+		ArrayList<GffGeneIsoInfo> lsGffInfo = getCoordLs();
+		if (lsGffInfo == null || lsGffInfo.size() < 1) {
+			return;
+		}
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffInfo) {
+			gffGeneIsoInfo.setCoord(coord);
+		}
+	}
 	
 	/**
 	 * 
@@ -119,7 +125,13 @@ public class GffDetailGene extends GffDetailAbs
 	 * 直接添加转录本，之后用addcds()方法给该转录本添加exon
 	 */
 	protected void addsplitlist(String splitName) {
-		GffGeneIsoInfo gffGeneIsoInfo = new GffGeneIsoInfo(splitName,cis5to3,this);
+		GffGeneIsoInfo gffGeneIsoInfo = null;
+		if (cis5to3) {
+			gffGeneIsoInfo = new GffGeneIsoCis(splitName,this);
+		}
+		else {
+			gffGeneIsoInfo = new GffGeneIsoTrans(splitName,this);
+		}
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 		lsIsoName.add(splitName);
 	}
@@ -178,39 +190,8 @@ public class GffDetailGene extends GffDetailAbs
 	 * 用坐标查找具体的转录本信息，如果坐标信息相同，则返回以前的信息
 	 * @param coord
 	 */
-	public ArrayList<GffGeneIsoSearch> getCoordSearchLs() {
-		if (lsGffGeneIsoInfoSearch != null && coord == lsGffGeneIsoInfoSearch.get(0).getCoord()) {
-			return lsGffGeneIsoInfoSearch;
-		}
-		lsGffGeneIsoInfoSearch = new ArrayList<GffGeneIsoSearch>();
-		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			GffGeneIsoSearch gffGeneIsoSearch = null;
-			if (cis5to3) {
-				gffGeneIsoSearch = new GffGeneIsoSearchCis(gffGeneIsoInfo, coord);
-			}
-			else {
-				gffGeneIsoSearch = new GffGeneIsoSearchTrans(gffGeneIsoInfo, coord);
-			}
-			lsGffGeneIsoInfoSearch.add(gffGeneIsoSearch);
-		}
-		return lsGffGeneIsoInfoSearch;
-	}
-	/**
-	 * 用坐标查找具体的转录本信息
-	 * @param coord
-	 */
-	public GffGeneIsoSearch getCoordSearchLongest() {
-		ArrayList<GffGeneIsoSearch> lsGffGeneIsoSearchs = getCoordSearchLs();
-		int id = getLongestSplitID();
-		return lsGffGeneIsoSearchs.get(id);
-	}
-	/**
-	 * 用坐标查找具体的转录本信息
-	 * @param coord
-	 */
-	public GffGeneIsoSearch getCoordSearchName(String splitName) {
-		ArrayList<GffGeneIsoSearch> lsGffGeneIsoSearchs = getCoordSearchLs();
-		return lsGffGeneIsoSearchs.get(lsIsoName.indexOf(splitName));
+	public ArrayList<GffGeneIsoInfo> getCoordLs() {
+		return lsGffGeneIsoInfos;
 	}
     /**
      * 获得该基因中最长的一条转录本的部分区域的信息。已经考虑过开闭区间问题

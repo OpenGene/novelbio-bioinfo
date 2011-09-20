@@ -15,7 +15,7 @@ public class SeqFasta {
 	private String SeqName;
 	private String SeqSequence;
 	private static Logger logger = Logger.getLogger(SeqFasta.class);
-	
+	private boolean cis5to3 = true;
 	
 	/**
 	 * 当用指定序列来插入或替换本序列中的位置时，如果插入的位置并不是很确定
@@ -23,11 +23,36 @@ public class SeqFasta {
 	 */
 	private static final String SEP_SEQ = "XXXXXXX";
 	
+	public SeqFasta(String seqName, String SeqSequence)
+	{
+		getCompMap();
+		this.SeqName = seqName;
+		this.SeqSequence = SeqSequence;
+	}
+	public SeqFasta(String seqName, String SeqSequence, boolean cis5to3)
+	{
+		getCompMap();
+		this.SeqName = seqName;
+		
+		this.cis5to3 = cis5to3;
+		if (cis5to3) {
+			this.SeqSequence = SeqSequence;
+		}
+		else {
+			this.SeqSequence = reservecom(SeqSequence);
+		}
+	}
 	
 	protected SeqFasta() {
 		getCompMap();
 	}
-	
+	/**
+	 * 本序列在生成的时候是正向还是反向，实际没有影响
+	 * @return
+	 */
+	public boolean isCis5to3() {
+		return cis5to3;
+	};
 	/**
 	 * 设定序列名
 	 */
@@ -252,15 +277,21 @@ public class SeqFasta {
 		String FinalSeq = String.copyValueOf(chrSeq);
 		SeqSequence = FinalSeq;
 	}
-	
-	
+	/**
+	 * 直接返回序列
+	 */
+	public String toString()
+	{
+		return SeqSequence;
+		
+	}
 	/**
 	 * 统计序列中小写序列，N的数量以及X的数量等
 	 */
-	public ArrayList<String[]> getSeqInfo()
+	public ArrayList<LocInfo> getSeqInfo()
 	{
 		//string0: flag string1: location string2:endLoc
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		ArrayList<LocInfo> lsResult = new ArrayList<LocInfo>();
 		
 		
 		char[] seq = SeqSequence.toCharArray();
@@ -339,17 +370,8 @@ public class SeqFasta {
 					flagBound = false; //边界模糊标记，XX
 				}
 			}
-			
-			
 		}
 		return lsResult;
-		
-		
-		
-		
-		
-		
-		
 	}
 	/**
 	 * 
@@ -358,12 +380,9 @@ public class SeqFasta {
 	 * @param start 内部会加上1
 	 * @param length
 	 */
-	private void addList(ArrayList<String[]> lsInfo, String info, int start, int length) {
-		String[] tmpInfo = new String[3];
-		tmpInfo[0] = info;
-		tmpInfo[1] = start + 1 + "";
-		tmpInfo[2] = start + length + "";
-		lsInfo.add(tmpInfo);
+	private void addList(ArrayList<LocInfo> lsInfo, String info, int start, int length) {
+		LocInfo locInfo = new LocInfo(info, "", start, start+length-1, true);
+		lsInfo.add(locInfo);
 	}
 	
 	

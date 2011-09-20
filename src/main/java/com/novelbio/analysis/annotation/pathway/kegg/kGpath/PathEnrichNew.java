@@ -341,7 +341,12 @@ public class PathEnrichNew {
 					hashGeneNum.add(accID);
 					//////////////////获得本基因的geneInfo///////////////////////////////////
 					String[] anno = ServAnno.getGenInfo(geneID);
-					symbol = anno[0]; description = anno[1];
+					if (anno != null) {
+						symbol = anno[0]; description = anno[1];
+					}
+					else {
+						symbol = ""; description = "";
+					}
 					/////////////////////////////////////////////////////////////////////////////////////////
 					String thisevalue = kGen2Path.getBlastInfo().getEvalue()+"";
 					String subTax = subTaxID + "";

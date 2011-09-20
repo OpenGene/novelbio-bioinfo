@@ -32,7 +32,7 @@ import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlPath;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.CtrlNormal;
-import com.novelbio.base.gui.DoubleOnlyDoc;
+import com.novelbio.base.gui.NumberOnlyDoc;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.NumOnlyDoc;
 
@@ -159,16 +159,7 @@ public class GuiPathJpanel extends JPanel{
 		}
 		{
 			jTxtUpValuePath = new JTextField();
-			jTxtUpValuePath.setDocument(new DoubleOnlyDoc());
-			jTxtUpValuePath.addKeyListener(new KeyAdapter() {
-				public void keyTyped(KeyEvent evt) {
-					String old = jTxtUpValuePath.getText();
-					if (old.contains(".")&&evt.getKeyChar() == '.') {
-						evt.setKeyChar('\0');//³ÁÄ¬
-					}
-				}
-			});
-
+			jTxtUpValuePath.setDocument(new NumberOnlyDoc(10,4));
 		}
 		{
 			jLabDownValuePath = new JLabel();
@@ -176,15 +167,7 @@ public class GuiPathJpanel extends JPanel{
 		}
 		{
 			jTxtDownValuePath = new JTextField();
-			jTxtDownValuePath.setDocument(new DoubleOnlyDoc());
-			jTxtDownValuePath.addKeyListener(new KeyAdapter() {
-				public void keyTyped(KeyEvent evt) {
-					String old = jTxtDownValuePath.getText();
-					if (old.contains(".")&&evt.getKeyChar() == '.') {
-						evt.setKeyChar('\0');//³ÁÄ¬
-					}
-				}
-			});
+			jTxtDownValuePath.setDocument(new NumberOnlyDoc(10,4));
 
 		}
 		{
@@ -503,8 +486,11 @@ public class GuiPathJpanel extends JPanel{
 		
 		CtrlPath ctrlPath = null;
 		if (!jChkCluster.isSelected() || colAccID == colFC) {
-			double up = Double.parseDouble(jTxtUpValuePath.getText());
-			double down = Double.parseDouble(jTxtDownValuePath.getText());
+			double up = 0; double down = 0;
+			if ( colAccID != colFC) {
+				up = Double.parseDouble(jTxtUpValuePath.getText());
+				down = Double.parseDouble(jTxtDownValuePath.getText());
+			}
 			ctrlPath = CtrlPath.getInstance(geneFileXls, colAccID, colFC, up, down, backGroundFile, QtaxID, blast, StaxID, evalue);
 			ctrlPath.doInBackground();
 			setPath(ctrlPath);
@@ -531,7 +517,7 @@ public class GuiPathJpanel extends JPanel{
 			settab(jTabbedPanePathResult, "DownPathAnalysis", lsDownResult.get(0));
 			settab(jTabbedPanePathResult, "DownGene2Path", lsDownResult.get(1));
 		}
-		if (hashResult.size() > 0) {
+		if (hashResult != null && hashResult.size() > 0) {
 			for(Entry<String,ArrayList<ArrayList<String[]>>> entry:hashResult.entrySet())
 			{
 				String key = entry.getKey();

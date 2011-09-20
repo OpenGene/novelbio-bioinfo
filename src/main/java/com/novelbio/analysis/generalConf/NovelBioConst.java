@@ -67,8 +67,10 @@ public class NovelBioConst {
 	 * 7位Os号
 	 */
 	public final static String DBINFO_RICE_TIGR = "TIGRrice";
-
-	
+	/**
+	 * 相对路径文件夹
+	 */
+	public final static String PATH_POSITION_RELATE = "ConfFold/";
 	/**
 	 * 9位Os号
 	 */

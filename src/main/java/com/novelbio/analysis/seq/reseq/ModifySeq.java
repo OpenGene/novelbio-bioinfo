@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -46,7 +47,7 @@ public class ModifySeq {
 	 * null不变
 	 */
 	public void setSeqFasta(String SeqFile, Boolean TOLOWCASE) {
-		seqFastaHash = new SeqFastaHash(SeqFile, TOLOWCASE);
+		seqFastaHash = new SeqFastaHash(SeqFile, "", true,false,TOLOWCASE);
 		//只获取第一条序列，因为细菌只有一条
 		seqFasta = seqFastaHash.getSeqFastaAll().get(0);
 	}
@@ -62,7 +63,7 @@ public class ModifySeq {
 	{
 		pathInfo = FileOperate.addSep(pathInfo);
 		
-		SeqFastaHash seqModifyFastaHash = new SeqFastaHash(modifySeqFile);
+		SeqFastaHash seqModifyFastaHash = new SeqFastaHash(modifySeqFile);//h(modifySeqFile);
 		ArrayList<String[]> lsFileName = FileOperate.getFoldFileName(pathInfo, "*", "info");
 		//modify的lst_Info信息
 		ArrayList<ModifyInfo> lsModifyInfos = new ArrayList<ModifyInfo>();
@@ -186,7 +187,7 @@ public class ModifySeq {
 			seqFasta.modifySeq(modifyInfo.getStart(), modifyInfo.getEnd(),modifyInfo.getModifySeq().toUpperCase(), modifyInfo.isBooStart(), modifyInfo.isBooEnd());
 		}
 		if (tmpModifyInfo != null) {
-			String subseq = tmpModifyInfo.getModifySeq().substring(tmpModifyInfo.getCrossStartSiteSeq2Start() - 1).toUpperCase();
+			String subseq = tmpModifyInfo.getModifySeq().substring(tmpModifyInfo.getCrossStartSiteSeq2Start() - tmpModifyInfo.getStartModify()).toUpperCase();
 //			seqFasta.modifySeq(tmpModifyInfo.getCrossStartSiteSeq1Start(),tmpModifyInfo.getEnd(),subseq,  tmpModifyInfo.isBooStart(),true);
 			seqFasta.modifySeq(1,tmpModifyInfo.getEnd(),subseq, true ,tmpModifyInfo.isBooEnd());
 		}

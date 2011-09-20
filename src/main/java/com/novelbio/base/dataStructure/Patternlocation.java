@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 public class Patternlocation 
 {
 	/**
+	 * <b>高级处理，耗时长</b>
 	 * 输入stringinput，正则表达式,以及是否无视大小写（True），
 	 * @param inputstr：输入所要查找的string
 	 * @param regex：输入要匹配的正则表达式
@@ -69,11 +70,47 @@ public class Patternlocation
        }
        return listResult;
      }
-    
-    
-    
-    
+    /**
+     * <b>简单处理，相对快速</b>
+     * 获得序列中指定的所有正则表达式的值
+     * @param inputstr
+     * @param regex
+     * @param CASE
+     * @return 没有抓到的话，返回null
+     */
+    public ArrayList<String> getPat(String inputstr)
+    {
+    	ArrayList<String> lsresult = new ArrayList<String>();
+    	 matInput=patInput.matcher(inputstr);
+    	 while (matInput.find()) {
+			lsresult.add(matInput.group());
+		}
+    	 if (lsresult.size() == 0) {
+			return null;
+		}
+    	return lsresult;
     }
+    
+    String regex = "";
+    boolean thiscase = false;
+	 Pattern patInput;
+	 Matcher matInput;
+    public Patternlocation(String regex,boolean thiscase) {
+		this.regex = regex;
+		this.thiscase = thiscase;
+
+    	 if(!thiscase)//是否无视大小写
+    	 {
+    	     patInput=Pattern.compile(regex,Pattern.CASE_INSENSITIVE);
+    	 }
+    	 else 
+    	 {
+    		 patInput=Pattern.compile(regex);
+		}
+	}
+
+    
+}
 
 
 

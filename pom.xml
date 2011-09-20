@@ -74,13 +74,6 @@
   		<scope>compile</scope>
   	</dependency>
   	<dependency>
-  		<groupId>net.sourceforge.jchardet</groupId>
-  		<artifactId>jchardet</artifactId>
-  		<version>1.0</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
   		<groupId>com.google.guava</groupId>
   		<artifactId>guava</artifactId>
   		<version>r09</version>
@@ -126,11 +119,6 @@
   		<groupId>net.sourceforge.cpdetector</groupId>
   		<artifactId>cpdetector</artifactId>
   		<version>1.0.8</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>jheatchart</groupId>
-  		<artifactId>jheatchart</artifactId>
-  		<version>0.6</version>
   	</dependency>
   	<dependency>
   		<groupId>org.apache.httpclient</groupId>

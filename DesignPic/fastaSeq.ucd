@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" xmlns:options="options.xmi" name="fastaSeq" size="1163,1856" id="" metadata="uml2-1.0" initialized="true" scrolledY="889" tag="10" key="32303037303533312D3130204E6F76656C62696F">
+  <children xsi:type="editmodel:ClassEditModel" name="CtrlSeq" location="705,1140" size="167,81" id="com.novelbio.analysis.seq/CtrlSeq" runTimeClassModel="main([Ljava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="57,18">
+      <children xsi:type="editmodel:MethodEditModel" name="main" id="com.novelbio.analysis.seq/CtrlSeq#main([Ljava.lang.String;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="3" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="SAMtools" location="765,360" size="218,135" id="com.novelbio.analysis.seq.mapping/SAMtools" runTimeClassModel="paired,samFile,sam2bed(Ljava.lang.String;Z),SAMtools(Ljava.lang.String;ZI)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="106,36">
+      <children xsi:type="editmodel:AttributeEditModel" name="paired" id="com.novelbio.analysis.seq.mapping/SAMtools#paired"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="samFile" id="com.novelbio.analysis.seq.mapping/SAMtools#samFile"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="81,36">
+      <children xsi:type="editmodel:MethodEditModel" name="SAMtools" id="com.novelbio.analysis.seq.mapping/SAMtools#SAMtools(Ljava.lang.String;ZI)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="sam2bed" id="com.novelbio.analysis.seq.mapping/SAMtools#sam2bed(Ljava.lang.String;Z)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" autoLocated="true" id="com.novelbio.analysis.seq.mapping/SAMtools->Standard::Instantiate" source="//@children.1" target="//@children.8" targetEnd="//@children.1/@sourceConnections.0/@children.2" label="//@children.1/@sourceConnections.0/@children.0" sourceEnd="//@children.1/@sourceConnections.0/@children.1" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:WireLabelEditModel" name="«Import, Instantiate»" size="114,13" anchorKind="MiddlePart"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,57" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="167,112"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="3" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:InterfaceEditModel" targetConnections="//@children.9/@sourceConnections.1" name="PeakCalling" location="60,305" size="213,94" id="com.novelbio.analysis.seq.chipseq/PeakCalling" runTimeClassModel="peakCallling(Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="97,18">
+      <children xsi:type="editmodel:MethodEditModel" name="peakCallling" id="com.novelbio.analysis.seq.chipseq/PeakCalling#peakCallling(Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="3" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="FastQMapSoap" location="556,1341" size="218,243" id="com.novelbio.analysis.seq.mapping/FastQMapSoap" runTimeClassModel="FastQMapSoap(Ljava.lang.String;Ljava.lang.String;IILjava.lang.String;),FastQMapSoap(Ljava.lang.String;ILjava.lang.String;Z),getBedFile(Ljava.lang.String;),exeIndexPath,mapReads(),getBedFileSE(Ljava.lang.String;),getBed2Macs(Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;),FastQMapSoap(Ljava.lang.String;IILjava.lang.String;Z),filterReads(Ljava.lang.String;),copeSope2Bed(Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="132,18">
+      <children xsi:type="editmodel:AttributeEditModel" name="exeIndexPath" id="com.novelbio.analysis.seq.mapping/FastQMapSoap#exeIndexPath"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="113,162">
+      <children xsi:type="editmodel:MethodEditModel" name="FastQMapSoap" id="com.novelbio.analysis.seq.mapping/FastQMapSoap#FastQMapSoap(Ljava.lang.String;Ljava.lang.String;IILjava.lang.String;Z)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="FastQMapSoap" id="com.novelbio.analysis.seq.mapping/FastQMapSoap#FastQMapSoap(Ljava.lang.String;ILjava.lang.String;Z)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="FastQMapSoap" id="com.novelbio.analysis.seq.mapping/FastQMapSoap#FastQMapSoap(Ljava.lang.String;IILjava.lang.String;Z)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="copeSope2Bed" id="com.novelbio.analysis.seq.mapping/FastQMapSoap#copeSope2Bed(Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="filterReads" id="com.novelbio.analysis.seq.mapping/FastQMapSoap#create(Lcom.novelbio.analysis.seq.FastQ;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getBed2Macs" id="com.novelbio.analysis.seq.mapping/FastQMapSoap#getBed2Macs(Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getBedFile" id="com.novelbio.analysis.seq.mapping/FastQMapSoap#getBedFile(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getBedFileSE" id="com.novelbio.analysis.seq.mapping/FastQMapSoap#getBedFileSE(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="mapReads" id="com.novelbio.analysis.seq.mapping/FastQMapSoap#mapReads()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" targetConnections="//@children.5/@sourceConnections.0 //@children.6/@sourceConnections.0" autoLocated="true" id="com.novelbio.analysis.seq.mapping/FastQMapAbs&lt;-com.novelbio.analysis.seq.mapping/FastQMapSoap" source="//@children.3" target="//@children.4" targetEnd="//@children.3/@sourceConnections.0/@children.1" sourceEnd="//@children.3/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="109,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="109,351" anchorKind="FixedAtEdge"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="3" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.3/@sourceConnections.0" name="FastQMap" location="307,940" size="218,351" id="com.novelbio.analysis.seq.mapping/FastQMapAbs" runTimeClassModel="FastQMap(Ljava.lang.String;Ljava.lang.String;I),setExtendTo(I),mapReads(),extendTo,FastQMap(Ljava.lang.String;Ljava.lang.String;II),maxInsert,getBedFile(Ljava.lang.String;),FastQMap(Ljava.lang.String;I),exePath,getBedFileSE(Ljava.lang.String;),minInsert,uniqMapping,chrFile,outFileName,setInsertSize(II),setFilePath(Ljava.lang.String;Ljava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="142,126">
+      <children xsi:type="editmodel:AttributeEditModel" name="chrFile" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#chrFile"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="exePath" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#exePath"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="extendTo" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#extendTo"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="maxInsert" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#maxInsert"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="minInsert" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#minInsert"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="outFileName" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#outFileName"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="uniqMapping" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#uniqMapping"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="101,162">
+      <children xsi:type="editmodel:MethodEditModel" name="FastQMap" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#FastQMapAbs(Ljava.lang.String;Ljava.lang.String;I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="FastQMap" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#FastQMapAbs(Ljava.lang.String;I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="FastQMap" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#FastQMapAbs(Ljava.lang.String;Ljava.lang.String;II)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getBedFile" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#getBedFile(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getBedFileSE" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#getBedFileSE(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="mapReads" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#mapReads()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setExtendTo" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#setExtendTo(I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setFilePath" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#setFilePath(Ljava.lang.String;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setInsertSize" id="com.novelbio.analysis.seq.mapping/FastQMapAbs#setInsertSize(II)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.novelbio.analysis.seq/FastQ&lt;-com.novelbio.analysis.seq.mapping/FastQMapAbs" source="//@children.4" target="//@children.7" targetEnd="//@children.4/@sourceConnections.0/@children.1" sourceEnd="//@children.4/@sourceConnections.0/@children.0" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="205,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="12,585"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="3" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="FastQMapBwa" location="308,1341" size="218,225" id="com.novelbio.analysis.seq.mapping/FastQMapBwa" runTimeClassModel="getBedFile(Ljava.lang.String;),mapReads(),gapLength,getBedFileSE(Ljava.lang.String;),filterReads(Ljava.lang.String;),FastQMapBwa(Ljava.lang.String;ILjava.lang.String;Z),FastQMapBwa(Ljava.lang.String;Ljava.lang.String;IILjava.lang.String;),FastQMapBwa(Ljava.lang.String;IILjava.lang.String;Z),setGapLength(I)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="99,18">
+      <children xsi:type="editmodel:AttributeEditModel" name="gapLength" id="com.novelbio.analysis.seq.mapping/FastQMapBwa#gapLength"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="107,144">
+      <children xsi:type="editmodel:MethodEditModel" name="FastQMapBwa" id="com.novelbio.analysis.seq.mapping/FastQMapBwa#FastQMapBwa(Ljava.lang.String;Ljava.lang.String;IILjava.lang.String;Z)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="FastQMapBwa" id="com.novelbio.analysis.seq.mapping/FastQMapBwa#FastQMapBwa(Ljava.lang.String;IILjava.lang.String;Z)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="FastQMapBwa" id="com.novelbio.analysis.seq.mapping/FastQMapBwa#FastQMapBwa(Ljava.lang.String;ILjava.lang.String;Z)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="filterReads" id="com.novelbio.analysis.seq.mapping/FastQMapBwa#filterReads(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getBedFile" id="com.novelbio.analysis.seq.mapping/FastQMapBwa#getBedFile(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getBedFileSE" id="com.novelbio.analysis.seq.mapping/FastQMapBwa#getBedFileSE(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="mapReads" id="com.novelbio.analysis.seq.mapping/FastQMapBwa#mapReads()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="setGapLength" id="com.novelbio.analysis.seq.mapping/FastQMapBwa#setGapLength(I)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.novelbio.analysis.seq.mapping/FastQMapAbs&lt;-com.novelbio.analysis.seq.mapping/FastQMapBwa" source="//@children.5" target="//@children.3/@sourceConnections.0" targetEnd="//@children.5/@sourceConnections.0/@children.1" sourceEnd="//@children.5/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="109,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="3" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="FastQRNASeq" location="60,1341" size="218,153" id="com.novelbio.analysis.seq.mapping/FastQRNASeq" runTimeClassModel="FastQRNASeq(Ljava.lang.String;Ljava.lang.String;IILjava.lang.String;),species,FastQRNASeq(Ljava.lang.String;Ljava.lang.String;ILjava.lang.String;),mapReads(),FastQRNASeq(Ljava.lang.String;ILjava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="100,18">
+      <children xsi:type="editmodel:AttributeEditModel" name="species" id="com.novelbio.analysis.seq.mapping/FastQRNASeq#species"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="103,72">
+      <children xsi:type="editmodel:MethodEditModel" name="FastQRNASeq" id="com.novelbio.analysis.seq.mapping/FastQRNASeq#FastQRNASeq(Ljava.lang.String;Ljava.lang.String;ILjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="FastQRNASeq" id="com.novelbio.analysis.seq.mapping/FastQRNASeq#FastQRNASeq(Ljava.lang.String;ILjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="FastQRNASeq" id="com.novelbio.analysis.seq.mapping/FastQRNASeq#FastQRNASeq(Ljava.lang.String;Ljava.lang.String;IILjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="mapReads" id="com.novelbio.analysis.seq.mapping/FastQRNASeq#mapReads()"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.novelbio.analysis.seq.mapping/FastQMapAbs&lt;-com.novelbio.analysis.seq.mapping/FastQRNASeq" source="//@children.6" target="//@children.3/@sourceConnections.0" targetEnd="//@children.6/@sourceConnections.0/@children.1" sourceEnd="//@children.6/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="109,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="3" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.4/@sourceConnections.0" name="FastQ" location="500,305" size="289,585" id="com.novelbio.analysis.seq/FastQ" runTimeClassModel="FastQ(Ljava.lang.String;Ljava.lang.String;II),treeLenBarcode,lsBarCode,sepBarCode(Ljava.lang.String;[Ljava.lang.String;),fASTQ_SANGER_OFFSET,guessFastOFormat(Ljava.util.List;),getSeqFile2(),getQuality(),hashBarcodeName,FastQ(Ljava.lang.String;I),trimPolyA(ILjava.lang.String;),qUALITY_HIGM,WZFsepFastQ(Ljava.lang.String;),fASTQ_ILLUMINA_OFFSET,qUALITY_MIDIAN_PAIREND,copeFastQ(ILjava.lang.String;[I),offset,seqFile2,getOffset(),isPairEnd(),hashFastQFilter,qUALITY_LOW,convertToFasta(Ljava.lang.String;),qUALITY_MIDIAN,quality,FastQ(Ljava.lang.String;Ljava.lang.String;I),filterBarcode(Ljava.lang.String;I[Ljava.lang.String;),filterReads(Ljava.lang.String;),getFirstReadsLen()">
+    <children xsi:type="editmodel:CompartmentEditModel" size="266,234">
+      <children xsi:type="editmodel:AttributeEditModel" name="fASTQ_ILLUMINA_OFFSET" id="com.novelbio.analysis.seq/FastQ#fASTQ_ILLUMINA_OFFSET"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="fASTQ_SANGER_OFFSET" id="com.novelbio.analysis.seq/FastQ#fASTQ_SANGER_OFFSET"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="hashBarcodeName" id="com.novelbio.analysis.seq/FastQ#hashBarcodeName"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="hashFastQFilter" id="com.novelbio.analysis.seq/FastQ#hashFastQFilter"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="lsBarCode" id="com.novelbio.analysis.seq/FastQ#lsBarCode"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="offset" id="com.novelbio.analysis.seq/FastQ#offset"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="qUALITY_HIGM" id="com.novelbio.analysis.seq/FastQ#qUALITY_HIGM"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="qUALITY_LOW" id="com.novelbio.analysis.seq/FastQ#qUALITY_LOW"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="qUALITY_MIDIAN" id="com.novelbio.analysis.seq/FastQ#qUALITY_MIDIAN"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="qUALITY_MIDIAN_PAIREND" id="com.novelbio.analysis.seq/FastQ#qUALITY_MIDIAN_PAIREND"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="quality" id="com.novelbio.analysis.seq/FastQ#quality"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="seqFile2" id="com.novelbio.analysis.seq/FastQ#seqFile2"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="treeLenBarcode" id="com.novelbio.analysis.seq/FastQ#treeLenBarcode"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="131,288">
+      <children xsi:type="editmodel:MethodEditModel" name="FastQ" id="com.novelbio.analysis.seq/FastQ#FastQ(Ljava.lang.String;I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="FastQ" id="com.novelbio.analysis.seq/FastQ#FastQ(Ljava.lang.String;Ljava.lang.String;II)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="FastQ" id="com.novelbio.analysis.seq/FastQ#FastQ(Ljava.lang.String;Ljava.lang.String;I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="WZFsepFastQ" id="com.novelbio.analysis.seq/FastQ#WZFsepFastQ(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="convertToFasta" id="com.novelbio.analysis.seq/FastQ#convertToFasta(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="copeFastQ" id="com.novelbio.analysis.seq/FastQ#copeFastQ(ILjava.lang.String;[I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="filterBarcode" id="com.novelbio.analysis.seq/FastQ#filterBarcode(Ljava.lang.String;I[Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="filterReads" id="com.novelbio.analysis.seq/FastQ#filterReadsExp(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getFirstReadsLen" id="com.novelbio.analysis.seq/FastQ#getFirstReadsLen()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getOffset" id="com.novelbio.analysis.seq/FastQ#getOffset()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getQuality" id="com.novelbio.analysis.seq/FastQ#getQuality()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getSeqFile2" id="com.novelbio.analysis.seq/FastQ#getSeqFile2()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="guessFastOFormat" id="com.novelbio.analysis.seq/FastQ#guessFastOFormat(Ljava.util.List;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="isPairEnd" id="com.novelbio.analysis.seq/FastQ#isPairEnd()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="sepBarCode" id="com.novelbio.analysis.seq/FastQ#sepBarCode(Ljava.lang.String;[Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="trimPolyA" id="com.novelbio.analysis.seq/FastQ#trimPolyAExp(ILjava.lang.String;)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" id="com.novelbio.analysis.seq/SeqComb&lt;-com.novelbio.analysis.seq/FastQ" source="//@children.7" target="//@children.8/@sourceConnections.0" targetEnd="//@children.7/@sourceConnections.0/@children.1" sourceEnd="//@children.7/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="144,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="0,112"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="3" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.9/@sourceConnections.0 //@children.1/@sourceConnections.0" name="BedSeq" location="303,305" size="167,171" id="com.novelbio.analysis.seq/BedSeq" runTimeClassModel="sortBedFile(ILjava.lang.String;[I),BedSeq(Ljava.lang.String;),filterXLY(Ljava.lang.String;),filterWYR(Ljava.lang.String;),extend(ILjava.lang.String;),getFastQ(ILjava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="90,108">
+      <children xsi:type="editmodel:MethodEditModel" name="BedSeq" id="com.novelbio.analysis.seq/BedSeq#BedSeq(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="extend" id="com.novelbio.analysis.seq/BedSeq#extend(ILjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="filterWYR" id="com.novelbio.analysis.seq/BedSeq#filterWYR(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="filterXLY" id="com.novelbio.analysis.seq/BedSeq#filterXLY(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getFastQ" id="com.novelbio.analysis.seq/BedSeq#getFastQ(ILjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="sortBedFile" id="com.novelbio.analysis.seq/BedSeq#sortBedFile(ILjava.lang.String;[I)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" targetConnections="//@children.7/@sourceConnections.0" autoLocated="true" id="com.novelbio.analysis.seq/SeqComb&lt;-com.novelbio.analysis.seq/BedSeq" source="//@children.8" target="//@children.10" targetEnd="//@children.8/@sourceConnections.0/@children.1" sourceEnd="//@children.8/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="83,0" anchorKind="FixedAtEdge" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="83,225" anchorKind="FixedAtEdge"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="3" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" name="BedPeakMacs" location="45,1035" size="213,135" id="com.novelbio.analysis.seq.chipseq/BedPeakMacs" runTimeClassModel="BedPeakMacs(Ljava.lang.String;),peakCallling(Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;),sortBedFile(ILjava.lang.String;[I),filterWYR(Ljava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="105,72">
+      <children xsi:type="editmodel:MethodEditModel" name="BedPeakMacs" id="com.novelbio.analysis.seq.chipseq/BedPeakMacs#BedPeakMacs(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="filterWYR" id="com.novelbio.analysis.seq.chipseq/BedPeakMacs#filterWYR(Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="peakCallling" id="com.novelbio.analysis.seq.chipseq/BedPeakMacs#peakCallling(Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="sortBedFile" id="com.novelbio.analysis.seq.chipseq/BedPeakMacs#sortBedFile(ILjava.lang.String;[I)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.novelbio.analysis.seq/BedSeq&lt;-com.novelbio.analysis.seq.chipseq/BedPeakMacs" source="//@children.9" target="//@children.8" targetEnd="//@children.9/@sourceConnections.0/@children.1" sourceEnd="//@children.9/@sourceConnections.0/@children.0" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="128,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="55,171"/>
+    </sourceConnections>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.novelbio.analysis.seq.chipseq/PeakCalling&lt;-com.novelbio.analysis.seq.chipseq/BedPeakMacs" source="//@children.9" target="//@children.2" targetEnd="//@children.9/@sourceConnections.1/@children.1" sourceEnd="//@children.9/@sourceConnections.1/@children.0" connectionRouterKind="Manual">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="113,0" attachSource="true"/>
+      <children xsi:type="editmodel:AssociationEndEditModel" location="98,94"/>
+    </sourceConnections>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="3" showAttributeProperty="true"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.8/@sourceConnections.0" name="SeqComb" location="432,30" size="167,225" id="com.novelbio.analysis.seq/SeqComb" runTimeClassModel="seqNum,getSeqNum(),trimAdaptorR(Ljava.lang.String;Ljava.lang.String;IIF),trimAdaptorL(Ljava.lang.String;Ljava.lang.String;IIF),trimPolyA(Ljava.lang.String;I),getSeqFile(),seqFile,SeqComb(Ljava.lang.String;I),getGradTxt([ILjava.lang.String;)">
+    <children xsi:type="editmodel:CompartmentEditModel" size="96,36">
+      <children xsi:type="editmodel:AttributeEditModel" name="seqFile" id="com.novelbio.analysis.seq/SeqComb#seqFile"/>
+      <children xsi:type="editmodel:AttributeEditModel" name="seqNum" id="com.novelbio.analysis.seq/SeqComb#seqNum"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="101,126">
+      <children xsi:type="editmodel:MethodEditModel" name="SeqComb" id="com.novelbio.analysis.seq/SeqComb#SeqComb(Ljava.lang.String;I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getGradTxt" id="com.novelbio.analysis.seq/SeqComb#getGradTxt([ILjava.lang.String;)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getSeqFile" id="com.novelbio.analysis.seq/SeqComb#getSeqFile()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="getSeqNum" id="com.novelbio.analysis.seq/SeqComb#getSeqNum()"/>
+      <children xsi:type="editmodel:MethodEditModel" name="trimAdaptorL" id="com.novelbio.analysis.seq/SeqComb#trimAdaptorL(Ljava.lang.String;Ljava.lang.String;IIF)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="trimAdaptorR" id="com.novelbio.analysis.seq/SeqComb#trimAdaptorR(Ljava.lang.String;Ljava.lang.String;IIF)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="trimPolyA" id="com.novelbio.analysis.seq/SeqComb#trimPolyA(Ljava.lang.String;I)"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
+    <classifierPreferences xsi:type="editmodel:UMLClassDiagramClassifierPreference" showStereotype="true" attributeSorter="Natural" methodSorter="Natural" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="3" showAttributeProperty="true"/>
+  </children>
+  <diagramOptions xsi:type="options:ClassDiagramOptions" properties="wireOptions=1;Product=eUML2" autoName="false"/>
+  <boardSetting snapToGeometry="true" gridEnabled="true" gridSpacing="15,15" gridOrigin="0,0" rulerUnit="pixel" gridVisibility="false">
+    <leftRuler/>
+    <topRuler/>
+  </boardSetting>
+  <classDiagramPreferences xsi:type="editmodel:UMLClassDiagramPreference" showPopupBars="true" showConnectionHandles="true" attributeSorter="Natural" methodSorter="Natural" showClassStereotype="true" showPackageStereotype="true" showDependencyStereotype="true" showInterfaceStereotype="true" innerClassSorter="Natural" showPublicAttributes="true" showPackageAttributes="true" showStaticAttributes="true" showPublicMethods="true" showPackageMethods="true" showStaticMethods="true" showPublicInnerClasses="true" showPackageInnerClasses="true" showStaticInnerClasses="true" packageIndication="3" showAttributeProperty="true"/>
+</editmodel:ClassDiagramEditModel>

@@ -3,6 +3,7 @@ package com.novelbio.base.fileOperate;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,9 +15,11 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FileOperate {
-	private static String message;
+import org.apache.log4j.Logger;
 
+public class FileOperate {
+	private static Logger logger = Logger.getLogger(FileOperate.class);
+	
 	public FileOperate() {
 	}
 
@@ -59,7 +62,8 @@ public class FileOperate {
 	}
 
 	/**
-	 * 给定路径名，返回其上一层路径，不带"/" 如给定 /wer/fw4e/sr/frw/s3er.txt 返回 /wer/fw4e/sr/frw
+	 * 给定路径名，返回其上一层路径，带"/" 如给定 /wer/fw4e/sr/frw/s3er.txt 返回 /wer/fw4e/sr/frw/
+	 * 如果为相对路径的最上层，譬如给定的是soap 则返回“”
 	 * 可以给定不存在的路径
 	 * 
 	 * @param fileName
@@ -67,7 +71,13 @@ public class FileOperate {
 	 */
 	public static String getParentPathName(String fileName) {
 		File file = new File(fileName);
-		return file.getParent();
+		String fileParent =  file.getParent();
+		if (fileParent == null) {
+			return "";
+		}
+		else {
+			return addSep(fileParent);
+		}
 	}
 	/**
 	 * 给定文件名，加上后缀
@@ -96,7 +106,51 @@ public class FileOperate {
 		File file = new File(fileName);
 		return file.getName();
 	}
-
+	/**
+	 * <b>未经测试</b>
+	 * 给定文件路径，返回大小，单位为K
+	 * @param filePath
+	 * @return
+	 * 没有文件返回0；出错返回-1000000000
+	 */
+	public static double getFileSize(String filePath) {
+		File file = new File(filePath);
+		double totalsize = 0;
+		if (!file.exists()) {
+			return 0;
+		}
+		if (file.isFile()) {
+			   FileInputStream fis = null;
+               try{
+                   fis = new FileInputStream(file);  
+                   return fis.available()/1024;
+               }catch(Exception e1){
+            	   logger.error("IO出错！");
+                   return -1000000000;
+               }
+		}
+		else if (file.isDirectory()) {
+			ArrayList<String[]> lsFileName = getFoldFileName(filePath);
+			
+			for (String[] strings : lsFileName) {
+				String fileName = null;
+				//获得文件名
+				if (strings[1].equals("")) {
+					fileName = addSep(filePath) + strings[0];
+				}
+				else {
+					fileName = addSep(filePath) + strings[0] + "." + strings[1];
+				}
+				totalsize = totalsize + getFileSize(fileName);
+			}
+			return totalsize;
+		}
+		else {
+     	   logger.error("出错！");
+           return -1000000000;
+       }
+	}
+	
 	/**
 	 * 给定路径名，返回其名字,不带后缀名<br>
 	 * 如给定/home/zong0jie.aa.txt/和/home/zong0jie.aa.txt<br>
@@ -129,6 +183,9 @@ public class FileOperate {
 	 * @param filePath
 	 *            目录路径,最后不要加\\或/
 	 * @return arraylist 里面是string[2] 1:文件名 2：后缀
+	 *     文件 wfese.fse.fe认作 "wfese.fse"和"fe"<br>
+	 *            文件 wfese.fse.认作 "wfese.fse."和""<br>
+	 *            文件 wfese 认作 "wfese"和""<br>
 	 */
 	public static ArrayList<String[]> getFoldFileName(String filePath) {
 		return getFoldFileName(filePath, "*", "*");
@@ -235,7 +292,7 @@ public class FileOperate {
 				myFilePath.mkdir();
 			}
 		} catch (Exception e) {
-			message = "创建目录操作出错";
+			logger.error("创建目录操作出错");
 		}
 		return txt;
 	}
@@ -260,7 +317,7 @@ public class FileOperate {
 				txts = createFolder(txts + txt);
 			}
 		} catch (Exception e) {
-			message = "创建目录操作出错！";
+			logger.error("创建目录操作出错！");
 		}
 		return txts;
 	}
@@ -290,7 +347,7 @@ public class FileOperate {
 			myFile.close();
 			resultFile.close();
 		} catch (Exception e) {
-			message = "创建文件操作出错";
+			logger.error("创建文件操作出错");
 		}
 	}
 
@@ -320,7 +377,7 @@ public class FileOperate {
 			myFile.println(strContent);
 			myFile.close();
 		} catch (Exception e) {
-			message = "创建文件操作出错";
+			logger.error("创建文件操作出错");
 		}
 	}
 
@@ -344,7 +401,7 @@ public class FileOperate {
 				// message = (filePathAndName+"删除文件操作出错");
 			}
 		} catch (Exception e) {
-			message = e.toString();
+			logger.error( e.toString());
 		}
 		return bea;
 	}
@@ -364,7 +421,7 @@ public class FileOperate {
 			java.io.File myFilePath = new java.io.File(filePath);
 			myFilePath.delete(); // 删除空文件夹
 		} catch (Exception e) {
-			message = ("删除文件夹操作出错");
+			logger.error("删除文件夹操作出错");
 		}
 	}
 
@@ -442,7 +499,7 @@ public class FileOperate {
 				return false;
 			}
 		} catch (Exception e) {
-			message = ("复制单个文件操作出错");
+			logger.error ("复制单个文件操作出错");
 			return false;
 		}
 	}
@@ -493,7 +550,7 @@ public class FileOperate {
 				}
 			}
 		} catch (Exception e) {
-			message = "复制整个文件夹内容操作出错";
+			logger.error("复制整个文件夹内容操作出错");
 		}
 	}
 
@@ -509,6 +566,28 @@ public class FileOperate {
 	public static void changeFileName(String oldName, String newName) {
 		changeFileName(oldName, newName,false);
 	}
+	
+	
+	/**
+	 * 
+	 * 文件添加后缀并改后缀名，如果一样则不修改
+	 * @param FileName 原来文件的全名
+	 * @param append 要添加的后缀，譬如_1，_new
+	 * @param suffix 要添加的后缀名，譬如 txt， jpg ，自动去空格
+	 */
+	public static String changeFileSuffix(String FileName, String append, String suffix) {
+		String resultFile = "";
+		String parentPath = addSep(getParentPathName(FileName));
+		String[] fileName = getFileNameSep(FileName);
+		if (fileName[1] == null || fileName[1].equals("")) {
+			resultFile = parentPath + fileName[0] + append;
+		}
+		else {
+			resultFile = parentPath + fileName[0] + append + "." + suffix.trim();
+		}
+		return resultFile;
+	}
+	
 	/**
 	 * 文件改名,如果已有同名文件存在，则不改名并返回
 	 * 
@@ -681,11 +760,6 @@ public class FileOperate {
 			e.printStackTrace();
 		}
 	}
-
-	public String getMessage() {
-		return this.message;
-	}
-
 	/**
 	 * 判断文件是否存在，给的是绝对路径
 	 * 

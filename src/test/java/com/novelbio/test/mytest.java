@@ -1,6 +1,7 @@
 package com.novelbio.test;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.TreeSet;
 import javax.swing.tree.ExpandVetoException;
 
 import org.apache.commons.math.stat.correlation.PearsonsCorrelation;
+import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 
@@ -27,7 +29,6 @@ import com.novelbio.analysis.seq.SeqComb;
 import com.novelbio.analysis.seq.blastZJ.Cell;
 import com.novelbio.analysis.seq.blastZJ.LongestCommonSubsequence;
 import com.novelbio.analysis.seq.blastZJ.SmithWaterman;
-
 import com.novelbio.analysis.seq.genomeNew.GffChrChIP;
 import com.novelbio.analysis.seq.genomeNew.GffChrHanYanChrom;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
@@ -35,9 +36,11 @@ import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneUCSC;
-import com.novelbio.analysis.seq.mapping.FastQSoapMap;
+import com.novelbio.analysis.seq.mapping.FastQMapBwa;
+import com.novelbio.analysis.seq.mapping.FastQMapSoap;
+import com.novelbio.analysis.seq.mapping.SAMtools;
 import com.novelbio.analysis.seq.reseq.LastzAlign;
 import com.novelbio.analysis.seq.reseq.ModifySeq;
 import com.novelbio.analysis.tools.formatConvert.bedFormat.Soap2Bed;
@@ -45,6 +48,8 @@ import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.dataStructure.Patternlocation;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.Go2Term;
@@ -59,22 +64,17 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(filepath, false);
-		ArrayList<String> lsAccID = txtReadandWrite.readfileLs();
-		int goNum = 0;
-		for (String string : lsAccID) {
-			if (string.trim().equals("")) {
-				continue;
-			}
-			String accID = string.split("\t")[0];
-			CopedID copedID = new CopedID(accID, taxID, false);
-			CopedID copedIDBlast = copedID.getBlastCopedID(StaxID, 1e-10);
-			HashSet<String> hashGO = new HashSet<String>();
-			copedID
-		}
-		
-		
-		
+//		String seqFile1 = "/media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/Hanyan_medium.fq";
+//		String resultParent = "/media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/bwatest/";
+//		FastQMapBwa fastQMapBwa = new FastQMapBwa(seqFile1, FastQ.QUALITY_MIDIAN, resultParent + "uniqMid", true);
+//		fastQMapBwa.setFilePath("bwa", "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_refseq/RefSeqFromChr.fa");
+//		FastQMapBwa fastQMapBwa2 = new FastQMapBwa(seqFile1, FastQ.QUALITY_MIDIAN,  resultParent + "multiMid", false);
+//		fastQMapBwa2.setFilePath("bwa", "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_refseq/RefSeqFromChr.fa");
+//		fastQMapBwa.mapReads();
+//		fastQMapBwa2.mapReads();
+		SAMtools saMtools = new SAMtools("/media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/bwatest/multiMidout", false, 0);
+		saMtools.sam2bed("/media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/bwatest/multiBed.bed", false);
+		saMtools.sam2bed("/media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/bwatest/uniqBed.bed", true);
 	}
 
 	private static void testFdrFunction() throws Exception {

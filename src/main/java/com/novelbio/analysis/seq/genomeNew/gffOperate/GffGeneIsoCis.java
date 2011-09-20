@@ -16,11 +16,11 @@ import org.apache.log4j.Logger;
  * @author zong0jie
  *
  */
-public class GffGeneIsoSearchCis extends GffGeneIsoSearch {
-	private static final Logger logger = Logger.getLogger(GffGeneIsoSearchCis.class);
+public class GffGeneIsoCis extends GffGeneIsoInfo {
+	private static final Logger logger = Logger.getLogger(GffGeneIsoCis.class);
 
-	public GffGeneIsoSearchCis(GffGeneIsoInfo gffGeneIsoInfo, int coord) {
-		super(gffGeneIsoInfo,coord);
+	public GffGeneIsoCis(String IsoName, GffDetailGene gffDetailGene) {
+		super(IsoName, true, gffDetailGene);
 	}
 
 	
@@ -340,4 +340,75 @@ public class GffGeneIsoSearchCis extends GffGeneIsoSearch {
 		
 	}
 	
+	
+	protected void addExonUCSC(int locStart, int locEnd) {
+		/**
+		 * 添加外显子，添加在末尾 添加的时候必须按照基因方向添加， 正向从小到大添加 且 int0<int1 反向从大到小添加 且
+		 * int0>int1
+		 */
+		int[] tmpexon = new int[2];
+		tmpexon[0] = Math.min(locStart, locEnd);
+		tmpexon[1] = Math.max(locStart, locEnd);
+		lsIsoform.add(tmpexon);
+	}
+	/**
+	 * 这个要确认
+	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
+	 * 当gene为反方向时，exon是从大到小排列的<br>
+	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加 <br>
+	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
+	 */
+	protected void addExonGFF(int locStart, int locEnd) {
+		/**
+		 * 添加外显子，添加在末尾
+		 * 添加的时候必须按照基因方向添加，
+		 * 正向从小到大添加 且 int0<int1
+		 * 反向从大到小添加 且 int0>int1
+		 */
+		int[] tmpexon = new int[2];
+		tmpexon[0] = Math.min(locStart, locEnd);
+		tmpexon[1] = Math.max(locStart, locEnd);
+
+		lsIsoform.add(tmpexon);
+	}
+	
+	/**
+	 * 获得5UTR的长度
+	 * @return
+	 */
+	public int getLenUTR5() {
+		int FUTR=0;
+		int exonNum = lsIsoform.size();
+		 //0    1     2     3     4     5   每个外显子中 1 > 0      0    atg   1
+			for (int i = 0; i <exonNum; i++) 
+			{
+				if(lsIsoform.get(i)[1] < getATGSsite())    // 0       1   atg    
+					FUTR = FUTR + lsIsoform.get(i)[1] - lsIsoform.get(i)[0] + 1;
+				else if (lsIsoform.get(i)[0] < getATGSsite() && lsIsoform.get(i)[1] >= getATGSsite())  //     0    atg    1 
+					FUTR = FUTR + getATGSsite() - lsIsoform.get(i)[0];
+				else if (lsIsoform.get(i)[0] >= getATGSsite())  //     atg   0       1   
+					break;
+			}
+		return FUTR;
+	}
+	/**
+	 * 获得3UTR的长度
+	 * @return
+	 */
+	public int getLenUTR3()
+	{
+		int TUTR=0;
+		int exonNum = lsIsoform.size();
+		 //0    1     2     3     4     5   每个外显子中 0 < 1      0    uag   1
+		for (int i = exonNum - 1; i >=0 ; i--) 
+		{
+			if(lsIsoform.get(i)[0] > getUAGsite())  //      uag     0      1
+				TUTR = TUTR + lsIsoform.get(i)[1] - lsIsoform.get(i)[0] + 1;
+			else if (lsIsoform.get(i)[1] > getUAGsite() && lsIsoform.get(i)[0] <= getUAGsite())  //     0     uag    1
+				TUTR = TUTR + lsIsoform.get(i)[1] - getUAGsite();
+			else if (lsIsoform.get(i)[1] <= getUAGsite())   //   0      1     uag   
+				break;
+		}
+		return TUTR;
+	}
 }

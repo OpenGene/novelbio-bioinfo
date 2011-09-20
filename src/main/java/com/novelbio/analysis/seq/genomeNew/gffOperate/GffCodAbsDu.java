@@ -12,10 +12,6 @@ public abstract class GffCodAbsDu {
 	//这两个都会在具体的类中新建
 	GffCodAbs gffCodAbs1 = null;
 	GffCodAbs gffCodAbs2 = null;
-	//保存左端点的gffdetail
-	GffDetailAbs gffDetail1 = null;
-	//保存右端点的gffdetail
-	GffDetailAbs gffDetail2 = null;
 	//两个端点之间的gffdetail
 	ArrayList<GffDetailAbs> lsgffDetailsMid = new ArrayList<GffDetailAbs>();
 	/**

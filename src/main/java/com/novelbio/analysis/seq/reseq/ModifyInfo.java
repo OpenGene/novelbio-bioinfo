@@ -159,7 +159,13 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 	public void setLengthSeq2(int lengthSeq2) {
 		this.lengthSeq2 = lengthSeq2;
 	}
+	/**
+	 * 修改序列从原始序列的第几位开始，实际位，从1开始
+	 */
 	int startModify = -1;
+	/**
+	 * 修改序列到原始序列的第几位结束，实际位，从1开始
+	 */
 	int endModify = -1;
 	int crossStartSiteSeq2End = -1;
 	int crossStartSiteSeq2Start = -1;
@@ -169,6 +175,9 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 	 * 发生了横跨起点事件
 	 */
 	boolean crossStartSite = false;
+	/**
+	 * 发生了横跨起点事件
+	 */
 	public boolean isCrossStartSite() {
 		return crossStartSite;
 	}

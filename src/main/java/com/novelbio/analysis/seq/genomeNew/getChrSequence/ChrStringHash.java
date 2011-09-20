@@ -241,13 +241,5 @@ public class ChrStringHash extends SeqHashAbs{
 		return effGenomSize;
 	}
 
-	/**
-	 * 本Chr文件每一行的长度
-	 * 
-	 * @return
-	 */
-	public int getChrLineLength() {
-		return lengthRow;
-	}
 
 }

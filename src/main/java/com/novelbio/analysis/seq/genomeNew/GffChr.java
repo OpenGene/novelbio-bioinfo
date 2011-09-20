@@ -9,13 +9,12 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import org.apache.log4j.Logger;
-import org.tc33.jheatchart.HeatChart;
 
 import com.novelbio.analysis.generalConf.Species;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashCG;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs;
@@ -27,6 +26,7 @@ import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.java.HeatChart;
 
 
 
@@ -278,7 +278,7 @@ private static Logger logger = Logger.getLogger(GffChr.class);
 		for (String string : lsGeneID) {
 			SeqInfo seqInfo = new SeqInfo();
 			GffDetailGene gffDetailGene = gffHashGene.searchLOC(string);
-			GffGeneIsoSearch gffGeneIsoSearch = gffDetailGene.getCoordSearchLongest();
+			GffGeneIsoInfo gffGeneIsoSearch = gffDetailGene.getLongestSplit();
 			if (gffGeneIsoSearch.ismRNA()) {
 				seqInfo.atg = getReadsInfo(string,gffGeneIsoSearch,normlizType);
 				if (seqInfo.atg == null) {
@@ -410,7 +410,7 @@ private static Logger logger = Logger.getLogger(GffChr.class);
 	 * @return
 	 * double[] 0: atg位点,绝对位点，1-结束 从tss到tes的每个位点的reads数目
 	 */
-	private double[] getReadsInfo(String geneID, GffGeneIsoSearch gffGeneIsoSearch, int normalizeType) {
+	private double[] getReadsInfo(String geneID, GffGeneIsoInfo gffGeneIsoSearch, int normalizeType) {
 		int geneLength = 0;
 		try {
 			geneLength = seqFastaHash.getHashChrLength().get(geneID.toLowerCase()).intValue();
@@ -430,6 +430,8 @@ private static Logger logger = Logger.getLogger(GffChr.class);
 		}
 		return isoResult;
 	}
+
+ 
 	
 	/////////////////////////////////////   韩燕的项目   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 	

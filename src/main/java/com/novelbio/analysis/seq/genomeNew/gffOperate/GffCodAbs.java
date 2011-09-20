@@ -14,6 +14,10 @@ import java.util.regex.Pattern;
  */
 public abstract class GffCodAbs {
 	/**
+	 * 所有坐标的起始信息
+	 */
+	public static final int LOC_ORIGINAL = -1000000000;
+	/**
 	 * 构造函数赋初值
 	 */
 	protected  GffCodAbs(String chrID, int Coordinate) {

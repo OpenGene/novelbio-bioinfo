@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import org.tc33.jheatchart.HeatChart;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -41,7 +41,7 @@ private static Logger logger = Logger.getLogger(GffChrUnionHanYanRefSeq.class);
 	 * @return
 	 * double[] 0: atg位点,绝对位点，1-结束 从tss到tes的每个位点的reads数目
 	 */
-	protected double[] getReadsInfo(String geneID, GffGeneIsoSearch gffGeneIsoSearch, int normalizeType) {
+	protected double[] getReadsInfo(String geneID, GffGeneIsoInfo gffGeneIsoSearch, int normalizeType) {
 		int geneLength = 0;
 		try {
 			geneLength = seqFastaHash.getHashChrLength().get(geneID.toLowerCase()).intValue();
@@ -76,4 +76,5 @@ private static Logger logger = Logger.getLogger(GffChrUnionHanYanRefSeq.class);
 			readsNum = mapReads.ReadMapFile(uniqReads, startCod, colUnique, uniqMapping, cis5To3);
 		} catch (Exception e) {	e.printStackTrace();	}
 	}
+
 }

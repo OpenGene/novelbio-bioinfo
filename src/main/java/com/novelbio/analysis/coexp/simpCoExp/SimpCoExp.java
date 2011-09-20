@@ -42,7 +42,6 @@ public class SimpCoExp {
 	 * @param taxID
 	 * @param pearsonCutOff
 	 * @param pvalueCutOff
-	 * @param coExpID 0-4之间的数，没啥区别，就是同时进行多个计算时用不同的模块，最多可以同时进行4个coExp计算
 	 * @param outFile
 	 * @param filterNoDB 
 	 * @throws Exception

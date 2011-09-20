@@ -1,0 +1,579 @@
+<class-diagram version="1.0.4" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="true">  
+  <class id="1" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.copeID.CopedID" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/copeID/CopedID.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="373" y="12"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <interface id="4" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.copeID.CopedIDInt" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/copeID/CopedIDInt.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="616" y="534"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <class id="5" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.copeID.CopedIDAbs" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/copeID/CopedIDAbs.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1045" y="14"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="7" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.copeID.CopedIDuni" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/copeID/CopedIDuni.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1398" y="-217"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="8" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.copeID.CopedIDacc" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/copeID/CopedIDacc.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1400" y="-311"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="9" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.copeID.CopedIDgen" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/copeID/CopedIDgen.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1409" y="-95"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="10" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.AGene2Go" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/AGene2Go.java" binary="false">    
+    <position height="-1" width="-1" x="967" y="972"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="11" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.Gene2Go" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/Gene2Go.java" binary="false">    
+    <position height="-1" width="-1" x="1166" y="1273"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="13" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.AGeneInfo" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/AGeneInfo.java" binary="false">    
+    <position height="-1" width="-1" x="1437" y="391"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="14" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.UniGene2Go" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/UniGene2Go.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="941" y="1273"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="16" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.NCBIID" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/NCBIID.java" binary="false">    
+    <position height="-1" width="-1" x="1693" y="550"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="17" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.BlastInfo" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/BlastInfo.java" binary="false">    
+    <position height="-1" width="-1" x="1050" y="512"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="18" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.Go2Term" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/Go2Term.java" binary="false">    
+    <position height="-1" width="-1" x="659" y="1213"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="19" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.UniGeneInfo" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/UniGeneInfo.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1353" y="834"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="22" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.GeneInfo" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/GeneInfo.java" binary="false">    
+    <position height="-1" width="-1" x="1545" y="833"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="23" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.UniProtID" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/UniProtID.java" binary="false">    
+    <position height="-1" width="-1" x="1892" y="550"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="24" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.AgeneUniID" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/AgeneUniID.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1767" y="305"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="25" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.GO.goEntity.GOInfoAbs" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/GO/goEntity/GOInfoAbs.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1431" y="1271"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="27" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfoAccID" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KeggInfoAccID.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="2675" y="674"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="28" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegGenEntryKO" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KegGenEntryKO.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="2029" y="100"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="29" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KegEntity.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="2191" y="451"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <interface id="31" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfoInter" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KeggInfoInter.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="3243" y="-17"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <class id="32" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfoAbs" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KeggInfoAbs.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="2943" y="307"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="33" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfoUniID" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KeggInfoUniID.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="2993" y="685"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="34" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfoGenID" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KeggInfoGenID.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="3279" y="689"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="35" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KeggInfo.java" binary="false">    
+    <position height="-1" width="-1" x="2466" y="-9"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="36" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGIDgen2Keg" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGIDgen2Keg.java" binary="false">    
+    <position height="-1" width="-1" x="3136" y="868"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="38" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.noUseKGCKo2Entry" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/noUseKGCKo2Entry.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="3982" y="496"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="40" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.noUseKGCentry2Ko2Gen" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/noUseKGCentry2Ko2Gen.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="3710" y="1154"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="41" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGCentry2Gen" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGCentry2Gen.java" binary="false">    
+    <position height="-1" width="-1" x="2960" y="1200"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="42" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGCKo2Gen" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGCKo2Gen.java" binary="false">    
+    <position height="-1" width="-1" x="3296" y="1125"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="44" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGIDkeg2Ko" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGIDkeg2Ko.java" binary="false">    
+    <position height="-1" width="-1" x="2468" y="204"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="46" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGCgen2Entry" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGCgen2Entry.java" binary="false">    
+    <position height="-1" width="-1" x="3974" y="233"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="47" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGentry" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGentry.java" binary="false">    
+    <position height="-1" width="-1" x="3589" y="345"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="49" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGCgen2Ko" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGCgen2Ko.java" binary="false">    
+    <position height="-1" width="-1" x="2478" y="444"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <association>    
+    <end type="SOURCE" nodeId="28" navigable="false">      
+      <attribute name="lsKegEntities"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="29" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="32" navigable="false">      
+      <attribute name="hashKegEntities"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="47" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="25" navigable="false">      
+      <attribute name="hashGene2Gos"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="19"/>    
+    <end type="TARGET" nodeId="13"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="8"/>    
+    <end type="TARGET" nodeId="5"/>  
+  </generalization>  
+  <association>    
+    <end type="SOURCE" nodeId="49" navigable="false">      
+      <attribute name="lsKgiDkeg2Kos"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="44" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="32" navigable="false">      
+      <attribute name="lskGentries"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="47" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="10" navigable="false">      
+      <attribute name="hashGo2Term"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="18" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="33"/>    
+    <end type="TARGET" nodeId="32"/>  
+  </generalization>  
+  <realization>    
+    <end type="SOURCE" nodeId="1"/>    
+    <end type="TARGET" nodeId="4"/>  
+  </realization>  
+  <association>    
+    <end type="SOURCE" nodeId="33" navigable="false">      
+      <attribute name="kgiDgen2Keg"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="16"/>    
+    <end type="TARGET" nodeId="24"/>  
+  </generalization>  
+  <association>    
+    <end type="SOURCE" nodeId="38" navigable="false">      
+      <attribute name="lsKGentries"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="47" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="41" navigable="false">      
+      <attribute name="kgIDgen2Keg"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="5" navigable="false">      
+      <attribute name="kegGenEntryKO"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="28" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="28" navigable="false">      
+      <attribute name="lsKgiDkeg2Kos"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="44" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization>    
+    <end type="SOURCE" nodeId="32"/>    
+    <end type="TARGET" nodeId="31"/>  
+  </realization>  
+  <association>    
+    <end type="SOURCE" nodeId="28" navigable="false">      
+      <attribute name="lsQKegEntities"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="29" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="25" navigable="false">      
+      <attribute name="lsAGene2Gos"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="42" navigable="false">      
+      <attribute name="lsKgIDgen2Keg"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="32" navigable="false">      
+      <attribute name="lsKgiDkeg2Kos"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="44" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="27"/>    
+    <end type="TARGET" nodeId="32"/>  
+  </generalization>  
+  <realization>    
+    <end type="SOURCE" nodeId="5"/>    
+    <end type="TARGET" nodeId="4"/>  
+  </realization>  
+  <association>    
+    <end type="SOURCE" nodeId="5" navigable="false">      
+      <attribute name="lsBlastInfos"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="23"/>    
+    <end type="TARGET" nodeId="24"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="14"/>    
+    <end type="TARGET" nodeId="10"/>  
+  </generalization>  
+  <association>    
+    <end type="SOURCE" nodeId="5" navigable="false">      
+      <attribute name="blastInfo"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="7"/>    
+    <end type="TARGET" nodeId="5"/>  
+  </generalization>  
+  <association>    
+    <end type="SOURCE" nodeId="1" navigable="false">      
+      <attribute name="copedID"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="22"/>    
+    <end type="TARGET" nodeId="13"/>  
+  </generalization>  
+  <association>    
+    <end type="SOURCE" nodeId="5" navigable="false">      
+      <attribute name="geneInfo"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="9"/>    
+    <end type="TARGET" nodeId="5"/>  
+  </generalization>  
+  <association>    
+    <end type="SOURCE" nodeId="34" navigable="false">      
+      <attribute name="kgiDgen2Keg"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="36" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization>    
+    <end type="SOURCE" nodeId="35"/>    
+    <end type="TARGET" nodeId="31"/>  
+  </realization>  
+  <association>    
+    <end type="SOURCE" nodeId="25" navigable="false">      
+      <attribute name="aGene2Go"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="34"/>    
+    <end type="TARGET" nodeId="32"/>  
+  </generalization>  
+  <association>    
+    <end type="SOURCE" nodeId="35" navigable="false">      
+      <attribute name="keggInfoAbs"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="32" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="40" navigable="false">      
+      <attribute name="lsKgcKo2Gens"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="42" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="46" navigable="false">      
+      <attribute name="lsKGentries"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="47" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="5" navigable="false">      
+      <attribute name="keggInfo"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="35" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="11"/>    
+    <end type="TARGET" nodeId="10"/>  
+  </generalization>  
+  <classifier-display autosize="true" package="true" initial-value="false" signature="true" visibility="true">    
+    <attributes public="true" package="false" protected="false" private="false"/>    
+    <operations public="true" package="false" protected="false" private="false"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>

@@ -102,4 +102,5 @@ public interface SeqHashInt {
 	 * @return
 	 */
 	public ArrayList<String> getLsSeqName();
+	
 }

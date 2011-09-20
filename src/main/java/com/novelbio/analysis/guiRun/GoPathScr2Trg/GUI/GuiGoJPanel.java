@@ -32,7 +32,7 @@ import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlGO;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.CtrlNormal;
-import com.novelbio.base.gui.DoubleOnlyDoc;
+import com.novelbio.base.gui.NumberOnlyDoc;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.NumOnlyDoc;
 
@@ -171,16 +171,7 @@ public class GuiGoJPanel extends JPanel{
 		}
 		{
 			jTxtUpValueGo = new JTextField();
-			jTxtUpValueGo.setDocument(new DoubleOnlyDoc());
-			jTxtUpValueGo.addKeyListener(new KeyAdapter() {
-				public void keyTyped(KeyEvent evt) {
-					String old = jTxtUpValueGo.getText();
-					if (old.contains(".")&&evt.getKeyChar() == '.') {
-						evt.setKeyChar('\0');//³ÁÄ¬
-					}
-				}
-			});
-
+			jTxtUpValueGo.setDocument(new NumberOnlyDoc(10,4));
 		}
 		{
 			jLabDownValueGo = new JLabel();
@@ -188,16 +179,7 @@ public class GuiGoJPanel extends JPanel{
 		}
 		{
 			jTxtDownValueGo = new JTextField();
-			jTxtDownValueGo.setDocument(new DoubleOnlyDoc());
-			jTxtDownValueGo.addKeyListener(new KeyAdapter() {
-				public void keyTyped(KeyEvent evt) {
-					String old = jTxtDownValueGo.getText();
-					if (old.contains(".")&&evt.getKeyChar() == '.') {
-						evt.setKeyChar('\0');//³ÁÄ¬
-					}
-				}
-			});
-
+			jTxtDownValueGo.setDocument(new NumberOnlyDoc(10,4));
 		}
 		{
 			jBtnBGFileGo = new JButton();
@@ -587,8 +569,11 @@ public class GuiGoJPanel extends JPanel{
 		boolean elimGo = jRadBtnElim.isSelected();
 		CtrlGO ctrlGO = null;
 		if (!jChkCluster.isSelected() || colAccID == colFC) {
-			double up = Double.parseDouble(jTxtUpValueGo.getText());
-			double down = Double.parseDouble(jTxtDownValueGo.getText());
+			double up = 0; double down = 0;
+			if ( colAccID != colFC) {
+				up = Double.parseDouble(jTxtUpValueGo.getText());
+				down = Double.parseDouble(jTxtDownValueGo.getText());
+			}
 			ctrlGO = CtrlGO.getInstance(elimGo,geneFileXls, GOClass, colAccID, colFC, up, down, backGroundFile, QtaxID, blast, StaxID, evalue);
 			ctrlGO.doInBackGround();
 	
@@ -617,7 +602,7 @@ public class GuiGoJPanel extends JPanel{
 				settab(jTabbedPaneGoResult, "DownGO2Gene", lsDownResult.get(1));
 				settab(jTabbedPaneGoResult, "DownGene2GO", lsDownResult.get(2));
 			}
-			if (hashResult.size() > 0) {
+			if (hashResult != null && hashResult.size() > 0) {
 				for(Entry<String,ArrayList<ArrayList<String[]>>> entry:hashResult.entrySet())
 				{
 					String key = entry.getKey();
@@ -644,7 +629,7 @@ public class GuiGoJPanel extends JPanel{
 					settab(jTabbedPaneGoResult, "DownGO2Gene", lsDownResult.get(2));
 				}
 			}
-			if (hashResult.size() > 0) {
+			if (hashResult != null && hashResult.size() > 0) {
 				for(Entry<String,ArrayList<ArrayList<String[]>>> entry:hashResult.entrySet())
 				{
 					String key = entry.getKey();

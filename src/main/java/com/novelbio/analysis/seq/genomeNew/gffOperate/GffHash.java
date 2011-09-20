@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
  * @locHashtable hash（LOCID）--GeneInforlist
  * @LOCIDList 顺序存储每个基因号或条目号
  */
-public abstract class GffHash {
+public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs>{
 	/**
 	 * 起点默认为开区间
 	 */
@@ -59,14 +59,14 @@ public abstract class GffHash {
 	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的条目编号 <br>
 	  * 会有有多个LOCID共用一个区域的情况，所以有多个不同的LOCID指向同一个GffdetailUCSCgene<br>
 	 */
-	protected HashMap<String,GffDetailAbs> locHashtable;
+	protected HashMap<String,T> locHashtable;
 	
 	/**
 	 * 返回哈希表 LOC--LOC细节<br/>
 	 * 用于快速将LOC编号对应到LOC的细节
 	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的基因编号 <br/>
 	 */
-	public HashMap<String,GffDetailAbs> getLocHashtable() {
+	public HashMap<String,T> getLocHashtable() {
 		return locHashtable;
 	}
 	
@@ -110,7 +110,7 @@ public abstract class GffHash {
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	protected HashMap<String,ArrayList<GffDetailAbs>> Chrhash;
+	protected HashMap<String,ArrayList<T>> Chrhash;
 	
 	/**
 	 * 返回真正的查找用hash表<br>
@@ -120,7 +120,7 @@ public abstract class GffHash {
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	protected HashMap<String,ArrayList<GffDetailAbs>> getChrhash()
+	protected HashMap<String,ArrayList<T>> getChrhash()
 	{
 		return Chrhash;
 	}
@@ -129,8 +129,8 @@ public abstract class GffHash {
 	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
 	 * 没找到就返回null
 	 */
-	public GffCodAbs searchLocation(String chrID, int Coordinate) {
-		ArrayList<GffDetailAbs> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
+	public K searchLocation(String chrID, int Coordinate) {
+		ArrayList<T> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			return null;
 		}
@@ -141,40 +141,42 @@ public abstract class GffHash {
 		if (locInfo == null) {
 			return null;
 		}
-		GffCodAbs gffCodAbs = setGffCodAbs(chrID, Coordinate);
+		K gffCod = setGffCodAbs(chrID, Coordinate);
 		if (locInfo[0] == 1) // 定位在基因内
 		{
-			gffCodAbs.gffDetailThis = Loclist.get(locInfo[1]); 
-			gffCodAbs.gffDetailThis.setCoord(Coordinate);
-			gffCodAbs.booFindCod = true;
-			gffCodAbs.ChrHashListNumThis = locInfo[1];
-			gffCodAbs.insideLOC = true;
+			gffCod.gffDetailThis = Loclist.get(locInfo[1]); 
+			gffCod.gffDetailThis.setCoord(Coordinate);
+			gffCod.booFindCod = true;
+			gffCod.ChrHashListNumThis = locInfo[1];
+			gffCod.insideLOC = true;
 			if (locInfo[1] - 1 >= 0) {
-				gffCodAbs.gffDetailUp =  Loclist.get(locInfo[1]-1);
-				gffCodAbs.gffDetailUp.setCoord(Coordinate);
-				gffCodAbs.ChrHashListNumUp = locInfo[1]-1;
+				gffCod.gffDetailUp =  Loclist.get(locInfo[1]-1);
+				gffCod.gffDetailUp.setCoord(Coordinate);
+				gffCod.ChrHashListNumUp = locInfo[1]-1;
 				
 			}
 			if (locInfo[2] != -1) {
-				gffCodAbs.gffDetailDown = Loclist.get(locInfo[2]);
-				gffCodAbs.gffDetailDown.setCoord(Coordinate);
-				gffCodAbs.ChrHashListNumDown = locInfo[2];
+				gffCod.gffDetailDown = Loclist.get(locInfo[2]);
+				gffCod.gffDetailDown.setCoord(Coordinate);
+				gffCod.ChrHashListNumDown = locInfo[2];
 			}
 		} else if (locInfo[0] == 2) {
-			gffCodAbs.insideLOC = false;
+			gffCod.insideLOC = false;
 			if (locInfo[1] >= 0) {
-				gffCodAbs.gffDetailUp =  Loclist.get(locInfo[1]);
-				gffCodAbs.gffDetailUp.setCoord(Coordinate);
-				gffCodAbs.ChrHashListNumUp = locInfo[1];		
+				gffCod.gffDetailUp =  Loclist.get(locInfo[1]);
+				gffCod.gffDetailUp.setCoord(Coordinate);
+				gffCod.ChrHashListNumUp = locInfo[1];		
 			}
 			if (locInfo[2] != -1) {
-				gffCodAbs.gffDetailDown = Loclist.get(locInfo[2]);
-				gffCodAbs.gffDetailDown.setCoord(Coordinate);
-				gffCodAbs.ChrHashListNumDown = locInfo[2];
+				gffCod.gffDetailDown = Loclist.get(locInfo[2]);
+				gffCod.gffDetailDown.setCoord(Coordinate);
+				gffCod.ChrHashListNumDown = locInfo[2];
 			}
 		}
-		return gffCodAbs;
+		return gffCod;
 	}
+
+	protected abstract K setGffCodAbs(String chrID, int coordinate);
 
 	/**
 	 * 二分法查找location所在的位点,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
@@ -184,7 +186,7 @@ public abstract class GffHash {
 	 * 2：下个基因的序号 -1表示后面没有基因
 	 */
 	private int[] LocPosition(String chrID, int Coordinate) {
-		ArrayList<GffDetailAbs> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
+		ArrayList<T> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			return null;
 		}
@@ -264,8 +266,9 @@ public abstract class GffHash {
 	 * @param LOCID 给定某LOC的名称，注意名称是一个短的名字，譬如在UCSC基因中，不是locstring那种好几个基因连在一起的名字，而是单个的短的名字
 	 * @return 返回该LOCID的具体GffDetail信息，用相应的GffDetail类接收
 	 */
-	public abstract GffDetailAbs searchLOC(String LOCID);
-	
+	public T searchLOC(String LOCID){
+		return  locHashtable.get(LOCID);
+	}
 	/**
 	 * 需要覆盖
 	 * {return Chrhash.get(chrID).get(LOCNum);}
@@ -274,7 +277,10 @@ public abstract class GffHash {
 	 * @param LOCNum 该染色体上待查寻LOC的int序号
 	 * @return  返回该LOCID的具体GffDetail信息，用相应的GffDetail类接收
 	 */
-	public abstract GffDetailAbs searchLOC(String chrID,int LOCNum);
+	public T searchLOC(String chrID,int LOCNum)
+	{
+		return Chrhash.get(chrID).get(LOCNum);
+	}
 	
 	/**
 	 * 给定某个LOCID，返回该LOC在某条染色体中的位置序号号，第几位<br>
@@ -289,20 +295,11 @@ public abstract class GffHash {
 	 */
 	public String[] getLOCNum(String LOCID) {	
 		String[] LOCNumInfo=new String[2];
-		GffDetailAbs gffLOCdetail=locHashtable.get(LOCID);
+		T gffLOCdetail=locHashtable.get(LOCID);
 		LOCNumInfo[0]=gffLOCdetail.getChrID();
-		ArrayList<GffDetailAbs> locArrayList=Chrhash.get(LOCNumInfo[0]);
+		ArrayList<T> locArrayList=Chrhash.get(LOCNumInfo[0]);
 		LOCNumInfo[1]=locArrayList.indexOf(gffLOCdetail)+"";
 		return LOCNumInfo;
 	}
-	
-	/**
-	 * 简单的new 一个GffCodAbs然后设置chrID和Coordinate参数就行<br>
-	 * exmple:<br>
-	 * return new GffCodCG(chrID, Coordinate);<br>
-	 */
-	protected abstract GffCodAbs setGffCodAbs(String chrID, int Coordinate);
-	
-	
 
 }

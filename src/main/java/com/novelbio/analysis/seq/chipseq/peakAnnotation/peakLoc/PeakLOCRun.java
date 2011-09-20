@@ -27,7 +27,8 @@ public class PeakLOCRun {
 //				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
 		
 		System.out.println("prepare ok");
-		filterPeak();
+//		filterPeak();
+		regionFind();
 //		annotation();
 		//histData();
 		System.out.println(" ok");
@@ -144,7 +145,33 @@ public class PeakLOCRun {
 		System.out.println("ok");
 	}
 	
-	
+	/**
+	 * peak Annotation
+	 */
+	public static void  regionFind() {
+		//需要是excel文件
+		String ParentFile="/media/winE/NBC/Project/SNP_ZQ110826/";
+//		int taxID = 10090;
+		int colChrID = 2; int colStart = 3;int colEnd = 4;
+		int rowStart = 1; 
+		try {
+			String txtFile=ParentFile+"ZQsnpRaw.txt";
+			String excelResultFile=ParentFile+"ZQsnpRaw_filtered.txt";
+			PeakLOC.filterRegion(txtFile, "\t", colChrID, rowStart, colStart, colEnd, excelResultFile);
+//			int columnNum=0;
+//			 TxtReadandWrite txtReadandWrite=new TxtReadandWrite(excelResultFile, false);
+//			try {
+//				columnNum = txtReadandWrite.ExcelColumns(2,"\t");
+//				System.out.println(columnNum);
+//			} catch (Exception e2) {
+//			}
+//			int columnRead=columnNum-1;
+//			SymbolDesp.getRefSymbDesp(taxID,excelResultFile, columnRead, rowStart, columnRead);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("ok");
+	}
 	
 	
 	

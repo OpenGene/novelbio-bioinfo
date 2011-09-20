@@ -4,6 +4,7 @@
 	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources"/>
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="src/main/webapp"/>
+	<classpathentry kind="src" path="ConfFold"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
@@ -16,6 +17,7 @@
 	<classpathentry kind="lib" path="lib/appFramework-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jnlp.jar"/>
 	<classpathentry kind="lib" path="/ExternalJar/jgrapht-0.8.2/jgrapht-jdk1.6.jar" sourcepath="/ExternalJar/jgrapht-0.8.2/src"/>
+	<classpathentry kind="con" path="com.soyatec.uml.CONTAINER"/>
 	<classpathentry kind="output" path="target/classes"/>
 	<referencedentry kind="lib" path="/ExternalJar/jgrapht-0.8.2/lib/jgraph.jar" sourcepath="/ExternalJar/jgrapht-0.8.2/src"/>
 </classpath>

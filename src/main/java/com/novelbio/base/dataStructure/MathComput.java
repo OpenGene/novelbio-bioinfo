@@ -604,6 +604,65 @@ public class MathComput {
 		}
 		return result;
 	}
+	
+	/**
+	 * 给定一组区域，首先排序，然后将区域挨的很近--小于distance--的区域合并为一个，最后返回合并后的区域list
+	 * 排序只按照第一个区间进行排序，从小到大排列
+	 * @param lsNum 区域list，每个为double[0]起点坐标。double[1] 终点坐标 必须起点小于终点
+	 * @param distance，小于0就默认为0，即只合并重叠的区域
+	 * @return
+	 */
+	public static ArrayList<double[]>  combInterval(List<double[]> lsNum, double distance) 
+	{
+		Collections.sort(lsNum, new Comparator<double[]>() {
+			//从小到大排序
+			@Override
+			public int compare(double[] o1, double[] o2) {
+				if (o1[0] < o2 [0]) 
+					return -1;
+				else if (o1[0] > o2[0]) 
+					return 1;
+				else {
+					if (o1[1] < o2[1]) 
+						return -1;
+					else if (o1[1] > o2[1]) 
+						return 1;
+					else 
+						return 0;
+				}
+			}
+		});
+		
+		ArrayList<double[]> lsResult = new ArrayList<double[]>();
+		int i = 1;double[] tmpResult = lsNum.get(0);
+		while (i < lsNum.size()) {
+			double[] loc = lsNum.get(i);
+			if (tmpResult[1] >= loc[0] - distance) {
+				tmpResult[1] = loc[1];
+				i++;
+			}
+			else {
+				lsResult.add(tmpResult);
+				tmpResult  = loc;
+				i++;
+			}
+		}
+		lsResult.add(tmpResult);
+		return lsResult;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 //////////////////////////// java 版的 fdr 计算， BH 方法 //////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 给定pvaule，获得相应的fdr，用java来计算的<br>

@@ -18,8 +18,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  * @author zong0jie
  *
  */
-public class GffHashGeneUCSC extends GffHashGeneAbs
-{
+public class GffHashGeneUCSC extends GffHashGeneAbs{
 
 	public GffHashGeneUCSC(int taxID) {
 		super(taxID);
@@ -47,8 +46,8 @@ public class GffHashGeneUCSC extends GffHashGeneAbs
 	public void ReadGffarray(String gfffilename) throws Exception {
 
 		// 实例化四个表
-		Chrhash = new HashMap<String, ArrayList<GffDetailAbs>>();// 一个哈希表来存储每条染色体
-		locHashtable = new HashMap<String, GffDetailAbs>();// 存储每个LOCID和其具体信息的对照表
+		Chrhash = new HashMap<String, ArrayList<GffDetailGene>>();// 一个哈希表来存储每条染色体
+		locHashtable = new HashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
 		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
 		LOCChrHashIDList = new ArrayList<String>();
 
@@ -56,7 +55,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs
 		txtGffRead.setParameter(gfffilename, false, true);
 		BufferedReader readGff = txtGffRead.readfile();
 
-		ArrayList<GffDetailAbs> LOCList = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+		ArrayList<GffDetailGene> LOCList = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 		String content = "";
 		readGff.readLine();// 跳过第一行
 		String chrnametmpString = "";
@@ -74,11 +73,11 @@ public class GffHashGeneUCSC extends GffHashGeneAbs
 				{
 					LOCList.trimToSize();
 					// 把peak名称顺序装入LOCIDList
-					for (GffDetailAbs gffDetail : LOCList) {
+					for (GffDetailGene gffDetail : LOCList) {
 						LOCChrHashIDList.add(gffDetail.locString);
 					}
 				}
-				LOCList = new ArrayList<GffDetailAbs>();// 新建一个LOCList并放入Chrhash
+				LOCList = new ArrayList<GffDetailGene>();// 新建一个LOCList并放入Chrhash
 				Chrhash.put(chrnametmpString, LOCList);
 			}
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,20 +138,10 @@ public class GffHashGeneUCSC extends GffHashGeneAbs
 		}
 		LOCList.trimToSize();
 		// System.out.println(mm);
-		for (GffDetailAbs gffDetail : LOCList) {
+		for (GffDetailGene gffDetail : LOCList) {
 			LOCChrHashIDList.add(gffDetail.locString);
 		}
 		txtGffRead.close();
-	}
-
-	@Override
-	public GffDetailGene searchLOC(String LOCID) {
-		return (GffDetailGene) locHashtable.get(LOCID);
-	}
-
-	@Override
-	public GffDetailGene searchLOC(String chrID, int LOCNum) {
-		return (GffDetailGene) Chrhash.get(chrID).get(LOCNum);
 	}
 
 	@Override

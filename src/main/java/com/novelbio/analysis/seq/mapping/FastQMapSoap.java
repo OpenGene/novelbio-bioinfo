@@ -11,31 +11,100 @@ import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.chipseq.preprocess.MapPeak;
+import com.novelbio.analysis.tools.formatConvert.bedFormat.Soap2Bed;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class FastQSoapMap extends Mapping{
-	/**
-	 * 结果文件路径
-	 */
-	String outFileName = "";
-	/**
-	 * soap程序的路径
-	 */
-	String SoapExePath = "";
-	/**
-	 * 索引文件
-	 */
-	String IndexFile = "";
+public class FastQMapSoap extends FastQMapAbs{
+
 	
-	/**
-	 * 是否仅mapping unique序列
-	 */
-	boolean uniqMapping = true;
+	private static Logger logger = Logger.getLogger(FastQMapSoap.class);  
+	String exeIndexPath = "";
+
+
 	
 	
-	private static Logger logger = Logger.getLogger(FastQSoapMap.class);  
+	/**
+	 * 双端只做unique mapping
+	 * @param seqFile1
+	 * @param seqFile2 没有就写null
+	 * @param FastQFormateOffset
+	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
+	 * @param outFile mapping结果文件全路径
+	 * @param SoapExePath soap程序的全路径
+	 * @param IndexFile
+	 */
+	public FastQMapSoap(String seqFile1, String seqFile2,
+			int FastQFormateOffset, int QUALITY,String outFile, boolean uniqMapping) {
+		super(seqFile1, seqFile2, FastQFormateOffset, QUALITY);
+		this.uniqMapping = uniqMapping;
+		this.outFileName = outFile;
+	}
+
+	/**
+	 * @param seqFile1
+	 * @param FastQFormateOffset
+	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
+	 * @param outFilePath 结果文件路径
+	 * @param SoapExePath soap程序的路径
+	 * @param IndexFile
+	 */
+	public FastQMapSoap(String seqFile1,
+			int FastQFormateOffset, int QUALITY,String outFilePath,boolean uniqMapping) {
+		super(seqFile1, null, FastQFormateOffset, QUALITY);
+		this.uniqMapping = uniqMapping;
+		this.outFileName = outFilePath;
+	}
+	
+	/**
+	 * @param seqFile1
+	 * @param FastQFormateOffset
+	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
+	 * @param outFilePath 结果文件路径
+	 * @param SoapExePath soap程序的路径
+	 * @param IndexFile
+	 */
+	public FastQMapSoap(String seqFile1
+			, int QUALITY,String outFilePath,boolean uniqMapping) {
+		super(seqFile1, QUALITY);
+		this.outFileName = outFilePath;
+		this.uniqMapping = uniqMapping;
+	}
+	
+	/**
+	 * @param fastQ
+	 * @param outFileName 结果文件名
+	 * @param uniqMapping 是否uniqmapping，单端才有的参数
+	 */
+	protected FastQMapSoap(FastQ fastQ, String outFileName, boolean uniqMapping ) 
+	{
+		 this(fastQ.getSeqFile(), fastQ.getSeqFile2(),fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
+	}
+	
+	
+	/**
+	 * 将本seqFile进行mapping分析，做mapping之前先要进行过滤处理，mapping后直接转化成bed文件返回
+	 * @throws Exception
+	 */
+	public void mapReads()  {
+		 IndexMake();
+		// soap -a TGACT.fastq -b TGACT2.fastq -D /NC_009443.fna.index -o soapMapping -2 soapMappingNotPair -m 20 -x 500
+		String cmd = "";
+		cmd = ExePath + " -a "+getSeqFile();
+		cmd = cmd + " -D " + chrFile + ".index "; 
+		cmd = cmd + " -o " +outFileName; 
+		cmd = cmd +  " -r 2 ";
+		cmd = cmd +  " -v 2 -p 4 ";
+		if (isPairEnd()) {
+			cmd = cmd + " -b " + getSeqFile2();
+			cmd = cmd+ " -2 "+ outFileName+"_NotPair "+" -m "+minInsert+" -x "+maxInsert;
+		}
+		cmd = cmd+ " -u  "+ outFileName+"_NoMapping ";
+		System.out.println(cmd);
+		CmdOperate cmdOperate = new CmdOperate(cmd);
+		cmdOperate.doInBackground("soapMapping");
+	}
 	
 	/**
 	 * 先filterReads，得到过滤后的FastQ文件后，再mapping，
@@ -48,141 +117,142 @@ public class FastQSoapMap extends Mapping{
 	 * 所以不需要指定新的mapping文件
 	 * 出错返回null
 	 */
-	public FastQSoapMap filterReads(String fileFilterOut) 
+	protected FastQMapSoap createFastQMap(FastQ fastQ) 
 	{
-		FastQ fastQ = null;
-		try {
-			fastQ = super.filterReads(fileFilterOut);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.error("filter reads error:" + e.toString());
-			return null;
-		}
-		FastQSoapMap fastQSoapMap= new FastQSoapMap(fastQ.getSeqFile(), fastQ.getSeqFile2(), getOffset(), getQuality(), outFileName, SoapExePath,IndexFile);
+		FastQMapSoap fastQSoapMap= new FastQMapSoap(fastQ.getSeqFile(), fastQ.getSeqFile2(), fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
 		return fastQSoapMap;
 	}
-
-	
 	
 	/**
-	 * 双端只做unique mapping
-	 * @param seqFile1
-	 * @param seqFile2 没有就写null
-	 * @param FastQFormateOffset
-	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
-	 * @param outFilePath 结果文件路径
-	 * @param SoapExePath soap程序的全路径
-	 * @param IndexFile
+	 * 强制返回单端的bed文件，用于给macs找peak用
+	 * @return
 	 */
-	public FastQSoapMap(String seqFile1, String seqFile2,
-			int FastQFormateOffset, int QUALITY,String outFilePath,String SoapExePath, String IndexFile) {
-		super(seqFile1, seqFile2, FastQFormateOffset, QUALITY);
-		if (seqFile2==null || seqFile2.trim().equals("")) {
-			uniqMapping = true;
+	public BedSeq getBedFileSE(String bedFile)  {
+		if (!FileOperate.isFileExist(outFileName)) {
+			mapReads();
 		}
-		this.outFileName = outFilePath;
-		this.IndexFile = IndexFile;
-		this.SoapExePath = SoapExePath;
-	}
-
-	/**
-	 * @param seqFile1
-	 * @param FastQFormateOffset
-	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
-	 * @param outFilePath 结果文件路径
-	 * @param SoapExePath soap程序的路径
-	 * @param IndexFile
-	 */
-	public FastQSoapMap(String seqFile1,
-			int FastQFormateOffset, int QUALITY,String outFilePath,String SoapExePath, String IndexFile,boolean uniqMapping) {
-		super(seqFile1, null, FastQFormateOffset, QUALITY);
-		this.uniqMapping = uniqMapping;
-		this.outFileName = outFilePath;
-		this.IndexFile = IndexFile;
-		this.SoapExePath = SoapExePath;
-	}
-	
-	/**
-	 * @param seqFile1
-	 * @param FastQFormateOffset
-	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
-	 * @param outFilePath 结果文件路径
-	 * @param SoapExePath soap程序的路径
-	 * @param IndexFile
-	 */
-	public FastQSoapMap(String seqFile1
-			, int QUALITY,String outFilePath,String SoapExePath, String IndexFile,boolean uniqMapping) {
-		super(seqFile1, QUALITY);
-		this.outFileName = outFilePath;
-		this.uniqMapping = uniqMapping;
-		this.IndexFile = IndexFile;
-		this.SoapExePath = SoapExePath;
-	}
-	
-//	/**
-//	 * @param FastQFormateOffset
-//	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
-//	 * @param outFilePath 结果文件路径
-//	 * @param SoapExePath soap程序的路径
-//	 * @param IndexFile
-//	 */
-//	public FastQSoapMap(String outFilePath) {
-//		super(null, QUALITY_MIDIAN);
-//		this.outFileName = outFilePath;
-//	}
-//	
-	
-	/**
-	 * 将本seqFile进行mapping分析，做mapping之前先要进行过滤处理，mapping后直接转化成bed文件返回
-	 * @param fileName 最后的文件名
-	 * 实验组 fileName+"_Treat_SoapMap";
-	 */
-	@Override
-	public BedSeq mapReads(){
+		TxtReadandWrite txtSoap = new TxtReadandWrite(outFileName, false);
+		TxtReadandWrite txtOut1 = new TxtReadandWrite(bedFile, true);
+		BedSeq bedSeqOut1 = null;
+		String content = "";
 		try {
-			mapSoap( 20, 500);
+			BufferedReader readSoap = txtSoap.readfile();
+			while ((content = readSoap.readLine()) != null) {
+				if (content.trim().equals("")) {
+					continue;
+				}
+				String[] ss = content.split("\t");
+				String tmpres = "";
+				if (uniqMapping && Integer.parseInt(ss[3]) > 1) {
+					continue;
+				}
+				else {
+					tmpres = ss[7] + "\t"+ (Long.parseLong(ss[8])-1) +"\t"+ (Long.parseLong(ss[8])+ss[1].length()-1)+"\t"+ ss[12]+"\t"+ss[11]+"\t"+ss[6] +"\t" + ss[3];
+				}
+				txtOut1.writefileln(tmpres);
+			}
+			txtOut1.close();
+			txtSoap.close();
+			bedSeqOut1 = new BedSeq(bedFile);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.error("mapping error");
+			logger.error("BedFile Error:" + bedFile);
 		}
-		return null;
+		return bedSeqOut1;
 	}
-
+	
 	/**
-	 * 
-	 * 用soap进行mapping
-	 * @param soapPath soap的程序路径
-	 * @param inputFile1 输入测序结果，好像随便谁的都可以，不过后面的质控目前只针对solexa进行了编写
-	 * @param inputFile2 双端的话，输入另一个测序文件，没有的话就输入null或者""
-	 * @param indexFile genome文件的索引
-	 * @param outFile3 输出文件
-	 * @param minInsert 最小插入片段，20好了
-	 * @param maxInsert 最大插入片段，400好了
-	 * @throws Exception
+	 * 返回bed文件，如果是双端就返回双端的bed文件
+	 * 如果是单端就返回延长的bed文件，默认延长至extendTo bp
+	 * @return
+	 * 出错则返回null
 	 */
-	private void mapSoap(int minInsert, int maxInsert) throws Exception {
-		String cmd = "";
-		cmd = SoapExePath + " -a "+getSeqFile();
-		cmd = cmd + " -D " +this.IndexFile; 
-		cmd = cmd + " -o " +outFileName; 
-		if (uniqMapping) {
-			cmd = cmd +  " -r 0 ";
+	public BedSeq getBedFile(String outPut1) {
+		if (isPairEnd()) {
+			try {
+				return getBedFilePE(outFileName, outPut1);
+			} catch (Exception e) {
+				logger.error("convertBedFile error:"+ outFileName + " "+ outPut1);
+				e.printStackTrace();
+				return null;
+			}
 		}
 		else {
-			cmd = cmd +  " -r 2 ";
+			BedSeq bedSeq = getBedFileSE(outPut1+"raw");
+			return bedSeq.extend(extendTo, outPut1);
 		}
-		cmd = cmd +  " -v 2 -p 7 ";
-		if (getBooPairEnd()) {
-			cmd = cmd + " -b " + getSeqFile2();
-			cmd = cmd+ " -2 "+ outFileName+"_SEout "+" -m "+minInsert+" -x "+maxInsert;
-		}
-		System.out.println(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground();
 	}
-
+	/**
+	 * 返回bed文件，返回双端的bed文件
+	 * @return
+	 */
+	private BedSeq getBedFilePE(String soapFile,String outPut1) throws Exception {
+		if (!FileOperate.isFileExist(outFileName)) {
+			mapReads();
+		}
+		TxtReadandWrite txtSoap = new TxtReadandWrite(outFileName, false);
+		TxtReadandWrite txtOutComb = new TxtReadandWrite(outPut1, true);
+		
+		String content = "";
+		BufferedReader readSoap = txtSoap.readfile();
+		String tmpcontent=""; String tmpPrespre = "";
+		String[] tmpresPre =null;
+		while ((content = readSoap.readLine()) != null) {
+			if (content.trim().equals("")) {
+				continue;
+			}
+			String[] ss = content.split("\t");
+			//soap文件的格式是 chrID 坐标 无论mapping到正负链，该坐标都是起点，都是要向后加上bpLength-1的，
+			//只需要判断#/1即可，如果#/1为正，则mapping到正链上，否则mapping到负链上
+			if (ss[0].trim().endsWith("1")) {
+				tmpcontent = content;
+				tmpresPre = ss; //上一条的ss，上一条序列用 "\t" 分割
+				continue;
+			}
+			//只有当#/1和#/2的方向相反才是正确的测序结果。因为solexa测序的结果就是一正一负
+			if ((ss[0].trim().endsWith("2")&&ss[6].equals("-"))
+					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("+")
+			)
+			{
+				long startLoc = 0; long endLoc = 0; long tmpPre = Long.parseLong(tmpresPre[8]) - 1; long tmpSS = Long.parseLong(ss[8]) - 1;  
+				if (tmpPre < tmpSS) {
+					startLoc = tmpPre; endLoc = tmpSS + ss[1].length();
+				}
+				else {
+					logger.error("正向mapping，第2条序列在第1条reads前： "+tmpcontent+"\r\n"+content);
+					startLoc = tmpSS; endLoc = tmpPre + tmpresPre[1].length();
+				}
+				txtOutComb.writefileln(tmpresPre[7]+"\t"+startLoc+"\t"+endLoc + "\t" + tmpresPre[12] + "\t" + tmpresPre[11] +"\t+\t" +tmpresPre[3]);
+			}
+			else if ((ss[0].trim().endsWith("2")&&ss[6].equals("+"))
+					&& tmpresPre[0].trim().endsWith("1")&&tmpresPre[6].equals("-")
+			)
+			{
+				long startLoc = 0; long endLoc = 0; long tmpPre = Long.parseLong(tmpresPre[8]) - 1; long tmpSS = Long.parseLong(ss[8]) - 1;  
+				if (tmpPre<tmpSS) {
+					logger.error("反向mapping，第1条序列在第2条reads前： "+tmpcontent+"\r\n"+content);
+					startLoc = tmpPre; endLoc = tmpSS + ss[1].length();
+				}
+				else {
+					startLoc = tmpSS; endLoc = tmpPre + tmpresPre[1].length();
+				}
+				txtOutComb.writefileln(tmpresPre[7]+"\t"+startLoc+"\t"+endLoc + "\t" + tmpresPre[12] + "\t" + tmpresPre[11] +"\t-\t" +tmpresPre[3]);
+			}
+		}
+		txtOutComb.close();
+		txtSoap.close();
+		return new BedSeq(outPut1);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	* 将soap转化为标准bed文件，左端为开区间，不区分正负链时候做
 	* 本方法内部含有ascII的质量控制
@@ -195,10 +265,10 @@ public class FastQSoapMap extends Mapping{
 	 * @throws Exception 
 	 * @return 单端：返回ArrayList-BedSeq 第一个是单端的bed文件，第二个是变长的bed文件，用于作图<br>
 	 * 双端：返回ArrayList-BedSeq 第一个是单端的bed文件，第二个是变长的bed文件，用于作图，第三个是出错信息
-
 	 */
+	@Deprecated
 	public ArrayList<BedSeq> copeSope2Bed(String outPut,String outComb,String outError) throws Exception {
-		if (getBooPairEnd()) {
+		if (isPairEnd()) {
 			return getBed2MacsPE(outFileName, outPut, outComb, outError);
 		}
 		else {
@@ -213,17 +283,15 @@ public class FastQSoapMap extends Mapping{
 	 * @param soapFile
 	 * @param bpLength 测序长度
 	 * @param outPut1 macs的文件，仅仅是reads的结果
-	 * @param outLong 用于后期分析的mapping文件，这个将reads向3‘端延生至350bp
+	 * @param outLong 用于后期分析的mapping文件，这个将reads向3‘端延生至250bp
 	 * @throws Exception
 	 * @return 返回ArrayList-BedSeq 第一个是单端的bed文件，第二个是变长的bed文件，用于作图
 	 */
+	@Deprecated
 	private ArrayList<BedSeq> getBed2MacsSE(String soapFile,String outPut1,String outLong) throws Exception {
-		TxtReadandWrite txtSoap = new TxtReadandWrite();
-		txtSoap.setParameter(soapFile, false, true);
-		TxtReadandWrite txtOut1 = new TxtReadandWrite();
-		txtOut1.setParameter(outPut1, true, false);
-		TxtReadandWrite txtOutLong = new TxtReadandWrite();
-		txtOutLong.setParameter(outLong, true, false);
+		TxtReadandWrite txtSoap = new TxtReadandWrite(soapFile, false);
+		TxtReadandWrite txtOut1 = new TxtReadandWrite(outPut1, true);
+		TxtReadandWrite txtOutLong = new TxtReadandWrite(outLong, true);
 		
 		String content = "";
 		BufferedReader readSoap = txtSoap.readfile();
@@ -235,7 +303,7 @@ public class FastQSoapMap extends Mapping{
 			
 			String tmpres = ss[7] + "\t"+ (Long.parseLong(ss[8])-1) +"\t"+ (Long.parseLong(ss[8])+ss[1].length()-1)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 			txtOut1.writefile(tmpres+"\n");
-			if (ss[6].equals("+")) {		
+			if (ss[6].equals("+")) {
 				String tmpres2 = ss[7] + "\t"+ (Long.parseLong(ss[8])-1) +"\t"+ (Long.parseLong(ss[8])+249)+"\t"+ ss[3]+"\t"+ss[9]+"\t"+ss[6];
 				txtOutLong.writefile(tmpres2+"\n");
 			}
@@ -264,16 +332,13 @@ public class FastQSoapMap extends Mapping{
 	 * @throws Exception
 	 * @return 返回ArrayList-BedSeq 第一个是单端的bed文件，第二个是变长的bed文件，用于作图，第三个是出错信息
 	 */
+	@Deprecated
 	private ArrayList<BedSeq> getBed2MacsPE(String soapFile,String outPut1,String outCombine,String outError) throws Exception {
-		TxtReadandWrite txtSoap = new TxtReadandWrite();
-		txtSoap.setParameter(soapFile, false, true);
-		TxtReadandWrite txtOut1 = new TxtReadandWrite();
-		txtOut1.setParameter(outPut1, true, false);
-		TxtReadandWrite txtOutComb = new TxtReadandWrite();
-		txtOutComb.setParameter(outCombine, true, false);
+		TxtReadandWrite txtSoap = new TxtReadandWrite(soapFile, false);
+		TxtReadandWrite txtOut1 = new TxtReadandWrite(outPut1, true);
+		TxtReadandWrite txtOutComb = new TxtReadandWrite(outCombine, true);
 		
-		TxtReadandWrite txtOuterror = new TxtReadandWrite();
-		txtOuterror.setParameter(outError, true, false);
+		TxtReadandWrite txtOuterror = new TxtReadandWrite(outError, true);
 		
 		String content = "";
 		BufferedReader readSoap = txtSoap.readfile();
@@ -354,20 +419,14 @@ public class FastQSoapMap extends Mapping{
 	 */
 	public void getBed2Macs(String outPut1, String outCombFile1, String outPut2,String outCombFile2,String outError) throws Exception {
 		
-		TxtReadandWrite txtSoap = new TxtReadandWrite();
-		txtSoap.setParameter(outFileName, false, true);
-		TxtReadandWrite txtOut1 = new TxtReadandWrite();
-		txtOut1.setParameter(outPut1, true, false);
-		TxtReadandWrite txtoutCombFile1 = new TxtReadandWrite();
-		txtoutCombFile1.setParameter(outCombFile1, true, false);
+		TxtReadandWrite txtSoap = new TxtReadandWrite(outFileName, false);
+		TxtReadandWrite txtOut1 = new TxtReadandWrite(outPut1, true);
+		TxtReadandWrite txtoutCombFile1 = new TxtReadandWrite(outCombFile1, true);
 		
-		TxtReadandWrite txtOut2 = new TxtReadandWrite();
-		txtOut2.setParameter(outPut2, true, false);
-		TxtReadandWrite txtoutCombFile2 = new TxtReadandWrite();
-		txtoutCombFile2.setParameter(outCombFile2, true, false);
+		TxtReadandWrite txtOut2 = new TxtReadandWrite(outPut2, true);
+		TxtReadandWrite txtoutCombFile2 = new TxtReadandWrite(outCombFile2, true);
 		
-		TxtReadandWrite txtOuterror = new TxtReadandWrite();
-		txtOuterror.setParameter(outError, true, false);
+		TxtReadandWrite txtOuterror = new TxtReadandWrite(outError, true);
 		//获得测序长度
 		String[] string = txtSoap.readFirstLines(1).get(0).split("\t");
 		int bpLength = string[1].trim().length();
@@ -432,7 +491,22 @@ public class FastQSoapMap extends Mapping{
 		txtSoap.close();
 		
 	}
-	
+
+
+
+	@Override
+	protected void IndexMake() {
+		if (FileOperate.isFileExist(chrFile+".index.bwt")) {
+			return;
+		}
+		//一般有soap的地方就会有2bwt-builder 
+		exeIndexPath = FileOperate.getParentPathName(ExePath) + "2bwt-builder ";
+		String cmd = exeIndexPath + chrFile;
+		System.out.println(cmd);
+		CmdOperate cmdOperate = new CmdOperate(cmd);
+		cmdOperate.doInBackground("soapIndex");
+	}
+
 	
 	
 }
