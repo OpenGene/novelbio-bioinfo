@@ -139,4 +139,5 @@ public abstract class FastQMapAbs extends FastQ implements FastQMapInt{
 
 	protected abstract FastQMapAbs createFastQMap(FastQ fastQ);
 	
+	public abstract void setMapQ(int mapQ);
 }

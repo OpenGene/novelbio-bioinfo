@@ -39,10 +39,10 @@ import com.novelbio.base.plot.java.HeatChart;
  * @author zong0jie
  *
  */
-public abstract class GffChr {
+public abstract class GffChr1 {
 	
 
-private static Logger logger = Logger.getLogger(GffChr.class);
+private static Logger logger = Logger.getLogger(GffChr1.class);
 //////////////////////////////////////////////////参数设定/////////////////////////////////////////////////////////
 
 	/**
@@ -133,7 +133,7 @@ private static Logger logger = Logger.getLogger(GffChr.class);
 	 * @param Gfffilename
 	 * @throws Exception 
 	 */
-	public GffChr(String gffClass,String GffFile, String ChrFilePath, int taxID)
+	public GffChr1(String gffClass,String GffFile, String ChrFilePath, int taxID)
 	{
 		if (FileOperate.isFile(GffFile)) {
 			 try {
@@ -177,7 +177,7 @@ private static Logger logger = Logger.getLogger(GffChr.class);
 		 else if (gffClass.equals("Repeat")) {
 			 gffHash=new GffHashRepeat();
 		 }
-		gffHash.ReadGffarray(Gfffilename);
+		gffHash.ReadGffarrayExcep(Gfffilename);
 	 }
 	
 	/**

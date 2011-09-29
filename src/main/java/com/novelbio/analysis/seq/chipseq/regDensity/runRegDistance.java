@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.chipseq.regDensity;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.base.fileOperate.FileOperate;
 
 public class runRegDistance {
 
@@ -22,21 +23,32 @@ public class runRegDistance {
 		 int rowEnd = -1;
 		 int binNum = 5; //精度
 		 int range = 5000;//上下游多少距离
-		 String mapparentFIle="/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/Cell_Dpy30/mapping/";
-		 String PeakparentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/Cell_Dpy30/peakcalling/";
+		 String mapparentFIle="/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/3N/result/";
+		 String PeakparentFile = mapparentFIle+ "peakCalling/";
 		try {
-			String mapFilePath=mapparentFIle+"Dpy-30SortLen.bed";
+			String mapFilePath=mapparentFIle+"3Nextend_sort.bed";
 			
-			String txtPeakFile= PeakparentFile + "Dpy-30_peaks.xls";
+			String txtPeakFile= PeakparentFile + "ZHY_peaks_summit.xls";
+			String resultPrefix = "3N";
 			
-			String resultpath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/Cell_Dpy30/readsRegion/";
-			String resultPrefix = "Dpy-30";
+			
+			
+			
+			String resultpath = FileOperate.createFolders(mapparentFIle, "readsRegion") + "/";
+			
 			
 			RegDensity tssDistance=new RegDensity();
-			
-//			int[] colMap = new int[3];colMap[0] = 0; colMap[1] =1; colMap[2] =2;//王从茂的bed
 			tssDistance.setInvNum(binNum);
-			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
+//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+//					NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
+					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
+			
+			
+			
+			
+			
+			
 //			String geneFIle = "/home/zong0jie/桌面/CDG/CDG20110201/CTvsmT3/IntersectionResults/InterSectionGeneName.xls";
 //			tssDistance.getGeneNameTssDensity(geneFIle, 10000, 10000, "/media/winE/Bioinformatics/R/practice_script/platform/", resultpath, resultPrefix);
 //			tssDistance.getGeneNameGeneEndDensity(geneFIle, 10000, 10000, "/media/winE/Bioinformatics/R/practice_script/platform/", resultpath, resultPrefix);

@@ -507,6 +507,12 @@ public class FastQMapSoap extends FastQMapAbs{
 		cmdOperate.doInBackground("soapIndex");
 	}
 
+	@Override
+	public void setMapQ(int mapQ) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 	
 }

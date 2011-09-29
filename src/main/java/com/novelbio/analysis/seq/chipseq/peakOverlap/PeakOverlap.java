@@ -14,22 +14,33 @@ public class PeakOverlap
 	public static void main(String[] args) {
 
 		try {
-			String parentFile1 = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/annotation/";
-			 String fileMinus=parentFile1+"CSA_peaks.xls";
+			String parentFile1 = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/result/overlap/allPeak/";
+			 String fileN=parentFile1+"N_peaks_summit.xls";
 			 
 			 String parentFile2 = "/media/winE/NBC/Project/ChIPSeq_CDG101101CT/result/annotation/";
-			 String  filePlus=parentFile1+"CSA sepis peak Filter.xls";
+			 String  file2N=parentFile1+"2N_peaks_summit.xls";
+			 String  file3N=parentFile1+"3N_peaks_summit.xls";
 			/**
 			 * 每个peakOverlap的细节
 			 */
 			 String parentFile3 = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/annotation/";
-			 String txtPeakOverlapFile=parentFile3+"sipes2macs.txt";
-			/**
-			 * PeakOVerlap的总体评价
-			 */
-			 String txtPeakOverlapStatisticFile=parentFile3+"sipes2macsStatistic.txt";
-			//PeakOverLap(filePlus,fileMinus,txtPeakOverlapFile);
-		    PeakStatistic("SIPeS", "Macs",filePlus,fileMinus,txtPeakOverlapStatisticFile);
+			 String txtPeakOverlapFileN2N=parentFile1+"Nvs2N";
+			 String txtPeakOverlapFileN2NStic=parentFile1+"Nvs2Nstatistic";
+			 String txtPeakOverlapFileN3N=parentFile1+"Nvs3N";
+			 String txtPeakOverlapFileN3NStic=parentFile1+"Nvs3Nstatistic";
+			 String txtPeakOverlapFile2N3N=parentFile1+"2Nvs3N";
+			 String txtPeakOverlapFile2N3NStic=parentFile1+"2Nvs3Nstatistic";
+
+			PeakOverLap(fileN,file2N,txtPeakOverlapFileN2N);
+		    PeakStatistic("N", "2N",fileN,file2N,txtPeakOverlapFileN2NStic);
+		    
+			PeakOverLap(fileN,file3N,txtPeakOverlapFileN3N);
+		    PeakStatistic("N", "3N",fileN,file3N,txtPeakOverlapFileN3NStic);
+		    
+			PeakOverLap(file2N,file3N,txtPeakOverlapFile2N3N);
+		    PeakStatistic("2N", "3N",file2N,file3N,txtPeakOverlapFile2N3NStic);
+		    
+	
 		} catch (Exception e) {}
 		System.gc();
 		

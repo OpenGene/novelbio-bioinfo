@@ -87,4 +87,7 @@ public class FastQMap implements FastQMapInt{
 		return fastQMap.getBedFileSE(bedFile);
 	}
 	
+	public void setMapQ(int mapq) {
+		fastQMap.setMapQ(mapq);
+	}
 }

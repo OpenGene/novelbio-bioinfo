@@ -50,6 +50,14 @@ public class BedSeq extends SeqComb{
 		return bedSeq;
 	}
 	
+	/**
+	 * 指定bed文件，按照chrID和坐标进行排序
+	 * @param sortBedFile 排序后的文件全名
+	 */
+	public BedSeq sortBedFile(String sortBedFile)  {
+		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
+		return sortBedFile(1, sortBedFile, 2,3);
+	}
 	
 	/**
 	 * 专门给徐龙勇的GSM307618过滤的文件，

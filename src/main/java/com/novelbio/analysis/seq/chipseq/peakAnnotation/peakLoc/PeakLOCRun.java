@@ -20,12 +20,13 @@ public class PeakLOCRun {
 		columnID[0]=1;
 		columnID[1]=2;
 		columnID[2]=3;
-		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
-				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
-		
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 //				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
 		
+//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_TIGR,
+//				NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, "");
+		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
+				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
 		System.out.println("prepare ok");
 //		filterPeak();
 		regionFind();
@@ -114,11 +115,11 @@ public class PeakLOCRun {
 	 */
 	public static void  filterPeak() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/MethyArray_QZL110907/";
-		int taxID = 10090;
-		int colChrID = 1; int colSummit = 5;
+		String ParentFile="/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/result/peakCalling/";
+		int taxID = 39947;
+		int colChrID = 1; int colSummit = 6;
 		int rowStart = 1; 
-		int[] filterTss = new int[2]; filterTss[0] = 5000; filterTss[1] = 5000;
+		int[] filterTss = new int[2]; filterTss[0] = 1250; filterTss[1] = 0;
 		int[] filterGenEnd = new int[2]; filterGenEnd[0] = 0; filterGenEnd[1] = 0;
 		filterGenEnd = null;
 		boolean filterGeneBody = false;
@@ -127,8 +128,8 @@ public class PeakLOCRun {
 		boolean filterExon = false;
 		boolean filterIntron = false;
 		try {
-			String txtFile=ParentFile+"KC190 VS UN12D_Cope.txt";
-			String excelResultFile=ParentFile+"KC190 VS UN12D_Cope_filter.txt";
+			String txtFile=ParentFile+"N_peaks_summit.xls";
+			String excelResultFile= FileOperate.changeFileSuffix(txtFile, "_+1.25k-0k_filterAnnotation", null);
 			PeakLOC.filterPeak(txtFile, "\t", colChrID, colSummit, rowStart, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron, excelResultFile);
 			int columnNum=0;
 			 TxtReadandWrite txtReadandWrite=new TxtReadandWrite(excelResultFile, false);

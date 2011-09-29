@@ -24,7 +24,7 @@ public class GtfHashCufIso extends GffHash{
 	 * 只填充了locHashtable和LOCIDList两个list
 	 */
 	@Override
-	protected void ReadGffarray(String gfffilename) throws Exception {
+	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 		locHashtable = new HashMap<String, GffDetailAbs>();
 		LOCIDList = new ArrayList<String>();
 		TxtReadandWrite txtIso = new TxtReadandWrite();
@@ -80,7 +80,7 @@ public class GtfHashCufIso extends GffHash{
 	 * 没有，不要使用
 	 */
 	@Override
-	public GffCodAbs setGffCodAbs(String chrID, int Coordinate) {
+	public GffCodAbs setGffCod(String chrID, int Coordinate) {
 		// TODO Auto-generated method stub
 		return null;
 	}

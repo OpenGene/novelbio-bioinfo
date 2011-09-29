@@ -1,7 +1,12 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
+import javax.servlet.jsp.tagext.TryCatchFinally;
+
+import com.novelbio.analysis.annotation.copeID.CopedID;
+
 /**
  * 本类重写了equal代码，用于比较两个loc是否一致
+ * 重写了hashcode
  * 存储Gff文件中每个条目的具体信息，直接用于GffPeak文件
  * 包括<br>
  * 条目名 locString<br>
@@ -13,6 +18,36 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
  *
  */
 public abstract class GffDetailAbs {
+	
+	
+	
+	/**
+	 * 设定基因的转录起点上游长度，默认为3000bp
+	 */
+	protected static int UpStreamTSSbp = 3000;
+	
+	/**
+	 * 设定基因的转录起点下游长度，默认为2000bp
+	 */
+	protected static int DownStreamTssbp=2000;
+	/**
+	 * 设定基因结尾向外延伸的长度，默认为100bp
+	 * 就是说将基因结束点向后延伸100bp，认为是3’UTR
+	 * 那么在统计peak区域的时候，如果这段区域里面没有被peak所覆盖，则不统计该区域内reads的情况
+	 */
+	protected static int GeneEnd3UTR=100;
+	/**
+	 * 设定基因的转录起点终点位置信息
+	 * @param UpStreamTSSbp 设定基因的转录起点上游长度，默认为3000bp
+	 * @param DownStreamTssbp 设定基因的转录起点下游长度，默认为2000bp
+	 * @param GeneEnd3UTR 设定基因结尾向外延伸的长度，默认为100bp
+	 */
+	protected static void setCodLocation(int upStreamTSSbp, int downStreamTssbp, int geneEnd3UTR) {
+		UpStreamTSSbp = upStreamTSSbp;
+		DownStreamTssbp = downStreamTssbp;
+		GeneEnd3UTR = geneEnd3UTR;
+	}
+	
 	
 	/**
 	 * 该条目在List-GffDetail中的具体位置
@@ -51,7 +86,14 @@ public abstract class GffDetailAbs {
 	 * 条目终点，终点位置总是大于起点，无视条目方向
 	 */
 	protected int numberend = GffCodAbs.LOC_ORIGINAL; //loc end number
-	
+	/**
+	 * 本基因起点到上一个基因边界的距离
+	 */
+	protected int tss2UpGene = GffCodAbs.LOC_ORIGINAL;
+	/**
+	 * 本基因终点到下一个基因边界的距离
+	 */
+	protected int tes2DownGene = GffCodAbs.LOC_ORIGINAL;
 	/**
 	 * 染色体编号，都小写
 	 */
@@ -61,7 +103,6 @@ public abstract class GffDetailAbs {
 	 */
 	protected boolean cis5to3 = true; 
 	/**
-	 * 
 	 * 没有就设定为""或null
 	 * @param chrID 染色体编号，都小写
 	 * @param locString 	 * LOCID，<br>
@@ -91,7 +132,36 @@ public abstract class GffDetailAbs {
 	 * 坐标与基因终点的距离，考虑正反向
 	 */
 	protected Integer cod2End = null;
-
+	/**
+	 * 本基因终点到下一个基因边界的距离
+	 */
+	public int getTes2DownGene() {
+		return tes2DownGene;
+	}
+	/**
+	 * 本基因起点到上一个基因边界的距离
+	 */
+	public int getTss2UpGene() {
+		return tss2UpGene;
+	}
+	/**
+	 * @GffHashGene
+	 * 本基因终点，终点位置总是大于起点，无视基因方向
+	 * @GffHashItem
+	 * 条目终点，终点位置总是大于起点，无视条目方向
+	 */
+	public int getNumberend() {
+		return numberend;
+	}
+	/**
+	 * @GffHashGene
+	 * 本基因起点,起点位置总是小于终点，无视基因方向
+	 * @GffHashItem
+	 * 条目起点,起点位置总是小于终点，无视条目方向
+	 */
+	public int getNumberstart() {
+		return numberstart;
+	}
 	/**
 	 * 染色体坐标，会计算该点与本GffDetailAbs起点和终点的距离
 	 */
@@ -104,6 +174,55 @@ public abstract class GffDetailAbs {
 	 */
 	public int getCoord() {
 		return this.coord;
+	}
+	
+	/**
+	 * 坐标是否在基因的内部，包括Tss和GeneEnd的拓展区域
+	 */
+	public boolean isCodInGenExtend() {
+		return isCodInGene() || isCodInTss() || isCodInGenEnd();
+	}
+	
+	/**
+	 * 是否在所谓的Tss内
+	 * @return
+	 */
+	public boolean isCodInTss() {
+		if (getCod2Start() == null) {
+			return false;
+		}
+		if (getCod2Start() < 0 && Math.abs(getCod2Start()) <= UpStreamTSSbp) {
+			return true;
+		}
+		else if (getCod2Start() >= 0 && Math.abs(getCod2Start()) <= DownStreamTssbp) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 是否在所谓的GeneEnd内
+	 * @return
+	 */
+	public boolean isCodInGenEnd() {
+		if (getCod2End() == null) {
+			return false;
+		}
+		if (getCod2End() > 0 && Math.abs(getCod2End()) <= GeneEnd3UTR) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 是否在基因内，不拓展
+	 * @return
+	 */
+	public boolean isCodInGene() {
+		if (coord >= numberstart && coord <= numberend) {
+			return true;
+		}
+		return false;
 	}
 	/**
 	 * 染色体编号，都小写
@@ -150,26 +269,6 @@ public abstract class GffDetailAbs {
 		return this.numberstart;
 	}
 
-	/**
-	 * 只比较locString、numberstart、numberend、ChrID、cis5to3
-	 * 不比较coord
-	 * 	@Override
-	 */
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		
-		if (obj == null) return false;
-		
-		if (getClass() != obj.getClass()) return false;
-		
-		GffDetailAbs otherObj = (GffDetailAbs)obj;
-		
-		return locString.equals(otherObj.locString) && 
-		numberend == otherObj.numberend && 
-		numberstart == otherObj.numberstart &&
-		ChrID.equals(otherObj.ChrID) &&
-		cis5to3 == otherObj.cis5to3;
-	}
 	/**
 	 * 获得坐标到该ItemEnd的距离,如果coord小于0说明有问题，则返回null
 	 * 用之前先设定coord
@@ -237,5 +336,42 @@ public abstract class GffDetailAbs {
 			return false;
 		}
 	}
+	
+/////////////////////////////  重写equals等  ////////////////////////////////////
+
+	
+
+	/**
+	 * 只比较locString、numberstart、numberend、ChrID、cis5to3
+	 * 不比较coord
+	 * 	@Override
+	 */
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		
+		if (obj == null) return false;
+		
+		if (getClass() != obj.getClass()) return false;
+		
+		GffDetailAbs otherObj = (GffDetailAbs)obj;
+		
+		return locString.equals(otherObj.locString) && 
+		numberend == otherObj.numberend && 
+		numberstart == otherObj.numberstart &&
+		ChrID.equals(otherObj.ChrID) &&
+		getItemNum() == otherObj.getItemNum() &&
+		cis5to3 == otherObj.cis5to3;
+	} 
+
+	
+	/**
+	 * 重写hashcode
+	 */
+	public int hashCode(){
+		String hash = "";
+		hash = ChrID + "//" + locString + "//" + numberstart + "//" + numberstart;
+		return hash.hashCode();
+	}
+	
+	
 }

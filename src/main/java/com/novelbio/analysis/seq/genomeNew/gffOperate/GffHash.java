@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
  * @locHashtable hash（LOCID）--GeneInforlist
  * @LOCIDList 顺序存储每个基因号或条目号
  */
-public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs>{
+public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M extends GffCodAbsDu<T, K>>{
 	/**
 	 * 起点默认为开区间
 	 */
@@ -125,6 +126,14 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs>{
 		return Chrhash;
 	}
 	
+	
+	
+
+	
+	
+	
+	
+	
 	/**
 	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
 	 * 没找到就返回null
@@ -134,14 +143,11 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs>{
 		if (Loclist == null) {
 			return null;
 		}
-		String[] locationString = new String[5];
-		locationString[0] = "GffCodInfo_searchLocation error";
-		locationString[1] = "GffCodInfo_searchLocation error";
 		int[] locInfo = LocPosition(chrID, Coordinate);// 二分法查找peaknum的定位
 		if (locInfo == null) {
 			return null;
 		}
-		K gffCod = setGffCodAbs(chrID, Coordinate);
+		K gffCod = setGffCod(chrID, Coordinate);
 		if (locInfo[0] == 1) // 定位在基因内
 		{
 			gffCod.gffDetailThis = Loclist.get(locInfo[1]); 
@@ -176,8 +182,44 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs>{
 		return gffCod;
 	}
 
-	protected abstract K setGffCodAbs(String chrID, int coordinate);
-
+	protected abstract K setGffCod(String chrID, int coordinate);
+	/**
+	 * 返回双坐标查询的结果，内部自动判断 cod1 和 cod2的大小
+	 * 如果cod1 和cod2 有一个小于0，那么坐标不存在，则返回null
+	 * @param chrID
+	 * @param cod1 必须大于0
+	 * @param cod2 必须大于0
+	 * @return
+	 */
+	public M searchLocation(String chrID, int cod1, int cod2) {
+		if (cod1 < 0 && cod2 < 0) {
+			return null;
+		}
+		ArrayList<T> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
+		
+		
+		K gffCod1 = searchLocation(chrID, Math.min(cod1, cod2));
+		K gffCod2 = searchLocation(chrID, Math.max(cod1, cod2));
+		M gffCodDu = setGffCodDu(Loclist,gffCod1, gffCod2 );
+		
+		if (gffCodDu.gffCod1.getItemNumDown() < 0) {
+			gffCodDu.lsgffDetailsMid = null;
+		}
+		else {
+			for (int i = gffCodDu.gffCod1.getItemNumDown(); i <= gffCodDu.gffCod2.getItemNumUp(); i++) {
+				gffCodDu.lsgffDetailsMid.add(Loclist.get(i));
+			}
+		}
+		return gffCodDu;
+	}
+	/**
+	 * new一个对应的GffCodDu即可
+	 * @return
+	 */
+	protected abstract M setGffCodDu(ArrayList<T> lsgffDetail,
+			K gffCod1, K gffCod2);
+	
+	
 	/**
 	 * 二分法查找location所在的位点,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
 	 * 返回一个int[3]数组，<br>
@@ -240,6 +282,17 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs>{
 		return LocInfo;
 	}
 	
+	public void ReadGffarray(String gfffilename) {
+		try {
+			ReadGffarrayExcep(gfffilename);
+			setItemDistance();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 	/**
 	 * @本方法需要被覆盖
 	 * 最底层读取gff的方法<br>
@@ -257,7 +310,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs>{
 	 * （LOCID）--LOCIDList，按顺序保存LOCID,只能用于随机查找基因，不建议通过其获得某基因的序号<br/>
 	 * @throws Exception 
 	 */
-	public abstract void ReadGffarray(String gfffilename) throws Exception;
+	protected abstract void ReadGffarrayExcep(String gfffilename) throws Exception;
 
 	/**
 	 * 需要覆盖
@@ -301,5 +354,55 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs>{
 		LOCNumInfo[1]=locArrayList.indexOf(gffLOCdetail)+"";
 		return LOCNumInfo;
 	}
+	/**
+	 * 设定每个GffDetail的tss2UpGene和tes2DownGene
+	 */
+	private void setItemDistance() {
+		for (ArrayList<T> lsGffDetail : Chrhash.values()) {
+			for (int i = 0; i < lsGffDetail.size(); i++) {
+				T gffDetail = lsGffDetail.get(i);
+				T gffDetailUp = null;
+				T gffDetailDown = null;
+				if (i > 0) {
+					gffDetailUp = lsGffDetail.get(i-1);
+				}
+				if (i < lsGffDetail.size() - 1) {
+					gffDetailDown = lsGffDetail.get(i + 1);
+				}
+				if (gffDetail.cis5to3) {
+					gffDetail.tss2UpGene = distance(gffDetail, gffDetailUp, true);
+					gffDetail.tes2DownGene = distance(gffDetail, gffDetailDown, false);
+				}
+				else {
+					gffDetail.tss2UpGene = distance(gffDetail, gffDetailDown, false);
+					gffDetail.tes2DownGene = distance(gffDetail, gffDetailUp, true);
+				}
+			}
+		}
+	}
+	
+	private int distance(T gffDetail1, T gffDetail2, boolean Up) {
+		if (gffDetail2 == null) {
+			return 0;
+		}
+		else {
+			if (Up) {
+				return Math.abs(gffDetail1.getNumberstart() - gffDetail2.getNumberend());
+			}
+			else {
+				return Math.abs(gffDetail1.getNumberend() - gffDetail2.getNumberstart());
+			}
+		}
+	}
 
+
+
+
+
+
+
+
+
+	
+	
 }

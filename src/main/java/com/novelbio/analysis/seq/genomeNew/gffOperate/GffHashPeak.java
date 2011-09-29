@@ -17,7 +17,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  * @author zong0jie
  *
  */
-public class GffHashPeak extends GffHash<GffDetailPeak,GffCodPeak>{
+public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU>{
 	
 	boolean peakcis = false;
 	int colChrID = -1;
@@ -46,7 +46,7 @@ public class GffHashPeak extends GffHash<GffDetailPeak,GffCodPeak>{
      * @param rowNum
 	 */
 	public GffHashPeak(String gfffilename,boolean peakcis ,int colChrID,int colPeakstart,int colPeakend,int rowNum) throws Exception {
-		super(gfffilename);
+//		super();
 		this.peakcis = peakcis;
 		this.colChrID = colChrID;
 		this.colPeakstart = colPeakstart;
@@ -73,7 +73,7 @@ public class GffHashPeak extends GffHash<GffDetailPeak,GffCodPeak>{
      * @param colPeakend
      * @param rowNum
 	 */
-	public void ReadGffarray(String gfffilename) throws Exception 
+	protected void ReadGffarrayExcep(String gfffilename) throws Exception 
 	{
 		TxtReadandWrite txtPeakInfo=new TxtReadandWrite();
 		//先把txt文本中的peak信息读取
@@ -156,7 +156,7 @@ public class GffHashPeak extends GffHash<GffDetailPeak,GffCodPeak>{
 
 					//将locHashtable中相应的项目也修改，同时加入新的项目
 					//因为UCSC里面没有转录本一说，只有两个LOCID共用一个区域的情况，所以只能够两个不同的LOCID指向同一个GffdetailUCSCgene
-					String[] allPeakID=lastGffdetailpeak.locString.split("/");
+					String[] allPeakID = lastGffdetailpeak.locString.split("/");
 					for (int m= 0; m < allPeakID.length; m++) {
 						locHashtable.put(allPeakID[m], lastGffdetailpeak);
 					}
@@ -180,8 +180,13 @@ public class GffHashPeak extends GffHash<GffDetailPeak,GffCodPeak>{
 			//System.out.println(mm);
 	}
 	@Override
-	protected GffCodPeak setGffCodAbs(String chrID, int Coordinate) {
+	protected GffCodPeak setGffCod(String chrID, int Coordinate) {
 		return new GffCodPeak(chrID, Coordinate);
+	}
+	@Override
+	protected GffCodPeakDU setGffCodDu(ArrayList<GffDetailPeak> lsgffDetail,
+			GffCodPeak gffCod1, GffCodPeak gffCod2) {
+		return new GffCodPeakDU(lsgffDetail, gffCod1, gffCod2);
 	}
 	
 }

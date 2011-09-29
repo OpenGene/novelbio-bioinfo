@@ -313,7 +313,7 @@ public class MapReads {
 	 * @param binNum 待分割的块数
 	 * @return
 	 */
-	public  double[] getReadsDensity(String chrID,int startLoc,int endLoc,int binNum ) 
+	public  double[] getReadsDensity(String chrID,int startLoc,int endLoc,int binNum)
 	{
 		//首先将reads标准化为一个400-500bp宽的大块，每一块里面应该是该区域里面tags的总数，所以求该区域里面的最大值
 		//然后再在大块上面统计，
@@ -338,7 +338,7 @@ public class MapReads {
 	}
 	
 	
-
+	
 	
 	/**
 	 * 获得Mapping文件中最长和最短chr的长度

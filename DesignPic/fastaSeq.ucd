@@ -170,7 +170,7 @@
       <children xsi:type="editmodel:MethodEditModel" name="filterWYR" id="com.novelbio.analysis.seq/BedSeq#filterWYR(Ljava.lang.String;)"/>
       <children xsi:type="editmodel:MethodEditModel" name="filterXLY" id="com.novelbio.analysis.seq/BedSeq#filterXLY(Ljava.lang.String;)"/>
       <children xsi:type="editmodel:MethodEditModel" name="getFastQ" id="com.novelbio.analysis.seq/BedSeq#getFastQ(ILjava.lang.String;)"/>
-      <children xsi:type="editmodel:MethodEditModel" name="sortBedFile" id="com.novelbio.analysis.seq/BedSeq#sortBedFile(ILjava.lang.String;[I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="sortBedFile" id="com.novelbio.analysis.seq/BedSeq#sortBedFile(Ljava.lang.String;[I)"/>
     </children>
     <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
     <sourceConnections xsi:type="editmodel:GeneralizationEditModel" targetConnections="//@children.7/@sourceConnections.0" autoLocated="true" id="com.novelbio.analysis.seq/SeqComb&lt;-com.novelbio.analysis.seq/BedSeq" source="//@children.8" target="//@children.10" targetEnd="//@children.8/@sourceConnections.0/@children.1" sourceEnd="//@children.8/@sourceConnections.0/@children.0" connectionRouterKind="GeneralizationManhattan">
@@ -185,7 +185,7 @@
       <children xsi:type="editmodel:MethodEditModel" name="BedPeakMacs" id="com.novelbio.analysis.seq.chipseq/BedPeakMacs#BedPeakMacs(Ljava.lang.String;)"/>
       <children xsi:type="editmodel:MethodEditModel" name="filterWYR" id="com.novelbio.analysis.seq.chipseq/BedPeakMacs#filterWYR(Ljava.lang.String;)"/>
       <children xsi:type="editmodel:MethodEditModel" name="peakCallling" id="com.novelbio.analysis.seq.chipseq/BedPeakMacs#peakCallling(Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;Ljava.lang.String;)"/>
-      <children xsi:type="editmodel:MethodEditModel" name="sortBedFile" id="com.novelbio.analysis.seq.chipseq/BedPeakMacs#sortBedFile(ILjava.lang.String;[I)"/>
+      <children xsi:type="editmodel:MethodEditModel" name="sortBedFile" id="com.novelbio.analysis.seq.chipseq/BedPeakMacs#sortBedFile(Ljava.lang.String;[I)"/>
     </children>
     <children xsi:type="editmodel:CompartmentEditModel" size="0,0"/>
     <sourceConnections xsi:type="editmodel:GeneralizationEditModel" autoLocated="true" id="com.novelbio.analysis.seq/BedSeq&lt;-com.novelbio.analysis.seq.chipseq/BedPeakMacs" source="//@children.9" target="//@children.8" targetEnd="//@children.9/@sourceConnections.0/@children.1" sourceEnd="//@children.9/@sourceConnections.0/@children.0" connectionRouterKind="Manual">

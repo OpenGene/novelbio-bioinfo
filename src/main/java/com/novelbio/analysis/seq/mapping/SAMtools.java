@@ -150,7 +150,7 @@ public class SAMtools{
 	
 	/**
 	 * 将一行的信息提取为bed文件的格式
-	 * 起点从0开始
+	 * 起点从0开始，默认mapping数目为1
 	 * @return
 	 */
 	private String[] getBedFormat(String content)
@@ -176,14 +176,15 @@ public class SAMtools{
 		//起点
 		int start = Integer.parseInt(ss[3]) - 1;
 		int end = start + length;
-		String[] result = new String[6];
+		String[] result = new String[7];
 		result[0] = ss[2]; result[1] = start+""; result[2] = end+""; 
 		try {
 			result[3] = ss[18];
 		} catch (Exception e) {
 			result[3] = "none";
 		}
-		 result[4] = ss[5]; result[5] = strand; 
+		 result[4] = ss[5]; result[5] = strand;
+		 result[6] = "1";
 		return result;
 	}
 	

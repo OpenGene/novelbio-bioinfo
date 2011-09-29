@@ -24,6 +24,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.imageio.*;
@@ -222,6 +223,30 @@ public class HeatChart {
 	 */
 	public HeatChart(double[][] zValues) {
 		this(zValues, min(zValues), max(zValues));
+	}
+	
+	/**
+	 * 给定实现HeatChart接口的数据集，然后画图
+	 * 自动将HeatChartDataInts中的title设置给xvalue
+	 * 注意list中所有数据的维度应该一致
+	 * @param lsHeatChartDataInts
+	 */
+	public HeatChart(ArrayList<HeatChartDataInt> lsHeatChartDataInts) {
+		this(null, 0, 0);
+		copeHeatChartDataInt(lsHeatChartDataInts);
+	}
+	
+	private void copeHeatChartDataInt(ArrayList<HeatChartDataInt> lsHeatChartDataInts)
+	{
+		zValues = new double[lsHeatChartDataInts.size()][lsHeatChartDataInts.get(0).getDouble().length];
+		xValues = new String[lsHeatChartDataInts.size()];
+		for (int i = 0; i < lsHeatChartDataInts.size(); i++) {
+			HeatChartDataInt heatChartDataInt = lsHeatChartDataInts.get(i);
+			zValues[i] = heatChartDataInt.getDouble();
+			xValues[i] = heatChartDataInt.getTitle();
+		}
+		lowValue = min(zValues);
+		highValue = max(zValues);
 	}
 	
 	/**
@@ -1354,7 +1379,7 @@ public class HeatChart {
 		return getChartImage(false);
 	}
 	
-	/*
+	/**
 	 * Calculates all unknown component dimensions.
 	 */
 	private void measureComponents() {
@@ -1452,7 +1477,7 @@ public class HeatChart {
 		chartSize = new Dimension(chartWidth, chartHeight);
 	}
 	
-	/*
+	/**
 	 * Calculates the co-ordinates of some key positions.
 	 */
 	private void updateCoordinates() {
@@ -1632,7 +1657,7 @@ public class HeatChart {
 		}
 	}
 	
-	/*
+	/**
 	 * Draws the y-values onto the y-axis if showYAxisValues is set to true.
 	 */
 	private void drawYValues(Graphics2D chartGraphics) {

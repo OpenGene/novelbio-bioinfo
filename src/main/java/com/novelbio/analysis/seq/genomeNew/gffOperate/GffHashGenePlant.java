@@ -41,7 +41,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	 * Species.ARABIDOPSIS和DB.equals(Species.RICE
 	 * @throws Exception
 	 */
-	public GffHashGenePlant(String DB) throws Exception {
+	public GffHashGenePlant(String DB) {
 		setDB(DB);
 	}
 	
@@ -116,7 +116,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起： NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
-   public void ReadGffarray(String gfffilename) throws Exception
+   protected void ReadGffarrayExcep(String gfffilename) throws Exception
    {
 	   setHashName();
 		// 实例化四个表
@@ -331,10 +331,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	   txtgff.close();
    }
 
-	@Override
-	protected GffCodGene setGffCodAbs(String chrID, int Coordinate) {
-		return new GffCodGene(chrID, Coordinate);
-	}
+
 	
 }
 

@@ -12,15 +12,16 @@ public class PeakAnno {
 	
 	public static void main(String[] args) 
 	{
-		 int[] columnID=new int[3];
-		columnID[0]=1;
-		columnID[1]=2;
-		columnID[2]=3;
+//		 int[] columnID=new int[3];
+//		columnID[0]=1;
+//		columnID[1]=2;
+//		columnID[2]=3;
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 //				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
+//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_TIGR,
+//				NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, "");
 		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
-				NovelBioConst.GENOME_PATH_UCSC_HG18_GFF_REFSEQ, "");
-		
+				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
 //		PeakLOC.prepare("/media/winE/Bioinformatics/GenomeData/Arabidopsis/ChromFaRaw",null,NovelBioConst.GENOME_GFF_TYPE_TAIR,
 //				"/media/winE/Bioinformatics/GenomeData/Arabidopsis/TAIR9_GFF3_genes.gff", "");
 		System.out.println("prepare ok");
@@ -32,22 +33,25 @@ public class PeakAnno {
 	 */
 	public static void  annotation() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/SNP_ZQ110826/result/";
-		String geneStructurePath = "/media/winE/NBC/Project/SNP_ZQ110826/result";
+		String ParentFile="/media/winE/NBC/Project/SNP_ZQ110826/";
+		String geneStructurePath = FileOperate.createFolders(FileOperate.getParentPathName(ParentFile), "genestructure") + "/";
 		int[] columnID=new int[2];
-		columnID[0]=2;
-		columnID[1]=3;
+		columnID[0]=1;
+		columnID[1]=6;
 		int taxID = 9606;
 		//定位区域
 		int[] region = new int[3];//0:UpstreamTSSbp 1:DownStreamTssbp 2:GeneEnd3UTR
-//		region[0] = 3000; region[1] = 1500; region[2] = 100;
-//		int upBp = 3000;
-		region[0] = 100000; region[1] = 1000; region[2] = 100000;
-		int upBp = 100000;
+		region[0] = 10000; region[1] = 1500; region[2] = 10000;
+		
+		int upBp = region[0];
+//		region[0] = 100000; region[1] = 1000; region[2] = 100000;
+//		int upBp = 100000;
 		try {
-			 String FpeaksFile=ParentFile+"ZQsnp.txt";
-			 String FannotationFile=ParentFile+"ZQsnp_annotation.txt";
-			 String FPeakHist = ParentFile; String resultPrix ="ZQ";
+			 String FpeaksFile=ParentFile+"ZQsnpRaw.txt";
+			 String resultPrix ="ZQ";
+
+			 String FannotationFile= FileOperate.changeFileSuffix(FpeaksFile, "_annotation", null);
+			 String FPeakHist = ParentFile; 
 			 PeakLOC.histTssGeneEnd(FpeaksFile, "\t", columnID, 2, -1, FPeakHist, resultPrix);
 			 
 			 statisticNum(upBp,FpeaksFile, columnID,geneStructurePath, resultPrix);
@@ -69,7 +73,6 @@ public class PeakAnno {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		System.out.println("ok");
 	}
 	

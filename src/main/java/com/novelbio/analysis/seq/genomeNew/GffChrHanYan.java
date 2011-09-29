@@ -23,7 +23,7 @@ import com.novelbio.base.plot.java.HeatChart;
  * @author zong0jie
  * 
  */
-public abstract class GffChrHanYan extends GffChr{
+public abstract class GffChrHanYan extends GffChr1{
 	
 
 

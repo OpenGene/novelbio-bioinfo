@@ -7,7 +7,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class GffChrChIP extends GffChr{
+public class GffChrChIP extends GffChr1{
 
 	public GffChrChIP(String gffClass, String GffFile, String ChrFilePath,
 			int taxID) {

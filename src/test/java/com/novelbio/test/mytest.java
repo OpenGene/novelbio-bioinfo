@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import javax.swing.tree.ExpandVetoException;
@@ -22,6 +23,7 @@ import com.novelbio.analysis.annotation.blast.Blast2DB;
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo;
 import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.analysis.generalConf.Species;
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.CopyOfGUIanalysisSimple;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FastQ;
@@ -29,6 +31,7 @@ import com.novelbio.analysis.seq.SeqComb;
 import com.novelbio.analysis.seq.blastZJ.Cell;
 import com.novelbio.analysis.seq.blastZJ.LongestCommonSubsequence;
 import com.novelbio.analysis.seq.blastZJ.SmithWaterman;
+import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
 import com.novelbio.analysis.seq.genomeNew.GffChrChIP;
 import com.novelbio.analysis.seq.genomeNew.GffChrHanYanChrom;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
@@ -37,6 +40,8 @@ import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHash;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGenePlant;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneUCSC;
 import com.novelbio.analysis.seq.mapping.FastQMapBwa;
 import com.novelbio.analysis.seq.mapping.FastQMapSoap;
@@ -50,6 +55,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.Patternlocation;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.Rplot;
 import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.Go2Term;
@@ -64,17 +70,16 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-//		String seqFile1 = "/media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/Hanyan_medium.fq";
-//		String resultParent = "/media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/bwatest/";
-//		FastQMapBwa fastQMapBwa = new FastQMapBwa(seqFile1, FastQ.QUALITY_MIDIAN, resultParent + "uniqMid", true);
-//		fastQMapBwa.setFilePath("bwa", "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_refseq/RefSeqFromChr.fa");
-//		FastQMapBwa fastQMapBwa2 = new FastQMapBwa(seqFile1, FastQ.QUALITY_MIDIAN,  resultParent + "multiMid", false);
-//		fastQMapBwa2.setFilePath("bwa", "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_refseq/RefSeqFromChr.fa");
-//		fastQMapBwa.mapReads();
-//		fastQMapBwa2.mapReads();
-		SAMtools saMtools = new SAMtools("/media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/bwatest/multiMidout", false, 0);
-		saMtools.sam2bed("/media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/bwatest/multiBed.bed", false);
-		saMtools.sam2bed("/media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/bwatest/uniqBed.bed", true);
+		ArrayList<Integer> lsInt = new ArrayList<Integer>();
+		for (int i = 0; i < 20; i = i + 2) {
+			lsInt.add(i);
+		}
+		System.out.println("3 "+Collections.binarySearch(lsInt, 3));
+		System.out.println("4 "+Collections.binarySearch(lsInt, 4));
+		System.out.println("18 "+Collections.binarySearch(lsInt, 18));
+		System.out.println("19 "+Collections.binarySearch(lsInt, 19));
+		List<Integer> lsSub = lsInt.subList(1, 5);
+		System.out.println("ok");
 	}
 
 	private static void testFdrFunction() throws Exception {
@@ -210,7 +215,7 @@ public class mytest {
 	public void calUTR5length() throws Exception {
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
-				.ReadGffarray(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+				.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
 		int geneNum = 0;
 		int gene20bp = 0;
@@ -243,7 +248,7 @@ public class mytest {
 	public static void calIntron() throws Exception {
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
-				.ReadGffarray(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+				.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
 		ArrayList<Integer> lsIntron = new ArrayList<Integer>();
 		TreeSet<Integer> treeIntron = new TreeSet<Integer>();
@@ -277,7 +282,7 @@ public class mytest {
 	public static void testHanyan() throws Exception {
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
-				.ReadGffarray(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+				.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
 		txtReadandWrite
 				.setParameter(
@@ -351,7 +356,7 @@ public class mytest {
 				NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
-				.ReadGffarray(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+				.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
 		int seqNum = 0;
 		int consensusSeq = 0;
@@ -404,7 +409,7 @@ public class mytest {
 				NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
-				.ReadGffarray(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+				.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
 		GffDetailGene gffDetailGene = (GffDetailGene) gffHashUCSCgene
 				.getLocHashtable().get("NM_032526");
@@ -427,7 +432,7 @@ public class mytest {
 				NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
-				.ReadGffarray(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+				.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
 		int seqNum = 0;
 		int consensusSeq = 0;

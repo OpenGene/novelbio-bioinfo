@@ -26,7 +26,8 @@ public class FastQMapBwa extends FastQMapAbs{
 	 * 似乎该值双端才有用
 	 */
 	private static final int GENOME_SIZE_IN_MEMORY = 500000;
-	private static Logger logger = Logger.getLogger(FastQMapSoap.class);  
+	private static Logger logger = Logger.getLogger(FastQMapSoap.class);
+	private int mapQ = 20;
 	/**
 	 * @param fastQ
 	 * @param outFileName 结果文件名
@@ -111,6 +112,9 @@ public class FastQMapBwa extends FastQMapAbs{
 	public void setGapLength(int gapLength) {
 		this.gapLength = gapLength;
 	}
+	public void setMapQ(int mapQ) {
+		this.mapQ = mapQ;
+	}
 	/**
 	 * 参数设定不能用于solid
 	 */
@@ -189,12 +193,12 @@ public class FastQMapBwa extends FastQMapAbs{
 		if (!FileOperate.isFileExist(outFileName)) { 
 			mapReads();
 		}
-		SAMtools saMtools = new SAMtools(outFileName, isPairEnd(), 25);
+		SAMtools saMtools = new SAMtools(outFileName, isPairEnd(), mapQ);
 		if (isPairEnd()) {
 			return saMtools.sam2bed(bedFile, uniqMapping);
 		}
 		else {
-			BedSeq bedSeq = saMtools.sam2bed(bedFile+"raw", uniqMapping);
+			BedSeq bedSeq = saMtools.sam2bed(FileOperate.changeFileSuffix(bedFile, "_fromSam", "bed"), uniqMapping);
 			return bedSeq.extend(extendTo, bedFile);
 		}
 	}
@@ -208,7 +212,7 @@ public class FastQMapBwa extends FastQMapAbs{
 		if (!FileOperate.isFileExist(outFileName)) { 
 			mapReads();
 		}
-		SAMtools saMtools = new SAMtools(outFileName, false, 25);
+		SAMtools saMtools = new SAMtools(outFileName, false, mapQ);
 		return saMtools.sam2bed(bedFile, uniqMapping);
 		
 	}

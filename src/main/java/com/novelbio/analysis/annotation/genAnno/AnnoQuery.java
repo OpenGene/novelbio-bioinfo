@@ -11,6 +11,7 @@ import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
@@ -39,7 +40,7 @@ public class AnnoQuery {
 	 * @param colNum 实际列
 	 * @param regx正则表达式 如果为""则不切割
 	 */
-	public static void annoGeneID(String excelFile, int taxID,int colNum,String regx) {
+	public static void annoGeneIDXls(String excelFile, int taxID,int colNum,String regx) {
 		colNum--;
 		ExcelOperate excelAnno = new ExcelOperate();
 		excelAnno.openExcel(excelFile);
@@ -85,7 +86,77 @@ public class AnnoQuery {
 		}
 		String[][] dataResult = ArrayOperate.combArray(geneInfo, geneAno, colNum+1);
 		excelAnno.WriteExcel(1, 1, dataResult);
+	}
+	/**
+	 * 
+	 * 给arraytools的结果添加geneID,没有geneID则将本accID附加上去
+	 * 添加在第colNum列的后面，直接写入excel文件
+	 * <b>第一行一定是标题行</b>
+	 * 首先将指定accID列的每一项用regx切割，然后将结果查找geneID或者uniID，只找第一个含有geneID或uniID的项目，然后将该geneID或uniID装入excel
+	 * @param excelFile
+	 * @param taxID
+	 * @param colNum 实际列
+	 * @param regx正则表达式 如果为""则不切割
+	 */
+	public static void annoGeneIDTxt(String txtFile, int taxID,int colNum,String regx) {
+		colNum--;
+		TxtReadandWrite excelAnno = new TxtReadandWrite(txtFile, false);
+		//全部读取，第一行为title
+		String[][] geneInfo = null;
+		try {
+			geneInfo = excelAnno.ExcelRead("\t", 1, 1, excelAnno.ExcelRows(), excelAnno.ExcelColumns("\t"));
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ArrayList<String[]> lsgenAno = new ArrayList<String[]>();
+		for (int i = 1; i < geneInfo.length; i++) {
+			String[] accID = null;
+			if (regx.equals("")) {
+				accID = new String[1];
+				try {
+					accID[0] = CopeID.removeDot(geneInfo[i][colNum]);
+				} catch (Exception e) {
+					accID[0] = "error";
+				}
+			}
+			else {
+				try {
+					accID = geneInfo[i][colNum].split(regx);
+				} catch (Exception e) {
+					accID[0] = "error";
+				}
+				
+			}
+			String thisaccID = accID[0];
+			for (int j = 0; j < accID.length; j++) {
+				ArrayList<String> lsTmpaccID = ServAnno.getNCBIUni(CopeID.removeDot(accID[j]), taxID);
+				if (!lsTmpaccID.get(0).equals("accID")) {
+					thisaccID = lsTmpaccID.get(1);
+					break;
+				}
+			}
+			String[] tmpAno = new String[1];
+			tmpAno[0] =thisaccID; 
+			lsgenAno.add(tmpAno);
+		}
+		String[][] geneAno = new String[geneInfo.length][lsgenAno.get(0).length];
+		geneAno[0][0] = "geneID/uniID";
+		for (int i = 1; i < geneAno.length; i++) {
+			for (int j = 0; j < geneAno[0].length; j++) {
+				geneAno[i][j] = lsgenAno.get(i-1)[j];
+			}
+		}
+		String[][] dataResult = ArrayOperate.combArray(geneInfo, geneAno, colNum+1);
+		try {
+			excelAnno.setParameter(txtFile, true, false);
+			excelAnno.ExcelWrite(dataResult, "\t", 1, 1);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}	
+	
 	/**
 	 * 给arraytools的结果添加annotation
 	 * 添加在第colNum列的后面，直接写入excel文件

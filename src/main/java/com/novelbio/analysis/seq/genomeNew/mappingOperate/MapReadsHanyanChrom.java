@@ -38,7 +38,7 @@ public class MapReadsHanyanChrom extends MapReads{
 	}
 
 	/**
-	 * 
+	 * 根据reads是否与基因的方向相一致而进行过滤工作，这个是专门针对韩燕的项目做的分析
 	 * 给定一行信息，将具体内容加到对应的坐标上
 	 * @param tmp 本行分割后的信息
 	 * @param uniqReads 同一位点叠加后是否读取

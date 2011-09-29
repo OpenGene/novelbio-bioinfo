@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -68,10 +70,9 @@ public class MapReads {
 	 int colCis5To3 = 5;
 	 /**
 	  * 起点是否为开区间
-	  * 我通过Soap生成的bed文件是0
 	  * 常规的bed是1
 	  */
-	 int startRegion = 0;
+	 int startRegion = 1;
 	 /**
 	  * 终点是否为开区间
 	  */
@@ -86,7 +87,12 @@ public class MapReads {
 	  * 为第12列
 	  */
 	 int splitStart = -1;
-	 
+	 /**
+	  * <b>RNA-Seq使用</b><br>
+	  * 剪接位点列的设定
+	  * @param colSplit 是否有剪接列，如果没有则小于0, 从bam转到的bed文件中才有的列，主要在RNA-Seq中使用。如果有的话，一般为11列
+	  * @param splitStart 剪接列的起点等：如0,34,68，如果没有则小于0, 从bam转到的bed文件中才有的列，主要在RNA-Seq中使用。如果有的话，一般为12列
+	  */
 	 public void setSplit( int colSplit, int splitStart)
 	 {
 		 colSplit--; splitStart--;
@@ -113,15 +119,15 @@ public class MapReads {
 		tagLength=thisTagLength;
 	}
 	/**
+	 * <b>一般不用修改</b>
 	 * mapFile 里面用什么分隔符进行分隔的，默认是"\t"
 	 */
 	public void setSep(String sep) {
 		this.sep = sep;
 	}
 	 /**
-	  * 起点是否为开区间
-	  * 我通过Soap生成的bed文件是0
-	  * 常规的bed是1
+	  * 起点是否为开区间,
+	  * 常规的bed是1，bed文件不用修改
 	  */
 	public void setstartRegion(int startRegion) {
 		this.startRegion = startRegion;
@@ -134,7 +140,7 @@ public class MapReads {
 		this.colSplit = colSplit;
 	}
 	/**
-	 * 设定坐标文件中ChrID和 起点，终点的列数
+	 * 设定坐标文件中ChrID和 起点，终点的列数，<b>如果是常规的bed文件，那么这个不用修改</b>
 	 * @param colChrID ChrID所在的列
 	 * @param colStartNum 起点所在的
 	 * @param colEndNum 终点所在的列
@@ -147,23 +153,36 @@ public class MapReads {
 		this.colEndNum = colEndNum;
 		this.colCis5To3 = colCis5To3;
 	}
-	
+	boolean uniqReads = false;
+	int startCod = -1;
+	int colUnique = 7;
+	boolean booUniqueMapping = true;
+	Boolean cis5to3 = null;
 	/**
-	 * @param invNum 每隔多少位计数
-	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
-	 * @param mapFile mapping的结果文件，一般为bed格式
-	 * @param regx 序列名的正则表达式，null不设定 读取Chr文件夹的时候默认设定了 "\\bchr\\w*"
+	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
+	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
+	 * @param colUnique Unique的reads在哪一列 novelbio的标记在第七列，从1开始计算
+	 * @param booUniqueMapping 重复的reads是否只选择一条
+	 * @param cis5to3 是否仅选取某一方向的reads，null不考虑
 	 */
-	public MapReads(int invNum, String chrFilePath, String mapFile, String regx) 
+	public void setFilter(boolean uniqReads, int startCod, int colUnique, boolean booUniqueMapping, Boolean cis5to3)
 	{
-		hashChrLen = new HashMap<String, Long>();
-		SeqHash seqHash = null; 
+		this.uniqReads = uniqReads;
+		this.startCod = startCod;
+		this.colUnique = colUnique;
+		this.booUniqueMapping = booUniqueMapping;
+		this.cis5to3 = cis5to3;
+	}
+	/**
+	 * @param invNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
+	 * @param mapFile mapping的结果文件，一般为bed格式
+	 */
+	public MapReads(int invNum, String mapFile) 
+	{
 		this.invNum = invNum;
-		seqHash = new SeqHash(chrFilePath, regx);
-		hashChrLen = seqHash.getHashChrLength();
 		this.mapFile = mapFile;
 	}
-	
+
 	
 	/**
 	 * @param chrLenFile 给定文件，指定每条染色体的长度<br>
@@ -190,6 +209,33 @@ public class MapReads {
 	}
 	
 	/**
+	 * 从mapping文件中获得每条染色体的长度，
+	 * 要求mapping文件必须排过序，然后获得每个chr的最长reads到多长
+	 * @throws Exception 
+	 */
+	private void setHashChrLen() throws Exception
+	{
+		if (hashChrLen.size() > 0) {
+			return;
+		}
+		TxtReadandWrite txtMap = new TxtReadandWrite(mapFile, false);
+		BufferedReader readerMap = txtMap.readfile();
+		String content = ""; String chrID = ""; 
+		String[] preSs = null;
+		while ((content = readerMap.readLine()) != null) {
+			String[] ss = content.split("\t");
+			if (!ss[colChrID].equals(chrID)) {
+				if (preSs != null) {
+					hashChrLen.put(chrID.toLowerCase(), Long.parseLong(preSs[colEndNum]));
+				}
+				chrID = ss[colChrID];
+			}
+			preSs = ss;
+		}
+		hashChrLen.put(preSs[colChrID].toLowerCase(), Long.parseLong(preSs[colEndNum]));
+	}
+	
+	/**
 	 * 当输入为macs的bed文件时，自动<b>跳过chrm项目</b><br>
 	 * 所有chr项目都小写
 	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。注意，mapping文件中的chrID和chrLengthFile中的chrID要一致，否则会出错
@@ -201,8 +247,9 @@ public class MapReads {
 	 * @return 返回所有mapping的reads数量
 	 * @throws Exception
 	 */
-	public  long  ReadMapFile(boolean uniqReads, int startCod, int colUnique, boolean booUniqueMapping, Boolean cis5to3) throws Exception 
+	public long ReadMapFile() throws Exception 
 	{
+		setHashChrLen();
 		colUnique--;
 		if (startCod > 0 && colCis5To3 < 0) {
 			logger.error("不能设定startCod，因为没有设定方向列");
@@ -215,8 +262,7 @@ public class MapReads {
 		int[] chrBpReads=null;//保存每个bp的reads累计数
 		int[] SumChrBpReads=null;//直接从0开始记录，1代表第二个invNum,也和实际相同
 		/////////////////读文件的准备工作///////////////////////////////////////////////////
-		TxtReadandWrite txtmap=new TxtReadandWrite();
-		txtmap.setParameter(mapFile,false, true);
+		TxtReadandWrite txtmap=new TxtReadandWrite(mapFile,false);
 		BufferedReader bufmap=txtmap.readfile();
 		String content=""; String lastChr="";
 		////////////////////////////////////////////////////////////////////////////////////////////////
@@ -350,6 +396,10 @@ public class MapReads {
 				if (i >= chrLoc.length) {
 					logger.error("超出范围："+ i);
 					break;
+				}
+				if (i < 0) {
+					logger.error("超出范围："+ i);
+					continue;
 				}
 				chrLoc[i]++;
 			}
@@ -707,7 +757,6 @@ public class MapReads {
 		if (binNum <= 0) {
 			return result;
 		}
-		
 		double[] resultTagDensityNum=MathComput.mySpline(result, binNum, 0, 0, 0);
 		return resultTagDensityNum;
 	}
@@ -719,7 +768,7 @@ public class MapReads {
 	 * 给定double数组，按照reads总数进行标准化,reads总数由读取的mapping文件自动获得<br>
 	 * 最后先乘以1million然后再除以每个double的值<br>
 	 * @param doubleInfo
-	 * @param NormType 参数选择MapReads的NORMALIZATION类
+	 * @param NormType 参数选择MapReads的NORMALIZATION类,如果不在其中，则不修改
 	 * @return 
 	 */
 	public void normDouble(double[] doubleInfo, int NormType) {
@@ -735,10 +784,35 @@ public class MapReads {
 			}
 		}
 	}
+	/**
+	 * 
+	 * @param lsmapInfo
+	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 * @param NormType 参数选择MapReads的NORMALIZATION类,如果不在其中，则不修改
+	 */
+	public void getRegionLs(List<MapInfo> lsmapInfo, int thisInvNum, int type, int NormType) {
+		for (MapInfo mapInfo : lsmapInfo) {
+			double[] Info = getRengeInfo(thisInvNum, mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), type);
+			normDouble(Info, NormType);
+			mapInfo.setDouble(Info);
+		}
+	}
 	
-	
-	
-	
+	/**
+	 * 
+	 * @param binNum 待分割的区域数目
+	 * @param lsmapInfo
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 * @param NormType 参数选择MapReads的NORMALIZATION类,如果不在其中，则不修改
+	 */
+	public void getRegionLs(int binNum, List<MapInfo> lsmapInfo, int type, int NormType) {
+		for (MapInfo mapInfo : lsmapInfo) {
+			double[] Info = getRengeInfo(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), binNum, type);
+			normDouble(Info, NormType);
+			mapInfo.setDouble(Info);
+		}
+	}
 	
 	
 }

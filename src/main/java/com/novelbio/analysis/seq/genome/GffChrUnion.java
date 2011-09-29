@@ -631,9 +631,6 @@ public class GffChrUnion {
 			}
 			return chrAllLength;
 		}
-		 
-		
-		
 	}
 
 	/**
@@ -657,7 +654,7 @@ public class GffChrUnion {
 	 *  1: 最长chr长度
 	 */
 	public int[] getThreshodChrLength() 
-	{ 
+	{
 		int[] chrLen=new int[2];
 		ArrayList<String[]> chrInfo=ChrSearch.getChrLengthInfo();
 		chrLen[0]=Integer.parseInt(chrInfo.get(0)[1]);
@@ -747,7 +744,6 @@ public class GffChrUnion {
 			} catch (Exception e) {
 				System.out.println(LOCInfo[i][0]+"   "+LOCInfo[i][1]+"   "+LOCInfo[i][2]);
 			}
-			
 		 }
 	 }
 	 
@@ -1037,7 +1033,7 @@ public class GffChrUnion {
 	  * @return 返回该区域上有peak覆盖的所有tss上reads的情况的数组
 	  */
 	 @SuppressWarnings("unchecked")
-	private double[][] getTssRangeArray(int range, int binNum) 
+	 private double[][] getTssRangeArray(int range, int binNum) 
 	 {
 		 tmpGeneNum = 0;
 		 GffHash gffHashGene = gffHash;
@@ -1055,7 +1051,7 @@ public class GffChrUnion {
 			 if (lsGeneInfo.get(0)[0]!=0) 
 			 {
 				 GffDetailUCSCgene gffDetailUCSCgene=(GffDetailUCSCgene) gffHashGene.LOCsearch(tmpGeneID);
-
+				 
 				 int startNum=0; int endNum=0;
 				 if (gffDetailUCSCgene.cis5to3) 
 				 {
@@ -1064,8 +1060,8 @@ public class GffChrUnion {
 					 tmpTssBin=mapReads.getRengeInfo(gffDetailUCSCgene.ChrID, startNum, endNum, binNum, 0);
 					 if (tmpTssBin == null) {
 						 System.out.println(gffDetailUCSCgene.ChrID);
-						continue;
-					}
+						 continue;
+					 }
 				 }
 				 else//因为序列反向，所以需要将结果也反一下 
 				 {
@@ -1075,8 +1071,8 @@ public class GffChrUnion {
 					 //看看都是哪些会出错
 					 if (tmpTssBin == null) {
 						 System.out.println(gffDetailUCSCgene.ChrID);
-						continue;
-					}
+						 continue;
+					 }
 					 ArrayOperate.convertArray(tmpTssBin);
 				 }
 				 tmpGeneNum++;

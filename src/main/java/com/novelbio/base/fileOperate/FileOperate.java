@@ -283,7 +283,7 @@ public class FileOperate {
 	 *            目录路径,最后不要加\\或/
 	 * @return 返回目录创建后的路径
 	 */
-	public static String createFolder(String folderPath) {
+	private static String createFolder(String folderPath) {
 		String txt = folderPath;
 		try {
 			File myFilePath = new File(txt);
@@ -303,7 +303,7 @@ public class FileOperate {
 	 * @param folderPath
 	 *            准备要在本级目录下创建新目录的目录路径 例如 c:myf
 	 * @param paths
-	 *            无限级目录参数，各级目录以单数线区分 例如 a|b|c
+	 *            无限级目录参数，各级目录以/或\\区分 例如 a/b/c
 	 * @return 返回创建文件后的路径 例如 c:/myf/a/b/c
 	 */
 	public static String createFolders(String folderPath, String paths) {
@@ -311,7 +311,7 @@ public class FileOperate {
 
 		try {
 			String txt;
-			StringTokenizer st = new StringTokenizer(paths, "|");
+			StringTokenizer st = new StringTokenizer(paths, "/\\");
 			for (int i = 0; st.hasMoreTokens(); i++) {
 				txt = st.nextToken().trim();
 				txts = createFolder(txts + txt);
@@ -574,18 +574,27 @@ public class FileOperate {
 	 * @param FileName 原来文件的全名
 	 * @param append 要添加的后缀，譬如_1，_new
 	 * @param suffix 要添加的后缀名，譬如 txt， jpg ，自动去空格
+	 * suffix == null则不改变后缀名，suffix = "" 则去除后缀名
 	 */
 	public static String changeFileSuffix(String FileName, String append, String suffix) {
 		String resultFile = "";
 		String parentPath = addSep(getParentPathName(FileName));
 		String[] fileName = getFileNameSep(FileName);
-		if (fileName[1] == null || fileName[1].equals("")) {
-			resultFile = parentPath + fileName[0] + append;
+		resultFile = parentPath + fileName[0] + append;
+		if (suffix == null ) {
+			if (fileName[1] == null || fileName[1].equals("")) {
+				return resultFile;
+			}
+			else {
+				return resultFile + "."+ fileName[1];
+			}
+		}
+		else if (suffix.trim().equals("")) {
+			return resultFile;
 		}
 		else {
-			resultFile = parentPath + fileName[0] + append + "." + suffix.trim();
+			return resultFile + "."+ suffix;
 		}
-		return resultFile;
 	}
 	
 	/**
@@ -624,12 +633,16 @@ public class FileOperate {
 	 *            文件路径
 	 * @param newPath
 	 *            新文件所在的文件夹
-	 * @return
+	 * @return 新文件夹路径名
+	 * null:没有成功
 	 */
-	public static void moveFile(String oldPath, String newPath, boolean cover) {
+	public static String moveFile(String oldPath, String newPath, boolean cover) {
 		// 文件原地址
 		File oldFile = new File(oldPath);
-		moveFile(oldPath, newPath, oldFile.getName(), cover);
+		if (moveFile(oldPath, newPath, oldFile.getName(), cover)) {
+			return newPath+getFileName(oldPath);
+		}
+		return null;
 	}
 
 	/**
@@ -646,9 +659,10 @@ public class FileOperate {
 	 *            新文件的文件名
 	 * @param cover
 	 *            是否覆盖
-	 * @return
+	 * @return true 成功
+	 * false 失败
 	 */
-	public static void moveFile(String oldPath, String newPath, String newName,
+	public static boolean moveFile(String oldPath, String newPath, String newName,
 			boolean cover) {
 		newPath = addSep(newPath);
 		// 文件原地址
@@ -657,7 +671,7 @@ public class FileOperate {
 		// new一个新文件夹
 		File fnewpath = new File(newPath);
 		if (!oldFile.exists()) {
-			return;
+			return false;
 		}
 		// 判断文件夹是否存在
 		if (!fnewpath.exists())
@@ -666,14 +680,19 @@ public class FileOperate {
 		File fnew = new File(newPath + newName);
 		if (fnew.exists()) {
 			if (!cover) {
-				return;
+				return false;
 			}
 			fnew.delete();
 		}
 		if (!oldFile.renameTo(fnew)) {
 			if (copyFile(oldPath, newPath + newName, cover))
+			{
 				oldFile.delete();
+				return true;
+			}
+			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -763,7 +782,7 @@ public class FileOperate {
 	/**
 	 * 判断文件是否存在，给的是绝对路径
 	 * 
-	 * @param fileName
+	 * @param fileName 如果为null, 直接返回false
 	 * @return
 	 */
 	public static boolean isFileExist(String fileName) {

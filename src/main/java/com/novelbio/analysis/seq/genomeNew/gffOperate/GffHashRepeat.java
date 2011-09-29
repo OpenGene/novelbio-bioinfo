@@ -30,7 +30,7 @@ public class GffHashRepeat extends GffHash<GffDetailRepeat,GffCodRepeat>{
 	 * @throws Exception 
 	 */
 	@Override
-	public void ReadGffarray(String gfffilename) throws Exception {
+	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 		  //实例化三个表
 		   locHashtable =new HashMap<String, GffDetailRepeat>();//存储每个LOCID和其具体信息的对照表
 		   Chrhash=new HashMap<String, ArrayList<GffDetailRepeat>>();//一个哈希表来存储每条染色体
@@ -116,7 +116,7 @@ public class GffHashRepeat extends GffHash<GffDetailRepeat,GffCodRepeat>{
 	}
 
 	@Override
-	protected GffCodRepeat setGffCodAbs(String chrID, int Coordinate) {
+	protected GffCodRepeat setGffCod(String chrID, int Coordinate) {
 		return new GffCodRepeat(chrID, Coordinate);
 	}
 

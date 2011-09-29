@@ -1,18 +1,13 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * peak定位查找信息的基本类,并且直接可以用于CG与Peak<br>
- * 子类有GffCodInfoGene
- * 
+ * 子类有GffCodInfoGene 
  * @author zong0jie
- * 
  */
-public abstract class GffCodAbs {
+public abstract class GffCodAbs<T extends GffDetailAbs> {
+
 	/**
 	 * 所有坐标的起始信息
 	 */
@@ -24,6 +19,10 @@ public abstract class GffCodAbs {
 		this.chrID = chrID;
 		this.Coordinate = Coordinate;
 	}
+	
+	
+	
+	
 	
 	String chrID = "";
 	int Coordinate = -1;
@@ -62,45 +61,64 @@ public abstract class GffCodAbs {
 	public boolean isInsideLoc() {
 		return insideLOC;
 	}
-
+	/**
+	 * 是否在上一个条目内
+	 * @return
+	 */
+	public boolean isInsideUp() {
+		return gffDetailUp.isCodInGene();
+	}
+	/**
+	 * 是否在下一个条目内
+	 * @return
+	 */
+	public boolean isInsideDown() {
+		return gffDetailDown.isCodInGene();
+	}
 	/**
 	 * 为上个条目的具体信息，如果没有则为null(譬如定位在最前端)<br>
 	 * 1: 如果在条目内，为下个条目的具体信息<br>
 	 * 如果在条目间，为下个条目的具体信息，如果没有则为null(譬如定位在最前端)
 	 */
-	protected GffDetailAbs gffDetailUp = null;
+	protected T gffDetailUp = null;
 	/**
 	 * 只有geneDetail用到
-	 * 获得上个条目的具体信息，覆盖下
-	 * return (GffDetailAbs)gffDetailUp;
+	 * 获得上个条目的具体信息
 	 * @return
 	 */
-	public abstract GffDetailAbs getGffDetailUp();
+	public T getGffDetailUp()
+	{
+		return gffDetailUp;
+	}
 
 	/**
 	 *  如果在条目内，为本条目的具体信息，没有定位在基因内则为null<br>
 	 */
-	protected GffDetailAbs gffDetailThis = null;
+	protected T gffDetailThis = null;
 	/**
 	 * 只有geneDetail用到
-	 * 获得本条目的具体信息，覆盖下。
+	 * 获得本条目的具体信息，
 	 * 如果本条目为null，说明不在条目内
-	 * return (GffDetailAbs)gffDetailThis;
 	 * @return
 	 */
-	public abstract GffDetailAbs getGffDetailThis();
+	public T getGffDetailThis()
+	{
+		return gffDetailThis;
+	}
 	/**
 	 * 只有geneDetail用到
 	 * 为下个条目的具体信息，如果没有则为null(譬如定位在最后端)
 	 */
-	protected GffDetailAbs gffDetailDown = null;
+	protected T gffDetailDown = null;
 	/**
 	 * 只有geneDetail用到
-	 * 获得本条目的具体信息，覆盖下
-	 * return (GffDetailAbs)gffDetailDown;
+	 * 获得下一个条目的具体信息
 	 * @return
 	 */
-	public abstract GffDetailAbs getGffDetailDown();
+	public T getGffDetailDown()
+	{
+		return gffDetailDown;
+	}
 	
 	/**
 	 * 上个条目在ChrHash-list中的编号，从0开始，<b>如果上个条目不存在，则为-1</b><br>

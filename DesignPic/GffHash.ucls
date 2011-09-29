@@ -283,106 +283,42 @@
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <realization>    
-    <end type="SOURCE" nodeId="27"/>    
-    <end type="TARGET" nodeId="26"/>  
-  </realization>  
   <generalization>    
-    <end type="SOURCE" nodeId="18"/>    
+    <end type="SOURCE" nodeId="7"/>    
     <end type="TARGET" nodeId="16"/>  
   </generalization>  
-  <association>    
-    <end type="SOURCE" nodeId="19" navigable="false">      
-      <attribute name="gffCodAbs2"/>      
-      <multiplicity minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" nodeId="34" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association>    
-    <end type="SOURCE" nodeId="34" navigable="false">      
-      <attribute name="gffDetailDown"/>      
-      <multiplicity minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" nodeId="16" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
   <generalization>    
-    <end type="SOURCE" nodeId="17"/>    
+    <end type="SOURCE" nodeId="25"/>    
+    <end type="TARGET" nodeId="16"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="27"/>    
     <end type="TARGET" nodeId="14"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="8"/>    
+    <end type="TARGET" nodeId="34"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="11"/>    
+    <end type="TARGET" nodeId="16"/>  
   </generalization>  
   <generalization>    
     <end type="SOURCE" nodeId="33"/>    
     <end type="TARGET" nodeId="24"/>  
   </generalization>  
   <generalization>    
-    <end type="SOURCE" nodeId="11"/>    
-    <end type="TARGET" nodeId="16"/>  
-  </generalization>  
-  <association>    
-    <end type="SOURCE" nodeId="34" navigable="false">      
-      <attribute name="gffDetailThis"/>      
-      <multiplicity minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" nodeId="16" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <generalization>    
-    <end type="SOURCE" nodeId="2"/>    
-    <end type="TARGET" nodeId="3"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="4"/>    
-    <end type="TARGET" nodeId="3"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="22"/>    
-    <end type="TARGET" nodeId="27"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="7"/>    
-    <end type="TARGET" nodeId="16"/>  
-  </generalization>  
-  <association>    
-    <end type="SOURCE" nodeId="24" navigable="false">      
-      <attribute name="gffDetailGene"/>      
-      <multiplicity minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" nodeId="18" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <generalization>    
-    <end type="SOURCE" nodeId="20"/>    
-    <end type="TARGET" nodeId="16"/>  
-  </generalization>  
-  <association>    
-    <end type="SOURCE" nodeId="19" navigable="false">      
-      <attribute name="gffCodAbs1"/>      
-      <multiplicity minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" nodeId="34" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <generalization>    
-    <end type="SOURCE" nodeId="30"/>    
-    <end type="TARGET" nodeId="14"/>  
-  </generalization>  
-  <generalization>    
     <end type="SOURCE" nodeId="29"/>    
     <end type="TARGET" nodeId="14"/>  
   </generalization>  
   <generalization>    
-    <end type="SOURCE" nodeId="15"/>    
-    <end type="TARGET" nodeId="14"/>  
+    <end type="SOURCE" nodeId="20"/>    
+    <end type="TARGET" nodeId="16"/>  
   </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="12"/>    
-    <end type="TARGET" nodeId="27"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="10"/>    
-    <end type="TARGET" nodeId="24"/>  
-  </generalization>  
+  <realization>    
+    <end type="SOURCE" nodeId="6"/>    
+    <end type="TARGET" nodeId="5"/>  
+  </realization>  
   <association>    
     <end type="SOURCE" nodeId="14" navigable="false">      
       <attribute name="locHashtable"/>      
@@ -391,9 +327,69 @@
     <end type="TARGET" nodeId="16" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <realization>    
+    <end type="SOURCE" nodeId="27"/>    
+    <end type="TARGET" nodeId="26"/>  
+  </realization>  
   <generalization>    
-    <end type="SOURCE" nodeId="8"/>    
+    <end type="SOURCE" nodeId="22"/>    
+    <end type="TARGET" nodeId="27"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="17"/>    
+    <end type="TARGET" nodeId="14"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="18"/>    
+    <end type="TARGET" nodeId="16"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="2"/>    
+    <end type="TARGET" nodeId="3"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="9"/>    
+    <end type="TARGET" nodeId="19"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="4"/>    
+    <end type="TARGET" nodeId="3"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="30"/>    
+    <end type="TARGET" nodeId="14"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="21"/>    
     <end type="TARGET" nodeId="34"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="6"/>    
+    <end type="TARGET" nodeId="4"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="13"/>    
+    <end type="TARGET" nodeId="34"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="12"/>    
+    <end type="TARGET" nodeId="27"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="15"/>    
+    <end type="TARGET" nodeId="14"/>  
+  </generalization>  
+  <association>    
+    <end type="SOURCE" nodeId="18" navigable="false">      
+      <attribute name="lsGffGeneIsoInfos"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="24" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="10"/>    
+    <end type="TARGET" nodeId="24"/>  
   </generalization>  
   <association>    
     <end type="SOURCE" nodeId="19" navigable="false">      
@@ -404,53 +400,17 @@
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association>    
-    <end type="SOURCE" nodeId="34" navigable="false">      
-      <attribute name="gffDetailUp"/>      
+    <end type="SOURCE" nodeId="24" navigable="false">      
+      <attribute name="gffDetailGene"/>      
       <multiplicity minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" nodeId="16" navigable="true"/>    
+    <end type="TARGET" nodeId="18" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <generalization>    
     <end type="SOURCE" nodeId="31"/>    
     <end type="TARGET" nodeId="34"/>  
   </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="9"/>    
-    <end type="TARGET" nodeId="19"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="6"/>    
-    <end type="TARGET" nodeId="4"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="27"/>    
-    <end type="TARGET" nodeId="14"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="13"/>    
-    <end type="TARGET" nodeId="34"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="25"/>    
-    <end type="TARGET" nodeId="16"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="21"/>    
-    <end type="TARGET" nodeId="34"/>  
-  </generalization>  
-  <association>    
-    <end type="SOURCE" nodeId="18" navigable="false">      
-      <attribute name="lsGffGeneIsoInfos"/>      
-      <multiplicity minimum="0" maximum="2147483647"/>    
-    </end>    
-    <end type="TARGET" nodeId="24" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <realization>    
-    <end type="SOURCE" nodeId="6"/>    
-    <end type="TARGET" nodeId="5"/>  
-  </realization>  
   <classifier-display autosize="true" package="true" initial-value="false" signature="true" visibility="true">    
     <attributes public="false" package="false" protected="false" private="false"/>    
     <operations public="true" package="false" protected="false" private="false"/>  

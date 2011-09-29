@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public interface GffHashInf<T extends GffDetailAbs, K extends GffCodAbs> {
+public interface GffHashInf<T extends GffDetailAbs, K extends GffCodAbs<T>, M extends GffCodAbsDu<T, K>> {
 	
 	/**
 	 * 起点是否为闭区间，不是则为开区间，<br>
@@ -49,25 +49,6 @@ public interface GffHashInf<T extends GffDetailAbs, K extends GffCodAbs> {
 	public K searchLocation(String chrID, int Coordinate);
 
 	/**
-	 * @本方法需要被覆盖
-	 * 最底层读取gff的方法<br>
-	 * 输入Gff文件，最后获得两个哈希表和一个list表,
-	 * 结构如下：<br/>
-	 * @1.Chrhash
-	 * （ChrID）--ChrList--GeneInforList(GffDetail类)<br/>
-	 *   其中ChrID为小写，代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID,
-	 * chr格式，全部小写 chr1,chr2,chr11<br/>
-	 * 
-	 * @2.locHashtable
-	 * （LOCID）--GeneInforlist，其中LOCID代表具体的条目编号,各个条目定义由相应的GffHash决定 <br/>
-	 * 
-	 * @3.LOCIDList
-	 * （LOCID）--LOCIDList，按顺序保存LOCID,只能用于随机查找基因，不建议通过其获得某基因的序号<br/>
-	 * @throws Exception 
-	 */
-	public void ReadGffarray(String gfffilename) throws Exception;
-
-	/**
 	 * 需要覆盖
 	 * 查找某个特定LOC的信息
 	 * {return locHashtable.get(LOCID);}
@@ -99,6 +80,14 @@ public interface GffHashInf<T extends GffDetailAbs, K extends GffCodAbs> {
 	 */
 	public String[] getLOCNum(String LOCID);
 	
-	
+	/**
+	 * 返回双坐标查询的结果，内部自动判断 cod1 和 cod2的大小
+	 * 如果cod1 和cod2 有一个小于0，那么坐标不存在，则返回null
+	 * @param chrID
+	 * @param cod1 必须大于0
+	 * @param cod2 必须大于0
+	 * @return
+	 */
+	public M searchLocation(String chrID, int cod1, int cod2);
 
 }

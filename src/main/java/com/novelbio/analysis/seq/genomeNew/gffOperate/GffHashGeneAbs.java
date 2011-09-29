@@ -10,14 +10,14 @@ import java.util.Map.Entry;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.test.testextend.a;
 
-public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene> implements GffHashGeneInf
+public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, GffCodGeneDU> implements GffHashGeneInf
 {
 	int taxID = 0;
-	public GffHashGeneAbs(int taxID) {
-		this.taxID = taxID;
-	}
+	String acc2GeneIDfile = "";
+	
 	public GffHashGeneAbs() {
 	}
 	
@@ -31,18 +31,16 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene> i
 //	}
 	
 	/**
-	 * 输入基因名/geneID，返回基因的坐标信息等
+	 * 输入基因名，返回基因的坐标信息等
 	 * @param accID
 	 * @return
 	 */
 	public GffDetailGene getGeneDetail(String accID) {
-		GffDetailGene gffDetailGene = locHashtable.get(accID);
-		if (gffDetailGene == null) {
-			gffDetailGene = getLocHashtable().get(accID);
-		}
+		GffDetailGene gffDetailGene = getLocHashtable().get(accID);
 		if (gffDetailGene == null) {
 			CopedID copedID = new CopedID(accID, taxID, false);
-			gffDetailGene = getLocHashtable().get(copedID.getGenUniID());
+			String locID = getHashGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
+			gffDetailGene = getLocHashtable().get(locID);
 		}
 		return gffDetailGene;
 	}
@@ -67,7 +65,7 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene> i
 		long all5UTRLength=0;
 		long all3UTRLength=0;
 		long allupBpLength=0;
-
+		
 		int errorNum=0;//看UCSC中有多少基因的TSS不是最长转录本的起点
 		/////////////////////正   式   计   算//////////////////////////////////////////
 		
@@ -108,7 +106,7 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene> i
 	/**
 	 * 获得Gene2GeneID在数据库中的信息，并且写入文本，一般不用
 	 */
-	public ArrayList<String[]> getGene2ID() {
+	private ArrayList<String[]> getGene2ID() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		
 		ArrayList<String> lsAccID = getLOCIDList();
@@ -122,38 +120,62 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene> i
 		return lsResult;
 	}
 	/**
-	 * 一个Gff文件只跑以此就好
+	 * 一个Gff文件只跑一次就好
 	 * 将读取的Gff文件中的AccID转化为GeneID并且保存在文本中，下次直接读取该文本即可获得AccID与GeneID的对照表，快速查找
 	 * @param txtAccID2GeneID
 	 */
-	public void writeAccID2GeneID(String txtaccID2GeneID) {
+	private void writeAccID2GeneID(String txtaccID2GeneID) {
 		TxtReadandWrite txtAccID2GeneID = new TxtReadandWrite(txtaccID2GeneID, true);
 		txtAccID2GeneID.ExcelWrite(getGene2ID(), "\t", 1, 1);
 	}
+	private HashMap<String, String> hashGeneID2Acc = null;
 	/**
 	 * 输入
 	 * @param txtaccID2GeneID
 	 * @return
+	 * hashGeneID2Acc，一个geneID对应多个accID的时候，accID用“//”隔开
 	 */
-	public HashMap<String, String> getAcc2GeneID(String txtaccID2GeneID) {
-		HashMap<String, String> hashAcc2GeneID = new HashMap<String, String>();
+	private HashMap<String, String> getHashGeneID2Acc(String txtaccID2GeneID) {
+		if (hashGeneID2Acc != null) {
+			return hashGeneID2Acc;
+		}
+		if (!FileOperate.isFileExist(txtaccID2GeneID)) {
+			writeAccID2GeneID(txtaccID2GeneID);
+		}
+		hashGeneID2Acc = new HashMap<String, String>();
 		TxtReadandWrite txtAcc2GenID = new TxtReadandWrite(txtaccID2GeneID, false);
 		ArrayList<String> lsAccID = txtAcc2GenID.readfileLs();
 		for (String string : lsAccID) {
+			if (taxID == 0) {
+				ArrayList<CopedID> lsCopedIDs = CopedID.getLsCopedID(string, 0, false);
+				if (lsCopedIDs.size() == 1) {
+					taxID = lsCopedIDs.get(0).getTaxID();
+				}
+			}
+			
 			if (string == null || string.trim().equals("")) {
 				continue;
 			}
 			String[] ss = string.split("\t");
-			hashAcc2GeneID.put(ss[0], ss[1]);
+			if (hashGeneID2Acc.containsKey(ss[1])) {
+				hashGeneID2Acc.put(ss[1], hashGeneID2Acc.get(ss[1])+"//"+ss[0]);
+			}
+			else {
+				hashGeneID2Acc.put(ss[1], ss[0]);
+			}
 		}
-		return hashAcc2GeneID;
+		return hashGeneID2Acc;
 	}
 	
+	@Override
+	protected GffCodGene setGffCod(String chrID, int Coordinate) {
+		return new GffCodGene(chrID, Coordinate);
+	}
 	
-	
-	
-	
-	
-	
+	@Override
+	protected GffCodGeneDU setGffCodDu(ArrayList<GffDetailGene> lsgffDetail,
+			GffCodGene gffCod1, GffCodGene gffCod2) {
+		return new GffCodGeneDU(lsgffDetail, gffCod1, gffCod2);
+	}
 	
 }

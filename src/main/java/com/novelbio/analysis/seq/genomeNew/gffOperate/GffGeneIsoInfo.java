@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -36,7 +35,61 @@ public abstract class GffGeneIsoInfo {
 	 */
 	public static final int COD_LOCUTR_OUT = 0;	
 	
+	/**
+	 * 设定基因的转录起点上游长度，默认为3000bp
+	 */
+	protected static int UpStreamTSSbp = 3000;
+	
+	/**
+	 * 设定基因的转录起点下游长度，默认为2000bp
+	 */
+	protected static int DownStreamTssbp=2000;
+	/**
+	 * 设定基因结尾向外延伸的长度，默认为100bp
+	 * 就是说将基因结束点向后延伸100bp，认为是3’UTR
+	 * 那么在统计peak区域的时候，如果这段区域里面没有被peak所覆盖，则不统计该区域内reads的情况
+	 */
+	protected static int GeneEnd3UTR=100;
+	/**
+	 * 设定基因的转录起点终点位置信息
+	 * @param UpStreamTSSbp 设定基因的转录起点上游长度，默认为3000bp
+	 * @param DownStreamTssbp 设定基因的转录起点下游长度，默认为2000bp
+	 * @param GeneEnd3UTR 设定基因结尾向外延伸的长度，默认为100bp
+	 */
+	protected static void setCodLocation(int upStreamTSSbp, int downStreamTssbp, int geneEnd3UTR) {
+		UpStreamTSSbp = upStreamTSSbp;
+		DownStreamTssbp = downStreamTssbp;
+		GeneEnd3UTR = geneEnd3UTR;
+	}
+	
+	
+	public boolean isCodInIsoTss()
+	{
+		if (codLoc == COD_LOC_OUT && getCod2Tss() < 0 && Math.abs(getCod2Tss()) <= UpStreamTSSbp ) {
+			return true;
+		}
+		else if ( codLoc != COD_LOC_OUT && getCod2Tss() > 0 && Math.abs(getCod2Tss()) <= DownStreamTssbp ) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isCodInIsoGenEnd()
+	{
+		if (codLoc == COD_LOC_OUT && getCod2Tes() > 0 && Math.abs(getCod2Tes()) <= GeneEnd3UTR ) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isCodInIsoExtend() {
+		return (codLoc != COD_LOC_OUT) || isCodInIsoTss() || isCodInIsoGenEnd();
+	}
+	
+	
+	
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
+	
 	public GffGeneIsoInfo(String IsoName,boolean cis5to3, GffDetailGene gffDetailGene) {
 		this.IsoName = IsoName;
 		this.coord = gffDetailGene.getCoord();
@@ -44,6 +97,7 @@ public abstract class GffGeneIsoInfo {
 			searchCoord();
 		}
 	}
+	
 //	/**
 //	 * 仅仅初始化给查找时用
 //	 * @param IsoName
@@ -166,6 +220,12 @@ public abstract class GffGeneIsoInfo {
 	public  ArrayList<int[]> getIsoInfo() {
 		return lsIsoform;
 	}
+	
+ 
+	
+	
+	
+	
 	/**
 	 * 该转录本的ATG的第一个字符坐标，从1开始计数，是闭区间
 	 * @return
@@ -565,7 +625,9 @@ public abstract class GffGeneIsoInfo {
 	 */
 	HashMap<Integer, Integer> hashLocExInNum;
 	/**
-	 * @param location 该点坐标在第几个外显子或内含子中
+	 * 该点在外显子中为正数，在内含子中为负数
+	 * 为实际数目
+	 * 都不在为0
 	 * @return
 	 */
 	protected abstract int getLocExInNum(int location);

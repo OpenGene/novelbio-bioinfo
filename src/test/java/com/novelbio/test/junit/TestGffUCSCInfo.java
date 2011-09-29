@@ -28,7 +28,7 @@ public class TestGffUCSCInfo extends TestCase{
 	{
 		//UCSC test
 		gffHashUCSC = new GffHashGeneUCSC(9606);
-		gffHashUCSC.ReadGffarray(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+		gffHashUCSC.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		gffCodInfoUCSCgenechr1_1385068 = (GffCodGene) gffHashUCSC.searchLocation("chr1", 1385069);//
 		lsAllLoc = gffHashUCSC.getLOCIDList();
 		hashGffDetail = gffHashUCSC.getLocHashtable();

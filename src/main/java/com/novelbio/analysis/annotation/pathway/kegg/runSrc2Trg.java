@@ -19,11 +19,11 @@ public class runSrc2Trg {
 	public static void main(String[] args) {
 		String parentFIle = "/home/zong0jie/桌面/";
 
-		int QtaxID = 10090;
+		int QtaxID = 9606;
 		boolean blast = false;
 		int StaxID = 4932;
 		try {
-			String readExcel = parentFIle + "网络构建.xls";
+			String readExcel = parentFIle + "正干预差异基因.xls";
 			
 			
 			

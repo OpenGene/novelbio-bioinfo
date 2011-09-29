@@ -33,6 +33,21 @@ public class GffDetailGene extends GffDetailAbs
 	public final static String EXON = "exon";
 	public final static String UTR5 = "5utr";
 	public final static String UTR3 = "3utr";
+	public final static String TSS = "tss";
+	public final static String TES = "tes";
+	/**
+	 * 设定基因的转录起点终点位置信息
+	 * @param UpStreamTSSbp 设定基因的转录起点上游长度，默认为3000bp
+	 * @param DownStreamTssbp 设定基因的转录起点下游长度，默认为2000bp
+	 * @param GeneEnd3UTR 设定基因结尾向外延伸的长度，默认为100bp
+	 */
+	protected static void setCodLocation(int upStreamTSSbp, int downStreamTssbp, int geneEnd3UTR) {
+		UpStreamTSSbp = upStreamTSSbp;
+		DownStreamTssbp = downStreamTssbp;
+		GeneEnd3UTR = geneEnd3UTR;
+		GffGeneIsoInfo.setCodLocation(upStreamTSSbp, downStreamTssbp, geneEnd3UTR);
+	}
+	
 	
 	/**
 	 * 顺序存储每个转录本的的坐标情况

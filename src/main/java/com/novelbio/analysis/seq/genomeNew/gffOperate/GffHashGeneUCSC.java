@@ -20,11 +20,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  */
 public class GffHashGeneUCSC extends GffHashGeneAbs{
 
-	public GffHashGeneUCSC(int taxID) {
-		super(taxID);
-		// TODO Auto-generated constructor stub
-	}
-
 	/**
 	 * @Override
 	 * 最底层读取gff的方法，本方法只能读取UCSCknown gene<br>
@@ -43,7 +38,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起，用斜线分割"/"： NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
-	public void ReadGffarray(String gfffilename) throws Exception {
+	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 
 		// 实例化四个表
 		Chrhash = new HashMap<String, ArrayList<GffDetailGene>>();// 一个哈希表来存储每条染色体
@@ -142,11 +137,6 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			LOCChrHashIDList.add(gffDetail.locString);
 		}
 		txtGffRead.close();
-	}
-
-	@Override
-	protected GffCodGene setGffCodAbs(String chrID, int Coordinate) {
-		return new GffCodGene(chrID, Coordinate);
 	}
 
 	

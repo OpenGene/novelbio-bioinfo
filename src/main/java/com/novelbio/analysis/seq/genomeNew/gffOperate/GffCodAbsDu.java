@@ -3,17 +3,29 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
+
 /**
  * 双坐标
  * @author zong0jie
  *
  */
-public abstract class GffCodAbsDu {
+public abstract class GffCodAbsDu<T extends GffDetailAbs, K extends GffCodAbs<T>>  {
 	//这两个都会在具体的类中新建
-	GffCodAbs gffCodAbs1 = null;
-	GffCodAbs gffCodAbs2 = null;
+	
+	public GffCodAbsDu(ArrayList<T> lsgffDetail, K gffCod1, K gffCod2)
+	{
+		this.lsgffDetailsMid = lsgffDetail;
+		this.gffCod1 = gffCod1;
+		this.gffCod2 = gffCod2;
+		calInfo();
+	}
+
+	K gffCod1 = null;
+	K gffCod2 = null;	
+	
 	//两个端点之间的gffdetail
-	ArrayList<GffDetailAbs> lsgffDetailsMid = new ArrayList<GffDetailAbs>();
+	ArrayList<T> lsgffDetailsMid = null;
 	/**
 	 * peak与左端Item交集时，交集在左端Item中所占的比例
 	 */
@@ -84,53 +96,60 @@ public abstract class GffCodAbsDu {
 	 * 返回左端的GffCod，覆盖成相应的GffCod类
 	 * @return
 	 */
-	public abstract GffCodAbs getGffCodLeft();
+	public K getGffCodLeft()
+	{
+		return gffCod1;
+	}
 	/**
 	 * 返回左端的GffCod，覆盖成相应的GffCod类
 	 * @return
 	 */
-	public abstract GffCodAbs getGffCodRight();
+	public K getGffCodRight()
+	{
+		return gffCod2;
+	}
 	/**
 	 * 返回两个坐标中间夹着的的GffDetail，覆盖成相应的GffDetail类
 	 * @return
 	 */
-	public abstract ArrayList<? extends GffDetailAbs> getLsGffDetailMid();
+	public ArrayList<T> getLsGffDetailMid()
+	{
+		return lsgffDetailsMid;
+	}
 	
 	/**
 	 * 双坐标查找 输入相关的GffHash类，然后填充相关信息<br>
 	 */
-	public void searchLocation(GffHash gffHash) {
-		Hashtable<String, ArrayList<? extends GffDetailAbs>> LocHash = gffHash.getChrhash();
-		ArrayList<? extends GffDetailAbs> Loclist = LocHash.get(gffCodAbs1.getChrID().toLowerCase());// 某一条染色体的信息
-		gffCodAbs1.searchLocation(gffHash);
-		gffCodAbs2.searchLocation(gffHash);
+	private void calInfo() {
+		T gffDetail1 = gffCod1.getGffDetailThis();
+		T gffDetail2 = gffCod2.getGffDetailThis();
+		int leftItemLength = 0; int leftoverlap = 0;
+		int rightItemLength = 0; int rightoverlap = 0;
+		int peakLength = gffCod2.getCoord() - gffCod1.getCoord();
+		if (gffDetail1 != null) {
+			leftItemLength = gffDetail1.numberend - gffDetail1.numberstart;
+			leftoverlap = gffDetail1.numberend - gffCod1.getCoord();
+		}
+		if (gffDetail2 != null) {
+			rightItemLength = gffDetail2.numberend - gffDetail2.numberstart;
+			rightoverlap = gffCod2.getCoord() - gffDetail2.numberstart;
+		}
 		/**
 		 * 如果peak两个端点都在在同一条目之内
 		 */
-		if (gffCodAbs1.geneChrHashListNum[0] == gffCodAbs2.geneChrHashListNum[0]
-				&& gffCodAbs1.insideLOC && gffCodAbs2.insideLOC) 
+		if (gffCod1.insideLOC && gffCod2.insideLOC && 
+				gffDetail1.equals(gffDetail2)
+		)
 		{
-			gffDetail1= Loclist.get(gffCodAbs1.geneChrHashListNum[0]);
-			int thisDetailLength = gffDetail1.numberend - gffDetail1.numberstart;
-			int peakLength = gffCodAbs1.getCoord() - gffCodAbs2.getCoord();
-			opLeftInItem = 100 * (double) peakLength / thisDetailLength;
+			opLeftInItem = 100 * (double) peakLength / leftItemLength;
 			opLeftInCod = 100;
 			opLeftBp = peakLength; opRightInItem = opLeftInItem; opRightInCod = 100; opRightBp = opLeftBp;
 		}
 		// 如果peak左端点在一个条目内，右端点在另一个条目内
-		else if (gffCodAbs1.insideLOC
-				&& gffCodAbs2.insideLOC
-				&& gffCodAbs1.geneChrHashListNum[0] != gffCodAbs2.geneChrHashListNum[0]) 
+		else if (gffCod1.insideLOC
+				&& gffCod2.insideLOC
+				&& !gffCod1.equals(gffCod2) )
 		{
-			gffDetail1 = Loclist.get(gffCodAbs1.geneChrHashListNum[0]);
-			gffDetail2 = Loclist.get(gffCodAbs2.geneChrHashListNum[0]);
-			int leftItemLength = gffDetail1.numberend - gffDetail1.numberstart;
-			int rightItemLength = gffDetail2.numberend - gffDetail2.numberstart;
-
-			int leftoverlap = gffDetail1.numberend - gffCodAbs1.getCoord();
-			int rightoverlap = gffCodAbs2.getCoord() - gffDetail2.numberstart;
-			int peakLength = gffCodAbs2.getCoord() - gffCodAbs1.getCoord();
-
 			opLeftInItem = 100 * (double) leftoverlap / leftItemLength;
 			opLeftInCod = 100 * (double) leftoverlap / peakLength;
 			opLeftBp = leftoverlap;
@@ -139,44 +158,19 @@ public abstract class GffCodAbsDu {
 			opRightBp = rightoverlap;
 		}
 		// peak只有左端点在条目内
-		else if (gffCodAbs1.insideLOC && !gffCodAbs2.insideLOC) {
-			gffDetail1= Loclist.get(gffCodAbs1.geneChrHashListNum[0]);
-			int leftItemLength = gffDetail1.numberend
-					- gffDetail1.numberstart;
-			int leftoverlap = gffDetail1.numberend - gffCodAbs1.getCoord();
-			int peakLength = gffCodAbs2.getCoord() - gffCodAbs1.getCoord();
-
+		else if (gffCod1.insideLOC && !gffCod2.insideLOC) {
 			opLeftInItem = 100 * (double) leftoverlap / leftItemLength;
 			opLeftInCod = 100 * (double) leftoverlap / peakLength;
 			opLeftBp = leftoverlap;
 			opRightInItem = 0; opRightInCod = 0; opRightBp = 0;
 		}
 		// peak只有右端点在条目内
-		else if (!gffCodAbs1.insideLOC && gffCodAbs2.insideLOC) {
-			gffDetail2 = Loclist.get(gffCodAbs2.geneChrHashListNum[0]);
-			int rightItemLength = gffDetail2.numberend - gffDetail2.numberstart;
-			int rightoverlap = gffCodAbs2.getCoord() - gffDetail2.numberstart;
-			int peakLength = gffCodAbs2.getCoord() - gffCodAbs1.getCoord();
+		else if (!gffCod1.insideLOC && gffCod2.insideLOC) {
 			opLeftInItem = 0; opLeftInCod = 0; opLeftBp = 0;
 			opRightInItem = 100 * (double) rightoverlap / rightItemLength;
 			opRightInCod = 100 * (double) rightoverlap / peakLength;
 			opRightBp = rightoverlap;
 		}
-		// //////////////////////////////////////////////获得两个坐标以及中间夹着的条目，注意不包括坐标所在的基因///////////////////////////////////////////////////////////////////////////////
-		// 两个坐标的ID以及 之间条目的ID起止，如--------------
-		// coordinate1(Cod1ID)----------ItemA(startID)-------ItemB-------ItemC------ItemD(endID)-------coordinate2(Cod2ID)-----------------
-		int Cod1ID = -1, Cod2ID = -1;
-		Cod1ID = gffCodAbs1.geneChrHashListNum[0];// 本条目/上个条目编号
-		if (gffCodAbs2.insideLOC)
-			Cod2ID = gffCodAbs2.geneChrHashListNum[0];// 本条目编号
-		else
-			Cod2ID = gffCodAbs2.geneChrHashListNum[1];// 下个条目编号
-		if ((Cod2ID - Cod1ID) > 1)// 把Cod1ID和Cod2ID之间的所有条目的GffDetail装入LstGffCodInfo
-		{
-			for (int i = 1; i < (Cod2ID - Cod1ID); i++) {
-				GffDetailAbs gffDetail = Loclist.get(Cod1ID + i);
-				lsgffDetailsMid.add(gffDetail);
-			}
-		}
 	}
+	
 }

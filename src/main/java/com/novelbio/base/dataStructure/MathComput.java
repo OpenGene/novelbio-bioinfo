@@ -6,9 +6,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.math.stat.StatUtils;
+import org.apache.ibatis.annotations.Insert;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
@@ -31,6 +33,20 @@ public class MathComput {
 		int avg=sum/length;
 		return avg;
 	}
+	
+	public double mean(List<? extends Number> lsNumbers) {
+		double length=lsNumbers.size();
+		double sum=0;
+		for(int i=1;i<length;i++)
+		{
+			sum=sum+lsNumbers.get(i).doubleValue();
+		}
+		double avg=sum/length;
+		return avg;
+	}
+	
+	
+	
 	/**
 	 * 输入数据，获得平均数
 	 * 采用插入排序法，据说对于小规模数据效率还不错
@@ -48,6 +64,11 @@ public class MathComput {
 		double avg=sum/length;
 		return avg;
 	}
+	
+	
+	
+	
+	
 	/**
 	 * 输入数据，获得和
 	 * @param Num
@@ -60,6 +81,11 @@ public class MathComput {
 		}
 		return sum;
 	}
+	
+	
+	
+	
+	
 	/**
 	 * 输入数据，获得和
 	 * @param Num
@@ -103,6 +129,23 @@ public class MathComput {
 			med=unsortNum[length/2];
 		return med;
 	}
+	
+	
+	
+	/**
+	 * 输入数据，获得中位数, 用于10
+	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * @return
+	 */
+	public static double median(List<? extends Number> lsNumbers)
+	{
+		double[] mydouble = new double[lsNumbers.size()];
+		for (int i = 0; i < mydouble.length; i++) {
+			mydouble[i] = lsNumbers.get(i).doubleValue();
+		}
+		return median(mydouble);
+	}
+	
 	
 	/**
 	 * 输入数据，获得中位数, 用于10
@@ -632,7 +675,6 @@ public class MathComput {
 				}
 			}
 		});
-		
 		ArrayList<double[]> lsResult = new ArrayList<double[]>();
 		int i = 1;double[] tmpResult = lsNum.get(0);
 		while (i < lsNum.size()) {
@@ -652,11 +694,87 @@ public class MathComput {
 	}
 	
 	
+	/**
+	 * 
+	 * 给定一组数，将两个接近距离小于distance的数合并，保留权重大的那一个
+	 * 最后返回按照位置进行排序的结果
+	 * @param lsNum double[2] 0:数字 1:权重
+	 * @param distance 数字的距离，不能小于该值
+	 * @param max true 选择权重最大的，min选择权重最小的
+	 * @return
+	 */
+	public static ArrayList<double[]>  combLs(List<double[]> lsNum, double distance, boolean max) 
+	{
+		Collections.sort(lsNum, new Comparator<double[]>() {
+			//从小到大排序
+			public int compare(double[] o1, double[] o2) {
+				if (o1[0] == o2 [0]) return 0;
+				return o1[0] < o2[0] ? -1:1;
+			}});
+		//最大的一个数
+		double bigNum = lsNum.get(lsNum.size() -1)[0];
+		double binNum =  (bigNum - lsNum.get(0)[0])/distance;//最后能切割成多少份
+		
+		int lastInsertNum = 0;
+		int insertNum = 0;
+		ArrayList<double[]> lsResult = new ArrayList<double[]>();
+		for (int i = 0; i < binNum; i++) {
+			double[] binNum2 = new double[2]; binNum2[0] = binNum; binNum2[1] = 0;
+			lastInsertNum = insertNum;
+			insertNum = Collections.binarySearch(lsNum, binNum2,new Comparator<double[]>() {
+				public int compare(double[] o1, double[] o2) {
+					if (o1[0] == o2 [0]) return 0;
+					return o1[0] < o2[0] ? -1:1;
+				} });
+			//截取相应的区域
+			List<double[]> lsTmp = null;
+			if (insertNum >= 0) {
+				insertNum ++;
+				lsTmp = lsNum.subList(lastInsertNum, insertNum);
+				
+			}
+			else {
+				insertNum = -insertNum - 1;
+				lsTmp = lsNum.subList(lastInsertNum, insertNum);
+			}
+			double[] tmpResult = getBigestWeight(lsTmp,max);
+			if (tmpResult != null) {
+				lsResult.add(tmpResult);
+			}
+		}
+		return lsResult;
+	}
 	
 	
-	
-	
-	
+	/**
+	 * 找到这个序列中权重最大的一项，没有则返回null
+	 * @param lsNum 0:数字 1:权重
+	 * @param max true 选择权重最大的，min选择权重最小的
+	 * @return
+	 */
+	private static double[] getBigestWeight(List<double[]> lsNum, boolean max)
+	{
+		double[] result = null;
+		if (max) {
+			double big = Double.MIN_VALUE;
+			for (double[] ds : lsNum) {
+				if (ds[1] > big) {
+					result = ds;
+					big = ds[1];
+				}
+			}
+		}
+		else {
+			double small = Double.MAX_VALUE;
+			for (double[] ds : lsNum) {
+				if (ds[1] < small) {
+					result = ds;
+					small = ds[1];
+				}
+			}
+		}
+		return result;
+	}
 	
 	
 	

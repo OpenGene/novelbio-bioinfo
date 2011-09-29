@@ -76,7 +76,7 @@ public class ChrStringHash extends SeqHashAbs{
 				regx, "*");
 		hashChrSeqFile = new HashMap<String, RandomAccessFile>();
 		hashBufChrSeqFile = new HashMap<String, BufferedReader>();
-
+		lsSeqName = new ArrayList<String>();
 		for (int i = 0; i < lsChrFile.size(); i++) {
 			RandomAccessFile chrRAseq = null;
 			TxtReadandWrite txtChrTmp = new TxtReadandWrite();

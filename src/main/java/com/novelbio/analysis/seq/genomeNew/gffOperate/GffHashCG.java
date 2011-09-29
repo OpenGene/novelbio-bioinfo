@@ -28,7 +28,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  * 
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
-public class GffHashCG extends GffHash<GffDetailCG,GffCodCG>
+public class GffHashCG extends GffHash<GffDetailCG, GffCodCG, GffCodCGDU>
 {	
 
 	/**
@@ -50,7 +50,7 @@ public class GffHashCG extends GffHash<GffDetailCG,GffCodCG>
      *
 	 * @throws Exception 
 	 */
-	public void ReadGffarray(String gfffilename) throws Exception 
+	public void ReadGffarrayExcep(String gfffilename) throws Exception 
 	{
 		  //实例化三个表
 		   locHashtable =new HashMap<String, GffDetailCG>();//存储每个LOCID和其具体信息的对照表
@@ -167,7 +167,12 @@ public class GffHashCG extends GffHash<GffDetailCG,GffCodCG>
 		return hashCGLength;
 	}
 	@Override
-	protected GffCodCG setGffCodAbs(String chrID, int Coordinate) {
+	protected GffCodCG setGffCod(String chrID, int Coordinate) {
 		return new GffCodCG(chrID, Coordinate);
+	}
+
+	@Override
+	protected GffCodCGDU setGffCodDu(ArrayList<GffDetailCG> lsgffDetail, GffCodCG gffCod1, GffCodCG gffCod2) {
+		return new GffCodCGDU(lsgffDetail, gffCod1, gffCod2);
 	}
 }

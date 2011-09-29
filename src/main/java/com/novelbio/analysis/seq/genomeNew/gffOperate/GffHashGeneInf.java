@@ -53,27 +53,6 @@ public interface GffHashGeneInf  {
 	 */
 	public ArrayList<String> getLOCChrHashIDList();
 	
-	
-	
-	/**
-	 * @本方法需要被覆盖
-	 * 最底层读取gff的方法<br>
-	 * 输入Gff文件，最后获得两个哈希表和一个list表,
-	 * 结构如下：<br/>
-	 * @1.Chrhash
-	 * （ChrID）--ChrList--GeneInforList(GffDetail类)<br/>
-	 *   其中ChrID为小写，代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID,
-	 * chr格式，全部小写 chr1,chr2,chr11<br/>
-	 * 
-	 * @2.locHashtable
-	 * （LOCID）--GeneInforlist，其中LOCID代表具体的条目编号,各个条目定义由相应的GffHash决定 <br/>
-	 * 
-	 * @3.LOCIDList
-	 * （LOCID）--LOCIDList，按顺序保存LOCID,只能用于随机查找基因，不建议通过其获得某基因的序号<br/>
-	 * @throws Exception 
-	 */
-	public abstract void ReadGffarray(String gfffilename) throws Exception;
-	
 	/**
 	 * 给定某个LOCID，返回该LOC在某条染色体中的位置序号号，第几位<br>
 	 * 也就是Chrhash中某个chr下该LOC的位置<br>
