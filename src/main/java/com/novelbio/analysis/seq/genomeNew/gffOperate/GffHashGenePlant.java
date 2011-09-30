@@ -199,6 +199,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
       		   if(genematcher.find())//找到了
       		   {
       			   gffDetailLOC=new GffDetailGene(chrnametmpString, genematcher.group(), ss[6].equals("+"));//新建一个基因类
+      			   gffDetailLOC.setTaxID(taxID);
       			   gffDetailLOC.numberstart=Integer.parseInt(ss[3].toLowerCase());gffDetailLOC.numberend=Integer.parseInt(ss[4]);//基因起止      		
       			   LOCList.add(gffDetailLOC);//添加进入LOClist
       			   locHashtable.put(gffDetailLOC.locString, gffDetailLOC);//添加进入hash（LOCID）--GeneInforlist哈希表，确定各个基因和他们的类之间的关系    

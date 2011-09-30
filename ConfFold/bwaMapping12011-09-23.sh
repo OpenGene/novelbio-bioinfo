@@ -1,0 +1,1 @@
+bwa aln -n 0.05 -o 1 -e 3 -l 25 -t 4 -O 10 -I /media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/Index/bwa_Index/mm9.fasta /media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/GSM307619_ES.H3K27me3.fasq > /media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/Mapping/GSM307619_ES.H3K27me3_1.sai

@@ -412,7 +412,65 @@ public class CopedID implements CopedIDInt{
 		return hashTaxID;
 	}
 
+	/////////////////////////////  重写equals等  ////////////////////////////////////
+	/**
+	 * 只要两个ncbiid的geneID相同，就认为这两个NCBIID相同
+	 * 但是如果geneID为0，也就是NCBIID根本没有初始化，那么直接返回false
+	 * 	@Override
+	 */
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		
+		if (obj == null) return false;
+		
+		if (getClass() != obj.getClass()) return false;
+		CopedID otherObj = (CopedID)obj;
+		
+		if (
+				//geneID相同且都不为“”，可以认为两个基因相同
+				(!copedID.genUniID.trim().equals("")
+				&& !otherObj.getGenUniID().trim().equals("") 
+				&& copedID.genUniID.trim().equals(otherObj.getGenUniID().trim())	
+				&& copedID.idType.equals(otherObj.getIDtype())
+				&& copedID.taxID == otherObj.getTaxID()
+				)
+				||//geneID都为""，那么如果两个accID相同且不为""，也可认为两个基因相同
+				(copedID.genUniID.trim().equals("")
+				&& otherObj.getGenUniID().trim().equals("") 
+				&& ( !copedID.accID.equals("") && !otherObj.getAccID().equals("") )
+				&& copedID.accID.equals(otherObj.getAccID())
+				&& copedID.idType.equals(otherObj.getIDtype())
+				&& copedID.taxID == otherObj.getTaxID()
+				)
+				||
+				//或者geneID和accID都为""也可以认为两个基因相同
+				(copedID.genUniID.trim().equals("")
+				&& otherObj.getGenUniID().trim().equals("") 
+				&& copedID.accID.equals("") 
+				&& otherObj.getAccID().equals("")						
+				)
+		)
+		{
+			return true;
+		}
+		return false;
+	}
 
-
+	/**
+	 * 重写hashcode
+	 */
+	public int hashCode(){
+		String hash = "";
+		if (!copedID.genUniID.trim().equals("")) {
+			hash = copedID.genUniID.trim() + "sep_@@_genUni_" + copedID.idType.trim() + "@@" + copedID.taxID;
+		}
+		else if (copedID.genUniID.trim().equals("") && !copedID.accID.trim().equals("")) {
+			hash = copedID.accID.trim()+"@@accID"+copedID.idType.trim()+"@@"+copedID.taxID;
+		}
+		else if ( copedID.genUniID.trim().equals("") && copedID.accID.trim().equals("")) {
+			hash = "";
+		}
+		return hash.hashCode();
+	}
 	
 }

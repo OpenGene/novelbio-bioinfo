@@ -3,6 +3,8 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 
@@ -39,15 +41,14 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 	 * @throws Exception 
 	 */
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
-
+		setTaxID(gfffilename);
 		// 实例化四个表
 		Chrhash = new HashMap<String, ArrayList<GffDetailGene>>();// 一个哈希表来存储每条染色体
 		locHashtable = new HashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
 		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
 		LOCChrHashIDList = new ArrayList<String>();
 
-		TxtReadandWrite txtGffRead = new TxtReadandWrite();
-		txtGffRead.setParameter(gfffilename, false, true);
+		TxtReadandWrite txtGffRead = new TxtReadandWrite(gfffilename, false);
 		BufferedReader readGff = txtGffRead.readfile();
 
 		ArrayList<GffDetailGene> LOCList = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
@@ -116,6 +117,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			// 添加新基因
 			GffDetailGene gffDetailUCSCgene = new GffDetailGene(chrnametmpString, geneInfo[0], geneInfo[2].equals("+"));
+			gffDetailUCSCgene.setTaxID(taxID);
 			gffDetailUCSCgene.numberstart = Integer.parseInt(geneInfo[3])+startRegion;
 			gffDetailUCSCgene.numberend = Integer.parseInt(geneInfo[4])+endRegion;
 			gffDetailUCSCgene.addsplitlist(geneInfo[0]);
@@ -138,6 +140,23 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 		}
 		txtGffRead.close();
 	}
-
+	private void setTaxID(String gffFile) {
+		TxtReadandWrite txtGffRead = new TxtReadandWrite(gffFile, false);
+		ArrayList<String> lsInfo = null;
+		try {
+			lsInfo = txtGffRead.readFirstLines(100);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (taxID == 0) {
+			for (String accID : lsInfo) {
+				ArrayList<CopedID> lsCopedIDs = CopedID.getLsCopedID(accID.split("\t")[0], 0, false);
+				if (lsCopedIDs.size() == 1) {
+					taxID = lsCopedIDs.get(0).getTaxID();
+					break;
+				}
+			}
+		}
+	}
 	
 }

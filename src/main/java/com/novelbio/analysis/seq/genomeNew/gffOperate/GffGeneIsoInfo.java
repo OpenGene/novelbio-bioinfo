@@ -2,7 +2,11 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.apache.commons.collections15.map.Flat3Map;
 import org.apache.log4j.Logger;
+
+import com.novelbio.analysis.annotation.copeID.CopedID;
 
 /**
  * 记录GffGene中的转录本信息
@@ -34,7 +38,38 @@ public abstract class GffGeneIsoInfo {
 	 * 标记codInExon不在UTR中
 	 */
 	public static final int COD_LOCUTR_OUT = 0;	
+	/**
+	 * 哺乳动物基因间为Tss上游5000bp
+	 */
+	public static final int PROMOTER_INTERGENIC_MAMMUM = 5000;
+	/**
+	 * 哺乳动物为Distal Promoter Tss上游1000bp，以内的就为Proximal Promoter
+	 */
+	public static final int PROMOTER_DISTAL_MAMMUM = 1000;
+	/**
+	 * InterGenic_
+	 */
+	public static final String PROMOTER_INTERGENIC_STR = "InterGenic_";
+	/**
+	 * Distal Promoter_
+	 */
+	public static final String PROMOTER_DISTAL_STR = "Distal Promoter_";
+	/**
+	 * Proximal Promoter_
+	 */
+	public static final String PROMOTER_PROXIMAL_STR = "Proximal Promoter_";
+	/**
+	 * Proximal Promoter_
+	 */
+	public static final String PROMOTER_DOWNSTREAMTSS_STR = "Promoter DownStream Of Tss_";
 	
+	
+	
+	
+	private int taxID = 0;
+	protected void setTaxID(int taxID) {
+		this.taxID = taxID;
+	}
 	/**
 	 * 设定基因的转录起点上游长度，默认为3000bp
 	 */
@@ -62,7 +97,10 @@ public abstract class GffGeneIsoInfo {
 		GeneEnd3UTR = geneEnd3UTR;
 	}
 	
-	
+	/**
+	 * coord是否在promoter区域的范围内，从Tss上游UpStreamTSSbp到Tss下游DownStreamTssbp
+	 * @return
+	 */
 	public boolean isCodInIsoTss()
 	{
 		if (codLoc == COD_LOC_OUT && getCod2Tss() < 0 && Math.abs(getCod2Tss()) <= UpStreamTSSbp ) {
@@ -73,7 +111,10 @@ public abstract class GffGeneIsoInfo {
 		}
 		return false;
 	}
-	
+	/**
+	 * coord是否在gene外，并且在geneEnd延长区域的范围内
+	 * @return
+	 */
 	public boolean isCodInIsoGenEnd()
 	{
 		if (codLoc == COD_LOC_OUT && getCod2Tes() > 0 && Math.abs(getCod2Tes()) <= GeneEnd3UTR ) {
@@ -81,7 +122,10 @@ public abstract class GffGeneIsoInfo {
 		}
 		return false;
 	}
-	
+	/**
+	 * coord是否在该转录本包括promoter和geneEnd延长区域的范围内
+	 * @return
+	 */
 	public boolean isCodInIsoExtend() {
 		return (codLoc != COD_LOC_OUT) || isCodInIsoTss() || isCodInIsoGenEnd();
 	}
@@ -393,7 +437,7 @@ public abstract class GffGeneIsoInfo {
 	/**
 	 * 坐标在5UTR、3UTR还是不在
 	 */
-	protected int codLocUTR = 0;
+	protected int codLocUTR = COD_LOCUTR_OUT;
 	/**
 	 * 使用前先判定在UTR中
 	 * 如果坐标在UTR中，坐标距离UTR的起点，注意这个会去除内含子
@@ -423,7 +467,7 @@ public abstract class GffGeneIsoInfo {
 	}
 	/**
 	 * 在转录本的哪个位置
-	 * 有COD_LOC_EXON，COD_LOC_INTRON，COD_LOC_OUT三种
+	 * 有COD_LOCUTR_5UTR，COD_LOCUTR_3UTR，两种
 	 * @return
 	 */
 	public int getCodLocUTR() {
@@ -457,7 +501,7 @@ public abstract class GffGeneIsoInfo {
 	 * 实际数目，从1开始记数
 	 * @return
 	 */
-	public int getExInNum() {
+	public int getCodExInNum() {
 		return numExIntron;
 	}
 	/**
@@ -745,10 +789,115 @@ public abstract class GffGeneIsoInfo {
 		exonSub[0] = lsIsoform.get(exonNumEnd)[0]; exonSub[1] = end; 
 		lsresult.add(exonSub);
 		return lsresult;
-	
+	}
+	/**
+	 * 返回该GeneIsoName所对应的CopedID，因为是NM号所以不需要指定TaxID
+	 * @return
+	 */
+	public CopedID getCopedID()
+	{
+		return new CopedID(getIsoName(), taxID, false);
 	}
 	
+	/**
+	 * 文字形式的定位描述
+	 * @return
+	 * null: 不在该转录本内
+	 */
+	public String getCodLocStr() {
+		String result = "";
+		if (isCodInIsoExtend()) {
+			return null;
+		}
+		//promoter
+		if (isCodInIsoTss() && getCodLoc() == COD_LOC_OUT) {
+			if (cod2TSS > PROMOTER_INTERGENIC_MAMMUM) {
+				result = PROMOTER_INTERGENIC_STR;
+			}
+			else if (cod2TSS > PROMOTER_DISTAL_MAMMUM) {
+				result = PROMOTER_DISTAL_STR;
+			}
+			else {
+				result = PROMOTER_PROXIMAL_STR;;
+			}
+		}
+		else if (isCodInIsoTss() && getCodLoc() != COD_LOC_OUT) {
+			result = PROMOTER_DOWNSTREAMTSS_STR;
+		}
+		
+		result = result + "Distance to Tss is: " + Math.abs(cod2TSS) + " ";
+		//UTR
+		if (codLocUTR == COD_LOCUTR_5UTR) {
+			result = result + "5UTR_";
+		}
+		else if (codLocUTR == COD_LOCUTR_3UTR) {
+			result = result + "3UTR_";
+		}
+		//exon intron
+		if (codLoc == COD_LOC_EXON) {
+			result = result + "Exon_Exon Position Number is:" + getCodExInNum();
+		}
+		else if (codLoc == COD_LOC_INTRON) {
+			result = result + "Intron_Intron Position Number is:" + getCodExInNum();
+		}
+		//gene end
+		if (isCodInIsoGenEnd()) {
+			result = result + "Distance to GeneEnd: "+ getCod2Tes();
+		}
+		return result;
+	}
 	
-	
-	
+	/**
+	 * 文字形式的定位描述
+	 * null: 不在该转录本内
+	 * 
+	 * 指定条件，将符合条件的peak抓出来并做注释，主要是筛选出合适的peak然后做后续比较工作
+	 * 不符合的会跳过
+	 * @param filterTss 是否进行tss筛选，null不进行，如果进行，那么必须是int[2],0：tss上游多少bp  1：tss下游多少bp，都为正数 <b>只有当filterGeneBody为false时，tss下游才会发会作用</b>
+	 * @param filterGenEnd 是否进行geneEnd筛选，null不进行，如果进行，那么必须是int[2],0：geneEnd上游多少bp  1：geneEnd下游多少bp，都为正数<b>只有当filterGeneBody为false时，geneEnd上游才会发会作用</b>
+	 * @param filterGeneBody 是否处于geneBody，true，将处于geneBody的基因全部筛选出来，false，不进行geneBody的筛选<br>
+	 * <b>以下条件只有当filterGeneBody为false时才能发挥作用</b>
+	 * @param filter5UTR 是否处于5UTR中
+	 * @param filter3UTR 是否处于3UTR中
+	 * @param filterExon 是否处于外显子中
+	 * @param filterIntron 是否处于内含子中
+	 * 0-n:输入的loc信息<br>
+	 * n+1: 基因名<br>
+	 * n+2: 基因信息<br>
+	 **/
+	public String getCodLocStrFilter(int[] filterTss, int[] filterGenEnd, 
+			boolean filterGeneBody,boolean filter5UTR, boolean filter3UTR,boolean filterExon, boolean filterIntron) {
+		boolean filter = false;
+		if (filterTss != null) {
+			if (cod2TSS >= -filterTss[0] && cod2TSS <= filterTss[1]) {
+				filter = true;
+			}
+		}
+		if (filterGenEnd != null) {
+			if (cod2TES >= -filterGenEnd[0] && cod2TES <= filterGenEnd[1]) {
+				filter = true;
+			}
+		}
+		if (filterGeneBody && getCodLoc() != COD_LOC_OUT) {
+			filter = true;
+		}
+		if (filter5UTR && getCodLocUTR() == COD_LOCUTR_5UTR) {
+			filter = true;
+		}
+		if (filter3UTR && getCodLocUTR() == COD_LOCUTR_3UTR) {
+			filter = true;
+		}
+		if (filterExon && getCodLoc() == COD_LOC_EXON) {
+			filter = true;
+		}
+		if (filterIntron && getCodLoc() == COD_LOC_INTRON) {
+			filter = true;
+		}
+		if (filter) {
+			return getCodLocStr();
+		}
+		else {
+			return null;
+		}
+	}
 }

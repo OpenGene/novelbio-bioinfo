@@ -1,0 +1,1 @@
+sort -k1,1  -k2,2n  -k3,3n /media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/Mapping/nature2007K27Extend.bed > /media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/Mapping/nature2007K27ExtendSort.bed

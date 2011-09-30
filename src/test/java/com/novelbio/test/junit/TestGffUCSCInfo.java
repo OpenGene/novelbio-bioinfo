@@ -38,8 +38,8 @@ public class TestGffUCSCInfo extends TestCase{
 	{
 		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.findCod());
 		assertEquals("NM_022834/NM_199121",gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().getLocString());
-		assertEquals(true,gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().getCis5to3());
-		assertEquals(true,gffCodInfoUCSCgenechr1_1385068.getGffDetailDown().getCis5to3());
+		assertEquals(true,gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().isCis5to3());
+		assertEquals(true,gffCodInfoUCSCgenechr1_1385068.getGffDetailDown().isCis5to3());
 		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.isInsideLoc());
 		assertEquals(-995, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getCoordSearchLongest().getCod2ATG());
 		assertEquals(-18841, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getCoordSearchLongest().getCod2UAG());

@@ -25,6 +25,8 @@ public class PeakLOCRun {
 		
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_TIGR,
 //				NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, "");
+//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
+//				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
 		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
 		System.out.println("prepare ok");
@@ -157,7 +159,7 @@ public class PeakLOCRun {
 		int rowStart = 1; 
 		try {
 			String txtFile=ParentFile+"ZQsnpRaw.txt";
-			String excelResultFile=ParentFile+"ZQsnpRaw_filtered.txt";
+			String excelResultFile=ParentFile+"ZQsnpRaw_filteredhg19.txt";
 			PeakLOC.filterRegion(txtFile, "\t", colChrID, rowStart, colStart, colEnd, excelResultFile);
 //			int columnNum=0;
 //			 TxtReadandWrite txtReadandWrite=new TxtReadandWrite(excelResultFile, false);

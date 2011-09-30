@@ -311,7 +311,7 @@ public class mytest {
 			GffCodGene gffCodGene = (GffCodGene) gffHashUCSCgene
 					.searchLocation(ss[0], Integer.parseInt(ss[1]));
 			if (gffCodGene != null && gffCodGene.findCod()) {
-				if (gffCodGene.getGffDetailThis().getCis5to3() != ss[5]
+				if (gffCodGene.getGffDetailThis().isCis5to3() != ss[5]
 						.equals("+")) {
 					logger.error("坐标与基因转录方向不符合" + content);
 					count++;
@@ -324,7 +324,7 @@ public class mytest {
 			GffCodGene gffCodGene2 = (GffCodGene) gffHashUCSCgene
 					.searchLocation(ss[0], Integer.parseInt(ss[2]));
 			if (gffCodGene2 != null && gffCodGene2.findCod()) {
-				if (gffCodGene2.getGffDetailThis().getCis5to3() != ss[5]
+				if (gffCodGene2.getGffDetailThis().isCis5to3() != ss[5]
 						.equals("+")) {
 					// logger.error("坐标与基因转录方向不符合"+content);
 					count++;
@@ -365,7 +365,7 @@ public class mytest {
 			GffDetailGene gffDetailGene = (GffDetailGene) gffHashUCSCgene
 					.getLocHashtable().get(geneID);
 			ArrayList<int[]> iso = gffDetailGene.getLongestSplit().getIsoInfo();
-			String tmpseq = chrStringHash.getSeq(gffDetailGene.getCis5to3(),
+			String tmpseq = chrStringHash.getSeq(gffDetailGene.isCis5to3(),
 					gffDetailGene.getChrID(), iso, false);
 
 			String tmpseq2 = seqFastaHash.getsequence(gffDetailGene
@@ -414,7 +414,7 @@ public class mytest {
 		GffDetailGene gffDetailGene = (GffDetailGene) gffHashUCSCgene
 				.getLocHashtable().get("NM_032526");
 		ArrayList<int[]> iso = gffDetailGene.getLongestSplit().getIsoInfo();
-		String tmpseq = chrStringHash.getSeq(gffDetailGene.getCis5to3(),
+		String tmpseq = chrStringHash.getSeq(gffDetailGene.isCis5to3(),
 				gffDetailGene.getChrID(), iso, false);
 		System.out.println(tmpseq.toUpperCase());
 	}
@@ -441,7 +441,7 @@ public class mytest {
 			GffDetailGene gffDetailGene = (GffDetailGene) gffHashUCSCgene
 					.getLocHashtable().get(geneID);
 			ArrayList<int[]> iso = gffDetailGene.getLongestSplit().getIsoInfo();
-			String tmpseq = chrStringHash.getSeq(gffDetailGene.getCis5to3(),
+			String tmpseq = chrStringHash.getSeq(gffDetailGene.isCis5to3(),
 					gffDetailGene.getChrID(), iso, false);
 			if (tmpseq != null) {
 				txtReadandWrite.writefileln(">"

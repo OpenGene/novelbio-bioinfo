@@ -4,9 +4,11 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 /**
  * 专门存储UCSC的gene坐标文件
@@ -35,20 +37,26 @@ public class GffDetailGene extends GffDetailAbs
 	public final static String UTR3 = "3utr";
 	public final static String TSS = "tss";
 	public final static String TES = "tes";
+	
+	
+	
+	int taxID = 0;
 	/**
 	 * 设定基因的转录起点终点位置信息
 	 * @param UpStreamTSSbp 设定基因的转录起点上游长度，默认为3000bp
 	 * @param DownStreamTssbp 设定基因的转录起点下游长度，默认为2000bp
 	 * @param GeneEnd3UTR 设定基因结尾向外延伸的长度，默认为100bp
 	 */
-	protected static void setCodLocation(int upStreamTSSbp, int downStreamTssbp, int geneEnd3UTR) {
+	public static void setCodLocation(int upStreamTSSbp, int downStreamTssbp, int geneEnd3UTR) {
 		UpStreamTSSbp = upStreamTSSbp;
 		DownStreamTssbp = downStreamTssbp;
 		GeneEnd3UTR = geneEnd3UTR;
 		GffGeneIsoInfo.setCodLocation(upStreamTSSbp, downStreamTssbp, geneEnd3UTR);
 	}
 	
-	
+	protected void setTaxID(int taxID) {
+		this.taxID = taxID;
+	}
 	/**
 	 * 顺序存储每个转录本的的坐标情况
 	 */
@@ -60,7 +68,7 @@ public class GffDetailGene extends GffDetailAbs
 	
 	public void setCoord(int coord) {
 		this.coord = coord;
-		ArrayList<GffGeneIsoInfo> lsGffInfo = getCoordLs();
+		ArrayList<GffGeneIsoInfo> lsGffInfo = getLsCodSplit();
 		if (lsGffInfo == null || lsGffInfo.size() < 1) {
 			return;
 		}
@@ -147,6 +155,7 @@ public class GffDetailGene extends GffDetailAbs
 		else {
 			gffGeneIsoInfo = new GffGeneIsoTrans(splitName,this);
 		}
+		gffGeneIsoInfo.setTaxID(this.taxID);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 		lsIsoName.add(splitName);
 	}
@@ -205,7 +214,7 @@ public class GffDetailGene extends GffDetailAbs
 	 * 用坐标查找具体的转录本信息，如果坐标信息相同，则返回以前的信息
 	 * @param coord
 	 */
-	public ArrayList<GffGeneIsoInfo> getCoordLs() {
+	public ArrayList<GffGeneIsoInfo> getLsCodSplit() {
 		return lsGffGeneIsoInfos;
 	}
     /**
@@ -286,4 +295,52 @@ public class GffDetailGene extends GffDetailAbs
 		return -1000000;
 	}
 	
+	/**
+	 * 是否在该基因内，具体情况
+	 * @return
+	 * 返回anno[4]
+	 * 0：accID
+	 * 1：symbol
+	 * 2：description
+	 * 3：location
+	 * 没有就返回“”
+	 */
+	public String[] getInfo() {
+		String[] anno = new String[4];
+		for (int i = 0; i < anno.length; i++) {
+			anno[i] = "";
+		}
+		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
+		if (isCodInGenExtend()) {
+			for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
+				if (gffGeneIsoInfo.isCodInIsoExtend()) {
+					hashCopedID.add(gffGeneIsoInfo.getCopedID());
+				}
+			}
+			for (CopedID copedID : hashCopedID) {
+				if (anno.equals("")) {
+					anno[0] = copedID.getAccID();
+					anno[1] = copedID.getSymbo();
+					anno[2] = copedID.getDescription();
+				}
+				else {
+					anno[0] = anno[0]+"//"+copedID.getAccID();
+					anno[1] = anno[1]+"//"+copedID.getSymbo();
+					anno[2] = anno[2]+"//"+copedID.getDescription();
+				}
+			}
+			if (getLongestSplit().isCodInIsoExtend()) {
+				anno[4] = getLongestSplit().getCodLocStr();
+			}
+			else {
+				for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
+					if (gffGeneIsoInfo.isCodInIsoExtend()) {
+						anno[4] = gffGeneIsoInfo.getCodLocStr();
+						break;
+					}
+				}
+			}
+		}
+		return anno;
+	}
 }

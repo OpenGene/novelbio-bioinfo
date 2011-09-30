@@ -10,12 +10,6 @@ import java.util.HashMap;
 public interface GffHashGeneInf  {
 	
 	/**
-	 * 输入基因名/geneID，返回基因的坐标信息等
-	 * @param accID
-	 * @return
-	 */
-	public GffDetailGene getGeneDetail(String accID);
-	/**
 	 * 	返回外显子总长度，内含子总长度等信息，只统计最长转录本的信息
 	 * 有问题
 	 * 为一个ArrayList-Integer

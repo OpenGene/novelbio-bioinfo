@@ -32,15 +32,16 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 	
 	/**
 	 * 输入基因名，返回基因的坐标信息等
+	 * 可以输入accID
 	 * @param accID
 	 * @return
 	 */
-	public GffDetailGene getGeneDetail(String accID) {
-		GffDetailGene gffDetailGene = getLocHashtable().get(accID);
+	public GffDetailGene searchLOC(String accID) {
+		GffDetailGene gffDetailGene = super.searchLOC(accID);
 		if (gffDetailGene == null) {
 			CopedID copedID = new CopedID(accID, taxID, false);
 			String locID = getHashGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
-			gffDetailGene = getLocHashtable().get(locID);
+			gffDetailGene = super.searchLOC(locID);
 		}
 		return gffDetailGene;
 	}
@@ -146,13 +147,6 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 		TxtReadandWrite txtAcc2GenID = new TxtReadandWrite(txtaccID2GeneID, false);
 		ArrayList<String> lsAccID = txtAcc2GenID.readfileLs();
 		for (String string : lsAccID) {
-			if (taxID == 0) {
-				ArrayList<CopedID> lsCopedIDs = CopedID.getLsCopedID(string, 0, false);
-				if (lsCopedIDs.size() == 1) {
-					taxID = lsCopedIDs.get(0).getTaxID();
-				}
-			}
-			
 			if (string == null || string.trim().equals("")) {
 				continue;
 			}
@@ -177,5 +171,4 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 			GffCodGene gffCod1, GffCodGene gffCod2) {
 		return new GffCodGeneDU(lsgffDetail, gffCod1, gffCod2);
 	}
-	
 }

@@ -180,14 +180,14 @@ public abstract class GffDetailAbs {
 	 * 坐标是否在基因的内部，包括Tss和GeneEnd的拓展区域
 	 */
 	public boolean isCodInGenExtend() {
-		return isCodInGene() || isCodInTss() || isCodInGenEnd();
+		return isCodInGene() || isCodInPromoter() || isCodInGenEnd();
 	}
 	
 	/**
 	 * 是否在所谓的Tss内
 	 * @return
 	 */
-	public boolean isCodInTss() {
+	public boolean isCodInPromoter() {
 		if (getCod2Start() == null) {
 			return false;
 		}
@@ -245,7 +245,7 @@ public abstract class GffDetailAbs {
 	/**
 	 * 转录方向，假设同一基因不管多少转录本都同一转录方向
 	 */
-	public boolean getCis5to3() {
+	public boolean isCis5to3() {
 		return this.cis5to3;
 	}
 	/**

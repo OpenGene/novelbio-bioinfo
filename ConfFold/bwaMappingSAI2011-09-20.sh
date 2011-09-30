@@ -1,0 +1,1 @@
+bwa samse -n 100 /media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_refseq/RefSeqFromChr.fa /media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/bwatest/Hanyan_medium_1.sai /media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/Hanyan_medium.fq > /media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/bwatest/multiMidout

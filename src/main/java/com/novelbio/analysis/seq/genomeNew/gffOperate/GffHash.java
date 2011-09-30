@@ -281,11 +281,15 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 		LocInfo[0] = 2;
 		return LocInfo;
 	}
-	
+	/**
+	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面
+	 * @param gfffilename
+	 */
 	public void ReadGffarray(String gfffilename) {
 		try {
 			ReadGffarrayExcep(gfffilename);
 			setItemDistance();
+			setOther();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -396,8 +400,13 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	}
 
 
-
-
+	/**
+	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面，本方发为空，直接继承即可
+	 */
+	protected void setOther()
+	{
+		
+	}
 
 
 

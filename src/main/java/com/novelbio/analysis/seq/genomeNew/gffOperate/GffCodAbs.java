@@ -56,7 +56,7 @@ public abstract class GffCodAbs<T extends GffDetailAbs> {
 	 */
 	protected boolean insideLOC = false;
 	/**
-	 * 定位情况 条目内/条目外
+	 * 定位情况 条目内/条目外，不考虑Tss上游和geneEnd下游之类的信息
 	 */
 	public boolean isInsideLoc() {
 		return insideLOC;

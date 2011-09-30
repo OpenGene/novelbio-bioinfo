@@ -22,10 +22,6 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 		}
 		gffHashGene.ReadGffarray(gffFile);
 	}
-	@Override
-	public GffDetailGene getGeneDetail(String accID) {
-		return gffHashGene.getGeneDetail(accID);
-	}
 
 	@Override
 	public ArrayList<Long> getGeneStructureLength(int upBp) {

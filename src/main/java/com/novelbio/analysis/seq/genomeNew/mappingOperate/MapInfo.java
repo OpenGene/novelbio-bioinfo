@@ -58,6 +58,10 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	{
 		return startLoc;
 	}
+	
+	public void setStart(int startLoc) {
+		this.startLoc = startLoc;
+	}
 	/**
 	 * 获得终点坐标
 	 * @return

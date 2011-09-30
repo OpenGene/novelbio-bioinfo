@@ -1,0 +1,1 @@
+bwa index  -a is /media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_refseq/RefSeqFromChr.fa

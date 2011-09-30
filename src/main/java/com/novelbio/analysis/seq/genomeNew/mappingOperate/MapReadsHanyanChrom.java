@@ -56,12 +56,12 @@ public class MapReadsHanyanChrom extends MapReads{
 		if (cis5to3 != null) {
 			GffCodGene gffCodGene = (GffCodGene) gffHashGene.searchLocation(tmp[colChrID], Integer.parseInt(tmp[colStartNum]));
 			//如果位点一在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
-			if (gffCodGene.isInsideLoc() && cis5to3 == (gffCodGene.getGffDetailThis().getCis5to3() == tmp[colCis5To3].equals("+")) ) {
+			if (gffCodGene.isInsideLoc() && cis5to3 == (gffCodGene.getGffDetailThis().isCis5to3() == tmp[colCis5To3].equals("+")) ) {
 				return super.addLoc(tmp, uniqReads, tmpOld, startCod, null, chrBpReads, readsNum);
 			}
 			GffCodGene gffCodGene2 = (GffCodGene) gffHashGene.searchLocation(tmp[colChrID], Integer.parseInt(tmp[colEndNum]));
 			//如果位点二在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
-			if (gffCodGene2.isInsideLoc() && cis5to3 == (gffCodGene2.getGffDetailThis().getCis5to3() == tmp[colCis5To3].equals("+")) ) {
+			if (gffCodGene2.isInsideLoc() && cis5to3 == (gffCodGene2.getGffDetailThis().isCis5to3() == tmp[colCis5To3].equals("+")) ) {
 				return super.addLoc(tmp, uniqReads, tmpOld, startCod, null, chrBpReads, readsNum);
 			}
 			if (!gffCodGene.isInsideLoc() && !gffCodGene2.isInsideLoc()) {
