@@ -75,8 +75,8 @@ public class SimpCoExp {
 		Object[] obj = annotationScr2Trg(info, taxID);
 		ArrayList<String[]> lsScr2Trg = (ArrayList<String[]>) obj[0];
 		ArrayList<String[]> lsResult = (ArrayList<String[]>) obj[1];
-		String[] anoTitle = new String[4];
-		anoTitle[0] = "GeneID"; anoTitle[1] = "GeneSymbol"; anoTitle[2] = "Description"; anoTitle[3] = "degree";
+		String[] anoTitle = new String[6];
+		anoTitle[0] = "GeneID"; anoTitle[1] = "GeneSymbol"; anoTitle[2] = "Description"; anoTitle[3] = "InDegree";anoTitle[4] = "OutDegree";anoTitle[5] = "Degree";
 		lsResult.add(0, anoTitle);
 		
 		String[] coExpTitle = new String[9];
@@ -113,8 +113,8 @@ public class SimpCoExp {
 		Object[] obj = annotationScr2Trg(info, taxID);
 		 ArrayList<String[]> lsScr2Trg = (ArrayList<String[]>) obj[0];
 		 ArrayList<String[]> lsResult = (ArrayList<String[]>) obj[1];
-		String[] anoTitle = new String[4];
-		anoTitle[0] = "GeneID"; anoTitle[1] = "GeneSymbol"; anoTitle[2] = "Description"; anoTitle[3] = "degree";
+		String[] anoTitle = new String[6];
+		anoTitle[0] = "GeneID"; anoTitle[1] = "GeneSymbol"; anoTitle[2] = "Description"; anoTitle[3] = "InDegree";anoTitle[4] = "OutDegree";anoTitle[5] = "Degree";
 		lsResult.add(0, anoTitle);
 		
 		String[] coExpTitle = new String[6];
@@ -294,14 +294,16 @@ public class SimpCoExp {
 	 * 0: GeneID<br>
 	 * 1: GeneSymbol<br>
 	 * 2: Description<br>
-	 * 3: degree<br>
+	 * 3: InDegree<br>
+	 * 4: OutDegree<br>
+	 * 5: Degree
 	 * @throws Exception 
 	 */
 	private static Object[] annotationScr2Trg(String[][] result,int taxID) throws Exception
 	{
 		/**
 		 * key accID
-		 * value 0:accID 1:symbol 2: Description 3:degree
+		 * value 0:accID 1:symbol 2: Description 3:InDegree 4:OutDegree 5:AllDegree
 		 */
 		Hashtable<String,String[]> hashAccID = new Hashtable<String, String[]>();
 		for (int i = 0; i < result.length; i++) 
@@ -309,7 +311,8 @@ public class SimpCoExp {
 			//将geneID1装入hash，并计算degree
 			if (hashAccID.containsKey(result[i][0])) {
 				String[] tmpResult = hashAccID.get(result[i][0]);
-				tmpResult[3] = Integer.parseInt(tmpResult[3]) +1 +"";
+				tmpResult[4] = Integer.parseInt(tmpResult[4]) +1 +"";
+				tmpResult[5] = Integer.parseInt(tmpResult[5]) +1 +"";
 			}
 			else 
 			{
@@ -321,9 +324,9 @@ public class SimpCoExp {
 				///////////////////////////////////////////////////////////////////////////////////
 				//这一段放if里：只有当数据库中有时才计数
 				//放在if外：不管数据库中是否含有都计数
-				tmpResult = new String[4];
+				tmpResult = new String[6];
 				tmpResult[0] = result[i][0];tmpResult[1] = ""; tmpResult[2] = "";
-				tmpResult[3] = 1+"";
+				tmpResult[3] = 0+"";tmpResult[4] = 1+"";tmpResult[5] = 1+"";
 				hashAccID.put(result[i][0], tmpResult);//这一段放if里：只有当数据库中有时才计数
 				////////////////////////////////////////////////////////////////////////////////
 				if (lsGene2GoInfos != null && lsGene2GoInfos.size() > 0) 
@@ -334,10 +337,12 @@ public class SimpCoExp {
 				}
 				//hashAccID.put(result[i][0], tmpResult);//放在if外：不管数据库中是否含有都计数
 			}
+			
 			//将geneID2装入hash，并计算degree
 			if (hashAccID.containsKey(result[i][1])) {
 				String[] tmpResult = hashAccID.get(result[i][1]);
 				tmpResult[3] = Integer.parseInt(tmpResult[3]) +1 +"";
+				tmpResult[5] = Integer.parseInt(tmpResult[5]) +1 +"";
 			}
 			else 
 			{
@@ -348,9 +353,9 @@ public class SimpCoExp {
 				///////////////////////////////////////////////////////////////////////////////////
 				//这一段放if里：只有当数据库中有时才计数
 				//放在if外：不管数据库中是否含有都计数
-				String[] tmpResult = new String[4];
+				String[] tmpResult = new String[6];
 				tmpResult[0] = result[i][1];tmpResult[1] = ""; tmpResult[2] = "";
-				tmpResult[3] = 1+"";
+				tmpResult[3] = 1+"";tmpResult[4] = 0+"";tmpResult[5] = 1+"";
 				hashAccID.put(result[i][1], tmpResult);
 				////////////////////////////////////////////////////////////////////////////////
 				if (lsGene2GoInfos != null && lsGene2GoInfos.size() > 0) 

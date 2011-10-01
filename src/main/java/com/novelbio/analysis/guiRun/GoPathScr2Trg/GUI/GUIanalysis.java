@@ -51,6 +51,9 @@ public class GUIanalysis extends javax.swing.JFrame {
 	private GuiGoJPanel guiGoJPanel;
 	private GuiPathJpanel guiPathJpanel;
 	private GuiBlastJpanel guiBlastJpanel;
+	private GuiPearson guiSrcToTrg;
+	private GuiDegreeAdd guiDegreeAdd;
+	private GuiPearson guiPearson;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -89,7 +92,14 @@ public class GUIanalysis extends javax.swing.JFrame {
 				guiPathJpanel = new GuiPathJpanel();
 				jTabbedPane1.addTab("Pathway Analysis", null, guiPathJpanel, null);
 				
+				guiSrcToTrg = new GuiPearson();
+				jTabbedPane1.addTab("src2trg", null, guiSrcToTrg, null);
 				
+				guiDegreeAdd = new GuiDegreeAdd();
+				jTabbedPane1.addTab("degree", null, guiDegreeAdd, null);
+				
+				guiPearson = new GuiPearson();
+				jTabbedPane1.addTab("pearson", null, guiPearson, null);
 //				{
 //					jPanCoExp = new JPanel();
 //					jTabbedPane1.addTab("CoExpression", null, jPanCoExp, null);
