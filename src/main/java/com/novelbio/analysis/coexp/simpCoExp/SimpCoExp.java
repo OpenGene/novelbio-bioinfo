@@ -316,26 +316,15 @@ public class SimpCoExp {
 			}
 			else 
 			{
-				NCBIID ncbiid = new NCBIID();
-				ncbiid.setAccID(result[i][0]);
-				if (taxID>0) 	ncbiid.setTaxID(taxID);
-				ArrayList<Gene2GoInfo> lsGene2GoInfos = DaoFCGene2GoInfo.queryLsGeneDetail(ncbiid);
-				String[] tmpResult = null;
+				CopedID copedID = new CopedID(result[i][0], taxID, false);
+				String[] tmpResult = new String[6];
 				///////////////////////////////////////////////////////////////////////////////////
 				//这一段放if里：只有当数据库中有时才计数
 				//放在if外：不管数据库中是否含有都计数
-				tmpResult = new String[6];
-				tmpResult[0] = result[i][0];tmpResult[1] = ""; tmpResult[2] = "";
+				tmpResult[0] = result[i][0];tmpResult[1] = copedID.getSymbo(); tmpResult[2] = copedID.getDescription();
 				tmpResult[3] = 0+"";tmpResult[4] = 1+"";tmpResult[5] = 1+"";
 				hashAccID.put(result[i][0], tmpResult);//这一段放if里：只有当数据库中有时才计数
 				////////////////////////////////////////////////////////////////////////////////
-				if (lsGene2GoInfos != null && lsGene2GoInfos.size() > 0) 
-				{
-					Gene2GoInfo gene2GoInfo = lsGene2GoInfos.get(0);
-					tmpResult[1] = gene2GoInfo.getGeneInfo().getSymbol().split("//")[0];
-					tmpResult[2] = gene2GoInfo.getGeneInfo().getDescription();
-				}
-				//hashAccID.put(result[i][0], tmpResult);//放在if外：不管数据库中是否含有都计数
 			}
 			
 			//将geneID2装入hash，并计算degree
@@ -346,35 +335,19 @@ public class SimpCoExp {
 			}
 			else 
 			{
-				NCBIID ncbiid = new NCBIID();
-				ncbiid.setAccID(result[i][1]);
-				if (taxID>0) 	ncbiid.setTaxID(taxID);
-				ArrayList<Gene2GoInfo> lsGene2GoInfos = DaoFCGene2GoInfo.queryLsGeneDetail(ncbiid);
+				CopedID copedID = new CopedID(result[i][0], taxID, false);
 				///////////////////////////////////////////////////////////////////////////////////
 				//这一段放if里：只有当数据库中有时才计数
 				//放在if外：不管数据库中是否含有都计数
 				String[] tmpResult = new String[6];
-				tmpResult[0] = result[i][1];tmpResult[1] = ""; tmpResult[2] = "";
+				tmpResult[0] = result[i][1];tmpResult[1] = copedID.getSymbo(); tmpResult[2] = copedID.getDescription();
 				tmpResult[3] = 1+"";tmpResult[4] = 0+"";tmpResult[5] = 1+"";
 				hashAccID.put(result[i][1], tmpResult);
-				////////////////////////////////////////////////////////////////////////////////
-				if (lsGene2GoInfos != null && lsGene2GoInfos.size() > 0) 
-				{
-					Gene2GoInfo gene2GoInfo = lsGene2GoInfos.get(0);
-					tmpResult[1] = gene2GoInfo.getGeneInfo().getSymbol().split("//")[0];
-					tmpResult[2] = gene2GoInfo.getGeneInfo().getDescription();
-				}
-				
 			}
 		}
-		String[][] scrAnno = new String[result.length][2];//scr的annotation
-		String[][] trgAnno = new String[result.length][2];//trg的annotation
 		for (int j = 0; j < result.length; j++) {
 			hashAccID.get(result);
 		}
-		
-		
-		
 		Enumeration<String> keys=hashAccID.keys();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		while(keys.hasMoreElements()){
@@ -402,7 +375,6 @@ public class SimpCoExp {
 		
 		return obj;
 	}
-	
 	
 	
 }
