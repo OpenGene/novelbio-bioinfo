@@ -1,12 +1,16 @@
 package com.novelbio.analysis.annotation.copeID;
 
 import java.util.ArrayList;
+
+import com.novelbio.analysis.annotation.GO.goEntity.GOInfoAbs;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo;
+import com.novelbio.database.entity.friceDB.AGene2Go;
+import com.novelbio.database.entity.friceDB.AGeneInfo;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.kegg.KGpathway;
 
-public interface CopedIDInt {
+public interface CopedIDInt{
 	
 	
 	/**
@@ -24,7 +28,7 @@ public interface CopedIDInt {
 	 * @param evalue
 	 * @return
 	 */
-	public CopedID getBlastCopedID(int StaxID,double evalue) ;
+	public CopedID getCopedIDBlast(int StaxID,double evalue) ;
 	
 	/**
 	 * idType，必须是IDTYPE中的一种
@@ -92,21 +96,21 @@ public interface CopedIDInt {
 	 * @param StaxID
 	 * @return
 	 */
-	public ArrayList<CopedID> getBlastLsCopedID();
+	public ArrayList<CopedID> getCopedIDLsBlast();
 	/**
 	 * 	blast多个物种
 	 * 首先设定blast的物种
 	 * 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 获得经过blast的KegPath
 	 */
-	public ArrayList<KGpathway> getBlastKegPath();
-	/**
-	 * blast单个物种
-	 * 给定blast到的copedID，用 getBlastCopedID(int StaxID,double evalue) 方法获得
-	 * 用方法： setBlastInfo(double evalue, int... StaxID)
-	 * 获得经过blast的KegPath
-	 */
-	public ArrayList<KGpathway> getBlastKegPath(CopedID copedID);
+	public ArrayList<KGpathway> getKegPathBlast();
+//	/**
+//	 * blast单个物种
+//	 * 给定blast到的copedID，用 getBlastCopedID(int StaxID,double evalue) 方法获得
+//	 * 用方法： setBlastInfo(double evalue, int... StaxID)
+//	 * 获得经过blast的KegPath
+//	 */
+//	public ArrayList<KGpathway> getBlastKegPath(CopedID copedID);
 	/**
 	 * 获得该copedID的KegPath
 	 */
@@ -117,4 +121,27 @@ public interface CopedIDInt {
 	 * @param StaxID
 	 */
 	public void setBlastLsInfo(double evalue, int... StaxID);
+	/**
+	 * 返回该CopeID所对应的GO信息
+	 * @return
+	 */
+	public ArrayList<AGene2Go> getGene2GO(String GOType);
+
+	
+	//////////   GoInfo   ////////////////
+	/**
+	 * 	blast多个物种
+	 * 首先设定blast的物种
+	 * 用方法： setBlastInfo(double evalue, int... StaxID)
+	 * 获得经过blast的GoInfo
+	 */
+	public ArrayList<AGene2Go> getGene2GOBlast(String GOType);
+	/**
+	 * blast多个物种
+	 * 首先要设定blast的目标
+	 * 用方法： setBlastInfo(double evalue, int... StaxID)
+	 * @return
+	 * 返回blast的信息，包括evalue等，该list和getCopedIDLsBlast()得到的list是一一对应的
+	 */
+	public ArrayList<BlastInfo> getLsBlastInfos();
 }

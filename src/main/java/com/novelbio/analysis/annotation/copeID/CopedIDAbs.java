@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.novelbio.analysis.annotation.GO.goEntity.GOInfoAbs;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegGenEntryKO;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo;
@@ -24,7 +25,7 @@ import com.novelbio.database.entity.kegg.KGpathway;
 import com.novelbio.database.service.ServAnno;
 import com.novelbio.database.service.ServBlastInfo;
 
-public abstract class CopedIDAbs implements CopedIDInt{
+public abstract class CopedIDAbs implements CopedIDInt {
 //	public final static String IDTYPE_ACCID = "accID"; 
 //	public final static String IDTYPE_GENEID = "geneID";
 //	public final static String IDTYPE_UNIID = "uniID"; 
@@ -69,6 +70,11 @@ public abstract class CopedIDAbs implements CopedIDInt{
 	
 	KeggInfo keggInfo;
 	
+	GOInfoAbs goInfoAbs = null;
+	
+	
+///////////////////    Blast setting   /////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	/**
 	 * 单个物种的blast
 	 * 获得本copedID blast到对应物种的blastInfo信息，没有就返回null
@@ -95,6 +101,7 @@ public abstract class CopedIDAbs implements CopedIDInt{
 	}
 	/**
 	 * 设定多个物种进行blast
+	 * 每次设定后都会刷新
 	 * @param evalue
 	 * @param StaxID
 	 */
@@ -122,7 +129,7 @@ public abstract class CopedIDAbs implements CopedIDInt{
 	 * @param evalue
 	 * @return
 	 */
-	public CopedID getBlastCopedID(int StaxID,double evalue) {
+	public CopedID getCopedIDBlast(int StaxID,double evalue) {
 		BlastInfo blastInfo = setBlastInfo(StaxID, evalue);
 		if (blastInfo == null) {
 			return null;
@@ -168,7 +175,7 @@ public abstract class CopedIDAbs implements CopedIDInt{
 	 * @param StaxID
 	 * @return
 	 */
-	public ArrayList<CopedID> getBlastLsCopedID() {
+	public ArrayList<CopedID> getCopedIDLsBlast() {
 		ArrayList<CopedID> lsResult = new ArrayList<CopedID>();
 		if (lsBlastInfos == null || lsBlastInfos.size() == 0) {
 			return null;
@@ -181,7 +188,17 @@ public abstract class CopedIDAbs implements CopedIDInt{
 		}
 		return lsResult;
 	}
-	
+	/**
+	 * blast多个物种
+	 * 首先要设定blast的目标
+	 * 用方法： setBlastInfo(double evalue, int... StaxID)
+	 * @return
+	 * 返回blast的信息，包括evalue等，该list和getCopedIDLsBlast()得到的list是一一对应的
+	 */
+	public ArrayList<BlastInfo> getLsBlastInfos() {
+		return lsBlastInfos;
+	}
+	////////////////////   normal setting  /////////////////////////////////////////////////////////////////
 	/**
 	 * idType，必须是IDTYPE中的一种
 	 */
@@ -268,33 +285,7 @@ public abstract class CopedIDAbs implements CopedIDInt{
 			return ageneUniID.getAccID();
 		}
 	}
-	/**
-	 * 获得该CopeID的List-KGentry,如果没有或为空，则返回null
-	 * @param blast 是否blast到相应物种查看
-	 * @param StaxID 如果blast为true，那么设定StaxID
-	 * @return 如果没有就返回null
-	 */
-	public ArrayList<KegEntity> getKegEntity(boolean blast,int StaxID,double evalue) {
-		if (!blast) {
-			return setKegGenEntryKO().getLsKGentries();
-		}
-		else {
-			//如果本基因能找到keggID就不进行blast
-			if ( setKegGenEntryKO().getLsKGentries() != null) {
-				return setKegGenEntryKO().getLsKGentries();
-			}
-			CopedID ScopedID = getBlastCopedID(StaxID,evalue);
-			return ScopedID.getKegEntity(false, 0, 0);
-		}
-	}
 	
-	private KegGenEntryKO setKegGenEntryKO()
-	{
-		if (kegGenEntryKO == null) {
-			kegGenEntryKO = new KegGenEntryKO(idType, genUniID, taxID);
-		}
-		return kegGenEntryKO;
-	}
 	
 	/**
 	 * 	 * 指定一个dbInfo，返回该dbInfo所对应的accID，没有则返回null
@@ -327,7 +318,7 @@ public abstract class CopedIDAbs implements CopedIDInt{
 				tmpAnno[i] = "";
 			}
 			tmpAnno[0] = getSymbo(); tmpAnno[1] = getDescription(); tmpAnno[2] = StaxID + ""; 
-			CopedID copedIDBlast = getBlastCopedID(StaxID, evalue);
+			CopedID copedIDBlast = getCopedIDBlast(StaxID, evalue);
 			if (copedIDBlast != null) {
 				tmpAnno[3] = this.evalue + "";
 				tmpAnno[4] = copedIDBlast.getSymbo();
@@ -343,7 +334,74 @@ public abstract class CopedIDAbs implements CopedIDInt{
 		}
 		return tmpAnno;
 	}
-
+//////////////////////////////////GOInfo  ////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * 设定 goInfoAbs的信息
+	 */
+	protected abstract void setGoInfo();
+	/**
+	 * 返回该基因所对应的GOInfo信息，不包含Blast
+	 * @return
+	 */
+	protected GOInfoAbs getGOInfo() {
+		if (goInfoAbs == null) {
+			setGoInfo();
+		}
+		return goInfoAbs;
+	}
+	/**
+	 * 返回该CopedID所对应的Gene2GOInfo
+	 * @param GOType
+	 * @return
+	 */
+	public ArrayList<AGene2Go> getGene2GO(String GOType) {
+		return getGOInfo().getLsGene2Go(GOType);
+	}
+	/**
+	 * 	blast多个物种
+	 * 首先设定blast的物种
+	 * 用方法： setBlastInfo(double evalue, int... StaxID)
+	 * 获得经过blast的GoInfo
+	 */
+	public ArrayList<AGene2Go> getGene2GOBlast(String GOType) {
+		setGoInfo();
+		ArrayList<GOInfoAbs> lsGoInfo = new ArrayList<GOInfoAbs>();
+		
+		ArrayList<CopedID> lsBlastCopedIDs = getCopedIDLsBlast();
+		for (CopedID copedID : lsBlastCopedIDs) {
+			lsGoInfo.add(copedID.getGOInfo());
+		}
+		return goInfoAbs.getLsGen2Go(lsGoInfo, GOType);
+	}
+//////////////////KEGG      //////////////////////////////////////////////
+	/**
+	 * 获得该CopeID的List-KGentry,如果没有或为空，则返回null
+	 * @param blast 是否blast到相应物种查看
+	 * @param StaxID 如果blast为true，那么设定StaxID
+	 * @return 如果没有就返回null
+	 */
+	public ArrayList<KegEntity> getKegEntity(boolean blast,int StaxID,double evalue) {
+		if (!blast) {
+			return setKegGenEntryKO().getLsKGentries();
+		}
+		else {
+			//如果本基因能找到keggID就不进行blast
+			if ( setKegGenEntryKO().getLsKGentries() != null) {
+				return setKegGenEntryKO().getLsKGentries();
+			}
+			CopedID ScopedID = getCopedIDBlast(StaxID,evalue);
+			return ScopedID.getKegEntity(false, 0, 0);
+		}
+	}
+	
+	private KegGenEntryKO setKegGenEntryKO()
+	{
+		if (kegGenEntryKO == null) {
+			kegGenEntryKO = new KegGenEntryKO(idType, genUniID, taxID);
+		}
+		return kegGenEntryKO;
+	}
+	
 	/**
 	 * 获得相关的Kegg信息
 	 * @return
@@ -368,28 +426,28 @@ public abstract class CopedIDAbs implements CopedIDInt{
 	 * 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 获得经过blast的KegPath
 	 */
-	public ArrayList<KGpathway> getBlastKegPath() {
+	public ArrayList<KGpathway> getKegPathBlast() {
 		getKeggInfo();
 		ArrayList<KeggInfo> lskeggInfo = new ArrayList<KeggInfo>();
-		ArrayList<CopedID> lsBlastCopedIDs = getBlastLsCopedID();
+		ArrayList<CopedID> lsBlastCopedIDs = getCopedIDLsBlast();
 		for (CopedID copedID : lsBlastCopedIDs) {
 			lskeggInfo.add(copedID.getKeggInfo());
 		}
 		return keggInfo.getLsKegPath(lskeggInfo);
 	}
 	
-	/**
-	 * blast单个物种
-	 * 给定blast到的copedID，用 getBlastCopedID(int StaxID,double evalue) 方法获得
-	 * 用方法： setBlastInfo(double evalue, int... StaxID)
-	 * 获得经过blast的KegPath
-	 */
-	public ArrayList<KGpathway> getBlastKegPath(CopedID copedID) {
-		getKeggInfo();
-		ArrayList<KeggInfo> lskeggInfo = new ArrayList<KeggInfo>();
-		lskeggInfo.add(copedID.getKeggInfo());
-		return keggInfo.getLsKegPath(lskeggInfo);
-	}
+//	/**
+//	 * blast单个物种
+//	 * 给定blast到的copedID，用 getBlastCopedID(int StaxID,double evalue) 方法获得
+//	 * 用方法： setBlastInfo(double evalue, int... StaxID)
+//	 * 获得经过blast的KegPath
+//	 */
+//	public ArrayList<KGpathway> getBlastKegPath(CopedID copedID) {
+//		getKeggInfo();
+//		ArrayList<KeggInfo> lskeggInfo = new ArrayList<KeggInfo>();
+//		lskeggInfo.add(copedID.getKeggInfo());
+//		return keggInfo.getLsKegPath(lskeggInfo);
+//	}
 	
 	/////////////////////////////  重写equals等  ////////////////////////////////////
 

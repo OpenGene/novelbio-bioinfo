@@ -286,15 +286,19 @@ public class TxtReadandWrite {
 	 * @param sep
 	 * @throws Exception
 	 */
-	private void Rwritefile(int[] content, int colLen, String sep)
-			throws Exception {
-		for (int i = 0; i < content.length; i++) {
-			filewriter.write(content[i] + "" + sep);
-			if ((i + 1) % colLen == 0) {
-				filewriter.write("\r\n");
+	private void Rwritefile(int[] content, int colLen, String sep) {
+		try {
+			for (int i = 0; i < content.length; i++) {
+				filewriter.write(content[i] + "" + sep);
+				if ((i + 1) % colLen == 0) {
+					filewriter.write("\r\n");
+				}
 			}
+			filewriter.flush();
+		} catch (Exception e) {
+			logger.error("file error: "+ getFileName());
 		}
-		filewriter.flush();
+		
 	}
 	/**
 	 * 指定正则表达式，将文本中含有该正则表达式的行全部删除
@@ -348,7 +352,7 @@ public class TxtReadandWrite {
 	 * 
 	 * @param content
 	 */
-	public void Rwritefile(int[] content) throws Exception {
+	public void Rwritefile(int[] content) {
 		Rwritefile(content, 20, " ");
 	}
 
@@ -360,16 +364,20 @@ public class TxtReadandWrite {
 	 * @param sep
 	 * @throws Exception
 	 */
-	private void Rwritefile(String[] content, int colLen, String sep)
-			throws Exception {
-		for (int i = 0; i < content.length; i++) {
-			filewriter.write(content[i] + "" + sep);
-			if ((i + 1) % colLen == 0) {
-				filewriter.write("\r\n");
+	private void Rwritefile(String[] content, int colLen, String sep) {
+		try {
+			for (int i = 0; i < content.length; i++) {
+				filewriter.write(content[i] + "" + sep);
+				if ((i + 1) % colLen == 0) {
+					filewriter.write("\r\n");
+				}
 			}
-		}
 
-		filewriter.flush();
+			filewriter.flush();
+		} catch (Exception e) {
+			logger.error("file error: "+getFileName());
+		}
+		
 	}
 
 	/**
@@ -377,7 +385,7 @@ public class TxtReadandWrite {
 	 * 
 	 * @param content
 	 */
-	public void Rwritefile(String[] content) throws Exception {
+	public void Rwritefile(String[] content) {
 		Rwritefile(content, 20, " ");
 	}
 
@@ -401,26 +409,32 @@ public class TxtReadandWrite {
 	 * @return
 	 * @throws Exception
 	 */
-	public int ExcelRows() throws Exception {
-		int rowNum = 0;
-		BufferedReader readasexcel = readfile();
-		String content = "";
-		String content2 = "";
-		while ((content = readasexcel.readLine()) != null) {
-			rowNum++;
-			content2 = content;
+	public int ExcelRows() {
+		try {
+			int rowNum = 0;
+			BufferedReader readasexcel = readfile();
+			String content = "";
+			String content2 = "";
+			while ((content = readasexcel.readLine()) != null) {
+				rowNum++;
+				content2 = content;
+			}
+			
+			if (content2.equals(""))
+			{
+				readasexcel.close();
+				return rowNum - 1;
+			}
+			else
+			{
+				readasexcel.close();
+				return rowNum;
+			}
+		} catch (Exception e) {
+			logger.error("excelRows error: "+ getFileName());
+			return -1;
 		}
 		
-		if (content2.equals(""))
-		{
-			readasexcel.close();
-			return rowNum - 1;
-		}
-		else
-		{
-			readasexcel.close();
-			return rowNum;
-		}
 	}
 
 	/**
@@ -433,18 +447,24 @@ public class TxtReadandWrite {
 	 * @return 返回指定行的列数
 	 * @throws Exception
 	 */
-	public int ExcelColumns(String sep) throws Exception {
+	public int ExcelColumns(String sep){
 		int excelRows = ExcelRows();
-		BufferedReader readasexcel = readfile();
-		int colNum=0;
-		for (int i = 0; i < excelRows - 1; i++) {
-			String tmpstr = readasexcel.readLine();
-			int TmpColNum = tmpstr.split(sep).length;
-			if (TmpColNum>colNum) {
-				colNum=TmpColNum;
+		try {
+			BufferedReader readasexcel = readfile();
+			int colNum=0;
+			for (int i = 0; i < excelRows - 1; i++) {
+				String tmpstr = readasexcel.readLine();
+				int TmpColNum = tmpstr.split(sep).length;
+				if (TmpColNum>colNum) {
+					colNum=TmpColNum;
+				}
 			}
+			return colNum;
+		} catch (Exception e) {
+			logger.error("get Columns error: "+ getFileName());
+			return -1;
 		}
-		return colNum;
+		
 	}
 
 	/**
@@ -582,62 +602,65 @@ public class TxtReadandWrite {
 	 */
 	public ArrayList<String[]> ExcelRead(String sep, int rowStartNum,
 			int columnStartNum, int rowEndNum, int columnEndNum, int colNotNone)
-			throws Exception {
-		
-		int readlines = rowEndNum - rowStartNum + 1;
-		if (columnEndNum<0) {
-			columnEndNum =	ExcelColumns(sep);
-		}
-		// System.out.println(readlines);
-		// System.out.println(readcolumns);
+	{
 
 		ArrayList<String[]> result = new ArrayList<String[]>();
+		try {
+			int readlines = rowEndNum - rowStartNum + 1;
+			if (columnEndNum<0) {
+				columnEndNum =	ExcelColumns(sep);
+			}
+			// System.out.println(readlines);
+			// System.out.println(readcolumns);
 
-		// 先跳过前面的好多行
-		bufread = readfile();
-		for (int i = 0; i < rowStartNum - 1; i++) {
-			if (bufread.readLine() == null)// 如果文本中没有那么多行
-			{
-				return null;
-			}
-		}
-		// 正式读取
-		String content = "";
-		String[] tmp;// 两个临时变量
-		for (int i = 0; i < readlines; i++) {
-			if ((content = bufread.readLine()) == null)// 读完了
-			{
-				break;
-			}
-			if (content.trim().equals("")) {
-				continue;
-			}
-			tmp = content.split(sep);
-			int tmpLength = tmp.length;
-			if (colNotNone > 0
-					&& (tmp[colNotNone - 1] == null || tmp[colNotNone - 1]
-							.trim().equals(""))) {
-				continue;
-			}
-			String[] tmpResult = null;
-			if (columnEndNum > tmpLength) {
-				tmpResult = new String[tmpLength - columnStartNum + 1];
-			} else {
-				tmpResult = new String[columnEndNum - columnStartNum + 1];
-			}
-			for (int j = 0; j < tmpResult.length; j++) {
-				tmpResult[j] = "";
-			}
-			for (int j = 0; j < tmpResult.length; j++) {
-				int colNum = columnStartNum - 1 + j;
-				if (tmp[colNum] == null) {
-					tmpResult[j] = "";
-				} else {
-					tmpResult[j] = tmp[colNum];
+
+			// 先跳过前面的好多行
+			bufread = readfile();
+			for (int i = 0; i < rowStartNum - 1; i++) {
+				if (bufread.readLine() == null)// 如果文本中没有那么多行
+				{
+					return null;
 				}
 			}
-			result.add(tmpResult);
+			// 正式读取
+			String content = "";
+			String[] tmp;// 两个临时变量
+			for (int i = 0; i < readlines; i++) {
+				if ((content = bufread.readLine()) == null)// 读完了
+				{
+					break;
+				}
+				if (content.trim().equals("")) {
+					continue;
+				}
+				tmp = content.split(sep);
+				int tmpLength = tmp.length;
+				if (colNotNone > 0 && (tmp[colNotNone - 1] == null || tmp[colNotNone - 1].trim().equals(""))) {
+					continue;
+				}
+				String[] tmpResult = null;
+				if (columnEndNum > tmpLength) {
+					tmpResult = new String[tmpLength - columnStartNum + 1];
+				} else {
+					tmpResult = new String[columnEndNum - columnStartNum + 1];
+				}
+				for (int j = 0; j < tmpResult.length; j++) {
+					tmpResult[j] = "";
+				}
+				for (int j = 0; j < tmpResult.length; j++) {
+					int colNum = columnStartNum - 1 + j;
+					if (tmp[colNum] == null) {
+						tmpResult[j] = "";
+					} else {
+						tmpResult[j] = tmp[colNum];
+					}
+				}
+				result.add(tmpResult);
+			}
+		} catch (Exception e) {
+			logger.error("read Excel Error: "+ getFileName());
 		}
+	
 		return result;
 	}
 

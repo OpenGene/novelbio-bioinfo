@@ -11,8 +11,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 public class ArrayOperate {
-	
+	private static final Logger logger = Logger.getLogger(ArrayOperate.class);
 	
 	/**
 	 * 给定lsString，将lsString看作ArrayList-String[]，纵向将其合并为String[][]，也就是类似cbind
@@ -160,7 +162,7 @@ public class ArrayOperate {
 			String tmpKeyB = strings[BcolNum];
 			String[] tmpA = hashLsA.get(tmpKeyB.trim());
 			if (tmpA == null) {
-				System.out.println(tmpKeyB);
+				logger.error("no lsA element equals lsB: "+tmpKeyB);
 				continue;
 			}
 			String[] tmpResult = combArray(strings, tmpA, 0);
@@ -345,6 +347,34 @@ public class ArrayOperate {
 			lsResult.add(value);
 		}
 		return lsResult;
+	}
+	
+	/**
+	 * 复制数组
+	 * @param <T>
+	 * @param array
+	 * @return
+	 */
+	public static<T> T[] copyArray(T[] array) {
+		return copyArray(array, array.length);
+	}
+	/**
+	 * 复制数组
+	 * @param <T>
+	 * @param array
+	 * @param Length 将array的Length位复制给结果array，如果length > array.length，则延长结果array
+	 * @return
+	 * 最后生成Length长度的array
+	 */
+	public static<T> T[] copyArray(T[] array, int Length) {
+		T[] result=(T[]) Array.newInstance(array.getClass().getComponentType(), Length);
+		for (int i = 0; i < array.length; i++) {
+			if (i >= Length) {
+				continue;
+			}
+			result[i] = array[i];
+		}
+		return result;
 	}
 	
 }

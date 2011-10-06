@@ -9,9 +9,9 @@ public class test {
 	 */
 	public static void main(String[] args) {
 	 
-		//changPiixvName();
+		changPiixvName();
 		try {
-			compDon2Chan();
+//			compDon2Chan();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -41,7 +41,7 @@ public class test {
 		aaa.getcookies();
 		String ID="";
 		//aaa.execute(ID);
-		aaa.readfile("/home/zong0jie/×ÀÃæ/tmppicture/pixiv", "/home/zong0jie/Í¼Æ¬/My Pictures/¿¨Í¨/PixivPicture");
+		aaa.readfile("/Volumes/DATA/myData/Desktop/pixiv/picture", "/Volumes/DATA/myData/Pictures/Comic/pixiv_picture");
 	}
 	
 	private static void compDon2Chan() throws Exception {

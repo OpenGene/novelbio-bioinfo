@@ -2,7 +2,10 @@ package com.novelbio.analysis.annotation.copeID;
 
 import java.util.ArrayList;
 
+import com.novelbio.analysis.annotation.GO.goEntity.GOInfoAbs;
+import com.novelbio.analysis.annotation.GO.goEntity.GOInfoGenID;
 import com.novelbio.database.entity.friceDB.AgeneUniID;
+import com.novelbio.database.entity.friceDB.Gene2Go;
 
 public class CopedIDacc extends CopedIDAbs{
 	 
@@ -35,5 +38,11 @@ public class CopedIDacc extends CopedIDAbs{
 		return null;
 	}
 
+	@Override
+	protected void setGoInfo() {
+		
+	}
 
+	
+	
 }

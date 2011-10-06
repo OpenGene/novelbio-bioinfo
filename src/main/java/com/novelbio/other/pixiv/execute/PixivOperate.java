@@ -3,6 +3,7 @@ package com.novelbio.other.pixiv.execute;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -118,16 +119,20 @@ public class PixivOperate
  	   String name="";
  	   String houzhuiming="";
  	   String namep="";
+ 	   ArrayList<String[]> lsFile = FileOperate.getFoldFileName(filepath);
  	    int ID;//pixiv文件名
-        for (int i = 0; i < file.length; i++) 
+ 	    
+ 	    
+ 	    
+        for (int i = 0; i < lsFile.size(); i++) 
         {
-		   if (!file[i].contains("."))
+		   if (lsFile.get(i)[1] == null || lsFile.get(i)[1].trim().equals(""))
 		   {
 			  continue;
 		   }
-		   
+		   String oldFile = lsFile.get(i)[0]+"."+lsFile.get(i)[1];
 		 //获取文件名与后缀名
-		   matcher=pattern.matcher(file[i]);
+		   matcher=pattern.matcher(oldFile);
 		  if(matcher.find())
 		  {
 			  name=matcher.group(1);
@@ -175,7 +180,7 @@ public class PixivOperate
 		   filename[1]=filename[1].replace(">", "");
 		   filename[1]=filename[1].replace("|", "");
 		   
-		   String oldfilename=filepath+"/"+file[i];
+		   String oldfilename=filepath+"/"+oldFile;
 		   /////String newfilename=filename[0]+namep+"."+houzhuiming;
 		   //FileOperate.changeFileName(oldfilename, newfilename);//文件改名
 		   //FileOperate.moveFile(filepath+"/"+newfilename, newPath+"/"+filename[1]);//移动文件

@@ -1,5 +1,7 @@
 package com.novelbio.analysis.annotation.copeID;
 import java.util.ArrayList;
+
+import com.novelbio.analysis.annotation.GO.goEntity.GOInfoGenID;
 import com.novelbio.database.DAO.FriceDAO.DaoFSGeneInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
 import com.novelbio.database.entity.friceDB.AgeneUniID;
@@ -17,10 +19,10 @@ public class CopedIDgen extends CopedIDAbs{
 	 *            ŒÔ÷÷ID
 	 */
 	public CopedIDgen(String accID, String idType, String genUniID, int taxID) {
-		this.accID = accID;
-		this.genUniID = genUniID;
-		this.idType = idType;
-		this.taxID = taxID;
+		super.accID = accID;
+		super.genUniID = genUniID;
+		super.idType = idType;
+		super.taxID = taxID;
 	}
 	
 	@Override
@@ -28,7 +30,7 @@ public class CopedIDgen extends CopedIDAbs{
 		GeneInfo geneInfoq = new GeneInfo();
 		long geneID = Long.parseLong(getGenUniID());
 		geneInfoq.setGeneID(geneID);
-		geneInfo = DaoFSGeneInfo.queryGeneInfo(geneInfoq);
+		super.geneInfo = DaoFSGeneInfo.queryGeneInfo(geneInfoq);
 	}
 	
 	@Override
@@ -46,6 +48,11 @@ public class CopedIDgen extends CopedIDAbs{
 			return lsNcbiids.get(0);
 		}
 	}
+	
 
+	@Override
+	protected void setGoInfo() {
+		goInfoAbs = new GOInfoGenID(genUniID, taxID);
+	}
 
 }

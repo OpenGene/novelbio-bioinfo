@@ -3,6 +3,7 @@ package com.novelbio.database.entity.kegg;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.novelbio.database.DAO.KEGGDAO.DaoKPathway;
 import com.novelbio.database.entity.AbsPathway;
 
 public class KGpathway extends AbsPathway{
@@ -69,5 +70,32 @@ public class KGpathway extends AbsPathway{
 	{
 		this.linkUrl=linkUrl.trim();
 	}
+	/**
+	 * 存储Go2Term的信息
+	 * key:Go
+	 * value:GoInfo
+	 * 0:QueryGoID,1:GoID,2:GoTerm 3:GoFunction
+	 */
+	static HashMap<String, KGpathway> hashKGPath = new HashMap<String, KGpathway>();
 	
+	/**
+	 * 将所有GO信息提取出来放入hash表中，方便查找
+	 * 存储Go2Term的信息
+	 * key:GoID
+	 * value:GoInfo
+	 * 0:QueryGoID,1:GoID,2:GoTerm 3:GoFunction
+	 * 如果已经查过了一次，自动返回
+	 */
+	public static HashMap<String, KGpathway> getHashKGpath() {
+		if (hashKGPath != null && hashKGPath.size() > 0) {
+			return hashKGPath;
+		}
+		KGpathway kGpathway = new KGpathway();
+		ArrayList<KGpathway> lsKGpathways = DaoKPathway.queryLsKGpathways(kGpathway);
+		for (KGpathway kGpathway2 : lsKGpathways) 
+		{
+			hashKGPath.put(kGpathway2.getPathName(), kGpathway2);
+		}
+		return hashKGPath;
+	}
 }

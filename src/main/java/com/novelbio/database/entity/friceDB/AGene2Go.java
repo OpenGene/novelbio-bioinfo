@@ -48,10 +48,15 @@ public abstract class AGene2Go {
 	}
 	/**
 	 * 根据Go2Term进行了校正
+	 * 没有就返回null
 	 * @return
 	 */
 	public String getGOTerm() {
-		return getHashGo2Term().get(GOID).getGoTerm();
+		try {
+			return Go2Term.getHashGo2Term().get(GOID).getGoTerm();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
 	public void setGOTerm(String GOTerm) {
@@ -66,10 +71,16 @@ public abstract class AGene2Go {
 	}
 	/**
 	 * 根据Go2Term进行了校正
+	 * 没有就返回null
 	 * @return
 	 */
 	public String getFunction() {
-		return getHashGo2Term().get(GOID).getGoFunction();
+		try {
+			return Go2Term.getHashGo2Term().get(GOID).getGoFunction();
+		} catch (Exception e) {
+			return null;
+		}
+		
 	}
 	
 	public void setFunction(String function) {
@@ -83,34 +94,8 @@ public abstract class AGene2Go {
 		this.dataBase = dataBase;
 	}
 	
-	/**
-	 * 存储Go2Term的信息
-	 * key:Go
-	 * value:GoInfo
-	 * 0:QueryGoID,1:GoID,2:GoTerm 3:GoFunction
-	 */
-	static HashMap<String, Go2Term> hashGo2Term = new HashMap<String, Go2Term>();
+
 	
-	/**
-	 * 将所有GO信息提取出来放入hash表中，方便查找
-	 * 存储Go2Term的信息
-	 * key:GoID
-	 * value:GoInfo
-	 * 0:QueryGoID,1:GoID,2:GoTerm 3:GoFunction
-	 * 如果已经查过了一次，自动返回
-	 */
-	public static HashMap<String, Go2Term> getHashGo2Term() {
-		if (hashGo2Term != null && hashGo2Term.size() > 0) {
-			return hashGo2Term;
-		}
-		Go2Term go2Term = new Go2Term();
-		ArrayList<Go2Term> lsGo2Terms = DaoFSGo2Term.queryLsGo2Term(go2Term);
-		for (Go2Term go2Term2 : lsGo2Terms) 
-		{
-			hashGo2Term.put(go2Term2.getGoID(), go2Term2);
-		}
-		return hashGo2Term;
-	}
 	
 	/**
 	 * 只要两个gene2GO的geneID相同，就认为这两个NCBIID相同

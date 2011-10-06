@@ -5,12 +5,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.novelbio.analysis.annotation.GO.goEntity.GOInfoAbs;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
 import com.novelbio.database.DAO.FriceDAO.DaoFSTaxID;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
+import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.TaxInfo;
@@ -160,17 +162,31 @@ public class CopedID implements CopedIDInt{
 		return null;
 	}
 	
+	//////////////////  Blast setting  ///////////////////////////////////////////
+	@Override
+	public void setBlastLsInfo(double evalue, int... StaxID) {
+		copedID.setBlastLsInfo(evalue,StaxID);
+	}
 	
 	@Override
 	public BlastInfo setBlastInfo(int StaxID, double evalue) {
 		return copedID.setBlastInfo(StaxID, evalue);
 	}
-
-	@Override
-	public CopedID getBlastCopedID(int StaxID, double evalue) {
-		return copedID.getBlastCopedID(StaxID, evalue);
+	public ArrayList<BlastInfo> getLsBlastInfos()
+	{
+		return copedID.getLsBlastInfos();
 	}
-
+///////////////////////   获得blast  copedID  ///////////////////////////////////////////////////////////////////
+	
+	@Override
+	public CopedID getCopedIDBlast(int StaxID, double evalue) {
+		return copedID.getCopedIDBlast(StaxID, evalue);
+	}
+	@Override
+	public ArrayList<CopedID> getCopedIDLsBlast() {
+		return copedID.getCopedIDLsBlast();
+	}
+/////////////////////////  常规信息  //////////////////////////////////////////////////////////////
 	@Override
 	public String getIDtype() {
 		return copedID.getIDtype();
@@ -200,15 +216,7 @@ public class CopedID implements CopedIDInt{
 	public String getSymbo() {
 		return copedID.getSymbo();
 	}
-
-	@Override
-	public ArrayList<KegEntity> getKegEntity(boolean blast, int StaxID,
-			double evalue) {
-		return copedID.getKegEntity(blast, StaxID, evalue);
-	}
-
-
-
+	
 	@Override
 	public String getAccIDDBinfo(String dbInfo) {
 		return copedID.getAccIDDBinfo(dbInfo);
@@ -218,24 +226,23 @@ public class CopedID implements CopedIDInt{
 	public String[] getAnno(boolean blast, int StaxID, double evalue) {
 		return copedID.getAnno(blast, StaxID, evalue);
 	}
+/////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+////////////////////   KEGG    /////////////////////////////////////////////////////////
 	@Override
 	public KeggInfo getKeggInfo() {
 		return copedID.getKeggInfo();
 	}
-
 	@Override
-	public ArrayList<CopedID> getBlastLsCopedID() {
-		return copedID.getBlastLsCopedID();
-	}
-
-	@Override
-	public ArrayList<KGpathway> getBlastKegPath() {
-		return copedID.getBlastKegPath();
-	}
-
-	@Override
-	public ArrayList<KGpathway> getBlastKegPath(CopedID copedID) {
-		return copedID.getBlastKegPath(copedID);
+	public ArrayList<KGpathway> getKegPathBlast() {
+		return copedID.getKegPathBlast();
 	}
 
 	@Override
@@ -244,11 +251,26 @@ public class CopedID implements CopedIDInt{
 	}
 
 	@Override
-	public void setBlastLsInfo(double evalue, int... StaxID) {
-		copedID.setBlastLsInfo(evalue,StaxID);
+	public ArrayList<KegEntity> getKegEntity(boolean blast, int StaxID,
+			double evalue) {
+		return copedID.getKegEntity(blast, StaxID, evalue);
 	}
 
-	
+	//////////////  GO 方法  ///////////////////////
+	@Override
+	public ArrayList<AGene2Go> getGene2GO(String GOType) {
+		return copedID.getGene2GO(GOType);
+	}
+
+	protected GOInfoAbs getGOInfo() {
+		return copedID.getGOInfo();
+	}
+
+	@Override
+	public ArrayList<AGene2Go> getGene2GOBlast(String GOType) {
+		return copedID.getGene2GOBlast(GOType);
+	}
+
 	
 	
 	/////////////////////////////  static 方法  ////////////////////////////////////
@@ -333,6 +355,102 @@ public class CopedID implements CopedIDInt{
 		return hashResult;
 	}
 	
+////////   公有 GO 的处理   /////////////////////////////////////
+	/**
+	 * 将一系列CopedID中的GO整理成 genUniID goID,goID,goID.....的样式
+	 * 内部根据genUniID去重复
+	 * @param lsCopedIDs 一系列的copedID
+	 * @param GOType GOInfoAbs中的信息
+	 * @param blast 注意lsCopedID里面的copedID必须要先设定过setBlast才有用
+	 * @reture 没有则返回null
+	 */
+	public static ArrayList<String[]> getLsGoInfo(ArrayList<CopedID> lsCopedIDs, String GOType, boolean blast) {
+		if (lsCopedIDs == null || lsCopedIDs.size() == 0) {
+			return null;
+		}
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		HashSet<String> hashUniGenID = new HashSet<String>();
+		for (CopedID copedID : lsCopedIDs) {
+			///////    去重复     //////////////////////////////
+			if (hashUniGenID.contains(copedID.getGenUniID())) {
+				continue;
+			}
+			hashUniGenID.add(copedID.getGenUniID());
+			////////////////////////////////////////////////////////////
+			ArrayList<AGene2Go> lstmpgo;
+			if (blast) {
+				lstmpgo = copedID.getGene2GOBlast(GOType);
+			}
+			else {
+				lstmpgo = copedID.getGene2GO(GOType);
+			}
+			if (lstmpgo == null || lstmpgo.size() == 0) {
+				continue;
+			}
+			String[] strGene2Go = new String[2];
+			strGene2Go[0] = copedID.getGenUniID();
+			for (AGene2Go aGene2Go : lstmpgo) {
+				if (strGene2Go[1].equals("")) {
+					strGene2Go[1] = aGene2Go.getGOID();
+				}
+				else {
+					strGene2Go[1] = strGene2Go[1] + ","+aGene2Go.getGOID();
+				}
+			}
+			lsResult.add(strGene2Go);
+		}
+		return lsResult;
+	}
+	
+////////公有 KEGG 的处理   /////////////////////////////////////
+	/**
+	 * 将一系列CopedID中的KEGG整理成 genUniID PathID,pathID,pathID.....的样式
+	 * 内部根据genUniID去重复
+	 * @param lsCopedIDs 一系列的copedID
+	 * @param GOType GOInfoAbs中的信息
+	 * @param blast 注意lsCopedID里面的copedID必须要先设定过setBlast才有用
+	 * @reture 没有则返回null
+	 */
+	public static ArrayList<String[]> getLsPathInfo(ArrayList<CopedID> lsCopedIDs, boolean blast) {
+		if (lsCopedIDs == null || lsCopedIDs.size() == 0) {
+			return null;
+		}
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		HashSet<String> hashUniGenID = new HashSet<String>();
+		for (CopedID copedID : lsCopedIDs) {
+			///////    去重复     //////////////////////////////
+			if (hashUniGenID.contains(copedID.getGenUniID())) {
+				continue;
+			}
+			hashUniGenID.add(copedID.getGenUniID());
+			////////////////////////////////////////////////////////////
+			
+			ArrayList<KGpathway> lstmpgo;
+			if (blast) {
+				lstmpgo = copedID.getKegPathBlast();
+			}
+			else {
+				lstmpgo = copedID.getKegPath();
+			}
+			if (lstmpgo == null || lstmpgo.size() == 0) {
+				continue;
+			}
+			String[] strGene2Path = new String[2];
+			strGene2Path[0] = copedID.getGenUniID();
+			for (KGpathway kGpathway : lstmpgo) {
+				if (strGene2Path[1].equals("")) {
+					strGene2Path[1] = kGpathway.getPathName();
+				}
+				else {
+					strGene2Path[1] = strGene2Path[1] + ","+kGpathway.getPathName();
+				}
+			}
+			lsResult.add(strGene2Path);
+		}
+		return lsResult;
+	}
+	
+	
 /////////////////////// 私有 static 方法 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 给定一个accessID，如果该access是NCBIID，则返回NCBIID的geneID
@@ -411,7 +529,12 @@ public class CopedID implements CopedIDInt{
 		}
 		return hashTaxID;
 	}
-
+	
+	
+	
+	
+	
+	
 	/////////////////////////////  重写equals等  ////////////////////////////////////
 	/**
 	 * 只要两个ncbiid的geneID相同，就认为这两个NCBIID相同
@@ -472,5 +595,8 @@ public class CopedID implements CopedIDInt{
 		}
 		return hash.hashCode();
 	}
+
+
+
 	
 }

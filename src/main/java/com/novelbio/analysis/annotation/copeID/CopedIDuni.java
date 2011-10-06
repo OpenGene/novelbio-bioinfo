@@ -1,5 +1,7 @@
 package com.novelbio.analysis.annotation.copeID;
 import java.util.ArrayList;
+
+import com.novelbio.analysis.annotation.GO.goEntity.GOInfoUniID;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniGeneInfo;
 import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.AgeneUniID;
@@ -42,6 +44,10 @@ public class CopedIDuni extends CopedIDAbs{
 		else {
 			return lsuniProtIDs.get(0);
 		}
+	}
+	@Override
+	protected void setGoInfo() {
+		goInfoAbs = new GOInfoUniID(genUniID, taxID);
 	}
 
 }

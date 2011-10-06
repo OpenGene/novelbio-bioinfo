@@ -181,7 +181,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		HashMap<String, KGpathway> hashPath = new HashMap<String, KGpathway>();
 		for (KGentry kGentry : lsKGentries) {
 			KGpathway kGpathwayQ = new KGpathway(); kGpathwayQ.setPathName(kGentry.getPathName());
-			KGpathway kGpathway = DaoKPathway.queryKGpathway(kGpathwayQ);
+			KGpathway kGpathway = KGpathway.getHashKGpath().get(kGentry.getPathName());//DaoKPathway.queryKGpathway(kGpathwayQ);
 			hashPath.put(kGpathway.getPathName(), kGpathway);
 		}
 		return ArrayOperate.getArrayListValue(hashPath);
