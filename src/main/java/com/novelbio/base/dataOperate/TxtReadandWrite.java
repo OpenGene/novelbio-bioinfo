@@ -158,7 +158,7 @@ public class TxtReadandWrite {
 			lsResult.add(content);
 			rownum ++;
 		}
-		clone();
+		close();
 		return lsResult;
 	}
 	

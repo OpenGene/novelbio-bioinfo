@@ -376,5 +376,36 @@ public class ArrayOperate {
 		}
 		return result;
 	}
-	
+	/**
+	 * 复制数组
+	 * @param <T>
+	 * @param array
+	 * @param Length 将array的Length位复制给结果array，如果Length > array.length，则延长结果array
+	 * @param 最后复制靠前还是靠后，靠前 infoXXX，靠后XXXinfo
+	 * @return
+	 * 最后生成Length长度的array
+	 */
+	public static<T> T[] copyArray(T[] array, int Length,boolean start) {
+		T[] result=(T[]) Array.newInstance(array.getClass().getComponentType(), Length);
+		if (start) {
+			for (int i = 0; i < array.length; i++) {
+				if (i >= Length) {
+					continue;
+				}
+				result[i] = array[i];
+			}
+		}
+		else
+		{
+			int j = 0;
+			for (int i = array.length - 1; i >= 0; i--) {
+				j ++;
+				if (j >= Length) {
+					continue;
+				}
+				result[i] = array[i];
+			}
+		}
+		return result;
+	}
 }
