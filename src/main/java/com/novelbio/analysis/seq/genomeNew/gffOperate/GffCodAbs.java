@@ -66,6 +66,9 @@ public abstract class GffCodAbs<T extends GffDetailAbs> {
 	 * @return
 	 */
 	public boolean isInsideUp() {
+		if (gffDetailUp == null) {
+			return false;
+		}
 		return gffDetailUp.isCodInGene();
 	}
 	/**
@@ -73,6 +76,9 @@ public abstract class GffCodAbs<T extends GffDetailAbs> {
 	 * @return
 	 */
 	public boolean isInsideDown() {
+		if (gffDetailDown == null) {
+			return false;
+		}
 		return gffDetailDown.isCodInGene();
 	}
 	/**

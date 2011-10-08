@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.generalConf.Species;
 
@@ -68,7 +69,10 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 	public GffDetailGene searchLOC(String LOCID) {
 		return gffHashGene.searchLOC(LOCID);
 	}
-
+	@Override
+	public GffDetailGene searchLOC(CopedID copedID) {
+		return gffHashGene.searchLOC(copedID);
+	}
 	@Override
 	public GffDetailGene searchLOC(String chrID, int LOCNum) {
 		return gffHashGene.searchLOC(chrID, LOCNum);

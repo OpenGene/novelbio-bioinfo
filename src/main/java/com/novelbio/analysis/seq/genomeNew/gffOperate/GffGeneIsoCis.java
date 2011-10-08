@@ -20,7 +20,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	private static final Logger logger = Logger.getLogger(GffGeneIsoCis.class);
 
 	public GffGeneIsoCis(String IsoName, GffDetailGene gffDetailGene) {
-		super(IsoName, true, gffDetailGene);
+		super(IsoName, gffDetailGene);
 	}
 
 	
@@ -411,4 +411,24 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		}
 		return TUTR;
 	}
+
+
+	@Override
+	public GffGeneIsoCis clone() {
+		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis(IsoName, gffDetailGene);
+		gffGeneIsoCis.ATGsite = ATGsite;
+		gffGeneIsoCis.gffDetailGene = gffDetailGene;
+		gffGeneIsoCis.setCoord(getCoord());
+		return gffGeneIsoCis;
+	}
+
+
+	@Override
+	public boolean isCis5to3() {
+		return true;
+	}
+	
+	
+	
+	
 }

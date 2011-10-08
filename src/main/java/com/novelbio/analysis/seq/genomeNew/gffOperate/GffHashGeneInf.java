@@ -2,6 +2,8 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.novelbio.analysis.annotation.copeID.CopedID;
 /**
  * 将GffHash和GffHashGene的方法全部列在了这里
  * @author zong0jie
@@ -59,5 +61,12 @@ public interface GffHashGeneInf  {
 	 * 1:该染色体上该LOC的序号，如1467等
 	 */
 	public String[] getLOCNum(String LOCID);
+	/**
+	 * 输入CopedID，返回基因的坐标信息等
+	 * @param copedID 
+	 * @return
+	 * 没有就返回null
+	 */
+	GffDetailGene searchLOC(CopedID copedID);
 
 }

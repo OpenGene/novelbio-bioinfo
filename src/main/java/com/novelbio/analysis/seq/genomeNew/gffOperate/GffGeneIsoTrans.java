@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	private static final Logger logger = Logger.getLogger(GffGeneIsoTrans.class);
 	public GffGeneIsoTrans(String IsoName, GffDetailGene gffDetailGene) {
-		super(IsoName, false, gffDetailGene);
+		super(IsoName, gffDetailGene);
 	}
 	@Override
 	protected void setCod2ExInStartEnd() {

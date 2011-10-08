@@ -101,7 +101,7 @@ public abstract class GffCodAbsDu<T extends GffDetailAbs, K extends GffCodAbs<T>
 		return gffCod1;
 	}
 	/**
-	 * 返回左端的GffCod，覆盖成相应的GffCod类
+	 * 返回右端的GffCod，覆盖成相应的GffCod类
 	 * @return
 	 */
 	public K getGffCodRight()
@@ -116,7 +116,29 @@ public abstract class GffCodAbsDu<T extends GffDetailAbs, K extends GffCodAbs<T>
 	{
 		return lsgffDetailsMid;
 	}
-	
+	/**
+	 * 返回全部包含的gffDetail信息
+	 * @return
+	 */
+	public ArrayList<T> getAllGffDetail() {
+		ArrayList<T> lsGffDetailAll = new ArrayList<T>();
+		if (getGffCodLeft() != null && getGffCodLeft().isInsideLoc()) {
+			if (getGffCodLeft().isInsideUp())
+				lsGffDetailAll.add(getGffCodLeft().getGffDetailUp());
+			lsGffDetailAll.add(getGffCodLeft().getGffDetailThis());
+		}
+		if (lsgffDetailsMid != null) {
+			for (T t : lsgffDetailsMid) {
+				lsGffDetailAll.add(t);
+			}
+		}
+		if (getGffCodRight() != null && getGffCodRight().isInsideLoc()) {
+			if (getGffCodRight().isInsideDown())
+				lsGffDetailAll.add(getGffCodRight().getGffDetailDown());
+			lsGffDetailAll.add(getGffCodRight().getGffDetailThis());
+		}
+		return lsGffDetailAll;
+	}
 	/**
 	 * 双坐标查找 输入相关的GffHash类，然后填充相关信息<br>
 	 */

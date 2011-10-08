@@ -134,7 +134,7 @@ public abstract class GffGeneIsoInfo {
 	
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
 	
-	public GffGeneIsoInfo(String IsoName,boolean cis5to3, GffDetailGene gffDetailGene) {
+	public GffGeneIsoInfo(String IsoName, GffDetailGene gffDetailGene) {
 		this.IsoName = IsoName;
 		this.coord = gffDetailGene.getCoord();
 		if (this.coord > GffCodAbs.LOC_ORIGINAL) {
@@ -157,10 +157,7 @@ public abstract class GffGeneIsoInfo {
 	public GffDetailGene getThisGffDetailGene() {
 		return gffDetailGene;
 	}
-	boolean cis5to3 = true;
-	public boolean isCis5to3() {
-		return cis5to3;
-	}
+	public abstract boolean isCis5to3();
 	protected boolean mRNA = true;
 	/**
 	 * 是否是mRNA有atg和uag，
@@ -493,6 +490,7 @@ public abstract class GffGeneIsoInfo {
 		return coord;
 	}
 	public void setCoord(int coord) {
+	
 		this.coord = coord;
 		searchCoord();
 	}
@@ -582,11 +580,13 @@ public abstract class GffGeneIsoInfo {
 	public int getCod2TESmRNA() {
 		return cod2TESmRNA;
 	}
+
 	
 	/**
 	 */
 	private void searchCoord()
 	{
+		init();
 		codSearchNum();
 		if (codLocUTR == COD_LOCUTR_5UTR) {
 			setCod2UTR5();
@@ -599,7 +599,28 @@ public abstract class GffGeneIsoInfo {
 			setCod2StartEndCDS();
 		}
 	}
-
+	/**
+	 * 初始化变量
+	 */
+	private void init()
+	{
+		 coord = GffCodAbs.LOC_ORIGINAL;
+		 cod2TSS = GffCodAbs.LOC_ORIGINAL;
+		 cod2TES = GffCodAbs.LOC_ORIGINAL;
+		 cod2TSSmRNA = GffCodAbs.LOC_ORIGINAL;
+		 cod2TESmRNA = GffCodAbs.LOC_ORIGINAL;
+		 cod2ATGmRNA= GffCodAbs.LOC_ORIGINAL;
+		 cod2UAGmRNA = GffCodAbs.LOC_ORIGINAL;
+		 cod2ExInStart = GffCodAbs.LOC_ORIGINAL;
+		 cod2ExInEnd = GffCodAbs.LOC_ORIGINAL;
+		 cod2ATG = GffCodAbs.LOC_ORIGINAL;
+		 cod2UAG = GffCodAbs.LOC_ORIGINAL;
+		 numExIntron = -1;
+		 codLocUTR = COD_LOCUTR_OUT;
+		 cod2UTRstartmRNA = GffCodAbs.LOC_ORIGINAL;
+		 cod2UTRendmRNA = GffCodAbs.LOC_ORIGINAL;
+		 codLoc = 0;
+	}
 	/**
 	 * 第一个计算的，计算坐标与本 外显子/内含子 的 起点/终点 的距离
 	 */
@@ -900,4 +921,7 @@ public abstract class GffGeneIsoInfo {
 			return null;
 		}
 	}
+	
+	
+	public abstract GffGeneIsoInfo clone();
 }

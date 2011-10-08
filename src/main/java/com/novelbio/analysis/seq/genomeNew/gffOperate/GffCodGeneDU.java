@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.novelbio.analysis.annotation.copeID.CopedID;
+
 public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 
 	public GffCodGeneDU(ArrayList<GffDetailGene> lsgffDetail,
@@ -145,6 +147,30 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			return true;
 		}
 		return false;
-	}	
+	}
+	/**
+	 * 返回所有覆盖到的基因的copedID
+	 * @return
+	 */
+	public ArrayList<CopedID> getAllCoveredGenes() {
+		ArrayList<GffDetailGene> lsGenes = getAllGffDetail();
+		//用来去冗余的
+		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
+		ArrayList<CopedID> lsCopedIDs = new ArrayList<CopedID>();
+		for (GffDetailGene gffDetailGene : lsGenes) {
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				//看是否真正的落在该基因内部
+				if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
+					CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), gffDetailGene.getTaxID(), false);
+					if (hashCopedID.contains(copedID)) {
+						continue;
+					}
+					hashCopedID.add(copedID);
+					lsCopedIDs.add(copedID);
+				}
+			}
+		}
+		return lsCopedIDs;
+	}
 	
 }

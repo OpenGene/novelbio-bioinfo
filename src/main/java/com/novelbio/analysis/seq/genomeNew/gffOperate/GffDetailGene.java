@@ -57,6 +57,9 @@ public class GffDetailGene extends GffDetailAbs
 	protected void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
+	public int getTaxID() {
+		return taxID;
+	}
 	/**
 	 * 顺序存储每个转录本的的坐标情况
 	 */

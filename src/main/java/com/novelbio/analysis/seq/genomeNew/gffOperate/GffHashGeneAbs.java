@@ -46,6 +46,18 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 		return gffDetailGene;
 	}
 	/**
+	 * 输入CopedID，返回基因的坐标信息等
+	 * @param copedID 
+	 * @return
+	 * 没有就返回null
+	 */
+	public GffDetailGene searchLOC(CopedID copedID) {
+		String locID = getHashGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
+		return super.searchLOC(locID);
+	}
+	
+	
+	/**
 	 * 	返回外显子总长度，内含子总长度等信息，只统计最长转录本的信息
 	 * 有问题
 	 * 为一个ArrayList-Integer
