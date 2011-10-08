@@ -112,11 +112,11 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			blastInfoTmp.setEvalue(evalue);
 			blastInfoTmp.setQueryID(genUniID);
 			blastInfoTmp.setSubjectTax(i);
-			lsBlastInfos = DaoFSBlastInfo.queryLsBlastInfo(blastInfoTmp);
-			if (lsBlastInfos != null && lsBlastInfos.size() > 0) 
+			ArrayList<BlastInfo> lsBlastInfosTmp = DaoFSBlastInfo.queryLsBlastInfo(blastInfoTmp);
+			if (lsBlastInfosTmp != null && lsBlastInfosTmp.size() > 0) 
 			{
-				Collections.sort(lsBlastInfos);//排序选择最小的一项
-				BlastInfo blastInfo = lsBlastInfos.get(0);
+				Collections.sort(lsBlastInfosTmp);//排序选择最小的一项
+				BlastInfo blastInfo = lsBlastInfosTmp.get(0);
 				lsBlastInfos.add(blastInfo);
 			}
 		}

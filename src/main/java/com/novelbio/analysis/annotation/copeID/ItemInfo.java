@@ -5,5 +5,8 @@ package com.novelbio.analysis.annotation.copeID;
  *
  */
 public interface ItemInfo {
+	/**
+	 * Fisher检验时候用的东西
+	 */
 	public String[] getItemName(String ItemID);
 }

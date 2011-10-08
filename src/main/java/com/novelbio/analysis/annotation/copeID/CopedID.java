@@ -272,7 +272,44 @@ public class CopedID implements CopedIDInt{
 	}
 
 	
-	
+	/**
+	 * 获得该copedID的annotation信息
+	 * @param copedID
+	 * @param blast
+	 * @return
+	 * 	 * blast：<br>
+	 * 			title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";<br>
+	 * title2[3]="Evalue";
+	 * title2[4]="subjectSymbol";
+			title2[5]="Description";<br>
+			不blast：<br>
+						title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";<br>
+	 */
+	public String[] getAnnoInfo(boolean blast) {
+		String[] tmpresult = null;
+		if (blast)
+			tmpresult = new String[6];
+		else
+			tmpresult = new String[3];
+		tmpresult[0] = copedID.getAccID(); tmpresult[1] = copedID.getSymbo(); tmpresult[2] = copedID.getDescription();
+		if (blast) {
+			if (copedID.getCopedIDLsBlast() != null && copedID.getLsBlastInfos() != null && copedID.getLsBlastInfos().size() > 0) {
+				for (int i = 0; i < copedID.getLsBlastInfos().size(); i++) {
+					if (tmpresult[3] == null || tmpresult[3].trim().equals("")) {
+						tmpresult[3] = copedID.getLsBlastInfos().get(i).getEvalue() + "";
+						tmpresult[4] = copedID.getCopedIDLsBlast().get(i).getSymbo();
+						tmpresult[5] = copedID.getCopedIDLsBlast().get(i).getDescription();
+					}
+					else {
+						tmpresult[3] = tmpresult[3] + "//" + copedID.getLsBlastInfos().get(i).getEvalue();
+						tmpresult[4] = tmpresult[4] + "//" + copedID.getCopedIDLsBlast().get(i).getSymbo();
+						tmpresult[5] = tmpresult[5] + "//" + copedID.getCopedIDLsBlast().get(i).getDescription();
+					}
+				}
+			}
+		}
+		return tmpresult;
+	}
 	/////////////////////////////  static 方法  ////////////////////////////////////
 	/**
 	 * blast的结果可能类似dbj|AK240418.1|
@@ -407,7 +444,7 @@ public class CopedID implements CopedIDInt{
 	 * 将一系列CopedID中的KEGG整理成 genUniID PathID,pathID,pathID.....的样式
 	 * 内部根据genUniID去重复
 	 * @param lsCopedIDs 一系列的copedID
-	 * @param GOType GOInfoAbs中的信息
+	 * @param GoType GOInfoAbs中的信息
 	 * @param blast 注意lsCopedID里面的copedID必须要先设定过setBlast才有用
 	 * @reture 没有则返回null
 	 */

@@ -1,7 +1,9 @@
 package com.novelbio.analysis.annotation.GO;
 
 import java.io.BufferedReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -32,6 +34,7 @@ import com.novelbio.database.entity.kegg.KGpathway;
 /**
  * service 层，实现GO的fisher检验
  * 包括常规Fisher和elimFisher
+ * 同时还实现了Pathway
  * @author zong0jie
  *
  */
@@ -46,6 +49,7 @@ public class GoFisher {
 		this.lsCopedIDsBG = lsCopedIDsBG;
 		this.blast = blast;
 		this.GOType = GOtype;
+		fillCopedIDInfo();
 	}
 	
 	public GoFisher(boolean blast, String GOtype)
@@ -127,9 +131,9 @@ public class GoFisher {
 	 * @return
 	 */
 	public ArrayList<String[]> getResult(String Type) {
-		ArrayList<String[]> lsTest = null;
+		ArrayList<String[]> lsTestResult = null;
 		try {
-			lsTest = normalTest(Type);
+			lsTestResult = normalTest(Type);
 		} catch (Exception e) {
 			logger.error("error");
 		}
@@ -143,17 +147,15 @@ public class GoFisher {
 		}
 		ArrayList<String[]> lsResult = null;
 		if (blast) {
-			 lsResult = ArrayOperate.combArrayListHash(lsTest, lsAnno, 0, 6);
+			 lsResult = ArrayOperate.combArrayListHash(lsTestResult, lsAnno, 0, 6);
 		}
 		else {
-			 lsResult = ArrayOperate.combArrayListHash(lsTest, lsAnno, 0, 3);
+			 lsResult = ArrayOperate.combArrayListHash(lsTestResult, lsAnno, 0, 3);
 		}
 		return lsResult;
 		
 	}
-	
-	
-	
+
 	/**
 	 * 指定算go还是pathway
 	 * @return 结果没加标题<br>
@@ -269,21 +271,21 @@ public class GoFisher {
 			ArrayList<AGene2Go> lsGen2Go = null;
 			//获得具体的GO信息
 			if (blast)
-				lsGen2Go = copedID.getGene2GO(GOType);
+				lsGen2Go = copedID.getGene2GOBlast(GOType);
 			else
 				lsGen2Go = copedID.getGene2GO(GOType);
 			if (lsGen2Go == null || lsGen2Go.size() == 0) {
 				continue;
 			}
 			//GO前面的常规信息的填充,Symbol和description等
-			String[] tmpresult = getAnnoInfo(copedID, blast);
+			String[] tmpresult = copedID.getAnnoInfo(blast);
 			//GO信息的填充
 			for (AGene2Go aGene2Go : lsGen2Go) {
 				String[] result = null;
 				if (blast)
-					result = ArrayOperate.copyArray(tmpresult, 9);
+					result = Arrays.copyOf(tmpresult, 9);//ArrayOperate.copyArray(tmpresult, 9);
 				else
-					result = ArrayOperate.copyArray(tmpresult, 6);
+					result = Arrays.copyOf(tmpresult, 6);
 				result[result.length -1] = aGene2Go.getEvidence();
 				result[result.length -2] = aGene2Go.getGOTerm();
 				result[result.length -3] =aGene2Go.getGOID();
@@ -315,7 +317,7 @@ public class GoFisher {
 				continue;
 			}
 			//GO前面的常规信息的填充,Symbol和description等
-			String[] tmpresult = getAnnoInfo(copedID, blast);
+			String[] tmpresult = copedID.getAnnoInfo(blast);
 			//GO信息的填充
 			for (KGpathway kGpathway : lsKgPathway) {
 				String[] result = null;
@@ -329,44 +331,6 @@ public class GoFisher {
 			}
 		}
 		return lsFinal;
-	}
-	/**
-	 * 获得该copedID的annotation信息
-	 * @param copedID
-	 * @param blast
-	 * @return
-	 * 	 * blast：<br>
-	 * 			title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";<br>
-	 * title2[3]="Evalue";
-	 * title2[4]="subjectSymbol";
-			title2[5]="Description";<br>
-			不blast：<br>
-						title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";<br>
-	 */
-	private String[] getAnnoInfo(CopedID copedID, boolean blast) {
-		String[] tmpresult = null;
-		if (blast)
-			tmpresult = new String[6];
-		else
-			tmpresult = new String[3];
-		tmpresult[0] = copedID.getAccID(); tmpresult[1] = copedID.getSymbo(); tmpresult[2] = copedID.getDescription();
-		if (blast) {
-			if (copedID.getCopedIDLsBlast() != null && copedID.getLsBlastInfos() != null && copedID.getLsBlastInfos().size() > 0) {
-				for (int i = 0; i < copedID.getLsBlastInfos().size(); i++) {
-					if (tmpresult[3].trim().equals("")) {
-						tmpresult[3] = copedID.getLsBlastInfos().get(i).getEvalue() + "";
-						tmpresult[4] = copedID.getCopedIDLsBlast().get(i).getSymbo();
-						tmpresult[5] = copedID.getCopedIDLsBlast().get(i).getDescription();
-					}
-					else {
-						tmpresult[3] = tmpresult[3] + "//" + copedID.getLsBlastInfos().get(i).getEvalue();
-						tmpresult[4] = tmpresult[4] + "//" + copedID.getCopedIDLsBlast().get(i).getSymbo();
-						tmpresult[5] = tmpresult[5] + "//" + copedID.getCopedIDLsBlast().get(i).getDescription();
-					}
-				}
-			}
-		}
-		return tmpresult;
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Elim Fisher //////////////////////////////////////////////////////////////////
@@ -497,297 +461,48 @@ public class GoFisher {
 						title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";title2[3]="GOID";<br>
 			title2[4]="GOTerm";title2[5]="Evidenc<br>
 	 */
-	public static ArrayList<ArrayList<String[]>> getElimFisher(String condition, ArrayList<String[]>  lsAccID,ArrayList<ArrayList<String[]>> lsBGGenGoInfo,String GOClass, boolean sepID,int QtaxID,boolean blast, int StaxID,double evalue,int NumGOID) throws Exception
+	public ArrayList<ArrayList<String[]>> getElimFisher(int NumGOID) throws Exception
 	{
-		
 		//获得差异基因列表，geneInfo列表
-		String[] strGeneID = null;
-		ArrayList<ArrayList<String[]>> lsGenGoInfo = QgeneID2Go.getGenGoInfo(lsAccID, QtaxID, GOClass, sepID, blast, evalue, StaxID);
-		ArrayList<String[]> lsGeneInfo = lsGenGoInfo.get(0); //gene总体信息
-		ArrayList<String[]> lsGene2Go = lsGenGoInfo.get(1);//gene go,go,go信息
-		ArrayList<String[]> lsGo2Gene = null;//Go2Gene的信息，仅在blast时才有用
-		strGeneID = new String[lsGene2Go.size()];//用于elim检验
-		for (int i = 0; i < strGeneID.length; i++) {
-			strGeneID[i] = lsGene2Go.get(i)[0];
-		}
-		///////////////保存每个基因对应的具体信息，这样就不用去数据库搜索了/////////////
-		Hashtable<String, String[]> hashGeneInfo = new Hashtable<String, String[]>();
-		if (sepID) {
-			for (String[] string : lsGeneInfo) {
-				hashGeneInfo.put(string[0], string);
-			}
-		}
-		else {
-			for (String[] string : lsGeneInfo) {
-				hashGeneInfo.put(string[1], string);
-			}
-		}
-		/////////////////////////////////////////////////////////////////////////////////////////////
-		if (blast) {
-			lsGo2Gene = lsGenGoInfo.get(2); //这个只有在NBCfisher中才会使用
-		}
-		
-		
-		ArrayList<String[]> lsBGGene2Go = lsBGGenGoInfo.get(1);//gene go,go,go信息
-		
-		
-		/////////////////////////topGo的参数///////////////////////
-		TxtReadandWrite txtParam = new TxtReadandWrite();
-		txtParam.setParameter(NovelBioConst.R_WORKSPACE_TOPGO_PARAM, true, false);
-		String content = "";
-		if (GOClass.equals(GOInfoAbs.GO_BP)) 
-			content = "BP";
-		else if (GOClass.equals(GOInfoAbs.GO_MF)) 
-			content = "MF";
-		else if (GOClass.equals(GOInfoAbs.GO_CC)) 
-			content = "CC";
-		
-		else if (GOClass.equals("")) {
-			content = "BP";
-		}
-		content =content + " "+NovelBioConst.R_WORKSPACE_TOPGO_GORESULT+" "+ NumGOID + " " + NovelBioConst.R_WORKSPACE_TOPGO_GOINFO;
-		txtParam.writefile(content);
-		txtParam.close();
-		/////////////////////////TopGo的BG///////////////////////
-		TxtReadandWrite txtTopGoBG = new TxtReadandWrite();
-		txtTopGoBG.setParameter(NovelBioConst.R_WORKSPACE_TOPGO_BGGeneGo, true, false);
-		txtTopGoBG.ExcelWrite(lsBGGene2Go, "\t", 1, 1);
-
-		txtTopGoBG.close();
-		///////////////TopGo的待分析geneID/////////////////////////////////////////////
-		TxtReadandWrite txtGenID= new TxtReadandWrite();
-		txtGenID.setParameter(NovelBioConst.R_WORKSPACE_TOPGO_GENEID, true, false);
-		txtGenID.Rwritefile(strGeneID);
-		txtTopGoBG.close();
-		//////////////////////////////////////////////////////////////////////
-		RElimFisher();
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, 
-				FileOperate.getParentPathName(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP), FileOperate.getFileName(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP)+condition,true);
-		//GOID对应GeneID的hash表
-		Hashtable<String,ArrayList<String>> hashGO2Gene = getGo2GeneBG( NovelBioConst.R_WORKSPACE_TOPGO_GOINFO);
-		ArrayList<String> lsGeneID = new ArrayList<String>();
-		for (int i = 0; i < strGeneID.length; i++) {
-			lsGeneID.add(strGeneID[i]);
-		}
-		ArrayList<String[]> lsResultTable = getElimFisherTable(NovelBioConst.R_WORKSPACE_TOPGO_GORESULT);
-		
-		
-		
-		//////////////////////将结果中的每一个GO都获得其相应的Gene并在arrayList中保存/////////////////////////////////////////////
-		/**
-		 * 0:GOID
-		 * 1:GOTerm
-		 * 2:AccID
-		 * 3:Symbol/accID
-		 */
-		ArrayList<String[]> lsGO2GeneInfo = new ArrayList<String[]>();
-		for (int i = 1; i < lsResultTable.size(); i++) 
-		{
-			//某个GO中所含有的所有背景基因
-			ArrayList<String> lsTmpGeneID = hashGO2Gene.get(lsResultTable.get(i)[0]);
-			//获得某个GO中所含有的所有差异基因
-			ArrayList<String> lsCoGeneID = ArrayOperate.getCoLs(lsTmpGeneID, lsGeneID);
-			for (String string : lsCoGeneID)
-			{
-				String[] strTmpGo2Gene = new String[4];//将GO2Gene装入结果文件。
-				strTmpGo2Gene[0] = lsResultTable.get(i)[0];strTmpGo2Gene[1] = lsResultTable.get(i)[1]; strTmpGo2Gene[2] = string;
-				strTmpGo2Gene[3] = hashGeneInfo.get(string)[2];//geneSymbol
-				lsGO2GeneInfo.add(strTmpGo2Gene);
-			}
-		}
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		ArrayList<String[]> lsGoResult = ArrayOperate.combArrayListHash(lsResultTable, lsGO2GeneInfo, 1, 1);
-		
-		int[] colNum = new int[6]; //除去title[0]="GOID";title[1]="GOTerm";title[2]="difGene";title[3]="AllDifGene";title[4]="GeneInGoID";title[5]="AllGene";title[6]="Pvalue";title[7]="FDR";title[8]="enrichment";title[9]="(-log2P)";
-		colNum[0] = lsGO2GeneInfo.get(0).length+0;colNum[1] = lsGO2GeneInfo.get(0).length+1;colNum[2] = lsGO2GeneInfo.get(0).length+2;
-		colNum[3] = lsGO2GeneInfo.get(0).length+3;colNum[4] = lsGO2GeneInfo.get(0).length+4;colNum[5] = lsGO2GeneInfo.get(0).length+5;
-		
-		lsGoResult = ArrayOperate.listCope(lsGoResult, colNum, false);
-		final int colPvalue = lsGoResult.get(0).length-4;//pvalue那一列
-		//排序
-        Collections.sort(lsGoResult,new Comparator<String[]>(){
-            public int compare(String[] arg0, String[] arg1) {
-            	Double a=Double.parseDouble(arg0[colPvalue].replace("<", "")); Double b=Double.parseDouble(arg1[colPvalue].replace("<", ""));
-                return a.compareTo(b);
-            }
-        });
-        
-        ArrayList<String[]> lsGoResultFinal = CopeID.copeCombineID(condition,lsGoResult, 2, 2, sepID);
-        ArrayList<String[]> lsGeneInfoFinal = CopeID.copeCombineID(condition,lsGeneInfo, 1, 0, sepID);
-        
-		 ////////////////////////////////////////加标题////////////////////////////////////////////////////
-    	String[] title=new String[8];
-		title[0]="GOID";title[1]="GOTerm";title[2]="AccessID";title[3]="GeneSymbol";
-		title[4]="P-Value";title[5]="FDR";title[6]="Enrichment";title[7]="(-log2P)";
-		lsGoResultFinal.add(0,title);
-		/////////////////////////////////////////////////////////////////////////////////////
-		if (blast) {
-			int[] colDel = new int[3]; 
-			colDel[0] = 1; colDel[1] = 8; colDel[2] = 9; 
-			lsGeneInfoFinal = ArrayOperate.listCope(lsGeneInfoFinal, colDel, false);
-		        
-			String[] title2=new String[12];
-			title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";title2[3]="GOID";
-			title2[4]="GOTerm";title2[5]="Evidence";title2[6]="Evalue";title2[7]="subjectSymbol";
-			title2[8]="Description";title2[9]="GOID";title2[10]="GOTerm";title2[11]="Evidence";
-			lsGeneInfoFinal.add(0,title2);
-		}
-		else {
-			int[] colDel = new int[1]; 
-			colDel[0] = 1;
-			lsGeneInfoFinal = ArrayOperate.listCope(lsGeneInfoFinal, colDel, false);
-			
-			String[] title2=new String[12];
-			title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";title2[3]="GOID";
-			title2[4]="GOTerm";title2[5]="Evidence";
-			lsGeneInfoFinal.add(0,title2);
-		}
-		////////////////////////////////////////////////////////////////////////////////////
-		ArrayList<ArrayList<String[]>> lsResult = new ArrayList<ArrayList<String[]>>();
-		lsResult.add(lsResultTable);
-		lsResult.add(lsGoResultFinal);
-		lsResult.add(lsGeneInfoFinal);
-		return lsResult;
-	}
-	/**
-	 * 生成的gomap图重命名为NovelBioConst.R_WORKSPACE_TOPGO_GOMAP+condition
-	 * @param condition 是分析哪个时期的信息 譬如上调，下调 或 背景，要和前面对应
-	 * @param lsAccID 经过整理的accID<br>
-	 * * arraylist-string[3]<br>
-0: ID类型："geneID"或"uniID"或"accID"<br>
-1: accID<br>
-2: 具体转换的ID
-	 * @param lsBGAccID 经过整理的BG的accID<br>
-	 * * arraylist-string[3]<br>
-0: ID类型："geneID"或"uniID"或"accID"<br>
-1: accID<br>
-2: 具体转换的ID
-	 * @param GOClass Go的类型 P: biological Process F:molecular Function C: cellular Component 如果GOClass为""那么背景产生全部，但是分析时按照BP进行，不过结果会有问题。
-	 * 所以""仅仅是为了产生背景而使用
-	 * @param sepID 
-	 * @param QtaxID
-	 * @param blast
-	 * @param StaxID
-	 * @param evalue
-	 * @param NumGOID 最后显示多少个GO
-	 * @throws Exception
-	 * @return 三个list
-	 * 第一个 lsResultTable,Go富集分析的结果表格<br>
-	 * 0: GOID<br>
-1: GOTerm<br>
-2:"Significant"<br>
-3:"allNumSig"<br>
-4:"Annotated"<br>
-5:"allNumBG"<br>
-6:"pvalue"<br>
-7:"fdr"<br>
-8:"foldEnrichment"<br>
-9:"logP"<br>
-	 * 第二个lsGoResultFinal Go富集分析的Go2gene表格<br>
-	 * 	title[0]="GOID";title[1]="GOTerm";title[2]="AccessID";title[3]="GeneSymbol";<br>
-		title[4]="P-Value";title[5]="FDR";title[6]="Enrichment";title[7]="(-log2P)<br>
-	 * 第三个lsGeneInfoFinal Go富集分析的gene2Go表格<br>
-	 * blast：<br>
-	 * 			title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";title2[3]="GOID";<br>
-			title2[4]="GOTerm";title2[5]="Evidence";title2[6]="Evalue";title2[7]="subjectSymbol";<br>
-			title2[8]="Description";title2[9]="GOID";;title2[10]="GOTerm";title2[11]="Evide<br>
-			不blast：<br>
-						title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";title2[3]="GOID";<br>
-			title2[4]="GOTerm";title2[5]="Evidenc<br>
-	 */
-	public ArrayList<ArrayList<String[]>> getElimFisher(String condition, ArrayList<String[]>  lsAccID,ArrayList<String[]> lsBGGenGoInfo,String GOClass,int QtaxID,boolean blast, int StaxID,double evalue,int NumGOID) throws Exception
-	{
-		
-		//获得差异基因列表，geneInfo列表
-		String[] strGeneID = null;
-//		ArrayList<ArrayList<String[]>> lsGenGoInfo = QgeneID2Go.getGenGoInfo(lsAccID, QtaxID, GOClass, sepID, blast, evalue, StaxID);
-		ArrayList<String[]> lsGeneInfo = getGO2Info(GOClass);
-//		ArrayList<String[]> lsGene2Go = lsGenGoInfo.get(1);//gene go,go,go信息
-		ArrayList<String[]> lsGo2Gene = null;//Go2Gene的信息，仅在blast时才有用
-		strGeneID = new String[lsTest.size()];//用于elim检验
+		String[] strGeneID = new String[lsTest.size()];//用于elim检验
+		ArrayList<String> lsGeneID = new ArrayList<String>();//和strGeneID一样的东西
 		for (int i = 0; i < strGeneID.length; i++) {
 			strGeneID[i] = lsTest.get(i)[0];
-		}		
-		
-		/////////////////////////topGo的参数///////////////////////
-		TxtReadandWrite txtParam = new TxtReadandWrite();
-		txtParam.setParameter(NovelBioConst.R_WORKSPACE_TOPGO_PARAM, true, false);
-		String content = "";
-		if (GOClass.equals("P")) {
-			content = "BP";
-		}
-		else if (GOClass.equals("F")) {
-			content = "MF";
-		}
-		else if (GOClass.equals("C")) {
-			content = "CC";
-		}
-		else if (GOClass.equals("")) {
-			content = "BP";
-		}
-		content =content + " "+NovelBioConst.R_WORKSPACE_TOPGO_GORESULT+" "+ NumGOID + " " + NovelBioConst.R_WORKSPACE_TOPGO_GOINFO;
-		txtParam.writefile(content);
-		txtParam.close();
-		//////////////////////////////////////////////////////////////////////
-		ArrayList<String[]>  lsResultTable = RElimFisher(strGeneID);
-		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, 
-				FileOperate.getParentPathName(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP), FileOperate.getFileName(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP)+condition,true);
-		//GOID对应GeneID的hash表
-		Hashtable<String,ArrayList<String>> hashGO2Gene = getGo2GeneBG( NovelBioConst.R_WORKSPACE_TOPGO_GOINFO);
-		ArrayList<String> lsGeneID = new ArrayList<String>();
-		for (int i = 0; i < strGeneID.length; i++) {
 			lsGeneID.add(strGeneID[i]);
-		}		
-		
-		
-		//////////////////////将结果中的每一个GO都获得其相应的Gene并在arrayList中保存/////////////////////////////////////////////
-		/**
-		 * 0:GOID
-		 * 1:GOTerm
-		 * 2:AccID
-		 * 3:Symbol/accID
-		 */
-		ArrayList<String[]> lsGO2GeneInfo = new ArrayList<String[]>();
-		for (int i = 1; i < lsResultTable.size(); i++) 
-		{
-			//某个GO中所含有的所有背景基因
-			ArrayList<String> lsTmpGeneID = hashGO2Gene.get(lsResultTable.get(i)[0]);
-			//获得某个GO中所含有的所有差异基因
-			ArrayList<String> lsCoGeneID = ArrayOperate.getCoLs(lsTmpGeneID, lsGeneID);
-			for (String string : lsCoGeneID)
-			{
-				String[] strTmpGo2Gene = new String[4];//将GO2Gene装入结果文件。
-				strTmpGo2Gene[0] = lsResultTable.get(i)[0];strTmpGo2Gene[1] = lsResultTable.get(i)[1]; strTmpGo2Gene[2] = string;
-				strTmpGo2Gene[3] = hashGeneInfo.get(string)[2];//geneSymbol
-				lsGO2GeneInfo.add(strTmpGo2Gene);
-			}
 		}
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		ArrayList<String[]> lsGoResult = ArrayOperate.combArrayListHash(lsResultTable, lsGO2GeneInfo, 1, 1);
 		
-		int[] colNum = new int[6]; //除去title[0]="GOID";title[1]="GOTerm";title[2]="difGene";title[3]="AllDifGene";title[4]="GeneInGoID";title[5]="AllGene";title[6]="Pvalue";title[7]="FDR";title[8]="enrichment";title[9]="(-log2P)";
-		colNum[0] = lsGO2GeneInfo.get(0).length+0;colNum[1] = lsGO2GeneInfo.get(0).length+1;colNum[2] = lsGO2GeneInfo.get(0).length+2;
-		colNum[3] = lsGO2GeneInfo.get(0).length+3;colNum[4] = lsGO2GeneInfo.get(0).length+4;colNum[5] = lsGO2GeneInfo.get(0).length+5;
+		ArrayList<String[]> lsElimTable = RElimFisher(strGeneID, NumGOID);
+		ArrayList<String[]> lsElimGO2Gene = getElimGo2Gene(lsElimTable, lsGeneID);
+		ArrayList<String[]> lsGeneInfoFinal = ArrayOperate.combArrayListHash(lsElimTable, lsElimGO2Gene, 0, 0);
 		
-		lsGoResult = ArrayOperate.listCope(lsGoResult, colNum, false);
-		final int colPvalue = lsGoResult.get(0).length-4;//pvalue那一列
+		//加标题
+		if (blast) {
+			String[] title=new String[12];
+			title[0]="GOID";title[1]="GOTerm";
+			title[2]="QueryID";title[3]="QuerySymbol";title[4]="Description";
+			title[5]="Evalue";title[6]="subjectSymbol";
+			title[7]="Description";title[8]="P-Value";title[9]="FDR";title[10]="Enrichment";title[11]="(-log2P)";
+			lsGeneInfoFinal.add(0,title);
+		}
+		else {
+			String[] title=new String[12];
+			title[0]="GOID";title[1]="GOTerm";
+			title[2]="QueryID";title[3]="QuerySymbol";title[4]="Description";
+			title[5]="P-Value";title[6]="FDR";title[7]="Enrichment";title[8]="(-log2P)";
+			lsGeneInfoFinal.add(0,title);
+		}
 		//排序
-        Collections.sort(lsGoResult,new Comparator<String[]>(){
+		final int colPvalue = lsGeneInfoFinal.get(0).length-4;//pvalue那一列
+		//排序
+        Collections.sort(lsGeneInfoFinal,new Comparator<String[]>(){
             public int compare(String[] arg0, String[] arg1) {
             	Double a=Double.parseDouble(arg0[colPvalue].replace("<", "")); Double b=Double.parseDouble(arg1[colPvalue].replace("<", ""));
                 return a.compareTo(b);
             }
         });
         
-        ArrayList<String[]> lsGoResultFinal = CopeID.copeCombineID(condition,lsGoResult, 2, 2, sepID);
-        ArrayList<String[]> lsGeneInfoFinal = CopeID.copeCombineID(condition,lsGeneInfo, 1, 0, sepID);
         
-		 ////////////////////////////////////////加标题////////////////////////////////////////////////////
-    	String[] title=new String[8];
-		title[0]="GOID";title[1]="GOTerm";title[2]="AccessID";title[3]="GeneSymbol";
-		title[4]="P-Value";title[5]="FDR";title[6]="Enrichment";title[7]="(-log2P)";
-		lsGoResultFinal.add(0,title);
-		/////////////////////////////////////////////////////////////////////////////////////
+        ArrayList<String[]> lsGene2GoInfo = getGO2Info(GOType);
 		if (blast) {
 			int[] colDel = new int[3]; 
 			colDel[0] = 1; colDel[1] = 8; colDel[2] = 9; 
@@ -797,7 +512,7 @@ public class GoFisher {
 			title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";title2[3]="GOID";
 			title2[4]="GOTerm";title2[5]="Evidence";title2[6]="Evalue";title2[7]="subjectSymbol";
 			title2[8]="Description";title2[9]="GOID";title2[10]="GOTerm";title2[11]="Evidence";
-			lsGeneInfoFinal.add(0,title2);
+			lsGene2GoInfo.add(0,title2);
 		}
 		else {
 			int[] colDel = new int[1]; 
@@ -807,8 +522,10 @@ public class GoFisher {
 			String[] title2=new String[12];
 			title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";title2[3]="GOID";
 			title2[4]="GOTerm";title2[5]="Evidence";
-			lsGeneInfoFinal.add(0,title2);
+			lsGene2GoInfo.add(0,title2);
 		}
+		
+		
 		////////////////////////////////////////////////////////////////////////////////////
 		ArrayList<ArrayList<String[]>> lsResult = new ArrayList<ArrayList<String[]>>();
 		lsResult.add(lsResultTable);
@@ -816,6 +533,13 @@ public class GoFisher {
 		lsResult.add(lsGeneInfoFinal);
 		return lsResult;
 	}
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * 读取RGOresultTableFile文件，包含标题列
@@ -901,37 +625,51 @@ public class GoFisher {
 		return hashGo2Gene;
 	}
 	/**
+	 * 不包含标题
 	 * 将elim的GO2Gene改成正规的Go2Gene 的List并返回
 	 * @param hashElimGo2Gene topGO中所含有的go2gene的信息
-	 * @oaram lsGO2GeneInfo topGO所生成的GO结果的table
-	 * @param lsGeneID 该次分析的的所有基因列表
+	 * @oaram lsResultTable topGO所生成的GO结果的table
+	 * @param lsGeneID 该次分析的的所有差异基因列表
+	 * @return
+	 * Go富集分析的Go2Gene表格<br>
+	 * blast：<br>title2[0]="GOID";title2[1]="GOTerm"
+	 * 			title2[2]="QueryID";title2[3]="QuerySymbol";title2[4]="Description";title2[5]="Evalue";title2[6]="subjectSymbol";<br>
+			title2[7]="Description";<br>
+			不blast：<br>title2[0]="GOID";title2[1]="GOTerm"
+						title2[2]="QueryID";title2[3]="QuerySymbol";title2[4]="Description";<br>
 	 */
-	private void getElimGo2Gene(HashMap<String, ArrayList<String>> hashElimGo2Gene, ArrayList<String[]> lsResultTable, ArrayList<String> lsGeneID)
+	private ArrayList<String[]> getElimGo2Gene(ArrayList<String[]> lsResultTable, ArrayList<String> lsGeneID)
 	{
+		HashMap<String, ArrayList<String>> hashElimGo2Gene = null;
+		try {
+			hashElimGo2Gene = getGo2GeneBG(NovelBioConst.R_WORKSPACE_TOPGO_GOINFO);
+		} catch (Exception e) {
+			logger.error("ElimFisher stopped: "+ NovelBioConst.R_WORKSPACE_TOPGO_GOINFO + " file error");
+		}
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (int i = 1; i < lsResultTable.size(); i++) 
 		{
 			//某个GO中所含有的所有背景基因
 			ArrayList<String> lsTmpGeneID = hashElimGo2Gene.get(lsResultTable.get(i)[0]);
 			//获得某个GO中所含有的所有差异基因
 			ArrayList<String> lsCoGeneID = ArrayOperate.getCoLs(lsTmpGeneID, lsGeneID);
+			//每一个Go所对应的基因
 			for (String string : lsCoGeneID)
 			{
-				String[] strTmpGo2Gene = new String[4];//将GO2Gene装入结果文件。
-				strTmpGo2Gene[0] = lsResultTable.get(i)[0];strTmpGo2Gene[1] = lsResultTable.get(i)[1]; strTmpGo2Gene[2] = string;
-				strTmpGo2Gene[3] = hashGeneInfo.get(string)[2];//geneSymbol
-				hashElimGo2Gene.add(strTmpGo2Gene);
+				ArrayList<CopedID> lscopedIDs = hashgene2CopedID.get(string);
+				CopedID copedIDFirst = lscopedIDs.get(0);
+				//每一个基因所含有的多个copedID，也就是多个不同的accID
+				for (CopedID copedID : lscopedIDs) {
+					String[] anno = copedID.getAnnoInfo(blast);
+					String[] result = new String[anno.length + 2];
+					result[0] = lsResultTable.get(i)[0]; result[1] = lsResultTable.get(i)[1];
+					for (int j = 2; j < result.length; j++) {
+						result[j] = anno[j-2];
+					}
+					lsResult.add(result);
+				}
 			}
 		}
-		
-		
-		
-		
+		return lsResult;
 	}
-	
-	
-	
-	
-	
-	
-	
 }
