@@ -7,9 +7,9 @@ import java.util.HashMap;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genome.GffChrUnion;
 import com.novelbio.analysis.seq.genome.getChrSequence.ChrSearch;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHashAbs;
+import com.novelbio.analysis.seq.genomeNew2.getChrSequence.ChrStringHash;
+import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqHashAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 

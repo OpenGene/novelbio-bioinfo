@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import org.hamcrest.core.Is;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 

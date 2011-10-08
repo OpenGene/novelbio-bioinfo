@@ -6,9 +6,9 @@ import java.util.Comparator;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 

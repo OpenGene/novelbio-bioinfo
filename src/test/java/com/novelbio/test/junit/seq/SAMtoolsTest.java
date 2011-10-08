@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.novelbio.analysis.seq.genomeNew.GffChrHanYanChrom;
+import com.novelbio.analysis.seq.genomeNew2.GffChrHanYanChrom;
 import com.novelbio.analysis.seq.mapping.SAMtools;
 
 import junit.framework.TestCase;

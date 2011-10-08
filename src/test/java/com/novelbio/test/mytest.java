@@ -19,6 +19,7 @@ import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 
+
 import com.novelbio.analysis.annotation.blast.Blast2DB;
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo;
@@ -32,17 +33,17 @@ import com.novelbio.analysis.seq.blastZJ.Cell;
 import com.novelbio.analysis.seq.blastZJ.LongestCommonSubsequence;
 import com.novelbio.analysis.seq.blastZJ.SmithWaterman;
 import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
-import com.novelbio.analysis.seq.genomeNew.GffChrChIP;
-import com.novelbio.analysis.seq.genomeNew.GffChrHanYanChrom;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHash;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGenePlant;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneUCSC;
+import com.novelbio.analysis.seq.genomeNew2.GffChrChIP;
+import com.novelbio.analysis.seq.genomeNew2.GffChrHanYanChrom;
+import com.novelbio.analysis.seq.genomeNew2.getChrSequence.ChrStringHash;
+import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHash;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGenePlant;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneUCSC;
 import com.novelbio.analysis.seq.mapping.FastQMapBwa;
 import com.novelbio.analysis.seq.mapping.FastQMapSoap;
 import com.novelbio.analysis.seq.mapping.SAMtools;
@@ -70,16 +71,13 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		ArrayList<Integer> lsInt = new ArrayList<Integer>();
-		for (int i = 0; i < 20; i = i + 2) {
-			lsInt.add(i);
+		CopedID copedID = new CopedID("tp53", 9823, false);
+		copedID.setBlastLsInfo(1e-5, 9606);
+		String[] anno = copedID.getAnnoInfo(true);
+		for (String string : anno) {
+			System.out.println( string);
 		}
-		System.out.println("3 "+Collections.binarySearch(lsInt, 3));
-		System.out.println("4 "+Collections.binarySearch(lsInt, 4));
-		System.out.println("18 "+Collections.binarySearch(lsInt, 18));
-		System.out.println("19 "+Collections.binarySearch(lsInt, 19));
-		List<Integer> lsSub = lsInt.subList(1, 5);
-		System.out.println("ok");
+		
 	}
 
 	private static void testFdrFunction() throws Exception {

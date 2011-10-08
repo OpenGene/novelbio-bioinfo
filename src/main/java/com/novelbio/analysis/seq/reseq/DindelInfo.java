@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 /**
  * 保存Dindel软件得到的信息，每一行一个DindelInfo 类

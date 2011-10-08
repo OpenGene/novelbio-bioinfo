@@ -6,12 +6,13 @@ import org.junit.Test;
 
 import junit.framework.TestCase;
 
+
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.analysis.seq.genomeNew.GffChrHanYanChrom;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneUCSC;
+import com.novelbio.analysis.seq.genomeNew2.GffChrHanYanChrom;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffGeneIsoSearch;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneUCSC;
 
 public class TestGffChrUnion extends TestCase {
 	double[] input;

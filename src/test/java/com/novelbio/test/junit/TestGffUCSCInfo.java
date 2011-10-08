@@ -10,12 +10,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailAbs;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoSearch;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneUCSC;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailAbs;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffGeneIsoSearch;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneUCSC;
 
 public class TestGffUCSCInfo extends TestCase{
 	GffHashGeneUCSC gffHashUCSC;

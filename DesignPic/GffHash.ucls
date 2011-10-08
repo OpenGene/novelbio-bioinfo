@@ -41,16 +41,16 @@
     </display>  
   </class>  
   <class id="7" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailPeak" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffDetailPeak.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailPeak" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffDetailPeak.java" binary="false">    
     <position height="-1" width="-1" x="1939" y="110"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class id="8" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodGene.java" 
+  <class id="8" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodGene" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodGene.java" 
     binary="false">    
     <position height="-1" width="-1" x="3072" y="316"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -58,8 +58,8 @@
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class id="9" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodCGDU" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodCGDU.java" 
+  <class id="9" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodCGDU" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodCGDU.java" 
     binary="false">    
     <position height="-1" width="-1" x="3078" y="593"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -68,8 +68,8 @@
     </display>  
   </class>  
   <class id="10" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneIsoCis.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffGeneIsoCis" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffGeneIsoCis.java" binary="false">    
     <position height="-1" width="-1" x="2542" y="1502"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
@@ -77,8 +77,8 @@
     </display>  
   </class>  
   <class id="11" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailRepeat" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffDetailRepeat.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailRepeat" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffDetailRepeat.java" binary="false">    
     <position height="-1" width="-1" x="1924" y="410"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
@@ -86,16 +86,16 @@
     </display>  
   </class>  
   <class id="12" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneUCSC" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashGeneUCSC.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneUCSC" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashGeneUCSC.java" binary="false">    
     <position height="90" width="219" x="1344" y="962"/>    
     <display autosize="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class id="13" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeak" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodPeak.java" 
+  <class id="13" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodPeak" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodPeak.java" 
     binary="false">    
     <position height="-1" width="-1" x="3082" y="59"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -103,8 +103,8 @@
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class id="14" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHash" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHash.java" 
+  <class id="14" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHash" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHash.java" 
     binary="false">    
     <position height="-1" width="-1" x="1638" y="188"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -112,8 +112,8 @@
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class id="15" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashCG" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashCG.java" 
+  <class id="15" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashCG" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashCG.java" 
     binary="false">    
     <position height="-1" width="-1" x="1084" y="235"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -122,8 +122,8 @@
     </display>  
   </class>  
   <class id="16" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailAbs" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffDetailAbs.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailAbs" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffDetailAbs.java" binary="false">    
     <position height="-1" width="-1" x="2221" y="188"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
@@ -131,8 +131,8 @@
     </display>  
   </class>  
   <class id="17" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GtfHashCufIso" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GtfHashCufIso.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GtfHashCufIso" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GtfHashCufIso.java" binary="false">    
     <position height="-1" width="-1" x="1087" y="79"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
@@ -140,26 +140,26 @@
     </display>  
   </class>  
   <class id="18" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffDetailGene.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailGene" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffDetailGene.java" binary="false">    
     <position height="-1" width="-1" x="2222" y="978"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="true" protected="true" private="false"/>    
     </display>  
   </class>  
-  <class id="19" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbsDu" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodAbsDu.java" 
-    binary="false">    
+  <class id="19" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodAbsDu" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodAbsDu.java" binary="false">    
     <position height="-1" width="-1" x="2642" y="538"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class id="20" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailCG" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffDetailCG.java" 
-    binary="false">    
+  <class id="20" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailCG" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffDetailCG.java" binary="false">    
     <position height="-1" width="-1" x="1929" y="265"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
@@ -167,8 +167,8 @@
     </display>  
   </class>  
   <class id="21" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodRepeat" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodRepeat.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodRepeat" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodRepeat.java" binary="false">    
     <position height="-1" width="-1" x="3076" y="458"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
@@ -176,8 +176,8 @@
     </display>  
   </class>  
   <class id="22" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGenePlant" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashGenePlant.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGenePlant" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashGenePlant.java" binary="false">    
     <position height="-1" width="-1" x="1758" y="1017"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
@@ -185,8 +185,8 @@
     </display>  
   </class>  
   <interface id="23" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashInf" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashInf.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashInf" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashInf.java" binary="false">    
     <position height="-1" width="-1" x="757" y="155"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
@@ -194,8 +194,8 @@
     </display>  
   </interface>  
   <class id="24" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneIsoInfo.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffGeneIsoInfo" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffGeneIsoInfo.java" binary="false">    
     <position height="-1" width="-1" x="2671" y="998"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
@@ -203,8 +203,8 @@
     </display>  
   </class>  
   <class id="25" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GtfDetailCufIso" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GtfDetailCufIso.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GtfDetailCufIso" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GtfDetailCufIso.java" binary="false">    
     <position height="-1" width="-1" x="1930" y="647"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
@@ -212,8 +212,8 @@
     </display>  
   </class>  
   <interface id="26" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneInf" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashGeneInf.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneInf" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashGeneInf.java" binary="false">    
     <position height="-1" width="-1" x="1265" y="779"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
@@ -221,17 +221,17 @@
     </display>  
   </interface>  
   <class id="27" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashGeneAbs.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneAbs" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashGeneAbs.java" binary="false">    
     <position height="-1" width="-1" x="1629" y="776"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class id="28" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashGene.java" 
-    binary="false">    
+  <class id="28" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGene" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashGene.java" binary="false">    
     <position height="-1" width="-1" x="738" y="345"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
@@ -239,25 +239,25 @@
     </display>  
   </class>  
   <class id="29" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashRepeat" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashRepeat.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashRepeat" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashRepeat.java" binary="false">    
     <position height="-1" width="-1" x="1073" y="404"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class id="30" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashPeak" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashPeak.java" 
-    binary="false">    
+  <class id="30" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashPeak" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashPeak.java" binary="false">    
     <position height="-1" width="-1" x="1058" y="593"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class id="31" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodCG" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodCG.java" 
+  <class id="31" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodCG" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodCG.java" 
     binary="false">    
     <position height="-1" width="-1" x="3078" y="190"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -266,16 +266,16 @@
     </display>  
   </class>  
   <class id="33" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoTrans" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneIsoTrans.java" binary="false">    
+    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffGeneIsoTrans" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffGeneIsoTrans.java" binary="false">    
     <position height="-1" width="-1" x="2827" y="1503"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="true" protected="false" private="true"/>    
     </display>  
   </class>  
-  <class id="34" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbs" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodAbs.java" 
+  <class id="34" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodAbs" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodAbs.java" 
     binary="false">    
     <position height="-1" width="-1" x="2651" y="166"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      

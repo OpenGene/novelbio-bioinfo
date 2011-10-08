@@ -5,9 +5,9 @@ import java.util.HashMap;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.chipseq.preprocess.Comb;
-import com.novelbio.analysis.seq.genomeNew.GffChrHanYanChrom;
-import com.novelbio.analysis.seq.genomeNew.GffChrUnionHanYanRefSeq;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genomeNew2.GffChrHanYanChrom;
+import com.novelbio.analysis.seq.genomeNew2.GffChrUnionHanYanRefSeq;
+import com.novelbio.analysis.seq.genomeNew2.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 

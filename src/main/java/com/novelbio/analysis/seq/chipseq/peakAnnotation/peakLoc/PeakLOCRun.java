@@ -23,15 +23,15 @@ public class PeakLOCRun {
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 //				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
 		
-//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_TIGR,
-//				NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, "");
+		PeakLOC.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_TIGR,
+				NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, "");
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 //				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
-		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
-				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
+//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
+//				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
 		System.out.println("prepare ok");
-//		filterPeak();
-		regionFind();
+		filterPeak();
+//		regionFind();
 //		annotation();
 		//histData();
 		System.out.println(" ok");
@@ -117,11 +117,11 @@ public class PeakLOCRun {
 	 */
 	public static void  filterPeak() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/result/peakCalling/";
+		String ParentFile="/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/result/peakCalling/compare/";
 		int taxID = 39947;
 		int colChrID = 1; int colSummit = 6;
 		int rowStart = 1; 
-		int[] filterTss = new int[2]; filterTss[0] = 1250; filterTss[1] = 0;
+		int[] filterTss = new int[2]; filterTss[0] = 1500; filterTss[1] = 0;
 		int[] filterGenEnd = new int[2]; filterGenEnd[0] = 0; filterGenEnd[1] = 0;
 		filterGenEnd = null;
 		boolean filterGeneBody = false;
@@ -130,8 +130,8 @@ public class PeakLOCRun {
 		boolean filterExon = false;
 		boolean filterIntron = false;
 		try {
-			String txtFile=ParentFile+"N_peaks_summit.xls";
-			String excelResultFile= FileOperate.changeFileSuffix(txtFile, "_+1.25k-0k_filterAnnotation", null);
+			String txtFile=ParentFile+"3Nvs2N_peaks_summit.xls";
+			String excelResultFile= FileOperate.changeFileSuffix(txtFile, "_+1.5k-0k_filterAnnotation", null);
 			PeakLOC.filterPeak(txtFile, "\t", colChrID, colSummit, rowStart, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron, excelResultFile);
 			int columnNum=0;
 			 TxtReadandWrite txtReadandWrite=new TxtReadandWrite(excelResultFile, false);

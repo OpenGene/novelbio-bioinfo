@@ -1,8 +1,10 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GtfDetailCufIso;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GtfHashCufIso;
+
+
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GtfDetailCufIso;
+import com.novelbio.analysis.seq.genomeNew2.gffOperate.GtfHashCufIso;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class SplitCope {
