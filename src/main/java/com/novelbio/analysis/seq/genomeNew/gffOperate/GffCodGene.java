@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * @author zong0jie
  *
  */
-public class GffCodGene extends GffCodAbs<GffDetailGeneCod, GffDetailGene>
+public class GffCodGene extends GffCodAbs<GffDetailGene>
 {
 	protected GffCodGene(String chrID, int Coordinate) {
 		super(chrID, Coordinate);
@@ -17,26 +17,26 @@ public class GffCodGene extends GffCodAbs<GffDetailGeneCod, GffDetailGene>
 	}
 	
 	
-//	public void getCodInfo() {
-//		
-//		
-//	}
-//	
-//	/**
-//	 * 返回该gffDetailGene的具体信息
-//	 * string[3]
-//	 * @param gffDetailGene
-//	 */
-//	private static void copeGffDetailGene(GffDetailGeneCod gffDetailGene) {
-//		if (gffDetailGene.isCodInGenExtend()) {
-//			ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfo = gffDetailGene.getLsCodSplit();
-//			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfo) {
-//				if (gffGeneIsoInfo.isCodInIsoExtend()) {
-//					gffGeneIsoInfo.getCodLocUTR();
-//				}
-//			}
-//		}
-//	}
+	public void getCodInfo() {
+		
+		
+	}
+	
+	/**
+	 * 返回该gffDetailGene的具体信息
+	 * string[3]
+	 * @param gffDetailGene
+	 */
+	private static void copeGffDetailGene(GffDetailGene gffDetailGene) {
+		if (gffDetailGene.isCodInGenExtend()) {
+			ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfo = gffDetailGene.getLsCodSplit();
+			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfo) {
+				if (gffGeneIsoInfo.isCodInIsoExtend()) {
+					gffGeneIsoInfo.getCodLocUTR();
+				}
+			}
+		}
+	}
 	
 	
 }

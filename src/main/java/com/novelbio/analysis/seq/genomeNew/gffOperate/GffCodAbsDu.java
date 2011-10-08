@@ -10,10 +10,10 @@ import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
  * @author zong0jie
  *
  */
-public abstract class GffCodAbsDu<T extends GffDetailAbs, K extends GffCodAbs<M,T>, M extends GffDetailAbsCod<T>>  {
+public abstract class GffCodAbsDu<T extends GffDetailAbs, K extends GffCodAbs<T>>  {
 	//这两个都会在具体的类中新建
 	
-	public GffCodAbsDu(ArrayList<M> lsgffDetail, K gffCod1, K gffCod2)
+	public GffCodAbsDu(ArrayList<T> lsgffDetail, K gffCod1, K gffCod2)
 	{
 		this.lsgffDetailsMid = lsgffDetail;
 		this.gffCod1 = gffCod1;
@@ -25,7 +25,7 @@ public abstract class GffCodAbsDu<T extends GffDetailAbs, K extends GffCodAbs<M,
 	K gffCod2 = null;	
 	
 	//两个端点之间的gffdetail
-	ArrayList<M> lsgffDetailsMid = null;
+	ArrayList<T> lsgffDetailsMid = null;
 	/**
 	 * peak与左端Item交集时，交集在左端Item中所占的比例
 	 */
@@ -112,7 +112,7 @@ public abstract class GffCodAbsDu<T extends GffDetailAbs, K extends GffCodAbs<M,
 	 * 返回两个坐标中间夹着的的GffDetail，覆盖成相应的GffDetail类
 	 * @return
 	 */
-	public ArrayList<M> getLsGffDetailMid()
+	public ArrayList<T> getLsGffDetailMid()
 	{
 		return lsgffDetailsMid;
 	}
@@ -120,16 +120,16 @@ public abstract class GffCodAbsDu<T extends GffDetailAbs, K extends GffCodAbs<M,
 	 * 返回全部包含的gffDetail信息
 	 * @return
 	 */
-	public ArrayList<M> getAllGffDetail() {
-		ArrayList<M> lsGffDetailAll = new ArrayList<M>();
+	public ArrayList<T> getAllGffDetail() {
+		ArrayList<T> lsGffDetailAll = new ArrayList<T>();
 		if (getGffCodLeft() != null && getGffCodLeft().isInsideLoc()) {
 			if (getGffCodLeft().isInsideUp())
 				lsGffDetailAll.add(getGffCodLeft().getGffDetailUp());
 			lsGffDetailAll.add(getGffCodLeft().getGffDetailThis());
 		}
 		if (lsgffDetailsMid != null) {
-			for (M m : lsgffDetailsMid) {
-				lsGffDetailAll.add(m);
+			for (T t : lsgffDetailsMid) {
+				lsGffDetailAll.add(t);
 			}
 		}
 		if (getGffCodRight() != null && getGffCodRight().isInsideLoc()) {
@@ -143,8 +143,8 @@ public abstract class GffCodAbsDu<T extends GffDetailAbs, K extends GffCodAbs<M,
 	 * 双坐标查找 输入相关的GffHash类，然后填充相关信息<br>
 	 */
 	private void calInfo() {
-		T gffDetail1 = gffCod1.getGffDetailThis().getGffDetail();
-		T gffDetail2 = gffCod2.getGffDetailThis().getGffDetail();
+		T gffDetail1 = gffCod1.getGffDetailThis();
+		T gffDetail2 = gffCod2.getGffDetailThis();
 		int leftItemLength = 0; int leftoverlap = 0;
 		int rightItemLength = 0; int rightoverlap = 0;
 		int peakLength = gffCod2.getCoord() - gffCod1.getCoord();

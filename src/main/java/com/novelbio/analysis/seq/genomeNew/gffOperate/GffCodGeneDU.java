@@ -6,9 +6,9 @@ import java.util.Set;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
 
-public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene, GffDetailGeneCod>{
+public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 
-	public GffCodGeneDU(ArrayList<GffDetailGeneCod> lsgffDetail,
+	public GffCodGeneDU(ArrayList<GffDetailGene> lsgffDetail,
 			GffCodGene gffCod1, GffCodGene gffCod2) {
 		super(lsgffDetail, gffCod1, gffCod2);
 	}
@@ -17,11 +17,11 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene, GffDeta
 	 * 将这两个端点中，涉及到Tss的基因全部提取出来
 	 * @return
 	 */
-	public Set<GffDetailGeneCod> getTSSGene() {
+	public Set<GffDetailGene> getTSSGene() {
 		/**
 		 * 待返回的基因
 		 */
-		Set<GffDetailGeneCod> setGffDetailGenes = new HashSet<GffDetailGeneCod>();
+		Set<GffDetailGene> setGffDetailGenes = new HashSet<GffDetailGene>();
 		//在前面基因的最长转录本范围内
 		if (gffCod1 != null)
 		{
@@ -54,7 +54,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene, GffDeta
 		return setGffDetailGenes;
 	}
 	
-	private boolean isUpTss(GffDetailGeneCod gffDetailGene) {
+	private boolean isUpTss(GffDetailGene gffDetailGene) {
 		if (gffDetailGene == null || !gffDetailGene.isCodInGenExtend()) {
 			return false;
 		}
@@ -153,14 +153,39 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene, GffDeta
 	 * @return
 	 */
 	public ArrayList<CopedID> getAllCoveredGenes() {
-		ArrayList<GffDetailGene> lsGenes = getAllGffDetail();
 		//用来去冗余的
 		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
 		ArrayList<CopedID> lsCopedIDs = new ArrayList<CopedID>();
-		for (GffDetailGene gffDetailGene : lsGenes) {
-			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				//看是否真正的落在该基因内部
+		if (getGffCodLeft() != null && getGffCodLeft().isInsideLoc()) {
+			if (getGffCodLeft().isInsideUp())
+			{
+				for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodLeft().getGffDetailUp().getLsCodSplit()) {
+					if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
+						CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), getGffCodLeft().getGffDetailUp().getTaxID(), false);
+						if (hashCopedID.contains(copedID)) {
+							continue;
+						}
+						hashCopedID.add(copedID);
+						lsCopedIDs.add(copedID);
+					}
+				}
+			}
+			for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodLeft().getGffDetailThis().getLsCodSplit()) {
 				if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
+					CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), getGffCodLeft().getGffDetailThis().getTaxID(), false);
+					if (hashCopedID.contains(copedID)) {
+						continue;
+					}
+					hashCopedID.add(copedID);
+					lsCopedIDs.add(copedID);
+				}
+			}
+		}
+		
+		if (getLsGffDetailMid() != null) {
+			for (GffDetailGene gffDetailGene : getLsGffDetailMid()) {
+				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+					// 看是否真正的落在该基因内部
 					CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), gffDetailGene.getTaxID(), false);
 					if (hashCopedID.contains(copedID)) {
 						continue;
@@ -170,7 +195,35 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene, GffDeta
 				}
 			}
 		}
+		
+		
+		if (getGffCodRight() != null && getGffCodRight().isInsideLoc()) {
+			for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodRight().getGffDetailThis().getLsCodSplit()) {
+				if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
+					CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), getGffCodRight().getGffDetailThis().getTaxID(), false);
+					if (hashCopedID.contains(copedID)) {
+						continue;
+					}
+					hashCopedID.add(copedID);
+					lsCopedIDs.add(copedID);
+				}
+			}
+			if (getGffCodRight().isInsideDown())
+			{
+				for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodRight().getGffDetailDown().getLsCodSplit()) {
+					if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
+						CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), getGffCodRight().getGffDetailDown().getTaxID(), false);
+						if (hashCopedID.contains(copedID)) {
+							continue;
+						}
+						hashCopedID.add(copedID);
+						lsCopedIDs.add(copedID);
+					}
+				}
+			}
+		}
+		
+	 
 		return lsCopedIDs;
 	}
-	
 }

@@ -136,6 +136,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	
 	/**
 	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
+	 * 采用clone的方法获得信息
 	 * 没找到就返回null
 	 */
 	public K searchLocation(String chrID, int Coordinate) {
@@ -150,31 +151,31 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 		K gffCod = setGffCod(chrID, Coordinate);
 		if (locInfo[0] == 1) // 定位在基因内
 		{
-			gffCod.gffDetailThis = Loclist.get(locInfo[1]);
+			gffCod.gffDetailThis = (T) Loclist.get(locInfo[1]).clone(); 
 			gffCod.gffDetailThis.setCoord(Coordinate);
 			gffCod.booFindCod = true;
 			gffCod.ChrHashListNumThis = locInfo[1];
 			gffCod.insideLOC = true;
 			if (locInfo[1] - 1 >= 0) {
-				gffCod.gffDetailUp =  Loclist.get(locInfo[1]-1);
+				gffCod.gffDetailUp =  (T) Loclist.get(locInfo[1]-1).clone();
 				gffCod.gffDetailUp.setCoord(Coordinate);
 				gffCod.ChrHashListNumUp = locInfo[1]-1;
 				
 			}
 			if (locInfo[2] != -1) {
-				gffCod.gffDetailDown = Loclist.get(locInfo[2]);
+				gffCod.gffDetailDown = (T) Loclist.get(locInfo[2]).clone();
 				gffCod.gffDetailDown.setCoord(Coordinate);
 				gffCod.ChrHashListNumDown = locInfo[2];
 			}
 		} else if (locInfo[0] == 2) {
 			gffCod.insideLOC = false;
 			if (locInfo[1] >= 0) {
-				gffCod.gffDetailUp =  Loclist.get(locInfo[1]);
+				gffCod.gffDetailUp =  (T) Loclist.get(locInfo[1]).clone();
 				gffCod.gffDetailUp.setCoord(Coordinate);
 				gffCod.ChrHashListNumUp = locInfo[1];		
 			}
 			if (locInfo[2] != -1) {
-				gffCod.gffDetailDown = Loclist.get(locInfo[2]);
+				gffCod.gffDetailDown = (T) Loclist.get(locInfo[2]).clone();
 				gffCod.gffDetailDown.setCoord(Coordinate);
 				gffCod.ChrHashListNumDown = locInfo[2];
 			}
@@ -200,7 +201,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 		
 		K gffCod1 = searchLocation(chrID, Math.min(cod1, cod2));
 		K gffCod2 = searchLocation(chrID, Math.max(cod1, cod2));
-		M gffCodDu = setGffCodDu(Loclist,gffCod1, gffCod2 );
+		M gffCodDu = setGffCodDu(new ArrayList<T>(),gffCod1, gffCod2 );
 		
 		if (gffCodDu.gffCod1.getItemNumDown() < 0) {
 			gffCodDu.lsgffDetailsMid = null;

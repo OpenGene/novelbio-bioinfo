@@ -42,4 +42,13 @@ public class GffDetailRepeat extends GffDetailAbs
 	{
 		return repeatFamily;
 	}
+	@Override
+	public GffDetailRepeat clone() {
+		GffDetailRepeat gffDetailRepeat = new GffDetailRepeat(getChrID(), locString, cis5to3);
+		this.clone(gffDetailRepeat);
+		gffDetailRepeat.repeatName = repeatName;
+		gffDetailRepeat.repeatClass = repeatClass;
+		gffDetailRepeat.repeatFamily = repeatFamily;
+		return gffDetailRepeat;
+	}
 }

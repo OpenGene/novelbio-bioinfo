@@ -6,7 +6,7 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
  * 子类有GffCodInfoGene 
  * @author zong0jie
  */
-public abstract class GffCodAbs<T extends GffDetailAbsCod<K>,K extends GffDetailAbs> {
+public abstract class GffCodAbs<T extends GffDetailAbs> {
 
 	/**
 	 * 所有坐标的起始信息

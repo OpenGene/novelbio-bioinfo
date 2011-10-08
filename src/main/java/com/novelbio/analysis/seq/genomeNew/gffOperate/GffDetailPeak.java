@@ -7,4 +7,11 @@ public class GffDetailPeak extends GffDetailAbs{
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	public GffDetailPeak clone() {
+		GffDetailPeak gffDetailPeak = new GffDetailPeak(getChrID(), locString, cis5to3);
+		this.clone(gffDetailPeak);
+		return gffDetailPeak;
+	}
+
 }

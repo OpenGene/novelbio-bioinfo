@@ -73,5 +73,18 @@ public class GffDetailCG extends GffDetailAbs
 	public double getPerCpG() {
 		return perCpG;
 	}
+	@Override
+	public GffDetailCG clone() {
+		GffDetailCG gffDetailCG = new GffDetailCG(getChrID(), locString, cis5to3);
+		this.clone(gffDetailCG);
+		gffDetailCG.numGC = numGC;
+		gffDetailCG.lengthCpG=lengthCpG;
+		gffDetailCG.numCpG=numCpG;
+		gffDetailCG.numGC=numGC;
+		gffDetailCG.perCpG=perCpG;
+		gffDetailCG.perGC=perGC;
+		gffDetailCG.obsExp=obsExp;
+		return gffDetailCG;
+	}
 	
 }

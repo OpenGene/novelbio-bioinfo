@@ -23,7 +23,9 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		super(IsoName, gffDetailGene);
 	}
 
-	
+	public GffGeneIsoCis(String IsoName, int coord) {
+		super(IsoName, coord);
+	}
 	/**
 	 * 第一个计算的，计算坐标与本 外显子/内含子 的 起点/终点 的距离
 	 */
@@ -415,9 +417,8 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 
 	@Override
 	public GffGeneIsoCis clone() {
-		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis(IsoName, gffDetailGene);
-		gffGeneIsoCis.ATGsite = ATGsite;
-		gffGeneIsoCis.gffDetailGene = gffDetailGene;
+		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis(IsoName, coord);
+		this.clone(gffGeneIsoCis);
 		gffGeneIsoCis.setCoord(getCoord());
 		return gffGeneIsoCis;
 	}

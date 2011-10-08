@@ -10,6 +10,9 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	public GffGeneIsoTrans(String IsoName, GffDetailGene gffDetailGene) {
 		super(IsoName, gffDetailGene);
 	}
+	public GffGeneIsoTrans(String IsoName, int coord) {
+		super(IsoName, coord);
+	}
 	@Override
 	protected void setCod2ExInStartEnd() {
 		int NumExon = numExIntron - 1; //实际数量减去1，方法内用该变量运算
@@ -385,23 +388,10 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		return false;
 	}
 	@Override
-	protected void addExonGFFCDSUTR(int locStart, int locEnd) {
-		/**
-		 * 添加外显子，添加在末尾 添加的时候必须按照基因方向添加， 正向从小到大添加 且 int0<int1 反向从大到小添加 且
-		 * int0>int1
-		 */
-		int[] tmpexon = new int[2];
-
-		tmpexon[0] = Math.max(locStart, locEnd);
-		tmpexon[1] = Math.min(locStart, locEnd);
-		if (lsIsoform.size() > 0) {
-			int[] exon = lsIsoform.get(lsIsoform.size() - 1);
-			if (Math.abs(exon[1] - tmpexon[0]) == 1) {
-				exon[1] = tmpexon[1];
-				return;
-			}
-		}
-		lsIsoform.add(tmpexon);
-
+	public GffGeneIsoTrans clone() {
+		GffGeneIsoTrans gffGeneIsoTrans = new GffGeneIsoTrans(IsoName, coord);
+		this.clone(gffGeneIsoTrans);
+		gffGeneIsoTrans.setCoord(getCoord());
+		return gffGeneIsoTrans;
 	}
 }

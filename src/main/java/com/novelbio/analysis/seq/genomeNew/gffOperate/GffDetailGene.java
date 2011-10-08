@@ -8,7 +8,6 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
-
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 /**
@@ -69,6 +68,17 @@ public class GffDetailGene extends GffDetailAbs
 	 * 顺序存储每个转录本的名字
 	 */
 	private ArrayList<String> lsIsoName = new ArrayList<String>();
+	
+	public void setCoord(int coord) {
+		this.coord = coord;
+		ArrayList<GffGeneIsoInfo> lsGffInfo = getLsCodSplit();
+		if (lsGffInfo == null || lsGffInfo.size() < 1) {
+			return;
+		}
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffInfo) {
+			gffGeneIsoInfo.setCoord(coord);
+		}
+	}
 	
 	/**
 	 * 
@@ -287,5 +297,69 @@ public class GffDetailGene extends GffDetailAbs
 		}
 		return -1000000;
 	}
+	
+	/**
+	 * 是否在该基因内，具体情况
+	 * @return
+	 * 返回anno[4]
+	 * 0：accID
+	 * 1：symbol
+	 * 2：description
+	 * 3：location
+	 * 没有就返回“”
+	 */
+	public String[] getInfo() {
+		String[] anno = new String[4];
+		for (int i = 0; i < anno.length; i++) {
+			anno[i] = "";
+		}
+		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
+		if (isCodInGenExtend()) {
+			for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
+				if (gffGeneIsoInfo.isCodInIsoExtend()) {
+					hashCopedID.add(gffGeneIsoInfo.getCopedID());
+				}
+			}
+			for (CopedID copedID : hashCopedID) {
+				if (anno.equals("")) {
+					anno[0] = copedID.getAccID();
+					anno[1] = copedID.getSymbo();
+					anno[2] = copedID.getDescription();
+				}
+				else {
+					anno[0] = anno[0]+"//"+copedID.getAccID();
+					anno[1] = anno[1]+"//"+copedID.getSymbo();
+					anno[2] = anno[2]+"//"+copedID.getDescription();
+				}
+			}
+			if (getLongestSplit().isCodInIsoExtend()) {
+				anno[4] = getLongestSplit().getCodLocStr();
+			}
+			else {
+				for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
+					if (gffGeneIsoInfo.isCodInIsoExtend()) {
+						anno[4] = gffGeneIsoInfo.getCodLocStr();
+						break;
+					}
+				}
+			}
+		}
+		return anno;
+	}
+
+	@Override
+	public GffDetailGene clone() {
+		GffDetailGene gffDetailGene = new GffDetailGene(getChrID(), locString, cis5to3);
+		this.clone(gffDetailGene);
+		gffDetailGene.taxID = taxID;
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			gffDetailGene.lsGffGeneIsoInfos.add(gffGeneIsoInfo.clone());
+		}
+		for (String string : lsIsoName) {
+			gffDetailGene.lsIsoName.add(string);
+		}
+		return gffDetailGene;
+	}
+	
 	
 }
