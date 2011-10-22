@@ -39,8 +39,11 @@ public interface GffHashGeneInf  {
 	 * 不能通过该方法获得某个LOC在基因上的定位
 	 */
 	public ArrayList<String> getLOCIDList();
-	
-	
+	/**
+	 * 返回读取的Gff文件名
+	 * @return
+	 */
+	public String getGffFilename();
 	/**
 	 * 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就用"/"隔开，
 	 * 那么该list中的元素用split("/")分割后，上locHashtable就可提取相应的GffDetail，目前主要是Peak用到
@@ -68,5 +71,11 @@ public interface GffHashGeneInf  {
 	 * 没有就返回null
 	 */
 	GffDetailGene searchLOC(CopedID copedID);
+	/**
+	 * 给定LOCID，返回所对应的转录本
+	 * @param LOCID
+	 * @return
+	 */
+	GffGeneIsoInfo searchISO(String LOCID);
 
 }

@@ -12,24 +12,22 @@ import org.junit.Test;
 
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailAbs;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffGeneIsoSearch;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneUCSC;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 
 public class TestGffUCSCInfo extends TestCase{
-	GffHashGeneUCSC gffHashUCSC;
+	GffHashGene gffHashUCSC;
 	GffCodGene gffCodInfoUCSCgenechr1_1385068;
 	ArrayList<String> lsAllLoc;
-	HashMap<String, GffDetailAbs> hashGffDetail;
+	HashMap<String, GffDetailGene> hashGffDetail;
 	
 	@Before
 	public void setUp() throws Exception
 	{
 		//UCSC test
-		gffHashUCSC = new GffHashGeneUCSC(9606);
-		gffHashUCSC.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+		gffHashUCSC = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		gffCodInfoUCSCgenechr1_1385068 = (GffCodGene) gffHashUCSC.searchLocation("chr1", 1385069);//
 		lsAllLoc = gffHashUCSC.getLOCIDList();
 		hashGffDetail = gffHashUCSC.getLocHashtable();
@@ -42,11 +40,11 @@ public class TestGffUCSCInfo extends TestCase{
 		assertEquals(true,gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().isCis5to3());
 		assertEquals(true,gffCodInfoUCSCgenechr1_1385068.getGffDetailDown().isCis5to3());
 		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.isInsideLoc());
-		assertEquals(-995, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getCoordSearchLongest().getCod2ATG());
-		assertEquals(-18841, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getCoordSearchLongest().getCod2UAG());
-		assertEquals(-20469, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getCoordSearchLongest().getCod2Tes());
-		assertEquals(0, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getCoordSearchLongest().getCod2Tss());
-		assertEquals(GffGeneIsoSearch.COD_LOC_EXON, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getCoordSearchLongest().getCodLoc());
+		assertEquals(-995, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplit().getCod2ATG());
+		assertEquals(-18841, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplit().getCod2UAG());
+		assertEquals(-20469, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplit().getCod2Tes());
+		assertEquals(0, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplit().getCod2Tss());
+		assertEquals(GffGeneIsoInfo.COD_LOC_EXON, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplit().getCodLoc());
 	}
 	
 	
@@ -60,7 +58,8 @@ public class TestGffUCSCInfo extends TestCase{
 			int tessite = gffDetailGene.getLongestSplit().getTESsite();
 			int uagsite = gffDetailGene.getLongestSplit().getUAGsite();
 			gffDetailGene.setCoord(atgsite);
-			GffGeneIsoSearch gffGeneIsoSearch = gffDetailGene.getCoordSearchLongest();
+			GffGeneIsoInfo gffGeneIsoSearch = gffDetailGene.getLongestSplit();
+			
 			if ( gffDetailGene.getLongestSplit().ismRNA()) {
 				assertEquals(gffGeneIsoSearch.getLocDistance(atgsite, tsssite), gffDetailGene.getLongestSplit().getLenUTR5());
 				assertEquals(gffGeneIsoSearch.getLocDistance(tessite, uagsite), gffDetailGene.getLongestSplit().getLenUTR3());
@@ -81,7 +80,7 @@ public class TestGffUCSCInfo extends TestCase{
 			if (atg2uag == 918) {
 				System.out.println("ok");
 				gffDetailGene.setCoord(atgsite+1);
-				GffGeneIsoSearch gffGeneIsoSearchtest = gffDetailGene.getCoordSearchLongest();
+				GffGeneIsoInfo gffGeneIsoSearchtest = gffDetailGene.getLongestSplit();
 				System.out.println(gffGeneIsoSearchtest.getCod2UAGmRNA());
 				
 			}
@@ -117,11 +116,6 @@ public class TestGffUCSCInfo extends TestCase{
 				int cod2atg2 = gffGeneIsoSearch.getLocDistance(coordatgdown2, uagsite);
 				assertEquals(300, cod2atg2);
 			}
-			
-			
-			
-			
-			
 		}
 	}
 	
@@ -132,7 +126,7 @@ public class TestGffUCSCInfo extends TestCase{
 		}
 
 		gffDetailGene.setCoord(coord);
-		GffGeneIsoSearch gffGeneIsoSearchCod = gffDetailGene.getCoordSearchLongest();
+		GffGeneIsoInfo gffGeneIsoSearchCod = gffDetailGene.getLongestSplit();
 //		if (gffGeneIsoSearchCod.getCod2ATGmRNA() == 528) {
 //			System.out.println("stop");
 //		}

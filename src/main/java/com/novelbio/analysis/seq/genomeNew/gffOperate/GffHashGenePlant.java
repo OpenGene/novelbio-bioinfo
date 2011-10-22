@@ -71,7 +71,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	/**
 	 * mRNA类似名
 	 */
-	private static HashSet<String> hashmRNA = new HashSet<String>();
+	private static HashMap<String, String> hashmRNA = new HashMap<String, String>();
 	/**
 	 * gene类似名
 	 */
@@ -81,15 +81,15 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	 */
 	private void setHashName() {
 		if (hashmRNA.isEmpty()) {
-			hashmRNA.add("mRNA_TE_gene");
-			hashmRNA.add("mRNA");
-			hashmRNA.add("miRNA");
-			hashmRNA.add("tRNA");
-			hashmRNA.add("pseudogenic_transcript");
-			hashmRNA.add("snoRNA");
-			hashmRNA.add("snRNA");
-			hashmRNA.add("rRNA");
-			hashmRNA.add("ncRNA");
+			hashmRNA.put("mRNA_TE_gene",GffGeneIsoInfo.TYPE_GENE_MRNA_TE);
+			hashmRNA.put("mRNA",GffGeneIsoInfo.TYPE_GENE_MRNA);
+			hashmRNA.put("miRNA",GffGeneIsoInfo.TYPE_GENE_MIRNA);
+			hashmRNA.put("tRNA",GffGeneIsoInfo.TYPE_GENE_TRNA);
+			hashmRNA.put("pseudogenic_transcript",GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT);
+			hashmRNA.put("snoRNA",GffGeneIsoInfo.TYPE_GENE_SNORNA);
+			hashmRNA.put("snRNA",GffGeneIsoInfo.TYPE_GENE_SNRNA);
+			hashmRNA.put("rRNA",GffGeneIsoInfo.TYPE_GENE_RRNA);
+			hashmRNA.put("ncRNA",GffGeneIsoInfo.TYPE_GENE_NCRNA);
 		}
 		
 		if (hashgene.isEmpty()) {
@@ -162,7 +162,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 					LOCList.trimToSize();
 					 //把peak名称顺序装入LOCIDList
 					   for (GffDetailGene gffDetail : LOCList) {
-						   LOCChrHashIDList.add(gffDetail.locString);
+						   LOCChrHashIDList.add(gffDetail.getLocString());
 					   }
 				}
 				LOCList=new ArrayList<GffDetailGene>();//新建一个LOCList并放入Chrhash
@@ -182,7 +182,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 					}
 					gffDetailLOC.addATGUAG(cdsStart, cdsEnd);
 					if (cdsStart < 0 || cdsEnd < 0 || cdsStart > cdsEnd) {
-						System.out.println("GffHashPlantGeneError: 文件  " + gfffilename + "  本组或上组基因有问题，cdsStart或cdsEnd出错  " + gffDetailLOC.locString);
+						System.out.println("GffHashPlantGeneError: 文件  " + gfffilename + "  本组或上组基因有问题，cdsStart或cdsEnd出错  " + gffDetailLOC.getLocString());
 					}
 					mRNAsplit = false;// 全新的基因，将其归位false\
 					if (!ss[2].equals("gene")) {
@@ -202,8 +202,8 @@ public class GffHashGenePlant extends GffHashGeneAbs{
       			   gffDetailLOC.setTaxID(taxID);
       			   gffDetailLOC.numberstart=Integer.parseInt(ss[3].toLowerCase());gffDetailLOC.numberend=Integer.parseInt(ss[4]);//基因起止      		
       			   LOCList.add(gffDetailLOC);//添加进入LOClist
-      			   locHashtable.put(gffDetailLOC.locString, gffDetailLOC);//添加进入hash（LOCID）--GeneInforlist哈希表，确定各个基因和他们的类之间的关系    
-      			   LOCIDList.add(gffDetailLOC.locString);
+      			   locHashtable.put(gffDetailLOC.getLocString().toLowerCase(), gffDetailLOC);//添加进入hash（LOCID）--GeneInforlist哈希表，确定各个基因和他们的类之间的关系    
+      			   LOCIDList.add(gffDetailLOC.getLocString());
       		   }
       		   else {
       			   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  在本行可能没有指定的基因ID  " +content);
@@ -217,7 +217,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
       	    * 不管怎么加都是从第一个cds开始加到最后一个cds，正向的话就是从小加到大，反向就是从大加到小。
       	    * 一旦出现了mRNA，就要开始指定5UTR，3UTR，CDS的起点和终止
       	    */
-		   else if (hashmRNA.contains(ss[2])) 
+		   else if (hashmRNA.containsKey(ss[2])) 
 		   {
 			   if (!ss[2].equals("mRNA")) {
 				ncRNA = true;
@@ -231,7 +231,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 				   }
 				   gffDetailLOC.addATGUAG(cdsStart, cdsEnd);
 				   if (cdsStart <0 || cdsEnd<0 || cdsStart >= cdsEnd) {
-					   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.locString);
+					   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.getLocString());
 				   }
 				   mRNAsplit =false;
 			   }
@@ -239,7 +239,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   if(mRNAmatcher.find())
 			   {
 				   //每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
-				   gffDetailLOC.addsplitlist(mRNAmatcher.group());				   
+				   gffDetailLOC.addsplitlist(mRNAmatcher.group(), hashmRNA.get(ss[2]));	   
 				   //仿照UCSC的做法，如果是一个非编码的mRNA，那么cdsStart = cdsEnd = mRNAend
 				   mRNAstart = Integer.parseInt(ss[3]); mRNAend = Integer.parseInt(ss[4]); 
 				   cdsStart = -100; cdsEnd = -100;
@@ -319,7 +319,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   }
 		   gffDetailLOC.addATGUAG(cdsStart,cdsEnd);
 		   if (cdsStart <0 || cdsEnd<0 || cdsStart > cdsEnd) {
-			   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.locString);
+			   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.getLocString());
 		   }
 		   mRNAsplit = false;//全新的基因，将其归位false
 	   }
@@ -327,7 +327,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	   LOCList.trimToSize();
 	   //把peak名称顺序装入LOCIDList
 	   for (GffDetailGene gffDetail : LOCList) {
-		   LOCChrHashIDList.add(gffDetail.locString);
+		   LOCChrHashIDList.add(gffDetail.getLocString());
 	   }
 	   txtgff.close();
    }

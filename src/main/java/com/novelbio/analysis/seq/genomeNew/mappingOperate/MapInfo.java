@@ -8,10 +8,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbs;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.plot.java.HeatChartDataInt;
-
+/**
+ * 内建根据weight排序的方法
+ * @author zong0jie
+ *
+ */
 public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	String chrID = "";
 	int startLoc = GffCodAbs.LOC_ORIGINAL;
@@ -20,23 +25,65 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	static boolean min2max = true;
 	String title = "";
 	double[] value = null;
-	int summitLoc = GffCodAbs.LOC_ORIGINAL;
+	int flagLoc = GffCodAbs.LOC_ORIGINAL;
 	/**
-	 * 
 	 * @param chrID
-	 * @param startLoc 从0开始
+	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
 	 * @param endLoc 从0开始
+	 * @param flagLoc 特定的一个位点坐标，譬如ATGsite，summitSite等
 	 * @param flag 比较的标签，可以是表达值等
 	 * @param title 本条目的名字，譬如基因名等
 	 */
-	public MapInfo(String chrID, int startLoc, int endLoc, int summitLoc ,double flag, String title)
+	public MapInfo(String chrID, int startLoc, int endLoc, int flagLoc ,double weight, String title)
 	{
 		this.chrID = chrID;
 		this.startLoc = startLoc;
 		this.endLoc = endLoc;
-		this.weight = flag;
+		this.weight = weight;
 		this.title = title;
-		this.summitLoc = summitLoc;
+		this.flagLoc = flagLoc;
+	}
+	/**
+	 * @param chrID
+	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
+	 * @param endLoc 从0开始
+	 * @param flag 比较的标签，可以是表达值等
+	 * @param title 本条目的名字，譬如基因名等
+	 */
+	public MapInfo(String chrID,double weight, String title)
+	{
+		this.chrID = chrID;
+		this.weight = weight;
+		this.title = title;
+	}
+	/**
+	 * 设定一个位点，譬如ATGsite，SummitSite之类的
+	 * @param flagLoc
+	 */
+	public void setFlagLoc(int flagLoc) {
+		this.flagLoc = flagLoc;
+	}
+	/**
+	 * 设定标题之类的东西，symbol好了
+	 * @param title
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	/**
+	 * @param chrID
+	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
+	 * @param endLoc 从0开始
+	 * @param flag 比较的标签，可以是表达值等
+	 * @param title 本条目的名字，譬如基因名等
+	 */
+	public MapInfo(String chrID)
+	{
+		this.chrID = chrID;
+	}
+	
+	public void setWeight(double weight) {
+		this.weight = weight;
 	}
 	/**
 	 * 是否从小到大排序
@@ -47,8 +94,17 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	public String getChrID() {
 		return chrID;
 	}
-	public int getSummit() {
-		return summitLoc;
+	/**
+	 * 获得指定的位点，譬如summit或者atgsite等等
+	 * 如果site <  startLoc 
+	 *  或 site > endLoc，那么就取start和end的中间数(四舍五入)
+	 * @return
+	 */
+	public int getFlagSite() {
+		if (flagLoc >= startLoc && flagLoc <= endLoc) {
+			return flagLoc;
+		}
+		return (int)((double)(startLoc+endLoc)/2+0.5) ;
 	}
 	/**
 	 * 获得起点坐标
@@ -58,8 +114,10 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	{
 		return startLoc;
 	}
-	
-	public void setStart(int startLoc) {
+	public void setEndLoc(int endLoc) {
+		this.endLoc = endLoc;
+	}
+	public void setStartLoc(int startLoc) {
 		this.startLoc = startLoc;
 	}
 	/**
@@ -80,6 +138,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	}
 	/**
 	 * 用于比较的，从小到大比
+	 * 根据weight排序
 	 */
 	@Override
 	public int compareTo(MapInfo map) {
@@ -122,10 +181,10 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 			@Override
 			public int compare(MapInfo o1, MapInfo o2) {
 				if (o1.getChrID().equals(o2.getChrID())) {
-					if (o1.getSummit() == o2.getSummit()) {
+					if (o1.getFlagSite() == o2.getFlagSite()) {
 						return 0;
 					}
-					return o1.getSummit() < o2.getSummit() ? -1:1;
+					return o1.getFlagSite() < o2.getFlagSite() ? -1:1;
 				}
 				return o1.getChrID().compareTo(o2.getChrID());
 			}
@@ -143,10 +202,10 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 				lsTmp = hashLsMapInfo.get(mapInfo.chrID);
 			}
 			double[] info = new double[2];
-			info[0] = mapInfo.getSummit();
+			info[0] = mapInfo.getFlagSite();
 			info[1] = mapInfo.getWeight();
 			lsTmp.add(info);
-			hashMapInfo.put(mapInfo.getChrID()+mapInfo.getSummit(), mapInfo);
+			hashMapInfo.put(mapInfo.getChrID()+mapInfo.getFlagSite(), mapInfo);
 		}
 		
 		ArrayList<MapInfo> lsResult = new ArrayList<MapInfo>();

@@ -17,6 +17,7 @@ import javax.swing.tree.ExpandVetoException;
 import org.apache.commons.math.stat.correlation.PearsonsCorrelation;
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
+import org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 
 
@@ -32,18 +33,12 @@ import com.novelbio.analysis.seq.SeqComb;
 import com.novelbio.analysis.seq.blastZJ.Cell;
 import com.novelbio.analysis.seq.blastZJ.LongestCommonSubsequence;
 import com.novelbio.analysis.seq.blastZJ.SmithWaterman;
+import com.novelbio.analysis.seq.chipseq.BedPeak;
 import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
-import com.novelbio.analysis.seq.genomeNew2.GffChrChIP;
-import com.novelbio.analysis.seq.genomeNew2.GffChrHanYanChrom;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.ChrStringHash;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHash;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGenePlant;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneUCSC;
+import com.novelbio.analysis.seq.chipseq.BedPeakSicer;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.mapping.FastQMapAbs;
 import com.novelbio.analysis.seq.mapping.FastQMapBwa;
 import com.novelbio.analysis.seq.mapping.FastQMapSoap;
 import com.novelbio.analysis.seq.mapping.SAMtools;
@@ -71,15 +66,134 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		CopedID copedID = new CopedID("tp53", 9823, false);
-		copedID.setBlastLsInfo(1e-5, 9606);
-		String[] anno = copedID.getAnnoInfo(true);
-		for (String string : anno) {
-			System.out.println( string);
+		FastQ fastQ = new FastQ("/media/winE/NBC/Project/RNA-Seq_KGY/20110624_SalviaMiltiorrhiza/solexa/sra_data_1.fastQ", 0);
+		int a = fastQ.getSeqNum();
+		System.out.println(a);
+	}
+	
+	
+	/**
+	 * 开国银的solexa是单双端放在一起，而且是fasta格式，要将其转变为fastq格式
+	 * @throws Exception 
+	 */
+	private static void getFastQ(String fasta,String outFile) throws Exception {
+		String outFile1 = FileOperate.changeFileSuffix(outFile, "_1", null);
+		String outFile2 = FileOperate.changeFileSuffix(outFile, "_2", null);
+		TxtReadandWrite txtWrite1 = new TxtReadandWrite(outFile1, true);
+		TxtReadandWrite txtWrite2 = new TxtReadandWrite(outFile2, true);
+		
+		
+		
+		TxtReadandWrite txtRead = new TxtReadandWrite(fasta, false);
+		String content = "";
+		BufferedReader reader = txtRead.readfile();
+		String tmp1 = ""; String tmp2 = ""; int count = 0;
+		while ((content = reader.readLine()) != null) {
+			if (count == 0) {
+				tmp1 = content.replace("length=75", "").trim().replace(" ", "_").replace(">", "@");
+				if (tmp1.endsWith(".1")) {
+					tmp1 = tmp1.substring(0,tmp1.length() - 2)+"/1";
+				}
+				else {
+					System.out.println(content);
+				}
+			}
+			else if (count == 1) {
+				tmp1 = tmp1 + "\r\n"+content;
+			}
+			else if (count == 2) {
+				tmp1 = tmp1 + content + "\r\n+\r\nggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg";
+			}
+			else if (count == 3) {
+				tmp2 = content.replace("length=75", "").trim().replace(" ", "_").replace(">", "@");
+				if (tmp2.endsWith(".2")) {
+					tmp2 = tmp2.substring(0,tmp2.length() - 2)+"/2";
+				}
+				else {
+					System.out.println(content);
+				}
+			}
+			else if (count == 4) {
+				tmp2 = tmp2 + "\r\n"+content;
+			}
+			
+			else if (count == 5) {
+				tmp2 = tmp2 + content + "\r\n+\r\nggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg";
+				txtWrite1.writefileln(tmp1);
+				txtWrite2.writefileln(tmp2);
+				count = 0;
+				continue;
+			}
+			count ++;
+		}
+	}
+	
+	
+	
+	/**
+	 * 测序到bed文件的pipline
+	 */
+	public static void pipline() {
+		
+//		name();
+		try {
+			String seqFile1 = "/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/2.rawseq/2.rawseq.txt";
+			FastQMapBwa fastQ = new FastQMapBwa(seqFile1,FastQ.QUALITY_MIDIAN,"" +
+					"/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/2.bwa_tigr6.1_norednuntcdna_withnopolya.sam" ,true);
+//			
+			fastQ.setTrimPolyA(true,false);
+			fastQ.setAdaptorRight("TCGTATGCCGTCTTCTGTT");
+			fastQ.setReadsLenMin(15);
+			fastQ.setAdapterParam(6, 3);
+			fastQ = fastQ.filterReads("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/2.rawseq/2.filterAll.txt");
+			String chrFile = "/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/IndexBwa/TIGRrice6.1_NoRendunt.all.cDNA";
+			fastQ.setFilePath("", chrFile);		
+			fastQ.setMapQ(5);
+//			fastQ2.mapReads();
+			
+			BedSeq bedSeq = fastQ.getBedFileSE("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/2.bwa_all.bed");
+//			bedSeq = new BedSeq("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/1.bwa_all.bed");
+			bedSeq.sortBedFile("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/2.bwa_all_sort.bed");
+			System.out.println(bedSeq.getSeqNum());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		try {
+			String seqFile1 = "/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/3.rawseq/3.rawseq.txt";
+			FastQMapBwa fastQ = new FastQMapBwa(seqFile1,FastQ.QUALITY_MIDIAN,"" +
+					"/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/3.bwa_tigr6.1_norednuntcdna_withnopolya.sam" ,true);
+//			
+			fastQ.setTrimPolyA(true,false);
+			fastQ.setAdaptorRight("TCGTATGCCGTCTTCTGTT");
+			fastQ.setReadsLenMin(15);
+			fastQ.setAdapterParam(6, 3);
+			fastQ = fastQ.filterReads("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/3.rawseq/3.filterAll.txt");
+
+			String chrFile = "/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/IndexBwa/TIGRrice6.1_NoRendunt.all.cDNA";
+			fastQ.setFilePath("", chrFile);		
+			fastQ.setMapQ(5);
+//			fastQ2.mapReads();
+			
+			BedSeq bedSeq = fastQ.getBedFileSE("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/3.bwa_all.bed");
+//			bedSeq = new BedSeq("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/1.bwa_all.bed");
+			bedSeq.sortBedFile("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/3.bwa_all_sort.bed");
+			System.out.println(bedSeq.getSeqNum());
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 		
+		
+		
+		
+		
+		
+		
 	}
-
+	
+	public static void name() {
+		SeqFastaHash seqHash = new SeqFastaHash("/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/IndexBwa/TIGRrice6.1all.cDNA", "LOC_Os\\d{2}g\\d{5}", false, false);
+		seqHash.writeFileSep("/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/IndexBwa/", "TIGRrice6.1_NoRendunt.all.cDNA", new int[]{-1,-1}, false, 100);
+	}
 	private static void testFdrFunction() throws Exception {
 		ArrayList<Double> lsinput = new ArrayList<Double>();
 		ExcelOperate exOperate = new ExcelOperate();

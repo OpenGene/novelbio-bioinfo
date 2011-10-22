@@ -1,5 +1,7 @@
 package com.novelbio.analysis.seq.chipseq;
 
+import java.util.ArrayList;
+
 public interface PeakCalling {
 	
 	/**
@@ -10,5 +12,7 @@ public interface PeakCalling {
 	 * @param outFile 目标文件夹，不用加"/"
 	 * @throws Exception 
 	 */
-	public void peakCallling( String bedTreat,String bedCol,String species, String outFilePath ,String prix);
+	public void peakCallling(String bedCol,String species, String outFilePath ,String prix);
+	
+	
 }

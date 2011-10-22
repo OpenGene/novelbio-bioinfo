@@ -50,30 +50,30 @@ public class RunUpDateDB {
 			String pathGen2Refseq = fold + "gene2refseq";
 			String outGen2RefStat = fold + "outTaxgene2refseq";
 			String outGen2RefID = fold + "outTaxGen2RefID";
-//			copeNCBIID(taxIDFile, pathGene2accessionID, outGen2AccTaxID, 
-//					pathGene2enseb, outGen2EnsembTaxID, pathGen2Refseq, outGen2RefStat, outGen2RefID);
+			copeNCBIID(taxIDFile, pathGene2accessionID, outGen2AccTaxID, 
+					pathGene2enseb, outGen2EnsembTaxID, pathGen2Refseq, outGen2RefStat, outGen2RefID);
 			System.out.println("copeNCBIID OK");
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String uniIDmapSelect = fold + "idmapping_selected.tab";
 			String taxuniIDmapSelect = fold + "taxuniIDmapSelect";
 			String outUniIDmapSelectNCBIID = fold + "outUniIDmapSelectNCBIID";
 			String outUniIDmapSelectUniID =  fold + "outUniIDmapSelectUniID";
-//		copeUniID(taxIDFile, uniIDmapSelect, taxuniIDmapSelect, outUniIDmapSelectNCBIID, outUniIDmapSelectUniID);
+		copeUniID(taxIDFile, uniIDmapSelect, taxuniIDmapSelect, outUniIDmapSelectNCBIID, outUniIDmapSelectUniID);
 		
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String Ref2Uni = fold + "gene_refseq_uniprotkb_collab.txt";
 			String outUniIDmapSelectUniIDnone = fold + "outUniIDmapSelectUniIDnone";//先用outUniIDmapSelectUniID查找NCBIID，没找到的写入该文本
-//			upDateNCBIID(taxIDFile, outGen2AccTaxID, outGen2EnsembTaxID, outUniIDmapSelectNCBIID, Ref2Uni, outUniIDmapSelectUniID, outUniIDmapSelectUniIDnone);
+			upDateNCBIID(taxIDFile, outGen2AccTaxID, outGen2EnsembTaxID, outUniIDmapSelectNCBIID, Ref2Uni, outUniIDmapSelectUniID, outUniIDmapSelectUniIDnone);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String geneInfoFile = fold + "gene_info";
 			String taxGeneInfoFile = fold + "taxGeneInfoFile";
-//			upDateNCBIIDSymbol(taxIDFile, geneInfoFile, taxGeneInfoFile);
-//			upDateUniID(outUniIDmapSelectUniIDnone);
+			upDateNCBIIDSymbol(taxIDFile, geneInfoFile, taxGeneInfoFile);
+			upDateUniID(outUniIDmapSelectUniIDnone);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String gene_associationgoa_unipro = fold + "gene_association.goa_uniprot";
 			String taxgene_associationgoa_unipro = fold + "taxgene_associationgoa_unipro";
-//			upDateUniIDgene_associationgoa_uniprot(taxIDFile, gene_associationgoa_unipro, taxgene_associationgoa_unipro, taxGeneInfoFile);
-//			UpDateNBCDBFile.upDateGeneInfo(taxGeneInfoFile);
+			upDateUniIDgene_associationgoa_uniprot(taxIDFile, gene_associationgoa_unipro, taxgene_associationgoa_unipro, taxGeneInfoFile);
+			UpDateNBCDBFile.upDateGeneInfo(taxGeneInfoFile);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String affyFold = "/media/winE/Bioinformatics/Affymetrix/";
 			String AffyFileHuman = affyFold + "Human/Human Genome U133 Plus 2.0/HG-U133_Plus_2.na31.annot.csv/HG-U133_Plus_2.na31.annotModify.xls";
@@ -96,8 +96,8 @@ public class RunUpDateDB {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			String goterm = fold + "GO.terms_alt_ids";
 			String gene2GoFile = fold + "gene2go";
-//			upDateGen2Go(goterm, taxIDFile, gene2GoFile, taxgene_associationgoa_unipro, taxuniIDmapSelect);
-//			
+			upDateGen2Go(goterm, taxIDFile, gene2GoFile, taxgene_associationgoa_unipro, taxuniIDmapSelect);
+			
 //			upDateAffyGo(AffyFileHuman, NovelBioConst.DBINFO_AFFY_HUMAN_U133_PLUS2, 9606);
 //			upDateAffyGo(AffyFileMouse, NovelBioConst.DBINFO_AFFY_MOUSE_430_2, 10090);
 //			upDateAffyGo(AffyFileCow, NovelBioConst.DBINFO_AFFY_COW, 9913);
@@ -146,7 +146,7 @@ public class RunUpDateDB {
 			//////////////  毕 赤 酵 母  ///////////////////////////////////
 			String pipasfunction1009 = "/home/zong0jie/桌面/yeast/Pichia/pipas_function-1009.txt";
 			String Pichia_GS115GO_0509 = "/home/zong0jie/桌面/yeast/Pichia/Pichia_GS115.GO_0509/Pichia_GS115.GO_0509";
-			PPA( pipasfunction1009,  Pichia_GS115GO_0509);
+//			PPA( pipasfunction1009,  Pichia_GS115GO_0509);
 			
 			
 		} catch (Exception e) {

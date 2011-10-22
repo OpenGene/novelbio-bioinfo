@@ -120,7 +120,7 @@ public class GffChrGene {
 	protected List<MapInfo> getLocInfo(ArrayList<MapInfo> lssummit, int range, boolean sortmin2max, int thisBinNum) {
 		ArrayList<MapInfo> lsTmp = new ArrayList<MapInfo>();
 		for (MapInfo mapInfo : lssummit) {
-			MapInfo mapInfo2 = new MapInfo(mapInfo.getChrID(), mapInfo.getSummit() - range, mapInfo.getSummit() + range, mapInfo.getSummit(), mapInfo.getWeight(),mapInfo.getTitle());
+			MapInfo mapInfo2 = new MapInfo(mapInfo.getChrID(), mapInfo.getFlagSite() - range, mapInfo.getFlagSite() + range, mapInfo.getFlagSite(), mapInfo.getWeight(),mapInfo.getTitle());
 			lsTmp.add(mapInfo2);
 		}
 		MapInfo.sortPath(sortmin2max);
@@ -245,7 +245,7 @@ public class GffChrGene {
 		HashSet<GffDetailGene> hashGffDetailGenes = new HashSet<GffDetailGene>();
 		for (MapInfo mapInfo : lsPeakInfo) {
 			if (mapInfo.getStart() <0 && mapInfo.getStart() > -1000) {
-				mapInfo.setStart(0);;
+				mapInfo.setStartLoc(0);;
 			}
 			hashGffDetailGenes.addAll(getPeakStructureGene(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), structure ) );
 		}
@@ -291,7 +291,7 @@ public class GffChrGene {
 		lsResult.add(new String[]{"GeneBody","0"});
 		
 		for (MapInfo mapInfo : lsPeakInfo) {
-			GffCodGene gffCodGene = gffHashGene.searchLocation(mapInfo.getChrID(), mapInfo.getSummit());
+			GffCodGene gffCodGene = gffHashGene.searchLocation(mapInfo.getChrID(), mapInfo.getFlagSite());
 			if (gffCodGene.isInsideLoc()) {
 				String[] tmpAll = lsResult.get(5); //GeneBody
 				tmpAll[1] = Integer.parseInt(tmpAll[1]) + 1 + "";

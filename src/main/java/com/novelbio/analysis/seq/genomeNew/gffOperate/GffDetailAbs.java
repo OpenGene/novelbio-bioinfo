@@ -68,9 +68,10 @@ public abstract class GffDetailAbs {
 	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
 	 * peak: peak起点_peak终点
 	 */
-	protected String locString = ""; //loc name
-	
-	
+	private String locString = ""; //loc name
+	public void setLocString(String locString) {
+		this.locString = locString;
+	}
 	/**
 	 * @GffHashGene
 	 * 本基因起点,起点位置总是小于终点，无视基因方向
@@ -115,7 +116,7 @@ public abstract class GffDetailAbs {
 	 */
 	public GffDetailAbs(String chrID, String locString,boolean cis5to3)
 	{
-		this.ChrID = chrID;
+		this.ChrID = chrID.toLowerCase();
 		this.locString = locString;
 		this.cis5to3 = cis5to3;
 	}

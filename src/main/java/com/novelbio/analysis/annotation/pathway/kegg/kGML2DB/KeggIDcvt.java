@@ -46,6 +46,22 @@ public class KeggIDcvt {
 				break;
 			}
 		}
+		while ((content=reader.readLine())!=null) 
+		{
+			String[] ss=content.split("\t"); 
+			long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim());
+			String accID = ss[0].split(":")[1].trim();
+			NCBIID ncbiid=new NCBIID();
+			ncbiid.setGeneId(geneID); ncbiid.setAccID(accID); ncbiid.setTaxID(TaxID); 
+			ArrayList<NCBIID> lsNcbiids=DaoFSNCBIID.queryLsNCBIID(ncbiid);
+			if (lsNcbiids==null || lsNcbiids.size() == 0) {
+				ncbiid.setDBInfo("KEGG");
+				DaoFSNCBIID.InsertNCBIID(ncbiid);
+			}
+		}
+		
+		
+		
 		///////////////////////////////////////////////////////////////////////////////////////
 		if (TaxID==0) {
 			System.err.println("在NCBIID表中没有找到该物种的taxID");
@@ -62,7 +78,6 @@ public class KeggIDcvt {
 			if (DaoKIDgen2Keg.queryLsKGIDgen2Keg(kgiDgen2Keg) == null || DaoKIDgen2Keg.queryLsKGIDgen2Keg(kgiDgen2Keg).size() == 0) {
 				DaoKIDgen2Keg.InsertKGIDgen2Keg(kgiDgen2Keg);
 			}
-			
 		}
 	}
 	

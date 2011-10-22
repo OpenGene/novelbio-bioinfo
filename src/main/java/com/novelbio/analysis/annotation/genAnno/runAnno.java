@@ -8,36 +8,41 @@ public class runAnno {
       = Logger.getLogger(runAnno.class);
 	public static void main(String[] args) 
 	{
-//		anno();
-		annoGeneID();
+		anno();
+//		annoGeneID();
 	}
 	//ÃÌº”◊¢ Õ
 	public static void anno() {
-		String parentFile = "/home/zong0jie/◊¿√Ê/hiv interaction/hiv interaction/";
+		
 		try {
-			AnnoQuery.anno(parentFile+"gag_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
-			AnnoQuery.anno(parentFile+"gag_results.xls", 0,3, false, 9606, 1e-10, "");
+			String parentFile = "/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/DGEexpress/Intersect1vs2°¢3/";
+//			AnnoQuery.anno(parentFile+"X2vsX1_filter.xls", 39947, 1, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+//			AnnoQuery.anno(parentFile+"X3vsX1_filter.xls", 39947, 1, false, 9606, 1e-10, "");
 			
-			AnnoQuery.anno(parentFile+"nef_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
-			AnnoQuery.anno(parentFile+"nef_results.xls", 0,3, false, 9606, 1e-10, "");
+			AnnoQuery.anno(parentFile+"1”Î2°¢3∂º”–≤Ó“Ïµƒª˘“Ú.xls", 39947, 1, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+			 
+//			AnnoQuery.annoGeneID2symbol(parentFile+"gag_results.xls",9606,3,false,9606,1e-10);
+		} catch (Exception e) {
+			e.printStackTrace()	;
+		}
+		try {
+			String parentFile = "/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/DGEexpress/Intersect2vs1°¢3/";
+//			AnnoQuery.anno(parentFile+"X2vsX1_filter.xls", 39947, 1, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+//			AnnoQuery.anno(parentFile+"X3vsX1_filter.xls", 39947, 1, false, 9606, 1e-10, "");
 			
-			AnnoQuery.anno(parentFile+"pol_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
-			AnnoQuery.anno(parentFile+"pol_results.xls", 0,3, false, 9606, 1e-10, "");
+			AnnoQuery.anno(parentFile+"2”Î1°¢3∂º”–≤Ó“Ïµƒª˘“Ú.xls", 39947, 1, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+			 
+//			AnnoQuery.annoGeneID2symbol(parentFile+"gag_results.xls",9606,3,false,9606,1e-10);
+		} catch (Exception e) {
+			e.printStackTrace()	;
+		}
+		try {
+			String parentFile = "/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/DGEexpress/Intersect3vs1°¢2/";
+//			AnnoQuery.anno(parentFile+"X2vsX1_filter.xls", 39947, 1, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+//			AnnoQuery.anno(parentFile+"X3vsX1_filter.xls", 39947, 1, false, 9606, 1e-10, "");
 			
-			AnnoQuery.anno(parentFile+"rev_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
-			AnnoQuery.anno(parentFile+"rev_results.xls", 0,3, false, 9606, 1e-10, "");
-			
-			AnnoQuery.anno(parentFile+"tat_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
-			AnnoQuery.anno(parentFile+"tat_results.xls", 0,3, false, 9606, 1e-10, "");
-			
-			AnnoQuery.anno(parentFile+"vif_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
-			AnnoQuery.anno(parentFile+"vif_results.xls", 0,3, false, 9606, 1e-10, "");
-			
-			AnnoQuery.anno(parentFile+"vpr_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
-			AnnoQuery.anno(parentFile+"vpr_results.xls", 0,3, false, 9606, 1e-10, "");
-			
-			AnnoQuery.anno(parentFile+"vpu_results.xls", 0,8, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
-			AnnoQuery.anno(parentFile+"vpu_results.xls", 0,3, false, 9606, 1e-10, "");
+			AnnoQuery.anno(parentFile+"3”Î1°¢2∂º”–≤Ó“Ïµƒª˘“Ú.xls", 39947, 1, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
+			 
 //			AnnoQuery.annoGeneID2symbol(parentFile+"gag_results.xls",9606,3,false,9606,1e-10);
 		} catch (Exception e) {
 			e.printStackTrace()	;

@@ -23,13 +23,13 @@ public class runRegDistance {
 		 int rowEnd = -1;
 		 int binNum = 5; //精度
 		 int range = 5000;//上下游多少距离
-		 String mapparentFIle="/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/3N/result/";
-		 String PeakparentFile = mapparentFIle+ "peakCalling/";
+		 String mapparentFIle="/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/2W.clean.fq/result/";
+		 String PeakparentFile = mapparentFIle;//+ "peakCalling/";
 		try {
-			String mapFilePath=mapparentFIle+"3Nextend_sort.bed";
+			String mapFilePath=mapparentFIle+"2Wextend_Sort.bed";
 			
-			String txtPeakFile= PeakparentFile + "ZHY_peaks_summit.xls";
-			String resultPrefix = "3N";
+			String txtPeakFile= PeakparentFile + "2WseSort-W200-G600-E100.scoreisland";
+			String resultPrefix = "2W";
 			
 			
 			
@@ -39,10 +39,10 @@ public class runRegDistance {
 			
 			RegDensity tssDistance=new RegDensity();
 			tssDistance.setInvNum(binNum);
-//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
-//					NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
-			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
-					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+					NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
+//			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
+//					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
 			
 			
 			

@@ -3,11 +3,12 @@ package com.novelbio.analysis.seq.chipseq;
 import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class BedPeakMacs extends BedSeq implements PeakCalling{
+public class BedPeakMacs extends BedPeak implements PeakCalling{
 
 	public static final String SPECIES_RICE = "os";
 	public static final String SPECIES_HUMAN = "hs";
@@ -57,8 +58,7 @@ public class BedPeakMacs extends BedSeq implements PeakCalling{
 	 * @param prix Ñù±¾Ç°×º
 	 * @throws Exception
 	 */
-	public void peakCallling(String thisPath, String bedCol,
-			String species, String outFilePath, String prix) {
+	public void peakCallling(String bedCol, String species, String outFilePath, String prix) {
 		String effge = "";
 		String col = "";
 		String name = "";
@@ -78,22 +78,20 @@ public class BedPeakMacs extends BedSeq implements PeakCalling{
 			name = " -n "+prix;
 		}
 		String cmd = "macs14 -t "+getSeqFile() +col+name + effge + mfole + pvalue ;//+ "-w";
-		TxtReadandWrite txtCmd = new TxtReadandWrite();
-		txtCmd.setParameter(outFilePath+"/macs.sh", true, false);
+		TxtReadandWrite txtCmd = new TxtReadandWrite( outFilePath+"/macs.sh", true);
 		txtCmd.writefile(cmd);
 		txtCmd.close();
 		CmdOperate cmdOperate = new CmdOperate("sh "+outFilePath+"/macs.sh");
 		cmdOperate.doInBackground();
-		String peakFile = FileOperate.moveFile(thisPath+"/"+prix+"_peaks.xls", outFilePath,true);
-		FileOperate.moveFile(thisPath+"/"+prix+"_peaks.bed", outFilePath+"/TmpPeakInfo",true);
-		FileOperate.moveFile(thisPath+"/"+prix+"_negative_peaks.xls", outFilePath+"/TmpPeakInfo"+prix+"/",true);
-		FileOperate.moveFile(thisPath+"/"+prix+"_model.r", outFilePath+"/TmpPeakInfo"+prix+"/",true);
-		FileOperate.moveFile(thisPath+"/"+prix+"_diag.xls", outFilePath+"/TmpPeakInfo"+prix+"/",true);
-		FileOperate.moveFile(thisPath+"/"+prix+"_summits.bed", outFilePath+"/TmpPeakInfo"+prix+"/",true);
-		FileOperate.moveFolder(thisPath+"/"+prix+"_MACS_wiggle", outFilePath+"/TmpPeakInfo"+prix+"/",true);
+		String peakFile = FileOperate.moveFile(PathDetail.getProjectPath()+"/"+prix+"_peaks.xls", outFilePath,true);
+		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_peaks.bed", outFilePath+"/TmpPeakInfo",true);
+		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_negative_peaks.xls", outFilePath+"/TmpPeakInfo"+prix+"/",true);
+		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_model.r", outFilePath+"/TmpPeakInfo"+prix+"/",true);
+		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_diag.xls", outFilePath+"/TmpPeakInfo"+prix+"/",true);
+		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_summits.bed", outFilePath+"/TmpPeakInfo"+prix+"/",true);
+		FileOperate.moveFolder(PathDetail.getProjectPath() + "/" + prix+"_MACS_wiggle", outFilePath+"/TmpPeakInfo"+prix+"/",true);
 		FileOperate.delFile(outFilePath+"/macs.sh");
 		copeMACSPeakFile(peakFile, FileOperate.changeFileSuffix(peakFile, "_summit", null));
-		
 	}
 	
 	/**
@@ -132,6 +130,8 @@ public class BedPeakMacs extends BedSeq implements PeakCalling{
 		TxtReadandWrite txtOut = new TxtReadandWrite(outPut, true);
 		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
 	}
+
+ 
 	
 	
 	

@@ -27,9 +27,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffsearchCG;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchPeak;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchRepeat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchUCSCgene;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqHashAbs;
-import com.novelbio.analysis.seq.genomeNew2.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -199,9 +197,9 @@ public class GffChrUnion {
 	public void loadMap(String mapFile,String chrFilePath,String sep,int colChrID,int colStartNum,int colEndNum,int invNum,int tagLength) 
 	{
 		
-		mapReads=new MapReads(5, chrFilePath, mapFile,null);
+		mapReads=new MapReads();
 		try {
-			readsNum = mapReads.ReadMapFile(true, -1, 0, false, null);//(mapFile, chrFilePath, sep, colChrID, colStartNum, colEndNum, invNum);
+			readsNum = mapReads.ReadMapFile(mapFile, chrFilePath, sep, colChrID, colStartNum, colEndNum, invNum);//(true, -1, 0, false, null);//(mapFile, chrFilePath, sep, colChrID, colStartNum, colEndNum, invNum);
 			if (tagLength>20) {
 				mapReads.setTagLength(tagLength);
 			}
@@ -222,9 +220,10 @@ public class GffChrUnion {
 	 */
 	public void loadMap(String mapFile,String chrFilePath,String regx,String sep,int colChrID,int colStartNum,int colEndNum,int invNum,int tagLength) 
 	{
-		mapReads=new MapReads(invNum, chrFilePath, mapFile,regx);
+		mapReads=new MapReads();
+//		mapReads=new MapReads(invNum, chrFilePath, mapFile,regx);
 		try {
-			readsNum = mapReads.ReadMapFile(false, -1, 0, false, null);//(mapFile, chrFilePath, sep, colChrID, colStartNum, colEndNum, invNum);
+			readsNum = mapReads.ReadMapFile(mapFile, chrFilePath, sep, colChrID, colStartNum, colEndNum, invNum);//(true, -1, 0, false, null);//(mapFile, chrFilePath, sep, colChrID, colStartNum, colEndNum, invNum);
 			if (tagLength>20) {
 				mapReads.setTagLength(tagLength);
 			}

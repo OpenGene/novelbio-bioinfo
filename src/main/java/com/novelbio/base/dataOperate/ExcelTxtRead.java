@@ -21,6 +21,124 @@ import com.novelbio.base.dataStructure.ArrayOperate;
  */
 public class ExcelTxtRead {
 	private static final Logger logger = Logger.getLogger(ExcelTxtRead.class);
+	
+	/**
+	 * 指定excel/txt文件，以及需要读取的列和行
+	 * @param excelFile 待读取的excel文件
+	 * @param columnID 待读取的列，int[]中间是读取的第几列，读取结果会按照指定的列的顺序给出
+	 * @param rowStart
+	 * @param rowEnd 如果rowEnd<1，则一直读到sheet1文件结尾
+	 * @return
+	 */
+	@Deprecated
+	public static String[][] readExcelTxt(String excelFile,int[] columnID,int rowStart,int rowEnd)
+	{
+		if (ExcelOperate.isExcel(excelFile)) {
+			return readExcel(excelFile, columnID, rowStart, rowEnd);
+		}
+		try {
+			return readtxtExcel(excelFile, "\t", columnID, rowStart, rowEnd);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * 指定excel/txt文件，以及需要读取的列和行
+	 *  自动将第一列空位或者null的行删除
+	 * @param excelFile 待读取的excel文件
+	 * @param columnID 待读取的列，int[]中间是读取的第几列，读取结果会按照指定的列的顺序给出
+	 * @param rowStart
+	 * @param rowEnd 如果rowEnd<1，则一直读到sheet1文件结尾
+	 * @return 
+	 */
+	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int[] columnID,int rowStart,int rowEnd)
+	{
+		return readLsExcelTxt(excelFile, columnID, rowStart, rowEnd,true);
+	}
+	
+	/**
+	 * 
+	 * 指定excel/txt文件，以及需要读取的列和行
+	 * @param excelFile 待读取的excel文件
+	 * @param columnID 待读取的列，int[]中间是读取的第几列，读取结果会按照指定的列的顺序给出
+	 * @param rowStart
+	 * @param rowEnd 如果rowEnd<1，则一直读到sheet1文件结尾
+	 * @param DelFirst 是否将第一列空位或者null的行删除
+	 * @return
+	 */
+	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int[] columnID,int rowStart,int rowEnd, boolean DelFirst)
+	{
+		String[][] tmpResult = null;
+		if (ExcelOperate.isExcel(excelFile)) {
+			tmpResult = readExcel(excelFile, columnID, rowStart, rowEnd);
+		}
+		try {
+			tmpResult = readtxtExcel(excelFile, "\t", columnID, rowStart, rowEnd);
+		} catch (Exception e) {
+			return null;
+		}
+		ArrayList<String[]> result = new ArrayList<String[]>();
+		for (String[] strings : tmpResult) {
+			if (DelFirst && (strings[0] == null || strings[0].trim().equals(""))) {
+				continue;
+			}
+			result.add(strings);
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * 给定文件，xls2003/2007/txt，获得它们的信息，用arraylist-string[]保存
+	 * @param File 文件名
+	 * @param firstlinels1 从第几行开始读去
+	 * @param sep 如果是txt的话，间隔是什么
+	 * @return
+	 * @throws Exception
+	 */
+	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int firstlinels1)
+	{
+		ArrayList<String[]> ls1=null;
+		if (ExcelOperate.isExcel(excelFile)) {
+			ExcelOperate excel = new ExcelOperate(excelFile);
+			ls1 = excel.ReadLsExcel(firstlinels1, 1, excel.getRowCount(), excel.getColCount());
+			excel.Close();
+			return ls1;
+		}
+		TxtReadandWrite txt = new TxtReadandWrite(excelFile, false);
+		int txtRowNum = txt.ExcelRows();
+		ls1=txt.ExcelRead("\t", firstlinels1, 1,txtRowNum , -1, 1);//从目标行读取
+		txt.close();
+		return ls1;
+	}
+	
+	/**
+	 * 
+	 * 给定文件，xls2003/2007/txt，获得它们的信息，用arraylist-string[]保存
+	 * @param excelFile
+	 * @param rowStart 
+	 * @param rowEnd 值小于等于0时，读取全部行
+	 * @param colStart 值小于等于0时，读取全部列
+	 * @param colEnd
+	 * @return
+	 * @throws Exception
+	 */
+	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int rowStart, int rowEnd, int colStart, int colEnd) throws Exception 
+	{
+		ArrayList<String[]> ls1=null;
+		if (ExcelOperate.isExcel(excelFile)) {
+			ExcelOperate excel = new ExcelOperate(excelFile);
+			ls1 = excel.ReadLsExcel(rowStart, colStart, rowEnd, colEnd);
+			excel.Close();
+			return ls1;
+		}
+		TxtReadandWrite txt = new TxtReadandWrite(excelFile, false);
+		ls1=txt.ExcelRead("\t", rowStart, colStart,rowEnd , colEnd, 0);//从目标行读取
+		txt.close();
+		return ls1;
+	}
+	
 	/**
 	 * 指定excel文件，以及需要读取的列和行
 	 * @param excelFile 待读取的excel文件
@@ -29,6 +147,7 @@ public class ExcelTxtRead {
 	 * @param rowEnd 如果rowEnd<1，则一直读到sheet1文件结尾
 	 * @return
 	 */
+	@Deprecated
 	public static String[][] readExcel(String excelFile,int[] columnID,int rowStart,int rowEnd) 
 	{
 		ExcelOperate excelOperate=new ExcelOperate();
@@ -55,6 +174,7 @@ public class ExcelTxtRead {
 	 * @return
 	 * @throws Exception 
 	 */
+	@Deprecated
 	public static String[][] readtxtExcel(String txtFile,String sep,int[] columnID,int rowStart,int rowEnd) throws Exception 
 	{
 		TxtReadandWrite txtOperate=new TxtReadandWrite();
@@ -112,25 +232,10 @@ public class ExcelTxtRead {
 	 * @return
 	 * @throws Exception
 	 */
+    @Deprecated
 	public static ArrayList<String[]> getFileToList(String File,int firstlinels1, String sep) throws Exception 
 	{
-		ArrayList<String[]> ls1=null;ArrayList<String[]> ls2=null;
-		TxtReadandWrite txt = new TxtReadandWrite(File,false);
-		
-		try {
-			ExcelOperate excel = new ExcelOperate();
-			excel.openExcel(File);
-			ls1 = excel.ReadLsExcel(firstlinels1, 1, excel.getRowCount(), excel.getColCount(2));
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		if (ls1 == null || ls1.size()<1) {
-			int txtRowNum = txt.ExcelRows();
-			ls1=txt.ExcelRead(sep, firstlinels1, 1,txtRowNum , -1, 1);//从目标行读取
-		}
-		txt.close();
-		return ls1;
+		return readLsExcelTxt(File, firstlinels1);
 	}
 	
 	/**
@@ -141,6 +246,7 @@ public class ExcelTxtRead {
 	 * @return
 	 * @throws Exception
 	 */
+	@Deprecated
 	public static String[][] getFileToArray(String File,int firstlinels1, String sep)
 	{
 		String[][] ls1=null;

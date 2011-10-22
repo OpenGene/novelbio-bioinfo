@@ -12,7 +12,10 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 public class SeqHash implements SeqHashInt{
 private static Logger logger = Logger.getLogger(SeqHash.class);
+	String chrFile = "";
+	SeqHashAbs seqHashAbs = null;
 	/**
+	 * 重名文件就返回，认为一样的东西
 	 * @param chrFile 序列文件或序列文件夹
 	 * @param regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，则用该正则表达式提取含有该文件名的文件
 	 * 单文件默认为"";文件夹默认为"\\bchr\\w*"；
@@ -21,6 +24,9 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	 */
 	public SeqHash(String chrFile)
 	{
+		if (this.chrFile.equals(chrFile)) {
+			return;
+		}
 		if (FileOperate.isFile(chrFile)) {
 			seqHashAbs =new SeqFastaHash(chrFile, "", true, false);
 		}
@@ -28,7 +34,13 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 			seqHashAbs = new ChrStringHash(chrFile, "\\bchr\\w*", true);
 		}
 	}
-	
+	/**
+	 * 返回文件名 
+	 * @return
+	 */
+	public String getChrFile() {
+		return chrFile;
+	}
 	/**
 	 * @param chrFile 序列文件或序列文件夹
 	 * @param regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，则用该正则表达式提取含有该文件名的文件
@@ -85,7 +97,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 		this.TOLOWCASE = TOLOWCASE;
 	}
 	
-	SeqHashAbs seqHashAbs = null;
+
 	/**
 	 * 结果的文件是否转化为大小写
 	 * True：小写
@@ -100,8 +112,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	
 	@Override
 	public ArrayList<String[]> getChrLengthInfo() {
-		seqHashAbs.getChrLengthInfo();
-		return null;
+		return seqHashAbs.getChrLengthInfo();
 	}
 
 	@Override

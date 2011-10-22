@@ -183,8 +183,10 @@ public class MapReads {
 		this.invNum = invNum;
 		this.mapFile = mapFile;
 	}
-
-	
+	static boolean printChrID = false;
+	public static void setPrintChrID(boolean print) {
+		printChrID = print;
+	}
 	/**
 	 * @param chrLenFile 给定文件，指定每条染色体的长度<br>
 	 * 文件格式为： chrID \t chrLen   如 chr1 \t  23456
@@ -280,8 +282,10 @@ public class MapReads {
 				}
 				lastChr = tmp[colChrID].trim().toLowerCase();// 实际这是新出现的ChrID
 				// ////////////////释放内存，感觉加上这段有点用，本来内存到1.2g，加了后降到990m///////////////////////////
-				if (count%200 == 0) {
-					System.out.println(lastChr);
+				if (printChrID) {
+					if (count%1000 == 0) {
+						System.out.println(lastChr);
+					}
 				}
 //				chrBpReads = null;// 看看能不能释放掉内存
 //				System.gc();// 显式调用gc

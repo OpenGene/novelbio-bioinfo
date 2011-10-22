@@ -216,7 +216,23 @@ public class MathComput {
 			return unsortNum[length/2];
 	}
 	
-	
+	/**
+	 * 输入数据，获得平均数
+	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * 用于获得每10个bp的tag堆积数的中位数
+	 * @return
+	 */
+	public static double max(ArrayList<? extends Number> lsNum)
+	{
+		double max = lsNum.get(0).doubleValue();
+		for (Number number : lsNum) {
+			double tmp = number.doubleValue();
+			if (tmp > max) {
+				max = tmp;
+			}
+		}
+		return max;
+	}
 	/**
 	 * 输入数据进行排序，
 	 * @return
@@ -452,7 +468,39 @@ public class MathComput {
 		return result;
 	}
 	
-	
+	/**
+	 * 这个是为韩燕做的
+	 * 给定一个数组，指定ATG所在的位置(实际位置)，然后从该位置向前(开区间)，向后(闭区间)，根据给定的分割数，指定进行合并，最后获得指定分割数量的数组
+	 * 用于将500或更多份的基因中tag累计数缩小到100份内
+	 * @param treatNum invNum里面的bp具体值
+	 * @param invBpNum 每一块里面的bp数，比方韩燕的要求是3个bp一个coding这么划分
+	 * @param ATGsite 从起点的第几个Bp开始(实际位点)，因为序列不一定是3的倍数，那么我们指定从起点的第几个bp开始，从该Bp(<b>也就是ATG的实际位点，包括该Bp</b>)进行划分
+	 * ，这个值最好小于invBpNum
+	 * @param Num 选择该invBp中，也就是3个bp中第几个作为最后的结果，从1开始计数。那么韩燕的话，应该选择最后一个--也就是第三个bp的结果作为划分的结果
+	 * 也就是说韩燕的设置应该为3
+	 * @return
+	 */
+	public static double[] mySplineHY(double[] treatNum, int invBpNum,int ATGsite,int Num)
+	{
+		//四舍五入获得长度
+		int lengthDown = (int)Math.ceil((double)(treatNum.length - ATGsite + 1)/invBpNum);
+		int lengthUp = (int)Math.ceil((double)(ATGsite -  1)/invBpNum);
+		double[] result = new double[lengthDown + lengthUp];
+		
+		int k = lengthUp;
+		//后半部分
+		for (int i = ATGsite - 1; i < treatNum.length + 1 - Num;  i = i + invBpNum) {
+			result[k] = treatNum[i + Num - 1];
+			k++;
+		}
+		//前半部分
+		k = lengthUp - 1;
+		for (int i = ATGsite - 1 - invBpNum; i >= 1-Num; i = i - invBpNum) {
+			result[k] = treatNum[i + Num - 1];
+			k--;
+		}
+		return result;
+	}
 	
 	
 	/**

@@ -51,8 +51,11 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 			this.endRegion = 1;
 	}
 	
+	String gfffilename = "";
 	
-	
+	public String getGffFilename() {
+		return gfffilename;
+	}
 	Logger logger = Logger.getLogger(GffHash.class);
 	/**
 	 * 哈希表LOC--LOC细节<br>
@@ -140,6 +143,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 * 没找到就返回null
 	 */
 	public K searchLocation(String chrID, int Coordinate) {
+		chrID = chrID.toLowerCase();
 		ArrayList<T> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			return null;
@@ -193,6 +197,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 * @return
 	 */
 	public M searchLocation(String chrID, int cod1, int cod2) {
+		chrID = chrID.toLowerCase();
 		if (cod1 < 0 && cod2 < 0) {
 			return null;
 		}
@@ -201,6 +206,9 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 		
 		K gffCod1 = searchLocation(chrID, Math.min(cod1, cod2));
 		K gffCod2 = searchLocation(chrID, Math.max(cod1, cod2));
+		if (gffCod1 == null) {
+			System.out.println("error");
+		}
 		M gffCodDu = setGffCodDu(new ArrayList<T>(),gffCod1, gffCod2 );
 		
 		if (gffCodDu.gffCod1.getItemNumDown() < 0) {
@@ -208,7 +216,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 		}
 		else {
 			for (int i = gffCodDu.gffCod1.getItemNumDown(); i <= gffCodDu.gffCod2.getItemNumUp(); i++) {
-				gffCodDu.lsgffDetailsMid.add(Loclist.get(i));
+				gffCodDu.lsgffDetailsMid.add((T)Loclist.get(i).clone());
 			}
 		}
 		return gffCodDu;
@@ -287,6 +295,10 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 * @param gfffilename
 	 */
 	public void ReadGffarray(String gfffilename) {
+		if (this.gfffilename.equals(gfffilename)) {
+			return;
+		}
+		this.gfffilename = gfffilename;
 		try {
 			ReadGffarrayExcep(gfffilename);
 			setItemDistance();
@@ -325,7 +337,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 * @return 返回该LOCID的具体GffDetail信息，用相应的GffDetail类接收
 	 */
 	public T searchLOC(String LOCID){
-		return  locHashtable.get(LOCID);
+		return  locHashtable.get(LOCID.toLowerCase());
 	}
 	/**
 	 * 需要覆盖
@@ -337,6 +349,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 */
 	public T searchLOC(String chrID,int LOCNum)
 	{
+		chrID = chrID.toLowerCase();
 		return Chrhash.get(chrID).get(LOCNum);
 	}
 	
@@ -353,7 +366,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 */
 	public String[] getLOCNum(String LOCID) {	
 		String[] LOCNumInfo=new String[2];
-		T gffLOCdetail=locHashtable.get(LOCID);
+		T gffLOCdetail=locHashtable.get(LOCID.toLowerCase());
 		LOCNumInfo[0]=gffLOCdetail.getChrID();
 		ArrayList<T> locArrayList=Chrhash.get(LOCNumInfo[0]);
 		LOCNumInfo[1]=locArrayList.indexOf(gffLOCdetail)+"";

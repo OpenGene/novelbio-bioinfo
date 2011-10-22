@@ -62,10 +62,24 @@ public abstract class GffGeneIsoInfo {
 	 * Proximal Promoter_
 	 */
 	public static final String PROMOTER_DOWNSTREAMTSS_STR = "Promoter DownStream Of Tss_";
-	
-	
-	
-	
+	public static final String TYPE_GENE_MRNA = "mRNA";
+	public static final String TYPE_GENE_MIRNA = "miRNA";
+	public static final String TYPE_GENE_PSEU_TRANSCRIPT = "pseudogenic_transcript";
+	public static final String TYPE_GENE_MRNA_TE = "mRNA_TE_gene";
+	public static final String TYPE_GENE_TRNA = "tRNA";
+	public static final String TYPE_GENE_SNORNA = "snoRNA";
+	public static final String TYPE_GENE_SNRNA = "snRNA";
+	public static final String TYPE_GENE_RRNA = "rRNA";
+	public static final String TYPE_GENE_NCRNA = "ncRNA";
+
+	private String flagTypeGene = TYPE_GENE_MRNA;
+	/**
+	 * 返回该基因的类型
+	 * @return
+	 */
+	public String getGeneType() {
+		return flagTypeGene;
+	}
 	private int taxID = 0;
 	protected void setTaxID(int taxID) {
 		this.taxID = taxID;
@@ -134,15 +148,17 @@ public abstract class GffGeneIsoInfo {
 	
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
 	
-	public GffGeneIsoInfo(String IsoName, GffDetailGene gffDetailGene) {
+	public GffGeneIsoInfo(String IsoName, GffDetailGene gffDetailGene, String geneType) {
 		this.IsoName = IsoName;
+		this.flagTypeGene = geneType;
 		this.coord = gffDetailGene.getCoord();
 		if (this.coord > GffCodAbs.LOC_ORIGINAL) {
 			searchCoord();
 		}
 	}
-	public GffGeneIsoInfo(String IsoName, int coord) {
+	public GffGeneIsoInfo(String IsoName, int coord, String geneType) {
 		this.IsoName = IsoName;
+		this.flagTypeGene = geneType;
 		this.coord = coord;
 		if (this.coord > GffCodAbs.LOC_ORIGINAL) {
 			searchCoord();
@@ -303,6 +319,10 @@ public abstract class GffGeneIsoInfo {
 		return lsIsoform.get(lsIsoform.size() -1)[1];
 		
 	}
+	public int getExonNum()
+	{
+		return lsIsoform.size();
+	}
 	/**
 	 * 获得5UTR的长度
 	 * @return
@@ -435,7 +455,7 @@ public abstract class GffGeneIsoInfo {
 	 * 坐标在第几个外显子或内含子中，如果不在就为负数
 	 * 实际数目，从1开始记数
 	 */
-	protected int numExIntron = -1;
+	protected int numExIntron = 0;
 	
 	/**
 	 * 坐标在5UTR、3UTR还是不在
@@ -501,7 +521,7 @@ public abstract class GffGeneIsoInfo {
 		searchCoord();
 	}
 	/**
-	 * 坐标在第几个外显子或内含子中，如果不在就为负数
+	 * 坐标在第几个外显子或内含子中，如果不在就为0
 	 * 实际数目，从1开始记数
 	 * @return
 	 */
@@ -833,7 +853,7 @@ public abstract class GffGeneIsoInfo {
 	 */
 	public String getCodLocStr() {
 		String result = "";
-		if (isCodInIsoExtend()) {
+		if (!isCodInIsoExtend()) {
 			return null;
 		}
 		//promoter
@@ -905,21 +925,23 @@ public abstract class GffGeneIsoInfo {
 				filter = true;
 			}
 		}
+		
 		if (filterGeneBody && getCodLoc() != COD_LOC_OUT) {
 			filter = true;
 		}
-		if (filter5UTR && getCodLocUTR() == COD_LOCUTR_5UTR) {
+		else if (filter5UTR && getCodLocUTR() == COD_LOCUTR_5UTR) {
 			filter = true;
 		}
-		if (filter3UTR && getCodLocUTR() == COD_LOCUTR_3UTR) {
+		else if (filter3UTR && getCodLocUTR() == COD_LOCUTR_3UTR) {
 			filter = true;
 		}
-		if (filterExon && getCodLoc() == COD_LOC_EXON) {
+		else if (filterExon && getCodLoc() == COD_LOC_EXON) {
 			filter = true;
 		}
-		if (filterIntron && getCodLoc() == COD_LOC_INTRON) {
+		else if (filterIntron && getCodLoc() == COD_LOC_INTRON) {
 			filter = true;
 		}
+		
 		if (filter) {
 			return getCodLocStr();
 		}
@@ -934,18 +956,19 @@ public abstract class GffGeneIsoInfo {
 	protected void clone(GffGeneIsoInfo gffGeneIsoInfo)
 	{
 		gffGeneIsoInfo.ATGsite = ATGsite;
-		gffGeneIsoInfo.coord = coord;
+//		gffGeneIsoInfo.coord = coord;
 		if (gffDetailGene != null) {
 			gffGeneIsoInfo.gffDetailGene = gffDetailGene.clone();
 		}
 		gffGeneIsoInfo.hashLocExInEnd = hashLocExInEnd;
 		gffGeneIsoInfo.hashLocExInNum = hashLocExInNum;
 		gffGeneIsoInfo.hashLocExInStart =hashLocExInStart;
-		gffGeneIsoInfo.IsoName = IsoName;
+//		gffGeneIsoInfo.IsoName = IsoName;
 		gffGeneIsoInfo.lsIsoform = lsIsoform;
 		gffGeneIsoInfo.lengthIso = lengthIso;
 		gffGeneIsoInfo.mRNA = mRNA;
 		gffGeneIsoInfo.taxID = taxID;
 		gffGeneIsoInfo.UAGsite = UAGsite;
+//		gffGeneIsoInfo.flagTypeGene = flagTypeGene;
 	}
 }

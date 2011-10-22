@@ -7,11 +7,11 @@ import org.apache.log4j.Logger;
 
 public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	private static final Logger logger = Logger.getLogger(GffGeneIsoTrans.class);
-	public GffGeneIsoTrans(String IsoName, GffDetailGene gffDetailGene) {
-		super(IsoName, gffDetailGene);
+	public GffGeneIsoTrans(String IsoName, GffDetailGene gffDetailGene, String geneTpye) {
+		super(IsoName, gffDetailGene, geneTpye);
 	}
-	public GffGeneIsoTrans(String IsoName, int coord) {
-		super(IsoName, coord);
+	public GffGeneIsoTrans(String IsoName, int coord, String geneTpye) {
+		super(IsoName, coord, geneTpye);
 	}
 	@Override
 	protected void setCod2ExInStartEnd() {
@@ -389,7 +389,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	}
 	@Override
 	public GffGeneIsoTrans clone() {
-		GffGeneIsoTrans gffGeneIsoTrans = new GffGeneIsoTrans(IsoName, coord);
+		GffGeneIsoTrans gffGeneIsoTrans = new GffGeneIsoTrans(IsoName, coord, getGeneType());
 		this.clone(gffGeneIsoTrans);
 		gffGeneIsoTrans.setCoord(getCoord());
 		return gffGeneIsoTrans;

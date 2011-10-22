@@ -274,8 +274,12 @@ public class TxtReadandWrite {
 	 * 
 	 * @param content
 	 */
-	public void Rwritefile(double[] content) throws Exception {
-		Rwritefile(content, 20, " ");
+	public void Rwritefile(double[] content) {
+		try {
+			Rwritefile(content, 20, " ");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 	/**
@@ -439,9 +443,6 @@ public class TxtReadandWrite {
 
 	/**
 	 * 按照excel方法读取文本时使用，用于 获得文本中最长行的列数，效率似乎有点低下
-	 * 
-	 * @param setRow
-	 *            指定行数，如果指定行超过文本最大行，则将指定行设为最大行。
 	 * @param sep
 	 *            该行的分隔符，为正则表达式，tab为"\t"
 	 * @return 返回指定行的列数
@@ -590,8 +591,8 @@ public class TxtReadandWrite {
 	 *            实际读取起始行
 	 * @param columnStartNum
 	 *            实际读取起始列
-	 * @param rowEndNum
-	 *            实际读取终止行
+	 * @param rowEndNum 
+	 *            实际读取终止行 ,当该项=-1时，读取所有行
 	 * @param columnEndNum
 	 *            实际读取终止列,当该项=-1时，读取所有列，反正是ArrayList--String[]嘛<br>
 	 *            如果该项大于最大列，那么就把本行都读取了
@@ -606,10 +607,13 @@ public class TxtReadandWrite {
 
 		ArrayList<String[]> result = new ArrayList<String[]>();
 		try {
-			int readlines = rowEndNum - rowStartNum + 1;
-			if (columnEndNum<0) {
+			if (columnEndNum <= 0) {
 				columnEndNum =	ExcelColumns(sep);
 			}
+			if (rowEndNum <= 0) {
+				rowEndNum = ExcelRows();
+			}
+			int readlines = rowEndNum - rowStartNum + 1;
 			// System.out.println(readlines);
 			// System.out.println(readcolumns);
 

@@ -64,7 +64,10 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 	public GffCodGene searchLocation(String chrID, int Coordinate) {
 		return gffHashGene.searchLocation(chrID, Coordinate);
 	}
-
+	@Override
+	public GffGeneIsoInfo searchISO(String LOCID) {
+		return gffHashGene.searchISO(LOCID);
+	}
 	@Override
 	public GffDetailGene searchLOC(String LOCID) {
 		return gffHashGene.searchLOC(LOCID);
@@ -80,6 +83,11 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 	@Override
 	public GffCodGeneDU searchLocation(String chrID, int cod1, int cod2) {
 		return gffHashGene.searchLocation(chrID, cod1, cod2);
+	}
+
+	@Override
+	public String getGffFilename() {
+		return gffHashGene.getGffFilename();
 	}
 
 }

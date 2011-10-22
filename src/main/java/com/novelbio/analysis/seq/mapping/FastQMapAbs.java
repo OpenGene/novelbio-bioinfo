@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.mapping;
 
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 准备进行mapping的fastQ文件
@@ -86,10 +87,26 @@ public abstract class FastQMapAbs extends FastQ implements FastQMapInt{
 		this.minInsert = minInsertLen;
 		this.maxInsert = maxInsertLen;
 	}
-	
+	/**
+	 * @param exeFile bwa程序所在的路径，系统路径则用""
+	 * @param chrFile 序列文件
+	 */
 	public void setFilePath(String exeFile, String chrFile) {
 		this.chrFile = chrFile;
-		this.ExePath = exeFile;
+		if (exeFile.trim().equals("")) {
+			this.ExePath = "";
+		}
+		else {
+			this.ExePath = FileOperate.addSep(exeFile);
+		}
+		
+	}
+	/**
+	 * 输出的mapping文件路径
+	 * @param outFileName
+	 */
+	public void setOutFileName(String outFileName) {
+		this.outFileName = outFileName;
 	}
 	
 	
@@ -124,13 +141,9 @@ public abstract class FastQMapAbs extends FastQ implements FastQMapInt{
 	{
 		FastQ fastQ = null;
 		try {
-			fastQ = super.filterReads(fileFilterOut);
-			
-			
-			
-			
+			fastQ = super.filterReads(fileFilterOut);	
 		} catch (Exception e) {
-			return null;
+			e.printStackTrace();
 		}
 //		FastQMapBwa fastQSoapMap= new FastQMapBwa(fastQ.getSeqFile(), fastQ.getSeqFile2(), getOffset(), getQuality(), outFileName, uniqMapping);
 		FastQMapAbs fastQMapAbs = createFastQMap(fastQ);
@@ -138,6 +151,8 @@ public abstract class FastQMapAbs extends FastQ implements FastQMapInt{
 	}
 
 	protected abstract FastQMapAbs createFastQMap(FastQ fastQ);
-	
+	/**
+	 * 设定mapping质量，根据不同的测序长度进行默认20
+	 */
 	public abstract void setMapQ(int mapQ);
 }

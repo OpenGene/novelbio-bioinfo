@@ -57,6 +57,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 		String chrnametmpString = "";
 		// int mm=0;//计数的东西
 		while ((content = readGff.readLine()) != null) {
+			content = content.replace("\"", "");
 			String[] geneInfo = content.split("\t");
 			String[] exonStarts = geneInfo[8].split(",");
 			String[] exonEnds = geneInfo[9].split(",");
@@ -70,7 +71,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 					LOCList.trimToSize();
 					// 把peak名称顺序装入LOCIDList
 					for (GffDetailGene gffDetail : LOCList) {
-						LOCChrHashIDList.add(gffDetail.locString);
+						LOCChrHashIDList.add(gffDetail.getLocString());
 					}
 				}
 				LOCList = new ArrayList<GffDetailGene>();// 新建一个LOCList并放入Chrhash
@@ -93,8 +94,13 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 					lastGffdetailUCSCgene.numberend = Integer.parseInt(geneInfo[4])+endRegion;
 
 				// 将本基因(转录本)的ID装入locString中
-				lastGffdetailUCSCgene.locString = lastGffdetailUCSCgene.locString + "/" + geneInfo[0];
-				lastGffdetailUCSCgene.addsplitlist(geneInfo[0]);
+				lastGffdetailUCSCgene.setLocString(lastGffdetailUCSCgene.getLocString() + "/" + geneInfo[0]);
+				if (Math.abs(Integer.parseInt(geneInfo[5]) - Integer.parseInt(geneInfo[6])) <= 1) {
+					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], GffGeneIsoInfo.TYPE_GENE_MIRNA);
+				}
+				else {
+					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], GffGeneIsoInfo.TYPE_GENE_MRNA);
+				}
 				// 添加一个转录本，然后将相应信息:
 				// 第一项是该转录本的Coding region start，第二项是该转录本的Coding region
 				// end,从第三项开始是该转录本的Exon坐标信息
@@ -108,9 +114,9 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				LOCIDList.add(geneInfo[0]);
 				// 将locHashtable中相应的项目也修改，同时加入新的项目
 				// 因为UCSC里面没有转录本一说，只有两个LOCID共用一个区域的情况，所以只能够两个不同的LOCID指向同一个GffdetailUCSCgene
-				String[] allLOCID = lastGffdetailUCSCgene.locString.split("/");
+				String[] allLOCID = lastGffdetailUCSCgene.getLocString().split("/");
 				for (int i = 0; i < allLOCID.length; i++) {
-					locHashtable.put(allLOCID[i], lastGffdetailUCSCgene);
+					locHashtable.put(allLOCID[i].toLowerCase(), lastGffdetailUCSCgene);
 				}
 				continue;
 			}
@@ -120,7 +126,12 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			gffDetailUCSCgene.setTaxID(taxID);
 			gffDetailUCSCgene.numberstart = Integer.parseInt(geneInfo[3])+startRegion;
 			gffDetailUCSCgene.numberend = Integer.parseInt(geneInfo[4])+endRegion;
-			gffDetailUCSCgene.addsplitlist(geneInfo[0]);
+			if (Math.abs(Integer.parseInt(geneInfo[5]) - Integer.parseInt(geneInfo[6])) <= 1) {
+				gffDetailUCSCgene.addsplitlist(geneInfo[0], GffGeneIsoInfo.TYPE_GENE_MIRNA);
+			}
+			else {
+				gffDetailUCSCgene.addsplitlist(geneInfo[0], GffGeneIsoInfo.TYPE_GENE_MRNA);
+			}
 			// 添加一个转录本，然后将相应信息:
 			// 第一项是该转录本的Coding region start，第二项是该转录本的Coding region
 			// end,从第三项开始是该转录本的Exon坐标信息
@@ -131,16 +142,19 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			}
 			LOCList.add(gffDetailUCSCgene);
 			LOCIDList.add(geneInfo[0]);
-			locHashtable.put(geneInfo[0], gffDetailUCSCgene);
+			locHashtable.put(geneInfo[0].toLowerCase(), gffDetailUCSCgene);
 		}
 		LOCList.trimToSize();
 		// System.out.println(mm);
 		for (GffDetailGene gffDetail : LOCList) {
-			LOCChrHashIDList.add(gffDetail.locString);
+			LOCChrHashIDList.add(gffDetail.getLocString());
 		}
 		txtGffRead.close();
 	}
 	private void setTaxID(String gffFile) {
+		if (taxID != 0) {
+			return;
+		}
 		TxtReadandWrite txtGffRead = new TxtReadandWrite(gffFile, false);
 		ArrayList<String> lsInfo = null;
 		try {
@@ -148,15 +162,15 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (taxID == 0) {
-			for (String accID : lsInfo) {
-				ArrayList<CopedID> lsCopedIDs = CopedID.getLsCopedID(accID.split("\t")[0], 0, false);
-				if (lsCopedIDs.size() == 1) {
-					taxID = lsCopedIDs.get(0).getTaxID();
-					break;
-				}
+		for (String accID : lsInfo) {
+			ArrayList<CopedID> lsCopedIDs = CopedID.getLsCopedID(
+					accID.split("\t")[0], 0, false);
+			if (lsCopedIDs.size() == 1) {
+				taxID = lsCopedIDs.get(0).getTaxID();
+				break;
 			}
 		}
+		
 	}
 	
 }

@@ -18,7 +18,7 @@ public class CDGtools {
 		BedPeakMacs bedPeakMacs = new BedPeakMacs(bedFileNrom);
 		bedPeakMacs = bedPeakMacs.sortBedFile(1, parentFile + "Dpy-30SortNorm.bed", 2,3);
 		System.out.println("sortFinish");
-		bedPeakMacs.peakCallling(PathDetail.getProjectPath(), null, "mm", parentFile, "Dpy-30");
+		bedPeakMacs.peakCallling(null, "mm", parentFile, "Dpy-30");
 		System.out.println("Peakfinish");
 //		BedSeq bedSeq = new BedSeq(bedFileLen);
 //		bedSeq.sortBedFile(1, parentFile + "Dpy-30SortLen.bed", 2,3);

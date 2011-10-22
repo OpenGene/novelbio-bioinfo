@@ -1,11 +1,17 @@
 package com.novelbio.analysis.seq;
 
 import java.io.BufferedReader;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import org.apache.log4j.Logger;
+
+import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * bed格式的文件，统统用来处理bed文件
@@ -350,5 +356,114 @@ public class BedSeq extends SeqComb{
 		}
 		return hashChrReadsNum;
 	}
-
+	/**
+	 * 用dge的方法来获得基因表达量
+	 * 出错返回null
+	 */
+	public HashMap<String, Integer> getDGEnum(boolean sort) {
+		BedSeq bedseq = null;
+		if (sort) {
+			bedseq = sortBedFile(FileOperate.changeFileSuffix(getSeqFile(), "_DGESort", null));
+		}
+		else {
+			bedseq = this;
+		}
+		try {
+			return bedseq.getGeneExpress();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	/**
+	 * @return
+	 * 返回每个基因所对应的表达量， 用 int[1]只是为了地址引用。
+	 * @throws Exception
+	 */
+	private HashMap<String, Integer> getGeneExpress() throws Exception
+	{
+		txtSeqFile = new TxtReadandWrite(seqFile, false);
+		BufferedReader reader = txtSeqFile.readfile();
+		String content = "";
+		HashMap<String, Integer> hashResult = new HashMap<String, Integer>();
+		String oldLoc = ""; ArrayList<Integer> lsTmpExpValue = new ArrayList<Integer>();
+		int tmpCount = 0; int tmpLocEnd = -1;
+		while ((content = reader.readLine()) != null) {
+			String[] ss = content.split("\t");
+			if (!oldLoc.equals(ss[0]) && !oldLoc.equals("")) {
+				hashResult.put(oldLoc, (int)MathComput.max(lsTmpExpValue));
+				lsTmpExpValue.clear();
+				tmpCount = 0;
+				tmpLocEnd = -1;
+			}
+			if (Integer.parseInt(ss[1]) > tmpLocEnd) {
+				lsTmpExpValue.add(tmpCount);
+				tmpCount = 0;
+				
+			}
+			tmpCount ++;
+			tmpLocEnd = Integer.parseInt(ss[2]);
+			oldLoc = ss[0];
+		}
+		return hashResult;
+	}
+	
+	
+	/**
+	 * 将bed文件转化成DGE所需的信息，直接可以用DEseq分析的
+	 */
+	public static void dgeCal(String result, boolean sort, String... bedFile)
+	{
+		ArrayList<HashMap<String, Integer>> lsDGEvalue = new ArrayList<HashMap<String,Integer>>();
+		for (String string : bedFile) {
+			BedSeq bedSeq = new BedSeq(string);
+			lsDGEvalue.add(bedSeq.getDGEnum(sort));
+		}
+		HashMap<String, int[]> hashResult = combineHashDGEvalue(lsDGEvalue);
+		TxtReadandWrite txtOut = new TxtReadandWrite(result, true);
+		String title = "GeneID";
+		for (String string : bedFile) {
+			title = title + "\t"+ FileOperate.getFileNameSep(string)[0];
+		}
+		txtOut.writefileln(title);
+		for (Entry<String, int[]> entry : hashResult.entrySet()) {
+			String loc = entry.getKey(); int[] value = entry.getValue();
+			for (int i : value) {
+				loc = loc + "\t" + i;
+			}
+			txtOut.writefileln(loc);
+		}
+	}
+	/**
+	 * 给定一组hash表，key：locID   value：expressValue
+	 * 将他们合并成一个hash表
+	 * @param lsDGEvalue
+	 * @return
+	 */
+	private static HashMap<String, int[]> combineHashDGEvalue(ArrayList<HashMap<String, Integer>> lsDGEvalue)
+	{
+		HashMap<String, int[]> hashValue = new HashMap<String, int[]>();
+		for (int i = 0; i < lsDGEvalue.size(); i++) {
+			HashMap<String, Integer> hashTmp = lsDGEvalue.get(i);
+			for (Entry<String, Integer> entry : hashTmp.entrySet()) {
+				String loc = entry.getKey(); int value = entry.getValue();
+			
+				if (hashValue.containsKey(loc)) {
+					int[] tmpvalue = hashValue.get(loc);
+					tmpvalue[i] = value;
+				}
+				else
+				{
+					int[] tmpvalue = new int[lsDGEvalue.size()];
+					tmpvalue[i] = value;
+					hashValue.put(loc, tmpvalue);
+				}
+			}
+		}
+		return hashValue;
+	}
+	
+	
+	
+	
 }

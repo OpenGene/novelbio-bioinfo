@@ -18,6 +18,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 
 /**
+ * 根据reads是否与基因的方向相一致而进行过滤工作，这个是专门针对韩燕的项目做的分析，
  * 不考虑内存限制的编
  * @author zong0jie
  *
@@ -26,19 +27,26 @@ public class MapReadsHanyanChrom extends MapReads{
 	private static Logger logger = Logger.getLogger(MapReadsHanyanChrom.class);
 	GffHashGeneAbs gffHashGene = null;
 	/**
-	 * 
+	 * 根据reads是否与基因的方向相一致而进行过滤工作，这个是专门针对韩燕的项目做的分析，
 	 * @param invNum 每隔多少位计数
-	 * @param chrFilePath 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
 	 * @param mapFile mapping的结果文件，一般为bed格式
 	 */
-	public MapReadsHanyanChrom(int invNum, String chrFilePath, String mapFile,GffHashGeneAbs gffHashGene) 
+	public MapReadsHanyanChrom(int invNum, String mapFile) 
 	{
-		super(invNum, chrFilePath, mapFile, "");
-		this.gffHashGene = gffHashGene;
+		super(invNum, mapFile);
 	}
-
 	/**
-	 * 根据reads是否与基因的方向相一致而进行过滤工作，这个是专门针对韩燕的项目做的分析
+	 * @param chrLenFile 给定文件，指定每条染色体的长度	 
+	 * @param invNum 每隔多少位计数
+	 * @param mapFile mapping的结果文件，一般为bed格式
+	 */
+	public MapReadsHanyanChrom(String chrLenFile, int invNum, String mapFile) 
+	{
+		super(chrLenFile, invNum, mapFile);
+	}
+	/**
+	 * 根据reads是否与基因的方向相一致而进行过滤工作，这个是专门针对韩燕的项目做的分析，
+	 * 用于当reads mapping至genome上时，仅保留reads与基因方向相同的reads
 	 * 给定一行信息，将具体内容加到对应的坐标上
 	 * @param tmp 本行分割后的信息
 	 * @param uniqReads 同一位点叠加后是否读取
@@ -54,16 +62,17 @@ public class MapReadsHanyanChrom extends MapReads{
 		
 		//需要根据方向来筛选reads
 		if (cis5to3 != null) {
-			GffCodGene gffCodGene = (GffCodGene) gffHashGene.searchLocation(tmp[colChrID], Integer.parseInt(tmp[colStartNum]));
+			GffCodGene gffCodGene = gffHashGene.searchLocation(tmp[colChrID], Integer.parseInt(tmp[colStartNum]));
 			//如果位点一在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
 			if (gffCodGene.isInsideLoc() && cis5to3 == (gffCodGene.getGffDetailThis().isCis5to3() == tmp[colCis5To3].equals("+")) ) {
 				return super.addLoc(tmp, uniqReads, tmpOld, startCod, null, chrBpReads, readsNum);
 			}
-			GffCodGene gffCodGene2 = (GffCodGene) gffHashGene.searchLocation(tmp[colChrID], Integer.parseInt(tmp[colEndNum]));
+			GffCodGene gffCodGene2 = gffHashGene.searchLocation(tmp[colChrID], Integer.parseInt(tmp[colEndNum]));
 			//如果位点二在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
 			if (gffCodGene2.isInsideLoc() && cis5to3 == (gffCodGene2.getGffDetailThis().isCis5to3() == tmp[colCis5To3].equals("+")) ) {
 				return super.addLoc(tmp, uniqReads, tmpOld, startCod, null, chrBpReads, readsNum);
 			}
+			
 			if (!gffCodGene.isInsideLoc() && !gffCodGene2.isInsideLoc()) {
 				return super.addLoc(tmp, uniqReads, tmpOld, startCod, null, chrBpReads, readsNum);
 			}

@@ -99,23 +99,29 @@ public abstract class SeqComb {
 	
 	
 	/**
+	 * 注意两个以下的adaptor无法过滤
 	 * 过滤右侧接头序列的方法，用循环搜索，容许错配，但是不能够过虑含有gap的adaptor。
 	 * 算法，假设右侧最多只有一整个接头。那么先将接头直接对到右侧对齐，然后循环的将接头对到reads上去。
 	 * @param seqIn 输入序列 无所谓大小写
 	 * @param seqAdaptor 接头 无所谓大小写
-	 * @param mapNum 第一次接头左端mapping到序列的第几个碱基上，从1开始记数，-1说明没找到
-	 * @param numMM 最多容错几个mismatch
-	 * @param perMm 最多容错百分比
+	 * @param mapNum 第一次接头左端mapping到序列的第几个碱基上，从1开始记数，-1说明没找到 建议设定为：seqIn.length() +1- seqAdaptor.length()
+	 * @param numMM 最多容错几个mismatch 2个比较好
+	 * @param conNum 最多容错连续几个mismatch，1个比较好
+	 * @param perMm 最多容错百分比 设定为30吧，这个是怕adaptor太短
 	 * @return 返回该tag的第一个碱基在序列上的位置，从0开始记数
 	 * 也就是该adaptor前面有多少个碱基，可以直接用substring(0,return)来截取
 	 * -1说明没有adaptor
 	 */
-	public static int trimAdaptorR(String seqIn, String seqAdaptor, int mapNum, int numMM, float perMm) {
+	public static int trimAdaptorR(String seqIn, String seqAdaptor, int mapNum, int numMM, int conNum, float perMm) {
+		if (seqAdaptor.equals("")) {
+			return seqIn.length();
+		}
 		mapNum--;
 		seqIn = seqIn.toUpperCase();
 		seqAdaptor = seqAdaptor.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		char[] chrAdaptor = seqAdaptor.toCharArray(); int lenA = seqAdaptor.length();
+		int con = 0;//记录连续的非匹配的字符有几个
 //		从左到右搜索chrIn
 		for (int i = mapNum; i < lenIn; i++) {
 			int pm = 0; //perfect match
@@ -123,12 +129,14 @@ public abstract class SeqComb {
 			for (int j = 0; j < lenA; j++) {
 				if (i+j >= lenIn)
 					break;
-				if (chrIn[i+j] == chrAdaptor[j]) {
+				if (chrIn[i+j] == chrAdaptor[j] || chrIn[i+j] == 'N') {
 					pm++;
+					con = 0;
 				}
 				else {
+					con ++ ;
 					mm++;
-					if (mm > numMM)
+					if (mm > numMM || con > conNum)
 						break;
 				}
 			}
@@ -138,29 +146,35 @@ public abstract class SeqComb {
 				return i;
 			}
 		}
-		logger.error("haven't find adaptor: "+seqIn+" "+seqAdaptor);
-		return -1;
+		logger.info("haven't find adaptor: "+seqIn+" "+seqAdaptor);
+		return seqIn.length();
 	}
 	
 	
 	/**
+	 * 注意两个以下的adaptor无法过滤
 	 * 过滤左侧接头序列的方法，用循环搜索，容许错配，但是不能够过虑含有gap的adaptor。
-	 * 算法，假设右侧最多只有一整个接头。那么先将接头直接对到右侧对齐，然后循环的将接头对到reads上去。
+	 * 算法，假设左侧最多只有一整个接头。那么先将接头直接对到左侧对齐，然后循环的将接头对到reads上去。
 	 * @param seqIn 输入序列 无所谓大小写
 	 * @param seqAdaptor 接头 无所谓大小写
-	 * @param mapNum 第一次接头左端mapping到序列的第几个碱基上，从1开始记数，-1说明没找到
-	 * @param numMM 最多容错几个mismatch
-	 * @param perMm 最多容错百分比
+	 * @param mapNum 第一次接头右端mapping到序列的第几个碱基上，从1开始记数，-1说明没找到 建议设定为：adaptorLeft.length()
+	 * @param numMM 最多容错几个mismatch 1个比较好
+	 * @param conNum 最多容错连续几个mismatch，1个比较好
+	 * @param perMm 最多容错百分比,100进制，设定为30吧，这个是怕adaptor太短
 	 * @return 返回该tag的最一个碱基在序列上的位置，从1开始记数
 	 * 也就是该adaptor前面有多少个碱基，可以直接用substring(return)来截取
 	 * -1说明没有adaptor
 	 */
-	public static int trimAdaptorL(String seqIn, String seqAdaptor, int mapNum, int numMM, float perMm) {
+	public static int trimAdaptorL(String seqIn, String seqAdaptor, int mapNum, int conNum, int numMM, float perMm) {
+		if (seqAdaptor.equals("")) {
+			return 0;
+		}
 		mapNum--;
 		seqIn = seqIn.toUpperCase();
 		seqAdaptor = seqAdaptor.toUpperCase();
-		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
+		char[] chrIn = seqIn.toCharArray(); //int lenIn = seqIn.length();
 		char[] chrAdaptor = seqAdaptor.toCharArray(); int lenA = seqAdaptor.length();
+		int con = 0;//记录连续的非匹配的字符有几个
 //		从右到左搜索chrIn
 		for (int i = mapNum; i >= 0 ; i--) {
 			int pm = 0; //perfect match
@@ -168,57 +182,86 @@ public abstract class SeqComb {
 			for (int j = chrAdaptor.length-1; j >= 0; j--) {
 				if (i+j-lenA+1 < 0)
 					break;
-				if (chrIn[i+j-lenA+1] == chrAdaptor[j]) {
-					pm++;
+				if (chrIn[i+j-lenA+1] == chrAdaptor[j] || chrIn[i+j-lenA+1] == 'N') {
+					pm++; con = 0;
 				}
 				else {
+					con ++ ;
 					mm++;
-					if (mm > numMM)
+					if (mm > numMM || con > conNum)
 						break;
 				}
 			}
 			int lenAdaptor = pm + mm;
 //			float per = ((float)mm/lenAdaptor);
-			if (mm <= numMM && ((float)mm/lenAdaptor) <= perMm && lenAdaptor > 4) {
+			if (mm <= numMM && ((float)mm/lenAdaptor) <= perMm/100 && lenAdaptor > 4) {
 				return i+1;
 			}
 		}
-		logger.error("haven't find adaptor: "+seqIn+" "+seqAdaptor);
-		return -1;
+		logger.info("haven't find adaptor: "+seqIn+" "+seqAdaptor);
+		return 0;
 	}
 	
 	
 	/**
-	 * 过滤右侧polyA
+	 * 过滤右侧polyA，当为AAANNNAAANANAA时，无视N继续过滤
 	 * @param seqIn
-	 * @param numMM 几个错配
+	 * @param numMM 几个错配 一般为1
 	 * @return
-	 * 返回该tag的第一个碱基在序列上的位置，从0开始记数
+	 * 返回该Seq的第一个A在序列上的位置，从0开始记数
+	 * 如果没有A，返回值 == Seq.length()
 	 * 也就是该polyA前面有多少个碱基，可以直接用substring(0,return)来截取
 	 */
-	public static int trimPolyA(String seqIn, int numMM) {
+	public static int trimPolyA(String seqIn, int numMM, int maxConteniunNoneA) {
 		seqIn = seqIn.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
-		int numMismatch = 0; int numA = 0;
+		int numMismatch = 0;
 		int con = 0;//记录连续的非A的字符有几个
 		for (int i = lenIn-1; i >= 0; i--) {
-			numA++;
-			if (chrIn[i] != 'A') {
+			if (chrIn[i] != 'A' && chrIn[i] != 'N') {
 				numMismatch++;
 				con++;
 			}
 			else {
 				con = 0;
 			}
-			if (numMismatch > numMM) {
+			if (numMismatch > numMM || con > maxConteniunNoneA) {
 				return i+con;//把最后不是a的还的加回去
 			}
 		}
-		System.out.println(seqIn);
-		return -1;
+//		System.out.println(seqIn);
+		return 0;
 	}
 	
-	
+	/**
+	 * 过滤左侧polyT，当为TTTNNNTTTNTNTT时，无视N继续过滤
+	 * @param seqIn
+	 * @param numMM 几个错配 一般为1
+	 * @return
+	 * 返回该tag的最后一个碱基在序列上的位置，从1开始记数
+	 * 也就是该polyT有多少个碱基，可以直接用substring(return)来截取
+	 */
+	public static int trimPolyT(String seqIn, int numMM, int maxConteniunNoneT) {
+		seqIn = seqIn.toUpperCase();
+		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
+		int numMismatch = 0;
+		int con = 0;//记录连续的非A的字符有几个
+		for (int i = 0; i < lenIn; i++) {
+			if (chrIn[i] != 'T' && chrIn[i] != 'N') {
+				numMismatch++;
+				con++;
+			}
+			else {
+				con = 0;
+			}
+			if (numMismatch > numMM || con > maxConteniunNoneT) {
+				return i-con+1;//把最后不是a的还的加回去
+			}
+		}
+//		System.out.println(seqIn);
+		return lenIn;
+		
+	}
 	
 	
 	

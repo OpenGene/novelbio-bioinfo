@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 /**
+ * 重写了clone但是没有重写equals和hash
  * 专门存储UCSC的gene坐标文件
  * group:Genes and Gene Prediction Tracks
  * track:UCSC Genes
@@ -29,6 +30,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
  */
 public class GffDetailGene extends GffDetailAbs
 {
+	private final static Logger logger = Logger.getLogger(GffDetailGene.class);
 	
 	public final static String INTRON = "intron";
 	public final static String EXON_WITHOUT_UTR = "exon_without_utr";
@@ -43,9 +45,9 @@ public class GffDetailGene extends GffDetailAbs
 	int taxID = 0;
 	/**
 	 * 设定基因的转录起点终点位置信息
-	 * @param UpStreamTSSbp 设定基因的转录起点上游长度，默认为3000bp
-	 * @param DownStreamTssbp 设定基因的转录起点下游长度，默认为2000bp
-	 * @param GeneEnd3UTR 设定基因结尾向外延伸的长度，默认为100bp
+	 * @param upStreamTSSbp 设定基因的转录起点上游长度，默认为3000bp
+	 * @param downStreamTssbp 设定基因的转录起点下游长度，默认为2000bp
+	 * @param geneEnd3UTR 设定基因结尾向外延伸的长度，默认为100bp
 	 */
 	public static void setCodLocation(int upStreamTSSbp, int downStreamTssbp, int geneEnd3UTR) {
 		UpStreamTSSbp = upStreamTSSbp;
@@ -60,6 +62,21 @@ public class GffDetailGene extends GffDetailAbs
 	public int getTaxID() {
 		return taxID;
 	}
+	/**
+	 * 删除转录本,从0开始计算
+	 */
+	public void removeIso(int id) {
+		lsGffGeneIsoInfos.remove(id);
+		lsIsoName.remove(id);
+	}
+	/**
+	 * 给定转录本的名字，删除转录本
+	 */
+	public void removeIso(String isoName) {
+		int id = lsIsoName.indexOf(isoName);
+		removeIso(id);
+	}
+	
 	/**
 	 * 顺序存储每个转录本的的坐标情况
 	 */
@@ -81,7 +98,6 @@ public class GffDetailGene extends GffDetailAbs
 	}
 	
 	/**
-	 * 
 	 * @param chrID
 	 * @param locString
 	 * @param cis5to3
@@ -121,9 +137,6 @@ public class GffDetailGene extends GffDetailAbs
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExonGFFCDSUTR(locStart, locEnd);
 	}
-
-	
-	
 	
 	/**
 	 * 给最后一个转录本添加ATG和UAG坐标，<br>
@@ -150,13 +163,13 @@ public class GffDetailGene extends GffDetailAbs
 	/**
 	 * 直接添加转录本，之后用addcds()方法给该转录本添加exon
 	 */
-	protected void addsplitlist(String splitName) {
+	protected void addsplitlist(String splitName, String geneTpye) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (cis5to3) {
-			gffGeneIsoInfo = new GffGeneIsoCis(splitName,this);
+			gffGeneIsoInfo = new GffGeneIsoCis(splitName,this, geneTpye);
 		}
 		else {
-			gffGeneIsoInfo = new GffGeneIsoTrans(splitName,this);
+			gffGeneIsoInfo = new GffGeneIsoTrans(splitName,this, geneTpye);
 		}
 		gffGeneIsoInfo.setTaxID(this.taxID);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
@@ -180,8 +193,19 @@ public class GffDetailGene extends GffDetailAbs
      * 给定转录本名(UCSC里实际上是基因名)<br>
      */
     public GffGeneIsoInfo getIsolist(String splitID)
-    {  
-    	return lsGffGeneIsoInfos.get(lsIsoName.indexOf(splitID));//include one special loc start number to end number	
+    {
+    	int index = lsIsoName.indexOf(splitID);
+    	//忽略大小写的查找
+    	for (int i = 0; i < lsIsoName.size(); i++)
+            if (splitID.equalsIgnoreCase(lsIsoName.get(i)))
+            	index = i;
+    	
+    	
+    	if (index == -1) {
+    		logger.error("cannotFind the ID: "+ splitID);
+			return null;
+		}
+    	return lsGffGeneIsoInfos.get(index);//include one special loc start number to end number	
     }
 
     private int getLongestSplitID() {
@@ -214,7 +238,7 @@ public class GffDetailGene extends GffDetailAbs
 		return lsGffGeneIsoInfos.get(id);
 	}
 	/**
-	 * 用坐标查找具体的转录本信息，如果坐标信息相同，则返回以前的信息
+	 * 返回所有的转录本信息
 	 * @param coord
 	 */
 	public ArrayList<GffGeneIsoInfo> getLsCodSplit() {
@@ -349,7 +373,7 @@ public class GffDetailGene extends GffDetailAbs
 
 	@Override
 	public GffDetailGene clone() {
-		GffDetailGene gffDetailGene = new GffDetailGene(getChrID(), locString, cis5to3);
+		GffDetailGene gffDetailGene = new GffDetailGene(getChrID(), getLocString(), cis5to3);
 		this.clone(gffDetailGene);
 		gffDetailGene.taxID = taxID;
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {

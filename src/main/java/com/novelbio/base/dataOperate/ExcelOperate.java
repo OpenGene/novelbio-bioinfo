@@ -1,6 +1,7 @@
 package com.novelbio.base.dataOperate;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.novelbio.base.fileOperate.FileOperate;
 
 
 
@@ -27,6 +30,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class ExcelOperate //目前是从网上搞的读取代码
 {   
+	public static final int EXCEL2003 = 2003;
+	public static final int EXCEL2007 = 2007;
+	public static final int EXCEL_NOT = 100;
+	public static final int EXCEL_NO_FILE = 0;
+	
 	//**
 	 //* @author caihua //貌似是原作者，本代码经过Zong Jie修改
 	 //*/
@@ -36,7 +44,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	 private Row row = null;
 	 private Cell cell= null;
 	 private int sheetNum = 0; // 第sheetnum个工作表
-	 private int rowNum = 0;
+//	 private int rowNum = 0;
 	 private FileInputStream fis = null;
      private String filename="";
 		
@@ -45,17 +53,113 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	 public ExcelOperate()//构造函数，暂时不知道做什么用
 	 {
 	 }
+	 /**
+	  * 打开excel，没有就新建excel2007
+	  * @param imputfilename
+	  */
+	 public ExcelOperate(String imputfilename)//构造函数，暂时不知道做什么用
+	 {
+		 openExcel(imputfilename, true);
+	 }
+	 public ExcelOperate(String imputfilename, boolean excel2003)//构造函数，暂时不知道做什么用
+	 {
+		 boolean excel2007 = !excel2003;
+		 openExcel(imputfilename,excel2007);
+	 }
+	 
+	 public static void main(String[] args) {
+		System.out.println(isExcelVersion("/home/zong0jie/桌面/1471-2164-8-242-s4.xx"));
+		ExcelOperate excelOperate = new ExcelOperate("/home/zong0jie/桌面/1471-2164-8-242-s4.xlsx", false);
+		System.out.println(excelOperate.ReadExcel(1, 1));
+	}
+	 
 	 
 	 /**
-	  * 读取excel文件获得HSSFWorkbook对象,默认新建2003
+	  * 读取excel文件获得HSSFWorkbook对象,默认新建2007
 	  * 这个使用的时候要用try块包围
 	  * 能读取返回true，不然返回false
 	  * @param imputfilename
 	  */
 	 public boolean openExcel(String imputfilename) 
 	 {  
-		 return openExcel(imputfilename,false);
+		 return openExcel(imputfilename,true);
 	 }
+	 
+	 /**
+	  * 判断是否为excel2003或2007
+	  * @param imputfilename
+	  * @return
+	  * EXCEL2003 EXCEL2007 EXCEL_NOT EXCEL_NO_FILE
+	  */
+	 private static int isExcelVersion(String filename) 
+	 {
+		 if (!FileOperate.isFileExist(filename)) {
+			return EXCEL_NO_FILE;
+		 }
+		 if (isExcel2003(filename)) {
+			return EXCEL2003;
+		}
+		 else if (isExcel2007(filename)) {
+			return EXCEL2007;
+		}
+		return EXCEL_NOT;
+	 }
+	 /**
+	  * 判断是否为excel2003或2007
+	  * @param imputfilename
+	  * @return
+	  * EXCEL2003 EXCEL2007 EXCEL_NOT EXCEL_NO_FILE
+	  */
+	 public static boolean isExcel(String filename) 
+	 {
+		 if (isExcelVersion(filename) == EXCEL2003 || isExcelVersion(filename) == EXCEL2007 ) {
+			return true;
+		}
+		return false;
+	 }
+	 /**
+	  * 判断是否为excel2003或2007
+	  * @param imputfilename
+	  * @return
+	  * EXCEL2003 EXCEL2007 EXCEL_NOT EXCEL_NO_FILE
+	  */
+	 public static boolean isExcel2003(String filename) 
+	 {
+		 File f = new File(filename);
+		 FileInputStream fos = null;
+		 Workbook wb = null;
+		 //读文件
+		try { fos = new FileInputStream(f); }  catch (FileNotFoundException e)  {}
+		try {
+			wb = new HSSFWorkbook(fos);
+		} catch (Exception e) {  }
+		if (wb != null) 
+			 return true;
+		return false;
+	 }
+	 
+	 /**
+	  * 判断是否为excel2003或2007
+	  * @param imputfilename
+	  * @return
+	  * EXCEL2003 EXCEL2007 EXCEL_NOT EXCEL_NO_FILE
+	  */
+	 public static boolean isExcel2007(String filename) 
+	 {
+		 File f = new File(filename);
+		 FileInputStream fos = null;
+		 Workbook wb = null;
+		 //读文件
+		try { fos = new FileInputStream(f); }  catch (FileNotFoundException e)  {}
+		try {
+			wb = new XSSFWorkbook(fos);
+		} catch (Exception e) {  }
+		if (wb != null) 
+			 return true;
+		return false;
+	 }
+	 
+
 	 /**
 	  * 读取excel文件获得Workbook对象,默认聚焦在第一个sheet上
 	  * 这个使用的时候要用try块包围
@@ -73,17 +177,19 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		      if (f.exists()) 
 		      {
 		    	  FileInputStream fos = new FileInputStream(f);   //把要读取的 .xls 文件 包装起来  
-		    	  if (excel2007) {
+		    	  if (isExcelVersion(imputfilename) == EXCEL2003) {
+		    		  wb= new HSSFWorkbook(fos);       //得到 excel 工作簿对应的 HSSFWorkbook 对象  
+		    		  sheet = wb.getSheetAt(0);
+		    		  sheetNum = 0;
+		    	  }
+		    	  else if (isExcelVersion(imputfilename) == EXCEL2007) {
 		    		  wb=new XSSFWorkbook(fos);
 		    		  sheet = wb.getSheetAt(0);
 		    		  sheetNum = 0;
 		    	  }
 		    	  else {
-		    		  wb= new HSSFWorkbook(fos);       //得到 excel 工作簿对应的 HSSFWorkbook 对象  
-		    		  sheet = wb.getSheetAt(0);
-		    		  sheetNum = 0;
+		    		 return false;
 		    	  }
-		    	  
 		    	  fos.close();
 		    	  return true;
 		      }
@@ -92,7 +198,6 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		      {
 		    	  return newExcelOpen(imputfilename, excel2007);
 		      }
-		  
 	         }
 		 catch (Exception e) 
 		 {
@@ -108,7 +213,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  */
 	 public boolean newExcelOpen(String filenameinput)
 	 {
-		 return newExcelOpen(filenameinput,false);
+		 return newExcelOpen(filenameinput,true);
 
 	 }
 	 
@@ -129,7 +234,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  */
 	 
 	 public boolean newExcelOpen(String filenameinput,boolean excel2007) 
-	 {   
+	 {
 		 filename=filenameinput;
 	      if (!excel2007) {
 				wb=new HSSFWorkbook();  
@@ -142,7 +247,6 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		    	  //在 Excel 工作簿中建创一个工作表,其名为缺省值 sheet1  
 				//	 sheet = wb.createSheet("sheet1");  
 			}
-	
 		 return true;
 	 }
 /////////////////////////excel的各个属性，包括sheet数目，某sheet下的行数///////////////////////
@@ -191,17 +295,38 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	 
 	 
 	 /**
-	  * 获得默认sheetNum的第一行的列数
+	  * 获得默认sheetNum的前20行最长的列数
 	  * @param sheetNum 指定实际sheet数
 	  * @param rowNum 指定实际行数
 	  * @return 返回该行列数,如果该行不存在，则返回0
 	  */
 	 public int getColCount()
-	 {    
-		 int rownum=1;
-		return getColCount(this.sheetNum+1,rownum);
+	 {
+		 int maxColNum = 0;
+		 for (int i = 0; i < 20; i++) {
+			 int tmpColCount = getColCount(this.sheetNum+1,i);
+			if (tmpColCount > maxColNum) 
+				maxColNum = tmpColCount;
+		}
+		return maxColNum;
 	 }
 	 
+	 /**
+	  * 获得默认sheetNum的前20行最长的列数
+	  * @param sheetNum 指定实际sheet数
+	  * @param rowNum 指定实际行数
+	  * @return 返回该行列数,如果该行不存在，则返回0
+	  */
+	 public int getColCountSheet(int sheet)
+	 {
+		 int maxColNum = 0;
+		 for (int i = 0; i < 20; i++) {
+			 int tmpColCount = getColCount(sheet+1,i);
+			if (tmpColCount > maxColNum) 
+				maxColNum = tmpColCount;
+		}
+		return maxColNum;
+	 }
 	 /**
 	  * 获得默认sheetNum的第rowNum行的列数
 	  * @param sheetNum 指定实际sheet数
@@ -402,94 +527,111 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  */
 	//读取一块excel，每次读一行,循环读
 	 public String[][] ReadExcel(int sheetNum, int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) 
-	 {
-		sheetNum--;rowStartNum--;columnStartNum--;rowEndNum--;columnEndNum--;
-		if (sheetNum < 0)
-		{
+ {
+		if (rowEndNum <= 0) {
+			rowEndNum = getRowCount(sheetNum);
+		}
+		if (columnEndNum <= 0) {
+			columnEndNum = getColCountSheet(sheetNum);
+		}
+
+		sheetNum--;
+		rowStartNum--;
+		columnStartNum--;
+		rowEndNum--;
+		columnEndNum--;
+
+		if (sheetNum < 0) {
 			sheetNum = wb.getSheetIndex(sheet);
 		}
 		if (rowStartNum < 0) {
 			rowStartNum = 0;
 		}
 		String[][] strExcelLine = null;
-		try 
-		{
+		try {
 			sheet = wb.getSheetAt(sheetNum);
 			row = sheet.getRow(rowStartNum);
-	   
-	  // int cellCount;//要读取的行的cell数
-	   //本处考虑去掉
-	   /////////////////////////
-	  // if(columnEndNum<row.getLastCellNum())//如果要读取的列数小于该列含有的cell数目，那么就读少的
-	   //{
-	    //cellCount = columnEndNum;
-	  // }
-	   //else                                //不然就全读取
-	  // {
-		// cellCount=row.getLastCellNum();
-	  // }
-	   ////////////////////////
-	   //如果读取的列数大于实际列数，那么就用实际列数来取代读取的列数
-	  // if (rowEndNum>sheet.getLastRowNum())
-		// {
-		//	 rowEndNum=sheet.getLastRowNum();
-		// }
-	   
-	   int readrownum=rowEndNum-rowStartNum+1;//读的实际行数
-	   int readcolumnnum=columnEndNum-columnStartNum+1;//读取的实际列数
-	   strExcelLine = new String[readrownum][readcolumnnum];
-	   for(int i=0;i<readrownum;i++)
-	   {
-           row=sheet.getRow(rowStartNum+i);
-           if (row==null)//中间有空行，这个row就是null
-           {
-        	   continue;
-           }
-		   for (int j = 0; j < readcolumnnum; j++) //考虑将cellcount换成readcolumnnum
-	      {
-		 try {  
-			   if (row.getCell((short)(j+columnStartNum)) != null) 
-			   { // add this condition
-				    // judge
-				    switch (row.getCell((short)(j+columnStartNum)).getCellType())
-				    {
-				    case Cell.CELL_TYPE_FORMULA:
-				    	//strExcelLine[i][j] = "FORMULA";
-				    	strExcelLine[i][j] =  String.valueOf(row.getCell((short)(j+columnStartNum)).getNumericCellValue()).trim();
-				     break;
-				    case Cell.CELL_TYPE_NUMERIC:  //如果单元格里的数据类型为数据  
-				    	strExcelLine[i][j]= String.valueOf(row.getCell((short)(j+columnStartNum)).getNumericCellValue()).trim();
-				        break;
-				    case Cell.CELL_TYPE_STRING:
-				    	strExcelLine[i][j] = row.getCell((short)(j+columnStartNum)).getStringCellValue().trim();
-				     break;
-				    case Cell.CELL_TYPE_BOOLEAN://如果单元格里的数据类型为 Boolean                     
-				    	strExcelLine[i][j] = String.valueOf(row.getCell((short)(j+columnStartNum)).getBooleanCellValue()).trim();  
-				    case Cell.CELL_TYPE_BLANK:
-				    	strExcelLine[i][j] = "";
-				     break;
-				    default:
-				    	strExcelLine[i][j] = "error";
-				     break;
-				    }
-				   
-			   }
-				    
-		    }
-				   catch (Exception e) 
-				   {
-				   e.printStackTrace();
-				  }	  
-	      }
-	   }
-	  
-	   }
-	        catch (Exception e) 
-	    {
-	       e.printStackTrace();
-	      }
-	   return strExcelLine;
-	   }
+
+			// int cellCount;//要读取的行的cell数
+			// 本处考虑去掉
+			// ///////////////////////
+			// if(columnEndNum<row.getLastCellNum())//如果要读取的列数小于该列含有的cell数目，那么就读少的
+			// {
+			// cellCount = columnEndNum;
+			// }
+			// else //不然就全读取
+			// {
+			// cellCount=row.getLastCellNum();
+			// }
+			// //////////////////////
+			// 如果读取的列数大于实际列数，那么就用实际列数来取代读取的列数
+			// if (rowEndNum>sheet.getLastRowNum())
+			// {
+			// rowEndNum=sheet.getLastRowNum();
+			// }
+
+			int readrownum = rowEndNum - rowStartNum + 1;// 读的实际行数
+			int readcolumnnum = columnEndNum - columnStartNum + 1;// 读取的实际列数
+			strExcelLine = new String[readrownum][readcolumnnum];
+			for (int i = 0; i < readrownum; i++) {
+				row = sheet.getRow(rowStartNum + i);
+				if (row == null)// 中间有空行，这个row就是null
+				{
+					continue;
+				}
+				for (int j = 0; j < readcolumnnum; j++) // 考虑将cellcount换成readcolumnnum
+				{
+					try {
+						if (row.getCell((short) (j + columnStartNum)) != null) { // add
+																					// this
+																					// condition
+																					// judge
+							switch (row.getCell((short) (j + columnStartNum))
+									.getCellType()) {
+							case Cell.CELL_TYPE_FORMULA:
+								// strExcelLine[i][j] = "FORMULA";
+								strExcelLine[i][j] = String.valueOf(
+										row.getCell(
+												(short) (j + columnStartNum))
+												.getNumericCellValue()).trim();
+								break;
+							case Cell.CELL_TYPE_NUMERIC: // 如果单元格里的数据类型为数据
+								strExcelLine[i][j] = String.valueOf(
+										row.getCell(
+												(short) (j + columnStartNum))
+												.getNumericCellValue()).trim();
+								break;
+							case Cell.CELL_TYPE_STRING:
+								strExcelLine[i][j] = row
+										.getCell((short) (j + columnStartNum))
+										.getStringCellValue().trim();
+								break;
+							case Cell.CELL_TYPE_BOOLEAN:// 如果单元格里的数据类型为 Boolean
+								strExcelLine[i][j] = String.valueOf(
+										row.getCell(
+												(short) (j + columnStartNum))
+												.getBooleanCellValue()).trim();
+							case Cell.CELL_TYPE_BLANK:
+								strExcelLine[i][j] = "";
+								break;
+							default:
+								strExcelLine[i][j] = "error";
+								break;
+							}
+
+						}
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return strExcelLine;
+	}
 	 
 	 /**
 	  * 读取指定块内容,返回arrayList,如果中间有空行，则跳过<br/>
@@ -499,8 +641,8 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param sheetNum：实际sheet数<br/>
 	  * @param rowStartNum：起点实际行数<br/> 
 	  * @param columnStartNum：起点实际列数<br/> 
-	  * @param rowEndNum：终点实际行数<br/> 
-	  * @param columnEndNum：终点实际列数<br/>
+	  * @param rowEndNum：终点实际行数 0 时读取全部行<br/> 
+	  * @param columnEndNum：终点实际列数 0 时读取全部列<br/>
 	  * 如果行数超过文件实际行数，则多出来的数组设置为null<br/>
 	  * @return String[]
 	  * 有重载
@@ -508,7 +650,15 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	//读取一块excel，每次读一行,循环读
 	 public ArrayList<String[]> ReadLsExcel(int sheetNum, int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) 
 	 {
+		 if (rowEndNum <= 0) {
+			 rowEndNum = getRowCount(sheetNum);
+		}
+		 if (columnEndNum <= 0) {
+			columnEndNum = getColCountSheet(sheetNum);
+		}
 		sheetNum--;rowStartNum--;columnStartNum--;rowEndNum--;columnEndNum--;
+		
+		
 		if (sheetNum < 0)
 		{
 			sheetNum = wb.getSheetIndex(sheet);

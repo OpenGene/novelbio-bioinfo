@@ -37,7 +37,8 @@ public interface FastQMapInt {
 	 */
 	public abstract BedSeq getBedFileSE(String bedFile);
 	/**
-	 * 设定mapping质量，仅在bwa中有用
+	 * bwa才用到
+	 * 设定mapping质量，仅在bwa中有用，默认为20
 	 * 一般30以下，也可以设置到15或者12
 	 * @param mapQ
 	 */

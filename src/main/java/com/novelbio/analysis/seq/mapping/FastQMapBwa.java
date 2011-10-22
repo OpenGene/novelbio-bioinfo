@@ -51,11 +51,10 @@ public class FastQMapBwa extends FastQMapAbs{
 	public FastQMapBwa(String seqFile1, String seqFile2,
 			int FastQFormateOffset, int QUALITY,String outFileName, boolean uniqMapping) {
 		super(seqFile1, seqFile2, FastQFormateOffset, QUALITY);
-		this.uniqMapping = uniqMapping;
-		
-		this.outFileName = outFileName;
+		super.uniqMapping = uniqMapping;
+		super.outFileName = outFileName;
 	}
-
+	
 	/**
 	 * @param seqFile1
 	 * @param FastQFormateOffset
@@ -66,8 +65,8 @@ public class FastQMapBwa extends FastQMapAbs{
 	public FastQMapBwa(String seqFile1,
 			int FastQFormateOffset, int QUALITY,String outFileName, boolean uniqMapping) {
 		super(seqFile1, null, FastQFormateOffset, QUALITY);
-		this.uniqMapping = uniqMapping;
-		this.outFileName = outFileName;
+		super.uniqMapping = uniqMapping;
+		super.outFileName = outFileName;
 	}
 	
 	/**
@@ -112,6 +111,7 @@ public class FastQMapBwa extends FastQMapAbs{
 	public void setGapLength(int gapLength) {
 		this.gapLength = gapLength;
 	}
+
 	public void setMapQ(int mapQ) {
 		this.mapQ = mapQ;
 	}
@@ -127,7 +127,7 @@ public class FastQMapBwa extends FastQMapAbs{
 //		bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai TGACT2.sai barcod_TGACT.fastq 
 		
 		
-		String cmd = ""; cmd = ExePath + " aln ";
+		String cmd = ""; cmd = super.ExePath + "bwa aln ";
 		cmd = cmd + "-n 0.05 "; //5%的错误率
 		cmd = cmd + "-o 1 "; //一个gap
 		cmd = cmd + "-e " + gapLength + " "; //该gap最多5bp长
@@ -160,7 +160,7 @@ public class FastQMapBwa extends FastQMapAbs{
 //		bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai 
 //		TGACT2.sai barcod_TGACT.fastq barcod_TGACT2.fastq > TGACT.sam
 		if (isPairEnd()) {
-			cmd = "bwa sampe " + "-a " + maxInsert;
+			cmd = super.ExePath + "bwa sampe " + "-a " + maxInsert;
 			if (FileOperate.getFileSize(chrFile) < GENOME_SIZE_IN_MEMORY) {
 				cmd = cmd + " -P ";//将基因组读入内存
 			}
@@ -170,10 +170,10 @@ public class FastQMapBwa extends FastQMapAbs{
 		}
 		else {
 			if (uniqMapping) {
-				cmd = "bwa samse " + "-n 1 ";
+				cmd = super.ExePath + "bwa samse " + "-n 1 ";
 			}
 			else {
-				cmd = "bwa samse " + "-n 100 ";
+				cmd = super.ExePath + "bwa samse " + "-n 100 ";
 			}
 			cmd = cmd + chrFile + " " + sai1 + " "  + getSeqFile();
 			cmd = cmd + " > " + outFileName;
@@ -243,7 +243,7 @@ public class FastQMapBwa extends FastQMapAbs{
 		if (FileOperate.isFileExist(chrFile + ".bwt") == true) {
 			return;
 		}
-		String cmd = ExePath + " index ";
+		String cmd = super.ExePath + "bwa index ";
 		cmd = cmd + getChrLen();//用哪种算法
 		//TODO :考虑是否自动判断为solid
 		cmd = cmd + chrFile;
@@ -252,7 +252,13 @@ public class FastQMapBwa extends FastQMapAbs{
 		cmdOperate.doInBackground("bwaMakeIndex");
 	}
 	
-	
+	/**
+	 * 过滤低质量reads
+	 */
+	public FastQMapBwa filterReads(String fileFilterOut)
+	{
+		return (FastQMapBwa) super.filterReads(fileFilterOut);
+	}
 	
 	
 	

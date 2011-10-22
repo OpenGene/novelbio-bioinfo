@@ -32,7 +32,7 @@ public class FastQ extends SeqComb {
 	private static Logger logger = Logger.getLogger(FastQ.class);
 	public static int FASTQ_SANGER_OFFSET = 33;
 	public static int FASTQ_ILLUMINA_OFFSET = 64;
-
+	
 	private TxtReadandWrite txtSeqFile2 = new TxtReadandWrite();
 
 	private int offset = 0;
@@ -46,6 +46,7 @@ public class FastQ extends SeqComb {
 	 */
 	public static int QUALITY_MIDIAN_PAIREND = 40;
 	public static int QUALITY_HIGM = 50;
+	public static int QUALITY_LOW_454 = 10454;
 	/**
 	 * FastQ文件的第四行是序列的质量行，所以为4-1 = 3
 	 */
@@ -55,10 +56,33 @@ public class FastQ extends SeqComb {
 	 */
 	private int readsLen = 0;
 	/**
+	 * 最短reads的长度，小于该长度的reads就跳过
+	 */
+	private int readsLenMin = 25;
+	
+	private int adaptermaxMismach = 2;
+	private int adaptermaxConMismatch = 1;
+	
+	/**
+	 * 设定最短reads的长度，小于该长度的reads就跳过，默认为25
+	 */
+	public void setReadsLenMin(int readsLenMin) {
+		this.readsLenMin = readsLenMin;
+	}
+	/**
+	 * 根据具体的序列调整
+	 * @param maxMismach 默认是2
+	 * @param maxConMismatch 默认是1
+	 */
+	public void setAdapterParam(int maxMismach, int maxConMismatch) {
+		this.adaptermaxConMismatch = maxConMismatch;
+		this.adaptermaxMismach = maxMismach;
+	}
+	/**
 	 * 默认中等质量控制
 	 */
 	private int quality = QUALITY_MIDIAN;
-
+	
 	/**
 	 * fastQ里面asc||码的指标与个数
 	 */
@@ -79,9 +103,56 @@ public class FastQ extends SeqComb {
 	 * 记录barcode的长度
 	 */
 	TreeSet<Integer> treeLenBarcode = new TreeSet<Integer>();
-
+	
 	// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////  参 数 设 定  ////////////////////
+	boolean trimPolyA_right = false;
+	/**
+	 * true的话，没有polyA的序列不要
+	 */
+	boolean flagPolyA = false;
+	/**
+	 * true的话，没有polyT的序列不要
+	 */
+	boolean flagPolyT = false;
+	boolean trimPolyT_left = false;
+	/**
+	 * 设定了adaptor就不要设定PolyA
+	 * @param trimPolyA_right
+	 */
+	public void setTrimPolyA(boolean trimPolyA_right, boolean flagPlogA) {
+		this.trimPolyA_right = trimPolyA_right;
+		this.flagPolyA = flagPlogA;
+	}
+	/**
+	 * 设定了adaptor就不要设定PolyA
+	 * @param trimPolyA_right
+	 */
+	public void setTrimPolyT(boolean trimPolyT_left, boolean flagPlogT) {
+		this.trimPolyT_left = trimPolyT_left;
+		this.flagPolyT = flagPlogT;
+	}
+	String adaptorLeft = "";
+	String adaptorRight = "";
+	/**
+	 * 注意adapter里面不要有非ATGC的东西
+	 * @param adaptor
+	 */
+	public void setAdaptorLeft(String adaptor)
+	{
+		this.adaptorLeft = adaptor.trim();
+	}
+	/**
+	 * 设定了polyA就不要设定adaptor
+	 * 注意adapter里面不要有非ATGC的东西
+	 * @param adaptor
+	 */
+	public void setAdaptorRight(String adaptor)
+	{
+		this.adaptorRight = adaptor.trim();
+	}
 
+	//////////////////////////
 	/**
 	 * 返回第二个FastQ文件的文件名 如果没有则返回null
 	 * 
@@ -117,7 +188,7 @@ public class FastQ extends SeqComb {
 	public boolean isPairEnd() {
 		return booPairEnd;
 	}
-
+	
 	/**
 	 * 获得第一条reads的长度，返回负数说明出错
 	 * 
@@ -158,6 +229,12 @@ public class FastQ extends SeqComb {
 			hashFastQFilter.put(10, 2);
 			hashFastQFilter.put(13, 6);
 			hashFastQFilter.put(20, 10);
+		} else if (QUALITY == QUALITY_LOW_454) {
+			quality = QUALITY;
+			hashFastQFilter.put(2, 1);
+			hashFastQFilter.put(10, 6);
+			hashFastQFilter.put(13, 15);
+			hashFastQFilter.put(20, 50);
 		}
 		else {
 			hashFastQFilter.put(2, 1);
@@ -219,11 +296,25 @@ public class FastQ extends SeqComb {
 	public FastQ(String seqFile1, int QUALITY) {
 		this(seqFile1, null, QUALITY);
 	}
-
+	/**
+	 * 待测试
+	 * 先去adaptoer，然后去polyA(右端)和polyT(左端)，然后去两端NNN，然后去总体低质量
+	 * 指定阈值，将fastQ文件进行过滤处理并产生新文件，那么本类的文件也会替换成新的文件
+	 * 
+	 * @param Qvalue_Num
+	 *            二维数组 每一行代表一个Qvalue 以及最多出现的个数 int[0][0] = 13 int[0][1] = 7
+	 *            :表示质量低于Q13的个数小于7个
+	 * @param fileFilterOut
+	 *            结果文件后缀，如果指定的fastQ有两个文件，那么最后输出两个fileFilterOut<br>
+	 *            分别为fileFilterOut_1和fileFilterOut_2
+	 * @return 返回已经过滤好的FastQ，其实里面也就是换了两个FastQ文件而已
+	 * @throws Exception
+	 */
 	public FastQ filterReads(String fileFilterOut) {
 		try {
 			return filterReadsExp( fileFilterOut);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("filter Error: "+ fileFilterOut);
 			return null;
 		}
@@ -242,7 +333,7 @@ public class FastQ extends SeqComb {
 	 * @return 返回已经过滤好的FastQ，其实里面也就是换了两个FastQ文件而已
 	 * @throws Exception
 	 */
-	private FastQ filterReadsExp(String fileFilterOut) throws Exception {
+	private FastQ filterReadsExp222(String fileFilterOut) throws Exception {
 		txtSeqFile.setParameter(seqFile, false, true);
 		BufferedReader readerSeq = txtSeqFile.readfile();
 		BufferedReader readerSeq2 = null;
@@ -305,7 +396,295 @@ public class FastQ extends SeqComb {
 		txtOutFile2.close();
 		return fastQ;
 	}
+	/**
+	 * 待测试
+	 * 先去adaptoer，然后去polyA(右端)和polyT(左端)，然后去两端NNN，然后去总体低质量
+	 * 指定阈值，将fastQ文件进行过滤处理并产生新文件，那么本类的文件也会替换成新的文件
+	 * 
+	 * @param Qvalue_Num
+	 *            二维数组 每一行代表一个Qvalue 以及最多出现的个数 int[0][0] = 13 int[0][1] = 7
+	 *            :表示质量低于Q13的个数小于7个
+	 * @param fileFilterOut
+	 *            结果文件后缀，如果指定的fastQ有两个文件，那么最后输出两个fileFilterOut<br>
+	 *            分别为fileFilterOut_1和fileFilterOut_2
+	 * @return 返回已经过滤好的FastQ，其实里面也就是换了两个FastQ文件而已
+	 * @throws Exception
+	 */
+	private FastQ filterReadsExp(String fileFilterOut) throws Exception {
+		txtSeqFile.setParameter(seqFile, false, true);
+		BufferedReader readerSeq = txtSeqFile.readfile();
+		BufferedReader readerSeq2 = null;
+		TxtReadandWrite txtOutFile = new TxtReadandWrite();
+		
+		if (!booPairEnd) 
+			txtOutFile.setParameter(fileFilterOut.trim(), true, false);
+		else 
+			txtOutFile.setParameter(fileFilterOut.trim() + "_1", true, false);
+		
+		TxtReadandWrite txtOutFile2 = new TxtReadandWrite();;
+		if (booPairEnd) {
+			txtSeqFile2.setParameter(seqFile2, false, true);
+			readerSeq2 = txtSeqFile2.readfile();
+			txtOutFile2.setParameter(fileFilterOut.trim() + "_2", true, false);
+		}
+		setFastQFormat();
 
+		String content = "";
+		String content2 = null;
+		int count = 0;
+		String seqBlock1 = "";
+		String seqBlock2 = "";
+		while ((content = readerSeq.readLine()) != null) {
+			count ++;
+			seqBlock1 = seqBlock1 + content + "\r\n";
+			
+			if (booPairEnd) {
+				content2 = readerSeq2.readLine();
+				seqBlock2 = seqBlock2 + content + "\r\n";
+			}
+			
+			if (count == block)
+			{
+				seqBlock1 = seqBlock1.trim();
+				if (booPairEnd)
+					seqBlock2 = seqBlock2.trim();
+				
+				//////////////  adaptor  ///////////////////////////////////////////////
+				seqBlock1 = trimAdaptor(seqBlock1);
+				if (booPairEnd)
+					seqBlock2 = trimAdaptor(seqBlock2);
+				///////////// polyA ///////////////////////////////////////////////////////
+				if (trimPolyA_right) {
+					seqBlock1 = trimPolyAR(seqBlock1, 2);
+					if (booPairEnd)
+						seqBlock2 = trimPolyAR(seqBlock2, 2);
+					
+					if (seqBlock1 == null || seqBlock2 == null) {
+						seqBlock1 = ""; seqBlock2 = "";
+						count = 0;// 清零
+						continue;
+					}
+				}
+				///////////// polyT ///////////////////////////////////////////////////////
+				if (trimPolyT_left) {
+					seqBlock1 = trimPolyTL(seqBlock1, 2);
+					if (booPairEnd)
+						seqBlock2 = trimPolyTL(seqBlock2, 2);
+					
+					if (seqBlock1 == null || seqBlock2 == null) {
+						seqBlock1 = ""; seqBlock2 = "";
+						count = 0;// 清零
+						continue;
+					}
+				}
+			
+				///////////////  tail NNN  ////////////////////////////////////////////
+				seqBlock1 = trimNNN(seqBlock1, 2);
+				if (booPairEnd)
+					seqBlock2 = trimNNN(seqBlock2, 2);
+				
+				if (seqBlock1 == null || seqBlock2 == null) {
+					seqBlock1 = ""; seqBlock2 = "";
+					count = 0;// 清零
+					continue;
+				}
+				///////////////////  QC  /////////////////////////////////////////////////////////
+				
+				if (QCBlock(seqBlock1, seqBlock2)) {
+					txtOutFile.writefileln(seqBlock1);
+					if (booPairEnd) {
+						txtOutFile2.writefileln(seqBlock2);
+					}
+				}
+				// 清空
+				seqBlock1 = "";
+				seqBlock2 = "";
+				count = 0;// 清零
+				continue;
+			}
+		}
+		FastQ fastQ = null;
+
+		if (booPairEnd) {
+			fastQ = new FastQ(fileFilterOut.trim() + "_1", fileFilterOut.trim()
+					+ "_2", offset, quality);
+		} else {
+			fastQ = new FastQ(fileFilterOut.trim(), null, offset, quality);
+		}
+		txtSeqFile.close();
+		txtSeqFile2.close();
+		txtOutFile.close();
+		txtOutFile2.close();
+		return fastQ;
+	}
+	
+	/**
+	 * cutOff选择10即认为10，包括10以下的序列都不好，需要cut掉
+	 * @param fastQBlock
+	 * @param numMM
+	 * @return
+	 */
+	private String trimNNN(String fastQBlock, int numMM)
+	{
+		String ss = fastQBlock.split("\r\n")[3];
+		int numStart = trimNNNLeft(ss, 10, numMM);
+//		if (numStart > 0) {
+//			System.out.println(ss);
+//		}
+		int numEnd = trimNNNRight(ss, 10, numMM);
+		return trimBlockSeq(fastQBlock, numStart, numEnd);
+	}
+	
+	/**
+	 * 
+	 * 过滤右端低质量序列，Q10，Q13以下为低质量序列，一路剪切直到全部切光为止
+	 * @param seqIn 质量列
+	 * @param cutOff 低质量序列的cutOff, 小于等于他就会被cut
+	 * @param numMM 几个好的序列，就是说NNNCNNN这种，坏的中间夹一个好的 一般为1
+	 * @return
+	 * 	 * 返回该NNN的第一个碱基在序列上的位置，从0开始记数
+	 * 也就是该NNN前面有多少个碱基，可以直接用substring(0,return)来截取
+	 * 返回-1表示出错
+	 */
+	private int trimNNNRight(String seqIn,int cutOff, int numMM) {
+		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
+		int numMismatch = 0;
+		int con = 0;//记录连续的低质量的字符有几个
+		for (int i = lenIn-1; i >= 0; i--) {
+			if ((int)chrIn[i] - offset > cutOff) {
+				numMismatch++;
+				con++;
+			}
+			else {
+				con = 0;
+			}
+			if (numMismatch > numMM) {
+				return i+con;//把最后不是a的还的加回去
+			}
+		}
+		logger.info("no useful seq: "+ seqIn);
+		return 0;
+	}
+	/**
+	 * 
+	 * 过滤左端低质量序列，Q10，Q13以下为低质量序列，一路剪切直到全部切光为止
+	 * @param seqIn 质量列
+	 * @param cutOff 低质量序列的cutOff, 小于等于他就会被cut
+	 * @param numMM 几个好的序列，就是说NNNCNNN这种，坏的中间夹一个好的 一般为1
+	 * @return
+	 * 	 * 返回该NNN的第最后一个碱基在序列上的位置，从1开始记数
+	 * 也就是该NNN有多少个碱基，可以直接用substring(return)来截取
+	 * 返回-1表示出错
+	 */
+	private int trimNNNLeft(String seqIn,int cutOff, int numMM) {
+		char[] chrIn = seqIn.toCharArray();
+		int numMismatch = 0;
+		int con = -1;//记录连续的低质量的字符有几个
+		for (int i = 0; i < chrIn.length; i++) {
+			if ((int)chrIn[i] - offset > cutOff) {
+				numMismatch++;
+				con++;
+			}
+			else {
+				con = -1;
+			}
+			if (numMismatch > numMM) {
+				return i - con;//把最后不是a的还的加回去
+			}
+		}
+		logger.info("no useful seq: "+ seqIn);
+		return seqIn.length();
+	}
+	
+	/**
+	 * 每四行一个block，用来处理该block的方法，主要是截短
+	 * block必须用"\r\n"换行
+	 * @param block
+	 * @param start 和substring一样的用法
+	 * @param end 和substring一样的用法
+	 * @return 返回截短后的string
+	 * 一样还是用"\r\n"换行，最后没有"\r\n"
+	 * 如果截短后的长度小于设定的最短reads长度，那么就返回null
+	 */
+	private String trimBlockSeq(String block, int start, int end)
+	{
+		if (end - start + 1 < readsLenMin) {
+			return null;
+		}
+		String[] ss = block.split("\r\n");
+		if (start == 0 && end == ss[3].length()) {
+			return block.trim();
+		}
+		ss[1] = ss[1].substring(start, end);
+		ss[3] = ss[3].substring(start, end);
+		String ssResult = ss[0] + "\r\n" + ss[1] + "\r\n" + ss[2] + "\r\n" + ss[3];
+		return ssResult;
+	}
+	/**
+	 * 过滤右侧polyA
+	 * @param block
+	 * @param mismatch 可以设定的稍微长一点点，因为里面有设定最长连续错配为1了，所以这里建议2-3
+	 * @return 返回截短后的string
+	 * 一样还是用"\r\n"换行，最后没有"\r\n"
+	 */
+	private String trimPolyAR(String fastQBlock, int mismatch)
+	{
+		String ss = fastQBlock.split("\r\n")[1];
+		int num = super.trimPolyA(ss, mismatch,1);
+		if (flagPolyA && num == ss.length()) {
+			return null;
+		}
+		return trimBlockSeq(fastQBlock, 0, num);
+	}
+	/**
+	 * 过滤左侧polyT
+	 * @param block
+	 * @param mismatch 可以设定的稍微长一点点，因为里面有设定最长连续错配为1了，所以这里建议2-3
+	 * @return 返回截短后的string
+	 * 一样还是用"\r\n"换行，最后没有"\r\n"
+	 */
+	private String trimPolyTL(String fastQBlock, int mismatch)
+	{
+		String ss = fastQBlock.split("\r\n")[1];
+		int num = super.trimPolyT(ss, mismatch,1);
+		if (flagPolyT && num == 0) {
+			return null;
+		}
+		return trimBlockSeq(fastQBlock, num, ss.length());
+	}
+	/**
+	 * 过滤左右两侧的接头
+	 * @param fastQBlock
+	 * @return
+	 */
+	private String trimAdaptor(String fastQBlock) {
+		if (adaptorLeft.equals("") && adaptorRight.equals("")) {
+			return fastQBlock.trim();
+		}
+		String ss = fastQBlock.split("\r\n")[1];
+		int leftNum = super.trimAdaptorL(ss, adaptorLeft, adaptorLeft.length(), adaptermaxMismach,adaptermaxConMismatch, 30);
+		int rightNum = super.trimAdaptorR(ss, adaptorRight,ss.length() - adaptorRight.length(), adaptermaxMismach,adaptermaxConMismatch, 30);
+		return trimBlockSeq(fastQBlock, leftNum, rightNum);
+	}
+	
+	
+	private boolean QCBlock(String seqBlock1, String seqBlock2) {
+		if (seqBlock1 == null && seqBlock2 == null) {
+			return false;
+		}
+		String ss1 = seqBlock1.split("\r\n")[3];
+		String ss2 = null;
+		if (seqBlock2 != null && !seqBlock2.equals("")) {
+			ss2 = seqBlock2.split("\r\n")[3];
+		}
+		else {
+			ss2 = null;
+		}
+		if (QC(ss1, ss2)) {
+			return true;
+		}
+		return false;
+	}
 	/**
 	 * 给定双端测序的两条序列，看这两条序列的质量是否符合要求 首先会判定质量是否以BBBBB结尾，是的话直接跳过 有高中低三档选择
 	 * 
@@ -319,7 +698,7 @@ public class FastQ extends SeqComb {
 		boolean booQC1 = false;
 		boolean booQC2 = false;
 
-		if (seq1.endsWith("BBBBB") || (seq2 != null && seq2.endsWith("BBBBB"))) {
+		if (seq1.endsWith("BBBBBBB") || (seq2 != null && seq2.endsWith("BBBBBBB"))) {
 			return false;
 		}
 
@@ -345,7 +724,45 @@ public class FastQ extends SeqComb {
 		}
 		return true;
 	}
-
+	/**
+	 * 给定一行fastQ的ascII码，同时指定一系列的Q值，返回asc||小于该Q值的char有多少
+	 * 按照Qvalue输入的顺序，输出就是相应的int[]
+	 * 
+	 * @param FASTQ_FORMAT_OFFSET
+	 *            offset是多少，FASTQ_SANGER_OFFSET和
+	 * @param fastQSeq
+	 *            具体的fastQ字符串
+	 * @param Qvalue
+	 *            Qvalue的阈值，可以指定多个<b>必须从小到大排列</b>，一般为Q13，有时为Q10，具体见维基百科的FASTQ
+	 *            format
+	 * @return int 按照顺序，小于等于每个Qvalue的数量
+	 */
+	public static int[][] copeFastQ(int FASTQ_FORMAT_OFFSET, String fastQSeq, int... Qvalue) {
+		if (FASTQ_FORMAT_OFFSET == 0) {
+			System.out.println("FastQ.copeFastQ ,没有指定offset");
+		}
+		int[][] qNum = new int[Qvalue.length][2];
+		for (int i = 0; i < qNum.length; i++) {
+			qNum[i][0] = Qvalue[i];
+		}
+		char[] fastq = fastQSeq.toCharArray();
+		for (char c : fastq) {
+			for (int i = Qvalue.length - 1; i >= 0; i--) {
+				if ((int) c - FASTQ_FORMAT_OFFSET <= Qvalue[i]) {//注意是小于等于
+					qNum[i][1]++;
+					continue;
+				} else {
+					break;
+				}
+			}
+		}
+		return qNum;
+	}
+	/**
+	 * 将mismatich比对指标文件，看是否符合
+	 * @param thisFastQ
+	 * @return
+	 */
 	private boolean filterFastQ(int[][] thisFastQ) {
 		for (int[] is : thisFastQ) {
 			Integer Num = hashFastQFilter.get(is[0]);
@@ -447,41 +864,7 @@ public class FastQ extends SeqComb {
 		return FASTQ_ILLUMINA_OFFSET;
 	}
 
-	/**
-	 * 给定一行fastQ的ascII码，同时指定一系列的Q值，返回asc||小于该Q值的char有多少
-	 * 按照Qvalue输入的顺序，输出就是相应的int[]
-	 * 
-	 * @param FASTQ_FORMAT_OFFSET
-	 *            offset是多少，FASTQ_SANGER_OFFSET和
-	 * @param fastQSeq
-	 *            具体的fastQ字符串
-	 * @param Qvalue
-	 *            Qvalue的阈值，可以指定多个<b>必须从小到大排列</b>，一般为Q13，有时为Q10，具体见维基百科的FASTQ
-	 *            format
-	 * @return int 按照顺序，小于等于每个Qvalue的数量
-	 */
-	public static int[][] copeFastQ(int FASTQ_FORMAT_OFFSET, String fastQSeq,
-			int... Qvalue) {
-		if (FASTQ_FORMAT_OFFSET == 0) {
-			System.out.println("FastQ.copeFastQ ,没有指定offset");
-		}
-		int[][] qNum = new int[Qvalue.length][2];
-		for (int i = 0; i < qNum.length; i++) {
-			qNum[i][0] = Qvalue[i];
-		}
-		char[] fastq = fastQSeq.toCharArray();
-		for (char c : fastq) {
-			for (int i = Qvalue.length - 1; i >= 0; i--) {
-				if ((int) c - FASTQ_FORMAT_OFFSET <= Qvalue[i]) {
-					qNum[i][1]++;
-					continue;
-				} else {
-					break;
-				}
-			}
-		}
-		return qNum;
-	}
+
 
 	// ////////////////// barcode 筛选序列
 	// ///////////////////////////////////////////////////////////////////////////////////
@@ -839,61 +1222,61 @@ public class FastQ extends SeqComb {
 		txtSeqFile2.close();
 	}
 	
-	
-	public FastQ trimPolyA(int filterNum,String fileFilterOut) {
-		try {
-			return trimPolyAExp(filterNum, fileFilterOut);
-		} catch (Exception e) {
-			logger.error("trimPolyA error:" + fileFilterOut);
-			return null;
-		}
-	}
-	/**
-	 * 指定阈值，将fastQ文件过滤polyA，目前只能针对单端右侧的polyA
-	 * 
-	 * @param filterNum 序列最短多长，建议22
-	 * @return 返回已经过滤好的FastQ，其实里面也就是换了两个FastQ文件而已
-	 * @throws Exception
-	 */
-	private FastQ trimPolyAExp(int filterNum,String fileFilterOut) throws Exception {
-		txtSeqFile.setParameter(seqFile, false, true);
-		BufferedReader readerSeq = txtSeqFile.readfile();
-		
-		TxtReadandWrite txtOutFile = new TxtReadandWrite();
-		txtOutFile.setParameter(fileFilterOut.trim(), true, false);
-
-		setFastQFormat();
-
-		String content = "";
-		int count = 0;int lastID = -10;
-		String tmpResult1 = "";
-		while ((content = readerSeq.readLine()) != null) {
-			if (count == 1) {
-				lastID = trimPolyA(content, 1);
-				if (lastID >= filterNum) {
-					tmpResult1 = tmpResult1 + content.substring(0,lastID) + "\n";
-				}
-				count++;
-				continue;
-			}
-			if (count == QCline) {
-				if (lastID >= filterNum) {
-					tmpResult1 = tmpResult1 + content.substring(0,lastID) + "\n";
-					txtOutFile.writefile(tmpResult1);
-				}
-				count = 0;// 清零
-				tmpResult1 = "";
-				continue;
-			}
-			tmpResult1 = tmpResult1 + content + "\n";
-			count++;
-		}
-		FastQ fastQ = null;
-		fastQ = new FastQ(fileFilterOut.trim(), null, offset, quality);
-		txtSeqFile.close();
-		txtOutFile.close();
-		return fastQ;
-	}
+//	
+//	public FastQ trimPolyA(int filterNum,String fileFilterOut) {
+//		try {
+//			return trimPolyAExp(filterNum, fileFilterOut);
+//		} catch (Exception e) {
+//			logger.error("trimPolyA error:" + fileFilterOut);
+//			return null;
+//		}
+//	}
+//	/**
+//	 * 指定阈值，将fastQ文件过滤polyA，目前只能针对单端右侧的polyA
+//	 * 
+//	 * @param filterNum 序列最短多长，建议22
+//	 * @return 返回已经过滤好的FastQ，其实里面也就是换了两个FastQ文件而已
+//	 * @throws Exception
+//	 */
+//	private FastQ trimPolyAExp(int filterNum,String fileFilterOut) throws Exception {
+//		txtSeqFile.setParameter(seqFile, false, true);
+//		BufferedReader readerSeq = txtSeqFile.readfile();
+//		
+//		TxtReadandWrite txtOutFile = new TxtReadandWrite();
+//		txtOutFile.setParameter(fileFilterOut.trim(), true, false);
+//
+//		setFastQFormat();
+//
+//		String content = "";
+//		int count = 0;int lastID = -10;
+//		String tmpResult1 = "";
+//		while ((content = readerSeq.readLine()) != null) {
+//			if (count == 1) {
+//				lastID = trimPolyA(content, 1);
+//				if (lastID >= filterNum) {
+//					tmpResult1 = tmpResult1 + content.substring(0,lastID) + "\n";
+//				}
+//				count++;
+//				continue;
+//			}
+//			if (count == QCline) {
+//				if (lastID >= filterNum) {
+//					tmpResult1 = tmpResult1 + content.substring(0,lastID) + "\n";
+//					txtOutFile.writefile(tmpResult1);
+//				}
+//				count = 0;// 清零
+//				tmpResult1 = "";
+//				continue;
+//			}
+//			tmpResult1 = tmpResult1 + content + "\n";
+//			count++;
+//		}
+//		FastQ fastQ = null;
+//		fastQ = new FastQ(fileFilterOut.trim(), null, offset, quality);
+//		txtSeqFile.close();
+//		txtOutFile.close();
+//		return fastQ;
+//	}
 	
 	/**
 	 * 将fastq文件转化为fasta文件<br>
@@ -968,6 +1351,5 @@ public class FastQ extends SeqComb {
 		txtFasta2.close();
 	}
 
-
-
+	
 }

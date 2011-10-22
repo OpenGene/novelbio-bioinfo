@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 /**
+ * 名字通通小写
  * 计算距离时，SnnnC<br>
  * S距离C为5，S和C重合时距离为0<br>
  * CnnnATG<br>
@@ -19,12 +20,12 @@ import org.apache.log4j.Logger;
 public class GffGeneIsoCis extends GffGeneIsoInfo {
 	private static final Logger logger = Logger.getLogger(GffGeneIsoCis.class);
 
-	public GffGeneIsoCis(String IsoName, GffDetailGene gffDetailGene) {
-		super(IsoName, gffDetailGene);
+	public GffGeneIsoCis(String IsoName, GffDetailGene gffDetailGene, String geneType) {
+		super(IsoName, gffDetailGene, geneType);
 	}
 
-	public GffGeneIsoCis(String IsoName, int coord) {
-		super(IsoName, coord);
+	public GffGeneIsoCis(String IsoName, int coord, String geneType) {
+		super(IsoName, coord, geneType);
 	}
 	/**
 	 * 第一个计算的，计算坐标与本 外显子/内含子 的 起点/终点 的距离
@@ -417,7 +418,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 
 	@Override
 	public GffGeneIsoCis clone() {
-		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis(IsoName, coord);
+		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis(IsoName, coord, getGeneType());
 		this.clone(gffGeneIsoCis);
 		gffGeneIsoCis.setCoord(getCoord());
 		return gffGeneIsoCis;

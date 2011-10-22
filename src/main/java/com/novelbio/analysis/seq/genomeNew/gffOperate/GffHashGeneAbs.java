@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
+import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.test.testextend.a;
@@ -17,9 +18,21 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 {
 	int taxID = 0;
 	String acc2GeneIDfile = "";
-	
+	String gfffile = "";
 	public GffHashGeneAbs() {
 	}
+	
+	
+	/**
+	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面
+	 * @param gfffilename
+	 */
+	public void ReadGffarray(String gfffilename) {
+		this.acc2GeneIDfile = FileOperate.changeFileSuffix(gfffilename, "_accID2geneID", "list");
+		super.ReadGffarray(gfffilename);
+	}
+	
+	
 	
 //	/**
 //	 * 哈希表geneID--LOC细节<br>
@@ -40,7 +53,13 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 		GffDetailGene gffDetailGene = super.searchLOC(accID);
 		if (gffDetailGene == null) {
 			CopedID copedID = new CopedID(accID, taxID, false);
-			String locID = getHashGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
+			String locID = null;
+			try {
+				locID = getHashGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
+			} catch (Exception e) {
+				logger.error(accID);
+			}
+		
 			gffDetailGene = super.searchLOC(locID);
 		}
 		return gffDetailGene;
@@ -56,6 +75,23 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 		return super.searchLOC(locID);
 	}
 	
+	/**
+	 * 输入基因名，返回基因的具体转录本，主要用在UCSC上
+	 * 可以输入accID
+	 * @param accID
+	 * @return
+	 */
+	public GffGeneIsoInfo searchISO(String accID) {
+		GffDetailGene gffdetail = searchLOC(accID);
+		if (gffdetail == null) {
+			return null;
+		}
+		GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(accID);
+		if (gffGeneIsoInfoOut == null) {
+			gffGeneIsoInfoOut = gffdetail.getLongestSplit();
+		}
+		return gffGeneIsoInfoOut;
+	}
 	
 	/**
 	 * 	返回外显子总长度，内含子总长度等信息，只统计最长转录本的信息
@@ -183,4 +219,8 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 			GffCodGene gffCod1, GffCodGene gffCod2) {
 		return new GffCodGeneDU(lsgffDetail, gffCod1, gffCod2);
 	}
+	
+	
+	
+	
 }

@@ -221,12 +221,13 @@ public class SeqFastaHash extends SeqHashAbs {
 	}
 	
 	/**
-	 * 输入序列名
+	 * 输入序列名，自动转变为小写
 	 * 输入序列坐标，起点和终点
 	 * 返回序列
 	 */
 	public SeqFasta getSeqFasta(String seqID) 
-	{ 
+	{
+		seqID = seqID.toLowerCase();
 		return hashSeq.get(seqID);
 	}
 	/**
