@@ -13,14 +13,15 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
-public class TestElimGO extends TestNovelGO{
-	private static final Logger logger = Logger.getLogger(TestElimGO.class);
-	public TestElimGO(ArrayList<CopedID> lsCopedIDsTest,
-			ArrayList<CopedID> lsCopedIDsBG, boolean blast, String GoType) {
+public class ElimGOFunTest extends NovelGOFunTest{
+	private static final Logger logger = Logger.getLogger(ElimGOFunTest.class);
+	public ElimGOFunTest(ArrayList<CopedID> lsCopedIDsTest, ArrayList<CopedID> lsCopedIDsBG, boolean blast, String GoType) {
 		super(lsCopedIDsTest, lsCopedIDsBG, blast, GoType);
-		// TODO Auto-generated constructor stub
 	}
-
+	public ElimGOFunTest(boolean blast,String GoType, double evalue, int...blastTaxID) {
+		super(blast, GoType, evalue, blastTaxID);
+		this.GoType = GoType;
+	}
 	int NumGOID = 300;
 	
 	/**
@@ -29,8 +30,8 @@ public class TestElimGO extends TestNovelGO{
 	public void setNumGOID(int NumGOID) {
 		this.NumGOID = NumGOID;
 	}
-
-	public ArrayList<String[]> Item2GenePvalue() {
+	
+	public ArrayList<String[]> getItem2GenePvalue() {
 		ArrayList<String[]> lsTestResult = null;
 		try {
 			//同时初始化了	 strGeneID 和 lsGeneID
@@ -48,7 +49,6 @@ public class TestElimGO extends TestNovelGO{
 			 lsResult = ArrayOperate.combArrayListHash(lsTestResult, lsAnno, 0, 3);
 		}
 		return lsResult;
-	
 	}
 	
 	/**
@@ -65,7 +65,7 @@ public class TestElimGO extends TestNovelGO{
 	 * n+7:enrichment n+8:(-log2P) <br>
 	 * @throws Exception 
 	 */
-	public ArrayList<String[]> getTestResult() throws Exception
+	public ArrayList<String[]> getTestResult()
 	{
 		setStrGeneID();
 		TxtReadandWrite txtParam = new TxtReadandWrite(NovelBioConst.R_WORKSPACE_TOPGO_PARAM, true);

@@ -9,15 +9,15 @@ import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.Go2Term;
 
-public class TestNovelGO extends TestAbs{
+public class NovelGOFunTest extends AbstFunTest{
 	String GoType = GOInfoAbs.GO_BP;
-	public TestNovelGO(ArrayList<CopedID> lsCopedIDsTest,
+	public NovelGOFunTest(ArrayList<CopedID> lsCopedIDsTest,
 			ArrayList<CopedID> lsCopedIDsBG, boolean blast, String GoType) {
 		super(lsCopedIDsTest, lsCopedIDsBG, blast);
 		this.GoType = GoType;
 	}
-	public TestNovelGO(boolean blast, String GoType) {
-		super(blast);
+	public NovelGOFunTest(boolean blast,String GoType, double evalue, int...blastTaxID) {
+		super(blast, evalue, blastTaxID);
 		this.GoType = GoType;
 	}
 	
@@ -100,6 +100,18 @@ public class TestNovelGO extends TestAbs{
 		String[] GoTerm = new String[1];
 		GoTerm[0] = Go2Term.getHashGo2Term().get(ItemID).getGoTerm();
 		return GoTerm;
+	}
+	@Override
+	public void setDetailType(String GOtype) {
+		this.GoType = GOtype;
+	}
+	/**
+	 * ²»·µ»Ø
+	 */
+	@Override
+	public ArrayList<String[]> getItem2GenePvalue() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

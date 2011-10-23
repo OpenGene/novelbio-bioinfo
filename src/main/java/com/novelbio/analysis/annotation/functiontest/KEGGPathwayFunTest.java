@@ -7,14 +7,14 @@ import java.util.HashSet;
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.database.entity.kegg.KGpathway;
 
-public class TestKEGGPathway extends TestAbs{
+public class KEGGPathwayFunTest extends AbstFunTest{
 
-	public TestKEGGPathway(ArrayList<CopedID> lsCopedIDsTest,
+	public KEGGPathwayFunTest(ArrayList<CopedID> lsCopedIDsTest,
 			ArrayList<CopedID> lsCopedIDsBG, boolean blast) {
 		super(lsCopedIDsTest, lsCopedIDsBG, blast);
 	}
-	public TestKEGGPathway(boolean blast) {
-		super( blast);
+	public KEGGPathwayFunTest(boolean blast, double evalue, int... blastTaxID) {
+		super( blast, evalue, blastTaxID);
 	}
 	/**
 	 * Fisher检验时候用的东西
@@ -95,6 +95,22 @@ public class TestKEGGPathway extends TestAbs{
 			}
 		}
 		return lsFinal;
+	}
+	/**
+	 * 暂时没用
+	 */
+	@Override
+	public void setDetailType(String GOtype) {
+		// TODO Auto-generated method stub
+		
+	}
+	/**
+	 * 不返回
+	 */
+	@Override
+	public ArrayList<String[]> getItem2GenePvalue() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

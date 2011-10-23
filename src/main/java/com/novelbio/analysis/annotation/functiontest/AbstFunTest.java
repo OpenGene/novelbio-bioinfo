@@ -2,6 +2,7 @@ package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
@@ -14,27 +15,30 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public abstract class TestAbs implements ItemInfo{
+public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 
 	private static final Logger logger = Logger.getLogger(GoFisher.class);
 	public static final String TEST_GO = "go";
 	public static final String TEST_KEGGPATH = "KEGGpathway";
 	
-	public TestAbs(ArrayList<CopedID> lsCopedIDsTest, ArrayList<CopedID> lsCopedIDsBG, boolean blast)
+	public AbstFunTest(ArrayList<CopedID> lsCopedIDsTest, ArrayList<CopedID> lsCopedIDsBG, boolean blast)
 	{
 		this.lsCopedIDsTest = lsCopedIDsTest;
 		this.lsCopedIDsBG = lsCopedIDsBG;
 		this.blast = blast;
 	}
 	
-	public TestAbs(boolean blast)
+	public AbstFunTest(boolean blast, double evalue, int... blastTaxID)
 	{
 		this.blast = blast;
+		this.blastTaxID = blastTaxID;
+		this.blastEvalue = evalue;
 	}
-
+	
 	int taxID = 0;
 	boolean blast = false;
-
+	int[] blastTaxID = null;
+	double blastEvalue = 1e-10;
 	ArrayList<CopedID> lsCopedIDsTest = null;
 	ArrayList<CopedID> lsCopedIDsBG = null;
 	/**
@@ -48,33 +52,94 @@ public abstract class TestAbs implements ItemInfo{
 	
 	String BGfile = "";
 	/**
-	 * AccID2CopedID的对照表
-	 */
-	HashMap<String, CopedID> hashAcc2CopedID = new HashMap<String, CopedID>();
-	/**
 	 * gene2CopedID的对照表，多个accID对应同一个geneID的时候就用这个hash来处理
+	 * 用途，当做elimFisher的时候，最后会得到一系列的geneID，而每个geneID可能对应了多个accID
+	 * 这时候就用geneID作为key，将accID放入value的list中。
+	 * 但是很可能value里面的copedID有相同的accID，这时候为了避免这种情况，我新建了一个hashAcc2CopedID
+	 * 专门用于去冗余
 	 */
 	HashMap<String, ArrayList<CopedID>> hashgene2CopedID = new HashMap<String, ArrayList<CopedID>>();
 	
-	public void setTest(ArrayList<String> lsCopedID, int taxID) {
+	/**
+	 * 设定物种
+	 * @param taxID
+	 */
+	public void setTaxID(int taxID) {
+		this.taxID = taxID;
+	}
+	/**
+	 * 获得当前物种
+	 * @return
+	 */
+	public int getTaxID() {
+		return taxID;
+	}
+	/**
+	 * 用copedID的geneUniID先查找lsBG，找不到再从头查找
+	 * @param lsTest
+	 * @return
+	 */
+	private ArrayList<String[]> getLsTestFromLsBG(ArrayList<CopedID> lsTest)
+	{
+		if (blast) {
+			for (CopedID copedID : lsTest) {
+				copedID.setBlastLsInfo(blastEvalue, blastTaxID);
+			}
+		}
+		
+		if (lsBG == null || lsBG.size() < 1) {
+			return convert2Item(lsTest);
+		}
+		HashMap<String, String>  hashBG = new HashMap<String, String>();
+		for (String[] strings : lsBG) {
+			hashBG.put(strings[0], strings[1]);
+		}
+		ArrayList<String[]> lsout = new ArrayList<String[]>();
+		ArrayList<CopedID> lsNo = new ArrayList<CopedID>();
+		for (CopedID copedID : lsTest) {
+			String tmpresult = hashBG.get(copedID.getGenUniID());
+			if (tmpresult == null) {
+				lsNo.add(copedID);
+			}
+			String[] result = new String[]{copedID.getGenUniID(), tmpresult};
+			lsout.add(result);
+		}
+		if (lsNo.size() > 0) {
+			ArrayList<String[]> lsnew = convert2Item(lsNo);
+			lsout.addAll(lsnew);
+			lsBG.addAll(lsnew);
+		}
+		return lsout;
+	}
+	
+	public void setLsTestAccID(ArrayList<String> lsCopedID) {
 		lsCopedIDsTest = new ArrayList<CopedID>();
+		
 		lsAnno = null;
+		
 		for (String string : lsCopedID) {
 			CopedID copedID = new CopedID(string, taxID, false);
+			if (blast) {
+				copedID.setBlastLsInfo(blastEvalue, blastTaxID);
+			}
 			lsCopedIDsTest.add(copedID);
 		}
-		fillCopedIDInfo();
-		lsTest = convert2Item(lsCopedIDsTest);
+		fillCopedIDInfo(lsCopedIDsTest);
+		lsTest = getLsTestFromLsBG( lsCopedIDsTest);
 	}
 	
-	public void setLsCopedID(ArrayList<CopedID> lsCopedIDs) {
+	public void setLsTest(ArrayList<CopedID> lsCopedIDs) {
 		this.lsCopedIDsTest = lsCopedIDs;
 		lsAnno = null;
-		lsTest = convert2Item(lsCopedIDsTest);
-		fillCopedIDInfo();
+		fillCopedIDInfo(lsCopedIDsTest);
+		lsTest = getLsTestFromLsBG(lsCopedIDsTest);
 	}
-	
-	public void setLsBG(String fileName) {
+	/**
+	 * 最好能第一时间设定
+	 * 读取genUniID item,item格式的表
+	 * @param fileName
+	 */
+	public void setLsBGItem(String fileName) {
 		if (!FileOperate.isFileExist(fileName)) {
 			logger.error("no FIle exist: "+ fileName);
 		}
@@ -82,31 +147,40 @@ public abstract class TestAbs implements ItemInfo{
 		lsBG = txtReadBG.ExcelRead("\t", 1, 1, txtReadBG.ExcelRows(), 2, 1);
 	}
 	
-	
-	
-	
 	/**
-	 * 必须先设置lsTestCopedID，因为要从中读取taxID
+	 * 最好能第一时间设定
+	 * 读取背景文件，指定读取某一列
 	 * @param fileName
 	 */
-	public void setLsBGAccID(String fileName) {
+	public void setLsBGAccID(String fileName, int colNum) {
+		lsCopedIDsBG.clear();
 		if (!FileOperate.isFileExist(fileName)) {
 			logger.error("no FIle exist: "+ fileName);
 		}
-		String[][] accID = null;
+		ArrayList<String[]> accID = null;
 		try {
-			accID = ExcelTxtRead.readExcel(fileName, new int[]{1}, 1, -1);
+			accID =  ExcelTxtRead.readLsExcelTxt(fileName, new int[]{colNum}, 1, -1);
 		} catch (Exception e) {
-			try {
-				accID = ExcelTxtRead.readtxtExcel(fileName, "\t",new int[]{1}, 1, -1);
-			} catch (Exception e2) {
-				logger.error("BG accID file is not correct: "+ fileName);
-			}
+			logger.error("BG accID file is not correct: "+ fileName);
 		}
-		int taxID = lsCopedIDsTest.get(0).getTaxID();
 		for (String[] strings : accID) {
-			lsCopedIDsBG.add(new CopedID(strings[0], taxID, false));
+			CopedID copedID = new CopedID(strings[0], taxID, false);
+			copedID.setBlastLsInfo(blastEvalue, blastTaxID);
+			lsCopedIDsBG.add(copedID);
 		}
+		lsBG = convert2Item(lsCopedIDsBG);
+	}
+	/**
+	 * 最好能第一时间设定
+	 * 读取背景文件，指定读取某一列
+	 * @param fileName
+	 */
+	public void setLsBGCopedID(ArrayList<CopedID> lsBGaccID) {
+		for (CopedID copedID : lsBGaccID) {
+			copedID.setBlastLsInfo(blastEvalue, blastTaxID);
+		}
+		this.lsCopedIDsBG = lsBGaccID;
+		lsBG = convert2Item(lsCopedIDsBG);
 	}
 	/**
 	 * 每次设置新的LsCopedTest后必须重置
@@ -117,8 +191,19 @@ public abstract class TestAbs implements ItemInfo{
 	 * 返回Gene2ItemPvalue
 	 * @param Type
 	 * @return
+	 * 根据不同的Test有不同的情况
+	 * 一般如下
+	 * Go富集分析的gene2Go表格<br>
+	 * blast：<br>
+	 * 			title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";title2[3]="Evalue";title2[4]="subjectSymbol";<br>
+			title2[5]="Description";title2[6]="PathID";title2[7]="PathTerm";<br>
+			不blast：<br>
+						title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";title2[3]="PathID";<br>
+			title2[4]="PathTerm";<br>
+	 * @return
+	 * 
 	 */
-	public ArrayList<String[]> Item2GenePvalue() {
+	public ArrayList<String[]> getGene2ItemPvalue() {
 		ArrayList<String[]> lsTestResult = null;
 		try {
 			lsTestResult = getTestResult();
@@ -152,10 +237,16 @@ public abstract class TestAbs implements ItemInfo{
 	 * n+7:enrichment n+8:(-log2P) <br>
 	 * @throws Exception 
 	 */
-	public ArrayList<String[]> getTestResult() throws Exception
+	public ArrayList<String[]> getTestResult()
 	{
 		ArrayList<String[]> lsTestResult = null;
+		try {
 			lsTestResult = FisherTest.getFisherResult(lsTest, lsBG, this);
+		} catch (Exception e) {
+			logger.error("error: ");
+		}
+			
+			
 		return lsTestResult;
 	}
 	/**
@@ -165,15 +256,22 @@ public abstract class TestAbs implements ItemInfo{
 	 */
 	protected abstract ArrayList<String[]> convert2Item(ArrayList<CopedID> lsCopedIDs);
 	
-	
-	private void fillCopedIDInfo()
+	/**
+	 * 设定hashgene2CopedID，就是一个geneID会对应多个accID的这种
+	 * @param lsCopedIDs
+	 */
+	private void fillCopedIDInfo(ArrayList<CopedID> lsCopedIDs)
 	{
-		for (CopedID copedID : lsCopedIDsTest) {
+		//////////////  先 清 空  ////////////////////////
+		HashSet<String> hashAccID = new HashSet<String>();
+		hashgene2CopedID.clear();
+		////////////////////////////////////////////
+		for (CopedID copedID : lsCopedIDs) {
 			//去冗余，accID相同去掉
-			if (hashAcc2CopedID.containsKey(copedID.getAccID())) {
+			if (hashAccID.contains(copedID.getAccID())) {
 				continue;
 			}
-			hashAcc2CopedID.put(copedID.getAccID(), copedID);
+			hashAccID.add(copedID.getAccID());
 			if (hashgene2CopedID.containsKey(copedID.getGenUniID())) {
 				hashgene2CopedID.get(copedID.getGenUniID()).add(copedID);
 			}
@@ -215,4 +313,8 @@ public abstract class TestAbs implements ItemInfo{
 	 * @return
 	 */
 	protected abstract ArrayList<String[]> setGene2Item();
+	/**
+	 * 目前只能设定GO的type
+	 */
+	public abstract void setDetailType(String GOtype);
 }
