@@ -25,6 +25,8 @@ import com.novelbio.base.fileOperate.FileOperate;
  *
  */
 public class GffChrMap extends GffChrAbs{
+	
+	String fileName = "";
 	/**
 	 * 
 	 */
@@ -192,33 +194,71 @@ public class GffChrMap extends GffChrAbs{
 	}
 	
 	
-	
+
+	/**
+	 * 根据前面设定upBp和downBp
+	 * 根据Peak文件做出TSS图
+	 * @param range Tss两端区域
+	 * @param binNum 分割分数
+	 * @param figure 图片路径
+	 * @param RworkSpace 
+	 * @param resultFilePath 保存至哪个文件夹
+	 * @param prefix 文件名前缀
+	 */
+	public void getTssDensity(String fileName, int colChrID, int colStartLoc, int colEndLoc, int colScore, int rowStart,int binNum, String resultFilePath, String prefix) {
+		ArrayList<MapInfo> lsMapInfo = super.getFileRegionMapInfo(fileName, colChrID, colStartLoc, colEndLoc, colScore, rowStart);
+		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(lsMapInfo, GffDetailGene.TSS, binNum);//(binNum,lsMapInfo, GffDetailGene.TSS);
+		
+		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
+//		double[] TssDensity=gffLocatCod.getUCSCTssRange(LocInfo, range, binNum);
+		plotRTss(TssDensity);
+	}
 	
 	/**
-	 * 指定一个区域范围的list，返回每个list的reads信息
-	 * 默认加权平均
-	 * @param lsMapInfo 直接修改本List
-	 * @param binNum
+	 * 根据前面设定upBp和downBp
+	 * 根据Peak文件做出TSS图
+	 * @param range Tss两端区域
+	 * @param binNum 分割分数
+	 * @param figure 图片路径
+	 * @param RworkSpace 
+	 * @param resultFilePath 保存至哪个文件夹
+	 * @param prefix 文件名前缀
 	 */
-	private void getRegionReads( int binNum) {
-		int type = 0;
-		mapReads.getRegionLs(binNum, lsMapInfos, type);
+	public void getTesDensity(String fileName, int colChrID, int colStartLoc, int colEndLoc, int colScore, int rowStart,int binNum, String resultFilePath, String prefix) {
+		ArrayList<MapInfo> lsMapInfo = super.getFileRegionMapInfo(fileName, colChrID, colStartLoc, colEndLoc, colScore, rowStart);
+		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(lsMapInfo, GffDetailGene.TES, binNum);//(binNum,lsMapInfo, GffDetailGene.TSS);
+		
+		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
+//		double[] TssDensity=gffLocatCod.getUCSCTssRange(LocInfo, range, binNum);
+		plotRTss(TssDensity);
 	}
 	
-	private void getTssMapInfo()
+	private void plotRTss(double[] TssDensity)
 	{
-		super.getPeakGeneStructure(lsPeakInfo, structure);
+		TxtReadandWrite tssReadandWrite=new TxtReadandWrite();
+		tssReadandWrite.setParameter(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_R, true,false);
+		try { tssReadandWrite.Rwritefile(TssDensity); 	} catch (Exception e) { 	e.printStackTrace(); }
+		tssReadandWrite.setParameter(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_PARAM, true,false);
+		try{
+			tssReadandWrite.writefile(super.upBp+""); 
+		} catch (Exception e) { 	e.printStackTrace(); }
+		try {density("Tss");	} catch (Exception e) {	e.printStackTrace();}
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_EXCEL, resultFilePath,prefix+"tss.txt",true);
+		FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_PIC, resultFilePath,prefix+"TSSReads.jpg",true);
+		
+		TxtReadandWrite txtTmpGenNum = new TxtReadandWrite();
+		//写入该区域进行统计的基因数目
+		 if (!resultFilePath.endsWith(File.separator)) {  
+			 resultFilePath = resultFilePath + File.separator;  
+	         }
+		 txtTmpGenNum.setParameter(resultFilePath+prefix+"tssGenNum.txt", true, false);
+		 try {
+			txtTmpGenNum.writefile(gffLocatCod.getRegGenNum()+"");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

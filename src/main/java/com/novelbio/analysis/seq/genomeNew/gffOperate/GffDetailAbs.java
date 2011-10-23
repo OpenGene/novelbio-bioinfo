@@ -6,7 +6,7 @@ import com.novelbio.analysis.annotation.copeID.CopedID;
 
 /**
  * 本类重写了equal代码，用于比较两个loc是否一致
- * 重写了hashcode
+ * 重写了hashcode 仅比较ChrID + "//" + locString + "//" + numberstart + "//" + numberstart;
  * 存储Gff文件中每个条目的具体信息，直接用于GffPeak文件
  * 包括<br>
  * 条目名 locString<br>

@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbs;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.plot.java.HeatChartDataInt;
 /**
@@ -168,8 +169,17 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	public double getWeight() {
 		return weight;
 	}
+	
+	public MapInfo clone() {
+		MapInfo mapInfo = new MapInfo(chrID, startLoc, endLoc, flagLoc, weight, title);
+		double[] value2 = new double[value.length];
+		for (int i = 0; i < value2.length; i++) {
+			value2[i] = value[i];
+		}
+		mapInfo.setDouble(value2);
+		return mapInfo;
+	}
 	/**
-	 * 
 	 * 给定mapInfo的序列，用mapInfo的summit点来筛选peak，将summit点距离在distance以内的删除，只保留权重最大的那个mapInfo
 	 * @param lsmapinfo 用mapInfo的summit点来筛选peak
 	 * @param distance 将summit点距离在distance以内的删除
@@ -220,4 +230,103 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		}
 		return lsResult;
 	}
+	
+	/**
+	 * 给定mapInfo的list
+	 * 将里面的double[]合并成一个，假定mapInfo中的value不等长
+	 * 按照summit位点对齐，假定summit点为0点
+	 * @param lsmapinfo mapInfo的信息
+	 * @param upNum 上游个数，<=0表示最长上游
+	 * @param downNum 下游个数, <=0表示最长下游
+	 * @return
+	 * 得到的结果会除以lsmapinfo的长度作为标准化
+	 */
+	public static double[] getCutLsMapInfoComb(List<MapInfo> lsmapinfo, int upNum, int downNum) {
+		if (upNum <= 0 || downNum <= 0) {
+			int[] max = getLsMapInfoUpDown(lsmapinfo);
+			if (upNum <= 0)
+				upNum = max[0];
+			if (downNum <= 0)
+				downNum = max[1];
+		}
+		double[] result = new double[upNum+downNum+1];
+		for (MapInfo mapInfo : lsmapinfo) {
+			double[] tmp = ArrayOperate.cuttArray(mapInfo.getDouble(), mapInfo.getFlagSite(), upNum, downNum, -1);
+			for (int i = 0; i < result.length; i++) {
+				result[i] = result[i] + tmp[i];
+			}
+		}
+		for (int i = 0; i < result.length; i++) {
+			result[i] = result[i]/lsmapinfo.size();
+		}
+		return result;
+	}
+	
+	/**
+	 * 不排序
+	 * 给定mapInfo的list
+	 * 将里面的double[]合并成一个，假定mapInfo中的value不等长
+	 * 按照summit位点对齐，假定summit点为0点
+	 * @param lsmapinfo mapInfo的信息
+	 * @param upNum 上游个数，<=0表示最长上游
+	 * @param downNum 下游个数, <=0表示最长下游
+	 * @return
+	 */
+	public static ArrayList<MapInfo> getCutLsMapInfo(List<MapInfo> lsmapinfo, int upNum, int downNum) {
+		if (upNum <= 0 || downNum <= 0) {
+			int[] max = getLsMapInfoUpDown(lsmapinfo);
+			if (upNum <= 0)
+				upNum = max[0];
+			if (downNum <= 0)
+				downNum = max[1];
+		}
+		ArrayList<MapInfo> lsResult = new ArrayList<MapInfo>();
+		for (MapInfo mapInfo : lsmapinfo) {
+			double[] tmp = ArrayOperate.cuttArray(mapInfo.getDouble(), mapInfo.getFlagSite(), upNum, downNum, -1);
+			MapInfo mapInfo2 = mapInfo.clone();
+			mapInfo2.setDouble(tmp);
+			lsResult.add(mapInfo2);
+		}
+		return lsResult;
+	}
+	
+	/**
+	 * 给定一个MapInfo，返回该组里面的最长Up和最长Down
+	 * @param lsmapinfo
+	 * @return
+	 */
+	private static int[] getLsMapInfoUpDown(List<MapInfo> lsmapinfo)
+	{
+			int maxUp = 0; int maxDown = 0;
+			for (MapInfo mapInfo : lsmapinfo) {
+				int tmpUp = mapInfo.getFlagSite() - mapInfo.getStart();
+				int tmpDown = mapInfo.getEnd() - mapInfo.getFlagSite();
+				if (tmpUp > maxUp) {
+					maxUp = tmpUp;
+				}
+				if (tmpDown > maxDown) {
+					tmpDown = maxDown;
+				}
+			}
+		return new int[]{maxUp,maxDown};
+	}
+	
+	/**
+	 * 给定mapInfo的list
+	 * 将里面的double[]合并成一个，假定mapInfo中的value等长
+	 */
+	public static double[] getCombLsMapInfo(List<MapInfo> lsmapinfo) {
+		double[] result = new double[lsmapinfo.get(0).getDouble().length];
+		for (MapInfo mapInfo : lsmapinfo) {
+			double[] tmp = mapInfo.getDouble();
+			for (int i = 0; i < result.length; i++) {
+				result[i] = result[i] + tmp[i];
+			}
+		}
+		for (int i = 0; i < result.length; i++) {
+			result[i] = result[i]/lsmapinfo.size();
+		}
+		return result;
+	}
+	
 }

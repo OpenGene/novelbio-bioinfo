@@ -12,6 +12,7 @@ import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 /**
  * 重写了clone但是没有重写equals和hash
+ * hash同GffDetailAbs，仅比较ChrID + "//" + locString + "//" + numberstart + "//" + numberstart;
  * 专门存储UCSC的gene坐标文件
  * group:Genes and Gene Prediction Tracks
  * track:UCSC Genes
@@ -384,6 +385,5 @@ public class GffDetailGene extends GffDetailAbs
 		}
 		return gffDetailGene;
 	}
-	
 	
 }

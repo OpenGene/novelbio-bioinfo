@@ -880,6 +880,7 @@ public class MapReads {
 	
 	/**
 	 * 经过标准化
+	 * 将MapInfo中的double填充上相应的reads信息
 	 * @param binNum 待分割的区域数目
 	 * @param lsmapInfo
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和

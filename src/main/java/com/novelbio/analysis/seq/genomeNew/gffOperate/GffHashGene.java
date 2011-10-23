@@ -70,6 +70,7 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 	}
 	@Override
 	public GffDetailGene searchLOC(String LOCID) {
+		LOCID = CopedID.removeDot(LOCID);
 		return gffHashGene.searchLOC(LOCID);
 	}
 	@Override

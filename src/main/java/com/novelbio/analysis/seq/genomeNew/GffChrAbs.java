@@ -1,7 +1,9 @@
 package com.novelbio.analysis.seq.genomeNew;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
@@ -35,24 +37,24 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	static SeqHash seqHash = null;
 	
 	MapReads mapReads = null;
-	/**
-	 * 设定一系列的坐标位点
-	 */
-	ArrayList<MapInfo> lsMapInfos = null;
-	/**
-	 * 设定本次需要进行分析的MapInfo list
-	 * @param lsMapInfos
-	 */
-	public void setLsMapInfos(ArrayList<MapInfo> lsMapInfos) {
-		this.lsMapInfos = lsMapInfos;
-	}
-	/**
-	 * 获得本次需要分析的MapInfo list
-	 * @return
-	 */
-	public ArrayList<MapInfo> getLsMapInfos() {
-		return lsMapInfos;
-	}
+//	/**
+//	 * 设定一系列的坐标位点
+//	 */
+//	ArrayList<MapInfo> lsMapInfos = null;
+//	/**
+//	 * 设定本次需要进行分析的MapInfo list
+//	 * @param lsMapInfos
+//	 */
+//	public void setLsMapInfos(ArrayList<MapInfo> lsMapInfos) {
+//		this.lsMapInfos = lsMapInfos;
+//	}
+//	/**
+//	 * 获得本次需要分析的MapInfo list
+//	 * @return
+//	 */
+//	public ArrayList<MapInfo> getLsMapInfos() {
+//		return lsMapInfos;
+//	}
 	public static GffHashGene getGffHashGene() {
 		return gffHashGene;
 	}
@@ -195,7 +197,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 * @param colScore 打分，也就是权重，没有该列的话，就设置为0
 	 * @param rowStart
 	 */
-	public void getFileRegion(String txtExcel, int colChrID, int colStartLoc, int colEndLoc, int colScore,int rowStart)
+	public ArrayList<MapInfo> getFileRegionMapInfo(String txtExcel, int colChrID, int colStartLoc, int colEndLoc, int colScore,int rowStart)
 	{
 		int[] columnID = null;
 		if (colScore <= 0 ) {
@@ -205,11 +207,18 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 			columnID = new int[]{colChrID,colStartLoc,colEndLoc, colScore};
 		}
 		ArrayList<String[]> lstmp = ExcelTxtRead.readLsExcelTxt(txtExcel, columnID, rowStart, 0);
-		lsMapInfos = new ArrayList<MapInfo>();
+		ArrayList<MapInfo> lsMapInfos = new ArrayList<MapInfo>();
 		for (String[] strings : lstmp) {
 			MapInfo mapInfo = new MapInfo(strings[0]);
-			mapInfo.setStartLoc(Integer.parseInt(strings[1]));
-			mapInfo.setEndLoc(Integer.parseInt(strings[2]));
+			
+			try {
+				mapInfo.setStartLoc(Integer.parseInt(strings[1]));
+				mapInfo.setEndLoc(Integer.parseInt(strings[2]));
+			} catch (Exception e) {
+				logger.error("该坐标有问题："+mapInfo.getChrID());
+				continue;
+			}
+		
 			if (mapInfo.getStart() <0 && mapInfo.getStart() > -1000) {
 				mapInfo.setStartLoc(0);;
 			}
@@ -219,6 +228,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 			lsMapInfos.add(mapInfo);
 		}
 		MapInfo.sortLsMapInfo(lsMapInfos, distanceMapInfo);
+		return lsMapInfos;
 	}
 	/**
 	 * 获得summit两端各region的区域，总共就是region*2+1的区域
@@ -229,7 +239,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 * @param colSummit
 	 * @param rowStart
 	 */
-	public void getFileSite(String txtExcel,int region ,int colChrID, int colSummit, int colScore, int rowStart)
+	public ArrayList<MapInfo> getFileSiteMapInfo(String txtExcel,int region ,int colChrID, int colSummit, int colScore, int rowStart)
 	{
 		int[] columnID = null;
 		if (colScore <= 0 ) {
@@ -239,11 +249,15 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 			columnID = new int[]{colChrID, colSummit, colScore};
 		}
 		ArrayList<String[]> lstmp = ExcelTxtRead.readLsExcelTxt(txtExcel, columnID, rowStart, 0);
-		lsMapInfos = new ArrayList<MapInfo>();
+		ArrayList<MapInfo> lsMapInfos = new ArrayList<MapInfo>();
 		for (String[] strings : lstmp) {
 			MapInfo mapInfo = new MapInfo(strings[0]);
-			int start = Integer.parseInt(strings[1]);
-			mapInfo.setFlagLoc(Integer.parseInt(strings[1]));
+			try {
+				mapInfo.setFlagLoc(Integer.parseInt(strings[1]));
+			} catch (Exception e) {
+				logger.error("该坐标有问题："+mapInfo.getChrID());
+				continue;
+			}
 			mapInfo.setStartLoc(mapInfo.getFlagSite() - region);
 			mapInfo.setEndLoc(mapInfo.getFlagSite() + region);
 			if (mapInfo.getStart() <0 && mapInfo.getStart() > -1000) {
@@ -255,33 +269,100 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 			lsMapInfos.add(mapInfo);
 		}
 		MapInfo.sortLsMapInfo(lsMapInfos, distanceMapInfo);
+		return lsMapInfos;
 	}
 	
 	/**
-	 * 
+	 * 根据前面设定upBp和downBp
+	 * @param lsMapInfos
 	 * @param structure GffDetailGene.TSS等
+	 * @param binNum 分成几块
 	 * @return
 	 */
-	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(String structure)
+	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(ArrayList<MapInfo> lsMapInfos, String structure, int binNum)
 	{
-		Set<GffDetailGene> setGffDetailGenes = getPeakGeneStructure(structure);
-		 ArrayList<MapInfo> lsResult = getMapInfoFromGffGene(setGffDetailGenes, structure);
+		HashMap<GffDetailGene,Double>  hashGffDetailGenes = getPeakGeneStructure(lsMapInfos, structure);
+		 ArrayList<MapInfo> lsResult = getMapInfoFromGffGene(hashGffDetailGenes, structure);
+		 mapReads.getRegionLs(binNum, lsResult, 0);
 		 return lsResult;
 	}
+
+	/**
+	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个
+	 * @param txtExcel
+	 * @param region
+	 * @param colChrID
+	 * @param colSummit
+	 * @param rowStart
+	 * @param Structure 基因的哪个部分的结构
+	 * @param binNum 最后结果分成几块
+	 */
+	public ArrayList<MapInfo> getFileGeneMapInfo(String txtExcel,int colGeneID, int colScore, int rowStart, String Structure, int binNum)
+	{
+		////////////////////     读 文 件   ////////////////////////////////////////////
+		int[] columnID = null;
+		if (colScore <= 0 ) {
+			 columnID = new int[]{colGeneID};
+		}
+		else {
+			columnID = new int[]{colGeneID, colScore};
+		}	
+		ArrayList<String[]> lstmp = ExcelTxtRead.readLsExcelTxt(txtExcel, columnID, rowStart, 0);
+		return getLsGeneMapInfo(lstmp, Structure, binNum);
+	}
+	
+	/**
+	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个
+	 * @param lsGeneValue string[2] 0:geneID 1:value 其中1 可以没有，那么就是string[1] 0:geneID
+	 * @param rowStart
+	 * @param Structure 基因的哪个部分的结构
+	 * @param binNum 最后结果分成几块
+	 * @return
+	 */
+	public ArrayList<MapInfo> getLsGeneMapInfo(ArrayList<String[]> lsGeneValue, String Structure, int binNum) {
+ 		HashMap<GffDetailGene, Double> hashGene2Value = new HashMap<GffDetailGene, Double>();
+		for (String[] strings : lsGeneValue) {
+			GffDetailGene gffDetailGene = gffHashGene.searchLOC(strings[0]);
+			if (hashGene2Value.containsKey(gffDetailGene)) {
+				if (strings.length > 1) {
+					double score = Double.parseDouble(strings[1]);
+					if (hashGene2Value.get(gffDetailGene) > score) {
+						hashGene2Value.put(gffDetailGene, score);
+					}
+				}
+			} else {
+				if (strings.length > 1) {
+					hashGene2Value.put(gffDetailGene,
+							Double.parseDouble(strings[1]));
+				} else {
+					hashGene2Value.put(gffDetailGene, 0.0);
+				}
+			}
+		}
+		ArrayList<MapInfo> lsMapInfoGene = getMapInfoFromGffGene(hashGene2Value, Structure);
+		mapReads.getRegionLs(binNum, lsMapInfoGene, 0);
+		return lsMapInfoGene;
+	}
+	
+	
+	
+	
+	
 	
 	
 	/**
 	 * 根据前面设定upBp和downBp
 	 * 给定一系列gffDetailGene，以及想要的部分，返回对应区域的LsMapInfo
+	 * <b>注意里面没有填充reads的double[] value</b>
 	 * @param setgffDetailGenes
 	 * @param structure
 	 * @return
 	 */
-	protected ArrayList<MapInfo> getMapInfoFromGffGene(Set<GffDetailGene> setgffDetailGenes, String structure)
+	private ArrayList<MapInfo> getMapInfoFromGffGene(HashMap<GffDetailGene,Double> setgffDetailGenes, String structure)
 	{
-		lsMapInfos = new ArrayList<MapInfo>();
-		for (GffDetailGene gffDetailGene : setgffDetailGenes) {
-			lsMapInfos.add(getStructureLoc(gffDetailGene, structure));
+		ArrayList<MapInfo> lsMapInfos = new ArrayList<MapInfo>();
+		for (Entry<GffDetailGene, Double> gffDetailValue : setgffDetailGenes.entrySet()) {
+			lsMapInfos.add(getStructureLoc(gffDetailValue.getKey(),gffDetailValue.getValue(), structure));
 		}
 		return lsMapInfos;
 	}
@@ -292,14 +373,23 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 * 自动去冗余基因
 	 * @param lsPeakInfo mapInfo必须有 chrID 和 startLoc 和 endLoc 三项
 	 */
-	protected HashSet<GffDetailGene> getPeakGeneStructure(String structure) {
+	private HashMap<GffDetailGene,Double> getPeakGeneStructure(ArrayList<MapInfo> lsMapInfos, String structure) {
 		//存储最后基因的数量
-		HashSet<GffDetailGene> hashGffDetailGenes = new HashSet<GffDetailGene>();
+		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
 		for (MapInfo mapInfo : lsMapInfos) {
 			if (mapInfo.getStart() <0 && mapInfo.getStart() > -1000) {
 				mapInfo.setStartLoc(0);;
 			}
-			hashGffDetailGenes.addAll(getPeakStructureGene(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), structure ) );
+			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), structure );
+			for (GffDetailGene gffDetailGene : setGffDetailGene) {
+				if (hashGffDetailGenes.containsKey(gffDetailGene)) {
+					if (mapInfo.getWeight() > hashGffDetailGenes.get(gffDetailGene)) {
+						hashGffDetailGenes.put(gffDetailGene, mapInfo.getWeight());
+					}
+				}
+				else
+					hashGffDetailGenes.put(gffDetailGene, mapInfo.getWeight());
+			}
 		}
 		return hashGffDetailGenes;
 	}
@@ -327,19 +417,25 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	/**
 	 * 前面设定upBp和downBp
 	 * 给定gffDetailGene，以及想要的部分，返回对应区域的MapInfo
+	 * <b>注意里面没有填充reads的double[] value</b>
 	 * @param gffDetailGene
+	 * @param value 该基因所对应的阈值
 	 * @param structure GffDetailGene.TSS等
 	 * @return
 	 */
-	private MapInfo getStructureLoc(GffDetailGene gffDetailGene, String structure)
+	private MapInfo getStructureLoc(GffDetailGene gffDetailGene, Double value,String structure)
 	{
 		if (structure.equals(GffDetailGene.TSS)) {
 			int tss = gffDetailGene.getLongestSplit().getTSSsite();
-			return new MapInfo(gffDetailGene.getChrID(), tss - upBp, tss + downBp, tss,0, gffDetailGene.getLongestSplit().getIsoName());
+			MapInfo mapInfo = new MapInfo(gffDetailGene.getChrID(), tss - upBp, tss + downBp, tss,0, gffDetailGene.getLongestSplit().getIsoName());
+			mapInfo.setWeight(value);
+			return mapInfo;
 		}
 		else if (structure.equals(GffDetailGene.TES)) {
 			int tes = gffDetailGene.getLongestSplit().getTSSsite();
-			return new MapInfo(gffDetailGene.getChrID(), tes - upBp, tes + downBp, tes, 0, gffDetailGene.getLongestSplit().getIsoName());
+			MapInfo mapInfo = new MapInfo(gffDetailGene.getChrID(), tes - upBp, tes + downBp, tes, 0, gffDetailGene.getLongestSplit().getIsoName());
+			mapInfo.setWeight(value);
+			return mapInfo;
 		}
 		else {
 			logger.error("还没添加该种类型的structure");
