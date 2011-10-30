@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
 import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
+import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
 
 public class GOInfoUniID extends GOInfoAbs{
 	private static Logger logger = Logger.getLogger(GOInfoUniID.class);
@@ -21,7 +21,7 @@ public class GOInfoUniID extends GOInfoAbs{
 			return;
 		}
 		lsAGene2Gos = new ArrayList<AGene2Go>();
-		ArrayList<UniGene2Go>  lstmp = DaoFSUniGene2Go.queryUniGene2Go(genUniAccID);
+		ArrayList<UniGene2Go>  lstmp = MapUniGene2Go.queryUniGene2Go(genUniAccID);
 		if (lstmp == null || lstmp.size() == 0) {
 			return;
 		}

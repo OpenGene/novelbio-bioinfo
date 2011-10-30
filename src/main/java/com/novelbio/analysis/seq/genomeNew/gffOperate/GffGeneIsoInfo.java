@@ -71,8 +71,10 @@ public abstract class GffGeneIsoInfo {
 	public static final String TYPE_GENE_SNRNA = "snRNA";
 	public static final String TYPE_GENE_RRNA = "rRNA";
 	public static final String TYPE_GENE_NCRNA = "ncRNA";
-
+	
 	private String flagTypeGene = TYPE_GENE_MRNA;
+	
+	String chrID = "";
 	/**
 	 * 返回该基因的类型
 	 * @return
@@ -155,14 +157,16 @@ public abstract class GffGeneIsoInfo {
 		if (this.coord > GffCodAbs.LOC_ORIGINAL) {
 			searchCoord();
 		}
+		this.chrID = gffDetailGene.getChrID();
 	}
-	public GffGeneIsoInfo(String IsoName, int coord, String geneType) {
+	public GffGeneIsoInfo(String IsoName, String chrID, int coord, String geneType) {
 		this.IsoName = IsoName;
 		this.flagTypeGene = geneType;
 		this.coord = coord;
 		if (this.coord > GffCodAbs.LOC_ORIGINAL) {
 			searchCoord();
 		}
+		this.chrID = chrID;
 	}
 //	/**
 //	 * 仅仅初始化给查找时用
@@ -176,8 +180,13 @@ public abstract class GffGeneIsoInfo {
 //	}
 
 	GffDetailGene gffDetailGene;
-	public GffDetailGene getThisGffDetailGene() {
-		return gffDetailGene;
+//	public GffDetailGene getThisGffDetailGene() {
+//		return gffDetailGene;
+//	}
+	public String getChrID()
+	{
+//		return gffDetailGene.getChrID();
+		return chrID;
 	}
 	public abstract boolean isCis5to3();
 	protected boolean mRNA = true;
@@ -749,14 +758,14 @@ public abstract class GffGeneIsoInfo {
 	 * @param mRNAnum
 	 * NnnnLoc 为-4位，当N与Loc重合时为0
 	 */
-	public abstract int getLocdistanceSite(int location, int mRNAnum);
+	public abstract int getLocDistmRNASite(int location, int mRNAnum);
 	/**
 	 * 两个坐标之间的距离，mRNA层面，当loc1在loc2上游时，返回负数，当loc1在loc2下游时，返回正数
 	 * 要求这两个坐标都在exon上.如果不符合，则返回GffCodAbs.LOC_ORIGINAL
 	 * @param loc1 第一个坐标
 	 * @param loc2 第二个坐标
 	 */
-	public int getLocDistance(int loc1, int loc2)
+	public int getLocDistmRNA(int loc1, int loc2)
 	{
 		int locSmall = 0; int locBig = 0;
 		if (isCis5to3()) {

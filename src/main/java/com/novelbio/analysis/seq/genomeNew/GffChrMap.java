@@ -1,6 +1,9 @@
 package com.novelbio.analysis.seq.genomeNew;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +21,8 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.java.HeatChart;
+import com.novelbio.test.testextend.a;
 
 /**
  * 给定基因的区域，画出各种统计图
@@ -32,7 +37,6 @@ public class GffChrMap extends GffChrAbs{
 	 */
 	boolean HanYanFstrand =false;
 	/**
-	 * 
 	 * @param gffType
 	 * @param gffFile
 	 * @param readsBed
@@ -43,7 +47,27 @@ public class GffChrMap extends GffChrAbs{
 		super(gffType, gffFile, chrFile, readsBed, binNum);
 		this.HanYanFstrand = HanYanFstrand;
 	}
+	/**
+	 * @param gffType
+	 * @param gffFile
+	 * @param readsBed
+	 * @param binNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
+	 * @param HanYanFstrand 是否选择韩燕模式，根据reads是否与基因的方向相一致而进行过滤工作，这个是专门针对韩燕的项目做的分析。
+	 */
+	public GffChrMap(String gffType, String gffFile, String chrFile,String readsBed, int binNum) {
+		super(gffType, gffFile, chrFile, readsBed, binNum);
+		this.HanYanFstrand = false;
+	}
 	
+	public static void main(String[] args) {
+		GffChrMap gffChrMap = new GffChrMap(NovelBioConst.GENOME_GFF_TYPE_TIGR, NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE,
+				NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, 
+				"/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/N/result/Nextend_sort.bed", 10);
+		gffChrMap.loadChrFile();
+		gffChrMap.loadMapReads();
+		gffChrMap.plotTssHeatMap("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/DGEexpress/dgeexpress",
+				1, 2, 2, GffDetailGene.TSS, 1000, "/media/winE/NBC/Project/Project_ZHY_Lab/TssHeat.png");
+	}
 	/**
 	 * @param readsFile mapping的结果文件，必须排过序，一般为bed格式
 	 * @param binNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
@@ -119,9 +143,7 @@ public class GffChrMap extends GffChrAbs{
 		}
 	}
 	
-	
 	/**
-	 * 
 	 * 给定染色体，返回该染色体上reads分布
 	 * @param chrID 第几个软色体
 	 * @param maxresolution 最长分辨率
@@ -193,6 +215,81 @@ public class GffChrMap extends GffChrAbs{
 		p.waitFor();
 	}
 	
+	/**
+	 * 
+	 * @param txtExcel
+	 * @param colGeneID
+	 * @param colScore
+	 * @param rowStart
+	 * @param structure
+	 * @param binNum 最后结果分成几块
+	 */
+	public void plotTssHeatMap(String txtExcel, int colGeneID, int colScore, int rowStart, String structure, int binNum, String outFile) {
+		ArrayList<MapInfo> lsMapInfos = super.getFileGeneMapInfo(txtExcel, colGeneID, colScore, rowStart, structure, binNum);
+		MapInfo.sortPath(false);
+		Collections.sort(lsMapInfos);
+//		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 100, HeatChart.SCALE_LINEAR, FileOperate.changeFileSuffix(outFile, "_100line", null));
+//		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 100, HeatChart.SCALE_EXPONENTIAL, FileOperate.changeFileSuffix(outFile, "_100exp", null));
+//		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 100, HeatChart.SCALE_LOGARITHMIC, FileOperate.changeFileSuffix(outFile, "_100log", null));
+		
+//		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 70, HeatChart.SCALE_LINEAR, FileOperate.changeFileSuffix(outFile, "_70line", null));
+//		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 70, HeatChart.SCALE_EXPONENTIAL, FileOperate.changeFileSuffix(outFile, "_70exp", null));
+//		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 70, HeatChart.SCALE_LOGARITHMIC, FileOperate.changeFileSuffix(outFile, "_70log", null));
+		
+//		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 200, HeatChart.SCALE_LINEAR, FileOperate.changeFileSuffix(outFile, "_200line", null));
+//		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 200, HeatChart.SCALE_EXPONENTIAL, FileOperate.changeFileSuffix(outFile, "_200exp", null));
+//		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 200, HeatChart.SCALE_LOGARITHMIC, FileOperate.changeFileSuffix(outFile, "_200log", null));
+//		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 100, 0.5, FileOperate.changeFileSuffix(outFile, "_100log", null));
+		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 450, 1.5, FileOperate.changeFileSuffix(outFile, "_450power", null));
+		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 400, 1.5, FileOperate.changeFileSuffix(outFile, "_400power", null));
+		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 350, 1.5, FileOperate.changeFileSuffix(outFile, "_350power", null));
+		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 300, 1.5, FileOperate.changeFileSuffix(outFile, "_300power", null));
+	}
+	
+	/**
+	 * @param lsMapInfo
+	 * @param structure
+	 * @param color 颜色 Color.WHITE等
+	 * @param outFile 图片路径
+	 */
+	private static void plotHeatMap(ArrayList<MapInfo> lsMapInfo, String structure, Color color, double small, double big, double scale ,String outFile)
+	{
+		HeatChart map = new HeatChart(lsMapInfo, small, big);
+		if (structure.equals(GffDetailGene.TSS)) {
+			map.setTitle("HeatMap Of TSS");
+			map.setXAxisLabel("Distance To TSS");
+			map.setYAxisLabel("");
+		}
+		else if (structure.equals(GffDetailGene.TES)) {
+			map.setTitle("HeatMap Of TES");
+			map.setXAxisLabel("Distance To TES");
+			map.setYAxisLabel("");
+		}
+		
+		String[] aa = new String[]{"a","b","c","d","e","f"};
+		map.setXValues(aa);
+		String[] nn = new String[lsMapInfo.get(0).getDouble().length];
+		for (int i = 0; i < nn.length; i++) {
+			nn[i] = "";
+		}
+		map.setYValues(nn);
+		Dimension bb = new Dimension();
+		bb.setSize(1, 0.01);
+		map.setCellSize(bb );
+		//Output the chart to a file.
+		Color colorblue = color;
+		Color colorRed = Color.WHITE;
+		//map.setBackgroundColour(color);
+		map.setHighValueColour(colorblue);
+		map.setLowValueColour(colorRed);
+		map.setColourScale(scale);
+		try {
+			map.saveToFile(new File(outFile));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 
 	/**
@@ -232,7 +329,6 @@ public class GffChrMap extends GffChrAbs{
 //		double[] TssDensity=gffLocatCod.getUCSCTssRange(LocInfo, range, binNum);
 		plotRTss(TssDensity);
 	}
-	
 	private void plotRTss(double[] TssDensity)
 	{
 		TxtReadandWrite tssReadandWrite=new TxtReadandWrite();
@@ -259,9 +355,6 @@ public class GffChrMap extends GffChrAbs{
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -324,7 +417,7 @@ public class GffChrMap extends GffChrAbs{
 
 	/**
 	 * 仅给<b>韩燕</b>使用<br>
-	 * 获得基因的信息，然后排序，可以从里面挑选出最大的几个然后画图
+	 * 获得基因的信息，然后排序，可以从里面挑选出含reads最多的几个然后画图
 	 * 返回经过排序的mapinfo的list，每一个mapInfo包含了该基因的核糖体信息
 	 */
 	public ArrayList<MapInfo> getChrInfo() {

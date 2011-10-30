@@ -544,6 +544,9 @@ public class TxtReadandWrite {
 			int columnStartNum, int rowEndNum, int columnEndNum)
 			throws Exception {
 		BufferedReader readasexcel = readfile();
+		if (rowEndNum <= 0) {
+			rowEndNum = ExcelRows();
+		}
 		int readlines = rowEndNum - rowStartNum + 1;
 		int readcolumns = columnEndNum - columnStartNum + 1;
 		// System.out.println(readlines);

@@ -32,7 +32,29 @@ public class BedSeq extends SeqComb{
 	public BedSeq(String bedFile) {
 		super(bedFile, 1);
 	}
-
+	
+	public static void main(String[] args) {
+		BedSeq bedSeq = null;
+		String parentFile = "/media/winE/NBC/Project/Project_FY_Lab/Result/cufflink_evaluate/";
+		
+		bedSeq = new BedSeq(parentFile+"K0.bed");
+		System.out.print("\tK0MappedNum\t"+bedSeq.getSeqNum());
+		System.out.println();
+		
+		bedSeq = new BedSeq(parentFile+"K5.bed");
+		System.out.print("\tK5readsFilterNum\t"+bedSeq.getSeqNum());
+		System.out.println();
+		
+		bedSeq = new BedSeq(parentFile+"WT0.bed");
+		System.out.print("\tWT0readsFilterNum\t"+bedSeq.getSeqNum());
+		System.out.println();
+		
+		bedSeq = new BedSeq(parentFile+"WT5.bed");
+		System.out.print("\tWT5readsFilterNum\t"+bedSeq.getSeqNum());
+		System.out.println();
+	}
+	
+	
 	/**
 	 * 指定bed文件，以及需要排序的列数，产生排序结果
 	 * @param chrID ChrID所在的列，从1开始记数，按照字母数字排序

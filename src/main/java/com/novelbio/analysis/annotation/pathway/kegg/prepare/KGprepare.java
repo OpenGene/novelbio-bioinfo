@@ -8,10 +8,10 @@ import java.util.Map;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.geneanno.MapUniProtID;
 
 
 
@@ -101,7 +101,7 @@ public class KGprepare {
 			String accID = removeDot(geneID[i]);
 			ncbiid.setAccID(accID);ncbiid.setTaxID(taxID);
 			uniProtID.setAccID(accID);uniProtID.setTaxID(taxID);
-			ArrayList<NCBIID> lsNcbiids=DaoFSNCBIID.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsNcbiids=MapNCBIID.queryLsNCBIID(ncbiid);
 			//先查找NCBIID表
 			if (lsNcbiids != null && lsNcbiids.size() > 0) 
 			{
@@ -115,7 +115,7 @@ public class KGprepare {
 				continue;
 			}
 			//没找到的话，查找UniProtID表
-			ArrayList<UniProtID> lsUniProtIDs=DaoFSUniProtID.queryLsUniProtID(uniProtID);
+			ArrayList<UniProtID> lsUniProtIDs=MapUniProtID.queryLsUniProtID(uniProtID);
 			if (lsUniProtIDs != null && lsUniProtIDs.size() > 0) {
 				String tmpGeneID = lsUniProtIDs.get(0).getUniID();
 				if (Sep) {

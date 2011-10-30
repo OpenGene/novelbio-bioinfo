@@ -10,7 +10,7 @@ public class AbsGetSpring {
 	BeanFactory factory;
 
 	public AbsGetSpring() {
-		ctx = new ClassPathXmlApplicationContext("spring.xml");
+		ctx = new ClassPathXmlApplicationContext("spring2.xml");
 		factory = (BeanFactory) ctx;
 	}
 }

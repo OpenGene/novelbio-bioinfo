@@ -34,7 +34,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		return SeqFasta.getCompMap();
 	}
 	
-	String regx = "";
+	String regx = null;
 	boolean append;
 	
 	String chrFile = "";
@@ -286,7 +286,9 @@ public abstract class SeqHashAbs implements SeqHashInt{
 
 	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
-	 * @param cisseq 正反向
+	 * 不管转录本的方向，总是从基因组的5‘向3’提取。
+	 * 方向需要人工设定cisseq
+	 * @param cisseq 正反向，是否需要反向互补。
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
@@ -328,6 +330,56 @@ public abstract class SeqHashAbs implements SeqHashInt{
 			}
 		}
 		if (!cisseq) {
+			result = SeqFasta.reservecom(result);
+		}
+		return result;
+	}
+	/**
+	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
+	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
+	 * @param cisseq 正反向，在提出的正向转录本的基础上，是否需要反向互补。
+	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
+	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
+	 */
+	@Override
+	public String getSeq(String chrID,ArrayList<int[]> lsInfo, boolean getIntron) {
+		String myChrID = chrID;
+		if (CaseChange) {
+			myChrID = chrID.toLowerCase();
+		}
+		if (!hashChrLength.containsKey(myChrID)) {
+			logger.error("没有该染色体： "+chrID);
+			return null;
+		}
+		
+		String result = ""; boolean cis5to3 = true;
+		int[] exon1 = lsInfo.get(0);
+		if (exon1[0] > exon1[1]) {
+			cis5to3 = false;
+		}
+		if (cis5to3) {
+			for (int i = 0; i < lsInfo.size(); i++) {
+				int[] exon = lsInfo.get(i);
+				try {	
+					result = result + getSeq(chrID, exon[0], exon[1]).toUpperCase(); 
+					if (getIntron && i < lsInfo.size()-1) {
+						result = result + getSeq(chrID,exon[1]+1, lsInfo.get(i+1)[0]-1).toLowerCase();
+					}
+				} catch (Exception e) {e.printStackTrace();}
+			}
+		}
+		else {
+			for (int i = lsInfo.size() - 1; i >= 0; i--) {
+				int[] exon = lsInfo.get(i);
+				try {	
+					result = result + getSeq(chrID, exon[1], exon[0]).toUpperCase(); 
+					if (getIntron && i > 0) {
+						result = result + getSeq(chrID,exon[0] + 1, lsInfo.get(i-1)[1] - 1).toLowerCase();
+					}
+				} catch (Exception e) {e.printStackTrace();}
+			}
+		}
+		if (!cis5to3) {
 			result = SeqFasta.reservecom(result);
 		}
 		return result;

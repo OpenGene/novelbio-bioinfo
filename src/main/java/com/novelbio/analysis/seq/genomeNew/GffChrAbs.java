@@ -78,7 +78,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	
 	
 	static String chrFile = "";
-	static String chrRegx = "";
+	static String chrRegx = null;
 	
 	/**
 	 * 
@@ -181,8 +181,11 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	}
 	
 	protected void loadMapReads() {
-		if (FileOperate.isFileExist(chrFile) || FileOperate.isFileDirectory(chrFile)) {
-			 seqHash = new SeqHash(chrFile, chrRegx);
+		try {
+			mapReads.ReadMapFile();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -288,7 +291,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	}
 
 	/**
-	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个
+	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
 	 * @param txtExcel
 	 * @param region
 	 * @param colChrID
@@ -312,7 +315,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	}
 	
 	/**
-	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个
+	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
 	 * @param lsGeneValue string[2] 0:geneID 1:value 其中1 可以没有，那么就是string[1] 0:geneID
 	 * @param rowStart
 	 * @param Structure 基因的哪个部分的结构

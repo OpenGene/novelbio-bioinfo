@@ -3,11 +3,11 @@ package com.novelbio.analysis.annotation.pathway.kegg.pathEntity;
 import java.util.ArrayList;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
-import com.novelbio.database.DAO.KEGGDAO.DaoKIDgen2Keg;
-import com.novelbio.database.DAO.KEGGDAO.DaoKNIdKeg;
 import com.novelbio.database.entity.kegg.KGIDgen2Keg;
 import com.novelbio.database.entity.kegg.KGpathway;
 import com.novelbio.database.entity.kegg.noGene.KGNIdKeg;
+import com.novelbio.database.mapper.kegg.MapKIDgen2Keg;
+import com.novelbio.database.mapper.kegg.MapKNIdKeg;
 
 public class KeggInfoAccID extends KeggInfoAbs{
 	
@@ -28,7 +28,7 @@ public class KeggInfoAccID extends KeggInfoAbs{
 			bookgiDgen2Keg = true;
 			KGNIdKeg kgnIdKegTmp = new KGNIdKeg();
 			kgnIdKegTmp.setUsualName(genUniAccID);
-			kgnIdKeg = DaoKNIdKeg.queryKGNIdKeg(kgnIdKegTmp);
+			kgnIdKeg = MapKNIdKeg.queryKGNIdKeg(kgnIdKegTmp);
 		}
 		if (kgnIdKeg != null) {
 			keggID = "cpd:"+kgnIdKeg.getKegID();

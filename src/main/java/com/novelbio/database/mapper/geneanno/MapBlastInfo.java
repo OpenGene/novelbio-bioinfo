@@ -1,4 +1,4 @@
-package com.novelbio.database.DAO.FriceDAO;
+package com.novelbio.database.mapper.geneanno;
 
 import java.util.ArrayList;
 
@@ -10,7 +10,7 @@ import com.novelbio.database.util.Util;
 
 
 
-public class DaoFSBlastInfo {
+public class MapBlastInfo {
 
 	/**
 		where<br>

@@ -14,11 +14,6 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGeneInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniGeneInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.Gene2GoInfo;
 import com.novelbio.database.entity.friceDB.GeneInfo;
@@ -26,6 +21,11 @@ import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.Uni2GoInfo;
 import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.mapper.geneanno.MapBlastInfo;
+import com.novelbio.database.mapper.geneanno.MapGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.service.ServAnno;
 
 public class AnnoQuery {

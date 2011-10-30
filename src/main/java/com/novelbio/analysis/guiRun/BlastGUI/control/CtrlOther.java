@@ -3,8 +3,8 @@ package com.novelbio.analysis.guiRun.BlastGUI.control;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.database.DAO.FriceDAO.DaoFSTaxID;
 import com.novelbio.database.entity.friceDB.TaxInfo;
+import com.novelbio.database.mapper.geneanno.MapFSTaxID;
 
 
 public class CtrlOther {
@@ -17,7 +17,7 @@ public class CtrlOther {
 	public static HashMap<String, Integer> getSpecies() 
 	{
 		TaxInfo taxInfo = new TaxInfo();
-		ArrayList<TaxInfo> lsTaxID = DaoFSTaxID.queryLsTaxInfo(taxInfo);
+		ArrayList<TaxInfo> lsTaxID = MapFSTaxID.queryLsTaxInfo(taxInfo);
 		HashMap<String, Integer> hashTaxID = new HashMap<String, Integer>();
 		for (TaxInfo taxInfo2 : lsTaxID) {
 			if (taxInfo2.getAbbr().trim().equals("")) {

@@ -8,12 +8,6 @@ import java.util.Set;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGo2Term;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.Blast2GeneInfo;
 import com.novelbio.database.entity.friceDB.BlastInfo;
@@ -26,6 +20,12 @@ import com.novelbio.database.entity.friceDB.Uni2GoInfo;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
 import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.mapper.geneanno.MapBlastInfo;
+import com.novelbio.database.mapper.geneanno.MapGene2Go;
+import com.novelbio.database.mapper.geneanno.MapGo2Term;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
+import com.novelbio.database.mapper.geneanno.MapUniProtID;
 
 public class ServGo {
 	/**
@@ -49,7 +49,7 @@ public class ServGo {
 			return hashGo2Term;
 		}
 		Go2Term go2Term = new Go2Term();
-		ArrayList<Go2Term> lsGo2Terms = DaoFSGo2Term.queryLsGo2Term(go2Term);
+		ArrayList<Go2Term> lsGo2Terms = MapGo2Term.queryLsGo2Term(go2Term);
 		for (Go2Term go2Term2 : lsGo2Terms) 
 		{
 			String[] strgo2term = new String[4];
@@ -103,7 +103,7 @@ public class ServGo {
 	public static ArrayList<Gene2Go> getGen2Go(NCBIID ncbiid)
 	{
 		long GeneID = ncbiid.getGeneId();
-		return DaoFSGene2Go.queryGene2Go(GeneID);
+		return MapGene2Go.queryGene2Go(GeneID);
 	}
 
 	
@@ -115,7 +115,7 @@ public class ServGo {
 	 */
 	public static ArrayList<UniGene2Go> getUniGen2Go(UniProtID uniProtID)
 	{
-		return DaoFSUniGene2Go.queryUniGene2Go(uniProtID.getUniID());
+		return MapUniGene2Go.queryUniGene2Go(uniProtID.getUniID());
 	}
 	
 }

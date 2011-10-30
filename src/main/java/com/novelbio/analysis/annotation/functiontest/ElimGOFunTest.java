@@ -43,15 +43,17 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		ArrayList<String[]> lsAnno = getElimGo2Gene(lsTestResult, lsGeneID);
 		ArrayList<String[]> lsResult = null;
 		if (blast) {
-			 lsResult = ArrayOperate.combArrayListHash(lsTestResult, lsAnno, 0, 6);
+			 lsResult = ArrayOperate.combArrayListHash(lsTestResult, lsAnno, 0, 0);
 		}
 		else {
-			 lsResult = ArrayOperate.combArrayListHash(lsTestResult, lsAnno, 0, 3);
+			 lsResult = ArrayOperate.combArrayListHash(lsTestResult, lsAnno, 0, 0);
 		}
 		return lsResult;
 	}
 	
+	
 	/**
+	 * @param run 是否要新运行一次
 	 * @return 结果加标题了<br>
 	 * arrayList-string[6] 
 	 * 0:itemID <br>
@@ -67,6 +69,8 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	 */
 	public ArrayList<String[]> getTestResult()
 	{
+		if (lsTestResult != null && lsTestResult.size() > 0)
+			return lsTestResult;
 		setStrGeneID();
 		TxtReadandWrite txtParam = new TxtReadandWrite(NovelBioConst.R_WORKSPACE_TOPGO_PARAM, true);
 		String content = "";
@@ -90,9 +94,9 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		cmdOperate.doInBackground();
 		//读取
 		TxtReadandWrite txtRGo2Gene = new TxtReadandWrite(NovelBioConst.R_WORKSPACE_TOPGO_GORESULT, false);
-		ArrayList<String[]> lsElimTable = txtRGo2Gene.ExcelRead("\t", 2, 2, txtRGo2Gene.ExcelRows(), txtRGo2Gene.ExcelColumns("\t"), 0);
+		lsTestResult = txtRGo2Gene.ExcelRead("\t", 2, 2, txtRGo2Gene.ExcelRows(), txtRGo2Gene.ExcelColumns("\t"), 0);
 		//去除"号
-		for (String[] strings : lsElimTable) 
+		for (String[] strings : lsTestResult) 
 		{
 			for (int i = 0; i < strings.length; i++) {
 				strings[i] = strings[i].replace("\"", "");
@@ -102,8 +106,8 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		title[0] = "GOID"; title[1] = "GOTerm";
 		title[2] = "DifGene"; title[3] = "AllDifGene"; title[4] = "GeneInGOID"; title[5] = "AllGene";
 		title[6] = "P-Value"; title[7] = "FDR"; title[8] = "Enrichment"; title[9] = "(-log2P)";
-		lsElimTable.add(0,title);
-		return lsElimTable;
+		lsTestResult.add(0,title);
+		return lsTestResult;
 	}
 
 	
@@ -111,16 +115,14 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	ArrayList<String> lsGeneID = null;
 	private void setStrGeneID()
 	{
-		String[] strGeneID = new String[lsTest.size()];//用于elim检验
-		ArrayList<String> lsGeneID = new ArrayList<String>();//和strGeneID一样的东西
-		for (int i = 0; i < strGeneID.length; i++) {
+		strGeneID = new String[lsTest.size()];//用于elim检验
+		lsGeneID = new ArrayList<String>();//和strGeneID一样的东西
+		for (int i = 0; i < lsTest.size(); i++) {
 			strGeneID[i] = lsTest.get(i)[0];
 			lsGeneID.add(strGeneID[i]);
 		}
 	}
-	
-	
-	
+
 	/**
 	 * 不包含标题
 	 * 将elim的GO2Gene改成正规的Go2Gene 的List并返回

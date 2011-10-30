@@ -3,7 +3,7 @@ package com.novelbio.database.entity.friceDB;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.database.DAO.FriceDAO.DaoFSGo2Term;
+import com.novelbio.database.mapper.geneanno.MapGo2Term;
 
 /**
  * ÷ÿ–¥¡Àequal∫Õhash
@@ -24,7 +24,11 @@ public abstract class AGene2Go {
 	public abstract void setGeneUniID(String geneUniID);
 	
 	public String getGOID() {
-		return GOID;
+		try {
+			return Go2Term.getHashGo2Term().get(GOID).getGoID();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	public void setGOID(String GOID) {
 		this.GOID = GOID;

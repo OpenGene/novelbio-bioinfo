@@ -192,6 +192,7 @@ public class GffDetailGene extends GffDetailAbs
     }
     /**
      * 给定转录本名(UCSC里实际上是基因名)<br>
+     * 没有则返回null
      */
     public GffGeneIsoInfo getIsolist(String splitID)
     {
@@ -203,7 +204,7 @@ public class GffDetailGene extends GffDetailAbs
     	
     	
     	if (index == -1) {
-    		logger.error("cannotFind the ID: "+ splitID);
+    		logger.info("cannotFind the ID: "+ splitID);
 			return null;
 		}
     	return lsGffGeneIsoInfos.get(index);//include one special loc start number to end number	

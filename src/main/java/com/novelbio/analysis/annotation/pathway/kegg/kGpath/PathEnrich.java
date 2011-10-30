@@ -19,15 +19,15 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGeneInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.KEGGDAO.DaoKNIdKeg;
-import com.novelbio.database.DAO.KEGGDAO.DaoKPathway;
 import com.novelbio.database.entity.friceDB.GeneInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.kegg.KGentry;
 import com.novelbio.database.entity.kegg.KGpathway;
 import com.novelbio.database.entity.kegg.noGene.KGNIdKeg;
+import com.novelbio.database.mapper.geneanno.MapGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.kegg.MapKNIdKeg;
+import com.novelbio.database.mapper.kegg.MapKPathway;
 
 /**
  * 给定基因，返回每个基因所在的Pathway和Pathway数量，方便做Pathway富集检验
@@ -79,7 +79,7 @@ public class PathEnrich {
 			{
 				ncbiid.setTaxID(QtaxID);
 			}
-			ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid);
 			if (lsNcbiids!=null && lsNcbiids.size()>0) 
 			{
 				geneID = lsNcbiids.get(0).getGeneId() + "";
@@ -108,7 +108,7 @@ public class PathEnrich {
 			{
 				ncbiid.setTaxID(QtaxID);
 			}
-			ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid);
 			if (lsNcbiids!=null && lsNcbiids.size()>0) 
 			{
 				geneID = lsNcbiids.get(0).getGeneId() + "";
@@ -196,8 +196,8 @@ public class PathEnrich {
 		
 		ExcelOperate excelGO = new ExcelOperate();
 		excelGO.openExcel(resultExcel2003);
-		excelGO.WriteExcel(prix+"PathAnalysis", 1, 1, lsFisherResult, true);
-		excelGO.WriteExcel(prix+"Gene2Path", 1, 1, lsPathInfoResult, true);
+		excelGO.WriteExcel(prix+"PathAnalysis", 1, 1, lsFisherResult);
+		excelGO.WriteExcel(prix+"Gene2Path", 1, 1, lsPathInfoResult);
 	}
 	
 
@@ -309,7 +309,7 @@ public class PathEnrich {
 		    //如果是ncbi的geneID号，那么就用ncbiid去搜索数据库，否则用UniProtID去搜索数据库
 			if (flagNcbi) 
 			{
-				NCBIID ncbiidsub = DaoFSNCBIID.queryLsNCBIID(ncbiid).get(0);
+				NCBIID ncbiidsub = MapNCBIID.queryLsNCBIID(ncbiid).get(0);
 				KGen2Path kGen2Path=QKegPath.qKegPath(ncbiidsub, blast,subTaxID, evalue);
 				//如果本基因含有keggID
 				if (kGen2Path.getKGCgen2Entry()!=null
@@ -318,14 +318,14 @@ public class PathEnrich {
 				{
 					//////////////////获得该基因的geneInfo///////////////////////////////////
 					GeneInfo tmpGeneInfo=new GeneInfo(); tmpGeneInfo.setGeneID(Long.parseLong(geneID));
-					GeneInfo tmpGeneInfo2 =  DaoFSGeneInfo.queryGeneInfo(tmpGeneInfo);
+					GeneInfo tmpGeneInfo2 =  MapGeneInfo.queryGeneInfo(tmpGeneInfo);
 					String symbol = ""; String description = "";
 					if (tmpGeneInfo2 != null) {
 						description = tmpGeneInfo2.getDescription();
 						if ((symbol = tmpGeneInfo2.getSymbol().split("//")[0]).equals(""))
 						{
 							NCBIID ncbiid2 = new NCBIID(); ncbiid2.setGeneId(Long.parseLong(geneID));
-							ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid2);
+							ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid2);
 							symbol = lsNcbiids.get(0).getAccID(); 
 						}
 					}
@@ -355,7 +355,7 @@ public class PathEnrich {
 							geneInfo[1] = lsKGentry.get(i).getPathName();
 							//搜索pathway的Title
 							KGpathway kGpathway = new KGpathway(); kGpathway.setPathName(geneInfo[1]); 
-							geneInfo[2] = DaoKPathway.queryKGpathway(kGpathway).getTitle();
+							geneInfo[2] = MapKPathway.queryKGpathway(kGpathway).getTitle();
 							geneInfo[3] = symbol;
 							geneInfo[4] = description;
 							lsGeneInfo.add(geneInfo);
@@ -376,14 +376,14 @@ public class PathEnrich {
 
 					//////////////////获得该基因的geneInfo///////////////////////////////////
 					GeneInfo tmpGeneInfo=new GeneInfo(); tmpGeneInfo.setGeneID(Long.parseLong(geneID));
-					GeneInfo tmpGeneInfo2 =  DaoFSGeneInfo.queryGeneInfo(tmpGeneInfo);
+					GeneInfo tmpGeneInfo2 =  MapGeneInfo.queryGeneInfo(tmpGeneInfo);
 					String symbol = ""; String description = "";
 					if (tmpGeneInfo2 != null) {
 						description = tmpGeneInfo2.getDescription();
 						if ((symbol = tmpGeneInfo2.getSymbol().split("//")[0]).equals(""))
 						{
 							NCBIID ncbiid2 = new NCBIID(); ncbiid2.setGeneId(Long.parseLong(geneID));
-							ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid2);
+							ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid2);
 							symbol = lsNcbiids.get(0).getAccID(); 
 						}
 					}
@@ -393,14 +393,14 @@ public class PathEnrich {
 					
 					
 					GeneInfo qtmpGeneInfo=new GeneInfo(); qtmpGeneInfo.setGeneID(Long.parseLong(subGeneID));
-					GeneInfo qtmpGeneInfo2 =  DaoFSGeneInfo.queryGeneInfo(qtmpGeneInfo);
+					GeneInfo qtmpGeneInfo2 =  MapGeneInfo.queryGeneInfo(qtmpGeneInfo);
 					String symbol2 = ""; String description2 = "";
 					if (tmpGeneInfo2 != null) {
 						description2 = qtmpGeneInfo2.getDescription();
 						if ((symbol2 = tmpGeneInfo2.getSymbol().split("//")[0]).equals(""))
 						{
 							NCBIID ncbiid2 = new NCBIID(); ncbiid2.setGeneId(Long.parseLong(subGeneID));
-							ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid2);
+							ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid2);
 							symbol2 = lsNcbiids.get(0).getAccID(); 
 						}
 					}
@@ -423,7 +423,7 @@ public class PathEnrich {
 							geneInfo[1] = lsKGentry.get(i).getPathName();
 							//搜索pathway的Title
 							KGpathway kGpathway = new KGpathway(); kGpathway.setPathName(geneInfo[1]); 
-							geneInfo[2] = DaoKPathway.queryKGpathway(kGpathway).getTitle();
+							geneInfo[2] = MapKPathway.queryKGpathway(kGpathway).getTitle();
 							
 							geneInfo[3] = symbol;
 							geneInfo[4] = description;
@@ -447,7 +447,7 @@ public class PathEnrich {
 				//先试试化合物查询
 				KGNIdKeg kgnIdKeg = new KGNIdKeg();
 				kgnIdKeg.setUsualName(accID);
-				KGNIdKeg kgnIdKegSub = DaoKNIdKeg.queryKGNIdKeg(kgnIdKeg);
+				KGNIdKeg kgnIdKegSub = MapKNIdKeg.queryKGNIdKeg(kgnIdKeg);
 				if (kgnIdKegSub != null) {
 					KGng2Path kGng2Path=  QKegPath.qKegPath(queryTaxID, kgnIdKegSub);
 					
@@ -475,7 +475,7 @@ public class PathEnrich {
 							geneInfo[1] = lsKGentry.get(i).getPathName();
 							//搜索pathway的Title
 							KGpathway kGpathway = new KGpathway(); kGpathway.setPathName(geneInfo[1]); 
-							geneInfo[2] = DaoKPathway.queryKGpathway(kGpathway).getTitle();
+							geneInfo[2] = MapKPathway.queryKGpathway(kGpathway).getTitle();
 							geneInfo[3] = kGng2Path.getKgnCompInfo().getUsualName().split("//")[0];
 							geneInfo[4] = kGng2Path.getKgnCompInfo().getComment();
 							lsGeneInfo.add(geneInfo);
@@ -543,7 +543,7 @@ public class PathEnrich {
 		    String[] tmpResult=new String[6];
 		    tmpResult[0]=pathID;
 		    KGpathway path2Term=new KGpathway(); path2Term.setPathName(pathID);
-		    KGpathway path2Term2=DaoKPathway.queryKGpathway(path2Term);
+		    KGpathway path2Term2=MapKPathway.queryKGpathway(path2Term);
 		    tmpResult[1]=path2Term2.getTitle();
 		    tmpResult[2]=lsGeneID.size()+"";
 		    tmpResult[3]=NumDif+"";

@@ -5,14 +5,14 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGeneInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.KEGGDAO.DaoKEntry;
-import com.novelbio.database.DAO.KEGGDAO.DaoKIDKeg2Ko;
 import com.novelbio.database.entity.friceDB.GeneInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.kegg.KGIDkeg2Ko;
 import com.novelbio.database.entity.kegg.KGentry;
+import com.novelbio.database.mapper.geneanno.MapGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.kegg.MapKEntry;
+import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
 
 public class Scr2Target {
 	
@@ -38,7 +38,7 @@ public class Scr2Target {
 			{
 				NCBIID ncbiid = new NCBIID();
 				ncbiid.setAccID(accID[i]);
-				ArrayList<NCBIID> lsncbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+				ArrayList<NCBIID> lsncbiid = MapNCBIID.queryLsNCBIID(ncbiid);
 				if (lsncbiid != null && lsncbiid.size()>0) 
 				{
 					QtaxID = (int)lsncbiid.get(0).getTaxID();
@@ -85,7 +85,7 @@ public class Scr2Target {
 					////////////////如果geneBlast到了人类，并且得到了相应的KO，那么尝试获得该KO所对应本物种的KeggID，并用KeggID直接mapping回本基因。如果没有KeggID，则用KO去mapping////////////////////////////////////////////////////////////////
 					KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
 					kgiDkeg2Ko.setKo(ko[j]);kgiDkeg2Ko.setTaxID(QtaxID);
-					ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos2 = DaoKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+					ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos2 = MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 					if (lsKgiDkeg2Kos2 != null && lsKgiDkeg2Kos2.size()>0) 
 					{
 						//虽然一个ko对应多个keggID，但是对于pathway来说，一个ko就对应到一个pathway上，所以一个ko就够了
@@ -99,7 +99,7 @@ public class Scr2Target {
 			{
 				KGentry qkGentry=new KGentry();
 				qkGentry.setEntryName(ko[j]);qkGentry.setTaxID(QtaxID);
-				ArrayList<KGentry> lsKGentryQuery = DaoKEntry.queryLsKGentries(qkGentry);
+				ArrayList<KGentry> lsKGentryQuery = MapKEntry.queryLsKGentries(qkGentry);
  				for (int k = 0; k < lsKGentryQuery.size(); k++)
 				{
 					Hashtable<String, KGpathScr2Trg> tmpHashEntryRelation=QKegPath.getHashKGpathRelation(lsKGentryQuery.get(k));
@@ -173,7 +173,7 @@ public class Scr2Target {
 			{
 				KGentry qkGentry=new KGentry();
 				qkGentry.setEntryName(ko[j]);qkGentry.setTaxID(QtaxID);
-				ArrayList<KGentry> lsKGentryQuery = DaoKEntry.queryLsKGentries(qkGentry);
+				ArrayList<KGentry> lsKGentryQuery = MapKEntry.queryLsKGentries(qkGentry);
  				for (int k = 0; k < lsKGentryQuery.size(); k++)
 				{
 					Hashtable<String, KGpathScr2Trg> tmpHashEntryRelation=QKegPath.getHashKGpathRelation(lsKGentryQuery.get(k));
@@ -459,12 +459,12 @@ public class Scr2Target {
 			else if (qGenKegInfo[3] !=null)
 			{
 				GeneInfo qgeneInfo = new GeneInfo(); qgeneInfo.setGeneID(Long.parseLong(qGenKegInfo[1]));
-				GeneInfo geneInfoSub = DaoFSGeneInfo.queryGeneInfo(qgeneInfo);
+				GeneInfo geneInfoSub = MapGeneInfo.queryGeneInfo(qgeneInfo);
 				//如果没有symbol
 				if (geneInfoSub == null || geneInfoSub.getSymbol() == null || geneInfoSub.getSymbol().trim().equals("") || geneInfoSub.getSymbol().trim().equals("-")) 
 				{
 					NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[1])); 
-					queryGenInfo[0] = DaoFSNCBIID.queryLsNCBIID(ncbiid).get(0).getAccID();
+					queryGenInfo[0] = MapNCBIID.queryLsNCBIID(ncbiid).get(0).getAccID();
 					if (geneInfoSub == null) {
 						queryGenInfo[2] = "";
 					}
@@ -486,7 +486,7 @@ public class Scr2Target {
 				if (qGenKegInfo[1] != null) {
 					GeneInfo qgeneInfo = new GeneInfo();
 					qgeneInfo.setGeneID(Long.parseLong(qGenKegInfo[1]));
-					GeneInfo geneInfoSub = DaoFSGeneInfo.queryGeneInfo(qgeneInfo);
+					GeneInfo geneInfoSub = MapGeneInfo.queryGeneInfo(qgeneInfo);
 					//如果没有symbol
 					if (geneInfoSub == null) {
 						System.out.println("error");
@@ -496,7 +496,7 @@ public class Scr2Target {
 					if (geneInfoSub == null || geneInfoSub.getSymbol() == null || geneInfoSub.getSymbol().trim().equals("") || geneInfoSub.getSymbol().trim().equals("-")) 
 					{
 						NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[1])); 
-						queryGenInfo[0] = DaoFSNCBIID.queryLsNCBIID(ncbiid).get(0).getAccID();
+						queryGenInfo[0] = MapNCBIID.queryLsNCBIID(ncbiid).get(0).getAccID();
 					}
 					else
 					{
@@ -515,12 +515,12 @@ public class Scr2Target {
 				queryGenInfo[3] = qGenKegInfo[4]; queryGenInfo[4] = qGenKegInfo[5];
 				GeneInfo qgeneInfo2 = new GeneInfo();
 				qgeneInfo2.setGeneID(Long.parseLong(qGenKegInfo[6]));
-				GeneInfo geneInfoSub2 = DaoFSGeneInfo.queryGeneInfo(qgeneInfo2);
+				GeneInfo geneInfoSub2 = MapGeneInfo.queryGeneInfo(qgeneInfo2);
 				//如果没有symbol
 				if (geneInfoSub2.getSymbol() == null || geneInfoSub2.getSymbol().trim().equals("") || geneInfoSub2.getSymbol().trim().equals("-")) 
 				{
 					NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[6])); 
-					queryGenInfo[5] = DaoFSNCBIID.queryLsNCBIID(ncbiid).get(0).getAccID();
+					queryGenInfo[5] = MapNCBIID.queryLsNCBIID(ncbiid).get(0).getAccID();
 				}
 				else 
 				{

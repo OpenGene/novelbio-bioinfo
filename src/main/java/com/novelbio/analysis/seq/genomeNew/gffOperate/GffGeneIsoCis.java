@@ -24,8 +24,8 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		super(IsoName, gffDetailGene, geneType);
 	}
 
-	public GffGeneIsoCis(String IsoName, int coord, String geneType) {
-		super(IsoName, coord, geneType);
+	public GffGeneIsoCis(String IsoName, String ChrID, int coord, String geneType) {
+		super(IsoName, ChrID, coord, geneType);
 	}
 	/**
 	 * 第一个计算的，计算坐标与本 外显子/内含子 的 起点/终点 的距离
@@ -285,7 +285,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	 * NnnnLoc 为-4位，当N与Loc重合时为0
 	 */
 	@Override
-	public int getLocdistanceSite(int location, int mRNAnum) {
+	public int getLocDistmRNASite(int location, int mRNAnum) {
 		if (getLocExInNum(location) <= 0) {
 			return -1;
 		}
@@ -418,7 +418,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 
 	@Override
 	public GffGeneIsoCis clone() {
-		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis(IsoName, coord, getGeneType());
+		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis(IsoName, chrID,coord, getGeneType());
 		this.clone(gffGeneIsoCis);
 		gffGeneIsoCis.setCoord(getCoord());
 		return gffGeneIsoCis;

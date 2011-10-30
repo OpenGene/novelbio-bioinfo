@@ -157,9 +157,9 @@ public class GoFisherNew {
 		
 		if (lsGeneUpCope.size()>0) {
 			ArrayList<ArrayList<String[]>> lsResult = getElimFisher(prix[0],lsGeneUpCope, lsBGGenGoInfo, GOClass, sepID, QtaxID, blast, StaxID, evalue,NumGo);
-			excelResult.WriteExcel(prix[0]+"GoAnalysis", 1, 1, lsResult.get(0), true);
-			excelResult.WriteExcel(prix[0]+"GO2Gene", 1, 1,lsResult.get(1) , true);
-			excelResult.WriteExcel(prix[0]+"Gene2GO", 1, 1,lsResult.get(2) , true);
+			excelResult.WriteExcel(prix[0]+"GoAnalysis", 1, 1, lsResult.get(0));
+			excelResult.WriteExcel(prix[0]+"GO2Gene", 1, 1,lsResult.get(1) );
+			excelResult.WriteExcel(prix[0]+"Gene2GO", 1, 1,lsResult.get(2) );
 
 			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP+prix[0], 
 					FileOperate.getParentPathName(resultPicName), FileOperate.getFileName(resultPicName)+prix[0]+".pdf",true);
@@ -168,9 +168,9 @@ public class GoFisherNew {
 			
 			
 			ArrayList<ArrayList<String[]>> lsResult =getElimFisher(prix[1],lsGeneDownCope, lsBGGenGoInfo, GOClass, sepID, QtaxID, blast, StaxID, evalue,NumGo);
-			excelResult.WriteExcel(prix[1]+"GoAnalysis", 1, 1, lsResult.get(0), true);
-			excelResult.WriteExcel(prix[1]+"GO2Gene", 1, 1,lsResult.get(1) , true);
-			excelResult.WriteExcel(prix[1]+"Gene2GO", 1, 1,lsResult.get(2) , true);
+			excelResult.WriteExcel(prix[1]+"GoAnalysis", 1, 1, lsResult.get(0));
+			excelResult.WriteExcel(prix[1]+"GO2Gene", 1, 1,lsResult.get(1) );
+			excelResult.WriteExcel(prix[1]+"Gene2GO", 1, 1,lsResult.get(2) );
 			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP+prix[1], 
 					FileOperate.getParentPathName(resultPicName), FileOperate.getFileName(resultPicName)+prix[1]+".pdf",true);
 		}
@@ -569,18 +569,18 @@ public class GoFisherNew {
 
 		if (lsGeneUpCope.size()>0) {
 			ArrayList<ArrayList<String[]>> lsResult = getNBCFisher(prix[0],lsGeneUpCope, lsGoInfoBG, GOClass, sepID, QtaxID, blast, StaxID, evalue);
-			excelResult.WriteExcel(prix[0]+"GoAnalysis", 1, 1, lsResult.get(0), true);
-			excelResult.WriteExcel(prix[0]+"Gene2GO", 1, 1,lsResult.get(1) , true);
+			excelResult.WriteExcel(prix[0]+"GoAnalysis", 1, 1, lsResult.get(0));
+			excelResult.WriteExcel(prix[0]+"Gene2GO", 1, 1,lsResult.get(1) );
 			if (blast) {
-				excelResult.WriteExcel(prix[0]+"GO2Gene", 1, 1,lsResult.get(2) , true);
+				excelResult.WriteExcel(prix[0]+"GO2Gene", 1, 1,lsResult.get(2) );
 			}
 		}
 		if (lsGeneDownCope.size()>0) {
 			ArrayList<ArrayList<String[]>> lsResult =getNBCFisher(prix[1],lsGeneDownCope, lsGoInfoBG, GOClass, sepID, QtaxID, blast, StaxID, evalue);
-			excelResult.WriteExcel(prix[1]+"GoAnalysis", 1, 1, lsResult.get(0), true);
-			excelResult.WriteExcel(prix[1]+"Gene2GO", 1, 1,lsResult.get(1) , true);
+			excelResult.WriteExcel(prix[1]+"GoAnalysis", 1, 1, lsResult.get(0));
+			excelResult.WriteExcel(prix[1]+"Gene2GO", 1, 1,lsResult.get(1) );
 			if (blast) {
-				excelResult.WriteExcel(prix[0]+"GO2Gene", 1, 1,lsResult.get(2) , true);
+				excelResult.WriteExcel(prix[0]+"GO2Gene", 1, 1,lsResult.get(2) );
 			}
 		}
 	}

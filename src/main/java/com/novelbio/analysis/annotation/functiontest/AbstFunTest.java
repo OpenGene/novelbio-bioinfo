@@ -114,7 +114,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	
 	public void setLsTestAccID(ArrayList<String> lsCopedID) {
 		lsCopedIDsTest = new ArrayList<CopedID>();
-		
+		lsTestResult = new ArrayList<String[]>();
 		lsAnno = null;
 		
 		for (String string : lsCopedID) {
@@ -133,6 +133,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		lsAnno = null;
 		fillCopedIDInfo(lsCopedIDsTest);
 		lsTest = getLsTestFromLsBG(lsCopedIDsTest);
+		lsTestResult = new ArrayList<String[]>();
 	}
 	/**
 	 * 最好能第一时间设定
@@ -153,7 +154,11 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * @param fileName
 	 */
 	public void setLsBGAccID(String fileName, int colNum) {
+		if (lsCopedIDsBG == null) {
+			lsCopedIDsBG = new ArrayList<CopedID>();
+		}
 		lsCopedIDsBG.clear();
+		
 		if (!FileOperate.isFileExist(fileName)) {
 			logger.error("no FIle exist: "+ fileName);
 		}
@@ -220,8 +225,9 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		}
 		return lsResult;
 	}
-	
+	ArrayList<String[]> lsTestResult = new ArrayList<String[]>();
 	/**
+	 * booRun 新跑一次 返回最后的结果，ElimGO需要覆盖该方法 对结果排个序
 	 * 返回最后的结果，ElimGO需要覆盖该方法
 	 * 对结果排个序
 	 * @return 结果没加标题<br>
@@ -239,7 +245,9 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 */
 	public ArrayList<String[]> getTestResult()
 	{
-		ArrayList<String[]> lsTestResult = null;
+		if (lsTestResult != null && lsTestResult.size() > 0) {
+			return lsTestResult;
+		}
 		try {
 			lsTestResult = FisherTest.getFisherResult(lsTest, lsBG, this);
 		} catch (Exception e) {
@@ -317,4 +325,15 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * 目前只能设定GO的type
 	 */
 	public abstract void setDetailType(String GOtype);
+	
+	/**
+	 * 保存本LsBG的信息
+	 * @param txtBGItem
+	 */
+	public void saveLsBGItem(String txtBGItem) {
+		TxtReadandWrite txtOut = new TxtReadandWrite(txtBGItem, true);
+		txtOut.ExcelWrite(lsBG, "\t", 1, 1);
+		txtOut.close();
+	}
+	
 }

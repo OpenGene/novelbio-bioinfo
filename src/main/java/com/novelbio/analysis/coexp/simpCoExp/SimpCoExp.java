@@ -88,11 +88,9 @@ public class SimpCoExp {
 		ExcelOperate excelCoExp = new ExcelOperate();
 		excelCoExp.newExcelOpen(outFile);
 		String sheet1 = "GeneInteraction";
-		excelCoExp.createNewSheet(sheet1);
-		excelCoExp.WriteExcel(sheet1, 1, 1, lsScr2Trg, true);
+		excelCoExp.WriteExcel(sheet1, 1, 1, lsScr2Trg);
 		String sheet2 = "Attribute";
-		excelCoExp.createNewSheet(sheet2);
-		excelCoExp.WriteExcel(sheet2, 1, 1, lsResult, true);
+		excelCoExp.WriteExcel(sheet2, 1, 1, lsResult);
 	}
 	
 	/**
@@ -126,11 +124,9 @@ public class SimpCoExp {
 		ExcelOperate excelCoExp = new ExcelOperate();
 		excelCoExp.newExcelOpen(outFile);
 		String sheet1 = "GeneInteraction";
-		excelCoExp.createNewSheet(sheet1);
-		excelCoExp.WriteExcel(sheet1, 1, 1, lsScr2Trg, true);
+		excelCoExp.WriteExcel(sheet1, 1, 1, lsScr2Trg);
 		String sheet2 = "Attribute";
-		excelCoExp.createNewSheet(sheet2);
-		excelCoExp.WriteExcel(sheet2, 1, 1, lsResult, true);
+		excelCoExp.WriteExcel(sheet2, 1, 1, lsResult);
 	}
 	
 	/**
@@ -193,8 +189,7 @@ public class SimpCoExp {
 		ExcelOperate excelCoExp = new ExcelOperate();
 		excelCoExp.openExcel(outFile, false);
 		String sheet1 = "GeneInteraction";
-		excelCoExp.createNewSheet(sheet1);
-		excelCoExp.WriteExcel(sheet1, 1, 1, lsCoExpResult,true);
+		excelCoExp.WriteExcel(sheet1, 1, 1, lsCoExpResult);
 	}
 	
 	

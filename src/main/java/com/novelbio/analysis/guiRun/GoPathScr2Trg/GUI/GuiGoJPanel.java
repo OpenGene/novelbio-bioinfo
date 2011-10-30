@@ -6,6 +6,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlGO;
 import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.CtrlNormal;
 import com.novelbio.base.gui.NumberOnlyDoc;
@@ -238,12 +240,12 @@ public class GuiGoJPanel extends JPanel{
 			jBtbSaveGo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					GUIFileOpen guiFileOpen = new GUIFileOpen();
-					String savefilename = guiFileOpen.saveFileName("excel2003", "xls");
-					CtrlGO ctrlGO = CtrlGO.getCtrlGoUsed();
-					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
-						savefilename = savefilename+".xls";
+					String savefilename = guiFileOpen.saveFileName("excel2007", "xlsx");
+					CtrlGO ctrlGO = CtrlGO.getInstance();
+					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xlsx")) {
+						savefilename = savefilename+".xlsx";
 					}
-					ctrlGO.saveFile(savefilename);
+					ctrlGO.saveExcel(savefilename);
 				}
 			});
 		}
@@ -544,12 +546,6 @@ public class GuiGoJPanel extends JPanel{
 	 */
 	private void getResult()
 	{
-		//jScrollPaneInputGo 最外层的方框
-		//jTabbedPaneGOTest 里面的标签框
-		//jPanGoTest 具体的标签
-		//jScrollPaneGOtest 标签里面的方框
-		//jTabFInputGo 方框里面的数据框
-		//jTabInputGo 具体数据
 		String geneFileXls = jTxtFilePathGo.getText();
 		String GOClass = "";
 		if (jRadBtnGoClassC.isSelected()) {
@@ -568,91 +564,52 @@ public class GuiGoJPanel extends JPanel{
 		double evalue = 1e-10;
 		boolean elimGo = jRadBtnElim.isSelected();
 		CtrlGO ctrlGO = null;
+		
+		ArrayList<String[]> lsAccID = null;
+		if (colAccID != colFC)
+			 lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID, colFC}, 1, 0);
+		else
+			lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID}, 1, 0);
+		
+		ctrlGO = CtrlGO.getInstance(elimGo, GOClass, colFC, blast, evalue, StaxID);
+		ctrlGO.setLsBG(backGroundFile);
+		
 		if (!jChkCluster.isSelected() || colAccID == colFC) {
 			double up = 0; double down = 0;
 			if ( colAccID != colFC) {
 				up = Double.parseDouble(jTxtUpValueGo.getText());
 				down = Double.parseDouble(jTxtDownValueGo.getText());
 			}
-			ctrlGO = CtrlGO.getInstance(elimGo,geneFileXls, GOClass, colAccID, colFC, up, down, backGroundFile, QtaxID, blast, StaxID, evalue);
-			ctrlGO.doInBackGround();
-	
-			setNormalGo(ctrlGO, elimGo, blast);
+			ctrlGO.doInBackgroundNorm(lsAccID, up, down);
+			setNormalGo(ctrlGO);
 		}
 		else {
-			ctrlGO = CtrlGO.getInstance(elimGo, geneFileXls, GOClass, colAccID, colFC, backGroundFile, QtaxID, blast, StaxID, evalue);
-			ctrlGO.doInBackGround();
-			setNormalGo(ctrlGO, elimGo, blast);
+			ctrlGO = CtrlGO.getInstance(elimGo, GOClass, colFC, blast, evalue, StaxID);
+			ctrlGO.doInBackgroundCluster(lsAccID);
+			setNormalGo(ctrlGO);
 		}
 	}
 	
-	private void setNormalGo(CtrlGO ctrlGO, boolean elimGo, boolean blast) {
-		ArrayList<ArrayList<String[]>> lsUpResult = ctrlGO.getLsResultUp();
-		ArrayList<ArrayList<String[]>> lsDownResult = ctrlGO.getLsResultDown();
-		HashMap<String, ArrayList<ArrayList<String[]>>> hashResult = ctrlGO.getHashResult();
+	private void setNormalGo(CtrlGO ctrlGO) {
+		//jScrollPaneInputGo 最外层的方框
+		//jTabbedPaneGOTest 里面的标签框
+		//jPanGoTest 具体的标签
+		// jScrollPaneGOtest 标签里面的方框
+		// jTabFInputGo 方框里面的数据框
+		// jTabInputGo 具体数据
+		HashMap<String, LinkedHashMap<String, ArrayList<String[]>>> hashResult = ctrlGO.getHashResult();
 		jTabbedPaneGoResult.removeAll();
-		if (elimGo) {
-			if (lsUpResult != null) {
-				settab(jTabbedPaneGoResult, "UpGoAnalysis", lsUpResult.get(0));
-				settab(jTabbedPaneGoResult, "UpGO2Gene", lsUpResult.get(1));
-				settab(jTabbedPaneGoResult, "UpGene2GO", lsUpResult.get(2));
+		int i = 0;
+		for (Entry<String, LinkedHashMap<String, ArrayList<String[]>>> entry : hashResult.entrySet()) {
+			if (i > 2) {
+				break;
 			}
-			if (lsDownResult != null) {
-				settab(jTabbedPaneGoResult, "DownGoAnalysis", lsDownResult.get(0));
-				settab(jTabbedPaneGoResult, "DownGO2Gene", lsDownResult.get(1));
-				settab(jTabbedPaneGoResult, "DownGene2GO", lsDownResult.get(2));
+			for (Entry<String, ArrayList<String[]>> entryTable : entry.getValue().entrySet()) {
+				settab(jTabbedPaneGoResult, entry.getKey()+entryTable.getKey(), entryTable.getValue());
 			}
-			if (hashResult != null && hashResult.size() > 0) {
-				for(Entry<String,ArrayList<ArrayList<String[]>>> entry:hashResult.entrySet())
-				{
-					String key = entry.getKey();
-					ArrayList<ArrayList<String[]>> value = entry.getValue();
-					settab(jTabbedPaneGoResult, key+"GoAnalysis", value.get(0));
-					settab(jTabbedPaneGoResult, key+"GO2Gene", value.get(1));
-					settab(jTabbedPaneGoResult, key+"Gene2GO", value.get(2));
-					break;
-				}
-			}
-		}
-		else {
-			if (lsUpResult != null) {
-				settab(jTabbedPaneGoResult, "UpGoAnalysis", lsUpResult.get(0));
-				settab(jTabbedPaneGoResult, "UpGene2GO", lsUpResult.get(1));
-				if (blast) {
-					settab(jTabbedPaneGoResult, "UpGO2Gene", lsUpResult.get(2));
-				}
-			}
-			if (lsDownResult != null) {
-				settab(jTabbedPaneGoResult, "DownGoAnalysis", lsDownResult.get(0));
-				settab(jTabbedPaneGoResult, "DownGene2GO", lsDownResult.get(1));
-				if (blast) {
-					settab(jTabbedPaneGoResult, "DownGO2Gene", lsDownResult.get(2));
-				}
-			}
-			if (hashResult != null && hashResult.size() > 0) {
-				for(Entry<String,ArrayList<ArrayList<String[]>>> entry:hashResult.entrySet())
-				{
-					String key = entry.getKey();
-					ArrayList<ArrayList<String[]>> value = entry.getValue();
-					settab(jTabbedPaneGoResult, key + "GoAnalysis",value.get(0));
-					settab(jTabbedPaneGoResult, key + "Gene2GO", value.get(1));
-					if (blast) {
-						settab(jTabbedPaneGoResult, "DownGO2Gene", value.get(2));
-					}
-					break;
-				}
-			}
+			i++;
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	private void settab(JTabbedPane jTabbedPaneGoResult, String tabName , ArrayList<String[]> lsResult) {
 		//里层

@@ -230,7 +230,7 @@ public class CtrlGO2 {
 			String prix = entry.getKey();
 			HashMap<String, ArrayList<String[]>> hashValue = entry.getValue();
 			for (Entry<String,ArrayList<String[]>> entry2 : hashValue.entrySet()) {
-				excelResult.WriteExcel(prix + entry2.getKey(), 1, 1, entry2.getValue(), true);
+				excelResult.WriteExcel(prix + entry2.getKey(), 1, 1, entry2.getValue());
 			}
 			if (elimGo) {
 				FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP + prix,

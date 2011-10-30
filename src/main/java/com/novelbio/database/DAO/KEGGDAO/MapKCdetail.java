@@ -6,7 +6,7 @@ import com.novelbio.database.entity.kegg.*;
 import com.novelbio.database.entity.friceDB.*;
 import com.novelbio.database.util.Util;
 
-public class DaoKCdetail {
+public class MapKCdetail {
 	/**
 	 * geneID2KO是多对多的关系，
 	 * KGCgen2Ko中包含了这个多对多，里面有个list

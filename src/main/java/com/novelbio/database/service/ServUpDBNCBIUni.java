@@ -2,10 +2,10 @@ package com.novelbio.database.service;
 
 import java.util.ArrayList;
 
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.geneanno.MapUniProtID;
 
 public class ServUpDBNCBIUni {
 	/**
@@ -23,14 +23,14 @@ public class ServUpDBNCBIUni {
 			ncbiid2.setGeneId(ncbiid.getGeneId());
 		}
 		ncbiid2.setTaxID(ncbiid.getTaxID());
-		ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid2);
+		ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid2);
 		if (lsNcbiids == null || lsNcbiids.size() == 0) {
-			DaoFSNCBIID.InsertNCBIID(ncbiid);
+			MapNCBIID.InsertNCBIID(ncbiid);
 		}
 		else {
 			if (updateDBinfo) {
 				ncbiid.setGeneId(lsNcbiids.get(0).getGeneId());
-				DaoFSNCBIID.upDateNCBIID(ncbiid);
+				MapNCBIID.upDateNCBIID(ncbiid);
 			}
 		}
 	}
@@ -50,14 +50,14 @@ public class ServUpDBNCBIUni {
 			uniprotID2.setUniID(uniprotID.getUniID());
 		}
 		uniprotID2.setTaxID(uniprotID.getTaxID());
-		ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniprotID2);
+		ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniprotID2);
 		if (lsUniProtIDs == null || lsUniProtIDs.size() == 0) {
-			DaoFSUniProtID.InsertUniProtID(uniprotID);
+			MapUniProtID.InsertUniProtID(uniprotID);
 		}
 		else {
 			if (updateDBinfo) {
 				uniprotID.setUniID(lsUniProtIDs.get(0).getUniID());
-				DaoFSUniProtID.upDateUniProt(uniprotID);
+				MapUniProtID.upDateUniProt(uniprotID);
 			}
 		}
 	}

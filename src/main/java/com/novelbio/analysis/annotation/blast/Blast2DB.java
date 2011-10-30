@@ -16,8 +16,8 @@ import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
 import com.novelbio.database.entity.friceDB.NCBIID;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
 
 /**
  * 准备序列，做Blast，并将结果导入数据库
@@ -101,7 +101,7 @@ public class Blast2DB {
 			//搜索数据库，将序列名转变为geneID
 			//将重复序列名中的"<"符号去除
 			NCBIID ncbiid=new NCBIID(); ncbiid.setAccID(seqInfo.getSeqName());
-			DaoFSNCBIID daoSNCBIID=new DaoFSNCBIID();
+			MapNCBIID daoSNCBIID=new MapNCBIID();
 			ArrayList<NCBIID> lsNcbiids=daoSNCBIID.queryLsNCBIID(ncbiid);
 			if (lsNcbiids==null||lsNcbiids.size()==0) {
 				if (getNoName) {

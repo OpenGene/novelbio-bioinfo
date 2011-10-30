@@ -12,9 +12,6 @@ import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegGenEntryKO;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.tools.Mas3.getProbID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.AGeneInfo;
 import com.novelbio.database.entity.friceDB.AgeneUniID;
@@ -22,8 +19,11 @@ import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniProtID;
 import com.novelbio.database.entity.kegg.KGpathway;
+import com.novelbio.database.mapper.geneanno.MapBlastInfo;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.service.ServAnno;
-import com.novelbio.database.service.ServBlastInfo;
+import com.novelbio.database.service.ServBlastInfo2;
 
 public abstract class CopedIDAbs implements CopedIDInt {
 //	public final static String IDTYPE_ACCID = "accID"; 
@@ -89,7 +89,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			blastInfoTmp.setEvalue(evalue);
 			blastInfoTmp.setQueryID(genUniID);
 			blastInfoTmp.setSubjectTax(StaxID);
-			ArrayList<BlastInfo> lsBlastInfos = DaoFSBlastInfo.queryLsBlastInfo(blastInfoTmp);
+			ArrayList<BlastInfo> lsBlastInfos = MapBlastInfo.queryLsBlastInfo(blastInfoTmp);
 			if (lsBlastInfos != null && lsBlastInfos.size() > 0) 
 			{
 				Collections.sort(lsBlastInfos);//排序选择最小的一项
@@ -112,7 +112,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			blastInfoTmp.setEvalue(evalue);
 			blastInfoTmp.setQueryID(genUniID);
 			blastInfoTmp.setSubjectTax(i);
-			ArrayList<BlastInfo> lsBlastInfosTmp = DaoFSBlastInfo.queryLsBlastInfo(blastInfoTmp);
+			ArrayList<BlastInfo> lsBlastInfosTmp = MapBlastInfo.queryLsBlastInfo(blastInfoTmp);
 			if (lsBlastInfosTmp != null && lsBlastInfosTmp.size() > 0) 
 			{
 				Collections.sort(lsBlastInfosTmp);//排序选择最小的一项
@@ -170,7 +170,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * 首先要设定blast的目标
 	 * 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 给定一系列的目标物种的taxID，获得CopedIDlist
-	 * 如果没有结果，直接返回null
+	 * 如果没有结果，返回一个空的lsResult
 	 * @param evalue
 	 * @param StaxID
 	 * @return
@@ -178,7 +178,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	public ArrayList<CopedID> getCopedIDLsBlast() {
 		ArrayList<CopedID> lsResult = new ArrayList<CopedID>();
 		if (lsBlastInfos == null || lsBlastInfos.size() == 0) {
-			return null;
+			return lsResult;
 		}
 		for (BlastInfo blastInfo : lsBlastInfos) {
 			CopedID copedID = getBlastCopedID(blastInfo);
@@ -368,10 +368,12 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		ArrayList<GOInfoAbs> lsGoInfo = new ArrayList<GOInfoAbs>();
 		
 		ArrayList<CopedID> lsBlastCopedIDs = getCopedIDLsBlast();
-		for (CopedID copedID : lsBlastCopedIDs) {
-			lsGoInfo.add(copedID.getGOInfo());
+		if (lsBlastCopedIDs != null) {
+			for (CopedID copedID : lsBlastCopedIDs) {
+				lsGoInfo.add(copedID.getGOInfo());
+			}
 		}
-		return goInfoAbs.getLsGen2Go(lsGoInfo, GOType);
+		return getGOInfo().getLsGen2Go(lsGoInfo, GOType);
 	}
 //////////////////KEGG      //////////////////////////////////////////////
 	/**
@@ -430,8 +432,10 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		getKeggInfo();
 		ArrayList<KeggInfo> lskeggInfo = new ArrayList<KeggInfo>();
 		ArrayList<CopedID> lsBlastCopedIDs = getCopedIDLsBlast();
-		for (CopedID copedID : lsBlastCopedIDs) {
-			lskeggInfo.add(copedID.getKeggInfo());
+		if (lsBlastCopedIDs != null) {
+			for (CopedID copedID : lsBlastCopedIDs) {
+				lskeggInfo.add(copedID.getKeggInfo());
+			}
 		}
 		return keggInfo.getLsKegPath(lskeggInfo);
 	}

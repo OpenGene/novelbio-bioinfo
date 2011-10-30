@@ -9,10 +9,10 @@ import java.util.Map.Entry;
 import com.novelbio.analysis.annotation.pathway.network.AbsNetRelate;
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
 import com.novelbio.analysis.annotation.pathway.network.KegNetRelate;
-import com.novelbio.database.DAO.KEGGDAO.DaoKEntry;
-import com.novelbio.database.DAO.KEGGDAO.DaoKRealtion;
 import com.novelbio.database.entity.kegg.KGentry;
 import com.novelbio.database.entity.kegg.KGrelation;
+import com.novelbio.database.mapper.kegg.MapKEntry;
+import com.novelbio.database.mapper.kegg.MapKRealtion;
 
 /**
  * KgEntry的升级版，添加了不少新的方法
@@ -291,7 +291,7 @@ public class KegEntity {
 	 */
 	public static ArrayList<KegEntity> getLsEntity(KGentry kGentry) {
 		ArrayList<KegEntity> lsKegEntities = new ArrayList<KegEntity>();
-		ArrayList<KGentry> lskGentries = DaoKEntry.queryLsKGentries(kGentry);
+		ArrayList<KGentry> lskGentries = MapKEntry.queryLsKGentries(kGentry);
 		if (lskGentries == null || lskGentries.size() < 1) {
 			return null;
 		}
@@ -343,10 +343,10 @@ public class KegEntity {
 	{
 		KGrelation tmpQkGrelation=new KGrelation();
 		tmpQkGrelation.setEntry1ID(id); tmpQkGrelation.setPathName(pathName);
-		ArrayList<KGrelation> lsKGrelations1 = DaoKRealtion.queryLsKGrelations(tmpQkGrelation);
+		ArrayList<KGrelation> lsKGrelations1 = MapKRealtion.queryLsKGrelations(tmpQkGrelation);
 		
 		tmpQkGrelation.setEntry2ID(id); tmpQkGrelation.setPathName(pathName);
-		ArrayList<KGrelation> lsKGrelations2 = DaoKRealtion.queryLsKGrelations(tmpQkGrelation);
+		ArrayList<KGrelation> lsKGrelations2 = MapKRealtion.queryLsKGrelations(tmpQkGrelation);
 		/////////设定来自哪个
 		for (KGrelation kGrelation : lsKGrelations1) {
 			kGrelation.setFlag(KGrelation.FLAG_ENTRYID1);

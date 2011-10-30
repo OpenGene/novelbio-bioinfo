@@ -73,10 +73,12 @@ public class ExcelTxtRead {
 		if (ExcelOperate.isExcel(excelFile)) {
 			tmpResult = readExcel(excelFile, columnID, rowStart, rowEnd);
 		}
-		try {
-			tmpResult = readtxtExcel(excelFile, "\t", columnID, rowStart, rowEnd);
-		} catch (Exception e) {
-			return null;
+		else {
+			try {
+				tmpResult = readtxtExcel(excelFile, "\t", columnID, rowStart, rowEnd);
+			} catch (Exception e) {
+				return null;
+			}
 		}
 		ArrayList<String[]> result = new ArrayList<String[]>();
 		for (String[] strings : tmpResult) {
@@ -124,7 +126,7 @@ public class ExcelTxtRead {
 	 * @return
 	 * @throws Exception
 	 */
-	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int rowStart, int rowEnd, int colStart, int colEnd) throws Exception 
+	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int rowStart, int rowEnd, int colStart, int colEnd)
 	{
 		ArrayList<String[]> ls1=null;
 		if (ExcelOperate.isExcel(excelFile)) {

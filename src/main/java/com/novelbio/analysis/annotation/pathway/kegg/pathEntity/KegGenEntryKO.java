@@ -3,16 +3,16 @@ package com.novelbio.analysis.annotation.pathway.kegg.pathEntity;
 import java.util.ArrayList;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
-import com.novelbio.database.DAO.KEGGDAO.DaoKCdetail;
-import com.novelbio.database.DAO.KEGGDAO.DaoKEntry;
-import com.novelbio.database.DAO.KEGGDAO.DaoKIDKeg2Ko;
+import com.novelbio.database.DAO.KEGGDAO.MapKCdetail;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.kegg.KGCgen2Entry;
 import com.novelbio.database.entity.kegg.KGCgen2Ko;
 import com.novelbio.database.entity.kegg.KGIDkeg2Ko;
 import com.novelbio.database.entity.kegg.KGentry;
+import com.novelbio.database.mapper.geneanno.MapBlastInfo;
+import com.novelbio.database.mapper.kegg.MapKEntry;
+import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
 
 /**
  * CopedID相关的Kegg信息
@@ -91,7 +91,7 @@ and taxID=#{taxID}
 			ncbiid.setGeneId(Integer.parseInt(geneID));
 			ncbiid.setTaxID(taxID);
 			KGCgen2Entry kgCgen2Entry = null;
-			kgCgen2Entry = DaoKCdetail.queryGen2entry(ncbiid);
+			kgCgen2Entry = MapKCdetail.queryGen2entry(ncbiid);
 			if (kgCgen2Entry != null) {
 				setParam(kgCgen2Entry);
 			}
@@ -108,7 +108,7 @@ and taxID=#{taxID}
 		if (lsKgiDkeg2Kos == null) {
 			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
 			kgiDkeg2Ko.setKeggID(keggID); kgiDkeg2Ko.setTaxID(taxID);
-			lsKgiDkeg2Kos = DaoKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+			lsKgiDkeg2Kos = MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 			if (lsKgiDkeg2Kos == null) {
 				lsKgiDkeg2Kos = new ArrayList<KGIDkeg2Ko>();
 			}
@@ -147,7 +147,7 @@ and taxID=#{taxID}
 		for (String ko : lsKO) {
 			KGentry kGentry = new KGentry();
 			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();  kgiDkeg2Ko.setKo(ko); kgiDkeg2Ko.setTaxID(QtaxID);
-			ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = DaoKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+			ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 			ArrayList<KegEntity> lskGentries = new ArrayList<KegEntity>();
 			////////////////如果geneBlast到了人类，并且得到了相应的KO，那么获得该KO所对应本物种的KeggID，并用KeggID直接mapping回本基因////////////////////////////////////////////////////////////////
 			if (lsKgiDkeg2Kos != null && lsKgiDkeg2Kos.size()>0) 

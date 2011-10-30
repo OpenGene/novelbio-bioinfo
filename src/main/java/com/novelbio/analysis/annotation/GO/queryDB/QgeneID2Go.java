@@ -19,7 +19,7 @@ import com.novelbio.database.entity.friceDB.Uni2GoInfo;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
 import com.novelbio.database.entity.friceDB.UniProtID;
 import com.novelbio.database.service.ServAnno;
-import com.novelbio.database.service.ServBlastInfo;
+import com.novelbio.database.service.ServBlastInfo2;
 import com.novelbio.database.service.ServGo;
 
 
@@ -278,7 +278,7 @@ public class QgeneID2Go {
 		///////////÷±Ω”≤È’“///////////////////////////////////
 		for (String[] strings : lsAccID)
 		{
-			Blast2GeneInfo blast2GeneInfo = ServBlastInfo.getBlastGen2Go(strings, QtaxID, blast, StaxID, evalue);
+			Blast2GeneInfo blast2GeneInfo = ServBlastInfo2.getBlastGen2Go(strings, QtaxID, blast, StaxID, evalue);
 			if (blast) {
 				ArrayList<String[]> tmpInfo = GOQuery.copeBlastInfo(blast2GeneInfo, evalue, GOClass, sepID, lsGene2Go, true);
 				if (tmpInfo != null) {

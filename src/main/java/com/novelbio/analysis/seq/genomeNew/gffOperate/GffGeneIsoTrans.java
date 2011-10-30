@@ -10,8 +10,8 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	public GffGeneIsoTrans(String IsoName, GffDetailGene gffDetailGene, String geneTpye) {
 		super(IsoName, gffDetailGene, geneTpye);
 	}
-	public GffGeneIsoTrans(String IsoName, int coord, String geneTpye) {
-		super(IsoName, coord, geneTpye);
+	public GffGeneIsoTrans(String IsoName, String chrID, int coord, String geneTpye) {
+		super(IsoName, chrID, coord, geneTpye);
 	}
 	@Override
 	protected void setCod2ExInStartEnd() {
@@ -256,7 +256,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	 * NnnnLoc 为4位，当N与Loc重合时为0
 	 */
 	@Override
-	public int getLocdistanceSite(int location, int mRNAnum) {
+	public int getLocDistmRNASite(int location, int mRNAnum) {
 		if (getLocExInNum(location) <= 0) {
 			return -1;
 		}
@@ -389,7 +389,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	}
 	@Override
 	public GffGeneIsoTrans clone() {
-		GffGeneIsoTrans gffGeneIsoTrans = new GffGeneIsoTrans(IsoName, coord, getGeneType());
+		GffGeneIsoTrans gffGeneIsoTrans = new GffGeneIsoTrans(IsoName, chrID, coord, getGeneType());
 		this.clone(gffGeneIsoTrans);
 		gffGeneIsoTrans.setCoord(getCoord());
 		return gffGeneIsoTrans;

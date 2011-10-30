@@ -1,4 +1,4 @@
-package com.novelbio.database.DAO.FriceDAO;
+package com.novelbio.database.mapper.geneanno;
 
 import java.util.ArrayList;
 
@@ -6,7 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import com.novelbio.database.entity.friceDB.*;
 import com.novelbio.database.util.Util;
 
-public class DaoFSGo2Term {
+public class MapGo2Term {
 
 	/**
 	 * 用GoIDquery,GoID,GoFunction三个中的任意组合去查找Go2Term表

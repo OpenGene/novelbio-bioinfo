@@ -223,21 +223,15 @@ public class CtrlGONew {
 				ArrayList<ArrayList<String[]>> value = entry.getValue();
 				excelResult.openExcel(filePath + key + ".xls");
 				if (!elimGo) {
-					excelResult.WriteExcel(key + "GoAnalysis", 1, 1,
-							value.get(0), true);
-					excelResult.WriteExcel(key + "Gene2GO", 1, 1, value.get(1),
-							true);
+					excelResult.WriteExcel(key + "GoAnalysis", 1, 1, value.get(0));
+					excelResult.WriteExcel(key + "Gene2GO", 1, 1, value.get(1));
 					if (blast) {
-						excelResult.WriteExcel(key + "GO2Gene", 1, 1,
-								value.get(2), true);
+						excelResult.WriteExcel(key + "GO2Gene", 1, 1, value.get(2));
 					}
 				} else {
-					excelResult.WriteExcel(prix[0] + "GoAnalysis", 1, 1,
-							value.get(0), true);
-					excelResult.WriteExcel(prix[0] + "GO2Gene", 1, 1,
-							value.get(1), true);
-					excelResult.WriteExcel(prix[0] + "Gene2GO", 1, 1,
-							value.get(2), true);
+					excelResult.WriteExcel(prix[0] + "GoAnalysis", 1, 1, value.get(0));
+					excelResult.WriteExcel(prix[0] + "GO2Gene", 1, 1, value.get(1));
+					excelResult.WriteExcel(prix[0] + "Gene2GO", 1, 1, value.get(2));
 					FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP
 							+ key, FileOperate.getParentPathName(excelPath),
 							FileOperate.getFileNameSep(excelPath)[0] + key
@@ -323,45 +317,33 @@ public class CtrlGONew {
 		excelResult.openExcel(resultExcel2003);
 		if (!elimGo) {
 			if (lsResultUp.size() > 0) {
-				excelResult.WriteExcel(prix[0] + "GoAnalysis", 1, 1,
-						lsResultUp.get(0), true);
-				excelResult.WriteExcel(prix[0] + "Gene2GO", 1, 1,
-						lsResultUp.get(1), true);
+				excelResult.WriteExcel(prix[0] + "GoAnalysis", 1, 1, lsResultUp.get(0));
+				excelResult.WriteExcel(prix[0] + "Gene2GO", 1, 1, lsResultUp.get(1));
 				if (blast) {
-					excelResult.WriteExcel(prix[0] + "GO2Gene", 1, 1,
-							lsResultUp.get(2), true);
+					excelResult.WriteExcel(prix[0] + "GO2Gene", 1, 1, lsResultUp.get(2));
 				}
 			}
 			if (lsResultDown.size() > 0) {
-				excelResult.WriteExcel(prix[1] + "GoAnalysis", 1, 1,
-						lsResultDown.get(0), true);
-				excelResult.WriteExcel(prix[1] + "Gene2GO", 1, 1,
-						lsResultDown.get(1), true);
+				excelResult.WriteExcel(prix[1] + "GoAnalysis", 1, 1, lsResultDown.get(0));
+				excelResult.WriteExcel(prix[1] + "Gene2GO", 1, 1, lsResultDown.get(1));
 				if (blast) {
-					excelResult.WriteExcel(prix[0] + "GO2Gene", 1, 1,
-							lsResultDown.get(2), true);
+					excelResult.WriteExcel(prix[0] + "GO2Gene", 1, 1, lsResultDown.get(2));
 				}
 			}
 		} else {
 			if (lsResultUp.size() > 0) {
-				excelResult.WriteExcel(prix[0] + "GoAnalysis", 1, 1,
-						lsResultUp.get(0), true);
-				excelResult.WriteExcel(prix[0] + "GO2Gene", 1, 1,
-						lsResultUp.get(1), true);
-				excelResult.WriteExcel(prix[0] + "Gene2GO", 1, 1,
-						lsResultUp.get(2), true);
+				excelResult.WriteExcel(prix[0] + "GoAnalysis", 1, 1, lsResultUp.get(0));
+				excelResult.WriteExcel(prix[0] + "GO2Gene", 1, 1, lsResultUp.get(1));
+				excelResult.WriteExcel(prix[0] + "Gene2GO", 1, 1, lsResultUp.get(2));
 				FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP
 						+ prix[0], FileOperate.getParentPathName(excelPath),
 						FileOperate.getFileNameSep(excelPath)[0] + prix[0]
 								+ "GoMap.pdf", true);
 			}
 			if (lsResultDown.size() > 0) {
-				excelResult.WriteExcel(prix[1] + "GoAnalysis", 1, 1,
-						lsResultDown.get(0), true);
-				excelResult.WriteExcel(prix[1] + "GO2Gene", 1, 1,
-						lsResultDown.get(1), true);
-				excelResult.WriteExcel(prix[1] + "Gene2GO", 1, 1,
-						lsResultDown.get(2), true);
+				excelResult.WriteExcel(prix[1] + "GoAnalysis", 1, 1, lsResultDown.get(0));
+				excelResult.WriteExcel(prix[1] + "GO2Gene", 1, 1, lsResultDown.get(1));
+				excelResult.WriteExcel(prix[1] + "Gene2GO", 1, 1,lsResultDown.get(2));
 				FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP
 						+ prix[1], FileOperate.getParentPathName(excelPath),
 						FileOperate.getFileNameSep(excelPath)[0] + prix[1]

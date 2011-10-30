@@ -3,8 +3,8 @@ package com.novelbio.base.gui;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.database.DAO.FriceDAO.DaoFSTaxID;
 import com.novelbio.database.entity.friceDB.TaxInfo;
+import com.novelbio.database.mapper.geneanno.MapFSTaxID;
 
 
 public class CtrlNormal {	
@@ -18,7 +18,7 @@ public class CtrlNormal {
 	public static HashMap<String, Integer> getSpecies() 
 	{
 		TaxInfo taxInfo = new TaxInfo();
-		ArrayList<TaxInfo> lsTaxID = DaoFSTaxID.queryLsTaxInfo(taxInfo);
+		ArrayList<TaxInfo> lsTaxID = MapFSTaxID.queryLsTaxInfo(taxInfo);
 		HashMap<String, Integer> hashTaxID = new HashMap<String, Integer>();
 		for (TaxInfo taxInfo2 : lsTaxID) {
 			if (taxInfo2.getAbbr() == null || taxInfo2.getAbbr().trim().equals("")) {

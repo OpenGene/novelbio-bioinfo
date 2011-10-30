@@ -16,15 +16,6 @@ import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.GOQuery;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGeneInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGo2Term;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSTaxID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniGeneInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.Gene2Go;
@@ -35,6 +26,15 @@ import com.novelbio.database.entity.friceDB.TaxInfo;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
 import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.mapper.geneanno.MapBlastInfo;
+import com.novelbio.database.mapper.geneanno.MapFSTaxID;
+import com.novelbio.database.mapper.geneanno.MapGene2Go;
+import com.novelbio.database.mapper.geneanno.MapGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapGo2Term;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
+import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.service.ServGo;
 
 
@@ -81,10 +81,10 @@ public class UpDateNBCDBFile {
 			
 			gene2GoInfo.setFunction(goFunction);
 			gene2GoInfo.setDataBase("NCBI");
-			Gene2Go gene2GoInfo2=(Gene2Go) DaoFSGene2Go.queryGene2Go(gene2GoInfo);
+			Gene2Go gene2GoInfo2=(Gene2Go) MapGene2Go.queryGene2Go(gene2GoInfo);
 			if (gene2GoInfo2==null) 
 			{
-				DaoFSGene2Go.InsertGene2Go(gene2GoInfo);
+				MapGene2Go.InsertGene2Go(gene2GoInfo);
 				i++;
 			}
 			else {
@@ -94,7 +94,7 @@ public class UpDateNBCDBFile {
 						&& !gene2GoInfo2.getEvidence().contains(gene2GoInfo.getEvidence()))
 				{
 					gene2GoInfo.setEvidence(gene2GoInfo.getEvidence()+"//"+gene2GoInfo2.getEvidence());
-					DaoFSGene2Go.upDateGene2Go(gene2GoInfo);
+					MapGene2Go.upDateGene2Go(gene2GoInfo);
 					i++;
 				}
 			}
@@ -139,14 +139,14 @@ public class UpDateNBCDBFile {
 				ncbiid.setGeneId((long)Double.parseDouble(string));
 				ncbiid.setAccID(ss[2]); 
 				//如果搜到了，那么看是否需要更新DBINFO
-				ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+				ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid);
 				if (lsNcbiids != null && lsNcbiids.size() > 0) 
 				{
 					//如果需要更新dbinfo，那么看现有的dbinfo是否和老的一样，如果不一样的话，才更新
 					if (updateDBINFO && !lsNcbiids.get(0).getDBInfo().equals(ss[3])) 
 					{
 						ncbiid.setDBInfo(ss[3]);
-						DaoFSNCBIID.upDateNCBIID(ncbiid);
+						MapNCBIID.upDateNCBIID(ncbiid);
 						i++;
 					}
 					else
@@ -155,7 +155,7 @@ public class UpDateNBCDBFile {
 				else
 				{
 					ncbiid.setDBInfo(ss[3]);
-					DaoFSNCBIID.InsertNCBIID(ncbiid);
+					MapNCBIID.InsertNCBIID(ncbiid);
 					i++;
 				}
 			}
@@ -193,7 +193,7 @@ public class UpDateNBCDBFile {
 			ncbiid.setTaxID(Integer.parseInt(ss[0]));
 			ncbiid.setAccID(ss[2]); 
 			//如果搜到了，那么看是否需要更新DBINFO
-			ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid);
 			if (lsNcbiids != null && lsNcbiids.size() > 0) 
 			{
 				continue;
@@ -204,7 +204,7 @@ public class UpDateNBCDBFile {
 				//多个geneID分别都试一遍
 				ncbiid.setGeneId(ssGeneID);
 				ncbiid.setDBInfo(ss[3]);
-				DaoFSNCBIID.InsertNCBIID(ncbiid);
+				MapNCBIID.InsertNCBIID(ncbiid);
 				i++;
 				if (i%10000==0) {
 					System.out.println(i);
@@ -242,7 +242,7 @@ public class UpDateNBCDBFile {
 			NCBIID ncbiid=new NCBIID();
 			
 			ncbiid.setGeneId((long)Double.parseDouble(ss[1]));//先用geneID搜
-			ArrayList<NCBIID> lsncbiid=DaoFSNCBIID.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsncbiid=MapNCBIID.queryLsNCBIID(ncbiid);
 			if (lsncbiid==null||lsncbiid.size()==0) 
 			{
 				txtnoFindFile.writefile(content+"\n");
@@ -252,12 +252,12 @@ public class UpDateNBCDBFile {
 			ncbiid.setAccID(ss[2]);
 			
 			//geneID和 accID两个一起查看是否能查到
-			NCBIID ncbiid2=DaoFSNCBIID.queryNCBIID(ncbiid);
+			NCBIID ncbiid2=MapNCBIID.queryNCBIID(ncbiid);
 			if (ncbiid2==null) 
 			{
 				ncbiid.setTaxID(Integer.parseInt(ss[0]));
 				ncbiid.setDBInfo(ss[3]);
-				DaoFSNCBIID.InsertNCBIID(ncbiid);
+				MapNCBIID.InsertNCBIID(ncbiid);
 			}
 			else {
 				continue;
@@ -296,7 +296,7 @@ public class UpDateNBCDBFile {
 			NCBIID ncbiid=new NCBIID();
 			
 			ncbiid.setAccID(ss[0]);//先用refseq搜
-			ArrayList<NCBIID> lsncbiid=DaoFSNCBIID.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsncbiid=MapNCBIID.queryLsNCBIID(ncbiid);
 			if (lsncbiid==null||lsncbiid.size()==0) 
 			{
 				continue;
@@ -307,12 +307,12 @@ public class UpDateNBCDBFile {
 				ncbiid.setAccID(ss[1]);
 				
 				//geneID和 uniID两个一起查看是否能查到，能查到就跳过，查不到就插入
-				NCBIID ncbiid2=DaoFSNCBIID.queryNCBIID(ncbiid);
+				NCBIID ncbiid2=MapNCBIID.queryNCBIID(ncbiid);
 				if (ncbiid2==null) 
 				{
 					ncbiid.setTaxID(ncbiid3.getTaxID());
 					ncbiid.setDBInfo(NovelBioConst.DBINFO_UNIPROT_UNIID);
-					DaoFSNCBIID.InsertNCBIID(ncbiid);
+					MapNCBIID.InsertNCBIID(ncbiid);
 					i++;
 				}
 				else {
@@ -359,17 +359,17 @@ public class UpDateNBCDBFile {
 				NCBIID ncbiid = new NCBIID();
 				ncbiid.setTaxID(taxID);
 				ncbiid.setAccID(ss[1]);
-				ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+				ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid);
 				if (lsNcbiids != null && lsNcbiids.size()>0) 
 				{
 					//查到的话，再用本列真正的accID去查NCBIID表，如果没查到，那么插入
 					long geneID = lsNcbiids.get(0).getGeneId();
 					ncbiid.setGeneId(geneID);
 					ncbiid.setAccID(ss[2]);
-					ArrayList<NCBIID> lsNcbiids2 = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+					ArrayList<NCBIID> lsNcbiids2 = MapNCBIID.queryLsNCBIID(ncbiid);
 					if (lsNcbiids2 == null || lsNcbiids2.size() == 0) {
 						ncbiid.setDBInfo(ss[3]);
-						DaoFSNCBIID.InsertNCBIID(ncbiid);
+						MapNCBIID.InsertNCBIID(ncbiid);
 						i++;
 					}
 					continue;
@@ -384,11 +384,11 @@ public class UpDateNBCDBFile {
 				uniProtid.setTaxID(Integer.parseInt(ss[0]));
 				uniProtid.setUniID(ss[1]);
 				uniProtid.setAccID(ss[2]);
-				ArrayList<UniProtID> lsuniProtid2=DaoFSUniProtID.queryLsUniProtID(uniProtid);
+				ArrayList<UniProtID> lsuniProtid2=MapUniProtID.queryLsUniProtID(uniProtid);
 				if (lsuniProtid2==null || lsuniProtid2.size() == 0) 
 				{
 					uniProtid.setDBInfo(ss[3]);
-					DaoFSUniProtID.InsertUniProtID(uniProtid);
+					MapUniProtID.InsertUniProtID(uniProtid);
 					i++;
 				}
 				else {
@@ -430,10 +430,10 @@ public class UpDateNBCDBFile {
 			geneInfo.setSymNome(ss[10]);geneInfo.setFullName(ss[11]);geneInfo.setNomStat(ss[12]);geneInfo.setOtherDesign(ss[13]);
 			geneInfo.setModDate(ss[14]);
 
-			GeneInfo geneInfo2=DaoFSGeneInfo.queryGeneInfo(geneInfo);
+			GeneInfo geneInfo2=MapGeneInfo.queryGeneInfo(geneInfo);
 			if (geneInfo2==null)
 			{
-				DaoFSGeneInfo.InsertGeneInfo(geneInfo);
+				MapGeneInfo.InsertGeneInfo(geneInfo);
 			}
 			else {
 				continue;
@@ -486,11 +486,11 @@ public class UpDateNBCDBFile {
 				geneInfo.setSynonyms("");
 			}
 			
-			GeneInfo geneInfo2=DaoFSGeneInfo.queryGeneInfo(geneInfo);
+			GeneInfo geneInfo2=MapGeneInfo.queryGeneInfo(geneInfo);
 			
 			if (geneInfo2==null)
 			{
-				DaoFSGeneInfo.InsertGeneInfo(geneInfo);
+				MapGeneInfo.InsertGeneInfo(geneInfo);
 			}
 			else {
 				boolean flag=false;
@@ -534,7 +534,7 @@ public class UpDateNBCDBFile {
 				}
 				if(flag)
 				{
-					DaoFSGeneInfo.upDateGeneInfo(geneInfo2);
+					MapGeneInfo.upDateGeneInfo(geneInfo2);
 					i++;
 				}
 			}
@@ -583,11 +583,11 @@ public class UpDateNBCDBFile {
 				uniGeneInfo.setSynonyms("");
 			}
 			
-			UniGeneInfo uniGeneInfo2=DaoFSUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
+			UniGeneInfo uniGeneInfo2=MapUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 			
 			if (uniGeneInfo2==null)
 			{
-				DaoFSUniGeneInfo.InsertUniGeneInfo(uniGeneInfo);
+				MapUniGeneInfo.InsertUniGeneInfo(uniGeneInfo);
 			}
 			else 
 			{
@@ -633,7 +633,7 @@ public class UpDateNBCDBFile {
 				}
 				if(flag)
 				{
-					DaoFSUniGeneInfo.upDateUniGeneInfo(uniGeneInfo2);
+					MapUniGeneInfo.upDateUniGeneInfo(uniGeneInfo2);
 					i++;
 				}
 			}
@@ -683,7 +683,7 @@ public class UpDateNBCDBFile {
 			NCBIID ncbiid=new NCBIID();
 			int taxID=Integer.parseInt(ss[12].split("\\|")[0].split(":")[1]);//本列的taxID
 			ncbiid.setAccID(ss[1]);ncbiid.setTaxID(taxID);
-			ArrayList<NCBIID> lsNcbiids=DaoFSNCBIID.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsNcbiids=MapNCBIID.queryLsNCBIID(ncbiid);
 			if (lsNcbiids.size()>0)//能和NCBIID对应上去，也就是说能够找到GeneID，那么将其装入gene2Go表
 			{
 				for (int i = 0; i < lsNcbiids.size(); i++)   //一个基因可能会有多个geneID
@@ -695,7 +695,7 @@ public class UpDateNBCDBFile {
 					gene2Go.setGOID(GoID);gene2Go.setQualifier(ss[3].trim());gene2Go.setReference(ss[5]);gene2Go.setEvidence(ss[6]);gene2Go.setFunction(goFuncition);
 					gene2Go.setGOTerm(goTerm);
 					gene2Go.setDataBase(NovelBioConst.DBINFO_UNIPROT_UNIID);
-					AGene2Go gene2Go2 = DaoFSGene2Go.queryGene2Go(gene2Go);
+					AGene2Go gene2Go2 = MapGene2Go.queryGene2Go(gene2Go);
 					if (gene2Go2!=null) //如果已经存在了，那么考虑下是否升级
 					{
 						boolean update=false;
@@ -708,12 +708,12 @@ public class UpDateNBCDBFile {
 							update=true;
 						}
 						if (update) {
-							DaoFSGene2Go.upDateGene2Go((Gene2Go) gene2Go2);
+							MapGene2Go.upDateGene2Go((Gene2Go) gene2Go2);
 						}
 					}
 					else //如果没有，则升级
 					{
-						DaoFSGene2Go.InsertGene2Go(gene2Go);
+						MapGene2Go.InsertGene2Go(gene2Go);
 					}
 				}
 			}
@@ -723,7 +723,7 @@ public class UpDateNBCDBFile {
 				uniGene2Go.setUniProtID(ss[1].trim());uniGene2Go.setGOID(GoID);uniGene2Go.setQualifier(ss[3].trim());uniGene2Go.setReference(ss[5]);
 				uniGene2Go.setEvidence(ss[6]);uniGene2Go.setFunction(goFuncition);uniGene2Go.setDataBase("UniProt");
 				uniGene2Go.setGOTerm(goTerm);
-				AGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
+				AGene2Go uniGene2Go2 = MapUniGene2Go.queryUniGene2Go(uniGene2Go);
 				if (uniGene2Go2!=null) //如果已经存在了，那么考虑下是否升级
 				{
 					boolean update=false;
@@ -736,12 +736,12 @@ public class UpDateNBCDBFile {
 						update=true;
 					}
 					if (update) {
-						DaoFSUniGene2Go.upDateUniGene2Go((UniGene2Go) uniGene2Go2);
+						MapUniGene2Go.upDateUniGene2Go((UniGene2Go) uniGene2Go2);
 					}
 				}
 				else //如果没有，则升级
 				{
-					DaoFSUniGene2Go.InsertUniGene2Go(uniGene2Go);
+					MapUniGene2Go.InsertUniGene2Go(uniGene2Go);
 				}
 			}
 			
@@ -779,13 +779,13 @@ public class UpDateNBCDBFile {
 			{
 				Go2Term go2Term=new Go2Term();
 				go2Term.setGoIDQuery(ss[0].trim());
-				Go2Term go2Term2=DaoFSGo2Term.queryGo2Term(go2Term);
+				Go2Term go2Term2=MapGo2Term.queryGo2Term(go2Term);
 				if (go2Term2==null) {
 					go2Term.setGoID(ss[0].trim());
 					go2Term.setGoIDQuery(ss[0].trim());
 					go2Term.setGoTerm(ss[2].trim());
 					go2Term.setGoFunction(ss[3].trim());
-					DaoFSGo2Term.InsertGo2Term(go2Term);
+					MapGo2Term.InsertGo2Term(go2Term);
 					i++;
 				}
 			}
@@ -796,25 +796,25 @@ public class UpDateNBCDBFile {
 				{
 					Go2Term go2Term=new Go2Term();
 					go2Term.setGoIDQuery(ss2[j].trim());
-					Go2Term go2Term2=DaoFSGo2Term.queryGo2Term(go2Term);
+					Go2Term go2Term2=MapGo2Term.queryGo2Term(go2Term);
 					if (go2Term2==null) {
 						go2Term.setGoID(ss[0].trim());
 						go2Term.setGoIDQuery(ss2[j].trim());
 						go2Term.setGoTerm(ss[2].trim());
 						go2Term.setGoFunction(ss[3].trim());
-						DaoFSGo2Term.InsertGo2Term(go2Term);
+						MapGo2Term.InsertGo2Term(go2Term);
 						i++;
 					}
 				}
 				Go2Term go2Term=new Go2Term();
 				go2Term.setGoIDQuery(ss[0].trim());
-				Go2Term go2Term2=DaoFSGo2Term.queryGo2Term(go2Term);
+				Go2Term go2Term2=MapGo2Term.queryGo2Term(go2Term);
 				if (go2Term2==null) {
 					go2Term.setGoID(ss[0].trim());
 					go2Term.setGoIDQuery(ss[0].trim());
 					go2Term.setGoTerm(ss[2].trim());
 					go2Term.setGoFunction(ss[3].trim());
-					DaoFSGo2Term.InsertGo2Term(go2Term);
+					MapGo2Term.InsertGo2Term(go2Term);
 					i++;
 				}
 			}
@@ -848,7 +848,7 @@ public class UpDateNBCDBFile {
 			blastInfo.setQueryID(ss[0]);blastInfo.setQueryTax(Integer.parseInt(ss[1]));blastInfo.setSubjectTax(Integer.parseInt(ss[4]));
 			//Date date=(Date) new SimpleDateFormat("yyyy-MM-dd").parse(ss[8]);
 			blastInfo.setBlastDate(ss[8]);//这个不会用于查询
-			BlastInfo blastInfo2=DaoFSBlastInfo.queryBlastInfo(blastInfo);
+			BlastInfo blastInfo2=MapBlastInfo.queryBlastInfo(blastInfo);
 			blastInfo.setQueryDB(ss[2]);
 			blastInfo.setSubjectID(ss[3]);
 			blastInfo.setSubjectDB(ss[5]);
@@ -859,11 +859,11 @@ public class UpDateNBCDBFile {
 			{
 				if(!blastInfo2.getSubjectID().equals(blastInfo.getSubjectID())&&blastInfo2.getEvalue()>blastInfo.getEvalue()) 
 				{
-					DaoFSBlastInfo.upDateBlastInfo(blastInfo);
+					MapBlastInfo.upDateBlastInfo(blastInfo);
 				}
 				continue;
 			}
-			DaoFSBlastInfo.InsertBlastInfo(blastInfo);
+			MapBlastInfo.InsertBlastInfo(blastInfo);
 		}
 	}
 	
@@ -892,7 +892,7 @@ public class UpDateNBCDBFile {
 			//Date date=(Date) new SimpleDateFormat("yyyy-MM-dd").parse(ss[8]);
 			blastInfo.setBlastDate(ss[8]);//这个不会用于查询
 			
-			BlastInfo blastInfo2=DaoFSBlastInfo.queryBlastInfo(blastInfo);
+			BlastInfo blastInfo2=MapBlastInfo.queryBlastInfo(blastInfo);
 
 			blastInfo.setQueryDB(ss[2]);
 			blastInfo.setSubjectID(copedIDS.getGenUniID());
@@ -913,11 +913,11 @@ public class UpDateNBCDBFile {
 			{
 				if(!blastInfo2.getSubjectID().equals(blastInfo.getSubjectID())&&blastInfo2.getEvalue()>blastInfo.getEvalue()) 
 				{
-					DaoFSBlastInfo.upDateBlastInfo(blastInfo);
+					MapBlastInfo.upDateBlastInfo(blastInfo);
 				}
 				continue;
 			}
-			DaoFSBlastInfo.InsertBlastInfo(blastInfo);
+			MapBlastInfo.InsertBlastInfo(blastInfo);
 		}
 	}
 	
@@ -938,11 +938,11 @@ public class UpDateNBCDBFile {
 			TaxInfo taxID=new TaxInfo();
 			taxID.setTaxID(Integer.parseInt(taxInfo[i][0]));taxID.setChnName(taxInfo[i][1]);taxID.setLatin(taxInfo[i][2]);
 			taxID.setComName(taxInfo[i][3]);taxID.setAbbr(taxInfo[i][4]);
-			if (DaoFSTaxID.queryTaxInfo(taxID)==null) {
-				DaoFSTaxID.InsertTaxInfo(taxID);
+			if (MapFSTaxID.queryTaxInfo(taxID)==null) {
+				MapFSTaxID.InsertTaxInfo(taxID);
 			}
 			else {
-				DaoFSTaxID.upDateTaxInfo(taxID);
+				MapFSTaxID.upDateTaxInfo(taxID);
 			}
 		}
 	}
@@ -1030,7 +1030,7 @@ public class UpDateNBCDBFile {
 		TxtReadandWrite txtRemain=new TxtReadandWrite();txtRemain.setParameter(remain, true, false);
 		BufferedReader inputReader=txtInput.readfile();
 		
-		DaoFSUniProtID uniProtIDDao=new DaoFSUniProtID();
+		MapUniProtID uniProtIDDao=new MapUniProtID();
 		
 		String content="";
 		int[] index=new int[3];index[0]=1;index[1]=2;index[2]=10;
@@ -1062,7 +1062,7 @@ public class UpDateNBCDBFile {
 					}
 					NCBIID ncbiid=new NCBIID();
 					ncbiid.setTaxID(taxID);ncbiid.setAccID(sstmpid);
-					lsResultNcbiid=DaoFSNCBIID.queryLsNCBIID(ncbiid);
+					lsResultNcbiid=MapNCBIID.queryLsNCBIID(ncbiid);
 					if (lsResultNcbiid.size()==1)
 					{
 						NCBIflag=1;break;

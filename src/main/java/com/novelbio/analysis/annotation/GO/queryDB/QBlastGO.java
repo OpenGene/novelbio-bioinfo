@@ -10,10 +10,6 @@ import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGo2Term;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.Blast2GeneInfo;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.Gene2GoInfo;
@@ -23,6 +19,10 @@ import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.Uni2GoInfo;
 import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.mapper.geneanno.MapBlastInfo;
+import com.novelbio.database.mapper.geneanno.MapGo2Term;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.geneanno.MapUniProtID;
 
 public class QBlastGO {
 	
@@ -235,7 +235,7 @@ public class QBlastGO {
 				continue;
 			}
 		    Go2Term go2Term=new Go2Term(); go2Term.setGoIDQuery(GOID);
-		    Go2Term go2Term2=DaoFSGo2Term.queryGo2Term(go2Term);
+		    Go2Term go2Term2=MapGo2Term.queryGo2Term(go2Term);
 
 		    	tmpResult[1]=go2Term2.getGoTerm();
 
@@ -322,7 +322,7 @@ public class QBlastGO {
 				BlastInfo blastInfo=new BlastInfo();
 				blastInfo.setQueryID(gene2GoQueryInfo.getGeneId()+"");
 				blastInfo.setQueryTax(QueryTaxID);blastInfo.setSubjectTax(SubjectTaxID);
-				BlastInfo blastInforesult=DaoFSBlastInfo.queryBlastInfo(blastInfo);
+				BlastInfo blastInforesult=MapBlastInfo.queryBlastInfo(blastInfo);
 				//在blast表里面存在
 				if (blastInforesult!=null) 
 				{
@@ -334,7 +334,7 @@ public class QBlastGO {
 						NCBIID ncbiidSbuject=new NCBIID();ncbiidSbuject.setGeneId(SubjectGeneID); 
 						NCBIID ncbiidsubject2=null;
 						Gene2GoInfo gene2GoSubjectInfo=null;
-						ArrayList<NCBIID> lsNcbiids=DaoFSNCBIID.queryLsNCBIID(ncbiidSbuject);
+						ArrayList<NCBIID> lsNcbiids=MapNCBIID.queryLsNCBIID(ncbiidSbuject);
 						if (lsNcbiids!=null&&lsNcbiids.size()>0) {
 							ncbiidsubject2=lsNcbiids.get(0);
 							gene2GoSubjectInfo=DaoFCGene2GoInfo.queryGeneDetail(ncbiidsubject2);
@@ -347,7 +347,7 @@ public class QBlastGO {
 						UniProtID uniProtIDSubject=new UniProtID();uniProtIDSubject.setUniID(SubjectUniGeneID);
 						UniProtID uniProtIDSubject2=null;
 						Uni2GoInfo uni2GoInfoSubject=null;
-						ArrayList<UniProtID> lsUniProtIDs=DaoFSUniProtID.queryLsUniProtID(uniProtIDSubject);
+						ArrayList<UniProtID> lsUniProtIDs=MapUniProtID.queryLsUniProtID(uniProtIDSubject);
 						if (lsUniProtIDs!=null&&lsUniProtIDs.size()>0) 
 						{
 							uniProtIDSubject2=lsUniProtIDs.get(0);
@@ -363,7 +363,7 @@ public class QBlastGO {
 				
 					BlastInfo blastInfo2=new BlastInfo();
 					blastInfo2.setQueryID(AccID[i]);blastInfo2.setQueryTax(QueryTaxID);blastInfo2.setSubjectTax(SubjectTaxID);
-					BlastInfo blastInforesult2=DaoFSBlastInfo.queryBlastInfo(blastInfo2);
+					BlastInfo blastInforesult2=MapBlastInfo.queryBlastInfo(blastInfo2);
 					if (blastInforesult2!=null) 
 					{
 						blast2GeneInfo.setBlastInfo(blastInfo2);//.setIdentities(blastInforesult2.getIdentities());blast2GeneInfo.setEvalue(blastInforesult2.getEvalue());blast2GeneInfo.setBlastDate(blastInforesult2.getBlastDate());
@@ -374,7 +374,7 @@ public class QBlastGO {
 							NCBIID ncbiidSbuject=new NCBIID();ncbiidSbuject.setGeneId(SubjectGeneID); 
 							NCBIID ncbiidsubject2=null;
 							Gene2GoInfo gene2GoSubjectInfo=null;
-							ArrayList<NCBIID> lsNcbiids=DaoFSNCBIID.queryLsNCBIID(ncbiidSbuject);
+							ArrayList<NCBIID> lsNcbiids=MapNCBIID.queryLsNCBIID(ncbiidSbuject);
 							if (lsNcbiids!=null&&lsNcbiids.size()>0) {
 								ncbiidsubject2=lsNcbiids.get(0);
 								gene2GoSubjectInfo=DaoFCGene2GoInfo.queryGeneDetail(ncbiidsubject2);
@@ -386,7 +386,7 @@ public class QBlastGO {
 							UniProtID uniProtIDSubject=new UniProtID();uniProtIDSubject.setUniID(SubjectUniGeneID);
 							UniProtID uniProtIDSubject2=null;
 							Uni2GoInfo uni2GoInfoSubject=null;
-							ArrayList<UniProtID> lsUniProtIDs=DaoFSUniProtID.queryLsUniProtID(uniProtIDSubject);
+							ArrayList<UniProtID> lsUniProtIDs=MapUniProtID.queryLsUniProtID(uniProtIDSubject);
 							if (lsUniProtIDs!=null&&lsUniProtIDs.size()>0) 
 							{
 								uniProtIDSubject2=lsUniProtIDs.get(0);
@@ -404,7 +404,7 @@ public class QBlastGO {
 				blast2GeneInfo.setQueryGene2GoInfo(gene2GoQueryInfo);//直接装入
 				BlastInfo blastInfo3=new BlastInfo();
 				blastInfo3.setQueryID(AccID[i]);blastInfo3.setQueryTax(QueryTaxID);blastInfo3.setSubjectTax(SubjectTaxID);
-				BlastInfo blastInforesult2=DaoFSBlastInfo.queryBlastInfo(blastInfo3);
+				BlastInfo blastInforesult2=MapBlastInfo.queryBlastInfo(blastInfo3);
 				if (blastInforesult2!=null) 
 				{
 					blast2GeneInfo.setBlastInfo(blastInforesult2);
@@ -415,7 +415,7 @@ public class QBlastGO {
 						NCBIID ncbiidSbuject=new NCBIID();ncbiidSbuject.setGeneId(SubjectGeneID); 
 						NCBIID ncbiidsubject2=null;
 						Gene2GoInfo gene2GoSubjectInfo=null;
-						ArrayList<NCBIID> lsNcbiids=DaoFSNCBIID.queryLsNCBIID(ncbiidSbuject);
+						ArrayList<NCBIID> lsNcbiids=MapNCBIID.queryLsNCBIID(ncbiidSbuject);
 						if (lsNcbiids!=null&&lsNcbiids.size()>0) {
 							ncbiidsubject2=lsNcbiids.get(0);
 							gene2GoSubjectInfo=DaoFCGene2GoInfo.queryGeneDetail(ncbiidsubject2);
@@ -427,7 +427,7 @@ public class QBlastGO {
 						UniProtID uniProtIDSubject=new UniProtID();uniProtID.setUniID(SubjectUniGeneID);
 						UniProtID uniProtIDSubject2=null;
 						Uni2GoInfo uni2GoInfoSubject=null;
-						ArrayList<UniProtID> lsUniProtIDs=DaoFSUniProtID.queryLsUniProtID(uniProtIDSubject);
+						ArrayList<UniProtID> lsUniProtIDs=MapUniProtID.queryLsUniProtID(uniProtIDSubject);
 						if (lsUniProtIDs!=null&&lsUniProtIDs.size()>0) 
 						{
 							uniProtIDSubject2=lsUniProtIDs.get(0);
@@ -542,7 +542,7 @@ public class QBlastGO {
 					//如果没有symbol的话，就随便找一个accID放上去
 					else {
 						NCBIID ncbiid = new NCBIID(); ncbiid.setGeneId(blast2GeneInfo.getQueryGene2GoInfo().getGeneId());
-						ArrayList<NCBIID> lsncbiidsub = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+						ArrayList<NCBIID> lsncbiidsub = MapNCBIID.queryLsNCBIID(ncbiid);
 						if (lsncbiidsub!=null && lsncbiidsub.size()>0)  {
 							tmpBlastInfo[2] = lsncbiidsub.get(0).getAccID();
 						}
@@ -559,7 +559,7 @@ public class QBlastGO {
 						tmpBlastInfo[2]=tmpUniGeneInfo.getSymbol().split("//")[0];
 					else {
 						UniProtID uniProtID = new UniProtID(); uniProtID.setUniID(blast2GeneInfo.getQueryUniGene2GoInfo().getUniID());
-						ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+						ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 						if (lsUniProtIDs!=null && lsUniProtIDs.size()>0)  {
 							tmpBlastInfo[2] = lsUniProtIDs.get(0).getAccID();
 						}
@@ -795,7 +795,7 @@ public class QBlastGO {
 					else {
 						NCBIID ncbiid = new NCBIID(); ncbiid.setGeneId(blast2GeneInfo.getQueryGene2GoInfo().getGeneId());
 						if (ncbiid.getGeneId()>0) {
-							ArrayList<NCBIID> lsncbiidsub = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+							ArrayList<NCBIID> lsncbiidsub = MapNCBIID.queryLsNCBIID(ncbiid);
 							if (lsncbiidsub!=null && lsncbiidsub.size()>0)  {
 								tmpBlastInfo[1] = lsncbiidsub.get(0).getAccID();
 							}
@@ -811,7 +811,7 @@ public class QBlastGO {
 					else {
 						UniProtID uniProtID = new UniProtID(); uniProtID.setUniID(blast2GeneInfo.getQueryUniGene2GoInfo().getUniID());
 						if (uniProtID.getUniID() != null && !uniProtID.getUniID().equals("")) {
-							ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+							ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 							if (lsUniProtIDs!=null && lsUniProtIDs.size()>0)  {
 								tmpBlastInfo[1] = lsUniProtIDs.get(0).getAccID();
 							}
@@ -827,7 +827,7 @@ public class QBlastGO {
 					else {
 						NCBIID ncbiid = new NCBIID(); ncbiid.setGeneId(blast2GeneInfo.getSubjectGene2GoInfo().getGeneId());
 						if (ncbiid.getGeneId()>0) {
-							ArrayList<NCBIID> lsncbiidsub = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+							ArrayList<NCBIID> lsncbiidsub = MapNCBIID.queryLsNCBIID(ncbiid);
 							if (lsncbiidsub!=null && lsncbiidsub.size()>0)  {
 								tmpBlastInfo[2] = lsncbiidsub.get(0).getAccID();
 							}
@@ -843,7 +843,7 @@ public class QBlastGO {
 					else {
 						UniProtID uniProtID = new UniProtID(); uniProtID.setUniID(blast2GeneInfo.getSubjectUni2GoInfo().getUniID());
 						if (uniProtID.getUniID() != null && !uniProtID.getUniID().equals("")) {
-							ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+							ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 							if (lsUniProtIDs!=null && lsUniProtIDs.size()>0)  {
 								tmpBlastInfo[2] = lsUniProtIDs.get(0).getAccID();
 							}
@@ -876,7 +876,7 @@ public class QBlastGO {
 						else {
 							NCBIID ncbiid = new NCBIID(); ncbiid.setGeneId(blast2GeneInfo.getQueryGene2GoInfo().getGeneId());
 							if (ncbiid.getGeneId()>0) {
-								ArrayList<NCBIID> lsncbiidsub = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+								ArrayList<NCBIID> lsncbiidsub = MapNCBIID.queryLsNCBIID(ncbiid);
 								if (lsncbiidsub!=null && lsncbiidsub.size()>0)  {
 									symbol = lsncbiidsub.get(0).getAccID();
 								}
@@ -915,7 +915,7 @@ public class QBlastGO {
 						else {
 							UniProtID uniProtID = new UniProtID(); uniProtID.setUniID(blast2GeneInfo.getQueryUniGene2GoInfo().getUniID());
 							if (uniProtID.getUniID() != null && !uniProtID.getUniID().equals("")) {
-								ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+								ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 								if (lsUniProtIDs!=null && lsUniProtIDs.size()>0)  {
 									symbol = lsUniProtIDs.get(0).getAccID();
 								}
@@ -954,7 +954,7 @@ public class QBlastGO {
 						else {
 							NCBIID ncbiid = new NCBIID(); ncbiid.setGeneId(blast2GeneInfo.getSubjectGene2GoInfo().getGeneId());
 							if (ncbiid.getGeneId()>0) {
-								ArrayList<NCBIID> lsncbiidsub = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+								ArrayList<NCBIID> lsncbiidsub = MapNCBIID.queryLsNCBIID(ncbiid);
 								if (lsncbiidsub!=null && lsncbiidsub.size()>0)  {
 									subSymbol = lsncbiidsub.get(0).getAccID();
 								}
@@ -990,7 +990,7 @@ public class QBlastGO {
 						else {
 							UniProtID uniProtID = new UniProtID(); uniProtID.setUniID(blast2GeneInfo.getSubjectUni2GoInfo().getUniID());
 							if (uniProtID.getUniID() != null && !uniProtID.getUniID().equals("")) {
-								ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+								ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 								if (lsUniProtIDs!=null && lsUniProtIDs.size()>0)  {
 									subSymbol = lsUniProtIDs.get(0).getAccID();
 								}

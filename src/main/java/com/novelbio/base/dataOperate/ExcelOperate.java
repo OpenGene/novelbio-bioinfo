@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -68,14 +69,23 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	 }
 	 
 	 public static void main(String[] args) {
-		System.out.println(isExcelVersion("/home/zong0jie/桌面/1471-2164-8-242-s4.xx"));
-		ExcelOperate excelOperate = new ExcelOperate("/home/zong0jie/桌面/1471-2164-8-242-s4.xlsx", false);
-		System.out.println(excelOperate.ReadExcel(1, 1));
+//		System.out.println(isExcelVersion("/home/zong0jie/桌面/1471-2164-8-242-s4.xx"));
+		ExcelOperate excelOperate = new ExcelOperate();
+		excelOperate.openExcel("/home/zong0jie/桌面/mytest4.xlsx");
+//		excelOperate.WriteExcel(2, 2, "test");
+		ArrayList<String[]> lsTest = new ArrayList<String[]>();
+		lsTest.add(new String[]{"sfe","feget","feget","feget"});
+		lsTest.add(new String[]{"sfe","feget","feget","feget"});
+		lsTest.add(new String[]{"sfe","feget","feget","feget"});
+		lsTest.add(new String[]{"sfe","feget","feget","feget"});
+		excelOperate.WriteExcel("testsheet4", 3, 5, lsTest);
+		excelOperate.WriteExcel("testsheet4", 8, 10, lsTest);
+		excelOperate.WriteExcel("testsheet4", 18, 20, lsTest);
 	}
 	 
 	 
 	 /**
-	  * 读取excel文件获得HSSFWorkbook对象,默认新建2007
+	  * 读取excel文件获得HSSFWorkbook对象,默认新建2003
 	  * 这个使用的时候要用try块包围
 	  * 能读取返回true，不然返回false
 	  * @param imputfilename
@@ -159,7 +169,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		return false;
 	 }
 	 
-
+	 int versionXls = 0;;
 	 /**
 	  * 读取excel文件获得Workbook对象,默认聚焦在第一个sheet上
 	  * 这个使用的时候要用try块包围
@@ -169,7 +179,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  */
 	 ////////////////////打开已有excel文件//////////////////////////////////
 	 public boolean openExcel(String imputfilename,boolean excel2007) 
-	 {  
+	 {
 		 try {
 		      filename=imputfilename;
 		      File f = new File(filename);  
@@ -181,11 +191,13 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		    		  wb= new HSSFWorkbook(fos);       //得到 excel 工作簿对应的 HSSFWorkbook 对象  
 		    		  sheet = wb.getSheetAt(0);
 		    		  sheetNum = 0;
+		    		  versionXls = EXCEL2003;
 		    	  }
 		    	  else if (isExcelVersion(imputfilename) == EXCEL2007) {
 		    		  wb=new XSSFWorkbook(fos);
 		    		  sheet = wb.getSheetAt(0);
 		    		  sheetNum = 0;
+		    		  versionXls = EXCEL2007;
 		    	  }
 		    	  else {
 		    		 return false;
@@ -206,6 +218,34 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		  }
 	 }
 	 
+	 private boolean resetExcel() 
+	 {
+		 
+		 
+		 
+		 try {
+			 if (!FileOperate.isFileExist(filename)) {
+				return true;
+			}
+			File f = new File(filename);
+			// 如果文件存在，则打开该文件
+			FileInputStream fos = new FileInputStream(f); // 把要读取的 .xls 文件 包装起来
+			if (versionXls == EXCEL2003) {
+				wb = new HSSFWorkbook(fos); // 得到 excel 工作簿对应的 HSSFWorkbook 对象
+			} else if (versionXls == EXCEL2007) {
+				wb = new XSSFWorkbook(fos);
+			} else {
+				return false;
+			}
+			fos.close();
+			return true;
+		 }
+		 catch (Exception e) 
+		 {
+			 e.printStackTrace();
+			 return false;
+		  }
+	 }
 	 /**
 	  * 默认新建03版excel
 	  * @param filenameinput
@@ -216,40 +256,20 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		 return newExcelOpen(filenameinput,true);
 
 	 }
-	 
-	 /**
-	  * 新建excel 默认新建03版
-	  * @return
-	  */
-	 /**
-	 public boolean newExcelOpen()
-	 {
-		 wb=new HSSFWorkbook();  
-		 //在 Excel 工作簿中建创一个工作表,其名为缺省值 sheet1  
-		 sheet =wb.createSheet("sheet1");  
 
-		   return true;
-	 }
-	 
-	  */
-	 
-	 public boolean newExcelOpen(String filenameinput,boolean excel2007) 
-	 {
-		 filename=filenameinput;
-	      if (!excel2007) {
-				wb=new HSSFWorkbook();  
-				  //在 Excel 工作簿中建创一个工作表,其名为缺省值 sheet1  
-				// sheet = wb.createSheet("sheet1");  
-			}
-		      else {
-		    	  wb=new XSSFWorkbook();
-				//wb= new XSSFWorkbook(filenameinput);
-		    	  //在 Excel 工作簿中建创一个工作表,其名为缺省值 sheet1  
-				//	 sheet = wb.createSheet("sheet1");  
-			}
-		 return true;
-	 }
-/////////////////////////excel的各个属性，包括sheet数目，某sheet下的行数///////////////////////
+	public boolean newExcelOpen(String filenameinput, boolean excel2007) {
+		filename = filenameinput;
+		if (!excel2007) {
+			wb = new HSSFWorkbook();
+			versionXls = EXCEL2003;
+		} else {
+			wb = new XSSFWorkbook();
+			versionXls = EXCEL2007;
+		}
+		return true;
+	}
+
+	// ///////////////////////excel的各个属性，包括sheet数目，某sheet下的行数///////////////////////
 	 /**
 	  * 返回sheet表数目,为实际sheet数目
 	  * @return int
@@ -328,20 +348,15 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		return maxColNum;
 	 }
 	 /**
-	  * 获得默认sheetNum的第rowNum行的列数
+	  * 获得第一个sheetNum的第rowNum行的列数
 	  * @param sheetNum 指定实际sheet数
 	  * @param rowNum 指定实际行数
 	  * @return 返回该行列数，如果该行不存在，则返回0
 	  */
 	 public int getColCount(int rownum)
 	 {    
-		 return getColCount(this.sheetNum+1,rownum);
+		 return getColCount(1,rownum);
 	 }
-	 
-	 
-	 
-	 
-	 
 	 /**
 	  * 获得指定sheetNum的rowNum下的列数
 	  * @param sheetNum 指定实际sheet数
@@ -349,7 +364,8 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @return 返回该行列数，如果该行不存在，则返回0
 	  */
 	 public int getColCount(int sheetNum,int rowNum)
-	 {     rowNum--; sheetNum--;
+	 {
+		 rowNum--; sheetNum--;
 	   if (wb == null)
 	   {
 		 System.out.println("=============>WorkBook为空");
@@ -372,56 +388,6 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	   ColCount = row.getLastCellNum()+1;
 	   return ColCount;
 	 }
-///////////////////////新建sheet///////////////////////////////
-	
-	 /**
-	  * 新建sheet不指定sheet名，新建后excel焦点还是在原来的sheet上
-	  * 返回Sheet实际编号
-	  */
-	 public int createNewSheet()
-	 {
-		  int sheetNum=wb.getNumberOfSheets()+1;
-		  String sheetname="Sheet"+sheetNum;
-		  wb.createSheet(sheetname);
-		  return wb.getSheetIndex(sheetname)+1;
-	 }
-	 /**
-	  * 新建sheet同时指定sheet名，新建后excel焦点还是在原来的sheet上
-	  * 返回Sheet实际编号
-	  */
-	 public int createNewSheet(String sheetName)
-	 {
-		 if (wb.getSheetIndex(sheetName) >= 0) {
-			return wb.getSheetIndex(sheetName);
-		}
-		  wb.createSheet(sheetName);
-		  return wb.getSheetIndex(sheetName)+1;
-	 }
-	 /**
-	  * 聚焦到实际sheet上，可以从createNewSheet获得,如果sheetNum大于所含的sheet数，则返回
-	  * @param sheetNum
-	  */
-	 public boolean setSheetNum(int sheetNum) {
-		 if ( wb.getNumberOfSheets() <= sheetNum) {
-			return false;
-		}
-		sheet = wb.getSheetAt(sheetNum);
-		this.sheetNum = sheetNum;
-		return true;
-	}
-	 
-	 /**
-	  * 聚焦到实际sheet上，可以从createNewSheet获得,如果sheetNum大于所含的sheet数，则返回
-	  * @param sheetNum
-	  */
-	 public boolean setSheetNum(String sheetName) {
-		 if ( wb.getSheetIndex(sheetName) < 0) {
-			return false;
-		}
-		sheet = wb.getSheet(sheetName);
-		sheetNum = wb.getSheetIndex(sheetName);
-		return true;
-	}
 /////////////////////读取excel///////////////////////////////////////////////////////
 	 
 	 /**
@@ -671,25 +637,6 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		{
 			sheet = wb.getSheetAt(sheetNum);
 			row = sheet.getRow(rowStartNum);
-	   
-			// int cellCount;//要读取的行的cell数
-			//本处考虑去掉
-			/////////////////////////
-			// if(columnEndNum<row.getLastCellNum())//如果要读取的列数小于该列含有的cell数目，那么就读少的
-			//{
-			//cellCount = columnEndNum;
-			// }
-			//else                                //不然就全读取
-			// {
-			// cellCount=row.getLastCellNum();
-			// }
-			////////////////////////
-			//如果读取的列数大于实际列数，那么就用实际列数来取代读取的列数
-			// if (rowEndNum>sheet.getLastRowNum())
-			// {
-			//	 rowEndNum=sheet.getLastRowNum();
-			// }
-			
 			int readrownum=rowEndNum-rowStartNum+1;//读的实际行数
 			int readcolumnnum=columnEndNum-columnStartNum+1;//读取的实际列数
 			//LsExcelLine = new String[readrownum][readcolumnnum];
@@ -827,49 +774,24 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		 */
 	 public boolean WriteExcel(int rowNum, int cellNum,String content) 
 	 {
-		 if ( wb.getNumberOfSheets() == 0) {
-			 sheet = wb.createSheet("sheet1"); 
-			 sheetNum = wb.getSheetIndex("sheet1");
-		}
-		 return WriteExcel(true,this.sheetNum+1,rowNum, cellNum,content);
+		 return WriteExcel(null, 1,rowNum, cellNum,content);
 	 }
-	    /**
-	     * 单个数值写入单个excel文件,默认写入sheet1,写入其他sheet不改变exceloperate焦点
-	     * 设置写入行数，列数和内容，写入的内容默认为String
-	     * 其中行数，列数，都为实际数目，不用减去1
+ 
+	 /**
+	     * 块文件写入excel文件，并设定sheetName，如果没有该sheetName，那么就新建一个
+	     * 设置写入的sheet名字，行数，列数和内容，写入的内容默认为String[][]
+	     * String[][]中的null会自动跳过
+	     * 其中sheet数，行数，列数，都为实际数目，不用减去1
+	     * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
+	     * @param sheetName
 	     * @param rowNum
 	     * @param cellNum
 	     * @param content
 		 */
-	 public boolean WriteExcel(boolean save,int rowNum, int cellNum,String content) 
+	 public boolean WriteExcel(String sheetName, int rowNum, int cellNum,List<String[]> content) 
 	 {
-		 if ( wb.getNumberOfSheets() == 0) {
-			 sheet = wb.createSheet("sheet1");  
-			 sheetNum = wb.getSheetIndex("sheet1");
-		}
-		 return WriteExcel(save,this.sheetNum+1,rowNum, cellNum,content);
+		 return WriteExcel(sheetName, -1, rowNum, cellNum, content);
 	 }
-	 
-	    /**
-	     * 单个数值写入单个excel文件,设置写入sheet的名字,如果没有该sheetName，那么就新建一个
-	     * 写入其他sheet不改变exceloperate焦点
-	     * 设置写入行数，列数和内容，写入的内容默认为String
-	     * 其中行数，列数，都为实际数目，不用减去1
-	     * @param save 是否保存
-	     * @param rowNum
-	     * @param cellNum
-	     * @param content
-		 */
-	 public boolean WriteExcel(boolean save,String sheetName,int rowNum, int cellNum,String content) 
-	 {
-		 sheetNum=wb.getSheetIndex(sheetName);
-		 if (sheetNum < 0) {
-			 sheet = wb.createSheet(sheetName); 
-			 sheetNum = wb.getSheetIndex(sheetName);
-		}
-		 return WriteExcel(save,sheetNum+1,rowNum, cellNum,content);
-	 }
-	 
 	 /**
 	     * 块文件写入excel文件，并设定sheetName，如果没有该sheetName，那么就新建一个
 	     * 设置写入的sheet名字，行数，列数和内容，写入的内容默认为String[][]
@@ -883,229 +805,34 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		 */
 	 public boolean WriteExcel(String sheetName, int rowNum, int cellNum,String[][] content) 
 	 {
-		 sheetNum=wb.getSheetIndex(sheetName);
-		 if (sheetNum < 0) 
-		 {
-			 sheet = wb.createSheet(sheetName);  
-			 sheetNum = wb.getSheetIndex(sheetName);
-		}
-		 return WriteExcel(true,sheetNum+1,rowNum, cellNum,  content); 
+		 return WriteExcel(sheetName, -1, rowNum, cellNum, content);
 	 }
-	 
-	 /**
-	     * 块文件写入excel文件，并设定sheetName，如果没有该sheetName，那么就新建一个
-	     * 设置写入的sheet名字，行数，列数和内容，写入的内容默认为String[][]
-	     * String[][]中的null会自动跳过
-	     * 其中sheet数，行数，列数，都为实际数目，不用减去1
-	     * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
-	     * @param save 是否保存
-	     * @param sheetName
-	     * @param rowNum
-	     * @param cellNum
-	     * @param content
-		 */
-	 public boolean WriteExcel(boolean save,String sheetName, int rowNum, int cellNum,String[][] content) 
-	 { 
-		 sheetNum = wb.getSheetIndex(sheetName);
-		 if (sheetNum < 0) {
-			 sheet = wb.createSheet(sheetName);
-			 sheetNum = wb.getSheetIndex(sheetName);
-		}
-		 return WriteExcel(save,sheetNum+1,rowNum, cellNum,  content); 
-	 }
-	 
-	 
-	 /**
-	     * 块文件写入excel文件,默认保存
-	     * 设置写入的行数，列数和内容，写入的内容默认为String[][]
-	     * String[][]中的null会自动跳过
-	     * 其中sheet数，行数，列数，都为实际数目，不用减去1
-	     * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
-	     * @param rowNum
-	     * @param cellNum
-	     * @param content
-		 */
-	 public boolean WriteExcel( int rowNum, int cellNum,String[][] content) 
-	 {
-		 return WriteExcel(true,this.sheetNum+1,rowNum, cellNum,  content); 
-	 }
-	 
-	 /**
-	     * 块文件写入excel文件,默认保存
-	     * 设置写入的行数，列数和内容，写入的内容默认为String[][]
-	     * String[][]中的null会自动跳过
-	     * 其中sheet数，行数，列数，都为实际数目，不用减去1
-	     * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
-	     * @param rowNum
-	     * @param cellNum
-	     * @param content
-		 */
-	 public boolean WriteExcel(boolean save, int rowNum, int cellNum,String[][] content) 
-	 {
-		 return WriteExcel(save,this.sheetNum+1,rowNum, cellNum,  content); 
-	 }
-	 /**
-	     * 块文件写入excel文件
-	     * 设置写入的行数，列数和内容，写入的内容默认为List<String[]>, 其中String[]为行，list.get(i)为列
-	     * String[]中的null会自动跳过
-	     * 其中sheet数，行数，列数，都为实际数目，不用减去1
-	     * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
-	     * @param save 是否保存
-	     * @param rowNum
-	     * @param cellNum
-	     * @param content
-
-		 */
-	 public boolean WriteExcel(boolean save, int rowNum, int cellNum,List<String[]> content) 
-	 {
-		 return WriteExcel(save,this.sheetNum+1,rowNum, cellNum,  content); 
-	 }
-
-	 /**
-	     * 块文件写入excel文件
-	     * 设置写入的行数，列数和内容，写入的内容默认为List<String[]>, 其中String[]为行，list.get(i)为列
-	     * String[]中的null会自动跳过
-	     * 其中sheet数，行数，列数，都为实际数目，不用减去1
-	     * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
-	     * @param rowNum
-	     * @param cellNum
-	     * @param content
-	     * @param save 是否保存
-		 */
-	 public boolean WriteExcel( int rowNum, int cellNum,List<String[]> content,boolean save) 
-	 {
-		 return WriteExcel(save,this.sheetNum+1,rowNum, cellNum,  content); 
-	 }
-	 
-	 /**
-	     * 块文件写入excel文件
-	     * 设置写入的行数，列数和内容，写入的内容默认为List<String[]>, 其中String[]为行，list.get(i)为列
-	     * String[]中的null会自动跳过
-	     * 其中sheet数，行数，列数，都为实际数目，不用减去1
-	     * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
-	     * @param rowNum
-	     * @param cellNum
-	     * @param content
-	     * @param save 是否保存
-		 */
-	 public boolean WriteExcel( String sheetName,int rowNum, int cellNum,List<String[]> content,boolean save) 
-	 {
-		 sheetNum=wb.getSheetIndex(sheetName);
-		 if (sheetNum < 0) 
-		 {
-			 sheet = wb.createSheet(sheetName);  
-			 sheetNum = wb.getSheetIndex(sheetName);
-		}
-		 return WriteExcel(save,this.sheetNum+1,rowNum, cellNum,  content); 
-	 }
-
-    /**
-     * 单个数值写入单个excel文件，写入其他sheet不改变exceloperate焦点
-     * 设置写入的sheet数，行数，列数和内容，写入的内容默认为String
-     * 其中sheet数，行数，列数，都为实际数目，不用减去1
-     * @param save 是否保存
-     * @param sheetNum
-     * @param rowNum
-     * @param cellNum
-     * @param content
+	/**
+	 * 块文件写入excel文件,默认写入第一个sheet 设置写入的行数，列数和内容，写入的内容默认为String[][]
+	 * String[][]中的null会自动跳过 其中sheet数，行数，列数，都为实际数目，不用减去1
+	 * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
+	 * 
+	 * @param rowNum 实际行
+	 * @param cellNum 实际列
+	 * @param content
 	 */
-	 public boolean WriteExcel(boolean save,int sheetNum, int rowNum, int cellNum,String content) 
-    {
-    	sheetNum--;rowNum--;cellNum--;//将sheet和行列都还原为零状态
-    	 if (sheetNum < 0 || rowNum < 0)
-    		   return false;
-    	 
-    	 if((sheet = wb.getSheetAt(sheetNum))==null)
-    	 {
-    		 sheet=wb.createSheet();
-    	 }
-    	 try {
-  			  //row = sheet.createRow(rowNum);
-  			 row=sheet.getRow(rowNum);
-		     if(row==null)
-		       {
-			    row=sheet.createRow(rowNum); 
-	           }
-  			  cell=row.createCell((short)cellNum);
-  			  try
-  			  {
-  				  double tmpValue = Double.parseDouble(content);
-  				  //cell.setCellType(0);
-  				  cell.setCellValue(tmpValue);
-  			  } catch (Exception e) {
-  				  cell.setCellValue(content);
-  			  }
-  			  if(filename!=""&&save)Save();
-  			  return true;
-    	 }
-    	 catch (Exception e) 
-    	 {
-    		 e.printStackTrace();
-    		 return false;
-    	 }
+	public boolean WriteExcel(int rowNum, int cellNum, String[][] content) {
+		return WriteExcel(null, 1, rowNum, cellNum, content);
 	}
-	 
 	 /**
-	     * 块文件写入excel文件
-	     * 设置写入的sheet数，行数，列数和内容，写入的内容默认为String[][],String[][]中的null会自动跳过
-	     * 其中sheet数，行数，列数，都为实际数目，不用减去1
-	     * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
-	     * @param sheetNum
-	     * @param rowNum
-	     * @param cellNum
-	     * @param content
-		 */
-	 public boolean WriteExcel(boolean save, int sheetNum, int rowNum, int cellNum,String[][] content) 
+	  * 块文件写入excel文件
+	  * 设置写入的sheet数，行数，列数和内容，写入的内容默认为List<String[]>,其中String[]为行，list.get(i)为列
+	  * String[]中的null会自动跳过
+	  * 其中sheet数，行数，列数，都为实际数目，不用减去1
+	  * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
+	  * @param rowNum 实际行
+	  * @param cellNum 实际列
+	  * @param content
+	  */
+	 public boolean WriteExcel(int rowNum, int cellNum, List<String[]> content) 
 	 {
-		 	sheetNum--;rowNum--;cellNum--;//将sheet和行列都还原为零状态
-		 	int writeRowNumber=content.length-1;//这个就是数组第一维的数量
-		 	int writeColiumNubmer=content[0].length-1;//数组第二维的数量
-		 	boolean flag;
-		 
-	    	 if (sheetNum < -1 || rowNum < 0)
-	    		   return false;
-	    	 try {
-	    		  try {
-	    			   
-						  sheet=wb.getSheetAt(sheetNum);  						 
-					  } 
-	    		  catch (Exception e) 
-				     {
-					      sheet=wb.createSheet("sheet"+(getSheetCount()+1));//新建sheet					 
-				     }
-		
-				  for (int i=0;i<=writeRowNumber;i++) 
-				  {  int writerow=i+rowNum;//写入的行数
-				     row=sheet.getRow(writerow);
-				     if(row==null)
-				       {
-					    row=sheet.createRow(writerow); 
-			           }
-					   for (int j = 0; j <=writeColiumNubmer; j++) //写入
-					   {   
-						   if(content[i][j]==null) continue;//跳过空值
-						   cell=row.createCell((short)(cellNum+j));
-			 				 try
-		    				 {
-									double tmpValue = Double.parseDouble(content[i][j]);
-									//cell.setCellType(0);
-									cell.setCellValue(tmpValue);
-							} catch (Exception e) {
-								cell.setCellValue(content[i][j]);
-							}
-					   }
-				  }
-	  			  if(filename!=""&&save)Save();
-	  			  return true;
-	    		  }
-	    	 catch (Exception e) 
-	    		  {
-	    		   e.printStackTrace();
-	    		   return false;
-	    		  }
-	 }
-	 
-	 
+		return WriteExcel(null, 1, rowNum, cellNum, content);
+	}
 	 /**
 	  * 块文件写入excel文件
 	  * 设置写入的sheet数，行数，列数和内容，写入的内容默认为List<String[]>,其中String[]为行，list.get(i)为列
@@ -1117,56 +844,240 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param cellNum
 	  * @param content
 	  */
-	 public boolean WriteExcel(boolean save,int sheetNum, int rowNum, int cellNum, List<String[]> content) 
+	 public boolean WriteExcel(int sheetNum, int rowNum, int cellNum, List<String[]> content) 
 	 {
-		 	sheetNum--;rowNum--;cellNum--;//将sheet和行列都还原为零状态
-		 	int writeRowNumber=content.size();//这个就是数组第一维的数量
-		 	boolean flag;
-	    	 if (sheetNum < -1 || rowNum < 0)
-	    		   return false;
-	    	 try {
-	    		  try {
-						  sheet=wb.getSheetAt(sheetNum);  						 
-					  } 
-	    		  catch (Exception e) 
-				     {
-					      sheet=wb.createSheet("sheet"+(getSheetCount()+1));//新建sheet					 
-				     }
+		return WriteExcel(null, sheetNum, rowNum, cellNum, content);
+	}
+	 /**
+	  * 块文件写入excel文件
+	  * 设置写入的sheet数或sheetName，两个只要设置一个，默认先设定sheetName
+	  * 行数，列数和内容，写入的内容默认为List<String[]>,其中String[]为行，list.get(i)为列
+	  * String[]中的null会自动跳过
+	  * 其中sheet数，行数，列数，都为实际数目，不用减去1
+	  * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
+	  * @param sheetNum
+	  * @param sheetName
+	  * @param rowNum 实际行
+	  * @param cellNum 实际列
+	  * @param content
+	  * @return
+	  */
+	 private boolean WriteExcel(String sheetName ,int sheetNum, int rowNum, int cellNum, String content) 
+	 {
+		resetExcel(); 
 		
-				  for (int i=0; i <writeRowNumber;i++) 
-				  {  int writerow=i+rowNum;//写入的行数
-				     row=sheet.getRow(writerow);
-				     if(row==null)
-				       {
-					    row=sheet.createRow(writerow); 
-			           }
-				      String[] rowcontent=content.get(i);
-				      if(rowcontent==null) continue;
-					   for (int j = 0; j <rowcontent.length; j++) //写入
-					   {   
-						   if(rowcontent[j]==null) continue; //跳过空值
-						   cell=row.createCell((short)(cellNum+j));
-			 				 try
-		    				 {
-									double tmpValue = Double.parseDouble(rowcontent[j]);
-									//cell.setCellType(0);
-									cell.setCellValue(tmpValue);
-							} catch (Exception e) {
-								cell.setCellValue(rowcontent[j]);
-							}
-					   }
-				  }
-	  			  if(filename!=""&&save)Save();
-	  			  return true;
-	    		  }
-	    	 catch (Exception e) 
-	    		  {
-	    		   e.printStackTrace();
-	    		   return false;
-	    		  }
-	 }
-	 
- 
+		if ((sheetNum <= -1 && sheetName == null) || rowNum < 0)
+			return false;
+
+		Sheet sheet = getSheet(sheetName, sheetNum);
+		writeExcel(sheet, rowNum, cellNum, content);
+		if (filename != "")
+			Save();
+		return true;
+	}
+	 /**
+	  * 块文件写入excel文件
+	  * 设置写入的sheet数或sheetName，两个只要设置一个，默认先设定sheetName
+	  * 行数，列数和内容，写入的内容默认为List<String[]>,其中String[]为行，list.get(i)为列
+	  * String[]中的null会自动跳过
+	  * 其中sheet数，行数，列数，都为实际数目，不用减去1
+	  * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
+	  * @param sheetNum
+	  * @param sheetName
+	  * @param rowNum 实际行
+	  * @param cellNum 实际列
+	  * @param content
+	  * @return
+	  */
+	 private boolean WriteExcel(String sheetName ,int sheetNum, int rowNum, int cellNum, List<String[]> content) 
+	 {
+		resetExcel();
+		
+		if ((sheetNum <= -1 && sheetName == null) || rowNum < 0)
+			return false;
+
+		Sheet sheet = getSheet(sheetName, sheetNum);
+		writeExcel(sheet, rowNum, cellNum, content);
+		if (filename != "")
+			Save();
+		return true;
+	}
+	 /**
+	  * 
+	  * 块文件写入excel文件
+	  * 设置写入的sheet数或sheetName，两个只要设置一个，默认先设定sheetName
+	  * 行数，列数和内容，写入的内容默认为List<String[]>,其中String[]为行，list.get(i)为列
+	  * String[]中的null会自动跳过
+	  * 其中sheet数，行数，列数，都为实际数目，不用减去1
+	  * 当sheetNum设置超出已存在sheet数目时，则为新建sheet写入
+	  * @param sheetNum 实际sheet数，也就是必须大于等于1
+	  * @param sheetName
+	  * @param rowNum 实际行
+	  * @param cellNum 实际列
+	  * @param content
+	  * @return
+	  */
+	 private boolean WriteExcel(String sheetName ,int sheetNum, int rowNum, int cellNum, String[][] content) 
+	 {
+		resetExcel();
+		
+		if ((sheetNum <= -1 && sheetName == null) || rowNum < 0)
+			return false;
+
+		Sheet sheet = getSheet(sheetName, sheetNum);
+		writeExcel(sheet, rowNum, cellNum, content);
+		if (filename != "")
+			Save();
+		return true;
+	}
+	 /**
+	  * 设置写入的sheet数或sheetName，两个只要设置一个，默认先设定sheetName
+	  * @param sheetName 没有设为null
+	  * @param sheetNum 没有设为小于1
+	  * @return
+	  */
+	private Sheet getSheet(String sheetName, int sheetNum) {
+		sheetNum--;
+		Sheet sheet = null;
+		if (sheetName != null) {
+			sheet = wb.getSheet(sheetName);
+			if (sheet == null) {
+				sheet = wb.createSheet(sheetName);
+				sheetNum = wb.getSheetIndex(sheetName);
+			}
+		} else if (sheetNum >= 0) {
+			sheet = wb.getSheetAt(sheetNum);
+			if (sheet == null) {
+				sheet = wb.createSheet("sheet" + (getSheetCount() + 1));// 新建sheet
+			}
+		}
+		return sheet;
+	}
+	/**
+	 * 写入单个元素
+	 * @param sheet
+	 * @param rowNum 实际行
+	 * @param cellNum 实际列
+	 * @param content
+	 * @return
+	 */
+	private boolean writeExcel(Sheet sheet, int rowNum, int cellNum, String content) {
+		rowNum--;
+		cellNum--;// 将sheet和行列都还原为零状态
+		if (rowNum < 0)
+			return false;
+		try {
+			// row = sheet.createRow(rowNum);
+			Row row = sheet.getRow(rowNum);
+			if (row == null) {
+				row = sheet.createRow(rowNum);
+			}
+			Cell cell = row.createCell((short) cellNum);
+			try {
+				double tmpValue = Double.parseDouble(content);
+				// cell.setCellType(0);
+				cell.setCellValue(tmpValue);
+			} catch (Exception e) {
+				cell.setCellValue(content);
+			}
+			if (filename != "")
+				Save();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	 /**
+	  * 写入list等
+	  * @param sheet
+	  * @param rowNum 实际行
+	  * @param cellNum 实际列
+	  * @param content
+	  * @return
+	  */
+	private boolean writeExcel(Sheet sheet, int rowNum, int cellNum, Iterable<String[]> content) {
+		rowNum--;
+		cellNum--;// 将sheet和行列都还原为零状态
+		boolean flag;
+		if (rowNum < 0)
+			return false;
+		try {
+			int i = 0;
+			for (String[] rowcontent : content) {
+				int writerow = i + rowNum;// 写入的行数
+				Row row = sheet.getRow(writerow);
+				if (row == null) {
+					row = sheet.createRow(writerow);
+				}
+				if (rowcontent == null)
+					continue;
+				for (int j = 0; j < rowcontent.length; j++) // 写入
+				{
+					if (rowcontent[j] == null)
+						continue; // 跳过空值
+					Cell cell = row.createCell((short) (cellNum + j));
+					try {
+						double tmpValue = Double.parseDouble(rowcontent[j]);
+						// cell.setCellType(0);
+						cell.setCellValue(tmpValue);
+					} catch (Exception e) {
+						cell.setCellValue(rowcontent[j]);
+					}
+				}
+				i ++;
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	/**
+	 * 写入数组等
+	 * @param sheet
+	 * @param rowNum 实际行
+	 * @param cellNum 实际列
+	 * @param content
+	 * @return
+	 */
+	private boolean writeExcel(Sheet sheet, int rowNum, int cellNum, String[][] content) {
+		rowNum--;
+		cellNum--;// 将sheet和行列都还原为零状态
+		boolean flag;
+		if (rowNum < 0)
+			return false;
+		try {
+			int i = 0;
+			for (String[] rowcontent : content) {
+				int writerow = i + rowNum;// 写入的行数
+				Row row = sheet.getRow(writerow);
+				if (row == null) {
+					row = sheet.createRow(writerow);
+				}
+				if (rowcontent == null)
+					continue;
+				for (int j = 0; j < rowcontent.length; j++) // 写入
+				{
+					if (rowcontent[j] == null)
+						continue; // 跳过空值
+					Cell cell = row.createCell((short) (cellNum + j));
+					try {
+						double tmpValue = Double.parseDouble(rowcontent[j]);
+						// cell.setCellType(0);
+						cell.setCellValue(tmpValue);
+					} catch (Exception e) {
+						cell.setCellValue(rowcontent[j]);
+					}
+				}
+				i ++;
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 	 /**
 	     * 条文件写入excel文件，
 	     * 设置写入的sheet数，行数，列数和内容，写入的内容默认为String[],设定写入行/列
@@ -1181,6 +1092,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		 */
 	 public boolean WriteExcel(boolean save,int sheetNum, int rowNum, int cellNum, String[] content, boolean raw) 
 	 {
+		 resetExcel();
 		 	sheetNum--;rowNum--;cellNum--;//将sheet和行列都还原为零状态
 		 	int writeNumber=content.length;//这个就是数组第一维的数量
 		 	boolean flag;
@@ -1268,6 +1180,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		 */
 	 public boolean WriteExcel(boolean save,int sheetNum, int rowNum, int cellNum, List<String> content, boolean raw) 
 	 {
+		 resetExcel();
 		 	sheetNum--;rowNum--;cellNum--;//将sheet和行列都还原为零状态
 		 	int writeNumber=content.size();//这个就是数组第一维的数量
 		 	boolean flag;
@@ -1347,19 +1260,18 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	     * 保存excel文件，使用以前的文件名。有重载
 		 */
 	 public boolean Save() 
-	 {    if(filename=="") return false;
+	 {
+		 if(filename=="") return false;
 		 try {
 			 FileOutputStream out = new FileOutputStream(filename);
-			    wb.write(out);
-			    out.close();
-			    return true;
+			 wb.write(out);
+			 out.close();
+			 return true;
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 			return false;
 		}
-		
-
 	}
 	     /**
 	      * 输入文件名

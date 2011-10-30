@@ -9,15 +9,15 @@ import com.novelbio.analysis.annotation.GO.goEntity.GOInfoAbs;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo;
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSTaxID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.TaxInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
 import com.novelbio.database.entity.kegg.KGpathway;
+import com.novelbio.database.mapper.geneanno.MapFSTaxID;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.service.ServAnno;
 
 /**
@@ -502,7 +502,7 @@ public class CopedID implements CopedIDInt{
 		ArrayList<String> lsResult = new ArrayList<String>();
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setAccID(accID); ncbiid.setTaxID(taxID);
-		ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+		ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid);
 		ArrayList<UniProtID> lsUniProtIDs = null;
 		//ÏÈ²éncbiid
 		if (lsNcbiids != null && lsNcbiids.size() > 0)
@@ -524,7 +524,7 @@ public class CopedID implements CopedIDInt{
 		{
 			UniProtID uniProtID = new UniProtID();
 			uniProtID.setAccID(accID); uniProtID.setTaxID(taxID);
-			lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+			lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 			if (lsUniProtIDs != null && lsUniProtIDs.size() > 0) 
 			{
 				lsResult.add(CopedID.IDTYPE_UNIID);lsResult.add(lsUniProtIDs.get(0).getTaxID()+"");
@@ -555,7 +555,7 @@ public class CopedID implements CopedIDInt{
 	public static HashMap<Integer, String[]> getSpecies() 
 	{
 		TaxInfo taxInfo = new TaxInfo();
-		ArrayList<TaxInfo> lsTaxID = DaoFSTaxID.queryLsTaxInfo(taxInfo);
+		ArrayList<TaxInfo> lsTaxID = MapFSTaxID.queryLsTaxInfo(taxInfo);
 		HashMap<Integer,String[]> hashTaxID = new HashMap<Integer, String[]>();
 		for (TaxInfo taxInfo2 : lsTaxID) {
 			if (taxInfo2.getAbbr() == null || taxInfo2.getAbbr().trim().equals("")) {

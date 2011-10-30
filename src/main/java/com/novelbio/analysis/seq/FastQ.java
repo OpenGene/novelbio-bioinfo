@@ -63,6 +63,36 @@ public class FastQ extends SeqComb {
 	private int adaptermaxMismach = 2;
 	private int adaptermaxConMismatch = 1;
 	
+	public static void main(String[] args) {
+		FastQ fastQ = null;
+		String parentFile = "/media/winE/NBC/Project/Project_FY_Lab/clean_reads/";
+		
+		fastQ = new FastQ(parentFile+"DT40_KO0h_L1_1.fq", FastQ.QUALITY_MIDIAN);
+		System.out.print("\tK0readsNum\t"+fastQ.getSeqNum());
+		fastQ = new FastQ(parentFile+"DT40_KO0h_L1_Filter.fq_1", FastQ.QUALITY_MIDIAN);
+		System.out.print("\tK0readsFilterNum\t"+fastQ.getSeqNum());
+		System.out.println();
+		
+		fastQ = new FastQ(parentFile+"DT40_KO5h_L1_1.fq", FastQ.QUALITY_MIDIAN);
+		System.out.print("\tK5readsNum\t"+fastQ.getSeqNum());
+		fastQ = new FastQ(parentFile+"DT40_KO5h_L1_Filter.fq_1", FastQ.QUALITY_MIDIAN);
+		System.out.print("\tK5readsFilterNum\t"+fastQ.getSeqNum());
+		System.out.println();
+		
+		fastQ = new FastQ(parentFile+"DT40_WT0h_L1_1.fq", FastQ.QUALITY_MIDIAN);
+		System.out.print("\tWT0readsNum\t"+fastQ.getSeqNum());
+		fastQ = new FastQ(parentFile+"DT40_WT0h_L1_Filter.fq_1", FastQ.QUALITY_MIDIAN);
+		System.out.print("\tWT0readsFilterNum\t"+fastQ.getSeqNum());
+		System.out.println();
+		
+		fastQ = new FastQ(parentFile+"DT40_WT5h_L1_1.fq", FastQ.QUALITY_MIDIAN);
+		System.out.print("\tWT5readsNum\t"+fastQ.getSeqNum());
+		fastQ = new FastQ(parentFile+"DT40_WT5h_L1_Filter.fq_1", FastQ.QUALITY_MIDIAN);
+		System.out.print("\tWT5readsFilterNum\t"+fastQ.getSeqNum());
+		System.out.println();
+	}
+	
+	
 	/**
 	 * 设定最短reads的长度，小于该长度的reads就跳过，默认为25
 	 */

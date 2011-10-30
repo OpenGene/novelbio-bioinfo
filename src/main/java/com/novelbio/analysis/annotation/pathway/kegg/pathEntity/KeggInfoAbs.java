@@ -11,13 +11,13 @@ import org.apache.ibatis.migration.commands.NewCommand;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.DAO.KEGGDAO.DaoKIDKeg2Ko;
-import com.novelbio.database.DAO.KEGGDAO.DaoKPathway;
 import com.novelbio.database.entity.friceDB.TaxInfo;
 import com.novelbio.database.entity.kegg.KGIDkeg2Ko;
 import com.novelbio.database.entity.kegg.KGentry;
 import com.novelbio.database.entity.kegg.KGpathway;
 import com.novelbio.database.entity.kegg.KGrelation;
+import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
+import com.novelbio.database.mapper.kegg.MapKPathway;
 import com.novelbio.database.updatedb.idconvert.TaxIDInfo;
 
 public abstract class KeggInfoAbs implements KeggInfoInter{
@@ -120,7 +120,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 			
 			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
 			kgiDkeg2Ko.setKeggID(getKegID()); kgiDkeg2Ko.setTaxID(taxID);
-			lsKgiDkeg2Kos = DaoKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+			lsKgiDkeg2Kos = MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 			if (lsKgiDkeg2Kos == null) {
 				lsKgiDkeg2Kos = new ArrayList<KGIDkeg2Ko>();
 			}
@@ -201,7 +201,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		ArrayList<KGentry> lsQKegEntities = new ArrayList<KGentry>();
 		for (String ko : lsKO) {
 			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();  kgiDkeg2Ko.setKo(ko); kgiDkeg2Ko.setTaxID(taxID);
-			ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = DaoKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+			ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 			ArrayList<KGentry> lskGentriesTmp = new ArrayList<KGentry>();
 			////////////////如果geneBlast到了人类，并且得到了相应的KO，那么获得该KO所对应本物种的KeggID，并用KeggID直接mapping回本基因////////////////////////////////////////////////////////////////
 			if (lsKgiDkeg2Kos != null && lsKgiDkeg2Kos.size()>0) 

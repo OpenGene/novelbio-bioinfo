@@ -165,7 +165,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 		for (String accID : lsInfo) {
 			ArrayList<CopedID> lsCopedIDs = CopedID.getLsCopedID(
 					accID.split("\t")[0], 0, false);
-			if (lsCopedIDs.size() == 1) {
+			if (lsCopedIDs.size() == 1 && lsCopedIDs.get(0).getIDtype() != CopedID.IDTYPE_ACCID) {
 				taxID = lsCopedIDs.get(0).getTaxID();
 				break;
 			}

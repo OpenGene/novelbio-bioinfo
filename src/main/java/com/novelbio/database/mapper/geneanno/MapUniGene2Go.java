@@ -1,4 +1,4 @@
-package com.novelbio.database.DAO.FriceDAO;
+package com.novelbio.database.mapper.geneanno;
 
 import java.util.ArrayList;
 
@@ -7,7 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 import com.novelbio.database.entity.friceDB.*;
 import com.novelbio.database.util.Util;
 
-public class DaoFSUniGene2Go {
+public class MapUniGene2Go {
 
 	/**
 	 * 用GeneID去查找Gene2Go表

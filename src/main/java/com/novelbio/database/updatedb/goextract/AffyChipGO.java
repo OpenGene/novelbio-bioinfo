@@ -11,12 +11,12 @@ import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.GOQuery;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
 import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
+import com.novelbio.database.mapper.geneanno.MapGene2Go;
+import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
 import com.novelbio.database.service.ServAnno;
 import com.novelbio.database.service.ServGo;
 import com.novelbio.database.updatedb.idconvert.NCBIIDOperate;
@@ -240,17 +240,17 @@ public class AffyChipGO {
 			gene2GoInfo.setFunction(goFun);
 			gene2GoInfo.setDataBase(ss[5]);
 			
-			Gene2Go gene2GoInfo2=(Gene2Go) DaoFSGene2Go.queryGene2Go(gene2GoInfo);
+			Gene2Go gene2GoInfo2=(Gene2Go) MapGene2Go.queryGene2Go(gene2GoInfo);
 			if (gene2GoInfo2==null)
 			{
-				DaoFSGene2Go.InsertGene2Go(gene2GoInfo);
+				MapGene2Go.InsertGene2Go(gene2GoInfo);
 			}
 			else {
 				//如果已经含有相应的GOID，那么看evidence是否也含有了，没有的话就upDate
 				if(gene2GoInfo2.getEvidence() != null && gene2GoInfo.getEvidence() != null && !gene2GoInfo2.getEvidence().contains(gene2GoInfo.getEvidence()))
 				{
 					gene2GoInfo.setEvidence(gene2GoInfo.getEvidence()+"/"+gene2GoInfo2.getEvidence());
-					DaoFSGene2Go.upDateGene2Go(gene2GoInfo);
+					MapGene2Go.upDateGene2Go(gene2GoInfo);
 				}
 			}
 			i++;
@@ -288,17 +288,17 @@ public class AffyChipGO {
 			gene2GoInfo.setFunction(goFun);
 			gene2GoInfo.setDataBase(ss[5]);
 			
-			AGene2Go gene2GoInfo2=DaoFSUniGene2Go.queryUniGene2Go(gene2GoInfo);
+			AGene2Go gene2GoInfo2=MapUniGene2Go.queryUniGene2Go(gene2GoInfo);
 			if (gene2GoInfo2==null)
 			{
-				DaoFSUniGene2Go.InsertUniGene2Go(gene2GoInfo);
+				MapUniGene2Go.InsertUniGene2Go(gene2GoInfo);
 			}
 			else {
 				//如果已经含有相应的GOID，那么看evidence是否也含有了，没有的话就upDate
 				if(gene2GoInfo2.getEvidence() != null && gene2GoInfo.getEvidence() != null && !gene2GoInfo2.getEvidence().contains(gene2GoInfo.getEvidence()))
 				{
 					gene2GoInfo.setEvidence(gene2GoInfo.getEvidence()+"/"+gene2GoInfo2.getEvidence());
-					DaoFSUniGene2Go.upDateUniGene2Go(gene2GoInfo);
+					MapUniGene2Go.upDateUniGene2Go(gene2GoInfo);
 				}
 			}
 			i++;

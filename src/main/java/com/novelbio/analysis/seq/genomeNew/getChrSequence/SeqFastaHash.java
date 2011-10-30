@@ -99,7 +99,14 @@ public class SeqFastaHash extends SeqHashAbs {
 	 */
 	protected void setChrFile() throws Exception
 	{
-		Pattern pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE); // flags
+		Pattern pattern = null;
+		if (regx == null) {
+			pattern = Pattern.compile("", Pattern.CASE_INSENSITIVE); // flags
+		}
+		else {
+			pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE); // flags
+		}
+		
 		Matcher matcher;// matcher.groupCount() 返回此匹配器模式中的捕获组数。
 		hashSeq = new HashMap<String, SeqFasta>();// 本list用来存储染色体
 		TxtReadandWrite txtSeqFile = new TxtReadandWrite(chrFile,false);
@@ -124,7 +131,7 @@ public class SeqFastaHash extends SeqHashAbs {
 				else
 					tmpSeqName = content.trim().substring(1).trim().replace(" ", "_");// substring(1)，去掉>符号，不变大小写
 				// ///////////////用正则表达式抓取序列名中的特定字符////////////////////////////////////////////////
-				if (regx.trim().equals("")) {
+				if (regx == null || regx.trim().equals("")) {
 					Seq.setSeqName(tmpSeqName);
 				} else {
 					matcher = pattern.matcher(tmpSeqName);

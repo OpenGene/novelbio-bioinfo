@@ -3,8 +3,8 @@ package com.novelbio.database.entity.kegg;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.database.DAO.KEGGDAO.DaoKPathway;
 import com.novelbio.database.entity.AbsPathway;
+import com.novelbio.database.mapper.kegg.MapKPathway;
 
 public class KGpathway extends AbsPathway{
 	
@@ -91,7 +91,7 @@ public class KGpathway extends AbsPathway{
 			return hashKGPath;
 		}
 		KGpathway kGpathway = new KGpathway();
-		ArrayList<KGpathway> lsKGpathways = DaoKPathway.queryLsKGpathways(kGpathway);
+		ArrayList<KGpathway> lsKGpathways = MapKPathway.queryLsKGpathways(kGpathway);
 		for (KGpathway kGpathway2 : lsKGpathways) 
 		{
 			hashKGPath.put(kGpathway2.getPathName(), kGpathway2);

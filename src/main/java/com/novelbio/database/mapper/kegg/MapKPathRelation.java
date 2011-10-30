@@ -1,4 +1,4 @@
-package com.novelbio.database.DAO.KEGGDAO;
+package com.novelbio.database.mapper.kegg;
 
 import java.util.ArrayList;
 
@@ -8,7 +8,7 @@ import com.novelbio.database.entity.kegg.KGpathRelation;
 import com.novelbio.database.util.Util;
 
  
-public class DaoKPathRelation {
+public class MapKPathRelation {
 	/**
 	 * if test="pathName !=null" <br>
 				 pathName=#{pathName}<br>

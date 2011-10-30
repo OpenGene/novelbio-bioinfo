@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genomeNew.getChrSequence;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.reseq.SoapsnpInfo;
@@ -16,6 +17,36 @@ public class SeqFasta {
 	private String SeqSequence;
 	private static Logger logger = Logger.getLogger(SeqFasta.class);
 	private boolean cis5to3 = true;
+	/**
+	 * 反向互补哈希表
+	 */
+	private static HashMap<Character, Character> compmap = null;// 碱基翻译哈希表
+
+	/**
+	 * 获得互补配对hash表
+	 * 给碱基对照哈希表赋值 目前有A-T， G-C，N-N 的对应关系（包括了大小写的对应） 将来可能要添加新的
+	 */
+	public static HashMap<Character, Character> getCompMap() {
+		if (compmap != null) {
+			return compmap;
+		}
+		compmap = new HashMap<Character, Character>();// 碱基翻译哈希表
+		compmap.put(Character.valueOf('A'), Character.valueOf('T'));
+		compmap.put(Character.valueOf('a'), Character.valueOf('t'));
+		compmap.put(Character.valueOf('T'), Character.valueOf('A'));
+		compmap.put(Character.valueOf('t'), Character.valueOf('a'));
+		compmap.put(Character.valueOf('G'), Character.valueOf('C'));
+		compmap.put(Character.valueOf('g'), Character.valueOf('c'));
+		compmap.put(Character.valueOf('C'), Character.valueOf('G'));
+		compmap.put(Character.valueOf('c'), Character.valueOf('g'));
+		compmap.put(Character.valueOf(' '), Character.valueOf(' '));
+		compmap.put(Character.valueOf('N'), Character.valueOf('N'));
+		compmap.put(Character.valueOf('n'), Character.valueOf('n'));
+		compmap.put(Character.valueOf('-'), Character.valueOf('-'));
+		compmap.put(Character.valueOf('\n'), Character.valueOf(' '));
+		compmap.put(Character.valueOf('X'), Character.valueOf('X'));
+		return compmap;
+	}
 	
 	/**
 	 * 当用指定序列来插入或替换本序列中的位置时，如果插入的位置并不是很确定
@@ -75,7 +106,9 @@ public class SeqFasta {
 	
 	/**
 	 * 获得具体序列
+	 * 用tostring()代替
 	 */
+	@Deprecated
 	public String getSeq() {
 		return SeqSequence;
 	}
@@ -86,38 +119,14 @@ public class SeqFasta {
 		return reservecomplement(getSeq());
 	}
 	/**
-	 * 反向互补哈希表
+	 * 获得具体序列的反向互补序列
 	 */
-	private static HashMap<Character, Character> compmap = null;// 碱基翻译哈希表
-
-	/**
-	 * 获得互补配对hash表
-	 * 给碱基对照哈希表赋值 目前有A-T， G-C，N-N 的对应关系（包括了大小写的对应） 将来可能要添加新的
-	 */
-	public static HashMap<Character, Character> getCompMap() {
-		if (compmap != null) {
-			return compmap;
-		}
-		compmap = new HashMap<Character, Character>();// 碱基翻译哈希表
-		compmap.put(Character.valueOf('A'), Character.valueOf('T'));
-		compmap.put(Character.valueOf('a'), Character.valueOf('t'));
-		compmap.put(Character.valueOf('T'), Character.valueOf('A'));
-		compmap.put(Character.valueOf('t'), Character.valueOf('a'));
-		compmap.put(Character.valueOf('G'), Character.valueOf('C'));
-		compmap.put(Character.valueOf('g'), Character.valueOf('c'));
-		compmap.put(Character.valueOf('C'), Character.valueOf('G'));
-		compmap.put(Character.valueOf('c'), Character.valueOf('g'));
-		compmap.put(Character.valueOf(' '), Character.valueOf(' '));
-		compmap.put(Character.valueOf('N'), Character.valueOf('N'));
-		compmap.put(Character.valueOf('n'), Character.valueOf('n'));
-		compmap.put(Character.valueOf('-'), Character.valueOf('-'));
-		compmap.put(Character.valueOf('\n'), Character.valueOf(' '));
-		compmap.put(Character.valueOf('X'), Character.valueOf('X'));
-		return compmap;
+	public SeqFasta getSeqRC2() {
+		String seq = reservecomplement(SeqSequence);
+		SeqFasta seqFasta = new SeqFasta(SeqName, seq);
+		seqFasta.cis5to3 = !cis5to3;
+		return seqFasta;
 	}
-
-
-
 	/**
 	 * 输入序列坐标信息：序列名-序列起点和终点 返回序列
 	 * 
@@ -388,7 +397,7 @@ public class SeqFasta {
 	
 	/**
 	 * 比较两个序列是否一致，计数不一致的碱基数
-	 * 从头开始比较，可以有空格
+	 * 从头开始比较，头尾可以有空格，中间不能有。不是blast模式的比较
 	 */
 	public static int compare2Seq(String seq1, String seq2) {
 		char[] chrSeq1 = seq1.trim().toLowerCase().toCharArray();
@@ -403,10 +412,32 @@ public class SeqFasta {
 		result = result + Math.max(chrSeq1.length, chrSeq2.length) - i;
 		return result;
 	}
+	/**
+	 * 将nr序列转变为aa序列，首先正反向之后，然后按照该顺序进行orf选择
+	 * @param cis 是正向 false：反向互补
+	 * @param orf 第几个orf，0，1，2
+	 * @return
+	 */
+	public String toAAseq(boolean cis,int orf) {
+		String seq = "";
+		if (!cis) {
+			seq = reservecom(SeqSequence);
+		}
+		else {
+			seq = SeqSequence;
+		}
+		char[] nrChar = seq.toCharArray();
+		StringBuilder resultAA = new StringBuilder();
+		for (int i = orf; i < nrChar.length - 3; i = i+3) {
+			String tmp = String.valueOf(new char[]{nrChar[i],nrChar[i+1],nrChar[i+2]});
+			resultAA.append(AminoAcid.convertDNA2AA(tmp, true));
+		}
+		return resultAA.toString();
+	}
 	
-	
-	
-	
-	
-	
+	public SeqFasta clone() {
+		SeqFasta seqFasta = new SeqFasta(SeqName, SeqSequence);
+		seqFasta.cis5to3 = cis5to3;
+		return seqFasta;
+	}
 }

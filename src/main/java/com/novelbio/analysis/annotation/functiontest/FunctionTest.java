@@ -18,6 +18,13 @@ public class FunctionTest implements FunTestInt{
 	public static final Logger logger = Logger.getLogger(FunctionTest.class);
 	AbstFunTest funTest = null;
 	
+	public static void main(String[] args) {
+		FunctionTest functionTest = new FunctionTest(FUNCTION_GO_ELIM, 39947, true, 1e-10, 3702);
+		functionTest.setLsBGAccID("/media/winE/Bioinformatics/GenomeData/Rice/RiceAffyBG.txt", 1);
+		functionTest.saveLsBGItem("/media/winE/Bioinformatics/GenomeData/Rice/RiceAffyBG2GOBlast.txt");
+	}
+	
+	
 	/**
 	 * 选择一种检验方式FUNCTION_GO_NOVELBIO等
 	 * 是否blast，如果blast那么blast到哪几个物种
@@ -100,6 +107,11 @@ public class FunctionTest implements FunTestInt{
 	public ArrayList<String[]> getItem2GenePvalue() {
 		// TODO Auto-generated method stub
 		return funTest.getItem2GenePvalue();
+	}
+
+	@Override
+	public void saveLsBGItem(String txtBGItem) {
+		funTest.saveLsBGItem(txtBGItem);
 	}
 	
 }

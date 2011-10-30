@@ -271,9 +271,9 @@ public class GoFisher {
 
 		ExcelOperate excelResult = new ExcelOperate();
 		excelResult.openExcel(resultExcel2003);
-		excelResult.WriteExcel(prix+"GoAnalysis", 1, 1, lsResultTable, true);
-		excelResult.WriteExcel(prix+"GO2Gene", 1, 1,lsGoResult , true);
-		excelResult.WriteExcel(prix+"Gene2GO", 1, 1,lsGeneInfo , true);
+		excelResult.WriteExcel(prix+"GoAnalysis", 1, 1, lsResultTable);
+		excelResult.WriteExcel(prix+"GO2Gene", 1, 1,lsGoResult );
+		excelResult.WriteExcel(prix+"Gene2GO", 1, 1,lsGeneInfo);
 	}
 	
 	
@@ -583,8 +583,8 @@ public class GoFisher {
 		}
 		ExcelOperate excelGO = new ExcelOperate();
 		excelGO.openExcel(resultExcel2003);
-		excelGO.WriteExcel(prix+"GoAnalysis", 1, 1, lsFisherResult, true);
-		excelGO.WriteExcel(prix+"Gene2Go", 1, 1, lsGOInfoResult, true);
+		excelGO.WriteExcel(prix+"GoAnalysis", 1, 1, lsFisherResult);
+		excelGO.WriteExcel(prix+"Gene2Go", 1, 1, lsGOInfoResult);
 	}
 	
 	

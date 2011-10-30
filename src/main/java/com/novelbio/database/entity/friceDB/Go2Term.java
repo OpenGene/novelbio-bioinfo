@@ -3,7 +3,7 @@ package com.novelbio.database.entity.friceDB;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.database.DAO.FriceDAO.DaoFSGo2Term;
+import com.novelbio.database.mapper.geneanno.MapGo2Term;
 
 public class Go2Term {
 
@@ -60,11 +60,12 @@ public class Go2Term {
 			return hashGo2Term;
 		}
 		Go2Term go2Term = new Go2Term();
-		ArrayList<Go2Term> lsGo2Terms = DaoFSGo2Term.queryLsGo2Term(go2Term);
+		ArrayList<Go2Term> lsGo2Terms = MapGo2Term.queryLsGo2Term(go2Term);
 		for (Go2Term go2Term2 : lsGo2Terms) 
 		{
-			hashGo2Term.put(go2Term2.getGoID(), go2Term2);
+			hashGo2Term.put(go2Term2.getGoIDQuery(), go2Term2);
 		}
 		return hashGo2Term;
-	}
+	}	
+	
 }

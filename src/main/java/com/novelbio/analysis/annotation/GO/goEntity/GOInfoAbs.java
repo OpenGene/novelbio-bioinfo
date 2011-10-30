@@ -8,11 +8,12 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGo2Term;
 import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.AGeneInfo;
+import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.Go2Term;
 import com.novelbio.database.entity.kegg.KGentry;
+import com.novelbio.database.mapper.geneanno.MapGo2Term;
 
 public abstract class GOInfoAbs{
 	public static final String GO_CC = "cellular component";
@@ -52,28 +53,30 @@ public abstract class GOInfoAbs{
 	
 	/**
 	 * 将多个CopedID的GOInfoAbs放在一起，取并集去冗余
-	 * 没有则返回null
+	 * 没有则返回空的LsResult
 	 * @param lsGoInfo 多个GOInfoAbs的list
 	 * @return
 	 */
 	public ArrayList<AGene2Go> getLsGen2Go(ArrayList<GOInfoAbs> lsGoInfo, String GOType) {
 		setGene2Go();
+		hashGene2Gos = new HashMap<String, AGene2Go>();
 		//先将本基因的信息加入Hash表
 		for (AGene2Go aGene2Go : getLsGene2Go(GOType)) {
 			if (hashGene2Gos.containsKey(aGene2Go.getGOID()))
 				continue;
 			hashGene2Gos.put(aGene2Go.getGOID(), aGene2Go);
 		}
-		
-		for (GOInfoAbs goInfoAbs : lsGoInfo) {
-			for (AGene2Go aGene2Go :  goInfoAbs.getLsGene2Go(GOType)) {
-				if (hashGene2Gos.containsKey(aGene2Go.getGOID()))
-					continue;
-				hashGene2Gos.put(aGene2Go.getGOID(), aGene2Go);
+		if (lsGoInfo != null && lsGoInfo.size() > 0) {
+			for (GOInfoAbs goInfoAbs : lsGoInfo) {
+				for (AGene2Go aGene2Go : goInfoAbs.getLsGene2Go(GOType)) {
+					if (hashGene2Gos.containsKey(aGene2Go.getGOID()))
+						continue;
+					hashGene2Gos.put(aGene2Go.getGOID(), aGene2Go);
+				}
 			}
 		}
 		if (hashGene2Gos == null || hashGene2Gos.size() == 0) {
-			return null;
+			return new ArrayList<AGene2Go>();
 		}
 		return ArrayOperate.getArrayListValue(hashGene2Gos);
 	}
@@ -81,7 +84,7 @@ public abstract class GOInfoAbs{
 	 * 根据具体的GO_TYPE的标记，获得本GeneID的GO信息
 	 * @param GOType 如果是GO_ALL，则返回全部的GO信息
 	 * @return
-	 * 没有则返回null
+	 * 没有则返回一个空的lsResult
 	 */
 	public ArrayList<AGene2Go> getLsGene2Go(String GOType)
 	{
@@ -101,14 +104,14 @@ public abstract class GOInfoAbs{
 		}
 		else {
 			logger.error("UnKnown GOType: "+ GOType );
-			return null;
+			return new ArrayList<AGene2Go>();
 		}
 	}
 	/**
 	 * Gotype 必须是C，F，P
 	 * @param GoType
 	 * @return
-	 * 如果没有该项GO，则返回null
+	 * 如果没有该项GO，则返回一个空的lsResult
 	 */
 	private ArrayList<AGene2Go> getLsGoType(String GoType) {
 		ArrayList<AGene2Go> lsResult = new ArrayList<AGene2Go>();
@@ -116,9 +119,6 @@ public abstract class GOInfoAbs{
 			if (aGene2Go.getFunction().equals(GoType)) {
 				lsResult.add(aGene2Go);
 			}
-		}
-		if (lsResult.size() == 0) {
-			return null;
 		}
 		return lsResult;
 	}

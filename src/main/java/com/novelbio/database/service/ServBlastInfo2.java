@@ -2,15 +2,15 @@ package com.novelbio.database.service;
 
 import java.util.ArrayList;
 
-import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
 import com.novelbio.database.entity.friceDB.Blast2GeneInfo;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.Gene2GoInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.Uni2GoInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.mapper.geneanno.MapBlastInfo;
 
-public class ServBlastInfo {
+public class ServBlastInfo2 {
 	/**
 	 * @param genInfo
 	 * 0: ID类型："geneID"或"uniID"或"accID"<br>
@@ -54,7 +54,7 @@ public class ServBlastInfo {
 		BlastInfo qblastInfo = new BlastInfo();
 		qblastInfo.setEvalue(evalue);qblastInfo.setQueryID(ncbiid.getGeneId()+"");
 		qblastInfo.setSubjectTax(StaxID);
-		ArrayList<BlastInfo> lsBlastInfos = DaoFSBlastInfo.queryLsBlastInfo(qblastInfo);
+		ArrayList<BlastInfo> lsBlastInfos = MapBlastInfo.queryLsBlastInfo(qblastInfo);
 		if (lsBlastInfos != null && lsBlastInfos.size() > 0 && lsBlastInfos.get(0).getEvalue() <= evalue) 
 		{
 			return lsBlastInfos.get(0);
@@ -73,7 +73,7 @@ public class ServBlastInfo {
 		BlastInfo qblastInfo = new BlastInfo();
 		qblastInfo.setEvalue(evalue);qblastInfo.setQueryID(uniProtID.getUniID());
 		qblastInfo.setSubjectTax(StaxID);
-		ArrayList<BlastInfo> lsBlastInfos = DaoFSBlastInfo.queryLsBlastInfo(qblastInfo);
+		ArrayList<BlastInfo> lsBlastInfos = MapBlastInfo.queryLsBlastInfo(qblastInfo);
 		if (lsBlastInfos != null && lsBlastInfos.size() > 0 && lsBlastInfos.get(0).getEvalue() <= evalue) 
 		{
 			return lsBlastInfos.get(0);
@@ -93,7 +93,7 @@ public class ServBlastInfo {
 		BlastInfo qblastInfo = new BlastInfo();
 		qblastInfo.setEvalue(evalue);qblastInfo.setQueryID(accID);
 		qblastInfo.setSubjectTax(StaxID);
-		ArrayList<BlastInfo> lsBlastInfos = DaoFSBlastInfo.queryLsBlastInfo(qblastInfo);
+		ArrayList<BlastInfo> lsBlastInfos = MapBlastInfo.queryLsBlastInfo(qblastInfo);
 		if (lsBlastInfos != null && lsBlastInfos.size() > 0 && lsBlastInfos.get(0).getEvalue() <= evalue) 
 		{
 			return lsBlastInfos.get(0);

@@ -17,14 +17,14 @@ import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGeneInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniGeneInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.GeneInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.mapper.geneanno.MapGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.service.ServAnno;
 import com.novelbio.database.updatedb.database.UpDateFriceDB;
 
@@ -153,7 +153,7 @@ public class RiceID {
 					}
 					NCBIID ncbiid = new NCBIID();
 					ncbiid.setAccID(strings[0]);ncbiid.setTaxID(39947);
-					ArrayList<NCBIID> lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+					ArrayList<NCBIID> lsNcbiid = MapNCBIID.queryLsNCBIID(ncbiid);
 					if (lsNcbiid != null && lsNcbiid.size()>0)
 					{
 						GeneID = lsNcbiid.get(0).getGeneId();
@@ -165,7 +165,7 @@ public class RiceID {
 					{
 						UniProtID uniProtID = new UniProtID();
 						uniProtID.setAccID(strings[0]);uniProtID.setTaxID(39947);
-						ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+						ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 						if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 						{
 							uniID = lsUniProtIDs.get(0).getUniID();
@@ -228,10 +228,10 @@ public class RiceID {
 			long geneID = 0;  String uniID = null;
 			
 			//先搜索ncbiid表格,RapDB和Tigr都搜一下
-			ArrayList<NCBIID> lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);//先用RapDB的ID搜，然后用TigrID搜
+			ArrayList<NCBIID> lsNcbiid = MapNCBIID.queryLsNCBIID(ncbiid);//先用RapDB的ID搜，然后用TigrID搜
 			if (lsNcbiid == null || lsNcbiid.size()<1) {
 				ncbiid = new NCBIID();ncbiid.setAccID(lstmpLOC.get(1)[0]);ncbiid.setTaxID(39947);
-				lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+				lsNcbiid = MapNCBIID.queryLsNCBIID(ncbiid);
 			}
 			////////////////////
 			if (lsNcbiid != null && lsNcbiid.size()>0)//搜到了
@@ -241,10 +241,10 @@ public class RiceID {
 			if (geneID == 0) //如果NCBIID中没有
 			{
 				//开始搜UniProtID表
-				ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);//先用RapDB的ID搜，然后用TigrID搜
+				ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);//先用RapDB的ID搜，然后用TigrID搜
 				if (lsUniProtIDs == null || lsUniProtIDs.size()<1) {
 					uniProtID = new UniProtID(); uniProtID.setAccID(lstmpLOC.get(1)[0]);uniProtID.setTaxID(39947);
-					lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+					lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 				}
 				if (lsUniProtIDs != null && lsUniProtIDs.size()>0) 
 				{
@@ -300,7 +300,7 @@ public class RiceID {
 						String tmpOsID= tmp.split(",")[0].trim();
 						NCBIID ncbiid = new NCBIID();
 						ncbiid.setAccID(tmpOsID);ncbiid.setTaxID(39947);
-						ArrayList<NCBIID> lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+						ArrayList<NCBIID> lsNcbiid = MapNCBIID.queryLsNCBIID(ncbiid);
 						if (lsNcbiid != null && lsNcbiid.size()>0)
 						{
 							GeneID = lsNcbiid.get(0).getGeneId();
@@ -319,7 +319,7 @@ public class RiceID {
 							String tmpOsID= tmp.split(",")[0];
 							UniProtID uniProtID = new UniProtID();
 							uniProtID.setAccID(tmpOsID); uniProtID.setTaxID(39947);
-							ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+							ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 							if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 							{
 								uniID = lsUniProtIDs.get(0).getUniID();
@@ -370,7 +370,7 @@ public class RiceID {
 			for (int i = 1; i < tmpID.length; i++) {
 				NCBIID ncbiid = new NCBIID();
 				ncbiid.setAccID(CopeID.removeDot(tmpID[i])); ncbiid.setTaxID(39947);
-				ArrayList<NCBIID> lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+				ArrayList<NCBIID> lsNcbiid = MapNCBIID.queryLsNCBIID(ncbiid);
 				if (lsNcbiid != null && lsNcbiid.size()>0)
 				{
 					geneID = lsNcbiid.get(0).getGeneId();
@@ -382,7 +382,7 @@ public class RiceID {
 				for (int i = 1; i < tmpID.length; i++) {
 					UniProtID uniProtID = new UniProtID();
 					uniProtID.setAccID(CopeID.removeDot(tmpID[i])); uniProtID.setTaxID(39947);
-					ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+					ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 					if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 					{
 						uniID = lsUniProtIDs.get(0).getUniID();
@@ -543,7 +543,7 @@ public class RiceID {
 				{
 					NCBIID ncbiid = new NCBIID();
 					ncbiid.setAccID(strings[0]); ncbiid.setTaxID(39947);
-					ArrayList<NCBIID> lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+					ArrayList<NCBIID> lsNcbiid = MapNCBIID.queryLsNCBIID(ncbiid);
 					if (lsNcbiid != null && lsNcbiid.size()>0)
 					{
 						GeneID = lsNcbiid.get(0).getGeneId();
@@ -555,7 +555,7 @@ public class RiceID {
 					{
 						UniProtID uniProtID = new UniProtID();
 						uniProtID.setAccID(strings[0]);uniProtID.setTaxID(39947);
-						ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+						ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 						if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 						{
 							uniID = lsUniProtIDs.get(0).getUniID();
@@ -572,12 +572,12 @@ public class RiceID {
 				if (GeneID !=0) {
 					GeneInfo geneInfo = new GeneInfo();
 					geneInfo.setGeneID(GeneID);
-					GeneInfo geneInfo2 = DaoFSGeneInfo.queryGeneInfo(geneInfo);
+					GeneInfo geneInfo2 = MapGeneInfo.queryGeneInfo(geneInfo);
 					if (geneInfo2 == null) //数据库中没有，就插入
 					{
 						geneInfo.setSymbol(symbol);
 						geneInfo.setDescription(description);
-						DaoFSGeneInfo.InsertGeneInfo(geneInfo);
+						MapGeneInfo.InsertGeneInfo(geneInfo);
 					}
 					else  //数据库中有
 					{
@@ -594,19 +594,19 @@ public class RiceID {
 							flagUpdate = true;
 						}
 						if (flagUpdate) {
-							DaoFSGeneInfo.upDateGeneInfo(geneInfo2);
+							MapGeneInfo.upDateGeneInfo(geneInfo2);
 						}
 					}
 				}
 				else if (GeneID ==0 && uniID != null) {
 					UniGeneInfo uniGeneInfo = new UniGeneInfo();
 					uniGeneInfo.setUniProtID(uniID);
-					UniGeneInfo uniGeneInfo2 = DaoFSUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
+					UniGeneInfo uniGeneInfo2 = MapUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 					if (uniGeneInfo2 == null) //数据库中没有，就插入
 					{
 						uniGeneInfo.setSymbol(symbol);
 						uniGeneInfo.setDescription(description);
-						DaoFSUniGeneInfo.InsertUniGeneInfo(uniGeneInfo);
+						MapUniGeneInfo.InsertUniGeneInfo(uniGeneInfo);
 					}
 					else  //数据库中有
 					{
@@ -624,7 +624,7 @@ public class RiceID {
 						}
 						
 						if (flagUpdate) {
-							DaoFSUniGeneInfo.upDateUniGeneInfo(uniGeneInfo2);
+							MapUniGeneInfo.upDateUniGeneInfo(uniGeneInfo2);
 						}
 					}
 				}
@@ -747,10 +747,10 @@ public class RiceID {
 				{
 					GeneInfo geneInfo = new GeneInfo();
 					geneInfo.setGeneID(Long.parseLong(lsaccID.get(i)));
-					GeneInfo geneInfo2 = DaoFSGeneInfo.queryGeneInfo(geneInfo);
+					GeneInfo geneInfo2 = MapGeneInfo.queryGeneInfo(geneInfo);
 					if (geneInfo2 == null) {
 						geneInfo.setSymbol(LOCID); geneInfo.setDescription(description);
-						DaoFSGeneInfo.InsertGeneInfo(geneInfo);
+						MapGeneInfo.InsertGeneInfo(geneInfo);
 					}
 					else 
 					{
@@ -764,7 +764,7 @@ public class RiceID {
 							update = true;
 						}
 						if (update) {
-							DaoFSGeneInfo.upDateGeneInfo(geneInfo2);
+							MapGeneInfo.upDateGeneInfo(geneInfo2);
 						}
 					}
 				}	
@@ -774,10 +774,10 @@ public class RiceID {
 				{
 					UniGeneInfo uniGeneInfo = new UniGeneInfo();
 					uniGeneInfo.setUniProtID(lsaccID.get(i));
-					UniGeneInfo uniGeneInfo2 = DaoFSUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
+					UniGeneInfo uniGeneInfo2 = MapUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 					if (uniGeneInfo2 == null) {
 						uniGeneInfo.setSymbol(LOCID); uniGeneInfo.setDescription(description);
-						DaoFSUniGeneInfo.InsertUniGeneInfo(uniGeneInfo);
+						MapUniGeneInfo.InsertUniGeneInfo(uniGeneInfo);
 					}
 					else 
 					{
@@ -791,7 +791,7 @@ public class RiceID {
 							update = true;
 						}
 						if (update) {
-							DaoFSUniGeneInfo.upDateUniGeneInfo(uniGeneInfo2);
+							MapUniGeneInfo.upDateUniGeneInfo(uniGeneInfo2);
 						}
 					}
 				}

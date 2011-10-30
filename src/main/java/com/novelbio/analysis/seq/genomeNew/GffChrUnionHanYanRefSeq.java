@@ -55,7 +55,7 @@ private static Logger logger = Logger.getLogger(GffChrUnionHanYanRefSeq.class);
 		}
 		mapReads.normDouble(iso, normalizeType);
 		double[] isoResult = new double[iso.length+1];
-		isoResult[0] = gffGeneIsoSearch.getLocDistance(gffGeneIsoSearch.getATGSsite(), gffGeneIsoSearch.getTSSsite());
+		isoResult[0] = gffGeneIsoSearch.getLocDistmRNA(gffGeneIsoSearch.getATGSsite(), gffGeneIsoSearch.getTSSsite());
 		for (int i = 0; i < iso.length; i++) {
 			isoResult[i+1] = iso[i];
 		}

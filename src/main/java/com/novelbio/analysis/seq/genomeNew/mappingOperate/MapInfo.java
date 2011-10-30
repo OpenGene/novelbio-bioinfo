@@ -25,6 +25,9 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	double weight = 0; // 比较的标签，可以是表达等
 	static boolean min2max = true;
 	String title = "";
+	String description = "";
+	String aaSeq = "";
+	String nrSeq = "";
 	double[] value = null;
 	int flagLoc = GffCodAbs.LOC_ORIGINAL;
 	/**
@@ -72,6 +75,49 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		this.title = title;
 	}
 	/**
+	 * 对于该位点的具体描述，可以是序列
+	 * @param description
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	/**
+	 * 对于该区域的具体描述
+	 * @param description
+	 */
+	public String getDescription() {
+		return description;
+	}
+	/**
+	 * 该区域的氨基酸序列
+	 * @param aaSeq
+	 */
+	public void setAaSeq(String aaSeq) {
+		this.aaSeq = aaSeq;
+	}
+	/**
+	 * 该区域的氨基酸序列
+	 * @param aaSeq
+	 */
+	public String getAaSeq() {
+		return aaSeq;
+	}
+	/**
+	 * 该区域的核酸序列
+	 * @param aaSeq
+	 */
+	public void setNrSeq(String nrSeq) {
+		this.nrSeq = nrSeq;
+	}
+	/**
+	 * 该区域的核酸序列
+	 * @param aaSeq
+	 */
+	public String getNrSeq() {
+		return nrSeq;
+	}
+	
+	/**
 	 * @param chrID
 	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
 	 * @param endLoc 从0开始
@@ -97,12 +143,13 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	}
 	/**
 	 * 获得指定的位点，譬如summit或者atgsite等等
+	 * 如果startLoc <0 或者endLoc <0 那么说明起点和终点没设置，直接返回flagLoc
 	 * 如果site <  startLoc 
 	 *  或 site > endLoc，那么就取start和end的中间数(四舍五入)
 	 * @return
 	 */
 	public int getFlagSite() {
-		if (flagLoc >= startLoc && flagLoc <= endLoc) {
+		if ( startLoc <0 || endLoc <0 || (flagLoc >= startLoc && flagLoc <= endLoc)) {
 			return flagLoc;
 		}
 		return (int)((double)(startLoc+endLoc)/2+0.5) ;
@@ -176,6 +223,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		for (int i = 0; i < value2.length; i++) {
 			value2[i] = value[i];
 		}
+		mapInfo.setDescription(getDescription());
 		mapInfo.setDouble(value2);
 		return mapInfo;
 	}
@@ -328,5 +376,22 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		}
 		return result;
 	}
+	
+//	boolean isExon = false;
+//	/**
+//	 * 是否在外显子中
+//	 * @return
+//	 */
+//	public boolean isExon()
+//	{
+//		return isExon;
+//	}
+//	/**
+//	 * 设定是否在外显子中
+//	 * @param isExon
+//	 */
+//	public void setExon(boolean isExon) {
+//		this.isExon = isExon;
+//	}
 	
 }

@@ -125,7 +125,7 @@ public class MapReads {
 		return allReadsNum;
 	}
 	 
-	 static boolean booPrintChrID = false;
+	 static boolean booPrintChrID = true;
 	 public static void setBooPrintChrID(boolean booPrintChrID) {
 		MapReads.booPrintChrID = booPrintChrID;
 	}
@@ -176,6 +176,9 @@ public class MapReads {
 	}
 	boolean uniqReads = false;
 	int startCod = -1;
+	/**
+	 * 标记mapping个数的列
+	 */
 	int colUnique = 7;
 	boolean booUniqueMapping = true;
 	Boolean cis5to3 = null;
@@ -332,9 +335,9 @@ public class MapReads {
 				lastChr = tmp[colChrID].trim().toLowerCase();// 实际这是新出现的ChrID
 				// ////////////////释放内存，感觉加上这段有点用，本来内存到1.2g，加了后降到990m///////////////////////////
 				if (booPrintChrID) {
-					if (count%200 == 0) {
+//					if (count%200 == 0) {
 						System.out.println(lastChr);
-					}
+//					}
 				}
 				
 //				chrBpReads = null;// 看看能不能释放掉内存
@@ -366,7 +369,8 @@ public class MapReads {
 			////////////////////按照位点加和chrBpReads////////////////////////////////
 			if (flag == false) //没有该基因则跳过
 				continue;
-			if (!booUniqueMapping || colUnique < 0 || Integer.parseInt(tmp[colUnique]) <= 1) {
+			//TODO 这里 uniqe mapping 的设置需要修改，因为万一 tmp[colUnique]里面不是数字呢？
+			if (!booUniqueMapping || colUnique < 0 || tmp.length <= colUnique || Integer.parseInt(tmp[colUnique]) <= 1) {
 				tmpOld = addLoc(tmp, uniqReads, tmpOld, startCod, cis5to3, chrBpReads,ReadsNum);
 			}
 		}
@@ -450,11 +454,11 @@ public class MapReads {
 		for (int[] is : lsAddLoc) {
 			for (int i = is[0]; i <= is[1]; i++) {
 				if (i >= chrLoc.length) {
-					logger.error("超出范围："+ i);
+					logger.info("超出范围："+ i);
 					break;
 				}
 				if (i < 0) {
-					logger.error("超出范围："+ i);
+					logger.info("超出范围："+ i);
 					continue;
 				}
 				chrLoc[i]++;
@@ -707,6 +711,12 @@ public class MapReads {
 		int k=0;
 		try {
 			for (int i = leftNum; i <= rightNum; i++) {
+				if (i >= invNumReads.length) {
+					break;
+				}
+				if (i < 0) {
+					continue;
+				}
 				tmpRegReads[k] = invNumReads[i];
 				k++;
 			}

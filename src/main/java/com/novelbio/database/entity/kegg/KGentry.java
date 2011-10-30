@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
-import com.novelbio.database.DAO.KEGGDAO.DaoKEntry;
-import com.novelbio.database.DAO.KEGGDAO.DaoKRealtion;
+import com.novelbio.database.mapper.kegg.MapKEntry;
+import com.novelbio.database.mapper.kegg.MapKRealtion;
 
 
 public class KGentry {
@@ -326,10 +326,10 @@ public class KGentry {
 	{
 		KGrelation tmpQkGrelation=new KGrelation();
 		tmpQkGrelation.setEntry1ID(id); tmpQkGrelation.setPathName(pathName);
-		ArrayList<KGrelation> lsKGrelations1 = DaoKRealtion.queryLsKGrelations(tmpQkGrelation);
+		ArrayList<KGrelation> lsKGrelations1 = MapKRealtion.queryLsKGrelations(tmpQkGrelation);
 		
 		tmpQkGrelation.setEntry2ID(id); tmpQkGrelation.setPathName(pathName);
-		ArrayList<KGrelation> lsKGrelations2 = DaoKRealtion.queryLsKGrelations(tmpQkGrelation);
+		ArrayList<KGrelation> lsKGrelations2 = MapKRealtion.queryLsKGrelations(tmpQkGrelation);
 		/////////设定来自哪个
 		for (KGrelation kGrelation : lsKGrelations1) {
 			kGrelation.setFlag(KGrelation.FLAG_ENTRYID1);
@@ -397,7 +397,7 @@ public class KGentry {
 		 * @return
 		 */
 		public static ArrayList<KGentry> getLsEntity(KGentry kGentry) {
-			ArrayList<KGentry> lskGentries = DaoKEntry.queryLsKGentries(kGentry);
+			ArrayList<KGentry> lskGentries = MapKEntry.queryLsKGentries(kGentry);
 			if (lskGentries == null || lskGentries.size() < 1) {
 				return null;
 			}
@@ -432,7 +432,7 @@ public class KGentry {
 		public static ArrayList<KGentry> getLsEntity(String kegID) {
 			KGentry kGentry = new KGentry();
 			kGentry.setEntryName(kegID);
-			ArrayList<KGentry> lskGentries = DaoKEntry.queryLsKGentries(kGentry);
+			ArrayList<KGentry> lskGentries = MapKEntry.queryLsKGentries(kGentry);
 			if (lskGentries == null || lskGentries.size() < 1) {
 				return null;
 			}

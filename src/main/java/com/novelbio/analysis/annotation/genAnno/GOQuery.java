@@ -15,7 +15,7 @@ import com.novelbio.database.entity.friceDB.Uni2GoInfo;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
 import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.service.ServAnno;
-import com.novelbio.database.service.ServBlastInfo;
+import com.novelbio.database.service.ServBlastInfo2;
 import com.novelbio.database.service.ServGo;
 
 public class GOQuery {
@@ -71,7 +71,7 @@ public class GOQuery {
 			ArrayList<String> lsAccID = ServAnno.getNCBIUni(accID, taxID);
 			String[] thisaccID = new String[3];
 			thisaccID[0] = lsAccID.get(0); thisaccID[1] = accID; thisaccID[2] = lsAccID.get(1);
-			Blast2GeneInfo blast2GeneInfo = ServBlastInfo.getBlastGen2Go(thisaccID, taxID, blast, StaxID, evalue);
+			Blast2GeneInfo blast2GeneInfo = ServBlastInfo2.getBlastGen2Go(thisaccID, taxID, blast, StaxID, evalue);
 			return copeBlastInfo(blast2GeneInfo, evalue, GOClass, false, null, true);
 		}
 	}

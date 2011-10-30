@@ -10,13 +10,6 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGeneInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGo2Term;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniGeneInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.AGeneInfo;
 import com.novelbio.database.entity.friceDB.Gene2Go;
@@ -26,6 +19,13 @@ import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
 import com.novelbio.database.entity.friceDB.UniGeneInfo;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.mapper.geneanno.MapGene2Go;
+import com.novelbio.database.mapper.geneanno.MapGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapGo2Term;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
+import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapUniProtID;
 
 
 public class UpDateFriceDB {
@@ -47,7 +47,7 @@ public class UpDateFriceDB {
 			}
 			NCBIID ncbiid = new NCBIID();
 			ncbiid.setAccID(CopeID.removeDot(tmpID[i])); ncbiid.setTaxID(taxID);
-			ArrayList<NCBIID> lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsNcbiid = MapNCBIID.queryLsNCBIID(ncbiid);
 			if (lsNcbiid != null && lsNcbiid.size()>0)
 			{
 				geneID = lsNcbiid.get(0).getGeneId();
@@ -62,7 +62,7 @@ public class UpDateFriceDB {
 				}
 				UniProtID uniProtID = new UniProtID();
 				uniProtID.setAccID(CopeID.removeDot(tmpID[i])); uniProtID.setTaxID(taxID);
-				ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+				ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 				if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 				{
 					uniID = lsUniProtIDs.get(0).getUniID();
@@ -112,13 +112,13 @@ public class UpDateFriceDB {
 				if (considerGeneID) {
 					ncbiid.setGeneId(GeneID);
 				}
-				ArrayList<NCBIID> lsNcbiid = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+				ArrayList<NCBIID> lsNcbiid = MapNCBIID.queryLsNCBIID(ncbiid);
 				if (lsNcbiid != null && lsNcbiid.size()>0)
 				{//如果数据库中的--来源信息 和本次不一致，并且需要更换名称
 					if  (hashDBInfo.contains(strings[1]) && !lsNcbiid.get(0).getDBInfo().equals(strings[1])) {
 						ncbiid.setGeneId(GeneID);ncbiid.setDBInfo(strings[1]);
 						ncbiid.setTaxID(taxID);
-						DaoFSNCBIID.upDateNCBIID(ncbiid);
+						MapNCBIID.upDateNCBIID(ncbiid);
 					}
 				}
 				else
@@ -130,7 +130,7 @@ public class UpDateFriceDB {
 					
 					ncbiid.setGeneId(GeneID);ncbiid.setDBInfo(strings[1]);
 					ncbiid.setTaxID(taxID);
-					DaoFSNCBIID.InsertNCBIID(ncbiid);
+					MapNCBIID.InsertNCBIID(ncbiid);
 				}
 			}
 			return true;
@@ -147,7 +147,7 @@ public class UpDateFriceDB {
 				if (considerGeneID) {
 					uniProtID.setUniID(uniID);
 				}
-				ArrayList<UniProtID> lsUniProtIDs = DaoFSUniProtID.queryLsUniProtID(uniProtID);
+				ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
 				if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 				{
 						if (hashDBInfo.contains(strings[1]) && !lsUniProtIDs.get(0).getDBInfo().equals(strings[1]))
@@ -157,13 +157,13 @@ public class UpDateFriceDB {
 							//如果没有找到，才用自己的ID
 							uniProtID.setDBInfo(strings[1]); uniProtID.setUniID(uniID);
 							uniProtID.setTaxID(taxID);
-							DaoFSUniProtID.upDateUniProt(uniProtID);
+							MapUniProtID.upDateUniProt(uniProtID);
 						}
 				}
 				else {
 					uniProtID.setDBInfo(strings[1]); uniProtID.setUniID(uniID);
 					uniProtID.setTaxID(taxID);
-					DaoFSUniProtID.InsertUniProtID(uniProtID);
+					MapUniProtID.InsertUniProtID(uniProtID);
 				}
 			}
 			return true;
@@ -185,7 +185,7 @@ public class UpDateFriceDB {
 	public static boolean upDateGenGO(long GeneID,String uniID,String tmpGOID,String DBINFO) {
 		Go2Term go2Term = new Go2Term();
 		go2Term.setGoIDQuery(tmpGOID);
-		Go2Term go2Term2 = DaoFSGo2Term.queryGo2Term(go2Term);
+		Go2Term go2Term2 = MapGo2Term.queryGo2Term(go2Term);
 		String function = go2Term2.getGoFunction();
 		String term = go2Term2.getGoTerm();
 		String goID = go2Term2.getGoID();
@@ -197,14 +197,14 @@ public class UpDateFriceDB {
 			gene2Go.setFunction(function);
 			gene2Go.setGeneId(GeneID);
 			gene2Go.setGOTerm(term);
-			Gene2Go gene2Go2 = (Gene2Go) DaoFSGene2Go.queryGene2Go(gene2Go);
+			Gene2Go gene2Go2 = (Gene2Go) MapGene2Go.queryGene2Go(gene2Go);
 			if (gene2Go2 != null)
 			{
 				return true;
 			}
 			else
 			{
-				DaoFSGene2Go.InsertGene2Go(gene2Go);
+				MapGene2Go.InsertGene2Go(gene2Go);
 				return true;
 			}
 		}
@@ -217,12 +217,12 @@ public class UpDateFriceDB {
 			uniGene2Go.setFunction(function);
 			uniGene2Go.setUniProtID(uniID);
 			uniGene2Go.setGOTerm(term);
-			AGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
+			AGene2Go uniGene2Go2 = MapUniGene2Go.queryUniGene2Go(uniGene2Go);
 			if (uniGene2Go2 != null) {
 				return true;
 			}
 			else {
-				DaoFSUniGene2Go.InsertUniGene2Go(uniGene2Go);
+				MapUniGene2Go.InsertUniGene2Go(uniGene2Go);
 				return true;
 			}
 		}
@@ -244,7 +244,7 @@ public class UpDateFriceDB {
 	public static boolean upDateGenGO(long GeneID,String uniID,Gene2Go gene2GoTmp) {
 		Go2Term go2Term = new Go2Term();
 		go2Term.setGoIDQuery(gene2GoTmp.getGOID());
-		Go2Term go2Term2 = DaoFSGo2Term.queryGo2Term(go2Term);
+		Go2Term go2Term2 = MapGo2Term.queryGo2Term(go2Term);
 		if (go2Term2 == null) {
 			logger.error("没有该GOTerm："+ gene2GoTmp.getGOID());
 			return false;
@@ -265,7 +265,7 @@ public class UpDateFriceDB {
 			gene2Go.setFunction(function);
 			gene2Go.setGeneId(GeneID);
 			gene2Go.setGOTerm(term);
-			Gene2Go gene2Go2 = (Gene2Go) DaoFSGene2Go.queryGene2Go(gene2Go);
+			Gene2Go gene2Go2 = (Gene2Go) MapGene2Go.queryGene2Go(gene2Go);
 			if (gene2Go2 != null)
 			{
 				if (gene2Go2.getDataBase() != null && gene2Go.getDataBase() != null && !gene2Go2.getDataBase().contains( gene2Go.getDataBase())) 
@@ -292,12 +292,12 @@ public class UpDateFriceDB {
 					gene2Go2.setQualifier(gene2Go.getQualifier());
 				}
 				
-				DaoFSGene2Go.upDateGene2Go(gene2Go2);
+				MapGene2Go.upDateGene2Go(gene2Go2);
 				return true;
 			}
 			else
 			{
-				DaoFSGene2Go.InsertGene2Go(gene2Go);
+				MapGene2Go.InsertGene2Go(gene2Go);
 				return true;
 			}
 		}
@@ -315,7 +315,7 @@ public class UpDateFriceDB {
 			uniGene2Go.setFunction(function);
 			uniGene2Go.setUniProtID(uniID);
 			uniGene2Go.setGOTerm(term);
-			AGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
+			AGene2Go uniGene2Go2 = MapUniGene2Go.queryUniGene2Go(uniGene2Go);
 			if (uniGene2Go2 != null) {
 				
 				
@@ -344,12 +344,12 @@ public class UpDateFriceDB {
 				else  if(uniGene2Go2.getQualifier() == null){
 					uniGene2Go2.setQualifier(uniGene2Go.getQualifier());
 				}
-				DaoFSUniGene2Go.upDateUniGene2Go((UniGene2Go) uniGene2Go2);
+				MapUniGene2Go.upDateUniGene2Go((UniGene2Go) uniGene2Go2);
 				
 				return true;
 			}
 			else {
-				DaoFSUniGene2Go.InsertUniGene2Go(uniGene2Go);
+				MapUniGene2Go.InsertUniGene2Go(uniGene2Go);
 				return true;
 			}
 		}
@@ -366,23 +366,23 @@ public class UpDateFriceDB {
 		{
 			GeneInfo geneInfo = new GeneInfo();
 			geneInfo.setGeneID(Long.parseLong(aGeneInfo.getGeneUniID()));
-			GeneInfo geneInfoS = DaoFSGeneInfo.queryGeneInfo(geneInfo);
+			GeneInfo geneInfoS = MapGeneInfo.queryGeneInfo(geneInfo);
 			if (geneInfoS == null) {
-				DaoFSGeneInfo.InsertGeneInfo((GeneInfo) aGeneInfo);
+				MapGeneInfo.InsertGeneInfo((GeneInfo) aGeneInfo);
 			}
 			else {
-				DaoFSGeneInfo.upDateGeneInfo((GeneInfo) aGeneInfo);
+				MapGeneInfo.upDateGeneInfo((GeneInfo) aGeneInfo);
 			}
 		}
 		else if (aGeneInfo.getIDType().equals(CopedID.IDTYPE_UNIID)) {
 			UniGeneInfo geneInfo = new UniGeneInfo();
 			geneInfo.setUniProtID(aGeneInfo.getGeneUniID());
-			UniGeneInfo geneInfoS = DaoFSUniGeneInfo.queryUniGeneInfo(geneInfo);
+			UniGeneInfo geneInfoS = MapUniGeneInfo.queryUniGeneInfo(geneInfo);
 			if (geneInfoS == null) {
-				DaoFSUniGeneInfo.InsertUniGeneInfo((UniGeneInfo) aGeneInfo);
+				MapUniGeneInfo.InsertUniGeneInfo((UniGeneInfo) aGeneInfo);
 			}
 			else {
-				DaoFSUniGeneInfo.upDateUniGeneInfo((UniGeneInfo) aGeneInfo);
+				MapUniGeneInfo.upDateUniGeneInfo((UniGeneInfo) aGeneInfo);
 			}
 		}
 		else {

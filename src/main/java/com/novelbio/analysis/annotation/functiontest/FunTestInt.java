@@ -97,4 +97,9 @@ public interface FunTestInt {
 	 * @return
 	 */
 	public ArrayList<String[]> getItem2GenePvalue();
+	/**
+	 * 保存本LsBG的信息
+	 * @param txtBGItem
+	 */
+	public void saveLsBGItem(String txtBGItem);
 }

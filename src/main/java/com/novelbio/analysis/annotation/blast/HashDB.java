@@ -3,8 +3,8 @@ package com.novelbio.analysis.annotation.blast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
 import com.novelbio.database.entity.friceDB.NCBIID;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
 
 /**
  * 将数据库中的数据提取到内存中用hash来保存，以增加读取速度
@@ -24,7 +24,7 @@ public class HashDB {
 	{
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setTaxID(taxID);
-		ArrayList<NCBIID> lsNcbiids= DaoFSNCBIID.queryLsNCBIID(ncbiid);
+		ArrayList<NCBIID> lsNcbiids= MapNCBIID.queryLsNCBIID(ncbiid);
 		HashMap<String, String> hashAcc2GenID = new HashMap<String, String>();
 		String geneID="";
 		for (NCBIID ncbiid2 : lsNcbiids) 

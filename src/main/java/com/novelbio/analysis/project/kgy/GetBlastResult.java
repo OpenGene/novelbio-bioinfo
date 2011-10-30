@@ -31,23 +31,29 @@ public class GetBlastResult {
 	private void getSeq()
 	{
 		String parent = "/media/winE/NBC/Project/RNA-Seq_KGY/20110624_SalviaMiltiorrhiza/blast/";
-		String txtFile = parent + "ORCA3_blast";
+		String txtFile = parent + "AtPAP1blastInfo.txt";
 		String fastaFile = parent + "KGYfinal.fa";
-		String seqOut = parent + "ORCA3_dansheng";
+		String seqOut = parent + "AtPAP1blastSeq.txt";
 		setSeqHash(fastaFile);
-		Set<String> lsGeneID = getLsGeneID(txtFile);
+		Set<String> lsGeneID = getLsBlastGeneID(txtFile,2);
 		writeSeq(lsGeneID, seqOut);
 //		seqHash.saveChrLengthToFile(parent + "chrLen");
 	}
 	
-	
-	private Set<String> getLsGeneID(String txtFile)
+	/**
+	 * 给定blast的文件
+	 * @param txtFile
+	 * @param colGeneID
+	 * @return
+	 */
+	private Set<String> getLsBlastGeneID(String txtFile, int colGeneID)
 	{
+		colGeneID --;
 		TxtReadandWrite txtRead = new TxtReadandWrite(txtFile, false);
 		ArrayList<String[]> lsTmp = txtRead.ExcelRead("\t", 1, 1, -1, -1, 0);
 		LinkedHashSet<String> lsResult = new LinkedHashSet<String>();
 		for (String[] strings : lsTmp) {
-			lsResult.add(strings[1]);
+			lsResult.add(strings[colGeneID]);
 		}
 		return lsResult;
 	}
@@ -63,6 +69,7 @@ public class GetBlastResult {
 			SeqFasta seqFasta = seqHash.getSeqFasta(string);
 			if (seqFasta == null) {
 				System.out.println(string);
+				continue;
 			}
 			txtOut.writefileln(">" + seqFasta.getSeqName());
 			txtOut.writefileln(seqFasta.getSeq());

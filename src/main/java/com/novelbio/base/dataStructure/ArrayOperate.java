@@ -246,6 +246,40 @@ public class ArrayOperate {
 		return lsResult;
 	}
 	
+	/**
+	 * 给定一个数组，以及它的中点坐标，和上游下游坐标，切割或者扩充该数组
+	 * @param array 数组
+	 * @param center 中心位置，譬如2的话，就是该数组的第二位
+	 * @param up 中心上面的元素个数
+	 * @param down 中心下面的元素个数
+	 * @param thisdefault 默认值，就是没有的地方用什么填充
+	 * @return
+	 * 最后返回长度为 up+1+down的array
+	 */
+	public static double[] cuttArray(double[] array, int center, int up, int down, double thisdefault) {
+		center--;
+		double[] result = new double[up + down +1];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = thisdefault;
+		}
+		int resultCenter = up;
+		for (int i = center; i >= 0; i--) {
+			if (resultCenter < 0) {
+				break;
+			}
+			result[resultCenter] = array[i];
+			resultCenter--;
+		}
+		resultCenter = up + 1;
+		for (int i = center + 1; i < array.length; i++) {
+			if (resultCenter - up > down) {
+				break;
+			}
+			result[resultCenter] = array[i];
+			resultCenter++;
+		}
+		return result;
+	}
 	
 	/**
 	 * 颠倒数组，直接性将传入的数组倒置，不返回东西

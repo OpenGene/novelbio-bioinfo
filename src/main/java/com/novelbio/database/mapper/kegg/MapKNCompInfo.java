@@ -1,4 +1,4 @@
-package com.novelbio.database.DAO.KEGGDAO;
+package com.novelbio.database.mapper.kegg;
 
 import java.util.ArrayList;
 
@@ -10,7 +10,7 @@ import com.novelbio.database.entity.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.entity.friceDB.*;
 import com.novelbio.database.util.Util;
 
-public class DaoKNCompInfo {
+public class MapKNCompInfo {
 
 	/**
 		select *

@@ -10,15 +10,15 @@ import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.GOQuery;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniGene2Go;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniProtID;
 import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.mapper.geneanno.MapGene2Go;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
+import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.service.ServAnno;
 import com.novelbio.database.service.ServGo;
 
@@ -59,7 +59,7 @@ public class UniProtConvertID {
 					NCBIID ncbiid = new NCBIID();
 					tmp[3] = CopeID.removeDot(tmp[3]);
 					ncbiid.setAccID(tmp[3]); ncbiid.setTaxID(Integer.parseInt(tmp[13]));
-					ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+					ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid);
 					if (lsNcbiids != null && lsNcbiids.size() > 0) 
 					{
 						tmp[2] = lsNcbiids.get(0).getGeneId()+"";
@@ -640,10 +640,10 @@ public class UniProtConvertID {
 						gene2Go.setGOID(GoID);
 						gene2Go.setGOTerm(goTerm);
 						gene2Go.setGeneId(Long.parseLong(lsAccID.get(i)));
-						AGene2Go gene2Go2 = DaoFSGene2Go.queryGene2Go(gene2Go);
+						AGene2Go gene2Go2 = MapGene2Go.queryGene2Go(gene2Go);
 						if (gene2Go2==null) //如果已经存在了，那么考虑下是否升级
 						{
-							DaoFSGene2Go.InsertGene2Go(gene2Go);
+							MapGene2Go.InsertGene2Go(gene2Go);
 						}
 					}
 				}
@@ -655,10 +655,10 @@ public class UniProtConvertID {
 						uniGene2Go.setGOID(GoID);
 						uniGene2Go.setGOTerm(goTerm);
 						uniGene2Go.setUniProtID(lsAccID.get(i));
-						AGene2Go uniGene2Go2 = DaoFSUniGene2Go.queryUniGene2Go(uniGene2Go);
+						AGene2Go uniGene2Go2 = MapUniGene2Go.queryUniGene2Go(uniGene2Go);
 						if (uniGene2Go2==null) //如果已经存在了，那么考虑下是否升级
 						{
-							DaoFSUniGene2Go.InsertUniGene2Go(uniGene2Go);
+							MapUniGene2Go.InsertUniGene2Go(uniGene2Go);
 						}
 					}
 				}

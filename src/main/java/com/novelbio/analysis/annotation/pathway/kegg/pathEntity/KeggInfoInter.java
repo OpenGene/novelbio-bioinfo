@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.annotation.copeID.CopedID;
-import com.novelbio.database.DAO.KEGGDAO.DaoKIDKeg2Ko;
 import com.novelbio.database.entity.kegg.KGIDkeg2Ko;
 import com.novelbio.database.entity.kegg.KGentry;
 import com.novelbio.database.entity.kegg.KGpathway;
+import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
 
 public interface KeggInfoInter {
 	

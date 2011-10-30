@@ -3,9 +3,9 @@ package com.novelbio.database.updatedb.goextract;
 import java.io.BufferedReader;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
 import com.novelbio.database.entity.friceDB.AGene2Go;
 import com.novelbio.database.entity.friceDB.Gene2Go;
+import com.novelbio.database.mapper.geneanno.MapGene2Go;
 
 public class UniProtGo {
 	/**
@@ -121,7 +121,7 @@ public class UniProtGo {
 		txtgene2Go.setParameter(UniprotIdmapping2GOtaxID,false,true);
 		BufferedReader gene2GoReader=txtgene2Go.readfile();
 		
-		DaoFSGene2Go friceDAO=new DaoFSGene2Go();
+		MapGene2Go friceDAO=new MapGene2Go();
 		
 		String content="";
 		int i=0;

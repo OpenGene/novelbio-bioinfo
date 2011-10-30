@@ -8,11 +8,11 @@ import org.apache.poi.ss.util.SSCellRange;
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGeneInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSUniGeneInfo;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.GeneInfo;
 import com.novelbio.database.entity.friceDB.UniGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
 import com.novelbio.database.updatedb.database.UpDateFriceDB;
 
 public class ArabidopsisTair {
@@ -73,13 +73,13 @@ public class ArabidopsisTair {
 			{
 				GeneInfo geneInfo = new GeneInfo();
 				geneInfo.setGeneID(Long.parseLong(copedID.getGenUniID()));
-				GeneInfo geneInfoResult = DaoFSGeneInfo.queryGeneInfo(geneInfo);
+				GeneInfo geneInfoResult = MapGeneInfo.queryGeneInfo(geneInfo);
 				//如果没找到
 				if (geneInfoResult == null) {
 					geneInfo.setSymbol(CopedID.removeDot(ss[0]));
 					geneInfo.setDescription(ss[1]+"//"+ss[2]);
 					geneInfo.setOtherDesign(ss[3]);
-					DaoFSGeneInfo.InsertGeneInfo(geneInfo);
+					MapGeneInfo.InsertGeneInfo(geneInfo);
 				}
 				//如果找到了
 				else {
@@ -89,7 +89,7 @@ public class ArabidopsisTair {
 									+ geneInfoResult.getOtherDesign());
 						} else
 							geneInfoResult.setOtherDesign(ss[3]);
-					DaoFSGeneInfo.upDateGeneInfo(geneInfoResult);
+					MapGeneInfo.upDateGeneInfo(geneInfoResult);
 				}
 			}
 			else if(copedID.getIDtype().equals(CopedID.IDTYPE_UNIID) )
@@ -97,14 +97,14 @@ public class ArabidopsisTair {
 				UniGeneInfo uniGeneInfo = new UniGeneInfo();
 				uniGeneInfo.setUniProtID(copedID.getGenUniID());
 				
-				UniGeneInfo uniGeneInfoResult = DaoFSUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
+				UniGeneInfo uniGeneInfoResult = MapUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 				
 				//如果没找到
 				if (uniGeneInfoResult == null) {
 					uniGeneInfo.setSymbol(CopedID.removeDot(ss[0]));
 					uniGeneInfo.setDescription(ss[1]+"//"+ss[2]);
 					uniGeneInfo.setOtherDesign(ss[3]);
-					DaoFSUniGeneInfo.InsertUniGeneInfo(uniGeneInfo);
+					MapUniGeneInfo.InsertUniGeneInfo(uniGeneInfo);
 				}
 				//如果找到了
 				else {
@@ -113,7 +113,7 @@ public class ArabidopsisTair {
 							uniGeneInfoResult.setOtherDesign(ss[3] + uniGeneInfoResult.getOtherDesign());
 						else 
 							uniGeneInfoResult.setOtherDesign(ss[3]);
-					DaoFSUniGeneInfo.upDateUniGeneInfo(uniGeneInfoResult);
+					MapUniGeneInfo.upDateUniGeneInfo(uniGeneInfoResult);
 				}
 			}
 			else {

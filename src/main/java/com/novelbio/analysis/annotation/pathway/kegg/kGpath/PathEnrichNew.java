@@ -27,12 +27,12 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.DAO.KEGGDAO.DaoKNIdKeg;
-import com.novelbio.database.DAO.KEGGDAO.DaoKPathway;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.kegg.KGentry;
 import com.novelbio.database.entity.kegg.KGpathway;
 import com.novelbio.database.entity.kegg.noGene.KGNIdKeg;
+import com.novelbio.database.mapper.kegg.MapKNIdKeg;
+import com.novelbio.database.mapper.kegg.MapKPathway;
 import com.novelbio.database.service.ServAnno;
 
 /**
@@ -113,13 +113,13 @@ public class PathEnrichNew {
 		excelResult.openExcel(resultExcel2003);
 		if (lsGeneUpCope.size()>0) {
 			ArrayList<ArrayList<String[]>> lsResult = getPathEnrich(prix[0],lsGeneUpCope, hashBGgene, sepID,QtaxID, blast, subTaxID,evalue,geneBackGroundNum);
-			excelResult.WriteExcel(prix[0]+"PathAnalysis", 1, 1, lsResult.get(0), true);
-			excelResult.WriteExcel(prix[0]+"Gene2Path", 1, 1, lsResult.get(1), true);
+			excelResult.WriteExcel(prix[0]+"PathAnalysis", 1, 1, lsResult.get(0));
+			excelResult.WriteExcel(prix[0]+"Gene2Path", 1, 1, lsResult.get(1));
 		}
 		if (lsGeneDownCope.size()>0) {
 			ArrayList<ArrayList<String[]>> lsResult = getPathEnrich(prix[1],lsGeneDownCope, hashBGgene, sepID,QtaxID, blast, subTaxID,evalue,geneBackGroundNum);
-			excelResult.WriteExcel(prix[1]+"PathAnalysis", 1, 1, lsResult.get(0), true);
-			excelResult.WriteExcel(prix[1]+"Gene2Path", 1, 1, lsResult.get(1), true);
+			excelResult.WriteExcel(prix[1]+"PathAnalysis", 1, 1, lsResult.get(0));
+			excelResult.WriteExcel(prix[1]+"Gene2Path", 1, 1, lsResult.get(1));
 		}
 	}
 	
@@ -174,7 +174,7 @@ public class PathEnrichNew {
 			public String[] getItemName(String ItemID) {
 				String[] tmpInfo = new String[1];
 			    KGpathway path2Term=new KGpathway(); path2Term.setPathName(ItemID);
-			    KGpathway path2Term2=DaoKPathway.queryKGpathway(path2Term);
+			    KGpathway path2Term2=MapKPathway.queryKGpathway(path2Term);
 			    tmpInfo[0]=path2Term2.getTitle();
 				return tmpInfo;
 			}
@@ -322,7 +322,7 @@ public class PathEnrichNew {
 							geneInfo[2] = lsKGentry.get(i).getPathName();
 							//搜索pathway的Title
 							KGpathway kGpathway = new KGpathway(); kGpathway.setPathName(geneInfo[2]); 
-							geneInfo[3] = DaoKPathway.queryKGpathway(kGpathway).getTitle();
+							geneInfo[3] = MapKPathway.queryKGpathway(kGpathway).getTitle();
 							geneInfo[4] = symbol;
 							geneInfo[5] = description;
 							lsGeneInfo.add(geneInfo);
@@ -384,7 +384,7 @@ public class PathEnrichNew {
 							geneInfo[2] = lsKGentry.get(i).getPathName();
 							//搜索pathway的Title
 							KGpathway kGpathway = new KGpathway(); kGpathway.setPathName(geneInfo[2]); 
-							geneInfo[3] = DaoKPathway.queryKGpathway(kGpathway).getTitle();
+							geneInfo[3] = MapKPathway.queryKGpathway(kGpathway).getTitle();
 							geneInfo[4] = symbol;
 							geneInfo[5] = description;
 							geneInfo[6] = thisevalue;
@@ -408,7 +408,7 @@ public class PathEnrichNew {
 				//先试试化合物查询
 				KGNIdKeg kgnIdKeg = new KGNIdKeg();
 				kgnIdKeg.setUsualName(accID);
-				KGNIdKeg kgnIdKegSub = DaoKNIdKeg.queryKGNIdKeg(kgnIdKeg);
+				KGNIdKeg kgnIdKegSub = MapKNIdKeg.queryKGNIdKeg(kgnIdKeg);
 				if (kgnIdKegSub != null) {
 					KGng2Path kGng2Path=  QKegPath.qKegPath(queryTaxID, kgnIdKegSub);
 					
@@ -435,7 +435,7 @@ public class PathEnrichNew {
 							geneInfo[2] = lsKGentry.get(i).getPathName();
 							//搜索pathway的Title
 							KGpathway kGpathway = new KGpathway(); kGpathway.setPathName(geneInfo[2]); 
-							geneInfo[3] = DaoKPathway.queryKGpathway(kGpathway).getTitle();
+							geneInfo[3] = MapKPathway.queryKGpathway(kGpathway).getTitle();
 							geneInfo[4] = kGng2Path.getKgnCompInfo().getUsualName().split("//")[0];
 							geneInfo[5] = kGng2Path.getKgnCompInfo().getComment();
 							lsGeneInfo.add(geneInfo);

@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -21,7 +23,7 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 	String gfffile = "";
 	public GffHashGeneAbs() {
 	}
-	
+	private static Logger logger = Logger.getLogger(GffHashGeneAbs.class);
 	
 	/**
 	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面

@@ -1,4 +1,4 @@
-package com.novelbio.database.DAO.KEGGDAO;
+package com.novelbio.database.mapper.kegg;
 
 import java.util.ArrayList;
 import org.apache.ibatis.session.SqlSession;
@@ -6,7 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import com.novelbio.database.entity.kegg.KGreaction;
 import com.novelbio.database.util.Util;
 
-public class DaoKReaction {
+public class MapKReaction {
 
 	
 	/**

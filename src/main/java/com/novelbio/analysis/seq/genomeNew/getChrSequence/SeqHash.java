@@ -169,6 +169,11 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 			boolean getIntron) {
 		return getSeqCase(seqHashAbs.getSeq(cisseq, chrID, lsInfo, getIntron),TOLOWCASE);
 	}
+	@Override
+	public String getSeq(String chrID, ArrayList<int[]> lsInfo,
+			boolean getIntron) {
+		return getSeqCase(seqHashAbs.getSeq(chrID, lsInfo, getIntron),TOLOWCASE);
+	}
 
 	//////////////////////  static method  ////////////////////////////////////////////////////////////////////////////////
 	/**

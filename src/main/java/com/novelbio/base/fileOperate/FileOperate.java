@@ -217,7 +217,8 @@ public class FileOperate {
 		String houzhuiming = ""; // บ๓ืบร๛
 		String[] filenamefinal;
 		filePath = deleteSep(filePath);
-		if (filename.equals("*")) {
+		if (filename == null || filename.equals("*") )//|| filename.equals(""))
+		{
 			filename = ".*";
 		}
 		if (suffix.equals("*")) {

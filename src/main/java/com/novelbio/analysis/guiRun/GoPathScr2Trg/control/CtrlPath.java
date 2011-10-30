@@ -255,8 +255,8 @@ public class CtrlPath {
 					String key = entry.getKey();
 					ArrayList<ArrayList<String[]>> value = entry.getValue();
 					excelResult.openExcel(filePath + key + ".xls");
-					excelResult.WriteExcel(key+"PathAnalysis", 1, 1, value.get(0), true);
-					excelResult.WriteExcel(key+"Gene2Path", 1, 1,value.get(1) , true);
+					excelResult.WriteExcel(key+"PathAnalysis", 1, 1, value.get(0));
+					excelResult.WriteExcel(key+"Gene2Path", 1, 1,value.get(1));
 				}
 			}
 		}
@@ -266,12 +266,12 @@ public class CtrlPath {
 			ExcelOperate excelResult = new ExcelOperate();
 			excelResult.openExcel(resultExcel2003);
 			if (lsResultUp.size() > 0) {
-				excelResult.WriteExcel(prix[0]+"PathAnalysis", 1, 1, lsResultUp.get(0), true);
-				excelResult.WriteExcel(prix[0]+"Gene2Path", 1, 1,lsResultUp.get(1) , true);
+				excelResult.WriteExcel(prix[0]+"PathAnalysis", 1, 1, lsResultUp.get(0));
+				excelResult.WriteExcel(prix[0]+"Gene2Path", 1, 1,lsResultUp.get(1) );
 			}
 			if (lsResultDown.size() > 0) {
-				excelResult.WriteExcel(prix[1]+"PathAnalysis", 1, 1, lsResultDown.get(0), true);
-				excelResult.WriteExcel(prix[1]+"Gene2Path", 1, 1,lsResultDown.get(1) , true);
+				excelResult.WriteExcel(prix[1]+"PathAnalysis", 1, 1, lsResultDown.get(0));
+				excelResult.WriteExcel(prix[1]+"Gene2Path", 1, 1,lsResultDown.get(1) );
 			}
 		}
 		/**

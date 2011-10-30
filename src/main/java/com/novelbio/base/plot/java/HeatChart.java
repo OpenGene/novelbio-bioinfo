@@ -25,6 +25,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.imageio.*;
@@ -231,12 +232,22 @@ public class HeatChart {
 	 * 注意list中所有数据的维度应该一致
 	 * @param lsHeatChartDataInts
 	 */
-	public HeatChart(ArrayList<HeatChartDataInt> lsHeatChartDataInts) {
-		this(null, 0, 0);
+	public HeatChart(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts) {
 		copeHeatChartDataInt(lsHeatChartDataInts);
+		setHeatChart(zValues, min(zValues), max(zValues));
+	}
+	/**
+	 * 给定实现HeatChart接口的数据集，然后画图
+	 * 自动将HeatChartDataInts中的title设置给xvalue
+	 * 注意list中所有数据的维度应该一致
+	 * @param lsHeatChartDataInts
+	 */
+	public HeatChart(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts, double low, double high) {
+		copeHeatChartDataInt(lsHeatChartDataInts);
+		setHeatChart(zValues, low, high);
 	}
 	
-	private void copeHeatChartDataInt(ArrayList<HeatChartDataInt> lsHeatChartDataInts)
+	private void copeHeatChartDataInt(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts)
 	{
 		zValues = new double[lsHeatChartDataInts.size()][lsHeatChartDataInts.get(0).getDouble().length];
 		xValues = new String[lsHeatChartDataInts.size()];
@@ -262,6 +273,21 @@ public class HeatChart {
 	 * the z-values.
 	 */
 	public HeatChart(double[][] zValues, double low, double high) {
+		setHeatChart(zValues, low, high);
+	}
+	/**
+	 * Constructs a heatmap for the given z-values against x/y-values that by 
+	 * default will be the values 0 to n-1, where n is the number of columns or
+	 * rows.
+	 * 
+	 * @param zValues the z-values, where each element is a row of z-values
+	 * in the resultant heat chart.
+	 * @param low the minimum possible value, which may or may not appear in the
+	 * z-values.
+	 * @param high the maximum possible value, which may or may not appear in 
+	 * the z-values.
+	 */
+	private void setHeatChart(double[][] zValues, double low, double high) {
 		this.zValues = zValues;
 		this.lowValue = low;
 		this.highValue = high;

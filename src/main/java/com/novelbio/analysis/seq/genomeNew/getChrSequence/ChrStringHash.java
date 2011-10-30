@@ -72,6 +72,9 @@ public class ChrStringHash extends SeqHashAbs{
 	protected void setChrFile() throws Exception
 	{
 		chrFile = FileOperate.addSep(chrFile);
+		if (regx == null) {
+			regx = "\\bchr\\w*";
+		}
 		ArrayList<String[]> lsChrFile = FileOperate.getFoldFileName(chrFile,
 				regx, "*");
 		hashChrSeqFile = new HashMap<String, RandomAccessFile>();

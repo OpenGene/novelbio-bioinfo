@@ -4,12 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGen2Path;
-import com.novelbio.database.DAO.FriceDAO.DaoFSBlastInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSNCBIID;
-import com.novelbio.database.DAO.KEGGDAO.DaoKCdetail;
-import com.novelbio.database.DAO.KEGGDAO.DaoKEntry;
-import com.novelbio.database.DAO.KEGGDAO.DaoKIDKeg2Ko;
-import com.novelbio.database.DAO.KEGGDAO.DaoKPathway;
+import com.novelbio.database.DAO.KEGGDAO.MapKCdetail;
 import com.novelbio.database.entity.friceDB.BlastInfo;
 import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.kegg.KGCgen2Entry;
@@ -17,6 +12,11 @@ import com.novelbio.database.entity.kegg.KGCgen2Ko;
 import com.novelbio.database.entity.kegg.KGIDkeg2Ko;
 import com.novelbio.database.entity.kegg.KGentry;
 import com.novelbio.database.entity.kegg.KGpathway;
+import com.novelbio.database.mapper.geneanno.MapBlastInfo;
+import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mapper.kegg.MapKEntry;
+import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
+import com.novelbio.database.mapper.kegg.MapKPathway;
 import com.novelbio.database.service.ServAnno;
 
 public class KegPathQuery {
@@ -58,7 +58,7 @@ public class KegPathQuery {
 		String[] anno = ServAnno.getAnno(accID, taxID, blast, subTaxID, evalue);
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setAccID(accID); ncbiid.setTaxID(taxID);
-		ArrayList<NCBIID> lsNcbiids = DaoFSNCBIID.queryLsNCBIID(ncbiid);
+		ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid);
 		if (lsNcbiids != null && lsNcbiids.size()>=1) {
 			ncbiid = lsNcbiids.get(0);
 		}
@@ -142,7 +142,7 @@ public class KegPathQuery {
 	public static String getPathTitle(String pathID) {
 		KGpathway kGpathway = new KGpathway();
 		kGpathway.setPathName(pathID.trim());
-		kGpathway = DaoKPathway.queryKGpathway(kGpathway);
+		kGpathway = MapKPathway.queryKGpathway(kGpathway);
 		return kGpathway.getTitle();
 	}
 	
@@ -170,7 +170,7 @@ and taxID=#{taxID}
 		KGen2Path kGen2Path = new KGen2Path();
 		KGCgen2Entry kgCgen2Entry = null;
 		if (ncbiid.getGeneId() != 0) {
-			kgCgen2Entry=DaoKCdetail.queryGen2entry(ncbiid);
+			kgCgen2Entry=MapKCdetail.queryGen2entry(ncbiid);
 		}
 		kGen2Path.setKGCgen2Entry(kgCgen2Entry);
 		//如果本基因含有pathway那就不进行blast
@@ -188,13 +188,13 @@ and taxID=#{taxID}
 			BlastInfo blastInfo2 = null;
 			if (ncbiid.getGeneId() != 0) {
 				blastInfo.setQueryID(ncbiid.getGeneId()+"");blastInfo.setSubjectTax(subTaxID);
-				blastInfo2=DaoFSBlastInfo.queryBlastInfo(blastInfo);
+				blastInfo2=MapBlastInfo.queryBlastInfo(blastInfo);
 			}
 			
 			//用accID再搜索一次
 			if (blastInfo2==null) {
 				blastInfo.setQueryID(ncbiid.getAccID());
-				blastInfo2=DaoFSBlastInfo.queryBlastInfo(blastInfo);
+				blastInfo2=MapBlastInfo.queryBlastInfo(blastInfo);
 			}
 			//如果搜索到了,并且blast的evalue小于设定值
 			if(blastInfo2!=null&&blastInfo2.getEvalue()<=evalue)
@@ -204,7 +204,7 @@ and taxID=#{taxID}
 				//用blast到的geneID去搜索kegg数据库,获得subject的KO信息
 				NCBIID ncbiidSubject = new NCBIID();
 				ncbiidSubject.setGeneId(Integer.parseInt(blastInfo2.getSubjectID()));
-				KGCgen2Ko kgCgen2Ko = DaoKCdetail.queryGen2Ko(ncbiidSubject);
+				KGCgen2Ko kgCgen2Ko = MapKCdetail.queryGen2Ko(ncbiidSubject);
 				ArrayList<KGentry> lsKGentriesSubject = null;
 				//如果找到ko了
 				if (kgCgen2Ko!=null
@@ -224,7 +224,7 @@ and taxID=#{taxID}
 						KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
 						kgiDkeg2Ko.setKo(ko);kgiDkeg2Ko.setTaxID(queryTaxID);
 						//用KO去搜索KeggID
-						ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos2 = DaoKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+						ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos2 = MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 						//如果搜到了KeggID，那么将KeggID去找entry
 						if (lsKgiDkeg2Kos2 != null && lsKgiDkeg2Kos2.size()>0) 
 						{
@@ -233,7 +233,7 @@ and taxID=#{taxID}
 							kGentry.setEntryName(keggID);
 							kGentry.setTaxID(queryTaxID);
 							//在给定ko和taxID的情况下，一个ko可以参与多个pathway，和一个pathway里的多个entry
-							ArrayList<KGentry> lskGentries=DaoKEntry.queryLsKGentries(kGentry);
+							ArrayList<KGentry> lskGentries=MapKEntry.queryLsKGentries(kGentry);
 							lsKGentriesSubject.addAll(lskGentries);
 						}
 						/////////////如果geneBlast到了人类，并且得到了相应的KO，那么获得该KO所对应本物种的KeggID，如果没有KeggID，则用KO去找本基因的entry//////////////////////////////////////////////////////////////////
@@ -242,7 +242,7 @@ and taxID=#{taxID}
 							kGentry.setEntryName(ko);
 							kGentry.setTaxID(queryTaxID);
 							//在给定ko和taxID的情况下，一个ko可以参与多个pathway，和一个pathway里的多个entry
-							ArrayList<KGentry> lskGentries=DaoKEntry.queryLsKGentries(kGentry);
+							ArrayList<KGentry> lskGentries=MapKEntry.queryLsKGentries(kGentry);
 							lsKGentriesSubject.addAll(lskGentries);
 						}
 					}

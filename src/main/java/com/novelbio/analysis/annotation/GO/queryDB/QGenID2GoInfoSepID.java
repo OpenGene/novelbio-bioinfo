@@ -12,7 +12,6 @@ import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGo2Term;
 import com.novelbio.database.entity.friceDB.Gene2Go;
 import com.novelbio.database.entity.friceDB.Gene2GoInfo;
 import com.novelbio.database.entity.friceDB.Go2Term;
@@ -20,6 +19,7 @@ import com.novelbio.database.entity.friceDB.NCBIID;
 import com.novelbio.database.entity.friceDB.Uni2GoInfo;
 import com.novelbio.database.entity.friceDB.UniGene2Go;
 import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.mapper.geneanno.MapGo2Term;
 
 /**
  * 查找GeneID2GoInfo的信息
@@ -322,7 +322,7 @@ public class QGenID2GoInfoSepID
 				continue;
 			}
 		    Go2Term go2Term=new Go2Term(); go2Term.setGoIDQuery(GOID);
-		    Go2Term go2Term2=DaoFSGo2Term.queryGo2Term(go2Term);
+		    Go2Term go2Term2=MapGo2Term.queryGo2Term(go2Term);
 		    tmpResult[1]=go2Term2.getGoTerm();
 		    tmpResult[2]=lsGeneID.size()+"";
 		    tmpResult[3]=NumDif+"";
