@@ -88,9 +88,9 @@ public class SimpCoExp {
 		ExcelOperate excelCoExp = new ExcelOperate();
 		excelCoExp.newExcelOpen(outFile);
 		String sheet1 = "GeneInteraction";
-		excelCoExp.WriteExcel(sheet1, 1, 1, lsScr2Trg);
+		excelCoExp.WriteExcel(sheet1, 1, 1, lsResult);
 		String sheet2 = "Attribute";
-		excelCoExp.WriteExcel(sheet2, 1, 1, lsResult);
+		excelCoExp.WriteExcel(sheet2, 1, 1, lsScr2Trg);
 	}
 	
 	/**
@@ -331,7 +331,7 @@ public class SimpCoExp {
 			}
 			else 
 			{
-				CopedID copedID = new CopedID(result[i][0], taxID, false);
+				CopedID copedID = new CopedID(result[i][1], taxID, false);
 				///////////////////////////////////////////////////////////////////////////////////
 				//这一段放if里：只有当数据库中有时才计数
 				//放在if外：不管数据库中是否含有都计数
@@ -341,9 +341,7 @@ public class SimpCoExp {
 				hashAccID.put(result[i][1], tmpResult);
 			}
 		}
-		for (int j = 0; j < result.length; j++) {
-			hashAccID.get(result);
-		}
+
 		Enumeration<String> keys=hashAccID.keys();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		while(keys.hasMoreElements()){
