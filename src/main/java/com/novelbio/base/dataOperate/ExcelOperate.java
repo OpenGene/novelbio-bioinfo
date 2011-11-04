@@ -341,7 +341,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	 {
 		 int maxColNum = 0;
 		 for (int i = 0; i < 20; i++) {
-			 int tmpColCount = getColCount(sheet+1,i);
+			 int tmpColCount = getColCount(sheet,i);
 			if (tmpColCount > maxColNum) 
 				maxColNum = tmpColCount;
 		}
@@ -396,8 +396,8 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  *但是最后获得的数组计数是从0开始的，不同于C#<br/>
 	  * @param rowStartNum：起点实际行数<br/> 
 	  * @param columnStartNum：起点实际列数<br/> 
-	  * @param rowEndNum：终点实际行数<br/> 
-	  * @param columnEndNum：终点实际列数<br/>
+	  * @param rowEndNum：终点实际行数，小于等于0则读取到尾部<br/> 
+	  * @param columnEndNum：终点实际列数，小于等于0则读取到尾部<br/>
 	  * 如果行数超过文件实际行数，则多出来的数组设置为null<br/>
 	  * @return String[][]<br/>
 	  */
@@ -416,8 +416,8 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  *但是最后获得的数组计数是从0开始的，不同于C#<br/>
 	  * @param rowStartNum：起点实际行数<br/> 
 	  * @param columnStartNum：起点实际列数<br/> 
-	  * @param rowEndNum：终点实际行数<br/> 
-	  * @param columnEndNum：终点实际列数<br/>
+	  * @param rowEndNum：终点实际行数，小于等于0则读取到尾部<br/> 
+	  * @param columnEndNum：终点实际列数，小于等于0则读取到尾部<br/>
 	  * 如果行数超过文件实际行数，则多出来的数组设置为null<br/>
 	  * @return String[][]<br/>
 	  */
@@ -437,8 +437,8 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param sheetName：待读取sheet名字<br/> 
 	  * @param rowStartNum：起点实际行数<br/> 
 	  * @param columnStartNum：起点实际列数<br/> 
-	  * @param rowEndNum：终点实际行数<br/> 
-	  * @param columnEndNum：终点实际列数<br/>
+	  * @param rowEndNum：终点实际行数，小于等于0则读取到尾部<br/> 
+	  * @param columnEndNum：终点实际列数，小于等于0则读取到尾部<br/>
 	  * 如果行数超过文件实际行数，则多出来的数组设置为null<br/>
 	  * @return String[][]<br/>
 	  */
@@ -460,8 +460,8 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param sheetName：待读取sheet名字<br/> 
 	  * @param rowStartNum：起点实际行数<br/> 
 	  * @param columnStartNum：起点实际列数<br/> 
-	  * @param rowEndNum：终点实际行数<br/> 
-	  * @param columnEndNum：终点实际列数<br/>
+	  * @param rowEndNum：终点实际行数，小于等于0则读取到尾部<br/> 
+	  * @param columnEndNum：终点实际列数，小于等于0则读取到尾部<br/>
 	  * 如果行数超过文件实际行数，则多出来的数组设置为null<br/>
 	  * @return String[][]<br/>
 	  */
@@ -485,8 +485,8 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param sheetNum：实际sheet数<br/>
 	  * @param rowStartNum：起点实际行数<br/> 
 	  * @param columnStartNum：起点实际列数<br/> 
-	  * @param rowEndNum：终点实际行数<br/> 
-	  * @param columnEndNum：终点实际列数<br/>
+	  * @param rowEndNum：终点实际行数，小于等于0则读取到尾部<br/> 
+	  * @param columnEndNum：终点实际列数，小于等于0则读取到尾部<br/>
 	  * 如果行数超过文件实际行数，则多出来的数组设置为null<br/>
 	  * @return String[]
 	  * 有重载
@@ -607,8 +607,8 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param sheetNum：实际sheet数<br/>
 	  * @param rowStartNum：起点实际行数<br/> 
 	  * @param columnStartNum：起点实际列数<br/> 
-	  * @param rowEndNum：终点实际行数 0 时读取全部行<br/> 
-	  * @param columnEndNum：终点实际列数 0 时读取全部列<br/>
+	  * @param rowEndNum：终点实际行数，小于等于0则读取到尾部<br/> 
+	  * @param columnEndNum：终点实际列数，小于等于0则读取到尾部<br/>
 	  * 如果行数超过文件实际行数，则多出来的数组设置为null<br/>
 	  * @return String[]
 	  * 有重载
@@ -946,7 +946,11 @@ public class ExcelOperate //目前是从网上搞的读取代码
 				sheetNum = wb.getSheetIndex(sheetName);
 			}
 		} else if (sheetNum >= 0) {
-			sheet = wb.getSheetAt(sheetNum);
+			try {
+				sheet = wb.getSheetAt(sheetNum);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 			if (sheet == null) {
 				sheet = wb.createSheet("sheet" + (getSheetCount() + 1));// 新建sheet
 			}

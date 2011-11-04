@@ -1354,7 +1354,7 @@ public class HeatChart {
 		
 		// Determine image type based upon whether require alpha or not.
 		// Using BufferedImage.TYPE_INT_ARGB seems to break on jpg.
-		int imageType = (alpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
+		int imageType = (alpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_3BYTE_BGR);
 		
 		// Create our chart image which we will eventually draw everything on.
 		BufferedImage chartImage = new BufferedImage(chartSize.width, chartSize.height, imageType);

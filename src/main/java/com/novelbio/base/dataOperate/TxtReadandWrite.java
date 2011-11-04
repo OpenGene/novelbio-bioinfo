@@ -3,15 +3,38 @@ package com.novelbio.base.dataOperate;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.fileOperate.FileOperate;
@@ -23,10 +46,27 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class TxtReadandWrite {
 	private static Logger logger = Logger.getLogger(TxtReadandWrite.class);
+	
+	public final static String GZIP = "gz";
+	public final static String BZIP2 = "bzip2";
+	public final static String ZIP = "zip";
+	public final static String TXT = "txt";
+	private String filetype = TXT;
+	
+	
 	@Deprecated
 	public TxtReadandWrite () {
 		
 	}
+	public TxtReadandWrite (String fileType, String filepath, boolean createNew) {
+		if (createNew) {
+			setParameter(fileType, filepath, createNew, false);
+		}
+		else {
+			setParameter(fileType, filepath, createNew, true);
+		}
+	}
+	
 	public TxtReadandWrite (String filepath, boolean createNew) {
 		if (createNew) {
 			setParameter(filepath, createNew, false);
@@ -35,17 +75,33 @@ public class TxtReadandWrite {
 			setParameter(filepath, createNew, true);
 		}
 	}
+	/**
+	 * 待测试
+	 * 读取压缩文件，文件中只能有一个压缩文件，并且不能是子文件夹
+	 * @param zip
+	 * @param filePath
+	 */
+	public TxtReadandWrite (String fileType, String filePath) {
+		this.filetype = fileType;
+		setParameter(fileType, filePath, false, true);
+	}
+	
 	
 	File txtfile;
+	InputStream inputStream;
 	FileReader fileread;
-	FileWriter filewriter;
+	OutputStream outputStream;
 	BufferedReader bufread;
 	BufferedWriter bufwriter;
+	boolean createNew = false;
+	boolean append = true;
+	
+	
 	public String getFileName() {
 		return txtfile.getAbsolutePath();
 	}
 	/**
-	 * 
+	 * 默认产生txt文本
 	 * @param filepath
 	 *            要读取或写入的文件名filepath
 	 * @param createNew
@@ -57,39 +113,185 @@ public class TxtReadandWrite {
 	 */
 	public boolean setParameter(String filepath, boolean createNew,
 			boolean append) {
+		return setParameter(TXT, filepath, createNew, append);
+	}
+	/**
+	 * 按照最初的设定，重新设定各类信息，类似setParameter()
+	 * @return
+	 */
+	public boolean reSetInfo() {
+		return setParameter(this.filetype, txtfile.getAbsolutePath(), createNew, append);
+	}
+	
+	/**
+	 * @param filepath
+	 *            要读取或写入的文件名filepath
+	 * @param createNew
+	 *            当文本不存在时，是否需要新建文本
+	 * @param append
+	 *            是接着写入还是写新的。<b>读取文本时必须设置为true</b>
+	 * @return true：成功设置文本参数<br>
+	 *         false：没有设好文本参数
+	 */
+	public boolean setParameter(String fileType, String filepath, boolean createNew,
+			boolean append) {
+		close();
+		this.filetype = fileType;
 		txtfile = new File(filepath);
-		if (txtfile.exists() == false) {
-			if (createNew)// 如果文本文件不存在则创建它
-			{
-				try {
-					txtfile.createNewFile();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				txtfile = new File(filepath); // 重新实例化
-			} else {
-				return false;
-			}
-		}
+		this.createNew = createNew;
+		this.append = append;
 		try {
-			filewriter = new FileWriter(txtfile, append);
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
+			if (createNew) {
+				createFile(fileType, filepath);
+				return true;
+			}
+			else if (txtfile.exists()) {
+				getFile(fileType, filepath, append);
+				return true;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return false;
+	}
+	
+	
+	
+	private void createFile(String fileType, String fileName) throws Exception
+	{
+		outputStream = new FileOutputStream(txtfile,false);
+		if (fileType.equals(TXT)) {
+			return;
+		}
+		
+		else if (fileType.equals(ZIP)) {
+			ZipArchiveOutputStream filewriterzip = new ZipArchiveOutputStream(txtfile);
+			ZipArchiveEntry entry = new ZipArchiveEntry(FileOperate.getFileNameSep(fileName)[0]);
+
+			filewriterzip.putArchiveEntry(entry);
+//			filewriterzip.createArchiveEntry(txtfile, FileOperate.getFileNameSep(fileName)[0]+".txt");
+			outputStream = filewriterzip;
+		}
+		else if (fileType.equals(GZIP)) {
+			outputStream = new GZIPOutputStream(outputStream);
+		}
+		else if (fileType.equals(BZIP2)) {
+			outputStream = new BZip2CompressorOutputStream(outputStream);
 		}
 	}
-
+	
+	private void getFile(String fileType, String fileName, boolean append) throws Exception
+	{
+		outputStream = new FileOutputStream(txtfile,append);
+		inputStream = new FileInputStream(txtfile);
+		fileread = new FileReader(txtfile);
+		if (fileType.equals(TXT)) {
+			return;
+		}
+		if (fileType.equals(ZIP)) {
+			ZipArchiveOutputStream filewriterzip = new ZipArchiveOutputStream(outputStream);
+//			ZipArchiveEntry archiveEntry = new ZipArchiveEntry(name);
+//			filewriterzip.putArchiveEntry(archiveEntry);
+			outputStream = filewriterzip;
+			
+			ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(inputStream);
+			ArchiveEntry zipEntry = null;
+			while ((zipEntry = zipArchiveInputStream.getNextEntry()) != null) {
+				if (!zipEntry.isDirectory() && zipEntry.getSize() > 0) {
+					break;
+				}
+			}
+			inputStream = zipArchiveInputStream;
+		}
+		else if (fileType.equals(GZIP)) {
+			inputStream = new GZIPInputStream(inputStream);
+			outputStream = new GZIPOutputStream(outputStream);
+		}
+		else if (fileType.equals(BZIP2)) {
+			inputStream = new BZip2CompressorInputStream(inputStream);
+			outputStream = new BZip2CompressorOutputStream(outputStream);
+		}
+	}
+	
 	/**
+	 * 这个内部使用，外部用@readlines代替
 	 * @param path输入文件名
 	 * @return 返回BufferedReader，记得读完后要关闭Buffer流
 	 * @throws Exception
 	 */
+	@Deprecated
 	public BufferedReader readfile() throws Exception {
-		fileread = new FileReader(txtfile);
-		bufread = new BufferedReader(fileread);
+		inputStream = new FileInputStream(txtfile);
+		if (filetype.equals(ZIP)) {
+			ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(inputStream);
+			ArchiveEntry zipEntry = null;
+			while ((zipEntry = zipArchiveInputStream.getNextEntry()) != null) {
+				if (!zipEntry.isDirectory() && zipEntry.getSize() > 0) {
+					break;
+				}
+			}
+			inputStream = zipArchiveInputStream;
+		}
+		else if (filetype.equals(GZIP)) {
+			inputStream = new GZIPInputStream(inputStream);
+		}
+		else if (filetype.equals(BZIP2)) {
+			inputStream = new BZip2CompressorInputStream(inputStream);
+		}
+		bufread = new BufferedReader(new   InputStreamReader(inputStream));
 		return bufread;
 	}
+	
+	public Iterable<String> readlines()
+	{
+		try {
+			return readPerlines();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * 迭代读取文件
+	 * @param filename
+	 * @return
+	 * @throws Exception 
+	 * @throws IOException
+	 */
+	private Iterable<String> readPerlines() throws Exception {
+		 final BufferedReader bufread =  readfile(); 
+		return new Iterable<String>() {
+			public Iterator<String> iterator() {
+				return new Iterator<String>() {
+					public boolean hasNext() {
+						return line != null;
+					}
+
+					public String next() {
+						String retval = line;
+						line = getLine();
+						return retval;
+					}
+
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+
+					String getLine() {
+						String line = null;
+						try {
+							line = bufread.readLine();
+						} catch (IOException ioEx) {
+							line = null;
+						}
+						return line;
+					}
+					String line = getLine();
+				};
+			}
+		};
+	}
+
 	/**
 	 * @param path输入文件名
 	 * @return 返回List<String>，读完不用关闭Buffer流
@@ -183,8 +385,8 @@ public class TxtReadandWrite {
 	 */
 	public void writefile(String content) {
 		try {
-			filewriter.write(content);
-			filewriter.flush();
+			outputStream.write(content.getBytes());
+			outputStream.flush();
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -198,8 +400,8 @@ public class TxtReadandWrite {
 	 */
 	public void writefileln(String content) {
 		try {
-			filewriter.write(content);
-			filewriter.write("\r\n");
+			outputStream.write(content.getBytes());
+			outputStream.write("\r\n".getBytes());
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -212,7 +414,7 @@ public class TxtReadandWrite {
 	 */
 	public void writefileln() {
 		try {
-			filewriter.write("\r\n");
+			outputStream.write("\r\n".getBytes());
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -228,11 +430,11 @@ public class TxtReadandWrite {
 			char[] mychar = content.toCharArray();
 			for (int i = 0; i < mychar.length; i++) {
 				if (i>0 && i%length == 0) {
-					filewriter.write("\r\n");
+					outputStream.write("\r\n".getBytes());
 				}
-				filewriter.write(mychar[i]);
+				outputStream.write(mychar[i]);
 			}
-			filewriter.flush();
+			outputStream.flush();
 		} catch (Exception e) {
 		}
 	}
@@ -243,9 +445,9 @@ public class TxtReadandWrite {
 	 * @throws Exception
 	 */
 	public void writefile(String content, boolean flush) throws Exception {
-		filewriter.write(content);
+		outputStream.write(content.getBytes());
 		if (flush) {
-			filewriter.flush();
+			outputStream.flush();
 		}
 	}
 
@@ -260,13 +462,13 @@ public class TxtReadandWrite {
 	private void Rwritefile(double[] content, int colLen, String sep)
 			throws Exception {
 		for (int i = 0; i < content.length; i++) {
-			filewriter.write(content[i] + "" + sep);
+			outputStream.write((content[i] + "" + sep).getBytes());
 			if ((i + 1) % colLen == 0) {
-				filewriter.write("\r\n");
+				outputStream.write("\r\n".getBytes());
 			}
 		}
 
-		filewriter.flush();
+		outputStream.flush();
 	}
 
 	/**
@@ -293,12 +495,12 @@ public class TxtReadandWrite {
 	private void Rwritefile(int[] content, int colLen, String sep) {
 		try {
 			for (int i = 0; i < content.length; i++) {
-				filewriter.write(content[i] + "" + sep);
+				outputStream.write((content[i] + "" + sep).getBytes());
 				if ((i + 1) % colLen == 0) {
-					filewriter.write("\r\n");
+					outputStream.write("\r\n".getBytes());
 				}
 			}
-			filewriter.flush();
+			outputStream.flush();
 		} catch (Exception e) {
 			logger.error("file error: "+ getFileName());
 		}
@@ -338,14 +540,7 @@ public class TxtReadandWrite {
 			e.printStackTrace();
 		}
 		
-		try {
-			fileread.close();
-		} catch (Exception e) {
-		}
-		try {
-			filewriter.close();
-		} catch (Exception e) {
-		}
+		close();
 	}
 	
 	
@@ -371,13 +566,13 @@ public class TxtReadandWrite {
 	private void Rwritefile(String[] content, int colLen, String sep) {
 		try {
 			for (int i = 0; i < content.length; i++) {
-				filewriter.write(content[i] + "" + sep);
+				outputStream.write((content[i] + "" + sep).getBytes());
 				if ((i + 1) % colLen == 0) {
-					filewriter.write("\r\n");
+					outputStream.write("\r\n".getBytes());
 				}
 			}
 
-			filewriter.flush();
+			outputStream.flush();
 		} catch (Exception e) {
 			logger.error("file error: "+getFileName());
 		}
@@ -401,10 +596,10 @@ public class TxtReadandWrite {
 	public<T> void writefile(List<T> lsContent) throws Exception {
 		
 		for (int i = 0; i < lsContent.size(); i++) {
-			filewriter.write(lsContent.get(i).toString());
-			filewriter.write("\r\n");
+			outputStream.write(lsContent.get(i).toString().getBytes());
+			outputStream.write("\r\n".getBytes());
 		}
-		filewriter.flush();
+		outputStream.flush();
 	}
 
 	/**
@@ -723,14 +918,14 @@ public class TxtReadandWrite {
 					tmp = content[i][j].toString();
 				}
 				if (j < (content[0].length - 1)) {
-					filewriter.write(tmp + sep);
+					outputStream.write((tmp + sep).getBytes());
 				} else {
-					filewriter.write(tmp);
+					outputStream.write(tmp.getBytes());
 				}
 			}
-			filewriter.write("\r\n");// 换行
+			outputStream.write("\r\n".getBytes());// 换行
 		}
-		filewriter.flush();// 写入文本
+		outputStream.flush();// 写入文本
 	}
 
 	/**
@@ -748,14 +943,14 @@ public class TxtReadandWrite {
 				if (content[i][j] == null)
 					content[i][j] = "";
 				if (j < (content[0].length - 1)) {
-					filewriter.write(content[i][j] + sep);
+					outputStream.write((content[i][j] + sep).getBytes());
 				} else {
-					filewriter.write(content[i][j]);
+					outputStream.write(content[i][j].getBytes());
 				}
 			}
-			filewriter.write("\r\n");// 换行
+			outputStream.write("\r\n".getBytes());// 换行
 		}
-		filewriter.flush();// 写入文本
+		outputStream.flush();// 写入文本
 	}
 
 	/**
@@ -775,19 +970,19 @@ public class TxtReadandWrite {
 				if (content[i] == null)
 					content[i] = "";
 				if (i < (content.length - 1)) {
-					filewriter.write(content[i] + sep);
+					outputStream.write((content[i] + sep).getBytes());
 				} else {
-					filewriter.write(content[i]);
+					outputStream.write(content[i].getBytes());
 				}
 			}
-			filewriter.write("\r\n");
+			outputStream.write("\r\n".getBytes());
 		} else// 竖着写入
 		{
 			for (int i = 0; i < content.length; i++) {
-				filewriter.write(content[i] + "\r\n");
+				outputStream.write((content[i] + "\r\n").getBytes());
 			}
 		}
-		filewriter.flush();// 写入文本
+		outputStream.flush();// 写入文本
 	}
 
 	/**
@@ -812,21 +1007,17 @@ public class TxtReadandWrite {
 					if (content.get(i)[j] == null)
 						content.get(i)[j] = "";
 					if (j < (content.get(i).length - 1)) {
-						filewriter.write(content.get(i)[j] + sep);
+						outputStream.write((content.get(i)[j] + sep).getBytes());
 					} else {
-						filewriter.write(content.get(i)[j]);
+						outputStream.write(content.get(i)[j].getBytes());
 					}
 				}
-				filewriter.write("\r\n");// 换行
+				outputStream.write("\r\n".getBytes());// 换行
 			}
-			filewriter.flush();// 写入文本
+			outputStream.flush();// 写入文本
 		} catch (Exception e) {
 			logger.error("write list data error:"+getFileName());
-			
 		}
-	
-		
-		
 	}
 
 	/**
@@ -853,14 +1044,14 @@ public class TxtReadandWrite {
 					if (content.get(i)[column[j]] == null)
 						content.get(i)[column[j]] = "";
 					if (j < (column.length - 1)) {
-						filewriter.write(content.get(i)[column[j]] + sep);
+						outputStream.write((content.get(i)[column[j]] + sep).getBytes());
 					} else {
-						filewriter.write(content.get(i)[column[j]]);
+						outputStream.write(content.get(i)[column[j]].getBytes());
 					}
 				}
-				filewriter.write("\r\n");// 换行
+				outputStream.write("\r\n".getBytes());// 换行
 			}
-			filewriter.flush();// 写入文本
+			outputStream.flush();// 写入文本
 		} else {
 			ArrayList<Integer> lscolumn = new ArrayList<Integer>();
 			for (int i = 0; i < column.length; i++) {
@@ -874,23 +1065,56 @@ public class TxtReadandWrite {
 					if (content.get(i)[j] == null)
 						content.get(i)[j] = "";
 					if (j < (content.get(i).length - 1)) {
-						filewriter.write(content.get(i)[j] + sep);
+						outputStream.write((content.get(i)[j] + sep).getBytes());
 					} else {
-						filewriter.write(content.get(i)[j]);
+						outputStream.write(content.get(i)[j].getBytes());
 					}
 				}
-				filewriter.write("\r\n");// 换行
+				outputStream.write("\r\n".getBytes());// 换行
 			}
-			filewriter.flush();// 写入文本
+			outputStream.flush();// 写入文本
 		}
 	}
+	/**
+	 * 获得txt的文本，如果没压缩，则将文件改名，如果压缩了，则返回OutTxt的解压缩文件
+	 * @param OutTxt
+	 */
+	public void unZipFile(String OutTxt)
+	{
+		if (this.filetype.equals(TXT)) {
+			FileOperate.moveFile(txtfile.getAbsolutePath(), FileOperate.getParentPathName(OutTxt), FileOperate.getFileName(OutTxt), true);
+			return;
+		}
+		TxtReadandWrite txtOut = new TxtReadandWrite(OutTxt, true);
+		for (String string : readlines()) {
+			txtOut.writefileln(string);
+		}
+		close();
+		txtOut.close();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * 关闭流文件
 	 */
 	public void close() {
 		try {
-			filewriter.flush();
-
+			outputStream.flush();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 		}
@@ -910,7 +1134,14 @@ public class TxtReadandWrite {
 			// TODO Auto-generated catch block
 		}
 		try {
-			filewriter.close();
+			if (filetype.equals(ZIP)) {
+				ArchiveOutputStream fileOutputStream = (ArchiveOutputStream) outputStream;
+				fileOutputStream.closeArchiveEntry();
+			}
+		} catch (Exception e) {
+		}
+		try {
+			outputStream.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 		}

@@ -573,12 +573,15 @@ public class FileOperate {
 	 * 
 	 * 文件添加后缀并改后缀名，如果一样则不修改
 	 * @param FileName 原来文件的全名
-	 * @param append 要添加的后缀，譬如_1，_new
+	 * @param append 要添加的后缀，譬如_1，_new，如果为null，则不添加
 	 * @param suffix 要添加的后缀名，譬如 txt， jpg ，自动去空格
 	 * suffix == null则不改变后缀名，suffix = "" 则去除后缀名
 	 */
 	public static String changeFileSuffix(String FileName, String append, String suffix) {
 		String resultFile = "";
+		if (append == null) {
+			append = "";
+		}
 		String parentPath = addSep(getParentPathName(FileName));
 		String[] fileName = getFileNameSep(FileName);
 		resultFile = parentPath + fileName[0] + append;

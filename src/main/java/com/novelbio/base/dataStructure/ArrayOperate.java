@@ -174,20 +174,17 @@ public class ArrayOperate {
 
 	/**
 	 * 用之前要看清楚指定的column是否在ls内 <br>
-	 * 给定List，获得其中指定的某几列,获得的某几列按照指定的列进行排列,从0开始计数<br>
+	 * 给定List，获得其中指定的某几列,获得的某几列按照指定的列进行排列,<b>从0开始计数</b><br>
 	 * 或者去除指定的某几列<br>
 	 * 用一个boolean参数来指定<br>
 	 * @return
 	 */
 	public static ArrayList<String[]> listCope(ArrayList<String[]> ls, int[] colNum, boolean include) 
 	{
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		if (include)
-		{
+		if (include) {
 			return listCope(ls, colNum);
 		}
-		else 
-		{
+		else {
 			HashSet<Integer> hashCol = new HashSet<Integer>();
 			for (int i = 0; i < colNum.length; i++) {
 				hashCol.add(colNum[i]);
@@ -215,11 +212,9 @@ public class ArrayOperate {
 	private static ArrayList<String[]> listCope(ArrayList<String[]> ls, int[] colNum) 
 	{
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		for (String[] strings : ls) 
-		{
+		for (String[] strings : ls) {
 			String[] tmpString = new String[colNum.length];
-			for (int i = 0; i < tmpString.length; i++)
-			{
+			for (int i = 0; i < tmpString.length; i++) {
 				tmpString[i] = strings[colNum[i]];
 			}
 			lsResult.add(tmpString);
