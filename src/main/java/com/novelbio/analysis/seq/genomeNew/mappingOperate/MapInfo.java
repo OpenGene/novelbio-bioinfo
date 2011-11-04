@@ -30,6 +30,28 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	String nrSeq = "";
 	double[] value = null;
 	int flagLoc = GffCodAbs.LOC_ORIGINAL;
+	boolean cis5to3 = true;
+	/**
+	 * 本坐标的方向，用于基因的Tss和Tes等运算
+	 * @param cis5to3
+	 */
+	public void setCis5to3(boolean cis5to3) {
+		this.cis5to3 = cis5to3;
+	}
+	/**
+	 * 本坐标的方向，用于基因的Tss和Tes等运算
+	 * @return
+	 */
+	public boolean isCis5to3() {
+		return cis5to3;
+	}
+	/**
+	 * 是否从小到大排序
+	 * @return
+	 */
+	public static boolean isMin2max() {
+		return min2max;
+	}
 	/**
 	 * @param chrID
 	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
@@ -200,8 +222,15 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 			return weight > map.weight ? -1:1;
 		}
 	}
-	
+	/**
+	 * 这个在设定的时候，会根据mapinfo的方向进行，也就是说如果该mapInfo为正向，则直接赋值
+	 * 反向的话就颠倒一下然后再赋值
+	 * @param value
+	 */
 	public void setDouble(double[] value) {
+		if (!cis5to3) {
+			ArrayOperate.convertArray(value);
+		}
 		this.value = value;
 	}
 	
@@ -252,7 +281,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		HashMap<String, MapInfo> hashMapInfo = new HashMap<String, MapInfo>();
 		for (MapInfo mapInfo : lsmapinfo) {
 			ArrayList<double[]> lsTmp = null;
-			if (hashLsMapInfo.containsKey(mapInfo.getChrID())) {
+			if (!hashLsMapInfo.containsKey(mapInfo.getChrID())) {
 				lsTmp = new ArrayList<double[]>();
 				hashLsMapInfo.put(mapInfo.getChrID(), lsTmp);
 			}

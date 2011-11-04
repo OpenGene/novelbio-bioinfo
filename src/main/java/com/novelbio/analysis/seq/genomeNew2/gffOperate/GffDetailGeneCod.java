@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.genomeNew2.gffOperate;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 public class GffDetailGeneCod extends GffDetailAbsCod<GffDetailGene>{
 	ArrayList<GffGeneIsoInfoCod> lsGffInfoCod = null;

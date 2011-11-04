@@ -10,10 +10,10 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.test.testextend.a;
 
 public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, GffCodGeneDU> implements GffHashGeneInf
@@ -59,7 +59,8 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 			try {
 				locID = getHashGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
 			} catch (Exception e) {
-				logger.error(accID);
+				logger.error("Ã»ÓÐ¸ÃaccID£º"+accID);
+				return null;
 			}
 		
 			gffDetailGene = super.searchLOC(locID);

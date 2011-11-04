@@ -3,9 +3,9 @@ package com.novelbio.analysis.seq.genomeNew2.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.generalConf.Species;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, GffCodGene,GffCodGeneDU>{
 	

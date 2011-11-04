@@ -8,7 +8,7 @@ import java.util.Set;
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 
@@ -42,7 +42,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 				continue;
 			hashGffDetailGeneAnno.add(gffDetailGene);
 			
-			String[] anno = getAnnoCod(gffDetailGene);
+			String[] anno = getAnnoCod(gffDetailGene, "peak_left_point:");
 			lsAnno.add(anno);
 		}
 		
@@ -63,7 +63,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 				continue;
 			hashGffDetailGeneAnno.add(gffDetailGene);
 			
-			String[] anno = getAnnoCod(gffDetailGene);
+			String[] anno = getAnnoCod(gffDetailGene, "peak_right_point:");
 			lsAnno.add(anno);
 		}
 		return lsAnno;
@@ -77,7 +77,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	 * 2：description<br>
 	 * 3：文字形式的定位描述
 	 */
-	private String[] getAnnoCod(GffDetailGene gffDetailGene)
+	private String[] getAnnoCod(GffDetailGene gffDetailGene, String peakPointInfo)
 	{
 		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
 		String[] anno = new String[4];
@@ -95,7 +95,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			anno[2] = anno[2] + "///" + copedID.getDescription();
 		}
 		anno[0] = anno[0].replaceFirst("///", ""); anno[1] = anno[1].replaceFirst("///", ""); anno[2] = anno[2].replaceFirst("///", "");
-		anno[3] = gffDetailGene.getLongestSplit().getCodLocStr();
+		anno[3] = peakPointInfo+gffDetailGene.getLongestSplit().getCodLocStr();
 		return anno;
 	}
 	/**
@@ -130,6 +130,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	}
 	
 	/**
+	 * 左端端点覆盖
 	 * 将覆盖到指定区域的基因全部提取出来并返回
 	 * @param Tss Tss上下游多少bp，上游为负数下游为正数， 两个都为正数表示只选取Tss下游，两个都为负数表示只选取Tss上游
 	 * @param Tes 同Tss
@@ -142,7 +143,6 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	private Set<GffDetailGene> getStructureUpGene(int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron) {
 		LinkedHashSet<GffDetailGene> hashGene = new LinkedHashSet<GffDetailGene>();
 		ArrayList<GffDetailGene[]> lsGffDetailGenes = getSameGeneDetail();
-		
 		for (GffDetailGene[] gffDetailGenes : lsGffDetailGenes) {
 			if (gffDetailGenes[0] == null && gffDetailGenes[1] == null) {
 				continue;
@@ -161,10 +161,8 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		}
 		return hashGene;
 	}
-	
-	
 	/**
-	 * 
+	 * 右端端点覆盖
 	 * 将覆盖到指定区域的基因全部提取出来并返回
 	 * @param Tss Tss上下游多少bp，上游为负数下游为正数， 两个都为正数表示只选取Tss下游，两个都为负数表示只选取Tss上游
 	 * @param Tes 同Tss
@@ -177,7 +175,6 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	private Set<GffDetailGene> getStructureDownGene(int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron) {
 		LinkedHashSet<GffDetailGene> hashGene = new LinkedHashSet<GffDetailGene>();
 		ArrayList<GffDetailGene[]> lsGffDetailGenes = getSameGeneDetail();
-		
 		for (GffDetailGene[] gffDetailGenes : lsGffDetailGenes) {
 			if (gffDetailGenes[0] == null && gffDetailGenes[1] == null) {
 				continue;
@@ -207,9 +204,15 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		}
 		lsGffDetailGenes = new ArrayList<GffDetailGene[]>();
 		
-		
+		/**
+		 * 0，1，2 第一个坐标点，在up this 和down
+		 * 3，4，5 第二个坐标点，在up this 和down
+		 * 1：坐标点在内部
+		 * 2：两个坐标点都在本基因内部
+		 * -1：前面一个点不在基因内
+		 */
 		int[] flag = new int[6];
-		//////////////////up
+		//////////////////  up   /////////////////////////////////
 		if (this.gffCod1.isInsideUp()) {
 			GffDetailGene[] gffDetailGenesUp = new GffDetailGene[2];
 			gffDetailGenesUp[0] = gffCod1.getGffDetailUp();
@@ -220,7 +223,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			}
 			lsGffDetailGenes.add(gffDetailGenesUp);
 		}
-		//////////////////////this
+		//////////////////////   this    /////////////////////////////////
 		if (this.gffCod1.isInsideLoc()) {
 			flag[1] = 1;
 			GffDetailGene[] gffDetailGenes = new GffDetailGene[2];
@@ -257,7 +260,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			lsGffDetailGenes.add(gffDetailGenesDown);
 		}
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////  cod2  /////////////////////////////////////////////////////////////////////////////////////////////////
 		if (this.gffCod2.isInsideUp() && flag[3] != -1) {
 			flag[3] = 1;
 			GffDetailGene[] gffDetailGenesUp2 = new GffDetailGene[2];
@@ -647,6 +650,12 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	 */
 	private int[] getInRegion2Cod(GffDetailGene gffDetailGene1, GffDetailGene gffDetailGene2, int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron)
 	{
+		if (!gffDetailGene1.isCis5to3()) {
+			GffDetailGene gffDetailGeneTmp = gffDetailGene1;
+			gffDetailGene1 = gffDetailGene2;
+			gffDetailGene2 = gffDetailGeneTmp;
+		}
+		
 		/**
 		 * 标记，0表示需要去除，1表示保留
 		 */

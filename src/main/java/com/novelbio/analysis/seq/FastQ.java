@@ -228,7 +228,7 @@ public class FastQ extends SeqComb {
 		if (readsLen > 0) {
 			return readsLen;
 		}
-		txtSeqFile.setParameter(seqFile, false, true);
+		txtSeqFile.setParameter(compressInType, seqFile, false, true);
 		ArrayList<String> lsreads = null;
 		try {
 			lsreads = txtSeqFile.readFirstLines(4);
@@ -294,6 +294,7 @@ public class FastQ extends SeqComb {
 		if (seqFile2 != null && !seqFile2.trim().equals("") && FileOperate.isFileExist(seqFile2.trim())) {
 			booPairEnd = true;
 			this.seqFile2 = seqFile2;
+			txtSeqFile2.setParameter(compressInType, seqFile2, false, true);
 		}
 		if (FastQFormateOffset == FASTQ_SANGER_OFFSET) {
 			offset = 33;
@@ -364,21 +365,21 @@ public class FastQ extends SeqComb {
 	 * @throws Exception
 	 */
 	private FastQ filterReadsExp222(String fileFilterOut) throws Exception {
-		txtSeqFile.setParameter(seqFile, false, true);
+		txtSeqFile.setParameter(compressInType, seqFile, false, true);
 		BufferedReader readerSeq = txtSeqFile.readfile();
 		BufferedReader readerSeq2 = null;
 
 		TxtReadandWrite txtOutFile = new TxtReadandWrite();
 		if (!booPairEnd) {
-			txtOutFile.setParameter(fileFilterOut.trim(), true, false);
+			txtOutFile.setParameter(compressOutType, fileFilterOut.trim(), true, false);
 		} else {
-			txtOutFile.setParameter(fileFilterOut.trim() + "_1", true, false);
+			txtOutFile.setParameter(compressOutType, fileFilterOut.trim() + "_1", true, false);
 		}
 		TxtReadandWrite txtOutFile2 = new TxtReadandWrite();;
 		if (booPairEnd) {
-			txtSeqFile2.setParameter(seqFile2, false, true);
+			txtSeqFile2.reSetInfo();
 			readerSeq2 = txtSeqFile2.readfile();
-			txtOutFile2.setParameter(fileFilterOut.trim() + "_2", true, false);
+			txtOutFile2.setParameter(compressOutType, fileFilterOut.trim() + "_2", true, false);
 		}
 		setFastQFormat();
 
@@ -420,6 +421,7 @@ public class FastQ extends SeqComb {
 		} else {
 			fastQ = new FastQ(fileFilterOut.trim(), null, offset, quality);
 		}
+		fastQ.setCompressType(compressOutType, compressOutType);
 		txtSeqFile.close();
 		txtSeqFile2.close();
 		txtOutFile.close();
@@ -441,21 +443,21 @@ public class FastQ extends SeqComb {
 	 * @throws Exception
 	 */
 	private FastQ filterReadsExp(String fileFilterOut) throws Exception {
-		txtSeqFile.setParameter(seqFile, false, true);
+		txtSeqFile.setParameter(compressInType, seqFile, false, true);
 		BufferedReader readerSeq = txtSeqFile.readfile();
 		BufferedReader readerSeq2 = null;
 		TxtReadandWrite txtOutFile = new TxtReadandWrite();
 		
 		if (!booPairEnd) 
-			txtOutFile.setParameter(fileFilterOut.trim(), true, false);
+			txtOutFile.setParameter(compressOutType, fileFilterOut.trim(), true, false);
 		else 
-			txtOutFile.setParameter(fileFilterOut.trim() + "_1", true, false);
+			txtOutFile.setParameter(compressOutType, fileFilterOut.trim() + "_1", true, false);
 		
 		TxtReadandWrite txtOutFile2 = new TxtReadandWrite();;
 		if (booPairEnd) {
-			txtSeqFile2.setParameter(seqFile2, false, true);
+			txtSeqFile2.reSetInfo();
 			readerSeq2 = txtSeqFile2.readfile();
-			txtOutFile2.setParameter(fileFilterOut.trim() + "_2", true, false);
+			txtOutFile2.setParameter(compressOutType, fileFilterOut.trim() + "_2", true, false);
 		}
 		setFastQFormat();
 
@@ -541,6 +543,7 @@ public class FastQ extends SeqComb {
 		} else {
 			fastQ = new FastQ(fileFilterOut.trim(), null, offset, quality);
 		}
+		fastQ.setCompressType(compressOutType, compressOutType);
 		txtSeqFile.close();
 		txtSeqFile2.close();
 		txtOutFile.close();
@@ -831,7 +834,7 @@ public class FastQ extends SeqComb {
 	 * @return fastQ质控序列的list 出错返回null
 	 */
 	private ArrayList<String> getLsFastQSeq(int Num) {
-		txtSeqFile.setParameter(seqFile, false, true);
+		txtSeqFile.setParameter(compressInType, seqFile, false, true);
 		ArrayList<String> lsResult = new ArrayList<String>();
 		try {
 			String content = "";
@@ -955,35 +958,35 @@ public class FastQ extends SeqComb {
 			String barcodename = entry.getValue();
 			TxtReadandWrite txtBarcod = new TxtReadandWrite();
 			resultFileName[k] = filePath+fileName[0]+"_"+barcodename+"."+fileName[1];
-			txtBarcod.setParameter(resultFileName[k], true, false);
+			txtBarcod.setParameter(compressOutType, resultFileName[k], true, false);
 			hashBarcodeTxt.put(barcodename, txtBarcod);
 			k++;
 			if (booPairEnd) {
 				TxtReadandWrite txtBarcod2 = new TxtReadandWrite();
 				resultFileName[k] = filePath+fileName[0]+"_"+barcodename+"2."+fileName[1];
-				txtBarcod2.setParameter(resultFileName[k], true, false);
+				txtBarcod2.setParameter(compressOutType, resultFileName[k], true, false);
 				hashBarcodeTxt2.put(barcodename, txtBarcod2);
 				k++;
 			}
 		}
 		TxtReadandWrite txtBarcod = new TxtReadandWrite();
 		resultFileName[k] = filePath+fileName[0]+"_"+"notfind."+fileName[1];
-		txtBarcod.setParameter(resultFileName[k], true, false);
+		txtBarcod.setParameter(compressOutType, resultFileName[k], true, false);
 		hashBarcodeTxt.put("notfind", txtBarcod);
 		k++;
 		if (booPairEnd) {
 			TxtReadandWrite txtBarcod2 = new TxtReadandWrite();
 			resultFileName[k] = filePath+fileName[0]+"_"+"notfind2."+fileName[1];
-			txtBarcod2.setParameter(resultFileName[k], true, false);
+			txtBarcod2.setParameter(compressOutType, resultFileName[k], true, false);
 			hashBarcodeTxt2.put("notfind", txtBarcod2);
 			k++;
 		}
 
-		txtSeqFile.setParameter(seqFile, false, true);
+		txtSeqFile.setParameter(compressInType, seqFile, false, true);
 		BufferedReader reader1 = txtSeqFile.readfile();
 		BufferedReader reader2 = null;
 		if (booPairEnd) {
-			txtSeqFile2.setParameter(seqFile2, false, true);
+			txtSeqFile2.reSetInfo();
 			reader2 = txtSeqFile2.readfile();
 		}
 		String content1 = ""; String content2 = "";
@@ -1192,7 +1195,7 @@ public class FastQ extends SeqComb {
 	 * @throws Exception
 	 */
 	public void WZFsepFastQ(String outFile) throws Exception {
-		txtSeqFile.setParameter(seqFile, false, true);
+		txtSeqFile.setParameter(compressInType, seqFile, false, true);
 		TxtReadandWrite txtOut1 = new TxtReadandWrite();
 		txtOut1.setParameter(outFile + 1 + ".fastq", true, false);
 		TxtReadandWrite txtOut2 = new TxtReadandWrite();
@@ -1318,7 +1321,7 @@ public class FastQ extends SeqComb {
 	 * @throws Exception 
 	 */
 	public void convertToFasta(String fastaFile) throws Exception {
-		txtSeqFile.setParameter(seqFile, false, true);
+		txtSeqFile.setParameter(compressInType, seqFile, false, true);
 		BufferedReader reader = txtSeqFile.readfile();
 		
 		TxtReadandWrite txtFasta1 = new TxtReadandWrite();
@@ -1327,7 +1330,7 @@ public class FastQ extends SeqComb {
 		TxtReadandWrite txtFasta2 = new TxtReadandWrite();
 		BufferedReader reader2 = null;
 		if (booPairEnd) {
-			txtSeqFile2.setParameter(seqFile2, false, true);
+			txtSeqFile2.reSetInfo();
 			reader2 = txtSeqFile2.readfile();
 			FileOperate.getFileNameSep(fastaFile);
 			String filepath = "";

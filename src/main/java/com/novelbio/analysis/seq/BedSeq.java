@@ -7,11 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
  * bed格式的文件，统统用来处理bed文件
@@ -64,17 +64,43 @@ public class BedSeq extends SeqComb{
 	 */
 	public BedSeq sortBedFile(int chrID, String sortBedFile,int...arg)  {
 		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
+		String tmpTxt = "";
+		if (!compressInType.equals(TxtReadandWrite.TXT))
+		{
+			tmpTxt = FileOperate.changeFileSuffix(seqFile, "_unzip", "txt");
+			txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
+			txtSeqFile.unZipFile(tmpTxt);
+		}
+		else {
+			tmpTxt = seqFile;
+		}
 		String cmd = "sort";
+		
 		if (chrID != 0) {
 			cmd = cmd + " -k"+chrID+","+chrID+" ";
 		}
 		for (int i : arg) {
 			cmd = cmd + " -k"+i+","+i+"n ";
 		}
-		cmd = cmd + seqFile + " > " + sortBedFile;
+		
+		if (compressOutType.equals(TxtReadandWrite.GZIP)) {
+			cmd = cmd + tmpTxt  +" | gzip -c > " + sortBedFile;
+		}
+		else if (compressOutType.equals(TxtReadandWrite.BZIP2)) {
+			cmd = cmd + tmpTxt  +" | bzip2 -c > " + sortBedFile;
+		}
+		else if (compressOutType.equals(TxtReadandWrite.TXT)) {
+			cmd = cmd + tmpTxt + " > " + sortBedFile;
+		}
+		
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.doInBackground("sortBed");
 		BedSeq bedSeq = new BedSeq(sortBedFile);
+		bedSeq.setCompressType(compressOutType, compressOutType);
+		if (!compressInType.equals(TxtReadandWrite.TXT))
+		{
+			FileOperate.delFile(tmpTxt);
+		}
 		return bedSeq;
 	}
 	
@@ -94,11 +120,11 @@ public class BedSeq extends SeqComb{
 	 * @throws Exception 
 	 */
 	public BedSeq filterXLY(String filterOut) throws Exception {
-		txtSeqFile.setParameter(seqFile, false, true);
+		txtSeqFile.setParameter(compressInType, seqFile, false, true);
 		BufferedReader reader   = txtSeqFile.readfile();
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite();
-		txtOut.setParameter(filterOut, true, false);
+		txtOut.setParameter(compressOutType, filterOut, true, false);
 		
 		String content = "";
 		while ((content = reader.readLine())!=null) {
@@ -108,6 +134,7 @@ public class BedSeq extends SeqComb{
 			}
 		}
 		BedSeq bedSeq = new BedSeq(filterOut);
+		bedSeq.setCompressType(compressOutType, compressOutType);
 		return bedSeq;
 	}
 	
@@ -118,11 +145,11 @@ public class BedSeq extends SeqComb{
 	 * @throws Exception 
 	 */
 	public BedSeq filterWYR(String filterOut) throws Exception {
-		txtSeqFile.setParameter(seqFile, false, true);
+		txtSeqFile.setParameter(compressInType, seqFile, false, true);
 		BufferedReader reader   = txtSeqFile.readfile();
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite();
-		txtOut.setParameter(filterOut, true, false);
+		txtOut.setParameter(compressOutType,filterOut, true, false);
 		
 		String content = "";
 		while ((content = reader.readLine())!=null) {
@@ -140,6 +167,7 @@ public class BedSeq extends SeqComb{
 			}
 		}
 		BedSeq bedSeq = new BedSeq(filterOut);
+		bedSeq.setCompressType(compressOutType, compressOutType);
 		return bedSeq;
 	}
 	/**
@@ -173,10 +201,10 @@ public class BedSeq extends SeqComb{
 	public BedSeq extend(int extendTo, String outFileName)
 	{
 		try {
-			txtSeqFile.setParameter(seqFile, false, true);
+			txtSeqFile.setParameter(compressInType, seqFile, false, true);
 			BufferedReader reader = txtSeqFile.readfile();
 			
-			TxtReadandWrite txtOut = new TxtReadandWrite(outFileName, true);
+			TxtReadandWrite txtOut = new TxtReadandWrite(compressOutType, outFileName, true);
 			
 			String content = "";
 			while ((content = reader.readLine()) != null) {
@@ -202,6 +230,7 @@ public class BedSeq extends SeqComb{
 			txtSeqFile.close();
 			txtOut.close();
 			BedSeq bedSeq = new BedSeq(outFileName);
+			bedSeq.setCompressType(compressOutType, compressOutType);
 			return bedSeq;
 		} catch (Exception e) {
 			logger.error("extend error! targetFile: " + getSeqFile() + "   resultFIle: "+ outFileName);
@@ -219,12 +248,12 @@ public class BedSeq extends SeqComb{
 	public void getFastQ(int colSeqNum, String outFileName)
 	{
 		colSeqNum--;
-		txtSeqFile.setParameter(seqFile, false, true);
+		txtSeqFile.setParameter(compressInType, seqFile, false, true);
 		BufferedReader reader;
 		try {
 			reader = txtSeqFile.readfile();
 			TxtReadandWrite txtOut = new TxtReadandWrite();
-			txtOut.setParameter(outFileName, true, false);
+			txtOut.setParameter(compressOutType, outFileName, true, false);
 			String content = "";
 			//质量列,一百个
 			String qstring = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
@@ -259,10 +288,10 @@ public class BedSeq extends SeqComb{
 	 */
 	public LinkedHashMap<String, double[]> calDestribution(boolean calFragLen, String FragmentFile)
 	{
-		TxtReadandWrite txtbed = new TxtReadandWrite(seqFile, false);
+		TxtReadandWrite txtbed = new TxtReadandWrite(compressInType, seqFile, false);
 		TxtReadandWrite txtFragmentFile = null;
 		if (calFragLen) {
-			txtFragmentFile =new TxtReadandWrite(FragmentFile, false);
+			txtFragmentFile =new TxtReadandWrite(compressOutType, FragmentFile, false);
 		}
 		//chrID与该chrID所mapping到的reads数量
 		LinkedHashMap<String, double[]> hashChrReadsNum = new LinkedHashMap<String, double[]>();
@@ -312,6 +341,7 @@ public class BedSeq extends SeqComb{
 	
 	/**
 	 * 测试一下
+	 * @param 输入的染色体长度文件，肯定是txt
 	 * 计算测序结果的coverage情况，以及reads在每条染色体上的coverage情况，结果必须是排过序的.
 	 * @return linkedHashMap
 	 * 第一个key 和 value： allMappingReadsCoverage    allMappingReadsCoverage/allChrLen<br>
@@ -325,7 +355,7 @@ public class BedSeq extends SeqComb{
 		//ChrID和长度的对照表
 		LinkedHashMap<String, String> lkHashChrLen = txtChrID.getKey2Value("\t", false);
 		LinkedHashMap<String, double[]> hashChrReadsNum = new LinkedHashMap<String, double[]>();
-		TxtReadandWrite txtbed = new TxtReadandWrite(seqFile, false);
+		TxtReadandWrite txtbed = new TxtReadandWrite(compressInType, seqFile, false);
 		
 		double[] chrMappedReads = new double[2];//仅仅为了值传递，数据保存在[0]中
 		int tmpLocStart = 0; int tmpLocEnd = 0;//用来计算coverage
@@ -404,7 +434,7 @@ public class BedSeq extends SeqComb{
 	 */
 	private HashMap<String, Integer> getGeneExpress() throws Exception
 	{
-		txtSeqFile = new TxtReadandWrite(seqFile, false);
+		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
 		BufferedReader reader = txtSeqFile.readfile();
 		String content = "";
 		HashMap<String, Integer> hashResult = new HashMap<String, Integer>();
@@ -432,6 +462,7 @@ public class BedSeq extends SeqComb{
 	
 	
 	/**
+	 * 无法设定compressType
 	 * 将bed文件转化成DGE所需的信息，直接可以用DEseq分析的
 	 */
 	public static void dgeCal(String result, boolean sort, String... bedFile)

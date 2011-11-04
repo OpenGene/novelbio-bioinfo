@@ -73,7 +73,14 @@ public class GffChrAnno extends GffChrAbs{
 	
 	
 	
-	
+	/**
+	 * 给定txt的文件，和染色体编号，染色体起点终点，和输出文件，将peak覆盖到的区域注释出来
+	 * @param txtFile
+	 * @param colChrID
+	 * @param colStart
+	 * @param colEnd
+	 * @param outTxtFile
+	 */
 	public void annotation(String txtFile, int colChrID, int colStart, int colEnd, String outTxtFile) {
 //		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(txtFile, false);
 //		ArrayList<String[]> lsIn = txtReadandWrite.ExcelRead("\t", 1, 1, txtReadandWrite.ExcelRows(), -1, 0);
@@ -171,4 +178,83 @@ public class GffChrAnno extends GffChrAbs{
 		return lsAnno;
 	}
 
+	
+	/**
+	 * 给定坐标信息，返回该坐标定位信息，如外显子还是内含子
+	 * @param mapInfo 
+	 * @param summit true：用flagSite进行定位，false：用两端进行定位
+	 */
+	public void getStatisticInfo(MapInfo mapInfo,boolean summit) {
+		gffHashGene.set
+	}
+	
+	private void searchSite(MapInfo mapInfo)
+	{
+		
+		GffCodGene gffCodGene = gffHashGene.searchLocation(mapInfo.getChrID(), mapInfo.getFlagSite());
+		if (gffCodGene.isInsideLoc()) {
+			
+		}
+		else {
+			if (gffCodGene.getGffDetailUp().) {
+				
+			}
+		}
+	}
+	
+	
 }
+
+/**
+ * 基因定位情况
+ * @author zong0jie
+ *
+ */
+class siteLocInfo
+{
+	/**
+	 * 是否在不包含promoter的外显子中
+	 */
+	int ExonWithOutPromoter = 0;
+	/**
+	 * 是否在不包含promoter的内含子中
+	 */
+	int IntronWithOutPromoter = 0;
+	/**
+	 * 是否在genebody中
+	 */
+	int geneBody = 0;
+	/**
+	 * 是否在基因外的Promoter中
+	 */
+	int PromoterOutGene = 0;
+	/**
+	 * 是否在基因内的Promoter中
+	 */
+	int PromoterInGene = 0;
+	/**
+	 * 是否在不包含promoter的外显子中
+	 */
+	int InterGenic = 0;
+	/**
+	 * 是否在5‘UTR中
+	 */
+	int UTR5 = 0;
+	/**
+	 * 是否在3‘UTR中
+	 */
+	int UTR3 = 0;
+	
+	
+	
+	
+	
+	
+	
+	
+
+}
+
+
+
+

@@ -2,7 +2,7 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import javax.servlet.jsp.tagext.TryCatchFinally;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
  * 本类重写了equal代码，用于比较两个loc是否一致

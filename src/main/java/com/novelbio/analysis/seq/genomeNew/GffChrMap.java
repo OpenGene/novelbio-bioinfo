@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
@@ -21,7 +20,10 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.heatmap.Gradient;
+import com.novelbio.base.plot.heatmap.HeatMap;
 import com.novelbio.base.plot.java.HeatChart;
+import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.test.testextend.a;
 
 /**
@@ -65,7 +67,7 @@ public class GffChrMap extends GffChrAbs{
 				"/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/N/result/Nextend_sort.bed", 10);
 		gffChrMap.loadChrFile();
 		gffChrMap.loadMapReads();
-		gffChrMap.plotTssHeatMap("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/DGEexpress/dgeexpress",
+		gffChrMap.plotTssTesHeatMap("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/DGEexpress/dgeexpress",
 				1, 2, 2, GffDetailGene.TSS, 1000, "/media/winE/NBC/Project/Project_ZHY_Lab/TssHeat.png");
 	}
 	/**
@@ -217,16 +219,22 @@ public class GffChrMap extends GffChrAbs{
 	
 	/**
 	 * 
+	 * @param SortS2M 是否从小到大排序
 	 * @param txtExcel
 	 * @param colGeneID
 	 * @param colScore
 	 * @param rowStart
+	 * @param heapMapSmall
+	 * @param heapMapBig
+	 * @param scale
 	 * @param structure
-	 * @param binNum 最后结果分成几块
+	 * @param binNum
+	 * @param outFile
 	 */
-	public void plotTssHeatMap(String txtExcel, int colGeneID, int colScore, int rowStart, String structure, int binNum, String outFile) {
-		ArrayList<MapInfo> lsMapInfos = super.getFileGeneMapInfo(txtExcel, colGeneID, colScore, rowStart, structure, binNum);
-		MapInfo.sortPath(false);
+	public void plotTssTesHeatMap(Color color,boolean SortS2M, String txtExcel, int colGeneID, int colScore, int rowStart, 
+			double heapMapSmall, double heapMapBig, double scale, String structure, int binNum, String outFile) {
+		ArrayList<MapInfo> lsMapInfos = super.readFileGeneMapInfo(txtExcel, colGeneID, colScore, rowStart, structure, binNum);
+		MapInfo.sortPath(SortS2M);
 		Collections.sort(lsMapInfos);
 //		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 100, HeatChart.SCALE_LINEAR, FileOperate.changeFileSuffix(outFile, "_100line", null));
 //		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 100, HeatChart.SCALE_EXPONENTIAL, FileOperate.changeFileSuffix(outFile, "_100exp", null));
@@ -240,17 +248,42 @@ public class GffChrMap extends GffChrAbs{
 //		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 200, HeatChart.SCALE_EXPONENTIAL, FileOperate.changeFileSuffix(outFile, "_200exp", null));
 //		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 200, HeatChart.SCALE_LOGARITHMIC, FileOperate.changeFileSuffix(outFile, "_200log", null));
 //		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 100, 0.5, FileOperate.changeFileSuffix(outFile, "_100log", null));
-		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 450, 1.5, FileOperate.changeFileSuffix(outFile, "_450power", null));
-		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 400, 1.5, FileOperate.changeFileSuffix(outFile, "_400power", null));
-		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 350, 1.5, FileOperate.changeFileSuffix(outFile, "_350power", null));
-		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 300, 1.5, FileOperate.changeFileSuffix(outFile, "_300power", null));
+//		plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 450, 1.5, FileOperate.changeFileSuffix(outFile, null, null));
+		plotHeatMap(lsMapInfos, structure, color, heapMapSmall, heapMapBig, scale, FileOperate.changeFileSuffix(outFile, null, null));
 	}
 	
 	/**
-	 * @param lsMapInfo
-	 * @param structure
-	 * @param color 颜色 Color.WHITE等
-	 * @param outFile 图片路径
+	 * 
+	 * 获得summit位点，画summit位点附近的reads图
+	 * @param SortS2M 是否从小到大排序
+	 * @param txtExcel
+	 * @param colChrID
+	 * @param colSummit
+	 * @param colRegion
+	 * @param colScore
+	 * @param rowStart
+	 * @param heapMapSmall
+	 * @param heapMapBig
+	 * @param scale
+	 * @param binNum
+	 * @param outFile
+	 */
+	public void plotSummitHeatMap(boolean SortS2M, String txtExcel, int colChrID, int colSummit, int colRegion, int colScore, int rowStart, 
+			double heapMapSmall, double heapMapBig, double scale, int binNum, String outFile) {
+		ArrayList<MapInfo> lsMapInfos = super.readFileSiteMapInfo(txtExcel, colRegion, colChrID, colSummit, colScore, rowStart);
+		MapInfo.sortPath(SortS2M);
+		Collections.sort(lsMapInfos);
+		mapReads.getRegionLs(binNum, lsMapInfos, 0);
+		plotHeatMap(lsMapInfos, "", Color.BLUE, heapMapSmall, heapMapBig, scale, FileOperate.changeFileSuffix(outFile, null, null));
+	}	
+	/**
+	 * @param lsMapInfo 基因信息
+	 * @param structure 基因结构，目前只有 GffDetailGene.TSS 和 GffDetailGene.TES
+	 * @param color
+	 * @param small 最小
+	 * @param big 最大
+	 * @param scale scale次方，大于1则稀疏高表达，小于1则稀疏低表达
+	 * @param outFile
 	 */
 	private static void plotHeatMap(ArrayList<MapInfo> lsMapInfo, String structure, Color color, double small, double big, double scale ,String outFile)
 	{
@@ -263,6 +296,11 @@ public class GffChrMap extends GffChrAbs{
 		else if (structure.equals(GffDetailGene.TES)) {
 			map.setTitle("HeatMap Of TES");
 			map.setXAxisLabel("Distance To TES");
+			map.setYAxisLabel("");
+		}
+		else {
+			map.setTitle("HeatMap Of Summit");
+			map.setXAxisLabel("Distance To Summit");
 			map.setYAxisLabel("");
 		}
 		
@@ -292,6 +330,44 @@ public class GffChrMap extends GffChrAbs{
 	}
 	
 
+	
+	/**
+	 * @param lsMapInfo 基因信息
+	 * @param structure 基因结构，目前只有 GffDetailGene.TSS 和 GffDetailGene.TES
+	 * @param color
+	 * @param small 最小
+	 * @param big 最大
+	 * @param scale scale次方，大于1则稀疏高表达，小于1则稀疏低表达
+	 * @param outFile
+	 */
+	public static void plotHeatMap2(ArrayList<MapInfo> lsMapInfo,ArrayList<MapInfo> lsMapInfo2 ,
+			String outFile,double mindata1, double maxdata1, double mindata2, double maxdata2)
+	{
+		Color colorred = new Color(255, 0, 0, 255);
+		Color colorwhite = new Color(0, 0, 0, 0);
+		Color colorgreen = new Color(0, 255, 0, 255);
+		
+		Color[] gradientColors = new Color[] { colorwhite, colorred };
+		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
+		
+		Color[] gradientColors2 = new Color[] { colorwhite, colorgreen };
+		Color[] customGradient2 = Gradient.createMultiGradient(gradientColors2, 250);
+		HeatMap heatMap = new HeatMap(lsMapInfo, lsMapInfo2, false, customGradient, customGradient2);
+		heatMap.setRange(mindata1, maxdata1, mindata2, maxdata2);
+		try {
+			heatMap.saveToFile(outFile, 4000, 1000, true);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
 	/**
 	 * 根据前面设定upBp和downBp
 	 * 根据Peak文件做出TSS图
@@ -303,7 +379,7 @@ public class GffChrMap extends GffChrAbs{
 	 * @param prefix 文件名前缀
 	 */
 	public void getTssDensity(String fileName, int colChrID, int colStartLoc, int colEndLoc, int colScore, int rowStart,int binNum, String resultFilePath, String prefix) {
-		ArrayList<MapInfo> lsMapInfo = super.getFileRegionMapInfo(fileName, colChrID, colStartLoc, colEndLoc, colScore, rowStart);
+		ArrayList<MapInfo> lsMapInfo = super.readFileRegionMapInfo(fileName, colChrID, colStartLoc, colEndLoc, colScore, rowStart);
 		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(lsMapInfo, GffDetailGene.TSS, binNum);//(binNum,lsMapInfo, GffDetailGene.TSS);
 		
 		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
@@ -322,7 +398,7 @@ public class GffChrMap extends GffChrAbs{
 	 * @param prefix 文件名前缀
 	 */
 	public void getTesDensity(String fileName, int colChrID, int colStartLoc, int colEndLoc, int colScore, int rowStart,int binNum, String resultFilePath, String prefix) {
-		ArrayList<MapInfo> lsMapInfo = super.getFileRegionMapInfo(fileName, colChrID, colStartLoc, colEndLoc, colScore, rowStart);
+		ArrayList<MapInfo> lsMapInfo = super.readFileRegionMapInfo(fileName, colChrID, colStartLoc, colEndLoc, colScore, rowStart);
 		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(lsMapInfo, GffDetailGene.TES, binNum);//(binNum,lsMapInfo, GffDetailGene.TSS);
 		
 		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
@@ -463,6 +539,25 @@ public class GffChrMap extends GffChrAbs{
 		Collections.sort(lsMapInfo);
 		return lsMapInfo;
 	}
+	
+	/**
+	 * 经过标准化
+	 * 将MapInfo中的double填充上相应的reads信息
+	 * @param binNum 待分割的区域数目
+	 * @param lsmapInfo
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 */
+	public void getRegionLs(int binNum, ArrayList<MapInfo> lsmapInfo, int type)
+	{
+		mapReads.getRegionLs(binNum, lsmapInfo, type);
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 }

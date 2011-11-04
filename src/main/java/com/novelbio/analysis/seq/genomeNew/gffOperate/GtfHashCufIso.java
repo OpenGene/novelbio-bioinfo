@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.base.cmd.cmdOperate2;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
  * 读取cufdif软件生成的isoforms.fpkm_tracking

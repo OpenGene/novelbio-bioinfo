@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene, GffDetailGeneCod>{
 

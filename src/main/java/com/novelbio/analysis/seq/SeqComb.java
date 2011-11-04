@@ -24,6 +24,39 @@ public abstract class SeqComb {
 	 */
 	private int seqNum = -1;
 	
+	protected String compressInType = TxtReadandWrite.TXT;
+	protected String compressOutType = TxtReadandWrite.TXT;
+	/**
+	 * 
+	 * 设定文件压缩格式
+	 * 从TxtReadandWrite.TXT来
+	 * @param cmpInType 输入的压缩格式
+	 * @param cmpOutType 输出的压缩格式
+	 */
+	public void setCompressType(String cmpInType, String cmpOutType) {
+		if (cmpInType != null && !cmpInType.equals("")) {
+			this.compressInType = cmpInType;
+		}
+		if (cmpOutType != null && !cmpInType.equals("")) {
+			this.compressOutType = cmpOutType;
+		}
+		
+	}
+	/**
+	 *  输入的压缩格式
+	 * @return
+	 */
+	public String getCompressInType() {
+		return compressInType;
+	}
+	/**
+	 *  输出的压缩格式
+	 * @return
+	 */
+	public String getCompressOutType() {
+		return compressOutType;
+	}
+	
 	private static Logger logger = Logger.getLogger(SeqComb.class);  
 	/**
 	 * 
@@ -33,6 +66,7 @@ public abstract class SeqComb {
 	public SeqComb(String seqFile, int block) {
 		this.seqFile = seqFile;
 		this.block = block;
+		txtSeqFile.setParameter(compressInType,seqFile, false, true);
 	}
 	public String getSeqFile() {
 		return seqFile;
@@ -46,7 +80,7 @@ public abstract class SeqComb {
 		if (seqNum >= 0) {
 			return seqNum;
 		}
-		txtSeqFile.setParameter(seqFile, false, true);
+		txtSeqFile.reSetInfo();
 		int readsNum = 0;
 		try {
 			readsNum =  txtSeqFile.ExcelRows()/block;
@@ -66,7 +100,7 @@ public abstract class SeqComb {
 	 * @throws Exception
 	 */
 	public void getGradTxt( int[] percent,String outFile) throws Exception {
-		txtSeqFile.setParameter(seqFile, false, true);
+		txtSeqFile.reSetInfo();
 		for (int i = 0; i < percent.length; i++) {
 			if (percent[i]>100) {
 				percent[i] = 100;
@@ -75,7 +109,7 @@ public abstract class SeqComb {
 		ArrayList<TxtReadandWrite> lstxtWrite = new ArrayList<TxtReadandWrite>();
 		for (int i = 0; i < percent.length; i++) {
 			TxtReadandWrite txtWrite = new TxtReadandWrite();
-			txtWrite.setParameter(outFile+percent[i], true, false);
+			txtWrite.setParameter(compressOutType, outFile+percent[i], true, false);
 			lstxtWrite.add(txtWrite);
 		}
 		int rowAllNum = txtSeqFile.ExcelRows();

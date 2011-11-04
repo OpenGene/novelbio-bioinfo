@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 
 /**

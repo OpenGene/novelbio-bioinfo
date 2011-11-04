@@ -896,8 +896,14 @@ public class MapReads {
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
 	public void getRegionLs(int binNum, List<MapInfo> lsmapInfo, int type) {
-		for (MapInfo mapInfo : lsmapInfo) {
+		for (int i = 0; i < lsmapInfo.size(); i++) {
+			MapInfo mapInfo = lsmapInfo.get(i);
 			double[] Info = getRengeInfo(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), binNum, type);
+			if (Info == null) {
+				lsmapInfo.remove(i); i--;
+				logger.error("出现未知ID："+mapInfo.getTitle() + " "+mapInfo.getChrID() + " " + mapInfo.getStart() + " "+ mapInfo.getEnd());
+				continue;
+			}
 			mapInfo.setDouble(Info);
 		}
 	}

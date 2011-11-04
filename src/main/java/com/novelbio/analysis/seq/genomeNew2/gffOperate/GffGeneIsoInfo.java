@@ -6,7 +6,7 @@ import java.util.HashMap;
 import org.apache.commons.collections15.map.Flat3Map;
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
  * 记录GffGene中的转录本信息

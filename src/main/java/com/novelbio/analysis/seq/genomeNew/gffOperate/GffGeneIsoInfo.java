@@ -6,7 +6,7 @@ import java.util.HashMap;
 import org.apache.commons.collections15.map.Flat3Map;
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
  * 记录GffGene中的转录本信息
@@ -41,11 +41,29 @@ public abstract class GffGeneIsoInfo {
 	/**
 	 * 哺乳动物基因间为Tss上游5000bp
 	 */
-	public static final int PROMOTER_INTERGENIC_MAMMUM = 5000;
+	public static int PROMOTER_INTERGENIC_MAMMUM = 5000;
+	/**
+	 * 设定DISTAL Promoter区域在TSS上游的多少bp外，默认1000
+	 * 目前仅和annotation的文字有关
+	 * 1000bp以内为 Proximal Promoter_
+	 * @param pROMOTER_DISTAL_MAMMUM
+	 */
+	public static void setPROMOTER_DISTAL_MAMMUM(int pROMOTER_DISTAL_MAMMUM) {
+		PROMOTER_DISTAL_MAMMUM = pROMOTER_DISTAL_MAMMUM;
+	}
+	/**
+	 * 设定intergeneic区域在TSS上游的多少bp外，默认5000
+	 * 目前仅和annotation的文字有关
+	 * @param pROMOTER_INTERGENIC_MAMMUM
+	 */
+	public static void setPROMOTER_INTERGENIC_MAMMUM(
+			int pROMOTER_INTERGENIC_MAMMUM) {
+		PROMOTER_INTERGENIC_MAMMUM = pROMOTER_INTERGENIC_MAMMUM;
+	}
 	/**
 	 * 哺乳动物为Distal Promoter Tss上游1000bp，以内的就为Proximal Promoter
 	 */
-	public static final int PROMOTER_DISTAL_MAMMUM = 1000;
+	public static int PROMOTER_DISTAL_MAMMUM = 1000;
 	/**
 	 * InterGenic_
 	 */
@@ -861,7 +879,13 @@ public abstract class GffGeneIsoInfo {
 	 * null: 不在该转录本内
 	 */
 	public String getCodLocStr() {
-		String result = "";
+		String result = "gene_position:";
+		if ( isCis5to3()) {
+			result = result + "forward ";
+		}
+		else {
+			result = result + "reverse ";
+		}
 		if (!isCodInIsoExtend()) {
 			return null;
 		}
@@ -881,7 +905,7 @@ public abstract class GffGeneIsoInfo {
 			result = PROMOTER_DOWNSTREAMTSS_STR;
 		}
 		
-		result = result + "Distance to Tss is: " + Math.abs(cod2TSS) + " ";
+		result = result + "Distance_to_Tss_is:" + Math.abs(cod2TSS) + " ";
 		//UTR
 		if (codLocUTR == COD_LOCUTR_5UTR) {
 			result = result + "5UTR_";
@@ -891,14 +915,14 @@ public abstract class GffGeneIsoInfo {
 		}
 		//exon intron
 		if (codLoc == COD_LOC_EXON) {
-			result = result + "Exon_Exon Position Number is:" + getCodExInNum();
+			result = result + "Exon:exon_Position_Number_is:" + getCodExInNum();
 		}
 		else if (codLoc == COD_LOC_INTRON) {
-			result = result + "Intron_Intron Position Number is:" + getCodExInNum();
+			result = result + "Intron_intron_Position_Number_is:" + getCodExInNum();
 		}
 		//gene end
 		if (isCodInIsoGenEnd()) {
-			result = result + "Distance to GeneEnd: "+ getCod2Tes();
+			result = result + "Distance_to_GeneEnd: "+ getCod2Tes();
 		}
 		return result;
 	}

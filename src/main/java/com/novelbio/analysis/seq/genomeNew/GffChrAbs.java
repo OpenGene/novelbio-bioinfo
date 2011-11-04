@@ -121,14 +121,16 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 		}
 	}
 	/**
+	 * 专门用于画图时的参数
 	 * @param upBp tss和tes以及其他位点的上游长度，默认5000
 	 * @param downBp tss和tes以及其他位点的下游长度，默认5000
 	 */
-	public void region(int upBp, int downBp) {
+	public void setPlotRegion(int upBp, int downBp) {
 		this.upBp = upBp;
 		this.downBp = downBp;
 	}
 	/**
+	 * 专门用于基因定位时的参数
 	 * 设定基因的定位区域信息
 	 * @param tssUpBp 设定基因的转录起点上游长度，默认为3000bp
 	 * @param tssDownBp 设定基因的转录起点下游长度，默认为2000bp
@@ -162,7 +164,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 		GffChrAbs.chrRegx = regx;
 	}
 	
-	protected void loadChrFile() {
+	public void loadChrFile() {
 		if (FileOperate.isFileExist(chrFile) || FileOperate.isFileDirectory(chrFile)) {
 			 seqHash = new SeqHash(chrFile, chrRegx);
 		}
@@ -180,7 +182,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 		}
 	}
 	
-	protected void loadMapReads() {
+	public void loadMapReads() {
 		try {
 			mapReads.ReadMapFile();
 		} catch (Exception e) {
@@ -200,7 +202,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 * @param colScore 打分，也就是权重，没有该列的话，就设置为0
 	 * @param rowStart
 	 */
-	public ArrayList<MapInfo> getFileRegionMapInfo(String txtExcel, int colChrID, int colStartLoc, int colEndLoc, int colScore,int rowStart)
+	public ArrayList<MapInfo> readFileRegionMapInfo(String txtExcel, int colChrID, int colStartLoc, int colEndLoc, int colScore,int rowStart)
 	{
 		int[] columnID = null;
 		if (colScore <= 0 ) {
@@ -234,6 +236,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 		return lsMapInfos;
 	}
 	/**
+	 * 不用reads填充MapInfo
 	 * 获得summit两端各region的区域，总共就是region*2+1的区域
 	 * 如果两个位点终点的间距在distanceMapInfo以内，就会删除那个权重低的
 	 * @param txtExcel
@@ -242,7 +245,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 * @param colSummit
 	 * @param rowStart
 	 */
-	public ArrayList<MapInfo> getFileSiteMapInfo(String txtExcel,int region ,int colChrID, int colSummit, int colScore, int rowStart)
+	public ArrayList<MapInfo> readFileSiteMapInfo(String txtExcel,int region ,int colChrID, int colSummit, int colScore, int rowStart)
 	{
 		int[] columnID = null;
 		if (colScore <= 0 ) {
@@ -276,6 +279,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	}
 	
 	/**
+	 * 给定区域，自动获得基因
 	 * 根据前面设定upBp和downBp
 	 * @param lsMapInfos
 	 * @param structure GffDetailGene.TSS等
@@ -292,15 +296,15 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 
 	/**
 	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
+	 * 一般用于根据gene express 画heapmap图
 	 * @param txtExcel
-	 * @param region
-	 * @param colChrID
-	 * @param colSummit
+	 * @param colGeneID
+	 * @param colScore
 	 * @param rowStart
 	 * @param Structure 基因的哪个部分的结构
 	 * @param binNum 最后结果分成几块
 	 */
-	public ArrayList<MapInfo> getFileGeneMapInfo(String txtExcel,int colGeneID, int colScore, int rowStart, String Structure, int binNum)
+	public ArrayList<MapInfo> readFileGeneMapInfo(String txtExcel,int colGeneID, int colScore, int rowStart, String Structure, int binNum)
 	{
 		////////////////////     读 文 件   ////////////////////////////////////////////
 		int[] columnID = null;
@@ -316,6 +320,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	
 	/**
 	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
+	 * 一般用于根据gene express 画heapmap图
 	 * @param lsGeneValue string[2] 0:geneID 1:value 其中1 可以没有，那么就是string[1] 0:geneID
 	 * @param rowStart
 	 * @param Structure 基因的哪个部分的结构
@@ -326,17 +331,26 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
  		HashMap<GffDetailGene, Double> hashGene2Value = new HashMap<GffDetailGene, Double>();
 		for (String[] strings : lsGeneValue) {
 			GffDetailGene gffDetailGene = gffHashGene.searchLOC(strings[0]);
+			if (gffDetailGene == null) {
+				continue;
+			}
 			if (hashGene2Value.containsKey(gffDetailGene)) {
 				if (strings.length > 1) {
 					double score = Double.parseDouble(strings[1]);
-					if (hashGene2Value.get(gffDetailGene) > score) {
-						hashGene2Value.put(gffDetailGene, score);
+					if (MapInfo.isMin2max()) {
+						if (hashGene2Value.get(gffDetailGene) < score) {
+							hashGene2Value.put(gffDetailGene, score);
+						}
+					}
+					else {
+						if (hashGene2Value.get(gffDetailGene) > score) {
+							hashGene2Value.put(gffDetailGene, score);
+						}
 					}
 				}
 			} else {
 				if (strings.length > 1) {
-					hashGene2Value.put(gffDetailGene,
-							Double.parseDouble(strings[1]));
+					hashGene2Value.put(gffDetailGene, Double.parseDouble(strings[1]));
 				} else {
 					hashGene2Value.put(gffDetailGene, 0.0);
 				}
@@ -386,8 +400,15 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), structure );
 			for (GffDetailGene gffDetailGene : setGffDetailGene) {
 				if (hashGffDetailGenes.containsKey(gffDetailGene)) {
-					if (mapInfo.getWeight() > hashGffDetailGenes.get(gffDetailGene)) {
-						hashGffDetailGenes.put(gffDetailGene, mapInfo.getWeight());
+					if (MapInfo.isMin2max()) {
+						if (mapInfo.getWeight() < hashGffDetailGenes.get(gffDetailGene)) {
+							hashGffDetailGenes.put(gffDetailGene, mapInfo.getWeight());
+						}
+					}
+					else {
+						if (mapInfo.getWeight() > hashGffDetailGenes.get(gffDetailGene)) {
+							hashGffDetailGenes.put(gffDetailGene, mapInfo.getWeight());
+						}
 					}
 				}
 				else
@@ -430,13 +451,23 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	{
 		if (structure.equals(GffDetailGene.TSS)) {
 			int tss = gffDetailGene.getLongestSplit().getTSSsite();
-			MapInfo mapInfo = new MapInfo(gffDetailGene.getChrID(), tss - upBp, tss + downBp, tss,0, gffDetailGene.getLongestSplit().getIsoName());
+			MapInfo mapInfo = null;
+			if (gffDetailGene.isCis5to3())
+				mapInfo = new MapInfo(gffDetailGene.getChrID(), tss - upBp, tss + downBp, tss,0, gffDetailGene.getLongestSplit().getIsoName());
+			else 
+				mapInfo = new MapInfo(gffDetailGene.getChrID(), tss - downBp, tss + upBp, tss, 0, gffDetailGene.getLongestSplit().getIsoName());
+			mapInfo.setCis5to3(gffDetailGene.isCis5to3());
 			mapInfo.setWeight(value);
 			return mapInfo;
 		}
 		else if (structure.equals(GffDetailGene.TES)) {
-			int tes = gffDetailGene.getLongestSplit().getTSSsite();
-			MapInfo mapInfo = new MapInfo(gffDetailGene.getChrID(), tes - upBp, tes + downBp, tes, 0, gffDetailGene.getLongestSplit().getIsoName());
+			int tes = gffDetailGene.getLongestSplit().getTESsite();
+			MapInfo mapInfo = null;
+			if (gffDetailGene.isCis5to3())
+				mapInfo = new MapInfo(gffDetailGene.getChrID(), tes - upBp, tes + downBp, tes, 0, gffDetailGene.getLongestSplit().getIsoName());
+			else 
+				mapInfo = new MapInfo(gffDetailGene.getChrID(), tes - downBp, tes + upBp, tes, 0, gffDetailGene.getLongestSplit().getIsoName());
+			mapInfo.setCis5to3(gffDetailGene.isCis5to3());
 			mapInfo.setWeight(value);
 			return mapInfo;
 		}
