@@ -50,17 +50,19 @@ public class SAMtools{
 		
 	}
 	/**
+	 * 
 	 * 将sam文件改为bed文件，根据mapping质量和正反向进行筛选
 	 * <b>不能挑选跨染色体的融合基因<b>
+	 * @param bedFileCompType bed文件的压缩格式，TxtReadandWrite.TXT等设定
 	 * @param bedFile 最后产生的bedFile
 	 * @param uniqMapping 是否为uniqmapping
 	 * 如果不是uniqmapping，那么mapping数量在第七列
 	 * @return
 	 */
-	public BedSeq sam2bed(String bedFile, boolean uniqMapping) {
+	public BedSeq sam2bed(String bedFileCompType, String bedFile, boolean uniqMapping) {
 		TxtReadandWrite txtSam = new TxtReadandWrite(samFile, false);
 		
-		TxtReadandWrite txtBed = new TxtReadandWrite(bedFile, true);
+		TxtReadandWrite txtBed = new TxtReadandWrite(bedFileCompType, bedFile, true);
 
 //		以下为同一行
 //		HWUSI-EAS1734:0007:3:1:1430:16645:0     163     NC_009443       1523922 60      70M     =       

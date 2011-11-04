@@ -59,8 +59,8 @@ public class FastQMapBwa extends FastQMapAbs{
 	 * @param seqFile1
 	 * @param FastQFormateOffset
 	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
-	 * @param outFilePath 结果文件名
-	 * @param IndexFile
+	 * @param outFileName 结果文件名
+	 * @param uniqMapping
 	 */
 	public FastQMapBwa(String seqFile1,
 			int FastQFormateOffset, int QUALITY,String outFileName, boolean uniqMapping) {
@@ -195,10 +195,10 @@ public class FastQMapBwa extends FastQMapAbs{
 		}
 		SAMtools saMtools = new SAMtools(outFileName, isPairEnd(), mapQ);
 		if (isPairEnd()) {
-			return saMtools.sam2bed(bedFile, uniqMapping);
+			return saMtools.sam2bed(compressOutType, bedFile, uniqMapping);
 		}
 		else {
-			BedSeq bedSeq = saMtools.sam2bed(FileOperate.changeFileSuffix(bedFile, "_fromSam", "bed"), uniqMapping);
+			BedSeq bedSeq = saMtools.sam2bed(compressOutType, FileOperate.changeFileSuffix(bedFile, "_fromSam", "bed"), uniqMapping);
 			return bedSeq.extend(extendTo, bedFile);
 		}
 	}
@@ -213,7 +213,7 @@ public class FastQMapBwa extends FastQMapAbs{
 			mapReads();
 		}
 		SAMtools saMtools = new SAMtools(outFileName, false, mapQ);
-		return saMtools.sam2bed(bedFile, uniqMapping);
+		return saMtools.sam2bed(compressOutType, bedFile, uniqMapping);
 		
 	}
 	

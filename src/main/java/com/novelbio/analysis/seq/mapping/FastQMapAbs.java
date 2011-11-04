@@ -147,6 +147,8 @@ public abstract class FastQMapAbs extends FastQ implements FastQMapInt{
 		}
 //		FastQMapBwa fastQSoapMap= new FastQMapBwa(fastQ.getSeqFile(), fastQ.getSeqFile2(), getOffset(), getQuality(), outFileName, uniqMapping);
 		FastQMapAbs fastQMapAbs = createFastQMap(fastQ);
+		fastQMapAbs.setCompressType(fastQ.getCompressInType(), fastQ.getCompressOutType());
+
 		return fastQMapAbs;
 	}
 
