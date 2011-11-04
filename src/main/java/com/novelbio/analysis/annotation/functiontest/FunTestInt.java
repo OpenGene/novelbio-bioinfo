@@ -1,7 +1,8 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
-import com.novelbio.analysis.annotation.copeID.CopedID;
+
+import com.novelbio.database.model.modcopeid.CopedID;
 
 public interface FunTestInt {
 	

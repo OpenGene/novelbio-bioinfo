@@ -2,7 +2,7 @@ package com.novelbio.analysis.annotation.pathway.network;
 
 import java.util.ArrayList;
 
-import com.novelbio.database.entity.kegg.KGentry;
+import com.novelbio.database.domain.kegg.KGentry;
 
 
 

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.novelbio.analysis.annotation.GO.goEntity.GOInfoAbs;
-import com.novelbio.analysis.annotation.copeID.CopedID;
-import com.novelbio.database.entity.friceDB.AGene2Go;
-import com.novelbio.database.entity.friceDB.Go2Term;
+import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.Go2Term;
+import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modgo.GOInfoAbs;
 
 public class NovelGOFunTest extends AbstFunTest{
 	String GoType = GOInfoAbs.GO_BP;
@@ -86,10 +86,23 @@ public class NovelGOFunTest extends AbstFunTest{
 					result = Arrays.copyOf(tmpresult, 6);
 				result[result.length -1] = aGene2Go.getEvidence();
 				result[result.length -2] = aGene2Go.getGOTerm();
-				result[result.length -3] =aGene2Go.getGOID();
+				result[result.length -3] = aGene2Go.getGOID();
 				lsFinal.add(result);
 			}
 		}
+		String[] title;
+		if (blast) {
+			title = new String[9];
+			title[0]="QueryID";title[1]="QuerySymbol";title[2]="Description";
+			title[3]="Evalue"; title[4]="subjectSymbol"; title[5]="Description";
+			title[6]="GOID"; title[7]="GOTerm"; title[8]="Evidence";
+		}
+		else {
+			title = new String[6];
+			title[0]="QueryID";title[1]="QuerySymbol";title[2]="Description";
+			title[3]="GOID"; title[4]="GOTerm"; title[5]="Evidence";
+		}
+		lsFinal.add(0,title);
 		return lsFinal;
 	}
 	/**

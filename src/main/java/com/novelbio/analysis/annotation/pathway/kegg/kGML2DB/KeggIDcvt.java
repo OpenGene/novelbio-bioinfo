@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.entity.friceDB.NCBIID;
-import com.novelbio.database.entity.kegg.KGIDgen2Keg;
-import com.novelbio.database.entity.kegg.KGIDkeg2Ko;
-import com.novelbio.database.entity.kegg.noGene.KGNCompInfo;
-import com.novelbio.database.entity.kegg.noGene.KGNIdKeg;
+import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.kegg.KGIDgen2Keg;
+import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
+import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
+import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
 import com.novelbio.database.mapper.kegg.MapKIDgen2Keg;
@@ -56,7 +56,7 @@ public class KeggIDcvt {
 			ArrayList<NCBIID> lsNcbiids=MapNCBIID.queryLsNCBIID(ncbiid);
 			if (lsNcbiids==null || lsNcbiids.size() == 0) {
 				ncbiid.setDBInfo("KEGG");
-				MapNCBIID.InsertNCBIID(ncbiid);
+				MapNCBIID.insertNCBIID(ncbiid);
 			}
 		}
 		

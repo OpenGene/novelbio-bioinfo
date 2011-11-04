@@ -16,9 +16,8 @@ import java.util.Map;
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.annotation.copeID.CopeID;
-import com.novelbio.analysis.annotation.copeID.FisherTest;
-import com.novelbio.analysis.annotation.copeID.ItemInfo;
+import com.novelbio.analysis.annotation.functiontest.FisherTest;
+import com.novelbio.analysis.annotation.functiontest.ItemInfo;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGen2Path;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGng2Path;
@@ -27,12 +26,13 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.entity.friceDB.NCBIID;
-import com.novelbio.database.entity.kegg.KGentry;
-import com.novelbio.database.entity.kegg.KGpathway;
-import com.novelbio.database.entity.kegg.noGene.KGNIdKeg;
+import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.kegg.KGentry;
+import com.novelbio.database.domain.kegg.KGpathway;
+import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.mapper.kegg.MapKNIdKeg;
 import com.novelbio.database.mapper.kegg.MapKPathway;
+import com.novelbio.database.model.modcopeid.CopeID;
 import com.novelbio.database.service.ServAnno;
 
 /**

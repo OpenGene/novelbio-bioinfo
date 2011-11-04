@@ -3,7 +3,7 @@ package com.novelbio.analysis.annotation.blast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.database.entity.friceDB.NCBIID;
+import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 
 /**

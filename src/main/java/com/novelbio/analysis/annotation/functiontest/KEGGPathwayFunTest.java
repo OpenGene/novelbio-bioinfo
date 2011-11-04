@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
-import com.novelbio.database.entity.kegg.KGpathway;
+import com.novelbio.database.domain.kegg.KGpathway;
+import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modkegg.KeggInfo;
 
 public class KEGGPathwayFunTest extends AbstFunTest{
 
@@ -22,7 +23,7 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 	@Override
 	public String[] getItemName(String ItemID) {
 		String[] KeggTerm = new String[1];
-		KeggTerm[0] = KGpathway.getHashKGpath().get(ItemID).getTitle();
+		KeggTerm[0] = KeggInfo.getKGpathway(ItemID).getTitle();
 		return KeggTerm;
 	}
 

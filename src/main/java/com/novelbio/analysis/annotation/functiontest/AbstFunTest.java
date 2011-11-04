@@ -7,13 +7,11 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.annotation.GO.GoFisher;
-import com.novelbio.analysis.annotation.copeID.CopedID;
-import com.novelbio.analysis.annotation.copeID.FisherTest;
-import com.novelbio.analysis.annotation.copeID.ItemInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 

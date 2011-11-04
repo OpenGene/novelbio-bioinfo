@@ -6,12 +6,13 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.annotation.GO.goEntity.GOInfoAbs;
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modgo.GOInfoAbs;
 
 public class ElimGOFunTest extends NovelGOFunTest{
 	private static final Logger logger = Logger.getLogger(ElimGOFunTest.class);
@@ -30,7 +31,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	public void setNumGOID(int NumGOID) {
 		this.NumGOID = NumGOID;
 	}
-	
+
 	public ArrayList<String[]> getItem2GenePvalue() {
 		ArrayList<String[]> lsTestResult = null;
 		try {
@@ -48,7 +49,16 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		else {
 			 lsResult = ArrayOperate.combArrayListHash(lsTestResult, lsAnno, 0, 0);
 		}
-		return lsResult;
+		int[] includeCol = new int[9];
+		includeCol[0] = 0; includeCol[1] = 1; includeCol[2] = 2; includeCol[3] = 3; includeCol[4] = 4; 
+		 includeCol[5] = lsResult.get(0).length - 4; includeCol[6] = lsResult.get(0).length - 3; includeCol[7] = lsResult.get(0).length - 2; 
+		 includeCol[8] = lsResult.get(0).length - 1; 
+		ArrayList<String[]> lsFinal = ArrayOperate.listCope(lsResult, includeCol, true);
+    	String[] title=new String[9];
+		title[0]="GOID";title[1]="GOTerm";title[2]="AccessID";title[3]="GeneSymbol";title[4]="Description";
+		title[5]="P-Value";title[6]="FDR";title[7]="Enrichment";title[8]="(-log2P)";
+		lsFinal.add(0,title);
+		return lsFinal;
 	}
 	
 	

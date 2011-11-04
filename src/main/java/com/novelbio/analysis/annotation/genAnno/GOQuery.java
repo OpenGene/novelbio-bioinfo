@@ -6,18 +6,18 @@ import java.util.List;
 import java.util.Set;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.database.entity.friceDB.Blast2GeneInfo;
-import com.novelbio.database.entity.friceDB.BlastInfo;
-import com.novelbio.database.entity.friceDB.Gene2Go;
-import com.novelbio.database.entity.friceDB.Gene2GoInfo;
-import com.novelbio.database.entity.friceDB.GeneInfo;
-import com.novelbio.database.entity.friceDB.Uni2GoInfo;
-import com.novelbio.database.entity.friceDB.UniGene2Go;
-import com.novelbio.database.entity.friceDB.UniGeneInfo;
+import com.novelbio.database.domain.geneanno.Blast2GeneInfo;
+import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.Gene2Go;
+import com.novelbio.database.domain.geneanno.Gene2GoInfo;
+import com.novelbio.database.domain.geneanno.GeneInfo;
+import com.novelbio.database.domain.geneanno.Uni2GoInfo;
+import com.novelbio.database.domain.geneanno.UniGene2Go;
+import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.service.ServAnno;
 import com.novelbio.database.service.ServBlastInfo2;
 import com.novelbio.database.service.ServGo;
-
+@Deprecated
 public class GOQuery {
  
 	

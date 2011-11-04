@@ -13,12 +13,9 @@ import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.annotation.GO.goEntity.GOInfoAbs;
 import com.novelbio.analysis.annotation.GO.queryDB.QgeneID2Go;
-import com.novelbio.analysis.annotation.copeID.CopeID;
-import com.novelbio.analysis.annotation.copeID.CopedID;
-import com.novelbio.analysis.annotation.copeID.FisherTest;
-import com.novelbio.analysis.annotation.copeID.ItemInfo;
+import com.novelbio.analysis.annotation.functiontest.FisherTest;
+import com.novelbio.analysis.annotation.functiontest.ItemInfo;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.ExcelOperate;
@@ -26,10 +23,13 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.entity.friceDB.AGene2Go;
-import com.novelbio.database.entity.friceDB.Gene2Go;
-import com.novelbio.database.entity.friceDB.Go2Term;
-import com.novelbio.database.entity.kegg.KGpathway;
+import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.Gene2Go;
+import com.novelbio.database.domain.geneanno.Go2Term;
+import com.novelbio.database.domain.kegg.KGpathway;
+import com.novelbio.database.model.modcopeid.CopeID;
+import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modgo.GOInfoAbs;
 
 /**
  * service 层，实现GO的fisher检验

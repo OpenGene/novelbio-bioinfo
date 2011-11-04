@@ -2,9 +2,9 @@ package com.novelbio.analysis.annotation.pathway.kegg.pathEntity;
 
 import java.util.ArrayList;
 
-import com.novelbio.database.entity.friceDB.BlastInfo;
-import com.novelbio.database.entity.kegg.KGCgen2Entry;
-import com.novelbio.database.entity.kegg.KGentry;
+import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.kegg.KGCgen2Entry;
+import com.novelbio.database.domain.kegg.KGentry;
 
 
 /**

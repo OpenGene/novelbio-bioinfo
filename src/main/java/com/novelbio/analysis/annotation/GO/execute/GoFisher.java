@@ -13,13 +13,13 @@ import com.novelbio.analysis.annotation.GO.queryDB.QBlastGO;
 import com.novelbio.analysis.annotation.GO.queryDB.QGenID2GoInfo;
 import com.novelbio.analysis.annotation.GO.queryDB.QGenID2GoInfoSepID;
 import com.novelbio.analysis.annotation.blast.blastRun;
-import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modcopeid.CopeID;
 
 
 /**

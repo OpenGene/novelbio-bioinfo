@@ -2,9 +2,9 @@ package com.novelbio.analysis.annotation.pathway.kegg.pathEntity;
 
 import java.util.ArrayList;
 
-import com.novelbio.database.entity.kegg.KGentry;
-import com.novelbio.database.entity.kegg.noGene.KGNCompInfo;
-import com.novelbio.database.entity.kegg.noGene.KGNIdKeg;
+import com.novelbio.database.domain.kegg.KGentry;
+import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
+import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 
 
 

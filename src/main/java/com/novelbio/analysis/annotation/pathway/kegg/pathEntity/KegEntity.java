@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 import com.novelbio.analysis.annotation.pathway.network.AbsNetRelate;
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
 import com.novelbio.analysis.annotation.pathway.network.KegNetRelate;
-import com.novelbio.database.entity.kegg.KGentry;
-import com.novelbio.database.entity.kegg.KGrelation;
+import com.novelbio.database.domain.kegg.KGentry;
+import com.novelbio.database.domain.kegg.KGrelation;
 import com.novelbio.database.mapper.kegg.MapKEntry;
 import com.novelbio.database.mapper.kegg.MapKRealtion;
 

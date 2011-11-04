@@ -12,12 +12,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.entity.friceDB.NCBIID;
+import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.model.modcopeid.CopeID;
 
 /**
  * 准备序列，做Blast，并将结果导入数据库

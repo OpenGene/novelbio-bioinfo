@@ -6,28 +6,28 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.novelbio.analysis.annotation.copeID.CopeID;
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
-import com.novelbio.database.entity.friceDB.BlastInfo;
-import com.novelbio.database.entity.friceDB.Gene2GoInfo;
-import com.novelbio.database.entity.friceDB.GeneInfo;
-import com.novelbio.database.entity.friceDB.NCBIID;
-import com.novelbio.database.entity.friceDB.Uni2GoInfo;
-import com.novelbio.database.entity.friceDB.UniGeneInfo;
-import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.Gene2GoInfo;
+import com.novelbio.database.domain.geneanno.GeneInfo;
+import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.geneanno.Uni2GoInfo;
+import com.novelbio.database.domain.geneanno.UniGeneInfo;
+import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapBlastInfo;
 import com.novelbio.database.mapper.geneanno.MapGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapUniProtID;
+import com.novelbio.database.model.modcopeid.CopeID;
+import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.ServAnno;
-
+@Deprecated
 public class AnnoQuery {
 	/**
 	 * 

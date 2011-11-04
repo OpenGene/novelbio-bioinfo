@@ -4,9 +4,9 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.model.modcopeid.CopeID;
 /**
  * 从NCBI的nt和nr数据库中获得指定物种的序列并整理为fasta格式
 	 * 整理成:<br>

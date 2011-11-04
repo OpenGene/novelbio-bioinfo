@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.annotation.GO.goEntity.GOInfoAbs;
-import com.novelbio.analysis.annotation.copeID.CopedID;
+import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modgo.GOInfoAbs;
 
 /**
  * 功能分析的类

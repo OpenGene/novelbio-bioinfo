@@ -1,4 +1,4 @@
-package com.novelbio.analysis.annotation.copeID;
+package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -238,12 +238,10 @@ public class FisherTest {
 			String[] tmp = lsGOinfo.get(i);
 			String[] tmp2=new String[tmp.length+RFisherResult[i].length-4];
 			for (int j = 0; j < tmp2.length; j++) {
-				if( j<tmp.length)
-				{
+				if( j<tmp.length) {
 					tmp2[j]=tmp[j];
 				}
-				else 
-				{
+				else {
 					tmp2[j]=RFisherResult[i][j-tmp.length+4];
 				}
 			}

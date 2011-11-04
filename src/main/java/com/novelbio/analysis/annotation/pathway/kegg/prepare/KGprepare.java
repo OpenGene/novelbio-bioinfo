@@ -8,8 +8,8 @@ import java.util.Map;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.entity.friceDB.NCBIID;
-import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.geneanno.MapUniProtID;
 

@@ -9,9 +9,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import com.novelbio.analysis.annotation.GO.queryDB.QgeneID2Go;
-import com.novelbio.analysis.annotation.copeID.CopeID;
-import com.novelbio.analysis.annotation.copeID.FisherTest;
-import com.novelbio.analysis.annotation.copeID.ItemInfo;
+import com.novelbio.analysis.annotation.functiontest.FisherTest;
+import com.novelbio.analysis.annotation.functiontest.ItemInfo;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.ExcelOperate;
@@ -19,6 +18,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modcopeid.CopeID;
 import com.novelbio.database.service.ServGo;
 
 

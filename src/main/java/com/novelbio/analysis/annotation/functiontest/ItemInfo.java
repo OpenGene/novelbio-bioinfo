@@ -1,4 +1,4 @@
-package com.novelbio.analysis.annotation.copeID;
+package com.novelbio.analysis.annotation.functiontest;
 /**
  * 专门用与FisherTest类中获得Item的情况
  * @author zong0jie
