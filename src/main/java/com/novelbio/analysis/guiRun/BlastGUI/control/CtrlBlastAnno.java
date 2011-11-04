@@ -9,12 +9,12 @@ import javax.swing.SwingWorker;
 
 
 import com.google.common.base.Splitter;
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GuiBlastJpanel;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.ServAnno;
 
 

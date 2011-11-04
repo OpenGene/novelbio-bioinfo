@@ -3,7 +3,7 @@ package com.novelbio.analysis.guiRun.BlastGUI.control;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.database.entity.friceDB.TaxInfo;
+import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.mapper.geneanno.MapFSTaxID;
 
 

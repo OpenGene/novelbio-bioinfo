@@ -11,12 +11,12 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.annotation.GO.execute.GoFisherNew;
 import com.novelbio.analysis.annotation.GO.queryDB.QgeneID2Go;
-import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.CopyOfGUIanalysisSimple;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modcopeid.CopeID;
 
 public class CtrlGONew {
 	private static final Logger logger = Logger.getLogger(CtrlGONew.class);
