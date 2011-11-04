@@ -4,10 +4,11 @@ import java.util.ArrayList;
 
 import org.apache.ibatis.session.SqlSession;
 
-import com.novelbio.database.entity.friceDB.*;
+import com.novelbio.database.domain.geneanno.*;
+import com.novelbio.database.mapper.MapperSql;
 import com.novelbio.database.util.Util;
 
-public class MapNCBIID {
+public interface MapNCBIID extends MapperSql{
 	
 
 	/**
@@ -25,23 +26,7 @@ public class MapNCBIID {
 	 * @param NCBIID
 	 * @return
 	 */
-	public static NCBIID queryNCBIID(NCBIID QueryNCBIID){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
-		NCBIID nCBIID=null;
-		try
-		{
-			nCBIID= (NCBIID)session.selectOne("FriceDBSingle.selectNCBIID",QueryNCBIID);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return nCBIID;
-	}
+	public NCBIID queryNCBIID(NCBIID QueryNCBIID);
 	
 	/**
 	 * 用geneID,accessID,TaxID三个中的任意组合去查找NCBIID表
@@ -58,39 +43,9 @@ public class MapNCBIID {
 	 * @param NCBIID
 	 * @return
 	 */
-	public static ArrayList<NCBIID> queryLsNCBIID(NCBIID QueryNCBIID){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
-		ArrayList<NCBIID> lsNCBIID=null;
-		try
-		{
-			lsNCBIID= (ArrayList<NCBIID>)session.selectList("FriceDBSingle.selectNCBIID",QueryNCBIID);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsNCBIID;
-	}
+	public ArrayList<NCBIID> queryLsNCBIID(NCBIID QueryNCBIID);
 	
-	public static void InsertNCBIID(NCBIID nCBIID){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
- 		try
-		{
-			session.insert("FriceDBSingle.insertNCBIID", nCBIID);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void insertNCBIID(NCBIID nCBIID);
 	
 	/**
 	 * 目前的升级方式是<br>
@@ -122,19 +77,5 @@ public class MapNCBIID {
 	    /where <br>
 	 * @param NCBIID
 	 */
-	public static void upDateNCBIID(NCBIID nCBIID){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
- 		try
-		{
-			session.update("FriceDBSingle.updateNCBIID", nCBIID);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void upDateNCBIID(NCBIID nCBIID);
 }

@@ -2,14 +2,14 @@ package com.novelbio.database.updatedb.idconvert;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.entity.friceDB.AGene2Go;
-import com.novelbio.database.entity.friceDB.AGeneInfo;
-import com.novelbio.database.entity.friceDB.Gene2Go;
-import com.novelbio.database.entity.friceDB.GeneInfo;
-import com.novelbio.database.entity.friceDB.UniGeneInfo;
+import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.AGeneInfo;
+import com.novelbio.database.domain.geneanno.Gene2Go;
+import com.novelbio.database.domain.geneanno.GeneInfo;
+import com.novelbio.database.domain.geneanno.UniGeneInfo;
+import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.updatedb.database.UpDateFriceDB;
 
 public class Yeast {

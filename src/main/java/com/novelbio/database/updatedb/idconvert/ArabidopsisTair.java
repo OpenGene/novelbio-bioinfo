@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.util.SSCellRange;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.entity.friceDB.Gene2Go;
-import com.novelbio.database.entity.friceDB.GeneInfo;
-import com.novelbio.database.entity.friceDB.UniGeneInfo;
+import com.novelbio.database.domain.geneanno.Gene2Go;
+import com.novelbio.database.domain.geneanno.GeneInfo;
+import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
+import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.updatedb.database.UpDateFriceDB;
 
 public class ArabidopsisTair {

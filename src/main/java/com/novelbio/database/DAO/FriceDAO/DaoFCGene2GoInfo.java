@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import org.apache.ibatis.session.SqlSession;
 
-import com.novelbio.database.entity.friceDB.*;
+import com.novelbio.database.domain.geneanno.*;
 import com.novelbio.database.util.Util;
 
-
+@Deprecated
 public class DaoFCGene2GoInfo {
 	/**
 	 * 给定NCBIID对象，返回NCBIID、gene2Go、Gene2Info几个表的信息

@@ -4,7 +4,8 @@ import javax.inject.Inject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.novelbio.database.entity.friceDB.NCBIID;
+
+import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.mapper.MapNCBIID;
 import com.novelbio.database.service.AbsGetSpring;
 //@ContextConfiguration("classpath:spring.xml")

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.ibatis.session.SqlSession;
 
-import com.novelbio.database.entity.friceDB.BlastInfo;
+import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.util.Util;
 
 

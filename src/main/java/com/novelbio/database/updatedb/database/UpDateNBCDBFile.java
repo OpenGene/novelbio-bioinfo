@@ -11,21 +11,20 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.GOQuery;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.entity.friceDB.AGene2Go;
-import com.novelbio.database.entity.friceDB.BlastInfo;
-import com.novelbio.database.entity.friceDB.Gene2Go;
-import com.novelbio.database.entity.friceDB.GeneInfo;
-import com.novelbio.database.entity.friceDB.Go2Term;
-import com.novelbio.database.entity.friceDB.NCBIID;
-import com.novelbio.database.entity.friceDB.TaxInfo;
-import com.novelbio.database.entity.friceDB.UniGene2Go;
-import com.novelbio.database.entity.friceDB.UniGeneInfo;
-import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.Gene2Go;
+import com.novelbio.database.domain.geneanno.GeneInfo;
+import com.novelbio.database.domain.geneanno.Go2Term;
+import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.geneanno.TaxInfo;
+import com.novelbio.database.domain.geneanno.UniGene2Go;
+import com.novelbio.database.domain.geneanno.UniGeneInfo;
+import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapBlastInfo;
 import com.novelbio.database.mapper.geneanno.MapFSTaxID;
 import com.novelbio.database.mapper.geneanno.MapGene2Go;
@@ -35,6 +34,7 @@ import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
 import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapUniProtID;
+import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.ServGo;
 
 
@@ -155,7 +155,7 @@ public class UpDateNBCDBFile {
 				else
 				{
 					ncbiid.setDBInfo(ss[3]);
-					MapNCBIID.InsertNCBIID(ncbiid);
+					MapNCBIID.insertNCBIID(ncbiid);
 					i++;
 				}
 			}
@@ -204,7 +204,7 @@ public class UpDateNBCDBFile {
 				//多个geneID分别都试一遍
 				ncbiid.setGeneId(ssGeneID);
 				ncbiid.setDBInfo(ss[3]);
-				MapNCBIID.InsertNCBIID(ncbiid);
+				MapNCBIID.insertNCBIID(ncbiid);
 				i++;
 				if (i%10000==0) {
 					System.out.println(i);
@@ -257,7 +257,7 @@ public class UpDateNBCDBFile {
 			{
 				ncbiid.setTaxID(Integer.parseInt(ss[0]));
 				ncbiid.setDBInfo(ss[3]);
-				MapNCBIID.InsertNCBIID(ncbiid);
+				MapNCBIID.insertNCBIID(ncbiid);
 			}
 			else {
 				continue;
@@ -312,7 +312,7 @@ public class UpDateNBCDBFile {
 				{
 					ncbiid.setTaxID(ncbiid3.getTaxID());
 					ncbiid.setDBInfo(NovelBioConst.DBINFO_UNIPROT_UNIID);
-					MapNCBIID.InsertNCBIID(ncbiid);
+					MapNCBIID.insertNCBIID(ncbiid);
 					i++;
 				}
 				else {
@@ -369,7 +369,7 @@ public class UpDateNBCDBFile {
 					ArrayList<NCBIID> lsNcbiids2 = MapNCBIID.queryLsNCBIID(ncbiid);
 					if (lsNcbiids2 == null || lsNcbiids2.size() == 0) {
 						ncbiid.setDBInfo(ss[3]);
-						MapNCBIID.InsertNCBIID(ncbiid);
+						MapNCBIID.insertNCBIID(ncbiid);
 						i++;
 					}
 					continue;

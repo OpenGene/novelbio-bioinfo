@@ -2,12 +2,12 @@ package com.novelbio.database.service;
 
 import java.util.ArrayList;
 
-import com.novelbio.database.entity.friceDB.Blast2GeneInfo;
-import com.novelbio.database.entity.friceDB.BlastInfo;
-import com.novelbio.database.entity.friceDB.Gene2GoInfo;
-import com.novelbio.database.entity.friceDB.NCBIID;
-import com.novelbio.database.entity.friceDB.Uni2GoInfo;
-import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.domain.geneanno.Blast2GeneInfo;
+import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.Gene2GoInfo;
+import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.geneanno.Uni2GoInfo;
+import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapBlastInfo;
 
 public class ServBlastInfo2 {

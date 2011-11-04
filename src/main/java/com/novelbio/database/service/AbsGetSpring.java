@@ -6,11 +6,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 public class AbsGetSpring {
-	ApplicationContext ctx;
-	BeanFactory factory;
-
-	public AbsGetSpring() {
-		ctx = new ClassPathXmlApplicationContext("spring2.xml");
+	static ApplicationContext ctx;
+	static protected BeanFactory factory;
+	static
+	{
+		ctx = new ClassPathXmlApplicationContext("spring.xml");
 		factory = (BeanFactory) ctx;
 	}
 }

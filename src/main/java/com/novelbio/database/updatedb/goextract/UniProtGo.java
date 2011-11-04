@@ -3,8 +3,8 @@ package com.novelbio.database.updatedb.goextract;
 import java.io.BufferedReader;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.entity.friceDB.AGene2Go;
-import com.novelbio.database.entity.friceDB.Gene2Go;
+import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.mapper.geneanno.MapGene2Go;
 
 public class UniProtGo {

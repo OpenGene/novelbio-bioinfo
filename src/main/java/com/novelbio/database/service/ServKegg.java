@@ -2,22 +2,22 @@ package com.novelbio.database.service;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGen2Path;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGng2Path;
 import com.novelbio.database.DAO.KEGGDAO.MapKCdetail;
-import com.novelbio.database.entity.friceDB.BlastInfo;
-import com.novelbio.database.entity.friceDB.NCBIID;
-import com.novelbio.database.entity.kegg.KGCgen2Entry;
-import com.novelbio.database.entity.kegg.KGCgen2Ko;
-import com.novelbio.database.entity.kegg.KGIDkeg2Ko;
-import com.novelbio.database.entity.kegg.KGentry;
-import com.novelbio.database.entity.kegg.noGene.KGNCompInfo;
-import com.novelbio.database.entity.kegg.noGene.KGNIdKeg;
+import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.kegg.KGCgen2Entry;
+import com.novelbio.database.domain.kegg.KGCgen2Ko;
+import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
+import com.novelbio.database.domain.kegg.KGentry;
+import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
+import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.mapper.geneanno.MapBlastInfo;
 import com.novelbio.database.mapper.kegg.MapKEntry;
 import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
 import com.novelbio.database.mapper.kegg.MapKNCompInfo;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 public class ServKegg {
 

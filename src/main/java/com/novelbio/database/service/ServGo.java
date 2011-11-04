@@ -6,26 +6,26 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
-import com.novelbio.database.entity.friceDB.AGene2Go;
-import com.novelbio.database.entity.friceDB.Blast2GeneInfo;
-import com.novelbio.database.entity.friceDB.BlastInfo;
-import com.novelbio.database.entity.friceDB.Gene2Go;
-import com.novelbio.database.entity.friceDB.Gene2GoInfo;
-import com.novelbio.database.entity.friceDB.GeneInfo;
-import com.novelbio.database.entity.friceDB.Go2Term;
-import com.novelbio.database.entity.friceDB.NCBIID;
-import com.novelbio.database.entity.friceDB.Uni2GoInfo;
-import com.novelbio.database.entity.friceDB.UniGene2Go;
-import com.novelbio.database.entity.friceDB.UniGeneInfo;
-import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.Blast2GeneInfo;
+import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.Gene2Go;
+import com.novelbio.database.domain.geneanno.Gene2GoInfo;
+import com.novelbio.database.domain.geneanno.GeneInfo;
+import com.novelbio.database.domain.geneanno.Go2Term;
+import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.geneanno.Uni2GoInfo;
+import com.novelbio.database.domain.geneanno.UniGene2Go;
+import com.novelbio.database.domain.geneanno.UniGeneInfo;
+import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapBlastInfo;
 import com.novelbio.database.mapper.geneanno.MapGene2Go;
 import com.novelbio.database.mapper.geneanno.MapGo2Term;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
 import com.novelbio.database.mapper.geneanno.MapUniProtID;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 public class ServGo {
 	/**

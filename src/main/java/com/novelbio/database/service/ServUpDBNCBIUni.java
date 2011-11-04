@@ -2,8 +2,8 @@ package com.novelbio.database.service;
 
 import java.util.ArrayList;
 
-import com.novelbio.database.entity.friceDB.NCBIID;
-import com.novelbio.database.entity.friceDB.UniProtID;
+import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.geneanno.MapUniProtID;
 
@@ -25,7 +25,7 @@ public class ServUpDBNCBIUni {
 		ncbiid2.setTaxID(ncbiid.getTaxID());
 		ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid2);
 		if (lsNcbiids == null || lsNcbiids.size() == 0) {
-			MapNCBIID.InsertNCBIID(ncbiid);
+			MapNCBIID.insertNCBIID(ncbiid);
 		}
 		else {
 			if (updateDBinfo) {

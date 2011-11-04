@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashSet;
 
-import com.novelbio.analysis.annotation.copeID.CopeID;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.model.modcopeid.CopeID;
 
 
 

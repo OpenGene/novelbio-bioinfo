@@ -2,10 +2,10 @@ package com.novelbio.database.DAO.KEGGDAO;
 
 import org.apache.ibatis.session.SqlSession;
 
-import com.novelbio.database.entity.kegg.*;
-import com.novelbio.database.entity.friceDB.*;
+import com.novelbio.database.domain.geneanno.*;
+import com.novelbio.database.domain.kegg.*;
 import com.novelbio.database.util.Util;
-
+@Deprecated
 public class MapKCdetail {
 	/**
 	 * geneID2KO是多对多的关系，

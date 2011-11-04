@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import org.apache.ibatis.session.SqlSession;
 
-import com.novelbio.database.entity.kegg.*;
-import com.novelbio.database.entity.friceDB.*;
+import com.novelbio.database.domain.geneanno.*;
+import com.novelbio.database.domain.kegg.*;
 import com.novelbio.database.util.Util;
 
 public class MapKIDKeg2Ko {
