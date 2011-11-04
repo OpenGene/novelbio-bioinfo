@@ -3,11 +3,11 @@ package com.novelbio.analysis.seq.chipseq.peakAnnotation.symbolAnnotation;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.ServAnno;
 
 
