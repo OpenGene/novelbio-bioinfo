@@ -20,15 +20,15 @@ import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailAbs;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
-import com.novelbio.database.entity.friceDB.Gene2GoInfo;
-import com.novelbio.database.entity.friceDB.NCBIID;
+import com.novelbio.database.domain.geneanno.Gene2GoInfo;
+import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 
 public class SimpCoExp {
