@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapNCBIID">
+	<resultMap id="NCBIIDMap" type="NCBIID">
+		<result property="geneID" column="GeneID"/>
+		<result property="dbInfo" column="DataBaseInfo"/>
+	</resultMap>
+	<select id="queryNCBIID" parameterType="NCBIID" resultMap="NCBIIDMap">
+		select *
+		from NCBIID
+		<where>
+			<if test="geneID !=0 and geneID !=null">
+				GeneID = #{geneID} 
+			</if>
+			<if test="accessID !=null">
+				and accessID = #{accessID} 
+			</if>
+			<if test="taxID !=0 and taxID !=null">
+				and TaxID = #{taxID} 
+			</if>
+			<if test="dbInfo !=null">
+				and DataBaseInfo = #{dbInfo}
+			</if>
+	    </where> 
+	</select>
+	<select id="queryLsNCBIID" parameterType="NCBIID" resultMap="NCBIIDMap">
+		select *
+		from NCBIID
+		<where>
+			<if test="geneID !=0 and geneID !=null">
+				GeneID = #{geneID} 
+			</if>
+			<if test="accessID !=null">
+				and accessID = #{accessID} 
+			</if>
+			<if test="taxID !=0 and taxID !=null">
+				and TaxID = #{taxID} 
+			</if>
+			<if test="dbInfo !=null">
+				and DataBaseInfo = #{dbInfo}
+			</if>
+	    </where> 
+	</select>
+	<insert id="insertNCBIID" parameterType="NCBIID">
+		insert into NCBIID (TaxID,GeneID,accessID,DataBaseInfo)
+		values (#{taxID},#{geneID},#{accessID},#{dbInfo})
+	</insert>
+	<update id="upDateNCBIID" parameterType="NCBIID">
+		update NCBIID
+		<set>
+			<if test="taxID !=null and taxID !=0">
+				TaxID = #{taxID},
+			</if>
+			<if test="geneID !=null and geneID !=0">
+				GeneID = #{geneID},
+			</if>
+			<if test="dbInfo !=null">
+				DataBaseInfo = #{dbInfo},
+			</if>
+			<if test="accessID !=null">
+				accessID = #{accessID} 
+			</if>
+		</set>
+		<where>
+			<if test="geneID !=0 and geneID !=null">
+				GeneID = #{geneID} 
+			</if>
+			<if test="accessID !=null">
+				and accessID = #{accessID} 
+			</if>
+			<if test="taxID !=0 and taxID !=null">
+				and TaxID = #{taxID} 
+			</if>
+	    </where> 
+	</update>
+</mapper>

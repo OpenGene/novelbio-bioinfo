@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapSnpIndelRs">
+	<resultMap id="SnpIndelRsMap" type="SnpIndelRs">
+	</resultMap>
+	<select id="querySnpIndelRs" parameterType="SnpIndelRs" resultMap="SnpIndelRsMap">
+		select *
+		from snpindelrs
+		<where>
+			<if test="snpRsID != null and snpRsID != '' ">
+				snpRsID = #{snpRsID}
+			</if>
+			<if test="taxID != 0">
+				and taxID = #{taxID}
+			</if>
+			<if test="locStart != 0">
+				and locStart = #{locStart}
+			</if>
+			<if test="locEnd != 0">
+				and locEnd = #{locEnd}
+			</if>
+			<if test="strand != null and strand != '' ">
+				and strand = #{strand}
+			</if>
+			<if test="molType !=null and molType != '' ">
+				and molType = #{molType}
+			</if>
+			<if test="type !=null and type != '' ">
+				and type = #{type}
+			</if>
+			<if test="locType !=null and locType != '' ">
+				and locType = #{locType}
+			</if>
+			<if test="weight != 0">
+				and weight = #{weight}
+			</if>
+	    </where>
+	</select>
+	<select id="queryLsSnpIndelRs" parameterType="SnpIndelRs" resultMap="SnpIndelRsMap">
+		select *
+		from snpindelrs
+		<where>
+			<if test="snpRsID !=null and snpRsID != '' ">
+				snpRsID = #{snpRsID}
+			</if>
+			<if test="taxID != 0">
+				and taxID = #{taxID}
+			</if>
+			<if test="locStart != 0">
+				and locStart = #{locStart}
+			</if>
+			<if test="locEnd != 0">
+				and locEnd = #{locEnd}
+			</if>
+			<if test="strand != null and strand != '' ">
+				and strand = #{strand}
+			</if>
+			<if test="molType != null and molType != '' ">
+				and molType = #{molType}
+			</if>
+			<if test="type != null and type != '' ">
+				and type = #{type}
+			</if>
+			<if test="locType !=null and locType != '' ">
+				and locType = #{locType}
+			</if>
+			<if test="weight != 0">
+				and weight = #{weight}
+			</if>
+	    </where>
+	</select>
+</mapper>
