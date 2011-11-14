@@ -181,7 +181,7 @@ public class GuiPearson extends JPanel{
 						for (int i = 0; i < ColNum ; i++) {
 							columnID[i] = i+1;
 						}
-						SimpCoExp.getCoExpInfo(jTxtFilePathPath.getText(), columnID, 9606, 0.05, savefilename, false);
+						SimpCoExp.getCoExpInfo(jTxtFilePathPath.getText(), columnID,9606 , Double.parseDouble(jTxtAccColPath.getText()), savefilename, false);
 					} catch (Exception e) {
 						// TODO: handle exception
 					}

@@ -22,26 +22,26 @@ public class runSrc2Trg {
 		
 		
 		
-		getInfo();
+//		getInfo();
 		
-//		String parentFIle = "/home/zong0jie/桌面/";
-//
-//		int QtaxID = 9606;
-//		boolean blast = false;
-//		int StaxID = 4932;
-//		try {
-//			String readExcel = parentFIle + "正干预差异基因.xls";
-//			
-//			
-//			
-//			String scr2trg = parentFIle + FileOperate.getFileNameSep(readExcel)[0]+"InterSectiontrg.txt";
-//			String attr = parentFIle + FileOperate.getFileNameSep(readExcel)[0]+"InterSectionatt.txt";
-//			String[] accID = KGprepare.getAccID(1, 1,readExcel);
-//			Scr2Target.getGene2RelateKo("",accID,scr2trg, attr , QtaxID, blast, StaxID, 1e-5);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		String parentFIle = "/home/zong0jie/桌面/";
+
+		int QtaxID = 9606;
+		boolean blast = false;
+		int StaxID = 4932;
+		try {
+			String readExcel = parentFIle + "UCSChg19RefseqDuplicateID.xls";
+			
+			
+			
+			String scr2trg = parentFIle + FileOperate.getFileNameSep(readExcel)[0]+"InterSectiontrg.txt";
+			String attr = parentFIle + FileOperate.getFileNameSep(readExcel)[0]+"InterSectionatt.txt";
+			String[] accID = KGprepare.getAccID(1, 1,readExcel);
+			Scr2Target.getGene2RelateKo("path:hsa04150",accID,scr2trg, attr , QtaxID, blast, StaxID, 1e-5);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 //		try {
 //			String readExcel = parentFIle + "603 vs 601.xls";
@@ -61,11 +61,11 @@ public class runSrc2Trg {
 	{
 		String parentFIle = "/home/zong0jie/桌面/";
 
-		int QtaxID = 83332;
+		int QtaxID = 9606;
 		boolean blast = false;
 		int StaxID = 4932;
 		try {
-			String readExcel = parentFIle + "mtuID.xls";
+			String readExcel = parentFIle + "显著GO PATH交集基因.xls";
 			
 			
 			

@@ -13,10 +13,13 @@ import com.novelbio.database.mapper.geneanno.MapGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.kegg.MapKEntry;
 import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
+import com.novelbio.database.servSpring.ServNCBIID;
+import com.novelbio.database.service.ServAnno;
+import com.novelbio.database.service.servgeneanno.ServGeneAnno;
 
 public class Scr2Target {
 	
-
+	
 
 	/**
 	 * 
@@ -31,6 +34,7 @@ public class Scr2Target {
 	 */
 	public static void getGene2RelateKo(String pathName, String[] accID,String ResultFIleScr2Target, String resultFIleAttribute,int QtaxID,boolean blast,int subTaxID,double evalue) throws Exception
 	{
+		ServGeneAnno servNCBIID = new ServGeneAnno();
 		//丛数据库获得taxID
 		if (QtaxID <= 0)
 		{
@@ -38,7 +42,7 @@ public class Scr2Target {
 			{
 				NCBIID ncbiid = new NCBIID();
 				ncbiid.setAccID(accID[i]);
-				ArrayList<NCBIID> lsncbiid = MapNCBIID.queryLsNCBIID(ncbiid);
+				ArrayList<NCBIID> lsncbiid = servNCBIID.queryLsNCBIID(ncbiid);
 				if (lsncbiid != null && lsncbiid.size()>0) 
 				{
 					QtaxID = (int)lsncbiid.get(0).getTaxID();
@@ -102,6 +106,10 @@ public class Scr2Target {
 				ArrayList<KGentry> lsKGentryQuery = MapKEntry.queryLsKGentries(qkGentry);
  				for (int k = 0; k < lsKGentryQuery.size(); k++)
 				{
+ 					if (lsKGentryQuery.get(k).getEntryName().equals("hsa:56604")) {
+ 						System.out.println("stop");
+					}
+ 					
 					Hashtable<String, KGpathScr2Trg> tmpHashEntryRelation=QKegPath.getHashKGpathRelation(lsKGentryQuery.get(k));
 					Enumeration<String> keys=tmpHashEntryRelation.keys();
 					while(keys.hasMoreElements())
@@ -377,32 +385,6 @@ public class Scr2Target {
 		txtReadandWrite.ExcelWrite(lsAttribute, "\t", 1, 1);
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	/**
 	 * 给定pathway，和一个geneID信息以及其所对应的targetGeneID信息，返回pathway的sourceTarget表
 	 * @param pathName
@@ -413,6 +395,7 @@ public class Scr2Target {
 	 */
 	private static void getRelation(String pathName, ArrayList<Object[]> lsRelationInfo ,int QtaxID,String ResultFIleScr2Target, String resultFIleAttribute) throws Exception 
 	{
+		ServGeneAnno servGeneAnno = new ServGeneAnno();
 		//source 2 target 的表格
 		//string[3] 0:source 1:target 2:relation
 		ArrayList<String[]> lsScr2Target = new ArrayList<String[]>();
@@ -421,6 +404,9 @@ public class Scr2Target {
 		ArrayList<String[]> lsRelationEntry = new ArrayList<String[]>();
 		for (int i = 0; i < lsRelationInfo.size(); i++) {
 			lsRelationEntry.add((String[]) lsRelationInfo.get(i)[0]);
+			if (lsRelationEntry.get(i)[3].equals("hsa:56604")) {
+				System.out.println("test");
+			}
 		}
 		
 		Hashtable<String,String[]> hashEntryInfo = new Hashtable<String, String[]>();
@@ -463,8 +449,8 @@ public class Scr2Target {
 				//如果没有symbol
 				if (geneInfoSub == null || geneInfoSub.getSymbol() == null || geneInfoSub.getSymbol().trim().equals("") || geneInfoSub.getSymbol().trim().equals("-")) 
 				{
-					NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[1])); 
-					queryGenInfo[0] = MapNCBIID.queryLsNCBIID(ncbiid).get(0).getAccID();
+					NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[1]));
+					queryGenInfo[0] = servGeneAnno.queryLsNCBIID(ncbiid).get(0).getAccID();
 					if (geneInfoSub == null) {
 						queryGenInfo[2] = "";
 					}
@@ -496,11 +482,12 @@ public class Scr2Target {
 					if (geneInfoSub == null || geneInfoSub.getSymbol() == null || geneInfoSub.getSymbol().trim().equals("") || geneInfoSub.getSymbol().trim().equals("-")) 
 					{
 						NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[1])); 
-						queryGenInfo[0] = MapNCBIID.queryLsNCBIID(ncbiid).get(0).getAccID();
+						queryGenInfo[0] = servGeneAnno.queryLsNCBIID(ncbiid).get(0).getAccID();
 					}
 					else
 					{
 						queryGenInfo[0] = geneInfoSub.getSymbol().split("//")[0];
+
 					}
 					if (geneInfoSub != null && geneInfoSub.getDescription() != null) {
 						queryGenInfo[2] = geneInfoSub.getDescription();
@@ -520,7 +507,7 @@ public class Scr2Target {
 				if (geneInfoSub2.getSymbol() == null || geneInfoSub2.getSymbol().trim().equals("") || geneInfoSub2.getSymbol().trim().equals("-")) 
 				{
 					NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[6])); 
-					queryGenInfo[5] = MapNCBIID.queryLsNCBIID(ncbiid).get(0).getAccID();
+					queryGenInfo[5] = servGeneAnno.queryLsNCBIID(ncbiid).get(0).getAccID();
 				}
 				else 
 				{
@@ -529,6 +516,9 @@ public class Scr2Target {
 				queryGenInfo[6] = geneInfoSub2.getDescription();
 			}
 			hashEntryInfo.put(qGenKegInfo[0], queryGenInfo);
+			if (queryGenInfo[0].equals("TUBB2A")) {
+				System.out.println("test");
+			}
 		}
 		
 		

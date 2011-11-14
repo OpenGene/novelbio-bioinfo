@@ -27,6 +27,9 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	public GffGeneIsoCis(String IsoName, String ChrID, int coord, String geneType) {
 		super(IsoName, ChrID, coord, geneType);
 	}
+	public GffGeneIsoCis(String IsoName, String ChrID, String geneType) {
+		super(IsoName, ChrID, geneType);
+	}
 	/**
 	 * 第一个计算的，计算坐标与本 外显子/内含子 的 起点/终点 的距离
 	 */
@@ -354,6 +357,18 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		tmpexon[1] = Math.max(locStart, locEnd);
 		lsIsoform.add(tmpexon);
 	}
+	
+	/**
+	 * 这个要确认
+	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
+	 * 当gene为反方向时，exon是从大到小排列的<br>
+	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加 <br>
+	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
+	 */
+	protected void addExonCufflinkGTF(int locStart, int locEnd) {
+		addExonGFF( locStart,  locEnd);
+	}
+	
 	/**
 	 * 这个要确认
 	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
@@ -430,7 +445,33 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		return true;
 	}
 	
-	
+	@Override
+	public GffGeneIsoCis cloneDeep() {
+		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis(IsoName, chrID,coord, getGeneType());
+		this.cloneDeep(gffGeneIsoCis);
+		gffGeneIsoCis.setCoord(getCoord());
+		return gffGeneIsoCis;
+	}
+
+	@Override
+	public int getStartAbs() {
+		return lsIsoform.get(0)[0];
+	}
+
+	@Override
+	public int getEndAbs() {
+		return lsIsoform.get(lsIsoform.size() - 1)[1];
+	}
+
+	@Override
+	protected String getGTFformatExon(String geneID, String title, String strand) {
+		String geneExon = "";
+		for (int[] exons : getIsoInfo()) {
+			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" +exons[0] + "\t" + exons[1]
+		     + "\t"+"0.000000"+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id "+getIsoName()+"\"; \r\n";
+		}
+		return geneExon;
+	}
 	
 	
 }

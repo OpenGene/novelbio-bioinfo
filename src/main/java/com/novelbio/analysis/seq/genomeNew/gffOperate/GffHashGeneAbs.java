@@ -7,11 +7,16 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.CompSubArrayCluster;
+import com.novelbio.base.dataStructure.CompSubArrayInfo;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.test.testextend.a;
@@ -22,6 +27,8 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 	String acc2GeneIDfile = "";
 	String gfffile = "";
 	public GffHashGeneAbs() {
+		Chrhash = new HashMap<String, ArrayList<GffDetailGene>>();
+		hashGeneID2Acc = new HashMap<String, String>();
 	}
 	private static Logger logger = Logger.getLogger(GffHashGeneAbs.class);
 	
@@ -34,8 +41,12 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 		super.ReadGffarray(gfffilename);
 	}
 	
-	
-	
+	public int getTaxID() {
+		return taxID;
+	}
+	public void setTaxID(int taxID) {
+		this.taxID = taxID;
+	}
 //	/**
 //	 * 哈希表geneID--LOC细节<br>
 //	 * 用于快速将geneID编号对应到LOC的细节<br>
@@ -224,6 +235,73 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 	}
 	
 	
+	/**
+	 * 将基因装入GffHash中
+	 * @param chrID
+	 * @param gffDetailGene
+	 */
+	public void addGffDetailGene(String chrID, GffDetailGene gffDetailGene) {
+		
+		if (!Chrhash.containsKey(chrID.toLowerCase())) {
+			ArrayList<GffDetailGene> lsGffDetailGenes = new ArrayList<GffDetailGene>();
+			Chrhash.put(chrID, lsGffDetailGenes);
+		}
+		ArrayList<GffDetailGene> lsGffDetailGenes = Chrhash.get(chrID.toLowerCase());
+		lsGffDetailGenes.add(gffDetailGene);
+	}
+	
+	
+	
+	/**
+	 * 
+	 * 将文件写入GTF中
+	 * @param GTFfile
+	 * @param title 给该GTF起个名字
+	 */
+	@Override
+	public void writeToGTF(String GTFfile,String title)
+	{
+		TxtReadandWrite txtGtf = new TxtReadandWrite(GTFfile, true);
+		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(Chrhash);
+		//把得到的ChrID排个序
+		TreeSet<String> treeSet = new TreeSet<String>();
+		for (String string : lsChrID) {
+			treeSet.add(string);
+		}
+		for (String string : treeSet) {
+			ArrayList<GffDetailGene> lsGffDetailGenes = Chrhash.get(string);
+			writeToGTF(txtGtf, lsGffDetailGenes, title);
+		}
+		txtGtf.close();
+	}
+	/**
+	 * 将一个染色体中的信息写入文本，按照GTF格式
+	 * @param txtWrite
+	 * @param lsGffDetailGenes
+	 */
+	private void writeToGTF(TxtReadandWrite txtWrite, ArrayList<GffDetailGene> lsGffDetailGenes, String title)
+	{
+		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
+			String geneGTF = gffDetailGene.getGTFformate(title);
+			txtWrite.writefileln(geneGTF.trim());
+		}
+	}
+	
+	
 	
 	
 }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

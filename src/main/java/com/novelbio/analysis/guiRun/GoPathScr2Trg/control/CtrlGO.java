@@ -105,6 +105,7 @@ public class CtrlGO {
 	 */
 	private CtrlGO(boolean elimGo, String GOClass, int QtaxID, boolean blast,
 			double evalue, int... StaxID) {
+		this.elimGo = elimGo;
 		if (elimGo) {
 			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_ELIM,
 					QtaxID, blast, evalue, StaxID);
@@ -134,7 +135,7 @@ public class CtrlGO {
 			}
 		}
 		if (flagGeneID) {
-			functionTest.setLsBGAccID(fileName, 1);
+			functionTest.setLsBGAccID(fileName, 1,FileOperate.changeFileSuffix(fileName, "_Item", "txt"));
 		}
 		else {
 			functionTest.setLsBGItem(fileName);
@@ -227,14 +228,25 @@ public class CtrlGO {
 	{
 		functionTest.setLsTest(lsCopedIDs);
 		ArrayList<String[]> lsResultTest = functionTest.getTestResult();
-		ArrayList<String[]> lsGene2GO = functionTest.getGene2Item();
+		String[] title = new String[10];
+		title[0] = "GOID"; title[1] = "GOTerm";
+		title[2] = "DifGene"; title[3] = "AllDifGene"; title[4] = "GeneInGOID"; title[5] = "AllGene";
+		title[6] = "P-Value"; title[7] = "FDR"; title[8] = "Enrichment"; title[9] = "(-log2P)";
+		lsResultTest.add(0,title);
 		
 		LinkedHashMap<String, ArrayList<String[]>> hashResult = new LinkedHashMap<String, ArrayList<String[]>>();
 		hashResult.put("GO_Result", lsResultTest);
-		hashResult.put("Gene2GO", lsGene2GO);
+		
 		if (elimGo) {
+			ArrayList<String[]> lsGene2GO = functionTest.getGene2Item();
+			hashResult.put("Gene2GO", lsGene2GO);
+			
 			ArrayList<String[]> lsGO2Gene = functionTest.getItem2GenePvalue();
 			hashResult.put("GO2Gene", lsGO2Gene);
+		}
+		else {
+			ArrayList<String[]> lsGene2GOPvalue = functionTest.getGene2ItemPvalue();
+			hashResult.put("Gene2GO", lsGene2GOPvalue);
 		}
 		hashResultGene.put(prix, hashResult);
 		return hashResultGene;

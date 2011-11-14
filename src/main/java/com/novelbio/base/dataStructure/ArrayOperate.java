@@ -13,6 +13,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
+
 public class ArrayOperate {
 	private static final Logger logger = Logger.getLogger(ArrayOperate.class);
 	
@@ -437,4 +439,497 @@ public class ArrayOperate {
 		}
 		return result;
 	}
+	
+	/**
+	 * @param <T> 实现compSubArray接口
+	 * @param lsThisList 第一个list
+	 * @param lsCmpList 第二个list
+	 * @param cis 是否正向的比，true：list的元素从小到大排列且每个cell小的在前大的在后
+	 * false：list的元素从大到小排列且每个cell大的在前小的在后
+	 * @return
+	 * list<br>
+	 * |<br>
+	 * |------ListlsElement|---listCell1：Element1,Element2<br>
+	 * |                          |---listCell2：Element3<br>
+	 * |             <br>
+	 * |             <br>
+	 * |<br>
+	 * |<br>
+	 * |<br>
+	 */
+	public<T extends CompSubArray> ArrayList<ArrayList<ArrayList<T>>> cmpLsaaa(ArrayList<T> lsThisList, ArrayList<T> lsCmpList, boolean cis)
+	{
+		ArrayList<ArrayList<ArrayList<T>>> lsResult = new ArrayList<ArrayList<ArrayList<T>>>();
+		int score = 0; // 打分，看最后这两个转录本有多相似
+		boolean flag1 = true;// 是否记录跨过的exon1
+		boolean flag2 = true;// 是否记录跨过的exon2
+		int i = 0;
+		int j = 0;
+		//每个单元的信息
+		ArrayList<ArrayList<T>> lsElement = new ArrayList<ArrayList<T>>();
+		ArrayList<T> lsThisCell = new ArrayList<T>();
+		ArrayList<T> lsCmpCell = new ArrayList<T>();
+		while (true) {
+			if (i >= lsThisList.size() || j >= lsCmpList.size()) {
+				break;
+			}
+			double[] exon1 = lsThisList.get(i).getCell();
+			double[] exon2 = lsCmpList.get(j).getCell();
+			double[] tmpFlag = null;
+			
+			if (cis)
+				tmpFlag = cmpArray(exon1, exon2);
+			else
+				tmpFlag = cmpArrayTrans(exon1, exon2);
+
+			if (tmpFlag[0] == 0) {
+				//两个element一样大小，则添加新的单元
+				lsElement = new ArrayList<ArrayList<T>>();
+				lsThisCell.add(lsThisList.get(i));
+				lsCmpCell.add(lsCmpList.get(j));
+				lsElement.add(lsThisCell); lsElement.add(lsCmpCell);
+				lsResult.add(lsElement);
+				lsThisCell = new ArrayList<T>();//新建cell
+				lsCmpCell = new ArrayList<T>();//新建cell
+				i++;j++;
+			}
+			//
+			else if (tmpFlag[0] < 4) //element1 的 尾部 在 element2 的 尾部 前
+			{
+				i++;
+				if (tmpFlag[0] != 1) {
+					flag2 = false;
+					if (lsThisCell.size() > 0) {
+						//如果已经有了该element，就跳过
+						double[] tmpThisLast =  lsThisCell.get(lsThisCell.size()-1).getCell(); // 获得最后一个cell
+						double[] tmpThis = lsThisList.get(i).getCell();
+						if (tmpThisLast[0] != tmpThis[0] || tmpThisLast[1] != tmpThis[1]) {
+							lsThisCell.add(lsThisList.get(i));
+						}
+						//如果已经有了该element，就跳过
+						double[] tmpCmpLast =  lsCmpCell.get(lsCmpCell.size()-1).getCell(); // 获得最后一个cell
+						double[] tmpCmp = lsCmpList.get(i).getCell();
+						if (tmpCmpLast[0] != tmpCmp[0] || tmpCmpLast[1] != tmpCmp[1]) {
+							lsCmpCell.add(lsCmpList.get(i));
+						}
+					}
+					lsThisCell.add(lsThisList.get(i));
+					lsCmpCell.add(lsCmpList.get(i));
+					score = score + 1;
+				}
+				//
+				else {
+					if (flag1) {
+						lsThisCell = new ArrayList<T>();//新建cell
+						lsCmpCell = new ArrayList<T>();//新建cell
+						lsCmpCell.add(lsCmpList.get(j));
+						score = score + 1;
+					} else {
+						flag1 = true; // 说明该element需要另起一组新的了
+						lsThisCell = new ArrayList<T>();//新建cell
+						lsCmpCell = new ArrayList<T>();//新建cell
+					}
+				}
+			} else if (tmpFlag[0] >= 4) {
+				j++;
+				// 跨过了该exon
+				if (tmpFlag[0] != 6) {
+					flag1 = false;
+					score = score + 1;
+				} else {
+					if (flag2) {
+						score = score + 1;
+					} else {
+						flag2 = true;
+					}
+				}
+			}
+		}
+		return null;
+	}
+		
+	
+	/**
+	 * @param <T> 实现compSubArray接口
+	 * @param lsThisList 第一个list
+	 * @param lsCmpList 第二个list
+	 * @param min2max 输入的数据是否从小到大，true：list的元素从小到大排列
+	 * false：list的元素从大到小排列
+	 * @return
+	 * list<br>
+	 * |<br>
+	 * |------ListlsElement|---listCell1：Element1,Element2<br>
+	 * |                          |---listCell2：Element3<br>
+	 * |             <br>
+	 * |             <br>
+	 * |<br>
+	 * |<br>
+	 * |<br>d
+	 */
+	public static<T extends CompSubArray> ArrayList<CompSubArrayCluster> compLs2(ArrayList<T> lsThisList, ArrayList<T> lsCmpList,boolean min2max)
+	{
+		ArrayList<CompSubArrayCluster> lsCompResult = new ArrayList<CompSubArrayCluster>();
+		String flagThis = CompSubArrayInfo.FLAGTHIS; String flagComp = CompSubArrayInfo.FLAGCOMP;
+		ArrayList<CompSubArrayInfo> lsTmp = new ArrayList<CompSubArrayInfo>();
+		int th = 0;
+		int co = 0;
+		/////////////////////////////////////将输入的数组元素标记好后，混在一起放入一个list中//////////////////////////////////////////////////////////////////////
+		while (true) {
+			if (th >= lsThisList.size() || co >= lsCmpList.size()) {
+				break;
+			}
+			if (min2max) {
+				//假设输入的数组是经过排序，并且前小后大的
+				//依次比较本组和比较组的元素，然后装入list
+				if (lsThisList.get(th).getCell()[0] < lsCmpList.get(co).getCell()[0]) {
+					CompSubArrayInfo compSubArrayInfo = new CompSubArrayInfo(lsThisList.get(th), flagThis,lsThisList.get(th).isCis5to3());
+					lsTmp.add(compSubArrayInfo);
+					th++;
+				}
+				else {
+					CompSubArrayInfo compSubArrayInfo = new CompSubArrayInfo(lsCmpList.get(co), flagComp,lsCmpList.get(co).isCis5to3());
+					lsTmp.add(compSubArrayInfo);
+					co++;
+				}
+			}
+			else {
+				//假设输入的数组是经过排序，并且前大后小的
+				//依次比较本组和比较组的元素，然后装入list
+				if (lsThisList.get(th).getCell()[1] > lsCmpList.get(co).getCell()[1]) {
+					CompSubArrayInfo compSubArrayInfo = new CompSubArrayInfo(lsThisList.get(th), flagThis,lsThisList.get(th).isCis5to3());
+					lsTmp.add(compSubArrayInfo);
+					th++;
+				}
+				else {
+					CompSubArrayInfo compSubArrayInfo = new CompSubArrayInfo(lsCmpList.get(co), flagComp,lsCmpList.get(co).isCis5to3());
+					lsTmp.add(compSubArrayInfo);
+					co++;
+				}
+			}
+		}
+		
+		if (th < lsThisList.size()) {
+			for (int i = th; i < lsThisList.size(); i++) {
+				CompSubArrayInfo compSubArrayInfo = new CompSubArrayInfo(lsThisList.get(i), flagThis,lsThisList.get(i).isCis5to3());
+				lsTmp.add(compSubArrayInfo);
+			}
+		}
+		if (co < lsCmpList.size()) {
+			for (int i = co; i < lsCmpList.size(); i++) {
+				CompSubArrayInfo compSubArrayInfo = new CompSubArrayInfo(lsCmpList.get(i), flagComp,lsCmpList.get(i).isCis5to3());
+				lsTmp.add(compSubArrayInfo);
+			}
+		}
+		
+		
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//将元素装入list中，并且成两组，this和compare----分组是在CompSubArrayCluster类中进行的
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		CompSubArrayCluster compSubArrayCluster = null;
+		for (int i = 0; i < lsTmp.size(); i++) {
+			CompSubArrayInfo compSubArray = lsTmp.get(i);
+
+			
+			if (i == 0) {
+				compSubArrayCluster = new CompSubArrayCluster();
+				compSubArrayCluster.addCompElement(compSubArray);
+				lsCompResult.add(compSubArrayCluster);
+				continue;
+			}
+			if (!compSubArrayCluster.addCompElement(compSubArray)) {
+				compSubArrayCluster = new CompSubArrayCluster();
+				compSubArrayCluster.addCompElement(compSubArray);
+				lsCompResult.add(compSubArrayCluster);
+			}
+		}
+		return lsCompResult;
+	}
+
+	/**
+	 * 二分法查找Coordinate的情况,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
+	 * 返回一个int[3]数组，<br>
+	 * 0: 1-基因内 2-基因外<br>
+	 * 1：本基因序号（定位在基因内） / 上个基因的序号(定位在基因外) -1表示前面没有基因<br>
+	 * 2：下个基因的序号 -1表示后面没有基因<br>
+	 * 3: 和上一个节点的距离，如果在起点则为-1<br>
+	 * 4：和下一个节点的距离，如果在终点则为-1<br>
+	 */
+	private<T extends CompSubArray> double[] LocPositionT(ArrayList<T> lsTarget, double Coordinate) {
+		ArrayList<double[]> lsTmp = new ArrayList<double[]>();
+		for (T t : lsTarget) {
+			lsTmp.add(t.getCell());
+		}
+		return LocPosition(lsTmp, Coordinate);
+	}
+	
+		
+	
+		
+	
+	
+	/**
+	 * 待检查
+	 * 二分法查找Coordinate的情况,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
+	 * 返回一个int[3]数组，<br>
+	 * 0: 1-基因内 2-基因外<br>
+	 * 1：本基因序号（定位在基因内） / 上个基因的序号(定位在基因外) -1表示前面没有基因<br>
+	 * 2：下个基因的序号 -1表示后面没有基因
+	 * 3: 和上一个节点的距离，如果在起点则为-1
+	 * 4：和下一个节点的距离，如果在终点则为-1
+	 */
+	private double[] LocPosition(ArrayList<double[]> lsTarget, double Coordinate) {
+		double[] LocInfo = new double[3];
+		int endnum = lsTarget.size() - 1;
+		int beginnum = 0;
+		int number = 0;
+		// 在第一个Item之前
+		if (Coordinate < lsTarget.get(beginnum)[0]) {
+			LocInfo[0] = 2;
+			LocInfo[1] = -1;
+			LocInfo[2] = 0;
+			LocInfo[3] = -1;
+			LocInfo[4] = lsTarget.get(beginnum)[0] - Coordinate;
+			return LocInfo;
+		}
+		// 在最后一个Item之后
+		else if (Coordinate > lsTarget.get(endnum)[1]) {
+			LocInfo[1] = endnum;
+			LocInfo[2] = -1;
+			LocInfo[0] = 2;
+			LocInfo[3] = Coordinate - lsTarget.get(endnum)[1];
+			LocInfo[4] = -1;
+			return LocInfo;
+		}
+		do {
+			number = (beginnum + endnum + 1) / 2;// 3/2=1,5/2=2
+			if (Coordinate == lsTarget.get(number)[0]) {
+				beginnum = number;
+				endnum = number + 1;
+				break;
+			}
+			else if (Coordinate < lsTarget.get(number)[0]
+					&& number != 0) {
+				endnum = number;
+			} else {
+				beginnum = number;
+			}
+		} while ((endnum - beginnum) > 1);
+		LocInfo[1] = beginnum;
+		LocInfo[2] = endnum;
+		if (Coordinate <= lsTarget.get(beginnum)[1])// 不知道会不会出现PeakNumber比biginnum小的情况
+		{ // location在基因内部
+			LocInfo[0] = 1;
+			LocInfo[3] = Coordinate - lsTarget.get(beginnum)[0];
+			LocInfo[4] = lsTarget.get(beginnum)[1] - Coordinate;
+			return LocInfo;
+		}
+		// location在基因外部
+		LocInfo[0] = 2;
+		return LocInfo;
+	}
+	
+	
+	/**
+	 * 比较两个区域之间的overlap的数值和比例
+	 * 数组必须只有两个值，并且是闭区间
+		 * 结果信息：
+		 * 0：位置情况,总共6种情况， 0：一致 1：数组1在前  2：数组2在前 <br>
+		 * 1：overlap的bp<br>
+		 * 2：overlap占1的比值<br>
+		 * 3：overlap占2的比值<br>
+		 */
+	public static double[] cmpArray(double[] region1, double[] region2) {
+		/**
+		 * 结果信息：
+		 * 0：位置情况,总共6种情况， 0：一致 1：数组1在前  2：数组2在前
+		 * 1：overlap的bp
+		 * 2：overlap占1的比值
+		 * 3：overlap占2的比值
+		 */
+		double[] result = new double[4];
+
+		double[] region1m = new double[2];
+		region1m[0] = Math.min(region1[0], region1[1]);
+		region1m[1] = Math.max(region1[0], region1[1]);
+		double lenReg1 = region1m[1] - region1m[0] + 1;
+		
+		
+		double[] region2m = new double[2];
+		region2m[0] = Math.min(region2[0], region2[1]);
+		region2m[1] = Math.max(region2[0], region2[1]);
+		double lenReg2 = region2m[1] - region2m[0] + 1;
+		//equal
+		//   |--------|
+		//   |--------|
+		if (region1m[0] == region2m[0] && region1m[1] == region2m[1]) {
+			result[0] = 0;
+			result[1] = region1m[1] - region2m[0] + 1;
+			result[2] = 1;
+			result[3] = 1;
+		}
+		//overlap
+		else if (region1m[0] <= region2m[0] && region1m[1] > region2m[0]) {
+			//      0---------1   region2m               2
+			//  0-------1         region1m 
+			if (region1m[1] <= region2m[1]) {
+				result[0] = 2;
+				result[1] = region1m[1] - region2m[0] + 1;
+				result[2] = result[1]/lenReg1;
+				result[3] = result[1]/lenReg2;
+			}
+			//     |----------|       region2m            4
+			//  |-----------------|   region1m
+			else {
+				result[0] = 4;
+				result[1] = lenReg2;
+				result[2] = lenReg2/lenReg1;
+				result[3] = 1;
+			}
+		}
+		else if (region1m[0] > region2m[0] && region1m[0] < region2m[1]) {
+			//   |---------------|   region2m               3
+			//        |-------|      region1m
+			if (region1m[1] <= region2m[1]) {
+				result[0] = 3;
+				result[1] = lenReg1;
+				result[2] = 1;
+				result[3] = lenReg1/lenReg2;
+			}
+			//   0---------1           region2m            5
+			//        0----------1     region1m
+			else {
+				result[0] = 5;
+				result[1] = region2m[1] - region1m[0] + 1;
+				result[2] = result[1]/lenReg1;
+				result[3] = result[1]/lenReg2;
+			}
+		}
+		//before
+		//                   |------|   region2m             1
+		//         |------|             region1m
+		else if (region1m[1] <= region2m[0]) {
+			result[0] = 1;
+			result[1] = 0;
+			result[2] = 0;
+			result[3] = 0;
+		}
+		//after 
+		//       |------|             region2m             6
+		//                 |------|   region1m
+		else if (region1m[0] >= region2m[1] ) {
+			result[0] = 6;
+			result[1] = 0;
+			result[2] = 0;
+			result[3] = 0;
+		}
+		else {
+			logger.error("出现未知错误，不可能存在的region特征："+ region1m[0] + " " +region1m[1 ] + "     " + region2m[0] + " "+ region2m[1]);
+			result[0] = -1;
+			result[1] = -1;
+			result[2] = -1;
+			result[3] = -1;
+		}
+	
+		return result;
+	}
+
+	/**
+	 * 比较的内容和cmpArray一模一样，只不过比较的时候将大小反过来而已
+	 * 大的在前小的在后
+	 * 比较两个区域之间的overlap的数值和比例
+	 * 数组必须只有两个值
+	 * 
+	 */
+	public static double[] cmpArrayTrans(double[] region1, double[] region2) {
+		/**
+		 * 结果信息：
+		 * 0：位置情况， 0：一致 1：数组1在前  2：数组2在前
+		 * 1：overlap的bp
+		 * 2：overlap占1的比值
+		 * 3：overlap占2的比值
+		 * 4：
+		 */
+		double[] result = new double[3];
+
+		double[] region1m = new double[2];
+		region1m[0] = Math.max(region1[0], region1[1]);
+		region1m[1] = Math.min(region1[0], region1[1]);
+		double lenReg1 = region1m[0] - region1m[1] + 1;
+		double[] region2m = new double[2];
+		region2m[0] = Math.max(region2[0], region2[1]);
+		region2m[1] = Math.min(region2[0], region2[1]);
+		double lenReg2 = region2m[0] - region2m[1] + 1;
+		//equal
+		//   |--------|
+		//   |--------|
+		if (region1m[0] == region2m[0] && region1m[1] == region2m[1]) {
+			result[0] = 0;
+		}
+		//overlap
+		else if (region1m[1] <= region2m[0] && region1m[0] > region2m[0]) {
+			//  1----------0             region2m
+			//         1--------0        region1m 
+			if (region1m[1] >= region2m[1]) {
+				result[0] = 2;
+				result[1] = region2m[0] - region1m[1] + 1;
+				result[2] = result[1]/lenReg1;
+				result[3] = result[1]/lenReg2;
+			}
+			//     1----------0       region2m
+			//  1------------------0   region1m
+			else {
+				result[0] = 4;
+				result[1] = lenReg2;
+				result[2] = lenReg2/lenReg1;
+				result[3] = 1;
+			}
+		}
+		else if (region1m[0] < region2m[0] && region1m[0] > region2m[1]) {
+			//   1---------------0  region2m
+			//        1-------0     region1m
+			if (region1m[1] >= region2m[1]) {
+				result[0] = 3;
+				result[1] = lenReg1;
+				result[2] = 1;
+				result[3] = lenReg1/lenReg2;
+			}
+			//            1---------0  region2m
+			//       1----------0     region1m
+			else {
+				result[0] = 5;
+				result[1] = region1m[0] - region2m[1] + 1;
+				result[2] = result[1]/lenReg1;
+				result[3] = result[1]/lenReg2;
+			}
+		}
+		//before
+		//     1------0              region2m
+		//                1------0    region1m
+		else if (region1m[1] >= region2m[0]) {
+			result[0] = 1;
+			result[1] = 0;
+			result[2] = 0;
+			result[3] = 0;
+		}
+		//after
+		//                  1------0       region2m
+		//        1------0                 region1m
+		else if (region1m[0] <= region2m[1] ) {
+			result[0] = 6;
+			result[1] = 0;
+			result[2] = 0;
+			result[3] = 0;
+		}
+		else {
+			logger.error("出现未知错误，不可能存在的region特征："+ region1m[0] + " " +region1m[1 ] + "     " + region2m[0] + " "+ region2m[1]);
+			result[0] = -1;
+			result[1] = -1;
+			result[2] = -1;
+			result[3] = -1;
+		}
+		return result;
+	}
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+

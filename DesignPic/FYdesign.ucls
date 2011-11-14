@@ -1,0 +1,252 @@
+<class-diagram version="1.0.4" icons="true" automaticImage="PNG" always-add-relationships="false" generalizations="true" 
+  realizations="true" associations="true" dependencies="false" nesting-relationships="true">  
+  <class id="1" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.base.dataStructure.CompSubArrayInfo" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/base/dataStructure/CompSubArrayInfo.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1934" y="1062"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="3" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoTrans" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneIsoTrans.java" binary="false">    
+    <position height="-1" width="-1" x="610" y="2709"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="4" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/mappingOperate/MapReads.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="311" y="1653"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="5" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneIsoInfo.java" binary="false">    
+    <position height="-1" width="-1" x="824" y="1934"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <interface id="6" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.base.dataStructure.CompSubArray" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/base/dataStructure/CompSubArray.java" binary="false">    
+    <position height="-1" width="-1" x="1565" y="1007"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </interface>  
+  <class id="7" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneCluster" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneCluster.java" binary="false">    
+    <position height="-1" width="-1" x="311" y="874"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="9" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashGeneAbs.java" binary="false">    
+    <position height="-1" width="-1" x="1645" y="196"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="10" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHash" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHash.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1183" y="275"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="12" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.base.dataStructure.MathComput" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/base/dataStructure/MathComput.java" binary="false">    
+    <position height="-1" width="-1" x="193" y="319"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="13" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.base.dataStructure.ArrayOperate" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/base/dataStructure/ArrayOperate.java" binary="false">    
+    <position height="-1" width="-1" x="593" y="271"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="14" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailAbs" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffDetailAbs.java" binary="false">    
+    <position height="-1" width="-1" x="1162" y="986"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="15" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.base.dataStructure.CompSubArrayCluster" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/base/dataStructure/CompSubArrayCluster.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1931" y="1442"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="16" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffDetailGene.java" binary="false">    
+    <position height="-1" width="-1" x="833" y="984"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="17" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis" project="Novelbio" 
+    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneIsoCis.java" binary="false">    
+    <position height="-1" width="-1" x="944" y="2685"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="19" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneIsoInfo.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1567" y="813"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <realization>    
+    <end type="SOURCE" nodeId="19"/>    
+    <end type="TARGET" nodeId="6"/>  
+  </realization>  
+  <association>    
+    <end type="SOURCE" nodeId="7" navigable="false">      
+      <attribute name="gffDetailGene1"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="16" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="1" navigable="false">      
+      <attribute name="cmp"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="7" navigable="false">      
+      <attribute name="mapReads"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="7" navigable="false">      
+      <attribute name="gffGeneClusterUp"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="5" navigable="false">      
+      <attribute name="gffDetailGene"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="16" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="7" navigable="false">      
+      <attribute name="gffDetailGene2"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="16" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization>    
+    <end type="SOURCE" nodeId="14"/>    
+    <end type="TARGET" nodeId="6"/>  
+  </realization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="9"/>    
+    <end type="TARGET" nodeId="10"/>  
+  </generalization>  
+  <generalization>    
+    <end type="SOURCE" nodeId="17"/>    
+    <end type="TARGET" nodeId="5"/>  
+  </generalization>  
+  <association>    
+    <end type="SOURCE" nodeId="15" navigable="false">      
+      <attribute name="lsCompSubArrayInfosComp"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="16" navigable="false">      
+      <attribute name="lsGffGeneIsoInfos"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association>    
+    <end type="SOURCE" nodeId="10" navigable="false">      
+      <attribute name="locHashtable"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="16"/>    
+    <end type="TARGET" nodeId="14"/>  
+  </generalization>  
+  <association>    
+    <end type="SOURCE" nodeId="15" navigable="false">      
+      <attribute name="lsCompSubArrayInfosThis"/>      
+      <multiplicity minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" nodeId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization>    
+    <end type="SOURCE" nodeId="3"/>    
+    <end type="TARGET" nodeId="5"/>  
+  </generalization>  
+  <association>    
+    <end type="SOURCE" nodeId="7" navigable="false">      
+      <attribute name="gffGeneClusterDown"/>      
+      <multiplicity minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" nodeId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <classifier-display autosize="true" package="true" initial-value="false" signature="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true"/>    
+    <operations public="true" package="true" protected="true" private="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>

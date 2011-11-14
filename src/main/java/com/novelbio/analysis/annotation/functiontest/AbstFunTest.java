@@ -1,6 +1,7 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -79,14 +80,19 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 */
 	private ArrayList<String[]> getLsTestFromLsBG(ArrayList<CopedID> lsTest)
 	{
+		//去冗余用的
+		HashSet<CopedID> hashCopedIDs = new HashSet<CopedID>();
+		for (CopedID copedID : lsTest) {
+			hashCopedIDs.add(copedID);
+		}
 		if (blast) {
-			for (CopedID copedID : lsTest) {
+			for (CopedID copedID : hashCopedIDs) {
 				copedID.setBlastLsInfo(blastEvalue, blastTaxID);
 			}
 		}
 		
 		if (lsBG == null || lsBG.size() < 1) {
-			return convert2Item(lsTest);
+			return convert2Item(hashCopedIDs);
 		}
 		HashMap<String, String>  hashBG = new HashMap<String, String>();
 		for (String[] strings : lsBG) {
@@ -94,10 +100,11 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		}
 		ArrayList<String[]> lsout = new ArrayList<String[]>();
 		ArrayList<CopedID> lsNo = new ArrayList<CopedID>();
-		for (CopedID copedID : lsTest) {
+		for (CopedID copedID : hashCopedIDs) {
 			String tmpresult = hashBG.get(copedID.getGenUniID());
 			if (tmpresult == null) {
 				lsNo.add(copedID);
+				continue;
 			}
 			String[] result = new String[]{copedID.getGenUniID(), tmpresult};
 			lsout.add(result);
@@ -109,7 +116,13 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		}
 		return lsout;
 	}
-	
+	/**
+	 * 要先读取AccID文件
+	 * @return
+	 */
+	public ArrayList<String[]> getLsBG() {
+		return lsBG;
+	}
 	public void setLsTestAccID(ArrayList<String> lsCopedID) {
 		lsCopedIDsTest = new ArrayList<CopedID>();
 		lsTestResult = new ArrayList<String[]>();
@@ -247,7 +260,22 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 			return lsTestResult;
 		}
 		try {
-			lsTestResult = FisherTest.getFisherResult(lsTest, lsBG, this);
+			ArrayList<String[]> lstest = new ArrayList<String[]>();
+			for (String[] strings : lsTest) {
+				if (strings[1] == null || strings[1].trim().equals("")) {
+					continue;
+				}
+				lstest.add(strings);
+			}
+			ArrayList<String[]> lsbg = new ArrayList<String[]>();
+			for (String[] strings : lsBG) {
+				if (strings[1] == null || strings[1].trim().equals("")) {
+					continue;
+				}
+				lsbg.add(strings);
+			}
+			
+			lsTestResult = FisherTest.getFisherResult(lstest, lsbg, this);
 		} catch (Exception e) {
 			logger.error("error: ");
 		}
@@ -260,7 +288,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * geneID goID,goID,goID的样式
 	 * 并按照genUniID去冗余
 	 */
-	protected abstract ArrayList<String[]> convert2Item(ArrayList<CopedID> lsCopedIDs);
+	protected abstract ArrayList<String[]> convert2Item(Collection<CopedID> lsCopedIDs);
 	
 	/**
 	 * 设定hashgene2CopedID，就是一个geneID会对应多个accID的这种

@@ -3,9 +3,15 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.HiddenAction;
+
 import org.apache.commons.collections15.map.Flat3Map;
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.CompSubArray;
+import com.novelbio.base.dataStructure.CompSubArrayCluster;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
@@ -186,6 +192,13 @@ public abstract class GffGeneIsoInfo {
 		}
 		this.chrID = chrID;
 	}
+	
+	public GffGeneIsoInfo(String IsoName, String chrID, String geneType) {
+		this.IsoName = IsoName;
+		this.flagTypeGene = geneType;
+		this.chrID = chrID;
+	}
+	
 //	/**
 //	 * 仅仅初始化给查找时用
 //	 * @param IsoName
@@ -985,6 +998,12 @@ public abstract class GffGeneIsoInfo {
 	
 	
 	public abstract GffGeneIsoInfo clone();
+	/**
+	 * 连lsIso也复制
+	 * @return
+	 */
+	public abstract GffGeneIsoInfo cloneDeep();
+	
 	
 	protected void clone(GffGeneIsoInfo gffGeneIsoInfo)
 	{
@@ -1003,5 +1022,178 @@ public abstract class GffGeneIsoInfo {
 		gffGeneIsoInfo.taxID = taxID;
 		gffGeneIsoInfo.UAGsite = UAGsite;
 //		gffGeneIsoInfo.flagTypeGene = flagTypeGene;
+	}
+	protected void cloneDeep(GffGeneIsoInfo gffGeneIsoInfo)
+	{
+		gffGeneIsoInfo.ATGsite = ATGsite;
+//		gffGeneIsoInfo.coord = coord;
+		if (gffDetailGene != null) {
+			gffGeneIsoInfo.gffDetailGene = gffDetailGene.clone();
+		}
+		gffGeneIsoInfo.hashLocExInEnd = hashLocExInEnd;
+		gffGeneIsoInfo.hashLocExInNum = hashLocExInNum;
+		gffGeneIsoInfo.hashLocExInStart =hashLocExInStart;
+//		gffGeneIsoInfo.IsoName = IsoName;
+		ArrayList<int[]> lsIso = new ArrayList<int[]>();
+		for (int[] is : lsIsoform) {
+			int[] isTmp = new int[2];
+			isTmp[0] = is[0];
+			isTmp[1] = is[1];
+			lsIso.add(isTmp);
+		}
+		gffGeneIsoInfo.lsIsoform = lsIso;
+		gffGeneIsoInfo.lengthIso = lengthIso;
+		gffGeneIsoInfo.mRNA = mRNA;
+		gffGeneIsoInfo.taxID = taxID;
+		gffGeneIsoInfo.UAGsite = UAGsite;
+//		gffGeneIsoInfo.flagTypeGene = flagTypeGene;
+	}
+	//保存中间状态
+	HashMap<String, ArrayList<CompSubArrayCluster>> hashTmp = new HashMap<String, ArrayList<CompSubArrayCluster>>();
+	/**
+	 * 比较两个转录本之间的差距有多大
+	 * @param gffGeneIsoInfo
+	 * @return
+	 */
+	public double compIso(GffGeneIsoInfo gffGeneIsoInfo) {
+		ArrayList<CompSubArrayCluster> lsCompResult = null;
+		if (hashTmp.containsKey(gffGeneIsoInfo.getIsoName())) {
+			lsCompResult =  hashTmp.get(gffGeneIsoInfo.getIsoName());
+		}
+		else {
+			ArrayList<ExonInfo> lsThis = new ArrayList<ExonInfo>();
+			ArrayList<ExonInfo> lsComp = new ArrayList<ExonInfo>();
+			
+			ArrayList<int[]> lsIsoComp = gffGeneIsoInfo.getIsoInfo();
+			
+			for (int[] is : lsIsoform) {
+				ExonInfo exonInfo = new ExonInfo(is, gffGeneIsoInfo.isCis5to3());
+				lsThis.add(exonInfo);
+			}
+			for (int[] is : lsIsoComp) {
+				ExonInfo exonInfo = new ExonInfo(is, gffGeneIsoInfo.isCis5to3());
+				lsComp.add(exonInfo);
+			}
+			lsCompResult = ArrayOperate.compLs2(lsThis, lsComp, gffGeneIsoInfo.isCis5to3());
+			hashTmp.put(gffGeneIsoInfo.getIsoName(), lsCompResult);
+		}
+		return CompSubArrayCluster.getCompScore(lsCompResult);
+	}
+	/**
+	 * 比较两个转录本之间的差距有多大
+	 * @param gffGeneIsoInfo
+	 * @return
+	 */
+	public  ArrayList<CompSubArrayCluster> compIsoLs(GffGeneIsoInfo gffGeneIsoInfo) {
+		ArrayList<CompSubArrayCluster> lsCompResult = null;
+		if (hashTmp.containsKey(gffGeneIsoInfo.getIsoName())) {
+			lsCompResult = hashTmp.get(gffGeneIsoInfo.getIsoName());
+		}
+		else {
+			ArrayList<ExonInfo> lsThis = new ArrayList<ExonInfo>();
+			ArrayList<ExonInfo> lsComp = new ArrayList<ExonInfo>();
+			
+			ArrayList<int[]> lsIsoComp = gffGeneIsoInfo.getIsoInfo();
+			
+			for (int[] is : lsIsoform) {
+				ExonInfo exonInfo = new ExonInfo(is, gffGeneIsoInfo.isCis5to3());
+				lsThis.add(exonInfo);
+			}
+			for (int[] is : lsIsoComp) {
+				ExonInfo exonInfo = new ExonInfo(is, gffGeneIsoInfo.isCis5to3());
+				lsComp.add(exonInfo);
+			}
+			lsCompResult = ArrayOperate.compLs2(lsThis, lsComp, gffGeneIsoInfo.isCis5to3());
+			hashTmp.put(gffGeneIsoInfo.getIsoName(), lsCompResult);
+		}
+		return lsCompResult;
+	}
+	
+	
+	public void setLsIsoform(ArrayList<int[]> lsIsoform) {
+		this.lsIsoform = lsIsoform;
+	}
+	public void setIsoName(String isoName) {
+		IsoName = isoName;
+	}
+	/**
+	 * 专门添加cufflink的结果
+	 * @param locStart
+	 * @param locEnd
+	 */
+	protected abstract void addExonCufflinkGTF(int locStart, int locEnd);
+	
+	
+	/**
+	 * 获得该转录本的起点，不考虑方向
+	 * @return
+	 */
+	public abstract int getStartAbs();
+	/**
+	 * 获得该转录本的终点，不考虑方向
+	 * @return
+	 */
+	public abstract int getEndAbs();
+	/**
+	 * 返回该基因的GTF格式文件，末尾有换行符
+	 * @param title 该GTF文件的名称
+	 * @return
+	 */
+	protected String getGTFformat(String geneID, String title)
+	{
+		String strand = "+";
+		if (!isCis5to3()) {
+			strand = "-";
+		}
+		String genetitle = getChrID() + "\t" +title + "\ttranscript\t" +getStartAbs() +
+		"\t" + getEndAbs() + "\t"+"0.000000"+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id \""+getIsoName()+"\"; \r\n";
+		genetitle = genetitle + getGTFformatExon(geneID, title,strand);
+		return genetitle;
+	}
+	
+	protected abstract String getGTFformatExon(String geneID, String title, String strand);
+	/**
+	 * 获得所有外显子的长度之和
+	 */
+	public int getIsoLen() {
+		int isoLen = 0;
+		for (int[] exons : lsIsoform) {
+			isoLen = isoLen + Math.abs(exons[1] - exons[0]);
+		}
+		return isoLen;
+	}
+}
+
+
+
+class ExonInfo implements CompSubArray
+{
+	boolean cis;
+	int[] exon;
+
+	@Override
+	public double[] getCell() {
+		if (cis) {
+			return new double[]{exon[0],exon[1]};
+		}
+		else {
+			return new double[]{exon[1],exon[0]};
+		}
+	}
+	public ExonInfo(int[] exon, boolean cis) {
+		this.exon = exon;
+		this.cis = cis;
+	}
+	@Override
+	public Boolean isCis5to3() {
+		return cis;
+	}
+	@Override
+	public double getStartCis() {
+		return exon[0];
+	}
+	@Override
+	public double getEndCis() {
+		return exon[1];
 	}
 }

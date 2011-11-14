@@ -16,7 +16,7 @@ public class MacsPeakCompare {
 	
 	public static void main(String[] args) {
 		MacsPeakCompare macsPeakCompare = new MacsPeakCompare();
-		macsPeakCompare.TssRegionDGE();
+		macsPeakCompare.annotationRegionTss();
 	}
 	
 	/**
@@ -25,31 +25,19 @@ public class MacsPeakCompare {
 	public void annotationRegionTss() {
 		GffChrAnno gffChrAnno = new GffChrAnno(NovelBioConst.GENOME_GFF_TYPE_TIGR, NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE);
 		gffChrAnno.setFilterTssTes(new int[]{-1500,0}, null);
-
-		String parentFIle = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/compare/comparePeakRegionAnno/";
+		gffChrAnno.setFilterGeneBody(true, false, false);
+		String parentFIle = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/compareSICER/";
 		
-		String fileIn = parentFIle + "2Nvs3N_peaks_summit.xls";
-		String fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-0_anno", null);
-		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
+		String fileIn = parentFIle + "2NseSort-and-3NseSort-W200-G200-summary.xls";
+		String fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-GeneBody_anno", null);
+//		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
 		
-		fileIn = parentFIle + "2NvsN_peaks_summit.xls";
-		fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-0_anno", null);
-		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
+//		fileIn = parentFIle + "NseSort-and-2NseSort-W200-G200-summary.xls";
+//		fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-GeneBody_anno", null);
+//		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
 		
-		fileIn = parentFIle + "3Nvs2N_peaks_summit.xls";
-		fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-0_anno", null);
-		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-		
-		fileIn = parentFIle + "3NvsN_peaks_summit.xls";
-		fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-0_anno", null);
-		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-		
-		fileIn = parentFIle + "Nvs2N_peaks_summit.xls";
-		fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-0_anno", null);
-		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-		
-		fileIn = parentFIle + "Nvs3N_peaks_summit.xls";
-		fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-0_anno", null);
+		fileIn = parentFIle + "NseSort-and-3NseSort-W200-G200-summary.xls";
+		fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-GeneBody_anno", null);
 		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
 	}
 	/**

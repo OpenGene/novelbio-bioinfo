@@ -2,6 +2,9 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import javax.servlet.jsp.tagext.TryCatchFinally;
 
+import org.apache.log4j.Logger;
+
+import com.novelbio.base.dataStructure.CompSubArray;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
@@ -17,9 +20,9 @@ import com.novelbio.database.model.modcopeid.CopedID;
  * @author zong0jie
  *
  */
-public abstract class GffDetailAbs {
+public abstract class GffDetailAbs implements CompSubArray{
 	
-	
+	private static Logger logger = Logger.getLogger(GffDetailAbs.class);
 	
 	/**
 	 * 设定基因的转录起点上游长度，默认为3000bp
@@ -102,7 +105,7 @@ public abstract class GffDetailAbs {
 	/**
 	 * 转录方向，假设同一基因不管多少转录本都同一转录方向
 	 */
-	protected boolean cis5to3 = true; 
+	protected Boolean cis5to3 = null; 
 	/**
 	 * 没有就设定为""或null
 	 * @param chrID 染色体编号，都小写
@@ -112,9 +115,9 @@ public abstract class GffDetailAbs {
 	 * UCSC:XM_0101010/XM_032020<br>
 	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
 	 * peak: peak起点_peak终点
-	 * @param cis5to3
+	 * @param cis5to3 不确定就输入null
 	 */
-	public GffDetailAbs(String chrID, String locString,boolean cis5to3)
+	public GffDetailAbs(String chrID, String locString,Boolean cis5to3)
 	{
 		this.ChrID = chrID.toLowerCase();
 		this.locString = locString;
@@ -247,8 +250,9 @@ public abstract class GffDetailAbs {
 	}
 	/**
 	 * 转录方向，假设同一基因不管多少转录本都同一转录方向
+	 * 如果为null，说明没有方向，一个转录本里面既有正向也有反向，总体就没有方向
 	 */
-	public boolean isCis5to3() {
+	public Boolean isCis5to3() {
 		return this.cis5to3;
 	}
 	/**
@@ -289,12 +293,17 @@ public abstract class GffDetailAbs {
 		if (coord < 0) {
 			return null;
 		}
+		if (cis5to3 == null) {
+			logger.error("不能确定该Item的方向");
+			return null;
+		}
 		if (cis5to3) {
 			cod2End =  coord -numberend;
 		}
 		else {
 			cod2End = numberstart- coord;
 		}
+	
 		return cod2End;
 	}
 	
@@ -395,5 +404,44 @@ public abstract class GffDetailAbs {
 		gffDetailAbs.numberend = numberend;
 		gffDetailAbs.tes2DownGene = tes2DownGene;
 		gffDetailAbs.tss2UpGene = tss2UpGene;
+	}
+	/**
+	 * 获得起点和终点
+	 */
+	@Override
+	public double[] getCell()
+	{
+		double[] result = new double[2];
+		result[0] = numberstart;
+		result[1] = numberend;
+		return result;
+	}
+	/**
+	 * 根据cis方向获得起点
+	 * 不能确定方向的话，就按照正向来
+	 * @return
+	 */
+	public double getStartCis()
+	{
+		if (cis5to3 == null || cis5to3) {
+			return numberstart;
+		}
+		else {
+			return numberend;
+		}
+	}
+	/**
+	 * 根据cis方向获得终点
+	 * 不能确定方向的话，就按照正向来
+	 * @return
+	 */
+	public double getEndCis()
+	{
+		if (cis5to3 == null || cis5to3) {
+			return numberend;
+		}
+		else {
+			return numberstart;
+		}
 	}
 }

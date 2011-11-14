@@ -1,8 +1,19 @@
 package com.novelbio.test;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Transparency;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,10 +22,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.tree.ExpandVetoException;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.math.stat.correlation.PearsonsCorrelation;
+import org.apache.commons.math.stat.descriptive.moment.Variance;
+import org.apache.commons.math.stat.descriptive.rank.Max;
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
@@ -22,8 +42,6 @@ import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValue
 
 
 import com.novelbio.analysis.annotation.blast.Blast2DB;
-import com.novelbio.analysis.annotation.copeID.CopedID;
-import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.generalConf.Species;
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.CopyOfGUIanalysisSimple;
@@ -44,6 +62,7 @@ import com.novelbio.analysis.seq.mapping.FastQMapSoap;
 import com.novelbio.analysis.seq.mapping.SAMtools;
 import com.novelbio.analysis.seq.reseq.LastzAlign;
 import com.novelbio.analysis.seq.reseq.ModifySeq;
+import com.novelbio.analysis.tools.Mas3.getProbID;
 import com.novelbio.analysis.tools.formatConvert.bedFormat.Soap2Bed;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.ExcelOperate;
@@ -51,10 +70,17 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.Patternlocation;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.base.plot.Rplot;
-import com.novelbio.database.DAO.FriceDAO.DaoFSGene2Go;
-import com.novelbio.database.entity.friceDB.Gene2Go;
-import com.novelbio.database.entity.friceDB.Go2Term;
+import com.novelbio.database.domain.geneanno.Gene2Go;
+import com.novelbio.database.domain.geneanno.Go2Term;
+import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.mapper.geneanno.MapGene2Go;
+import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modkegg.KeggInfo;
+import com.novelbio.database.servSpring.ServNCBIID;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 public class mytest {
 
@@ -66,10 +92,17 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		FastQ fastQ = new FastQ("/media/winE/NBC/Project/RNA-Seq_KGY/20110624_SalviaMiltiorrhiza/solexa/sra_data_1.fastQ", 0);
-		int a = fastQ.getSeqNum();
-		System.out.println(a);
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(TxtReadandWrite.GZIP, "/media/winE/NBC/Project/Project_FY_Lab/clean_reads/compress/DT40_KO0h_L1_2.fq.gz", false);
+		int i = 0;
+		for (String string : txtReadandWrite.readlines()) {
+			System.out.println(string);
+			i ++ ;
+			if (i > 100) {
+				break;
+			}
+		}
 	}
+	
 	
 	
 	/**
@@ -626,3 +659,5 @@ public class mytest {
 	}
 
 }
+
+

@@ -44,9 +44,9 @@ public class RunCoExp {
 		
 //		   º∆À„degree
 	try {
-			String excelFile = parentFIle+"T&DC CoexpressionNoFilter.xls";
-			String outFile = parentFIle+"T&DC CoexpressionNoFilterDegree.xls";
-			SimpCoExp.getCoExpDegree(excelFile,10090,outFile);
+			String excelFile = parentFIle+"NB.xls";
+			String outFile = parentFIle+"NBDegree.xls";
+			SimpCoExp.getCoExpDegree(excelFile,39947,outFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

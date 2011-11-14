@@ -124,12 +124,10 @@ public class TxtReadandWrite {
 	}
 	
 	/**
-	 * @param filepath
-	 *            要读取或写入的文件名filepath
-	 * @param createNew
-	 *            当文本不存在时，是否需要新建文本
-	 * @param append
-	 *            是接着写入还是写新的。<b>读取文本时必须设置为true</b>
+	 * @param fileType 压缩格式
+	 * @param filepath 要读取或写入的文件名filepath
+	 * @param createNew 当文本不存在时，是否需要新建文本
+	 * @param append 是接着写入还是写新的。<b>读取文本时必须设置为true</b>
 	 * @return true：成功设置文本参数<br>
 	 *         false：没有设好文本参数
 	 */
@@ -154,8 +152,13 @@ public class TxtReadandWrite {
 		}
 		return false;
 	}
-	
-	
+	/**
+	 * 仅设定压缩格式
+	 * @param filetype
+	 */
+	public void setFiletype(String filetype) {
+		this.filetype = filetype;
+	}
 	
 	private void createFile(String fileType, String fileName) throws Exception
 	{
@@ -987,7 +990,7 @@ public class TxtReadandWrite {
 
 	/**
 	 * 将数据按照excel的方法写入List<string[]>,null和""都不写入，最后写入一个换行
-	 * 
+	 * 内部close()
 	 * @param sep
 	 *            txt文本的分割符,为正则表达式，tab是"\t"
 	 * @param rowStartNum
@@ -1018,6 +1021,7 @@ public class TxtReadandWrite {
 		} catch (Exception e) {
 			logger.error("write list data error:"+getFileName());
 		}
+		close();
 	}
 
 	/**

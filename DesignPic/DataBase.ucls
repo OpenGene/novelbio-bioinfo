@@ -1,16 +1,15 @@
 <class-diagram version="1.0.4" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true">  
-  <class id="1" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.copeID.CopedID" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/copeID/CopedID.java" 
-    binary="false">    
+  <class id="1" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modcopeid.CopedID" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modcopeid/CopedID.java" binary="false">    
     <position height="-1" width="-1" x="373" y="12"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <interface id="4" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.copeID.CopedIDInt" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/copeID/CopedIDInt.java" 
+  <interface id="4" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modcopeid.CopedIDInt" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modcopeid/CopedIDInt.java" 
     binary="false">    
     <position height="-1" width="-1" x="616" y="534"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -18,8 +17,8 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </interface>  
-  <class id="5" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.copeID.CopedIDAbs" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/copeID/CopedIDAbs.java" 
+  <class id="5" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modcopeid.CopedIDAbs" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modcopeid/CopedIDAbs.java" 
     binary="false">    
     <position height="-1" width="-1" x="1045" y="14"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -27,8 +26,8 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="7" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.copeID.CopedIDuni" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/copeID/CopedIDuni.java" 
+  <class id="7" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modcopeid.CopedIDuni" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modcopeid/CopedIDuni.java" 
     binary="false">    
     <position height="-1" width="-1" x="1398" y="-217"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -36,8 +35,8 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="8" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.copeID.CopedIDacc" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/copeID/CopedIDacc.java" 
+  <class id="8" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modcopeid.CopedIDacc" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modcopeid/CopedIDacc.java" 
     binary="false">    
     <position height="-1" width="-1" x="1400" y="-311"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -45,8 +44,8 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="9" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.copeID.CopedIDgen" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/copeID/CopedIDgen.java" 
+  <class id="9" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modcopeid.CopedIDgen" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modcopeid/CopedIDgen.java" 
     binary="false">    
     <position height="-1" width="-1" x="1409" y="-95"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -54,32 +53,33 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="10" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.AGene2Go" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/AGene2Go.java" binary="false">    
+  <class id="10" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.geneanno.AGene2Go" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/geneanno/AGene2Go.java" binary="false">    
     <position height="-1" width="-1" x="967" y="972"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="11" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.Gene2Go" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/Gene2Go.java" binary="false">    
+  <class id="11" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.geneanno.Gene2Go" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/geneanno/Gene2Go.java" binary="false">    
     <position height="-1" width="-1" x="1166" y="1273"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="13" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.AGeneInfo" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/AGeneInfo.java" binary="false">    
+  <class id="13" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.geneanno.AGeneInfo" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/geneanno/AGeneInfo.java" 
+    binary="false">    
     <position height="-1" width="-1" x="1437" y="391"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="14" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.UniGene2Go" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/UniGene2Go.java" 
+  <class id="14" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.geneanno.UniGene2Go" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/geneanno/UniGene2Go.java" 
     binary="false">    
     <position height="-1" width="-1" x="941" y="1273"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -87,32 +87,33 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="16" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.NCBIID" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/NCBIID.java" binary="false">    
+  <class id="16" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.geneanno.NCBIID" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/geneanno/NCBIID.java" binary="false">    
     <position height="-1" width="-1" x="1693" y="550"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="17" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.BlastInfo" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/BlastInfo.java" binary="false">    
+  <class id="17" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.geneanno.BlastInfo" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/geneanno/BlastInfo.java" 
+    binary="false">    
     <position height="-1" width="-1" x="1050" y="512"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="18" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.Go2Term" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/Go2Term.java" binary="false">    
+  <class id="18" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.geneanno.Go2Term" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/geneanno/Go2Term.java" binary="false">    
     <position height="-1" width="-1" x="659" y="1213"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="19" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.UniGeneInfo" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/UniGeneInfo.java" 
+  <class id="19" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.geneanno.UniGeneInfo" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/geneanno/UniGeneInfo.java" 
     binary="false">    
     <position height="-1" width="-1" x="1353" y="834"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -120,24 +121,25 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="22" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.GeneInfo" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/GeneInfo.java" binary="false">    
+  <class id="22" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.geneanno.GeneInfo" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/geneanno/GeneInfo.java" binary="false">    
     <position height="-1" width="-1" x="1545" y="833"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="23" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.UniProtID" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/UniProtID.java" binary="false">    
+  <class id="23" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.geneanno.UniProtID" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/geneanno/UniProtID.java" 
+    binary="false">    
     <position height="-1" width="-1" x="1892" y="550"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="24" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.friceDB.AgeneUniID" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/friceDB/AgeneUniID.java" 
+  <class id="24" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.geneanno.AgeneUniID" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/geneanno/AgeneUniID.java" 
     binary="false">    
     <position height="-1" width="-1" x="1767" y="305"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -145,18 +147,16 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="25" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.annotation.GO.goEntity.GOInfoAbs" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/GO/goEntity/GOInfoAbs.java" 
-    binary="false">    
+  <class id="25" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modgo.GOInfoAbs" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modgo/GOInfoAbs.java" binary="false">    
     <position height="-1" width="-1" x="1431" y="1271"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="27" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfoAccID" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KeggInfoAccID.java" 
+  <class id="27" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modkegg.KeggInfoAccID" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modkegg/KeggInfoAccID.java" 
     binary="false">    
     <position height="-1" width="-1" x="2675" y="674"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -184,9 +184,8 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <interface id="31" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfoInter" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KeggInfoInter.java" 
+  <interface id="31" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modkegg.KeggInfoInter" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modkegg/KeggInfoInter.java" 
     binary="false">    
     <position height="-1" width="-1" x="3243" y="-17"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -194,9 +193,8 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </interface>  
-  <class id="32" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfoAbs" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KeggInfoAbs.java" 
+  <class id="32" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modkegg.KeggInfoAbs" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modkegg/KeggInfoAbs.java" 
     binary="false">    
     <position height="-1" width="-1" x="2943" y="307"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -204,9 +202,8 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="33" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfoUniID" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KeggInfoUniID.java" 
+  <class id="33" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modkegg.KeggInfoUniID" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modkegg/KeggInfoUniID.java" 
     binary="false">    
     <position height="-1" width="-1" x="2993" y="685"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -214,9 +211,8 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="34" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfoGenID" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KeggInfoGenID.java" 
+  <class id="34" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modkegg.KeggInfoGenID" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modkegg/KeggInfoGenID.java" 
     binary="false">    
     <position height="-1" width="-1" x="3279" y="689"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -224,25 +220,24 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="35" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KeggInfo" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/annotation/pathway/kegg/pathEntity/KeggInfo.java" binary="false">    
+  <class id="35" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.model.modkegg.KeggInfo" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/model/modkegg/KeggInfo.java" binary="false">    
     <position height="-1" width="-1" x="2466" y="-9"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="36" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGIDgen2Keg" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGIDgen2Keg.java" binary="false">    
+  <class id="36" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.kegg.KGIDgen2Keg" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/kegg/KGIDgen2Keg.java" binary="false">    
     <position height="-1" width="-1" x="3136" y="868"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="38" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.noUseKGCKo2Entry" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/noUseKGCKo2Entry.java" 
+  <class id="38" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.kegg.noUseKGCKo2Entry" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/kegg/noUseKGCKo2Entry.java" 
     binary="false">    
     <position height="-1" width="-1" x="3982" y="496"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -250,8 +245,8 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="40" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.noUseKGCentry2Ko2Gen" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/noUseKGCentry2Ko2Gen.java" 
+  <class id="40" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.kegg.noUseKGCentry2Ko2Gen" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/kegg/noUseKGCentry2Ko2Gen.java" 
     binary="false">    
     <position height="-1" width="-1" x="3710" y="1154"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
@@ -259,48 +254,48 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="41" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGCentry2Gen" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGCentry2Gen.java" binary="false">    
+  <class id="41" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.kegg.KGCentry2Gen" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/kegg/KGCentry2Gen.java" binary="false">    
     <position height="-1" width="-1" x="2960" y="1200"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="42" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGCKo2Gen" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGCKo2Gen.java" binary="false">    
+  <class id="42" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.kegg.KGCKo2Gen" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/kegg/KGCKo2Gen.java" binary="false">    
     <position height="-1" width="-1" x="3296" y="1125"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="44" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGIDkeg2Ko" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGIDkeg2Ko.java" binary="false">    
+  <class id="44" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.kegg.KGIDkeg2Ko" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/kegg/KGIDkeg2Ko.java" binary="false">    
     <position height="-1" width="-1" x="2468" y="204"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="46" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGCgen2Entry" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGCgen2Entry.java" binary="false">    
+  <class id="46" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.kegg.KGCgen2Entry" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/kegg/KGCgen2Entry.java" binary="false">    
     <position height="-1" width="-1" x="3974" y="233"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="47" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGentry" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGentry.java" binary="false">    
+  <class id="47" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.kegg.KGentry" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/kegg/KGentry.java" binary="false">    
     <position height="-1" width="-1" x="3589" y="345"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="49" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.entity.kegg.KGCgen2Ko" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/entity/kegg/KGCgen2Ko.java" binary="false">    
+  <class id="49" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.database.domain.kegg.KGCgen2Ko" 
+    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/database/domain/kegg/KGCgen2Ko.java" binary="false">    
     <position height="-1" width="-1" x="2478" y="444"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="true" package="false" protected="false" private="false"/>      

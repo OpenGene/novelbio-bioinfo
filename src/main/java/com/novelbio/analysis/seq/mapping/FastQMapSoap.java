@@ -91,7 +91,7 @@ public class FastQMapSoap extends FastQMapAbs{
 		 IndexMake();
 		// soap -a TGACT.fastq -b TGACT2.fastq -D /NC_009443.fna.index -o soapMapping -2 soapMappingNotPair -m 20 -x 500
 		String cmd = "";
-		cmd = ExePath + " -a "+getSeqFile();
+		cmd = ExePath + "soap -a "+getSeqFile();
 		cmd = cmd + " -D " + chrFile + ".index "; 
 		cmd = cmd + " -o " +outFileName; 
 		cmd = cmd +  " -r 2 ";

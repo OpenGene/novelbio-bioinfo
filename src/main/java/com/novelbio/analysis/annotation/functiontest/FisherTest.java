@@ -158,7 +158,7 @@ public class FisherTest {
 		HashMap<String, ArrayList<String>> hashResult = new HashMap<String, ArrayList<String>>();
 		for (String[] strings : lsGene2Item) {
 			String geneID = strings[0];
-			if (strings[1].trim().equals("")) {
+			if (strings[1] == null || strings[1].trim().equals("")) {
 				continue;
 			}
 			String[] items = strings[1].split(",");

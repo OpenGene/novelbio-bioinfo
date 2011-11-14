@@ -77,5 +77,12 @@ public interface GffHashGeneInf  {
 	 * @return
 	 */
 	GffGeneIsoInfo searchISO(String LOCID);
+	/**
+	 * 获得该转录本组的物种ID
+	 * @return
+	 */
+	int getTaxID();
+
+	void writeToGTF(String GTFfile, String title);
 
 }

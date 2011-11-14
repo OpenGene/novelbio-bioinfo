@@ -112,11 +112,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 				strings[i] = strings[i].replace("\"", "");
 			}
 		}
-		String[] title = new String[10];
-		title[0] = "GOID"; title[1] = "GOTerm";
-		title[2] = "DifGene"; title[3] = "AllDifGene"; title[4] = "GeneInGOID"; title[5] = "AllGene";
-		title[6] = "P-Value"; title[7] = "FDR"; title[8] = "Enrichment"; title[9] = "(-log2P)";
-		lsTestResult.add(0,title);
+
 		return lsTestResult;
 	}
 

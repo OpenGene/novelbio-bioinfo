@@ -84,7 +84,7 @@ public class GUIanalysis extends javax.swing.JFrame {
 				getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
 				jTabbedPane1.setPreferredSize(new java.awt.Dimension(1035, 682));
 				guiBlastJpanel = new GuiBlastJpanel();
-				jTabbedPane1.addTab("DataBase", null, guiBlastJpanel, null);
+				jTabbedPane1.addTab("Gene Query", null, guiBlastJpanel, null);
 				
 				guiGoJPanel= new GuiGoJPanel();
 				jTabbedPane1.addTab("GO Analysis", null, guiGoJPanel, null);
@@ -93,13 +93,14 @@ public class GUIanalysis extends javax.swing.JFrame {
 				jTabbedPane1.addTab("Pathway Analysis", null, guiPathJpanel, null);
 				
 				guiSrcToTrg = new GuiSrcToTrg();
-				jTabbedPane1.addTab("src2trg", null, guiSrcToTrg, null);
+				jTabbedPane1.addTab("Gene-Act Network", null, guiSrcToTrg, null);
 				
-				guiDegreeAdd = new GuiDegreeAdd();
-				jTabbedPane1.addTab("degree", null, guiDegreeAdd, null);
-				
+			
 				guiPearson = new GuiPearson();
-				jTabbedPane1.addTab("pearson", null, guiPearson, null);
+				jTabbedPane1.addTab("Co-Exp Network", null, guiPearson, null);
+				guiDegreeAdd = new GuiDegreeAdd();
+				jTabbedPane1.addTab("Network Analysis", null, guiDegreeAdd, null);
+				
 //				{
 //					jPanCoExp = new JPanel();
 //					jTabbedPane1.addTab("CoExpression", null, jPanCoExp, null);

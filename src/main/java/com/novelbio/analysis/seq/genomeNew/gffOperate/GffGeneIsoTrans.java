@@ -13,6 +13,9 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	public GffGeneIsoTrans(String IsoName, String chrID, int coord, String geneTpye) {
 		super(IsoName, chrID, coord, geneTpye);
 	}
+	public GffGeneIsoTrans(String IsoName, String ChrID, String geneType) {
+		super(IsoName, ChrID, geneType);
+	}
 	@Override
 	protected void setCod2ExInStartEnd() {
 		int NumExon = numExIntron - 1; //实际数量减去1，方法内用该变量运算
@@ -331,6 +334,27 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加 <br>
 	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
 	 */
+	@Override
+	protected void addExonCufflinkGTF(int locStart, int locEnd) {
+		/**
+		 * 添加外显子，添加在末尾
+		 * 添加的时候必须按照基因方向添加，
+		 * 正向从小到大添加 且 int0<int1
+		 * 反向从大到小添加 且 int0>int1
+		 */
+		int[] tmpexon = new int[2];
+		tmpexon[0] = Math.max(locStart, locEnd);
+		tmpexon[1] = Math.min(locStart, locEnd);
+		lsIsoform.add(0,tmpexon);
+	}
+	
+	/**
+	 * 这个要确认
+	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
+	 * 当gene为反方向时，exon是从大到小排列的<br>
+	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加 <br>
+	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
+	 */
 	protected void addExonGFF(int locStart, int locEnd) {
 		/**
 		 * 添加外显子，添加在末尾
@@ -394,4 +418,34 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		gffGeneIsoTrans.setCoord(getCoord());
 		return gffGeneIsoTrans;
 	}
+	@Override
+	public GffGeneIsoTrans cloneDeep() {
+		GffGeneIsoTrans gffGeneIsoTrans = new GffGeneIsoTrans(IsoName, chrID, coord, getGeneType());
+		this.cloneDeep(gffGeneIsoTrans);
+		gffGeneIsoTrans.setCoord(getCoord());
+		return gffGeneIsoTrans;
+	}
+	@Override
+	public int getStartAbs() {
+		return lsIsoform.get(lsIsoform.size() - 1)[1];
+		
+	}
+
+	@Override
+	public int getEndAbs() {
+		// TODO Auto-generated method stub
+		return lsIsoform.get(0)[0];
+	}
+
+	@Override
+	protected String getGTFformatExon(String geneID, String title, String strand) {
+		String geneExon = "";
+		for (int i = getIsoInfo().size() - 1; i >= 0; i--) {
+			int[] exons = getIsoInfo().get(i);
+			geneExon = geneExon + getChrID() + "\t" + title + "\texon\t" + exons[1] + "\t" + exons[0] + "\t" + "0.000000" + "\t"
+					+ strand + "\t.\t" + "gene_id \"" + geneID + "\"; transcript_id " + getIsoName() + "\"; \r\n";
+		}
+		return geneExon;
+	}
+
 }

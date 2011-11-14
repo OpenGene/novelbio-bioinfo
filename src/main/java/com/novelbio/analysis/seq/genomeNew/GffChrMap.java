@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
+
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
@@ -62,13 +64,19 @@ public class GffChrMap extends GffChrAbs{
 	}
 	
 	public static void main(String[] args) {
-		GffChrMap gffChrMap = new GffChrMap(NovelBioConst.GENOME_GFF_TYPE_TIGR, NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE,
-				NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, 
-				"/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/N/result/Nextend_sort.bed", 10);
+		GffChrMap gffChrMap = new GffChrMap(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ,
+				NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, 
+				"//media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/k0_extend_sort.bed", 10);
 		gffChrMap.loadChrFile();
 		gffChrMap.loadMapReads();
-		gffChrMap.plotTssTesHeatMap("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/DGEexpress/dgeexpress",
-				1, 2, 2, GffDetailGene.TSS, 1000, "/media/winE/NBC/Project/Project_ZHY_Lab/TssHeat.png");
+		gffChrMap.setPlotRegion(5000, 5000);
+		gffChrMap.plotTssTesHeatMap(Color.blue,true,"/home/zong0jie/桌面/aaaaa.xls",
+				1, 2, 2, 0,80,1,GffDetailGene.TSS, 1000, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/TssHeattest80.png");
+		gffChrMap.plotTssTesHeatMap(Color.blue,true,"/home/zong0jie/桌面/aaaaa.xls",
+				1, 2, 2, 0,60,1,GffDetailGene.TSS, 1000, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/TssHeattest60.png");
+		gffChrMap.plotTssTesHeatMap(Color.blue,true,"/home/zong0jie/桌面/aaaaa.xls",
+				1, 2, 2, 0,100,1,GffDetailGene.TSS, 1000, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/TssHeattest100.png");
+		
 	}
 	/**
 	 * @param readsFile mapping的结果文件，必须排过序，一般为bed格式

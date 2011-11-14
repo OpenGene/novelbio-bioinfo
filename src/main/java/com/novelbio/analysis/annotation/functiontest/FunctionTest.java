@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 
@@ -67,7 +68,18 @@ public class FunctionTest implements FunTestInt{
 	public void setLsBGAccID(String fileName, int colNum) {
 		funTest.setLsBGAccID(fileName, colNum);
 	}
-
+	/**
+	 * 读取AccID文件，然后将Item保存至相应的文件夹中
+	 * @param fileName
+	 * @param colNum
+	 * @param outLsItem
+	 */
+	public void setLsBGAccID(String fileName, int colNum, String outLsItem) {
+		funTest.setLsBGAccID(fileName, colNum);
+		ArrayList<String[]> lsBG = funTest.getLsBG();
+		TxtReadandWrite txtOut = new TxtReadandWrite(outLsItem, true);
+		txtOut.ExcelWrite(lsBG, "\t", 1, 1);
+	}
 	@Override
 	public void setLsBGCopedID(ArrayList<CopedID> lsBGaccID) {
 		funTest.setLsBGCopedID(lsBGaccID);

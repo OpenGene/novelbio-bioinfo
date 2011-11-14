@@ -61,21 +61,21 @@ public class TestGffUCSCInfo extends TestCase{
 			GffGeneIsoInfo gffGeneIsoSearch = gffDetailGene.getLongestSplit();
 			
 			if ( gffDetailGene.getLongestSplit().ismRNA()) {
-				assertEquals(gffGeneIsoSearch.getLocDistance(atgsite, tsssite), gffDetailGene.getLongestSplit().getLenUTR5());
-				assertEquals(gffGeneIsoSearch.getLocDistance(tessite, uagsite), gffDetailGene.getLongestSplit().getLenUTR3());
+				assertEquals(gffGeneIsoSearch.getLocDistmRNA(atgsite, tsssite), gffDetailGene.getLongestSplit().getLenUTR5());
+				assertEquals(gffGeneIsoSearch.getLocDistmRNA(tessite, uagsite), gffDetailGene.getLongestSplit().getLenUTR3());
 			}
 		
 			assertEquals(0, gffGeneIsoSearch.getCod2ATG());
 			
-			int atg2tes = -gffGeneIsoSearch.getLocDistance(atgsite, tessite);
+			int atg2tes = -gffGeneIsoSearch.getLocDistmRNA(atgsite, tessite);
 			int cod2tes = gffGeneIsoSearch.getCod2TESmRNA();
 			assertEquals(atg2tes , cod2tes);
 			
-			int atg2tss = gffGeneIsoSearch.getLocDistance(atgsite, tsssite);
+			int atg2tss = gffGeneIsoSearch.getLocDistmRNA(atgsite, tsssite);
 			int cod2tss = gffGeneIsoSearch.getCod2TSSmRNA();
 			assertEquals(atg2tss , cod2tss);
 			
-			int atg2uag = -gffGeneIsoSearch.getLocDistance(atgsite, uagsite);
+			int atg2uag = -gffGeneIsoSearch.getLocDistmRNA(atgsite, uagsite);
 			int cod2uag = -gffGeneIsoSearch.getCod2UAGmRNA();
 			if (atg2uag == 918) {
 				System.out.println("ok");
@@ -86,34 +86,34 @@ public class TestGffUCSCInfo extends TestCase{
 			}
 			assertEquals(atg2uag , cod2uag);
 			
-			int atg2atg = gffGeneIsoSearch.getLocDistance(atgsite, atgsite);
+			int atg2atg = gffGeneIsoSearch.getLocDistmRNA(atgsite, atgsite);
 			int cod2atg = -gffGeneIsoSearch.getCod2ATG();
 			assertEquals(0, atg2atg);
 			assertEquals(atg2atg, cod2atg);
 			
-			int coordatgup = gffGeneIsoSearch.getLocdistanceSite(atgsite, -300);
-			int coordatgdown = gffGeneIsoSearch.getLocdistanceSite(atgsite, 500);
+			int coordatgup = gffGeneIsoSearch.getLocDistmRNASite(atgsite, -300);
+			int coordatgdown = gffGeneIsoSearch.getLocDistmRNASite(atgsite, 500);
 			if (coordatgup > 0) {
-				int cod2atg2 = gffGeneIsoSearch.getLocDistance(coordatgup, atgsite);
+				int cod2atg2 = gffGeneIsoSearch.getLocDistmRNA(coordatgup, atgsite);
 				assertEquals(-300, cod2atg2);
 				getCod2Site(gffDetailGene, coordatgup, atgsite, uagsite, tsssite, tessite);
 			}
 			
 			if (coordatgdown > 0) {
-				int cod2atg2 = gffGeneIsoSearch.getLocDistance(coordatgdown, atgsite);
+				int cod2atg2 = gffGeneIsoSearch.getLocDistmRNA(coordatgdown, atgsite);
 				assertEquals(500, cod2atg2);
 				getCod2Site(gffDetailGene, coordatgdown, atgsite, uagsite, tsssite, tessite);
 			}
 			
-			int coordatgup2 = gffGeneIsoSearch.getLocdistanceSite(uagsite, -500);
-			int coordatgdown2 = gffGeneIsoSearch.getLocdistanceSite(uagsite, 300);
+			int coordatgup2 = gffGeneIsoSearch.getLocDistmRNASite(uagsite, -500);
+			int coordatgdown2 = gffGeneIsoSearch.getLocDistmRNASite(uagsite, 300);
 			
 			if (coordatgup2 > 0) {
-				int cod2atg2 = gffGeneIsoSearch.getLocDistance(coordatgup2, uagsite);
+				int cod2atg2 = gffGeneIsoSearch.getLocDistmRNA(coordatgup2, uagsite);
 				assertEquals(-500, cod2atg2);
 			}
 			if (coordatgdown2 > 0) {
-				int cod2atg2 = gffGeneIsoSearch.getLocDistance(coordatgdown2, uagsite);
+				int cod2atg2 = gffGeneIsoSearch.getLocDistmRNA(coordatgdown2, uagsite);
 				assertEquals(300, cod2atg2);
 			}
 		}
@@ -132,12 +132,12 @@ public class TestGffUCSCInfo extends TestCase{
 //		}
 		
 		
-		assertEquals(gffGeneIsoSearchCod.getLocDistance(coord,atgsite), gffGeneIsoSearchCod.getCod2ATGmRNA());
+		assertEquals(gffGeneIsoSearchCod.getLocDistmRNA(coord,atgsite), gffGeneIsoSearchCod.getCod2ATGmRNA());
 		
 		
-		assertEquals(gffGeneIsoSearchCod.getLocDistance(coord,uagsite), gffGeneIsoSearchCod.getCod2UAGmRNA());
-		assertEquals(gffGeneIsoSearchCod.getLocDistance(coord,tsssite), gffGeneIsoSearchCod.getCod2TSSmRNA());
-		assertEquals(gffGeneIsoSearchCod.getLocDistance(coord,tessite), -gffGeneIsoSearchCod.getCod2TESmRNA());		
+		assertEquals(gffGeneIsoSearchCod.getLocDistmRNA(coord,uagsite), gffGeneIsoSearchCod.getCod2UAGmRNA());
+		assertEquals(gffGeneIsoSearchCod.getLocDistmRNA(coord,tsssite), gffGeneIsoSearchCod.getCod2TSSmRNA());
+		assertEquals(gffGeneIsoSearchCod.getLocDistmRNA(coord,tessite), -gffGeneIsoSearchCod.getCod2TESmRNA());		
 	}
 	@After
 	public void  clear() {

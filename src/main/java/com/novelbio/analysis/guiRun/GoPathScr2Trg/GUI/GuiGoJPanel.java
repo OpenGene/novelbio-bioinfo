@@ -571,7 +571,7 @@ public class GuiGoJPanel extends JPanel{
 		else
 			lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID}, 1, 0);
 		
-		ctrlGO = CtrlGO.getInstance(elimGo, GOClass, colFC, blast, evalue, StaxID);
+		ctrlGO = CtrlGO.getInstance(elimGo, GOClass, QtaxID, blast, evalue, StaxID);
 		ctrlGO.setLsBG(backGroundFile);
 		
 		if (!jChkCluster.isSelected() || colAccID == colFC) {

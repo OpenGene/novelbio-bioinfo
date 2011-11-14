@@ -24,8 +24,8 @@ public class MedianGet {
 	HashMap<String, ArrayList<String[]>> hashGeneInfo = new HashMap<String, ArrayList<String[]>>();
 	public static void main(String[] args) {
 		MedianGet medianGet = new MedianGet();
-		medianGet.getMedian("/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/合并数据.xls", 1, 
-				"/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/合并数据combin.xls", 2,3,4,5,6,7,8,9,10,11,12,13,14,15);
+		medianGet.getMedian("/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/20111113/miRNA治疗后VS治疗前.xls", 1, 
+				"/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/20111113/miRNA治疗后VS治疗前_cope.xls", 2,3,4,5,6,7,8,9,10,11,12,13,14,15);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class MedianGet {
 		
 		ExcelOperate excelOperate = new ExcelOperate();
 		excelOperate.openExcel(outFile);
-		excelOperate.WriteExcel(1, 1, lsResult, true);
+		excelOperate.WriteExcel(1, 1, lsResult);
 	}
 	
 	

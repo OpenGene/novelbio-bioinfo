@@ -9,7 +9,12 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.commons.math.stat.descriptive.moment.Mean;
+import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
+import org.apache.commons.math.stat.descriptive.moment.Variance;
+import org.apache.commons.math.stat.descriptive.rank.Max;
+import org.apache.commons.math.stat.descriptive.rank.Min;
 import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -623,7 +628,7 @@ public class MapReads {
 	 * @return
 	 */
 	public  double[] getRengeInfo(int thisInvNum,String chrID,int startNum,int endNum,int type)
-	{
+	{	
 		if (startNum <=0 && endNum <=0) {
 			startNum = 1; endNum = (int)getChrLen(chrID);
 		}
@@ -875,6 +880,148 @@ public class MapReads {
 			}
 		}
 	}
+	
+	/**
+	 * 给定坐标范围，返回该区间内最小值
+	 * @param chrID
+	 * @param startLoc
+	 * @param endLoc
+	 * @return double
+	 */
+	public double regionMin(String chrID, int startLoc, int endLoc)
+	{
+		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
+		return new Min().evaluate(info);
+	}
+	
+	/**
+	 * 给定坐标范围，返回该区间内最大值
+	 * @param chrID
+	 * @param startLoc
+	 * @param endLoc
+	 * @return double
+	 */
+	public double regionMax(String chrID, int startLoc, int endLoc)
+	{
+		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
+		return new Max().evaluate(info);
+	}
+	/**
+	 * 给定坐标范围，返回该区间内平均值
+	 * @param chrID
+	 * @param startLoc
+	 * @param endLoc
+	 * @return double
+	 */
+	public double regionMean(String chrID, int startLoc, int endLoc)
+	{
+		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
+		return new Mean().evaluate(info);
+	}
+	/**
+	 * 如果invNum不为1，则可能不精确
+	 * 给定坐标范围，看该区域内有多少0区域
+	 * @param chrID
+	 * @param startLoc 无所谓哪个在前，绝对坐标从1开始
+	 * @param endLoc
+	 * @return arrayList[]:0区域的绝对坐标区间
+	 * 
+	 */
+	public ArrayList<int[]> region0Info(String chrID, int startLocT, int endLocT)
+	{
+		int startLoc = Math.min(startLocT, endLocT);
+		int endLoc = Math.max(startLocT, endLocT);
+		startLoc--; endLoc--;
+		int[] invNumReads = hashChrBpReads.get(chrID.toLowerCase());
+		if (startLoc < 0 || endLoc >= invNumReads.length) {
+			logger.error("越界了："+ chrID + " " + startLoc + " " + endLoc);
+			return null;
+		}
+		
+		ArrayList<int[]> lsResult = new ArrayList<int[]>();
+		
+		boolean flag0 = false;
+		int[] region = null;
+		for (int i = startLoc; i < endLoc; i++) {
+			if (invNumReads[i] == 0 && !flag0) {
+				region = new int[2];
+				region[0] = i+1;
+				region[1] = i + 1;
+				lsResult.add(region);
+				flag0 = true;
+			}
+			else if (invNumReads[i] == 0 && flag0) {
+				region[1] = i+1;
+			}
+			else if (invNumReads[i] != 0) {
+				flag0 = false;
+			}
+		}
+		return lsResult;
+	}
+	/**
+	 * 给定坐标范围，返回该区间内标准差
+	 * @param chrID
+	 * @param startLoc
+	 * @param endLoc
+	 * @return double
+	 */
+	public double regionSD(String chrID, int startLoc, int endLoc)
+	{
+		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
+		return new StandardDeviation().evaluate(info);
+	}
+	/**
+	 * 给定坐标范围，返回该区间内标准差
+	 * @param chrID
+	 * @param startLoc
+	 * @param endLoc
+	 * @return double
+	 */
+	public double regionSD(String chrID, List<int[]> lsLoc)
+	{
+		return new StandardDeviation().evaluate(getRegionInfo(chrID, lsLoc));
+	}
+	/**
+	 * 给定坐标范围，返回该区间内平均值
+	 * @param chrID
+	 * @param startLoc
+	 * @param endLoc
+	 * @return double
+	 */
+	public double regionMean(String chrID, List<int[]> lsLoc)
+	{
+		return new Mean().evaluate(getRegionInfo(chrID, lsLoc));
+	}
+	
+	public double[] getRegionInfo(String chrID, List<int[]> lsLoc) {
+		ArrayList<double[]> lstmp = new ArrayList<double[]>();
+		for (int[] is : lsLoc) {
+			int min = Math.min(is[0], is[1]);
+			int max = Math.max(is[0], is[1]);
+			double[] info = getRengeInfo(invNum, chrID, min,max, 0);
+			lstmp.add(info);
+		}
+		int len = 0;
+		for (double[] ds : lstmp) {
+			len = len + ds.length;
+		}
+		//生成最终长度的double
+		double[] finalReads = new double[len];
+		int index = 0;
+		for (double[] ds : lstmp) {
+			for (double d : ds) {
+				finalReads[index] = d;
+				index ++ ;
+			}
+		}
+		return finalReads;
+	}
+	
+	
+	
+	
+	
 	/**
 	 * 经过标准化
 	 * @param lsmapInfo

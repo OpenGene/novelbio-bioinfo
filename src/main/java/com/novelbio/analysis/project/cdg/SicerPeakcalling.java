@@ -19,16 +19,31 @@ public class SicerPeakcalling {
 	
 	public static void main(String[] args) {
 		SicerPeakcalling sicerpeakcalling = new SicerPeakcalling();
-		sicerpeakcalling.TssRegionDGE2sample2();
+		sicerpeakcalling.statistic();
 	}
+	
+	
+	
+	public void statistic() {
+		gffChrAnno.setFilterTssTes(new int[]{-2000,2000}, null);
+		String txtFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/compareSICER/compareResult/2KseSort-and-2WseSort-W200-G600-summary_summit.xls";
+		gffChrAnno.getSummitStatistic(txtFile, 1, 4, 2, FileOperate.changeFileSuffix(txtFile, "_statistic", "txt"));
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * 将peak覆盖到tss区域的基因挑选出来
 	 */
-	public void annotationRegionTss() {
-		gffChrAnno.setFilterTssTes(new int[]{-2000,2000}, null);
-		
-		
+	public void annotationRegion() {
+		gffChrAnno.setFilterTssTes(new int[]{-3000,2000}, null);
+		gffChrAnno.setFilterGeneBody(true, false, false);
 //		String parentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/compareSICER/compareResult/";
 //		String fileIn = parentFIle + "2KseSort-and-2WseSort-W200-G600-summary";
 //		String fileOut = FileOperate.changeFileSuffix(fileIn, "_anno", "txt");
@@ -45,28 +60,20 @@ public class SicerPeakcalling {
 //		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
 		
 		
-		String parentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/PeakCalling/";
-		String fileIn = parentFIle + "2KseSort-W200-G600-E100.scoreisland";
-		String fileOut = FileOperate.changeFileSuffix(fileIn, "_anno", "txt");
+		String parentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/compareSICER/compareResult/";
+		String fileIn = parentFIle + "KEseSort-and-WEseSort-W200-G600-summary";
+		String fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "txt");
 	
 		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-		fileIn = parentFIle + "2WseSort-W200-G600-E100.scoreisland";
-		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno", "txt");
+		fileIn = parentFIle + "2WseSort-and-WEseSort-W200-G600-summary";
+		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "txt");
 		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-		fileIn = parentFIle + "KEseSort-W200-G600-E100.scoreisland";
-		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno", "txt");
+		fileIn = parentFIle + "2KseSort-and-KEseSort-W200-G600-summary";
+		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "txt");
 		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-		fileIn = parentFIle + "WEseSort-W200-G600-E100.scoreisland";
-		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno", "txt");
+		fileIn = parentFIle + "2KseSort-and-2WseSort-W200-G600-summary";
+		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "txt");
 		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-		
-		
-		
-		
-		
-		
-		
-		
 	}
 	/**
 	 * 绘制Tss附近区域与FX2关联的heatmap图

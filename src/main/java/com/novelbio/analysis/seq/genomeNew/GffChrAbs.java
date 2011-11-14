@@ -69,6 +69,9 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 * 标准化方法，默认为不标准化
 	 */
 	int mapNormType = MapReads.NORMALIZATION_NO;
+	/**
+	 * 主要用于画图
+	 */
 	int upBp = 5000;//tss和tes以及其他位点的上游长度，默认5000
 	int downBp = 5000;//tss和tes以及其他位点的下游长度，默认5000
 	

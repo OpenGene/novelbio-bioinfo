@@ -11,11 +11,15 @@ import java.util.List;
 
 import org.apache.commons.math.stat.StatUtils;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 
 public class MathComput {
+	private static Logger logger = Logger.getLogger(MathComput.class);
+	
+	
 	/**
 	 * 输入数据，获得平均数
 	 * 采用插入排序法，据说对于小规模数据效率还不错
@@ -44,7 +48,6 @@ public class MathComput {
 		double avg=sum/length;
 		return avg;
 	}
-	
 	
 	
 	/**
@@ -823,11 +826,9 @@ public class MathComput {
 		}
 		return result;
 	}
+
 	
-	
-	
-	
-	
+
 	
 //////////////////////////// java 版的 fdr 计算， BH 方法 //////////////////////////////////////////////////////////////////////////////////
 	/**

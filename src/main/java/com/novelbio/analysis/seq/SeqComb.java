@@ -36,11 +36,11 @@ public abstract class SeqComb {
 	public void setCompressType(String cmpInType, String cmpOutType) {
 		if (cmpInType != null && !cmpInType.equals("")) {
 			this.compressInType = cmpInType;
+			txtSeqFile.setFiletype(cmpInType);
 		}
 		if (cmpOutType != null && !cmpInType.equals("")) {
 			this.compressOutType = cmpOutType;
 		}
-		
 	}
 	/**
 	 *  输入的压缩格式

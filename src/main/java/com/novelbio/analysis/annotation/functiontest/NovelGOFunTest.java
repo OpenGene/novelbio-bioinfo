@@ -2,6 +2,7 @@ package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 
 import com.novelbio.database.domain.geneanno.AGene2Go;
@@ -22,7 +23,7 @@ public class NovelGOFunTest extends AbstFunTest{
 	}
 	
 	@Override
-	protected ArrayList<String[]> convert2Item(ArrayList<CopedID> lsCopedIDs) {
+	protected ArrayList<String[]> convert2Item(Collection<CopedID> lsCopedIDs) {
 		HashSet<String> hashGenUniID = new HashSet<String>();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 			for (CopedID copedID : lsCopedIDs) {

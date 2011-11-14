@@ -291,6 +291,7 @@ public class FastQ extends SeqComb {
 	public FastQ(String seqFile1, String seqFile2, int FastQFormateOffset,
 			int QUALITY) {
 		super(seqFile1, 4);// fastQ一般4行为一个序列
+		txtSeqFile.setParameter(compressInType, seqFile1, false,true);
 		if (seqFile2 != null && !seqFile2.trim().equals("") && FileOperate.isFileExist(seqFile2.trim())) {
 			booPairEnd = true;
 			this.seqFile2 = seqFile2;
@@ -307,6 +308,12 @@ public class FastQ extends SeqComb {
 		setHashFastQFilter(QUALITY);
 	}
 
+	public void setCompressType(String cmpInType, String cmpOutType) {
+		super.setCompressType(cmpInType, cmpOutType);
+		if (txtSeqFile2 != null) {
+			txtSeqFile2.setFiletype(cmpInType);
+		}
+	}
 	/**
 	 * 自动判断 FastQ的格式
 	 * 
@@ -443,7 +450,7 @@ public class FastQ extends SeqComb {
 	 * @throws Exception
 	 */
 	private FastQ filterReadsExp(String fileFilterOut) throws Exception {
-		txtSeqFile.setParameter(compressInType, seqFile, false, true);
+		txtSeqFile.reSetInfo();//setParameter(compressInType, seqFile, false, true);
 		BufferedReader readerSeq = txtSeqFile.readfile();
 		BufferedReader readerSeq2 = null;
 		TxtReadandWrite txtOutFile = new TxtReadandWrite();
@@ -472,7 +479,7 @@ public class FastQ extends SeqComb {
 			
 			if (booPairEnd) {
 				content2 = readerSeq2.readLine();
-				seqBlock2 = seqBlock2 + content + "\r\n";
+				seqBlock2 = seqBlock2 + content2 + "\r\n";
 			}
 			
 			if (count == block)

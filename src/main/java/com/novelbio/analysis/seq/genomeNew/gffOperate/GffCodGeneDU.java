@@ -6,12 +6,13 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
+import org.apache.log4j.Logger;
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 
 import com.novelbio.database.model.modcopeid.CopedID;
 
 public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
-
+	private static Logger logger = Logger.getLogger(GffCodGeneDU.class); 
 	public GffCodGeneDU(ArrayList<GffDetailGene> lsgffDetail,
 			GffCodGene gffCod1, GffCodGene gffCod2) {
 		super(lsgffDetail, gffCod1, gffCod2);
@@ -379,13 +380,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		 */
 		int[] flag = null;
 		//正向
-		if ( gffDetailGene.isCis5to3() ) {
-			flag = isInRegion1CodCisRegion_Cis5to3(gffDetailGene, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
-		}
-		//反向
-		else {
-			flag = isInRegion1CodTransRegion_Cis5to3(gffDetailGene, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
-		}
+		flag = isInRegion1CodCisRegion_Cis5to3(gffDetailGene, true,Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
 		boolean flagResult = false;
 		for (int i = flag.length - 1; i >= 0 ; i--) {
 			if (flag[i] == 0) {
@@ -402,7 +397,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	}
 	/**
 	 * 需要检查
-	 * 仅考虑两个点不在同一个基因内部的情况时，第一个点的情况
+	 * 仅考虑两个点不在同一个基因内部的情况时，第二个点的情况
 	 * 效率稍低但是很全面，每个isoform都会判断
 	 * @param gffDetailGene
 	 * @param Tss
@@ -423,14 +418,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		 * 标记，0表示需要去除，1表示保留
 		 */
 		int[] flag = null;
-		//正向
-		if ( gffDetailGene.isCis5to3() ) {
-			flag = isInRegion1CodTransRegion_Cis5to3(gffDetailGene, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
-		}
-		//反向
-		else {
-			flag = isInRegion1CodCisRegion_Cis5to3(gffDetailGene, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
-		}
+		flag = isInRegion1CodCisRegion_Cis5to3(gffDetailGene, false, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
 		boolean flagResult = false;
 		for (int i = flag.length - 1; i >= 0 ; i--) {
 			if (flag[i] == 0) {
@@ -494,6 +482,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	 * 当cod覆盖方向和转录本方向一致的时候采用
 	 * 效率稍低但是很全面，每个isoform都会判断
 	 * @param gffDetailGene
+	 * @param startCod 是否为第一个位点
 	 * @param Tss
 	 * @param Tes
 	 * @param geneBody
@@ -505,7 +494,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	 * int[iso.size] 标记其中每个转录本是否合格，0不合格1合格
 	 * 
 	 */
-	private int[] isInRegion1CodCisRegion_Cis5to3(GffDetailGene gffDetailGene, int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron)
+	private int[] isInRegion1CodCisRegion_Cis5to3(GffDetailGene gffDetailGene, boolean startCod,int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron)
  {
 		/**
 		 * 标记，0表示需要去除，1表示保留
@@ -514,122 +503,107 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		// 正向
 		for (int i = 0; i < gffDetailGene.getLsCodSplit().size(); i++) {
 			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLsCodSplit().get(i);
-			if (Tss != null) {
-				if (gffGeneIsoInfo.getCod2Tss() <= Tss[1]) {
-					flag[i] = 1;
+			if (gffGeneIsoInfo.isCis5to3() && startCod
+			||
+			!gffGeneIsoInfo.isCis5to3() && !startCod
+			) {
+				if (Tss != null) {
+					if (gffGeneIsoInfo.getCod2Tss() <= Tss[1]) {
+						flag[i] = 1;
+					}
+				}
+				if (Tes != null) {
+					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes() <= Tes[1]) {
+						flag[i] = 1;
+					}
+				}
+				if (geneBody) {
+					// 在基因下游肯定是在基因外了
+					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes() <= 0) {
+						flag[i] = 1;
+					}
+				}
+				if (UTR5) {
+					if (flag[i] == 0 && geneBody == false
+							&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
+							&& gffGeneIsoInfo.getCod2ATG() <= 0) {
+						flag[i] = 1;
+					}
+				}
+				if (UTR3) {
+					if (flag[i] == 0 && geneBody == false
+							&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
+							&& gffGeneIsoInfo.getCod2Tes() <= 0) {
+						flag[i] = 1;
+					}
+				}
+				if (Exon) {
+					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes() <= 0) {
+						flag[i] = 1;
+					}
+				}
+				if (Intron) {
+					if (flag[i] == 0
+							&& gffGeneIsoInfo.getCod2Tes() <= 0
+							&& gffGeneIsoInfo.getCodExInNum() < gffGeneIsoInfo.getIsoInfo().size()) {
+						flag[i] = 1;
+					}
 				}
 			}
-			if (Tes != null) {
-				if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes() <= Tes[1]) {
-					flag[i] = 1;
+			else if (gffGeneIsoInfo.isCis5to3() && !startCod
+					||
+					!gffGeneIsoInfo.isCis5to3() && startCod
+					) {
+				if (Tss != null) {
+					if (gffGeneIsoInfo.getCod2Tss() >= Tss[0]) {
+						flag[i] = 1;
+					}
+				}
+				if (Tes != null) {
+					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes() >= Tes[0]) {
+						flag[i] = 1;
+					}
+				}
+				if (geneBody) {
+					// 在基因下游肯定是在基因外了
+					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tss() >= 0) {
+						flag[i] = 1;
+					}
+				}
+				if (UTR5) {
+					if (flag[i] == 0 && geneBody == false
+							&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
+							&& gffGeneIsoInfo.getCod2Tss() >= 0) {
+						flag[i] = 1;
+					}
+				}
+				if (UTR3) {
+					if (flag[i] == 0
+							&& geneBody == false
+							&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
+							&& (gffGeneIsoInfo.getCod2UAG() >= 0)) {
+						flag[i] = 1;
+					}
+				}
+				if (Exon) {
+					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tss() >= 0) {
+						flag[i] = 1;
+					}
+				}
+				if (Intron) {
+					if (flag[i] == 0
+							&& gffGeneIsoInfo.getCod2Tss() >= 0
+							&& (gffGeneIsoInfo.getCodExInNum() < 0
+									|| gffGeneIsoInfo.getCodExInNum() > 1
+									|| (gffGeneIsoInfo.getCodExInNum() == 1 && gffGeneIsoInfo.codLoc == GffGeneIsoInfo.COD_LOC_INTRON))) 
+					{
+						flag[i] = 1;
+					}
 				}
 			}
-			if (geneBody) {
-				// 在基因下游肯定是在基因外了
-				if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes() <= 0) {
-					flag[i] = 1;
-				}
-			}
-			if (UTR5) {
-				if (flag[i] == 0 && geneBody == false
-						&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
-						&& gffGeneIsoInfo.getCod2ATG() <= 0) {
-					flag[i] = 1;
-				}
-			}
-			if (UTR3) {
-				if (flag[i] == 0 && geneBody == false
-						&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
-						&& gffGeneIsoInfo.getCod2Tes() <= 0) {
-					flag[i] = 1;
-				}
-			}
-			if (Exon) {
-				if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes() <= 0) {
-					flag[i] = 1;
-				}
-			}
-			if (Intron) {
-				if (flag[i] == 0
-						&& gffGeneIsoInfo.getCod2Tes() <= 0
-						&& gffGeneIsoInfo.getCodExInNum() < gffGeneIsoInfo.getIsoInfo().size()) {
-					flag[i] = 1;
-				}
-			}
-		}
-		return flag;
-	}
-	
-	
-	
-	/**
-	 * 需要检查
-	 * 仅考虑两个点不在同一个基因内部的情况时，第一个点的情况
-	 * 效率稍低但是很全面，每个isoform都会判断
-	 * @param gffDetailGene
-	 * @param Tss
-	 * @param Tes
-	 * @param geneBody
-	 * @param UTR5 如果位点在Tss前，那么即使本基因没有5UTR，也会被选择到
-	 * @param UTR3
-	 * @param Exon
-	 * @param Intron
-	 * @return
-	 * int[iso.size] 标记其中每个转录本是否合格，0不合格1合格
-	 */
-	private int[] isInRegion1CodTransRegion_Cis5to3(GffDetailGene gffDetailGene, int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron)
-	{
-		/**
-		 * 标记，0表示需要去除，1表示保留
-		 */
-		int[] flag = new int[gffDetailGene.getLsCodSplit().size()];
-		for (int i = 0; i < gffDetailGene.getLsCodSplit().size(); i++) {
-			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLsCodSplit().get(i);
-			if (Tss != null) {
-				if (gffGeneIsoInfo.getCod2Tss() >= Tss[0]) {
-					flag[i] = 1;
-				}
-			}
-			if (Tes != null) {
-				if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes() >= Tes[0]) {
-					flag[i] = 1;
-				}
-			}
-			if (geneBody) {
-				// 在基因下游肯定是在基因外了
-				if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tss() >= 0) {
-					flag[i] = 1;
-				}
-			}
-			if (UTR5) {
-				if (flag[i] == 0 && geneBody == false
-						&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
-						&& gffGeneIsoInfo.getCod2Tss() >= 0) {
-					flag[i] = 1;
-				}
-			}
-			if (UTR3) {
-				if (flag[i] == 0
-						&& geneBody == false
-						&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
-						&& (gffGeneIsoInfo.getCod2UAG() >= 0)) {
-					flag[i] = 1;
-				}
-			}
-			if (Exon) {
-				if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tss() >= 0) {
-					flag[i] = 1;
-				}
-			}
-			if (Intron) {
-				if (flag[i] == 0
-						&& gffGeneIsoInfo.getCod2Tss() >= 0
-						&& (gffGeneIsoInfo.getCodExInNum() < 0
-								|| gffGeneIsoInfo.getCodExInNum() > 1
-								|| (gffGeneIsoInfo.getCodExInNum() == 1 && gffGeneIsoInfo.codLoc == GffGeneIsoInfo.COD_LOC_INTRON))) 
-				{
-					flag[i] = 1;
-				}
+			//不可能出现的情况
+			else {
+				logger.error("unknown events");
 			}
 		}
 		return flag;
@@ -650,19 +624,21 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	 */
 	private int[] getInRegion2Cod(GffDetailGene gffDetailGene1, GffDetailGene gffDetailGene2, int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron)
 	{
-		if (!gffDetailGene1.isCis5to3()) {
-			GffDetailGene gffDetailGeneTmp = gffDetailGene1;
-			gffDetailGene1 = gffDetailGene2;
-			gffDetailGene2 = gffDetailGeneTmp;
-		}
-		
 		/**
 		 * 标记，0表示需要去除，1表示保留
 		 */
 		int[] flag = new int[gffDetailGene1.getLsCodSplit().size()];
 		for (int i = 0; i < gffDetailGene1.getLsCodSplit().size(); i++) {
-			GffGeneIsoInfo gffGeneIsoInfo1 = gffDetailGene1.getLsCodSplit().get(i);
-			GffGeneIsoInfo gffGeneIsoInfo2 = gffDetailGene2.getLsCodSplit().get(i);
+			GffGeneIsoInfo gffGeneIsoInfo1 = null;
+			GffGeneIsoInfo gffGeneIsoInfo2 = null;
+			if (gffDetailGene1.getLsCodSplit().get(i).isCis5to3()) {
+				gffGeneIsoInfo1 = gffDetailGene1.getLsCodSplit().get(i);
+				gffGeneIsoInfo2 = gffDetailGene2.getLsCodSplit().get(i);
+			}
+			else {
+				gffGeneIsoInfo1 = gffDetailGene2.getLsCodSplit().get(i);
+				gffGeneIsoInfo2 = gffDetailGene1.getLsCodSplit().get(i);
+			}
 			if (Tss != null) {
 				if (gffGeneIsoInfo1.getCod2Tss() <= Tss[1] && gffGeneIsoInfo2.getCod2Tss() >= Tss[0]) {
 					flag[i] = 1;

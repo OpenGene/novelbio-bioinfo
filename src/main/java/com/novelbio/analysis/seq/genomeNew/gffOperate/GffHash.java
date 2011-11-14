@@ -257,13 +257,8 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 		else if (Coordinate > Loclist.get(endnum).getNumStart()) {
 			LocInfo[1] = endnum;
 			LocInfo[2] = -1;
-			if (Coordinate < Loclist.get(endnum).getNumStart()) {
-				LocInfo[0] = 1;
-				return LocInfo;
-			} else {
-				LocInfo[0] = 2;
-				return LocInfo;
-			}
+			LocInfo[0] = 2;
+			return LocInfo;
 		}
 		do {
 			number = (beginnum + endnum + 1) / 2;// 3/2=1,5/2=2
@@ -387,7 +382,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 				if (i < lsGffDetail.size() - 1) {
 					gffDetailDown = lsGffDetail.get(i + 1);
 				}
-				if (gffDetail.cis5to3) {
+				if (gffDetail.isCis5to3() == null || gffDetail.isCis5to3()) {
 					gffDetail.tss2UpGene = distance(gffDetail, gffDetailUp, true);
 					gffDetail.tes2DownGene = distance(gffDetail, gffDetailDown, false);
 				}
