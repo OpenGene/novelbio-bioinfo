@@ -48,7 +48,7 @@
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/FRICEDB"/>
         <property name="username" value="root"/>
-        <property name="password" value="cszcs"/>        
+        <property name="password" value=""/>        
     </bean> -->
     <!-- transaction manager, use JtaTransactionManager for global tx -->
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -86,8 +86,8 @@
     
     <!-- 通过扫描的模式，扫描目录在com/hoo/mapper目录下，所有的mapper都继承SqlMapper接口的接口， 这样一个bean就可以了  -->
  	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.novelbio.database.mapper"/>
-        <property name="markerInterface" value="com.novelbio.database.mapper.MapperSql"/>
+        <property name="basePackage" value="com.novelbio.database.mapper.geneanno"/>
+     <!--   <property name="markerInterface" value="com.novelbio.database.mapper.MapperSql"/>-->
     </bean> 
        <!-- enable autowire -->
     <context:annotation-config />

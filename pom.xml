@@ -81,9 +81,9 @@
   		<scope>compile</scope>
   	</dependency>
   	<dependency>
-  		<groupId>org.mybatis</groupId>
-  		<artifactId>mybatis</artifactId>
-  		<version>3.0.4</version>
+  		<groupId>mysql</groupId>
+  		<artifactId>mysql-connector-java</artifactId>
+  		<version>5.1.16</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
@@ -159,13 +159,6 @@
   		<groupId>com.thoughtworks.xstream</groupId>
   		<artifactId>xstream</artifactId>
   		<version>1.3.1</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.mybatis</groupId>
-  		<artifactId>mybatis-spring</artifactId>
-  		<version>1.0.0</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
@@ -294,63 +287,16 @@
   		<scope>compile</scope>
   	</dependency>
   	<dependency>
-  		<groupId>org.apache.commons</groupId>
-  		<artifactId>commons-compress</artifactId>
-  		<version>1.3</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>javax.inject</groupId>
-  		<artifactId>javax.inject</artifactId>
-  		<version>1</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.thoughtworks.xstream</groupId>
-  		<artifactId>xstream</artifactId>
-  		<version>1.4.2</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.springframework</groupId>
-  		<artifactId>spring-tx</artifactId>
-  		<version>3.0.5.RELEASE</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.jolbox</groupId>
-  		<artifactId>bonecp</artifactId>
-  		<version>0.7.1.RELEASE</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.springframework</groupId>
-  		<artifactId>spring-jdbc</artifactId>
-  		<version>3.0.5.RELEASE</version>
+  		<groupId>org.mybatis</groupId>
+  		<artifactId>mybatis</artifactId>
+  		<version>3.0.6</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
   	<dependency>
   		<groupId>org.mybatis</groupId>
   		<artifactId>mybatis-spring</artifactId>
-  		<version>1.0.1</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>mysql</groupId>
-  		<artifactId>mysql-connector-java</artifactId>
-  		<version>5.1.18</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.springframework</groupId>
-  		<artifactId>spring-test</artifactId>
-  		<version>3.0.6.RELEASE</version>
+  		<version>1.0.2</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
