@@ -7,9 +7,9 @@ import java.util.HashMap;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genome.GffChrUnion;
 import com.novelbio.analysis.seq.genome.getChrSequence.ChrSearch;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.ChrStringHash;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqHashAbs;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHashAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -32,9 +32,7 @@ public class ReadsDensity
 		if (FileOperate.isFile(chrFilePath)) 
 			seqHash = new SeqFastaHash(chrFilePath);
 		if (FileOperate.isFileDirectory(chrFilePath)) 
-			seqHash = new ChrStringHash(chrFilePath);
-		seqHash.setInfo(true,regx, false, "");
-		seqHash.setFile();
+			seqHash = new ChrStringHash(chrFilePath, regx, true);
 		return seqHash;
 	}
 	

@@ -3,12 +3,12 @@ package com.novelbio.analysis.seq.chipseq.peakOverlap;
 import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.chipseq.repeatMask.RepeatMask;
-import com.novelbio.analysis.seq.genome.GffPeakOverlap;
+import com.novelbio.analysis.seq.genomeNew.GffPeakOverLap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 
 
-public class PeakOverlap 
+public class PeakOverlapNew 
 {
 
 	public static void main(String[] args) {
@@ -58,7 +58,7 @@ public class PeakOverlap
 		int peakEnd=3;
 		int rowNum=2;
 		
-		GffPeakOverlap cdgPeak=new GffPeakOverlap();
+		GffPeakOverLap cdgPeak=new GffPeakOverLap();
 		try {
 			cdgPeak.readPeakFile(filePlus, fileMinus, colChr, peakStart, peakEnd, rowNum);
 		} catch (Exception e) {
@@ -85,7 +85,7 @@ public class PeakOverlap
 		int peakEnd=3;
 		int rowNum=2;
 		
-		GffPeakOverlap cdgPeak=new GffPeakOverlap();
+		GffPeakOverLap cdgPeak=new GffPeakOverLap();
 		try {
 			cdgPeak.readPeakFile(filePlus, fileMinus, colChr, peakStart, peakEnd, rowNum);
 		} catch (Exception e) {

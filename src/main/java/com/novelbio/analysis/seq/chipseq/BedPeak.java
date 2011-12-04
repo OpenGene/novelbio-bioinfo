@@ -28,7 +28,7 @@ public abstract class BedPeak extends BedSeq {
 		gffChrAnno.setGeneRange(tssUpBp, tssDownBp, geneEnd3UTR);
 	}
 	/**
-	 * 设定Tss
+	 * 设定Tss,annotation用的
 	 * @param filterTss 默认-1500+1500
 	 * @param filterGenEnd 默认null
 	 */

@@ -15,20 +15,20 @@ public class runReadsDensity
 	 */
 	public static void main(String[] args) {
 		///**mouse
-		String parentFile="/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT/";
-		String resultFile = "/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT";
+		String parentFile="/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/mappingFile/";
+		String resultFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/ReadsDestribution/";
 		int invNum=1;
 		int tagLength=30;//考虑自动获取
 		try {
 			
-			String mapFFile=parentFile+"TGACTsort.bed";
+			String mapFFile=parentFile+"Nextend_sort.bed";
 			String mapRFile="";
-			String prix = "TGACTplot";
+			String prix = "Nplot";
 			String sep="\t"; 
 			
 			ReadsDensity aaaDensity=new ReadsDensity();
 			aaaDensity.maxresolution = 30000;
-			aaaDensity.prepare(mapFFile,mapRFile,"/media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna", "",sep, 1, 2,3, invNum,tagLength);
+			aaaDensity.prepare(mapFFile,mapRFile,"/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/ChromFa", "",sep, 1, 2,3, invNum,tagLength);
 //			aaaDensity.prepare(mapFFile,mapRFile,NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM, "",sep, 1, 2,3, invNum,tagLength);
 			aaaDensity.getAllChrDist();
 			FileOperate.moveFoldFile(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS,resultFile,prix,true);

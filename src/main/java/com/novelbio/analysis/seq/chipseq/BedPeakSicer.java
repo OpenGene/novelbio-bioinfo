@@ -2,14 +2,21 @@ package com.novelbio.analysis.seq.chipseq;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-
+/**
+ * SICER首先要配置SICER他的脚本的路径，设置他里面的物种，effective genome size等
+ * @author zong0jie
+ *
+ */
 public class BedPeakSicer extends BedPeak implements PeakCalling{
+	private static Logger logger = Logger.getLogger(BedPeakSicer.class);
 	private static final String SICER_PATH = NovelBioConst.PEAKCALLING_SICER_PATH;
 	/**
 	 * 这个需要更新
@@ -58,18 +65,13 @@ is 1E-2.
 	int Evalue = 100;
 
 
-	public static void main(String[] args) throws Exception {
-		String parString = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/compareSICER/";
-		String out = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/compareSICER";
-		
-		
-		BedPeakSicer bedPeakSicer = new BedPeakSicer(parString + "2KseSort.bed");
+	public static void main(String[] args) {
+		String parString = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/Mapping/";
+		BedPeakSicer bedPeakSicer = new BedPeakSicer(parString + "nature2007K27seSort.bed");
 		bedPeakSicer.setGffFile(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ);
 		bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
 		bedPeakSicer.setFilterTssTes(new int[]{-2000,2000}, null);
-		
-		
-		bedPeakSicer.peakCallingComp(parString + "2WseSort.bed", BedPeakSicer.SPECIES_MOUSE, "2Kvs2W");
+		bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE, "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/PeakCallingSICER", "nature2007Sicer");
 		
 		
 	}
@@ -98,6 +100,12 @@ is 1E-2.
 	public void setGapSIze(int gapSIze) {
 		this.gapSIze = gapSIze;
 	}
+	/**
+	 * 默认evalue 100
+	 * FDR 0.01
+	 * @param evalue
+	 * @param FDR
+	 */
 	public void setEvalueFDR(int evalue, double FDR) {
 		this.Evalue = evalue;
 		this.FDR = FDR;
@@ -130,7 +138,7 @@ is 1E-2.
 	public void peakCallling(String bedCol, String species, String outFilePath, String fileName) {
 		ArrayList<String[]> lsIn = null;
 		if (bedCol == null || bedCol.trim().equals("")) {
-			lsIn = peakCallingSingle(species);
+			lsIn = peakCallingSingle(species, outFilePath);
 		}
 		else {
 			lsIn = peakCallingCol(bedCol, species);
@@ -147,19 +155,22 @@ is 1E-2.
 	 * @return
 	 * 返回peakcalling的结果，包含标题
 	 */
-	private ArrayList<String[]> peakCallingSingle(String species)
+	private ArrayList<String[]> peakCallingSingle(String species, String outDir)
 	{
 		String bedFile = super.getSeqFile();
 		String parentPath = FileOperate.deleteSep(FileOperate.getParentPathName(bedFile));
 		
 		String cmd = cmdSingle + parentPath + " " + FileOperate.getFileName(bedFile) + " ";
-		cmd = cmd + parentPath + " ";
+		cmd = cmd + outDir + " ";
 		cmd = cmd + species + " ";
 		cmd = cmd + redundancy_threshold + " " + windowSize + " " + fragment_size + " " + effectiveGenomeSize + " " + gapSIze + " " + Evalue + " ";
+		
+		logger.info(cmd);
+		System.out.println(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.doInBackground("SICER_Peak");
 		
-		String in = FileOperate.addSep(FileOperate.getParentPathName(bedFile)) + FileOperate.getFileNameSep(bedFile)[0] 
+		String in = FileOperate.addSep(outDir) + FileOperate.getFileNameSep(bedFile)[0] 
 		+ "-W"+windowSize+"-G"+gapSIze + "-E"+ Evalue + ".scoreisland";
 		
 		TxtReadandWrite txtRead = new TxtReadandWrite(in, false);
@@ -194,6 +205,7 @@ is 1E-2.
 		cmd = cmd + species + " ";
 		cmd = cmd + redundancy_threshold + " " + windowSize + " " + fragment_size + effectiveGenomeSize + gapSIze + FDR;
 		CmdOperate cmdOperate = new CmdOperate(cmd);
+
 		cmdOperate.doInBackground("SICER_Peak");
 		//输出结果的文件名估计会有问题
 		String in = FileOperate.addSep(parentPath) + " " + FileOperate.getFileNameSep(bedFile)[0] + "-W"+windowSize+"-G"+gapSIze + "-E" + ".scoreisland";

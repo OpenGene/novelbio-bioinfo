@@ -12,7 +12,7 @@ public class repeatRun {
 	
 	
 	
-	static String repeakBackGround="/media/winE/Bioinformatics/GenomeData/ucsc_mm9/statistic/repeatregionBackGround.txt";
+	static String repeakBackGround="/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/statisticInfo/repeatregionBackGround.txt";
  
 
 
@@ -20,7 +20,7 @@ public class repeatRun {
 	
 	//输出文件
 	
-	static String filePeakRegionStatsticBp="/media/winE/NBC/Project/ChIPSeq_CDG1011101/result/repeat/mT3RegionStasticBp";
+	static String filePeakRegionStatsticBp="/media/winE/NBC/Project/ChIPSeq_WJK100909/result/Repeat/WJKRegionStasticBp";
 	//static String filePeakSummitStatstic="/media/winG/NBC/Project/ChIP-SeqCDG20100911/result/repeat/FrepeatSummitStastic";
 
 	
@@ -29,7 +29,7 @@ public class repeatRun {
 	 */
 	public static void main(String[] args) 
 	{
-		try {	RepeatMask.loadRepeat(NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REPEAT);	} catch (Exception e) {e.printStackTrace();	}
+		try {	RepeatMask.loadRepeat(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REPEAT);	} catch (Exception e) {e.printStackTrace();	}
 		//PeakRegionStatsticBp();
 		PeakRegionStatstic50();
 		//PeakSummitStatstic();
@@ -68,9 +68,9 @@ public class repeatRun {
 			 int colChr=1;//第一列是chr
 			 int colLOC1=2;//第二列是第一个坐标
 			 int colLOC2=3;//第三列是第二个坐标
-			String FlocationFile="/media/winE/NBC/Project/ChIPSeq_CDG110330/result/annotation/FT5_macsPeak_peaks.xls";
-			String filePeakRegionStatstic50="/media/winE/NBC/Project/ChIPSeq_CDG110330/result/repeat/FT5_RegionStastic50";
-			RepeatMask.locatstatistic(false,FlocationFile, NovelBioConst.GENOME_PATH_UCSC_MM19_STATISTIC_REPEAT,filePeakRegionStatstic50, readRow, colChr, colLOC1,colLOC2);
+			String FlocationFile="/media/winE/NBC/Project/ChIPSeq_WJK100909/result/PeakCalling/Peak Information.xls";
+			String filePeakRegionStatstic50="/media/winE/NBC/Project/ChIPSeq_WJK100909/result/Repeat/WJK_RegionStastic50";
+			RepeatMask.locatstatistic(false,FlocationFile, repeakBackGround,filePeakRegionStatstic50, readRow, colChr, colLOC1,colLOC2);
 			
 		} catch (Exception e) { e.printStackTrace(); }
 		System.out.println("ok");
@@ -98,8 +98,8 @@ public class repeatRun {
 			 int colChr=1;//第一列是chr
 			 int colLOC1=2;//第二列是第一个坐标
 			 int colLOC2=3;//第三列是第二个坐标
-			 String FlocationFile="/media/winE/NBC/Project/ChIPSeq_CDG110330/result/annotation/FT5_macsPeak_peaks.xls";
-			 String filePeakRegionDetail="/media/winE/NBC/Project/ChIPSeq_CDG110330/result/repeat/FT5_RrepeatPeakRegionDetail";
+			 String FlocationFile="/media/winE/NBC/Project/ChIPSeq_WJK100909/result/PeakCalling/Peak Information20100926_all.xls";
+			 String filePeakRegionDetail="/media/winE/NBC/Project/ChIPSeq_WJK100909/result/Repeat/WJK_RegionDetail";
 				
 			RepeatMask.peakRepeatDetail(FlocationFile,filePeakRegionDetail, readRow, colChr, colLOC1,colLOC2); 	
 		} catch (Exception e) { e.printStackTrace(); }

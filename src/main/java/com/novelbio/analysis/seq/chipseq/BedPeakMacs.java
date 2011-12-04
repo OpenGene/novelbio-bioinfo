@@ -25,8 +25,16 @@ public class BedPeakMacs extends BedPeak implements PeakCalling{
 		BedSeq bedSeq = super.filterWYR(filterOut);
 		return new BedPeakMacs(bedSeq.getSeqFile());
 	}
-	
-	
+	/**
+	 * 设置lambda，如果默认是有lambda的，意思是动态的挑选peak，如果一个区域reads数量很多，那么该区域的peak相对减分
+	 * 不设置的话就用全局的lambda来处理，那么reads多的地方肯定就peak大
+	 * @return
+	 */
+	String nolambda = "";
+	public void setNoLambda()
+	{
+		nolambda = " --nolambda "; 
+	}
 	
 	/**
 	 * 指定bed文件，以及需要排序的列数，产生排序结果
@@ -62,8 +70,8 @@ public class BedPeakMacs extends BedPeak implements PeakCalling{
 		String effge = "";
 		String col = "";
 		String name = "";
-		String mfole = " -m 5,200 ";
-		String pvalue = " -p 1e-3 ";
+		String mfole = " -m 3,500 ";
+		String pvalue = " -p 1e-2 ";
 		if (species.equals("os")) {
 			effge = " -g 2.6e8 ";
 		}
@@ -77,12 +85,12 @@ public class BedPeakMacs extends BedPeak implements PeakCalling{
 		if (prix !=null && !prix.trim().equals("")) {
 			name = " -n "+prix;
 		}
-		String cmd = "macs14 -t "+getSeqFile() +col+name + effge + mfole + pvalue ;//+ "-w";
+		String cmd = "macs14 -t "+getSeqFile() +col+name + effge + mfole + pvalue + nolambda;//+ "-w";
 		TxtReadandWrite txtCmd = new TxtReadandWrite( outFilePath+"/macs.sh", true);
 		txtCmd.writefile(cmd);
 		txtCmd.close();
 		CmdOperate cmdOperate = new CmdOperate("sh "+outFilePath+"/macs.sh");
-		cmdOperate.doInBackground();
+		cmdOperate.doInBackground("macs");
 		String peakFile = FileOperate.moveFile(PathDetail.getProjectPath()+"/"+prix+"_peaks.xls", outFilePath,true);
 		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_peaks.bed", outFilePath+"/TmpPeakInfo",true);
 		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_negative_peaks.xls", outFilePath+"/TmpPeakInfo"+prix+"/",true);

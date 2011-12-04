@@ -23,17 +23,17 @@ public class PeakLOCRun {
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 //				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
 		
-		PeakLOC.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_TIGR,
-				NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, "");
+		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
+				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 //				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 //				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
 		System.out.println("prepare ok");
-		filterPeak();
+//		filterPeak();
 //		regionFind();
 //		annotation();
-		//histData();
+		histData();
 		System.out.println(" ok");
 		try {
 //			statisticNum();
@@ -72,10 +72,10 @@ public class PeakLOCRun {
 	{
 		int[] columnID=new int[2];
 		columnID[0]=1;
-		columnID[1]=6;
+		columnID[1]=9;
 		try {
-			PeakLOC.locatstatistic("/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/annotation/CSA_peaks.xls", "\t", 
-					columnID, 2, -1, "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/statistic/CSAStatistic");
+			PeakLOC.locatstatistic("/media/winE/NBC/Project/ChIPSeq_WJK100909/result/PeakCalling/Peak Information.xls", "\t", 
+					columnID, 2, -1, "/media/winE/NBC/Project/ChIPSeq_WJK100909/result/PeakCalling/CSAStatistic");
 			//PeakLOC.locatstatistic(refSortUsingFile, FpeaksFile, "\t", columnID,2, -1, FwritehistFile);
 			
 		} catch (Exception e) {
