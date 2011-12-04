@@ -16,13 +16,13 @@ public class MacsPeakCompare {
 	
 	public static void main(String[] args) {
 		MacsPeakCompare macsPeakCompare = new MacsPeakCompare();
-		macsPeakCompare.annotationRegionTss();
+		macsPeakCompare.annotationRegionTssGeneBodySingle();
 	}
 	
 	/**
-	 * 将peak覆盖到tss区域的基因挑选出来
+	 * 将SICER比较的peak覆盖到tss区域的基因挑选出来
 	 */
-	public void annotationRegionTss() {
+	public void annotationRegionTssGeneBody() {
 		GffChrAnno gffChrAnno = new GffChrAnno(NovelBioConst.GENOME_GFF_TYPE_TIGR, NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE);
 		gffChrAnno.setFilterTssTes(new int[]{-1500,0}, null);
 		gffChrAnno.setFilterGeneBody(true, false, false);
@@ -38,8 +38,36 @@ public class MacsPeakCompare {
 		
 		fileIn = parentFIle + "NseSort-and-3NseSort-W200-G200-summary.xls";
 		fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-GeneBody_anno", null);
-		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
+		gffChrAnno.annoFile(fileIn, 1, 2, 3, fileOut);
 	}
+	
+	/**
+	 * 将SICERpeak覆盖到tss区域的基因挑选出来
+	 */
+	public void annotationRegionTssGeneBodySingle() {
+		GffChrAnno gffChrAnno = new GffChrAnno(NovelBioConst.GENOME_GFF_TYPE_TIGR, NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE);
+		gffChrAnno.setFilterTssTes(new int[]{-1500,0}, null);
+		gffChrAnno.setFilterGeneBody(true, false, false);
+		String parentFIle = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/compareSICER/single/";
+//		
+		String fileIn = parentFIle + "2NseSort-W200-G200-E100.scoreisland";
+		String fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-GeneBody_anno", "xls");
+//		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
+//		
+//		fileIn = parentFIle + "NseSort-W200-G200-E100.scoreisland";
+//		fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-GeneBody_anno", null);
+//		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
+		
+		fileIn = parentFIle + "3NseSort-W200-G200-E100.scoreisland";
+		fileOut = FileOperate.changeFileSuffix(fileIn, "-1.5k-GeneBody_anno", null);
+		gffChrAnno.annoFile(fileIn, 1, 2, 3, fileOut);
+		
+	}
+	
+	
+	
+	
+	
 	/**
 	 * 绘制Tss附近区域与表达关联的heatmap图
 	 */

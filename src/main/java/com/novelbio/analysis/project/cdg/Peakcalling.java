@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.analysis.seq.chipseq.BedPeakSicer;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.analysis.seq.genomeNew.GffChrMap;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
@@ -12,26 +13,95 @@ import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class SicerPeakcalling {
+public class Peakcalling {
 	
 	GffChrAnno gffChrAnno = new GffChrAnno(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ);
 	
 	
 	public static void main(String[] args) {
-		SicerPeakcalling sicerpeakcalling = new SicerPeakcalling();
-		sicerpeakcalling.statistic();
+		Peakcalling sicerpeakcalling = new Peakcalling();
+		sicerpeakcalling.peakCallingSICER();
 	}
 	
 	
 	
-	public void statistic() {
-		gffChrAnno.setFilterTssTes(new int[]{-2000,2000}, null);
-		String txtFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/compareSICER/compareResult/2KseSort-and-2WseSort-W200-G600-summary_summit.xls";
-		gffChrAnno.getSummitStatistic(txtFile, 1, 4, 2, FileOperate.changeFileSuffix(txtFile, "_statistic", "txt"));
+	public void peakCallingSICER() {
+		
+//		try {
+//			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/KEseSort.bed";
+//			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
+//			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
+//			bedPeakSicer.setEffectiveGenomeSize(78);
+//			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
+//					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/KE.clean.fq/result/peakCalling/SICER", "KE");
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//		}
+//		try {
+//			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/2WseSort.bed";
+//			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
+//			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
+//			bedPeakSicer.setEffectiveGenomeSize(78);
+//			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
+//					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/2W.clean.fq/result/peakCalling/SICER", "2W");
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//		}
+//		try {
+//			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/2KseSort.bed";
+//			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
+//			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
+//			bedPeakSicer.setEffectiveGenomeSize(78);
+//			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
+//					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/2K.clean.fq/result/peakCalling/SICER", "2K");
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//		}
+		
+		try {
+			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/k0sort.bed";
+			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
+			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K4);
+			bedPeakSicer.setEffectiveGenomeSize(78);
+			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
+					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/peakCalling/SICER", "k0");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		try {
+			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/k4sort.bed";
+			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
+			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K4);
+			bedPeakSicer.setEffectiveGenomeSize(78);
+			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
+					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/peakCalling/SICER", "k4");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		try {
+			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/W0sort.bed";
+			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
+			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K4);
+			bedPeakSicer.setEffectiveGenomeSize(78);
+			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
+					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/peakCalling/SICER", "W0");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		try {
+			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/W4sort.bed";
+			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
+			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K4);
+			bedPeakSicer.setEffectiveGenomeSize(78);
+			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
+					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/peakCalling/SICER", "W4");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
-	
-	
-	
 	
 	
 	
@@ -39,42 +109,98 @@ public class SicerPeakcalling {
 	
 	
 	/**
+	 * 统计内含子外显子比例
+	 */
+	public void statistic() {
+		gffChrAnno.setFilterTssTes(new int[]{-2000,2000}, null);
+		String txtFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/compareSICER/compareResult/2KseSort-and-2WseSort-W200-G600-summary_summit.xls";
+		gffChrAnno.getSummitStatistic(txtFile, 1, 4, 2, FileOperate.changeFileSuffix(txtFile, "_statistic", "txt"));
+	}
+	
+
+	/**
 	 * 将peak覆盖到tss区域的基因挑选出来
 	 */
-	public void annotationRegion() {
+	public void annotation() {
 		gffChrAnno.setFilterTssTes(new int[]{-3000,2000}, null);
 		gffChrAnno.setFilterGeneBody(true, false, false);
-//		String parentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/compareSICER/compareResult/";
-//		String fileIn = parentFIle + "2KseSort-and-2WseSort-W200-G600-summary";
-//		String fileOut = FileOperate.changeFileSuffix(fileIn, "_anno", "txt");
+		
+		String parentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/PeakCalling/";
+		String fileIn = parentFIle + "2WseSort-W200-G600-E100.scoreisland_score35.xls";
+		String fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
 //	
 //		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-//		fileIn = parentFIle + "2KseSort-and-KEseSort-W200-G600-summary";
-//		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno", "txt");
+//		fileIn = parentFIle + "KEseSort-W200-G600-E100.scoreisland_score35.xls";
+//		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
 //		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-//		fileIn = parentFIle + "2WseSort-and-WEseSort-W200-G600-summary";
-//		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno", "txt");
+//		fileIn = parentFIle + "WEseSort-W200-G600-E100.scoreisland_score35.xls";
+//		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
 //		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-//		fileIn = parentFIle + "KEseSort-and-WEseSort-W200-G600-summary";
-//		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno", "txt");
-//		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
+		fileIn = parentFIle + "2KseSort-W200-G600-E100.scoreisland_score35.xls";
+		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
+		gffChrAnno.annoFile(fileIn, 1, 2, 3, fileOut);
+	}
+	
+	/**
+	 * 将peak覆盖到tss区域的基因挑选出来
+	 */
+	public void annotationCompK4() {
+		gffChrAnno.setFilterTssTes(new int[]{-3000,2000}, null);
+		gffChrAnno.setFilterGeneBody(true, false, false);
 		
+		String parentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/peakCalling/SICER/";
+		String fileIn = parentFIle + "k0sort-W200-G200-E100.scoreisland_score35.xls";
+		String fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
+	
+//		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
+		fileIn = parentFIle + "k4sort-W200-G200-E100.scoreisland_score35.xls";
+		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
+//		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
+		fileIn = parentFIle + "W0sort-W200-G200-E100.scoreisland_score35.xls";
+		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
+//		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
+		fileIn = parentFIle + "W4sort-W200-G200-E100.scoreisland_score35.xls";
+		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
+		gffChrAnno.annoFile(fileIn, 1, 2, 3, fileOut);
+	}
+	
+	
+	/**
+	 * 将peak覆盖到tss区域的基因挑选出来
+	 */
+	public void annotationCompK27() {
+		gffChrAnno.setFilterTssTes(new int[]{-3000,2000}, null);
+		gffChrAnno.setFilterGeneBody(true, false, false);
 		
 		String parentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/compareSICER/compareResult/";
-		String fileIn = parentFIle + "KEseSort-and-WEseSort-W200-G600-summary";
-		String fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "txt");
+		String fileIn = parentFIle + "KEseSort-and-WEseSort-W200-G600-summary_summit_2fold.xls";
+		String fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
 	
-		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-		fileIn = parentFIle + "2WseSort-and-WEseSort-W200-G600-summary";
-		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "txt");
-		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-		fileIn = parentFIle + "2KseSort-and-KEseSort-W200-G600-summary";
-		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "txt");
-		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
-		fileIn = parentFIle + "2KseSort-and-2WseSort-W200-G600-summary";
-		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "txt");
-		gffChrAnno.annotation(fileIn, 1, 2, 3, fileOut);
+		gffChrAnno.annoFile(fileIn, 1, 2, 3, fileOut);
+		fileIn = parentFIle + "2WseSort-and-WEseSort-W200-G600-summary_summit_2fold.xls";
+		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
+		gffChrAnno.annoFile(fileIn, 1, 2, 3, fileOut);
+		fileIn = parentFIle + "2KseSort-and-KEseSort-W200-G600-summary_summit_2fold.xls";
+		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
+		gffChrAnno.annoFile(fileIn, 1, 2, 3, fileOut);
+		fileIn = parentFIle + "2KseSort-and-2WseSort-W200-G600-summary_summit_2fold.xls";
+		fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
+		gffChrAnno.annoFile(fileIn, 1, 2, 3, fileOut);
 	}
+	
+	/**
+	 * 将peak覆盖到tss区域的基因挑选出来
+	 */
+	public void annotationFX2RegionMacs() {
+		gffChrAnno.setFilterTssTes(new int[]{-3000,2000}, null);
+		gffChrAnno.setFilterGeneBody(true, false, false);
+		String parentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/FX2.clean.fq/result/peakCalling/";
+		String fileIn = parentFIle + "FX2_peaks_summit_p-50-Uni_fc-8.xls";
+		String fileOut = FileOperate.changeFileSuffix(fileIn, "_anno-3KTssGeneBody", "xls");
+		gffChrAnno.annoFile(fileIn, 1, 2, 3, fileOut);
+
+	}
+	
 	/**
 	 * 绘制Tss附近区域与FX2关联的heatmap图
 	 */
@@ -103,18 +229,6 @@ public class SicerPeakcalling {
 		gffChrMap.setMapReads(bedReads, 5);
 		gffChrMap.loadMapReads();
 		gffChrMap.plotTssTesHeatMap(Color.blue,false, dgeFile, 1, 2, 2, 0, 30, 1.1, GffDetailGene.TSS, 1000, outFile);
-//
-//		bedReads = parentPathBed + "KEextend_sort.bed";
-//		outFile = parentPathOut + "KE_TSS_FX2Max2Min_-5k+5k.png";
-//		gffChrMap.setMapReads(bedReads, 5);
-//		gffChrMap.loadMapReads();
-//		gffChrMap.plotTssTesHeatMap(false, dgeFile, 10, 11, 2, 0, 20, 1, GffDetailGene.TSS, 1000, outFile);
-//		
-//		bedReads = parentPathBed + "WEextend_sort.bed";
-//		outFile = parentPathOut + "WE_TSS_FX2Max2Min_-5k+5k.png";
-//		gffChrMap.setMapReads(bedReads, 5);
-//		gffChrMap.loadMapReads();
-//		gffChrMap.plotTssTesHeatMap(false, dgeFile, 10, 11, 2, 0, 20, 1, GffDetailGene.TSS, 1000, outFile);
 	}
 	
 	public void TssRegionDGE2sample() {
@@ -216,110 +330,6 @@ public class SicerPeakcalling {
 		outFile =parentPathOut + "W4_4vs2W_27_NormPerGene.png";
 		//第一个red第二个green
 		gffChrMap.plotHeatMap2(lsMapInfos1, lsMapInfos2, outFile, 0, 100, 0, 10);
-		
-	}
-	
-	
-	public void TssRegionDGE2sample2() {
-		
-		String parentPathDGE = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/FX2.clean.fq/result/annotation/";
-		String parentPathBed1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/";
-		String parentPathBed2 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/";
-		
-		String parentPathOut = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/regionreads/heatmap/";
-
-		String dgeFile = parentPathDGE + "FX2_peaks_summit_+2k-2k_filterAnnotation_sort.txt";
-		String bedReads =  "";
-		String outFile =parentPathOut + "";
-		
-		
-		
-		GffChrMap gffChrMap = new GffChrMap(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ,
-				NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, null, 10);
-//		gffChrMap.setMapNormType(MapReads.NORMALIZATION_PER_GENE);
-		gffChrMap.setPlotRegion(5000, 5000);
-		gffChrMap.loadChrFile();
-		gffChrMap.setPlotRegion(5000, 5000);
-		
-		bedReads = parentPathBed2 + "KEextend_sort.bed";
-		
-		gffChrMap.setMapReads(bedReads, 5);
-		gffChrMap.loadMapReads();
-		MapInfo.sortPath(true);
-		ArrayList<MapInfo> lsMapInfos1 = gffChrMap.readFileGeneMapInfo(dgeFile, 10, 11, 2, GffDetailGene.TSS, 1000);
-		MapInfo.sortPath(true);
-		Collections.sort(lsMapInfos1);
-		
-		bedReads = parentPathBed2 + "WEextend_sort.bed";
-		gffChrMap.setMapReads(bedReads, 5);
-		gffChrMap.loadMapReads();
-		ArrayList<MapInfo> lsMapInfos2 = gffChrMap.readFileGeneMapInfo(dgeFile, 10, 11, 2, GffDetailGene.TSS, 1000);
-		MapInfo.sortPath(true);
-		Collections.sort(lsMapInfos1);
-		outFile =parentPathOut + "KE_27vsWE_27_NormPerGene.png";
-		//第一个red第二个green
-		gffChrMap.plotHeatMap2(lsMapInfos1, lsMapInfos2, outFile, 0, 10, 0, 10);
-		gffChrMap.plotHeatMap2(lsMapInfos1, lsMapInfos1, outFile+"_test.png", 0, 10, 0, 10);
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		bedReads = parentPathBed2 + "2Kextend_sort.bed";
-		
-		gffChrMap.setMapReads(bedReads, 5);
-		gffChrMap.loadMapReads();
-		MapInfo.sortPath(true);
-		 lsMapInfos1 = gffChrMap.readFileGeneMapInfo(dgeFile, 10, 11, 2, GffDetailGene.TSS, 1000);
-		MapInfo.sortPath(true);
-		Collections.sort(lsMapInfos1);
-		
-		bedReads = parentPathBed2 + "2Wextend_sort.bed";
-		gffChrMap.setMapReads(bedReads, 5);
-		gffChrMap.loadMapReads();
-		 lsMapInfos2 = gffChrMap.readFileGeneMapInfo(dgeFile, 10, 11, 2, GffDetailGene.TSS, 1000);
-		MapInfo.sortPath(true);
-		Collections.sort(lsMapInfos1);
-		outFile =parentPathOut + "2K_27vs2W_27_NormPerGene.png";
-		//第一个red第二个green
-		gffChrMap.plotHeatMap2(lsMapInfos1, lsMapInfos2, outFile, 0, 10, 0, 10);
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		bedReads = parentPathBed2 + "KEextend_sort.bed";
-		
-		gffChrMap.setMapReads(bedReads, 5);
-		gffChrMap.loadMapReads();
-		MapInfo.sortPath(true);
-		 lsMapInfos1 = gffChrMap.readFileGeneMapInfo(dgeFile, 10, 11, 2, GffDetailGene.TSS, 1000);
-		MapInfo.sortPath(true);
-		Collections.sort(lsMapInfos1);
-		
-		bedReads = parentPathBed2 + "2Kextend_sort.bed";
-		gffChrMap.setMapReads(bedReads, 5);
-		gffChrMap.loadMapReads();
-		 lsMapInfos2 = gffChrMap.readFileGeneMapInfo(dgeFile, 10, 11, 2, GffDetailGene.TSS, 1000);
-		MapInfo.sortPath(true);
-		Collections.sort(lsMapInfos1);
-		outFile =parentPathOut + "KE_27vs2K_27_NormPerGene.png";
-		//第一个red第二个green
-		gffChrMap.plotHeatMap2(lsMapInfos1, lsMapInfos2, outFile, 0, 10, 0, 10);
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		bedReads = parentPathBed2 + "WEextend_sort.bed";
-		
-		gffChrMap.setMapReads(bedReads, 5);
-		gffChrMap.loadMapReads();
-		MapInfo.sortPath(true);
-		 lsMapInfos1 = gffChrMap.readFileGeneMapInfo(dgeFile, 10, 11, 2, GffDetailGene.TSS, 1000);
-		MapInfo.sortPath(true);
-		Collections.sort(lsMapInfos1);
-		
-		bedReads = parentPathBed2 + "2Wextend_sort.bed";
-		gffChrMap.setMapReads(bedReads, 5);
-		gffChrMap.loadMapReads();
-		 lsMapInfos2 = gffChrMap.readFileGeneMapInfo(dgeFile, 10, 11, 2, GffDetailGene.TSS, 1000);
-		MapInfo.sortPath(true);
-		Collections.sort(lsMapInfos1);
-		outFile =parentPathOut + "WE_27vs2W_27_NormPerGene.png";
-		//第一个red第二个green
-		gffChrMap.plotHeatMap2(lsMapInfos1, lsMapInfos2, outFile, 0, 10, 0, 10);
 		
 	}
 	
