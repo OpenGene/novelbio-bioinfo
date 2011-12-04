@@ -327,7 +327,7 @@ public class CtrlGONew {
 				excelResult.WriteExcel(prix[1] + "GoAnalysis", 1, 1, lsResultDown.get(0));
 				excelResult.WriteExcel(prix[1] + "Gene2GO", 1, 1, lsResultDown.get(1));
 				if (blast) {
-					excelResult.WriteExcel(prix[0] + "GO2Gene", 1, 1, lsResultDown.get(2));
+					excelResult.WriteExcel(prix[1] + "GO2Gene", 1, 1, lsResultDown.get(2));
 				}
 			}
 		} else {

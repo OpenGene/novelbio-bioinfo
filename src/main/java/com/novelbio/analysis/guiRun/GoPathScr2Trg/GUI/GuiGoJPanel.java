@@ -30,7 +30,6 @@ import javax.swing.LayoutStyle;
 import javax.swing.table.DefaultTableModel;
 
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlGO;
-import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.CtrlNormal;
@@ -356,7 +355,6 @@ public class GuiGoJPanel extends JPanel{
 		}
 	}
 	
-	
 	private void setGroup(GroupLayout jPanGoLayout)
 	{jPanGoLayout.setVerticalGroup(jPanGoLayout.createSequentialGroup()
 			.addContainerGap()
@@ -528,18 +526,15 @@ public class GuiGoJPanel extends JPanel{
 	 */
 	private void setGoProview(String filePath)
 	{
-		ExcelOperate excelOperate = new ExcelOperate();
-		excelOperate.openExcel(filePath);
-		String[][] goRawData = excelOperate.ReadExcel(1, 1, excelOperate.getRowCount(), excelOperate.getColCount());
+		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(filePath, 1);
 		String[][] tableValue = null;
-		DefaultTableModel jTabInputGo = new DefaultTableModel(tableValue,goRawData[0]);
+		DefaultTableModel jTabInputGo = new DefaultTableModel(tableValue, lsInfo.get(0));
 		JTable jTabFInputGo = new JTable();
 		jScrollPaneInputGo.setViewportView(jTabFInputGo);
 		jTabFInputGo.setModel(jTabInputGo);
-		for (int i = 1; i < goRawData.length; i++) {
-			jTabInputGo.addRow(goRawData[i]);
+		for (int i = 1; i < lsInfo.size(); i++) {
+			jTabInputGo.addRow(lsInfo.get(i));
 		}
-		
 	}
 	/**
 	 * analysis按下去后得到结果
@@ -584,7 +579,6 @@ public class GuiGoJPanel extends JPanel{
 			setNormalGo(ctrlGO);
 		}
 		else {
-			ctrlGO = CtrlGO.getInstance(elimGo, GOClass, colFC, blast, evalue, StaxID);
 			ctrlGO.doInBackgroundCluster(lsAccID);
 			setNormalGo(ctrlGO);
 		}
