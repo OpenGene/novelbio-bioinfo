@@ -21,6 +21,14 @@ public class NovelGOFunTest extends AbstFunTest{
 		super(blast, evalue, blastTaxID);
 		this.GoType = GoType;
 	}
+	/**
+	 * GOabsÖÐµÄGOtype
+	 * @param goType
+	 */
+	@Override
+	public void setGoType(String goType) {
+		GoType = goType;
+	}
 	
 	@Override
 	protected ArrayList<String[]> convert2Item(Collection<CopedID> lsCopedIDs) {

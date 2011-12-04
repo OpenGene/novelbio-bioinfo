@@ -13,9 +13,8 @@ import com.novelbio.database.mapper.geneanno.MapGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.kegg.MapKEntry;
 import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
-import com.novelbio.database.servSpring.ServNCBIID;
 import com.novelbio.database.service.ServAnno;
-import com.novelbio.database.service.servgeneanno.ServGeneAnno;
+import com.novelbio.database.service.servgeneanno.ServNCBIID;
 
 public class Scr2Target {
 	
@@ -34,7 +33,7 @@ public class Scr2Target {
 	 */
 	public static void getGene2RelateKo(String pathName, String[] accID,String ResultFIleScr2Target, String resultFIleAttribute,int QtaxID,boolean blast,int subTaxID,double evalue) throws Exception
 	{
-		ServGeneAnno servNCBIID = new ServGeneAnno();
+		ServNCBIID servNCBIID = new ServNCBIID();
 		//丛数据库获得taxID
 		if (QtaxID <= 0)
 		{
@@ -395,7 +394,7 @@ public class Scr2Target {
 	 */
 	private static void getRelation(String pathName, ArrayList<Object[]> lsRelationInfo ,int QtaxID,String ResultFIleScr2Target, String resultFIleAttribute) throws Exception 
 	{
-		ServGeneAnno servGeneAnno = new ServGeneAnno();
+		ServNCBIID servGeneAnno = new ServNCBIID();
 		//source 2 target 的表格
 		//string[3] 0:source 1:target 2:relation
 		ArrayList<String[]> lsScr2Target = new ArrayList<String[]>();

@@ -3,8 +3,12 @@ package com.novelbio.analysis.annotation.GO.execute;
 import java.util.ArrayList;
 
 import com.novelbio.analysis.annotation.GO.queryDB.QBlastGO;
+import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlGO;
 import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.database.model.modgo.GOInfoAbs;
 
 public class runGo {
 
@@ -15,15 +19,11 @@ public class runGo {
 		//goanalysis2();
 		try
 		{
-		
-			 //AgilentIDmodify.getInfo(9823, "/media/winE/Bioinformatics/Agilent/猪/0912_026440_1291690870959/AllAnnotations/026440_D_AA_20100525.txt", 2, "/media/winE/Bioinformatics/Agilent/猪/agilentPig.txt", "Agilent0912");
-			// AgilentIDmodify.getInfo(9823, "/media/winE/Bioinformatics/Agilent/猪/0804_020109_1291691130807/AllAnnotations/020109_D_AA_20100525.txt", 2, "/media/winE/Bioinformatics/Agilent/猪/agilentPig2.txt", "Agilent0804");
-			//UpDateFriceDB.upDateNCBIID("/media/winE/Bioinformatics/BLAST/result/susAgilent2RefSeqNCBIID.txt", "/media/winE/Bioinformatics/BLAST/result/out");
-			//UpDateFriceDB.upDateNCBIID("/media/winE/Bioinformatics/Agilent/猪/agilentPig.txt", "/media/winE/Bioinformatics/Agilent/猪/out2");
-			//blastgoanalysis();
-//			goanalysisElim();
-//			goanalysisElimNew();
-			goanalysisNBCNew();
+			goanalysis(39947, 3702, "/media/winE/NBC/Project/Project_ZDB_Lab/THX/mtr45vswt_rma_filter.xls", 
+					"/media/winE/NBC/Project/Project_ZDB_Lab/THX/GO//mtr45vswt.xlsx");
+			goanalysis(39947, 3702, "/media/winE/NBC/Project/Project_ZDB_Lab/THX/mtr55vswt_rma_filter.xls", 
+					"/media/winE/NBC/Project/Project_ZDB_Lab/THX/GO//mtr55vswt.xlsx");
+			
 			System.out.println("ok");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -32,30 +32,32 @@ public class runGo {
 	}
  
 	
-//	/**
-//	 * elimFisher聚类分组GO分析，用R的topGO包
-//	 */
-//	public static void goanalysisCluster() {
-//
-//		try {
-//			QGenID2GoInfoSepID qGenID2GoInfo=new QGenID2GoInfoSepID();
-//			String file="/home/zong0jie/桌面/tmp/cdtmp/LCY/";
-//			String geneFile=file+"受试药物趋势.xls";
-//			String GOClass = "P";
-//			int[] colID = new int[2];colID[0] = 1; colID[1] = 2;
-//			String backGroundFile=file+"BG.txt";
-//			int QtaxID = 0;
-//			boolean blast = false;
-//			int StaxID = 9606;
-//			double evalue = 1e-10;
-//			String resultExcel2003 = file +"受试药物趋势";
-// 			GoFisher.getGoRunElim(geneFile, GOClass, colID, backGroundFile, QtaxID, blast, StaxID, evalue, resultExcel2003);
-//			System.out.println("ok");
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+	/**
+	 * elimFisher聚类分组GO分析，用R的topGO包
+	 */
+	public static void goanalysis(int QtaxID, int StaxID, String geneFileXls, String outFile) {
+		String GOClass = "P";
+		int colAccID = 1;
+		int colFC = 2;
+		String backGroundFile = "/media/winE/Bioinformatics/GenomeData/Rice/RiceAffyBG2GOBlast.txt";
+		boolean blast = true;
+		double evalue = 1e-10;
+		boolean elimGo = true;
+		CtrlGO ctrlGO = null;
+		
+		ArrayList<String[]> lsAccID = null;
+		if (colAccID != colFC)
+			 lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID, colFC}, 1, 0);
+		else
+			lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID}, 1, 0);
+		
+		ctrlGO = CtrlGO.getInstance(elimGo, GOClass, QtaxID, blast, evalue, StaxID);
+		ctrlGO.setLsBG(backGroundFile);
+		
+		ctrlGO.doInBackgroundNorm(lsAccID, 1, -1);
+		ctrlGO.saveExcel(outFile);
+		
+	}
 //	
 //	/**
 //	 * 其明聚类分组GO分析，用其明算法

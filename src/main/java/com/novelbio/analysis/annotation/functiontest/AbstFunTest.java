@@ -152,6 +152,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * @param fileName
 	 */
 	public void setLsBGItem(String fileName) {
+		lsTestResult = new ArrayList<String[]>();
 		if (!FileOperate.isFileExist(fileName)) {
 			logger.error("no FIle exist: "+ fileName);
 		}
@@ -165,6 +166,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * @param fileName
 	 */
 	public void setLsBGAccID(String fileName, int colNum) {
+		lsTestResult = new ArrayList<String[]>();
 		if (lsCopedIDsBG == null) {
 			lsCopedIDsBG = new ArrayList<CopedID>();
 		}
@@ -192,6 +194,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * @param fileName
 	 */
 	public void setLsBGCopedID(ArrayList<CopedID> lsBGaccID) {
+		lsTestResult = new ArrayList<String[]>();
 		for (CopedID copedID : lsBGaccID) {
 			copedID.setBlastLsInfo(blastEvalue, blastTaxID);
 		}
@@ -253,6 +256,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * n+6:FDR <br>
 	 * n+7:enrichment n+8:(-log2P) <br>
 	 * @throws Exception 
+	 * 没有就返回null
 	 */
 	public ArrayList<String[]> getTestResult()
 	{
@@ -267,6 +271,9 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 				}
 				lstest.add(strings);
 			}
+			if (lstest.size() == 0) {
+				return null;
+			}
 			ArrayList<String[]> lsbg = new ArrayList<String[]>();
 			for (String[] strings : lsBG) {
 				if (strings[1] == null || strings[1].trim().equals("")) {
@@ -274,7 +281,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 				}
 				lsbg.add(strings);
 			}
-			
+	
 			lsTestResult = FisherTest.getFisherResult(lstest, lsbg, this);
 		} catch (Exception e) {
 			logger.error("error: ");
@@ -360,6 +367,12 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtBGItem, true);
 		txtOut.ExcelWrite(lsBG, "\t", 1, 1);
 		txtOut.close();
+	}
+	/**
+	 * 只能用于GO分析
+	 * @param goType
+	 */
+	public void setGoType(String goType) {
 	}
 	
 }

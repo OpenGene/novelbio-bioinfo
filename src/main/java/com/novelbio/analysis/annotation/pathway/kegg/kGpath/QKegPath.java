@@ -26,7 +26,7 @@ import com.novelbio.database.mapper.kegg.MapKNCompInfo;
 import com.novelbio.database.mapper.kegg.MapKPathRelation;
 import com.novelbio.database.mapper.kegg.MapKPathway;
 import com.novelbio.database.mapper.kegg.MapKRealtion;
-import com.novelbio.database.service.servgeneanno.ServGeneAnno;
+import com.novelbio.database.service.servgeneanno.ServNCBIID;
 
 
 
@@ -362,7 +362,7 @@ and taxID=#{taxID}
 	 */
 	public static ArrayList<String[]> getGeneID(String[] accID, int taxID) 
 	{
-		ServGeneAnno servGeneAnno = new ServGeneAnno();
+		ServNCBIID servGeneAnno = new ServNCBIID();
 		/**
 		 * 用来去重复的表，key为geneID/UniProtID/accID，value
 		 * 为String[3]
@@ -831,7 +831,7 @@ and taxID=#{taxID}
 	 * @param genID
 	 */
 	private static String getKeggID(String genID,int taxID) {
-		ServGeneAnno servGeneAnno = new ServGeneAnno();
+		ServNCBIID servGeneAnno = new ServNCBIID();
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setAccID(genID);ncbiid.setTaxID(taxID);
 		ArrayList<NCBIID> lsNcbiids = servGeneAnno.queryLsNCBIID(ncbiid);

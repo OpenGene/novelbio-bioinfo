@@ -48,6 +48,14 @@ public class FunctionTest implements FunTestInt{
 		}
 		funTest.setTaxID(taxID);
 	}
+	/**
+	 * 只能用于GO分析中
+	 */
+	public void setGOtype(String goType)
+	{
+		funTest.setGoType(goType);
+	}
+	
 	
 	@Override
 	public void setLsTestAccID(ArrayList<String> lsCopedID) {

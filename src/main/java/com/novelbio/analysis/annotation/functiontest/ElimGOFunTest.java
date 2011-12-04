@@ -76,12 +76,14 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	 * n+6:FDR <br>
 	 * n+7:enrichment n+8:(-log2P) <br>
 	 * @throws Exception 
+	 * 没有就返回null
 	 */
 	public ArrayList<String[]> getTestResult()
 	{
 		if (lsTestResult != null && lsTestResult.size() > 0)
 			return lsTestResult;
-		setStrGeneID();
+		if (!setStrGeneID())
+			return null;
 		TxtReadandWrite txtParam = new TxtReadandWrite(NovelBioConst.R_WORKSPACE_TOPGO_PARAM, true);
 		String content = "";
 		if (GoType.equals(GOInfoAbs.GO_BP)) 
@@ -119,14 +121,26 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	
 	String[] strGeneID = null;
 	ArrayList<String> lsGeneID = null;
-	private void setStrGeneID()
+	private boolean setStrGeneID()
 	{
+		ArrayList<String[]> lstest = new ArrayList<String[]>();
+		for (String[] strings : lsTest) {
+			if (strings[1] == null || strings[1].trim().equals("")) {
+				continue;
+			}
+			lstest.add(strings);
+		}
+		if (lstest.size() == 0) {
+			return false;
+		}
+		
 		strGeneID = new String[lsTest.size()];//用于elim检验
 		lsGeneID = new ArrayList<String>();//和strGeneID一样的东西
-		for (int i = 0; i < lsTest.size(); i++) {
-			strGeneID[i] = lsTest.get(i)[0];
+		for (int i = 0; i < lstest.size(); i++) {
+			strGeneID[i] = lstest.get(i)[0];
 			lsGeneID.add(strGeneID[i]);
 		}
+		return true;
 	}
 
 	/**
