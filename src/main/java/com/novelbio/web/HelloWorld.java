@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 
 public class HelloWorld extends HttpServlet {
+	
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter aa = new AnnotationMethodHandlerAdapter();

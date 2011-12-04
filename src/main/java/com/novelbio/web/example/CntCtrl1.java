@@ -1,4 +1,4 @@
-   package com.novelbio.web;  
+   package com.novelbio.web.example;  
      
    import org.apache.catalina.Session;
 import org.springframework.beans.factory.annotation.Autowired;  
@@ -17,19 +17,22 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.novelbio.web.model.User;
+import com.novelbio.web.validator.UserValidator;
      
-   @Component
-   @RequestMapping(value = "/")
-   @SessionAttributes("user")
-   public final class ContactController {  
+//   @Component
+//   @RequestMapping(value = "test")
+//   @SessionAttributes("user")
+	@Controller
+   public final class CntCtrl1 {  
          
        @Autowired  
          private UserValidator userValidator;
+       
        public void setValidator(UserValidator userValidator) {  
            this.userValidator = userValidator;  
        }
          
-       @RequestMapping(value = "/form",method = RequestMethod.GET)  //访问地址为   域名/servlet/class的value/本value + 后缀
+       @RequestMapping(value = "/form2",method = RequestMethod.GET)  //访问地址为   域名/servlet/class的value/本value + 后缀
 //       @RequestMapping(method = RequestMethod.GET)  
        public ModelAndView get() {
     	   //以下几种可以的情况
@@ -67,7 +70,7 @@ import com.novelbio.web.model.User;
        
        
 //     @RequestMapping(value = "form",method = RequestMethod.GET)  //访问地址为   域名/servlet/class的value/本value + 后缀
-       @RequestMapping(value ="/formhuih",method =RequestMethod.GET )  
+       @RequestMapping(value ="/formhuih.htm",method =RequestMethod.GET )  
        public ModelAndView get(@RequestBody String body) {
     	   System.out.println(body);
     	   //以下几种可以的情况
@@ -75,7 +78,12 @@ import com.novelbio.web.model.User;
            ModelAndView mav = new ModelAndView("form");
            //mav.setViewName("form");
            //可以往里面直接插入一个 新建对象，
-           mav.addObject("user", new User());
+      	   User user = new User();
+      	   user.setName("formhuih");
+      	   user.setText("zongjie");
+    	   user.setEmail("fwefe@fewef.com");//这时候表单里面对应选项就会出现字
+           mav.addObject("user",user);
+//           mav.addObject("user", new User());
            //也可以指定对象名，再插入对象
            //mav.addObject( new User());
            
@@ -93,10 +101,10 @@ import com.novelbio.web.model.User;
        }
        
        @RequestMapping( method = RequestMethod.POST)  
-       public String post(@ModelAttribute("user") User user, BindingResult result,Model model) {
+       public String post( User user, BindingResult result,Model model) {
     	  // Model model 是将post的这个视图整个的传递了进来，可以对其进行一些处理，不过不处理也没关系,该参数可以省
     	   userValidator.validate(user, result);  
-           if (result.hasErrors()) { return "form"; }  
+           if (result.hasErrors()) { return "formhuih"; }  
              
            // Use the redirect-after-post pattern to reduce double-submits. 
            model.addAttribute("user", user);//装入session
