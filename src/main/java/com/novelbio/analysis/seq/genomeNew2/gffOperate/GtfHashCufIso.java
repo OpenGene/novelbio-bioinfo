@@ -16,8 +16,8 @@ import com.novelbio.database.model.modcopeid.CopedID;
  */
 public class GtfHashCufIso extends GffHash{
 
-	public GtfHashCufIso(String gfffilename) {
-		super(gfffilename);
+	public GtfHashCufIso() {
+		super();
 		// TODO Auto-generated constructor stub
 	}
 	/**
@@ -31,7 +31,7 @@ public class GtfHashCufIso extends GffHash{
 		txtIso.setParameter(gfffilename, false, true);
 		String[] head = txtIso.readFirstLine().split("\t");
 		//添加标题
-		for (int i = 10; i < head.length; i = i+3) {
+		for (int i = 9; i < head.length; i = i+4) {
 			GtfDetailCufIso.addCodName(head[i].replace("_FPKM", "").trim());
 		}
 		ArrayList<String> lsAll = txtIso.readfileLs();	lsAll.remove(0);
@@ -41,26 +41,22 @@ public class GtfHashCufIso extends GffHash{
 				continue;
 			}
 			GtfDetailCufIso gtfDetailCufIso = null;
-			String geneID = CopedID.removeDot(ss[2]);
+			String geneID = ss[4];
 			if (locHashtable.containsKey(geneID)) {
 				gtfDetailCufIso = (GtfDetailCufIso) locHashtable.get(geneID);
 			}
 			else {
-				gtfDetailCufIso = new GtfDetailCufIso("", CopedID.removeDot(ss[2]), false);
+				gtfDetailCufIso = new GtfDetailCufIso("", geneID, false);
 				locHashtable.put(geneID, gtfDetailCufIso);
 				LOCIDList.add(geneID);
 			}
-			double[] exp = new double[(ss.length-10)/3]; int m=0;
-			for (int i = 10; i < ss.length; i = i+3) {
-				exp[m] = Double.parseDouble(ss[i]);
+			int[] exp = new int[(ss.length-10)/3]; int m=0;
+			for (int i = 9; i < ss.length; i = i+4) {
+				exp[m] = (int)Double.parseDouble(ss[i]);
 				m++;
 			}
-		
-				gtfDetailCufIso.addIsoExp(ss[1], ss[2], exp);
-	
-			
+			gtfDetailCufIso.addIsoExp(ss[1], ss[2], exp);
 		}
-		
 	}
 	/**
 	 * 没用，不要使用
@@ -74,7 +70,7 @@ public class GtfHashCufIso extends GffHash{
 	 */
 	@Override
 	public GtfDetailCufIso searchLOC(String chrID, int LOCNum) {
-		return (GtfDetailCufIso) Chrhash.get(chrID).get(LOCNum);
+		return (GtfDetailCufIso) ((HashMap) Chrhash.get(chrID)).get(LOCNum);
 	}
 	/**
 	 * 没有，不要使用
@@ -84,5 +80,16 @@ public class GtfHashCufIso extends GffHash{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	@Override
+	protected GffCodAbsDu setGffCodDu(ArrayList lsgffDetail, GffCodAbs gffCod1,
+			GffCodAbs gffCod2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/**
+	 * 不需要进行该步骤
+	 */
+	protected void setItemDistance() {
+		
+	}
 }

@@ -38,7 +38,7 @@ public class GtfDetailCufIso extends GffDetailAbs{
 	/**
 	 * 放入所有剪接的名字，以及该剪接对应的时期，和相应的表达量，并排序
 	 */
-	private TreeMap<String,ArrayList<Double>> treeIso2Exp = new TreeMap<String, ArrayList<Double>>();
+	private TreeMap<String,ArrayList<Integer>> treeIso2Exp = new TreeMap<String, ArrayList<Integer>>();
 	/**
 	 * 依次放入每个时期的名称，名称和treeIso2Exp里面的名称一致.
 	 * 因为一个gtf文件中所有基因的时期都一致，所以用static
@@ -53,9 +53,9 @@ public class GtfDetailCufIso extends GffDetailAbs{
 	/**
 	 * 添加某个转录本的表达量，按照时期依次添加，可以添加数组也可以一个一个添加
 	 */
-	public void addIsoExp(String class_code,String IsoName,double...exp) {
-		ArrayList<Double> lsExp = new ArrayList<Double>();
-		for (double d : exp) {
+	public void addIsoExp(String class_code,String IsoName,int...exp) {
+		ArrayList<Integer> lsExp = new ArrayList<Integer>();
+		for (int d : exp) {
 			lsExp.add(d);
 		}
 		treeIso2Exp.put(changeName(IsoName, class_code), lsExp);
@@ -81,9 +81,9 @@ public class GtfDetailCufIso extends GffDetailAbs{
 	public ArrayList<String[]> getIsoExp() {
 		ArrayList<String[]> lsIsoExp = new ArrayList<String[]>();
 		int m = 0;// 计数器
-		for (Entry<String, ArrayList<Double>> entry : treeIso2Exp.entrySet()) {
+		for (Entry<String, ArrayList<Integer>> entry : treeIso2Exp.entrySet()) {
 			String isoName = entry.getKey();
-			ArrayList<Double> lsexp = entry.getValue();
+			ArrayList<Integer> lsexp = entry.getValue();
 			for (int i = 0; i < lsexp.size(); i++) {
 				String[] cod = null;
 				if (i<lsIsoExp.size()) {
@@ -129,5 +129,10 @@ public class GtfDetailCufIso extends GffDetailAbs{
 		hashIsoInfo.put("x", "x");
 		hashIsoInfo.put("s", "s");
 		hashIsoInfo.put(".", ".");
+	}
+	@Override
+	public GffDetailAbsCod setCood(int coord) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
