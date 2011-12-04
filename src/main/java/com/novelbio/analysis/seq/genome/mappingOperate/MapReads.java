@@ -173,6 +173,9 @@ public class MapReads {
 				if (i >= chrBpReads.length) {
 					break;
 				}
+				else if (i < 0) {
+					continue;
+				}
 				chrBpReads[i]++;
 				if (chrBpReads[i]<0) 
 				{

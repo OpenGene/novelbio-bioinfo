@@ -269,6 +269,9 @@ public class GffPeakOverlap
 	private int twoSiteLocation(GffDetail gffMPeakDetial,GffHashPeak gffHashplusPeak) 
 	{
 		String ChrID=gffMPeakDetial.ChrID;
+		if (ChrID.equalsIgnoreCase("chrY")) {
+			System.out.println("stop");
+		}
 		int start=gffMPeakDetial.numberstart;
 		int end=gffMPeakDetial.numberend;
 		

@@ -79,7 +79,7 @@ public class GffHashPeak extends GffHash{
 
 			int peakNum=peakInfo.length;
 			for (int i = 0; i < peakNum; i++) {
-				chrnametmpString=lstmpPeakinfo.get(i)[0];
+				chrnametmpString=lstmpPeakinfo.get(i)[0].toLowerCase();
 				tmppeakstart=Integer.parseInt(lstmpPeakinfo.get(i)[1]);
 				tmppeakend=Integer.parseInt(lstmpPeakinfo.get(i)[2]);
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
