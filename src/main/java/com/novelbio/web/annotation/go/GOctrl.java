@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 
 import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 import org.hamcrest.core.IsEqual;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,8 +16,10 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
+import com.novelbio.database.service.servgeneanno.ServNCBIID;
 import com.novelbio.web.model.User;
 
 @Controller
@@ -40,6 +43,11 @@ public class GOctrl {
 		mav.addObject("goparam", goParam);
 		mav.addObject("hashGoType",CopedID.getHashGOID());
 		mav.addObject("summiturl", "goanalysis.htm");//装入session,通过session传递，也可以通过url传递
+		ServNCBIID servNCBIID = new ServNCBIID();
+		NCBIID ncbiid = new NCBIID();
+		ncbiid.setAccID("tp53"); ncbiid.setTaxID(9606);
+		NCBIID ncbiid2 = servNCBIID.queryNCBIID(ncbiid);
+		System.out.println(ncbiid2.getGenUniID());
 		System.out.println(CopedID.getHashTaxIDName().get(9606));
 		mav.addObject("hashTaxID", CopedID.getHashTaxIDName());
 		return mav;

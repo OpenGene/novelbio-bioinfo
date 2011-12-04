@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.novelbio.database.mapper.geneanno.MapFSTaxID;
+import com.novelbio.database.service.servgeneanno.ServNCBIID;
+
 import org.aopalliance.intercept.*;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 /**
  * GOµÄ²ÎÊý
  * @author zong0jie
@@ -17,12 +20,11 @@ public class GoParam {
 	boolean elimGo = true;
 	boolean novelGo = false;
 	boolean cluster = false;
-	
+
 	String goType = "";
 	
 	int accCol = 1;
 	int ExpCol = 2;
-	
 	double upValue = 0;
 	double downValue = 0;
 	String inputFile = "";

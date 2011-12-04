@@ -3,6 +3,8 @@ package com.novelbio.database.service.servgeneanno;
 import java.util.ArrayList;
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.NCBIID;
@@ -12,12 +14,14 @@ import com.novelbio.database.service.AbsGetSpring;
 public class ServNCBIID extends AbsGetSpring implements MapNCBIID{
 	@Inject
 	private MapNCBIID mapNCBIID;
+
+	
 //	static{
 //		mapNCBIID = (MapNCBIID) factory.getBean("mapNCBIID");
 //	}
-	public ServNCBIID()
+	public ServNCBIID()  
 	{
-//		mapNCBIID = (MapNCBIID) factory.getBean("mapNCBIID");
+		mapNCBIID = (MapNCBIID) factory.getBean("mapNCBIID");
 	}
 	//TODO Õý¹æÐ´·¨
 //	@Inject

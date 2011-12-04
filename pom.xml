@@ -102,13 +102,6 @@
   		<scope>compile</scope>
   	</dependency>
   	<dependency>
-  		<groupId>log4j</groupId>
-  		<artifactId>log4j</artifactId>
-  		<version>1.2.16</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
   		<groupId>org.apache.httpclient</groupId>
   		<artifactId>httpclient</artifactId>
   		<version>3.1</version>
@@ -173,18 +166,6 @@
   		<groupId>org.apache.commons</groupId>
   		<artifactId>commons-compress</artifactId>
   		<version>1.1</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.jolbox</groupId>
-  		<artifactId>bonecp</artifactId>
-  		<version>0.7.1.RELEASE</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.slf4j</groupId>
-  		<artifactId>slf4j-log4j12</artifactId>
-  		<version>1.6.4</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
@@ -297,6 +278,46 @@
   		<groupId>org.mybatis</groupId>
   		<artifactId>mybatis-spring</artifactId>
   		<version>1.0.2</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.google.collections</groupId>
+  		<artifactId>google-collections</artifactId>
+  		<version>1.0</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.jolbox</groupId>
+  		<artifactId>bonecp</artifactId>
+  		<version>0.7.1.RELEASE</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-log4j12</artifactId>
+  		<version>1.6.4</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-api</artifactId>
+  		<version>1.6.4</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>integration</artifactId>
+  		<version>1.6.4</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-jdk14</artifactId>
+  		<version>1.6.4</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>

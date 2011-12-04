@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import javax.inject.Inject;
 
 import org.broadinstitute.sting.utils.collections.CircularArray.Int;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.TaxInfo;
@@ -15,20 +17,19 @@ import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.geneanno.MapTaxID;
 import com.novelbio.database.service.AbsGetSpring;
 
-@Service
+@Component
 //public class ServTaxID extends AbsGetSpring implements MapTaxID{
-public class ServTaxID   implements MapTaxID{
+public class ServTaxID extends AbsGetSpring  implements MapTaxID{
 	HashMap<String, Integer> hashNameTaxID = new LinkedHashMap<String, Integer>();
 	HashMap<Integer, String> hashTaxIDName = new LinkedHashMap<Integer, String>();
-	
-	
-	
-	@Inject
+
+	@Autowired
 	private MapTaxID mapTaxID;
-//	public ServTaxID()
-//	{
-//		mapTaxID = (MapTaxID) factory.getBean("mapTaxID");
-//	}
+
+	public ServTaxID()
+	{
+		mapTaxID = (MapTaxID) factory.getBean("mapTaxID");
+	}
 	@Override
 	public TaxInfo queryTaxInfo(TaxInfo taxInfo) {
 		// TODO Auto-generated method stub
