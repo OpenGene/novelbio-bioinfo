@@ -8,6 +8,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfoSnpIndel;
 
 public class GffChrSeq extends GffChrAbs{
 
@@ -22,23 +23,11 @@ public class GffChrSeq extends GffChrAbs{
 	}
 
 	public static void main(String[] args) {
-//		ArrayList<String[]> lsChrFile = FileOperate.getFoldFileName("/media/winE/Bioinformatics/GenomeData/checken/chromFa",
-//				regx, "*");
-		
-//		GffChrSeq gffChrSeq = new GffChrSeq(NovelBioConst.GENOME_GFF_TYPE_UCSC, 
-//				"/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/chickenEnsemblGenes",
-//				"/media/winE/Bioinformatics/GenomeData/checken/chromFa");
-		
-		GffChrSeq gffChrSeq = new GffChrSeq(NovelBioConst.GENOME_GFF_TYPE_UCSC, 
-		NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ,
-		NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
-		MapInfo mapInfo = new MapInfo("chr1");
-		mapInfo.setFlagLoc(67391831);
-		gffChrSeq.getAAsnp(mapInfo);
-		System.out.println(mapInfo.getStart() + "  " + mapInfo.getEnd());
-		System.out.println(mapInfo.getNrSeq());
-		System.out.println(mapInfo.getAaSeq());
-		System.out.println(mapInfo.getTitle());
+		GffChrSeq gffChrSeq = new GffChrSeq(NovelBioConst.GENOME_GFF_TYPE_UCSC,  null, NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
+//		gffChrSeq.setGffFile(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, "/media/winE/NBC/Project/Project_FY_Lab/Result/cufflinkAll/cufcompare/cmpAll.combined_cope.gtf");
+		gffChrSeq.loadChrFile();
+		String aaa = gffChrSeq.getSeq(true, "chr1", 1, 1);
+		System.out.println(aaa);
 	}
 	
 	/**
@@ -60,6 +49,44 @@ public class GffChrSeq extends GffChrAbs{
 	}
 	
 	/**
+	 * 给定坐标，提取序列
+	 * @param IsoName
+	 * @param absIso
+	 * @param getIntron
+	 * @return
+	 */
+	public String getSeq(boolean cis5to3,String chrID, int startLoc, int endLoc)
+	{
+		return seqHash.getSeq(chrID, (long)startLoc, (long)endLoc);
+	}
+	
+	/**
+	 * 
+	 * 
+	 * 给定基因名，获得该转录本的信息
+	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
+	 * @param IsoName 转录本的名字
+	 * @param cis5to3 正反向，在提出的正向转录本的基础上，是否需要反向互补。
+	 * @param startExon 具体某个exon
+	 * @param endExon 具体某个Intron
+	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
+	 * @param getIntron
+	 * @return
+	 */
+	public String getSeq(String IsoName, boolean cis5to3,int startExon, int endExon, boolean absIso,boolean getIntron)
+	{
+		GffGeneIsoInfo gffGeneIsoInfo = null;
+		if (absIso)
+			gffGeneIsoInfo = gffHashGene.searchISO(IsoName);
+		else
+			gffGeneIsoInfo = gffHashGene.searchLOC(IsoName).getLongestSplit();
+		
+		return seqHash.getSeq(gffGeneIsoInfo.getChrID(), cis5to3, startExon, endExon, gffGeneIsoInfo.getIsoInfo(), getIntron);
+	}
+	
+	
+	
+	/**
 	 * 给定基因名，获得该转录本的信息
 	 * 不管转录本的方向，总是从基因组的5‘向3’提取。 方向需要人工设定cisseq
 	 * @param cisseq 获得正向还是反向序列，相对于基因组来说的
@@ -78,52 +105,8 @@ public class GffChrSeq extends GffChrAbs{
 		
 		return seqHash.getSeq(cisseq, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getIsoInfo(), getIntron);
 	}
-	/**
-	 * 给定mapInfo，其中mapInfo的flagLoc为snp坐标位点，chrID为染色体位置
-	 * 获得该snp所在的三个碱基，以及所对应的氨基酸
-	 * startLoc为起点碱基坐标，endLoc为终点碱基坐标
-	 * 默认搜索最长转录本
-	 * 将具体的序列信息填充mapInfo
-	 * 返回该snp的定位信息
-	 */
-	public GffCodGene getAAsnp(MapInfo mapInfo) {
-		GffCodGene gffCodeGene = gffHashGene.searchLocation(mapInfo.getChrID(), mapInfo.getFlagSite());
-		if (gffCodeGene.isInsideLoc()) {
-			//先找最长转录本，看snp是否在该转录本的exon中，不在的话，找其他所有转录本,看是否在基因的表达区中
-			GffGeneIsoInfo gffGeneIsoInfo = gffCodeGene.getGffDetailThis() .getLongestSplit();
-			if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_EXON
-					|| gffGeneIsoInfo.getCod2ATGmRNA() < 0 
-					|| gffGeneIsoInfo.getCod2UAG() > 0 ) {
-				for (GffGeneIsoInfo gffGeneIsoInfo2 : gffCodeGene.getGffDetailThis().getLsCodSplit()) {
-					if (gffGeneIsoInfo2.getCodLoc() == GffGeneIsoInfo.COD_LOC_EXON 
-							&& gffGeneIsoInfo2.getCod2ATGmRNA() >= 0 
-							&& gffGeneIsoInfo2.getCod2UAG() <= 0)  {
-						gffGeneIsoInfo = gffGeneIsoInfo2;
-						break;
-					}
-				}
-			}
-			//找到了
-			if (gffGeneIsoInfo.getCodLoc() == GffGeneIsoInfo.COD_LOC_EXON) {
-				int startLen = gffGeneIsoInfo.getCod2ATGmRNA();
-				int endLen = gffGeneIsoInfo.getCod2UAG();
-				// 确定在外显子中
-				if (startLen >= 0 && endLen <= 0) {
-					int LocStart = gffGeneIsoInfo.getLocDistmRNASite(mapInfo.getFlagSite(), -startLen%3);
-					int LocEnd = gffGeneIsoInfo.getLocDistmRNASite(mapInfo.getFlagSite(), 2 - startLen%3);
-					ArrayList<int[]> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
-					String NR = seqHash.getSeq(mapInfo.getChrID(), lsTmp, false);
-					
-//					System.out.println(seqHash.getSeq(mapInfo.getChrID(),  gffGeneIsoInfo.getRangeIso(LocStart-4, LocEnd+4), false));
-					mapInfo.setNrSeq(NR);
-					mapInfo.setAaSeq(AminoAcid.convertDNA2AA(NR, false));
-					mapInfo.setStartLoc(LocStart);
-					mapInfo.setEndLoc(LocEnd);
-					mapInfo.setTitle(gffGeneIsoInfo.getIsoName());
-				}
-			}
-		}
-		return gffCodeGene;
-	}
+
+	
+	
 	
 }

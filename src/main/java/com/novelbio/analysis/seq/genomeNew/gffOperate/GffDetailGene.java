@@ -76,24 +76,37 @@ public class GffDetailGene extends GffDetailAbs
 	 */
 	public void removeIso(int id) {
 		lsGffGeneIsoInfos.remove(id);
-		lsIsoName.remove(id);
 	}
 	/**
 	 * 给定转录本的名字，删除转录本
 	 */
 	public void removeIso(String isoName) {
-		int id = lsIsoName.indexOf(isoName);
+		int id = getIsoID(isoName);
 		removeIso(id);
 	}
+	
+	/**
+	 * 从0开始计数
+	 * 返回-1表示没有该转录本 
+	 * @param isoName
+	 * @return
+	 */
+	private int getIsoID(String isoName)
+	{
+		for (int i = 0; i < lsGffGeneIsoInfos.size(); i++) {
+			GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(i);
+			if (gffGeneIsoInfo.getIsoName().equalsIgnoreCase(isoName)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	
 	/**
 	 * 顺序存储每个转录本的的坐标情况
 	 */
 	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
-	/**
-	 * 顺序存储每个转录本的名字
-	 */
-	private ArrayList<String> lsIsoName = new ArrayList<String>();
 	
 	public void setCoord(int coord) {
 		this.coord = coord;
@@ -182,7 +195,6 @@ public class GffDetailGene extends GffDetailAbs
 		}
 		gffGeneIsoInfo.setTaxID(this.taxID);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
-		lsIsoName.add(splitName);
 	}
 	/**
 	 * 直接添加转录本，之后用addcds()方法给该转录本添加exon
@@ -197,7 +209,6 @@ public class GffDetailGene extends GffDetailAbs
 		}
 		gffGeneIsoInfo.setTaxID(this.taxID);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
-		lsIsoName.add(splitName);
 	}
 	/**
 	 * @return 返回转录本的数目
@@ -231,13 +242,7 @@ public class GffDetailGene extends GffDetailAbs
      */
     public GffGeneIsoInfo getIsolist(String splitID)
     {
-    	int index = lsIsoName.indexOf(splitID);
-    	//忽略大小写的查找
-    	for (int i = 0; i < lsIsoName.size(); i++)
-            if (splitID.equalsIgnoreCase(lsIsoName.get(i)))
-            	index = i;
-    	
-    	
+    	int index = getIsoID(splitID);
     	if (index == -1) {
     		logger.info("cannotFind the ID: "+ splitID);
 			return null;
@@ -419,9 +424,6 @@ public class GffDetailGene extends GffDetailAbs
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			gffDetailGene.lsGffGeneIsoInfos.add(gffGeneIsoInfo.clone());
 		}
-		for (String string : lsIsoName) {
-			gffDetailGene.lsIsoName.add(string);
-		}
 		return gffDetailGene;
 	}
 	/**
@@ -432,7 +434,6 @@ public class GffDetailGene extends GffDetailAbs
 	public void addIso(GffDetailGene gffDetailGene)
 	{
 		ArrayList<GffGeneIsoInfo> lsGeneIsoInfosFinal = new ArrayList<GffGeneIsoInfo>();
-		ArrayList<String> lsGeneIsoNameFinal = new ArrayList<String>();
 		ArrayList<GffGeneIsoInfo> lsIsoAdd = gffDetailGene.getLsCodSplit();
 		ArrayList<GffGeneIsoInfo> lsIsoThis = getLsCodSplit();
 		for (GffGeneIsoInfo gffGeneIsoInfoTmp : lsIsoThis) {
@@ -442,9 +443,7 @@ public class GffDetailGene extends GffDetailAbs
 				//
 				if (gffGeneIsoInfo.isCis5to3() != gffGeneIsoInfoAdd.isCis5to3()) {
 					lsGeneIsoInfosFinal.add(gffGeneIsoInfo);
-					lsGeneIsoNameFinal.add(gffGeneIsoInfo.getIsoName());
 					lsGeneIsoInfosFinal.add(gffGeneIsoInfoAdd);
-					lsGeneIsoNameFinal.add(gffGeneIsoInfoAdd.getIsoName());
 					logger.error("两个方向不一致的gff不能合并："+ gffGeneIsoInfo.getIsoName() + " " + gffGeneIsoInfoAdd.getIsoName());
 					continue;
 				}
@@ -458,9 +457,7 @@ public class GffDetailGene extends GffDetailAbs
 					//如果重叠区域太长，那么就分开加入成两个转录本
 					if (overlapInfo[2] > OVERLAP_RATIO || overlapInfo[3] > OVERLAP_RATIO) {
 						lsGeneIsoInfosFinal.add(gffGeneIsoInfo);
-						lsGeneIsoNameFinal.add(gffGeneIsoInfo.getIsoName());
 						lsGeneIsoInfosFinal.add(gffGeneIsoInfoAdd);
-						lsGeneIsoNameFinal.add(gffGeneIsoInfoAdd.getIsoName());
 						continue;
 					}
 					//如果重叠区域短长，那么就将短的掐头去尾
@@ -492,12 +489,9 @@ public class GffDetailGene extends GffDetailAbs
 					gffGeneIsoInfoTmpFinal.getIsoInfo().addAll(0, gffGeneIsoInfoAdd.getIsoInfo());
 				}
 				lsGeneIsoInfosFinal.add(gffGeneIsoInfoTmpFinal);
-				lsGeneIsoNameFinal.add(gffGeneIsoInfoTmpFinal.getIsoName());
 			}
 		}
-		lsGffGeneIsoInfos = lsGeneIsoInfosFinal;
-		lsIsoName = lsGeneIsoNameFinal;
-		
+		lsGffGeneIsoInfos = lsGeneIsoInfosFinal;		
 		//重置起点和终点
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGeneIsoInfosFinal) {
 			if (gffGeneIsoInfo.getIsoInfo().get(0)[0] < numberstart) {
@@ -515,6 +509,27 @@ public class GffDetailGene extends GffDetailAbs
 		}
 	}
 	
+	/**
+	 * 去除重复Isoform
+	 */
+	public void removeDupliIso()
+	{
+		ArrayList<GffGeneIsoInfo> lsNew = new ArrayList<GffGeneIsoInfo>();
+		
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			boolean flag = true;
+			for (GffGeneIsoInfo gffGeneIsoInfo2 : lsNew) {
+				if (gffGeneIsoInfo2.compIso(gffGeneIsoInfo.getIsoInfo())) {
+					flag = false;
+					break;
+				}
+			}
+			if (flag) {
+				lsNew.add(gffGeneIsoInfo);
+			}
+		}
+		lsGffGeneIsoInfos = lsNew;
+	}
 	
 	/**
 	 * 用于冯英的项目，添加新的转录本
@@ -532,16 +547,8 @@ public class GffDetailGene extends GffDetailAbs
 			cis5to3 = null;
 		}
 		for (GffGeneIsoInfo gffGeneIsoInfoOld : lsGffGeneIsoInfos) {
-			ArrayList<int[]> lsExonOld = gffGeneIsoInfoOld.getIsoInfo();
-			//比较两个转录本是不是一模一样，是的话就不添加了
-			if (gffGeneIsoInfoOld.isCis5to3() == gffGeneIsoInfo.isCis5to3() && lsExonOld.size() == lsExonThis.size()) {
-				for (int i = 0; i < lsExonOld.size(); i++) {
-					int exonOld[] = lsExonOld.get(i);
-					int exonThis[] = lsExonThis.get(i);
-					if (exonOld[0] == exonThis[0] && exonOld[1] == exonThis[1]) {
-						return;
-					}
-				}
+			if (gffGeneIsoInfoOld.compIso(lsExonThis)) {
+				return;
 			}
 		}
 		
@@ -549,12 +556,11 @@ public class GffDetailGene extends GffDetailAbs
 		String IsoName = gffGeneIsoInfo.IsoName;
 		int i = lsGffGeneIsoInfos.size();
 		//修改名字
-		while (lsIsoName.contains(IsoName)) {
+		while (isContainsIso(IsoName)) {
 			IsoName = FileOperate.changeFileSuffix(IsoName, "", ""+i).replace("/", "");
 			i++;
 		}
 		gffGeneIsoInfo.IsoName = IsoName;
-		lsIsoName.add(IsoName);
 
 		if (numberstart < 0 || numberstart > gffGeneIsoInfo.getStartAbs()) {
 			numberstart = gffGeneIsoInfo.getStartAbs();
@@ -572,4 +578,17 @@ public class GffDetailGene extends GffDetailAbs
 		return geneGTF;
 	}
 	
+	/**
+	 * 判断是否存在该名字的转录本
+	 * @param IsoName
+	 */
+	public boolean isContainsIso(String IsoName)
+	{
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			if (gffGeneIsoInfo.getIsoName().equalsIgnoreCase(IsoName)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

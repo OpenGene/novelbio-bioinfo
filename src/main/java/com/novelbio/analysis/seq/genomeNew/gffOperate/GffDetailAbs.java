@@ -405,7 +405,16 @@ public abstract class GffDetailAbs implements CompSubArray{
 		gffDetailAbs.tes2DownGene = tes2DownGene;
 		gffDetailAbs.tss2UpGene = tss2UpGene;
 	}
+	
+	
+	/////////////////////////////////////////////////// 实现 比较的接口 ///////////////////////////////////
 	/**
+	 * 比较的接口方法
+	 * 本gffdetail属于哪个组
+	 */
+	String flagComp = "";
+	/**
+	 * CompSubArray 比较的接口方法
 	 * 获得起点和终点
 	 */
 	@Override
@@ -417,6 +426,7 @@ public abstract class GffDetailAbs implements CompSubArray{
 		return result;
 	}
 	/**
+	 * CompSubArray 比较的接口方法
 	 * 根据cis方向获得起点
 	 * 不能确定方向的话，就按照正向来
 	 * @return
@@ -431,6 +441,7 @@ public abstract class GffDetailAbs implements CompSubArray{
 		}
 	}
 	/**
+	 * CompSubArray 比较的接口方法
 	 * 根据cis方向获得终点
 	 * 不能确定方向的话，就按照正向来
 	 * @return
@@ -443,5 +454,41 @@ public abstract class GffDetailAbs implements CompSubArray{
 		else {
 			return numberstart;
 		}
+	}
+	/**
+	 * CompSubArray 比较的接口方法
+	 * @return
+	 */
+	@Override
+	public double getStartAbs() {
+		return getNumberstart();
+	}
+	/**
+	 * CompSubArray 比较的接口方法
+	 * @return
+	 */
+	@Override
+	public double getEndAbs() {
+		return getNumberend();
+	}
+	@Override
+	public String getFlag() {
+		return flagComp;
+	}
+	/**
+	 * CompSubArray 比较的接口方法
+	 * @param flag
+	 */
+	@Override
+	public void setFlag(String flag) {
+		this.flagComp = flag;
+	}
+	/**
+	 * CompSubArray 比较的接口方法
+	 * @param flag
+	 */
+	@Override
+	public double getLen() {
+		return Math.abs(numberend - numberstart);
 	}
 }

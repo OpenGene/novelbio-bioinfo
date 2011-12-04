@@ -63,17 +63,11 @@ public class GffChrAnno extends GffChrAbs{
 		String parentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/PeakCalling/";
 		String txtFile = parentFile + "2KseSort-W200-G600-E100.scoreisland";
 		String out = parentFile + "2KSICERanno.txt";
-		gffChrAnno.annotation(txtFile, 1, 2, 3, out);
+		gffChrAnno.annoFile(txtFile, 1, 2, 3, out);
 	}
 	
-	
-	
-	
-	
-	
-	
-	
 	/**
+	 * 首先设定需要注释的区域，如tss，tes，genebody等
 	 * 给定txt的文件，和染色体编号，染色体起点终点，和输出文件，将peak覆盖到的区域注释出来
 	 * @param txtFile
 	 * @param colChrID
@@ -81,7 +75,7 @@ public class GffChrAnno extends GffChrAbs{
 	 * @param colEnd
 	 * @param outTxtFile
 	 */
-	public void annotation(String txtFile, int colChrID, int colStart, int colEnd, String outTxtFile) {
+	public void annoFile(String txtFile, int colChrID, int colStart, int colEnd, String outTxtFile) {
 //		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(txtFile, false);
 //		ArrayList<String[]> lsIn = txtReadandWrite.ExcelRead("\t", 1, 1, txtReadandWrite.ExcelRows(), -1, 0);
 		ArrayList<String[]> lsIn = ExcelTxtRead.readLsExcelTxt(txtFile, 1);
@@ -105,6 +99,9 @@ public class GffChrAnno extends GffChrAbs{
 		
 		for (String[] strings : lsInfo) {
 			ArrayList<String[]> lsanno = getGenInfoFilter(strings[colChrID], Integer.parseInt(strings[colStart]), Integer.parseInt(strings[colEnd]));
+			if (lsanno == null) {
+				continue;
+			}
 			for (String[] strings2 : lsanno) {
 				String[] tmpResult = new String[strings.length + strings2.length];
 				for (int i = 0; i < strings.length; i++) {
@@ -174,6 +171,9 @@ public class GffChrAnno extends GffChrAbs{
 	 */
 	public ArrayList<String[]> getGenInfoFilter(String chrID, int startCod, int endCod) {
 		GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation(chrID, startCod, endCod);
+		if (gffCodGeneDu == null) {
+			return null;
+		}
 		ArrayList<String[]> lsAnno = gffCodGeneDu.getAnno(tss, tes, genebody, UTR5, UTR3, exonFilter, intronFilter);
 		return lsAnno;
 	}
@@ -377,15 +377,6 @@ class siteLocInfo
 	 * 是否在3‘UTR中
 	 */
 	int UTR3 = 0;
-	
-	
-	
-	
-	
-	
-	
-	
-
 }
 
 

@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.swing.plaf.synth.Region;
+
 import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
@@ -158,13 +160,13 @@ public class MapReads {
 	public void setstartRegion(int startRegion) {
 		this.startRegion = startRegion;
 	}
-	/**
-	 * 是否有剪接列，如果没有则小于0, 从bam转到的bed文件中才有的列，主要在RNA-Seq中使用
-	 * 为第11列
-	 */
-	public void setColSplit(int colSplit) {
-		this.colSplit = colSplit;
-	}
+//	/**
+//	 * 是否有剪接列，如果没有则小于0, 从bam转到的bed文件中才有的列，主要在RNA-Seq中使用
+//	 * 为第11列
+//	 */
+//	public void setColSplit(int colSplit) {
+//		this.colSplit = colSplit;
+//	}
 	/**
 	 * 设定坐标文件中ChrID和 起点，终点的列数，<b>如果是常规的bed文件，那么这个不用修改</b>
 	 * @param colChrID ChrID所在的列
@@ -293,7 +295,15 @@ public class MapReads {
 		return false;
 	}
 	
-	
+	public long ReadMapFile()
+	{
+		try {
+			return ReadMapFileExp();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
 	
 	/**
 	 * 当输入为macs的bed文件时，自动<b>跳过chrm项目</b><br>
@@ -307,7 +317,7 @@ public class MapReads {
 	 * @return 返回所有mapping的reads数量
 	 * @throws Exception
 	 */
-	public long ReadMapFile() throws Exception 
+	private long ReadMapFileExp() throws Exception 
 	{
 		setHashChrLen();
 		colUnique--;
@@ -882,6 +892,7 @@ public class MapReads {
 	}
 	
 	/**
+	 * 经过标准化
 	 * 给定坐标范围，返回该区间内最小值
 	 * @param chrID
 	 * @param startLoc
@@ -907,6 +918,7 @@ public class MapReads {
 		return new Max().evaluate(info);
 	}
 	/**
+	 * 经过标准化
 	 * 给定坐标范围，返回该区间内平均值
 	 * @param chrID
 	 * @param startLoc
@@ -972,11 +984,11 @@ public class MapReads {
 		return new StandardDeviation().evaluate(info);
 	}
 	/**
+	 * 
 	 * 给定坐标范围，返回该区间内标准差
-	 * @param chrID
-	 * @param startLoc
-	 * @param endLoc
-	 * @return double
+	 * @param chrID 染色体编号
+	 * @param lsLoc 一个转录本的exon list
+	 * @return
 	 */
 	public double regionSD(String chrID, List<int[]> lsLoc)
 	{
@@ -985,9 +997,8 @@ public class MapReads {
 	/**
 	 * 给定坐标范围，返回该区间内平均值
 	 * @param chrID
-	 * @param startLoc
-	 * @param endLoc
-	 * @return double
+	 * @param lsLoc 一个转录本的exon list
+	 * @return
 	 */
 	public double regionMean(String chrID, List<int[]> lsLoc)
 	{
@@ -1068,4 +1079,19 @@ public class MapReads {
 	public ArrayList<String> getChrIDLs() {
 		return ArrayOperate.getArrayListKey(hashChrLen);
 	}
+	
+	/**
+	 * 给定坐标信息，将比较的比值，也就是均值相除，放入mapInfo的weight内
+	 * 内部标准化
+	 * @param mapReads 第一个mapReads信息
+	 * @param mapReads2 第二个mapReads信息
+	 * @param mapInfo
+	 */
+	public static void CmpMapReg(MapReads mapReads, MapReads mapReads2, MapInfo mapInfo)
+	{
+		double value1 = mapReads.regionMean(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd());
+		double value2 = mapReads2.regionMean(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd());
+		mapInfo.setWeight(value1/value2);
+	}
+	
 }

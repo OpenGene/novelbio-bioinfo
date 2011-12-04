@@ -3,11 +3,17 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetail;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.CmpListCluster;
 
 
 /**
@@ -202,7 +208,9 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 			return null;
 		}
 		ArrayList<T> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
-		
+		if (Loclist == null) {
+			return null;
+		}
 		
 		K gffCod1 = searchLocation(chrID, Math.min(cod1, cod2));
 		K gffCod2 = searchLocation(chrID, Math.max(cod1, cod2));
@@ -254,7 +262,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 			return LocInfo;
 		}
 		// 在最后一个Item之后
-		else if (Coordinate > Loclist.get(endnum).getNumStart()) {
+		else if (Coordinate >= Loclist.get(endnum).getNumStart()) {
 			LocInfo[1] = endnum;
 			LocInfo[2] = -1;
 			LocInfo[0] = 2;
@@ -416,8 +424,6 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	{
 		
 	}
-
-
 
 
 

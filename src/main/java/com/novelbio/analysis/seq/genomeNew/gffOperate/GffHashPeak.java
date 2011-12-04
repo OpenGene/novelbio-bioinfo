@@ -45,7 +45,7 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
      * @param colPeakend
      * @param rowNum
 	 */
-	public GffHashPeak(String gfffilename,boolean peakcis ,int colChrID,int colPeakstart,int colPeakend,int rowNum) throws Exception {
+	public GffHashPeak(boolean peakcis ,int colChrID,int colPeakstart,int colPeakend,int rowNum) throws Exception {
 //		super();
 		this.peakcis = peakcis;
 		this.colChrID = colChrID;
@@ -127,7 +127,7 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 						LOCList.trimToSize();
 						 //把peak名称顺序装入LOCIDList
 						   for (GffDetailPeak gffDetail : LOCList) {
-							   LOCChrHashIDList.add(gffDetail.locString);
+							   LOCChrHashIDList.add(gffDetail.getLocString());
 						   }
 					}
 					LOCList=new ArrayList<GffDetailPeak>();//新建一个LOCList并放入Chrhash
@@ -146,17 +146,13 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 						lastGffdetailpeak.numberstart=tmppeakstart;
 					if(tmppeakend>lastGffdetailpeak.numberend)
 						lastGffdetailpeak.numberend=tmppeakend;
-  
-					//将基因(转录本ID)装入LOCList
-				
-					
+					//将基因(转录本ID)装入LOCList					
 					//将本基因(转录本)的ID装入locString中
-					lastGffdetailpeak.locString=lastGffdetailpeak.locString+"/"+tmppeakstart+"_"+tmppeakend;
+					lastGffdetailpeak.setLocString(lastGffdetailpeak.getLocString()+"/"+tmppeakstart+"_"+tmppeakend);
 					//将新值装入locHashtable	
-
 					//将locHashtable中相应的项目也修改，同时加入新的项目
 					//因为UCSC里面没有转录本一说，只有两个LOCID共用一个区域的情况，所以只能够两个不同的LOCID指向同一个GffdetailUCSCgene
-					String[] allPeakID = lastGffdetailpeak.locString.split("/");
+					String[] allPeakID = lastGffdetailpeak.getLocString().split("/");
 					for (int m= 0; m < allPeakID.length; m++) {
 						locHashtable.put(allPeakID[m], lastGffdetailpeak);
 					}
@@ -170,11 +166,11 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 				gffdetailpeak.numberend=tmppeakend;
 				
 				LOCList.add(gffdetailpeak);  
-				locHashtable.put(gffdetailpeak.locString, gffdetailpeak);
+				locHashtable.put(gffdetailpeak.getLocString(), gffdetailpeak);
 			}
 			LOCList.trimToSize();
 			for (GffDetailPeak gffDetail : LOCList) {
-				LOCChrHashIDList.add(gffDetail.locString);
+				LOCChrHashIDList.add(gffDetail.getLocString());
 			}
 			txtPeakInfo.close();
 			//System.out.println(mm);

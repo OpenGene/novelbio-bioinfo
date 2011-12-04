@@ -468,7 +468,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		String geneExon = "";
 		for (int[] exons : getIsoInfo()) {
 			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" +exons[0] + "\t" + exons[1]
-		     + "\t"+"0.000000"+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id "+getIsoName()+"\"; \r\n";
+		     + "\t"+"0.000000"+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id \""+getIsoName()+"\"; \r\n";
 		}
 		return geneExon;
 	}

@@ -169,13 +169,14 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 	 * @param gffHashGene 另一个转录本，本方法可逆--另一个调用该方法得到的结果一样
 	 * @return
 	 */
-	public GffHashGene compHashGene(GffHashGene gffHashThis, GffHashGene gffHashGene)
+	public static GffHashGene compHashGene(GffHashGene gffHashThis, GffHashGene gffHashGene, String chrLen, String gffHashGeneBed)
 	{
 		GffHashGene gffHashGeneResult = new GffHashGene();
 		//不是同一个物种就不比了
 		if (gffHashGene.getTaxID() != gffHashThis.getTaxID()) {
 			return null;
 		}
+		GffGeneCluster.setMapReads(chrLen, gffHashGeneBed);
 		for (Entry<String, ArrayList<GffDetailGene>> entry : gffHashThis.getChrhash().entrySet()) {
 			String chrID = entry.getKey();
 			System.out.println(chrID);
@@ -202,6 +203,7 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 					lsGffGeneComp.add((GffDetailGene)compSubArrayInfo.cmp);
 				}
 				GffGeneCluster gffGeneCluster = new GffGeneCluster(gffHashThis, gffHashGene, lsGffGeneThis, lsGffGeneComp);
+				
 				GffDetailGene gffdetail = gffGeneCluster.getCombGffDetail();
 				if (gffdetail == null) {
 					continue;

@@ -1,12 +1,15 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.text.html.HTMLDocument.HTMLReader.HiddenAction;
 
 import org.apache.commons.collections15.map.Flat3Map;
 import org.apache.log4j.Logger;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.objective;
 
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -109,6 +112,9 @@ public abstract class GffGeneIsoInfo {
 	private int taxID = 0;
 	protected void setTaxID(int taxID) {
 		this.taxID = taxID;
+	}
+	public int getTaxID() {
+		return taxID;
 	}
 	/**
 	 * 设定基因的转录起点上游长度，默认为3000bp
@@ -786,10 +792,41 @@ public abstract class GffGeneIsoInfo {
 	 * 返回距离loc有num Bp的坐标，在mRNA层面，在loc上游时num 为负数
 	 * 在loc下游时num为正数
 	 * 如果num Bp外就没有基因了，则返回-1；
+	 * @param location 坐标
 	 * @param mRNAnum
 	 * NnnnLoc 为-4位，当N与Loc重合时为0
 	 */
 	public abstract int getLocDistmRNASite(int location, int mRNAnum);
+	
+	/**
+	 * 返回能和本loc组成一个氨基酸的头部nr的坐标，从1开始计算
+	 * @param location
+	 * @return
+	 */
+	public int getLocAAbefore(int location) {
+		int startLen = getLocDistmRNA(location,ATGsite);
+		return  getLocDistmRNASite(location, -startLen%3);
+	}
+	/**
+	 * 返回能和本loc组成一个氨基酸的头部nr的偏移，也就是向前偏移几个碱基
+	 * 恒为负数
+	 * @param location
+	 * @return
+	 */
+	public int getLocAAbeforeBias(int location) {
+		int startLen = getLocDistmRNA(location,ATGsite);
+		return   -startLen%3;
+	}
+	/**
+	 * 返回能和本loc组成一个氨基酸的尾部nr的坐标，从1开始计算
+	 * @param location
+	 * @return
+	 */
+	public int getLocAAend(int location)
+	{
+		int startLen = getLocDistmRNA(location,ATGsite);
+		return  getLocDistmRNASite(location, 2 - startLen%3);
+	}
 	/**
 	 * 两个坐标之间的距离，mRNA层面，当loc1在loc2上游时，返回负数，当loc1在loc2下游时，返回正数
 	 * 要求这两个坐标都在exon上.如果不符合，则返回GffCodAbs.LOC_ORIGINAL
@@ -1030,9 +1067,9 @@ public abstract class GffGeneIsoInfo {
 		if (gffDetailGene != null) {
 			gffGeneIsoInfo.gffDetailGene = gffDetailGene.clone();
 		}
-		gffGeneIsoInfo.hashLocExInEnd = hashLocExInEnd;
-		gffGeneIsoInfo.hashLocExInNum = hashLocExInNum;
-		gffGeneIsoInfo.hashLocExInStart =hashLocExInStart;
+		gffGeneIsoInfo.hashLocExInEnd = new HashMap<Integer, Integer>();
+		gffGeneIsoInfo.hashLocExInNum = new HashMap<Integer, Integer>();
+		gffGeneIsoInfo.hashLocExInStart = new HashMap<Integer, Integer>();
 //		gffGeneIsoInfo.IsoName = IsoName;
 		ArrayList<int[]> lsIso = new ArrayList<int[]>();
 		for (int[] is : lsIsoform) {
@@ -1145,9 +1182,10 @@ public abstract class GffGeneIsoInfo {
 		if (!isCis5to3()) {
 			strand = "-";
 		}
-		String genetitle = getChrID() + "\t" +title + "\ttranscript\t" +getStartAbs() +
-		"\t" + getEndAbs() + "\t"+"0.000000"+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id \""+getIsoName()+"\"; \r\n";
-		genetitle = genetitle + getGTFformatExon(geneID, title,strand);
+//		String genetitle = getChrID() + "\t" +title + "\ttranscript\t" +getStartAbs() +
+//		"\t" + getEndAbs() + "\t"+"0.000000"+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id \""+getIsoName()+"\"; \r\n";
+//		genetitle = genetitle + getGTFformatExon(geneID, title,strand);
+		String genetitle = getGTFformatExon(geneID, title,strand);
 		return genetitle;
 	}
 	
@@ -1162,7 +1200,81 @@ public abstract class GffGeneIsoInfo {
 		}
 		return isoLen;
 	}
+	
+	/**
+	 * 可能不是很精确
+	 * 返回距离Tss的一系列坐标的实际坐标
+	 * @param is 相对于 TSS的坐标信息，譬如-200到-100，-100到100，100到200等，每一组就是一个int[2]，注意int[1]必须小于int[2]
+	 * @return
+	 * 最后获得的结果正向int[0] < int[1]
+	 * 反向 int[0] > int[1]
+	 */
+	public ArrayList<int[]> getRegionNearTss(Collection<int[]> isList)
+	{
+		ArrayList<int[]> lsTmp = new ArrayList<int[]>();
+		int tsssite = getTSSsite();
+		for (int[] is : isList) {
+			int[] tmp = new int[2];
+			if (isCis5to3()) {
+				tmp[0] = tsssite + is[0];
+				tmp[1] = tsssite + is[1];
+			}
+			else {
+				tmp[0] = tsssite - is[0];
+				tmp[1] = tsssite - is[1];
+			}
+			lsTmp.add(tmp);
+		}
+		return lsTmp;
+	}
+	
+	
+	/**
+	 * 比较是否为同一个转录本
+	 */
+	public boolean equals(Object obj) {
+
+		if (this == obj) return true;
+		
+		if (obj == null) return false;
+		
+		if (getClass() != obj.getClass()) return false;
+		
+		GffGeneIsoInfo otherObj = (GffGeneIsoInfo)obj;
+		//物种，起点终点，ATG，UAG，外显子长度，转录本名字等都一致
+		boolean flag =  this.getTaxID() == otherObj.getTaxID() && this.getChrID().equals(otherObj.getChrID()) && this.getATGSsite() == otherObj.getATGSsite()
+		&& this.getUAGsite() == otherObj.getUAGsite() && this.getTSSsite() == otherObj.getTSSsite()
+		&& this.getIsoLen() == otherObj.getIsoLen() && this.getIsoName().equals(otherObj.getIsoName());
+		
+		if (flag && compIso(otherObj.getIsoInfo()) ) {
+			return true;
+		}
+		return false;
+	}
+	
+	
+	
+	/**
+	 * 外显子比较如果一模一样则返回true；
+	 * @param lsOtherExon
+	 * @return
+	 */
+	protected boolean compIso(ArrayList<int[]> lsOtherExon)
+	{
+		if (lsOtherExon.size() != getIsoInfo().size()) {
+			return false;
+		}
+		for (int i = 0; i < lsOtherExon.size(); i++) {
+			int exonOld[] = lsOtherExon.get(i);
+			int exonThis[] = getIsoInfo().get(i);
+			if (exonOld[0] != exonThis[0] || exonOld[1] != exonThis[1]) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
+
 
 
 
@@ -1170,7 +1282,7 @@ class ExonInfo implements CompSubArray
 {
 	boolean cis;
 	int[] exon;
-
+	String flag = "";
 	@Override
 	public double[] getCell() {
 		if (cis) {
@@ -1196,4 +1308,26 @@ class ExonInfo implements CompSubArray
 	public double getEndCis() {
 		return exon[1];
 	}
+	@Override
+	public double getStartAbs() {
+		return Math.min(exon[0], exon[1]);
+	}
+	@Override
+	public double getEndAbs() {
+		return Math.max(exon[0], exon[1]);
+	}
+	@Override
+	public String getFlag() {
+		return flag;
+	}
+	@Override
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
+	@Override
+	public double getLen()
+	{
+		return Math.abs(exon[0] - exon[1]);
+	}
+
 }

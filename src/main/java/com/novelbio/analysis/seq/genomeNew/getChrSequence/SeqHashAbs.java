@@ -288,11 +288,11 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
 	 * 不管转录本的方向，总是从基因组的5‘向3’提取。
 	 * 方向需要人工设定cisseq
-	 * @param cisseq 正反向，是否需要反向互补。
+	 * @param cisseq 正反向，是否需要反向互补。正向永远是5to3
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
-	public String getSeq(boolean cisseq, String chrID,ArrayList<int[]> lsInfo, boolean getIntron) {
+	private String getSeq(boolean cisseq, String chrID,List<int[]> lsInfo, String sep, boolean getIntron) {
 		String myChrID = chrID;
 		if (CaseChange) {
 			myChrID = chrID.toLowerCase();
@@ -304,16 +304,16 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		
 		String result = ""; boolean cis5to3 = true;
 		int[] exon1 = lsInfo.get(0);
-		if (exon1[0] > exon1[1]) {
+		if (exon1[0] > exon1[1] || (lsInfo.size() > 1 && lsInfo.get(0)[0] > lsInfo.get(1)[0]) ) {
 			cis5to3 = false;
 		}
 		if (cis5to3) {
 			for (int i = 0; i < lsInfo.size(); i++) {
 				int[] exon = lsInfo.get(i);
 				try {	
-					result = result + getSeq(chrID, exon[0], exon[1]).toUpperCase(); 
+					result = result + sep + getSeq(chrID, exon[0], exon[1]).toUpperCase(); 
 					if (getIntron && i < lsInfo.size()-1) {
-						result = result + getSeq(chrID,exon[1]+1, lsInfo.get(i+1)[0]-1).toLowerCase();
+						result = result + sep + getSeq(chrID,exon[1]+1, lsInfo.get(i+1)[0]-1).toLowerCase();
 					}
 				} catch (Exception e) {e.printStackTrace();}
 			}
@@ -322,68 +322,90 @@ public abstract class SeqHashAbs implements SeqHashInt{
 			for (int i = lsInfo.size() - 1; i >= 0; i--) {
 				int[] exon = lsInfo.get(i);
 				try {	
-					result = result + getSeq(chrID, exon[1], exon[0]).toUpperCase(); 
+					result = result + sep + getSeq(chrID, exon[1], exon[0]).toUpperCase();
 					if (getIntron && i > 0) {
-						result = result + getSeq(chrID,exon[0] + 1, lsInfo.get(i-1)[1] - 1).toLowerCase();
+						result = result + sep + getSeq(chrID,exon[0] + 1, lsInfo.get(i-1)[1] - 1).toLowerCase();;
 					}
 				} catch (Exception e) {e.printStackTrace();}
 			}
 		}
+		result = result.substring(sep.length());
 		if (!cisseq) {
 			result = SeqFasta.reservecom(result);
 		}
 		return result;
 	}
+	String sep = "";
 	/**
+	 * 外显子之间用什么来分割，默认为""
+	 * @param sep
+	 */
+	@Override
+	public void setSep(String sep) {
+		this.sep = sep;
+	}
+	/**
+	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
+	 * 不管转录本的方向，总是从基因组的5‘向3’提取。
+	 * 方向需要人工设定cisseq
+	 * @param cisseq 正反向，是否需要反向互补，正向永远是5to3。
+	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
+	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
+	 */
+	public String getSeq(boolean cisseq, String chrID,List<int[]> lsInfo, boolean getIntron) {
+		return getSeq(cisseq, chrID, lsInfo, sep, getIntron);
+	}
+	
+	/**
+	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
+	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
+	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
+	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
+	 */
+	@Override
+	public String getSeq(String chrID,List<int[]> lsInfo, boolean getIntron) {
+		 boolean cis5to3 = true;
+		 int[] exon1 = lsInfo.get(0);
+		 if (exon1[0] > exon1[1] || (lsInfo.size() > 1 && lsInfo.get(0)[0] > lsInfo.get(1)[0]) ) {
+			 cis5to3 = false;
+		 }
+		 return this.getSeq(cis5to3, chrID, lsInfo, getIntron);
+	}
+	
+	/**
+	 * 
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
 	 * @param cisseq 正反向，在提出的正向转录本的基础上，是否需要反向互补。
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
+	 * @param chrID
+	 * @param cisseq 正反向
+	 * @param start 实际第几个exon
+	 * @param end 实际第几个exon
+	 * @param lsInfo
+	 * @param getIntron 是否获取内含子，内含子自动小写
+	 * @return
 	 */
 	@Override
-	public String getSeq(String chrID,ArrayList<int[]> lsInfo, boolean getIntron) {
-		String myChrID = chrID;
-		if (CaseChange) {
-			myChrID = chrID.toLowerCase();
-		}
-		if (!hashChrLength.containsKey(myChrID)) {
-			logger.error("没有该染色体： "+chrID);
-			return null;
-		}
-		
-		String result = ""; boolean cis5to3 = true;
+	public String getSeq(String chrID,boolean cisseq, int start, int end, List<int[]> lsInfo, boolean getIntron) {
+		start--;
+		boolean cis5to3 = true;
 		int[] exon1 = lsInfo.get(0);
 		if (exon1[0] > exon1[1]) {
 			cis5to3 = false;
 		}
-		if (cis5to3) {
-			for (int i = 0; i < lsInfo.size(); i++) {
-				int[] exon = lsInfo.get(i);
-				try {	
-					result = result + getSeq(chrID, exon[0], exon[1]).toUpperCase(); 
-					if (getIntron && i < lsInfo.size()-1) {
-						result = result + getSeq(chrID,exon[1]+1, lsInfo.get(i+1)[0]-1).toLowerCase();
-					}
-				} catch (Exception e) {e.printStackTrace();}
-			}
+		List<int[]> lsExon = lsInfo.subList(start, end);
+		String seq = getSeq(cis5to3, chrID, lsExon, getIntron);
+		if (cisseq) {
+			return seq;
 		}
 		else {
-			for (int i = lsInfo.size() - 1; i >= 0; i--) {
-				int[] exon = lsInfo.get(i);
-				try {	
-					result = result + getSeq(chrID, exon[1], exon[0]).toUpperCase(); 
-					if (getIntron && i > 0) {
-						result = result + getSeq(chrID,exon[0] + 1, lsInfo.get(i-1)[1] - 1).toLowerCase();
-					}
-				} catch (Exception e) {e.printStackTrace();}
-			}
+			return SeqFasta.reservecom(seq);
 		}
-		if (!cis5to3) {
-			result = SeqFasta.reservecom(result);
-		}
-		return result;
 	}
+	
+	
 	/**
 	 * 按顺序提取闭区间序列，每一个区段保存为一个SeqFasta对象
 	 * SeqFasta的名字为chrID:起点坐标-终点坐标 都是闭区间

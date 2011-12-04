@@ -487,7 +487,8 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 */
 	public String getRefLenFile()
 	{
-		String outFile = FileOperate.changeFileSuffix(chrFile, "_chrLen", "list");
+		
+		String outFile = FileOperate.changeFileSuffix(FileOperate.deleteSep(chrFile), "_chrLen", "list");
 		if (FileOperate.isFileExist(outFile)) {
 			return outFile;
 		}

@@ -227,6 +227,7 @@ public class GffChrMap extends GffChrAbs{
 	
 	/**
 	 * 
+	 * @param color
 	 * @param SortS2M 是否从小到大排序
 	 * @param txtExcel
 	 * @param colGeneID
@@ -235,8 +236,8 @@ public class GffChrMap extends GffChrAbs{
 	 * @param heapMapSmall
 	 * @param heapMapBig
 	 * @param scale
-	 * @param structure
-	 * @param binNum
+	 * @param structure 基因结构，目前只有 GffDetailGene.TSS 和 GffDetailGene.TES
+	 * @param binNum 最后分成几块
 	 * @param outFile
 	 */
 	public void plotTssTesHeatMap(Color color,boolean SortS2M, String txtExcel, int colGeneID, int colScore, int rowStart, 

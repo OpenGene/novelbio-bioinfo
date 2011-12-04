@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.log4j.Logger;
 
 public class GffGeneIsoTrans extends GffGeneIsoInfo{
@@ -41,6 +42,11 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		}
 		cod2UTRstartmRNA = cod2UTRstartmRNA + cod2ExInStart;
 	//  5-1 5-0  cood  4-1 uag 4-0     3-1 3-0         2-1 2-0    1-1 gta  cood 1-0      0-1 0-tss  cood
+		try {
+			 lsIsoform.get(NumExon);
+		} catch (Exception e) {
+			System.out.println(this.IsoName);
+		}
 		if (ATGsite >= lsIsoform.get(NumExon)[1]) //一定要大于等于
 		{
 			cod2UTRendmRNA = coord - ATGsite - 1;//GTAnnnC

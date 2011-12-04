@@ -23,6 +23,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	public void setGffHashRef(GffHashGene gffHashRef) {
 		this.gffHashRef = gffHashRef;
 	}
+	
 	String transcript = "transcript";
 	@Override
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
@@ -41,9 +42,9 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		ArrayList<GffGeneIsoInfo> lsGeneIsoInfos = null;
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		String tmpChrID = "";
+		String tmpTranscriptName = "";
 		while ((content = reader.readLine()) != null)// 读到结尾
 		{
-			
 			if (content.charAt(0) == '#')
 				continue;
 			String[] ss = content.split("\t");// 按照tab分开
@@ -63,10 +64,8 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			}
 			if (ss[2].equals(transcript)) {
 				String isoName = ss[8].split(";")[1].replace("transcript_id", "").replace("\"", "").trim();
-				if (isoName.equals("transfrag.25525.1")) {
-					System.out.println("stop");
-				}
-				boolean cis = getLocCis(ss[2], chrnametmpString, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+				tmpTranscriptName = isoName;
+				boolean cis = getLocCis(ss[6], chrnametmpString, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 				if (cis) 
 					gffGeneIsoInfo = new GffGeneIsoCis(isoName, chrnametmpString, GffGeneIsoInfo.TYPE_GENE_MRNA);
 				else 
@@ -74,8 +73,16 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 				lsGeneIsoInfos.add(gffGeneIsoInfo);
 				continue;
 			}
+			else if (!ss[8].split(";")[1].replace("transcript_id", "").replace("\"", "").trim().equals(tmpTranscriptName)) {
+				tmpTranscriptName = ss[8].split(";")[1].replace("transcript_id", "").replace("\"", "").trim();
+				boolean cis = getLocCis(ss[6], chrnametmpString, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+				if (cis) 
+					gffGeneIsoInfo = new GffGeneIsoCis(tmpTranscriptName, chrnametmpString, GffGeneIsoInfo.TYPE_GENE_MRNA);
+				else 
+					gffGeneIsoInfo = new GffGeneIsoTrans(tmpTranscriptName, chrnametmpString, GffGeneIsoInfo.TYPE_GENE_MRNA);
+				lsGeneIsoInfos.add(gffGeneIsoInfo);
+			}
 			gffGeneIsoInfo.addExonCufflinkGTF( Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
-			
 		}
 		CopeChrIso(hashChrIso);
 		txtgff.close();
@@ -123,13 +130,14 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		//依次装入gffdetailGene中
 		GffDetailGene gffDetailGene = null;
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGeneIsoInfos) {
-			if (gffGeneIsoInfo.getIsoName().equals("transfrag.6946.1")) {
-				System.out.println("test");
+			if (gffGeneIsoInfo.getIsoName().contains("transfrag.13988")) {
+				System.out.println("stop");
 			}
 			if (gffDetailGene == null) {
 				gffDetailGene = new GffDetailGene(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getIsoName(), gffGeneIsoInfo.isCis5to3());
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				lsResult.add(gffDetailGene);
+				locHashtable.put(gffGeneIsoInfo.getIsoName().toLowerCase(), gffDetailGene);
 				continue;
 			}
 			
@@ -139,11 +147,13 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			double[] compResult = ArrayOperate.cmpArray(gffIsoRange, gffGeneRange);
 			if (compResult[2] > GffDetailGene.OVERLAP_RATIO || compResult[3] > GffDetailGene.OVERLAP_RATIO) {
 				gffDetailGene.addIso(gffGeneIsoInfo);
+				locHashtable.put(gffGeneIsoInfo.getIsoName().toLowerCase(), gffDetailGene);
 			}
 			else {
 				gffDetailGene = new GffDetailGene(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getIsoName(), gffGeneIsoInfo.isCis5to3());
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				lsResult.add(gffDetailGene);
+				locHashtable.put(gffGeneIsoInfo.getIsoName().toLowerCase(), gffDetailGene);
 				continue;
 			}
 		}
@@ -153,6 +163,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	
 	/**
 	 * 给定chrID和坐标，返回该点应该是正链还是负链
+	 * 如果不清楚正负链且没有给定相关的refGff，则直接返回true
 	 * @param chrID
 	 * @param LocID
 	 * @return
@@ -166,6 +177,11 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			return false;
 		}
 		else {
+			if (gffHashRef == null) {
+				return true;
+			}
+			
+			
 			int LocID = (LocIDStart + LocIDEnd )/2;
 			GffCodGene gffCodGene = gffHashRef.searchLocation(chrID, LocID);
 			if (gffCodGene == null) {

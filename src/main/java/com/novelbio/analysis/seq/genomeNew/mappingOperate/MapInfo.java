@@ -23,12 +23,13 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	int startLoc = GffCodAbs.LOC_ORIGINAL;
 	int endLoc = GffCodAbs.LOC_ORIGINAL;
 	double weight = 0; // 比较的标签，可以是表达等
+	//从小到大排序
 	static boolean min2max = true;
 	String title = "";
 	String description = "";
-	String aaSeq = "";
+	//核酸序列
 	String nrSeq = "";
-	double[] value = null;
+	private double[] value = null;
 	int flagLoc = GffCodAbs.LOC_ORIGINAL;
 	boolean cis5to3 = true;
 	/**
@@ -45,6 +46,17 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	public boolean isCis5to3() {
 		return cis5to3;
 	}
+	boolean correct = true;
+	/**
+	 * 是否用cis5to3的信息来翻转Value的double[]
+	 * 默认翻转
+	 * @param correct
+	 */
+	public void setCorrectUseCis5to3(boolean correct)
+	{
+		this.correct = correct;
+	}
+	
 	/**
 	 * 是否从小到大排序
 	 * @return
@@ -69,6 +81,25 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		this.title = title;
 		this.flagLoc = flagLoc;
 	}
+	
+	/**
+	 * 如果startLoc < endLoc,则cis5to3设定为反向
+	 * @param chrID
+	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
+	 * @param endLoc 从0开始
+	 */
+	public MapInfo(String chrID, int startLoc, int endLoc)
+	{
+		this.chrID = chrID;
+		this.startLoc = Math.min(startLoc, endLoc);
+		this.endLoc = Math.max(startLoc, endLoc);
+		if (startLoc > endLoc) {
+			setCis5to3(false);
+		}
+	}
+	
+	
+	
 	/**
 	 * @param chrID
 	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
@@ -110,20 +141,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	public String getDescription() {
 		return description;
 	}
-	/**
-	 * 该区域的氨基酸序列
-	 * @param aaSeq
-	 */
-	public void setAaSeq(String aaSeq) {
-		this.aaSeq = aaSeq;
-	}
-	/**
-	 * 该区域的氨基酸序列
-	 * @param aaSeq
-	 */
-	public String getAaSeq() {
-		return aaSeq;
-	}
+
 	/**
 	 * 该区域的核酸序列
 	 * @param aaSeq
@@ -228,15 +246,23 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 * @param value
 	 */
 	public void setDouble(double[] value) {
-		if (!cis5to3) {
-			ArrayOperate.convertArray(value);
-		}
 		this.value = value;
 	}
 	
+	/**
+	 * 会根据cis5to3以及correct的信息来返回value的值
+	 * 如果既反向，又标记了修正，则将value颠倒
+	 */
 	@Override
 	public double[] getDouble() {
-		return value;
+		double[] valueTmp = new double[value.length];
+		for (int i = 0; i < valueTmp.length; i++) {
+			valueTmp[i] = value[i];
+		}
+		if (!cis5to3 && correct) {
+			ArrayOperate.convertArray(valueTmp);
+		}
+		return valueTmp;
 	}
 	/**
 	 * 

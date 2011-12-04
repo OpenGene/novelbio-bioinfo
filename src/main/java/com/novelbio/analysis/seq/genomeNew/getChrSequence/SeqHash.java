@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -147,7 +148,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	/////////////////////  提 取 序 列  /////////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public String getSeq(String chrID, long startlocation, long endlocation)
-			throws IOException {
+	{
 		return getSeqCase(seqHashAbs.getSeq(chrID, startlocation, endlocation),TOLOWCASE);
 	}
 
@@ -165,16 +166,20 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 
 
 	@Override
-	public String getSeq(boolean cisseq, String chrID, ArrayList<int[]> lsInfo,
+	public String getSeq(boolean cisseq, String chrID, List<int[]> lsInfo,
 			boolean getIntron) {
 		return getSeqCase(seqHashAbs.getSeq(cisseq, chrID, lsInfo, getIntron),TOLOWCASE);
 	}
 	@Override
-	public String getSeq(String chrID, ArrayList<int[]> lsInfo,
+	public String getSeq(String chrID, List<int[]> lsInfo,
 			boolean getIntron) {
 		return getSeqCase(seqHashAbs.getSeq(chrID, lsInfo, getIntron),TOLOWCASE);
 	}
-
+	@Override
+	public String getSeq(String chrID, boolean cisseq, int start, int end,
+			List<int[]> lsInfo, boolean getIntron) {
+		return getSeqCase(seqHashAbs.getSeq(chrID, cisseq, start, end, lsInfo, getIntron),TOLOWCASE);
+	}
 	//////////////////////  static method  ////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 根据TOLOWCASE的选项，返回相应的seq序列
@@ -234,6 +239,12 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 			}
 		}
 	}
+	@Override
+	public void setSep(String sep) {
+		seqHashAbs.setSep(sep);
+		
+	}
+
 
 
 	

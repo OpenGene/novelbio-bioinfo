@@ -91,6 +91,7 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 	
 	/**
 	 * 输入基因名，返回基因的具体转录本，主要用在UCSC上
+	 * 没找到具体的转录本名字，那么就返回最长转录本
 	 * 可以输入accID
 	 * @param accID
 	 * @return
@@ -282,6 +283,7 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 	private void writeToGTF(TxtReadandWrite txtWrite, ArrayList<GffDetailGene> lsGffDetailGenes, String title)
 	{
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
+			gffDetailGene.removeDupliIso();
 			String geneGTF = gffDetailGene.getGTFformate(title);
 			txtWrite.writefileln(geneGTF.trim());
 		}

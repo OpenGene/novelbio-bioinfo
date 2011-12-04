@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genomeNew.getChrSequence;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public interface SeqHashInt {
 	/**
@@ -54,7 +55,7 @@ public interface SeqHashInt {
 	 * @throws IOException
 	 */
 	public void saveChrLengthToFile(String outFile) ;
-	public String getSeq(String chrID, long startlocation, long endlocation) throws IOException ;
+	public String getSeq(String chrID, long startlocation, long endlocation);
 	
 	
 	/**
@@ -96,7 +97,7 @@ public interface SeqHashInt {
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
-	public String getSeq(boolean cisseq, String chrID,ArrayList<int[]> lsInfo, boolean getIntron);
+	public String getSeq(boolean cisseq, String chrID,List<int[]> lsInfo, boolean getIntron);
 	
 	/**
 	 * 获得所有序列的名字
@@ -106,10 +107,31 @@ public interface SeqHashInt {
 	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
-	 * @param cisseq 正反向，在提出的正向转录本的基础上，是否需要反向互补。
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
-	public String getSeq(String chrID, ArrayList<int[]> lsInfo, boolean getIntron);
+	public String getSeq(String chrID, List<int[]> lsInfo, boolean getIntron);
+	
+	/**
+	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
+	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
+	 * @param cisseq 正反向，在提出的正向转录本的基础上，是否需要反向互补。
+	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
+	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
+	 * @param chrID
+	 * @param cisseq 正反向
+	 * @param start 实际第几个exon
+	 * @param end 实际第几个exon
+	 * @param lsInfo
+	 * @param getIntron 是否获取内含子，内含子自动小写
+	 * @return
+	 */
+	String getSeq(String chrID, boolean cisseq, int start, int end,
+			List<int[]> lsInfo, boolean getIntron);
+	/**
+	 * 外显子之间用什么分割
+	 * @param sep
+	 */
+	void setSep(String sep);
 	
 }

@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genomeNew.getChrSequence;
 
 import java.util.HashMap;
 import org.apache.log4j.Logger;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.statusAckLog;
 
 
 public class AminoAcid {
@@ -100,12 +101,12 @@ public class AminoAcid {
 		hashCode3.put("CTA", AA3_Leu); //hashCode.put("CCA", "Pro");  hashCode.put("CAA", "Gln");   hashCode.put("CGA", "Arg");
 		hashCode3.put("CTG", AA3_Leu); //hashCode.put("CCG", "Pro");  hashCode.put("CAG", "Gln");   hashCode.put("CGG", "Arg");
 		                           
-		hashCode3.put("ATT", AA3_Ile);   hashCode3.put("ACT", AA3_Thr); hashCode3.put("AAT", AA1_Asn);  hashCode3.put("AGT", AA3_Ser);
+		hashCode3.put("ATT", AA3_Ile);   hashCode3.put("ACT", AA3_Thr); hashCode3.put("AAT", AA3_Asn);  hashCode3.put("AGT", AA3_Ser);
 		hashCode3.put("ATC", AA3_Ile);   //hashCode.put("ACC", "Thr"); hashCode.put("AAC", "Asn");  hashCode.put("AGC", "Ser");
 		hashCode3.put("ATA", AA3_Ile);   //hashCode.put("ACA", "Thr"); hashCode.put("AAA", "Lys");  hashCode.put("AGA", "Arg");
 		hashCode3.put("ATG", AA3_Met); //hashCode.put("ACG", "Thr"); hashCode.put("AAG", "Lys");  hashCode.put("AGG", "Arg");
 		                           
-		hashCode3.put("GTT", AA3_Val); hashCode3.put("GCT", AA3_Ala); hashCode3.put("GAT", AA1_Asp);  hashCode3.put("GGT", AA3_Gly);
+		hashCode3.put("GTT", AA3_Val); hashCode3.put("GCT", AA3_Ala); hashCode3.put("GAT", AA3_Asp);  hashCode3.put("GGT", AA3_Gly);
 		hashCode3.put("GTC", AA3_Val);// hashCode.put("GCC", "Ala"); hashCode.put("GAC", "Asp");  hashCode.put("GGC", "Gly");
 		hashCode3.put("GTA", AA3_Val); //hashCode.put("GCA", "Ala"); hashCode.put("GAA", "Glu");  hashCode.put("GGA", "Gly");
 		hashCode3.put("GTG", AA3_Val); //hashCode.put("GCG", "Ala"); hashCode.put("GAG", "Glu");  hashCode.put("GGG", "Gly");
@@ -173,9 +174,10 @@ public class AminoAcid {
 	 */
 	private static HashMap<String, String[]> getHashAAquality()
 	{
-		if (hashAAquality == null) {
+		if (hashAAquality != null) {
 			return hashAAquality;
 		}
+		hashAAquality = new HashMap<String, String[]>();
 		hashAAquality.put(AA3_Asp, new String[]{"polar","charged","negatively"});    hashAAquality.put(AA1_Asp, new String[]{"polar","charged","negatively"});
 		hashAAquality.put(AA3_Glu, new String[]{"polar","charged","negatively"});     hashAAquality.put(AA1_Glu, new String[]{"polar","charged","negatively"});
 		hashAAquality.put(AA3_His, new String[]{"polar","charged","positively"});		hashAAquality.put(AA1_His, new String[]{"polar","charged","positively"});
@@ -203,7 +205,8 @@ public class AminoAcid {
 		hashAAquality.put(AA3_Cys, new String[]{"nonpolar","not_group","sulfur"});		hashAAquality.put(AA1_Cys, new String[]{"nonpolar","not_group","sulfur"});
 		
 		hashAAquality.put(AA3_Pro, new String[]{"nonpolar","not_group","other"});		hashAAquality.put(AA1_Pro, new String[]{"nonpolar","not_group","other"});
-		
+		hashAAquality.put(AA3_STOP, new String[]{"Stop_Code","Stop_Code","Stop_Code"});		hashAAquality.put(AA1_STOP, new String[]{"Stop_Code","Stop_Code","Stop_Code"});
+
 		return hashAAquality;
 	}
 
@@ -245,6 +248,60 @@ public class AminoAcid {
 		return hashAAchange;
 	}
 	
+	String DNAseq = "";
+	/**
+	 * 默认返回三字母长度的氨基酸
+	 */
+	boolean AA3Len = true;
+	
+	public AminoAcid(String DNAseq) {
+		this.DNAseq = DNAseq;
+	}
+	public AminoAcid(String DNAseq, boolean AA3Len) {
+		this.DNAseq = DNAseq;
+		this.AA3Len = AA3Len;
+	}
+	
+	
+	public void setAA3Len(boolean AA3Len) {
+		this.AA3Len = AA3Len;
+	}
+	
+	
+	/**
+	 * 指定序列，将其转换为蛋白编码
+	 * @param DNAcode
+	 * @param AA1 是否转化为单字母AA，false转化为3字母AA
+	 * @return
+	 * null 表示没有找到，说明输入的序列有误
+	 */
+	public String convertDNA2AA()
+	{
+		DNAseq = DNAseq.trim().toUpperCase();
+		if (DNAseq.length() %3 != 0) {
+			logger.error("DNA三联密码长度不对：" + DNAseq);
+		}
+		char[] DNAseqChar = DNAseq.toCharArray();
+		String resultAAseq = "";
+		for (int i = 2; i < DNAseqChar.length; i = i + 3) {
+			String tmpDNAcode = "";
+			tmpDNAcode = ""+ DNAseqChar[i - 2] + DNAseqChar[i - 1] + DNAseqChar[i];
+			if (AA3Len) {
+				resultAAseq = resultAAseq + " " + convertDNACode2AA(tmpDNAcode, !AA3Len);
+			}
+			else {
+				resultAAseq = resultAAseq + convertDNACode2AA(tmpDNAcode, !AA3Len);
+			}
+		}
+		return resultAAseq.trim();
+	}
+	
+	public int getOrfShitf()
+	{
+		return DNAseq.length()%3;
+	}
+	
+	
 	/**
 	 * 指定三联密码子，将其转换为蛋白编码
 	 * @param DNAcode
@@ -252,9 +309,8 @@ public class AminoAcid {
 	 * @return
 	 * null 表示没有找到，说明输入的序列有误
 	 */
-	public static String convertDNA2AA(String DNAcode, boolean AA1)
-	{
-		DNAcode = DNAcode.trim().toUpperCase();
+	 static String convertDNACode2AA(String DNAcode, boolean AA1) {
+		 DNAcode = DNAcode.trim().toUpperCase();
 		if (DNAcode.length() != 3) {
 			logger.error("DNA三联密码长度不对：" + DNAcode);
 		}
@@ -265,6 +321,8 @@ public class AminoAcid {
 			return getHashCode3().get(DNAcode);
 		}
 	}
+	
+	
 	/**
 	 * 输入格式不标准的AA，将其改成标准格式AA
 	 * @param AA
@@ -319,8 +377,8 @@ public class AminoAcid {
 	 */
 	public static String cmpAAqualityDNA(String DNAcode1, String DNAcode2)
 	{
-		String AA1 = convertDNA2AA(DNAcode1, true);
-		String AA2 = convertDNA2AA(DNAcode2, true);
+		String AA1 = convertDNACode2AA(DNAcode1, true);
+		String AA2 = convertDNACode2AA(DNAcode2, true);
 		return compareAAquality(AA1, AA2);
 	}
 	
@@ -346,14 +404,20 @@ public class AminoAcid {
 	 */
 	private static String compareAAquality(String AA1, String AA2)
 	{
+		if (AA1.equals(AA2)) {
+			return "same Amio Acid";
+		}
 		String[] aaInfo1 = getHashAAquality().get(AA1);
 		String[] aaInfo2 = getHashAAquality().get(AA2);
+		if (aaInfo1 == null || aaInfo2 ==null) {
+			return "";
+		}
 		for (int i = 0; i < aaInfo1.length; i++) {
 			if (!aaInfo1[i].equals(aaInfo2[i])) {
 				return aaInfo1[i] + " --> " + aaInfo2[i];
 			}
 		}
-		return "";	
+		return "same chemical property";	
 	}
 	
 }
