@@ -22,8 +22,15 @@ public class FastQMapSoap extends FastQMapAbs{
 	private static Logger logger = Logger.getLogger(FastQMapSoap.class);  
 	String exeIndexPath = "";
 
-
-	
+	int mismatch = 2;
+	/**
+	 * 设定mismatch
+	 * 默认为2
+	 * snp设定为5
+	 */
+	public void setMisMatch(int mismatch) {
+		this.mismatch = mismatch;
+	}
 	
 	/**
 	 * 双端只做unique mapping
@@ -95,7 +102,7 @@ public class FastQMapSoap extends FastQMapAbs{
 		cmd = cmd + " -D " + chrFile + ".index "; 
 		cmd = cmd + " -o " +outFileName; 
 		cmd = cmd +  " -r 2 ";
-		cmd = cmd +  " -v 2 -p 4 ";
+		cmd = cmd +  " -v "+mismatch+" -p 4 ";
 		if (isPairEnd()) {
 			cmd = cmd + " -b " + getSeqFile2();
 			cmd = cmd+ " -2 "+ outFileName+"_NotPair "+" -m "+minInsert+" -x "+maxInsert;

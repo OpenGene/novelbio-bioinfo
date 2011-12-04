@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.apache.xmlbeans.impl.piccolo.xml.Piccolo;
 
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.SeqComb;
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Patternlocation;
@@ -18,7 +19,7 @@ import com.novelbio.base.dataStructure.Patternlocation;
  * @author zong0jie
  *
  */
-public class SAMtools{
+public class SAMtools extends SeqComb{
 	private static final Logger logger = Logger.getLogger(SAMtools.class);
 
 	String samFile = "";
@@ -40,6 +41,10 @@ public class SAMtools{
 	 * @param mapQuality mapping质量，大于30说明不错，大于25说明能mapping上。<=0则用默认值，为25
 	 */
 	public SAMtools(String samFile, boolean paired, int mapQuality) {
+		super(samFile, 1);
+		if (paired) {
+			setBlock(2);
+		}
 		this.samFile = samFile;
 		this.paired = paired;
 		if (mapQuality > 0) {
@@ -48,6 +53,17 @@ public class SAMtools{
 		
 		patternlocation = new Patternlocation("\\d+(?=M|N)", true); 
 		
+	}
+ 
+	
+	private void setInfo(String samFile, boolean paired, int mapQuality) {
+		this.samFile = samFile;
+		this.paired = paired;
+		if (mapQuality > 0) {
+			this.mapQuality = mapQuality;
+		}
+		
+		patternlocation = new Patternlocation("\\d+(?=M|N)", true); 
 	}
 	/**
 	 * 

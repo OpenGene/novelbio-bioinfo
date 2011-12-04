@@ -1,6 +1,8 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 
 import com.novelbio.analysis.seq.genomeNew2.gffOperate.GtfDetailCufIso;
@@ -16,7 +18,8 @@ public class SplitCope {
 	 * @param fpkmTrackFile
 	 */
 	public SplitCope(String splitFile, String fpkmTrackFile) {
-		gtfHashCufIso = new GtfHashCufIso(fpkmTrackFile);
+		gtfHashCufIso = new GtfHashCufIso();
+		gtfHashCufIso.ReadGffarray(fpkmTrackFile);
 		this.splitFile = splitFile;
 	}
 	/**
@@ -24,13 +27,13 @@ public class SplitCope {
 	 * @param splitNewFile
 	 * @throws Exception 
 	 */
-	public void copeSplit(String splitNewFile) throws Exception {
+	public void copeSplit(String splitNewFile, double filter) throws Exception {
 		TxtReadandWrite txtSplit = new TxtReadandWrite();
 		txtSplit.setParameter(splitFile, false, true);
 
 		TxtReadandWrite txtSplitNew = new TxtReadandWrite();
 		txtSplitNew.setParameter(splitNewFile, true, false);
-
+		
 		ArrayList<String> lsSplit = txtSplit.readfileLs();
 		ArrayList<String> lsExpName = GtfDetailCufIso.getExp();
 		String ExpInfo = "";
@@ -40,16 +43,17 @@ public class SplitCope {
 		txtSplitNew.writefile(lsSplit.get(0) + ExpInfo+"\n");
 		for (int i = 1; i < lsSplit.size(); i++) {
 			String[] ss = lsSplit.get(i).split("\t");
-			if (ss[2].equals("-")) {
+			if (ss[2].equals("-") || ss[6].equals("NOTEST")) {
 				continue;
 			}
-			String result = getSplitInfo(ss[2],10);
+			String result = getSplitInfo(ss[2], filter);
 			if (result == null) {
 				continue;
 			}
 			txtSplitNew.writefile(lsSplit.get(i) + result+"\n");
 		}
 	}
+	HashSet<String> hashGeneID = new HashSet<String>();
 	/**
 	 * 指定geneID，返回该geneID的各个转录本的表达情况
 	 * 这样的格式
@@ -63,12 +67,15 @@ public class SplitCope {
 	 */
 	private String getSplitInfo(String geneID,double filter) {
 		
+		if (hashGeneID.contains(geneID)) {
+			return null;
+		}
 		GtfDetailCufIso gtfDetailCufIso = gtfHashCufIso.searchLOC(geneID);
 		if (gtfDetailCufIso == null) {
 			return null;
 		}
 		ArrayList<String[]> lsIsoExp = gtfDetailCufIso.getIsoExp();
-
+		
 		//这就是一个矩阵，每一行代表一个时期，每一列代表一种可变剪接。
 		//那么如果要达到阈值必须所有行加起来，有两项大于阈值
 		//并且所有列加起来，有两项大于阈值
@@ -117,6 +124,7 @@ public class SplitCope {
 			}
 			result = result+"\t"+tmp;
 		}
+		hashGeneID.add(geneID);
 		return result;
 	}
 	

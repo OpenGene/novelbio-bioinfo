@@ -27,6 +27,14 @@ public abstract class SeqComb {
 	protected String compressInType = TxtReadandWrite.TXT;
 	protected String compressOutType = TxtReadandWrite.TXT;
 	/**
+	 * 设置一个block几行，譬如sam文件单端一行双端2行
+	 * @param block
+	 */
+	public void setBlock(int block) {
+		this.block = block;
+	}
+	
+	/**
 	 * 
 	 * 设定文件压缩格式
 	 * 从TxtReadandWrite.TXT来

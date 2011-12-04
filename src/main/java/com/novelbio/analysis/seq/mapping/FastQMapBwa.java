@@ -28,6 +28,30 @@ public class FastQMapBwa extends FastQMapAbs{
 	private static final int GENOME_SIZE_IN_MEMORY = 500000;
 	private static Logger logger = Logger.getLogger(FastQMapSoap.class);
 	private int mapQ = 20;
+	
+	String sampleGroup = "";
+	/**
+	 * 本次mapping的组
+	 * @param sampleGroup
+	 * "@RQ\tID:< ID >\tLB:< LIBRARY_NAME >\tSM:< SAMPLE_NAME >\tPL:ILLUMINA" <br>
+	 * example: "@RG\tID:Exome1\tLB:Exome1\tSM:Exome1\tPL:ILLUMINA"
+	 */
+	public void setSampleGroup(String sampleGroup) {
+		if (sampleGroup.trim().equals("")) {
+			this.sampleGroup = "";
+		}
+		else {
+			this.sampleGroup = " -r " + "\""+sampleGroup+"\"" + " ";
+		}
+	}
+	
+	boolean readInMemory = false;
+	/**
+	 * 是否将index读入内存
+	 */
+	public void setReadInMemory(boolean readInMemory) {
+		this.readInMemory = readInMemory;
+	}
 	/**
 	 * @param fastQ
 	 * @param outFileName 结果文件名
@@ -160,8 +184,8 @@ public class FastQMapBwa extends FastQMapAbs{
 //		bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai 
 //		TGACT2.sai barcod_TGACT.fastq barcod_TGACT2.fastq > TGACT.sam
 		if (isPairEnd()) {
-			cmd = super.ExePath + "bwa sampe " + "-a " + maxInsert;
-			if (FileOperate.getFileSize(chrFile) < GENOME_SIZE_IN_MEMORY) {
+			cmd = super.ExePath + "bwa sampe " + sampleGroup + "-a " + maxInsert;
+			if (FileOperate.getFileSize(chrFile) < GENOME_SIZE_IN_MEMORY || readInMemory) {
 				cmd = cmd + " -P ";//将基因组读入内存
 			}
 			cmd = cmd + " -n 10 -N 10 ";
@@ -170,10 +194,10 @@ public class FastQMapBwa extends FastQMapAbs{
 		}
 		else {
 			if (uniqMapping) {
-				cmd = super.ExePath + "bwa samse " + "-n 1 ";
+				cmd = super.ExePath + "bwa samse " + sampleGroup + "-n 1 ";
 			}
 			else {
-				cmd = super.ExePath + "bwa samse " + "-n 100 ";
+				cmd = super.ExePath + "bwa samse " + sampleGroup + "-n 100 ";
 			}
 			cmd = cmd + chrFile + " " + sai1 + " "  + getSeqFile();
 			cmd = cmd + " > " + outFileName;

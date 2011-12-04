@@ -146,6 +146,20 @@ public class FastQ extends SeqComb {
 	 */
 	boolean flagPolyT = false;
 	boolean trimPolyT_left = false;
+	
+	/**
+	 * 是否将序列两边的NNN删除
+	 */
+	boolean trimNNN = true;
+	/**
+	 * 是否将序列两边的NNN删除
+	 * 默认是删除的，但是感觉速度好慢然后cufflink还有问题
+	 */
+	public void setTrimNNN(boolean trimNNN)
+	{
+		this.trimNNN = trimNNN;
+	}
+	
 	/**
 	 * 设定了adaptor就不要设定PolyA
 	 * @param trimPolyA_right
@@ -162,6 +176,9 @@ public class FastQ extends SeqComb {
 		this.trimPolyT_left = trimPolyT_left;
 		this.flagPolyT = flagPlogT;
 	}
+	
+	
+	
 	String adaptorLeft = "";
 	String adaptorRight = "";
 	/**
@@ -198,6 +215,7 @@ public class FastQ extends SeqComb {
 	 * @return
 	 */
 	public int getOffset() {
+		setFastQFormat();
 		return offset;
 	}
 
@@ -243,31 +261,31 @@ public class FastQ extends SeqComb {
 	private void setHashFastQFilter(int QUALITY) {
 		if (QUALITY == QUALITY_HIGM) {
 			quality = QUALITY;
-			hashFastQFilter.put(10, 0);
+			hashFastQFilter.put(10, 2);
 			hashFastQFilter.put(13, 3);
 			hashFastQFilter.put(20, 7);
 		} else if (QUALITY == QUALITY_LOW) {
 			quality = QUALITY;
-			hashFastQFilter.put(2, 1);
+//			hashFastQFilter.put(2, 1);
 			hashFastQFilter.put(10, 4);
 			hashFastQFilter.put(13, 8);
 			hashFastQFilter.put(20, 15);
 		} else if (QUALITY == QUALITY_MIDIAN
 				|| QUALITY == QUALITY_MIDIAN_PAIREND) {
 			quality = QUALITY;
-			hashFastQFilter.put(2, 1);
+//			hashFastQFilter.put(2, 1);
 			hashFastQFilter.put(10, 2);
 			hashFastQFilter.put(13, 6);
 			hashFastQFilter.put(20, 10);
 		} else if (QUALITY == QUALITY_LOW_454) {
 			quality = QUALITY;
-			hashFastQFilter.put(2, 1);
+//			hashFastQFilter.put(2, 1);
 			hashFastQFilter.put(10, 6);
 			hashFastQFilter.put(13, 15);
 			hashFastQFilter.put(20, 50);
 		}
 		else {
-			hashFastQFilter.put(2, 1);
+//			hashFastQFilter.put(2, 1);
 			hashFastQFilter.put(10, 2);
 			hashFastQFilter.put(13, 6);
 			hashFastQFilter.put(20, 10);
@@ -301,8 +319,6 @@ public class FastQ extends SeqComb {
 			offset = 33;
 		} else if (FastQFormateOffset == FASTQ_ILLUMINA_OFFSET) {
 			offset = 64;
-		} else {
-			setFastQFormat();
 		}
 
 		setHashFastQFilter(QUALITY);
@@ -349,6 +365,7 @@ public class FastQ extends SeqComb {
 	 * @throws Exception
 	 */
 	public FastQ filterReads(String fileFilterOut) {
+		setFastQFormat();
 		try {
 			return filterReadsExp( fileFilterOut);
 		} catch (Exception e) {
@@ -450,6 +467,7 @@ public class FastQ extends SeqComb {
 	 * @throws Exception
 	 */
 	private FastQ filterReadsExp(String fileFilterOut) throws Exception {
+		setFastQFormat();
 		txtSeqFile.reSetInfo();//setParameter(compressInType, seqFile, false, true);
 		BufferedReader readerSeq = txtSeqFile.readfile();
 		BufferedReader readerSeq2 = null;
@@ -466,7 +484,6 @@ public class FastQ extends SeqComb {
 			readerSeq2 = txtSeqFile2.readfile();
 			txtOutFile2.setParameter(compressOutType, fileFilterOut.trim() + "_2", true, false);
 		}
-		setFastQFormat();
 
 		String content = "";
 		String content2 = null;
@@ -518,15 +535,18 @@ public class FastQ extends SeqComb {
 				}
 			
 				///////////////  tail NNN  ////////////////////////////////////////////
-				seqBlock1 = trimNNN(seqBlock1, 2);
-				if (booPairEnd)
-					seqBlock2 = trimNNN(seqBlock2, 2);
-				
-				if (seqBlock1 == null || seqBlock2 == null) {
-					seqBlock1 = ""; seqBlock2 = "";
-					count = 0;// 清零
-					continue;
+				if (trimNNN) {
+					seqBlock1 = trimNNN(seqBlock1, 2);
+					if (booPairEnd)
+						seqBlock2 = trimNNN(seqBlock2, 2);
+					
+					if (seqBlock1 == null || seqBlock2 == null) {
+						seqBlock1 = ""; seqBlock2 = "";
+						count = 0;// 清零
+						continue;
+					}
 				}
+				
 				///////////////////  QC  /////////////////////////////////////////////////////////
 				
 				if (QCBlock(seqBlock1, seqBlock2)) {
