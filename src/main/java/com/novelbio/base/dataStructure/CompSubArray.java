@@ -24,4 +24,31 @@ public interface CompSubArray {
 	 * @return
 	 */
 	double getEndCis();
+	/**
+	 * 获得起点绝对坐标
+	 * @return
+	 */
+	double getStartAbs();
+	/**
+	 * 获得终点绝对坐标
+	 * @return
+	 */
+	double getEndAbs();
+	/**
+	 * 设置标签，属于this组还是compare组
+	 * 在CmpListCluster的static变量中选
+	 * @return
+	 */
+	String getFlag();
+	/**
+	 * 设置标签，属于this组还是compare组
+	 * 在CmpListCluster的static变量中选
+	 * @return
+	 */
+	void setFlag(String flag);
+	/**
+	 * 获得这个单元的长度
+	 * @return
+	 */
+	double getLen();
 }

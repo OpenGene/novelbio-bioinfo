@@ -311,7 +311,7 @@ public class TxtReadandWrite {
 				lsResult.add(content);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return lsResult;
 	}
@@ -338,12 +338,22 @@ public class TxtReadandWrite {
 
 	/**
 	 * @return 返回 String，读完不用关闭Buffer流
-	 * @throws Exception
+	 * 
 	 */
-	public String readFirstLine() throws Exception {
-		BufferedReader read = readfile();
+	public String readFirstLine() {
+		BufferedReader read;
+		try {
+			read = readfile();
+			String str = read.readLine();
+			close();
+			return str;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 		// 先跳过前面的好多行
-		return  read.readLine();
+		
 	}
 	
 	/**
@@ -351,19 +361,24 @@ public class TxtReadandWrite {
 	 * @return 返回 String，读完不用关闭Buffer流
 	 * @throws Exception
 	 */
-	public ArrayList<String> readFirstLines(int Num) throws Exception {
+	public ArrayList<String> readFirstLines(int Num) {
 		ArrayList<String> lsResult = new ArrayList<String>();
-		BufferedReader read = readfile();
-		String content = ""; int rownum = 1;
-		// 先跳过前面的好多行
-		while ((content = read.readLine()) != null) {
-			if (rownum > Num) {
-				break;
+		try {
+			BufferedReader read = readfile();
+			String content = ""; int rownum = 1;
+			// 先跳过前面的好多行
+			while ((content = read.readLine()) != null) {
+				if (rownum > Num) {
+					break;
+				}
+				lsResult.add(content);
+				rownum ++;
 			}
-			lsResult.add(content);
-			rownum ++;
+			close();
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
-		close();
+		
 		return lsResult;
 	}
 	
@@ -393,7 +408,6 @@ public class TxtReadandWrite {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
 	}
 	/**
 	 * 写入并换行
@@ -409,6 +423,26 @@ public class TxtReadandWrite {
 			// TODO: handle exception
 		}
 	}
+	/**
+	 * 写入一行数组并换行，用"\t"隔开
+	 * @param content
+	 *            ，要写入文件内容
+	 * @throws Exception
+	 */
+	public void writefileln(String[] content) {
+		String content2 = "";
+		for (String string : content) {
+			content2 = content2 + "\t" + string;
+		}
+		content2.trim();
+		try {
+			outputStream.write(content2.getBytes());
+			outputStream.write("\r\n".getBytes());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	
 	/**
 	 * 写入并换行
 	 * @param content
@@ -596,13 +630,16 @@ public class TxtReadandWrite {
 	 *            ，要写入List--String文件内容,自动在每一行添加换行符"\r\n";
 	 * @throws Exception
 	 */
-	public<T> void writefile(List<T> lsContent) throws Exception {
-		
-		for (int i = 0; i < lsContent.size(); i++) {
-			outputStream.write(lsContent.get(i).toString().getBytes());
-			outputStream.write("\r\n".getBytes());
+	public<T> void writefile(List<T> lsContent){
+		try {
+			for (int i = 0; i < lsContent.size(); i++) {
+				outputStream.write(lsContent.get(i).toString().getBytes());
+				outputStream.write("\r\n".getBytes());
+			}
+			outputStream.flush();
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
-		outputStream.flush();
 	}
 
 	/**

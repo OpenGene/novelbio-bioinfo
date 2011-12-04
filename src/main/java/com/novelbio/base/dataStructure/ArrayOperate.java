@@ -644,7 +644,101 @@ public class ArrayOperate {
 		}
 		return lsCompResult;
 	}
-
+	/**
+	 * 目前只能最多输入两个arraylist
+	 * @param <T> 实现compSubArray接口
+	 * @param lsThisList 第一个list
+	 * @param lsCmpList 第二个list
+	 * @param min2max 输入的数据是否从小到大，true：list的元素从小到大排列
+	 * false：list的元素从大到小排列
+	 * @return
+	 * list<br>
+	 * |<br>
+	 * |------ListlsElement|---listCell1：Element1,Element2<br>
+	 * |                          |---listCell2：Element3<br>
+	 * |             <br>
+	 * |             <br>
+	 * |<br>
+	 * |<br>
+	 * |<br>d
+	 */
+	public static<T extends CompSubArray> ArrayList<CmpListCluster<T>> compList(boolean min2max, ArrayList<T>... lsThisList)
+	{
+		ArrayList<CmpListCluster<T>> lsCompResult = new ArrayList<CmpListCluster<T>>();
+		String flagThis = CmpListCluster.FLAGTHIS; String flagComp = CmpListCluster.FLAGCOMP;
+		ArrayList<T> lsTmp = new ArrayList<T>();
+		int th = 0;
+		int co = 0;
+		/////////////////////////////////////   将输入的数组元素标记好后，混在一起放入一个list中  ////////////////////////////////////////////
+		/////////////////////////////////////   目的是要获得经过排序的一个list     //////////////////////////////////////////////////////////////////////
+		while (true) {
+			if (th >= lsThisList[0].size() || co >= lsThisList[1].size()) {
+				break;
+			}
+			if (min2max) {
+				//假设输入的数组是经过排序，并且前小后大的
+				//依次比较本组和比较组的元素，然后装入list
+				if (lsThisList[0].get(th).getCell()[0] < lsThisList[1].get(co).getCell()[0]) {
+					T elementThis = lsThisList[0].get(th); elementThis.setFlag(flagThis);
+					lsTmp.add(elementThis);
+					th++;
+				}
+				else {
+					T elementThis = lsThisList[1].get(co); elementThis.setFlag(flagComp);
+					lsTmp.add(elementThis);
+					co++;
+				}
+			}
+			else {
+				//假设输入的数组是经过排序，并且前大后小的
+				//依次比较本组和比较组的元素，然后装入list
+				if (lsThisList[0].get(th).getCell()[1] > lsThisList[1].get(co).getCell()[1]) {
+					T elementThis = lsThisList[0].get(th); elementThis.setFlag(flagThis);
+					lsTmp.add(elementThis);
+					th++;
+				}
+				else {
+					T elementThis = lsThisList[1].get(co); elementThis.setFlag(flagComp);
+					lsTmp.add(elementThis);
+					co++;
+				}
+			}
+		}
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		if (th < lsThisList[0].size()) {
+			for (int i = th; i < lsThisList[0].size(); i++) {
+				T elementThis = lsThisList[0].get(th); elementThis.setFlag(flagThis);
+				lsTmp.add(elementThis);
+			}
+		}
+		if (co < lsThisList[1].size()) {
+			for (int i = co; i < lsThisList[1].size(); i++) {
+				T elementThis = lsThisList[1].get(co); elementThis.setFlag(flagComp);
+				lsTmp.add(elementThis);
+			}
+		}
+		
+		
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//将元素装入list中，并且成两组，this和compare----分组是在CompSubArrayCluster类中进行的
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		CmpListCluster<T> compSubArrayCluster = null;
+		for (int i = 0; i < lsTmp.size(); i++) {
+			T compSubArray = lsTmp.get(i);
+			if (i == 0) {
+				compSubArrayCluster = new CmpListCluster<T>();
+				compSubArrayCluster.addCompElement(compSubArray);
+				lsCompResult.add(compSubArrayCluster);
+				continue;
+			}
+			if (!compSubArrayCluster.addCompElement(compSubArray)) {
+				compSubArrayCluster = new CmpListCluster<T>();
+				compSubArrayCluster.addCompElement(compSubArray);
+				lsCompResult.add(compSubArrayCluster);
+			}
+		}
+		return lsCompResult;
+	}
 	/**
 	 * 二分法查找Coordinate的情况,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
 	 * 返回一个int[3]数组，<br>
