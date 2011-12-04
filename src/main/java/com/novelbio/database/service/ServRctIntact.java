@@ -3,10 +3,10 @@ package com.novelbio.database.service;
 import java.util.ArrayList;
 
 import com.novelbio.database.domain.react.RctInteract;
-import com.novelbio.database.mapper.MapRctIneract;
 
 public class ServRctIntact extends AbsGetSpring{
-	static MapRctIneract mapRctIneract;
+	
+	MapRctIneract mapRctIneract;
 	/**
 	 * 		where <br>
 			if test="taxID !=0 and taxID !=null"<br>

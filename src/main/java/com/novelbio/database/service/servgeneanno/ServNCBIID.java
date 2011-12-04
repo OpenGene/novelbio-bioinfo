@@ -9,12 +9,15 @@ import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.service.AbsGetSpring;
 @Service
-public class ServGeneAnno extends AbsGetSpring implements MapNCBIID{
+public class ServNCBIID extends AbsGetSpring implements MapNCBIID{
 	@Inject
-	protected MapNCBIID mapNCBIID2;
-	static MapNCBIID mapNCBIID;
-	static{
-		mapNCBIID = (MapNCBIID) factory.getBean("mapNCBIID");
+	private MapNCBIID mapNCBIID;
+//	static{
+//		mapNCBIID = (MapNCBIID) factory.getBean("mapNCBIID");
+//	}
+	public ServNCBIID()
+	{
+//		mapNCBIID = (MapNCBIID) factory.getBean("mapNCBIID");
 	}
 	//TODO Õý¹æÐ´·¨
 //	@Inject

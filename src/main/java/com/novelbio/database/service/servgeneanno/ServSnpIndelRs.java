@@ -21,12 +21,18 @@ public class ServSnpIndelRs extends AbsGetSpring implements MapSnpIndelRs{
 //        assertEquals("aaa", lsncbiid.get(0).getSnpRsID());
 	}
 	@Inject
-	protected MapSnpIndelRs mapSnpIndelRs2;
-	static MapSnpIndelRs mapSnpIndelRs;
-	static{
-		mapSnpIndelRs = (MapSnpIndelRs) factory.getBean("mapSnpIndelRs");
+	private MapSnpIndelRs mapSnpIndelRs;
+	
+	
+	public ServSnpIndelRs() {
+//		mapSnpIndelRs = (MapSnpIndelRs) factory.getBean("mapSnpIndelRs");
 	}
-	private static ServGeneAnno info; 
+	
+//	static MapSnpIndelRs mapSnpIndelRs;
+//	static{
+//		mapSnpIndelRs = (MapSnpIndelRs) factory.getBean("mapSnpIndelRs");
+//	}
+	private static ServNCBIID info; 
 	
 	@Override
 	public SnpIndelRs querySnpIndelRs(SnpIndelRs snpIndelRs) {

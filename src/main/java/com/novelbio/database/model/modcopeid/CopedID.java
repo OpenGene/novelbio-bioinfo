@@ -5,7 +5,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.statusAckLog;
+
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
+import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlGO;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
@@ -16,6 +20,7 @@ import com.novelbio.database.mapper.geneanno.MapFSTaxID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.service.ServAnno;
+import com.novelbio.database.service.servgeneanno.ServTaxID;
 
 /**
  * 这只是一个代理类 专门对基因的ID做一些处理的类<br>
@@ -506,6 +511,7 @@ public class CopedID implements CopedIDInt{
 	 * HashMap - key:Integer taxID
 	 * value: 0: Kegg缩写 1：拉丁名
 	 */
+	@Deprecated
 	public static HashMap<Integer, String[]> getSpecies() 
 	{
 		TaxInfo taxInfo = new TaxInfo();
@@ -520,10 +526,37 @@ public class CopedID implements CopedIDInt{
 		}
 		return hashTaxID;
 	}
+	/**
+	 * 返回常用名对taxID
+	 * @return
+	 */
+	public static HashMap<String, Integer> getHashNameTaxID() {
+		ServTaxID servTaxID = new ServTaxID();
+		return servTaxID.getHashNameTaxID();
+	}
+	/**
+	 * 返回taxID对常用名
+	 * @return
+	 */
+	public static HashMap<Integer,String> getHashTaxIDName() {
+		ServTaxID servTaxID = new ServTaxID();
+		return servTaxID.getHashTaxIDName();
+	}
 	
-	
-	
-	
+	/**
+	 * GO对应GeneOntology的hash表
+	 * @return
+	 * HashMap - key:GO缩写 
+	 * value: 0: GO全名
+	 */
+	public static HashMap<String, String> getHashGOID() 
+	{
+		HashMap<String, String> hashGOInfo = new HashMap<String, String>();
+		hashGOInfo.put(GOInfoAbs.GO_BP, GOInfoAbs.GO_BP);
+		hashGOInfo.put(GOInfoAbs.GO_CC, GOInfoAbs.GO_CC);
+		hashGOInfo.put(GOInfoAbs.GO_MF, GOInfoAbs.GO_MF);
+		return hashGOInfo;
+	}
 	
 	
 	/////////////////////////////  重写equals等  ////////////////////////////////////
@@ -587,7 +620,7 @@ public class CopedID implements CopedIDInt{
 		return hash.hashCode();
 	}
 
-
+	
 
 	
 }

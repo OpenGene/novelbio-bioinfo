@@ -14,6 +14,7 @@ import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.service.servgeneanno.ServNCBIID;
 
 public class ServAnno {
 
@@ -114,11 +115,12 @@ public class ServAnno {
 	 * @return
 	 */
 	public static String getGenName(long geneID) {
+		ServNCBIID servAnno = new ServNCBIID();
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setGeneId(geneID);
 		//ncbiid.setDBInfo("");
 		if (ncbiid.getGeneId()>0) {
-			ArrayList<NCBIID> lsncbiidsub = MapNCBIID.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsncbiidsub = servAnno.queryLsNCBIID(ncbiid);
 			if (lsncbiidsub!=null && lsncbiidsub.size()>0)  
 				return lsncbiidsub.get(0).getAccID();
 			else 
@@ -157,10 +159,11 @@ public class ServAnno {
 	 * 没查到就返回accID-taxID-accID
 	 */
 	public static ArrayList<String> getNCBIUniTax(String accID,int taxID) {
+		ServNCBIID servAnno = new ServNCBIID();
 		ArrayList<String> lsResult = new ArrayList<String>();
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setAccID(accID); ncbiid.setTaxID(taxID);
-		ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid);
+		ArrayList<NCBIID> lsNcbiids = servAnno.queryLsNCBIID(ncbiid);
 		ArrayList<UniProtID> lsUniProtIDs = null;
 		//先查ncbiid
 		if (lsNcbiids != null && lsNcbiids.size() > 0)
@@ -215,10 +218,11 @@ public class ServAnno {
 	 * 没查到就返回accID-accID
 	 */
 	public static ArrayList<String> getNCBIUni(String accID,int taxID) {
+		ServNCBIID servAnno = new ServNCBIID();
 		ArrayList<String> lsResult = new ArrayList<String>();
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setAccID(accID); ncbiid.setTaxID(taxID);
-		ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid);
+		ArrayList<NCBIID> lsNcbiids = servAnno.queryLsNCBIID(ncbiid);
 		ArrayList<UniProtID> lsUniProtIDs = null;
 		//装入结果的string0信息
 		String ncbiFlag = CopedID.IDTYPE_GENEID; String uniprotFlag = CopedID.IDTYPE_UNIID; String nothing = CopedID.IDTYPE_ACCID;
@@ -331,9 +335,10 @@ public class ServAnno {
 	 * @return 如果能搜到NCBIID，就返回第一个NCBIID。如果搜不到，就返回null
 	 */
 	public static NCBIID getNCBIID(long geneID,int taxID) {
+		ServNCBIID servAnno = new ServNCBIID();
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setGeneId(geneID);ncbiid.setTaxID(taxID);
-		ArrayList<NCBIID> lsNcbiids= MapNCBIID.queryLsNCBIID(ncbiid);
+		ArrayList<NCBIID> lsNcbiids= servAnno.queryLsNCBIID(ncbiid);
 		if (lsNcbiids == null || lsNcbiids.size() < 1) {
 			return null;
 		}
@@ -376,12 +381,13 @@ public class ServAnno {
 	 * @return 如果能搜到NCBIID，就返回第一个NCBIID。如果搜不到，就返回null
 	 */
 	private static NCBIID getNCBIID(long geneID,int taxID,String dbInfo) {
+		ServNCBIID servAnno = new ServNCBIID();
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setGeneId(geneID);ncbiid.setTaxID(taxID);
 		if (!dbInfo.trim().equals("")) {
 			ncbiid.setDBInfo(dbInfo);
 		}
-		ArrayList<NCBIID> lsNcbiids= MapNCBIID.queryLsNCBIID(ncbiid);
+		ArrayList<NCBIID> lsNcbiids= servAnno.queryLsNCBIID(ncbiid);
 		if (lsNcbiids == null || lsNcbiids.size() < 1) {
 			return null;
 		}

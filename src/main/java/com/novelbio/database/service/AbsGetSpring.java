@@ -8,9 +8,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class AbsGetSpring {
 	static ApplicationContext ctx;
 	static protected BeanFactory factory;
-	static
-	{
-		ctx = new ClassPathXmlApplicationContext("spring.xml");
-		factory = (BeanFactory) ctx;
-	}
+//	static
+//	{
+//		ctx = new ClassPathXmlApplicationContext("spring.xml");
+//		factory = (BeanFactory) ctx;
+//	}
 }

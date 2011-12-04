@@ -200,9 +200,12 @@ public class SnpIndelRs {
 	/**
 	 *  Average heterozygosity from all observations. Note: may be computed on small number of samples.
 	 * 平均杂合率
-	 * 小于0表示没有
+	 * -1表示没有
 	 */
 	public double getAvHet() {
+		if (avHet < 0) {
+			return -1;
+		}
 		return avHet;
 	}
 	/**
@@ -216,9 +219,12 @@ public class SnpIndelRs {
 	/**
 	 * Standard Error for the average heterozygosity
 	 * 平均杂合率标准误
-	 * 小于0表示没有
+	 * -1表示没有
 	 */
 	public double getAvHetSE() {
+		if (avHetSE < 0) {
+			return -1;
+		}
 		return avHetSE;
 	}
 	/**

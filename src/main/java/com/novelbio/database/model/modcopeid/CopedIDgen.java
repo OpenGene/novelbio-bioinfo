@@ -11,7 +11,7 @@ import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.mapper.geneanno.MapGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.model.modgo.GOInfoGenID;
-import com.novelbio.database.service.servgeneanno.ServGeneAnno;
+import com.novelbio.database.service.servgeneanno.ServNCBIID;
 
 public class CopedIDgen extends CopedIDAbs{
 
@@ -41,6 +41,8 @@ public class CopedIDgen extends CopedIDAbs{
 	
 	@Override
 	protected AgeneUniID getGenUniID(String genUniID, String dbInfo) {
+		
+		ServNCBIID servGeneAnno = new ServNCBIID();
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setGeneId(Long.parseLong(genUniID));ncbiid.setTaxID(taxID);
 		if (!dbInfo.trim().equals("")) {

@@ -24,7 +24,7 @@ import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.service.AbsGetSpring;
-import com.novelbio.database.service.servgeneanno.ServGeneAnno;
+import com.novelbio.database.service.servgeneanno.ServNCBIID;
 
 public abstract class CopedIDAbs implements CopedIDInt {
 //	public final static String IDTYPE_ACCID = "accID"; 
@@ -32,7 +32,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 //	public final static String IDTYPE_UNIID = "uniID"; 
 //	
 ////////////  service  ///////////////////////////////////////////////////////////////////////
-	static ServGeneAnno servGeneAnno = new ServGeneAnno();
+//	static ServGeneAnno servGeneAnno = new ServGeneAnno();
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 物种id
@@ -467,7 +467,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * 没查到就返回accID-accID
 	 */
 	public static ArrayList<String> getNCBIUniTax(String accID,int taxID) {
-//		ServGeneAnno servGeneAnno = new ServGeneAnno();
+		ServNCBIID servGeneAnno = new ServNCBIID();
 		ArrayList<String> lsResult = new ArrayList<String>();
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setAccID(accID); ncbiid.setTaxID(taxID);
