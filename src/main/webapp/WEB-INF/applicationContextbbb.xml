@@ -14,6 +14,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
+<!-- 数据库和中间层的配置 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xmlns:aop="http://www.springframework.org/schema/aop"
@@ -28,7 +29,7 @@
      http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
      
      
-     
+     <!-- BoneCP的连接池 -->
      <bean id="mainDataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
   		 <property name="driverClass" value="com.mysql.jdbc.Driver" />
   		 <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/FRICEDB" />
@@ -43,7 +44,7 @@
  		 <property name="statementsCacheSize" value="100"/>
  		 <property name="releaseHelperThreads" value="3"/>
 	</bean>
-	<!-- DataSource 
+	<!-- DataSource
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/FRICEDB"/>
@@ -66,36 +67,32 @@
             </list>
         </property>
     </bean>
- 
+    
+    <!-- enable autowire -->
+    <context:annotation-config />
 
     <!-- enable transaction demarcation with annotations  -->
     <tx:annotation-driven />
 
   <!-- 单独配置一个Mapper； 这种模式就是得给每个mapper接口配置一个bean -->
-     <!-- -->
-    <bean id="mapTaxID" class="org.mybatis.spring.mapper.MapperFactoryBean">
-        <property name="mapperInterface" value="com.novelbio.database.mapper.geneanno.MapTaxID" />
+     <!--
+    <bean id="friceNCBIID" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="com.novelbio.dao.FriceNCBIID" />
         <property name="sqlSessionFactory" ref="sqlSessionFactory" />
     </bean> 
-   <!-- 单独配置一个Mapper； 这种模式就是得给每个mapper接口配置一个bean -->
-     <!-- -->
-    <bean id="servTaxID" class="com.novelbio.database.service.servgeneanno.ServTaxID">
-        <property name="mapTaxID" ref="mapTaxID" />
-    </bean> 
- 
-    
+  -->
+  
     <!-- 通过扫描的模式，扫描目录在com/hoo/mapper目录下，所有的mapper都继承SqlMapper接口的接口， 这样一个bean就可以了  -->
  	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.novelbio.database.mapper"/>
         <property name="markerInterface" value="com.novelbio.database.mapper.MapperSql"/>
     </bean> 
-       <!-- enable autowire -->
-    <context:annotation-config />
+   
 <!--  <property name="markerInterface" value="com.novelbio.database.DAO.FriceDAO.MapperSql"/>
 <property name="markerInterface" value="com.novelbio.database.mapper.MapperSql"/>
  -->
 
       <!-- 自动探测 enable component scanning (beware that this does not enable mapper scanning!)  -->  
-    <context:component-scan base-package="com.novelbio.database.service.servgeneanno" /> 
+    <context:component-scan base-package="com.novelbio.database.service" /> 
   
 </beans>

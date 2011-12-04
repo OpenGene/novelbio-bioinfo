@@ -10,6 +10,8 @@
 <title>Thank You</title>
 </head>
 <body>
+<p>${message}</p>
+You are visitor number ${counter}.
 	<h1>wait for calculate</h1>
 </body>
 </html>

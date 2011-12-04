@@ -1,3 +1,4 @@
-#Mon May 23 00:45:03 CST 2011
+#Sat Dec 03 21:16:59 CST 2011
 eclipse.preferences.version=1
 encoding//src/main/java/log4j.properties=UTF-8
+encoding//src/main/webapp/WEB-INF/velocity/GeneOntology.vm=UTF-8

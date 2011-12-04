@@ -15,6 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,8 +36,12 @@ import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.math.stat.correlation.PearsonsCorrelation;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.apache.commons.math.stat.descriptive.rank.Max;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
+import org.broadinstitute.sting.gatk.CommandLineGATK;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 import org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 
@@ -54,6 +59,7 @@ import com.novelbio.analysis.seq.blastZJ.SmithWaterman;
 import com.novelbio.analysis.seq.chipseq.BedPeak;
 import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
 import com.novelbio.analysis.seq.chipseq.BedPeakSicer;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.analysis.seq.mapping.FastQMapAbs;
@@ -72,38 +78,68 @@ import com.novelbio.base.dataStructure.Patternlocation;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.base.plot.Rplot;
+import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.mapper.geneanno.MapGene2Go;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modkegg.KeggInfo;
-import com.novelbio.database.servSpring.ServNCBIID;
-import com.thoughtworks.xstream.XStream;
+ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 public class mytest {
 
 	private static Logger logger = Logger.getLogger(mytest.class);
-
 	/**
 	 * @param args
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(TxtReadandWrite.GZIP, "/media/winE/NBC/Project/Project_FY_Lab/clean_reads/compress/DT40_KO0h_L1_2.fq.gz", false);
-		int i = 0;
-		for (String string : txtReadandWrite.readlines()) {
-			System.out.println(string);
-			i ++ ;
-			if (i > 100) {
-				break;
-			}
-		}
+		System.out.println(CopedID.getHashTaxIDName().get(9606));
 	}
 	
 	
+	
+	
+	private void GATK() {
+		/**
+		 *  java -Xmx4g -jar GenomeAnalysisTK.jar \
+   -R /media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa \
+   -knownSites /media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/snp/Mills_Devine_2hit.indels.hg19.vcf \
+   -I /media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_1_BWA.bam \
+   -T CountCovariates \
+   -cov ReadGroupCovariate \
+   -cov QualityScoreCovariate \
+   -cov CycleCovariate \
+   -cov DinucCovariate \
+   -recalFile /media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/my_reads.recal_data.csv
+
+		 */
+		ArrayList<String> lsCmd = new ArrayList<String>();
+		lsCmd.add("-R");
+		lsCmd.add("/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa");
+		lsCmd.add("-knownSites");
+		lsCmd.add("/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/snp/Mills_Devine_2hit.indels.hg19.vcf");
+		lsCmd.add("-I");
+		lsCmd.add("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/B_BWA.bam");
+		lsCmd.add("-T");
+		lsCmd.add("CountCovariates");
+
+		lsCmd.add("-cov");
+		lsCmd.add("ReadGroupCovariate");
+		lsCmd.add("-cov");
+		lsCmd.add("QualityScoreCovariate");
+		lsCmd.add("-cov");
+		lsCmd.add("CycleCovariate");
+		lsCmd.add("-cov");
+		lsCmd.add("DinucCovariate");
+		lsCmd.add("-recalFile");
+		lsCmd.add("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/my_reads.recal_data.csv");
+		String[] argv = lsCmd.toArray(new String[1]);
+		CommandLineGATK.main(argv);
+	}
 	
 	/**
 	 * 开国银的solexa是单双端放在一起，而且是fasta格式，要将其转变为fastq格式

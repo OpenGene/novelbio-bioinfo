@@ -1,1 +1,0 @@
-bwa aln -n 0.05 -o 1 -e 3 -l 25 -t 4 -O 10 -I /media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/IndexBwa/TIGRrice6.1.con /media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/N/RawData/N.fq > /media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/N/result/N_1.sai

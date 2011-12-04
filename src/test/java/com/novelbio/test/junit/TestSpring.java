@@ -20,7 +20,8 @@ import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTest
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.react.RctInteract;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.service.servgeneanno.ServGeneAnno;
+import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.service.servgeneanno.ServNCBIID;
 @ContextConfiguration("classpath:spring.xml")
 public class TestSpring extends AbstractJUnit38SpringContextTests{
     
@@ -46,9 +47,9 @@ public void before()
 //    assertEquals("aaa", re.getDBInfo());
 //}
 
-@Inject
+//@Inject
 private MapNCBIID mapNCBIID;
-private ServGeneAnno servGeneAnno = new ServGeneAnno();
+private ServNCBIID servGeneAnno = new ServNCBIID();
 
 
 
@@ -72,21 +73,18 @@ public void init()
 	}
     @Test
     public static void testGetAccount() {
-    	NCBIID re = new NCBIID();
-		re.setAccID("tp53");
-    	ArrayList<NCBIID> lsncbiid = info.mapNCBIID.queryLsNCBIID(re);
-//        System.out.println(re.getDbInfo1());
-        assertEquals("Symbol", lsncbiid.get(0).getDBInfo());
+    	 
+        assertEquals("human", CopedID.getHashTaxIDName().get(9606));
     }
 
-    @Test
-    public void testAServGetAccount() {
-//    	servGeneAnno = new ServGeneAnno();
-    	NCBIID re = new NCBIID();
-		re.setAccID("tp53");
-    	ArrayList<NCBIID> lsncbiid = servGeneAnno.queryLsNCBIID(re);
-//        System.out.println(re.getDbInfo1());
-        assertEquals("Symbol", lsncbiid.get(0).getDBInfo());
-    }
+//    @Test
+//    public void testAServGetAccount() {
+////    	servGeneAnno = new ServGeneAnno();
+//    	NCBIID re = new NCBIID();
+//		re.setAccID("tp53");
+//    	ArrayList<NCBIID> lsncbiid = servGeneAnno.queryLsNCBIID(re);
+////        System.out.println(re.getDbInfo1());
+//        assertEquals("Symbol", lsncbiid.get(0).getDBInfo());
+//    }
 
 }

@@ -1,1 +1,0 @@
-bwa aln -n 0.05 -o 1 -e 5 -l 25 -t 4 -O 10 -I /media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_refseq/RefSeqFromChr.fa /media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/Hanyan_medium.fq > /media/winE/NBC/Project/Project_HY_Lab/TSC2_WT/fastq/bwatest/Hanyan_medium_1.sai

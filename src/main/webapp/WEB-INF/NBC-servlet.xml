@@ -6,30 +6,19 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd   
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd   
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">   
-     <!--
-    <bean class = "org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
-  	-->  
+ 
        <!-- Load messages -->  
-     <bean id="messageSource"  
-         class="org.springframework.context.support.ResourceBundleMessageSource"  
+     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"  
        p:basenames="errors"/>  
-  
-  	
-  	<!--<context:annotation-config />    --> 
+       
+  	<context:annotation-config />   <!-- --> <!-- 这个在数据库xml中已经设定过了 -->
 	 <!--把标记了@Controller注解的类转换为bean   --> 
 	<context:component-scan base-package="com.novelbio.web" />     
 
      <!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射    -->
-
-	<bean
-		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
-
-	<!-- JSP配置：对模型视图名称的解析，即在模型视图名称添加前后缀 -->
-	<bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
-		p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" />
-
-	<!-- velocity配置：对模型视图名称的解析，即在模型视图名称添加前后缀 
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+	
+ 	<!-- velocity配置：对模型视图名称的解析，即在模型视图名称添加前后缀 
 	VelocityConfigurer负责在Spring中设置Velocity引擎。
 	这里，我们通过属性resourceLoaderPath告诉 Velocity到哪里寻找它的模板。
 	我们建议将模板放到WEB-INF的某个子目录下面，这样可以保证这些模板不能被直接访问-->
@@ -39,16 +28,18 @@
 			<value>WEB-INF/velocity/</value>
 		</property>
 		<property name="velocityProperties">
-			
 			<!-- 可以注意到velocityProperties属性使用一个<props>元素来设置多个属性。
 			在这里可以设置的属性与一个典型的 Velocity应用中通过“velocity.properties”文件设置的属性是一样的。
 			缺省地，Velocity的#foreach循环维护一个名为$velocityCount的循环计数器，该计数器在第一轮循环开始时从1开始计数。
 			但这里我们设置属性 directive.foreach.counter.name为loopCounter，
 			因此将使用$loopCounter来引用循环计数器。我们也通过设置属性directive.foreach.counter.initial.value为0使循环计数器由零开始计数。
+			也就是和java的循环统一。
 			（想知道关于 Velocity配置属性的信息，请参考Velocity开发者指南http://jakarta.apache.org/velocity/developer-guide.html。） -->
 			<props>
 				<prop key="directive.foreach.counter.name">loopCounter</prop>
 				<prop key="directive.foreach.counter.initial.value">0</prop>
+				<prop  key="input.encoding">GBK</prop>   <!-- UTF8的文字 -->
+                <prop  key="output.encoding">GBK</prop>    
 			</props>
 		</property>
 	</bean>
@@ -67,6 +58,11 @@
 		<property name="suffix">
 			<value>.vm</value>
 		</property>
+	    <property name="cache" value="true" />
+ 	   <!-- 中文配置 -->
+       <property name="contentType" value="text/html;charset=GBK" />  
+       <!-- 在模板使用spring 的宏 -->
+       <property name="exposeSpringMacroHelpers" value="true" />  
 		<!-- 尽管应用已经配置成可以渲染Velocity视图了，但我们还有一些杂七杂八的问题需要解决。
 		当你比较程序清单9.1中的couseList.vm 和courseList.jsp时，会注意到courseList.vm没有像 courseList.jsp一样对课程的ID、开始日期和结束日期进行格式化。
 		在courseList.jsp中，课程ID显示为一个6位定长的前面以零补齐的数字，而所有的日期以完整格式显示。

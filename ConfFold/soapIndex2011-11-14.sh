@@ -1,0 +1,1 @@
+2bwt-builder /media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/soap_chromFa/UCSC_hg19.fa.index

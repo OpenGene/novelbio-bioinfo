@@ -1,0 +1,1 @@
+sort -k1,1  -k2,2n  -k3,3n /media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG101101/bed_2011.1.21/mouseData_45PE/ttt_unzip.txt > /media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG101101/bed_2011.1.21/mouseData_45PE/hmc_unpaired_summits.bed_sort_txt

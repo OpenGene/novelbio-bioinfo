@@ -1,0 +1,1 @@
+bwa aln -n 0.05 -o 1 -e 3 -l 25 -t 4 -O 10 -I  /media/winE/NBC/Project/ChIPSeq_WJK100909/ChIP_Seq_WJK100909_Mapping/input/hg_all_filter.fq > /media/winE/NBC/Project/ChIPSeq_WJK100909/ChIP_Seq_WJK100909_Mapping/input/hg_all_filter_1.sai

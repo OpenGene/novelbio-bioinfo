@@ -1,0 +1,1 @@
+bwa samse -n 1 /media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa /media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_2Filter_1.sai /media/winE/NBC/Project/Project_HXW_Lab/exome_capture/rawdata/D_2Filter.fq > /media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_2_BWA_map.sam

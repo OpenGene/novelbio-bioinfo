@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapTaxID">
+	
+	<resultMap id="TaxInfoMap" type="TaxInfo">
+	</resultMap>
+	<select id="queryTaxInfo" parameterType="TaxInfo" resultMap="TaxInfoMap">
+		select *
+		from taxInfo
+		<where>
+			<if test="taxID !=null and taxID !=0">
+				taxID = #{taxID}
+			</if>
+			<if test="chnName !=null">
+				and chnName = #{chnName}
+			</if>
+			<if test="comName !=null">
+				and comName = #{comName}
+			</if>
+			<if test="latin !=null">
+				and latin = #{latin}
+			</if>
+			<if test="abbr !=null">
+				and abbr = #{abbr}
+			</if>
+	    </where> 
+	</select>
+	<select id="queryLsTaxInfo" parameterType="TaxInfo" resultMap="TaxInfoMap">
+		select *
+		from taxInfo
+		<where>
+			<if test="taxID !=null and taxID !=0">
+				taxID = #{taxID}
+			</if>
+			<if test="chnName !=null">
+				and chnName = #{chnName}
+			</if>
+			<if test="comName !=null">
+				and comName = #{comName}
+			</if>
+			<if test="latin !=null">
+				and latin = #{latin}
+			</if>
+			<if test="abbr !=null">
+				and abbr = #{abbr}
+			</if>
+	    </where> 
+	</select>
+	<insert id="InsertTaxInfo" parameterType="TaxInfo">
+		insert into taxInfo (taxID,chnName,comName,latin,abbr)
+		values (#{taxID},#{chnName},#{comName},#{latin},#{abbr})
+	</insert>
+	<update id="upDateTaxInfo" parameterType="TaxInfo">
+		update taxInfo
+		<set>
+			<if test="chnName !=null">
+				chnName = #{chnName},
+			</if>
+			<if test="comName !=null">
+				comName = #{comName},
+			</if>
+			<if test="latin !=null">
+				latin = #{latin},
+			</if>
+			<if test="abbr !=null">
+				abbr = #{abbr}
+			</if>
+		</set>
+		where taxID = #{taxID} 
+	</update>
+</mapper>

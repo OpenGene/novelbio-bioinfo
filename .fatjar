@@ -1,12 +1,12 @@
 #Fat Jar Configuration File
-#Sat Sep 17 16:14:07 CST 2011
+#Sat Nov 26 14:26:39 CST 2011
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=true
-jarname=/home/zong0jie/\u684C\u9762/NbcToolsTestFatJar.jar
+jarname=/home/zong0jie/\u684C\u9762/NbcToolsTestFatJarNew.jar
 manifest.mergeall=true
-manifest.mainclass=com.novelbio.test.mytest
+manifest.mainclass=com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.GUIanalysis
 manifest.file=<createnew>
 jarname.isextern=true
 onejar.expand=

@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Novelbio</title>
+<link href="./views/nbcTitle.css" rel="stylesheet" type="text/css" />
+<link href="./views/workTab.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+<div class="nbcTitle" id="GO"><img src="./views/NBClogofinal2_400resolution.png" width="148" height="62" alt="nbcLogo" />
+  <div class="nbcTitleInfo" id="GOInfo">GeneOntology</div>
+</div>
+<div class="workTab" id="GOtab">
+<?php echo $error;?>
+  <p>GOpostForm</p>
+  <form action= ${summiturl} method="post" enctype="multipart/form-data" name="form1" id="form1">
+    <p>GO Analysis  </p>
+    <p>
+      <label>
+      whether Blast
+      #springFormCheckbox("goparam.blast" "")
+      </label>
+     </p>
+    <p>
+      <label>QuerySpecies
+      #springFormSingleSelect("goparam.queryTaxID" $hashTaxID "")
+      </label>
+    </p>
+    <p>
+      <label>blast Species       
+       #springFormSingleSelect("goparam.blastTaxID" $hashTaxID "")
+      </label>
+    </p>
+    <p>
+      <label>GO Type      
+       #springFormSingleSelect("goparam.goType" $hashGoType "")
+      </label>
+    </p>
+    <p>
+      <label>AccFile     
+       #springFormInput("goparam.inputFile" "")
+      </label>
+    </p> 
+    <p>
+      <input type="submit" />
+    </p>
+  </form>
+  <p>&nbsp;</p>
+</div>
+</body>
+</html>

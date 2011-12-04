@@ -1,1 +1,0 @@
-bwa aln -n 0.05 -o 1 -e 5 -l 25 -t 4 -O 10 -I /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna /media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT/barcod_TGACT2.fastq > /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/test/barcod_TGACT2_2.sai

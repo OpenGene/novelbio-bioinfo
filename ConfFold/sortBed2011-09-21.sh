@@ -1,1 +1,0 @@
-sort -k1,1  -k2,2n  -k3,3n /media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/WE.clean.fq/result/WEextend.bed > /media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/WE.clean.fq/result/WEextend_Sort.bed

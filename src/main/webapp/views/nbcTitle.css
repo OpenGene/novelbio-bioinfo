@@ -1,0 +1,16 @@
+.nbcTitle {
+	position: absolute;
+	width: 829px;
+	height: 68px;
+	left: 66px;
+	top: 8px;
+}
+.nbcTitleInfo {
+	position: absolute;
+	height: 24px;
+	width: 139px;
+	left: 653px;
+	top: 22px;
+	font-size: 20px;
+	font-family: "Courier New", Courier, monospace;
+}

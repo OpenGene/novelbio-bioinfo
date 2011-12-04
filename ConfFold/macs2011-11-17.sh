@@ -1,0 +1,1 @@
+sh /media/winE/NBC/Project/ChIPSeq_WJK100909/ChIP_Seq_WJK100909_Mapping/input/macs.sh

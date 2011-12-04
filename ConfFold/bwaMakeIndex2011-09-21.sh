@@ -1,1 +1,0 @@
-bwa index  -a bwtsw /media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/Index/bwa_Index/mm9.fasta
