@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.AminoAcid;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.tools.Mas3.getProbID;
 import com.novelbio.database.domain.geneanno.SnpIndelRs;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.servgeneanno.ServSnpIndelRs;
@@ -16,6 +17,34 @@ import com.novelbio.database.updatedb.database.CopeDBSnp132;
  *
  */
 public class MapInfoSnpIndel extends MapInfo{
+	
+	boolean isExon = true;
+	public void setExon(boolean isExon) {
+		this.isExon = isExon;
+	}
+	public boolean isExon() {
+		return isExon;
+	}
+	/**
+	 * snp在基因长度的百分比
+	 */
+	double prop = 0;
+	/**
+	 * snp在基因长度的百分比
+	 * 越小越靠近头部
+	 * 0-1之间
+	 */
+	public void setProp(double prop) {
+		this.prop = prop;
+	}
+	/**
+	 * snp在基因长度的百分比
+	 * 越小越靠近头部
+	 */
+	public double getProp() {
+		return prop;
+	}
+	
 	int taxID = 0;
 	private static Logger logger = Logger.getLogger(MapInfoSnpIndel.class);
 	SnpIndelRs snpIndelRs;
@@ -23,6 +52,28 @@ public class MapInfoSnpIndel extends MapInfo{
 	String thisAaSeq = "";
 	String thisBase = "";
 	String refBase = "";
+	String thisAAnr = "";
+	String refAAnr = "";
+	
+	public void setThisAAnr(String thisAAnr) {
+		this.thisAAnr = thisAAnr;
+	}
+	public String getThisAAnr() {
+		return thisAAnr;
+	}
+	public void setRefAAnr(String refAAnr) {
+		this.refAAnr = refAAnr;
+	}
+	public String getRefAAnr() {
+		return refAAnr;
+	}
+	public void setRefBase(String refBase) {
+		this.refBase = refBase;
+	}
+	public void setThisBase(String thisBase) {
+		this.thisBase = thisBase;
+	}
+	
 	/**
 	 * 移码，0，1，2三种
 	 */
@@ -359,7 +410,7 @@ public class MapInfoSnpIndel extends MapInfo{
 			if (!snpRsID.equals(snpRsID)) {
 				logger.error("本dbspnID与输入的dbsnpID不对应："+snpRsID + snpIndelRs.getSnpRsID());
 			}
-			else return;
+//			else return;
 		}
 		this.snpRsID = snpRsID;
 	}
@@ -405,15 +456,15 @@ public class MapInfoSnpIndel extends MapInfo{
 	
 	public static String getMyTitle()
 	{
-		String result = "chrID\tstartLoc\trefBase\tAllelic_depths_Ref\tthisBase\tAllelic_depths_Alt \tquality\tFilter\tAllele_Frequency\tAllele_Balance_Hets()\t" + 
-		"refAAseq\tthisAaSeq\tAA_chemical_property\tOrfShift\tGeneAccID\tGeneSymbol\tGeneDescription";
+		String result = "ChrID\tStartLoc\tRefBase\tAllelic_depths_Ref\tThisBase\tAllelic_depths_Alt \tQuality\tFilter\tAllele_Frequency\tAllele_Balance_Hets()\tIsInExon\tDistance_To_Start\t" + 
+		"RefAAnr\tRefAAseq\tThisAAnr\tThisAASeq\tAA_chemical_property\tOrfShift\tSnpDB_ID\tGeneAccID\tGeneSymbol\tGeneDescription";
 		return result;
 	}
 	
 	public String toString() {
-		String result = chrID + "\t" + startLoc + "\t" + refBase + "\t" + this.Allelic_depths_Ref + "\t" + thisBase + "\t" +
-		this.Allelic_depths_Alt + "\t" + quality + "\t" + this.Filter + "\t" + this.Allele_Frequency + "\t" + getAllele_Balance_Hets() + "\t" + 
-		this.refAAseq + "\t" + this.thisAaSeq;
+		String result = chrID + "\t" + startLoc + "\t" + refBase + "\t" + this.Allelic_depths_Ref + "\t" + thisBase + "\t" + 
+		this.Allelic_depths_Alt + "\t" + quality + "\t" + this.Filter + "\t" + this.Allele_Frequency + "\t" + getAllele_Balance_Hets() + "\t" + isExon()+"\t" + prop +"\t"+
+		refAAnr +"\t"+this.refAAseq + "\t" + thisAAnr +"\t"+this.thisAaSeq ;
 		if (refAAseq != null && refAAseq.length() ==3 && thisAaSeq != null && thisAaSeq.length() == 3) {
 			result = result + "\t" + AminoAcid.cmpAAquality(refAAseq, thisAaSeq);
 		}
@@ -421,7 +472,15 @@ public class MapInfoSnpIndel extends MapInfo{
 			result = result + "\t" + "";
 		}
 		result = result + "\t" + this.getOrfShift();
-		getSnpIndelRs();
+		result = result + "\t" + snpRsID;
+//		getSnpIndelRs();
+//		if (snpIndelRs != null) {
+//			result = result + "\t" + snpIndelRs.getSnpRsID();
+//		}
+//		else {
+//			result = result + "\t" + "";
+//		}
+		
 //		if (snpIndelRs != null) {
 //			if (snpIndelRs.getAvHet() == -1) {
 //				result = result + "\t" + "AvHet_No Info" + "\t" + "AvHetSE_No Info";

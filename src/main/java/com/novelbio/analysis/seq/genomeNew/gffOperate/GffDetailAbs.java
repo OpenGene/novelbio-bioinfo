@@ -491,4 +491,26 @@ public abstract class GffDetailAbs implements CompSubArray{
 	public double getLen() {
 		return Math.abs(numberend - numberstart);
 	}
+	
+	
+	@Override
+	public void setStartCis(double startLoc)
+	{
+		if (cis5to3 == null || cis5to3) {
+			numberstart = (int)startLoc;
+		}
+		else {
+			numberend = (int)startLoc;
+		}
+	}
+	@Override
+	public void setEndCis(double endLoc)
+	{
+		if (cis5to3 == null || cis5to3) {
+			numberend = (int)endLoc;
+		}
+		else {
+			numberstart = (int)endLoc;
+		}
+	}
 }

@@ -71,9 +71,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="accessID !=null">
 				and accessID = #{accessID} 
 			</if>
-			<if test="taxID !=0 and taxID !=null">
-				and TaxID = #{taxID} 
-			</if>
 	    </where> 
 	</update>
 </mapper>

@@ -2,6 +2,8 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,8 +11,10 @@ import javax.swing.text.html.HTMLDocument.HTMLReader.HiddenAction;
 
 import org.apache.commons.collections15.map.Flat3Map;
 import org.apache.log4j.Logger;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.objective;
 
+import com.novelbio.analysis.seq.chipseq.cGIsland.CpG;
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArray;
@@ -175,8 +179,23 @@ public abstract class GffGeneIsoInfo {
 	public boolean isCodInIsoExtend() {
 		return (codLoc != COD_LOC_OUT) || isCodInIsoTss() || isCodInIsoGenEnd();
 	}
-	
-	
+	/**
+	 * cod是否在编码区
+	 * 如果本转录本是非编码RNA，直接返回false；
+	 * @return
+	 */
+	public boolean isCodInAAregion()
+	{
+		if (!ismRNA() || getCodLoc() != GffGeneIsoInfo.COD_LOC_EXON) {
+			return false;
+		}
+		if (cod2ATG < 0 || cod2UAG > 0) {
+			return false;
+		}
+		return true;
+		
+		
+	}
 	
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
 	
@@ -647,7 +666,7 @@ public abstract class GffGeneIsoInfo {
 	/**
 	 * 使用前先判定在Exon中，坐标到TES的距离，mRNA水平
 	 * 不去除内含子的直接用getCod2UAG
-	 * 因为cod在外显子中，所以肯定在tss下游，所以该值始终为正数
+	 * 因为cod在外显子中，所以肯定在tES上游，所以该值始终为负数
 	 */
 	public int getCod2TESmRNA() {
 		return cod2TESmRNA;
@@ -1252,7 +1271,7 @@ public abstract class GffGeneIsoInfo {
 		return false;
 	}
 	
-	
+
 	
 	/**
 	 * 外显子比较如果一模一样则返回true；
@@ -1273,6 +1292,8 @@ public abstract class GffGeneIsoInfo {
 		}
 		return true;
 	}
+	protected abstract void sortIso();
+	protected abstract void sortIsoRead();
 }
 
 
@@ -1305,6 +1326,16 @@ class ExonInfo implements CompSubArray
 		return exon[0];
 	}
 	@Override
+	public void setStartCis(double startLoc)
+	{
+		exon[0] = (int)startLoc;
+	}
+	@Override
+	public void setEndCis(double endLoc)
+	{
+		exon[1] = (int)endLoc;
+	}
+	@Override
 	public double getEndCis() {
 		return exon[1];
 	}
@@ -1329,5 +1360,8 @@ class ExonInfo implements CompSubArray
 	{
 		return Math.abs(exon[0] - exon[1]);
 	}
+	
+
+	
 
 }

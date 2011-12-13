@@ -18,10 +18,10 @@ public class PeakAnno {
 //		columnID[2]=3;
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 //				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
-//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_TIGR,
-//				NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, "");
-		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
-				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
+		PeakLOC.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_TIGR,
+				NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, "");
+//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
+//				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
 //		PeakLOC.prepare("/media/winE/Bioinformatics/GenomeData/Arabidopsis/ChromFaRaw",null,NovelBioConst.GENOME_GFF_TYPE_TAIR,
 //				"/media/winE/Bioinformatics/GenomeData/Arabidopsis/TAIR9_GFF3_genes.gff", "");
 		System.out.println("prepare ok");
@@ -33,22 +33,22 @@ public class PeakAnno {
 	 */
 	public static void  annotation() {
 		//需要是excel文件
-		String ParentFile="/media/winE/NBC/Project/SNP_ZQ110826/";
+		String ParentFile="/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/compareSICER/single/";
 		String geneStructurePath = FileOperate.createFolders(FileOperate.getParentPathName(ParentFile), "genestructure") + "/";
 		int[] columnID=new int[2];
 		columnID[0]=1;
-		columnID[1]=6;
-		int taxID = 9606;
+		columnID[1]=5;
+		int taxID = 39947;
 		//定位区域
 		int[] region = new int[3];//0:UpstreamTSSbp 1:DownStreamTssbp 2:GeneEnd3UTR
-		region[0] = 10000; region[1] = 1500; region[2] = 10000;
+		region[0] = 1500; region[1] = 1500; region[2] = 100;
 		
 		int upBp = region[0];
-//		region[0] = 100000; region[1] = 1000; region[2] = 100000;
+//		region[0] = 1000; region[1] = 1000; region[2] = 100000;
 //		int upBp = 100000;
 		try {
-			 String FpeaksFile=ParentFile+"ZQsnpRaw.txt";
-			 String resultPrix ="ZQ";
+			 String FpeaksFile=ParentFile+"3NseSort-W200-G200-E100.scoreisland.xls";
+			 String resultPrix ="3N";
 
 			 String FannotationFile= FileOperate.changeFileSuffix(FpeaksFile, "_annotation", null);
 			 String FPeakHist = ParentFile; 
@@ -56,20 +56,20 @@ public class PeakAnno {
 			 
 			 statisticNum(upBp,FpeaksFile, columnID,geneStructurePath, resultPrix);
 			 
-			 PeakLOC.locatDetail(FpeaksFile, "\t", columnID,2, -1, FannotationFile,region);
-			 
-			 TxtReadandWrite txtReadandWrite=new TxtReadandWrite();
-				txtReadandWrite.setParameter(FannotationFile, false, true);
-				int columnNum=0;
-				try {
-					columnNum = txtReadandWrite.ExcelColumns("\t");
-				} catch (Exception e2) {
-				}
-				int columnRead=columnNum-1;
-				int rowStart=2;
-				SymbolDesp.getRefSymbDesp(taxID,FannotationFile, columnRead, rowStart, columnRead);
-				SymbolDesp.getRefSymbDesp(taxID,FannotationFile, columnRead-2, rowStart, columnRead-2);
-				SymbolDesp.getRefSymbDesp(taxID,FannotationFile, columnRead-4, rowStart, columnRead-4);
+//			 PeakLOC.locatDetail(FpeaksFile, "\t", columnID,2, -1, FannotationFile,region);
+//			 
+//			 TxtReadandWrite txtReadandWrite=new TxtReadandWrite();
+//				txtReadandWrite.setParameter(FannotationFile, false, true);
+//				int columnNum=0;
+//				try {
+//					columnNum = txtReadandWrite.ExcelColumns("\t");
+//				} catch (Exception e2) {
+//				}
+//				int columnRead=columnNum-1;
+//				int rowStart=2;
+//				SymbolDesp.getRefSymbDesp(taxID,FannotationFile, columnRead, rowStart, columnRead);
+//				SymbolDesp.getRefSymbDesp(taxID,FannotationFile, columnRead-2, rowStart, columnRead-2);
+//				SymbolDesp.getRefSymbDesp(taxID,FannotationFile, columnRead-4, rowStart, columnRead-4);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

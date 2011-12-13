@@ -262,8 +262,6 @@ public class GffChrAnno extends GffChrAbs{
 		return result;
 	}
 	
-
-	
 	
 	
 	/**

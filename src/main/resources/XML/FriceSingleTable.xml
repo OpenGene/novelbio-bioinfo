@@ -80,9 +80,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="accessID !=null">
 				and accessID = #{accessID} 
 			</if>
-			<if test="taxID !=0 and taxID !=null">
-				and TaxID = #{taxID} 
-			</if>
 	    </where> 
 	</update>
 	
@@ -146,43 +143,43 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="geneID !=null and geneID != 0">
 				GeneID = #{geneID},
 			</if>
-			<if test="symbol !=null">
+			<if test="symbol !=null and symbol != ''">
 				Symbol = #{symbol},
 			</if>
-			<if test="locusTag !=null">
+			<if test="locusTag !=null and locusTag != '' ">
 				LocusTag = #{locusTag},
 			</if>
-			<if test="synonyms !=null">
+			<if test="synonyms !=null and locusTag != '' ">
 				Synonyms = #{synonyms},
 			</if>
-			<if test="dbXrefs !=null">
+			<if test="dbXrefs !=null and locusTag != '' ">
 				dbXrefs = #{dbXrefs},
 			</if>
-			<if test="chromosome !=null">
+			<if test="chromosome !=null and chromosome != '' ">
 				chromosome = #{chromosome},
 			</if>
-			<if test="mapLocation !=null">
+			<if test="mapLocation !=null and mapLocation != '' ">
 				mapLocation = #{mapLocation},
 			</if>
-			<if test="description !=null">
+			<if test="description !=null and description != '' ">
 				description = #{description},
 			</if>
-			<if test="typeOfGene !=null">
+			<if test="typeOfGene !=null and typeOfGene != '' ">
 				typeOfGene = #{typeOfGene},
 			</if>
-			<if test="symNome !=null">
+			<if test="symNome !=null and symNome != '' ">
 				SymbolFromNomenclature = #{symNome},
 			</if>
-			<if test="fullNameNome !=null">
+			<if test="fullNameNome !=null and fullNameNome != '' ">
 				FullNameFromNomenclature = #{fullNameNome},
 			</if>
-			<if test="nomStat !=null">
+			<if test="nomStat !=null and nomStat != '' ">
 				NomenclatureStatus = #{nomStat},
 			</if>
-			<if test="otherDesign !=null">
+			<if test="otherDesign !=null and otherDesign != '' ">
 				OtherDesignations = #{otherDesign},
 			</if>
-			<if test="modDate !=null">
+			<if test="modDate !=null and modDate != '' ">
 				ModificationDate = #{modDate}
 			</if>
 		</set>
@@ -308,9 +305,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</set>
 		<where>
-			<if test="taxID !=null and taxID !=0">
-				TaxID = #{taxID}
-			</if>
 			<if test="uniID !=null">
 				and UniID = #{uniID} 
 			</if>

@@ -51,4 +51,14 @@ public interface CompSubArray {
 	 * @return
 	 */
 	double getLen();
+	/**
+	 * 按照方向设定起点
+	 * @param startLoc
+	 */
+	void setStartCis(double startLoc);
+	/**
+	 * 按照方向设定终点
+	 * @param startLoc
+	 */
+	void setEndCis(double endLoc);
 }

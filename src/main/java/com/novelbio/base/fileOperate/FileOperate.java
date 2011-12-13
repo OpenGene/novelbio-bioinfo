@@ -570,7 +570,7 @@ public class FileOperate {
 	
 	
 	/**
-	 * 
+	 * 只修输入的文件名，并不直接操作文件
 	 * 文件添加后缀并改后缀名，如果一样则不修改
 	 * @param FileName 原来文件的全名
 	 * @param append 要添加的后缀，譬如_1，_new，如果为null，则不添加
@@ -601,6 +601,21 @@ public class FileOperate {
 		}
 	}
 	
+	
+	/**
+	 * 直接操作文件
+	 * 文件添加后缀并改后缀名，如果一样则不修改
+	 * @param FileName 原来文件的全名
+	 * @param append 要添加的后缀，譬如_1，_new，如果为null，则不添加
+	 * @param suffix 要添加的后缀名，譬如 txt， jpg ，自动去空格
+	 * suffix == null则不改变后缀名，suffix = "" 则去除后缀名
+	 */
+	public static String changeFileSuffixReal(String FileName, String append, String suffix) {
+		String newFile = changeFileSuffix(FileName, append, suffix);
+		moveFile(FileName, getParentPathName(newFile), getFileName(newFile), true);
+		return newFile;
+	}
+	
 	/**
 	 * 文件改名,如果已有同名文件存在，则不改名并返回
 	 * 
@@ -627,6 +642,11 @@ public class FileOperate {
 		oldFile.renameTo(fnew);
 	}
 	
+	
+	
+	
+	
+	
 	/**
 	 * 移动文件，如果新地址有同名文件，则不移动并返回<br>
 	 * 可以创建一级新文件夹<br>
@@ -648,7 +668,7 @@ public class FileOperate {
 		}
 		return null;
 	}
-
+	
 	/**
 	 * 移动文件，如果新地址有同名文件，则不移动并返回<br>
 	 * 可以创建一级新文件夹<br>
@@ -666,11 +686,11 @@ public class FileOperate {
 	 * @return true 成功
 	 * false 失败
 	 */
-	public static boolean moveFile(String oldPath, String newPath, String newName,
+	public static boolean moveFile(String oldFileName, String newPath, String newName,
 			boolean cover) {
 		newPath = addSep(newPath);
 		// 文件原地址
-		File oldFile = new File(oldPath);
+		File oldFile = new File(oldFileName);
 		// 文件新（目标）地址
 		// new一个新文件夹
 		File fnewpath = new File(newPath);
@@ -689,7 +709,7 @@ public class FileOperate {
 			fnew.delete();
 		}
 		if (!oldFile.renameTo(fnew)) {
-			if (copyFile(oldPath, newPath + newName, cover))
+			if (copyFile(oldFileName, newPath + newName, cover))
 			{
 				oldFile.delete();
 				return true;

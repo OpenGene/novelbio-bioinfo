@@ -9,7 +9,7 @@ public class FilterReads {
 	public static void main(String[] args) {
 		FilterReads filterReads = new FilterReads();
 //		filterReads.filterReads();
-		filterReads.mappingBWA();
+		filterReads.mappingSOAP();
 	}
 	
 	private void filterReads()
@@ -132,12 +132,12 @@ public class FilterReads {
 	
 	private void mappingSOAP() {
 		String parentFileFQ = "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/rawdata/";
-		String parentFileOut = "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/";
+		String parentFileOut = "/media/winF/NBC/Project/Project_HXW/mappingsoap/";
 		
 		/////////////////////////////////// bwa ////////////////////////////////////////////////////
 		
-		String seqFile1 = parentFileFQ + "A_1Filter.fq";
-		String outFileMapping = parentFileOut + "A_1_SOAP_map.sam";
+		String seqFile1 = parentFileFQ + "A_Filter.fq";
+		String outFileMapping = parentFileOut + "A_SOAP_map.sam";
 		FastQMapSoap fastQMapBwa = new FastQMapSoap(seqFile1,  FastQ.FASTQ_ILLUMINA_OFFSET, FastQ.QUALITY_MIDIAN, outFileMapping, true);
 //		fastQMapBwa.setFilePath("", "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/soap_chromFa/UCSC_hg19.fa");
 //		fastQMapBwa.setMisMatch(3);
@@ -165,36 +165,34 @@ public class FilterReads {
 //		fastQMapBwa.setFilePath("", "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/soap_chromFa/UCSC_hg19.fa");
 //		fastQMapBwa.setMisMatch(3);
 //		fastQMapBwa.mapReads();
+		seqFile1 = parentFileFQ + "A_Filter.fq";
+		outFileMapping = parentFileOut + "A_SOAP_map.txt";
+		fastQMapBwa = new FastQMapSoap(seqFile1,  FastQ.FASTQ_ILLUMINA_OFFSET, FastQ.QUALITY_MIDIAN, outFileMapping, true);
+		fastQMapBwa.setFilePath("", "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/soap_chromFa/UCSC_hg19.fa");
+		fastQMapBwa.setMisMatch(3);
+		fastQMapBwa.mapReads();
 
 		
-		seqFile1 = parentFileFQ + "C_1Filter.fq";
-		outFileMapping = parentFileOut + "C_1_SOAP_map.sam";
+		seqFile1 = parentFileFQ + "B_Filter.fq";
+		outFileMapping = parentFileOut + "B_SOAP_map.txt";
 		fastQMapBwa = new FastQMapSoap(seqFile1,  FastQ.FASTQ_ILLUMINA_OFFSET, FastQ.QUALITY_MIDIAN, outFileMapping, true);
 		fastQMapBwa.setFilePath("", "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/soap_chromFa/UCSC_hg19.fa");
 		fastQMapBwa.setMisMatch(3);
 		fastQMapBwa.mapReads();
 
-		seqFile1 = parentFileFQ + "C_2Filter.fq";
-		outFileMapping = parentFileOut + "C_2_SOAP_map.sam";
+		seqFile1 = parentFileFQ + "C_Filter.fq";
+		outFileMapping = parentFileOut + "C_SOAP_map.txt";
 		fastQMapBwa = new FastQMapSoap(seqFile1,  FastQ.FASTQ_ILLUMINA_OFFSET, FastQ.QUALITY_MIDIAN, outFileMapping, true);
 		fastQMapBwa.setFilePath("", "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/soap_chromFa/UCSC_hg19.fa");
 		fastQMapBwa.setMisMatch(3);
 		fastQMapBwa.mapReads();
 		
-		seqFile1 = parentFileFQ + "D_1Filter.fq";
-		outFileMapping = parentFileOut + "D_1_SOAP_map.sam";
+		seqFile1 = parentFileFQ + "D_Filter.fq";
+		outFileMapping = parentFileOut + "D_SOAP_map.txt";
 		fastQMapBwa = new FastQMapSoap(seqFile1,  FastQ.FASTQ_ILLUMINA_OFFSET, FastQ.QUALITY_MIDIAN, outFileMapping, true);
 		fastQMapBwa.setFilePath("", "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/soap_chromFa/UCSC_hg19.fa");
 		fastQMapBwa.setMisMatch(3);
 		fastQMapBwa.mapReads();
-
-		seqFile1 = parentFileFQ + "D_2Filter.fq";
-		outFileMapping = parentFileOut + "D_2_SOAP_map.sam";
-		fastQMapBwa = new FastQMapSoap(seqFile1,  FastQ.FASTQ_ILLUMINA_OFFSET, FastQ.QUALITY_MIDIAN, outFileMapping, true);
-		fastQMapBwa.setFilePath("", "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa");
-		fastQMapBwa.setMisMatch(3);
-		fastQMapBwa.mapReads();
-
 
 	}
 	

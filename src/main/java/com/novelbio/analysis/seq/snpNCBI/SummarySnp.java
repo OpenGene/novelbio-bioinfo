@@ -6,7 +6,7 @@ public class SummarySnp {
 	
 	private void searchSnp() {
 		GffChrAnno gffChrAnno = new GffChrAnno(gffType, gffFile);
-		gffChrAnno.
+		gffChrAnno
 
 	}
 	

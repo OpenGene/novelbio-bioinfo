@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.addRsvRequest;
 import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
@@ -51,6 +52,31 @@ public class GffChrMap extends GffChrAbs{
 		super(gffType, gffFile, chrFile, readsBed, binNum);
 		this.HanYanFstrand = HanYanFstrand;
 	}
+	/**
+	 * 按照染色体数，统计每个染色体上总位点数，每个位点数，
+	 * string[4]
+	 * 0: chrID
+	 * 1: readsNum
+	 * 2: readsPipNum
+	 * 3: readsPipMean
+	 * @return
+	 */
+	public ArrayList<String[]> getChrLenInfo()
+	{
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		ArrayList<String> lsChrID = mapReads.getChrIDLs();
+		for (String string : lsChrID) {
+			String[] chrInfoTmp = new String[4];
+			chrInfoTmp[0] = string;
+			chrInfoTmp[1] = mapReads.getChrReadsNum(string) + "";
+			chrInfoTmp[2] = mapReads.getChrReadsPipNum(string) + "";
+			chrInfoTmp[3] = mapReads.getChrReadsPipMean(string) + "";
+			lsResult.add(chrInfoTmp);
+		}
+		return lsResult;
+	}
+	
+	
 	/**
 	 * @param gffType
 	 * @param gffFile

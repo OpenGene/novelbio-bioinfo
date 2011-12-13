@@ -750,7 +750,7 @@ public class GffLocatCod extends GffChrUnion
 		
 		for (int i = 0; i < LOCIDInfo.length; i++)
 		{
-			GffCodInfoUCSCgene tmpresult=null;String chrID = LOCIDInfo[i][0].toLowerCase(); int summit = Integer.parseInt(LOCIDInfo[i][1]);
+			GffCodInfoUCSCgene tmpresult=null;String chrID = LOCIDInfo[i][0].toLowerCase(); int summit = Integer.parseInt(LOCIDInfo[i][1].trim());
 			try {
 				if (summit == 4332972) {
 					System.out.println("error");
@@ -870,7 +870,7 @@ public class GffLocatCod extends GffChrUnion
 			GffCodInfoUCSCgene tmpresult=null;
 			try {
 				String LOCID=LOCIDInfo[i][0].toLowerCase();
-				int LOCcod=Integer.parseInt(LOCIDInfo[i][1]);
+				int LOCcod=Integer.parseInt(LOCIDInfo[i][1].trim());
 				if (LOCcod == 2336086) {
 					System.out.println("error");
 				}

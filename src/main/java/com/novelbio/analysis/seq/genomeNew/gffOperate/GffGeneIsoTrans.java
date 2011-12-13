@@ -1,6 +1,8 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
@@ -453,5 +455,44 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		}
 		return geneExon;
 	}
+	@Override
+	protected void sortIso() {
+		for (int i = 0; i < lsIsoform.size(); i++) {
+			int[] is = lsIsoform.get(i);
+			if (is[0] < is[1]) {
+				int tmp = is[1];
+				is[1] = is[0];
+				is[0] = tmp;
+				logger.error("exon坐标有问题：" + is[0]+"\t" + is[1]);
+			}
+		}
+		Collections.sort(lsIsoform, new Comparator<int[]>() {
+			@Override
+			public int compare(int[] o1, int[] o2) {
+				if (o1[0] < o2[0]) {
+					return -1;
+				}
+				else if (o1[0] > o2[0]) {
+					return 1;
+				}
+				else {
+					return 0;
+				}
+			}
+		});
+	}
+	@Override
+	protected void sortIsoRead() {
+		Collections.sort(lsIsoform, new Comparator<int[]>() {
 
+			@Override
+			public int compare(int[] o1, int[] o2) {
+				Integer a = o1[0];
+				Integer b = o2[0];
+				return -a.compareTo(b);
+			}
+		});
+		
+	}
+	
 }

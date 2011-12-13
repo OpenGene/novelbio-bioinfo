@@ -7,6 +7,7 @@ import java.util.Comparator;
 
 import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.condHostInfoEnt;
 
+import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
@@ -19,10 +20,6 @@ public class CmpPeakStatistic {
 	
 	public static void main(String[] args) {
 		CmpPeakStatistic cmpPeakStatistic = new CmpPeakStatistic();
-		
-		
-		
-		
 		cmpPeakStatistic.getOverlapNum("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/WE.clean.fq/result/peakCalling/SICER/WEseSort-W200-G600-E100vsNature2007.scoreisland",
 				100, 7, 4, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/WE.clean.fq/result/peakCalling/SICER/WEseSort-W200-G600-E100vsNature2007_statistic.scoreisland");
 	}

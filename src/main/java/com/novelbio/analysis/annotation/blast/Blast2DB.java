@@ -26,6 +26,9 @@ import com.novelbio.database.model.modcopeid.CopeID;
  */
 public class Blast2DB {
 	
+	public static void main(String[] args) {
+		
+	}
 	/**
 	 * 给定正则表达式来抓取名称中需要的ID。如果regx.equals("")，那么默认抓取
 	 * >gi|215277009|ref|NR_024540.1| Homo sapiens WAS protein family homolog 5 pseudogene (WASH5P), non-coding RNA 

@@ -186,27 +186,49 @@ public class AnnoQuery {
 				accID = geneInfo[i][colNum].split(regx);
 			}
 			String thisaccID = geneInfo[i][colNum];
-			for (int j = 0; j < accID.length; j++) {
-				ArrayList<String> lsTmpaccID = ServAnno.getNCBIUni(CopeID.removeDot(accID[j]), taxID);
-				if (!lsTmpaccID.get(0).equals("accID")) {
-					thisaccID = accID[j];
-					break;
+			CopedID copedID = new CopedID(thisaccID, taxID, false);
+			copedID.setBlastInfo(StaxID, evalue);
+			String[] tmpAno = copedID.getAnnoInfo(blast);//ServAnno.getAnno(thisaccID,taxID, blast, StaxID, evalue);
+			if (taxID == 39947) {
+				String[] tmpAnoLoc = new String[tmpAno.length + 1];
+				for (int j = 0; j < tmpAno.length; j++) {
+					tmpAnoLoc[j+1] = tmpAno[j];
 				}
+				tmpAnoLoc[0] = copedID.getAccIDDBinfo(NovelBioConst.DBINFO_RICE_TIGR);
+				
+				
+				lsgenAno.add(tmpAnoLoc);
 			}
-			String[] tmpAno = ServAnno.getAnno(thisaccID,taxID, blast, StaxID, evalue);
-			lsgenAno.add(tmpAno);
+			else {
+				lsgenAno.add(tmpAno);
+			}
 		}
 		String[][] geneAno = new String[geneInfo.length][lsgenAno.get(0).length];
-		geneAno[0][0] = "Symbol";geneAno[0][1] = "Description";
-		if (blast) {
-			geneAno[0][2] = "subjectTaxID"; geneAno[0][3] = "evalue";
-			geneAno[0][4] = "symbol"; geneAno[0][5] = "description";
-		}
-		for (int i = 1; i < geneAno.length; i++) {
-			for (int j = 0; j < geneAno[0].length; j++) {
-				geneAno[i][j] = lsgenAno.get(i-1)[j];
+		if (taxID == 39947) {
+			geneAno[0][0] = "LocID"; geneAno[0][1] = "Symbol";geneAno[0][2] = "Description";
+			if (blast) {
+				geneAno[0][3] = "subjectTaxID"; geneAno[0][4] = "evalue";
+				geneAno[0][5] = "symbol"; geneAno[0][6] = "description";
+			}
+			for (int i = 1; i < geneAno.length; i++) {
+				for (int j = 0; j < geneAno[0].length; j++) {
+					geneAno[i][j] = lsgenAno.get(i-1)[j];
+				}
 			}
 		}
+		else {
+			geneAno[0][0] = "Symbol";geneAno[0][1] = "Description";
+			if (blast) {
+				geneAno[0][2] = "subjectTaxID"; geneAno[0][3] = "evalue";
+				geneAno[0][4] = "symbol"; geneAno[0][5] = "description";
+			}
+			for (int i = 1; i < geneAno.length; i++) {
+				for (int j = 0; j < geneAno[0].length; j++) {
+					geneAno[i][j] = lsgenAno.get(i-1)[j];
+				}
+			}
+		}
+		
 		String[][] dataResult = ArrayOperate.combArray(geneInfo, geneAno, colNum+1);
 		excelAnno.WriteExcel(1, 1, dataResult);
 	}

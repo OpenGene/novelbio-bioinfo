@@ -5,7 +5,7 @@ import com.novelbio.analysis.seq.chipseq.peakOverlap.PeakOverlap;
 public class PeakCompare {
 	public static void main(String[] args) {
 		PeakCompare peakCompare = new PeakCompare();
-		peakCompare.cmpPeaksWTK4vsWTK27();
+		peakCompare.cmpPeaksKO_K4vsWTK27();
 	}
 	
 	
@@ -93,7 +93,7 @@ public class PeakCompare {
 	 * 比较我们的WE与W0，从peak层面
 	 * 也就是找出潜在的bivalent
 	 */
-	public void cmpPeaksWTK4vsWTK27()
+	public void cmpPeaksWT_K4vsWTK27()
 	{
 		try {
 			String parentFile1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/";
@@ -256,5 +256,52 @@ public class PeakCompare {
 //		} catch (Exception e) {
 //		}
 
+	}
+
+
+/**
+ * 比较我们的WE与W0，从peak层面
+ * 也就是找出潜在的bivalent
+ */
+	public void cmpPeaksKO_K4vsWTK27() {
+		try {
+			String parentFile1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/score35_KO_final_anno/";
+			String fileKO_K4 = parentFile1 + "K4-k0sort-W200-G200-E100.scoreisland_score35.xls";
+
+			String parentFile2 = parentFile1;
+			String fileKO_K27 = parentFile2 + "K27-KEseSort-W200-G600-E100.scoreisland_score35.xls";
+			/**
+			 * 每个peakOverlap的细节
+			 */
+			String parentFile3 = parentFile1;
+			String txtPeakOverlapFileWE2Nature = parentFile3 + "KO_bivalent_K4sicer";
+			String txtPeakOverlapFileWE2NatureStic = parentFile3 + "KObivalent_K4sicer_statistic";
+
+			PeakOverlap.PeakOverLap(fileKO_K4, fileKO_K27,
+					txtPeakOverlapFileWE2Nature);
+			PeakOverlap.PeakStatistic("KO_K4", "KO_K27", fileKO_K4, fileKO_K27,
+					txtPeakOverlapFileWE2NatureStic);
+		} catch (Exception e) {
+		}
+
+		try {
+			String parentFile1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/score35_KO_final_anno/";
+			String fileKO_K4 = parentFile1 + "K4-k0sort-W200-G200-E100.scoreisland_score35.xls";
+
+			String parentFile2 = parentFile1;
+			String fileKO_K27 = parentFile2 + "K27-KEseSort-W200-G600-E100.scoreisland_score35.xls";
+			/**
+			 * 每个peakOverlap的细节
+			 */
+			String parentFile3 = parentFile1;
+			String txtPeakOverlapFileWE2Nature = parentFile3 + "KO_bivalent_K27sicer";
+			String txtPeakOverlapFileWE2NatureStic = parentFile3 + "KObivalent_K27sicer_statistic";
+
+			PeakOverlap.PeakOverLap(fileKO_K27, fileKO_K4,
+					txtPeakOverlapFileWE2Nature);
+			PeakOverlap.PeakStatistic("KO_K27", "KO_K4", fileKO_K27, fileKO_K4,
+					txtPeakOverlapFileWE2NatureStic);
+		} catch (Exception e) {
+		}
 	}
 }

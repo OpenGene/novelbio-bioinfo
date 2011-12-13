@@ -247,13 +247,14 @@ public class CtrlGO {
 		
 		LinkedHashMap<String, ArrayList<String[]>> hashResult = new LinkedHashMap<String, ArrayList<String[]>>();
 		hashResult.put("GO_Result", lsResultTest);
-		
+		FileOperate.changeFileSuffixReal(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, "_"+prix, null);
 		if (elimGo) {
 			ArrayList<String[]> lsGene2GO = functionTest.getGene2Item();
 			hashResult.put("Gene2GO", lsGene2GO);
 			
 			ArrayList<String[]> lsGO2Gene = functionTest.getItem2GenePvalue();
 			hashResult.put("GO2Gene", lsGO2Gene);
+			
 		}
 		else {
 			ArrayList<String[]> lsGene2GOPvalue = functionTest.getGene2ItemPvalue();
@@ -272,7 +273,7 @@ public class CtrlGO {
 				excelResult.WriteExcel(prix + entry2.getKey(), 1, 1, entry2.getValue());
 			}
 			if (elimGo) {
-				FileOperate.moveFile(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP,
+				FileOperate.moveFile(FileOperate.changeFileSuffix(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, "_"+prix, null),
 						FileOperate.getParentPathName(excelPath), FileOperate.getFileNameSep(excelPath)[0] + prix + "GoMap.pdf", true);
 			}
 		}

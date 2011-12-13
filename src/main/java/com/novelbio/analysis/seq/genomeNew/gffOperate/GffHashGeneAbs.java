@@ -290,7 +290,14 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 	}
 	
 	
-	
+	boolean transExonBig2Small = true;
+	/**
+	 * 反方向的转录本，exon是不是从大到小的排列
+	 */
+	public void setExonTrans(boolean transExonBig2Small)
+	{
+		this.transExonBig2Small = transExonBig2Small;
+	}
 	
 }
 	

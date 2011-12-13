@@ -59,4 +59,20 @@ public class CompSubArrayInfo
 	public CompSubArray getCmp() {
 		return cmp;
 	}
+	/**
+	 * 根据方向设定起点
+	 * @param start
+	 */
+	public void setStart(double start)
+	{
+		cmp.setStartCis(start);
+	}
+	/**
+	 * 根据方向设定终点
+	 * @param start
+	 */
+	public void setEnd(double end)
+	{
+		cmp.setEndCis(end);
+	}
 }

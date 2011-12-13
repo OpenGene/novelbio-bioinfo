@@ -48,7 +48,7 @@ public class ServNCBIID extends AbsGetSpring implements MapNCBIID{
 	}
 	@Override
 	public void upDateNCBIID(NCBIID nCBIID) {
-		mapNCBIID.insertNCBIID(nCBIID);
+		mapNCBIID.upDateNCBIID(nCBIID);
 		
 	}
 	

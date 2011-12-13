@@ -38,11 +38,12 @@ public class Splicer {
 	public static void copeInfo()
 	{
 		SplitCope splitCope = new SplitCope(
-				"/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cuffDifK0vsK5/splicing.diff",
-				"/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cuffDifK0vsK5/isoforms.fpkm_tracking");
+				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/cufDif/heartK0vsWT0/splicing.diff",
+				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/cufDif/heartK0vsWT0/isoforms.fpkm_tracking");
 		try {
+			
 			splitCope
-					.copeSplit("/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cuffDifK0vsK5/splicing.Out.xls", 5);
+					.copeSplit("/media/winF/NBC/Project/Project_FY/FYmouse20111122/cufDif/heartK0vsWT0/splicing.Out5.xls", 2);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

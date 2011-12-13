@@ -330,6 +330,12 @@ public class AminoAcid {
 	 */
 	private static String getAAformate(String AA)
 	{
+		
+		if (AA.trim().equals(AA1_STOP) || AA.trim().equals(AA3_STOP)) {
+			return AA.trim();
+		}
+		
+		
 		AA = AA.trim();
 		if (AA.length() == 1) {
 			return AA.toUpperCase();

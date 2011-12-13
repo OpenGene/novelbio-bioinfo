@@ -628,6 +628,7 @@ public class TxtReadandWrite {
 	/**
 	 * @param lsContent-T 注意T只能是string interge等简单的能转化为string的类
 	 *            ，要写入List--String文件内容,自动在每一行添加换行符"\r\n";
+	 *            内部close 流
 	 * @throws Exception
 	 */
 	public<T> void writefile(List<T> lsContent){
@@ -640,6 +641,7 @@ public class TxtReadandWrite {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+		close();
 	}
 
 	/**

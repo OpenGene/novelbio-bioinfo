@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.swing.plaf.synth.Region;
 
@@ -18,6 +19,7 @@ import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.apache.commons.math.stat.descriptive.rank.Max;
 import org.apache.commons.math.stat.descriptive.rank.Min;
 import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -62,6 +64,18 @@ public class MapReads {
 	  * 序列信息,名字都为小写
 	  */
 	 HashMap<String, Long> hashChrLen = new HashMap<String, Long>();
+	 /**
+	  * 每条序列的reads数量，long[]只有0有效，只是为了地址传递
+	  */
+	 HashMap<String, long[]> hashChrReadsNum = new HashMap<String, long[]>();
+	 /**
+	  * 每条序列的堆叠bp数量，long[]只有0有效，只是为了地址传递
+	  */
+	 HashMap<String, long[]> hashChrPipNum = new HashMap<String, long[]>();
+	 /**
+	  * 每条序列的平均堆叠高度，int[]只有0有效，只是为了地址传递
+	  */
+	 HashMap<String, Double> hashChrPipMean = new HashMap<String, Double>();
 	 /**
 	  * 具体的mapping文件
 	  */
@@ -130,12 +144,12 @@ public class MapReads {
 	  */
 	 public long getAllReadsNum() {
 		return allReadsNum;
-	}
+	 }
 	 
 	 static boolean booPrintChrID = true;
 	 public static void setBooPrintChrID(boolean booPrintChrID) {
-		MapReads.booPrintChrID = booPrintChrID;
-	}
+		 MapReads.booPrintChrID = booPrintChrID;
+	 }
 	 
 	/**
 	 * 设定双端readsTag拼起来后长度的估算值，目前solexa双端送样长度大概是300bp，不用太精确
@@ -326,8 +340,7 @@ public class MapReads {
 			return -1;
 		}
 //		看一下startRegion是否起作用
-		long[] ReadsNum = new long[1];
-		//所谓结算就是说每隔invNum的bp就把这invNumbp内每个bp的Reads叠加数取平均或中位数，保存进chrBpReads中
+ 		//所谓结算就是说每隔invNum的bp就把这invNumbp内每个bp的Reads叠加数取平均或中位数，保存进chrBpReads中
 		/////////////////////////////////////////获得每条染色体的长度并保存在hashChrLength中////////////////////////////////////////////////////
 		int[] chrBpReads=null;//保存每个bp的reads累计数
 		int[] SumChrBpReads=null;//直接从0开始记录，1代表第二个invNum,也和实际相同
@@ -335,6 +348,8 @@ public class MapReads {
 		TxtReadandWrite txtmap=new TxtReadandWrite(mapFile,false);
 		BufferedReader bufmap=txtmap.readfile();
 		String content=""; String lastChr="";
+		long[] readsChrNum = new long[1];
+		long[] readsPipNum = new long[1];
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		//先假设mapping结果已经排序好，并且染色体已经分开好。
 		boolean flag = true;// 当没有该染色体时标记为false并且跳过所有该染色体上的坐标
@@ -345,7 +360,7 @@ public class MapReads {
 			{
 				tmpOld = new int[2];//更新 tmpOld
 				if (!lastChr.equals("") && flag){ // 前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
-					sumChrBp(chrBpReads, 1, SumChrBpReads);
+					sumChrBp(chrBpReads, 1, SumChrBpReads, readsPipNum);
 				}
 				lastChr = tmp[colChrID].trim().toLowerCase();// 实际这是新出现的ChrID
 				// ////////////////释放内存，感觉加上这段有点用，本来内存到1.2g，加了后降到990m///////////////////////////
@@ -354,7 +369,6 @@ public class MapReads {
 						System.out.println(lastChr);
 //					}
 				}
-				
 //				chrBpReads = null;// 看看能不能释放掉内存
 //				System.gc();// 显式调用gc
 				int chrLength = 0;
@@ -375,6 +389,10 @@ public class MapReads {
 				SumChrBpReads = new int[SumLength];// 直接从0开始记录，1代表第二个invNum,也和实际相同
 				// //////////将新出现的chr装入哈希表////////////////////////////////
 				hashChrBpReads.put(lastChr, SumChrBpReads);// 将新出现的chrID和新建的SumChrBpReads装入hash表
+				readsChrNum = new long[1];
+				hashChrReadsNum.put(lastChr, readsChrNum);
+				readsPipNum = new long[1];
+				hashChrPipNum.put(lastChr, readsPipNum);
 				// ///////////将每一条序列长度装入lsChrLength///////////////////
 				String[] tmpChrLen = new String[2];
 				tmpChrLen[0] = lastChr;
@@ -386,12 +404,12 @@ public class MapReads {
 				continue;
 			//TODO 这里 uniqe mapping 的设置需要修改，因为万一 tmp[colUnique]里面不是数字呢？
 			if (!booUniqueMapping || colUnique < 0 || tmp.length <= colUnique || Integer.parseInt(tmp[colUnique]) <= 1) {
-				tmpOld = addLoc(tmp, uniqReads, tmpOld, startCod, cis5to3, chrBpReads,ReadsNum);
+				tmpOld = addLoc(tmp, uniqReads, tmpOld, startCod, cis5to3, chrBpReads,readsChrNum);
 			}
 		}
 		///////////////////循环结束后还要将最后一次的内容做总结////////////////////////////////////
 		if (flag) {
-			sumChrBp(chrBpReads, 1, SumChrBpReads);
+			sumChrBp(chrBpReads, 1, SumChrBpReads, readsPipNum);
 		}
 		 ////////////////////////////把lsChrLength按照chrLen从小到大进行排序/////////////////////////////////////////////////////////////////////////////
 		  Collections.sort(lsChrLength,new Comparator<String[]>(){
@@ -406,8 +424,12 @@ public class MapReads {
 	            }
 	        });
 		  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		  allReadsNum = ReadsNum[0];
-		  return ReadsNum[0];
+		  allReadsNum = 0;
+		  for (Entry<String, long[]> entry : hashChrReadsNum.entrySet()) {
+			allReadsNum = allReadsNum + entry.getValue()[0];
+			hashChrPipMean.put(entry.getKey(), (double)hashChrPipNum.get(entry.getKey())[0]/hashChrLen.get(entry.getKey()));
+		  }
+		  return allReadsNum;
 	}
 	/**
 	 * 具体加和的处理方法
@@ -563,15 +585,16 @@ public class MapReads {
 	 * @param type 取值类型，中位数或平均值，0中位数，1均值 其他的默认中位数
 	 * @param SumChrBpReads 将每个区间内的
 	 */
-	protected void sumChrBp(int[] chrBpReads,int type,int[] SumChrBpReads) 
+	protected void sumChrBp(int[] chrBpReads,int type,int[] SumChrBpReads, long[] chrReadsPipNum) 
 	{
 		 int SumLength = chrBpReads.length/invNum - 1;//保证不会溢出，因为java默认除数直接忽略小数而不是四舍五入
 		 if (invNum == 1) {
 			for (int i = 0; i < SumLength; i++) {
 				SumChrBpReads[i] = chrBpReads[i+1];
+				chrReadsPipNum[0] = chrReadsPipNum[0] + chrBpReads[i+1];
 			}
 			return;
-		}
+		 }
 		 for (int i = 0; i < SumLength; i++)
 		 {
 			 int[] tmpSumReads=new int[invNum];//将总的chrBpReads里的每一段提取出来
@@ -579,6 +602,7 @@ public class MapReads {
 			 for (int j = sumStart; j < sumStart + invNum; j++) 
 			 {
 				 tmpSumReads[k] = chrBpReads[j];
+				 chrReadsPipNum[0] = chrReadsPipNum[0] + chrBpReads[j];
 				 k++;
 			 }
 			 if (type==0) //每隔一段区域取样，建议每隔10bp取样，取中位数
@@ -598,12 +622,13 @@ public class MapReads {
 	 * @param type 取值类型，中位数或平均值，0中位数，1均值 其他的默认中位数
 	 * @param SumChrBpReads 将每个区间内的
 	 */
-	protected void sumChrBp(double[] chrBpReads,int type,int[] SumChrBpReads) 
+	protected void sumChrBp(double[] chrBpReads,int type,int[] SumChrBpReads, long[] chrReadsPipNum) 
 	{
 		 int SumLength = chrBpReads.length/invNum - 1;//保证不会溢出，因为java默认除数直接忽略小数而不是四舍五入
 		 if (invNum == 1) {
 			for (int i = 0; i < SumLength; i++) {
 				SumChrBpReads[i] = (int) Math.round(chrBpReads[i+1]);
+				chrReadsPipNum[0] = chrReadsPipNum[0] + (int) Math.round(chrBpReads[i+1]);
 			}
 			return;
 		}
@@ -614,6 +639,7 @@ public class MapReads {
 			 for (int j = sumStart; j < sumStart + invNum; j++) 
 			 {
 				 tmpSumReads[k] = (int) Math.round(chrBpReads[j]);
+				 chrReadsPipNum[0] = chrReadsPipNum[0] + (int) Math.round(chrBpReads[j]);
 				 k++;
 			 }
 			 if (type==0) //每隔一段区域取样，建议每隔10bp取样，取中位数
@@ -928,6 +954,9 @@ public class MapReads {
 	public double regionMean(String chrID, int startLoc, int endLoc)
 	{
 		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
+		if (info == null) {
+			return -1;
+		}
 		return new Mean().evaluate(info);
 	}
 	/**
@@ -1067,11 +1096,30 @@ public class MapReads {
 	}
 	
 	/**
-	 * 从这里得到的实际某条染色体的长都
+	 * 从这里得到的实际某条染色体的长度
 	 */
 	public long getChrLen(String chrID) {
 		return hashChrLen.get(chrID.toLowerCase());
 	}
+	/**
+	 * 从这里得到的实际某条染色体所包含的reads书目
+	 */
+	public long getChrReadsNum(String chrID) {
+		return hashChrReadsNum.get(chrID.toLowerCase())[0];
+	}
+	/**
+	 * 从这里得到的实际某条染色体的长度
+	 */
+	public long getChrReadsPipNum(String chrID) {
+		return hashChrPipNum.get(chrID.toLowerCase())[0];
+	}
+	/**
+	 * 从这里得到的实际某条染色体高度的平均值
+	 */
+	public double getChrReadsPipMean(String chrID) {
+		return hashChrPipMean.get(chrID.toLowerCase());
+	}
+	
 	/**
 	 * 返回所有chrID的list
 	 * @return

@@ -67,6 +67,13 @@ public class NovelBioConst {
 	 * 7位Os号
 	 */
 	public final static String DBINFO_RICE_TIGR = "TIGRrice";
+	
+	/**
+	 * 玉米
+	 */
+	public final static String DBINFO_MAIZE_MGDB = "MaizeGDB";
+	
+	
 	/**
 	 * 相对路径文件夹
 	 */

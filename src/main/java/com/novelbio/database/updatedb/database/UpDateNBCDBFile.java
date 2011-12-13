@@ -829,7 +829,7 @@ public class UpDateNBCDBFile {
 	/**
 	 * 将Blast整理好的结果插入BlastInfo中
 	 * 插入时采用如下方法
-	 * 用queryID，queryTax和subjectTax搜索数据库，如果没找到，则插入。如果找到，则先看subjectID是否一致，如果不一致，则比较evalue。如果新加入的evalue更小，则升级数据库
+	 * 用querygeneID，queryTax和subjectTax搜索数据库，如果没找到，则插入。如果找到，则先看subjectID是否一致，如果不一致，则比较evalue。如果新加入的evalue更小，则升级数据库
 	 * 如果有跳过
 	 * @author zong0jie
 	 * @param blast2InfoFile blast文件
@@ -893,7 +893,6 @@ public class UpDateNBCDBFile {
 			blastInfo.setBlastDate(ss[8]);//这个不会用于查询
 			
 			BlastInfo blastInfo2=MapBlastInfo.queryBlastInfo(blastInfo);
-
 			blastInfo.setQueryDB(ss[2]);
 			blastInfo.setSubjectID(copedIDS.getGenUniID());
 			blastInfo.setSubjectDB(ss[5]);

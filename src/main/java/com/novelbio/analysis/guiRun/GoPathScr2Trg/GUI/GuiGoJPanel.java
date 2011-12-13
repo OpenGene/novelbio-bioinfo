@@ -36,6 +36,7 @@ import com.novelbio.base.gui.CtrlNormal;
 import com.novelbio.base.gui.NumberOnlyDoc;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.NumOnlyDoc;
+import com.novelbio.database.model.modgo.GOInfoAbs;
 
 
 /**
@@ -544,13 +545,13 @@ public class GuiGoJPanel extends JPanel{
 		String geneFileXls = jTxtFilePathGo.getText();
 		String GOClass = "";
 		if (jRadBtnGoClassC.isSelected()) {
-			GOClass = "C";
+			GOClass = GOInfoAbs.GO_CC;
 		}
 		else if (jRadBtnGoClassP.isSelected()) {
-			GOClass = "P";
+			GOClass = GOInfoAbs.GO_BP;
 		}
 		else if (jRadBtnGoClassF.isSelected()) {
-			GOClass = "F";
+			GOClass = GOInfoAbs.GO_MF;
 		}
 		int colAccID = Integer.parseInt(jTxtAccColGo.getText());
 		int colFC = Integer.parseInt(jTxtValColGo.getText());

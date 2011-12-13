@@ -509,6 +509,13 @@ public class FastQ extends SeqComb {
 				seqBlock1 = trimAdaptor(seqBlock1);
 				if (booPairEnd)
 					seqBlock2 = trimAdaptor(seqBlock2);
+				
+				
+				if (seqBlock1 == null || seqBlock2 == null) {
+					seqBlock1 = ""; seqBlock2 = "";
+					count = 0;// 清零
+					continue;
+				}
 				///////////// polyA ///////////////////////////////////////////////////////
 				if (trimPolyA_right) {
 					seqBlock1 = trimPolyAR(seqBlock1, 2);
@@ -714,6 +721,7 @@ public class FastQ extends SeqComb {
 	}
 	/**
 	 * 过滤左右两侧的接头
+	 * 如果截短后的长度小于设定的最短reads长度，那么就返回null
 	 * @param fastQBlock
 	 * @return
 	 */

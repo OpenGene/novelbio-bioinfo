@@ -172,6 +172,7 @@ public class CopedID implements CopedIDInt{
 	
 	@Override
 	public BlastInfo setBlastInfo(int StaxID, double evalue) {
+		copedID.setBlastLsInfo(evalue, StaxID);
 		return copedID.setBlastInfo(StaxID, evalue);
 	}
 	public ArrayList<BlastInfo> getLsBlastInfos()

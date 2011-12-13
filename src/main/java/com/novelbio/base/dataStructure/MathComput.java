@@ -30,7 +30,7 @@ public class MathComput {
 	{
 		int length=unsortNum.length;
 		int sum=0;
-		for(int i=1;i<length;i++)
+		for(int i=0;i<length;i++)
 		{
 			sum=sum+unsortNum[i];
 		}
@@ -41,7 +41,7 @@ public class MathComput {
 	public double mean(List<? extends Number> lsNumbers) {
 		double length=lsNumbers.size();
 		double sum=0;
-		for(int i=1;i<length;i++)
+		for(int i=0;i<length;i++)
 		{
 			sum=sum+lsNumbers.get(i).doubleValue();
 		}
@@ -60,7 +60,7 @@ public class MathComput {
 	{
 		double length=unsortNum.length;
 		double sum=0;
-		for(int i=1;i<length;i++)
+		for(int i=0;i<length;i++)
 		{
 			sum=sum+unsortNum[i];
 		}

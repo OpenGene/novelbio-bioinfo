@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
 import com.novelbio.analysis.seq.chipseq.BedPeakSicer;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.analysis.seq.genomeNew.GffChrMap;
@@ -20,9 +21,30 @@ public class Peakcalling {
 	
 	public static void main(String[] args) {
 		Peakcalling sicerpeakcalling = new Peakcalling();
-		sicerpeakcalling.peakCallingSICER();
+		sicerpeakcalling.peakCallingMACS();
 	}
-	
+public void peakCallingMACS() {
+ 
+		
+		try {
+			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/FX2se.bed";
+			BedPeakMacs bedPeakSicer = new BedPeakMacs(bedFile);
+			bedPeakSicer.setNoLambda();//(BedPeakSicer.HISTONE_TYPE_H3K4);
+			bedPeakSicer.peakCallling(null, BedPeakMacs.SPECIES_MOUSE, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/FX2.clean.fq/result/", "FX2");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		try {
+			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/FHE.clean.fq_SE.bed";
+			BedPeakMacs bedPeakSicer = new BedPeakMacs(bedFile);
+			bedPeakSicer.setNoLambda();//(BedPeakSicer.HISTONE_TYPE_H3K4);
+			bedPeakSicer.peakCallling(null, BedPeakMacs.SPECIES_MOUSE, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/FHE/", "FHE");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+		
+		
 	
 	
 	public void peakCallingSICER() {

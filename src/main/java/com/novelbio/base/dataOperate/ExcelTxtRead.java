@@ -121,8 +121,8 @@ public class ExcelTxtRead {
 	 * @param excelFile
 	 * @param rowStart 
 	 * @param rowEnd 值小于等于0时，读取全部行
-	 * @param colStart 值小于等于0时，读取全部列
-	 * @param colEnd
+	 * @param colStart 
+	 * @param colEnd 值小于等于0时，读取全部列
 	 * @return
 	 * @throws Exception
 	 */

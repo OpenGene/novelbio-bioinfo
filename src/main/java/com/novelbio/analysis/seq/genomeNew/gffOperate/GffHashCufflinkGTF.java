@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	GffHashGene gffHashRef;
@@ -22,6 +23,13 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	 */
 	public void setGffHashRef(GffHashGene gffHashRef) {
 		this.gffHashRef = gffHashRef;
+	}
+	/**
+	 * 反方向的转录本，exon是不是从大到小的排列
+	 */
+	public void setExonTrans(boolean transExonBig2Small)
+	{
+		this.transExonBig2Small = transExonBig2Small;
 	}
 	
 	String transcript = "transcript";
@@ -82,7 +90,13 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 					gffGeneIsoInfo = new GffGeneIsoTrans(tmpTranscriptName, chrnametmpString, GffGeneIsoInfo.TYPE_GENE_MRNA);
 				lsGeneIsoInfos.add(gffGeneIsoInfo);
 			}
-			gffGeneIsoInfo.addExonCufflinkGTF( Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+			if (transExonBig2Small) {
+				gffGeneIsoInfo.addExonGFF( Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+			}
+			else {
+				gffGeneIsoInfo.addExonCufflinkGTF( Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+			}
+			
 		}
 		CopeChrIso(hashChrIso);
 		txtgff.close();
@@ -130,14 +144,14 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		//依次装入gffdetailGene中
 		GffDetailGene gffDetailGene = null;
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGeneIsoInfos) {
-			if (gffGeneIsoInfo.getIsoName().contains("transfrag.13988")) {
-				System.out.println("stop");
-			}
+			gffGeneIsoInfo.sortIsoRead();
 			if (gffDetailGene == null) {
 				gffDetailGene = new GffDetailGene(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getIsoName(), gffGeneIsoInfo.isCis5to3());
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				lsResult.add(gffDetailGene);
 				locHashtable.put(gffGeneIsoInfo.getIsoName().toLowerCase(), gffDetailGene);
+				locHashtable.put(CopedID.removeDot(gffGeneIsoInfo.getIsoName()).toLowerCase(), gffDetailGene);
+				locHashtable.put(CopedID.removeDot(gffDetailGene.getLocString()).toLowerCase(), gffDetailGene);
 				continue;
 			}
 			
@@ -148,12 +162,17 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			if (compResult[2] > GffDetailGene.OVERLAP_RATIO || compResult[3] > GffDetailGene.OVERLAP_RATIO) {
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				locHashtable.put(gffGeneIsoInfo.getIsoName().toLowerCase(), gffDetailGene);
+				locHashtable.put(CopedID.removeDot(gffGeneIsoInfo.getIsoName()).toLowerCase(), gffDetailGene);
+
 			}
 			else {
+				
 				gffDetailGene = new GffDetailGene(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getIsoName(), gffGeneIsoInfo.isCis5to3());
+				locHashtable.put(CopedID.removeDot(gffDetailGene.getLocString()).toLowerCase(), gffDetailGene);
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				lsResult.add(gffDetailGene);
 				locHashtable.put(gffGeneIsoInfo.getIsoName().toLowerCase(), gffDetailGene);
+				locHashtable.put(CopedID.removeDot(gffGeneIsoInfo.getIsoName()).toLowerCase(), gffDetailGene);
 				continue;
 			}
 		}

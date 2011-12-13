@@ -26,10 +26,12 @@ import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.model.modcopeid.CopeID;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.service.servgeneanno.ServNCBIID;
 
 
 public class UpDateFriceDB {
 	private static Logger logger = Logger.getLogger(UpDateFriceDB.class);
+	 
 	/**
 	 * 指定一些ID，找出他们的geneID或UniID、
 	 * 主要是方便upDateNCBIUniID的使用
@@ -39,6 +41,7 @@ public class UpDateFriceDB {
 	 * string-2 0:geneID, ==0 说明没找到 1: UniID == null 或"" 说明没找到
 	 */
 	public static String[] getGeneUniID( int taxID,String... tmpID) {
+		ServNCBIID servNCBIID = new ServNCBIID();
 		long geneID = 0;
 		String uniID = "";
 		for (int i = 0; i < tmpID.length; i++) {
@@ -47,7 +50,7 @@ public class UpDateFriceDB {
 			}
 			NCBIID ncbiid = new NCBIID();
 			ncbiid.setAccID(CopeID.removeDot(tmpID[i])); ncbiid.setTaxID(taxID);
-			ArrayList<NCBIID> lsNcbiid = MapNCBIID.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsNcbiid = servNCBIID.queryLsNCBIID(ncbiid);
 			if (lsNcbiid != null && lsNcbiid.size()>0)
 			{
 				geneID = lsNcbiid.get(0).getGeneId();
@@ -94,6 +97,7 @@ public class UpDateFriceDB {
 	 */
 	public static boolean upDateNCBIUniID(long GeneID, String uniID,int taxID,boolean considerGeneID,Collection<String[]> lsAccIDInfo,String ...arStrings)
 	{
+		ServNCBIID servNCBIID = new ServNCBIID();
 		HashSet<String> hashDBInfo = new HashSet<String>();
 		for (String string : arStrings) {
 			hashDBInfo.add(string);
@@ -112,13 +116,13 @@ public class UpDateFriceDB {
 				if (considerGeneID) {
 					ncbiid.setGeneId(GeneID);
 				}
-				ArrayList<NCBIID> lsNcbiid = MapNCBIID.queryLsNCBIID(ncbiid);
+				ArrayList<NCBIID> lsNcbiid = servNCBIID.queryLsNCBIID(ncbiid);
 				if (lsNcbiid != null && lsNcbiid.size()>0)
 				{//如果数据库中的--来源信息 和本次不一致，并且需要更换名称
 					if  (hashDBInfo.contains(strings[1]) && !lsNcbiid.get(0).getDBInfo().equals(strings[1])) {
 						ncbiid.setGeneId(GeneID);ncbiid.setDBInfo(strings[1]);
 						ncbiid.setTaxID(taxID);
-						MapNCBIID.upDateNCBIID(ncbiid);
+						servNCBIID.upDateNCBIID(ncbiid);
 					}
 				}
 				else
@@ -130,7 +134,12 @@ public class UpDateFriceDB {
 					
 					ncbiid.setGeneId(GeneID);ncbiid.setDBInfo(strings[1]);
 					ncbiid.setTaxID(taxID);
-					MapNCBIID.insertNCBIID(ncbiid);
+					try {
+						servNCBIID.insertNCBIID(ncbiid);
+					} catch (Exception e) {
+						servNCBIID.upDateNCBIID(ncbiid);
+					}
+					
 				}
 			}
 			return true;
@@ -163,7 +172,12 @@ public class UpDateFriceDB {
 				else {
 					uniProtID.setDBInfo(strings[1]); uniProtID.setUniID(uniID);
 					uniProtID.setTaxID(taxID);
-					MapUniProtID.InsertUniProtID(uniProtID);
+					try {
+						MapUniProtID.InsertUniProtID(uniProtID);
+					} catch (Exception e) {
+						MapUniProtID.upDateUniProt(uniProtID);
+					}
+					
 				}
 			}
 			return true;
@@ -230,6 +244,69 @@ public class UpDateFriceDB {
 			return false;
 		}
 	}
+	
+	/**
+	 * 给定一个GOterm，以及相应的GeneID或UniID，将这个GoTerm插入相应的表.
+	 * 当一个geneID仅有GOterm存在时会最合适
+	 * 同时指定GO数据库的来源，数据库中没有的会被插入。
+	 * @param geneID 如果geneID不为0，插入NCBIID数据库
+	 * @param uniID 如果uniID不为null，插入uniProtID数据库
+	 * 注意如果uniID和geneID并存，那么优先考虑geneID
+	 * @param lsAccIDInfo 一组accID的信息 list-string[2] 0:accID 1:DataBaseInfo
+	 * @param arStrings 指定的databaseInfo
+	 * @return 插入返回true，没有能够插入，也就是没找到，返回false
+	 */
+	public static boolean upDateGenGO(CopedID copedID, String tmpGOID,String DBINFO) {
+		Go2Term go2Term = new Go2Term();
+		go2Term.setGoIDQuery(tmpGOID);
+		Go2Term go2Term2 = MapGo2Term.queryGo2Term(go2Term);
+		String function = go2Term2.getGoFunction();
+		String term = go2Term2.getGoTerm();
+		String goID = go2Term2.getGoID();
+		AGene2Go gene2Go = null;
+		//先装Gene2GO
+		if (copedID.getIDtype().equals(CopedID.IDTYPE_GENEID)) {
+			gene2Go = new Gene2Go();
+			gene2Go.setGOID(goID);
+			gene2Go.setDataBase(DBINFO);
+			gene2Go.setFunction(function);
+			gene2Go.setGeneUniID(copedID.getGenUniID());
+			gene2Go.setGOTerm(term);
+			
+			Gene2Go gene2Go2 = (Gene2Go) MapGene2Go.queryGene2Go((Gene2Go)gene2Go);
+			if (gene2Go2 != null)
+			{
+				return true;
+			}
+			else
+			{
+				MapGene2Go.InsertGene2Go((Gene2Go)gene2Go);
+				return true;
+			}
+		}
+		//再装uniGene2GO
+		else if (copedID.getIDtype().equals(CopedID.IDTYPE_UNIID)) 
+		{
+			gene2Go = new UniGene2Go();
+			gene2Go.setGOID(goID);
+			gene2Go.setDataBase(DBINFO);
+			gene2Go.setFunction(function);
+			gene2Go.setGeneUniID(copedID.getGenUniID());
+			gene2Go.setGOTerm(term);
+			AGene2Go uniGene2Go2 = MapUniGene2Go.queryUniGene2Go((UniGene2Go)gene2Go);
+			if (uniGene2Go2 != null) {
+				return true;
+			}
+			else {
+				MapUniGene2Go.InsertUniGene2Go((UniGene2Go)gene2Go);
+				return true;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+	
 	
 	/**
 	 * 给定一个Gene2Go，以及相应的GeneID或UniID，将这个GoTerm插入相应的表.
@@ -359,8 +436,18 @@ public class UpDateFriceDB {
 	}
 	
 	
-	
+	/**
+	 * 默认替换已有数据库中的symbol
+	 * @param aGeneInfo
+	 */
 	public static void upDateGenInfo(AGeneInfo aGeneInfo)
+	{
+		upDateGenInfo(aGeneInfo, true);
+		
+	}
+	
+	
+	public static void upDateGenInfo(AGeneInfo aGeneInfo, boolean changeSymbol)
 	{
 		if(aGeneInfo.getIDType().equals(CopedID.IDTYPE_GENEID))
 		{
@@ -371,6 +458,9 @@ public class UpDateFriceDB {
 				MapGeneInfo.InsertGeneInfo((GeneInfo) aGeneInfo);
 			}
 			else {
+				if (!changeSymbol) {
+					aGeneInfo.setSymbol(null);
+				}
 				MapGeneInfo.upDateGeneInfo((GeneInfo) aGeneInfo);
 			}
 		}
@@ -382,20 +472,14 @@ public class UpDateFriceDB {
 				MapUniGeneInfo.InsertUniGeneInfo((UniGeneInfo) aGeneInfo);
 			}
 			else {
+				if (!changeSymbol) {
+					aGeneInfo.setSymbol(null);
+				}
 				MapUniGeneInfo.upDateUniGeneInfo((UniGeneInfo) aGeneInfo);
 			}
 		}
 		else {
 			logger.error("出错，没见过的IDType");
 		}
-		
-		
-		
 	}
-	
-	
-	
-	
-	
-	
 }
