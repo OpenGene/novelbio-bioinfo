@@ -16,35 +16,32 @@ public class GOandAnno {
 		String parentFile = ""; String file = "";
 		
 		
-		parentFile = "/media/winE/NBC/Project/Project_ZDB_Lab/HY2011xinpian/HY_filter/";
+		parentFile = "/media/winE/NBC/Project/Project_ZDB_Lab/XW/XW-2/";
 		
-		file = parentFile + "HYM32 vs 11.xls";
+		file = parentFile + "Fon4vsFonM.xls";
 		goanalysis(39947, 3702, file, 
 				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
 		
-		file = parentFile + "HYM1 vs11.xls";
+		file = parentFile + "Fon4vsQ34.xls";
 		goanalysis(39947, 3702, file, 
 				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
 		
-		file = parentFile + "HYa1_6 vsM1.xls";
+		file = parentFile + "Q34vsFonM.xls";
 		goanalysis(39947, 3702, file, 
 				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
 		
-		file = parentFile + "HYa1_6 vs11.xls";
+		file = parentFile + "QctrvsFon4.xls";
 		goanalysis(39947, 3702, file, 
 				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
 		
-		file = parentFile + "HYa1_3 vs M1.xls";
+		file = parentFile + "QctrvsFonM.xls";
 		goanalysis(39947, 3702, file, 
 				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
 		
-		file = parentFile + "HYa1_3vs1-6.xls";
+		file = parentFile + "WTvsTF.xls";
 		goanalysis(39947, 3702, file, 
 				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
 		
-		file = parentFile + "HYa1_3vs11.xls";
-		goanalysis(39947, 3702, file, 
-				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
 		
 //		anno(39947, 3702, file, FileOperate.changeFileSuffix(file, "_anno", null));
 //		
@@ -99,10 +96,10 @@ public class GOandAnno {
 		ctrlGO = CtrlGO.getInstance(elimGo, GOClass, QtaxID, blast, evalue, StaxID);
 		ctrlGO.setLsBG(backGroundFile);
 		
-		ctrlGO.doInBackgroundNorm(lsAccIDAll, 1, -1);
+		ctrlGO.doInBackgroundNorm(lsAccIDAll, 0.9, -0.9);
 		ctrlGO.saveExcel(outFile);
 		
-		ctrlGO.doInBackgroundNorm(lsAccIDCod, 1, -1);
+		ctrlGO.doInBackgroundNorm(lsAccIDCod, 0.9, -0.9);
 		ctrlGO.saveExcel(outFile);
 		
 		
