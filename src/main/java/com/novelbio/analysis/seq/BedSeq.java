@@ -430,6 +430,7 @@ public class BedSeq extends SeqComb{
 	/**
 	 * @return
 	 * 返回每个基因所对应的表达量， 用 int[1]只是为了地址引用。
+	 * bed文件必须排序
 	 * @throws Exception
 	 */
 	private HashMap<String, Integer> getGeneExpress() throws Exception
@@ -442,6 +443,10 @@ public class BedSeq extends SeqComb{
 		int tmpCount = 0; int tmpLocEnd = -1;
 		while ((content = reader.readLine()) != null) {
 			String[] ss = content.split("\t");
+			//mapping到互补链上的，是假的信号
+			if (ss[5].equals("-")) {
+				continue;
+			}
 			if (!oldLoc.equals(ss[0]) && !oldLoc.equals("")) {
 				hashResult.put(oldLoc, (int)MathComput.max(lsTmpExpValue));
 				lsTmpExpValue.clear();
@@ -451,7 +456,6 @@ public class BedSeq extends SeqComb{
 			if (Integer.parseInt(ss[1]) > tmpLocEnd) {
 				lsTmpExpValue.add(tmpCount);
 				tmpCount = 0;
-				
 			}
 			tmpCount ++;
 			tmpLocEnd = Integer.parseInt(ss[2]);
