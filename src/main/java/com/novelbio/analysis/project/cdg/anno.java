@@ -19,22 +19,22 @@ public class anno {
 	}
 	
 	private static void anno() {
-//		GffChrAnno gffChrAnno = new GffChrAnno(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ);
-//		gffChrAnno.setFilterTssTes(new int[]{-3000,2000}, null);
-//		String parent = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/score35_WT_final_anno/";
-//		String txtFile = parent + "K27_WE-W200-G600-E100_score35_overlap_filter.xls";
+		GffChrAnno gffChrAnno = new GffChrAnno(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ);
+		gffChrAnno.setFilterTssTes(new int[]{-2000,2000}, null);
+		String parent = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/score35_WT_final_anno/";
+		String txtFile = parent + "WEseSort-W200-G600-E100.scoreisland_score35.xls";
 //		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-3k+2k", "xls"));
-//		
-//		txtFile = parent + "K4-W0-W200-G200-E100_score35_overlap_filter.xls";
-//		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-3k+2k", "xls"));
-		String parent1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/bivalentKO_K4K27Down_yulu_method20111208/";
-		String parent2 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/bivalentWT_K4K27Down_yulu_method20111208/";
-
-		anno anno = new anno();
-		anno.cmpAccID(10090, parent1 + "KO_0d_bivalent_-2k+2k.xls",
-				parent2 + "bivalent_anno_WE_-2k+2kTss.xls"
-		);
-		anno.getAccID(10090, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/TKO-D4 vs FH-D42.txt", "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/TKO-D4 vs FH-D4_changeID.txt");
+		
+		txtFile = parent + "W0sort-W200-G200-E100.scoreisland_score35.xls";
+		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-2k+2k", "xls"));
+//		String parent1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/bivalentKO_K4K27Down_yulu_method20111208/";
+//		String parent2 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/bivalentWT_K4K27Down_yulu_method20111208/";
+//
+//		anno anno = new anno();
+//		anno.cmpAccID(10090, parent1 + "KO_0d_bivalent_-2k+2k.xls",
+//				parent2 + "bivalent_anno_WE_-2k+2kTss.xls"
+//		);
+//		anno.getAccID(10090, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/TKO-D4 vs FH-D42.txt", "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/TKO-D4 vs FH-D4_changeID.txt");
 		
 		
 	}

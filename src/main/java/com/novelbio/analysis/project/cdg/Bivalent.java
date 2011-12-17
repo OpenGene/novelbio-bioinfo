@@ -27,15 +27,15 @@ public class Bivalent {
 //		gffChrAnno.annoFile(txtFile, 1, 2, 3, outFile);
 		
 		
-		txtFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/K27W0-W2/WEse-and-HSZ_W-4_SE-W200-G600-summary_2foldUp.xls";
+		txtFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/score35_WT_final_anno/W0sort-W200-G200-E100.scoreisland_score35.xls";
 		outFile = FileOperate.changeFileSuffix(txtFile, "_anno", null);
 		gffChrAnno.setFilterTssTes(filterTss, null);
 		gffChrAnno.annoFile(txtFile, 1, 2, 3, outFile);
 		
-		txtFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/K27W0-W2/WEseSort-and-2WseSort-W200-G600-summary_2foldUp.xls";
-		outFile = FileOperate.changeFileSuffix(txtFile, "_anno", null);
-		gffChrAnno.setFilterTssTes(filterTss, null);
-		gffChrAnno.annoFile(txtFile, 1, 2, 3, outFile);
+//		txtFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/K27W0-W2/WEseSort-and-2WseSort-W200-G600-summary_2foldUp.xls";
+//		outFile = FileOperate.changeFileSuffix(txtFile, "_anno", null);
+//		gffChrAnno.setFilterTssTes(filterTss, null);
+//		gffChrAnno.annoFile(txtFile, 1, 2, 3, outFile);
 	}
 	
 	
