@@ -19,6 +19,21 @@ import com.novelbio.base.plot.java.HeatChartDataInt;
  *
  */
 public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
+	/**
+	 * 比较mapinfo的起点终点
+	 */
+	public static final int COMPARE_LOCSITE = 100;
+	/**
+	 * 比较mapinfo的flag site
+	 */
+	public static final int COMPARE_LOCFLAG = 200;
+	/**
+	 * 比较mapinfo的weight
+	 */
+	public static final int COMPARE_WEIGHT = 100;
+	
+	int compareInfo = COMPARE_WEIGHT;
+	
 	String chrID = "";
 	int startLoc = GffCodAbs.LOC_ORIGINAL;
 	int endLoc = GffCodAbs.LOC_ORIGINAL;
@@ -97,7 +112,14 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 			setCis5to3(false);
 		}
 	}
-	
+	/**
+	 * 选择COMPARE_LOCSITE等
+	 * 默认COMPARE_WEIGHT
+	 * @param COMPARE_TYPE
+	 */
+	public void setCompType(int COMPARE_TYPE) {
+		this.compareInfo = COMPARE_TYPE;
+	}
 	
 	
 	/**
@@ -225,20 +247,70 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		return title;
 	}
 	/**
+	 * 排序的时候不按照weight排序，而是按照site位点排序
+	 * 默认false
+	 * @param compFromSite
+	 */
+	public static void setCompSite(int compFromSite) {
+		
+	}
+	
+	/**
 	 * 用于比较的，从小到大比
 	 * 根据weight排序
 	 */
 	@Override
 	public int compareTo(MapInfo map) {
-		if (weight == map.weight) {
-			return 0;
+		if (compareInfo == COMPARE_LOCFLAG) {
+			int i = chrID.compareTo(map.chrID);
+			if (i != 0) {
+				return i;
+			}
+			if (flagLoc == map.flagLoc) {
+				return 0;
+			}
+			if (min2max) {
+				return flagLoc < map.flagLoc ? -1:1;
+			}
+			else {
+				return flagLoc > map.flagLoc ? -1:1;
+			}
 		}
-		if (min2max) {
-			return weight < map.weight ? -1:1;
+		else if (compareInfo == COMPARE_LOCSITE) {
+			int i = chrID.compareTo(map.chrID);
+			if (i != 0) {
+				return i;
+			}
+			if (startLoc == map.startLoc) {
+				if (endLoc == map.endLoc) {
+					return 0;
+				}
+				if (min2max) {
+					return endLoc < map.endLoc ? -1:1;
+				}
+				else {
+					return endLoc > map.endLoc ? -1:1;
+				}
+			}
+			if (min2max) {
+				return startLoc < map.startLoc ? -1:1;
+			}
+			else {
+				return startLoc > map.startLoc ? -1:1;
+			}
 		}
 		else {
-			return weight > map.weight ? -1:1;
+			if (weight == map.weight) {
+				return 0;
+			}
+			if (min2max) {
+				return weight < map.weight ? -1:1;
+			}
+			else {
+				return weight > map.weight ? -1:1;
+			}
 		}
+	
 	}
 	/**
 	 * 这个在设定的时候，会根据mapinfo的方向进行，也就是说如果该mapInfo为正向，则直接赋值

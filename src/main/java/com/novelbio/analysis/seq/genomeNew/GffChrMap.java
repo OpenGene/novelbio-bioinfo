@@ -90,18 +90,15 @@ public class GffChrMap extends GffChrAbs{
 	}
 	
 	public static void main(String[] args) {
-		GffChrMap gffChrMap = new GffChrMap(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ,
-				NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, 
-				"//media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/k0_extend_sort.bed", 10);
+		GffChrMap gffChrMap = new GffChrMap(NovelBioConst.GENOME_GFF_TYPE_TIGR, NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE,
+				NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, 
+				"/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/N/result/Nextend_sort.bed", 10);
 		gffChrMap.loadChrFile();
 		gffChrMap.loadMapReads();
-		gffChrMap.setPlotRegion(5000, 5000);
-		gffChrMap.plotTssTesHeatMap(Color.blue,true,"/home/zong0jie/×ÀÃæ/aaaaa.xls",
-				1, 2, 2, 0,80,1,GffDetailGene.TSS, 1000, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/TssHeattest80.png");
-		gffChrMap.plotTssTesHeatMap(Color.blue,true,"/home/zong0jie/×ÀÃæ/aaaaa.xls",
-				1, 2, 2, 0,60,1,GffDetailGene.TSS, 1000, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/TssHeattest60.png");
-		gffChrMap.plotTssTesHeatMap(Color.blue,true,"/home/zong0jie/×ÀÃæ/aaaaa.xls",
-				1, 2, 2, 0,100,1,GffDetailGene.TSS, 1000, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/TssHeattest100.png");
+		gffChrMap.setPlotRegion(4000, 4000);
+		gffChrMap.setMapNormType(MapReads.NORMALIZATION_NO);
+		gffChrMap.plotTssTesHeatMap(Color.blue,false,"/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP_mRNA/sigle/dgeexpress2.xls",
+				1, 2, 2, 0,100,1,GffDetailGene.TSS, 1000, "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTesHeatMap/check2.png");
 		
 	}
 	/**

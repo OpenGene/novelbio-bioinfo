@@ -115,9 +115,10 @@ public class MapReads {
 	  * 为第12列
 	  */
 	 int splitStart = -1;
-	 int NormalType = NORMALIZATION_NO;
+	 int NormalType = NORMALIZATION_ALL_READS;
 	 /**
 	  * 设定标准化方法，可以随时设定，不一定要在读取文件前
+	  * 默认是NORMALIZATION_ALL_READS
 	  * @param normalType
 	  */
 	 public void setNormalType(int normalType) {
@@ -765,7 +766,14 @@ public class MapReads {
 			logger.error("下标越界"+e.toString());
 		}
 		normDouble(tmpRegReads, NormalType);
-		double[] tmp =  MathComput.mySpline(tmpRegReads, binNum,leftBias,rightBias,type);
+		double[] tmp = null;
+		try {
+			tmp =  MathComput.mySpline(tmpRegReads, binNum,leftBias,rightBias,type);
+		} catch (Exception e) {
+//			tmp =  MathComput.mySpline(tmpRegReads, binNum,leftBias,rightBias,type);
+			return null;
+		}
+		
 		return tmp;
 	}
 	/**
