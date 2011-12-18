@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import org.apache.log4j.Logger;
+import org.apache.velocity.runtime.directive.Stop;
 
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -410,6 +411,7 @@ public class BedSeq extends SeqComb{
 	}
 	/**
 	 * 用dge的方法来获得基因表达量
+	 * @param sort 是否需要排序
 	 * 出错返回null
 	 */
 	public HashMap<String, Integer> getDGEnum(boolean sort) {
@@ -439,31 +441,48 @@ public class BedSeq extends SeqComb{
 		BufferedReader reader = txtSeqFile.readfile();
 		String content = "";
 		HashMap<String, Integer> hashResult = new HashMap<String, Integer>();
-		String oldLoc = ""; ArrayList<Integer> lsTmpExpValue = new ArrayList<Integer>();
-		int tmpCount = 0; int tmpLocEnd = -1;
+		String oldLoc = ""; ArrayList<int[]> lsTmpExpValue = new ArrayList<int[]>();
+		int[] tmpCount = new int[]{0}; int tmpLocEnd = -1;
 		while ((content = reader.readLine()) != null) {
+			if (content.contains("NM_018000")) {
+				System.out.println("stop");
+			}
 			String[] ss = content.split("\t");
 			//mapping到互补链上的，是假的信号
 			if (ss[5].equals("-")) {
 				continue;
 			}
 			if (!oldLoc.equals(ss[0]) && !oldLoc.equals("")) {
-				hashResult.put(oldLoc, (int)MathComput.max(lsTmpExpValue));
+				hashResult.put(oldLoc, max(lsTmpExpValue));
 				lsTmpExpValue.clear();
-				tmpCount = 0;
+				tmpCount = new int[]{0};
 				tmpLocEnd = -1;
 			}
 			if (Integer.parseInt(ss[1]) > tmpLocEnd) {
+				tmpCount = new int[]{0};
 				lsTmpExpValue.add(tmpCount);
-				tmpCount = 0;
 			}
-			tmpCount ++;
+			tmpCount[0] ++;
 			tmpLocEnd = Integer.parseInt(ss[2]);
 			oldLoc = ss[0];
 		}
 		return hashResult;
 	}
-	
+	/**
+	 * 输入int[0] 只有0位有信息
+	 * @param lsReads
+	 * @return
+	 */
+	private int max(ArrayList<int[]> lsReads)
+	{
+		int max = lsReads.get(0)[0];
+		for (int[] is : lsReads) {
+			if (is[0] > max) {
+				max = is[0];
+			}
+		}
+		return max;
+	}
 	
 	/**
 	 * 无法设定compressType
