@@ -6,13 +6,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import org.apache.log4j.Logger;
-import org.apache.velocity.runtime.directive.Stop;
 
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
  * bed格式的文件，统统用来处理bed文件
