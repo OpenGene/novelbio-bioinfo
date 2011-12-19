@@ -78,9 +78,9 @@ public class SiteInfo {
 			ArrayList<MapInfoSnpIndel> lsFileNoMapInfo = getNoSiteMapInfo(hashFileChrLocSnp.get(fileName), hashChrLocSnp);
 			MapInfoSnpIndel.getSiteInfo(lsFileNoMapInfo, hashSnpSamFile.get(fileName));
 			for (MapInfoSnpIndel mapInfoSnpIndel : lsFileNoMapInfo) {
-				String key = mapInfoSnpIndel.getChrID()+sep+mapInfoSnpIndel.getStart();
+				String key = mapInfoSnpIndel.getChrID() + sep + mapInfoSnpIndel.getStart();
 				MapInfoSnpIndel otherMap = hashChrLocSnp.get(key);//正常的别的样本的信息
-				String tmpResult = mapInfoSnpIndel.getChrID()+"\t"+mapInfoSnpIndel.getStart()+"\t"+mapInfoSnpIndel.getAllelic_depths_Ref();
+				String tmpResult = mapInfoSnpIndel.getChrID()+"\t"+mapInfoSnpIndel.getStart()+"\t"+mapInfoSnpIndel.getRefBase()+"\t" +mapInfoSnpIndel.getAllelic_depths_Ref();
 				tmpResult = tmpResult + "\t" +otherMap.getThisBase() + "\t" + mapInfoSnpIndel.getSeqType(otherMap.getThisBase(), otherMap.getType());
 				txtOut.writefileln(tmpResult);
 			}
@@ -100,7 +100,9 @@ public class SiteInfo {
 		ArrayList<MapInfoSnpIndel> lsResult = new ArrayList<MapInfoSnpIndel>();
 		for (String key : hashAll.keySet()) {
 			if (!hashTmp.containsKey(key)) {
-				lsResult.add(hashAll.get(key));
+				MapInfoSnpIndel mapInfoSnpIndelTmp = hashAll.get(key);
+				MapInfoSnpIndel mapInfoSnpIndelTmpResult = new MapInfoSnpIndel(taxID, mapInfoSnpIndelTmp.getChrID(), mapInfoSnpIndelTmp.getStart(), mapInfoSnpIndelTmp.getRefBase(), mapInfoSnpIndelTmp.getThisBase());
+				lsResult.add(mapInfoSnpIndelTmpResult);
 			}
 		}
 		return lsResult;

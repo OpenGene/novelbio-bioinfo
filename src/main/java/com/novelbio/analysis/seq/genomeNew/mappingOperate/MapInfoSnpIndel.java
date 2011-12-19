@@ -264,15 +264,19 @@ public class MapInfoSnpIndel extends MapInfo{
 				mapInfoIndex++;
 			}
 			else {
-				while (Integer.parseInt(ss[1]) > lsMapInfos.get(mapInfoIndex).getStart()) {
+				while (mapInfoIndex < lsMapInfos.size() && Integer.parseInt(ss[1]) > lsMapInfos.get(mapInfoIndex).getStart() ) {
 					mapInfoIndex++;
 				}
-				if (Integer.parseInt(ss[1]) == lsMapInfos.get(mapInfoIndex).getStart()) {
+				if (mapInfoIndex >= lsMapInfos.size()) {
+					continue;
+				}
+				else if (Integer.parseInt(ss[1]) == lsMapInfos.get(mapInfoIndex).getStart()) {
 					lsMapInfos.get(mapInfoIndex).setSamToolsPilup(content);
 					mapInfoIndex++;
 				}
 			}
 		}
+		System.out.println("readOverFile:" + txtSamToolsFile);
 	}
 	
 	
@@ -438,6 +442,20 @@ public class MapInfoSnpIndel extends MapInfo{
 	}
 	public String getSnpINFO() {
 		return Filter;
+	}
+	/**
+	 * 设定thisSite测序深度
+	 * @return
+	 */
+	public void setAllelicDepthsAlt(int Allelic_depths_Alt) {
+		this. Allelic_depths_Alt = Allelic_depths_Alt;
+	}
+	/**
+	 * 设定refSite测序深度
+	 * @return
+	 */
+	public void setAllelicDepthsRef(int Allelic_depths_Ref) {
+		this. Allelic_depths_Ref = Allelic_depths_Ref;
 	}
 	/**
 	 * AF Allele Frequency, for each ALT allele, in the same order as listed 1表示纯合子，0.5表示杂合，多个样本可能结果会不同
