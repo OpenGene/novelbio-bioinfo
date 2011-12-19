@@ -450,8 +450,18 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		String geneExon = "";
 		for (int i = getIsoInfo().size() - 1; i >= 0; i--) {
 			int[] exons = getIsoInfo().get(i);
-			geneExon = geneExon + getChrID() + "\t" + title + "\texon\t" + exons[1] + "\t" + exons[0] + "\t" + "0.000000" + "\t"
+			geneExon = geneExon + getChrID() + "\t" + title + "\texon\t" + exons[1] + "\t" + exons[0] + "\t" + "." + "\t"
 					+ strand + "\t.\t" + "gene_id \"" + geneID + "\"; transcript_id " + getIsoName() + "\"; \r\n";
+		}
+		return geneExon;
+	}
+	@Override
+	protected String getGFFformatExonMISO(String geneID, String title, String strand) {
+		String geneExon = "";
+		for (int i = 0;  i < getIsoInfo().size(); i++) {
+			int[] exons = getIsoInfo().get(i);
+			geneExon = geneExon + getChrID() + "\t" + title + "\texon\t" + exons[1] + "\t" + exons[0] + "\t" + "." + "\t"
+					+ strand + "\t.\t" + "ID=exon:" + getIsoName()  + ":" + i +";"+ "Parent=" + getIsoName() + " \r\n";
 		}
 		return geneExon;
 	}
@@ -494,5 +504,6 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		});
 		
 	}
+
 	
 }

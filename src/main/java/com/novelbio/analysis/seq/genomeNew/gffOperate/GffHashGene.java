@@ -245,9 +245,11 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 	@Override
 	public void writeToGTF(String GTFfile, String title) {
 		gffHashGene.writeToGTF(GTFfile, title);
-		
 	}
 	
-		
+	@Override
+	public void writeToGFFIso(String GTFfile, String title) {
+		gffHashGene.writeToGFFIso(GTFfile, title);
+	}	
 		
 }

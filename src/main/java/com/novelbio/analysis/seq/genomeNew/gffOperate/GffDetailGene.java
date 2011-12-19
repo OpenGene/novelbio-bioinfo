@@ -674,6 +674,20 @@ public class GffDetailGene extends GffDetailAbs
 		return geneGTF;
 	}
 	
+	public String getGFFformate(String title) {
+		String geneGFF = getChrID() + "\t" +title + "\tmRNA\t" + getNumberstart()+ "\t" + getNumberend()
+        + "\t"+"."+"\t" +isCis5to3()+"\t.\t"+ "ID=" + getLocString().split(SEP_GENE_NAME)[0]
+        +";Name="+getLocString().split(SEP_GENE_NAME)[0]+ ";Name="+getLocString().split(SEP_GENE_NAME)[0] + " \r\n";
+		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
+			geneGFF = geneGFF + getChrID() + "\t" +title + "\tmRNA\t" +gffGeneIsoInfo.getStartAbs()+ "\t" + gffGeneIsoInfo.getEndAbs()
+	        + "\t"+"."+"\t" +gffGeneIsoInfo.isCis5to3()+"\t.\t"+ "ID=" + gffGeneIsoInfo.getIsoName() 
+	        +";Name="+gffGeneIsoInfo.getIsoName()+ ";Parent="+ getLocString().split(SEP_GENE_NAME)[0] + " \r\n";
+			gffGeneIsoInfo.sortIso();
+			geneGFF = geneGFF + gffGeneIsoInfo.getGFFformat(getLocString().split(SEP_GENE_NAME)[0], title);
+		}
+		return geneGFF;
+	}
+	
 	/**
 	 * 判断是否存在该名字的转录本
 	 * @param IsoName

@@ -1207,8 +1207,25 @@ public abstract class GffGeneIsoInfo {
 		String genetitle = getGTFformatExon(geneID, title,strand);
 		return genetitle;
 	}
-	
+	/**
+	 * 返回该基因的GTF格式文件，末尾有换行符
+	 * @param title 该GTF文件的名称
+	 * @return
+	 */
+	protected String getGFFformat(String geneID, String title)
+	{
+		String strand = "+";
+		if (!isCis5to3()) {
+			strand = "-";
+		}
+//		String genetitle = getChrID() + "\t" +title + "\ttranscript\t" +getStartAbs() +
+//		"\t" + getEndAbs() + "\t"+"0.000000"+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id \""+getIsoName()+"\"; \r\n";
+//		genetitle = genetitle + getGTFformatExon(geneID, title,strand);
+		String genetitle = getGFFformatExonMISO(geneID, title,strand);
+		return genetitle;
+	}
 	protected abstract String getGTFformatExon(String geneID, String title, String strand);
+	protected abstract String getGFFformatExonMISO(String geneID, String title, String strand);
 	/**
 	 * 获得所有外显子的长度之和
 	 */

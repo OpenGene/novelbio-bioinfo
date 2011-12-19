@@ -84,5 +84,11 @@ public interface GffHashGeneInf  {
 	int getTaxID();
 
 	void writeToGTF(String GTFfile, String title);
+	/**
+	 * 仅将有可变剪接的转录本写入GFF3文件
+	 * @param GTFfile
+	 * @param title
+	 */
+	void writeToGFFIso(String GFFfile, String title);
 
 }

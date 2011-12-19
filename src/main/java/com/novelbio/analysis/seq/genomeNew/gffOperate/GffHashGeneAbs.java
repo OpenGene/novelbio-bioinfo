@@ -289,7 +289,6 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 		}
 	}
 	
-	
 	boolean transExonBig2Small = true;
 	/**
 	 * 反方向的转录本，exon是不是从大到小的排列
@@ -298,6 +297,51 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 	{
 		this.transExonBig2Small = transExonBig2Small;
 	}
+	@Override
+	public void writeToGFFIso(String GTFfile, String title) {
+
+		TxtReadandWrite txtGtf = new TxtReadandWrite(GTFfile, true);
+		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(Chrhash);
+		//把得到的ChrID排个序
+		TreeSet<String> treeSet = new TreeSet<String>();
+		for (String string : lsChrID) {
+			treeSet.add(string);
+		}
+		for (String string : treeSet) {
+			ArrayList<GffDetailGene> lsGffDetailGenes = Chrhash.get(string);
+			writeToGFFIso(txtGtf, lsGffDetailGenes, title);
+		}
+		txtGtf.close();
+	}
+	
+	/**
+	 * 将一个染色体中的信息写入文本，按照GTF格式
+	 * @param txtWrite
+	 * @param lsGffDetailGenes
+	 */
+	private void writeToGFFIso(TxtReadandWrite txtWrite, ArrayList<GffDetailGene> lsGffDetailGenes, String title)
+	{
+		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
+			gffDetailGene.removeDupliIso();
+			if (gffDetailGene.getLsCodSplit().size() <= 1) {
+				continue;
+			}
+			String geneGTF = gffDetailGene.getGTFformate(title);
+			txtWrite.writefileln(geneGTF.trim());
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }
 	
