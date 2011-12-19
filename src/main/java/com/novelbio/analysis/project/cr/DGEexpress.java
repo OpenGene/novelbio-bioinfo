@@ -6,12 +6,13 @@ import java.util.Map.Entry;
 import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.statusAckLog;
 
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.tools.compare.CombineTab;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class DGEexpress {
 	public static void main(String[] args) {
-
+		combDGE();
 	}
 	
 	public static void getExpress() {
@@ -34,7 +35,17 @@ public class DGEexpress {
 	
 	public static void combDGE()
 	{
-		
+		String parentFile = "/media/winE/NBC/Project/RNA-Seq_CR_20111201/";
+		String file1 = parentFile + "HUMarbE_E6d.fq_filter_map_Sorted_dgeExpress.txt";
+		String file2 = parentFile + "HUMarbE_E6dn.fq_filter_map_Sorted_dgeExpress.txt";
+		String file3 = parentFile + "HUMarbE_NS6d.fq_filter_map_Sorted_dgeExpress.txt";
+
+		CombineTab comb = new CombineTab();
+		comb.setColDetai(file1, "E6d", 2);
+		comb.setColDetai(file2 ,"E6dn", 2);
+		comb.setColDetai(file3, "NS6d", 2);
+		comb.setColID(1);
+		comb.exeToFile(parentFile + "CR.xls");
 	}
 	
 }
