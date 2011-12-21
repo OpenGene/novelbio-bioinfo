@@ -298,9 +298,9 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 		this.transExonBig2Small = transExonBig2Small;
 	}
 	@Override
-	public void writeToGFFIso(String GTFfile, String title) {
+	public void writeToGFFIso(String GFFfile, String title) {
 
-		TxtReadandWrite txtGtf = new TxtReadandWrite(GTFfile, true);
+		TxtReadandWrite txtGtf = new TxtReadandWrite(GFFfile, true);
 		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(Chrhash);
 		//把得到的ChrID排个序
 		TreeSet<String> treeSet = new TreeSet<String>();
@@ -326,8 +326,8 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 			if (gffDetailGene.getLsCodSplit().size() <= 1) {
 				continue;
 			}
-			String geneGTF = gffDetailGene.getGTFformate(title);
-			txtWrite.writefileln(geneGTF.trim());
+			String geneGFF = gffDetailGene.getGFFformate(title);
+			txtWrite.writefileln(geneGFF.trim());
 		}
 	}
 	

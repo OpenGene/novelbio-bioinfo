@@ -675,12 +675,20 @@ public class GffDetailGene extends GffDetailAbs
 	}
 	
 	public String getGFFformate(String title) {
-		String geneGFF = getChrID() + "\t" +title + "\tmRNA\t" + getNumberstart()+ "\t" + getNumberend()
-        + "\t"+"."+"\t" +isCis5to3()+"\t.\t"+ "ID=" + getLocString().split(SEP_GENE_NAME)[0]
+		String strand = "+";
+		if (!isCis5to3()) {
+			strand = "-";
+		}
+		String geneGFF = getChrID() + "\t" +title + "\tgene\t" + getNumberstart()+ "\t" + getNumberend()
+        + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=" + getLocString().split(SEP_GENE_NAME)[0]
         +";Name="+getLocString().split(SEP_GENE_NAME)[0]+ ";Name="+getLocString().split(SEP_GENE_NAME)[0] + " \r\n";
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
+			String strandmRNA = "+";
+			if (!gffGeneIsoInfo.isCis5to3()) {
+				strandmRNA = "-";
+			}
 			geneGFF = geneGFF + getChrID() + "\t" +title + "\tmRNA\t" +gffGeneIsoInfo.getStartAbs()+ "\t" + gffGeneIsoInfo.getEndAbs()
-	        + "\t"+"."+"\t" +gffGeneIsoInfo.isCis5to3()+"\t.\t"+ "ID=" + gffGeneIsoInfo.getIsoName() 
+	        + "\t"+"."+"\t" +strandmRNA+"\t.\t"+ "ID=" + gffGeneIsoInfo.getIsoName() 
 	        +";Name="+gffGeneIsoInfo.getIsoName()+ ";Parent="+ getLocString().split(SEP_GENE_NAME)[0] + " \r\n";
 			gffGeneIsoInfo.sortIso();
 			geneGFF = geneGFF + gffGeneIsoInfo.getGFFformat(getLocString().split(SEP_GENE_NAME)[0], title);

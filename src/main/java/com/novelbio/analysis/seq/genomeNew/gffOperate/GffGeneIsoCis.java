@@ -471,7 +471,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		for (int i = 0; i < getIsoInfo().size(); i++) {
 			int[] exons = getIsoInfo().get(i);
 			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" +exons[0] + "\t" + exons[1]
-		     + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=exon:" + getIsoName()  + ":" + i +";Parent=" + getIsoName() + " \r\n";
+		     + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=exon:" + getIsoName()  + ":" + (i+1) +";Parent=" + getIsoName() + " \r\n";
 		}
 		return geneExon;
 	
@@ -504,10 +504,10 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 			@Override
 			public int compare(int[] o1, int[] o2) {
 				if (o1[0] < o2[0]) {
-					return 1;
+					return -1;
 				}
 				else if (o1[0] > o2[0]) {
-					return -1;
+					return 1;
 				}
 				else {
 					return 0;

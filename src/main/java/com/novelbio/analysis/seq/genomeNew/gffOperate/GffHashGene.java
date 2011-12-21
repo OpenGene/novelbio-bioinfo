@@ -15,6 +15,16 @@ import com.novelbio.database.model.modcopeid.CopedID;
 
 public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, GffCodGene,GffCodGeneDU>{
 	
+	public static void main(String[] args) {
+		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
+				"/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/new/novelbioModify_a15m1bf_All_highAll20111220.GTF");
+		gffHashGene.writeToGFFIso("/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/novelbioModify_a15m1bf_All_high60MISO20111220.GFF3", "novelbio");
+		
+		
+	}
+	
+	
+	
 	GffHashGeneAbs gffHashGene = null;
 	public GffHashGene(String GffType, String gffFile)
 	{
@@ -32,6 +42,12 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 		}
 		gffHashGene.ReadGffarray(gffFile);
 	}
+	/**
+	 * 反方向的转录本，exon是不是从大到小的排列
+	 * @param GffType
+	 * @param gffFile
+	 * @param transExonBig2Small
+	 */
 	public GffHashGene(String GffType, String gffFile, boolean transExonBig2Small)
 	{
 		if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_UCSC)) {
