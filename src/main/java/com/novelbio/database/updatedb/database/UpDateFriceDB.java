@@ -17,13 +17,13 @@ import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniGene2Go;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
-import com.novelbio.database.mapper.geneanno.MapGene2Go;
-import com.novelbio.database.mapper.geneanno.MapGeneInfo;
-import com.novelbio.database.mapper.geneanno.MapGo2Term;
+import com.novelbio.database.mapper.geneanno.MapGene2GoOld;
+import com.novelbio.database.mapper.geneanno.MapGeneInfoOld;
+import com.novelbio.database.mapper.geneanno.MapGo2TermOld;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
-import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
-import com.novelbio.database.mapper.geneanno.MapUniProtID;
+import com.novelbio.database.mapper.geneanno.MapUniGene2GoOld;
+import com.novelbio.database.mapper.geneanno.MapUniGeneInfoOld;
+import com.novelbio.database.mapper.geneanno.MapUniProtIDOld;
 import com.novelbio.database.model.modcopeid.CopeID;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.servgeneanno.ServNCBIID;
@@ -65,7 +65,7 @@ public class UpDateFriceDB {
 				}
 				UniProtID uniProtID = new UniProtID();
 				uniProtID.setAccID(CopeID.removeDot(tmpID[i])); uniProtID.setTaxID(taxID);
-				ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
+				ArrayList<UniProtID> lsUniProtIDs = MapUniProtIDOld.queryLsUniProtID(uniProtID);
 				if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 				{
 					uniID = lsUniProtIDs.get(0).getUniID();
@@ -122,7 +122,7 @@ public class UpDateFriceDB {
 					if  (hashDBInfo.contains(strings[1]) && !lsNcbiid.get(0).getDBInfo().equals(strings[1])) {
 						ncbiid.setGeneId(GeneID);ncbiid.setDBInfo(strings[1]);
 						ncbiid.setTaxID(taxID);
-						servNCBIID.upDateNCBIID(ncbiid);
+						servNCBIID.updateNCBIID(ncbiid);
 					}
 				}
 				else
@@ -137,7 +137,7 @@ public class UpDateFriceDB {
 					try {
 						servNCBIID.insertNCBIID(ncbiid);
 					} catch (Exception e) {
-						servNCBIID.upDateNCBIID(ncbiid);
+						servNCBIID.updateNCBIID(ncbiid);
 					}
 					
 				}
@@ -156,7 +156,7 @@ public class UpDateFriceDB {
 				if (considerGeneID) {
 					uniProtID.setUniID(uniID);
 				}
-				ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
+				ArrayList<UniProtID> lsUniProtIDs = MapUniProtIDOld.queryLsUniProtID(uniProtID);
 				if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 				{
 						if (hashDBInfo.contains(strings[1]) && !lsUniProtIDs.get(0).getDBInfo().equals(strings[1]))
@@ -166,16 +166,16 @@ public class UpDateFriceDB {
 							//如果没有找到，才用自己的ID
 							uniProtID.setDBInfo(strings[1]); uniProtID.setUniID(uniID);
 							uniProtID.setTaxID(taxID);
-							MapUniProtID.upDateUniProt(uniProtID);
+							MapUniProtIDOld.upDateUniProt(uniProtID);
 						}
 				}
 				else {
 					uniProtID.setDBInfo(strings[1]); uniProtID.setUniID(uniID);
 					uniProtID.setTaxID(taxID);
 					try {
-						MapUniProtID.InsertUniProtID(uniProtID);
+						MapUniProtIDOld.InsertUniProtID(uniProtID);
 					} catch (Exception e) {
-						MapUniProtID.upDateUniProt(uniProtID);
+						MapUniProtIDOld.upDateUniProt(uniProtID);
 					}
 					
 				}
@@ -199,7 +199,7 @@ public class UpDateFriceDB {
 	public static boolean upDateGenGO(long GeneID,String uniID,String tmpGOID,String DBINFO) {
 		Go2Term go2Term = new Go2Term();
 		go2Term.setGoIDQuery(tmpGOID);
-		Go2Term go2Term2 = MapGo2Term.queryGo2Term(go2Term);
+		Go2Term go2Term2 = MapGo2TermOld.queryGo2Term(go2Term);
 		String function = go2Term2.getGoFunction();
 		String term = go2Term2.getGoTerm();
 		String goID = go2Term2.getGoID();
@@ -211,14 +211,14 @@ public class UpDateFriceDB {
 			gene2Go.setFunction(function);
 			gene2Go.setGeneId(GeneID);
 			gene2Go.setGOTerm(term);
-			Gene2Go gene2Go2 = (Gene2Go) MapGene2Go.queryGene2Go(gene2Go);
+			Gene2Go gene2Go2 = (Gene2Go) MapGene2GoOld.queryGene2Go(gene2Go);
 			if (gene2Go2 != null)
 			{
 				return true;
 			}
 			else
 			{
-				MapGene2Go.InsertGene2Go(gene2Go);
+				MapGene2GoOld.InsertGene2Go(gene2Go);
 				return true;
 			}
 		}
@@ -231,12 +231,12 @@ public class UpDateFriceDB {
 			uniGene2Go.setFunction(function);
 			uniGene2Go.setUniProtID(uniID);
 			uniGene2Go.setGOTerm(term);
-			AGene2Go uniGene2Go2 = MapUniGene2Go.queryUniGene2Go(uniGene2Go);
+			AGene2Go uniGene2Go2 = MapUniGene2GoOld.queryUniGene2Go(uniGene2Go);
 			if (uniGene2Go2 != null) {
 				return true;
 			}
 			else {
-				MapUniGene2Go.InsertUniGene2Go(uniGene2Go);
+				MapUniGene2GoOld.InsertUniGene2Go(uniGene2Go);
 				return true;
 			}
 		}
@@ -259,7 +259,7 @@ public class UpDateFriceDB {
 	public static boolean upDateGenGO(CopedID copedID, String tmpGOID,String DBINFO) {
 		Go2Term go2Term = new Go2Term();
 		go2Term.setGoIDQuery(tmpGOID);
-		Go2Term go2Term2 = MapGo2Term.queryGo2Term(go2Term);
+		Go2Term go2Term2 = MapGo2TermOld.queryGo2Term(go2Term);
 		String function = go2Term2.getGoFunction();
 		String term = go2Term2.getGoTerm();
 		String goID = go2Term2.getGoID();
@@ -273,14 +273,14 @@ public class UpDateFriceDB {
 			gene2Go.setGeneUniID(copedID.getGenUniID());
 			gene2Go.setGOTerm(term);
 			
-			Gene2Go gene2Go2 = (Gene2Go) MapGene2Go.queryGene2Go((Gene2Go)gene2Go);
+			Gene2Go gene2Go2 = (Gene2Go) MapGene2GoOld.queryGene2Go((Gene2Go)gene2Go);
 			if (gene2Go2 != null)
 			{
 				return true;
 			}
 			else
 			{
-				MapGene2Go.InsertGene2Go((Gene2Go)gene2Go);
+				MapGene2GoOld.InsertGene2Go((Gene2Go)gene2Go);
 				return true;
 			}
 		}
@@ -293,12 +293,12 @@ public class UpDateFriceDB {
 			gene2Go.setFunction(function);
 			gene2Go.setGeneUniID(copedID.getGenUniID());
 			gene2Go.setGOTerm(term);
-			AGene2Go uniGene2Go2 = MapUniGene2Go.queryUniGene2Go((UniGene2Go)gene2Go);
+			AGene2Go uniGene2Go2 = MapUniGene2GoOld.queryUniGene2Go((UniGene2Go)gene2Go);
 			if (uniGene2Go2 != null) {
 				return true;
 			}
 			else {
-				MapUniGene2Go.InsertUniGene2Go((UniGene2Go)gene2Go);
+				MapUniGene2GoOld.InsertUniGene2Go((UniGene2Go)gene2Go);
 				return true;
 			}
 		}
@@ -321,7 +321,7 @@ public class UpDateFriceDB {
 	public static boolean upDateGenGO(long GeneID,String uniID,Gene2Go gene2GoTmp) {
 		Go2Term go2Term = new Go2Term();
 		go2Term.setGoIDQuery(gene2GoTmp.getGOID());
-		Go2Term go2Term2 = MapGo2Term.queryGo2Term(go2Term);
+		Go2Term go2Term2 = MapGo2TermOld.queryGo2Term(go2Term);
 		if (go2Term2 == null) {
 			logger.error("没有该GOTerm："+ gene2GoTmp.getGOID());
 			return false;
@@ -342,7 +342,7 @@ public class UpDateFriceDB {
 			gene2Go.setFunction(function);
 			gene2Go.setGeneId(GeneID);
 			gene2Go.setGOTerm(term);
-			Gene2Go gene2Go2 = (Gene2Go) MapGene2Go.queryGene2Go(gene2Go);
+			Gene2Go gene2Go2 = (Gene2Go) MapGene2GoOld.queryGene2Go(gene2Go);
 			if (gene2Go2 != null)
 			{
 				if (gene2Go2.getDataBase() != null && gene2Go.getDataBase() != null && !gene2Go2.getDataBase().contains( gene2Go.getDataBase())) 
@@ -369,12 +369,12 @@ public class UpDateFriceDB {
 					gene2Go2.setQualifier(gene2Go.getQualifier());
 				}
 				
-				MapGene2Go.upDateGene2Go(gene2Go2);
+				MapGene2GoOld.upDateGene2Go(gene2Go2);
 				return true;
 			}
 			else
 			{
-				MapGene2Go.InsertGene2Go(gene2Go);
+				MapGene2GoOld.InsertGene2Go(gene2Go);
 				return true;
 			}
 		}
@@ -392,7 +392,7 @@ public class UpDateFriceDB {
 			uniGene2Go.setFunction(function);
 			uniGene2Go.setUniProtID(uniID);
 			uniGene2Go.setGOTerm(term);
-			AGene2Go uniGene2Go2 = MapUniGene2Go.queryUniGene2Go(uniGene2Go);
+			AGene2Go uniGene2Go2 = MapUniGene2GoOld.queryUniGene2Go(uniGene2Go);
 			if (uniGene2Go2 != null) {
 				
 				
@@ -421,12 +421,12 @@ public class UpDateFriceDB {
 				else  if(uniGene2Go2.getQualifier() == null){
 					uniGene2Go2.setQualifier(uniGene2Go.getQualifier());
 				}
-				MapUniGene2Go.upDateUniGene2Go((UniGene2Go) uniGene2Go2);
+				MapUniGene2GoOld.upDateUniGene2Go((UniGene2Go) uniGene2Go2);
 				
 				return true;
 			}
 			else {
-				MapUniGene2Go.InsertUniGene2Go(uniGene2Go);
+				MapUniGene2GoOld.InsertUniGene2Go(uniGene2Go);
 				return true;
 			}
 		}
@@ -453,29 +453,29 @@ public class UpDateFriceDB {
 		{
 			GeneInfo geneInfo = new GeneInfo();
 			geneInfo.setGeneID(Long.parseLong(aGeneInfo.getGeneUniID()));
-			GeneInfo geneInfoS = MapGeneInfo.queryGeneInfo(geneInfo);
+			GeneInfo geneInfoS = MapGeneInfoOld.queryGeneInfo(geneInfo);
 			if (geneInfoS == null) {
-				MapGeneInfo.InsertGeneInfo((GeneInfo) aGeneInfo);
+				MapGeneInfoOld.InsertGeneInfo((GeneInfo) aGeneInfo);
 			}
 			else {
 				if (!changeSymbol) {
 					aGeneInfo.setSymbol(null);
 				}
-				MapGeneInfo.upDateGeneInfo((GeneInfo) aGeneInfo);
+				MapGeneInfoOld.upDateGeneInfo((GeneInfo) aGeneInfo);
 			}
 		}
 		else if (aGeneInfo.getIDType().equals(CopedID.IDTYPE_UNIID)) {
 			UniGeneInfo geneInfo = new UniGeneInfo();
 			geneInfo.setUniProtID(aGeneInfo.getGeneUniID());
-			UniGeneInfo geneInfoS = MapUniGeneInfo.queryUniGeneInfo(geneInfo);
+			UniGeneInfo geneInfoS = MapUniGeneInfoOld.queryUniGeneInfo(geneInfo);
 			if (geneInfoS == null) {
-				MapUniGeneInfo.InsertUniGeneInfo((UniGeneInfo) aGeneInfo);
+				MapUniGeneInfoOld.InsertUniGeneInfo((UniGeneInfo) aGeneInfo);
 			}
 			else {
 				if (!changeSymbol) {
 					aGeneInfo.setSymbol(null);
 				}
-				MapUniGeneInfo.upDateUniGeneInfo((UniGeneInfo) aGeneInfo);
+				MapUniGeneInfoOld.upDateUniGeneInfo((UniGeneInfo) aGeneInfo);
 			}
 		}
 		else {

@@ -2,78 +2,26 @@ package com.novelbio.database.mapper.kegg;
 
 import java.util.ArrayList;
 
-import org.apache.ibatis.session.SqlSession;
-
 import com.novelbio.database.domain.kegg.KGpathway;
-import com.novelbio.database.util.Util;
+import com.novelbio.database.mapper.MapperSql;
 
-
-public class MapKPathway {
-
-	
+public interface MapKPathway extends MapperSql{
 	/**
 	 * 用number,pathNam,org中任意组合去查找entry表
 	 * @param KGpathway
 	 * @return
 	 */
-	public static ArrayList<KGpathway> queryLsKGpathways(KGpathway kGpathway){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		ArrayList<KGpathway> lsKGpathways=null;
-		try
-		{
-			lsKGpathways= (ArrayList<KGpathway>)session.selectList("KGMLSingle.selectPathway",kGpathway);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsKGpathways;
-	}
+	public ArrayList<KGpathway> queryLsKGpathways(KGpathway kGpathway);
 	
-		/**
-		 * 用number,pathNam,org中任意组合去查找entry表
-		 * @param KGpathway
-		 * @return
-		 */
-		public static KGpathway queryKGpathway(KGpathway kGpathway){
-			SqlSession session=Util.getSqlSesFactKEGG().openSession();
-			KGpathway kGpathway2=null;
-			try
-			{
-				kGpathway2= (KGpathway)session.selectOne("KGMLSingle.selectPathway",kGpathway);
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-			finally
-			{
-				session.close();
-			}
-			return kGpathway2;
-		}
-		
-	
-	
-	public static void InsertKGpathway(KGpathway kGpathway){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.insert("KGMLSingle.insertPathway", kGpathway);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	/**
+	 * 用number,pathNam,org中任意组合去查找entry表
+	 * 
+	 * @param KGpathway
+	 * @return
+	 */
+	public KGpathway queryKGpathway(KGpathway kGpathway);
+
+	public void insertKGpathway(KGpathway kGpathway);
 	
 	/**
 	 * 目前的升级方式是
@@ -86,20 +34,5 @@ public class MapKPathway {
 		<b>where</b> pathName = #{pathName}
 	 * @param KGpathway
 	 */
-	public static void upDateKGpathway(KGpathway kGpathway){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.update("KGMLSingle.updatePathway", kGpathway);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
-
+	public void updateKGpathway(KGpathway kGpathway);
 }

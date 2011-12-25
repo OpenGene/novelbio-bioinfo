@@ -430,11 +430,10 @@ public class TxtReadandWrite {
 	 * @throws Exception
 	 */
 	public void writefileln(String[] content) {
-		String content2 = "";
-		for (String string : content) {
-			content2 = content2 + "\t" + string;
+		String content2 = content[0];
+		for (int i = 1; i < content.length; i++) {
+			content2 = content2 + "\t" + content[i];
 		}
-		content2.trim();
 		try {
 			outputStream.write(content2.getBytes());
 			outputStream.write("\r\n".getBytes());

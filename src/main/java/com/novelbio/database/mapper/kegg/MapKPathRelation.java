@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import org.apache.ibatis.session.SqlSession;
 
 import com.novelbio.database.domain.kegg.KGpathRelation;
+import com.novelbio.database.mapper.MapperSql;
 import com.novelbio.database.util.Util;
 
- 
-public class MapKPathRelation {
+public interface MapKPathRelation extends MapperSql{
 	/**
 	 * if test="pathName !=null" <br>
 				 pathName=#{pathName}<br>
@@ -22,23 +22,7 @@ public class MapKPathRelation {
 	 * @param kGpathRelation
 	 * @return
 	 */
-	public static ArrayList<KGpathRelation> queryLskGpathRelations(KGpathRelation kGpathRelation){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		ArrayList<KGpathRelation> lsKGpathRelations=null;
-		try
-		{
-			lsKGpathRelations= (ArrayList<KGpathRelation>)session.selectList("KGMLSingle.selectPathRelation",kGpathRelation);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsKGpathRelations;
-	}
+	public ArrayList<KGpathRelation> queryLskGpathRelations(KGpathRelation kGpathRelation);
 	
 	/**
 	 * if test="pathName !=null" <br>
@@ -53,40 +37,9 @@ public class MapKPathRelation {
 	 * @param kGpathRelation
 	 * @return
 	 */
-	public static KGpathRelation queryKGpathRelation(KGpathRelation kGpathRelation){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		KGpathRelation kGpathRelation2=null;
-		try
-		{
-			kGpathRelation2= (KGpathRelation)session.selectOne("KGMLSingle.selectPathRelation",kGpathRelation);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return kGpathRelation2;
-	}
+	public KGpathRelation queryKGpathRelation(KGpathRelation kGpathRelation);
 	
-	
-	public static void InsertKGpathRelation(KGpathRelation kGpathRelation){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.insert("KGMLSingle.insertPathRelation", kGpathRelation);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void insertKGpathRelation(KGpathRelation kGpathRelation);
 	
 	/**
 	 * 目前的升级方式是
@@ -118,19 +71,5 @@ public class MapKPathRelation {
 		/where<br>
 	 * @param kGentry
 	 */
-	public static void upDateKGentry(KGpathRelation kGpathRelation){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.update("KGMLSingle.updatePathRelation", kGpathRelation);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void updateKGpathRelation(KGpathRelation kGpathRelation);
 }

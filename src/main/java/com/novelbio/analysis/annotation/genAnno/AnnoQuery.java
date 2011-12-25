@@ -7,11 +7,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.Gene2GoInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
@@ -19,16 +18,15 @@ import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.Uni2GoInfo;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
-import com.novelbio.database.mapper.geneanno.MapBlastInfo;
-import com.novelbio.database.mapper.geneanno.MapGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
-import com.novelbio.database.mapper.geneanno.MapUniProtID;
-import com.novelbio.database.model.modcopeid.CopeID;
 import com.novelbio.database.model.modcopeid.CopedID;
-import com.novelbio.database.service.ServAnno;
 @Deprecated
 public class AnnoQuery {
+	public static void main(String[] args) {
+		String parent = "/media/winE/NBC/Project/Project_Q_Lab/tophat/GO/";
+		anno(parent + "2vs0gene_exp.diff.xls",parent + "2txtOut.txt",  4577, 1, true, 3702, 1e-10, "");
+		anno(parent + "3vs0gene_exp.diff.xls",parent + "3txtOut.txt",  4577, 1, true, 3702, 1e-10, "");
+	}
 	/**
 	 * 
 	 * 给arraytools的结果添加geneID,没有geneID则将本accID附加上去
@@ -87,75 +85,6 @@ public class AnnoQuery {
 		String[][] dataResult = ArrayOperate.combArray(geneInfo, geneAno, colNum+1);
 		excelAnno.WriteExcel(1, 1, dataResult);
 	}
-	/**
-	 * 
-	 * 给arraytools的结果添加geneID,没有geneID则将本accID附加上去
-	 * 添加在第colNum列的后面，直接写入excel文件
-	 * <b>第一行一定是标题行</b>
-	 * 首先将指定accID列的每一项用regx切割，然后将结果查找geneID或者uniID，只找第一个含有geneID或uniID的项目，然后将该geneID或uniID装入excel
-	 * @param excelFile
-	 * @param taxID
-	 * @param colNum 实际列
-	 * @param regx正则表达式 如果为""则不切割
-	 */
-	public static void annoGeneIDTxt(String txtFile, int taxID,int colNum,String regx) {
-		colNum--;
-		TxtReadandWrite excelAnno = new TxtReadandWrite(txtFile, false);
-		//全部读取，第一行为title
-		String[][] geneInfo = null;
-		try {
-			geneInfo = excelAnno.ExcelRead("\t", 1, 1, excelAnno.ExcelRows(), excelAnno.ExcelColumns("\t"));
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		ArrayList<String[]> lsgenAno = new ArrayList<String[]>();
-		for (int i = 1; i < geneInfo.length; i++) {
-			String[] accID = null;
-			if (regx.equals("")) {
-				accID = new String[1];
-				try {
-					accID[0] = CopeID.removeDot(geneInfo[i][colNum]);
-				} catch (Exception e) {
-					accID[0] = "error";
-				}
-			}
-			else {
-				try {
-					accID = geneInfo[i][colNum].split(regx);
-				} catch (Exception e) {
-					accID[0] = "error";
-				}
-				
-			}
-			String thisaccID = accID[0];
-			for (int j = 0; j < accID.length; j++) {
-				ArrayList<String> lsTmpaccID = ServAnno.getNCBIUni(CopeID.removeDot(accID[j]), taxID);
-				if (!lsTmpaccID.get(0).equals("accID")) {
-					thisaccID = lsTmpaccID.get(1);
-					break;
-				}
-			}
-			String[] tmpAno = new String[1];
-			tmpAno[0] =thisaccID; 
-			lsgenAno.add(tmpAno);
-		}
-		String[][] geneAno = new String[geneInfo.length][lsgenAno.get(0).length];
-		geneAno[0][0] = "geneID/uniID";
-		for (int i = 1; i < geneAno.length; i++) {
-			for (int j = 0; j < geneAno[0].length; j++) {
-				geneAno[i][j] = lsgenAno.get(i-1)[j];
-			}
-		}
-		String[][] dataResult = ArrayOperate.combArray(geneInfo, geneAno, colNum+1);
-		try {
-			excelAnno.setParameter(txtFile, true, false);
-			excelAnno.ExcelWrite(dataResult, "\t", 1, 1);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}	
 	
 	/**
 	 * 给arraytools的结果添加annotation
@@ -169,109 +98,28 @@ public class AnnoQuery {
 	 * @param evalue
 	 * @param regx 如果为""则不切割
 	 */
-	public static void anno(String excelFile, int taxID,int colNum,boolean blast,int StaxID,double evalue,String regx) {
+	public static void anno(String excelFile, String out,int taxID,int colNum,boolean blast,int StaxID,double evalue,String regx) {
 		colNum--;
-		ExcelOperate excelAnno = new ExcelOperate();
-		excelAnno.openExcel(excelFile);
-		//全部读取，第一行为title
-		String[][] geneInfo = excelAnno.ReadExcel(1, 1, excelAnno.getRowCount(), excelAnno.getColCount(2));
-		ArrayList<String[]> lsgenAno = new ArrayList<String[]>();
-		for (int i = 1; i < geneInfo.length; i++) {
-			String[] accID = null;
+		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxtFile(excelFile, 1, 1, -1, -1);
+		ArrayList<String[]> lsTmpAnno = new ArrayList<String[]>();
+		for (int i = 1; i < lsInfo.size(); i++) {
+			String accID = "";
 			if (regx.equals("")) {
-				accID = new String[1];
-				accID[0] =CopeID.removeDot(geneInfo[i][colNum]);
+				accID = lsInfo.get(i)[colNum];//CopeID.removeDot(geneInfo[i][colNum]);
 			}
 			else {
-				accID = geneInfo[i][colNum].split(regx);
+				accID = lsInfo.get(i)[colNum].split(regx)[0];
 			}
-			String thisaccID = geneInfo[i][colNum];
-			CopedID copedID = new CopedID(thisaccID, taxID, false);
-			copedID.setBlastInfo(StaxID, evalue);
-			String[] tmpAno = copedID.getAnnoInfo(blast);//ServAnno.getAnno(thisaccID,taxID, blast, StaxID, evalue);
-			if (taxID == 39947) {
-				String[] tmpAnoLoc = new String[tmpAno.length + 1];
-				for (int j = 0; j < tmpAno.length; j++) {
-					tmpAnoLoc[j+1] = tmpAno[j];
-				}
-				tmpAnoLoc[0] = copedID.getAccIDDBinfo(NovelBioConst.DBINFO_RICE_TIGR);
-				
-				
-				lsgenAno.add(tmpAnoLoc);
-			}
-			else {
-				lsgenAno.add(tmpAno);
-			}
+			CopedID copedID = new CopedID(accID, taxID, false);
+			copedID.setBlastInfo(evalue, StaxID);
+			String[] out2 = copedID.getAnno(blast);
+			lsTmpAnno.add(ArrayOperate.combArray(new String[]{copedID.getAccID()}, out2, 0));
 		}
-		String[][] geneAno = new String[geneInfo.length][lsgenAno.get(0).length];
-		if (taxID == 39947) {
-			geneAno[0][0] = "LocID"; geneAno[0][1] = "Symbol";geneAno[0][2] = "Description";
-			if (blast) {
-				geneAno[0][3] = "subjectTaxID"; geneAno[0][4] = "evalue";
-				geneAno[0][5] = "symbol"; geneAno[0][6] = "description";
-			}
-			for (int i = 1; i < geneAno.length; i++) {
-				for (int j = 0; j < geneAno[0].length; j++) {
-					geneAno[i][j] = lsgenAno.get(i-1)[j];
-				}
-			}
-		}
-		else {
-			geneAno[0][0] = "Symbol";geneAno[0][1] = "Description";
-			if (blast) {
-				geneAno[0][2] = "subjectTaxID"; geneAno[0][3] = "evalue";
-				geneAno[0][4] = "symbol"; geneAno[0][5] = "description";
-			}
-			for (int i = 1; i < geneAno.length; i++) {
-				for (int j = 0; j < geneAno[0].length; j++) {
-					geneAno[i][j] = lsgenAno.get(i-1)[j];
-				}
-			}
-		}
-		
-		String[][] dataResult = ArrayOperate.combArray(geneInfo, geneAno, colNum+1);
-		excelAnno.WriteExcel(1, 1, dataResult);
-	}
-	
-	/**
-	 * 给arraytools的结果添加annotation
-	 * 添加在第colNum列的后面，直接写入excel文件
-	 * <b>第一行一定是标题行</b>
-	 * @param excelFile
-	 * @param taxID
-	 * @param colNum 实际列,本列为geneID
-	 * @param blast
-	 * @param StaxID
-	 * @param evalue
-	 * @param regx 如果为""则不切割
-	 */
-	public static void annoGeneID2symbol(String excelFile, int taxID,int colNum,boolean blast,int StaxID,double evalue) {
-		colNum--;
-		ExcelOperate excelAnno = new ExcelOperate();
-		excelAnno.openExcel(excelFile);
-		//全部读取，第一行为title
-		String[][] geneInfo = excelAnno.ReadExcel(1, 1, excelAnno.getRowCount(), excelAnno.getColCount(2));
-		ArrayList<CopedID> lsgenAno = new ArrayList<CopedID>();
-		for (int i = 1; i < geneInfo.length; i++) {
-		
-			CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, geneInfo[i][colNum], StaxID);			
-			lsgenAno.add(copedID);
-		}
-		
-		String[][] geneAno = new String[geneInfo.length][lsgenAno.get(0).getAnno(blast, StaxID, evalue).length];
-		geneAno[0][0] = "Symbol";geneAno[0][1] = "Description";
-		if (blast) {
-			geneAno[0][2] = "subjectTaxID"; geneAno[0][3] = "evalue";
-			geneAno[0][4] = "symbol"; geneAno[0][5] = "description";
-		}
-		for (int i = 1; i < geneAno.length; i++) {
-			String[] annoInfo = lsgenAno.get(0).getAnno(blast, StaxID, evalue);
-			for (int j = 0; j < geneAno[0].length; j++) {
-				geneAno[i][j] = annoInfo[j];
-			}
-		}
-		String[][] dataResult = ArrayOperate.combArray(geneInfo, geneAno, colNum+1);
-		excelAnno.WriteExcel(1, 1, dataResult);
+		lsTmpAnno.add(0,ArrayOperate.combArray(new String[]{"AccID"}, CopedID.getTitleAnno(blast), 0));
+		TxtReadandWrite txtOut = new TxtReadandWrite(out, true);
+		txtOut.ExcelWrite(lsTmpAnno, "\t", 1, 1);
+//		ArrayList<String[]> lsResult = ArrayOperate.combArray(lsInfo, lsTmpAnno, colNum+1);
+//		ExcelTxtRead.writeLsExcelTxt(excelFile, lsResult, 1, 1, -1, -1);
 	}
 	
 }

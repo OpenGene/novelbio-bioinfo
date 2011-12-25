@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapKIDKeg2Ko">
+	<resultMap id="keg2Ko" type="KGIDkeg2Ko">
+	</resultMap>
+	<select id="queryLsKGIDkeg2Ko" parameterType="KGIDkeg2Ko" resultMap="keg2Ko">
+		select *
+		from IDkeg2Ko
+		<where>
+			<if test="keggID !=null and keggID != ''">
+				keggID = #{keggID} 
+			</if>
+			<if test="Ko !=null and Ko != ''">
+				and Ko = #{Ko} 
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and taxID = #{taxID} 
+			</if>
+	    </where>
+	</select>
+	<select id="queryKGIDkeg2Ko" parameterType="KGIDkeg2Ko" resultMap="keg2Ko">
+		select *
+		from IDkeg2Ko
+		<where>
+			<if test="keggID !=null and keggID != ''">
+				keggID = #{keggID} 
+			</if>
+			<if test="Ko !=null and Ko != ''">
+				and Ko = #{Ko} 
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and taxID = #{taxID} 
+			</if>
+	    </where>
+	</select>
+	<insert id="insertKGIDkeg2Ko" parameterType="KGIDkeg2Ko">
+		insert into IDkeg2Ko (keggID,Ko,taxID)
+		values (#{keggID},#{Ko},#{taxID})
+	</insert>
+	<update id="updateKGIDkeg2Ko" parameterType="KGIDkeg2Ko">
+		update IDkeg2Ko
+		<set>
+			<if test="Ko != null and Ko != ''">
+				Ko = #{Ko},
+			</if>
+			<if test="keggID != null and keggID != ''">
+				keggID = #{keggID},
+			</if>
+			<if test="taxID != null and taxID !=0">
+				TaxID = #{taxID}
+			</if>
+		</set>
+ 		<where>
+			<if test="keggID !=null and keggID != ''">
+				keggID = #{keggID},
+			</if>
+			<if test="Ko !=null and Ko != ''">
+				Ko = #{Ko},
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				taxID = #{taxID} 
+			</if>
+	    </where>
+	</update>
+</mapper>

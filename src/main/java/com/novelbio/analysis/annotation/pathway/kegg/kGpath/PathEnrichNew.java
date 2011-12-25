@@ -30,8 +30,8 @@ import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
-import com.novelbio.database.mapper.kegg.MapKNIdKeg;
-import com.novelbio.database.mapper.kegg.MapKPathway;
+import com.novelbio.database.mapper.kegg.MapKNIdKegOld;
+import com.novelbio.database.mapper.kegg.MapKPathwayOld;
 import com.novelbio.database.model.modcopeid.CopeID;
 import com.novelbio.database.service.ServAnno;
 
@@ -174,7 +174,7 @@ public class PathEnrichNew {
 			public String[] getItemName(String ItemID) {
 				String[] tmpInfo = new String[1];
 			    KGpathway path2Term=new KGpathway(); path2Term.setPathName(ItemID);
-			    KGpathway path2Term2=MapKPathway.queryKGpathway(path2Term);
+			    KGpathway path2Term2=MapKPathwayOld.queryKGpathway(path2Term);
 			    tmpInfo[0]=path2Term2.getTitle();
 				return tmpInfo;
 			}
@@ -322,7 +322,7 @@ public class PathEnrichNew {
 							geneInfo[2] = lsKGentry.get(i).getPathName();
 							//搜索pathway的Title
 							KGpathway kGpathway = new KGpathway(); kGpathway.setPathName(geneInfo[2]); 
-							geneInfo[3] = MapKPathway.queryKGpathway(kGpathway).getTitle();
+							geneInfo[3] = MapKPathwayOld.queryKGpathway(kGpathway).getTitle();
 							geneInfo[4] = symbol;
 							geneInfo[5] = description;
 							lsGeneInfo.add(geneInfo);
@@ -384,7 +384,7 @@ public class PathEnrichNew {
 							geneInfo[2] = lsKGentry.get(i).getPathName();
 							//搜索pathway的Title
 							KGpathway kGpathway = new KGpathway(); kGpathway.setPathName(geneInfo[2]); 
-							geneInfo[3] = MapKPathway.queryKGpathway(kGpathway).getTitle();
+							geneInfo[3] = MapKPathwayOld.queryKGpathway(kGpathway).getTitle();
 							geneInfo[4] = symbol;
 							geneInfo[5] = description;
 							geneInfo[6] = thisevalue;
@@ -408,7 +408,7 @@ public class PathEnrichNew {
 				//先试试化合物查询
 				KGNIdKeg kgnIdKeg = new KGNIdKeg();
 				kgnIdKeg.setUsualName(accID);
-				KGNIdKeg kgnIdKegSub = MapKNIdKeg.queryKGNIdKeg(kgnIdKeg);
+				KGNIdKeg kgnIdKegSub = MapKNIdKegOld.queryKGNIdKeg(kgnIdKeg);
 				if (kgnIdKegSub != null) {
 					KGng2Path kGng2Path=  QKegPath.qKegPath(queryTaxID, kgnIdKegSub);
 					
@@ -435,7 +435,7 @@ public class PathEnrichNew {
 							geneInfo[2] = lsKGentry.get(i).getPathName();
 							//搜索pathway的Title
 							KGpathway kGpathway = new KGpathway(); kGpathway.setPathName(geneInfo[2]); 
-							geneInfo[3] = MapKPathway.queryKGpathway(kGpathway).getTitle();
+							geneInfo[3] = MapKPathwayOld.queryKGpathway(kGpathway).getTitle();
 							geneInfo[4] = kGng2Path.getKgnCompInfo().getUsualName().split("//")[0];
 							geneInfo[5] = kGng2Path.getKgnCompInfo().getComment();
 							lsGeneInfo.add(geneInfo);

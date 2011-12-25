@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapKEntry">
+	<resultMap id="entryMap" type="KGentry">
+		<result property="linkEntry" column="link"/>
+	</resultMap>
+	<select id="queryLsKGentries" parameterType="KGentry" resultMap="entryMap">
+		select *
+		from entry
+		<where>
+			<if test="name !=null and name !='' ">
+				 name=#{name}
+			</if>
+			<if test="pathName !=null and pathName != '' ">
+				and pathName=#{pathName}
+			</if>
+			<if test="id !=null and id !=0">
+				and ID=#{id}
+			</if>
+			<if test="reactionName !=null and reactionName != '' ">
+				and reactionName=#{reactionName}
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and taxID=#{taxID}
+			</if>
+			<if test="parentID !=null and parentID !=0">
+				and parentID=#{parentID}
+			</if>
+		</where>
+	</select>
+		<select id="queryKGentry" parameterType="KGentry" resultMap="entryMap">
+		select *
+		from entry
+		<where>
+			<if test="name !=null and name !='' ">
+				 name=#{name}
+			</if>
+			<if test="pathName !=null and pathName != '' ">
+				and pathName=#{pathName}
+			</if>
+			<if test="id !=null and id !=0">
+				and ID=#{id}
+			</if>
+			<if test="reactionName !=null and reactionName != '' ">
+				and reactionName=#{reactionName}
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and taxID=#{taxID}
+			</if>
+			<if test="parentID !=null and parentID !=0">
+				and parentID=#{parentID}
+			</if>
+		</where>
+	</select>
+	<insert id="insertKGentry" parameterType="KGentry">
+		insert into entry (name,pathName,ID,type,reactionName,link,compNum,compID,parentID,taxID)
+		values (#{name},#{pathName},#{id},#{type},#{reactionName},#{linkEntry},#{compNum},#{compID},#{parentID},#{taxID})
+	</insert>
+	<update id="updateKGentry" parameterType="KGentry">
+		update entry
+		<set>
+			<if test="name !=null and name !=0">
+				name = #{name},
+			</if>
+			<if test="geneID !=null and geneID !=0">
+				pathName = #{pathName},
+			</if>
+			<if test="id !=null and id != 0">
+				ID = #{id},
+			</if>
+			<if test="reactionName !=null and reactionName !=''">
+				reactionName = #{reactionName} 
+			</if>
+			<if test="linkEntry !=null and linkEntry !=''">
+				link = #{linkEntry} 
+			</if>
+			<if test="compNum !=null">
+				compNum = #{compNum} 
+			</if>
+			<if test="compID !=null">
+				compID = #{compID} 
+			</if>
+			<if test="parentID !=null">
+				parentID = #{parentID} 
+			</if>
+			<if test="taxID !=null and taxID != 0">
+				taxID = #{taxID} 
+			</if>
+		</set>
+		<where>
+			<if test="name !=null and name != '' ">
+				 name=#{name}
+			</if>
+			<if test="pathName !=null and pathName != '' ">
+				and pathName=#{pathName}
+			</if>
+			<if test="id !=null and id !=0">
+				and ID=#{id}
+			</if>
+		</where>
+	</update>
+</mapper>

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.novelbio.database.domain.AbsPathway;
-import com.novelbio.database.mapper.kegg.MapKPathway;
 
 public class KGpathway extends AbsPathway{
 	

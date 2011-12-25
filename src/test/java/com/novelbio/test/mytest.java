@@ -78,11 +78,9 @@ import com.novelbio.base.dataStructure.Patternlocation;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.base.plot.Rplot;
-import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
-import com.novelbio.database.mapper.geneanno.MapGene2Go;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modkegg.KeggInfo;
  import com.thoughtworks.xstream.XStream;
@@ -97,7 +95,7 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		System.out.println(CopedID.getHashTaxIDName().get(9606));
+		System.out.println("aaa".contains(""));
 	}
 	
 	

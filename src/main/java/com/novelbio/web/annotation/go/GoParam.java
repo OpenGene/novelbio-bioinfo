@@ -8,6 +8,7 @@ import com.novelbio.database.service.servgeneanno.ServNCBIID;
 
 import org.aopalliance.intercept.*;
 import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
+import org.springframework.web.multipart.MultipartFile;
 /**
  * GOµÄ²ÎÊý
  * @author zong0jie
@@ -27,7 +28,7 @@ public class GoParam {
 	int ExpCol = 2;
 	double upValue = 0;
 	double downValue = 0;
-	String inputFile = "";
+	MultipartFile inputFile = null;
 	String bgFile = "";
 	
 	public void setBlast(boolean blast) {
@@ -91,10 +92,10 @@ public class GoParam {
 	public String getGoType() {
 		return goType;
 	}
-	public void setInputFile(String inputFile) {
+	public void setInputFile(MultipartFile inputFile) {
 		this.inputFile = inputFile;
 	}
-	public String getInputFile() {
+	public MultipartFile getInputFile() {
 		return inputFile;
 	}
 	public void setQueryTaxID(int queryTaxID) {

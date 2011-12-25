@@ -47,11 +47,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.SwingUtilities;
 
-import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastAnno;
-import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastGo;
-import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlOther;
-import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastPath;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.gui.CtrlNormal;

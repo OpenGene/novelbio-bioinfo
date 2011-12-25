@@ -9,13 +9,11 @@ import javax.swing.SwingWorker;
 
 
 import com.google.common.base.Splitter;
-import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GuiBlastJpanel;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modcopeid.CopedID;
-import com.novelbio.database.service.ServAnno;
 
 
 
@@ -109,7 +107,7 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 			try {
 				CopedID copedID = new CopedID(geneID, taxID, false);
 //				String[] tmpAnno = ServAnno.getAnno(geneID, taxID, blast, StaxID, evalue);
-				String[] tmpAnno = copedID.getAnno(blast, StaxID, evalue);
+				String[] tmpAnno = copedID.getAnno(blast);
 				if (tmpAnno == null) {
 					tmpAnno = new String[length];
 					for (int j = 0; j < tmpAnno.length; j++) {

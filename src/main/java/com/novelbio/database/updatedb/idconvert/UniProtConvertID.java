@@ -14,10 +14,10 @@ import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniGene2Go;
 import com.novelbio.database.domain.geneanno.UniProtID;
-import com.novelbio.database.mapper.geneanno.MapGene2Go;
+import com.novelbio.database.mapper.geneanno.MapGene2GoOld;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
-import com.novelbio.database.mapper.geneanno.MapUniProtID;
+import com.novelbio.database.mapper.geneanno.MapUniGene2GoOld;
+import com.novelbio.database.mapper.geneanno.MapUniProtIDOld;
 import com.novelbio.database.model.modcopeid.CopeID;
 import com.novelbio.database.service.ServAnno;
 import com.novelbio.database.service.ServGo;
@@ -640,10 +640,10 @@ public class UniProtConvertID {
 						gene2Go.setGOID(GoID);
 						gene2Go.setGOTerm(goTerm);
 						gene2Go.setGeneId(Long.parseLong(lsAccID.get(i)));
-						AGene2Go gene2Go2 = MapGene2Go.queryGene2Go(gene2Go);
+						AGene2Go gene2Go2 = MapGene2GoOld.queryGene2Go(gene2Go);
 						if (gene2Go2==null) //如果已经存在了，那么考虑下是否升级
 						{
-							MapGene2Go.InsertGene2Go(gene2Go);
+							MapGene2GoOld.InsertGene2Go(gene2Go);
 						}
 					}
 				}
@@ -655,10 +655,10 @@ public class UniProtConvertID {
 						uniGene2Go.setGOID(GoID);
 						uniGene2Go.setGOTerm(goTerm);
 						uniGene2Go.setUniProtID(lsAccID.get(i));
-						AGene2Go uniGene2Go2 = MapUniGene2Go.queryUniGene2Go(uniGene2Go);
+						AGene2Go uniGene2Go2 = MapUniGene2GoOld.queryUniGene2Go(uniGene2Go);
 						if (uniGene2Go2==null) //如果已经存在了，那么考虑下是否升级
 						{
-							MapUniGene2Go.InsertUniGene2Go(uniGene2Go);
+							MapUniGene2GoOld.InsertUniGene2Go(uniGene2Go);
 						}
 					}
 				}

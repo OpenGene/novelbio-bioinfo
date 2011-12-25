@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 import org.apache.ibatis.session.SqlSession;
 
-import com.novelbio.database.domain.geneanno.*;
+import com.novelbio.database.domain.geneanno.Go2Term;
+import com.novelbio.database.mapper.MapperSql;
 import com.novelbio.database.util.Util;
 
-public class MapGo2Term {
+public interface MapGo2Term extends MapperSql{
+
 
 	/**
 	 * 用GoIDquery,GoID,GoFunction三个中的任意组合去查找Go2Term表
@@ -15,23 +17,7 @@ public class MapGo2Term {
 	 * @param Go2Term
 	 * @return
 	 */
-	public static Go2Term queryGo2Term(Go2Term queryGo2Term){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
-		Go2Term go2Term=null;
-		try
-		{
-			go2Term= (Go2Term)session.selectOne("FriceDBSingle.selectGo2Term",queryGo2Term);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return go2Term;
-	}
+	public Go2Term queryGo2Term(Go2Term queryGo2Term);
 	
 	/**
 	 * 用GoIDquery,GoID,GoFunction三个中的任意组合去查找Go2Term表
@@ -39,39 +25,9 @@ public class MapGo2Term {
 	 * @param Go2Term
 	 * @return
 	 */
-	public static ArrayList<Go2Term> queryLsGo2Term(Go2Term queryGo2Term){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
-		ArrayList<Go2Term> lsGo2Term=null;
-		try
-		{
-			lsGo2Term= (ArrayList<Go2Term>)session.selectList("FriceDBSingle.selectGo2Term",queryGo2Term);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsGo2Term;
-	}
+	public ArrayList<Go2Term> queryLsGo2Term(Go2Term queryGo2Term);
 	
-	public static void InsertGo2Term(Go2Term Go2Term){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
- 		try
-		{
-			session.insert("FriceDBSingle.insertGo2Term", Go2Term);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void insertGo2Term(Go2Term Go2Term);
 	
 	/**
 	 * 目前的升级方式是
@@ -103,19 +59,6 @@ public class MapGo2Term {
 	    /where<br>
 	 * @param geneInfo
 	 */
-	public static void upDateGo2Term(Go2Term Go2Term){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
- 		try
-		{
-			session.update("FriceDBSingle.updateGo2Term", Go2Term);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void updateGo2Term(Go2Term Go2Term);
+
 }

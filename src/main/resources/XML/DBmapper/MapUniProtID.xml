@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapUniProtID">
+		<resultMap id="UniProtIDMap" type="UniProtID">
+		<result property="uniID" column="UniID"/>
+		<result property="dbInfo" column="DataBaseInfo"/>
+	</resultMap>
+	<select id="queryUniProtID" parameterType="UniProtID" resultMap="UniProtIDMap">
+		select *
+		from UniProtID
+		<where>
+			<if test="uniID !=null">
+				UniID = #{uniID} 
+			</if>
+			<if test="accessID !=null">
+				and accessID = #{accessID} 
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and TaxID = #{taxID} 
+			</if>
+			<if test="dbInfo !=null">
+				and DataBaseInfo = #{dbInfo}
+			</if>
+		</where>
+	</select>
+	<select id="queryLsUniProtID" parameterType="UniProtID" resultMap="UniProtIDMap">
+		select *
+		from UniProtID
+		<where>
+			<if test="uniID !=null">
+				UniID = #{uniID} 
+			</if>
+			<if test="accessID !=null">
+				and accessID = #{accessID} 
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and TaxID = #{taxID} 
+			</if>
+			<if test="dbInfo !=null">
+				and DataBaseInfo = #{dbInfo}
+			</if>
+		</where>
+	</select>
+	<insert id="insertUniProtID" parameterType="UniProtID">
+		insert into UniProtID (TaxID,UniID,accessID,DataBaseInfo)
+		values (#{taxID},#{uniID},#{accessID},#{dbInfo})
+	</insert>
+	<update id="updateUniProtID" parameterType="UniProtID">
+		update UniProtID 
+		<set>
+			<if test="taxID !=null and taxID !=0">
+				TaxID = #{taxID},
+			</if>
+			<if test="uniID !=null">
+				UniID = #{uniID},
+			</if>
+			<if test="dbInfo !=null">
+				DataBaseInfo = #{dbInfo},
+			</if>
+			<if test="accessID !=null">
+				accessID = #{accessID} 
+			</if>
+		</set>
+		<where>
+			<if test="uniID !=null">
+				and UniID = #{uniID} 
+			</if>
+			<if test="accessID !=null">
+				and accessID = #{accessID} 
+			</if>
+		</where>
+	</update>
+</mapper>

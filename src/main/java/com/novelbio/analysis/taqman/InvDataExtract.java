@@ -43,7 +43,13 @@ public class InvDataExtract {
 	
 	
 	
-	
+	/**
+	 * 给定英骏的taqman探针文件，将CT提取出来
+	 * 遇到CT为 Undetermined单词的就记为没有检出，如果一列里面超过filterProp比例的的CT含有该数字，就删除该miRNA<br>
+	 * @param excelFile
+	 * @param OutData
+	 * @param startRow
+	 */
 	public void getInfo(String excelFile, String OutData, int startRow)
 	{
 		ExcelOperate excelOperate = new ExcelOperate(excelFile);
@@ -61,7 +67,7 @@ public class InvDataExtract {
 	
 	
 	/**
-	 * 输入Invitrogen的tapman文件得到的list，进行初步筛选，返回CT检出的基因
+	 * 输入Invitrogen的tapman文件得到的list，进行初步筛选，返回CT检出的基因 <br>
 	 * @param lsData 读取得到的数据list
 	 * @param startRow 从第几行开始读，实际行
 	 * @param lsCTcol 读取哪几列，也就是CT列
@@ -111,11 +117,11 @@ public class InvDataExtract {
 	}
 	
 	/**
-	 * 指定标题列，返回所有是 指定string  的列的num
-	 * 标题列类似Array Card Name \t Assay \t Task \t Ct \t Avg Delta Ct \t Ct \t Avg Delta Ct \t Ct	Avg Delta Ct \t Ct \t Avg Delta Ct \t Ct \t Avg Delta Ct
-	 * 如果一个都没找到，返回null
+	 * 指定标题列，返回所有是 指定string  的列的num <br>
+	 * 标题列类似Array Card Name \t Assay \t Task \t Ct \t Avg Delta Ct \t Ct \t Avg Delta Ct \t Ct	Avg Delta Ct \t Ct \t Avg Delta Ct \t Ct \t Avg Delta Ct <br>
+	 * 如果一个都没找到，返回null <br>
 	 * @param strTitle 标题列
-	 * @param flagStr 用==该字符的列来检测是否检出,可以为 Ct 或者 Avg Delta Ct
+	 * @param flagStr 用equal该字符的列来检测是否检出,可以为 Ct 或者 Avg Delta Ct
 	 * @return
 	 */
 	private ArrayList<Integer> getCT_AvgCT_col(String[] strTitle, String flagStr)

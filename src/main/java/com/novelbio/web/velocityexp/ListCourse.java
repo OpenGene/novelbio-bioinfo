@@ -35,7 +35,7 @@ public class ListCourse{
 		user.setName("fsefs");
 		user.setText("zongjie");
 		user.setEmail("fwefe@fewef.com");// 这时候表单里面对应选项就会出现字
-		
+		user.setPassword("fssees");
 		//本步骤必须要有，意思将对象传入
 		mav.addObject("user", user);
 	    mav.addObject("courses", courses);
@@ -53,13 +53,13 @@ public class ListCourse{
     public String post(User user, BindingResult result,Model model) {
  	  // Model model 是将post的这个视图整个的传递了进来，可以对其进行一些处理，不过不处理也没关系,该参数可以省
     	
- 	   userValidator.validate(user, result);
-        if (result.hasErrors()) {
-        	return "courseList";
-        }
-        model.addAttribute("currUser", user);//装入session,通过session传递，也可以通过url传递
+// 	   userValidator.validate(user, result);
+//        if (result.hasErrors()) {
+//        	return "courseList";
+//        }
+        model.addAttribute("message", user.getEmail());//装入session,通过session传递，也可以通过url传递
         // Use the redirect-after-post pattern to reduce double-submits. 
-        return "courseList";
+        return "test";
 //        return "forward:test.htm?method=test2";
     	}
  }

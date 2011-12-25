@@ -2,15 +2,15 @@ package com.novelbio.database.mapper.kegg;
 
 import java.util.ArrayList;
 
-import org.apache.ibatis.session.SqlSession;
-
-import com.novelbio.database.domain.geneanno.*;
-import com.novelbio.database.domain.kegg.*;
 import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
-import com.novelbio.database.util.Util;
-
-public class MapKNCompInfo {
+import com.novelbio.database.mapper.MapperSql;
+/**
+ * kegg的化合物表
+ * @author zong0jie
+ *
+ */
+public interface MapKNCompInfo extends MapperSql {
 
 	/**
 		select *
@@ -19,23 +19,7 @@ public class MapKNCompInfo {
 	 * @param KGNIdKeg<br>
 	 * @return
 	 */
-	public static ArrayList<KGNCompInfo> queryLsKGNCompInfo(KGNIdKeg kgnIdKeg){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		ArrayList<KGNCompInfo> lsKgnCompInfos=null;
-		try
-		{
-			lsKgnCompInfos= (ArrayList<KGNCompInfo>)session.selectList("KGNoGen.selectCompInfo",kgnIdKeg);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsKgnCompInfos;
-	}
+	public ArrayList<KGNCompInfo> queryLsKGNCompInfo(KGNIdKeg kgnIdKeg);
 	
 	/**
 	select *
@@ -44,40 +28,10 @@ public class MapKNCompInfo {
  * @param KGNIdKeg<br>
  * @return
  */
-	public static KGNCompInfo queryKGNCompInfo(KGNIdKeg kgnIdKeg){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		KGNCompInfo kgnCompInfos=null;
-		try
-		{
-			kgnCompInfos= (KGNCompInfo) session.selectOne("KGNoGen.selectCompInfo",kgnIdKeg);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return kgnCompInfos;
-	}
+	public KGNCompInfo queryKGNCompInfo(KGNIdKeg kgnIdKeg);
 	
 	
-	public static void InsertKGNCompInfo(KGNCompInfo kgnCompInfo){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.insert("KGNoGen.insertCompInfo", kgnCompInfo);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void insertKGNCompInfo(KGNCompInfo kgnCompInfo);
 	
 	/**
 	 * 目前的升级方式是<br>
@@ -105,19 +59,5 @@ public class MapKNCompInfo {
 		where kegID = #{kegID}<br>
 	 * @param kgnCompInfo
 	 */
-	public static void upDateKGNIdKeg(KGNCompInfo kgnCompInfo){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.update("KEGIDconvert.updateCompInfo", kgnCompInfo);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void updateKGNCompInfo(KGNCompInfo kgnCompInfo);
 }

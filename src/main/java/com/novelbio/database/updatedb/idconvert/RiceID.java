@@ -20,10 +20,10 @@ import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
-import com.novelbio.database.mapper.geneanno.MapGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapGeneInfoOld;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
-import com.novelbio.database.mapper.geneanno.MapUniProtID;
+import com.novelbio.database.mapper.geneanno.MapUniGeneInfoOld;
+import com.novelbio.database.mapper.geneanno.MapUniProtIDOld;
 import com.novelbio.database.model.modcopeid.CopeID;
 import com.novelbio.database.service.ServAnno;
 import com.novelbio.database.updatedb.database.UpDateFriceDB;
@@ -165,7 +165,7 @@ public class RiceID {
 					{
 						UniProtID uniProtID = new UniProtID();
 						uniProtID.setAccID(strings[0]);uniProtID.setTaxID(39947);
-						ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
+						ArrayList<UniProtID> lsUniProtIDs = MapUniProtIDOld.queryLsUniProtID(uniProtID);
 						if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 						{
 							uniID = lsUniProtIDs.get(0).getUniID();
@@ -241,10 +241,10 @@ public class RiceID {
 			if (geneID == 0) //如果NCBIID中没有
 			{
 				//开始搜UniProtID表
-				ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);//先用RapDB的ID搜，然后用TigrID搜
+				ArrayList<UniProtID> lsUniProtIDs = MapUniProtIDOld.queryLsUniProtID(uniProtID);//先用RapDB的ID搜，然后用TigrID搜
 				if (lsUniProtIDs == null || lsUniProtIDs.size()<1) {
 					uniProtID = new UniProtID(); uniProtID.setAccID(lstmpLOC.get(1)[0]);uniProtID.setTaxID(39947);
-					lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
+					lsUniProtIDs = MapUniProtIDOld.queryLsUniProtID(uniProtID);
 				}
 				if (lsUniProtIDs != null && lsUniProtIDs.size()>0) 
 				{
@@ -319,7 +319,7 @@ public class RiceID {
 							String tmpOsID= tmp.split(",")[0];
 							UniProtID uniProtID = new UniProtID();
 							uniProtID.setAccID(tmpOsID); uniProtID.setTaxID(39947);
-							ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
+							ArrayList<UniProtID> lsUniProtIDs = MapUniProtIDOld.queryLsUniProtID(uniProtID);
 							if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 							{
 								uniID = lsUniProtIDs.get(0).getUniID();
@@ -382,7 +382,7 @@ public class RiceID {
 				for (int i = 1; i < tmpID.length; i++) {
 					UniProtID uniProtID = new UniProtID();
 					uniProtID.setAccID(CopeID.removeDot(tmpID[i])); uniProtID.setTaxID(39947);
-					ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
+					ArrayList<UniProtID> lsUniProtIDs = MapUniProtIDOld.queryLsUniProtID(uniProtID);
 					if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 					{
 						uniID = lsUniProtIDs.get(0).getUniID();
@@ -555,7 +555,7 @@ public class RiceID {
 					{
 						UniProtID uniProtID = new UniProtID();
 						uniProtID.setAccID(strings[0]);uniProtID.setTaxID(39947);
-						ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniProtID);
+						ArrayList<UniProtID> lsUniProtIDs = MapUniProtIDOld.queryLsUniProtID(uniProtID);
 						if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
 						{
 							uniID = lsUniProtIDs.get(0).getUniID();
@@ -572,12 +572,12 @@ public class RiceID {
 				if (GeneID !=0) {
 					GeneInfo geneInfo = new GeneInfo();
 					geneInfo.setGeneID(GeneID);
-					GeneInfo geneInfo2 = MapGeneInfo.queryGeneInfo(geneInfo);
+					GeneInfo geneInfo2 = MapGeneInfoOld.queryGeneInfo(geneInfo);
 					if (geneInfo2 == null) //数据库中没有，就插入
 					{
 						geneInfo.setSymbol(symbol);
 						geneInfo.setDescription(description);
-						MapGeneInfo.InsertGeneInfo(geneInfo);
+						MapGeneInfoOld.InsertGeneInfo(geneInfo);
 					}
 					else  //数据库中有
 					{
@@ -594,19 +594,19 @@ public class RiceID {
 							flagUpdate = true;
 						}
 						if (flagUpdate) {
-							MapGeneInfo.upDateGeneInfo(geneInfo2);
+							MapGeneInfoOld.upDateGeneInfo(geneInfo2);
 						}
 					}
 				}
 				else if (GeneID ==0 && uniID != null) {
 					UniGeneInfo uniGeneInfo = new UniGeneInfo();
 					uniGeneInfo.setUniProtID(uniID);
-					UniGeneInfo uniGeneInfo2 = MapUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
+					UniGeneInfo uniGeneInfo2 = MapUniGeneInfoOld.queryUniGeneInfo(uniGeneInfo);
 					if (uniGeneInfo2 == null) //数据库中没有，就插入
 					{
 						uniGeneInfo.setSymbol(symbol);
 						uniGeneInfo.setDescription(description);
-						MapUniGeneInfo.InsertUniGeneInfo(uniGeneInfo);
+						MapUniGeneInfoOld.InsertUniGeneInfo(uniGeneInfo);
 					}
 					else  //数据库中有
 					{
@@ -624,7 +624,7 @@ public class RiceID {
 						}
 						
 						if (flagUpdate) {
-							MapUniGeneInfo.upDateUniGeneInfo(uniGeneInfo2);
+							MapUniGeneInfoOld.upDateUniGeneInfo(uniGeneInfo2);
 						}
 					}
 				}
@@ -747,10 +747,10 @@ public class RiceID {
 				{
 					GeneInfo geneInfo = new GeneInfo();
 					geneInfo.setGeneID(Long.parseLong(lsaccID.get(i)));
-					GeneInfo geneInfo2 = MapGeneInfo.queryGeneInfo(geneInfo);
+					GeneInfo geneInfo2 = MapGeneInfoOld.queryGeneInfo(geneInfo);
 					if (geneInfo2 == null) {
 						geneInfo.setSymbol(LOCID); geneInfo.setDescription(description);
-						MapGeneInfo.InsertGeneInfo(geneInfo);
+						MapGeneInfoOld.InsertGeneInfo(geneInfo);
 					}
 					else 
 					{
@@ -764,7 +764,7 @@ public class RiceID {
 							update = true;
 						}
 						if (update) {
-							MapGeneInfo.upDateGeneInfo(geneInfo2);
+							MapGeneInfoOld.upDateGeneInfo(geneInfo2);
 						}
 					}
 				}	
@@ -774,10 +774,10 @@ public class RiceID {
 				{
 					UniGeneInfo uniGeneInfo = new UniGeneInfo();
 					uniGeneInfo.setUniProtID(lsaccID.get(i));
-					UniGeneInfo uniGeneInfo2 = MapUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
+					UniGeneInfo uniGeneInfo2 = MapUniGeneInfoOld.queryUniGeneInfo(uniGeneInfo);
 					if (uniGeneInfo2 == null) {
 						uniGeneInfo.setSymbol(LOCID); uniGeneInfo.setDescription(description);
-						MapUniGeneInfo.InsertUniGeneInfo(uniGeneInfo);
+						MapUniGeneInfoOld.InsertUniGeneInfo(uniGeneInfo);
 					}
 					else 
 					{
@@ -791,7 +791,7 @@ public class RiceID {
 							update = true;
 						}
 						if (update) {
-							MapUniGeneInfo.upDateUniGeneInfo(uniGeneInfo2);
+							MapUniGeneInfoOld.upDateUniGeneInfo(uniGeneInfo2);
 						}
 					}
 				}

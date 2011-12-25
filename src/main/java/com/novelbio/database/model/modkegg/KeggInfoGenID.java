@@ -1,17 +1,10 @@
 package com.novelbio.database.model.modkegg;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.novelbio.database.domain.kegg.KGCgen2Entry;
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
-import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
-import com.novelbio.database.domain.kegg.KGentry;
-import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
-import com.novelbio.database.mapper.kegg.MapKIDgen2Keg;
+import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
 
 public class KeggInfoGenID extends KeggInfoAbs{
-	
+	ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
 	public KeggInfoGenID(String genUniAccID, int taxID) {
 		super(genUniAccID, taxID);
 		// TODO Auto-generated constructor stub
@@ -31,7 +24,7 @@ public class KeggInfoGenID extends KeggInfoAbs{
 			bookgiDgen2Keg = true;
 			KGIDgen2Keg kgiDgen2KegTmp = new KGIDgen2Keg();
 			kgiDgen2KegTmp.setGeneID(geneID);
-			kgiDgen2Keg = MapKIDgen2Keg.queryKGIDgen2Keg(kgiDgen2KegTmp);
+			kgiDgen2Keg = servKIDgen2Keg.queryKGIDgen2Keg(kgiDgen2KegTmp);
 		}
 		if (kgiDgen2Keg != null) {
 			keggID = kgiDgen2Keg.getKeggID();

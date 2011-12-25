@@ -4,33 +4,18 @@ import java.util.ArrayList;
 
 import org.apache.ibatis.session.SqlSession;
 
-import com.novelbio.database.domain.geneanno.*;
-import com.novelbio.database.util.Util;
+import com.novelbio.database.domain.geneanno.GeneInfo;
+import com.novelbio.database.mapper.MapperSql;
 
-public class MapGeneInfo {
-	
+public interface MapGeneInfo extends MapperSql{
 	/**
-	 * 用GeneID去查找GeneInfo表
-	 * @param GeneID
+	 * 用GeneInfo类去查找GeneInfo表
+	 * 主要是来看本列是否已经存在了
+	 * 用geneID去查找数据库
+	 * @param geneInfo
 	 * @return
 	 */
-	public static ArrayList<GeneInfo> queryLsGeneInfo(long GeneID){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
-		ArrayList<GeneInfo> lsGeneInfo=null;
-		try
-		{
-			lsGeneInfo= (ArrayList<GeneInfo>)session.selectList("FriceDBSingle.selectGeneInfoID",GeneID);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsGeneInfo;
-	}
+	public GeneInfo queryGeneInfo(GeneInfo geneInfo);
 	
 	/**
 	 * 用GeneInfo类去查找GeneInfo表
@@ -39,82 +24,14 @@ public class MapGeneInfo {
 	 * 	@param geneInfo
 	 * @return
 	 */
-	public static ArrayList<GeneInfo> queryLsGeneInfo(GeneInfo geneInfo){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
-		ArrayList<GeneInfo> lsGeneInfo=null;
-		try
-		{
-			lsGeneInfo= (ArrayList<GeneInfo>)session.selectList("FriceDBSingle.selectGeneInfo",geneInfo);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsGeneInfo;
-	}
-	/**
-	 * 用GeneInfo类去查找GeneInfo表
-	 * 主要是来看本列是否已经存在了
-	 * 用geneID去查找数据库
-	 * @param geneInfo
-	 * @return
-	 */
-	public static GeneInfo queryGeneInfo(GeneInfo geneInfo){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
-		GeneInfo geneInfo2=null;
-		try
-		{
-			geneInfo2= (GeneInfo)session.selectOne("FriceDBSingle.selectGeneInfo",geneInfo);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return geneInfo2;
-	}
+	public ArrayList<GeneInfo> queryLsGeneInfo(GeneInfo geneInfo);
 	
-	
-	public static void InsertGeneInfo(GeneInfo geneInfo){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
- 		try
-		{
-			session.insert("FriceDBSingle.insertGeneInfo", geneInfo);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void insertGeneInfo(GeneInfo geneInfo);
 	
 	/**
 	 * 用geneID查找，升级全部项目，
 	 * @param geneInfo
 	 */
-	public static void upDateGeneInfo(GeneInfo geneInfo){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
- 		try
-		{
-			session.update("FriceDBSingle.updateGeneInfo", geneInfo);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void updateGeneInfo(GeneInfo geneInfo);
+
 }

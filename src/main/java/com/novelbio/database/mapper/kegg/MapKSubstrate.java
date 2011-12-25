@@ -5,75 +5,27 @@ import java.util.ArrayList;
 import org.apache.ibatis.session.SqlSession;
 
 import com.novelbio.database.domain.kegg.KGsubstrate;
+import com.novelbio.database.mapper.MapperSql;
 import com.novelbio.database.util.Util;
 
 
-public class MapKSubstrate {
-
-
+public interface MapKSubstrate extends MapperSql{
+	/**
+	 * 用reactionID,pathName,id,name中任意组合去查找substrate表
+	 * @param kGsubstrate
+	 * @return
+	 */
+	public ArrayList<KGsubstrate> queryLskgKGsubstrates(KGsubstrate kGsubstrate);
 	
 	/**
 	 * 用reactionID,pathName,id,name中任意组合去查找substrate表
 	 * @param kGsubstrate
 	 * @return
 	 */
-	public static ArrayList<KGsubstrate> queryLskgKGsubstrates(KGsubstrate kGsubstrate){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		ArrayList<KGsubstrate> lsKGsubstrates=null;
-		try
-		{
-			lsKGsubstrates= (ArrayList<KGsubstrate>)session.selectList("KGMLSingle.selectSubstrate",kGsubstrate);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsKGsubstrates;
-	}
-	
-	/**
-	 * 用reactionID,pathName,id,name中任意组合去查找substrate表
-	 * @param kGsubstrate
-	 * @return
-	 */
-	public static KGsubstrate queryKGsubstrate(KGsubstrate kGsubstrate){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		KGsubstrate kGsubstrate2=null;
-		try
-		{
-			kGsubstrate2= (KGsubstrate)session.selectOne("KGMLSingle.selectSubstrate",kGsubstrate);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return kGsubstrate2;
-	}
+	public KGsubstrate queryKGsubstrate(KGsubstrate kGsubstrate);
 	
 	
-	public static void InsertKGsubstrate(KGsubstrate kGsubstrate){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.insert("KGMLSingle.insertSubstrate", kGsubstrate);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void insertKGsubstrate(KGsubstrate kGsubstrate);
 	
 	/**
 	 * 目前的升级方式是:<br>
@@ -99,21 +51,7 @@ public class MapKSubstrate {
 		/where<br>
 	 * @param kGsubstrate
 	 */
-	public static void upDateKGsubstrate(KGsubstrate kGsubstrate){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.update("KGMLSingle.updateSubstrate", kGsubstrate);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void updateKGsubstrate(KGsubstrate kGsubstrate);
 
 
 

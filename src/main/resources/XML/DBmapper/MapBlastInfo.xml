@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapBlastInfo">
+	<resultMap id="BlastInfoMap" type="BlastInfo">
+	</resultMap>
+	<select id="queryBlastInfo" parameterType="BlastInfo" resultMap="BlastInfoMap">
+		select *
+		from BlastInfo
+		<where>
+			<if test="queryID !=null">
+				queryID = #{queryID}
+			</if>
+			<if test="queryTax !=null and queryTax!=0">
+				and queryTax = #{queryTax}
+			</if>
+			<if test="queryDB !=null">
+				and queryDB = #{queryDB}
+			</if>
+			<if test="subjectID !=null">
+				and subjectID = #{subjectID}
+			</if>
+			<if test="subjectTax !=null and subjectTax!=0">
+				and subjectTax = #{subjectTax}
+			</if>
+			<if test="subjectDB !=null">
+				and subjectDB = #{subjectDB}
+			</if>
+			<if test="subjectTab !=null">
+				and subjectTab = #{subjectTab}
+			</if>
+	    </where> 
+	</select>
+	<select id="queryLsBlastInfo" parameterType="BlastInfo" resultMap="BlastInfoMap">
+		select *
+		from BlastInfo
+		<where>
+			<if test="queryID !=null">
+				queryID = #{queryID}
+			</if>
+			<if test="queryTax !=null and queryTax!=0">
+				and queryTax = #{queryTax}
+			</if>
+			<if test="queryDB !=null">
+				and queryDB = #{queryDB}
+			</if>
+			<if test="subjectID !=null">
+				and subjectID = #{subjectID}
+			</if>
+			<if test="subjectTax !=null and subjectTax!=0">
+				and subjectTax = #{subjectTax}
+			</if>
+			<if test="subjectDB !=null">
+				and subjectDB = #{subjectDB}
+			</if>
+			<if test="subjectTab !=null">
+				and subjectTab = #{subjectTab}
+			</if>
+	    </where> 
+	</select>
+	<insert id="insertBlastInfo" parameterType="BlastInfo">
+		insert into BlastInfo (queryID,queryTax,queryDB,subjectID,subjectTax,subjectDB,identities,evalue,blastDate,subjectTab)
+		values (#{queryID},#{queryTax},#{queryDB},#{subjectID},#{subjectTax},#{subjectDB},#{identities},#{evalue},#{blastDate},#{subjectTab})
+	</insert>
+	<update id="updateBlastInfo" parameterType="BlastInfo">
+		update BlastInfo 
+		<set>
+			<if test="queryTax != null and queryTax != 0">
+				queryTax = #{queryTax},
+			</if>
+			<if test="queryDB != null">
+				queryDB = #{queryDB},
+			</if>
+			<if test="subjectID != null and subjectID != 0 ">
+				subjectID = #{subjectID},
+			</if>
+			<if test="subjectTax != null and subjectTax != 0">
+				subjectTax = #{subjectTax},
+			</if>
+			<if test="subjectDB != null">
+				subjectDB = #{subjectDB},
+			</if>
+			<if test="identities != null">
+				identities = #{identities},
+			</if>
+			<if test="evalue != null">
+				evalue = #{evalue},
+			</if>
+			<if test="blastDate != null">
+				blastDate = #{blastDate},
+			</if>
+			<if test="subjectTab != null">
+				subjectTab = #{subjectTab} 
+			</if>
+		</set>
+		<where>
+			<if test="queryID != null and queryID != '' and queryID != 0">
+				queryID = #{queryID}
+			</if>
+			<if test="queryTax != null and queryTax != 0">
+				and queryTax = #{queryTax}
+			</if>
+			<if test="subjectTax != null and subjectTax != 0">
+				and subjectTax = #{subjectTax}
+			</if>
+	    </where> 
+	</update>	
+</mapper>

@@ -14,7 +14,8 @@
 <div class="workTab" id="GOtab">
 <?php echo $error;?>
   <p>GOpostForm</p>
-  <form action= ${summiturl} method="post" enctype="multipart/form-data" name="form1" id="form1">
+<!--  <form action= ${summiturl} method="post" enctype="multipart/form-data"> -->
+   <form action=${summiturl} method="POST" enctype="multipart/form-data">  
     <p>GO Analysis  </p>
     <p>
       <label>
@@ -39,9 +40,9 @@
     </p>
     <p>
       <label>AccFile     
-       #springFormInput("goparam.inputFile" "")
+       #springFormFileInput("goparam.inputFile" "")
       </label>
-    </p> 
+    </p>
     <p>
       <input type="submit" />
     </p>

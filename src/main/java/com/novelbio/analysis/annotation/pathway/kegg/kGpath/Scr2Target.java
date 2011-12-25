@@ -9,10 +9,10 @@ import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
-import com.novelbio.database.mapper.geneanno.MapGeneInfo;
+import com.novelbio.database.mapper.geneanno.MapGeneInfoOld;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.kegg.MapKEntry;
-import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
+import com.novelbio.database.mapper.kegg.MapKEntryOld;
+import com.novelbio.database.mapper.kegg.MapKIDKeg2KoOld;
 import com.novelbio.database.service.ServAnno;
 import com.novelbio.database.service.servgeneanno.ServNCBIID;
 
@@ -88,7 +88,7 @@ public class Scr2Target {
 					////////////////如果geneBlast到了人类，并且得到了相应的KO，那么尝试获得该KO所对应本物种的KeggID，并用KeggID直接mapping回本基因。如果没有KeggID，则用KO去mapping////////////////////////////////////////////////////////////////
 					KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
 					kgiDkeg2Ko.setKo(ko[j]);kgiDkeg2Ko.setTaxID(QtaxID);
-					ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos2 = MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+					ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos2 = MapKIDKeg2KoOld.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 					if (lsKgiDkeg2Kos2 != null && lsKgiDkeg2Kos2.size()>0) 
 					{
 						//虽然一个ko对应多个keggID，但是对于pathway来说，一个ko就对应到一个pathway上，所以一个ko就够了
@@ -102,7 +102,7 @@ public class Scr2Target {
 			{
 				KGentry qkGentry=new KGentry();
 				qkGentry.setEntryName(ko[j]);qkGentry.setTaxID(QtaxID);
-				ArrayList<KGentry> lsKGentryQuery = MapKEntry.queryLsKGentries(qkGentry);
+				ArrayList<KGentry> lsKGentryQuery = MapKEntryOld.queryLsKGentries(qkGentry);
  				for (int k = 0; k < lsKGentryQuery.size(); k++)
 				{
  					if (lsKGentryQuery.get(k).getEntryName().equals("hsa:56604")) {
@@ -180,7 +180,7 @@ public class Scr2Target {
 			{
 				KGentry qkGentry=new KGentry();
 				qkGentry.setEntryName(ko[j]);qkGentry.setTaxID(QtaxID);
-				ArrayList<KGentry> lsKGentryQuery = MapKEntry.queryLsKGentries(qkGentry);
+				ArrayList<KGentry> lsKGentryQuery = MapKEntryOld.queryLsKGentries(qkGentry);
  				for (int k = 0; k < lsKGentryQuery.size(); k++)
 				{
 					Hashtable<String, KGpathScr2Trg> tmpHashEntryRelation=QKegPath.getHashKGpathRelation(lsKGentryQuery.get(k));
@@ -444,7 +444,7 @@ public class Scr2Target {
 			else if (qGenKegInfo[3] !=null)
 			{
 				GeneInfo qgeneInfo = new GeneInfo(); qgeneInfo.setGeneID(Long.parseLong(qGenKegInfo[1]));
-				GeneInfo geneInfoSub = MapGeneInfo.queryGeneInfo(qgeneInfo);
+				GeneInfo geneInfoSub = MapGeneInfoOld.queryGeneInfo(qgeneInfo);
 				//如果没有symbol
 				if (geneInfoSub == null || geneInfoSub.getSymbol() == null || geneInfoSub.getSymbol().trim().equals("") || geneInfoSub.getSymbol().trim().equals("-")) 
 				{
@@ -471,7 +471,7 @@ public class Scr2Target {
 				if (qGenKegInfo[1] != null) {
 					GeneInfo qgeneInfo = new GeneInfo();
 					qgeneInfo.setGeneID(Long.parseLong(qGenKegInfo[1]));
-					GeneInfo geneInfoSub = MapGeneInfo.queryGeneInfo(qgeneInfo);
+					GeneInfo geneInfoSub = MapGeneInfoOld.queryGeneInfo(qgeneInfo);
 					//如果没有symbol
 					if (geneInfoSub == null) {
 						System.out.println("error");
@@ -501,7 +501,7 @@ public class Scr2Target {
 				queryGenInfo[3] = qGenKegInfo[4]; queryGenInfo[4] = qGenKegInfo[5];
 				GeneInfo qgeneInfo2 = new GeneInfo();
 				qgeneInfo2.setGeneID(Long.parseLong(qGenKegInfo[6]));
-				GeneInfo geneInfoSub2 = MapGeneInfo.queryGeneInfo(qgeneInfo2);
+				GeneInfo geneInfoSub2 = MapGeneInfoOld.queryGeneInfo(qgeneInfo2);
 				//如果没有symbol
 				if (geneInfoSub2.getSymbol() == null || geneInfoSub2.getSymbol().trim().equals("") || geneInfoSub2.getSymbol().trim().equals("-")) 
 				{

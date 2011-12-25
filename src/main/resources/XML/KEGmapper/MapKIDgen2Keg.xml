@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapKIDgen2Keg">
+	<resultMap id="gen2Keg" type="KGIDgen2Keg">
+	</resultMap>
+	<select id="queryLsKGIDgen2Keg" parameterType="KGIDgen2Keg" resultMap="gen2Keg">
+		select *
+		from IDgen2Keg
+		<where>
+			<if test="geneID !=null and geneID !=0">
+				 geneID=#{geneID}
+			</if>
+			<if test="keggID != null and keggID != ''">
+				and keggID=#{keggID}
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and taxID=#{taxID}
+			</if>
+		</where>
+	</select>
+	<select id="queryKGIDgen2Keg" parameterType="KGIDgen2Keg" resultMap="gen2Keg">
+		select *
+		from IDgen2Keg
+		<where>
+			<if test="geneID !=null and geneID !=0">
+				 geneID=#{geneID}
+			</if>
+			<if test="keggID != null and keggID != ''">
+				and keggID=#{keggID}
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and taxID=#{taxID}
+			</if>
+		</where>
+	</select>
+	<insert id="insertKGIDgen2Keg" parameterType="KGIDgen2Keg">
+		insert into IDgen2Keg (geneID,keggID,taxID)
+		values (#{geneID},#{keggID},#{taxID})
+	</insert>
+	<update id="updateKGIDgen2Keg" parameterType="KGIDgen2Keg">
+		update IDgen2Keg
+		<set>
+			<if test="geneID != null and geneID !=0">
+				GeneID = #{geneID},
+			</if>
+			<if test="keggID != null and keggID != ''">
+				keggID = #{keggID},
+			</if>
+			<if test="taxID != null and taxID !=0">
+				TaxID = #{taxID}
+			</if>
+		</set>
+		<where>
+			<if test="geneID !=null and geneID !=0">
+				 geneID=#{geneID}
+			</if>
+			<if test="keggID != null and keggID != ''">
+				and keggID=#{keggID}
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and taxID=#{taxID}
+			</if>
+		</where>
+	</update>
+</mapper>

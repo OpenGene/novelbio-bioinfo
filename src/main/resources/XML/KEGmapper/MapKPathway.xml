@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapKPathway">
+	<resultMap id="pathwayMap" type="KGpathway">
+		<result property="mapNum" column="number"/>
+	</resultMap>
+	<select id="queryLsKGpathways" parameterType="KGpathway" resultMap="pathwayMap">
+		select *
+		from pathway
+		<where>
+			<if test="pathName !=null and pathName != '' ">
+				pathName = #{pathName} 
+			</if>
+			<if test="org !=null and org != '' ">
+				and org = #{org} 
+			</if>
+			<if test="mapNum !=null and mapNum != '' ">
+				and number = #{mapNum} 
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and taxID=#{taxID}
+			</if>
+	    </where>
+	</select>
+	<select id="queryKGpathway" parameterType="KGpathway" resultMap="pathwayMap">
+		select *
+		from pathway
+		<where>
+			<if test="pathName !=null and pathName != '' ">
+				pathName = #{pathName} 
+			</if>
+			<if test="org !=null and org != '' ">
+				and org = #{org} 
+			</if>
+			<if test="mapNum !=null and mapNum != '' ">
+				and number = #{mapNum} 
+			</if>
+			<if test="taxID !=null and taxID !=0">
+				and taxID=#{taxID}
+			</if>
+	    </where>
+	</select>
+	<insert id="insertKGpathway" parameterType="KGpathway">
+		insert into pathway (pathName,org,number,title,linkUrl,taxID)
+		values (#{pathName},#{org},#{mapNum},#{title},#{linkUrl},#{taxID})
+	</insert>
+	<update id="updateKGpathway" parameterType="KGpathway">
+		update pathway set
+		pathName = #{pathName},
+		org = #{org},
+		number = #{mapNum},
+		title = #{title},
+		linkUrl = #{linkUrl},
+		taxID = #{taxID}
+		where pathName = #{pathName}
+	</update>
+</mapper>

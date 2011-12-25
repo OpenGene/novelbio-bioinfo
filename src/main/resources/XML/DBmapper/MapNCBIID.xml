@@ -48,7 +48,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		insert into NCBIID (TaxID,GeneID,accessID,DataBaseInfo)
 		values (#{taxID},#{geneID},#{accessID},#{dbInfo})
 	</insert>
-	<update id="upDateNCBIID" parameterType="NCBIID">
+	<update id="updateNCBIID" parameterType="NCBIID">
 		update NCBIID
 		<set>
 			<if test="taxID !=null and taxID !=0">

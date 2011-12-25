@@ -9,9 +9,9 @@ import com.novelbio.database.domain.kegg.KGCgen2Entry;
 import com.novelbio.database.domain.kegg.KGCgen2Ko;
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
-import com.novelbio.database.mapper.geneanno.MapBlastInfo;
-import com.novelbio.database.mapper.kegg.MapKEntry;
-import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
+import com.novelbio.database.mapper.geneanno.MapBlastInfoOld;
+import com.novelbio.database.mapper.kegg.MapKEntryOld;
+import com.novelbio.database.mapper.kegg.MapKIDKeg2KoOld;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
@@ -108,7 +108,7 @@ and taxID=#{taxID}
 		if (lsKgiDkeg2Kos == null) {
 			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
 			kgiDkeg2Ko.setKeggID(keggID); kgiDkeg2Ko.setTaxID(taxID);
-			lsKgiDkeg2Kos = MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+			lsKgiDkeg2Kos = MapKIDKeg2KoOld.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 			if (lsKgiDkeg2Kos == null) {
 				lsKgiDkeg2Kos = new ArrayList<KGIDkeg2Ko>();
 			}
@@ -147,7 +147,7 @@ and taxID=#{taxID}
 		for (String ko : lsKO) {
 			KGentry kGentry = new KGentry();
 			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();  kgiDkeg2Ko.setKo(ko); kgiDkeg2Ko.setTaxID(QtaxID);
-			ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+			ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = MapKIDKeg2KoOld.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 			ArrayList<KegEntity> lskGentries = new ArrayList<KegEntity>();
 			////////////////如果geneBlast到了人类，并且得到了相应的KO，那么获得该KO所对应本物种的KeggID，并用KeggID直接mapping回本基因////////////////////////////////////////////////////////////////
 			if (lsKgiDkeg2Kos != null && lsKgiDkeg2Kos.size()>0) 

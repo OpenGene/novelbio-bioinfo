@@ -11,7 +11,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.geneanno.MapUniProtID;
+import com.novelbio.database.mapper.geneanno.MapUniProtIDOld;
 
 
 
@@ -115,7 +115,7 @@ public class KGprepare {
 				continue;
 			}
 			//没找到的话，查找UniProtID表
-			ArrayList<UniProtID> lsUniProtIDs=MapUniProtID.queryLsUniProtID(uniProtID);
+			ArrayList<UniProtID> lsUniProtIDs=MapUniProtIDOld.queryLsUniProtID(uniProtID);
 			if (lsUniProtIDs != null && lsUniProtIDs.size() > 0) {
 				String tmpGeneID = lsUniProtIDs.get(0).getUniID();
 				if (Sep) {

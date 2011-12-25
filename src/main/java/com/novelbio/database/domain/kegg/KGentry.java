@@ -3,9 +3,10 @@ package com.novelbio.database.domain.kegg;
 import java.util.ArrayList;
 
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
-import com.novelbio.database.mapper.kegg.MapKEntry;
-import com.novelbio.database.mapper.kegg.MapKRealtion;
+import com.novelbio.database.mapper.kegg.MapKRelation;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.service.servkegg.ServKEntry;
+import com.novelbio.database.service.servkegg.ServKRelation;
 
 
 public class KGentry {
@@ -324,12 +325,13 @@ public class KGentry {
 	 */
 	public ArrayList<KGrelation> getRelatEntity()
 	{
+		ServKRelation servKRelation = new ServKRelation();
 		KGrelation tmpQkGrelation=new KGrelation();
 		tmpQkGrelation.setEntry1ID(id); tmpQkGrelation.setPathName(pathName);
-		ArrayList<KGrelation> lsKGrelations1 = MapKRealtion.queryLsKGrelations(tmpQkGrelation);
+		ArrayList<KGrelation> lsKGrelations1 = servKRelation.queryLsKGrelations(tmpQkGrelation);
 		
 		tmpQkGrelation.setEntry2ID(id); tmpQkGrelation.setPathName(pathName);
-		ArrayList<KGrelation> lsKGrelations2 = MapKRealtion.queryLsKGrelations(tmpQkGrelation);
+		ArrayList<KGrelation> lsKGrelations2 = servKRelation.queryLsKGrelations(tmpQkGrelation);
 		/////////设定来自哪个
 		for (KGrelation kGrelation : lsKGrelations1) {
 			kGrelation.setFlag(KGrelation.FLAG_ENTRYID1);
@@ -397,7 +399,8 @@ public class KGentry {
 		 * @return
 		 */
 		public static ArrayList<KGentry> getLsEntity(KGentry kGentry) {
-			ArrayList<KGentry> lskGentries = MapKEntry.queryLsKGentries(kGentry);
+			ServKEntry servKEntry = new ServKEntry();
+			ArrayList<KGentry> lskGentries = servKEntry.queryLsKGentries(kGentry);
 			if (lskGentries == null || lskGentries.size() < 1) {
 				return null;
 			}
@@ -430,9 +433,10 @@ public class KGentry {
 		 * @return
 		 */
 		public static ArrayList<KGentry> getLsEntity(String kegID) {
+			ServKEntry servKEntry = new ServKEntry();
 			KGentry kGentry = new KGentry();
 			kGentry.setEntryName(kegID);
-			ArrayList<KGentry> lskGentries = MapKEntry.queryLsKGentries(kGentry);
+			ArrayList<KGentry> lskGentries = servKEntry.queryLsKGentries(kGentry);
 			if (lskGentries == null || lskGentries.size() < 1) {
 				return null;
 			}

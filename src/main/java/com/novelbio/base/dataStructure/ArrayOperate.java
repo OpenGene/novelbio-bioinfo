@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 
@@ -75,6 +76,48 @@ public class ArrayOperate {
 		return result;
 	}
  
+	/**
+	 * 二维[][]的合并，给定AT[][]和BT[][]
+	 * 将AT[][]和BT[][]合并，可以指定BT插入在AT的哪一列中
+	 * <b>注意，AT和BT的类型必须相等，行数必须相等,也就是第一维必须相等</b>
+	 * @param AT
+	 * @param BT
+	 * @param instNum 插入到AT的第几列之后，是AT的实际列,如果instNum<1则仅仅将BT并到AT的后面。
+	 * @return
+	 * 
+	 */
+	public static <T> ArrayList<T[]> combArray(List<T[]> lsAT,List<T[]> lsBT,int instNum) {
+		int rowNum = lsAT.size();
+		int colNum = lsAT.get(0).length+lsBT.get(0).length;
+		if (instNum<1) {
+			instNum = lsAT.get(0).length;
+		}
+		instNum--;
+		//通过反射的方法新建数组
+		ArrayList<T[]> lsResult = new ArrayList<T[]>();
+		T[][]  result = (T[][]) Array.newInstance(lsAT.get(0).getClass().getComponentType(),rowNum,colNum);
+		for (int i = 0; i < rowNum; i++) 
+		{
+			for (int j = 0; j < colNum; j++) 
+			{
+				if (j<=instNum) {
+					result[i][j]=lsAT.get(i)[j];
+				}
+				else if (j>instNum&&j<=instNum+lsBT.get(0).length) {
+					result[i][j]=lsBT.get(i)[j-instNum-1];
+				}
+				else
+				{
+					result[i][j]=lsAT.get(i)[j-lsBT.get(i).length];
+				}
+				lsResult.add(result[i]);
+			}
+		}
+		return lsResult;
+	}
+	
+	
+	
 	/**
 	 * @deprecated
 	 * 采用{@link combArray}取代

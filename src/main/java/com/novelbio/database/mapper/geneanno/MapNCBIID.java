@@ -77,5 +77,5 @@ public interface MapNCBIID extends MapperSql{
 	    /where <br>
 	 * @param NCBIID
 	 */
-	public void upDateNCBIID(NCBIID nCBIID);
+	public void updateNCBIID(NCBIID nCBIID);
 }

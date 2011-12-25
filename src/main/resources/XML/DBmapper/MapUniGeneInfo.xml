@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapUniGeneInfo">	
+	<resultMap id="UniGeneInfoMap" type="UniGeneInfo">
+		<id property="uniProtID" column="UniProtID" />
+		<result property="symbol" column="Symbol"/>
+		<result property="synonyms" column="Synonyms"/>
+		<result property="symNome" column="SymbolFromNomenclature"/>
+		<result property="fullNameNome" column="FullNameFromNomenclature"/>
+		<result property="otherDesign" column="OtherDesignations"/>
+		<result property="description" column="description"/>
+		<result property="typeOfGene" column="typeOfGene"/>
+		<result property="modDate" column="ModificationDate"/>
+		<result property="nomStat" column="NomenclatureStatus"/>
+		<result property="modDate" column="ModificationDate"/>
+	</resultMap>
+	<select id="queryUniGeneInfo" parameterType="UniGeneInfo" resultMap="UniGeneInfoMap">
+		select *
+		from UniGeneInfo
+		<where>
+			<if test="uniProtID != null and uniProtID != ''">
+				UniProtID = #{uniProtID}
+			</if>
+		</where>
+	</select>
+	<insert id="insertUniGeneInfo" parameterType="UniGeneInfo">
+		insert into UniGeneInfo (UniProtID,Symbol,LocusTag,Synonyms,dbXrefs,chromosome,mapLocation,description,typeOfGene,SymbolFromNomenclature,FullNameFromNomenclature,NomenclatureStatus,OtherDesignations,ModificationDate)
+		values (#{uniProtID},#{symbol},#{locusTag},#{synonyms},#{dbXrefs},#{chromosome},#{mapLocation},#{description},#{typeOfGene},#{symNome},#{fullNameNome},#{nomStat},#{otherDesign},#{modDate})
+	</insert>
+	<update id="updateUniGeneInfo" parameterType="UniGeneInfo">
+		update UniGeneInfo
+		<set>
+			<if test="uniProtID !=null">
+				UniProtID = #{uniProtID},
+			</if>
+			<if test="symbol !=null">
+				Symbol = #{symbol},
+			</if>
+			<if test="locusTag !=null">
+				LocusTag = #{locusTag},
+			</if>
+			<if test="synonyms !=null">
+				Synonyms = #{synonyms},
+			</if>
+			<if test="dbXrefs !=null">
+				dbXrefs = #{dbXrefs},
+			</if>
+			<if test="chromosome !=null">
+				chromosome = #{chromosome},
+			</if>
+			<if test="mapLocation !=null">
+				mapLocation = #{mapLocation},
+			</if>
+			<if test="description !=null">
+				description = #{description},
+			</if>
+			<if test="typeOfGene !=null">
+				typeOfGene = #{typeOfGene},
+			</if>
+			<if test="symNome !=null">
+				SymbolFromNomenclature = #{symNome},
+			</if>
+			<if test="fullNameNome !=null">
+				FullNameFromNomenclature = #{fullNameNome},
+			</if>
+			<if test="nomStat !=null">
+				NomenclatureStatus = #{nomStat},
+			</if>
+			<if test="otherDesign !=null">
+				OtherDesignations = #{otherDesign},
+			</if>
+			<if test="modDate !=null">
+				ModificationDate = #{modDate}
+			</if>
+		</set>
+		where UniProtID = #{uniProtID}
+	</update>
+</mapper>

@@ -1,14 +1,11 @@
 package com.novelbio.database.mapper.kegg;
 
 import java.util.ArrayList;
+import com.novelbio.database.domain.kegg.KGIDgen2Keg;
+import com.novelbio.database.mapper.MapperSql;
 
-import org.apache.ibatis.session.SqlSession;
+public interface MapKIDgen2Keg extends MapperSql {
 
-import com.novelbio.database.domain.geneanno.*;
-import com.novelbio.database.domain.kegg.*;
-import com.novelbio.database.util.Util;
-
-public class MapKIDgen2Keg {
 
 	/**
 		where
@@ -25,23 +22,7 @@ public class MapKIDgen2Keg {
 	 * @param KGIDgen2Keg
 	 * @return
 	 */
-	public static ArrayList<KGIDgen2Keg> queryLsKGIDgen2Keg(KGIDgen2Keg kgIDgen2Keg){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		ArrayList<KGIDgen2Keg> lsKgIDgen2Kegs=null;
-		try
-		{
-			lsKgIDgen2Kegs= (ArrayList<KGIDgen2Keg>)session.selectList("KEGIDconvert.selectGen2Keg",kgIDgen2Keg);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsKgIDgen2Kegs;
-	}
+	public ArrayList<KGIDgen2Keg> queryLsKGIDgen2Keg(KGIDgen2Keg kgIDgen2Keg);
 	
 	/**
 		where
@@ -58,40 +39,10 @@ public class MapKIDgen2Keg {
 	 * @param KGIDgen2Keg
 	 * @return
 	 */
-	public static KGIDgen2Keg queryKGIDgen2Keg(KGIDgen2Keg kGIDgen2Keg){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		KGIDgen2Keg kGIDgen2Keg2=null;
-		try
-		{
-			kGIDgen2Keg2= (KGIDgen2Keg)session.selectOne("KEGIDconvert.selectGen2Keg",kGIDgen2Keg);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return kGIDgen2Keg2;
-	}
+	public KGIDgen2Keg queryKGIDgen2Keg(KGIDgen2Keg kGIDgen2Keg);
 	
 	
-	public static void InsertKGIDgen2Keg(KGIDgen2Keg kGIDgen2Keg){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.insert("KEGIDconvert.insertGen2Keg", kGIDgen2Keg);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void insertKGIDgen2Keg(KGIDgen2Keg kGIDgen2Keg);
 	
 	/**
 	 * 目前的升级方式是
@@ -112,20 +63,5 @@ public class MapKIDgen2Keg {
 		/where
 	 * @param kGIDgen2Keg
 	 */
-	public static void upDateKGIDgen2Keg(KGIDgen2Keg kGIDgen2Keg){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.update("KEGIDconvert.updateGen2Keg", kGIDgen2Keg);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
-
+	public void updateKGIDgen2Keg(KGIDgen2Keg kGIDgen2Keg);
 }

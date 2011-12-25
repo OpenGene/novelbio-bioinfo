@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapKSubstrate">
+	<resultMap id="substrateMap" type="KGsubstrate">
+	</resultMap>
+	<select id="queryLskgKGsubstrates" parameterType="KGsubstrate" resultMap="substrateMap">
+		select *
+		from substrate
+		<where>
+			<if test="reactionID !=null and reactionID !=0">
+				 reactionID=#{reactionID}
+			</if>
+			<if test="pathName !=null and pathName != '' ">
+				and pathName=#{pathName}
+			</if>
+			<if test="id !=null and id !=0">
+				and ID=#{id}
+			</if>
+			<if test="name !=null and name != '' ">
+				and name=#{name}
+			</if>
+		</where>
+	</select>
+	<select id="queryKGsubstrate" parameterType="KGsubstrate" resultMap="substrateMap">
+		select *
+		from substrate
+		<where>
+			<if test="reactionID !=null and reactionID !=0">
+				 reactionID=#{reactionID}
+			</if>
+			<if test="pathName !=null and pathName != '' ">
+				and pathName=#{pathName}
+			</if>
+			<if test="id !=null and id !=0">
+				and ID=#{id}
+			</if>
+			<if test="name !=null and name != '' ">
+				and name=#{name}
+			</if>
+		</where>
+	</select>
+	<insert id="insertKGsubstrate" parameterType="KGsubstrate">
+		insert into substrate (pathName,reactionID,ID,name,type)
+		values (#{pathName},#{reactionID},#{id},#{name},#{type})
+	</insert>
+	<update id="updateKGsubstrate" parameterType="KGsubstrate">
+		update substrate set
+		pathName = #{pathName},
+		reactionID = #{reactionID},
+		ID = #{id},
+		name = #{name},
+		type = #{type}
+		<where>
+			<if test="reactionID !=null and reactionID !=0">
+				 reactionID=#{reactionID}
+			</if>
+			<if test="pathName !=null  and pathName != '' ">
+				and pathName=#{pathName}
+			</if>
+			<if test="id !=null and id !=0">
+				and ID=#{id}
+			</if>
+			<if test="name !=null  and name != '' ">
+				and name=#{name}
+			</if>
+		</where>
+	</update>
+</mapper>

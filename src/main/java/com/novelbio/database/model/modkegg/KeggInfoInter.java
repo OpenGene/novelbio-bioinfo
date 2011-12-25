@@ -6,7 +6,6 @@ import java.util.List;
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
-import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 public interface KeggInfoInter {

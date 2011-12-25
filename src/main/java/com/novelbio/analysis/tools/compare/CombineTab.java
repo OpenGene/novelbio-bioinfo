@@ -25,18 +25,18 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class CombineTab {
 	
 	public static void main(String[] args) {
-		String parentFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/compareSICER/";
-		String file1 = parentFile + "NseSort-and-2NseSort-W200-G200-summary-1.5k-GeneBody_anno_noredundent.xls";
-		String file2 = parentFile + "2NseSort-and-3NseSort-W200-G200-summary-1.5k-GeneBody_anno_noredundent.xls";
-		String file3 = parentFile + "NseSort-and-3NseSort-W200-G200-summary-1.5k-GeneBody_anno_noredundent.xls";
+		String parentFile = "/media/winE/NBC/Project/Project_Q_Lab/tophat/GO/";
+		String file1 = parentFile + "1vs0gene_exp.diff.xls";
+		String file2 = parentFile + "2vs0gene_exp.diff.xls";
+		String file3 = parentFile + "3vs0gene_exp.diff.xls";
 
 		CombineTab comb = new CombineTab();
-		comb.setColDetai(file1, "Nvs2N", 9,10,11,12,13,14,15,16);
-		comb.setColDetai(file2, "2Nvs3N", 9,10,11,12,13,14,15,16);
-		comb.setColDetai(file3, "Nvs3N", 9,10,11,12,13,14,15,16);
+		comb.setColDetai(file1, "1vs0", 2,3,4,5,6);
+		comb.setColDetai(file2, "2vs0", 3,4,5,6);
+		comb.setColDetai(file3, "3vs0", 3,4,5,6);
 
 		comb.setColID(1);
-		comb.exeToFile(parentFile + "ZHY_All_nofilter.xls");
+		comb.exeToFile(parentFile + "Maize_All_nofilter.xls");
 	}
 	
 	

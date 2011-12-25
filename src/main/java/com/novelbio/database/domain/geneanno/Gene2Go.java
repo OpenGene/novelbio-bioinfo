@@ -6,7 +6,7 @@ public class Gene2Go extends AGene2Go{
 	public long getGeneId() {
 		return geneID;
 	}
-	public void setGeneId(long geneID) {
+	protected void setGeneId(long geneID) {
 		this.geneID = geneID;
 	}
 	
@@ -17,5 +17,8 @@ public class Gene2Go extends AGene2Go{
 	@Override
 	public void setGeneUniID(String geneUniID) {
 		setGeneId(Long.parseLong(geneUniID));
+	}
+	public void setGeneUniID(long geneUniID) {
+		setGeneId(geneUniID);
 	}
 }

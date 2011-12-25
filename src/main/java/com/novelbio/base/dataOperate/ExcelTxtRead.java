@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -116,7 +117,7 @@ public class ExcelTxtRead {
 	}
 	
 	/**
-	 * 
+	 * 用readLsExcelTxtFile代替
 	 * 给定文件，xls2003/2007/txt，获得它们的信息，用arraylist-string[]保存
 	 * @param excelFile
 	 * @param rowStart 
@@ -126,6 +127,7 @@ public class ExcelTxtRead {
 	 * @return
 	 * @throws Exception
 	 */
+	@Deprecated 
 	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int rowStart, int rowEnd, int colStart, int colEnd)
 	{
 		ArrayList<String[]> ls1=null;
@@ -140,7 +142,56 @@ public class ExcelTxtRead {
 		txt.close();
 		return ls1;
 	}
-	
+	/**
+	 * 
+	 * 给定文件，xls2003/2007/txt，获得它们的信息，用arraylist-string[]保存
+	 * @param excelFile
+	 * @param rowStart 
+	 * @param rowEnd 值小于等于0时，读取全部行
+	 * @param colStart 
+	 * @param colEnd 值小于等于0时，读取全部列
+	 * @return
+	 * @throws Exception
+	 */
+	public static ArrayList<String[]> readLsExcelTxtFile(String excelFile,int rowStart, int colStart, int rowEnd, int colEnd)
+	{
+		ArrayList<String[]> ls1=null;
+		if (ExcelOperate.isExcel(excelFile)) {
+			ExcelOperate excel = new ExcelOperate(excelFile);
+			ls1 = excel.ReadLsExcel(rowStart, colStart, rowEnd, colEnd);
+			excel.Close();
+			return ls1;
+		}
+		TxtReadandWrite txt = new TxtReadandWrite(excelFile, false);
+		ls1=txt.ExcelRead("\t", rowStart, colStart,rowEnd , colEnd, 0);//从目标行读取
+		txt.close();
+		return ls1;
+	}
+	/**
+	 * 
+	 * 给定文件，xls2003/2007/txt，获得它们的信息，用arraylist-string[]保存
+	 * @param excelFile 写入已知文档，不过会将写入的sheet覆盖掉，txt的话会新建一个文档
+	 * @param rowStart 
+	 * @param rowEnd 值小于等于0时，读取全部行
+	 * @param colStart 
+	 * @param colEnd 值小于等于0时，读取全部列
+	 * @return
+	 * @throws Exception
+	 */
+	public static ArrayList<String[]> writeLsExcelTxt(String excelTxtFile, List<String[]> lsContent, int rowStart, int colStart, int rowEnd, int colEnd)
+	{
+		ArrayList<String[]> ls1=null;
+		if (ExcelOperate.isExcel(excelTxtFile)) {
+			ExcelOperate excel = new ExcelOperate(excelTxtFile);
+			excel.WriteExcel(1, 1, lsContent);
+			excel.Close();
+			return ls1;
+		}
+		TxtReadandWrite txt = new TxtReadandWrite(excelTxtFile, true);
+		txt.ExcelWrite(lsContent, "\t", 1, 1);
+		txt.close();
+		return ls1;
+	}
 	/**
 	 * 指定excel文件，以及需要读取的列和行
 	 * @param excelFile 待读取的excel文件

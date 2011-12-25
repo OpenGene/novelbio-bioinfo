@@ -47,8 +47,11 @@
                  <td>email£º</td>  
                  <td> #springFormInput("user.email" "")</td>  
                  <td> </td>  
-             </tr>  
-         </table>  
-     </form>  
+             </tr>
+         </table>
+            <p>
+      <input type="submit" />
+    </p>
+     </form>
     </body>
 </html>

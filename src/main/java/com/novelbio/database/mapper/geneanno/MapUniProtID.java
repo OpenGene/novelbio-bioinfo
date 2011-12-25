@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 import org.apache.ibatis.session.SqlSession;
 
-import com.novelbio.database.domain.geneanno.*;
+import com.novelbio.database.domain.geneanno.UniProtID;
+import com.novelbio.database.mapper.MapperSql;
 import com.novelbio.database.util.Util;
 
-public class MapUniProtID {
+public interface MapUniProtID extends MapperSql{
+
 	
 	/**
 	 * 	if test="uniID !=null"<br>
@@ -23,23 +25,7 @@ public class MapUniProtID {
 	 * @param QueryUniProtID
 	 * @return
 	 */
-	public static UniProtID queryUniProtID(UniProtID QueryUniProtID){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
-		UniProtID UniProtID=null;
-		try
-		{
-			UniProtID= (UniProtID)session.selectOne("FriceDBSingle.selectUniProtID",QueryUniProtID);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return UniProtID;
-	}
+	public UniProtID queryUniProtID(UniProtID QueryUniProtID);
 	
 	/**
 	 * 	if test="uniID !=null"<br>
@@ -55,39 +41,9 @@ public class MapUniProtID {
 	 * @param QueryUniProtID
 	 * @return
 	 */
-	public static ArrayList<UniProtID> queryLsUniProtID(UniProtID QueryUniProtID){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
-		ArrayList<UniProtID> lsUniProtID=null;
-		try
-		{
-			lsUniProtID= (ArrayList<UniProtID>)session.selectList("FriceDBSingle.selectUniProtID",QueryUniProtID);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsUniProtID;
-	}
+	public ArrayList<UniProtID> queryLsUniProtID(UniProtID QueryUniProtID);
 	
-	public static void InsertUniProtID(UniProtID UniProtID){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
- 		try
-		{
-			session.insert("FriceDBSingle.insertUniProtID", UniProtID);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void insertUniProtID(UniProtID UniProtID);
 	
 	/**
 	 * 目前的升级方式是<br>
@@ -119,19 +75,6 @@ public class MapUniProtID {
 		/where<br>
 	 * @param geneInfo
 	 */
-	public static void upDateUniProt(UniProtID UniProtID){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
- 		try
-		{
-			session.update("FriceDBSingle.updateUniProtID", UniProtID);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void updateUniProtID(UniProtID UniProtID);
+
 }

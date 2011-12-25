@@ -1,12 +1,11 @@
 package com.novelbio.database.mapper.kegg;
 
 import java.util.ArrayList;
-import org.apache.ibatis.session.SqlSession;
 
 import com.novelbio.database.domain.kegg.KGreaction;
-import com.novelbio.database.util.Util;
+import com.novelbio.database.mapper.MapperSql;
 
-public class MapKReaction {
+public interface MapKReaction extends MapperSql {
 
 	
 	/**
@@ -14,63 +13,17 @@ public class MapKReaction {
 	 * @param kGreaction
 	 * @return
 	 */
-	public static ArrayList<KGreaction> querylsKGreactions(KGreaction kGreaction){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		ArrayList<KGreaction> lsKGreactions=null;
-		try
-		{
-			lsKGreactions= (ArrayList<KGreaction>)session.selectList("KGMLSingle.selectReaction",kGreaction);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsKGreactions;
-	}
+	public ArrayList<KGreaction> queryLsKGreactions(KGreaction kGreaction);
 	
 	/**
 	 * 用name,pathNam,ID中任意组合去查找reaction表
 	 * @param kGreaction
 	 * @return
 	 */
-	public static KGreaction queryKGreaction(KGreaction kGreaction){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		KGreaction kGreaction2=null;
-		try
-		{
-			kGreaction2= (KGreaction)session.selectOne("KGMLSingle.selectReaction",kGreaction);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return kGreaction2;
-	}
+	public KGreaction queryKGreaction(KGreaction kGreaction);
 	
 	
-	public static void InsertKGreaction(KGreaction kGreaction){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.insert("KGMLSingle.insertReaction", kGreaction);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void insertKGreaction(KGreaction kGreaction);
 	
 	/**
 	 * 目前的升级方式是:<br>
@@ -93,20 +46,6 @@ public class MapKReaction {
 		/where<br>
 	 * @param KGreaction
 	 */
-	public static void upDateKGreaction(KGreaction kGreaction){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.update("KGMLSingle.updateReaction", kGreaction);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void updateKGreaction(KGreaction kGreaction);
 
 }

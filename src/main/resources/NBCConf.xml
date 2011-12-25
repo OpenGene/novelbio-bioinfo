@@ -14,6 +14,7 @@
 		<typeAlias alias="UniGene2Go" type="com.novelbio.database.domain.geneanno.UniGene2Go" />
 		<typeAlias alias="TaxInfo" type="com.novelbio.database.domain.geneanno.TaxInfo" />
 		<typeAlias alias="SnpIndelRs" type="com.novelbio.database.domain.geneanno.SnpIndelRs" />
+		<typeAlias alias="BlastInfo" type="com.novelbio.database.domain.geneanno.BlastInfo" />
 	<!-- Frice Complex Query aliases -->
 		<typeAlias alias="Gene2GoInfo" type="com.novelbio.database.domain.geneanno.Gene2GoInfo" />
 		<typeAlias alias="Uni2GoInfo" type="com.novelbio.database.domain.geneanno.Uni2GoInfo" />

@@ -10,10 +10,10 @@ import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
-import com.novelbio.database.mapper.kegg.MapKIDgen2Keg;
-import com.novelbio.database.mapper.kegg.MapKNCompInfo;
-import com.novelbio.database.mapper.kegg.MapKNIdKeg;
+import com.novelbio.database.mapper.kegg.MapKIDKeg2KoOld;
+import com.novelbio.database.mapper.kegg.MapKIDgen2KegOld;
+import com.novelbio.database.mapper.kegg.MapKNCompInfoOld;
+import com.novelbio.database.mapper.kegg.MapKNIdKegOld;
 
 /**
  * 将KEGGID与geneID和KEGGID与KO的关系等导入数据库
@@ -75,8 +75,8 @@ public class KeggIDcvt {
 			String kegID=ss[0];long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").trim());
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
 			kgiDgen2Keg.setGeneID(geneID);kgiDgen2Keg.setKeggID(kegID);kgiDgen2Keg.setTaxID(TaxID);
-			if (MapKIDgen2Keg.queryLsKGIDgen2Keg(kgiDgen2Keg) == null || MapKIDgen2Keg.queryLsKGIDgen2Keg(kgiDgen2Keg).size() == 0) {
-				MapKIDgen2Keg.InsertKGIDgen2Keg(kgiDgen2Keg);
+			if (MapKIDgen2KegOld.queryLsKGIDgen2Keg(kgiDgen2Keg) == null || MapKIDgen2KegOld.queryLsKGIDgen2Keg(kgiDgen2Keg).size() == 0) {
+				MapKIDgen2KegOld.InsertKGIDgen2Keg(kgiDgen2Keg);
 			}
 		}
 	}
@@ -102,7 +102,7 @@ public class KeggIDcvt {
 			String kegID=ss[0].trim();
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
 			kgiDgen2Keg.setKeggID(kegID);
-			KGIDgen2Keg kgiDgen2Keg2=MapKIDgen2Keg.queryKGIDgen2Keg(kgiDgen2Keg);
+			KGIDgen2Keg kgiDgen2Keg2=MapKIDgen2KegOld.queryKGIDgen2Keg(kgiDgen2Keg);
 			if (kgiDgen2Keg2!=null) {
 				TaxID=kgiDgen2Keg2.getTaxID();
 				break;
@@ -121,8 +121,8 @@ public class KeggIDcvt {
 			String kegID=ss[0];String ko=ss[1].trim();
 			KGIDkeg2Ko kgDkeg2Ko=new KGIDkeg2Ko();
 			kgDkeg2Ko.setKeggID(kegID);kgDkeg2Ko.setKo(ko);kgDkeg2Ko.setTaxID(TaxID);
-			if (MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgDkeg2Ko) == null || MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgDkeg2Ko).size() == 0) {
-				MapKIDKeg2Ko.InsertKGIDkeg2Ko(kgDkeg2Ko);
+			if (MapKIDKeg2KoOld.queryLsKGIDkeg2Ko(kgDkeg2Ko) == null || MapKIDKeg2KoOld.queryLsKGIDkeg2Ko(kgDkeg2Ko).size() == 0) {
+				MapKIDKeg2KoOld.InsertKGIDkeg2Ko(kgDkeg2Ko);
 			}
 		}
 	}
@@ -151,7 +151,7 @@ public class KeggIDcvt {
 				kgnIdKeg.setAttribute("Compound");
 				kgnIdKeg.setKegID(kegID);
 				kgnIdKeg.setUsualName(kegID);
-				MapKNIdKeg.InsertKGNIdKeg(kgnIdKeg);
+				MapKNIdKegOld.InsertKGNIdKeg(kgnIdKeg);
 				
 				//读取Name那一列
 				content = readerComp.readLine();
@@ -162,7 +162,7 @@ public class KeggIDcvt {
 					kgnIdKeg.setAttribute("Compound");
 					kgnIdKeg.setKegID(kegID);
 					kgnIdKeg.setUsualName(name);
-					MapKNIdKeg.InsertKGNIdKeg(kgnIdKeg);
+					MapKNIdKegOld.InsertKGNIdKeg(kgnIdKeg);
 					nameAll = name;
 					name = "";
 				}
@@ -173,7 +173,7 @@ public class KeggIDcvt {
 							kgnIdKeg.setAttribute("Compound");
 							kgnIdKeg.setKegID(kegID);
 							kgnIdKeg.setUsualName(name);
-							MapKNIdKeg.InsertKGNIdKeg(kgnIdKeg);
+							MapKNIdKegOld.InsertKGNIdKeg(kgnIdKeg);
 							nameAll = nameAll + "//"+name;
 							name = "";
 						}
@@ -183,7 +183,7 @@ public class KeggIDcvt {
 					kgnIdKeg.setAttribute("Compound");
 					kgnIdKeg.setKegID(kegID);
 					kgnIdKeg.setUsualName(name);
-					MapKNIdKeg.InsertKGNIdKeg(kgnIdKeg);
+					MapKNIdKegOld.InsertKGNIdKeg(kgnIdKeg);
 					if (nameAll.trim().equals("")) {
 						nameAll = name;
 					}
@@ -210,7 +210,7 @@ public class KeggIDcvt {
 					}
 					content = readerComp.readLine();
 				}
-				MapKNCompInfo.InsertKGNCompInfo(kgnCompInfo);
+				MapKNCompInfoOld.InsertKGNCompInfo(kgnCompInfo);
 				continue;
 			}
 		}

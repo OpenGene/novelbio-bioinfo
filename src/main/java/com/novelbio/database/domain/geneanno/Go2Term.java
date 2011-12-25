@@ -3,7 +3,7 @@ package com.novelbio.database.domain.geneanno;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.database.mapper.geneanno.MapGo2Term;
+import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
 public class Go2Term {
 
@@ -56,11 +56,12 @@ public class Go2Term {
 	 * 如果已经查过了一次，自动返回
 	 */
 	public static HashMap<String, Go2Term> getHashGo2Term() {
+		ServGo2Term servGo2Term = new ServGo2Term();
 		if (hashGo2Term != null && hashGo2Term.size() > 0) {
 			return hashGo2Term;
 		}
 		Go2Term go2Term = new Go2Term();
-		ArrayList<Go2Term> lsGo2Terms = MapGo2Term.queryLsGo2Term(go2Term);
+		ArrayList<Go2Term> lsGo2Terms = servGo2Term.queryLsGo2Term(go2Term);
 		for (Go2Term go2Term2 : lsGo2Terms) 
 		{
 			hashGo2Term.put(go2Term2.getGoIDQuery(), go2Term2);

@@ -5,11 +5,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.statusAckLog;
+import org.jfree.chart.title.Title;
 
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
-import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlGO;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
@@ -19,8 +17,9 @@ import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.mapper.geneanno.MapFSTaxID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
-import com.novelbio.database.service.ServAnno;
+import com.novelbio.database.service.servgeneanno.ServNCBIID;
 import com.novelbio.database.service.servgeneanno.ServTaxID;
+import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
 /**
  * 这只是一个代理类 专门对基因的ID做一些处理的类<br>
@@ -84,11 +83,12 @@ public class CopedID implements CopedIDInt{
 	 * 设定初始值，会自动去数据库查找accID并，完成填充本类。
 	 * <b>如果基因的IDtype是accID，那么该基因很可能不存在，那么看下blast的相关信息，如果blast也没有，那么就不存在了</b>
 	 * 不过只能产生一个CopedID，如果觉得一个accID要产生多个geneID，那么可以选择getLsCopedID方法
-	 * @param accID 如果类似XM_002121.1类型，那么将.1去除
+	 * @param accID 除去引号，然后如果类似XM_002121.1类型，那么将.1去除
 	 * @param taxID
 	 * @param blastType 具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
 	 */
 	public CopedID(String accID,int taxID,boolean blastType) {
+		accID.replace("\"", "");
 		if (blastType)
 			accID = getBlastAccID(accID);
 		else
@@ -139,12 +139,14 @@ public class CopedID implements CopedIDInt{
 	 * @param taxID 物种ID
 	 */
 	public static CopedID validCopedID(String idType, String genUniID,int taxID) {
+		ServNCBIID servNCBIID = new ServNCBIID();
+		ServUniProtID servUniProtID = new ServUniProtID();
 		CopedID copedID = null;
 		if (idType.equals(IDTYPE_ACCID)) {
 			return null;
 		}
 		else if (idType.equals(IDTYPE_GENEID)) {
-			NCBIID ncbiid = ServAnno.getNCBIID(Integer.parseInt(genUniID), taxID);
+			NCBIID ncbiid = servNCBIID.queryNCBIID(Integer.parseInt(genUniID), taxID);
 			if (ncbiid != null) {
 				String genUniID2 = ncbiid.getGeneId() + "";
 				int taxID2 = ncbiid.getTaxID();
@@ -153,7 +155,7 @@ public class CopedID implements CopedIDInt{
 			}
 		}
 		else if (idType.equals(IDTYPE_UNIID)) {
-			UniProtID uniProtID = ServAnno.getUniProtID(genUniID, taxID);
+			UniProtID uniProtID = servUniProtID.getUniProtID(genUniID, taxID);
 			if (uniProtID != null) {
 				String genUniID2 = uniProtID.getUniID();
 				int taxID2 = uniProtID.getTaxID();
@@ -166,15 +168,10 @@ public class CopedID implements CopedIDInt{
 	
 	//////////////////  Blast setting  ///////////////////////////////////////////
 	@Override
-	public void setBlastLsInfo(double evalue, int... StaxID) {
-		copedID.setBlastLsInfo(evalue,StaxID);
+	public void setBlastInfo(double evalue, int... StaxID) {
+		copedID.setBlastInfo(evalue,StaxID);
 	}
 	
-	@Override
-	public BlastInfo setBlastInfo(int StaxID, double evalue) {
-		copedID.setBlastLsInfo(evalue, StaxID);
-		return copedID.setBlastInfo(StaxID, evalue);
-	}
 	public ArrayList<BlastInfo> getLsBlastInfos()
 	{
 		return copedID.getLsBlastInfos();
@@ -182,12 +179,12 @@ public class CopedID implements CopedIDInt{
 ///////////////////////   获得blast  copedID  ///////////////////////////////////////////////////////////////////
 	
 	@Override
-	public CopedID getCopedIDBlast(int StaxID, double evalue) {
-		return copedID.getCopedIDBlast(StaxID, evalue);
-	}
-	@Override
 	public ArrayList<CopedID> getCopedIDLsBlast() {
 		return copedID.getCopedIDLsBlast();
+	}
+	@Override
+	public CopedID getCopedIDBlast() {
+		return copedID.getCopedIDBlast();
 	}
 /////////////////////////  常规信息  //////////////////////////////////////////////////////////////
 	@Override
@@ -224,39 +221,62 @@ public class CopedID implements CopedIDInt{
 	public String getAccIDDBinfo(String dbInfo) {
 		return copedID.getAccIDDBinfo(dbInfo);
 	}
-
+	
+	/**
+	 * 获得该copedID的annotation信息
+	 * @param copedID
+	 * @param blast
+	 * @return
+	 * 	 * blast：<br>
+	 * 			title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";<br>
+	 * title2[3]="Evalue";
+	 * title2[4]="subjectSymbol";
+			title2[5]="Description";<br>
+			不blast：<br>
+						title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";<br>
+	 */
 	@Override
-	public String[] getAnno(boolean blast, int StaxID, double evalue) {
-		return copedID.getAnno(blast, StaxID, evalue);
+	public String[] getAnno(boolean blast) {
+		return copedID.getAnno(blast);
+	}
+	
+	
+	public static String[] getTitleAnno(boolean blast)
+	{
+		String[] titleAnno = null;
+		if (blast) {
+			titleAnno = new String[6];
+		}
+		else {
+			titleAnno = new String[2];
+		}
+		titleAnno[0] = "Symbol";
+		titleAnno[1] = "Description";
+		if (blast) {
+			titleAnno[2] = "BLast_Species";
+			titleAnno[3] = "Evalue";
+			titleAnno[4] = "Blast_Symbol";
+			titleAnno[5] = "Blast_Description";
+		}
+		return titleAnno;
+		
 	}
 /////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
 
 ////////////////////   KEGG    /////////////////////////////////////////////////////////
 	@Override
 	public KeggInfo getKeggInfo() {
 		return copedID.getKeggInfo();
 	}
+
 	@Override
-	public ArrayList<KGpathway> getKegPathBlast() {
-		return copedID.getKegPathBlast();
+	public ArrayList<KGpathway> getKegPath(boolean blast) {
+		return copedID.getKegPath(blast);
 	}
 
 	@Override
-	public ArrayList<KGpathway> getKegPath() {
-		return copedID.getKegPath();
-	}
-
-	@Override
-	public ArrayList<KegEntity> getKegEntity(boolean blast, int StaxID,
-			double evalue) {
-		return copedID.getKegEntity(blast, StaxID, evalue);
+	public ArrayList<KegEntity> getKegEntity(boolean blast) {
+		return copedID.getKegEntity(blast);
 	}
 
 	//////////////  GO 方法  ///////////////////////
@@ -274,45 +294,6 @@ public class CopedID implements CopedIDInt{
 		return copedID.getGene2GOBlast(GOType);
 	}
 
-	
-	/**
-	 * 获得该copedID的annotation信息
-	 * @param copedID
-	 * @param blast
-	 * @return
-	 * 	 * blast：<br>
-	 * 			title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";<br>
-	 * title2[3]="Evalue";
-	 * title2[4]="subjectSymbol";
-			title2[5]="Description";<br>
-			不blast：<br>
-						title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";<br>
-	 */
-	public String[] getAnnoInfo(boolean blast) {
-		String[] tmpresult = null;
-		if (blast)
-			tmpresult = new String[6];
-		else
-			tmpresult = new String[3];
-		tmpresult[0] = copedID.getAccID(); tmpresult[1] = copedID.getSymbo(); tmpresult[2] = copedID.getDescription();
-		if (blast) {
-			if (copedID.getCopedIDLsBlast() != null && copedID.getLsBlastInfos() != null && copedID.getLsBlastInfos().size() > 0) {
-				for (int i = 0; i < copedID.getLsBlastInfos().size(); i++) {
-					if (tmpresult[3] == null || tmpresult[3].trim().equals("")) {
-						tmpresult[3] = copedID.getLsBlastInfos().get(i).getEvalue() + "";
-						tmpresult[4] = copedID.getCopedIDLsBlast().get(i).getSymbo();
-						tmpresult[5] = copedID.getCopedIDLsBlast().get(i).getDescription();
-					}
-					else {
-						tmpresult[3] = tmpresult[3] + "//" + copedID.getLsBlastInfos().get(i).getEvalue();
-						tmpresult[4] = tmpresult[4] + "//" + copedID.getCopedIDLsBlast().get(i).getSymbo();
-						tmpresult[5] = tmpresult[5] + "//" + copedID.getCopedIDLsBlast().get(i).getDescription();
-					}
-				}
-			}
-		}
-		return tmpresult;
-	}
 	/////////////////////////////  static 方法  ////////////////////////////////////
 	/**
 	 * blast的结果可能类似dbj|AK240418.1|
@@ -464,14 +445,8 @@ public class CopedID implements CopedIDInt{
 			}
 			hashUniGenID.add(copedID.getGenUniID());
 			////////////////////////////////////////////////////////////
-			
 			ArrayList<KGpathway> lstmpgo;
-			if (blast) {
-				lstmpgo = copedID.getKegPathBlast();
-			}
-			else {
-				lstmpgo = copedID.getKegPath();
-			}
+			lstmpgo = copedID.getKegPath(blast);
 			if (lstmpgo == null || lstmpgo.size() == 0) {
 				continue;
 			}

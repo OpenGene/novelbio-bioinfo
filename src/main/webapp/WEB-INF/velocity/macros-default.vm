@@ -1,0 +1,37 @@
+#**
+ * macros-default.vm
+ *
+ * This file consists of a collection of Velocity macros aimed at easing
+ * some of the common requirements of web applications - in particular
+ * handling of forms.
+ *
+ * Spring's Velocity support will automatically make this file and therefore
+ * all macros within it available to any application using Spring's
+ * VelocityConfigurer.
+ *
+ * To take advantage of these macros, the "exposeSpringMacroHelpers" property
+ * of the VelocityView class needs to be set to "true". This will expose a
+ * RequestContext under the name "springMacroRequestContext", as needed by
+ * the macros in this library.
+ *
+ * @author Zong Jie
+ * @since 1.1
+ *#
+ 
+#**
+ * springFormFileInput
+ *
+ * Display a form input field of type 'text' and bind it to an attribute
+ * of a command or bean.
+ *
+ * @param path the name of the field to bind to
+ * @param attributes any additional attributes for the element (such as class
+ *    or CSS styles or size
+ *
+ *#
+#macro( springFormFileInput $path $attributes )
+    #springBind($path)
+    <input type="file" id="${status.expression}" name="${status.expression}" value="$!status.value" ${attributes}#springCloseTag()
+#end
+
+

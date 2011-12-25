@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapGene2Go">
+	<resultMap id="gene2GoMap" type="Gene2Go">
+		<result property="geneID" column="GeneID"/>  
+		<result property="function" column="GoFunction"/>  
+	</resultMap>
+	<select id="queryLsGene2Go" parameterType="Gene2Go" resultMap="gene2GoMap">
+		select *
+		from gene2go
+		<where>
+			<if test="geneID != 0">
+				GeneID = #{geneID} 
+			</if>
+			<if test="GoID !=null">
+				and GoID = #{GoID} 
+			</if>
+	    </where>  
+	</select>
+	<select id="queryGene2Go" parameterType="Gene2Go" resultMap="gene2GoMap">
+		select *
+		from gene2go
+		<where>
+			<if test="geneID != 0">
+				GeneID = #{geneID} 
+			</if>
+			<if test="GoID !=null">
+				and GoID = #{GoID} 
+			</if>
+	    </where>  
+	</select>
+	<insert id="insertGene2Go" parameterType="Gene2Go">
+		insert into gene2go (GeneID,GOID,Evidence,Qualifier,GOTerm,Reference,GoFunction,DataBaseInfo)
+		values (#{geneID},#{GOID},#{evidence},#{qualifier},#{GOTerm},#{reference},#{function},#{dataBase})
+	</insert>
+	<update id="updateGene2Go" parameterType="Gene2Go">
+		update gene2go 
+		<set>
+			<if test="evidence !=null and evidence != '' ">
+				Evidence = #{evidence},
+			</if>
+			<if test="reference !=null and reference != ''">
+				Reference = #{reference}
+			</if>
+		</set>
+		<where>
+			<if test="geneID != 0">
+				GeneID = #{geneID} 
+			</if>
+			<if test="GoID !=null">
+				and GoID = #{GoID} 
+			</if>
+	    </where> 
+	</update>
+</mapper>

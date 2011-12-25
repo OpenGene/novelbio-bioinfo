@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.geneanno.MapUniProtID;
+import com.novelbio.database.mapper.geneanno.MapUniProtIDOld;
 
 public class ServUpDBNCBIUni {
 	/**
@@ -30,7 +30,7 @@ public class ServUpDBNCBIUni {
 		else {
 			if (updateDBinfo) {
 				ncbiid.setGeneId(lsNcbiids.get(0).getGeneId());
-				MapNCBIID.upDateNCBIID(ncbiid);
+				MapNCBIID.updateNCBIID(ncbiid);
 			}
 		}
 	}
@@ -50,14 +50,14 @@ public class ServUpDBNCBIUni {
 			uniprotID2.setUniID(uniprotID.getUniID());
 		}
 		uniprotID2.setTaxID(uniprotID.getTaxID());
-		ArrayList<UniProtID> lsUniProtIDs = MapUniProtID.queryLsUniProtID(uniprotID2);
+		ArrayList<UniProtID> lsUniProtIDs = MapUniProtIDOld.queryLsUniProtID(uniprotID2);
 		if (lsUniProtIDs == null || lsUniProtIDs.size() == 0) {
-			MapUniProtID.InsertUniProtID(uniprotID);
+			MapUniProtIDOld.InsertUniProtID(uniprotID);
 		}
 		else {
 			if (updateDBinfo) {
 				uniprotID.setUniID(lsUniProtIDs.get(0).getUniID());
-				MapUniProtID.upDateUniProt(uniprotID);
+				MapUniProtIDOld.upDateUniProt(uniprotID);
 			}
 		}
 	}

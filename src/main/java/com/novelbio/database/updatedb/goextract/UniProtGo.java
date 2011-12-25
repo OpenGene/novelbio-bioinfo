@@ -5,7 +5,7 @@ import java.io.BufferedReader;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Gene2Go;
-import com.novelbio.database.mapper.geneanno.MapGene2Go;
+import com.novelbio.database.mapper.geneanno.MapGene2GoOld;
 
 public class UniProtGo {
 	/**
@@ -121,7 +121,7 @@ public class UniProtGo {
 		txtgene2Go.setParameter(UniprotIdmapping2GOtaxID,false,true);
 		BufferedReader gene2GoReader=txtgene2Go.readfile();
 		
-		MapGene2Go friceDAO=new MapGene2Go();
+		MapGene2GoOld friceDAO=new MapGene2GoOld();
 		
 		String content="";
 		int i=0;

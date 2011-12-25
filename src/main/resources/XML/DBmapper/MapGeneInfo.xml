@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapGeneInfo">
+	<resultMap id="geneInfoMap" type="GeneInfo">
+		<id property="geneID" column="GeneID" />
+		<result property="symbol" column="Symbol"/>
+		<result property="synonyms" column="Synonyms"/>
+		<result property="symNome" column="SymbolFromNomenclature"/>
+		<result property="fullNameNome" column="FullNameFromNomenclature"/>
+		<result property="otherDesign" column="OtherDesignations"/>
+		<result property="description" column="description"/>
+		<result property="typeOfGene" column="typeOfGene"/>
+		<result property="modDate" column="ModificationDate"/>
+		<result property="nomStat" column="NomenclatureStatus"/>
+		<result property="modDate" column="ModificationDate"/>
+	</resultMap>
+	<select id="queryGeneInfo" parameterType="GeneInfo" resultMap="geneInfoMap">
+		select *
+		from geneInfo
+		<where>
+			<if test="geneID != 0">
+				GeneID = #{geneID} 
+			</if>
+	    </where> 
+	</select>
+	<select id="queryLsGeneInfo" parameterType="GeneInfo" resultMap="geneInfoMap">
+		select *
+		from geneInfo
+		<where>
+			<if test="geneID != 0">
+				GeneID = #{geneID} 
+			</if>
+	    </where> 
+	</select>
+	<insert id="insertGeneInfo" parameterType="GeneInfo">
+		insert into geneInfo (GeneID,Symbol,LocusTag,Synonyms,dbXrefs,chromosome,mapLocation,description,typeOfGene,SymbolFromNomenclature,FullNameFromNomenclature,NomenclatureStatus,OtherDesignations,ModificationDate)
+		values (#{geneID},#{symbol},#{locusTag},#{synonyms},#{dbXrefs},#{chromosome},#{mapLocation},#{description},#{typeOfGene},#{symNome},#{fullNameNome},#{nomStat},#{otherDesign},#{modDate})
+	</insert>
+	<update id="updateGeneInfo" parameterType="GeneInfo">
+		update geneInfo
+		<set>
+			<if test="geneID !=null and geneID != 0">
+				GeneID = #{geneID},
+			</if>
+			<if test="symbol !=null and symbol != ''">
+				Symbol = #{symbol},
+			</if>
+			<if test="locusTag !=null and locusTag != '' ">
+				LocusTag = #{locusTag},
+			</if>
+			<if test="synonyms !=null and locusTag != '' ">
+				Synonyms = #{synonyms},
+			</if>
+			<if test="dbXrefs !=null and locusTag != '' ">
+				dbXrefs = #{dbXrefs},
+			</if>
+			<if test="chromosome !=null and chromosome != '' ">
+				chromosome = #{chromosome},
+			</if>
+			<if test="mapLocation !=null and mapLocation != '' ">
+				mapLocation = #{mapLocation},
+			</if>
+			<if test="description !=null and description != '' ">
+				description = #{description},
+			</if>
+			<if test="typeOfGene !=null and typeOfGene != '' ">
+				typeOfGene = #{typeOfGene},
+			</if>
+			<if test="symNome !=null and symNome != '' ">
+				SymbolFromNomenclature = #{symNome},
+			</if>
+			<if test="fullNameNome !=null and fullNameNome != '' ">
+				FullNameFromNomenclature = #{fullNameNome},
+			</if>
+			<if test="nomStat !=null and nomStat != '' ">
+				NomenclatureStatus = #{nomStat},
+			</if>
+			<if test="otherDesign !=null and otherDesign != '' ">
+				OtherDesignations = #{otherDesign},
+			</if>
+			<if test="modDate !=null and modDate != '' ">
+				ModificationDate = #{modDate}
+			</if>
+		</set>
+		<where>
+			<if test="geneID != 0">
+				GeneID = #{geneID} 
+			</if>
+	    </where> 
+	</update>
+</mapper>

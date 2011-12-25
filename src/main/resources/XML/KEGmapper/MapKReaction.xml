@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapKReaction">
+	<resultMap id="reactionMap" type="KGreaction">
+		<result property="alt" column="altName"/>  
+	</resultMap>
+	<select id="queryLsKGreactions" parameterType="KGreaction" resultMap="reactionMap">
+		select *
+		from reaction
+		<where>
+			<if test="name !=null and name != '' ">
+				 name=#{name}
+			</if>
+			<if test="pathName !=null and pathName != '' ">
+				and pathName=#{pathName}
+			</if>
+			<if test="id !=null and id !=0">
+				and ID=#{id}
+			</if>
+		</where>
+	</select>
+	<select id="queryKGreaction" parameterType="KGreaction" resultMap="reactionMap">
+		select *
+		from reaction
+		<where>
+			<if test="name !=null and name != '' ">
+				 name=#{name}
+			</if>
+			<if test="pathName !=null and pathName != '' ">
+				and pathName=#{pathName}
+			</if>
+			<if test="id !=null and id !=0">
+				and ID=#{id}
+			</if>
+		</where>
+	</select>
+	<insert id="insertKGreaction" parameterType="KGreaction">
+		insert into reaction (pathName,ID,name,type,altName)
+		values (#{pathName},#{id},#{name},#{type},#{alt})
+	</insert>
+	<update id="updateKGreaction" parameterType="KGreaction">
+		update reaction set
+		pathName = #{pathName},
+		ID = #{id},
+		name = #{name},
+		type = #{type},
+		altName = #{alt},
+		<where>
+			<if test="name !=null and name != '' ">
+				 name=#{name}
+			</if>
+			<if test="pathName !=null and pathName != '' ">
+				and pathName=#{pathName}
+			</if>
+			<if test="id !=null and id !=0">
+				and ID=#{id}
+			</if>
+		</where>
+	</update>
+</mapper>

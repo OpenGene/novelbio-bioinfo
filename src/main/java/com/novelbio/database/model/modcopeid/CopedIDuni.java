@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
-import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
-import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.model.modgo.GOInfoUniID;
+import com.novelbio.database.service.servgeneanno.ServUniGeneInfo;
+import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
 public class CopedIDuni extends CopedIDAbs{
+	ServUniGeneInfo servUniGeneInfo = new ServUniGeneInfo();
+	ServUniProtID servUniProtID = new ServUniProtID();
 	/**
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
 	 * 
@@ -27,7 +29,7 @@ public class CopedIDuni extends CopedIDAbs{
 	protected void setGenInfo() {
 		UniGeneInfo uniGeneInfo = new UniGeneInfo();
 		uniGeneInfo.setUniProtID(getGenUniID());
-		geneInfo = MapUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
+		geneInfo = servUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 	}
 
 	@Override
@@ -37,7 +39,7 @@ public class CopedIDuni extends CopedIDAbs{
 		if (!dbInfo.trim().equals("")) {
 			uniProtID.setDBInfo(dbInfo);
 		}
-		ArrayList<UniProtID> lsuniProtIDs= MapUniProtID.queryLsUniProtID(uniProtID);
+		ArrayList<UniProtID> lsuniProtIDs= servUniProtID.queryLsUniProtID(uniProtID);
 		if (lsuniProtIDs == null || lsuniProtIDs.size() < 1) {
 			return null;
 		}

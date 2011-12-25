@@ -18,5 +18,5 @@ public class UniGeneInfo extends AGeneInfo{
 	public void setGeneUniID(String geneUniID) {
 		setUniProtID(geneUniID);
 	}
-	
+
 }

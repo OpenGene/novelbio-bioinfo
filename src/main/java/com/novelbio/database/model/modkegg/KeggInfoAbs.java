@@ -15,13 +15,15 @@ import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.domain.kegg.KGrelation;
-import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
-import com.novelbio.database.mapper.kegg.MapKPathway;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
+import com.novelbio.database.service.servkegg.ServKPathRelation;
+import com.novelbio.database.service.servkegg.ServKPathway;
 import com.novelbio.database.updatedb.idconvert.TaxIDInfo;
 
 public abstract class KeggInfoAbs implements KeggInfoInter{
-	
+	ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
+
 	public KeggInfoAbs(String genUniAccID, int taxID) {
 		this.genUniAccID = genUniAccID;
 		this.taxID = taxID;
@@ -120,7 +122,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 			
 			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
 			kgiDkeg2Ko.setKeggID(getKegID()); kgiDkeg2Ko.setTaxID(taxID);
-			lsKgiDkeg2Kos = MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+			lsKgiDkeg2Kos = servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 			if (lsKgiDkeg2Kos == null) {
 				lsKgiDkeg2Kos = new ArrayList<KGIDkeg2Ko>();
 			}
@@ -201,7 +203,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		ArrayList<KGentry> lsQKegEntities = new ArrayList<KGentry>();
 		for (String ko : lsKO) {
 			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();  kgiDkeg2Ko.setKo(ko); kgiDkeg2Ko.setTaxID(taxID);
-			ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = MapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+			ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 			ArrayList<KGentry> lskGentriesTmp = new ArrayList<KGentry>();
 			////////////////如果geneBlast到了人类，并且得到了相应的KO，那么获得该KO所对应本物种的KeggID，并用KeggID直接mapping回本基因////////////////////////////////////////////////////////////////
 			if (lsKgiDkeg2Kos != null && lsKgiDkeg2Kos.size()>0) 
@@ -250,19 +252,20 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	static HashMap<String, KGpathway> hashKGPath = new HashMap<String, KGpathway>();
 	
 	/**
-	 * 将所有GO信息提取出来放入hash表中，方便查找
-	 * 存储Go2Term的信息
+	 * 将所有pathway信息提取出来放入hash表中，方便查找
+	 * 存储pathway2Term的信息
 	 * key:GoID
 	 * value:GoInfo
 	 * 0:QueryGoID,1:GoID,2:GoTerm 3:GoFunction
 	 * 如果已经查过了一次，自动返回
 	 */
 	public static HashMap<String, KGpathway> getHashKGpath() {
+		ServKPathway servKPathway = new ServKPathway();
 		if (hashKGPath != null && hashKGPath.size() > 0) {
 			return hashKGPath;
 		}
 		KGpathway kGpathway = new KGpathway();
-		ArrayList<KGpathway> lsKGpathways = MapKPathway.queryLsKGpathways(kGpathway);
+		ArrayList<KGpathway> lsKGpathways = servKPathway.queryLsKGpathways(kGpathway);
 		for (KGpathway kGpathway2 : lsKGpathways) 
 		{
 			hashKGPath.put(kGpathway2.getPathName(), kGpathway2);

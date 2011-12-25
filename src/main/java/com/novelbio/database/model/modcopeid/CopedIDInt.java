@@ -11,25 +11,7 @@ import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
 
 public interface CopedIDInt{
-	
-	
-	/**
-	 * 获得本copedID blast到对应物种的blastInfo信息，没有就返回null
-	 * @param StaxID
-	 * @param evalue
-	 * @return
-	 */
-	public BlastInfo setBlastInfo(int StaxID, double evalue);
-	
-	
-	/**
-	 * 获得本copedID blast到对应物种的copedID，没有就返回null
-	 * @param StaxID
-	 * @param evalue
-	 * @return
-	 */
-	public CopedID getCopedIDBlast(int StaxID,double evalue) ;
-	
+ 
 	/**
 	 * idType，必须是IDTYPE中的一种
 	 */
@@ -66,7 +48,7 @@ public interface CopedIDInt{
 	 * @param StaxID 如果blast为true，那么设定StaxID
 	 * @return 如果没有就返回null
 	 */
-	public ArrayList<KegEntity> getKegEntity(boolean blast,int StaxID,double evalue) ;
+	public ArrayList<KegEntity> getKegEntity(boolean blast) ;
 	
 	
 	/**
@@ -77,10 +59,11 @@ public interface CopedIDInt{
 	public String getAccIDDBinfo(String dbInfo);
 	
 	/**
-	 * 如果blast * 0:symbol 1:description 2:subjectTaxID 3:evalue 4:symbol 5:description 如果不blast 0:symbol 1:description
+	 * 如果blast 选择blast的第一个物种<br>
+	 * 0:symbol 1:description 2:subjectTaxID 3:evalue 4:symbol 5:description 如果不blast 0:symbol 1:description
 	 * @return
 	 */
-	public String[] getAnno( boolean blast, int StaxID, double evalue) ;
+	public String[] getAnno( boolean blast ) ;
 	/**
 	 * 获得相应的KeggInfo信息
 	 * @return
@@ -97,30 +80,13 @@ public interface CopedIDInt{
 	 * @return
 	 */
 	public ArrayList<CopedID> getCopedIDLsBlast();
-	/**
-	 * 	blast多个物种
-	 * 首先设定blast的物种
-	 * 用方法： setBlastInfo(double evalue, int... StaxID)
-	 * 获得经过blast的KegPath
-	 */
-	public ArrayList<KGpathway> getKegPathBlast();
-//	/**
-//	 * blast单个物种
-//	 * 给定blast到的copedID，用 getBlastCopedID(int StaxID,double evalue) 方法获得
-//	 * 用方法： setBlastInfo(double evalue, int... StaxID)
-//	 * 获得经过blast的KegPath
-//	 */
-//	public ArrayList<KGpathway> getBlastKegPath(CopedID copedID);
-	/**
-	 * 获得该copedID的KegPath
-	 */
-	public ArrayList<KGpathway> getKegPath();
+ 
 	/**
 	 * 设定多个物种进行blast
 	 * @param evalue
 	 * @param StaxID
 	 */
-	public void setBlastLsInfo(double evalue, int... StaxID);
+	public void setBlastInfo(double evalue, int... StaxID);
 	/**
 	 * 返回该CopeID所对应的GO信息
 	 * @return
@@ -144,4 +110,17 @@ public interface CopedIDInt{
 	 * 返回blast的信息，包括evalue等，该list和getCopedIDLsBlast()得到的list是一一对应的
 	 */
 	public ArrayList<BlastInfo> getLsBlastInfos();
+
+	/**
+	 * 返回第一个比对到的物种
+	 * @return
+	 */
+	CopedID getCopedIDBlast();
+	/**
+	 * 	blast多个物种
+	 * 首先设定blast的物种
+	 * 用方法： setBlastInfo(double evalue, int... StaxID)
+	 * 获得经过blast的KegPath
+	 */
+	ArrayList<KGpathway> getKegPath(boolean blast);
 }

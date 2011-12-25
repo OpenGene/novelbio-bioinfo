@@ -38,10 +38,7 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 				}
 				hashGenUniID.add(copedID.getGenUniID());
 				ArrayList<KGpathway> lsPath = null;
-				if (blast) 
-					lsPath = copedID.getKegPathBlast();
-				else 
-					lsPath = copedID.getKegPath();
+				lsPath = copedID.getKegPath(blast);
 				
 				if (lsPath == null || lsPath.size() == 0) {
 					continue;
@@ -75,10 +72,7 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 		for (CopedID copedID : lsCopedIDsTest) {
 			ArrayList<KGpathway> lsPath = null;
 			//获得具体的GO信息
-			if (blast) 
-				lsPath = copedID.getKegPathBlast();
-			else 
-				lsPath = copedID.getKegPath();
+			lsPath = copedID.getKegPath(blast);
 			if (lsPath == null || lsPath.size() == 0) {
 				continue;
 			}

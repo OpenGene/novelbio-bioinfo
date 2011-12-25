@@ -1,5 +1,7 @@
 package com.novelbio.web.annotation.go;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -37,7 +39,7 @@ public class GOctrl {
 		// 可以往里面直接插入一个 新建对象，这样对应的表中就会填上相关的信息
 		GoParam goParam = new GoParam();
 		goParam.setGoType(GOInfoAbs.GO_CC);
-		goParam.setInputFile("fesefsef");
+//		goParam.setInputFile("fesefsef");
 		goParam.setBlast(true);
 		goParam.setQueryTaxID(9823);
 		mav.addObject("goparam", goParam);
@@ -61,14 +63,23 @@ public class GOctrl {
 //    }
     //redirect: 连接传给浏览器，浏览器再次访问，网址会发生变化，参数通过session传递
     @RequestMapping(method = RequestMethod.POST)  
-    public ModelAndView post2(GoParam goParam, BindingResult result,Model model) {
-    	
-        model.addAttribute("goparam", goParam);//装入session,通过session传递，也可以通过url传递
+    public ModelAndView post2(GoParam goParam, BindingResult result,Model model)  {
+        model.addAttribute("message", goParam.getInputFile());//装入session,通过session传递，也可以通过url传递
+        model.addAttribute("counter", goParam.getQueryTaxID());//装入session,通过session传递，也可以通过url传递
         ModelAndView modelAndView = new ModelAndView("test");
         modelAndView.addObject("message", goParam.getInputFile());
         modelAndView.addObject("counter", goParam.getQueryTaxID());
+        try {
+        	 if (!goParam.getInputFile().isEmpty()) {
+                 byte[] bytes = goParam.getInputFile().getBytes();
+                 FileOutputStream fos = new FileOutputStream("/home/zong0jie/桌面/testupload"); // 上传到写死的上传路径
+                 fos.write(bytes);  //写入文件
+                 System.out.println("/home/zong0jie/桌面/testupload");
+               }
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
         return modelAndView;
-        
     }
   
 }

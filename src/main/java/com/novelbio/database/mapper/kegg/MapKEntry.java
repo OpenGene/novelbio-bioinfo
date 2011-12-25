@@ -2,13 +2,11 @@ package com.novelbio.database.mapper.kegg;
 
 import java.util.ArrayList;
 
-import org.apache.ibatis.session.SqlSession;
+import com.novelbio.database.domain.kegg.KGentry;
+import com.novelbio.database.mapper.MapperSql;
 
-import com.novelbio.database.domain.geneanno.*;
-import com.novelbio.database.domain.kegg.*;
-import com.novelbio.database.util.Util;
+public interface MapKEntry extends MapperSql {
 
-public class MapKEntry{
 	
 	/**
 	 		where<br>
@@ -34,23 +32,7 @@ public class MapKEntry{
 	 * @param KGentry
 	 * @return
 	 */
-	public static ArrayList<KGentry> queryLsKGentries(KGentry kGentry){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		ArrayList<KGentry> lsKGentries=null;
-		try
-		{
-			lsKGentries= (ArrayList<KGentry>)session.selectList("KGMLSingle.selectEntry",kGentry);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsKGentries;
-	}
+	public ArrayList<KGentry> queryLsKGentries(KGentry kGentry);
 	
 	/**
 	 		where<br>
@@ -76,41 +58,10 @@ public class MapKEntry{
 	 * @param KGentry
 	 * @return
 	 */
-	public static KGentry queryKGentry(KGentry kGentry){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
-		KGentry kGentry2=null;
-		try
-		{
-			kGentry2= (KGentry)session.selectOne("KGMLSingle.selectEntry",kGentry);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return kGentry2;
-	}
+	public KGentry queryKGentry(KGentry kGentry);
 	
 	
-	public static void InsertKGentry(KGentry kGentry){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.insert("KGMLSingle.insertEntry", kGentry);
-		}
-		catch(Exception e)
-		{
-			System.out.println(kGentry.getPathName()+"      "+kGentry.getLinkEntry());
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void insertKGentry(KGentry kGentry);
 	
 	/**
 	 * 目前的升级方式是
@@ -129,19 +80,6 @@ public class MapKEntry{
 		and ID=#{id}<br>
 	 * @param kGentry
 	 */
-	public static void upDateKGentry(KGentry kGentry){
-		SqlSession session=Util.getSqlSesFactKEGG().openSession();
- 		try
-		{
-			session.update("KGMLSingle.updateEntry", kGentry);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void updateKGentry(KGentry kGentry);
+
 }

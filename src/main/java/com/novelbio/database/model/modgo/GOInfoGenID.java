@@ -6,13 +6,11 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Gene2Go;
-import com.novelbio.database.domain.geneanno.UniGene2Go;
-import com.novelbio.database.mapper.geneanno.MapGene2Go;
-import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
+import com.novelbio.database.service.servgeneanno.ServGene2Go;
 
 public class GOInfoGenID extends GOInfoAbs{
 	private static Logger logger = Logger.getLogger(GOInfoGenID.class);
-
+	ServGene2Go servGene2Go = new ServGene2Go();
 	public GOInfoGenID(String genUniAccID, int taxID) {
 		super(genUniAccID, taxID);
 	}
@@ -23,7 +21,8 @@ public class GOInfoGenID extends GOInfoAbs{
 			return;
 		}
 		lsAGene2Gos = new ArrayList<AGene2Go>();
-		ArrayList<Gene2Go>  lstmp = MapGene2Go.queryGene2Go(Integer.parseInt(genUniAccID));
+		
+		ArrayList<Gene2Go>  lstmp = servGene2Go.queryLsGene2Go(Integer.parseInt(genUniAccID));
 		if (lstmp == null || lstmp.size() == 0) {
 			return;
 		}

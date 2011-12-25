@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapKNIdKeg">
+	<resultMap id="pathRelationMap" type="KGpathRelation">
+	</resultMap>
+	<select id="queryLsKGNIdKeg" parameterType="KGpathRelation" resultMap="pathRelationMap">
+		select *
+		from pathRelation
+		<where>
+			<if test="pathName != null and pathName != '' ">
+				 pathName=#{pathName}
+			</if>
+			<if test="scrPath !=null and scrPath != '' ">
+				and scrPath=#{scrPath}
+			</if>
+			<if test="trgPath !=null and trgPath != '' ">
+				and trgPath=#{trgPath}
+			</if>
+		</where>
+	</select>
+	<select id="queryKGNIdKeg" parameterType="KGpathRelation" resultMap="pathRelationMap">
+		select *
+		from pathRelation
+		<where>
+			<if test="pathName != null and pathName != '' ">
+				 pathName=#{pathName}
+			</if>
+			<if test="scrPath !=null and scrPath != '' ">
+				and scrPath=#{scrPath}
+			</if>
+			<if test="trgPath !=null and trgPath != '' ">
+				and trgPath=#{trgPath}
+			</if>
+		</where>
+	</select>
+	<insert id="insertKGNIdKeg" parameterType="KGpathRelation">
+		insert into pathRelation (pathName,scrPath,trgPath,type)
+		values (#{pathName},#{scrPath},#{trgPath},#{type})
+	</insert>
+	<update id="updateKGNIdKeg" parameterType="KGpathRelation">
+		update substrate
+		<set>
+			<if test="pathName !=null and pathName != ''">
+				 pathName=#{pathName},
+			</if>
+			<if test="scrPath !=null and scrPath != ''">
+				scrPath=#{scrPath},
+			</if>
+			<if test="trgPath !=null and trgPath != ''">
+				trgPath=#{trgPath},
+			</if>
+			<if test="type !=null and type != ''">
+				type=#{type}
+			</if>
+		</set>
+		<where>
+			<if test="pathName !=null and pathName != ''">
+				 pathName=#{pathName}
+			</if>
+			<if test="scrPath !=null and scrPath != ''">
+				and scrPath=#{scrPath}
+			</if>
+			<if test="trgPath !=null and trgPath != ''">
+				and trgPath=#{trgPath}
+			</if>
+		</where>
+	</update>
+</mapper>

@@ -87,7 +87,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		}
 		if (blast) {
 			for (CopedID copedID : hashCopedIDs) {
-				copedID.setBlastLsInfo(blastEvalue, blastTaxID);
+				copedID.setBlastInfo(blastEvalue, blastTaxID);
 			}
 		}
 		
@@ -131,7 +131,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		for (String string : lsCopedID) {
 			CopedID copedID = new CopedID(string, taxID, false);
 			if (blast) {
-				copedID.setBlastLsInfo(blastEvalue, blastTaxID);
+				copedID.setBlastInfo(blastEvalue, blastTaxID);
 			}
 			lsCopedIDsTest.add(copedID);
 		}
@@ -183,7 +183,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		}
 		for (String[] strings : accID) {
 			CopedID copedID = new CopedID(strings[0], taxID, false);
-			copedID.setBlastLsInfo(blastEvalue, blastTaxID);
+			copedID.setBlastInfo(blastEvalue, blastTaxID);
 			lsCopedIDsBG.add(copedID);
 		}
 		lsBG = convert2Item(lsCopedIDsBG);
@@ -196,7 +196,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	public void setLsBGCopedID(ArrayList<CopedID> lsBGaccID) {
 		lsTestResult = new ArrayList<String[]>();
 		for (CopedID copedID : lsBGaccID) {
-			copedID.setBlastLsInfo(blastEvalue, blastTaxID);
+			copedID.setBlastInfo(blastEvalue, blastTaxID);
 		}
 		this.lsCopedIDsBG = lsBGaccID;
 		lsBG = convert2Item(lsCopedIDsBG);

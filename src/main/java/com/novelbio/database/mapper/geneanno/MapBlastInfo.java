@@ -2,15 +2,10 @@ package com.novelbio.database.mapper.geneanno;
 
 import java.util.ArrayList;
 
-import org.apache.ibatis.session.SqlSession;
-
 import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.util.Util;
+import com.novelbio.database.mapper.MapperSql;
 
-
-
-
-public class MapBlastInfo {
+public interface MapBlastInfo extends MapperSql {
 
 	/**
 		where<br>
@@ -36,23 +31,7 @@ public class MapBlastInfo {
 	 * @param BlastInfo
 	 * @return
 	 */
-	public static BlastInfo queryBlastInfo(BlastInfo qBlastInfo){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
-		BlastInfo blastInfo=null;
-		try
-		{
-			blastInfo= (BlastInfo)session.selectOne("FriceDBSingle.selectBlastInfo",qBlastInfo);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return blastInfo;
-	}
+	public BlastInfo queryBlastInfo(BlastInfo qBlastInfo);
 	
 	/**
 		where<br>
@@ -78,39 +57,9 @@ public class MapBlastInfo {
 	 * @param BlastInfo
 	 * @return
 	 */
-	public static  ArrayList<BlastInfo> queryLsBlastInfo(BlastInfo qBlastInfo){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
-		ArrayList<BlastInfo> lsBlastInfos=null;
-		try
-		{
-			lsBlastInfos= (ArrayList<BlastInfo>)session.selectList("FriceDBSingle.selectBlastInfo",qBlastInfo);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-		return lsBlastInfos;
-	}
+	public ArrayList<BlastInfo> queryLsBlastInfo(BlastInfo qBlastInfo);
 	
-	public static void InsertBlastInfo(BlastInfo blastInfo){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
- 		try
-		{
-			session.insert("FriceDBSingle.insertBlastInfo", blastInfo);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void insertBlastInfo(BlastInfo blastInfo);
 	
 	/**
 update BlastInfo <br>
@@ -128,19 +77,5 @@ update BlastInfo <br>
 			/if<br>
 	    /where <br>
 	 */
-	public static void upDateBlastInfo(BlastInfo blastInfo){
-		SqlSession session=Util.getSqlSesFactFriceDB().openSession();
- 		try
-		{
-			session.update("FriceDBSingle.updateBlastInfo", blastInfo);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			session.close();
-		}
-	}
+	public void updateBlastInfo(BlastInfo blastInfo);
 }

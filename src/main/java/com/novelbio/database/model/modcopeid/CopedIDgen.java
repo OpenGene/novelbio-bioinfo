@@ -1,20 +1,15 @@
 package com.novelbio.database.model.modcopeid;
 import java.util.ArrayList;
 
-import javax.inject.Inject;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
-import com.novelbio.database.mapper.geneanno.MapGeneInfo;
-import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.model.modgo.GOInfoGenID;
+import com.novelbio.database.service.servgeneanno.ServGeneInfo;
 import com.novelbio.database.service.servgeneanno.ServNCBIID;
 
 public class CopedIDgen extends CopedIDAbs{
-
+	ServGeneInfo servGeneInfo = new ServGeneInfo();
 	/**
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
 	 * 
@@ -36,7 +31,7 @@ public class CopedIDgen extends CopedIDAbs{
 		GeneInfo geneInfoq = new GeneInfo();
 		long geneID = Long.parseLong(getGenUniID());
 		geneInfoq.setGeneID(geneID);
-		super.geneInfo = MapGeneInfo.queryGeneInfo(geneInfoq);
+		super.geneInfo = servGeneInfo.queryGeneInfo(geneInfoq);
 	}
 	
 	@Override

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapKRelation">
+	<resultMap id="relationMap" type="KGrelation">
+		<result property="entry1" column="entry1ID"/>  
+		<result property="entry2" column="entry2ID"/>  
+	</resultMap>
+	<select id="queryLsKGrelations" parameterType="KGrelation" resultMap="relationMap">
+		select *
+		from relation
+		<where>
+			<if test="pathName != null and pathName != '' ">
+				 pathName=#{pathName}
+			</if>
+			<if test="entry1 != null and entry1 != 0">
+				and entry1ID=#{entry1}
+			</if>
+			<if test="entry2 != null and entry2 !=0">
+				and entry2ID=#{entry2}
+			</if>
+			<if test="type != null and type != '' ">
+				and type=#{type}
+			</if>
+			<if test="subtypeName !=null and subtypeName != '' ">
+				and subtypeName=#{subtypeName}
+			</if>
+		</where>
+	</select>
+		<select id="queryKGrelation" parameterType="KGrelation" resultMap="relationMap">
+		select *
+		from relation
+		<where>
+			<if test="pathName != null and pathName != '' ">
+				 pathName=#{pathName}
+			</if>
+			<if test="entry1 != null and entry1 != 0">
+				and entry1ID=#{entry1}
+			</if>
+			<if test="entry2 != null and entry2 !=0">
+				and entry2ID=#{entry2}
+			</if>
+			<if test="type != null and type != '' ">
+				and type=#{type}
+			</if>
+			<if test="subtypeName !=null and subtypeName != '' ">
+				and subtypeName=#{subtypeName}
+			</if>
+		</where>
+	</select>
+	<insert id="insertKGrelation" parameterType="KGrelation">
+		insert into relation (pathName,entry1ID,entry2ID,type,subtypeName,subtypeValue)
+		values (#{pathName},#{entry1},#{entry2},#{type},#{subtypeName},#{subtypeValue})
+	</insert>
+	<update id="updateKGrelation" parameterType="KGrelation">
+		update geneInfo set
+		pathName = #{pathName},
+		entry1ID = #{entry1},
+		entry2ID = #{entry2},
+		type = #{type},
+		subtypeName = #{subtypeName},
+		subtypeValue = #{subtypeValue}
+		<where>
+			<if test="pathName !=null and pathName != '' ">
+				 pathName=#{pathName}
+			</if>
+			<if test="entry1 !=null and entry1 != 0">
+				and entry1ID=#{entry1}
+			</if>
+			<if test="entry2 !=null and entry2 !=0">
+				and entry2ID=#{entry2}
+			</if>
+			<if test="type !=null and type != '' ">
+				and type=#{type}
+			</if>
+			<if test="subtypeName !=null and subtypeName != '' ">
+				and subtypeName=#{subtypeName}
+			</if>
+		</where>
+	</update>
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapGo2Term">
+	<resultMap id="Go2TermMap" type="Go2Term">
+	</resultMap>
+	<select id="queryGo2Term" parameterType="Go2Term" resultMap="Go2TermMap">
+		select *
+		from Go2Term
+		<where>
+			<if test="GoIDquery !=null">
+				GoIDquery = #{GoIDquery} 
+			</if>
+			<if test="GoID !=null">
+				and GoID = #{GoID} 
+			</if>
+			<if test="GoFunction !=null">
+				and GoFunction = #{GoFunction} 
+			</if>
+	    </where> 
+	</select>
+	<select id="queryLsGo2Term" parameterType="Go2Term" resultMap="Go2TermMap">
+		select *
+		from Go2Term
+		<where>
+			<if test="GoIDquery !=null">
+				GoIDquery = #{GoIDquery} 
+			</if>
+			<if test="GoID !=null">
+				and GoID = #{GoID} 
+			</if>
+			<if test="GoFunction !=null">
+				and GoFunction = #{GoFunction} 
+			</if>
+	    </where> 
+	</select>
+	<insert id="insertGo2Term" parameterType="Go2Term">
+		insert into Go2Term (GoIDquery,GoID,GoTerm,GoFunction)
+		values (#{GoIDquery},#{GoID},#{GoTerm},#{GoFunction})
+	</insert>
+	<update id="updateGo2Term" parameterType="Go2Term">
+		update Go2Term 
+		<set>
+			<if test="GoIDquery !=null">
+				GoIDquery = #{GoIDquery},
+			</if>
+			<if test="GoID !=null">
+				GoID = #{GoID},
+			</if>
+			<if test="GoFunction !=null">
+				GoFunction = #{GoFunction},
+			</if>
+			<if test="GoTerm !=null">
+				GoTerm = #{GoTerm}
+			</if>
+		</set>
+		<where>
+			<if test="GoIDquery !=null">
+				GoIDquery = #{GoIDQuery} 
+			</if>
+			<if test="GoID !=null">
+				and GoID = #{GoID} 
+			</if>
+			<if test="GoFunction !=null">
+				and GoFunction = #{GoFunction} 
+			</if>
+	    </where> 
+	</update>	
+</mapper>

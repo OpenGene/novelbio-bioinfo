@@ -25,15 +25,15 @@ import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.geneanno.UniGene2Go;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
-import com.novelbio.database.mapper.geneanno.MapBlastInfo;
+import com.novelbio.database.mapper.geneanno.MapBlastInfoOld;
 import com.novelbio.database.mapper.geneanno.MapFSTaxID;
-import com.novelbio.database.mapper.geneanno.MapGene2Go;
-import com.novelbio.database.mapper.geneanno.MapGeneInfo;
-import com.novelbio.database.mapper.geneanno.MapGo2Term;
+import com.novelbio.database.mapper.geneanno.MapGene2GoOld;
+import com.novelbio.database.mapper.geneanno.MapGeneInfoOld;
+import com.novelbio.database.mapper.geneanno.MapGo2TermOld;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
-import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
-import com.novelbio.database.mapper.geneanno.MapUniProtID;
+import com.novelbio.database.mapper.geneanno.MapUniGene2GoOld;
+import com.novelbio.database.mapper.geneanno.MapUniGeneInfoOld;
+import com.novelbio.database.mapper.geneanno.MapUniProtIDOld;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.ServGo;
 
@@ -81,10 +81,10 @@ public class UpDateNBCDBFile {
 			
 			gene2GoInfo.setFunction(goFunction);
 			gene2GoInfo.setDataBase("NCBI");
-			Gene2Go gene2GoInfo2=(Gene2Go) MapGene2Go.queryGene2Go(gene2GoInfo);
+			Gene2Go gene2GoInfo2=(Gene2Go) MapGene2GoOld.queryGene2Go(gene2GoInfo);
 			if (gene2GoInfo2==null) 
 			{
-				MapGene2Go.InsertGene2Go(gene2GoInfo);
+				MapGene2GoOld.InsertGene2Go(gene2GoInfo);
 				i++;
 			}
 			else {
@@ -94,7 +94,7 @@ public class UpDateNBCDBFile {
 						&& !gene2GoInfo2.getEvidence().contains(gene2GoInfo.getEvidence()))
 				{
 					gene2GoInfo.setEvidence(gene2GoInfo.getEvidence()+"//"+gene2GoInfo2.getEvidence());
-					MapGene2Go.upDateGene2Go(gene2GoInfo);
+					MapGene2GoOld.upDateGene2Go(gene2GoInfo);
 					i++;
 				}
 			}
@@ -146,7 +146,7 @@ public class UpDateNBCDBFile {
 					if (updateDBINFO && !lsNcbiids.get(0).getDBInfo().equals(ss[3])) 
 					{
 						ncbiid.setDBInfo(ss[3]);
-						MapNCBIID.upDateNCBIID(ncbiid);
+						MapNCBIID.updateNCBIID(ncbiid);
 						i++;
 					}
 					else
@@ -384,11 +384,11 @@ public class UpDateNBCDBFile {
 				uniProtid.setTaxID(Integer.parseInt(ss[0]));
 				uniProtid.setUniID(ss[1]);
 				uniProtid.setAccID(ss[2]);
-				ArrayList<UniProtID> lsuniProtid2=MapUniProtID.queryLsUniProtID(uniProtid);
+				ArrayList<UniProtID> lsuniProtid2=MapUniProtIDOld.queryLsUniProtID(uniProtid);
 				if (lsuniProtid2==null || lsuniProtid2.size() == 0) 
 				{
 					uniProtid.setDBInfo(ss[3]);
-					MapUniProtID.InsertUniProtID(uniProtid);
+					MapUniProtIDOld.InsertUniProtID(uniProtid);
 					i++;
 				}
 				else {
@@ -430,10 +430,10 @@ public class UpDateNBCDBFile {
 			geneInfo.setSymNome(ss[10]);geneInfo.setFullName(ss[11]);geneInfo.setNomStat(ss[12]);geneInfo.setOtherDesign(ss[13]);
 			geneInfo.setModDate(ss[14]);
 
-			GeneInfo geneInfo2=MapGeneInfo.queryGeneInfo(geneInfo);
+			GeneInfo geneInfo2=MapGeneInfoOld.queryGeneInfo(geneInfo);
 			if (geneInfo2==null)
 			{
-				MapGeneInfo.InsertGeneInfo(geneInfo);
+				MapGeneInfoOld.InsertGeneInfo(geneInfo);
 			}
 			else {
 				continue;
@@ -486,11 +486,11 @@ public class UpDateNBCDBFile {
 				geneInfo.setSynonyms("");
 			}
 			
-			GeneInfo geneInfo2=MapGeneInfo.queryGeneInfo(geneInfo);
+			GeneInfo geneInfo2=MapGeneInfoOld.queryGeneInfo(geneInfo);
 			
 			if (geneInfo2==null)
 			{
-				MapGeneInfo.InsertGeneInfo(geneInfo);
+				MapGeneInfoOld.InsertGeneInfo(geneInfo);
 			}
 			else {
 				boolean flag=false;
@@ -534,7 +534,7 @@ public class UpDateNBCDBFile {
 				}
 				if(flag)
 				{
-					MapGeneInfo.upDateGeneInfo(geneInfo2);
+					MapGeneInfoOld.upDateGeneInfo(geneInfo2);
 					i++;
 				}
 			}
@@ -583,11 +583,11 @@ public class UpDateNBCDBFile {
 				uniGeneInfo.setSynonyms("");
 			}
 			
-			UniGeneInfo uniGeneInfo2=MapUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
+			UniGeneInfo uniGeneInfo2=MapUniGeneInfoOld.queryUniGeneInfo(uniGeneInfo);
 			
 			if (uniGeneInfo2==null)
 			{
-				MapUniGeneInfo.InsertUniGeneInfo(uniGeneInfo);
+				MapUniGeneInfoOld.InsertUniGeneInfo(uniGeneInfo);
 			}
 			else 
 			{
@@ -633,7 +633,7 @@ public class UpDateNBCDBFile {
 				}
 				if(flag)
 				{
-					MapUniGeneInfo.upDateUniGeneInfo(uniGeneInfo2);
+					MapUniGeneInfoOld.upDateUniGeneInfo(uniGeneInfo2);
 					i++;
 				}
 			}
@@ -695,7 +695,7 @@ public class UpDateNBCDBFile {
 					gene2Go.setGOID(GoID);gene2Go.setQualifier(ss[3].trim());gene2Go.setReference(ss[5]);gene2Go.setEvidence(ss[6]);gene2Go.setFunction(goFuncition);
 					gene2Go.setGOTerm(goTerm);
 					gene2Go.setDataBase(NovelBioConst.DBINFO_UNIPROT_UNIID);
-					AGene2Go gene2Go2 = MapGene2Go.queryGene2Go(gene2Go);
+					AGene2Go gene2Go2 = MapGene2GoOld.queryGene2Go(gene2Go);
 					if (gene2Go2!=null) //如果已经存在了，那么考虑下是否升级
 					{
 						boolean update=false;
@@ -708,12 +708,12 @@ public class UpDateNBCDBFile {
 							update=true;
 						}
 						if (update) {
-							MapGene2Go.upDateGene2Go((Gene2Go) gene2Go2);
+							MapGene2GoOld.upDateGene2Go((Gene2Go) gene2Go2);
 						}
 					}
 					else //如果没有，则升级
 					{
-						MapGene2Go.InsertGene2Go(gene2Go);
+						MapGene2GoOld.InsertGene2Go(gene2Go);
 					}
 				}
 			}
@@ -723,7 +723,7 @@ public class UpDateNBCDBFile {
 				uniGene2Go.setUniProtID(ss[1].trim());uniGene2Go.setGOID(GoID);uniGene2Go.setQualifier(ss[3].trim());uniGene2Go.setReference(ss[5]);
 				uniGene2Go.setEvidence(ss[6]);uniGene2Go.setFunction(goFuncition);uniGene2Go.setDataBase("UniProt");
 				uniGene2Go.setGOTerm(goTerm);
-				AGene2Go uniGene2Go2 = MapUniGene2Go.queryUniGene2Go(uniGene2Go);
+				AGene2Go uniGene2Go2 = MapUniGene2GoOld.queryUniGene2Go(uniGene2Go);
 				if (uniGene2Go2!=null) //如果已经存在了，那么考虑下是否升级
 				{
 					boolean update=false;
@@ -736,12 +736,12 @@ public class UpDateNBCDBFile {
 						update=true;
 					}
 					if (update) {
-						MapUniGene2Go.upDateUniGene2Go((UniGene2Go) uniGene2Go2);
+						MapUniGene2GoOld.upDateUniGene2Go((UniGene2Go) uniGene2Go2);
 					}
 				}
 				else //如果没有，则升级
 				{
-					MapUniGene2Go.InsertUniGene2Go(uniGene2Go);
+					MapUniGene2GoOld.InsertUniGene2Go(uniGene2Go);
 				}
 			}
 			
@@ -779,13 +779,13 @@ public class UpDateNBCDBFile {
 			{
 				Go2Term go2Term=new Go2Term();
 				go2Term.setGoIDQuery(ss[0].trim());
-				Go2Term go2Term2=MapGo2Term.queryGo2Term(go2Term);
+				Go2Term go2Term2=MapGo2TermOld.queryGo2Term(go2Term);
 				if (go2Term2==null) {
 					go2Term.setGoID(ss[0].trim());
 					go2Term.setGoIDQuery(ss[0].trim());
 					go2Term.setGoTerm(ss[2].trim());
 					go2Term.setGoFunction(ss[3].trim());
-					MapGo2Term.InsertGo2Term(go2Term);
+					MapGo2TermOld.InsertGo2Term(go2Term);
 					i++;
 				}
 			}
@@ -796,25 +796,25 @@ public class UpDateNBCDBFile {
 				{
 					Go2Term go2Term=new Go2Term();
 					go2Term.setGoIDQuery(ss2[j].trim());
-					Go2Term go2Term2=MapGo2Term.queryGo2Term(go2Term);
+					Go2Term go2Term2=MapGo2TermOld.queryGo2Term(go2Term);
 					if (go2Term2==null) {
 						go2Term.setGoID(ss[0].trim());
 						go2Term.setGoIDQuery(ss2[j].trim());
 						go2Term.setGoTerm(ss[2].trim());
 						go2Term.setGoFunction(ss[3].trim());
-						MapGo2Term.InsertGo2Term(go2Term);
+						MapGo2TermOld.InsertGo2Term(go2Term);
 						i++;
 					}
 				}
 				Go2Term go2Term=new Go2Term();
 				go2Term.setGoIDQuery(ss[0].trim());
-				Go2Term go2Term2=MapGo2Term.queryGo2Term(go2Term);
+				Go2Term go2Term2=MapGo2TermOld.queryGo2Term(go2Term);
 				if (go2Term2==null) {
 					go2Term.setGoID(ss[0].trim());
 					go2Term.setGoIDQuery(ss[0].trim());
 					go2Term.setGoTerm(ss[2].trim());
 					go2Term.setGoFunction(ss[3].trim());
-					MapGo2Term.InsertGo2Term(go2Term);
+					MapGo2TermOld.InsertGo2Term(go2Term);
 					i++;
 				}
 			}
@@ -848,7 +848,7 @@ public class UpDateNBCDBFile {
 			blastInfo.setQueryID(ss[0]);blastInfo.setQueryTax(Integer.parseInt(ss[1]));blastInfo.setSubjectTax(Integer.parseInt(ss[4]));
 			//Date date=(Date) new SimpleDateFormat("yyyy-MM-dd").parse(ss[8]);
 			blastInfo.setBlastDate(ss[8]);//这个不会用于查询
-			BlastInfo blastInfo2=MapBlastInfo.queryBlastInfo(blastInfo);
+			BlastInfo blastInfo2=MapBlastInfoOld.queryBlastInfo(blastInfo);
 			blastInfo.setQueryDB(ss[2]);
 			blastInfo.setSubjectID(ss[3]);
 			blastInfo.setSubjectDB(ss[5]);
@@ -859,11 +859,11 @@ public class UpDateNBCDBFile {
 			{
 				if(!blastInfo2.getSubjectID().equals(blastInfo.getSubjectID())&&blastInfo2.getEvalue()>blastInfo.getEvalue()) 
 				{
-					MapBlastInfo.upDateBlastInfo(blastInfo);
+					MapBlastInfoOld.upDateBlastInfo(blastInfo);
 				}
 				continue;
 			}
-			MapBlastInfo.InsertBlastInfo(blastInfo);
+			MapBlastInfoOld.InsertBlastInfo(blastInfo);
 		}
 	}
 	
@@ -892,7 +892,7 @@ public class UpDateNBCDBFile {
 			//Date date=(Date) new SimpleDateFormat("yyyy-MM-dd").parse(ss[8]);
 			blastInfo.setBlastDate(ss[8]);//这个不会用于查询
 			
-			BlastInfo blastInfo2=MapBlastInfo.queryBlastInfo(blastInfo);
+			BlastInfo blastInfo2=MapBlastInfoOld.queryBlastInfo(blastInfo);
 			blastInfo.setQueryDB(ss[2]);
 			blastInfo.setSubjectID(copedIDS.getGenUniID());
 			blastInfo.setSubjectDB(ss[5]);
@@ -912,11 +912,11 @@ public class UpDateNBCDBFile {
 			{
 				if(!blastInfo2.getSubjectID().equals(blastInfo.getSubjectID())&&blastInfo2.getEvalue()>blastInfo.getEvalue()) 
 				{
-					MapBlastInfo.upDateBlastInfo(blastInfo);
+					MapBlastInfoOld.upDateBlastInfo(blastInfo);
 				}
 				continue;
 			}
-			MapBlastInfo.InsertBlastInfo(blastInfo);
+			MapBlastInfoOld.InsertBlastInfo(blastInfo);
 		}
 	}
 	
@@ -1029,7 +1029,7 @@ public class UpDateNBCDBFile {
 		TxtReadandWrite txtRemain=new TxtReadandWrite();txtRemain.setParameter(remain, true, false);
 		BufferedReader inputReader=txtInput.readfile();
 		
-		MapUniProtID uniProtIDDao=new MapUniProtID();
+		MapUniProtIDOld uniProtIDDao=new MapUniProtIDOld();
 		
 		String content="";
 		int[] index=new int[3];index[0]=1;index[1]=2;index[2]=10;
