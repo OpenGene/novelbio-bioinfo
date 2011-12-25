@@ -30,7 +30,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	/**
 	 * 比较mapinfo的weight
 	 */
-	public static final int COMPARE_WEIGHT = 100;
+	public static final int COMPARE_WEIGHT = 300;
 	
 	int compareInfo = COMPARE_WEIGHT;
 	
@@ -246,14 +246,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	public String getTitle() {
 		return title;
 	}
-	/**
-	 * 排序的时候不按照weight排序，而是按照site位点排序
-	 * 默认false
-	 * @param compFromSite
-	 */
-	public static void setCompSite(int compFromSite) {
-		
-	}
+ 
 	
 	/**
 	 * 用于比较的，从小到大比
