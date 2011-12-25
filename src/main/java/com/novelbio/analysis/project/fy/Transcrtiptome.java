@@ -14,15 +14,37 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 public class Transcrtiptome {
 	public static void main(String[] args) {
 		Transcrtiptome transcrtiptome = new Transcrtiptome();
-		transcrtiptome.reconstruct();
+		transcrtiptome.reconstructChicken();
 		
 //		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF,
 //				"/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/a15m1bf.combined.gtf");
 //		gffHashGene.writeToGTF("/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/novelbioModify_a15m1bf.GTF", "novelbio");
 	}
 	
+	public void reconstructChicken() {
+		
+		GffHashGene gffHashGeneRef = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+				"/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/chickenEnsemblGenes");
+		GffGeneCluster.geneInso("/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/tophatDifParam/a15bfm1/junctions.bed");
+
+		GffHashGene gffHashGeneCufflink = new GffHashGene();//(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, "/media/winE/NBC/Project/Project_FY_Lab/Result/cufflink_evaluate/tophat/OutPut/OutK0noGTF/transcripts.gtf");
+		gffHashGeneCufflink.setParam(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF);
+		gffHashGeneCufflink.setGffHash(gffHashGeneRef);
+		gffHashGeneCufflink.setTaxID(9031);
+		String trasnGTFPath = "/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/new/";
+		gffHashGeneCufflink.readGffFile( trasnGTFPath + "cuffcmp.combined.gtf");
+		@SuppressWarnings("unused")
+//		GffHashGene gffHashGene2 = gffHashGeneCufflink.compHashGene(gffHashGeneCufflink, gffHashGeneRef, 
+//				"/media/winE/Bioinformatics/GenomeData/checken/chromFaLen",
+//				"/media/winF/NBC/Project/Project_FY/冯英组小鼠测序数据20111122/tophata9m0/Alla15m1/accept.bed",100);
+		GffHashGene gffHashGene2 = gffHashGeneCufflink.compHashGene(gffHashGeneCufflink, gffHashGeneRef, 
+				"/media/winE/Bioinformatics/GenomeData/checken/chromFaLen", null, 30);
+
+		gffHashGene2.writeToGTF(trasnGTFPath + "novelbioModify_a15m1bf_All_highAll20111220.GTF", "novelbio");
+		System.out.println("ok");
+	}
 	
-	public void reconstruct() {
+	public void reconstructMouse() {
 		
 		GffHashGene gffHashGeneRef = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, 
 				"/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/mouse_mm9_UCSC_ensembl_sorted");

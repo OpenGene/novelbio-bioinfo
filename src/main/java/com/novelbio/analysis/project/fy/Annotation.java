@@ -8,16 +8,16 @@ public class Annotation {
 	public static void main(String[] args) {
 		
 //		anno("/home/zong0jie/◊¿√Ê/WT0-WT5_diff-gene.xls");
-		anno("/media/winF/NBC/Project/Project_FY/FYmouse20111122/cufDif/MEF2dK0vsWT/gene_exp.diff.xls");
-		anno("/media/winF/NBC/Project/Project_FY/FYmouse20111122/cufDif/MEF2dK0vsWT/splicing.Out5.xls");
+//		anno("/media/winF/NBC/Project/Project_FY/FYmouse20111122/cufDif/MEF2dK0vsWT/gene_exp.diff.xls");
+//		anno("/media/winF/NBC/Project/Project_FY/FYmouse20111122/cufDif/MEF2dK0vsWT/splicing.Out5.xls");
+		anno("/media/winF/NBC/Project/Project_FY/chicken/MISO/K5vsWT5/K5_vs_WT5/bayes-factors/K5_vs_WT5.xls");
 	}
 	
 	
 	
 	public static void anno(String txtFile) {
 		try {
-			AnnoQuery.anno(txtFile, 10090, 3, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
-			 
+			AnnoQuery.anno(txtFile, 9031, 1, false, 9606, 1e-10, "");//GeneID2symbol(parentFile+"tdr–æ∆¨.xls",39947,1,false,9606,1e-10);
 		} catch (Exception e) {
 			e.printStackTrace()	;
 		}
