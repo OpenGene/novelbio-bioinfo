@@ -231,6 +231,19 @@ public abstract class GffDetailAbs implements CompSubArray{
 		return false;
 	}
 	/**
+	 * 是否在基因内，拓展
+	 * @return
+	 */
+	public boolean isCodInGeneExtend(int upTss, int downTes) {
+		if (cis5to3 && coord >= numberstart - Math.abs(upTss) && coord <= numberend + Math.abs(downTes)) {
+			return true;
+		}
+		else if (!cis5to3 && coord >= numberstart - Math.abs(downTes) && coord <= numberend + Math.abs(upTss)) {
+			return true;
+		}
+		return false;
+	}
+	/**
 	 * 染色体编号，都小写
 	 */
 	public String getChrID() {

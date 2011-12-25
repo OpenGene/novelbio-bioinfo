@@ -456,9 +456,9 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 			int tss = gffDetailGene.getLongestSplit().getTSSsite();
 			MapInfo mapInfo = null;
 			if (gffDetailGene.isCis5to3())
-				mapInfo = new MapInfo(gffDetailGene.getChrID(), tss - upBp, tss + downBp, tss,0, gffDetailGene.getLongestSplit().getIsoName());
+				mapInfo = new MapInfo(gffDetailGene.getChrID(), tss - Math.abs(upBp), tss + Math.abs(downBp), tss,0, gffDetailGene.getLongestSplit().getIsoName());
 			else 
-				mapInfo = new MapInfo(gffDetailGene.getChrID(), tss - downBp, tss + upBp, tss, 0, gffDetailGene.getLongestSplit().getIsoName());
+				mapInfo = new MapInfo(gffDetailGene.getChrID(), tss - Math.abs(downBp), tss + Math.abs(upBp), tss, 0, gffDetailGene.getLongestSplit().getIsoName());
 			mapInfo.setCis5to3(gffDetailGene.isCis5to3());
 			mapInfo.setWeight(value);
 			return mapInfo;
@@ -467,9 +467,9 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 			int tes = gffDetailGene.getLongestSplit().getTESsite();
 			MapInfo mapInfo = null;
 			if (gffDetailGene.isCis5to3())
-				mapInfo = new MapInfo(gffDetailGene.getChrID(), tes - upBp, tes + downBp, tes, 0, gffDetailGene.getLongestSplit().getIsoName());
+				mapInfo = new MapInfo(gffDetailGene.getChrID(), tes - Math.abs(upBp), tes + Math.abs(downBp), tes, 0, gffDetailGene.getLongestSplit().getIsoName());
 			else 
-				mapInfo = new MapInfo(gffDetailGene.getChrID(), tes - downBp, tes + upBp, tes, 0, gffDetailGene.getLongestSplit().getIsoName());
+				mapInfo = new MapInfo(gffDetailGene.getChrID(), tes - Math.abs(downBp), tes + Math.abs(upBp), tes, 0, gffDetailGene.getLongestSplit().getIsoName());
 			mapInfo.setCis5to3(gffDetailGene.isCis5to3());
 			mapInfo.setWeight(value);
 			return mapInfo;

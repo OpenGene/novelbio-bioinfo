@@ -142,8 +142,16 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	 * 没有则返回一个size为0的set
 	 */
 	private Set<GffDetailGene> getStructureUpGene(int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron) {
+		int tssUp = 0; int tesDown = 0;
+		if (Tss != null) {
+			tssUp = Tss[0];
+		}
+		if (Tes != null) {
+			tesDown = Tes[1];
+		}
+		
 		LinkedHashSet<GffDetailGene> hashGene = new LinkedHashSet<GffDetailGene>();
-		ArrayList<GffDetailGene[]> lsGffDetailGenes = getSameGeneDetail();
+		ArrayList<GffDetailGene[]> lsGffDetailGenes = getSameGeneDetail(tssUp,tesDown);
 		for (GffDetailGene[] gffDetailGenes : lsGffDetailGenes) {
 			if (gffDetailGenes[0] == null && gffDetailGenes[1] == null) {
 				continue;
@@ -174,8 +182,16 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	 * 没有则返回一个size为0的set
 	 */
 	private Set<GffDetailGene> getStructureDownGene(int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron) {
+		int tssUp = 0; int tesDown = 0;
+		if (Tss != null) {
+			tssUp = Tss[0];
+		}
+		if (Tes != null) {
+			tesDown = Tes[1];
+		}
+		
 		LinkedHashSet<GffDetailGene> hashGene = new LinkedHashSet<GffDetailGene>();
-		ArrayList<GffDetailGene[]> lsGffDetailGenes = getSameGeneDetail();
+		ArrayList<GffDetailGene[]> lsGffDetailGenes = getSameGeneDetail(tssUp, tesDown);
 		for (GffDetailGene[] gffDetailGenes : lsGffDetailGenes) {
 			if (gffDetailGenes[0] == null && gffDetailGenes[1] == null) {
 				continue;
@@ -198,7 +214,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	 * 0: null 1: gffDetailGene 位点在后面的gff中 <br>
 	 *  0: gffDetailGene 1: gffDetailGene 位点同时在两个gff中
 	 */
-	private ArrayList<GffDetailGene[]> getSameGeneDetail()
+	private ArrayList<GffDetailGene[]> getSameGeneDetail(int tssUp, int tesDown)
 	{
 		if (lsGffDetailGenes != null) {
 			return lsGffDetailGenes;
@@ -214,7 +230,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		 */
 		int[] flag = new int[6];
 		//////////////////  up   /////////////////////////////////
-		if (this.gffCod1.isInsideUp()) {
+		if (this.gffCod1.isInsideUpExtend(tssUp, tesDown)) {
 			GffDetailGene[] gffDetailGenesUp = new GffDetailGene[2];
 			gffDetailGenesUp[0] = gffCod1.getGffDetailUp();
 			flag[0] = 1;
@@ -242,7 +258,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			lsGffDetailGenes.add(gffDetailGenes);
 		}
 	
-		if (this.gffCod1.isInsideDown()) {
+		if (this.gffCod1.isInsideDownExtend(tssUp, tesDown)) {
 			GffDetailGene[] gffDetailGenesDown = new GffDetailGene[2];
 			gffDetailGenesDown[0] = gffCod1.getGffDetailUp();
 			flag[2] = 1;
@@ -262,7 +278,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		}
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////////  cod2  /////////////////////////////////////////////////////////////////////////////////////////////////
-		if (this.gffCod2.isInsideUp() && flag[3] != -1) {
+		if (this.gffCod2.isInsideUpExtend(tssUp, tesDown) && flag[3] != -1) {
 			flag[3] = 1;
 			GffDetailGene[] gffDetailGenesUp2 = new GffDetailGene[2];
 			gffDetailGenesUp2[1] = gffCod2.getGffDetailUp();
@@ -275,7 +291,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			gffDetailGenes2[1] = gffCod2.getGffDetailThis();
 			lsGffDetailGenes.add(gffDetailGenes2);
 		}
-		if (this.gffCod2.isInsideDown() && flag[5] != -1) {
+		if (this.gffCod2.isInsideDownExtend(tssUp, tesDown) && flag[5] != -1) {
 			flag[5] = 1;
 			GffDetailGene[] gffDetailGenes2 = new GffDetailGene[2];
 			gffDetailGenes2[1] = gffCod2.getGffDetailDown();

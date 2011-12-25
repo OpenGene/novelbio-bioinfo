@@ -82,6 +82,28 @@ public abstract class GffCodAbs<T extends GffDetailAbs> {
 		return gffDetailDown.isCodInGene();
 	}
 	/**
+	 * 是否在上一个条目内
+	 * 扩展tss和tes，无视正负号
+	 * @return
+	 */
+	public boolean isInsideUpExtend(int upTss, int downTes) {
+		if (gffDetailUp == null) {
+			return false;
+		}
+		return gffDetailUp.isCodInGeneExtend(upTss, downTes);
+	}
+	/**
+	 * 是否在下一个条目内
+	 * 扩展tss和tes，无视正负号
+	 * @return
+	 */
+	public boolean isInsideDownExtend(int upTss, int downTes) {
+		if (gffDetailDown == null) {
+			return false;
+		}
+		return gffDetailDown.isCodInGeneExtend(upTss, downTes);
+	}
+	/**
 	 * 为上个条目的具体信息，如果没有则为null(譬如定位在最前端)<br>
 	 * 1: 如果在条目内，为下个条目的具体信息<br>
 	 * 如果在条目间，为下个条目的具体信息，如果没有则为null(譬如定位在最前端)
