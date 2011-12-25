@@ -98,6 +98,9 @@ public class GffChrAnno extends GffChrAbs{
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		
 		for (String[] strings : lsInfo) {
+			if (strings[1].equals("1894000")) {
+				System.out.println("stop");
+			}
 			ArrayList<String[]> lsanno = getGenInfoFilter(strings[colChrID], Integer.parseInt(strings[colStart]), Integer.parseInt(strings[colEnd]));
 			if (lsanno == null) {
 				continue;
