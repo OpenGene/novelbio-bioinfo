@@ -652,6 +652,8 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		for (int i = 0; i < gffDetailGene1.getLsCodSplit().size(); i++) {
 			GffGeneIsoInfo gffGeneIsoInfo1 = null;
 			GffGeneIsoInfo gffGeneIsoInfo2 = null;
+			//输入的是同一个GffGeneDetail。不过每一个gffGeneDetail含有一个cod，并且 cod1 绝对值< cod2 绝对值
+			//那么以下需要将cod1在基因中的位置小于cod2，所以当gene反向的时候需要将cod反向
 			if (gffDetailGene1.getLsCodSplit().get(i).isCis5to3()) {
 				gffGeneIsoInfo1 = gffDetailGene1.getLsCodSplit().get(i);
 				gffGeneIsoInfo2 = gffDetailGene2.getLsCodSplit().get(i);
