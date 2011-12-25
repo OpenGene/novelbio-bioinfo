@@ -42,8 +42,13 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			if (hashGffDetailGeneAnno.contains(gffDetailGene))
 				continue;
 			hashGffDetailGeneAnno.add(gffDetailGene);
+			String[] anno = null;
+			try {
+				anno = getAnnoCod(gffDetailGene, "peak_left_point:");
+			} catch (Exception e) {
+				System.out.println("stop");
+			}
 			
-			String[] anno = getAnnoCod(gffDetailGene, "peak_left_point:");
 			lsAnno.add(anno);
 		}
 		
@@ -260,7 +265,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 	
 		if (this.gffCod1.isInsideDownExtend(tssUp, tesDown)) {
 			GffDetailGene[] gffDetailGenesDown = new GffDetailGene[2];
-			gffDetailGenesDown[0] = gffCod1.getGffDetailUp();
+			gffDetailGenesDown[0] = gffCod1.getGffDetailDown();
 			flag[2] = 1;
 			if (this.gffCod2.isInsideUp() && this.gffCod1.getGffDetailDown().equals(this.gffCod2.getGffDetailUp())) {
 				flag[2] = 2; flag[3] = -1;
