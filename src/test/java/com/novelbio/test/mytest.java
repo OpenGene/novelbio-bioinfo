@@ -95,7 +95,7 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		System.out.println("aaa".contains(""));
+		System.out.println("test".contains(""));
 	}
 	
 	
