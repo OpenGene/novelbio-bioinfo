@@ -20,8 +20,8 @@ import com.novelbio.database.service.AbsGetSpring;
 @Component
 //public class ServTaxID extends AbsGetSpring implements MapTaxID{
 public class ServTaxID extends AbsGetSpring  implements MapTaxID{
-	HashMap<String, Integer> hashNameTaxID = new LinkedHashMap<String, Integer>();
-	HashMap<Integer, String> hashTaxIDName = new LinkedHashMap<Integer, String>();
+	static HashMap<String, Integer> hashNameTaxID = new LinkedHashMap<String, Integer>();
+	static HashMap<Integer, String> hashTaxIDName = new LinkedHashMap<Integer, String>();
 
 	@Autowired
 	private MapTaxID mapTaxID;
