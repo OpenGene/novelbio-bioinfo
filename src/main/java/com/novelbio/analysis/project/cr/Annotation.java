@@ -17,15 +17,11 @@ public class Annotation {
 //		excelOut = FileOperate.changeFileSuffix(excelIn, "_anno", null);
 //		AnnoQuery.anno(excelIn, excelOut, 9606, 1, false, 9606, 1e-10, "");
 		
-		excelIn = "/media/winE/NBC/Project/RNA-Seq_CR_20111201/DGEDif_E6dnvsNS6d.xls";
+		excelIn = "/media/winE/NBC/Project/RNA-Seq_CR_20111201/E6dvsE6dn.xls";
 		excelOut = FileOperate.changeFileSuffix(excelIn, "_anno", null);
 		AnnoQuery.anno(excelIn, excelOut, 9606, 1, false, 9606, 1e-10, "");
 		
-		excelIn = "/media/winE/NBC/Project/RNA-Seq_CR_20111201/DGEDif_E6dvsE6dn.xls";
-		excelOut = FileOperate.changeFileSuffix(excelIn, "_anno", null);
-		AnnoQuery.anno(excelIn, excelOut, 9606, 1, false, 9606, 1e-10, "");
-		
-		excelIn = "/media/winE/NBC/Project/RNA-Seq_CR_20111201/DGEDif_E6dvsNS6d.xls";
+		excelIn = "/media/winE/NBC/Project/RNA-Seq_CR_20111201/E6dvsNS6d.xls";
 		excelOut = FileOperate.changeFileSuffix(excelIn, "_anno", null);
 		AnnoQuery.anno(excelIn, excelOut, 9606, 1, false, 9606, 1e-10, "");
 	}
