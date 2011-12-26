@@ -87,10 +87,12 @@ public class AnnoQuery {
 	}
 	
 	/**
+	 * 
 	 * 给arraytools的结果添加annotation
 	 * 添加在第colNum列的后面，直接写入excel文件
 	 * <b>第一行一定是标题行</b>
 	 * @param excelFile
+	 * @param out
 	 * @param taxID
 	 * @param colNum 实际列
 	 * @param blast

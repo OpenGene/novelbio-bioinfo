@@ -68,6 +68,7 @@ public class CopedID implements CopedIDInt{
 	 *            物种ID
 	 */
 	public CopedID(String accID,String idType, String genUniID, int taxID) {
+		accID = accID.replace("\"", "");
 		if (idType.equals(IDTYPE_UNIID)) {
 			copedID = new CopedIDuni(accID,idType, genUniID, taxID);
 		}
@@ -88,7 +89,7 @@ public class CopedID implements CopedIDInt{
 	 * @param blastType 具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
 	 */
 	public CopedID(String accID,int taxID,boolean blastType) {
-		accID.replace("\"", "");
+		accID = accID.replace("\"", "");
 		if (blastType)
 			accID = getBlastAccID(accID);
 		else

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.condHostInfoEnt;
 import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 
+import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -15,7 +16,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
 
 public class anno {
 	public static void main(String[] args) {
-		anno();
+		annoGeneID();
 	}
 	
 	private static void anno() {
@@ -45,6 +46,19 @@ public class anno {
 		
 	}
 	
+	private static void annoGeneID() {
+		String parentFile = "/home/zong0jie/◊¿√Ê/’≈∫Í”Ó2011-12-25/DGE/";
+		String file = parentFile + "ZHYnewDGEDif_Nvs2N.xls";
+		String out = FileOperate.changeFileSuffix(file, "_anno", null);
+		AnnoQuery.anno(file, out, 39947, 1, true, 3702, 1e-10, "");
+		
+		 file = parentFile + "ZHYnewDGEDif_2Nvs3N.xls";
+		 out = FileOperate.changeFileSuffix(file, "_anno", null);
+		AnnoQuery.anno(file, out, 39947, 1, true, 3702, 1e-10, "");
+		 file = parentFile + "DGE-Signal.xls";
+		 out = FileOperate.changeFileSuffix(file, "_anno", null);
+		AnnoQuery.anno(file, out, 39947, 1, true, 3702, 1e-10, "");
+	}
 	
 	HashMap<String, ArrayList<String>> hashGeID2String = null;
 	public void cmpAccID(int taxID, String... file)

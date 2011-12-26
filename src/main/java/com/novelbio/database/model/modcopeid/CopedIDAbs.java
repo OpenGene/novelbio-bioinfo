@@ -216,7 +216,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 */
 	public String getDescription() {
 		setSymbolDescrip();
-		if (geneInfo == null) {
+		if (geneInfo == null || geneInfo.getDescription() == null) {
 			return "";
 		}
 		return geneInfo.getDescription().replaceAll("\"", "");
