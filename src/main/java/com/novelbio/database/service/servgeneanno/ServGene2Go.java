@@ -23,7 +23,7 @@ public class ServGene2Go extends AbsGetSpring implements MapGene2Go {
 
 	public ArrayList<Gene2Go> queryLsGene2Go(int geneID) {
 		Gene2Go gene2Go = new Gene2Go();
-		gene2Go.setGeneUniID(geneID);
+		gene2Go.setGeneUniID(geneID + "");
 		return mapGene2Go.queryLsGene2Go(gene2Go);
 	}
 	public Gene2Go queryGene2Go(String geneID, String GOID) {

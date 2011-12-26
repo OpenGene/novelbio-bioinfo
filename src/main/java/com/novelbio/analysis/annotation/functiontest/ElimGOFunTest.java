@@ -23,6 +23,9 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		super(blast, GoType, evalue, blastTaxID);
 		this.GoType = GoType;
 	}
+	
+	public ElimGOFunTest() {}
+	
 	int NumGOID = 300;
 	
 	/**
@@ -151,7 +154,8 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	 * @param lsGeneID 该次分析的的所有差异基因列表
 	 * @return
 	 * Go富集分析的Go2Gene表格<br>
-	 * blast：<br>title2[0]="GOID";title2[1]="GOTerm"
+	 * blast：<br>
+	 * title2[0]="GOID";title2[1]="GOTerm"
 	 * 			title2[2]="QueryID";title2[3]="QuerySymbol";title2[4]="Description";title2[5]="Evalue";title2[6]="subjectSymbol";<br>
 			title2[7]="Description";<br>
 			不blast：<br>title2[0]="GOID";title2[1]="GOTerm"
@@ -176,14 +180,19 @@ public class ElimGOFunTest extends NovelGOFunTest{
 			for (String string : lsCoGeneID)
 			{
 				ArrayList<CopedID> lscopedIDs = hashgene2CopedID.get(string);
-				CopedID copedIDFirst = lscopedIDs.get(0);
 				//每一个基因所含有的多个copedID，也就是多个不同的accID
 				for (CopedID copedID : lscopedIDs) {
-					String[] anno = copedID.getAnnoInfo(blast);
+					String[] tmpresultRaw = copedID.getAnno(blast);
+					String[] anno = copyAnno(copedID.getAccID(), tmpresultRaw);
 					String[] result = new String[anno.length + 2];
-					result[0] = lsResultTable.get(i)[0]; result[1] = lsResultTable.get(i)[1];
-					for (int j = 2; j < result.length; j++) {
-						result[j] = anno[j-2];
+					result[0] = lsResultTable.get(i)[0]; result[1] = lsResultTable.get(i)[1]; result[2] = copedID.getAccID();
+					int m = 3;
+					for (int j = 3; j < result.length; j++) {
+						result[j] = anno[m - 3];
+						if (m-3 == 3 ) {
+							m++;
+						}
+						m++;
 					}
 					lsResult.add(result);
 				}

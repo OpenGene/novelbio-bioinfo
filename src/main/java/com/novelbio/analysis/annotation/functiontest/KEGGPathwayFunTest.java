@@ -15,9 +15,13 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 			ArrayList<CopedID> lsCopedIDsBG, boolean blast) {
 		super(lsCopedIDsTest, lsCopedIDsBG, blast);
 	}
+	
 	public KEGGPathwayFunTest(boolean blast, double evalue, int... blastTaxID) {
-		super( blast, evalue, blastTaxID);
+		setBlast(blast, evalue, blastTaxID);
 	}
+	
+	public KEGGPathwayFunTest() {}
+	
 	/**
 	 * Fisher检验时候用的东西
 	 */
@@ -77,7 +81,8 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 				continue;
 			}
 			//GO前面的常规信息的填充,Symbol和description等
-			String[] tmpresult = copedID.getAnnoInfo(blast);
+			String[] tmpresultRaw = copedID.getAnno(blast);
+			String[] tmpresult = copyAnno(copedID.getAccID(), tmpresultRaw);
 			//GO信息的填充
 			for (KGpathway kGpathway : lsPath) {
 				String[] result = null;

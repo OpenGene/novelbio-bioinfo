@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
+
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
@@ -18,16 +21,18 @@ public class NovelGOFunTest extends AbstFunTest{
 		this.GoType = GoType;
 	}
 	public NovelGOFunTest(boolean blast,String GoType, double evalue, int...blastTaxID) {
-		super(blast, evalue, blastTaxID);
 		this.GoType = GoType;
+		setBlast(blast, evalue, blastTaxID);
 	}
+	public NovelGOFunTest() {}
+	
 	/**
 	 * GOabs中的GOtype
 	 * @param goType
 	 */
 	@Override
 	public void setGoType(String goType) {
-		GoType = goType;
+		this.GoType = goType;
 	}
 	
 	@Override
@@ -85,7 +90,8 @@ public class NovelGOFunTest extends AbstFunTest{
 				continue;
 			}
 			//GO前面的常规信息的填充,Symbol和description等
-			String[] tmpresult = copedID.getAnnoInfo(blast);
+			String[] tmpresultRaw = copedID.getAnno(blast);
+			String[] tmpresult = copyAnno(copedID.getAccID(), tmpresultRaw);
 			//GO信息的填充
 			for (AGene2Go aGene2Go : lsGen2Go) {
 				String[] result = null;
@@ -114,6 +120,8 @@ public class NovelGOFunTest extends AbstFunTest{
 		lsFinal.add(0,title);
 		return lsFinal;
 	}
+
+	
 	/**
 	 * Fisher检验时候用的东西
 	 */

@@ -7,7 +7,6 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.annotation.GO.GoFisher;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -16,7 +15,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
 
 public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 
-	private static final Logger logger = Logger.getLogger(GoFisher.class);
+	private static final Logger logger = Logger.getLogger(AbstFunTest.class);
 	public static final String TEST_GO = "go";
 	public static final String TEST_KEGGPATH = "KEGGpathway";
 	
@@ -27,11 +26,17 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		this.blast = blast;
 	}
 	
-	public AbstFunTest(boolean blast, double evalue, int... blastTaxID)
+	public AbstFunTest() {}
+	
+	public void setBlast(boolean blast, double evalue, int... blastTaxID)
 	{
 		this.blast = blast;
 		this.blastTaxID = blastTaxID;
 		this.blastEvalue = evalue;
+	}
+	
+	public void setBlastTaxID(int... taxID) {
+		this.blastTaxID = taxID;
 	}
 	
 	int taxID = 0;
@@ -375,4 +380,23 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	public void setGoType(String goType) {
 	}
 	
+	
+	/**
+	 *  ‰»Î
+	 * * blast£∫
+blast * 0:symbol 1:description 2:evalue 3:subjectSpecies 4:symbol 5:description
+≤ªblast£∫
+0:symbol 1:description
+	 * @param tmpresultRaw
+	 * @return
+ * blast£∫
+blast * 0:queryID  1:symbol 2:description 3:evalue 4:subjectSpecies 5:symbol 6:description
+≤ªblast£∫
+ 0:queryID  1:symbol 2:description
+	 */
+	protected static String[] copyAnno(String QueryID, String[] tmpresultRaw) {
+		String[] tmpInfo = ArrayOperate.deletElement(tmpresultRaw, new int[]{3});
+		String[] result = ArrayOperate.combArray(new String[]{QueryID}, tmpInfo, 0);
+		return result;
+	}
 }

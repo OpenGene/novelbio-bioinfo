@@ -30,7 +30,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.novelbio.analysis.annotation.pathway.kegg.kGpath.Scr2Target;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlPath;
+import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlPath2;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.CtrlNormal;
@@ -163,7 +163,7 @@ public class GuiSrcToTrg extends JPanel{
 				public void actionPerformed(ActionEvent evt) {
 					GUIFileOpen guiFileOpen = new GUIFileOpen();
 					String savefilename = guiFileOpen.saveFileName("txt", "txt");
-					CtrlPath ctrlPath = CtrlPath.getCtrlPathUsed();
+					CtrlPath2 ctrlPath = CtrlPath2.getCtrlPathUsed();
 					if (!FileOperate.getFileNameSep(savefilename)[1].equals("txt")) {
 						savefilename = savefilename+".txt";
 					}

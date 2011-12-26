@@ -8,11 +8,9 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
-import com.novelbio.analysis.annotation.genAnno.GOQuery;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GuiBlastJpanel;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.service.ServGo;
 
 
 public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo>

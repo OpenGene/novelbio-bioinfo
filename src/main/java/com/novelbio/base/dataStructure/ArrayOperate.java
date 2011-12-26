@@ -10,6 +10,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
@@ -186,7 +187,33 @@ public class ArrayOperate {
 		return result;
 	}
 	
-
+	/**
+	 * 删除数组中的一些项目
+	 * @param <T>
+	 * @param Aarray 数组
+	 * @param deletNum 需要删除哪几项，从0开始计算，如果超出数组项，则忽略
+	 * @return
+	 */
+	public static<T> T[] deletElement(T[] Aarray,int[] deletNum) {
+		TreeSet<Integer> treeRemove = new TreeSet<Integer>();
+		for (int i : deletNum) {
+			if (i < 0 || i >= Aarray.length) {
+				continue;
+			}
+			treeRemove.add(i);
+		}
+		
+		T[] result=(T[]) Array.newInstance(Aarray.getClass().getComponentType(), Aarray.length - treeRemove.size());//new T[Astring.length+Bstring.length];
+		int resultNum = 0;
+		for (int i = 0; i < Aarray.length; i++) {
+			if (treeRemove.contains(i)) {
+				continue;
+			}
+			result[resultNum] = Aarray[i];
+			resultNum++ ;
+		}
+		return result;
+	}
 	/**
 	 * 用hash的方法来合并两个List<br>
 	 * 给定lsA、lsB<br>

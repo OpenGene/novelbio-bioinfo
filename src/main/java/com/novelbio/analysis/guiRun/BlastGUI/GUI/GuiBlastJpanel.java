@@ -40,12 +40,13 @@ import org.jdesktop.application.Application;
 
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastAnno;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastGo;
-import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlOther;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastPath;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.gui.CtrlNormal;
+import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modgo.GOInfoAbs;
 
 
 /**
@@ -685,16 +686,14 @@ public class GuiBlastJpanel extends JPanel{
 		if(jComGOClassSelect == null) {
 			ComboBoxModel jCmbGOClassSelectModel = 
 				new DefaultComboBoxModel(
-						new String[] { "Biological Process", "Molecular Function","Cellular Component","All" });
+						new String[] { GOInfoAbs.GO_BP, GOInfoAbs.GO_MF,GOInfoAbs.GO_CC, GOInfoAbs.GO_ALL});
 			jComGOClassSelect = new JComboBox();
 			jComGOClassSelect.setModel(jCmbGOClassSelectModel);
 			GoClass = (String) jComGOClassSelect.getSelectedItem();
-			GoClass =CtrlOther.getGoClass(GoClass);
 			jComGOClassSelect.addActionListener(new ActionListener() 
 			{
 				public void actionPerformed(ActionEvent evt) {
 					GoClass = (String) jComGOClassSelect.getSelectedItem();
-					GoClass =CtrlOther.getGoClass(GoClass);
 				}
 			});
 		}

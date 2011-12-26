@@ -15,7 +15,7 @@ import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.statusAckLog;
 public abstract class AGene2Go {
 	public static final String EVIDENCE_IEA = "IEA";
 	public static final String SEP = "//";
-	private String GOID;
+	private String GoID;
 	private String evidence;
 	private String qualifier;
 	private String GOTerm;
@@ -28,14 +28,23 @@ public abstract class AGene2Go {
 	
 	public String getGOID() {
 		try {
-			return Go2Term.getHashGo2Term().get(GOID).getGoID();
+			return Go2Term.getHashGo2Term().get(GoID).getGoID();
 		} catch (Exception e) {
 			return null;
 		}
 	}
-	public void setGOID(String GOID) {
-		this.GOID = GOID;
-	}  
+//	/**
+//	 * 仅给数据库使用
+//	 * @return
+//	 */
+//	@Deprecated
+//	public String getGOIDNorm() {
+//		return GoID;
+//	}
+	
+	public void setGOID(String GoID) {
+		this.GoID = GoID;
+	}
 	
 	public String getEvidence() {
 		return evidence;
@@ -60,7 +69,7 @@ public abstract class AGene2Go {
 	 */
 	public String getGOTerm() {
 		try {
-			return Go2Term.getHashGo2Term().get(GOID).getGoTerm();
+			return Go2Term.getHashGo2Term().get(GoID).getGoTerm();
 		} catch (Exception e) {
 			return null;
 		}
@@ -86,7 +95,7 @@ public abstract class AGene2Go {
 	 */
 	public String getFunction() {
 		try {
-			return Go2Term.getHashGo2Term().get(GOID).getGoFunction();
+			return Go2Term.getHashGo2Term().get(GoID).getGoFunction();
 		} catch (Exception e) {
 			return null;
 		}

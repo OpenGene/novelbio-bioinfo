@@ -18,7 +18,5 @@ public class Gene2Go extends AGene2Go{
 	public void setGeneUniID(String geneUniID) {
 		setGeneId(Long.parseLong(geneUniID));
 	}
-	public void setGeneUniID(long geneUniID) {
-		setGeneId(geneUniID);
-	}
+
 }

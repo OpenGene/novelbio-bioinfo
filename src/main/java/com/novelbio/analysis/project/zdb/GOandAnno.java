@@ -20,27 +20,27 @@ public class GOandAnno {
 		
 		file = parentFile + "Fon4vsFonM.xls";
 		goanalysis(39947, 3702, file, 
-				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
+				FileOperate.changeFileSuffix(file, "_elimGO2", "xlsx"), BGfile);
 		
-		file = parentFile + "Fon4vsQ34.xls";
-		goanalysis(39947, 3702, file, 
-				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
-		
-		file = parentFile + "Q34vsFonM.xls";
-		goanalysis(39947, 3702, file, 
-				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
-		
-		file = parentFile + "QctrvsFon4.xls";
-		goanalysis(39947, 3702, file, 
-				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
-		
-		file = parentFile + "QctrvsFonM.xls";
-		goanalysis(39947, 3702, file, 
-				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
-		
-		file = parentFile + "WTvsTF.xls";
-		goanalysis(39947, 3702, file, 
-				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
+//		file = parentFile + "Fon4vsQ34.xls";
+//		goanalysis(39947, 3702, file, 
+//				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
+//		
+//		file = parentFile + "Q34vsFonM.xls";
+//		goanalysis(39947, 3702, file, 
+//				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
+//		
+//		file = parentFile + "QctrvsFon4.xls";
+//		goanalysis(39947, 3702, file, 
+//				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
+//		
+//		file = parentFile + "QctrvsFonM.xls";
+//		goanalysis(39947, 3702, file, 
+//				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
+//		
+//		file = parentFile + "WTvsTF.xls";
+//		goanalysis(39947, 3702, file, 
+//				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
 		
 		
 //		anno(39947, 3702, file, FileOperate.changeFileSuffix(file, "_anno", null));
@@ -99,8 +99,8 @@ public class GOandAnno {
 		ctrlGO.doInBackgroundNorm(lsAccIDAll, 0.9, -0.9);
 		ctrlGO.saveExcel(outFile);
 		
-		ctrlGO.doInBackgroundNorm(lsAccIDCod, 0.9, -0.9);
-		ctrlGO.saveExcel(outFile);
+//		ctrlGO.doInBackgroundNorm(lsAccIDCod, 0.9, -0.9);
+//		ctrlGO.saveExcel(outFile);
 		
 		
 //		AnnoQuery.anno(geneFileXls, QtaxID, colAccID, blast, StaxID, evalue, "");

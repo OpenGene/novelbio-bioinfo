@@ -6,6 +6,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -29,7 +30,9 @@ import javax.swing.table.DefaultTableModel;
 
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlGO;
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlPath;
+import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlPath2;
 import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.CtrlNormal;
 import com.novelbio.base.gui.NumberOnlyDoc;
@@ -228,7 +231,7 @@ public class GuiPathJpanel extends JPanel{
 				public void actionPerformed(ActionEvent evt) {
 					GUIFileOpen guiFileOpen = new GUIFileOpen();
 					String savefilename = guiFileOpen.saveFileName("excel2003", "xls");
-					CtrlPath ctrlPath = CtrlPath.getCtrlPathUsed();
+					CtrlPath2 ctrlPath = CtrlPath2.getCtrlPathUsed();
 					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
 						savefilename = savefilename+".xls";
 					}
@@ -485,47 +488,49 @@ public class GuiPathJpanel extends JPanel{
 		double evalue = 1e-10;
 		
 		CtrlPath ctrlPath = null;
+		
+		ArrayList<String[]> lsAccID = null;
+		if (colAccID != colFC)
+			 lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID, colFC}, 1, 0);
+		else
+			lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID}, 1, 0);
+		
+		ctrlPath = CtrlPath.getInstance(QtaxID, blast, evalue, StaxID);
+		ctrlPath.setLsBG(backGroundFile);
+		
 		if (!jChkCluster.isSelected() || colAccID == colFC) {
 			double up = 0; double down = 0;
 			if ( colAccID != colFC) {
 				up = Double.parseDouble(jTxtUpValuePath.getText());
 				down = Double.parseDouble(jTxtDownValuePath.getText());
 			}
-			ctrlPath = CtrlPath.getInstance(geneFileXls, colAccID, colFC, up, down, backGroundFile, QtaxID, blast, StaxID, evalue);
-			ctrlPath.doInBackground();
-			setPath(ctrlPath);
+			ctrlPath.doInBackgroundNorm(lsAccID, up, down);
+			setNormalGo(ctrlPath);
 		}
 		else {
-			ctrlPath = CtrlPath.getInstance( geneFileXls, colAccID, colFC, backGroundFile, QtaxID, blast, StaxID, evalue);
-			ctrlPath.doInBackground();
-			setPath(ctrlPath);
+			ctrlPath.doInBackgroundCluster(lsAccID);
+			setNormalGo(ctrlPath);
 		}
-		
 	}
 	
-	private void setPath(CtrlPath ctrlPath) 
-	{
-		ArrayList<ArrayList<String[]>> lsUpResult = ctrlPath.getLsResultUp();
-		ArrayList<ArrayList<String[]>> lsDownResult = ctrlPath.getLsResultDown();
-		HashMap<String, ArrayList<ArrayList<String[]>>> hashResult = ctrlPath.getHashResult();
+	private void setNormalGo(CtrlPath ctrlGO) {
+		//jScrollPaneInputGo 最外层的方框
+		//jTabbedPaneGOTest 里面的标签框
+		//jPanGoTest 具体的标签
+		// jScrollPaneGOtest 标签里面的方框
+		// jTabFInputGo 方框里面的数据框
+		// jTabInputGo 具体数据
+		HashMap<String, LinkedHashMap<String, ArrayList<String[]>>> hashResult = ctrlGO.getHashResult();
 		jTabbedPanePathResult.removeAll();
-		if (lsUpResult != null) {
-			settab(jTabbedPanePathResult, "UpPathAnalysis", lsUpResult.get(0));
-			settab(jTabbedPanePathResult, "UpGene2Path", lsUpResult.get(1));
-		}
-		if (lsDownResult != null) {
-			settab(jTabbedPanePathResult, "DownPathAnalysis", lsDownResult.get(0));
-			settab(jTabbedPanePathResult, "DownGene2Path", lsDownResult.get(1));
-		}
-		if (hashResult != null && hashResult.size() > 0) {
-			for(Entry<String,ArrayList<ArrayList<String[]>>> entry:hashResult.entrySet())
-			{
-				String key = entry.getKey();
-				ArrayList<ArrayList<String[]>> value = entry.getValue();
-				settab(jTabbedPanePathResult, key+"PathAnalysis", value.get(0));
-				settab(jTabbedPanePathResult, key+"Gene2Path", value.get(1));
+		int i = 0;
+		for (Entry<String, LinkedHashMap<String, ArrayList<String[]>>> entry : hashResult.entrySet()) {
+			if (i > 2) {
 				break;
 			}
+			for (Entry<String, ArrayList<String[]>> entryTable : entry.getValue().entrySet()) {
+				settab(jTabbedPanePathResult, entry.getKey()+entryTable.getKey(), entryTable.getValue());
+			}
+			i++;
 		}
 	}
 	

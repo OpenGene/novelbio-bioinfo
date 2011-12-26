@@ -229,12 +229,9 @@ public class CopedID implements CopedIDInt{
 	 * @param blast
 	 * @return
 	 * 	 * blast£º<br>
-	 * 			title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";<br>
-	 * title2[3]="Evalue";
-	 * title2[4]="subjectSymbol";
-			title2[5]="Description";<br>
+	 * 			blast * 0:symbol 1:description 2:evalue 3:subjectSpecies 4:symbol 5:description <br>
 			²»blast£º<br>
-						title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";<br>
+						0:symbol 1:description<br>
 	 */
 	@Override
 	public String[] getAnno(boolean blast) {
