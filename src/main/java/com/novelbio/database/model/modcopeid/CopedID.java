@@ -108,6 +108,31 @@ public class CopedID implements CopedIDInt{
 		}
 	}
 	
+	
+	/**
+	 * 设定初始值，会自动去数据库查找accID并，完成填充本类。
+	 * <b>如果基因的IDtype是accID，那么该基因很可能不存在，那么看下blast的相关信息，如果blast也没有，那么就不存在了</b>
+	 * 不过只能产生一个CopedID，如果觉得一个accID要产生多个geneID，那么可以选择getLsCopedID方法
+	 * @param accID 除去引号，然后如果类似XM_002121.1类型，那么将.1去除
+	 * @param taxID
+	 */
+	public CopedID(String accID,int taxID) {
+		accID = accID.replace("\"", "");
+		accID = removeDot(accID);
+		ArrayList<String> lsaccID = getNCBIUniTax(accID, taxID);
+		String idType = lsaccID.get(0); taxID = Integer.parseInt(lsaccID.get(1));
+		String tmpGenID = lsaccID.get(2);
+		if (idType.equals(IDTYPE_UNIID)) {
+			copedID = new CopedIDuni(accID, idType, tmpGenID, taxID);
+		}
+		else if (idType.equals(IDTYPE_GENEID)) {
+			copedID = new CopedIDgen(accID,idType, tmpGenID, taxID);
+		}
+		else if (idType.equals(IDTYPE_ACCID)) {
+			copedID = new CopedIDacc(accID,idType, tmpGenID, taxID);
+		}
+	}
+	
 	/**
 	 * 设定初始值，会自动去数据库查找accID并完成填充本类。
 	 * @param accID 如果类似XM_002121.1类型，那么将.1去除

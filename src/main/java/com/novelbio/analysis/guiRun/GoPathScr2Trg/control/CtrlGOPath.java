@@ -80,10 +80,6 @@ public abstract class CtrlGOPath {
 		this.evalue = evalue;
 	}
 	
-	public void setLsTestID(ArrayList<String> lsAccID) {
-		functionTest.setLsTestAccID(lsAccID);
-	}
-
 	/**
 	 * 最好第一时间输入
 	 * 简单的判断下输入的是geneID还是geneID2Item表

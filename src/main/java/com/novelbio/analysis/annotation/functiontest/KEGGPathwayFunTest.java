@@ -90,8 +90,8 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 					result = Arrays.copyOf(tmpresult, 8);//ArrayOperate.copyArray(tmpresult, 9);
 				else
 					result = Arrays.copyOf(tmpresult, 5);
-				result[result.length -2] = kGpathway.getTitle();
-				result[result.length -3] =kGpathway.getPathName();
+				result[result.length -1] = kGpathway.getTitle();
+				result[result.length -2] =kGpathway.getPathName();
 				lsFinal.add(result);
 			}
 		}

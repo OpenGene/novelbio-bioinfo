@@ -207,6 +207,9 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	}
 	
 	public int getTaxID() {
+		if (taxID <= 0) {
+			taxID = Integer.parseInt(getNCBIUniTax(accID, 0).get(1));
+		}
 		return taxID;
 	}
 	

@@ -3,7 +3,7 @@
 PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
 <!--singleTable Operate in FriceDB -->
-<mapper namespace="com.novelbio.database.mapper.geneanno.MapKIDKeg2Ko">
+<mapper namespace="com.novelbio.database.mapper.kegg.MapKIDKeg2Ko">
 	<resultMap id="keg2Ko" type="KGIDkeg2Ko">
 	</resultMap>
 	<select id="queryLsKGIDkeg2Ko" parameterType="KGIDkeg2Ko" resultMap="keg2Ko">

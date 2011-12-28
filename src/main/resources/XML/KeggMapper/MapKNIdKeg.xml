@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.kegg.MapKNIdKeg">
+	<resultMap id="idKegMap" type="KGNIdKeg">
+		<result property="kegID" column="kegID"/>
+		<result property="attribute" column="attribute"/>
+		<result property="usualName" column="usualName"/>
+	</resultMap>
+	<select id="selectIdKeg" parameterType="KGNIdKeg" resultMap="idKegMap">
+		select *
+		from idKeg
+		<where>
+			<if test="kegID != null and kegID != '' ">
+				 kegID = #{kegID}
+			</if>
+			<if test="usualName !=null and usualName != '' ">
+				and usualName = #{usualName}
+			</if>
+		</where>
+	</select>
+	<insert id="insertIdKeg" parameterType="KGNIdKeg">
+		insert into idKeg (kegID,attribute,usualName)
+		values (#{kegID},#{attribute},#{usualName})
+	</insert>
+	<update id="updateIdKeg" parameterType="KGNIdKeg">
+		update idKeg set
+		<set>
+			<if test="kegID !=null">
+				 kegID = #{kegID},
+			</if>
+			<if test="usualName !=null">
+				usualName = #{usualName},
+			</if>
+			<if test="attribute !=null">
+				attribute = #{attribute}
+			</if>
+		</set>
+		<where>
+			<if test="kegID != null and kegID != '' ">
+				 kegID = #{kegID}
+			</if>
+			<if test="usualName !=null and usualName != '' ">
+				and usualName = #{usualName}
+			</if>
+		</where>
+	</update>
+</mapper>

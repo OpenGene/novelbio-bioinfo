@@ -3,7 +3,7 @@
 PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
 <!--singleTable Operate in FriceDB -->
-<mapper namespace="com.novelbio.database.mapper.geneanno.MapKPathway">
+<mapper namespace="com.novelbio.database.mapper.kegg.MapKPathway">
 	<resultMap id="pathwayMap" type="KGpathway">
 		<result property="mapNum" column="number"/>
 	</resultMap>

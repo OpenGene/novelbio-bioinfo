@@ -3,7 +3,7 @@
 PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
 <!--singleTable Operate in FriceDB -->
-<mapper namespace="com.novelbio.database.mapper.geneanno.MapKRelation">
+<mapper namespace="com.novelbio.database.mapper.kegg.MapKRelation">
 	<resultMap id="relationMap" type="KGrelation">
 		<result property="entry1" column="entry1ID"/>  
 		<result property="entry2" column="entry2ID"/>  

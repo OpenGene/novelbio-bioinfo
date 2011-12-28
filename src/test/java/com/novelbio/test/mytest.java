@@ -95,7 +95,8 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		System.out.println("test".contains(""));
+		CopedID copedID  = new CopedID("tp53", 9606);
+		System.out.println(copedID.getKegPath(false).get(0).getPathName());
 	}
 	
 	
