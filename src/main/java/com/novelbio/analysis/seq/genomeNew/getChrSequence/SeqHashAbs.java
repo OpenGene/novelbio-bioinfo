@@ -383,7 +383,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 * @param cisseq 正反向
 	 * @param start 实际第几个exon 起点必须小于等于终点
-	 * @param end 实际第几个exon
+	 * @param end 实际第几个axon
 	 * @param lsInfo
 	 * @param getIntron 是否获取内含子，内含子自动小写
 	 * @return

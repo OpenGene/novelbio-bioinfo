@@ -11,8 +11,8 @@ import javax.swing.text.html.HTMLDocument.HTMLReader.HiddenAction;
 
 import org.apache.commons.collections15.map.Flat3Map;
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.objective;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog222;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.objective
 
 import com.novelbio.analysis.seq.chipseq.cGIsland.CpG;
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;

@@ -529,6 +529,15 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		});
 		
 	}
-
-
+	/**
+	 * 获得具体的编码序列
+	 * @return
+	 */
+	protected ArrayList<int[]> getLsIsoCDSDetail() {
+		if (ATGsite == UAGsite) {
+			
+		}
+	}
+	
+	
 }
