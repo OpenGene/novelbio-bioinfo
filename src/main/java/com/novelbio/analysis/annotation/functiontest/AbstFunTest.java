@@ -188,7 +188,9 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		}
 		for (String[] strings : accID) {
 			CopedID copedID = new CopedID(strings[0], taxID, false);
-			copedID.setBlastInfo(blastEvalue, blastTaxID);
+			if (blast) {
+				copedID.setBlastInfo(blastEvalue, blastTaxID);
+			}
 			lsCopedIDsBG.add(copedID);
 		}
 		lsBG = convert2Item(lsCopedIDsBG);
