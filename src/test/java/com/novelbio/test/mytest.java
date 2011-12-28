@@ -95,8 +95,8 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		CopedID copedID  = new CopedID("tp53", 9606);
-		System.out.println(copedID.getKegPath(false).get(0).getPathName());
+		CopedID copedID  = new CopedID("fsefse", 9606);
+		System.out.println(copedID.getTaxID());
 	}
 	
 	
