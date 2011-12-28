@@ -392,10 +392,39 @@ public class GffChrMap extends GffChrAbs{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 	
-	
+	/**
+	 * @param lsMapInfo 基因信息
+	 * @param structure 基因结构，目前只有 GffDetailGene.TSS 和 GffDetailGene.TES
+	 * @param color
+	 * @param small 最小
+	 * @param big 最大
+	 * @param scale scale次方，大于1则稀疏高表达，小于1则稀疏低表达
+	 * @param outFile
+	 */
+	public static void plotHeatMapMinus(ArrayList<MapInfo> lsMapInfo1,ArrayList<MapInfo> lsMapInfo2 ,
+			String outFile,double mindata1, double maxdata1, double mindata2, double maxdata2)
+	{
+		ArrayList<MapInfo> lsMapInfoFinal = MapInfo.minusListMapInfo(lsMapInfo1, lsMapInfo2);
+		Color colorgreen = new Color(0, 255, 0, 255);
+		Color colorwhite = new Color(0, 0, 0, 0);
+		Color colorred = new Color(255, 0, 0, 255);
+		
+		
+		
+		Color[] gradientColors = new Color[] { colorgreen, colorwhite, colorred };
+		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
+
+		HeatMap heatMap = new HeatMap(lsMapInfoFinal, false, customGradient);
+		heatMap.setRange(mindata1, maxdata1);
+		try {
+			heatMap.saveToFile(outFile, 6000, 1000, true);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	
 	

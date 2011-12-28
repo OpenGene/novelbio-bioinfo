@@ -512,6 +512,14 @@ public class HeatMap extends JPanel
 //			repaint();
 		}
     }
+    
+    public void setRange(double mindata1, double maxdata1)
+    {
+    	this.minData1 = mindata1;
+    	this.maxData1 = maxdata1;
+    	dataColorIndices = updateDataColors(data, minData1, maxData1);
+
+    }
     private double[] getDataRange(double mindata, double maxdata)
     {
     	double[] dataRange = new double[]{mindata,maxdata};

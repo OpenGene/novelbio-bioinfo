@@ -430,6 +430,28 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		return result;
 	}
 	
+	
+	/**
+	 * 用lsmapinfo1 减去 lsmapinfo2的信息
+	 * @param lsmapinfo1
+	 * @param lsmapinfo2
+	 * @param upNum
+	 * @param downNum
+	 * @return
+	 */
+	public static ArrayList<MapInfo> minusListMapInfo(List<MapInfo> lsmapinfo1, List<MapInfo> lsmapinfo2) {
+		ArrayList<MapInfo> lsResult = new ArrayList<MapInfo>();
+		for (int i = 0; i < lsmapinfo1.size(); i++) {
+			MapInfo mapInfoTmp = lsmapinfo1.get(i).clone();
+			MapInfo mapInfoTmp2 = lsmapinfo2.get(i);
+			for (int j = 0; j < mapInfoTmp.value.length; j++) {
+				mapInfoTmp.value[j] = mapInfoTmp.value[j] - mapInfoTmp2.value[j];
+			}
+			lsResult.add(mapInfoTmp);
+		}
+		return lsResult;
+	}
+	
 	/**
 	 * 不排序
 	 * 给定mapInfo的list
