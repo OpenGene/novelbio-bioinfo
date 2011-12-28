@@ -2,20 +2,9 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.HiddenAction;
-
-import org.apache.commons.collections15.map.Flat3Map;
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.objective;
-
-import com.novelbio.analysis.seq.chipseq.cGIsland.CpG;
-import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArray;
 import com.novelbio.base.dataStructure.CompSubArrayCluster;
