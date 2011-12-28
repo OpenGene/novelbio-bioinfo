@@ -373,14 +373,14 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	}
 	
 	/**
-	 * 
+	 * 测试git
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
 	 * 仅获得起始exon到终止exon（包括起点和终点）的exon list
+	 * @param chrID
 	 * @param cisseq 正反向，在提出的正向转录本的基础上，是否需要反向互补。
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
-	 * @param chrID
 	 * @param cisseq 正反向
 	 * @param start 实际第几个exon 起点必须小于等于终点
 	 * @param end 实际第几个exon
