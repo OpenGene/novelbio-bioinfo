@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import com.novelbio.base.dataStructure.ArrayOperatweee;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArray;
 import com.novelbio.base.dataStructure.CompSubArrayCluster;
 import com.novelbio.database.model.modcopeid.CopedID;
