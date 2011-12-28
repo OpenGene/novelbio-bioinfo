@@ -1300,6 +1300,24 @@ public abstract class GffGeneIsoInfo {
 	}
 	protected abstract void sortIso();
 	protected abstract void sortIsoRead();
+	
+	
+
+	/**
+	 * 获得具体的编码序列
+	 * 没有结果就返回new list-int[]
+	 * @return
+	 */
+	protected ArrayList<int[]> getLsIsoCDS()
+	{
+		if (ATGsite == UAGsite) {
+			return new ArrayList<int[]>();
+		}
+		return getLsIsoCDSDetail();
+	}
+	
+	protected abstract ArrayList<int[]> getLsIsoCDSDetail();
+
 }
 
 
@@ -1366,8 +1384,6 @@ class ExonInfo implements CompSubArray
 	{
 		return Math.abs(exon[0] - exon[1]);
 	}
-	
-
 	
 
 }
