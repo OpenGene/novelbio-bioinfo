@@ -309,7 +309,7 @@ public class AminoAcid {
 	 * @return
 	 * null 表示没有找到，说明输入的序列有误
 	 */
-	 static String convertDNACode2AA(String DNAcode, boolean AA1) {
+	 public static String convertDNACode2AA(String DNAcode, boolean AA1) {
 		 DNAcode = DNAcode.trim().toUpperCase();
 		if (DNAcode.length() != 3) {
 			logger.error("DNA三联密码长度不对：" + DNAcode);

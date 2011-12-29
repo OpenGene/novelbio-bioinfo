@@ -1308,16 +1308,52 @@ public abstract class GffGeneIsoInfo {
 	 * 没有结果就返回new list-int[]
 	 * @return
 	 */
-	protected ArrayList<int[]> getLsIsoCDS()
+	public ArrayList<int[]> getIsoInfoCDS()
 	{
 		if (ATGsite == UAGsite) {
 			return new ArrayList<int[]>();
 		}
-		return getLsIsoCDSDetail();
-	}
-	
-	protected abstract ArrayList<int[]> getLsIsoCDSDetail();
 
+		ArrayList<int[]> lsresult = new ArrayList<int[]>();
+		int numAtg = getLocExInNum(ATGsite) - 1;
+		int numUag = getLocExInNum(UAGsite) - 1;
+		for (int i = 0; i < lsIsoform.size(); i++) {
+			int[] exonTmp = lsIsoform.get(i);
+			if (i < numAtg) {
+				continue;
+			}
+			else if (i > numUag) {
+				break;
+			}
+			else if (i == numAtg) {
+				int[] exonFinalTmp = new int[2];
+				exonFinalTmp[0] = ATGsite;
+				if (numAtg == numUag) {
+					exonFinalTmp[1] = UAGsite;
+					lsresult.add(exonFinalTmp);
+					break;
+				}
+				else {
+					exonFinalTmp[1] = exonTmp[1];
+					lsresult.add(exonFinalTmp);
+				}
+			}
+			else if (i == numUag) {
+				int[] exonFinalTmp = new int[2];
+				exonFinalTmp[0] = exonTmp[0];
+				exonFinalTmp[1] = UAGsite;
+				lsresult.add(exonFinalTmp);
+				break;
+			}
+			else {
+				int[] exonFinalTmp = new int[2];
+				exonFinalTmp[0] = exonTmp[0];
+				exonFinalTmp[1] = exonTmp[1];
+				lsresult.add(exonFinalTmp);
+			}
+		}
+		return lsresult;
+	}
 }
 
 

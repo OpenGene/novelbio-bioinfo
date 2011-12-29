@@ -497,7 +497,6 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	@Override
 	protected void sortIsoRead() {
 		Collections.sort(lsIsoform, new Comparator<int[]>() {
-
 			@Override
 			public int compare(int[] o1, int[] o2) {
 				Integer a = o1[0];
@@ -505,8 +504,6 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 				return -a.compareTo(b);
 			}
 		});
-		
 	}
-
 	
 }

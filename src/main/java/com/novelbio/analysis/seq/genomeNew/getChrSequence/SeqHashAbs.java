@@ -394,7 +394,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		if (start < 0) {
 			start = 0;
 		}
-		if (end < 0 || end > lsInfo.size()) {
+		if (end <= 0 || end > lsInfo.size()) {
 			end = lsInfo.size();
 		}
 		boolean cis5to3 = true;

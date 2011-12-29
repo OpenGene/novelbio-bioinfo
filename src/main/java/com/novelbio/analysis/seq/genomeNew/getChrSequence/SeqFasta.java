@@ -430,7 +430,7 @@ public class SeqFasta {
 		StringBuilder resultAA = new StringBuilder();
 		for (int i = orf; i < nrChar.length - 3; i = i+3) {
 			String tmp = String.valueOf(new char[]{nrChar[i],nrChar[i+1],nrChar[i+2]});
-			resultAA.append(AminoAcid.convertDNA2AA(tmp, true));
+			resultAA.append(AminoAcid.convertDNACode2AA(tmp, true));
 		}
 		return resultAA.toString();
 	}
