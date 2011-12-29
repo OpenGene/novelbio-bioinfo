@@ -124,7 +124,9 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 	public ArrayList<String> getLOCIDList() {
 		return gffHashGene.getLOCIDList();
 	}
-
+	/**
+	 * 也就是全部基因的ID
+	 */
 	@Override
 	public ArrayList<String> getLOCChrHashIDList() {
 		return gffHashGene.getLOCChrHashIDList();

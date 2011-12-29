@@ -149,8 +149,44 @@ public class GffChrSeq extends GffChrAbs{
 		else
 			gffGeneIsoInfo = gffHashGene.searchLOC(IsoName).getLongestSplit();
 		
-		return seqHash.getSeq(gffGeneIsoInfo.getChrID(), cis5to3, 0, 0, gffGeneIsoInfo.getIsoInfoCDS(), getIntron);
+		String seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), cis5to3, 0, 0, gffGeneIsoInfo.getIsoInfoCDS(), getIntron);
+		SeqFasta seqFasta = new SeqFasta("NM_004195", seq);
+		return seqFasta.toAAseq(true, 0);
 	}
 
-	
+	/**
+	 * 获得某个物种的全部aa序列，从refseq中提取更加精确
+	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
+	 * @param IsoName 转录本的名字
+	 * @param cis5to3 正反向，在提出的正向转录本的基础上，是否需要反向互补
+	 * @param startExon 具体某个exon
+	 * @param endExon 具体某个Intron
+	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
+	 * @param getIntron
+	 * @return
+	 */
+	public ArrayList<SeqFasta> getSeqProteinAll()
+	{
+		ArrayList<String> lsID = gffHashGene.getLOCChrHashIDList();
+		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
+		GffGeneIsoInfo gffGeneIsoInfo = null;
+		for (String string : lsID) {
+			if (string.contains("NM_207421")) {
+				System.out.println("stop");
+			}
+			gffGeneIsoInfo = gffHashGene.searchISO(string.split("/")[0]);
+			ArrayList<int[]> lsCDS = gffGeneIsoInfo.getIsoInfoCDS();
+			if (lsCDS.size() > 0) {
+				String seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), true, 0, 0, lsCDS, false);
+				if (seq == null || seq.length() < 3) {
+					continue;
+				}
+				SeqFasta seqFasta = new SeqFasta(string.split("/")[0], seq);
+				lsResult.add(seqFasta);
+			}
+			
+		}
+		return lsResult;
+		
+	}
 }
