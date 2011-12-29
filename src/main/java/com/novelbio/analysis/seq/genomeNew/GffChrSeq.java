@@ -151,7 +151,6 @@ public class GffChrSeq extends GffChrAbs{
 		
 		return seqHash.getSeq(gffGeneIsoInfo.getChrID(), cis5to3, 0, 0, gffGeneIsoInfo.getIsoInfoCDS(), getIntron);
 	}
-	
-	
+
 	
 }

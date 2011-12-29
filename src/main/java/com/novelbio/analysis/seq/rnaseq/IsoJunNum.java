@@ -4,13 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
-import org.broadinstitute.sting.utils.collections.CircularArray.Int;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
@@ -19,11 +15,13 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.database.domain.kegg.noUseKGCentry2Ko2Gen;
 import com.novelbio.database.model.modcopeid.CopedID;
 
-
+/**
+ * 给定基因信息，依次返回每个特异性位点的junction reads数
+ * @author zong0jie
+ *
+ */
 public class IsoJunNum {
 	
 	TophatJunction tophatJunction = new TophatJunction();

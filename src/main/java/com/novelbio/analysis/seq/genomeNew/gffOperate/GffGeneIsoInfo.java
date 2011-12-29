@@ -1354,6 +1354,26 @@ public abstract class GffGeneIsoInfo {
 		}
 		return lsresult;
 	}
+	
+	/**
+	 * 给定nr位点，换算为距离ATG多少aa位置
+	 * 直接给定nr的实际位点
+	 */
+	public int getAAsiteNum(int codSite)
+	{
+		if (Math.abs(ATGsite-UAGsite) < 2) {
+			return 0;
+		}
+		int aaNum = getLocDistmRNA(codSite, ATGsite);
+		return (aaNum+2)/3;
+	}
+	
+	public int getAAsiteNum() {
+		if (Math.abs(ATGsite-UAGsite) < 2) {
+			return 0;
+		}
+		return (cod2ATGmRNA+2)/3;
+	}
 }
 
 
