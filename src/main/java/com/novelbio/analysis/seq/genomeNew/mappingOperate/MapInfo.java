@@ -32,7 +32,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 */
 	public static final int COMPARE_WEIGHT = 300;
 	
-	int compareInfo = COMPARE_WEIGHT;
+	static int compareInfo = COMPARE_WEIGHT;
 	
 	String chrID = "";
 	int startLoc = GffCodAbs.LOC_ORIGINAL;
@@ -117,8 +117,8 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 * Ä¬ÈÏCOMPARE_WEIGHT
 	 * @param COMPARE_TYPE
 	 */
-	public void setCompType(int COMPARE_TYPE) {
-		this.compareInfo = COMPARE_TYPE;
+	public static void setCompType(int COMPARE_TYPE) {
+		compareInfo = COMPARE_TYPE;
 	}
 	
 	

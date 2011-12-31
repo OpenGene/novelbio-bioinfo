@@ -12,10 +12,18 @@ import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 import org.broadinstitute.sting.utils.exceptions.StingException;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
+import com.novelbio.analysis.seq.genomeNew.GffChrMap;
 import com.novelbio.analysis.seq.genomeNew.GffChrSnpIndel;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneUCSC;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfoSnpIndel;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SNPGATKcope {
@@ -27,32 +35,37 @@ public class SNPGATKcope {
 
 	public static void main(String[] args) {
 		SNPGATKcope snpgatKcope = new SNPGATKcope();
+		snpgatKcope.setDomainInfo("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/AllsnpCoped.txt",
+				"/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/pfam/pfamInfo.txt", "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/Allsnp_pfam.xls");
+	}
+	public static void main22(String[] args) {
+		SNPGATKcope snpgatKcope = new SNPGATKcope();
 		
 		ArrayList<String> lsResult = new ArrayList<String>();
 		TxtReadandWrite txtOut = new TxtReadandWrite();
 		
-		
-		lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/B_BWA_SNPrecal_IndelFiltered.vcf");
-		txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/B_Result2.xls", true);
-		txtOut.writefile(lsResult);
+//		lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/B_BWA_SNPrecal_IndelFiltered.vcf");
+//		txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/B_Result2.xls", true);
+//		txtOut.writefile(lsResult);
+////		
+//		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/C_BWA_SNPrecal_IndelFiltered.vcf");
+//		 txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/C_Result2.xls", true);
+//		txtOut.writefile(lsResult);
+//		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_BWA_SNPrecal_IndelFiltered.vcf");
+//		 txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_Result2.xls", true);
+//		txtOut.writefile(lsResult);
 //		
-		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/C_BWA_SNPrecal_IndelFiltered.vcf");
-		 txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/C_Result2.xls", true);
-		txtOut.writefile(lsResult);
-		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_BWA_SNPrecal_IndelFiltered.vcf");
-		 txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_Result2.xls", true);
-		txtOut.writefile(lsResult);
+//		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_BWA_SNPrecal_IndelFiltered.vcf");
+//		txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_Result2.xls", true);
+//		txtOut.writefile(lsResult);
 		
-		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_BWA_SNPrecal_IndelFiltered.vcf");
-		txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_Result2.xls", true);
-		txtOut.writefile(lsResult);
-		
-		String Parent = "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/";
+		String Parent = "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/";
 		String A = Parent + "A_Result2.xls";
 		String B = Parent + "B_Result2.xls";
 		String C = Parent + "C_Result2.xls";
 		String D = Parent + "D_Result2.xls";
-		snpgatKcope.writeAllSnp("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/novelbio/Allsnp", A,B,C,D);
+		String out = Parent + "all.xls";
+		snpgatKcope.writeAllSnp(out, A,B,C,D);
 	}
 	
 	
@@ -123,11 +136,7 @@ public class SNPGATKcope {
 			txtWrite.close();
 		}
 	}
-	
-	
-	
-	
-	
+
 	/**
 	 * 
 	 * 给定一组snp，装入hash表中
@@ -187,8 +196,43 @@ public class SNPGATKcope {
 	}
 	
 	
-	
-	
+	/**
+	 * 给定文本，和domain信息，获得具体domain的信息
+	 * @param txtExcelSNP
+	 * @param domainFile
+	 * @param outFile
+	 */
+	public void setDomainInfo(String txtExcelSNP, String domainFile, String outFile) {
+		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
+		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+		DomainPfam.readDomain(domainFile);
+		ArrayList<String[]> lsSnp = ExcelTxtRead.readLsExcelTxt(txtExcelSNP, 1);
+		for (int i = 1; i < lsSnp.size(); i++) {
+			String[] ss = lsSnp.get(i);
+			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(0, ss[0], Integer.parseInt(ss[1]), ss[3], ss[4]);
+			GffCodGene gffcod = gffHashGene.searchLocation(mapInfoSnpIndel.getChrID(), mapInfoSnpIndel.getStart());
+			String tmp = "";
+			if (gffcod.isInsideLoc()) {
+				GffDetailGene gffDetailGene = gffcod.getGffDetailThis();
+				
+				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+					DomainPfam domainPfam = DomainPfam.getDomainPfam(gffGeneIsoInfo.getIsoName());
+					if (domainPfam == null) {
+						continue;
+					}
+					domainPfam.setAALoc(gffGeneIsoInfo.getCod2ATGmRNA()/3);
+					tmp = domainPfam.toString();
+					break;
+				}
+				
+			}
+			String result = ArrayOperate.cmbString(ss, "\t");
+			result = result + "\t" + tmp;
+			txtOut.writefileln(result);
+		}
+		txtOut.close();
+	}
 	
 	
 	

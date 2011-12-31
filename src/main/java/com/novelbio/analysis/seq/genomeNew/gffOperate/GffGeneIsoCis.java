@@ -197,7 +197,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	 * @return
 	 */
 	@Override
-	protected int getLocExInNum(int location) {
+	public int getLocExInNum(int location) {
 		if (hashLocExInNum == null) {
 			hashLocExInNum = new HashMap<Integer, Integer>();
 		}
@@ -232,7 +232,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	 * @param location 坐标
 	 */
 	@Override
-	protected int getLoc2ExInStart(int location) {
+	public int getLoc2ExInStart(int location) {
 		if (hashLocExInStart == null) {
 			hashLocExInStart = new HashMap<Integer, Integer>();
 		}
@@ -260,7 +260,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	 *  * 该点在外显子中为正数，在内含子中为负数，为实际数目
 	 */
 	@Override
-	protected int getLoc2ExInEnd(int location) {
+	public int getLoc2ExInEnd(int location) {
 		if (hashLocExInEnd == null) {
 			hashLocExInEnd = new HashMap<Integer, Integer>();
 		}
@@ -275,7 +275,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		}
 		else if(exIntronNum < 0) 
 		{   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
-			 loc2ExInEnd = lsIsoform.get(NumExon)[0] - location - 1;// 距后一个外显子 nnCnnnnN
+			 loc2ExInEnd = lsIsoform.get(NumExon+1)[0] - location - 1;// 距后一个外显子 nnCnnnnN
 		}
 		hashLocExInEnd.put(location, loc2ExInEnd);
 		return loc2ExInEnd;

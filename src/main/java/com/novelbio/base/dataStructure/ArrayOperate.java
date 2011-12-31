@@ -19,6 +19,25 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 
 public class ArrayOperate {
 	private static final Logger logger = Logger.getLogger(ArrayOperate.class);
+	/**
+	 * 合并字符串数组
+	 * @param ss
+	 * @param sep
+	 * @return
+	 */
+	public static String cmbString(String[] ss, String sep)
+	{
+		String result = "";
+		if (ss.length < 1) {
+			return "";
+		}
+		result = ss[0];
+		for (int i = 1; i < ss.length; i++) {
+			result = result + "\t" + ss[i];
+		}
+		return result;
+	}
+	
 	
 	/**
 	 * 给定lsString，将lsString看作ArrayList-String[]，纵向将其合并为String[][]，也就是类似cbind

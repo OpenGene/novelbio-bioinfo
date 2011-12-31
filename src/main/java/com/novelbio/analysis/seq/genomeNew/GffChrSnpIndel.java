@@ -34,12 +34,12 @@ public class GffChrSnpIndel extends GffChrAbs {
 		System.out.println(aaa);
 	}
 	
-	
+	/**
+	 * 根据indel或者snp注释上该snp的信息
+	 * @param mapInfo
+	 * @return
+	 */
 	public GffCodGene getSnpIndel(MapInfoSnpIndel mapInfo) {
-		if ( Math.abs(mapInfo.getStart() - 981931) < 3 ) {
-			System.out.println("stop");
-		}
-		
 		if (mapInfo.getFlagSite() > 0) {
 			return getSnp(mapInfo);
 		}

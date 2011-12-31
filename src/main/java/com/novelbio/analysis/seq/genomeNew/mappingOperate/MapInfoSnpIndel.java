@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genomeNew.mappingOperate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -55,7 +56,7 @@ public class MapInfoSnpIndel extends MapInfo{
 	{
 		String[] ss = samString.split("\t");
 		this.chrID = ss[0];
-		this.startLoc = Integer.parseInt(ss[1]);
+//		this.startLoc = Integer.parseInt(ss[1]);
 		this.refBase = ss[2];
 		this.Read_Depth_Filtered = Integer.parseInt(ss[3]);
 		setAllenInfo(ss[4]);
@@ -190,6 +191,34 @@ public class MapInfoSnpIndel extends MapInfo{
 			return num[0];
 		}
 	}
+	
+	/**
+	 * 给定序列和错配方式，返回所含有的reads堆叠数
+	 * 从hash表中获得
+	 * @param seqInfo
+	 * @param seqType
+	 * @return
+	 */
+	public int getSeqType(MapInfoSnpIndel mapInfoSnpIndel) {
+		String seqInfo = "";
+		if (mapInfoSnpIndel.getType().equals(TYPE_DELETION)) {
+			seqInfo = mapInfoSnpIndel.getRefBase().substring(1);
+		}
+		else if (mapInfoSnpIndel.getType().equals(TYPE_INSERT)) {
+			seqInfo = mapInfoSnpIndel.getThisBase().substring(1);
+		}
+		else {
+			seqInfo = mapInfoSnpIndel.getThisBase();
+		}
+		String tmpInfo = (seqInfo.trim()+SEP+mapInfoSnpIndel.getType()).toLowerCase();
+		int[] num = hashAlle.get(tmpInfo);
+		if (num == null) {
+			return 0;
+		}
+		else {
+			return num[0];
+		}
+	}
 	/**
 	 * 返回所有的非ref的基因以及对应的种类和数量
 	 * list-string[3]
@@ -211,7 +240,14 @@ public class MapInfoSnpIndel extends MapInfo{
 	}
 	
 	
-	
+	public int getStartReal() {
+		if (type.equals(TYPE_MISMATCH)) {
+			return getStart();
+		}
+		else {
+			return getStart() + 1;
+		}
+	}
 	
 	
 	
@@ -223,10 +259,12 @@ public class MapInfoSnpIndel extends MapInfo{
 	 * 获得每个位点的具体信息
 	 */
 	public static void getSiteInfo(List<MapInfoSnpIndel> lsSite, String txtSamToolsFile) {
+		MapInfo.setCompType(MapInfo.COMPARE_LOCSITE);
+		Collections.sort(lsSite);
 		/**
 		 * 每个chrID对应一组mapinfo
 		 */
-		HashMap<String, ArrayList<MapInfoSnpIndel>> hashChrIDMapInfo = new HashMap<String, ArrayList<MapInfoSnpIndel>>();
+		HashMap<String, ArrayList<MapInfoSnpIndel>> hashChrIDMapInfo = new LinkedHashMap<String, ArrayList<MapInfoSnpIndel>>();
 		//按照chr位置装入hash表
 		for (MapInfoSnpIndel mapInfo : lsSite) {
 			ArrayList<MapInfoSnpIndel> lsMap = hashChrIDMapInfo.get(mapInfo.getChrID());
@@ -241,17 +279,25 @@ public class MapInfoSnpIndel extends MapInfo{
 		}
 		
 		
-		MapInfo.setCompSite(MapInfo.COMPARE_LOCSITE);
-		Collections.sort(lsSite);
+	
+
 		TxtReadandWrite txtReadSam = new TxtReadandWrite(txtSamToolsFile, false);
 		String tmpChrID = ""; ArrayList<MapInfoSnpIndel> lsMapInfos = null;
-		int mapInfoIndex = 0;
+		int mapInfoIndex = 0;//依次进行下去
 		for (String content : txtReadSam.readlines()) {
 			String[] ss = content.split("\t");
 			if (!ss[0].equals(tmpChrID)) {
 				tmpChrID = ss[0];
 				lsMapInfos = hashChrIDMapInfo.get(tmpChrID);
 				mapInfoIndex = 0;
+			}
+			
+			if (Integer.parseInt(ss[1]) == 9714530) {
+				System.out.println("stop");
+			}
+			
+			if (lsMapInfos == null) {
+				break;
 			}
 			if (mapInfoIndex >= lsMapInfos.size()) {
 				continue;
@@ -260,6 +306,9 @@ public class MapInfoSnpIndel extends MapInfo{
 				continue;
 			}
 			else if (Integer.parseInt(ss[1]) == lsMapInfos.get(mapInfoIndex).getStart()) {
+				if (lsMapInfos.get(mapInfoIndex).getType().equals(TYPE_INSERT)) {
+					System.out.println("stop");
+				}
 				lsMapInfos.get(mapInfoIndex).setSamToolsPilup(content);
 				mapInfoIndex++;
 			}
@@ -725,6 +774,10 @@ public class MapInfoSnpIndel extends MapInfo{
 	}
 	
 	public String toString() {
+		int startLoc = this.startLoc;
+		if (!this.type.equals(TYPE_MISMATCH)) {
+			startLoc = startLoc - 1; 
+		}
 		String result = chrID + "\t" + startLoc + "\t" + refBase + "\t" + this.Allelic_depths_Ref + "\t" + thisBase + "\t" + 
 		this.Allelic_depths_Alt + "\t" + quality + "\t" + this.Filter + "\t" + this.Allele_Frequency + "\t" + getAllele_Balance_Hets() + "\t" + isExon()+"\t" + prop +"\t"+
 		refAAnr +"\t"+this.refAAseq + "\t" + thisAAnr +"\t"+this.thisAaSeq ;

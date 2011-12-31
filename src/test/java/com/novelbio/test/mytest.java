@@ -62,6 +62,7 @@ import com.novelbio.analysis.seq.chipseq.BedPeakSicer;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.mapping.FastQMapAbs;
 import com.novelbio.analysis.seq.mapping.FastQMapBwa;
 import com.novelbio.analysis.seq.mapping.FastQMapSoap;
@@ -95,8 +96,7 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		CopedID copedID  = new CopedID("fsefse", 9606);
-		System.out.println(copedID.getTaxID());
+
 	}
 	
 	

@@ -175,7 +175,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	 * @return
 	 */
 	@Override
-	protected int getLocExInNum(int location) {
+	public int getLocExInNum(int location) {
 		if (hashLocExInNum == null) {
 			hashLocExInNum = new HashMap<Integer, Integer>();
 		}
@@ -210,7 +210,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	 *  * 该点在外显子中为正数，在内含子中为负数，为实际数目
 	 */
 	@Override
-	protected int getLoc2ExInStart(int location) {
+	public int getLoc2ExInStart(int location) {
 		if (hashLocExInStart == null) {
 			hashLocExInStart = new HashMap<Integer, Integer>();
 		}
@@ -220,13 +220,13 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		int loc2ExInStart = -1000000000;   int exIntronNum = getLocExInNum(location); 	int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
 		if (exIntronNum > 0) {
 //		    5-1 cood 5-0    4-1 uag 4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			loc2ExInStart = lsIsoform.get(NumExon)[0] - location;//距离本外显子起始 nnnnnnnnC
+			loc2ExInStart = Math.abs(lsIsoform.get(NumExon)[0] - location);//距离本外显子起始 nnnnnnnnC
 			hashLocExInStart.put(location, loc2ExInStart);
 		}
 		else if(exIntronNum < 0) 
 		{
 //		    5-1 cood 5-0    4-1 uag 4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			loc2ExInStart = lsIsoform.get(NumExon)[1] - location -1;// 距前一个外显子 NnnnCnnnn
+			loc2ExInStart = Math.abs(lsIsoform.get(NumExon)[1] - location) -1;// 距前一个外显子 NnnnCnnnn
 			hashLocExInStart.put(location, loc2ExInStart);
 		}
 		return loc2ExInStart;
@@ -238,7 +238,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	 *  * 该点在外显子中为正数，在内含子中为负数，为实际数目
 	 */
 	@Override
-	protected int getLoc2ExInEnd(int location) {
+	public int getLoc2ExInEnd(int location) {
 		if (hashLocExInEnd == null) {
 			hashLocExInEnd = new HashMap<Integer, Integer>();
 		}
@@ -253,7 +253,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		else if(exIntronNum < 0)
 		{
 //		    5-1 cood 5-0    4-1 uag 4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			 loc2ExInEnd = location - lsIsoform.get(NumExon)[0] - 1;// 距后一个外显子 nnCnnnnN
+			 loc2ExInEnd = location - lsIsoform.get(NumExon+1)[0] - 1;// 距后一个外显子 nnCnnnnN
 		}
 		hashLocExInEnd.put(location, loc2ExInEnd);
 		return loc2ExInEnd;

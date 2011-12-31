@@ -31,7 +31,7 @@ public class InvDataExtract {
 	
 	public static void main(String[] args) {
 		InvDataExtract invDataExtract = new InvDataExtract();
-		String parentPath = "/media/winE/NBC/Project/TaqMan_XYCK_111101/";
+		String parentPath = "/media/winE/NBC/Project/TaqMan_CXD_111230/";
 		String excelTaqman = parentPath + "Human MicroRNA Array CT值统计报告.xls";
 		String out = parentPath + "deltaCT.txt";
 		invDataExtract.getInfo(excelTaqman, out, 2);
