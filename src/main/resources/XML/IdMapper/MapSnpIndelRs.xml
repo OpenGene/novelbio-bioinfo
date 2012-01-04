@@ -42,7 +42,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<select id="queryLsSnpIndelRs" parameterType="SnpIndelRs" resultMap="SnpIndelRsMap">
 		select *
 		from snpindelrs
-		<where>
+		where
 			<if test="snpRsID !=null and snpRsID != '' ">
 				snpRsID = #{snpRsID}
 			</if>
@@ -70,6 +70,5 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="weight != 0">
 				and weight = #{weight}
 			</if>
-	    </where>
 	</select>
 </mapper>

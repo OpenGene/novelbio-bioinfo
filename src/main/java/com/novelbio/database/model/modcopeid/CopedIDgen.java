@@ -36,20 +36,9 @@ public class CopedIDgen extends CopedIDAbs{
 	
 	@Override
 	protected AgeneUniID getGenUniID(String genUniID, String dbInfo) {
-		
+		int geneID = Integer.parseInt(genUniID);
 		ServNCBIID servGeneAnno = new ServNCBIID();
-		NCBIID ncbiid = new NCBIID();
-		ncbiid.setGeneId(Long.parseLong(genUniID));ncbiid.setTaxID(taxID);
-		if (!dbInfo.trim().equals("")) {
-			ncbiid.setDBInfo(dbInfo);
-		}
-		ArrayList<NCBIID> lsNcbiids= servGeneAnno.queryLsNCBIID(ncbiid);
-		if (lsNcbiids == null || lsNcbiids.size() < 1) {
-			return null;
-		}
-		else {
-			return lsNcbiids.get(0);
-		}
+		return servGeneAnno.queryGenUniID(geneID, taxID, dbInfo);
 	}
 	
 

@@ -23,13 +23,13 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	protected void setCod2ExInStartEnd() {
 		int NumExon = numExIntron - 1; //实际数量减去1，方法内用该变量运算
 		if (codLoc == COD_LOC_EXON) {
-			cod2ExInStart = lsIsoform.get(NumExon)[0] - coord;//距离本外显子起始 Cnnn
-			cod2ExInEnd = coord - lsIsoform.get(NumExon)[1];//距离本外显子终止  nnnC
+			cod2ExInStart = lsElement.get(NumExon)[0] - coord;//距离本外显子起始 Cnnn
+			cod2ExInEnd = coord - lsElement.get(NumExon)[1];//距离本外显子终止  nnnC
 		}
 		else if(codLoc == COD_LOC_INTRON) 
 		{   //  5-1 5-0  cood  4-1 uag 4-0     3-1 3-0         2-1 2-0    1-1 gta 1-0  cood  0-1 0-tss  cood
-			   cod2ExInEnd = coord - lsIsoform.get(numExIntron)[0] - 1;// 距后一个外显子 NnnCnn
-			   cod2ExInStart = lsIsoform.get(NumExon)[1] - coord -1;// 距前一个外显子 nnnCnnnN
+			   cod2ExInEnd = coord - lsElement.get(numExIntron)[0] - 1;// 距后一个外显子 NnnCnn
+			   cod2ExInStart = lsElement.get(NumExon)[1] - coord -1;// 距前一个外显子 nnnCnnnN
 		}
 	}
 
@@ -40,16 +40,16 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		cod2UTRstartmRNA = 0; cod2UTRendmRNA = 0;
 	//  5-1 5-0    4-1 uag 4-0     3-1 gta 3-0         2-1 2-0    1-1 cood 1-0            0-1 0-tss  cood
 		for (int i = 0; i < NumExon; i++) {
-			cod2UTRstartmRNA = cod2UTRstartmRNA + lsIsoform.get(i)[0] - lsIsoform.get(i)[1] + 1;
+			cod2UTRstartmRNA = cod2UTRstartmRNA + lsElement.get(i)[0] - lsElement.get(i)[1] + 1;
 		}
 		cod2UTRstartmRNA = cod2UTRstartmRNA + cod2ExInStart;
 	//  5-1 5-0  cood  4-1 uag 4-0     3-1 3-0         2-1 2-0    1-1 gta  cood 1-0      0-1 0-tss  cood
 		try {
-			 lsIsoform.get(NumExon);
+			 lsElement.get(NumExon);
 		} catch (Exception e) {
 			System.out.println(this.IsoName);
 		}
-		if (ATGsite >= lsIsoform.get(NumExon)[1]) //一定要大于等于
+		if (ATGsite >= lsElement.get(NumExon)[1]) //一定要大于等于
 		{
 			cod2UTRendmRNA = coord - ATGsite - 1;//GTAnnnC
 		}
@@ -58,13 +58,13 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		{
 			cod2UTRendmRNA = cod2ExInEnd;  ///nnnC
 			int m = NumExon+1;
-			while ( lsIsoform.get(m)[1] > ATGsite  ) 
+			while ( lsElement.get(m)[1] > ATGsite  ) 
 			{
-				cod2UTRendmRNA = cod2UTRendmRNA + lsIsoform.get(m)[0] - lsIsoform.get(m)[1] + 1;
+				cod2UTRendmRNA = cod2UTRendmRNA + lsElement.get(m)[0] - lsElement.get(m)[1] + 1;
 				m++;
 			}
-			cod2UTRendmRNA = cod2UTRendmRNA + lsIsoform.get(m)[0] - ATGsite;//Atgn
-			if (ATGsite > lsIsoform.get(m)[0]) {
+			cod2UTRendmRNA = cod2UTRendmRNA + lsElement.get(m)[0] - ATGsite;//Atgn
+			if (ATGsite > lsElement.get(m)[0]) {
 				logger.error("setCod2UTR5Cis error: coord is out of the isoform, but the codLoc is: "+codLoc+" coord: "+ coord + IsoName);
 			}
 		}
@@ -76,7 +76,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		
 		cod2UTRstartmRNA = 0; cod2UTRendmRNA = 0;
 		//  5-1 5-0    4-1 cood  uag 4-0     3-1 gta 3-0           2-1 2-0       1-1 cood 1-0       0-1 0-tss  cood
-		if ( UAGsite <= lsIsoform.get(NumExon)[0])//一定要小于等于 
+		if ( UAGsite <= lsElement.get(NumExon)[0])//一定要小于等于 
 		{
 			cod2UTRstartmRNA = UAGsite - coord - 1;  //CnnnGAU
 		}
@@ -86,17 +86,17 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 			cod2UTRstartmRNA = cod2ExInStart; //Cnnnnn
 			int m = NumExon - 1;
 		//  5-1 cood 5-0       4-1  4-0        3-1 uag 3-0           2-1 2-0       1-1 cood 1-0       0-1 0-tss  cood
-			while (m >= 0 && lsIsoform.get(m)[0] < UAGsite) 
+			while (m >= 0 && lsElement.get(m)[0] < UAGsite) 
 			{
-				cod2UTRstartmRNA = cod2UTRstartmRNA + lsIsoform.get(m)[0] - lsIsoform.get(m)[1] + 1;
+				cod2UTRstartmRNA = cod2UTRstartmRNA + lsElement.get(m)[0] - lsElement.get(m)[1] + 1;
 				m--;
 			}
-			cod2UTRstartmRNA = cod2UTRstartmRNA + UAGsite - lsIsoform.get(m)[1]; //nnnGAU
+			cod2UTRstartmRNA = cod2UTRstartmRNA + UAGsite - lsElement.get(m)[1]; //nnnGAU
 		}
 		/////////////////////utrend//////////////////
 		//  5-1 5-0    4-1 cood  4-0     3-1 uag 3-0           2-1 2-0       1-1 cood 1-0       0-1 0-tss  cood
-		for (int i = lsIsoform.size() - 1; i > NumExon; i--) {
-			cod2UTRendmRNA = cod2UTRendmRNA + lsIsoform.get(i)[0] - lsIsoform.get(i)[1] +1;
+		for (int i = lsElement.size() - 1; i > NumExon; i--) {
+			cod2UTRendmRNA = cod2UTRendmRNA + lsElement.get(i)[0] - lsElement.get(i)[1] +1;
 		}
 		cod2UTRendmRNA = cod2UTRendmRNA + cod2ExInEnd;
 	}
@@ -107,12 +107,12 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		cod2TSSmRNA = 0; cod2TESmRNA = 0;
 		//  5-1 5-0    4-1 cood  4-0     3-1 uag 3-0           2-1 2-0       1-1 cood 1-0       0-1 0-tss  cood
 		for (int i = 0; i < NumExon; i++) {
-			cod2TSSmRNA = cod2TSSmRNA + lsIsoform.get(i)[0] - lsIsoform.get(i)[1] +1;
+			cod2TSSmRNA = cod2TSSmRNA + lsElement.get(i)[0] - lsElement.get(i)[1] +1;
 		}
 		cod2TSSmRNA = cod2TSSmRNA + cod2ExInStart;
 		
-		for (int i = NumExon + 1; i < lsIsoform.size(); i++) {
-			cod2TESmRNA = cod2TESmRNA + lsIsoform.get(i)[0] - lsIsoform.get(i)[1] +1;
+		for (int i = NumExon + 1; i < lsElement.size(); i++) {
+			cod2TESmRNA = cod2TESmRNA + lsElement.get(i)[0] - lsElement.get(i)[1] +1;
 		}
 		cod2TESmRNA = cod2TESmRNA + cod2ExInEnd;
 	}
@@ -136,14 +136,14 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 			else {
 				//  5-1 5-0    4-1 cood  4-0     3-1 gau 3-0           2-1 cood 2-0       1-1 gta 1-0       0-1 0-tss  cood
 				for (int i = 0; i < NumExon; i++) {
-					if (lsIsoform.get(i)[1] > ATGsite) {
+					if (lsElement.get(i)[1] > ATGsite) {
 						continue;
 					}
-					if (lsIsoform.get(i)[0] >= ATGsite && lsIsoform.get(i)[1] <= ATGsite) {
-						cod2ATGmRNA = ATGsite - lsIsoform.get(i)[1] + 1; // Atgnn   nnnnC
+					if (lsElement.get(i)[0] >= ATGsite && lsElement.get(i)[1] <= ATGsite) {
+						cod2ATGmRNA = ATGsite - lsElement.get(i)[1] + 1; // Atgnn   nnnnC
 						continue;
 					}
-					cod2ATGmRNA = cod2ATGmRNA + lsIsoform.get(i)[0] - lsIsoform.get(i)[1] +1;
+					cod2ATGmRNA = cod2ATGmRNA + lsElement.get(i)[0] - lsElement.get(i)[1] +1;
 				}
 				cod2ATGmRNA = cod2ATGmRNA + cod2ExInStart;
 			}
@@ -157,15 +157,15 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 				}
 				
 			//  5-1 5-0    4-1 cood  4-0     3-1 gau 3-0           2-1 2-0       1-1 cood 1-0       0-1 0-tss  cood
-			for (int i = NumExon + 1; i < lsIsoform.size(); i++) {
-				if (lsIsoform.get(i)[0] < UAGsite) {
+			for (int i = NumExon + 1; i < lsElement.size(); i++) {
+				if (lsElement.get(i)[0] < UAGsite) {
 					break;
 				}
-				if (lsIsoform.get(i)[0] >= UAGsite && lsIsoform.get(i)[1] <= UAGsite) {
-					cod2UAGmRNA = cod2UAGmRNA + lsIsoform.get(i)[0] - UAGsite + 1; // Gaunn nnn nnC
+				if (lsElement.get(i)[0] >= UAGsite && lsElement.get(i)[1] <= UAGsite) {
+					cod2UAGmRNA = cod2UAGmRNA + lsElement.get(i)[0] - UAGsite + 1; // Gaunn nnn nnC
 					break;
 				}
-				cod2UAGmRNA = cod2UAGmRNA + lsIsoform.get(i)[0] - lsIsoform.get(i)[1] +1;
+				cod2UAGmRNA = cod2UAGmRNA + lsElement.get(i)[0] - lsElement.get(i)[1] +1;
 			}
 			cod2UAGmRNA = -(cod2UAGmRNA + cod2ExInEnd);
 		}
@@ -183,20 +183,20 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 			return hashLocExInNum.get(location);
 		}
 
-		if (    location > lsIsoform.get(0)[0] || 
-				location < lsIsoform.get(lsIsoform.size()-1)[1]  )  	{
+		if (    location > lsElement.get(0)[0] || 
+				location < lsElement.get(lsElement.size()-1)[1]  )  	{
 //			hashLocExInNum.put(location, 0);  //不在转录本内的坐标不用理会
 			return 0;
 		}
-		for(int i = 0; i < lsIsoform.size(); i++)  //一个一个Exon的检查
+		for(int i = 0; i < lsElement.size(); i++)  //一个一个Exon的检查
 		{
 			//		    5-1 cood 5-0    4-1 uag 4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			if(location >= lsIsoform.get(i)[1] && location <= lsIsoform.get(i)[0]) {
+			if(location >= lsElement.get(i)[1] && location <= lsElement.get(i)[0]) {
 				hashLocExInNum.put(location, i + 1);
 				return i + 1;
 			}
 			//		    5-1 cood 5-0    4-1 uag 4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			else if(i <= lsIsoform.size() - 2 && location < lsIsoform.get(i)[1] && location > lsIsoform.get(i+1)[0]) {
+			else if(i <= lsElement.size() - 2 && location < lsElement.get(i)[1] && location > lsElement.get(i+1)[0]) {
 				hashLocExInNum.put(location, -(i + 1));
 				return -(i + 1);
 			}
@@ -220,13 +220,13 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		int loc2ExInStart = -1000000000;   int exIntronNum = getLocExInNum(location); 	int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
 		if (exIntronNum > 0) {
 //		    5-1 cood 5-0    4-1 uag 4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			loc2ExInStart = Math.abs(lsIsoform.get(NumExon)[0] - location);//距离本外显子起始 nnnnnnnnC
+			loc2ExInStart = Math.abs(lsElement.get(NumExon)[0] - location);//距离本外显子起始 nnnnnnnnC
 			hashLocExInStart.put(location, loc2ExInStart);
 		}
 		else if(exIntronNum < 0) 
 		{
 //		    5-1 cood 5-0    4-1 uag 4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			loc2ExInStart = Math.abs(lsIsoform.get(NumExon)[1] - location) -1;// 距前一个外显子 NnnnCnnnn
+			loc2ExInStart = Math.abs(lsElement.get(NumExon)[1] - location) -1;// 距前一个外显子 NnnnCnnnn
 			hashLocExInStart.put(location, loc2ExInStart);
 		}
 		return loc2ExInStart;
@@ -248,12 +248,12 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		int loc2ExInEnd = -1000000000; int exIntronNum = getLocExInNum(location); int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
 		if (exIntronNum > 0) {
 //		    5-1 cood 5-0    4-1 uag 4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			 loc2ExInEnd = location - lsIsoform.get(NumExon)[1];//距离本外显子终止  Cnnnnnnn
+			 loc2ExInEnd = location - lsElement.get(NumExon)[1];//距离本外显子终止  Cnnnnnnn
 		}
 		else if(exIntronNum < 0)
 		{
 //		    5-1 cood 5-0    4-1 uag 4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			 loc2ExInEnd = location - lsIsoform.get(NumExon+1)[0] - 1;// 距后一个外显子 nnCnnnnN
+			 loc2ExInEnd = location - lsElement.get(NumExon+1)[0] - 1;// 距后一个外显子 nnCnnnnN
 		}
 		hashLocExInEnd.put(location, loc2ExInEnd);
 		return loc2ExInEnd;
@@ -280,7 +280,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 				int exonNum = getLocExInNum(location) - 1;
 				int remain = Math.abs(mRNAnum) - getLoc2ExInStart(location);
 				for (int i = exonNum - 1; i >= 0; i--) {
-					int[] tmpExon = lsIsoform.get(i);
+					int[] tmpExon = lsElement.get(i);
 					// 一个一个外显子的向前遍历
 					if (remain - (tmpExon[0] - tmpExon[1] + 1) > 0) {
 						remain = remain - (tmpExon[0] - tmpExon[1] + 1);
@@ -300,8 +300,8 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 			else {
 				int exonNum = getLocExInNum(location) - 1;
 				int remain = mRNAnum - getLoc2ExInEnd(location);
-				for (int i = exonNum + 1; i < lsIsoform.size(); i++) {
-					int[] tmpExon = lsIsoform.get(i);
+				for (int i = exonNum + 1; i < lsElement.size(); i++) {
+					int[] tmpExon = lsElement.get(i);
 					// 一个一个外显子的向前遍历
 					if (remain - (tmpExon[0] - tmpExon[1] + 1) > 0) {
 						remain = remain - (tmpExon[0] - tmpExon[1] + 1);
@@ -332,7 +332,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		int[] tmpexon = new int[2];
 		tmpexon[0] = Math.max(locStart, locEnd);
 		tmpexon[1] = Math.min(locStart, locEnd);
-		lsIsoform.add(0, tmpexon);
+		lsElement.add(0, tmpexon);
 	}
 	
 	/**
@@ -353,7 +353,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		int[] tmpexon = new int[2];
 		tmpexon[0] = Math.max(locStart, locEnd);
 		tmpexon[1] = Math.min(locStart, locEnd);
-		lsIsoform.add(0,tmpexon);
+		lsElement.add(0,tmpexon);
 	}
 	
 	/**
@@ -373,7 +373,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		int[] tmpexon = new int[2];
 		tmpexon[0] = Math.max(locStart, locEnd);
 		tmpexon[1] = Math.min(locStart, locEnd);
-		lsIsoform.add(tmpexon);
+		lsElement.add(tmpexon);
 	}
 	
 	/**
@@ -382,15 +382,15 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	 */
 	public int getLenUTR5() {
 		int FUTR=0;
-		int exonNum = lsIsoform.size();
+		int exonNum = lsElement.size();
 		 //5  4   3   2   1   0    每个外显子中 0 > 1     1    gta   0
 		for (int i = 0; i < exonNum; i++) 
 		{
-			if(lsIsoform.get(i)[1] > getATGSsite())  // gta   1      0
-				FUTR = FUTR + lsIsoform.get(i)[0] - lsIsoform.get(i)[1] + 1;
-			else if (lsIsoform.get(i)[0] > getATGSsite()  && lsIsoform.get(i)[1] <= getATGSsite() ) //   1     gta      0
-				FUTR = FUTR + lsIsoform.get(i)[0] - getATGSsite();
-			else if (lsIsoform.get(i)[0] <= getATGSsite())   //   1        0      gta 
+			if(lsElement.get(i)[1] > getATGSsite())  // gta   1      0
+				FUTR = FUTR + lsElement.get(i)[0] - lsElement.get(i)[1] + 1;
+			else if (lsElement.get(i)[0] > getATGSsite()  && lsElement.get(i)[1] <= getATGSsite() ) //   1     gta      0
+				FUTR = FUTR + lsElement.get(i)[0] - getATGSsite();
+			else if (lsElement.get(i)[0] <= getATGSsite())   //   1        0      gta 
 				break;
 		}
 		return FUTR;
@@ -402,15 +402,15 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	public int getLenUTR3()
 	{
 		int TUTR=0;
-		int exonNum = lsIsoform.size();
+		int exonNum = lsElement.size();
 		//5  4   3   2   1   0    每个外显子中 0 > 1      1    gau  0
 		for (int i = exonNum-1; i >=0 ; i--) 
 		{
-			if(lsIsoform.get(i)[0] < getUAGsite())  //     1      0     gau
-				TUTR = TUTR + lsIsoform.get(i)[0] - lsIsoform.get(i)[1] + 1;
-			else if (lsIsoform.get(i)[0] >= getUAGsite() && lsIsoform.get(i)[1] < getUAGsite())  //     1    gau    0     
-				TUTR = TUTR + getUAGsite() - lsIsoform.get(i)[1];
-			else if (lsIsoform.get(i)[1] >= getUAGsite())   //   gau   1      0     
+			if(lsElement.get(i)[0] < getUAGsite())  //     1      0     gau
+				TUTR = TUTR + lsElement.get(i)[0] - lsElement.get(i)[1] + 1;
+			else if (lsElement.get(i)[0] >= getUAGsite() && lsElement.get(i)[1] < getUAGsite())  //     1    gau    0     
+				TUTR = TUTR + getUAGsite() - lsElement.get(i)[1];
+			else if (lsElement.get(i)[1] >= getUAGsite())   //   gau   1      0     
 				break;
 		}
 		return TUTR;
@@ -435,14 +435,14 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	}
 	@Override
 	public int getStartAbs() {
-		return lsIsoform.get(lsIsoform.size() - 1)[1];
+		return lsElement.get(lsElement.size() - 1)[1];
 		
 	}
 
 	@Override
 	public int getEndAbs() {
 		// TODO Auto-generated method stub
-		return lsIsoform.get(0)[0];
+		return lsElement.get(0)[0];
 	}
 
 	@Override
@@ -467,8 +467,8 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	}
 	@Override
 	protected void sortIso() {
-		for (int i = 0; i < lsIsoform.size(); i++) {
-			int[] is = lsIsoform.get(i);
+		for (int i = 0; i < lsElement.size(); i++) {
+			int[] is = lsElement.get(i);
 			if (is[0] < is[1]) {
 				int tmp = is[1];
 				is[1] = is[0];
@@ -479,7 +479,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		/**
 		 * 反着排序
 		 */
-		Collections.sort(lsIsoform, new Comparator<int[]>() {
+		Collections.sort(lsElement, new Comparator<int[]>() {
 			@Override
 			public int compare(int[] o1, int[] o2) {
 				if (o1[0] < o2[0]) {
@@ -496,7 +496,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	}
 	@Override
 	protected void sortIsoRead() {
-		Collections.sort(lsIsoform, new Comparator<int[]>() {
+		Collections.sort(lsElement, new Comparator<int[]>() {
 			@Override
 			public int compare(int[] o1, int[] o2) {
 				Integer a = o1[0];

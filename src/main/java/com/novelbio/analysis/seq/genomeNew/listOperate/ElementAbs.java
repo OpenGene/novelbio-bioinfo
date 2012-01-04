@@ -1,16 +1,25 @@
 package com.novelbio.analysis.seq.genomeNew.listOperate;
 
 public interface ElementAbs {
+	public boolean isCis5to3();
+	/**
+	 * 根据方向提取
+	 * @return
+	 */
+	public int getStartCis();
 	
-	public int getStart();
+	public int getStartAbs();
 	
-	public int getEnd();
+	public int getEndCis();
 	
-	public void setStart(int startLoc);
+	public int getEndAbs();
 	
-	public void setEnd(int endLoc);
+	public void setStartCis(int startLoc);
+	
+	public void setEndCis(int endLoc);
 	
 	public int getLen();
+	
 
 }
 

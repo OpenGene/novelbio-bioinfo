@@ -5,6 +5,7 @@ import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.model.modgo.GOInfoUniID;
+import com.novelbio.database.service.servgeneanno.ServNCBIID;
 import com.novelbio.database.service.servgeneanno.ServUniGeneInfo;
 import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
@@ -34,19 +35,9 @@ public class CopedIDuni extends CopedIDAbs{
 
 	@Override
 	protected AgeneUniID getGenUniID(String genUniID, String dbInfo) {
-		UniProtID uniProtID = new UniProtID();
-		uniProtID.setUniID(genUniID);uniProtID.setTaxID(taxID);
-		if (!dbInfo.trim().equals("")) {
-			uniProtID.setDBInfo(dbInfo);
-		}
-		ArrayList<UniProtID> lsuniProtIDs= servUniProtID.queryLsUniProtID(uniProtID);
-		if (lsuniProtIDs == null || lsuniProtIDs.size() < 1) {
-			return null;
-		}
-		else {
-			return lsuniProtIDs.get(0);
-		}
+		return servUniProtID.queryGenUniID(genUniID, taxID, dbInfo);
 	}
+	
 	@Override
 	protected void setGoInfo() {
 		goInfoAbs = new GOInfoUniID(genUniID, taxID);

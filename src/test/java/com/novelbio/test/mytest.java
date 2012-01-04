@@ -36,6 +36,7 @@ import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.math.stat.correlation.PearsonsCorrelation;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.apache.commons.math.stat.descriptive.rank.Max;
+import org.apache.commons.math.stat.inference.TestUtils;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.migration.commands.NewCommand;
@@ -96,7 +97,12 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-
+		CopedID copedID = new CopedID("Glyma0041s00240", 0);
+		copedID.setBlastInfo(1e-10, 3702);
+		String[] anno = copedID.getAnno(true);
+		for (String string : anno) {
+			System.out.println(string);
+		}
 	}
 	
 	

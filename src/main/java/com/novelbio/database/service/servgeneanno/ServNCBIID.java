@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.service.AbsGetSpring;
@@ -52,17 +53,57 @@ public class ServNCBIID extends AbsGetSpring implements MapNCBIID{
 		
 	}
 	/**
+	 * 首先用指定的数据库查找NCBIID表
+	 * 如果找到了就返回找到的第一个的ncbiid对象
+	 * 如果没找到，再去除dbinfo查找，如果还没找到，就返回Null
+	 * @param geneID
+	 * @param taxID
+	 * @param dbInfo
+	 * @return
+	 */
+	public NCBIID queryGenUniID(int geneID, int taxID, String dbInfo) {
+		if (dbInfo != null) 
+			dbInfo = dbInfo.trim();
+		else 
+			dbInfo = "";
+		
+		NCBIID ncbiid = new NCBIID();
+		ncbiid.setGeneId(geneID); ncbiid.setTaxID(taxID);
+		if (!dbInfo.trim().equals("")) {
+			ncbiid.setDBInfo(dbInfo.trim());
+		}
+		ArrayList<NCBIID> lsNcbiids= queryLsNCBIID(ncbiid);
+		//如果带数据库的没找到，就重置数据库
+		if (!dbInfo.equals("") && (lsNcbiids == null || lsNcbiids.size() < 1) ) {
+			ncbiid.setDBInfo("");
+			lsNcbiids= queryLsNCBIID(ncbiid);
+		}
+		if ((lsNcbiids == null || lsNcbiids.size() < 1)) {
+			return null;
+		}
+		else {
+			return lsNcbiids.get(0);
+		}
+	}
+	
+	/**
 	 * 没有该ID就插入，有该ID的话看如果需要override，如果override且数据库不一样，就覆盖升级
 	 * @param nCBIID
 	 * @param override
 	 */
 	public void updateNCBIID(NCBIID ncbiid, boolean override) {
+		String db = ncbiid.getDBInfo();
+		//查询的时候为了防止查不到，先除去dbinfo的信息
+		ncbiid.setDBInfo("");
 		ArrayList<NCBIID> lsResult = mapNCBIID.queryLsNCBIID(ncbiid);
 		if (lsResult == null || lsResult.size() == 0) {
+			//插入的时候再加上
+			ncbiid.setDBInfo(db);
 			mapNCBIID.insertNCBIID(ncbiid);
 		}
 		else {
-			if (override && !lsResult.get(0).getDBInfo().equals(ncbiid.getDBInfo())) {
+			if (override && !lsResult.get(0).getDBInfo().equals(db)) {
+				ncbiid.setDBInfo(db);
 				mapNCBIID.updateNCBIID(ncbiid);
 			}
 		}

@@ -36,7 +36,10 @@ public class Species {
 	 * 水稻
 	 */
 	public final static String RICE = "rice";
-	
+	/**
+	 * 大豆
+	 */
+	public final static String Gmax = "gmax";
 	/**
 	 * 人类第19版本
 	 */

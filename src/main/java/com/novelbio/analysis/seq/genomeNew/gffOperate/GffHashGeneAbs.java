@@ -107,7 +107,24 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 		}
 		return gffGeneIsoInfoOut;
 	}
-	
+	/**
+	 * 保存所有gffDetailGene
+	 */
+	ArrayList<GffDetailGene> lsGffDetailGenesAll = new ArrayList<GffDetailGene>();
+	/**
+	 * 返回所有GffDetailGene
+	 * @return
+	 */
+	public ArrayList<GffDetailGene> getGffDetailGenesAll()
+	{
+		if (lsGffDetailGenesAll.size() != 0) {
+			return lsGffDetailGenesAll;
+		}
+		for (ArrayList<GffDetailGene> lsGffDetailGenes : Chrhash.values()) {
+			lsGffDetailGenesAll.addAll(lsGffDetailGenes);
+		}
+		return lsGffDetailGenesAll;
+	}
 	/**
 	 * 	返回外显子总长度，内含子总长度等信息，只统计最长转录本的信息
 	 * 有问题

@@ -32,9 +32,17 @@ public class anno {
 //		txtFile = parent + "W4sort-W200-G200-E100.scoreisland_score35.xls";
 //		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-2k+2k", "xls"));
 		
-		txtFile = parent + "W0sort-W200-G200-E100.scoreisland";
+		txtFile = parent + "k0sort-W200-G200-E100.scoreisland_score35.xls";
 		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-2k+2k", "xls"));
 		
+		txtFile = parent + "k4sort-W200-G200-E100.scoreisland_score35.xls";
+		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-2k+2k", "xls"));
+		
+		txtFile = parent + "W0sort-W200-G200-E100.scoreisland_score35.xls";
+		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-2k+2k", "xls"));
+		
+		txtFile = parent + "W4sort-W200-G200-E100.scoreisland_score35.xls";
+		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-2k+2k", "xls"));
 		
 		
 //		String parent1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/bivalent/bivalentKO_K4K27Down_yulu_method20111208/";

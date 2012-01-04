@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+
+import com.novelbio.analysis.seq.genomeNew.listOperate.ElementAbs;
+import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArray;
 import com.novelbio.base.dataStructure.CompSubArrayCluster;
@@ -15,7 +18,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
  * @author zong0jie
  *
  */
-public abstract class GffGeneIsoInfo {
+public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 	/**
 	 * 标记codInExon处在外显子中
 	 */
@@ -182,8 +185,6 @@ public abstract class GffGeneIsoInfo {
 			return false;
 		}
 		return true;
-		
-		
 	}
 	
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
@@ -262,8 +263,8 @@ public abstract class GffGeneIsoInfo {
      * exon成对出现，第一个exon坐标是该转录本的起点，最后一个exon坐标是该转录本的终点，正向从小到大排列且int[0]<int[1]<br>
      * 反向从大到小排列且int[0]>int[1]<br>
      */
-	protected ArrayList<int[]> lsIsoform = new ArrayList<int[]>();
-
+//	protected ArrayList<ExonInfo> lsElement = new ArrayList<ExonInfo>();
+	
 	/**
 	 * 该转录本的长度
 	 */
@@ -299,23 +300,18 @@ public abstract class GffGeneIsoInfo {
 		 * 正向从小到大添加 且 int0<int1
 		 * 反向从大到小添加 且 int0>int1
 		 */
-		int[] tmpexon = new int[2];
-		if (isCis5to3()) {
-			tmpexon[0] = Math.min(locStart, locEnd);
-			tmpexon[1] = Math.max(locStart, locEnd);
-		}
-		else {
-			tmpexon[0] = Math.max(locStart, locEnd);
-			tmpexon[1] = Math.min(locStart, locEnd);
-		}
-		if (lsIsoform.size() > 0) {
-			int[] exon = lsIsoform.get(lsIsoform.size() - 1);
-			if (Math.abs(exon[1] - tmpexon[0]) == 1) {
-				exon[1] = tmpexon[1];
+		ExonInfo tmpexon = new ExonInfo();
+		tmpexon.setCis(isCis5to3());
+		tmpexon.setStartCis(locStart);
+		tmpexon.setEndCis(locEnd);
+		if (lsElement.size() > 0) {
+			ExonInfo exon = lsElement.get(lsElement.size() - 1);
+			if (Math.abs(exon.getEndCis() - tmpexon.getStartAbs()) == 1) {
+				exon.setEndCis(tmpexon.getEndCis());
 				return;
 			}
 		}
-		lsIsoform.add(tmpexon);
+		lsElement.add(tmpexon);
 	}
 	/**
 	 * 返回该转录本的名称
@@ -334,8 +330,8 @@ public abstract class GffGeneIsoInfo {
 	 * 如果反向则从大到小排列，且int0&gt;int1
 	 * @return
 	 */
-	public  ArrayList<int[]> getIsoInfo() {
-		return lsIsoform;
+	public  ArrayList<ExonInfo> getIsoInfo() {
+		return lsElement;
 	}
 	
  
@@ -363,19 +359,19 @@ public abstract class GffGeneIsoInfo {
 	 * @return
 	 */
 	public int getTSSsite() {
-		return lsIsoform.get(0)[0];
+		return (int)lsElement.get(0).getStartCis();
 	}
 	/**
 	 * 该转录本的Coding region end的最后一个字符坐标，从1开始计数，是闭区间
 	 * @return
 	 */
 	public int getTESsite() {
-		return lsIsoform.get(lsIsoform.size() -1)[1];
+		return lsElement.get(lsElement.size() -1).getStartCis();
 		
 	}
 	public int getExonNum()
 	{
-		return lsIsoform.size();
+		return lsElement.size();
 	}
 	/**
 	 * 获得5UTR的长度
@@ -395,21 +391,21 @@ public abstract class GffGeneIsoInfo {
      */
 	public int getLenExon(int num)
 	{
-		if (num < 0 || num > lsIsoform.size()) {
+		if (num < 0 || num > lsElement.size()) {
 			return -1000000000;
 		}
 		else if (num == 0) 
 		{
 			int allExonLength = 0;
-			for (int i = 0; i < lsIsoform.size(); i++) // 0-0 0-1 1-0 1-1
+			for (int i = 0; i < lsElement.size(); i++) // 0-0 0-1 1-0 1-1
 			{ // 2-1 2-0 1-1 1-0 0-1 0-tss cood
-				allExonLength = allExonLength + Math.abs(lsIsoform.get(i)[1] - lsIsoform.get(i)[0]) + 1;
+				allExonLength = allExonLength + lsElement.get(i).getLen();
 			}
 			return allExonLength;
 		}
 		else {
 			num--;
-			return Math.abs(lsIsoform.get(num)[1] - lsIsoform.get(num)[0]) + 1;
+			return lsElement.get(num).getLen();
 		}
 	}
 	 /**
@@ -419,19 +415,19 @@ public abstract class GffGeneIsoInfo {
      */
 	public int getLenIntron(int num)
 	{
-		if (num < 0 || num > lsIsoform.size()) {
+		if (num < 0 || num > lsElement.size()) {
 			return -1000000000;
 		}
 		else if (num == 0) 
 		{
 			int allIntronLength = 0;
-			for (int i = 1; i < lsIsoform.size(); i++) // 0-0 0-1 1-0 1-1
+			for (int i = 1; i < lsElement.size(); i++) // 0-0 0-1 1-0 1-1
 			{ // 2-1 2-0 1-1 1-0 0-1 0-tss cood
-				allIntronLength = allIntronLength + Math.abs(lsIsoform.get(i)[1] - lsIsoform.get(i)[0]) - 1;
+				allIntronLength = allIntronLength + Math.abs(lsElement.get(i).getStartCis() - lsElement.get(i-1).getEndCis()) - 1;
 			}
 		}
 		num--;
-		return Math.abs(lsIsoform.get(num + 1)[0] - lsIsoform.get(num)[1]) - 1;
+		return Math.abs(lsElement.get(num + 1).getStartCis() - lsElement.get(num).getEndAbs()) - 1;
 	}
 	
 	/**
@@ -668,16 +664,21 @@ public abstract class GffGeneIsoInfo {
 	{
 		init();
 		codSearchNum();
-		if (codLocUTR == COD_LOCUTR_5UTR) {
-			setCod2UTR5();
+		try {
+			if (codLocUTR == COD_LOCUTR_5UTR) {
+				setCod2UTR5();
+			}
+			else if (codLocUTR == COD_LOCUTR_3UTR) {
+				setCod2UTR3();
+			}
+			if (codLoc == COD_LOC_EXON) {
+				setCod2StartEndmRNA();
+				setCod2StartEndCDS();
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
-		else if (codLocUTR == COD_LOCUTR_3UTR) {
-			setCod2UTR3();
-		}
-		if (codLoc == COD_LOC_EXON) {
-			setCod2StartEndmRNA();
-			setCod2StartEndCDS();
-		}
+
 	}
 	/**
 	 * 初始化变量
@@ -864,7 +865,7 @@ public abstract class GffGeneIsoInfo {
 		else {
 			distance = getLoc2ExInEnd(locSmall) + getLoc2ExInStart(locBig) + 1;
 			for (int i = locSmallExInNum + 1; i <= locBigExInNum - 1; i++) {
-				distance = distance + Math.abs(lsIsoform.get(i)[0] -lsIsoform.get(i)[1]) + 1;
+				distance = distance + lsElement.get(i).getLen();
 			}
 		}
 		
@@ -912,13 +913,13 @@ public abstract class GffGeneIsoInfo {
 		}
 		
 		int[] exonSub = new int[2];
-		exonSub[0] = start; exonSub[1] = lsIsoform.get(exonNumStart)[1];
+		exonSub[0] = start; exonSub[1] = lsElement.get(exonNumStart)[1];
 		lsresult.add(exonSub);
 		for (int i = exonNumStart+1; i < exonNumEnd; i++) {
-			lsresult.add(lsIsoform.get(i));
+			lsresult.add(lsElement.get(i));
 		}
 		exonSub = new int[2];
-		exonSub[0] = lsIsoform.get(exonNumEnd)[0]; exonSub[1] = end; 
+		exonSub[0] = lsElement.get(exonNumEnd)[0]; exonSub[1] = end; 
 		lsresult.add(exonSub);
 		return lsresult;
 	}
@@ -1061,7 +1062,7 @@ public abstract class GffGeneIsoInfo {
 		gffGeneIsoInfo.hashLocExInNum = hashLocExInNum;
 		gffGeneIsoInfo.hashLocExInStart =hashLocExInStart;
 //		gffGeneIsoInfo.IsoName = IsoName;
-		gffGeneIsoInfo.lsIsoform = lsIsoform;
+		gffGeneIsoInfo.lsElement = lsElement;
 		gffGeneIsoInfo.lengthIso = lengthIso;
 		gffGeneIsoInfo.mRNA = mRNA;
 		gffGeneIsoInfo.taxID = taxID;
@@ -1079,14 +1080,12 @@ public abstract class GffGeneIsoInfo {
 		gffGeneIsoInfo.hashLocExInNum = new HashMap<Integer, Integer>();
 		gffGeneIsoInfo.hashLocExInStart = new HashMap<Integer, Integer>();
 //		gffGeneIsoInfo.IsoName = IsoName;
-		ArrayList<int[]> lsIso = new ArrayList<int[]>();
-		for (int[] is : lsIsoform) {
-			int[] isTmp = new int[2];
-			isTmp[0] = is[0];
-			isTmp[1] = is[1];
-			lsIso.add(isTmp);
+		ArrayList<ExonInfo> lsIso = new ArrayList<ExonInfo>();
+		for (ExonInfo is : lsElement) {
+			ExonInfo exonInfo = is.clone();
+			lsIso.add(exonInfo);
 		}
-		gffGeneIsoInfo.lsIsoform = lsIso;
+		gffGeneIsoInfo.lsElement = lsIso;
 		gffGeneIsoInfo.lengthIso = lengthIso;
 		gffGeneIsoInfo.mRNA = mRNA;
 		gffGeneIsoInfo.taxID = taxID;
@@ -1106,20 +1105,8 @@ public abstract class GffGeneIsoInfo {
 			lsCompResult =  hashTmp.get(gffGeneIsoInfo.getIsoName());
 		}
 		else {
-			ArrayList<ExonInfo> lsThis = new ArrayList<ExonInfo>();
-			ArrayList<ExonInfo> lsComp = new ArrayList<ExonInfo>();
-			
-			ArrayList<int[]> lsIsoComp = gffGeneIsoInfo.getIsoInfo();
-			
-			for (int[] is : lsIsoform) {
-				ExonInfo exonInfo = new ExonInfo(is, gffGeneIsoInfo.isCis5to3());
-				lsThis.add(exonInfo);
-			}
-			for (int[] is : lsIsoComp) {
-				ExonInfo exonInfo = new ExonInfo(is, gffGeneIsoInfo.isCis5to3());
-				lsComp.add(exonInfo);
-			}
-			lsCompResult = ArrayOperate.compLs2(lsThis, lsComp, gffGeneIsoInfo.isCis5to3());
+			ArrayList<ExonInfo> lsIsoComp = gffGeneIsoInfo.getIsoInfo();
+			lsCompResult = ArrayOperate.compLs2(lsElement, lsIsoComp, gffGeneIsoInfo.isCis5to3());
 			hashTmp.put(gffGeneIsoInfo.getIsoName(), lsCompResult);
 		}
 		return CompSubArrayCluster.getCompScore(lsCompResult);
@@ -1135,28 +1122,15 @@ public abstract class GffGeneIsoInfo {
 			lsCompResult = hashTmp.get(gffGeneIsoInfo.getIsoName());
 		}
 		else {
-			ArrayList<ExonInfo> lsThis = new ArrayList<ExonInfo>();
-			ArrayList<ExonInfo> lsComp = new ArrayList<ExonInfo>();
-			
-			ArrayList<int[]> lsIsoComp = gffGeneIsoInfo.getIsoInfo();
-			
-			for (int[] is : lsIsoform) {
-				ExonInfo exonInfo = new ExonInfo(is, gffGeneIsoInfo.isCis5to3());
-				lsThis.add(exonInfo);
-			}
-			for (int[] is : lsIsoComp) {
-				ExonInfo exonInfo = new ExonInfo(is, gffGeneIsoInfo.isCis5to3());
-				lsComp.add(exonInfo);
-			}
-			lsCompResult = ArrayOperate.compLs2(lsThis, lsComp, gffGeneIsoInfo.isCis5to3());
+			lsCompResult = ArrayOperate.compLs2(lsElement, gffGeneIsoInfo.getIsoInfo(), gffGeneIsoInfo.isCis5to3());
 			hashTmp.put(gffGeneIsoInfo.getIsoName(), lsCompResult);
 		}
 		return lsCompResult;
 	}
 	
 	
-	public void setLsIsoform(ArrayList<int[]> lsIsoform) {
-		this.lsIsoform = lsIsoform;
+	public void setLsIsoform(ArrayList<ExonInfo> lsIsoform) {
+		this.lsElement = lsIsoform;
 	}
 	public void setIsoName(String isoName) {
 		IsoName = isoName;
@@ -1215,16 +1189,7 @@ public abstract class GffGeneIsoInfo {
 	}
 	protected abstract String getGTFformatExon(String geneID, String title, String strand);
 	protected abstract String getGFFformatExonMISO(String geneID, String title, String strand);
-	/**
-	 * 获得所有外显子的长度之和
-	 */
-	public int getIsoLen() {
-		int isoLen = 0;
-		for (int[] exons : lsIsoform) {
-			isoLen = isoLen + Math.abs(exons[1] - exons[0]);
-		}
-		return isoLen;
-	}
+
 	
 	/**
 	 * 可能不是很精确
@@ -1269,7 +1234,7 @@ public abstract class GffGeneIsoInfo {
 		//物种，起点终点，ATG，UAG，外显子长度，转录本名字等都一致
 		boolean flag =  this.getTaxID() == otherObj.getTaxID() && this.getChrID().equals(otherObj.getChrID()) && this.getATGSsite() == otherObj.getATGSsite()
 		&& this.getUAGsite() == otherObj.getUAGsite() && this.getTSSsite() == otherObj.getTSSsite()
-		&& this.getIsoLen() == otherObj.getIsoLen() && this.getIsoName().equals(otherObj.getIsoName());
+		&& this.getListLen() == otherObj.getListLen() && this.getIsoName().equals(otherObj.getIsoName());
 		
 		if (flag && compIso(otherObj.getIsoInfo()) ) {
 			return true;
@@ -1317,8 +1282,8 @@ public abstract class GffGeneIsoInfo {
 		ArrayList<int[]> lsresult = new ArrayList<int[]>();
 		int numAtg = getLocExInNum(ATGsite) - 1;
 		int numUag = getLocExInNum(UAGsite) - 1;
-		for (int i = 0; i < lsIsoform.size(); i++) {
-			int[] exonTmp = lsIsoform.get(i);
+		for (int i = 0; i < lsElement.size(); i++) {
+			int[] exonTmp = lsElement.get(i);
 			if (i < numAtg) {
 				continue;
 			}
@@ -1379,67 +1344,94 @@ public abstract class GffGeneIsoInfo {
 
 
 
-class ExonInfo implements CompSubArray
+class ExonInfo implements ElementAbs
 {
 	boolean cis;
-	int[] exon;
-	String flag = "";
-	@Override
-	public double[] getCell() {
-		if (cis) {
-			return new double[]{exon[0],exon[1]};
-		}
-		else {
-			return new double[]{exon[1],exon[0]};
-		}
-	}
+	int[] exon = new int[2];
+
 	public ExonInfo(int[] exon, boolean cis) {
 		this.exon = exon;
 		this.cis = cis;
 	}
-	@Override
-	public Boolean isCis5to3() {
-		return cis;
+	/**
+	 * 根据正反向自动设定起点和终点
+	 * @param start
+	 * @param end
+	 * @param cis
+	 */
+	public ExonInfo(int start, int end, boolean cis) {
+		setCis(cis);
+		if (cis) {
+			exon[0] = Math.min(start, end);
+			exon[1] = Math.max(start, end);
+		}
+		else {
+			exon[0] = Math.max(start, end);
+			exon[1] = Math.min(start, end);
+		}
+	}
+	
+	public ExonInfo() {
+	}
+	public void setCis(boolean cis) {
+		this.cis = cis;
 	}
 	@Override
-	public double getStartCis() {
+	public boolean isCis5to3() {
+		return cis;
+	}
+
+	@Override
+	public void setStartCis(int startLoc)
+	{
+		if (cis) {
+			exon[0] = (int)startLoc;
+		}
+		else {
+			exon[1] = (int)startLoc;
+		}
+	}
+	@Override
+	public void setEndCis(int endLoc)
+	{
+		if (cis) {
+			exon[1] = (int)endLoc;
+		}
+		else {
+			exon[0] = (int)endLoc;
+		}
+	}
+	@Override
+	public int getStartCis() {
 		return exon[0];
 	}
 	@Override
-	public void setStartCis(double startLoc)
-	{
-		exon[0] = (int)startLoc;
-	}
-	@Override
-	public void setEndCis(double endLoc)
-	{
-		exon[1] = (int)endLoc;
-	}
-	@Override
-	public double getEndCis() {
+	public int getEndCis() {
 		return exon[1];
 	}
 	@Override
-	public double getStartAbs() {
+	public int getStartAbs() {
 		return Math.min(exon[0], exon[1]);
 	}
 	@Override
-	public double getEndAbs() {
+	public int getEndAbs() {
 		return Math.max(exon[0], exon[1]);
 	}
+
 	@Override
-	public String getFlag() {
-		return flag;
+	public int getLen() {
+		return Math.abs(exon[0] - exon[1]) + 1;
 	}
-	@Override
-	public void setFlag(String flag) {
-		this.flag = flag;
-	}
-	@Override
-	public double getLen()
+
+	public ExonInfo clone()
 	{
-		return Math.abs(exon[0] - exon[1]);
+		ExonInfo exonInfo = new ExonInfo(getStartCis(), getEndCis(), cis);
+		return exonInfo;
 	}
 	
+	public boolean equals(Object elementAbs)
+	{
+		
+	}
 
 }

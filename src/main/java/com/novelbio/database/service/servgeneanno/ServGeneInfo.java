@@ -50,6 +50,10 @@ public class ServGeneInfo extends AbsGetSpring implements MapGeneInfo {
 		GeneInfo geneInfoOld = queryGeneInfo(genUniID);
 		if (geneInfoOld != null) {
 			if (geneInfoOld.addInfo(geneInfo)) {
+				////////////
+				geneInfoOld.copeyInfo(geneInfo);
+				geneInfoOld.setGeneUniID(genUniID);
+				//////////////
 				updateGeneInfo(geneInfoOld);
 			}
 		}

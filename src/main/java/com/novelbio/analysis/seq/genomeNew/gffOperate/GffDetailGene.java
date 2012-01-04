@@ -65,6 +65,8 @@ public class GffDetailGene extends GffDetailAbs
 		GffGeneIsoInfo.setCodLocation(upStreamTSSbp, downStreamTssbp, geneEnd3UTR);
 	}
 	
+ 
+	
 	protected void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
@@ -124,7 +126,7 @@ public class GffDetailGene extends GffDetailAbs
 	 * @param locString
 	 * @param cis5to3
 	 */
-	protected GffDetailGene(String chrID, String locString, boolean cis5to3) {
+	public GffDetailGene(String chrID, String locString, boolean cis5to3) {
 		super(chrID, locString, cis5to3);
 	}
 	/**
@@ -709,4 +711,14 @@ public class GffDetailGene extends GffDetailAbs
 		}
 		return false;
 	}
+	
+	/**
+	 * 将所有转录本放在一起进行合并，按照外显子进行划分。
+	 * 每一组就是多个转录本的不同外显子
+	 */
+	public void compIso() {
+		
+	}
+	
+	
 }

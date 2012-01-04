@@ -38,7 +38,7 @@ public class ServUniGeneInfo extends AbsGetSpring implements MapUniGeneInfo{
 	@Override
 	public void updateUniGeneInfo(UniGeneInfo uniGeneInfo) {
 		// TODO Auto-generated method stub
-		mapUniGeneInfo.insertUniGeneInfo(uniGeneInfo);
+		mapUniGeneInfo.updateUniGeneInfo(uniGeneInfo);
 	}
 	/**
 	 * 输入geneUniID以及具体的内容，看是否需要升级
@@ -51,6 +51,10 @@ public class ServUniGeneInfo extends AbsGetSpring implements MapUniGeneInfo{
 		UniGeneInfo uniGeneInfoOld = queryUniGeneInfo(genUniID);
 		if (uniGeneInfoOld != null) {
 			if (uniGeneInfoOld.addInfo(geneInfo)) {
+				////////////
+				uniGeneInfoOld.copeyInfo(geneInfo);
+				uniGeneInfoOld.setGeneUniID(genUniID);
+				//////////////
 				updateUniGeneInfo(uniGeneInfoOld);
 			}
 		}

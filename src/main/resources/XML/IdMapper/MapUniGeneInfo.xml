@@ -76,6 +76,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				ModificationDate = #{modDate}
 			</if>
 		</set>
-		where UniProtID = #{uniProtID}
+		where
+			<if test="uniProtID !=null and uniProtID != '' ">
+				UniProtID = #{uniProtID}
+			</if>
 	</update>
 </mapper>

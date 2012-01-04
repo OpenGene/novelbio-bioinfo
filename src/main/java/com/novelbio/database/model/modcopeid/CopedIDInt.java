@@ -123,4 +123,44 @@ public interface CopedIDInt{
 	 * 获得经过blast的KegPath
 	 */
 	ArrayList<KGpathway> getKegPath(boolean blast);
+	/**
+	 * 输入已知的geneUniID和IDtype
+	 * @param geneUniID
+	 * @param idType 必须是CopedID.IDTYPE_GENEID等，可以不输入
+	 */
+	void setUpdateGeneID(String geneUniID, String idType);
+	/**
+	 * 依次输入需要升级的GO信息，最后升级
+	 * 这里只是先获取GO的信息，最后调用升级method的时候再升级
+	 * @param GOID
+	 * @param GOdatabase
+	 * @param GOevidence
+	 * @param GORef
+	 * @param gOQualifiy
+	 */
+	void setUpdateGO(String GOID, String GOdatabase, String GOevidence,
+			String GORef, String gOQualifiy);
+	/**
+	 * 输入需要update的geneInfo，注意不需要设定geneUniID
+	 * @param geneInfo
+	 */
+	void setUpdateGeneInfo(AGeneInfo geneInfo);
+	/**
+	 * 如果新的ID不加入UniID，那么就写入指定的文件中
+	 * 文件需要最开始用set指定
+	 * @param updateUniID
+	 */
+	void update(boolean updateUniID);
+	/**
+	 * 如果新的ID不加入UniID，那么就写入指定的文件中
+	 * 文件需要最开始用set指定
+	 * @param updateUniID
+	 */
+	void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo);
+	/**
+	 * 如果新的ID不加入UniID，那么就写入指定的文件中
+	 * 文件需要最开始用set指定
+	 * @param updateUniID
+	 */
+	void setUpdateRefAccID(int taxID, String DBInfo, String... refAccID);
 }

@@ -22,7 +22,6 @@ public class MathComput {
 	
 	/**
 	 * 输入数据，获得平均数
-	 * 采用插入排序法，据说对于小规模数据效率还不错
 	 * 用于获得每10个bp的tag堆积数的中位数
 	 * @return
 	 */
@@ -35,6 +34,22 @@ public class MathComput {
 			sum=sum+unsortNum[i];
 		}
 		int avg=sum/length;
+		return avg;
+	}
+	/**
+	 * 输入数据，获得平均数
+	 * 用于获得每10个bp的tag堆积数的中位数
+	 * @return
+	 */
+	public static long mean(long[] unsortNum)
+	{
+		int length=unsortNum.length;
+		long sum=0;
+		for(int i=0;i<length;i++)
+		{
+			sum=sum+unsortNum[i];
+		}
+		long avg=sum/length;
 		return avg;
 	}
 	

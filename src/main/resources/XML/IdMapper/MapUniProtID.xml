@@ -12,16 +12,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select *
 		from UniProtID
 		<where>
-			<if test="uniID !=null">
+			<if test="uniID !=null and uniID != ''">
 				UniID = #{uniID} 
 			</if>
-			<if test="accessID !=null">
+			<if test="accessID !=null and accessID != ''">
 				and accessID = #{accessID} 
 			</if>
 			<if test="taxID !=null and taxID !=0">
 				and TaxID = #{taxID} 
 			</if>
-			<if test="dbInfo !=null">
+			<if test="dbInfo !=null and dbInfo != ''">
 				and DataBaseInfo = #{dbInfo}
 			</if>
 		</where>
@@ -30,16 +30,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select *
 		from UniProtID
 		<where>
-			<if test="uniID !=null">
+			<if test="uniID !=null and uniID != ''">
 				UniID = #{uniID} 
 			</if>
-			<if test="accessID !=null">
+			<if test="accessID !=null and accessID != ''">
 				and accessID = #{accessID} 
 			</if>
 			<if test="taxID !=null and taxID !=0">
 				and TaxID = #{taxID} 
 			</if>
-			<if test="dbInfo !=null">
+			<if test="dbInfo !=null and dbInfo != ''">
 				and DataBaseInfo = #{dbInfo}
 			</if>
 		</where>
@@ -54,23 +54,22 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="taxID !=null and taxID !=0">
 				TaxID = #{taxID},
 			</if>
-			<if test="uniID !=null">
+			<if test="uniID !=null and uniID != ''">
 				UniID = #{uniID},
 			</if>
-			<if test="dbInfo !=null">
+			<if test="dbInfo !=null and dbInfo != ''">
 				DataBaseInfo = #{dbInfo},
 			</if>
-			<if test="accessID !=null">
+			<if test="accessID !=null and accessID != ''">
 				accessID = #{accessID} 
 			</if>
 		</set>
-		<where>
-			<if test="uniID !=null">
+		where
+			<if test="uniID !=null and uniID != ''">
 				and UniID = #{uniID} 
 			</if>
-			<if test="accessID !=null">
+			<if test="accessID !=null and accessID != ''">
 				and accessID = #{accessID} 
 			</if>
-		</where>
 	</update>
 </mapper>

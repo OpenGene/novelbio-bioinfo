@@ -46,13 +46,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				Reference = #{reference}
 			</if>
 		</set>
-		<where>
+		where
 			<if test="geneID != 0">
 				GeneID = #{geneID} 
 			</if>
 			<if test="GoID !=null">
 				and GoID = #{GoID} 
 			</if>
-	    </where> 
 	</update>
 </mapper>

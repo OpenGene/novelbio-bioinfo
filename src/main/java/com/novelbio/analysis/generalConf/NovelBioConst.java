@@ -54,6 +54,7 @@ public class NovelBioConst {
 	 * 这个是最常用的毕赤酵母的ID
 	 */
 	public  final static String DBINFO_PPA_NCBI_ID = "Pichia_NCBI_ID";
+	public  final static String DBINFO_AFFY_GLMAX = "affy_glymax";
 	/**
 	 * 这个是最常用的酿酒酵母的ID
 	 */
@@ -67,7 +68,10 @@ public class NovelBioConst {
 	 * 7位Os号
 	 */
 	public final static String DBINFO_RICE_TIGR = "TIGRrice";
-	
+	/**
+	 * 7位Os号
+	 */
+	public final static String DBINFO_GLYMAX_SOYBASE = "SoyBase";
 	/**
 	 * 玉米
 	 */

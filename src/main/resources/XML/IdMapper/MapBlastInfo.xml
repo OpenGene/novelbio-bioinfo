@@ -10,25 +10,25 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select *
 		from BlastInfo
 		<where>
-			<if test="queryID !=null">
+			<if test="queryID != null and queryID != ''">
 				queryID = #{queryID}
 			</if>
-			<if test="queryTax !=null and queryTax!=0">
+			<if test="queryTax != null and queryTax!=0">
 				and queryTax = #{queryTax}
 			</if>
-			<if test="queryDB !=null">
+			<if test="queryDB != null and queryDB != ''">
 				and queryDB = #{queryDB}
 			</if>
-			<if test="subjectID !=null">
+			<if test="subjectID != null and subjectID != ''">
 				and subjectID = #{subjectID}
 			</if>
-			<if test="subjectTax !=null and subjectTax!=0">
+			<if test="subjectTax != null and subjectTax != 0">
 				and subjectTax = #{subjectTax}
 			</if>
-			<if test="subjectDB !=null">
+			<if test="subjectDB != null and subjectDB != ''">
 				and subjectDB = #{subjectDB}
 			</if>
-			<if test="subjectTab !=null">
+			<if test="subjectTab != null and subjectTab != ''">
 				and subjectTab = #{subjectTab}
 			</if>
 	    </where> 
@@ -37,28 +37,28 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select *
 		from BlastInfo
 		<where>
-			<if test="queryID !=null">
+			<if test="queryID != null and queryID != ''">
 				queryID = #{queryID}
 			</if>
-			<if test="queryTax !=null and queryTax!=0">
+			<if test="queryTax != null and queryTax!=0">
 				and queryTax = #{queryTax}
 			</if>
-			<if test="queryDB !=null">
+			<if test="queryDB != null and queryDB != ''">
 				and queryDB = #{queryDB}
 			</if>
-			<if test="subjectID !=null">
+			<if test="subjectID != null and subjectID != ''">
 				and subjectID = #{subjectID}
 			</if>
-			<if test="subjectTax !=null and subjectTax!=0">
+			<if test="subjectTax != null and subjectTax != 0">
 				and subjectTax = #{subjectTax}
 			</if>
-			<if test="subjectDB !=null">
+			<if test="subjectDB != null and subjectDB != ''">
 				and subjectDB = #{subjectDB}
 			</if>
-			<if test="subjectTab !=null">
+			<if test="subjectTab != null and subjectTab != ''">
 				and subjectTab = #{subjectTab}
 			</if>
-	    </where> 
+	    </where>
 	</select>
 	<insert id="insertBlastInfo" parameterType="BlastInfo">
 		insert into BlastInfo (queryID,queryTax,queryDB,subjectID,subjectTax,subjectDB,identities,evalue,blastDate,subjectTab)
@@ -73,7 +73,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="queryDB != null">
 				queryDB = #{queryDB},
 			</if>
-			<if test="subjectID != null and subjectID != 0 ">
+			<if test="subjectID != null and subjectID != '' ">
 				subjectID = #{subjectID},
 			</if>
 			<if test="subjectTax != null and subjectTax != 0">
@@ -95,8 +95,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				subjectTab = #{subjectTab} 
 			</if>
 		</set>
-		<where>
-			<if test="queryID != null and queryID != '' and queryID != 0">
+		where
+			<if test="queryID != null and queryID != ''">
 				queryID = #{queryID}
 			</if>
 			<if test="queryTax != null and queryTax != 0">
@@ -105,6 +105,5 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="subjectTax != null and subjectTax != 0">
 				and subjectTax = #{subjectTax}
 			</if>
-	    </where> 
 	</update>	
 </mapper>

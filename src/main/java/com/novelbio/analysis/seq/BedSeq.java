@@ -411,7 +411,7 @@ public class BedSeq extends SeqComb{
 	 * @param sort 是否需要排序
 	 * 出错返回null
 	 */
-	public HashMap<String, Integer> getDGEnum(boolean sort) {
+	public HashMap<String, Integer> getDGEnum(boolean sort, boolean allTags) {
 		BedSeq bedseq = null;
 		if (sort) {
 			bedseq = sortBedFile(FileOperate.changeFileSuffix(getSeqFile(), "_DGESort", null));
@@ -420,19 +420,21 @@ public class BedSeq extends SeqComb{
 			bedseq = this;
 		}
 		try {
-			return bedseq.getGeneExpress();
+			return bedseq.getGeneExpress(allTags);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+	
 	/**
+	 * @param Alltags true: 选择全部tag，false，只选择最多的tag
 	 * @return
-	 * 返回每个基因所对应的表达量， 用 int[1]只是为了地址引用。
+	 * 返回每个基因所对应的表达量，包括多个tag之和--除了反向tag， 用 int[1]只是为了地址引用。
 	 * bed文件必须排序
 	 * @throws Exception
 	 */
-	private HashMap<String, Integer> getGeneExpress() throws Exception
+	private HashMap<String, Integer> getGeneExpress(boolean Alltags) throws Exception
 	{
 		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
 		BufferedReader reader = txtSeqFile.readfile();
@@ -441,16 +443,18 @@ public class BedSeq extends SeqComb{
 		String oldLoc = ""; ArrayList<int[]> lsTmpExpValue = new ArrayList<int[]>();
 		int[] tmpCount = new int[]{0}; int tmpLocEnd = -1;
 		while ((content = reader.readLine()) != null) {
-			if (content.contains("NM_018000")) {
-				System.out.println("stop");
-			}
 			String[] ss = content.split("\t");
 			//mapping到互补链上的，是假的信号
 			if (ss[5].equals("-")) {
 				continue;
 			}
 			if (!oldLoc.equals(ss[0]) && !oldLoc.equals("")) {
-				hashResult.put(oldLoc, max(lsTmpExpValue));
+				if (Alltags) {
+					hashResult.put(oldLoc, sum(lsTmpExpValue));
+				}
+				else {
+					hashResult.put(oldLoc, max(lsTmpExpValue));
+				}
 				lsTmpExpValue.clear();
 				tmpCount = new int[]{0};
 				tmpLocEnd = -1;
@@ -480,17 +484,34 @@ public class BedSeq extends SeqComb{
 		}
 		return max;
 	}
-	
 	/**
+	 * 输入int[0] 只有0位有信息
+	 * @param lsReads
+	 * @return
+	 */
+	private int sum(ArrayList<int[]> lsReads)
+	{
+		int sum = 0;
+		for (int[] is : lsReads) {
+			sum = sum + is[0];
+		}
+		return sum;
+	}
+	/**
+	 * 
 	 * 无法设定compressType
 	 * 将bed文件转化成DGE所需的信息，直接可以用DEseq分析的
+	 * @param result
+	 * @param sort 
+	 * @param allTags 是否获得全部的正向tag，false的话，只选择最多的正向tag的数量
+	 * @param bedFile
 	 */
-	public static void dgeCal(String result, boolean sort, String... bedFile)
+	public static void dgeCal(String result, boolean sort, boolean allTags, String... bedFile)
 	{
 		ArrayList<HashMap<String, Integer>> lsDGEvalue = new ArrayList<HashMap<String,Integer>>();
 		for (String string : bedFile) {
 			BedSeq bedSeq = new BedSeq(string);
-			lsDGEvalue.add(bedSeq.getDGEnum(sort));
+			lsDGEvalue.add(bedSeq.getDGEnum(sort,allTags));
 		}
 		HashMap<String, int[]> hashResult = combineHashDGEvalue(lsDGEvalue);
 		TxtReadandWrite txtOut = new TxtReadandWrite(result, true);

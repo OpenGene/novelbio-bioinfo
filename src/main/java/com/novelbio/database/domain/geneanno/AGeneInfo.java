@@ -2,6 +2,9 @@ package com.novelbio.database.domain.geneanno;
 
 import javax.swing.text.Element;
 
+import org.apache.catalina.ha.util.IDynamicProperty;
+import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
+
 public abstract class AGeneInfo {
 	private String symbol;
 	private String locusTag;
@@ -42,6 +45,9 @@ public abstract class AGeneInfo {
 	 * @param idType
 	 */
 	public void setIDType(String idType) {
+		if (idType == null || idType.trim().equals("")) {
+			return;
+		}
 		if (this.idType != null && this.idType.equals(idType)) {
 			return;
 		}
@@ -258,6 +264,7 @@ public abstract class AGeneInfo {
 	}
 	/**
 	 * 增加信息，将信息全部复制过来，并且加上来自哪个数据库，如果本类中已有的信息也会附加上去
+	 * 不包括geneID的添加
 	 * 如果信息重复，就不需要升级，则返回false
 	 * @param geneInfo
 	 * @param infoDBfrom AGeneInfo.FROMDB_NCBI等
@@ -298,7 +305,7 @@ public abstract class AGeneInfo {
 		addDbXrefs(geneInfo.getDbXrefs());
 		addDescription(geneInfo.getDescription());
 		addFullName(geneInfo.getFullName());
-		setGeneUniID(geneInfo.getGeneUniID());
+//		setGeneUniID(geneInfo.getGeneUniID());
 		setIDType(geneInfo.getIDType());
 		setLocusTag(geneInfo.getLocusTag());
 		addMapLocation(geneInfo.getMapLocation());

@@ -25,18 +25,22 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class CombineTab {
 	
 	public static void main(String[] args) {
-		String parentFile = "/media/winE/NBC/Project/Project_Q_Lab/tophat/GO/";
-		String file1 = parentFile + "1vs0gene_exp.diff.xls";
-		String file2 = parentFile + "2vs0gene_exp.diff.xls";
-		String file3 = parentFile + "3vs0gene_exp.diff.xls";
-
+		String parentFile = "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/geneLevel/";
+		String file1 = parentFile + "A.txt";
+		String file2 = parentFile + "B.txt";
+		String file3 = parentFile + "C.txt";
+		String file4 = parentFile + "BC.txt";
+		String file5 = parentFile + "ABC.txt";
+		
 		CombineTab comb = new CombineTab();
-		comb.setColDetai(file1, "1vs0", 2,3,4,5,6);
-		comb.setColDetai(file2, "2vs0", 3,4,5,6);
-		comb.setColDetai(file3, "3vs0", 3,4,5,6);
-
-		comb.setColID(1);
-		comb.exeToFile(parentFile + "Maize_All_nofilter.xls");
+		comb.setColDetai(file1, "A", 1,2,3,4,5,6,11,12,13,14,19,20,21,22,27,28,29,30,35,36,37,38,39,40,41,42,43,44,45,46,47,48);
+		comb.setColDetai(file2, "B", 1,2,3,4,5,6,11,12,13,14,19,20,21,22,27,28,29,30,35,36,37,38,39,40,41,42,43,44,45,46,47,48);
+		comb.setColDetai(file3, "C", 1,2,3,4,5,6,11,12,13,14,19,20,21,22,27,28,29,30,35,36,37,38,39,40,41,42,43,44,45,46,47,48);
+		comb.setColDetai(file4, "BC", 1,2,3,4,5,6,11,12,13,14,19,20,21,22,27,28,29,30,35,36,37,38,39,40,41,42,43,44,45,46,47,48);
+		comb.setColDetai(file5, "ABC", 1,2,3,4,5,6,11,12,13,14,19,20,21,22,27,28,29,30,35,36,37,38,39,40,41,42,43,44,45,46,47,48);
+		
+		comb.setColID(45);
+		comb.exeToFile(parentFile + "Allgene.xls");
 	}
 	
 	

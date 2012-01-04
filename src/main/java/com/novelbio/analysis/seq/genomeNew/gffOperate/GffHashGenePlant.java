@@ -59,6 +59,12 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			splitmRNA="LOC_Os\\d{2}g\\d{5}\\.\\d";
 			this.taxID = 39947;
 		}
+		else if (DB.equals(Species.Gmax)) {
+			GeneName="Glyma\\d{2}g\\d{5}";
+//			splitmRNA="(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";
+			splitmRNA="Glyma\\d{2}g\\d{5}\\.\\d";
+			this.taxID = 3847;
+		}
 	}
 	/**
 	 * 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  "AT\\w{1}G\\d{5}"

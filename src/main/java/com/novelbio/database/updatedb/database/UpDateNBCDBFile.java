@@ -25,17 +25,13 @@ import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.geneanno.UniGene2Go;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
-import com.novelbio.database.mapper.geneanno.MapBlastInfoOld;
 import com.novelbio.database.mapper.geneanno.MapFSTaxID;
-import com.novelbio.database.mapper.geneanno.MapGene2GoOld;
-import com.novelbio.database.mapper.geneanno.MapGeneInfoOld;
-import com.novelbio.database.mapper.geneanno.MapGo2TermOld;
+
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.geneanno.MapUniGene2GoOld;
-import com.novelbio.database.mapper.geneanno.MapUniGeneInfoOld;
-import com.novelbio.database.mapper.geneanno.MapUniProtIDOld;
+
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.ServGo;
+import com.novelbio.database.service.servgeneanno.ServBlastInfo;
 
 
 public class UpDateNBCDBFile {
@@ -878,6 +874,7 @@ public class UpDateNBCDBFile {
 	 */
 	public static void upDateBlastInfo(String blast2InfoFile) throws Exception
 	{
+		ServBlastInfo servBlastInfo = new ServBlastInfo();
 		TxtReadandWrite txtBInfo=new TxtReadandWrite(blast2InfoFile, false);
 		BufferedReader readerBInfo=txtBInfo.readfile();
 		String content="";
@@ -892,7 +889,7 @@ public class UpDateNBCDBFile {
 			//Date date=(Date) new SimpleDateFormat("yyyy-MM-dd").parse(ss[8]);
 			blastInfo.setBlastDate(ss[8]);//这个不会用于查询
 			
-			BlastInfo blastInfo2=MapBlastInfoOld.queryBlastInfo(blastInfo);
+			BlastInfo blastInfo2=servBlastInfo.queryBlastInfo(blastInfo);
 			blastInfo.setQueryDB(ss[2]);
 			blastInfo.setSubjectID(copedIDS.getGenUniID());
 			blastInfo.setSubjectDB(ss[5]);
@@ -912,11 +909,11 @@ public class UpDateNBCDBFile {
 			{
 				if(!blastInfo2.getSubjectID().equals(blastInfo.getSubjectID())&&blastInfo2.getEvalue()>blastInfo.getEvalue()) 
 				{
-					MapBlastInfoOld.upDateBlastInfo(blastInfo);
+					servBlastInfo.updateBlastInfo(blastInfo);
 				}
 				continue;
 			}
-			MapBlastInfoOld.InsertBlastInfo(blastInfo);
+			servBlastInfo.insertBlastInfo(blastInfo);
 		}
 	}
 	

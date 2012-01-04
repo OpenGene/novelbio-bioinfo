@@ -9,6 +9,7 @@ import org.jfree.chart.title.Title;
 
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
 import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.TaxInfo;
@@ -34,9 +35,8 @@ public class CopedID implements CopedIDInt{
 	public final static String IDTYPE_ACCID = "accID"; 
 	public final static String IDTYPE_GENEID = "geneID";
 	public final static String IDTYPE_UNIID = "uniID";
-
+	
 	private CopedIDAbs copedID;
-
 	/**
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
 	 * 
@@ -617,6 +617,38 @@ public class CopedID implements CopedIDInt{
 			hash = "";
 		}
 		return hash.hashCode();
+	}
+
+	@Override
+	public void setUpdateGeneID(String geneUniID, String idType) {
+		copedID.setUpdateGeneID(geneUniID, idType);
+		
+	}
+
+	@Override
+	public void setUpdateGO(String GOID, String GOdatabase, String GOevidence,
+			String GORef, String gOQualifiy) {
+		copedID.setUpdateGO(GOID, GOdatabase, GOevidence, GORef, gOQualifiy);
+	}
+
+	@Override
+	public void setUpdateGeneInfo(AGeneInfo geneInfo) {
+		copedID.setUpdateGeneInfo(geneInfo);
+	}
+
+	@Override
+	public void update(boolean updateUniID) {
+		copedID.update(updateUniID);
+	}
+
+	@Override
+	public void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo) {
+		copedID.setUpdateDBinfo(DBInfo, overlapDBinfo);
+	}
+
+	@Override
+	public void setUpdateRefAccID(int taxID, String DBInfo, String... refAccID) {
+		copedID.setUpdateRefAccID(taxID, DBInfo, refAccID);
 	}
 
 	

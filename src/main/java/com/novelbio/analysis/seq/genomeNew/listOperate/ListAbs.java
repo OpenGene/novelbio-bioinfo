@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import org.apache.poi.ss.formula.functions.T;
-import org.apache.tomcat.util.bcel.classfile.Code;
-
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbs;
 
 public abstract class ListAbs<T extends ElementAbs> {
@@ -36,6 +34,7 @@ public abstract class ListAbs<T extends ElementAbs> {
 	Boolean cis5to3 = null;
 	
 	public boolean isCis5to3() {
+		setCis5to3();
 		if (cis5to3 == null) {
 			return true;
 		}
@@ -51,11 +50,11 @@ public abstract class ListAbs<T extends ElementAbs> {
 			return;
 		}
 		for (ElementAbs ele : lsElement) {
-			if (ele.getStart() < ele.getEnd()) {
+			if (ele.getStartAbs() < ele.getEndAbs()) {
 				cis5to3 = true;
 				break;
 			}
-			else if (ele.getStart() > ele.getEnd()) {
+			else if (ele.getStartAbs() > ele.getEndAbs()) {
 				cis5to3 = false;
 				break;
 			}
@@ -160,12 +159,12 @@ public abstract class ListAbs<T extends ElementAbs> {
 	}
 	public int getStart()
 	{
-		return lsElement.get(0).getStart();
+		return lsElement.get(0).getStartCis();
 	}
 	
 	public int getEnd()
 	{
-		return lsElement.get(lsElement.size() - 1).getEnd();
+		return lsElement.get(lsElement.size() - 1).getEndCis();
 	}
 	
 	/**
@@ -223,12 +222,12 @@ public abstract class ListAbs<T extends ElementAbs> {
 		int exIntronNum = getLocInEleNum(location);
 		int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
 		if (exIntronNum > 0) {
-			loc2ExInStart = Math.abs(location - lsElement.get(NumExon).getStart());//距离本外显子起始 nnnnnnnnC
+			loc2ExInStart = Math.abs(location - lsElement.get(NumExon).getStartCis());//距离本外显子起始 nnnnnnnnC
 			hashLocExInStart.put(location, loc2ExInStart);
 		}
 		else if(exIntronNum < 0) 
 		{   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
-			loc2ExInStart = Math.abs(location - lsElement.get(NumExon).getEnd()) -1;// 距前一个外显子 NnnnCnnnn
+			loc2ExInStart = Math.abs(location - lsElement.get(NumExon).getEndCis()) -1;// 距前一个外显子 NnnnCnnnn
 			hashLocExInStart.put(location, loc2ExInStart);
 		}
 		return loc2ExInStart;
@@ -250,11 +249,11 @@ public abstract class ListAbs<T extends ElementAbs> {
 		int exIntronNum = getLocInEleNum(location);
 		int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
 		if (exIntronNum > 0) {
-			 loc2ExInEnd = Math.abs(lsElement.get(NumExon).getEnd()- location);//距离本外显子终止  Cnnnnnnn
+			 loc2ExInEnd = Math.abs(lsElement.get(NumExon).getEndCis()- location);//距离本外显子终止  Cnnnnnnn
 		}
 		else if(exIntronNum < 0) 
 		{   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
-			 loc2ExInEnd = Math.abs(lsElement.get(NumExon+1).getStart() - location) - 1;// 距后一个外显子 nnCnnnnN
+			 loc2ExInEnd = Math.abs(lsElement.get(NumExon+1).getStartCis() - location) - 1;// 距后一个外显子 nnCnnnnN
 		}
 		hashLocExInEnd.put(location, loc2ExInEnd);
 		return loc2ExInEnd;
@@ -284,12 +283,12 @@ public abstract class ListAbs<T extends ElementAbs> {
 		for(int i = 0; i < lsElement.size(); i++)  //一个一个Exon的检查
 		{
 			// tss             0-0 0-1        1-0 1-1      2-0 2-1       3-0 cood 3-1                 4-0  4-1               5
-			if(location <= lsElement.get(i).getEnd() && location >= lsElement.get(i).getStart()) {
+			if(location <= lsElement.get(i).getEndCis() && location >= lsElement.get(i).getStartCis()) {
 				hashCodInEleNum.put(location, i + 1);
 				return i + 1;
 			}
 			// tss             0-0 0-1        1-0 1-1      2-0 2-1       3-0 3-1        cood         4-0  4-1               5
-			else if(i<= lsElement.size() - 2 && location > lsElement.get(i).getEnd() && location < lsElement.get(i+1).getStart()) {
+			else if(i<= lsElement.size() - 2 && location > lsElement.get(i).getEndCis() && location < lsElement.get(i+1).getStartCis()) {
 				hashCodInEleNum.put(location, -(i + 1));
 				return -(i + 1);
 			}
@@ -318,12 +317,12 @@ public abstract class ListAbs<T extends ElementAbs> {
 		for(int i = 0; i < lsElement.size(); i++)  //一个一个Exon的检查
 		{
 			//		    5-1 cood 5-0    4-1 uag 4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			if(location >= lsElement.get(i).getEnd() && location <= lsElement.get(i).getStart()) {
+			if(location >= lsElement.get(i).getEndCis() && location <= lsElement.get(i).getStartCis()) {
 				hashCodInEleNum.put(location, i + 1);
 				return i + 1;
 			}
 			//		    5-1 cood 5-0    4-1 uag 4-0     3-1 cood 3-0         2-1 2-0    1-1 gta 1-0    0-1  cood 0-tss  cood
-			else if(i <= lsElement.size() - 2 && location < lsElement.get(i).getEnd() && location > lsElement.get(i+1).getStart()) {
+			else if(i <= lsElement.size() - 2 && location < lsElement.get(i).getEndCis() && location > lsElement.get(i+1).getStartCis()) {
 				hashCodInEleNum.put(location, -(i + 1));
 				return -(i + 1);
 			}
@@ -332,7 +331,45 @@ public abstract class ListAbs<T extends ElementAbs> {
 		return 0;
 	}
 	
+	/**
+	 * 获得所有外显子的长度之和
+	 */
+	public int getListLen() {
+		int isoLen = 0;
+		for (T exons : lsElement) {
+			isoLen = isoLen + exons.getLen();
+		}
+		return isoLen;
+	}
 	
+	public int size()
+	{
+		return lsElement.size();
+	}
+	public T get(int i)
+	{
+		return lsElement.get(i);
+	}
+	
+	/**
+	 * 外显子比较如果一模一样则返回true；
+	 * @param lsOtherExon
+	 * @return
+	 */
+	protected boolean compIso(ListAbs<T> lsOther)
+	{
+		if (lsOther.size() != size()) {
+			return false;
+		}
+		for (int i = 0; i < lsOther.size(); i++) {
+			T otherT = lsOther.get(i);
+			T thisT = get(i);
+			if (exonOld[0] != exonThis[0] || exonOld[1] != exonThis[1]) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
 
 /**
@@ -343,12 +380,12 @@ class CompS2M implements Comparator<ElementAbs>
 {
 	@Override
 	public int compare(ElementAbs o1, ElementAbs o2) {
-		Integer o1start = o1.getStart();
-		Integer o2start = o2.getStart();
+		Integer o1start = o1.getStartCis();
+		Integer o2start = o2.getStartCis();
 		int comp = o1start.compareTo(o2start);
 		if (comp == 0) {
-			Integer o1end = o1.getEnd();
-			Integer o2end = o2.getEnd();
+			Integer o1end = o1.getEndCis();
+			Integer o2end = o2.getEndCis();
 			return o1end.compareTo(o2end);
 		}
 		return comp;
@@ -362,14 +399,16 @@ class CompM2S implements Comparator<ElementAbs>
 {
 	@Override
 	public int compare(ElementAbs o1, ElementAbs o2) {
-		Integer o1start = o1.getStart();
-		Integer o2start = o2.getStart();
+		Integer o1start = o1.getStartCis();
+		Integer o2start = o2.getStartCis();
 		int comp = o1start.compareTo(o2start);
 		if (comp == 0) {
-			Integer o1end = o1.getEnd();
-			Integer o2end = o2.getEnd();
+			Integer o1end = o1.getEndCis();
+			Integer o2end = o2.getEndCis();
 			return -o1end.compareTo(o2end);
 		}
 		return -comp;
 	}
+	
+
 }

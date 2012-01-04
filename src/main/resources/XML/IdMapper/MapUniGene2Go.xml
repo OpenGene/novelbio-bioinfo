@@ -46,13 +46,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				Reference = #{reference}
 			</if>
 		</set>
-		<where>
+		where
 			<if test="uniProtID != null and uniProtID != ''">
 				UniProtID = #{uniProtID} 
 			</if>
 			<if test="GOID !=null and GOID != ''">
 				and GOID = #{GOID} 
 			</if>
-		</where>
 	</update>
 </mapper>

@@ -85,10 +85,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				ModificationDate = #{modDate}
 			</if>
 		</set>
-		<where>
-			<if test="geneID != 0">
-				GeneID = #{geneID} 
-			</if>
-	    </where> 
+		where 
+		<if test="geneID !=null and geneID != '' ">
+				GeneID = #{geneID}
+		</if>
 	</update>
 </mapper>

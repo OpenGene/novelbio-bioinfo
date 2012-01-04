@@ -16,19 +16,23 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class DGECope {
 
 	public static void main(String[] args) {
+//		getExpress();
 		combDGE();
 	}
 	
 	public static void getExpress() {
-		String bedFile = "/media/winE/NBC/Project/RNA-Seq_CR_20111201/HUMarbE_E6dn.fq_filter_map_Sorted.bed";
+		String bedFile = "/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/1.bwa_all_sort.bed";
 		getDGEexpress(bedFile, FileOperate.changeFileSuffix(bedFile, "_dgeExpress", "txt"));
-		bedFile = "/media/winE/NBC/Project/RNA-Seq_CR_20111201/HUMarbE_NS6d.fq_filter_map_Sorted.bed";
+		bedFile = "/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/2.bwa_all_sort.bed";
 		getDGEexpress(bedFile, FileOperate.changeFileSuffix(bedFile, "_dgeExpress", "txt"));
+		bedFile = "/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/3.bwa_all_sort.bed";
+		getDGEexpress(bedFile, FileOperate.changeFileSuffix(bedFile, "_dgeExpress", "txt"));
+
 	}
 	public static void getDGEexpress(String bedFile, String outFile) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 		BedSeq bedSeq = new BedSeq(bedFile);
-		HashMap<String, Integer> hashDge = bedSeq.getDGEnum(false);
+		HashMap<String, Integer> hashDge = bedSeq.getDGEnum(false, true);
 		for (Entry<String, Integer> entry : hashDge.entrySet()) {
 			String result = entry.getKey();
 			int exp = entry.getValue();
