@@ -651,6 +651,11 @@ public class CopedID implements CopedIDInt{
 		copedID.setUpdateRefAccID(taxID, DBInfo, refAccID);
 	}
 
+	@Override
+	public void setUpdateBlastInfo(BlastInfo blastInfo) {
+		copedID.setUpdateBlastInfo(blastInfo);
+	}
+
 	
 
 	

@@ -122,7 +122,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		return this.identities;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
-	private double evalue=100;
+	private double evalue = 100;
 	/**
 	 * 设置查找的evalue，初值为100
 	 */

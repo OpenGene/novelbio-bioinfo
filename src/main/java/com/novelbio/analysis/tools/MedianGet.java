@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.MathComput;
 
 /**
@@ -26,8 +27,8 @@ public class MedianGet {
 		MedianGet medianGet = new MedianGet();
 //		medianGet.getMedian("/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/20111113/miRNA治疗后VS治疗前.xls", 1, 
 //				"/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/20111113/miRNA治疗后VS治疗前_cope.xls", 2,3,4,5,6,7,8,9,10,11,12,13,14,15);
-		medianGet.getMedian("/home/zong0jie/桌面/LncRNA-Case1vsCol.xls", 1, 
-		"/home/zong0jie/桌面/LncRNA-Case1vsCol_coped.xls", 2,3,4,5,6,7,8,9,10);
+		medianGet.getMedian("/home/zong0jie/桌面/复件 信号值.txt", 1, 
+		"/home/zong0jie/桌面/复件 信号值_coped.xls", 2,3,4,5,6,7);
 	}
 
 	/**
@@ -43,9 +44,7 @@ public class MedianGet {
 		for (int i = 0; i < colNum.length; i++) {
 			colNum[i] --;
 		}
-		ExcelOperate excelComb = new ExcelOperate();
-		excelComb.openExcel(excelFile);
-		ArrayList<String[]> lsExcel = excelComb.ReadLsExcel(1, 1, excelComb.getRowCount(), excelComb.getColCount());
+		ArrayList<String[]> lsExcel = ExcelTxtRead.readLsExcelTxt(excelFile, 1);
 		lsResult.add(lsExcel.remove(0));
 		for (String[] strings : lsExcel) {
 			if (hashGeneInfo.containsKey(strings[colAccID].trim()) ) {
@@ -73,11 +72,6 @@ public class MedianGet {
 		excelOperate.openExcel(outFile);
 		excelOperate.WriteExcel(1, 1, lsResult);
 	}
-	
-	
-	
-	
-	
 	
 	/**
 	 * @param lsInfo 指定几行信息

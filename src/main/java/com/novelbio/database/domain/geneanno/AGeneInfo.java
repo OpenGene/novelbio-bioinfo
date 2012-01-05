@@ -99,6 +99,9 @@ public abstract class AGeneInfo {
 
 	
 	public String getDescription() {
+		if (description == null) {
+			return "";
+		}
 		return description;
 	}
 	public void setDescription(String description) {

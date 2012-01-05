@@ -7,11 +7,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-
-import com.google.common.base.Splitter;
-import com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GuiBlastJpanel;
-import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modcopeid.CopedID;
 
@@ -99,13 +95,14 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 		if (blast) 
 			length = 6;
 		else 
-			length = 2; 
+			length = 2;
 		
 		for (int i = 0; i<lsGeneID.size(); i++) {
 			String geneID = lsGeneID.get(i).trim();
 		
 			try {
-				CopedID copedID = new CopedID(geneID, taxID, false);
+				CopedID copedID = new CopedID(geneID, taxID);
+				copedID.setBlastInfo(1e-10, StaxID);
 //				String[] tmpAnno = ServAnno.getAnno(geneID, taxID, blast, StaxID, evalue);
 				String[] tmpAnno = copedID.getAnno(blast);
 				if (tmpAnno == null) {
