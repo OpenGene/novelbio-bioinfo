@@ -1346,12 +1346,10 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 
 class ExonInfo implements ElementAbs
 {
-	boolean cis;
 	int[] exon = new int[2];
 
-	public ExonInfo(int[] exon, boolean cis) {
+	public ExonInfo(int[] exon) {
 		this.exon = exon;
-		this.cis = cis;
 	}
 	/**
 	 * 根据正反向自动设定起点和终点
@@ -1360,7 +1358,6 @@ class ExonInfo implements ElementAbs
 	 * @param cis
 	 */
 	public ExonInfo(int start, int end, boolean cis) {
-		setCis(cis);
 		if (cis) {
 			exon[0] = Math.min(start, end);
 			exon[1] = Math.max(start, end);
@@ -1373,12 +1370,15 @@ class ExonInfo implements ElementAbs
 	
 	public ExonInfo() {
 	}
-	public void setCis(boolean cis) {
-		this.cis = cis;
-	}
+ 
 	@Override
 	public boolean isCis5to3() {
-		return cis;
+		if (exon[0] < exon[1]) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	@Override
