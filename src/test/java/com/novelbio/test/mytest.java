@@ -97,12 +97,17 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		CopedID copedID = new CopedID("Glyma0041s00240", 0);
-		copedID.setBlastInfo(1e-10, 3702);
-		String[] anno = copedID.getAnno(true);
-		for (String string : anno) {
-			System.out.println(string);
+		ArrayList<Double> lsNum = new ArrayList<Double>();
+		for (int i = 1; i <= 10; i++) {
+			lsNum.add((double) i);
 		}
+		System.out.println(0+" " +Collections.binarySearch(lsNum, 0d));
+		System.out.println(1+" " +Collections.binarySearch(lsNum, 1d));
+		System.out.println(1.5+" " +Collections.binarySearch(lsNum, 1.5d));
+		System.out.println(2+" " +Collections.binarySearch(lsNum, 2d));
+		System.out.println(2.5+" " +Collections.binarySearch(lsNum, 2.5d));
+		System.out.println(10+" " +Collections.binarySearch(lsNum, 10d));
+		System.out.println(10.5+" " +Collections.binarySearch(lsNum, 10.5d));
 	}
 	
 	

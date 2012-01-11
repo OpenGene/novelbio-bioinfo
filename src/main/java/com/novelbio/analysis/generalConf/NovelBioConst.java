@@ -63,7 +63,10 @@ public class NovelBioConst {
 	 * TAIR的AT编号
 	 */
 	public final static String DBINFO_ATH_TAIR = "TAIRath";
-	
+	/**
+	 * ZFIN的斑马鱼
+	 */
+	public final static String DBINFO_DRE_ZFIN = "ZFINdre";
 	/**
 	 * 7位Os号
 	 */

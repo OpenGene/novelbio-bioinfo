@@ -158,11 +158,10 @@ public interface CopedIDInt{
 	 */
 	void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo);
 	/**
-	 * 如果新的ID不加入UniID，那么就写入指定的文件中
-	 * 文件需要最开始用set指定
+记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
 	 * @param updateUniID
 	 */
-	void setUpdateRefAccID(int taxID, String DBInfo, String... refAccID);
+	void setUpdateRefAccID(String... refAccID);
 	/**
 	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级
 	 * 

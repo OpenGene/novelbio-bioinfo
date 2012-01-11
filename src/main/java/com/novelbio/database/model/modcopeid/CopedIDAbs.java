@@ -479,7 +479,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
 	 */
 	@Override
-	public void setUpdateRefAccID(int taxID, String DBInfo, String... refAccID) {
+	public void setUpdateRefAccID(String... refAccID) {
 		lsRefAccID.clear();
 		for (String string : refAccID) {
 			lsRefAccID.add(string);
@@ -682,6 +682,9 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	// /////////////////////////////////////////////////////
 
 	private void updateBlastInfo() {
+		if (lsBlastInfosUpdate == null) {
+			return;
+		}
 		for (BlastInfo blastInfo : lsBlastInfosUpdate) {
 			servBlastInfo.updateBlast(blastInfo);
 		}

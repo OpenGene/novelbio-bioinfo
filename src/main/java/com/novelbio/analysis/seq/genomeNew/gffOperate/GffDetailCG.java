@@ -1,5 +1,7 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
+import com.novelbio.analysis.seq.genomeNew.listOperate.ElementAbs;
+
 /**
  * 针对UCSC的CpGall文件设计的Detai信息
  * @包含超类信息

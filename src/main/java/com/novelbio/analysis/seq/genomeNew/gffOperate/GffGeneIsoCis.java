@@ -37,43 +37,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	 */
 	@Override
 	protected void setCod2ExInStartEnd() {}
-	
-	/**
-	 * 当坐标在5UTR的外显子中时使用
-	 * 方向为正向
-	 */
-	@Override
-	protected void setCod2UTR5() {
-		int NumExon = numExIntron - 1; //实际数量减去1，方法内用该变量运算
-		
-		cod2UTRstartmRNA = 0; cod2UTRendmRNA = 0;
-		//             tss             0-0   0-1        1-0 cood 1-1           2-0  2-1               3-0  atg  3-1               4               5
-		for (int i = 0; i < NumExon; i++) {
-			cod2UTRstartmRNA = cod2UTRstartmRNA + lsElement.get(i)[1] - lsElement.get(i)[0] + 1;
-		}
-		cod2UTRstartmRNA = cod2UTRstartmRNA + cod2ExInStart;
-		//  tss             0        1-0    cood  atg  1-1      2               3               4               5
-		if (ATGsite <= lsElement.get(NumExon)[1]) //一定要小于等于
-		{
-			cod2UTRendmRNA = ATGsite - coord - 1;//CnnnnnnATG
-		}
-		// tss             0        1-0    cood   1-1      2               3-0   atg   3-1                 4               5
-		else
-		{
-			cod2UTRendmRNA = cod2ExInEnd;  ///Cnnnnnn
-			int m = NumExon+1;
-			while ( lsElement.get(m)[1] < ATGsite  ) 
-			{
-				cod2UTRendmRNA = cod2UTRendmRNA + lsElement.get(m)[1] - lsElement.get(m)[0] + 1;
-				m++;
-			}
-			cod2UTRendmRNA = cod2UTRendmRNA + ATGsite - lsElement.get(m)[0];//nnnnnnnATG
-			
-			if (ATGsite < lsElement.get(m)[0]) {
-				logger.error("setCod2UTR5Cis error: coord is out of the isoform, but the codLoc is: "+codLoc+" coord: "+ coord + IsoName);
-			}
-		}
-	}
+
 	
 	/**
 	 * 当坐标在3UTR的外显子中时使用
@@ -190,96 +154,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	}
 	
 
-	/**
-	 * 该点在外显子中为正数，在内含子中为负数
-	 * 为实际数目
-	 * 都不在为0
-	 * @return
-	 */
-	@Override
-	public int getLocExInNum(int location) {
-		if (hashLocExInNum == null) {
-			hashLocExInNum = new HashMap<Integer, Integer>();
-		}
-		else if (hashLocExInNum.containsKey(location)) {
-			return hashLocExInNum.get(location);
-		}
 
-		if (    location < lsElement.get(0)[0] || 
-				location > lsElement.get(lsElement.size()-1)[1]  )  	{
-//			hashLocExInNum.put(location, 0);  //不在转录本内的坐标不用理会
-			return 0;
-		}
-		for(int i = 0; i < lsElement.size(); i++)  //一个一个Exon的检查
-		{
-			// tss             0-0 0-1        1-0 1-1      2-0 2-1       3-0 cood 3-1                 4-0  4-1               5
-			if(location <= lsElement.get(i)[1] && location >= lsElement.get(i)[0]) {
-				hashLocExInNum.put(location, i + 1);
-				return i + 1;
-			}
-			// tss             0-0 0-1        1-0 1-1      2-0 2-1       3-0 3-1        cood         4-0  4-1               5
-			else if(i<= lsElement.size() - 2 && location > lsElement.get(i)[1] && location < lsElement.get(i+1)[0]) {
-				hashLocExInNum.put(location, -(i + 1));
-				return -(i + 1);
-			}
-		}
-		hashLocExInNum.put(location, 0);
-		return 0;
-	}
-
-	/**
-	 * 坐标到外显子/内含子 起点距离
-	 * @param location 坐标
-	 */
-	@Override
-	public int getLoc2ExInStart(int location) {
-		if (hashLocExInStart == null) {
-			hashLocExInStart = new HashMap<Integer, Integer>();
-		}
-		else if (hashLocExInStart.containsKey(location)) {
-			return hashLocExInStart.get(location);
-		}
-		int loc2ExInStart = -1000000000;
-		int exIntronNum = getLocExInNum(location);
-		int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
-		if (exIntronNum > 0) {
-			loc2ExInStart = location - lsElement.get(NumExon)[0];//距离本外显子起始 nnnnnnnnC
-			hashLocExInStart.put(location, loc2ExInStart);
-		}
-		else if(exIntronNum < 0) 
-		{   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
-			loc2ExInStart = location - lsElement.get(NumExon)[1] -1;// 距前一个外显子 NnnnCnnnn
-			hashLocExInStart.put(location, loc2ExInStart);
-		}
-		return loc2ExInStart;
-	}
-
-	/**
-	 * 坐标到外显子/内含子 终点距离
-	 * @param location 坐标
-	 *  * 该点在外显子中为正数，在内含子中为负数，为实际数目
-	 */
-	@Override
-	public int getLoc2ExInEnd(int location) {
-		if (hashLocExInEnd == null) {
-			hashLocExInEnd = new HashMap<Integer, Integer>();
-		}
-		else if (hashLocExInEnd.containsKey(location)) {
-			return hashLocExInEnd.get(location);
-		}
-		int loc2ExInEnd = -1000000000;
-		int exIntronNum = getLocExInNum(location);
-		int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
-		if (exIntronNum > 0) {
-			 loc2ExInEnd = lsElement.get(NumExon)[1] - location;//距离本外显子终止  Cnnnnnnn
-		}
-		else if(exIntronNum < 0) 
-		{   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
-			 loc2ExInEnd = lsElement.get(NumExon+1)[0] - location - 1;// 距后一个外显子 nnCnnnnN
-		}
-		hashLocExInEnd.put(location, loc2ExInEnd);
-		return loc2ExInEnd;
-	}
 	
 	
 	/**
@@ -443,7 +318,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 
 
 	@Override
-	public boolean isCis5to3() {
+	public Boolean isCis5to3() {
 		return true;
 	}
 	
@@ -457,20 +332,20 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 
 	@Override
 	public int getStartAbs() {
-		return lsElement.get(0)[0];
+		return lsElement.get(0).getStartCis();
 	}
 
 	@Override
 	public int getEndAbs() {
-		return lsElement.get(lsElement.size() - 1)[1];
+		return lsElement.get(lsElement.size() - 1).getEndCis();
 	}
 	@Override
 	protected String getGFFformatExonMISO(String geneID, String title,
 			String strand) {
 		String geneExon = "";
 		for (int i = 0; i < getIsoInfo().size(); i++) {
-			int[] exons = getIsoInfo().get(i);
-			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" +exons[0] + "\t" + exons[1]
+			ExonInfo exons = getIsoInfo().get(i);
+			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" + exons.getStartAbs() + "\t" + exons.getEndAbs()
 		     + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=exon:" + getIsoName()  + ":" + (i+1) +";Parent=" + getIsoName() + " \r\n";
 		}
 		return geneExon;
@@ -479,54 +354,12 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	@Override
 	protected String getGTFformatExon(String geneID, String title, String strand) {
 		String geneExon = "";
-		for (int[] exons : getIsoInfo()) {
-			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" +exons[0] + "\t" + exons[1]
+		for (ExonInfo exons : getIsoInfo()) {
+			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" + exons.getStartAbs()  + "\t" + exons.getEndAbs() 
 		     + "\t"+"."+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id \""+getIsoName()+"\"; \r\n";
 		}
 		return geneExon;
 	}
-	/**
-	 * 从大到小排序
-	 */
-	@Override
-	protected void sortIso() {
-		for (int i = 0; i < lsElement.size(); i++) {
-			int[] is = lsElement.get(i);
-			if (is[0] > is[1]) {
-				int tmp = is[1];
-				is[1] = is[0];
-				is[0] = tmp;
-				logger.error("exon坐标有问题：" + is[0]+"\t" + is[1]);
-			}
-		}
-		
-		Collections.sort(lsElement, new Comparator<int[]>() {
-			@Override
-			public int compare(int[] o1, int[] o2) {
-				if (o1[0] < o2[0]) {
-					return -1;
-				}
-				else if (o1[0] > o2[0]) {
-					return 1;
-				}
-				else {
-					return 0;
-				}
-			}
-		});
-	}
 
-	@Override
-	protected void sortIsoRead() {
-		Collections.sort(lsElement, new Comparator<int[]>() {
-
-			@Override
-			public int compare(int[] o1, int[] o2) {
-				Integer a = o1[0];
-				Integer b = o2[0];
-				return a.compareTo(b);
-			}
-		});
-	}
 	
 }

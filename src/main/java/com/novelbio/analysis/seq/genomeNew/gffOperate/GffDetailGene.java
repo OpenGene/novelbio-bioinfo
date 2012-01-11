@@ -223,7 +223,7 @@ public class GffDetailGene extends GffDetailAbs
 	 * 转录方向，假设同一基因不管多少转录本都同一转录方向
 	 * 如果为null，说明没有方向，一个转录本里面既有正向也有反向，总体就没有方向
 	 */
-	public Boolean isCis5to3() {
+	public boolean isCis5to3() {
 		if (cis5to3 == null) {
 			return getLongestSplit().isCis5to3();
 		}
@@ -258,11 +258,11 @@ public class GffDetailGene extends GffDetailAbs
 		}
 		ArrayList<Integer> lslength = new ArrayList<Integer>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			ArrayList<int[]> lsExon = gffGeneIsoInfo.getIsoInfo();
+			ArrayList<ExonInfo> lsExon = gffGeneIsoInfo.getIsoInfo();
 			if (lsExon.size() == 0)
 				lslength.add(0);
 			else
-				lslength.add(Math.abs(lsExon.get(0)[0] - lsExon.get(lsExon.size()-1)[1]));
+				lslength.add(gffGeneIsoInfo.getLen());
 		}
 		int max = lslength.get(0); int id = 0;
 		for (int i = 0; i < lslength.size(); i++) {
@@ -303,68 +303,20 @@ public class GffDetailGene extends GffDetailAbs
 	public int getTypeLength(String type,int num)  
 	{
 		GffGeneIsoInfo gffGeneIsoInfo = getLongestSplit();
-		ArrayList<int[]> lsExon = gffGeneIsoInfo.getIsoInfo();
-		int exonNum = lsExon.size();
 		//TODO 如果超出需要返回0
 		if (type.equals(INTRON)) {
-			return Math.abs(lsExon.get(num)[0] - lsExon.get(num-1)[1]) - 1;
+			return gffGeneIsoInfo.getLenIntron(num);
 		}
 		if (type.equals(EXON)) {
-			return Math.abs(lsExon.get(num)[1] - lsExon.get(num)[0]) + 1;
+			return gffGeneIsoInfo.getLenExon(num);
 		}
 		if (type.equals(UTR5)) 
 		{
-			int FUTR=0;
-			if (gffGeneIsoInfo.isCis5to3()) { //0    1     2     3     4     5   每个外显子中 1 > 0      0    atg   1
-				for (int i = 0; i <exonNum; i++) 
-				{
-					if(lsExon.get(i)[1] < gffGeneIsoInfo.getATGSsite())    // 0       1   atg    
-						FUTR = FUTR + lsExon.get(i)[1] - lsExon.get(i)[0] + 1;
-					else if (lsExon.get(i)[0] < gffGeneIsoInfo.getATGSsite() && lsExon.get(i)[1] >= gffGeneIsoInfo.getATGSsite())  //     0    atg    1 
-						FUTR = FUTR + gffGeneIsoInfo.getATGSsite() - lsExon.get(i)[0];
-					else if (lsExon.get(i)[0] >= gffGeneIsoInfo.getATGSsite())  //     atg   0       1   
-						break;
-				}
-			}
-			else { //5  4   3   2   1   0    每个外显子中 0 > 1     1    gta   0
-				for (int i = 0; i < exonNum; i++) 
-				{
-					if(lsExon.get(i)[1] > gffGeneIsoInfo.getATGSsite())  // gta   1      0
-						FUTR = FUTR + lsExon.get(i)[0] - lsExon.get(i)[1] + 1;
-					else if (lsExon.get(i)[0] > gffGeneIsoInfo.getATGSsite()  && lsExon.get(i)[1] <= gffGeneIsoInfo.getATGSsite() ) //   1     gta      0
-						FUTR = FUTR + lsExon.get(i)[0] - gffGeneIsoInfo.getATGSsite();
-					else if (lsExon.get(i)[0] <= gffGeneIsoInfo.getATGSsite())   //   1        0      gta 
-						break;
-				}
-			}
-			return FUTR;
+			return gffGeneIsoInfo.getLenUTR5();
 		}
 		if (type.equals(UTR3)) 
 		{
-			int TUTR=0;
-			if (gffGeneIsoInfo.isCis5to3()) { //0    1     2     3     4     5   每个外显子中 0 < 1      0    uag   1
-				for (int i = exonNum - 1; i >=0 ; i--) 
-				{
-					if(lsExon.get(i)[0] > gffGeneIsoInfo.getUAGsite())  //      uag     0      1
-						TUTR = TUTR + lsExon.get(i)[1] - lsExon.get(i)[0] + 1;
-					else if (lsExon.get(i)[1] > gffGeneIsoInfo.getUAGsite() && lsExon.get(i)[0] <= gffGeneIsoInfo.getUAGsite())  //     0     uag    1
-						TUTR = TUTR + lsExon.get(i)[1] - gffGeneIsoInfo.getUAGsite();
-					else if (lsExon.get(i)[1] <= gffGeneIsoInfo.getUAGsite())   //   0      1     uag   
-						break;
-				}
-			}
-			else { //5  4   3   2   1   0    每个外显子中 0 > 1      1    gau  0
-				for (int i = exonNum-1; i >=0 ; i--) 
-				{
-					if(lsExon.get(i)[0] < gffGeneIsoInfo.getUAGsite())  //     1      0     gau
-						TUTR = TUTR + lsExon.get(i)[0] - lsExon.get(i)[1] + 1;
-					else if (lsExon.get(i)[0] >= gffGeneIsoInfo.getUAGsite() && lsExon.get(i)[1] < gffGeneIsoInfo.getUAGsite())  //     1    gau    0     
-						TUTR = TUTR + gffGeneIsoInfo.getUAGsite() - lsExon.get(i)[1];
-					else if (lsExon.get(i)[1] >= gffGeneIsoInfo.getUAGsite())   //   gau   1      0     
-						break;
-				}
-			}
-			return TUTR;
+			return gffGeneIsoInfo.getLenUTR3();
 		}
 		return -1000000;
 	}

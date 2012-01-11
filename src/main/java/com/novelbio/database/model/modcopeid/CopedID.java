@@ -647,8 +647,8 @@ public class CopedID implements CopedIDInt{
 	}
 
 	@Override
-	public void setUpdateRefAccID(int taxID, String DBInfo, String... refAccID) {
-		copedID.setUpdateRefAccID(taxID, DBInfo, refAccID);
+	public void setUpdateRefAccID(String... refAccID) {
+		copedID.setUpdateRefAccID(refAccID);
 	}
 
 	@Override

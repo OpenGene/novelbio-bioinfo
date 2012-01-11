@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetail;
+import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CmpListCluster;
 
@@ -23,7 +25,7 @@ import com.novelbio.base.dataStructure.CmpListCluster;
  * @locHashtable hash（LOCID）--GeneInforlist
  * @LOCIDList 顺序存储每个基因号或条目号
  */
-public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M extends GffCodAbsDu<T, K>>{
+public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M extends GffCodAbsDu<T, K>> {
 	/**
 	 * 起点默认为开区间
 	 */
@@ -70,6 +72,26 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	  * 会有有多个LOCID共用一个区域的情况，所以有多个不同的LOCID指向同一个GffdetailUCSCgene<br>
 	 */
 	protected HashMap<String,T> locHashtable;
+	/**
+	 * 哈希表LOC--在arraylist上的Num<br>
+	 * 用于快速将LOC编号对应到其对应的chr上的位置<br>
+	 */
+	protected HashMap<String,Integer> hashLoc2Num;
+	/**
+	 * 返回哈希表 LOC--LOC细节<br/>
+	 * 用于快速将LOC编号对应到LOC的细节
+	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的基因编号 <br/>
+	 */
+	public HashMap<String,Integer> getHashLocNum() {
+		if (hashLoc2Num != null) {
+			return hashLoc2Num;
+		}
+		hashLoc2Num = new LinkedHashMap<String, Integer>();
+		for (ListAbs<T> listAbs : Chrhash.values()) {
+			listAbs.getHashLocNum(hashLoc2Num);
+		}
+		return hashLoc2Num;
+	}
 	
 	/**
 	 * 返回哈希表 LOC--LOC细节<br/>
@@ -77,6 +99,13 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的基因编号 <br/>
 	 */
 	public HashMap<String,T> getLocHashtable() {
+		if (locHashtable != null) {
+			return locHashtable;
+		}
+		locHashtable = new LinkedHashMap<String, T>();
+		for (ListAbs<T> listAbs : Chrhash.values()) {
+			listAbs.getLocHashtable(locHashtable);
+		}
 		return locHashtable;
 	}
 	
@@ -100,17 +129,24 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 * 顺序获得，可以获得某个LOC在基因上的定位。
 	 * 其中TigrGene的ID每个就是一个LOCID，也就是说TIGR的ID不需要进行切割，当然切了也没关系
 	 */
-	protected ArrayList<String> LOCChrHashIDList;
+//	protected ArrayList<String> LOCChrHashIDList;
 	
 	/**
-	 * 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就用"/"隔开，
+	 * 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就用ListAbs.SEP隔开，
 	 * 那么该list中的元素用split("/")分割后，上locHashtable就可提取相应的GffDetail，目前主要是Peak用到
 	 * 顺序获得，可以获得某个LOC在基因上的定位。
 	 * 其中TigrGene的ID每个就是一个LOCID，也就是说TIGR的ID不需要进行切割，当然切了也没关系
 	 */
-	public ArrayList<String> getLOCChrHashIDList() {
-		return LOCChrHashIDList;
-	}
+//	public ArrayList<String> getLOCChrHashIDList() {
+//		if (LOCChrHashIDList != null) {
+//			return LOCChrHashIDList;
+//		}
+//		LOCChrHashIDList = new ArrayList<String>();
+//		for (ListAbs<T> lsAbs : Chrhash.values()) {
+//			LOCChrHashIDList.addAll(lsAbs.getLOCIDList());
+//		}
+//		return LOCChrHashIDList;
+//	}
 	
 	/**
 	 * 这个是真正的查找用hash表<br>
@@ -120,7 +156,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	protected HashMap<String,ArrayList<T>> Chrhash;
+	protected LinkedHashMap<String,ListAbs<T>> Chrhash;
 	
 	/**
 	 * 返回真正的查找用hash表<br>
@@ -130,18 +166,10 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	protected HashMap<String,ArrayList<T>> getChrhash()
+	protected HashMap<String,ListAbs<T>> getChrhash()
 	{
 		return Chrhash;
 	}
-	
-	
-	
-
-	
-	
-	
-	
 	
 	/**
 	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
@@ -150,11 +178,11 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 */
 	public K searchLocation(String chrID, int Coordinate) {
 		chrID = chrID.toLowerCase();
-		ArrayList<T> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
+		ListAbs<T> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			return null;
 		}
-		int[] locInfo = LocPosition(chrID, Coordinate);// 二分法查找peaknum的定位
+		int[] locInfo = Loclist.LocPosition(Coordinate);// 二分法查找peaknum的定位
 		if (locInfo == null) {
 			return null;
 		}
@@ -207,7 +235,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 		if (cod1 < 0 && cod2 < 0) {
 			return null;
 		}
-		ArrayList<T> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
+		ListAbs<T> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			return null;
 		}
@@ -237,62 +265,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 			K gffCod1, K gffCod2);
 	
 	
-	/**
-	 * 二分法查找location所在的位点,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
-	 * 返回一个int[3]数组，<br>
-	 * 0: 1-基因内 2-基因外<br>
-	 * 1：本基因序号（定位在基因内） / 上个基因的序号(定位在基因外) -1表示前面没有基因<br>
-	 * 2：下个基因的序号 -1表示后面没有基因
-	 */
-	private int[] LocPosition(String chrID, int Coordinate) {
-		ArrayList<T> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
-		if (Loclist == null) {
-			return null;
-		}
-		int[] LocInfo = new int[3];
-		int endnum = 0;
-		endnum = Loclist.size() - 1;
-		int beginnum = 0;
-		int number = 0;
-		// 在第一个Item之前
-		if (Coordinate < Loclist.get(beginnum).getNumStart()) {
-			LocInfo[0] = 2;
-			LocInfo[1] = -1;
-			LocInfo[2] = 0;
-			return LocInfo;
-		}
-		// 在最后一个Item之后
-		else if (Coordinate >= Loclist.get(endnum).getNumStart()) {
-			LocInfo[1] = endnum;
-			LocInfo[2] = -1;
-			LocInfo[0] = 2;
-			return LocInfo;
-		}
-		do {
-			number = (beginnum + endnum + 1) / 2;// 3/2=1,5/2=2
-			if (Coordinate == Loclist.get(number).getNumStart()) {
-				beginnum = number;
-				endnum = number + 1;
-				break;
-			}
-			else if (Coordinate < Loclist.get(number).getNumStart()
-					&& number != 0) {
-				endnum = number;
-			} else {
-				beginnum = number;
-			}
-		} while ((endnum - beginnum) > 1);
-		LocInfo[1] = beginnum;
-		LocInfo[2] = endnum;
-		if (Coordinate <= Loclist.get(beginnum).getNumEnd())// 不知道会不会出现PeakNumber比biginnum小的情况
-		{ // location在基因内部
-			LocInfo[0] = 1;
-			return LocInfo;
-		}
-		// location在基因外部
-		LocInfo[0] = 2;
-		return LocInfo;
-	}
+ 
 	/**
 	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面
 	 * @param gfffilename
@@ -367,19 +340,18 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 * 0: 染色体编号，chr1,chr2等，都为小写<br>
 	 * 1:该染色体上该LOC的序号，如1467等
 	 */
-	public String[] getLOCNum(String LOCID) {	
-		String[] LOCNumInfo=new String[2];
-		T gffLOCdetail=locHashtable.get(LOCID.toLowerCase());
-		LOCNumInfo[0]=gffLOCdetail.getChrID();
-		ArrayList<T> locArrayList=Chrhash.get(LOCNumInfo[0]);
-		LOCNumInfo[1]=locArrayList.indexOf(gffLOCdetail)+"";
-		return LOCNumInfo;
+	public String[] getLOCNum(String LOCID) {
+		String[] result = new String[2];
+		T ele = locHashtable.get(LOCID);
+		result[0] = ele.getChrID();
+		result[1] = getHashLocNum().get(LOCID) + "";
+		return result;
 	}
 	/**
 	 * 设定每个GffDetail的tss2UpGene和tes2DownGene
 	 */
 	private void setItemDistance() {
-		for (ArrayList<T> lsGffDetail : Chrhash.values()) {
+		for (ListAbs<T> lsGffDetail : Chrhash.values()) {
 			for (int i = 0; i < lsGffDetail.size(); i++) {
 				T gffDetail = lsGffDetail.get(i);
 				T gffDetailUp = null;
@@ -390,7 +362,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 				if (i < lsGffDetail.size() - 1) {
 					gffDetailDown = lsGffDetail.get(i + 1);
 				}
-				if (gffDetail.isCis5to3() == null || gffDetail.isCis5to3()) {
+				if (gffDetail.isCis5to3()) {
 					gffDetail.tss2UpGene = distance(gffDetail, gffDetailUp, true);
 					gffDetail.tes2DownGene = distance(gffDetail, gffDetailDown, false);
 				}

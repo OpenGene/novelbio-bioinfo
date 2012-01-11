@@ -4,6 +4,7 @@ import javax.servlet.jsp.tagext.TryCatchFinally;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genomeNew.listOperate.ElementAbs;
 import com.novelbio.base.dataStructure.CompSubArray;
 import com.novelbio.database.model.modcopeid.CopedID;
 
@@ -20,7 +21,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
  * @author zong0jie
  *
  */
-public abstract class GffDetailAbs implements CompSubArray{
+public abstract class GffDetailAbs implements ElementAbs{
 	
 	private static Logger logger = Logger.getLogger(GffDetailAbs.class);
 	
@@ -263,9 +264,9 @@ public abstract class GffDetailAbs implements CompSubArray{
 	}
 	/**
 	 * 转录方向，假设同一基因不管多少转录本都同一转录方向
-	 * 如果为null，说明没有方向，一个转录本里面既有正向也有反向，总体就没有方向
+	 * 一个转录本里面既有正向也有反向，选择方向最多的那个
 	 */
-	public Boolean isCis5to3() {
+	public boolean isCis5to3() {
 		return this.cis5to3;
 	}
 	/**
@@ -418,112 +419,40 @@ public abstract class GffDetailAbs implements CompSubArray{
 		gffDetailAbs.tes2DownGene = tes2DownGene;
 		gffDetailAbs.tss2UpGene = tss2UpGene;
 	}
-	
-	
-	/////////////////////////////////////////////////// 实现 比较的接口 ///////////////////////////////////
-	/**
-	 * 比较的接口方法
-	 * 本gffdetail属于哪个组
-	 */
-	String flagComp = "";
-	/**
-	 * CompSubArray 比较的接口方法
-	 * 获得起点和终点
-	 */
 	@Override
-	public double[] getCell()
-	{
-		double[] result = new double[2];
-		result[0] = numberstart;
-		result[1] = numberend;
-		return result;
-	}
-	/**
-	 * CompSubArray 比较的接口方法
-	 * 根据cis方向获得起点
-	 * 不能确定方向的话，就按照正向来
-	 * @return
-	 */
-	public double getStartCis()
-	{
-		if (cis5to3 == null || cis5to3) {
+	public int getStartCis() {
+		if (isCis5to3()) {
 			return numberstart;
 		}
-		else {
+		return numberend;
+	}
+	@Override
+	public int getStartAbs() {
+		return numberstart;
+	}
+	@Override
+	public int getEndCis() {
+		if (isCis5to3()) {
 			return numberend;
 		}
-	}
-	/**
-	 * CompSubArray 比较的接口方法
-	 * 根据cis方向获得终点
-	 * 不能确定方向的话，就按照正向来
-	 * @return
-	 */
-	public double getEndCis()
-	{
-		if (cis5to3 == null || cis5to3) {
-			return numberend;
-		}
-		else {
-			return numberstart;
-		}
-	}
-	/**
-	 * CompSubArray 比较的接口方法
-	 * @return
-	 */
-	@Override
-	public double getStartAbs() {
-		return getNumberstart();
-	}
-	/**
-	 * CompSubArray 比较的接口方法
-	 * @return
-	 */
-	@Override
-	public double getEndAbs() {
-		return getNumberend();
+		return numberstart;
 	}
 	@Override
-	public String getFlag() {
-		return flagComp;
-	}
-	/**
-	 * CompSubArray 比较的接口方法
-	 * @param flag
-	 */
-	@Override
-	public void setFlag(String flag) {
-		this.flagComp = flag;
-	}
-	/**
-	 * CompSubArray 比较的接口方法
-	 * @param flag
-	 */
-	@Override
-	public double getLen() {
-		return Math.abs(numberend - numberstart);
-	}
-	
-	
-	@Override
-	public void setStartCis(double startLoc)
-	{
-		if (cis5to3 == null || cis5to3) {
-			numberstart = (int)startLoc;
-		}
-		else {
-			numberend = (int)startLoc;
-		}
+	public int getEndAbs() {
+		return numberend;
 	}
 	@Override
-	public void setEndCis(double endLoc)
-	{
-		if (cis5to3 == null || cis5to3) {
-			numberend = (int)endLoc;
-		}
-		else {
-			numberstart = (int)endLoc;
-		}
+	public void setStartCis(int startLoc) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void setEndCis(int endLoc) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public int getLen() {
+		return Math.abs(numberend-numberstart) + 1;
 	}
 }
