@@ -95,7 +95,6 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		ArrayList<ArrayList<GffGeneIsoInfo>> lsTmp = ArrayOperate.getArrayListValue(hashChrIso);
 		for (ArrayList<GffGeneIsoInfo> arrayList : lsTmp) {
 			copeChrInfo(arrayList);
-			
 		}
 	}
 	
