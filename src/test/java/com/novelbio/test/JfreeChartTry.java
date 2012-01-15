@@ -50,7 +50,6 @@ public class JfreeChartTry extends ApplicationFrame {
 	     pieplot.setNoDataMessage("No data available");
 	     pieplot.setCircular(true);
 	     pieplot.setLabelGap(0.01D);//¼ä¾à
-	    
 	     return jfreechart;
 	   }
 	  
