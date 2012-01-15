@@ -57,7 +57,6 @@ public class JfreeChartTry extends ApplicationFrame {
 	   //生成显示图表的面板
 	   public static JPanel createDemoPanel(){
 	     JFreeChart jfreechart = createChart(createDataset());
-	     
 	     return new ChartPanel(jfreechart);
 	   }
 	  
