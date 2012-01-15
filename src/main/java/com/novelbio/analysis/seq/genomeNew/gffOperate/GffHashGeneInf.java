@@ -44,13 +44,6 @@ public interface GffHashGeneInf  {
 	 * @return
 	 */
 	public String getGffFilename();
-	/**
-	 * 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就用"/"隔开，
-	 * 那么该list中的元素用split("/")分割后，上locHashtable就可提取相应的GffDetail，目前主要是Peak用到
-	 * 顺序获得，可以获得某个LOC在基因上的定位。
-	 * 其中TigrGene的ID每个就是一个LOCID，也就是说TIGR的ID不需要进行切割，当然切了也没关系
-	 */
-	public ArrayList<String> getLOCChrHashIDList();
 	
 	/**
 	 * 给定某个LOCID，返回该LOC在某条染色体中的位置序号号，第几位<br>

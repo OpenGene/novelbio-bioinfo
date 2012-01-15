@@ -137,7 +137,7 @@ public class GffDetailGene extends GffDetailAbs
 	protected void addExonUCSC(int locStart,int locEnd)
 	{
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
-		gffGeneIsoInfo.addExonUCSC(locStart, locEnd);
+		gffGeneIsoInfo.addExon(locStart, locEnd);
 	}
 	/**
 	 * 针对水稻拟南芥的GFF文件
@@ -148,7 +148,7 @@ public class GffDetailGene extends GffDetailAbs
 	protected void addExonGFF(int locStart,int locEnd)
 	{
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
-		gffGeneIsoInfo.addExonGFF(locStart, locEnd);
+		gffGeneIsoInfo.addExon(locStart, locEnd);
 	}
 	/**
 	 * 针对水稻拟南芥的GFF文件
@@ -258,8 +258,7 @@ public class GffDetailGene extends GffDetailAbs
 		}
 		ArrayList<Integer> lslength = new ArrayList<Integer>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			ArrayList<ExonInfo> lsExon = gffGeneIsoInfo.getIsoInfo();
-			if (lsExon.size() == 0)
+			if (gffGeneIsoInfo.size() == 0)
 				lslength.add(0);
 			else
 				lslength.add(gffGeneIsoInfo.getLen());
@@ -425,14 +424,14 @@ public class GffDetailGene extends GffDetailAbs
 				}
 				//如果重叠区域短长，那么就将短的掐头去尾
 				else {
-					if (gffGeneIsoInfo.getIsoLen() >= gffGeneIsoInfoAdd.getIsoLen()) {
-						while (gffGeneIsoInfoAdd.getIsoInfo().size() > 0 && gffGeneIsoInfo.getEndAbs() > gffGeneIsoInfoAdd.getStartAbs()) {
-							gffGeneIsoInfoAdd.getIsoInfo().remove(0);
+					if (gffGeneIsoInfo.getLen() >= gffGeneIsoInfoAdd.getLen()) {
+						while (gffGeneIsoInfoAdd.size() > 0 && gffGeneIsoInfo.getEndAbs() > gffGeneIsoInfoAdd.getStartAbs()) {
+							gffGeneIsoInfoAdd.remove(0);
 						}
 					}
 					else {
-						while (gffGeneIsoInfo.getIsoInfo().size() > 0 && gffGeneIsoInfo.getEndAbs() > gffGeneIsoInfoAdd.getStartAbs()) {
-							gffGeneIsoInfo.getIsoInfo().remove(gffGeneIsoInfo.getIsoInfo().size() - 1);
+						while (gffGeneIsoInfo.size() > 0 && gffGeneIsoInfo.getEndAbs() > gffGeneIsoInfoAdd.getStartAbs()) {
+							gffGeneIsoInfo.remove(gffGeneIsoInfo.size() - 1);
 						}
 					}
 				}
@@ -441,34 +440,34 @@ public class GffDetailGene extends GffDetailAbs
 			gffGeneIsoInfoTmpFinal.IsoName = gffGeneIsoInfoTmpFinal.getIsoName() + "///" + gffGeneIsoInfoAdd.getIsoName();
 			//如果exon在上一个转录本的内部，直接删除
 			if (gffGeneIsoInfoAdd.isCis5to3()) {
-				if (gffGeneIsoInfoAdd.getIsoInfo().size() > 0 && gffGeneIsoInfoTmpFinal.getIsoInfo().size() > 0 && gffGeneIsoInfoAdd.getIsoInfo().get(0)[0] < gffGeneIsoInfoTmpFinal.getIsoInfo().get(gffGeneIsoInfoTmpFinal.getIsoInfo().size() - 1)[1]) {
+				if (gffGeneIsoInfoAdd.size() > 0 && gffGeneIsoInfoTmpFinal.size() > 0 && gffGeneIsoInfoAdd.get(0).getStartCis() < gffGeneIsoInfoTmpFinal.get(gffGeneIsoInfoTmpFinal.size() - 1).getEndCis()) {
 					logger.error("出现重叠转录本：" + gffGeneIsoInfoAdd.getIsoName());
 				}
-				gffGeneIsoInfoTmpFinal.getIsoInfo().addAll( gffGeneIsoInfoAdd.getIsoInfo());
+				gffGeneIsoInfoTmpFinal.addAll( gffGeneIsoInfoAdd);
 			} else {
-					if (gffGeneIsoInfoAdd.getIsoInfo().size() > 0 && gffGeneIsoInfoTmpFinal.getIsoInfo().size() > 0 && gffGeneIsoInfoAdd.getIsoInfo().get( gffGeneIsoInfoAdd.getIsoInfo().size() - 1)[1] < gffGeneIsoInfoTmpFinal.getIsoInfo().get(0)[0]) {
+					if (gffGeneIsoInfoAdd.size() > 0 && gffGeneIsoInfoTmpFinal.size() > 0 && gffGeneIsoInfoAdd.get( gffGeneIsoInfoAdd.size() - 1).getEndCis() < gffGeneIsoInfoTmpFinal.get(0).getStartCis()) {
 						logger.error("出现重叠转录本：" + gffGeneIsoInfoAdd.getIsoName());
 					}
-				gffGeneIsoInfoTmpFinal.getIsoInfo().addAll(0, gffGeneIsoInfoAdd.getIsoInfo());
+				gffGeneIsoInfoTmpFinal.addAll(0, gffGeneIsoInfoAdd);
 			}
-			gffGeneIsoInfoTmpFinal.sortIso();
+			gffGeneIsoInfoTmpFinal.sort();
 			lsGeneIsoInfosFinal.add(gffGeneIsoInfoTmpFinal);
 		}		
 		
 		lsGffGeneIsoInfos = lsGeneIsoInfosFinal;		
 		//重置起点和终点
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGeneIsoInfosFinal) {
-			if (gffGeneIsoInfo.getIsoInfo().get(0)[0] < numberstart) {
-				numberstart = gffGeneIsoInfo.getIsoInfo().get(0)[0];
+			if (gffGeneIsoInfo.get(0).getStartCis() < numberstart) {
+				numberstart = gffGeneIsoInfo.get(0).getStartCis();
 			}
-			if (gffGeneIsoInfo.getIsoInfo().get(0)[0] > numberend) {
-				numberend = gffGeneIsoInfo.getIsoInfo().get(0)[0];
+			if (gffGeneIsoInfo.get(0).getStartCis() > numberend) {
+				numberend = gffGeneIsoInfo.get(0).getStartCis();
 			}
-			if (gffGeneIsoInfo.getIsoInfo().get(gffGeneIsoInfo.getIsoInfo().size() - 1)[1] < numberstart) {
-				numberstart = gffGeneIsoInfo.getIsoInfo().get(gffGeneIsoInfo.getIsoInfo().size() - 1)[1];
+			if (gffGeneIsoInfo.get(gffGeneIsoInfo.size() - 1).getEndCis() < numberstart) {
+				numberstart = gffGeneIsoInfo.get(gffGeneIsoInfo.size() - 1).getEndCis();
 			}
-			if (gffGeneIsoInfo.getIsoInfo().get(gffGeneIsoInfo.getIsoInfo().size() - 1)[1] > numberend) {
-				numberend = gffGeneIsoInfo.getIsoInfo().get(gffGeneIsoInfo.getIsoInfo().size() - 1)[1];
+			if (gffGeneIsoInfo.get(gffGeneIsoInfo.size() - 1).getEndCis() > numberend) {
+				numberend = gffGeneIsoInfo.get(gffGeneIsoInfo.size() - 1).getEndCis();
 			}
 		}
 	}
@@ -510,14 +509,14 @@ public class GffDetailGene extends GffDetailAbs
 					}
 					//如果重叠区域短长，那么就将短的掐头去尾
 					else {
-						if (gffGeneIsoInfo.getIsoLen() >= gffGeneIsoInfoAdd.getIsoLen()) {
-							while (gffGeneIsoInfoAdd.getIsoInfo().size() > 0 && gffGeneIsoInfo.getEndAbs() > gffGeneIsoInfoAdd.getStartAbs()) {
-								gffGeneIsoInfoAdd.getIsoInfo().remove(0);
+						if (gffGeneIsoInfo.getLen() >= gffGeneIsoInfoAdd.getLen()) {
+							while (gffGeneIsoInfoAdd.size() > 0 && gffGeneIsoInfo.getEndAbs() > gffGeneIsoInfoAdd.getStartAbs()) {
+								gffGeneIsoInfoAdd.remove(0);
 							}
 						}
 						else {
-							while (gffGeneIsoInfo.getIsoInfo().size() > 0 && gffGeneIsoInfo.getEndAbs() > gffGeneIsoInfoAdd.getStartAbs()) {
-								gffGeneIsoInfo.getIsoInfo().remove(gffGeneIsoInfo.getIsoInfo().size() - 1);
+							while (gffGeneIsoInfo.size() > 0 && gffGeneIsoInfo.getEndAbs() > gffGeneIsoInfoAdd.getStartAbs()) {
+								gffGeneIsoInfo.remove(gffGeneIsoInfo.size() - 1);
 							}
 						}
 					}
@@ -526,34 +525,34 @@ public class GffDetailGene extends GffDetailAbs
 				gffGeneIsoInfoTmpFinal.IsoName = gffGeneIsoInfoTmpFinal.getIsoName() + "///" + gffGeneIsoInfoAdd.getIsoName();
 				//如果exon在上一个转录本的内部，直接删除
 				if (gffGeneIsoInfoAdd.isCis5to3()) {
-					if (gffGeneIsoInfoAdd.getIsoInfo().size() > 0 && gffGeneIsoInfoTmpFinal.getIsoInfo().size() > 0 && gffGeneIsoInfoAdd.getIsoInfo().get(0)[0] < gffGeneIsoInfoTmpFinal.getIsoInfo().get(gffGeneIsoInfoTmpFinal.getIsoInfo().size() - 1)[1]) {
+					if (gffGeneIsoInfoAdd.size() > 0 && gffGeneIsoInfoTmpFinal.size() > 0 && gffGeneIsoInfoAdd.get(0).getStartCis() < gffGeneIsoInfoTmpFinal.get(gffGeneIsoInfoTmpFinal.size() - 1).getEndCis()) {
 						logger.error("出现重叠转录本：" + gffGeneIsoInfoAdd.getIsoName());
 					}
-					gffGeneIsoInfoTmpFinal.getIsoInfo().addAll( gffGeneIsoInfoAdd.getIsoInfo());
+					gffGeneIsoInfoTmpFinal.addAll( gffGeneIsoInfoAdd);
 				} else {
-						if (gffGeneIsoInfoAdd.getIsoInfo().size() > 0 && gffGeneIsoInfoTmpFinal.getIsoInfo().size() > 0 && gffGeneIsoInfoAdd.getIsoInfo().get( gffGeneIsoInfoAdd.getIsoInfo().size() - 1)[1] < gffGeneIsoInfoTmpFinal.getIsoInfo().get(0)[0]) {
+						if (gffGeneIsoInfoAdd.size() > 0 && gffGeneIsoInfoTmpFinal.size() > 0 && gffGeneIsoInfoAdd.get( gffGeneIsoInfoAdd.size() - 1).getEndCis() < gffGeneIsoInfoTmpFinal.get(0).getStartCis()) {
 							logger.error("出现重叠转录本：" + gffGeneIsoInfoAdd.getIsoName());
 						}
-					gffGeneIsoInfoTmpFinal.getIsoInfo().addAll(0, gffGeneIsoInfoAdd.getIsoInfo());
+					gffGeneIsoInfoTmpFinal.addAll(0, gffGeneIsoInfoAdd);
 				}
-				gffGeneIsoInfoTmpFinal.sortIso();
+				gffGeneIsoInfoTmpFinal.sort();
 				lsGeneIsoInfosFinal.add(gffGeneIsoInfoTmpFinal);
 			}
 		}
 		lsGffGeneIsoInfos = lsGeneIsoInfosFinal;		
 		//重置起点和终点
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGeneIsoInfosFinal) {
-			if (gffGeneIsoInfo.getIsoInfo().get(0)[0] < numberstart) {
-				numberstart = gffGeneIsoInfo.getIsoInfo().get(0)[0];
+			if (gffGeneIsoInfo.get(0).getStartCis() < numberstart) {
+				numberstart = gffGeneIsoInfo.get(0).getStartCis();
 			}
-			if (gffGeneIsoInfo.getIsoInfo().get(0)[0] > numberend) {
-				numberend = gffGeneIsoInfo.getIsoInfo().get(0)[0];
+			if (gffGeneIsoInfo.get(0).getStartCis() > numberend) {
+				numberend = gffGeneIsoInfo.get(0).getStartCis();
 			}
-			if (gffGeneIsoInfo.getIsoInfo().get(gffGeneIsoInfo.getIsoInfo().size() - 1)[1] < numberstart) {
-				numberstart = gffGeneIsoInfo.getIsoInfo().get(gffGeneIsoInfo.getIsoInfo().size() - 1)[1];
+			if (gffGeneIsoInfo.get(gffGeneIsoInfo.size() - 1).getEndCis() < numberstart) {
+				numberstart = gffGeneIsoInfo.get(gffGeneIsoInfo.size() - 1).getEndCis();
 			}
-			if (gffGeneIsoInfo.getIsoInfo().get(gffGeneIsoInfo.getIsoInfo().size() - 1)[1] > numberend) {
-				numberend = gffGeneIsoInfo.getIsoInfo().get(gffGeneIsoInfo.getIsoInfo().size() - 1)[1];
+			if (gffGeneIsoInfo.get(gffGeneIsoInfo.size() - 1).getEndCis() > numberend) {
+				numberend = gffGeneIsoInfo.get(gffGeneIsoInfo.size() - 1).getEndCis();
 			}
 		}
 	}
@@ -568,7 +567,7 @@ public class GffDetailGene extends GffDetailAbs
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			boolean flag = true;
 			for (GffGeneIsoInfo gffGeneIsoInfo2 : lsNew) {
-				if (gffGeneIsoInfo2.compIso(gffGeneIsoInfo.getIsoInfo())) {
+				if (gffGeneIsoInfo2.compIso(gffGeneIsoInfo)) {
 					flag = false;
 					break;
 				}
@@ -587,8 +586,8 @@ public class GffDetailGene extends GffDetailAbs
 	 */
 	public void addIso(GffGeneIsoInfo gffGeneIsoInfo)
 	{
-		ArrayList<int[]> lsExonThis = gffGeneIsoInfo.getIsoInfo();
-		if (lsExonThis == null || lsExonThis.size() == 0) {
+		ArrayList<ExonInfo> lsExonThis = gffGeneIsoInfo;
+		if (gffGeneIsoInfo == null || gffGeneIsoInfo.size() == 0) {
 			return;
 		}
 		
@@ -622,7 +621,7 @@ public class GffDetailGene extends GffDetailAbs
 	public String getGTFformate(String title) {
 		String geneGTF = "";
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
-			gffGeneIsoInfo.sortIso();
+			gffGeneIsoInfo.sort();
 			geneGTF = geneGTF + gffGeneIsoInfo.getGTFformat(getLocString().split(SEP_GENE_NAME)[0], title);
 		}
 		return geneGTF;
@@ -644,7 +643,7 @@ public class GffDetailGene extends GffDetailAbs
 			geneGFF = geneGFF + getChrID() + "\t" +title + "\tmRNA\t" +gffGeneIsoInfo.getStartAbs()+ "\t" + gffGeneIsoInfo.getEndAbs()
 	        + "\t"+"."+"\t" +strandmRNA+"\t.\t"+ "ID=" + gffGeneIsoInfo.getIsoName() 
 	        +";Name="+gffGeneIsoInfo.getIsoName()+ ";Parent="+ getLocString().split(SEP_GENE_NAME)[0] + " \r\n";
-			gffGeneIsoInfo.sortIso();
+			gffGeneIsoInfo.sort();
 			geneGFF = geneGFF + gffGeneIsoInfo.getGFFformat(getLocString().split(SEP_GENE_NAME)[0], title);
 		}
 		return geneGFF;

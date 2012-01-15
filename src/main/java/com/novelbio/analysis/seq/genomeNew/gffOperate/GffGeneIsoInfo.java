@@ -15,11 +15,20 @@ import com.novelbio.base.dataStructure.CompSubArrayCluster;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
- * 记录GffGene中的转录本信息
- * @author zong0jie
- *
+ * 记录该转录本的具体坐标信息,
+ * 第一项开始是exon的信息，exon成对出现，为int[2] 
+ * 0: 该外显子起点，闭区间，从1开始记数<br>
+ * 1: 该外显子终点，闭区间，从1开始记数<br>
+ * 按照基因的方向进行排列
+ * 如果正向则从小到大排列，且int0&lt;int1
+ * 如果反向则从大到小排列，且int0&gt;int1
+ * @return
  */
 public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6015332335255457620L;
 	/**
 	 * 标记codInExon处在外显子中
 	 */
@@ -278,7 +287,7 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加 <br>
 	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
 	 */
-	protected abstract void addExonUCSC(int locStart, int locEnd);
+//	protected abstract void addExonUCSC(int locStart, int locEnd);
 	/**
 	 * 这个要确认
 	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
@@ -286,7 +295,7 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加 <br>
 	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
 	 */
-	protected abstract void addExonGFF(int locStart, int locEnd);
+//	protected abstract void addExonGFF(int locStart, int locEnd);
 	/**
 	 * 这个要确认
 	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
@@ -302,14 +311,14 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 		 * 反向从大到小添加 且 int0>int1
 		 */
 		ExonInfo tmpexon = new ExonInfo(locStart, locEnd, isCis5to3());
-		if (lsElement.size() > 0) {
-			ExonInfo exon = lsElement.get(lsElement.size() - 1);
+		if (size() > 0) {
+			ExonInfo exon = get(size() - 1);
 			if (Math.abs(exon.getEndCis() - tmpexon.getStartCis()) == 1) {
 				exon.setEndCis(tmpexon.getEndCis());
 				return;
 			}
 		}
-		lsElement.add(tmpexon);
+		add(tmpexon);
 	}
 	/**
 	 * 返回该转录本的名称
@@ -318,21 +327,6 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 	public String getIsoName() {
 		return IsoName;
 	}
-	/**
-	 * 返回该转录本的具体坐标信息,
-	 * 第一项开始是exon的信息，exon成对出现，为int[2] 
-	 * 0: 该外显子起点，闭区间，从1开始记数<br>
-	 * 1: 该外显子终点，闭区间，从1开始记数<br>
-	 * 按照基因的方向进行排列
-	 * 如果正向则从小到大排列，且int0&lt;int1
-	 * 如果反向则从大到小排列，且int0&gt;int1
-	 * @return
-	 */
-	public  ArrayList<ExonInfo> getIsoInfo() {
-		return lsElement;
-	}
-	
-	
 	
 	
 	/**
@@ -355,19 +349,19 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 	 * @return
 	 */
 	public int getTSSsite() {
-		return (int)lsElement.get(0).getStartCis();
+		return (int)get(0).getStartCis();
 	}
 	/**
 	 * 该转录本的Coding region end的最后一个字符坐标，从1开始计数，是闭区间
 	 * @return
 	 */
 	public int getTESsite() {
-		return lsElement.get(lsElement.size() -1).getStartCis();
+		return get(size() -1).getStartCis();
 		
 	}
 	public int getExonNum()
 	{
-		return lsElement.size();
+		return size();
 	}
 	/**
 	 * 获得5UTR的长度
@@ -393,21 +387,21 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
      */
 	public int getLenExon(int num)
 	{
-		if (num < 0 || num > lsElement.size()) {
+		if (num < 0 || num > size()) {
 			return -1000000000;
 		}
 		else if (num == 0) 
 		{
 			int allExonLength = 0;
-			for (int i = 0; i < lsElement.size(); i++) // 0-0 0-1 1-0 1-1
+			for (int i = 0; i < size(); i++) // 0-0 0-1 1-0 1-1
 			{ // 2-1 2-0 1-1 1-0 0-1 0-tss cood
-				allExonLength = allExonLength + lsElement.get(i).getLen();
+				allExonLength = allExonLength + get(i).getLen();
 			}
 			return allExonLength;
 		}
 		else {
 			num--;
-			return lsElement.get(num).getLen();
+			return get(num).getLen();
 		}
 	}
 	 /**
@@ -417,19 +411,19 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
      */
 	public int getLenIntron(int num)
 	{
-		if (num < 0 || num > lsElement.size()) {
+		if (num < 0 || num > size()) {
 			return -1000000000;
 		}
 		else if (num == 0) 
 		{
 			int allIntronLength = 0;
-			for (int i = 1; i < lsElement.size(); i++) // 0-0 0-1 1-0 1-1
+			for (int i = 1; i < size(); i++) // 0-0 0-1 1-0 1-1
 			{ // 2-1 2-0 1-1 1-0 0-1 0-tss cood
-				allIntronLength = allIntronLength + Math.abs(lsElement.get(i).getStartCis() - lsElement.get(i-1).getEndCis()) - 1;
+				allIntronLength = allIntronLength + Math.abs(get(i).getStartCis() - get(i-1).getEndCis()) - 1;
 			}
 		}
 		num--;
-		return Math.abs(lsElement.get(num + 1).getStartCis() - lsElement.get(num).getEndAbs()) - 1;
+		return Math.abs(get(num + 1).getStartCis() - get(num).getEndAbs()) - 1;
 	}
 	
 	/**
@@ -662,6 +656,76 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 		return cod2TESmRNA;
 	}
 
+	/**
+	 * TO BE CHECKED
+	 * 返回距离loc有num Bp的坐标，在mRNA层面，在loc上游时num 为负数
+	 * 在loc下游时num为正数
+	 * 如果num Bp外就没有基因了，则返回-1；
+	 * @param mRNAnum
+	 * NnnnLoc 为-4位，当N与Loc重合时为0
+	 */
+	@Override
+	public int getLocDistmRNASite(int location, int mRNAnum) {
+		if (getLocInEleNum(location) <= 0) {
+			return -1;
+		}
+		if (mRNAnum < 0) {
+			if (Math.abs(mRNAnum) <= getLoc2EleStart(location)) {
+				if (isCis5to3()) {
+					return location + mRNAnum;
+				}
+				else
+					return  location + Math.abs(mRNAnum);
+			} 
+			else {
+				int exonNum = getLocInEleNum(location) - 1;
+				int remain = Math.abs(mRNAnum) - getLoc2ExInStart(location);
+				for (int i = exonNum - 1; i >= 0; i--) {
+					ExonInfo tmpExon = get(i);
+					// 一个一个外显子的向前遍历
+					if (remain - tmpExon.getLen() > 0) {
+						remain = remain - tmpExon.getLen();
+						continue;
+					}
+					else {
+						return tmpExon.getEndCis() - remain + 1;
+					}
+				}
+				return -1;
+			}
+		} 
+		else {
+			if (mRNAnum <= getLoc2ExInEnd(location)) {
+				if (isCis5to3()) {
+					return location + mRNAnum;
+				}
+				else {
+					return location - mRNAnum;
+				}
+			} 
+			else {
+				int exonNum = getLocInEleNum(location) - 1;
+				int remain = mRNAnum - getLoc2ExInEnd(location);
+				for (int i = exonNum + 1; i < size(); i++) {
+					ExonInfo tmpExon = get(i);
+					// 一个一个外显子的向前遍历
+					if (remain - tmpExon.getLen() > 0) {
+						remain = remain - tmpExon.getLen();
+						continue;
+					}
+					else {
+						if (isCis5to3()) {
+							return tmpExon.getStartCis() + remain - 1;
+						}
+						else {
+							return tmpExon.getStartCis() - remain + 1;
+						}
+					}
+				}
+				return -1;
+			}
+		}
+	}
 	
 	/**
 	 */
@@ -695,7 +759,7 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 	/**
 	 * 第一个计算的，计算坐标与本 外显子/内含子 的 起点/终点 的距离
 	 */
-	protected abstract void setCod2ExInStartEnd();
+//	protected abstract void setCod2ExInStartEnd();
 	/**
 	 * 查找坐标在第几个外显子或内含子中
 	 * 并且指出在是在外显子还是内含子
@@ -778,15 +842,7 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 		hashLocExInEnd.put(location, distance);
 		return distance;
 	}
-	/**
-	 * 返回距离loc有num Bp的坐标，在mRNA层面，在loc上游时num 为负数
-	 * 在loc下游时num为正数
-	 * 如果num Bp外就没有基因了，则返回-1；
-	 * @param location 坐标
-	 * @param mRNAnum
-	 * NnnnLoc 为-4位，当N与Loc重合时为0
-	 */
-	public abstract int getLocDistmRNASite(int location, int mRNAnum);
+
 	
 	/**
 	 * 返回能和本loc组成一个氨基酸的头部nr的坐标，从1开始计算
@@ -851,12 +907,12 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 			lsresult.add(exonInfo);
 			return lsresult;
 		}
-		ExonInfo exonInfo = new ExonInfo(start,lsElement.get(exonNumStart).getEndCis(),isCis5to3());
+		ExonInfo exonInfo = new ExonInfo(start,get(exonNumStart).getEndCis(),isCis5to3());
 		lsresult.add(exonInfo);
 		for (int i = exonNumStart+1; i < exonNumEnd; i++) {
-			lsresult.add(lsElement.get(i));
+			lsresult.add(get(i));
 		}
-		ExonInfo exonInfo2 = new ExonInfo(lsElement.get(exonNumEnd).getStartCis(),end,isCis5to3());
+		ExonInfo exonInfo2 = new ExonInfo(get(exonNumEnd).getStartCis(),end,isCis5to3());
 		lsresult.add(exonInfo2);
 		return lsresult;
 	}
@@ -990,6 +1046,7 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 	
 	protected void clone(GffGeneIsoInfo gffGeneIsoInfo)
 	{
+		gffGeneIsoInfo = this.clone();
 		gffGeneIsoInfo.ATGsite = ATGsite;
 //		gffGeneIsoInfo.coord = coord;
 		if (gffDetailGene != null) {
@@ -999,7 +1056,7 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 		gffGeneIsoInfo.hashLocExInNum = hashLocExInNum;
 		gffGeneIsoInfo.hashLocExInStart =hashLocExInStart;
 //		gffGeneIsoInfo.IsoName = IsoName;
-		gffGeneIsoInfo.lsElement = lsElement;
+		
 		gffGeneIsoInfo.lengthIso = lengthIso;
 		gffGeneIsoInfo.mRNA = mRNA;
 		gffGeneIsoInfo.taxID = taxID;
@@ -1017,12 +1074,10 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 		gffGeneIsoInfo.hashLocExInNum = new HashMap<Integer, Integer>();
 		gffGeneIsoInfo.hashLocExInStart = new HashMap<Integer, Integer>();
 //		gffGeneIsoInfo.IsoName = IsoName;
-		ArrayList<ExonInfo> lsIso = new ArrayList<ExonInfo>();
-		for (ExonInfo is : lsElement) {
+		for (ExonInfo is : this) {
 			ExonInfo exonInfo = is.clone();
-			lsIso.add(exonInfo);
+			gffGeneIsoInfo.add(exonInfo);
 		}
-		gffGeneIsoInfo.lsElement = lsIso;
 		gffGeneIsoInfo.lengthIso = lengthIso;
 		gffGeneIsoInfo.mRNA = mRNA;
 		gffGeneIsoInfo.taxID = taxID;
@@ -1042,8 +1097,8 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 			lsCompResult =  hashTmp.get(gffGeneIsoInfo.getIsoName());
 		}
 		else {
-			ArrayList<ExonInfo> lsIsoComp = gffGeneIsoInfo.getIsoInfo();
-			lsCompResult = ArrayOperate.compLs2(lsElement, lsIsoComp, gffGeneIsoInfo.isCis5to3());
+			ArrayList<ExonInfo> lsIsoComp = gffGeneIsoInfo;
+			lsCompResult = ArrayOperate.compLs2(this, lsIsoComp, gffGeneIsoInfo.isCis5to3());
 			hashTmp.put(gffGeneIsoInfo.getIsoName(), lsCompResult);
 		}
 		return CompSubArrayCluster.getCompScore(lsCompResult);
@@ -1059,27 +1114,26 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 			lsCompResult = hashTmp.get(gffGeneIsoInfo.getIsoName());
 		}
 		else {
-			lsCompResult = ArrayOperate.compLs2(lsElement, gffGeneIsoInfo.getIsoInfo(), gffGeneIsoInfo.isCis5to3());
+			lsCompResult = ArrayOperate.compLs2(this, gffGeneIsoInfo, gffGeneIsoInfo.isCis5to3());
 			hashTmp.put(gffGeneIsoInfo.getIsoName(), lsCompResult);
 		}
 		return lsCompResult;
 	}
 	
-	
-	public void setLsIsoform(ArrayList<ExonInfo> lsIsoform) {
-		this.lsElement = lsIsoform;
-	}
 	public void setIsoName(String isoName) {
 		IsoName = isoName;
 	}
 	/**
-	 * 专门添加cufflink的结果
-	 * @param locStart
-	 * @param locEnd
+	 * 这个要确认
+	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
+	 * 当gene为反方向时，exon是从大到小排列的<br>
+	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加 <br>
+	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
 	 */
-	protected abstract void addExonCufflinkGTF(int locStart, int locEnd);
-	
-	
+	protected void addExon(int locStart, int locEnd) {
+		ExonInfo exonInfo = new ExonInfo(locStart, locEnd, true);
+		add(exonInfo);
+	}
 	/**
 	 * 获得该转录本的起点，不考虑方向
 	 * @return
@@ -1198,9 +1252,9 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 		}
 		return true;
 	}
-	protected abstract void sortIso();
-	protected abstract void sortIsoRead();
-	
+//	protected abstract void sortIso();
+//	protected abstract void sortIsoRead();
+//	
 	
 
 	/**
@@ -1217,8 +1271,8 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 		ArrayList<ExonInfo> lsresult = new ArrayList<ExonInfo>();
 		int numAtg = getLocInEleNum(ATGsite) - 1;
 		int numUag = getLocInEleNum(UAGsite) - 1;
-		for (int i = 0; i < lsElement.size(); i++) {
-			ExonInfo exonTmp = lsElement.get(i);
+		for (int i = 0; i < size(); i++) {
+			ExonInfo exonTmp = get(i);
 			if (i < numAtg) {
 				continue;
 			}

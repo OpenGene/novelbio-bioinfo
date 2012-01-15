@@ -159,6 +159,6 @@ class DomainDetail implements ElementAbs
 
 	@Override
 	public int getLen() {
-		return Math.abs(startLoc - endLoc);
+		return Math.abs(startLoc - endLoc) + 1;
 	}
 }

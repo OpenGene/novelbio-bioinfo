@@ -25,7 +25,7 @@ public class MathComput {
 	 * 用于获得每10个bp的tag堆积数的中位数
 	 * @return
 	 */
-	public static int mean(int[] unsortNum)
+	public static double mean(int[] unsortNum)
 	{
 		int length=unsortNum.length;
 		int sum=0;
@@ -33,7 +33,44 @@ public class MathComput {
 		{
 			sum=sum+unsortNum[i];
 		}
-		int avg=sum/length;
+		double avg= (double)sum/length;
+		return avg;
+	}
+	
+	/**
+	 * 输入数据，获得平均数
+	 * 用于获得每10个bp的tag堆积数的中位数
+	 * @return
+	 */
+	public static double mean(int[]... unsortNum)
+	{
+		long sum = 0;
+		long num = 0;
+		for (int i = 0; i < unsortNum.length; i++) {
+			for (int j = 0; j < unsortNum[i].length; j++) {
+				sum = sum + unsortNum[i][j];
+				num ++ ;
+			}
+		}
+		double avg=(double) sum/num;
+		return avg;
+	}
+	/**
+	 * 输入数据，获得平均数
+	 * 用于获得每10个bp的tag堆积数的中位数
+	 * @return
+	 */
+	public static double mean(Iterable<int[]> unsortNum)
+	{
+		long sum = 0;
+		long num = 0;
+		for (int[] is : unsortNum) {
+			for (int i : is) {
+				sum = sum + i;
+				num ++;
+			}
+		}
+		double avg=(double) sum/num;
 		return avg;
 	}
 	/**

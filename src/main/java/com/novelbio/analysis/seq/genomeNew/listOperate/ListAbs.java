@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-
-import org.apache.poi.ss.formula.functions.T;
-import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.thresholdEntry;
-
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbs;
 
-public abstract class ListAbs <T extends ElementAbs> {
+public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4583552188474447935L;
 	public static final String SEP = "//";
 	/**
 	 * 保存某个坐标和所在的element数目,
@@ -19,7 +18,6 @@ public abstract class ListAbs <T extends ElementAbs> {
 	 * 负数，两个element之间
 	 */
 	HashMap<Integer, Integer> hashCodInEleNum;
-
 	/**
 	 * 保存某个坐标到所在的内含子/外显子起点的距离
 	 */
@@ -30,10 +28,6 @@ public abstract class ListAbs <T extends ElementAbs> {
 	 */
 	HashMap<Integer, Integer> hashLocExInEnd;
 	
-	/**
-	 * 必须保证按次序装入
-	 */
-	protected ArrayList<T> lsElement = new ArrayList<T>();
 	Boolean cis5to3 = null;
 	/**
 	 * 没有方向则返回null
@@ -51,18 +45,41 @@ public abstract class ListAbs <T extends ElementAbs> {
 	 * 将list中的元素进行排序，如果element里面 start > end，那么就从大到小排序
 	 * 如果element里面start < end，那么就从小到大排序
 	 */
-	protected void sortLsEle()
+	public void sort()
 	{
 		if (cis5to3 == null) {
-			Collections.sort(lsElement, new CompS2MAbs());
+			Collections.sort(this, new CompS2MAbs());
 		}
 		if (cis5to3) {
-			Collections.sort(lsElement, new CompS2M());
+			Collections.sort(this, new CompS2M());
 		}
 		else {
-			Collections.sort(lsElement, new CompM2S());
+			Collections.sort(this, new CompM2S());
 		}
 	}
+	
+//    /**
+//     * Returns an iterator over the elements in this list in proper sequence.
+//     *
+//     * <p>The returned iterator is <a href="#fail-fast"><i>fail-fast</i></a>.
+//     *
+//     * @return an iterator over the elements in this list in proper sequence
+//     */
+//	public Iterator<T> iterator() {
+//		return iterator();
+//	}
+//    /**
+//     * Returns a list iterator over the elements in this list (in proper
+//     * sequence).
+//     *
+//     * <p>The returned list iterator is <a href="#fail-fast"><i>fail-fast</i></a>.
+//     *
+//     * @see #listIterator(int)
+//     */
+//	public Iterator<T> listIterator() {
+//		return listIterator();
+//	}
+	
 	/**
 	 * 返回实际第num个element间区的长度
 	 * @param num 实际数目
@@ -71,10 +88,10 @@ public abstract class ListAbs <T extends ElementAbs> {
 	public int getInterGenic(int num)
 	{
 		if (cis5to3 == null) {
-			return lsElement.get(num).getStartAbs() - lsElement.get(num - 1).getEndAbs();
+			return get(num).getStartAbs() - get(num - 1).getEndAbs();
 		}
 		else {
-			return Math.abs(lsElement.get(num).getStartCis() - lsElement.get(num - 1).getEndCis());
+			return Math.abs(get(num).getStartCis() - get(num - 1).getEndCis());
 		}
 	}
 	/**
@@ -84,23 +101,23 @@ public abstract class ListAbs <T extends ElementAbs> {
 	 */
 	public int getEleLen(int num)
 	{
-		return lsElement.get(num-1).getLen();
+		return get(num-1).getLen();
 	}
 	public int getLen()
 	{
 		if (cis5to3 != null) {
-			return Math.abs(lsElement.get(0).getStartCis() - lsElement.get(lsElement.size()-1).getEndCis());
-		}
+			return Math.abs(get(0).getStartCis() - get(size()-1).getEndCis()) + 1;
+ 		}
 		else {
-			if (lsElement.size() == 1) {
-				return lsElement.get(0).getLen();
+			if (size() == 1) {
+				return get(0).getLen();
 			}
 			else {
-				if (lsElement.get(0).getStartAbs() < lsElement.get(1).getStartAbs()) {
-					return lsElement.get(lsElement.size()-1).getEndAbs() - lsElement.get(0).getStartAbs();
+				if (get(0).getStartAbs() < get(1).getStartAbs()) {
+					return get(size()-1).getEndAbs() - get(0).getStartAbs();
 				}
 				else {
-					return lsElement.get(0).getEndAbs() - lsElement.get(lsElement.size()-1).getStartAbs();
+					return get(0).getEndAbs() - get(size()-1).getStartAbs();
 				}
 			}
 		}
@@ -174,17 +191,17 @@ public abstract class ListAbs <T extends ElementAbs> {
 	public int getStart()
 	{
 		if (cis5to3 != null) {
-			return lsElement.get(0).getStartCis();
+			return get(0).getStartCis();
 		}
-		return lsElement.get(0).getStartAbs();
+		return get(0).getStartAbs();
 	}
 	
 	public int getEnd()
 	{
 		if (cis5to3 != null) {
-			return lsElement.get(lsElement.size() - 1).getEndCis();
+			return get(size() - 1).getEndCis();
 		}
-		return lsElement.get(lsElement.size() - 1).getEndAbs();
+		return get(size() - 1).getEndAbs();
 	}
 	
 	/**
@@ -217,7 +234,7 @@ public abstract class ListAbs <T extends ElementAbs> {
 		else {
 			distance = getLoc2EleEnd(locSmall) + getLoc2EleStart(locBig) + 1;
 			for (int i = locSmallExInNum + 1; i <= locBigExInNum - 1; i++) {
-				distance = distance + lsElement.get(i).getLen();
+				distance = distance + get(i).getLen();
 			}
 		}
 		
@@ -228,6 +245,7 @@ public abstract class ListAbs <T extends ElementAbs> {
 	}
 	
 	/**
+	 * TO BE CHECKED
 	 * 只有在cis存在的时候才能使用
 	 * 返回距离loc有num Bp的坐标，在mRNA层面，在loc上游时num 为负数
 	 * 在loc下游时num为正数
@@ -247,7 +265,7 @@ public abstract class ListAbs <T extends ElementAbs> {
 				int exonNum = getLocInEleNum(location) - 1;
 				int remain = Math.abs(mRNAnum) - getLoc2EleStart(location);
 				for (int i = exonNum - 1; i >= 0; i--) {
-					ElementAbs tmpExon = lsElement.get(i);
+					ElementAbs tmpExon = get(i);
 					// 一个一个外显子的向前遍历
 					if (remain - tmpExon.getLen() > 0) {
 						remain = remain - tmpExon.getLen();
@@ -267,8 +285,8 @@ public abstract class ListAbs <T extends ElementAbs> {
 			else {
 				int exonNum = getLocInEleNum(location) - 1;
 				int remain = mRNAnum - getLoc2EleEnd(location);
-				for (int i = exonNum + 1; i < lsElement.size(); i++) {
-					ElementAbs tmpExon = lsElement.get(i);
+				for (int i = exonNum + 1; i < size(); i++) {
+					ElementAbs tmpExon = get(i);
 					// 一个一个外显子的向前遍历
 					if (remain - tmpExon.getLen() > 0) {
 						remain = remain - tmpExon.getLen();
@@ -302,16 +320,16 @@ public abstract class ListAbs <T extends ElementAbs> {
 		int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
 		if (exIntronNum > 0) {
 			if (cis5to3 != null)
-				loc2ExInStart = Math.abs(location - lsElement.get(NumExon).getStartCis());//距离本外显子起始 nnnnnnnnC
+				loc2ExInStart = Math.abs(location - get(NumExon).getStartCis());//距离本外显子起始 nnnnnnnnC
 			else
-				loc2ExInStart = Math.abs(location - lsElement.get(NumExon).getStartAbs());//距离本外显子起始 nnnnnnnnC
+				loc2ExInStart = Math.abs(location - get(NumExon).getStartAbs());//距离本外显子起始 nnnnnnnnC
 		}
 		else if(exIntronNum < 0) 
 		{   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
 			if (cis5to3 != null) 
-				loc2ExInStart = Math.abs(location - lsElement.get(NumExon).getEndCis()) -1;// 距前一个外显子 NnnnCnnnn
+				loc2ExInStart = Math.abs(location - get(NumExon).getEndCis()) -1;// 距前一个外显子 NnnnCnnnn
 			else
-				loc2ExInStart = Math.abs(location - lsElement.get(NumExon).getEndAbs()) -1;// 距前一个外显子 NnnnCnnnn
+				loc2ExInStart = Math.abs(location - get(NumExon).getEndAbs()) -1;// 距前一个外显子 NnnnCnnnn
 		}
 		hashLocExInStart.put(location, loc2ExInStart);
 		return loc2ExInStart;
@@ -334,16 +352,16 @@ public abstract class ListAbs <T extends ElementAbs> {
 		int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
 		if (exIntronNum > 0) {
 			if (cis5to3 != null)
-				 loc2ExInEnd = Math.abs(lsElement.get(NumExon).getEndCis()- location);//距离本外显子终止  Cnnnnnnn
+				 loc2ExInEnd = Math.abs(get(NumExon).getEndCis()- location);//距离本外显子终止  Cnnnnnnn
 			else
-				 loc2ExInEnd = Math.abs(lsElement.get(NumExon).getEndAbs()- location);//距离本外显子终止  Cnnnnnnn
+				 loc2ExInEnd = Math.abs(get(NumExon).getEndAbs()- location);//距离本外显子终止  Cnnnnnnn
 		}
 		else if(exIntronNum < 0) 
 		{   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
 			if (cis5to3 != null) 
-				 loc2ExInEnd = Math.abs(lsElement.get(NumExon+1).getStartCis() - location) - 1;// 距后一个外显子 nnCnnnnN
+				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartCis() - location) - 1;// 距后一个外显子 nnCnnnnN
 			else
-				 loc2ExInEnd = Math.abs(lsElement.get(NumExon+1).getStartAbs() - location) - 1;// 距后一个外显子 nnCnnnnN
+				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartAbs() - location) - 1;// 距后一个外显子 nnCnnnnN
 			
 		}
 		hashLocExInEnd.put(location, loc2ExInEnd);
@@ -357,19 +375,10 @@ public abstract class ListAbs <T extends ElementAbs> {
 	 */
 	public int getListLen() {
 		int isoLen = 0;
-		for (T exons : lsElement) {
+		for (E exons : this) {
 			isoLen = isoLen + exons.getLen();
 		}
 		return isoLen;
-	}
-	
-	public int size()
-	{
-		return lsElement.size();
-	}
-	public T get(int i)
-	{
-		return lsElement.get(i);
 	}
 	
 	/**
@@ -377,14 +386,14 @@ public abstract class ListAbs <T extends ElementAbs> {
 	 * @param lsOtherExon
 	 * @return
 	 */
-	public boolean compIso(ListAbs<T> lsOther)
+	public boolean compIso(ListAbs<E> lsOther)
 	{
 		if (lsOther.size() != size()) {
 			return false;
 		}
 		for (int i = 0; i < lsOther.size(); i++) {
-			T otherT = lsOther.get(i);
-			T thisT = get(i);
+			E otherT = lsOther.get(i);
+			E thisT = get(i);
 			if (!otherT.equals(thisT)) {
 				return false;
 			}
@@ -395,9 +404,9 @@ public abstract class ListAbs <T extends ElementAbs> {
 	 * 返回每个ID对应的具体element
 	 * @return
 	 */
-	public void getLocHashtable(HashMap<String,T> hashLocMap)
+	public void getLocHashtable(HashMap<String,E> hashLocMap)
 	{
-		for (T ele : lsElement) {
+		for (E ele : this) {
 			String[] ss = ele.getLocString().split(SEP);
 			for (String string : ss) {
 				hashLocMap.put(string, ele);
@@ -410,8 +419,8 @@ public abstract class ListAbs <T extends ElementAbs> {
 	 */
 	public void getHashLocNum(HashMap<String,Integer> hashLocNum)
 	{
-		for (int i = 0; i < lsElement.size(); i++) {
-			T ele = lsElement.get(i);
+		for (int i = 0; i < size(); i++) {
+			E ele = get(i);
 			String[] ss = ele.getLocString().split(SEP);
 			for (String string : ss) {
 				hashLocNum.put(string, i);
@@ -426,8 +435,8 @@ public abstract class ListAbs <T extends ElementAbs> {
 	public HashMap<String,Integer> getHash2Num()
 	{
 		HashMap<String, Integer> hashID2Num = new HashMap<String, Integer>();
-		for (int i = 0; i < lsElement.size(); i++) {
-			T ele = lsElement.get(i);
+		for (int i = 0; i < size(); i++) {
+			E ele = get(i);
 			String[] ss = ele.getLocString().split(SEP);
 			for (String string : ss) {
 				hashID2Num.put(string, i);
@@ -443,7 +452,7 @@ public abstract class ListAbs <T extends ElementAbs> {
 	public ArrayList<String> getLOCIDList()
 	{
 		ArrayList<String> lsLocID = new ArrayList<String>();
-		for (T ele : lsElement) {
+		for (E ele : this) {
 			lsLocID.add(ele.getLocString());
 		}
 		return lsLocID;
@@ -460,13 +469,13 @@ public abstract class ListAbs <T extends ElementAbs> {
 	 */
 	public int[] LocPosition( int Coordinate) {
 		if (cis5to3 == null) {
-			return BinarySearch.LocPositionAbs(lsElement, Coordinate);
+			return BinarySearch.LocPositionAbs(this, Coordinate);
 		}
 		else if (cis5to3) {
-			return BinarySearch.LocPositionCis(lsElement, Coordinate);
+			return BinarySearch.LocPositionCis(this, Coordinate);
 		}
 		else {
-			return BinarySearch.LocPositionTran(lsElement, Coordinate);
+			return BinarySearch.LocPositionTran(this, Coordinate);
 		}
 	}
 	
