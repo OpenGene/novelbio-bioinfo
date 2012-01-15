@@ -114,17 +114,17 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			public int compare(GffGeneIsoInfo o1, GffGeneIsoInfo o2) {
 				Integer o1Start = -1;
 				if (o1.isCis5to3()) {
-					o1Start = o1.getIsoInfo().get(0).getStartCis();
+					o1Start = o1.get(0).getStartCis();
 				}
 				else {
-					o1Start = o1.getIsoInfo().get(o1.getIsoInfo().size() - 1).getEndCis();
+					o1Start = o1.get(o1.size() - 1).getEndCis();
 				}
 				Integer o2Start = -1;
 				if (o2.isCis5to3()) {
-					o2Start = o2.getIsoInfo().get(0).getStartCis();
+					o2Start = o2.get(0).getStartCis();
 				}
 				else {
-					o2Start = o2.getIsoInfo().get(o2.getIsoInfo().size() - 1).getEndCis();
+					o2Start = o2.get(o2.size() - 1).getEndCis();
 				}
 				return o1Start.compareTo(o2Start);
 			}
