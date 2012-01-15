@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.apache.catalina.filters.AddDefaultCharsetFilter;
-
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.generalConf.Species;
 import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;

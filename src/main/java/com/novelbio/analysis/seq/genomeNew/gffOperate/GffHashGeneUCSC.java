@@ -3,7 +3,9 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
+import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
@@ -44,15 +46,14 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 		setTaxID(gfffilename);
 		// 实例化四个表
-		Chrhash = new HashMap<String, ArrayList<GffDetailGene>>();// 一个哈希表来存储每条染色体
+		Chrhash = new LinkedHashMap<String, ListAbs<GffDetailGene>>();// 一个哈希表来存储每条染色体
 		locHashtable = new HashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
 		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
-		LOCChrHashIDList = new ArrayList<String>();
 
 		TxtReadandWrite txtGffRead = new TxtReadandWrite(gfffilename, false);
 		BufferedReader readGff = txtGffRead.readfile();
 
-		ArrayList<GffDetailGene> LOCList = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+		ListAbs<GffDetailGene> LOCList = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 		String content = "";
 		readGff.readLine();// 跳过第一行
 		String chrnametmpString = "";
@@ -70,12 +71,8 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				if (LOCList != null)// 如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
 				{
 					LOCList.trimToSize();
-					// 把peak名称顺序装入LOCIDList
-					for (GffDetailGene gffDetail : LOCList) {
-						LOCChrHashIDList.add(gffDetail.getLocString());
-					}
 				}
-				LOCList = new ArrayList<GffDetailGene>();// 新建一个LOCList并放入Chrhash
+				LOCList = new ListAbs<GffDetailGene>();// 新建一个LOCList并放入Chrhash
 				Chrhash.put(chrnametmpString, LOCList);
 			}
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,10 +143,6 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			locHashtable.put(geneInfo[0].toLowerCase(), gffDetailUCSCgene);
 		}
 		LOCList.trimToSize();
-		// System.out.println(mm);
-		for (GffDetailGene gffDetail : LOCList) {
-			LOCChrHashIDList.add(gffDetail.getLocString());
-		}
 		txtGffRead.close();
 	}
 	
@@ -174,15 +167,14 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 	protected void ReadGffarrayExcep2(String gfffilename) throws Exception {
 		setTaxID(gfffilename);
 		// 实例化四个表
-		Chrhash = new HashMap<String, ArrayList<GffDetailGene>>();// 一个哈希表来存储每条染色体
+		Chrhash = new LinkedHashMap<String, ListAbs<GffDetailGene>>();// 一个哈希表来存储每条染色体
 		locHashtable = new HashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
 		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
-		LOCChrHashIDList = new ArrayList<String>();
 
 		TxtReadandWrite txtGffRead = new TxtReadandWrite(gfffilename, false);
 		BufferedReader readGff = txtGffRead.readfile();
 
-		ArrayList<GffDetailGene> LOCList = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+		ListAbs<GffDetailGene> LOCList = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 		String content = "";
 		readGff.readLine();// 跳过第一行
 		String chrnametmpString = "";
@@ -200,12 +192,8 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				if (LOCList != null)// 如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
 				{
 					LOCList.trimToSize();
-					// 把peak名称顺序装入LOCIDList
-					for (GffDetailGene gffDetail : LOCList) {
-						LOCChrHashIDList.add(gffDetail.getLocString());
-					}
 				}
-				LOCList = new ArrayList<GffDetailGene>();// 新建一个LOCList并放入Chrhash
+				LOCList = new ListAbs<GffDetailGene>();// 新建一个LOCList并放入Chrhash
 				Chrhash.put(chrnametmpString, LOCList);
 			}
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -284,10 +272,6 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			locHashtable.put(geneInfo[0].toLowerCase(), gffDetailUCSCgene);
 		}
 		LOCList.trimToSize();
-		// System.out.println(mm);
-		for (GffDetailGene gffDetail : LOCList) {
-			LOCChrHashIDList.add(gffDetail.getLocString());
-		}
 		txtGffRead.close();
 	}
 	
