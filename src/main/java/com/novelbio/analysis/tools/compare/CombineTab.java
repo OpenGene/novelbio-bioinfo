@@ -26,15 +26,16 @@ public class CombineTab {
 	
 	public static void main(String[] args) {
 		String parentFile = "/home/zong0jie/×ÀÃæ/";
-		String file1 = parentFile + "01A.xls";
-		String file2 = parentFile + "01B.xls";
-		
+		String file1 = parentFile + "4.xls";
+		String file2 = parentFile + "5.xls";
+		String file3 = parentFile + "6.xls";
 		CombineTab comb = new CombineTab();
-		comb.setColDetai(file1, "A", 2,3,4);
-		comb.setColDetai(file2, "B", 2,3,4);
+		comb.setColDetai(file1, "4", 2,3,4,5,6,7,8,9,10);
+		comb.setColDetai(file2, "5", 2,3,4,5,6,7,8,9,10);
+		comb.setColDetai(file3, "6", 2,3,4,5,6,7,8,9,10);
 		
 		comb.setColID(1);
-		comb.exeToFile(parentFile + "01-A_B.xls");
+		comb.exeToFile(parentFile + "4_5_6.xls");
 	}
 	
 	

@@ -2,9 +2,12 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
@@ -13,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
+import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArrayCluster;
@@ -27,7 +31,7 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 	String acc2GeneIDfile = "";
 	String gfffile = "";
 	public GffHashGeneAbs() {
-		Chrhash = new HashMap<String, ArrayList<GffDetailGene>>();
+		Chrhash = new LinkedHashMap<String, ListAbs<GffDetailGene>>();
 		hashGeneID2Acc = new HashMap<String, String>();
 	}
 	private static Logger logger = Logger.getLogger(GffHashGeneAbs.class);
@@ -120,7 +124,7 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 		if (lsGffDetailGenesAll.size() != 0) {
 			return lsGffDetailGenesAll;
 		}
-		for (ArrayList<GffDetailGene> lsGffDetailGenes : Chrhash.values()) {
+		for (ListAbs<GffDetailGene> lsGffDetailGenes : Chrhash.values()) {
 			lsGffDetailGenesAll.addAll(lsGffDetailGenes);
 		}
 		return lsGffDetailGenesAll;
@@ -150,10 +154,10 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 		int errorNum=0;//看UCSC中有多少基因的TSS不是最长转录本的起点
 		/////////////////////正   式   计   算//////////////////////////////////////////
 		
-		for(Entry<String, ArrayList<GffDetailGene>> entry:Chrhash.entrySet())
+		for(Entry<String, ListAbs<GffDetailGene>> entry:Chrhash.entrySet())
 		{
 			String key = entry.getKey();
-			ArrayList<GffDetailGene> value = entry.getValue();
+			ListAbs<GffDetailGene> value = entry.getValue();
 			int chrLOCNum=value.size();
 			allupBpLength=allupBpLength+chrLOCNum*upBp;
 		    //一条一条染色体的去检查内含子和外显子的长度
@@ -261,14 +265,12 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 	public void addGffDetailGene(String chrID, GffDetailGene gffDetailGene) {
 		
 		if (!Chrhash.containsKey(chrID.toLowerCase())) {
-			ArrayList<GffDetailGene> lsGffDetailGenes = new ArrayList<GffDetailGene>();
+			ListAbs<GffDetailGene> lsGffDetailGenes = new ListAbs<GffDetailGene>();
 			Chrhash.put(chrID, lsGffDetailGenes);
 		}
-		ArrayList<GffDetailGene> lsGffDetailGenes = Chrhash.get(chrID.toLowerCase());
+		ListAbs<GffDetailGene> lsGffDetailGenes = Chrhash.get(chrID.toLowerCase());
 		lsGffDetailGenes.add(gffDetailGene);
 	}
-	
-	
 	
 	/**
 	 * 
@@ -306,14 +308,6 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 		}
 	}
 	
-	boolean transExonBig2Small = true;
-	/**
-	 * 反方向的转录本，exon是不是从大到小的排列
-	 */
-	public void setExonTrans(boolean transExonBig2Small)
-	{
-		this.transExonBig2Small = transExonBig2Small;
-	}
 	@Override
 	public void writeToGFFIso(String GFFfile, String title) {
 

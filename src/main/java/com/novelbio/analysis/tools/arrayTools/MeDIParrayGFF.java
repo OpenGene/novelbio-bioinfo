@@ -7,18 +7,22 @@ import java.util.HashSet;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
-
-public class MeDIParray {
+/**
+ * 解析罗氏的甲基化芯片Gff文件
+ * @author zong0jie
+ *
+ */
+public class MeDIParrayGFF {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String parentPath = "/media/winE/NBC/Project/MethyArray_QZL110907/";
-//		String ratiogff = parentPath + "394440A01_Slot_12_2010-03-10_Slot12_RM-MM9-HX3_635_ratio.gff";
+		String parentPath = "/media/winE/NBC/Project/Methylation_PH_120110/长征医院-彭浒/GFF Files（长征医院彭浒 QQ52901159）/Scaled log2-ratio Data/Ams/";
+//		String ratiogff = parentPath + "DJY_635_ratio.gff";
 //		String outFile = parentPath + FileOperate.getFileNameSep(ratiogff)[0]+"_out."+ FileOperate.getFileNameSep(ratiogff)[1];
-		String resultGff = parentPath + "NB90m VS UN12D.txt";
-		String outFile = parentPath + "NB90m VS UN12D_Cope.txt";
+		String resultGff = parentPath + "Sample1_635_ratio_coped.gff.gff";
+		String outFile = parentPath + "Sample1_635_ratio_coped_final.gff";
 		try {
 //			format(ratiogff, outFile);
 			getCombProbe(resultGff, outFile, "\t", 3, 4, 8, 2, 0.5, 3);
@@ -27,9 +31,28 @@ public class MeDIParray {
 		} catch (Exception e) {
 						e.printStackTrace();
 		}
-
+		
+		
+		formatPath("/media/winE/NBC/Project/Methylation_PH_120110/长征医院-彭浒/GFF Files（长征医院彭浒 QQ52901159）/Scaled log2-ratio Data");
 	}
 
+	
+	public static void formatPath(String filePath)
+	{
+		ArrayList<String[]> lsFile = FileOperate.getFoldFileName(filePath, "*", "gff");
+		for (String[] strings : lsFile) {
+			String fileName = FileOperate.addSep(filePath) + strings[0] + "." + strings[1];
+			String fileOut = FileOperate.changeFileSuffix(fileName, "_coped", null);
+			try {
+				format(fileName, fileOut);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+	
+	}
+	
 	public static void format(String ratiogff, String outFile) throws Exception
 	{
 		TxtReadandWrite txtGff = new TxtReadandWrite(ratiogff, false);

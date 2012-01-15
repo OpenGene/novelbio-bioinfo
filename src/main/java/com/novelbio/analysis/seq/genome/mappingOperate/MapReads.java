@@ -5,12 +5,17 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.broadinstitute.sting.utils.collections.CircularArray.Int;
+
 import com.novelbio.analysis.seq.genome.getChrSequence.ChrSearch;
 import com.novelbio.analysis.seq.genome.getChrSequence.ChrStringHash;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 
@@ -43,7 +48,53 @@ public class MapReads {
 	public  void setTagLength(int thisTagLength) {
 		tagLength=thisTagLength;
 	}
-
+	
+	HashMap<String, Integer> hashChrReadsNum = new HashMap<String, Integer>();
+	
+	public double calBG()
+	{
+		return MathComput.mean(hashChrBpReads.values());
+	}
+	public ArrayList<String[]> calBGperChrID()
+	{
+		ArrayList<String[]> lsInfo = new ArrayList<String[]>();
+		for (Entry<String, int[]> entry : hashChrBpReads.entrySet()) {
+			String[] tmp = new String[2];
+			tmp[0] = entry.getKey();
+			tmp[1] = MathComput.mean(entry.getValue()) + "";
+			lsInfo.add(tmp);
+		}
+		return lsInfo;
+	}
+	
+	public int getReadsNum() {
+		return ReadsNum;
+	}
+	public HashMap<String, Integer> getHashChrReadsNum() {
+		return hashChrReadsNum;
+	}
+	/**
+	 * 将一些peak区域重新设定值，实际上是将peak的值删除然后获得background的信息
+	 * @param lsRange
+	 */
+	public void setNum(ArrayList<MapInfo> lsRange, int value)
+	{
+		int tmp = 0;
+		for (MapInfo mapInfo : lsRange) {
+			int[] chrNumInfo = hashChrBpReads.get(mapInfo.getChrID().toLowerCase());
+			if (chrNumInfo == null) {
+				System.out.println("没有该染色体：" + mapInfo.getChrID());
+				continue;
+			}
+			for (int i = mapInfo.getStart()/invNum; i < mapInfo.getEnd()/invNum; i++) {
+				tmp = chrNumInfo[i];
+				chrNumInfo[i] = value;
+			}
+		}
+	}
+	
+	int ReadsNum = 0;
+	
 	/**
 	 * 当输入为macs的bed文件时，自动跳过chrm项目
 	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。注意，mapping文件中的chrID和chrLengthFile中的chrID要一致，否则会出错
@@ -52,13 +103,14 @@ public class MapReads {
 	 * @param colChrID ChrID在第几列，从1开始,如果chrID<=0，则将采用王丛茂的格式读取
 	 * @param colStartNum mapping起点在第几列，从1开始
 	 * @param colEndNum mapping终点在第几列，从1开始
-	 * @param invNum 每隔多少位计数
+	 * @param thisinvNum 每隔多少位计数
 	 * @return ReadsNum 总共多少reads，用于标准化计算
 	 * @throws Exception
 	 */
 	public  long  ReadMapFile(String mapFile,String chrFilePath,String sep,int colChrID,int colStartNum,int colEndNum,int thisinvNum) throws Exception 
 	{
-		long ReadsNum = 0;
+		int ReadsNumchr = 0;
+		 ReadsNum = 0;
 		//所谓结算就是说每隔invNum的bp就把这invNumbp内每个bp的Reads叠加数取平均或中位数，保存进chrBpReads中
 		colChrID--;colStartNum--;colEndNum--;
 		invNum=thisinvNum;
@@ -93,6 +145,8 @@ public class MapReads {
 					if (!lastChr.equals("")) //前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
 					{
 						sumChrBp(chrBpReads, 1, SumChrBpReads);
+						hashChrReadsNum.put(lastChr, ReadsNumchr);
+						ReadsNumchr = 0;
 					}
 					lastChr=tmp[colChrID].trim().toLowerCase();//实际这是新出现的ChrID
 					//////////////////释放内存，感觉加上这段有点用，本来内存到1.2g，加了后降到990m///////////////////////////
@@ -122,6 +176,10 @@ public class MapReads {
 			{
 				if(content.startsWith(">"))
 				{
+					if (lastChr != null && lastChr != "") {
+						hashChrReadsNum.put(lastChr, ReadsNumchr);
+						ReadsNumchr = 0;
+					}
 					 Pattern pattern =Pattern.compile("chr\\w+", Pattern.CASE_INSENSITIVE);  //flags - 匹配标志，可能包括 CASE_INSENSITIVE、MULTILINE、DOTALL、UNICODE_CASE、 CANON_EQ、UNIX_LINES、LITERAL 和 COMMENTS 的位掩码  // CASE_INSENSITIVE,大小写不敏感，MULTILINE 多行
 					 Matcher matcher;//matcher.groupCount() 返回此匹配器模式中的捕获组数。
 					 matcher = pattern.matcher(content);     
@@ -185,10 +243,12 @@ public class MapReads {
 			tmpStartOld = tmpStart;
 			tmpEndOld = tmpEnd;
 			ReadsNum++;
+			ReadsNumchr++;
 		}
 		
 		///////////////////循环结束后还要将最后一次的内容做总结////////////////////////////////////
 		 sumChrBp(chrBpReads, 1, SumChrBpReads);
+		 hashChrReadsNum.put(lastChr, ReadsNumchr);
 		 ////////////////////////////把lsChrLength按照chrLen从小到大进行排序/////////////////////////////////////////////////////////////////////////////
 		  Collections.sort(lsChrLength,new Comparator<String[]>(){
 	            public int compare(String[] arg0, String[] arg1)
@@ -202,6 +262,7 @@ public class MapReads {
 	            }
 	        });
 		 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		  
 		 return ReadsNum;
 	}
 	
@@ -233,8 +294,15 @@ public class MapReads {
 				 SumChrBpReads[i]=(int) MathComput.median(tmpSumReads);
 		 }
 	}
-	
-	
+	/**
+	 * 用本mapReads减去另一个mapReads中的信号
+	 * 主要用来比较BG
+	 * @param mapReads
+	 */
+	public void minusMapReads(MapReads mapReads)
+	{
+		
+	}
 
 	
 	/**
@@ -337,6 +405,9 @@ public class MapReads {
 			return null;
 		}
 		double[] resultTagDensityNum=MathComput.mySpline(tmpReadsNum, binNum, 0, 0, 2);
+		for (int i = 0; i < resultTagDensityNum.length; i++) {
+			resultTagDensityNum[i] =  resultTagDensityNum[i] * 5000000/this.ReadsNum;
+		}
 		return resultTagDensityNum;
 	}
 	

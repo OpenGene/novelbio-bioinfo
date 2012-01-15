@@ -6,9 +6,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 
@@ -54,18 +56,16 @@ public class GffHashCG extends GffHash<GffDetailCG, GffCodCG, GffCodCGDU>
 	{
 		  //实例化三个表
 		   locHashtable =new HashMap<String, GffDetailCG>();//存储每个LOCID和其具体信息的对照表
-		   Chrhash = new HashMap<String, ArrayList<GffDetailCG>>();//一个哈希表来存储每条染色体
+		   Chrhash = new LinkedHashMap<String, ListAbs<GffDetailCG>>();//一个哈希表来存储每条染色体
 		   LOCIDList = new ArrayList<String>();//顺序存储每个基因号，这个打算用于提取随机基因号
-		   LOCChrHashIDList = new ArrayList<String>();//顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID
 		   //为读文件做准备
-		   TxtReadandWrite txtgff=new TxtReadandWrite();
-		   txtgff.setParameter(gfffilename, false,true);
+		   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);
 		   BufferedReader reader=txtgff.readfile();//open gff file
 	       
 		   String[] ss = null;//存储分割数组的临时变量
 		   String content="";
 		   //临时变量
-		   ArrayList<GffDetailCG> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+		   ListAbs<GffDetailCG> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 		   String chrnametmpString=""; //染色体的临时名字
 		   
 		   reader.readLine();//跳过第一行
@@ -79,7 +79,6 @@ public class GffHashCG extends GffHash<GffDetailCG, GffCodCG, GffCodCGDU>
 			   {
 				   if(LOCList!=null)//如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
 				   {
-					   LOCList.trimToSize();
 					   //我收集的一个list/array排序的方法，很简单易用
 					   Collections.sort(LOCList,new Comparator<GffDetailAbs>(){
 				            public int compare(GffDetailAbs arg0, GffDetailAbs arg1) {
@@ -96,10 +95,9 @@ public class GffHashCG extends GffHash<GffDetailCG, GffCodCG, GffCodCGDU>
 					   //排序完后把CG号装入LOCIDList
 					   for (GffDetailCG gffDetail : LOCList) {
 						   LOCIDList.add(gffDetail.getLocString());
-						   LOCChrHashIDList.add(gffDetail.getLocString());
 					   }
 				   }
-				   LOCList=new ArrayList<GffDetailCG>();//新建一个LOCList并放入Chrhash
+				   LOCList=new ListAbs<GffDetailCG>();//新建一个LOCList并放入Chrhash
 				   Chrhash.put(chrnametmpString, LOCList);
 			   }
 			  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,7 +132,6 @@ public class GffHashCG extends GffHash<GffDetailCG, GffCodCG, GffCodCGDU>
 		 //排序完后装入LOCIDList
 		   for (GffDetailAbs gffDetail : LOCList) {
 			   LOCIDList.add(gffDetail.getLocString());
-			   LOCChrHashIDList.add(gffDetail.getLocString());
 		}
 		   txtgff.close();
 		 /////////////////////////////////////////////////////////////////////////////////////////////////

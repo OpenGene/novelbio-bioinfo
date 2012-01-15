@@ -8,6 +8,7 @@ import org.apache.catalina.filters.AddDefaultCharsetFilter;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.generalConf.Species;
+import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArrayCluster;
 import com.novelbio.base.dataStructure.CompSubArrayInfo;
@@ -42,29 +43,7 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 		}
 		gffHashGene.ReadGffarray(gffFile);
 	}
-	/**
-	 * 反方向的转录本，exon是不是从大到小的排列
-	 * @param GffType
-	 * @param gffFile
-	 * @param transExonBig2Small
-	 */
-	public GffHashGene(String GffType, String gffFile, boolean transExonBig2Small)
-	{
-		if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_UCSC)) {
-			gffHashGene = new GffHashGeneUCSC();
-		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_TIGR) ) {
-			gffHashGene = new GffHashGenePlant(Species.RICE);
-		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_TAIR)) {
-			gffHashGene = new GffHashGenePlant(Species.ARABIDOPSIS);
-		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF)) {
-			gffHashGene = new GffHashCufflinkGTF();
-		}
-		gffHashGene.setExonTrans(transExonBig2Small);
-		gffHashGene.ReadGffarray(gffFile);
-	}
+	
 	/**
 	 * 只设定参数，不读取
 	 * @param GffType
@@ -124,13 +103,6 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 	public ArrayList<String> getLOCIDList() {
 		return gffHashGene.getLOCIDList();
 	}
-	/**
-	 * 也就是全部基因的ID
-	 */
-	@Override
-	public ArrayList<String> getLOCChrHashIDList() {
-		return gffHashGene.getLOCChrHashIDList();
-	}
 
 	@Override
 	public String[] getLOCNum(String LOCID) {
@@ -183,19 +155,11 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 		return gffHashGene.getTaxID();
 	}
 	
-	public  HashMap<String, ArrayList<GffDetailGene>> getChrhash()
+	public  HashMap<String, ListAbs<GffDetailGene>> getChrhash()
 	{
 		return gffHashGene.getChrhash();
 	}
-	
- 	/**
-	 * 反方向的转录本，exon是不是从大到小的排列
-	 * 仅在CufflinkGTF中使用
-	 */
-	public void setExonTrans(boolean transExonBig2Small)
-	{
-		gffHashGene.setExonTrans(transExonBig2Small);
-	}
+ 
 	
 	/**
 	 * 将基因装入GffHash中
@@ -223,7 +187,7 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 		}
 		GffGeneCluster.setHighExpReads(highExpReads);
 		GffGeneCluster.setMapReads(chrLen, gffHashGeneBed);
-		for (Entry<String, ArrayList<GffDetailGene>> entry : gffHashThis.getChrhash().entrySet()) {
+		for (Entry<String, ListAbs<GffDetailGene>> entry : gffHashThis.getChrhash().entrySet()) {
 			String chrID = entry.getKey();
 			System.out.println(chrID);
 			ArrayList<GffDetailGene> lsThisGffDetail = entry.getValue();

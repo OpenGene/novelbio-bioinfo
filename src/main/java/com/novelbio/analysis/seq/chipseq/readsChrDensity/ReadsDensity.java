@@ -97,6 +97,18 @@ public class ReadsDensity
 		}
 	}
 	
+	/**
+	 * 画出所有染色体上密度图
+	 * @throws Exception
+	 */
+	public void getAllChrDistBG(String peakFile, int rowStart, int colChrID, int colStartLoc, int colEndLoc) throws Exception 
+	{
+		ArrayList<String[]> chrlengthInfo=seqHash.getChrLengthInfo();
+		gffChrUnion.removePeakInfo(peakFile, rowStart, colChrID, colStartLoc, colEndLoc);
+		for (int i = chrlengthInfo.size()-1; i>=0; i--) {
+			getChrDist(chrlengthInfo.get(i)[0], maxresolution);
+		}
+	}
  
 	/**
 	 * 给定染色体，返回该染色体上reads分布

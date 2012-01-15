@@ -2,10 +2,13 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,6 +19,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetail;
 import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CmpListCluster;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 
 /**
@@ -285,7 +289,6 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 		}
 	}
 	
-	
 	/**
 	 * @本方法需要被覆盖
 	 * 最底层读取gff的方法<br>
@@ -305,6 +308,10 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 */
 	protected abstract void ReadGffarrayExcep(String gfffilename) throws Exception;
 
+ 
+	
+	
+	
 	/**
 	 * 需要覆盖
 	 * 查找某个特定LOC的信息

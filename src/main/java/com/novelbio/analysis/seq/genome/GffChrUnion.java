@@ -28,6 +28,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffsearchPeak;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchRepeat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffsearchUCSCgene;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -644,7 +646,39 @@ public class GffChrUnion {
 		return ChrSearch.getChrLengthInfo();
 	}
 	
+	public void removePeakInfo(String peakFile, int rowStart, int colChrID, int colStartLoc, int colEndLoc)
+	{
+		ArrayList<MapInfo> lsMapInfos = getLsMapInfo(peakFile, rowStart, colChrID, colStartLoc, colEndLoc);
+		double avg = 0;
+		avg = mapReads.calBG();
+		System.out.println("BG:" + avg);
+		System.out.println("normBG:" + avg * 5000000/mapReads.getReadsNum());
+		ArrayList<String[]> lsAvgPerChr = mapReads.calBGperChrID();
+		for (String[] strings : lsAvgPerChr) {
+			System.out.println(strings[0] + "  "+Double.parseDouble(strings[1])*5000000/mapReads.getHashChrReadsNum().get(strings[0]) );
+		}
+		
+		mapReads.setNum(lsMapInfos,0);
+		avg = mapReads.calBG();
+		System.out.println("BG:" + avg);
+		System.out.println("normBG:" + avg * 5000000/mapReads.getReadsNum());
+		lsAvgPerChr = mapReads.calBGperChrID();
+		for (String[] strings : lsAvgPerChr) {
+			System.out.println(strings[0] + "  "+Double.parseDouble(strings[1])*5000000/mapReads.getHashChrReadsNum().get(strings[0]) );
+		}
+	}
 	
+	
+	
+	public ArrayList<MapInfo> getLsMapInfo(String peakFile, int rowStart, int colChrID, int colStartLoc, int colEndLoc) {
+		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(peakFile, new int[]{colChrID, colStartLoc, colEndLoc}, rowStart, -1);
+		ArrayList<MapInfo> lsMapInfos = new ArrayList<MapInfo>();
+		for (String[] strings : lsInfo) {
+			MapInfo mapInfo = new MapInfo(strings[0], Integer.parseInt(strings[1]), Integer.parseInt(strings[2]));
+			lsMapInfos.add(mapInfo);
+		}
+		return lsMapInfos;
+	}
 	/**
 	 * 在读取chr长度文件后，可以通过此获得最长和最短chr的长度
 	 * @param chrID

@@ -35,14 +35,6 @@ public interface GffHashInf<T extends GffDetailAbs, K extends GffCodAbs<T>, M ex
 	public ArrayList<String> getLOCIDList();
 	
 	/**
-	 * 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就用"/"隔开，
-	 * 那么该list中的元素用split("/")分割后，上locHashtable就可提取相应的GffDetail，目前主要是Peak用到
-	 * 顺序获得，可以获得某个LOC在基因上的定位。
-	 * 其中TigrGene的ID每个就是一个LOCID，也就是说TIGR的ID不需要进行切割，当然切了也没关系
-	 */
-	public ArrayList<String> getLOCChrHashIDList();
-	
-	/**
 	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
 	 * 没找到就返回null
 	 */

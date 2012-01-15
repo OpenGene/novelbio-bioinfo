@@ -17,7 +17,10 @@ public class ZebraFish {
 //		zebraFish.updateZbGO("/home/zong0jie/桌面/danio_rerio/gene_association.zfin");
 //		zebraFish.updateZbRefSeqID("/home/zong0jie/桌面/danio_rerio/gene2refseq.txt", NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
 //		zebraFish.updateZbRefSeqID("/home/zong0jie/桌面/danio_rerio/ensembl_1_to_1.txt", NovelBioConst.DBINFO_ENSEMBL);
-		zebraFish.getSeq("/home/zong0jie/桌面/danio_rerio/sequence/rna.fa", "/home/zong0jie/桌面/danio_rerio/sequence/rnaCope.fa");
+//		zebraFish.getSeq("/media/winE/Bioinformatics/GenomeData/danio_rerio/sequence/NCBI_rna.fa", 
+//				"/media/winE/Bioinformatics/GenomeData/danio_rerio/sequence/NCBI_coped_rna.fa", "\\w{2}_\\d+");
+		
+		zebraFish.updateAffy2AccID(7955, "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfishRefSeq.xls");
 	}
 	private void updateZbGeneID(String zbID2geneIDFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(zbID2geneIDFile, false);
@@ -67,13 +70,26 @@ public class ZebraFish {
 		}
 	}
 	
-	private void getSeq(String seqIn, String seqOut)
+	private void getSeq(String seqIn, String seqOut, String regx)
 	{
-		SeqFastaHash seqFastaHash = new SeqFastaHash(seqIn, "\\w{2}_\\d+", false, false);
+		SeqFastaHash seqFastaHash = new SeqFastaHash(seqIn,regx, false, false);
 		ArrayList<SeqFasta> lsFasta = seqFastaHash.getSeqFastaAll();
 		TxtReadandWrite txtOut = new TxtReadandWrite(seqOut, true);
 		for (SeqFasta seqFasta : lsFasta) {
 			txtOut.writefileln(seqFasta.toStringNRfasta());
 		}
 	}
+	
+	private void updateAffy2AccID(int taxID, String affy2)
+	{
+		TxtReadandWrite txtRead = new TxtReadandWrite(affy2, false);
+		for (String content : txtRead.readlines()) {
+			String[] ss = content.split("\t");
+			CopedID copedID = new CopedID(ss[0], taxID);
+			copedID.setUpdateRefAccID(ss[1]);
+			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_AFFY_GLMAX, true);
+			copedID.update(true);
+		}
+	}
+ 
 }
