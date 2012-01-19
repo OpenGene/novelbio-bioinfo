@@ -77,6 +77,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			hashDBtype.put(10090, NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
 			hashDBtype.put(3702, NovelBioConst.DBINFO_ATH_TAIR);
 			hashDBtype.put(3847, NovelBioConst.DBINFO_GLYMAX_SOYBASE);
+			hashDBtype.put(4102, NovelBioConst.DBINFO_PLANTGDB_ACC);
 		}
 		String result = hashDBtype.get(taxID);
 		if (result == null) {
@@ -113,7 +114,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	public void setBlastInfo(double evalue, int... StaxID) {
 		lsBlastInfos = new ArrayList<BlastInfo>();
 		for (int i : StaxID) {
-			BlastInfo blastInfo = servBlastInfo.queryBlastInfo(genUniID, i,
+			BlastInfo blastInfo = servBlastInfo.queryBlastInfo(genUniID,taxID, i,
 					evalue);
 			if (blastInfo != null) {
 				lsBlastInfos.add(blastInfo);
@@ -147,13 +148,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		if (blastInfo == null) {
 			return null;
 		}
-		String idType = "";
-		if (blastInfo.getSubjectTab().equals(BlastInfo.SUBJECT_TAB_NCBIID)) {
-			idType = CopedID.IDTYPE_GENEID;
-		} else if (blastInfo.getSubjectTab().equals(
-				BlastInfo.SUBJECT_TAB_UNIPROTID)) {
-			idType = CopedID.IDTYPE_UNIID;
-		}
+		String idType = blastInfo.getSubjectTab();
 		CopedID copedID = new CopedID(idType, blastInfo.getSubjectID(),
 				blastInfo.getSubjectTax());
 		return copedID;
@@ -571,14 +566,12 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * @param blastInfo
 	 */
 	@Override
-	public void setUpdateBlastInfo(BlastInfo blastInfo) {
-		if (blastInfo.getQueryID() == null || blastInfo.getQueryID().equals("")
-				|| blastInfo.getSubjectID() == null
-				|| blastInfo.getSubjectID().equals("")
-				|| blastInfo.getQueryTax() == 0 || blastInfo.getEvalue() > 50
-				|| blastInfo.getEvalue() < 0) {
-			return;
-		}
+	public void setUpdateBlastInfo(String SubAccID, String subDBInfo, int SubTaxID, double evalue, double identities) {
+		BlastInfo blastInfo = new BlastInfo(null, 0, SubAccID, SubTaxID);
+		blastInfo.setQueryID(genUniID);
+		blastInfo.setQueryTax(getTaxID());
+		blastInfo.setEvalue_Identity(evalue, identities);
+		blastInfo.setQueryDB_SubDB(this.databaseType, subDBInfo);
 		if (lsBlastInfosUpdate == null) {
 			lsBlastInfosUpdate = new ArrayList<BlastInfo>();
 		}

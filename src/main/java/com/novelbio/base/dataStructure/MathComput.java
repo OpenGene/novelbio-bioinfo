@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.math.stat.StatUtils;
+import org.apache.commons.math.stat.inference.TestUtils;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.log4j.Logger;
 
@@ -878,9 +879,6 @@ public class MathComput {
 		}
 		return result;
 	}
-
-	
-
 	
 //////////////////////////// java 版的 fdr 计算， BH 方法 //////////////////////////////////////////////////////////////////////////////////
 	/**

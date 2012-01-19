@@ -39,6 +39,15 @@ public class NovelBioConst {
 	 */
 	public final static String DBINFO_NCBI_ACC_GENEAC = "geneAC";
 	/**
+	 * PlantGDB中最普通的DBINFO ID
+	 */
+	public final static String DBINFO_PLANTGDB_ACC = "PlantGDB";
+	
+	/**
+	 * Nemblgen中最普通的DBINFO ID
+	 */
+	public final static String DBINFO_ROCHE = "Roche";
+	/**
 	 * UniProtDB中的uniIDkey表
 	 */
 	public final static String DBINFO_UNIPROT_UNIID = "UniProt";

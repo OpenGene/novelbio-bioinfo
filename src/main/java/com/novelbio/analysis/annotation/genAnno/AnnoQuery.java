@@ -23,9 +23,14 @@ import com.novelbio.database.model.modcopeid.CopedID;
 @Deprecated
 public class AnnoQuery {
 	public static void main(String[] args) {
-		String parent = "/media/winE/NBC/Project/Project_Q_Lab/tophat/GO/";
-		anno(parent + "2vs0gene_exp.diff.xls",parent + "2txtOut.txt",  4577, 1, true, 3702, 1e-10, "");
-		anno(parent + "3vs0gene_exp.diff.xls",parent + "3txtOut.txt",  4577, 1, true, 3702, 1e-10, "");
+		String parent = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/";
+		anno(parent + "mouseHeartK0vsWT0outDifResult.xls",parent + "mouseHeartK0vsWT0outDifResult_Anno.xls",  10090, 1, false, 9606, 1e-10, "");
+		anno(parent + "mouseMEF_K0vsWT0outDifResult.xls",parent + "mouseMEFK0vsWT0outDifResult_Anno.xls",  10090, 1, false, 9606, 1e-10, "");
+		anno(parent + "mouseMEF_K2vsWT2outDifResult.xls",parent + "mouseMEF_K2vsWT2outDifResult_Anno.xls",  10090, 1, false, 9606, 1e-10, "");
+	
+		parent = "/media/winF/NBC/Project/Project_FY/chicken/";
+		anno(parent + "chickenK0vsWT0outDifResult.xls",parent + "chickenK0vsWT0outDifResult_Anno.xls",  9031, 1, false, 9606, 1e-10, "");
+		anno(parent + "chickenK5vsWT5outDifResult.xls",parent + "chickenK5vsWT5outDifResult_Anno.xls",  9031, 1, false, 9606, 1e-10, "");	
 	}
 	/**
 	 * 
@@ -98,9 +103,9 @@ public class AnnoQuery {
 	 * @param blast
 	 * @param StaxID
 	 * @param evalue
-	 * @param regx 如果为""则不切割
+	 * @param regx  该cell里面是否包含一个以上的ID，譬如accID1,accID2 如果是这样的，就用splite去切割并且只取第一个。如果为""则不切割
 	 */
-	public static void anno(String excelFile, String out,int taxID,int colNum,boolean blast,int StaxID,double evalue,String regx) {
+	public static void anno(String excelFile,String out,int taxID,int colNum,boolean blast,int StaxID,double evalue,String regx) {
 		colNum--;
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxtFile(excelFile, 1, 1, -1, -1);
 		ArrayList<String[]> lsTmpAnno = new ArrayList<String[]>();
@@ -112,7 +117,7 @@ public class AnnoQuery {
 			else {
 				accID = lsInfo.get(i)[colNum].split(regx)[0];
 			}
-			CopedID copedID = new CopedID(accID, taxID, false);
+			CopedID copedID = new CopedID(accID, taxID);
 			copedID.setBlastInfo(evalue, StaxID);
 			String[] out2 = copedID.getAnno(blast);
 			lsTmpAnno.add(ArrayOperate.combArray(new String[]{copedID.getAccID()}, out2, 0));

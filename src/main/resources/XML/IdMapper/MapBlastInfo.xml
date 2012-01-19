@@ -13,7 +13,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="queryID != null and queryID != ''">
 				queryID = #{queryID}
 			</if>
-			<if test="queryTax != null and queryTax!=0">
+			<if test="queryTax != null and queryTax!= 0">
 				and queryTax = #{queryTax}
 			</if>
 			<if test="queryDB != null and queryDB != ''">

@@ -162,10 +162,6 @@ public interface CopedIDInt{
 	 * @param updateUniID
 	 */
 	void setUpdateRefAccID(String... refAccID);
-	/**
-	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级
-	 * 
-	 * @param blastInfo
-	 */
-	void setUpdateBlastInfo(BlastInfo blastInfo);
+	void setUpdateBlastInfo(String SubAccID, String subDBInfo, int SubTaxID,
+			double evalue, double identities);
 }

@@ -77,8 +77,8 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	protected String getGFFformatExonMISO(String geneID, String title,
 			String strand) {
 		String geneExon = "";
-		for (int i = 0; i < getIsoInfo().size(); i++) {
-			ExonInfo exons = getIsoInfo().get(i);
+		for (int i = 0; i < size(); i++) {
+			ExonInfo exons = get(i);
 			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" + exons.getStartAbs() + "\t" + exons.getEndAbs()
 		     + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=exon:" + getIsoName()  + ":" + (i+1) +";Parent=" + getIsoName() + " \r\n";
 		}
@@ -88,7 +88,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	@Override
 	protected String getGTFformatExon(String geneID, String title, String strand) {
 		String geneExon = "";
-		for (ExonInfo exons : getIsoInfo()) {
+		for (ExonInfo exons : this) {
 			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" + exons.getStartAbs()  + "\t" + exons.getEndAbs() 
 		     + "\t"+"."+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id \""+getIsoName()+"\"; \r\n";
 		}

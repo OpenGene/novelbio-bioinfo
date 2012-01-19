@@ -23,17 +23,16 @@ public class PeakLOCRun {
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 //				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
 		
-		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
-				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 //				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
-//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
-//				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
+		PeakLOC.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_TIGR,
+				NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, "");
+		statisticNum();
 		System.out.println("prepare ok");
 //		filterPeak();
 //		regionFind();
 //		annotation();
-		histData();
+//		histData();
 		System.out.println(" ok");
 		try {
 //			statisticNum();
@@ -185,20 +184,20 @@ public class PeakLOCRun {
 	 */
 	public static void statisticNum() 
 	{
-		String ParentFile="/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/annotation/";
-		String resultParentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110608Paper/GeneStructure/";
+		String ParentFile="/home/zong0jie/桌面/张宏宇2012/Meth/甲基化位点/";
+		String resultParentFile = "/home/zong0jie/桌面/张宏宇2012/Meth/genestructure/";
 		int[] columnID=new int[2];
 		columnID[0]=1;
 		columnID[1]=6;
 		String[][] intronExonStatistic;
 		try {
-			String FpeaksFile=ParentFile+"PHF8_peaks.txt";
+			String FpeaksFile=ParentFile+"NseSort-W200-G200-E100.scoreisland_anno_-1.5k+0.xls";
 			String prix = "PHF8";
 			
 			
 			String genestructureBar = prix + "bar.jpg";
 			String genestructureStatistic = prix + "geneStructure";
-			intronExonStatistic = PeakLOC.getPeakStaticInfo(FpeaksFile, "\t", columnID, 2, -1);
+			intronExonStatistic = PeakLOC.getPeakStaticInfo(2000, FpeaksFile, "\t", columnID, 2, -1);
 			TxtReadandWrite txtstatistic=new TxtReadandWrite();
 			txtstatistic.setParameter(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, true,false);
 			txtstatistic.ExcelWrite(intronExonStatistic, "\t");

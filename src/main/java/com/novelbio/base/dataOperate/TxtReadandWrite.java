@@ -1027,6 +1027,7 @@ public class TxtReadandWrite {
 	}
 
 	/**
+	 * 效率太低，待修正
 	 * 将数据按照excel的方法写入List<string[]>,null和""都不写入，最后写入一个换行
 	 * 内部close()
 	 * @param sep

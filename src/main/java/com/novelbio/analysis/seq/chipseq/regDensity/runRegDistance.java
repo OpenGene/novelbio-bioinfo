@@ -21,145 +21,180 @@ public class runRegDistance {
 		 int[] colMap = new int[3]; colMap[0] = 1; colMap[1] =2; colMap[2] =3; //mapping 文件中 chr 起点 终点的位置 常规bed文件 1，2，3 王从茂的文件，0，1，2
 		 int rowStart = 2;
 		 int rowEnd = -1;
-		 int binNum = 10; //精度
-		 int range = 3000;//上下游多少距离
-		 String mapparentFIle = "/media/winE/NBC/Project/ChIPSeq_WJK100909/mapping/";
-		 String PeakparentFile = "/media/winE/NBC/Project/ChIPSeq_WJK100909/result/PeakCalling/";//+ "peakCalling/";
+		 int binNum = 5; //精度
+		 int range = 5000;//上下游多少距离
+		 String mapparentFIle = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/mappingFile/";
+//		 String PeakparentFile = "/media/winE/NBC/Project/ChIPSeq_WJK100909/result/PeakCalling/";//+ "peakCalling/";
 		try {
-			String mapFilePath=mapparentFIle+"fragment_tab.bed";
-			
-			String txtPeakFile= PeakparentFile + "Peak Information.xls";
-			String resultPrefix = "WJK";
-			String resultpath = "/media/winE/NBC/Project/ChIPSeq_WJK100909/result/PeakCalling/";
+			String mapFilePath=mapparentFIle+"Nextend_sort.bed";
+			String geneFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/high.txt";
+//			String txtPeakFile= PeakparentFile + "Peak Information.xls";
+			String resultPrefix = "Nhigh";
+			String resultpath = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/";
 			RegDensity tssDistance=new RegDensity();
 			tssDistance.setInvNum(binNum);
-			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
-					NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, mapFilePath);
-//			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
-//					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
-//			String geneFIle = "/home/zong0jie/桌面/CDG/CDG20110201/CTvsmT3/IntersectionResults/InterSectionGeneName.xls";
-//			tssDistance.getGeneNameTssDensity(geneFIle, 10000, 10000, "/media/winE/Bioinformatics/R/practice_script/platform/", resultpath, resultPrefix);
-//			tssDistance.getGeneNameGeneEndDensity(geneFIle, 10000, 10000, "/media/winE/Bioinformatics/R/practice_script/platform/", resultpath, resultPrefix);
-			
-			tssDistance.getPeakInfo(txtPeakFile, columnID, rowStart, rowEnd);	
-//			tssDistance.getRegionDensity("GeneEnd",range, range*2/binNum,resultpath,resultPrefix);
-			tssDistance.getRegionDensity("Tss",range,range*2/binNum,resultpath,resultPrefix);
-//			tssDistance.getRegionDensityHeatMap("Tss", range, range*2/binNum, resultpath, resultPrefix+"heatmap");
-			tssDistance.getRegionDensity("GeneEnd",range, range*2/binNum,resultpath,resultPrefix);
-//			tssDistance.getRegionDensityHeatMap("GeneEnd", range, range*2/binNum, resultpath, resultPrefix+"heatmap");
+//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+//					NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, mapFilePath);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
+					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
+ 
+			tssDistance.getGeneNameTssDensity(geneFile, range, 1000, resultpath, resultPrefix);
+			tssDistance.getGeneNameGeneEndDensity(geneFile, range, 1000, resultpath, resultPrefix);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		
-		///////////////////////////////////////////////////////////////////////////////////////////////////
-//		try {
-//			String mapFilePath=mapparentFIle+"sortD4K.filt.bed";
-//			
-//			String txtPeakFile= PeakparentFile + "D4K.filt_peaks.xls";
-//			
-//			String resultpath = "/media/winE/NBC/Project/ChIPSeq_CDG101011/result/readsInRegion/";
-//			String resultPrefix = "D4K";
-//			
-//			RegDensity tssDistance=new RegDensity();
-//			
-////			int[] colMap = new int[3];colMap[0] = 0; colMap[1] =1; colMap[2] =2;//王从茂的bed
-//			tssDistance.setInvNum(binNum);
-//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
-////			String geneFIle = "/home/zong0jie/桌面/CDG/CDG20110201/CTvsmT3/IntersectionResults/InterSectionGeneName.xls";
-////			tssDistance.getGeneNameTssDensity(geneFIle, 10000, 10000, "/media/winE/Bioinformatics/R/practice_script/platform/", resultpath, resultPrefix);
-////			tssDistance.getGeneNameGeneEndDensity(geneFIle, 10000, 10000, "/media/winE/Bioinformatics/R/practice_script/platform/", resultpath, resultPrefix);
-//			
-//			tssDistance.getPeakInfo(txtPeakFile, columnID, rowStart, rowEnd);	
-//			tssDistance.getRegionDensity("GeneEnd",range, range*2/binNum,resultpath,resultPrefix);
-//			tssDistance.getRegionDensity("Tss",range,range*2/binNum,resultpath,resultPrefix);
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//		}
-//		try {
-//			String mapFilePath=mapparentFIle+"sortD4W.filt.bed";
-//			
-//			String txtPeakFile= PeakparentFile + "D4W.filt_peaks.xls";
-//			
-//			String resultpath = "/media/winE/NBC/Project/ChIPSeq_CDG101011/result/readsInRegion/";
-//			String resultPrefix = "D4W";
-//			
-//			RegDensity tssDistance=new RegDensity();
-//			
-////			int[] colMap = new int[3];colMap[0] = 0; colMap[1] =1; colMap[2] =2;//王从茂的bed
-//			tssDistance.setInvNum(binNum);
-//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
-////			String geneFIle = "/home/zong0jie/桌面/CDG/CDG20110201/CTvsmT3/IntersectionResults/InterSectionGeneName.xls";
-////			tssDistance.getGeneNameTssDensity(geneFIle, 10000, 10000, "/media/winE/Bioinformatics/R/practice_script/platform/", resultpath, resultPrefix);
-////			tssDistance.getGeneNameGeneEndDensity(geneFIle, 10000, 10000, "/media/winE/Bioinformatics/R/practice_script/platform/", resultpath, resultPrefix);
-//			
-//			tssDistance.getPeakInfo(txtPeakFile, columnID, rowStart, rowEnd);	
-//			tssDistance.getRegionDensity("GeneEnd",range, range*2/binNum,resultpath,resultPrefix);
-//			tssDistance.getRegionDensity("Tss",range,range*2/binNum,resultpath,resultPrefix);
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//		}
-//		try {
-//			String mapFilePath=mapparentFIle+"sortEK.filt.bed";
-//			
-//			String txtPeakFile= PeakparentFile + "EK.filt_peaks.xls";
-//			
-//			String resultpath = "/media/winE/NBC/Project/ChIPSeq_CDG101011/result/readsInRegion/";
-//			String resultPrefix = "EK";
-//			
-//			RegDensity tssDistance=new RegDensity();
-//			
-////			int[] colMap = new int[3];colMap[0] = 0; colMap[1] =1; colMap[2] =2;//王从茂的bed
-//			tssDistance.setInvNum(binNum);
-//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
-////			String geneFIle = "/home/zong0jie/桌面/CDG/CDG20110201/CTvsmT3/IntersectionResults/InterSectionGeneName.xls";
-////			tssDistance.getGeneNameTssDensity(geneFIle, 10000, 10000, "/media/winE/Bioinformatics/R/practice_script/platform/", resultpath, resultPrefix);
-////			tssDistance.getGeneNameGeneEndDensity(geneFIle, 10000, 10000, "/media/winE/Bioinformatics/R/practice_script/platform/", resultpath, resultPrefix);
-//			
-//			tssDistance.getPeakInfo(txtPeakFile, columnID, rowStart, rowEnd);	
-//			tssDistance.getRegionDensity("GeneEnd",range, range*2/binNum,resultpath,resultPrefix);
-//			tssDistance.getRegionDensity("Tss",range,range*2/binNum,resultpath,resultPrefix);
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//		}
-//		try {
-//			String mapFilePath=mapparentFIle+"Rfragment.fasta";
-//			
-//			String txtPeakFile= PeakparentFile + "k0_macsPeak_peaks.txt";
-//			
-//			String resultpath = "/media/winE/NBC/Project/ChIPSeq_CDG101101/result/regionReads/selectGene/";
-//			String resultPrefix = "mCEF";
-//			
-//			RegDensity tssDistance = new RegDensity();
-////			int[] colMap = new int[3];colMap[0] = 0; colMap[1] =1; colMap[2] =2;//王从茂的bed
-//			tssDistance.setInvNum(binNum);
-//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
-//			String geneFile1 = "/home/zong0jie/桌面/gene.txt";
-////			String geneFile2 = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/statisticInfo/randomRefseqGene/mouseRefseqRandom2.txt";
-//			tssDistance.getGeneNameTssDensity("NM_009233", 10000, "Sox1R", 10000, resultpath);
-//			tssDistance.getGeneNameTssDensity("NM_010277", 10000, "GfapR", 10000, resultpath);
-//			tssDistance.getGeneNameTssDensity("NM_013627", 10000, "Pax6R", 10000, resultpath);
-//			tssDistance.getGeneNameTssDensity("NM_009234", 10000, "Sox11R", 10000, resultpath);
-//			tssDistance.getGeneNameTssDensity("NM_016968", 10000, "Olig1R", 10000, resultpath);
-//			tssDistance.getGeneNameTssDensity("NM_016967", 10000, "Olig2R", 10000, resultpath);
-//			tssDistance.getGeneNameTssDensity("NM_008629", 10000, "Msi1R", 10000, resultpath);
-//			tssDistance.getGeneNameTssDensity("NM_023279", 10000, "Tubb3R", 10000, resultpath);
-//			tssDistance.getGeneNameTssDensity("NM_008632", 10000, "Mtap2R", 10000, resultpath);
-////			tssDistance.getGeneNameTssDensity(geneFile2, 10000, 10000, resultpath, resultPrefix+"random2");
-////			tssDistance.getGeneNameGeneEndDensity(geneFile2, 10000, 10000, resultpath, resultPrefix+"random2");
-//			
-//			
-//			
-////			tssDistance.getPeakInfo(txtPeakFile, columnID, rowStart, rowEnd);	
-////			tssDistance.getRegionDensity("GeneEnd",range, range*2/binNum,resultpath,resultPrefix);
-////			tssDistance.getRegionDensity("Tss",range,range*2/binNum,resultpath,resultPrefix);
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//		}
-//		
-//		
+		try {
+			String mapFilePath=mapparentFIle+"Nextend_sort.bed";
+			String geneFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/mid.txt";
+//			String txtPeakFile= PeakparentFile + "Peak Information.xls";
+			String resultPrefix = "Nmid";
+			String resultpath = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/";
+			RegDensity tssDistance=new RegDensity();
+			tssDistance.setInvNum(binNum);
+//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+//					NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, mapFilePath);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
+					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
+ 
+			tssDistance.getGeneNameTssDensity(geneFile, range, 1000, resultpath, resultPrefix);
+			tssDistance.getGeneNameGeneEndDensity(geneFile, range, 1000, resultpath, resultPrefix);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		try {
+			String mapFilePath=mapparentFIle+"Nextend_sort.bed";
+			String geneFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/low.txt";
+//			String txtPeakFile= PeakparentFile + "Peak Information.xls";
+			String resultPrefix = "Nlow";
+			String resultpath = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/";
+			RegDensity tssDistance=new RegDensity();
+			tssDistance.setInvNum(binNum);
+//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+//					NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, mapFilePath);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
+					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
+ 
+			tssDistance.getGeneNameTssDensity(geneFile, range, 1000, resultpath, resultPrefix);
+			tssDistance.getGeneNameGeneEndDensity(geneFile, range, 1000, resultpath, resultPrefix);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
 		
 		
+		try {
+			String mapFilePath=mapparentFIle+"2Nextend_sort.bed";
+			String geneFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/high.txt";
+//			String txtPeakFile= PeakparentFile + "Peak Information.xls";
+			String resultPrefix = "2Nhigh";
+			String resultpath = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/";
+			RegDensity tssDistance=new RegDensity();
+			tssDistance.setInvNum(binNum);
+//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+//					NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, mapFilePath);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
+					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
+ 
+			tssDistance.getGeneNameTssDensity(geneFile, range, 1000, resultpath, resultPrefix);
+			tssDistance.getGeneNameGeneEndDensity(geneFile, range, 1000, resultpath, resultPrefix);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
+		try {
+			String mapFilePath=mapparentFIle+"2Nextend_sort.bed";
+			String geneFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/mid.txt";
+//			String txtPeakFile= PeakparentFile + "Peak Information.xls";
+			String resultPrefix = "2Nmid";
+			String resultpath = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/";
+			RegDensity tssDistance=new RegDensity();
+			tssDistance.setInvNum(binNum);
+//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+//					NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, mapFilePath);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
+					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
+ 
+			tssDistance.getGeneNameTssDensity(geneFile, range, 1000, resultpath, resultPrefix);
+			tssDistance.getGeneNameGeneEndDensity(geneFile, range, 1000, resultpath, resultPrefix);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		try {
+			String mapFilePath=mapparentFIle+"2Nextend_sort.bed";
+			String geneFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/low.txt";
+//			String txtPeakFile= PeakparentFile + "Peak Information.xls";
+			String resultPrefix = "2Nlow";
+			String resultpath = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/";
+			RegDensity tssDistance=new RegDensity();
+			tssDistance.setInvNum(binNum);
+//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+//					NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, mapFilePath);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
+					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
+ 
+			tssDistance.getGeneNameTssDensity(geneFile, range, 1000, resultpath, resultPrefix);
+			tssDistance.getGeneNameGeneEndDensity(geneFile, range, 1000, resultpath, resultPrefix);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		
+		
+		try {
+			String mapFilePath=mapparentFIle+"3Nextend_sort.bed";
+			String geneFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/high.txt";
+//			String txtPeakFile= PeakparentFile + "Peak Information.xls";
+			String resultPrefix = "3Nhigh";
+			String resultpath = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/";
+			RegDensity tssDistance=new RegDensity();
+			tssDistance.setInvNum(binNum);
+//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+//					NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, mapFilePath);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
+					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
+ 
+			tssDistance.getGeneNameTssDensity(geneFile, range, 1000, resultpath, resultPrefix);
+			tssDistance.getGeneNameGeneEndDensity(geneFile, range, 1000, resultpath, resultPrefix);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		try {
+			String mapFilePath=mapparentFIle+"3Nextend_sort.bed";
+			String geneFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/mid.txt";
+//			String txtPeakFile= PeakparentFile + "Peak Information.xls";
+			String resultPrefix = "3Nmid";
+			String resultpath = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/";
+			RegDensity tssDistance=new RegDensity();
+			tssDistance.setInvNum(binNum);
+//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+//					NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, mapFilePath);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
+					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
+ 
+			tssDistance.getGeneNameTssDensity(geneFile, range, 1000, resultpath, resultPrefix);
+			tssDistance.getGeneNameGeneEndDensity(geneFile, range, 1000, resultpath, resultPrefix);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		try {
+			String mapFilePath=mapparentFIle+"3Nextend_sort.bed";
+			String geneFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/low.txt";
+//			String txtPeakFile= PeakparentFile + "Peak Information.xls";
+			String resultPrefix = "3Nlow";
+			String resultpath = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/";
+			RegDensity tssDistance=new RegDensity();
+			tssDistance.setInvNum(binNum);
+//			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+//					NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, mapFilePath);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_TIGR, 
+					NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, mapFilePath);
+ 
+			tssDistance.getGeneNameTssDensity(geneFile, range, 1000, resultpath, resultPrefix);
+			tssDistance.getGeneNameGeneEndDensity(geneFile, range, 1000, resultpath, resultPrefix);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 }

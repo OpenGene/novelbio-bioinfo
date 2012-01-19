@@ -566,7 +566,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 				if (Intron) {
 					if (flag[i] == 0
 							&& gffGeneIsoInfo.getCod2Tes() <= 0
-							&& gffGeneIsoInfo.getCodExInNum() < gffGeneIsoInfo.getIsoInfo().size()) {
+							&& gffGeneIsoInfo.getCodExInNum() < gffGeneIsoInfo.size()) {
 						flag[i] = 1;
 					}
 				}

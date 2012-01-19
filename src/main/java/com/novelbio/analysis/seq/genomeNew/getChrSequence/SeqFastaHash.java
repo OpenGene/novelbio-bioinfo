@@ -298,7 +298,14 @@ public class SeqFastaHash extends SeqHashAbs {
 		txtResultSeqName.close();
 	}
 	
-
+	public void writeToFile(String seqOut)
+	{
+		ArrayList<SeqFasta> lsFasta = getSeqFastaAll();
+		TxtReadandWrite txtOut = new TxtReadandWrite(seqOut, true);
+		for (SeqFasta seqFasta : lsFasta) {
+			txtOut.writefileln(seqFasta.toStringNRfasta());
+		}
+	}
 	
 	
 	

@@ -23,6 +23,8 @@ import com.novelbio.database.service.servgeneanno.ServTaxID;
 import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
 /**
+ * <b>注意blastInfo中的SubjectTab和QueryTab有问题，需要重写</b><br>
+ * 
  * 这只是一个代理类 专门对基因的ID做一些处理的类<br>
  * <b>如果基因的IDtype是accID，那么该基因很可能不存在，那么看下blast的相关信息，如果blast也没有，那么就不存在了</b><br>
  * 可以将输入的ID合并起来，并且将分散的ID存储在一个Hashmap中
@@ -33,8 +35,8 @@ import com.novelbio.database.service.servgeneanno.ServUniProtID;
  */
 public class CopedID implements CopedIDInt{
 	public final static String IDTYPE_ACCID = "accID"; 
-	public final static String IDTYPE_GENEID = "geneID";
-	public final static String IDTYPE_UNIID = "uniID";
+	public final static String IDTYPE_GENEID = "NCBIID";
+	public final static String IDTYPE_UNIID = "UniprotID";
 	
 	private CopedIDAbs copedID;
 	/**
@@ -652,8 +654,10 @@ public class CopedID implements CopedIDInt{
 	}
 
 	@Override
-	public void setUpdateBlastInfo(BlastInfo blastInfo) {
-		copedID.setUpdateBlastInfo(blastInfo);
+	public void setUpdateBlastInfo(String SubAccID, String subDBInfo,
+			int SubTaxID, double evalue, double identities) {
+		copedID.setUpdateBlastInfo(SubAccID, subDBInfo, SubTaxID, evalue, identities);
+		
 	}
 
 	

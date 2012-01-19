@@ -66,7 +66,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</set>
 		where
 			<if test="uniID !=null and uniID != ''">
-				and UniID = #{uniID} 
+				UniID = #{uniID} 
 			</if>
 			<if test="accessID !=null and accessID != ''">
 				and accessID = #{accessID} 

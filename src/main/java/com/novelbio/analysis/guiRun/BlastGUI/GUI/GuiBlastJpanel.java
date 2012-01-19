@@ -62,6 +62,10 @@ import com.novelbio.database.model.modgo.GOInfoAbs;
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
 public class GuiBlastJpanel extends JPanel{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -610030039829839849L;
 	private JTextArea jTxtGenID;
 	private JLabel jLbGeneID;
 	private JScrollPane jScrollPane1;
