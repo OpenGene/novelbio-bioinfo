@@ -15,7 +15,6 @@ import com.novelbio.base.plot.Rplot;
  *
  */
 public class FYrna {
-
 	/**
 	 * @param args
 	 */

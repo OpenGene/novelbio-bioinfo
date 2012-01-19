@@ -50,14 +50,12 @@ public class JfreeChartTry extends ApplicationFrame {
 	     pieplot.setNoDataMessage("No data available");
 	     pieplot.setCircular(true);
 	     pieplot.setLabelGap(0.01D);//间距
-	    
 	     return jfreechart;
 	   }
 	  
 	   //生成显示图表的面板
 	   public static JPanel createDemoPanel(){
 	     JFreeChart jfreechart = createChart(createDataset());
-	     
 	     return new ChartPanel(jfreechart);
 	   }
 	  

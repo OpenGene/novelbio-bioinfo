@@ -52,7 +52,6 @@ public class BedSeq extends SeqComb{
 		System.out.println();
 	}
 	
-	
 	/**
 	 * 指定bed文件，以及需要排序的列数，产生排序结果
 	 * @param chrID ChrID所在的列，从1开始记数，按照字母数字排序
