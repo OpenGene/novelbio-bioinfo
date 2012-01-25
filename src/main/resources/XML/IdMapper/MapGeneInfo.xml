@@ -16,6 +16,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<result property="modDate" column="ModificationDate"/>
 		<result property="nomStat" column="NomenclatureStatus"/>
 		<result property="modDate" column="ModificationDate"/>
+		<result property="pubmedID" column="PubmedID"/>
 	</resultMap>
 	<select id="queryGeneInfo" parameterType="GeneInfo" resultMap="geneInfoMap">
 		select *
@@ -36,15 +37,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    </where> 
 	</select>
 	<insert id="insertGeneInfo" parameterType="GeneInfo">
-		insert into geneInfo (GeneID,Symbol,LocusTag,Synonyms,dbXrefs,chromosome,mapLocation,description,typeOfGene,SymbolFromNomenclature,FullNameFromNomenclature,NomenclatureStatus,OtherDesignations,ModificationDate)
-		values (#{geneID},#{symbol},#{locusTag},#{synonyms},#{dbXrefs},#{chromosome},#{mapLocation},#{description},#{typeOfGene},#{symNome},#{fullNameNome},#{nomStat},#{otherDesign},#{modDate})
+		insert into geneInfo
+		 (GeneID,Symbol,LocusTag,Synonyms,dbXrefs,
+		chromosome,mapLocation,description,typeOfGene,SymbolFromNomenclature,
+		FullNameFromNomenclature,NomenclatureStatus,OtherDesignations,ModificationDate,PubmedID)
+		
+		values 
+		
+		(#{geneID},#{symbol},#{locusTag},#{synonyms},#{dbXrefs},
+		#{chromosome},#{mapLocation},#{description},#{typeOfGene},#{symNome},
+		#{fullNameNome},#{nomStat},#{otherDesign},#{modDate},#{pubmedID})
 	</insert>
 	<update id="updateGeneInfo" parameterType="GeneInfo">
 		update geneInfo
 		<set>
-			<if test="geneID !=null and geneID != 0">
-				GeneID = #{geneID},
-			</if>
 			<if test="symbol !=null and symbol != ''">
 				Symbol = #{symbol},
 			</if>
@@ -84,10 +90,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="modDate !=null and modDate != '' ">
 				ModificationDate = #{modDate}
 			</if>
+			<if test="pubmedID !=null and pubmedID != '' ">
+				PubmedID = #{pubmedID}
+			</if>
 		</set>
 		where 
-		<if test="geneID !=null and geneID != '' ">
 				GeneID = #{geneID}
-		</if>
 	</update>
 </mapper>

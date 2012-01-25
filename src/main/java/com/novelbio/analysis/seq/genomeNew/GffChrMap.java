@@ -594,7 +594,7 @@ public class GffChrMap extends GffChrAbs{
 			mapInfo.setDouble(tmp2);
 			mapInfo.setFlagLoc(combatgSite);
 			CopedID copedID = new CopedID(string, 0, false);
-			mapInfo.setTitle(copedID.getSymbo());
+			mapInfo.setTitle(copedID.getSymbol());
 			lsMapInfo.add(mapInfo);
 		}
 		Collections.sort(lsMapInfo);

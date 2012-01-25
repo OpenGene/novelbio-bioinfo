@@ -345,12 +345,12 @@ public class GffDetailGene extends GffDetailAbs
 			for (CopedID copedID : hashCopedID) {
 				if (anno.equals("")) {
 					anno[0] = copedID.getAccID();
-					anno[1] = copedID.getSymbo();
+					anno[1] = copedID.getSymbol();
 					anno[2] = copedID.getDescription();
 				}
 				else {
 					anno[0] = anno[0]+"//"+copedID.getAccID();
-					anno[1] = anno[1]+"//"+copedID.getSymbo();
+					anno[1] = anno[1]+"//"+copedID.getSymbol();
 					anno[2] = anno[2]+"//"+copedID.getDescription();
 				}
 			}

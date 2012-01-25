@@ -253,7 +253,26 @@ public class TxtReadandWrite {
 			return null;
 		}
 	}
-	
+	/**
+	 * 从第几行开始读，是实际行
+	 * @param lines 如果lines小于1，则从头开始读取
+	 * @return
+	 */
+	public Iterable<String> readlines(int lines)
+	{
+		lines --;
+		try {
+			Iterable<String> itContent = readPerlines();
+			if (lines > 0) {
+				for (int i = 0; i < lines; i++) {
+					itContent.iterator().next();
+				}
+			}
+			return itContent;
+		} catch (Exception e) {
+			return null;
+		}
+	}
 	/**
 	 * 迭代读取文件
 	 * @param filename

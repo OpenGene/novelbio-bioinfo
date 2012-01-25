@@ -16,11 +16,7 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="lib/appFramework-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jnlp.jar"/>
-	<classpathentry kind="lib" path="/ExternalJar/jgrapht-0.8.2/jgrapht-jdk1.6.jar" sourcepath="/ExternalJar/jgrapht-0.8.2/src"/>
 	<classpathentry kind="con" path="com.soyatec.uml.CONTAINER"/>
-	<classpathentry kind="lib" path="/home/zong0jie/桌面/GenomeAnalysisTK-1.3-16-g6a5d5e7/AnalyzeCovariates.jar" sourcepath="/media/winE/bioinformaticsTools/GATK/destination_directory/public/java.zip"/>
-	<classpathentry kind="lib" path="/home/zong0jie/桌面/GenomeAnalysisTK-1.3-16-g6a5d5e7/GenomeAnalysisTK.jar" sourcepath="/media/winE/bioinformaticsTools/GATK/destination_directory/public/java.zip"/>
-	<classpathentry kind="lib" path="/media/winD/fedora/workspace/ExternalJar/com.springsource.org.aopalliance-1.0.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 	<referencedentry kind="lib" path="/ExternalJar/jgrapht-0.8.2/lib/jgraph.jar" sourcepath="/ExternalJar/jgrapht-0.8.2/src"/>
 </classpath>

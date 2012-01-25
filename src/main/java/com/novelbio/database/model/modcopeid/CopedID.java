@@ -241,8 +241,8 @@ public class CopedID implements CopedIDInt{
 	}
 	
 	@Override
-	public String getSymbo() {
-		return copedID.getSymbo();
+	public String getSymbol() {
+		return copedID.getSymbol();
 	}
 	
 	@Override
@@ -660,7 +660,9 @@ public class CopedID implements CopedIDInt{
 		
 	}
 
-	
-
+	@Override
+	public void setUpdateAccID(String accID) {
+		copedID.setUpdateAccID(accID);
+	}
 	
 }

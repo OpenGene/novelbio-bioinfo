@@ -139,7 +139,7 @@ public class PenncnvCope {
 		for (CopedID copedID : hashCopedID) {
 			String[] tmpResult = new String[hashSample.size() + 3];
 			tmpResult[0] = copedID.getAccID();
-			tmpResult[1] = copedID.getSymbo();
+			tmpResult[1] = copedID.getSymbol();
 			tmpResult[2] = copedID.getDescription();
 			HashMap<String, String> hashSample2Cnv = hashGeneCnv.get(copedID);
 			int m = 3;

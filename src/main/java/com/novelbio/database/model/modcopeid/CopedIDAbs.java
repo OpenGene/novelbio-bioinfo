@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.lsb_catchCallback;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegGenEntryKO;
@@ -18,11 +15,8 @@ import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.Gene2Go;
-import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
-import com.novelbio.database.domain.geneanno.UniGene2Go;
-import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
@@ -49,7 +43,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	/**
 	 * 具体的accID
 	 */
-	String accID = "";
+	String accID = null;
 
 	String genUniID = "";
 
@@ -236,7 +230,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * 
 	 * @return
 	 */
-	public String getSymbo() {
+	public String getSymbol() {
 		setSymbolDescrip();
 		return symbol;
 	}
@@ -253,11 +247,13 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		if (idType.equals(CopedID.IDTYPE_ACCID)) {
 			symbol = "";
 		}
+		
 		setGenInfo();
 		if (geneInfo == null) {
 			symbol = getGenName(getGenUniID(), getDatabaseTyep());
 		} else {
-			symbol = geneInfo.getSymbol().split("//")[0];
+			geneInfo.setTaxID(taxID);
+			symbol = geneInfo.getSymbol();
 		}
 		if (symbol.equals("")) {
 			symbol = getGenName(getGenUniID(), getDatabaseTyep());
@@ -314,7 +310,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			for (int i = 0; i < tmpAnno.length; i++) {
 				tmpAnno[i] = "";
 			}
-			tmpAnno[0] = getSymbo();
+			tmpAnno[0] = getSymbol();
 			tmpAnno[1] = getDescription();
 			if (getCopedIDLsBlast() != null && getLsBlastInfos() != null
 					&& getLsBlastInfos().size() > 0) {
@@ -323,7 +319,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 						tmpAnno[2] = CopedID.getHashTaxIDName().get(
 								getLsBlastInfos().get(i).getSubjectTax());
 						tmpAnno[3] = getLsBlastInfos().get(i).getEvalue() + "";
-						tmpAnno[4] = getCopedIDLsBlast().get(i).getSymbo();
+						tmpAnno[4] = getCopedIDLsBlast().get(i).getSymbol();
 						tmpAnno[5] = getCopedIDLsBlast().get(i)
 								.getDescription();
 					} else {
@@ -335,7 +331,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 						tmpAnno[3] = tmpAnno[3] + "//"
 								+ getLsBlastInfos().get(i).getEvalue();
 						tmpAnno[4] = tmpAnno[4] + "//"
-								+ getCopedIDLsBlast().get(i).getSymbo();
+								+ getCopedIDLsBlast().get(i).getSymbol();
 						tmpAnno[5] = tmpAnno[5] + "//"
 								+ getCopedIDLsBlast().get(i).getDescription();
 					}
@@ -346,7 +342,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			for (int i = 0; i < tmpAnno.length; i++) {
 				tmpAnno[i] = "";
 			}
-			tmpAnno[0] = getSymbo();
+			tmpAnno[0] = getSymbol();
 			tmpAnno[1] = getDescription();
 		}
 		return tmpAnno;
@@ -490,6 +486,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * @param taxID
 	 * @param DBInfo
 	 * @param 是否用本DBInfo修正以前的DBInfo
+	 * 不管是true还是false，geneinfo都会用其进行修正
 	 */
 	@Override
 	public void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo) {
@@ -517,7 +514,18 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		this.idType = idType;
 	}
-
+	/**
+	 * 设定该ID的accID
+	 */
+	@Override
+	public void setUpdateAccID(String accID) {
+		if (accID.equals("") || accID.trim().equals("-")) {
+			return;
+		}
+		this.accID = CopedID.removeDot(accID);
+	}
+	
+	
 	/**
 	 * 记录升级的GO信息的，每次升级完毕后都清空
 	 */
@@ -549,7 +557,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 
 	/**
 	 * 输入需要update的geneInfo，注意不需要设定geneUniID
-	 * 
+	 * 但是需要设定
 	 * @param geneInfo
 	 */
 	@Override
@@ -611,12 +619,15 @@ public abstract class CopedIDAbs implements CopedIDInt {
 
 	/**
 	 * 升级geneID数据库，并且将geneUniID按照数据库进行重置 <b>只升级第一个获得的geneID</b>
-	 * 
+	 * 如果accID没有，则不升级
 	 * @param 如果在数据库中没有找到对应的ID
 	 *            ，是否将ID导入UniID库
 	 * @throws EOFException
 	 */
 	private void updateGeneID(boolean updateUniID) {
+		if (accID == null || accID.equals("")) {
+			return;
+		}
 		if (databaseType == null || databaseType.equals("")) {
 			logger.error("升级geneID时没有设置该gene的数据库来源，自动设置为NCBIID");
 			databaseType = NovelBioConst.DBINFO_NCBI_ACC_GENEAC;
@@ -663,6 +674,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		if (geneInfo == null) {
 			return;
 		}
+		geneInfo.setTaxID(taxID);
 		if (idType.equals(CopedID.IDTYPE_UNIID)) {
 			servUniGeneInfo.updateUniGenInfo(genUniID, geneInfo);
 		} else if (idType.equals(CopedID.IDTYPE_GENEID)) {

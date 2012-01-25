@@ -97,7 +97,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			}
 			hashCopedID.add(copedID);
 			anno[0] = anno[0] + "///" + copedID.getAccID();
-			anno[1] = anno[1] + "///" + copedID.getSymbo();
+			anno[1] = anno[1] + "///" + copedID.getSymbol();
 			anno[2] = anno[2] + "///" + copedID.getDescription();
 		}
 		anno[0] = anno[0].replaceFirst("///", ""); anno[1] = anno[1].replaceFirst("///", ""); anno[2] = anno[2].replaceFirst("///", "");
@@ -127,7 +127,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			}
 			hashCopedID.add(copedID);
 			anno[0] = anno[0] + "///" + copedID.getAccID();
-			anno[1] = anno[1] + "///" + copedID.getSymbo();
+			anno[1] = anno[1] + "///" + copedID.getSymbol();
 			anno[2] = anno[2] + "///" + copedID.getDescription();
 		}
 		anno[0] = anno[0].replaceFirst("///", ""); anno[1] = anno[1].replaceFirst("///", ""); anno[2] = anno[2].replaceFirst("///", "");

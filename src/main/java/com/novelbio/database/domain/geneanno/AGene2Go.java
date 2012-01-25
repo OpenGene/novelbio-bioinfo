@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.commons.validator.util.Flags;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.statusAckLog;
 
 /**
  * ÷ÿ–¥¡Àequal∫Õhash

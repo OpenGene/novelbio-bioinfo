@@ -41,9 +41,6 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.gatk.CommandLineGATK;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
-import org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 
 
@@ -97,17 +94,8 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		ArrayList<Double> lsNum = new ArrayList<Double>();
-		for (int i = 1; i <= 10; i++) {
-			lsNum.add((double) i);
-		}
-		System.out.println(0+" " +Collections.binarySearch(lsNum, 0d));
-		System.out.println(1+" " +Collections.binarySearch(lsNum, 1d));
-		System.out.println(1.5+" " +Collections.binarySearch(lsNum, 1.5d));
-		System.out.println(2+" " +Collections.binarySearch(lsNum, 2d));
-		System.out.println(2.5+" " +Collections.binarySearch(lsNum, 2.5d));
-		System.out.println(10+" " +Collections.binarySearch(lsNum, 10d));
-		System.out.println(10.5+" " +Collections.binarySearch(lsNum, 10.5d));
+		String aa = "@@fswef";
+		System.out.println(aa.split("@@")[1]);
 	}
 	
 	

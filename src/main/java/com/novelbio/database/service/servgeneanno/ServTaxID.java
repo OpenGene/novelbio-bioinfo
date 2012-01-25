@@ -4,16 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import javax.inject.Inject;
-
-import org.broadinstitute.sting.utils.collections.CircularArray.Int;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.TaxInfo;
-import com.novelbio.database.mapper.geneanno.MapFSTaxID;
-import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.geneanno.MapTaxID;
 import com.novelbio.database.service.AbsGetSpring;
 

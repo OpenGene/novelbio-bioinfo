@@ -3,8 +3,6 @@ package com.novelbio.database.domain.geneanno;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.broadinstitute.sting.utils.exceptions.StingException;
-
 import com.novelbio.database.model.modcopeid.CopedID;
 
 /**

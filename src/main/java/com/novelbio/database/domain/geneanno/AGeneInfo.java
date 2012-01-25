@@ -1,13 +1,30 @@
 package com.novelbio.database.domain.geneanno;
 
-import javax.swing.text.Element;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
-import org.apache.catalina.ha.util.IDynamicProperty;
 import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
+import antlr.collections.List;
+
+import com.novelbio.analysis.generalConf.NovelBioConst;
+/**
+ * 当有新的物种加入时，需要添加新的dbinfo信息
+ * 否则默认是走NCBIID
+ * @author zong0jie
+ *
+ */
 public abstract class AGeneInfo {
+	static ArrayList<String> lsDBinfo = new ArrayList<String>();
+	static{
+		lsDBinfo.add(NovelBioConst.DBINFO_NCBI_ACC_GenralID);
+		lsDBinfo.add(NovelBioConst.DBINFO_UNIPROT_GenralID);
+	}
+	
 	private String symbol;
 	private String locusTag;
+	
 	
 	private String synonyms;
 	private String dbXrefs;
@@ -21,21 +38,69 @@ public abstract class AGeneInfo {
 	private String nomStat;
 	private String otherDesign;
 	private String modDate;
-	
-	private String fromDB = "";
-	private String sep = "";
+	private String pubmedID;
+	private HashSet<String> hashPubmedIDs = new HashSet<String>();
+	private String dbInfo = "";
 	public abstract String getGeneUniID();
 	public abstract void setGeneUniID(String geneUniID);
+	
+	
+	private int taxID = 0;
+	
 	/**
-	 * 必须第一时间设定
-	 * @param fromDB
+	 * 这个不用设定。copedID会去设定
+	 * @param taxID
 	 */
-	public void setFromDB(String fromDB) {
-		this.fromDB = fromDB.trim();
-		if (!this.fromDB.equals("") ) {
-			this.sep = SEP_INFO;
+	public void setTaxID(int taxID) {
+		this.taxID = taxID;
+	}
+	
+	/**
+	 * 可以连续不断的设定好几次
+	 * 有几篇文献就设定几次
+	 * @param pubmedID
+	 */
+	public void setPubmedID(String pubmedID) {
+		if (hashPubmedIDs.contains(pubmedID)) {
+			return;
+		}
+		hashPubmedIDs.add(pubmedID);
+		if (this.pubmedID == null || this.pubmedID.equals("")) {
+			this.pubmedID = pubmedID;
+		}
+		else {
+			this.pubmedID = this.pubmedID + SEP_ID + pubmedID;
 		}
 	}
+	/**
+	 * 如果没有pubmedID，则返回一个空的arraylist，方便用foreach语句
+	 * @return
+	 */
+	public ArrayList<String> getPubmedIDs() {
+		ArrayList<String> lsPubmedIDs = new ArrayList<String>();
+		if (pubmedID != null && !pubmedID.equals("")) {
+			return lsPubmedIDs;
+		}
+		String[] ss = pubmedID.split(SEP_ID);
+		for (String string : ss) {
+			lsPubmedIDs.add(string);
+		}
+		return lsPubmedIDs;
+	}
+	private String getPubmedID() {
+		return pubmedID;
+	}
+	/**
+	 * 必须第一时间设定
+	 * 有	NovelBioConst.DBINFO_NCBI_ACC_GenralID
+		NovelBioConst.DBINFO_UNIPROT_GenralID
+	 * @param fromDB
+	 */
+	public void setDBinfo(String fromDB) {
+		this.dbInfo = fromDB.trim();
+	}
+	
+	
 	
 	public String getIDType() {
 		return idType;
@@ -55,7 +120,7 @@ public abstract class AGeneInfo {
 	}
 	
 	public String getSymbol() {
-		return symbol;
+		return getInfoSep(symbol);
 	}
 	public void setSymbol(String symbol) {
 		this.symbol = validateField(null, symbol,true);
@@ -69,7 +134,7 @@ public abstract class AGeneInfo {
 	}
 	
 	public String getSynonyms() {
-		return synonyms;
+		return getInfoSep(synonyms);
 	}
 	public void setSynonyms(String synonyms) {
 		this.synonyms = validateField(null, synonyms,true);
@@ -94,15 +159,10 @@ public abstract class AGeneInfo {
 	}
 	public void setMapLocation(String mapLocation) {
 		this.mapLocation = validateField(null, mapLocation,true);
-	}  
-
-
+	}
 	
 	public String getDescription() {
-		if (description == null) {
-			return "";
-		}
-		return description;
+		return getInfoSep(description);
 	}
 	public void setDescription(String description) {
 		this.description = validateField(null,description,true);
@@ -120,7 +180,7 @@ public abstract class AGeneInfo {
 	 * @return
 	 */
 	public String getSymNome() {
-		return symNome;
+		return getInfoSep(symNome);
 	}
 	public void setSymNome(String symNome) {
 		this.symNome = validateField(null, symNome,true);
@@ -131,7 +191,7 @@ public abstract class AGeneInfo {
 	 * @return
 	 */
 	public String getFullName() {
-		return fullNameNome;
+		return getInfoSep(fullNameNome);
 	}
 	public void setFullName(String fullNameFromNomenclature) {
 		this.fullNameNome =  validateField(null, fullNameFromNomenclature,true);
@@ -192,9 +252,22 @@ public abstract class AGeneInfo {
 	private void addDbXrefs(String dbXrefs) {
 		this.dbXrefs = validateField(this.dbXrefs, dbXrefs,true);
 	}
+	private void addPubmedIDs(String pubmedIDs) {
+		if (this.pubmedID == null || this.pubmedID.equals("")) {
+			this.pubmedID = pubmedIDs;
+		}
+		else if (pubmedIDs == null || pubmedIDs.trim().equals("-")) {
+			return;
+		}
+		else {
+			this.pubmedID = this.pubmedID + SEP_ID + pubmedIDs;
+		}
+		
+	}
 	///////////////////////////////////////////////////////////////////
 	/**
-	 * 验证输入项
+	 * 验证输入项，将输入项按照需求修正，并返回修正后的结果
+	 * 如果输入项为"-", ""等，直接返回thisField
 	 * @param thisField 已有的项
 	 * @param inputField 待输入项
 	 * @return
@@ -211,7 +284,7 @@ public abstract class AGeneInfo {
 		}
 		else {
 			if (sepWithDBinfo) {
-				inputFieldFinal = fromDB + sep + inputField;
+				inputFieldFinal = dbInfo + SEP_INFO + inputField;
 			}
 			else {
 				inputFieldFinal = inputField;
@@ -230,10 +303,37 @@ public abstract class AGeneInfo {
 		}
 	}
 	//////////////////////////////////////////////////
-	public static final String FROMDB_NCBI = "NCBI";
-	public static final String FROMDB_UNIPROT = "UniProt";
-	public static final String FROMDB_TAIR = "tair";
-	public static final String FROMDB_TIGR = "tigr";
+//	public static final String FROMDB_NCBI = "NCBI";
+//	public static final String FROMDB_UNIPROT = "UniProt";
+//	public static final String FROMDB_TAIR = "tair";
+//	public static final String FROMDB_TIGR = "tigr";
+	/**
+	 * 特定的物种对应特定的数据库
+	 */
+	static HashMap<Integer, String> hashDBtype = new HashMap<Integer, String>();
+
+	/**
+	 * 特定的物种使用特定数据库的信息
+	 * 譬如水稻就用TIGR
+	 * 拟南芥就用TAIR
+	 * @return
+	 */
+	private String getDatabaseTyep() {
+		if (hashDBtype.size() == 0) {
+			hashDBtype.put(39947, NovelBioConst.DBINFO_RICE_TIGR);
+			hashDBtype.put(3702, NovelBioConst.DBINFO_ATH_TAIR);
+			hashDBtype.put(3847, NovelBioConst.DBINFO_GLYMAX_SOYBASE);
+			hashDBtype.put(4102, NovelBioConst.DBINFO_PLANTGDB_ACC);
+		}
+		return hashDBtype.get(taxID);
+	}
+	/**
+	 * 将NCBIID等表中的dbinfo转化成geneInfo中的dbinfo
+	 */
+	static HashMap<Integer, String> hashDBinfo = new HashMap<Integer, String>();
+	
+	
+	
 	/**
 	 * 分割两个ID或两个Description
 	 */
@@ -264,6 +364,7 @@ public abstract class AGeneInfo {
 		setSymNome(geneInfo.getSymNome());
 		setSynonyms(geneInfo.getSynonyms());
 		setTypeOfGene(geneInfo.getTypeOfGene());
+		this.pubmedID = geneInfo.pubmedID;
 	}
 	/**
 	 * 增加信息，将信息全部复制过来，并且加上来自哪个数据库，如果本类中已有的信息也会附加上去
@@ -301,6 +402,8 @@ public abstract class AGeneInfo {
 			!validateUpdate(getSynonyms(), geneInfo.getSynonyms())
 			&&
 			!validateUpdate(getTypeOfGene(), geneInfo.getTypeOfGene())
+			&&
+			!validateUpdate(getPubmedID(), geneInfo.getPubmedID())
 		) {
 			return false;
 		}
@@ -319,6 +422,7 @@ public abstract class AGeneInfo {
 		addSymNome(geneInfo.getSymNome());
 		addSynonyms(geneInfo.getSynonyms());
 		setTypeOfGene(geneInfo.getTypeOfGene());
+		addPubmedIDs(geneInfo.getPubmedID());
 		return true;
 	}
 	/**
@@ -347,5 +451,41 @@ public abstract class AGeneInfo {
 		else {
 			return true;
 		}
+	}
+	
+	/**
+	 * 给定输出的symbol等，将其按照指定的数据库将信息提取出来
+	 * @param info
+	 * @return
+	 */
+	private String getInfoSep(String info) {
+		if (info == null || info.equals("")) {
+			return "";
+		}
+		String[] ss = info.split(SEP_ID);
+		if (ss.length == 1) {
+			return ss[0].split(SEP_INFO)[1];
+		}
+		/**
+		 * 用来保存具体的信息
+		 */
+		HashMap<String, String> hashInfo = new HashMap<String, String>();
+		for (String string : ss) {
+			String[] ss2 = string.split(SEP_INFO);
+			hashInfo.put(ss2[0], ss2[1]);
+		}
+		if (getDatabaseTyep() != null) {
+			String result = hashInfo.get(getDatabaseTyep());
+			if (result != null) {
+				return result;
+			}
+		}
+		for (String string : lsDBinfo) {
+			String result = hashInfo.get(string);
+			if (result != null) {
+				return result;
+			}
+		}
+		return ss[0].split(SEP_INFO)[1];
 	}
 }

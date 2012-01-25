@@ -811,7 +811,7 @@ public class MapInfoSnpIndel extends MapInfo{
 		if (getGffIso() != null) {
 			result = result + "\t" + getGffIso().getIsoName();
 			CopedID copedID = new CopedID(getGffIso().getIsoName(), taxID, false);
-			result = result + "\t" + copedID.getSymbo() +"\t"+copedID.getDescription();
+			result = result + "\t" + copedID.getSymbol() +"\t"+copedID.getDescription();
 		}
 		else {
 			result = result + "\t \t \t " ;

@@ -217,8 +217,8 @@ public class SimpCoExp {
 					tmpresult[1] = lsCoexpGenInfos.get(j).getCopedID().getAccID();
 				}
 				else {
-					tmpresult[0] = lsCoexpGenInfos.get(i).getCopedID().getSymbo();
-					tmpresult[1] = lsCoexpGenInfos.get(j).getCopedID().getSymbo();
+					tmpresult[0] = lsCoexpGenInfos.get(i).getCopedID().getSymbol();
+					tmpresult[1] = lsCoexpGenInfos.get(j).getCopedID().getSymbol();
 				}
 //				tmpresult[0] = lsCoexpGenInfos.get(i).getCopedID().getSymbo();
 //				tmpresult[1] = lsCoexpGenInfos.get(j).getCopedID().getSymbo();
@@ -317,7 +317,7 @@ public class SimpCoExp {
 				///////////////////////////////////////////////////////////////////////////////////
 				//这一段放if里：只有当数据库中有时才计数
 				//放在if外：不管数据库中是否含有都计数
-				tmpResult[0] = result[i][0];tmpResult[1] = copedID.getSymbo(); tmpResult[2] = copedID.getDescription();
+				tmpResult[0] = result[i][0];tmpResult[1] = copedID.getSymbol(); tmpResult[2] = copedID.getDescription();
 				tmpResult[3] = 0+"";tmpResult[4] = 1+"";tmpResult[5] = 1+"";
 				hashAccID.put(result[i][0], tmpResult);//这一段放if里：只有当数据库中有时才计数
 				////////////////////////////////////////////////////////////////////////////////
@@ -336,7 +336,7 @@ public class SimpCoExp {
 				//这一段放if里：只有当数据库中有时才计数
 				//放在if外：不管数据库中是否含有都计数
 				String[] tmpResult = new String[6];
-				tmpResult[0] = result[i][1];tmpResult[1] = copedID.getSymbo(); tmpResult[2] = copedID.getDescription();
+				tmpResult[0] = result[i][1];tmpResult[1] = copedID.getSymbol(); tmpResult[2] = copedID.getDescription();
 				tmpResult[3] = 1+"";tmpResult[4] = 0+"";tmpResult[5] = 1+"";
 				hashAccID.put(result[i][1], tmpResult);
 			}
@@ -391,7 +391,7 @@ class CoexpGenInfo
 	}
 	
 	public String getGeneSymbol() {
-		return copedID.getSymbo();
+		return copedID.getSymbol();
 	}
 	/**
 	 * 获得表达值

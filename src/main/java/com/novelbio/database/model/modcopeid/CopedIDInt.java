@@ -40,7 +40,7 @@ public interface CopedIDInt{
 	 * 获得该基因的symbol
 	 * @return
 	 */
-	public String getSymbo();
+	public String getSymbol();
 	
 	/**
 	 * 获得该CopeID的List-KGentry,如果没有或为空，则返回null
@@ -142,9 +142,10 @@ public interface CopedIDInt{
 			String GORef, String gOQualifiy);
 	/**
 	 * 输入需要update的geneInfo，注意不需要设定geneUniID
+	 * <b>务必要设定geneinfo的dbinfo</b>，dbinfo是判定该geneinfo数据库来源的信息
 	 * @param geneInfo
 	 */
-	void setUpdateGeneInfo(AGeneInfo geneInfo);
+	public void setUpdateGeneInfo(AGeneInfo geneInfo);
 	/**
 	 * 如果新的ID不加入UniID，那么就写入指定的文件中
 	 * 文件需要最开始用set指定
@@ -164,4 +165,9 @@ public interface CopedIDInt{
 	void setUpdateRefAccID(String... refAccID);
 	void setUpdateBlastInfo(String SubAccID, String subDBInfo, int SubTaxID,
 			double evalue, double identities);
+	/**
+	 * 设定accID，当用geneUniID进行new copedID工作时使用
+	 * @param accID
+	 */
+	void setUpdateAccID(String accID);
 }
