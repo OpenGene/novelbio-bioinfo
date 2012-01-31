@@ -13,7 +13,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
  */
 public class NCBI {
 	public static void main(String[] args) {
-		previewGZ("/Volumes/DATA/work/Bioinformatics/DataBase/gene2go.gz");
+		previewGZ("/Volumes/DATA/work/Bioinformatics/DataBase/GO/gene_association.goa_uniprot.gz");
 	}
 	/**
 	 * 看gz压缩格式的文本的内容
@@ -26,14 +26,11 @@ public class NCBI {
 		for (String string : itString) {
 			System.out.println(string);
 			i ++;
-			if (i>100) {
+			if (i>500) {
 				break;
 			}
 		}
 	}
-
-	
-
 }
 
 /**
@@ -156,7 +153,6 @@ AP_000048	P68969
 class impGeneRef2UniID extends ImportPerLine
 {
 	static CopedID copedID;
-
 	@Override
 	protected void impPerLine(String content) {
 		String[] ss = content.split("\t");
@@ -168,40 +164,6 @@ class impGeneRef2UniID extends ImportPerLine
 		}
 		copedID.setUpdateAccID(ss[1]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_UNIPROT_GenralID, false);
-		copedID.update(false);
-	}
-}
-/**
- * 因为一个基因可能有有多篇文献，为提高效率，采用static设定的copedID，方便连续统计
- * 将gene2pubmed.gz这个文件导入数据库，每行的格式如下
- * #Format: tax_id GeneID PubMed_ID (tab is used as a separator, pound sign - start of a comment)
-9	1246500	9873079
-9	1246501	9873079
-9	1246502	9812361
-9	1246502	9873079
- * @param content
- */
-class impGene2Pub extends ImportPerLine
-{
-	static CopedID copedID;
-
-	@Override
-	protected void impPerLine(String content) {
-		String[] ss = content.split("\t");
-		int taxID = Integer.parseInt(ss[0]);
-		if (!hashTaxID.contains(taxID)) {
-			return;
-		}
-		AGeneInfo geneInfo;
-		if (copedID == null || !copedID.getGenUniID().equals(ss[1])) {
-			copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
-			geneInfo = new GeneInfo();
-		}
-		else {
-			geneInfo = copedID.getGeneInfo();
-		}
-		geneInfo.setPubmedID(ss[2]);
-		copedID.setUpdateGeneInfo(geneInfo);
 		copedID.update(false);
 	}
 }
@@ -234,15 +196,65 @@ class impGene2Info extends ImportPerLine
 	}
 }
 
-class impGene2GO extends ImportPerLine
+/**
+ * 在导入geneInfo后导入这个文件
+ * 因为一个基因可能有有多篇文献，为提高效率，采用static设定的copedID，方便连续统计
+ * 将gene2pubmed.gz这个文件导入数据库，每行的格式如下
+ * #Format: tax_id GeneID PubMed_ID (tab is used as a separator, pound sign - start of a comment)
+9	1246500	9873079
+9	1246501	9873079
+9	1246502	9812361
+9	1246502	9873079
+ * @param content
+ */
+class impGene2Pub extends ImportPerLine
 {
+	static CopedID copedID;
 
 	@Override
-	void impPerLine(String lineContent) {
-		// TODO Auto-generated method stub
-		
+	protected void impPerLine(String content) {
+		String[] ss = content.split("\t");
+		int taxID = Integer.parseInt(ss[0]);
+		if (!hashTaxID.contains(taxID)) {
+			return;
+		}
+		AGeneInfo geneInfo = new GeneInfo();
+		if (copedID == null || !copedID.getGenUniID().equals(ss[1])) {
+			copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
+		}
+		geneInfo.setPubmedID(ss[2]);
+		copedID.setUpdateGeneInfo(geneInfo);
+		copedID.update(false);
 	}
-	
+}
+
+/**
+ * 导入GO信息，在导入Go2Term文件后导入该表
+ * @author zong0jie
+ *
+ */
+class impGene2GO extends ImportPerLine
+{
+	static CopedID copedID;
+	@Override
+	void impPerLine(String lineContent) {
+		String[] ss = lineContent.split("\t");
+		int taxID = Integer.parseInt(ss[0]);
+		if (!hashTaxID.contains(taxID)) {
+			return;
+		}
+		if (copedID == null || !copedID.getGenUniID().equals(ss[1])) {
+			if (copedID != null) {
+				copedID.update(false);
+			}
+			copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
+		}
+		copedID.setUpdateGO(ss[2], NovelBioConst.DBINFO_NCBI, ss[3], "PMID:"+ss[6], ss[4]);
+	}
+	void impEnd()
+	{
+		copedID.update(false);
+	}
 }
 
 

@@ -13,21 +13,29 @@ abstract class ImportPerLine
 {
 	static HashSet<Integer> hashTaxID = null;
 	static String taxIDfile = "";
-	
+	int readFromLine = 2;
+	/**
+	 * 覆盖该方法来设定从第几行开始读取
+	 */
+	protected void setReadFromLine() {
+		this.readFromLine = 2;
+	}
 	/**
 	 * 将指定的文件导入数据库，必须是每一行都能单独导入的表
 	 * 如果需要导入多行，譬如amiGO的信息，请覆盖该方法
 	 */
 	public void importInfoPerLine(String gene2AccFile, boolean gzip) {
+		setReadFromLine();
 		TxtReadandWrite txtGene2Acc;
 		if (gzip)
 			txtGene2Acc = new TxtReadandWrite(TxtReadandWrite.GZIP, gene2AccFile);
 		else 
 			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 		//从第二行开始读取
-		for (String content : txtGene2Acc.readlines(2)) {
+		for (String content : txtGene2Acc.readlines(readFromLine)) {
 			impPerLine(content);
 		}
+		impEnd();
 	}
 	
 	/**
@@ -51,4 +59,9 @@ abstract class ImportPerLine
 	 * @param lineContent
 	 */
 	abstract void impPerLine(String lineContent);
+	/**
+	 * 结尾的时候做的工作，譬如最后还需要导入一次什么东西，就重写该函数
+	 */
+	void impEnd()
+	{}
 }

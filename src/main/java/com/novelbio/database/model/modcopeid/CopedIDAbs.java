@@ -24,7 +24,6 @@ import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.service.servgeneanno.ServBlastInfo;
 import com.novelbio.database.service.servgeneanno.ServGene2Go;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
-import com.novelbio.database.service.servgeneanno.ServGo2Term;
 import com.novelbio.database.service.servgeneanno.ServNCBIID;
 import com.novelbio.database.service.servgeneanno.ServUniGene2Go;
 import com.novelbio.database.service.servgeneanno.ServUniGeneInfo;
@@ -94,7 +93,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	ServUniGeneInfo servUniGeneInfo = new ServUniGeneInfo();
 	ServGene2Go servGene2Go = new ServGene2Go();
 	ServUniGene2Go servUniGene2Go = new ServUniGene2Go();
-	ServGo2Term servGo2Term = new ServGo2Term();
 	// ///////////////////////////////////////////////////////////////////////////////////////////
 
 	// ///////////////// Blast setting
@@ -185,9 +183,14 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	// /////////////////////////////////////////////////////////////////
 	/**
 	 * idType，必须是IDTYPE中的一种
+	 * 不过在设定了lsRefAccID后，可以根据具体的lsRefAccID去查找数据库并确定idtype
 	 */
 	public String getIDtype() {
-		return this.idType;
+		if (lsRefAccID == null || lsRefAccID.size() == 0) {
+			return this.idType;
+		}
+		ArrayList<String> lsIDtype = getUpdateGenUniID();
+		return lsIDtype.get(0);
 	}
 
 	/**
@@ -554,7 +557,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 
 	/**
 	 * 依次输入需要升级的GO信息，最后升级 这里只是先获取GO的信息，最后调用升级method的时候再升级
-	 * 
+	 * 可以连续不断的添加
 	 * @param GOID
 	 * @param GOdatabase
 	 * @param GOevidence
@@ -570,7 +573,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		gene2Go.setDataBase(GOdatabase);
 		gene2Go.setQualifier(gOQualifiy);
 		gene2Go.setReference(GORef);
-		Go2Term go2Term = servGo2Term.getHashGo2Term().get(GOID);
+		Go2Term go2Term = Go2Term.queryGo2Term(GOID);
 		gene2Go.setFunction(go2Term.getGoFunction());
 		gene2Go.setGOTerm(go2Term.getGoTerm());
 		lsGOInfoUpdate.add(gene2Go);
@@ -592,7 +595,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	/**
 	 * 
 	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级
-	 * 
+	 * 可以连续不断的添加
 	 * @param blastInfo
 	 */
 	@Override

@@ -11,6 +11,7 @@ import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
@@ -580,9 +581,9 @@ public class CopedID implements CopedIDInt{
 	public static HashMap<String, String> getHashGOID() 
 	{
 		HashMap<String, String> hashGOInfo = new HashMap<String, String>();
-		hashGOInfo.put(GOInfoAbs.GO_BP, GOInfoAbs.GO_BP);
-		hashGOInfo.put(GOInfoAbs.GO_CC, GOInfoAbs.GO_CC);
-		hashGOInfo.put(GOInfoAbs.GO_MF, GOInfoAbs.GO_MF);
+		hashGOInfo.put(Go2Term.GO_BP, Go2Term.GO_BP);
+		hashGOInfo.put(Go2Term.GO_CC, Go2Term.GO_CC);
+		hashGOInfo.put(Go2Term.GO_MF, Go2Term.GO_MF);
 		return hashGOInfo;
 	}
 	

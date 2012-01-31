@@ -45,6 +45,12 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="reference !=null and reference != ''">
 				Reference = #{reference}
 			</if>
+            <if test="qualifier !=null and qualifier != ''">
+				Qualifier = #{qualifier}
+			</if>
+			<if test="dataBase !=null and dataBase != ''">
+				DataBaseInfo = #{dataBase}
+			</if>
 		</set>
 		where
 			<if test="geneID != 0">

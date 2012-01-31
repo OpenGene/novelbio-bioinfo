@@ -130,12 +130,20 @@ public interface CopedIDInt{
 	 */
 	void setUpdateGeneID(String geneUniID, String idType);
 	/**
-	 * 依次输入需要升级的GO信息，最后升级
-	 * 这里只是先获取GO的信息，最后调用升级method的时候再升级
+	 * 依次输入需要升级的GO信息，最后升级<br>
+	 * 这里只是先获取GO的信息，最后调用升级method的时候再升级<br>
+	 * 可以连续不断的添加
 	 * @param GOID
 	 * @param GOdatabase
 	 * @param GOevidence
-	 * @param GORef
+	 * @param GORef a GO_REF identifier. See section 8 and
+http://www.geneontology.org/doc/GO.references<br>
+for an explanation of the reference types used.<br>
+Examples: PMID:9058808<br>
+DOI:10.1046/j.1469-8137.2001.00150.x<br>
+GO_REF:0000002<br>
+GO_REF:0000020<br>
+GO_REF:0000004<br>
 	 * @param gOQualifiy
 	 */
 	void setUpdateGO(String GOID, String GOdatabase, String GOevidence,
@@ -170,6 +178,8 @@ public interface CopedIDInt{
 	 */
 	void setUpdateRefAccID(ArrayList<String> lsRefAccID);
 	/**
+	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级
+	 * 可以连续不断的添加
 	 * @param SubAccID 目标物种的accID
 	 * @param subDBInfo 目标物种的数据库来源
 	 * @param SubTaxID 目标物种的物种ID

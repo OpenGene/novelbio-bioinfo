@@ -45,7 +45,10 @@ public abstract class AGene2Go {
 //	}
 	
 	public void setGOID(String GoID) {
-		this.GoID = GoID;
+		if (GoID == null || GoID.trim().equals("")) {
+			return;
+		}
+		this.GoID = GoID.trim();
 	}
 	
 	public String getEvidence() {
@@ -55,7 +58,7 @@ public abstract class AGene2Go {
 		if (evidence == null || evidence.trim().equals("")) {
 			return;
 		}
-		this.evidence = evidence;
+		this.evidence = evidence.trim();
 	}
 	
 	public String getQualifier() {
@@ -130,7 +133,13 @@ public abstract class AGene2Go {
 	{
 		this.qualifier = validate(this.qualifier, qualifier);
 	}
-	
+	private void addEvidence(String evidence)
+	{
+		if (evidence.equals(EVIDENCE_IEA)) {
+			return;
+		}
+		this.qualifier = validate(this.qualifier, qualifier);
+	}
 	/**
 	 * true说明确实有新东西
 	 * 如果信息重复，就不需要升级，则返回false
@@ -153,22 +162,26 @@ public abstract class AGene2Go {
 	/**
 	 * true说明确实有新东西
 	 * 如果信息重复，就不需要升级，则返回false
+	 * 添加了Database，Qualifier，Reference和Evidence
 	 * @param gene2Go
 	 * @return
 	 */
 	public boolean addInfo(AGene2Go gene2Go)
 	{
 		if (!validateUpdate(getDataBase(), gene2Go.getDataBase())
-				&& 
-				!validateUpdate(getQualifier(), gene2Go.getQualifier())
-						&&
-						!validateUpdate(getReference(), gene2Go.getReference())
+			&& 
+			!validateUpdate(getQualifier(), gene2Go.getQualifier())
+			&&
+			!validateUpdate(getReference(), gene2Go.getReference())
+			&&
+			!validateUpdate(getEvidence(), gene2Go.getEvidence())
 		) {
 			return false;
 		}
 		addDataBase(gene2Go.getDataBase());
 		addQualifier(gene2Go.getQualifier());
 		addReference(gene2Go.getReference());
+		addEvidence(gene2Go.getEvidence());
 		return true;
 	}
 	/**

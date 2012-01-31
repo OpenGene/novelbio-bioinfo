@@ -4,9 +4,12 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Patternlocation;
+import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 public class AmiGO {
 	/**
@@ -267,4 +270,175 @@ class ImpGOExtObo extends ImportPerLine
 		}
 		return lsResult.get(0)[0];
 	}
+}
+
+
+/**
+ * 先把其他的全倒入一遍后，再导入这个，导完后将别的没有找到NCBIID的导入uniprotID表。
+ * 导入文件gene_association.goa_uniprot.gz
+ * 网址：http://www.geneontology.org/gene-associations
+ * @author zong0jie
+ *
+ */
+class Impgene_associationgoa_uniprot extends ImportPerLine
+{
+	/**
+	 * 从第5行开始读取
+	 */
+	protected void setReadFromLine() {
+		this.readFromLine = 5;
+	}
+	/**
+	 * 文件格式
+	 * Since we deal with proteins rather than genes, the semantics of some
+fields in our files may be slightly different to other gene association files.
+
+1.  DB
+Database from which annotated entry has been taken.
+For the UniProtKB and UniProtKB Complete Proteomes gene associaton files: UniProtKB
+For the PDB association file:  PDB
+Example: UniProtKB
+
+2.  DB_Object_ID
+A unique identifier in the database for the item being annotated.
+Here: an accession number or identifier of the annotated protein
+(or PDB entry for the gene_association.goa_pdb file)
+For the UniProtKB and UniProtKB Complete Proteomes gene association files: a UniProtKB Accession.
+Examples O00165
+
+3.  DB_Object_Symbol
+A (unique and valid) symbol (gene name) that corresponds to the DB_Object_ID.
+An officially approved gene symbol will be used in this field when available.
+Alternatively, other gene symbols or locus names are applied.
+If no symbols are available, the identifier applied in column 2 will be used.
+Examples: G6PC
+CYB561
+MGCQ309F3
+
+4.  Qualifier
+This column is used for flags that modify the interpretation of an
+annotation.
+If not null, then values in this field can equal: NOT, colocalizes_with, contributes_to,
+NOT | contributes_to, NOT | colocalizes_with
+Example: NOT
+
+5.  GO ID
+The GO identifier for the term attributed to the DB_Object_ID.
+Example: GO:0005634
+
+6.  DB:Reference
+A single reference cited to support an annotation.
+Where an annotation cannot reference a paper, this field will contain
+a GO_REF identifier. See section 8 and
+http://www.geneontology.org/doc/GO.references
+for an explanation of the reference types used.
+Examples: PMID:9058808
+DOI:10.1046/j.1469-8137.2001.00150.x
+GO_REF:0000002
+GO_REF:0000020
+GO_REF:0000004
+GO_REF:0000003
+GO_REF:0000019
+GO_REF:0000023
+GO_REF:0000024
+GO_REF:0000033
+
+7.  Evidence
+One of either EXP, IMP, IC, IGI, IPI, ISS, IDA, IEP, IEA, TAS, NAS,
+NR, ND or RCA.
+Example: TAS
+
+8.  With
+An additional identifier to support annotations using certain
+evidence codes (including IEA, IPI, IGI, IMP, IC and ISS evidences).
+Examples: UniProtKB:O00341
+InterPro:IPROO1878
+RGD:123456
+CHEBI:12345
+Ensembl:ENSG00000136141
+GO:0000001
+EC:3.1.22.1
+
+9.  Aspect
+One of the three ontologies, corresponding to the GO identifier applied.
+P (biological process), F (molecular function) or C (cellular component).
+Example: P
+
+10. DB_Object_Name
+Name of protein
+The full UniProt protein name will be present here,
+if available from UniProtKB. If a name cannot be added, this field
+will be left empty.
+Examples: Glucose-6-phosphatase
+Cellular tumor antigen p53
+Coatomer subunit beta
+
+11. Synonym
+Gene_symbol [or other text]
+Alternative gene symbol(s), IPI identifier(s) and UniProtKB/Swiss-Prot identifiers are
+provided pipe-separated, if available from UniProtKB. If none of these identifiers
+have been supplied, the field will be left empty.
+Example:  RNF20|BRE1A|IPI00690596|BRE1A_BOVIN
+IPI00706050
+MMP-16|IPI00689864
+
+12. DB_Object_Type
+What kind of entity is being annotated.
+Here: protein (or protein_structure for the
+gene_association.goa_pdb file).
+Example: protein
+
+13. Taxon_ID
+Identifier for the species being annotated.
+Example: taxon:9606
+
+14. Date
+The date of last annotation update in the format 'YYYYMMDD'
+Example: 20050101
+
+15. Assigned_By
+Attribute describing the source of the annotation.  One of
+either UniProtKB, AgBase, BHF-UCL, CGD, DictyBase, EcoCyc, EcoWiki, Ensembl,
+FlyBase, GDB, GeneDB_Spombe,GeneDB_Pfal, GOC, GR (Gramene), HGNC, Human Protein Atlas,
+JCVI, IntAct, InterPro, LIFEdb, PAMGO_GAT, MGI, Reactome, RGD,
+Roslin Institute, SGD, TAIR, TIGR, ZFIN, PINC (Proteome Inc.) or WormBase.
+Example: UniProtKB
+
+16. Annotation_Extension
+Contains cross references to other ontologies/databases that can be used to qualify or
+enhance the GO term applied in the annotation.
+The cross-reference is prefaced by an appropriate GO relationship; references to multiple ontologies
+can be entered.
+Example: part_of(CL:0000084)
+occurs_in(GO:0009536)
+has_input(CHEBI:15422)
+has_output(CHEBI:16761)
+has_participant(UniProtKB:Q08722)
+part_of(CL:0000017)|part_of(MA:0000415)
+
+17. Gene_Product_Form_ID
+The unique identifier of a specific spliceform of the protein described in column 2 (DB_Object_ID)
+Example:O43526-2
+	 */
+	@Override
+	void impPerLine(String lineContent) {
+		String[] ss = lineContent.split("\t");
+		CopedID copedID = new CopedID(ss[1], Integer.parseInt(ss[12].replace("taxon:", "")));
+		//找到合适的表，NCBI或UniProt，并导入UniID
+		copedID.setUpdateRefAccID(ss[1],ss[2]);
+		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_UNIPROT_UNIID, false);
+		copedID.update(true);
+		//导入symbol和description
+		copedID.setUpdateAccID(ss[2]);
+		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, false);
+		GeneInfo geneInfo = new GeneInfo();
+		geneInfo.setSymbol(ss[2]);
+		geneInfo.setDescription(ss[9]);
+		geneInfo.setDBinfo(NovelBioConst.DBINFO_UNIPROT_GenralID);
+		copedID.setUpdateGeneInfo(geneInfo);
+		copedID.setUpdateGO(ss[4], NovelBioConst.DBINFO_UNIPROTID, ss[6], ss[5], ss[3]);
+		copedID.update(true);
+	}
+	
+
 }

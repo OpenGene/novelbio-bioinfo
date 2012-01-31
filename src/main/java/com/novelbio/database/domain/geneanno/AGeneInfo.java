@@ -61,6 +61,7 @@ public abstract class AGeneInfo {
 	 * @param pubmedID
 	 */
 	public void setPubmedID(String pubmedID) {
+		pubmedID = pubmedID.trim();
 		if (hashPubmedIDs.contains(pubmedID)) {
 			return;
 		}
