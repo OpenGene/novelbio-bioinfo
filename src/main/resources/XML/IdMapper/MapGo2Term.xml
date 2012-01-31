@@ -10,11 +10,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select *
 		from Go2Term
 		<where>
-			<if test="GoIDquery !=null">
-				GoIDquery = #{GoIDquery} 
-			</if>
 			<if test="GoID !=null">
-				and GoID = #{GoID} 
+				 GoID = #{GoID} 
 			</if>
 			<if test="GoFunction !=null">
 				and GoFunction = #{GoFunction} 
@@ -25,47 +22,46 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select *
 		from Go2Term
 		<where>
-			<if test="GoIDquery !=null">
-				GoIDquery = #{GoIDquery} 
-			</if>
 			<if test="GoID !=null">
-				and GoID = #{GoID} 
+				 GoID = #{GoID} 
 			</if>
 			<if test="GoFunction !=null">
 				and GoFunction = #{GoFunction} 
 			</if>
-	    </where> 
+	    </where>
 	</select>
 	<insert id="insertGo2Term" parameterType="Go2Term">
-		insert into Go2Term (GoIDquery,GoID,GoTerm,GoFunction)
-		values (#{GoIDquery},#{GoID},#{GoTerm},#{GoFunction})
+		insert into Go2Term (GoID,GoTerm,GoFunction,Parent,Child,Definition)
+		values (#{GoID},#{GoTerm},#{GoFunction},#{Parent},#{Child},#{Definition})
 	</insert>
 	<update id="updateGo2Term" parameterType="Go2Term">
 		update Go2Term 
 		<set>
-			<if test="GoIDquery !=null">
-				GoIDquery = #{GoIDquery},
-			</if>
-			<if test="GoID !=null">
+			<if test="GoID != null and GoID != ''">
 				GoID = #{GoID},
 			</if>
-			<if test="GoFunction !=null">
+			<if test="GoFunction != null and GoFunction != ''">
 				GoFunction = #{GoFunction},
 			</if>
-			<if test="GoTerm !=null">
+			<if test="GoTerm != null and GoTerm != ''">
 				GoTerm = #{GoTerm}
 			</if>
-		</set>
-		<where>
-			<if test="GoIDquery !=null">
-				GoIDquery = #{GoIDQuery} 
+			<if test="Parent != null and Parent != ''">
+				Parent = #{Parent}
 			</if>
-			<if test="GoID !=null">
+			<if test="Child != null and Child != ''">
+				Child = #{Child}
+			</if>
+			<if test="Definition != null and Definition != ''">
+				Definition = #{Definition}
+			</if>
+		</set>
+		where
+			<if test="GoID != null and GoID != ''">
 				and GoID = #{GoID} 
 			</if>
-			<if test="GoFunction !=null">
+			<if test="GoFunction != null and GoFunction != ''">
 				and GoFunction = #{GoFunction} 
 			</if>
-	    </where> 
 	</update>	
 </mapper>

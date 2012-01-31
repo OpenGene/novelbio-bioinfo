@@ -5,16 +5,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
-
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
+import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
 public class NovelGOFunTest extends AbstFunTest{
-	String GoType = GOInfoAbs.GO_BP;
+	String GoType = Go2Term.GO_BP;
+	ServGo2Term servGo2Term = new ServGo2Term();
 	public NovelGOFunTest(ArrayList<CopedID> lsCopedIDsTest,
 			ArrayList<CopedID> lsCopedIDsBG, boolean blast, String GoType) {
 		super(lsCopedIDsTest, lsCopedIDsBG, blast);
@@ -128,7 +128,7 @@ public class NovelGOFunTest extends AbstFunTest{
 	@Override
 	public String[] getItemName(String ItemID) {
 		String[] GoTerm = new String[1];
-		GoTerm[0] = Go2Term.getHashGo2Term().get(ItemID).getGoTerm();
+		GoTerm[0] = servGo2Term.queryGo2Term(ItemID).getGoTerm();
 		return GoTerm;
 	}
 	@Override

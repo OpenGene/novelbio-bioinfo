@@ -7,13 +7,10 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
+import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
 public abstract class GOInfoAbs{
-	public static final String GO_CC = "cellular component";
-	public static final String GO_MF = "molecular function";
-	public static final String GO_BP = "biological process";
-	public static final String GO_ALL = "all gene ontology";
-	
+
 	private static Logger logger = Logger.getLogger(GOInfoAbs.class);
 	/**
 	 * geneUniID所对应的具体GO信息
@@ -83,16 +80,16 @@ public abstract class GOInfoAbs{
 	{
 		setGene2Go();
 		
-		if (GOType.equals(GO_BP)) {
-			return getLsGoType("P");
+		if (GOType.equals(Go2Term.GO_BP)) {
+			return getLsGoType(Go2Term.FUN_SHORT_BIO_P);
 		}
-		else if (GOType.equals(GO_CC)) {
-			return getLsGoType("C");
+		else if (GOType.equals(Go2Term.GO_CC)) {
+			return getLsGoType(Go2Term.FUN_SHORT_CEL_C);
 		}
-		else if (GOType.equals(GO_MF)) {
-			return getLsGoType("F");
+		else if (GOType.equals(Go2Term.GO_MF)) {
+			return getLsGoType(Go2Term.FUN_SHORT_MOL_F);
 		}
-		else if (GOType.equals(GO_ALL)) {
+		else if (GOType.equals(Go2Term.GO_ALL)) {
 			return lsAGene2Gos;
 		}
 		else {
@@ -121,7 +118,8 @@ public abstract class GOInfoAbs{
 	 * @return
 	 */
 	public static Go2Term getGO2Term(String GOID) {
-		return Go2Term.getHashGo2Term().get(GOID);
+		ServGo2Term servGo2Term = new ServGo2Term();
+		return servGo2Term.queryGo2Term(GOID);
 	}
 	
 }

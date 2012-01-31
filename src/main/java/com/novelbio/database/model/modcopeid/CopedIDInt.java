@@ -141,17 +141,19 @@ public interface CopedIDInt{
 	void setUpdateGO(String GOID, String GOdatabase, String GOevidence,
 			String GORef, String gOQualifiy);
 	/**
-	 * 输入需要update的geneInfo，注意不需要设定geneUniID
+	 * 输入需要update的geneInfo，注意不需要设定geneUniID，除非是单独升级pubmedID信息，否则
 	 * <b>务必要设定geneinfo的dbinfo</b>，dbinfo是判定该geneinfo数据库来源的信息
+	 * 
 	 * @param geneInfo
 	 */
 	public void setUpdateGeneInfo(AGeneInfo geneInfo);
 	/**
-	 * 如果新的ID不加入UniID，那么就写入指定的文件中
+	 * 如果新的ID不加入UniID，那么就返回false
+	 * 如果升级不成功，也返回false
 	 * 文件需要最开始用set指定
 	 * @param updateUniID
 	 */
-	void update(boolean updateUniID);
+	boolean update(boolean updateUniID);
 	/**
 	 * 如果新的ID不加入UniID，那么就写入指定的文件中
 	 * 文件需要最开始用set指定
@@ -159,10 +161,21 @@ public interface CopedIDInt{
 	 */
 	void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo);
 	/**
-记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
+	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
 	 * @param updateUniID
 	 */
 	void setUpdateRefAccID(String... refAccID);
+	/**
+	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
+	 */
+	void setUpdateRefAccID(ArrayList<String> lsRefAccID);
+	/**
+	 * @param SubAccID 目标物种的accID
+	 * @param subDBInfo 目标物种的数据库来源
+	 * @param SubTaxID 目标物种的物种ID
+	 * @param evalue 相似度evalue
+	 * @param identities 相似度信息
+	 */
 	void setUpdateBlastInfo(String SubAccID, String subDBInfo, int SubTaxID,
 			double evalue, double identities);
 	/**
@@ -170,4 +183,10 @@ public interface CopedIDInt{
 	 * @param accID
 	 */
 	void setUpdateAccID(String accID);
+	/**
+	 * 返回geneinfo信息
+	 * @return
+	 */
+	AGeneInfo getGeneInfo();
+
 }

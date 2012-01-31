@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.condHostInfoEnt;
-
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

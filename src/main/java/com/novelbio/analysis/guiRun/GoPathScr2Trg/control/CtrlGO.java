@@ -13,6 +13,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 
@@ -24,7 +25,7 @@ public class CtrlGO extends CtrlGOPath{
 	 */
 	private static CtrlGO ctrlGO = null;
 
-	String GOClass = GOInfoAbs.GO_BP;
+	String GOClass = Go2Term.GO_BP;
 	boolean elimGo = true;
 
 	/**

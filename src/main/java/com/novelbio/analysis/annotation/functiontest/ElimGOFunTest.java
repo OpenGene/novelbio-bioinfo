@@ -11,6 +11,7 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 
@@ -89,11 +90,11 @@ public class ElimGOFunTest extends NovelGOFunTest{
 			return null;
 		TxtReadandWrite txtParam = new TxtReadandWrite(NovelBioConst.R_WORKSPACE_TOPGO_PARAM, true);
 		String content = "";
-		if (GoType.equals(GOInfoAbs.GO_BP)) 
+		if (GoType.equals(Go2Term.GO_BP)) 
 			content = "BP";
-		else if (GoType.equals(GOInfoAbs.GO_MF)) 
+		else if (GoType.equals(Go2Term.GO_MF)) 
 			content = "MF";
-		else if (GoType.equals(GOInfoAbs.GO_CC)) 
+		else if (GoType.equals(Go2Term.GO_CC)) 
 			content = "CC";
 		content =content + " "+NovelBioConst.R_WORKSPACE_TOPGO_GORESULT+" "+ NumGOID + " " + NovelBioConst.R_WORKSPACE_TOPGO_GOINFO;
 		txtParam.writefile(content); txtParam.close();

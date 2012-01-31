@@ -25,7 +25,6 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.database.DAO.FriceDAO.DaoFCGene2GoInfo;
 import com.novelbio.database.domain.geneanno.Gene2GoInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modcopeid.CopedID;

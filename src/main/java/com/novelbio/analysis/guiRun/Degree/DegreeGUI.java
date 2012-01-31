@@ -18,8 +18,6 @@ import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlOther;
-
 
 
 /**

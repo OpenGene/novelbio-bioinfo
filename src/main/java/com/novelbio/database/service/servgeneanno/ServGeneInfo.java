@@ -51,8 +51,8 @@ public class ServGeneInfo extends AbsGetSpring implements MapGeneInfo {
 		if (geneInfoOld != null) {
 			if (geneInfoOld.addInfo(geneInfo)) {
 				////////////
-				geneInfoOld.copeyInfo(geneInfo);
-				geneInfoOld.setGeneUniID(genUniID);
+//				geneInfoOld.copeyInfo(geneInfo);
+//				geneInfoOld.setGeneUniID(genUniID);
 				//////////////
 				updateGeneInfo(geneInfoOld);
 			}

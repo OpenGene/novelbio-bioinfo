@@ -92,8 +92,12 @@ public abstract class AGeneInfo {
 	}
 	/**
 	 * 必须第一时间设定
-	 * 有	NovelBioConst.DBINFO_NCBI_ACC_GenralID
-		NovelBioConst.DBINFO_UNIPROT_GenralID
+			39947, NovelBioConst.DBINFO_RICE_TIGR<br>
+			3702, NovelBioConst.DBINFO_ATH_TAIR<br>
+			3847, NovelBioConst.DBINFO_GLYMAX_SOYBASE<br>
+			4102, NovelBioConst.DBINFO_PLANTGDB_ACC<br>
+			NovelBioConst.DBINFO_NCBI_ACC_GenralID<br>
+		    NovelBioConst.DBINFO_UNIPROT_GenralID
 	 * @param fromDB
 	 */
 	public void setDBinfo(String fromDB) {

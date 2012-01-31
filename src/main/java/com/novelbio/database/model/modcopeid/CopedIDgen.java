@@ -12,7 +12,7 @@ public class CopedIDgen extends CopedIDAbs{
 	ServGeneInfo servGeneInfo = new ServGeneInfo();
 	/**
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
-	 * 
+	 * @param accID
 	 * @param idType
 	 *            必须是IDTYPE中的一种
 	 * @param genUniID

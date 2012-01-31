@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 
@@ -34,10 +35,10 @@ public class FunctionTest implements FunTestInt{
 	public FunctionTest(String functionType, int taxID, boolean blast, double blastevalue, int... blasttaxID)
 	{
 		if (functionType.equals(FUNCTION_GO_NOVELBIO)) {
-			funTest = new NovelGOFunTest(blast, GOInfoAbs.GO_BP, blastevalue, blasttaxID);
+			funTest = new NovelGOFunTest(blast, Go2Term.GO_BP, blastevalue, blasttaxID);
 		}
 		else if (functionType.equals(FUNCTION_GO_ELIM)) {
-			funTest = new ElimGOFunTest(blast, GOInfoAbs.GO_BP, blastevalue, blasttaxID);
+			funTest = new ElimGOFunTest(blast, Go2Term.GO_BP, blastevalue, blasttaxID);
 		}
 		else if (functionType.equals(FUNCTION_PATHWAY_KEGG)) {
 			funTest = new KEGGPathwayFunTest(blast, blastevalue, blasttaxID);

@@ -3,9 +3,6 @@ package com.novelbio.analysis.project.cdg;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.condHostInfoEnt;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
-
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.base.dataOperate.ExcelTxtRead;

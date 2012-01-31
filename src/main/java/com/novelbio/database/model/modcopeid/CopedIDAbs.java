@@ -24,6 +24,7 @@ import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.service.servgeneanno.ServBlastInfo;
 import com.novelbio.database.service.servgeneanno.ServGene2Go;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
+import com.novelbio.database.service.servgeneanno.ServGo2Term;
 import com.novelbio.database.service.servgeneanno.ServNCBIID;
 import com.novelbio.database.service.servgeneanno.ServUniGene2Go;
 import com.novelbio.database.service.servgeneanno.ServUniGeneInfo;
@@ -45,7 +46,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 */
 	String accID = null;
 
-	String genUniID = "";
+	String genUniID = null;
 
 	String symbol = null;
 
@@ -93,7 +94,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	ServUniGeneInfo servUniGeneInfo = new ServUniGeneInfo();
 	ServGene2Go servGene2Go = new ServGene2Go();
 	ServUniGene2Go servUniGene2Go = new ServUniGene2Go();
-
+	ServGo2Term servGo2Term = new ServGo2Term();
 	// ///////////////////////////////////////////////////////////////////////////////////////////
 
 	// ///////////////// Blast setting
@@ -354,7 +355,13 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * 设定 goInfoAbs的信息
 	 */
 	protected abstract void setGoInfo();
-
+	/**
+	 * 返回geneinfo信息
+	 * @return
+	 */
+	public AGeneInfo getGeneInfo() {
+		return geneInfo;
+	}
 	/**
 	 * 返回该基因所对应的GOInfo信息，不包含Blast
 	 * 
@@ -473,10 +480,27 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	public void setUpdateRefAccID(String... refAccID) {
 		lsRefAccID.clear();
 		for (String string : refAccID) {
-			lsRefAccID.add(string);
+			String tmpRefID = CopedID.removeDot(string);
+			if (tmpRefID == null) {
+				continue;
+			}
+			lsRefAccID.add(tmpRefID);
 		}
 	}
-
+	/**
+	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
+	 */
+	@Override
+	public void setUpdateRefAccID(ArrayList<String> lsRefAccID) {
+		this.lsRefAccID.clear();
+		for (String string : lsRefAccID) {
+			String tmpRefID = CopedID.removeDot(string);
+			if (tmpRefID == null) {
+				continue;
+			}
+			this.lsRefAccID.add(tmpRefID);
+		}
+	}
 	boolean overrideDBinfo = false;
 	String databaseType = "";
 
@@ -519,9 +543,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 */
 	@Override
 	public void setUpdateAccID(String accID) {
-		if (accID.equals("") || accID.trim().equals("-")) {
-			return;
-		}
 		this.accID = CopedID.removeDot(accID);
 	}
 	
@@ -549,7 +570,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		gene2Go.setDataBase(GOdatabase);
 		gene2Go.setQualifier(gOQualifiy);
 		gene2Go.setReference(GORef);
-		Go2Term go2Term = Go2Term.getHashGo2Term().get(GOID);
+		Go2Term go2Term = servGo2Term.getHashGo2Term().get(GOID);
 		gene2Go.setFunction(go2Term.getGoFunction());
 		gene2Go.setGOTerm(go2Term.getGoTerm());
 		lsGOInfoUpdate.add(gene2Go);
@@ -567,15 +588,22 @@ public abstract class CopedIDAbs implements CopedIDInt {
 
 	// 专门用于升级
 	ArrayList<BlastInfo> lsBlastInfosUpdate = null;
-
+	
 	/**
+	 * 
 	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级
 	 * 
 	 * @param blastInfo
 	 */
 	@Override
 	public void setUpdateBlastInfo(String SubAccID, String subDBInfo, int SubTaxID, double evalue, double identities) {
+		if (genUniID == null || genUniID.equals("")) {
+			return;
+		}
 		BlastInfo blastInfo = new BlastInfo(null, 0, SubAccID, SubTaxID);
+		if (blastInfo.getSubjectTab().equals(CopedID.IDTYPE_ACCID)) {
+			logger.error("没有该blast的accID："+SubAccID);
+		}
 		blastInfo.setQueryID(genUniID);
 		blastInfo.setQueryTax(getTaxID());
 		blastInfo.setEvalue_Identity(evalue, identities);
@@ -592,24 +620,32 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * @param updateUniID
 	 */
 	@Override
-	public void update(boolean updateUniID) {
-		updateGeneID(updateUniID);
-		updateGeneInfo();
-		updateGene2Go();
-		updateBlastInfo();
+	public boolean update(boolean updateUniID) {
+		boolean flag1 = updateGeneID(updateUniID);
+		boolean flag2 = updateGeneInfo();
+		boolean flag3 = updateGene2Go();
+		boolean flag4 = updateBlastInfo();
+		return flag1&&flag2&&flag3&&flag4;
 	}
 
 	/**
 	 * 升级GO数据库
 	 */
-	private void updateGene2Go() {
+	private boolean updateGene2Go() {
+		if (genUniID == null || genUniID.equals("")) {
+			return false;
+		}
 		for (Gene2Go gene2Go : lsGOInfoUpdate) {
 			if (idType.equals(CopedID.IDTYPE_GENEID)) {
 				servGene2Go.updateGene2Go(genUniID, gene2Go);
 			} else if (idType.equals(CopedID.IDTYPE_UNIID)) {
 				servUniGene2Go.updateUniGene2Go(genUniID, gene2Go);
 			}
+			else {
+				return false;
+			}
 		}
+		return true;
 	}
 
 	/**
@@ -622,11 +658,16 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * 如果accID没有，则不升级
 	 * @param 如果在数据库中没有找到对应的ID
 	 *            ，是否将ID导入UniID库
+	 *            true,导入uniID库，并且重置idtype
 	 * @throws EOFException
 	 */
-	private void updateGeneID(boolean updateUniID) {
+	private boolean updateGeneID(boolean updateUniID) {
+		if (genUniID == null && accID == null) {
+			return false;
+		}
+		//说明不需要升级accID
 		if (accID == null || accID.equals("")) {
-			return;
+			return true;
 		}
 		if (databaseType == null || databaseType.equals("")) {
 			logger.error("升级geneID时没有设置该gene的数据库来源，自动设置为NCBIID");
@@ -663,16 +704,22 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			idType = CopedID.IDTYPE_UNIID;
 			genUniID = accID;
 		} else {
-
+			return false;
 		}
+		return true;
 	}
 
 	/**
 	 * 升级geneID
+	 * 如果没有genUniID，或者没有搜索到对应的genID，则返回false；
+	 * 如果没有geneInfo信息，则认为不需要升级，返回true
 	 */
-	private void updateGeneInfo() {
+	private boolean updateGeneInfo() {
+		if (genUniID == null || genUniID.equals("")) {
+			return false;
+		}
 		if (geneInfo == null) {
-			return;
+			return true;
 		}
 		geneInfo.setTaxID(taxID);
 		if (idType.equals(CopedID.IDTYPE_UNIID)) {
@@ -680,19 +727,32 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		} else if (idType.equals(CopedID.IDTYPE_GENEID)) {
 			servGeneInfo.updateGenInfo(genUniID, geneInfo);
 		}
+		else {
+			return false;
+		}
 		geneInfo = null;
+		return true;
 	}
 
 	// /////////////////////// 升级 Blast 的信息
 	// /////////////////////////////////////////////////////
 
-	private void updateBlastInfo() {
+	private boolean updateBlastInfo() {
+		boolean blastCorrect = true;
+		if (genUniID == null || genUniID.equals("")) {
+			return false;
+		}
 		if (lsBlastInfosUpdate == null) {
-			return;
+			return true;
 		}
 		for (BlastInfo blastInfo : lsBlastInfosUpdate) {
+			if (blastInfo.getSubjectTab().equals(CopedID.IDTYPE_ACCID)) {
+				blastCorrect = false;
+				continue;
+			}
 			servBlastInfo.updateBlast(blastInfo);
 		}
+		return false;
 	}
 
 	// /////////////////////// 升级 uniGene 的信息

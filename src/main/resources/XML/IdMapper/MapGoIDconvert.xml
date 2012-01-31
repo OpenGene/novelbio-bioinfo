@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapGoIDconvert">
+	<resultMap id="GoIDconvertMap" type="Go2Term">
+	</resultMap>
+	<select id="queryGoIDconvert" parameterType="Go2Term" resultMap="GoIDconvertMap">
+		select *
+		from goidconvert
+		<where>
+			<if test="GoIDquery !=null">
+				querygoid = #{GoIDquery} 
+			</if>
+			<if test="GoID !=null">
+				and goid = #{GoID} 
+			</if>
+	    </where> 
+	</select>
+	<select id="queryLsGoIDconvert" parameterType="Go2Term" resultMap="GoIDconvertMap">
+		select *
+		from goidconvert
+		<where>
+			<if test="GoIDquery !=null">
+				querygoid = #{GoIDquery} 
+			</if>
+			<if test="GoID !=null">
+				and goid = #{GoID} 
+			</if>
+	    </where> 
+	</select>
+	<insert id="insertGoIDconvert" parameterType="Go2Term">
+		insert into goidconvert (querygoid,goid)
+		values (#{GoIDquery},#{GoID})
+	</insert>
+	<update id="updateGoIDconvert" parameterType="Go2Term">
+		update goidconvert 
+		<set>
+			<if test="GoIDquery !=null">
+				querygoid = #{GoIDquery},
+			</if>
+			<if test="GoID !=null">
+				goid = #{GoID},
+			</if>
+		</set>
+		<where>
+			<if test="GoIDquery !=null">
+				querygoid = #{GoIDQuery} 
+			</if>
+			<if test="GoID !=null">
+				and goid = #{GoID} 
+			</if>
+	    </where> 
+	</update>	
+</mapper>

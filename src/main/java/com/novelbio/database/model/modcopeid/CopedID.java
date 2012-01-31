@@ -49,14 +49,18 @@ public class CopedID implements CopedIDInt{
 	 *            物种ID
 	 */
 	public CopedID(String idType, String genUniID, int taxID) {
+		genUniID = genUniID.trim();
+		if (genUniID.equals("")) {
+			genUniID = null;
+		}
 		if (idType.equals(IDTYPE_UNIID)) {
-			copedID = new CopedIDuni("",idType, genUniID, taxID);
+			copedID = new CopedIDuni(null,idType, genUniID, taxID);
 		}
 		else if (idType.equals(IDTYPE_GENEID)) {
-			copedID = new CopedIDgen("",idType, genUniID, taxID);
+			copedID = new CopedIDgen(null,idType, genUniID, taxID);
 		}
 		else if (idType.equals(IDTYPE_ACCID)) {
-			copedID = new CopedIDacc("",idType, genUniID, taxID);
+			copedID = new CopedIDacc(null,idType, genUniID, taxID);
 		}
 	}
 
@@ -70,7 +74,12 @@ public class CopedID implements CopedIDInt{
 	 *            物种ID
 	 */
 	public CopedID(String accID,String idType, String genUniID, int taxID) {
-		accID = accID.replace("\"", "");
+		if (accID != null) {
+			accID = accID.replace("\"", "").trim();
+			if (accID.equals("")) {
+				accID = null;
+			}
+		}
 		if (idType.equals(IDTYPE_UNIID)) {
 			copedID = new CopedIDuni(accID,idType, genUniID, taxID);
 		}
@@ -91,7 +100,10 @@ public class CopedID implements CopedIDInt{
 	 * @param blastType 具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
 	 */
 	public CopedID(String accID,int taxID,boolean blastType) {
-		accID = accID.replace("\"", "");
+		if (accID != null) {
+			accID = accID.replace("\"", "").trim();
+		}
+		
 		if (blastType)
 			accID = getBlastAccID(accID);
 		else
@@ -251,6 +263,14 @@ public class CopedID implements CopedIDInt{
 	}
 	
 	/**
+	 * 返回geneinfo信息
+	 * @return
+	 */
+	@Override
+	public AGeneInfo getGeneInfo() {
+		return copedID.getGeneInfo();
+	}
+	/**
 	 * 获得该copedID的annotation信息
 	 * @param copedID
 	 * @param blast
@@ -284,7 +304,6 @@ public class CopedID implements CopedIDInt{
 			titleAnno[5] = "Blast_Description";
 		}
 		return titleAnno;
-		
 	}
 /////////////////////////////////////////////////////////////////////
 
@@ -331,14 +350,22 @@ public class CopedID implements CopedIDInt{
 	}
 
 	/**
-	 *  首先除去空格
+	 *  首先除去空格，如果为""或“-”
+	 *  则返回null
 	 * 如果类似XM_002121.1类型，那么将.1去除
 	 * @param accID
 	 * @return accID without .1
 	 */
 	public static String removeDot(String accID)
 	{
+		if (accID == null) {
+			return null;
+		}
 		String tmpGeneID = accID.trim();
+		if (tmpGeneID.equals("") || accID.equals("-")) {
+			return null;
+		}
+		
 		int dotIndex = tmpGeneID.lastIndexOf(".");
 		//如果类似XM_002121.1类型
 		if (dotIndex>0 && tmpGeneID.length() - dotIndex == 2) {
@@ -639,8 +666,8 @@ public class CopedID implements CopedIDInt{
 	}
 
 	@Override
-	public void update(boolean updateUniID) {
-		copedID.update(updateUniID);
+	public boolean update(boolean updateUniID) {
+		return copedID.update(updateUniID);
 	}
 
 	@Override
@@ -652,7 +679,10 @@ public class CopedID implements CopedIDInt{
 	public void setUpdateRefAccID(String... refAccID) {
 		copedID.setUpdateRefAccID(refAccID);
 	}
-
+	@Override
+	public void setUpdateRefAccID(ArrayList<String> lsRefAccID) {
+		copedID.setUpdateRefAccID(lsRefAccID);
+	}
 	@Override
 	public void setUpdateBlastInfo(String SubAccID, String subDBInfo,
 			int SubTaxID, double evalue, double identities) {

@@ -5,6 +5,9 @@ import java.util.HashMap;
 
 import org.apache.commons.validator.util.Flags;
 
+import com.novelbio.database.service.ServAnno;
+import com.novelbio.database.service.servgeneanno.ServGo2Term;
+
 /**
  * 重写了equal和hash
  * 要两个ncbiid的geneID和GOID都相同，才认为这两个NCBIID相同
@@ -21,13 +24,13 @@ public abstract class AGene2Go {
 	private String reference;
 	private String function;
 	private String dataBase;
-	
+	private ServGo2Term servGo2Term = new ServGo2Term();
 	public abstract String getGeneUniId();
 	public abstract void setGeneUniID(String geneUniID);
 	
 	public String getGOID() {
 		try {
-			return Go2Term.getHashGo2Term().get(GoID).getGoID();
+			return servGo2Term.getHashGo2Term().get(GoID).getGoID();
 		} catch (Exception e) {
 			return null;
 		}
@@ -68,7 +71,7 @@ public abstract class AGene2Go {
 	 */
 	public String getGOTerm() {
 		try {
-			return Go2Term.getHashGo2Term().get(GoID).getGoTerm();
+			return servGo2Term.getHashGo2Term().get(GoID).getGoTerm();
 		} catch (Exception e) {
 			return null;
 		}
@@ -94,7 +97,7 @@ public abstract class AGene2Go {
 	 */
 	public String getFunction() {
 		try {
-			return Go2Term.getHashGo2Term().get(GoID).getGoFunction();
+			return servGo2Term.getHashGo2Term().get(GoID).getGoFunction();
 		} catch (Exception e) {
 			return null;
 		}
