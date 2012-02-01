@@ -3,19 +3,14 @@ package com.novelbio.base.dataStructure;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
-
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 
 public class ArrayOperate {
 	private static final Logger logger = Logger.getLogger(ArrayOperate.class);

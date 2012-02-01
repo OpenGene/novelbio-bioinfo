@@ -19,7 +19,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<select id="queryUniGeneInfo" parameterType="UniGeneInfo" resultMap="UniGeneInfoMap">
 		select *
-		from UniGeneInfo
+		from unigeneinfo
 		<where>
 			<if test="uniProtID != null and uniProtID != ''">
 				UniProtID = #{uniProtID}
@@ -27,11 +27,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</select>
 	<insert id="insertUniGeneInfo" parameterType="UniGeneInfo">
-		insert into UniGeneInfo (UniProtID,Symbol,LocusTag,Synonyms,dbXrefs,chromosome,mapLocation,description,typeOfGene,SymbolFromNomenclature,FullNameFromNomenclature,NomenclatureStatus,OtherDesignations,ModificationDate)
+		insert into unigeneinfo (UniProtID,Symbol,LocusTag,Synonyms,dbXrefs,chromosome,mapLocation,description,typeOfGene,SymbolFromNomenclature,FullNameFromNomenclature,NomenclatureStatus,OtherDesignations,ModificationDate)
 		values (#{uniProtID},#{symbol},#{locusTag},#{synonyms},#{dbXrefs},#{chromosome},#{mapLocation},#{description},#{typeOfGene},#{symNome},#{fullNameNome},#{nomStat},#{otherDesign},#{modDate})
 	</insert>
 	<update id="updateUniGeneInfo" parameterType="UniGeneInfo">
-		update UniGeneInfo
+		update unigeneinfo
 		<set>
 			<if test="uniProtID !=null">
 				UniProtID = #{uniProtID},

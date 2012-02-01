@@ -29,7 +29,18 @@ public class ServTaxID extends AbsGetSpring  implements MapTaxID{
 		// TODO Auto-generated method stub
 		return mapTaxID.queryTaxInfo(taxInfo);
 	}
-
+	/**
+	 * @param taxID 0 ‘Ú∑µªÿnull
+	 * @return
+	 */
+	public TaxInfo queryTaxInfo(int taxID) {
+		if (taxID == 0) {
+			return null;
+		}
+		TaxInfo taxInfo = new TaxInfo();
+		taxInfo.setTaxID(taxID);
+		return mapTaxID.queryTaxInfo(taxInfo);
+	}
 	@Override
 	public ArrayList<TaxInfo> queryLsTaxInfo(TaxInfo taxInfo) {
 		// TODO Auto-generated method stub

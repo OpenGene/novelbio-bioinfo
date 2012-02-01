@@ -10,7 +10,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<select id="queryUniGene2Go" parameterType="UniGene2Go" resultMap="UniGene2GoMap">
 		select *
-		from UniGene2Go
+		from unigene2go
 		<where>
 			<if test="uniProtID != null and uniProtID != ''">
 				UniProtID = #{uniProtID} 
@@ -22,7 +22,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
  	<select id="queryLsUniGene2Go" parameterType="UniGene2Go" resultMap="UniGene2GoMap">
 		select *
-		from UniGene2Go
+		from unigene2go
 		<where>
 			<if test="uniProtID != null and uniProtID != ''">
 				UniProtID = #{uniProtID} 
@@ -33,11 +33,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</select>
 	<insert id="insertUniGene2Go" parameterType="UniGene2Go">
-		insert into UniGene2Go (UniProtID,GOID,Evidence,Qualifier,GOTerm,Reference,GoFunction,DataBaseInfo)
+		insert into unigene2go (UniProtID,GOID,Evidence,Qualifier,GOTerm,Reference,GoFunction,DataBaseInfo)
 		values (#{uniProtID},#{GOID},#{evidence},#{qualifier},#{GOTerm},#{reference},#{function},#{dataBase})
 	</insert>
 	<update id="updateUniGene2Go" parameterType="UniGene2Go">
-		update UniGene2Go 
+		update unigene2go 
 		<set>
 			<if test="evidence !=null and evidence != ''">
 				Evidence = #{evidence},

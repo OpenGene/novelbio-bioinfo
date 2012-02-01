@@ -14,16 +14,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="taxID !=null and taxID !=0">
 				taxID = #{taxID}
 			</if>
-			<if test="chnName !=null">
+			<if test="chnName !=null and chnName != ''">
 				and chnName = #{chnName}
 			</if>
-			<if test="comName !=null">
+			<if test="comName !=null and comName != ''">
 				and comName = #{comName}
 			</if>
-			<if test="latin !=null">
+			<if test="latin !=null and latin != ''">
 				and latin = #{latin}
 			</if>
-			<if test="abbr !=null">
+			<if test="abbr !=null and abbr != ''">
 				and abbr = #{abbr}
 			</if>
 	    </where> 
@@ -35,16 +35,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="taxID !=null and taxID !=0">
 				taxID = #{taxID}
 			</if>
-			<if test="chnName !=null">
+			<if test="chnName !=null and chnName != ''">
 				and chnName = #{chnName}
 			</if>
-			<if test="comName !=null">
+			<if test="comName !=null and comName != ''">
 				and comName = #{comName}
 			</if>
-			<if test="latin !=null">
+			<if test="latin !=null and latin != ''">
 				and latin = #{latin}
 			</if>
-			<if test="abbr !=null">
+			<if test="abbr !=null and abbr != ''">
 				and abbr = #{abbr}
 			</if>
 	    </where> 
@@ -56,16 +56,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<update id="upDateTaxInfo" parameterType="TaxInfo">
 		update taxInfo
 		<set>
-			<if test="chnName !=null">
+			<if test="chnName !=null and chnName != ''">
 				chnName = #{chnName},
 			</if>
-			<if test="comName !=null">
+			<if test="comName !=null and comName != ''">
 				comName = #{comName},
 			</if>
-			<if test="latin !=null">
+			<if test="latin !=null and latin != ''">
 				latin = #{latin},
 			</if>
-			<if test="abbr !=null">
+			<if test="abbr !=null and abbr != ''">
 				abbr = #{abbr}
 			</if>
 		</set>

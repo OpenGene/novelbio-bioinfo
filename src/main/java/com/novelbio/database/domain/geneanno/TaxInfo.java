@@ -1,11 +1,19 @@
 package com.novelbio.database.domain.geneanno;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.novelbio.database.mapper.geneanno.MapFSTaxID;
+import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.service.servgeneanno.ServTaxID;
+
 /**
  * 有关taxID的表格
  * @author zong0jie
  *
  */
 public class TaxInfo {
-	
+	ServTaxID servTaxID = new ServTaxID();
 	/**
 	 * NCBI的物种ID
 	 */	
@@ -15,6 +23,9 @@ public class TaxInfo {
 	 * @param taxID
 	 */
 	public void setTaxID(int taxID) {
+		if (taxID == 0) {
+			return;
+		}
 		this.taxID=taxID;
 	}
 	/**
@@ -32,12 +43,18 @@ public class TaxInfo {
 	 * KEGG上的缩写
 	 */
 	public void setAbbr(String abbr) {
-		this.abbr=abbr;
+		if (abbr == null) {
+			return;
+		}
+		this.abbr=abbr.trim();
 	}
 	/**
 	 * KEGG上的缩写
 	 */
 	public String getAbbr() {
+		if (abbr == null) {
+			return "";
+		}
 		return this.abbr;
 	}
 	
@@ -49,12 +66,18 @@ public class TaxInfo {
 	 * 拉丁名
 	 */
 	public void setLatin(String latin) {
-		this.latin=latin;
+		if (latin == null) {
+			return;
+		}
+		this.latin=latin.trim();
 	}
 	/**
 	 * 拉丁名
 	 */
 	public String getLatin() {
+		if (latin == null) {
+			return "";
+		}
 		return this.latin;
 	}
 	
@@ -66,12 +89,18 @@ public class TaxInfo {
 	 * 常用名
 	 */
 	public void setComName(String comName) {
-		this.comName=comName;
+		if (comName == null) {
+			return;
+		}
+		this.comName=comName.trim();
 	}
 	/**
 	 * 常用名
 	 */
 	public String getComName() {
+		if (comName == null) {
+			return "";
+		}
 		return this.comName;
 	}
 	
@@ -83,13 +112,74 @@ public class TaxInfo {
 	 * 中文名
 	 */
 	public void setChnName(String chnName) {
-		this.chnName=chnName;
+		if (chnName == null) {
+			return;
+		}
+		this.chnName=chnName.trim();
 	}
 	/**
 	 * 中文名
 	 */
 	public String getChnName() {
+		if (chnName == null) {
+			return "";
+		}
 		return this.chnName;
 	}
-
+	/**
+	 * 返回常用名对taxID
+	 * @return
+	 */
+	public static HashMap<String, Integer> getHashNameTaxID() {
+		ServTaxID servTaxID = new ServTaxID();
+		return servTaxID.getHashNameTaxID();
+	}
+	/**
+	 * 返回taxID对常用名
+	 * @return
+	 */
+	public static HashMap<Integer,String> getHashTaxIDName() {
+		ServTaxID servTaxID = new ServTaxID();
+		return servTaxID.getHashTaxIDName();
+	}
+	
+	public void update() {
+		if (taxID == 0) {
+			return;
+		}
+		TaxInfo taxInfo = servTaxID.queryTaxInfo(taxID);
+		if (taxInfo == null) {
+			servTaxID.InsertTaxInfo(this);
+		}
+		else if (!equals(taxInfo)) {
+			servTaxID.upDateTaxInfo(this);
+		}
+	}
+	
+	/**
+	 * 不仅仅比较taxID，全部比较一遍
+	 */
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		
+		if (obj == null) return false;
+		
+		if (getClass() != obj.getClass()) return false;
+		TaxInfo otherObj = (TaxInfo)obj;
+		
+		if (getAbbr().equals(otherObj.getAbbr())
+		&&		
+		getChnName().equals(otherObj.getChnName())
+		&&
+		getComName().equals(otherObj.getComName())
+		&&
+		getLatin().equals(otherObj.getLatin())
+		&&
+		getTaxID() == otherObj.getTaxID()
+		)
+		{
+			return true;
+		}
+		return false;
+	}
 }

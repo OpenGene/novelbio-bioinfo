@@ -12,28 +12,66 @@ import com.novelbio.database.model.modcopeid.CopedID;
  *ID转换的文件网址：ftp://ftp.ncbi.nih.gov/gene/DATA/
  */
 public class NCBI {
+	String taxID = "";
+	String gene2Acc = "";
+	String gene2Ref = "";
+	String gene2ensembl = "";
+	String geneRef2UniID = "";
+	String gene2Info = "";
+	String gene2Pub = "";
+	String goExtObo = "";
+	String gene2GO = "";
 	public static void main(String[] args) {
-		previewGZ("/Volumes/DATA/work/Bioinformatics/DataBase/GO/gene_association.goa_uniprot.gz");
+		
 	}
-	/**
-	 * 看gz压缩格式的文本的内容
-	 */
-	private static void previewGZ(String gzfile)
-	{
-		TxtReadandWrite txtRead = new TxtReadandWrite(TxtReadandWrite.GZIP, gzfile);
-		int i = 0;
-		Iterable<String> itString = txtRead.readlines(1);		
-		for (String string : itString) {
-			System.out.println(string);
-			i ++;
-			if (i>500) {
-				break;
-			}
-		}
+	public void setTaxID(String taxID) {
+		this.taxID = taxID;
+	}
+	public void setGene2AccFile(String gen2Acc, String gene2Ref) {
+		this.gene2Acc = gen2Acc;
+		this.gene2Ref = gene2Ref;
+	}
+	public void setGene2Ensembl(String gene2ensembl) {
+		this.gene2ensembl = gene2ensembl;
+	}
+	public void setGeneRef2UniID(String geneRef2UniID) {
+		this.geneRef2UniID = geneRef2UniID;
+	}
+	public void setGene2Info(String gene2Info) {
+		this.gene2Info = gene2Info;
+	}
+	public void setGene2Pub(String gene2Pub) {
+		this.gene2Pub = gene2Pub;
+	}
+	public void setGOExtObo(String goExtObo) {
+		this.goExtObo = goExtObo;
+	}
+	public void setGene2GO(String gene2GO) {
+		this.gene2GO = gene2GO;
+	}
+	public void importFile() {
+		ImportPerLine impFile = null;
+		impFile = new ImpGen2Acc();
+		impFile.setTaxID(taxID);
+		impFile.importInfoPerLine(gene2Acc, true);
+//		impFile.importInfoPerLine(gene2Ref, true);
+//		impFile = new ImpGen2Ensembl();
+//		impFile.importInfoPerLine(gene2ensembl, true);
+//		impFile = new ImpGeneRef2UniID();
+//		impFile.importInfoPerLine(geneRef2UniID, true);
+//		impFile = new ImpGene2Info();
+//		impFile.importInfoPerLine(gene2Info, true);
+//		impFile = new ImpGene2Pub();
+//		impFile.importInfoPerLine(gene2Pub, true);
+//		impFile = new ImpGOExtObo();
+//		impFile.importInfoPerLine(goExtObo, true);
+//		impFile = new ImpGene2GO();
+//		impFile.importInfoPerLine(gene2GO, true);
 	}
 }
 
 /**
+ * 导入次序：1
  * 将gene2accion和gene2refseq.gz这两个文件导入数据库，仅导入指定的物种
  * 文件格式如下<br>
  * tax_id	GeneID	status	RNA_ID	RNA_gi	pro_ID	pro_gi	  genomic_ID	genomic_gi	start_on_genomic_ID	end_on_genomic_ID	orientation	assembly<br>
@@ -41,7 +79,7 @@ public class NCBI {
 9	1246502	VALIDATED	-	-	NP_047187.1	10954458	NC_001911.1	10954454	3040	4590	+	-<br>
 9	1246503	-	-	-	AAD12601.1	3282741	AF041837.1	3282736	-	-	?	-
  */
-class impGen2Acc extends ImportPerLine
+class ImpGen2Acc extends ImportPerLine
  {
 	/**
 	 * 将gene2accion和gene2refseq.gz这两个文件导入数据库，仅导入指定的物种
@@ -88,13 +126,14 @@ class impGen2Acc extends ImportPerLine
 }
 
 /**
+ * 导入次序：2
  * 将gene2ensembl.gz这个文件导入数据库，每行的格式如下
  * tax_id GeneID Ensembl_gene_id RNA_ID Ensembl_rna_id protein_ID Ensembl_protein_id
    7227	30970	FBgn0040373	NM_130477.2	FBtr0070108	NP_569833.1	FBpp0070103
    7227	30970	FBgn0040373	NM_166834.1	FBtr0070107	NP_726658.1	FBpp0070102
  * @param content
  */
-class impGen2Ensembl extends ImportPerLine
+class ImpGen2Ensembl extends ImportPerLine
 {
 	/**
 	 * 将gene2ensembl.gz这个文件导入数据库，每行的格式如下
@@ -141,6 +180,7 @@ class impGen2Ensembl extends ImportPerLine
 	}
 }
 /**
+ * 导入次序：3
  * 因为一个基因可能有有多个uniprotID，为提高效率，采用static设定的copedID，方便连续统计
  * 将gene_refseq_uniprotkb_collab.gz这个文件导入数据库，每行的格式如下
 #Format: NCBI_protein_accession UniProtKB_protein_accession (tab is used as a separator, pound sign - start of a comment)
@@ -150,7 +190,7 @@ AP_000048	P68968
 AP_000048	P68969
  * @param content
  */
-class impGeneRef2UniID extends ImportPerLine
+class ImpGeneRef2UniID extends ImportPerLine
 {
 	static CopedID copedID;
 	@Override
@@ -169,10 +209,11 @@ class impGeneRef2UniID extends ImportPerLine
 }
 
 /**
+ * 导入次序：4
  * 将geneInfo.gz这个文件导入数据库
  * @param content
  */
-class impGene2Info extends ImportPerLine
+class ImpGene2Info extends ImportPerLine
 {
 	@Override
 	protected void impPerLine(String content) {
@@ -197,6 +238,7 @@ class impGene2Info extends ImportPerLine
 }
 
 /**
+ * 导入次序：5
  * 在导入geneInfo后导入这个文件
  * 因为一个基因可能有有多篇文献，为提高效率，采用static设定的copedID，方便连续统计
  * 将gene2pubmed.gz这个文件导入数据库，每行的格式如下
@@ -207,7 +249,7 @@ class impGene2Info extends ImportPerLine
 9	1246502	9873079
  * @param content
  */
-class impGene2Pub extends ImportPerLine
+class ImpGene2Pub extends ImportPerLine
 {
 	static CopedID copedID;
 
@@ -229,11 +271,12 @@ class impGene2Pub extends ImportPerLine
 }
 
 /**
+ * 导入次序：6
  * 导入GO信息，在导入Go2Term文件后导入该表
  * @author zong0jie
  *
  */
-class impGene2GO extends ImportPerLine
+class ImpGene2GO extends ImportPerLine
 {
 	static CopedID copedID;
 	@Override

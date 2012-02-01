@@ -22,7 +22,7 @@ public class AmiGO {
 	 * annotation
 	 */
 	
-	
+	ImpGen2Acc
 	
 }
 

@@ -10,7 +10,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<select id="queryUniProtID" parameterType="UniProtID" resultMap="UniProtIDMap">
 		select *
-		from UniProtID
+		from uniprotid
 		<where>
 			<if test="uniID !=null and uniID != ''">
 				UniID = #{uniID} 
@@ -28,7 +28,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	<select id="queryLsUniProtID" parameterType="UniProtID" resultMap="UniProtIDMap">
 		select *
-		from UniProtID
+		from uniprotid
 		<where>
 			<if test="uniID !=null and uniID != ''">
 				UniID = #{uniID} 
@@ -45,11 +45,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</select>
 	<insert id="insertUniProtID" parameterType="UniProtID">
-		insert into UniProtID (TaxID,UniID,accessID,DataBaseInfo)
+		insert into uniprotid (TaxID,UniID,accessID,DataBaseInfo)
 		values (#{taxID},#{uniID},#{accessID},#{dbInfo})
 	</insert>
 	<update id="updateUniProtID" parameterType="UniProtID">
-		update UniProtID 
+		update uniprotid 
 		<set>
 			<if test="taxID !=null and taxID !=0">
 				TaxID = #{taxID},

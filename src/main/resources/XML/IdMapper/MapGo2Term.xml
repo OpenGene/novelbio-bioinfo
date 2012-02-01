@@ -8,7 +8,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<select id="queryGo2Term" parameterType="Go2Term" resultMap="Go2TermMap">
 		select *
-		from Go2Term
+		from go2term
 		<where>
 			<if test="GoID !=null">
 				 GoID = #{GoID} 
@@ -20,7 +20,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	<select id="queryLsGo2Term" parameterType="Go2Term" resultMap="Go2TermMap">
 		select *
-		from Go2Term
+		from go2term
 		<where>
 			<if test="GoID !=null">
 				 GoID = #{GoID} 
@@ -31,11 +31,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    </where>
 	</select>
 	<insert id="insertGo2Term" parameterType="Go2Term">
-		insert into Go2Term (GoID,GoTerm,GoFunction,Parent,Child,Definition)
+		insert into go2term (GoID,GoTerm,GoFunction,Parent,Child,Definition)
 		values (#{GoID},#{GoTerm},#{GoFunction},#{Parent},#{Child},#{Definition})
 	</insert>
 	<update id="updateGo2Term" parameterType="Go2Term">
-		update Go2Term 
+		update go2term 
 		<set>
 			<if test="GoID != null and GoID != ''">
 				GoID = #{GoID},

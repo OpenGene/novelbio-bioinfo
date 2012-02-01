@@ -20,7 +20,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<select id="queryGeneInfo" parameterType="GeneInfo" resultMap="geneInfoMap">
 		select *
-		from geneInfo
+		from geneinfo
 		<where>
 			<if test="geneID != 0">
 				GeneID = #{geneID} 
@@ -29,7 +29,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	<select id="queryLsGeneInfo" parameterType="GeneInfo" resultMap="geneInfoMap">
 		select *
-		from geneInfo
+		from geneinfo
 		<where>
 			<if test="geneID != 0">
 				GeneID = #{geneID} 
@@ -37,7 +37,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    </where> 
 	</select>
 	<insert id="insertGeneInfo" parameterType="GeneInfo">
-		insert into geneInfo
+		insert into geneinfo
 		 (GeneID,Symbol,LocusTag,Synonyms,dbXrefs,
 		chromosome,mapLocation,description,typeOfGene,SymbolFromNomenclature,
 		FullNameFromNomenclature,NomenclatureStatus,OtherDesignations,ModificationDate,PubmedID)
@@ -49,7 +49,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		#{fullNameNome},#{nomStat},#{otherDesign},#{modDate},#{pubmedID})
 	</insert>
 	<update id="updateGeneInfo" parameterType="GeneInfo">
-		update geneInfo
+		update geneinfo
 		<set>
 			<if test="symbol !=null and symbol != ''">
 				Symbol = #{symbol},

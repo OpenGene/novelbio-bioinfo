@@ -8,7 +8,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<select id="queryBlastInfo" parameterType="BlastInfo" resultMap="BlastInfoMap">
 		select *
-		from BlastInfo
+		from blastinfo
 		<where>
 			<if test="queryID != null and queryID != ''">
 				queryID = #{queryID}
@@ -35,7 +35,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	<select id="queryLsBlastInfo" parameterType="BlastInfo" resultMap="BlastInfoMap">
 		select *
-		from BlastInfo
+		from blastinfo
 		<where>
 			<if test="queryID != null and queryID != ''">
 				queryID = #{queryID}
@@ -61,11 +61,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    </where>
 	</select>
 	<insert id="insertBlastInfo" parameterType="BlastInfo">
-		insert into BlastInfo (queryID,queryTax,queryDB,subjectID,subjectTax,subjectDB,identities,evalue,blastDate,subjectTab)
+		insert into blastinfo (queryID,queryTax,queryDB,subjectID,subjectTax,subjectDB,identities,evalue,blastDate,subjectTab)
 		values (#{queryID},#{queryTax},#{queryDB},#{subjectID},#{subjectTax},#{subjectDB},#{identities},#{evalue},#{blastDate},#{subjectTab})
 	</insert>
 	<update id="updateBlastInfo" parameterType="BlastInfo">
-		update BlastInfo 
+		update blastinfo 
 		<set>
 			<if test="queryTax != null and queryTax != 0">
 				queryTax = #{queryTax},
