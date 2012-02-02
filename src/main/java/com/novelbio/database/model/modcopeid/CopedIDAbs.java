@@ -475,7 +475,19 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
 	 */
 	ArrayList<String> lsRefAccID = new ArrayList<String>();
-
+	Boolean uniqID = null;
+	/**
+	 * 在采用refaccID作为参照进行升级ID的时候，是否必须是uniqID
+	 * uniqID：用给定的参考ID能找到数据库中的唯一基因
+	 * true：只有当uniqID时才升级
+	 * null：默认参数--非uniqID也升级，不过只升级第一个基因
+	 * false：非uniqID也升级，升级搜索到的全部ID，该功能尚未实现
+	 * @param uniqID
+	 */
+	@Override
+	public void setUpdateRefAccID(Boolean uniqID) {
+		this.uniqID = uniqID;
+	}
 	/**
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
 	 */
@@ -680,7 +692,21 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		// 只升级第一个获得的geneID
 		if (lsGenID != null && !lsGenID.get(0).equals(CopedID.IDTYPE_ACCID)) {
 			this.idType = lsGenID.get(0);
-
+			//refAccID可能会查到超过不止一个ID，不同的情况，用不同的方法处理
+			if (uniqID == null) {
+				
+			}
+			else if ( lsGenID.size() > 3) {
+				if (uniqID) {
+					logger.error("查到了超过一个ID! 输入accID：" + getAccID() + "  RefID：" + lsRefAccID.get(0));
+					return false;
+				}
+				else if (!uniqID) {
+					logger.error("该功能尚未实现");
+					return false;
+				}
+			}
+			
 			if (lsGenID.get(0).equals(CopedID.IDTYPE_GENEID)) {
 				NCBIID ncbiid = new NCBIID();
 				ncbiid.setAccID(accID);

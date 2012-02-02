@@ -695,5 +695,11 @@ public class CopedID implements CopedIDInt{
 	public void setUpdateAccID(String accID) {
 		copedID.setUpdateAccID(accID);
 	}
+
+	@Override
+	public void setUpdateRefAccID(Boolean uniqID) {
+		copedID.setUpdateRefAccID(uniqID);
+		
+	}
 	
 }
