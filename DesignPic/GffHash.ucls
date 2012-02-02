@@ -1,416 +1,613 @@
-<class-diagram version="1.0.4" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+<class-diagram version="1.0.5" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true">  
-  <class id="2" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.FastQ" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/FastQ.java" binary="false">    
-    <position height="301" width="248" x="15" y="231"/>    
-    <display autosize="false" package="true" initial-value="false" signature="true" visibility="false">      
+  <class id="1" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbsDu" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodAbsDu.java" binary="false">    
+    <position height="-1" width="-1" x="2120" y="494"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="false" private="false"/>    
-    </display>  
-  </class>  
-  <class id="3" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.SeqComb" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/SeqComb.java" binary="false">    
-    <position height="-1" width="-1" x="245" y="93"/>    
-    <display autosize="false" package="true" initial-value="false" signature="true" visibility="false">      
-      <attributes public="true" package="true" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="4" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.BedSeq" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/BedSeq.java" binary="false">    
-    <position height="-1" width="-1" x="406" y="284"/>    
+  <class id="2" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodRepeat" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodRepeat.java" binary="false">    
+    <position height="-1" width="-1" x="4290" y="186"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="false" protected="false" private="false"/>      
+      <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <interface id="5" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.chipseq.PeakCalling" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/chipseq/PeakCalling.java" binary="false">    
-    <position height="62" width="244" x="627" y="438"/>    
-    <display autosize="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </interface>  
-  <class id="6" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.chipseq.BedPeakMacs" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/chipseq/BedPeakMacs.java" binary="false">    
-    <position height="-1" width="-1" x="418" y="467"/>    
+  <class id="3" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodGeneDU.java" binary="false">    
+    <position height="-1" width="-1" x="2128" y="1099"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+      <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="7" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailPeak" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffDetailPeak.java" binary="false">    
-    <position height="-1" width="-1" x="1939" y="110"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="8" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodGene" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodGene.java" 
+  <class id="4" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashCufflinkGTF" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashCufflinkGTF.java" 
     binary="false">    
-    <position height="-1" width="-1" x="3072" y="316"/>    
+    <position height="-1" width="-1" x="3201" y="849"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+      <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="9" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodCGDU" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodCGDU.java" 
-    binary="false">    
-    <position height="-1" width="-1" x="3078" y="593"/>    
+  <class id="5" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailRepeat" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffDetailRepeat.java" binary="false">    
+    <position height="-1" width="-1" x="2802" y="591"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="6" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GtfHashCufIso" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GtfHashCufIso.java" binary="false">    
+    <position height="-1" width="-1" x="3491" y="-186"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="7" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHash" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHash.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="2746" y="-232"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="8" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneCluster" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneCluster.java" binary="false">    
+    <position height="-1" width="-1" x="2947" y="1418"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="9" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashRepeat" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashRepeat.java" binary="false">    
+    <position height="-1" width="-1" x="3391" y="-354"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
   <class id="10" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffGeneIsoCis" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffGeneIsoCis.java" binary="false">    
-    <position height="-1" width="-1" x="2542" y="1502"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="false" private="true"/>    
-    </display>  
-  </class>  
-  <class id="11" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailRepeat" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffDetailRepeat.java" binary="false">    
-    <position height="-1" width="-1" x="1924" y="410"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="12" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneUCSC" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashGeneUCSC.java" binary="false">    
-    <position height="90" width="219" x="1344" y="962"/>    
-    <display autosize="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="13" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodPeak" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodPeak.java" 
-    binary="false">    
-    <position height="-1" width="-1" x="3082" y="59"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="14" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHash" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHash.java" 
-    binary="false">    
-    <position height="-1" width="-1" x="1638" y="188"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="15" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashCG" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashCG.java" 
-    binary="false">    
-    <position height="-1" width="-1" x="1084" y="235"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="16" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailAbs" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffDetailAbs.java" binary="false">    
-    <position height="-1" width="-1" x="2221" y="188"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="17" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GtfHashCufIso" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GtfHashCufIso.java" binary="false">    
-    <position height="-1" width="-1" x="1087" y="79"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="18" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailGene" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffDetailGene.java" binary="false">    
-    <position height="-1" width="-1" x="2222" y="978"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="false"/>    
-    </display>  
-  </class>  
-  <class id="19" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodAbsDu" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodAbsDu.java" binary="false">    
-    <position height="-1" width="-1" x="2642" y="538"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="20" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailCG" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffDetailCG.java" binary="false">    
-    <position height="-1" width="-1" x="1929" y="265"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="21" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodRepeat" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodRepeat.java" binary="false">    
-    <position height="-1" width="-1" x="3076" y="458"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="22" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGenePlant" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashGenePlant.java" binary="false">    
-    <position height="-1" width="-1" x="1758" y="1017"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <interface id="23" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashInf" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashInf.java" binary="false">    
-    <position height="-1" width="-1" x="757" y="155"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </interface>  
-  <class id="24" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffGeneIsoInfo" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffGeneIsoInfo.java" binary="false">    
-    <position height="-1" width="-1" x="2671" y="998"/>    
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneUCSC" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashGeneUCSC.java" binary="false">    
+    <position height="-1" width="-1" x="3509" y="268"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="25" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GtfDetailCufIso" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GtfDetailCufIso.java" binary="false">    
-    <position height="-1" width="-1" x="1930" y="647"/>    
+  <class id="11" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailAbs" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffDetailAbs.java" binary="false">    
+    <position height="-1" width="-1" x="2477" y="497"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+      <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <interface id="26" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneInf" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashGeneInf.java" binary="false">    
-    <position height="-1" width="-1" x="1265" y="779"/>    
+  <class id="12" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashCG" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashCG.java" binary="false">    
+    <position height="-1" width="-1" x="3014" y="-332"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="13" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneIsoCis.java" binary="false">    
+    <position height="-1" width="-1" x="1113" y="1875"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="14" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeakDU" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodPeakDU.java" binary="false">    
+    <position height="-1" width="-1" x="1728" y="392"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="15" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneIsoInfo.java" binary="false">    
+    <position height="-1" width="-1" x="1608" y="1847"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="16" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailPeak" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffDetailPeak.java" binary="false">    
+    <position height="-1" width="-1" x="2739" y="727"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="17" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffDetailGene.java" binary="false">    
+    <position height="-1" width="-1" x="2499" y="1430"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="18" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodCG" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodCG.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="4474" y="280"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="19" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GtfDetailCufIso" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GtfDetailCufIso.java" binary="false">    
+    <position height="-1" width="-1" x="2805" y="390"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="20" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeak" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodPeak.java" binary="false">    
+    <position height="-1" width="-1" x="4609" y="364"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <interface id="21" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneInf" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashGeneInf.java" binary="false">    
+    <position height="-1" width="-1" x="3657" y="723"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </interface>  
-  <class id="27" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneAbs" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashGeneAbs.java" binary="false">    
-    <position height="-1" width="-1" x="1629" y="776"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="28" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGene" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashGene.java" binary="false">    
-    <position height="-1" width="-1" x="738" y="345"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="29" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashRepeat" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashRepeat.java" binary="false">    
-    <position height="-1" width="-1" x="1073" y="404"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="30" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashPeak" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffHashPeak.java" binary="false">    
-    <position height="-1" width="-1" x="1058" y="593"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
-    </display>  
-  </class>  
-  <class id="31" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodCG" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodCG.java" 
+  <class id="22" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGenePlant" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashGenePlant.java" 
     binary="false">    
-    <position height="-1" width="-1" x="3078" y="190"/>    
+    <position height="-1" width="-1" x="3515" y="141"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+      <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="33" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffGeneIsoTrans" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffGeneIsoTrans.java" binary="false">    
-    <position height="-1" width="-1" x="2827" y="1503"/>    
+  <class id="23" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoTrans" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneIsoTrans.java" binary="false">    
+    <position height="-1" width="-1" x="1117" y="1534"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="false" private="true"/>    
+      <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="34" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodAbs" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/genomeNew2/gffOperate/GffCodAbs.java" 
+  <class id="24" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashGeneAbs.java" binary="false">    
+    <position height="-1" width="-1" x="3185" y="214"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="25" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbs" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodAbs.java" binary="false">    
+    <position height="-1" width="-1" x="4536" y="-43"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="26" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashGene.java" binary="false">    
+    <position height="-1" width="-1" x="3610" y="1469"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="27" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/ExonInfo.java" 
     binary="false">    
-    <position height="-1" width="-1" x="2651" y="166"/>    
+    <position height="-1" width="-1" x="2138" y="-19"/>    
     <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+      <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <generalization>    
-    <end type="SOURCE" nodeId="7"/>    
-    <end type="TARGET" nodeId="16"/>  
+  <interface id="28" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashInf" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashInf.java" binary="false">    
+    <position height="-1" width="-1" x="3970" y="921"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <class id="29" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailCG" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffDetailCG.java" binary="false">    
+    <position height="-1" width="-1" x="2785" y="181"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="30" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashPeak" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashPeak.java" binary="false">    
+    <position height="-1" width="-1" x="3682" y="-341"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="31" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodGene.java" binary="false">    
+    <position height="-1" width="-1" x="4803" y="230"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="32" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodCGDU" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodCGDU.java" binary="false">    
+    <position height="-1" width="-1" x="1727" y="214"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="33" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.listOperate.CompS2M" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/listOperate/ListAbs.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="464" y="-276"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="34" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.listOperate.CompS2MAbs" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/listOperate/ListAbs.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="454" y="-193"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <interface id="35" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.listOperate.ElementAbs" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/listOperate/ElementAbs.java" binary="false">    
+    <position height="-1" width="-1" x="2464" y="-32"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <class id="36" corner="BOTTOM_RIGHT" language="java" 
+    name="com.novelbio.analysis.seq.genomeNew.listOperate.BinarySearch" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/listOperate/ListAbs.java" binary="false">    
+    <position height="-1" width="-1" x="450" y="-40"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="37" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.listOperate.CompM2S" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/listOperate/ListAbs.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="450" y="-117"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="38" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/listOperate/ListAbs.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="1151" y="-215"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="true" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <dependency id="39">    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <association id="40">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="41" name="lsgffDetailsMid"/>      
+      <multiplicity id="42" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="43">    
+    <end type="SOURCE" refId="15" navigable="false">      
+      <attribute id="44" name="gffDetailGene"/>      
+      <multiplicity id="45" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="46">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="47" name="lsGffGeneThis"/>      
+      <multiplicity id="48" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="49">    
+    <end type="SOURCE" refId="32"/>    
+    <end type="TARGET" refId="1"/>  
   </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="25"/>    
-    <end type="TARGET" nodeId="16"/>  
+  <association id="50">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="51" name="gffDetailGene2"/>      
+      <multiplicity id="52" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="53">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="54" name="lsGffGeneComp"/>      
+      <multiplicity id="55" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="56">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="57" name="lsGffDetailGenes"/>      
+      <multiplicity id="58" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="59">    
+    <end type="SOURCE" refId="24"/>    
+    <end type="TARGET" refId="7"/>  
   </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="27"/>    
-    <end type="TARGET" nodeId="14"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="8"/>    
-    <end type="TARGET" nodeId="34"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="11"/>    
-    <end type="TARGET" nodeId="16"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="33"/>    
-    <end type="TARGET" nodeId="24"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="29"/>    
-    <end type="TARGET" nodeId="14"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="20"/>    
-    <end type="TARGET" nodeId="16"/>  
-  </generalization>  
-  <realization>    
-    <end type="SOURCE" nodeId="6"/>    
-    <end type="TARGET" nodeId="5"/>  
+  <realization id="60">    
+    <end type="SOURCE" refId="26"/>    
+    <end type="TARGET" refId="21"/>  
   </realization>  
-  <association>    
-    <end type="SOURCE" nodeId="14" navigable="false">      
-      <attribute name="locHashtable"/>      
-      <multiplicity minimum="0" maximum="2147483647"/>    
-    </end>    
-    <end type="TARGET" nodeId="16" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <realization>    
-    <end type="SOURCE" nodeId="27"/>    
-    <end type="TARGET" nodeId="26"/>  
+  <generalization id="61">    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="38"/>  
+  </generalization>  
+  <generalization id="62">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="11"/>  
+  </generalization>  
+  <realization id="63">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="35"/>  
   </realization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="22"/>    
-    <end type="TARGET" nodeId="27"/>  
+  <dependency id="64">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <generalization id="65">    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="24"/>  
   </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="17"/>    
-    <end type="TARGET" nodeId="14"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="18"/>    
-    <end type="TARGET" nodeId="16"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="2"/>    
-    <end type="TARGET" nodeId="3"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="9"/>    
-    <end type="TARGET" nodeId="19"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="4"/>    
-    <end type="TARGET" nodeId="3"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="30"/>    
-    <end type="TARGET" nodeId="14"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="21"/>    
-    <end type="TARGET" nodeId="34"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="6"/>    
-    <end type="TARGET" nodeId="4"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="13"/>    
-    <end type="TARGET" nodeId="34"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="12"/>    
-    <end type="TARGET" nodeId="27"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="15"/>    
-    <end type="TARGET" nodeId="14"/>  
-  </generalization>  
-  <association>    
-    <end type="SOURCE" nodeId="18" navigable="false">      
-      <attribute name="lsGffGeneIsoInfos"/>      
-      <multiplicity minimum="0" maximum="2147483647"/>    
+  <association id="66">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="67" name="gffHashRef"/>      
+      <multiplicity id="68" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" nodeId="24" navigable="true"/>    
+    <end type="TARGET" refId="26" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization>    
-    <end type="SOURCE" nodeId="10"/>    
-    <end type="TARGET" nodeId="24"/>  
+  <generalization id="69">    
+    <end type="SOURCE" refId="18"/>    
+    <end type="TARGET" refId="25"/>  
   </generalization>  
-  <association>    
-    <end type="SOURCE" nodeId="19" navigable="false">      
-      <attribute name="lsgffDetailsMid"/>      
-      <multiplicity minimum="0" maximum="2147483647"/>    
+  <generalization id="70">    
+    <end type="SOURCE" refId="23"/>    
+    <end type="TARGET" refId="15"/>  
+  </generalization>  
+  <generalization id="71">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="15"/>  
+  </generalization>  
+  <generalization id="72">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="11"/>  
+  </generalization>  
+  <association id="73">    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="74" name="lsGffGeneIsoInfos"/>      
+      <multiplicity id="75" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" nodeId="16" navigable="true"/>    
+    <end type="TARGET" refId="15" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association>    
-    <end type="SOURCE" nodeId="24" navigable="false">      
-      <attribute name="gffDetailGene"/>      
-      <multiplicity minimum="0" maximum="1"/>    
+  <association id="76">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="77" name="gffHashGene"/>      
+      <multiplicity id="78" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" nodeId="18" navigable="true"/>    
+    <end type="TARGET" refId="24" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization>    
-    <end type="SOURCE" nodeId="31"/>    
-    <end type="TARGET" nodeId="34"/>  
+  <generalization id="79">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="25"/>  
   </generalization>  
+  <generalization id="80">    
+    <end type="SOURCE" refId="30"/>    
+    <end type="TARGET" refId="7"/>  
+  </generalization>  
+  <generalization id="81">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="82">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="11"/>  
+  </generalization>  
+  <realization id="83">    
+    <end type="SOURCE" refId="24"/>    
+    <end type="TARGET" refId="21"/>  
+  </realization>  
+  <dependency id="84">    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <generalization id="85">    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <association id="86">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="87" name="gffGeneClusterDown"/>      
+      <multiplicity id="88" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="89">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="90" name="Chrhash"/>      
+      <multiplicity id="91" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="38" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="92">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <association id="93">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="94" name="gffHashRef"/>      
+      <multiplicity id="95" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="26" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="96">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="7"/>  
+  </generalization>  
+  <association id="97">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="98" name="gffDetailGene1"/>      
+      <multiplicity id="99" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="100">    
+    <end type="SOURCE" refId="26"/>    
+    <end type="TARGET" refId="28"/>  
+  </realization>  
+  <realization id="101">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="35"/>  
+  </realization>  
+  <generalization id="102">    
+    <end type="SOURCE" refId="31"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="103">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="24"/>  
+  </generalization>  
+  <generalization id="104">    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="11"/>  
+  </generalization>  
+  <association id="105">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="106" name="gffGeneClusterUp"/>      
+      <multiplicity id="107" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="108">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="109" name="gffHashThisCufflink"/>      
+      <multiplicity id="110" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="26" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="111">    
+    <end type="SOURCE" refId="29"/>    
+    <end type="TARGET" refId="11"/>  
+  </generalization>  
+  <generalization id="112">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="7"/>  
+  </generalization>  
+  <generalization id="113">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="24"/>  
+  </generalization>  
+  <association id="114">    
+    <end type="SOURCE" refId="24" navigable="false">      
+      <attribute id="115" name="lsGffDetailGenesAll"/>      
+      <multiplicity id="116" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="117">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="7"/>  
+  </generalization>  
+  <association id="118">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="119" name="locHashtable"/>      
+      <multiplicity id="120" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="121">    
+    <end type="SOURCE" refId="23"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
   <classifier-display autosize="true" package="true" initial-value="false" signature="true" visibility="true">    
     <attributes public="false" package="false" protected="false" private="false"/>    
     <operations public="true" package="false" protected="false" private="false"/>  

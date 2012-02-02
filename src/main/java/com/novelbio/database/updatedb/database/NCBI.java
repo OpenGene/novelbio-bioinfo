@@ -53,12 +53,12 @@ public class NCBI {
 		ImportPerLine impFile = null;
 		impFile = new ImpGen2Acc();
 		impFile.setTaxID(taxID);
-		impFile.importInfoPerLine(gene2Acc, true);
+//		impFile.importInfoPerLine(gene2Acc, true);
 //		impFile.importInfoPerLine(gene2Ref, true);
 //		impFile = new ImpGen2Ensembl();
 //		impFile.importInfoPerLine(gene2ensembl, true);
-//		impFile = new ImpGeneRef2UniID();
-//		impFile.importInfoPerLine(geneRef2UniID, true);
+		impFile = new ImpGeneRef2UniID();
+		impFile.importInfoPerLine(geneRef2UniID, true);
 //		impFile = new ImpGene2Info();
 //		impFile.importInfoPerLine(gene2Info, true);
 //		impFile = new ImpGene2Pub();
@@ -198,7 +198,7 @@ class ImpGeneRef2UniID extends ImportPerLine
 		String[] ss = content.split("\t");
 		if (copedID == null || !copedID.getAccID().equals(CopedID.removeDot(ss[0]))) {
 			copedID = new CopedID(ss[0],0);
-			if (!hashTaxID.contains(copedID.getTaxID())) {
+			if (copedID.getTaxID() == 0 || !hashTaxID.contains(copedID.getTaxID())) {
 				return;
 			}
 		}

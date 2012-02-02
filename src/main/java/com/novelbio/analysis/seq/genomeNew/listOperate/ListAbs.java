@@ -58,28 +58,6 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 		}
 	}
 	
-//    /**
-//     * Returns an iterator over the elements in this list in proper sequence.
-//     *
-//     * <p>The returned iterator is <a href="#fail-fast"><i>fail-fast</i></a>.
-//     *
-//     * @return an iterator over the elements in this list in proper sequence
-//     */
-//	public Iterator<T> iterator() {
-//		return iterator();
-//	}
-//    /**
-//     * Returns a list iterator over the elements in this list (in proper
-//     * sequence).
-//     *
-//     * <p>The returned list iterator is <a href="#fail-fast"><i>fail-fast</i></a>.
-//     *
-//     * @see #listIterator(int)
-//     */
-//	public Iterator<T> listIterator() {
-//		return listIterator();
-//	}
-	
 	/**
 	 * 返回实际第num个element间区的长度
 	 * @param num 实际数目

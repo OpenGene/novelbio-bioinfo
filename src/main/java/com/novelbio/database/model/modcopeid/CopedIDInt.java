@@ -28,7 +28,10 @@ public interface CopedIDInt{
 	 * @return
 	 */
 	public String getGenUniID();
-	
+	/**
+	 * 如果数据库中没有找到对应的accID，则设定时候输入的是什么taxID，返回的就是同样的taxID
+	 * @return
+	 */
 	public int getTaxID() ;
 	
 	/**
