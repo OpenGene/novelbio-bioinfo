@@ -223,6 +223,12 @@ class ImpGene2Info extends ImportPerLine
 			return;
 		}
 		CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
+		copedID.setUpdateAccID(ss[2]);
+		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, true);
+		copedID.update(false);
+		copedID.setUpdateAccID(ss[4]);
+		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYNONYMS, true);
+		copedID.update(false);
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setSymbol(ss[2]); geneInfo.setLocusTag(ss[3]);
 		geneInfo.setSynonyms(ss[4]); geneInfo.setDbXrefs(ss[5]);
