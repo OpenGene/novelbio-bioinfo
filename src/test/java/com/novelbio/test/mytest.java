@@ -78,10 +78,12 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.base.plot.Rplot;
 import com.novelbio.database.domain.geneanno.Gene2Go;
+import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modkegg.KeggInfo;
+import com.novelbio.database.service.servgeneanno.ServGeneInfo;
  import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
@@ -94,8 +96,10 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		String aa = "@@fswef";
-		System.out.println(aa.split("@@")[1]);
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite("/media/winE/Bioinformatics/DataBase/gene_info/aaa/aaa", false);
+		for (String string : txtReadandWrite.readlines(2)) {
+			System.out.println(string);
+		}
 	}
 	
 	

@@ -459,7 +459,7 @@ public class UpDateFriceDB {
 			}
 			else {
 				if (!changeSymbol) {
-					aGeneInfo.setSymbol(null);
+					aGeneInfo.setSymb(null);
 				}
 				MapGeneInfoOld.upDateGeneInfo((GeneInfo) aGeneInfo);
 			}
@@ -473,7 +473,7 @@ public class UpDateFriceDB {
 			}
 			else {
 				if (!changeSymbol) {
-					aGeneInfo.setSymbol(null);
+					aGeneInfo.setSymb(null);
 				}
 				MapUniGeneInfoOld.upDateUniGeneInfo((UniGeneInfo) aGeneInfo);
 			}

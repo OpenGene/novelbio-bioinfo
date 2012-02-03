@@ -3,6 +3,7 @@ package com.novelbio.database.service.servgeneanno;
 import java.util.ArrayList;
 import javax.inject.Inject;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.service.AbsGetSpring;
 @Service
 public class ServNCBIID extends AbsGetSpring implements MapNCBIID{
+	private static Logger logger = Logger.getLogger(ServNCBIID.class);
 	@Inject
 	private MapNCBIID mapNCBIID;
 
@@ -87,26 +89,43 @@ public class ServNCBIID extends AbsGetSpring implements MapNCBIID{
 	}
 	
 	/**
+	 * <b>没有accID，放弃升级</b>
 	 * 没有该ID就插入，有该ID的话看如果需要override，如果override且数据库不一样，就覆盖升级
 	 * @param nCBIID
 	 * @param override
 	 */
-	public void updateNCBIID(NCBIID ncbiid, boolean override) {
+	public boolean updateNCBIID(NCBIID ncbiid, boolean override) {
 		String db = ncbiid.getDBInfo();
 		//查询的时候为了防止查不到，先除去dbinfo的信息
 		ncbiid.setDBInfo("");
+		if (ncbiid.getAccID() == null) {
+			logger.error("accID不存在，不能升级");
+			return false;
+		}
 		ArrayList<NCBIID> lsResult = mapNCBIID.queryLsNCBIID(ncbiid);
 		if (lsResult == null || lsResult.size() == 0) {
 			//插入的时候再加上
 			ncbiid.setDBInfo(db);
-			mapNCBIID.insertNCBIID(ncbiid);
+			try {
+				mapNCBIID.insertNCBIID(ncbiid);
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+			
 		}
 		else {
 			if (override && !lsResult.get(0).getDBInfo().equals(db)) {
 				ncbiid.setDBInfo(db);
-				mapNCBIID.updateNCBIID(ncbiid);
+				try {
+					mapNCBIID.updateNCBIID(ncbiid);
+					return true;
+				} catch (Exception e) {
+					return false;
+				}
 			}
 		}
+		return true;
 	}
 	/**
 	 * 如果存在则返回第一个找到的geneID
@@ -116,6 +135,9 @@ public class ServNCBIID extends AbsGetSpring implements MapNCBIID{
 	 * @return
 	 */
 	public NCBIID queryNCBIID(int geneID, int taxID) {
+		if (geneID <= 0) {
+			return null;
+		}
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setGeneId(geneID);
 		ncbiid.setTaxID(taxID);

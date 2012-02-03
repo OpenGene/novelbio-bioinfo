@@ -299,12 +299,12 @@ public class ServAnno {
 			return result;
 		}
 		else {
-			result[0] = geneInfo2.getSymbol().split("//")[0];
+			result[0] = geneInfo2.getSymb().split("//")[0];
 			if (result[0].equals(""))
 			{
 				result[0] = getGenName(geneID);
 			}
-			result[1] = geneInfo2.getDescription();
+			result[1] = geneInfo2.getDescrp();
 			return result;
 		}
 	}
@@ -333,12 +333,12 @@ public class ServAnno {
 			return result;
 		}
 		else {
-			result[0] = uniGeneInfo2.getSymbol().split("//")[0];
+			result[0] = uniGeneInfo2.getSymb().split("//")[0];
 			if (result[0].equals(""))
 			{
 				result[0] = getUniGenName(uniID);
 			}
-			result[1] = uniGeneInfo2.getDescription();
+			result[1] = uniGeneInfo2.getDescrp();
 			return result;
 		}
 	}

@@ -15,8 +15,10 @@ import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.Gene2Go;
+import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
@@ -223,10 +225,10 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 */
 	public String getDescription() {
 		setSymbolDescrip();
-		if (geneInfo == null || geneInfo.getDescription() == null) {
+		if (geneInfo == null || geneInfo.getDescrp() == null) {
 			return "";
 		}
-		return geneInfo.getDescription().replaceAll("\"", "");
+		return geneInfo.getDescrp().replaceAll("\"", "");
 	}
 
 	/**
@@ -257,7 +259,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			symbol = getGenName(getGenUniID(), getDatabaseTyep());
 		} else {
 			geneInfo.setTaxID(taxID);
-			symbol = geneInfo.getSymbol();
+			symbol = geneInfo.getSymb();
 		}
 		if (symbol.equals("")) {
 			symbol = getGenName(getGenUniID(), getDatabaseTyep());
@@ -739,7 +741,8 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	}
 
 	/**
-	 * 升级geneID
+	 * 根据geneID和idType升级相关的geneInfo
+	 * 注意，geneInfo只能是单个，不能是合并过的geneInfo
 	 * 如果没有genUniID，或者没有搜索到对应的genID，则返回false；
 	 * 如果没有geneInfo信息，则认为不需要升级，返回true
 	 */
@@ -753,8 +756,10 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		geneInfo.setTaxID(taxID);
 		if (idType.equals(CopedID.IDTYPE_UNIID)) {
 			servUniGeneInfo.updateUniGenInfo(genUniID, geneInfo);
+			updateUniGeneInfoSymbolAndSynonyms(geneInfo);
 		} else if (idType.equals(CopedID.IDTYPE_GENEID)) {
 			servGeneInfo.updateGenInfo(genUniID, geneInfo);
+			updateGeneInfoSymbolAndSynonyms(geneInfo);
 		}
 		else {
 			return false;
@@ -762,7 +767,99 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		geneInfo = null;
 		return true;
 	}
-
+	
+	private void updateGeneInfoSymbolAndSynonyms(AGeneInfo geneInfo2)
+	{
+		NCBIID ncbiid = null;
+		if (geneInfo2.getSep() != null && !geneInfo2.equals("")) {
+			if (geneInfo2.getSymb() != null) {
+				String[] ssymb = geneInfo2.getSymb().split(geneInfo2.getSep());
+				for (String string : ssymb) {
+					ncbiid = new NCBIID();
+					ncbiid.setAccID(string.trim());
+					ncbiid.setDBInfo(NovelBioConst.DBINFO_SYMBOL);
+					ncbiid.setGenUniID(genUniID);
+					ncbiid.setTaxID(taxID);
+					servNCBIID.updateNCBIID(ncbiid, true);
+				}
+			}
+			if (geneInfo2.getSynonym() != null) {
+				String[] ssynonym = geneInfo2.getSynonym().split(geneInfo2.getSep());
+				for (String string : ssynonym) {
+					ncbiid = new NCBIID();
+					ncbiid.setAccID(string.trim());
+					ncbiid.setDBInfo(NovelBioConst.DBINFO_SYNONYMS);
+					ncbiid.setGenUniID(genUniID);
+					ncbiid.setTaxID(taxID);
+					servNCBIID.updateNCBIID(ncbiid, true);
+				}
+			}
+		}
+		else {
+			if (geneInfo2.getSymb() != null) {
+				ncbiid = new NCBIID();
+				ncbiid.setAccID(geneInfo2.getSymb());
+				ncbiid.setDBInfo(NovelBioConst.DBINFO_SYMBOL);
+				ncbiid.setGenUniID(genUniID);
+				ncbiid.setTaxID(taxID);
+				servNCBIID.updateNCBIID(ncbiid, false);
+			}
+			if (geneInfo2.getSynonym() != null) {
+				ncbiid = new NCBIID();
+				ncbiid.setAccID(geneInfo2.getSynonym());
+				ncbiid.setDBInfo(NovelBioConst.DBINFO_SYNONYMS);
+				ncbiid.setGenUniID(genUniID);
+				ncbiid.setTaxID(taxID);
+				servNCBIID.updateNCBIID(ncbiid, false);
+			}
+		}
+	}
+	private void updateUniGeneInfoSymbolAndSynonyms(AGeneInfo uniGeneInfo)
+	{
+		UniProtID uniprotID = null;
+		if (uniGeneInfo.getSep() != null && !uniGeneInfo.equals("")) {
+			if (uniGeneInfo.getSymb() != null) {
+				String[] ssymb = uniGeneInfo.getSymb().split(uniGeneInfo.getSep());
+				for (String string : ssymb) {
+					uniprotID = new UniProtID();
+					uniprotID.setAccID(string.trim());
+					uniprotID.setDBInfo(NovelBioConst.DBINFO_SYMBOL);
+					uniprotID.setGenUniID(genUniID);
+					uniprotID.setTaxID(taxID);
+					servUniProtID.updateUniProtID(uniprotID, true);
+				}
+			}
+			if (uniGeneInfo.getSynonym() != null) {
+				String[] ssynonym = uniGeneInfo.getSynonym().split(uniGeneInfo.getSep());
+				for (String string : ssynonym) {
+					uniprotID = new UniProtID();
+					uniprotID.setAccID(string.trim());
+					uniprotID.setDBInfo(NovelBioConst.DBINFO_SYNONYMS);
+					uniprotID.setGenUniID(genUniID);
+					uniprotID.setTaxID(taxID);
+					servUniProtID.updateUniProtID(uniprotID, true);
+				}
+			}
+		}
+		else {
+			if (uniGeneInfo.getSymb() != null) {
+				uniprotID = new UniProtID();
+				uniprotID.setAccID(uniGeneInfo.getSymb());
+				uniprotID.setDBInfo(NovelBioConst.DBINFO_SYMBOL);
+				uniprotID.setGenUniID(genUniID);
+				uniprotID.setTaxID(taxID);
+				servUniProtID.updateUniProtID(uniprotID, true);
+			}
+			if (uniGeneInfo.getSynonym() != null) {
+				uniprotID = new UniProtID();
+				uniprotID.setAccID(uniGeneInfo.getSynonym());
+				uniprotID.setDBInfo(NovelBioConst.DBINFO_SYNONYMS);
+				uniprotID.setGenUniID(genUniID);
+				uniprotID.setTaxID(taxID);
+				servUniProtID.updateUniProtID(uniprotID, true);
+			}
+		}
+	}
 	// /////////////////////// 升级 Blast 的信息
 	// /////////////////////////////////////////////////////
 
@@ -781,7 +878,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			}
 			servBlastInfo.updateBlast(blastInfo);
 		}
-		return false;
+		return blastCorrect;
 	}
 
 	// /////////////////////// 升级 uniGene 的信息

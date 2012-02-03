@@ -321,8 +321,8 @@ public class PathEnrich {
 					GeneInfo tmpGeneInfo2 =  MapGeneInfoOld.queryGeneInfo(tmpGeneInfo);
 					String symbol = ""; String description = "";
 					if (tmpGeneInfo2 != null) {
-						description = tmpGeneInfo2.getDescription();
-						if ((symbol = tmpGeneInfo2.getSymbol().split("//")[0]).equals(""))
+						description = tmpGeneInfo2.getDescrp();
+						if ((symbol = tmpGeneInfo2.getSymb().split("//")[0]).equals(""))
 						{
 							NCBIID ncbiid2 = new NCBIID(); ncbiid2.setGeneId(Long.parseLong(geneID));
 							ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid2);
@@ -379,8 +379,8 @@ public class PathEnrich {
 					GeneInfo tmpGeneInfo2 =  MapGeneInfoOld.queryGeneInfo(tmpGeneInfo);
 					String symbol = ""; String description = "";
 					if (tmpGeneInfo2 != null) {
-						description = tmpGeneInfo2.getDescription();
-						if ((symbol = tmpGeneInfo2.getSymbol().split("//")[0]).equals(""))
+						description = tmpGeneInfo2.getDescrp();
+						if ((symbol = tmpGeneInfo2.getSymb().split("//")[0]).equals(""))
 						{
 							NCBIID ncbiid2 = new NCBIID(); ncbiid2.setGeneId(Long.parseLong(geneID));
 							ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid2);
@@ -396,8 +396,8 @@ public class PathEnrich {
 					GeneInfo qtmpGeneInfo2 =  MapGeneInfoOld.queryGeneInfo(qtmpGeneInfo);
 					String symbol2 = ""; String description2 = "";
 					if (tmpGeneInfo2 != null) {
-						description2 = qtmpGeneInfo2.getDescription();
-						if ((symbol2 = tmpGeneInfo2.getSymbol().split("//")[0]).equals(""))
+						description2 = qtmpGeneInfo2.getDescrp();
+						if ((symbol2 = tmpGeneInfo2.getSymb().split("//")[0]).equals(""))
 						{
 							NCBIID ncbiid2 = new NCBIID(); ncbiid2.setGeneId(Long.parseLong(subGeneID));
 							ArrayList<NCBIID> lsNcbiids = MapNCBIID.queryLsNCBIID(ncbiid2);

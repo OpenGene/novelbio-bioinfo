@@ -18,7 +18,18 @@ public abstract class AgeneUniID {
 
 	public abstract String getGenUniID();
 	public abstract void setGenUniID(String genUniID);
+	/**
+	 * 如果是“”，则返回null
+	 * @return
+	 */
 	public String getAccID() {
+		if (accessID == null) {
+			return null;
+		}
+		accessID = accessID.trim();
+		if (accessID.equals("")) {
+			return null;
+		}
 		return accessID;
 	}
 	public void setAccID(String accessID) {

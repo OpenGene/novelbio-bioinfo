@@ -142,14 +142,14 @@ public class Yeast {
 			
 			//Symbol
 			if (!ss[4].equals("")) {
-				aGeneInfo.setSymbol(ss[4]);
+				aGeneInfo.setSymb(ss[4]);
 			}
 			else if (!ss[3].equals("")) {
-				aGeneInfo.setSymbol(ss[3]);
+				aGeneInfo.setSymb(ss[3]);
 			}
 			
 			if (!ss[5].equals("")) {
-				aGeneInfo.setSynonyms(ss[5]);
+				aGeneInfo.setSynonym(ss[5]);
 			}
 			
 			if (!ss[2].equals("")) {
@@ -161,7 +161,7 @@ public class Yeast {
 			}
 			
 			if (!ss[15].equals("")) {
-				aGeneInfo.setDescription(ss[15]);
+				aGeneInfo.setDescrp(ss[15]);
 			}
 			UpDateFriceDB.upDateGenInfo(aGeneInfo);
 		}
@@ -243,7 +243,7 @@ public class Yeast {
 				aGeneInfo.setIDType(CopedID.IDTYPE_UNIID);
 			}
 			aGeneInfo.setGeneUniID(genUniID[0]);
-			aGeneInfo.setDescription(ss[3]);
+			aGeneInfo.setDescrp(ss[3]);
 			UpDateFriceDB.upDateGenInfo(aGeneInfo);
 		}
 	}

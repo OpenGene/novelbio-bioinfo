@@ -33,7 +33,12 @@ public class ServGeneInfo extends AbsGetSpring implements MapGeneInfo {
 	}
 	@Override
 	public void insertGeneInfo(GeneInfo geneInfo) {
-		mapGeneInfo.insertGeneInfo(geneInfo);
+		try {
+			mapGeneInfo.insertGeneInfo(geneInfo);
+		} catch (Exception e) {
+			System.out.println(geneInfo.getGeneID());
+		}
+		
 	}
 	@Override
 	public void updateGeneInfo(GeneInfo geneInfo) {

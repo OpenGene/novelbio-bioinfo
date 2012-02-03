@@ -57,14 +57,14 @@ public class NCBI {
 //		impFile.importInfoPerLine(gene2Ref, true);
 //		impFile = new ImpGen2Ensembl();
 //		impFile.importInfoPerLine(gene2ensembl, true);
-		impFile = new ImpGeneRef2UniID();
-		impFile.importInfoPerLine(geneRef2UniID, true);
+//		impFile = new ImpGeneRef2UniID();
+//		impFile.importInfoPerLine(geneRef2UniID, true);
 //		impFile = new ImpGene2Info();
 //		impFile.importInfoPerLine(gene2Info, true);
 //		impFile = new ImpGene2Pub();
 //		impFile.importInfoPerLine(gene2Pub, true);
-//		impFile = new ImpGOExtObo();
-//		impFile.importInfoPerLine(goExtObo, true);
+		impFile = new ImpGOExtObo();
+		impFile.importInfoPerLine(goExtObo, false);
 //		impFile = new ImpGene2GO();
 //		impFile.importInfoPerLine(gene2GO, true);
 	}
@@ -223,21 +223,16 @@ class ImpGene2Info extends ImportPerLine
 			return;
 		}
 		CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
-		copedID.setUpdateAccID(ss[2]);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, true);
-		copedID.update(false);
-		copedID.setUpdateAccID(ss[4]);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYNONYMS, true);
-		copedID.update(false);
 		GeneInfo geneInfo = new GeneInfo();
-		geneInfo.setSymbol(ss[2]); geneInfo.setLocusTag(ss[3]);
-		geneInfo.setSynonyms(ss[4]); geneInfo.setDbXrefs(ss[5]);
-		geneInfo.setChromosome(ss[6]); geneInfo.setMapLocation(ss[7]);
-		geneInfo.setDescription(ss[8]); geneInfo.setTypeOfGene(ss[9]);
-		geneInfo.setSymNome(ss[10]); geneInfo.setFullName(ss[11]);
-		geneInfo.setNomStat(ss[12]); geneInfo.setOtherDesign(ss[13]);
-		geneInfo.setModDate(ss[14]);
 		geneInfo.setDBinfo(NovelBioConst.DBINFO_NCBI_ACC_GenralID);
+		geneInfo.setSep("\\|");
+		geneInfo.setSymb(ss[2]); geneInfo.setLocTag(ss[3]);
+		geneInfo.setSynonym(ss[4]); geneInfo.setDbXref(ss[5]);
+		geneInfo.setChrm(ss[6]); geneInfo.setMapLoc(ss[7]);
+		geneInfo.setDescrp(ss[8]); geneInfo.setTypeOfGene(ss[9]);
+		geneInfo.setSymNom(ss[10]); geneInfo.setFullName(ss[11]);
+		geneInfo.setNomState(ss[12]); geneInfo.setOtherDesg(ss[13]);
+		geneInfo.setModDate(ss[14]);
 		copedID.setUpdateGeneInfo(geneInfo);
 		copedID.update(false);
 	}
@@ -270,7 +265,7 @@ class ImpGene2Pub extends ImportPerLine
 		if (copedID == null || !copedID.getGenUniID().equals(ss[1])) {
 			copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
 		}
-		geneInfo.setPubmedID(ss[2]);
+		geneInfo.setPubmedIDs(ss[2]);
 		copedID.setUpdateGeneInfo(geneInfo);
 		copedID.update(false);
 	}

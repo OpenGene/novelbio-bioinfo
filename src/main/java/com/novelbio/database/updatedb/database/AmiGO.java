@@ -22,7 +22,7 @@ public class AmiGO {
 	 * annotation
 	 */
 	
-	ImpGen2Acc
+//	ImpGen2Acc
 	
 }
 
@@ -42,26 +42,34 @@ class ImpGOExtObo extends ImportPerLine
 		else 
 			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 		//从第二行开始读取，第一次导入
-		String tmpContent = "";
-		for (String content : txtGene2Acc.readlines(2)) {
-			if (content.startsWith("[Term]")) {
-				tmpContent = content;
-			}
-			if (content.equals("")) {
-				impPerLine(tmpContent);
-			}
-			tmpContent = tmpContent + "\r\n" + content;
-		}
+		String tmpContent = null;
+//		for (String content : txtGene2Acc.readlines(2)) {
+//			if (content.startsWith("[Term]")) {
+//				tmpContent = content;
+//				continue;
+//			}
+//			if (content.equals("")) {
+//				impPerLine(tmpContent);
+//				tmpContent = null;
+//			}
+//			if (tmpContent != null) {
+//				tmpContent = tmpContent + "\r\n" + content;
+//			}
+//		}
 		//从第二行开始读取，第二次导入
 		for (String content : txtGene2Acc.readlines(2)) {
 			if (content.startsWith("[Term]")) {
 				tmpContent = content;
+				continue;
 			}
 			if (content.equals("")) {
 				impPerLineObsolete(tmpContent);
 				impPerLineChild(tmpContent);
+				tmpContent = null;
 			}
-			tmpContent = tmpContent + "\r\n" + content;
+			if (tmpContent != null) {
+				tmpContent = tmpContent + "\r\n" + content;
+			}
 		}
 	}
 	
@@ -70,6 +78,9 @@ class ImpGOExtObo extends ImportPerLine
 	 */
 	@Override
 	void impPerLine(String lineContent) {
+		if (lineContent == null || lineContent.equals("")) {
+			return;
+		}
 		String[] ss = lineContent.split("\r\n");
 		if (lineContent.contains("is_obsolete: true")) {
 			return;
@@ -88,13 +99,13 @@ class ImpGOExtObo extends ImportPerLine
 			//GO Function
 			if (string.startsWith("namespace: ")) {
 				if (string.equals("namespace: biological_process")) {
-					go2Term.setGoFunction(Go2Term.GO_BP);
+					go2Term.setGoFunction(Go2Term.FUN_SHORT_BIO_P);
 				}
 				if (string.equals("namespace: molecular_function")) {
-					go2Term.setGoFunction(Go2Term.GO_MF);
+					go2Term.setGoFunction(Go2Term.FUN_SHORT_MOL_F);
 				}
 				if (string.equals("namespace: cellular_component")) {
-					go2Term.setGoFunction(Go2Term.GO_CC);
+					go2Term.setGoFunction(Go2Term.FUN_SHORT_CEL_C);
 				}
 			}
 			//GO Definition
@@ -154,16 +165,20 @@ class ImpGOExtObo extends ImportPerLine
 	 * 第二次才导入 过时GO 信息
 	 */
 	void impPerLineObsolete(String lineContent) {
-		String[] ss = lineContent.split("\r\n");
+		if (lineContent == null) {
+			return;
+		}
 		if (!lineContent.contains("is_obsolete: true")) {
 			return;
 		}
+		String[] ss = lineContent.split("\r\n");
+		
 		ArrayList<String> lsGOIDConsider = new ArrayList<String>();
 		ArrayList<String> lsGOIDReplace = new ArrayList<String>();
 		String GOID = "";
 		for (String string : ss) {
 			//Parent
-			if (string.startsWith("is_a:")) {
+			if (string.startsWith("id:")) {
 				GOID = extractGOID(string);
 				break;
 			}
@@ -210,10 +225,13 @@ class ImpGOExtObo extends ImportPerLine
 	 * 第二次才导入  子类信息
 	 */
 	void impPerLineChild(String lineContent) {
-		String[] ss = lineContent.split("\r\n");
+		if (lineContent == null) {
+			return;
+		}
 		if (lineContent.contains("is_obsolete: true")) {
 			return;
 		}
+		String[] ss = lineContent.split("\r\n");
 		String childID = "";
 		for (String string : ss) {
 			if (string.startsWith("id:")) {
@@ -432,8 +450,8 @@ Example:O43526-2
 		copedID.setUpdateAccID(ss[2]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, false);
 		GeneInfo geneInfo = new GeneInfo();
-		geneInfo.setSymbol(ss[2]);
-		geneInfo.setDescription(ss[9]);
+		geneInfo.setSymb(ss[2]);
+		geneInfo.setDescrp(ss[9]);
 		geneInfo.setDBinfo(NovelBioConst.DBINFO_UNIPROT_GenralID);
 		copedID.setUpdateGeneInfo(geneInfo);
 		copedID.setUpdateGO(ss[4], NovelBioConst.DBINFO_UNIPROTID, ss[6], ss[5], ss[3]);

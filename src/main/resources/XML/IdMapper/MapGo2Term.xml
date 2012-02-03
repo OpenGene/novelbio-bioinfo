@@ -44,13 +44,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				GoFunction = #{GoFunction},
 			</if>
 			<if test="GoTerm != null and GoTerm != ''">
-				GoTerm = #{GoTerm}
+				GoTerm = #{GoTerm},
 			</if>
 			<if test="Parent != null and Parent != ''">
-				Parent = #{Parent}
+				Parent = #{Parent},
 			</if>
 			<if test="Child != null and Child != ''">
-				Child = #{Child}
+				Child = #{Child},
 			</if>
 			<if test="Definition != null and Definition != ''">
 				Definition = #{Definition}
@@ -58,7 +58,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</set>
 		where
 			<if test="GoID != null and GoID != ''">
-				and GoID = #{GoID} 
+				GoID = #{GoID} 
 			</if>
 			<if test="GoFunction != null and GoFunction != ''">
 				and GoFunction = #{GoFunction} 

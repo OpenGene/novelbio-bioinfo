@@ -575,8 +575,8 @@ public class RiceID {
 					GeneInfo geneInfo2 = MapGeneInfoOld.queryGeneInfo(geneInfo);
 					if (geneInfo2 == null) //数据库中没有，就插入
 					{
-						geneInfo.setSymbol(symbol);
-						geneInfo.setDescription(description);
+						geneInfo.setSymb(symbol);
+						geneInfo.setDescrp(description);
 						MapGeneInfoOld.InsertGeneInfo(geneInfo);
 					}
 					else  //数据库中有
@@ -584,13 +584,13 @@ public class RiceID {
 						boolean flagUpdate = false;//判断最后是否升级数据库
 						String[] tmpSymbol = symbol.split("//");
 						for (String string : tmpSymbol) {
-							if (!geneInfo2.getSymbol().contains(string)) {//如果含有新的symbol
-								geneInfo2.setSymbol(string+"//"+geneInfo2.getSymbol());
+							if (!geneInfo2.getSymb().contains(string)) {//如果含有新的symbol
+								geneInfo2.setSymb(string+"//"+geneInfo2.getSymb());
 								flagUpdate = true;
 							}
 						}
-						if (!geneInfo2.getDescription().contains(description)) {//如果含有新的description
-							geneInfo2.setDescription(description+"//"+geneInfo2.getDescription());
+						if (!geneInfo2.getDescrp().contains(description)) {//如果含有新的description
+							geneInfo2.setDescrp(description+"//"+geneInfo2.getDescrp());
 							flagUpdate = true;
 						}
 						if (flagUpdate) {
@@ -604,8 +604,8 @@ public class RiceID {
 					UniGeneInfo uniGeneInfo2 = MapUniGeneInfoOld.queryUniGeneInfo(uniGeneInfo);
 					if (uniGeneInfo2 == null) //数据库中没有，就插入
 					{
-						uniGeneInfo.setSymbol(symbol);
-						uniGeneInfo.setDescription(description);
+						uniGeneInfo.setSymb(symbol);
+						uniGeneInfo.setDescrp(description);
 						MapUniGeneInfoOld.InsertUniGeneInfo(uniGeneInfo);
 					}
 					else  //数据库中有
@@ -613,13 +613,13 @@ public class RiceID {
 						boolean flagUpdate = false;//判断最后是否升级数据库
 						String[] tmpSymbol = symbol.split("//");
 						for (String string : tmpSymbol) {
-							if (!uniGeneInfo2.getSymbol().contains(string)) {//如果含有新的symbol
-								uniGeneInfo2.setSymbol(string+"//"+uniGeneInfo2.getSymbol());
+							if (!uniGeneInfo2.getSymb().contains(string)) {//如果含有新的symbol
+								uniGeneInfo2.setSymb(string+"//"+uniGeneInfo2.getSymb());
 								flagUpdate = true;
 							}
 						}
-						if (!uniGeneInfo2.getDescription().contains(description)) {//如果含有新的description
-							uniGeneInfo2.setDescription(description+"//"+uniGeneInfo2.getDescription());
+						if (!uniGeneInfo2.getDescrp().contains(description)) {//如果含有新的description
+							uniGeneInfo2.setDescrp(description+"//"+uniGeneInfo2.getDescrp());
 							flagUpdate = true;
 						}
 						
@@ -749,18 +749,18 @@ public class RiceID {
 					geneInfo.setGeneID(Long.parseLong(lsaccID.get(i)));
 					GeneInfo geneInfo2 = MapGeneInfoOld.queryGeneInfo(geneInfo);
 					if (geneInfo2 == null) {
-						geneInfo.setSymbol(LOCID); geneInfo.setDescription(description);
+						geneInfo.setSymb(LOCID); geneInfo.setDescrp(description);
 						MapGeneInfoOld.InsertGeneInfo(geneInfo);
 					}
 					else 
 					{
 						boolean update = false;
-						if (geneInfo2.getSymbol().trim().equals("")) {//添加symbol
-							geneInfo2.setSymbol(LOCID);
+						if (geneInfo2.getSymb().trim().equals("")) {//添加symbol
+							geneInfo2.setSymb(LOCID);
 							update = true;
 						}
-						if (!geneInfo2.getDescription().contains(description)) {//添加description
-							geneInfo2.setDescription(geneInfo2.getDescription()+"//"+description);
+						if (!geneInfo2.getDescrp().contains(description)) {//添加description
+							geneInfo2.setDescrp(geneInfo2.getDescrp()+"//"+description);
 							update = true;
 						}
 						if (update) {
@@ -776,18 +776,18 @@ public class RiceID {
 					uniGeneInfo.setUniProtID(lsaccID.get(i));
 					UniGeneInfo uniGeneInfo2 = MapUniGeneInfoOld.queryUniGeneInfo(uniGeneInfo);
 					if (uniGeneInfo2 == null) {
-						uniGeneInfo.setSymbol(LOCID); uniGeneInfo.setDescription(description);
+						uniGeneInfo.setSymb(LOCID); uniGeneInfo.setDescrp(description);
 						MapUniGeneInfoOld.InsertUniGeneInfo(uniGeneInfo);
 					}
 					else 
 					{
 						boolean update = false;
-						if (uniGeneInfo2.getSymbol().trim().equals("")) {//添加symbol
-							uniGeneInfo2.setSymbol(LOCID);
+						if (uniGeneInfo2.getSymb().trim().equals("")) {//添加symbol
+							uniGeneInfo2.setSymb(LOCID);
 							update = true;
 						}
-						if (!uniGeneInfo2.getDescription().contains(description)) {//添加description
-							uniGeneInfo2.setDescription(uniGeneInfo2.getDescription()+"//"+description);
+						if (!uniGeneInfo2.getDescrp().contains(description)) {//添加description
+							uniGeneInfo2.setDescrp(uniGeneInfo2.getDescrp()+"//"+description);
 							update = true;
 						}
 						if (update) {

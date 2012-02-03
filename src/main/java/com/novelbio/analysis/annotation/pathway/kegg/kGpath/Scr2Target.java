@@ -446,7 +446,7 @@ public class Scr2Target {
 				GeneInfo qgeneInfo = new GeneInfo(); qgeneInfo.setGeneID(Long.parseLong(qGenKegInfo[1]));
 				GeneInfo geneInfoSub = MapGeneInfoOld.queryGeneInfo(qgeneInfo);
 				//如果没有symbol
-				if (geneInfoSub == null || geneInfoSub.getSymbol() == null || geneInfoSub.getSymbol().trim().equals("") || geneInfoSub.getSymbol().trim().equals("-")) 
+				if (geneInfoSub == null || geneInfoSub.getSymb() == null || geneInfoSub.getSymb().trim().equals("") || geneInfoSub.getSymb().trim().equals("-")) 
 				{
 					NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[1]));
 					queryGenInfo[0] = servGeneAnno.queryLsNCBIID(ncbiid).get(0).getAccID();
@@ -454,13 +454,13 @@ public class Scr2Target {
 						queryGenInfo[2] = "";
 					}
 					else {
-						queryGenInfo[2] = geneInfoSub.getDescription();
+						queryGenInfo[2] = geneInfoSub.getDescrp();
 					}
 				}
 				else 
 				{
-					queryGenInfo[0] = geneInfoSub.getSymbol().split("//")[0];
-					queryGenInfo[2] = geneInfoSub.getDescription();
+					queryGenInfo[0] = geneInfoSub.getSymb().split("//")[0];
+					queryGenInfo[2] = geneInfoSub.getDescrp();
 				}
 				queryGenInfo[1] = QtaxID + "";
 				
@@ -478,18 +478,18 @@ public class Scr2Target {
 					}
 					
 					
-					if (geneInfoSub == null || geneInfoSub.getSymbol() == null || geneInfoSub.getSymbol().trim().equals("") || geneInfoSub.getSymbol().trim().equals("-")) 
+					if (geneInfoSub == null || geneInfoSub.getSymb() == null || geneInfoSub.getSymb().trim().equals("") || geneInfoSub.getSymb().trim().equals("-")) 
 					{
 						NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[1])); 
 						queryGenInfo[0] = servGeneAnno.queryLsNCBIID(ncbiid).get(0).getAccID();
 					}
 					else
 					{
-						queryGenInfo[0] = geneInfoSub.getSymbol().split("//")[0];
+						queryGenInfo[0] = geneInfoSub.getSymb().split("//")[0];
 
 					}
-					if (geneInfoSub != null && geneInfoSub.getDescription() != null) {
-						queryGenInfo[2] = geneInfoSub.getDescription();
+					if (geneInfoSub != null && geneInfoSub.getDescrp() != null) {
+						queryGenInfo[2] = geneInfoSub.getDescrp();
 					}
 					queryGenInfo[1] = QtaxID + "";
 				}
@@ -503,16 +503,16 @@ public class Scr2Target {
 				qgeneInfo2.setGeneID(Long.parseLong(qGenKegInfo[6]));
 				GeneInfo geneInfoSub2 = MapGeneInfoOld.queryGeneInfo(qgeneInfo2);
 				//如果没有symbol
-				if (geneInfoSub2.getSymbol() == null || geneInfoSub2.getSymbol().trim().equals("") || geneInfoSub2.getSymbol().trim().equals("-")) 
+				if (geneInfoSub2.getSymb() == null || geneInfoSub2.getSymb().trim().equals("") || geneInfoSub2.getSymb().trim().equals("-")) 
 				{
 					NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[6])); 
 					queryGenInfo[5] = servGeneAnno.queryLsNCBIID(ncbiid).get(0).getAccID();
 				}
 				else 
 				{
-					queryGenInfo[5] = geneInfoSub2.getSymbol().split("//")[0];
+					queryGenInfo[5] = geneInfoSub2.getSymb().split("//")[0];
 				}
-				queryGenInfo[6] = geneInfoSub2.getDescription();
+				queryGenInfo[6] = geneInfoSub2.getDescrp();
 			}
 			hashEntryInfo.put(qGenKegInfo[0], queryGenInfo);
 			if (queryGenInfo[0].equals("TUBB2A")) {

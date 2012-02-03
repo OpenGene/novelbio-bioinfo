@@ -421,9 +421,9 @@ public class UpDateNBCDBFile {
 			String[] ss=content.split("\t");
 			GeneInfo geneInfo=new GeneInfo();
 			geneInfo.setGeneID((long)Double.parseDouble(ss[1]));
-			geneInfo.setSymbol(ss[2]);	geneInfo.setLocusTag(ss[3]);geneInfo.setSynonyms(ss[4]);geneInfo.setDbXrefs(ss[5]);
-			geneInfo.setChromosome(ss[6]);geneInfo.setMapLocation(ss[7]);geneInfo.setDescription(ss[8]);geneInfo.setTypeOfGene(ss[9]);
-			geneInfo.setSymNome(ss[10]);geneInfo.setFullName(ss[11]);geneInfo.setNomStat(ss[12]);geneInfo.setOtherDesign(ss[13]);
+			geneInfo.setSymb(ss[2]);	geneInfo.setLocTag(ss[3]);geneInfo.setSynonym(ss[4]);geneInfo.setDbXref(ss[5]);
+			geneInfo.setChrm(ss[6]);geneInfo.setMapLoc(ss[7]);geneInfo.setDescrp(ss[8]);geneInfo.setTypeOfGene(ss[9]);
+			geneInfo.setSymNom(ss[10]);geneInfo.setFullName(ss[11]);geneInfo.setNomState(ss[12]);geneInfo.setOtherDesg(ss[13]);
 			geneInfo.setModDate(ss[14]);
 
 			GeneInfo geneInfo2=MapGeneInfoOld.queryGeneInfo(geneInfo);
@@ -465,21 +465,21 @@ public class UpDateNBCDBFile {
 			String[] ss=content.split("\t");
 			GeneInfo geneInfo=new GeneInfo();
 			geneInfo.setGeneID((long)Double.parseDouble(ss[1]));
-			geneInfo.setSymbol(ss[2]);
+			geneInfo.setSymb(ss[2]);
  
 	
 			if (ss.length>3) {
-				geneInfo.setDescription(ss[3]);
+				geneInfo.setDescrp(ss[3]);
 			}
 			else {
-				geneInfo.setDescription("");
+				geneInfo.setDescrp("");
 			}
 			
 			if (ss.length>4) {
-				geneInfo.setSynonyms(ss[4]);
+				geneInfo.setSynonym(ss[4]);
 			}
 			else {
-				geneInfo.setSynonyms("");
+				geneInfo.setSynonym("");
 			}
 			
 			GeneInfo geneInfo2=MapGeneInfoOld.queryGeneInfo(geneInfo);
@@ -490,35 +490,35 @@ public class UpDateNBCDBFile {
 			}
 			else {
 				boolean flag=false;
-				if (!geneInfo2.getSymbol().contains(geneInfo.getSymbol().trim()))
+				if (!geneInfo2.getSymb().contains(geneInfo.getSymb().trim()))
 				{
-					if (!geneInfo2.getSymbol().trim().equals("")) {
-						geneInfo2.setSymbol(geneInfo2.getSymbol().trim()+"//"+geneInfo.getSymbol().trim());
+					if (!geneInfo2.getSymb().trim().equals("")) {
+						geneInfo2.setSymb(geneInfo2.getSymb().trim()+"//"+geneInfo.getSymb().trim());
 					}
 					else {
-						geneInfo2.setSymbol(geneInfo.getSymbol().trim());
+						geneInfo2.setSymb(geneInfo.getSymb().trim());
 					}
 					flag=true;
 				}
-				if (!geneInfo2.getDescription().contains(geneInfo.getDescription().trim())) {
-					if (!geneInfo2.getDescription().trim().equals("")) {
-						geneInfo2.setDescription(geneInfo2.getDescription().trim()+"//"+geneInfo.getDescription().trim());
+				if (!geneInfo2.getDescrp().contains(geneInfo.getDescrp().trim())) {
+					if (!geneInfo2.getDescrp().trim().equals("")) {
+						geneInfo2.setDescrp(geneInfo2.getDescrp().trim()+"//"+geneInfo.getDescrp().trim());
 					}
 					else {
-						geneInfo2.setDescription(geneInfo.getDescription().trim());
+						geneInfo2.setDescrp(geneInfo.getDescrp().trim());
 					}
 					 flag=true;
 				}
-				if (geneInfo.getSynonyms()!=null) {
-					String[] synonyms=geneInfo.getSynonyms().split("\\|");
+				if (geneInfo.getSynonym()!=null) {
+					String[] synonyms=geneInfo.getSynonym().split("\\|");
 					for (int j = 0; j < synonyms.length; j++) {
-						if (!geneInfo2.getSynonyms().contains(synonyms[j].trim()))
+						if (!geneInfo2.getSynonym().contains(synonyms[j].trim()))
 						{
-							if (!geneInfo2.getSynonyms().trim().equals("")) {
-								geneInfo2.setSynonyms(geneInfo2.getSynonyms().trim()+"|"+synonyms[j].trim());
+							if (!geneInfo2.getSynonym().trim().equals("")) {
+								geneInfo2.setSynonym(geneInfo2.getSynonym().trim()+"|"+synonyms[j].trim());
 							}
 							else {
-								geneInfo2.setSynonyms(synonyms[j].trim());
+								geneInfo2.setSynonym(synonyms[j].trim());
 							}
 							if (synonyms[j].trim().equals("HLA-")) {
 								System.out.println("test");
@@ -565,18 +565,18 @@ public class UpDateNBCDBFile {
 			String[] ss=content.split("\t");
 			UniGeneInfo uniGeneInfo=new UniGeneInfo();
 			uniGeneInfo.setUniProtID(ss[1]);
-			uniGeneInfo.setSymbol(ss[2]);
+			uniGeneInfo.setSymb(ss[2]);
 			if (ss.length>3) {
-				uniGeneInfo.setDescription(ss[3]);
+				uniGeneInfo.setDescrp(ss[3]);
 			}
 			else {
-				uniGeneInfo.setDescription("");
+				uniGeneInfo.setDescrp("");
 			}
 			if (ss.length>4) {
-				uniGeneInfo.setSynonyms(ss[4]);
+				uniGeneInfo.setSynonym(ss[4]);
 			}
 			else {
-				uniGeneInfo.setSynonyms("");
+				uniGeneInfo.setSynonym("");
 			}
 			
 			UniGeneInfo uniGeneInfo2=MapUniGeneInfoOld.queryUniGeneInfo(uniGeneInfo);
@@ -587,41 +587,41 @@ public class UpDateNBCDBFile {
 			}
 			else 
 			{
-				if (uniGeneInfo2.getDescription()==null) {
-					uniGeneInfo2.setDescription("");
+				if (uniGeneInfo2.getDescrp()==null) {
+					uniGeneInfo2.setDescrp("");
 				}
-				if (uniGeneInfo2.getSynonyms()==null) {
-					uniGeneInfo2.setSynonyms("");
+				if (uniGeneInfo2.getSynonym()==null) {
+					uniGeneInfo2.setSynonym("");
 				}
 				boolean flag=false;
-				if (!uniGeneInfo2.getSymbol().contains(uniGeneInfo.getSymbol().trim())) {
-					if (uniGeneInfo2.getSymbol().trim().equals("")) {
-						uniGeneInfo2.setSymbol(uniGeneInfo.getSymbol().trim());
+				if (!uniGeneInfo2.getSymb().contains(uniGeneInfo.getSymb().trim())) {
+					if (uniGeneInfo2.getSymb().trim().equals("")) {
+						uniGeneInfo2.setSymb(uniGeneInfo.getSymb().trim());
 					}
 					else {
-						uniGeneInfo2.setSymbol(uniGeneInfo2.getSymbol().trim()+"//"+uniGeneInfo.getSymbol().trim());
+						uniGeneInfo2.setSymb(uniGeneInfo2.getSymb().trim()+"//"+uniGeneInfo.getSymb().trim());
 					}
 					flag=true;
 				}
-				if (!uniGeneInfo2.getDescription().contains(uniGeneInfo.getDescription().trim())) {
-					if (uniGeneInfo2.getDescription().trim().equals("")) {
-						uniGeneInfo2.setDescription(uniGeneInfo.getDescription().trim());
+				if (!uniGeneInfo2.getDescrp().contains(uniGeneInfo.getDescrp().trim())) {
+					if (uniGeneInfo2.getDescrp().trim().equals("")) {
+						uniGeneInfo2.setDescrp(uniGeneInfo.getDescrp().trim());
 					}
 					else {
-						uniGeneInfo2.setDescription(uniGeneInfo2.getDescription().trim()+"//"+uniGeneInfo.getDescription().trim());
+						uniGeneInfo2.setDescrp(uniGeneInfo2.getDescrp().trim()+"//"+uniGeneInfo.getDescrp().trim());
 					}
 					 flag=true;
 				}
-				if (uniGeneInfo.getSynonyms()!=null) {
-					String[] synonyms=uniGeneInfo.getSynonyms().split("\\|");
+				if (uniGeneInfo.getSynonym()!=null) {
+					String[] synonyms=uniGeneInfo.getSynonym().split("\\|");
 					for (int j = 0; j < synonyms.length; j++) {
-						if (!uniGeneInfo2.getSynonyms().contains(synonyms[j].trim()))
+						if (!uniGeneInfo2.getSynonym().contains(synonyms[j].trim()))
 						{
-							if (uniGeneInfo2.getSynonyms().trim().equals("")) {
-								uniGeneInfo2.setSynonyms(synonyms[j].trim());
+							if (uniGeneInfo2.getSynonym().trim().equals("")) {
+								uniGeneInfo2.setSynonym(synonyms[j].trim());
 							}
 							else {
-								uniGeneInfo2.setSynonyms(uniGeneInfo2.getSynonyms().trim()+"|"+synonyms[j].trim());
+								uniGeneInfo2.setSynonym(uniGeneInfo2.getSynonym().trim()+"|"+synonyms[j].trim());
 							}
 							flag=true;
 						}

@@ -149,8 +149,8 @@ public class MaizeGDB {
 			geneInfo = new UniGeneInfo();
 		}
 		geneInfo.setGeneUniID(copedID.getGenUniID());
-		geneInfo.setDescription(tmpDescription);
-		geneInfo.setSymbol(tmpMaizeID);
+		geneInfo.setDescrp(tmpDescription);
+		geneInfo.setSymb(tmpMaizeID);
 		geneInfo.setIDType(copedID.getIDtype());
 		UpDateFriceDB.upDateGenInfo(geneInfo, false);
 	}

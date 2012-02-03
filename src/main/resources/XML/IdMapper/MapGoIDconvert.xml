@@ -10,8 +10,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select *
 		from goidconvert
 		<where>
-			<if test="GoIDquery !=null">
-				querygoid = #{GoIDquery} 
+			<if test="queryGoID !=null">
+				querygoid = #{queryGoID} 
 			</if>
 			<if test="GoID !=null">
 				and goid = #{GoID} 
@@ -22,8 +22,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select *
 		from goidconvert
 		<where>
-			<if test="GoIDquery !=null">
-				querygoid = #{GoIDquery} 
+			<if test="queryGoID !=null">
+				querygoid = #{queryGoID} 
 			</if>
 			<if test="GoID !=null">
 				and goid = #{GoID} 
@@ -32,21 +32,21 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	<insert id="insertGoIDconvert" parameterType="Go2Term">
 		insert into goidconvert (querygoid,goid)
-		values (#{GoIDquery},#{GoID})
+		values (#{queryGoID},#{GoID})
 	</insert>
 	<update id="updateGoIDconvert" parameterType="Go2Term">
 		update goidconvert 
 		<set>
-			<if test="GoIDquery !=null">
-				querygoid = #{GoIDquery},
+			<if test="queryGoID !=null">
+				querygoid = #{queryGoID},
 			</if>
 			<if test="GoID !=null">
 				goid = #{GoID},
 			</if>
 		</set>
 		<where>
-			<if test="GoIDquery !=null">
-				querygoid = #{GoIDQuery} 
+			<if test="queryGoID !=null">
+				querygoid = #{queryGoID} 
 			</if>
 			<if test="GoID !=null">
 				and goid = #{GoID} 

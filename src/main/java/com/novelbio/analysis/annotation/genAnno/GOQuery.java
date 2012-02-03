@@ -170,10 +170,10 @@ public class GOQuery {
 			GeneInfo tmpGeneInfo = gene2GoInfo.getGeneInfo();
 			
 			//annotation
-			if(tmpGeneInfo != null && tmpGeneInfo.getSymbol() != null)
+			if(tmpGeneInfo != null && tmpGeneInfo.getSymb() != null)
 			{
-				gene2Go[2] = tmpGeneInfo.getSymbol().split("//")[0];
-				gene2Go[3] = tmpGeneInfo.getDescription();
+				gene2Go[2] = tmpGeneInfo.getSymb().split("//")[0];
+				gene2Go[3] = tmpGeneInfo.getDescrp();
 			}
 			/////////////////////////////////如果没有symbol的话，就随便找一个accID放上去//////////////////////////////////////////////////
 			else 
@@ -257,10 +257,10 @@ public class GOQuery {
 			UniGeneInfo tmpUniGeneInfo = uni2GoInfo.getUniGeneInfo();
 			
 			//annotation
-			if(tmpUniGeneInfo != null && tmpUniGeneInfo.getSymbol() != null)
+			if(tmpUniGeneInfo != null && tmpUniGeneInfo.getSymb() != null)
 			{
-				uni2Go[2] = tmpUniGeneInfo.getSymbol().split("//")[0];
-				uni2Go[3] = tmpUniGeneInfo.getDescription();
+				uni2Go[2] = tmpUniGeneInfo.getSymb().split("//")[0];
+				uni2Go[3] = tmpUniGeneInfo.getDescrp();
 			}
 			/////////////////////////////////如果没有symbol的话，就随便找一个accID放上去//////////////////////////////////////////////////
 			else 
@@ -379,8 +379,8 @@ public class GOQuery {
 				geneID = Qgene2GoInfo.getGeneId()+"";
 			}
 			GeneInfo tmpGeneInfo=Qgene2GoInfo.getGeneInfo();
-			if(tmpGeneInfo!=null&&tmpGeneInfo.getSymbol()!=null)
-				symbol = tmpGeneInfo.getSymbol().split("//")[0];
+			if(tmpGeneInfo!=null&&tmpGeneInfo.getSymb()!=null)
+				symbol = tmpGeneInfo.getSymb().split("//")[0];
 			//如果没有symbol的话，就随便找一个accID放上去
 			else {
 				symbol = ServAnno.getGenName(Qgene2GoInfo.getGeneId());
@@ -391,8 +391,8 @@ public class GOQuery {
 			accID = Quni2GoInfo.getQuaryID();
 			geneID = Quni2GoInfo.getUniID();
 			UniGeneInfo tmpUniGeneInfo=Quni2GoInfo.getUniGeneInfo();
-			if(tmpUniGeneInfo!=null&&tmpUniGeneInfo.getSymbol()!=null)
-				symbol = tmpUniGeneInfo.getSymbol().split("//")[0];
+			if(tmpUniGeneInfo!=null&&tmpUniGeneInfo.getSymb()!=null)
+				symbol = tmpUniGeneInfo.getSymb().split("//")[0];
 			//如果没有symbol的话，就随便找一个accID放上去
 			else {
 				symbol = ServAnno.getUniGenName(Quni2GoInfo.getUniID());
@@ -401,8 +401,8 @@ public class GOQuery {
 		if (Sgene2GoInfo!=null&&blastInfo.getEvalue()<=evalue) 
 		 {
 			GeneInfo tmpGeneInfo=Sgene2GoInfo.getGeneInfo();
-			if(tmpGeneInfo!=null&&tmpGeneInfo.getSymbol()!=null)
-				subSymbol = tmpGeneInfo.getSymbol().split("//")[0];
+			if(tmpGeneInfo!=null&&tmpGeneInfo.getSymb()!=null)
+				subSymbol = tmpGeneInfo.getSymb().split("//")[0];
 			//如果没有symbol的话，就随便找一个accID放上去
 			else {
 				subSymbol = ServAnno.getGenName(Sgene2GoInfo.getGeneId());
@@ -411,8 +411,8 @@ public class GOQuery {
 		else if (Suni2GoInfo!=null && blastInfo.getEvalue()<=evalue)
 		{
 			UniGeneInfo tmpUniGeneInfo=Suni2GoInfo.getUniGeneInfo();
-			if(tmpUniGeneInfo!=null&&tmpUniGeneInfo.getSymbol()!=null)
-				subSymbol = tmpUniGeneInfo.getSymbol().split("//")[0];
+			if(tmpUniGeneInfo!=null&&tmpUniGeneInfo.getSymb()!=null)
+				subSymbol = tmpUniGeneInfo.getSymb().split("//")[0];
 			//如果没有symbol的话，就随便找一个accID放上去
 			else {
 				subSymbol = ServAnno.getUniGenName(Suni2GoInfo.getUniID());
@@ -707,10 +707,10 @@ public class GOQuery {
 				}
 				
 				GeneInfo tmpGeneInfo = Qgene2GoInfo.getGeneInfo();
-				if(tmpGeneInfo != null && tmpGeneInfo.getSymbol() != null)
+				if(tmpGeneInfo != null && tmpGeneInfo.getSymb() != null)
 				{
-					tmpBlastInfo[2] = tmpGeneInfo.getSymbol().split("//")[0];
-					tmpBlastInfo[3] = tmpGeneInfo.getDescription();
+					tmpBlastInfo[2] = tmpGeneInfo.getSymb().split("//")[0];
+					tmpBlastInfo[3] = tmpGeneInfo.getDescrp();
 				}
 				//如果没有symbol的话，就随便找一个accID放上去
 				else {
@@ -722,10 +722,10 @@ public class GOQuery {
 				tmpBlastInfo[0] = Quni2GoInfo.getQuaryID();
 				tmpBlastInfo[1] = Quni2GoInfo.getUniID();
 				UniGeneInfo tmpUniGeneInfo = Quni2GoInfo.getUniGeneInfo();
-				if(tmpUniGeneInfo != null && tmpUniGeneInfo.getSymbol() != null)
+				if(tmpUniGeneInfo != null && tmpUniGeneInfo.getSymb() != null)
 				{
-					tmpBlastInfo[2] = tmpUniGeneInfo.getSymbol().split("//")[0];
-					tmpBlastInfo[3] = tmpUniGeneInfo.getDescription();
+					tmpBlastInfo[2] = tmpUniGeneInfo.getSymb().split("//")[0];
+					tmpBlastInfo[3] = tmpUniGeneInfo.getDescrp();
 				}
 				else {
 					tmpBlastInfo[2] = ServAnno.getUniGenName(Quni2GoInfo.getUniID());
@@ -738,10 +738,10 @@ public class GOQuery {
 				tmpBlastInfo[8]=Sgene2GoInfo.getTaxID()+"";
 				tmpBlastInfo[9]=Sgene2GoInfo.getGeneId()+"";
 				GeneInfo tmpGeneInfo=Sgene2GoInfo.getGeneInfo();
-				if(tmpGeneInfo!=null&&tmpGeneInfo.getSymbol()!=null)
+				if(tmpGeneInfo!=null&&tmpGeneInfo.getSymb()!=null)
 				{
-					tmpBlastInfo[10] = tmpGeneInfo.getSymbol().split("//")[0];
-					tmpBlastInfo[11] = tmpGeneInfo.getDescription();
+					tmpBlastInfo[10] = tmpGeneInfo.getSymb().split("//")[0];
+					tmpBlastInfo[11] = tmpGeneInfo.getDescrp();
 				}
 				else {
 					tmpBlastInfo[10] = ServAnno.getGenName(Sgene2GoInfo.getGeneId());
@@ -753,10 +753,10 @@ public class GOQuery {
 				tmpBlastInfo[8] = Suni2GoInfo.getTaxID()+"";
 				tmpBlastInfo[9] = Suni2GoInfo.getUniID();
 				UniGeneInfo tmpUniGeneInfo = Suni2GoInfo.getUniGeneInfo();
-				if(tmpUniGeneInfo != null && tmpUniGeneInfo.getSymbol() != null)
+				if(tmpUniGeneInfo != null && tmpUniGeneInfo.getSymb() != null)
 				{
-					tmpBlastInfo[10] = tmpUniGeneInfo.getSymbol().split("//")[0];
-					tmpBlastInfo[11] = tmpUniGeneInfo.getDescription();
+					tmpBlastInfo[10] = tmpUniGeneInfo.getSymb().split("//")[0];
+					tmpBlastInfo[11] = tmpUniGeneInfo.getDescrp();
 				}
 				else {
 					tmpBlastInfo[9] = ServAnno.getUniGenName(Suni2GoInfo.getUniID());
@@ -803,10 +803,10 @@ public class GOQuery {
 						tmpBlastInfo[1] = Qgene2GoInfo.getQuaryID();
 					
 					GeneInfo tmpGeneInfo=Qgene2GoInfo.getGeneInfo();
-					if(tmpGeneInfo!=null&&tmpGeneInfo.getSymbol()!=null)
+					if(tmpGeneInfo!=null&&tmpGeneInfo.getSymb()!=null)
 					{
-						tmpBlastInfo[2] = tmpGeneInfo.getSymbol().split("//")[0];
-						tmpBlastInfo[3] = tmpGeneInfo.getDescription();
+						tmpBlastInfo[2] = tmpGeneInfo.getSymb().split("//")[0];
+						tmpBlastInfo[3] = tmpGeneInfo.getDescrp();
 					}
 					else {
 						tmpBlastInfo[2] = ServAnno.getGenName(Qgene2GoInfo.getGeneId());
@@ -831,10 +831,10 @@ public class GOQuery {
 					tmpBlastInfo[0]=Quni2GoInfo.getQuaryID();
 					tmpBlastInfo[1]=Quni2GoInfo.getUniID();
 					UniGeneInfo tmpUniGeneInfo=Quni2GoInfo.getUniGeneInfo();
-					if(tmpUniGeneInfo!=null&&tmpUniGeneInfo.getSymbol()!=null)
+					if(tmpUniGeneInfo!=null&&tmpUniGeneInfo.getSymb()!=null)
 					{
-						tmpBlastInfo[2]=tmpUniGeneInfo.getSymbol().split("//")[0];
-						tmpBlastInfo[3] = tmpUniGeneInfo.getDescription();
+						tmpBlastInfo[2]=tmpUniGeneInfo.getSymb().split("//")[0];
+						tmpBlastInfo[3] = tmpUniGeneInfo.getDescrp();
 					}
 					else {
 						tmpBlastInfo[2]= ServAnno.getUniGenName(Quni2GoInfo.getUniID());
@@ -860,10 +860,10 @@ public class GOQuery {
 					tmpBlastInfo[8]=Sgene2GoInfo.getTaxID()+"";
 					tmpBlastInfo[9]=Sgene2GoInfo.getGeneId()+"";
 					GeneInfo tmpGeneInfo=Sgene2GoInfo.getGeneInfo();
-					if(tmpGeneInfo!=null&&tmpGeneInfo.getSymbol()!=null)
+					if(tmpGeneInfo!=null&&tmpGeneInfo.getSymb()!=null)
 					{
-						tmpBlastInfo[10]=tmpGeneInfo.getSymbol().split("//")[0];
-						tmpBlastInfo[11]=tmpGeneInfo.getDescription();
+						tmpBlastInfo[10]=tmpGeneInfo.getSymb().split("//")[0];
+						tmpBlastInfo[11]=tmpGeneInfo.getDescrp();
 					}
 					else {
 						tmpBlastInfo[10]= ServAnno.getGenName(Sgene2GoInfo.getGeneId());
@@ -887,10 +887,10 @@ public class GOQuery {
 					tmpBlastInfo[8]=Suni2GoInfo.getTaxID()+"";
 					tmpBlastInfo[9]=Suni2GoInfo.getUniID();
 					UniGeneInfo tmpUniGeneInfo=Suni2GoInfo.getUniGeneInfo();
-					if(tmpUniGeneInfo!=null&&tmpUniGeneInfo.getSymbol()!=null)
+					if(tmpUniGeneInfo!=null&&tmpUniGeneInfo.getSymb()!=null)
 					{
-						tmpBlastInfo[10]=tmpUniGeneInfo.getSymbol().split("//")[0];
-						tmpBlastInfo[11]=tmpUniGeneInfo.getDescription();
+						tmpBlastInfo[10]=tmpUniGeneInfo.getSymb().split("//")[0];
+						tmpBlastInfo[11]=tmpUniGeneInfo.getDescrp();
 					}
 					else {
 						tmpBlastInfo[10]=ServAnno.getUniGenName(Suni2GoInfo.getUniID());

@@ -39,12 +39,12 @@ public class SoyBean {
 			CopedID copedID = new CopedID(ss[0], taxID);
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_GLYMAX_SOYBASE, true);
 			GeneInfo geneInfo = new GeneInfo();
-			geneInfo.setSymbol(CopedID.removeDot(ss[0]));
+			geneInfo.setSymb(CopedID.removeDot(ss[0]));
 			if (ss.length < 9) {
-				geneInfo.setDescription("");
+				geneInfo.setDescrp("");
 			}
 			else {
-				geneInfo.setDescription(ss[8]);
+				geneInfo.setDescrp(ss[8]);
 			}
 			copedID.setUpdateGeneInfo(geneInfo);
 			copedID.update(true);

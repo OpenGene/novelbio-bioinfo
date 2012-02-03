@@ -260,12 +260,12 @@ public class TxtReadandWrite {
 	 */
 	public Iterable<String> readlines(int lines)
 	{
-		lines --;
+		lines = lines - 1;
 		try {
 			Iterable<String> itContent = readPerlines();
 			if (lines > 0) {
 				for (int i = 0; i < lines; i++) {
-					itContent.iterator().next();
+					itContent.iterator().hasNext();
 				}
 			}
 			return itContent;

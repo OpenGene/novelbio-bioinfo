@@ -304,7 +304,7 @@ class idmappingSelectedGOPubmed extends idmappingSelected
 		String[] ss = ssPubmed.split(";");
 		for (String string : ss) {
 			GeneInfo geneInfo = new GeneInfo();
-			geneInfo.setPubmedID(string);
+			geneInfo.setPubmedIDs(string);
 			copedID.setUpdateGeneInfo(geneInfo);
 			if (!copedID.update(false)) {
 				return false;

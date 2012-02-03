@@ -3,8 +3,9 @@ package com.novelbio.database.mapper.geneanno;
 import java.util.ArrayList;
 
 import com.novelbio.database.domain.geneanno.Go2Term;
+import com.novelbio.database.mapper.MapperSql;
 
-public interface MapGoIDconvert {
+public interface MapGoIDconvert extends MapperSql{
 
 
 

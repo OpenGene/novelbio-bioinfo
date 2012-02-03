@@ -20,7 +20,7 @@ public class Go2Term {
 	private static final String SEP_ID = "@//@";
 	private static final String SEP_INFO = "@@";
 	private ServGo2Term servGo2Term = new ServGo2Term();
-    private String GoIDquery;
+    private String queryGoID;
 	private String GoID;
 	private String GoTerm;
 	private String GoFunction;
@@ -144,10 +144,10 @@ public class Go2Term {
 	
 	
 	public String getGoIDQuery() {
-		return GoIDquery;
+		return queryGoID;
 	}
 	public void setGoIDQuery(String GoIDQuery) {
-		this.GoIDquery = GoIDQuery;
+		this.queryGoID = GoIDQuery;
 	}
 
 	public String getGoID() {

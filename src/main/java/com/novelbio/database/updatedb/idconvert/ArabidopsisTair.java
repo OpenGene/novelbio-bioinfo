@@ -76,19 +76,19 @@ public class ArabidopsisTair {
 				GeneInfo geneInfoResult = MapGeneInfoOld.queryGeneInfo(geneInfo);
 				//如果没找到
 				if (geneInfoResult == null) {
-					geneInfo.setSymbol(CopedID.removeDot(ss[0]));
-					geneInfo.setDescription(ss[1]+"//"+ss[2]);
-					geneInfo.setOtherDesign(ss[3]);
+					geneInfo.setSymb(CopedID.removeDot(ss[0]));
+					geneInfo.setDescrp(ss[1]+"//"+ss[2]);
+					geneInfo.setOtherDesg(ss[3]);
 					MapGeneInfoOld.InsertGeneInfo(geneInfo);
 				}
 				//如果找到了
 				else {
-					geneInfoResult.setDescription(ss[1]+"//"+ss[2]);
-						if (geneInfoResult.getOtherDesign() != null) {
-							geneInfoResult.setOtherDesign(ss[3]
-									+ geneInfoResult.getOtherDesign());
+					geneInfoResult.setDescrp(ss[1]+"//"+ss[2]);
+						if (geneInfoResult.getOtherDesg() != null) {
+							geneInfoResult.setOtherDesg(ss[3]
+									+ geneInfoResult.getOtherDesg());
 						} else
-							geneInfoResult.setOtherDesign(ss[3]);
+							geneInfoResult.setOtherDesg(ss[3]);
 					MapGeneInfoOld.upDateGeneInfo(geneInfoResult);
 				}
 			}
@@ -101,18 +101,18 @@ public class ArabidopsisTair {
 				
 				//如果没找到
 				if (uniGeneInfoResult == null) {
-					uniGeneInfo.setSymbol(CopedID.removeDot(ss[0]));
-					uniGeneInfo.setDescription(ss[1]+"//"+ss[2]);
-					uniGeneInfo.setOtherDesign(ss[3]);
+					uniGeneInfo.setSymb(CopedID.removeDot(ss[0]));
+					uniGeneInfo.setDescrp(ss[1]+"//"+ss[2]);
+					uniGeneInfo.setOtherDesg(ss[3]);
 					MapUniGeneInfoOld.InsertUniGeneInfo(uniGeneInfo);
 				}
 				//如果找到了
 				else {
-					uniGeneInfoResult.setDescription(ss[1]+"//"+ss[2]);
-						if (uniGeneInfoResult.getOtherDesign() != null) 
-							uniGeneInfoResult.setOtherDesign(ss[3] + uniGeneInfoResult.getOtherDesign());
+					uniGeneInfoResult.setDescrp(ss[1]+"//"+ss[2]);
+						if (uniGeneInfoResult.getOtherDesg() != null) 
+							uniGeneInfoResult.setOtherDesg(ss[3] + uniGeneInfoResult.getOtherDesg());
 						else 
-							uniGeneInfoResult.setOtherDesign(ss[3]);
+							uniGeneInfoResult.setOtherDesg(ss[3]);
 					MapUniGeneInfoOld.upDateUniGeneInfo(uniGeneInfoResult);
 				}
 			}

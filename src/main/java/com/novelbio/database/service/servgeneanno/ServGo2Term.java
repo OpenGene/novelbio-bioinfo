@@ -146,7 +146,7 @@ public class ServGo2Term  extends AbsGetSpring implements MapGo2Term{
 	 */
 	public HashMap<String, Go2Term> getHashGo2Term() {
 		Go2Term queryGo2Term = new Go2Term();
-		if (hashGo2Term != null) {
+		if (hashGo2Term.size() > 0) {
 			return hashGo2Term;
 		}
 		HashMap<String, Go2Term> hashGOIDconvert = new HashMap<String, Go2Term>();
