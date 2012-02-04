@@ -6,7 +6,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.novelbio.database.mapper.geneanno.MapUniGene2Go">
 	<resultMap id="UniGene2GoMap" type="UniGene2Go">
 		<result property="uniProtID" column="UniProtID"/> 
-		<result property="function" column="GoFunction"/> 
+		<result property="dataBase" column="DataBaseInfo"/>
+		<result property="myGoID" column="GoID"/> 
 	</resultMap>
 	<select id="queryUniGene2Go" parameterType="UniGene2Go" resultMap="UniGene2GoMap">
 		select *
@@ -15,8 +16,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="uniProtID != null and uniProtID != ''">
 				UniProtID = #{uniProtID} 
 			</if>
-			<if test="GOID !=null and GOID != ''">
-				and GOID = #{GOID} 
+			<if test="myGoID !=null and myGoID != ''">
+				and GOID = #{myGoID} 
+			</if>
+			<if test="taxID !=null and taxID != ''">
+				and TaxID = #{taxID} 
 			</if>
 		</where>
 	</select>
@@ -27,31 +31,39 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="uniProtID != null and uniProtID != ''">
 				UniProtID = #{uniProtID} 
 			</if>
-			<if test="GOID !=null and GOID != ''">
-				and GOID = #{GOID} 
+			<if test="myGoID !=null and myGoID != ''">
+				and GOID = #{myGoID} 
+			</if>
+			<if test="taxID !=null and taxID != ''">
+				and TaxID = #{taxID} 
 			</if>
 		</where>
 	</select>
 	<insert id="insertUniGene2Go" parameterType="UniGene2Go">
-		insert into unigene2go (UniProtID,GOID,Evidence,Qualifier,GOTerm,Reference,GoFunction,DataBaseInfo)
-		values (#{uniProtID},#{GOID},#{evidence},#{qualifier},#{GOTerm},#{reference},#{function},#{dataBase})
+		insert into unigene2go (TaxID,UniProtID,GOID,Evidence,Qualifier,Reference,DataBaseInfo)
+		values (#{taxID},#{uniProtID},#{myGoID},#{evidence},#{qualifier},#{reference},#{dataBase})
 	</insert>
 	<update id="updateUniGene2Go" parameterType="UniGene2Go">
 		update unigene2go 
 		<set>
-			<if test="evidence !=null and evidence != ''">
+			<if test="evidence !=null and evidence != '' ">
 				Evidence = #{evidence},
 			</if>
 			<if test="reference !=null and reference != ''">
-				Reference = #{reference}
+				Reference = #{reference},
+			</if>
+            <if test="qualifier !=null and qualifier != ''">
+				Qualifier = #{qualifier},
+			</if>
+			<if test="dataBase !=null and dataBase != ''">
+				DataBaseInfo = #{dataBase}
 			</if>
 		</set>
 		where
-			<if test="uniProtID != null and uniProtID != ''">
 				UniProtID = #{uniProtID} 
-			</if>
-			<if test="GOID !=null and GOID != ''">
-				and GOID = #{GOID} 
+				and GOID = #{myGoID} 
+			<if test="taxID !=null and taxID != ''">
+				and TaxID = #{taxID} 
 			</if>
 	</update>
 </mapper>

@@ -272,7 +272,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * 
 	 * @return
 	 */
-	protected String getGenName(String genUniID, String databaseType) {
+	protected String getGenName(String genUniID,String databaseType) {
 		AgeneUniID ageneUniID = getGenUniID(genUniID, databaseType);
 		if (ageneUniID == null) {
 			return "";
@@ -583,13 +583,11 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			String GORef, String gOQualifiy) {
 		Gene2Go gene2Go = new Gene2Go();
 		gene2Go.setGOID(GOID);
+		gene2Go.setTaxID(taxID);
 		gene2Go.setEvidence(GOevidence);
 		gene2Go.setDataBase(GOdatabase);
 		gene2Go.setQualifier(gOQualifiy);
 		gene2Go.setReference(GORef);
-		Go2Term go2Term = Go2Term.queryGo2Term(GOID);
-		gene2Go.setFunction(go2Term.getGoFunction());
-		gene2Go.setGOTerm(go2Term.getGoTerm());
 		lsGOInfoUpdate.add(gene2Go);
 	}
 
@@ -654,9 +652,9 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		for (Gene2Go gene2Go : lsGOInfoUpdate) {
 			if (idType.equals(CopedID.IDTYPE_GENEID)) {
-				servGene2Go.updateGene2Go(genUniID, gene2Go);
+				servGene2Go.updateGene2Go(genUniID, taxID, gene2Go);
 			} else if (idType.equals(CopedID.IDTYPE_UNIID)) {
-				servUniGene2Go.updateUniGene2Go(genUniID, gene2Go);
+				servUniGene2Go.updateUniGene2Go(genUniID, taxID, gene2Go);
 			}
 			else {
 				return false;
@@ -755,10 +753,10 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		geneInfo.setTaxID(taxID);
 		if (idType.equals(CopedID.IDTYPE_UNIID)) {
-			servUniGeneInfo.updateUniGenInfo(genUniID, geneInfo);
+			servUniGeneInfo.updateUniGenInfo(genUniID, taxID, geneInfo);
 			updateUniGeneInfoSymbolAndSynonyms(geneInfo);
 		} else if (idType.equals(CopedID.IDTYPE_GENEID)) {
-			servGeneInfo.updateGenInfo(genUniID, geneInfo);
+			servGeneInfo.updateGenInfo(genUniID, taxID, geneInfo);
 			updateGeneInfoSymbolAndSynonyms(geneInfo);
 		}
 		else {

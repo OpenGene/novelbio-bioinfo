@@ -2,8 +2,6 @@ package com.novelbio.database.service;
 
 import java.util.ArrayList;
 
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
-
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;

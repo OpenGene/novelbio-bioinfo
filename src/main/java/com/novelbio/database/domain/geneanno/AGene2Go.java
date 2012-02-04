@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.commons.validator.util.Flags;
+import org.apache.log4j.Logger;
 
 import com.novelbio.database.service.ServAnno;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
@@ -15,22 +16,22 @@ import com.novelbio.database.service.servgeneanno.ServGo2Term;
  * 	@Override
  */
 public abstract class AGene2Go {
+	private static Logger logger = Logger.getLogger(AGene2Go.class);
 	public static final String EVIDENCE_IEA = "IEA";
 	public static final String SEP = "//";
-	private String GoID;
+	private String myGoID;
 	private String evidence;
 	private String qualifier;
-	private String GOTerm;
 	private String reference;
-	private String function;
 	private String dataBase;
+	private int taxID;
 	private ServGo2Term servGo2Term = new ServGo2Term();
 	public abstract String getGeneUniId();
 	public abstract void setGeneUniID(String geneUniID);
 	
 	public String getGOID() {
 		try {
-			return servGo2Term.getHashGo2Term().get(GoID).getGoID();
+			return servGo2Term.getHashGo2Term().get(myGoID).getGoID();
 		} catch (Exception e) {
 			return null;
 		}
@@ -48,9 +49,18 @@ public abstract class AGene2Go {
 		if (GoID == null || GoID.trim().equals("")) {
 			return;
 		}
-		this.GoID = GoID.trim();
+		try {
+			this.myGoID = servGo2Term.getHashGo2Term().get(GoID).getGoID();
+		} catch (Exception e) {
+			this.myGoID = GoID;
+		}
 	}
-	
+	public void setTaxID(int taxID) {
+		this.taxID = taxID;
+	}
+	public int getTaxID() {
+		return taxID;
+	}
 	public String getEvidence() {
 		return evidence;
 	}
@@ -65,6 +75,13 @@ public abstract class AGene2Go {
 		return qualifier;
 	}
 	public void setQualifier(String qualifier) {
+		if (qualifier == null) {
+			return;
+		}
+		qualifier = qualifier.trim();
+		if (qualifier.equals("") || qualifier.equals("-")) {
+			return;
+		}
 		this.qualifier = qualifier;
 	}
 	/**
@@ -74,15 +91,12 @@ public abstract class AGene2Go {
 	 */
 	public String getGOTerm() {
 		try {
-			return servGo2Term.getHashGo2Term().get(GoID).getGoTerm();
+			return servGo2Term.getHashGo2Term().get(myGoID).getGoTerm();
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	public void setGOTerm(String GOTerm) {
-		this.GOTerm = GOTerm;
-	}
 	/**
 	 * 可能会被sep分割
 	 * @return
@@ -100,15 +114,10 @@ public abstract class AGene2Go {
 	 */
 	public String getFunction() {
 		try {
-			return servGo2Term.getHashGo2Term().get(GoID).getGoFunction();
+			return servGo2Term.getHashGo2Term().get(myGoID).getGoFunction();
 		} catch (Exception e) {
 			return null;
 		}
-		
-	}
-	
-	public void setFunction(String function) {
-		this.function = function;
 	}
 	/**
 	 * 可能会被sep分割
@@ -133,6 +142,18 @@ public abstract class AGene2Go {
 	{
 		this.qualifier = validate(this.qualifier, qualifier);
 	}
+	private void addTaxID(int taxID) {
+		if (taxID == 0) {
+			return;
+		}
+		if (this.taxID == 0) {
+			this.taxID = taxID;
+			return;
+		}
+		if (this.taxID != taxID) {
+			logger.error("待拷贝的两个geneInfo中的taxID不一致，原taxID："+this.taxID + " 新taxID：" + taxID );
+		}
+	}
 	private void addEvidence(String evidence)
 	{
 		if (evidence.equals(EVIDENCE_IEA)) {
@@ -150,12 +171,12 @@ public abstract class AGene2Go {
 	{
 		setDataBase(gene2Go.getDataBase());
 		setEvidence(gene2Go.getEvidence());
-		setFunction(gene2Go.getFunction());
 		setGeneUniID(gene2Go.getGeneUniId());
 		setGOID(gene2Go.getGOID());
-		setGOTerm(gene2Go.getGOTerm());
+//		setGOTerm(gene2Go.getGOTerm());
 		setQualifier(gene2Go.getQualifier());
 		setReference(gene2Go.getReference());
+		setTaxID(gene2Go.getTaxID());
 	}
 	
 	
@@ -182,6 +203,7 @@ public abstract class AGene2Go {
 		addQualifier(gene2Go.getQualifier());
 		addReference(gene2Go.getReference());
 		addEvidence(gene2Go.getEvidence());
+		addTaxID(gene2Go.getTaxID());
 		return true;
 	}
 	/**

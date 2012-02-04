@@ -63,10 +63,10 @@ public class NCBI {
 //		impFile.importInfoPerLine(gene2Info, true);
 //		impFile = new ImpGene2Pub();
 //		impFile.importInfoPerLine(gene2Pub, true);
-		impFile = new ImpGOExtObo();
-		impFile.importInfoPerLine(goExtObo, false);
-//		impFile = new ImpGene2GO();
-//		impFile.importInfoPerLine(gene2GO, true);
+//		impFile = new ImpGOExtObo();
+//		impFile.importInfoPerLine(goExtObo, false);
+		impFile = new ImpGene2GO();
+		impFile.importInfoPerLine(gene2GO, true);
 	}
 }
 
@@ -293,7 +293,12 @@ class ImpGene2GO extends ImportPerLine
 			}
 			copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
 		}
-		copedID.setUpdateGO(ss[2], NovelBioConst.DBINFO_NCBI, ss[3], "PMID:"+ss[6], ss[4]);
+		if (ss[6] == null || ss[6].equals("") || ss[6].equals("-")) {
+			copedID.setUpdateGO(ss[2], NovelBioConst.DBINFO_NCBI, ss[3], null, ss[4]);
+		}
+		else {
+			copedID.setUpdateGO(ss[2], NovelBioConst.DBINFO_NCBI, ss[3], "PMID:"+ss[6], ss[4]);
+		}
 	}
 	void impEnd()
 	{

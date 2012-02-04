@@ -16,6 +16,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<result property="modDate" column="ModificationDate"/>
 		<result property="nomStat" column="NomenclatureStatus"/>
 		<result property="modDate" column="ModificationDate"/>
+		<result property="pubmedID" column="PubmedID"/>
+		<result property="taxID" column="TaxID"/>
 	</resultMap>
 	<select id="queryUniGeneInfo" parameterType="UniGeneInfo" resultMap="UniGeneInfoMap">
 		select *
@@ -24,11 +26,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="uniProtID != null and uniProtID != ''">
 				UniProtID = #{uniProtID}
 			</if>
+			<if test="taxID !=null and taxID != ''">
+				and TaxID = #{taxID} 
+			</if>
 		</where>
 	</select>
 	<insert id="insertUniGeneInfo" parameterType="UniGeneInfo">
-		insert into unigeneinfo (UniProtID,Symbol,LocusTag,Synonyms,dbXrefs,chromosome,mapLocation,description,typeOfGene,SymbolFromNomenclature,FullNameFromNomenclature,NomenclatureStatus,OtherDesignations,ModificationDate)
-		values (#{uniProtID},#{symbol},#{locusTag},#{synonyms},#{dbXrefs},#{chromosome},#{mapLocation},#{description},#{typeOfGene},#{symNome},#{fullNameNome},#{nomStat},#{otherDesign},#{modDate})
+		insert into unigeneinfo 
+		(TaxID,UniProtID,Symbol,LocusTag,Synonyms,dbXrefs,
+		chromosome,mapLocation,description,typeOfGene,SymbolFromNomenclature,
+		FullNameFromNomenclature,NomenclatureStatus,OtherDesignations,ModificationDate,PubmedID)
+		values 
+		(#{taxID},#{uniProtID},#{symbol},#{locusTag},#{synonyms},#{dbXrefs},
+		#{chromosome},#{mapLocation},#{description},#{typeOfGene},#{symNome},
+		#{fullNameNome},#{nomStat},#{otherDesign},#{modDate},#{pubmedID})
 	</insert>
 	<update id="updateUniGeneInfo" parameterType="UniGeneInfo">
 		update unigeneinfo
@@ -75,10 +86,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="modDate !=null">
 				ModificationDate = #{modDate}
 			</if>
+			<if test="pubmedID !=null and pubmedID != '' ">
+				PubmedID = #{pubmedID}
+			</if>
 		</set>
 		where
-			<if test="uniProtID !=null and uniProtID != '' ">
-				UniProtID = #{uniProtID}
+			UniProtID = #{uniProtID}
+			<if test="taxID !=null and taxID != ''">
+				and TaxID = #{taxID} 
 			</if>
 	</update>
 </mapper>

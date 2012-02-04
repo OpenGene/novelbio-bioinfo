@@ -21,14 +21,16 @@ public class ServGene2Go extends AbsGetSpring implements MapGene2Go {
 		mapGene2Go = (MapGene2Go) factory.getBean("mapGene2Go");
 	}
 
-	public ArrayList<Gene2Go> queryLsGene2Go(int geneID) {
+	public ArrayList<Gene2Go> queryLsGene2Go(int geneID, int taxID) {
 		Gene2Go gene2Go = new Gene2Go();
 		gene2Go.setGeneUniID(geneID + "");
+		gene2Go.setTaxID(taxID);
 		return mapGene2Go.queryLsGene2Go(gene2Go);
 	}
-	public Gene2Go queryGene2Go(String geneID, String GOID) {
+	public Gene2Go queryGene2Go(String geneID, int taxID,String GOID) {
 		Gene2Go gene2Go = new Gene2Go();
 		gene2Go.setGeneUniID(geneID);
+		gene2Go.setTaxID(taxID);
 		gene2Go.setGOID(GOID);
 		return mapGene2Go.queryGene2Go(gene2Go);
 	}
@@ -54,13 +56,16 @@ public class ServGene2Go extends AbsGetSpring implements MapGene2Go {
 		mapGene2Go.updateGene2Go(gene2Go);
 	}
 	/**
+	 * 
 	 * 输入geneUniID以及具体的内容，看是否需要升级
 	 * 能插入就插入，已经有了就判端与数据库中是否一致，不一致就升级
 	 * @param genUniID
+	 * @param taxID 以该taxID为准
 	 * @param gene2Go
 	 */
-	public void updateGene2Go(String genUniID,AGene2Go gene2Go) {
-		Gene2Go gene2GoOld = queryGene2Go(genUniID, gene2Go.getGOID());
+	public void updateGene2Go(String genUniID, int taxID, AGene2Go gene2Go) {
+		gene2Go.setTaxID(taxID);
+		Gene2Go gene2GoOld = queryGene2Go(genUniID, taxID, gene2Go.getGOID());
 		if (gene2GoOld != null) {
 			if (gene2GoOld.addInfo(gene2Go)) {
 				updateGene2Go(gene2GoOld);

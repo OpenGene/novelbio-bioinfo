@@ -2,6 +2,7 @@ package com.novelbio.database.service.servgeneanno;
 
 import javax.inject.Inject;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.AGeneInfo;
@@ -12,6 +13,7 @@ import com.novelbio.database.service.AbsGetSpring;
 
 @Service
 public class ServUniGeneInfo extends AbsGetSpring implements MapUniGeneInfo{
+	private static Logger logger = Logger.getLogger(ServUniGeneInfo.class);
 	@Inject
 	private MapUniGeneInfo mapUniGeneInfo;
 	
@@ -24,9 +26,10 @@ public class ServUniGeneInfo extends AbsGetSpring implements MapUniGeneInfo{
 	public UniGeneInfo queryUniGeneInfo(UniGeneInfo uniGeneInfo) {
 		return mapUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 	}
-	public UniGeneInfo queryUniGeneInfo(String uniGenID) {
+	public UniGeneInfo queryUniGeneInfo(String uniGenID, int taxID) {
 		UniGeneInfo uniGeneInfo = new UniGeneInfo();
 		uniGeneInfo.setGeneUniID(uniGenID);
+		uniGeneInfo.setTaxID(taxID);
 		return mapUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 	}
 	@Override
@@ -46,9 +49,12 @@ public class ServUniGeneInfo extends AbsGetSpring implements MapUniGeneInfo{
 	 * @param genUniID
 	 * @param gene2Go
 	 */
-	public void updateUniGenInfo(String genUniID, AGeneInfo geneInfo)
+	public void updateUniGenInfo(String genUniID, int taxID,AGeneInfo geneInfo)
 	{
-		UniGeneInfo uniGeneInfoOld = queryUniGeneInfo(genUniID);
+		if (taxID != 0 && geneInfo.getTaxID() != 0 && taxID != geneInfo.getTaxID()) {
+			logger.error("输入taxID和自带taxID不一致,输入taxID："+taxID + " 自带taxID：" + geneInfo.getTaxID());
+		}
+		UniGeneInfo uniGeneInfoOld = queryUniGeneInfo(genUniID, taxID);
 		if (uniGeneInfoOld != null) {
 			if (uniGeneInfoOld.addInfo(geneInfo)) {
 				////////////

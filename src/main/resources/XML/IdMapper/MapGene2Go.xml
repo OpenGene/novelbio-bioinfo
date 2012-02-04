@@ -6,7 +6,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.novelbio.database.mapper.geneanno.MapGene2Go">
 	<resultMap id="gene2GoMap" type="Gene2Go">
 		<result property="geneID" column="GeneID"/>  
-		<result property="function" column="GoFunction"/>  
+		<result property="dataBase" column="DataBaseInfo"/>
+		<result property="myGoID" column="GoID"/>
+		<result property="taxID" column="TaxID"/>  
 	</resultMap>
 	<select id="queryLsGene2Go" parameterType="Gene2Go" resultMap="gene2GoMap">
 		select *
@@ -15,8 +17,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="geneID != 0">
 				GeneID = #{geneID} 
 			</if>
-			<if test="GoID !=null">
-				and GoID = #{GoID} 
+			<if test="myGoID !=null and myGoID != ''">
+				and GoID = #{myGoID} 
+			</if>
+			<if test="taxID !=null and taxID != ''">
+				and TaxID = #{taxID} 
 			</if>
 	    </where>  
 	</select>
@@ -27,14 +32,17 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="geneID != 0">
 				GeneID = #{geneID} 
 			</if>
-			<if test="GoID !=null">
-				and GoID = #{GoID} 
+			<if test="myGoID !=null">
+				and GoID = #{myGoID} 
+			</if>
+			<if test="taxID !=null and taxID != ''">
+				and TaxID = #{taxID} 
 			</if>
 	    </where>  
 	</select>
 	<insert id="insertGene2Go" parameterType="Gene2Go">
-		insert into gene2go (GeneID,GOID,Evidence,Qualifier,GOTerm,Reference,GoFunction,DataBaseInfo)
-		values (#{geneID},#{GOID},#{evidence},#{qualifier},#{GOTerm},#{reference},#{function},#{dataBase})
+		insert into gene2go (TaxID,GeneID,GOID,Evidence,Qualifier,Reference,DataBaseInfo)
+		values (#{taxID},#{geneID},#{myGoID},#{evidence},#{qualifier},#{reference},#{dataBase})
 	</insert>
 	<update id="updateGene2Go" parameterType="Gene2Go">
 		update gene2go 
@@ -43,21 +51,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				Evidence = #{evidence},
 			</if>
 			<if test="reference !=null and reference != ''">
-				Reference = #{reference}
+				Reference = #{reference},
 			</if>
             <if test="qualifier !=null and qualifier != ''">
-				Qualifier = #{qualifier}
+				Qualifier = #{qualifier},
 			</if>
 			<if test="dataBase !=null and dataBase != ''">
 				DataBaseInfo = #{dataBase}
 			</if>
 		</set>
 		where
-			<if test="geneID != 0">
-				GeneID = #{geneID} 
-			</if>
-			<if test="GoID !=null">
-				and GoID = #{GoID} 
+				GeneID = #{geneID}
+				and GoID = #{myGoID} 
+			<if test="taxID !=null and taxID != ''">
+				and TaxID = #{taxID} 
 			</if>
 	</update>
 </mapper>

@@ -22,7 +22,7 @@ public class GOInfoGenID extends GOInfoAbs{
 		}
 		lsAGene2Gos = new ArrayList<AGene2Go>();
 		
-		ArrayList<Gene2Go>  lstmp = servGene2Go.queryLsGene2Go(Integer.parseInt(genUniAccID));
+		ArrayList<Gene2Go>  lstmp = servGene2Go.queryLsGene2Go(Integer.parseInt(genUniAccID), taxID);
 		if (lstmp == null || lstmp.size() == 0) {
 			return;
 		}

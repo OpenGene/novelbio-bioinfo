@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.AGeneInfo;
@@ -12,6 +13,7 @@ import com.novelbio.database.mapper.geneanno.MapGeneInfo;
 import com.novelbio.database.service.AbsGetSpring;
 @Service
 public class ServGeneInfo extends AbsGetSpring implements MapGeneInfo {
+	private static Logger logger = Logger.getLogger(ServGeneInfo.class);
 	@Inject
 	private MapGeneInfo mapGeneInfo;
 	public ServGeneInfo()  
@@ -22,9 +24,10 @@ public class ServGeneInfo extends AbsGetSpring implements MapGeneInfo {
 	public GeneInfo queryGeneInfo(GeneInfo geneInfo) {
 		return mapGeneInfo.queryGeneInfo(geneInfo);
 	}
-	public GeneInfo queryGeneInfo(String genUniID) {
+	public GeneInfo queryGeneInfo(String genUniID, int taxID) {
 		GeneInfo geneInfoQ = new GeneInfo();
 		geneInfoQ.setGeneUniID(genUniID);
+		geneInfoQ.setTaxID(taxID);
 		return mapGeneInfo.queryGeneInfo(geneInfoQ);
 	}
 	@Override
@@ -33,12 +36,7 @@ public class ServGeneInfo extends AbsGetSpring implements MapGeneInfo {
 	}
 	@Override
 	public void insertGeneInfo(GeneInfo geneInfo) {
-		try {
-			mapGeneInfo.insertGeneInfo(geneInfo);
-		} catch (Exception e) {
-			System.out.println(geneInfo.getGeneID());
-		}
-		
+		mapGeneInfo.insertGeneInfo(geneInfo);
 	}
 	@Override
 	public void updateGeneInfo(GeneInfo geneInfo) {
@@ -50,9 +48,12 @@ public class ServGeneInfo extends AbsGetSpring implements MapGeneInfo {
 	 * @param genUniID
 	 * @param gene2Go
 	 */
-	public void updateGenInfo(String genUniID, AGeneInfo geneInfo)
+	public void updateGenInfo(String genUniID, int taxID, AGeneInfo geneInfo)
 	{
-		GeneInfo geneInfoOld = queryGeneInfo(genUniID);
+		if (taxID != 0 && geneInfo.getTaxID() != 0 && taxID != geneInfo.getTaxID()) {
+			logger.error("输入taxID和自带taxID不一致,输入taxID："+taxID + " 自带taxID：" + geneInfo.getTaxID());
+		}
+		GeneInfo geneInfoOld = queryGeneInfo(genUniID, taxID);
 		if (geneInfoOld != null) {
 			if (geneInfoOld.addInfo(geneInfo)) {
 				////////////

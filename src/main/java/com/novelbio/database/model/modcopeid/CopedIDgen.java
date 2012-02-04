@@ -30,7 +30,7 @@ public class CopedIDgen extends CopedIDAbs{
 	protected void setGenInfo() {
 		GeneInfo geneInfoq = new GeneInfo();
 		long geneID = Long.parseLong(getGenUniID());
-		geneInfoq.setGeneID(geneID);
+		geneInfoq.setGeneID(geneID);geneInfoq.setTaxID(taxID);
 		super.geneInfo = servGeneInfo.queryGeneInfo(geneInfoq);
 	}
 	

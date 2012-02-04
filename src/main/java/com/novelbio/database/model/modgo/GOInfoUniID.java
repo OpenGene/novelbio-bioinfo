@@ -23,7 +23,7 @@ public class GOInfoUniID extends GOInfoAbs{
 			return;
 		}
 		lsAGene2Gos = new ArrayList<AGene2Go>();
-		ArrayList<UniGene2Go>  lstmp = servUniGene2Go.queryLsUniGene2Go(genUniAccID);
+		ArrayList<UniGene2Go>  lstmp = servUniGene2Go.queryLsUniGene2Go(genUniAccID, taxID);
 		if (lstmp == null || lstmp.size() == 0) {
 			return;
 		}

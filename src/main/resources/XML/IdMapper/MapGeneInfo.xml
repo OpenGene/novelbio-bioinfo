@@ -17,6 +17,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<result property="nomStat" column="NomenclatureStatus"/>
 		<result property="modDate" column="ModificationDate"/>
 		<result property="pubmedID" column="PubmedID"/>
+		<result property="taxID" column="TaxID"/>
 	</resultMap>
 	<select id="queryGeneInfo" parameterType="GeneInfo" resultMap="geneInfoMap">
 		select *
@@ -24,6 +25,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<where>
 			<if test="geneID != 0">
 				GeneID = #{geneID} 
+			</if>
+			<if test="taxID !=null and taxID != ''">
+				and TaxID = #{taxID} 
 			</if>
 	    </where> 
 	</select>
@@ -34,17 +38,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="geneID != 0">
 				GeneID = #{geneID} 
 			</if>
+			<if test="taxID !=null and taxID != ''">
+				and TaxID = #{taxID} 
+			</if>
 	    </where> 
 	</select>
 	<insert id="insertGeneInfo" parameterType="GeneInfo">
 		insert into geneinfo
-		 (GeneID,Symbol,LocusTag,Synonyms,dbXrefs,
+		 (TaxID,GeneID,Symbol,LocusTag,Synonyms,dbXrefs,
 		chromosome,mapLocation,description,typeOfGene,SymbolFromNomenclature,
 		FullNameFromNomenclature,NomenclatureStatus,OtherDesignations,ModificationDate,PubmedID)
 		
 		values 
 		
-		(#{geneID},#{symbol},#{locusTag},#{synonyms},#{dbXrefs},
+		(#{taxID},#{geneID},#{symbol},#{locusTag},#{synonyms},#{dbXrefs},
 		#{chromosome},#{mapLocation},#{description},#{typeOfGene},#{symNome},
 		#{fullNameNome},#{nomStat},#{otherDesign},#{modDate},#{pubmedID})
 	</insert>
@@ -95,6 +102,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</set>
 		where 
-				GeneID = #{geneID}
+			GeneID = #{geneID}
+			<if test="taxID !=null and taxID != ''">
+				and TaxID = #{taxID} 
+			</if>
 	</update>
 </mapper>

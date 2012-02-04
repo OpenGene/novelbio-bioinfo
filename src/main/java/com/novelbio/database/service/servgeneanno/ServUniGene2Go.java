@@ -21,16 +21,18 @@ public class ServUniGene2Go extends AbsGetSpring implements MapUniGene2Go{
 	}
 	
 	
-	public ArrayList<UniGene2Go> queryLsUniGene2Go(String uniprotID) {
+	public ArrayList<UniGene2Go> queryLsUniGene2Go(String uniprotID, int taxID) {
 		UniGene2Go uniGene2Go = new UniGene2Go();
 		uniGene2Go.setGeneUniID(uniprotID);
+		uniGene2Go.setTaxID(taxID);
 		return mapUniGene2Go.queryLsUniGene2Go(uniGene2Go);
 	}
 
-	public UniGene2Go queryUniGene2Go(String uniprotID, String GOID) {
+	public UniGene2Go queryUniGene2Go(String uniprotID, int taxID, String GOID) {
 		UniGene2Go uniGene2Go = new UniGene2Go();
 		uniGene2Go.setGeneUniID(uniprotID);
 		uniGene2Go.setGOID(GOID);
+		uniGene2Go.setTaxID(taxID);
 		return mapUniGene2Go.queryUniGene2Go(uniGene2Go);
 	}
 
@@ -62,8 +64,8 @@ public class ServUniGene2Go extends AbsGetSpring implements MapUniGene2Go{
 	 * @param genUniID
 	 * @param gene2Go
 	 */
-	public void updateUniGene2Go(String genUniID, AGene2Go gene2Go) {
-		UniGene2Go uniGene2GoOld = queryUniGene2Go(genUniID, gene2Go.getGOID());
+	public void updateUniGene2Go(String genUniID, int taxID, AGene2Go gene2Go) {
+		UniGene2Go uniGene2GoOld = queryUniGene2Go(genUniID, taxID, gene2Go.getGOID());
 		if (uniGene2GoOld != null) {
 			if (uniGene2GoOld.addInfo(gene2Go)) {
 				updateUniGene2Go(uniGene2GoOld);

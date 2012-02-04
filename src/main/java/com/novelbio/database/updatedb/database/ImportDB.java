@@ -23,7 +23,7 @@ public class ImportDB {
 		String gene2Pub = NCBIDBPath + "gene2pubmed.gz";
 		String goExtObo = GOPath + "gene_ontology_ext.obo";
 		String gene2GO = NCBIDBPath + "gene2go.gz";
-		
+//		String gene2GO = "/media/winE/Bioinformatics/DataBase/gene2go/bbb";
 		NCBI ncbi = new NCBI();
 		ncbi.setTaxID(taxIDFile);
 		ncbi.setGene2AccFile(gene2Acc, gene2Ref);

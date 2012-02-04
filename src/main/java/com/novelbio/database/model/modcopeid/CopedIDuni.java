@@ -29,7 +29,7 @@ public class CopedIDuni extends CopedIDAbs{
 	}
 	protected void setGenInfo() {
 		UniGeneInfo uniGeneInfo = new UniGeneInfo();
-		uniGeneInfo.setUniProtID(getGenUniID());
+		uniGeneInfo.setUniProtID(getGenUniID()); uniGeneInfo.setTaxID(taxID);
 		geneInfo = servUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
 	}
 

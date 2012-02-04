@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.apache.log4j.Logger;
 import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
 import antlr.collections.List;
@@ -19,6 +20,7 @@ import com.novelbio.analysis.generalConf.NovelBioConst;
  *
  */
 public abstract class AGeneInfo {
+	private static Logger logger = Logger.getLogger(AGeneInfo.class);
 	static ArrayList<String> lsDBinfo = new ArrayList<String>();
 	static{
 		lsDBinfo.add(NovelBioConst.DBINFO_NCBI_ACC_GenralID);
@@ -27,7 +29,6 @@ public abstract class AGeneInfo {
 	
 	private String symbol;
 	private String locusTag;
-	
 	
 	private String synonyms;
 	private String dbXrefs;
@@ -69,7 +70,9 @@ public abstract class AGeneInfo {
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
-	
+	public int getTaxID() {
+		return taxID;
+	}
 	/**
 	 * 必须第一时间设定
 			39947, NovelBioConst.DBINFO_RICE_TIGR<br>
@@ -314,6 +317,18 @@ public abstract class AGeneInfo {
 	private void addSynonyms(String synonyms) {
 		this.synonyms = validateField(this.synonyms, synonyms,true);
 	}
+	private void addTaxID(int taxID) {
+		if (taxID == 0) {
+			return;
+		}
+		if (this.taxID == 0) {
+			this.taxID = taxID;
+			return;
+		}
+		if (this.taxID != taxID) {
+			logger.error("待拷贝的两个geneInfo中的taxID不一致，原taxID："+this.taxID + " 新taxID：" + taxID );
+		}
+	}
 	private void addOtherDesign(String otherDesign) {
 		this.otherDesign = validateField(this.otherDesign,otherDesign,true);
 	}
@@ -454,6 +469,7 @@ public abstract class AGeneInfo {
 		synonyms = geneInfo.synonyms;
 		typeOfGene = geneInfo.typeOfGene;
 		pubmedID = geneInfo.pubmedID;
+		taxID = geneInfo.taxID;
 		setGeneUniID(geneInfo.getGeneUniID());
 	}
 	/**
@@ -515,6 +531,7 @@ public abstract class AGeneInfo {
 		addSynonyms(geneInfo.getSynonym());
 		setTypeOfGene(geneInfo.getTypeOfGene());
 		addPubmedIDs(geneInfo.getPubmedID());
+		addTaxID(geneInfo.getTaxID());
 		return true;
 	}
 	/**
