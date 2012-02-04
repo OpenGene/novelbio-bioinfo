@@ -75,7 +75,12 @@ public class ServGene2Go extends AbsGetSpring implements MapGene2Go {
 			Gene2Go gene2GoNew = new Gene2Go();
 			gene2GoNew.copyInfo(gene2Go);
 			gene2GoNew.setGeneUniID(genUniID);
-			insertGene2Go(gene2GoNew);
+			try {
+				insertGene2Go(gene2GoNew);
+			} catch (Exception e) {//出错原因可能是有两个连续一样的goID，然后连续插入的时候第一个goID还没来得及建索引，导致第二个直接就插入了然后出错
+				System.out.println(gene2Go.getGOID() + " " + gene2GoNew.getGeneUniId() + " " + gene2Go.getTaxID());
+			}
+			
 		}
 	}
 	

@@ -31,7 +31,11 @@ public abstract class AGene2Go {
 	
 	public String getGOID() {
 		try {
-			return servGo2Term.getHashGo2Term().get(myGoID).getGoID();
+			String goID = servGo2Term.getHashGo2Term().get(myGoID).getGoID();
+			if (!goID.equals(myGoID)) {
+				System.out.println("stop");
+			}
+			return goID;
 		} catch (Exception e) {
 			return null;
 		}
