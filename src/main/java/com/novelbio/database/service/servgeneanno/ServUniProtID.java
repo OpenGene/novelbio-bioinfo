@@ -92,7 +92,12 @@ public class ServUniProtID extends AbsGetSpring implements MapUniProtID{
 		ArrayList<UniProtID> lsResult = mapUniProtID.queryLsUniProtID(uniProtID);
 		if (lsResult == null || lsResult.size() == 0) {
 			uniProtID.setDBInfo(db);
-			mapUniProtID.insertUniProtID(uniProtID);
+			try {
+				mapUniProtID.insertUniProtID(uniProtID);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 		}
 		else {
 			if (override && !lsResult.get(0).getDBInfo().equals(db)) {

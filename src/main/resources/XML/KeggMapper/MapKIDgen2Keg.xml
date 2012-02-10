@@ -8,7 +8,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<select id="queryLsKGIDgen2Keg" parameterType="KGIDgen2Keg" resultMap="gen2Keg">
 		select *
-		from IDgen2Keg
+		from idgen2Keg
 		<where>
 			<if test="geneID !=null and geneID !=0">
 				 geneID=#{geneID}
@@ -23,7 +23,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	<select id="queryKGIDgen2Keg" parameterType="KGIDgen2Keg" resultMap="gen2Keg">
 		select *
-		from IDgen2Keg
+		from idgen2Keg
 		<where>
 			<if test="geneID !=null and geneID !=0">
 				 geneID=#{geneID}
@@ -37,11 +37,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</select>
 	<insert id="insertKGIDgen2Keg" parameterType="KGIDgen2Keg">
-		insert into IDgen2Keg (geneID,keggID,taxID)
+		insert into idgen2Keg (geneID,keggID,taxID)
 		values (#{geneID},#{keggID},#{taxID})
 	</insert>
 	<update id="updateKGIDgen2Keg" parameterType="KGIDgen2Keg">
-		update IDgen2Keg
+		update idgen2Keg
 		<set>
 			<if test="geneID != null and geneID !=0">
 				GeneID = #{geneID},

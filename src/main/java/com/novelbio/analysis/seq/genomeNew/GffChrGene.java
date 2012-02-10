@@ -125,7 +125,7 @@ public class GffChrGene {
 		}
 		MapInfo.sortPath(sortmin2max);
 		List<MapInfo> lsResult= MapInfo.sortLsMapInfo(lsTmp, range);
-		mapReads.getRegionLs(thisBinNum, lsResult, 0, mapNormType);
+		mapReads.getRegionLs(thisBinNum, lsResult, mapNormType);
 		return lsResult;
 	}
 	
@@ -138,7 +138,7 @@ public class GffChrGene {
 	protected ArrayList<MapInfo> getPeakStructure(ArrayList<MapInfo> lsPeakInfo, int thisInvNum, String structure) {
 		Set<GffDetailGene> setgffDetailGenes = getPeakGeneStructure(lsPeakInfo, structure);
 		ArrayList<MapInfo> lsMapInfos = getMapInfoFromGffGene(setgffDetailGenes, structure);
-		mapReads.getRegionLs(lsMapInfos, thisInvNum, 0, mapNormType);
+		mapReads.getRegionLs(lsMapInfos, thisInvNum, mapNormType);
 		return lsMapInfos;
 	}
 	
@@ -153,7 +153,7 @@ public class GffChrGene {
 	protected ArrayList<MapInfo> getPeakStructure(int thisBinNum,ArrayList<MapInfo> lsPeakInfo, String structure) {
 		Set<GffDetailGene> setgffDetailGenes = getPeakGeneStructure(lsPeakInfo, structure);
 		ArrayList<MapInfo> lsMapInfos = getMapInfoFromGffGene(setgffDetailGenes, structure);
-		mapReads.getRegionLs(thisBinNum, lsMapInfos, 0, mapNormType);
+		mapReads.getRegionLs(thisBinNum, lsMapInfos, mapNormType);
 		return lsMapInfos;
 	}
 	///////////////////////////   annotation   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

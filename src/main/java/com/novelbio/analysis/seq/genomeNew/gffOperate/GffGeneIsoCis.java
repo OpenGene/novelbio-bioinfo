@@ -24,13 +24,16 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 
 	public GffGeneIsoCis(String IsoName, GffDetailGene gffDetailGene, String geneType) {
 		super(IsoName, gffDetailGene, geneType);
+		super.setCis5to3(true);
 	}
 
 	public GffGeneIsoCis(String IsoName, String ChrID, int coord, String geneType) {
 		super(IsoName, ChrID, coord, geneType);
+		super.setCis5to3(true);
 	}
 	public GffGeneIsoCis(String IsoName, String ChrID, String geneType) {
 		super(IsoName, ChrID, geneType);
+		super.setCis5to3(true);
 	}
 	
 	
@@ -46,21 +49,13 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	public GffGeneIsoCis clone() {
 		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis(IsoName, chrID,coord, getGeneType());
 		this.clone(gffGeneIsoCis);
-		gffGeneIsoCis.setCoord(getCoord());
 		return gffGeneIsoCis;
-	}
-
-
-	@Override
-	public Boolean isCis5to3() {
-		return true;
 	}
 	
 	@Override
 	public GffGeneIsoCis cloneDeep() {
 		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis(IsoName, chrID,coord, getGeneType());
 		this.cloneDeep(gffGeneIsoCis);
-		gffGeneIsoCis.setCoord(getCoord());
 		return gffGeneIsoCis;
 	}
 
@@ -93,6 +88,15 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		     + "\t"+"."+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id \""+getIsoName()+"\"; \r\n";
 		}
 		return geneExon;
+	}
+
+	@Override
+	protected void setCod2SiteAbs() {
+		cod2ATG = coord - ATGsite; //CnnnATG    AtgnC
+		cod2UAG = coord - UAGsite; //CnuaG    UAGnnnC
+		cod2TSS = coord - getTSSsite();
+		cod2TES = coord - getTESsite();
+		
 	}
 	
 }

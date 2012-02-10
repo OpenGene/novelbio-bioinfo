@@ -11,7 +11,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<select id="selectIdKeg" parameterType="KGNIdKeg" resultMap="idKegMap">
 		select *
-		from idKeg
+		from idkeg
 		<where>
 			<if test="kegID != null and kegID != '' ">
 				 kegID = #{kegID}
@@ -22,11 +22,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</select>
 	<insert id="insertIdKeg" parameterType="KGNIdKeg">
-		insert into idKeg (kegID,attribute,usualName)
+		insert into idkeg (kegID,attribute,usualName)
 		values (#{kegID},#{attribute},#{usualName})
 	</insert>
 	<update id="updateIdKeg" parameterType="KGNIdKeg">
-		update idKeg set
+		update idkeg set
 		<set>
 			<if test="kegID !=null">
 				 kegID = #{kegID},

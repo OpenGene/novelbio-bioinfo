@@ -143,7 +143,7 @@ public class ChrStringHash extends SeqHashAbs{
 	 * 
 	 * @throws IOException
 	 */
-	protected String getSeqInfo(String chrID, long startlocation, long endlocation)
+	protected SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation)
 			throws IOException {
 		startlocation--;
 		RandomAccessFile chrRASeqFile = hashChrSeqFile.get(chrID.toLowerCase());// 判断文件是否存在
@@ -187,14 +187,17 @@ public class ChrStringHash extends SeqHashAbs{
 					+ " 最多提取20000bp");
 			return null;
 		}
+		
+		SeqFasta seqFasta = new SeqFasta();
+		seqFasta.setSeqName(chrID + "_" + startlocation + "_" + endlocation);
 		// 定到目标坐标
 		StringBuilder sequence = new StringBuilder();
 		chrRASeqFile.seek(startRealCod);
-
+		
 		if (rowendNum - rowstartNum == 0) {
 			String seqResult = chrRASeqFile.readLine();
 			seqResult = seqResult.substring(0, endrowBias - startrowBias);
-			return seqResult;
+			seqFasta.setSeq(seqResult);
 		} else {
 			for (int i = 0; i < rowendNum - rowstartNum; i++) {
 				sequence.append(chrRASeqFile.readLine());
@@ -203,8 +206,9 @@ public class ChrStringHash extends SeqHashAbs{
 			endline = endline.substring(0, endrowBias);
 			sequence.append(endline);
 			String seqResult = sequence.toString();
-			return seqResult;
+			seqFasta.setSeq(seqResult);
 		}
+		return seqFasta;
 	}
 
 

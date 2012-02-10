@@ -16,10 +16,6 @@ import com.novelbio.database.model.modcopeid.CopedID;
  */
 public class GtfHashCufIso extends GffHash{
 
-	public GtfHashCufIso(String gfffilename) {
-		super(gfffilename);
-		// TODO Auto-generated constructor stub
-	}
 	/**
 	 * 只填充了locHashtable和LOCIDList两个list
 	 */
@@ -70,17 +66,17 @@ public class GtfHashCufIso extends GffHash{
 		return (GtfDetailCufIso) locHashtable.get(LOCID);
 	}
 	/**
-	 * 没用，不要使用
-	 */
-	@Override
-	public GtfDetailCufIso searchLOC(String chrID, int LOCNum) {
-		return (GtfDetailCufIso) Chrhash.get(chrID).get(LOCNum);
-	}
-	/**
 	 * 没有，不要使用
 	 */
 	@Override
 	public GffCodAbs setGffCod(String chrID, int Coordinate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	protected GffCodAbsDu setGffCodDu(ArrayList lsgffDetail, GffCodAbs gffCod1,
+			GffCodAbs gffCod2) {
+		sss
 		// TODO Auto-generated method stub
 		return null;
 	}

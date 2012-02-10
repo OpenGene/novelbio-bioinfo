@@ -1,7 +1,5 @@
 package com.novelbio.analysis.seq.genomeNew.listOperate;
 
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.objective;
-
 public interface ElementAbs {
 	public boolean isCis5to3();
 	/**

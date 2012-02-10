@@ -63,8 +63,8 @@ public class NCBI {
 //		impFile.importInfoPerLine(gene2Info, true);
 //		impFile = new ImpGene2Pub();
 //		impFile.importInfoPerLine(gene2Pub, true);
-//		impFile = new ImpGOExtObo();
-//		impFile.importInfoPerLine(goExtObo, false);
+		impFile = new ImpGOExtObo();
+		impFile.importInfoPerLine(goExtObo, false);
 		impFile = new ImpGene2GO();
 		impFile.importInfoPerLine(gene2GO, true);
 	}

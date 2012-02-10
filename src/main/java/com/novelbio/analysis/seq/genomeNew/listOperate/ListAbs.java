@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+
+import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbs;
 
 public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
+	private static Logger logger = Logger.getLogger(ListAbs.class);
 	/**
 	 * 
 	 */
@@ -184,6 +187,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	
 	/**
 	 * 两个坐标之间的距离，仅仅计算他们在mRNA层面的距离，也就是只计算ele上的距离。
+	 * 当两者重叠时，返回0
 	 * 当loc1在loc2上游时，返回正数，当loc1在loc2下游时，返回负数
 	 * 要求这两个坐标都在exon上.如果不符合，则返回GffCodAbs.LOC_ORIGINAL
 	 * @param loc1 第一个坐标
@@ -198,7 +202,8 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 		else {
 			locSmall = Math.max(loc1, loc2);  locBig = Math.min(loc1, loc2);
 		}
-		int locSmallExInNum = getLocInEleNum(locSmall); int locBigExInNum = getLocInEleNum(locBig);
+		int locSmallExInNum = getLocInEleNum(locSmall); 
+		int locBigExInNum = getLocInEleNum(locBig);
 		
 		int distance = GffCodAbs.LOC_ORIGINAL;
 		
@@ -222,14 +227,70 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 		return -Math.abs(distance);
 	}
 	
+//	/**
+//	 * TO BE CHECKED
+//	 * 只有在cis存在的时候才能使用
+//	 * 返回距离loc有num Bp的坐标，在mRNA层面，在loc上游时num 为负数
+//	 * 在loc下游时num为正数
+//	 * 如果num Bp外就没有基因了，则返回-1；
+//	 * @param mRNAnum
+//	 * NnnnLoc 为-4位，当N与Loc重合时为0
+//	 */
+//	public int getLocDistmRNASite(int location, int mRNAnum) {
+//		if (getLocInEleNum(location) <= 0) {
+//			return -1;
+//		}
+//		if (mRNAnum < 0) {
+//			if (Math.abs(mRNAnum) <= getLoc2EleStart(location)) {
+//				return location + mRNAnum;
+//			} 
+//			else {
+//				int exonNum = getLocInEleNum(location) - 1;
+//				int remain = Math.abs(mRNAnum) - getLoc2EleStart(location);
+//				for (int i = exonNum - 1; i >= 0; i--) {
+//					ElementAbs tmpExon = get(i);
+//					// 一个一个外显子的向前遍历
+//					if (remain - tmpExon.getLen() > 0) {
+//						remain = remain - tmpExon.getLen();
+//						continue;
+//					}
+//					else {
+//						return tmpExon.getEndCis() - remain + 1;
+//					}
+//				}
+//				return -1;
+//			}
+//		}
+//		else {
+//			if (mRNAnum <= getLoc2EleEnd(location)) {
+//				return location + mRNAnum;
+//			} 
+//			else {
+//				int exonNum = getLocInEleNum(location) - 1;
+//				int remain = mRNAnum - getLoc2EleEnd(location);
+//				for (int i = exonNum + 1; i < size(); i++) {
+//					ElementAbs tmpExon = get(i);
+//					// 一个一个外显子的向前遍历
+//					if (remain - tmpExon.getLen() > 0) {
+//						remain = remain - tmpExon.getLen();
+//						continue;
+//					}
+//					else {
+//						return tmpExon.getStartCis() + remain - 1;
+//					}
+//				}
+//				return -1;
+//			}
+//		}
+//	}
 	/**
 	 * TO BE CHECKED
-	 * 只有在cis存在的时候才能使用
 	 * 返回距离loc有num Bp的坐标，在mRNA层面，在loc上游时num 为负数
 	 * 在loc下游时num为正数
 	 * 如果num Bp外就没有基因了，则返回-1；
 	 * @param mRNAnum
 	 * NnnnLoc 为-4位，当N与Loc重合时为0
+	 * LnnnnN为5位
 	 */
 	public int getLocDistmRNASite(int location, int mRNAnum) {
 		if (getLocInEleNum(location) <= 0) {
@@ -237,20 +298,29 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 		}
 		if (mRNAnum < 0) {
 			if (Math.abs(mRNAnum) <= getLoc2EleStart(location)) {
-				return location + mRNAnum;
+				if (isCis5to3()) {
+					return location + mRNAnum;
+				}
+				else
+					return  location + Math.abs(mRNAnum);
 			} 
 			else {
 				int exonNum = getLocInEleNum(location) - 1;
 				int remain = Math.abs(mRNAnum) - getLoc2EleStart(location);
 				for (int i = exonNum - 1; i >= 0; i--) {
-					ElementAbs tmpExon = get(i);
+					E tmpExon = get(i);
 					// 一个一个外显子的向前遍历
 					if (remain - tmpExon.getLen() > 0) {
 						remain = remain - tmpExon.getLen();
 						continue;
 					}
 					else {
-						return tmpExon.getEndCis() - remain + 1;
+						if (isCis5to3()) {
+							return tmpExon.getEndCis() - remain + 1;
+						}
+						else {
+							return tmpExon.getEndCis() + remain - 1;
+						}
 					}
 				}
 				return -1;
@@ -258,27 +328,36 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 		}
 		else {
 			if (mRNAnum <= getLoc2EleEnd(location)) {
-				return location + mRNAnum;
+				if (isCis5to3()) {
+					return location + mRNAnum;
+				}
+				else {
+					return location - mRNAnum;
+				}
 			} 
 			else {
 				int exonNum = getLocInEleNum(location) - 1;
 				int remain = mRNAnum - getLoc2EleEnd(location);
 				for (int i = exonNum + 1; i < size(); i++) {
-					ElementAbs tmpExon = get(i);
+					E tmpExon = get(i);
 					// 一个一个外显子的向前遍历
 					if (remain - tmpExon.getLen() > 0) {
 						remain = remain - tmpExon.getLen();
 						continue;
 					}
 					else {
-						return tmpExon.getStartCis() + remain - 1;
+						if (isCis5to3()) {
+							return tmpExon.getStartCis() + remain - 1;
+						}
+						else {
+							return tmpExon.getStartCis() - remain + 1;
+						}
 					}
 				}
 				return -1;
 			}
 		}
 	}
-	
 	
 	/**
 	 * 必须首先设定ListAbs的方向，并且该方向和其内部的element的方向要一致
@@ -548,6 +627,14 @@ class BinarySearch
 			LocInfo[3] = LocInfo[1] + 1;
 			return LocInfo;
 		}
+		else if (Coordinate >= lsElement.get(endnum).getStartCis())// 不知道会不会出现PeakNumber比biginnum小的情况
+		{ // location在基因内部
+			LocInfo[0] = 1;
+			LocInfo[1] = endnum;
+			LocInfo[2] = endnum + 1;
+			LocInfo[3] = LocInfo[1] + 1;
+			return LocInfo;
+		}
 		// location在基因外部
 		LocInfo[0] = 2;
 		LocInfo[3] = -LocInfo[1] - 1;
@@ -611,9 +698,17 @@ class BinarySearch
 		} while ((endnum - beginnum) > 1);
 		LocInfo[1] = beginnum;
 		LocInfo[2] = endnum;
-		if (Coordinate >= lsElement.get(beginnum).getEndCis())// 不知道会不会出现PeakNumber比biginnum小的情况
+		if (Coordinate >= lsElement.get(beginnum).getEndCis())
 		{ // location在基因内部
 			LocInfo[0] = 1;
+			LocInfo[3] = LocInfo[1] + 1;
+			return LocInfo;
+		}
+		else if (Coordinate <= lsElement.get(endnum).getStartCis()) 
+		{// location在基因内部
+			LocInfo[0] = 1;
+			LocInfo[1] = endnum;
+			LocInfo[2] = endnum + 1;
 			LocInfo[3] = LocInfo[1] + 1;
 			return LocInfo;
 		}

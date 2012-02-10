@@ -73,6 +73,9 @@ public abstract class AGeneInfo {
 	public int getTaxID() {
 		return taxID;
 	}
+	public String getDbInfo() {
+		return dbInfo;
+	}
 	/**
 	 * 必须第一时间设定
 			39947, NovelBioConst.DBINFO_RICE_TIGR<br>
@@ -181,7 +184,7 @@ public abstract class AGeneInfo {
 		return getInfoSep(symbol);
 	}
 	public void setSymb(String symbol) {
-		this.symbol = validateField(null, symbol,true);
+		this.symbol = validateField(dbInfo, null, symbol,true);
 	}
 	/**
 	 * locusTag
@@ -191,7 +194,7 @@ public abstract class AGeneInfo {
 		return getInfoSep(locusTag);
 	}
 	public void setLocTag(String locusTag) {
-		this.locusTag = validateField(null, locusTag,true);
+		this.locusTag = validateField(dbInfo, null, locusTag,true);
 	}
 	/**
 	 * synonyms
@@ -201,7 +204,7 @@ public abstract class AGeneInfo {
 		return getInfoSep(synonyms);
 	}
 	public void setSynonym(String synonyms) {
-		this.synonyms = validateField(null, synonyms,true);
+		this.synonyms = validateField(dbInfo, null, synonyms,true);
 	}
 	/**
 	 * dbXrefs
@@ -211,7 +214,7 @@ public abstract class AGeneInfo {
 		return getInfoSep(dbXrefs);
 	}
 	public void setDbXref(String dbXrefs) {
-		this.dbXrefs = validateField(null, dbXrefs,true);
+		this.dbXrefs = validateField(dbInfo, null, dbXrefs,true);
 	}  
 	/**
 	 * chromosome
@@ -221,7 +224,7 @@ public abstract class AGeneInfo {
 		return getInfoSep(chromosome);
 	}
 	public void setChrm(String chromosome) {
-		this.chromosome = validateField(null, chromosome,true);
+		this.chromosome = validateField(dbInfo, null, chromosome,true);
 	}  
 	/**
 	 * mapLocation
@@ -231,7 +234,7 @@ public abstract class AGeneInfo {
 		return getInfoSep(mapLocation);
 	}
 	public void setMapLoc(String mapLocation) {
-		this.mapLocation = validateField(null, mapLocation,true);
+		this.mapLocation = validateField(dbInfo, null, mapLocation,true);
 	}
 	/**
 	 * description
@@ -241,7 +244,7 @@ public abstract class AGeneInfo {
 		return getInfoSep(description);
 	}
 	public void setDescrp(String description) {
-		this.description = validateField(null,description,true);
+		this.description = validateField(dbInfo, null,description,true);
 	}
 
 	public String getTypeOfGene() {
@@ -265,7 +268,7 @@ public abstract class AGeneInfo {
 		return getInfoSep(symNome);
 	}
 	public void setSymNom(String symNome) {
-		this.symNome = validateField(null, symNome,true);
+		this.symNome = validateField(dbInfo, null, symNome,true);
 	}
 
 	/**
@@ -276,14 +279,14 @@ public abstract class AGeneInfo {
 		return getInfoSep(fullNameNome);
 	}
 	public void setFullName(String fullNameFromNomenclature) {
-		this.fullNameNome =  validateField(null, fullNameFromNomenclature,true);
+		this.fullNameNome =  validateField(dbInfo, null, fullNameFromNomenclature,true);
 	}
 
 	public String getNomState() {
 		return getInfoSep(nomStat);
 	}
 	public void setNomState(String nomStat) {
-		this.nomStat = validateField(null, nomStat, true);
+		this.nomStat = validateField(dbInfo, null, nomStat, true);
 	}
 
 	/**
@@ -298,7 +301,7 @@ public abstract class AGeneInfo {
 	 * @param otherDesign
 	 */
 	public void setOtherDesg(String otherDesign) {
-		this.otherDesign = validateField(null, otherDesign,true);
+		this.otherDesign = validateField(dbInfo, null, otherDesign,true);
 	}
 
 	public String getModDate() {
@@ -311,11 +314,11 @@ public abstract class AGeneInfo {
 	
 	
 	/////////////// add /////////////////////////////////////////////
-	private void addSymbol(String symbol) {
-		this.symbol = validateField(this.symbol, symbol,true);
+	private void addSymbol(String dbInfo, String symbol) {
+		this.symbol = validateField(dbInfo, this.symbol, symbol,true);
 	}
-	private void addSynonyms(String synonyms) {
-		this.synonyms = validateField(this.synonyms, synonyms,true);
+	private void addSynonyms(String dbInfo, String synonyms) {
+		this.synonyms = validateField(dbInfo, this.synonyms, synonyms,true);
 	}
 	private void addTaxID(int taxID) {
 		if (taxID == 0) {
@@ -329,33 +332,34 @@ public abstract class AGeneInfo {
 			logger.error("待拷贝的两个geneInfo中的taxID不一致，原taxID："+this.taxID + " 新taxID：" + taxID );
 		}
 	}
-	private void addOtherDesign(String otherDesign) {
-		this.otherDesign = validateField(this.otherDesign,otherDesign,true);
+	private void addOtherDesign(String dbInfo, String otherDesign) {
+		this.otherDesign = validateField(dbInfo, this.otherDesign,otherDesign,true);
 	}
-	private void addFullName(String fullNameFromNomenclature) {
-		this.fullNameNome =  validateField(this.fullNameNome,fullNameFromNomenclature,true);
+	private void addFullName(String dbInfo, String fullNameFromNomenclature) {
+		this.fullNameNome =  validateField(dbInfo, this.fullNameNome,fullNameFromNomenclature,true);
 	}
-	private void addSymNome(String symNome) {
-		this.symNome = validateField(this.symNome,symNome,true);
+	private void addSymNome(String dbInfo, String symNome) {
+		this.symNome = validateField(dbInfo, this.symNome,symNome,true);
 	}
-	private void addNomStat(String nomStat) {
-		this.nomStat = validateField(this.nomStat, nomStat, true);
+	private void addNomStat(String dbInfo, String nomStat) {
+		this.nomStat = validateField(dbInfo, this.nomStat, nomStat, true);
 	}
-	private void addDescription(String description) {
-		this.description = validateField(this.description,description,true);
+	private void addDescription(String dbInfo, String description) {
+		this.description = validateField(dbInfo, this.description,description,true);
 	}
-	private void addMapLocation(String mapLocation) {
-		this.mapLocation = validateField(this.mapLocation, mapLocation,true);
+	private void addMapLocation(String dbInfo, String mapLocation) {
+		this.mapLocation = validateField(dbInfo, this.mapLocation, mapLocation,true);
 	}
-	private void addChromosome(String chromosome) {
-		this.chromosome = validateField(this.chromosome, chromosome,true);
+	private void addChromosome(String dbInfo, String chromosome) {
+		this.chromosome = validateField(dbInfo, this.chromosome, chromosome,true);
 	}
-	private void addDbXrefs(String dbXrefs) {
-		this.dbXrefs = validateField(this.dbXrefs, dbXrefs,true);
+	private void addDbXrefs(String dbInfo, String dbXrefs) {
+		this.dbXrefs = validateField(dbInfo, this.dbXrefs, dbXrefs,true);
 	}
-	private void addLocusTag(String locusTag) {
-		this.locusTag = validateField(this.locusTag, locusTag,true);
+	private void addLocusTag(String dbInfo, String locusTag) {
+		this.locusTag = validateField(dbInfo, this.locusTag, locusTag,true);
 	}
+	
 	private void addPubmedIDs(String pubmedIDs) {
 		if (this.pubmedID == null || this.pubmedID.equals("")) {
 			this.pubmedID = pubmedIDs;
@@ -376,7 +380,7 @@ public abstract class AGeneInfo {
 	 * @param inputField 待输入项
 	 * @return
 	 */
-	private String validateField(String thisField, String inputField, boolean sepWithDBinfo)
+	private String validateField(String dbInfo, String thisField, String inputField, boolean sepWithDBinfo)
 	{
 		String inputFieldFinal = "";
 		if (inputField == null) {
@@ -514,21 +518,20 @@ public abstract class AGeneInfo {
 		) {
 			return false;
 		}
-		addChromosome(geneInfo.getChrm());
-		addDbXrefs(geneInfo.getDbXref());
-		addDescription(geneInfo.getDescrp());
-		addFullName(geneInfo.getFullName());
-		addLocusTag(geneInfo.getLocTag());
+		addChromosome(geneInfo.getDbInfo(), geneInfo.getChrm());
+		addDbXrefs(geneInfo.getDbInfo(), geneInfo.getDbXref());
+		addDescription(geneInfo.getDbInfo(), geneInfo.getDescrp());
+		addFullName(geneInfo.getDbInfo(), geneInfo.getFullName());
+		addLocusTag(geneInfo.getDbInfo(), geneInfo.getLocTag());
 //		setGeneUniID(geneInfo.getGeneUniID());
 		setIDType(geneInfo.getIDType());
-		setLocTag(geneInfo.getLocTag());
-		addMapLocation(geneInfo.getMapLoc());
+		addMapLocation(geneInfo.getDbInfo(), geneInfo.getMapLoc());
 		setModDate(geneInfo.getModDate());
-		addNomStat(geneInfo.getNomState());
-		addOtherDesign(geneInfo.getOtherDesg());
-		addSymbol(geneInfo.getSymb());
-		addSymNome(geneInfo.getSymNom());
-		addSynonyms(geneInfo.getSynonym());
+		addNomStat(geneInfo.getDbInfo(), geneInfo.getNomState());
+		addOtherDesign(geneInfo.getDbInfo(), geneInfo.getOtherDesg());
+		addSymbol(geneInfo.getDbInfo(), geneInfo.getSymb());
+		addSymNome(geneInfo.getDbInfo(), geneInfo.getSymNom());
+		addSynonyms(geneInfo.getDbInfo(), geneInfo.getSynonym());
 		setTypeOfGene(geneInfo.getTypeOfGene());
 		addPubmedIDs(geneInfo.getPubmedID());
 		addTaxID(geneInfo.getTaxID());
@@ -555,7 +558,7 @@ public abstract class AGeneInfo {
 			return false;
 		}
 		if (inputField.contains(SEP_INFO)) {
-			if (thisField.contains(inputField.split(SEP_INFO)[1])) {
+			if (thisField.toLowerCase().replace("-", " ").contains(inputField.split(SEP_INFO)[1].toLowerCase().replace("-", " "))) {
 				return false;
 			}
 		}

@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.genomeNew.getChrSequence;
 
 import java.util.HashMap;
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.statusAckLog;
 
 
 public class AminoAcid {

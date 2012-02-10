@@ -50,6 +50,10 @@ public abstract class AGene2Go {
 //	}
 	
 	public void setGOID(String GoID) {
+		if (GoID == null) {
+			System.out.println("stop");
+		}
+		GoID = GoID.trim();
 		if (GoID == null || GoID.trim().equals("")) {
 			return;
 		}
@@ -160,7 +164,7 @@ public abstract class AGene2Go {
 	}
 	private void addEvidence(String evidence)
 	{
-		if (evidence.equals(EVIDENCE_IEA)) {
+		if (evidence == null || evidence.equals("") || evidence.equals(EVIDENCE_IEA)) {
 			return;
 		}
 		this.qualifier = validate(this.qualifier, qualifier);

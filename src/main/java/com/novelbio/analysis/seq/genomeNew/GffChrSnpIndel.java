@@ -5,15 +5,21 @@ import java.util.ArrayList;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.AminoAcid;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genomeNew.listOperate.ElementAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfoSnpIndel;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
-
+/**
+ * 给定snp和indel等信息，获得改变的氨基酸等
+ * @author zong0jie
+ *
+ */
 public class GffChrSnpIndel extends GffChrAbs {
 
 	public GffChrSnpIndel(String gffType, String gffFile, String chrFile, String regx) {
@@ -48,18 +54,12 @@ public class GffChrSnpIndel extends GffChrAbs {
 		}
 	}
 	
-	
-	
-	
-
-	
 	/**
-	 * 可以将该方法放入AminoAcid类中
-	 * @param cis5to3
-	 * @param NR
-	 * @param mapInfo
-	 * @param LocStart
-	 * @param LocEnd
+	 * 给定序列和起始位点，用snp位点去替换序列
+	 * @param cis5to3 正反向
+	 * @param NR 给定序列
+	 * @param mapInfo 给定snp信息
+	 * @param startBias  在序列的哪一个点开始替换
 	 * @return
 	 */
 	private String replaceSnpIndel(boolean cis5to3, String NR, MapInfoSnpIndel mapInfo,int startBias )
@@ -128,7 +128,8 @@ public class GffChrSnpIndel extends GffChrAbs {
 			}
 			String NR = "";
 			
-			ArrayList<int[]> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
+			ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
+
 			if (lsTmp == null) {
 				NR = seqHash.getSeq(gffGeneIsoInfo.isCis5to3(), mapInfo.getChrID(), LocStart, LocEnd);
 			}
@@ -191,7 +192,7 @@ public class GffChrSnpIndel extends GffChrAbs {
 				LocStart = gffGeneIsoInfoStart.getLocAAbefore(mapInfo.getEnd());
 				LocEnd = gffGeneIsoInfoStart.getLocAAend(mapInfo.getStart());
 			}
-			ArrayList<int[]> lsTmp = gffGeneIsoInfoStart.getRangeIso(LocStart, LocEnd);
+			ArrayList<ExonInfo> lsTmp = gffGeneIsoInfoStart.getRangeIso(LocStart, LocEnd);
 			//TODO 这里有一些问题
 			if (lsTmp == null) {
 				return gffCodeGeneStart;

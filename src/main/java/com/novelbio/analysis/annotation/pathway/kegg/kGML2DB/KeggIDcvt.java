@@ -3,6 +3,7 @@ package com.novelbio.analysis.annotation.pathway.kegg.kGML2DB;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 
+import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
@@ -10,10 +11,7 @@ import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.kegg.MapKIDKeg2KoOld;
-import com.novelbio.database.mapper.kegg.MapKIDgen2KegOld;
-import com.novelbio.database.mapper.kegg.MapKNCompInfoOld;
-import com.novelbio.database.mapper.kegg.MapKNIdKegOld;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
  * 将KEGGID与geneID和KEGGID与KO的关系等导入数据库
@@ -38,12 +36,9 @@ public class KeggIDcvt {
 		{
 			String[] ss=content.split("\t"); 
 			long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim());
-			NCBIID ncbiid=new NCBIID();
-			ncbiid.setGeneId(geneID);
-			ArrayList<NCBIID> lsNcbiids=MapNCBIID.queryLsNCBIID(ncbiid);
-			if (lsNcbiids!=null&&lsNcbiids.size()>0) {
-				TaxID=(int) lsNcbiids.get(0).getTaxID();
-				break;
+			CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, geneID + "", 0);
+			if (copedID.getTaxID() > 0) {
+				TaxID = copedID.getTaxID();
 			}
 		}
 		while ((content=reader.readLine())!=null) 
@@ -51,17 +46,11 @@ public class KeggIDcvt {
 			String[] ss=content.split("\t"); 
 			long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim());
 			String accID = ss[0].split(":")[1].trim();
-			NCBIID ncbiid=new NCBIID();
-			ncbiid.setGeneId(geneID); ncbiid.setAccID(accID); ncbiid.setTaxID(TaxID); 
-			ArrayList<NCBIID> lsNcbiids=MapNCBIID.queryLsNCBIID(ncbiid);
-			if (lsNcbiids==null || lsNcbiids.size() == 0) {
-				ncbiid.setDBInfo("KEGG");
-				MapNCBIID.insertNCBIID(ncbiid);
-			}
+			CopedID copedID = new CopedID(accID, TaxID);
+			copedID.setUpdateGeneID(geneID+"", CopedID.IDTYPE_GENEID);
+			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_KEGG, false);
+			copedID.update(false);
 		}
-		
-		
-		
 		///////////////////////////////////////////////////////////////////////////////////////
 		if (TaxID==0) {
 			System.err.println("在NCBIID表中没有找到该物种的taxID");

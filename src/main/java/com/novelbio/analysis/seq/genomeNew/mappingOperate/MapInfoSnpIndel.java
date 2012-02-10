@@ -631,10 +631,17 @@ public class MapInfoSnpIndel extends MapInfo{
 		return flagLoc;
 	}
 
-	
+	/**
+	 * 实际的序列
+	 * @return
+	 */
 	public String getThisBase() {
 		return thisBase;
 	}
+	/**
+	 * 参考序列
+	 * @return
+	 */
 	public String getRefBase() {
 		return refBase;
 	}

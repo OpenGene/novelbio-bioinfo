@@ -23,7 +23,6 @@ public class ImportDB {
 		String gene2Pub = NCBIDBPath + "gene2pubmed.gz";
 		String goExtObo = GOPath + "gene_ontology_ext.obo";
 		String gene2GO = NCBIDBPath + "gene2go.gz";
-//		String gene2GO = "/media/winE/Bioinformatics/DataBase/gene2go/bbb";
 		NCBI ncbi = new NCBI();
 		ncbi.setTaxID(taxIDFile);
 		ncbi.setGene2AccFile(gene2Acc, gene2Ref);
@@ -33,7 +32,29 @@ public class ImportDB {
 		ncbi.setGeneRef2UniID(geneRef2UniID);
 		ncbi.setGOExtObo(goExtObo);
 		ncbi.setGene2GO(gene2GO);
-		ncbi.importFile();
+//		ncbi.importFile();
+		
+		String outUniIDFile = NCBIDBPath + "outIdmap.txt";
+		String idmappingSelectedFile = NCBIDBPath + "idmapping_selected.tab_sub.gz";
+		String impgene_associationgoa_uniprotFile = NCBIDBPath + "GO/gene_association.goa_uniprot.gz";
+		UniProt uniProt = new UniProt();
+		uniProt.setIdmappingSelectedFile(idmappingSelectedFile);
+		uniProt.setTaxIDFile(taxIDFile);
+		uniProt.setOutUniIDFile(outUniIDFile);
+		uniProt.setImpgene_associationgoa_uniprotFile(impgene_associationgoa_uniprotFile);
+//		uniProt.update();
+		String ensemblFileMouse = "/media/winE/Bioinformatics/DataBase/Mus_musculus.NCBIM37.65.gtf"; 
+		String ucscGffFileMouse = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/refseqSortUsing.txt";
+		int taxIDMouse = 10090;
+		
+		String ensemblFileChicken = ""; String ucscGffFileChicken = "";
+		int taxIDChicken = 9031;
+		
+		Ensembl ensembl = new Ensembl();
+		ensembl.setEnsemblFile(ensemblFileMouse, ucscGffFileMouse, taxIDMouse);
+//		ensembl.setEnsemblFile(ensemblFileChicken, ucscGffFileChicken, taxIDChicken);
+		ensembl.update();
+		
 	}
 	
 	

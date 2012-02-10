@@ -6,6 +6,7 @@ public class NovelBioConst {
 	public final static String DBINFO_UNIPROTID = "UniProtID";
 	public  final static String DBINFO_NCBI_ACC_GenralID = "NCBI";
 	public final static String DBINFO_NCBI_ACC_REFSEQ = "RefSeq";
+	public  final static String DBINFO_KEGG = "KEGG";
 	/**
 	 * RefSeq的蛋白ID
 	 */
@@ -294,6 +295,19 @@ public class NovelBioConst {
 	 * topGo计算需要的GeneID
 	 */
 	public final static String R_WORKSPACE_TOPGO_GENEID = R_WORKSPACE_TOPGO + "GeneID.txt";
+	/////////////////////////    limma microarray 的脚本    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * microarray的文件夹
+	 */
+	public final static String R_WORKSPACE_MICROARRAY = R_WORKSPACE + "microarray/";
+	/**
+	 * 标准化的脚本路径
+	 */
+	public final static String R_WORKSPACE_MICROARRAY_NORMLIZATION = R_WORKSPACE_MICROARRAY + "norm.R";
+	/**
+	 * limma筛选差异基因的脚本
+	 */
+	public final static String R_WORKSPACE_MICROARRAY_COMPARE = R_WORKSPACE_MICROARRAY + "limma.txt";
 	/////////////////////////基因结构的分析////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 保存基因结构文件的路径，用于保存ChIP-Seq的Peak在基因组上分布的统计分析

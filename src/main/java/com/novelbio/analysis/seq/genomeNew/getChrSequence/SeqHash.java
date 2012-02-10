@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -147,38 +148,50 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	}
 	/////////////////////  Ã· »° –Ú ¡–  /////////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public String getSeq(String chrID, long startlocation, long endlocation)
+	public SeqFasta getSeq(String chrID, long startlocation, long endlocation)
 	{
-		return getSeqCase(seqHashAbs.getSeq(chrID, startlocation, endlocation),TOLOWCASE);
+		SeqFasta seqFasta = seqHashAbs.getSeq(chrID, startlocation, endlocation);
+		seqFasta.setTOLOWCASE(TOLOWCASE);
+		return seqFasta;
 	}
 
 	@Override
-	public String getSeq(boolean cisseq, String chrID, long startlocation,
+	public SeqFasta getSeq(boolean cisseq, String chrID, long startlocation,
 			long endlocation) {
-		return getSeqCase(seqHashAbs.getSeq(cisseq, chrID, startlocation, endlocation),TOLOWCASE);
+		SeqFasta seqFasta = seqHashAbs.getSeq(cisseq, chrID, startlocation, endlocation);
+		seqFasta.setTOLOWCASE(TOLOWCASE);
+		return seqFasta;
 	}
 
 	@Override
-	public String getSeq(String chr, int peaklocation, int region,
+	public SeqFasta getSeq(String chr, int peaklocation, int region,
 			boolean cisseq) {
-		return getSeqCase(seqHashAbs.getSeq(chr, peaklocation, region, cisseq),TOLOWCASE);
+		SeqFasta seqFasta = seqHashAbs.getSeq(chr, peaklocation, region, cisseq);
+		seqFasta.setTOLOWCASE(TOLOWCASE);
+		return seqFasta;
 	}
 
 
 	@Override
-	public String getSeq(boolean cisseq, String chrID, List<int[]> lsInfo,
+	public SeqFasta getSeq(boolean cisseq, String chrID, List<ExonInfo> lsInfo,
 			boolean getIntron) {
-		return getSeqCase(seqHashAbs.getSeq(cisseq, chrID, lsInfo, getIntron),TOLOWCASE);
+		SeqFasta seqFasta = seqHashAbs.getSeq(cisseq, chrID, lsInfo, getIntron);
+		seqFasta.setTOLOWCASE(TOLOWCASE);
+		return seqFasta;
 	}
 	@Override
-	public String getSeq(String chrID, List<int[]> lsInfo,
+	public SeqFasta getSeq(String chrID, List<ExonInfo> lsInfo,
 			boolean getIntron) {
-		return getSeqCase(seqHashAbs.getSeq(chrID, lsInfo, getIntron),TOLOWCASE);
+		SeqFasta seqFasta = seqHashAbs.getSeq(chrID, lsInfo, getIntron);
+		seqFasta.setTOLOWCASE(TOLOWCASE);
+		return seqFasta;
 	}
 	@Override
-	public String getSeq(String chrID, boolean cisseq, int start, int end,
-			List<int[]> lsInfo, boolean getIntron) {
-		return getSeqCase(seqHashAbs.getSeq(chrID, cisseq, start, end, lsInfo, getIntron),TOLOWCASE);
+	public SeqFasta getSeq(String chrID, boolean cisseq, int start, int end,
+			List<ExonInfo> lsInfo, boolean getIntron) {
+		SeqFasta seqFasta = seqHashAbs.getSeq(chrID, cisseq, start, end, lsInfo, getIntron);
+		seqFasta.setTOLOWCASE(TOLOWCASE);
+		return seqFasta;
 	}
 	//////////////////////  static method  ////////////////////////////////////////////////////////////////////////////////
 	/**

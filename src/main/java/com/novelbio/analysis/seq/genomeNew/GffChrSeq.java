@@ -28,10 +28,9 @@ public class GffChrSeq extends GffChrAbs{
 				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
 //		gffChrSeq.setGffFile(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, "/media/winE/NBC/Project/Project_FY_Lab/Result/cufflinkAll/cufcompare/cmpAll.combined_cope.gtf");
 		gffChrSeq.loadChrFile();
-		String seq = gffChrSeq.getSeqCDS("NM_004195", true, true, false);
-		SeqFasta seqFasta = new SeqFasta("NM_004195", seq);
-		seqFasta.toAAseq(true, 0);
-		System.out.println(seqFasta.toAAseq(true, 0));
+		SeqFasta seqFasta = gffChrSeq.getSeqCDS("NM_004195", true, true, false);
+		seqFasta.toStringAA(true, 0);
+		System.out.println(seqFasta.toStringAA(true, 0));
 	}
 	
 	/**
@@ -41,7 +40,7 @@ public class GffChrSeq extends GffChrAbs{
 	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
 	 * @return
 	 */
-	public String getSeq(String IsoName, boolean absIso,boolean getIntron)
+	public SeqFasta getSeq(String IsoName, boolean absIso,boolean getIntron)
 	{
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (absIso)
@@ -49,7 +48,7 @@ public class GffChrSeq extends GffChrAbs{
 		else
 			gffGeneIsoInfo = gffHashGene.searchLOC(IsoName).getLongestSplit();
 		
-		return seqHash.getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getIsoInfo(), getIntron);
+		return seqHash.getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, getIntron);
 	}
 	
 	/**
@@ -59,7 +58,7 @@ public class GffChrSeq extends GffChrAbs{
 	 * @param getIntron
 	 * @return
 	 */
-	public String getSeq(boolean cis5to3,String chrID, int startLoc, int endLoc)
+	public SeqFasta getSeq(boolean cis5to3,String chrID, int startLoc, int endLoc)
 	{
 		return seqHash.getSeq(chrID, (long)startLoc, (long)endLoc);
 	}
@@ -75,7 +74,7 @@ public class GffChrSeq extends GffChrAbs{
 	 * @param getIntron
 	 * @return
 	 */
-	public String getSeq(String IsoName, boolean cis5to3,int startExon, int endExon, boolean absIso,boolean getIntron)
+	public SeqFasta getSeq(String IsoName, boolean cis5to3,int startExon, int endExon, boolean absIso,boolean getIntron)
 	{
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (absIso)
@@ -83,7 +82,9 @@ public class GffChrSeq extends GffChrAbs{
 		else
 			gffGeneIsoInfo = gffHashGene.searchLOC(IsoName).getLongestSplit();
 		
-		return seqHash.getSeq(gffGeneIsoInfo.getChrID(), cis5to3, startExon, endExon, gffGeneIsoInfo.getIsoInfo(), getIntron);
+		SeqFasta seqFasta = seqHash.getSeq(gffGeneIsoInfo.getChrID(), cis5to3, startExon, endExon, gffGeneIsoInfo, getIntron);
+		seqFasta.setSeqName(IsoName);
+		return seqFasta;
 	}
 	
 	
@@ -97,7 +98,7 @@ public class GffChrSeq extends GffChrAbs{
 	 * @param getIntron 是否获得内含子
 	 * @return
 	 */
-	public String getSeq(boolean cisseq, String IsoName, boolean absIso,boolean getIntron)
+	public SeqFasta getSeq(boolean cisseq, String IsoName, boolean absIso,boolean getIntron)
 	{
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (absIso)
@@ -105,7 +106,9 @@ public class GffChrSeq extends GffChrAbs{
 		else
 			gffGeneIsoInfo = gffHashGene.searchLOC(IsoName).getLongestSplit();
 		
-		return seqHash.getSeq(cisseq, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getIsoInfo(), getIntron);
+		SeqFasta seqFasta = seqHash.getSeq(cisseq, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, getIntron);
+		seqFasta.setSeqName(IsoName);
+		return seqFasta;
 	}
 
 	/**
@@ -119,7 +122,7 @@ public class GffChrSeq extends GffChrAbs{
 	 * @param getIntron
 	 * @return
 	 */
-	public String getSeqCDS(String IsoName, boolean cis5to3, boolean absIso,boolean getIntron)
+	public SeqFasta getSeqCDS(String IsoName, boolean cis5to3, boolean absIso,boolean getIntron)
 	{
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (absIso)
@@ -127,7 +130,9 @@ public class GffChrSeq extends GffChrAbs{
 		else
 			gffGeneIsoInfo = gffHashGene.searchLOC(IsoName).getLongestSplit();
 		
-		return seqHash.getSeq(gffGeneIsoInfo.getChrID(), cis5to3, 0, 0, gffGeneIsoInfo.getIsoInfoCDS(), getIntron);
+		SeqFasta seqFasta = seqHash.getSeq(gffGeneIsoInfo.getChrID(), cis5to3, 0, 0, gffGeneIsoInfo.getIsoInfoCDS(), getIntron);
+		seqFasta.setSeqName(IsoName);
+		return seqFasta;
 	}
 	
 	/**
@@ -149,9 +154,9 @@ public class GffChrSeq extends GffChrAbs{
 		else
 			gffGeneIsoInfo = gffHashGene.searchLOC(IsoName).getLongestSplit();
 		
-		String seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), cis5to3, 0, 0, gffGeneIsoInfo.getIsoInfoCDS(), getIntron);
-		SeqFasta seqFasta = new SeqFasta("NM_004195", seq);
-		return seqFasta.toAAseq(true, 0);
+		SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), cis5to3, 0, 0, gffGeneIsoInfo.getIsoInfoCDS(), getIntron);
+		seq.setSeqName(IsoName);
+		return seq.toStringAA(true, 0);
 	}
 
 	/**
@@ -171,9 +176,6 @@ public class GffChrSeq extends GffChrAbs{
 		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		for (String string : lsID) {
-			if (string.contains("NM_207421")) {
-				System.out.println("stop");
-			}
 			gffGeneIsoInfo = gffHashGene.searchISO(string.split("/")[0]);
 			ArrayList<int[]> lsCDS = gffGeneIsoInfo.getIsoInfoCDS();
 			if (lsCDS.size() > 0) {

@@ -12,17 +12,15 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	private static final Logger logger = Logger.getLogger(GffGeneIsoTrans.class);
 	public GffGeneIsoTrans(String IsoName, GffDetailGene gffDetailGene, String geneTpye) {
 		super(IsoName, gffDetailGene, geneTpye);
+		super.setCis5to3(false);
 	}
 	public GffGeneIsoTrans(String IsoName, String chrID, int coord, String geneTpye) {
 		super(IsoName, chrID, coord, geneTpye);
+		super.setCis5to3(false);
 	}
 	public GffGeneIsoTrans(String IsoName, String ChrID, String geneType) {
 		super(IsoName, ChrID, geneType);
-	}
-	
-	@Override
-	public Boolean isCis5to3() {
-		return false;
+		super.setCis5to3(false);
 	}
 	@Override
 	public GffGeneIsoTrans clone() {
@@ -69,6 +67,14 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 					+ strand + "\t.\t" + "ID=exon:" + getIsoName()  + ":" + (i+1) +";"+ "Parent=" + getIsoName() + " \r\n";
 		}
 		return geneExon;
+	}
+	@Override
+	protected void setCod2SiteAbs() {
+		cod2ATG =  ATGsite - coord; //CnnnATG    AtgnC
+		cod2UAG = UAGsite - coord; //CnuaG    UAGnnnC
+		cod2TSS = getTSSsite() - coord;
+		cod2TES = getTESsite() - coord;
+		
 	}
 	
 }

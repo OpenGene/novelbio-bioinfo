@@ -304,7 +304,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 * @param colGeneID
 	 * @param colScore
 	 * @param rowStart
-	 * @param Structure 基因的哪个部分的结构
+	 * @param Structure 基因的哪个部分的结构 
 	 * @param binNum 最后结果分成几块
 	 */
 	public ArrayList<MapInfo> readFileGeneMapInfo(String txtExcel,int colGeneID, int colScore, int rowStart, String Structure, int binNum)
@@ -389,9 +389,12 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 
 	
 	/**
+	 * 
 	 * 给定peak的信息，chrID和起点终点，返回被peak覆盖到Tss的基因名和覆盖情况，用于做Tss图
 	 * 自动去冗余基因
-	 * @param lsPeakInfo mapInfo必须有 chrID 和 startLoc 和 endLoc 三项
+	 * @param lsPeakInfo mapInfo必须有 chrID 和 startLoc 和 endLoc 三项 
+	 * @param structure GffDetailGene.TSS等
+	 * @return
 	 */
 	private HashMap<GffDetailGene,Double> getPeakGeneStructure(ArrayList<MapInfo> lsMapInfos, String structure) {
 		//存储最后基因的数量
@@ -425,7 +428,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 * @param chrID
 	 * @param startLoc
 	 * @param endLoc
-	 * @param structure
+	 * @param structure GffDetailGene.TSS等
 	 * @return
 	 */
 	private Set<GffDetailGene> getPeakStructureGene(String chrID, int startLoc, int endLoc, String structure) {

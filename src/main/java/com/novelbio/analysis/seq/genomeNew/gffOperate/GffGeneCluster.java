@@ -7,7 +7,6 @@ import java.util.TreeMap;
 
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.utils.exceptions.StingException;
 
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;

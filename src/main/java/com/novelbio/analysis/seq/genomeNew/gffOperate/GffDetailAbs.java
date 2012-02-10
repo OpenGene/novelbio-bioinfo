@@ -351,7 +351,7 @@ public abstract class GffDetailAbs implements ElementAbs{
 	 * 坐标是否在基因内
 	 * @return
 	 */
-	public boolean getCodInSide() {
+	public boolean isCodInSide() {
 		if (coord < 0) {
 			return false;
 		}
@@ -409,9 +409,9 @@ public abstract class GffDetailAbs implements ElementAbs{
 	 */
 	protected void clone(GffDetailAbs gffDetailAbs)
 	{
-//		gffDetailAbs1.ChrID = gffDetailAbs2.ChrID;
-//		gffDetailAbs1.cis5to3 = gffDetailAbs2.cis5to3
-//		gffDetailAbs1.locString = gffDetailAbs2.locString;
+		gffDetailAbs.ChrID = ChrID;
+		gffDetailAbs.cis5to3 = cis5to3;
+		gffDetailAbs.locString = locString;
 		gffDetailAbs.coord = coord;
 		gffDetailAbs.itemNum = itemNum;
 		gffDetailAbs.numberstart = numberstart;

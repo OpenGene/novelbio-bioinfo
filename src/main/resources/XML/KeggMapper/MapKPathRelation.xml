@@ -8,7 +8,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<select id="queryLskGpathRelations" parameterType="KGpathRelation" resultMap="pathRelationMap">
 		select *
-		from pathRelation
+		from pathrelation
 		<where>
 			<if test="pathName != null and pathName != '' ">
 				 pathName=#{pathName}
@@ -23,7 +23,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	<select id="queryKGpathRelation" parameterType="KGpathRelation" resultMap="pathRelationMap">
 		select *
-		from pathRelation
+		from pathrelation
 		<where>
 			<if test="pathName != null and pathName != '' ">
 				 pathName=#{pathName}
@@ -37,11 +37,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		</where>
 	</select>
 	<insert id="insertKGpathRelation" parameterType="KGpathRelation">
-		insert into pathRelation (pathName,scrPath,trgPath,type)
+		insert into pathrelation (pathName,scrPath,trgPath,type)
 		values (#{pathName},#{scrPath},#{trgPath},#{type})
 	</insert>
 	<update id="updateKGpathRelation" parameterType="KGpathRelation">
-		update substrate
+		update pathrelation
 		<set>
 			<if test="pathName !=null and pathName != '' ">
 				 pathName=#{pathName},

@@ -18,6 +18,25 @@ public class SeqFasta {
 	private static Logger logger = Logger.getLogger(SeqFasta.class);
 	private boolean cis5to3 = true;
 	/**
+	 * 结果的文件是否转化为大小写 True：小写 False：大写 null：不变
+	 * @return
+	 */
+	private Boolean TOLOWCASE = null;
+	public void setTOLOWCASE(Boolean TOLOWCASE) {
+		this.TOLOWCASE = TOLOWCASE;
+	}
+	/**
+	 * nr序列的长度
+	 * @return
+	 */
+	public int length() {
+		return SeqSequence.length();
+	}
+	
+	public void setCis5to3(boolean cis5to3) {
+		this.cis5to3 = cis5to3;
+	}
+	/**
 	 * 反向互补哈希表
 	 */
 	private static HashMap<Character, Character> compmap = null;// 碱基翻译哈希表
@@ -473,20 +492,6 @@ public class SeqFasta {
 	}
 	
 	/**
-	 * 获得具体序列
-	 * 用tostring()代替
-	 */
-	@Deprecated
-	public String getSeq() {
-		return SeqSequence;
-	}
-	/**
-	 * 获得具体序列的反向互补序列
-	 */
-	public String getSeqRC() {
-		return reservecomplement(getSeq());
-	}
-	/**
 	 * 获得具体序列的反向互补序列
 	 */
 	public SeqFasta getSeqRC2() {
@@ -509,20 +514,18 @@ public class SeqFasta {
 	 * @param cisseq序列正反向
 	 *            ，蛋白序列就输true
 	 */
-	public String getsequence(int startlocation,
-			int endlocation, boolean cisseq) {
+	public SeqFasta getSubSeq(int startlocation, int endlocation, boolean cisseq) {
 		String sequence = getsequence(startlocation, endlocation);
-		if (cisseq) {
-			return sequence;
-		} else {
-			return reservecomplement(sequence);
-		}
+		SeqFasta seqFasta = new SeqFasta(SeqName, sequence, cisseq);
+		seqFasta.TOLOWCASE = TOLOWCASE;
+		seqFasta.AA3Len = AA3Len;
+		return seqFasta;
 	}
 
 	/**
 	 * 输入序列坐标，起点和终点 返回序列
 	 */
-	public String getsequence(int startlocation, int endlocation) {
+	private String getsequence(int startlocation, int endlocation) {
 		/**
 		 * 如果位点超过了范围，那么修正位点
 		 */
@@ -586,6 +589,20 @@ public class SeqFasta {
 			}
 		}
 		return recomseq.toString();
+	}
+	
+	/**
+	 * 输入序列，互补对照表 获得反向互补序列
+	 * 其中SeqName不变，cis5to3反向，序列反向互补
+	 */
+	public SeqFasta reservecom() {
+		SeqFasta seqFasta = new SeqFasta();
+		seqFasta.TOLOWCASE = TOLOWCASE;
+		seqFasta.SeqName = SeqName;
+		seqFasta.cis5to3 = !cis5to3;
+		seqFasta.AA3Len = AA3Len;
+		seqFasta.SeqSequence = reservecom(SeqSequence);
+		return seqFasta;
 	}
 	
 	/**
@@ -655,25 +672,33 @@ public class SeqFasta {
 		SeqSequence = FinalSeq;
 	}
 	/**
-	 * 直接返回序列
+	 * 根据TOLOWCASE返回序列
 	 */
 	public String toString()
 	{
-		return SeqSequence;
+		if (SeqSequence == null) {
+			return null;
+		}
+		if (TOLOWCASE == null) {
+			return SeqSequence;
+		}
+		else {
+			return TOLOWCASE.equals(true) ?  SeqSequence.toLowerCase() :  SeqSequence.toUpperCase();
+		}
 	}
 	/**
 	 * 返回AA的fasta序列
 	 */
 	public String toStringAAfasta()
 	{
-		return ">" + SeqName + "\r\n" + toAAseq(true, 0);
+		return ">" + SeqName + "\r\n" + toStringAA(true, 0);
 	}
 	/**
 	 * 返回Nr的fasta序列
 	 */
 	public String toStringNRfasta()
 	{
-		return ">" + SeqName + "\r\n" + SeqSequence;
+		return ">" + SeqName + "\r\n" + toString();
 	}
 	/**
 	 * 统计序列中小写序列，N的数量以及X的数量等
@@ -799,7 +824,7 @@ public class SeqFasta {
 	 * @param orf 第几个orf，0，1，2
 	 * @return
 	 */
-	public String toAAseq(boolean cis,int orf) {
+	public String toStringAA(boolean cis,int orf) {
 		String seq = "";
 		if (!cis) {
 			seq = reservecom(SeqSequence);

@@ -130,4 +130,10 @@ public class GtfDetailCufIso extends GffDetailAbs{
 		hashIsoInfo.put("s", "s");
 		hashIsoInfo.put(".", ".");
 	}
+	@Override
+	public GffDetailAbs clone() {
+		sss
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

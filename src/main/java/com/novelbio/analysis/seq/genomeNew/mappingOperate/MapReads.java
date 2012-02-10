@@ -228,7 +228,6 @@ public class MapReads {
 		this.invNum = invNum;
 		this.mapFile = mapFile;
 	}
-
 	String chrLenFile = "";
 	/**
 	 * 设定染色体长度文件
@@ -252,7 +251,7 @@ public class MapReads {
 		this.mapFile = mapFile;
 	}
 	/**
-	 * 每隔多少位取样
+	 * 每隔多少位取样,如果设定为1，则算法会变化，然后会很精确
 	 * @return
 	 */
 	public int getBinNum() {

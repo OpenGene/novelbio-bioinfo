@@ -43,19 +43,19 @@ class ImpGOExtObo extends ImportPerLine
 			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 		//从第二行开始读取，第一次导入
 		String tmpContent = null;
-//		for (String content : txtGene2Acc.readlines(2)) {
-//			if (content.startsWith("[Term]")) {
-//				tmpContent = content;
-//				continue;
-//			}
-//			if (content.equals("")) {
-//				impPerLine(tmpContent);
-//				tmpContent = null;
-//			}
-//			if (tmpContent != null) {
-//				tmpContent = tmpContent + "\r\n" + content;
-//			}
-//		}
+		for (String content : txtGene2Acc.readlines(2)) {
+			if (content.startsWith("[Term]")) {
+				tmpContent = content;
+				continue;
+			}
+			if (content.equals("")) {
+				impPerLine(tmpContent);
+				tmpContent = null;
+			}
+			if (tmpContent != null) {
+				tmpContent = tmpContent + "\r\n" + content;
+			}
+		}
 		//从第二行开始读取，第二次导入
 		for (String content : txtGene2Acc.readlines(2)) {
 			if (content.startsWith("[Term]")) {
@@ -300,6 +300,7 @@ class ImpGOExtObo extends ImportPerLine
  */
 class Impgene_associationgoa_uniprot extends ImportPerLine
 {
+	private static Logger logger = Logger.getLogger(Impgene_associationgoa_uniprot.class);
 	/**
 	 * 从第5行开始读取
 	 */
@@ -440,15 +441,26 @@ Example:O43526-2
 	 */
 	@Override
 	void impPerLine(String lineContent) {
+
 		String[] ss = lineContent.split("\t");
-		CopedID copedID = new CopedID(ss[1], Integer.parseInt(ss[12].replace("taxon:", "")));
+		int taxID = 0;
+		try {
+			taxID = Integer.parseInt(ss[12].replace("taxon:", ""));
+		} catch (Exception e) {
+			logger.error("taxID出错：" + lineContent);
+		}
+		
+		if (!hashTaxID.contains(taxID)) {
+			return;
+		}
+		CopedID copedID = new CopedID(ss[1], taxID);
 		//找到合适的表，NCBI或UniProt，并导入UniID
 		copedID.setUpdateRefAccID(ss[1],ss[2]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_UNIPROT_UNIID, false);
 		copedID.update(true);
 		//导入symbol和description
-		copedID.setUpdateAccID(ss[2]);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, false);
+//		copedID.setUpdateAccID(ss[2]);
+//		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, false);
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setSymb(ss[2]);
 		geneInfo.setDescrp(ss[9]);

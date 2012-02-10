@@ -11,20 +11,20 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<select id="queryLsKGNCompInfo" parameterType="KGNIdkeg" resultMap="compInfoMap">
 		select *
-		from kgComp
+		from kgcomp
 		where kegID = #{kegID}
 	</select>
 	<select id="queryKGNCompInfo" parameterType="KGNIdkeg" resultMap="compInfoMap">
 		select *
-		from kgComp
+		from kgcomp
 		where kegID = #{kegID}
 	</select>
 	<insert id="insertKGNCompInfo" parameterType="KGNCompInfo">
-		insert into kgComp (kegID,usualName,formula,mass,remark,comment)
+		insert into kgcomp (kegID,usualName,formula,mass,remark,comment)
 		values (#{kegID},#{usualName},#{formula},#{mass},#{remark},#{comment})
 	</insert>
 	<update id="updateKGNCompInfo" parameterType="KGNCompInfo">
-		update kgComp set
+		update kgcomp set
 		<set>
 			<if test="kegID !=null and kegID != ''">
 				 kegID=#{kegID},

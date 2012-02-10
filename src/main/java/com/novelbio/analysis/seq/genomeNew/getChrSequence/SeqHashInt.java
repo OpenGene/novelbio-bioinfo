@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
+
 public interface SeqHashInt {
 	/**
 	 * 返回chrID和chrLength的对应关系
@@ -55,7 +57,7 @@ public interface SeqHashInt {
 	 * @throws IOException
 	 */
 	public void saveChrLengthToFile(String outFile) ;
-	public String getSeq(String chrID, long startlocation, long endlocation);
+	public SeqFasta getSeq(String chrID, long startlocation, long endlocation);
 	
 	
 	/**
@@ -71,7 +73,7 @@ public interface SeqHashInt {
 	 *            序列终点
 	 * @return
 	 */
-	public String getSeq(boolean cisseq, String chrID, long startlocation, long endlocation);
+	public SeqFasta getSeq(boolean cisseq, String chrID, long startlocation, long endlocation);
 	
 	/**
 	 * 给出peak位点，查找指定范围的sequence，根据CaseChange改变大小写
@@ -86,7 +88,7 @@ public interface SeqHashInt {
 	 * @param cisseq
 	 *            true:正向链 false：反向互补链
 	 */
-	public String getSeq(String chr, int peaklocation, int region,
+	public SeqFasta getSeq(String chr, int peaklocation, int region,
 			boolean cisseq);
 
 	/**
@@ -97,7 +99,7 @@ public interface SeqHashInt {
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
-	public String getSeq(boolean cisseq, String chrID,List<int[]> lsInfo, boolean getIntron);
+	public SeqFasta getSeq(boolean cisseq, String chrID,List<ExonInfo> lsInfo, boolean getIntron);
 	
 	/**
 	 * 获得所有序列的名字
@@ -110,7 +112,7 @@ public interface SeqHashInt {
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
-	public String getSeq(String chrID, List<int[]> lsInfo, boolean getIntron);
+	public SeqFasta getSeq(String chrID, List<ExonInfo> lsInfo, boolean getIntron);
 	
 	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
@@ -126,8 +128,8 @@ public interface SeqHashInt {
 	 * @param getIntron 是否获取内含子，内含子自动小写
 	 * @return
 	 */
-	String getSeq(String chrID, boolean cisseq, int start, int end,
-			List<int[]> lsInfo, boolean getIntron);
+	SeqFasta getSeq(String chrID, boolean cisseq, int start, int end,
+			List<ExonInfo> lsInfo, boolean getIntron);
 	/**
 	 * 外显子之间用什么分割
 	 * @param sep

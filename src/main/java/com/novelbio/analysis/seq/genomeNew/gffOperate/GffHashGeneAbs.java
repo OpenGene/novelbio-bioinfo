@@ -221,7 +221,7 @@ public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, G
 	 * hashGeneID2Acc，一个geneID对应多个accID的时候，accID用“//”隔开
 	 */
 	private HashMap<String, String> getHashGeneID2Acc(String txtaccID2GeneID) {
-		if (hashGeneID2Acc != null) {
+		if (hashGeneID2Acc != null && hashGeneID2Acc.size() > 0) {
 			return hashGeneID2Acc;
 		}
 		if (!FileOperate.isFileExist(txtaccID2GeneID)) {

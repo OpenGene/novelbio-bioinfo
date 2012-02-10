@@ -3,8 +3,6 @@ package com.novelbio.analysis.seq.snpNCBI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.statusAckLog;
-
 import com.novelbio.analysis.seq.genomeNew.listOperate.ElementAbs;
 import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

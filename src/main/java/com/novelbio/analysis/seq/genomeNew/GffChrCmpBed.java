@@ -3,9 +3,6 @@ package com.novelbio.analysis.seq.genomeNew;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
-import org.broadinstitute.sting.utils.collections.CircularArray.Int;
-
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;

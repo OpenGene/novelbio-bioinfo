@@ -23,7 +23,7 @@ public class GffChrChIP extends GffChr1{
 	 */
 	public String[] getGeneRegion(String accID,int region) {
 		GffHashGeneAbs gffHashGene = (GffHashGeneAbs) gffHash;
-		GffDetailGene gffDetailGene = gffHashGene.getGeneDetail(accID);
+		GffDetailGene gffDetailGene = gffHashGene.searchLOC(accID);
 		if (gffDetailGene == null) {
 			return null;
 		}

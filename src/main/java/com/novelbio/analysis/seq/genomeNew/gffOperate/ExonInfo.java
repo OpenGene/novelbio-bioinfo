@@ -18,6 +18,7 @@ public class ExonInfo implements ElementAbs, Comparable<ExonInfo>
 	 * @param cis
 	 */
 	public ExonInfo(int start, int end, boolean cis) {
+		this.cis = cis;
 		if (cis) {
 			exon[0] = Math.min(start, end);
 			exon[1] = Math.max(start, end);
@@ -106,9 +107,12 @@ public class ExonInfo implements ElementAbs, Comparable<ExonInfo>
 		}
 		return false;
 	}
+	/**
+	 * 本外显子的   起点_终点
+	 */
 	@Override
 	public String getLocString() {
-		return "" + exon[0] + exon[1];
+		return "" + exon[0] + "_" +  exon[1];
 	}
 	@Override
 	public int compareTo(ExonInfo o) {

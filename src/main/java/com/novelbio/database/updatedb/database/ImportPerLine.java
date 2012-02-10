@@ -2,6 +2,8 @@ package com.novelbio.database.updatedb.database;
 
 import java.util.HashSet;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.TaxInfo;
@@ -13,6 +15,7 @@ import com.novelbio.database.domain.geneanno.TaxInfo;
  */
 abstract class ImportPerLine
 {
+	private static Logger logger = Logger.getLogger(ImportPerLine.class);
 	static HashSet<Integer> hashTaxID = null;
 	static String taxIDfile = "";
 	int readFromLine = 2;
@@ -34,10 +37,16 @@ abstract class ImportPerLine
 		else 
 			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 		//从第二行开始读取
+		int num = 0;
 		for (String content : txtGene2Acc.readlines(readFromLine)) {
 			impPerLine(content);
+			num++;
+			if (num%10000 == 0) {
+				logger.info("import line number:" + num);
+			}
 		}
 		impEnd();
+		logger.info("finished import file " + gene2AccFile);
 	}
 	
 	/**

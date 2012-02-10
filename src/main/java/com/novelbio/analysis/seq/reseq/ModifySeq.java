@@ -6,9 +6,10 @@ import java.util.Comparator;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.LocInfo;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -93,7 +94,7 @@ public class ModifySeq {
 		}
 		txtReadandWrite.close();
 		txtModifySeqInfoFile.close();
-		ArrayList<String[]> lsresult = seqFasta.getSeqInfo();
+		ArrayList<LocInfo> lsresult = seqFasta.getSeqInfo();
 		TxtReadandWrite txtStatistic = new TxtReadandWrite(statictis, true);
 		
 		try {

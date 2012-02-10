@@ -68,7 +68,11 @@ public class ServUniGeneInfo extends AbsGetSpring implements MapUniGeneInfo{
 			UniGeneInfo uniGeneInfo = new UniGeneInfo();
 			uniGeneInfo.copeyInfo(geneInfo);
 			uniGeneInfo.setGeneUniID(genUniID);
-			insertUniGeneInfo(uniGeneInfo);
+			try {
+				insertUniGeneInfo(uniGeneInfo);
+			} catch (Exception e) {
+			e.printStackTrace();
+			}
 		}
 	}
 }

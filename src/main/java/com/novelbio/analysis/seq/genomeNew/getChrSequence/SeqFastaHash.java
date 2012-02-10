@@ -182,7 +182,7 @@ public class SeqFastaHash extends SeqHashAbs {
 			 }
 			 else 
 			 {
-				if (tmpSeq.getSeq().length()<seqFasta.getSeq().length()) 
+				if (tmpSeq.length()<seqFasta.length()) 
 				{
 					hashSeq.put(seqFasta.getSeqName(), seqFasta);
 					hashChrLength.put(seqFasta.getSeqName(), (long) seq.length());
@@ -204,9 +204,9 @@ public class SeqFastaHash extends SeqHashAbs {
 	{
 		if (hashSeq.containsKey(SeqID)) {
 			if (cisseq) {
-				return hashSeq.get(SeqID).getSeq().toLowerCase();
+				return hashSeq.get(SeqID).toString().toLowerCase();
 			} else {
-				return hashSeq.get(SeqID).getSeqRC();
+				return hashSeq.get(SeqID).reservecom().toString();
 			}
 		}
 	   return null;
@@ -217,14 +217,14 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * 输入序列坐标，起点和终点
 	 * 返回序列
 	 */
-	protected String getSeqInfo(String seqID, long startlocation, long endlocation) throws IOException 
-	{ 
+	protected SeqFasta getSeqInfo(String seqID, long startlocation, long endlocation) throws IOException 
+	{
 		SeqFasta targetChr=hashSeq.get(seqID);
 		if (targetChr == null) {
 			logger.error("没有该序列 " +seqID);
-			return "没有该序列 " +seqID;
+			return null;
 		}
-		return targetChr.getsequence((int)startlocation, (int)endlocation);
+		return targetChr.getSubSeq((int)startlocation, (int)endlocation, true);
 	}
 	
 	/**
@@ -274,19 +274,19 @@ public class SeqFastaHash extends SeqHashAbs {
 
 		for (Entry<String, SeqFasta> entry : hashSeq.entrySet()) {
 			SeqFasta seqFasta = entry.getValue();
-			if (SeqHash.testSeqLen(seqFasta.getSeq().length(), len))//长度在目标范围内
+			if (SeqHash.testSeqLen(seqFasta.toString().length(), len))//长度在目标范围内
 			{
 				if (sepFile) {
 					
 					TxtReadandWrite txtReadandWrite2 = new TxtReadandWrite(filePath + prix + seqFasta.getSeqName().replace(" ", "_")+".fasta", true);
 					txtReadandWrite2.writefileln(">"+seqFasta.getSeqName().trim().replace(" ", "_"));
-					txtReadandWrite2.writefilePerLine(seqFasta.getSeq(), writelen);
+					txtReadandWrite2.writefilePerLine(seqFasta.toString(), writelen);
 					txtResultSeqName.writefileln(txtReadandWrite2.getFileName());
 					txtReadandWrite2.close();
 				}
 				else {
 					txtReadandWrite.writefileln(">"+seqFasta.getSeqName().trim().replace(" ", "_"));
-					txtReadandWrite.writefilePerLine(seqFasta.getSeq(), writelen);
+					txtReadandWrite.writefilePerLine(seqFasta.toString(), writelen);
 					txtReadandWrite.writefileln("");
 				}
 			}

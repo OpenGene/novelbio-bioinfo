@@ -5,10 +5,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 
 
 
@@ -104,10 +106,9 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 		//////////////////////////正式读取，类似GffUCSC的读取方法///////////////////////
 	 	//实例化三个表
 			locHashtable =new HashMap<String, GffDetailPeak>();//存储每个LOCID和其具体信息的对照表
-			Chrhash=new HashMap<String, ArrayList<GffDetailPeak>>();//一个哈希表来存储每条染色体
+			Chrhash=new LinkedHashMap<String, ListAbs<GffDetailPeak>>();
 			LOCIDList=new ArrayList<String>();//顺序存储每个peak号，不管是否重叠
-			LOCChrHashIDList=new ArrayList<String>();//
-			ArrayList<GffDetailPeak> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+			ListAbs<GffDetailPeak> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 			
 			String chrnametmpString="";
 			int tmppeakstart=-1;
@@ -126,11 +127,11 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 					{
 						LOCList.trimToSize();
 						 //把peak名称顺序装入LOCIDList
-						   for (GffDetailPeak gffDetail : LOCList) {
-							   LOCChrHashIDList.add(gffDetail.getLocString());
-						   }
+//						   for (GffDetailPeak gffDetail : LOCList) {
+//							   LOCChrHashIDList.add(gffDetail.getLocString());
+//						   }
 					}
-					LOCList=new ArrayList<GffDetailPeak>();//新建一个LOCList并放入Chrhash
+					LOCList=new ListAbs<GffDetailPeak>();//新建一个LOCList并放入Chrhash
 					Chrhash.put(chrnametmpString, LOCList);
 				}
 				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,9 +170,9 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 				locHashtable.put(gffdetailpeak.getLocString(), gffdetailpeak);
 			}
 			LOCList.trimToSize();
-			for (GffDetailPeak gffDetail : LOCList) {
-				LOCChrHashIDList.add(gffDetail.getLocString());
-			}
+//			for (GffDetailPeak gffDetail : LOCList) {
+//				LOCChrHashIDList.add(gffDetail.getLocString());
+//			}
 			txtPeakInfo.close();
 			//System.out.println(mm);
 	}

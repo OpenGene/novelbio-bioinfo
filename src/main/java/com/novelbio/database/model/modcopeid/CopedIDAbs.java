@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import org.apache.log4j.Logger;
+import org.eclipse.jdt.internal.compiler.env.IGenericField;
 
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegGenEntryKO;
@@ -261,7 +262,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			geneInfo.setTaxID(taxID);
 			symbol = geneInfo.getSymb();
 		}
-		if (symbol.equals("")) {
+		if (symbol == null || symbol.equals("")) {
 			symbol = getGenName(getGenUniID(), getDatabaseTyep());
 		}
 	}
@@ -581,6 +582,13 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	@Override
 	public void setUpdateGO(String GOID, String GOdatabase, String GOevidence,
 			String GORef, String gOQualifiy) {
+		if (GOID == null) {
+			return;
+		}
+		GOID = GOID.trim();
+		if (GOID.equals("")) {
+			return;	
+		}
 		Gene2Go gene2Go = new Gene2Go();
 		gene2Go.setGOID(GOID);
 		gene2Go.setTaxID(taxID);
@@ -636,7 +644,8 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 */
 	@Override
 	public boolean update(boolean updateUniID) {
-		boolean flag1 = updateGeneID(updateUniID);
+		ArrayList<String> lsGeneID = getUpdateGenUniID();
+		boolean flag1 = updateGeneID(lsGeneID, updateUniID);
 		boolean flag2 = updateGeneInfo();
 		boolean flag3 = updateGene2Go();
 		boolean flag4 = updateBlastInfo();
@@ -676,7 +685,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 *            true,导入uniID库，并且重置idtype
 	 * @throws EOFException
 	 */
-	private boolean updateGeneID(boolean updateUniID) {
+	private boolean updateGeneID(ArrayList<String> lsGeneID, boolean updateUniID) {
 		if (genUniID == null && accID == null) {
 			return false;
 		}
@@ -688,15 +697,14 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			logger.error("升级geneID时没有设置该gene的数据库来源，自动设置为NCBIID");
 			databaseType = NovelBioConst.DBINFO_NCBI_ACC_GENEAC;
 		}
-		ArrayList<String> lsGenID = getUpdateGenUniID();
 		// 只升级第一个获得的geneID
-		if (lsGenID != null && !lsGenID.get(0).equals(CopedID.IDTYPE_ACCID)) {
-			this.idType = lsGenID.get(0);
+		if (lsGeneID != null && !lsGeneID.get(0).equals(CopedID.IDTYPE_ACCID)) {
+			this.idType = lsGeneID.get(0);
 			//refAccID可能会查到超过不止一个ID，不同的情况，用不同的方法处理
 			if (uniqID == null) {
 				
 			}
-			else if ( lsGenID.size() > 3) {
+			else if ( lsGeneID.size() > 3) {
 				if (uniqID) {
 					logger.error("查到了超过一个ID! 输入accID：" + getAccID() + "  RefID：" + lsRefAccID.get(0));
 					return false;
@@ -707,19 +715,19 @@ public abstract class CopedIDAbs implements CopedIDInt {
 				}
 			}
 			
-			if (lsGenID.get(0).equals(CopedID.IDTYPE_GENEID)) {
+			if (lsGeneID.get(0).equals(CopedID.IDTYPE_GENEID)) {
 				NCBIID ncbiid = new NCBIID();
 				ncbiid.setAccID(accID);
 				ncbiid.setDBInfo(this.databaseType);
-				ncbiid.setGenUniID(lsGenID.get(2));
-				ncbiid.setTaxID(Integer.parseInt(lsGenID.get(1)));
+				ncbiid.setGenUniID(lsGeneID.get(2));
+				ncbiid.setTaxID(Integer.parseInt(lsGeneID.get(1)));
 				servNCBIID.updateNCBIID(ncbiid, overrideDBinfo);
-			} else if (lsGenID.get(0).equals(CopedID.IDTYPE_UNIID)) {
+			} else if (lsGeneID.get(0).equals(CopedID.IDTYPE_UNIID)) {
 				UniProtID uniProtID = new UniProtID();
 				uniProtID.setAccID(accID);
 				uniProtID.setDBInfo(this.databaseType);
-				uniProtID.setGenUniID(lsGenID.get(2));
-				uniProtID.setTaxID(Integer.parseInt(lsGenID.get(1)));
+				uniProtID.setGenUniID(lsGeneID.get(2));
+				uniProtID.setTaxID(Integer.parseInt(lsGeneID.get(1)));
 				servUniProtID.updateUniProtID(uniProtID, overrideDBinfo);
 			}
 		} else if (updateUniID) {
@@ -913,10 +921,8 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		// 挑选出最短的geneID
 		Collections.sort(lsGenUniID, new Comparator<ArrayList<String>>() {
 			public int compare(ArrayList<String> o1, ArrayList<String> o2) {
-				Integer o1Info = CopedIDAbs.getHashAccIDtype2Int().get(
-						o1.get(0));
-				Integer o2Info = CopedIDAbs.getHashAccIDtype2Int().get(
-						o2.get(0));
+				Integer o1Info = CopedIDAbs.getHashAccIDtype2Int().get(o1.get(0));
+				Integer o2Info = CopedIDAbs.getHashAccIDtype2Int().get(o2.get(0));
 				int flag = o1Info.compareTo(o2Info);
 				if (flag != 0) {
 					return flag;
@@ -939,6 +945,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 
 	private static HashMap<String, Integer> getHashAccIDtype2Int() {
 		if (hashAccIDtype2Int == null) {
+			hashAccIDtype2Int = new HashMap<String, Integer>();
 			hashAccIDtype2Int.put(CopedID.IDTYPE_ACCID, 300);
 			hashAccIDtype2Int.put(CopedID.IDTYPE_UNIID, 200);
 			hashAccIDtype2Int.put(CopedID.IDTYPE_GENEID, 100);
@@ -963,9 +970,16 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 *         没查到就返回accID-accID
 	 */
 	public static ArrayList<String> getNCBIUniTax(String accID, int taxID) {
+		ArrayList<String> lsResult = new ArrayList<String>();
+		if (accID == null || accID.equals("")) {
+			lsResult.add(CopedID.IDTYPE_ACCID);
+			lsResult.add(taxID + "");
+			lsResult.add(accID);
+			return lsResult;
+		}
 		ServNCBIID servGeneAnno = new ServNCBIID();
 		ServUniProtID servUniProtID = new ServUniProtID();
-		ArrayList<String> lsResult = new ArrayList<String>();
+
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setAccID(accID);
 		ncbiid.setTaxID(taxID);

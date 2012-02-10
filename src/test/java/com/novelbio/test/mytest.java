@@ -60,7 +60,11 @@ import com.novelbio.analysis.seq.chipseq.BedPeakSicer;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.FastQMapAbs;
 import com.novelbio.analysis.seq.mapping.FastQMapBwa;
 import com.novelbio.analysis.seq.mapping.FastQMapSoap;
@@ -71,6 +75,7 @@ import com.novelbio.analysis.tools.Mas3.getProbID;
 import com.novelbio.analysis.tools.formatConvert.bedFormat.Soap2Bed;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.Patternlocation;
@@ -96,10 +101,13 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite("/media/winE/Bioinformatics/DataBase/gene_info/aaa/aaa", false);
-		for (String string : txtReadandWrite.readlines(2)) {
-			System.out.println(string);
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(TxtReadandWrite.GZIP,"/media/winE/Bioinformatics/DataBase/idmapping_selected.tab.gz", false);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(TxtReadandWrite.GZIP,"/media/winE/Bioinformatics/DataBase/idmapping_selected.tab_sub.gz", true);
+		for (String string : txtReadandWrite.readlines(19500000)) {
+			txtWrite.writefileln(string);
 		}
+		txtReadandWrite.close();
+		txtWrite.close();
 	}
 	
 	

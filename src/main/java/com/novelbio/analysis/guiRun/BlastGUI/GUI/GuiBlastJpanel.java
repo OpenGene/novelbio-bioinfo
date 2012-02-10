@@ -45,6 +45,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.gui.CtrlNormal;
 import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 
@@ -690,7 +691,7 @@ public class GuiBlastJpanel extends JPanel{
 		if(jComGOClassSelect == null) {
 			ComboBoxModel jCmbGOClassSelectModel = 
 				new DefaultComboBoxModel(
-						new String[] { GOInfoAbs.GO_BP, GOInfoAbs.GO_MF,GOInfoAbs.GO_CC, GOInfoAbs.GO_ALL});
+						new String[] { Go2Term.GO_BP, Go2Term.GO_MF,Go2Term.GO_CC, Go2Term.GO_ALL});
 			jComGOClassSelect = new JComboBox();
 			jComGOClassSelect.setModel(jCmbGOClassSelectModel);
 			GoClass = (String) jComGOClassSelect.getSelectedItem();
