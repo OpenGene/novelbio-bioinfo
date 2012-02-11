@@ -20,6 +20,13 @@ abstract class ImportPerLine
 	static String taxIDfile = "";
 	int readFromLine = 2;
 	/**
+	 * 将无法升级的行写入该文本
+	 */
+	TxtReadandWrite txtWriteExcep = null;
+	public void setTxtWriteExcep(String txtWriteExcepFile) {
+		txtWriteExcep = new TxtReadandWrite(txtWriteExcepFile, true);
+	}
+	/**
 	 * 覆盖该方法来设定从第几行开始读取
 	 */
 	protected void setReadFromLine() {
@@ -39,13 +46,21 @@ abstract class ImportPerLine
 		//从第二行开始读取
 		int num = 0;
 		for (String content : txtGene2Acc.readlines(readFromLine)) {
-			impPerLine(content);
+			if (!impPerLine(content)) {
+				if (txtWriteExcep != null) {
+					txtWriteExcep.writefileln(content);
+				}
+			}
 			num++;
 			if (num%10000 == 0) {
 				logger.info("import line number:" + num);
 			}
 		}
 		impEnd();
+		txtGene2Acc.close();
+		if (txtWriteExcep != null) {
+			txtWriteExcep.close();
+		}
 		logger.info("finished import file " + gene2AccFile);
 	}
 	
@@ -81,7 +96,7 @@ abstract class ImportPerLine
 	 * 按行处理具体信息
 	 * @param lineContent
 	 */
-	abstract void impPerLine(String lineContent);
+	abstract boolean impPerLine(String lineContent);
 	/**
 	 * 结尾的时候做的工作，譬如最后还需要导入一次什么东西，就重写该函数
 	 */

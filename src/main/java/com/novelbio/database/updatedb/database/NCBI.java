@@ -90,11 +90,11 @@ class ImpGen2Acc extends ImportPerLine
 	9	1246503	-	-	-	AAD12601.1	3282741	AF041837.1	3282736	-	-	?	-
 	 */
 	@Override
-	protected void impPerLine(String content) {
+	public boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
 		int taxID = Integer.parseInt(ss[0]);
 		if (!hashTaxID.contains(taxID)) {
-			return;
+			return true;
 		}
 		CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
 
@@ -122,6 +122,7 @@ class ImpGen2Acc extends ImportPerLine
 		copedID.setUpdateAccID(ss[7]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_GENEAC, false);
 		copedID.update(false);
+		return true;
 	}
 }
 
@@ -143,11 +144,11 @@ class ImpGen2Ensembl extends ImportPerLine
 	 * @param content
 	 */
 	@Override
-	protected void impPerLine(String content) {
+	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
 		int taxID = Integer.parseInt(ss[0]);
 		if (!hashTaxID.contains(taxID)) {
-			return;
+			return true;
 		}
 		CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
  
@@ -177,6 +178,7 @@ class ImpGen2Ensembl extends ImportPerLine
 		copedID.setUpdateAccID(ss[6]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ENSEMBL_PRO, false);
 		copedID.update(false);
+		return true;
 	}
 }
 /**
@@ -194,17 +196,17 @@ class ImpGeneRef2UniID extends ImportPerLine
 {
 	static CopedID copedID;
 	@Override
-	protected void impPerLine(String content) {
+	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
 		if (copedID == null || !copedID.getAccID().equals(CopedID.removeDot(ss[0]))) {
 			copedID = new CopedID(ss[0],0);
 			if (copedID.getTaxID() == 0 || !hashTaxID.contains(copedID.getTaxID())) {
-				return;
+				return true;
 			}
 		}
 		copedID.setUpdateAccID(ss[1]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_UNIPROT_GenralID, false);
-		copedID.update(false);
+		return copedID.update(false);
 	}
 }
 
@@ -216,11 +218,11 @@ class ImpGeneRef2UniID extends ImportPerLine
 class ImpGene2Info extends ImportPerLine
 {
 	@Override
-	protected void impPerLine(String content) {
+	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
 		int taxID = Integer.parseInt(ss[0]);
 		if (!hashTaxID.contains(taxID)) {
-			return;
+			return true;
 		}
 		CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
 		GeneInfo geneInfo = new GeneInfo();
@@ -234,7 +236,7 @@ class ImpGene2Info extends ImportPerLine
 		geneInfo.setNomState(ss[12]); geneInfo.setOtherDesg(ss[13]);
 		geneInfo.setModDate(ss[14]);
 		copedID.setUpdateGeneInfo(geneInfo);
-		copedID.update(false);
+		return copedID.update(false);
 	}
 }
 
@@ -255,11 +257,11 @@ class ImpGene2Pub extends ImportPerLine
 	static CopedID copedID;
 
 	@Override
-	protected void impPerLine(String content) {
+	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
 		int taxID = Integer.parseInt(ss[0]);
 		if (!hashTaxID.contains(taxID)) {
-			return;
+			return true;
 		}
 		AGeneInfo geneInfo = new GeneInfo();
 		if (copedID == null || !copedID.getGenUniID().equals(ss[1])) {
@@ -267,7 +269,7 @@ class ImpGene2Pub extends ImportPerLine
 		}
 		geneInfo.setPubmedIDs(ss[2]);
 		copedID.setUpdateGeneInfo(geneInfo);
-		copedID.update(false);
+		return copedID.update(false);
 	}
 }
 
@@ -281,11 +283,11 @@ class ImpGene2GO extends ImportPerLine
 {
 	static CopedID copedID;
 	@Override
-	void impPerLine(String lineContent) {
+	public boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
 		int taxID = Integer.parseInt(ss[0]);
 		if (!hashTaxID.contains(taxID)) {
-			return;
+			return true;
 		}
 		if (copedID == null || !copedID.getGenUniID().equals(ss[1])) {
 			if (copedID != null) {
@@ -299,6 +301,7 @@ class ImpGene2GO extends ImportPerLine
 		else {
 			copedID.setUpdateGO(ss[2], NovelBioConst.DBINFO_NCBI, ss[3], "PMID:"+ss[6], ss[4]);
 		}
+		return true;
 	}
 	void impEnd()
 	{

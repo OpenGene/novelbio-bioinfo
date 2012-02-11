@@ -158,6 +158,32 @@ public class GffChrSeq extends GffChrAbs{
 		seq.setSeqName(IsoName);
 		return seq.toStringAA(true, 0);
 	}
+	/**
+	 * 提取基因promoter附近的序列
+	 * @param IsoName 基因名
+	 * @param upBp tss上游多少bp，负数，如果正数就在下游
+	 * @param downBp tss下游多少bp，正数，如果负数就在上游
+	 * @return
+	 */
+	public SeqFasta getPromoter(String IsoName, int upBp, int downBp) {
+		GffGeneIsoInfo gffGeneIsoInfo = null;
+		gffGeneIsoInfo = gffHashGene.searchISO(IsoName);
+		int TssSite = gffGeneIsoInfo.getTSSsite();
+		int startlocation = 0; int endlocation = 0;
+		if (gffGeneIsoInfo.isCis5to3()) {
+			startlocation = TssSite + upBp;
+			endlocation = TssSite + downBp;
+		}
+		else {
+			startlocation = TssSite - upBp;
+			endlocation = TssSite - downBp;
+		}
+		int start = Math.min(startlocation, endlocation);
+		int end = Math.max(startlocation, endlocation);
+		SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getChrID(), start, end);
+		seq.setSeqName(gffGeneIsoInfo.getIsoName());
+		return seq;
+	}
 
 	/**
 	 * 获得某个物种的全部aa序列，从refseq中提取更加精确

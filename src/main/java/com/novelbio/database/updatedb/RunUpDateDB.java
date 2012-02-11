@@ -8,13 +8,13 @@ import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.updatedb.database.RiceID;
 import com.novelbio.database.updatedb.database.UpDateNBCDBFile;
 import com.novelbio.database.updatedb.goextract.AffyChipGO;
 import com.novelbio.database.updatedb.idconvert.AffyIDmodify;
 import com.novelbio.database.updatedb.idconvert.ArabidopsisTair;
 import com.novelbio.database.updatedb.idconvert.GeneInfoTaxIDgetSymbol;
 import com.novelbio.database.updatedb.idconvert.NCBIIDOperate;
-import com.novelbio.database.updatedb.idconvert.RiceID;
 import com.novelbio.database.updatedb.idconvert.UniProtConvertID;
 import com.novelbio.database.updatedb.idconvert.Yeast;
 

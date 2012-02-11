@@ -91,13 +91,7 @@ class IdmappingSelected extends ImportPerLine
 	public void setUpdateUniprotID(boolean updateUniprotID) {
 		this.updateUniprotID = updateUniprotID;
 	}
-	/**
-	 * 将无法升级的行写入该文本
-	 */
-	TxtReadandWrite txtWriteExcep = null;
-	public void setTxtWriteExcep(String txtWriteExcepFile) {
-		txtWriteExcep = new TxtReadandWrite(txtWriteExcepFile, true);
-	}
+
 	/**
 	 * 将idmapping_selected.tab导入数据库，仅导入指定的物种
 	 * 文件格式如下<br>
@@ -126,12 +120,12 @@ class IdmappingSelected extends ImportPerLine
 	23. Additional PubMed
 	*/
 	@Override
-	protected void impPerLine(String content) {
+	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
 		ss = ArrayOperate.copyArray(ss, 23);
 		int taxID = Integer.parseInt(ss[13]);
 		if (!hashTaxID.contains(taxID)) {
-			return;
+			return true;
 		}
 		CopedID copedID = null;
 		//如果geneID存在，那么就新建一个geneUniID的类
@@ -145,8 +139,7 @@ class IdmappingSelected extends ImportPerLine
 				for (String string : geneIDs) {
 					copedID = new CopedID(CopedID.IDTYPE_GENEID, string, taxID);
 					if (updateInfo(ss[0], copedID, NovelBioConst.DBINFO_UNIPROT_GenralID) && !updateUniprotID) {
-						txtWriteExcep.writefileln(content);
-						return;
+						return false;
 					}
 					updateInfo(ss[1], copedID, NovelBioConst.DBINFO_UNIPROT_UNIPROTKB_ID);
 					updateInfo(ss[7], copedID, NovelBioConst.DBINFO_IPI);
@@ -162,7 +155,7 @@ class IdmappingSelected extends ImportPerLine
 					updateInfo(ss[20], copedID, NovelBioConst.DBINFO_ENSEMBL_TRS);
 					updateInfo(ss[21], copedID, NovelBioConst.DBINFO_ENSEMBL_PRO);
 				}
-				return;
+				return true;
 			}
 		}
 		else {
@@ -179,8 +172,7 @@ class IdmappingSelected extends ImportPerLine
  			copedID.setUpdateRefAccID(lsRefAccID);
 		}
 		if (updateInfo(ss[0], copedID, NovelBioConst.DBINFO_UNIPROT_GenralID) && !updateUniprotID) {
-			txtWriteExcep.writefileln(content);
-			return;
+			return false;
 		}
 		updateInfo(ss[1], copedID, NovelBioConst.DBINFO_UNIPROT_UNIPROTKB_ID);
 		updateInfo(ss[7], copedID, NovelBioConst.DBINFO_IPI);
@@ -195,6 +187,7 @@ class IdmappingSelected extends ImportPerLine
 		updateInfo(ss[19], copedID, NovelBioConst.DBINFO_ENSEMBL);
 		updateInfo(ss[20], copedID, NovelBioConst.DBINFO_ENSEMBL_TRS);
 		updateInfo(ss[21], copedID, NovelBioConst.DBINFO_ENSEMBL_PRO);
+		return true;
 	}
 	
 	private void addListAccID(String tmpAccID, ArrayList<String> lsRefAccID) {
@@ -290,12 +283,12 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 	23. Additional PubMed
 	*/
 	@Override
-	public void impPerLine(String content) {
+	public boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
 		ss = ArrayOperate.copyArray(ss, 23);
 		int taxID = Integer.parseInt(ss[13]);
 		if (!hashTaxID.contains(taxID)) {
-			return;
+			return true;
 		}
 		CopedID copedID = null;
 		//如果geneID存在，那么就新建一个geneUniID的类
@@ -309,12 +302,12 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 				for (String string : geneIDs) {
 					copedID = new CopedID(CopedID.IDTYPE_GENEID, string, taxID);
 					if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
-						txtWriteExcep.writefileln(content);
+						return false;
 					}
 					updateGO(ss[6], copedID, NovelBioConst.DBINFO_UNIPROTID);
 					updatePubmed(ss[16], copedID);
 				}
-				return;
+				return true;
 			}
 		}
 		else {
@@ -331,7 +324,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
  			copedID.setUpdateRefAccID(lsRefAccID);
 		}
 		if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
-			txtWriteExcep.writefileln(content);
+			return false;
 		}
 		if (ss[6] != null && !ss[6].equals("")) {
 			updateGO(ss[6], copedID, NovelBioConst.DBINFO_UNIPROT_GenralID);
@@ -339,6 +332,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 		if (ss[16] != null && !ss[16].equals("")) {
 			updatePubmed(ss[16], copedID);
 		}
+		return true;
 	}
 	
 	private void addListAccID(String tmpAccID, ArrayList<String> lsRefAccID) {

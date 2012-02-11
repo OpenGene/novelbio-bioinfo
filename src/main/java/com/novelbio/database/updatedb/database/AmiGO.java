@@ -71,19 +71,23 @@ class ImpGOExtObo extends ImportPerLine
 				tmpContent = tmpContent + "\r\n" + content;
 			}
 		}
+		txtGene2Acc.close();
+		if (txtWriteExcep != null) {
+			txtWriteExcep.close();
+		}
 	}
 	
 	/**
 	 * 第一次先倒入已有的信息。
 	 */
 	@Override
-	void impPerLine(String lineContent) {
+	public boolean impPerLine(String lineContent) {
 		if (lineContent == null || lineContent.equals("")) {
-			return;
+			return true;
 		}
 		String[] ss = lineContent.split("\r\n");
 		if (lineContent.contains("is_obsolete: true")) {
-			return;
+			return true;
 		}
 		ArrayList<String> lsQueryID = new ArrayList<String>();
 		Go2Term go2Term = new Go2Term();
@@ -135,7 +139,7 @@ class ImpGOExtObo extends ImportPerLine
 				String parentGOID = extractGOID(string);
 				if (parentGOID == null) {
 					logger.error("is_a 中没有对应的GOID：" + string);
-					return;
+					return false;
 				}
 				if (string.contains("part_of")) {
 					go2Term.setParent(parentGOID, Go2Term.RELATION_PARTOF);
@@ -159,6 +163,7 @@ class ImpGOExtObo extends ImportPerLine
 			go2Term.setGoIDQuery(string2);
 			go2Term.update();
 		}
+		return true;
 	}
 	
 	/**
@@ -440,7 +445,7 @@ The unique identifier of a specific spliceform of the protein described in colum
 Example:O43526-2
 	 */
 	@Override
-	void impPerLine(String lineContent) {
+	public boolean impPerLine(String lineContent) {
 
 		String[] ss = lineContent.split("\t");
 		int taxID = 0;
@@ -451,7 +456,7 @@ Example:O43526-2
 		}
 		
 		if (!hashTaxID.contains(taxID)) {
-			return;
+			return true;
 		}
 		CopedID copedID = new CopedID(ss[1], taxID);
 		//找到合适的表，NCBI或UniProt，并导入UniID
@@ -467,7 +472,7 @@ Example:O43526-2
 		geneInfo.setDBinfo(NovelBioConst.DBINFO_UNIPROT_GenralID);
 		copedID.setUpdateGeneInfo(geneInfo);
 		copedID.setUpdateGO(ss[4], NovelBioConst.DBINFO_UNIPROTID, ss[6], ss[5], ss[3]);
-		copedID.update(true);
+		return copedID.update(true);
 	}
 	
 

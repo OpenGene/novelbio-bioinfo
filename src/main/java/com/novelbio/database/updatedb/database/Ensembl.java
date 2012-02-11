@@ -87,10 +87,18 @@ class EnsembleGTF extends ImportPerLine
 			if (checkIfSame(oldContent, content)) {
 				continue;
 			}
-			impPerLine(content);
+			if (!impPerLine(content)) {
+				if (txtWriteExcep != null) {
+					txtWriteExcep.writefileln(content);
+				}
+			}
 			oldContent = content;
 		}
 		impEnd();
+		txtGene2Acc.close();
+		if (txtWriteExcep != null) {
+			txtWriteExcep.close();
+		}
 		logger.info("finished import file " + gene2AccFile);
 	}
 	/**
@@ -127,7 +135,7 @@ class EnsembleGTF extends ImportPerLine
 	 * E22C19W28_E50C23	protein_coding	CDS	775083	775229	.	-	0	 gene_id "ENSGALG00000010254"; transcript_id "ENSGALT00000016676"; exon_number "12"; gene_name "FAIM2"; gene_biotype "protein_coding"; protein_id "ENSGALP00000016657";
 	 */
 	@Override
-	void impPerLine(String lineContent) {
+	public boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
 		String[] ssID = ss[8].split(";");
 		ArrayList<String> lsRefID = new ArrayList<String>();
@@ -154,11 +162,11 @@ class EnsembleGTF extends ImportPerLine
 		if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
 			GffCodGene gffCodGene = gffHashGene.searchLocation("chr"+ss[0], Integer.parseInt(ss[4]));
 			if (gffCodGene == null || !gffCodGene.isInsideLoc()) {
-				return;
+				return true;
 			}
 			copedID = gffCodGene.getGffDetailThis().getLongestSplit().getCopedID();
 			if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
-				return;
+				return true;
 			}
 		}
 		
@@ -185,6 +193,7 @@ class EnsembleGTF extends ImportPerLine
 				copedID.update(true);
 			}
 		}
+		return true;
 	}
 	
 }

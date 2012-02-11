@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.stat.StatUtils;
 import org.apache.commons.math.stat.inference.TestUtils;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibLsf.valueType;
 import org.jfree.xml.factory.objects.ArrayObjectDescription;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -25,7 +25,7 @@ public class MeDIParrayGFF {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main1(String[] args) {
 		String parentPath = "/media/winE/NBC/Project/Methylation_FXL_20111229/GFF Files/GFF Files/result/data/";
 //		String ratiogff = parentPath + "DJY_635_ratio.gff";
 //		String outFile = parentPath + FileOperate.getFileNameSep(ratiogff)[0]+"_out."+ FileOperate.getFileNameSep(ratiogff)[1];
@@ -52,7 +52,10 @@ public class MeDIParrayGFF {
 		getPvalueT(excelTxtFile, 2, colSample1, colSample2, 100, outFile);
 	}
 	
-	
+	public static void main(String[] args) {
+		copeFinalFile("/home/zong0jie/桌面/out_filtered_Mid_anno_-2k+2k/out_filtered_Mid_anno_-2k+2k.xls",
+				"/home/zong0jie/桌面/out_filtered_Mid_anno_-2k+2k/out_filtered_Mid_anno_-2k+2k_Result.xls", 1, 3, 4);
+	}
 	
 	
 	public static void formatPath(String filePath)
@@ -162,8 +165,45 @@ public class MeDIParrayGFF {
 		txtGff.close();
 		txtOut.close();
 	}
+	/**
+	 * 给定输入文件，就是挑选出的三个探针连在一起的甲基化芯片分析结果
+	 * 去除冗余，将三个探针连在一起的只保留最中间的一条探针
+	 * @param inFile
+	 * @param outFile
+	 */
+	public static void copeFinalFile(String inFile, String outFile, int colChrID, int colStart, int colEnd)
+	{
+		colChrID--; colStart--; colEnd--;
+		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(inFile, 1);
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		//加上title
+		lsResult.add(lsInfo.get(0));
+		ArrayList<String[]> lsTmp = new ArrayList<String[]>();
+		for (int i = 1; i < lsInfo.size(); i++) {
+			String[] tmp = lsInfo.get(i);
+			//如果本探针和上一个探针只相差1000bp
+			if (lsTmp.size() == 0) {
+				lsTmp.add(tmp);
+			}
+			else if (tmp[colChrID].equals(lsTmp.get(lsTmp.size() - 1)[colChrID]) && Double.parseDouble(tmp[colStart]) - Double.parseDouble(lsTmp.get(lsTmp.size() - 1)[colEnd]) < 1000) {
+				lsTmp.add(tmp);
+			}
+			else {
+				lsResult.add(getMedProb(lsTmp));
+				lsTmp.clear();
+				lsTmp.add(tmp);
+			}
+		}
+		lsResult.add(getMedProb(lsTmp));
+		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
+		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+	}
 	
-	
+	private static String[] getMedProb(ArrayList<String[]> lsProbs)
+	{
+		int i = lsProbs.size()/2;
+		return lsProbs.get(i);
+	}
 	
 	/**
 	 * 尾部添加4列，1:sample1 median        2:sample2 median              3:sample1/sample2            4:pvalue

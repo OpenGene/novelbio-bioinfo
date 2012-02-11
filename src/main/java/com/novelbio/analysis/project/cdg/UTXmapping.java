@@ -10,12 +10,31 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 public class UTXmapping {
 	public static void main(String[] args) {
-		String parent = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/";
-		String fastqFHE = parent + "FHE.clean.fq.gz";
-		String fastqGZW4 = parent + "HSZ_W-4.clean.fq.gz";
-//		pipleChIPLine(fastqGZK4, parent + "PeakCalling/K4sicer");
-		pipleChIPLineMACS(fastqFHE, parent + "PeakCalling/FHE");
+		mappingAdd();
 	}
+	/**
+	 * 徐龙勇补测的数据，合并后进行mapping
+	 */
+	private static void mappingAdd()
+	{
+		String parentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/";
+		String fastqKEGZ = parentFile + "KEall.fq.gz";
+		String peakFileKE = parentFile + "peakcalling/KE_ALL_SICER.xls";
+		pipleChIPLineSICER(fastqKEGZ, peakFileKE);
+		
+		String fastqWEGZ = parentFile + "WEall.fq.gz";
+		String peakFileWE = parentFile + "peakcalling/KE_ALL_SICER.xls";
+		pipleChIPLineSICER(fastqWEGZ, peakFileWE);
+		
+		String fastqK4GZ = parentFile + "K4all.fq.gz";
+		String peakFileK4 = parentFile + "peakcalling/K4_ALL_SICER.xls";
+		pipleChIPLineSICER(fastqK4GZ, peakFileK4);
+		
+		String fastqW4GZ = parentFile + "W4all.fq.gz";
+		String peakFileW4 = parentFile + "peakcalling/W4_ALL_SICER.xls";
+		pipleChIPLineSICER(fastqW4GZ, peakFileW4);
+	}
+	
 	
 	
 	public static void pipleChIPLineSICER(String fastqGZ, String PeakFile) {
@@ -34,7 +53,7 @@ public class UTXmapping {
 		
 		BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
 		bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
-		bedPeakSicer.setEffectiveGenomeSize(78);
+		bedPeakSicer.setEffectiveGenomeSize(85);
 		bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE, FileOperate.getParentPathName(PeakFile), FileOperate.getFileName(PeakFile));
 	}
 	

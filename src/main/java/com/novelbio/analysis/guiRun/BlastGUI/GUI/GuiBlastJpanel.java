@@ -617,7 +617,7 @@ public class GuiBlastJpanel extends JPanel{
 	}
 	private JComboBox getJCobTaxSelect() {
 		if(jCobTaxSelect == null) {
-			final HashMap<String, Integer> hashTaxID = CtrlNormal.getSpecies();
+			final HashMap<String, Integer> hashTaxID = CopedID.getHashNameTaxID();
 			
 			String[] speciesarray = new String[hashTaxID.size()+1];
 //			String[] speciesarray = new String[hashTaxID.size()];
