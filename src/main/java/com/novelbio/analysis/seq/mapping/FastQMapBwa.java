@@ -27,7 +27,7 @@ public class FastQMapBwa extends FastQMapAbs{
 	 */
 	private static final int GENOME_SIZE_IN_MEMORY = 500000;
 	private static Logger logger = Logger.getLogger(FastQMapSoap.class);
-	private int mapQ = 20;
+	private int mapQ = 10;
 	
 	String sampleGroup = "";
 	/**

@@ -27,8 +27,8 @@ public class MedianGet {
 		MedianGet medianGet = new MedianGet();
 //		medianGet.getMedian("/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/20111113/miRNA治疗后VS治疗前.xls", 1, 
 //				"/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/20111113/miRNA治疗后VS治疗前_cope.xls", 2,3,4,5,6,7,8,9,10,11,12,13,14,15);
-		medianGet.getMedian("/home/zong0jie/桌面/复件 信号值.txt", 1, 
-		"/home/zong0jie/桌面/复件 信号值_coped.xls", 2,3,4,5,6,7);
+		medianGet.getMedian("/home/zong0jie/桌面/共表达median.xls", 1, 
+		"/home/zong0jie/桌面/共表达median_coped.xls", 2,3,4,5,6,7);
 	}
 
 	/**

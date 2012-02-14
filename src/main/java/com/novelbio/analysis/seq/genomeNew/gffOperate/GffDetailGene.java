@@ -101,6 +101,12 @@ public class GffDetailGene extends GffDetailAbs
 				return i;
 			}
 		}
+		for (int i = 0; i < lsGffGeneIsoInfos.size(); i++) {
+			GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(i);
+			if (gffGeneIsoInfo.getIsoName().toLowerCase().contains(isoName.toLowerCase())) {
+				return i;
+			}
+		}
 		return -1;
 	}
 	

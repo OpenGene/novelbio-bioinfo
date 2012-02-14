@@ -25,7 +25,7 @@ public class GetAllSeq {
 				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
 //		gffChrSeq.setGffFile(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, "/media/winE/NBC/Project/Project_FY_Lab/Result/cufflinkAll/cufcompare/cmpAll.combined_cope.gtf");
 		gffChrSeq.loadChrFile();
-		ArrayList<SeqFasta> lsSeqFastas = gffChrSeq.getSeqProteinAll();
+		ArrayList<SeqFasta> lsSeqFastas = gffChrSeq.getSeqCDSAll();
 		HashSet<String> hash = new HashSet<String>();
 		for (SeqFasta seqFasta : lsSeqFastas) {
 			if (seqFasta.toStringAAfasta().contains("*")) {

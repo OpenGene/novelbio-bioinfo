@@ -18,8 +18,8 @@ public class anno {
 	private static void anno() {
 		GffChrAnno gffChrAnno = new GffChrAnno(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ);
 		gffChrAnno.setFilterTssTes(new int[]{-2000,2000}, null);
-		String parent = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/peakCalling/SICER/";
-		String txtFile = parent + "W0sort-W200-G200-E100.scoreisland";
+		String parent = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcalling/";
+		String txtFile = parent + "K4all_SE-W200-G600-E100.scoreisland";
 //		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-2k+2k", "xls"));
 //		
 //		txtFile = parent + "HSZ_W-4.clean.fq_SE-W200-G600-E100.scoreisland_score35.xls";
@@ -29,16 +29,16 @@ public class anno {
 //		txtFile = parent + "W4sort-W200-G200-E100.scoreisland_score35.xls";
 //		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-2k+2k", "xls"));
 		
-		txtFile = parent + "k0sort-W200-G200-E100.scoreisland_score35.xls";
+		txtFile = parent + "KEall_SE-W200-G600-E100.scoreisland";
 		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-2k+2k", "xls"));
 		
-		txtFile = parent + "k4sort-W200-G200-E100.scoreisland_score35.xls";
+		txtFile = parent + "W4all_SE-W200-G600-E100.scoreisland";
 		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-2k+2k", "xls"));
 		
-		txtFile = parent + "W0sort-W200-G200-E100.scoreisland_score35.xls";
+		txtFile = parent + "WEall_SE-W200-G600-E100.scoreisland";
 		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-2k+2k", "xls"));
 		
-		txtFile = parent + "W4sort-W200-G200-E100.scoreisland_score35.xls";
+		txtFile = parent + "K4all_SE-W200-G600-E100.scoreisland";
 		gffChrAnno.annoFile(txtFile, 1, 2, 3, FileOperate.changeFileSuffix(txtFile, "_anno_-2k+2k", "xls"));
 		
 		

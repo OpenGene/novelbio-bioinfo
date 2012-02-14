@@ -14,7 +14,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	 * 
 	 */
 	private static final long serialVersionUID = 4583552188474447935L;
-	public static final String SEP = "//";
+	public static final String SEP = "/";
 	/**
 	 * 保存某个坐标和所在的element数目,
 	 * value: 正数，element中，

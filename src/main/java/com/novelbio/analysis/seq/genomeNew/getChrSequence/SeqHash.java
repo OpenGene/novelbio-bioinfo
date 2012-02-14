@@ -159,6 +159,9 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	public SeqFasta getSeq(boolean cisseq, String chrID, long startlocation,
 			long endlocation) {
 		SeqFasta seqFasta = seqHashAbs.getSeq(cisseq, chrID, startlocation, endlocation);
+		if (seqFasta == null) {
+			return null;
+		}
 		seqFasta.setTOLOWCASE(TOLOWCASE);
 		return seqFasta;
 	}

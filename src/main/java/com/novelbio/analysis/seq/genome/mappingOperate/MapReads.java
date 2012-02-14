@@ -11,8 +11,6 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.broadinstitute.sting.utils.collections.CircularArray.Int;
-
 import com.novelbio.analysis.seq.genome.getChrSequence.ChrSearch;
 import com.novelbio.analysis.seq.genome.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;

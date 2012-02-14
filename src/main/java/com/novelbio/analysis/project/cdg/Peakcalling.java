@@ -21,7 +21,7 @@ public class Peakcalling {
 	
 	public static void main(String[] args) {
 		Peakcalling sicerpeakcalling = new Peakcalling();
-		sicerpeakcalling.peakCallingMACS();
+		sicerpeakcalling.peakCallingSICER();
 	}
 public void peakCallingMACS() {
  
@@ -48,78 +48,45 @@ public void peakCallingMACS() {
 	
 	
 	public void peakCallingSICER() {
-		
-//		try {
-//			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/KEseSort.bed";
-//			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
-//			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
-//			bedPeakSicer.setEffectiveGenomeSize(78);
-//			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
-//					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/KE.clean.fq/result/peakCalling/SICER", "KE");
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//		}
-//		try {
-//			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/2WseSort.bed";
-//			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
-//			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
-//			bedPeakSicer.setEffectiveGenomeSize(78);
-//			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
-//					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/2W.clean.fq/result/peakCalling/SICER", "2W");
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//		}
-//		try {
-//			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/2KseSort.bed";
-//			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
-//			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
-//			bedPeakSicer.setEffectiveGenomeSize(78);
-//			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
-//					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/2K.clean.fq/result/peakCalling/SICER", "2K");
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//		}
-		
+		String parentPath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/";
+		String out = parentPath + "peakcallingNew/";
 		try {
-			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/k0sort.bed";
+			String bedFile = parentPath + "WEall_SE.bed";
 			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
-			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K4);
-			bedPeakSicer.setEffectiveGenomeSize(78);
+			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
+			bedPeakSicer.setEffectiveGenomeSize(85);
 			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
-					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/peakCalling/SICER", "k0");
+					out, "WE");
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
 		try {
-			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/k4sort.bed";
+			String bedFile = parentPath + "KEall_SE.bed";
 			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
-			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K4);
-			bedPeakSicer.setEffectiveGenomeSize(78);
+			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
+			bedPeakSicer.setEffectiveGenomeSize(85);
 			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
-					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/peakCalling/SICER", "k4");
+					out, "KE");
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
 		try {
-			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/W0sort.bed";
+			String bedFile = parentPath + "W4all_SE.bed";
 			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
-			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K4);
-			bedPeakSicer.setEffectiveGenomeSize(78);
+			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
+			bedPeakSicer.setEffectiveGenomeSize(85);
 			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
-					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/peakCalling/SICER", "W0");
+					out, "W4");
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
 		try {
-			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/W4sort.bed";
+			String bedFile = parentPath + "K4all_SE.bed";
 			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
-			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K4);
-			bedPeakSicer.setEffectiveGenomeSize(78);
+			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
+			bedPeakSicer.setEffectiveGenomeSize(85);
 			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE,
-					"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/peakCalling/SICER", "W4");
+					out, "K4");
 		} catch (Exception e) {
 			// TODO: handle exception
 		}

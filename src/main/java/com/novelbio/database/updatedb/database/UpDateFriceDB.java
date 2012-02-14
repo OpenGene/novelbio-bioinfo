@@ -189,11 +189,11 @@ public class UpDateFriceDB {
 	 * 给定一个GOterm，以及相应的GeneID或UniID，将这个GoTerm插入相应的表.
 	 * 当一个geneID仅有GOterm存在时会最合适
 	 * 同时指定GO数据库的来源，数据库中没有的会被插入。
-	 * @param geneID 如果geneID不为0，插入NCBIID数据库
+	 * @param GeneID 如果geneID不为0，插入NCBIID数据库
 	 * @param uniID 如果uniID不为null，插入uniProtID数据库
 	 * 注意如果uniID和geneID并存，那么优先考虑geneID
-	 * @param lsAccIDInfo 一组accID的信息 list-string[2] 0:accID 1:DataBaseInfo
-	 * @param arStrings 指定的databaseInfo
+	 * @param tmpGOID GOID
+	 * @param DBINFO 指定的databaseInfo
 	 * @return 插入返回true，没有能够插入，也就是没找到，返回false
 	 */
 	public static boolean upDateGenGO(long GeneID,String uniID,String tmpGOID,String DBINFO) {

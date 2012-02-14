@@ -92,7 +92,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 					lastGffdetailUCSCgene.numberend = Integer.parseInt(geneInfo[4])+endRegion;
 
 				// 将本基因(转录本)的ID装入locString中
-				lastGffdetailUCSCgene.setLocString(lastGffdetailUCSCgene.getLocString() + "/" + geneInfo[0]);
+				lastGffdetailUCSCgene.setLocString(lastGffdetailUCSCgene.getLocString() + ListAbs.SEP + geneInfo[0]);
 				if (Math.abs(Integer.parseInt(geneInfo[5]) - Integer.parseInt(geneInfo[6])) <= 2) {
 					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], GffGeneIsoInfo.TYPE_GENE_MIRNA);
 				}
@@ -112,7 +112,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				LOCIDList.add(geneInfo[0]);
 				// 将locHashtable中相应的项目也修改，同时加入新的项目
 				// 因为UCSC里面没有转录本一说，只有两个LOCID共用一个区域的情况，所以只能够两个不同的LOCID指向同一个GffdetailUCSCgene
-				String[] allLOCID = lastGffdetailUCSCgene.getLocString().split("/");
+				String[] allLOCID = lastGffdetailUCSCgene.getLocString().split(ListAbs.SEP);
 				for (int i = 0; i < allLOCID.length; i++) {
 					locHashtable.put(allLOCID[i].toLowerCase(), lastGffdetailUCSCgene);
 				}
@@ -161,7 +161,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
      *  <b>3.LOCIDList</b><br>
      * （LOCID）这个List顺序存储每个基因号或条目号，这个打算用于提取随机基因号，实际上是所有条目按顺序放入，但是不考虑转录本(UCSC)或是重复(Peak) 这个ID与locHash一一对应，但是不能用它来确定某条目的前一个或后一个条目 <br>
      * <b>4.LOCChrHashIDList </b><br>
-     *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起，用斜线分割"/"： NM_XXXX/NM_XXXX...<br>
+     *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起，用ListAbs.SEP分割： NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
 	protected void ReadGffarrayExcep2(String gfffilename) throws Exception {
@@ -221,7 +221,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				
 				
 				// 将本基因(转录本)的ID装入locString中
-				lastGffdetailUCSCgene.setLocString(lastGffdetailUCSCgene.getLocString() + "/" + geneInfo[0]);
+				lastGffdetailUCSCgene.setLocString(lastGffdetailUCSCgene.getLocString() + ListAbs.SEP + geneInfo[0]);
 				if (Math.abs(Integer.parseInt(geneInfo[5]) - Integer.parseInt(geneInfo[6])) <= 1) {
 					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], GffGeneIsoInfo.TYPE_GENE_MIRNA, geneInfo[2].equals("+"));
 				}
@@ -241,7 +241,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				LOCIDList.add(geneInfo[0]);
 				// 将locHashtable中相应的项目也修改，同时加入新的项目
 				// 因为UCSC里面没有转录本一说，只有两个LOCID共用一个区域的情况，所以只能够两个不同的LOCID指向同一个GffdetailUCSCgene
-				String[] allLOCID = lastGffdetailUCSCgene.getLocString().split("/");
+				String[] allLOCID = lastGffdetailUCSCgene.getLocString().split(ListAbs.SEP);
 				for (int i = 0; i < allLOCID.length; i++) {
 					locHashtable.put(allLOCID[i].toLowerCase(), lastGffdetailUCSCgene);
 				}

@@ -23,10 +23,10 @@ public class runRegDistance {
 		 int rowEnd = -1;
 		 int binNum = 5; //精度
 		 int range = 5000;//上下游多少距离
-		 String mapparentFIle = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/mappingFile/";
+		 String mapparentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/";
 //		 String PeakparentFile = "/media/winE/NBC/Project/ChIPSeq_WJK100909/result/PeakCalling/";//+ "peakCalling/";
 		try {
-			String mapFilePath=mapparentFIle+"Nextend_sort.bed";
+			String mapFilePath=mapparentFIle+"K4all_Extend.bed";
 			String geneFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTes/expressTssTes/high.txt";
 //			String txtPeakFile= PeakparentFile + "Peak Information.xls";
 			String resultPrefix = "Nhigh";

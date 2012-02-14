@@ -44,22 +44,12 @@ public class ExonInfo implements ElementAbs, Comparable<ExonInfo>
 	@Override
 	public void setStartCis(int startLoc)
 	{
-		if (cis) {
-			exon[0] = (int)startLoc;
-		}
-		else {
-			exon[1] = (int)startLoc;
-		}
+		exon[0] = (int)startLoc;
 	}
 	@Override
 	public void setEndCis(int endLoc)
 	{
-		if (cis) {
-			exon[1] = (int)endLoc;
-		}
-		else {
-			exon[0] = (int)endLoc;
-		}
+		exon[1] = (int)endLoc;
 	}
 	@Override
 	public int getStartCis() {

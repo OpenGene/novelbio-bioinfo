@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -25,17 +24,18 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class CombineTab {
 	
 	public static void main(String[] args) {
-		String parentFile = "/home/zong0jie/×ÀÃæ/";
-		String file1 = parentFile + "4.xls";
-		String file2 = parentFile + "5.xls";
-		String file3 = parentFile + "6.xls";
+		String parentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcalling/";
+		String file1 = parentFile + "K4all_SE-W200-G600-E100_anno_-2k+2k.xls";
+		String file2 = parentFile + "KEall_SE-W200-G600-E100_anno_-2k+2k.xls";
+		String file3 = parentFile + "W4all_SE-W200-G600-E100_anno_-2k+2k.xls";
+		String file4 = parentFile + "WEall_SE-W200-G600-E100_anno_-2k+2k.xls";
 		CombineTab comb = new CombineTab();
-		comb.setColDetai(file1, "4", 2,3,4,5,6,7,8,9,10);
-		comb.setColDetai(file2, "5", 2,3,4,5,6,7,8,9,10);
-		comb.setColDetai(file3, "6", 2,3,4,5,6,7,8,9,10);
-		
-		comb.setColID(1);
-		comb.exeToFile(parentFile + "4_5_6.xls");
+		comb.setColDetai(file1, "K4", 4,6,7);
+		comb.setColDetai(file2, "KE", 4,6,7);
+		comb.setColDetai(file3, "W4", 4,6,7);
+		comb.setColDetai(file4, "WE", 4,6,7);
+		comb.setColID(5);
+		comb.exeToFile(parentFile + "K27_New.xls");
 	}
 	
 	

@@ -133,7 +133,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 * 顺序获得，可以获得某个LOC在基因上的定位。
 	 * 其中TigrGene的ID每个就是一个LOCID，也就是说TIGR的ID不需要进行切割，当然切了也没关系
 	 */
-//	protected ArrayList<String> LOCChrHashIDList;
+	protected ArrayList<String> LOCChrHashIDList;
 	
 	/**
 	 * 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就用ListAbs.SEP隔开，
@@ -141,16 +141,16 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	 * 顺序获得，可以获得某个LOC在基因上的定位。
 	 * 其中TigrGene的ID每个就是一个LOCID，也就是说TIGR的ID不需要进行切割，当然切了也没关系
 	 */
-//	public ArrayList<String> getLOCChrHashIDList() {
-//		if (LOCChrHashIDList != null) {
-//			return LOCChrHashIDList;
-//		}
-//		LOCChrHashIDList = new ArrayList<String>();
-//		for (ListAbs<T> lsAbs : Chrhash.values()) {
-//			LOCChrHashIDList.addAll(lsAbs.getLOCIDList());
-//		}
-//		return LOCChrHashIDList;
-//	}
+	public ArrayList<String> getLOCChrHashIDList() {
+		if (LOCChrHashIDList != null) {
+			return LOCChrHashIDList;
+		}
+		LOCChrHashIDList = new ArrayList<String>();
+		for (ListAbs<T> lsAbs : Chrhash.values()) {
+			LOCChrHashIDList.addAll(lsAbs.getLOCIDList());
+		}
+		return LOCChrHashIDList;
+	}
 	
 	/**
 	 * 这个是真正的查找用hash表<br>

@@ -7,6 +7,7 @@ import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.reseq.SoapsnpInfo;
+import com.novelbio.base.dataStructure.Patternlocation;
 
 /**
  * 本类专门用来装fasta文件的具体信息，的超类
@@ -839,6 +840,76 @@ public class SeqFasta {
 			resultAA.append(AminoAcid.convertDNACode2AA(tmp, true));
 		}
 		return resultAA.toString();
+	}
+	/**
+	 * 给定motif，在序列上查找相应的正则表达式<br>
+	 * 返回正向序列和反向序列查找的结果<br>
+	 * List-string [4] <br>
+	 * 0: seqName<br>
+	 * 1: strand : + / -<br>
+	 * 2: 具体的motif序列<br>
+	 * 3: motif最后一个碱基与本序列终点的距离
+	 * @param regex
+	 * @return
+	 */
+	public ArrayList<String[]> getMotifScanResult(String regex) {
+		return getMotifScanResult(regex,0);
+	}
+	
+	/**
+	 * 可能不能精确到单碱基
+	 * 给定motif，在序列上查找相应的正则表达式<br>
+	 * 返回正向序列和反向序列查找的结果<br>
+	 * List-string [4] <br>
+	 * 0: seqName<br>
+	 * 1: strand : + / -<br>
+	 * 2: 具体的motif序列<br>
+	 * 3: motif最后一个碱基与本序列site点的距离
+	 * @param regex
+	 * @param site 距离该序列终点的位置，上游为负数，下游为正数。譬如tss距离seq终点500bp，则site为-500。
+	 * 也就是序列取到tss下游500bp。
+	 * 最后返回motif到site点，那么<b>负数</b>表示motif在site的上游，<b>正数</b>表示motif在site的下游
+	 * @return
+	 */
+	public ArrayList<String[]> getMotifScanResult(String regex, int site) {
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		ArrayList<String[]> lsTmpResultFor = Patternlocation.getPatLoc(toString(), regex, false);
+		if (lsTmpResultFor != null && lsTmpResultFor.size() > 0) {
+			for (String[] strings : lsTmpResultFor) {
+				String[] tmpResult = new String[4];
+				tmpResult[0] = getSeqName();
+				tmpResult[1] = "+";
+				tmpResult[2] = strings[0];
+				if (site != 0)
+					tmpResult[3] = (Integer.parseInt(strings[2]) + site) * -1 + "";
+				else 
+					tmpResult[3] = strings[2];
+				
+				lsResult.add(tmpResult);
+			}
+		}
+		ArrayList<String[]> lsTmpResultRev = Patternlocation.getPatLoc(reservecom().toString(), regex, false);
+		if (lsTmpResultRev != null && lsTmpResultRev.size() > 0) {
+			for (String[] strings : lsTmpResultRev) {
+				String[] tmpResult = new String[4];
+				tmpResult[0] = getSeqName();
+				tmpResult[1] = "-";
+				tmpResult[2] = strings[0];
+				if (site != 0)
+					tmpResult[3] = (Integer.parseInt(strings[1]) + site) * -1 + "";
+				else
+					tmpResult[3] = strings[1];
+				
+				lsResult.add(tmpResult);
+			}
+		}
+		return lsResult;
+	}
+	
+	public static String[] getMotifScanTitle()
+	{
+		String[] title = new String[]{"SeqName","Strand","MotifSeq","Distance2SeqEnd"};
+		return title;
 	}
 	
 	public SeqFasta clone() {

@@ -35,7 +35,7 @@ class ImpGOExtObo extends ImportPerLine
 	 * 所以覆盖方法
 	 */
 	@Override
-	public void importInfoPerLine(String gene2AccFile, boolean gzip) {
+	public void updateFile(String gene2AccFile, boolean gzip) {
 		TxtReadandWrite txtGene2Acc;
 		if (gzip)
 			txtGene2Acc = new TxtReadandWrite(TxtReadandWrite.GZIP, gene2AccFile);

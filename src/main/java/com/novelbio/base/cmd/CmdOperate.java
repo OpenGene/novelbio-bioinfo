@@ -108,6 +108,7 @@ public class CmdOperate {
 			String cmd1SH = NovelBioConst.PATH_POSITION_RELATE + cmdFileName+ DateTime.getDate() + ".sh";
 			TxtReadandWrite txtCmd1 = new TxtReadandWrite(cmd1SH, true);
 			txtCmd1.writefile(cmd);
+			txtCmd1.close();
 			cmd = "sh "+cmd1SH;
 			try {
 				doInBackgroundB();

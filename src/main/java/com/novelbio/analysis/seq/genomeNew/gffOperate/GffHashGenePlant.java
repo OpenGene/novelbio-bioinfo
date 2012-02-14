@@ -154,6 +154,9 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	   GffDetailGene gffDetailLOC= null;
 	   while((content=reader.readLine())!=null)//读到结尾
 	   {
+		   if (content.contains("LOC_Os05g52120")) {
+			System.out.println("stop");
+		}
 		   if(content.charAt(0)=='#')
 			   continue;
 		   ////////////////// 需要进行替换的地方 /////////////////////////////////////////////////////////////

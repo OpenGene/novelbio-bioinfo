@@ -1,31 +1,110 @@
 package com.novelbio.analysis.project.cdg;
 
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.statusAckLog;
-
 import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.chipseq.regDensity.RegDensity;
+import com.novelbio.base.fileOperate.FileOperate;
 
 public class TssPlot {
 	public static void main(String[] args) {
-		TssK4();
-		TssK27();
-		TssFHX();
+
+		
+//		bedFile = parentFile + "";
+//		bedSeq = new BedSeq(bedFile);
+//		bedSeq.sortBedFile(FileOperate.changeFileSuffix(bedFile, "_sorted", null));
+
+		TssK27Gene();
+//		TssK4();
+//		TssK27();
+//		TssFHX();
 	}
-	public static void TssK4() {
+	
+	public static void TssK27Gene() {
 		 int[] columnID=new int[3]; columnID[0] = 1; columnID[1] = 2; columnID[2] = 3;//读取peak文件，读取哪几列，依次为 chrID， 起点， 终点
 		 int[] colMap = new int[3]; colMap[0] = 1; colMap[1] =2; colMap[2] =3; //mapping 文件中 chr 起点 终点的位置 常规bed文件 1，2，3 王从茂的文件，0，1，2
 		 int rowStart = 2;
 		 int rowEnd = -1;
 		 int binNum = 5; //精度
 		 int range = 5000;//上下游多少距离
-		 String mapparentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/mapping/";
-		 String PeakparentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110225/result/peakCalling/SICER/";//+ "peakCalling/";
-		 String resultpath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/readsTss/";
+		 String mapparentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/";
+		 String PeakparentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcalling/";//+ "peakCalling/";
+		 String resultpath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/tsstesplot/";
+		 String geneFile = "/home/zong0jie/桌面/refseqMM9allgene.txt";
 		try {
-			String mapFilePath=mapparentFIle+"k0_extend_sort.bed";
+			String mapFilePath=mapparentFIle+"W4all_sorted_extend.bed";
 			
-			String txtPeakFile= PeakparentFile + "k0sort-W200-G200-E100.scoreisland_score35.xls";
-			String resultPrefix = "H3K4_K0_sicer_35_Peak";
+			String txtPeakFile= PeakparentFile + "W4all_SE-W200-G600-E100.scoreisland";
+			String resultPrefix = "W4gene";
+			RegDensity tssDistance=new RegDensity();
+			tssDistance.setInvNum(binNum);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+					NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
+			tssDistance.getPeakInfo(txtPeakFile, columnID, rowStart, rowEnd);	
+			tssDistance.getGeneNameTssDensity(geneFile, range, range*2/binNum, resultpath, resultPrefix);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		try {
+			String mapFilePath=mapparentFIle+"WEall_sorted_extend.bed";
+			
+			String txtPeakFile= PeakparentFile + "WEall_SE-W200-G600-E100.scoreisland";
+			String resultPrefix = "W0gene";
+			RegDensity tssDistance=new RegDensity();
+			tssDistance.setInvNum(binNum);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+					NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
+			tssDistance.getPeakInfo(txtPeakFile, columnID, rowStart, rowEnd);	
+			tssDistance.getGeneNameTssDensity(geneFile, range, range*2/binNum, resultpath, resultPrefix);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		try {
+			String mapFilePath=mapparentFIle+"KEall_sorted_extend.bed";
+			
+			String txtPeakFile= PeakparentFile + "KEall_SE-W200-G600-E100.scoreisland";
+			String resultPrefix = "K0gene";
+			RegDensity tssDistance=new RegDensity();
+			tssDistance.setInvNum(binNum);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+					NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
+			tssDistance.getPeakInfo(txtPeakFile, columnID, rowStart, rowEnd);	
+			tssDistance.getGeneNameTssDensity(geneFile, range, range*2/binNum, resultpath, resultPrefix);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		try {
+			String mapFilePath=mapparentFIle+"K4all_sorted_extend.bed";
+			
+			String txtPeakFile= PeakparentFile + "K4all_SE-W200-G600-E100.scoreisland";
+			String resultPrefix = "k4gene";
+			RegDensity tssDistance=new RegDensity();
+			tssDistance.setInvNum(binNum);
+			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+					NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, mapFilePath);
+			tssDistance.getPeakInfo(txtPeakFile, columnID, rowStart, rowEnd);	
+			tssDistance.getGeneNameTssDensity(geneFile, range, range*2/binNum, resultpath, resultPrefix);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+	}
+	
+	
+	public static void TssK27new() {
+		 int[] columnID=new int[3]; columnID[0] = 1; columnID[1] = 2; columnID[2] = 3;//读取peak文件，读取哪几列，依次为 chrID， 起点， 终点
+		 int[] colMap = new int[3]; colMap[0] = 1; colMap[1] =2; colMap[2] =3; //mapping 文件中 chr 起点 终点的位置 常规bed文件 1，2，3 王从茂的文件，0，1，2
+		 int rowStart = 2;
+		 int rowEnd = -1;
+		 int binNum = 5; //精度
+		 int range = 5000;//上下游多少距离
+		 String mapparentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/";
+		 String PeakparentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcalling/";//+ "peakCalling/";
+		 String resultpath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/tsstesplot/";
+		try {
+			String mapFilePath=mapparentFIle+"W4all_sorted_extend.bed";
+			
+			String txtPeakFile= PeakparentFile + "W4all_SE-W200-G600-E100.scoreisland";
+			String resultPrefix = "W4";
 			RegDensity tssDistance=new RegDensity();
 			tssDistance.setInvNum(binNum);
 			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
@@ -36,10 +115,10 @@ public class TssPlot {
 			// TODO: handle exception
 		}
 		try {
-			String mapFilePath=mapparentFIle+"k4_extend_sort.bed";
+			String mapFilePath=mapparentFIle+"WEall_sorted_extend.bed";
 			
-			String txtPeakFile= PeakparentFile + "k4sort-W200-G200-E100.scoreisland_score35.xls";
-			String resultPrefix = "H3K4_K4_sicer_35_Peak";
+			String txtPeakFile= PeakparentFile + "WEall_SE-W200-G600-E100.scoreisland";
+			String resultPrefix = "W0";
 			RegDensity tssDistance=new RegDensity();
 			tssDistance.setInvNum(binNum);
 			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
@@ -50,10 +129,10 @@ public class TssPlot {
 			// TODO: handle exception
 		}
 		try {
-			String mapFilePath=mapparentFIle+"W0_extend_sort.bed";
+			String mapFilePath=mapparentFIle+"KEall_sorted_extend.bed";
 			
-			String txtPeakFile= PeakparentFile + "W0sort-W200-G200-E100.scoreisland_score35.xls";
-			String resultPrefix = "H3K4_W0_sicer_35_Peak";
+			String txtPeakFile= PeakparentFile + "KEall_SE-W200-G600-E100.scoreisland";
+			String resultPrefix = "K0";
 			RegDensity tssDistance=new RegDensity();
 			tssDistance.setInvNum(binNum);
 			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
@@ -64,10 +143,10 @@ public class TssPlot {
 			// TODO: handle exception
 		}
 		try {
-			String mapFilePath=mapparentFIle+"W4_extend_sort.bed";
+			String mapFilePath=mapparentFIle+"K4all_sorted_extend.bed";
 			
-			String txtPeakFile= PeakparentFile + "W4sort-W200-G200-E100.scoreisland_score35.xls";
-			String resultPrefix = "H3K4_W4_sicer_35_Peak";
+			String txtPeakFile= PeakparentFile + "K4all_SE-W200-G600-E100.scoreisland";
+			String resultPrefix = "k4";
 			RegDensity tssDistance=new RegDensity();
 			tssDistance.setInvNum(binNum);
 			tssDistance.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM, colMap,NovelBioConst.GENOME_GFF_TYPE_UCSC, 
@@ -77,6 +156,7 @@ public class TssPlot {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+
 	}
 	
 	public static void TssK27() {

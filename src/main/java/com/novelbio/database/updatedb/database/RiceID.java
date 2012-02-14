@@ -1,462 +1,80 @@
 package com.novelbio.database.updatedb.database;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-
-import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
-import com.novelbio.database.domain.geneanno.UniGeneInfo;
-import com.novelbio.database.domain.geneanno.UniProtID;
-import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.ServAnno;
 
 
 public class RiceID{
-	/**
-	 * 将RapDB中Gff3文件中的Symbol与Description导入数据库
-	 * 文件中含有%20C等符号，已经用url解码了
-	 * @param fileName
-	 * @throws Exception
-	 */
-	public static void upDateRapDBGeneInfo(String fileName) throws Exception {
-		TxtReadandWrite txtReadGff = new TxtReadandWrite();
-		txtReadGff.setParameter(fileName, false, true);
-		BufferedReader reader = txtReadGff.readfile();
-		
-		String content = "";
-		while ((content=reader.readLine())!=null) {
-			String symbol = "";
-			String description = "";
-			String enc="utf8";//文件中含有%20C等符号，用url解码
-			//如果是标题行
-			if (content.contains("ID=")||content.contains("Name=")||content.contains("Alias=")||content.contains("Gene_symbols=")||content.contains("GO=")||content.contains("Locus_id="))
-			{
-				
-				String tmpInfo = content.split("\t")[8];
-				String[] tmpID = tmpInfo.split(";");
-				//装载accID与相应数据库的list
-				ArrayList<String[]> lsAccIDInfo = new ArrayList<String[]>();
-				for (int i = 0; i < tmpID.length; i++) 
-				{
-					tmpID[i] = URLDecoder.decode(tmpID[i], enc);//文件中含有%20C等符号，用url解码
-					if (tmpID[i].contains("ID=")){
-						String tmp = tmpID[i].split("=")[1];
-						String[] tmpAcc = tmp.split(",");
-						for (int j = 0; j < tmpAcc.length; j++) {
-							String[] tmpRapID =new String[2];
-							tmpRapID[0] = CopeID.removeDot(tmpAcc[i]);
-							tmpRapID[1] = NovelBioConst.DBINFO_RICE_RAPDB;
-							lsAccIDInfo.add(tmpRapID);
-						}
-					}
-					else if (tmpID[i].contains("Name=")) {
-						String tmp = tmpID[i].split("=")[1];
-						String[] tmpAcc = tmp.split(",");
-						for (int j = 0; j < tmpAcc.length; j++) {
-							String[] tmpRapID =new String[2];
-							tmpRapID[0] = CopeID.removeDot( tmpAcc[j]);
-							tmpRapID[1] = NovelBioConst.DBINFO_RICE_RAPDB;
-							lsAccIDInfo.add(tmpRapID);
-						}
-					}
-					else if (tmpID[i].contains("Alias=")) {
-						String tmp = tmpID[i].split("=")[1];
-						String[] tmpAcc = tmp.split(",");
-						for (int j = 0; j < tmpAcc.length; j++) {
-							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  CopeID.removeDot( tmpAcc[j]);
-							tmpRapID[1] = NovelBioConst.DBINFO_NCBIID;
-							lsAccIDInfo.add(tmpRapID);
-						}
-					}
-					else if (tmpID[i].contains("Gene_symbols=")) {
-						String tmp = tmpID[i].split("=")[1];
-						String[] tmpAcc = tmp.split(",");
-						for (int j = 0; j < tmpAcc.length; j++) {
-							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
-							tmpRapID[1] = NovelBioConst.DBINFO_SYMBOL;
-							lsAccIDInfo.add(tmpRapID);
-							
-							if (symbol.trim().equals(""))
-								symbol = tmpRapID[0];
-							else
-								symbol = symbol + "//" + tmpRapID[0];
-							
-						}
-					}
-					//OsID放在第一位
-					else if (tmpID[i].contains("ID_converter=")) {
-						String tmp = tmpID[i].split("=")[1];
-						String[] tmpAcc = tmp.split(",");
-						for (int j = 0; j < tmpAcc.length; j++) {
-							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
-							tmpRapID[1] = NovelBioConst.DBINFO_RICE_IRGSP;
-							lsAccIDInfo.add(0,tmpRapID);
-						}
-					}
-					else if (tmpID[i].contains("NIAS_FLcDNA=")) {
-						String tmp = tmpID[i].split("=")[1];
-						String[] tmpAcc = tmp.split(",");
-						for (int j = 0; j < tmpAcc.length; j++) {
-							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
-							tmpRapID[1] = NovelBioConst.DBINFO_NIAS_FLCDNA;
-							lsAccIDInfo.add(tmpRapID);
-						}
-					}
-				
-					else if (tmpID[i].contains("ORF_evidence=")) {
-						String tmp = tmpID[i].split("=")[1];
-						String[] tmpAcc = tmp.split(",");
-						for (int j = 0; j < tmpAcc.length; j++) {
-							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  tmpAcc[j].replaceAll("\\(.*\\)", "").trim();
-							tmpRapID[1] = NovelBioConst.DBINFO_UNIPROT_GenralID;
-							lsAccIDInfo.add(tmpRapID);
-						}
-					}
-					else if (tmpID[i].contains("Expression=")) {
-						String tmp = tmpID[i].split("=")[1];
-						String[] tmpAcc = tmp.split(",");
-						for (int j = 0; j < tmpAcc.length; j++) {
-							String[] tmpRapID =new String[2];
-							tmpRapID[0] =  CopeID.removeDot(tmpAcc[j]);
-							tmpRapID[1] = NovelBioConst.DBINFO_NCBIID;
-							lsAccIDInfo.add(tmpRapID);
-						}
-					}
-					else if (tmpID[i].contains("Note=")) {
-						description = tmpID[i].split("=")[1];
-					}
-				}
-				/////要么落在NCBIID中，要么落在UniProtID中，如果两个都没有，就装入UniProtID表中///////
-				long GeneID = 0;
-				String uniID = null;
-				//////////获得geneID或UniProtID///
-				for (String[] strings : lsAccIDInfo) 
-				{
-					NCBIID ncbiid = new NCBIID();
-					ncbiid.setAccID(strings[0]); ncbiid.setTaxID(39947);
-					ArrayList<NCBIID> lsNcbiid = MapNCBIID.queryLsNCBIID(ncbiid);
-					if (lsNcbiid != null && lsNcbiid.size()>0)
-					{
-						GeneID = lsNcbiid.get(0).getGeneId();
-						break;
-					}
-				}
-				if (GeneID == 0) {
-					for (String[] strings : lsAccIDInfo) 
-					{
-						UniProtID uniProtID = new UniProtID();
-						uniProtID.setAccID(strings[0]);uniProtID.setTaxID(39947);
-						ArrayList<UniProtID> lsUniProtIDs = MapUniProtIDOld.queryLsUniProtID(uniProtID);
-						if (lsUniProtIDs != null && lsUniProtIDs.size()>0)
-						{
-							uniID = lsUniProtIDs.get(0).getUniID();
-							break;
-						}
-					}
-				}
-				
-				if (symbol.trim().equals("") && description.trim().equals("")) {
-					continue;
-				}
-				
-				/////////倒入数据库//////////////
-				if (GeneID !=0) {
-					GeneInfo geneInfo = new GeneInfo();
-					geneInfo.setGeneID(GeneID);
-					GeneInfo geneInfo2 = MapGeneInfoOld.queryGeneInfo(geneInfo);
-					if (geneInfo2 == null) //数据库中没有，就插入
-					{
-						geneInfo.setSymb(symbol);
-						geneInfo.setDescrp(description);
-						MapGeneInfoOld.InsertGeneInfo(geneInfo);
-					}
-					else  //数据库中有
-					{
-						boolean flagUpdate = false;//判断最后是否升级数据库
-						String[] tmpSymbol = symbol.split("//");
-						for (String string : tmpSymbol) {
-							if (!geneInfo2.getSymb().contains(string)) {//如果含有新的symbol
-								geneInfo2.setSymb(string+"//"+geneInfo2.getSymb());
-								flagUpdate = true;
-							}
-						}
-						if (!geneInfo2.getDescrp().contains(description)) {//如果含有新的description
-							geneInfo2.setDescrp(description+"//"+geneInfo2.getDescrp());
-							flagUpdate = true;
-						}
-						if (flagUpdate) {
-							MapGeneInfoOld.upDateGeneInfo(geneInfo2);
-						}
-					}
-				}
-				else if (GeneID ==0 && uniID != null) {
-					UniGeneInfo uniGeneInfo = new UniGeneInfo();
-					uniGeneInfo.setUniProtID(uniID);
-					UniGeneInfo uniGeneInfo2 = MapUniGeneInfoOld.queryUniGeneInfo(uniGeneInfo);
-					if (uniGeneInfo2 == null) //数据库中没有，就插入
-					{
-						uniGeneInfo.setSymb(symbol);
-						uniGeneInfo.setDescrp(description);
-						MapUniGeneInfoOld.InsertUniGeneInfo(uniGeneInfo);
-					}
-					else  //数据库中有
-					{
-						boolean flagUpdate = false;//判断最后是否升级数据库
-						String[] tmpSymbol = symbol.split("//");
-						for (String string : tmpSymbol) {
-							if (!uniGeneInfo2.getSymb().contains(string)) {//如果含有新的symbol
-								uniGeneInfo2.setSymb(string+"//"+uniGeneInfo2.getSymb());
-								flagUpdate = true;
-							}
-						}
-						if (!uniGeneInfo2.getDescrp().contains(description)) {//如果含有新的description
-							uniGeneInfo2.setDescrp(description+"//"+uniGeneInfo2.getDescrp());
-							flagUpdate = true;
-						}
-						
-						if (flagUpdate) {
-							MapUniGeneInfoOld.upDateUniGeneInfo(uniGeneInfo2);
-						}
-					}
-				}
-			}
-		}
+	String gffRapDB = "";
+	String gffTIGR = "";
+	String rapDBoutID = "";
+	String tigrDBoutID = "";
+	String rap2MSU = "";
+	public void setRiceRap2MSU(String rap2MSU) {
+		this.rap2MSU = rap2MSU;
 	}
-	
-	
-	//////////以下开始导入Tigr的数据，包括TIGRID和GO和Description的信息，同时还要导入RapDB的Description信息//////////////////////////////
-	/**
-	 * 将TIGR的Gff文件导入NCBIID数据库或UniProt库，不导入geneInfo表
-	 * @param gffTigrRice  tigrRice的gff文件
-	 * @param outFile 没有GeneID的LOC基因，这个考虑导入UniProt表
-	 * @param insertUniID true: 将没有搜到的项目插入UniProtID表，False：将没有搜到的项目输出到outFile
-	 * 本项目第一次插入时先不用，先要将表都查找NCBIID和UniProtID,找不到的输出为outfile
-	 * 等第一次各种查找都结束了，第二次再将outfile导入时，没有搜到的就可以导入UniProt表了
-	 * @throws Exception  
-	 */
-	public static void tigrNCBIID(String gffTigrRice, String outFile,boolean insertUniID) throws Exception
-	{
-		//里面会出现 %20之类的乱码，需要用URLDecoder来进行解码
-		TxtReadandWrite txtOutFile = new TxtReadandWrite();
-		txtOutFile.setParameter(outFile, true, false);
-		
-		TxtReadandWrite txtRapDB = new TxtReadandWrite();
-		txtRapDB.setParameter(gffTigrRice, false, true);
-		BufferedReader reader = txtRapDB.readfile();
-		String content = "";
-		
-		while ((content = reader.readLine())!=null) {
-			if (content.startsWith("#")) {
-				continue;
-			}
-			
-			String[] ss = content.split("\t");
-			if (!ss[2].trim().equals("gene"))
-				continue;
-			
-			String[] ssLOC = ss[8].split(";");
-			String LOCID = ssLOC[ssLOC.length-1].split("=")[1];
-			
-			ArrayList<String> lsaccID = ServAnno.getNCBIUni(LOCID, 39947);
-			
-			String dbType = lsaccID.get(0);
-			if (dbType.equals("geneID")) 
-			{
-				ArrayList<String[]> lsAccIDInfo = new ArrayList<String[]>();
-				for (int i = 1; i < lsaccID.size(); i++) 
-				{
-					String[] tmpAccIDInfo = new String[2];
-					tmpAccIDInfo[0] = LOCID; tmpAccIDInfo[1] = NovelBioConst.DBINFO_RICE_TIGR;
-					lsAccIDInfo.add(tmpAccIDInfo);
-					UpDateFriceDB.upDateNCBIUniID(Long.parseLong(lsaccID.get(i)), null, 39947,false, lsAccIDInfo, NovelBioConst.DBINFO_RICE_TIGR);
-				}
-			}
-			if (dbType.equals("uniID")) {
-				ArrayList<String[]> lsAccIDInfo = new ArrayList<String[]>();
-				for (int i = 1; i < lsaccID.size(); i++) 
-				{
-					String[] tmpAccIDInfo = new String[2];
-					tmpAccIDInfo[0] = LOCID; tmpAccIDInfo[1] = NovelBioConst.DBINFO_RICE_TIGR;
-					lsAccIDInfo.add(tmpAccIDInfo);
-					UpDateFriceDB.upDateNCBIUniID(0, lsaccID.get(i), 39947,false, lsAccIDInfo, NovelBioConst.DBINFO_RICE_TIGR);
-				}
-			}
-			if (dbType.equals("accID")) {
-				if (insertUniID) {
-					ArrayList<String[]> lsAccIDInfo = new ArrayList<String[]>();
-					String[] tmpAccIDInfo = new String[2];
-					tmpAccIDInfo[0] = LOCID; tmpAccIDInfo[1] = NovelBioConst.DBINFO_RICE_TIGR;
-					lsAccIDInfo.add(tmpAccIDInfo);
-					UpDateFriceDB.upDateNCBIUniID(0,lsaccID.get(1), 39947,false, lsAccIDInfo, NovelBioConst.DBINFO_RICE_TIGR);
-				}
-				else {
-					txtOutFile.writefile(content+"\n");
-				}
-			}
-		}
-		txtRapDB.close();
-		txtOutFile.close();
+	public void setGffRapDB(String gffRapDB) {
+		this.gffRapDB = gffRapDB;
 	}
-	
-	
-	
-	/**
-	 * 将TIGR的Gff文件导入geneInfo表
-	 * @param gffTigrRice  tigrRice的gff文件
-	 * @throws Exception  
-	 */
-	public static void tigrDescription(String gffTigrRice) throws Exception
-	{
-		//里面会出现 %20之类的乱码，需要用URLDecoder来进行解码
-		String enc="utf8";
-		
-		TxtReadandWrite txtRapDB = new TxtReadandWrite();
-		txtRapDB.setParameter(gffTigrRice, false, true);
-		BufferedReader reader = txtRapDB.readfile();
-		String content = "";
-		
-		while ((content = reader.readLine())!=null) {
-			if (content.startsWith("#")) {
-				continue;
-			}
-			
-			String[] ss = content.split("\t");
-			if (!ss[2].trim().equals("gene"))
-				continue;
-			
-			String[] ssLOC = ss[8].split(";");
-			String LOCID = ssLOC[2].split("=")[1];
-	
-			
-			String description = URLDecoder.decode(ssLOC[1].split("=")[1], enc);//文件中含有%20C等符号，用url解码
-			
-			ArrayList<String> lsaccID = ServAnno.getNCBIUni(LOCID, 39947);
-			
-			String dbType = lsaccID.get(0);
-			if (dbType.equals("geneID")) {
-				for (int i = 1; i < lsaccID.size(); i++) 
-				{
-					GeneInfo geneInfo = new GeneInfo();
-					geneInfo.setGeneID(Long.parseLong(lsaccID.get(i)));
-					GeneInfo geneInfo2 = MapGeneInfoOld.queryGeneInfo(geneInfo);
-					if (geneInfo2 == null) {
-						geneInfo.setSymb(LOCID); geneInfo.setDescrp(description);
-						MapGeneInfoOld.InsertGeneInfo(geneInfo);
-					}
-					else 
-					{
-						boolean update = false;
-						if (geneInfo2.getSymb().trim().equals("")) {//添加symbol
-							geneInfo2.setSymb(LOCID);
-							update = true;
-						}
-						if (!geneInfo2.getDescrp().contains(description)) {//添加description
-							geneInfo2.setDescrp(geneInfo2.getDescrp()+"//"+description);
-							update = true;
-						}
-						if (update) {
-							MapGeneInfoOld.upDateGeneInfo(geneInfo2);
-						}
-					}
-				}	
-			}
-			if (dbType.equals("uniID")) {
-				for (int i = 1; i < lsaccID.size(); i++) 
-				{
-					UniGeneInfo uniGeneInfo = new UniGeneInfo();
-					uniGeneInfo.setUniProtID(lsaccID.get(i));
-					UniGeneInfo uniGeneInfo2 = MapUniGeneInfoOld.queryUniGeneInfo(uniGeneInfo);
-					if (uniGeneInfo2 == null) {
-						uniGeneInfo.setSymb(LOCID); uniGeneInfo.setDescrp(description);
-						MapUniGeneInfoOld.InsertUniGeneInfo(uniGeneInfo);
-					}
-					else 
-					{
-						boolean update = false;
-						if (uniGeneInfo2.getSymb().trim().equals("")) {//添加symbol
-							uniGeneInfo2.setSymb(LOCID);
-							update = true;
-						}
-						if (!uniGeneInfo2.getDescrp().contains(description)) {//添加description
-							uniGeneInfo2.setDescrp(uniGeneInfo2.getDescrp()+"//"+description);
-							update = true;
-						}
-						if (update) {
-							MapUniGeneInfoOld.upDateUniGeneInfo(uniGeneInfo2);
-						}
-					}
-				}
-			}
-		}
-		txtRapDB.close();
+	public void setGffTIGR(String gffTIGR) {
+		this.gffTIGR = gffTIGR;
 	}
-	
-	
+	public void setRapDBoutID(String rapDBoutID) {
+		this.rapDBoutID = rapDBoutID;
+	}
+	public void setTigrDBoutID(String tigrDBoutID) {
+		this.tigrDBoutID = tigrDBoutID;
+	}
 	/**
 	 * 将Tigr的Gff文件导入gene2GO数据库，倒入NCBIGO和UniGO两个表
 	 * @param gffRapDB
 	 * @param outFIle
 	 * @throws Exception
 	 */
-	public static void tigrGO(String gffTigr) throws Exception 
+	public void update()
 	{
-		TxtReadandWrite txtRapDB = new TxtReadandWrite();
-		txtRapDB.setParameter(gffTigr, false, true);
-		BufferedReader reader = txtRapDB.readfile();
-		String content = "";	
-		int mm=0;
-		while ((content = reader.readLine()) != null) 
-		{
-			String[] ss = content.split("\t");
-			String LocID = ss[0].trim();
-			ArrayList<String> lsAccInfo = ServAnno.getNCBIUni(LocID, 39947);
-			if (lsAccInfo.get(0).equals("geneID"))
-			{
-				for (int i = 1; i < lsAccInfo.size(); i++)
-				{
-					for (int j = 1; j < ss.length; j++) 
-					{//每个GOID都装入
-						UpDateFriceDB.upDateGenGO(Long.parseLong(lsAccInfo.get(i)), null, ss[j].trim(), NovelBioConst.DBINFO_RICE_TIGR);
-					}
-				}
-			}
-			else if (lsAccInfo.get(0).equals("uniID"))
-			{
-				for (int i = 1; i < lsAccInfo.size(); i++)
-				{
-					for (int j = 1; j < ss.length; j++) 
-					{//每个GOID都装入
-						UpDateFriceDB.upDateGenGO(0,lsAccInfo.get(i), ss[j].trim(), NovelBioConst.DBINFO_RICE_TIGR);
-					}
-				}
-			}
-			else {
-				continue;
-			}
-		}
-		System.out.println(mm);
-		txtRapDB.close();
+		RiceTIGRGFFID riceTIGRGFFID = new RiceTIGRGFFID();
+//		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID);
+//		riceTIGRGFFID.setInsertAccID(false);
+//		riceTIGRGFFID.updateFile(gffTIGR, false);
+		
+		RiceRapDBID riceRapDBID = new RiceRapDBID();
+//		riceRapDBID.setTxtWriteExcep(rapDBoutID);
+//		riceRapDBID.setInsertAccID(false);
+//		riceRapDBID.updateFile(gffRapDB, false);
+		
+		RiceRap2MSU riceRap2MSU = new RiceRap2MSU();
+		riceRap2MSU.updateFile(rap2MSU, false);
+//		
+//		riceRapDBID.setInsertAccID(true);
+//		riceRapDBID.setTxtWriteExcep(rapDBoutID + "_2");
+//		riceRapDBID.updateFile(rapDBoutID, false);
+//		
+//		riceTIGRGFFID.setInsertAccID(true);
+//		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID + "_2");
+//		riceTIGRGFFID.updateFile(tigrDBoutID, false);
+		
+/////////////////////////////////////////////////////////////////////////////////////////////////
+		
+//		RiceRapDBInfo riceRapDBInfo = new RiceRapDBInfo();
+//		riceRapDBInfo.updateFile(gffRapDB, false);
+//		
+//		RiceTIGRInfo riceTIGRInfo = new RiceTIGRInfo();
+//		riceTIGRInfo.updateFile(gffTIGR, false);
+//		
+//		RiceTIGRGO riceTIGRGO = new RiceTIGRGO();
+//		riceTIGRGO.updateFile(gffTIGR, false);
 	}
 }
 /**
@@ -464,10 +82,19 @@ public class RiceID{
  * @author zong0jie
  *
  */
-class RiceRapDB extends ImportPerLine
+class RiceRapDBID extends ImportPerLine
 {	
+	boolean insertAccID = false;
+	/**
+	 * 没有的ID是否导入uniID
+	 * 第一次不用第二次导入
+	 * @param insertAccID
+	 */
+	public void setInsertAccID(boolean insertAccID) {
+		this.insertAccID = insertAccID;
+	}
 	String enc="utf8";//文件中含有%20C等符号，用url解码
-	private static Logger logger = Logger.getLogger(RiceRapDB.class);
+	private static Logger logger = Logger.getLogger(RiceRapDBID.class);
 	public void importInfoPerLine(String rapdbGFF, boolean gzip) {
 		setReadFromLine();
 		TxtReadandWrite txtGene2Acc;
@@ -524,10 +151,10 @@ class RiceRapDB extends ImportPerLine
 				String[] tmpAcc = tmp.split(",");
 				for (int j = 0; j < tmpAcc.length; j++) {
 					String[] tmpRapID =new String[2];
-					tmpRapID[0] = tmpAcc[i];
+					tmpRapID[0] = tmpAcc[j];
 					tmpRapID[1] = NovelBioConst.DBINFO_RICE_RAPDB;
 					lsAccIDInfo.add(tmpRapID);
-					lsRefID.add(tmpAcc[i]);
+					lsRefID.add(tmpAcc[j]);
 				}
 			}
 			else if (tmpID[i].contains("Name=")) {
@@ -538,7 +165,8 @@ class RiceRapDB extends ImportPerLine
 					tmpRapID[0] = tmpAcc[j];
 					tmpRapID[1] = NovelBioConst.DBINFO_RICE_RAPDB;
 					lsAccIDInfo.add(tmpRapID);
-					lsRefID.add(tmpAcc[i]);				}
+					lsRefID.add(tmpAcc[j]);			
+				}
 			}
 			else if (tmpID[i].contains("Alias=")) {
 				String tmp = tmpID[i].split("=")[1];
@@ -547,7 +175,8 @@ class RiceRapDB extends ImportPerLine
 					String[] tmpRapID =new String[2];
 					tmpRapID[0] =   tmpAcc[j];
 					tmpRapID[1] = NovelBioConst.DBINFO_NCBIID;
-					lsRefID.add(tmpAcc[i]);
+					lsAccIDInfo.add(tmpRapID);
+					lsRefID.add(tmpAcc[j]);
 				}
 			}
 			else if (tmpID[i].contains("Gene_symbols=")) {
@@ -569,7 +198,7 @@ class RiceRapDB extends ImportPerLine
 					tmpRapID[0] =  tmpAcc[j];
 					tmpRapID[1] = NovelBioConst.DBINFO_RICE_IRGSP;
 					lsAccIDInfo.add(tmpRapID);
-					lsRefID.add(0, tmpAcc[i]);
+					lsRefID.add(0, tmpAcc[j]);
 				}
 			}
 			else if (tmpID[i].contains("ORF_evidence=")) {
@@ -579,23 +208,44 @@ class RiceRapDB extends ImportPerLine
 					String[] tmpRapID =new String[2];
 					tmpRapID[0] =  tmpAcc[j].replaceAll("\\(.*\\)", "").trim();
 					tmpRapID[1] = NovelBioConst.DBINFO_UNIPROT_GenralID;
-					lsRefID.add(tmpAcc[i]);
+					lsRefID.add(tmpAcc[j]);
 				}
 			}
 		}
-		CopedID copedID = new CopedID("", 39947);
-		copedID.setUpdateRefAccID(lsRefID);
-		if (copedID.getIDtype().equals(CopedID.IDTYPE_GENEID)) {
-			for (String[] strings : lsAccIDInfo) 
-			{
-				copedID.setUpdateAccID(strings[0]);
-				copedID.setUpdateDBinfo(strings[1], true);
-				copedID.update(false);
-			}
+		if (lsRefID.size() == 0) {
 			return true;
 		}
+		CopedID copedID = new CopedID("", 39947);
+		copedID.setUpdateRefAccID(lsRefID);
+		//如果需要插入了，就不管是不是ncbiID都插入进去
+		if (insertAccID) {
+			if (!copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+				for (String[] strings : lsAccIDInfo) 
+				{
+					copedID.setUpdateAccID(strings[0]);
+					copedID.setUpdateDBinfo(strings[1], true);
+					copedID.update(insertAccID);
+				}
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		//否则只插入ncbi表中
 		else {
-			return false;
+			if (copedID.getIDtype().equals(CopedID.IDTYPE_GENEID)) {
+				for (String[] strings : lsAccIDInfo) 
+				{
+					copedID.setUpdateAccID(strings[0]);
+					copedID.setUpdateDBinfo(strings[1], true);
+					copedID.update(insertAccID);
+				}
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 	}
 	
@@ -603,9 +253,10 @@ class RiceRapDB extends ImportPerLine
 /**
  * 将Rap2MSU的信息--也就是Os2LOC的对照表--导入数据库,
  * 1. 导入RapDB的gff3文件 产生一个没有倒入的文件
- * 2. 导入Rap2MSU，产生一个没有倒入的文件
- * 3. 导入Tigr的gff文件，产生一个没有倒入的文件
- * 4. 依上面标号，按照2，1，3的顺序把没有导入的文件导入数据库，没有找到的导入uniID表中
+ * 2. 导入Tigr的gff文件，产生一个没有倒入的文件
+ * 3. 导入Rap2MSU，全部导入
+ * 4. 导入RapDB的gff3文件 产生一个没有倒入的文件
+ * 5. 导入Tigr的gff文件，产生一个没有倒入的文件
  * @throws Exception 
  */
 class RiceRap2MSU extends ImportPerLine
@@ -636,7 +287,7 @@ class RiceRap2MSU extends ImportPerLine
 		for (String[] strings : lstmpLOC) {
 			copedID.setUpdateAccID(strings[0]);
 			copedID.setUpdateDBinfo(strings[1], true);
-			if (!copedID.update(false))
+			if (!copedID.update(true))
 				return false;
 		}
 		return true;
@@ -692,14 +343,194 @@ class RapDBGO extends ImportPerLine
 		return copedID.update(false);
 	}
 }
+/**
+ * 将TIGR的Gff文件导入NCBIID数据库或UniProt库，不导入geneInfo表
+ * @param gffTigrRice  tigrRice的gff文件
+ * @param outFile 没有GeneID的LOC基因，这个考虑导入UniProt表
+ * @param insertUniID true: 将没有搜到的项目插入UniProtID表，False：将没有搜到的项目输出到outFile
+ * 本项目第一次插入时先不用，先要将表都查找NCBIID和UniProtID,找不到的输出为outfile
+ * 等第一次各种查找都结束了，第二次再将outfile导入时，没有搜到的就可以导入UniProt表了
+ * @throws Exception  
+ */
+class RiceTIGRGFFID extends ImportPerLine
+{
+	boolean insertAccID = false;
+	/**
+	 * 没有的ID是否导入uniID
+	 * 第一次不用第二次导入
+	 * @param insertAccID
+	 */
+	public void setInsertAccID(boolean insertAccID) {
+		this.insertAccID = insertAccID;
+	}
+	@Override
+	public boolean impPerLine(String lineContent) {
+			if (lineContent.startsWith("#"))
+				return true;
+			String[] ss = lineContent.split("\t");
+			if (!ss[2].trim().equals("gene"))
+				return true;
+			////////////////////////////
+			String[] ssLOC = ss[8].split(";");
+			String LOCID = ssLOC[ssLOC.length-1].split("=")[1];
+			CopedID copedID = new CopedID(LOCID, 39947);
+			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_RICE_TIGR, true);
+			return copedID.update(insertAccID);
+	}
+}
+/**
+ * 将RapDB中Gff3文件中的Symbol与Description导入数据库
+ * 文件中含有%20C等符号，需要用url解码
+ * @param fileName
+ * @throws Exception
+ */
+class RiceRapDBInfo extends ImportPerLine
+{
+	String enc = "utf8";// 文件中含有%20C等符号，用url解码
+	@Override
+	boolean impPerLine(String lineContent) {
+		String symbol = "";
+		String description = "";
 
-class AffyID2LOC extends ImportPerLine
+		// 如果是标题行
+		if (!(lineContent.contains("ID=") || lineContent.contains("Name=")
+				|| lineContent.contains("Alias=")
+				|| lineContent.contains("Gene_symbols=")
+				|| lineContent.contains("GO=")
+				|| lineContent.contains("Locus_id="))) {
+			return true;
+		}
+		String tmpInfo = lineContent.split("\t")[8];
+		String[] tmpID = tmpInfo.split(";");
+		// 装载accID与相应数据库的list
+		ArrayList<String> lsRefID = new ArrayList<String>();
+		for (int i = 0; i < tmpID.length; i++) {
+			try {
+				tmpID[i] = URLDecoder.decode(tmpID[i], enc);
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}// 文件中含有%20C等符号，用url解码
+			if (tmpID[i].contains("ID=")) {
+				String tmp = tmpID[i].split("=")[1];
+				String[] tmpAcc = tmp.split(",");
+				for (int j = 0; j < tmpAcc.length; j++) {
+					String tmpRapID = tmpAcc[i];
+					lsRefID.add(tmpRapID);
+				}
+			} else if (tmpID[i].contains("Name=")) {
+				String tmp = tmpID[i].split("=")[1];
+				String[] tmpAcc = tmp.split(",");
+				for (int j = 0; j < tmpAcc.length; j++) {
+					String tmpRapID = tmpAcc[i];
+					lsRefID.add(tmpRapID);
+				}
+			} else if (tmpID[i].contains("Alias=")) {
+				String tmp = tmpID[i].split("=")[1];
+				String[] tmpAcc = tmp.split(",");
+				for (int j = 0; j < tmpAcc.length; j++) {
+					String tmpRapID = tmpAcc[i];
+					lsRefID.add(tmpRapID);
+				}
+			} else if (tmpID[i].contains("Gene_symbols=")) {
+				String tmp = tmpID[i].split("=")[1];
+				String[] tmpAcc = tmp.split(",");
+				for (int j = 0; j < tmpAcc.length; j++) {
+					String tmpRapID = tmpAcc[i];
+					lsRefID.add(tmpRapID);
+
+					if (symbol.trim().equals(""))
+						symbol = tmpRapID;
+					else
+						symbol = symbol + "//" + tmpRapID;
+				}
+			}
+			// OsID放在第一位
+			else if (tmpID[i].contains("ID_converter=")) {
+				String tmp = tmpID[i].split("=")[1];
+				String[] tmpAcc = tmp.split(",");
+				for (int j = 0; j < tmpAcc.length; j++) {
+					String tmpRapID = tmpAcc[i];
+					lsRefID.add(0, tmpRapID);
+				}
+			}
+			else if (tmpID[i].contains("Note=")) {
+				description = tmpID[i].split("=")[1];
+			}
+		}
+		
+		if (symbol.trim().equals("") && description.trim().equals("")) {
+			return true;
+		}
+		
+		CopedID copedID = new CopedID("", 39947);
+		copedID.setUpdateRefAccID(lsRefID);
+		GeneInfo geneInfo = new GeneInfo();
+		geneInfo.setSymb(symbol);
+		geneInfo.setDescrp(description);
+		geneInfo.setDBinfo(NovelBioConst.DBINFO_RICE_RAPDB);
+		copedID.setUpdateGeneInfo(geneInfo);
+		return copedID.update(false);
+	}
+	
+}
+/**
+ * 将TIGR的Gff文件导入geneInfo表
+ * @param gffTigrRice  tigrRice的gff文件
+ * @throws Exception  
+ */
+class RiceTIGRInfo extends ImportPerLine
+{
+	String enc="utf8";//文件中含有%20C等符号，用url解码
+	@Override
+	boolean impPerLine(String lineContent) {
+		if (lineContent.startsWith("#")) {
+			return true;
+		}
+		
+		String[] ss = lineContent.split("\t");
+		if (!ss[2].trim().equals("gene"))
+			return true;
+		
+		String[] ssLOC = ss[8].split(";");
+		String LOCID = ssLOC[2].split("=")[1];
+		String description;
+		try {
+			description = URLDecoder.decode(ssLOC[1].split("=")[1], enc);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}//文件中含有%20C等符号，用url解码
+		
+		ArrayList<String> lsaccID = ServAnno.getNCBIUni(LOCID, 39947);
+		GeneInfo geneInfo = new GeneInfo();
+		geneInfo.setSymb(LOCID); geneInfo.setDescrp(description);
+		geneInfo.setDBinfo(NovelBioConst.DBINFO_RICE_TIGR);
+		CopedID copedID = new CopedID("", 39947);
+		copedID.setUpdateRefAccID(lsaccID);
+		copedID.setUpdateGeneInfo(geneInfo);
+		return copedID.update(false);
+	}
+}
+
+/**
+ * 将Tigr的Gff文件导入gene2GO数据库，倒入NCBIGO和UniGO两个表
+ */
+class RiceTIGRGO extends ImportPerLine
 {
 
 	@Override
-	boolean impPerLine(String lineContent) {
-		//TODO
-		
+	public boolean impPerLine(String lineContent) {
+		String[] ss = lineContent.split("\t");
+		String LocID = ss[0].trim();
+		CopedID copedID = new CopedID(LocID, 39947);
+		for (int j = 1; j < ss.length; j++) 
+		{//每个GOID都装入
+			copedID.setUpdateGO(ss[j].trim(), NovelBioConst.DBINFO_RICE_TIGR, "", "", "");
+		}
+		return copedID.update(false);
 	}
 	
 }

@@ -47,7 +47,7 @@ public class UniProt {
 //		idmappingSelected.importInfoPerLine(outUniIDFile, false);
 		
 		IdmappingSelectedGOPubmed idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
-		idmappingSelectedGOPubmed.importInfoPerLine(idmappingSelectedFile, true);
+		idmappingSelectedGOPubmed.updateFile(idmappingSelectedFile, true);
 		
 	}
 }

@@ -23,6 +23,9 @@ abstract class ImportPerLine
 	 * 将无法升级的行写入该文本
 	 */
 	TxtReadandWrite txtWriteExcep = null;
+	/**
+	 * 将无法升级的行写入该文本
+	 */
 	public void setTxtWriteExcep(String txtWriteExcepFile) {
 		txtWriteExcep = new TxtReadandWrite(txtWriteExcepFile, true);
 	}
@@ -36,7 +39,7 @@ abstract class ImportPerLine
 	 * 将指定的文件导入数据库，必须是每一行都能单独导入的表
 	 * 如果需要导入多行，譬如amiGO的信息，请覆盖该方法
 	 */
-	public void importInfoPerLine(String gene2AccFile, boolean gzip) {
+	public void updateFile(String gene2AccFile, boolean gzip) {
 		setReadFromLine();
 		TxtReadandWrite txtGene2Acc;
 		if (gzip)

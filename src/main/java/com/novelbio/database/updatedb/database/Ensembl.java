@@ -47,7 +47,7 @@ public class Ensembl {
 			ensembleGTF.setTaxID(taxID);
 			ensembleGTF.setGffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, lsGffFile.get(i));
 			i ++;
-			ensembleGTF.importInfoPerLine(fileName, false);
+			ensembleGTF.updateFile(fileName, false);
 		}
 	}
 }
@@ -69,7 +69,7 @@ class EnsembleGTF extends ImportPerLine
 	 * 将指定的文件导入数据库，如果是重复的基因，就不导入了
 	 * 如果需要导入多行，譬如amiGO的信息，请覆盖该方法
 	 */
-	public void importInfoPerLine(String gene2AccFile, boolean gzip) {
+	public void updateFile(String gene2AccFile, boolean gzip) {
 		setReadFromLine();
 		TxtReadandWrite txtGene2Acc;
 		if (gzip)

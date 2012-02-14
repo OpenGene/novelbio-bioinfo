@@ -2,17 +2,22 @@ package com.novelbio.analysis.seq.genomeNew;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.AminoAcid;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfoSnpIndel;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class GffChrSeq extends GffChrAbs{
-
+	private static Logger logger = Logger.getLogger(GffChrSeq.class);
 	public GffChrSeq(String gffType, String gffFile, String chrFile, String regx) {
 		super(gffType, gffFile, chrFile, regx, null, 0);
 		loadChrFile();
@@ -24,13 +29,12 @@ public class GffChrSeq extends GffChrAbs{
 	}
 
 	public static void main(String[] args) {
+//		GffChrSeq gffChrSeq = new GffChrSeq(NovelBioConst.GENOME_GFF_TYPE_UCSC,  
+//				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
+		
 		GffChrSeq gffChrSeq = new GffChrSeq(NovelBioConst.GENOME_GFF_TYPE_UCSC,  
 				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
-//		gffChrSeq.setGffFile(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, "/media/winE/NBC/Project/Project_FY_Lab/Result/cufflinkAll/cufcompare/cmpAll.combined_cope.gtf");
-		gffChrSeq.loadChrFile();
-		SeqFasta seqFasta = gffChrSeq.getSeqCDS("NM_004195", true, true, false);
-		seqFasta.toStringAA(true, 0);
-		System.out.println(seqFasta.toStringAA(true, 0));
+
 	}
 	
 	/**
@@ -181,12 +185,53 @@ public class GffChrSeq extends GffChrAbs{
 		int start = Math.min(startlocation, endlocation);
 		int end = Math.max(startlocation, endlocation);
 		SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getChrID(), start, end);
+		if (seq == null) {
+			logger.error("没有提取到序列：" + " "+ gffGeneIsoInfo.getChrID() + " " + start + " " + end);
+			return null;
+		}
 		seq.setSeqName(gffGeneIsoInfo.getIsoName());
 		return seq;
 	}
-
 	/**
-	 * 获得某个物种的全部aa序列，从refseq中提取更加精确
+	 * 提取全基因组的promoter附近的序列
+	 * @param upBp tss上游多少bp，负数，如果正数就在下游
+	 * @param downBp tss下游多少bp，正数，如果负数就在上游
+	 * @return
+	 */
+	public ArrayList<SeqFasta> getGenomePromoterSeq(int upBp, int downBp) {
+		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
+		ArrayList<String> lsID = gffHashGene.getLOCChrHashIDList();
+		for (String string : lsID) {
+			String geneID = string.split(ListAbs.SEP)[0];
+			SeqFasta seqFasta = getPromoter(geneID, upBp, downBp);
+			if (seqFasta == null) {
+				logger.error("没有提取到序列"+geneID);
+				continue;
+			}
+			lsResult.add(seqFasta);
+		}
+		return lsResult;
+	}
+	/**
+	 * 用指定motif搜索全基因组基因的promoter区域，返回得到的motif
+	 * 并写入文本
+	 * @param outTxtFile
+	 * @param regex
+	 * @param upBp
+	 * @param downBp
+	 */
+	public void motifPromoterScan(String outTxtFile, String regex, int upBp, int downBp) {
+		ArrayList<SeqFasta> lsPromoterSeq = getGenomePromoterSeq(upBp, downBp);
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		lsResult.add(SeqFasta.getMotifScanTitle());
+		for (SeqFasta seqFasta : lsPromoterSeq) {
+			lsResult.addAll(seqFasta.getMotifScanResult(regex));
+		}
+		TxtReadandWrite txtMotifOut = new TxtReadandWrite(outTxtFile, true);
+		txtMotifOut.ExcelWrite(lsResult, "\t", 1, 1);
+	}
+	/**
+	 * 获得某个物种的全部cds序列，从refseq中提取更加精确
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
 	 * @param IsoName 转录本的名字
 	 * @param cis5to3 正反向，在提出的正向转录本的基础上，是否需要反向互补
@@ -196,23 +241,22 @@ public class GffChrSeq extends GffChrAbs{
 	 * @param getIntron
 	 * @return
 	 */
-	public ArrayList<SeqFasta> getSeqProteinAll()
+	public ArrayList<SeqFasta> getSeqCDSAll()
 	{
 		ArrayList<String> lsID = gffHashGene.getLOCChrHashIDList();
 		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		for (String string : lsID) {
-			gffGeneIsoInfo = gffHashGene.searchISO(string.split("/")[0]);
-			ArrayList<int[]> lsCDS = gffGeneIsoInfo.getIsoInfoCDS();
+			gffGeneIsoInfo = gffHashGene.searchISO(string.split(ListAbs.SEP)[0]);
+			ArrayList<ExonInfo> lsCDS = gffGeneIsoInfo.getIsoInfoCDS();
 			if (lsCDS.size() > 0) {
-				String seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), true, 0, 0, lsCDS, false);
+				SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), lsCDS, false);
 				if (seq == null || seq.length() < 3) {
 					continue;
 				}
-				SeqFasta seqFasta = new SeqFasta(string.split("/")[0], seq);
-				lsResult.add(seqFasta);
+				seq.setSeqName(string.split(ListAbs.SEP)[0]);
+				lsResult.add(seq);
 			}
-			
 		}
 		return lsResult;
 		

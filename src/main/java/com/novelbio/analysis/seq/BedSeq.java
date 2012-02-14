@@ -207,9 +207,10 @@ public class BedSeq extends SeqComb{
 			while ((content = reader.readLine()) != null) {
 				String[] ss = content.split("\t");
 				int end = Integer.parseInt(ss[2]); int start = Integer.parseInt(ss[1]);
-				if ((end - start )< 0) {logger.error("Bed 文件出错，有一列的终点小于起点"+content); }
+				int minus = end - start;
+				if (minus< 0) {logger.error("Bed 文件出错，有一列的终点小于起点"+content); }
 				
-				if ((end - start) < extendTo ) {
+				if (minus< extendTo ) {
 					if (ss[5].equals("+")) {
 						ss[2] = start + extendTo + "";
 					}
@@ -222,7 +223,7 @@ public class BedSeq extends SeqComb{
 					contString = contString+ss[i] + "\t";
 				}
 				contString = contString + ss[ss.length -1];
-				txtOut.writefile(contString+"\n");
+				txtOut.writefile(contString+"\n", false);
 			}
 			txtSeqFile.close();
 			txtOut.close();

@@ -51,10 +51,10 @@ public class BedPeakSicer extends BedPeak implements PeakCalling{
 	 */
 	String cmdComp = "sh "+ FileOperate.addSep(SICER_PATH) + "SICER-df-rb.sh ";
 	/**
-	 * 表示从reads的一头到该fragment的终点的距离估算
-	 * 也就是fregment的长度的一半。一般来说Illumina的solexa上样长度为250-500，所以取300/2 = 150是比较合适的
+	 * 表示从reads的一头到该fragment的终点的距离
+	 * SICER在计算的时候会将reads移动到fregment长度一半的地方做修正。一般来说Illumina的solexa上样长度为250-500，所以取250-300是比较合适的
 	 */
-	int fragment_size = 150;
+	int fragment_size = 250;
 	double effectiveGenomeSize = 0.82;
 	double FDR = 0.01;
 	/**
