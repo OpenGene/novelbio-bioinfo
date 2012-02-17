@@ -20,7 +20,11 @@ import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.model.modcopeid.CopedID;
-@Deprecated
+/**
+ * ÅúÁ¿×¢ÊÍ
+ * @author zong0jie
+ *
+ */
 public class AnnoQuery {
 	public static void main(String[] args) {
 		String parent = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/";
@@ -74,14 +78,13 @@ public class AnnoQuery {
 	}
 	private static String[] getTitle(String[] title, boolean blast)
 	{
-		String[] annotitle = null;
-		if (blast) {
-			title = ArrayOperate.copyArray(title, 5);
+		if (!blast) {
+			title = ArrayOperate.copyArray(title, title.length + 2);
 			title[title.length - 1] = "Description";
 			title[title.length - 2] = "Symbol";
 		}
 		else {
-			title = ArrayOperate.copyArray(title, 3);
+			title = ArrayOperate.copyArray(title,  title.length + 5);
 			title[title.length - 5] = "Description";
 			title[title.length - 4] = "Symbol";
 			title[title.length - 3] = "Blast_evalue";
@@ -134,7 +137,7 @@ public class AnnoQuery {
 			String[] anno = copedID.getAnno(true);
 			result[result.length - 5] = anno[0];
 			result[result.length - 4] = anno[1];
-			result[result.length - 3] = anno[2];
+			result[result.length - 3] = anno[3];
 			result[result.length - 2] = anno[4];
 			result[result.length - 1] = anno[5];
 		}

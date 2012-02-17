@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.CopyOfGUIanalysisSimple;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -42,7 +41,7 @@ public abstract class CtrlGOPath {
 	double up = -1;
 	double down = -1;
 
-	String[] prix = new String[2];
+//	String[] prix = new String[2];
 	boolean cluster = false;
 	/**
 	 * 结果,key： 时期等
@@ -88,7 +87,7 @@ public abstract class CtrlGOPath {
 	public void setLsBG(String fileName)
 	{
 		boolean flagGeneID = true;
-		ArrayList<String[]> lsArrayList = ExcelTxtRead.readLsExcelTxt(fileName, 1, 100, 1, -1);
+		ArrayList<String[]> lsArrayList = ExcelTxtRead.readLsExcelTxtFile(fileName, 1, 1, 100, -1);//readLsExcelTxt(fileName, 1, 100, 1, -1);
 		for (String[] strings : lsArrayList) {
 			if (strings.length > 1 && strings[1].contains(",")) {
 				flagGeneID = false;
@@ -96,13 +95,14 @@ public abstract class CtrlGOPath {
 			}
 		}
 		if (flagGeneID) {
-			functionTest.setLsBGAccID(fileName, 1,FileOperate.changeFileSuffix(fileName, "_Item", "txt"));
+			setLsBGAccIDsave(fileName);
 		}
 		else {
 			functionTest.setLsBGItem(fileName);
 		}
 	}
 	
+	abstract void setLsBGAccIDsave(String  fileName);
 	/**
 	 * 
 	 * 给定文件，和文件分割符，以及第几列，获得该列的基因ID
@@ -192,20 +192,17 @@ public abstract class CtrlGOPath {
 		if (lsResultTest == null) {
 			return;
 		}
-		String[] title = new String[10];
-		title[0] = "GOID"; title[1] = "GOTerm";
-		title[2] = "DifGene"; title[3] = "AllDifGene"; title[4] = "GeneInGOID"; title[5] = "AllGene";
-		title[6] = "P-Value"; title[7] = "FDR"; title[8] = "Enrichment"; title[9] = "(-log2P)";
-		lsResultTest.add(0,title);
-		LinkedHashMap<String, ArrayList<String[]>> hashResult = calItem2GenePvalue(lsResultTest);
+		lsResultTest.add(0,getResultTitle());
+		LinkedHashMap<String, ArrayList<String[]>> hashResult = calItem2GenePvalue(prix, lsResultTest);
 		hashResultGene.put(prix, hashResult);
 	}
+	abstract String[] getResultTitle();
 	/**
 	 * 返回该检验所对应返回的几个时期的信息，也就是几个sheet
 	 * @param lsResultTest 将检验结果装入hash表
 	 * @return
 	 */
-	protected abstract LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(ArrayList<String[]> lsResultTest);
+	protected abstract LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<String[]> lsResultTest);
 	
 	
 	public void saveExcel(String excelPath) {
@@ -217,13 +214,13 @@ public abstract class CtrlGOPath {
 			for (Entry<String,ArrayList<String[]>> entry2 : hashValue.entrySet()) {
 				excelResult.WriteExcel(prix + entry2.getKey(), 1, 1, entry2.getValue());
 			}
-			copeFile(excelPath);
+			copeFile(prix, excelPath);
 		}
 	}
 	/**
 	 * 是否需要额外的处理文件，不需要就留空
 	 * 譬如elimGO需要移动GOMAP等
 	 */
-	protected abstract void copeFile(String excelPath);
+	protected abstract void copeFile(String prix, String excelPath);
 
 }

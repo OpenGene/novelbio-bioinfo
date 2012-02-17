@@ -11,20 +11,11 @@ import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGen2Path;
 import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGng2Path;
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
 import com.novelbio.base.dataOperate.ExcelOperate;
-import com.novelbio.database.DAO.KEGGDAO.*;
 import com.novelbio.database.domain.geneanno.*;
 import com.novelbio.database.domain.kegg.*;
 import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
-import com.novelbio.database.mapper.geneanno.MapBlastInfoOld;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.geneanno.MapUniProtIDOld;
-import com.novelbio.database.mapper.kegg.MapKEntryOld;
-import com.novelbio.database.mapper.kegg.MapKIDKeg2KoOld;
-import com.novelbio.database.mapper.kegg.MapKIDgen2KegOld;
-import com.novelbio.database.mapper.kegg.MapKNCompInfoOld;
-import com.novelbio.database.mapper.kegg.MapKPathRelationOld;
-import com.novelbio.database.mapper.kegg.MapKPathwayOld;
 import com.novelbio.database.mapper.kegg.MapKRelation;
 import com.novelbio.database.service.servgeneanno.ServNCBIID;
 
@@ -59,7 +50,7 @@ and taxID=#{taxID}
 	 * @param subTaxID 需要查找的物种
 	 * @param evalue 只有当blast为true时才起作用，当evalue<=设定值时才会考虑blast获得的KO值
 	 */
-	public static KGen2Path qKegPath(NCBIID ncbiid,boolean blast,int subTaxID,double evalue) 
+	public static KGen2Path qKegPath2(NCBIID ncbiid,boolean blast,int subTaxID,double evalue) 
 	{
 		KGen2Path kGen2Path = new KGen2Path();
 		KGCgen2Entry kgCgen2Entry = null;
@@ -165,7 +156,7 @@ and taxID=#{taxID}
 	 * @param subTaxID 需要查找的物种
 	 * @param evalue 只有当blast为true时才起作用，当evalue<=设定值时才会考虑blast获得的KO值
 	 */
-	public static KGng2Path qKegPath(int queryTax, KGNIdKeg kgnIdKeg) 
+	public static KGng2Path qKegPath2(int queryTax, KGNIdKeg kgnIdKeg) 
 	{
 		KGng2Path kGng2Path = new KGng2Path();
 		kGng2Path.setKGNIdKeg(kgnIdKeg);
@@ -210,7 +201,7 @@ and taxID=#{taxID}
 	 * 7: subKO 目标物种的KO，注意不是keggID，KO可直接用于比对到本物种上去,如果有多个KO，则用"//"隔开
 	 * 
 	 */
-	public static String[] getKeggID(String[] geneIDInfo,boolean blast,int subTaxID,double evalue ) 
+	public static String[] getKeggID2(String[] geneIDInfo,boolean blast,int subTaxID,double evalue ) 
 	{
 		String[] kegIDInfo = new String[8];
 		kegIDInfo[0] = geneIDInfo[0]; kegIDInfo[1] = geneIDInfo[1]; kegIDInfo[2] = geneIDInfo[2];
@@ -360,7 +351,7 @@ and taxID=#{taxID}
 	 * @param subTaxID
 	 * @param evalue
 	 */
-	public static ArrayList<String[]> getGeneID(String[] accID, int taxID) 
+	public static ArrayList<String[]> getGeneID2(String[] accID, int taxID) 
 	{
 		ServNCBIID servGeneAnno = new ServNCBIID();
 		/**

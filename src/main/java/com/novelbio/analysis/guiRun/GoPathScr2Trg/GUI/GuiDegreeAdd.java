@@ -25,7 +25,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.table.DefaultTableModel;
 
 import com.novelbio.analysis.coexp.simpCoExp.SimpCoExp;
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlPath2;
+import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlPath;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.CtrlNormal;
@@ -147,7 +147,6 @@ public class GuiDegreeAdd extends JPanel{
 				public void actionPerformed(ActionEvent evt) {
 					GUIFileOpen guiFileOpen = new GUIFileOpen();
 					String savefilename = guiFileOpen.saveFileName("xls", "xls");
-					CtrlPath2 ctrlPath = CtrlPath2.getCtrlPathUsed();
 					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
 						savefilename = savefilename+".xls";
 					}

@@ -46,11 +46,11 @@ public class LimmaAffy {
 	/**
 	 * 标准化数据的文件路径
 	 */
-	String normData = "";
+	String normDataFile = NovelBioConst.R_WORKSPACE_MICROARRAY_NORMDATA_TMP;
 	/**
 	 * 标准化方法
 	 */
-	String NormType = "";
+	String NormType = LimmaAffy.NORM_RMA;
 	/**
 	 * 探针列
 	 */
@@ -81,9 +81,32 @@ public class LimmaAffy {
 	{
 		lsRawData.add(rawDataFile);
 	}
-	public void setNormData(String normDataFile)
+	public void cleanRawData()
 	{
-		this.normData = normDataFile;
+		lsRawData.clear();
+	}
+	public void setNormDataFile(String normDataFile)
+	{
+		this.normDataFile = normDataFile;
+	}
+	/**
+	 * 获得标准化好的文件名称
+	 * @return
+	 */
+	private String getNormDataFile() {
+		//TODO
+		return normDataFile;
+	}
+	public static void main(String[] args) {
+		LimmaAffy limmaAffy = new LimmaAffy();
+		limmaAffy.setNormDataFile("/media/winE/NBC/Project/Microarray_YL_111012/CEL/fasfees");
+		limmaAffy.setRawData("/media/winE/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C07201.CEL");
+		limmaAffy.setRawData("/media/winE/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C07202.CEL");
+		limmaAffy.setRawData("/media/winE/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C07203.CEL");
+		ArrayList<String> ls = limmaAffy.generateScriptNorm();
+		for (String string : ls) {
+			System.out.println(string);
+		}
 	}
 	/**
 	 * 忽略大小写
@@ -95,10 +118,13 @@ public class LimmaAffy {
 	public void setLsCompInfo(ArrayList<String[]> lsCompInfo) {
 		this.lsCompInfo = lsCompInfo;
 	}
-	
+	/**
+	 * 产生标准化的数据，并写入文本，并读取内存
+	 * @return
+	 */
 	public ArrayList<String> getNormData()
 	{
-		ArrayList<String> lsNorm = generateScriptNorm();
+		generateScriptNorm();
 	}
 	/**
 	 * 忽略大小写
@@ -123,6 +149,11 @@ public class LimmaAffy {
 	
 	/**
 	 * 产生标准化的R脚本
+	 * library(affy) <br>
+	 * library(gcrma)<br>
+	 * Data = ReadAffy("fswefse","fse3r")<br>
+	 * esetOld =gcrma(Data)<br>
+	 * write.exprs(esetOld, file = "adfs")<br>
 	 * @return
 	 */
 	private ArrayList<String> generateScriptNorm() {
@@ -143,7 +174,10 @@ public class LimmaAffy {
 		return lsScript;
 	}
 	/**
-	 * 生成读取cel文件的script
+	 * 生成读取cel文件的script<br>
+	 * Data = ReadAffy("fswefse","fse3r")  <br>
+	esetOld =gcrma(Data)<br>
+	write.exprs(esetOld, file = "adfs")
 	 * @return
 	 */
 	private String scriptReadRawDataCel()
@@ -152,6 +186,7 @@ public class LimmaAffy {
 		for (String string : lsRawData) {
 			script = script + "\"" + string + "\", ";
 		}
+		script = script.substring(0, script.length() - 2);
 		script = script + ")\r\n";
 		if (NormType.equals(LimmaAffy.NORM_RMA)) {
 			script = script + "esetOld = rma(data)\r\n";
@@ -160,17 +195,16 @@ public class LimmaAffy {
 			script = script + "esetOld = gcrma(data)\r\n";
 		}
 		script = script + scriptWriteNormData();
-		drgfr
 		return script;
 	}
 	/**
-	 * 生成挑选差异基因的script
-	 * eset=read.table(file=\""+txtTmpNormData+"\",he=T,sep=\"\\t\",row.names=1)
-	 * eset = log2(eset)
-	#普通t检验
-	#design = model.matrix(~ -1+factor (c(1,1,2,2,3,3)))  #-1：设计矩阵中去掉截距， factor：所含有的因子，也就是比对的芯片，同样的数字代表重复
-	design = model.matrix(~ -1+factor (c(rep(1,15),rep(2,41))))
-	colnames(design) = c("H","S") #加上芯片名,芯片名不能是数字，所以为a9522
+	 * 生成挑选差异基因的script <br>
+	 * eset=read.table(file=\""+txtTmpNormData+"\",he=T,sep=\"\\t\",row.names=1)<br>
+	 * eset = log2(eset)<br>
+	#普通t检验<br>
+	#design = model.matrix(~ -1+factor (c(1,1,2,2,3,3)))  #-1：设计矩阵中去掉截距， factor：所含有的因子，也就是比对的芯片，同样的数字代表重复<br>
+	design = model.matrix(~ -1+factor (c(rep(1,15),rep(2,41))))<br>
+	colnames(design) = c("H","S") #加上芯片名,芯片名不能是数字，所以为a9522<br>
 
 	 * @return
 	 */
@@ -187,11 +221,11 @@ public class LimmaAffy {
 	}
 	/**
 	 * 构建比较方法的脚本
-	contrast.matrix = makeContrasts( HvsS = H - S,levels=design)
-	#比较与导出
-	fit = lmFit(eset, design) 
-	fit2 = contrasts.fit(fit, contrast.matrix) 
-	fit2.eBayes = eBayes(fit2) 
+	contrast.matrix = makeContrasts( HvsS = H - S,levels=design) <br>
+	#比较与导出<br>
+	fit = lmFit(eset, design) <br>
+	fit2 = contrasts.fit(fit, contrast.matrix) <br>
+	fit2.eBayes = eBayes(fit2) <br>
 	write.table(topTable(fit2.eBayes, coef="HvsS", adjust="fdr", sort.by="B", number=50000),  file="HvsS.xls", row.names=F, sep="\t") 
 
 	 * @return
@@ -293,24 +327,26 @@ public class LimmaAffy {
 			String[] strings = lsGroupInfo.get(i);
 			columnID[i+1] = Integer.parseInt(strings[0]);
 		}		
-		ArrayList<String[]> lsTmpNormData = ExcelTxtRead.readLsExcelTxt(getNormFile(), columnID, 1, -1);
+		ArrayList<String[]> lsTmpNormData = ExcelTxtRead.readLsExcelTxt(getNormDataFile(), columnID, 1, -1);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(txtFileName, true);
 		txtWrite.ExcelWrite(lsTmpNormData, "\t", 1, 1);
 	}
 	/**
 	 * 将标准化数据写入文本的script
+	 * write.exprs(esetOld, file = "adfs")
 	 */
 	private String scriptWriteNormData()
 	{
-		String script = "write.exprs(esetOld, file=\"" + getNormFile()+ "\")";
+		String script = "write.exprs(esetOld, file=\"" + getNormDataFile()+ "\")";
 		return script;
 	}
 	/**
 	 * 读取标准化数据的脚本
+	 * eset = "read.table(file = "aa.txt", he = T, sep = "\t", row.names = 1)"
 	 * @return
 	 */
 	private String scriptReadNormData() {
-		String script = "eset=read.table(file=\""+getNormFile()+"\",he=T,sep=\"\\t\",row.names=1)";
+		String script = "eset=read.table(file=\""+getNormDataFile()+"\",he=T,sep=\"\\t\",row.names=1)";
 		return script;
 	}
 	/**
@@ -321,19 +357,13 @@ public class LimmaAffy {
 		String script = "eset=read.table(file=\""+txtTmpNormData+"\",he=T,sep=\"\\t\",row.names=1)";
 		return script;
 	}
-	private ArrayList<String[]> getNormData()
+	
+	private ArrayList<String[]> readNormData()
 	{
-		ArrayList<String[]> lsNormData = ExcelTxtRead.readLsExcelTxt(getNormFile(), 1);
+		ArrayList<String[]> lsNormData = ExcelTxtRead.readLsExcelTxt(getNormDataFile(), 1);
 		return lsNormData;
 	}
 	
 	
-	/**
-	 * 获得标准化好的文件名称
-	 * @return
-	 */
-	private String getNormFile() {
-		//TODO
-		return null;
-	}
+
 }

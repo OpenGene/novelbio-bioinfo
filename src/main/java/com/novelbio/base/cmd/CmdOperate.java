@@ -33,6 +33,7 @@ public class CmdOperate {
 		
 		public ArrayList<ArrayList<String>> doInBackground() {
 			try {
+				logger.info(cmd);
 				return doInBackgroundB();
 			} catch (Exception e) {
 				logger.error("cmd cannot executed correctly: "+cmd);
@@ -69,6 +70,7 @@ public class CmdOperate {
 						{
 							progressDataErr.strcmdInfo = info; 
 							progressDataErr.info = false;
+							logger.error(info);
 							System.out.println(info);
 							lsErr.add(info);
 						}
@@ -91,8 +93,11 @@ public class CmdOperate {
 			BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(process.getInputStream()));
 			String ls_1 = "";
 			while ( (ls_1=bufferedReader.readLine()) != null)
-			System.out.println(ls_1); 
-			
+			{
+				logger.info(ls_1);
+				System.out.println(ls_1);
+				lsIn.add(ls_1);
+			}
 			process.waitFor();
 			ArrayList<ArrayList<String>> lsResult = new ArrayList<ArrayList<String>>();
 			lsResult.add(lsIn); lsResult.add(lsErr);
@@ -111,6 +116,7 @@ public class CmdOperate {
 			txtCmd1.close();
 			cmd = "sh "+cmd1SH;
 			try {
+				logger.info(cmd);
 				doInBackgroundB();
 			} catch (Exception e) {
 				logger.error("cmd cannot executed correctly: "+cmd);

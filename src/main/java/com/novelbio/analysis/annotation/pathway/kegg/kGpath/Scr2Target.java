@@ -9,12 +9,10 @@ import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
-import com.novelbio.database.mapper.geneanno.MapGeneInfoOld;
-import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.kegg.MapKEntryOld;
-import com.novelbio.database.mapper.kegg.MapKIDKeg2KoOld;
-import com.novelbio.database.service.ServAnno;
+import com.novelbio.database.service.servgeneanno.ServGeneInfo;
 import com.novelbio.database.service.servgeneanno.ServNCBIID;
+import com.novelbio.database.service.servkegg.ServKEntry;
+import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 
 public class Scr2Target {
 	
@@ -34,6 +32,8 @@ public class Scr2Target {
 	public static void getGene2RelateKo(String pathName, String[] accID,String ResultFIleScr2Target, String resultFIleAttribute,int QtaxID,boolean blast,int subTaxID,double evalue) throws Exception
 	{
 		ServNCBIID servNCBIID = new ServNCBIID();
+		ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
+		ServKEntry servKEntry = new ServKEntry();
 		//丛数据库获得taxID
 		if (QtaxID <= 0)
 		{
@@ -66,12 +66,12 @@ public class Scr2Target {
 	KGpathRelation ： 具体信息 
 		 */
 		ArrayList<Object[]> lsRelationInfo = new ArrayList<Object[]>();
-		ArrayList<String[]> lsAccID = QKegPath.getGeneID(accID, QtaxID);
+		ArrayList<String[]> lsAccID = QKegPath.getGeneID2(accID, QtaxID);
 		//一个一个的accID去查找
 		for (int i = 0; i < lsAccID.size(); i++) 
 		{
 			Hashtable<String, KGpathScr2Trg> hashEntryRelation = new Hashtable<String, KGpathScr2Trg>();
-			String[] qGenKegInfo=QKegPath.getKeggID(lsAccID.get(i), blast, subTaxID, evalue);
+			String[] qGenKegInfo=QKegPath.getKeggID2(lsAccID.get(i), blast, subTaxID, evalue);
 			if (qGenKegInfo[3]==null&&qGenKegInfo[7]==null) {
 				continue;
 			}
@@ -88,7 +88,7 @@ public class Scr2Target {
 					////////////////如果geneBlast到了人类，并且得到了相应的KO，那么尝试获得该KO所对应本物种的KeggID，并用KeggID直接mapping回本基因。如果没有KeggID，则用KO去mapping////////////////////////////////////////////////////////////////
 					KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
 					kgiDkeg2Ko.setKo(ko[j]);kgiDkeg2Ko.setTaxID(QtaxID);
-					ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos2 = MapKIDKeg2KoOld.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+					ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos2 = servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 					if (lsKgiDkeg2Kos2 != null && lsKgiDkeg2Kos2.size()>0) 
 					{
 						//虽然一个ko对应多个keggID，但是对于pathway来说，一个ko就对应到一个pathway上，所以一个ko就够了
@@ -102,7 +102,7 @@ public class Scr2Target {
 			{
 				KGentry qkGentry=new KGentry();
 				qkGentry.setEntryName(ko[j]);qkGentry.setTaxID(QtaxID);
-				ArrayList<KGentry> lsKGentryQuery = MapKEntryOld.queryLsKGentries(qkGentry);
+				ArrayList<KGentry> lsKGentryQuery = servKEntry.queryLsKGentries(qkGentry);
  				for (int k = 0; k < lsKGentryQuery.size(); k++)
 				{
  					if (lsKGentryQuery.get(k).getEntryName().equals("hsa:56604")) {
@@ -150,6 +150,7 @@ public class Scr2Target {
 	 */
 	public static void getGene2RelateKo2(String pathName, ArrayList<String> lsKeggID,String ResultFIleScr2Target, String resultFIleAttribute,int QtaxID) throws Exception
 	{
+		ServKEntry servKEntry = new ServKEntry();
 		/**
 		 * 保存关系的一个list，object[2]
 		 * 0：qGenKegInfo[7]<br>
@@ -180,7 +181,7 @@ public class Scr2Target {
 			{
 				KGentry qkGentry=new KGentry();
 				qkGentry.setEntryName(ko[j]);qkGentry.setTaxID(QtaxID);
-				ArrayList<KGentry> lsKGentryQuery = MapKEntryOld.queryLsKGentries(qkGentry);
+				ArrayList<KGentry> lsKGentryQuery = servKEntry.queryLsKGentries(qkGentry);
  				for (int k = 0; k < lsKGentryQuery.size(); k++)
 				{
 					Hashtable<String, KGpathScr2Trg> tmpHashEntryRelation=QKegPath.getHashKGpathRelation(lsKGentryQuery.get(k));
@@ -395,6 +396,7 @@ public class Scr2Target {
 	private static void getRelation(String pathName, ArrayList<Object[]> lsRelationInfo ,int QtaxID,String ResultFIleScr2Target, String resultFIleAttribute) throws Exception 
 	{
 		ServNCBIID servGeneAnno = new ServNCBIID();
+		ServGeneInfo servGeneInfo = new ServGeneInfo();
 		//source 2 target 的表格
 		//string[3] 0:source 1:target 2:relation
 		ArrayList<String[]> lsScr2Target = new ArrayList<String[]>();
@@ -444,7 +446,7 @@ public class Scr2Target {
 			else if (qGenKegInfo[3] !=null)
 			{
 				GeneInfo qgeneInfo = new GeneInfo(); qgeneInfo.setGeneID(Long.parseLong(qGenKegInfo[1]));
-				GeneInfo geneInfoSub = MapGeneInfoOld.queryGeneInfo(qgeneInfo);
+				GeneInfo geneInfoSub = servGeneInfo.queryGeneInfo(qgeneInfo);
 				//如果没有symbol
 				if (geneInfoSub == null || geneInfoSub.getSymb() == null || geneInfoSub.getSymb().trim().equals("") || geneInfoSub.getSymb().trim().equals("-")) 
 				{
@@ -471,7 +473,7 @@ public class Scr2Target {
 				if (qGenKegInfo[1] != null) {
 					GeneInfo qgeneInfo = new GeneInfo();
 					qgeneInfo.setGeneID(Long.parseLong(qGenKegInfo[1]));
-					GeneInfo geneInfoSub = MapGeneInfoOld.queryGeneInfo(qgeneInfo);
+					GeneInfo geneInfoSub = servGeneInfo.queryGeneInfo(qgeneInfo);
 					//如果没有symbol
 					if (geneInfoSub == null) {
 						System.out.println("error");
@@ -501,7 +503,7 @@ public class Scr2Target {
 				queryGenInfo[3] = qGenKegInfo[4]; queryGenInfo[4] = qGenKegInfo[5];
 				GeneInfo qgeneInfo2 = new GeneInfo();
 				qgeneInfo2.setGeneID(Long.parseLong(qGenKegInfo[6]));
-				GeneInfo geneInfoSub2 = MapGeneInfoOld.queryGeneInfo(qgeneInfo2);
+				GeneInfo geneInfoSub2 = servGeneInfo.queryGeneInfo(qgeneInfo2);
 				//如果没有symbol
 				if (geneInfoSub2.getSymb() == null || geneInfoSub2.getSymb().trim().equals("") || geneInfoSub2.getSymb().trim().equals("-")) 
 				{

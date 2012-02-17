@@ -63,7 +63,9 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	public int getTaxID() {
 		return this.taxID;
 	}
-
+	/**
+	 * 是否已经装载过lskGentries了
+	 */
 	boolean boolskGentries = false;
 	private ArrayList<KGentry> lskGentries = null;
 	/**

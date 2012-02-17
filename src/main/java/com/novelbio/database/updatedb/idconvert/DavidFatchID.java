@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.WebFetchOld;
 
 
 public class DavidFatchID
@@ -86,7 +86,7 @@ public class DavidFatchID
 		 BufferedReader davidFileReader=davidrReadandWriteurl.readfile();
 			String tmpcontent="";
 			
-			WebFetch davidFetch=new WebFetch();
+			WebFetchOld davidFetch=new WebFetchOld();
 			
 			while ((tmpcontent=davidFileReader.readLine())!=null) 
 			{

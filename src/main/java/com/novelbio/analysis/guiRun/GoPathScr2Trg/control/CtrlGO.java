@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.CopyOfGUIanalysisSimple;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -76,14 +75,14 @@ public class CtrlGO extends CtrlGOPath{
 	}
 
 	@Override
-	protected void copeFile(String excelPath) {
+	protected void copeFile(String prix, String excelPath) {
 		if (elimGo) {
 			FileOperate.moveFile(FileOperate.changeFileSuffix(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, "_"+prix, null),
 					FileOperate.getParentPathName(excelPath), FileOperate.getFileNameSep(excelPath)[0] + prix + "GoMap.pdf", true);
 		}
 	}
 	@Override
-	protected LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(ArrayList<String[]> lsResultTest) {
+	protected LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<String[]> lsResultTest) {
 			LinkedHashMap<String, ArrayList<String[]>> hashResult = new LinkedHashMap<String, ArrayList<String[]>>();
 			hashResult.put("GO_Result", lsResultTest);
 			if (elimGo) {
@@ -100,6 +99,18 @@ public class CtrlGO extends CtrlGOPath{
 				hashResult.put("Gene2GO", lsGene2GOPvalue);
 			}
 		return hashResult;
+	}
+	@Override
+	void setLsBGAccIDsave(String fileName) {
+		functionTest.setLsBGAccID(fileName, 1,FileOperate.changeFileSuffix(fileName, "_GOItem", "txt"));
+	}
+	@Override
+	String[] getResultTitle() {
+		String[] title = new String[10];
+		title[0] = "GOID"; title[1] = "GOTerm";
+		title[2] = "DifGene"; title[3] = "AllDifGene"; title[4] = "GeneInGOID"; title[5] = "AllGene";
+		title[6] = "P-Value"; title[7] = "FDR"; title[8] = "Enrichment"; title[9] = "(-log2P)";
+		return title;
 	}
 
 }

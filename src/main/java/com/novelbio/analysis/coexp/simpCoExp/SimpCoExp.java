@@ -18,9 +18,6 @@ import org.apache.commons.math.stat.correlation.PearsonsCorrelation;
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
-
-
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailAbs;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

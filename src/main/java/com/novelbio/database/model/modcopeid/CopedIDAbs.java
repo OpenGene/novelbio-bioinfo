@@ -214,7 +214,9 @@ public abstract class CopedIDAbs implements CopedIDInt {
 
 	public int getTaxID() {
 		if (taxID <= 0) {
-			taxID = Integer.parseInt(getNCBIUniTax(accID, 0).get(1));
+			if (getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+				taxID = Integer.parseInt(getNCBIUniTax(accID, 0).get(1));
+			}
 		}
 		return taxID;
 	}
@@ -305,7 +307,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	protected abstract AgeneUniID getGenUniID(String genUniID, String dbInfo);
 
 	/**
-	 * 先设定blast的情况 如果blast * 0:symbol 1:description 2:evalue 3:subjectSpecies
+	 * 先设定blast的情况 如果blast * 0:symbol 1:description  2:subjectSpecies 3:evalue
 	 * 4:symbol 5:description 如果不blast 0:symbol 1:description
 	 * 
 	 * @return
@@ -636,7 +638,30 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		lsBlastInfosUpdate.add(blastInfo);
 	}
-
+	/**
+	 * 
+	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级
+	 * 可以连续不断的添加
+	 * @param blastInfo
+	 */
+	@Override
+	public void setUpdateBlastInfo(String SubGenUniID, String subIDtype, String subDBInfo, int SubTaxID, double evalue, double identities) {
+		if (genUniID == null || genUniID.equals("")) {
+			return;
+		}
+		BlastInfo blastInfo = new BlastInfo(null, 0, SubGenUniID, subIDtype, SubTaxID);
+		if (blastInfo.getSubjectTab().equals(CopedID.IDTYPE_ACCID)) {
+			logger.error("没有该blast的geneUniID："+SubGenUniID);
+		}
+		blastInfo.setQueryID(genUniID);
+		blastInfo.setQueryTax(getTaxID());
+		blastInfo.setEvalue_Identity(evalue, identities);
+		blastInfo.setQueryDB_SubDB(this.databaseType, subDBInfo);
+		if (lsBlastInfosUpdate == null) {
+			lsBlastInfosUpdate = new ArrayList<BlastInfo>();
+		}
+		lsBlastInfosUpdate.add(blastInfo);
+	}
 	/**
 	 * 如果新的ID不加入UniID，那么就写入指定的文件中 文件需要最开始用set指定
 	 * 

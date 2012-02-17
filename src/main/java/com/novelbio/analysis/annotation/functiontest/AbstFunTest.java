@@ -161,8 +161,9 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		if (!FileOperate.isFileExist(fileName)) {
 			logger.error("no FIle exist: "+ fileName);
 		}
-		TxtReadandWrite txtReadBG = new TxtReadandWrite(fileName, false);
-		lsBG = txtReadBG.ExcelRead("\t", 1, 1, txtReadBG.ExcelRows(), 2, 1);
+		lsBG = ExcelTxtRead.readLsExcelTxt(fileName, new int[]{1,2}, 1, -1, true);
+//		TxtReadandWrite txtReadBG = new TxtReadandWrite(fileName, false);
+//		lsBG = txtReadBG.ExcelRead("\t", 1, 1, txtReadBG.ExcelRows(), 2, 1);
 	}
 	
 	/**

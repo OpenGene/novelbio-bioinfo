@@ -701,5 +701,12 @@ public class CopedID implements CopedIDInt{
 		copedID.setUpdateRefAccID(uniqID);
 		
 	}
+
+	@Override
+	public void setUpdateBlastInfo(String SubGenUniID, String subIDtype,
+			String subDBInfo, int SubTaxID, double evalue, double identities) {
+		copedID.setUpdateBlastInfo(SubGenUniID, subIDtype, subDBInfo, SubTaxID, evalue, identities);
+		
+	}
 	
 }

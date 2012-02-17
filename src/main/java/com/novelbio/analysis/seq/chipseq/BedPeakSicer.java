@@ -75,8 +75,13 @@ is 1E-2.
 		
 		
 	}
-	
-	
+	/**
+	 * 设定fragment长度，默认250
+	 * @param fragment_size
+	 */
+	public void setFragmentSize(int fragment_size) {
+		this.fragment_size = fragment_size;
+	}
 	
 	/**
 	 * 当reads一定长度时，如果测饱和数量的reads，由于reads长度的限制，uniqmapping的reads不可能完全覆盖全基因组，一般来说测的越长覆盖的面积约大。

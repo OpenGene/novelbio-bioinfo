@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
-import com.novelbio.analysis.annotation.pathway.network.AbsNetRelate;
+import com.novelbio.analysis.annotation.network.AbsNetRelate;
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
 import com.novelbio.analysis.annotation.pathway.network.KegNetRelate;
 import com.novelbio.database.domain.kegg.KGentry;

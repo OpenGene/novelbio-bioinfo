@@ -408,7 +408,7 @@ public class KGentry {
 		}
 
 		/**
-		 * 给定kGentry，用里面的信息搜数据库并返回，如果没搜到的话就返回null<br>
+		 * 给定kGentry，用里面的信息搜数据库并返回，如果没搜到的话就返回new arraylist<br>
 		 		where<br>
 				if test="name !=null"<br>
 					 name=#{name}<br>
@@ -433,12 +433,15 @@ public class KGentry {
 		 * @return
 		 */
 		public static ArrayList<KGentry> getLsEntity(String kegID) {
+			if (kegID == null) {
+				return new ArrayList<KGentry>();
+			}
 			ServKEntry servKEntry = new ServKEntry();
 			KGentry kGentry = new KGentry();
 			kGentry.setEntryName(kegID);
 			ArrayList<KGentry> lskGentries = servKEntry.queryLsKGentries(kGentry);
-			if (lskGentries == null || lskGentries.size() < 1) {
-				return null;
+			if (lskGentries == null) {
+				return new ArrayList<KGentry>();
 			}
 			return lskGentries;
 		}

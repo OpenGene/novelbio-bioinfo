@@ -1,4 +1,4 @@
-package com.novelbio.analysis.annotation.pathway.network;
+package com.novelbio.analysis.annotation.network;
 
 import java.util.Set;
 

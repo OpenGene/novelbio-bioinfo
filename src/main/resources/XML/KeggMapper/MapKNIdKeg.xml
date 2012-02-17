@@ -9,7 +9,19 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		<result property="attribute" column="attribute"/>
 		<result property="usualName" column="usualName"/>
 	</resultMap>
-	<select id="selectIdKeg" parameterType="KGNIdKeg" resultMap="idKegMap">
+	<select id="queryKGNIdKeg" parameterType="KGNIdKeg" resultMap="idKegMap">
+		select *
+		from idkeg
+		<where>
+			<if test="kegID != null and kegID != '' ">
+				 kegID = #{kegID}
+			</if>
+			<if test="usualName !=null and usualName != '' ">
+				and usualName = #{usualName}
+			</if>
+		</where>
+	</select>
+	<select id="queryLsKGNIdKeg" parameterType="KGNIdKeg" resultMap="idKegMap">
 		select *
 		from idkeg
 		<where>

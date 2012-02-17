@@ -8,7 +8,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	<select id="queryLsKGIDkeg2Ko" parameterType="KGIDkeg2Ko" resultMap="keg2Ko">
 		select *
-		from idkeg2Ko
+		from idkeg2ko
 		<where>
 			<if test="keggID !=null and keggID != ''">
 				keggID = #{keggID} 
@@ -23,7 +23,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	<select id="queryKGIDkeg2Ko" parameterType="KGIDkeg2Ko" resultMap="keg2Ko">
 		select *
-		from idkeg2Ko
+		from idkeg2ko
 		<where>
 			<if test="keggID !=null and keggID != ''">
 				keggID = #{keggID} 
@@ -37,11 +37,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    </where>
 	</select>
 	<insert id="insertKGIDkeg2Ko" parameterType="KGIDkeg2Ko">
-		insert into idkeg2Ko (keggID,Ko,taxID)
+		insert into idkeg2ko (keggID,Ko,taxID)
 		values (#{keggID},#{Ko},#{taxID})
 	</insert>
 	<update id="updateKGIDkeg2Ko" parameterType="KGIDkeg2Ko">
-		update idkeg2Ko
+		update idkeg2ko
 		<set>
 			<if test="Ko != null and Ko != ''">
 				Ko = #{Ko},

@@ -8,7 +8,6 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.CopyOfGUIanalysisSimple;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -65,7 +64,7 @@ public class CtrlPath extends CtrlGOPath {
 	}
 
 	@Override
-	protected LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(ArrayList<String[]> lsResultTest) {
+	protected LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<String[]> lsResultTest) {
 			LinkedHashMap<String, ArrayList<String[]>> hashResult = new LinkedHashMap<String, ArrayList<String[]>>();
 			hashResult.put("Pathway_Result", lsResultTest);
 			ArrayList<String[]> lsGene2PathPvalue = functionTest.getGene2ItemPvalue();
@@ -74,7 +73,19 @@ public class CtrlPath extends CtrlGOPath {
 	}
 	
 	@Override
-	protected void copeFile(String excelPath) {
+	protected void copeFile(String prix, String excelPath) {
 	}
-	
+	@Override
+	void setLsBGAccIDsave(String fileName) {
+		functionTest.setLsBGAccID(fileName, 1,FileOperate.changeFileSuffix(fileName, "_PathItem", "txt"));
+		
+	}
+	@Override
+	String[] getResultTitle() {
+		String[] title = new String[10];
+		title[0] = "PathID"; title[1] = "PathTerm";
+		title[2] = "DifGene"; title[3] = "AllDifGene"; title[4] = "GeneInPath"; title[5] = "AllGene";
+		title[6] = "P-Value"; title[7] = "FDR"; title[8] = "Enrichment"; title[9] = "(-log2P)";
+		return title;
+	}
 }

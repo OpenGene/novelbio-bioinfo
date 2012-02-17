@@ -8,14 +8,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.WebFetchOld;
 import com.novelbio.base.fileOperate.FileOperate;
 
 
 public class PixivOperate 
 {
 	
-	WebFetch pixiv=new WebFetch();
+	WebFetchOld pixiv=new WebFetchOld();
 	/**
 	 * »ñµÃpixivµÄcookies
 	 */

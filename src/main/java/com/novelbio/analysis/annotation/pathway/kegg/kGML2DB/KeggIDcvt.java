@@ -12,6 +12,11 @@ import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.service.servgeneanno.ServGene2Go;
+import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
+import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
+import com.novelbio.database.service.servkegg.ServKNCompInfo;
+import com.novelbio.database.service.servkegg.ServKNIdKeg;
 
 /**
  * 将KEGGID与geneID和KEGGID与KO的关系等导入数据库
@@ -26,6 +31,7 @@ public class KeggIDcvt {
 	 */
 	public static void upDateGen2Keg(String gen2KegFile) throws Exception 
 	{
+		ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
 		TxtReadandWrite txtgene2Keg=new TxtReadandWrite();
 		txtgene2Keg.setParameter(gen2KegFile, false, true);
 		int TaxID=0;
@@ -39,18 +45,19 @@ public class KeggIDcvt {
 			CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, geneID + "", 0);
 			if (copedID.getTaxID() > 0) {
 				TaxID = copedID.getTaxID();
+				break;
 			}
 		}
-		while ((content=reader.readLine())!=null) 
-		{
-			String[] ss=content.split("\t"); 
-			long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim());
-			String accID = ss[0].split(":")[1].trim();
-			CopedID copedID = new CopedID(accID, TaxID);
-			copedID.setUpdateGeneID(geneID+"", CopedID.IDTYPE_GENEID);
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_KEGG, false);
-			copedID.update(false);
-		}
+//		while ((content=reader.readLine())!=null) 
+//		{
+//			String[] ss=content.split("\t"); 
+//			long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim());
+//			String accID = ss[0].split(":")[1].trim();
+//			CopedID copedID = new CopedID(accID, TaxID);
+//			copedID.setUpdateGeneID(geneID+"", CopedID.IDTYPE_GENEID);
+//			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_KEGG, false);
+//			copedID.update(false);
+//		}
 		///////////////////////////////////////////////////////////////////////////////////////
 		if (TaxID==0) {
 			System.err.println("在NCBIID表中没有找到该物种的taxID");
@@ -64,8 +71,8 @@ public class KeggIDcvt {
 			String kegID=ss[0];long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").trim());
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
 			kgiDgen2Keg.setGeneID(geneID);kgiDgen2Keg.setKeggID(kegID);kgiDgen2Keg.setTaxID(TaxID);
-			if (MapKIDgen2KegOld.queryLsKGIDgen2Keg(kgiDgen2Keg) == null || MapKIDgen2KegOld.queryLsKGIDgen2Keg(kgiDgen2Keg).size() == 0) {
-				MapKIDgen2KegOld.InsertKGIDgen2Keg(kgiDgen2Keg);
+			if (servKIDgen2Keg.queryLsKGIDgen2Keg(kgiDgen2Keg) == null || servKIDgen2Keg.queryLsKGIDgen2Keg(kgiDgen2Keg).size() == 0) {
+				servKIDgen2Keg.insertKGIDgen2Keg(kgiDgen2Keg);
 			}
 		}
 	}
@@ -79,6 +86,8 @@ public class KeggIDcvt {
 	 */
 	public static void upDateKeg2Ko(String keg2KoFile) throws Exception 
 	{
+		ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
+		ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
 		TxtReadandWrite txtKeg2Ko=new TxtReadandWrite();
 		txtKeg2Ko.setParameter(keg2KoFile, false, true);
 		int TaxID=0;
@@ -91,7 +100,7 @@ public class KeggIDcvt {
 			String kegID=ss[0].trim();
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
 			kgiDgen2Keg.setKeggID(kegID);
-			KGIDgen2Keg kgiDgen2Keg2=MapKIDgen2KegOld.queryKGIDgen2Keg(kgiDgen2Keg);
+			KGIDgen2Keg kgiDgen2Keg2=servKIDgen2Keg.queryKGIDgen2Keg(kgiDgen2Keg);
 			if (kgiDgen2Keg2!=null) {
 				TaxID=kgiDgen2Keg2.getTaxID();
 				break;
@@ -110,8 +119,8 @@ public class KeggIDcvt {
 			String kegID=ss[0];String ko=ss[1].trim();
 			KGIDkeg2Ko kgDkeg2Ko=new KGIDkeg2Ko();
 			kgDkeg2Ko.setKeggID(kegID);kgDkeg2Ko.setKo(ko);kgDkeg2Ko.setTaxID(TaxID);
-			if (MapKIDKeg2KoOld.queryLsKGIDkeg2Ko(kgDkeg2Ko) == null || MapKIDKeg2KoOld.queryLsKGIDkeg2Ko(kgDkeg2Ko).size() == 0) {
-				MapKIDKeg2KoOld.InsertKGIDkeg2Ko(kgDkeg2Ko);
+			if (servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgDkeg2Ko) == null || servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgDkeg2Ko).size() == 0) {
+				servKIDKeg2Ko.insertKGIDkeg2Ko(kgDkeg2Ko);
 			}
 		}
 	}
@@ -123,6 +132,8 @@ public class KeggIDcvt {
 	 */
 	public static void upDateKegCompound(String compFile) throws Exception
 	{
+		ServKNIdKeg servKNIdKeg = new ServKNIdKeg();
+		ServKNCompInfo servKNCompInfo = new ServKNCompInfo();
 		TxtReadandWrite txtComp = new TxtReadandWrite();
 		txtComp.setParameter(compFile, false, true);
 		BufferedReader readerComp = txtComp.readfile();
@@ -140,7 +151,7 @@ public class KeggIDcvt {
 				kgnIdKeg.setAttribute("Compound");
 				kgnIdKeg.setKegID(kegID);
 				kgnIdKeg.setUsualName(kegID);
-				MapKNIdKegOld.InsertKGNIdKeg(kgnIdKeg);
+				servKNIdKeg.insertKGNIdKeg(kgnIdKeg);
 				
 				//读取Name那一列
 				content = readerComp.readLine();
@@ -151,7 +162,7 @@ public class KeggIDcvt {
 					kgnIdKeg.setAttribute("Compound");
 					kgnIdKeg.setKegID(kegID);
 					kgnIdKeg.setUsualName(name);
-					MapKNIdKegOld.InsertKGNIdKeg(kgnIdKeg);
+					servKNIdKeg.insertKGNIdKeg(kgnIdKeg);
 					nameAll = name;
 					name = "";
 				}
@@ -162,7 +173,7 @@ public class KeggIDcvt {
 							kgnIdKeg.setAttribute("Compound");
 							kgnIdKeg.setKegID(kegID);
 							kgnIdKeg.setUsualName(name);
-							MapKNIdKegOld.InsertKGNIdKeg(kgnIdKeg);
+							servKNIdKeg.insertKGNIdKeg(kgnIdKeg);
 							nameAll = nameAll + "//"+name;
 							name = "";
 						}
@@ -172,7 +183,7 @@ public class KeggIDcvt {
 					kgnIdKeg.setAttribute("Compound");
 					kgnIdKeg.setKegID(kegID);
 					kgnIdKeg.setUsualName(name);
-					MapKNIdKegOld.InsertKGNIdKeg(kgnIdKeg);
+					servKNIdKeg.insertKGNIdKeg(kgnIdKeg);
 					if (nameAll.trim().equals("")) {
 						nameAll = name;
 					}
@@ -199,7 +210,7 @@ public class KeggIDcvt {
 					}
 					content = readerComp.readLine();
 				}
-				MapKNCompInfoOld.InsertKGNCompInfo(kgnCompInfo);
+				servKNCompInfo.insertKGNCompInfo(kgnCompInfo);
 				continue;
 			}
 		}

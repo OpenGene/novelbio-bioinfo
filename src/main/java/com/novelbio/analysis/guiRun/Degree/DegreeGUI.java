@@ -18,6 +18,8 @@ import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.novelbio.database.model.modcopeid.CopedID;
+
 
 
 /**
@@ -69,7 +71,7 @@ public class DegreeGUI extends javax.swing.JFrame {
 //							new String[] { "Item One", "Item Two" });
 //				jCBSelectTaxID = new JComboBox();
 //				jCBSelectTaxID.setModel(jCBSelectTaxIDModel);
-				final HashMap<String, Integer> hashTaxID = CtrlOther.getSpecies();
+				final HashMap<String, Integer> hashTaxID = CopedID.getHashNameTaxID();//.getSpecies();
 				
 				String[] speciesarray = new String[hashTaxID.size()+1];
 				int i = 0;

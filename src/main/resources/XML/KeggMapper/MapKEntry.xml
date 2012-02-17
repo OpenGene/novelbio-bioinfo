@@ -62,32 +62,32 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	<update id="updateKGentry" parameterType="KGentry">
 		update entry
 		<set>
-			<if test="name !=null and name !=0">
+			<if test="name !=null and name != ''">
 				name = #{name},
 			</if>
-			<if test="geneID !=null and geneID !=0">
+			<if test="pathName !=null and pathName != ''">
 				pathName = #{pathName},
 			</if>
 			<if test="id !=null and id != 0">
 				ID = #{id},
 			</if>
 			<if test="reactionName !=null and reactionName !=''">
-				reactionName = #{reactionName} 
+				reactionName = #{reactionName},
 			</if>
-			<if test="linkEntry !=null and linkEntry !=''">
-				link = #{linkEntry} 
+			<if test="linkEntry != null and linkEntry !=''">
+				link = #{linkEntry},
 			</if>
-			<if test="compNum !=null">
-				compNum = #{compNum} 
+			<if test="compNum != null">
+				compNum = #{compNum},
 			</if>
 			<if test="compID !=null">
-				compID = #{compID} 
+				compID = #{compID},
 			</if>
 			<if test="parentID !=null">
-				parentID = #{parentID} 
+				parentID = #{parentID},
 			</if>
-			<if test="taxID !=null and taxID != 0">
-				taxID = #{taxID} 
+			<if test="taxID != null and taxID != 0">
+				taxID = #{taxID}
 			</if>
 		</set>
 		<where>

@@ -1,4 +1,4 @@
-package com.novelbio.analysis.annotation.pathway.network;
+package com.novelbio.analysis.annotation.network;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,10 +24,16 @@ public abstract class AbsNetEntity {
 	/**
 	 * 以下是本entity大概属于什么类别
 	 */
-	public static String ENTITY_GENE = "gene"; 
-	public static String ENTITY_COMPOUND = "compound";
-	public static String ENTITY_DRUG = "drug";
-	
+	public static int ENTITY_GENE = 123; 
+	public static int ENTITY_COMPOUND = 456;
+	public static int ENTITY_DRUG = 789;
+	/**
+	 * 该节点的类型，用来表示这个唯一点。
+	 * 有时候会有这种情况，譬如Kegg里面一个节点有三个基因。
+	 * 那么这三个点在图片中应该是同一个点。这时候就可以用ENTITY_COMPLEX来表示这个大节点，其他小点和它连起来。
+	 * 
+	 */
+	public static int ENTITY_COMPLEX = 1024;
 	/**
 	 * 以下是本entity处在的DBinfo
 	 */
@@ -38,11 +44,6 @@ public abstract class AbsNetEntity {
 	 * 该节点包括若干个CopedID
 	 */
 	HashSet<CopedID> hashCopedIDs = new HashSet<CopedID>();
-	
-	/**
-	 * 该节点所在的pathway信息
-	 */
-	ArrayList<AbsPathway> lsPathInfo = new ArrayList<AbsPathway>(); 
 	
 	/**
 	 * 该节点的ID，用来表示这个唯一点。
@@ -58,10 +59,9 @@ public abstract class AbsNetEntity {
 	 */
 	private String flag = "";
 	
-	private ArrayList<String> lsDataBase = new ArrayList<String>();
+	private ArrayList<String> lsDataBase = new ArrayList<String>();	
 	
-	private String taxID = "";
-	
+	int taxID = 0;
 	
 	/**
 	 * 该节点包括若干个CopedID
@@ -76,80 +76,25 @@ public abstract class AbsNetEntity {
 	{
 		hashCopedIDs.add(copedID);
 	}
-	
-	/**
-	 * 该节点所在的pathway信息
-	 */
-	public ArrayList<AbsPathway> getLsPathways() {
-		return lsPathInfo;
-	}
-	/**
-	 * 该节点所在的pathway信息
-	 */
-	public void addLsPathways(AbsPathway pathway)
-	{
-		lsPathInfo.add(pathway);
-	}
-	
-	/**
-	 * 该节点的ID，用来表示这个唯一点。
-	 * 有时候会有这种情况，譬如Kegg里面一个节点有三个基因，而这三个基因在reactome中对应了三个不同的节点。
-	 * 那么这四个点在图片中应该是同一个点。这时候就可以用entityID来表示这四个节点在最后的网络图中其实是同一个节点。
-	 */
-	public String getEntityID() {
-		return entityID;
-	}
-	/**
-	 * 该节点的ID，用来表示这个唯一点。
-	 * 有时候会有这种情况，譬如Kegg里面一个节点有三个基因，而这三个基因在reactome中对应了三个不同的节点。
-	 * 那么这四个点在图片中应该是同一个点。这时候就可以用entityID来表示这四个节点在最后的网络图中其实是同一个节点。
-	 */
-	public void setEntityID(String entityID)
-	{
-		this.entityID = entityID;
-	}
+ 
 	/**
 	 * 该节点的物种
 	 */
-	public String getTaxID() {
+	public int getTaxID() {
 		return taxID;
 	}
 	/**
 	 * 该节点的物种
 	 */
-	public void setTaxID(String taxID)
+	public void setTaxID(int taxID)
 	{
 		this.taxID = taxID;
 	}
 	/**
-	 * 该节点处于哪个DataBase中，有DBINFO_KEGG 和DBINFO_REACTOME
-	 * @return
-	 */
-	public ArrayList<String> getDataBaseInfo() {
-		return lsDataBase;
-	}
-	/**
-	 * 该节点处于哪个DataBase中，有DBINFO_KEGG 和DBINFO_REACTOME
-	 * @return
-	 */
-	public void setDataBaseInfo(String DBinfo)
-	{
-		this.lsDataBase.add(DBinfo);
-	}
-	/**
 	 * 数值应该是AbsNetEntity中ENTITY中的一员，可以是化合物，基因，药物等，按照需要可以添加
-	 * 只有当flag=ENTITY_GENE时，才会有lsNcbiids或lsUniProtIDs
 	 */
 	public String getFlag() {
 		return flag;
-	}
-	/**
-	 * 数值应该是AbsNetEntity中ENTITY中的一员，可以是化合物，基因，药物等，按照需要可以添加
-	 * 只有当flag=ENTITY_GENE时，才会有lsNcbiids或lsUniProtIDs
-	 */
-	public void setFlag(String flag)
-	{
-		this.flag = flag;
 	}
 	/**
 	 * 	仅比较两个AbsNetEntity的entityID是否相同。但是当entityID.trim()为""时，都忽略
@@ -182,23 +127,19 @@ public abstract class AbsNetEntity {
 		if (!hashCopedIDs.equals(otherObj.getHashCopedIDs()))
 			return false;
 		
-		//比较所处在的数据库是否一致
-		if (!lsDataBase.equals(otherObj.getDataBaseInfo()))
-			return false;
-		
 		return true;
 	}
 	
 	public int hashCode()
 	{
-		int hashCode = hashCopedIDs.hashCode() + lsDataBase.hashCode();
+		int hashCode = hashCopedIDs.hashCode() + lsDataBase.hashCode()*1000000;
 		return hashCode;
 	}
 	
 	/**
 	 * 用来保存
 	 */
-	static HashMap<String, ArrayList<AbsNetEntity>> hashAbsNetEntity = new HashMap<String, ArrayList<AbsNetEntity>>();
+	static ArrayList<AbsNetRelate> hashAbsNetRelate = new ArrayList<AbsNetRelate>();
 	
 	/**
 	 * 给定一个entityID，返回该entity所有的细分节点，<br>
@@ -210,34 +151,6 @@ public abstract class AbsNetEntity {
 	 */
 	public static ArrayList<AbsNetEntity> getLsAbsNetEntity(String entityID) {
 		return hashAbsNetEntity.get(entityID.trim());
-	}
-	
-	/**
-	 * 给定一个节点信息，装入指定的哈希表中 
-	 * 如果hash表中没有改节点，直接生成一个新key
-	 * 如果hash表中有该节点的list，比较该节点信息与该list中的其他元素，如果都不相同，就加入该节点
-	 * @param absNetEntity
-	 */
-	public static void addAbsNetEntity(AbsNetEntity absNetEntity) {
-		if (hashAbsNetEntity.get(absNetEntity.getEntityID()) == null) {
-			ArrayList<AbsNetEntity> lsAbsNetEntities = new ArrayList<AbsNetEntity>();
-			lsAbsNetEntities.add(absNetEntity);
-			hashAbsNetEntity.put(absNetEntity.getEntityID(), lsAbsNetEntities);
-		}
-		else 
-		{
-			ArrayList<AbsNetEntity> lsAbsNetEntities = hashAbsNetEntity.get(absNetEntity.getEntityID());
-			if (!lsAbsNetEntities.contains(absNetEntity)) {
-				lsAbsNetEntities.add(absNetEntity);
-			}
-		}
-	}
-	
-	/**
-	 * 清空hash表
-	 */
-	public static void cleanHash() {
-		hashAbsNetEntity = new HashMap<String, ArrayList<AbsNetEntity>>();
 	}
 	
 	/**

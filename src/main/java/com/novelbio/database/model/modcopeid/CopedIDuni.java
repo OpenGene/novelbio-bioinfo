@@ -1,6 +1,8 @@
 package com.novelbio.database.model.modcopeid;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
@@ -10,8 +12,7 @@ import com.novelbio.database.service.servgeneanno.ServUniGeneInfo;
 import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
 public class CopedIDuni extends CopedIDAbs{
-	ServUniGeneInfo servUniGeneInfo = new ServUniGeneInfo();
-	ServUniProtID servUniProtID = new ServUniProtID();
+	private static Logger logger = Logger.getLogger(CopedIDuni.class);
 	/**
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
 	 * @param accID
@@ -25,6 +26,19 @@ public class CopedIDuni extends CopedIDAbs{
 		this.accID = accID;
 		this.genUniID = genUniID;
 		this.idType = idType;
+		if (taxID == 0) {
+			UniProtID uniProtID = new UniProtID();
+			uniProtID.setAccID(accID);
+			uniProtID.setGenUniID(genUniID);
+			ArrayList<UniProtID> lsTmp = servUniProtID.queryLsUniProtID(uniProtID);
+			if (lsTmp.size() > 0) {
+				this.taxID = lsTmp.get(0).getTaxID();
+			}
+			else {
+				logger.error("可能没有该genuniID："+genUniID);
+			}
+			return;
+		}
 		this.taxID = taxID;
 	}
 	protected void setGenInfo() {

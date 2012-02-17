@@ -7,8 +7,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import com.novelbio.analysis.annotation.genAnno.GOQuery;
-import com.novelbio.analysis.annotation.genAnno.KegPathQuery;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast;
 import com.novelbio.analysis.guiRun.BlastGUI.GUI.GuiBlastJpanel;
 

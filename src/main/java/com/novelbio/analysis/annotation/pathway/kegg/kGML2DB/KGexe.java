@@ -34,10 +34,22 @@ public class KGexe {
 //			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/sce");
 			
 //			KeggIDcvt.upDateGen2Keg("/home/zong0jie/桌面/yeast/sce_ncbi-geneid.list");
-//			KeggIDcvt.upDateKeg2Ko("/home/zong0jie/桌面/yeast/sce_ko.list");
+			KeggIDcvt.upDateKeg2Ko("/home/zong0jie/桌面/mmu_ko.list");
 //			
-			KeggIDcvt.upDateGen2Keg("/home/zong0jie/桌面/mtu_ncbi-geneid.list");
-//			KeggIDcvt.upDateKeg2Ko("/home/zong0jie/桌面/yeast/ppa_ko.list");
+//			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/mmu");
+//			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/metabolic/organisms/mmu");
+//			KeggIDcvt.upDateGen2Keg("/media/winE/Bioinformatics/Kegg/genes/organisms/mmu/mmu_ncbi-geneid.list");
+//			
+//			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/hsa");
+//			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/metabolic/organisms/hsa");
+//			KeggIDcvt.upDateGen2Keg("/media/winE/Bioinformatics/Kegg/genes/organisms/hsa/hsa_ncbi-geneid.list");
+//			KeggIDcvt.upDateKeg2Ko("/media/winE/Bioinformatics/Kegg/genes/organisms/hsa/hsa_ko.list");
+			
+			
+//			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/gga");
+//			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/metabolic/organisms/gga");
+//			KeggIDcvt.upDateGen2Keg("/media/winE/Bioinformatics/Kegg/genes/organisms/gga/gga_ncbi-geneid.list");
+//			KeggIDcvt.upDateKeg2Ko("/media/winE/Bioinformatics/Kegg/genes/organisms/gga/gga_ko.list");
 			
 			System.out.println("ok");
 		} catch (Exception e) {

@@ -62,8 +62,9 @@ public interface CopedIDInt{
 	public String getAccIDDBinfo(String dbInfo);
 	
 	/**
-	 * 如果blast 选择blast的第一个物种<br>
-	 * 0:symbol 1:description 2:subjectTaxID 3:evalue 4:symbol 5:description 如果不blast 0:symbol 1:description
+	 * 先设定blast的情况 如果blast * 0:symbol 1:description  2:subjectSpecies 3:evalue
+	 * 4:symbol 5:description 如果不blast 0:symbol 1:description
+	 * 
 	 * @return
 	 */
 	public String[] getAnno( boolean blast ) ;
@@ -210,5 +211,16 @@ GO_REF:0000004<br>
 	 * @param uniqID
 	 */
 	void setUpdateRefAccID(Boolean uniqID);
+	/**
+	 * 如果blast到geneUniID上去
+	 * @param SubGenUniID
+	 * @param subIDtype
+	 * @param subDBInfo
+	 * @param SubTaxID
+	 * @param evalue
+	 * @param identities
+	 */
+	void setUpdateBlastInfo(String SubGenUniID, String subIDtype,
+			String subDBInfo, int SubTaxID, double evalue, double identities);
 
 }

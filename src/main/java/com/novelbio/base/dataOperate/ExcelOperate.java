@@ -55,12 +55,12 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	 {
 	 }
 	 /**
-	  * 打开excel，没有就新建excel2007
+	  * 打开excel，没有就新建excel2003
 	  * @param imputfilename
 	  */
 	 public ExcelOperate(String imputfilename)//构造函数，暂时不知道做什么用
 	 {
-		 openExcel(imputfilename, true);
+		 openExcel(imputfilename, false);
 	 }
 	 public ExcelOperate(String imputfilename, boolean excel2003)//构造函数，暂时不知道做什么用
 	 {

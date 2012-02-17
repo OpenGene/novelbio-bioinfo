@@ -30,7 +30,6 @@ import javax.swing.table.DefaultTableModel;
 
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlGO;
 import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlPath;
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlPath2;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -231,11 +230,11 @@ public class GuiPathJpanel extends JPanel{
 				public void actionPerformed(ActionEvent evt) {
 					GUIFileOpen guiFileOpen = new GUIFileOpen();
 					String savefilename = guiFileOpen.saveFileName("excel2003", "xls");
-					CtrlPath2 ctrlPath = CtrlPath2.getCtrlPathUsed();
+					CtrlPath ctrlPath = CtrlPath.getInstance();
 					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
 						savefilename = savefilename+".xls";
 					}
-					ctrlPath.save(savefilename);
+					ctrlPath.saveExcel(savefilename);
 				}
 			});
 		}

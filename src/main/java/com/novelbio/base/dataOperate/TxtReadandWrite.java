@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1155,12 +1156,110 @@ public class TxtReadandWrite {
 		txtOut.close();
 	}
 	
+	String grepContent = "";
+	Pattern pattern = null;
+	Matcher matcher = null;
+	/**
+	 * 设定待抓取本文件中的特定文字
+	 * @param grepContent
+	 */
+	public void setGrepContent(String grepContent) {
+		this.grepContent = grepContent;
+	}
 	
+	/**
+	 * 获取抓取信息以及其前后几行的信息
+	 * @param txtFile
+	 * @param zipType
+	 * @param grepContent 可以是正则表达式
+	 * @param range
+	 * @param regx 是否是正则表达式，如果是正则表达式那么速度会慢
+	 * @return
+	 */
+	public ArrayList<String> grepInfo(int range, boolean caseSensitive, boolean regx)
+	{
+		//如果是正则表达式，那么就先初始化正则表达式
+		if (regx) {
+			if (caseSensitive) {
+				pattern = Pattern.compile(grepContent);
+			}
+			else {
+				pattern = Pattern.compile(grepContent, Pattern.CASE_INSENSITIVE);
+			}
+		}
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	
-	
-	
-	
+		/**
+		 * 存储获得string上面的string
+		 * 本来想用list存储的，但是考虑效率问题，所以用string数组来存储
+		 * 依次保存上面的几行信息，循环保存
+		 */
+		String[] tmpContent = new String[range]; int i = 0;
+		//保存最后的结果
+		ArrayList<String> lsResult = new ArrayList<String>();
+		try {
+			String content = "";
+			BufferedReader reader = readfile();
+			while ((content = reader.readLine()) != null) {
+				if (grepInfo(content, caseSensitive, regx)) {
+					int num = 0;//计数器，将前面的几行全部加入list
+					//加入前面保存的文字
+					while (num < range) {
+						if (i >= range) {
+							i = 0;
+						}
+						lsResult.add(tmpContent[i]);
+						num ++; i++;
+					}
+					//加入本行文字
+					lsResult.add(content);
+					//将后几行加入list，然后结束
+					int rest = 0;
+					while ((content = reader.readLine()) != null) {
+						if (rest >= range) {
+							close();
+							return lsResult;
+						}
+						lsResult.add(content);
+						rest++;
+					}
+					close();
+					return lsResult;
+				}
+				tmpContent[i] = content; i++;
+				if (i >= range) {
+					i = 0;
+				}
+			}
+		} catch (Exception e) { e.printStackTrace(); 	}
+		close();
+		return null;
+	}
+	/**
+	 * 给定文字，以及是否大小写，然后看是不是含有需要的文字
+	 * @param content
+	 * @param caseSensitive
+	 * @param regx
+	 * @return
+	 */
+	private boolean grepInfo(String content, boolean caseSensitive, boolean regx)
+	{
+		if (!regx) {
+			if (!caseSensitive)
+				if (content.toLowerCase().contains(grepContent))
+					return true;
+			else
+				if (content.contains(grepContent)) 
+					return true;
+		}
+		else {
+			matcher = pattern.matcher(content);
+			if (matcher.find()) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	
 	

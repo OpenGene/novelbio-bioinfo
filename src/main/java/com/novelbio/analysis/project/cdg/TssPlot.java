@@ -13,8 +13,8 @@ public class TssPlot {
 //		bedSeq = new BedSeq(bedFile);
 //		bedSeq.sortBedFile(FileOperate.changeFileSuffix(bedFile, "_sorted", null));
 
-		TssK27Gene();
-//		TssK4();
+//		TssK27Gene();
+		TssK27new();
 //		TssK27();
 //		TssFHX();
 	}
@@ -98,8 +98,8 @@ public class TssPlot {
 		 int binNum = 5; //精度
 		 int range = 5000;//上下游多少距离
 		 String mapparentFIle = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/";
-		 String PeakparentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcalling/";//+ "peakCalling/";
-		 String resultpath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/tsstesplot/";
+		 String PeakparentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/";//+ "peakCalling/";
+		 String resultpath = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/TssNew/";
 		try {
 			String mapFilePath=mapparentFIle+"W4all_sorted_extend.bed";
 			

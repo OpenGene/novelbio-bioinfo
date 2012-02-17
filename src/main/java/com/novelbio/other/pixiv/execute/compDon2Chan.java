@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.WebFetchOld;
 
 /**
  * 比较这两个网站，哪个图多选择哪个网站
@@ -17,8 +17,8 @@ import com.novelbio.base.dataOperate.WebFetch;
 public class compDon2Chan {
 	static String nameDon = "http://danbooru.donmai.us/post/index?tags=";
 	static String nameChan = "http://chan.sankakucomplex.com/post/index?tags=";
-	static WebFetch webDon = new WebFetch();
-	static WebFetch webChan = new WebFetch();
+	static WebFetchOld webDon = new WebFetchOld();
+	static WebFetchOld webChan = new WebFetchOld();
 	
 	public static void getMoreNum(String inFile, String outFile,String reset)  {
 		TxtReadandWrite txtIn = new TxtReadandWrite();

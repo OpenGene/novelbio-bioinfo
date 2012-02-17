@@ -101,17 +101,44 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(TxtReadandWrite.GZIP,"/media/winE/Bioinformatics/DataBase/idmapping_selected.tab.gz", false);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(TxtReadandWrite.GZIP,"/media/winE/Bioinformatics/DataBase/idmapping_selected.tab_sub.gz", true);
-		for (String string : txtReadandWrite.readlines(19500000)) {
-			txtWrite.writefileln(string);
-		}
-		txtReadandWrite.close();
-		txtWrite.close();
+//		String txtFile = "";
+//		String parent = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/";
+//		txtFile = parent + "WEall_SE-W200-G600-E100.scoreisland";
+//		System.out.println("WE: "+getAllPeakLen(txtFile));
+//		txtFile = parent + "KEall_SE-W200-G600-E100.scoreisland";
+//		System.out.println("KE: "+getAllPeakLen(txtFile));
+//		txtFile = parent + "W4all_SE-W200-G600-E100.scoreisland";
+//		System.out.println("W4: "+getAllPeakLen(txtFile));
+//		txtFile = parent + "K4all_SE-W200-G600-E100.scoreisland";
+//		System.out.println("K4: "+getAllPeakLen(txtFile));
+		BedPeakSicer bedPeakSicer = new BedPeakSicer("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/WEall_SE.bed");
+		bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
+		bedPeakSicer.setEffectiveGenomeSize(85);
+		bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingtest", "");
 	}
 	
 	
-	
+	private static int getAllPeakLen(String txtFile) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(txtFile, false);
+		int oldEnd = 0; String oldChr = "";
+		int length = 0;
+		for (String string : txtRead.readlines(2)) {
+			String[] ss = string.split("\t");
+			int start = Integer.parseInt(ss[1]); int end = Integer.parseInt(ss[2]);
+			if (ss[0].equals(oldChr) && start < oldEnd) {
+				if (end <= oldEnd) {
+					continue;
+				}
+				else {
+					length = length + end - oldEnd;
+				}
+			}
+			else {
+				length = length + end - start + 1;
+			}
+		}
+		return length;
+	}
 	
 	private void GATK() {
 		/**

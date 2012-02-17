@@ -1,5 +1,6 @@
 package com.novelbio.database.updatedb.database;
 
+import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -14,8 +15,9 @@ public class ImportDB {
 		
 //		updateNCBIID();
 //		updateUniprotID();
-		updateRiceID();
-		
+//		updateRiceID();//只导了前两个
+//		updateEnsembl();
+		updateBlast();
 	}
 	/**
 	 * 升级从NCBI下载的信息
@@ -59,16 +61,22 @@ public class ImportDB {
 		uniProt.setOutUniIDFile(outUniIDFile);
 		uniProt.setImpgene_associationgoa_uniprotFile(impgene_associationgoa_uniprotFile);
 		uniProt.update();
+		
+		
+		
+	}
+	private static void updateEnsembl()
+	{
 		String ensemblFileMouse = "/media/winE/Bioinformatics/DataBase/Mus_musculus.NCBIM37.65.gtf"; 
 		String ucscGffFileMouse = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/refseqSortUsing.txt";
 		int taxIDMouse = 10090;
-		
-		String ensemblFileChicken = ""; String ucscGffFileChicken = "";
-		int taxIDChicken = 9031;
-		
 		Ensembl ensembl = new Ensembl();
-		ensembl.setEnsemblFile(ensemblFileMouse, ucscGffFileMouse, taxIDMouse);
-//		ensembl.setEnsemblFile(ensemblFileChicken, ucscGffFileChicken, taxIDChicken);
+//		ensembl.setEnsemblFile(ensemblFileMouse, ucscGffFileMouse, taxIDMouse);
+		
+		String ensemblFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/Gallus_gallus.WASHUC2.65.gtf";
+		String ucscGffFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/chicken_Refseq_UCSCGFF";
+		int taxIDChicken = 9031;
+		ensembl.setEnsemblFile(ensemblFileChicken, ucscGffFileChicken, taxIDChicken);
 		ensembl.update();
 	}
 	private static void updateRiceID()
@@ -86,5 +94,21 @@ public class ImportDB {
 		riceID.setRiceRap2MSU(rap2MSU);
 		riceID.setTigrDBoutID(tigrDBoutID);
 		riceID.update();
+	}
+	
+	private static void updateBlast()
+	{
+		String blastFile = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA";
+		String outFIle = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA_out";
+		int blastTaxID = 0;
+		Blast blast = new Blast();
+		blast.setAccIDIsGeneID(false);
+		blast.setBlastIDisGeneID(true);
+		blast.setQueryDBinfo(NovelBioConst.DBINFO_ENSEMBL);
+		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
+		blast.setSubTaxID(9606);
+		blast.setTaxID(blastTaxID);
+		blast.setTxtWriteExcep(outFIle);
+		blast.updateFile(blastFile, false);
 	}
 }
