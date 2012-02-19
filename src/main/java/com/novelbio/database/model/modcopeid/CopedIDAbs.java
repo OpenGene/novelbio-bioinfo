@@ -8,8 +8,6 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.internal.compiler.env.IGenericField;
 
-import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
-import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegGenEntryKO;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
@@ -21,9 +19,11 @@ import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
+import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
+import com.novelbio.database.model.modkegg.KeggInfoInter;
 import com.novelbio.database.service.servgeneanno.ServBlastInfo;
 import com.novelbio.database.service.servgeneanno.ServGene2Go;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
@@ -61,7 +61,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 
 	double evalue = 10;
 
-	KegGenEntryKO kegGenEntryKO = null;
+//	KegGenEntryKO kegGenEntryKO = null;
 
 	AGeneInfo geneInfo = null;
 	// ArrayList<AGene2Go> lsGene2Gos = null;
@@ -109,11 +109,20 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	@Override
 	public void setBlastInfo(double evalue, int... StaxID) {
 		lsBlastInfos = new ArrayList<BlastInfo>();
-		for (int i : StaxID) {
-			BlastInfo blastInfo = servBlastInfo.queryBlastInfo(genUniID,taxID, i,
-					evalue);
-			if (blastInfo != null) {
-				lsBlastInfos.add(blastInfo);
+		if (!getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+			for (int i : StaxID) {
+				BlastInfo blastInfo = servBlastInfo.queryBlastInfo(genUniID,taxID, i,evalue);
+				if (blastInfo != null) {
+					lsBlastInfos.add(blastInfo);
+				}
+			}
+		}
+		else {
+			for (int i : StaxID) {
+				BlastInfo blastInfo = servBlastInfo.queryBlastInfo(accID,taxID, i,evalue);
+				if (blastInfo != null) {
+					lsBlastInfos.add(blastInfo);
+				}
 			}
 		}
 	}
@@ -325,24 +334,16 @@ public abstract class CopedIDAbs implements CopedIDInt {
 					&& getLsBlastInfos().size() > 0) {
 				for (int i = 0; i < getLsBlastInfos().size(); i++) {
 					if (tmpAnno[2] == null || tmpAnno[2].trim().equals("")) {
-						tmpAnno[2] = CopedID.getHashTaxIDName().get(
+						tmpAnno[2] = CopedID.getSpeciesTaxIDName().get(
 								getLsBlastInfos().get(i).getSubjectTax());
 						tmpAnno[3] = getLsBlastInfos().get(i).getEvalue() + "";
 						tmpAnno[4] = getCopedIDLsBlast().get(i).getSymbol();
-						tmpAnno[5] = getCopedIDLsBlast().get(i)
-								.getDescription();
+						tmpAnno[5] = getCopedIDLsBlast().get(i).getDescription();
 					} else {
-						tmpAnno[2] = tmpAnno[2]
-								+ "//"
-								+ CopedID.getHashTaxIDName().get(
-										getLsBlastInfos().get(i)
-												.getSubjectTax());
-						tmpAnno[3] = tmpAnno[3] + "//"
-								+ getLsBlastInfos().get(i).getEvalue();
-						tmpAnno[4] = tmpAnno[4] + "//"
-								+ getCopedIDLsBlast().get(i).getSymbol();
-						tmpAnno[5] = tmpAnno[5] + "//"
-								+ getCopedIDLsBlast().get(i).getDescription();
+						tmpAnno[2] = tmpAnno[2] + "//" + CopedID.getSpeciesTaxIDName().get(getLsBlastInfos().get(i).getSubjectTax());
+						tmpAnno[3] = tmpAnno[3] + "//" + getLsBlastInfos().get(i).getEvalue();
+						tmpAnno[4] = tmpAnno[4] + "//" + getCopedIDLsBlast().get(i).getSymbol();
+						tmpAnno[5] = tmpAnno[5] + "//" + getCopedIDLsBlast().get(i).getDescription();
 					}
 				}
 			}
@@ -383,8 +384,11 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	}
 
 	/**
-	 * 返回该CopedID所对应的Gene2GOInfo
-	 * 
+	 * 返回该CopedID所对应的Gene2GOInfo <br>
+	 * GO_BP<br>
+	 * GO_CC<br>
+	 * GO_MF<br>
+	 * GO_ALL<br>
 	 * @param GOType
 	 * @return
 	 */
@@ -408,7 +412,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		return getGOInfo().getLsGen2Go(lsGoInfo, GOType);
 	}
-
+	ArrayList<KGentry> lsKGentries = null;
 	// ////////////////KEGG //////////////////////////////////////////////
 	/**
 	 * 获得该CopeID的List-KGentry,如果没有或为空，则返回null
@@ -417,28 +421,21 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 *            是否blast到相应物种查看
 	 * @param StaxID
 	 *            如果blast为true，那么设定StaxID
-	 * @return 如果没有就返回null
+	 * @return 如果没有就返回一个空的list
 	 */
-	public ArrayList<KegEntity> getKegEntity(boolean blast) {
+	public ArrayList<KGentry> getKegEntity(boolean blast) {
+		getKeggInfo();
 		if (!blast) {
-			return setKegGenEntryKO().getLsKGentries();
+			return 	keggInfo.getLsKgGentries(null);
 		} else {
-			// 如果本基因能找到keggID就不进行blast
-			if (setKegGenEntryKO().getLsKGentries() != null) {
-				return setKegGenEntryKO().getLsKGentries();
+			ArrayList<CopedID> lsCopedIDsBlast = getCopedIDLsBlast();
+			ArrayList<KeggInfo> lsKeggInfos = new ArrayList<KeggInfo>();
+			for (CopedID copedID : lsCopedIDsBlast) {
+				lsKeggInfos.add(copedID.getKeggInfo());
 			}
-			CopedID ScopedID = getCopedIDBlast();
-			return ScopedID.getKegEntity(false);
+			return keggInfo.getLsKgGentries(lsKeggInfos);
 		}
 	}
-
-	private KegGenEntryKO setKegGenEntryKO() {
-		if (kegGenEntryKO == null) {
-			kegGenEntryKO = new KegGenEntryKO(idType, genUniID, taxID);
-		}
-		return kegGenEntryKO;
-	}
-
 	/**
 	 * 获得相关的Kegg信息
 	 * 

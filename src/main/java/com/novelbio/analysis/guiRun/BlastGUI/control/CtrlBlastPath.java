@@ -2,13 +2,16 @@ package com.novelbio.analysis.guiRun.BlastGUI.control;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast;
-import com.novelbio.analysis.guiRun.BlastGUI.GUI.GuiBlastJpanel;
+import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.GuiBlastJpanel;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.domain.kegg.KGentry;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 
 public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressDataPath> {
@@ -91,7 +94,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 			String geneID = lsGeneID.get(i).trim();
 		
 			try {
-				ArrayList<String[]> lstmpAnno = KegPathQuery.getGenPath(geneID, taxID, blast, StaxID, evalue);
+				ArrayList<String[]> lstmpAnno = getGenPath(geneID, taxID, blast, StaxID, evalue);
 				if (lstmpAnno == null || lstmpAnno.size()<1) {
 					String[] tmp = new String[length];
 					for (int j = 0; j < tmp.length; j++) {
@@ -114,6 +117,107 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 		
 		return lsDesp;
 	}
+	
+	
+	
+	/**
+	 * 给定accID，查询该accID所对应的pathway
+	 * 目前只能在NCBIID中查询，不能在UniProt中查询
+	 * @param accID accID 需要去空格处理以及判断accID是否为空
+	 * @param taxID
+	 * @param blast
+	 * @param subTaxID
+	 * @param evalue
+	 * @return 如果没查到则返回null
+	 * 如果blast：
+	 * 0:accID
+	 * 1:Symbol/AccID
+	 * 2:PathID
+	 * 3:PathName
+	 * 4:evalue
+	 * 5:SubjectSymbol
+	 * 6:PathID
+	 * 7:PathName
+	 * 如果没有blast
+	 * 0:accID
+	 * 1:Symbol/AccID
+	 * 2:PathID
+	 * 3:PathName
+	 */
+	public static ArrayList<String[]> getGenPath(String accID,int taxID,boolean blast,int subTaxID,double evalue)
+	{
+		String[] tmpAccIDInfo = new String[] { accID, ""};
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		CopedID copedID = new CopedID(accID, taxID);
+		if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+			return null;
+		}
+		tmpAccIDInfo[1] = copedID.getSymbol();
+		copedID.setBlastInfo(evalue, subTaxID);
+		// 本基因的GO信息
+		ArrayList<KGentry> lsKGentrythis = copedID.getKegEntity(false);
+		HashSet<String> hashPathID = new HashSet<String>();
+		for (KGentry kGentry : lsKGentrythis) {
+			String[] tmpResult = ArrayOperate.copyArray(tmpAccIDInfo, 4);
+			if (hashPathID.contains(kGentry.getPathName())) {
+				continue;
+			}
+			tmpResult[2] = kGentry.getPathName();
+			tmpResult[3] = kGentry.getPathTitle();
+			lsResult.add(tmpResult);
+		}
+		if (!blast) {
+			if (lsResult.size() == 0) {
+				return null;
+			}
+			return lsResult;
+		}
+		// blast基因的GO信息
+		ArrayList<String[]> lsResultBlast = new ArrayList<String[]>();
+
+		CopedID copedIDblast = copedID.getCopedIDBlast();
+		if (copedIDblast == null) {
+			for (String[] strings : lsResult) {
+				String[] result = ArrayOperate.copyArray(strings, 8);
+				lsResultBlast.add(result);
+			}
+			return lsResultBlast;
+		}
+		HashSet<String> hashPathIDBlast = new HashSet<String>();
+		ArrayList<KGentry> lsPathBlast = copedIDblast.getKegEntity(false);
+		int k = 0;
+		for (int i = 0; i < lsPathBlast.size(); i++) {
+			if (hashPathIDBlast.contains(lsPathBlast.get(i).getPathName())) {
+				continue;
+			}
+			if (lsResult == null)
+				lsResult = new ArrayList<String[]>();
+			String[] tmpResultBlast = new String[8];
+			// 初始化
+			for (int j = 0; j < tmpResultBlast.length; j++) {
+				tmpResultBlast[i] = "";
+			}
+			if (k < lsResult.size()) {
+				for (int j = 0; j < lsResult.get(k).length; j++) {
+					tmpResultBlast[j] = lsResult.get(k)[j];
+				}
+			} else {
+				tmpResultBlast[0] = accID;
+				tmpResultBlast[1] = copedID.getSymbol();
+			}
+			tmpResultBlast[4] = copedID.getLsBlastInfos().get(0).getEvalue() + "";
+			tmpResultBlast[5] = copedIDblast.getSymbol();
+			tmpResultBlast[6] = lsPathBlast.get(i).getPathName();
+			tmpResultBlast[7] = lsPathBlast.get(i).getPathTitle();
+			lsResultBlast.add(tmpResultBlast);
+			k ++;
+		}
+
+		return lsResultBlast;
+	}
+	
+	
+	
 	
 	@Override
 	public void process(List<ProgressDataPath> data)

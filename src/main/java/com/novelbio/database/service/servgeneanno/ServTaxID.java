@@ -14,7 +14,14 @@ import com.novelbio.database.service.AbsGetSpring;
 @Component
 //public class ServTaxID extends AbsGetSpring implements MapTaxID{
 public class ServTaxID extends AbsGetSpring  implements MapTaxID{
+	/**
+	 * 全体物种ID
+	 */
 	static HashMap<String, Integer> hashNameTaxID = new LinkedHashMap<String, Integer>();
+	/**
+	 * 仅包含有缩写的物种
+	 */
+	static HashMap<String, Integer> hashNameTaxIDUsual = new LinkedHashMap<String, Integer>();
 	static HashMap<Integer, String> hashTaxIDName = new LinkedHashMap<Integer, String>();
 
 	@Autowired
@@ -59,11 +66,17 @@ public class ServTaxID extends AbsGetSpring  implements MapTaxID{
 	}
 	/**
 	 * 返回常用名对taxID
+	 * @param allSpecies
 	 * @return
 	 */
-	public HashMap<String, Integer> getHashNameTaxID() {
+	public HashMap<String, Integer> getSpeciesNameTaxID(boolean allSpecies) {
 		setHashTaxID();
-		return hashNameTaxID;
+		if (allSpecies) {
+			return hashNameTaxID;
+		}
+		else {
+			return hashNameTaxIDUsual;
+		}
 	}
 	/**
 	 * 返回taxID对常用名
@@ -84,10 +97,11 @@ public class ServTaxID extends AbsGetSpring  implements MapTaxID{
 		ArrayList<TaxInfo> lsTaxID = mapTaxID.queryLsTaxInfo(taxInfo);
 		for (TaxInfo taxInfo2 : lsTaxID) {
 			if (taxInfo2.getAbbr() == null || taxInfo2.getAbbr().trim().equals("")) {
+				hashNameTaxID.put(taxInfo2.getComName().trim(), taxInfo2.getTaxID());
+				hashTaxIDName.put(taxInfo2.getTaxID(), taxInfo2.getComName().trim());
 				continue;
 			}
-			hashNameTaxID.put(taxInfo2.getComName().trim(), taxInfo2.getTaxID());
-			hashTaxIDName.put(taxInfo2.getTaxID(), taxInfo2.getComName().trim());
+			hashNameTaxIDUsual.put(taxInfo2.getComName().trim(), taxInfo2.getTaxID());
 		}
 	}
 }

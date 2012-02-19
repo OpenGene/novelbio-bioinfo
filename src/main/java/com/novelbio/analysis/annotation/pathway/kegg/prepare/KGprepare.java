@@ -10,8 +10,8 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniProtID;
-import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.geneanno.MapUniProtIDOld;
+import com.novelbio.database.service.servgeneanno.ServNCBIID;
+import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
 
 
@@ -92,6 +92,8 @@ public class KGprepare {
 	 */
 	public ArrayList<String[]> getLsAcc2GenID(String accIDFile,int rowStartNum,int colNum,int taxID,boolean Sep) throws Exception 
 	{
+		ServNCBIID servNCBIID = new ServNCBIID();
+		ServUniProtID servUniProtID = new ServUniProtID();
 		Hashtable<String, String> hashAcc2Gen = new Hashtable<String, String>();
 		String geneID[] =KGprepare.getAccID(accIDFile, rowStartNum, colNum);
  
@@ -101,7 +103,7 @@ public class KGprepare {
 			String accID = removeDot(geneID[i]);
 			ncbiid.setAccID(accID);ncbiid.setTaxID(taxID);
 			uniProtID.setAccID(accID);uniProtID.setTaxID(taxID);
-			ArrayList<NCBIID> lsNcbiids=MapNCBIID.queryLsNCBIID(ncbiid);
+			ArrayList<NCBIID> lsNcbiids=servNCBIID.queryLsNCBIID(ncbiid);
 			//先查找NCBIID表
 			if (lsNcbiids != null && lsNcbiids.size() > 0) 
 			{
@@ -115,7 +117,7 @@ public class KGprepare {
 				continue;
 			}
 			//没找到的话，查找UniProtID表
-			ArrayList<UniProtID> lsUniProtIDs=MapUniProtIDOld.queryLsUniProtID(uniProtID);
+			ArrayList<UniProtID> lsUniProtIDs=servUniProtID.queryLsUniProtID(uniProtID);
 			if (lsUniProtIDs != null && lsUniProtIDs.size() > 0) {
 				String tmpGeneID = lsUniProtIDs.get(0).getUniID();
 				if (Sep) {

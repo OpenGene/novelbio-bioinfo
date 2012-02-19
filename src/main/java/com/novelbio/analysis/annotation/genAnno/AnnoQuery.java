@@ -116,7 +116,7 @@ public class AnnoQuery {
 		return result;
 	}
 	/**
-	 * 注释数据，不需要blast
+	 * 注释数据，需要blast
 	 * @param info 给定一行信息
 	 * @param taxID 物种
 	 * @param accColNum 具体该info的哪个column，实际column
@@ -142,43 +142,6 @@ public class AnnoQuery {
 			result[result.length - 1] = anno[5];
 		}
 		return result;
-	}
-	/**
-	 * 
-	 * 给arraytools的结果添加annotation
-	 * 添加在第colNum列的后面，直接写入excel文件
-	 * <b>第一行一定是标题行</b>
-	 * @param excelFile
-	 * @param out
-	 * @param taxID
-	 * @param colNum 实际列
-	 * @param blast
-	 * @param StaxID
-	 * @param evalue
-	 * @param regx  该cell里面是否包含一个以上的ID，譬如accID1,accID2 如果是这样的，就用splite去切割并且只取第一个。如果为""则不切割
-	 */
-	public static void anno(String excelFile,String out,int taxID,int colNum,boolean blast,int StaxID,double evalue,String regx) {
-		colNum--;
-		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxtFile(excelFile, 1, 1, -1, -1);
-		ArrayList<String[]> lsTmpAnno = new ArrayList<String[]>();
-		for (int i = 1; i < lsInfo.size(); i++) {
-			String accID = "";
-			if (regx.equals("")) {
-				accID = lsInfo.get(i)[colNum];//CopeID.removeDot(geneInfo[i][colNum]);
-			}
-			else {
-				accID = lsInfo.get(i)[colNum].split(regx)[0];
-			}
-			CopedID copedID = new CopedID(accID, taxID);
-			copedID.setBlastInfo(evalue, StaxID);
-			String[] out2 = copedID.getAnno(blast);
-			lsTmpAnno.add(ArrayOperate.combArray(new String[]{copedID.getAccID()}, out2, 0));
-		}
-		lsTmpAnno.add(0,ArrayOperate.combArray(new String[]{"AccID"}, CopedID.getTitleAnno(blast), 0));
-		TxtReadandWrite txtOut = new TxtReadandWrite(out, true);
-		txtOut.ExcelWrite(lsTmpAnno, "\t", 1, 1);
-//		ArrayList<String[]> lsResult = ArrayOperate.combArray(lsInfo, lsTmpAnno, colNum+1);
-//		ExcelTxtRead.writeLsExcelTxt(excelFile, lsResult, 1, 1, -1, -1);
 	}
 	
 }

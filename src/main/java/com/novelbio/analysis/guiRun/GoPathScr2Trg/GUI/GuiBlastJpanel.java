@@ -1,8 +1,7 @@
-package com.novelbio.analysis.guiRun.BlastGUI.GUI;
+package com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -21,9 +19,6 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -33,21 +28,19 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
-import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import org.jdesktop.application.Application;
 
+import com.novelbio.analysis.guiRun.BlastGUI.GUI.NBCJDialog;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastAnno;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastGo;
 import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastPath;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.gui.CtrlNormal;
-import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
-import com.novelbio.database.model.modgo.GOInfoAbs;
 
 
 /**
@@ -350,21 +343,21 @@ public class GuiBlastJpanel extends JPanel{
 				public void actionPerformed(ActionEvent evt) {
 					
 					String[] queryID = jTxtGenID.getText().split("\n");
-					ArrayList<String> lsGenID = new ArrayList<String>();
+					ArrayList<String> lsAccID = new ArrayList<String>();
 					for (int i = 0; i < queryID.length; i++) {
 						if (queryID[i].trim().equals("")) {
 							continue;
 						}
-						lsGenID.add(queryID[i]);
+						lsAccID.add(queryID[i]);
 					}
 					List<String> lsGenID2 = null;
 					//////////////////一次只能读取3000个
-					if (lsGenID.size()>numLimit) {
+					if (lsAccID.size()>numLimit) {
 						JOptionPane.showMessageDialog(null, "To ensure the stability of the database, the gene number of each query is limited in."+numLimit, "alert", JOptionPane.INFORMATION_MESSAGE); 
-						lsGenID2 = lsGenID.subList(0, numLimit);
+						lsGenID2 = lsAccID.subList(0, numLimit);
 					}
 					else
-						lsGenID2 = lsGenID;
+						lsGenID2 = lsAccID;
 					///////////////各种设置
 					//设置进度条
 					getJBtnSaveAno().setEnabled(false);
@@ -617,12 +610,13 @@ public class GuiBlastJpanel extends JPanel{
 	}
 	private JComboBox getJCobTaxSelect() {
 		if(jCobTaxSelect == null) {
-			final HashMap<String, Integer> hashTaxID = CopedID.getHashNameTaxID();
+			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
 			
-			String[] speciesarray = new String[hashTaxID.size()+1];
+			
 //			String[] speciesarray = new String[hashTaxID.size()];
 			int i = 0;
-			Set<String> keys = hashTaxID.keySet();
+			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			String[] speciesarray = new String[keys.size()+1];
 			for(String key:keys)
 			{
 				speciesarray[i] = key; i++;
@@ -727,11 +721,10 @@ public class GuiBlastJpanel extends JPanel{
 		
 
 		if(jCmbSpeciesBlast == null) {
-			final HashMap<String, Integer> hashTaxID = CtrlNormal.getSpecies();
-			
-			String[] speciesarray = new String[hashTaxID.size()];
+			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
 			int i = 0;
-			Set<String> keys = hashTaxID.keySet();
+			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			String[] speciesarray = new String[keys.size()];
 			for(String key:keys)
 			{
 				speciesarray[i] = key; i++;

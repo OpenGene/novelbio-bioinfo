@@ -71,7 +71,8 @@ public class Scr2Target {
 		for (int i = 0; i < lsAccID.size(); i++) 
 		{
 			Hashtable<String, KGpathScr2Trg> hashEntryRelation = new Hashtable<String, KGpathScr2Trg>();
-			String[] qGenKegInfo=QKegPath.getKeggID2(lsAccID.get(i), blast, subTaxID, evalue);
+			
+			String[] qGenKegInfo=QKegPath.getKeggID(QtaxID, lsAccID.get(i), blast, subTaxID, evalue);
 			if (qGenKegInfo[3]==null&&qGenKegInfo[7]==null) {
 				continue;
 			}

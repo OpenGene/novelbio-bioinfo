@@ -12,8 +12,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modcopeid.CopedID;
-import com.novelbio.database.service.ServAnno;
-
 
 public class RiceID{
 	String gffRapDB = "";
@@ -503,13 +501,11 @@ class RiceTIGRInfo extends ImportPerLine
 			e.printStackTrace();
 			return false;
 		}//文件中含有%20C等符号，用url解码
-		
-		ArrayList<String> lsaccID = ServAnno.getNCBIUni(LOCID, 39947);
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setSymb(LOCID); geneInfo.setDescrp(description);
 		geneInfo.setDBinfo(NovelBioConst.DBINFO_RICE_TIGR);
 		CopedID copedID = new CopedID("", 39947);
-		copedID.setUpdateRefAccID(lsaccID);
+		copedID.setUpdateRefAccID(LOCID);
 		copedID.setUpdateGeneInfo(geneInfo);
 		return copedID.update(false);
 	}

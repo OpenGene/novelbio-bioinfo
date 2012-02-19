@@ -1,12 +1,7 @@
 package com.novelbio.database.domain.geneanno;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.apache.commons.validator.util.Flags;
 import org.apache.log4j.Logger;
 
-import com.novelbio.database.service.ServAnno;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
 /**
@@ -117,7 +112,10 @@ public abstract class AGene2Go {
 	}
 	/**
 	 * 根据Go2Term进行了校正
-	 * 没有就返回null
+	 * 没有就返回null<br>
+	 * FUN_SHORT_BIO_P<br>
+	 * FUN_SHORT_CEL_C<br>
+	 * FUN_SHORT_MOL_F<br>
 	 * @return
 	 */
 	public String getFunction() {

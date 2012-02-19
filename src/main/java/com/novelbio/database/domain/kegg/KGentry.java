@@ -2,14 +2,14 @@ package com.novelbio.database.domain.kegg;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
-import com.novelbio.database.mapper.kegg.MapKRelation;
-import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.servkegg.ServKEntry;
+import com.novelbio.database.service.servkegg.ServKPathway;
 import com.novelbio.database.service.servkegg.ServKRelation;
 
 
 public class KGentry {
+	ServKRelation servKRelation = new ServKRelation();
+	ServKPathway servKPathway = new ServKPathway();
 	/**
 	 * the ID of this entry in the pathway map <br>
 	 *  the identification number of this entry，从1开始记数
@@ -41,7 +41,7 @@ public class KGentry {
 	private String name;
 	
 	/**
-	 * 该entry所在的pathway
+	 * 该entry所在的pathwayID
 	 */
 	private String pathName;
 	
@@ -325,7 +325,7 @@ public class KGentry {
 	 */
 	public ArrayList<KGrelation> getRelatEntity()
 	{
-		ServKRelation servKRelation = new ServKRelation();
+		
 		KGrelation tmpQkGrelation=new KGrelation();
 		tmpQkGrelation.setEntry1ID(id); tmpQkGrelation.setPathName(pathName);
 		ArrayList<KGrelation> lsKGrelations1 = servKRelation.queryLsKGrelations(tmpQkGrelation);
@@ -343,7 +343,17 @@ public class KGentry {
 		lsKGrelations1.addAll(lsKGrelations2);
 		return lsKGrelations1;
 	}
-	
+	/**
+	 * 获得本entry所在pathway的名字
+	 * @return
+	 */
+	public String getPathTitle() {
+		KGpathway kGpathway = servKPathway.queryKGpathway(getPathName());
+		if (kGpathway == null) {
+			return null;
+		}
+		return kGpathway.getTitle();
+	}
 	
 		/**
 		 * 给定entryID和pathName，查找该pathway中的具体KGentry，没有就返回null<br>

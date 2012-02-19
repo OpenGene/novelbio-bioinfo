@@ -74,7 +74,7 @@ public void init()
     @Test
     public static void testGetAccount() {
     	 
-        assertEquals("human", CopedID.getHashTaxIDName().get(9606));
+        assertEquals("human", CopedID.getSpeciesTaxIDName().get(9606));
     }
 
 //    @Test

@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import com.novelbio.analysis.guiRun.BlastGUI.GUI.GuiBlastJpanel;
+import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.GuiBlastJpanel;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modcopeid.CopedID;
 
@@ -45,7 +45,6 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 	 * @param evalue
 	 * @param guiBlast
 	 */
-//	public CtrlBlastAnno(boolean blast, int taxID, int StaxID, double evalue,GUIBlast guiBlast) {
 	public CtrlBlastAnno(boolean blast, int taxID, int StaxID, double evalue,GuiBlastJpanel guiBlast) {
 		this.blast = blast;
 		this.taxID = taxID;
@@ -57,19 +56,6 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 	
 	
 	List<String> lsGeneID = null;
-	/**
-	 * 准备工作，将geneID读入内存同时准备查找，同时返回总共查找的数量，给进度条计数
-	 * @return
-	 * @throws Exception
-	 */
-	public int prepare(String splitRegx, int colNum) throws Exception {
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
-		ArrayList<String[]> lsGeneInfo = txtReadandWrite.ExcelRead(splitRegx, 1, 1, txtReadandWrite.ExcelRows(), 1, 1);
-		for (String[] strings : lsGeneInfo) {
-			lsGeneID.add(strings[0]);
-		}
-		return lsGeneInfo.size();
-	}
 	
 	/**
 	 * 准备工作，将geneID读入内存同时准备查找，同时返回总共查找的数量，给进度条计数
@@ -99,11 +85,9 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 		
 		for (int i = 0; i<lsGeneID.size(); i++) {
 			String geneID = lsGeneID.get(i).trim();
-		
 			try {
 				CopedID copedID = new CopedID(geneID, taxID);
 				copedID.setBlastInfo(1e-10, StaxID);
-//				String[] tmpAnno = ServAnno.getAnno(geneID, taxID, blast, StaxID, evalue);
 				String[] tmpAnno = copedID.getAnno(blast);
 				if (tmpAnno == null) {
 					tmpAnno = new String[length];
@@ -111,12 +95,13 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 						tmpAnno[j] = "";
 					}
 				}
+				//在tmpAnno的最前面加上accID
 				String[] tmpanno2 = new String[tmpAnno.length+1];
 				for (int j = 1; j < tmpanno2.length; j++) {
 					tmpanno2[j]=tmpAnno[j-1];
 				}
 				tmpanno2[0]=lsGeneID.get(i);
-				
+				/////////去除物种那一列/////////////////////////////
 				String[] tmpanno3 = null;
 				if(blast)
 				{
@@ -132,7 +117,7 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 				else {
 					tmpanno3 =  tmpanno2;
 				}
-
+				///////////////////////////////////////////////////
 				ProgressData progressData = new ProgressData();
 				progressData.rowNum = i;
 				progressData.tmpInfo = tmpanno3;

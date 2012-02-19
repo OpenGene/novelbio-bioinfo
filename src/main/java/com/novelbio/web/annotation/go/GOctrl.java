@@ -50,8 +50,8 @@ public class GOctrl {
 		ncbiid.setAccID("tp53"); ncbiid.setTaxID(9606);
 		NCBIID ncbiid2 = servNCBIID.queryNCBIID(ncbiid);
 		System.out.println(ncbiid2.getGenUniID());
-		System.out.println(CopedID.getHashTaxIDName().get(9606));
-		mav.addObject("hashTaxID", CopedID.getHashTaxIDName());
+		System.out.println(CopedID.getSpeciesTaxIDName().get(9606));
+		mav.addObject("hashTaxID", CopedID.getSpeciesTaxIDName());
 		return mav;
 	}
 	

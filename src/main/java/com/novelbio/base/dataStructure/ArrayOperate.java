@@ -449,11 +449,11 @@ public class ArrayOperate {
 	 * 将hashset的value提取出来
 	 * @param <K> key
 	 * @param hashset
-	 * 没有返回null
+	 * 没有返回一个空的arraylist
 	 */
 	public static<K> ArrayList<K> getArrayListValue(HashSet<K> hashset) {
 		if (hashset == null || hashset.size() == 0) {
-			return null;
+			return new ArrayList<K>();
 		}
 		
 		ArrayList<K> lsResult = new ArrayList<K>();

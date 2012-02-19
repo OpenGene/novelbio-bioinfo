@@ -1,8 +1,6 @@
 package com.novelbio.database.updatedb.bast;
 
-import com.novelbio.analysis.annotation.blast.Blast2DB;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
-import com.novelbio.database.updatedb.database.UpDateFriceDB;
 import com.novelbio.database.updatedb.database.UpDateNBCDBFile;
 
 public class BlastMaize {

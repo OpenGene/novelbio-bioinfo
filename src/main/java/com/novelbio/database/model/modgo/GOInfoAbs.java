@@ -72,7 +72,12 @@ public abstract class GOInfoAbs{
 	}
 	/**
 	 * 根据具体的GO_TYPE的标记，获得本GeneID的GO信息
-	 * @param GOType 如果是GO_ALL，则返回全部的GO信息
+	 * <br>
+	 * GO_BP<br>
+	 * GO_CC<br>
+	 * GO_MF<br>
+	 * GO_ALL<br>
+	 * @param GOType Go2Term.GO_BP等，如果是Go2Term.GO_ALL，则返回全部的GO信息
 	 * @return
 	 * 没有则返回一个空的lsResult
 	 */
@@ -98,13 +103,19 @@ public abstract class GOInfoAbs{
 		}
 	}
 	/**
-	 * Gotype 必须是C，F，P
+	 * Gotype 必须是：<br>
+	 * FUN_SHORT_BIO_P<br>
+	 * FUN_SHORT_CEL_C<br>
+	 * FUN_SHORT_MOL_F<br>
 	 * @param GoType
 	 * @return
 	 * 如果没有该项GO，则返回一个空的lsResult
 	 */
 	private ArrayList<AGene2Go> getLsGoType(String GoType) {
 		ArrayList<AGene2Go> lsResult = new ArrayList<AGene2Go>();
+		if (lsAGene2Gos == null) {
+			return new ArrayList<AGene2Go>();
+		}
 		for (AGene2Go aGene2Go : lsAGene2Gos) {
 			if (aGene2Go.getFunction().equals(GoType)) {
 				lsResult.add(aGene2Go);

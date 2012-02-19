@@ -2,12 +2,11 @@ package com.novelbio.database.model.modcopeid;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.jfree.chart.title.Title;
-
-import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
@@ -15,6 +14,7 @@ import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
+import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.mapper.geneanno.MapFSTaxID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
@@ -320,7 +320,7 @@ public class CopedID implements CopedIDInt{
 	}
 
 	@Override
-	public ArrayList<KegEntity> getKegEntity(boolean blast) {
+	public ArrayList<KGentry> getKegEntity(boolean blast) {
 		return copedID.getKegEntity(blast);
 	}
 
@@ -328,7 +328,7 @@ public class CopedID implements CopedIDInt{
 	@Override
 	public ArrayList<AGene2Go> getGene2GO(String GOType) {
 		return copedID.getGene2GO(GOType);
-	}
+ 	}
 
 	protected GOInfoAbs getGOInfo() {
 		return copedID.getGOInfo();
@@ -557,17 +557,41 @@ public class CopedID implements CopedIDInt{
 	}
 	/**
 	 * 返回常用名对taxID
+	 * @param allID true返回全部ID， false返回常用ID--也就是有缩写的ID
 	 * @return
 	 */
-	public static HashMap<String, Integer> getHashNameTaxID() {
+	public static HashMap<String, Integer> getSpeciesNameTaxID(boolean allID) {
 		ServTaxID servTaxID = new ServTaxID();
-		return servTaxID.getHashNameTaxID();
+		return servTaxID.getSpeciesNameTaxID(allID);
+	}
+	/**
+	 * 返回物种的常用名，并且按照字母排序（忽略大小写）
+	 * 可以配合getSpeciesNameTaxID方法来获得taxID
+	 * @param allID true返回全部ID， false返回常用ID--也就是有缩写的ID
+	 * @return
+	 */
+	public static ArrayList<String> getSpeciesName(boolean allID) {
+		ArrayList<String> lsResult = new ArrayList<String>();
+		ServTaxID servTaxID = new ServTaxID();
+		HashMap<String, Integer> hashSpecies = servTaxID.getSpeciesNameTaxID(allID);
+		for (String name : hashSpecies.keySet()) {
+			if (name != null && !name.equals("")) {
+				lsResult.add(name);
+			}
+		}
+		Collections.sort(lsResult, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareToIgnoreCase(o2);
+			}
+		});
+		return lsResult;
 	}
 	/**
 	 * 返回taxID对常用名
 	 * @return
 	 */
-	public static HashMap<Integer,String> getHashTaxIDName() {
+	public static HashMap<Integer,String> getSpeciesTaxIDName() {
 		ServTaxID servTaxID = new ServTaxID();
 		return servTaxID.getHashTaxIDName();
 	}

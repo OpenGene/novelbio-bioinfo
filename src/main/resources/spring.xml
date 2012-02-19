@@ -33,13 +33,20 @@
   		 <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/novelbio" />
   		 <property name="username" value="root"/>
   		 <property name="password" value=""/>
+  		 <!-- 每60秒检查所有连接池中的空闲连接    --> 
   		 <property name="IdleConnectionTestPeriodInMinutes" value="60"/>
+  		 <!-- 设置连接空闲时间(分钟)     --> 
   		 <property name="IdleMaxAgeInMinutes" value="240"/>
-  		 <property name="maxConnectionsPerPartition" value="30"/>
-  		 <property name="minConnectionsPerPartition" value="10"/>
+  		 <!--  设置连接池在每个分区中的最大连接数  --> 
+  		 <property name="maxConnectionsPerPartition" value="10"/>
+  		 <!--  设置连接池设在每个分区中的最小连接数     --> 
+  		 <property name="minConnectionsPerPartition" value="5"/>
+  		 <!-- 设置分区(设置 3个分区)     --> 
   		 <property name="partitionCount" value="3"/>
- 		 <property name="acquireIncrement" value="5"/>
+  		 <!-- 当连接池中的连接耗尽的时候 BoneCP一次同时获取的连接数    --> 
+ 		 <property name="acquireIncrement" value="15"/>
  		 <property name="statementsCacheSize" value="100"/>
+ 		  <!-- 连接释放处理    --> 
  		 <property name="releaseHelperThreads" value="3"/>
 	</bean>
     

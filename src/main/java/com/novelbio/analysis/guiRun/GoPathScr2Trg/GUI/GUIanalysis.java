@@ -27,7 +27,6 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
 
-import com.novelbio.analysis.guiRun.BlastGUI.GUI.GuiBlastJpanel;
 
 
 /**

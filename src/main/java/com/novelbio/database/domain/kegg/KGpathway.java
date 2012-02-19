@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.novelbio.database.domain.AbsPathway;
+import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
+import com.novelbio.database.service.servkegg.ServKPathway;
 
 public class KGpathway extends AbsPathway{
 	
@@ -69,5 +71,10 @@ public class KGpathway extends AbsPathway{
 	{
 		this.linkUrl=linkUrl.trim();
 	}
-
+	
+	public static KGpathway queryKPathway(String kgPathID) {	
+		ServKPathway servKPathway = new ServKPathway();
+		return servKPathway.queryKGpathway(kgPathID);
+	}
+	
 }

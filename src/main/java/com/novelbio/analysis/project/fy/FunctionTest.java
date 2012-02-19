@@ -59,20 +59,20 @@ public class FunctionTest {
 	}
 	
 	private static void go() {
-		int QtaxID = 10090;
+		int QtaxID = 9606;
 		int StaxID = 0;
-		String geneFileXls = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/cufDif/MEF2dK0vsWT/gene_exp2.csv";
+		String geneFileXls = "/home/zong0jie/×ÀÃæ/targetGene.xls";
 		String outFile = FileOperate.changeFileSuffix(geneFileXls, "_ElimGO", "xlsx");
-		String bg = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/mouse_mm9_UCSC_ensembl_BG_Item.txt";
+		String bg = "/media/winE/Bioinformatics/GenomeData/human/UCSChg19RefseqDuplicateID_GOItem.txt";
 		goanalysis(QtaxID, StaxID, geneFileXls, outFile, bg);
 
 	}
 	private static void path() {
-		int QtaxID = 10090;
+		int QtaxID = 9606;
 		int StaxID = 0;
-		String geneFileXls = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/cufDif/MEF2dK0vsWT/gene_exp2.csv";
+		String geneFileXls = "/home/zong0jie/×ÀÃæ/targetGene.xls";
 		String outFile = FileOperate.changeFileSuffix(geneFileXls, "_Path", "xlsx");
-		String bg = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/mouse_mm9_UCSC_ensembl_BG.txt";
+		String bg = "/media/winE/Bioinformatics/GenomeData/human/UCSChg19RefseqDuplicateID.txt";
 		pathwayAnalysis(QtaxID, StaxID, geneFileXls, outFile, bg);
 
 	}
@@ -107,7 +107,7 @@ public class FunctionTest {
 		boolean elimGo = true;
 		CtrlGO ctrlGO = null;
 		
-		ArrayList<String[]> lsAccIDCod = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID, colFC}, 1, 0);
+//		ArrayList<String[]> lsAccIDCod = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID, colFC}, 1, 0);
 		
 		ArrayList<String[]> lsAccIDAll = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID}, 1, 0);
 		
@@ -117,8 +117,8 @@ public class FunctionTest {
 		ctrlGO.doInBackgroundNorm(lsAccIDAll, 1, -1);
 		ctrlGO.saveExcel(outFile);
 		
-		ctrlGO.doInBackgroundNorm(lsAccIDCod, 1, -1);
-		ctrlGO.saveExcel(outFile);
+//		ctrlGO.doInBackgroundNorm(lsAccIDCod, 1, -1);
+//		ctrlGO.saveExcel(outFile);
 		
 		
 //		AnnoQuery.anno(geneFileXls, QtaxID, colAccID, blast, StaxID, evalue, "");
@@ -141,7 +141,7 @@ public class FunctionTest {
 		boolean elimGo = true;
 		CtrlPath ctrlGO = null;
 		
-		ArrayList<String[]> lsAccIDCod = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID, colFC}, 1, 0);
+//		ArrayList<String[]> lsAccIDCod = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID, colFC}, 1, 0);
 		
 		ArrayList<String[]> lsAccIDAll = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID}, 1, 0);
 		
@@ -151,8 +151,8 @@ public class FunctionTest {
 		ctrlGO.doInBackgroundNorm(lsAccIDAll, 1, -1);
 		ctrlGO.saveExcel(outFile);
 		
-		ctrlGO.doInBackgroundNorm(lsAccIDCod, 1, -1);
-		ctrlGO.saveExcel(outFile);
+//		ctrlGO.doInBackgroundNorm(lsAccIDCod, 1, -1);
+//		ctrlGO.saveExcel(outFile);
 		
 		
 //		AnnoQuery.anno(geneFileXls, QtaxID, colAccID, blast, StaxID, evalue, "");

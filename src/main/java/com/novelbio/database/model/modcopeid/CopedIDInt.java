@@ -2,10 +2,10 @@ package com.novelbio.database.model.modcopeid;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
@@ -51,7 +51,7 @@ public interface CopedIDInt{
 	 * @param StaxID 如果blast为true，那么设定StaxID
 	 * @return 如果没有就返回null
 	 */
-	public ArrayList<KegEntity> getKegEntity(boolean blast) ;
+	public ArrayList<KGentry> getKegEntity(boolean blast) ;
 	
 	
 	/**
@@ -92,7 +92,12 @@ public interface CopedIDInt{
 	 */
 	public void setBlastInfo(double evalue, int... StaxID);
 	/**
-	 * 返回该CopeID所对应的GO信息
+	 * 返回该CopedID所对应的Gene2GOInfo <br>
+	 * GO_BP<br>
+	 * GO_CC<br>
+	 * GO_MF<br>
+	 * GO_ALL<br>
+	 * @param GOType
 	 * @return
 	 */
 	public ArrayList<AGene2Go> getGene2GO(String GOType);
@@ -116,7 +121,10 @@ public interface CopedIDInt{
 	public ArrayList<BlastInfo> getLsBlastInfos();
 
 	/**
-	 * 返回第一个比对到的物种
+	 * 单个物种的blast 获得本copedID blast到对应物种的第一个copedID，没有就返回null
+	 * 
+	 * @param StaxID
+	 * @param evalue
 	 * @return
 	 */
 	CopedID getCopedIDBlast();

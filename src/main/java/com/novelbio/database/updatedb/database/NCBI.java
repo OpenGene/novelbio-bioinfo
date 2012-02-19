@@ -53,16 +53,16 @@ public class NCBI {
 		ImportPerLine impFile = null;
 		impFile = new ImpGen2Acc();
 		impFile.setTaxID(taxID);
-//		impFile.importInfoPerLine(gene2Acc, true);
-//		impFile.importInfoPerLine(gene2Ref, true);
-//		impFile = new ImpGen2Ensembl();
-//		impFile.importInfoPerLine(gene2ensembl, true);
-//		impFile = new ImpGeneRef2UniID();
-//		impFile.importInfoPerLine(geneRef2UniID, true);
-//		impFile = new ImpGene2Info();
-//		impFile.importInfoPerLine(gene2Info, true);
-//		impFile = new ImpGene2Pub();
-//		impFile.importInfoPerLine(gene2Pub, true);
+		impFile.updateFile(gene2Acc, true);
+		impFile.updateFile(gene2Ref, true);
+		impFile = new ImpGen2Ensembl();
+		impFile.updateFile(gene2ensembl, true);
+		impFile = new ImpGeneRef2UniID();
+		impFile.updateFile(geneRef2UniID, true);
+		impFile = new ImpGene2Info();
+		impFile.updateFile(gene2Info, true);
+		impFile = new ImpGene2Pub();
+		impFile.updateFile(gene2Pub, true);
 		impFile = new ImpGOExtObo();
 		impFile.updateFile(goExtObo, false);
 		impFile = new ImpGene2GO();
@@ -90,7 +90,7 @@ class ImpGen2Acc extends ImportPerLine
 	9	1246503	-	-	-	AAD12601.1	3282741	AF041837.1	3282736	-	-	?	-
 	 */
 	@Override
-	public boolean impPerLine(String content) {
+	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
 		int taxID = Integer.parseInt(ss[0]);
 		if (!hashTaxID.contains(taxID)) {
@@ -283,7 +283,7 @@ class ImpGene2GO extends ImportPerLine
 {
 	static CopedID copedID;
 	@Override
-	public boolean impPerLine(String lineContent) {
+	protected boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
 		int taxID = Integer.parseInt(ss[0]);
 		if (!hashTaxID.contains(taxID)) {

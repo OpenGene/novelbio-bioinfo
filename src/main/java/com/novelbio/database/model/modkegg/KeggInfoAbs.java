@@ -94,8 +94,10 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 */
 	public ArrayList<KGentry> getLsKgGentries(ArrayList<? extends KeggInfoInter> ls_keggInfo) {
 		getKgGentries();
-		for (KeggInfoInter keggInfo : ls_keggInfo) {
-			getBlastQInfo(keggInfo.getLsKo());
+		if (ls_keggInfo != null && ls_keggInfo.size() > 0) {
+			for (KeggInfoInter keggInfo : ls_keggInfo) {
+				getBlastQInfo(keggInfo.getLsKo());
+			}
 		}
 		return ArrayOperate.getArrayListValue(hashKegEntities);
 	}
@@ -147,14 +149,16 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	/**
 	 * 输入blast到的copedIDs，可以是多个
 	 * 返回最后的KGentry结果，包括没有blast的结果
-	 * @param lscopedIDs
+	 * @param lscopedIDs 如果没有blast，就不输入该项，设置为null即可
 	 * @return
 	 */
 	public ArrayList<KGpathway> getLsKegPath(ArrayList<? extends KeggInfoInter> ls_keggInfo)
 	{
 		getKgGentries();
-		for (KeggInfoInter keggInfo : ls_keggInfo) {
-			getBlastQInfo(keggInfo.getLsKo());
+		if (ls_keggInfo != null && ls_keggInfo.size() > 0) {
+			for (KeggInfoInter keggInfo : ls_keggInfo) {
+				getBlastQInfo(keggInfo.getLsKo());
+			}
 		}
 		ArrayList<KGpathway> lsKGpathways = new ArrayList<KGpathway>();
 		if (hashKegEntities != null) {

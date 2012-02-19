@@ -4,20 +4,18 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
 
-import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGen2Path;
-import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KGng2Path;
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
-import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.database.domain.geneanno.*;
 import com.novelbio.database.domain.kegg.*;
-import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
-import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
-import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.mapper.kegg.MapKRelation;
+import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.servgeneanno.ServNCBIID;
+import com.novelbio.database.service.servgeneanno.ServUniProtID;
+import com.novelbio.database.service.servkegg.ServKEntry;
+import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
+import com.novelbio.database.service.servkegg.ServKPathRelation;
+import com.novelbio.database.service.servkegg.ServKPathway;
+import com.novelbio.database.service.servkegg.ServKRelation;
 
 
 
@@ -31,148 +29,6 @@ import com.novelbio.database.service.servgeneanno.ServNCBIID;
  *
  */
 public class QKegPath {
-	
-	
-
-	/**
-	 * 
-	 * 用ncbiid去查找数据库，最后获得该基因的entry，主要用于做pathway的enrichment
-	 * <b>如果ncbiid中geneID == 0</b>，说明该NCBIID没有值，会直接进入blast步骤
-	 * if test="geneID !=null and geneID !=0"
-geneID=#{geneID}
-/if
-if test="taxID !=null and taxID !=0"
-and taxID=#{taxID}
-/if
-	 * 可以设定是否需要进行blast，不过就算设定了blast，如果本基因含有pathway那还是不进行blast
-	 * @param ncbiid
-	 * @param blast
-	 * @param subTaxID 需要查找的物种
-	 * @param evalue 只有当blast为true时才起作用，当evalue<=设定值时才会考虑blast获得的KO值
-	 */
-	public static KGen2Path qKegPath2(NCBIID ncbiid,boolean blast,int subTaxID,double evalue) 
-	{
-		KGen2Path kGen2Path = new KGen2Path();
-		KGCgen2Entry kgCgen2Entry = null;
-		if (ncbiid.getGeneId() != 0) {
-			kgCgen2Entry=MapKCdetail.queryGen2entry(ncbiid);
-		}
-		kGen2Path.setKGCgen2Entry(kgCgen2Entry);
-		//如果本基因含有pathway那就不进行blast
-		if (!blast ||   
-				(kGen2Path.getKGCgen2Entry()!=null
-						&&kGen2Path.getKGCgen2Entry().getLsKGentries()!=null
-						     &&kGen2Path.getKGCgen2Entry().getLsKGentries().size()>0))
-		{
-			return kGen2Path;
-		}
-		else 
-		{
-			/////////////////////////////////////先用geneID搜索blast数据库，不行的话用accID搜索，还搜不到就没有了////////////////////////////
-			BlastInfo blastInfo=new BlastInfo(); 
-			BlastInfo blastInfo2 = null;
-			if (ncbiid.getGeneId() != 0) {
-				blastInfo.setQueryID(ncbiid.getGeneId()+"");blastInfo.setSubjectTax(subTaxID);
-				blastInfo2=MapBlastInfoOld.queryBlastInfo(blastInfo);
-			}
-			//用accID再搜索一次
-			if (blastInfo2==null) {
-				blastInfo.setQueryID(ncbiid.getAccID());
-				blastInfo2=MapBlastInfoOld.queryBlastInfo(blastInfo);
-			}
-			//如果搜索到了,并且blast的evalue小于设定值
-			if(blastInfo2!=null&&blastInfo2.getEvalue()<=evalue)
-			{
-				int queryTaxID=blastInfo2.getQueryTax();
-				//用blast到的geneID去搜索kegg数据库,获得subject的KO信息
-				NCBIID ncbiidSubject = new NCBIID();
-				try {
-					ncbiidSubject.setGeneId(Integer.parseInt(blastInfo2.getSubjectID()));
-				} catch (Exception e) {
-					return kGen2Path;
-				}
-				kGen2Path.setBlastInfo(blastInfo2);
-				
-				KGCgen2Ko kgCgen2Ko = MapKCdetail.queryGen2Ko(ncbiidSubject);
-				ArrayList<KGentry> lsKGentriesSubject=null;
-				//如果找到ko了
-				if (kgCgen2Ko!=null
-						&&kgCgen2Ko.getLsKgiDkeg2Kos()!=null
-						&&kgCgen2Ko.getLsKgiDkeg2Kos().size()>0)
-				{
-					kGen2Path.setKegIDSubject(kgCgen2Ko.getKegID());
-					//这里面保存了一个keggID对应的所有ko
-					ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = kgCgen2Ko.getLsKgiDkeg2Kos();
-					//存储结果基因里面含有多少kegg的entry信息，也就相当于pathway
-					lsKGentriesSubject=new ArrayList<KGentry>();
-					for (int i = 0; i < lsKgiDkeg2Kos.size(); i++)
-					{
-						KGentry kGentry=new KGentry();
-						String ko = lsKgiDkeg2Kos.get(i).getKo();
-						////////////////如果geneBlast到了人类，并且得到了相应的KO，那么获得该KO所对应本物种的KeggID，并用KeggID直接mapping回本基因////////////////////////////////////////////////////////////////
-						KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
-						kgiDkeg2Ko.setKo(ko);kgiDkeg2Ko.setTaxID(queryTaxID);
-						ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos2 = MapKIDKeg2KoOld.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
-						if (lsKgiDkeg2Kos2 != null && lsKgiDkeg2Kos2.size()>0) 
-						{
-							//虽然一个ko对应多个keggID，但是对于pathway来说，一个ko就对应到一个pathway上，所以一个ko就够了
-							String keggID = lsKgiDkeg2Kos2.get(0).getKeggID();//这就是本物中的KeggID，用这个KeggID直接可以搜索相应的pathway
-							kGentry.setEntryName(keggID);
-							kGentry.setTaxID(queryTaxID);
-							//在给定ko和taxID的情况下，一个ko可以参与多个pathway，和一个pathway里的多个entry
-							ArrayList<KGentry> lskGentries=MapKEntryOld.queryLsKGentries(kGentry);
-							for (int j = 0; j < lskGentries.size(); j++) {
-								lsKGentriesSubject.add(lskGentries.get(j));
-							}
-						}
-						/////////////如果geneBlast到了人类，并且得到了相应的KO，那么获得该KO所对应本物种的KeggID，如果没有KeggID，则用KOmapping回本基因//////////////////////////////////////////////////////////////////
-						else
-						{
-							kGentry.setEntryName(ko);
-							kGentry.setTaxID(queryTaxID);
-							//在给定ko和taxID的情况下，一个ko可以参与多个pathway，和一个pathway里的多个entry
-							ArrayList<KGentry> lskGentries=MapKEntryOld.queryLsKGentries(kGentry);
-							for (int j = 0; j < lskGentries.size(); j++) 
-							{
-								lsKGentriesSubject.add(lskGentries.get(j));
-							}
-						}
-					}
-				}
-				kGen2Path.setLsBlastgen2Entry(lsKGentriesSubject);
-			}
-		}
-		return kGen2Path;
-	}
-	
-
-	/**
-	 * 
-	 * 用kgnIdKeg去查找数据库，最后获得该基因的entry，主要用于做pathway的enrichment
-	 * kgnIdKeg最好是确定已经存在的KGNIdKeg
-	 * 可以设定是否需要进行blast，不过就算设定了blast，如果本基因含有pathway那还是不进行blast
-	 * @param ncbiid
-	 * @param blast
-	 * @param subTaxID 需要查找的物种
-	 * @param evalue 只有当blast为true时才起作用，当evalue<=设定值时才会考虑blast获得的KO值
-	 */
-	public static KGng2Path qKegPath2(int queryTax, KGNIdKeg kgnIdKeg) 
-	{
-		KGng2Path kGng2Path = new KGng2Path();
-		kGng2Path.setKGNIdKeg(kgnIdKeg);
-		KGNCompInfo kgnCompInfo = MapKNCompInfoOld.queryKGNCompInfo(kgnIdKeg);
-		if (kgnCompInfo != null) {
-			kGng2Path.setKgnCompInfo(kgnCompInfo);
-		}
-		KGentry kGentryq = new KGentry();
-		////////数据库有问题，entry里面是 cpd:C00229，而compound里面是C00229//////////////////////////////////////////////////////////
-		kGentryq.setEntryName("cpd:"+kgnIdKeg.getKegID()); kGentryq.setTaxID(queryTax);
-		ArrayList<KGentry> lsKGentryS = MapKEntryOld.queryLsKGentries(kGentryq);
-		kGng2Path.setLsKGentry(lsKGentryS);
-		return kGng2Path;
-	}
-	
-	
 	/**
 	 *
 	 * 输入string[3]的geneID信息和blast的信息
@@ -201,145 +57,44 @@ and taxID=#{taxID}
 	 * 7: subKO 目标物种的KO，注意不是keggID，KO可直接用于比对到本物种上去,如果有多个KO，则用"//"隔开
 	 * 
 	 */
-	public static String[] getKeggID2(String[] geneIDInfo,boolean blast,int subTaxID,double evalue ) 
+	public static String[] getKeggID(int taxID, String[] geneIDInfo,boolean blast,int subTaxID,double evalue ) 
 	{
+		CopedID copedID = null;
+		if (geneIDInfo[1]!=null) {
+			copedID = new CopedID(CopedID.IDTYPE_GENEID, geneIDInfo[1], taxID);
+		}
+		else if (geneIDInfo[2]!=null) {
+			copedID = new CopedID(CopedID.IDTYPE_UNIID, geneIDInfo[2], taxID);
+		}
+		else {
+			copedID = new CopedID(geneIDInfo[0], taxID);
+		}
+		copedID.setBlastInfo(evalue, subTaxID);
+		
 		String[] kegIDInfo = new String[8];
 		kegIDInfo[0] = geneIDInfo[0]; kegIDInfo[1] = geneIDInfo[1]; kegIDInfo[2] = geneIDInfo[2];
-		if (geneIDInfo[1]!=null)
-		{
-			//直接查找kegg数据库
-			KGIDgen2Keg kGIDgen2Keg = new KGIDgen2Keg();
-			kGIDgen2Keg.setGeneID(Integer.parseInt(geneIDInfo[1]));
-			KGIDgen2Keg kgiDgen2KegSub = MapKIDgen2KegOld.queryKGIDgen2Keg(kGIDgen2Keg);
-			//如果本基因有自己的pathway，找到后直接退出
-			if (kgiDgen2KegSub != null) 
-			{
-				kegIDInfo[3] = kgiDgen2KegSub.getKeggID();
-				return kegIDInfo;
-			}
-
-			//查找blast数据库
-			if (blast)
-			{
-				BlastInfo qblastInfo = new BlastInfo();
-				//先用geneID去找
-				qblastInfo.setQueryID(geneIDInfo[1]); qblastInfo.setSubjectTax(subTaxID);
-				BlastInfo blastInfoSub = MapBlastInfoOld.queryBlastInfo(qblastInfo);
-				//blast到了
-				if (blastInfoSub != null) 
-				{
-					//并且evalue还小于设定阈值
-					if ( blastInfoSub.getEvalue() <= evalue)
-					{
-						//用blast的结果去搜索
-						NCBIID ncbiid = new NCBIID();
-						ncbiid.setGeneId(Integer.parseInt(blastInfoSub.getSubjectID()));
-						KGCgen2Ko kgCgen2Ko = MapKCdetail.queryGen2Ko(ncbiid);
-						//如果找到ko了
-						if (kgCgen2Ko != null
-								&& kgCgen2Ko.getLsKgiDkeg2Kos() != null
-								&& kgCgen2Ko.getLsKgiDkeg2Kos().size() > 0)
-						{
-							kegIDInfo[4] = blastInfoSub.getEvalue()+"";
-							kegIDInfo[5] = blastInfoSub.getSubjectTax()+"";
-							kegIDInfo[6] = blastInfoSub.getSubjectID();
-							kegIDInfo[7]  = "";
-							for (int i = 0; i <  kgCgen2Ko.getLsKgiDkeg2Kos().size(); i++) 
-							{
-								if (kegIDInfo[7].equals(""))
-								{
-									kegIDInfo[7] = kgCgen2Ko.getLsKgiDkeg2Kos().get(i).getKo();
-								}
-								else 
-								{
-									kegIDInfo[7] = kegIDInfo[7] + "//" + kgCgen2Ko.getLsKgiDkeg2Kos().get(i).getKo();
-								}
-							}
-							return kegIDInfo;
-						}
-					}
-				}
-				//用geneID没blast到，用ACCIDblast
-				else 
-				{
-					BlastInfo qblastInfo2 = new BlastInfo();
-					//用accID进行blast
-					qblastInfo2.setQueryID(geneIDInfo[0]); qblastInfo2.setSubjectTax(subTaxID);
-					BlastInfo blastInfoSub2 = MapBlastInfoOld.queryBlastInfo(qblastInfo2);
-					//blast到了并且evalue还小于设定阈值
-					if (blastInfoSub2 != null && blastInfoSub2.getEvalue() <= evalue) 
-					{
-						//用blast的结果去搜索
-						NCBIID ncbiid = new NCBIID();
-						ncbiid.setGeneId(Integer.parseInt(blastInfoSub2.getSubjectID()));
-						KGCgen2Ko kgCgen2Ko = MapKCdetail.queryGen2Ko(ncbiid);
-						//如果找到ko了
-						if (kgCgen2Ko != null
-								&& kgCgen2Ko.getLsKgiDkeg2Kos() != null
-								&& kgCgen2Ko.getLsKgiDkeg2Kos().size() > 0)
-						{
-							kegIDInfo[4] = blastInfoSub2.getEvalue()+"";
-							kegIDInfo[5] = blastInfoSub2.getSubjectTax()+"";
-							kegIDInfo[6] = blastInfoSub2.getSubjectID();
-							kegIDInfo[7] = "";
-							for (int i = 0; i <  kgCgen2Ko.getLsKgiDkeg2Kos().size(); i++) {
-								if (kegIDInfo[7].equals("")) {
-									kegIDInfo[7] = kgCgen2Ko.getLsKgiDkeg2Kos().get(i).getKo();
-								}
-								else {
-									kegIDInfo[7] = kegIDInfo[7] + "//" + kgCgen2Ko.getLsKgiDkeg2Kos().get(i).getKo();
-								}
-							}
-							return kegIDInfo;
-						}
-					}
-				}
-			}
+		kegIDInfo[3] = copedID.getKeggInfo().getKegID();
+		if (kegIDInfo[3] != null) {
+			return kegIDInfo;
 		}
-		//用accID来查找，只能够直接blast，因为没有geneID没法对上kegg
-		else
-		{
-			if (!blast) 
-			{
-				return kegIDInfo;
-			}
-
-			BlastInfo qblastInfo = new BlastInfo();
-			//用accID进行blast
-			qblastInfo.setQueryID(geneIDInfo[0]); qblastInfo.setSubjectTax(subTaxID);
-			BlastInfo blastInfoSub = MapBlastInfoOld.queryBlastInfo(qblastInfo);
-			//blast到了并且evalue还小于设定阈值
-			if (blastInfoSub != null && blastInfoSub.getEvalue() <= evalue) 
-			{
-				//用blast的结果去搜索
-				NCBIID ncbiid = new NCBIID();
-				ncbiid.setGeneId(Integer.parseInt(blastInfoSub.getSubjectID()));
-				KGCgen2Ko kgCgen2Ko = MapKCdetail.queryGen2Ko(ncbiid);
-				//如果找到ko了
-				if (kgCgen2Ko != null
-						&& kgCgen2Ko.getLsKgiDkeg2Kos() != null
-						&& kgCgen2Ko.getLsKgiDkeg2Kos().size() > 0)
-				{
-					kegIDInfo[4] = blastInfoSub.getEvalue()+"";
-					kegIDInfo[5] = blastInfoSub.getSubjectTax()+"";
-					kegIDInfo[6] = blastInfoSub.getSubjectID();
-					kegIDInfo[7] = "";
-					for (int i = 0; i <  kgCgen2Ko.getLsKgiDkeg2Kos().size(); i++) {
-						if (kegIDInfo[7].equals("")) {
-							kegIDInfo[7] = kgCgen2Ko.getLsKgiDkeg2Kos().get(i).getKo();
-						}
-						else {
-							kegIDInfo[7] = kegIDInfo[7] + "//" + kgCgen2Ko.getLsKgiDkeg2Kos().get(i).getKo();
-						}
-					}
-					return kegIDInfo;
-				}
-			}
+		if (copedID.getLsBlastInfos() == null || copedID.getLsBlastInfos().size() == 0) {
+			return kegIDInfo;
 		}
-		return kegIDInfo;
+		kegIDInfo[4] = copedID.getLsBlastInfos().get(0).getEvalue() + "";
+		kegIDInfo[5] = subTaxID + "";
+		kegIDInfo[6] = copedID.getCopedIDBlast().getGenUniID();
+		ArrayList<String> lsKO =  copedID.getCopedIDBlast().getKeggInfo().getLsKo();
+		if (lsKO == null || lsKO.size() == 0) {
+			return kegIDInfo;
+		}
+		else {
+			kegIDInfo[7] = lsKO.get(0);
+			for (int i = 1; i < lsKO.size(); i++) {
+				kegIDInfo[7] = kegIDInfo[7] + "//" + lsKO.get(i);
+			}
+			return kegIDInfo;
+		}
 	}
-	
-	
 	/**
 	 *
 	 * 输入序列信息数组，将ID信息转化为String[3],同时去冗余，也就是将相同的geneID只保留一个，相同的UniProtID也只保留一个
@@ -353,6 +108,7 @@ and taxID=#{taxID}
 	 */
 	public static ArrayList<String[]> getGeneID2(String[] accID, int taxID) 
 	{
+		ServUniProtID servUniProtID = new ServUniProtID();
 		ServNCBIID servGeneAnno = new ServNCBIID();
 		/**
 		 * 用来去重复的表，key为geneID/UniProtID/accID，value
@@ -387,7 +143,7 @@ and taxID=#{taxID}
 				UniProtID uniProtID = new UniProtID();
 				uniProtID.setAccID(accID[i]); 
 				if (taxID>0) uniProtID.setTaxID(taxID);
-				ArrayList<UniProtID> lsUniProtIDs = MapUniProtIDOld.queryLsUniProtID(uniProtID);
+				ArrayList<UniProtID> lsUniProtIDs = servUniProtID.queryLsUniProtID(uniProtID);
 				if (lsNcbiidSub!=null && lsNcbiidSub.size() > 0) {
 					geneInfo[2] = lsUniProtIDs.get(0).getUniID();
 					hashGeneIDInfo.put(geneInfo[2], geneInfo);
@@ -419,6 +175,8 @@ and taxID=#{taxID}
 	 */
 	public static Hashtable<String, KGpathScr2Trg>  getHashKGpathRelation(KGentry kGentry)
 	{
+		ServKEntry servKEntry = new ServKEntry();
+		ServKRelation servKRelation = new ServKRelation();
 		/**
 		 * 保存最后获得与之相关的entry信息
 		 */
@@ -431,7 +189,7 @@ and taxID=#{taxID}
 			tmpqkGentry.setPathName(kGentry.getPathName());
 			tmpqkGentry.setParentID(kGentry.getParentID());
 			//这里都是与queryEntry是component的entry,
-			ArrayList<KGentry> lsSubKGentries=MapKEntryOld.queryLsKGentries(tmpqkGentry);
+			ArrayList<KGentry> lsSubKGentries=servKEntry.queryLsKGentries(tmpqkGentry);
 			for (int i = 0; i < lsSubKGentries.size(); i++) 
 			{
 				KGentry tmpkgGentrySub=lsSubKGentries.get(i);
@@ -451,7 +209,7 @@ and taxID=#{taxID}
 			////////////////////////////////////////////////首先用entryID去查找//////////////////////////////////////////////////////////////
 			KGrelation tmpQkGrelation=new KGrelation();
 			tmpQkGrelation.setEntry1ID(kGentry.getID()); tmpQkGrelation.setPathName(kGentry.getPathName());
-			ArrayList<KGrelation> lsKGrelations = MapKRelation.queryLsKGrelations(tmpQkGrelation);
+			ArrayList<KGrelation> lsKGrelations = servKRelation.queryLsKGrelations(tmpQkGrelation);
 			/////////////////////////////////////////因为有些relation中有这种情况：entry1、entry2完全一致，就是subtype不一致，这个就是将一致的entry1、entry2去冗余的////////////////////////////////////////////////////////////////
 			Hashtable<String, KGrelation> hashPathID2KGRelation = removeRep(lsKGrelations);
 			
@@ -485,7 +243,7 @@ and taxID=#{taxID}
 			//////////////////////然后用parentID去查///////////////////////////////////////////////////////////////////////////////////////
 			KGrelation tmpQkGrelation2=new KGrelation();
 			tmpQkGrelation2.setEntry1ID(kGentry.getParentID()); tmpQkGrelation2.setPathName(kGentry.getPathName());
-			ArrayList<KGrelation> lsKGrelations2 = MapKRelation.queryLsKGrelations(tmpQkGrelation2);
+			ArrayList<KGrelation> lsKGrelations2 = servKRelation.queryLsKGrelations(tmpQkGrelation2);
 			/////////////////////////////////////////因为有些relation中有这种情况：entry1、entry2完全一致，就是subtype不一致，这个就是将一致的entry1、entry2去冗余的////////////////////////////////////////////////////////////////
 			Hashtable<String, KGrelation> hashPathID2KGRelation2 = removeRep(lsKGrelations2);
 			
@@ -521,7 +279,7 @@ and taxID=#{taxID}
 			////////////////////////////////////////////////直接用entryID去查找//////////////////////////////////////////////////////////////
 			KGrelation tmpQkGrelation=new KGrelation();
 			tmpQkGrelation.setEntry1ID(kGentry.getID()); tmpQkGrelation.setPathName(kGentry.getPathName());
-			ArrayList<KGrelation> lsKGrelations = MapKRelation.queryLsKGrelations(tmpQkGrelation);
+			ArrayList<KGrelation> lsKGrelations = servKRelation.queryLsKGrelations(tmpQkGrelation);
 			/////////////////////////////////////////因为有些relation中有这种情况：entry1、entry2完全一致，就是subtype不一致(也就是一对entry1-entry2含有多个不同的subtype)，这个就是将一致的entry1、entry2去冗余的////////////////////////////////////////////////////////////////
 			Hashtable<String, KGrelation> hashPathID2KGRelation = removeRep(lsKGrelations);
 			Enumeration keys=hashPathID2KGRelation.keys();
@@ -656,10 +414,11 @@ and taxID=#{taxID}
 	 * @return
 	 */
 	private static ArrayList<KGentry> getRelateEntry(int entryID, String pathName) {
+		ServKEntry servKEntry = new ServKEntry();
 		KGentry qKGentry = new KGentry();
 		qKGentry.setID(entryID); qKGentry.setPathName(pathName);
 		
-		ArrayList<KGentry> lskGentries = MapKEntryOld.queryLsKGentries(qKGentry);
+		ArrayList<KGentry> lskGentries = servKEntry.queryLsKGentries(qKGentry);
 		if (lskGentries != null && lskGentries.size() > 0) 
 		{
 			return lskGentries;
@@ -669,7 +428,7 @@ and taxID=#{taxID}
 		{
 			qKGentry = new KGentry();
 			qKGentry.setParentID(entryID); qKGentry.setPathName(pathName);
-			ArrayList<KGentry> lsKGentries2=MapKEntryOld.queryLsKGentries(qKGentry);
+			ArrayList<KGentry> lsKGentries2=servKEntry.queryLsKGentries(qKGentry);
 			return lsKGentries2;
 		}
 	}
@@ -683,10 +442,11 @@ and taxID=#{taxID}
 	 * 1：本pathID的trg对应的lsPathName
 	 */
 	private static ArrayList<String> getRelatePath(String pathName) {
+		ServKPathRelation servKPathRelation = new ServKPathRelation();
 		KGpathRelation kGpathRelation = new KGpathRelation();
 		KGrelation kGrelation =new KGrelation();
 		kGpathRelation.setPathName(pathName);
-		ArrayList<KGpathRelation> lsKGpathRelations = MapKPathRelationOld.queryLskGpathRelations(kGpathRelation);
+		ArrayList<KGpathRelation> lsKGpathRelations = servKPathRelation.queryLskGpathRelations(kGpathRelation);
 		ArrayList<String> lsTrgPathName = new ArrayList<String>();
 		for (KGpathRelation kGpathRelation2 : lsKGpathRelations) {
 			lsTrgPathName.add(kGpathRelation2.getTrgPath());
@@ -703,12 +463,13 @@ and taxID=#{taxID}
 	 */
 	private static Hashtable<String, KGpathway> getHashKGpathway(String[] PathID)
 	{
+		ServKPathway servKPathway = new ServKPathway();
 		Hashtable<String, KGpathway> hashPath = new Hashtable<String, KGpathway>();
 		for (String string : PathID) {
 			string = string.trim();
 			KGpathway kGpathway = new KGpathway();
 			kGpathway.setPathName(string);
-			kGpathway = MapKPathwayOld.queryKGpathway(kGpathway);
+			kGpathway = servKPathway.queryKGpathway(kGpathway);
 			hashPath.put(string, kGpathway);
 		}
 		return hashPath;
@@ -822,6 +583,7 @@ and taxID=#{taxID}
 	 * @param genID
 	 */
 	private static String getKeggID(String genID,int taxID) {
+		ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
 		ServNCBIID servGeneAnno = new ServNCBIID();
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setAccID(genID);ncbiid.setTaxID(taxID);
@@ -838,7 +600,7 @@ and taxID=#{taxID}
 		KGIDgen2Keg kgiDgen2Keg = new KGIDgen2Keg();
 		kgiDgen2Keg.setGeneID(geneID);
 		kgiDgen2Keg.setTaxID(taxID);
-		KGIDgen2Keg kgiDgen2KegS = MapKIDgen2KegOld.queryKGIDgen2Keg(kgiDgen2Keg);
+		KGIDgen2Keg kgiDgen2KegS = servKIDgen2Keg.queryKGIDgen2Keg(kgiDgen2Keg);
 		if (kgiDgen2KegS != null) {
 			return kgiDgen2KegS.getKeggID();
 		}

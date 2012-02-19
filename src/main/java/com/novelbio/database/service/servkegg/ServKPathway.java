@@ -27,6 +27,12 @@ public class ServKPathway extends AbsGetSpring implements MapKPathway {
 		return mapKPathway.queryKGpathway(kGpathway);
 	}
 
+	public KGpathway queryKGpathway(String kGpathwayID) {
+		// TODO Auto-generated method stub
+		KGpathway kGpathway = new KGpathway();
+		kGpathway.setPathName(kGpathwayID);
+		return mapKPathway.queryKGpathway(kGpathway);
+	}
 	@Override
 	public void insertKGpathway(KGpathway kGpathway) {
 		// TODO Auto-generated method stub

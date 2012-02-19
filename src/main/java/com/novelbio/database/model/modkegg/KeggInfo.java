@@ -59,7 +59,6 @@ public class KeggInfo implements KeggInfoInter{
 	public ArrayList<KGentry> getLsKgGentries(ArrayList<? extends KeggInfoInter> ls_keggInfo) {
 		return keggInfoAbs.getLsKgGentries(ls_keggInfo);
 	}
-	
 	public static KGpathway getKGpathway(String pathID)
 	{
 		return KeggInfoAbs.getHashKGpath().get(pathID);

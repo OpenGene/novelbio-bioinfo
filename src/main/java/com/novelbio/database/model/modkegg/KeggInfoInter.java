@@ -46,6 +46,7 @@ public interface KeggInfoInter {
 	/**
 	 * 输入blast到的CopedIDs
 	 * 返回该geneID所对应的KGentry
+	 * 没有则返回一个空的arraylist
 	 * @return
 	 */
 	public ArrayList<KGentry> getLsKgGentries(ArrayList<? extends KeggInfoInter> ls_keggInfo);

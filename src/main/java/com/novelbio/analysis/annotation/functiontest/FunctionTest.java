@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
-import com.novelbio.database.model.modgo.GOInfoAbs;
 
 /**
  * 功能分析的类

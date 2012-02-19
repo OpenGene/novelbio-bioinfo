@@ -130,9 +130,9 @@ public class TaxInfo {
 	 * 返回常用名对taxID
 	 * @return
 	 */
-	public static HashMap<String, Integer> getHashNameTaxID() {
+	public static HashMap<String, Integer> getHashNameTaxID(boolean allID) {
 		ServTaxID servTaxID = new ServTaxID();
-		return servTaxID.getHashNameTaxID();
+		return servTaxID.getSpeciesNameTaxID(allID);
 	}
 	/**
 	 * 返回taxID对常用名

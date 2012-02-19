@@ -196,7 +196,12 @@ public class Go2Term {
 	public void setGoTerm(String GoTerm) {
 		this.GoTerm = GoTerm;
 	}  
-	
+	/**
+	 * FUN_SHORT_BIO_P<br>
+	 * FUN_SHORT_CEL_C<br>
+	 * FUN_SHORT_MOL_F<br>
+	 * @return
+	 */
 	public String getGoFunction() {
 		return GoFunction;
 	}

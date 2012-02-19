@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.modcopeid.CopeID;
+import com.novelbio.database.model.modcopeid.CopedID;
 /**
  * 从NCBI的nt和nr数据库中获得指定物种的序列并整理为fasta格式
 	 * 整理成:<br>
@@ -60,7 +60,7 @@ public class GetSeq {
 			for (int j = 0; j < ss2.length; j++)
 			{
 				String string2 = ss2[j];
-				String accID = CopeID.removeDot(string2);
+				String accID = CopedID.removeDot(string2);
 				String geneID = hashAcc2GenID.get(accID);
 				if (geneID == null) 
 					continue;
@@ -80,7 +80,7 @@ public class GetSeq {
 		}
 		if (minGeneIDsub >= 0) {
 			String tmpAccID = lsGeneID.get(minGenID).split("\\|")[minGeneIDsub];
-			tmpAccID = CopeID.removeDot(tmpAccID);
+			tmpAccID = CopedID.removeDot(tmpAccID);
 			String resultGeneID = hashAcc2GenID.get(tmpAccID);
 			if (resultGeneID.split("//").length <= maxGeneIDNum) 
 				return resultGeneID;

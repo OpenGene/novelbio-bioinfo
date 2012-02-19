@@ -15,7 +15,6 @@ import javax.swing.SwingWorker;
 
 import com.google.common.base.Splitter;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
-import com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
