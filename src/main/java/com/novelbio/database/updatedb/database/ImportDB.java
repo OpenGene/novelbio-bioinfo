@@ -2,6 +2,7 @@ package com.novelbio.database.updatedb.database;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
  * 
@@ -16,8 +17,12 @@ public class ImportDB {
 //		updateNCBIID();
 //		updateUniprotID();
 //		updateRiceID();//只导了前两个
+//		updateTAIR();
+//		 updateZB();
 //		updateEnsembl();
-		updateBlast();
+//		updateBlast();
+		updateAffy();
+//		updateMicroarray();
 	}
 	/**
 	 * 升级从NCBI下载的信息
@@ -85,6 +90,7 @@ public class ImportDB {
 		String gffRapDB = riceParentPath + "RAP_genes.gff3";
 		String gffTIGR =  riceParentPath + "Tigr_all.gff3";
 		String rap2MSU =  riceParentPath + "RAP-MSU.txt";
+		String goFile = "/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/all.GOSlim_assignment";
 		String rapDBoutID = FileOperate.changeFileSuffix(gffRapDB, "_IDout", "txt");
 		String tigrDBoutID = FileOperate.changeFileSuffix(gffTIGR, "_IDout", "txt");
 		RiceID riceID = new RiceID();
@@ -93,6 +99,7 @@ public class ImportDB {
 		riceID.setRapDBoutID(rapDBoutID);
 		riceID.setRiceRap2MSU(rap2MSU);
 		riceID.setTigrDBoutID(tigrDBoutID);
+		riceID.setTigrGoSlim(goFile);
 		riceID.update();
 	}
 	
@@ -100,15 +107,197 @@ public class ImportDB {
 	{
 		String blastFile = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA";
 		String outFIle = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA_out";
-		int blastTaxID = 0;
+		int queryTaxID = 0;
 		Blast blast = new Blast();
-		blast.setAccIDIsGeneID(false);
-		blast.setBlastIDisGeneID(true);
+		blast.setQueryID(CopedID.IDTYPE_ACCID);
+		blast.setBlastID(CopedID.IDTYPE_GENEID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_ENSEMBL);
 		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
 		blast.setSubTaxID(9606);
-		blast.setTaxID(blastTaxID);
+		blast.setTaxID(queryTaxID);
 		blast.setTxtWriteExcep(outFIle);
-		blast.updateFile(blastFile, false);
+//		blast.updateFile(blastFile, false);
+		/////////////////  arabidopsis   //////////////////////////////////
+		blastFile = "/media/winE/Bioinformatics/BLAST/result/rice/tigrrice2tairath";
+		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+		queryTaxID = 39947;
+		blast = new Blast();
+		blast.setQueryID(CopedID.IDTYPE_ACCID);
+		blast.setBlastID(CopedID.IDTYPE_ACCID);
+		blast.setQueryDBinfo(NovelBioConst.DBINFO_RICE_TIGR);
+		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
+		blast.setSubTaxID(3702);
+		blast.setTaxID(queryTaxID);
+		blast.setTxtWriteExcep(outFIle);
+//		blast.updateFile(blastFile, false);
+		/////////////////   zebrafish   /////////////////////////
+		blastFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/dre_nr2hsa_refseq";
+		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+		queryTaxID = 7955;
+		blast = new Blast();
+		blast.setQueryID(CopedID.IDTYPE_GENEID);
+		blast.setBlastID(CopedID.IDTYPE_GENEID);
+		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
+		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
+		blast.setSubTaxID(9606);
+		blast.setTaxID(queryTaxID);
+		blast.setTxtWriteExcep(outFIle);
+		blast.updateFile(blastFile, false);		
 	}
+	
+	private static void updateAffy()
+	{
+		String affyFile = "";
+		String outFile = "";
+		int taxID = 0;
+		NormAffy normAffy = null;
+		/////////   arabidopsis  //////////////////////////////////////////////;
+		affyFile = "/media/winE/Bioinformatics/Affymetrix/Arabidopsis/ATH1-121501.na31.annot.csv/ATH1-121501.na31.annot_modify.csv";
+		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+		taxID = 3702;
+		normAffy = new NormAffy();
+		normAffy.setTaxID(taxID);
+		normAffy.setTxtWriteExcep(outFile);
+		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_ATH);
+//		normAffy.updateFile(affyFile, false);
+		/////////   human  //////////////////////////////////////////////;
+		affyFile = "/media/winE/Bioinformatics/Affymetrix/Human/Human Genome U133 Plus 2.0/HG-U133_Plus_2.na31.annot.csv/HG-U133_Plus_2.na31.annot.csv";
+		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+		taxID = 9606;
+		normAffy = new NormAffy();
+		normAffy.setTaxID(taxID);
+		normAffy.setTxtWriteExcep(outFile);
+		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_HUMAN_U133_PLUS2);
+//		normAffy.updateFile(affyFile, false);
+
+		/////////   Zebrafish  //////////////////////////////////////////////;
+//		affyFile = "/media/winE/Bioinformatics/Affymetrix/";
+//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+//		taxID = 0
+//		normAffy = new NormAffy();
+//		normAffy.setTaxID(taxID);
+//		normAffy.setTxtWriteExcep(outFile);
+//		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_ZEBRAFISH);
+//		normAffy.updateFile(affyFile, false);
+
+		/////////   soybean  //////////////////////////////////////////////;
+//		affyFile = "/media/winE/Bioinformatics/Affymetrix/";
+//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+//		taxID = 0
+//		normAffy = new NormAffy();
+//		normAffy.setTaxID(taxID);
+//		normAffy.setTxtWriteExcep(outFile);
+//		normAffy.updateFile(affyFile, false);
+
+		/////////   rice  //////////////////////////////////////////////;
+		affyFile = "/media/winE/Bioinformatics/Affymetrix/rice/Rice.na31.annot.csv/Rice.na31.annot.csv";
+		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+		taxID = 39947;
+		normAffy = new NormAffy();
+		normAffy.setTaxID(taxID);
+		normAffy.setTxtWriteExcep(outFile);
+		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
+//		normAffy.updateFile(affyFile, false);
+
+		/////////   Pig Porcine  //////////////////////////////////////////////;
+//		affyFile = "";
+//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+//		taxID = 0;
+//		normAffy = new NormAffy();
+//		normAffy.setTaxID(taxID);
+//		normAffy.setTxtWriteExcep(outFile);
+//		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_PIG);
+//		normAffy.updateFile(affyFile, false);
+
+		/////////   Mouse  //////////////////////////////////////////////;
+		affyFile = "/media/winE/Bioinformatics/Affymetrix/Mouse/Mouse Genome 430 2.0 Array/Mouse430_2.na31.annot.csvTT/Mouse430_2.na31.annot.csv";
+		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+		taxID = 10090;
+		normAffy = new NormAffy();
+		normAffy.setTaxID(taxID);
+		normAffy.setTxtWriteExcep(outFile);
+		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
+//		normAffy.updateFile(affyFile, false);
+
+		/////////   Bovine  //////////////////////////////////////////////;
+//		affyFile = "/media/winE/Bioinformatics/Affymetrix/";
+//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+//		taxID = 0;
+//		normAffy = new NormAffy();
+//		normAffy.setTaxID(taxID);
+//		normAffy.setTxtWriteExcep(outFile);
+//		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_COW);
+//		normAffy.updateFile(affyFile, false);
+		affyFile = "/media/winE/Bioinformatics/Affymetrix/rat/Rat230_2.na32.annot.csv/Rat230_2.na32.annot.csv";
+		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+		taxID = 10116;
+		normAffy = new NormAffy();
+		normAffy.setTaxID(taxID);
+		normAffy.setTxtWriteExcep(outFile);
+		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
+		normAffy.updateFile(affyFile, false);
+	}
+	
+	private static void updateTAIR() {
+		Arabidopsis arabidopsis = new Arabidopsis();
+		String parentPath = "/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/";
+		String athGO = parentPath + "ATH_GO_GOSLIM.txt/ATH_GO_GOSLIM2.txt";
+		String tAIR_functional_descriptions = parentPath + "TAIR10_functional_descriptions";
+		String tAIRModelcDNAAssociations = parentPath + "idconvert/TAIR10_Model_cDNA_associations";
+		String tAIRNCBIGeneIDmapping = parentPath + "TAIR10_NCBI_GENEID_mapping";
+		String tAIRNCBIRefSeqMappingPROT = parentPath + "TAIR10_NCBI_REFSEQ_mapping_PROT";
+		String tAIRNCBIRefSeqMappingRNA = parentPath + "TAIR10_NCBI_REFSEQ_mapping_RNA";
+		String uniprot2agi = parentPath + "idconvert/Uniprot2AGI";
+		arabidopsis.setAthGO(athGO);
+		arabidopsis.setTAIR_functional_descriptions(tAIR_functional_descriptions);
+		arabidopsis.setTAIRModelcDNAAssociations(tAIRModelcDNAAssociations);
+		arabidopsis.setTAIRNCBIGeneIDmapping(tAIRNCBIGeneIDmapping);
+		arabidopsis.setTAIRNCBIRefSeqMappingPROT(tAIRNCBIRefSeqMappingPROT);
+		arabidopsis.setTAIRNCBIRefSeqMappingRNA(tAIRNCBIRefSeqMappingRNA);
+		arabidopsis.setUniprot2AGI(uniprot2agi);
+		arabidopsis.update();
+	}
+	
+	private static void updateZB()
+	{
+		String zbEnsembl = "/media/winE/Bioinformatics/GenomeData/danio_rerio/ensembl_1_to_1.txt";
+		String zbGeneIDFile = "/media/winE/Bioinformatics/GenomeData/danio_rerio/gene2geneID.txt";
+		String zbGOFile = "/media/winE/Bioinformatics/GenomeData/danio_rerio/gene_association.zfin";
+		String zbRefSeqFile = "/media/winE/Bioinformatics/GenomeData/danio_rerio/gene2refseq.txt";
+		ZebraFish zebraFish = new ZebraFish();
+		zebraFish.setZbEnsembl(zbEnsembl);
+		zebraFish.setZbGeneIDFile(zbGeneIDFile);
+		zebraFish.setZbGOFile(zbGOFile);
+		zebraFish.setZbRefSeqFile(zbRefSeqFile);
+		zebraFish.update();
+	}
+	
+	private static void updateMicroarray() {
+		String zerbfishFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfishRefSeq.xls";
+		String zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
+		MicroArrayBlast microArrayBlast = null;
+		////////////////////  斑马鱼  /////////////////////////////
+		zerbfishFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfishRefSeq.xls";
+		zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
+		microArrayBlast = new MicroArrayBlast();
+		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_ZEBRAFISH);
+		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
+		microArrayBlast.updateFile(zerbfishFile, false);
+		microArrayBlast.updateFile(zerbfishFile2, false);
+		
+		
+		
+		
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 }

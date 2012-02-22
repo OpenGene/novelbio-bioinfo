@@ -34,16 +34,16 @@ public class KGexe {
 //			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/sce");
 			
 //			KeggIDcvt.upDateGen2Keg("/home/zong0jie/×ÀÃæ/yeast/sce_ncbi-geneid.list");
-			KeggIDcvt.upDateKeg2Ko("/home/zong0jie/×ÀÃæ/mmu_ko.list");
+//			KeggIDcvt.upDateKeg2Ko("/home/zong0jie/×ÀÃæ/mmu_ko.list");
 //			
 //			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/mmu");
 //			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/metabolic/organisms/mmu");
 //			KeggIDcvt.upDateGen2Keg("/media/winE/Bioinformatics/Kegg/genes/organisms/mmu/mmu_ncbi-geneid.list");
 //			
-//			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/hsa");
-//			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/metabolic/organisms/hsa");
-//			KeggIDcvt.upDateGen2Keg("/media/winE/Bioinformatics/Kegg/genes/organisms/hsa/hsa_ncbi-geneid.list");
-//			KeggIDcvt.upDateKeg2Ko("/media/winE/Bioinformatics/Kegg/genes/organisms/hsa/hsa_ko.list");
+			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/ath");
+			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/metabolic/organisms/ath");
+			KeggIDcvt.upDateGen2Keg("/media/winE/Bioinformatics/Kegg/genes/organisms/ath/ath_ncbi-geneid.list");
+			KeggIDcvt.upDateKeg2Ko("/media/winE/Bioinformatics/Kegg/genes/organisms/ath/ath_ko.list");
 			
 			
 //			KGML2DB.readKGML("/media/winE/Bioinformatics/Kegg/KGML/kgml/non-metabolic/organisms/gga");

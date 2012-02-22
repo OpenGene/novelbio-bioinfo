@@ -732,5 +732,11 @@ public class CopedID implements CopedIDInt{
 		copedID.setUpdateBlastInfo(SubGenUniID, subIDtype, subDBInfo, SubTaxID, evalue, identities);
 		
 	}
+
+	@Override
+	public void setUpdateAccIDNoCoped(String accID) {
+		copedID.setUpdateAccIDNoCoped(accID);
+		
+	}
 	
 }

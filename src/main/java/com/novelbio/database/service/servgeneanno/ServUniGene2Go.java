@@ -3,6 +3,7 @@ package com.novelbio.database.service.servgeneanno;
 import java.util.ArrayList;
 import javax.inject.Inject;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.AGene2Go;
@@ -12,7 +13,7 @@ import com.novelbio.database.service.AbsGetSpring;
 
 @Service
 public class ServUniGene2Go extends AbsGetSpring implements MapUniGene2Go{
-
+	private static Logger logger = Logger.getLogger(ServUniGene2Go.class);
 	@Inject
 	private MapUniGene2Go mapUniGene2Go;
 	public ServUniGene2Go()  
@@ -64,7 +65,7 @@ public class ServUniGene2Go extends AbsGetSpring implements MapUniGene2Go{
 	 * @param genUniID
 	 * @param gene2Go
 	 */
-	public void updateUniGene2Go(String genUniID, int taxID, AGene2Go gene2Go) {
+	public boolean updateUniGene2Go(String genUniID, int taxID, AGene2Go gene2Go) {
 		UniGene2Go uniGene2GoOld = queryUniGene2Go(genUniID, taxID, gene2Go.getGOID());
 		if (uniGene2GoOld != null) {
 			if (uniGene2GoOld.addInfo(gene2Go)) {
@@ -74,8 +75,18 @@ public class ServUniGene2Go extends AbsGetSpring implements MapUniGene2Go{
 		else {
 			UniGene2Go uniGene2GoNew = new UniGene2Go();
 			uniGene2GoNew.copyInfo(gene2Go);
+			if (uniGene2GoNew.getGOID() == null) {
+				logger.error("出现未知GOID：" + gene2Go.getGOID());
+				return false;
+			}
 			uniGene2GoNew.setGeneUniID(genUniID);
-			insertUniGene2Go(uniGene2GoNew);
+			try {
+				insertUniGene2Go(uniGene2GoNew);
+			} catch (Exception e) {//出错原因可能是有两个连续一样的goID，然后连续插入的时候第一个goID还没来得及建索引，导致第二个直接就插入了然后出错
+				System.out.println(gene2Go.getGOID() + " " + uniGene2GoNew.getGeneUniId() + " " + gene2Go.getTaxID());
+				return false;
+			}
 		}
+		return true;
 	}
 }

@@ -44,10 +44,8 @@ import org.apache.log4j.Logger;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 
 
-import com.novelbio.analysis.annotation.blast.Blast2DB;
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.generalConf.Species;
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.CopyOfGUIanalysisSimple;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.SeqComb;
@@ -58,6 +56,7 @@ import com.novelbio.analysis.seq.chipseq.BedPeak;
 import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
 import com.novelbio.analysis.seq.chipseq.BedPeakSicer;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
@@ -111,10 +110,14 @@ public class mytest {
 //		System.out.println("W4: "+getAllPeakLen(txtFile));
 //		txtFile = parent + "K4all_SE-W200-G600-E100.scoreisland";
 //		System.out.println("K4: "+getAllPeakLen(txtFile));
-		BedPeakSicer bedPeakSicer = new BedPeakSicer("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/WEall_SE.bed");
-		bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
-		bedPeakSicer.setEffectiveGenomeSize(85);
-		bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingtest", "");
+//		BedPeakSicer bedPeakSicer = new BedPeakSicer("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/WEall_SE.bed");
+//		bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
+//		bedPeakSicer.setEffectiveGenomeSize(85);
+//		bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingtest", "");
+		
+		String ss = "sefe|fsef";
+		System.out.println(ss.split("\\|")[1]);
+		
 	}
 	
 	

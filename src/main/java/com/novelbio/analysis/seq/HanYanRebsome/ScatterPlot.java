@@ -80,7 +80,7 @@ public class ScatterPlot {
 	}
 	/**
 	 * 获得第一个实验排名前n位基因的坐标信息
-	 * @param geneID
+	 * @param geneIDType
 	 */
 	public void getData(int geneNum,String outFile) {
 		TxtReadandWrite txtOutx = null;

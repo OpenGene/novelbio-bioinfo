@@ -40,7 +40,7 @@ public class QKegPath {
 	 * 如果有blast，并且本物种该geneID没有KeggID，那么选择blast物种的KeggID
 	 * 如果有blast，并且本物中该geneID有keggID，那么跳过
 	 * 如果本基因有taxID，那么
-	 * @param geneID 如果为数字，说明是ncbiID，如果为字母，说明是uniprotID
+	 * @param geneIDType 如果为数字，说明是ncbiID，如果为字母，说明是uniprotID
 	 * @param blast
 	 * @param subTaxID
 	 * @param evalue

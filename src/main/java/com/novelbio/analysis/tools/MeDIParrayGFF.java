@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.stat.StatUtils;
 import org.apache.commons.math.stat.inference.TestUtils;
@@ -22,19 +23,23 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class MeDIParrayGFF {
 
+	public static void main(String[] args) {
+//		Ttest();
+//		getConstentProb();
+		String inFile = "/media/winE/NBC/Project/Methylation_PH_120110/长征医院-彭浒/GFF Files（长征医院彭浒 QQ52901159）/Scaled log2-ratio Data/Ams/out456vs23789_Filtered.txt";
+		String outFile = FileOperate.changeFileSuffix(inFile, "_OneProbe", "txt");
+		copeFinalFile(inFile, outFile, 1, 3, 4);
+	}
+	
+	
 	/**
 	 * @param args
 	 */
-	public static void main1(String[] args) {
-		String parentPath = "/media/winE/NBC/Project/Methylation_FXL_20111229/GFF Files/GFF Files/result/data/";
-//		String ratiogff = parentPath + "DJY_635_ratio.gff";
-//		String outFile = parentPath + FileOperate.getFileNameSep(ratiogff)[0]+"_out."+ FileOperate.getFileNameSep(ratiogff)[1];
-		String resultGff = parentPath + "out.txt";
-		String outFile = parentPath + "out_filtered.txt";
+	public static void getConstentProb() {
+		String Gff1 = "/media/winE/NBC/Project/Methylation_PH_120110/长征医院-彭浒/GFF Files（长征医院彭浒 QQ52901159）/Scaled log2-ratio Data/Ams/out8vs9.txt";
+		
 		try {
-//			format(ratiogff, outFile);
-			getCombProbe(resultGff, outFile, "\t", 3, 4, 7, 3, 0.3333333, 8, 0.05, 3);
-//			getCombProbe(resultGff, outFile, "\t", 3, 4, 8, 2, 0.5, 3);
+			getCombProbe(Gff1, FileOperate.changeFileSuffix(Gff1, "_Filtered", null), "\t", 3, 4, 14, 2, 0.5, -1, 0.05, 3);
 			
 		} catch (Exception e) {
 						e.printStackTrace();
@@ -44,20 +49,31 @@ public class MeDIParrayGFF {
 //		formatPath("/media/winE/NBC/Project/Methylation_PH_120110/长征医院-彭浒/GFF Files（长征医院彭浒 QQ52901159）/Scaled log2-ratio Data");
 	}
 	
-	public static void main2(String[] args) {
-		String excelTxtFile = "/media/winE/NBC/Project/Methylation_FXL_20111229/GFF Files/GFF Files/result/data/FXL_All.txt";
-		String outFile = "/media/winE/NBC/Project/Methylation_FXL_20111229/GFF Files/GFF Files/result/data/out.txt";
-		int[] colSample1 = new int[]{5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21};
-		int[] colSample2 = new int[]{23,24,25};
-		getPvalueT(excelTxtFile, 2, colSample1, colSample2, 100, outFile);
+	public static void Ttest() {
+		String excelTxtFile = "/media/winE/NBC/Project/Methylation_PH_120110/长征医院-彭浒/GFF Files（长征医院彭浒 QQ52901159）/Scaled log2-ratio Data/Ams/Sample_All_635_ratio_coped.gff.gff";
+		String outFile1 = "/media/winE/NBC/Project/Methylation_PH_120110/长征医院-彭浒/GFF Files（长征医院彭浒 QQ52901159）/Scaled log2-ratio Data/Ams/out456vs23789.txt";
+		String outFile2 = "/media/winE/NBC/Project/Methylation_PH_120110/长征医院-彭浒/GFF Files（长征医院彭浒 QQ52901159）/Scaled log2-ratio Data/Ams/out89vs234567.txt";
+
+		int[] colSample1 = new int[]{10, 9, 8};
+		int[] colSample2 = new int[]{5, 6, 7, 11, 12};
+		getPvalueT(excelTxtFile, 2, colSample1, colSample2, 100, outFile1);
+		
+		colSample1 = new int[]{5, 6};
+		colSample2 = new int[]{7, 8, 9, 10, 11, 12};
+		getPvalueT(excelTxtFile, 2, colSample1, colSample2, 100, outFile2);
+		
 	}
 	
-	public static void main(String[] args) {
-		copeFinalFile("/home/zong0jie/桌面/out_filtered_Mid_anno_-2k+2k/out_filtered_Mid_anno_-2k+2k.xls",
-				"/home/zong0jie/桌面/out_filtered_Mid_anno_-2k+2k/out_filtered_Mid_anno_-2k+2k_Result.xls", 1, 3, 4);
-	}
+
 	
-	
+
+
+/**
+ * 将一个文件夹中所有的Gff文件整理为MEME可识别的文件
+ * @param ratiogff
+ * @param outFile
+ * @throws Exception
+ */
 	public static void formatPath(String filePath)
 	{
 		ArrayList<String[]> lsFile = FileOperate.getFoldFileName(filePath, "*", "gff");
@@ -112,7 +128,7 @@ public class MeDIParrayGFF {
 	 * @param colNum 第几行需要判断，实际列
 	 * @param fcUp 上调阈值
 	 * @param fcDown 下调阈值
-	 * @param colPvalue
+	 * @param colPvalue 小于0表示不考虑colPvalue
 	 * @param pvalue
 	 * @param probNum 连续几根探针
 	 * @throws Exception

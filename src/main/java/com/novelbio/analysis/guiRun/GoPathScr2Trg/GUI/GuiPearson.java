@@ -37,6 +37,7 @@ import com.novelbio.base.gui.CtrlNormal;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.NumOnlyDoc;
 import com.novelbio.base.gui.NumberOnlyDoc;
+import com.novelbio.database.model.modcopeid.CopedID;
 
 
 /**
@@ -187,10 +188,10 @@ public class GuiPearson extends JPanel{
 			});
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = CtrlNormal.getSpecies();
-			String[] speciesarray = new String[hashTaxID.size()+1];
+			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
 			int i = 0;
-			Set<String> keys = hashTaxID.keySet();
+			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			String[] speciesarray = new String[keys.size()+1];
 			for(String key:keys)
 			{
 				speciesarray[i] = key; i++;

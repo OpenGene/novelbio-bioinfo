@@ -25,15 +25,16 @@ public abstract class AGene2Go {
 	public abstract void setGeneUniID(String geneUniID);
 	
 	public String getGOID() {
-		try {
-			String goID = servGo2Term.getHashGo2Term().get(myGoID).getGoID();
-			if (!goID.equals(myGoID)) {
-				System.out.println("stop");
-			}
-			return goID;
-		} catch (Exception e) {
+		Go2Term go2Term = servGo2Term.getHashGo2Term().get(myGoID);
+		if (go2Term == null) {
+			logger.error("出现未知GOID：" + myGoID);
 			return null;
 		}
+		String goID = go2Term.getGoID();
+		if (!goID.equals(myGoID)) {
+			System.out.println("stop");
+		}
+		return goID;
 	}
 //	/**
 //	 * 仅给数据库使用
@@ -46,7 +47,8 @@ public abstract class AGene2Go {
 	
 	public void setGOID(String GoID) {
 		if (GoID == null) {
-			System.out.println("stop");
+			logger.error("GOID未知");
+			return;
 		}
 		GoID = GoID.trim();
 		if (GoID == null || GoID.trim().equals("")) {

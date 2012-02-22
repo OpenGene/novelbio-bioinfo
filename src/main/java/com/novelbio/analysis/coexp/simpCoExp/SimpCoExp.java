@@ -478,25 +478,3 @@ class CoexPair
 		return Pvalue;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

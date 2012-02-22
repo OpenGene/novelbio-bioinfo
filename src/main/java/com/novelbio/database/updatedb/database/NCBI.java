@@ -52,7 +52,7 @@ public class NCBI {
 	public void importFile() {
 		ImportPerLine impFile = null;
 		impFile = new ImpGen2Acc();
-		impFile.setTaxID(taxID);
+		impFile.setTaxIDFile(taxID);
 		impFile.updateFile(gene2Acc, true);
 		impFile.updateFile(gene2Ref, true);
 		impFile = new ImpGen2Ensembl();
@@ -254,8 +254,6 @@ class ImpGene2Info extends ImportPerLine
  */
 class ImpGene2Pub extends ImportPerLine
 {
-	static CopedID copedID;
-
 	@Override
 	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
@@ -264,10 +262,8 @@ class ImpGene2Pub extends ImportPerLine
 			return true;
 		}
 		AGeneInfo geneInfo = new GeneInfo();
-		if (copedID == null || !copedID.getGenUniID().equals(ss[1])) {
-			copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
-		}
-		geneInfo.setPubmedIDs(ss[2]);
+		CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
+		geneInfo.setPubID(ss[2]);
 		copedID.setUpdateGeneInfo(geneInfo);
 		return copedID.update(false);
 	}
@@ -281,7 +277,6 @@ class ImpGene2Pub extends ImportPerLine
  */
 class ImpGene2GO extends ImportPerLine
 {
-	static CopedID copedID;
 	@Override
 	protected boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
@@ -289,23 +284,18 @@ class ImpGene2GO extends ImportPerLine
 		if (!hashTaxID.contains(taxID)) {
 			return true;
 		}
-		if (copedID == null || !copedID.getGenUniID().equals(ss[1])) {
-			if (copedID != null) {
-				copedID.update(false);
-			}
-			copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
-		}
+		CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[1], taxID);
 		if (ss[6] == null || ss[6].equals("") || ss[6].equals("-")) {
 			copedID.setUpdateGO(ss[2], NovelBioConst.DBINFO_NCBI, ss[3], null, ss[4]);
 		}
 		else {
 			copedID.setUpdateGO(ss[2], NovelBioConst.DBINFO_NCBI, ss[3], "PMID:"+ss[6], ss[4]);
 		}
-		return true;
+		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI, false);
+		return copedID.update(false);
 	}
 	void impEnd()
 	{
-		copedID.update(false);
 	}
 }
 

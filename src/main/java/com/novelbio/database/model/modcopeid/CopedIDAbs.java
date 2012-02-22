@@ -562,7 +562,13 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	public void setUpdateAccID(String accID) {
 		this.accID = CopedID.removeDot(accID);
 	}
-	
+	/**
+	 * 设定该ID的accID，不经过处理的ID
+	 */
+	@Override
+	public void setUpdateAccIDNoCoped(String accID) {
+		this.accID = accID;
+	}
 	
 	/**
 	 * 记录升级的GO信息的，每次升级完毕后都清空
@@ -667,9 +673,23 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	@Override
 	public boolean update(boolean updateUniID) {
 		ArrayList<String> lsGeneID = getUpdateGenUniID();
-		boolean flag1 = updateGeneID(lsGeneID, updateUniID);
+		boolean flag1 = false;
+		try {
+			flag1 =updateGeneID(lsGeneID, updateUniID);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
 		boolean flag2 = updateGeneInfo();
-		boolean flag3 = updateGene2Go();
+		boolean flag3 = false;
+		try {
+			flag3 = updateGene2Go();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
 		boolean flag4 = updateBlastInfo();
 		return flag1&&flag2&&flag3&&flag4;
 	}
@@ -678,20 +698,24 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * 升级GO数据库
 	 */
 	private boolean updateGene2Go() {
+		boolean flag = true;
 		if (genUniID == null || genUniID.equals("")) {
 			return false;
 		}
 		for (Gene2Go gene2Go : lsGOInfoUpdate) {
 			if (idType.equals(CopedID.IDTYPE_GENEID)) {
-				servGene2Go.updateGene2Go(genUniID, taxID, gene2Go);
-			} else if (idType.equals(CopedID.IDTYPE_UNIID)) {
-				servUniGene2Go.updateUniGene2Go(genUniID, taxID, gene2Go);
+				if (!servGene2Go.updateGene2Go(genUniID, taxID, gene2Go))
+					flag = false;
+			} 
+			else if (idType.equals(CopedID.IDTYPE_UNIID)) {
+				if (!servUniGene2Go.updateUniGene2Go(genUniID, taxID, gene2Go))
+					flag = false;
 			}
 			else {
 				return false;
 			}
 		}
-		return true;
+		return flag;
 	}
 
 	/**
@@ -762,6 +786,13 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			// 重置geneUniID
 			idType = CopedID.IDTYPE_UNIID;
 			genUniID = accID;
+			//防止下一个导入的时候出错
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			return false;
 		}

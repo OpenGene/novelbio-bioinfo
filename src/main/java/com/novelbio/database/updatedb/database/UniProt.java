@@ -36,7 +36,7 @@ public class UniProt {
 	}
 	public void update() {
 		IdmappingSelected idmappingSelected = new IdmappingSelected();
-		idmappingSelected.setTaxID(taxIDFile);
+		idmappingSelected.setTaxIDFile(taxIDFile);
 //		idmappingSelected.setTxtWriteExcep(outUniIDFile);
 //		idmappingSelected.importInfoPerLine(idmappingSelectedFile, true);
 		
@@ -364,7 +364,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 		String[] ss = ssPubmed.split(";");
 		for (String string : ss) {
 			GeneInfo geneInfo = new GeneInfo();
-			geneInfo.setPubmedIDs(string);
+			geneInfo.setPubID(string);
 			copedID.setUpdateGeneInfo(geneInfo);
 			if (!copedID.update(false)) {
 				return false;

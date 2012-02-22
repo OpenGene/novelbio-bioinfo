@@ -64,10 +64,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="locusTag !=null and locusTag != '' ">
 				LocusTag = #{locusTag},
 			</if>
-			<if test="synonyms !=null and locusTag != '' ">
+			<if test="synonyms !=null and synonyms != '' ">
 				Synonyms = #{synonyms},
 			</if>
-			<if test="dbXrefs !=null and locusTag != '' ">
+			<if test="dbXrefs !=null and dbXrefs != '' ">
 				dbXrefs = #{dbXrefs},
 			</if>
 			<if test="chromosome !=null and chromosome != '' ">
@@ -95,7 +95,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				OtherDesignations = #{otherDesign},
 			</if>
 			<if test="modDate !=null and modDate != '' ">
-				ModificationDate = #{modDate}
+				ModificationDate = #{modDate},
 			</if>
 			<if test="pubmedID !=null and pubmedID != '' ">
 				PubmedID = #{pubmedID}

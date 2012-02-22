@@ -65,7 +65,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			</if>
 		</set>
 		where
-			<if test="geneID !=0 and geneID !=null">
+			<if test="geneID != 0">
 				GeneID = #{geneID} 
 			</if>
 			<if test="accessID !=null and accessID != ''">

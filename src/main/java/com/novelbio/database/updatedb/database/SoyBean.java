@@ -1,4 +1,4 @@
-package com.novelbio.database.updatedb.idconvert;
+package com.novelbio.database.updatedb.database;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

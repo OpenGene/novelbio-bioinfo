@@ -206,6 +206,10 @@ GO_REF:0000004<br>
 	 */
 	void setUpdateAccID(String accID);
 	/**
+	 * 设定该ID的accID，不经过处理的ID
+	 */
+	void setUpdateAccIDNoCoped(String accID);
+	/**
 	 * 返回geneinfo信息
 	 * @return
 	 */
@@ -230,5 +234,6 @@ GO_REF:0000004<br>
 	 */
 	void setUpdateBlastInfo(String SubGenUniID, String subIDtype,
 			String subDBInfo, int SubTaxID, double evalue, double identities);
+
 
 }

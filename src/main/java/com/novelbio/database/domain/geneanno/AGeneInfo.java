@@ -3,11 +3,10 @@ package com.novelbio.database.domain.geneanno;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
-
-import antlr.collections.List;
 
 import com.novelbio.analysis.generalConf.NovelBioConst;
 /**
@@ -26,6 +25,32 @@ public abstract class AGeneInfo {
 		lsDBinfo.add(NovelBioConst.DBINFO_NCBI_ACC_GenralID);
 		lsDBinfo.add(NovelBioConst.DBINFO_UNIPROT_GenralID);
 	}
+	//////////////////////////////////////////////////
+//	public static final String FROMDB_NCBI = "NCBI";
+//	public static final String FROMDB_UNIPROT = "UniProt";
+//	public static final String FROMDB_TAIR = "tair";
+//	public static final String FROMDB_TIGR = "tigr";
+	/**
+	 * 特定的物种对应特定的数据库
+	 */
+	static HashMap<Integer, String> hashDBtype = new HashMap<Integer, String>();
+
+	/**
+	 * 特定的物种使用特定数据库的信息
+	 * 譬如水稻就用TIGR
+	 * 拟南芥就用TAIR
+	 * @return
+	 */
+	private String getDatabaseType() {
+		if (hashDBtype.size() == 0) {
+			hashDBtype.put(39947, NovelBioConst.DBINFO_RICE_TIGR);
+			hashDBtype.put(3702, NovelBioConst.DBINFO_ATH_TAIR);
+			hashDBtype.put(3847, NovelBioConst.DBINFO_GLYMAX_SOYBASE);
+			hashDBtype.put(4102, NovelBioConst.DBINFO_PLANTGDB_ACC);
+		}
+		return hashDBtype.get(taxID);
+	}
+	
 	
 	private String symbol;
 	private String locusTag;
@@ -128,7 +153,7 @@ public abstract class AGeneInfo {
 	 * 有几篇文献就设定几次
 	 * @param pubmedID
 	 */
-	public void setPubmedIDs(String pubmedID) {
+	public void setPubID(String pubmedID) {
 		pubmedID = pubmedID.trim();
 		if (hashPubmedIDs.contains(pubmedID)) {
 			return;
@@ -139,6 +164,15 @@ public abstract class AGeneInfo {
 		}
 		else {
 			this.pubmedID = this.pubmedID + SEP_INFO + pubmedID;
+		}
+	}
+	/**
+	 * 文献一次设定到位，当然也可以连续设定
+	 * @param pubmedID
+	 */
+	public void setPubIDs(List<String> lsPubmedID) {
+		for (String string : lsPubmedID) {
+			setPubID(string);
 		}
 	}
 	/**
@@ -376,6 +410,9 @@ public abstract class AGeneInfo {
 	/**
 	 * 验证输入项，将输入项按照需求修正，并返回修正后的结果
 	 * 如果输入项为"-", ""等，直接返回thisField
+	 * 如果输入在已有的数据中找不到，则添加上 类似NCBI@@ffwefsef@//@NEW_DB@@NEW_DESCRIP
+	 * 如果输入的数据库和已有的记载重叠，则补上类似
+	 * NCBI@@NEW_DESCRIP//ffwefsef@//@UniProt@@sfesfe
 	 * @param thisField 已有的项
 	 * @param inputField 待输入项
 	 * @return
@@ -405,36 +442,23 @@ public abstract class AGeneInfo {
 			if (inputFieldFinal.equals("") || thisField.contains(inputField)) {
 				return thisField;
 			}
+			//如果数据库已经存在了
+			else if (thisField.contains(dbInfo)) {
+				if (sepWithDBinfo) {
+					String result = thisField.replace(dbInfo+SEP_INFO, inputFieldFinal + SEP_INFO_SAMEDB);
+					logger.error("出现相同数据库但是不通的注释："+ result);
+					return result;
+				}
+				else {
+					return thisField + SEP_ID + inputFieldFinal;
+				}
+			}
 			else {
 				return thisField + SEP_ID + inputFieldFinal;
 			}
 		}
 	}
-	//////////////////////////////////////////////////
-//	public static final String FROMDB_NCBI = "NCBI";
-//	public static final String FROMDB_UNIPROT = "UniProt";
-//	public static final String FROMDB_TAIR = "tair";
-//	public static final String FROMDB_TIGR = "tigr";
-	/**
-	 * 特定的物种对应特定的数据库
-	 */
-	static HashMap<Integer, String> hashDBtype = new HashMap<Integer, String>();
 
-	/**
-	 * 特定的物种使用特定数据库的信息
-	 * 譬如水稻就用TIGR
-	 * 拟南芥就用TAIR
-	 * @return
-	 */
-	private String getDatabaseType() {
-		if (hashDBtype.size() == 0) {
-			hashDBtype.put(39947, NovelBioConst.DBINFO_RICE_TIGR);
-			hashDBtype.put(3702, NovelBioConst.DBINFO_ATH_TAIR);
-			hashDBtype.put(3847, NovelBioConst.DBINFO_GLYMAX_SOYBASE);
-			hashDBtype.put(4102, NovelBioConst.DBINFO_PLANTGDB_ACC);
-		}
-		return hashDBtype.get(taxID);
-	}
 	/**
 	 * 将NCBIID等表中的dbinfo转化成geneInfo中的dbinfo
 	 */
@@ -443,9 +467,13 @@ public abstract class AGeneInfo {
 	
 	
 	/**
-	 * 分割两个ID或两个Description
+	 * 分割两个来源的ID或两个Description
 	 */
 	public static final String SEP_ID = "@//@";
+	/**
+	 * 分割同一个数据库的两个不同的注释信息
+	 */
+	public static final String SEP_INFO_SAMEDB = "//";
 	/**
 	 * 分割 NCBIID的title和内容
 	 * 如NCBI@@protein coding

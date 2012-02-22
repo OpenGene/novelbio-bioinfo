@@ -8,6 +8,7 @@ import java.util.Comparator;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 统计交集里面的密度，每100个peak取一次样，统计这一百个里面有多少有交集多少没交集最后输出txt
@@ -18,8 +19,18 @@ public class CmpPeakStatistic {
 	
 	public static void main(String[] args) {
 		CmpPeakStatistic cmpPeakStatistic = new CmpPeakStatistic();
-		cmpPeakStatistic.getOverlapNum("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/WE.clean.fq/result/peakCalling/SICER/WEseSort-W200-G600-E100vsNature2007.scoreisland",
-				100, 7, 4, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/WE.clean.fq/result/peakCalling/SICER/WEseSort-W200-G600-E100vsNature2007_statistic.scoreisland");
+		String file = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/comparePeak/W4vsK4-W200-G600-E100.scoreisland.xls";
+		cmpPeakStatistic.getOverlapNum(file,
+				100, 5, 4, FileOperate.changeFileSuffix(file, "_statistic", "xls"));
+		file = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/comparePeak/W4vsKE-W200-G600-E100.scoreisland.xls";
+		cmpPeakStatistic.getOverlapNum(file,
+				100, 5, 4, FileOperate.changeFileSuffix(file, "_statistic", "xls"));
+		file = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/comparePeak/WEvsKE-W200-G600-E100.scoreisland.xls";
+		cmpPeakStatistic.getOverlapNum(file,
+				100, 5, 4, FileOperate.changeFileSuffix(file, "_statistic", "xls"));
+		file = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/comparePeak/WEvsW4-W200-G600-E100.scoreisland.xls";
+		cmpPeakStatistic.getOverlapNum(file,
+				100, 5, 4, FileOperate.changeFileSuffix(file, "_statistic", "xls"));
 	}
 	
 	public void getOverlapNum(String fileName, int colNum, int colOverlap, int colScore, String outName) {
@@ -69,7 +80,7 @@ public class CmpPeakStatistic {
 				lsResult.add(tmpInfo);
 				noneOverlapNum = 0;
 			}
-			if (!lsInfo.get(i)[colOverlap].trim().equals("0")) {
+			if (!(Double.parseDouble(lsInfo.get(i)[colOverlap].trim()) ==0)) {
 				noneOverlapNum++;
 			}
 		}

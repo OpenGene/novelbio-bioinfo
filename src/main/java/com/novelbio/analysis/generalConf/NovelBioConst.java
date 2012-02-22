@@ -65,6 +65,7 @@ public class NovelBioConst {
 	 */
 	public  final static String DBINFO_PPA_NCBI_ID = "Pichia_NCBI_ID";
 	public  final static String DBINFO_AFFY_GLMAX = "affy_glymax";
+	public  final static String DBINFO_AFFY_ZEBRAFISH = "affy_zebrafish";
 	/**
 	 * 这个是最常用的酿酒酵母的ID
 	 */

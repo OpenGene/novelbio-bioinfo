@@ -39,7 +39,7 @@ public class Ensembl {
 	}
 	public void update() {
 		EnsembleGTF ensembleGTF = new EnsembleGTF();
-		ensembleGTF.setTaxID(taxIDFile);
+		ensembleGTF.setTaxIDFile(taxIDFile);
 		int i = 0;
 		for (Entry<String, Integer> entry : hashEnsemblTaxID.entrySet()) {
 			String fileName = entry.getKey();
@@ -55,10 +55,6 @@ public class Ensembl {
 class EnsembleGTF extends ImportPerLine
 {
 	private static Logger logger = Logger.getLogger(EnsembleGTF.class);
-	int taxID = 0;
-	public void setTaxID(int taxID) {
-		this.taxID = taxID;
-	}
 	GffHashGene gffHashGene;
 	public void setGffHashGene(String geneType, String gffFile) {
 		gffHashGene =  new GffHashGene(geneType, gffFile);

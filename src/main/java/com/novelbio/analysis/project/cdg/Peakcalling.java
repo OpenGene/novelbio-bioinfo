@@ -21,7 +21,7 @@ public class Peakcalling {
 	
 	public static void main(String[] args) {
 		Peakcalling sicerpeakcalling = new Peakcalling();
-		sicerpeakcalling.peakCallingSICER();
+		sicerpeakcalling.peakCallingSICERpaper();
 	}
 public void peakCallingMACS() {
  
@@ -92,7 +92,18 @@ public void peakCallingMACS() {
 		}
 	}
 	
-	
+	public void peakCallingSICERpaper() {
+		try {
+			String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/Mapping/nature2007K27seSort.bed";
+			String out = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/PeakCallingSICER2";
+			BedPeakSicer bedPeakSicer = new BedPeakSicer(bedFile);
+			bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
+			bedPeakSicer.setEffectiveGenomeSize(68);
+			bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE, out, "WE");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
 	
 	
 	

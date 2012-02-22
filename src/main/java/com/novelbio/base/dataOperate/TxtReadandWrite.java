@@ -842,6 +842,7 @@ public class TxtReadandWrite {
 	}
 
 	/**
+	 * 内部close
 	 * 将规则的txt文本按照excel的方法读取,自动跳过空行
 	 * 最后一行为空行的话会保留
 	 * @param sep
@@ -922,8 +923,9 @@ public class TxtReadandWrite {
 			}
 		} catch (Exception e) {
 			logger.error("read Excel Error: "+ getFileName());
+			close();
 		}
-	
+		close();
 		return result;
 	}
 

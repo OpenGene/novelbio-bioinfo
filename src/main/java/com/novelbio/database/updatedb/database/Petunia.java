@@ -1,4 +1,4 @@
-package com.novelbio.database.updatedb.idconvert;
+package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
 
@@ -8,7 +8,7 @@ import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
-
+还没改好
 public class Petunia {
 	public static void main(String[] args) {
 		updateAffy2AccID(4102, "/media/winE/Bioinformatics/BLAST/result/petunia/Nembgen2plantGDBIDCoped.txt");

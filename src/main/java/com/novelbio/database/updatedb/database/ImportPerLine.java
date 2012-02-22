@@ -18,7 +18,7 @@ abstract class ImportPerLine
 	private static Logger logger = Logger.getLogger(ImportPerLine.class);
 	static HashSet<Integer> hashTaxID = null;
 	static String taxIDfile = "";
-	int readFromLine = 2;
+	int readFromLine = 1;
 	/**
 	 * 将无法升级的行写入该文本
 	 */
@@ -35,6 +35,7 @@ abstract class ImportPerLine
 	protected void setReadFromLine() {
 		this.readFromLine = 2;
 	}
+	int taxID = 0;
 	/**
 	 * 将指定的文件导入数据库，必须是每一行都能单独导入的表
 	 * 如果需要导入多行，譬如amiGO的信息，请覆盖该方法
@@ -73,7 +74,7 @@ abstract class ImportPerLine
 	 * 仅读取一次
 	 * @param taxIDfile
 	 */
-	public void setTaxID(String taxIDfile) {
+	public void setTaxIDFile(String taxIDfile) {
 		if (ImportPerLine.taxIDfile.equals(taxIDfile)) {
 			return;
 		}
@@ -94,6 +95,14 @@ abstract class ImportPerLine
 			taxInfo.update();
 			hashTaxID.add(Integer.parseInt(ss[0]));
 		}
+	}
+	/**
+	 * 导入单个文件时，设定taxID
+	 * @param taxID
+	 */
+	public void setTaxID(int taxID)
+	{
+		this.taxID = taxID;
 	}
 	/**
 	 * 按行处理具体信息

@@ -290,7 +290,13 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	public int compareTo(BlastInfo o) {
 		Double evalueThis = evalue;
 		Double evalueO = o.getEvalue();
-		return evalueThis.compareTo(evalueO);
+		Double identityThis = identities;
+		Double identityO = o.identities;
+		int result = evalueThis.compareTo(evalueO);
+		if (result == 0) {
+			result = -identityThis.compareTo(identityO);
+		}
+		return result;
 	}
 
 }

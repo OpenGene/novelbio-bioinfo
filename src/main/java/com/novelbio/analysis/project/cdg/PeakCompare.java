@@ -5,8 +5,7 @@ import com.novelbio.analysis.seq.chipseq.peakOverlap.PeakOverlap;
 public class PeakCompare {
 	public static void main(String[] args) {
 		PeakCompare peakCompare = new PeakCompare();
-		peakCompare.cmpPeaksWT4d_K4vsWTK27();
-		peakCompare.cmpPeaksKO4d_K4vsWTK27();
+		peakCompare.cmpPeaksWEvsOther();
 	}
 	
 	
@@ -61,22 +60,103 @@ public class PeakCompare {
 		} catch (Exception e) {
 		}
 	}
-	
+	/**
+	 * 比较我们的WE与其他条件下的甲基化相关性
+	 */
+	public void cmpPeaksWEvsOther()
+	{
+		try {
+			String parentFile1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/";
+			String fileWE = parentFile1 + "WEall_SE-W200-G600-E100.scoreisland";
+
+			String parentFile2 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/";
+			String fileNature = parentFile2 + "W4all_SE-W200-G600-E100.scoreisland";
+			/**
+			 * 每个peakOverlap的细节
+			 */
+			String parentFile3 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/comparePeak/";
+			String txtPeakOverlapFileWE2Nature = parentFile3 + "WEall_SEvsW4all_SE.txt";
+			String txtPeakOverlapFileWE2NatureStic = parentFile3 + "WEall_SEvsW4all_SE_statistic.txt";
+			 
+
+			PeakOverlap.PeakOverLap(fileWE, fileNature, txtPeakOverlapFileWE2Nature);
+			PeakOverlap.PeakStatistic("WE", "W4", fileWE, fileNature,
+					txtPeakOverlapFileWE2NatureStic);
+		} catch (Exception e) {
+		}
+		try {
+			String parentFile1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/";
+			String fileWE = parentFile1 + "WEall_SE-W200-G600-E100.scoreisland";
+
+			String parentFile2 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/";
+			String fileNature = parentFile2 + "KEall_SE-W200-G600-E100.scoreisland";
+			/**
+			 * 每个peakOverlap的细节
+			 */
+			String parentFile3 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/comparePeak/";
+			String txtPeakOverlapFileWE2Nature = parentFile3 + "WEall_SEvsKEall_SE.txt";
+			String txtPeakOverlapFileWE2NatureStic = parentFile3 + "WEall_SEvsKEall_SE_statistic.txt";
+			 
+
+			PeakOverlap.PeakOverLap(fileWE, fileNature, txtPeakOverlapFileWE2Nature);
+			PeakOverlap.PeakStatistic("WE", "KE", fileWE, fileNature,
+					txtPeakOverlapFileWE2NatureStic);
+		} catch (Exception e) {
+		}
+		try {
+			String parentFile1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/";
+			String fileWE = parentFile1 + "W4all_SE-W200-G600-E100.scoreisland";
+
+			String parentFile2 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/";
+			String fileNature = parentFile2 + "KEall_SE-W200-G600-E100.scoreisland";
+			/**
+			 * 每个peakOverlap的细节
+			 */
+			String parentFile3 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/comparePeak/";
+			String txtPeakOverlapFileWE2Nature = parentFile3 + "W4all_SEvsKEall_SE.txt";
+			String txtPeakOverlapFileWE2NatureStic = parentFile3 + "W4all_SEvsKEall_SE_statistic.txt";
+			 
+
+			PeakOverlap.PeakOverLap(fileWE, fileNature, txtPeakOverlapFileWE2Nature);
+			PeakOverlap.PeakStatistic("W4", "KE", fileWE, fileNature,
+					txtPeakOverlapFileWE2NatureStic);
+		} catch (Exception e) {
+		}
+		try {
+			String parentFile1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/";
+			String fileWE = parentFile1 + "W4all_SE-W200-G600-E100.scoreisland";
+
+			String parentFile2 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/";
+			String fileNature = parentFile2 + "K4all_SE-W200-G600-E100.scoreisland";
+			/**
+			 * 每个peakOverlap的细节
+			 */
+			String parentFile3 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/comparePeak/";
+			String txtPeakOverlapFileWE2Nature = parentFile3 + "W4all_SEvsK4all_SE.txt";
+			String txtPeakOverlapFileWE2NatureStic = parentFile3 + "W4all_SEvsK4all_SE_statistic.txt";
+			 
+
+			PeakOverlap.PeakOverLap(fileWE, fileNature, txtPeakOverlapFileWE2Nature);
+			PeakOverlap.PeakStatistic("W4", "K4", fileWE, fileNature,
+					txtPeakOverlapFileWE2NatureStic);
+		} catch (Exception e) {
+		}
+	}
 	/**
 	 * 比较我们的WE与nature2007，从peak层面
 	 */
 	public void cmpPeaksWEvsW2()
 	{
 		try {
-			String parentFile1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/WE.clean.fq/result/peakCalling/SICER/";
-			String fileWE = parentFile1 + "WEseSort-W200-G600-E100.scoreisland";
+			String parentFile1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/";
+			String fileWE = parentFile1 + "WEall_SE-W200-G600-E100.scoreisland";
 
-			String parentFile2 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/PeakCallingSICER/";
+			String parentFile2 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/PeakCallingSICER2/";
 			String fileNature = parentFile2 + "nature2007K27seSort-W200-G600-E100.scoreisland";
 			/**
 			 * 每个peakOverlap的细节
 			 */
-			String parentFile3 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/compareXLYWEvsPaper/";
+			String parentFile3 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/compare2paper/";
 			String txtPeakOverlapFileWE2Nature = parentFile3 + "WEsicer_vs_Nature2007sicer";
 			String txtPeakOverlapFileWE2NatureStic = parentFile3 + "WEsicer_vs_Nature2007sicer_statistic";
 			 

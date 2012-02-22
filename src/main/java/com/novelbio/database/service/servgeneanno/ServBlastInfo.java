@@ -83,7 +83,8 @@ public class ServBlastInfo extends AbsGetSpring implements MapBlastInfo {
 		if (blastInfo2 == null) {
 			mapBlastInfo.insertBlastInfo(blastInfo);
 		}
-		else if (blastInfo2.getEvalue() < blastInfo.getEvalue()) {
+		//evalue小于等于blastinfo 或者evalue相同但是identity更大
+		else if (blastInfo2.getEvalue() < blastInfo.getEvalue() || (blastInfo2.getEvalue() == blastInfo.getEvalue() && blastInfo2.getIdentities() > blastInfo.getIdentities()  )) {
 			mapBlastInfo.updateBlastInfo(blastInfo);
 		}
 	}

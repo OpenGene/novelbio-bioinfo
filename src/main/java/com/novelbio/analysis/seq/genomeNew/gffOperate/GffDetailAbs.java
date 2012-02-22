@@ -444,12 +444,12 @@ public abstract class GffDetailAbs implements ElementAbs{
 	@Override
 	public void setStartCis(int startLoc) {
 		// TODO Auto-generated method stub
-		
+		hui
 	}
 	@Override
 	public void setEndCis(int endLoc) {
 		// TODO Auto-generated method stub
-		
+		nk
 	}
 	@Override
 	public int getLen() {
