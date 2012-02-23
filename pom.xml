@@ -28,7 +28,7 @@
   					<configuration>
   						<transformers>
   						<transformer implementation = "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-  							<mainClass>com.novelbio.analysis.guiRun.BlastGUI.GUI.GUIBlast</mainClass>
+  							<mainClass>com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.GUIanalysis</mainClass>
   						</transformer>
   						</transformers>
   					</configuration>

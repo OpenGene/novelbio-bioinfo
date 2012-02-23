@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
+import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
@@ -607,9 +608,12 @@ public class Scr2Target {
 		String[] title = new String[5];
 		title[0] = "source"; title[1] = "target"; title[2] = "relation"; title[3] = "detailRelation";  title[4] = "pathway"; 
 		lsScr2Target.add(0, title);
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
-		txtReadandWrite.setParameter(ResultFIleScr2Target, true, false);
-		txtReadandWrite.ExcelWrite(lsScr2Target, "\t", 1, 1);
+		ExcelOperate excelOperate = new ExcelOperate();
+		excelOperate.openExcel(ResultFIleScr2Target);
+		excelOperate.WriteExcel(1, 1, lsScr2Target);
+//		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
+//		txtReadandWrite.setParameter(ResultFIleScr2Target, true, false);
+//		txtReadandWrite.ExcelWrite(lsScr2Target, "\t", 1, 1);
 		
 		
 		Enumeration<String> keys=hashEntryInfoResult.keys();
@@ -626,8 +630,11 @@ public class Scr2Target {
 		title2[4] = "subject TaxID";title2[5] = "subject Symbol/accID";title2[6] = "subject Description";
 		title2[7] = "pathWay";
 		lsAttribute.add(0,title2);
-		txtReadandWrite.setParameter(resultFIleAttribute, true, false);
-		txtReadandWrite.ExcelWrite(lsAttribute, "\t", 1, 1);
+		ExcelOperate excelOperate2 = new ExcelOperate();
+		excelOperate2.openExcel(resultFIleAttribute);
+		excelOperate2.WriteExcel(1, 1, lsAttribute);
+//		txtReadandWrite.setParameter(resultFIleAttribute, true, false);
+//		txtReadandWrite.ExcelWrite(lsAttribute, "\t", 1, 1);
 	}
 	
 }

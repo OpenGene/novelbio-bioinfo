@@ -1,1 +1,0 @@
-sh /media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/PeakCalling//macs.sh

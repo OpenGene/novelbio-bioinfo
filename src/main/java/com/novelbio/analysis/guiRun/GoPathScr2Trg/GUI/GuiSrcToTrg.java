@@ -169,7 +169,7 @@ public class GuiSrcToTrg extends JPanel{
 					try {
 						String[] accID = KGprepare.getAccID(1, Integer.parseInt(jTxtAccColPath.getText()),jTxtFilePathPath.getText());
 						
-						Scr2Target.getGene2RelateKo("",accID,FileOperate.changeFileSuffix(savefilename, "_scr2trg", null),
+						Scr2Target.getGene2RelateKo("",accID,FileOperate.changeFileSuffix(savefilename, "_Gene_Act_Net", null),
 								FileOperate.changeFileSuffix(savefilename, "_attr", null) , QtaxID, jChkBlastPath.isSelected(), StaxID, 1e-5);
 						
 					} catch (Exception e) {
@@ -208,10 +208,10 @@ public class GuiSrcToTrg extends JPanel{
 			jChkBlastPath.setText("Blast");
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = CtrlNormal.getSpecies();
-			String[] speciesarray = new String[hashTaxID.size()+1];
+			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
 			int i = 0;
-			Set<String> keys = hashTaxID.keySet();
+			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			String[] speciesarray = new String[keys.size()+1];
 			for(String key:keys)
 			{
 				speciesarray[i] = key; i++;

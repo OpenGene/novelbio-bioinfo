@@ -85,8 +85,8 @@ public class AnnoQuery {
 		}
 		else {
 			title = ArrayOperate.copyArray(title,  title.length + 5);
-			title[title.length - 5] = "Description";
-			title[title.length - 4] = "Symbol";
+			title[title.length - 5] = "Symbol";
+			title[title.length - 4] = "Description";
 			title[title.length - 3] = "Blast_evalue";
 			title[title.length - 2] = "Blast_Symbol";
 			title[title.length - 1] = "Blast_Description";

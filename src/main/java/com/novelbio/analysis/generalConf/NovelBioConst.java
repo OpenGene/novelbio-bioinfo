@@ -234,7 +234,7 @@ public class NovelBioConst {
 	public final static String R_WORKSPACE = "/media/winE/Bioinformatics/R/practice_script/platform/";
 	
 //	public final static String R_WORKSPACE = "D:/Library/R//";
-//	public final static String R_SCRIPT = "c:/tools/R2_13/bin/Rscript ";
+//	public final static String R_SCRIPT = "D:/tools/R2_14/bin/Rscript ";
 	
 	/////////////////////////////≥£πÊFisher/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**

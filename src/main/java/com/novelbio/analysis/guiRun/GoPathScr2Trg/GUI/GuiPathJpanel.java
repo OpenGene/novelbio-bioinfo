@@ -288,10 +288,10 @@ public class GuiPathJpanel extends JPanel{
 			jChkBlastPath.setText("Blast");
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = CtrlNormal.getSpecies();
-			String[] speciesarray = new String[hashTaxID.size()+1];
+			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
 			int i = 0;
-			Set<String> keys = hashTaxID.keySet();
+			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			String[] speciesarray = new String[keys.size()+1];
 			for(String key:keys)
 			{
 				speciesarray[i] = key; i++;
@@ -513,14 +513,14 @@ public class GuiPathJpanel extends JPanel{
 		}
 	}
 	
-	private void setNormalGo(CtrlPath ctrlGO) {
+	private void setNormalGo(CtrlPath ctrlPath) {
 		//jScrollPaneInputGo 最外层的方框
 		//jTabbedPaneGOTest 里面的标签框
 		//jPanGoTest 具体的标签
 		// jScrollPaneGOtest 标签里面的方框
 		// jTabFInputGo 方框里面的数据框
 		// jTabInputGo 具体数据
-		HashMap<String, LinkedHashMap<String, ArrayList<String[]>>> hashResult = ctrlGO.getHashResult();
+		HashMap<String, LinkedHashMap<String, ArrayList<String[]>>> hashResult = ctrlPath.getHashResult();
 		jTabbedPanePathResult.removeAll();
 		int i = 0;
 		for (Entry<String, LinkedHashMap<String, ArrayList<String[]>>> entry : hashResult.entrySet()) {

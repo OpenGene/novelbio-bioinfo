@@ -1,1 +1,0 @@
-sh /media/winE/bioinformaticsTools/ChIP/SICER/SICER-rb.sh /media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/Mapping nature2007K27seSort.bed /media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/PeakCallingSICER mm9 1 200 150 0.82 600 100 

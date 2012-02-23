@@ -1,1 +1,0 @@
-bwa aln -n 0.05 -o 1 -e 3 -l 25 -t 4 -O 10 -I  /media/winE/NBC/Project/Project_HXW_Lab/exome_capture/rawdata/A_Filter.fq_1 > /media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_Filter_1.sai

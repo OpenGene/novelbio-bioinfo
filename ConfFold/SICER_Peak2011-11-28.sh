@@ -1,1 +1,0 @@
-sh /media/winE/bioinformaticsTools/ChIP/SICER/SICER-rb.sh /media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/K4_W4 HSZ_W-4.clean.fq_SE.bed /media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/K4_W4/PeakCalling/ mm9 1 200 150 0.78 600 100 

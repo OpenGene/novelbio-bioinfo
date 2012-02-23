@@ -97,13 +97,13 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 		}
 		String[] title;
 		if (blast) {
-			title = new String[9];
+			title = new String[8];
 			title[0]="QueryID";title[1]="QuerySymbol";title[2]="Description";
 			title[3]="Evalue"; title[4]="subjectSymbol"; title[5]="Description";
 			title[6]="PathID"; title[7]="PathTerm";
 		}
 		else {
-			title = new String[6];
+			title = new String[5];
 			title[0]="QueryID";title[1]="QuerySymbol";title[2]="Description";
 			title[3]="PathID"; title[4]="PathTerm";
 		}

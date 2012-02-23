@@ -1,1 +1,0 @@
-sort -k1,1  -k2,2n  -k3,3n /media/winE/NBC/Project/ChIPSeq_WJK100909/ChIP_Seq_WJK100909_Mapping/input/hg_allExtend.bed > /media/winE/NBC/Project/ChIPSeq_WJK100909/ChIP_Seq_WJK100909_Mapping/input/hg_allExtend_sort.bed

@@ -30,7 +30,6 @@ public class CmdOperate {
 		public CmdOperate(String cmd) {
 			this.cmd =cmd;
 		}
-		
 		public ArrayList<ArrayList<String>> doInBackground() {
 			try {
 				logger.info(cmd);

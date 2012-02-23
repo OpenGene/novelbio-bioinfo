@@ -268,7 +268,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 */
 	public ArrayList<String[]> getTestResult()
 	{
-		if (lsTestResult != null && lsTestResult.size() > 0) {
+		if (lsTestResult != null && lsTestResult.size() > 10) {
 			return lsTestResult;
 		}
 		try {
@@ -292,6 +292,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	
 			lsTestResult = FisherTest.getFisherResult(lstest, lsbg, this);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("error: ");
 		}
 			

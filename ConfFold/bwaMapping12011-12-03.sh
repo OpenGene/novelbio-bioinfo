@@ -1,1 +1,0 @@
-bwa aln -n 0.05 -o 1 -e 3 -l 25 -t 4 -O 10 -I /media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/Index/bwa_Index/mm9.fasta /media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/FHE.clean.fq_filtered.fq > /media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/FHE.clean.fq_filtered_1.sai

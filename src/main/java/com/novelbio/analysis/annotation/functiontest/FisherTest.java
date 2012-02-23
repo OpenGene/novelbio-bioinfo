@@ -111,7 +111,9 @@ public class FisherTest {
 			try {
 				strItemInfo = itemInfo.getItemName(ItemID);
 			} catch (Exception e) {
+				e.printStackTrace();
 				System.out.println("error");
+				continue;
 			}
 			 
 			 

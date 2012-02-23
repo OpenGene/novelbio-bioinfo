@@ -19,7 +19,6 @@ import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 import com.novelbio.database.service.servkegg.ServKPathRelation;
 import com.novelbio.database.service.servkegg.ServKPathway;
-import com.novelbio.database.updatedb.idconvert.TaxIDInfo;
 
 public abstract class KeggInfoAbs implements KeggInfoInter{
 	ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();

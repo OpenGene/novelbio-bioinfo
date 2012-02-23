@@ -242,10 +242,10 @@ public class GuiGoJPanel extends JPanel{
 			jBtbSaveGo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					GUIFileOpen guiFileOpen = new GUIFileOpen();
-					String savefilename = guiFileOpen.saveFileName("excel2007", "xlsx");
+					String savefilename = guiFileOpen.saveFileName("excel2007", "xls");
 					CtrlGO ctrlGO = CtrlGO.getInstance();
-					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xlsx")) {
-						savefilename = savefilename+".xlsx";
+					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
+						savefilename = savefilename+".xls";
 					}
 					ctrlGO.saveExcel(savefilename);
 				}

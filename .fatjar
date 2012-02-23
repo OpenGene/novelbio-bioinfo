@@ -1,10 +1,10 @@
 #Fat Jar Configuration File
-#Sat Nov 26 14:26:39 CST 2011
+#Thu Feb 23 18:27:40 CST 2012
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=true
-jarname=/home/zong0jie/\u684C\u9762/NbcToolsTestFatJarNew.jar
+jarname=/media/winD/fedora/gitnovelbio/ZJnbc/NbcFatJar.jar
 manifest.mergeall=true
 manifest.mainclass=com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.GUIanalysis
 manifest.file=<createnew>

@@ -1,1 +1,0 @@
-bwa aln -n 0.05 -o 1 -e 3 -l 25 -t 4 -O 10 -I /media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa /media/winE/NBC/Project/ChIPSeq_WJK100909/ChIP_Seq_WJK100909_Mapping/input/hg_all_filter2.fq > /media/winE/NBC/Project/ChIPSeq_WJK100909/ChIP_Seq_WJK100909_Mapping/input/hg_all_filter2_1.sai

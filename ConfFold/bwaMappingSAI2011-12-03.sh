@@ -1,1 +1,0 @@
-bwa samse -n 1 /media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/Index/bwa_Index/mm9.fasta /media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/FHE.clean.fq_filtered_1.sai /media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/FHE.clean.fq_filtered.fq > /media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/FHE.clean.fq_filtered.sam

@@ -1,1 +1,0 @@
-soap -a /media/winE/NBC/Project/Project_HXW_Lab/exome_capture/rawdata/D_Filter.fq_1 -D /media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/soap_chromFa/UCSC_hg19.fa.index.index  -o /media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_Soap_map -r 2  -v 2 -p 4  -u  /media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_Soap_map_NoMapping 

@@ -59,7 +59,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		 includeCol[8] = lsResult.get(0).length - 1; 
 		ArrayList<String[]> lsFinal = ArrayOperate.listCope(lsResult, includeCol, true);
     	String[] title=new String[9];
-		title[0]="GOID";title[1]="GOTerm";title[2]="AccessID";title[3]="GeneSymbol";title[4]="Description";
+		title[0]="GOID";title[1]="GOTerm";title[2]="QueryID";title[3]="GeneSymbol";title[4]="Description";
 		title[5]="P-Value";title[6]="FDR";title[7]="Enrichment";title[8]="(-log2P)";
 		lsFinal.add(0,title);
 		return lsFinal;
@@ -187,7 +187,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 					String[] anno = copyAnno(copedID.getAccID(), tmpresultRaw);
 					String[] result = new String[anno.length + 2];
 					result[0] = lsResultTable.get(i)[0]; result[1] = lsResultTable.get(i)[1]; result[2] = copedID.getAccID();
-					int m = 3;
+					int m = 4;
 					for (int j = 3; j < result.length; j++) {
 						result[j] = anno[m - 3];
 						if (m-3 == 3 ) {

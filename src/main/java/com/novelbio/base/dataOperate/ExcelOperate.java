@@ -92,7 +92,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  */
 	 public boolean openExcel(String imputfilename) 
 	 {  
-		 return openExcel(imputfilename,true);
+		 return openExcel(imputfilename,false);
 	 }
 	 
 	 /**
@@ -253,7 +253,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  */
 	 public boolean newExcelOpen(String filenameinput)
 	 {
-		 return newExcelOpen(filenameinput,true);
+		 return newExcelOpen(filenameinput,false);
 
 	 }
 

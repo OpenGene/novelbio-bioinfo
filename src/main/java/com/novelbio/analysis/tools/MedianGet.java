@@ -8,6 +8,7 @@ import java.util.List;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 获得一个表的中位数
@@ -27,8 +28,9 @@ public class MedianGet {
 		MedianGet medianGet = new MedianGet();
 //		medianGet.getMedian("/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/20111113/miRNA治疗后VS治疗前.xls", 1, 
 //				"/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/20111113/miRNA治疗后VS治疗前_cope.xls", 2,3,4,5,6,7,8,9,10,11,12,13,14,15);
-		medianGet.getMedian("/home/zong0jie/桌面/共表达median.xls", 1, 
-		"/home/zong0jie/桌面/共表达median_coped.xls", 2,3,4,5,6,7);
+		String file = "/home/zong0jie/桌面/Raw Intensity File-2组样品.xls";
+		medianGet.getMedian(file, 1, 
+		FileOperate.changeFileSuffix(file, "_median", null), 2,3,4,5);
 	}
 
 	/**
