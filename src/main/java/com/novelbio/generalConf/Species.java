@@ -1,4 +1,4 @@
-package com.novelbio.analysis.generalConf;
+package com.novelbio.generalConf;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;

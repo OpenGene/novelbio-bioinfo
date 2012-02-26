@@ -3,6 +3,7 @@ package com.novelbio.base.dataStructure;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,6 +15,8 @@ import org.apache.commons.math.stat.inference.TestUtils;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 
@@ -121,8 +124,75 @@ public class MathComput {
 		return avg;
 	}
 	
-	
-	
+	/**
+	 * 按照ID，获取一个矩阵的中位数
+	 * 每列表示不同的信息，每行表示一个基因
+	 * 可能存在重复基因，所以要对重复行(也就是重复基因)，取中位数
+	 * @param lsIn
+	 * @param colAccID
+	 * @param colNum
+	 * @return
+	 */
+	public static ArrayList<String[]> getMedian(List<String[]> lsIn, int colAccID, List<Integer> colNum) {
+		/**
+		 * 每个ID一个基因
+		 */
+		HashMap<String, ArrayList<String[]>> hashGeneInfo = new HashMap<String, ArrayList<String[]>>();
+		
+		hashGeneInfo = new HashMap<String, ArrayList<String[]>>();
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		colAccID--;
+		ArrayList<Integer> lsColNum = new ArrayList<Integer>();
+		for (int i = 0; i < colNum.size(); i++) {
+			lsColNum.add(colNum.get(i) - 1);
+		}
+		lsResult.add(lsIn.remove(0));
+		for (String[] strings : lsIn) {
+			if (hashGeneInfo.containsKey(strings[colAccID].trim()) ) {
+				ArrayList<String[]> lsInfo = hashGeneInfo.get(strings[colAccID].trim());
+				lsInfo.add(strings);
+			}
+			else {
+				ArrayList<String[]> lsInfo = new ArrayList<String[]>();
+				lsInfo.add(strings);
+				hashGeneInfo.put(strings[colAccID].trim(), lsInfo);
+			}
+		}
+		
+		Collection<ArrayList<String[]>> values = hashGeneInfo.values();
+		for(ArrayList<String[]> value:values)
+		{
+			try {
+				lsResult.add(getMediaInfo(value, lsColNum));
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+			}
+		}
+		return lsResult;
+	}
+	/**
+	 * @param lsInfo 指定几行信息
+	 * @param col 指定所在的列
+	 * @return 返回所在列的中位数
+	 * 列名采用第一行list的名字
+	 */
+	public static String[] getMediaInfo(List<String[]> lsInfo, List<Integer> col) {
+		
+		if (lsInfo.size() == 1) {
+			return lsInfo.get(0);
+		}
+		String[] result = lsInfo.get(0);
+		
+		for (int i = 0; i < col.size(); i++) {
+			double[] info = new double[lsInfo.size()];
+			for (int m = 0; m < lsInfo.size(); m++) {
+				info[m] = Double.parseDouble(lsInfo.get(m)[col.get(i)]);
+			}
+			double infoNew = median(info);
+			result[col.get(i)] = infoNew + "";
+		}
+		return result;
+	}
 	
 	
 	/**

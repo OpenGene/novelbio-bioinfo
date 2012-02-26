@@ -2,12 +2,12 @@ package com.novelbio.test;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.Rplot;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 专门给冯英做项目

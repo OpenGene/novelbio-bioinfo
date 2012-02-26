@@ -3,7 +3,6 @@ package com.novelbio.analysis.seq.genomeNew;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
@@ -11,6 +10,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 比较两个bed文件之间的区别

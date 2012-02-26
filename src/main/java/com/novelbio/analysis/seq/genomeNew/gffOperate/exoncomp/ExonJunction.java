@@ -13,7 +13,6 @@ import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceIns
 import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.condHostInfoEnt;
 import org.broadinstitute.sting.utils.collections.CircularArray.Int;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
@@ -21,6 +20,7 @@ import com.novelbio.analysis.seq.rnaseq.IsoJunNum;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异

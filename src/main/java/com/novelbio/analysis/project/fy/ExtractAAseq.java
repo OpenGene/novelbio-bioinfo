@@ -2,10 +2,10 @@ package com.novelbio.analysis.project.fy;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 周雪霞，鸡的转录本提取aa序列，打算做批量blast

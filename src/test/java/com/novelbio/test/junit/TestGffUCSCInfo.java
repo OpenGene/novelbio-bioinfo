@@ -11,11 +11,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class TestGffUCSCInfo extends TestCase{
 	GffHashGene gffHashUCSC;

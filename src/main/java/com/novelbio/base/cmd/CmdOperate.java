@@ -12,9 +12,9 @@ import javax.swing.SwingWorker;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class CmdOperate {
 	private static Logger logger = Logger.getLogger(CmdOperate.class);

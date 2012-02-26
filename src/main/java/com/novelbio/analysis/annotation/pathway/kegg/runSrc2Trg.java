@@ -30,7 +30,7 @@ public class runSrc2Trg {
 		boolean blast = false;
 		int StaxID = 4932;
 		try {
-			String readExcel = parentFIle + "UCSChg19RefseqDuplicateID.xls";
+			String readExcel = parentFIle + "Gene-Act.xls";
 			
 			
 			

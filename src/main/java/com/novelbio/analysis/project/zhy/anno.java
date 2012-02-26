@@ -7,12 +7,12 @@ import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.condHostInfoEnt;
 import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class anno {
 	public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.microarray;
+package com.novelbio.analysis.microarray;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,10 +9,10 @@ import java.util.LinkedHashMap;
 
 import org.apache.jasper.tagplugins.jstl.core.ForEach;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class LimmaAffy {
 	public static final String NORM_RMA = "RMA";

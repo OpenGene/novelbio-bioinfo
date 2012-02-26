@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.generalConf.NovelBioConst;
 /**
  * ibatis在操作数据库时会自动使用类中的setter和getter给属性赋值
  * 如果不想用类中的这些方法，那么setter和getter的名字不要和属性一样就好

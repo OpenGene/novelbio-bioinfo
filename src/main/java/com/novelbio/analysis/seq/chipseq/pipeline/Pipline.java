@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
 import com.novelbio.analysis.seq.chipseq.peakAnnotation.PeakAnno;
@@ -13,6 +12,7 @@ import com.novelbio.analysis.seq.chipseq.peakAnnotation.peakLoc.PeakLOC;
 import com.novelbio.analysis.seq.chipseq.preprocess.Comb;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.test.mytest;
 
 public class Pipline {

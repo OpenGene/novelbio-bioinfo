@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 专门将数据整理成适合进行fisher检验的格式，并且进行fisher检验

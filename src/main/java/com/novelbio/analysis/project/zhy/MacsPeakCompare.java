@@ -1,12 +1,12 @@
 package com.novelbio.analysis.project.zhy;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.analysis.seq.genomeNew.GffChrMap;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class MacsPeakCompare {
 

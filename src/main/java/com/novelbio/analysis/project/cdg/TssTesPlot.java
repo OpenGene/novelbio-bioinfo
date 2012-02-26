@@ -1,7 +1,7 @@
 package com.novelbio.analysis.project.cdg;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.chipseq.regDensity.RegDensity;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class TssTesPlot {
 	/**

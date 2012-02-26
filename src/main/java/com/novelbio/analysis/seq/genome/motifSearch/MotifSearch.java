@@ -7,7 +7,7 @@ import java.util.Hashtable;
 
 import com.novelbio.analysis.seq.genome.GffChrUnion;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.dataStructure.Patternlocation;
+import com.novelbio.base.dataStructure.PatternOperate;
 
 
 
@@ -185,7 +185,7 @@ public class MotifSearch
 	public int[] getMotifInfo(String subChrSeq,String motifReg)
 	{
 		int[] motifInfo=new int[3];
-		ArrayList<String[]> lsmotif=Patternlocation.getPatLoc(subChrSeq, motifReg, false);
+		ArrayList<String[]> lsmotif=PatternOperate.getPatLoc(subChrSeq, motifReg, false);
 		motifInfo[0]=lsmotif.size();
 		if (motifInfo[0]==0) {
 			motifInfo[1]=0;

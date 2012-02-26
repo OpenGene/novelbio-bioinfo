@@ -2,15 +2,15 @@ package com.novelbio.analysis.annotation.pathway.kegg.kGpath;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
 import com.novelbio.database.domain.geneanno.*;
 import com.novelbio.database.domain.kegg.*;
 import com.novelbio.database.model.modcopeid.CopedID;
-import com.novelbio.database.service.servgeneanno.ServNCBIID;
-import com.novelbio.database.service.servgeneanno.ServUniProtID;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
 import com.novelbio.database.service.servkegg.ServKPathRelation;
@@ -30,7 +30,7 @@ import com.novelbio.database.service.servkegg.ServKRelation;
  */
 public class QKegPath {
 	/**
-	 *
+	 *经过校正<br>
 	 * 输入string[3]的geneID信息和blast的信息
 	 * 0:queryID
 	 * 1:geneID 	
@@ -106,10 +106,8 @@ public class QKegPath {
 	 * @param subTaxID
 	 * @param evalue
 	 */
-	public static ArrayList<String[]> getGeneID2(String[] accID, int taxID) 
+	public static ArrayList<String[]> getGeneID(List<String> accID, int taxID) 
 	{
-		ServUniProtID servUniProtID = new ServUniProtID();
-		ServNCBIID servGeneAnno = new ServNCBIID();
 		/**
 		 * 用来去重复的表，key为geneID/UniProtID/accID，value
 		 * 为String[3]
@@ -117,52 +115,31 @@ public class QKegPath {
 		 * 1:geneID 	
 		 * 2:UniProtID :如果1没有这个才有
 		 */
-		Hashtable<String, String[]> hashGeneIDInfo = new Hashtable<String, String[]>();
-		for (int i = 0; i < accID.length; i++) 
-		{
-			String[] geneInfo = new String[3];
-			geneInfo[0] = accID[i];
-			
-			NCBIID ncbiid = new NCBIID();
-			ncbiid.setAccID(accID[i]); 
-			if (taxID>0) ncbiid.setTaxID(taxID);
-			ArrayList<NCBIID> lsNcbiidSub = null;
-			try {
-				 lsNcbiidSub = servGeneAnno.queryLsNCBIID(ncbiid);
-			} catch (Exception e) {
-				System.out.println(i);
-			}
-			
-			//首先找NCBIID表
-			if (lsNcbiidSub!=null && lsNcbiidSub.size() > 0) {
-				geneInfo[1] = lsNcbiidSub.get(0).getGeneId()+"";
-				hashGeneIDInfo.put(geneInfo[1], geneInfo);
-			}
-			//然后找UniProtID表
-			else {
-				UniProtID uniProtID = new UniProtID();
-				uniProtID.setAccID(accID[i]); 
-				if (taxID>0) uniProtID.setTaxID(taxID);
-				ArrayList<UniProtID> lsUniProtIDs = servUniProtID.queryLsUniProtID(uniProtID);
-				if (lsNcbiidSub!=null && lsNcbiidSub.size() > 0) {
-					geneInfo[2] = lsUniProtIDs.get(0).getUniID();
-					hashGeneIDInfo.put(geneInfo[2], geneInfo);
-				}
-				//如果还是没找到,就直接将accID装入hash表
-				else
-				{
-					hashGeneIDInfo.put(geneInfo[0], geneInfo);
-				}
-			}
-		}
-		
-		Enumeration keys=hashGeneIDInfo.keys();
+		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		while(keys.hasMoreElements()){
-			String key=(String)keys.nextElement();
-			String[] geneInfo = hashGeneIDInfo.get(key);
+		for (int i = 0; i < accID.size(); i++) 
+		{
+			CopedID copedID = new CopedID(accID.get(i), taxID);
+			try {
+				if (hashCopedID.contains(copedID)) {
+					continue;
+				}
+			} catch (Exception e) {
+				if (hashCopedID.contains(copedID)) {
+					continue;
+				}
+			}
+		
+			String[] geneInfo = new String[3];
+			geneInfo[0] = accID.get(i);
+			if (copedID.getIDtype().equals(CopedID.IDTYPE_GENEID)) {
+				geneInfo[1] = copedID.getGenUniID();
+			}
+			else if (copedID.getIDtype().equals(CopedID.IDTYPE_UNIID)) {
+				geneInfo[2] = copedID.getGenUniID();
+			}
 			lsResult.add(geneInfo);
- 		} 
+		}
 		return lsResult;
 	}
 	
@@ -560,54 +537,54 @@ public class QKegPath {
 		return objResult;
 	}
 	
-	/**
-	 * 输入基因，返回该基因的KeggID
-	 * @param geneID
-	 * @return
-	 */
-	public static ArrayList<String> getGeneKegID(String[] geneID,int taxID)
-	{
-		ArrayList<String> lsKeggID = new ArrayList<String>();
-		for (int i = 0; i < geneID.length; i++) {
-			String KeggID = getKeggID(geneID[i],taxID);
-			if (KeggID != null) {
-				lsKeggID.add(KeggID);
-			}
-		}
-		return lsKeggID;
-	}
-	
-	
-	/**
-	 * 给定geneID，返回该基因的KO,目前只支持NCBIID中含有的基因
-	 * @param genID
-	 */
-	private static String getKeggID(String genID,int taxID) {
-		ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
-		ServNCBIID servGeneAnno = new ServNCBIID();
-		NCBIID ncbiid = new NCBIID();
-		ncbiid.setAccID(genID);ncbiid.setTaxID(taxID);
-		ArrayList<NCBIID> lsNcbiids = servGeneAnno.queryLsNCBIID(ncbiid);
-		long geneID = 0;
-		if (lsNcbiids != null && lsNcbiids.size()>0) {
-			geneID = lsNcbiids.get(0).getGeneId();
-		}
-		if(geneID == 0)
-		{
-			return null;
-		}
-		
-		KGIDgen2Keg kgiDgen2Keg = new KGIDgen2Keg();
-		kgiDgen2Keg.setGeneID(geneID);
-		kgiDgen2Keg.setTaxID(taxID);
-		KGIDgen2Keg kgiDgen2KegS = servKIDgen2Keg.queryKGIDgen2Keg(kgiDgen2Keg);
-		if (kgiDgen2KegS != null) {
-			return kgiDgen2KegS.getKeggID();
-		}
-		else {
-			return null;
-		}
-	}
+//	/**
+//	 * 输入基因，返回该基因的KeggID
+//	 * @param geneID
+//	 * @return
+//	 */
+//	public static ArrayList<String> getGeneKegID(String[] geneID,int taxID)
+//	{
+//		ArrayList<String> lsKeggID = new ArrayList<String>();
+//		for (int i = 0; i < geneID.length; i++) {
+//			String KeggID = getKeggID(geneID[i],taxID);
+//			if (KeggID != null) {
+//				lsKeggID.add(KeggID);
+//			}
+//		}
+//		return lsKeggID;
+//	}
+//	
+//	
+//	/**
+//	 * 给定geneID，返回该基因的KO,目前只支持NCBIID中含有的基因
+//	 * @param genID
+//	 */
+//	private static String getKeggID2(String genID,int taxID) {
+//		ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
+//		ServNCBIID servGeneAnno = new ServNCBIID();
+//		NCBIID ncbiid = new NCBIID();
+//		ncbiid.setAccID(genID);ncbiid.setTaxID(taxID);
+//		ArrayList<NCBIID> lsNcbiids = servGeneAnno.queryLsNCBIID(ncbiid);
+//		long geneID = 0;
+//		if (lsNcbiids != null && lsNcbiids.size()>0) {
+//			geneID = lsNcbiids.get(0).getGeneId();
+//		}
+//		if(geneID == 0)
+//		{
+//			return null;
+//		}
+//		
+//		KGIDgen2Keg kgiDgen2Keg = new KGIDgen2Keg();
+//		kgiDgen2Keg.setGeneID(geneID);
+//		kgiDgen2Keg.setTaxID(taxID);
+//		KGIDgen2Keg kgiDgen2KegS = servKIDgen2Keg.queryKGIDgen2Keg(kgiDgen2Keg);
+//		if (kgiDgen2KegS != null) {
+//			return kgiDgen2KegS.getKeggID();
+//		}
+//		else {
+//			return null;
+//		}
+//	}
 	
 }
 

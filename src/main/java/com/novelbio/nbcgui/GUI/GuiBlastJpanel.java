@@ -1,4 +1,4 @@
-package com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI;
+package com.novelbio.nbcgui.GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,15 +32,13 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import org.jdesktop.application.Application;
 
-import com.novelbio.analysis.guiRun.BlastGUI.GUI.NBCJDialog;
-import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastAnno;
-import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastGo;
-import com.novelbio.analysis.guiRun.BlastGUI.control.CtrlBlastPath;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.base.gui.CtrlNormal;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.nbcgui.controlquery.CtrlBlastAnno;
+import com.novelbio.nbcgui.controlquery.CtrlBlastGo;
+import com.novelbio.nbcgui.controlquery.CtrlBlastPath;
 
 
 /**

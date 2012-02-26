@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.Patternlocation;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class AmiGO {
 	/**
@@ -287,7 +287,7 @@ class ImpGOExtObo extends ImportPerLine
 	}
 	private String extractGOID(String GOIDstring)
 	{
-		ArrayList<String[]> lsResult = Patternlocation.getPatLoc(GOIDstring, "GO:\\d+", false);
+		ArrayList<String[]> lsResult = PatternOperate.getPatLoc(GOIDstring, "GO:\\d+", false);
 		if (lsResult == null || lsResult.size() == 0) {
 			return null;
 		}

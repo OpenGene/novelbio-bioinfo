@@ -7,7 +7,7 @@ import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math.stat.descriptive.rank.Min;
 import org.apache.commons.math.util.MathUtils;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class FastQ {
 	

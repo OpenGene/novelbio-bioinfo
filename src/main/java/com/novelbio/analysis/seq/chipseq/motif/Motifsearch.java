@@ -5,14 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genome.GffChrUnion;
 import com.novelbio.analysis.seq.genome.motifSearch.MotifSearch;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.Patternlocation;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 
  
@@ -117,7 +117,7 @@ public class Motifsearch {
 		GetSeq.prepare(chrPah, null, Gffclass, gfffilename, "");
 		ArrayList<String> lsPeakSeq = GetSeq.getPeakSeq(peaklength, condition, txtFilepeakFile, sep, columnID, rowStart, rowEnd, false);//(Gffclass, gfffilename, chrPah, peaklength, condition, txtFilepeakFile, sep, columnID, rowStart, rowEnd,false);
 		for (String string : lsPeakSeq) {
-			ArrayList<String[]> lstmpResult = Patternlocation.getPatLoc(string, motifReg, false);
+			ArrayList<String[]> lstmpResult = PatternOperate.getPatLoc(string, motifReg, false);
 			for (String[] strings : lstmpResult) {
 				int motiflength = strings[0].length();
 				Integer motifLocation = Integer.parseInt(strings[1]) - peaklength + motiflength/2;
@@ -192,7 +192,7 @@ public class Motifsearch {
 				System.out.println("aaa");
 			}
 			String upstream = GetSeq.getGffLocatCod().getUpGenSeq(strings[0], length, true, true, Gffclass);
-			ArrayList<String[]> lstmpResult = Patternlocation.getPatLoc(upstream, motifReg, false);
+			ArrayList<String[]> lstmpResult = PatternOperate.getPatLoc(upstream, motifReg, false);
 			String[] tmpResult = new String[lstmpResult.size()*2];
 			for (int i = 0; i < lstmpResult.size(); i++) {
 				tmpResult[i*2] = lstmpResult.get(i)[0];

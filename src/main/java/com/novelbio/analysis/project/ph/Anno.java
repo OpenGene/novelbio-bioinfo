@@ -1,8 +1,8 @@
 package com.novelbio.analysis.project.ph;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class Anno {
 	public static void main(String[] args) {

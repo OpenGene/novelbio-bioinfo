@@ -1,7 +1,7 @@
 package com.novelbio.analysis.project.zhy;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.GffChrCmpBed;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 用用余璐的方法比较TSS里面甲基化的区别

@@ -44,8 +44,6 @@ import org.apache.log4j.Logger;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.analysis.generalConf.Species;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.SeqComb;
@@ -77,7 +75,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.dataStructure.Patternlocation;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.base.plot.Rplot;
@@ -88,6 +86,8 @@ import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
+import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.generalConf.Species;
  import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 

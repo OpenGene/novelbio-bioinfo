@@ -1,4 +1,4 @@
-package com.novelbio.analysis.guiRun.BlastGUI.GUI;
+package com.novelbio.nbcgui.GUI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;

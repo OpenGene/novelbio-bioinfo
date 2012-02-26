@@ -1,4 +1,4 @@
-package com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI;
+package com.novelbio.nbcgui.GUI;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -53,6 +53,7 @@ public class GUIanalysis extends javax.swing.JFrame {
 	private GuiSrcToTrg guiSrcToTrg;
 	private GuiDegreeAdd guiDegreeAdd;
 	private GuiPearson guiPearson;
+	private GuiTools guiTools;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -100,10 +101,8 @@ public class GUIanalysis extends javax.swing.JFrame {
 				guiDegreeAdd = new GuiDegreeAdd();
 				jTabbedPane1.addTab("Network Analysis", null, guiDegreeAdd, null);
 				
-//				{
-//					jPanCoExp = new JPanel();
-//					jTabbedPane1.addTab("CoExpression", null, jPanCoExp, null);
-//				}
+				guiTools = new GuiTools();
+				jTabbedPane1.addTab("Tools", null, guiTools, null);
 //				{
 //					jPanSrctrg = new JPanel();
 //					jTabbedPane1.addTab("Signal Network", null, jPanSrctrg, null);

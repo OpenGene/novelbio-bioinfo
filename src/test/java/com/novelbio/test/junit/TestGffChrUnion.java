@@ -7,11 +7,11 @@ import org.junit.Test;
 import junit.framework.TestCase;
 
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew2.GffChrHanYanChrom;
 import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneUCSC;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class TestGffChrUnion extends TestCase {
 	double[] input;

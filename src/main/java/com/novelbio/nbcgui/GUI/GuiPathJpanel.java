@@ -1,4 +1,4 @@
-package com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI;
+package com.novelbio.nbcgui.GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,16 +28,15 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.table.DefaultTableModel;
 
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlGO;
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlPath;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.gui.CtrlNormal;
 import com.novelbio.base.gui.NumberOnlyDoc;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.NumOnlyDoc;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.nbcgui.controltest.CtrlGO;
+import com.novelbio.nbcgui.controltest.CtrlPath;
 
 
 /**

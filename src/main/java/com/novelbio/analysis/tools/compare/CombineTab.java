@@ -1,6 +1,7 @@
 package com.novelbio.analysis.tools.compare;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -35,7 +36,6 @@ public class CombineTab {
 		comb.setColDetai(file3, "W4", 4,6,7);
 		comb.setColDetai(file4, "WE", 4,6,7);
 		comb.setColID(5);
-		comb.exeToFile(parentFile + "K27_New.xls");
 	}
 	
 	
@@ -50,7 +50,7 @@ public class CombineTab {
 	
 	private static Logger logger = Logger.getLogger(CombineTab.class);
 	/**
-	 * 每个条件的名称--也就是每个tab的文件名
+	 * 文件名--每个条件的名称
 	 */
 	LinkedHashMap<String, String> hashCond = new LinkedHashMap<String, String>();
 	
@@ -62,22 +62,32 @@ public class CombineTab {
 		}
 		this.colID = colID;
 	}
+	
+	public void setColID(ArrayList<Integer> lsColID) {
+		//先排个序
+		Collections.sort(lsColID);
+		colID = new int[lsColID.size()];
+		for (int i = 0; i < colID.length; i++) {
+			colID[i] = lsColID.get(i)-1;
+		}
+	}
 	/**
-	 * 对于每个文件，设定它具体要包含哪几列，不含flag列
+	 * 文件名---具体要包含哪几列，不含比较列
 	 */
 	LinkedHashMap<String, int[]> hashCodColDetail = new LinkedHashMap<String, int[]>();
 	/**
 	 *  获得每个文件名, 对于每个文件，设定它的ID列
 	 */
-	public void setColDetai(String condTxt, String codName, int... colDetai) {
-		for (int i = 0; i < colDetai.length; i++) {
-			colDetai[i] = colDetai[i] - 1;
+	public void setColDetai(String condTxt, String codName, int... colDetail) {
+		for (int i = 0; i < colDetail.length; i++) {
+			colDetail[i] = colDetail[i] - 1;
 		}
-		hashCodColDetail.put(condTxt, colDetai);
+		hashCodColDetail.put(condTxt, colDetail);
 		hashCond.put(condTxt,codName);
 	}
 	/**
 	 *  获得每个文件名, 对于每个文件，设定它的ID列
+	 *  那么文件的时期名由文本生成
 	 */
 	@Deprecated
 	public void setColDetai(String condTxt,int... colDetai) {
@@ -93,13 +103,13 @@ public class CombineTab {
 	 */
 	LinkedHashMap<String, String[]> hashID = new LinkedHashMap<String,String[]>();
 	/**
-	 * cod--hash-string-string[]
+	 * cod--hash-string-string[]<br>
 	 * colID--colID+colDetail
 	 */
 	HashMap<String, LinkedHashMap<String, String[]>> hashCod2LsInfo = new LinkedHashMap<String, LinkedHashMap<String,String[]>>();
 	
 	
-	public void exeToFile(String txtOutFile)
+	public ArrayList<String[]> exeToFile()
 	{
 		String title[] = new String[0];
 		for (Entry<String, String> entry : hashCond.entrySet()) {
@@ -121,8 +131,7 @@ public class CombineTab {
 		}
 		ArrayList<String[]> lsResult = combInfo();
 		lsResult.add(0,title);
-		TxtReadandWrite txtOut = new TxtReadandWrite(txtOutFile, true);
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+		return lsResult;
 	}
 	
 	
@@ -131,6 +140,7 @@ public class CombineTab {
 	 * 包含标题列
 	 * @param cond
 	 * @return
+	 * 获得的结果已经按照输入的colID顺序经过排序了
 	 */
 	private ArrayList<String[]> getLsInfo(String condTxt) {
 		int[] colDetail = hashCodColDetail.get(condTxt);

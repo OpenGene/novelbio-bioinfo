@@ -1,4 +1,4 @@
-package com.novelbio.analysis.guiRun.BlastGUI.control;
+package com.novelbio.nbcgui.controlquery;
 
 
 import java.util.ArrayList;
@@ -7,11 +7,11 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.GuiBlastJpanel;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 
 
 public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo>

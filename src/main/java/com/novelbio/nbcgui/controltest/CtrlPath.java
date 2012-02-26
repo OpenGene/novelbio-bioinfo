@@ -1,4 +1,4 @@
-package com.novelbio.analysis.guiRun.GoPathScr2Trg.control;
+package com.novelbio.nbcgui.controltest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,13 +7,13 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class CtrlPath extends CtrlGOPath {
 

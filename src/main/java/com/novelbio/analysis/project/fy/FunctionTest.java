@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.annotation.blast.blastRun;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlGO;
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlPath;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgo.GOInfoAbs;
+import com.novelbio.nbcgui.controltest.CtrlGO;
+import com.novelbio.nbcgui.controltest.CtrlPath;
 
 public class FunctionTest {
 	

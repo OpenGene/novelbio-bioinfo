@@ -8,7 +8,6 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 import org.eclipse.jdt.internal.compiler.env.IGenericField;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
@@ -31,6 +30,7 @@ import com.novelbio.database.service.servgeneanno.ServNCBIID;
 import com.novelbio.database.service.servgeneanno.ServUniGene2Go;
 import com.novelbio.database.service.servgeneanno.ServUniGeneInfo;
 import com.novelbio.database.service.servgeneanno.ServUniProtID;
+import com.novelbio.generalConf.NovelBioConst;
 
 public abstract class CopedIDAbs implements CopedIDInt {
 	private static Logger logger = Logger.getLogger(CopedIDAbs.class);
@@ -46,9 +46,9 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	/**
 	 * ¾ßÌåµÄaccID
 	 */
-	String accID = null;
+	String accID = "";
 
-	String genUniID = null;
+	String genUniID = "";
 
 	String symbol = null;
 

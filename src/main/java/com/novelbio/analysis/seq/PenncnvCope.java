@@ -12,12 +12,12 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 给周琴做分析的一套东西

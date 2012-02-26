@@ -1,4 +1,4 @@
-package com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI;
+package com.novelbio.nbcgui.GUI;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;

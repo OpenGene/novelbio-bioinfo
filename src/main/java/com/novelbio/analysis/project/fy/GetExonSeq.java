@@ -2,9 +2,9 @@ package com.novelbio.analysis.project.fy;
 
 import org.broad.tribble.bed.FullBEDFeature.Exon;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class GetExonSeq {
 	public static void main(String[] args) {

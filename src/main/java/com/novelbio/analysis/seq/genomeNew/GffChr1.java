@@ -10,7 +10,6 @@ import java.util.Comparator;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.generalConf.Species;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
@@ -27,6 +26,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.java.HeatChart;
+import com.novelbio.generalConf.Species;
 
 
 

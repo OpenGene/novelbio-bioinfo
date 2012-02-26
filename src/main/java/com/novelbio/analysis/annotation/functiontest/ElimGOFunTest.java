@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -14,6 +13,7 @@ import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class ElimGOFunTest extends NovelGOFunTest{
 	private static final Logger logger = Logger.getLogger(ElimGOFunTest.class);

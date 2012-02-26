@@ -4,9 +4,9 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.tools.formatConvert.FastQ;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.generalConf.NovelBioConst;
 
  /**
  * 本方法内部含有ascII的质量控制

@@ -3,15 +3,15 @@ package com.novelbio.analysis.annotation.pathway.kegg.kGpath;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
+
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
+import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
-import com.novelbio.database.service.servgeneanno.ServNCBIID;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 
@@ -30,22 +30,19 @@ public class Scr2Target {
 	 * @param evalue evalue 阈值是多少
 	 * @throws Exception
 	 */
-	public static void getGene2RelateKo(String pathName, String[] accID,String ResultFIleScr2Target, String resultFIleAttribute,int QtaxID,boolean blast,int subTaxID,double evalue) throws Exception
+	public static void getGene2RelateKo(String pathName, List<String> accID,String ResultFIleScr2Target, String resultFIleAttribute,int QtaxID,boolean blast,int subTaxID,double evalue) throws Exception
 	{
-		ServNCBIID servNCBIID = new ServNCBIID();
+		CopedID copedID = null;
 		ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
 		ServKEntry servKEntry = new ServKEntry();
 		//丛数据库获得taxID
 		if (QtaxID <= 0)
 		{
-			for (int i = 0; i < accID.length; i++) 
+			for (int i = 0; i < accID.size(); i++) 
 			{
-				NCBIID ncbiid = new NCBIID();
-				ncbiid.setAccID(accID[i]);
-				ArrayList<NCBIID> lsncbiid = servNCBIID.queryLsNCBIID(ncbiid);
-				if (lsncbiid != null && lsncbiid.size()>0) 
-				{
-					QtaxID = (int)lsncbiid.get(0).getTaxID();
+				copedID = new CopedID(accID.get(i), 0);
+				if (copedID.getTaxID() != 0) {
+					QtaxID = copedID.getTaxID();
 					break;
 				}
 			}
@@ -67,7 +64,7 @@ public class Scr2Target {
 	KGpathRelation ： 具体信息 
 		 */
 		ArrayList<Object[]> lsRelationInfo = new ArrayList<Object[]>();
-		ArrayList<String[]> lsAccID = QKegPath.getGeneID2(accID, QtaxID);
+		ArrayList<String[]> lsAccID = QKegPath.getGeneID(accID, QtaxID);
 		//一个一个的accID去查找
 		for (int i = 0; i < lsAccID.size(); i++) 
 		{
@@ -89,7 +86,7 @@ public class Scr2Target {
 				{
 					////////////////如果geneBlast到了人类，并且得到了相应的KO，那么尝试获得该KO所对应本物种的KeggID，并用KeggID直接mapping回本基因。如果没有KeggID，则用KO去mapping////////////////////////////////////////////////////////////////
 					KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
-					kgiDkeg2Ko.setKo(ko[j]);kgiDkeg2Ko.setTaxID(QtaxID);
+					kgiDkeg2Ko.setKo(ko[j]); kgiDkeg2Ko.setTaxID(QtaxID);
 					ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos2 = servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 					if (lsKgiDkeg2Kos2 != null && lsKgiDkeg2Kos2.size()>0) 
 					{
@@ -397,7 +394,6 @@ public class Scr2Target {
 	 */
 	private static void getRelation(String pathName, ArrayList<Object[]> lsRelationInfo ,int QtaxID,String ResultFIleScr2Target, String resultFIleAttribute) throws Exception 
 	{
-		ServNCBIID servGeneAnno = new ServNCBIID();
 		ServGeneInfo servGeneInfo = new ServGeneInfo();
 		//source 2 target 的表格
 		//string[3] 0:source 1:target 2:relation
@@ -407,9 +403,6 @@ public class Scr2Target {
 		ArrayList<String[]> lsRelationEntry = new ArrayList<String[]>();
 		for (int i = 0; i < lsRelationInfo.size(); i++) {
 			lsRelationEntry.add((String[]) lsRelationInfo.get(i)[0]);
-			if (lsRelationEntry.get(i)[3].equals("hsa:56604")) {
-				System.out.println("test");
-			}
 		}
 		
 		Hashtable<String,String[]> hashEntryInfo = new Hashtable<String, String[]>();
@@ -447,25 +440,9 @@ public class Scr2Target {
 			}
 			else if (qGenKegInfo[3] !=null)
 			{
-				GeneInfo qgeneInfo = new GeneInfo(); qgeneInfo.setGeneID(Long.parseLong(qGenKegInfo[1]));
-				GeneInfo geneInfoSub = servGeneInfo.queryGeneInfo(qgeneInfo);
-				//如果没有symbol
-				if (geneInfoSub == null || geneInfoSub.getSymb() == null || geneInfoSub.getSymb().trim().equals("") || geneInfoSub.getSymb().trim().equals("-")) 
-				{
-					NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[1]));
-					queryGenInfo[0] = servGeneAnno.queryLsNCBIID(ncbiid).get(0).getAccID();
-					if (geneInfoSub == null) {
-						queryGenInfo[2] = "";
-					}
-					else {
-						queryGenInfo[2] = geneInfoSub.getDescrp();
-					}
-				}
-				else 
-				{
-					queryGenInfo[0] = geneInfoSub.getSymb().split("//")[0];
-					queryGenInfo[2] = geneInfoSub.getDescrp();
-				}
+				CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, qGenKegInfo[1], QtaxID);
+				queryGenInfo[0] = copedID.getSymbol();
+				queryGenInfo[2] = copedID.getDescription();
 				queryGenInfo[1] = QtaxID + "";
 				
 			}
@@ -473,28 +450,9 @@ public class Scr2Target {
 			{
 				//如果geneID存在
 				if (qGenKegInfo[1] != null) {
-					GeneInfo qgeneInfo = new GeneInfo();
-					qgeneInfo.setGeneID(Long.parseLong(qGenKegInfo[1]));
-					GeneInfo geneInfoSub = servGeneInfo.queryGeneInfo(qgeneInfo);
-					//如果没有symbol
-					if (geneInfoSub == null) {
-						System.out.println("error");
-					}
-					
-					
-					if (geneInfoSub == null || geneInfoSub.getSymb() == null || geneInfoSub.getSymb().trim().equals("") || geneInfoSub.getSymb().trim().equals("-")) 
-					{
-						NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[1])); 
-						queryGenInfo[0] = servGeneAnno.queryLsNCBIID(ncbiid).get(0).getAccID();
-					}
-					else
-					{
-						queryGenInfo[0] = geneInfoSub.getSymb().split("//")[0];
-
-					}
-					if (geneInfoSub != null && geneInfoSub.getDescrp() != null) {
-						queryGenInfo[2] = geneInfoSub.getDescrp();
-					}
+					CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, qGenKegInfo[1], QtaxID);
+					queryGenInfo[0] = copedID.getSymbol();
+					queryGenInfo[2] = copedID.getDescription();
 					queryGenInfo[1] = QtaxID + "";
 				}
 				else 
@@ -503,25 +461,12 @@ public class Scr2Target {
 				}
 				
 				queryGenInfo[3] = qGenKegInfo[4]; queryGenInfo[4] = qGenKegInfo[5];
-				GeneInfo qgeneInfo2 = new GeneInfo();
-				qgeneInfo2.setGeneID(Long.parseLong(qGenKegInfo[6]));
-				GeneInfo geneInfoSub2 = servGeneInfo.queryGeneInfo(qgeneInfo2);
+				CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, qGenKegInfo[6], 0);
 				//如果没有symbol
-				if (geneInfoSub2.getSymb() == null || geneInfoSub2.getSymb().trim().equals("") || geneInfoSub2.getSymb().trim().equals("-")) 
-				{
-					NCBIID ncbiid = new NCBIID();  ncbiid.setGeneId(Long.parseLong(qGenKegInfo[6])); 
-					queryGenInfo[5] = servGeneAnno.queryLsNCBIID(ncbiid).get(0).getAccID();
-				}
-				else 
-				{
-					queryGenInfo[5] = geneInfoSub2.getSymb().split("//")[0];
-				}
-				queryGenInfo[6] = geneInfoSub2.getDescrp();
+				queryGenInfo[5] = copedID.getSymbol();
+				queryGenInfo[6] = copedID.getDescription();
 			}
 			hashEntryInfo.put(qGenKegInfo[0], queryGenInfo);
-			if (queryGenInfo[0].equals("TUBB2A")) {
-				System.out.println("test");
-			}
 		}
 		
 		

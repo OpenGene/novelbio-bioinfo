@@ -13,10 +13,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
-import com.novelbio.analysis.generalConf.Species;
 import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.generalConf.Species;
 
 
 

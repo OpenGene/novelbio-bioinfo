@@ -7,12 +7,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.Patternlocation;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class RiceID{
 	String gffRapDB = "";
@@ -519,7 +519,7 @@ class RiceRapDBInfo extends ImportPerLine
 	private ArrayList<String> setGOID(String GOInfo)
 	{
 		ArrayList<String> lsGOID = new ArrayList<String>();
-		ArrayList<String[]> lsResult = Patternlocation.getPatLoc(GOInfo, "GO:\\d+", false);
+		ArrayList<String[]> lsResult = PatternOperate.getPatLoc(GOInfo, "GO:\\d+", false);
 		for (String[] strings : lsResult) {
 			lsGOID.add(strings[0]);
 		}

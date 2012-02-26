@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.Patternlocation;
+import com.novelbio.base.dataStructure.PatternOperate;
 
 /**
  * 祝冬祺给了一系列序列和一个motif
@@ -40,7 +40,7 @@ public class MotifScan {
 		lsResult.add(new String[]{"GeneName","Strand","Motif","DistanceToSeqEnd"});
 		ArrayList<SeqFasta> lsFastaAll = seqFastaHash.getSeqFastaAll();
 		for (SeqFasta seqFasta : lsFastaAll) {
-			ArrayList<String[]> lsTmpResult = Patternlocation.getPatLoc(seqFasta.toString(), regexFor, false);
+			ArrayList<String[]> lsTmpResult = PatternOperate.getPatLoc(seqFasta.toString(), regexFor, false);
 			if (lsTmpResult != null && lsTmpResult.size() > 0) {
 				for (String[] strings : lsTmpResult) {
 					String[] tmpResult = new String[4];
@@ -51,7 +51,7 @@ public class MotifScan {
 					lsResult.add(tmpResult);
 				}
 			}
-			lsTmpResult = Patternlocation.getPatLoc(seqFasta.toString(), regexRev, false);
+			lsTmpResult = PatternOperate.getPatLoc(seqFasta.toString(), regexRev, false);
 			if (lsTmpResult != null && lsTmpResult.size() > 0) {
 				for (String[] strings : lsTmpResult) {
 					String[] tmpResult = new String[4];

@@ -3,9 +3,9 @@ package com.novelbio.base.plot;
 import java.io.IOException;
 import java.util.Collection;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class Rplot {
 	/**

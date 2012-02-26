@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.HanYanRebsome;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.GffChrMap;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
@@ -11,6 +10,7 @@ import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 给韩燕画散点图，两个时期的mapping结果进行比较

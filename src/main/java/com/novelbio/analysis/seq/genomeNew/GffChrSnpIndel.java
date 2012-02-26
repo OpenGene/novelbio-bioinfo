@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.genomeNew;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.AminoAcid;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
@@ -15,6 +14,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.generalConf.NovelBioConst;
 /**
  * 给定snp和indel等信息，获得改变的氨基酸等
  * @author zong0jie

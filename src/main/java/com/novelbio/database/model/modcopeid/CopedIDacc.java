@@ -22,8 +22,12 @@ public class CopedIDacc extends CopedIDAbs{
 	 *            ŒÔ÷÷ID
 	 */
 	public CopedIDacc(String accID, String idType, String genUniID, int taxID) {
-		this.accID = accID;
-		this.genUniID = genUniID;
+		if (accID != null) {
+			this.accID = accID;
+		}
+		if (genUniID != null) {
+			this.genUniID = genUniID;
+		}
 		this.idType = idType;
 		this.taxID = taxID;
 	}

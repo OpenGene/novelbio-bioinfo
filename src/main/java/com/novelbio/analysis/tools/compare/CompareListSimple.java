@@ -200,12 +200,6 @@ public class CompareListSimple
 			txt.setParameter(filePath+FileB, false,true);
 			ls2=txt.ExcelRead(sep, firstlinels2, 1, txt.ExcelRows(), -1, 1);
 		}
-		
-		
-	
-
-		
-		
 
 		ArrayList<ArrayList<String[]>> compareResult=compareList(ls1, ls2,considerCase);
 		String intersectionResultFilePath=filePath+resultFold+"/";

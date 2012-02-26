@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
 import com.novelbio.analysis.seq.chipseq.BedPeakSicer;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
@@ -13,6 +12,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class Peakcalling {
 	

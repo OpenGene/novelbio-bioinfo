@@ -661,10 +661,10 @@ public class CopedID implements CopedIDInt{
 	 */
 	public int hashCode(){
 		String hash = "";
-		if (!copedID.genUniID.trim().equals("")) {
+		if (copedID.genUniID != null && !copedID.genUniID.trim().equals("")) {
 			hash = copedID.genUniID.trim() + "sep_@@_genUni_" + copedID.idType.trim() + "@@" + copedID.taxID;
 		}
-		else if (copedID.genUniID.trim().equals("") && !copedID.accID.trim().equals("")) {
+		else if ( copedID.genUniID.trim().equals("") && !copedID.accID.trim().equals("")) {
 			hash = copedID.accID.trim()+"@@accID"+copedID.idType.trim()+"@@"+copedID.taxID;
 		}
 		else if ( copedID.genUniID.trim().equals("") && copedID.accID.trim().equals("")) {

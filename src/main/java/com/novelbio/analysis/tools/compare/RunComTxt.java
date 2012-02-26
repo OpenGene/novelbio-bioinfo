@@ -1,5 +1,11 @@
 package com.novelbio.analysis.tools.compare;
-
+/**
+ * 功能：
+ * 1. 取中位数
+ * 2. 将多个excel根据ID合并为1个，方便取交集和并集的操作
+ * @author zong0jie
+ *
+ */
 public class RunComTxt {
 
 	/**

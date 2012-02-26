@@ -197,7 +197,6 @@ public class SimpCoExp {
 	 * @param lsCoexpGenInfos
 	 */
 	private static ArrayList<String[]> calCoExp(List<CoexpGenInfo> lsCoexpGenInfos , double pvalueFilter,boolean filterNoDB) {
-		int length = lsCoexpGenInfos.size();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		CoexPair.setFirst(lsCoexpGenInfos);
 		int k = 0;
@@ -308,7 +307,7 @@ public class SimpCoExp {
 			}
 			else 
 			{
-				CopedID copedID = new CopedID(result[i][0], taxID, false);
+				CopedID copedID = new CopedID(result[i][0], taxID);
 				String[] tmpResult = new String[6];
 				///////////////////////////////////////////////////////////////////////////////////
 				//这一段放if里：只有当数据库中有时才计数

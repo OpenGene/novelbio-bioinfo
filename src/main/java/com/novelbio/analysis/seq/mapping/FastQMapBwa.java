@@ -5,7 +5,6 @@ import java.util.Date;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.base.cmd.CMDcallback;
@@ -13,6 +12,7 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 在set里面有很多参数可以设定，不设定就用默认

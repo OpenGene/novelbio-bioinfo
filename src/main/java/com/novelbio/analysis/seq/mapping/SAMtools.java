@@ -12,7 +12,7 @@ import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.SeqComb;
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.Patternlocation;
+import com.novelbio.base.dataStructure.PatternOperate;
 
 /**
  * 处理sam文件的工具
@@ -31,7 +31,7 @@ public class SAMtools extends SeqComb{
 	/**
 	 * 提取SAM中的mapping信息用的
 	 */
-	private Patternlocation patternlocation = null;
+	private PatternOperate patternlocation = null;
 	
 	
 	/**
@@ -51,7 +51,7 @@ public class SAMtools extends SeqComb{
 			this.mapQuality = mapQuality;
 		}
 		
-		patternlocation = new Patternlocation("\\d+(?=M|N)", true); 
+		patternlocation = new PatternOperate("\\d+(?=M|N)", true); 
 		
 	}
  
@@ -63,7 +63,7 @@ public class SAMtools extends SeqComb{
 			this.mapQuality = mapQuality;
 		}
 		
-		patternlocation = new Patternlocation("\\d+(?=M|N)", true); 
+		patternlocation = new PatternOperate("\\d+(?=M|N)", true); 
 	}
 	/**
 	 * 

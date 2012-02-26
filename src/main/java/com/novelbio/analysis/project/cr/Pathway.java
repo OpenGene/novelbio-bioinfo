@@ -2,10 +2,10 @@ package com.novelbio.analysis.project.cr;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlGO;
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.control.CtrlPath2;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.database.model.modgo.GOInfoAbs;
+import com.novelbio.nbcgui.controltest.CtrlGO;
+import com.novelbio.nbcgui.controltest.CtrlPath2;
 
 public class Pathway {
 	

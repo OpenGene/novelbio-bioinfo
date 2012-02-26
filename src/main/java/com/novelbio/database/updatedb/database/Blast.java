@@ -1,7 +1,7 @@
 package com.novelbio.database.updatedb.database;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class Blast extends ImportPerLine{
 	public  Blast() {

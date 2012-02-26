@@ -3,10 +3,10 @@ package com.novelbio.analysis.seq.chipseq.peakAnnotation.peakLoc;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.chipseq.peakAnnotation.symbolAnnotation.SymbolDesp;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 
 public class PeakLOCRun {

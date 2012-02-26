@@ -1,4 +1,4 @@
-package com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI;
+package com.novelbio.nbcgui.GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,8 +31,8 @@ import javax.swing.table.DefaultTableModel;
 import com.novelbio.analysis.annotation.pathway.kegg.kGpath.Scr2Target;
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.gui.CtrlNormal;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.NumOnlyDoc;
 import com.novelbio.database.model.modcopeid.CopedID;
@@ -167,9 +167,15 @@ public class GuiSrcToTrg extends JPanel{
 						savefilename = savefilename+".txt";
 					}
 					try {
-						String[] accID = KGprepare.getAccID(1, Integer.parseInt(jTxtAccColPath.getText()),jTxtFilePathPath.getText());
-						
-						Scr2Target.getGene2RelateKo("",accID,FileOperate.changeFileSuffix(savefilename, "_Gene_Act_Net", null),
+						ArrayList<String[]> lsAccIDstr = ExcelTxtRead.readLsExcelTxt(jTxtFilePathPath.getText(), new int[]{Integer.parseInt(jTxtAccColPath.getText())}, 1, -1);
+						ArrayList<String> lsAccID = new ArrayList<String>();
+						for (String[] strings : lsAccIDstr) {
+							if (strings[0] == null || strings[0].trim().equals("")) {
+								continue;
+							}
+							lsAccID.add(strings[0]);
+						}
+						Scr2Target.getGene2RelateKo("",lsAccID,FileOperate.changeFileSuffix(savefilename, "_Gene_Act_Net", null),
 								FileOperate.changeFileSuffix(savefilename, "_attr", null) , QtaxID, jChkBlastPath.isSelected(), StaxID, 1e-5);
 						
 					} catch (Exception e) {

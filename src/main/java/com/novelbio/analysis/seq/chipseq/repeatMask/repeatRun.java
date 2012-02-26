@@ -3,8 +3,8 @@ package com.novelbio.analysis.seq.chipseq.repeatMask;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.generalConf.NovelBioConst;
 
 
 public class repeatRun {

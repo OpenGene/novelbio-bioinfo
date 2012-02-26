@@ -1,4 +1,4 @@
-package com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI;
+package com.novelbio.nbcgui.GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,7 +33,6 @@ import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.analysis.coexp.simpCoExp.SimpCoExp;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.gui.CtrlNormal;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.NumOnlyDoc;
 import com.novelbio.base.gui.NumberOnlyDoc;

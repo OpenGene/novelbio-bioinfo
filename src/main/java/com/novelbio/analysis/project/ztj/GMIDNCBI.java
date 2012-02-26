@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.analysis.generalConf.Species;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailCG;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
@@ -12,6 +11,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGenePlant;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.Species;
 
 /**
  * 用id对应的方法，将gm的ID对应到NCBI上去

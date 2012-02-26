@@ -8,7 +8,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genome.getChrSequence.ChrSearch;
 import com.novelbio.analysis.seq.genome.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodInfo;
@@ -33,6 +32,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 
 

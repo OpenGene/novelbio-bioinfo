@@ -1,9 +1,9 @@
 package com.novelbio.database.updatedb.database;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class SoyBean {
 	int taxID = 3847;

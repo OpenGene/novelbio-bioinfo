@@ -2,8 +2,8 @@ package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.generalConf.NovelBioConst;
 /**
  * 常规affy的注释文件，仅导入affy探针，其他注释通通不导入<br>
  * <b>如果导入不进去，考虑将ss[8]放入筛选条件</b><br>

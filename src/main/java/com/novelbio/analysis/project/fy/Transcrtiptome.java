@@ -1,10 +1,10 @@
 package com.novelbio.analysis.project.fy;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneCluster;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 重建转录本

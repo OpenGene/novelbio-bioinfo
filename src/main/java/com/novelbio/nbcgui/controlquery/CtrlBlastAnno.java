@@ -1,4 +1,4 @@
-package com.novelbio.analysis.guiRun.BlastGUI.control;
+package com.novelbio.nbcgui.controlquery;
 
 
 import java.util.ArrayList;
@@ -7,9 +7,9 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import com.novelbio.analysis.guiRun.GoPathScr2Trg.GUI.GuiBlastJpanel;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 
 
 

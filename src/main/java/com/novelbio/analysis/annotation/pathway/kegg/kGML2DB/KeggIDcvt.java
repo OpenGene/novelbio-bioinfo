@@ -3,7 +3,6 @@ package com.novelbio.analysis.annotation.pathway.kegg.kGML2DB;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
@@ -17,6 +16,7 @@ import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
 import com.novelbio.database.service.servkegg.ServKNCompInfo;
 import com.novelbio.database.service.servkegg.ServKNIdKeg;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 将KEGGID与geneID和KEGGID与KO的关系等导入数据库

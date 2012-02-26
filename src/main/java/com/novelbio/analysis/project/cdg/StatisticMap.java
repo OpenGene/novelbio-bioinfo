@@ -2,12 +2,12 @@ package com.novelbio.analysis.project.cdg;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.genomeNew.GffChrMap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class StatisticMap {
 	

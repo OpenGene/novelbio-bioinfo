@@ -8,14 +8,14 @@ import java.util.regex.Pattern;
 /**
  * 输入正则表达式和所查找的文本，找到该正则表达式出现的位置
  */
-public class Patternlocation 
+public class PatternOperate 
 {
 	/**
 	 * <b>高级处理，耗时长</b>
 	 * 输入stringinput，正则表达式,以及是否无视大小写（True），
-	 * @param inputstr：输入所要查找的string
-	 * @param regex：输入要匹配的正则表达式
-	 * @param CASE：是否无视大小写。False:无视大小写。True:检查大小写
+	 * @param inputstr 输入所要查找的string
+	 * @param regex 输入要匹配的正则表达式
+	 * @param CASE 是否无视大小写。False:无视大小写。True:检查大小写
 	 * @return 返回List<String[3]>
 	 * list(i):input中找到的第i个匹配字符--具体内容为里面装的string[2]数组。<br/>
 	 * String[0]:正则表达式的某个特定的字符串<br/>
@@ -95,7 +95,7 @@ public class Patternlocation
     boolean thiscase = false;
 	 Pattern patInput;
 	 Matcher matInput;
-    public Patternlocation(String regex,boolean thiscase) {
+    public PatternOperate(String regex,boolean thiscase) {
 		this.regex = regex;
 		this.thiscase = thiscase;
 

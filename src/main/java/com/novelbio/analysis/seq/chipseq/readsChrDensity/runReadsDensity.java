@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.chipseq.readsChrDensity;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 
 public class runReadsDensity 

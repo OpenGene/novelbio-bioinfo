@@ -2,10 +2,10 @@ package com.novelbio.analysis.project.zhy;
 
 import java.awt.Color;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.GffChrMap;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class HeatMap {
 	public static void main(String[] args) {

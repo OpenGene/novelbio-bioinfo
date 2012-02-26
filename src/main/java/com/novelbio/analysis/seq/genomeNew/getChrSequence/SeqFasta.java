@@ -7,7 +7,7 @@ import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.reseq.SoapsnpInfo;
-import com.novelbio.base.dataStructure.Patternlocation;
+import com.novelbio.base.dataStructure.PatternOperate;
 
 /**
  * 本类专门用来装fasta文件的具体信息，的超类
@@ -873,7 +873,7 @@ public class SeqFasta {
 	 */
 	public ArrayList<String[]> getMotifScanResult(String regex, int site) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		ArrayList<String[]> lsTmpResultFor = Patternlocation.getPatLoc(toString(), regex, false);
+		ArrayList<String[]> lsTmpResultFor = PatternOperate.getPatLoc(toString(), regex, false);
 		if (lsTmpResultFor != null && lsTmpResultFor.size() > 0) {
 			for (String[] strings : lsTmpResultFor) {
 				String[] tmpResult = new String[4];
@@ -888,7 +888,7 @@ public class SeqFasta {
 				lsResult.add(tmpResult);
 			}
 		}
-		ArrayList<String[]> lsTmpResultRev = Patternlocation.getPatLoc(reservecom().toString(), regex, false);
+		ArrayList<String[]> lsTmpResultRev = PatternOperate.getPatLoc(reservecom().toString(), regex, false);
 		if (lsTmpResultRev != null && lsTmpResultRev.size() > 0) {
 			for (String[] strings : lsTmpResultRev) {
 				String[] tmpResult = new String[4];

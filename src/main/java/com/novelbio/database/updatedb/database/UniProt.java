@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import org.apache.poi.hssf.record.cont.ContinuableRecord;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 升级UniProt下载的所有文件的类

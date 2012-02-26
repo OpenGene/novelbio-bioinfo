@@ -1,10 +1,10 @@
 package com.novelbio.analysis.project.cdg;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
 import com.novelbio.analysis.seq.chipseq.BedPeakSicer;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 分析nature2007里面的甲基化数据

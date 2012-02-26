@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -17,6 +16,7 @@ import com.novelbio.database.updatedb.idconvert.GeneInfoTaxIDgetSymbol;
 import com.novelbio.database.updatedb.idconvert.NCBIIDOperate;
 import com.novelbio.database.updatedb.idconvert.UniProtConvertID;
 import com.novelbio.database.updatedb.idconvert.Yeast;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 自动化升级数据库

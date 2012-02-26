@@ -12,7 +12,6 @@ import java.util.List;
 import org.apache.commons.math.stat.StatUtils;
 import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
@@ -27,6 +26,7 @@ import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.HeatMap;
 import com.novelbio.base.plot.java.HeatChart;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.test.testextend.a;
 
 /**

@@ -8,13 +8,13 @@ import org.apache.jasper.tagplugins.jstl.core.If;
 import org.apache.log4j.Logger;
 import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.updatedb.database.UpDateFriceDB;
+import com.novelbio.generalConf.NovelBioConst;
 
 public class MaizeGDB {
 	private static Logger logger = Logger.getLogger(MaizeGDB.class);
