@@ -51,7 +51,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class GuiPearson extends JPanel{
+public class GuiPearsonJpanel extends JPanel{
 
 	private JTabbedPane jTabbedPanePathResult;
 	private JButton jBtbSavePath;
@@ -71,7 +71,7 @@ public class GuiPearson extends JPanel{
 	static int StaxID = 9606;//blastŒÔ÷÷ID
 	
 	
-	public GuiPearson() 
+	public GuiPearsonJpanel() 
 	{
 		GroupLayout jPanPathLayout = new GroupLayout((JComponent)this);
 		

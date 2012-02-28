@@ -89,7 +89,7 @@ public class GffGeneCluster {
 			gffDetailGene2 = lsGffGeneComp.get(0);
 		}
 		if (gffDetailGene1 != null && gffDetailGene2 != null) {
-			start = Math.min(gffDetailGene1.getNumberstart(),gffDetailGene2.getNumberstart());
+			start = Math.min(gffDetailGene1.getStartAbs(),gffDetailGene2.getStartAbs());
 		}
 	}
 	
@@ -104,7 +104,7 @@ public class GffGeneCluster {
 			
 			return gffDetailGene1;
 		}
-		GffDetailGene gffDetailGeneNew = new GffDetailGene(gffDetailGene2.getChrID(), gffDetailGene2.getLocString(), gffDetailGene1.isCis5to3());
+		GffDetailGene gffDetailGeneNew = new GffDetailGene(gffDetailGene2.getParentName(), gffDetailGene2.getName(), gffDetailGene1.isCis5to3());
 		if ((lsGffGeneThis == null || lsGffGeneThis.size() == 0)&& lsGffGeneComp != null) {
 			return lsGffGeneComp.get(0);
 		}
@@ -152,7 +152,7 @@ public class GffGeneCluster {
 	 */
 	private GffGeneIsoInfo findSameIso(GffGeneIsoInfo gffGeneIsoInfo, GffDetailGene gffDetailGene)
 	{
-		if (gffGeneIsoInfo.getIsoName().contains("01852")) {
+		if (gffGeneIsoInfo.getName().contains("01852")) {
 			System.out.println("stop");
 		}
 		TreeMap<Double, GffGeneIsoInfo> mapGffIso = new TreeMap<Double, GffGeneIsoInfo>();
@@ -220,7 +220,7 @@ public class GffGeneCluster {
 			}
 			
 			boolean inAnotherIso = false; boolean inUpIso = false;
-			GffCodGene gffCodGene  = gffHashRef.searchLocation(gffDetailGene1.getChrID(), (int)compSubArrayCluster.getStartSite());
+			GffCodGene gffCodGene  = gffHashRef.searchLocation(gffDetailGene1.getParentName(), (int)compSubArrayCluster.getStartSite());
 			
 			if (gffDetailGene1.isCis5to3() && gffCodGene.isInsideUp()
 			||
@@ -239,7 +239,7 @@ public class GffGeneCluster {
 			lsIsoFinal.addAll(lsexon);
 		}
 		gffGeneIsoInfoIn.setLsIsoform(lsIsoFinal);
-		gffGeneIsoInfoIn.setIsoName(gffGeneIsoInfoCmp.getIsoName());
+		gffGeneIsoInfoIn.setName(gffGeneIsoInfoCmp.getName());
 	}
 	
 	
@@ -264,10 +264,10 @@ public class GffGeneCluster {
 	{
 		String chrID = "";
 		if (gffDetailGene1 != null) {
-			chrID = gffDetailGene1.getChrID();
+			chrID = gffDetailGene1.getParentName();
 		}
 		else {
-			chrID = gffDetailGene2.getChrID();
+			chrID = gffDetailGene2.getParentName();
 		}
 		ArrayList<int[]> lsResultExon = new ArrayList<int[]>();
 		
@@ -421,10 +421,10 @@ public class GffGeneCluster {
 		int smallInt = 20;
 		String chrID = "";
 		if (gffDetailGene1 != null) {
-			chrID = gffDetailGene1.getChrID();
+			chrID = gffDetailGene1.getParentName();
 		}
 		else {
-			chrID = gffDetailGene2.getChrID();
+			chrID = gffDetailGene2.getParentName();
 		}
 		ArrayList<int[]> lsResultExon = new ArrayList<int[]>();
 		
@@ -675,33 +675,33 @@ public class GffGeneCluster {
 				int[] exon = new int[2];
 				//首先考察cufflink的，也就是this的，如果this有剪接位点，就返回
 				//考察起点
-				if (tophatJunction.getJunctionSite(gffDetailGene1.getChrID(),(int)lsExonThis.get(0).getStart()) > 0) {
+				if (tophatJunction.getJunctionSite(gffDetailGene1.getParentName(),(int)lsExonThis.get(0).getStart()) > 0) {
 					exon[0] = (int)lsExonThis.get(0).getStart();
 				}
-				else if (tophatJunction.getJunctionSite(gffDetailGene1.getChrID(),(int)lsExonComp.get(0).getStart()) > 0) {
+				else if (tophatJunction.getJunctionSite(gffDetailGene1.getParentName(),(int)lsExonComp.get(0).getStart()) > 0) {
 					exon[0] = (int)lsExonComp.get(0).getStart();
 				}
 				else {
 					if (inAnotherIso) {
-						logger.error("没找到合适的junction，而且在另一个转录本内：" + gffDetailGene1.getChrID() + " " + (int)lsExonThis.get(0).getStart());
+						logger.error("没找到合适的junction，而且在另一个转录本内：" + gffDetailGene1.getParentName() + " " + (int)lsExonThis.get(0).getStart());
 						return null;
 					}
-					logger.error("没找到合适的junction，用ref的位置：" + gffDetailGene1.getChrID() + " " + (int)lsExonThis.get(0).getStart());
+					logger.error("没找到合适的junction，用ref的位置：" + gffDetailGene1.getParentName() + " " + (int)lsExonThis.get(0).getStart());
 					exon[0] = (int)lsExonComp.get(0).getStart();
 				}
 				//考察终点
-				if (tophatJunction.getJunctionSite(gffDetailGene1.getChrID(),(int)lsExonThis.get(0).getEnd()) > 0) {
+				if (tophatJunction.getJunctionSite(gffDetailGene1.getParentName(),(int)lsExonThis.get(0).getEnd()) > 0) {
 					exon[1] = (int)lsExonThis.get(0).getEnd();
 				}
-				else if (tophatJunction.getJunctionSite(gffDetailGene1.getChrID(),(int)lsExonComp.get(0).getEnd()) > 0) {
+				else if (tophatJunction.getJunctionSite(gffDetailGene1.getParentName(),(int)lsExonComp.get(0).getEnd()) > 0) {
 					exon[1] = (int)lsExonComp.get(0).getEnd();
 				}
 				else {
 					if (inAnotherIso) {
-						logger.error("没找到合适的junction，而且在另一个转录本内：" + gffDetailGene1.getChrID() + " " + (int)lsExonThis.get(0).getEnd());
+						logger.error("没找到合适的junction，而且在另一个转录本内：" + gffDetailGene1.getParentName() + " " + (int)lsExonThis.get(0).getEnd());
 						return null;
 					}
-					logger.error("没找到合适的junction，用ref的位置：" + gffDetailGene1.getChrID() + " " + (int)lsExonThis.get(0).getEnd());
+					logger.error("没找到合适的junction，用ref的位置：" + gffDetailGene1.getParentName() + " " + (int)lsExonThis.get(0).getEnd());
 					exon[1] = (int)lsExonComp.get(0).getEnd();
 				}
 				ArrayList<int[]> lsResult = new ArrayList<int[]>();
@@ -712,12 +712,12 @@ public class GffGeneCluster {
 		//第一组有一个exon，第二组有很多个
 		if (lsExonThis.size() == 1 && lsExonComp.size() != 1) {
 			int[] exon = new int[2];
-			ArrayList<int[]> ls0List = mapReads.region0Info(gffDetailGene1.getChrID(), (int)lsExonThis.get(0).getStart(), (int)lsExonThis.get(0).getEnd());
+			ArrayList<int[]> ls0List = mapReads.region0Info(gffDetailGene1.getParentName(), (int)lsExonThis.get(0).getStart(), (int)lsExonThis.get(0).getEnd());
 			if (ls0List.size() <= 0) {
-				if (tophatJunction.getJunctionSite(gffDetailGene1.getChrID(),(int)lsExonThis.get(0).getStart()) > 0) {
+				if (tophatJunction.getJunctionSite(gffDetailGene1.getParentName(),(int)lsExonThis.get(0).getStart()) > 0) {
 					exon[0] = (int)lsExonThis.get(0).getStart();
 				}
-				else if (tophatJunction.getJunctionSite(gffDetailGene1.getChrID(),(int)lsExonComp.get(0).getStart()) > 0) {
+				else if (tophatJunction.getJunctionSite(gffDetailGene1.getParentName(),(int)lsExonComp.get(0).getStart()) > 0) {
 					exon[0] = (int)lsExonComp.get(0).getStart();
 				}
 			}
@@ -749,9 +749,9 @@ public class GffGeneCluster {
 				if (gffDetailGene1.isCis5to3()) {
 					
 					//看该UTR所在的exon与下一个exon之间是不是直接相连，如果相连，就可以合并了
-					ArrayList<int[]> lsInfo = mapReads.region0Info(gffDetailGene1.getChrID(), (int)compSubArrayClusterThis.getEndSite(), (int)compSubArrayClusterNext.getStartSite());
+					ArrayList<int[]> lsInfo = mapReads.region0Info(gffDetailGene1.getParentName(), (int)compSubArrayClusterThis.getEndSite(), (int)compSubArrayClusterNext.getStartSite());
 					if (lsInfo.size() == 0) {
-						ArrayList<Integer> lsJunct = tophatJunction.getJunctionSite(gffDetailGene1.getChrID(), (int)compSubArrayClusterThis.getEndSite());
+						ArrayList<Integer> lsJunct = tophatJunction.getJunctionSite(gffDetailGene1.getParentName(), (int)compSubArrayClusterThis.getEndSite());
 						if (lsJunct.size() == 0) {
 							int[] exon = new int[2];
 							exon[0] = (int)compSubArrayClusterThis.getStartSite();
@@ -794,10 +794,10 @@ public class GffGeneCluster {
 
 		if ((lsExonThis1.size() == 0 || lsExonThis2.size() == 0) && compSubArrayClusterNext != null) {
 			// 看该UTR所在的exon与下一个exon之间是不是直接相连，如果相连，就可以合并了
-			ArrayList<int[]> lsInfo = mapReads.region0Info( gffDetailGene1.getChrID(), (int) compSubArrayClusterThis.getEndSite(), (int) compSubArrayClusterNext.getStartSite());
+			ArrayList<int[]> lsInfo = mapReads.region0Info( gffDetailGene1.getParentName(), (int) compSubArrayClusterThis.getEndSite(), (int) compSubArrayClusterNext.getStartSite());
 			if (lsInfo.size() == 0) {
 				//查找junction位点
-				ArrayList<Integer> lsJunct = getJunctionSite( gffDetailGene1.getChrID(), (int) compSubArrayClusterThis.getEndSite(), cond);
+				ArrayList<Integer> lsJunct = getJunctionSite( gffDetailGene1.getParentName(), (int) compSubArrayClusterThis.getEndSite(), cond);
 				//没有junction位点
 				if (lsJunct.size() == 0) {
 					int[] exon = new int[2];

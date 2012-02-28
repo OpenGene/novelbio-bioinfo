@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.novelbio.analysis.seq.genomeNew2.GffChrHanYanChrom;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
 import junit.framework.TestCase;

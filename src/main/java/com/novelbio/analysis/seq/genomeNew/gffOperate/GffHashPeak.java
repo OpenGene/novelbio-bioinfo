@@ -149,11 +149,11 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 						lastGffdetailpeak.numberend=tmppeakend;
 					//将基因(转录本ID)装入LOCList					
 					//将本基因(转录本)的ID装入locString中
-					lastGffdetailpeak.setLocString(lastGffdetailpeak.getLocString()+"/"+tmppeakstart+"_"+tmppeakend);
+					lastGffdetailpeak.setName(lastGffdetailpeak.getName()+"/"+tmppeakstart+"_"+tmppeakend);
 					//将新值装入locHashtable	
 					//将locHashtable中相应的项目也修改，同时加入新的项目
 					//因为UCSC里面没有转录本一说，只有两个LOCID共用一个区域的情况，所以只能够两个不同的LOCID指向同一个GffdetailUCSCgene
-					String[] allPeakID = lastGffdetailpeak.getLocString().split("/");
+					String[] allPeakID = lastGffdetailpeak.getName().split("/");
 					for (int m= 0; m < allPeakID.length; m++) {
 						locHashtable.put(allPeakID[m], lastGffdetailpeak);
 					}
@@ -167,7 +167,7 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 				gffdetailpeak.numberend=tmppeakend;
 				
 				LOCList.add(gffdetailpeak);  
-				locHashtable.put(gffdetailpeak.getLocString(), gffdetailpeak);
+				locHashtable.put(gffdetailpeak.getName(), gffdetailpeak);
 			}
 			LOCList.trimToSize();
 //			for (GffDetailPeak gffDetail : LOCList) {

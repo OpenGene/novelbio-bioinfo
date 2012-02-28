@@ -77,7 +77,7 @@ public class GffDetailCG extends GffDetailAbs
 	}
 	@Override
 	public GffDetailCG clone() {
-		GffDetailCG gffDetailCG = new GffDetailCG(getChrID(), getLocString(), cis5to3);
+		GffDetailCG gffDetailCG = new GffDetailCG(getParentName(), getName(), cis5to3);
 		this.clone(gffDetailCG);
 		gffDetailCG.numGC = numGC;
 		gffDetailCG.lengthCpG=lengthCpG;

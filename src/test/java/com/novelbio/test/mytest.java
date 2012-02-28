@@ -18,6 +18,7 @@ import java.lang.reflect.Array;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -100,24 +101,21 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-//		String txtFile = "";
-//		String parent = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/";
-//		txtFile = parent + "WEall_SE-W200-G600-E100.scoreisland";
-//		System.out.println("WE: "+getAllPeakLen(txtFile));
-//		txtFile = parent + "KEall_SE-W200-G600-E100.scoreisland";
-//		System.out.println("KE: "+getAllPeakLen(txtFile));
-//		txtFile = parent + "W4all_SE-W200-G600-E100.scoreisland";
-//		System.out.println("W4: "+getAllPeakLen(txtFile));
-//		txtFile = parent + "K4all_SE-W200-G600-E100.scoreisland";
-//		System.out.println("K4: "+getAllPeakLen(txtFile));
-//		BedPeakSicer bedPeakSicer = new BedPeakSicer("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/WEall_SE.bed");
-//		bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
-//		bedPeakSicer.setEffectiveGenomeSize(85);
-//		bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingtest", "");
-		
-		String ss = "sefe|fsef";
-		System.out.println(ss.split("\\|")[1]);
-		
+		ArrayList<Double> lsInt = new ArrayList<Double>();
+		for (int i = 1; i < 10; i++) {
+			lsInt.add((double)i);
+		}
+		System.out.println(1 + " " +Collections.binarySearch(lsInt, 1.0));
+		System.out.println(2 + " " +Collections.binarySearch(lsInt, 2.0));
+		System.out.println(3 + " " +Collections.binarySearch(lsInt, 3.0));
+		System.out.println(0.2 + " " +Collections.binarySearch(lsInt, 0.2));
+		System.out.println(1.5 + " " +Collections.binarySearch(lsInt, 1.5));
+		System.out.println(2.5 + " " +Collections.binarySearch(lsInt, 2.5));
+		System.out.println(3 + " " +Collections.binarySearch(lsInt, 3.0));
+		System.out.println(3.5 + " " +Collections.binarySearch(lsInt, 3.5));
+		System.out.println(4 + " " +Collections.binarySearch(lsInt, 4.0));
+		System.out.println(9.0 + " " +Collections.binarySearch(lsInt, 9.0));
+		System.out.println(11.5 + " " +Collections.binarySearch(lsInt, 11.5));
 	}
 	
 	
@@ -485,7 +483,7 @@ public class mytest {
 					treeIntron.add(gffDetailGene.getLongestSplit()
 							.getLenIntron(i + 1));
 					if (gffDetailGene.getLongestSplit().getLenIntron(i + 1) == 1043911) {
-						System.out.println(gffDetailGene.getLocString());
+						System.out.println(gffDetailGene.getName());
 						System.out.println(i + 1);
 					}
 				}
@@ -587,11 +585,11 @@ public class mytest {
 					.getLocHashtable().get(geneID);
 			ArrayList<int[]> iso = gffDetailGene.getLongestSplit().getIsoInfo();
 			String tmpseq = chrStringHash.getSeq(gffDetailGene.isCis5to3(),
-					gffDetailGene.getChrID(), iso, false);
+					gffDetailGene.getParentName(), iso, false);
 
 			String tmpseq2 = seqFastaHash.getsequence(gffDetailGene
-					.getLongestSplit().getIsoName().toLowerCase(), true);
-			if (gffDetailGene.getLongestSplit().getIsoName()
+					.getLongestSplit().getName().toLowerCase(), true);
+			if (gffDetailGene.getLongestSplit().getName()
 					.equals("NM_022834")) {
 				System.err.println("aa");
 			}
@@ -636,7 +634,7 @@ public class mytest {
 				.getLocHashtable().get("NM_032526");
 		ArrayList<int[]> iso = gffDetailGene.getLongestSplit().getIsoInfo();
 		String tmpseq = chrStringHash.getSeq(gffDetailGene.isCis5to3(),
-				gffDetailGene.getChrID(), iso, false);
+				gffDetailGene.getParentName(), iso, false);
 		System.out.println(tmpseq.toUpperCase());
 	}
 
@@ -663,10 +661,10 @@ public class mytest {
 					.getLocHashtable().get(geneID);
 			ArrayList<int[]> iso = gffDetailGene.getLongestSplit().getIsoInfo();
 			String tmpseq = chrStringHash.getSeq(gffDetailGene.isCis5to3(),
-					gffDetailGene.getChrID(), iso, false);
+					gffDetailGene.getParentName(), iso, false);
 			if (tmpseq != null) {
 				txtReadandWrite.writefileln(">"
-						+ gffDetailGene.getLongestSplit().getIsoName());
+						+ gffDetailGene.getLongestSplit().getName());
 				txtReadandWrite.writefileln(tmpseq);
 			}
 		}

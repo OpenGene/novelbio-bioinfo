@@ -41,7 +41,7 @@ import javax.swing.SwingUtilities;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class GUIanalysis extends javax.swing.JFrame {
+public class GUIanalysisJpanel extends javax.swing.JFrame {
 	/**
 	 * 
 	 */
@@ -50,17 +50,17 @@ public class GUIanalysis extends javax.swing.JFrame {
 	private GuiGoJPanel guiGoJPanel;
 	private GuiPathJpanel guiPathJpanel;
 	private GuiBlastJpanel guiBlastJpanel;
-	private GuiSrcToTrg guiSrcToTrg;
-	private GuiDegreeAdd guiDegreeAdd;
-	private GuiPearson guiPearson;
-	private GuiTools guiTools;
+	private GuiSrcToTrgJpanel guiSrcToTrg;
+	private GuiDegreeAddJpanel guiDegreeAdd;
+	private GuiPearsonJpanel guiPearson;
+	private GuiToolsJpanel guiTools;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				GUIanalysis inst = new GUIanalysis();
+				GUIanalysisJpanel inst = new GUIanalysisJpanel();
 				inst.setLocationRelativeTo(null);
 				inst.setVisible(true);
 				inst.setTitle("NovelBio Data Analysis Platform");
@@ -71,7 +71,7 @@ public class GUIanalysis extends javax.swing.JFrame {
 		});
 	}
 	
-	public GUIanalysis() {
+	public GUIanalysisJpanel() {
 		super();
 		initGUI();
 	}
@@ -92,16 +92,16 @@ public class GUIanalysis extends javax.swing.JFrame {
 				guiPathJpanel = new GuiPathJpanel();
 				jTabbedPane1.addTab("Pathway Analysis", null, guiPathJpanel, null);
 				
-				guiSrcToTrg = new GuiSrcToTrg();
+				guiSrcToTrg = new GuiSrcToTrgJpanel();
 				jTabbedPane1.addTab("Gene-Act Network", null, guiSrcToTrg, null);
 				
 			
-				guiPearson = new GuiPearson();
+				guiPearson = new GuiPearsonJpanel();
 				jTabbedPane1.addTab("Co-Exp Network", null, guiPearson, null);
-				guiDegreeAdd = new GuiDegreeAdd();
+				guiDegreeAdd = new GuiDegreeAddJpanel();
 				jTabbedPane1.addTab("Network Analysis", null, guiDegreeAdd, null);
 				
-				guiTools = new GuiTools();
+				guiTools = new GuiToolsJpanel();
 				jTabbedPane1.addTab("Tools", null, guiTools, null);
 //				{
 //					jPanSrctrg = new JPanel();

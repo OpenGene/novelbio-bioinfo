@@ -18,6 +18,10 @@ public class SeqFasta {
 	private String SeqSequence;
 	private static Logger logger = Logger.getLogger(SeqFasta.class);
 	private boolean cis5to3 = true;
+	
+	public static final int SEQ_UNKNOWN = 128;
+	public static final int SEQ_PRO = 256;
+	public static final int SEQ_NR = 512;
 	/**
 	 * 结果的文件是否转化为大小写 True：小写 False：大写 null：不变
 	 * @return
@@ -43,8 +47,13 @@ public class SeqFasta {
 	private static HashMap<Character, Character> compmap = null;// 碱基翻译哈希表
 
 	/**
-	 * 获得互补配对hash表
-	 * 给碱基对照哈希表赋值 目前有A-T， G-C，N-N 的对应关系（包括了大小写的对应） 将来可能要添加新的
+	 * 获得互补配对hash表<br>
+		 * 生物信息学中常用的 18 个碱基字母 字母 碱基 单碱基 A A C C G G I I T T U U<br>
+		 *  二碱基 K G/T M A/C R A/G S G/C W A/T Y C/T <br>
+		 *  三碱基 B C/G/T D A/G/T H A/C/T V A/C/G<br>
+		 *   四碱基  N A/C/G/T X A/C/G/T <br>
+		 *   全称 Adenine Cytosine Guanine Isosine Thymine Uracil Keto aMino puRine Strong pair Weak pair pYrimidine Not A Not C Not G Not U (or T) Any Unknown <br>
+		 *   说明 腺嘌呤 胞嘧啶 鸟嘌呤 次黄嘌呤 胸腺嘧啶 尿嘧啶 含酮基 含氨基 嘌呤 强配对 弱配对 嘧啶 非A 非C 非G 非 U(T) 任一碱基 未知碱基 <br>
 	 */
 	public static HashMap<Character, Character> getCompMap() {
 		if (compmap != null) {
@@ -53,18 +62,38 @@ public class SeqFasta {
 		compmap = new HashMap<Character, Character>();// 碱基翻译哈希表
 		compmap.put(Character.valueOf('A'), Character.valueOf('T'));
 		compmap.put(Character.valueOf('a'), Character.valueOf('t'));
+		
 		compmap.put(Character.valueOf('T'), Character.valueOf('A'));
 		compmap.put(Character.valueOf('t'), Character.valueOf('a'));
+		
 		compmap.put(Character.valueOf('G'), Character.valueOf('C'));
 		compmap.put(Character.valueOf('g'), Character.valueOf('c'));
+		
 		compmap.put(Character.valueOf('C'), Character.valueOf('G'));
 		compmap.put(Character.valueOf('c'), Character.valueOf('g'));
-		compmap.put(Character.valueOf(' '), Character.valueOf(' '));
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		compmap.put(Character.valueOf('B'), Character.valueOf('V'));
+		compmap.put(Character.valueOf('b'), Character.valueOf('v'));
+		
+		compmap.put(Character.valueOf('V'), Character.valueOf('B'));
+		compmap.put(Character.valueOf('v'), Character.valueOf('b'));
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		compmap.put(Character.valueOf('D'), Character.valueOf('H'));
+		compmap.put(Character.valueOf('d'), Character.valueOf('h'));
+		
+		compmap.put(Character.valueOf('H'), Character.valueOf('D'));
+		compmap.put(Character.valueOf('h'), Character.valueOf('d'));
+		/////////////////////////////////////////////////////////////////////////////////////////////
+		compmap.put(Character.valueOf('X'), Character.valueOf('X'));
+		compmap.put(Character.valueOf('x'), Character.valueOf('x'));
+		
 		compmap.put(Character.valueOf('N'), Character.valueOf('N'));
 		compmap.put(Character.valueOf('n'), Character.valueOf('n'));
+		////////////////////////////////////////////////////////////////////////////////////////////
 		compmap.put(Character.valueOf('-'), Character.valueOf('-'));
 		compmap.put(Character.valueOf('\n'), Character.valueOf(' '));
-		compmap.put(Character.valueOf('X'), Character.valueOf('X'));
+		compmap.put(Character.valueOf(' '), Character.valueOf(' '));
+		
 		return compmap;
 	}
 	public static final String AA3_Ala = "Ala";
@@ -837,9 +866,18 @@ public class SeqFasta {
 		StringBuilder resultAA = new StringBuilder();
 		for (int i = orf; i < nrChar.length - 3; i = i+3) {
 			String tmp = String.valueOf(new char[]{nrChar[i],nrChar[i+1],nrChar[i+2]});
-			resultAA.append(AminoAcid.convertDNACode2AA(tmp, true));
+			resultAA.append(convertDNACode2AA(tmp, true));
 		}
 		return resultAA.toString();
+	}
+	/**
+	 * 将nr序列转变为aa序列，首先正反向之后，然后按照该顺序进行orf选择
+	 * @param cis 是正向 false：反向互补
+	 * @param orf 第几个orf，0，1，2
+	 * @return
+	 */
+	public String toStringAA() {
+		return toStringAA(isCis5to3(), 0);
 	}
 	/**
 	 * 给定motif，在序列上查找相应的正则表达式<br>
@@ -906,6 +944,33 @@ public class SeqFasta {
 		return lsResult;
 	}
 	
+	public int getSeqType()
+	{
+		int len = 2000;
+		if (len > length()) {
+			len = length() - 1;
+		}
+		char[] chr = SeqSequence.substring(0, len).toCharArray();
+		int num = 0;
+
+		for (char c : chr) {
+			if (getCompMap().containsKey(c)) {
+				continue;
+			}
+			else {
+				num ++ ;
+			}
+		}
+		if (num == 0) {
+			return SEQ_NR;
+		}
+		else if ((double)num/length() < 0.1) {
+			return SEQ_UNKNOWN;
+		}
+		else {
+			return SEQ_PRO;
+		}
+	}
 	public static String[] getMotifScanTitle()
 	{
 		String[] title = new String[]{"SeqName","Strand","MotifSeq","Distance2SeqEnd"};

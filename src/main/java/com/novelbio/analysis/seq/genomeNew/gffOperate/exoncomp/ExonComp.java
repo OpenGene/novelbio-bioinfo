@@ -87,7 +87,7 @@ public class ExonComp {
 	{
 		ArrayList<GffGeneIsoInfo> lsIsos = gffDetailGene.getLsCodSplit();
 		for (int[] exonBound : lsExonBounder) {
-			ExonCluster exonCluster = new ExonCluster(gffDetailGene.getChrID(), exonBound[0], exonBound[1]);
+			ExonCluster exonCluster = new ExonCluster(gffDetailGene.getParentName(), exonBound[0], exonBound[1]);
 			for (GffGeneIsoInfo gffGeneIsoInfo : lsIsos) {
 				if (gffGeneIsoInfo.isCis5to3() != gffDetailGene.isCis5to3()) {
 					continue;
@@ -129,10 +129,10 @@ public class ExonComp {
 					}
 				}
 				if (lsExonClusterTmp.size() > 0) {
-					exonCluster.addExonCluster(gffGeneIsoInfo.getIsoName(), lsExonClusterTmp);
+					exonCluster.addExonCluster(gffGeneIsoInfo.getName(), lsExonClusterTmp);
 				}
 				if (junc && beforeExonNum < lsExon.size()-1) {
-					exonCluster.setIsoJun(gffGeneIsoInfo.getIsoName(), beforeExonNum);
+					exonCluster.setIsoJun(gffGeneIsoInfo.getName(), beforeExonNum);
 				}
 			}
 			lsExonClusters.add(exonCluster);

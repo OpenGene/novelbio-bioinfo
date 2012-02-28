@@ -15,6 +15,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	 */
 	private static final long serialVersionUID = 4583552188474447935L;
 	public static final String SEP = "/";
+
 	/**
 	 * 保存某个坐标和所在的element数目,
 	 * value: 正数，element中，
@@ -32,6 +33,13 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	HashMap<Integer, Integer> hashLocExInEnd;
 	
 	Boolean cis5to3 = null;
+	protected String listName = "";
+	public void setName(String listName) {
+		this.listName = listName;
+	}
+	public String getName() {
+		return listName;
+	}
 	/**
 	 * 没有方向则返回null
 	 * @return
@@ -439,13 +447,16 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	}
 	
 	/**
+	 * 依次比较两个list中的元素是否一致。内部调用每个元素的equals方法
+	 * 不比较name，如果需要比较name，那么就用equal
+	 * 暂时还没重写equal
 	 * 外显子比较如果一模一样则返回true；
 	 * @param lsOtherExon
 	 * @return
 	 */
 	public boolean compIso(ListAbs<E> lsOther)
 	{
-		if (lsOther.size() != size()) {
+		if (lsOther.size() != size() ) {
 			return false;
 		}
 		for (int i = 0; i < lsOther.size(); i++) {
@@ -464,7 +475,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	public void getLocHashtable(HashMap<String,E> hashLocMap)
 	{
 		for (E ele : this) {
-			String[] ss = ele.getLocString().split(SEP);
+			String[] ss = ele.getName().split(SEP);
 			for (String string : ss) {
 				hashLocMap.put(string, ele);
 			}
@@ -478,7 +489,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	{
 		for (int i = 0; i < size(); i++) {
 			E ele = get(i);
-			String[] ss = ele.getLocString().split(SEP);
+			String[] ss = ele.getName().split(SEP);
 			for (String string : ss) {
 				hashLocNum.put(string, i);
 			}
@@ -494,7 +505,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 		HashMap<String, Integer> hashID2Num = new HashMap<String, Integer>();
 		for (int i = 0; i < size(); i++) {
 			E ele = get(i);
-			String[] ss = ele.getLocString().split(SEP);
+			String[] ss = ele.getName().split(SEP);
 			for (String string : ss) {
 				hashID2Num.put(string, i);
 			}
@@ -510,7 +521,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	{
 		ArrayList<String> lsLocID = new ArrayList<String>();
 		for (E ele : this) {
-			lsLocID.add(ele.getLocString());
+			lsLocID.add(ele.getName());
 		}
 		return lsLocID;
 	}

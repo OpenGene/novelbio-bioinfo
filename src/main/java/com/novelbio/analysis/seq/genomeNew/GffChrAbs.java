@@ -20,6 +20,7 @@ import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.fileOperate.FileOperate;
 /**
  * GffHashGene和SeqHash都是static，也就是一次只能对一个物种进行分析
@@ -83,6 +84,8 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	static String chrFile = "";
 	static String chrRegx = null;
 	
+	
+	String equationsFile = "";
 	/**
 	 * 
 	 * @param gffType
@@ -182,9 +185,27 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 			mapReads = new MapReads(binNum, readsFile);
 			mapReads.setChrLenFile(getRefLenFile());
 			mapReads.setNormalType(mapNormType);
+			setMapCorrect();
 		}
 	}
+	/**
+	 * 给定一个文本来修正
+	 * @param correctFile x第一列，y第二；列，从第一行开始读取
+	 */
+	public void setMapCorrect(String correctFile)
+	{
+		this.equationsFile = correctFile;
+		setMapCorrect();
+	}
 	
+	protected void setMapCorrect()
+	{
+		Equations equations = new Equations();
+		equations.setXYFile(equationsFile);
+		if (mapReads != null) {
+			mapReads.setEquations(equations);
+		}
+	}
 	public void loadMapReads() {
 		try {
 			mapReads.ReadMapFile();
@@ -459,9 +480,9 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 			int tss = gffDetailGene.getLongestSplit().getTSSsite();
 			MapInfo mapInfo = null;
 			if (gffDetailGene.isCis5to3())
-				mapInfo = new MapInfo(gffDetailGene.getChrID(), tss - Math.abs(upBp), tss + Math.abs(downBp), tss,0, gffDetailGene.getLongestSplit().getIsoName());
+				mapInfo = new MapInfo(gffDetailGene.getParentName(), tss - Math.abs(upBp), tss + Math.abs(downBp), tss,0, gffDetailGene.getLongestSplit().getName());
 			else 
-				mapInfo = new MapInfo(gffDetailGene.getChrID(), tss - Math.abs(downBp), tss + Math.abs(upBp), tss, 0, gffDetailGene.getLongestSplit().getIsoName());
+				mapInfo = new MapInfo(gffDetailGene.getParentName(), tss - Math.abs(downBp), tss + Math.abs(upBp), tss, 0, gffDetailGene.getLongestSplit().getName());
 			mapInfo.setCis5to3(gffDetailGene.isCis5to3());
 			mapInfo.setWeight(value);
 			return mapInfo;
@@ -470,9 +491,9 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 			int tes = gffDetailGene.getLongestSplit().getTESsite();
 			MapInfo mapInfo = null;
 			if (gffDetailGene.isCis5to3())
-				mapInfo = new MapInfo(gffDetailGene.getChrID(), tes - Math.abs(upBp), tes + Math.abs(downBp), tes, 0, gffDetailGene.getLongestSplit().getIsoName());
+				mapInfo = new MapInfo(gffDetailGene.getParentName(), tes - Math.abs(upBp), tes + Math.abs(downBp), tes, 0, gffDetailGene.getLongestSplit().getName());
 			else 
-				mapInfo = new MapInfo(gffDetailGene.getChrID(), tes - Math.abs(downBp), tes + Math.abs(upBp), tes, 0, gffDetailGene.getLongestSplit().getIsoName());
+				mapInfo = new MapInfo(gffDetailGene.getParentName(), tes - Math.abs(downBp), tes + Math.abs(upBp), tes, 0, gffDetailGene.getLongestSplit().getName());
 			mapInfo.setCis5to3(gffDetailGene.isCis5to3());
 			mapInfo.setWeight(value);
 			return mapInfo;

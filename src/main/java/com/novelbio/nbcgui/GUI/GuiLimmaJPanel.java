@@ -27,7 +27,7 @@ import javax.swing.LayoutStyle;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class LimmaJPanel extends javax.swing.JPanel {
+public class GuiLimmaJPanel extends javax.swing.JPanel {
 	private JScrollPane jScrollPaneRawCelData;
 	private JRadioButton jRadGCRMA;
 	private JRadioButton jRadRMA;
@@ -51,13 +51,13 @@ public class LimmaJPanel extends javax.swing.JPanel {
 	*/
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
-		frame.getContentPane().add(new LimmaJPanel());
+		frame.getContentPane().add(new GuiLimmaJPanel());
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
 	}
 	
-	public LimmaJPanel() {
+	public GuiLimmaJPanel() {
 		super();
 		initGUI();
 	}

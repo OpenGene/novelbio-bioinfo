@@ -1,11 +1,10 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
-import java.util.Comparator;
-
 import com.novelbio.analysis.seq.genomeNew.listOperate.ElementAbs;
 
 public class ExonInfo implements ElementAbs, Comparable<ExonInfo>
 {
+	GffGeneIsoInfo gffGeneIsoInfo = null;
 	int[] exon = new int[2];
 	boolean cis;
 	public ExonInfo(int[] exon) {
@@ -17,7 +16,8 @@ public class ExonInfo implements ElementAbs, Comparable<ExonInfo>
 	 * @param end
 	 * @param cis
 	 */
-	public ExonInfo(int start, int end, boolean cis) {
+	public ExonInfo(GffGeneIsoInfo gffGeneIsoInfo, int start, int end, boolean cis) {
+		this.gffGeneIsoInfo = gffGeneIsoInfo;
 		this.cis = cis;
 		if (cis) {
 			exon[0] = Math.min(start, end);
@@ -28,25 +28,22 @@ public class ExonInfo implements ElementAbs, Comparable<ExonInfo>
 			exon[1] = Math.min(start, end);
 		}
 	}
-	
 	public ExonInfo() {
 	}
- 
+	
 	public void setCis5to3(boolean cis5to3)
 	{
 		this.cis = cis5to3;
 	}
 	@Override
-	public boolean isCis5to3() {
+	public Boolean isCis5to3() {
 		return cis;
 	}
 
-	@Override
 	public void setStartCis(int startLoc)
 	{
 		exon[0] = (int)startLoc;
 	}
-	@Override
 	public void setEndCis(int endLoc)
 	{
 		exon[1] = (int)endLoc;
@@ -75,7 +72,7 @@ public class ExonInfo implements ElementAbs, Comparable<ExonInfo>
 
 	public ExonInfo clone()
 	{
-		ExonInfo exonInfo = new ExonInfo(getStartCis(), getEndCis(), cis);
+		ExonInfo exonInfo = new ExonInfo(gffGeneIsoInfo, getStartCis(), getEndCis(), cis);
 		return exonInfo;
 	}
 	/**
@@ -90,8 +87,9 @@ public class ExonInfo implements ElementAbs, Comparable<ExonInfo>
 		
 		if (getClass() != elementAbs.getClass()) return false;
 		ExonInfo element = (ExonInfo)elementAbs;
-		
-		if (element.getLocString().equals(getLocString()) )
+		//先不比较两个exon所在转录本的名字
+//		if (exon[0] == element.exon[0] && exon[1] == element.exon[1] && element.getParentName().equals(element.getParentName()) )
+		if (exon[0] == element.exon[0] && exon[1] == element.exon[1] )
 		{
 			return true;
 		}
@@ -101,8 +99,8 @@ public class ExonInfo implements ElementAbs, Comparable<ExonInfo>
 	 * 本外显子的   起点_终点
 	 */
 	@Override
-	public String getLocString() {
-		return "" + exon[0] + "_" +  exon[1];
+	public String getName() {
+		return exon[0] + "_" +  exon[1];
 	}
 	@Override
 	public int compareTo(ExonInfo o) {
@@ -122,5 +120,9 @@ public class ExonInfo implements ElementAbs, Comparable<ExonInfo>
 				}
 				return result;
 			}
+	}
+	@Override
+	public String getParentName() {
+		return gffGeneIsoInfo.getName();
 	}
 }

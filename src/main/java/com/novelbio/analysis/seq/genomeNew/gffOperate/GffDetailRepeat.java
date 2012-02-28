@@ -44,7 +44,7 @@ public class GffDetailRepeat extends GffDetailAbs
 	}
 	@Override
 	public GffDetailRepeat clone() {
-		GffDetailRepeat gffDetailRepeat = new GffDetailRepeat(getChrID(), getLocString(), cis5to3);
+		GffDetailRepeat gffDetailRepeat = new GffDetailRepeat(getParentName(), getName(), cis5to3);
 		this.clone(gffDetailRepeat);
 		gffDetailRepeat.repeatName = repeatName;
 		gffDetailRepeat.repeatClass = repeatClass;

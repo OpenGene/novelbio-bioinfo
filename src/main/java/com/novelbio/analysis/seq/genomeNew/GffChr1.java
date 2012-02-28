@@ -282,8 +282,8 @@ private static Logger logger = Logger.getLogger(GffChr1.class);
 			if (gffGeneIsoSearch.ismRNA()) {
 				seqInfo.atg = getReadsInfo(string,gffGeneIsoSearch,normlizType);
 				if (seqInfo.atg == null) {
-					logger.error("本基因没有相应的信息："+gffGeneIsoSearch.getThisGffDetailGene().getChrID()+" "+ 
-							gffGeneIsoSearch.getTSSsite() +"  " +gffGeneIsoSearch.getTESsite() +"  "+gffGeneIsoSearch.getIsoName());
+					logger.error("本基因没有相应的信息："+gffGeneIsoSearch.getThisGffDetailGene().getParentName()+" "+ 
+							gffGeneIsoSearch.getTSSsite() +"  " +gffGeneIsoSearch.getTESsite() +"  "+gffGeneIsoSearch.getName());
 					continue;
 				}
 				seqInfo.seqName = string;

@@ -170,6 +170,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			if (!Chrhash.containsKey(chrnametmpString)) //新的染色体
 			{
 				LOCList=new ListAbs<GffDetailGene>();//新建一个LOCList并放入Chrhash
+				LOCList.setName(chrnametmpString);
 				Chrhash.put(chrnametmpString, LOCList);
 			}
 		   /**
@@ -186,7 +187,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 					}
 					gffDetailLOC.addATGUAG(cdsStart, cdsEnd);
 					if (cdsStart < 0 || cdsEnd < 0 || cdsStart > cdsEnd) {
-						System.out.println("GffHashPlantGeneError: 文件  " + gfffilename + "  本组或上组基因有问题，cdsStart或cdsEnd出错  " + gffDetailLOC.getLocString());
+						System.out.println("GffHashPlantGeneError: 文件  " + gfffilename + "  本组或上组基因有问题，cdsStart或cdsEnd出错  " + gffDetailLOC.getName());
 					}
 					mRNAsplit = false;// 全新的基因，将其归位false\
 					if (!ss[2].equals("gene")) {
@@ -206,8 +207,8 @@ public class GffHashGenePlant extends GffHashGeneAbs{
       			   gffDetailLOC.setTaxID(taxID);
       			   gffDetailLOC.numberstart=Integer.parseInt(ss[3].toLowerCase());gffDetailLOC.numberend=Integer.parseInt(ss[4]);//基因起止      		
       			   LOCList.add(gffDetailLOC);//添加进入LOClist
-      			   locHashtable.put(gffDetailLOC.getLocString().toLowerCase(), gffDetailLOC);//添加进入hash（LOCID）--GeneInforlist哈希表，确定各个基因和他们的类之间的关系    
-      			   LOCIDList.add(gffDetailLOC.getLocString());
+      			   locHashtable.put(gffDetailLOC.getName().toLowerCase(), gffDetailLOC);//添加进入hash（LOCID）--GeneInforlist哈希表，确定各个基因和他们的类之间的关系    
+      			   LOCIDList.add(gffDetailLOC.getName());
       		   }
       		   else {
       			   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  在本行可能没有指定的基因ID  " +content);
@@ -235,7 +236,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 				   }
 				   gffDetailLOC.addATGUAG(cdsStart, cdsEnd);
 				   if (cdsStart <0 || cdsEnd<0 || cdsStart >= cdsEnd) {
-					   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.getLocString());
+					   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.getName());
 				   }
 				   mRNAsplit =false;
 			   }
@@ -323,7 +324,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   }
 		   gffDetailLOC.addATGUAG(cdsStart,cdsEnd);
 		   if (cdsStart <0 || cdsEnd<0 || cdsStart > cdsEnd) {
-			   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.getLocString());
+			   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.getName());
 		   }
 		   mRNAsplit = false;//全新的基因，将其归位false
 	   }

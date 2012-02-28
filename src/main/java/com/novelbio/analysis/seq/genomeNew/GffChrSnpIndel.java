@@ -36,7 +36,7 @@ public class GffChrSnpIndel extends GffChrAbs {
 		GffChrSeq gffChrSeq = new GffChrSeq(NovelBioConst.GENOME_GFF_TYPE_UCSC,  null, NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
 //		gffChrSeq.setGffFile(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, "/media/winE/NBC/Project/Project_FY_Lab/Result/cufflinkAll/cufcompare/cmpAll.combined_cope.gtf");
 		gffChrSeq.loadChrFile();
-		String aaa = gffChrSeq.getSeq(true, "chr1", 1, 1);
+		SeqFasta aaa = gffChrSeq.getSeq(true, "chr1", 1, 1);
 		System.out.println(aaa);
 	}
 	
@@ -126,7 +126,7 @@ public class GffChrSnpIndel extends GffChrAbs {
 					LocEnd = LocStart - 2;
 				}
 			}
-			String NR = "";
+			SeqFasta NR = null;
 			
 			ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
 
@@ -136,17 +136,16 @@ public class GffChrSnpIndel extends GffChrAbs {
 			else {
 				NR = seqHash.getSeq(mapInfo.getChrID(), lsTmp, false);
 			}
-			mapInfo.setRefAAnr(NR);
+			mapInfo.setRefAAnr(NR.toString());
 //			System.out.println(seqHash.getSeq(mapInfo.getChrID(),  gffGeneIsoInfo.getRangeIso(LocStart-4, LocEnd+4), false));
-			AminoAcid aminoAcid = new AminoAcid(NR);
-			mapInfo.setRefAAseq(aminoAcid.convertDNA2AA());
+			mapInfo.setRefAAseq(NR.toStringAA());
 			System.out.println(mapInfo.getFlagSite());
-			String NRthis = replaceSnpIndel(gffGeneIsoInfo.isCis5to3(), NR, mapInfo, gffGeneIsoInfo.getLocAAbeforeBias(mapInfo.getFlagSite()));
+			String NRthis = replaceSnpIndel(gffGeneIsoInfo.isCis5to3(), NR.toString(), mapInfo, gffGeneIsoInfo.getLocAAbeforeBias(mapInfo.getFlagSite()));
 			mapInfo.setThisAAnr(NRthis);
 			AminoAcid aminoAcidThis = new AminoAcid(NRthis);
 			mapInfo.setThisAaSeq(aminoAcidThis.convertDNA2AA());
 			mapInfo.setOrfShift(aminoAcidThis.getOrfShitf());
-			mapInfo.setTitle(gffGeneIsoInfo.getIsoName());
+			mapInfo.setTitle(gffGeneIsoInfo.getName());
 			mapInfo.setGffIso(gffGeneIsoInfo);
 		}
 		else {
@@ -197,16 +196,15 @@ public class GffChrSnpIndel extends GffChrAbs {
 			if (lsTmp == null) {
 				return gffCodeGeneStart;
 			}
-			String NR = seqHash.getSeq(mapInfo.getChrID(), lsTmp, false);
-			AminoAcid aminoAcid = new AminoAcid(NR);
-			mapInfo.setRefAAseq(aminoAcid.convertDNA2AA());
-			mapInfo.setRefAAnr(NR);
-			String NRthis = replaceSnpIndel(gffGeneIsoInfoStart.isCis5to3(), NR, mapInfo, gffGeneIsoInfoStart.getLocAAbeforeBias(mapInfo.getFlagSite()));
+			SeqFasta NR = seqHash.getSeq(mapInfo.getChrID(), lsTmp, false);
+			mapInfo.setRefAAseq(NR.toStringAA());
+			mapInfo.setRefAAnr(NR.toString());
+			String NRthis = replaceSnpIndel(gffGeneIsoInfoStart.isCis5to3(), NR.toString(), mapInfo, gffGeneIsoInfoStart.getLocAAbeforeBias(mapInfo.getFlagSite()));
 			mapInfo.setThisAAnr(NRthis);
 			AminoAcid aminoAcidThis = new AminoAcid(NRthis);
 			mapInfo.setThisAaSeq(aminoAcidThis.convertDNA2AA());
 			mapInfo.setOrfShift(aminoAcidThis.getOrfShitf());
-			mapInfo.setTitle(gffGeneIsoInfoStart.getIsoName());
+			mapInfo.setTitle(gffGeneIsoInfoStart.getName());
 			mapInfo.setGffIso(gffGeneIsoInfoStart);
 		}
 		else {

@@ -99,13 +99,13 @@ public class GMIDNCBI {
 		gffHashGene.ReadGffarray(gffFile);
 		for (ArrayList<GffDetailCG> lsGffGene : hashLsGffGene.values()) {
 			for (GffDetailCG gffDetailGene : lsGffGene) {
-				GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(gffDetailGene.getChrID(), (int)gffDetailGene.getStartAbs(), (int)gffDetailGene.getEndAbs());
+				GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(gffDetailGene.getParentName(), (int)gffDetailGene.getStartAbs(), (int)gffDetailGene.getEndAbs());
 				ArrayList<GffDetailGene> lsOverlapGffGene = gffCodGeneDU.getAllGffDetail();
 				if (lsOverlapGffGene.size() > 3) {
 					lsOverlapGffGene = gffCodGeneDU.getLsGffDetailMid();
 				}
 				for (GffDetailGene gffDetailGene2 : lsOverlapGffGene) {
-					txtOutGene.writefileln(gffDetailGene2.getLocString() + "\t" + gffDetailGene.getLocString().split(sep)[0] + "\t" + gffDetailGene.getLocString().split(sep)[1]);
+					txtOutGene.writefileln(gffDetailGene2.getName() + "\t" + gffDetailGene.getName().split(sep)[0] + "\t" + gffDetailGene.getName().split(sep)[1]);
 				}
 			}
 		}

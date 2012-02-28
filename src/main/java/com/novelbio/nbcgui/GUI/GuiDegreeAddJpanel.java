@@ -46,7 +46,7 @@ import com.novelbio.nbcgui.controltest.CtrlPath;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class GuiDegreeAdd extends JPanel{
+public class GuiDegreeAddJpanel extends JPanel{
 
 	private JTabbedPane jTabbedPanePathResult;
 	private JButton jBtbSavePath;
@@ -66,7 +66,7 @@ public class GuiDegreeAdd extends JPanel{
 	static int StaxID = 9606;//blastŒÔ÷÷ID
 	
 	
-	public GuiDegreeAdd() 
+	public GuiDegreeAddJpanel() 
 	{
 		GroupLayout jPanPathLayout = new GroupLayout((JComponent)this);
 		

@@ -350,7 +350,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	public String[] getLOCNum(String LOCID) {
 		String[] result = new String[2];
 		T ele = locHashtable.get(LOCID);
-		result[0] = ele.getChrID();
+		result[0] = ele.getParentName();
 		result[1] = getHashLocNum().get(LOCID) + "";
 		return result;
 	}
@@ -387,10 +387,10 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 		}
 		else {
 			if (Up) {
-				return Math.abs(gffDetail1.getNumberstart() - gffDetail2.getNumberend());
+				return Math.abs(gffDetail1.getStartAbs() - gffDetail2.getEndAbs());
 			}
 			else {
-				return Math.abs(gffDetail1.getNumberend() - gffDetail2.getNumberstart());
+				return Math.abs(gffDetail1.getEndAbs() - gffDetail2.getStartAbs());
 			}
 		}
 	}

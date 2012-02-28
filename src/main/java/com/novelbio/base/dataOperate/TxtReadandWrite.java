@@ -500,11 +500,17 @@ public class TxtReadandWrite {
 	 *            ，要写入文件内容,并考虑是否刷新--也就是直接写入文件而不是进入缓存
 	 * @throws Exception
 	 */
-	public void writefile(String content, boolean flush) throws Exception {
-		outputStream.write(content.getBytes());
-		if (flush) {
-			outputStream.flush();
+	public void writefile(String content, boolean flush) {
+		try {
+			outputStream.write(content.getBytes());
+			if (flush) {
+				outputStream.flush();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 	}
 
 	/**

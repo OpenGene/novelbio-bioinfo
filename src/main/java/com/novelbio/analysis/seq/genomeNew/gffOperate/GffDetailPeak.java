@@ -9,7 +9,7 @@ public class GffDetailPeak extends GffDetailAbs{
 
 	@Override
 	public GffDetailPeak clone() {
-		GffDetailPeak gffDetailPeak = new GffDetailPeak(getChrID(), getLocString(), cis5to3);
+		GffDetailPeak gffDetailPeak = new GffDetailPeak(getParentName(), getName(), cis5to3);
 		this.clone(gffDetailPeak);
 		return gffDetailPeak;
 	}

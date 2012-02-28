@@ -73,7 +73,7 @@ public abstract class GffDetailAbs implements ElementAbs{
 	 * peak: peak起点_peak终点
 	 */
 	private String locString = ""; //loc name
-	public void setLocString(String locString) {
+	public void setName(String locString) {
 		this.locString = locString;
 	}
 	/**
@@ -155,7 +155,7 @@ public abstract class GffDetailAbs implements ElementAbs{
 	 * @GffHashItem
 	 * 条目终点，终点位置总是大于起点，无视条目方向
 	 */
-	public int getNumberend() {
+	public int getEndAbs() {
 		return numberend;
 	}
 	/**
@@ -164,7 +164,7 @@ public abstract class GffDetailAbs implements ElementAbs{
 	 * @GffHashItem
 	 * 条目起点,起点位置总是小于终点，无视条目方向
 	 */
-	public int getNumberstart() {
+	public int getStartAbs() {
 		return numberstart;
 	}
 	/**
@@ -247,7 +247,7 @@ public abstract class GffDetailAbs implements ElementAbs{
 	/**
 	 * 染色体编号，都小写
 	 */
-	public String getChrID() {
+	public String getParentName() {
 		return this.ChrID;
 	}
     /**
@@ -258,7 +258,7 @@ public abstract class GffDetailAbs implements ElementAbs{
 	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
 	 * peak: peak起点_peak终点
      */
-	public String getLocString()
+	public String getName()
 	{
 		return this.locString;
 	}
@@ -266,29 +266,10 @@ public abstract class GffDetailAbs implements ElementAbs{
 	 * 转录方向，假设同一基因不管多少转录本都同一转录方向
 	 * 一个转录本里面既有正向也有反向，选择方向最多的那个
 	 */
-	public boolean isCis5to3() {
+	public Boolean isCis5to3() {
 		return this.cis5to3;
 	}
-	/**
-	 * @GffHashGene
-	 * 本基因起点,起点位置总是小于终点，无视基因方向
-	 * @GffHashItem
-	 * 条目起点,起点位置总是小于终点，无视条目方向
-	 */
-	public int getNumEnd()
-	{
-		return this.numberend;
-	}
-	/**
-	 * @GffHashGene
-	 * 本基因起点,起点位置总是小于终点，无视基因方向
-	 * @GffHashItem
-	 * 条目起点,起点位置总是小于终点，无视条目方向
-	 */
-	public int getNumStart()
-	{
-		return this.numberstart;
-	}
+
 
 	/**
 	 * 获得坐标到该ItemEnd的距离,如果coord小于0说明有问题，则返回null
@@ -426,10 +407,7 @@ public abstract class GffDetailAbs implements ElementAbs{
 		}
 		return numberend;
 	}
-	@Override
-	public int getStartAbs() {
-		return numberstart;
-	}
+	
 	@Override
 	public int getEndCis() {
 		if (isCis5to3()) {
@@ -437,20 +415,10 @@ public abstract class GffDetailAbs implements ElementAbs{
 		}
 		return numberstart;
 	}
-	@Override
-	public int getEndAbs() {
+	public int getEndAbs2() {
 		return numberend;
 	}
-	@Override
-	public void setStartCis(int startLoc) {
-		// TODO Auto-generated method stub
-		hui
-	}
-	@Override
-	public void setEndCis(int endLoc) {
-		// TODO Auto-generated method stub
-		nk
-	}
+	
 	@Override
 	public int getLen() {
 		return Math.abs(numberend-numberstart) + 1;

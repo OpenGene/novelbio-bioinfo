@@ -10,28 +10,29 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.swing.plaf.synth.Region;
-
 import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
-import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
-import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.apache.commons.math.stat.descriptive.rank.Max;
 import org.apache.commons.math.stat.descriptive.rank.Min;
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 不考虑内存限制的编
+ * 
  * @author zong0jie
- *
+ * 
  */
 public class MapReads {
+	Equations equations;
+	public void setEquations(Equations equations) {
+		this.equations = equations;
+	}
 	private static Logger logger = Logger.getLogger(MapReads.class);
 	/**
 	 * 将每个double[]求和/double.length
@@ -651,7 +652,7 @@ public class MapReads {
 		 }
 	}
 	/**
-	 * 经过标准化
+	 * 经过标准化，和equations修正
 	 * 输入坐标区间，和每个区间的bp数，返回该段区域内reads的数组
 	 * 定位到两个端点所在的 读取invNum区间，然后计算新的invNum区间，如果该染色体在mapping时候不存在，则返回null
 	 * @param thisInvNum 每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数
@@ -689,6 +690,9 @@ public class MapReads {
 			}
 			//标准化
 			normDouble(result, NormalType);
+			if (equations != null) {
+				result = equations.getYinfo(result);
+			}
 			return result;
 		}
 		///////////////////////////////////////////////////////////////////////////////
@@ -707,7 +711,7 @@ public class MapReads {
 	
 	
 	/**
-	 * 经过标准化
+	 * 经过标准化，和equations修正
 	 * 输入坐标区间，需要划分的块数，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
 	 * 定位到两个端点所在的 读取invNum区间，然后计算新的invNum区间
 	 * @param chrID 一定要小写
@@ -772,11 +776,13 @@ public class MapReads {
 //			tmp =  MathComput.mySpline(tmpRegReads, binNum,leftBias,rightBias,type);
 			return null;
 		}
-		
+		if (equations != null) {
+			tmp = equations.getYinfo(tmp);
+		}
 		return tmp;
 	}
 	/**
-	 * 经过标准化
+	 * 经过标准化，和equations修正
 	 * 给定染色体，与起点和终点，返回该染色体上tag的密度分布，如果该染色体在mapping时候不存在，则返回null
 	 * @param chrID 小写
 	 * @param startLoc 起点坐标，为实际起点 如果startNum<=0 并且endNum<=0，则返回全长信息
@@ -820,7 +826,7 @@ public class MapReads {
 	}
 	
 	/**
-	 *  用于mRNA的计算，经过标准化
+	 *  用于mRNA的计算，经过标准化，和equations修正
 	 * 输入坐标区间，需要划分的块数，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
 	 * 定位到两个端点所在的 读取invNum区间，然后计算新的invNum区间
 	 * @param chrID 一定要小写

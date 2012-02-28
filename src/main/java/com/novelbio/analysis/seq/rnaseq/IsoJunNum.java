@@ -239,7 +239,7 @@ class JunDetail
 		return endLoc;
 	}
 	public String getGffIsoName() {
-		return gffGeneIsoInfo.getIsoName();
+		return gffGeneIsoInfo.getName();
 	}
 	public int getIntronNum() {
 		return intronNum;

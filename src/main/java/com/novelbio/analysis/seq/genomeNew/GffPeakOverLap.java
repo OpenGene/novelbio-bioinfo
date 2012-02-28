@@ -80,7 +80,7 @@ public class GffPeakOverLap
 		for (int i = 0; i < plusNum; i++) 
 		{
 			GffDetailPeak tmpPlusDetail=gffPlusLocHash.get(lspeakPlusID.get(i));
-			int tmplength=tmpPlusDetail.getNumberend() - tmpPlusDetail.getNumStart();
+			int tmplength=tmpPlusDetail.getEndAbs() - tmpPlusDetail.getStartAbs();
 			plusAllLength=plusAllLength+tmplength;
 		}
 		return plusAllLength;
@@ -115,7 +115,7 @@ public class GffPeakOverLap
 		for (int i = 0; i < minusNum; i++) 
 		{
 			GffDetailPeak tmpMinusDetail=gffMinusLocHash.get(lspeakMinusID.get(i));
-			int tmplength=tmpMinusDetail.getNumberend() - tmpMinusDetail.getNumStart();
+			int tmplength=tmpMinusDetail.getEndAbs() - tmpMinusDetail.getStartAbs();
 			minusAllLength=minusAllLength+tmplength;
 		}
 		return minusAllLength;
@@ -183,7 +183,7 @@ public class GffPeakOverLap
 				String tmpResult[ ] = new String[3];
 				String tmpPeakID = lspeakMinusCope.get(i).split("/")[0];
 				GffDetailPeak gffMinusPeakDetial = gffMinusLocHash.get(tmpPeakID);
-				String ChrID = gffMinusPeakDetial.getChrID();
+				String ChrID = gffMinusPeakDetial.getParentName();
 				int overlapLength = twoSiteLocation(gffMinusPeakDetial,gffHashPeakPlus);
 				tmpResult[0] = ChrID;
 				tmpResult[1] = tmpPeakID;
@@ -199,7 +199,7 @@ public class GffPeakOverLap
 				String tmpResult[] = new String[3];
 				String tmpPeakID = lspeakMinusID.get(i);
 				GffDetailPeak gffMinusPeakDetial = gffMinusLocHash.get(tmpPeakID);
-				String ChrID = gffMinusPeakDetial.getChrID();
+				String ChrID = gffMinusPeakDetial.getParentName();
 				int overlapLength = twoSiteLocation(gffMinusPeakDetial,gffHashPeakPlus);
 				tmpResult[0] = ChrID;
 				tmpResult[1] = tmpPeakID;
@@ -232,7 +232,7 @@ public class GffPeakOverLap
 				String tmpResult[]=new String[3];
 				String tmpPeakID=lspeakPlusCope.get(i).split("/")[0];
 				GffDetailPeak gffPlusPeakDetial=gffPlusLocHash.get(tmpPeakID);
-				String ChrID=gffPlusPeakDetial.getChrID();
+				String ChrID=gffPlusPeakDetial.getParentName();
 				int overlapLength=twoSiteLocation(gffPlusPeakDetial,gffHashPeakMinus);
 				tmpResult[0]=ChrID;
 				tmpResult[1]=tmpPeakID;
@@ -248,7 +248,7 @@ public class GffPeakOverLap
 				String tmpResult[]=new String[3];
 				String tmpPeakID=lspeakPlusID.get(i);
 				GffDetailPeak gffPlusPeakDetial=gffPlusLocHash.get(tmpPeakID);
-				String ChrID=gffPlusPeakDetial.getChrID();
+				String ChrID=gffPlusPeakDetial.getParentName();
 				int overlapLength=twoSiteLocation(gffPlusPeakDetial,gffHashPeakMinus);
 				tmpResult[0]=ChrID;
 				tmpResult[1]=tmpPeakID;
@@ -269,9 +269,9 @@ public class GffPeakOverLap
 	 */
 	private int twoSiteLocation(GffDetailPeak gffMPeakDetial,GffHashPeak gffHashplusPeak) 
 	{
-		String ChrID=gffMPeakDetial.getChrID();
-		int start=gffMPeakDetial.getNumberstart();
-		int end=gffMPeakDetial.getNumberend();
+		String ChrID=gffMPeakDetial.getParentName();
+		int start=gffMPeakDetial.getStartAbs();
+		int end=gffMPeakDetial.getEndAbs();
 		
 		GffCodPeakDU lsSearchReslut = gffHashplusPeak.searchLocation(ChrID, start, end);//searchLocation(ChrID, start, end, gffHashplusPeak);
 		double startOverlapLength = lsSearchReslut.getOpLeftInCod();

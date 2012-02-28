@@ -91,7 +91,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			anno[i] = "";
 		
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), gffDetailGene.getTaxID(), false);
+			CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), gffDetailGene.getTaxID(), false);
 			if (hashCopedID.contains(copedID)) {
 				continue;
 			}
@@ -121,7 +121,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			anno[i] = "";
 		
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), gffDetailGene.getTaxID(), false);
+			CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), gffDetailGene.getTaxID(), false);
 			if (hashCopedID.contains(copedID)) {
 				continue;
 			}
@@ -816,7 +816,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			{
 				for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodLeft().getGffDetailUp().getLsCodSplit()) {
 					if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
-						CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), getGffCodLeft().getGffDetailUp().getTaxID(), false);
+						CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), getGffCodLeft().getGffDetailUp().getTaxID(), false);
 						if (hashCopedID.contains(copedID)) {
 							continue;
 						}
@@ -827,7 +827,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			}
 			for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodLeft().getGffDetailThis().getLsCodSplit()) {
 				if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
-					CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), getGffCodLeft().getGffDetailThis().getTaxID(), false);
+					CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), getGffCodLeft().getGffDetailThis().getTaxID(), false);
 					if (hashCopedID.contains(copedID)) {
 						continue;
 					}
@@ -841,7 +841,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			for (GffDetailGene gffDetailGene : getLsGffDetailMid()) {
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 					// 看是否真正的落在该基因内部
-					CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), gffDetailGene.getTaxID(), false);
+					CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), gffDetailGene.getTaxID(), false);
 					if (hashCopedID.contains(copedID)) {
 						continue;
 					}
@@ -855,7 +855,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		if (getGffCodRight() != null && getGffCodRight().isInsideLoc()) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodRight().getGffDetailThis().getLsCodSplit()) {
 				if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
-					CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), getGffCodRight().getGffDetailThis().getTaxID(), false);
+					CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), getGffCodRight().getGffDetailThis().getTaxID(), false);
 					if (hashCopedID.contains(copedID)) {
 						continue;
 					}
@@ -867,7 +867,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			{
 				for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodRight().getGffDetailDown().getLsCodSplit()) {
 					if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
-						CopedID copedID = new CopedID(gffGeneIsoInfo.getIsoName(), getGffCodRight().getGffDetailDown().getTaxID(), false);
+						CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), getGffCodRight().getGffDetailDown().getTaxID(), false);
 						if (hashCopedID.contains(copedID)) {
 							continue;
 						}

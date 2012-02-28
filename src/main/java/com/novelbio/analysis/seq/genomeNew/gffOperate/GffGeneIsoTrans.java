@@ -24,14 +24,14 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	}
 	@Override
 	public GffGeneIsoTrans clone() {
-		GffGeneIsoTrans gffGeneIsoTrans = new GffGeneIsoTrans(IsoName, chrID, coord, getGeneType());
+		GffGeneIsoTrans gffGeneIsoTrans = new GffGeneIsoTrans(getName(), chrID, coord, getGeneType());
 		this.clone(gffGeneIsoTrans);
 		gffGeneIsoTrans.setCoord(getCoord());
 		return gffGeneIsoTrans;
 	}
 	@Override
 	public GffGeneIsoTrans cloneDeep() {
-		GffGeneIsoTrans gffGeneIsoTrans = new GffGeneIsoTrans(IsoName, chrID, coord, getGeneType());
+		GffGeneIsoTrans gffGeneIsoTrans = new GffGeneIsoTrans(getName(), chrID, coord, getGeneType());
 		this.cloneDeep(gffGeneIsoTrans);
 		gffGeneIsoTrans.setCoord(getCoord());
 		return gffGeneIsoTrans;
@@ -54,7 +54,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		for (int i = size() - 1; i >= 0; i--) {
 			ExonInfo exons = get(i);
 			geneExon = geneExon + getChrID() + "\t" + title + "\texon\t" + exons.getEndCis() + "\t" + exons.getStartCis() + "\t" + "." + "\t"
-					+ strand + "\t.\t" + "gene_id \"" + geneID + "\"; transcript_id " + getIsoName() + "\"; \r\n";
+					+ strand + "\t.\t" + "gene_id \"" + geneID + "\"; transcript_id " + getName() + "\"; \r\n";
 		}
 		return geneExon;
 	}
@@ -64,7 +64,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		for (int i = 0;  i < size(); i++) {
 			ExonInfo exons = get(i);
 			geneExon = geneExon + getChrID() + "\t" + title + "\texon\t" + exons.getEndCis() + "\t" + exons.getStartCis() + "\t" + "." + "\t"
-					+ strand + "\t.\t" + "ID=exon:" + getIsoName()  + ":" + (i+1) +";"+ "Parent=" + getIsoName() + " \r\n";
+					+ strand + "\t.\t" + "ID=exon:" + getName()  + ":" + (i+1) +";"+ "Parent=" + getName() + " \r\n";
 		}
 		return geneExon;
 	}

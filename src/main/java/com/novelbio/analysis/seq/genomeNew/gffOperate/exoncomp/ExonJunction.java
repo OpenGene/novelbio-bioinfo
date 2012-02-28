@@ -150,7 +150,7 @@ public class ExonJunction {
 		//外显子的具体坐标
 		ArrayList<String> lsLocation = new ArrayList<String>();
 		ArrayList<ArrayList<long[]>> lsExonInfo = calDifExonJun(gffDetailGene, lsExonClusters, lsLocation);
-		return calLsExonInfo(gffDetailGene.getLocString(),lsExonInfo, lsLocation);
+		return calLsExonInfo(gffDetailGene.getName(),lsExonInfo, lsLocation);
 	}
 	/**
 	 * 给定转录本的分布情况，计算pvalue等指标
@@ -191,7 +191,7 @@ public class ExonJunction {
 				long[] counts = new long[lsExon.size() + junc];
 				for (int i = 0; i < lsExon.size(); i++) {
 					int[] exon = lsExon.get(i);
-					counts[i] = tophatJunction.getJunctionSite(gffDetailGene.getChrID(), exon[0], condition) + tophatJunction.getJunctionSite(gffDetailGene.getChrID(), exon[1], 	condition);
+					counts[i] = tophatJunction.getJunctionSite(gffDetailGene.getParentName(), exon[0], condition) + tophatJunction.getJunctionSite(gffDetailGene.getParentName(), exon[1], 	condition);
 				}
 				if (junc == 1) {
 					counts[counts.length - 1] = getJunReadsNum(gffDetailGene, exonCluster, condition);
@@ -216,7 +216,7 @@ public class ExonJunction {
 				continue;
 			}
 			//检查本步是否正确
-			result = result + tophatJunction.getJunctionSite(gffDetailGene.getChrID(), gffGeneIsoInfo.getIsoInfo().get(exonNum)[1], gffGeneIsoInfo.getIsoInfo().get(exonNum+1)[0], condition);
+			result = result + tophatJunction.getJunctionSite(gffDetailGene.getParentName(), gffGeneIsoInfo.getIsoInfo().get(exonNum)[1], gffGeneIsoInfo.getIsoInfo().get(exonNum+1)[0], condition);
 		}
 		return result;
 	}	

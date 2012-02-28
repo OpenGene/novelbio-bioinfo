@@ -36,7 +36,7 @@ public class TestGffUCSCInfo extends TestCase{
 	public void testchr1_1385068()
 	{
 		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.findCod());
-		assertEquals("NM_022834/NM_199121",gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().getLocString());
+		assertEquals("NM_022834/NM_199121",gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().getName());
 		assertEquals(true,gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().isCis5to3());
 		assertEquals(true,gffCodInfoUCSCgenechr1_1385068.getGffDetailDown().isCis5to3());
 		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.isInsideLoc());
@@ -109,8 +109,8 @@ public class TestGffUCSCInfo extends TestCase{
 			
 			if (coordatgup2 > 0) {
 				int cod2atg2 = gffGeneIsoSearch.getLocDistmRNA(uagsite, coordatgup2);
-				if (gffGeneIsoSearch.getIsoName().equals("NM_015658")) {
-					System.out.println(gffGeneIsoSearch.getIsoName());
+				if (gffGeneIsoSearch.getName().equals("NM_015658")) {
+					System.out.println(gffGeneIsoSearch.getName());
 					coordatgup2 = gffGeneIsoSearch.getLocDistmRNASite(uagsite, -500);
 					cod2atg2 = gffGeneIsoSearch.getLocDistmRNA(uagsite, coordatgup2);
 				}
@@ -159,7 +159,7 @@ public class TestGffUCSCInfo extends TestCase{
 	}
 	private void getCod2Site(GffDetailGene gffDetailGene, int coord, int atgsite, int uagsite, int tsssite, int tessite) {
 		
-		if (gffDetailGene.getLongestSplit().getIsoName().equals("NM_020710")) {
+		if (gffDetailGene.getLongestSplit().getName().equals("NM_020710")) {
 			System.out.println("ss");
 		}
 

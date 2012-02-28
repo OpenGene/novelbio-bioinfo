@@ -50,7 +50,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class GuiSrcToTrg extends JPanel{
+public class GuiSrcToTrgJpanel extends JPanel{
 
 	private JTabbedPane jTabbedPanePathResult;
 	private JButton jBtbSavePath;
@@ -74,7 +74,7 @@ public class GuiSrcToTrg extends JPanel{
 	static int StaxID = 9606;//blastŒÔ÷÷ID
 	
 	
-	public GuiSrcToTrg() 
+	public GuiSrcToTrgJpanel() 
 	{
 		GroupLayout jPanPathLayout = new GroupLayout((JComponent)this);
 		

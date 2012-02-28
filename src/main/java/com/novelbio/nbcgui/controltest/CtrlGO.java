@@ -101,9 +101,10 @@ public class CtrlGO extends CtrlGOPath{
 		return hashResult;
 	}
 	@Override
-	void setLsBGAccIDsave(String fileName) {
-		functionTest.setLsBGAccID(fileName, 1,FileOperate.changeFileSuffix(fileName, "_GOItem", "txt"));
+	String getGene2ItemFileName(String fileName) {
+		return FileOperate.changeFileSuffix(fileName, "_GO_Item", "txt");
 	}
+	
 	@Override
 	String[] getResultTitle() {
 		String[] title = new String[10];

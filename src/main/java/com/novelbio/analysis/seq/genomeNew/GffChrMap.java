@@ -128,6 +128,7 @@ public class GffChrMap extends GffChrAbs {
 				mapReads.setNormalType(mapNormType);
 			}
 		}
+		setMapCorrect();
 	}
 
 	/**
@@ -510,19 +511,16 @@ public class GffChrMap extends GffChrAbs {
 	}
 
 	/**
-	 * 根据前面设定upBp和downBp 根据Peak文件做出TSS图
-	 * 
-	 * @param range
-	 *            Tss两端区域
-	 * @param binNum
-	 *            分割分数
-	 * @param figure
-	 *            图片路径
-	 * @param RworkSpace
-	 * @param resultFilePath
-	 *            保存至哪个文件夹
-	 * @param prefix
-	 *            文件名前缀
+	 * 根据前面设定upBp和downBp 根据Peak所覆盖的基因做出TSS图
+	 * @param fileName peakFile
+	 * @param colChrID 
+	 * @param colStartLoc
+	 * @param colEndLoc
+	 * @param colScore 分数
+	 * @param rowStart 从第几行开始读
+	 * @param binNum 分成几份
+	 * @param resultFilePath 输出文件
+	 * @param prefix 前缀 <b>暂时没用</b>
 	 */
 	public void getTssDensity(String fileName, int colChrID, int colStartLoc,
 			int colEndLoc, int colScore, int rowStart, int binNum,
@@ -536,23 +534,25 @@ public class GffChrMap extends GffChrAbs {
 		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
 		// double[] TssDensity=gffLocatCod.getUCSCTssRange(LocInfo, range,
 		// binNum);
-		plotRTss(TssDensity);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFilePath, true);
+		for (double d : TssDensity) {
+			txtWrite.writefile(d+"", false);
+		}
+		txtWrite.close();
+//		plotRTss(TssDensity);
 	}
 
 	/**
-	 * 根据前面设定upBp和downBp 根据Peak文件做出TSS图
-	 * 
-	 * @param range
-	 *            Tss两端区域
-	 * @param binNum
-	 *            分割分数
-	 * @param figure
-	 *            图片路径
-	 * @param RworkSpace
-	 * @param resultFilePath
-	 *            保存至哪个文件夹
-	 * @param prefix
-	 *            文件名前缀
+	 * 根据前面设定upBp和downBp 根据Peak所覆盖的基因做出TSS图
+	 * @param fileName peakFile
+	 * @param colChrID 
+	 * @param colStartLoc
+	 * @param colEndLoc
+	 * @param colScore 分数
+	 * @param rowStart 从第几行开始读
+	 * @param binNum 分成几份
+	 * @param resultFilePath 输出文件
+	 * @param prefix 前缀 <b>暂时没用</b>
 	 */
 	public void getTesDensity(String fileName, int colChrID, int colStartLoc,
 			int colEndLoc, int colScore, int rowStart, int binNum,
@@ -564,6 +564,10 @@ public class GffChrMap extends GffChrAbs {
 														// GffDetailGene.TSS);
 
 		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFilePath, true);
+		for (double d : TssDensity) {
+			txtWrite.writefile(d+"", false);
+		}
 		// double[] TssDensity=gffLocatCod.getUCSCTssRange(LocInfo, range,
 		// binNum);
 		plotRTss(TssDensity);
@@ -615,13 +619,12 @@ public class GffChrMap extends GffChrAbs {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////徐龙勇的根据qPCR进行校正
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		GffChrMap gffChrMap = new GffChrMap(
 				NovelBioConst.GENOME_GFF_TYPE_UCSC,
 				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ,
 				NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,
-				"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/4Kextend_sort.bed",
-				10);
+				"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/4Kextend_sort.bed", 10);
 		gffChrMap.loadChrFile();
 		gffChrMap.loadMapReads();
 		int[] column = new int[]{11,15};
@@ -655,6 +658,17 @@ public class GffChrMap extends GffChrAbs {
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.All.txt", true);
 		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+	}
+	public static void main(String[] args) {
+		GffChrMap gffChrMap = new GffChrMap(
+				NovelBioConst.GENOME_GFF_TYPE_UCSC,
+				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ,
+				NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,
+				"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/4Kextend_sort.bed", 10);
+		gffChrMap.loadChrFile();
+		gffChrMap.loadMapReads();
+		gffChrMap.setMapCorrect(correctFile);
+		
 	}
 	/**
 	 * @param geneFile 基因文件

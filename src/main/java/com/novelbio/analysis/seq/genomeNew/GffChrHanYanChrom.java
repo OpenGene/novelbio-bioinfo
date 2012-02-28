@@ -54,7 +54,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYanChrom.class);
 		if (lsiso == null || lsiso.size() == 0) {
 			return null;
 		}
-		double[] iso = mapReads.getRengeInfo(gffGeneIsoInfo.getThisGffDetailGene().getChrID(), -1, 0, lsiso);
+		double[] iso = mapReads.getRengeInfo(gffGeneIsoInfo.getThisGffDetailGene().getParentName(), -1, 0, lsiso);
 		mapReads.normDouble(iso, normalizeType);
 		if (iso == null) {
 			return null;

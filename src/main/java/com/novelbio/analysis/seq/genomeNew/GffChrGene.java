@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
+
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU;
@@ -223,11 +225,11 @@ public class GffChrGene {
 	{
 		if (structure.equals(GffDetailGene.TSS)) {
 			int tss = gffDetailGene.getLongestSplit().getTSSsite();
-			return new MapInfo(gffDetailGene.getChrID(), tss - upBp, tss + downBp, tss,0, gffDetailGene.getLongestSplit().getIsoName());
+			return new MapInfo(gffDetailGene.getParentName(), tss - upBp, tss + downBp, tss,0, gffDetailGene.getLongestSplit().getName());
 		}
 		else if (structure.equals(GffDetailGene.TES)) {
 			int tes = gffDetailGene.getLongestSplit().getTSSsite();
-			return new MapInfo(gffDetailGene.getChrID(), tes - upBp, tes + downBp, tes, 0, gffDetailGene.getLongestSplit().getIsoName());
+			return new MapInfo(gffDetailGene.getParentName(), tes - upBp, tes + downBp, tes, 0, gffDetailGene.getLongestSplit().getName());
 		}
 		else {
 			logger.error("还没添加该种类型的structure");
@@ -347,7 +349,7 @@ public class GffChrGene {
 	 * 如果考虑正反向，那么true返回该基因正向，false返回该基因反向
 	 * @return
 	 */
-	public String getUpItemSeq(String LocID,int length,boolean considerDirection,boolean direction)
+	public SeqFasta getUpItemSeq(String LocID,int length,boolean considerDirection,boolean direction)
 	{
 		GffDetailGene gffDetailGene = gffHashGene.searchLOC(LocID);
 		if (gffDetailGene == null)
@@ -356,20 +358,20 @@ public class GffChrGene {
 		if (considerDirection)// 考虑正反向，返回的都是本基因的正向
 		{
 			if (gffDetailGene.isCis5to3()) {
-				StartNum = gffDetailGene.getNumberstart();
-				return seqHash.getSeq(direction, gffDetailGene.getChrID(), StartNum - length, StartNum);
+				StartNum = gffDetailGene.getStartAbs();
+				return seqHash.getSeq(direction, gffDetailGene.getParentName(), StartNum - length, StartNum);
 			} else {
-				StartNum = gffDetailGene.getNumberend();
-				return seqHash.getSeq(!direction,gffDetailGene.getChrID(), StartNum, StartNum + length);
+				StartNum = gffDetailGene.getEndAbs();
+				return seqHash.getSeq(!direction,gffDetailGene.getParentName(), StartNum, StartNum + length);
 			}
 		} else // 不考虑正反向，返回的就是默认正向或反向
 		{
 			if (gffDetailGene.isCis5to3()) {
-				StartNum = gffDetailGene.getNumberstart();
-				return seqHash.getSeq(direction, gffDetailGene.getChrID(), StartNum - length, StartNum);
+				StartNum = gffDetailGene.getStartAbs();
+				return seqHash.getSeq(direction, gffDetailGene.getParentName(), StartNum - length, StartNum);
 			} else {
-				StartNum = gffDetailGene.getNumberend();
-				return seqHash.getSeq(direction, gffDetailGene.getChrID(), StartNum, StartNum + length);
+				StartNum = gffDetailGene.getEndAbs();
+				return seqHash.getSeq(direction, gffDetailGene.getParentName(), StartNum, StartNum + length);
 			}
 		}
 	}
@@ -387,7 +389,7 @@ public class GffChrGene {
 	 * 2: 通通提取反向<br>
 	 * @return
 	 */
-	public String getPeakSeq(String ChrID, int codloc ,int lenght,int condition)
+	public SeqFasta getPeakSeq(String ChrID, int codloc ,int lenght,int condition)
 	{
 		if (condition==0) 
 		{

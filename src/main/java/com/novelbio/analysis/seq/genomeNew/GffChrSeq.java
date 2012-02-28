@@ -189,7 +189,7 @@ public class GffChrSeq extends GffChrAbs{
 			logger.error("没有提取到序列：" + " "+ gffGeneIsoInfo.getChrID() + " " + start + " " + end);
 			return null;
 		}
-		seq.setSeqName(gffGeneIsoInfo.getIsoName());
+		seq.setSeqName(gffGeneIsoInfo.getName());
 		return seq;
 	}
 	/**

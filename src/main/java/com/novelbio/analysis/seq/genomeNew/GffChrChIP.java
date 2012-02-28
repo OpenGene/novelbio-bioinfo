@@ -27,9 +27,9 @@ public class GffChrChIP extends GffChr1{
 		if (gffDetailGene == null) {
 			return null;
 		}
-		int center = (gffDetailGene.getNumStart() + gffDetailGene.getNumEnd())/2;
+		int center = (gffDetailGene.getStartAbs() + gffDetailGene.getEndAbs())/2;
 		String[] result = new String[3];
-		result[0] = gffDetailGene.getChrID();
+		result[0] = gffDetailGene.getParentName();
 		result[1] = center - region +"";
 		result[2] = center + region + "";
 		return result;

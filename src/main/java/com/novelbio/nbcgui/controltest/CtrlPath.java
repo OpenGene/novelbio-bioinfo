@@ -76,9 +76,8 @@ public class CtrlPath extends CtrlGOPath {
 	protected void copeFile(String prix, String excelPath) {
 	}
 	@Override
-	void setLsBGAccIDsave(String fileName) {
-		functionTest.setLsBGAccID(fileName, 1,FileOperate.changeFileSuffix(fileName, "_PathItem", "txt"));
-		
+	String getGene2ItemFileName(String fileName) {
+		return FileOperate.changeFileSuffix(fileName, "_Path_Item", "txt");
 	}
 	@Override
 	String[] getResultTitle() {

@@ -86,23 +86,42 @@ public abstract class CtrlGOPath {
 	 */
 	public void setLsBG(String fileName)
 	{
-		boolean flagGeneID = true;
+		boolean flagGeneID = testBGfile(fileName);
+		if (flagGeneID) {
+			functionTest.setLsBGItem(fileName);
+		}
+		else {
+			if (FileOperate.isFileExist( getGene2ItemFileName(fileName))) {
+				functionTest.setLsBGItem(getGene2ItemFileName(fileName));
+			}
+			else {
+				functionTest.setLsBGAccID(fileName, 1, getGene2ItemFileName(fileName));
+			}
+		}
+	}
+	/**
+	 * 文件名后加上go_item或者path_item等
+	 * @param fileName
+	 * @return
+	 */
+	abstract String getGene2ItemFileName(String  fileName);
+	/**
+	 * 测试文件是否为gene item,item的格式
+	 * @param fileName
+	 * @return
+	 */
+	private boolean testBGfile(String fileName)
+	{
+		boolean result = false;
 		ArrayList<String[]> lsArrayList = ExcelTxtRead.readLsExcelTxtFile(fileName, 1, 1, 100, -1);//readLsExcelTxt(fileName, 1, 100, 1, -1);
 		for (String[] strings : lsArrayList) {
 			if (strings.length > 1 && strings[1].contains(",")) {
-				flagGeneID = false;
+				result = true;
 				break;
 			}
 		}
-		if (flagGeneID) {
-			setLsBGAccIDsave(fileName);
-		}
-		else {
-			functionTest.setLsBGItem(fileName);
-		}
+		return result;
 	}
-	
-	abstract void setLsBGAccIDsave(String  fileName);
 	/**
 	 * 
 	 * 给定文件，和文件分割符，以及第几列，获得该列的基因ID

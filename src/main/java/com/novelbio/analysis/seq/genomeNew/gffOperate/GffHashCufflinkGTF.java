@@ -133,36 +133,37 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGeneIsoInfos) {
 			gffGeneIsoInfo.sort();
 			if (gffDetailGene == null) {
-				gffDetailGene = new GffDetailGene(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getIsoName(), gffGeneIsoInfo.isCis5to3());
+				gffDetailGene = new GffDetailGene(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getName(), gffGeneIsoInfo.isCis5to3());
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				lsResult.add(gffDetailGene);
-				locHashtable.put(gffGeneIsoInfo.getIsoName().toLowerCase(), gffDetailGene);
-				locHashtable.put(CopedID.removeDot(gffGeneIsoInfo.getIsoName()).toLowerCase(), gffDetailGene);
-				locHashtable.put(CopedID.removeDot(gffDetailGene.getLocString()).toLowerCase(), gffDetailGene);
+				locHashtable.put(gffGeneIsoInfo.getName().toLowerCase(), gffDetailGene);
+				locHashtable.put(CopedID.removeDot(gffGeneIsoInfo.getName()).toLowerCase(), gffDetailGene);
+				locHashtable.put(CopedID.removeDot(gffDetailGene.getName()).toLowerCase(), gffDetailGene);
 				continue;
 			}
 			
 			double[] gffIsoRange = new double[]{gffGeneIsoInfo.getStartAbs(), gffGeneIsoInfo.getEndAbs()};
-			double[] gffGeneRange = new double[]{gffDetailGene.getNumberstart(), gffDetailGene.getNumberend()};
+			double[] gffGeneRange = new double[]{gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs()};
 			
 			double[] compResult = ArrayOperate.cmpArray(gffIsoRange, gffGeneRange);
 			if (compResult[2] > GffDetailGene.OVERLAP_RATIO || compResult[3] > GffDetailGene.OVERLAP_RATIO) {
 				gffDetailGene.addIso(gffGeneIsoInfo);
-				locHashtable.put(gffGeneIsoInfo.getIsoName().toLowerCase(), gffDetailGene);
-				locHashtable.put(CopedID.removeDot(gffGeneIsoInfo.getIsoName()).toLowerCase(), gffDetailGene);
+				locHashtable.put(gffGeneIsoInfo.getName().toLowerCase(), gffDetailGene);
+				locHashtable.put(CopedID.removeDot(gffGeneIsoInfo.getName()).toLowerCase(), gffDetailGene);
 
 			}
 			else {
 				
-				gffDetailGene = new GffDetailGene(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getIsoName(), gffGeneIsoInfo.isCis5to3());
-				locHashtable.put(CopedID.removeDot(gffDetailGene.getLocString()).toLowerCase(), gffDetailGene);
+				gffDetailGene = new GffDetailGene(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getName(), gffGeneIsoInfo.isCis5to3());
+				locHashtable.put(CopedID.removeDot(gffDetailGene.getName()).toLowerCase(), gffDetailGene);
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				lsResult.add(gffDetailGene);
-				locHashtable.put(gffGeneIsoInfo.getIsoName().toLowerCase(), gffDetailGene);
-				locHashtable.put(CopedID.removeDot(gffGeneIsoInfo.getIsoName()).toLowerCase(), gffDetailGene);
+				locHashtable.put(gffGeneIsoInfo.getName().toLowerCase(), gffDetailGene);
+				locHashtable.put(CopedID.removeDot(gffGeneIsoInfo.getName()).toLowerCase(), gffDetailGene);
 				continue;
 			}
 		}
+		lsResult.setName(lsGeneIsoInfos.get(0).getChrID());
 		Chrhash.put(lsGeneIsoInfos.get(0).getChrID(), lsResult);
 	}
 	

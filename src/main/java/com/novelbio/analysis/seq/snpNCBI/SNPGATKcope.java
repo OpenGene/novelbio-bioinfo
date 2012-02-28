@@ -210,7 +210,7 @@ public class SNPGATKcope {
 				GffDetailGene gffDetailGene = gffcod.getGffDetailThis();
 				
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-					DomainPfam domainPfam = DomainPfam.getDomainPfam(gffGeneIsoInfo.getIsoName());
+					DomainPfam domainPfam = DomainPfam.getDomainPfam(gffGeneIsoInfo.getName());
 					if (domainPfam == null) {
 						continue;
 					}

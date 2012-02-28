@@ -83,9 +83,9 @@ public class GffHashCG extends GffHash<GffDetailCG, GffCodCG, GffCodCGDU>
 					   Collections.sort(LOCList,new Comparator<GffDetailAbs>(){
 				            public int compare(GffDetailAbs arg0, GffDetailAbs arg1) {
 				                int Compareresult;
-				            	if(arg0.getNumStart()<arg1.getNumStart())
+				            	if(arg0.getStartAbs()<arg1.getStartAbs())
 				            		Compareresult=-1;
-				            	else if (arg0.getNumStart()==arg1.getNumStart()) 
+				            	else if (arg0.getStartAbs()==arg1.getStartAbs()) 
 				            		Compareresult=0;
 				            	else 
 				            		Compareresult=1;
@@ -94,7 +94,7 @@ public class GffHashCG extends GffHash<GffDetailCG, GffCodCG, GffCodCGDU>
 				        });
 					   //排序完后把CG号装入LOCIDList
 					   for (GffDetailCG gffDetail : LOCList) {
-						   LOCIDList.add(gffDetail.getLocString());
+						   LOCIDList.add(gffDetail.getName());
 					   }
 				   }
 				   LOCList=new ListAbs<GffDetailCG>();//新建一个LOCList并放入Chrhash
@@ -113,7 +113,7 @@ public class GffHashCG extends GffHash<GffDetailCG, GffCodCG, GffCodCGDU>
 			   gffGCtmpDetail.obsExp=Double.parseDouble(ss[10]);
 			   //装入LOCList和locHashtable
 			   LOCList.add(gffGCtmpDetail);  
-			   locHashtable.put(gffGCtmpDetail.getLocString(), gffGCtmpDetail);
+			   locHashtable.put(gffGCtmpDetail.getName(), gffGCtmpDetail);
 		   }
 		   /////////////////////////////////////////////////////////////////////////////////////////////
 		   LOCList.trimToSize();
@@ -131,7 +131,7 @@ public class GffHashCG extends GffHash<GffDetailCG, GffCodCG, GffCodCGDU>
 	            }});
 		 //排序完后装入LOCIDList
 		   for (GffDetailAbs gffDetail : LOCList) {
-			   LOCIDList.add(gffDetail.getLocString());
+			   LOCIDList.add(gffDetail.getName());
 		}
 		   txtgff.close();
 		 /////////////////////////////////////////////////////////////////////////////////////////////////

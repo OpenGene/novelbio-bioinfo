@@ -73,6 +73,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 					LOCList.trimToSize();
 				}
 				LOCList = new ListAbs<GffDetailGene>();// 新建一个LOCList并放入Chrhash
+				LOCList.setName(chrnametmpString);
 				Chrhash.put(chrnametmpString, LOCList);
 			}
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +93,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 					lastGffdetailUCSCgene.numberend = Integer.parseInt(geneInfo[4])+endRegion;
 
 				// 将本基因(转录本)的ID装入locString中
-				lastGffdetailUCSCgene.setLocString(lastGffdetailUCSCgene.getLocString() + ListAbs.SEP + geneInfo[0]);
+				lastGffdetailUCSCgene.setName(lastGffdetailUCSCgene.getName() + ListAbs.SEP + geneInfo[0]);
 				if (Math.abs(Integer.parseInt(geneInfo[5]) - Integer.parseInt(geneInfo[6])) <= 2) {
 					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], GffGeneIsoInfo.TYPE_GENE_MIRNA);
 				}
@@ -112,7 +113,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				LOCIDList.add(geneInfo[0]);
 				// 将locHashtable中相应的项目也修改，同时加入新的项目
 				// 因为UCSC里面没有转录本一说，只有两个LOCID共用一个区域的情况，所以只能够两个不同的LOCID指向同一个GffdetailUCSCgene
-				String[] allLOCID = lastGffdetailUCSCgene.getLocString().split(ListAbs.SEP);
+				String[] allLOCID = lastGffdetailUCSCgene.getName().split(ListAbs.SEP);
 				for (int i = 0; i < allLOCID.length; i++) {
 					locHashtable.put(allLOCID[i].toLowerCase(), lastGffdetailUCSCgene);
 				}
@@ -201,7 +202,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			// 看本基因的转录起点是否小于上个基因的转录终点，如果小于，则说明本基因是上个基因的一个转录本
 			GffDetailGene lastGffdetailUCSCgene;
 			lastGffdetailUCSCgene = (GffDetailGene) LOCList.get(LOCList.size() - 1);
-			double[] regionLast = new double[]{lastGffdetailUCSCgene.getNumberstart(), lastGffdetailUCSCgene.getNumberend()};
+			double[] regionLast = new double[]{lastGffdetailUCSCgene.getStartAbs(), lastGffdetailUCSCgene.getEndAbs()};
 			double[] regionThis = new double[]{Double.parseDouble(geneInfo[3])+startRegion, Double.parseDouble(geneInfo[4])+endRegion };
 			double[] overlap = ArrayOperate.cmpArray(regionLast, regionThis);
 			if (LOCList.size() > 0 
@@ -221,7 +222,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				
 				
 				// 将本基因(转录本)的ID装入locString中
-				lastGffdetailUCSCgene.setLocString(lastGffdetailUCSCgene.getLocString() + ListAbs.SEP + geneInfo[0]);
+				lastGffdetailUCSCgene.setName(lastGffdetailUCSCgene.getName() + ListAbs.SEP + geneInfo[0]);
 				if (Math.abs(Integer.parseInt(geneInfo[5]) - Integer.parseInt(geneInfo[6])) <= 1) {
 					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], GffGeneIsoInfo.TYPE_GENE_MIRNA, geneInfo[2].equals("+"));
 				}
@@ -241,7 +242,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				LOCIDList.add(geneInfo[0]);
 				// 将locHashtable中相应的项目也修改，同时加入新的项目
 				// 因为UCSC里面没有转录本一说，只有两个LOCID共用一个区域的情况，所以只能够两个不同的LOCID指向同一个GffdetailUCSCgene
-				String[] allLOCID = lastGffdetailUCSCgene.getLocString().split(ListAbs.SEP);
+				String[] allLOCID = lastGffdetailUCSCgene.getName().split(ListAbs.SEP);
 				for (int i = 0; i < allLOCID.length; i++) {
 					locHashtable.put(allLOCID[i].toLowerCase(), lastGffdetailUCSCgene);
 				}
