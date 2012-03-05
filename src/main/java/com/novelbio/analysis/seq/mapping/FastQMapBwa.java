@@ -218,6 +218,7 @@ public class FastQMapBwa extends FastQMapAbs{
 			mapReads();
 		}
 		SAMtools saMtools = new SAMtools(outFileName, isPairEnd(), mapQ);
+		saMtools.setGetSeqName(true);
 		if (isPairEnd()) {
 			return saMtools.sam2bed(compressOutType, bedFile, uniqMapping);
 		}

@@ -27,9 +27,13 @@ import com.novelbio.database.model.modcopeid.CopedID;
  */
 public class AnnoQuery {
 	public static void main(String[] args) {
-		String parent = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/";
-		annoGeneIDXls(parent + "MEF_WT2vsWT0outDifResult.xls",parent + "mouseMEF_WT2vsWT0outDifResult_Anno_new.xls",  10090, 1, 1, "",false, 9606);
-		annoGeneIDXls(parent + "MEF_K02vsK00outDifResult.xls",parent + "mouseMEF_K02vsK00outDifResult_Anno_new.xls",  10090, 1, 1, "",false, 9606);
+//		String parent = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/";
+//		annoGeneIDXls(parent + "MEF_WT2vsWT0outDifResult.xls",parent + "mouseMEF_WT2vsWT0outDifResult_Anno_new.xls",  10090, 1, 1, "",false, 9606);
+//		annoGeneIDXls(parent + "MEF_K02vsK00outDifResult.xls",parent + "mouseMEF_K02vsK00outDifResult_Anno_new.xls",  10090, 1, 1, "",false, 9606);
+		
+		
+		String parent = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/rsem/DEGseq/";
+		annoGeneIDXls(parent + "output_score.txt",parent + "output_score_Anno.txt",  10090, 2, 1, "",false, 9606);
 
 //		annoGeneIDXls(parent + "mouseMEF_K0vsWT0outDifResult.xls",parent + "mouseMEF_K0vsWT0outDifResult_Anno_new.xls",  10090, 1, 1, "",false, 9606);
 //		annoGeneIDXls(parent + "mouseMEF_K2vsWT2outDifResult.xls",parent + "mouseMEF_K2vsWT2outDifResult_Anno_new.xls",  10090, 1, 1, "",false, 9606);

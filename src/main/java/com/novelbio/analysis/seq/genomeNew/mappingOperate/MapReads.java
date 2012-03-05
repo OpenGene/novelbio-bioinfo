@@ -1046,7 +1046,12 @@ public class MapReads {
 	{
 		return new Mean().evaluate(getRegionInfo(chrID, lsLoc));
 	}
-	
+	/**
+	 * 给定坐标范围，返回该区间内的信息
+	 * @param chrID
+	 * @param lsLoc 一个转录本的exon list
+	 * @return
+	 */
 	public double[] getRegionInfo(String chrID, List<int[]> lsLoc) {
 		ArrayList<double[]> lstmp = new ArrayList<double[]>();
 		for (int[] is : lsLoc) {
@@ -1076,7 +1081,7 @@ public class MapReads {
 	
 	
 	/**
-	 * 经过标准化
+	 * 经过标准化，和equations修正
 	 * @param lsmapInfo
 	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
@@ -1087,7 +1092,16 @@ public class MapReads {
 			mapInfo.setDouble(Info);
 		}
 	}
-	
+	/**
+	 * 经过标准化，和equations修正
+	 * @param lsmapInfo
+	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 */
+	public void getRegion(MapInfo mapInfo, int thisInvNum, int type) {
+		double[] Info = getRengeInfo(thisInvNum, mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), type);
+		mapInfo.setDouble(Info);
+	}
 	/**
 	 * 经过标准化
 	 * 将MapInfo中的double填充上相应的reads信息
@@ -1107,7 +1121,20 @@ public class MapReads {
 			mapInfo.setDouble(Info);
 		}
 	}
-	
+	/**
+	 * 经过标准化
+	 * 将MapInfo中的double填充上相应的reads信息
+	 * @param binNum 待分割的区域数目
+	 * @param lsmapInfo
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 */
+	public void getRegion(int binNum, MapInfo mapInfo, int type) {
+			double[] Info = getRengeInfo(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), binNum, type);
+			if (Info == null) {
+				logger.error("出现未知ID："+mapInfo.getTitle() + " "+mapInfo.getChrID() + " " + mapInfo.getStart() + " "+ mapInfo.getEnd());
+			}
+			mapInfo.setDouble(Info);
+	}
 	/**
 	 * 从这里得到的实际某条染色体的长度
 	 */

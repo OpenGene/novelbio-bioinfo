@@ -189,7 +189,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 		}
 	}
 	/**
-	 * 给定一个文本来修正
+	 * 给定一个文本来修正  没有文件则直接返回
 	 * @param correctFile x第一列，y第二；列，从第一行开始读取
 	 */
 	public void setMapCorrect(String correctFile)

@@ -1,0 +1,112 @@
+#PathName PathDetail
+R_SCRIPT	Rscript
+
+#R_WORKSPACE
+R_WORKSPACE	/media/winE/Bioinformatics/R/practice_script/platform/
+	
+#R_WORKSPACE	D:/Library/R/
+#R_SCRIPT	D:/tools/R2_14/bin/Rscript
+	
+#######################  常规Fisher  #########################
+# 常规Fisher的输入文件
+#R_WORKSPACE_FISHER = R_WORKSPACE + "Fisher/";
+R_WORKSPACE_FISHER	Fisher/
+
+#常规Fisher的输入文件
+#R_WORKSPACE_FISHER_INFO = R_WORKSPACE_FISHER + "Info.txt";
+R_WORKSPACE_FISHER_INFO	Info.txt
+
+#常规Fisher的计算脚本
+#R_WORKSPACE_FISHER_SCRIPT= R_WORKSPACE + "FisherBHfdr.R";
+R_WORKSPACE_FISHER_SCRIPT	FisherBHfdr.R
+
+#常规Fisher的结果文件
+#R_WORKSPACE_FISHER_RESULT = R_WORKSPACE_FISHER + "Analysis.txt";
+R_WORKSPACE_FISHER_RESULT	Analysis.txt
+
+#####################  topGo的ElimFisher  ####################
+	/**
+#topGo的文件夹
+#R_WORKSPACE_TOPGO = R_WORKSPACE + "topGO/";
+R_WORKSPACE_TOPGO	topGO/
+
+#topGo的R脚本文件
+#R_WORKSPACE_TOPGO_RSCRIPT = R_WORKSPACE + "topGO.R";
+R_WORKSPACE_TOPGO_RSCRIPT	topGO.R
+
+#topGo的参数
+#参数文本，第一个记录选择BP、MF、CC，第二个记录写文件，默认是GoResult.txt
+#第三个是数字，表示显示多少个GOTerm ,第四个记录GOInfo，就是每个GO对应的基因文件名
+#R_WORKSPACE_TOPGO_PARAM = R_WORKSPACE_TOPGO + "parameter.txt";
+R_WORKSPACE_TOPGO_PARAM	parameter.txt
+
+#topGo的gene Go Info的结果文件，最后整合进入excel
+#R_WORKSPACE_TOPGO_GENEGOINFO = R_WORKSPACE_TOPGO + "GeneGOInfo.txt";
+R_WORKSPACE_TOPGO_GENEGOINFO	GeneGOInfo.txt
+
+#topGo的gene go,go,go的结果文件
+#R_WORKSPACE_TOPGO_BGGeneGo = R_WORKSPACE_TOPGO + "BG2Go.txt";
+R_WORKSPACE_TOPGO_BGGeneGo	BG2Go.txt
+
+#topGo的包含elimFisher的结果table文件
+#R_WORKSPACE_TOPGO_GORESULT = R_WORKSPACE_TOPGO + "GoResult.txt";
+R_WORKSPACE_TOPGO_GORESULT	GoResult.txt
+
+#topGo的包含elimFisher的图片
+#R_WORKSPACE_TOPGO_GOMAP = R_WORKSPACE_TOPGO + "tGOall_elim_10_def.pdf";
+R_WORKSPACE_TOPGO_GOMAP	tGOall_elim_10_def.pdf
+
+#topGo的包含elimFisher的结果table文件
+#每个GO里面所含有的背景基因
+#格式为
+#   #GO:010101
+#   NM_0110101
+#R_WORKSPACE_TOPGO_GOINFO = R_WORKSPACE_TOPGO + "GOInfo.txt";
+R_WORKSPACE_TOPGO_GOINFO	GOInfo.txt
+
+#topGo计算需要的GeneID
+#R_WORKSPACE_TOPGO_GENEID = R_WORKSPACE_TOPGO + "GeneID.txt";
+R_WORKSPACE_TOPGO_GENEID	GeneID.txt
+
+
+######################### limma microarray 的脚本#############################################
+#microarray的文件夹
+#R_WORKSPACE_MICROARRAY = R_WORKSPACE + "microarray/";
+R_WORKSPACE_MICROARRAY	microarray/
+
+#标准化的脚本路径
+#R_WORKSPACE_MICROARRAY_NORMLIZATION = R_WORKSPACE_MICROARRAY + "norm.R";
+R_WORKSPACE_MICROARRAY_NORMLIZATION	norm.R
+
+# limma筛选差异基因的脚本
+#R_WORKSPACE_MICROARRAY_COMPARE = R_WORKSPACE_MICROARRAY + "limma.txt";
+R_WORKSPACE_MICROARRAY_COMPARE	limma.txt
+
+#limma临时的标准化基因文件
+#R_WORKSPACE_MICROARRAY_NORMDATA_TMP = R_WORKSPACE_MICROARRAY + "tmpNormGene.txt";
+R_WORKSPACE_MICROARRAY_NORMDATA_TMP	tmpNormGene.txt
+
+/////////////////////////R的density计算，可用于计算motif在指定序列上的分布///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * R的density计算的文件夹，可用于计算motif在指定序列上的分布
+	 */
+	public final static String R_WORKSPACE_DENSITY = R_WORKSPACE + "NormalDensity/";
+	/**
+	 * R的density计算的参数文件，保存本次计算的数据来源和数量，可用于计算motif在指定序列上的分布和Peak在TSS分布<br>
+	 * 第一行大标题第二行xtitle，第三行ytitle
+	 */
+	public final static String R_WORKSPACE_DENSITY_PARAM = R_WORKSPACE_DENSITY + "param.txt";
+	/**
+	 * R的density计算的计算文件，保存本次计算的数据，可用于计算motif在指定序列上的分布<br>
+	 * 数据每行一个，写成一列，没有标题
+	 */
+	public final static String R_WORKSPACE_DENSITY_DATA = R_WORKSPACE_DENSITY + "data.txt";
+	/**
+	 * R的density计算的脚本
+	 */
+	public final static String R_WORKSPACE_DENSITY_RSCRIPT = R_WORKSPACE + "NormalDensity.R";
+	/**
+	 * R的density计算的结果图片，保存本次计算的数据，可用于计算motif在指定序列上的分布
+	 */
+	public final static String R_WORKSPACE_DENSITY_PIC = R_WORKSPACE_DENSITY + "density.jpeg";
+	

@@ -96,16 +96,29 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 					}
 				}
 				//在tmpAnno的最前面加上accID
-				String[] tmpanno2 = new String[tmpAnno.length+1];
-				for (int j = 1; j < tmpanno2.length; j++) {
-					tmpanno2[j]=tmpAnno[j-1];
+				String[] tmpanno2 = null;
+				if (!blast) {
+					tmpanno2 = new String[tmpAnno.length+2];
+					for (int j = 1; j < tmpanno2.length-1; j++) {
+						tmpanno2[j]=tmpAnno[j-1];
+					}
+					tmpanno2[0]=lsGeneID.get(i);
+					tmpanno2[tmpanno2.length - 1] =copedID.getKeggInfo().getKegID();
 				}
-				tmpanno2[0]=lsGeneID.get(i);
+				else {
+					tmpanno2 = new String[tmpAnno.length+1];
+					for (int j = 1; j < tmpanno2.length; j++) {
+						tmpanno2[j]=tmpAnno[j-1];
+					}
+					tmpanno2[0]=lsGeneID.get(i);
+				}
+				
+			
 				/////////去除物种那一列/////////////////////////////
 				String[] tmpanno3 = null;
 				if(blast)
 				{
-					tmpanno3 = new String[9];
+					tmpanno3 = new String[10];
 					int j = 0;
 					for (int m = 0; m < tmpanno2.length; m++) {
 						if (m == 3) {

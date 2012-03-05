@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
-import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbs;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
@@ -247,7 +245,12 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		return title;
 	}
  
-	
+	public double getMean() {
+		return MathComput.mean(value);
+	}
+	public double getMedian() {
+		return MathComput.median(value);
+	}
 	/**
 	 * 用于比较的，从小到大比
 	 * 根据weight排序

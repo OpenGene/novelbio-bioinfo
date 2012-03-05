@@ -165,11 +165,35 @@ public class SAMtools extends SeqComb{
 		return bedSeq;
 	}
 	
-	
+	boolean getSeqName = false;
+	/**
+	 * 是否在bed文件的最后一列加上seq的名字
+	 * @param getSeqName
+	 */
+	public void setGetSeqName(boolean getSeqName) {
+		this.getSeqName = getSeqName;
+	}
 	/**
 	 * 将一行的信息提取为bed文件的格式
 	 * 起点从0开始，默认mapping数目为1
 	 * @return
+	 * 0:chrID
+	 * 1:start
+	 * 2:end
+	 * 3:Mismatching positions/bases
+	 * 4:CIGAR  M 0 alignment match (can be a sequence match or mismatch)
+I   1 insertion to the reference 
+D 2 deletion from the reference
+N 3 skipped region from the reference
+S 4 soft clipping (clipped sequences present in SEQ)
+H  5 hard clipping (clipped sequences NOT present in SEQ)
+P  6 padding (silent deletion from padded reference)
+=  7 sequence match 
+X 8 sequence mismatch
+
+5: strand
+6: 
+
 	 */
 	private String[] getBedFormat(String content)
 	{
@@ -194,15 +218,25 @@ public class SAMtools extends SeqComb{
 		//起点
 		int start = Integer.parseInt(ss[3]) - 1;
 		int end = start + length;
-		String[] result = new String[7];
+		String[] result = null;
+		if (getSeqName) {
+			result = new String[8];
+		}
+		else {
+			result = new String[7];
+		}
 		result[0] = ss[2]; result[1] = start+""; result[2] = end+""; 
 		try {
+			//Mismatching positions/bases
 			result[3] = ss[18];
 		} catch (Exception e) {
 			result[3] = "none";
 		}
 		 result[4] = ss[5]; result[5] = strand;
 		 result[6] = "1";
+		 if (getSeqName) {
+			result[7] = ss[0];
+		}
 		return result;
 	}
 	
@@ -238,7 +272,13 @@ public class SAMtools extends SeqComb{
 		//起点
 		int start = Integer.parseInt(ss[3]) - 1;
 		int end = start + length;
-		String[] result = new String[7];
+		String[] result = null;
+		if (getSeqName) {
+			result = new String[8];
+		}
+		else {
+			result = new String[7];
+		}
 		result[0] = ss[2]; result[1] = start+""; result[2] = end+""; 
 		try {
 			result[3] = ss[18];
@@ -251,14 +291,29 @@ public class SAMtools extends SeqComb{
 		 
 		 if (tagXA.length < 2) {
 			result[6] = "1";
+			if (getSeqName) {
+				result[7] = ss[0];
+			}
 			return lsResult;
 		}
 		 
 		 
 		 String[] tmpInfo = tagXA[1].split("\t")[0].split(";");
+		//这里修改的是已经添加入lsResult的result的信息
 		 result[6] = tmpInfo.length + 1 + "";
+		 if (getSeqName) {
+			 result[7] = ss[0];
+		 }
+		 //添加新的信息
 		 for (String string : tmpInfo) {
-			String[] tmpResult = new String[7];
+			String[] tmpResult = null;
+			if (getSeqName) {
+				tmpResult = new String[8];
+			}
+			else {
+				tmpResult = new String[7];
+			}
+			
 			String[] info = string.split(",");
 			tmpResult[0] = info[0];
 			int start1 = Integer.parseInt(info[1].substring(1)) -1;
@@ -272,6 +327,9 @@ public class SAMtools extends SeqComb{
 			tmpResult[4] = info[2];
 			tmpResult[5] = info[1].charAt(0)+"";
 			tmpResult[6] = result[6];
+			 if (getSeqName) {
+				 tmpResult[7] = ss[0];
+			 }
 			lsResult.add(tmpResult);
 		}
 		 if (lsResult.size() == 0) {

@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 
@@ -79,12 +80,20 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			// 添加转录本
 			// 看本基因的转录起点是否小于上个基因的转录终点，如果小于，则说明本基因是上个基因的一个转录本
-			GffDetailGene lastGffdetailUCSCgene;
+			GffDetailGene lastGffdetailUCSCgene = null; double[] overlapInfo = null;
+			if (LOCList.size() > 0 ) {
+				lastGffdetailUCSCgene = (GffDetailGene) LOCList.get(LOCList.size() - 1);
+				overlapInfo = ArrayOperate.cmpArray(new double[]{Double.parseDouble(geneInfo[3]), Double.parseDouble(geneInfo[4])}, 
+						new double[]{lastGffdetailUCSCgene.numberstart, lastGffdetailUCSCgene.numberend});	
+			}
+			
 			if (LOCList.size() > 0 
 					&& // 如果转录本方向不同，那就新开一个转录本
-					geneInfo[2].equals("+") == (lastGffdetailUCSCgene = (GffDetailGene) LOCList.get(LOCList.size() - 1)).cis5to3
+					geneInfo[2].equals("+") == lastGffdetailUCSCgene.cis5to3
 					&&
-					Integer.parseInt(geneInfo[3])+startRegion < lastGffdetailUCSCgene.numberend)
+					//将其改为重叠1/3以上才认为是同一个基因
+					(overlapInfo[2] > 0.3 || overlapInfo[3] > 0.3)
+					)
 			{
 				// 修改基因起点和终点
 				if (Integer.parseInt(geneInfo[3])+startRegion < lastGffdetailUCSCgene.numberstart)

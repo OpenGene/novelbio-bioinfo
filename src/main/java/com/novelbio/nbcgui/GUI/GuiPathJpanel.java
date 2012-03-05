@@ -37,6 +37,7 @@ import com.novelbio.base.gui.NumOnlyDoc;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.nbcgui.controltest.CtrlGO;
 import com.novelbio.nbcgui.controltest.CtrlPath;
+import javax.swing.SpringLayout;
 
 
 /**
@@ -88,14 +89,129 @@ public class GuiPathJpanel extends JPanel{
 	
 	public GuiPathJpanel() 
 	{
-		GroupLayout jPanPathLayout = new GroupLayout((JComponent)this);
-		setLayout(jPanPathLayout);
 		
 
 		setPreferredSize(new java.awt.Dimension(1046, 617));
 		setAlignmentX(0.0f);
 		setComponent();
-		setGroup(jPanPathLayout);
+		SpringLayout springLayout = new SpringLayout();
+		springLayout.putConstraint(SpringLayout.NORTH, jProgressBarPath, 588, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jProgressBarPath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, jProgressBarPath, 1035, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jLabResultReviewPath, 234, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jLabResultReviewPath, 248, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, jLabResultReviewPath, 375, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jLabInputReviewPath, 14, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jLabInputReviewPath, 241, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, jLabInputReviewPath, 338, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jScrollPaneInputPath, 36, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jScrollPaneInputPath, 241, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jScrollPaneInputPath, 228, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jScrollPaneInputPath, 1035, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jTabbedPanePathResult, 254, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jTabbedPanePathResult, 241, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jTabbedPanePathResult, 585, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jTabbedPanePathResult, 1035, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jTxtBGPath, 176, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jTxtBGPath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, jTxtBGPath, 227, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jBtnBGFilePath, 200, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jBtnBGFilePath, 130, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jBtnBGFilePath, 223, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jBtnBGFilePath, 227, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jBtnFileOpenPath, 60, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jBtnFileOpenPath, 122, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, jBtnFileOpenPath, 227, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jTxtAccColPath, 264, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jTxtAccColPath, 122, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jTxtAccColPath, 284, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jTxtAccColPath, 165, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jTxtValColPath, 331, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jTxtValColPath, 122, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jTxtValColPath, 351, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jTxtValColPath, 166, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jButRunPath, 564, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jButRunPath, 122, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jButRunPath, 588, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jButRunPath, 202, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jLabBGPath, 156, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jLabBGPath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, jLabBGPath, 122, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jCombSelSpePath, 112, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jCombSelSpePath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, jCombSelSpePath, 186, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jLabPathQtaxID, 88, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jLabPathQtaxID, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jLabPathQtaxID, 106, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jLabPathQtaxID, 141, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jCombBlastTaxPath, 453, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jCombBlastTaxPath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jCombBlastTaxPath, 479, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jCombBlastTaxPath, 212, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jTxtUpValuePath, 373, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jTxtUpValuePath, 105, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jTxtUpValuePath, 395, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jTxtUpValuePath, 174, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jTxtDownValuePath, 407, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jTxtDownValuePath, 105, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jTxtDownValuePath, 429, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jTxtDownValuePath, 174, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jLabPathPath, 12, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jLabPathPath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jLabPathPath, 30, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jLabPathPath, 97, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jChkBlastPath, 518, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jChkBlastPath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, jChkBlastPath, 92, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jChkCluster, 309, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jChkCluster, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, jChkCluster, 101, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jLabAccColPath, 267, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jLabAccColPath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jLabUpValuePath, 376, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jLabUpValuePath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jLabUpValuePath, 393, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jLabUpValuePath, 84, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jLabDownValuePath, 413, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jLabDownValuePath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jLabDownValuePath, 424, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jLabDownValuePath, 99, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jBtbSavePath, 565, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jBtbSavePath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, jBtbSavePath, 588, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, jBtbSavePath, 104, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jLabValueColPath, 334, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jLabValueColPath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.NORTH, jTxtFilePathPath, 36, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, jTxtFilePathPath, 12, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, jTxtFilePathPath, 229, SpringLayout.WEST, this);
+		setLayout(springLayout);
+		add(jTxtFilePathPath);
+		add(jLabValueColPath);
+		add(jBtbSavePath);
+		add(jLabDownValuePath);
+		add(jLabUpValuePath);
+		add(jLabAccColPath);
+		add(jChkCluster);
+		add(jChkBlastPath);
+		add(jLabPathPath);
+		add(jTxtDownValuePath);
+		add(jTxtUpValuePath);
+		add(jCombBlastTaxPath);
+		add(jLabPathQtaxID);
+		add(jCombSelSpePath);
+		add(jLabBGPath);
+		add(jButRunPath);
+		add(jTxtValColPath);
+		add(jTxtAccColPath);
+		add(jBtnFileOpenPath);
+		add(jBtnBGFilePath);
+		add(jTxtBGPath);
+		add(jTabbedPanePathResult);
+		add(jScrollPaneInputPath);
+		add(jLabInputReviewPath);
+		add(jLabResultReviewPath);
+		add(jProgressBarPath);
 	}
 	private void setComponent() {
 		btnGroupPathMethod = new ButtonGroup();
@@ -314,141 +430,6 @@ public class GuiPathJpanel extends JPanel{
 		}
 	}
 	
-	
-	private void setGroup(GroupLayout jPanPathLayout)
-	{
-		jPanPathLayout.setVerticalGroup(jPanPathLayout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(jPanPathLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				    .addComponent(jLabPathPath, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 18, GroupLayout.PREFERRED_SIZE)
-				    .addComponent(jLabInputReviewPath, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(jPanPathLayout.createParallelGroup()
-				    .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-				        .addComponent(jTxtFilePathPath, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				        .addComponent(jBtnFileOpenPath, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				        .addComponent(jLabPathQtaxID, GroupLayout.PREFERRED_SIZE, 18, GroupLayout.PREFERRED_SIZE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				        .addComponent(jCombSelSpePath, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-				        .addGap(21)
-				        .addComponent(jLabBGPath, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				        .addComponent(jTxtBGPath, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				        .addComponent(jBtnBGFilePath, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
-				    .addComponent(jScrollPaneInputPath, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 192, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(jLabResultReviewPath, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(jPanPathLayout.createParallelGroup()
-				    .addComponent(jTabbedPanePathResult, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 331, GroupLayout.PREFERRED_SIZE)
-				    .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-				        .addGap(10)
-				        .addGroup(jPanPathLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				            .addComponent(jTxtAccColPath, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-				            .addComponent(jLabAccColPath, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-				        .addGap(25)
-				        .addComponent(jChkCluster, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				        .addGroup(jPanPathLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				            .addComponent(jTxtValColPath, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-				            .addComponent(jLabValueColPath, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-				        .addGap(22)
-				        .addGroup(jPanPathLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				            .addComponent(jTxtUpValuePath, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
-				            .addComponent(jLabUpValuePath, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE))
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-				        .addGroup(jPanPathLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				            .addComponent(jTxtDownValuePath, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
-				            .addComponent(jLabDownValuePath, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 11, GroupLayout.PREFERRED_SIZE))
-				        .addGap(24)
-				        .addComponent(jCombBlastTaxPath, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-				        .addGap(39)
-				        .addComponent(jChkBlastPath, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				        .addGap(24)
-				        .addGroup(jPanPathLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				            .addComponent(jButRunPath, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
-				            .addComponent(jBtbSavePath, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(jProgressBarPath, GroupLayout.PREFERRED_SIZE, 14, GroupLayout.PREFERRED_SIZE)
-				.addGap(0, 6, Short.MAX_VALUE));
-			jPanPathLayout.setHorizontalGroup(jPanPathLayout.createSequentialGroup()
-			.addContainerGap()
-			.addGroup(jPanPathLayout.createParallelGroup()
-			    .addGroup(jPanPathLayout.createSequentialGroup()
-			        .addGroup(jPanPathLayout.createParallelGroup()
-			            .addComponent(jTxtFilePathPath, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 217, GroupLayout.PREFERRED_SIZE)
-			            .addGroup(jPanPathLayout.createSequentialGroup()
-			                .addGroup(jPanPathLayout.createParallelGroup()
-			                    .addComponent(jLabValueColPath, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
-			                    .addComponent(jBtbSavePath, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
-			                    .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                        .addComponent(jLabDownValuePath, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
-			                        .addGap(6))
-			                    .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                        .addComponent(jLabUpValuePath, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
-			                        .addGap(21))
-			                    .addComponent(jLabAccColPath, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
-			                    .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                        .addComponent(jChkCluster, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
-			                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))
-			                    .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                        .addComponent(jChkBlastPath, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-			                        .addGap(13))
-			                    .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                        .addComponent(jLabPathPath, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
-			                        .addGap(8)))
-			                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-			                .addGroup(jPanPathLayout.createParallelGroup()
-			                    .addComponent(jTxtDownValuePath, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)
-			                    .addComponent(jTxtUpValuePath, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE))
-			                .addGap(43))
-			            .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                .addComponent(jCombBlastTaxPath, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
-			                .addGap(17))
-			            .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                .addComponent(jLabPathQtaxID, GroupLayout.PREFERRED_SIZE, 129, GroupLayout.PREFERRED_SIZE)
-			                .addGap(88))
-			            .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                .addComponent(jCombSelSpePath, GroupLayout.PREFERRED_SIZE, 174, GroupLayout.PREFERRED_SIZE)
-			                .addGap(43))
-			            .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                .addComponent(jLabBGPath, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-			                .addGroup(jPanPathLayout.createParallelGroup()
-			                    .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                        .addComponent(jButRunPath, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-			                        .addGap(25))
-			                    .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                        .addComponent(jTxtValColPath, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
-			                        .addGap(61))
-			                    .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                        .addComponent(jTxtAccColPath, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
-			                        .addGap(62))
-			                    .addComponent(jBtnFileOpenPath, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE)
-			                    .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                        .addGap(8)
-			                        .addComponent(jBtnBGFilePath, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE))))
-			            .addComponent(jTxtBGPath, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE))
-			        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-			        .addGroup(jPanPathLayout.createParallelGroup()
-			            .addGroup(jPanPathLayout.createSequentialGroup()
-			                .addGap(0, 0, Short.MAX_VALUE)
-			                .addComponent(jTabbedPanePathResult, GroupLayout.PREFERRED_SIZE, 794, GroupLayout.PREFERRED_SIZE))
-			            .addGroup(jPanPathLayout.createSequentialGroup()
-			                .addComponent(jScrollPaneInputPath, GroupLayout.PREFERRED_SIZE, 794, GroupLayout.PREFERRED_SIZE)
-			                .addGap(0, 0, Short.MAX_VALUE))
-			            .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                .addComponent(jLabInputReviewPath, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
-			                .addGap(0, 697, Short.MAX_VALUE))
-			            .addGroup(GroupLayout.Alignment.LEADING, jPanPathLayout.createSequentialGroup()
-			                .addGap(7)
-			                .addComponent(jLabResultReviewPath, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
-			                .addGap(0, 660, Short.MAX_VALUE))))
-			    .addComponent(jProgressBarPath, GroupLayout.Alignment.LEADING, 0, 1023, Short.MAX_VALUE))
-			.addContainerGap());
-	}
 	/**
 	 * 查看文件的鼠标或键盘事件响应时调用
 	 */

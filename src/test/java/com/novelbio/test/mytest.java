@@ -101,21 +101,33 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		ArrayList<Double> lsInt = new ArrayList<Double>();
-		for (int i = 1; i < 10; i++) {
-			lsInt.add((double)i);
+		String miRNAbed = "/media/winE/NBC/Project/Project_ZHY_Lab/miRNA/result_advance_N/annotation_fastq_Bwa_map_filter_rRNA_sorted.bed";
+		String miRNAout = "/media/winE/NBC/Project/Project_ZHY_Lab/miRNA/result_advance_N/annotation_fastq_Bwa_map_filter_rRNA_sorted_coped3.bed";
+		TxtReadandWrite txtRead = new TxtReadandWrite(miRNAbed, false);
+		TxtReadandWrite txtOut = new TxtReadandWrite(miRNAout, true);
+		int startOld = 0; int endOld= 0; String chrIDOld = ""; int num = 0;
+		for (String string : txtRead.readlines()) {
+			String[] ss = string.split("\t");
+			int start = Integer.parseInt(ss[1]);
+			int end = Integer.parseInt(ss[2]);
+			if (start - endOld > 200 || !ss[0].equals(chrIDOld)) {
+				if (num > 2) {
+					txtOut.writefileln(new String[]{chrIDOld, startOld+"", endOld+"", num+""});
+				}
+				
+				chrIDOld = ss[0];
+				startOld = start;
+				endOld = end;
+				num = Integer.parseInt(ss[7].split("_")[1]);
+			}
+			else if (start - endOld < 200 && ss[0].equals(chrIDOld) ) {
+				endOld = end;
+				num = num + Integer.parseInt(ss[7].split("_")[1]);
+			}
 		}
-		System.out.println(1 + " " +Collections.binarySearch(lsInt, 1.0));
-		System.out.println(2 + " " +Collections.binarySearch(lsInt, 2.0));
-		System.out.println(3 + " " +Collections.binarySearch(lsInt, 3.0));
-		System.out.println(0.2 + " " +Collections.binarySearch(lsInt, 0.2));
-		System.out.println(1.5 + " " +Collections.binarySearch(lsInt, 1.5));
-		System.out.println(2.5 + " " +Collections.binarySearch(lsInt, 2.5));
-		System.out.println(3 + " " +Collections.binarySearch(lsInt, 3.0));
-		System.out.println(3.5 + " " +Collections.binarySearch(lsInt, 3.5));
-		System.out.println(4 + " " +Collections.binarySearch(lsInt, 4.0));
-		System.out.println(9.0 + " " +Collections.binarySearch(lsInt, 9.0));
-		System.out.println(11.5 + " " +Collections.binarySearch(lsInt, 11.5));
+		txtOut.writefileln(new String[]{chrIDOld, startOld+"", endOld+"", num+""});
+		txtOut.close();
+		txtRead.close();
 	}
 	
 	

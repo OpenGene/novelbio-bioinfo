@@ -39,6 +39,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.nbcgui.controlquery.CtrlBlastAnno;
 import com.novelbio.nbcgui.controlquery.CtrlBlastGo;
 import com.novelbio.nbcgui.controlquery.CtrlBlastPath;
+import javax.swing.SpringLayout;
 
 
 /**
@@ -97,14 +98,52 @@ public class GuiBlastJpanel extends JPanel{
 	
 	GuiBlastJpanel jBlastJpanel = null;
 	public GuiBlastJpanel() {
-			GroupLayout jPanBlastLayout = new GroupLayout((JComponent)this);
-			setLayout(jPanBlastLayout);
 		
 
 			this.setPreferredSize(new java.awt.Dimension(1046, 630));
 			setAlignmentX(0.0f);
 			setComponent();
-			setGroup(jPanBlastLayout);
+			springLayout = new SpringLayout();
+			springLayout.putConstraint(SpringLayout.NORTH, jScrollPane1, 32, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jScrollPane1, 212, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.SOUTH, jScrollPane1, 262, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.EAST, jScrollPane1, 1034, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.NORTH, jChBlast, 270, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jChBlast, 212, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.SOUTH, jChBlast, 290, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.EAST, jChBlast, 279, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.NORTH, jBtnGetFile, 3, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jBtnGetFile, 109, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.SOUTH, jBtnGetFile, 23, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.NORTH, jLbGeneID, 0, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jLbGeneID, 7, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.SOUTH, jLbGeneID, 26, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.EAST, jLbGeneID, 109, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.NORTH, jScroxTxtGeneID, 32, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jScroxTxtGeneID, 7, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.SOUTH, jScroxTxtGeneID, 306, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.EAST, jScroxTxtGeneID, 206, SpringLayout.WEST, this);
+			setLayout(springLayout);
+			add(getJLbGOandPath());
+			add(jScroxTxtGeneID);
+			add(jLbGeneID);
+			add(jBtnGetFile);
+			add(getJBtnGoPath());
+			add(getJRadioButtonGO());
+			add(getJCmbGOClassSelect());
+			add(getJRadioButtonPath());
+			add(getJBtnSaveGO());
+			add(getJBtnSaveAno());
+			add(getJSeparator1());
+			add(jChBlast);
+			add(getJCmbSpeciesBlast());
+			add(getJBtnAnno());
+			add(getJLblCond());
+			add(getJLabelTax());
+			add(getJCobTaxSelect());
+			add(jScrollPane1);
+			add(getJScrlGOTable());
+			add(getJProgressBar1());
 			Application.getInstance().getContext().getResourceMap(getClass()).injectComponents(this);
 			jBlastJpanel = this;
 		
@@ -149,6 +188,9 @@ public class GuiBlastJpanel extends JPanel{
 	public JButton getJBtnSaveAno() {
 		if(jBtnSaveAno == null) {
 			jBtnSaveAno = new JButton();
+			springLayout.putConstraint(SpringLayout.NORTH, jBtnSaveAno, 268, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jBtnSaveAno, 894, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.EAST, jBtnSaveAno, 987, SpringLayout.WEST, this);
 			jBtnSaveAno.setText("SaveAs");
 			jBtnSaveAno.setRolloverEnabled(true);
 			jBtnSaveAno.setEnabled(false);
@@ -166,6 +208,10 @@ public class GuiBlastJpanel extends JPanel{
 	private JSeparator getJSeparator1() {
 		if(jSeparator1 == null) {
 			jSeparator1 = new JSeparator();
+			springLayout.putConstraint(SpringLayout.NORTH, jSeparator1, 298, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jSeparator1, 312, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.SOUTH, jSeparator1, 304, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.EAST, jSeparator1, 1034, SpringLayout.WEST, this);
 		}
 		return jSeparator1;
 	}
@@ -173,6 +219,10 @@ public class GuiBlastJpanel extends JPanel{
 	private JScrollPane getJScrlGOTable() {
 		if(jScrlGOTable == null) {
 			jScrlGOTable = new JScrollPane();
+			springLayout.putConstraint(SpringLayout.NORTH, jScrlGOTable, 336, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jScrlGOTable, 7, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.SOUTH, jScrlGOTable, 609, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.EAST, jScrlGOTable, 1034, SpringLayout.WEST, this);
 		}
 		return jScrlGOTable;
 	}
@@ -180,6 +230,9 @@ public class GuiBlastJpanel extends JPanel{
 	public JButton getJBtnSaveGO() {
 		if(jBtnSaveGO == null) {
 			jBtnSaveGO = new JButton();
+			springLayout.putConstraint(SpringLayout.NORTH, jBtnSaveGO, 306, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jBtnSaveGO, 894, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.EAST, jBtnSaveGO, 987, SpringLayout.WEST, this);
 			jBtnSaveGO.setText("SaveAs");
 			jBtnSaveGO.setEnabled(false);
 			jBtnSaveGO.addActionListener(new ActionListener() {
@@ -194,90 +247,6 @@ public class GuiBlastJpanel extends JPanel{
 	}
 	
 	private void setGroup(GroupLayout jPanBlastLayout) {
-		jPanBlastLayout.setVerticalGroup(jPanBlastLayout.createSequentialGroup()
-				.addGroup(jPanBlastLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				    .addComponent(jLbGeneID, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-				    .addComponent(jBtnGetFile, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-				    .addComponent(getJLblCond(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				    .addComponent(getJCobTaxSelect(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				    .addComponent(getJLabelTax(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(jPanBlastLayout.createParallelGroup()
-				    .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-				        .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 230, GroupLayout.PREFERRED_SIZE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				        .addGroup(jPanBlastLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				            .addComponent(jChBlast, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-				            .addComponent(getJBtnSaveAno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				            .addComponent(getJBtnAnno(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				            .addComponent(getJCmbSpeciesBlast(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				        .addComponent(getJSeparator1(), GroupLayout.PREFERRED_SIZE, 6, GroupLayout.PREFERRED_SIZE)
-				        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))
-				    .addComponent(jScroxTxtGeneID, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 274, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(jPanBlastLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				    .addComponent(getJBtnSaveGO(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				    .addComponent(getJRadioButtonGO(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				    .addComponent(getJRadioButtonPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				    .addComponent(getJBtnGoPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				    .addComponent(getJLbGOandPath(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-				    .addComponent(getJCmbGOClassSelect(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(getJScrlGOTable(), 0, 270, Short.MAX_VALUE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(getJProgressBar1(), GroupLayout.PREFERRED_SIZE, 8, GroupLayout.PREFERRED_SIZE)
-				.addGap(7));
-					jPanBlastLayout.setHorizontalGroup(jPanBlastLayout.createSequentialGroup()
-					.addGap(7)
-					.addGroup(jPanBlastLayout.createParallelGroup()
-					    .addGroup(jPanBlastLayout.createSequentialGroup()
-					        .addGroup(jPanBlastLayout.createParallelGroup()
-					            .addComponent(getJLbGOandPath(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 205, GroupLayout.PREFERRED_SIZE)
-					            .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-					                .addComponent(jScroxTxtGeneID, GroupLayout.PREFERRED_SIZE, 199, GroupLayout.PREFERRED_SIZE)
-					                .addGap(6))
-					            .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-					                .addComponent(jLbGeneID, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
-					                .addComponent(jBtnGetFile, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
-					                .addGap(6)))
-					        .addGroup(jPanBlastLayout.createParallelGroup()
-					            .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-					                .addComponent(getJBtnGoPath(), GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
-					                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					                .addGroup(jPanBlastLayout.createParallelGroup()
-					                    .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-					                        .addComponent(getJRadioButtonGO(), GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE)
-					                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					                        .addComponent(getJCmbGOClassSelect(), 0, 296, Short.MAX_VALUE)
-					                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					                        .addComponent(getJRadioButtonPath(), GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
-					                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					                        .addGroup(jPanBlastLayout.createParallelGroup()
-					                            .addComponent(getJBtnSaveGO(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
-					                            .addComponent(getJBtnSaveAno(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
-					                        .addGap(47))
-					                    .addComponent(getJSeparator1(), GroupLayout.Alignment.LEADING, 0, 721, Short.MAX_VALUE)))
-					            .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-					                .addGroup(jPanBlastLayout.createParallelGroup()
-					                    .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-					                        .addComponent(jChBlast, GroupLayout.PREFERRED_SIZE, 67, GroupLayout.PREFERRED_SIZE)
-					                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					                        .addComponent(getJCmbSpeciesBlast(), 0, 227, Short.MAX_VALUE)
-					                        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-					                        .addComponent(getJBtnAnno(), GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE))
-					                    .addGroup(GroupLayout.Alignment.LEADING, jPanBlastLayout.createSequentialGroup()
-					                        .addGap(24)
-					                        .addComponent(getJLblCond(), GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE)
-					                        .addGap(0, 66, Short.MAX_VALUE)))
-					                .addGap(41)
-					                .addComponent(getJLabelTax(), GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
-					                .addComponent(getJCobTaxSelect(), GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE)
-					                .addGap(6))
-					            .addComponent(jScrollPane1, GroupLayout.Alignment.LEADING, 0, 822, Short.MAX_VALUE)))
-					    .addComponent(getJScrlGOTable(), GroupLayout.Alignment.LEADING, 0, 1027, Short.MAX_VALUE)
-					    .addComponent(getJProgressBar1(), GroupLayout.Alignment.LEADING, 0, 1027, Short.MAX_VALUE))
-					.addContainerGap());
 				
 	}
 	
@@ -286,6 +255,10 @@ public class GuiBlastJpanel extends JPanel{
 	public JProgressBar getJProgressBar1() {
 		if(jProgressBar1 == null) {
 			jProgressBar1 = new JProgressBar();
+			springLayout.putConstraint(SpringLayout.NORTH, jProgressBar1, 615, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jProgressBar1, 7, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.SOUTH, jProgressBar1, 623, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.EAST, jProgressBar1, 1034, SpringLayout.WEST, this);
 		}
 		return jProgressBar1;
 	}
@@ -295,6 +268,9 @@ public class GuiBlastJpanel extends JPanel{
 	private JRadioButton getJRadioButtonGO() {
 		if(jRadioButtonGO == null) {
 			jRadioButtonGO = new JRadioButton();
+			springLayout.putConstraint(SpringLayout.NORTH, jRadioButtonGO, 307, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jRadioButtonGO, 312, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.EAST, jRadioButtonGO, 444, SpringLayout.WEST, this);
 			jRadioButtonGO.setText("GeneOntology");
 			jRadioButtonGO.setSelected(true);
 			buttonGroup1.add(jRadioButtonGO);
@@ -311,6 +287,9 @@ public class GuiBlastJpanel extends JPanel{
 	private JRadioButton getJRadioButtonPath() {
 		if(jRadioButtonPath == null) {
 			jRadioButtonPath = new JRadioButton();
+			springLayout.putConstraint(SpringLayout.NORTH, jRadioButtonPath, 307, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jRadioButtonPath, 755, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.EAST, jRadioButtonPath, 890, SpringLayout.WEST, this);
 			jRadioButtonPath.setText("KEGG Pathway");
 			buttonGroup1.add(jRadioButtonPath);
 			jRadioButtonPath.setMargin(new java.awt.Insets(2, 0, 2, 0));
@@ -335,6 +314,9 @@ public class GuiBlastJpanel extends JPanel{
 	public JButton getJBtnAnno() {
 		if(jBtnAnno == null) {
 			jBtnAnno = new JButton();
+			springLayout.putConstraint(SpringLayout.NORTH, jBtnAnno, 268, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jBtnAnno, 524, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.EAST, jBtnAnno, 620, SpringLayout.WEST, this);
 			jBtnAnno.setText("Query");
 			jBtnAnno.setSize(96, 21);
 			jBtnAnno.addActionListener(new ActionListener() {
@@ -370,8 +352,8 @@ public class GuiBlastJpanel extends JPanel{
 						{
 							//设置anno结果框
 							{
-								titleAnno = new String[3];
-								titleAnno[0] ="QueryID";titleAnno[1] ="Symbol/AccID";titleAnno[2] ="Description";
+								titleAnno = new String[4];
+								titleAnno[0] ="QueryID";titleAnno[1] ="Symbol/AccID";titleAnno[2] ="Description";titleAnno[3] ="KeggID";
 								String[][] tableValue = null;
 								jTabAnno = new DefaultTableModel(tableValue,titleAnno);
 								jTabFAnno = new JTable();
@@ -382,7 +364,7 @@ public class GuiBlastJpanel extends JPanel{
 						else {
 							//设置anno结果框
 							{
-								titleAnno = new String[6];
+								titleAnno = new String[7];
 								titleAnno[0] ="QueryID";titleAnno[1] ="Symbol/AccID";titleAnno[2] ="Description";
 								titleAnno[3] ="evalue";titleAnno[4] ="BlastSymbol/AccID";titleAnno[5] ="BlastDescription";
 								String[][] tableValue = null;
@@ -410,6 +392,9 @@ public class GuiBlastJpanel extends JPanel{
 	public JButton getJBtnGoPath() {
 		if(jBtnGoPath == null) {
 			jBtnGoPath = new JButton();
+			springLayout.putConstraint(SpringLayout.NORTH, jBtnGoPath, 306, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jBtnGoPath, 212, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.EAST, jBtnGoPath, 308, SpringLayout.WEST, this);
 			jBtnGoPath.setText("Query");
 			jBtnGoPath.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
@@ -430,7 +415,7 @@ public class GuiBlastJpanel extends JPanel{
 					
 					
 					//////////////////一次只能读取3000个
-					if (lsGenID.size()>numLimit) {
+					if (lsGenID.size() > numLimit) {
 						JOptionPane.showMessageDialog(null, "To ensure the stability of the database, the gene number of each query is limited in 3000.", "alert", JOptionPane.INFORMATION_MESSAGE); 
 						lsGenID2 = lsGenID2.subList(0, numLimit);
 					}
@@ -523,6 +508,9 @@ public class GuiBlastJpanel extends JPanel{
 	public JLabel getJLblCond() {
 		if(jLblCond == null) {
 			jLblCond = new JLabel();
+			springLayout.putConstraint(SpringLayout.NORTH, jLblCond, 6, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jLblCond, 236, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.EAST, jLblCond, 554, SpringLayout.WEST, this);
 			jLblCond.setText("Prepare");
 		}
 		return jLblCond;
@@ -536,6 +524,9 @@ public class GuiBlastJpanel extends JPanel{
 	public JLabel getJLbGOandPath() {
 		if(jLbGOandPath == null) {
 			jLbGOandPath = new JLabel();
+			springLayout.putConstraint(SpringLayout.NORTH, jLbGOandPath, 311, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jLbGOandPath, 7, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.EAST, jLbGOandPath, 212, SpringLayout.WEST, this);
 			jLbGOandPath.setText("Prepare");
 		}
 		return jLbGOandPath;
@@ -623,6 +614,9 @@ public class GuiBlastJpanel extends JPanel{
 			ComboBoxModel jCobTaxSelectModel = 
 				new DefaultComboBoxModel(speciesarray);
 			jCobTaxSelect = new JComboBox();
+			springLayout.putConstraint(SpringLayout.NORTH, jCobTaxSelect, 2, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jCobTaxSelect, 800, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.EAST, jCobTaxSelect, 1028, SpringLayout.WEST, this);
 			jCobTaxSelect.setModel(jCobTaxSelectModel);
 			String species = (String) jCobTaxSelect.getSelectedItem();
 			if (hashTaxID.get(species) == null) {
@@ -649,6 +643,9 @@ public class GuiBlastJpanel extends JPanel{
 	private JLabel getJLabelTax() {
 		if(jLabelTax == null) {
 			jLabelTax = new JLabel();
+			springLayout.putConstraint(SpringLayout.NORTH, jLabelTax, 6, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jLabelTax, 661, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.EAST, jLabelTax, 800, SpringLayout.WEST, this);
 			jLabelTax.setText("select species");
 		}
 		return jLabelTax;
@@ -685,6 +682,9 @@ public class GuiBlastJpanel extends JPanel{
 				new DefaultComboBoxModel(
 						new String[] { Go2Term.GO_BP, Go2Term.GO_MF,Go2Term.GO_CC, Go2Term.GO_ALL});
 			jComGOClassSelect = new JComboBox();
+			springLayout.putConstraint(SpringLayout.NORTH, jComGOClassSelect, 307, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jComGOClassSelect, 448, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.EAST, jComGOClassSelect, 751, SpringLayout.WEST, this);
 			jComGOClassSelect.setModel(jCmbGOClassSelectModel);
 			GoClass = (String) jComGOClassSelect.getSelectedItem();
 			jComGOClassSelect.addActionListener(new ActionListener() 
@@ -706,17 +706,7 @@ public class GuiBlastJpanel extends JPanel{
 //			jCmbSpeciesBlast.setModel(jCmbSpeciesBlastModel);
 //		}
 //		return jCmbSpeciesBlast;
-		
-		
-		
-		
-		
-		
-		
-		
-		
 
-		
 
 		if(jCmbSpeciesBlast == null) {
 			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
@@ -730,6 +720,9 @@ public class GuiBlastJpanel extends JPanel{
 			ComboBoxModel jCobTaxSelectModel = 
 				new DefaultComboBoxModel(speciesarray);
 			jCmbSpeciesBlast = new JComboBox();
+			springLayout.putConstraint(SpringLayout.NORTH, jCmbSpeciesBlast, 269, SpringLayout.NORTH, this);
+			springLayout.putConstraint(SpringLayout.WEST, jCmbSpeciesBlast, 283, SpringLayout.WEST, this);
+			springLayout.putConstraint(SpringLayout.EAST, jCmbSpeciesBlast, 512, SpringLayout.WEST, this);
 			jCmbSpeciesBlast.setModel(jCobTaxSelectModel);
 			String species = (String) jCmbSpeciesBlast.getSelectedItem();
 			if (hashTaxID.get(species) == null) {
@@ -754,15 +747,6 @@ public class GuiBlastJpanel extends JPanel{
 	
 	}
 
-//	private void initGUI() {
-//		try {
-//			{
-//				this.setPreferredSize(new java.awt.Dimension(754, 388));
-//			}
-//		} catch(Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
-
 	NBCJDialog nbcjDialog;
+	private SpringLayout springLayout;
 }

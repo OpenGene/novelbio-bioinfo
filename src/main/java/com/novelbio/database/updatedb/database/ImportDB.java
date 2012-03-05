@@ -152,22 +152,22 @@ public class ImportDB {
 		int taxID = 0;
 		NormAffy normAffy = null;
 		/////////   arabidopsis  //////////////////////////////////////////////;
-		affyFile = "/media/winE/Bioinformatics/Affymetrix/Arabidopsis/ATH1-121501.na31.annot.csv/ATH1-121501.na31.annot_modify.csv";
-		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
-		taxID = 3702;
-		normAffy = new NormAffy();
-		normAffy.setTaxID(taxID);
-		normAffy.setTxtWriteExcep(outFile);
-		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_ATH);
+//		affyFile = "/media/winE/Bioinformatics/Affymetrix/Arabidopsis/ATH1-121501.na31.annot.csv/ATH1-121501.na31.annot_modify.csv";
+//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+//		taxID = 3702;
+//		normAffy = new NormAffy();
+//		normAffy.setTaxID(taxID);
+//		normAffy.setTxtWriteExcep(outFile);
+//		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_ATH);
 //		normAffy.updateFile(affyFile, false);
 		/////////   human  //////////////////////////////////////////////;
-		affyFile = "/media/winE/Bioinformatics/Affymetrix/Human/Human Genome U133 Plus 2.0/HG-U133_Plus_2.na31.annot.csv/HG-U133_Plus_2.na31.annot.csv";
-		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
-		taxID = 9606;
-		normAffy = new NormAffy();
-		normAffy.setTaxID(taxID);
-		normAffy.setTxtWriteExcep(outFile);
-		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_HUMAN_U133_PLUS2);
+//		affyFile = "/media/winE/Bioinformatics/Affymetrix/Human/Human Genome U133 Plus 2.0/HG-U133_Plus_2.na31.annot.csv/HG-U133_Plus_2.na31.annot.csv";
+//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+//		taxID = 9606;
+//		normAffy = new NormAffy();
+//		normAffy.setTaxID(taxID);
+//		normAffy.setTxtWriteExcep(outFile);
+//		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_HUMAN_U133_PLUS2);
 //		normAffy.updateFile(affyFile, false);
 
 		/////////   Zebrafish  //////////////////////////////////////////////;
@@ -190,13 +190,13 @@ public class ImportDB {
 //		normAffy.updateFile(affyFile, false);
 
 		/////////   rice  //////////////////////////////////////////////;
-		affyFile = "/media/winE/Bioinformatics/Affymetrix/rice/Rice.na31.annot.csv/Rice.na31.annot.csv";
-		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
-		taxID = 39947;
-		normAffy = new NormAffy();
-		normAffy.setTaxID(taxID);
-		normAffy.setTxtWriteExcep(outFile);
-		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
+//		affyFile = "/media/winE/Bioinformatics/Affymetrix/rice/Rice.na31.annot.csv/Rice.na31.annot.csv";
+//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+//		taxID = 39947;
+//		normAffy = new NormAffy();
+//		normAffy.setTaxID(taxID);
+//		normAffy.setTxtWriteExcep(outFile);
+//		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
 //		normAffy.updateFile(affyFile, false);
 
 		/////////   Pig Porcine  //////////////////////////////////////////////;
@@ -210,6 +210,16 @@ public class ImportDB {
 //		normAffy.updateFile(affyFile, false);
 
 		/////////   Mouse  //////////////////////////////////////////////;
+//		affyFile = "/media/winE/Bioinformatics/Affymetrix/Mouse/Mouse Genome 430 2.0 Array/Mouse430_2.na31.annot.csvTT/Mouse430_2.na31.annot.csv";
+//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+//		taxID = 10090;
+//		normAffy = new NormAffy();
+//		normAffy.setTaxID(taxID);
+//		normAffy.setTxtWriteExcep(outFile);
+//		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
+//		normAffy.updateFile(affyFile, false);
+		
+		/////////   Rat  //////////////////////////////////////////////;
 		affyFile = "/media/winE/Bioinformatics/Affymetrix/Mouse/Mouse Genome 430 2.0 Array/Mouse430_2.na31.annot.csvTT/Mouse430_2.na31.annot.csv";
 		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
 		taxID = 10090;
@@ -217,7 +227,7 @@ public class ImportDB {
 		normAffy.setTaxID(taxID);
 		normAffy.setTxtWriteExcep(outFile);
 		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
-//		normAffy.updateFile(affyFile, false);
+		normAffy.updateFile(affyFile, false);
 
 		/////////   Bovine  //////////////////////////////////////////////;
 //		affyFile = "/media/winE/Bioinformatics/Affymetrix/";

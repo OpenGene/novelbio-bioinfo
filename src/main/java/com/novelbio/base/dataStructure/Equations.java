@@ -20,7 +20,7 @@ public class Equations {
 	ArrayList<double[]> lsXY = new ArrayList<double[]>();
 	/**
 	 * 给定一系列的数据，分为两列，获得一个xy的曲线
-	 * @param file
+	 * @param file 没有文件则直接返回
 	 * @param colX x列
 	 * @param colY y列
 	 * @param rowNum 从第几列开始读去
@@ -47,7 +47,7 @@ public class Equations {
 	}
 	/**
 	 * 给定一系列的数据，分为两列，获得一个xy的曲线
-	 * @param file x第一列，y第二；列，从第一行开始读取
+	 * @param file  没有文件则直接返回  x第一列，y第二；列，从第一行开始读取
 	 */
 	public void setXYFile(String file)
 	{
@@ -141,8 +141,8 @@ class CompLsXY implements Comparator<double[]>
 {
 	@Override
 	public int compare(double[] o1, double[] o2) {
-		Double x1 = o1[1];
-		Double x2 = o2[2];
+		Double x1 = o1[0];
+		Double x2 = o2[0];
 		return x1.compareTo(x2);
 	}
 }

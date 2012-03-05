@@ -42,7 +42,7 @@ public class GffChrMap extends GffChrAbs {
 	 * 
 	 */
 	boolean HanYanFstrand = false;
-
+	
 	/**
 	 * @param gffType
 	 * @param gffFile
@@ -57,7 +57,14 @@ public class GffChrMap extends GffChrAbs {
 		super(gffType, gffFile, chrFile, readsBed, binNum);
 		this.HanYanFstrand = HanYanFstrand;
 	}
-
+	
+	/**
+	 * 每隔多少位取样,如果设定为1，则算法会变化，然后会很精确
+	 * @return
+	 */
+	public int getThisInv() {
+		return mapReads.getBinNum();
+	}
 	/**
 	 * 按照染色体数，统计每个染色体上总位点数，每个位点数， string[4] 0: chrID 1: readsNum 2: readsPipNum
 	 * 3: readsPipMean
@@ -93,22 +100,7 @@ public class GffChrMap extends GffChrAbs {
 		this.HanYanFstrand = false;
 	}
 
-	public static void main2(String[] args) {
-		GffChrMap gffChrMap = new GffChrMap(
-				NovelBioConst.GENOME_GFF_TYPE_TIGR,
-				NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE,
-				NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,
-				"/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/N/result/Nextend_sort.bed",
-				10);
-		gffChrMap.loadChrFile();
-		gffChrMap.loadMapReads();
-		gffChrMap.setPlotRegion(4000, 4000);
-		gffChrMap.setMapNormType(MapReads.NORMALIZATION_NO);
-		gffChrMap.plotTssTesHeatMap(Color.blue,false,"/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP_mRNA/sigle/dgeexpress2.xls",
-						1,2,2,0,100,1,GffDetailGene.TSS,1000,
-						"/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/Result/TssTesHeatMap/check2.png");
-
-	}
+ 
 
 	/**
 	 * @param readsFile
@@ -615,91 +607,8 @@ public class GffChrMap extends GffChrAbs {
 			e.printStackTrace();
 		}
 	}
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/////////徐龙勇的根据qPCR进行校正
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public static void main2(String[] args) {
-		GffChrMap gffChrMap = new GffChrMap(
-				NovelBioConst.GENOME_GFF_TYPE_UCSC,
-				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ,
-				NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,
-				"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/4Kextend_sort.bed", 10);
-		gffChrMap.loadChrFile();
-		gffChrMap.loadMapReads();
-		int[] column = new int[]{11,15};
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -500, 0));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, 0, 500));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -500, 500));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -500, 100));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -100, 500));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -200, 0));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, 0, 200));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -200, 200));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -200, 300));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -300, 200));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -500, 300));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -300, 500));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -800, 0));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, 0, 800));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -800, 200));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -200, 800));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -800, 500));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -500, 800));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -1000, 0));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, 0, 1000));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -1000, -500));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, 500, 1000));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -1000, -200));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, 200, 1000));
-		lsResult.addAll(gffChrMap.readQPCR("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.v2.xls", column, 2, -1, -1000, 1000));
-
-		
-		TxtReadandWrite txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/H3K27 D4 ChIP-qPCR.All.txt", true);
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
-	}
-	public static void main(String[] args) {
-		GffChrMap gffChrMap = new GffChrMap(
-				NovelBioConst.GENOME_GFF_TYPE_UCSC,
-				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ,
-				NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,
-				"/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/mapping/4Kextend_sort.bed", 10);
-		gffChrMap.loadChrFile();
-		gffChrMap.loadMapReads();
-		gffChrMap.setMapCorrect(correctFile);
-		
-	}
-	/**
-	 * @param geneFile 基因文件
-	 */
-	public ArrayList<String[]> readQPCR(String geneFile, int[] columnID, int rowStart, int rowEnd, int tssUp, int tssDown) {
-		ArrayList<String[]> lsGeneID = ExcelTxtRead.readLsExcelTxt(geneFile, columnID, rowStart, rowEnd);
-		ArrayList<String[]> lsResult = getGeneTssInfo(lsGeneID, tssUp, tssDown);
-		TxtReadandWrite txtOut = new TxtReadandWrite(FileOperate.changeFileSuffix(geneFile, "_qpcrNiHe"+tssUp+"_" + tssDown, "txt"), true);
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
-		return lsResult;
-	}
-	/**
-	 * 给定基因，附带一个qPCR的值。以及tss的起点和终点
-	 * 获得基因，qPCR的值，以及该区域mapping的reads中位数
-	 */
-	private ArrayList<String[]> getGeneTssInfo(ArrayList<String[]> lsGeneID, int tssUp, int tssDown)
-	{
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		for (String[] string : lsGeneID) {
-			double tmpResult = getGeneTss(string[0], tssUp, tssDown);
-			if (tmpResult < 0) {
-				continue;
-			}
-			String[] strResult = new String[3];
-			strResult[0] = string[0];
-			strResult[1] = string[1];
-			strResult[2] = tmpResult + "";
-			lsResult.add(strResult);
-		}
-		return lsResult;
-	}
+ 
+	
 	/**
 	 * 给定基因的symbol，返回该基因在tss附近区域的mapreads的平均数
 	 * @param geneID 基因名字
@@ -849,5 +758,26 @@ public class GffChrMap extends GffChrAbs {
 	public void getRegionLs(int binNum, ArrayList<MapInfo> lsmapInfo, int type) {
 		mapReads.getRegionLs(binNum, lsmapInfo, type);
 	}
-
+	/**
+	 * 经过标准化 将MapInfo中的double填充上相应的reads信息
+	 * 
+	 * @param binNum
+	 *            待分割的区域数目
+	 * @param lsmapInfo
+	 * @param type
+	 *            0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 */
+	public void getRegion(int binNum, MapInfo mapInfo, int type) {
+		mapReads.getRegion(binNum, mapInfo, type);
+	}
+	
+	/**
+	 * 经过标准化，和equations修正
+	 * @param lsmapInfo
+	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 */
+	public void getRegion(MapInfo mapInfo, int thisInvNum, int type) {
+		mapReads.getRegion(mapInfo, thisInvNum, type);
+	}
 }
