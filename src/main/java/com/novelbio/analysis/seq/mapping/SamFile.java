@@ -33,6 +33,28 @@ import net.sf.samtools.util.IOUtil;
 public class SamFile {
 	Logger logger = Logger.getLogger(SamFile.class);
 	String fileName = "";
+	boolean getPairedBed = false;
+	/**
+	 * 单端延长240bp
+	 */
+	int extend = 240;
+	/**
+	 * 双端数据是否获得连在一起的bed文件
+	 * 如果输入是单端数据，则将序列延长返回bed文件
+	 * 注意：如果是双端文件，<b>不能预先排序</b>
+	 * @param getPairedBed
+	 */
+	public void setGetPairedBed(boolean getPairedBed) {
+		this.getPairedBed = getPairedBed;
+	}
+	/**
+	 * mapping质量为10
+	 */
+	int mapQuality = 10;
+	public void setBedInfo(boolean pairendExtend, int mapQuality, int uniqMapping) {
+		
+	}
+	
 	SAMFileReader samFileReader;
 	boolean bamFile = false;
 	public SamFile(String samBamFile) {
@@ -97,6 +119,7 @@ public class SamFile {
         final int magicLength = readBytes(new BlockCompressedInputStream(new ByteArrayInputStream(buffer)), magicBuf, 0, 4);
         return magicLength == BAMFileConstants.BAM_MAGIC.length && Arrays.equals(BAMFileConstants.BAM_MAGIC, magicBuf);
     }
+    
     private static int readBytes(final InputStream stream, final byte[] buffer, final int offset, final int length)
             throws IOException {
             int bytesRead = 0;
@@ -136,11 +159,26 @@ public class SamFile {
 		samFileReader.close();
 		writer.close();
 	}
+	
+	/**
+	 * 将sam文件压缩为bam文件
+	 * 如果是bam文件，则返回
+	 */
+	public void compress() {
+		if (bamFile) {
+			return;
+		}
+		
+		
+	}
 	/**
 	 * 待检查
 	 */
 	public void index()
 	{
+		if (!bamFile) {
+			compress();
+		}
 		File fileOut = new File(FileOperate.changeFileSuffix(fileName, null, "bai"));
 		BAMIndexer indexer = new BAMIndexer(fileOut, samFileReader.getFileHeader());
 
@@ -157,7 +195,7 @@ public class SamFile {
 		indexer.finish();
 	}
 	/**
-	 * 还没有加上单双端
+	 * 返回单端
 	 * 将sam文件改为bed文件，根据mapping质量和正反向进行筛选
 	 * <b>不能挑选跨染色体的融合基因<b>
 	 * @param bedFileCompType bed文件的压缩格式，TxtReadandWrite.TXT等设定
@@ -189,7 +227,7 @@ X 8 sequence mismatch
 	public BedSeq sam2bed(String bedFileCompType, String bedFile, boolean uniqMapping) {
 		TxtReadandWrite txtBed = new TxtReadandWrite(bedFileCompType, bedFile, true);
 		for (SAMRecord samRecord : samFileReader) {
-			if (samRecord.getReadUnmappedFlag()) {
+			if (samRecord.getReadUnmappedFlag() || samRecord.getMapQuality < mapQuality) {
 				continue;
 			}
 			String strand = "+";
@@ -207,6 +245,88 @@ X 8 sequence mismatch
 		BedSeq bedSeq = new BedSeq(bedFile);
 		return bedSeq;
 	}
+	
+	/**
+	 * 返回双端，如果是单端文件，则返回延长的单端
+	 * 将sam文件改为bed文件，根据mapping质量和正反向进行筛选
+	 * <b>不能挑选跨染色体的融合基因<b>
+	 * @param bedFileCompType bed文件的压缩格式，TxtReadandWrite.TXT等设定
+	 * @param bedFile 最后产生的bedFile
+	 * @param uniqMapping 是否为uniqmapping
+	 * 如果不是uniqmapping，那么mapping数量在第七列
+	 * @return
+	 * 	/**
+	 * 将一行的信息提取为bed文件的格式
+	 * 起点从0开始，默认mapping数目为1
+	 * @return
+	 * 0:chrID
+	 * 1:start
+	 * 2:end
+	 * 3:Mismatching positions/bases
+	 * 4:CIGAR  M 0 alignment match (can be a sequence match or mismatch)
+I   1 insertion to the reference 
+D 2 deletion from the reference
+N 3 skipped region from the reference
+S 4 soft clipping (clipped sequences present in SEQ)
+H  5 hard clipping (clipped sequences NOT present in SEQ)
+P  6 padding (silent deletion from padded reference)
+=  7 sequence match 
+X 8 sequence mismatch
+
+5: strand
+6: 
+	 */
+	public BedSeq sam2bedPairEnd(String bedFileCompType, String bedFile, boolean uniqMapping) {
+		TxtReadandWrite txtBed = new TxtReadandWrite(bedFileCompType, bedFile, true);
+		SAMRecord samRecordOld = null;
+		for (SAMRecord samRecord : samFileReader) {
+			if (samRecord.getReadUnmappedFlag()) {
+				continue;
+			}
+			if (samRecordOld == null) {
+				samRecordOld = samRecord;
+				continue;
+			}
+			//相同名字，说明是一对，则根据方向选择起点和终点
+			if (samRecordOld.getSeqName().equals(samRecord.getSeqName())) {
+				if (samRecordOld.getReadNegativeStrandFlag() == samRecord.getReadNegativeStrandFlag()) {
+					samRecordOld = null;
+					continue;
+				}
+				
+				String strand = "+"; int start = 0; int end = 0;
+				if (samRecordOld.getReadNegativeStrandFlag()) {
+					strand = "-";
+					start = samRecord.getAlignmentStart();
+					end = samRecordOld.getAlignmentEnd();
+				}
+				else {
+					start = samRecordOld.getAlignmentStart();
+					end = samRecord.getAlignmentEnd();
+				}
+				String tmpResult = samRecordOld.getReferenceName() + "\t" + start + "\t" + end
+						+ "\t" + samRecordOld.getAttribute("MD") + "\t" + samRecordOld.getCigarString() + "\t" + strand;
+				if (getSeqName) {
+					tmpResult = tmpResult + "\t" + samRecordOld.getReferenceName();
+				}
+				txtBed.writefile(tmpResult, false);
+				//清空
+				samRecordOld = null;
+			}
+			//说明不是一对，另一条缺失了，
+			else {
+				//TODO extend the reads
+				
+				samRecordOld = samRecord;
+				continue;
+			}
+			
+		}
+		txtBed.close();
+		BedSeq bedSeq = new BedSeq(bedFile);
+		return bedSeq;
+	}
+	
 	boolean getSeqName = false;
 	/**
 	 * 是否在bed文件的最后一列加上seq的名字
