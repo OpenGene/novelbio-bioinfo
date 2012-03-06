@@ -17,6 +17,8 @@ import javax.swing.*;
 import org.apache.commons.math.analysis.solvers.LaguerreSolver;
 
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.PlotJpanel;
+import com.novelbio.base.plot.PlotNBC;
 import com.novelbio.base.plot.java.HeatChartDataInt;
 
 /**
@@ -75,9 +77,14 @@ import com.novelbio.base.plot.java.HeatChartDataInt;
  * @version 1.6
  */
 
-public class HeatMap extends JPanel
+public class HeatMap extends PlotNBC
 {
-    private double[][] data;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 9078068936831031727L;
+	
+	private double[][] data;
     private double[][] data2;
     private int[][] dataColorIndices;
     private int[][] dataColorIndices2;
@@ -101,12 +108,11 @@ public class HeatMap extends JPanel
 
     private Color[] colors;
     private Color[] colors2;
-    private Color bg = new Color(255, 255, 255, 0);
-    private Color fg = new Color(0, 0, 0, 0);
-    
-    private BufferedImage bufferedImage;
-//    private Graphics2D bufferedGraphics;
-    
+            
+    /**
+     * 当画过一次后设置为true
+     */
+    boolean painted = false;
 	/**
 	 * 给定实现HeatChart接口的数据集，然后画图
 	 * 自动将HeatChartDataInts中的title设置给xvalue
@@ -118,8 +124,8 @@ public class HeatMap extends JPanel
 		data = copeHeatChartDataInt(lsHeatChartDataInts);
         updateGradient(colors,data, useGraphicsYAxis);
 
-        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
-        this.setDoubleBuffered(true);
+//        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
+//        this.setDoubleBuffered(true);
 //        drawData();
 	}
 	/**
@@ -135,14 +141,11 @@ public class HeatMap extends JPanel
 		data2 = copeHeatChartDataInt(lsHeatChartDataInts2);
         updateGradient(colors,data, useGraphicsYAxis);
         updateGradient2(colors2,data2, useGraphicsYAxis);
-        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
-        this.setDoubleBuffered(true);
+//        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
+//        this.setDoubleBuffered(true);
 //        drawData();
 	}
-	
-	
-	
-	
+
 	private double[][] copeHeatChartDataInt(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts)
 	{
 		double[][] data = new double[lsHeatChartDataInts.size()][lsHeatChartDataInts.get(0).getDouble().length];
@@ -164,8 +167,8 @@ public class HeatMap extends JPanel
 
         updateGradient(colors,data, useGraphicsYAxis);
 
-        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
-        this.setDoubleBuffered(true);
+//        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
+//        this.setDoubleBuffered(true);
 
 //        this.bg = Color.white;
 //        this.fg = Color.black;
@@ -188,8 +191,8 @@ public class HeatMap extends JPanel
         updateGradient(colors,data, useGraphicsYAxis);
         updateGradient2(colors2, data2, useGraphicsYAxis);
 
-        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
-        this.setDoubleBuffered(true);
+//        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
+//        this.setDoubleBuffered(true);
 
 //        this.bg = Color.white;
 //        this.fg = Color.black;
@@ -210,8 +213,6 @@ public class HeatMap extends JPanel
         this.xMax = xMax;
         this.yMin = yMin;
         this.yMax = yMax;
-        
-        repaint();
     }
 
     /**
@@ -223,8 +224,6 @@ public class HeatMap extends JPanel
     {
         this.xMin = xMin;
         this.xMax = xMax;
-        
-        repaint();
     }
     
     /**
@@ -234,8 +233,6 @@ public class HeatMap extends JPanel
     public void setXMinCoordinateBounds(double xMin)
     {
         this.xMin = xMin;
-        
-        repaint();
     }
     
     /**
@@ -245,8 +242,6 @@ public class HeatMap extends JPanel
     public void setXMaxCoordinateBounds(double xMax)
     {
         this.xMax = xMax;
-        
-        repaint();
     }
 
     /**
@@ -258,8 +253,6 @@ public class HeatMap extends JPanel
     {
         this.yMin = yMin;
         this.yMax = yMax;
-        
-        repaint();
     }
     
     /**
@@ -269,8 +262,6 @@ public class HeatMap extends JPanel
     public void setYMinCoordinateBounds(double yMin)
     {
         this.yMin = yMin;
-        
-        repaint();
     }
     
     /**
@@ -280,8 +271,6 @@ public class HeatMap extends JPanel
     public void setYMaxCoordinateBounds(double yMax)
     {
         this.yMax = yMax;
-        
-        repaint();
     }
 
     /**
@@ -291,8 +280,6 @@ public class HeatMap extends JPanel
     public void setTitle(String title)
     {
         this.title = title;
-        
-        repaint();
     }
 
     /**
@@ -302,8 +289,6 @@ public class HeatMap extends JPanel
     public void setDrawTitle(boolean drawTitle)
     {
         this.drawTitle = drawTitle;
-        
-        repaint();
     }
 
     /**
@@ -313,8 +298,6 @@ public class HeatMap extends JPanel
     public void setXAxisTitle(String xAxisTitle)
     {
         this.xAxis = xAxisTitle;
-        
-        repaint();
     }
 
     /**
@@ -324,8 +307,6 @@ public class HeatMap extends JPanel
     public void setDrawXAxisTitle(boolean drawXAxisTitle)
     {
         this.drawXTitle = drawXAxisTitle;
-        
-        repaint();
     }
 
     /**
@@ -335,8 +316,6 @@ public class HeatMap extends JPanel
     public void setYAxisTitle(String yAxisTitle)
     {
         this.yAxis = yAxisTitle;
-        
-        repaint();
     }
 
     /**
@@ -346,8 +325,6 @@ public class HeatMap extends JPanel
     public void setDrawYAxisTitle(boolean drawYAxisTitle)
     {
         this.drawYTitle = drawYAxisTitle;
-        
-        repaint();
     }
 
 
@@ -358,8 +335,6 @@ public class HeatMap extends JPanel
     public void setDrawLegend(boolean drawLegend)
     {
         this.drawLegend = drawLegend;
-        
-        repaint();
     }
 
     /**
@@ -369,8 +344,6 @@ public class HeatMap extends JPanel
     public void setDrawXTicks(boolean drawXTicks)
     {
         this.drawXTicks = drawXTicks;
-        
-        repaint();
     }
 
     /**
@@ -380,30 +353,6 @@ public class HeatMap extends JPanel
     public void setDrawYTicks(boolean drawYTicks)
     {
         this.drawYTicks = drawYTicks;
-        
-        repaint();
-    }
-
-    /**
-     * Updates the foreground color. Calls repaint() when finished.
-     * @param fg Specifies the desired foreground color
-     */
-    public void setColorForeground(Color fg)
-    {
-        this.fg = fg;
-
-        repaint();
-    }
-
-    /**
-     * Updates the background color. Calls repaint() when finished.
-     * @param bg Specifies the desired background color
-     */
-    public void setColorBackground(Color bg)
-    {
-        this.bg = bg;
-
-        repaint();
     }
 
     /**
@@ -422,9 +371,7 @@ public class HeatMap extends JPanel
         {
         	dataColorIndices = updateDataColors(data,minData1, maxData1);
 
-            drawData();
-
-            repaint();
+//            drawData();
         }
     }
     
@@ -446,14 +393,11 @@ public class HeatMap extends JPanel
         	dataColorIndices2 = updateDataColors(data2, minData2,maxData2);
 
 //            drawData2();
-//
-//            repaint();
         }
     }
     
-    
-    
     /**
+     * 给定数据集，生成数据梯度
      * This uses the current array of colors that make up the gradient, and 
      * assigns a color index to each data point, stored in the dataColorIndices
      * array, which is used by the drawData() method to plot the points.
@@ -512,7 +456,11 @@ public class HeatMap extends JPanel
 //			repaint();
 		}
     }
-    
+    /**
+     * 设定画图的数据范围
+     * @param mindata1
+     * @param maxdata1
+     */
     public void setRange(double mindata1, double maxdata1)
     {
     	this.minData1 = mindata1;
@@ -520,6 +468,13 @@ public class HeatMap extends JPanel
     	dataColorIndices = updateDataColors(data, minData1, maxData1);
 
     }
+    /**
+     * 设定最小值和最大值，如果最小值为Double.MIN_VALUE，则设定为矩阵中的最小值
+     * 如果最大值为Double.MAX_VALUE，则设定为矩阵中的最大值
+     * @param mindata
+     * @param maxdata
+     * @return
+     */
     private double[] getDataRange(double mindata, double maxdata)
     {
     	double[] dataRange = new double[]{mindata,maxdata};
@@ -535,7 +490,7 @@ public class HeatMap extends JPanel
                 smallest = Math.min(data[x][y], smallest);
             }
         }
-        if (mindata == Double.MIN_NORMAL) {
+        if (mindata == Double.MIN_VALUE) {
         	dataRange[0] = smallest;
 		}
         if (maxdata == Double.MAX_VALUE) {
@@ -546,6 +501,7 @@ public class HeatMap extends JPanel
     
     
     /**
+     * 产生测试数据
      * This function generates data that is not vertically-symmetric, which
      * makes it very useful for testing which type of vertical axis is being
      * used to plot the data. If the graphics Y-axis is used, then the lowest
@@ -564,11 +520,11 @@ public class HeatMap extends JPanel
                 data[x][y] = y;
             }
         }
-
         return data;
     }
     
     /**
+     * 产生测试数据
      * This function generates an appropriate data array for display. It uses
      * the function: z = sin(x)*cos(y). The parameter specifies the number
      * of data points in each direction, producing a square matrix.
@@ -594,11 +550,11 @@ public class HeatMap extends JPanel
                 data[x][y] = Math.sin(sX) * Math.cos(sY);
             }
         }
-
         return data;
     }
 
     /**
+     * 产生测试数据
      * This function generates an appropriate data array for display. It uses
      * the function: z = Math.cos(Math.abs(sX) + Math.abs(sY)). The parameter 
      * specifies the number of data points in each direction, producing a 
@@ -630,18 +586,15 @@ public class HeatMap extends JPanel
 
         return data;
     }
-
-
-    
-    
-    
+   
     /**
+     * 颠倒数据，待修正
      * Updates the data display, calls drawData() to do the expensive re-drawing
      * of the data plot, and then calls repaint().
      * @param data The data to display, must be a complete array (non-ragged)
      * @param useGraphicsYAxis If true, the data will be displayed with the y=0 row at the top of the screen. If false, the data will be displayed with the y=0 row at the bottom of the screen.
      */
-    public double[][] updateDataPr(double[][] data, boolean useGraphicsYAxis)
+    private double[][] updateDataPr(double[][] data, boolean useGraphicsYAxis)
     {
         double[][] dataResult = new double[data.length][data[0].length];
         for (int ix = 0; ix < data.length; ix++)
@@ -664,6 +617,7 @@ public class HeatMap extends JPanel
     
     
     /**
+     * 画图，必须调用了该方法后才能保存图片
      * Creates a BufferedImage of the actual data plot.
      *
      * After doing some profiling, it was discovered that 90% of the drawing
@@ -683,36 +637,28 @@ public class HeatMap extends JPanel
      *
      * This function should be called whenever the data or the gradient changes.
      */
-    private void drawData()
+    protected void draw(int width, int heigh)
     {
     	int imageType = (alpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
     	bufferedImage = new BufferedImage(data.length,data[0].length, imageType);
-    	drawData(bufferedImage, new Dimension(1,1));
+    	if (data2 != null) {
+			drawData2(bufferedImage, new Dimension(1,1));
+		}
+    	else {
+    		drawData(bufferedImage, new Dimension(1,1));
+		}
+//    	graphics = bufferedImage.createGraphics();
+    	addPicInfo(width, heigh);
     }
-	/**
-	 * 透明度
-	 */
-	boolean alpha;
-	/**
-	 * 设定是否透明，默认透明
-	 * @param alpha
-	 */
-	public void setAlpha(boolean alpha) {
-		this.alpha = alpha;
-	}
+ 
 	
     private void drawData(BufferedImage bufferedImage,Dimension cellSize)
     {
-//        bufferedImage = new BufferedImage(data.length,data[0].length, BufferedImage.TYPE_INT_ARGB);
        Graphics2D bufferedGraphics = bufferedImage.createGraphics();
-      
-       
+       //可能是透明效果
 //       bufferedImage = bufferedGraphics.getDeviceConfiguration().createCompatibleImage(bufferedImage.getWidth(), bufferedImage.getHeight(), Transparency.TRANSLUCENT);  
 //       bufferedGraphics.dispose();  
 //       bufferedGraphics = bufferedImage.createGraphics();
-		
-		
-		
         for (int x = 0; x < data.length; x++)
         {
             for (int y = 0; y < data[0].length; y++)
@@ -727,18 +673,11 @@ public class HeatMap extends JPanel
             }
         }
     }
-    private void drawData2()
-    {
-    	int imageType = (alpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
-    	bufferedImage = new BufferedImage(data.length,data[0].length, imageType);
-    	drawData2(bufferedImage, new Dimension(1,1));
-    }
+ 
     
     private void drawData2(BufferedImage bufferedImage,Dimension cellSize)
     {
-//        bufferedImage = new BufferedImage(data.length,data[0].length, BufferedImage.TYPE_INT_ARGB);
        Graphics2D bufferedGraphics = bufferedImage.createGraphics();
-        
         for (int x = 0; x < data.length; x++)
         {
             for (int y = 0; y < data[0].length; y++)
@@ -746,16 +685,9 @@ public class HeatMap extends JPanel
             	Color color1 = colors[dataColorIndices[x][y]];
             	Color color2 = colors2[dataColorIndices2[x][y]];
             	Color color = addColor(color1, color2);
-//            	System.out.print(color.getRed() + " " + color.getGreen() + " " +color.getBlue()+" "+ color.getAlpha()+ "\t");
                 bufferedGraphics.setColor(color);
                 bufferedGraphics.fillRect(x, y, 1, 1);
-                //我的修改
-//                int cellX = x*cellSize.width;
-//				int cellY = y*cellSize.height;
-//                bufferedGraphics.setColor(colors[dataColorIndices[x][y]]);
-//                bufferedGraphics.fillRect(cellX, cellY, cellSize.width, cellSize.height);
             }
-//            System.out.println();
         }
     }
     
@@ -781,131 +713,19 @@ public class HeatMap extends JPanel
         Color color= new Color(rF, gF, bF, aF);
         return color;
     }
-    /**
-     * 
-	 * Generates a new chart <code>Image</code> based upon the currently held 
-	 * settings and then attempts to save that image to disk, to the location 
-	 * provided as a File parameter. The image type of the saved file will 
-	 * equal the extension of the filename provided, so it is essential that a 
-	 * suitable extension be included on the file name.
-	 * 
-	 * <p>
-	 * All supported <code>ImageIO</code> file types are supported, including 
-	 * PNG, JPG and GIF.
-	 * <p>
-	 * No chart will be generated until this or the related 
-	 * <code>getChartImage()</code> method are called. All successive calls 
-	 * will result in the generation of a new chart image, no caching is used.
-     * @param outputFileName the file location that the generated image file should 
-	 * be written to. The File must have a suitable filename, with an extension
-	 * of a valid image format (as supported by <code>ImageIO</code>).
-     * @param Width
-     * @param Height
-     * @param transpreat 是否透明
-     * @throws IOException if the output file's filename has no extension or 
-	 * if there the file is unable to written to. Reasons for this include a 
-	 * non-existant file location (check with the File exists() method on the 
-	 * parent directory), or the permissions of the write location may be 
-	 * incorrect.
-	 */
-	public void saveToFile(String outputFileName, int Width, int Height, boolean transpreat) throws IOException {
-		File outputFile = new File(outputFileName);
-		String filename = FileOperate.getFileName(outputFileName);
-		int extPoint = filename.lastIndexOf('.');
 
-		if (extPoint < 0) {
-			throw new IOException("Illegal filename, no extension used.");
-		}
-		
-    	int imageType = (alpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_3BYTE_BGR);
-    	BufferedImage bufferedImageTmp = new BufferedImage(data.length,data[0].length, imageType);
-    	if (data2 != null) {
-			drawData2(bufferedImageTmp, new Dimension(1,1));
-		}
-    	else {
-    		drawData(bufferedImageTmp, new Dimension(1,1));
-		}
-    	BufferedImage bufferedImage =  new BufferedImage(Width,Height, imageType);
-    	Graphics2D graphics2d = (Graphics2D) bufferedImage.createGraphics();
-    	if (transpreat) {
-    		  // ----------   增加下面的代码使得背景透明   -----------------  
-    		
-        	bufferedImage = graphics2d.getDeviceConfiguration().createCompatibleImage(Width, Height, Transparency.TRANSLUCENT);  
-        	graphics2d.dispose();
-        	graphics2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
-        	graphics2d = (Graphics2D) bufferedImage.createGraphics();  
-//        	graphics2d.setColor(new Color(255,0,0));  
-//        	graphics2d.setStroke(new BasicStroke(1));  
-//        	graphics2d.setColor(Color.white);  
-		}
-    	
-    	
-    	
-    	paintGraphic(bufferedImageTmp, graphics2d, Width, Height);
-    	
-    	
-		// Determine the extension of the filename.
-		String ext = filename.substring(extPoint + 1);
-		// Handle jpg without transparency.
-		if (ext.toLowerCase().equals("jpg") || ext.toLowerCase().equals("jpeg")) {
-			// Save our graphic.
-			saveGraphicJpeg(bufferedImage, outputFile, 1.0f);
-		} else {
-			ImageIO.write(bufferedImage, ext, outputFile);
-		}
-	}
-    
-	private void saveGraphicJpeg(BufferedImage chart, File outputFile, float quality) throws IOException {
-		// Setup correct compression for jpeg.
-		Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("jpeg");
-		ImageWriter writer = (ImageWriter) iter.next();
-		ImageWriteParam iwp = writer.getDefaultWriteParam();
-		iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-		iwp.setCompressionQuality(quality);
-		
-		// Output the image.
-		FileImageOutputStream output = new FileImageOutputStream(outputFile);
-		writer.setOutput(output);
-		IIOImage image = new IIOImage(chart, null, null);
-		writer.write(null, image, iwp);
-		writer.dispose();
-	}
-    
-    
-    
-    
-    
-    
-    
-    
     /**
-     * The overridden painting method, now optimized to simply draw the data
-     * plot to the screen, letting the drawImage method do the resizing. This
-     * saves an extreme amount of time.
+     * 将已经生成的BufferedImage 的 heatmap上添上标题，卡尺等等元素
+     * ，最后保存在Graphics g中所对应的另一个BufferedImage中
+     * @param bufferedImage
+     * @param g
+     * @param width
+     * @param height
      */
-    public void paintComponent(Graphics g)
+    private void addPicInfo(int width, int height)
     {
-        super.paintComponent(g);
-        int width = this.getWidth();
-        int height = this.getHeight();
-        this.setOpaque(true);
-        // draw the heat map
-        if (bufferedImage == null)
-        {
-            // Ideally, we only to call drawData in the constructor, or if we
-            // change the data or gradients. We include this just to be safe.
-            drawData();
-        }
-     // clear the panel
-        g.setColor(bg);
-        
-        paintGraphic(bufferedImage, g,width,height);
-    }
-    
-    private void paintGraphic(BufferedImage bufferedImage, Graphics g,int width, int height)
-    {
-    	 Graphics2D g2d = (Graphics2D) g;
-
+    	BufferedImage buf =  new BufferedImage(width, height, bufferedImage.getColorModel().getTransparency());
+    	 Graphics2D g2d = buf.createGraphics();
          g2d.fillRect(0, 0, width, height);
          
          // The data plot itself is drawn with 1 pixel per data point, and the
@@ -919,6 +739,9 @@ public class HeatMap extends JPanel
                        0, 0,
                        bufferedImage.getWidth(), bufferedImage.getHeight(),
                        null);
+         
+ 
+ 		
          // border
          g2d.setColor(fg);
          g2d.drawRect(30, 30, width - 60, height - 60);
@@ -980,7 +803,6 @@ public class HeatMap extends JPanel
          {
              g2d.drawString(xAxis, (width / 2) - 4 * xAxis.length(), height - 3);
          }
-
          // Legend
          if (drawLegend)
          {
@@ -993,5 +815,8 @@ public class HeatMap extends JPanel
                  g2d.fillRect(width - 19, yStart, 9, 1);
              }
          }
+         //将画完的图赋值给系统
+         bufferedImage = buf;
     }
+ 
 }

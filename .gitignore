@@ -1,5 +1,6 @@
 /pom.xml
-/target
-/logs
-/ConfFold
-/lib
+/target/
+/logs/
+/ConfFold/
+/lib/
+/.classpath

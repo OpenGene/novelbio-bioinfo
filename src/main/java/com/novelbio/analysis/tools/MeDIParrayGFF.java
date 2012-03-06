@@ -197,11 +197,11 @@ public class MeDIParrayGFF {
 		ArrayList<String[]> lsTmp = new ArrayList<String[]>();
 		for (int i = 1; i < lsInfo.size(); i++) {
 			String[] tmp = lsInfo.get(i);
-			//如果本探针和上一个探针只相差1000bp
+			//如果本探针和上一个探针只相差2000bp
 			if (lsTmp.size() == 0) {
 				lsTmp.add(tmp);
 			}
-			else if (tmp[colChrID].equals(lsTmp.get(lsTmp.size() - 1)[colChrID]) && Double.parseDouble(tmp[colStart]) - Double.parseDouble(lsTmp.get(lsTmp.size() - 1)[colEnd]) < 1000) {
+			else if (tmp[colChrID].equals(lsTmp.get(lsTmp.size() - 1)[colChrID]) && Double.parseDouble(tmp[colStart]) - Double.parseDouble(lsTmp.get(lsTmp.size() - 1)[colEnd]) < 2000) {
 				lsTmp.add(tmp);
 			}
 			else {

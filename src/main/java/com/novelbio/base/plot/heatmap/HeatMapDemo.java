@@ -1,5 +1,8 @@
 package com.novelbio.base.plot.heatmap;
 import javax.swing.*;
+
+import com.novelbio.base.plot.PlotJpanel;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -31,7 +34,8 @@ import java.awt.event.*;
 
 class HeatMapDemo extends JFrame implements ItemListener, FocusListener
 {
-    HeatMap panel;
+    HeatMap heatmap;
+    PlotJpanel plotJpanel;
     JCheckBox drawLegend;
     JCheckBox drawTitle;
     JCheckBox drawXTitle;
@@ -237,40 +241,40 @@ class HeatMapDemo extends JFrame implements ItemListener, FocusListener
         boolean useGraphicsYAxis = true;
         
         // you can use a pre-defined gradient:
-        panel = new HeatMap(data, useGraphicsYAxis, Gradient.GRADIENT_BLACK_TO_WHITE);
+        heatmap = new HeatMap(data, useGraphicsYAxis, Gradient.GRADIENT_BLACK_TO_WHITE);
         gradientComboBox.setSelectedIndex(0);
         
         // set miscelaneous settings
-        panel.setDrawLegend(true);
+        heatmap.setDrawLegend(true);
 
-        panel.setTitle("Height");
+        heatmap.setTitle("Height");
         textTitle.setText("Height");
-        panel.setDrawTitle(true);
+        heatmap.setDrawTitle(true);
 
-        panel.setXAxisTitle("X-Distance (m)");
+        heatmap.setXAxisTitle("X-Distance (m)");
         textXTitle.setText("X-DIstance (m)");
-        panel.setDrawXAxisTitle(true);
+        heatmap.setDrawXAxisTitle(true);
 
-        panel.setYAxisTitle("Y-Distance (m)");
+        heatmap.setYAxisTitle("Y-Distance (m)");
         textYTitle.setText("Y-DIstance (m)");
-        panel.setDrawYAxisTitle(true);
+        heatmap.setDrawYAxisTitle(true);
 
-        panel.setCoordinateBounds(0, 6.28, 0, 6.28);
+        heatmap.setCoordinateBounds(0, 6.28, 0, 6.28);
         textXMin.setText("0");
         textXMax.setText("6.28");
         textYMin.setText("0");
         textYMax.setText("6.28");
-        panel.setDrawXTicks(true);
-        panel.setDrawYTicks(true);
+        heatmap.setDrawXTicks(true);
+        heatmap.setDrawYTicks(true);
 
-        panel.setColorForeground(Color.black);
+        heatmap.setFg(Color.black);
         textFGColor.setText("000000");
-        panel.setColorBackground(Color.white);
+        heatmap.setBg(Color.white);
         textBGColor.setText("FFFFFF");
-        
-        
+        plotJpanel = new PlotJpanel();
+        plotJpanel.setPlotNBC(heatmap);
 	    this.getContentPane().add(listPane, BorderLayout.EAST);
-        this.getContentPane().add(panel, BorderLayout.CENTER);
+        this.getContentPane().add(plotJpanel, BorderLayout.CENTER);
     }
     
     public void focusGained(FocusEvent e)
@@ -282,15 +286,15 @@ class HeatMapDemo extends JFrame implements ItemListener, FocusListener
         
         if (source == textTitle)
         {
-            panel.setTitle(textTitle.getText());
+            heatmap.setTitle(textTitle.getText());
         }
         else if (source == textXTitle)
         {
-            panel.setXAxisTitle(textXTitle.getText());
+            heatmap.setXAxisTitle(textXTitle.getText());
         }
         else if (source == textYTitle)
         {
-            panel.setYAxisTitle(textYTitle.getText());
+            heatmap.setYAxisTitle(textYTitle.getText());
         }
         else if (source == textXMin)
         {
@@ -298,7 +302,7 @@ class HeatMapDemo extends JFrame implements ItemListener, FocusListener
             try
             {
                 d = Double.parseDouble(textXMin.getText());
-                panel.setXMinCoordinateBounds(d);
+                heatmap.setXMinCoordinateBounds(d);
             }
             catch (Exception ex){}
         }
@@ -308,7 +312,7 @@ class HeatMapDemo extends JFrame implements ItemListener, FocusListener
             try
             {
                 d = Double.parseDouble(textXMax.getText());
-                panel.setXMaxCoordinateBounds(d);
+                heatmap.setXMaxCoordinateBounds(d);
             }
             catch (Exception ex){}
         }
@@ -318,7 +322,7 @@ class HeatMapDemo extends JFrame implements ItemListener, FocusListener
             try
             {
                 d = Double.parseDouble(textYMin.getText());
-                panel.setYMinCoordinateBounds(d);
+                heatmap.setYMinCoordinateBounds(d);
             }
             catch (Exception ex){}
         }
@@ -328,7 +332,7 @@ class HeatMapDemo extends JFrame implements ItemListener, FocusListener
             try
             {
                 d = Double.parseDouble(textYMax.getText());
-                panel.setYMaxCoordinateBounds(d);
+                heatmap.setYMaxCoordinateBounds(d);
             }
             catch (Exception ex){}
         }
@@ -342,7 +346,7 @@ class HeatMapDemo extends JFrame implements ItemListener, FocusListener
             if (color == null)
                 return;
 
-            panel.setColorForeground(color);
+            heatmap.setFg(color);
         }
         else if (source == textBGColor)
         {
@@ -354,7 +358,7 @@ class HeatMapDemo extends JFrame implements ItemListener, FocusListener
             if (color == null)
                 return;
 
-            panel.setColorBackground(color);
+            heatmap.setBg(color);
         }
         
     }
@@ -385,27 +389,27 @@ class HeatMapDemo extends JFrame implements ItemListener, FocusListener
 
         if (source == drawLegend)
         {
-            panel.setDrawLegend(e.getStateChange() == ItemEvent.SELECTED);
+            heatmap.setDrawLegend(e.getStateChange() == ItemEvent.SELECTED);
         }
         else if (source == drawTitle)
         {
-            panel.setDrawTitle(e.getStateChange() == ItemEvent.SELECTED);
+            heatmap.setDrawTitle(e.getStateChange() == ItemEvent.SELECTED);
         }
         else if (source == drawXTitle)
         {
-            panel.setDrawXAxisTitle(e.getStateChange() == ItemEvent.SELECTED);
+            heatmap.setDrawXAxisTitle(e.getStateChange() == ItemEvent.SELECTED);
         }
         else if (source == drawXTicks)
         {
-            panel.setDrawXTicks(e.getStateChange() == ItemEvent.SELECTED);
+            heatmap.setDrawXTicks(e.getStateChange() == ItemEvent.SELECTED);
         }
         else if (source == drawYTitle)
         {
-            panel.setDrawYAxisTitle(e.getStateChange() == ItemEvent.SELECTED);
+            heatmap.setDrawYAxisTitle(e.getStateChange() == ItemEvent.SELECTED);
         }
         else if (source == drawYTicks)
         {
-            panel.setDrawYTicks(e.getStateChange() == ItemEvent.SELECTED);
+            heatmap.setDrawYTicks(e.getStateChange() == ItemEvent.SELECTED);
         }
         else
         {
@@ -413,7 +417,7 @@ class HeatMapDemo extends JFrame implements ItemListener, FocusListener
             Integer ix = (Integer) e.getItem();
             if (e.getStateChange() == ItemEvent.SELECTED)
             {
-                panel.updateGradient(gradients[ix]);
+//                panel.updateGradient(gradients[ix]);
             }
         }
     }

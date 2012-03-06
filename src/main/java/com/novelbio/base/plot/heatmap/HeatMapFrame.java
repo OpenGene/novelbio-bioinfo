@@ -226,7 +226,7 @@ class HeatMapFrame extends JFrame
 		// Handle jpg without transparency.
 		if (ext.toLowerCase().equals("jpg") || ext.toLowerCase().equals("jpeg")) {
 			// Save our graphic.
-			saveGraphicJpeg(image, outputFile, 1.0f);
+			saveGraphicJpeg(image, outputFileName, 1.0f);
 		} else {
 			ImageIO.write(image, ext, outputFile);
 		}
