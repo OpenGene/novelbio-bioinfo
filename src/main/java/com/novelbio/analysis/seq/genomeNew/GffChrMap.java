@@ -23,7 +23,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.heatmap.Gradient;
-import com.novelbio.base.plot.heatmap.HeatMap;
+import com.novelbio.base.plot.heatmap.PlotHeatMap;
 import com.novelbio.base.plot.java.HeatChart;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
@@ -461,7 +461,7 @@ public class GffChrMap extends GffChrAbs {
 		Color[] gradientColors2 = new Color[] { colorwhite, colorgreen };
 		Color[] customGradient2 = Gradient.createMultiGradient(gradientColors2,
 				250);
-		HeatMap heatMap = new HeatMap(lsMapInfo, lsMapInfo2, false,
+		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfo, lsMapInfo2, false,
 				customGradient, customGradient2);
 		heatMap.setRange(mindata1, maxdata1, mindata2, maxdata2);
 		try {
@@ -492,7 +492,7 @@ public class GffChrMap extends GffChrAbs {
 		Color[] customGradient = Gradient.createMultiGradient(gradientColors,
 				250);
 
-		HeatMap heatMap = new HeatMap(lsMapInfoFinal, false, customGradient);
+		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfoFinal, false, customGradient);
 		heatMap.setRange(mindata1, maxdata1);
 		try {
 			heatMap.saveToFile(outFile, 6000, 1000, true);

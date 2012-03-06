@@ -126,7 +126,7 @@ public class mytest {
 			}
 		}
 		txtOut.writefileln(new String[]{chrIDOld, startOld+"", endOld+"", num+""});
-		txtOut.close();
+//		txtOut.close();
 		txtRead.close();
 	}
 	

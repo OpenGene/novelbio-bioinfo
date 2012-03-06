@@ -77,7 +77,7 @@ import com.novelbio.base.plot.java.HeatChartDataInt;
  * @version 1.6
  */
 
-public class HeatMap extends PlotNBC
+public class PlotHeatMap extends PlotNBC
 {
     /**
 	 * 
@@ -119,7 +119,7 @@ public class HeatMap extends PlotNBC
 	 * 注意list中所有数据的维度应该一致
 	 * @param lsHeatChartDataInts
 	 */
-	public HeatMap(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts,boolean useGraphicsYAxis, Color[] colors) {
+	public PlotHeatMap(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts,boolean useGraphicsYAxis, Color[] colors) {
 		super();
 		data = copeHeatChartDataInt(lsHeatChartDataInts);
         updateGradient(colors,data, useGraphicsYAxis);
@@ -134,7 +134,7 @@ public class HeatMap extends PlotNBC
 	 * 注意list中所有数据的维度应该一致
 	 * @param lsHeatChartDataInts
 	 */
-	public HeatMap(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts,java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts2,
+	public PlotHeatMap(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts,java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts2,
 			boolean useGraphicsYAxis, Color[] colors, Color[] colors2) {
 		super();
 		data = copeHeatChartDataInt(lsHeatChartDataInts);
@@ -161,7 +161,7 @@ public class HeatMap extends PlotNBC
      * @param useGraphicsYAxis If true, the data will be displayed with the y=0 row at the top of the screen. If false, the data will be displayed with they=0 row at the bottom of the screen.
      * @param colors A variable of the type Color[]. See also {@link #createMultiGradient} and {@link #createGradient}.
      */
-    public HeatMap(double[][] data, boolean useGraphicsYAxis, Color[] colors)
+    public PlotHeatMap(double[][] data, boolean useGraphicsYAxis, Color[] colors)
     {
         super();
 
@@ -184,7 +184,7 @@ public class HeatMap extends PlotNBC
      * @param useGraphicsYAxis If true, the data will be displayed with the y=0 row at the top of the screen. If false, the data will be displayed with they=0 row at the bottom of the screen.
      * @param colors A variable of the type Color[]. See also {@link #createMultiGradient} and {@link #createGradient}.
      */
-    public HeatMap(double[][] data, double[][] data2, boolean useGraphicsYAxis, Color[] colors, Color[] colors2)
+    public PlotHeatMap(double[][] data, double[][] data2, boolean useGraphicsYAxis, Color[] colors, Color[] colors2)
     {
         super();
 

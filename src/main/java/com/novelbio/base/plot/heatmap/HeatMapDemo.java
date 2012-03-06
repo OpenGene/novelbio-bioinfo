@@ -34,7 +34,7 @@ import java.awt.event.*;
 
 class HeatMapDemo extends JFrame implements ItemListener, FocusListener
 {
-    HeatMap heatmap;
+    PlotHeatMap heatmap;
     PlotJpanel plotJpanel;
     JCheckBox drawLegend;
     JCheckBox drawTitle;
@@ -237,11 +237,11 @@ class HeatMapDemo extends JFrame implements ItemListener, FocusListener
         
         //----------------------------------------------------------------------
         
-        double[][] data = HeatMap.generateSinCosData(200);
+        double[][] data = PlotHeatMap.generateSinCosData(200);
         boolean useGraphicsYAxis = true;
         
         // you can use a pre-defined gradient:
-        heatmap = new HeatMap(data, useGraphicsYAxis, Gradient.GRADIENT_BLACK_TO_WHITE);
+        heatmap = new PlotHeatMap(data, useGraphicsYAxis, Gradient.GRADIENT_BLACK_TO_WHITE);
         gradientComboBox.setSelectedIndex(0);
         
         // set miscelaneous settings

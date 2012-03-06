@@ -45,7 +45,7 @@ import java.util.Iterator;
 
 class HeatMapFrame extends JFrame
 {
-    HeatMap panel;
+    PlotHeatMap panel;
 
     public HeatMapFrame() throws Exception
     {
@@ -87,7 +87,7 @@ class HeatMapFrame extends JFrame
 			}
 		}
         
-        panel = new HeatMap(data,data2, true, customGradient,customGradient2);
+        panel = new PlotHeatMap(data,data2, true, customGradient,customGradient2);
         panel.setRange(2, 80, 2, 80);
 //        data = panel.generatePyramidData(100);
 //        panel.setRange(10, 30);
