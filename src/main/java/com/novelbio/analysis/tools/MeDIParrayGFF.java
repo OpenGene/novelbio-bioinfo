@@ -2,6 +2,7 @@ package com.novelbio.analysis.tools;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -24,11 +25,20 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class MeDIParrayGFF {
 
 	public static void main(String[] args) {
-//		Ttest();
-//		getConstentProb();
-		String inFile = "/media/winE/NBC/Project/Methylation_PH_120110/长征医院-彭浒/GFF Files（长征医院彭浒 QQ52901159）/Scaled log2-ratio Data/Ams/out456vs23789_Filtered.txt";
-		String outFile = FileOperate.changeFileSuffix(inFile, "_OneProbe", "txt");
-		copeFinalFile(inFile, outFile, 1, 3, 4);
+		String parent = "/media/winF/NBC/Project/MeDIP_Array_ZW/GFF/Ams/";
+		String pathIn = parent + "ZWout.txt";
+		String pathOut = FileOperate.changeFileSuffix(pathIn, "_Ttest", null);
+		
+		
+//		combAMSfile(parent, pathIn);
+//		getPvalueT(pathIn, 2, new int[]{11,12,13,5,6,7}, new int[]{14,15,16,8,9,10}, 100, pathOut);
+		String out = FileOperate.changeFileSuffix(pathOut, "_Filtered", null);
+		try {
+			getCombProbe(pathOut, out, "\t", 3, 4, 19, 2, 0.5, 20, 0.01, 3);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -117,15 +127,62 @@ public class MeDIParrayGFF {
 		}
 		txtOut.close();
 	}
+	
+	public static void combAMSfile(String filePath, String pathOut)
+	{
+		TxtReadandWrite txtOut = new TxtReadandWrite(pathOut, true);
+		ArrayList<String[]> lsFileName = FileOperate.getFoldFileName(filePath, "*", "gff");
+		//每个文件一个hash表
+		HashMap<String, String> hashPrix2Txt = new HashMap<String, String>();
+		ArrayList<String> lsPrix = new ArrayList<String>();
+		for (String[] fileName : lsFileName) {
+			String filePathGff = filePath + "/" + fileName[0] + "." + fileName[1];
+			String prix = fileName[0].split("_")[0];
+			hashPrix2Txt.put(prix, filePathGff);
+			lsPrix.add(prix);
+		}
+		String[] title = new String[4 + lsPrix.size()];
+		title[0] = "seqname"; title[1] = "feature"; title[2] = "start"; title[3] = "end";
+		for (int i = 0; i < lsPrix.size(); i++) {
+			title[i+4] = lsPrix.get(i);
+		}
+//		txtOut.writefileln(title);
+		
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		for (int i = 0; i < lsPrix.size(); i++) {
+			String string = lsPrix.get(i);
+			String file = hashPrix2Txt.get(string);
+			//第一个文件需要将前几列都读入，其他的就只要读入比值即可
+			if (i == 0) {
+				ArrayList<String[]> lsTmpResult = ExcelTxtRead.readLsExcelTxt(file, new int[]{1, 3, 4, 5, 6}, 2, 0, " ");
+				for (String[] strings : lsTmpResult) {
+					String[] content = new String[title.length];
+					for (int j = 0; j < strings.length; j++) {
+						content[j] = strings[j];
+					}
+					lsResult.add(content);
+				}
+			}
+			else {
+				ArrayList<String[]> lsTmpResult = ExcelTxtRead.readLsExcelTxt(file, new int[]{6}, 2, 0, " ");
+				for (int j = 0; j < lsTmpResult.size(); j++) {
+					//i一定大于1，这时候从第5列开始写入文件
+					lsResult.get(j)[i + 4] = lsTmpResult.get(j)[0];
+				}
+			}
+		}
+		lsResult.add(0, title);
+		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+	}
+	
 	/**
-	 * 
 	 * 连续三根探针值大于2则认为甲基化
 	 * @param resultGff
 	 * @param outFile
 	 * @param sep
 	 * @param colStart 起点所在列
 	 * @param colEnd 终点所在列
-	 * @param colNum 第几行需要判断，实际列
+	 * @param colNum 第几列需要判断，实际列
 	 * @param fcUp 上调阈值
 	 * @param fcDown 下调阈值
 	 * @param colPvalue 小于0表示不考虑colPvalue
@@ -152,8 +209,8 @@ public class MeDIParrayGFF {
 			if ((Double.parseDouble(ss[colNum]) > fcDown && Double.parseDouble(ss[colNum]) < fcUp &&
 			(colPvalue < 0 || (colPvalue >= 0 && Double.parseDouble(ss[colPvalue]) <= pvalue))
 			)//当出现不满足探针时
-			||		
-			Integer.parseInt(ss[colStart]) - lastEnd > 2000 //不连续探针
+			||
+			(int)Double.parseDouble(ss[colStart]) - lastEnd > 2000//不连续探针
 			||//连续探针的强度不一致，一会儿上调一会儿下调
 			(lsTmpResult.size() > 0 && Double.parseDouble(ss[colNum]) >= fcUp 
 					&& Double.parseDouble(lsTmpResult.get(lsTmpResult.size()-1)[colNum]) <= fcDown 
@@ -242,7 +299,12 @@ public class MeDIParrayGFF {
 			double[] sample1 = new double[colSample1.length];
 			double[] sample2 = new double[colSample2.length];
 			for (int j = 0; j < sample1.length; j++) {
-				sample1[j] = Double.parseDouble(lsInfo.get(i)[colSample1[j] - 1]);
+				try {
+					sample1[j] = Double.parseDouble(lsInfo.get(i)[colSample1[j] - 1]);
+				} catch (Exception e) {
+					System.out.println(j + " " + i);
+				}
+				
 			}
 			for (int j = 0; j < sample2.length; j++) {
 				sample2[j] = Double.parseDouble(lsInfo.get(i)[colSample2[j] - 1]);

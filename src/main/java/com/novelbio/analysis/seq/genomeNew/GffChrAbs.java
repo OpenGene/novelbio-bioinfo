@@ -197,7 +197,9 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 		this.equationsFile = correctFile;
 		setMapCorrect();
 	}
-	
+	/**
+	 * 设定用qpcr等参数校正mapping结果
+	 */
 	protected void setMapCorrect()
 	{
 		Equations equations = new Equations();
@@ -416,9 +418,10 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 * @param lsPeakInfo mapInfo必须有 chrID 和 startLoc 和 endLoc 三项 
 	 * @param structure GffDetailGene.TSS等
 	 * @return
+	 * 基因和权重的hash表
 	 */
 	private HashMap<GffDetailGene,Double> getPeakGeneStructure(ArrayList<MapInfo> lsMapInfos, String structure) {
-		//存储最后基因的数量
+		//存储最后的基因和权重
 		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
 		for (MapInfo mapInfo : lsMapInfos) {
 			if (mapInfo.getStart() <0 && mapInfo.getStart() > -1000) {
@@ -470,7 +473,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 * 给定gffDetailGene，以及想要的部分，返回对应区域的MapInfo
 	 * <b>注意里面没有填充reads的double[] value</b>
 	 * @param gffDetailGene
-	 * @param value 该基因所对应的阈值
+	 * @param value 该基因所对应的权重
 	 * @param structure GffDetailGene.TSS等
 	 * @return
 	 */

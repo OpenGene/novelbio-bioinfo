@@ -47,7 +47,7 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
      * @param colPeakend
      * @param rowNum
 	 */
-	public GffHashPeak(boolean peakcis ,int colChrID,int colPeakstart,int colPeakend,int rowNum) throws Exception {
+	public GffHashPeak(boolean peakcis ,int colChrID,int colPeakstart,int colPeakend,int rowNum) {
 //		super();
 		this.peakcis = peakcis;
 		this.colChrID = colChrID;
@@ -116,7 +116,7 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 
 			int peakNum=peakInfo.length;
 			for (int i = 0; i < peakNum; i++) {
-				chrnametmpString=lstmpPeakinfo.get(i)[0];
+				chrnametmpString=lstmpPeakinfo.get(i)[0].toLowerCase();
 				tmppeakstart=Integer.parseInt(lstmpPeakinfo.get(i)[1]);
 				tmppeakend=Integer.parseInt(lstmpPeakinfo.get(i)[2]);
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

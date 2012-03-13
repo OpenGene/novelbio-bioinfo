@@ -82,7 +82,7 @@ public class PlotHeatMap extends PlotNBC
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 90      78068936831031727L;
+	private static final long serialVersionUID = 9078068936831031727L;
 	
 	private double[][] data;
     private double[][] data2;

@@ -15,7 +15,11 @@ import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.rank.Max;
 import org.apache.commons.math.stat.descriptive.rank.Min;
 import org.apache.log4j.Logger;
+import org.junit.experimental.max.MaxCore;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeak;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashPeak;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.Equations;
@@ -32,6 +36,8 @@ public class MapReads {
 	Equations equations;
 	public void setEquations(Equations equations) {
 		this.equations = equations;
+		//默认设定基因组上reads的最小值为0，凡是校正小于0的都改为0
+		equations.setMin(0);
 	}
 	private static Logger logger = Logger.getLogger(MapReads.class);
 	/**
@@ -147,6 +153,60 @@ public class MapReads {
 	 public long getAllReadsNum() {
 		return allReadsNum;
 	 }
+	 /**
+	  * 设定peak的bed文件，第一列为chrID，第二列为起点，第三列为终点，
+	  * 返回去除peak后，每条染色体的bg情况
+	  * @param peakBedFile
+	  * @param firstlinels1
+	  * @return ls-0：chrID 1：bg
+	  * 其中第一位是chrAll的信息
+	  */
+	 public ArrayList<String[]> getChIPBG(String peakBedFile, int firstlinels1)
+	 {
+		 ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		 GffHashPeak gffHashPeak = new GffHashPeak(true, 1, 2, 3, firstlinels1);
+		 gffHashPeak.ReadGffarray(peakBedFile);
+		 
+		 double allReads = 0; int numAll = 0; double max = 0;
+		 ArrayList<Integer> lsMidAll = new ArrayList<Integer>();
+		 for (Entry<String, int[]> entry : hashChrBpReads.entrySet()) {
+			String chrID = entry.getKey();
+			double allReadsChr = 0; int numChr = 0; double maxChr = 0;
+			ArrayList<Integer> lsMidChr = new ArrayList<Integer>();
+			int[] info = entry.getValue();
+			for (int i = 0; i < info.length; i++) {
+				if (info[i] == 0) { 
+					continue;
+				}
+				GffCodPeak gffcodPeak = gffHashPeak.searchLocation(chrID, i*invNum);
+				if (gffcodPeak != null && gffcodPeak.isInsideLoc()) {
+					continue;
+				}
+				if (maxChr < info[i]) {
+					maxChr = info[i];
+				}
+				if (lsMidChr.size() < 50000) {
+					lsMidChr.add(info[i]);
+				}
+				allReadsChr = allReadsChr + info[i];
+				numChr ++;
+			}
+			if (numChr != 0) {
+				double med75 = MathComput.median(lsMidChr, 75);
+				lsResult.add(new String[]{chrID, (double)allReadsChr/numChr+"", maxChr+"",  med75 + ""});
+			}
+			if (max < maxChr) {
+				max = maxChr;
+			}
+			lsMidAll.addAll(lsMidChr);
+			allReads = allReads + allReadsChr;
+			numAll = numAll + numChr;
+		 }
+		 double med75All = MathComput.median(lsMidAll, 75);
+		 lsResult.add(0, new String[]{"chrAll", (double)allReads/numAll + "", max + "", med75All + ""});
+		 return lsResult;
+	 }
+	 
 	 
 	 static boolean booPrintChrID = true;
 	 public static void setBooPrintChrID(boolean booPrintChrID) {

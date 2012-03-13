@@ -59,6 +59,19 @@ public class ExcelTxtRead {
 	}
 	
 	/**
+	 * 指定excel/txt文件，以及需要读取的列和行
+	 *  自动将第一列空位或者null的行删除
+	 * @param excelFile 待读取的excel文件
+	 * @param columnID 待读取的列，int[]中间是读取的第几列，读取结果会按照指定的列的顺序给出
+	 * @param rowStart
+	 * @param rowEnd 如果rowEnd<1，则一直读到sheet1文件结尾
+	 * @return 
+	 */
+	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int[] columnID,int rowStart,int rowEnd, String sep)
+	{
+		return readLsExcelTxt(excelFile, columnID, rowStart, rowEnd,true, sep);
+	}
+	/**
 	 * 
 	 * 指定excel/txt文件，以及需要读取的列和行
 	 * @param excelFile 待读取的excel文件
@@ -68,7 +81,7 @@ public class ExcelTxtRead {
 	 * @param DelFirst 是否将第一列空位或者null的行删除
 	 * @return
 	 */
-	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int[] columnID,int rowStart,int rowEnd, boolean DelFirst)
+	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int[] columnID,int rowStart,int rowEnd, boolean DelFirst, String sep)
 	{
 		String[][] tmpResult = null;
 		if (ExcelOperate.isExcel(excelFile)) {
@@ -76,7 +89,7 @@ public class ExcelTxtRead {
 		}
 		else {
 			try {
-				tmpResult = readtxtExcel(excelFile, "\t", columnID, rowStart, rowEnd);
+				tmpResult = readtxtExcel(excelFile, sep, columnID, rowStart, rowEnd);
 			} catch (Exception e) {
 				return null;
 			}
@@ -90,7 +103,20 @@ public class ExcelTxtRead {
 		}
 		return result;
 	}
-	
+	/**
+	 * 
+	 * 指定excel/txt文件，以及需要读取的列和行
+	 * @param excelFile 待读取的excel文件
+	 * @param columnID 待读取的列，int[]中间是读取的第几列，读取结果会按照指定的列的顺序给出
+	 * @param rowStart
+	 * @param rowEnd 如果rowEnd<1，则一直读到sheet1文件结尾
+	 * @param DelFirst 是否将第一列空位或者null的行删除
+	 * @return
+	 */
+	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int[] columnID,int rowStart,int rowEnd, boolean DelFirst)
+	{
+		return readLsExcelTxt( excelFile, columnID, rowStart, rowEnd,  DelFirst,  "\t");
+	}
 	
 	/**
 	 * 给定文件，xls2003/2007/txt，获得它们的信息，用arraylist-string[]保存

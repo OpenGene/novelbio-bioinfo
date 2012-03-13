@@ -231,7 +231,7 @@ public class BedSeq extends SeqComb{
 			bedSeq.setCompressType(compressOutType, compressOutType);
 			return bedSeq;
 		} catch (Exception e) {
-			logger.error("extend error! targetFile: " + getSeqFile() + "   resultFIle: "+ outFileName);
+			logger.error("extend error! targetFile: " + getFileName() + "   resultFIle: "+ outFileName);
 		}
 		return null;
 		
@@ -414,7 +414,7 @@ public class BedSeq extends SeqComb{
 	public HashMap<String, Integer> getDGEnum(boolean sort, boolean allTags) {
 		BedSeq bedseq = null;
 		if (sort) {
-			bedseq = sortBedFile(FileOperate.changeFileSuffix(getSeqFile(), "_DGESort", null));
+			bedseq = sortBedFile(FileOperate.changeFileSuffix(getFileName(), "_DGESort", null));
 		}
 		else {
 			bedseq = this;

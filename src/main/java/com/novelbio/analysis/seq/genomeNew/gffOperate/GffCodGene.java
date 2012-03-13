@@ -2,11 +2,6 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.AminoAcid;
- 
-
-
-
 /**
  * UCSC konwn gene的基因坐标信息
  * @author zong0jie

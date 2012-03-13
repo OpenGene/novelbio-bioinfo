@@ -248,6 +248,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		return lsResult;
 	}
 	ArrayList<String[]> lsTestResult = new ArrayList<String[]>();
+	
 	/**
 	 * booRun 新跑一次 返回最后的结果，ElimGO需要覆盖该方法 对结果排个序
 	 * 返回最后的结果，ElimGO需要覆盖该方法
@@ -271,6 +272,28 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		if (lsTestResult != null && lsTestResult.size() > 10) {
 			return lsTestResult;
 		}
+		return doTest();
+	}
+	/**
+	 * booRun 新跑一次 返回最后的结果，ElimGO需要覆盖该方法 对结果排个序
+	 * 返回最后的结果，ElimGO需要覆盖该方法
+	 * 对结果排个序
+	 * @return 结果没加标题<br>
+	 * arrayList-string[6] 
+	 * 0:itemID <br>
+	 * 1到n:item信息 <br>  
+	 * n+1:difGene <br>
+	 * n+2:AllDifGene<br>
+	 * n+3:GeneInGoID <br>
+	 * n+4:AllGene <br>
+	 * n+5:Pvalue<br>
+	 * n+6:FDR <br>
+	 * n+7:enrichment n+8:(-log2P) <br>
+	 * @throws Exception 
+	 * 没有就返回null
+	 */
+	protected ArrayList<String[]> doTest()
+	{
 		try {
 			ArrayList<String[]> lstest = new ArrayList<String[]>();
 			for (String[] strings : lsTest) {
@@ -295,8 +318,6 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 			e.printStackTrace();
 			logger.error("error: ");
 		}
-			
-			
 		return lsTestResult;
 	}
 	/**

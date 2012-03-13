@@ -103,27 +103,7 @@ public class GuiBlastJpanel extends JPanel{
 			this.setPreferredSize(new java.awt.Dimension(1046, 630));
 			setAlignmentX(0.0f);
 			setComponent();
-			springLayout = new SpringLayout();
-			springLayout.putConstraint(SpringLayout.NORTH, jScrollPane1, 32, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jScrollPane1, 212, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.SOUTH, jScrollPane1, 262, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.EAST, jScrollPane1, 1034, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.NORTH, jChBlast, 270, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jChBlast, 212, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.SOUTH, jChBlast, 290, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.EAST, jChBlast, 279, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.NORTH, jBtnGetFile, 3, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jBtnGetFile, 109, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.SOUTH, jBtnGetFile, 23, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.NORTH, jLbGeneID, 0, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jLbGeneID, 7, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.SOUTH, jLbGeneID, 26, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.EAST, jLbGeneID, 109, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.NORTH, jScroxTxtGeneID, 32, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jScroxTxtGeneID, 7, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.SOUTH, jScroxTxtGeneID, 306, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.EAST, jScroxTxtGeneID, 206, SpringLayout.WEST, this);
-			setLayout(springLayout);
+			setLayout(null);
 			add(getJLbGOandPath());
 			add(jScroxTxtGeneID);
 			add(jLbGeneID);
@@ -153,6 +133,7 @@ public class GuiBlastJpanel extends JPanel{
 		buttonGroup1 = new ButtonGroup();
 		{
 			jScroxTxtGeneID = new JScrollPane();
+			jScroxTxtGeneID.setBounds(7, 32, 199, 274);
 			{
 				jTxtGenID = new JTextArea();
 				jScroxTxtGeneID.setViewportView(jTxtGenID);
@@ -161,10 +142,12 @@ public class GuiBlastJpanel extends JPanel{
 		}
 		{
 			jLbGeneID = new JLabel();
+			jLbGeneID.setBounds(7, 0, 102, 26);
 			jLbGeneID.setText("Enter GeneID");
 		}
 		{
 			jBtnGetFile = new JButton();
+			jBtnGetFile.setBounds(109, 3, 97, 20);
 			jBtnGetFile.setText("OpenFile");
 			jBtnGetFile.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
@@ -174,13 +157,16 @@ public class GuiBlastJpanel extends JPanel{
 		}
 		{
 			jChBlast = new JCheckBox();
+			jChBlast.setBounds(212, 270, 67, 20);
 			;
 			jChBlast.setMargin(new java.awt.Insets(0, 0, 0, 0));
 			jChBlast.setName("jChBlast");
 		}
 		{
 			jScrollPane1 = new JScrollPane();
+			jScrollPane1.setBounds(212, 32, 822, 230);
 			jScrlGOTable = new JScrollPane();
+			jScrlGOTable.setBounds(7, 343, 1027, 266);
 		}
 	
 	}
@@ -188,9 +174,7 @@ public class GuiBlastJpanel extends JPanel{
 	public JButton getJBtnSaveAno() {
 		if(jBtnSaveAno == null) {
 			jBtnSaveAno = new JButton();
-			springLayout.putConstraint(SpringLayout.NORTH, jBtnSaveAno, 268, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jBtnSaveAno, 894, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.EAST, jBtnSaveAno, 987, SpringLayout.WEST, this);
+			jBtnSaveAno.setBounds(894, 268, 93, 24);
 			jBtnSaveAno.setText("SaveAs");
 			jBtnSaveAno.setRolloverEnabled(true);
 			jBtnSaveAno.setEnabled(false);
@@ -208,10 +192,7 @@ public class GuiBlastJpanel extends JPanel{
 	private JSeparator getJSeparator1() {
 		if(jSeparator1 == null) {
 			jSeparator1 = new JSeparator();
-			springLayout.putConstraint(SpringLayout.NORTH, jSeparator1, 298, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jSeparator1, 312, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.SOUTH, jSeparator1, 304, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.EAST, jSeparator1, 1034, SpringLayout.WEST, this);
+			jSeparator1.setBounds(312, 298, 722, 6);
 		}
 		return jSeparator1;
 	}
@@ -219,10 +200,7 @@ public class GuiBlastJpanel extends JPanel{
 	private JScrollPane getJScrlGOTable() {
 		if(jScrlGOTable == null) {
 			jScrlGOTable = new JScrollPane();
-			springLayout.putConstraint(SpringLayout.NORTH, jScrlGOTable, 336, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jScrlGOTable, 7, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.SOUTH, jScrlGOTable, 609, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.EAST, jScrlGOTable, 1034, SpringLayout.WEST, this);
+			jScrlGOTable.setBounds(7, 343, 1027, 266);
 		}
 		return jScrlGOTable;
 	}
@@ -230,9 +208,7 @@ public class GuiBlastJpanel extends JPanel{
 	public JButton getJBtnSaveGO() {
 		if(jBtnSaveGO == null) {
 			jBtnSaveGO = new JButton();
-			springLayout.putConstraint(SpringLayout.NORTH, jBtnSaveGO, 306, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jBtnSaveGO, 894, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.EAST, jBtnSaveGO, 987, SpringLayout.WEST, this);
+			jBtnSaveGO.setBounds(894, 306, 93, 24);
 			jBtnSaveGO.setText("SaveAs");
 			jBtnSaveGO.setEnabled(false);
 			jBtnSaveGO.addActionListener(new ActionListener() {
@@ -255,10 +231,7 @@ public class GuiBlastJpanel extends JPanel{
 	public JProgressBar getJProgressBar1() {
 		if(jProgressBar1 == null) {
 			jProgressBar1 = new JProgressBar();
-			springLayout.putConstraint(SpringLayout.NORTH, jProgressBar1, 615, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jProgressBar1, 7, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.SOUTH, jProgressBar1, 623, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.EAST, jProgressBar1, 1034, SpringLayout.WEST, this);
+			jProgressBar1.setBounds(7, 615, 1027, 8);
 		}
 		return jProgressBar1;
 	}
@@ -268,9 +241,7 @@ public class GuiBlastJpanel extends JPanel{
 	private JRadioButton getJRadioButtonGO() {
 		if(jRadioButtonGO == null) {
 			jRadioButtonGO = new JRadioButton();
-			springLayout.putConstraint(SpringLayout.NORTH, jRadioButtonGO, 307, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jRadioButtonGO, 312, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.EAST, jRadioButtonGO, 444, SpringLayout.WEST, this);
+			jRadioButtonGO.setBounds(312, 307, 132, 22);
 			jRadioButtonGO.setText("GeneOntology");
 			jRadioButtonGO.setSelected(true);
 			buttonGroup1.add(jRadioButtonGO);
@@ -287,9 +258,7 @@ public class GuiBlastJpanel extends JPanel{
 	private JRadioButton getJRadioButtonPath() {
 		if(jRadioButtonPath == null) {
 			jRadioButtonPath = new JRadioButton();
-			springLayout.putConstraint(SpringLayout.NORTH, jRadioButtonPath, 307, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jRadioButtonPath, 755, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.EAST, jRadioButtonPath, 890, SpringLayout.WEST, this);
+			jRadioButtonPath.setBounds(755, 307, 135, 22);
 			jRadioButtonPath.setText("KEGG Pathway");
 			buttonGroup1.add(jRadioButtonPath);
 			jRadioButtonPath.setMargin(new java.awt.Insets(2, 0, 2, 0));
@@ -314,11 +283,9 @@ public class GuiBlastJpanel extends JPanel{
 	public JButton getJBtnAnno() {
 		if(jBtnAnno == null) {
 			jBtnAnno = new JButton();
-			springLayout.putConstraint(SpringLayout.NORTH, jBtnAnno, 268, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jBtnAnno, 524, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.EAST, jBtnAnno, 620, SpringLayout.WEST, this);
+			jBtnAnno.setLocation(524, 268);
 			jBtnAnno.setText("Query");
-			jBtnAnno.setSize(96, 21);
+			jBtnAnno.setSize(96, 24);
 			jBtnAnno.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					
@@ -392,9 +359,7 @@ public class GuiBlastJpanel extends JPanel{
 	public JButton getJBtnGoPath() {
 		if(jBtnGoPath == null) {
 			jBtnGoPath = new JButton();
-			springLayout.putConstraint(SpringLayout.NORTH, jBtnGoPath, 306, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jBtnGoPath, 212, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.EAST, jBtnGoPath, 308, SpringLayout.WEST, this);
+			jBtnGoPath.setBounds(212, 306, 96, 24);
 			jBtnGoPath.setText("Query");
 			jBtnGoPath.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
@@ -508,9 +473,7 @@ public class GuiBlastJpanel extends JPanel{
 	public JLabel getJLblCond() {
 		if(jLblCond == null) {
 			jLblCond = new JLabel();
-			springLayout.putConstraint(SpringLayout.NORTH, jLblCond, 6, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jLblCond, 236, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.EAST, jLblCond, 554, SpringLayout.WEST, this);
+			jLblCond.setBounds(236, 6, 318, 14);
 			jLblCond.setText("Prepare");
 		}
 		return jLblCond;
@@ -524,9 +487,7 @@ public class GuiBlastJpanel extends JPanel{
 	public JLabel getJLbGOandPath() {
 		if(jLbGOandPath == null) {
 			jLbGOandPath = new JLabel();
-			springLayout.putConstraint(SpringLayout.NORTH, jLbGOandPath, 311, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jLbGOandPath, 7, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.EAST, jLbGOandPath, 212, SpringLayout.WEST, this);
+			jLbGOandPath.setBounds(7, 311, 205, 14);
 			jLbGOandPath.setText("Prepare");
 		}
 		return jLbGOandPath;
@@ -614,9 +575,7 @@ public class GuiBlastJpanel extends JPanel{
 			ComboBoxModel jCobTaxSelectModel = 
 				new DefaultComboBoxModel(speciesarray);
 			jCobTaxSelect = new JComboBox();
-			springLayout.putConstraint(SpringLayout.NORTH, jCobTaxSelect, 2, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jCobTaxSelect, 800, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.EAST, jCobTaxSelect, 1028, SpringLayout.WEST, this);
+			jCobTaxSelect.setBounds(800, 2, 228, 23);
 			jCobTaxSelect.setModel(jCobTaxSelectModel);
 			String species = (String) jCobTaxSelect.getSelectedItem();
 			if (hashTaxID.get(species) == null) {
@@ -643,9 +602,7 @@ public class GuiBlastJpanel extends JPanel{
 	private JLabel getJLabelTax() {
 		if(jLabelTax == null) {
 			jLabelTax = new JLabel();
-			springLayout.putConstraint(SpringLayout.NORTH, jLabelTax, 6, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jLabelTax, 661, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.EAST, jLabelTax, 800, SpringLayout.WEST, this);
+			jLabelTax.setBounds(661, 6, 139, 14);
 			jLabelTax.setText("select species");
 		}
 		return jLabelTax;
@@ -682,9 +639,7 @@ public class GuiBlastJpanel extends JPanel{
 				new DefaultComboBoxModel(
 						new String[] { Go2Term.GO_BP, Go2Term.GO_MF,Go2Term.GO_CC, Go2Term.GO_ALL});
 			jComGOClassSelect = new JComboBox();
-			springLayout.putConstraint(SpringLayout.NORTH, jComGOClassSelect, 307, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jComGOClassSelect, 448, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.EAST, jComGOClassSelect, 751, SpringLayout.WEST, this);
+			jComGOClassSelect.setBounds(448, 307, 303, 23);
 			jComGOClassSelect.setModel(jCmbGOClassSelectModel);
 			GoClass = (String) jComGOClassSelect.getSelectedItem();
 			jComGOClassSelect.addActionListener(new ActionListener() 
@@ -720,9 +675,7 @@ public class GuiBlastJpanel extends JPanel{
 			ComboBoxModel jCobTaxSelectModel = 
 				new DefaultComboBoxModel(speciesarray);
 			jCmbSpeciesBlast = new JComboBox();
-			springLayout.putConstraint(SpringLayout.NORTH, jCmbSpeciesBlast, 269, SpringLayout.NORTH, this);
-			springLayout.putConstraint(SpringLayout.WEST, jCmbSpeciesBlast, 283, SpringLayout.WEST, this);
-			springLayout.putConstraint(SpringLayout.EAST, jCmbSpeciesBlast, 512, SpringLayout.WEST, this);
+			jCmbSpeciesBlast.setBounds(283, 269, 229, 23);
 			jCmbSpeciesBlast.setModel(jCobTaxSelectModel);
 			String species = (String) jCmbSpeciesBlast.getSelectedItem();
 			if (hashTaxID.get(species) == null) {
@@ -748,5 +701,4 @@ public class GuiBlastJpanel extends JPanel{
 	}
 
 	NBCJDialog nbcjDialog;
-	private SpringLayout springLayout;
 }

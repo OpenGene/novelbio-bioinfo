@@ -7,6 +7,7 @@ import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.reseq.SoapsnpInfo;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 
 /**
@@ -87,8 +88,8 @@ public class SeqFasta {
 		compmap.put(Character.valueOf('X'), Character.valueOf('X'));
 		compmap.put(Character.valueOf('x'), Character.valueOf('x'));
 		
-		compmap.put(Character.valueOf('N'), Character.valueOf('N'));
-		compmap.put(Character.valueOf('n'), Character.valueOf('n'));
+		compmap.put(Character.valueOf('N'), Character.valueOf('A'));
+		compmap.put(Character.valueOf('n'), Character.valueOf('a'));
 		////////////////////////////////////////////////////////////////////////////////////////////
 		compmap.put(Character.valueOf('-'), Character.valueOf('-'));
 		compmap.put(Character.valueOf('\n'), Character.valueOf(' '));
@@ -721,14 +722,14 @@ public class SeqFasta {
 	 */
 	public String toStringAAfasta()
 	{
-		return ">" + SeqName + "\r\n" + toStringAA(true, 0);
+		return ">" + SeqName + TxtReadandWrite.huiche + toStringAA(true, 0);
 	}
 	/**
 	 * 返回Nr的fasta序列
 	 */
 	public String toStringNRfasta()
 	{
-		return ">" + SeqName + "\r\n" + toString();
+		return ">" + SeqName + TxtReadandWrite.huiche + toString();
 	}
 	/**
 	 * 统计序列中小写序列，N的数量以及X的数量等

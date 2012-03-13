@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.math.stat.StatUtils;
+import org.apache.commons.math.stat.inference.TestUtils;
 import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
@@ -464,12 +465,8 @@ public class GffChrMap extends GffChrAbs {
 		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfo, lsMapInfo2, false,
 				customGradient, customGradient2);
 		heatMap.setRange(mindata1, maxdata1, mindata2, maxdata2);
-		try {
-			heatMap.saveToFile(outFile, 4000, 1000, true);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		heatMap.saveToFile(outFile, 4000, 1000);
+
 	}
 
 	/**
@@ -494,12 +491,7 @@ public class GffChrMap extends GffChrAbs {
 
 		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfoFinal, false, customGradient);
 		heatMap.setRange(mindata1, maxdata1);
-		try {
-			heatMap.saveToFile(outFile, 6000, 1000, true);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		heatMap.saveToFile(outFile, 6000, 1000);
 	}
 
 	/**
@@ -511,31 +503,21 @@ public class GffChrMap extends GffChrAbs {
 	 * @param colScore 分数
 	 * @param rowStart 从第几行开始读
 	 * @param binNum 分成几份
-	 * @param resultFilePath 输出文件
-	 * @param prefix 前缀 <b>暂时没用</b>
+	 * @param resultFile 输出文件
 	 */
-	public void getTssDensity(String fileName, int colChrID, int colStartLoc,
-			int colEndLoc, int colScore, int rowStart, int binNum,
-			String resultFilePath, String prefix) {
-		ArrayList<MapInfo> lsMapInfo = super.readFileRegionMapInfo(fileName,
-				colChrID, colStartLoc, colEndLoc, colScore, rowStart);
-		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(
-				lsMapInfo, GffDetailGene.TSS, binNum);// (binNum,lsMapInfo,
-														// GffDetailGene.TSS);
-
+	public void getTssDensity(String fileName, int rowStart, int binNum, String resultFile) {
+		ArrayList<MapInfo> lsMapInfo = super.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
+		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(lsMapInfo, GffDetailGene.TSS, binNum);
 		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
-		// double[] TssDensity=gffLocatCod.getUCSCTssRange(LocInfo, range,
-		// binNum);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFilePath, true);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
 		for (double d : TssDensity) {
-			txtWrite.writefile(d+"", false);
+			txtWrite.writefileln(d+"");
 		}
 		txtWrite.close();
-//		plotRTss(TssDensity);
 	}
 
 	/**
-	 * 根据前面设定upBp和downBp 根据Peak所覆盖的基因做出TSS图
+	 * 根据前面设定upBp和downBp 根据Peak所覆盖的基因做出TES图
 	 * @param fileName peakFile
 	 * @param colChrID 
 	 * @param colStartLoc
@@ -543,71 +525,19 @@ public class GffChrMap extends GffChrAbs {
 	 * @param colScore 分数
 	 * @param rowStart 从第几行开始读
 	 * @param binNum 分成几份
-	 * @param resultFilePath 输出文件
-	 * @param prefix 前缀 <b>暂时没用</b>
+	 * @param resultFile 输出文件
 	 */
-	public void getTesDensity(String fileName, int colChrID, int colStartLoc,
-			int colEndLoc, int colScore, int rowStart, int binNum,
-			String resultFilePath, String prefix) {
-		ArrayList<MapInfo> lsMapInfo = super.readFileRegionMapInfo(fileName,
-				colChrID, colStartLoc, colEndLoc, colScore, rowStart);
-		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(
-				lsMapInfo, GffDetailGene.TES, binNum);// (binNum,lsMapInfo,
-														// GffDetailGene.TSS);
-
+	public void getTesDensity(String fileName, int rowStart, int binNum, String resultFile) {
+		ArrayList<MapInfo> lsMapInfo = super.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
+		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(lsMapInfo, GffDetailGene.TES, binNum);
+//		mapReads.getRegionLs(binNum, lsMapTssInfo, type);
 		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFilePath, true);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
 		for (double d : TssDensity) {
-			txtWrite.writefile(d+"", false);
+			txtWrite.writefileln(d+"");
 		}
-		// double[] TssDensity=gffLocatCod.getUCSCTssRange(LocInfo, range,
-		// binNum);
-		plotRTss(TssDensity);
+		txtWrite.close();
 	}
-
-	private void plotRTss(double[] TssDensity) {
-		TxtReadandWrite tssReadandWrite = new TxtReadandWrite();
-		tssReadandWrite.setParameter(
-				NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_R, true, false);
-		try {
-			tssReadandWrite.Rwritefile(TssDensity);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		tssReadandWrite.setParameter(
-				NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_PARAM, true, false);
-		try {
-			tssReadandWrite.writefile(super.upBp + "");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			density("Tss");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		FileOperate.moveFile(
-				NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_EXCEL,
-				resultFilePath, prefix + "tss.txt", true);
-		FileOperate.moveFile(
-				NovelBioConst.R_WORKSPACE_CHIP_READS_REGION_TSS_PIC,
-				resultFilePath, prefix + "TSSReads.jpg", true);
-
-		TxtReadandWrite txtTmpGenNum = new TxtReadandWrite();
-		// 写入该区域进行统计的基因数目
-		if (!resultFilePath.endsWith(File.separator)) {
-			resultFilePath = resultFilePath + File.separator;
-		}
-		txtTmpGenNum.setParameter(resultFilePath + prefix + "tssGenNum.txt",
-				true, false);
-		try {
-			txtTmpGenNum.writefile(gffLocatCod.getRegGenNum() + "");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
- 
 	
 	/**
 	 * 给定基因的symbol，返回该基因在tss附近区域的mapreads的平均数
@@ -681,7 +611,16 @@ public class GffChrMap extends GffChrAbs {
 		return gffGeneIsoInfoOut.getLenUTR5() + 1;
 		// 除以3是指3个碱基
 	}
-
+	/**
+	 * 设定peak的bed文件，第一列为chrID，第二列为起点，第三列为终点， 返回去除peak后，每条染色体的bg情况
+	 * @param peakFile
+	 * @param firstlinls1
+	 * @return
+	 */
+	public ArrayList<String[]> getBG(String peakFile, int firstlinls1)
+	{
+		return mapReads.getChIPBG(peakFile, firstlinls1);
+	}
 	/**
 	 * 专为韩燕设计 将三个碱基合并为1个coding，取3个的最后一个碱基对应的reads数
 	 * 

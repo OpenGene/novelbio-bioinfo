@@ -271,7 +271,19 @@ public class MathComput {
 		}
 		return median(mydouble);
 	}
-	
+	/**
+	 * 输入数据，获得中位数, 用于10
+	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * @return
+	 */
+	public static double median(List<? extends Number> lsNumbers, int percentage)
+	{
+		double[] mydouble = new double[lsNumbers.size()];
+		for (int i = 0; i < mydouble.length; i++) {
+			mydouble[i] = lsNumbers.get(i).doubleValue();
+		}
+		return median(mydouble, percentage);
+	}
 	
 	/**
 	 * 输入数据，获得中位数, 用于10
@@ -279,6 +291,15 @@ public class MathComput {
 	 * @return
 	 */
 	public static double median(double[] unsortNum)
+	{
+		return median(unsortNum, 50);
+	}
+	/**
+	 * 输入数据，获得中位数, 用于10
+	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * @return
+	 */
+	public static double median(double[] unsortNum, int percentage)
 	{
 		double med=-100;
 		double tmp=-10000;
@@ -297,13 +318,12 @@ public class MathComput {
 			}
 			unsortNum[j]= tmp;
 		}
-		if (length%2==0) 
-			med=(unsortNum[length/2-1]+unsortNum[length/2])/2;
+		if (length*percentage%100==0) 
+			med=(unsortNum[length*percentage/100-1]+unsortNum[length*percentage/100])/2;
 		else 
-			med=unsortNum[length/2];
+			med=unsortNum[length*percentage/100];
 		return med;
 	}
-	
 	/**
 	 * 输入数据，获得最接近中位数的那个数, 用于10
 	 * 采用插入排序法，据说对于小规模数据效率还不错

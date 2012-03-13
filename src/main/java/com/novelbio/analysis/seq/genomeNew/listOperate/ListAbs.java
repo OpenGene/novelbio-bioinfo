@@ -14,6 +14,9 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	 * 
 	 */
 	private static final long serialVersionUID = 4583552188474447935L;
+	/**
+	 * 好像是分割同一个element的多个name的符号，待确认
+	 */
 	public static final String SEP = "/";
 
 	/**

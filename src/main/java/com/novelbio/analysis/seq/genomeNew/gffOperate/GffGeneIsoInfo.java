@@ -854,9 +854,9 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 		else {
 			result = result + "reverse ";
 		}
-		if (!isCodInIsoExtend()) {
-			return null;
-		}
+//		if (!isCodInIsoExtend()) {
+//			return null;
+//		}
 		//promoter
 		if (isCodInIsoTss() && getCodLoc() == COD_LOC_OUT) {
 			if (cod2TSS > PROMOTER_INTERGENIC_MAMMUM) {

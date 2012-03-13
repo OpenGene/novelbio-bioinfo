@@ -98,8 +98,7 @@ public class GffDetailGene extends GffDetailAbs
 	 * @param isoName
 	 * @return
 	 */
-	private int getIsoID(String isoName)
-	{
+	private int getIsoID(String isoName) {
 		for (int i = 0; i < lsGffGeneIsoInfos.size(); i++) {
 			GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(i);
 			String[] tmpName = gffGeneIsoInfo.getName().split(SEP_ISO_NAME);
@@ -144,8 +143,7 @@ public class GffDetailGene extends GffDetailAbs
 	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加
 	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
 	 */
-	protected void addExonUCSC(int locStart,int locEnd)
-	{
+	protected void addExonUCSC(int locStart,int locEnd) {
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExon(locStart, locEnd);
 	}
@@ -155,8 +153,7 @@ public class GffDetailGene extends GffDetailAbs
 	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加
 	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
 	 */
-	protected void addExonGFF(int locStart,int locEnd)
-	{
+	protected void addExonGFF(int locStart,int locEnd) {
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExon(locStart, locEnd);
 	}

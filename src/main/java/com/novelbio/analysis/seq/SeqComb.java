@@ -76,7 +76,7 @@ public abstract class SeqComb {
 		this.block = block;
 		txtSeqFile.setParameter(compressInType,seqFile, false, true);
 	}
-	public String getSeqFile() {
+	public String getFileName() {
 		return seqFile;
 	}
 	/**

@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.chipseq;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.base.PathDetail;
@@ -8,22 +9,19 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class BedPeakMacs extends BedPeak implements PeakCalling{
+public class BedPeakMacs extends BedPeak {
 
-	public static final String SPECIES_RICE = "os";
-	public static final String SPECIES_HUMAN = "hs";
-	public static final String SPECIES_C_ELEGAN = "ce";
-	public static final String SPECIES_DROSOPHYLIA = "dm";
-	public static final String SPECIES_MOUSE = "mm";
 	
 	public BedPeakMacs(String bedFile) {
 		super(bedFile);
 		// TODO Auto-generated constructor stub
 	}
 	
+
+	
 	public BedPeakMacs filterWYR(String filterOut) throws Exception {
 		BedSeq bedSeq = super.filterWYR(filterOut);
-		return new BedPeakMacs(bedSeq.getSeqFile());
+		return new BedPeakMacs(bedSeq.getFileName());
 	}
 	/**
 	 * 设置lambda，如果默认是有lambda的，意思是动态的挑选peak，如果一个区域reads数量很多，那么该区域的peak相对减分
@@ -44,7 +42,7 @@ public class BedPeakMacs extends BedPeak implements PeakCalling{
 	 */
 	public BedPeakMacs sortBedFile(int chrID, String sortBedFile,int...arg) {
 		super.sortBedFile(chrID, sortBedFile, arg);
-		return new BedPeakMacs(super.getSeqFile());
+		return new BedPeakMacs(super.getFileName());
 	}
 	/**
 	 * 指定bed文件，以及需要排序的列数，产生排序结果
@@ -54,7 +52,7 @@ public class BedPeakMacs extends BedPeak implements PeakCalling{
 	 */
 	public BedPeakMacs sortBedFile(String sortBedFile) {
 		super.sortBedFile(sortBedFile);
-		return new BedPeakMacs(super.getSeqFile());
+		return new BedPeakMacs(super.getFileName());
 	}
 	/**
 	 * 默认参数：-m 5, --mfold=200
@@ -72,20 +70,21 @@ public class BedPeakMacs extends BedPeak implements PeakCalling{
 		String name = "";
 		String mfole = " -m 3,500 ";
 		String pvalue = " -p 1e-2 ";
-		if (species.equals("os")) {
-			effge = " -g 2.6e8 ";
-		}
-		else {
-			//物种 目前只能是 os mm hs ce dm
-			effge = " -g "+ species + " ";
-		}
+		
+		double genomeSize = hashSpecies2GenomeSize.get(species)*effectiveGenomeSize;
+		effge = " -g "+genomeSize + " ";
+		
+//		else {
+//			//物种 目前只能是 os mm hs ce dm
+//			effge = " -g "+ species + " ";
+//		}
 		if (bedCol != null && !bedCol.trim().equals("")) {
 			col = " -c " + bedCol + " ";
 		}
 		if (prix !=null && !prix.trim().equals("")) {
 			name = " -n "+prix;
 		}
-		String cmd = "macs14 -t "+getSeqFile() +col+name + effge + mfole + pvalue + nolambda;//+ "-w";
+		String cmd = "macs14 -t "+getFileName() +col+name + effge + mfole + pvalue + nolambda;//+ "-w";
 		TxtReadandWrite txtCmd = new TxtReadandWrite( outFilePath+"/macs.sh", true);
 		txtCmd.writefile(cmd);
 		txtCmd.close();

@@ -59,7 +59,7 @@ public class FastQMapBwa extends FastQMapAbs{
 	 */
 	protected FastQMapBwa(FastQ fastQ, String outFileName, boolean uniqMapping ) 
 	{
-		 this(fastQ.getSeqFile(), fastQ.getSeqFile2(),fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
+		 this(fastQ.getFileName(), fastQ.getSeqFile2(),fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
 	}
 	
 	/**
@@ -120,7 +120,7 @@ public class FastQMapBwa extends FastQMapAbs{
 	 */
 	protected FastQMapBwa createFastQMap(FastQ fastQ) 
 	{
-		FastQMapBwa fastQSoapMap= new FastQMapBwa(fastQ.getSeqFile(), fastQ.getSeqFile2(), fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
+		FastQMapBwa fastQSoapMap= new FastQMapBwa(fastQ.getFileName(), fastQ.getSeqFile2(), fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
 		return fastQSoapMap;
 	}
 	
@@ -162,9 +162,9 @@ public class FastQMapBwa extends FastQMapAbs{
 			cmd = cmd + "-I "; //Illumina 的偏移
 		}
 		
-		String sai1 = FileOperate.changeFileSuffix(getSeqFile(),"_1","sai");
+		String sai1 = FileOperate.changeFileSuffix(getFileName(),"_1","sai");
 		sai1 = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(sai1)[0] + ".sai"; 
-		String cmd1 = cmd + chrFile + " " + getSeqFile() + " > " + sai1;
+		String cmd1 = cmd + chrFile + " " + getFileName() + " > " + sai1;
 		System.out.println(cmd1);
 		CmdOperate cmdOperate = new CmdOperate(cmd1);
 		cmdOperate.doInBackground("bwaMapping1");
@@ -189,7 +189,7 @@ public class FastQMapBwa extends FastQMapAbs{
 				cmd = cmd + " -P ";//将基因组读入内存
 			}
 			cmd = cmd + " -n 10 -N 10 ";
-			cmd = cmd + chrFile + " " + sai1 + " "  + sai2 + " "  + getSeqFile() + " "  + getSeqFile2();
+			cmd = cmd + chrFile + " " + sai1 + " "  + sai2 + " "  + getFileName() + " "  + getSeqFile2();
 			cmd = cmd + " > " + outFileName;
 		}
 		else {
@@ -199,7 +199,7 @@ public class FastQMapBwa extends FastQMapAbs{
 			else {
 				cmd = super.ExePath + "bwa samse " + sampleGroup + "-n 100 ";
 			}
-			cmd = cmd + chrFile + " " + sai1 + " "  + getSeqFile();
+			cmd = cmd + chrFile + " " + sai1 + " "  + getFileName();
 			cmd = cmd + " > " + outFileName;
 		}
 		System.out.println(cmd);

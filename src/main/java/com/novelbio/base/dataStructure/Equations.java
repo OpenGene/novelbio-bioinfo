@@ -15,6 +15,15 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  */
 public class Equations {
+	double min = Double.MIN_VALUE;
+	double max = Double.MAX_VALUE;
+	public void setMin(double min){
+		this.min = min;
+	}
+	public void setMax(double max) {
+		this.max = max;
+	}
+	
 	private static Logger logger = Logger.getLogger(Equations.class);
 	
 	ArrayList<double[]> lsXY = new ArrayList<double[]>();
@@ -133,6 +142,12 @@ public class Equations {
 //			logger.error("×ø±ê´íÎó, x1: " + x1 + " y1: " + y1 + " x2: " + x2 + " y2: " + y2 + " x: " + x);
 //		}
 		double y = (y2*x1 - y2*x - y1*x2 + y1*x)/(x1 - x2);
+		if (y < min) {
+			return min;
+		}
+		if (y > max) {
+			return max;
+		}
 		return y;
 	}
 }

@@ -15,13 +15,14 @@ import com.novelbio.generalConf.NovelBioConst;
  * @author zong0jie
  *
  */
-public class BedPeakSicer extends BedPeak implements PeakCalling{
+public class BedPeakSicer extends BedPeak {
 	private static Logger logger = Logger.getLogger(BedPeakSicer.class);
 	private static final String SICER_PATH = NovelBioConst.PEAKCALLING_SICER_PATH;
 	/**
 	 * 这个需要更新
 	 */
-	public static final String SPECIES_RICE = "tair8";
+	public static final String SPECIES_RICE = "tigr10";
+	public static final String SPECIES_ARABIDOPSIS = "tair8";
 	public static final String SPECIES_HUMAN = "hg19";
 	public static final String SPECIES_C_ELEGAN = "ce";
 	public static final String SPECIES_DROSOPHYLIA = "dm3";
@@ -55,7 +56,6 @@ public class BedPeakSicer extends BedPeak implements PeakCalling{
 	 * SICER在计算的时候会将reads移动到fregment长度一半的地方做修正。一般来说Illumina的solexa上样长度为250-500，所以取250-300是比较合适的
 	 */
 	int fragment_size = 250;
-	double effectiveGenomeSize = 0.82;
 	double FDR = 0.01;
 	/**
 	 * E-value is not p-value. Suggestion for first try on histone modification data: E-
@@ -83,14 +83,6 @@ is 1E-2.
 		this.fragment_size = fragment_size;
 	}
 	
-	/**
-	 * 当reads一定长度时，如果测饱和数量的reads，由于reads长度的限制，uniqmapping的reads不可能完全覆盖全基因组，一般来说测的越长覆盖的面积约大。
-	 * 那么一般25bp覆盖为65%，35bp覆盖75%，50bp 80% 100bp可能更长，这里设置为100进制
-	 * @param effectiveGenomeSize
-	 */
-	public void setEffectiveGenomeSize(int effectiveGenomeSize) {
-		this.effectiveGenomeSize = (double)effectiveGenomeSize/100;
-	}
 	int redundancy_threshold = 1;
 	public void setRedundancy_threshold(int redundancy_threshold) {
 		this.redundancy_threshold = redundancy_threshold;
@@ -162,7 +154,7 @@ is 1E-2.
 	 */
 	private ArrayList<String[]> peakCallingSingle(String species, String outDir)
 	{
-		String bedFile = super.getSeqFile();
+		String bedFile = super.getFileName();
 		String parentPath = FileOperate.deleteSep(FileOperate.getParentPathName(bedFile));
 		
 		String cmd = cmdSingle + parentPath + " " + FileOperate.getFileName(bedFile) + " ";
@@ -200,7 +192,7 @@ is 1E-2.
 	 */
 	private ArrayList<String[]> peakCallingCol(String bedCol, String species)
 	{
-		String bedFile = super.getSeqFile();
+		String bedFile = super.getFileName();
 		String parentPath = FileOperate.deleteSep(FileOperate.getParentPathName(bedFile));
 //		String parentCol = FileOperate.deleteSep(FileOperate.getParentPathName(bedCol));
 
@@ -252,10 +244,10 @@ is 1E-2.
 	 */
 	public void peakCallingComp(String bedTreat2, String species, String prix)
 	{
-		String bedFile = super.getSeqFile();
+		String bedFile = super.getFileName();
 		String parentPath = FileOperate.deleteSep(FileOperate.getParentPathName(bedFile));
 		
-		String cmd = cmdComp +" " + super.getSeqFile() +" " + bedTreat2+ " " + species +" " + windowSize +" " + gapSIze +" " + Evalue +" " + FDR;
+		String cmd = cmdComp +" " + super.getFileName() +" " + bedTreat2+ " " + species +" " + windowSize +" " + gapSIze +" " + Evalue +" " + FDR;
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.doInBackground("SICER_Peak");
 		//输出结果的文件名估计会有问题
@@ -271,7 +263,7 @@ is 1E-2.
 	
 	public BedPeakSicer filterWYR(String filterOut) throws Exception {
 		BedSeq bedSeq = super.filterWYR(filterOut);
-		return new BedPeakSicer(bedSeq.getSeqFile());
+		return new BedPeakSicer(bedSeq.getFileName());
 	}
 
 	/**
@@ -282,7 +274,7 @@ is 1E-2.
 	 */
 	public BedPeakSicer sortBedFile(int chrID, String sortBedFile,int...arg) {
 		super.sortBedFile(chrID, sortBedFile, arg);
-		return new BedPeakSicer(super.getSeqFile());
+		return new BedPeakSicer(super.getFileName());
 	}
 	/**
 	 * 指定bed文件，以及需要排序的列数，产生排序结果
@@ -292,7 +284,7 @@ is 1E-2.
 	 */
 	public BedPeakSicer sortBedFile(String sortBedFile) {
 		super.sortBedFile(sortBedFile);
-		return new BedPeakSicer(super.getSeqFile());
+		return new BedPeakSicer(super.getFileName());
 	}
 
 

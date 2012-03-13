@@ -88,6 +88,10 @@ public class ElimGOFunTest extends NovelGOFunTest{
 			return lsTestResult;
 		if (!setStrGeneID())
 			return null;
+		return doTest();
+	}
+	
+	protected ArrayList<String[]> doTest() {
 		TxtReadandWrite txtParam = new TxtReadandWrite(NovelBioConst.R_WORKSPACE_TOPGO_PARAM, true);
 		String content = "";
 		if (GoType.equals(Go2Term.GO_BP)) 
@@ -118,13 +122,17 @@ public class ElimGOFunTest extends NovelGOFunTest{
 				strings[i] = strings[i].replace("\"", "");
 			}
 		}
-
 		return lsTestResult;
 	}
-
-	
+	/**
+	 * 待写入文本的geneID，可以被topGO识别并计算
+	 */
 	String[] strGeneID = null;
 	ArrayList<String> lsGeneID = null;
+	/**
+	 * 填充strGeneID：待写入文本的geneID，可以被topGO识别并计算
+	 * @return
+	 */
 	private boolean setStrGeneID()
 	{
 		ArrayList<String[]> lstest = new ArrayList<String[]>();

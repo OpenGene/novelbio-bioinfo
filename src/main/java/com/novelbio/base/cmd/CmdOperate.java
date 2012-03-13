@@ -42,6 +42,7 @@ public class CmdOperate {
 		}
 		
 		/**
+		 * 直接运行cmd，可能会出错
 		 * 返回两个arraylist-string 第一个是Info 第二个是error
 		 * @param fileName
 		 * @return
@@ -109,13 +110,13 @@ public class CmdOperate {
 		 * @param cmdFileName 文件名，备份用的，不需要路径
 		 */
 		public void doInBackground(String cmdFileName) {
+			logger.info(cmd);
 			String cmd1SH = NovelBioConst.PATH_POSITION_RELATE + cmdFileName+ DateTime.getDate() + ".sh";
 			TxtReadandWrite txtCmd1 = new TxtReadandWrite(cmd1SH, true);
 			txtCmd1.writefile(cmd);
 			txtCmd1.close();
 			cmd = "sh "+cmd1SH;
 			try {
-				logger.info(cmd);
 				doInBackgroundB();
 			} catch (Exception e) {
 				logger.error("cmd cannot executed correctly: "+cmd);

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.AminoAcid;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
@@ -14,6 +13,7 @@ import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfoSnpIndel;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class GffChrSeq extends GffChrAbs{
@@ -259,6 +259,65 @@ public class GffChrSeq extends GffChrAbs{
 			}
 		}
 		return lsResult;
-		
+	}
+	
+	/**
+	 * 获得某个物种的全部cds的每个ISO序列，从refseq中提取更加精确
+	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
+	 * @param IsoName 转录本的名字
+	 * @param cis5to3 正反向，在提出的正向转录本的基础上，是否需要反向互补
+	 * @param startExon 具体某个exon
+	 * @param endExon 具体某个Intron
+	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
+	 * @param getIntron
+	 * @return
+	 */
+	public ArrayList<SeqFasta> getSeqCDSAllIso()
+	{
+		ArrayList<String> lsID = gffHashGene.getLOCChrHashIDList();
+		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
+		GffDetailGene gffDetailGene = null;
+		for (String string : lsID) {
+			gffDetailGene = gffHashGene.searchLOC(string.split(ListAbs.SEP)[0]);
+			gffDetailGene.removeDupliIso();
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				ArrayList<ExonInfo> lsCDS = gffGeneIsoInfo.getIsoInfoCDS();
+				if (lsCDS.size() > 0) {
+					SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), lsCDS, false);
+					if (seq == null || seq.length() < 3) {
+						continue;
+					}
+					seq.setSeqName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+					lsResult.add(seq);
+				}
+			}
+		}
+		return lsResult;
+	}
+	/**
+	 * 返回gene2Iso的列表
+	 * 第一列：geneID
+	 * 第二列：ISOID
+	 * @return
+	 */
+	public ArrayList<String[]> getGene2Iso()
+	{
+		ArrayList<String> lsID = gffHashGene.getLOCChrHashIDList();
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		GffDetailGene gffDetailGene = null;
+		for (String string : lsID) {
+			gffDetailGene = gffHashGene.searchLOC(string.split(ListAbs.SEP)[0]);
+			gffDetailGene.removeDupliIso();
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				CopedID copedID = new CopedID(gffDetailGene.getName().split(GffDetailGene.SEP_GENE_NAME)[0], gffHashGene.getTaxID());
+				String symbol = copedID.getSymbol();
+				if (symbol == null || symbol.equals("")) {
+					symbol = gffDetailGene.getName().split(GffDetailGene.SEP_GENE_NAME)[0];
+				}
+				String[] geneID2Iso = new String[]{symbol, gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]};;
+				lsResult.add(geneID2Iso);
+			}
+		}
+		return lsResult;
 	}
 }

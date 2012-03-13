@@ -3,7 +3,6 @@ package com.novelbio.nbcgui.GUI;
 import javax.swing.JPanel;
 import java.awt.CardLayout;
 import javax.swing.JTextField;
-import net.miginfocom.swing.MigLayout;
 import javax.swing.SpringLayout;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;

@@ -239,7 +239,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			GffDetailGene[] gffDetailGenesUp = new GffDetailGene[2];
 			gffDetailGenesUp[0] = gffCod1.getGffDetailUp();
 			flag[0] = 1;
-			if (this.gffCod2.isInsideUp() && this.gffCod1.getGffDetailUp().equals(this.gffCod2.getGffDetailUp())) {
+			if (this.gffCod2.isInsideUpExtend(tssUp, tesDown) && this.gffCod1.getGffDetailUp().equals(this.gffCod2.getGffDetailUp())) {
 				flag[0] = 2; flag[3] = -1;
 				gffDetailGenesUp[1] = gffCod2.getGffDetailUp();
 			}
@@ -267,7 +267,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			GffDetailGene[] gffDetailGenesDown = new GffDetailGene[2];
 			gffDetailGenesDown[0] = gffCod1.getGffDetailDown();
 			flag[2] = 1;
-			if (this.gffCod2.isInsideUp() && this.gffCod1.getGffDetailDown().equals(this.gffCod2.getGffDetailUp())) {
+			if (this.gffCod2.isInsideUpExtend(tssUp, tesDown) && this.gffCod1.getGffDetailDown().equals(this.gffCod2.getGffDetailUp())) {
 				flag[2] = 2; flag[3] = -1;
 				gffDetailGenesDown[1] = gffCod2.getGffDetailUp();
 			}
@@ -275,7 +275,7 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 				flag[2] = 2; flag[4] = -1;
 				gffDetailGenesDown[1] = gffCod2.getGffDetailThis();
 			}
-			if (this.gffCod2.isInsideDown() && this.gffCod1.getGffDetailDown().equals(this.gffCod2.getGffDetailDown())) {
+			if (this.gffCod2.isInsideDownExtend(tssUp, tesDown) && this.gffCod1.getGffDetailDown().equals(this.gffCod2.getGffDetailDown())) {
 				flag[2] = 2; flag[5] = -1;
 				gffDetailGenesDown[1] = gffCod2.getGffDetailDown();
 			}
@@ -330,10 +330,12 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 			}
 		}
 		
-		for (GffDetailGene gffDetailGene : lsgffDetailsMid) {
-			setGffDetailGenes.add(gffDetailGene);
+		if (lsgffDetailsMid != null) {
+			for (GffDetailGene gffDetailGene : lsgffDetailsMid) {
+				setGffDetailGenes.add(gffDetailGene);
+			}
 		}
-		
+	
 		if (gffCod2 != null)
 		{
 			//上一个基因有关系
@@ -757,11 +759,11 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 				setGffDetailGenes.add(gffCod1.getGffDetailThis());
 			}
 		}
-		
-		for (GffDetailGene gffDetailGene : lsgffDetailsMid) {
-			setGffDetailGenes.add(gffDetailGene);
-		}
-		
+		if (lsgffDetailsMid != null) {
+			for (GffDetailGene gffDetailGene : lsgffDetailsMid) {
+				setGffDetailGenes.add(gffDetailGene);
+			}
+		}		
 		if (gffCod2 != null)
 		{
 			//上一个基因有关系

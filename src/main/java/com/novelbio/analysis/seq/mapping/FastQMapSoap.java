@@ -86,7 +86,7 @@ public class FastQMapSoap extends FastQMapAbs{
 	 */
 	protected FastQMapSoap(FastQ fastQ, String outFileName, boolean uniqMapping ) 
 	{
-		 this(fastQ.getSeqFile(), fastQ.getSeqFile2(),fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
+		 this(fastQ.getFileName(), fastQ.getSeqFile2(),fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
 	}
 	
 	
@@ -98,7 +98,7 @@ public class FastQMapSoap extends FastQMapAbs{
 		 IndexMake();
 		// soap -a TGACT.fastq -b TGACT2.fastq -D /NC_009443.fna.index -o soapMapping -2 soapMappingNotPair -m 20 -x 500
 		String cmd = "";
-		cmd = ExePath + "soap -a "+getSeqFile();
+		cmd = ExePath + "soap -a "+getFileName();
 		cmd = cmd + " -D " + chrFile + ".index "; 
 		cmd = cmd + " -o " +outFileName; 
 		cmd = cmd +  " -r 2 ";
@@ -126,7 +126,7 @@ public class FastQMapSoap extends FastQMapAbs{
 	 */
 	protected FastQMapSoap createFastQMap(FastQ fastQ) 
 	{
-		FastQMapSoap fastQSoapMap= new FastQMapSoap(fastQ.getSeqFile(), fastQ.getSeqFile2(), fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
+		FastQMapSoap fastQSoapMap= new FastQMapSoap(fastQ.getFileName(), fastQ.getSeqFile2(), fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
 		return fastQSoapMap;
 	}
 	
