@@ -1304,6 +1304,7 @@ public class TxtReadandWrite {
 		}
 	}
 }
+////´óÎÄ¼şÅÅ
  class TestCountWords {  
        public static void main(String[] args) {  
            File wf = new File("words.txt");  
