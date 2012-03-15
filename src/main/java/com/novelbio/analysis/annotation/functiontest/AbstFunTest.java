@@ -420,7 +420,7 @@ blast * 0:queryID  1:symbol 2:description 3:evalue 4:subjectSpecies 5:symbol 6:d
  0:queryID  1:symbol 2:description
 	 */
 	protected static String[] copyAnno(String QueryID, String[] tmpresultRaw) {
-		String[] tmpInfo = ArrayOperate.deletElement(tmpresultRaw, new int[]{3});
+		String[] tmpInfo = ArrayOperate.deletElement(tmpresultRaw, new int[]{2});
 		String[] result = ArrayOperate.combArray(new String[]{QueryID}, tmpInfo, 0);
 		return result;
 	}

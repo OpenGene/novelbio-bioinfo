@@ -69,7 +69,7 @@ public class NovelBioConst {
 	/**
 	 * 这个是最常用的酿酒酵母的ID
 	 */
-	public  final static String DBINFO_SSC_ID = "S. cerevisiaeID";
+	public  final static String DBINFO_SSC_ID = "ScerID";
 	/**
 	 * TAIR的AT编号
 	 */
@@ -226,15 +226,15 @@ public class NovelBioConst {
 	public final static String GENOME_PATH_RICE_TIGR_STATISTIC = GENOME_PATH_RICE_TIGR+"statisticInof/";
 
 	//////////////////////////////////R系列//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	public final static String R_SCRIPT = "Rscript ";
-//
-//	/**
-//	 *  "/media/winE/Bioinformatics/R/practice_script/platform/"
-//	 */
-//	public final static String R_WORKSPACE = "/media/winE/Bioinformatics/R/practice_script/platform/";
+	public final static String R_SCRIPT = "Rscript ";
+
+	/**
+	 *  "/media/winE/Bioinformatics/R/practice_script/platform/"
+	 */
+	public final static String R_WORKSPACE = "/media/winE/Bioinformatics/R/practice_script/platform/";
 	
-	public final static String R_WORKSPACE = "D:/Library/R//";
-	public final static String R_SCRIPT = "D:/tools/R2_14/bin/Rscript ";
+//	public final static String R_WORKSPACE = "D:/Library/R//";
+//	public final static String R_SCRIPT = "D:/tools/R2_14/bin/Rscript ";
 	
 	/////////////////////////////常规Fisher/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**

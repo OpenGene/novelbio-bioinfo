@@ -14,7 +14,7 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class ScatterPlot {
-	public static void main2(String[] args) {
+	public static void main(String[] args) {
 //		copePeakFile("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/H3K27all_SE-W200-G600-E100.scoreisland.xls");
 		String peakFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/peakCompare/H3K27all_SE-W200-G600-E100.scoreisland_CombPeak.xls";
 		String mapFile = "";
@@ -23,23 +23,23 @@ public class ScatterPlot {
 		peakFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcallingNew/peakCompare/H3K27all_SE-W200-G600-E100.scoreisland_CombPeak.xls";
 		
 		mapFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/W4all_sorted_extend.bed";
-		prix = "W4_correct";
-		getMethyInfo(mapFile, prix, peakFile, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/W4/correctFile");
+		prix = "W4_correct0int";
+		getMethyInfo(mapFile, prix, peakFile, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/regressByLocation/correctFileW4Liner0int");
 		
 //		mapFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/WEall_sorted_extend.bed";
 //		prix = "WE";
 //		getMethyInfo(mapFile, prix, peakFile, null);
 		
 		mapFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/K4all_sorted_extend.bed";
-		prix = "K4_correct";
-		getMethyInfo(mapFile, prix, peakFile, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/K4/correctFile");
+		prix = "K4_correct0int";
+		getMethyInfo(mapFile, prix, peakFile, "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/QPCR/regressByLocation/correctFileK4Liner0int");
 		
 //		mapFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/KEall_sorted_extend.bed";
 //		prix = "KE";
 //		getMethyInfo(mapFile, prix, peakFile, null);
 	}
 	
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		getMethInfo();
 	}
 	

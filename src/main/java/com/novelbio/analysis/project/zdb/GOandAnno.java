@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.nbcgui.controltest.CtrlGO;
 
@@ -12,15 +13,15 @@ public class GOandAnno {
 
 	
 	public static void main(String[] args) {
-		String BGfile = "/media/winE/Bioinformatics/GenomeData/Rice/RiceAffyBG2GOBlast.txt";
+		String BGfile = "/media/winE/Bioinformatics/GenomeData/checken/rsem/all_Gene2Iso.txt";
 		String parentFile = ""; String file = "";
 		
 		
-		parentFile = "/media/winE/NBC/Project/Project_ZDB_Lab/XW/XW-2/";
+		parentFile = "/media/winF/NBC/Project/Project_FY/chicken/Result/rsem/DEGseq/";
 		
-		file = parentFile + "Fon4vsFonM.xls";
-		goanalysis(39947, 3702, file, 
-				FileOperate.changeFileSuffix(file, "_elimGO2", "xlsx"), BGfile);
+		file = parentFile + "KO0vsKO5_anno_ensembl_Filtered.xls";
+		goanalysis(9031, 9606, file, 
+				FileOperate.changeFileSuffix(file, "_elimGO", "xlsx"), BGfile);
 		
 //		file = parentFile + "Fon4vsQ34.xls";
 //		goanalysis(39947, 3702, file, 
@@ -81,9 +82,9 @@ public class GOandAnno {
 		
 		
 		
-		String GOClass = GOInfoAbs.GO_BP;
+		String GOClass = Go2Term.GO_BP;
 		int colAccID = 1;
-		int colFC = 2;
+		int colFC = 4;
 		boolean blast = true;
 		double evalue = 1e-10;
 		boolean elimGo = true;
@@ -99,8 +100,8 @@ public class GOandAnno {
 		ctrlGO.doInBackgroundNorm(lsAccIDAll, 0.9, -0.9);
 		ctrlGO.saveExcel(outFile);
 		
-//		ctrlGO.doInBackgroundNorm(lsAccIDCod, 0.9, -0.9);
-//		ctrlGO.saveExcel(outFile);
+		ctrlGO.doInBackgroundNorm(lsAccIDCod, 0.9, -0.9);
+		ctrlGO.saveExcel(outFile);
 		
 		
 //		AnnoQuery.anno(geneFileXls, QtaxID, colAccID, blast, StaxID, evalue, "");

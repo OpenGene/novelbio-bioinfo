@@ -175,9 +175,12 @@ GO_REF:0000004<br>
 	 */
 	boolean update(boolean updateUniID);
 	/**
-	 * 如果新的ID不加入UniID，那么就写入指定的文件中
-	 * 文件需要最开始用set指定
-	 * @param updateUniID
+	 * 记录该ID的物种ID和数据库信息，用于修正以前的数据库
+	 * 
+	 * @param taxID
+	 * @param DBInfo
+	 * @param 是否用本DBInfo修正以前的DBInfo
+	 * 不管是true还是false，geneinfo都会用其进行修正
 	 */
 	void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo);
 	/**

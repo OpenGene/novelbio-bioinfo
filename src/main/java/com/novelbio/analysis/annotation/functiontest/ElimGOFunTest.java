@@ -198,9 +198,6 @@ public class ElimGOFunTest extends NovelGOFunTest{
 					int m = 4;
 					for (int j = 3; j < result.length; j++) {
 						result[j] = anno[m - 3];
-						if (m-3 == 3 ) {
-							m++;
-						}
 						m++;
 					}
 					lsResult.add(result);
