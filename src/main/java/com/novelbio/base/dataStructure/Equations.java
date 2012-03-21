@@ -37,6 +37,7 @@ public class Equations {
 	public void setXYFile(String file, int colX, int colY, int rowStart)
 	{
 		if (!FileOperate.isFileExist(file)) {
+			lsXY.clear();
 			return;
 		}
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(file, new int[]{colX, colY}, rowStart, -1);

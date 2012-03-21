@@ -13,11 +13,15 @@ import java.util.HashMap;
  *
  */
 public class DotStyle {
-
-	public static final int STYLE_LINE = 2;
+	/**
+	 * 画面积图，在基因组上测试过了，效果不错
+	 * Area没有线
+	 */
+	public static final int STYLE_AREA = 2;
 	public static final int STYLE_CYCLE = 4;
 	public static final int STYLE_RECTANGLE = 8;
 	public static final int STYLE_TRIANGLE = 16;
+	public static final int STYLE_LINE = 32;
 	
 	public static final int SIZE_S = 128;
 	public static final int SIZE_SM = 256;
@@ -40,8 +44,8 @@ public class DotStyle {
 	/**
 	 * 形状
 	 */
-	int style = 2;
-	int size = 100;
+	int style = STYLE_CYCLE;
+	int size = SIZE_M;
 	/**
 	 * 设定大小
 	 * @param size
@@ -81,12 +85,16 @@ public class DotStyle {
 	public int getStyle() {
 		return style;
 	}
+	public double getLineLength() {
+		return lineLength;
+	}
 	/**
 	 * 获得想要的图形，目前仅支持line，circle，rectangle
+	 * @param 需要扩大的倍数，高精度就扩大个3-5倍
 	 * @return
 	 */
-	public Shape getShape() {
-		if (style == STYLE_LINE) {
+	public Shape getShape(int Biger) {
+		if (style == STYLE_AREA) {
 			line = new Rectangle2D.Double();
 			double x = 0; double y = 0;
 			double w = 0; double h = 0;
@@ -102,7 +110,7 @@ public class DotStyle {
 				w = 3.0;
 			else if (size == SIZE_B)
 				w = 4.0;
-			line = new Rectangle2D.Double(x, y, w, h);
+			line = new Rectangle2D.Double(x, y, w*Biger, h);
 			return line;
 		}
 		else if (style == STYLE_CYCLE) {
@@ -126,7 +134,7 @@ public class DotStyle {
 			else if (size == SIZE_B) {
 				w = 4.0; h = 4.0;
 			}
-			circle = new Ellipse2D.Double(x, y, w, h);
+			circle = new Ellipse2D.Double(x, y, w*Biger, h*Biger);
 			return circle;
 		}
 		else if (style == STYLE_RECTANGLE) {
@@ -150,7 +158,7 @@ public class DotStyle {
 			else if (size == SIZE_B) {
 				w = 4.0; h = 4.0;
 			}
-			rectangele = new Rectangle2D.Double(x, y, w, h);
+			rectangele = new Rectangle2D.Double(x, y, w*Biger, h*Biger);
 			return rectangele;
 		}
 		else {

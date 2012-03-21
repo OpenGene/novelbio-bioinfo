@@ -110,9 +110,10 @@ public class ServNCBIID extends AbsGetSpring implements MapNCBIID{
 				mapNCBIID.insertNCBIID(ncbiid);
 				return true;
 			} catch (Exception e) {
+				logger.error("cannot insert into database: " + ncbiid.getAccID());
+				e.printStackTrace();
 				return false;
 			}
-			
 		}
 		else {
 			if (override && !lsResult.get(0).getDBInfo().equals(db)) {

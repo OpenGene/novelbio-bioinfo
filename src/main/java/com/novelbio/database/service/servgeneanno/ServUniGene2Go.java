@@ -34,7 +34,13 @@ public class ServUniGene2Go extends AbsGetSpring implements MapUniGene2Go{
 		uniGene2Go.setGeneUniID(uniprotID);
 		uniGene2Go.setGOID(GOID);
 		uniGene2Go.setTaxID(taxID);
-		return mapUniGene2Go.queryUniGene2Go(uniGene2Go);
+		try {
+			return mapUniGene2Go.queryUniGene2Go(uniGene2Go);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(uniGene2Go.getGOID());
+			return null;
+		}
 	}
 
 	

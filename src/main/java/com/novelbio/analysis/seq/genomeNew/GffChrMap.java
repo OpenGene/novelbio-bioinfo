@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genomeNew;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.DotStyle;
+import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.PlotHeatMap;
 import com.novelbio.base.plot.java.HeatChart;
@@ -173,12 +176,12 @@ public class GffChrMap extends GffChrAbs {
 
 	/**
 	 * 画出所有染色体上密度图
-	 * 
+	 * 用R画
 	 * @param gffChrMap2
 	 *            是否有第二条染色体，没有的话就是null
 	 * @throws Exception
 	 */
-	public void getAllChrDist(GffChrMap gffChrMap2) {
+	public void getAllChrDistR(GffChrMap gffChrMap2) {
 		ArrayList<String[]> chrlengthInfo = seqHash.getChrLengthInfo();
 		for (int i = chrlengthInfo.size() - 1; i >= 0; i--) {
 			try {
@@ -188,7 +191,72 @@ public class GffChrMap extends GffChrAbs {
 			}
 		}
 	}
-
+	/**
+	 * 画出所有染色体上密度图
+	 * 用java画
+	 * @param gffChrMap2
+	 *            是否有第二条染色体，没有的话就是null
+	 * @throws Exception
+	 */
+	public void plotAllChrDist(String outPath) {
+		ArrayList<String[]> chrlengthInfo = seqHash.getChrLengthInfo();
+		//find the longest chromosome's density
+		double[] chrReads = getChrDensity(seqHash.getChrLengthInfo().get(seqHash.getChrLengthInfo().size() - 1)[0], maxresolution);
+		double axisY = MathComput.median(chrReads, 95)*5;
+		for (int i = chrlengthInfo.size() - 1; i >= 0; i--) {
+			try {
+				plotChrDist(chrlengthInfo.get(i)[0], maxresolution, axisY, FileOperate.changeFileSuffix(outPath, "_"+chrlengthInfo.get(i)[0], "png"));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	/**
+	 * 给定染色体，返回该染色体上reads分布
+	 * 
+	 * @param chrID
+	 *            第几个软色体
+	 * @param maxresolution
+	 *            最长分辨率
+	 * @param gffChrMap2
+	 *            如果需要画第二条染色体的图，也就是对称了画
+	 * @param 输出文件名
+	 *            ，带后缀"_chrID"
+	 * @throws Exception
+	 */
+	private void plotChrDist(String chrID, int maxresolution, double axisY, String outFileName) throws Exception {
+		int[] resolution = seqHash.getChrRes(chrID, maxresolution);
+		/////////////////////   plotScatter can only accept double data   //////////////////////////////
+		double[] resolutionDoub = new double[resolution.length];
+		for (int i = 0; i < resolution.length; i++) {
+			resolutionDoub[i] = i;
+		}
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		double[] chrReads = getChrDensity(chrID.toLowerCase(), resolution.length);
+//		long chrLength = seqHash.getChrLength(chrID);
+		if (chrReads == null) {
+			return;
+		}
+		PlotScatter plotScatter = new PlotScatter();
+		plotScatter.setAxisX(0, maxresolution);
+		plotScatter.setAxisY(0, axisY);
+		DotStyle dotStyle = new DotStyle();
+		dotStyle.setColor(new Color(0, 0, 255, 255));
+		dotStyle.setStyle(DotStyle.STYLE_AREA);
+		dotStyle.setGroup("chrinfo");
+		plotScatter.addXY(resolutionDoub, chrReads, dotStyle);
+		plotScatter.setBg(Color.WHITE);
+		plotScatter.setAlpha(false);
+		int spaceX = (maxresolution/30) % 50 *50;
+		int spaceY = 10;
+		plotScatter.setTitle(chrID + " Reads Density", new Font(Font.SANS_SERIF, Font.PLAIN, 30));
+		plotScatter.setTitleX("Chromosome Length", new Font(Font.SANS_SERIF, Font.PLAIN, 28), spaceX);
+		plotScatter.setTitleY("Chromosome Length", new Font(Font.SANS_SERIF, Font.PLAIN, 28), spaceY);
+		
+		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
+		
+		plotScatter.saveToFile(outFileName, 10000, 1000);
+	}
 	/**
 	 * 给定染色体，返回该染色体上reads分布
 	 * 
@@ -268,7 +336,6 @@ public class GffChrMap extends GffChrAbs {
 		mapReads.normDouble(tmpResult, super.mapNormType);
 		return tmpResult;
 	}
-
 	/**
 	 * 调用R画图
 	 * 
@@ -290,7 +357,7 @@ public class GffChrMap extends GffChrAbs {
 	 *            是否从小到大排序
 	 * @param txtExcel
 	 * @param colGeneID
-	 * @param colScore
+	 * @param colScore 如果小于0或等于colGeneID，那么就用指定区域的reads当作score
 	 * @param rowStart
 	 * @param heapMapSmall
 	 * @param heapMapBig
@@ -482,7 +549,7 @@ public class GffChrMap extends GffChrAbs {
 		ArrayList<MapInfo> lsMapInfoFinal = MapInfo.minusListMapInfo(
 				lsMapInfo1, lsMapInfo2);
 		Color colorgreen = new Color(0, 255, 0, 255);
-		Color colorwhite = new Color(0, 0, 0, 0);
+		Color colorwhite = new Color(255, 255, 255, 255);
 		Color colorred = new Color(255, 0, 0, 255);
 
 		Color[] gradientColors = new Color[] { colorgreen, colorwhite, colorred };
@@ -496,18 +563,15 @@ public class GffChrMap extends GffChrAbs {
 
 	/**
 	 * 根据前面设定upBp和downBp 根据Peak所覆盖的基因做出TSS图
-	 * @param fileName peakFile
-	 * @param colChrID 
-	 * @param colStartLoc
-	 * @param colEndLoc
-	 * @param colScore 分数
+	 * @param fileName Peak文件
 	 * @param rowStart 从第几行开始读
 	 * @param binNum 分成几份
 	 * @param resultFile 输出文件
+	 * @param geneStructure GffDetailGene.TSS
 	 */
-	public void getTssDensity(String fileName, int rowStart, int binNum, String resultFile) {
+	public void plotRegionDensity(String fileName, int rowStart, int binNum, String resultFile, String geneStructure) {
 		ArrayList<MapInfo> lsMapInfo = super.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
-		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(lsMapInfo, GffDetailGene.TSS, binNum);
+		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
 		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
 		for (double d : TssDensity) {
@@ -515,30 +579,23 @@ public class GffChrMap extends GffChrAbs {
 		}
 		txtWrite.close();
 	}
-
 	/**
-	 * 根据前面设定upBp和downBp 根据Peak所覆盖的基因做出TES图
-	 * @param fileName peakFile
-	 * @param colChrID 
-	 * @param colStartLoc
-	 * @param colEndLoc
-	 * @param colScore 分数
+	 * 根据前面设定upBp和downBp 根据指定的基因做出TSS图
+	 * @param fileName 基因文件，必须第一列为geneID，内部去重复
 	 * @param rowStart 从第几行开始读
 	 * @param binNum 分成几份
 	 * @param resultFile 输出文件
+	 * @param geneStructure GffDetailGene.TSS
 	 */
-	public void getTesDensity(String fileName, int rowStart, int binNum, String resultFile) {
-		ArrayList<MapInfo> lsMapInfo = super.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
-		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(lsMapInfo, GffDetailGene.TES, binNum);
-//		mapReads.getRegionLs(binNum, lsMapTssInfo, type);
-		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
+	public void plotGeneDensity(String fileName, int rowStart, int binNum, String resultFile, String geneStructure) {
+		ArrayList<MapInfo> lsMapInfo = super.readFileGeneMapInfo(fileName, 1, 0, rowStart, geneStructure, binNum);
+		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapInfo);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
 		for (double d : TssDensity) {
 			txtWrite.writefileln(d+"");
 		}
 		txtWrite.close();
 	}
-	
 	/**
 	 * 给定基因的symbol，返回该基因在tss附近区域的mapreads的平均数
 	 * @param geneID 基因名字

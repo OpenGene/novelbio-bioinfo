@@ -5,8 +5,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -15,11 +18,14 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.FileImageOutputStream;
+import javax.imageio.stream.ImageOutputStream;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.fileOperate.FileOperate;
+
+import de.erichseifert.gral.graphics.DrawingContext;
 
 public abstract  class PlotNBC{
 
@@ -57,7 +63,7 @@ public abstract  class PlotNBC{
 	/**
 	 * 透明度
 	 */
-	protected boolean alpha;
+	protected boolean alpha = true;
 	/**
 	 * 设定是否透明，默认透明
 	 * @param alpha
@@ -133,11 +139,21 @@ public abstract  class PlotNBC{
 			writer.dispose();
 		} else {
 			try {
-				ImageIO.write(chart, ext, fileOut);
+				FileOutputStream fileOutputStream = new FileOutputStream(fileOut);
+				Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType("image/png");
+				while (writers.hasNext()) {
+					ImageWriter writer = writers.next();
+					ImageOutputStream ios = ImageIO.createImageOutputStream(fileOutputStream);
+					writer.setOutput(ios);
+					try {
+						writer.write(chart);
+					} finally {
+						ios.close();
+					}
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
 		}
 	}
     
@@ -151,6 +167,9 @@ public abstract  class PlotNBC{
      */
     private BufferedImage paintGraphicOut( int Width, int Height)
     {
+    	if (bufferedImage.getWidth() == Width && bufferedImage.getHeight() == Height) {
+			return bufferedImage;
+		}
     	BufferedImage bufferedImageResult = GraphicCope.resizeImage(bufferedImage, Width, Height);
     	Graphics2D graphics2d = (Graphics2D) bufferedImageResult.createGraphics();
     	// ----------   增加下面的代码使得背景透明   -----------------  

@@ -151,7 +151,7 @@ class EnsembleGTF extends ImportPerLine
 		}
 		CopedID copedID = new CopedID("", taxID);
 		copedID.setUpdateRefAccID(lsRefID);
-		copedID.setUpdateRefAccID(true);
+		copedID.setUpdateRefAccIDClear(true);
 		/**
 		 * 没找到对应的基因
 		 */

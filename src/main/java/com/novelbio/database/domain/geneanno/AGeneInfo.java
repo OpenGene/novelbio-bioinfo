@@ -446,7 +446,7 @@ public abstract class AGeneInfo {
 			else if (thisField.contains(dbInfo)) {
 				if (sepWithDBinfo) {
 					String result = thisField.replace(dbInfo+SEP_INFO, inputFieldFinal + SEP_INFO_SAMEDB);
-					logger.error("出现相同数据库但是不通的注释："+ result);
+					logger.error("出现相同数据库但是不同的注释："+ result);
 					return result;
 				}
 				else {

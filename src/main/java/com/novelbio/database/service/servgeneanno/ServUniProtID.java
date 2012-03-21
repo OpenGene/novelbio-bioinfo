@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.AgeneUniID;
@@ -16,6 +16,7 @@ import com.novelbio.database.service.AbsGetSpring;
 
 @Service
 public class ServUniProtID extends AbsGetSpring implements MapUniProtID{
+	Logger logger = Logger.getLogger(ServUniProtID.class);
 	@Inject
 	MapUniProtID mapUniProtID;
 	
@@ -85,26 +86,38 @@ public class ServUniProtID extends AbsGetSpring implements MapUniProtID{
 	 * @param nCBIID
 	 * @param override
 	 */
-	public void updateUniProtID(UniProtID uniProtID, boolean override) {
+	public boolean updateUniProtID(UniProtID uniProtID, boolean override) {
 		String db = uniProtID.getDBInfo();
 		//查询的时候为了防止查不到，先除去dbinfo的信息
 		uniProtID.setDBInfo("");
+		if (uniProtID.getAccID() == null) {
+			logger.error("accID不存在，不能升级");
+			return false;
+		}
 		ArrayList<UniProtID> lsResult = mapUniProtID.queryLsUniProtID(uniProtID);
 		if (lsResult == null || lsResult.size() == 0) {
 			uniProtID.setDBInfo(db);
 			try {
 				mapUniProtID.insertUniProtID(uniProtID);
+				return true;
 			} catch (Exception e) {
+				logger.error("cannot insert into database: " + uniProtID.getAccID());
 				e.printStackTrace();
+				return false;
 			}
-			
 		}
 		else {
 			if (override && !lsResult.get(0).getDBInfo().equals(db)) {
 				uniProtID.setDBInfo(db);
-				mapUniProtID.updateUniProtID(uniProtID);
+				try {
+					mapUniProtID.updateUniProtID(uniProtID);
+					return true;
+				} catch (Exception e) {
+					return false;
+				}
 			}
 		}
+		return true;
 	}
 	/**
 	 * 如果存在则返回第一个找到的geneID

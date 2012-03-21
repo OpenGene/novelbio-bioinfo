@@ -2,6 +2,7 @@ package com.novelbio.test;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
@@ -78,7 +79,9 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.GraphicCope;
+import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.Rplot;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.GeneInfo;
@@ -101,33 +104,28 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		String miRNAbed = "/media/winE/NBC/Project/Project_ZHY_Lab/miRNA/result_advance_N/annotation_fastq_Bwa_map_filter_rRNA_sorted.bed";
-		String miRNAout = "/media/winE/NBC/Project/Project_ZHY_Lab/miRNA/result_advance_N/annotation_fastq_Bwa_map_filter_rRNA_sorted_coped3.bed";
-		TxtReadandWrite txtRead = new TxtReadandWrite(miRNAbed, false);
-		TxtReadandWrite txtOut = new TxtReadandWrite(miRNAout, true);
-		int startOld = 0; int endOld= 0; String chrIDOld = ""; int num = 0;
-		for (String string : txtRead.readlines()) {
-			String[] ss = string.split("\t");
-			int start = Integer.parseInt(ss[1]);
-			int end = Integer.parseInt(ss[2]);
-			if (start - endOld > 200 || !ss[0].equals(chrIDOld)) {
-				if (num > 2) {
-					txtOut.writefileln(new String[]{chrIDOld, startOld+"", endOld+"", num+""});
-				}
-				
-				chrIDOld = ss[0];
-				startOld = start;
-				endOld = end;
-				num = Integer.parseInt(ss[7].split("_")[1]);
-			}
-			else if (start - endOld < 200 && ss[0].equals(chrIDOld) ) {
-				endOld = end;
-				num = num + Integer.parseInt(ss[7].split("_")[1]);
-			}
+		PlotScatter plotScatter = new PlotScatter();
+		plotScatter.setAxisX(-500, 500);
+		plotScatter.setAxisY(-500, 500);
+		DotStyle dotStyle = new DotStyle();
+		dotStyle.setColor(Color.blue);
+		dotStyle.setGroup("chrinfo");
+		dotStyle.setStyle(DotStyle.STYLE_LINE);
+		double[] x = new double[5];
+		double[] y = new double[5];
+		for (int i = 0; i < x.length; i++) {
+			x[i] = i*35;
+			y[i] = 200;
 		}
-		txtOut.writefileln(new String[]{chrIDOld, startOld+"", endOld+"", num+""});
-//		txtOut.close();
-		txtRead.close();
+		
+		plotScatter.addXY(x, y, dotStyle);
+		plotScatter.setTitle(" Reads Density", new Font(Font.SANS_SERIF, Font.PLAIN, 20));
+		plotScatter.setTitleX("testX", new Font(Font.SANS_SERIF, Font.PLAIN, 25),100.0);
+		plotScatter.setTitleY("testY",  new Font(Font.SANS_SERIF, Font.PLAIN, 25),100.0);
+		plotScatter.setBg(new Color(255, 255, 255, 255));
+		plotScatter.setAlpha(true);
+		plotScatter.setInsets(PlotScatter.INSETS_SIZE_M);
+		plotScatter.saveToFile("/media/winE/Bioinformatics/GenomeData/yeast/Pichia/aaa3.png", 1000, 1000);
 	}
 	
 	

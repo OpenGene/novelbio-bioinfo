@@ -705,6 +705,10 @@ public class CopedID implements CopedIDInt{
 		copedID.setUpdateRefAccID(refAccID);
 	}
 	@Override
+	public void setUpdateRefAccIDAdd(String... refAccID) {
+		copedID.setUpdateRefAccIDAdd(refAccID);
+	}
+	@Override
 	public void setUpdateRefAccID(ArrayList<String> lsRefAccID) {
 		copedID.setUpdateRefAccID(lsRefAccID);
 	}
@@ -721,8 +725,8 @@ public class CopedID implements CopedIDInt{
 	}
 
 	@Override
-	public void setUpdateRefAccID(Boolean uniqID) {
-		copedID.setUpdateRefAccID(uniqID);
+	public void setUpdateRefAccIDClear(Boolean uniqID) {
+		copedID.setUpdateRefAccIDClear(uniqID);
 		
 	}
 

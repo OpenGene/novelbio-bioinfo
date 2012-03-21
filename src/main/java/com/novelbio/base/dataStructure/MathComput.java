@@ -116,14 +116,12 @@ public class MathComput {
 	{
 		double length=unsortNum.length;
 		double sum=0;
-		for(int i=0;i<length;i++)
-		{
+		for(int i=0;i<length;i++) {
 			sum=sum+unsortNum[i];
 		}
 		double avg=sum/length;
 		return avg;
 	}
-	
 	/**
 	 * 按照ID，获取一个矩阵的中位数
 	 * 每列表示不同的信息，每行表示一个基因
@@ -158,7 +156,6 @@ public class MathComput {
 				hashGeneInfo.put(strings[colAccID].trim(), lsInfo);
 			}
 		}
-		
 		Collection<ArrayList<String[]>> values = hashGeneInfo.values();
 		for(ArrayList<String[]> value:values)
 		{
@@ -193,8 +190,6 @@ public class MathComput {
 		}
 		return result;
 	}
-	
-	
 	/**
 	 * 输入数据，获得和
 	 * @param Num
@@ -207,11 +202,6 @@ public class MathComput {
 		}
 		return sum;
 	}
-	
-	
-	
-	
-	
 	/**
 	 * 输入数据，获得和
 	 * @param Num
@@ -233,31 +223,16 @@ public class MathComput {
 	public static int median(int[] unsortNum)
 	{
 		int med=-100;
-		int tmp=-10000;
 		int length=unsortNum.length;
-		for(int i=1;i<length;i++)
-		{
-			tmp=unsortNum[i];
-			int j=i;
-			for(;j>0;j--)
-			{
-				if(tmp<unsortNum[j-1])
-				{
-					unsortNum[j]=unsortNum[j-1];
-				}
-				else break;
-			}
-			unsortNum[j]= tmp;
-		}
+		int[] unsortNew = copyArray(unsortNum);
+		sort(unsortNew, true);
+ 
 		if (length%2==0) 
-			med=(unsortNum[length/2-1]+unsortNum[length/2])/2;
+			med=(unsortNew[length/2-1]+unsortNew[length/2])/2;
 		else 
-			med=unsortNum[length/2];
+			med=unsortNew[length/2];
 		return med;
 	}
-	
-	
-	
 	/**
 	 * 输入数据，获得中位数, 用于10
 	 * 采用插入排序法，据说对于小规模数据效率还不错
@@ -301,28 +276,41 @@ public class MathComput {
 	 */
 	public static double median(double[] unsortNum, int percentage)
 	{
-		double med=-100;
-		double tmp=-10000;
-		int length=unsortNum.length;
-		for(int i=1;i<length;i++)
-		{
-			tmp=unsortNum[i];
-			int j=i;
-			for(;j>0;j--)
-			{
-				if(tmp<unsortNum[j-1])
-				{
-					unsortNum[j]=unsortNum[j-1];
-				}
-				else break;
-			}
-			unsortNum[j]= tmp;
-		}
+		double med = -100;
+		int length = unsortNum.length;
+		double[] unsortNew = copyArray(unsortNum);
+		sort(unsortNew, true);
 		if (length*percentage%100==0) 
-			med=(unsortNum[length*percentage/100-1]+unsortNum[length*percentage/100])/2;
+			med = (unsortNew[length*percentage/100-1] + unsortNew[length*percentage/100])/2;
 		else 
-			med=unsortNum[length*percentage/100];
+			med = unsortNew[length*percentage/100];
 		return med;
+	}
+	/**
+	 * copy an array
+	 * @param array
+	 * @return a new array which is been copied
+	 */
+	private static double[] copyArray(double[] array)
+	{
+		double[] arrayResult = new double[array.length];
+		for (int i = 0; i < array.length; i++) {
+			arrayResult[i] = array[i];
+		}
+		return arrayResult;
+	}
+	/**
+	 * copy an array
+	 * @param array
+	 * @return a new array which is been copied
+	 */
+	private static int[] copyArray(int[] array)
+	{
+		int[] arrayResult = new int[array.length];
+		for (int i = 0; i < array.length; i++) {
+			arrayResult[i] = array[i];
+		}
+		return arrayResult;
 	}
 	/**
 	 * 输入数据，获得最接近中位数的那个数, 用于10
@@ -332,34 +320,21 @@ public class MathComput {
 	public static double medianLike(double[] unsortNum)
 	{
 		double med=-100;
-		double tmp=-10000;
 		int length=unsortNum.length;
-		for(int i=1;i<length;i++)
-		{
-			tmp=unsortNum[i];
-			int j=i;
-			for(;j>0;j--)
-			{
-				if(tmp<unsortNum[j-1])
-				{
-					unsortNum[j]=unsortNum[j-1];
-				}
-				else break;
-			}
-			unsortNum[j]= tmp;
-		}
+		double[] unsortNew = copyArray(unsortNum);
+		sort(unsortNew, true);
+
 		if (length%2==0){
-			med=(unsortNum[length/2-1]+unsortNum[length/2])/2;
-			if (Math.abs(unsortNum[length/2-1] - med) <= Math.abs(unsortNum[length/2] - med)) {
-				return unsortNum[length/2-1];
+			med=(unsortNew[length/2-1]+unsortNew[length/2])/2;
+			if (Math.abs(unsortNew[length/2-1] - med) <= Math.abs(unsortNew[length/2] - med)) {
+				return unsortNew[length/2-1];
 			}
 			else {
-				return unsortNum[length/2];
+				return unsortNew[length/2];
 			}
-			
 		}
 		else 
-			return unsortNum[length/2];
+			return unsortNew[length/2];
 	}
 	
 	/**
@@ -383,19 +358,16 @@ public class MathComput {
 	 * 输入数据进行排序，
 	 * @return
 	 */
-	public static void sort(int[] unsortNum,boolean smallToBig)
+	public static void sort(int[] unsortNum, boolean smallToBig)
 	{
 		int tmp=-10000;
 		int length=unsortNum.length;
 		if (smallToBig) {
-			for(int i=1;i<length;i++)
-			{
+			for(int i=1;i<length;i++) {
 				tmp=unsortNum[i];
 				int j=i;
-				for(;j>0;j--)
-				{
-					if(tmp<unsortNum[j-1])
-					{
+				for(;j>0;j--) {
+					if(tmp<unsortNum[j-1]) {
 						unsortNum[j]=unsortNum[j-1];
 					}
 					else break;
@@ -404,14 +376,11 @@ public class MathComput {
 			}
 		}
 		else {
-			for(int i=1;i<length;i++)
-			{
+			for(int i=1;i<length;i++) {
 				tmp=unsortNum[i];
 				int j=i;
-				for(;j>0;j--)
-				{
-					if(tmp>unsortNum[j-1])
-					{
+				for(;j>0;j--) {
+					if(tmp>unsortNum[j-1]) {
 						unsortNum[j]=unsortNum[j-1];
 					}
 					else break;
@@ -419,10 +388,43 @@ public class MathComput {
 				unsortNum[j]= tmp;
 			}
 		}
-	
 	}
 	
-	
+	/**
+	 * 给定数组，直接排序
+	 * @param unsortNum
+	 */
+	private static void sort(double[] unsortNum, boolean smallToBig)
+	{
+		double tmp=-10000;
+		int length=unsortNum.length;
+		if (smallToBig) {
+			for(int i=1;i<length;i++) {
+				tmp=unsortNum[i];
+				int j=i;
+				for(;j>0;j--) {
+					if(tmp<unsortNum[j-1]) {
+						unsortNum[j]=unsortNum[j-1];
+					}
+					else break;
+				}
+				unsortNum[j]= tmp;
+			}
+		}
+		else {
+			for(int i=1;i<length;i++) {
+				tmp=unsortNum[i];
+				int j=i;
+				for(;j>0;j--) {
+					if(tmp>unsortNum[j-1]) {
+						unsortNum[j]=unsortNum[j-1];
+					}
+					else break;
+				}
+				unsortNum[j]= tmp;
+			}
+		}
+	}
 	
 	
 	/**

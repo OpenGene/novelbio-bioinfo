@@ -21,6 +21,7 @@ import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Equations;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 /**
  * GffHashGene和SeqHash都是static，也就是一次只能对一个物种进行分析
@@ -322,6 +323,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 
 	/**
 	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
+	 * 如果没有权重，就按照reads的密度进行排序
 	 * 一般用于根据gene express 画heapmap图
 	 * @param txtExcel
 	 * @param colGeneID
@@ -334,7 +336,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	{
 		////////////////////     读 文 件   ////////////////////////////////////////////
 		int[] columnID = null;
-		if (colScore <= 0 ) {
+		if (colScore <= 0 || colScore == colGeneID) {
 			 columnID = new int[]{colGeneID};
 		}
 		else {
@@ -354,14 +356,17 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 * @return
 	 */
 	public ArrayList<MapInfo> getLsGeneMapInfo(ArrayList<String[]> lsGeneValue, String Structure, int binNum) {
+		//有权重的就使用这个hash
  		HashMap<GffDetailGene, Double> hashGene2Value = new HashMap<GffDetailGene, Double>();
+
 		for (String[] strings : lsGeneValue) {
 			GffDetailGene gffDetailGene = gffHashGene.searchLOC(strings[0]);
 			if (gffDetailGene == null) {
 				continue;
 			}
-			if (hashGene2Value.containsKey(gffDetailGene)) {
-				if (strings.length > 1) {
+			//have gene score, using the score as value, when the gene is same, add the score bigger one
+			if (strings.length > 1) {
+				if (hashGene2Value.containsKey(gffDetailGene)) {
 					double score = Double.parseDouble(strings[1]);
 					if (MapInfo.isMin2max()) {
 						if (hashGene2Value.get(gffDetailGene) < score) {
@@ -373,25 +378,24 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 							hashGene2Value.put(gffDetailGene, score);
 						}
 					}
-				}
-			} else {
-				if (strings.length > 1) {
-					hashGene2Value.put(gffDetailGene, Double.parseDouble(strings[1]));
 				} else {
-					hashGene2Value.put(gffDetailGene, 0.0);
+					hashGene2Value.put(gffDetailGene, Double.parseDouble(strings[1]));
 				}
+			}
+			//didn't have score
+			else {
+				hashGene2Value.put(gffDetailGene, 0.0);
 			}
 		}
 		ArrayList<MapInfo> lsMapInfoGene = getMapInfoFromGffGene(hashGene2Value, Structure);
 		mapReads.getRegionLs(binNum, lsMapInfoGene, 0);
+		if (lsGeneValue.get(0).length <= 1) {
+			for (MapInfo mapInfo : lsMapInfoGene) {
+				mapInfo.setWeight(MathComput.mean(mapInfo.getDouble()));
+			}
+		}
 		return lsMapInfoGene;
 	}
-	
-	
-	
-	
-	
-	
 	
 	/**
 	 * 根据前面设定upBp和downBp
@@ -506,6 +510,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 			return null;
 		}
 	}
+
 	/**
 	 * 获得每条转录本的长度，如果outFile不存在，那么必须给出一个outFile的文件名
 	 * 并且SeqHash对象是存在的

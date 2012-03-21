@@ -162,8 +162,8 @@ GO_REF:0000004<br>
 			String GORef, String gOQualifiy);
 	/**
 	 * 输入需要update的geneInfo，注意不需要设定geneUniID，除非是单独升级pubmedID信息，否则
-	 * <b>务必要设定geneinfo的dbinfo</b>，dbinfo是判定该geneinfo数据库来源的信息
-	 * 
+	 * <b>务必要设定geneinfo的dbinfo</b>，dbinfo是判定该geneinfo数据库来源的信息<br>
+	 * 此外如果还需要设定synonme，并且synonme是被“|”等符号隔开<b>，则还需设定分隔符 "\\|"</b>
 	 * @param geneInfo
 	 */
 	public void setUpdateGeneInfo(AGeneInfo geneInfo);
@@ -185,6 +185,7 @@ GO_REF:0000004<br>
 	void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo);
 	/**
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
+	 * <b>重新设定的时候会清空</b>
 	 * @param updateUniID
 	 */
 	void setUpdateRefAccID(String... refAccID);
@@ -218,6 +219,7 @@ GO_REF:0000004<br>
 	 */
 	AGeneInfo getGeneInfo();
 	/**
+	 * <b>全新加入ID，以前的ID会被清空</b>
 	 * 在采用refaccID作为参照进行升级ID的时候，是否必须是uniqID
 	 * uniqID：用给定的参考ID能找到数据库中的唯一基因
 	 * true：只有当uniqID时才升级
@@ -225,7 +227,16 @@ GO_REF:0000004<br>
 	 * false：非uniqID也升级，升级搜索到的全部ID，该功能尚未实现
 	 * @param uniqID
 	 */
-	void setUpdateRefAccID(Boolean uniqID);
+	void setUpdateRefAccIDClear(Boolean uniqID);
+	/**<b>添加ID</b>
+	 * 在采用refaccID作为参照进行升级ID的时候，是否必须是uniqID
+	 * uniqID：用给定的参考ID能找到数据库中的唯一基因
+	 * true：只有当uniqID时才升级
+	 * null：默认参数--非uniqID也升级，不过只升级第一个基因
+	 * false：非uniqID也升级，升级搜索到的全部ID，该功能尚未实现
+	 * @param uniqID
+	 */
+	void setUpdateRefAccIDAdd(String[] refAccID);
 	/**
 	 * 如果blast到geneUniID上去
 	 * @param SubGenUniID
@@ -237,6 +248,8 @@ GO_REF:0000004<br>
 	 */
 	void setUpdateBlastInfo(String SubGenUniID, String subIDtype,
 			String subDBInfo, int SubTaxID, double evalue, double identities);
+
+
 
 
 }

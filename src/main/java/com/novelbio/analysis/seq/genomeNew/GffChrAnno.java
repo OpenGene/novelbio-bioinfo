@@ -98,7 +98,10 @@ public class GffChrAnno extends GffChrAbs{
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		
 		for (String[] strings : lsInfo) {
-			ArrayList<String[]> lsanno = getGenInfoFilter(strings[colChrID], Integer.parseInt(strings[colStart]), Integer.parseInt(strings[colEnd]));
+			String chrID = strings[colChrID];
+			int start =  (int)Double.parseDouble(strings[colStart]);
+			int end =  (int)Double.parseDouble(strings[colEnd]);
+			ArrayList<String[]> lsanno = getGenInfoFilter(chrID, start, end);
 			if (lsanno == null) {
 				continue;
 			}

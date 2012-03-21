@@ -35,6 +35,12 @@ abstract class ImportPerLine
 	protected void setReadFromLine() {
 		this.readFromLine = 2;
 	}
+	/**
+	 * 覆盖该方法来设定从第几行开始读取
+	 */
+	protected void setReadFromLine(int num) {
+		this.readFromLine = num;
+	}
 	int taxID = 0;
 	/**
 	 * 将指定的文件导入数据库，必须是每一行都能单独导入的表

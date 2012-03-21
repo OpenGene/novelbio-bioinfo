@@ -20,9 +20,11 @@ public class ImportDB {
 //		updateTAIR();
 //		 updateZB();
 //		updateEnsembl();
-//		updateBlast();
-		updateAffy();
+		updateYeast();
+		updateBlast();
+//		updateAffy();
 //		updateMicroarray();
+
 	}
 	/**
 	 * 升级从NCBI下载的信息
@@ -140,6 +142,19 @@ public class ImportDB {
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
 		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
 		blast.setSubTaxID(9606);
+		blast.setTaxID(queryTaxID);
+		blast.setTxtWriteExcep(outFIle);
+//		blast.updateFile(blastFile, false);		
+		/////////////////   pichia   /////////////////////////
+		blastFile = "/media/winE/Bioinformatics/BLAST/result/Pichia/pichia2SSC.txt";
+		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+		queryTaxID = 4922;
+		blast = new Blast();
+		blast.setQueryID(CopedID.IDTYPE_ACCID);
+		blast.setBlastID(CopedID.IDTYPE_ACCID);
+		blast.setQueryDBinfo(NovelBioConst.DBINFO_PPA_ID);
+		blast.setBlastDBinfo(NovelBioConst.DBINFO_SSC_ID);
+		blast.setSubTaxID(4932);
 		blast.setTaxID(queryTaxID);
 		blast.setTxtWriteExcep(outFIle);
 		blast.updateFile(blastFile, false);		
@@ -294,16 +309,25 @@ public class ImportDB {
 		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
 		microArrayBlast.updateFile(zerbfishFile, false);
 		microArrayBlast.updateFile(zerbfishFile2, false);
-		
-		
-		
-		
-		
-		
-		
 	}
 	
-	
+	private static void updateYeast()
+	{
+		String yeastDBxrefFile = "/media/winE/Bioinformatics/GenomeData/yeast/dbxref.tab.txt";
+		String SGD_featuresFile = "/media/winE/Bioinformatics/GenomeData/yeast/SGD_features.tab.txt";
+		String Gene_AssociationFile ="/media/winE/Bioinformatics/GenomeData/yeast/gene_association.sgd/gene_association.sgd";
+		String Pipas_FunFile = "/media/winE/Bioinformatics/GenomeData/yeast/Pichia/pipas_function-1009.txt";
+		String Pipas_GO_SlimFile = "/media/winE/Bioinformatics/GenomeData/yeast/Pichia/Pichia_GS115.GO_0509.gz";
+		String ppa_ncbi_geneidFile = "/media/winE/Bioinformatics/GenomeData/yeast/Pichia/ppa_ncbi-geneid.list";
+		Yeast yeast = new Yeast();
+		yeast.setGene_AssociationFile(Gene_AssociationFile);
+		yeast.setPipas_Fun(Pipas_FunFile);
+		yeast.setPipas_GO_Slim(Pipas_GO_SlimFile);
+		yeast.setSGD_featuresFile(SGD_featuresFile);
+		yeast.setYeastDBxrefFile(yeastDBxrefFile);
+		yeast.setPpa_ncbi_geneidFile(ppa_ncbi_geneidFile);
+		yeast.update();
+	}
 	
 	
 	

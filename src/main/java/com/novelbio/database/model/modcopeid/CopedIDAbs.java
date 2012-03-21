@@ -487,8 +487,22 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * @param uniqID
 	 */
 	@Override
-	public void setUpdateRefAccID(Boolean uniqID) {
+	public void setUpdateRefAccIDClear(Boolean uniqID) {
 		this.uniqID = uniqID;
+	}
+	/**
+	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
+	 */
+	@Override
+	public void setUpdateRefAccIDAdd(String... refAccID) {
+		lsRefAccID.clear();
+		for (String string : refAccID) {
+			String tmpRefID = CopedID.removeDot(string);
+			if (tmpRefID == null) {
+				continue;
+			}
+			lsRefAccID.add(tmpRefID);
+		}
 	}
 	/**
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
