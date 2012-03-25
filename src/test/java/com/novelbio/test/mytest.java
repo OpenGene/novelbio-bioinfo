@@ -95,6 +95,8 @@ import com.novelbio.generalConf.Species;
  import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
+import de.erichseifert.gral.plots.axes.Axis;
+
 public class mytest {
 
 	private static Logger logger = Logger.getLogger(mytest.class);
@@ -104,28 +106,30 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		PlotScatter plotScatter = new PlotScatter();
-		plotScatter.setAxisX(-500, 500);
-		plotScatter.setAxisY(-500, 500);
-		DotStyle dotStyle = new DotStyle();
-		dotStyle.setColor(Color.blue);
-		dotStyle.setGroup("chrinfo");
-		dotStyle.setStyle(DotStyle.STYLE_LINE);
-		double[] x = new double[5];
-		double[] y = new double[5];
+ 
+	 
+		double[] x = new double[100];
+		double[] y = new double[100];
 		for (int i = 0; i < x.length; i++) {
-			x[i] = i*35;
-			y[i] = 200;
+			x[i] = i*2;
+			y[i] = 10;
 		}
-		
+		PlotScatter plotScatter = new PlotScatter();
+		plotScatter.setAxisX(0, 10000);
+		plotScatter.setAxisY(0, 12);
+//		plotScatter.mapNum2ChangeX(0, 0, resolution.length, chrLength, interval);
+		DotStyle dotStyle = new DotStyle();
+		dotStyle.setColor(new Color(0, 0, 255, 255));
+		dotStyle.setStyle(DotStyle.STYLE_AREA);
 		plotScatter.addXY(x, y, dotStyle);
-		plotScatter.setTitle(" Reads Density", new Font(Font.SANS_SERIF, Font.PLAIN, 20));
-		plotScatter.setTitleX("testX", new Font(Font.SANS_SERIF, Font.PLAIN, 25),100.0);
-		plotScatter.setTitleY("testY",  new Font(Font.SANS_SERIF, Font.PLAIN, 25),100.0);
-		plotScatter.setBg(new Color(255, 255, 255, 255));
-		plotScatter.setAlpha(true);
-		plotScatter.setInsets(PlotScatter.INSETS_SIZE_M);
-		plotScatter.saveToFile("/media/winE/Bioinformatics/GenomeData/yeast/Pichia/aaa3.png", 1000, 1000);
+		plotScatter.setBg(Color.WHITE,false);
+		plotScatter.setAlpha(false);
+		plotScatter.setTitle( " Reads Density", null);
+		plotScatter.setTitleX("Chromosome Length", null, 0);
+		plotScatter.setTitleY("Normalized Reads Counts", null, (int)12/5);
+		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
+	 
+		plotScatter.saveToFile("/media/winE/Bioinformatics/GenomeData/yeast/Pichia/aaa3.png", 10000, 1000);
 	}
 	
 	

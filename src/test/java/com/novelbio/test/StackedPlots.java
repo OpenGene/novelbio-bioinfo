@@ -48,7 +48,8 @@ public class StackedPlots extends ExamplePanel {
 
                 plotUpper.setAreaRenderer(data, areaUpper);
                 plotUpper.setInsets(new Insets2D.Double(20.0, 50.0, 40.0, 20.0));
-
+                plotUpper.setAxisNotMove(XYPlot.AXIS_Y);
+                plotUpper.setAxisNotZoom(XYPlot.AXIS_Y);
                 // Create and format lower plot
                 XYPlot plotLower = new XYPlot(data);
                 Color colorLower = COLOR1;
@@ -61,13 +62,14 @@ public class StackedPlots extends ExamplePanel {
                 lineLower.setSetting(LineRenderer.COLOR, colorLower);
                 plotLower.setLineRenderer(data, lineLower);
                 plotLower.setInsets(new Insets2D.Double(20.0, 50.0, 40.0, 20.0));
-
+                plotLower.setAxisNotMove(XYPlot.AXIS_Y);
+                plotLower.setAxisNotZoom(XYPlot.AXIS_Y);
                 DrawableContainer plots = new DrawableContainer(new TableLayout(1));
                 plots.add(plotUpper);
-//                plots.add(plotLower);
+                plots.add(plotLower);
 
-                // Connect the two plots, i.e. user (mouse) actions affect both plots
-//                plotUpper.getNavigator().connect(plotLower.getNavigator());
+//                 Connect the two plots, i.e. user (mouse) actions affect both plots
+                plotUpper.getNavigator().connect(plotLower.getNavigator());
 
                 InteractivePanel panel = new InteractivePanel(plots);
                 add(panel);

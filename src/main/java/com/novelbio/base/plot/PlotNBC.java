@@ -39,9 +39,14 @@ public abstract  class PlotNBC{
 	}
 	protected Color bg = new Color(255, 255, 255, 0);
 	protected Color fg = Color.black;
+
     public void setFg(Color fg) {
 		this.fg = fg;
 	}
+    /**
+     * set the back ground color
+     * @param bg
+     */
     public void setBg(Color bg) {
 		this.bg = bg;
 	}
@@ -113,11 +118,11 @@ public abstract  class PlotNBC{
 			outputFileName = FileOperate.changeFileSuffix(outputFileName, null, ".jpg");
 		}
     	
-    	BufferedImage bufferedImageResult = paintGraphicOut( Width, Height);
+    	BufferedImage bufferedImageResult = paintGraphicOut(bufferedImage, fg, alpha, Width, Height);
     	saveGraphic(bufferedImageResult, outputFileName, 1.0f);
 	}
     
-    private void saveGraphic(BufferedImage chart, String outputFile, float quality) {
+    protected static void saveGraphic(BufferedImage chart, String outputFile, float quality) {
     	String ext = FileOperate.getFileNameSep(outputFile)[1];
     	File fileOut = new File(outputFile);
 		// Handle jpg without transparency.
@@ -165,7 +170,7 @@ public abstract  class PlotNBC{
      * @param width
      * @param height
      */
-    private BufferedImage paintGraphicOut( int Width, int Height)
+    protected static BufferedImage paintGraphicOut(BufferedImage bufferedImage, Color fg, boolean alpha, int Width, int Height)
     {
     	if (bufferedImage.getWidth() == Width && bufferedImage.getHeight() == Height) {
 			return bufferedImage;
@@ -174,15 +179,19 @@ public abstract  class PlotNBC{
     	Graphics2D graphics2d = (Graphics2D) bufferedImageResult.createGraphics();
     	// ----------   增加下面的代码使得背景透明   -----------------  
     	if (alpha) {
-    		bufferedImageResult = graphics2d.getDeviceConfiguration().createCompatibleImage(bufferedImageResult.getWidth(), bufferedImageResult.getHeight(), Transparency.TRANSLUCENT);  
-    		graphics2d.dispose();
-    		graphics2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
-    		graphics2d = (Graphics2D) bufferedImageResult.createGraphics();  
+//    		bufferedImageResult = graphics2d.getDeviceConfiguration().createCompatibleImage(bufferedImageResult.getWidth(), bufferedImageResult.getHeight(), Transparency.TRANSLUCENT);  
+//    		graphics2d.dispose();
+//    		graphics2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));
+//    		graphics2d = (Graphics2D) bufferedImageResult.createGraphics(); 
+    		
+    		
 //       	graphics2d.setColor(new Color(255,0,0));  
 //       	graphics2d.setStroke(new BasicStroke(1));  
 //       	graphics2d.setColor(Color.white);  
 		}
-    	 graphics2d.setColor(fg);
+    	if (fg != null) {
+    		graphics2d.setColor(fg);
+		}
     	 graphics2d.drawImage(bufferedImageResult,  0, 0, null);
     	 return bufferedImageResult;
     }

@@ -1,31 +1,22 @@
 package com.novelbio.base.plot;
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
-import javax.swing.JPanel;
+import com.novelbio.base.dataStructure.Equations;
 
 import de.erichseifert.gral.data.DataSeries;
 import de.erichseifert.gral.data.DataTable;
+import de.erichseifert.gral.graphics.Drawable;
 import de.erichseifert.gral.graphics.DrawingContext;
-import de.erichseifert.gral.io.plots.DrawableWriter;
-import de.erichseifert.gral.io.plots.DrawableWriterFactory;
 import de.erichseifert.gral.plots.BarPlot;
 import de.erichseifert.gral.plots.PlotArea;
 import de.erichseifert.gral.plots.XYPlot;
@@ -35,10 +26,9 @@ import de.erichseifert.gral.plots.axes.Axis;
 import de.erichseifert.gral.plots.axes.AxisRenderer;
 import de.erichseifert.gral.plots.points.DefaultPointRenderer2D;
 import de.erichseifert.gral.plots.points.PointRenderer;
-import de.erichseifert.gral.ui.InteractivePanel;
 import de.erichseifert.gral.util.Insets2D;
 
-public class PlotScatter extends PlotNBC{
+public class PlotScatter extends PlotNBCInteractive{
 	HashMap<DotStyle, DataTable> hashDataTable = new HashMap<DotStyle, DataTable>();
 	
 	XYPlot plot;
@@ -52,9 +42,34 @@ public class PlotScatter extends PlotNBC{
     public static final int INSETS_SIZE_ML = 400;
     public static final int INSETS_SIZE_L = 500;
     /**
+     * custom axis X's ticks
+     */
+    Map<Double, String> mapAxisX = null;
+    Font fontTicksX = null;
+    /**
+     * custom axis Y's ticks
+     */
+    Map<Double, String> mapAxisY = null;
+    Font fontTicksY = null;
+    /**
      * 坐标轴边界
      */
     Axis axisX = null, axisY = null;
+    
+    ArrayList<String> lsAxisNotMove = new ArrayList<String>();
+    /**
+     * set which axis is not move when moving or zooming
+     * @param AxisNotMove null will clean all the settings
+     */
+    public void setAxisNotMove(String... AxisNotMove) {
+    	if (AxisNotMove == null || AxisNotMove.length == 0) {
+			lsAxisNotMove.clear();
+		}
+    	for (String string : AxisNotMove) {
+    		this.lsAxisNotMove.add(string);
+    	}
+	}
+    
     /**
      * TODO: if style is line and y is much bigger than the Y axis length, than the point may not draw complete.
      * so we should set the point just near the bound of figure. so that the line can be drawn on the figure
@@ -155,8 +170,6 @@ public class PlotScatter extends PlotNBC{
 			}
 		}
     }
-    
-
     /**
      *  设定坐标轴边界
      * @param x1
@@ -167,32 +180,66 @@ public class PlotScatter extends PlotNBC{
     }
     /**
      * 设置标题
+     * @param title main title
+     * @param fontTitle font of the title
      * @param title
      */
     public void setTitle(String title, Font fontTitle)  {
-    	this.title = title;
-    	this.fontTitle = fontTitle;
+    	if (title != null)
+    		this.title = title;
+    	if (fontTitle != null)
+    		this.fontTitle =fontTitle;
     }
     
     /**
+     * 
      * 设置标题
-     * @param title
+     * @param titleX tile on axis x
+     * @param fontX font of the title
+     * @param spaceX ticks interval, 0 means not set the space
      */
     public void setTitleX(String titleX, Font fontX, double spaceX)  {
-    	this.titleX = titleX;
-    	this.fontX = fontX;
-    	this.spaceX = spaceX;
+    	if (titleX != null)
+    		this.titleX = titleX;
+    	if (fontX != null)
+    		this.fontX = fontX;
+    	if (spaceX != 0)
+    		this.spaceX = spaceX;
     }
     
     /**
      * 设置标题
-     * @param title
+     * @param titleY tile on axis y
+     * @param fontY font of the title
+     * @param spaceY ticks interval, 0 means not set the space
      */
     public void setTitleY(String titleY, Font fontY, double spaceY)  {
-    	this.titleY = titleY;
-    	this.fontY = fontY;
-    	this.spaceY = spaceY;
+    	if (titleY != null)
+    		this.titleY = titleY;
+    	if (fontY != null)
+    		this.fontY = fontY;
+    	if (spaceY != 0)
+    		this.spaceY = spaceY;
     }
+    
+    public void setAxisTicksX(Map<Double, String> mapTicks, Font fontTicks) {
+    	if (mapTicks != null) {
+    		this.mapAxisX = mapTicks;
+		}
+		if (fontTicks != null) {
+			this.fontTicksX = fontTicks;
+		}
+		
+	}
+    public void setAxisTicksY(Map<Double, String> mapTicks, Font fontTicks) {
+    	if (mapTicks != null) {
+    		this.mapAxisY = mapTicks;
+		}
+		if (fontTicks != null) {
+			this.fontTicksY = fontTicks;
+		}
+	}
+
  
     /**
      * 设定坐标轴边界
@@ -219,29 +266,40 @@ public class PlotScatter extends PlotNBC{
     	this.insetsBottom = bottom; this.insetsRight = right;
     }
     /**
-     * 设定图片坐标轴到图片边缘的距离
+     * set the marge size of a figure, the bigger the marge be, the font of the tile will also bigger
      * @param int size 
      */
     public void setInsets(int size) {
     	int insetsTop = 20, insetsLeft = 60, insetsBottom = 60, insetsRight = 40;
-    	double scale = 1;
+    	double scaleInsets = 1; double scaleFont = 1;
     	if (size == INSETS_SIZE_S) {
-    		scale = 0.8;
+    		scaleInsets = 0.8;
+    		scaleFont = 0.6;
     	}
     	else if (size == INSETS_SIZE_SM) {
-			scale = 1;
+    		scaleInsets = 1;
+    		scaleFont = 0.8;
 		}
     	else if (size == INSETS_SIZE_M) {
-			scale = 1.5;
+    		scaleInsets = 1.5;
+    		scaleFont = 1.2;
 		}
     	else if (size == INSETS_SIZE_ML) {
-			scale = 2;
+    		scaleInsets = 2;
+    		scaleFont = 1.5;
 		}
     	else if (size == INSETS_SIZE_L) {
-			scale = 3;
+    		scaleInsets = 3;
+    		scaleFont = 2;
 		}
-    	this.insetsTop = (int) (insetsTop * scale); this.insetsLeft = (int) (insetsLeft * scale);
-		this.insetsBottom = (int) (insetsBottom * scale); this.insetsRight = (int) (insetsRight * scale);
+    	this.insetsTop = (int) (insetsTop * scaleInsets); this.insetsLeft = (int) (insetsLeft * scaleInsets);
+		this.insetsBottom = (int) (insetsBottom * scaleInsets); this.insetsRight = (int) (insetsRight * scaleInsets);		
+    	this.fontX = new Font(Font.SANS_SERIF, Font.PLAIN, (int)(20*scaleFont));
+    	this.fontY = new Font(Font.SANS_SERIF, Font.PLAIN, (int)(20*scaleFont));
+		this.fontTicksX = new Font(Font.SANS_SERIF, Font.PLAIN, (int)(15*scaleFont));
+		this.fontTicksY = new Font(Font.SANS_SERIF, Font.PLAIN, (int)(15*scaleFont));
+		this.fontTitle =  new Font(Font.SANS_SERIF, Font.PLAIN, (int)(25*scaleFont));
+		
     }
     /**
      * 因为无法绘制每个点都为点到x轴的直线，会画的参差不齐，这时候就需要绘制最长的线
@@ -258,13 +316,29 @@ public class PlotScatter extends PlotNBC{
     	//1.02 means the result should some what long than the result
     	return (lineLength - start) * heigh* 1.02 / axisY.getRange();
     }
-
+    
 //	@Override
 	protected void draw(int width, int heigh) {
+		drawPlot(width, heigh);
+		toImage(width, heigh);
+	}
+	/**
+	 * needs check
+	 * @return
+	 */
+	public Drawable getPlot() {
+		drawPlot(10, 10);
+		return plot;
+	}
+	/**
+	 * @param width
+	 * @param heigh
+	 */
+	protected void drawPlot(int width, int heigh) {
 		int foldchange = 1;
 		width = width * foldchange;
 		heigh = heigh * foldchange;
-		plot = new XYPlot();
+		boolean plotFirst = true;
 		for (Entry<DotStyle, DataTable> entry : hashDataTable.entrySet()) {
 			DotStyle dotStyle = entry.getKey();
 			if (dotStyle.getStyle() == DotStyle.STYLE_LINE) {
@@ -272,7 +346,18 @@ public class PlotScatter extends PlotNBC{
 			}
 			DataTable dataTable = entry.getValue();
 			DataSeries dataSeries = new DataSeries(dotStyle.getGroup(), dataTable,0,1);
-			plot.add(dataSeries);
+			if (plot == null) {
+				plot = new XYPlot(dataSeries);
+				plotFirst = false;
+			}
+			else if (plotFirst) {
+				plot.clear();
+				plot.add(dataSeries);
+			}
+			else {
+				plot.add(dataSeries);
+			}
+			
 			
 			if (dotStyle.getStyle() == DotStyle.STYLE_AREA) {
                 AreaRenderer area = new DefaultAreaRenderer2D();
@@ -288,14 +373,10 @@ public class PlotScatter extends PlotNBC{
 		        points.setSetting(PointRenderer.COLOR, dotStyle.getColor());
 			}
 		}
-
         // Style the plot area
 //        plot.getPlotArea().setSetting(PlotArea.BORDER, new BasicStroke(2f));
-    	//background color
-        plot.getPlotArea().setSetting(PlotArea.BACKGROUND, new Color(0, 0, 0, 0));
-        // Style data series
-
-		   // set the distance between the figure and picture edge, 设定图片坐标轴到图片边缘的距离
+    
+		// set the distance between the figure and picture edge, 设定图片坐标轴到图片边缘的距离
 		plot.setInsets(new Insets2D.Double( insetsTop, insetsLeft, insetsBottom, insetsRight));
 		
         plot.getAxis(XYPlot.AXIS_X).setRange(axisX.getMin(), axisX.getMax());//设置坐标轴
@@ -305,16 +386,20 @@ public class PlotScatter extends PlotNBC{
         //坐标轴在figure最下方
         plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.INTERSECTION, -Double.MAX_VALUE);
         plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.INTERSECTION, -Double.MAX_VALUE);
-        
+	}
+	
+	
+	protected void toImage(int width, int heigh) {
 		int imageType = (alpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
     	bufferedImage = new BufferedImage(width, heigh, imageType);
     	if (bg != null && !bg.equals(new Color(0,0,0,0))) {
 			setBG(width, heigh);
 		}
-		DrawingContext context = new DrawingContext((Graphics2D) bufferedImage.getGraphics());
+    	DrawingContext context = new DrawingContext((Graphics2D) bufferedImage.getGraphics());
 		plot.setBounds(0, 0, width, heigh);
 		plot.draw(context);
 	}
+	
 	private void setAxisAndTitle()
 	{
 		// Style axes
@@ -334,7 +419,23 @@ public class PlotScatter extends PlotNBC{
 		if (spaceY != null) {
 			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_SPACING, spaceY);//坐标轴刻度
 		}
+		if (mapAxisX != null) {
+			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_CUSTOM, mapAxisX);//坐标轴刻度
+			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_SPACING, (axisX.getMax().doubleValue() - axisX.getMin().doubleValue())*2);//坐标轴刻度
+		}
+		if (mapAxisY != null) {
+			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_CUSTOM, mapAxisY);//坐标轴刻度
+			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_SPACING, (axisY.getMax().doubleValue() - axisY.getMin().doubleValue())*2);//坐标轴刻度
 
+		}
+		
+		if (fontTicksX != null) {
+			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_FONT, fontTicksX);//坐标轴刻度
+		}
+		if (fontTicksY != null) {
+			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_FONT, fontTicksY);//坐标轴刻度
+		}
+		
 		if (fontX != null) {
 			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.LABEL_FONT, fontX);
 		}
@@ -344,6 +445,25 @@ public class PlotScatter extends PlotNBC{
 		if (fontTitle != null) {
 			plot.setSetting(BarPlot.TITLE_FONT, fontTitle);
 		}
+		
+		//background color
+		if (!plotareaAll) {
+			 plot.getPlotArea().setSetting(PlotArea.BACKGROUND, bg);
+		}
+		else {
+			 plot.getPlotArea().setSetting(PlotArea.BACKGROUND, new Color(0, 0, 0, 0));
+		}
+		
+		if (lsAxisNotMove.size() == 0) {
+			plot.setAxisNotMove(null);
+			plot.setAxisNotZoom(null);
+		}
+		else {
+			for (String string : lsAxisNotMove) {
+				plot.setAxisNotMove(string);
+				plot.setAxisNotZoom(string);
+			}
+		}
 	}
 	/**
 	 * fill the insets with BG color, means fill the marginal area between the frame and the plot border.<br>
@@ -352,112 +472,51 @@ public class PlotScatter extends PlotNBC{
 	 * @param heigh
 	 */
 	private void setBG(int width, int heigh) {
-		Graphics2D graphics = bufferedImage.createGraphics();
-		graphics.setColor(bg);
-		graphics.fillRect(0, 0, width, heigh);//fill the left region
-//		graphics.fillRect(insetsLeft, 0, width-insetsLeft, insetsTop);//fill the upon region
-//		graphics.fillRect(insetsLeft, heigh-insetsBottom, width-insetsLeft, insetsBottom); //fill the bottom region
-//		graphics.fillRect(width-insetsRight, insetsTop, insetsRight, heigh - insetsTop - insetsBottom); //fill the right region
-//		if (fontTitle != null) {
-//			graphics.fillRect(insetsLeft, insetsTop, width-insetsLeft-insetsRight, (int)(fontTitle.getSize()*1.3)); //fill the bottom region
-//		}
-	}
-//	@Override
-	protected void draw2(int width, int heigh) {
-	  // Create data
-    DataTable data = new DataTable(Double.class, Double.class);
-    DataTable data2 = new DataTable(Double.class, Double.class);
-    final int POINT_COUNT = 2;
-    java.util.Random rand = new java.util.Random();
-    for (int i = 0; i < POINT_COUNT; i++) {
-        double x = rand.nextGaussian();
-        double y1 = rand.nextGaussian() + x;
-        data.add(x, y1);
-    }
-
-    for (int i = 0; i < 20; i++) {
-        double x = rand.nextGaussian();
-        double y1 = rand.nextGaussian() + x;
-        data2.add(x, y1);
-    }
-
-    // Create series
-    DataSeries series1 = new DataSeries("Series 1", data, 0, 1);
-    DataSeries series2 = new DataSeries("Series 2", data2, 0, 1);
-    plot = new XYPlot();
-    plot.add(series1);
-
- 
-  
- 
-    for (Entry<DotStyle, DataTable> entry : hashDataTable.entrySet()) {
-		DotStyle dotStyle = entry.getKey();
-		if (dotStyle.getStyle() == DotStyle.STYLE_AREA) {
-			dotStyle.setLineLength(getLineLen(heigh, dotStyle.getLineLength()));
+		if (plotareaAll) {
+			Graphics2D graphics = bufferedImage.createGraphics();
+			graphics.setColor(bg);
+			graphics.fillRect(0, 0, width, heigh);
 		}
-		DataTable dataTable = entry.getValue();
-		DataSeries dataSeries = new DataSeries(dotStyle.getGroup(), dataTable,0,1);
-		plot.add(dataSeries);
-		   // Style data series
-        PointRenderer points = new DefaultPointRenderer2D();
-        points.setSetting(PointRenderer.SHAPE, dotStyle.getShape(5));
-        points.setSetting(PointRenderer.COLOR, dotStyle.getColor());
-        plot.setPointRenderer(dataSeries, points);
 	}
- 
-    plot.getPlotArea().setSetting(
-            PlotArea.COLOR, new Color(0, 0, 0, 0));
-  
-    int insetsTop = 30,
-           insetsLeft = 60,
-           insetsBottom = 60,
-           insetsRight = 40;
-    plot.setInsets(new Insets2D.Double(
-            insetsTop, insetsLeft, insetsBottom, insetsRight));
-//    plot.setBounds(1, 1, 2, 3);
-//    Axis axis = new Axis(0, 2);
-//    plot.setAxis(XYPlot.AXIS_X, axis);//设置坐标轴ITALIC
-    plot.setSetting(BarPlot.TITLE, "Nice scatter");
-//    Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 15);
-//    plot.setSetting(BarPlot.TITLE_FONT, font);
-    plot.setAxis(XYPlot.AXIS_X, axisX);//设置坐标轴
-    plot.setAxis(XYPlot.AXIS_Y, axisY);//设置坐标轴
-    plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICK_LABELS, true);//坐标轴刻度
-    plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_SPACING, 20.0);//坐标轴刻度
-    plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS, true);//坐标轴刻度
-    plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_MINOR , true);//坐标轴刻度
-    plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.SHAPE_VISIBLE , true);//坐标轴刻度
-
-    if (title != null) {
-    	plot.setSetting(BarPlot.TITLE, title);
-        plot.setSetting(BarPlot.TITLE_FONT, fontTitle);
+	/**
+	 * map the ticks number to actual axis, using the linear transformation 
+	 * @return
+	 */
+	public void  mapNum2ChangeX(double startTick, double startResult, double endTick, double endResult, double intervalNumResult) {
+		mapAxisX = mapNum2Change(startTick, startResult, endTick, endResult, intervalNumResult);
 	}
-
-	
-	int imageType = (alpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
-	bufferedImage = new BufferedImage(width, heigh, imageType);
-	DrawingContext context = new DrawingContext((Graphics2D) bufferedImage.getGraphics());
-
-	plot.setBounds(0, 0, width, heigh);
-	plot.draw(context);
-
-	//fill the left region
-//	graphics.fillRect(0, 0, insetsLeft, 2000);//fill the left region
-//	graphics.fillRect(insetsLeft, 0, 2000-insetsLeft, insetsTop);//fill the upon region
-//	graphics.fillRect(insetsLeft, 2000-insetsBottom, 2000-insetsLeft, insetsBottom); //fill the bottom region
-//	graphics.fillRect(2000-insetsRight, insetsTop, insetsRight, 2000 - insetsTop - insetsBottom); //fill the right region
-	
-	
-	
-//	DrawingContext context = new DrawingContext(graphics);
-//	plot.setBounds(0, 0, 1000, 1000);
-//	plot.draw(context);
-
-
-
-      
-
-    
-		
+	/**
+	 * map the ticks number to actual axis, using the linear transformation 
+	 * @return
+	 */
+	public void  mapNum2ChangeY(double startTick, double startResult, double endTick, double endResult, double intervalNumResult) {
+		mapAxisY = mapNum2Change(startTick, startResult, endTick, endResult, intervalNumResult);
 	}
+	/**
+	 * map the ticks number to actual axis, using the linear transformation 
+	 * @return
+	 */
+	private Map<Double, String> mapNum2Change(double startTick, double startResult, double endTick, double endResult, double intervalNumResult)
+	{
+		HashMap<Double, String> mapAxis = new HashMap<Double, String>();
+		Equations equations = new Equations();
+		ArrayList<double[]> lsXY = new ArrayList<double[]>();
+		lsXY.add(new double[]{startResult, startTick});
+		lsXY.add(new double[]{endResult, endTick});
+		equations.setXY(lsXY);
+		boolean decimals = true;//whether the axis ticks have dot, means have decimals
+		if (intervalNumResult >= 1 || intervalNumResult <= -1) {
+			decimals = false;
+		}
+		for (double i = startResult; i < endResult; i = i + intervalNumResult) {
+			double tick = equations.getY(i);
+			String tmpResult = i + "";
+			if (!decimals) {
+				tmpResult = (int)i + "";
+			}
+			mapAxis.put(tick, tmpResult);
+		}
+		return mapAxis;
+	}
+	
 }

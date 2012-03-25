@@ -202,7 +202,7 @@ public class GffChrMap extends GffChrAbs {
 		ArrayList<String[]> chrlengthInfo = seqHash.getChrLengthInfo();
 		//find the longest chromosome's density
 		double[] chrReads = getChrDensity(seqHash.getChrLengthInfo().get(seqHash.getChrLengthInfo().size() - 1)[0], maxresolution);
-		double axisY = MathComput.median(chrReads, 95)*5;
+		double axisY = MathComput.median(chrReads, 95)*4;
 		for (int i = chrlengthInfo.size() - 1; i >= 0; i--) {
 			try {
 				plotChrDist(chrlengthInfo.get(i)[0], maxresolution, axisY, FileOperate.changeFileSuffix(outPath, "_"+chrlengthInfo.get(i)[0], "png"));
@@ -226,6 +226,10 @@ public class GffChrMap extends GffChrAbs {
 	 */
 	private void plotChrDist(String chrID, int maxresolution, double axisY, String outFileName) throws Exception {
 		int[] resolution = seqHash.getChrRes(chrID, maxresolution);
+		long chrLengthMax = seqHash.getChrLenMax();
+		double interval = ((int)(chrLengthMax/30)/1000)*1000;
+		long chrLength = seqHash.getChrLength(chrID);
+		
 		/////////////////////   plotScatter can only accept double data   //////////////////////////////
 		double[] resolutionDoub = new double[resolution.length];
 		for (int i = 0; i < resolution.length; i++) {
@@ -233,25 +237,33 @@ public class GffChrMap extends GffChrAbs {
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		double[] chrReads = getChrDensity(chrID.toLowerCase(), resolution.length);
-//		long chrLength = seqHash.getChrLength(chrID);
+		
+		//////////////////////////////////////
+//		double[] x = new double[1000];
+//		double[] y = new double[1000];
+//		for (int i = 0; i < x.length; i++) {
+//			x[i] = i*2;
+//			y[i] = 10;
+//		}
+		////////////////////////////////////////
 		if (chrReads == null) {
 			return;
 		}
 		PlotScatter plotScatter = new PlotScatter();
 		plotScatter.setAxisX(0, maxresolution);
 		plotScatter.setAxisY(0, axisY);
+		plotScatter.mapNum2ChangeX(0, 0, resolution.length, chrLength, interval);
 		DotStyle dotStyle = new DotStyle();
 		dotStyle.setColor(new Color(0, 0, 255, 255));
 		dotStyle.setStyle(DotStyle.STYLE_AREA);
-		dotStyle.setGroup("chrinfo");
 		plotScatter.addXY(resolutionDoub, chrReads, dotStyle);
+//		plotScatter.addXY(x, y, dotStyle);
+
 		plotScatter.setBg(Color.WHITE);
 		plotScatter.setAlpha(false);
-		int spaceX = (maxresolution/30) % 50 *50;
-		int spaceY = 10;
-		plotScatter.setTitle(chrID + " Reads Density", new Font(Font.SANS_SERIF, Font.PLAIN, 30));
-		plotScatter.setTitleX("Chromosome Length", new Font(Font.SANS_SERIF, Font.PLAIN, 28), spaceX);
-		plotScatter.setTitleY("Chromosome Length", new Font(Font.SANS_SERIF, Font.PLAIN, 28), spaceY);
+		plotScatter.setTitle(chrID + " Reads Density", null);
+		plotScatter.setTitleX("Chromosome Length", null, 0);
+		plotScatter.setTitleY("Normalized Reads Counts", null, (int)axisY/5);
 		
 		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
 		
