@@ -294,7 +294,7 @@ public class FastQ extends SeqComb {
 
 	/**
 	 * 输入前先判断文件是否存在,最好能判断两个文件是否是同一个测序的两端 那么可以判断是否为fastQ格式和fasQ格式第一行是否一致
-	 * 
+	 * 标准文件名的话，自动判断是否为gz压缩
 	 * @param seqFile1
 	 *            序列文件
 	 * @param seqFile2
@@ -309,6 +309,13 @@ public class FastQ extends SeqComb {
 	public FastQ(String seqFile1, String seqFile2, int FastQFormateOffset,
 			int QUALITY) {
 		super(seqFile1, 4);// fastQ一般4行为一个序列
+		String houzhui = FileOperate.getFileNameSep(seqFile1)[1];
+		if (houzhui.equals("gz")) {
+			setCompressType(TxtReadandWrite.GZIP, TxtReadandWrite.TXT);
+		}
+		else {
+			setCompressType(TxtReadandWrite.TXT, TxtReadandWrite.TXT);
+		}
 		txtSeqFile.setParameter(compressInType, seqFile1, false,true);
 		if (seqFile2 != null && !seqFile2.trim().equals("") && FileOperate.isFileExist(seqFile2.trim())) {
 			booPairEnd = true;
@@ -339,6 +346,13 @@ public class FastQ extends SeqComb {
 	 */
 	public FastQ(String seqFile1, String seqFile2, int QUALITY) {
 		this(seqFile1, seqFile2, 0, QUALITY);
+		String houzhui = FileOperate.getFileNameSep(seqFile1)[1];
+		if (houzhui.equals("gz")) {
+			setCompressType(TxtReadandWrite.GZIP, TxtReadandWrite.TXT);
+		}
+		else {
+			setCompressType(TxtReadandWrite.TXT, TxtReadandWrite.TXT);
+		}
 	}
 
 	/**
@@ -349,6 +363,13 @@ public class FastQ extends SeqComb {
 	 */
 	public FastQ(String seqFile1, int QUALITY) {
 		this(seqFile1, null, QUALITY);
+		String houzhui = FileOperate.getFileNameSep(seqFile1)[1];
+		if (houzhui.equals("gz")) {
+			setCompressType(TxtReadandWrite.GZIP, TxtReadandWrite.TXT);
+		}
+		else {
+			setCompressType(TxtReadandWrite.TXT, TxtReadandWrite.TXT);
+		}
 	}
 	/**
 	 * 待测试

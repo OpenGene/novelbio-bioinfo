@@ -15,7 +15,7 @@ public class GUIFileOpen  extends JFrame {
 	/**
 	 * 打开文本选择器
 	 * @param description 如"txt/excel 2003"
-	 * @param extensions 如 "txt","xls"
+	 * @param extensions 如 "txt","xls" 如果不设定，就显示全部文件
 	 * @return
 	 */
 	public String openFileName(String  description, String... extensions) {
@@ -37,8 +37,12 @@ public class GUIFileOpen  extends JFrame {
 	public ArrayList<String> openLsFileName(String  description, String... extensions) {
 		ArrayList<String> lsResult = new ArrayList<String>();
 		JFileChooser chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensions);
-		chooser.setFileFilter(filter);
+		if (extensions != null && extensions.length > 0) {
+			FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensions);
+			chooser.setFileFilter(filter);
+		}
+	
+	
 		int returnVal = chooser.showOpenDialog(getParent());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File[] files = chooser.getSelectedFiles();

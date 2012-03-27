@@ -54,6 +54,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiDegreeAddJpanel guiDegreeAdd;
 	private GuiPearsonJpanel guiPearson;
 	private GuiToolsJpanel guiTools;
+	private GuiFastQJpanel guiFastQ;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -103,10 +104,10 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiTools = new GuiToolsJpanel();
 				jTabbedPane1.addTab("Tools", null, guiTools, null);
-//				{
-//					jPanSrctrg = new JPanel();
-//					jTabbedPane1.addTab("Signal Network", null, jPanSrctrg, null);
-//				}
+				
+				guiFastQ = new GuiFastQJpanel();
+				jTabbedPane1.addTab("fastQ", null, guiFastQ, null);
+
 			}
 			pack();
 			this.setSize(1049, 699);

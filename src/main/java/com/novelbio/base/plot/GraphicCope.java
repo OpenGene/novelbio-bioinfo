@@ -234,12 +234,6 @@ public class GraphicCope {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
-		pressImage("G:\\imgtest\\sy.jpg", "G:\\imgtest\\test1.jpg", 0, 0, 0.5f);
-		pressText("我是文字水印", "G:\\imgtest\\test1.jpg", "黑体", 36, Color.white, 80, 0, 0, 0.3f);
-		resize("G:\\imgtest\\test1.jpg", 500, 500, true);
-	}
-
 	public static int getLength(String text) {
 		int length = 0;
 		for (int i = 0; i < text.length(); i++) {

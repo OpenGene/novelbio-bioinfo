@@ -3,18 +3,27 @@ package com.novelbio.base.plot;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import cern.colt.matrix.doublealgo.Statistic;
+
 import com.novelbio.base.dataStructure.Equations;
+import com.novelbio.base.plot.java.BarInfo;
 
 import de.erichseifert.gral.data.DataSeries;
+import de.erichseifert.gral.data.DataSource;
 import de.erichseifert.gral.data.DataTable;
+import de.erichseifert.gral.data.EnumeratedData;
+import de.erichseifert.gral.data.statistics.Histogram1D;
+import de.erichseifert.gral.data.statistics.Statistics;
 import de.erichseifert.gral.graphics.Drawable;
 import de.erichseifert.gral.graphics.DrawingContext;
 import de.erichseifert.gral.plots.BarPlot;
@@ -26,12 +35,14 @@ import de.erichseifert.gral.plots.axes.Axis;
 import de.erichseifert.gral.plots.axes.AxisRenderer;
 import de.erichseifert.gral.plots.points.DefaultPointRenderer2D;
 import de.erichseifert.gral.plots.points.PointRenderer;
+import de.erichseifert.gral.util.GraphicsUtils;
 import de.erichseifert.gral.util.Insets2D;
+import de.erichseifert.gral.util.Orientation;
 
 public class PlotScatter extends PlotNBCInteractive{
 	HashMap<DotStyle, DataTable> hashDataTable = new HashMap<DotStyle, DataTable>();
 	
-	XYPlot plot;
+	BarPlot plot;
 	String title = null, titleX = null, titleY = null;
 	Double spaceX = null, spaceY = null;
     Font fontTitle = new Font(Font.SANS_SERIF, Font.PLAIN, 15), fontX = null, fontY = null;
@@ -55,7 +66,10 @@ public class PlotScatter extends PlotNBCInteractive{
      * 坐标轴边界
      */
     Axis axisX = null, axisY = null;
-    
+    /**
+     * 内部坐标轴边界，如果外部没有设定坐标轴边界，就用内部的
+     */
+    Axis axisXMy = new Axis(Double.MAX_VALUE, Double.MIN_VALUE), axisYMy = new Axis(Double.MAX_VALUE, Double.MIN_VALUE);
     ArrayList<String> lsAxisNotMove = new ArrayList<String>();
     /**
      * set which axis is not move when moving or zooming
@@ -77,20 +91,33 @@ public class PlotScatter extends PlotNBCInteractive{
      * @param x
      * @param y
      */
-    public void addXY(double x, double y, DotStyle dotStyle) {
+    public void addXY(double x, double y, DotStyle dotStyle, String name) {
+    	if (name == null || name.trim().equals("")) {
+			dotStyle.setDotname(false);
+		}
+    	else {
+			dotStyle.setDotname(true);
+		}
     	DataTable dataTable = null;
     	if (!hashDataTable.containsKey(dotStyle)) {
-    		dataTable = new DataTable(Double.class, Double.class);
+    		if (dotStyle.isDotName()) {
+    			dataTable = new DataTable(Double.class, Double.class, String.class);
+			}
+    		else {
+    			dataTable = new DataTable(Double.class, Double.class);
+			}
 			hashDataTable.put(dotStyle, dataTable);
 		}
     	else {
 			dataTable = hashDataTable.get(dotStyle);
 		}
-    	dataTable.add(x,y);
-    	if (dotStyle.getStyle() == DotStyle.STYLE_AREA) {
-			if (y > dotStyle.getLineLength()) {
-				dotStyle.setLineLength(y);
-			}
+    	
+    	
+    	if (dotStyle.isDotName()) {
+    		dataTable.add(x,y,name);
+		}
+    	else {
+			dataTable.add(x,y);
 		}
     }
     /**
@@ -112,11 +139,6 @@ public class PlotScatter extends PlotNBCInteractive{
 		}
     	for (int i = 0; i < x.length; i++) {
     		dataTable.add(x[i],y[i]);
-    		if (dotStyle.getStyle() == DotStyle.STYLE_AREA) {
-				if (y[i] > dotStyle.getLineLength()) {
-					dotStyle.setLineLength(y[i]);
-				}
-			}
 		}
     }
     /**
@@ -135,11 +157,6 @@ public class PlotScatter extends PlotNBCInteractive{
 		}
     	for (double[] ds : lsXY) {
 			dataTable.add(ds[0],ds[1]);
-			if (dotStyle.getStyle() == DotStyle.STYLE_AREA) {
-				if (ds[1] > dotStyle.getLineLength()) {
-					dotStyle.setLineLength(ds[1]);
-				}
-			}
 		}
     }
     /**
@@ -163,13 +180,134 @@ public class PlotScatter extends PlotNBCInteractive{
     	for (Number numberX : lsX) {
 			Number numberY = lsY.iterator().next();
 			dataTable.add(numberX.doubleValue(), numberY.doubleValue());
-			if (dotStyle.getStyle() == DotStyle.STYLE_AREA) {
-				if (numberY.doubleValue() > dotStyle.getLineLength()) {
-					dotStyle.setLineLength(numberY.doubleValue());
-				}
-			}
 		}
     }
+    /**
+     * using data to plot the histogram
+     * @param lsNum data 
+     * @param breakNum Number of subdivisions for analysis.
+     * @param dotStyle
+     */
+    public void addHistData(Collection<? extends Number> lsNum, int breakNum, BarStyle dotStyle)
+    {
+    	DataTable dataTable = new DataTable(Double.class);
+    	for (Number number : lsNum) {
+			dataTable.add(number.doubleValue());//(number.doubleValue());
+		}
+    	addHistData(dataTable, breakNum, dotStyle);
+    }
+    /**
+     * using data to plot the histogram
+     * @param lsNum data 
+     * @param breakNum Number of subdivisions for analysis.
+     * @param dotStyle
+     */
+    public void addHistData(double[] lsNum, int breakNum, BarStyle dotStyle)
+    {
+    	DataTable dataTable = new DataTable(Double.class);
+    	for (Number number : lsNum) {
+			dataTable.add(number.doubleValue());//(number.doubleValue());
+		}
+    	addHistData(dataTable, breakNum, dotStyle);
+    }
+    
+    /**
+     * using data to plot the histogram
+     * @param dataTable data 
+     * @param breakNum Number of subdivisions for analysis.
+     * @param dotStyle
+     */
+    private void addHistData(DataTable dataTable, int breakNum, BarStyle barStyle)
+    {
+    	Histogram1D histogram = new Histogram1D(dataTable, Orientation.VERTICAL, breakNum);
+    	double min = dataTable.getStatistics().get(Statistics.MIN);
+    	double max = dataTable.getStatistics().get(Statistics.MAX);
+    	double step = (max - min)/breakNum;
+    	int allNum = dataTable.getRowCount();
+        DataSource histogram2d = new EnumeratedData(histogram, (min + min - step)/2.0, step);
+        
+    	if (barStyle.getBarWidth() == 0) {
+    		barStyle.setBarWidth(step*0.95);
+    	}
+    	barStyle.setStyle(DotStyle.STYLE_BAR);
+        DataTable dataTable2 = null;
+        dataTable2 = new DataTable(Double.class, Double.class, Double.class);
+        
+        double xmin = Double.MAX_VALUE, xmax = Double.MIN_VALUE, ymin = Double.MAX_VALUE, ymax = Double.MIN_VALUE;
+        
+    	for (int i = 0; i < histogram2d.getRowCount(); i++) {
+    		double x = Double.parseDouble(histogram2d.get(0, i).toString());
+    		double yValue = Double.parseDouble(histogram2d.get(1, i).toString());
+    		double yProperty = yValue/allNum;
+    		
+    		if (x < xmin)
+				xmin = x;
+    		if (x > xmax)
+				xmax = x;
+      		if (yProperty < ymin)
+      			ymin = yProperty;
+      		if (yProperty > ymax)
+      			ymax = yProperty;
+        		
+			dataTable2.add(x, yProperty, yValue);
+		}
+    	setAxis(xmin, xmax, true, 0.1, 0.1);
+    	setAxis(0, ymax, false, 0, 0.1);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    	if (plot == null) {
+			plot = new BarPlot(dataTable2);
+		}
+    	else {
+			plot.add(dataTable2);
+		}
+    	
+    	if (barStyle.getBarWidth() != 0) {
+				plot.setSetting(BarPlot.BAR_WIDTH, barStyle.getBarWidth());
+			}
+			PointRenderer pointRenderer = plot.getPointRenderer(dataTable2);
+			pointRenderer.setSetting(PointRenderer.COLOR, barStyle.getColor());
+			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE, barStyle.getBasicStroke());
+			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE_COLOR, barStyle.getEdgeColor());
+		//规定，dotname在第3列，dotvalue也就是常规value在第二列
+			//the third column is the name column
+			pointRenderer.setSetting(PointRenderer.VALUE_COLUMN, 2);
+			pointRenderer.setSetting(PointRenderer.VALUE_DISPLAYED, barStyle.isValueVisible());
+    }
+    
+    private void setAxis(double min, double max, boolean X, double extendRangeMin, double extendRangeMax)
+    {
+    	Axis axis = null;
+    	double range = Math.abs(max - min);
+    	if (X)
+    		axis = axisXMy;
+    	else
+    		axis = axisYMy;
+    	
+		if (min < axis.getMin().doubleValue()) {
+			axis.setMin(min - range * extendRangeMin);
+		}
+		if (max > axis.getMax().doubleValue()) {
+			axis.setMax(max + range * extendRangeMax);
+		}
+    }
+    /**
+     * using data to plot the Bar figure, 直接加入plot，不进入hash表
+     * @param lsNum data 
+     * @param breakNum Number of subdivisions for analysis.
+     * @param dotStyle
+     */
+    public void addBarPlot(List<BarInfo> lsBarInfos, BarStyle dotStyle)
+    {
+    	//TODO
+    	DataTable dataTable = new DataTable(Double.class);
+    	if (plot == null) {
+			plot = new BarPlot(dataTable);
+		}
+    	else {
+			plot.add(dataTable);
+		}
+    }
+    
     /**
      *  设定坐标轴边界
      * @param x1
@@ -299,22 +437,6 @@ public class PlotScatter extends PlotNBCInteractive{
 		this.fontTicksX = new Font(Font.SANS_SERIF, Font.PLAIN, (int)(15*scaleFont));
 		this.fontTicksY = new Font(Font.SANS_SERIF, Font.PLAIN, (int)(15*scaleFont));
 		this.fontTitle =  new Font(Font.SANS_SERIF, Font.PLAIN, (int)(25*scaleFont));
-		
-    }
-    /**
-     * 因为无法绘制每个点都为点到x轴的直线，会画的参差不齐，这时候就需要绘制最长的线
-     * 效率还不错
-     * 给定图片高度，给定最高的点的高度，返回每条线的长度
-     * @param width
-     * @param heigh
-     * @param lineLength
-     * @return
-     */
-    private double getLineLen(int heigh, double lineLength)
-    {
-    	double start = axisY.getMin().doubleValue();
-    	//1.02 means the result should some what long than the result
-    	return (lineLength - start) * heigh* 1.02 / axisY.getRange();
     }
     
 //	@Override
@@ -330,64 +452,52 @@ public class PlotScatter extends PlotNBCInteractive{
 		drawPlot(10, 10);
 		return plot;
 	}
+	public void clearData() {
+		plot = null;
+	}
 	/**
 	 * @param width
 	 * @param heigh
 	 */
 	protected void drawPlot(int width, int heigh) {
-		int foldchange = 1;
-		width = width * foldchange;
-		heigh = heigh * foldchange;
-		boolean plotFirst = true;
 		for (Entry<DotStyle, DataTable> entry : hashDataTable.entrySet()) {
 			DotStyle dotStyle = entry.getKey();
-			if (dotStyle.getStyle() == DotStyle.STYLE_LINE) {
-				dotStyle.setLineLength(getLineLen(heigh, dotStyle.getLineLength()));
-			}
 			DataTable dataTable = entry.getValue();
-			DataSeries dataSeries = new DataSeries(dotStyle.getGroup(), dataTable,0,1);
+			DataSeries dataSeries = null;
+			if (dotStyle.isDotName()) {
+				dataSeries = new DataSeries(dotStyle.getGroup(), dataTable,0,1,2);
+			}
+			else {
+				dataSeries = new DataSeries(dotStyle.getGroup(), dataTable,0,1);
+			}
 			if (plot == null) {
-				plot = new XYPlot(dataSeries);
-				plotFirst = false;
-			}
-			else if (plotFirst) {
-				plot.clear();
-				plot.add(dataSeries);
+				plot = new BarPlot(dataSeries);
 			}
 			else {
 				plot.add(dataSeries);
 			}
-			
-			
-			if (dotStyle.getStyle() == DotStyle.STYLE_AREA) {
-                AreaRenderer area = new DefaultAreaRenderer2D();
-//              areaUpper.setSetting(AreaRenderer.COLOR, GraphicsUtils.deriveWithAlpha(colorUpper, 64));
-                area.setSetting(AreaRenderer.COLOR, dotStyle.getColor());
-                plot.setAreaRenderer(dataSeries, area);
-                plot.setPointRenderer(dataSeries, null);
-			}
-			else {
-				  // Style data series
-		        PointRenderer points = new DefaultPointRenderer2D();
-		        points.setSetting(PointRenderer.SHAPE, dotStyle.getShape(foldchange));
-		        points.setSetting(PointRenderer.COLOR, dotStyle.getColor());
-			}
+			setPointStyle(dataSeries, dotStyle);
 		}
         // Style the plot area
 //        plot.getPlotArea().setSetting(PlotArea.BORDER, new BasicStroke(2f));
     
 		// set the distance between the figure and picture edge, 设定图片坐标轴到图片边缘的距离
 		plot.setInsets(new Insets2D.Double( insetsTop, insetsLeft, insetsBottom, insetsRight));
+		Axis axisxthis = axisXMy, axisythis = axisYMy;
+		if (axisX != null)
+			axisxthis = axisX;
+		if (axisY != null)
+			axisythis = axisY;
 		
-        plot.getAxis(XYPlot.AXIS_X).setRange(axisX.getMin(), axisX.getMax());//设置坐标轴
-        plot.getAxis(XYPlot.AXIS_Y).setRange(axisY.getMin(), axisY.getMax());//设置坐标轴
+        plot.getAxis(XYPlot.AXIS_X).setRange(axisxthis.getMin() ,axisxthis.getMax());//设置坐标轴
+        plot.getAxis(XYPlot.AXIS_Y).setRange(axisythis.getMin() ,axisythis.getMax());//设置坐标轴
         
         setAxisAndTitle();
         //坐标轴在figure最下方
         plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.INTERSECTION, -Double.MAX_VALUE);
         plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.INTERSECTION, -Double.MAX_VALUE);
 	}
-	
+
 	
 	protected void toImage(int width, int heigh) {
 		int imageType = (alpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
@@ -398,6 +508,53 @@ public class PlotScatter extends PlotNBCInteractive{
     	DrawingContext context = new DrawingContext((Graphics2D) bufferedImage.getGraphics());
 		plot.setBounds(0, 0, width, heigh);
 		plot.draw(context);
+	}
+	
+	private void setPointStyle(DataSource dataSeries, DotStyle dotStyle)
+	{
+		if (dotStyle.getStyle() == DotStyle.STYLE_AREA) {
+            AreaRenderer area = new DefaultAreaRenderer2D();
+            area.setSetting(AreaRenderer.COLOR, dotStyle.getColor());
+            plot.setAreaRenderer(dataSeries, area);
+            // Style data series
+	        PointRenderer points = new DefaultPointRenderer2D();
+	        points.setSetting(PointRenderer.SHAPE, new Rectangle2D.Double(0, 0, 0, 0));
+	        points.setSetting(PointRenderer.COLOR, new Color(0, 0, 0, 0));
+            plot.setPointRenderer(dataSeries, points);
+		}
+		else if (dotStyle.getStyle() == DotStyle.STYLE_LINE) {
+			plot.setSetting(BarPlot.BAR_WIDTH, 0.04);
+		    plot.getPointRenderer(dataSeries).setSetting(PointRenderer.COLOR, dotStyle.getColor());
+		}
+		else if (dotStyle.getStyle() == DotStyle.STYLE_BAR) {
+			BarStyle barStyle = (BarStyle) dotStyle;
+			if (barStyle.getBarWidth() != 0) {
+				plot.setSetting(BarPlot.BAR_WIDTH, barStyle.getBarWidth());
+			}
+			PointRenderer pointRenderer = plot.getPointRenderer(dataSeries);
+			pointRenderer.setSetting(PointRenderer.COLOR, barStyle.getColor());
+			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE, barStyle.getBasicStroke());
+			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE_COLOR, barStyle.getEdgeColor());
+
+		
+		} else {
+			// Style data series
+	        PointRenderer points = new DefaultPointRenderer2D();
+	        points.setSetting(PointRenderer.SHAPE, dotStyle.getShape());
+	        points.setSetting(PointRenderer.COLOR, dotStyle.getColor());
+	        plot.setPointRenderer(dataSeries, points);
+		}
+		//规定，dotname在第3列，dotvalue也就是常规value在第二列
+		if (dotStyle.isDotName()) {
+			int colValue = 1;
+			if (dataSeries.getColumnCount() == 2) {
+				colValue = 2;
+			}
+			PointRenderer pointRenderer = plot.getPointRenderer(dataSeries);
+			//the third column is the name column
+			pointRenderer.setSetting(PointRenderer.VALUE_COLUMN, colValue);
+		}
+        plot.getPointRenderer(dataSeries).setSetting(PointRenderer.VALUE_DISPLAYED, dotStyle.isValueVisible());
 	}
 	
 	private void setAxisAndTitle()

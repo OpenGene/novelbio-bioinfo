@@ -1,11 +1,15 @@
 package com.novelbio.base.plot;
 
 import java.awt.Color;
+import java.awt.LinearGradientPaint;
+import java.awt.Paint;
 import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
+
+import de.erichseifert.gral.util.GraphicsUtils;
 
 /**
  * 将数据的点分成几块，每一块都标记不同的颜色和点的样式
@@ -22,6 +26,7 @@ public class DotStyle {
 	public static final int STYLE_RECTANGLE = 8;
 	public static final int STYLE_TRIANGLE = 16;
 	public static final int STYLE_LINE = 32;
+	protected static final int STYLE_BAR = 64;
 	
 	public static final int SIZE_S = 128;
 	public static final int SIZE_SM = 256;
@@ -40,12 +45,33 @@ public class DotStyle {
 	/**
 	 * 颜色
 	 */
-	Color color = Color.BLACK;
+	Paint color = Color.BLACK;
 	/**
 	 * 形状
 	 */
 	int style = STYLE_CYCLE;
 	int size = SIZE_M;
+	/**
+	 * whether the point can be seen
+	 */
+	boolean valueVisible = false;
+	/**
+	 * whether the value of a point can be seen
+	 * default is false
+	 * @param visible
+	 */
+	public void setValueVisible(boolean valueVisible) {
+		this.valueVisible = valueVisible;
+	}
+	/**
+	 * whether the value of a point can be seen
+	 * default is false
+	 * @param visible
+	 */
+	public boolean isValueVisible() {
+		return valueVisible;
+	}
+	
 	/**
 	 * 设定大小
 	 * @param size
@@ -56,18 +82,11 @@ public class DotStyle {
 	public void setStyle(int style) {
 		this.style = style;
 	}
-	double lineLength = 0;
 	/**
-	 * 如果size为line，则必须设定本方法
-	 * 或者说一旦设定了本方法，则默认图像就为line
-	 * 如果是每个点作为线的存在，那么线的长度是多少
-	 * @param length
+	 * if want to set the point unvisible, just set color as blank
+	 * @param color
 	 */
-	public void setLineLength(double length) {
-		this.lineLength = length;
-	
-	}
-	public void setColor(Color color) {
+	public void setColor(Paint color) {
 		this.color = color;
 	}
 	public void setGroup(String group) {
@@ -76,7 +95,7 @@ public class DotStyle {
 	public String getGroup() {
 		return group;
 	}
-	public Color getColor() {
+	public Paint getColor() {
 		return color;
 	}
 	public int getSize() {
@@ -85,39 +104,36 @@ public class DotStyle {
 	public int getStyle() {
 		return style;
 	}
-	public double getLineLength() {
-		return lineLength;
+	/**
+	 * whether dot have a string name
+	 */
+	boolean dotname = false;
+	/**
+	 * whether dot have a string name
+	 * setting by PlotScatter Class
+	 */
+	protected void setDotname(boolean dotname) {
+		this.dotname = dotname;
+	}
+	/**
+	 * whether dot have a string name
+	 * setting by PlotScatter Class
+	 */
+	protected boolean isDotName() {
+		return dotname;
 	}
 	/**
 	 * 获得想要的图形，目前仅支持line，circle，rectangle
 	 * @param 需要扩大的倍数，高精度就扩大个3-5倍
 	 * @return
 	 */
-	public Shape getShape(int Biger) {
-		if (style == STYLE_AREA) {
-			line = new Rectangle2D.Double();
-			double x = 0; double y = 0;
-			double w = 0; double h = 0;
-			//线比设定的再长一点，防止画图的时候穿帮
-			h = lineLength*1.2;
-			if (size == SIZE_S) 
-				w = 0.5;
-			else if (size == SIZE_SM) 
-				w = 1.0;
-			else if (size == SIZE_M)
-				w = 2.0;
-			else if (size == SIZE_MB)
-				w = 3.0;
-			else if (size == SIZE_B)
-				w = 4.0;
-			line = new Rectangle2D.Double(x, y, w*Biger, h);
-			return line;
+	public Shape getShape() {
+		if (style == STYLE_AREA || style == STYLE_BAR) {
+			return null;
 		}
 		else if (style == STYLE_CYCLE) {
 			double x = 0; double y = 0;
 			double w = 0; double h = 0;
-			//线比设定的再长一点，防止画图的时候穿帮
-			h = lineLength*1.2;
 			if (size == SIZE_S) {
 				w = 0.5; h = 0.5;
 			}
@@ -134,14 +150,12 @@ public class DotStyle {
 			else if (size == SIZE_B) {
 				w = 4.0; h = 4.0;
 			}
-			circle = new Ellipse2D.Double(x, y, w*Biger, h*Biger);
+			circle = new Ellipse2D.Double(x, y, w, h);
 			return circle;
 		}
 		else if (style == STYLE_RECTANGLE) {
 			double x = 0; double y = 0;
 			double w = 0; double h = 0;
-			//线比设定的再长一点，防止画图的时候穿帮
-			h = lineLength*1.2;
 			if (size == SIZE_S) {
 				w = 0.5; h = 0.5;
 			}
@@ -158,7 +172,7 @@ public class DotStyle {
 			else if (size == SIZE_B) {
 				w = 4.0; h = 4.0;
 			}
-			rectangele = new Rectangle2D.Double(x, y, w*Biger, h*Biger);
+			rectangele = new Rectangle2D.Double(x, y, w, h);
 			return rectangele;
 		}
 		else {
@@ -205,5 +219,16 @@ public class DotStyle {
 	{
 		return size + style + group.hashCode() + color.hashCode()*100;
 	}
-
+	public static Paint getGridentColor(Color color) {
+		return new LinearGradientPaint(0f,0f, 0f,1f,
+			                                        new float[] { 0.0f, 1.0f },
+				                                      new Color[] { color, GraphicsUtils.deriveBrighter(color) }
+			                      );
+	}
+	public static Paint getGridentColor(Color color1, Color color2) {
+		return new LinearGradientPaint(0f,0f, 0f,1f,
+			                                        new float[] { 0.0f, 1.0f },
+				                                      new Color[] { color1, color2 }
+			                      );
+	}
 }

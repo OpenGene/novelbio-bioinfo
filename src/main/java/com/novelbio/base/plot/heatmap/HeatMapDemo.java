@@ -1,7 +1,7 @@
 package com.novelbio.base.plot.heatmap;
 import javax.swing.*;
 
-import com.novelbio.base.plot.PlotJpanel;
+import com.novelbio.base.plot.JpanelPlot;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -35,7 +35,7 @@ import java.awt.event.*;
 class HeatMapDemo extends JFrame implements ItemListener, FocusListener
 {
     PlotHeatMap heatmap;
-    PlotJpanel plotJpanel;
+    JpanelPlot plotJpanel;
     JCheckBox drawLegend;
     JCheckBox drawTitle;
     JCheckBox drawXTitle;
@@ -271,7 +271,7 @@ class HeatMapDemo extends JFrame implements ItemListener, FocusListener
         textFGColor.setText("000000");
         heatmap.setBg(Color.white);
         textBGColor.setText("FFFFFF");
-        plotJpanel = new PlotJpanel();
+        plotJpanel = new JpanelPlot();
         plotJpanel.setPlotNBC(heatmap);
 	    this.getContentPane().add(listPane, BorderLayout.EAST);
         this.getContentPane().add(plotJpanel, BorderLayout.CENTER);

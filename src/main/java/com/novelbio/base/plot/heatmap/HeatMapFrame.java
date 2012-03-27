@@ -109,8 +109,8 @@ class HeatMapFrame extends JFrame
 //        panel.setColorForeground(Color.white);
 //        panel.setColorBackground(Color.white);
 //        panel.setAlpha(true);
-        panel.saveToFile("/home/zong0jie/桌面/testimagePan2.png",500,500,true);
-        this.getContentPane().add(panel);
+//        panel.saveToFile("/home/zong0jie/桌面/testimagePan2.png",500,500,true);
+//        this.getContentPane().add(panel);
         this.createImage(1000, 1000);
 //        saveToFile("/home/zong0jie/桌面/testimage.png",1000,1000);
     }
@@ -122,7 +122,7 @@ class HeatMapFrame extends JFrame
         hmf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         hmf.setSize(500,500);
         hmf.setVisible(true);
-        hmf.saveImage(hmf.panel,"/home/zong0jie/桌面/testimageAll.png");
+//        hmf.saveImage(hmf.panel,"/home/zong0jie/桌面/testimageAll.png");
     }
 
     public static void main(String[] args)

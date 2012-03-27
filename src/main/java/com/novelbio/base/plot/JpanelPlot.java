@@ -34,13 +34,17 @@ import de.erichseifert.gral.graphics.DrawingContext;
 import de.erichseifert.gral.graphics.TableLayout;
 import de.erichseifert.gral.plots.XYPlot;
 import de.erichseifert.gral.ui.InteractivePanel;
-
-public class PlotJpanel extends JPanel{
+/**
+ * using as Jpannel, and can add plot images such as heatmap and scatterplot and so on
+ * @author zong0jie
+ *
+ */
+public class JpanelPlot extends JPanel{
 	public static final int PLOT_NORM = 100;
 	public static final int PLOT_INTERACT = 200;
 	
 	private static final long serialVersionUID = -2731809645384427146L;
-	Logger logger = Logger.getLogger(PlotJpanel.class);
+	Logger logger = Logger.getLogger(JpanelPlot.class);
 	/**
 	 * normal plot
 	 */
@@ -52,7 +56,7 @@ public class PlotJpanel extends JPanel{
 	 */
 	int plotType = PLOT_NORM;
 	
-	public PlotJpanel() {
+	public JpanelPlot() {
 		super(new BorderLayout());
 	}
 

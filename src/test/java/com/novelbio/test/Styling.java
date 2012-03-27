@@ -24,8 +24,6 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.jfree.xml.factory.objects.Line2DObjectDescription;
-
 import de.erichseifert.gral.data.DataSeries;
 import de.erichseifert.gral.data.DataTable;
 import de.erichseifert.gral.graphics.DrawingContext;
@@ -62,8 +60,8 @@ public class Styling extends JFrame {
         // Create series
         DataSeries series1 = new DataSeries("Series 1", data, 0, 1);
         DataSeries series2 = new DataSeries("Series 2", data, 0, 2);
-        XYPlot plot = new XYPlot(series1, series2);
-
+        XYPlot plot = new XYPlot(series1);
+        XYPlot plot2 = new XYPlot(series2);
         // Style the plot
         double insetsTop = 20.0,
                insetsLeft = 60.0,
@@ -81,16 +79,16 @@ public class Styling extends JFrame {
 
         // Style data series
         PointRenderer points1 = new DefaultPointRenderer2D();
-        points1.setSetting(PointRenderer.SHAPE, new Line2D.Double(0, 0, 100, 100));
-        points1.setSetting(PointRenderer.ERROR_DISPLAYED, false);
+//        points1.setSetting(PointRenderer.SHAPE, new Rectangle.Double(0, 0, 100, 100));
+//        points1.setSetting(PointRenderer.ERROR_DISPLAYED, false);
         points1.setSetting(PointRenderer.COLOR, Color.blue);
-        plot.setPointRenderer(series1, points1);
+//        plot.setPointRenderer(series1, points1);
 
         PointRenderer points2 = new DefaultPointRenderer2D();
         points2.setSetting(PointRenderer.SHAPE, new Rectangle(10, 10));
         points2.setSetting(PointRenderer.COLOR, new Color(0.0f, 0.0f, 0.0f, 0.3f));
-        plot.setPointRenderer(series2, points2);
-        plot.getAxis(XYPlot.AXIS_X).setRange(-10, 10);
+        plot2.setPointRenderer(series2, points2);
+        plot2.getAxis(XYPlot.AXIS_X).setRange(-10, 10);
 //        plot.setAxis(new Axis(-8, 8));
         // Style axes
         plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.LABEL, "X");
@@ -99,14 +97,15 @@ public class Styling extends JFrame {
         plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_SPACING, 1.0);
         plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.INTERSECTION, -Double.MAX_VALUE);
         plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.INTERSECTION, -Double.MAX_VALUE);
-
+        plot.add(plot2);
         // Display on screen
         getContentPane().add(new InteractivePanel(plot), BorderLayout.CENTER);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setMinimumSize(getContentPane().getMinimumSize());
         setSize(504, 327);
 
-        
+        plot2.getPointRenderer(series2).setSetting(PointRenderer.VALUE_DISPLAYED,
+                true);
 
 		BufferedImage image = new BufferedImage(2000, 2000, BufferedImage.TYPE_4BYTE_ABGR_PRE);
 		Graphics2D graphics = (Graphics2D) image.getGraphics();
@@ -147,17 +146,6 @@ public class Styling extends JFrame {
 				}
 		
 			}
-
-	
-//        try {
-//			drawableWriter.write(plot, new FileOutputStream(file), 2000, 2000);
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
  
     }
 
