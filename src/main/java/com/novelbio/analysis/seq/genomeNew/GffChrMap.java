@@ -2,25 +2,17 @@ package com.novelbio.analysis.seq.genomeNew;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.Paint;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.math.stat.StatUtils;
-import org.apache.commons.math.stat.inference.TestUtils;
-import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsHanyanChrom;
-import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -31,7 +23,8 @@ import com.novelbio.base.plot.heatmap.PlotHeatMap;
 import com.novelbio.base.plot.java.HeatChart;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
-import com.novelbio.test.testextend.a;
+
+import de.erichseifert.gral.util.GraphicsUtils;
 
 /**
  * 给定基因的区域，画出各种统计图
@@ -252,15 +245,15 @@ public class GffChrMap extends GffChrAbs {
 		PlotScatter plotScatter = new PlotScatter();
 		plotScatter.setAxisX(0, maxresolution);
 		plotScatter.setAxisY(0, axisY);
-		plotScatter.mapNum2ChangeX(0, 0, resolution.length, chrLength, interval);
+		plotScatter.setMapNum2ChangeX(0, 0, resolution.length, chrLength, interval);
 		DotStyle dotStyle = new DotStyle();
-		dotStyle.setColor(new Color(0, 0, 255, 255));
+		Paint colorGradient = DotStyle.getGridentColor(GraphicsUtils.deriveDarker(Color.blue), GraphicsUtils.deriveBrighter(Color.blue));
+		dotStyle.setColor(colorGradient);
 		dotStyle.setStyle(DotStyle.STYLE_AREA);
 		plotScatter.addXY(resolutionDoub, chrReads, dotStyle);
-//		plotScatter.addXY(x, y, dotStyle);
-
 		plotScatter.setBg(Color.WHITE);
 		plotScatter.setAlpha(false);
+		plotScatter.setMapNum2ChangeY(0, 0, axisY, 500, 100);
 		plotScatter.setTitle(chrID + " Reads Density", null);
 		plotScatter.setTitleX("Chromosome Length", null, 0);
 		plotScatter.setTitleY("Normalized Reads Counts", null, (int)axisY/5);
@@ -593,20 +586,26 @@ public class GffChrMap extends GffChrAbs {
 	}
 	/**
 	 * 根据前面设定upBp和downBp 根据指定的基因做出TSS图
-	 * @param fileName 基因文件，必须第一列为geneID，内部去重复
+	 * @param fileName 基因文件，必须第一列为geneID，内部去重复, 如果没有文件，则返回全体基因
 	 * @param rowStart 从第几行开始读
 	 * @param binNum 分成几份
 	 * @param resultFile 输出文件
 	 * @param geneStructure GffDetailGene.TSS
 	 */
 	public void plotGeneDensity(String fileName, int rowStart, int binNum, String resultFile, String geneStructure) {
-		ArrayList<MapInfo> lsMapInfo = super.readFileGeneMapInfo(fileName, 1, 0, rowStart, geneStructure, binNum);
+		ArrayList<MapInfo> lsMapInfo = null;
+		if (fileName == null || fileName.trim().equals("")) {
+			lsMapInfo = readGeneMapInfoAll(geneStructure, binNum);
+		}
+		else {
+			lsMapInfo = super.readFileGeneMapInfo(fileName, 1, 0, rowStart, geneStructure, binNum);
+		}
 		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapInfo);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
 		for (double d : TssDensity) {
 			txtWrite.writefileln(d+"");
 		}
-		txtWrite.close();
+		txtWrite.close();		
 	}
 	/**
 	 * 给定基因的symbol，返回该基因在tss附近区域的mapreads的平均数
@@ -614,7 +613,7 @@ public class GffChrMap extends GffChrAbs {
 	 * @param tssUp tss上游多少bp 负数在上游正数在下游
 	 * @param tssDown tss下游多少bp 负数在上游正数在下游
 	 */
-	private double getGeneTss(String geneID, int tssUp, int tssDown) {
+	public double getGeneTss(String geneID, int tssUp, int tssDown) {
 		GffDetailGene gffDetailGene = gffHashGene.searchLOC(geneID);
 		if (gffDetailGene == null) {
 			return -1;
@@ -636,7 +635,25 @@ public class GffChrMap extends GffChrAbs {
 		double[] siteInfo = mapReads.getRengeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
 		return MathComput.mean(siteInfo);
 	}
-
+	/**
+	 * 给定基因的symbol，返回该基因在tss附近区域的mapreads的平均数
+	 * @param geneID 基因名字
+	 * @param tssUp tss上游多少bp 负数在上游正数在下游
+	 * @param tssDown tss下游多少bp 负数在上游正数在下游
+	 */
+	public double getGeneBodySum(String geneID) {
+		GffDetailGene gffDetailGene = gffHashGene.searchLOC(geneID);
+		if (gffDetailGene == null) {
+			return -1;
+		}
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		int tssSite = gffGeneIsoInfo.getTSSsite();
+		int tesSite = gffGeneIsoInfo.getTESsite();
+		int tssStart = Math.min(tssSite, tesSite);
+		int tssEnd = Math.max(tssSite, tesSite);
+		double[] siteInfo = mapReads.getRengeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
+		return MathComput.sum(siteInfo);
+	}
 	// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

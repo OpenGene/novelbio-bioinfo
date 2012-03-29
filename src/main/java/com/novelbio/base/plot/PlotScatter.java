@@ -42,7 +42,7 @@ import de.erichseifert.gral.util.Orientation;
 public class PlotScatter extends PlotNBCInteractive{
 	HashMap<DotStyle, DataTable> hashDataTable = new HashMap<DotStyle, DataTable>();
 	
-	BarPlot plot;
+	XYPlot plot;
 	String title = null, titleX = null, titleY = null;
 	Double spaceX = null, spaceY = null;
     Font fontTitle = new Font(Font.SANS_SERIF, Font.PLAIN, 15), fontX = null, fontY = null;
@@ -471,7 +471,7 @@ public class PlotScatter extends PlotNBCInteractive{
 				dataSeries = new DataSeries(dotStyle.getGroup(), dataTable,0,1);
 			}
 			if (plot == null) {
-				plot = new BarPlot(dataSeries);
+				plot = new XYPlot(dataSeries);
 			}
 			else {
 				plot.add(dataSeries);
@@ -523,8 +523,9 @@ public class PlotScatter extends PlotNBCInteractive{
             plot.setPointRenderer(dataSeries, points);
 		}
 		else if (dotStyle.getStyle() == DotStyle.STYLE_LINE) {
-			plot.setSetting(BarPlot.BAR_WIDTH, 0.04);
-		    plot.getPointRenderer(dataSeries).setSetting(PointRenderer.COLOR, dotStyle.getColor());
+			//TODO 设置成常规的line
+//			plot.setSetting(BarPlot.BAR_WIDTH, 0.04);
+//		    plot.getPointRenderer(dataSeries).setSetting(PointRenderer.COLOR, dotStyle.getColor());
 		}
 		else if (dotStyle.getStyle() == DotStyle.STYLE_BAR) {
 			BarStyle barStyle = (BarStyle) dotStyle;
@@ -639,14 +640,14 @@ public class PlotScatter extends PlotNBCInteractive{
 	 * map the ticks number to actual axis, using the linear transformation 
 	 * @return
 	 */
-	public void  mapNum2ChangeX(double startTick, double startResult, double endTick, double endResult, double intervalNumResult) {
+	public void setMapNum2ChangeX(double startTick, double startResult, double endTick, double endResult, double intervalNumResult) {
 		mapAxisX = mapNum2Change(startTick, startResult, endTick, endResult, intervalNumResult);
 	}
 	/**
 	 * map the ticks number to actual axis, using the linear transformation 
 	 * @return
 	 */
-	public void  mapNum2ChangeY(double startTick, double startResult, double endTick, double endResult, double intervalNumResult) {
+	public void setMapNum2ChangeY(double startTick, double startResult, double endTick, double endResult, double intervalNumResult) {
 		mapAxisY = mapNum2Change(startTick, startResult, endTick, endResult, intervalNumResult);
 	}
 	/**

@@ -144,7 +144,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 * @param geneEnd3UTR 设定基因结尾向外延伸的长度，默认为100bp
 	 */
 	public void setGeneRange(int tssUpBp, int tssDownBp, int geneEnd3UTR) {
-		this.tssUpBp = tssDownBp;
+		this.tssUpBp = tssUpBp;
 		this.tssDownBp = tssDownBp;
 		this.geneEnd3UTR = geneEnd3UTR;
 		GffDetailGene.setCodLocation(tssUpBp, tssDownBp, geneEnd3UTR);
@@ -345,7 +345,26 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 		ArrayList<String[]> lstmp = ExcelTxtRead.readLsExcelTxt(txtExcel, columnID, rowStart, 0);
 		return getLsGeneMapInfo(lstmp, Structure, binNum);
 	}
-	
+	/**
+	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
+	 * 如果没有权重，就按照reads的密度进行排序
+	 * 一般用于根据gene express 画heapmap图
+	 * @param txtExcel
+	 * @param colGeneID
+	 * @param colScore
+	 * @param rowStart
+	 * @param Structure 基因的哪个部分的结构 
+	 * @param binNum 最后结果分成几块
+	 */
+	public ArrayList<MapInfo> readGeneMapInfoAll(String Structure, int binNum)
+	{
+		ArrayList<String> lsGeneID = gffHashGene.getLOCChrHashIDList();
+		ArrayList<String[]> lstmp = new ArrayList<String[]>();
+		for (String string : lsGeneID) {
+			lstmp.add(new String[]{string.split(GffDetailGene.SEP_GENE_NAME)[0]});
+		}
+		return getLsGeneMapInfo(lstmp, Structure, binNum);
+	}
 	/**
 	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
 	 * 一般用于根据gene express 画heapmap图

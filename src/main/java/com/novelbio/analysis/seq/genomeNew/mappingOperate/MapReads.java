@@ -508,7 +508,7 @@ public class MapReads {
 	 */
 	protected int[] addLoc(String[] tmp,boolean uniqReads,int[] tmpOld,int startCod, Boolean cis5to3, int[] chrBpReads, long[] readsNum) {
 		boolean cis5to3This = true;
-		if (colCis5To3 >= 0) {
+		if (colCis5To3 >= 0 && tmp.length > colCis5To3) {
 			cis5to3This = tmp[colCis5To3].trim().equals("+");
 		}
 		if (cis5to3 != null && cis5to3This != cis5to3.booleanValue()) {
