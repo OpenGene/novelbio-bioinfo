@@ -313,6 +313,10 @@ public class NovelBioConst {
 	 * limma临时的标准化基因文件
 	 */
 	public final static String R_WORKSPACE_MICROARRAY_NORMDATA_TMP = R_WORKSPACE_MICROARRAY + "tmpNormGene.txt";
+	/**
+	 * limma的标准化基因文件
+	 */
+	public final static String R_WORKSPACE_MICROARRAY_NORMDATA = R_WORKSPACE_MICROARRAY + "NormGene.txt";
 	/////////////////////////基因结构的分析////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 保存基因结构文件的路径，用于保存ChIP-Seq的Peak在基因组上分布的统计分析

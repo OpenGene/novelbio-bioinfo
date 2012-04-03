@@ -30,7 +30,7 @@ public class ArrayTools
 		
 		TxtReadandWrite txtReadandWrite=new TxtReadandWrite();
 		String resultFilePath=filePath+"/"+outFileName;
-		FileOperate.createFolder(resultFilePath);
+		FileOperate.createFolders(resultFilePath);
 		
 		int k=0;//计数分割的列数
 		//正式分割

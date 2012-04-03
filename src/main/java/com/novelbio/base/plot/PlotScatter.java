@@ -33,6 +33,7 @@ import de.erichseifert.gral.plots.areas.AreaRenderer;
 import de.erichseifert.gral.plots.areas.DefaultAreaRenderer2D;
 import de.erichseifert.gral.plots.axes.Axis;
 import de.erichseifert.gral.plots.axes.AxisRenderer;
+import de.erichseifert.gral.plots.lines.DefaultLineRenderer2D;
 import de.erichseifert.gral.plots.points.DefaultPointRenderer2D;
 import de.erichseifert.gral.plots.points.PointRenderer;
 import de.erichseifert.gral.util.GraphicsUtils;
@@ -517,12 +518,17 @@ public class PlotScatter extends PlotNBCInteractive{
             area.setSetting(AreaRenderer.COLOR, dotStyle.getColor());
             plot.setAreaRenderer(dataSeries, area);
             // Style data series
-	        PointRenderer points = new DefaultPointRenderer2D();
-	        points.setSetting(PointRenderer.SHAPE, new Rectangle2D.Double(0, 0, 0, 0));
-	        points.setSetting(PointRenderer.COLOR, new Color(0, 0, 0, 0));
-            plot.setPointRenderer(dataSeries, points);
+//	        PointRenderer points = new DefaultPointRenderer2D();
+//	        points.setSetting(PointRenderer.SHAPE, new Rectangle2D.Double(0, 0, 0, 0));
+//	        points.setSetting(PointRenderer.COLOR, new Color(0, 0, 0, 0));
+//        	plot.setPointRenderer(dataSeries, points);
+            plot.setPointRenderer(dataSeries, null);
 		}
 		else if (dotStyle.getStyle() == DotStyle.STYLE_LINE) {
+			 DefaultLineRenderer2D line = new DefaultLineRenderer2D();
+			 line.setSetting(DefaultLineRenderer2D.COLOR, dotStyle.getColor());
+			 plot.setLineRenderer(dataSeries, line);
+			 plot.setPointRenderer(dataSeries, null);
 			//TODO 设置成常规的line
 //			plot.setSetting(BarPlot.BAR_WIDTH, 0.04);
 //		    plot.getPointRenderer(dataSeries).setSetting(PointRenderer.COLOR, dotStyle.getColor());
@@ -535,9 +541,7 @@ public class PlotScatter extends PlotNBCInteractive{
 			PointRenderer pointRenderer = plot.getPointRenderer(dataSeries);
 			pointRenderer.setSetting(PointRenderer.COLOR, barStyle.getColor());
 			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE, barStyle.getBasicStroke());
-			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE_COLOR, barStyle.getEdgeColor());
-
-		
+			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE_COLOR, barStyle.getEdgeColor());		
 		} else {
 			// Style data series
 	        PointRenderer points = new DefaultPointRenderer2D();

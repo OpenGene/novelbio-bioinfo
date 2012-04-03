@@ -253,7 +253,7 @@ public class GffChrMap extends GffChrAbs {
 		plotScatter.addXY(resolutionDoub, chrReads, dotStyle);
 		plotScatter.setBg(Color.WHITE);
 		plotScatter.setAlpha(false);
-		plotScatter.setMapNum2ChangeY(0, 0, axisY, 500, 100);
+//		plotScatter.setMapNum2ChangeY(0, 0, axisY, 500, 100);
 		plotScatter.setTitle(chrID + " Reads Density", null);
 		plotScatter.setTitleX("Chromosome Length", null, 0);
 		plotScatter.setTitleY("Normalized Reads Counts", null, (int)axisY/5);
@@ -356,7 +356,6 @@ public class GffChrMap extends GffChrAbs {
 	}
 
 	/**
-	 * 
 	 * @param color
 	 * @param SortS2M
 	 *            是否从小到大排序
@@ -375,47 +374,19 @@ public class GffChrMap extends GffChrAbs {
 	 */
 	public void plotTssTesHeatMap(Color color, boolean SortS2M,
 			String txtExcel, int colGeneID, int colScore, int rowStart,
-			double heapMapSmall, double heapMapBig, double scale,
+			double heapMapSmall, double heapMapBig,
 			String structure, int binNum, String outFile) {
-		ArrayList<MapInfo> lsMapInfos = super.readFileGeneMapInfo(txtExcel,
-				colGeneID, colScore, rowStart, structure, binNum);
+		ArrayList<MapInfo> lsMapInfos = null;
+		if (txtExcel != null && !txtExcel.trim().equals("")) {
+			lsMapInfos = super.readFileGeneMapInfo(txtExcel, colGeneID, colScore, rowStart, structure, binNum);
+		}
+		else {
+			lsMapInfos = super.readGeneMapInfoAll(structure, binNum);
+		}
 		MapInfo.sortPath(SortS2M);
 		Collections.sort(lsMapInfos);
-		// plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 100,
-		// HeatChart.SCALE_LINEAR, FileOperate.changeFileSuffix(outFile,
-		// "_100line", null));
-		// plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 100,
-		// HeatChart.SCALE_EXPONENTIAL, FileOperate.changeFileSuffix(outFile,
-		// "_100exp", null));
-		// plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 100,
-		// HeatChart.SCALE_LOGARITHMIC, FileOperate.changeFileSuffix(outFile,
-		// "_100log", null));
-
-		// plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 70,
-		// HeatChart.SCALE_LINEAR, FileOperate.changeFileSuffix(outFile,
-		// "_70line", null));
-		// plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 70,
-		// HeatChart.SCALE_EXPONENTIAL, FileOperate.changeFileSuffix(outFile,
-		// "_70exp", null));
-		// plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 70,
-		// HeatChart.SCALE_LOGARITHMIC, FileOperate.changeFileSuffix(outFile,
-		// "_70log", null));
-
-		// plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 200,
-		// HeatChart.SCALE_LINEAR, FileOperate.changeFileSuffix(outFile,
-		// "_200line", null));
-		// plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 200,
-		// HeatChart.SCALE_EXPONENTIAL, FileOperate.changeFileSuffix(outFile,
-		// "_200exp", null));
-		// plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 200,
-		// HeatChart.SCALE_LOGARITHMIC, FileOperate.changeFileSuffix(outFile,
-		// "_200log", null));
-		// plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 100, 0.5,
-		// FileOperate.changeFileSuffix(outFile, "_100log", null));
-		// plotHeatMap(lsMapInfos, structure, Color.BLUE, 0, 450, 1.5,
-		// FileOperate.changeFileSuffix(outFile, null, null));
-		plotHeatMap(lsMapInfos, structure, color, heapMapSmall, heapMapBig,
-				scale, FileOperate.changeFileSuffix(outFile, null, null));
+		plotHeatMap(lsMapInfos, color, heapMapSmall, heapMapBig,
+				FileOperate.changeFileSuffix(outFile, "_HeatMap", "png"));
 	}
 
 	/**
@@ -445,15 +416,12 @@ public class GffChrMap extends GffChrAbs {
 		MapInfo.sortPath(SortS2M);
 		Collections.sort(lsMapInfos);
 		mapReads.getRegionLs(binNum, lsMapInfos, 0);
-		plotHeatMap(lsMapInfos, "", Color.BLUE, heapMapSmall, heapMapBig,
-				scale, FileOperate.changeFileSuffix(outFile, null, null));
+		plotHeatMap(lsMapInfos, Color.BLUE, heapMapSmall, heapMapBig,
+				 FileOperate.changeFileSuffix(outFile, null, null));
 	}
-
 	/**
 	 * @param lsMapInfo
 	 *            基因信息
-	 * @param structure
-	 *            基因结构，目前只有 GffDetailGene.TSS 和 GffDetailGene.TES
 	 * @param color
 	 * @param small
 	 *            最小
@@ -463,49 +431,15 @@ public class GffChrMap extends GffChrAbs {
 	 *            scale次方，大于1则稀疏高表达，小于1则稀疏低表达
 	 * @param outFile
 	 */
-	private static void plotHeatMap(ArrayList<MapInfo> lsMapInfo,
-			String structure, Color color, double small, double big,
-			double scale, String outFile) {
-		HeatChart map = new HeatChart(lsMapInfo, small, big);
-		if (structure.equals(GffDetailGene.TSS)) {
-			map.setTitle("HeatMap Of TSS");
-			map.setXAxisLabel("Distance To TSS");
-			map.setYAxisLabel("");
-		} else if (structure.equals(GffDetailGene.TES)) {
-			map.setTitle("HeatMap Of TES");
-			map.setXAxisLabel("Distance To TES");
-			map.setYAxisLabel("");
-		} else {
-			map.setTitle("HeatMap Of Summit");
-			map.setXAxisLabel("Distance To Summit");
-			map.setYAxisLabel("");
-		}
-
-		String[] aa = new String[] { "a", "b", "c", "d", "e", "f" };
-		map.setXValues(aa);
-		String[] nn = new String[lsMapInfo.get(0).getDouble().length];
-		for (int i = 0; i < nn.length; i++) {
-			nn[i] = "";
-		}
-		map.setYValues(nn);
-		Dimension bb = new Dimension();
-		bb.setSize(1, 0.01);
-		map.setCellSize(bb);
-		// Output the chart to a file.
-		Color colorblue = color;
-		Color colorRed = Color.WHITE;
-		// map.setBackgroundColour(color);
-		map.setHighValueColour(colorblue);
-		map.setLowValueColour(colorRed);
-		map.setColourScale(scale);
-		try {
-			map.saveToFile(new File(outFile));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	private static void plotHeatMap(ArrayList<MapInfo> lsMapInfo, Color color,double mindata, double maxdata, String outFile) {
+		Color colorwhite = new Color(0, 0, 0, 0);
+		Color[] gradientColors = new Color[] { colorwhite, color};
+		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
+		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfo, false,  customGradient);
+		heatMap.setRange(mindata, maxdata);
+		heatMap.saveToFile(outFile, 4000, 1000);
+		 
 	}
-
 	/**
 	 * @param lsMapInfo
 	 *            基因信息
@@ -595,7 +529,7 @@ public class GffChrMap extends GffChrAbs {
 	public void plotGeneDensity(String fileName, int rowStart, int binNum, String resultFile, String geneStructure) {
 		ArrayList<MapInfo> lsMapInfo = null;
 		if (fileName == null || fileName.trim().equals("")) {
-			lsMapInfo = readGeneMapInfoAll(geneStructure, binNum);
+			lsMapInfo = super.readGeneMapInfoAll(geneStructure, binNum);
 		}
 		else {
 			lsMapInfo = super.readFileGeneMapInfo(fileName, 1, 0, rowStart, geneStructure, binNum);

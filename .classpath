@@ -17,10 +17,7 @@
 	<classpathentry kind="lib" path="lib/appFramework-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jnlp.jar"/>
 	<classpathentry kind="con" path="com.soyatec.uml.CONTAINER"/>
-	<classpathentry kind="lib" path="/media/winD/fedora/workspace/ExternalJar/jgrapht-0.8.3/jgrapht-jdk1.6.jar"/>
-	<classpathentry kind="lib" path="lib/gral-examples-0.9-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/miglayout-3.5.5.jar"/>
-	<classpathentry kind="lib" path="lib/VectorGraphics2D-0.9-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 	<referencedentry kind="lib" path="/ExternalJar/jgrapht-0.8.2/lib/jgraph.jar" sourcepath="/ExternalJar/jgrapht-0.8.2/src"/>
 </classpath>

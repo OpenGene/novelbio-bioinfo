@@ -307,20 +307,37 @@ public class FileOperate {
 	 *            无限级目录参数，各级目录以/或\\区分 例如 a/b/c
 	 * @return 返回创建文件后的路径 例如 c:/myf/a/b/c
 	 */
-	public static String createFolders(String folderPath, String paths) {
-		String txts = addSep(folderPath);
-
+	public static boolean createFolders(String folderPath) {
+		if (isFileExist(folderPath)) {
+			if (isFileDirectory(folderPath))
+				return true;
+			else
+				return false;
+		}
+		String foldUpper = folderPath;
+		String creatPath = "";
+		boolean flag = true;
+		while (flag) {
+			if (isFileExist(foldUpper)) {
+				flag = false;
+				break;
+			}
+			creatPath = getFileName(foldUpper) + File.separator + creatPath;
+			foldUpper = getParentPathName(foldUpper);
+		}
+		String txts = addSep(foldUpper);
 		try {
 			String txt;
-			StringTokenizer st = new StringTokenizer(paths, "/\\");
+			StringTokenizer st = new StringTokenizer(creatPath, "/\\");
 			for (int i = 0; st.hasMoreTokens(); i++) {
 				txt = st.nextToken().trim();
 				txts = createFolder(txts + txt);
 			}
+			return true;
 		} catch (Exception e) {
 			logger.error("创建目录操作出错！");
+			return false;
 		}
-		return txts;
 	}
 
 	/**

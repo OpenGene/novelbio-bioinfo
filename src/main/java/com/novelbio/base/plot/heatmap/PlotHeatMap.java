@@ -117,7 +117,9 @@ public class PlotHeatMap extends PlotNBC
 	 * 给定实现HeatChart接口的数据集，然后画图
 	 * 自动将HeatChartDataInts中的title设置给xvalue
 	 * 注意list中所有数据的维度应该一致
-	 * @param lsHeatChartDataInts
+	 * @param lsHeatChartDataInts data
+	 * @param useGraphicsYAxis If true, the data will be displayed with the y=0 row at the top of the screen. If false, the data will be displayed with the y=0 row at the bottom of the screen.
+
 	 */
 	public PlotHeatMap(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts,boolean useGraphicsYAxis, Color[] colors) {
 		super();

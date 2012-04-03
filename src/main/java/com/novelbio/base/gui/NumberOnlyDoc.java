@@ -9,7 +9,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-import org.apache.jasper.tagplugins.jstl.core.If;
 import org.apache.poi.hssf.OldExcelFormatException;
 /**
  * jtxtFeild只能输入小数点，负号和数字

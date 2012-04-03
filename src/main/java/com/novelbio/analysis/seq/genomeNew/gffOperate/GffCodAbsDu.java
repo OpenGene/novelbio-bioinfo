@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
+import org.apache.ibatis.migration.commands.NewCommand;
 
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 
@@ -27,7 +28,7 @@ public abstract class GffCodAbsDu<T extends GffDetailAbs, K extends GffCodAbs<T>
 	K gffCod2 = null;	
 	
 	//两个端点之间的gffdetail
-	ArrayList<T> lsgffDetailsMid = null;
+	ArrayList<T> lsgffDetailsMid = new ArrayList<T>();
 	/**
 	 * peak与左端Item交集时，交集在左端Item中所占的比例
 	 */
@@ -194,6 +195,11 @@ public abstract class GffCodAbsDu<T extends GffDetailAbs, K extends GffCodAbs<T>
 			opRightInItem = 100 * (double) rightoverlap / rightItemLength;
 			opRightInCod = 100 * (double) rightoverlap / peakLength;
 			opRightBp = rightoverlap;
+		}else {
+			opLeftInItem = 0; opLeftInCod = 0; opLeftBp = 0;
+			opRightInItem = 0;
+			opRightInCod = 0;
+			opRightBp = 0;
 		}
 	}
 	

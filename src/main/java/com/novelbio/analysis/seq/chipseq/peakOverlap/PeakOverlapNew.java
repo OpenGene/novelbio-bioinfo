@@ -41,7 +41,9 @@ public class PeakOverlapNew
 		    PeakStatistic("2N", "3N",file2N,file3N,txtPeakOverlapFile2N3NStic);
 		    
 	
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		System.gc();
 		
 	}

@@ -8,6 +8,7 @@ import com.novelbio.analysis.tools.compare.CombineTab;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 
 public class CtrlCombFile {
 	CombineTab combineTab = new CombineTab();
@@ -55,14 +56,14 @@ public class CtrlCombFile {
 	
 	public void output() {
 		ArrayList<String[]> lsOut = combineTab.exeToFile();
-		if (lsOut.size() > 60000) {
+//		if (lsOut.size() > 60000) {
 			JOptionPane.showMessageDialog(null, "Result num is bigger than 60000, so save to txt file", "alert", JOptionPane.INFORMATION_MESSAGE);
 			TxtReadandWrite txtWrite = new TxtReadandWrite(oufFile, true);
 			txtWrite.ExcelWrite(lsOut, "\t", 1, 1);
 			return;
-		}
-		ExcelOperate excelOperate = new ExcelOperate();
-		excelOperate.openExcel(oufFile);
-		excelOperate.WriteExcel(1, 1, lsOut);
+//		}
+//		ExcelOperate excelOperate = new ExcelOperate();
+//		excelOperate.openExcel(FileOperate.changeFileSuffix(oufFile, "", "xls"));
+//		excelOperate.WriteExcel(1, 1, lsOut);
 	}
 }

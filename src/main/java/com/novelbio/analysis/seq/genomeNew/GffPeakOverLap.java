@@ -205,6 +205,7 @@ public class GffPeakOverLap
 				tmpResult[1] = tmpPeakID;
 				tmpResult[2] = overlapLength+"";
 				result.add(tmpResult);
+				
 			}
 		}
 		return result;
@@ -274,6 +275,9 @@ public class GffPeakOverLap
 		int end=gffMPeakDetial.getEndAbs();
 		
 		GffCodPeakDU lsSearchReslut = gffHashplusPeak.searchLocation(ChrID, start, end);//searchLocation(ChrID, start, end, gffHashplusPeak);
+		if (lsSearchReslut == null) {
+			return 0;
+		}
 		double startOverlapLength = lsSearchReslut.getOpLeftInCod();
 		if (startOverlapLength == 100) {
 			return lsSearchReslut.getOpLeftBp();
@@ -281,10 +285,12 @@ public class GffPeakOverLap
 
 		int tmpOverlapLength=0;
 		tmpOverlapLength= lsSearchReslut.getOpLeftBp() + lsSearchReslut.getOpRightBp();
-		
-		for (GffDetailPeak gffDetailPeak : lsSearchReslut.getLsGffDetailMid()) {
-			tmpOverlapLength = tmpOverlapLength + (int)gffDetailPeak.getLen();
+		if (lsSearchReslut.getLsGffDetailMid() != null) {
+			for (GffDetailPeak gffDetailPeak : lsSearchReslut.getLsGffDetailMid()) {
+				tmpOverlapLength = tmpOverlapLength + (int)gffDetailPeak.getLen();
+			}
 		}
+	
 		
 		if (tmpOverlapLength < 0) {
 			System.out.println("两个peak的交集为负数");

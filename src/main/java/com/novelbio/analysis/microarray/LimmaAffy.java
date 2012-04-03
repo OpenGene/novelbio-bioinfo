@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-
-import org.apache.jasper.tagplugins.jstl.core.ForEach;
 
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class LimmaAffy {
@@ -25,6 +23,13 @@ public class LimmaAffy {
 	 * 不对数据进行变换
 	 */
 	public static final String DATA_CONVERT_NONE = "none";
+	/**
+	 * 差异基因的信息，写入存档用的
+	 */
+	String infoDifGene = "";
+	public void setInfoDifGene(String infoDifGene) {
+		this.infoDifGene = infoDifGene;
+	}
 	
 	private String txtTmpNormData = NovelBioConst.R_WORKSPACE_MICROARRAY_NORMDATA_TMP;
 	ArrayList<String> lsRawData = new ArrayList<String>();
@@ -46,7 +51,7 @@ public class LimmaAffy {
 	/**
 	 * 标准化数据的文件路径
 	 */
-	String normDataFile = NovelBioConst.R_WORKSPACE_MICROARRAY_NORMDATA_TMP;
+	String normDataFile = NovelBioConst.R_WORKSPACE_MICROARRAY_NORMDATA;
 	/**
 	 * 标准化方法
 	 */
@@ -54,7 +59,7 @@ public class LimmaAffy {
 	/**
 	 * 探针列
 	 */
-	int colAccID = 0;
+	int colAccID = 1;
 	/**
 	 * 探针列
 	 */
@@ -77,16 +82,13 @@ public class LimmaAffy {
 	public void setDataConvertType(String dataConvertType) {
 		this.dataConvertType = dataConvertType;
 	}
-	public void setRawData(String rawDataFile)
-	{
+	public void setRawData(String rawDataFile) {
 		lsRawData.add(rawDataFile);
 	}
-	public void cleanRawData()
-	{
+	public void cleanRawData() {
 		lsRawData.clear();
 	}
-	public void setNormDataFile(String normDataFile)
-	{
+	public void setNormDataFile(String normDataFile) {
 		this.normDataFile = normDataFile;
 	}
 	/**
@@ -99,14 +101,29 @@ public class LimmaAffy {
 	}
 	public static void main(String[] args) {
 		LimmaAffy limmaAffy = new LimmaAffy();
-		limmaAffy.setNormDataFile("/media/winE/NBC/Project/Microarray_YL_111012/CEL/fasfees");
-		limmaAffy.setRawData("/media/winE/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C07201.CEL");
-		limmaAffy.setRawData("/media/winE/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C07202.CEL");
-		limmaAffy.setRawData("/media/winE/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C07203.CEL");
+//		limmaAffy.setNormDataFile("/media/winE/NBC/Project/Microarray_YL_111012/CEL/fasfees");
+		limmaAffy.setRawData("/media/winF/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C07201.CEL");
+		limmaAffy.setRawData("/media/winF/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C08022.CEL");
+		limmaAffy.setRawData("/media/winF/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C08083.CEL");
+		limmaAffy.setRawData("/media/winF/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135E_C08195.CEL");
 		ArrayList<String> ls = limmaAffy.generateScriptNorm();
 		for (String string : ls) {
 			System.out.println(string);
 		}
+//		CmdOperate cmdOperate = new CmdOperate(ls);
+//		cmdOperate.doInBackgroundR("MicroarrayLimma");
+		System.out.println("###################");
+		ArrayList<String[]> lsGroupInfo = new ArrayList<String[]>();
+		lsGroupInfo.add(new String[]{2+"","aa"});
+		lsGroupInfo.add(new String[]{3+"","bb"});
+		lsGroupInfo.add(new String[]{4+"","aa"});
+		lsGroupInfo.add(new String[]{5+"","bb"});
+		limmaAffy.setLsGroupInfo(lsGroupInfo);
+		ArrayList<String[]> lsCompInfo = new ArrayList<String[]>();
+		
+		lsCompInfo.add(new String[]{"aa","bb"});
+		limmaAffy.setLsCompInfo(lsCompInfo);
+		limmaAffy.difGeneFinder("/media/winE/Bioinformatics/R/Protocol/Microarray");
 	}
 	/**
 	 * 忽略大小写
@@ -122,14 +139,25 @@ public class LimmaAffy {
 	 * 产生标准化的数据，并写入文本，并读取内存
 	 * @return
 	 */
-	public ArrayList<String> getNormData()
+	public ArrayList<String[]> normData()
 	{
-		generateScriptNorm();
+		CmdOperate cmdOperate = new CmdOperate(generateScriptNorm());
+		cmdOperate.doInBackgroundR(infoDifGene+"DifGeneFinder");
+		ArrayList<String[]> lsGeneInfo = ExcelTxtRead.readLsExcelTxt(normDataFile, 1);
+		return lsGeneInfo;
+	}
+	public void difGeneFinder(String outPath)
+	{
+		ArrayList<String> lsScript = new ArrayList<String>();
+		lsScript.add(scriptDifGeneFind());
+		lsScript.add(getCompScriptSimple(outPath));
+		CmdOperate cmdOperate = new CmdOperate(lsScript);
+		cmdOperate.doInBackgroundR("MicroarrayLimmaDifGene");
 	}
 	/**
 	 * 忽略大小写
 	 * string[2];
-	 * 0：第几列信息，必须是intege
+	 * 0：第几列信息，实际列。必须是intege
 	 * 1：该列属于编组的名称
 	 */
 	public void setLsGroupInfo(ArrayList<String[]> lsGroupInfo) {
@@ -164,16 +192,6 @@ public class LimmaAffy {
 		return lsScript;
 	}
 	/**
-	 * 产生挑选差异基因的R脚本
-	 * @return
-	 */
-	private ArrayList<String> generateScriptDifGen() {
-		lsScript = new ArrayList<String>();
-		lsScript.add("library(limma)");
-		lsScript.add(scriptReadNormData());
-		return lsScript;
-	}
-	/**
 	 * 生成读取cel文件的script<br>
 	 * Data = ReadAffy("fswefse","fse3r")  <br>
 	esetOld =gcrma(Data)<br>
@@ -187,12 +205,12 @@ public class LimmaAffy {
 			script = script + "\"" + string + "\", ";
 		}
 		script = script.substring(0, script.length() - 2);
-		script = script + ")\r\n";
+		script = script + ")";
 		if (NormType.equals(LimmaAffy.NORM_RMA)) {
-			script = script + "esetOld = rma(data)\r\n";
+			script = script + "esetOld = rma(data)" +TxtReadandWrite.huiche;
 		}
 		else if (NormType.equals(LimmaAffy.NORM_GCRMA)) {
-			script = script + "esetOld = gcrma(data)\r\n";
+			script = script + "esetOld = gcrma(data)"+TxtReadandWrite.huiche;
 		}
 		script = script + scriptWriteNormData();
 		return script;
@@ -213,11 +231,11 @@ public class LimmaAffy {
 		String[] scriptDesignName = getDesign();
 		String script = scriptReadNormTmpData();
 		if (dataConvertType.equals(DATA_CONVERT_LOG2)) {
-			script = "eset = log2(eset)\r\n";
+			script = "eset = log2(eset)"+TxtReadandWrite.huiche;
 		}
-		script = script + scriptDesignName[0] + scriptDesignName[1];
+		script = script +TxtReadandWrite.huiche + scriptDesignName[0] + scriptDesignName[1];
 		
-		return null;
+		return script;
 	}
 	/**
 	 * 构建比较方法的脚本
@@ -230,16 +248,16 @@ public class LimmaAffy {
 
 	 * @return
 	 */
-	private String getCompScriptSimple()
+	private String getCompScriptSimple(String outPath)
 	{
-		String script = "contrast.matrix = makeContrast(";
+		String script = "contrast.matrix = makeContrasts(";
 		for (String[] strings : lsCompInfo) {
-			script = script + strings[0] + "_vs_" + strings[1] + "=" + strings[0] + " - " + strings[1] + ",";
+			script = script + strings[0] + "vs" + strings[1] + "=" + strings[0] + " - " + strings[1] + ",";
 		}
-		script = script + "levels=design)\r\n";
-		script = script + "fit = lmFit(eset, design)\r\n"+ "fit2 = contrasts.fit(fit, contrast.matrix) \r\n"+"fit2.eBayes = eBayes(fit2)\r\n";
+		script = script + "levels=design)"+TxtReadandWrite.huiche;
+		script = script + "fit = lmFit(eset, design)"+TxtReadandWrite.huiche+ "fit2 = contrasts.fit(fit, contrast.matrix) "+TxtReadandWrite.huiche+"fit2.eBayes = eBayes(fit2)"+TxtReadandWrite.huiche;
 		for (String[] strings : lsCompInfo) {
-			script = script + getWriteInfo(strings[0] + "_vs_" + strings[1]);
+			script = script + getWriteInfo(outPath, strings[0] + "vs" + strings[1]);
 		}
 		return script;
 	}
@@ -248,21 +266,22 @@ public class LimmaAffy {
 	 * @param compInfo
 	 * @return
 	 */
-	private String getWriteInfo(String compInfo)
+	private String getWriteInfo(String outpath, String compInfo)
 	{
-		String script = "write.table(topTable(fit2.eBayes, coef=\"" + compInfo + "\", adjust=\"fdr\", sort.by=\"B\", number=50000),  file=\""+compInfo+".xls\", row.names=F, sep=\"\\t\")\r\n";
+		outpath = FileOperate.addSep(outpath);
+		String script = "write.table(topTable(fit2.eBayes, coef=\"" + compInfo + "\", adjust=\"fdr\", sort.by=\"B\", number=50000),  file=\""+outpath + compInfo+".xls\", row.names=F, sep=\"\\t\")"+TxtReadandWrite.huiche;
 		return script;
 	}
 	
 	/**
-	 * 获得设计比较矩阵，并将数据写入临时Normlization文件中
+	 * 获得设计比较矩阵，并将数据写入临时Normlization文件中，自带换行符
 	 * 0: design = model.matrix(~ -1+factor (1,1,1,2,2,2))
 	 * 1: colnames(design) = c("H","S")
 	 * @return
 	 */
 	private String[] getDesign()
 	{
-		String scriptDesign = "design = model.matrix(~ -1+factor (";
+		String scriptDesign = "design = model.matrix(~ -1+factor(c(";
 		String scriptColName = "colnames(design) = c(";
 		//按照列进行排序
 		Collections.sort(lsGroupInfo, new Comparator<String[]>() {
@@ -294,20 +313,13 @@ public class LimmaAffy {
 			groupID = hashName2GroupID.get(strings[1]);
 			scriptDesign = scriptDesign +","+ groupID;
 		}
-		
-		for (String[] strings : lsGroupInfo) {
-			//分组名称所对应的ID
-			groupID = hashName2GroupID.get(strings[1]);
-			scriptDesign = scriptDesign + groupID + ",";
-		}
-		scriptDesign = scriptDesign.substring(0, scriptDesign.length() - 1);
-		scriptDesign = scriptDesign + "))\r\n";
+		scriptDesign = scriptDesign + ")))"+TxtReadandWrite.huiche;
 		//依次获得每个分组的名称
 		for (String string : hashName2GroupID.keySet()) {
 			scriptColName = scriptColName + "\""+string + "\",";
 		}
 		scriptColName = scriptColName.substring(0, scriptColName.length()-1);
-		scriptColName = scriptColName + ")\r\n";
+		scriptColName = scriptColName + ")"+TxtReadandWrite.huiche;
 		String[] design = new String[2];
 		design[0] = scriptDesign; design[1] = scriptColName;
 		return design;
@@ -326,7 +338,7 @@ public class LimmaAffy {
 		{
 			String[] strings = lsGroupInfo.get(i);
 			columnID[i+1] = Integer.parseInt(strings[0]);
-		}		
+		}
 		ArrayList<String[]> lsTmpNormData = ExcelTxtRead.readLsExcelTxt(getNormDataFile(), columnID, 1, -1);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(txtFileName, true);
 		txtWrite.ExcelWrite(lsTmpNormData, "\t", 1, 1);
@@ -342,28 +354,13 @@ public class LimmaAffy {
 	}
 	/**
 	 * 读取标准化数据的脚本
-	 * eset = "read.table(file = "aa.txt", he = T, sep = "\t", row.names = 1)"
-	 * @return
-	 */
-	private String scriptReadNormData() {
-		String script = "eset=read.table(file=\""+getNormDataFile()+"\",he=T,sep=\"\\t\",row.names=1)";
-		return script;
-	}
-	/**
-	 * 读取标准化数据的脚本
+	 * eset=read.table(file="txtTmpNormData",he=T,sep="\t",row.names=1)";
 	 * @return
 	 */
 	private String scriptReadNormTmpData() {
-		String script = "eset=read.table(file=\""+txtTmpNormData+"\",he=T,sep=\"\\t\",row.names=1)";
+		String script = "library(limma)" + TxtReadandWrite.huiche;
+		script = script +  "eset=read.table(file=\""+txtTmpNormData+"\",he=T,sep=\"\\t\",row.names=1)";
 		return script;
 	}
-	
-	private ArrayList<String[]> readNormData()
-	{
-		ArrayList<String[]> lsNormData = ExcelTxtRead.readLsExcelTxt(getNormDataFile(), 1);
-		return lsNormData;
-	}
-	
-	
 
 }
