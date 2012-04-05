@@ -71,6 +71,25 @@ public class PatternOperate
        return listResult;
      }
     /**
+     * 给定一行，返回其中所有的数字，如果没有，则返回空的int[]
+     * @param inputstr
+     * @return
+     */
+    public static int[] getNumAll(String inputstr)
+    {
+		ArrayList<String[]> lsResult = getPatLoc(inputstr, "\\d+", false);
+		if (lsResult.size() == 0) {
+			return new int[]{};
+		}
+		int[] colDetail = new int[lsResult.size()];
+		for (int i = 0; i < colDetail.length; i++) {
+			colDetail[i] = Integer.parseInt(lsResult.get(i)[0]);
+		}
+		return colDetail;
+    }
+    
+    
+    /**
      * <b>简单处理，相对快速</b>
      * 获得序列中指定的所有正则表达式的值
      * @param inputstr

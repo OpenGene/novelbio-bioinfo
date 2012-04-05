@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.TreeSet;
 
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -32,6 +33,7 @@ public class LimmaAffy {
 	}
 	
 	private String txtTmpNormData = NovelBioConst.R_WORKSPACE_MICROARRAY_NORMDATA_TMP;
+	HashMap<String,String> hashRawData = new LinkedHashMap<String, String>();
 	ArrayList<String> lsRawData = new ArrayList<String>();
 	/**
 	 * 忽略大小写
@@ -48,6 +50,10 @@ public class LimmaAffy {
 	 * group必须和lsGroupInfo中的string一致
 	 */
 	ArrayList<String[]> lsCompInfo = new ArrayList<String[]>();
+	/**
+	 * 标准化数据的文件路径
+	 */
+	String normDataFileRaw = NovelBioConst.R_WORKSPACE_MICROARRAY_NORMDATA + "raw";
 	/**
 	 * 标准化数据的文件路径
 	 */
@@ -82,11 +88,13 @@ public class LimmaAffy {
 	public void setDataConvertType(String dataConvertType) {
 		this.dataConvertType = dataConvertType;
 	}
-	public void setRawData(String rawDataFile) {
+	public void addCelFile(String rawDataFile, String prix) {
 		lsRawData.add(rawDataFile);
+		hashRawData.put(FileOperate.getFileName(rawDataFile), prix);
 	}
 	public void cleanRawData() {
 		lsRawData.clear();
+		hashRawData.clear();
 	}
 	public void setNormDataFile(String normDataFile) {
 		this.normDataFile = normDataFile;
@@ -102,16 +110,15 @@ public class LimmaAffy {
 	public static void main(String[] args) {
 		LimmaAffy limmaAffy = new LimmaAffy();
 //		limmaAffy.setNormDataFile("/media/winE/NBC/Project/Microarray_YL_111012/CEL/fasfees");
-		limmaAffy.setRawData("/media/winF/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C07201.CEL");
-		limmaAffy.setRawData("/media/winF/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C08022.CEL");
-		limmaAffy.setRawData("/media/winF/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C08083.CEL");
-		limmaAffy.setRawData("/media/winF/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135E_C08195.CEL");
+		limmaAffy.addCelFile("/media/winF/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C07201.CEL", "aa");
+		limmaAffy.addCelFile("/media/winF/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C08022.CEL", "bb");
+		limmaAffy.addCelFile("/media/winF/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135B_C08083.CEL", "vv");
+		limmaAffy.addCelFile("/media/winF/NBC/Project/Microarray_YL_111012/CEL/090918-HG-U133_Plus_2-09135E_C08195.CEL","sefe");
 		ArrayList<String> ls = limmaAffy.generateScriptNorm();
 		for (String string : ls) {
 			System.out.println(string);
 		}
-//		CmdOperate cmdOperate = new CmdOperate(ls);
-//		cmdOperate.doInBackgroundR("MicroarrayLimma");
+		limmaAffy.normData();
 		System.out.println("###################");
 		ArrayList<String[]> lsGroupInfo = new ArrayList<String[]>();
 		lsGroupInfo.add(new String[]{2+"","aa"});
@@ -136,15 +143,51 @@ public class LimmaAffy {
 		this.lsCompInfo = lsCompInfo;
 	}
 	/**
+	 * 忽略大小写
+	 * string[2];
+	 * 0：第几列信息，实际列。必须是intege
+	 * 1：该列属于编组的名称
+	 */
+	public void addCompInfo(String group1, String group2) {
+		lsCompInfo.add(new String[]{group1, group2});
+	}
+	/**
+	 * 清空设计
+	 * @param columnNum
+	 * @param groupName
+	 */
+	public void clearCompInfo() {
+		lsCompInfo.clear();
+	}
+	
+	
+	/**
 	 * 产生标准化的数据，并写入文本，并读取内存
 	 * @return
 	 */
 	public ArrayList<String[]> normData()
 	{
 		CmdOperate cmdOperate = new CmdOperate(generateScriptNorm());
-		cmdOperate.doInBackgroundR(infoDifGene+"DifGeneFinder");
-		ArrayList<String[]> lsGeneInfo = ExcelTxtRead.readLsExcelTxt(normDataFile, 1);
+		cmdOperate.doInBackgroundR(infoDifGene+"MicroarrayLimma");
+		ArrayList<String[]> lsGeneInfo = ExcelTxtRead.readLsExcelTxt(normDataFileRaw, 1);
+		String[] title = lsGeneInfo.get(0);
+		title[0] = "ProbeID";
+		for (int i = 1; i < title.length; i++) {
+			title[i] = hashRawData.get(title[i]);
+		}
+		TxtReadandWrite txtWrite = new TxtReadandWrite(normDataFile, true);
+		txtWrite.ExcelWrite(lsGeneInfo, "\t", 1, 1);
 		return lsGeneInfo;
+	}
+	/**
+	 * 产生标准化的数据，并写入文本，并读取内存
+	 * @return
+	 */
+	public ArrayList<String[]> normData(ArrayList<String[]> lsNormData)
+	{
+		TxtReadandWrite txtWrite = new TxtReadandWrite(normDataFile, true);
+		txtWrite.ExcelWrite(lsNormData, "\t", 1, 1);
+		return lsNormData;
 	}
 	public void difGeneFinder(String outPath)
 	{
@@ -162,6 +205,23 @@ public class LimmaAffy {
 	 */
 	public void setLsGroupInfo(ArrayList<String[]> lsGroupInfo) {
 		this.lsGroupInfo = lsGroupInfo;
+	}
+	/**
+	 * 忽略大小写
+	 * string[2];
+	 * 0：第几列信息，实际列。必须是intege
+	 * 1：该列属于编组的名称
+	 */
+	public void addGroupInfo(int columnNum, String groupName) {
+		lsGroupInfo.add(new String[]{columnNum + "", groupName});
+	}
+	/**
+	 * 清空设计
+	 * @param columnNum
+	 * @param groupName
+	 */
+	public void clearGroupInfo() {
+		lsGroupInfo.clear();
 	}
 	/**
 	 * 是否需要标准化数据，注意只有原始文件存在才能标准化数据
@@ -205,7 +265,7 @@ public class LimmaAffy {
 			script = script + "\"" + string + "\", ";
 		}
 		script = script.substring(0, script.length() - 2);
-		script = script + ")";
+		script = script + ")" + TxtReadandWrite.huiche;
 		if (NormType.equals(LimmaAffy.NORM_RMA)) {
 			script = script + "esetOld = rma(data)" +TxtReadandWrite.huiche;
 		}
@@ -268,7 +328,8 @@ public class LimmaAffy {
 	 */
 	private String getWriteInfo(String outpath, String compInfo)
 	{
-		outpath = FileOperate.addSep(outpath);
+//		outpath = FileOperate.addSep(outpath);
+		outpath = FileOperate.getParentPathName(outpath) + FileOperate.getFileNameSep(outpath)[0];
 		String script = "write.table(topTable(fit2.eBayes, coef=\"" + compInfo + "\", adjust=\"fdr\", sort.by=\"B\", number=50000),  file=\""+outpath + compInfo+".xls\", row.names=F, sep=\"\\t\")"+TxtReadandWrite.huiche;
 		return script;
 	}
@@ -349,7 +410,7 @@ public class LimmaAffy {
 	 */
 	private String scriptWriteNormData()
 	{
-		String script = "write.exprs(esetOld, file=\"" + getNormDataFile()+ "\")";
+		String script = "write.exprs(esetOld, file=\"" + normDataFileRaw + "\")";
 		return script;
 	}
 	/**

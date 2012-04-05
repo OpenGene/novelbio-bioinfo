@@ -25,9 +25,9 @@ public class SAMtools extends SeqComb{
 	String samFile = "";
 	boolean paired = false;
 	/**
-	 * 序列质量小于25的就不要了
+	 * 序列质量小于10的就不要了
 	 */
-	private int mapQuality = 25;
+	private int mapQuality = 10;
 	/**
 	 * 提取SAM中的mapping信息用的
 	 */
@@ -38,7 +38,7 @@ public class SAMtools extends SeqComb{
 	 * 设定单双端
 	 * @param samFile sam文件
 	 * @param paired 不知道的话就设定false
-	 * @param mapQuality mapping质量，大于30说明不错，大于25说明能mapping上。<=0则用默认值，为25
+	 * @param mapQuality mapping质量，大于30说明不错。<=0则用默认值，为10
 	 */
 	public SAMtools(String samFile, boolean paired, int mapQuality) {
 		super(samFile, 1);

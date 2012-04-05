@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import javax.print.attribute.standard.Fidelity;
+
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
@@ -493,17 +495,20 @@ public class FastQ extends SeqComb {
 		BufferedReader readerSeq = txtSeqFile.readfile();
 		BufferedReader readerSeq2 = null;
 		TxtReadandWrite txtOutFile = new TxtReadandWrite();
-		
+		String suffix = "fq";
+		if (compressOutType == TxtReadandWrite.GZIP) {
+			suffix = "gz";
+		}
 		if (!booPairEnd) 
 			txtOutFile.setParameter(compressOutType, fileFilterOut.trim(), true, false);
 		else 
-			txtOutFile.setParameter(compressOutType, fileFilterOut.trim() + "_1", true, false);
+			txtOutFile.setParameter(compressOutType, FileOperate.changeFileSuffix(fileFilterOut.trim(), "_1", suffix), true, false);
 		
 		TxtReadandWrite txtOutFile2 = new TxtReadandWrite();;
 		if (booPairEnd) {
 			txtSeqFile2.reSetInfo();
 			readerSeq2 = txtSeqFile2.readfile();
-			txtOutFile2.setParameter(compressOutType, fileFilterOut.trim() + "_2", true, false);
+			txtOutFile2.setParameter(compressOutType, FileOperate.changeFileSuffix(fileFilterOut.trim(), "_2", suffix), true, false);
 		}
 
 		String content = "";

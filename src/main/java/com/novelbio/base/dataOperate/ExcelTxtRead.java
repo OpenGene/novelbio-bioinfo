@@ -138,7 +138,7 @@ public class ExcelTxtRead {
 		}
 		TxtReadandWrite txt = new TxtReadandWrite(excelFile, false);
 		int txtRowNum = txt.ExcelRows();
-		ls1=txt.ExcelRead("\t", firstlinels1, 1,txtRowNum , -1, 1);//从目标行读取
+		ls1=txt.ExcelRead("\t", firstlinels1, 1,txtRowNum , -1, 0);//从目标行读取
 		txt.close();
 		return ls1;
 	}

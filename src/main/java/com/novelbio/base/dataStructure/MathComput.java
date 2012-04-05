@@ -356,6 +356,8 @@ public class MathComput {
 	}
 	/**
 	 * 输入数据进行排序，
+	 * @param unsortNum 待排序的数组
+	 * @param smallToBig 是否从小到大排序
 	 * @return
 	 */
 	public static void sort(int[] unsortNum, boolean smallToBig)

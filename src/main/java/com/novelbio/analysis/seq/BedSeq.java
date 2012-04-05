@@ -271,13 +271,13 @@ public class BedSeq extends SeqComb{
 	/**
 	 * calDestribution方法和calCoverage方法里面用到
 	 */
-	private String ALLMAPPEDREADS = "All Mapped Reads";
+	public static final String ALLMAPPEDREADS = "All Mapped Reads";
 	/**
 	 * 
 	 * 排序后再进行计算，否则速度会慢<br>
 	 * 计算reads在染色体上的总的mapping数量和单个染色体的mapping数量
 	 * @param calFragLen
-	 * @param FragmentFile
+	 * @param FragmentFile 写入的文件，写入然后调用R
 	 * @return linkedHashMap
 	 * 第一个key 和 value： allMappingReads    allMappingReads/allReads<br>
 	 * 其他: <br>
@@ -347,11 +347,27 @@ public class BedSeq extends SeqComb{
 	 * key: ChrID，小写<br> 
 	 * value double[2] 0: Coverage 1: Coverage/ChrLen
 	 */
-	public LinkedHashMap<String, double[]> calCoverage(String chrLenFile) throws Exception
+	public LinkedHashMap<String, double[]> getCoverage(String chrLenFile) throws Exception
 	{
 		TxtReadandWrite txtChrID = new TxtReadandWrite(chrLenFile, false);
 		//ChrID和长度的对照表
-		LinkedHashMap<String, String> lkHashChrLen = txtChrID.getKey2Value("\t", false);
+		LinkedHashMap<String, Double> lkHashChrLen = txtChrID.getKey2ValueDouble("\t", false);
+		return getCoverage(lkHashChrLen);
+	}
+	
+	/**
+	 * 测试一下
+	 * @param 输入的染色体长度文件，肯定是txt
+	 * 计算测序结果的coverage情况，以及reads在每条染色体上的coverage情况，结果必须是排过序的.
+	 * @return linkedHashMap
+	 * 第一个key 和 value： allMappingReadsCoverage    allMappingReadsCoverage/allChrLen<br>
+	 * 其他: <br>
+	 * key: ChrID，小写<br> 
+	 * value double[2] 0: Coverage 1: Coverage/ChrLen
+	 */
+	public LinkedHashMap<String, double[]> getCoverage(HashMap<String, Double> hashChr2Len)
+	{
+		//ChrID和长度的对照表
 		LinkedHashMap<String, double[]> hashChrReadsNum = new LinkedHashMap<String, double[]>();
 		TxtReadandWrite txtbed = new TxtReadandWrite(compressInType, seqFile, false);
 		
@@ -360,10 +376,8 @@ public class BedSeq extends SeqComb{
 		//全长基因
 		double[] allMappedReads = new double[2];
 		hashChrReadsNum.put(ALLMAPPEDREADS, allMappedReads);
-		
-		String content = ""; String chrID = "";
-		BufferedReader readBed = txtbed.readfile();
-		while ((content = readBed.readLine()) != null) {
+		String chrID = "";
+		for (String content : txtbed.readlines()) {
 			String[] ss = content.split("\t");
 			int Locstart = Integer.parseInt(ss[1]); int Locend = Integer.parseInt(ss[2]); 
 			if (!ss[0].trim().equals(chrID)) {
@@ -392,7 +406,7 @@ public class BedSeq extends SeqComb{
 		//计算比值并加入arraylist
 		long chrLenAll = 0L;
 		for (String key: hashChrReadsNum.keySet()) {
-			chrLenAll = chrLenAll + Long.parseLong(lkHashChrLen.get(key));
+			chrLenAll = chrLenAll + hashChr2Len.get(key).longValue();
 		}
 		
 		hashChrReadsNum.get(ALLMAPPEDREADS)[1] = hashChrReadsNum.get(ALLMAPPEDREADS)[0]/chrLenAll;
@@ -402,10 +416,11 @@ public class BedSeq extends SeqComb{
 			if (key.equals(ALLMAPPEDREADS)) {
 				continue;
 			}
-			value[2] = value[1]/Long.parseLong(lkHashChrLen.get(key));
+			value[2] = value[1]/hashChr2Len.get(key);
 		}
 		return hashChrReadsNum;
 	}
+	
 	/**
 	 * 用dge的方法来获得基因表达量
 	 * @param sort 是否需要排序

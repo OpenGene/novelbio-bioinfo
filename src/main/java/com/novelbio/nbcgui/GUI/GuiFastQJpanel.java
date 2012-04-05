@@ -19,12 +19,14 @@ import com.novelbio.nbcgui.controlseq.CtrlFastQMapping;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import javax.swing.ButtonGroup;
 
 public class GuiFastQJpanel extends JPanel {
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
 	CtrlFastQMapping ctrlFastQMapping = new CtrlFastQMapping();
+	private final ButtonGroup groupLibrary = new ButtonGroup();
 	public GuiFastQJpanel() {
 		SpringLayout springLayout = new SpringLayout();
 		setLayout(springLayout);
@@ -34,22 +36,22 @@ public class GuiFastQJpanel extends JPanel {
 		springLayout.putConstraint(SpringLayout.WEST, lblFastqfile, 10, SpringLayout.WEST, this);
 		add(lblFastqfile);
 		
-		final JScrollPaneData scrollPane = new JScrollPaneData();
-		scrollPane.setTitle(new String[]{"FileName","Prix","Group"});
-		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 6, SpringLayout.SOUTH, lblFastqfile);
-		springLayout.putConstraint(SpringLayout.WEST, scrollPane, 10, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, 188, SpringLayout.SOUTH, lblFastqfile);
-		add(scrollPane);
+		final JScrollPaneData scrollPaneInputFile = new JScrollPaneData();
+		scrollPaneInputFile.setTitle(new String[]{"FileName","Prix","Group"});
+		springLayout.putConstraint(SpringLayout.NORTH, scrollPaneInputFile, 6, SpringLayout.SOUTH, lblFastqfile);
+		springLayout.putConstraint(SpringLayout.WEST, scrollPaneInputFile, 10, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, scrollPaneInputFile, 188, SpringLayout.SOUTH, lblFastqfile);
+		add(scrollPaneInputFile);
 		
-		JButton btnOpen = new JButton("Open");
+		JButton btnOpenInputFile = new JButton("Open");
 
-		springLayout.putConstraint(SpringLayout.NORTH, btnOpen, 30, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, btnOpen, 457, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.EAST, scrollPane, -6, SpringLayout.WEST, btnOpen);
-		add(btnOpen);
+		springLayout.putConstraint(SpringLayout.NORTH, btnOpenInputFile, 30, SpringLayout.NORTH, this);
+		springLayout.putConstraint(SpringLayout.WEST, btnOpenInputFile, 457, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.EAST, scrollPaneInputFile, -6, SpringLayout.WEST, btnOpenInputFile);
+		add(btnOpenInputFile);
 		
 		JCheckBox chckbxFilterreads = new JCheckBox("FilterReads");
-		springLayout.putConstraint(SpringLayout.NORTH, chckbxFilterreads, 14, SpringLayout.SOUTH, scrollPane);
+		springLayout.putConstraint(SpringLayout.NORTH, chckbxFilterreads, 14, SpringLayout.SOUTH, scrollPaneInputFile);
 		springLayout.putConstraint(SpringLayout.WEST, chckbxFilterreads, 0, SpringLayout.WEST, lblFastqfile);
 		add(chckbxFilterreads);
 		
@@ -59,39 +61,38 @@ public class GuiFastQJpanel extends JPanel {
 		add(chckbxCutend);
 		
 		textField = new JTextField();
-		springLayout.putConstraint(SpringLayout.NORTH, textField, 2, SpringLayout.NORTH, chckbxCutend);
-		springLayout.putConstraint(SpringLayout.EAST, textField, 0, SpringLayout.EAST, scrollPane);
 		add(textField);
 		textField.setColumns(10);
 		
-		JComboBox comboBox = new JComboBox();
-		springLayout.putConstraint(SpringLayout.NORTH, comboBox, 0, SpringLayout.NORTH, chckbxFilterreads);
-		springLayout.putConstraint(SpringLayout.WEST, comboBox, 219, SpringLayout.EAST, chckbxFilterreads);
-		springLayout.putConstraint(SpringLayout.EAST, comboBox, -497, SpringLayout.EAST, this);
-		add(comboBox);
+		JComboBox cmbReadsQuality = new JComboBox();
+		springLayout.putConstraint(SpringLayout.NORTH, textField, 14, SpringLayout.SOUTH, cmbReadsQuality);
+		springLayout.putConstraint(SpringLayout.WEST, textField, 0, SpringLayout.WEST, cmbReadsQuality);
+		springLayout.putConstraint(SpringLayout.NORTH, cmbReadsQuality, 0, SpringLayout.NORTH, chckbxFilterreads);
+		springLayout.putConstraint(SpringLayout.WEST, cmbReadsQuality, 135, SpringLayout.EAST, chckbxFilterreads);
+		springLayout.putConstraint(SpringLayout.EAST, cmbReadsQuality, 0, SpringLayout.EAST, btnOpenInputFile);
+		add(cmbReadsQuality);
 		
 		JLabel lblReadsQuality = new JLabel("Reads Quality");
-		springLayout.putConstraint(SpringLayout.NORTH, lblReadsQuality, 18, SpringLayout.SOUTH, scrollPane);
-		springLayout.putConstraint(SpringLayout.WEST, lblReadsQuality, -146, SpringLayout.WEST, comboBox);
-		springLayout.putConstraint(SpringLayout.SOUTH, lblReadsQuality, 0, SpringLayout.SOUTH, chckbxFilterreads);
-		springLayout.putConstraint(SpringLayout.EAST, lblReadsQuality, -16, SpringLayout.WEST, comboBox);
+		springLayout.putConstraint(SpringLayout.NORTH, lblReadsQuality, 4, SpringLayout.NORTH, chckbxFilterreads);
+		springLayout.putConstraint(SpringLayout.WEST, lblReadsQuality, 6, SpringLayout.EAST, chckbxFilterreads);
+		springLayout.putConstraint(SpringLayout.EAST, lblReadsQuality, -15, SpringLayout.WEST, cmbReadsQuality);
 		add(lblReadsQuality);
 		
 		JLabel lblRetainBp = new JLabel("Retain Bp");
-		springLayout.putConstraint(SpringLayout.WEST, lblRetainBp, 105, SpringLayout.EAST, chckbxCutend);
-		springLayout.putConstraint(SpringLayout.SOUTH, lblRetainBp, 0, SpringLayout.SOUTH, textField);
+		springLayout.putConstraint(SpringLayout.NORTH, lblRetainBp, 4, SpringLayout.NORTH, chckbxCutend);
+		springLayout.putConstraint(SpringLayout.EAST, lblRetainBp, 0, SpringLayout.EAST, lblReadsQuality);
 		add(lblRetainBp);
 		
-		JComboBox comboBox_1 = new JComboBox();
-		springLayout.putConstraint(SpringLayout.NORTH, comboBox_1, 65, SpringLayout.SOUTH, btnOpen);
-		springLayout.putConstraint(SpringLayout.WEST, comboBox_1, 6, SpringLayout.EAST, scrollPane);
-		springLayout.putConstraint(SpringLayout.EAST, comboBox_1, 0, SpringLayout.EAST, btnOpen);
-		add(comboBox_1);
+		JComboBox cmbFileFormat = new JComboBox();
+		springLayout.putConstraint(SpringLayout.WEST, cmbFileFormat, 8, SpringLayout.EAST, scrollPaneInputFile);
+		springLayout.putConstraint(SpringLayout.SOUTH, cmbFileFormat, -39, SpringLayout.NORTH, cmbReadsQuality);
+		springLayout.putConstraint(SpringLayout.EAST, cmbFileFormat, 2, SpringLayout.EAST, btnOpenInputFile);
+		add(cmbFileFormat);
 		
-		JLabel lblFastqformat = new JLabel("FastQFormat");
-		springLayout.putConstraint(SpringLayout.WEST, lblFastqformat, 6, SpringLayout.EAST, scrollPane);
-		springLayout.putConstraint(SpringLayout.SOUTH, lblFastqformat, -6, SpringLayout.NORTH, comboBox_1);
-		add(lblFastqformat);
+		JLabel lblFileFormat = new JLabel("FileFormat");
+		springLayout.putConstraint(SpringLayout.WEST, lblFileFormat, 6, SpringLayout.EAST, scrollPaneInputFile);
+		springLayout.putConstraint(SpringLayout.SOUTH, lblFileFormat, -7, SpringLayout.NORTH, cmbFileFormat);
+		add(lblFileFormat);
 		
 		JCheckBox chckbxMapping = new JCheckBox("Mapping");
 		springLayout.putConstraint(SpringLayout.NORTH, chckbxMapping, 25, SpringLayout.SOUTH, chckbxCutend);
@@ -99,24 +100,24 @@ public class GuiFastQJpanel extends JPanel {
 		add(chckbxMapping);
 		
 		JComboBox comboBox_2 = new JComboBox();
+		springLayout.putConstraint(SpringLayout.NORTH, comboBox_2, 364, SpringLayout.NORTH, this);
 		springLayout.putConstraint(SpringLayout.WEST, comboBox_2, 10, SpringLayout.WEST, this);
 		springLayout.putConstraint(SpringLayout.EAST, comboBox_2, 140, SpringLayout.WEST, this);
 		add(comboBox_2);
 		
 		JLabel lblAlgrethm = new JLabel("algrethm");
-		springLayout.putConstraint(SpringLayout.SOUTH, lblAlgrethm, -6, SpringLayout.NORTH, comboBox_2);
+		springLayout.putConstraint(SpringLayout.SOUTH, lblAlgrethm, -337, SpringLayout.SOUTH, this);
 		springLayout.putConstraint(SpringLayout.EAST, lblAlgrethm, 0, SpringLayout.EAST, lblFastqfile);
 		add(lblAlgrethm);
 		
 		JComboBox comboBox_3 = new JComboBox();
-		springLayout.putConstraint(SpringLayout.NORTH, comboBox_2, 0, SpringLayout.NORTH, comboBox_3);
-		springLayout.putConstraint(SpringLayout.NORTH, comboBox_3, 85, SpringLayout.SOUTH, lblRetainBp);
+		springLayout.putConstraint(SpringLayout.NORTH, comboBox_3, 364, SpringLayout.NORTH, this);
 		springLayout.putConstraint(SpringLayout.WEST, comboBox_3, 191, SpringLayout.WEST, this);
 		springLayout.putConstraint(SpringLayout.EAST, comboBox_3, -627, SpringLayout.EAST, this);
 		add(comboBox_3);
 		
 		JLabel lblSpecies = new JLabel("Species");
-		springLayout.putConstraint(SpringLayout.NORTH, lblSpecies, 0, SpringLayout.NORTH, lblAlgrethm);
+		springLayout.putConstraint(SpringLayout.NORTH, lblSpecies, 344, SpringLayout.NORTH, this);
 		springLayout.putConstraint(SpringLayout.WEST, lblSpecies, 113, SpringLayout.EAST, lblAlgrethm);
 		add(lblSpecies);
 		
@@ -135,23 +136,22 @@ public class GuiFastQJpanel extends JPanel {
 		add(chckbxPairendextend);
 		
 		textField_1 = new JTextField();
-		springLayout.putConstraint(SpringLayout.NORTH, textField_1, 34, SpringLayout.SOUTH, chckbxConvertbed);
-		springLayout.putConstraint(SpringLayout.WEST, textField_1, 18, SpringLayout.EAST, chckbxPairendextend);
-		springLayout.putConstraint(SpringLayout.EAST, textField_1, -730, SpringLayout.EAST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, textField_1, -29, SpringLayout.NORTH, chckbxPairendextend);
+		springLayout.putConstraint(SpringLayout.EAST, textField_1, -790, SpringLayout.EAST, this);
 		add(textField_1);
 		textField_1.setColumns(10);
 		
 		JLabel lblExtendto = new JLabel("ExtendTo");
-		springLayout.putConstraint(SpringLayout.NORTH, lblExtendto, 160, SpringLayout.SOUTH, textField);
-		springLayout.putConstraint(SpringLayout.WEST, lblExtendto, 301, SpringLayout.EAST, chckbxPairendextend);
-		springLayout.putConstraint(SpringLayout.SOUTH, lblExtendto, -180, SpringLayout.SOUTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, lblExtendto, -585, SpringLayout.EAST, this);
+		springLayout.putConstraint(SpringLayout.WEST, textField_1, 3, SpringLayout.EAST, lblExtendto);
+		springLayout.putConstraint(SpringLayout.NORTH, lblExtendto, 63, SpringLayout.SOUTH, comboBox_3);
+		springLayout.putConstraint(SpringLayout.WEST, lblExtendto, 17, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, lblExtendto, -27, SpringLayout.NORTH, chckbxPairendextend);
+		springLayout.putConstraint(SpringLayout.EAST, lblExtendto, -1012, SpringLayout.EAST, this);
 		add(lblExtendto);
 		
 		textField_2 = new JTextField();
 		springLayout.putConstraint(SpringLayout.WEST, textField_2, 10, SpringLayout.WEST, this);
 		springLayout.putConstraint(SpringLayout.SOUTH, textField_2, -96, SpringLayout.SOUTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, textField_2, 87, SpringLayout.EAST, lblRetainBp);
 		add(textField_2);
 		textField_2.setColumns(10);
 		
@@ -163,25 +163,60 @@ public class GuiFastQJpanel extends JPanel {
 		add(lblResultpath);
 		
 		JButton btnSaveto = new JButton("SaveTo");
+		btnSaveto.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+			}
+		});
+		springLayout.putConstraint(SpringLayout.EAST, textField_2, -94, SpringLayout.WEST, btnSaveto);
 		springLayout.putConstraint(SpringLayout.NORTH, btnSaveto, 0, SpringLayout.NORTH, textField_2);
-		springLayout.putConstraint(SpringLayout.EAST, btnSaveto, 0, SpringLayout.EAST, btnOpen);
+		springLayout.putConstraint(SpringLayout.EAST, btnSaveto, 0, SpringLayout.EAST, btnOpenInputFile);
 		add(btnSaveto);
 		
 		JRadioButton rdbtnSingleend = new JRadioButton("SingleEnd");
+		groupLibrary.add(rdbtnSingleend);
 		springLayout.putConstraint(SpringLayout.WEST, rdbtnSingleend, 66, SpringLayout.EAST, lblFastqfile);
 		springLayout.putConstraint(SpringLayout.SOUTH, rdbtnSingleend, 0, SpringLayout.SOUTH, lblFastqfile);
 		add(rdbtnSingleend);
 		
 		JRadioButton rdbtnPairend = new JRadioButton("PairEnd");
+		groupLibrary.add(rdbtnPairend);
 		springLayout.putConstraint(SpringLayout.NORTH, rdbtnPairend, 0, SpringLayout.NORTH, rdbtnSingleend);
 		springLayout.putConstraint(SpringLayout.WEST, rdbtnPairend, 23, SpringLayout.EAST, rdbtnSingleend);
 		add(rdbtnPairend);
 		
-		btnOpen.addActionListener(new ActionListener() {
+		JCheckBox chckbxSort = new JCheckBox("Sort");
+		springLayout.putConstraint(SpringLayout.NORTH, chckbxSort, 28, SpringLayout.SOUTH, textField_1);
+		springLayout.putConstraint(SpringLayout.WEST, chckbxSort, 46, SpringLayout.EAST, chckbxPairendextend);
+		add(chckbxSort);
+		
+		JButton btnNewButton = new JButton("Delete");
+		
+		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				scrollPaneInputFile.removeSelRows();
+			}
+		});
+		springLayout.putConstraint(SpringLayout.WEST, btnNewButton, 9, SpringLayout.EAST, scrollPaneInputFile);
+		springLayout.putConstraint(SpringLayout.SOUTH, btnNewButton, -22, SpringLayout.NORTH, lblFileFormat);
+		springLayout.putConstraint(SpringLayout.EAST, btnNewButton, 73, SpringLayout.EAST, scrollPaneInputFile);
+		add(btnNewButton);
+		
+		btnOpenInputFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				ArrayList<String[]> lsFile = ctrlFastQMapping.getlsGetFileInfo();
-				scrollPane.addProview(lsFile);
+				scrollPaneInputFile.addProview(lsFile);
 			}
 		});
 	}

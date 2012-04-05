@@ -971,7 +971,37 @@ public class TxtReadandWrite {
 		}
 		return lkhashResult;
 	}
-	
+	/**
+	 * 给定一个两列文件，将其中的结果按照Key-value导出,value为double类型
+	 * 如果一列为空，如为很多空格，则跳过，如果有重复列，选择后出现的列
+	 * @param chrLenFile
+	 * @param keyCase key的大小写。 null 不改变大小写，false 小写，true大写
+	 * @return
+	 * 没东西则返回null
+	 */
+	public LinkedHashMap<String, Double> getKey2ValueDouble(String sep, Boolean keyCase) {
+		LinkedHashMap<String, Double> lkhashResult = new LinkedHashMap<String, Double>();
+		ArrayList<String> lstmp = readfileLs();
+		for (String string : lstmp) {
+			if (string == null || string.trim().equals("")) {
+				continue;
+			}
+			String[] ss = string.trim().split("\t");
+			if (keyCase != null) {
+				 ss[0] = keyCase == true ? ss[0].toUpperCase():ss[0].toLowerCase();  
+			}
+			if (ss.length < 2) {
+				lkhashResult.put(ss[0], 0.0);
+			}
+			else {
+				lkhashResult.put(ss[0], Double.parseDouble(ss[1]));
+			}
+		}
+		if (lkhashResult.size() == 0) {
+			return null;
+		}
+		return lkhashResult;
+	}
 	/**
 	 * 将数据按照excel的方法写入string[][],null和""都不写入，最后写入一个换行
 	 * 

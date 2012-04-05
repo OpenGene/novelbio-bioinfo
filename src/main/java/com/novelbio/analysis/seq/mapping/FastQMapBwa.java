@@ -78,7 +78,22 @@ public class FastQMapBwa extends FastQMapAbs{
 		super.uniqMapping = uniqMapping;
 		super.outFileName = outFileName;
 	}
-	
+	/**
+	 * 双端只做unique mapping
+	 * @param seqFile1
+	 * @param seqFile2 没有就写null
+	 * @param FastQFormateOffset
+	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
+	 * @param outFileName 结果文件名
+	 * @param uniqMapping 是否uniqmapping，单端才有的参数
+	 * @param IndexFile
+	 */
+	public FastQMapBwa(String seqFile1, String seqFile2,
+			 int QUALITY,String outFileName, boolean uniqMapping) {
+		super(seqFile1, seqFile2, QUALITY);
+		super.uniqMapping = uniqMapping;
+		super.outFileName = outFileName;
+	}
 	/**
 	 * @param seqFile1
 	 * @param FastQFormateOffset
@@ -143,7 +158,7 @@ public class FastQMapBwa extends FastQMapAbs{
 	 * 参数设定不能用于solid
 	 */
 	@Override
-	public void mapReads() {
+	public SAMtools mapReads() {
 		IndexMake();
 //		linux命令如下
 //		bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT.fastq > TGACT.sai
@@ -205,7 +220,8 @@ public class FastQMapBwa extends FastQMapAbs{
 		System.out.println(cmd);
 		cmdOperate = new CmdOperate(cmd);
 		cmdOperate.doInBackground("bwaMappingSAI");
-
+		SAMtools saMtools = new SAMtools(outFileName, isPairEnd(), 10);
+		return saMtools;
 	}
 	/**
 	 * 返回bed文件，如果是双端就返回双端的bed文件

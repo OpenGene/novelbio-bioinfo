@@ -117,7 +117,7 @@ public abstract class FastQMapAbs extends FastQ implements FastQMapInt{
 	 * 实验组 fileName+"_Treat_SoapMap";
 	 * @return 返回reads的总数，也就是测序量，<b>双端的话不乘以2</b>
 	 */
-	public abstract void mapReads();
+	public abstract SAMtools mapReads();
 	
 	/**
 	 * 回头添加做索引

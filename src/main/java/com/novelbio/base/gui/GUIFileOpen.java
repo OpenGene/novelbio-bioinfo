@@ -37,12 +37,12 @@ public class GUIFileOpen  extends JFrame {
 	public ArrayList<String> openLsFileName(String  description, String... extensions) {
 		ArrayList<String> lsResult = new ArrayList<String>();
 		JFileChooser chooser = new JFileChooser();
-		if (extensions != null && extensions.length > 0) {
-			FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensions);
-			chooser.setFileFilter(filter);
+		String[] extensionFinal = filterExtension(extensions);
+		if (extensionFinal != null) {
+			FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensionFinal);
+			chooser.setFileFilter(filter);	
 		}
-	
-	
+		chooser.setMultiSelectionEnabled(true);
 		int returnVal = chooser.showOpenDialog(getParent());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File[] files = chooser.getSelectedFiles();
@@ -61,12 +61,34 @@ public class GUIFileOpen  extends JFrame {
 	 */
 	public String saveFileName(String  description, String... extensions) {
 		JFileChooser chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensions);
-		chooser.setFileFilter(filter);
+		String[] extensionFinal = filterExtension(extensions);
+		if (extensionFinal != null) {
+			FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensionFinal);
+			chooser.setFileFilter(filter);	
+		}
 		int returnVal = chooser.showSaveDialog(getParent());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			return FileOperate.addSuffix(chooser.getSelectedFile().getAbsolutePath(),extensions[0]);
 		}
 		return null;
+	}
+	
+	private String[] filterExtension(String... extensions)
+	{
+		ArrayList<String> lsExtension = new ArrayList<String>();
+		// //////////////将文件名中为空格和*的去除，然后过滤后缀名
+		for (String string : extensions) {
+			if (string != null && (!string.equals("") && !string.equals("*"))) {
+				lsExtension.add(string);
+			}
+		}
+		String[] extensionFinal = null;
+		if (lsExtension.size() >= 1) {
+			extensionFinal = new String[lsExtension.size()];
+			for (int i = 0; i < extensionFinal.length; i++) {
+				extensionFinal[i] = lsExtension.get(i);
+			}
+		}
+		return extensionFinal;
 	}
 }
