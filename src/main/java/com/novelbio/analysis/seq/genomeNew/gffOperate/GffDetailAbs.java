@@ -4,8 +4,8 @@ import javax.servlet.jsp.tagext.TryCatchFinally;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.listOperate.ElementAbs;
 import com.novelbio.base.dataStructure.CompSubArray;
+import com.novelbio.base.dataStructure.listOperate.ElementAbs;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
@@ -25,6 +25,20 @@ public abstract class GffDetailAbs implements ElementAbs{
 	
 	private static Logger logger = Logger.getLogger(GffDetailAbs.class);
 	
+	int number = 0;
+	/**
+	 * 计数加一
+	 */
+	public void addNumber() {
+		number++;
+	}
+	/**
+	 * 本区域内出现多少的元素，必须前面调用addNumber添加
+	 * @return
+	 */
+	public int getNumber() {
+		return number;
+	}
 	/**
 	 * 设定基因的转录起点上游长度，默认为3000bp
 	 */
@@ -51,6 +65,7 @@ public abstract class GffDetailAbs implements ElementAbs{
 		DownStreamTssbp = downStreamTssbp;
 		GeneEnd3UTR = geneEnd3UTR;
 	}
+	
 	
 	
 	/**
@@ -399,6 +414,7 @@ public abstract class GffDetailAbs implements ElementAbs{
 		gffDetailAbs.numberend = numberend;
 		gffDetailAbs.tes2DownGene = tes2DownGene;
 		gffDetailAbs.tss2UpGene = tss2UpGene;
+		gffDetailAbs.number = number;
 	}
 	@Override
 	public int getStartCis() {
@@ -414,9 +430,6 @@ public abstract class GffDetailAbs implements ElementAbs{
 			return numberend;
 		}
 		return numberstart;
-	}
-	public int getEndAbs2() {
-		return numberend;
 	}
 	
 	@Override
