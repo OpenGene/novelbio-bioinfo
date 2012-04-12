@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
-import com.novelbio.analysis.seq.genomeNew.listOperate.ElementAbs;
+import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 
 /**
  * 针对UCSC的CpGall文件设计的Detai信息
@@ -23,7 +23,7 @@ import com.novelbio.analysis.seq.genomeNew.listOperate.ElementAbs;
  * @author zong0jie
  *
  */
-public class GffDetailCG extends GffDetailAbs
+public class GffDetailCG extends ListDetailAbs
 {
 	public GffDetailCG(String chrID, String locString, boolean cis5to3) {
 		super(chrID, locString, cis5to3);
@@ -78,7 +78,7 @@ public class GffDetailCG extends GffDetailAbs
 	@Override
 	public GffDetailCG clone() {
 		GffDetailCG gffDetailCG = new GffDetailCG(getParentName(), getName(), cis5to3);
-		this.clone(gffDetailCG);
+		super.clone(gffDetailCG);
 		gffDetailCG.numGC = numGC;
 		gffDetailCG.lengthCpG=lengthCpG;
 		gffDetailCG.numCpG=numCpG;

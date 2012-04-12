@@ -10,8 +10,9 @@ import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 
 
 
@@ -30,7 +31,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  * 
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
-public class GffHashCG extends GffHash<GffDetailCG, GffCodCG, GffCodCGDU>
+public class GffHashCG extends ListHash<GffDetailCG, GffCodCG, GffCodCGDU>
 {	
 
 	/**
@@ -80,8 +81,8 @@ public class GffHashCG extends GffHash<GffDetailCG, GffCodCG, GffCodCGDU>
 				   if(LOCList!=null)//如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
 				   {
 					   //我收集的一个list/array排序的方法，很简单易用
-					   Collections.sort(LOCList,new Comparator<GffDetailAbs>(){
-				            public int compare(GffDetailAbs arg0, GffDetailAbs arg1) {
+					   Collections.sort(LOCList,new Comparator<ListDetailAbs>(){
+				            public int compare(ListDetailAbs arg0, ListDetailAbs arg1) {
 				                int Compareresult;
 				            	if(arg0.getStartAbs()<arg1.getStartAbs())
 				            		Compareresult=-1;
@@ -130,7 +131,7 @@ public class GffHashCG extends GffHash<GffDetailCG, GffCodCG, GffCodCGDU>
 	            	return Compareresult;
 	            }});
 		 //排序完后装入LOCIDList
-		   for (GffDetailAbs gffDetail : LOCList) {
+		   for (ListDetailAbs gffDetail : LOCList) {
 			   LOCIDList.add(gffDetail.getName());
 		}
 		   txtgff.close();

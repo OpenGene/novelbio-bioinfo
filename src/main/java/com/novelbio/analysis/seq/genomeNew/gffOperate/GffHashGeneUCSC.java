@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 
@@ -116,7 +116,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				
 				int exonCount = Integer.parseInt(geneInfo[7]);
 				for (int i = 0; i < exonCount; i++) {
-					lastGffdetailUCSCgene.addExonUCSC(Integer.parseInt(exonStarts[i])+startRegion, Integer.parseInt(exonEnds[i])+endRegion);
+					lastGffdetailUCSCgene.addExonUCSCGFF(Integer.parseInt(exonStarts[i])+startRegion, Integer.parseInt(exonEnds[i])+endRegion);
 				}
 				// 将基因(转录本ID)装入LOCList
 				LOCIDList.add(geneInfo[0]);
@@ -146,7 +146,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			gffDetailUCSCgene.addATGUAG(Integer.parseInt(geneInfo[5])+startRegion,Integer.parseInt(geneInfo[6])+endRegion);
 			int exonCount = Integer.parseInt(geneInfo[7]);
 			for (int i = 0; i < exonCount; i++) {
-				gffDetailUCSCgene.addExonUCSC(Integer.parseInt(exonStarts[i])+startRegion,Integer.parseInt(exonEnds[i])+endRegion);
+				gffDetailUCSCgene.addExonUCSCGFF(Integer.parseInt(exonStarts[i])+startRegion,Integer.parseInt(exonEnds[i])+endRegion);
 			}
 			LOCList.add(gffDetailUCSCgene);
 			LOCIDList.add(geneInfo[0]);
@@ -245,7 +245,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				
 				int exonCount = Integer.parseInt(geneInfo[7]);
 				for (int i = 0; i < exonCount; i++) {
-					lastGffdetailUCSCgene.addExonUCSC(Integer.parseInt(exonStarts[i])+startRegion, Integer.parseInt(exonEnds[i])+endRegion);
+					lastGffdetailUCSCgene.addExonUCSCGFF(Integer.parseInt(exonStarts[i])+startRegion, Integer.parseInt(exonEnds[i])+endRegion);
 				}
 				// 将基因(转录本ID)装入LOCList
 				LOCIDList.add(geneInfo[0]);
@@ -275,7 +275,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			gffDetailUCSCgene.addATGUAG(Integer.parseInt(geneInfo[5])+startRegion,Integer.parseInt(geneInfo[6])+endRegion);
 			int exonCount = Integer.parseInt(geneInfo[7]);
 			for (int i = 0; i < exonCount; i++) {
-				gffDetailUCSCgene.addExonUCSC(Integer.parseInt(exonStarts[i])+startRegion,Integer.parseInt(exonEnds[i])+endRegion);
+				gffDetailUCSCgene.addExonUCSCGFF(Integer.parseInt(exonStarts[i])+startRegion,Integer.parseInt(exonEnds[i])+endRegion);
 			}
 			LOCList.add(gffDetailUCSCgene);
 			LOCIDList.add(geneInfo[0]);

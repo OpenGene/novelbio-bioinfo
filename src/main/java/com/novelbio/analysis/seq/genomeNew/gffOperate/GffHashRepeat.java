@@ -10,7 +10,7 @@ import java.util.Hashtable;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 
-public class GffHashRepeat extends GffHash<GffDetailRepeat,GffCodRepeat>{
+public class GffHashRepeat extends ListHash<GffDetailRepeat>{
 
 	/**
 	 * 最底层读取gff的方法，本方法只能读取UCSCRepeat文件<br>

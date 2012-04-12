@@ -10,21 +10,22 @@ import java.util.LinkedList;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 
 
 
 /**
+ * 也可以自己输入文件
  * 读取那种peak坐标的文件，只输入peak的染色体位置，起点坐标，终点坐标
  * @author zong0jie
  *
  */
-public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU>{
+public class GffHashBin extends ListHash<GffDetailPeak, GffCodPeak, GffCodPeakDU>{
 	
-	boolean peakcis = false;
-	int colChrID = -1;
-	int colPeakstart = -1;
-	int colPeakend = -1;
+	boolean peakcis = true;
+	int colChrID = 1;
+	int colPeakstart = 2;
+	int colPeakend = 3;
 	int rowNum = -1;
 	
 	/**
@@ -42,12 +43,12 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将多个重叠的peak放在一起： peak起点_peak终点/peak起点_peak终点_...<br>
      * @param gfffilename
      * @param peakcis peak是在正链还是负链上，不过没什么用，不用设置，默认为true就好
-     * @param colChrID
-     * @param colPeakstart
-     * @param colPeakend
-     * @param rowNum
+     * @param colChrID 实际数字，默认为1
+     * @param colPeakstart 实际数字，默认为2
+     * @param colPeakend 实际数字，默认为3
+     * @param rowNum 如果rowEnd<1，则一直读到sheet1文件结尾，默认为-1
 	 */
-	public GffHashPeak(boolean peakcis ,int colChrID,int colPeakstart,int colPeakend,int rowNum) {
+	public GffHashBin(boolean peakcis ,int colChrID,int colPeakstart,int colPeakend,int rowNum) {
 //		super();
 		this.peakcis = peakcis;
 		this.colChrID = colChrID;
@@ -55,6 +56,9 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 		this.colPeakend = colPeakend;
 		this.rowNum = rowNum;
 	}
+	
+	public GffHashBin() {}
+	
 	/**
      * 最底层读取peak坐标文件的方法，读取生成的peak信息，只读取peak所在Chr列，peak正反向(最好都为正)，peak起点列，peak终点列，并且指定从第几行读起，所有行和列都是实际行和列<br>
      * <b>peak</b> 正反向最好都为正，方便后续处理<br>
@@ -68,37 +72,69 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
      * （LOCID）--LOCIDList，按顺序保存Peak,这里不考虑多个重叠的peak，不建议通过其获得某基因的序号,具体情况 :peak起点_peak终点<br>
      * <b>LOCChrHashIDList </b><br>
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将多个重叠的peak放在一起： peak起点_peak终点/peak起点_peak终点_...<br>
-     * @param gfffilename
-     * @param peakcis peak是在正链还是负链上，不过没什么用，不用设置，默认为true就好
-     * @param colChrID
-     * @param colPeakstart
-     * @param colPeakend
-     * @param rowNum
 	 */
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception 
 	{
-		TxtReadandWrite txtPeakInfo=new TxtReadandWrite();
+		TxtReadandWrite txtPeakInfo=new TxtReadandWrite(gfffilename,false);
 		//先把txt文本中的peak信息读取
 		int[] colNum=new int[3];
 		colNum[0]=colChrID;colNum[1]=colPeakstart;colNum[2]=colPeakend;
-		txtPeakInfo.setParameter(gfffilename, false,true);
-		String[][] peakInfo=ExcelTxtRead.readtxtExcel(gfffilename, "\t", colNum, rowNum,  txtPeakInfo.ExcelRows());
-		/////////装入临时list
-		LinkedList<String[]> lstmpPeakinfo=new LinkedList<String[]>();
-		for (int i = 0; i < peakInfo.length; i++) {
-			lstmpPeakinfo.add(peakInfo[i]);
+		ArrayList<String[]> lstmpPeakinfo =ExcelTxtRead.readLsExcelTxt(gfffilename, colNum, rowNum, -1);//(gfffilename, "\t", colNum, rowNum,  txtPeakInfo.ExcelRows());
+		ReadGff(lstmpPeakinfo);
+		txtPeakInfo.close();
+	}
+	/**
+	 * 本方法和setInt取一个
+	 * @param lsInterval 这个是插入的区间
+	 */
+	public void setInterval(String name, ArrayList<int[]> lsInterval)
+	{
+		ArrayList<String[]> lsTmpInfo = new ArrayList<String[]>();
+		for (int[] is : lsInterval) {
+			String[] tmpInfo = new String[3];
+			tmpInfo[0] = name;
+			tmpInfo[1] = is[0] + "";
+			tmpInfo[2] = is[1] + "";
+			lsTmpInfo.add(tmpInfo);
 		}
+		ReadGff(lsTmpInfo);
+	}
+	/**
+	 * 本方法和setInterval取一个
+	 * @param lsInterval 这个是插入的单个数值，用于统计测序每个碱基的数量等
+	 */
+	public void setInt(String name, ArrayList<Integer> lsInterval)
+	{
+		ArrayList<String[]> lsTmpInfo = new ArrayList<String[]>();
+		for (Integer is : lsInterval) {
+			String[] tmpInfo = new String[3];
+			tmpInfo[0] = name;
+			tmpInfo[1] = is + "";
+			tmpInfo[2] = is + "";
+			lsTmpInfo.add(tmpInfo);
+		}
+		ReadGff(lsTmpInfo);
+	}
+
+	
+	/**
+	 * 内部有排序
+	 * 用list来表示peak的信息，必须
+	 * 0：chrID 同一个chrID 表示为同一类型中的细分
+	 * 1：start
+	 * 2：end
+	 * @param lsInfo
+	 */
+	public void ReadGff(ArrayList<String[]> lstmpPeakinfo) 
+	{
 		////对临时list进行排序,首先按照Chr排序，然后按照具体坐标排序
 	     Collections.sort(lstmpPeakinfo,new Comparator<String[]>(){
 	            public int compare(String[] arg0, String[] arg1) {
 	            	int i=arg0[0].compareTo(arg1[0]);
 	            	if(i==0){
-	            		 if( Integer.parseInt(arg0[1])< Integer.parseInt(arg1[1]))
-	 	                {	return -1;}
-	 	                else if (Integer.parseInt(arg0[1])== Integer.parseInt(arg1[1])) 
-	 	                { 	return 0;}
-	 	                else
-	 	                {   return 1;}
+	            		Integer a0 = Integer.parseInt(arg0[1]);
+	            		Integer a1 =  Integer.parseInt(arg1[1]);
+	            		return a0.compareTo(a1);
 	            	}
 	               return i;
 	            }
@@ -114,7 +150,7 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 			int tmppeakstart=-1;
 			int tmppeakend=-1;
 
-			int peakNum=peakInfo.length;
+			int peakNum=lstmpPeakinfo.size();
 			for (int i = 0; i < peakNum; i++) {
 				chrnametmpString=lstmpPeakinfo.get(i)[0].toLowerCase();
 				tmppeakstart=Integer.parseInt(lstmpPeakinfo.get(i)[1]);
@@ -173,7 +209,6 @@ public class GffHashPeak extends GffHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 //			for (GffDetailPeak gffDetail : LOCList) {
 //				LOCChrHashIDList.add(gffDetail.getLocString());
 //			}
-			txtPeakInfo.close();
 			//System.out.println(mm);
 	}
 	@Override

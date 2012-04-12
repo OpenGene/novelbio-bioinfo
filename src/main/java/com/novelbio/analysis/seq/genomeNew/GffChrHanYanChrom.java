@@ -63,7 +63,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYanChrom.class);
 			ArrayOperate.convertArray(iso);
 		}
 		double[] isoResult = new double[iso.length+1];
-		isoResult[0] = gffGeneIsoInfo.getLocDistmRNA(gffGeneIsoInfo.getATGSsite(), gffGeneIsoInfo.getTSSsite());
+		isoResult[0] = gffGeneIsoInfo.getLocDistmRNA(gffGeneIsoInfo.getATGsite(), gffGeneIsoInfo.getTSSsite());
 		for (int i = 0; i < iso.length; i++) {
 			isoResult[i+1] = iso[i];
 		}

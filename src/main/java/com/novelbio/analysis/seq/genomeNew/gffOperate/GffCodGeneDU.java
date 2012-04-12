@@ -9,9 +9,11 @@ import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 
+import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.test.mytest;
 
-public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
+public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	private static Logger logger = Logger.getLogger(GffCodGeneDU.class); 
 	public GffCodGeneDU(ArrayList<GffDetailGene> lsgffDetail,
 			GffCodGene gffCod1, GffCodGene gffCod2) {
@@ -321,11 +323,11 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		if (gffCod1 != null)
 		{
 			//上一个基因有关系
-			if (isUpTss(gffCod1.getGffDetailUp())) {
+			if (isUpTss(gffCod1.getGffDetailUp(), gffCod1.getCoord())) {
 				setGffDetailGenes.add(gffCod1.getGffDetailUp());
 			}
 			//本基因关系
-			if (isUpTss(gffCod1.getGffDetailThis())) {
+			if (isUpTss(gffCod1.getGffDetailThis(), gffCod1.getCoord())) {
 				setGffDetailGenes.add(gffCod1.getGffDetailThis());
 			}
 		}
@@ -339,20 +341,20 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		if (gffCod2 != null)
 		{
 			//上一个基因有关系
-			if (isDownTss(gffCod2.getGffDetailThis()))
+			if (isDownTss(gffCod2.getGffDetailThis(), gffCod2.getCoord()))
 			{
 				setGffDetailGenes.add(gffCod2.getGffDetailThis());
 			}
 			//本基因关系
-			if (isDownTss(gffCod2.getGffDetailDown())) {
+			if (isDownTss(gffCod2.getGffDetailDown(), gffCod2.getCoord())) {
 				setGffDetailGenes.add(gffCod2.getGffDetailDown());
 			}
 		}
 		return setGffDetailGenes;
 	}
 	
-	private boolean isUpTss(GffDetailGene gffDetailGene) {
-		if (gffDetailGene == null || !gffDetailGene.isCodInGenExtend()) {
+	private boolean isUpTss(GffDetailGene gffDetailGene, int coord) {
+		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
 		if (gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoTss()
@@ -365,8 +367,8 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		return false;
 	}
 	
-	private boolean isDownTss(GffDetailGene gffDetailGene) {
-		if (gffDetailGene == null || !gffDetailGene.isCodInGenExtend()) {
+	private boolean isDownTss(GffDetailGene gffDetailGene, int coord) {
+		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
 		if (!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoTss()
@@ -751,11 +753,11 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		if (gffCod1 != null)
 		{
 			//上一个基因有关系
-			if (isUpTes(gffCod1.getGffDetailUp())) {
+			if (isUpTes(gffCod1.getGffDetailUp(), gffCod1.getCoord())) {
 				setGffDetailGenes.add(gffCod1.getGffDetailUp());
 			}
 			//本基因关系
-			if (isUpTes(gffCod1.getGffDetailThis())) {
+			if (isUpTes(gffCod1.getGffDetailThis(), gffCod1.getCoord())) {
 				setGffDetailGenes.add(gffCod1.getGffDetailThis());
 			}
 		}
@@ -767,19 +769,19 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		if (gffCod2 != null)
 		{
 			//上一个基因有关系
-			if (isDownTes(gffCod2.getGffDetailThis())) {
+			if (isDownTes(gffCod2.getGffDetailThis(), gffCod2.getCoord())) {
 				setGffDetailGenes.add(gffCod2.getGffDetailThis());
 			}
 			//本基因关系
-			if (isDownTes(gffCod2.getGffDetailDown())) {
+			if (isDownTes(gffCod2.getGffDetailDown(), gffCod2.getCoord())) {
 				setGffDetailGenes.add(gffCod2.getGffDetailDown());
 			}
 		}
 		return setGffDetailGenes;
 	}
 	
-	private boolean isUpTes(GffDetailGene gffDetailGene) {
-		if (gffDetailGene == null || !gffDetailGene.isCodInGenExtend()) {
+	private boolean isUpTes(GffDetailGene gffDetailGene, int coord) {
+		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
 		if (gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend()
@@ -792,8 +794,8 @@ public class GffCodGeneDU extends GffCodAbsDu<GffDetailGene, GffCodGene>{
 		return false;
 	}
 	
-	private boolean isDownTes(GffDetailGene gffDetailGene) {
-		if (gffDetailGene == null || !gffDetailGene.isCodInGenExtend()) {
+	private boolean isDownTes(GffDetailGene gffDetailGene, int coord) {
+		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
 		if (!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend()

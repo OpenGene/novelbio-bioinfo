@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.chipseq.regDensity.RegDensity;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
 /**
@@ -34,7 +35,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
  * 本基因转录方向<br>
  * 本类中的几个方法都和Gff基因有关<br>
  */
-public class GffDetailGene extends GffDetailAbs
+public class GffDetailGene extends ListDetailAbs
 {
 	private final static Logger logger = Logger.getLogger(GffDetailGene.class);
 	/**
@@ -57,20 +58,6 @@ public class GffDetailGene extends GffDetailAbs
 	 */
 	private final static String SEP_ISO_NAME = "@//@";
 	int taxID = 0;
-	/**
-	 * 设定基因的转录起点终点位置信息
-	 * @param upStreamTSSbp 设定基因的转录起点上游长度，默认为3000bp
-	 * @param downStreamTssbp 设定基因的转录起点下游长度，默认为2000bp
-	 * @param geneEnd3UTR 设定基因结尾向外延伸的长度，默认为100bp
-	 */
-	public static void setCodLocation(int upStreamTSSbp, int downStreamTssbp, int geneEnd3UTR) {
-		UpStreamTSSbp = upStreamTSSbp;
-		DownStreamTssbp = downStreamTssbp;
-		GeneEnd3UTR = geneEnd3UTR;
-		GffGeneIsoInfo.setCodLocation(upStreamTSSbp, downStreamTssbp, geneEnd3UTR);
-	}
-	
- 
 	
 	protected void setTaxID(int taxID) {
 		this.taxID = taxID;
@@ -118,18 +105,7 @@ public class GffDetailGene extends GffDetailAbs
 	 * 顺序存储每个转录本的的坐标情况
 	 */
 	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
-	
-	public void setCoord(int coord) {
-		this.coord = coord;
-		ArrayList<GffGeneIsoInfo> lsGffInfo = getLsCodSplit();
-		if (lsGffInfo == null || lsGffInfo.size() < 1) {
-			return;
-		}
-		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffInfo) {
-			gffGeneIsoInfo.setCoord(coord);
-		}
-	}
-	
+		
 	/**
 	 * @param chrID
 	 * @param locString
@@ -138,22 +114,14 @@ public class GffDetailGene extends GffDetailAbs
 	public GffDetailGene(String chrID, String locString, boolean cis5to3) {
 		super(chrID, locString, cis5to3);
 	}
+
 	/**
+	 * 针对水稻拟南芥的GFF文件和UCSC的文件
 	 * 给最后一个转录本添加exon坐标，<br>
 	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加
 	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
 	 */
-	protected void addExonUCSC(int locStart,int locEnd) {
-		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
-		gffGeneIsoInfo.addExon(locStart, locEnd);
-	}
-	/**
-	 * 针对水稻拟南芥的GFF文件
-	 * 给最后一个转录本添加exon坐标，<br>
-	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加
-	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
-	 */
-	protected void addExonGFF(int locStart,int locEnd) {
+	protected void addExonUCSCGFF(int locStart,int locEnd) {
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExon(locStart, locEnd);
 	}
@@ -175,7 +143,6 @@ public class GffDetailGene extends GffDetailAbs
 	 */
 	protected void addATGUAG(int atg, int uag)
 	{
-
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		if (Math.abs(atg - uag)<=1) {
 			gffGeneIsoInfo.mRNA = false;
@@ -337,13 +304,13 @@ public class GffDetailGene extends GffDetailAbs
 	 * 3：location
 	 * 没有就返回“”
 	 */
-	public String[] getInfo() {
+	public String[] getInfo(int coord) {
 		String[] anno = new String[4];
 		for (int i = 0; i < anno.length; i++) {
 			anno[i] = "";
 		}
 		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
-		if (isCodInGenExtend()) {
+		if (isCodInGeneExtend(coord)) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
 				if (gffGeneIsoInfo.isCodInIsoExtend()) {
 					hashCopedID.add(gffGeneIsoInfo.getCopedID());

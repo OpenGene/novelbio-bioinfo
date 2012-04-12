@@ -546,6 +546,7 @@ public class GffChrMap extends GffChrAbs {
 	 * @param geneID 基因名字
 	 * @param tssUp tss上游多少bp 负数在上游正数在下游
 	 * @param tssDown tss下游多少bp 负数在上游正数在下游
+	 * @return 如果没有则返回-1
 	 */
 	public double getGeneTss(String geneID, int tssUp, int tssDown) {
 		GffDetailGene gffDetailGene = gffHashGene.searchLOC(geneID);
@@ -567,6 +568,10 @@ public class GffChrMap extends GffChrAbs {
 		int tssStart = Math.min(tssStartR, tssEndR);
 		int tssEnd = Math.max(tssStartR, tssEndR);
 		double[] siteInfo = mapReads.getRengeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
+		if (siteInfo == null) {
+//			System.out.println("stop");
+			return -1;
+		}
 		return MathComput.mean(siteInfo);
 	}
 	/**

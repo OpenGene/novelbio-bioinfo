@@ -10,6 +10,7 @@ import java.util.TreeSet;
 import org.apache.ibatis.migration.commands.NewCommand;
 
 import com.novelbio.base.cmd.cmdOperate2;
+import com.novelbio.base.dataStructure.listOperate.GffDetailAbs;
 
 public class GtfDetailCufIso extends GffDetailAbs{
 	

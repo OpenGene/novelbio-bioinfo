@@ -16,6 +16,7 @@ import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashBin;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -398,83 +399,6 @@ public class FastQ extends SeqComb {
 		}
 	}
 	
-	
-	/**
-	 * 指定阈值，将fastQ文件进行过滤处理并产生新文件，那么本类的文件也会替换成新的文件
-	 * 
-	 * @param Qvalue_Num
-	 *            二维数组 每一行代表一个Qvalue 以及最多出现的个数 int[0][0] = 13 int[0][1] = 7
-	 *            :表示质量低于Q13的个数小于7个
-	 * @param fileFilterOut
-	 *            结果文件后缀，如果指定的fastQ有两个文件，那么最后输出两个fileFilterOut<br>
-	 *            分别为fileFilterOut_1和fileFilterOut_2
-	 * @return 返回已经过滤好的FastQ，其实里面也就是换了两个FastQ文件而已
-	 * @throws Exception
-	 */
-	private FastQ filterReadsExp222(String fileFilterOut) throws Exception {
-		txtSeqFile.setParameter(compressInType, seqFile, false, true);
-		BufferedReader readerSeq = txtSeqFile.readfile();
-		BufferedReader readerSeq2 = null;
-
-		TxtReadandWrite txtOutFile = new TxtReadandWrite();
-		if (!booPairEnd) {
-			txtOutFile.setParameter(compressOutType, fileFilterOut.trim(), true, false);
-		} else {
-			txtOutFile.setParameter(compressOutType, fileFilterOut.trim() + "_1", true, false);
-		}
-		TxtReadandWrite txtOutFile2 = new TxtReadandWrite();;
-		if (booPairEnd) {
-			txtSeqFile2.reSetInfo();
-			readerSeq2 = txtSeqFile2.readfile();
-			txtOutFile2.setParameter(compressOutType, fileFilterOut.trim() + "_2", true, false);
-		}
-		setFastQFormat();
-
-		String content = "";
-		String content2 = null;
-		int count = 0;
-		String tmpResult1 = "";
-		String tmpResult2 = "";
-		while ((content = readerSeq.readLine()) != null) {
-			if (booPairEnd) {
-				content2 = readerSeq2.readLine().trim();
-			}
-			if (count == QCline) {
-				if (QC(content, content2)) {
-					tmpResult1 = tmpResult1 + content + "\n";
-					txtOutFile.writefile(tmpResult1);
-					if (booPairEnd) {
-						tmpResult2 = tmpResult2 + content2 + "\n";
-						txtOutFile2.writefile(tmpResult2);
-					}
-				}
-				// 清空
-				tmpResult1 = "";
-				tmpResult2 = "";
-				count = 0;// 清零
-				continue;
-			}
-			tmpResult1 = tmpResult1 + content + "\n";
-			if (booPairEnd) {
-				tmpResult2 = tmpResult2 + content2 + "\n";
-			}
-			count++;
-		}
-		FastQ fastQ = null;
-
-		if (booPairEnd) {
-			fastQ = new FastQ(fileFilterOut.trim() + "_1", fileFilterOut.trim()
-					+ "_2", offset, quality);
-		} else {
-			fastQ = new FastQ(fileFilterOut.trim(), null, offset, quality);
-		}
-		fastQ.setCompressType(compressOutType, compressOutType);
-		txtSeqFile.close();
-		txtSeqFile2.close();
-		txtOutFile.close();
-		txtOutFile2.close();
-		return fastQ;
-	}
 	/**
 	 * 待测试
 	 * 先去adaptoer，然后去polyA(右端)和polyT(左端)，然后去两端NNN，然后去总体低质量
@@ -831,7 +755,7 @@ public class FastQ extends SeqComb {
 	 *            format
 	 * @return int 按照顺序，小于等于每个Qvalue的数量
 	 */
-	public static int[][] copeFastQ(int FASTQ_FORMAT_OFFSET, String fastQSeq, int... Qvalue) {
+	public int[][] copeFastQ(int FASTQ_FORMAT_OFFSET, String fastQSeq, int... Qvalue) {
 		if (FASTQ_FORMAT_OFFSET == 0) {
 			System.out.println("FastQ.copeFastQ ,没有指定offset");
 		}
@@ -840,9 +764,16 @@ public class FastQ extends SeqComb {
 			qNum[i][0] = Qvalue[i];
 		}
 		char[] fastq = fastQSeq.toCharArray();
-		for (char c : fastq) {
+		//reads长度分布，一般用于454
+		gffHashBin.addNumber(gffreadsLen, fastq.length);
+		for (int m = 0; m < fastq.length; m++) {
+			char c = fastq[m];
+			int qualityScore = (int) c - FASTQ_FORMAT_OFFSET;
+			/////////////////////////序列质量，每个碱基的质量分布统计/////////////////////////////////////////////////
+			gffHashBin.addNumber(m+gffbpName, qualityScore);
+			//////////////////////////////////////////////////////////////////////////
 			for (int i = Qvalue.length - 1; i >= 0; i--) {
-				if ((int) c - FASTQ_FORMAT_OFFSET <= Qvalue[i]) {//注意是小于等于
+				if (qualityScore <= Qvalue[i]) {//注意是小于等于
 					qNum[i][1]++;
 					continue;
 				} else {
@@ -1444,6 +1375,34 @@ public class FastQ extends SeqComb {
 		txtFasta1.close();
 		txtFasta2.close();
 	}
+	/**
+	 * 统计reads分布和每个reads质量的方法
+	 */
+	GffHashBin gffHashBin = new GffHashBin();
+	String gffreadsLen = "Reads Length";
+	String gffbpName = "BP";
+	/**
+	 * 初始化reads分布统计类
+	 * @reads最长多少
+	 */
+	private void initialGffHashBin(int maxReadsLen) {
 
+		ArrayList<String[]> lsInfo = new ArrayList<String[]>();
+		//reads 长度
+		for (int i = 1; i <= maxReadsLen; i++) {
+			lsInfo.add(new String[]{gffreadsLen, i+ "", i + ""});
+		}
+		//每个碱基的质量
+		for (int i = 1; i <= maxReadsLen; i++) {
+			for (int j = 1; j < 60; j++) {
+				lsInfo.add(new String[]{i+gffbpName, j+ "", j + ""});
+			}
+		}
+		gffHashBin.ReadGff(lsInfo);
+	}
+	
+	
+	
+	
 	
 }

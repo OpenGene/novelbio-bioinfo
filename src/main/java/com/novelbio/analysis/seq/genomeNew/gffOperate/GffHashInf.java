@@ -3,7 +3,11 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public interface GffHashInf<T extends GffDetailAbs, K extends GffCodAbs<T>, M extends GffCodAbsDu<T, K>> {
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
+import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
+
+public interface GffHashInf<T extends ListDetailAbs, K extends ListCodAbs<T>, M extends ListCodAbsDu<T, K>> {
 	
 	/**
 	 * 起点是否为闭区间，不是则为开区间，<br>

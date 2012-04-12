@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeakDU;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailPeak;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashPeak;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashBin;
 
  
 
@@ -14,8 +14,8 @@ public class GffPeakOverLap
 	/**
 	 * 几个待用类
 	 */
-	GffHashPeak gffHashPeakMinus;
-	GffHashPeak gffHashPeakPlus;
+	GffHashBin gffHashPeakMinus;
+	GffHashBin gffHashPeakPlus;
 	
 	ArrayList<String> lspeakMinusID;//负链上的peakID
 	ArrayList<String> lspeakPlusID;//正链上的peakID
@@ -51,9 +51,9 @@ public class GffPeakOverLap
 	public void readPeakFile(String filePlus,String fileMinus,int colChr,int peakStart,int peakEnd,int rowNum) throws Exception 
 	{
 	
-		gffHashPeakPlus = new GffHashPeak(true, colChr, peakStart, peakEnd, rowNum);
+		gffHashPeakPlus = new GffHashBin(true, colChr, peakStart, peakEnd, rowNum);
 		gffHashPeakPlus.ReadGffarray(filePlus);
-		gffHashPeakMinus = new GffHashPeak(true, colChr, peakStart, peakEnd, rowNum);
+		gffHashPeakMinus = new GffHashBin(true, colChr, peakStart, peakEnd, rowNum);
 		gffHashPeakMinus.ReadGffarray(fileMinus);
 		
 		lspeakMinusID = gffHashPeakMinus.getLOCIDList();
@@ -264,11 +264,11 @@ public class GffPeakOverLap
 	/**
 	 * 查找peak OverLap的情况，返回Integer<br>
 	 * 为gffMPeakDetial查找gffHashplusPeak后获得的交集情况<br>
-	 * @param ChrID
+	 * @param parentName
 	 * @param start
 	 * @param end
 	 */
-	private int twoSiteLocation(GffDetailPeak gffMPeakDetial,GffHashPeak gffHashplusPeak) 
+	private int twoSiteLocation(GffDetailPeak gffMPeakDetial,GffHashBin gffHashplusPeak) 
 	{
 		String ChrID=gffMPeakDetial.getParentName();
 		int start=gffMPeakDetial.getStartAbs();

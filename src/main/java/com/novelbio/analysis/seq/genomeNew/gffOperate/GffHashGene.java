@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArrayCluster;
 import com.novelbio.base.dataStructure.CompSubArrayInfo;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.Species;
@@ -127,7 +127,7 @@ public class GffHashGene implements	GffHashGeneInf, GffHashInf<GffDetailGene, Gf
 
 	@Override
 	public GffCodGene searchLocation(String chrID, int Coordinate) {
-		return gffHashGene.searchLocation(chrID, Coordinate);
+		return gffHashGene.searchLocatioClone(chrID, Coordinate);
 	}
 	@Override
 	public GffGeneIsoInfo searchISO(String LOCID) {

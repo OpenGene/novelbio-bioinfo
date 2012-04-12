@@ -78,7 +78,6 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		     + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=exon:" + getName()  + ":" + (i+1) +";Parent=" + getName() + " \r\n";
 		}
 		return geneExon;
-	
 	}
 	@Override
 	protected String getGTFformatExon(String geneID, String title, String strand) {
@@ -88,15 +87,6 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		     + "\t"+"."+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id \""+getName()+"\"; \r\n";
 		}
 		return geneExon;
-	}
-
-	@Override
-	protected void setCod2SiteAbs() {
-		cod2ATG = coord - ATGsite; //CnnnATG    AtgnC
-		cod2UAG = coord - UAGsite; //CnuaG    UAGnnnC
-		cod2TSS = coord - getTSSsite();
-		cod2TES = coord - getTESsite();
-		
 	}
 	
 }

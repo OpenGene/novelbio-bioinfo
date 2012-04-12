@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genomeNew.listOperate;
+package com.novelbio.base.dataStructure.listOperate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +16,10 @@ import java.util.HashSet;
  *
  * @param <T>
  */
-public class ElementComb<T extends ElementAbs> implements ElementAbs {
+public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
+	public ListDetailComb() {
+		super("", "", null);
+	}
 	/**
 	 * 基因名--int[2]:
 	 * 0: 该ele所在的起点
@@ -44,12 +47,23 @@ public class ElementComb<T extends ElementAbs> implements ElementAbs {
 			return;
 		}
 		lsElement.add(element);
-		///// 这个可以不设置 ////////////////
-//		for (T t : element) {
-//			t.getParentName()
-//		}
-		//////////////////////////////////////////////
+		/// 这个可以不设置 ////////////////
+		for (T t : element) {
+			this.parentName = t.getParentName();
+			break;
+		}
+		//如果比较的element里面有相反的cis，那么就设定为null
+		for (T t : element) {
+			if (isCis5to3() == null) {
+				setCis5to3(t.isCis5to3());
+			}
+			else if (t.isCis5to3() != null || t.isCis5to3() != isCis5to3()) {
+				setCis5to3(null);
+				break;
+			}
+		}
 	}
+	
 	protected void sort() {
 		if (sorted) {
 			return;

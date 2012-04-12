@@ -15,17 +15,17 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
-import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArrayCluster;
 import com.novelbio.base.dataStructure.CompSubArrayInfo;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.test.testextend.a;
 
-public abstract class GffHashGeneAbs extends GffHash<GffDetailGene,GffCodGene, GffCodGeneDU> implements GffHashGeneInf
+public abstract class GffHashGeneAbs extends ListHash<GffDetailGene,GffCodGene, GffCodGeneDU> implements GffHashGeneInf
 {
 	int taxID = 0;
 	String acc2GeneIDfile = "";

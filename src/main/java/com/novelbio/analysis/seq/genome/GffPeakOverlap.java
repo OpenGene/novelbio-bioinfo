@@ -262,7 +262,7 @@ public class GffPeakOverlap
 	/**
 	 * 查找peak OverLap的情况，返回Integer<br>
 	 * 为gffMPeakDetial查找gffHashplusPeak后获得的交集情况<br>
-	 * @param ChrID
+	 * @param parentName
 	 * @param start
 	 * @param end
 	 */

@@ -6,6 +6,9 @@ import java.util.Hashtable;
 
 import com.novelbio.base.cmd.cmdOperate2;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.listOperate.GffCodAbs;
+import com.novelbio.base.dataStructure.listOperate.GffCodAbsDu;
+import com.novelbio.base.dataStructure.listOperate.GffDetailAbs;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 /**

@@ -1,4 +1,5 @@
-package com.novelbio.analysis.seq.genomeNew.gffOperate;
+package com.novelbio.base.dataStructure.listOperate;
+
 
 
 /**
@@ -6,7 +7,7 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
  * 子类有GffCodInfoGene 
  * @author zong0jie
  */
-public abstract class GffCodAbs<T extends GffDetailAbs> {
+public class ListCodAbs<T extends ListDetailAbs> {
 
 	/**
 	 * 所有坐标的起始信息
@@ -15,15 +16,10 @@ public abstract class GffCodAbs<T extends GffDetailAbs> {
 	/**
 	 * 构造函数赋初值
 	 */
-	protected  GffCodAbs(String chrID, int Coordinate) {
+	protected  ListCodAbs(String chrID, int Coordinate) {
 		this.chrID = chrID;
 		this.Coordinate = Coordinate;
 	}
-	
-	
-	
-	
-	
 	String chrID = "";
 	int Coordinate = -1;
 	/**
@@ -69,7 +65,7 @@ public abstract class GffCodAbs<T extends GffDetailAbs> {
 		if (gffDetailUp == null) {
 			return false;
 		}
-		return gffDetailUp.isCodInGene();
+		return gffDetailUp.isCodInGene(Coordinate);
 	}
 	/**
 	 * 是否在下一个条目内
@@ -79,18 +75,23 @@ public abstract class GffCodAbs<T extends GffDetailAbs> {
 		if (gffDetailDown == null) {
 			return false;
 		}
-		return gffDetailDown.isCodInGene();
+		return gffDetailDown.isCodInGene(Coordinate);
 	}
 	/**
+	 * 
 	 * 是否在上一个条目内
-	 * 扩展tss和tes，无视正负号
+	 * 扩展tss和tes，有正负号
+	 * @param upTss 负数为上游
+	 * @param downTes 正数为下游
 	 * @return
 	 */
 	public boolean isInsideUpExtend(int upTss, int downTes) {
 		if (gffDetailUp == null) {
 			return false;
 		}
-		return gffDetailUp.isCodInGeneExtend(upTss, downTes);
+		gffDetailUp.setTssRegion(upTss, 0);
+		gffDetailUp.setTesRegion(0, downTes);
+		return gffDetailUp.isCodInGeneExtend(Coordinate);
 	}
 	/**
 	 * 是否在下一个条目内
@@ -101,7 +102,9 @@ public abstract class GffCodAbs<T extends GffDetailAbs> {
 		if (gffDetailDown == null) {
 			return false;
 		}
-		return gffDetailDown.isCodInGeneExtend(upTss, downTes);
+		gffDetailDown.setTssRegion(upTss, 0);
+		gffDetailDown.setTesRegion(0, downTes);
+		return gffDetailDown.isCodInGeneExtend(Coordinate);
 	}
 	/**
 	 * 为上个条目的具体信息，如果没有则为null(譬如定位在最前端)<br>
@@ -114,11 +117,12 @@ public abstract class GffCodAbs<T extends GffDetailAbs> {
 	 * 获得上个条目的具体信息
 	 * @return
 	 */
-	public T getGffDetailUp()
-	{
+	public T getGffDetailUp() {
 		return gffDetailUp;
 	}
-
+	public void setGffDetailUp(T gffDetailUp) {
+		this.gffDetailUp = gffDetailUp;
+	}
 	/**
 	 *  如果在条目内，为本条目的具体信息，没有定位在基因内则为null<br>
 	 */
@@ -129,9 +133,11 @@ public abstract class GffCodAbs<T extends GffDetailAbs> {
 	 * 如果本条目为null，说明不在条目内
 	 * @return
 	 */
-	public T getGffDetailThis()
-	{
+	public T getGffDetailThis() {
 		return gffDetailThis;
+	}
+	public void setGffDetailThis(T gffDetailThis) {
+		this.gffDetailThis = gffDetailThis;
 	}
 	/**
 	 * 只有geneDetail用到
@@ -143,26 +149,35 @@ public abstract class GffCodAbs<T extends GffDetailAbs> {
 	 * 获得下一个条目的具体信息
 	 * @return
 	 */
-	public T getGffDetailDown()
-	{
+	public T getGffDetailDown() {
 		return gffDetailDown;
+	}
+	public void setGffDetailDown(T gffDetailDown) {
+		this.gffDetailDown = gffDetailDown;
 	}
 	
 	/**
 	 * 上个条目在ChrHash-list中的编号，从0开始，<b>如果上个条目不存在，则为-1</b><br>
 	 */
 	protected int ChrHashListNumUp = -1;
+	public void setChrHashListNumUp(int chrHashListNumUp) {
+		ChrHashListNumUp = chrHashListNumUp;
+	}
 	/**
 	 * 上个条目在ChrHash-list中的编号，从0开始，<b>如果上个条目不存在，则为-1</b><br>
 	 */
 	public int getItemNumUp() {
 		return ChrHashListNumUp;
 	}
+	
 	/**
 	 * 为本条目在ChrHash-list中的编号，从0开始<br>
 	 * 如果本条目不存在，则为-1<br>
 	 */
 	protected int ChrHashListNumThis = -1;
+	public void setChrHashListNumThis(int chrHashListNumThis) {
+		ChrHashListNumThis = chrHashListNumThis;
+	}
 	/**
 	 * 为本条目在ChrHash-list中的编号，从0开始<br>
 	 * 如果本条目不存在，则为-1<br>
@@ -170,10 +185,14 @@ public abstract class GffCodAbs<T extends GffDetailAbs> {
 	public int getItemNumThis() {
 		return ChrHashListNumThis;
 	}
+	
 	/**
 	 * 为下个条目在ChrHash-list中的编号，从0开始，<b>如果下个条目不存在，则为-1</b>
 	 */
 	protected int ChrHashListNumDown = -1;
+	public void setChrHashListNumDown(int chrHashListNumDown) {
+		ChrHashListNumDown = chrHashListNumDown;
+	}
 	/**
 	 * 为下个条目在ChrHash-list中的编号，从0开始，<b>如果下个条目不存在，则为-1</b>
 	 */

@@ -2,7 +2,9 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
 
-public class GffCodPeak  extends GffCodAbs<GffDetailPeak>{
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+
+public class GffCodPeak  extends ListCodAbs<GffDetailPeak>{
 
 	protected GffCodPeak(String chrID, int Coordinate) {
 		super(chrID, Coordinate);

@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genomeNew.listOperate;
+package com.novelbio.base.dataStructure.listOperate;
 
 import java.util.ArrayList;
 
@@ -10,7 +10,11 @@ import org.apache.log4j.Logger;
  * @author zong0jie
  *
  */
-public class ListComb<T extends ElementAbs> extends ListAbs<ElementComb<T>>{
+public class ListComb<T extends ListDetailAbs> extends ListAbs<ListDetailComb<T>>{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5877021643535236697L;
 	private static Logger logger = Logger.getLogger(ListComb.class);
 	/**
 	 * 全体待比较的listabs信息
@@ -100,7 +104,7 @@ public class ListComb<T extends ElementAbs> extends ListAbs<ElementComb<T>>{
 	private void setExonCluster()
 	{
 		for (int[] exonBound : lsExonBounder) {
-			ElementComb<T> elementComb = new ElementComb<T>(); //ExonCluster(gffDetailGene.getParentName(), exonBound[0], exonBound[1]);
+			ListDetailComb<T> elementComb = new ListDetailComb<T>(); //ExonCluster(gffDetailGene.getParentName(), exonBound[0], exonBound[1]);
 			for (int m = 0; m < lsAllListAbs.size(); m ++) {
 				ListAbs<T> lsAbs = lsAllListAbs.get(m);
 				if (lsAbs.isCis5to3() != isCis5to3()) {
@@ -166,10 +170,10 @@ public class ListComb<T extends ElementAbs> extends ListAbs<ElementComb<T>>{
 	 * 返回有差异的exon系列
 	 * @return
 	 */
-	public ArrayList<ElementComb<T>> getDifExonCluster() {
+	public ArrayList<ListDetailComb<T>> getDifExonCluster() {
 		copeList();
-		ArrayList<ElementComb<T>> lsDifExon = new ArrayList<ElementComb<T>>();
-		for (ElementComb<T> elementComb : this) {
+		ArrayList<ListDetailComb<T>> lsDifExon = new ArrayList<ListDetailComb<T>>();
+		for (ListDetailComb<T> elementComb : this) {
 			if (!elementComb.isSameEle()) {
 				lsDifExon.add(elementComb);
 			}

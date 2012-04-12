@@ -1,26 +1,16 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetail;
-import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.CmpListCluster;
-import com.novelbio.database.model.modcopeid.CopedID;
-
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
+import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 
 /**
  * 获得Gff的项目信息<br/>
@@ -29,7 +19,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
  * @locHashtable hash（LOCID）--GeneInforlist
  * @LOCIDList 顺序存储每个基因号或条目号
  */
-public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M extends GffCodAbsDu<T, K>> {
+public abstract class ListHash < T extends ListDetailAbs> {
 	/**
 	 * 起点默认为开区间
 	 */
@@ -68,7 +58,7 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	public String getGffFilename() {
 		return gfffilename;
 	}
-	Logger logger = Logger.getLogger(GffHash.class);
+	Logger logger = Logger.getLogger(ListHash.class);
 	/**
 	 * 哈希表LOC--LOC细节<br>
 	 * 用于快速将LOC编号对应到LOC的细节<br>
@@ -112,7 +102,16 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 		}
 		return locHashtable;
 	}
-	
+	/**
+	 * 给定一个chrID，返回该chrID所对应的ListAbs
+	 * @param chrID
+	 * @return
+	 */
+	public ListAbs<T> getListDetail(String chrID)
+	{
+		chrID = chrID.toLowerCase();
+		return Chrhash.get(chrID);
+	}
 	/**
 	 * 这个List顺序存储每个基因号或条目号，这个打算用于提取随机基因号，实际上是所有条目按顺序放入，但是不考虑转录本(UCSC)或是重复(Peak)
 	 * 这个ID与locHash一一对应，但是不能用它来确定某条目的前一个或后一个条目
@@ -174,100 +173,74 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 	{
 		return Chrhash;
 	}
-	
 	/**
+	 * 获得的每一个信息都是实际的而没有clone
 	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
 	 * 采用clone的方法获得信息
 	 * 没找到就返回null
 	 */
-	public K searchLocation(String chrID, int Coordinate) {
+	public ListCodAbs<T> searchLocation(String chrID, int cod1) {
 		chrID = chrID.toLowerCase();
 		ListAbs<T> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			return null;
 		}
-		int[] locInfo = Loclist.LocPosition(Coordinate);// 二分法查找peaknum的定位
-		if (locInfo == null) {
-			return null;
-		}
-		K gffCod = setGffCod(chrID, Coordinate);
-		if (locInfo[0] == 1) // 定位在基因内
-		{
-			gffCod.gffDetailThis = (T) Loclist.get(locInfo[1]).clone(); 
-			gffCod.gffDetailThis.setCoord(Coordinate);
-			gffCod.booFindCod = true;
-			gffCod.ChrHashListNumThis = locInfo[1];
-			gffCod.insideLOC = true;
-			if (locInfo[1] - 1 >= 0) {
-				gffCod.gffDetailUp =  (T) Loclist.get(locInfo[1]-1).clone();
-				gffCod.gffDetailUp.setCoord(Coordinate);
-				gffCod.ChrHashListNumUp = locInfo[1]-1;
-				
-			}
-			if (locInfo[2] != -1) {
-				gffCod.gffDetailDown = (T) Loclist.get(locInfo[2]).clone();
-				gffCod.gffDetailDown.setCoord(Coordinate);
-				gffCod.ChrHashListNumDown = locInfo[2];
-			}
-		} else if (locInfo[0] == 2) {
-			gffCod.insideLOC = false;
-			if (locInfo[1] >= 0) {
-				gffCod.gffDetailUp =  (T) Loclist.get(locInfo[1]).clone();
-				gffCod.gffDetailUp.setCoord(Coordinate);
-				gffCod.ChrHashListNumUp = locInfo[1];		
-			}
-			if (locInfo[2] != -1) {
-				gffCod.gffDetailDown = (T) Loclist.get(locInfo[2]).clone();
-				gffCod.gffDetailDown.setCoord(Coordinate);
-				gffCod.ChrHashListNumDown = locInfo[2];
-			}
-		}
-		return gffCod;
+		ListCodAbs<T> gffCod1 = Loclist.searchLocation(cod1);//(chrID, Math.min(cod1, cod2));
+		return gffCod1;
 	}
-
-	protected abstract K setGffCod(String chrID, int coordinate);
 	/**
 	 * 返回双坐标查询的结果，内部自动判断 cod1 和 cod2的大小
 	 * 如果cod1 和cod2 有一个小于0，那么坐标不存在，则返回null
-	 * @param chrID
+	 * @param chrID 内部自动小写
 	 * @param cod1 必须大于0
 	 * @param cod2 必须大于0
 	 * @return
 	 */
-	public M searchLocation(String chrID, int cod1, int cod2) {
+	public ListCodAbsDu<T, ListCodAbs<T>> searchLocation(String chrID, int cod1, int cod2) {
 		chrID = chrID.toLowerCase();
-		if (cod1 < 0 && cod2 < 0) {
-			return null;
-		}
 		ListAbs<T> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			return null;
 		}
-		
-		K gffCod1 = searchLocation(chrID, Math.min(cod1, cod2));
-		K gffCod2 = searchLocation(chrID, Math.max(cod1, cod2));
-		if (gffCod1 == null) {
-			System.out.println("error");
-		}
-		M gffCodDu = setGffCodDu(new ArrayList<T>(),gffCod1, gffCod2 );
-		
-		if (gffCodDu.gffCod1.getItemNumDown() < 0) {
-			gffCodDu.lsgffDetailsMid = null;
-		}
-		else {
-			for (int i = gffCodDu.gffCod1.getItemNumDown(); i <= gffCodDu.gffCod2.getItemNumUp(); i++) {
-				gffCodDu.lsgffDetailsMid.add((T)Loclist.get(i).clone());
-			}
-		}
-		return gffCodDu;
+		return Loclist.searchLocationClone(cod1, cod2);
 	}
 	/**
-	 * new一个对应的GffCodDu即可
+	 * 给定ID，在其所对应的信息上加一
+	 * @param name
+	 * @param location
+	 */
+	public void addNumber(String chrID, int location)
+	{
+		ListCodAbs<T> gffCodPeak = searchLocation(chrID, location);
+		if (!gffCodPeak.isInsideLoc()) {
+			return;
+		}
+		T gffDetailPeak = gffCodPeak.getGffDetailThis();
+		gffDetailPeak.addNumber();
+	}
+	/**
+	 * 返回区间以及每个区间的数量，前面必须add过
+	 * key：int的区间
+	 * value：具体数量
 	 * @return
 	 */
-	protected abstract M setGffCodDu(ArrayList<T> lsgffDetail,
-			K gffCod1, K gffCod2);
-	
+	public LinkedHashMap<String,LinkedHashMap<int[], Integer>> getFreq()
+	{
+		LinkedHashMap<String, LinkedHashMap<int[], Integer>> hashResult = new LinkedHashMap<String, LinkedHashMap<int[],Integer>>();
+		Set<String> setChrID = getChrhash().keySet();
+		for (String string : setChrID) {
+			LinkedHashMap<int[], Integer> hashTmpResult = new LinkedHashMap<int[], Integer>();
+			ListAbs<T> lsPeak = getListDetail(string);
+			for (T gffDetailPeak : lsPeak) {
+				int[] interval = new int[2];
+				interval[0] = gffDetailPeak.getStartAbs();
+				interval[1]= gffDetailPeak.getEndAbs();
+				hashTmpResult.put(interval, gffDetailPeak.getNumber());
+			}
+			hashResult.put(string, hashTmpResult);
+		}
+		return hashResult;
+	}
 	
  
 	/**
@@ -370,12 +343,12 @@ public abstract class GffHash <T extends GffDetailAbs, K extends GffCodAbs<T>, M
 					gffDetailDown = lsGffDetail.get(i + 1);
 				}
 				if (gffDetail.isCis5to3()) {
-					gffDetail.tss2UpGene = distance(gffDetail, gffDetailUp, true);
-					gffDetail.tes2DownGene = distance(gffDetail, gffDetailDown, false);
+					gffDetail.setTss2UpGene( distance(gffDetail, gffDetailUp, true) );
+					gffDetail.setTes2DownGene( distance(gffDetail, gffDetailDown, false) );
 				}
 				else {
-					gffDetail.tss2UpGene = distance(gffDetail, gffDetailDown, false);
-					gffDetail.tes2DownGene = distance(gffDetail, gffDetailUp, true);
+					gffDetail.setTss2UpGene( distance(gffDetail, gffDetailDown, false) );
+					gffDetail.setTes2DownGene( distance(gffDetail, gffDetailUp, true) );
 				}
 			}
 		}

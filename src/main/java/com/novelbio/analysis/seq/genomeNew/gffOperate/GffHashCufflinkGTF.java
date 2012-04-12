@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 public class GffHashCufflinkGTF extends GffHashGeneAbs{

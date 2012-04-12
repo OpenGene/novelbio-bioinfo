@@ -14,7 +14,7 @@ import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHash;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashCG;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGenePlant;
@@ -102,7 +102,7 @@ private static Logger logger = Logger.getLogger(GffChr1.class);
 	/**
 	 * 本类用到的一个gffHash，用来读取gff文件
 	 */
-	protected GffHash gffHash;
+	protected ListHash gffHash;
 	/**
 	 * 本类用到的一个mapreads，用来处理map文件
 	 */
@@ -424,7 +424,7 @@ private static Logger logger = Logger.getLogger(GffChr1.class);
 		}
 		mapReads.normDouble(iso, normalizeType);
 		double[] isoResult = new double[iso.length+1];
-		isoResult[0] = gffGeneIsoSearch.getLocDistmRNA(gffGeneIsoSearch.getATGSsite(), gffGeneIsoSearch.getTSSsite());
+		isoResult[0] = gffGeneIsoSearch.getLocDistmRNA(gffGeneIsoSearch.getATGsite(), gffGeneIsoSearch.getTSSsite());
 		for (int i = 0; i < iso.length; i++) {
 			isoResult[i+1] = iso[i];
 		}

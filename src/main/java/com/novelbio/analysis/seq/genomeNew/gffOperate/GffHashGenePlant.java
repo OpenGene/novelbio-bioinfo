@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.Species;
 
@@ -260,7 +260,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   //遇到5UTR
 		   else if (ss[2].equals("five_prime_UTR")) 
 		   {
-			   gffDetailLOC.addExonGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
+			   gffDetailLOC.addExonUCSCGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 			   //5UTR过去了
 			   UTR5start = false;
 			   UTR5end = true;//5UTR会有结束
@@ -279,7 +279,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 					   UTR5end = false;
 				   }
 				   else {
-					   gffDetailLOC.addExonGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
+					   gffDetailLOC.addExonUCSCGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 				   }
 				   CDSstart = false;
 				   CDSend = true;
@@ -287,7 +287,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 				   cdsEnd = Integer.parseInt(ss[4]);
 			   }
 			   else {
-				   gffDetailLOC.addExonGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
+				   gffDetailLOC.addExonUCSCGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 				   if (gffDetailLOC.cis5to3) 
 					   cdsEnd = Integer.parseInt(ss[4]);
 				   else //反着装
@@ -304,7 +304,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 				   CDSend = false; //已经不是紧跟着最后一个CDS了
 			   }
 			   else {
-				   gffDetailLOC.addExonGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
+				   gffDetailLOC.addExonUCSCGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 			   }
 			   //5UTR过去了
 			   UTR3start = false;

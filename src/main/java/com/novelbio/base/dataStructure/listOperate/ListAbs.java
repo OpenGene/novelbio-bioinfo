@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genomeNew.listOperate;
+package com.novelbio.base.dataStructure.listOperate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,9 +6,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbs;
 
-public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeak;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeakDU;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailPeak;
+
+public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>{
 	private static Logger logger = Logger.getLogger(ListAbs.class);
 	/**
 	 * 
@@ -36,6 +39,9 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	HashMap<Integer, Integer> hashLocExInEnd;
 	
 	Boolean cis5to3 = null;
+	/**
+	 * 本条目的名字
+	 */
 	protected String listName = "";
 	public void setName(String listName) {
 		this.listName = listName;
@@ -216,7 +222,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 		int locSmallExInNum = getLocInEleNum(locSmall); 
 		int locBigExInNum = getLocInEleNum(locBig);
 		
-		int distance = GffCodAbs.LOC_ORIGINAL;
+		int distance = ListCodAbs.LOC_ORIGINAL;
 		
 		if (locSmallExInNum <= 0 || locBigExInNum <= 0) 
 			return distance;
@@ -226,7 +232,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 			distance = locBig - locSmall;
 		}
 		else {
-			distance = getLoc2EleEnd(locSmall) + getLoc2EleStart(locBig) + 1;
+			distance = getCod2ExInEnd(locSmall) + getCod2ExInStart(locBig) + 1;
 			for (int i = locSmallExInNum + 1; i <= locBigExInNum - 1; i++) {
 				distance = distance + get(i).getLen();
 			}
@@ -259,7 +265,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 //				int exonNum = getLocInEleNum(location) - 1;
 //				int remain = Math.abs(mRNAnum) - getLoc2EleStart(location);
 //				for (int i = exonNum - 1; i >= 0; i--) {
-//					ElementAbs tmpExon = get(i);
+//					GffDetailAbs tmpExon = get(i);
 //					// 一个一个外显子的向前遍历
 //					if (remain - tmpExon.getLen() > 0) {
 //						remain = remain - tmpExon.getLen();
@@ -280,7 +286,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 //				int exonNum = getLocInEleNum(location) - 1;
 //				int remain = mRNAnum - getLoc2EleEnd(location);
 //				for (int i = exonNum + 1; i < size(); i++) {
-//					ElementAbs tmpExon = get(i);
+//					GffDetailAbs tmpExon = get(i);
 //					// 一个一个外显子的向前遍历
 //					if (remain - tmpExon.getLen() > 0) {
 //						remain = remain - tmpExon.getLen();
@@ -308,7 +314,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 			return -1;
 		}
 		if (mRNAnum < 0) {
-			if (Math.abs(mRNAnum) <= getLoc2EleStart(location)) {
+			if (Math.abs(mRNAnum) <= getCod2ExInStart(location)) {
 				if (isCis5to3()) {
 					return location + mRNAnum;
 				}
@@ -317,7 +323,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 			} 
 			else {
 				int exonNum = getLocInEleNum(location) - 1;
-				int remain = Math.abs(mRNAnum) - getLoc2EleStart(location);
+				int remain = Math.abs(mRNAnum) - getCod2ExInStart(location);
 				for (int i = exonNum - 1; i >= 0; i--) {
 					E tmpExon = get(i);
 					// 一个一个外显子的向前遍历
@@ -338,7 +344,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 			}
 		}
 		else {
-			if (mRNAnum <= getLoc2EleEnd(location)) {
+			if (mRNAnum <= getCod2ExInEnd(location)) {
 				if (isCis5to3()) {
 					return location + mRNAnum;
 				}
@@ -348,7 +354,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 			} 
 			else {
 				int exonNum = getLocInEleNum(location) - 1;
-				int remain = mRNAnum - getLoc2EleEnd(location);
+				int remain = mRNAnum - getCod2ExInEnd(location);
 				for (int i = exonNum + 1; i < size(); i++) {
 					E tmpExon = get(i);
 					// 一个一个外显子的向前遍历
@@ -376,7 +382,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	 * @param location 坐标
 	 *  * 该点在外显子中为正数，在内含子中为负数，为实际数目
 	 */
-	protected int getLoc2EleStart(int location) {
+	protected int getCod2ExInStart(int location) {
 		if (hashLocExInStart == null) {
 			hashLocExInStart = new HashMap<Integer, Integer>();
 		}
@@ -408,7 +414,7 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	 * @param location 坐标
 	 *  * 该点在外显子中为正数，在内含子中为负数，为实际数目
 	 */
-	protected int getLoc2EleEnd(int location) {
+	protected int getCod2ExInEnd(int location) {
 		if (hashLocExInEnd == null) {
 			hashLocExInEnd = new HashMap<Integer, Integer>();
 		}
@@ -553,20 +559,80 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 	/**
 	 * 该点在外显子中为正数，在内含子中为负数
 	 * 不在为0
-	 * 为实际数目
+	 * 为实际数目，从1开始计数
 	 * @return
 	 */
 	public int getLocInEleNum(int location) {
 		return LocPosition(location)[3];
 	}
+
+	/**
+	 * 获得的每一个信息都是实际的而没有clone
+	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
+	 * 采用clone的方法获得信息
+	 * 没找到就返回null
+	 */
+	public ListCodAbs<E> searchLocation(int Coordinate) {
+		int[] locInfo = LocPosition(Coordinate);// 二分法查找peaknum的定位
+		if (locInfo == null) {
+			return null;
+		}
+		ListCodAbs<E> gffCod = new ListCodAbs<E>(listName, Coordinate);
+		if (locInfo[0] == 1) // 定位在基因内
+		{
+			gffCod.setGffDetailThis( get(locInfo[1]) ); 
+			gffCod.booFindCod = true;
+			gffCod.ChrHashListNumThis = locInfo[1];
+			gffCod.insideLOC = true;
+			if (locInfo[1] - 1 >= 0) {
+				gffCod.setGffDetailUp( get(locInfo[1]-1) );
+				gffCod.ChrHashListNumUp = locInfo[1]-1;
+				
+			}
+			if (locInfo[2] != -1) {
+				gffCod.setGffDetailDown(get(locInfo[2]));
+				gffCod.ChrHashListNumDown = locInfo[2];
+			}
+		} else if (locInfo[0] == 2) {
+			gffCod.insideLOC = false;
+			if (locInfo[1] >= 0) {
+				gffCod.setGffDetailUp( get(locInfo[1]) );
+				gffCod.ChrHashListNumUp = locInfo[1];		
+			}
+			if (locInfo[2] != -1) {
+				gffCod.setGffDetailDown( get(locInfo[2]) );
+				gffCod.ChrHashListNumDown = locInfo[2];
+			}
+		}
+		return gffCod;
+	}
 	
-	
-	
-	
-	
-	
-	
-	
+	/**
+	 * 返回双坐标查询的结果，内部自动判断 cod1 和 cod2的大小
+	 * 如果cod1 和cod2 有一个小于0，那么坐标不存在，则返回null
+	 * @param chrID 内部自动小写
+	 * @param cod1 必须大于0
+	 * @param cod2 必须大于0
+	 * @return
+	 */
+	public ListCodAbsDu<E, ListCodAbs<E>> searchLocationClone(int cod1, int cod2) {
+		if (cod1 < 0 && cod2 < 0) {
+			return null;
+		}
+		ListCodAbs<E> gffCod1 = searchLocation(cod1);
+		ListCodAbs<E> gffCod2 = searchLocation(cod2);
+		if (gffCod1 == null) {
+			System.out.println("error");
+		}
+		ListCodAbsDu<E, ListCodAbs<E>> lsAbsDu = new ListCodAbsDu<E, ListCodAbs<E>>(gffCod1, gffCod2);
+		
+		if (lsAbsDu.getGffCod1().getItemNumDown() >= 0) {
+			for (int i = lsAbsDu.getGffCod1().getItemNumDown(); i <= lsAbsDu.getGffCod2().getItemNumUp(); i++) {
+				lsAbsDu.getLsGffDetailMid().add(get(i));
+			}
+		}
+		return lsAbsDu;
+	}
 }
 
 
@@ -574,10 +640,6 @@ public class ListAbs <E extends ElementAbs> extends ArrayList<E>{
 
 class BinarySearch
 {
-	
- 
-	
-
 	/**
 	 * 二分法查找location所在的位点,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
 	 * 返回一个int[3]数组，<br>
@@ -588,7 +650,7 @@ class BinarySearch
 	 * 不在为0
 	 * 为实际数目
 	 */
-	protected static int[] LocPositionCis(ArrayList<? extends ElementAbs> lsElement, int Coordinate) {
+	protected static int[] LocPositionCis(ArrayList<? extends ListDetailAbs> lsElement, int Coordinate) {
 		if (lsElement == null) {
 			return null;
 		}
@@ -665,7 +727,7 @@ class BinarySearch
 	 * 不在为0
 	 * 为实际数目
 	 */
-	protected static int[] LocPositionTran(ArrayList<? extends ElementAbs> lsElement, int Coordinate) {
+	protected static int[] LocPositionTran(ArrayList<? extends ListDetailAbs> lsElement, int Coordinate) {
 		if (lsElement == null) {
 			return null;
 		}
@@ -741,7 +803,7 @@ class BinarySearch
 	 * 不在为0
 	 * 为实际数目
 	 */
-	protected static int[] LocPositionAbs(ArrayList<? extends ElementAbs> lsElement, int Coordinate) {
+	protected static int[] LocPositionAbs(ArrayList<? extends ListDetailAbs> lsElement, int Coordinate) {
 		if (lsElement == null) {
 			return null;
 		}
@@ -805,10 +867,10 @@ class BinarySearch
  * 从小到大排序
  * @author zong0jie
  */
-class CompS2M implements Comparator<ElementAbs>
+class CompS2M implements Comparator<ListDetailAbs>
 {
 	@Override
-	public int compare(ElementAbs o1, ElementAbs o2) {
+	public int compare(ListDetailAbs o1, ListDetailAbs o2) {
 		Integer o1start = o1.getStartCis();
 		Integer o2start = o2.getStartCis();
 		int comp = o1start.compareTo(o2start);
@@ -825,10 +887,10 @@ class CompS2M implements Comparator<ElementAbs>
  * 从小到大排序，用绝对坐标值排序
  * @author zong0jie
  */
-class CompS2MAbs implements Comparator<ElementAbs>
+class CompS2MAbs implements Comparator<ListDetailAbs>
 {
 	@Override
-	public int compare(ElementAbs o1, ElementAbs o2) {
+	public int compare(ListDetailAbs o1, ListDetailAbs o2) {
 		Integer o1start = o1.getStartAbs();
 		Integer o2start = o2.getStartAbs();
 		int comp = o1start.compareTo(o2start);
@@ -845,10 +907,10 @@ class CompS2MAbs implements Comparator<ElementAbs>
  * 从大到小排序
  * @author zong0jie
  */
-class CompM2S implements Comparator<ElementAbs>
+class CompM2S implements Comparator<ListDetailAbs>
 {
 	@Override
-	public int compare(ElementAbs o1, ElementAbs o2) {
+	public int compare(ListDetailAbs o1, ListDetailAbs o2) {
 		Integer o1start = o1.getStartCis();
 		Integer o2start = o2.getStartCis();
 		int comp = o1start.compareTo(o2start);
