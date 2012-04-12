@@ -20,11 +20,14 @@ public class ImportDB {
 //		updateTAIR();
 //		 updateZB();
 //		updateEnsembl();
-		updateYeast();
+//		updateYeast();
+
+
+//		updateMicroarray();
+//		updateSoyBean();
+		updateZeaMaize();
 		updateBlast();
 //		updateAffy();
-//		updateMicroarray();
-
 	}
 	/**
 	 * 升级从NCBI下载的信息
@@ -157,7 +160,33 @@ public class ImportDB {
 		blast.setSubTaxID(4932);
 		blast.setTaxID(queryTaxID);
 		blast.setTxtWriteExcep(outFIle);
-		blast.updateFile(blastFile, false);		
+//		blast.updateFile(blastFile, false);
+		/////////////////   zeamaize   /////////////////////////
+		blastFile = "/media/winE/Bioinformatics/BLAST/result/maize/maize2AthFinal5b.txt";
+		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+		queryTaxID = 4577;
+		blast = new Blast();
+		blast.setQueryID(CopedID.IDTYPE_ACCID);
+		blast.setBlastID(CopedID.IDTYPE_ACCID);
+		blast.setQueryDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
+		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
+		blast.setSubTaxID(3702);
+		blast.setTaxID(queryTaxID);
+		blast.setTxtWriteExcep(outFIle);
+		blast.updateFile(blastFile, false);
+		/////////////////   soybean   /////////////////////////
+		blastFile = "/media/winE/Bioinformatics/BLAST/result/soybean/soybean2Ath.xls";
+		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+		queryTaxID = 3847;
+		blast = new Blast();
+		blast.setQueryID(CopedID.IDTYPE_ACCID);
+		blast.setBlastID(CopedID.IDTYPE_ACCID);
+		blast.setQueryDBinfo(NovelBioConst.DBINFO_GLYMAX_SOYBASE);
+		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
+		blast.setSubTaxID(3702);
+		blast.setTaxID(queryTaxID);
+		blast.setTxtWriteExcep(outFIle);
+//		blast.updateFile(blastFile, false);
 	}
 	
 	private static void updateAffy()
@@ -329,8 +358,23 @@ public class ImportDB {
 		yeast.update();
 	}
 	
+	private static void updateSoyBean() {
+		String soyDbxref = "/media/winE/Bioinformatics/GenomeData/soybean/ncbi/dbxref.xls";
+		String soyAnno = "/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_annotation_info.txt";
+		SoyBean soyBean = new SoyBean();
+		soyBean.setSoyDbxref(soyDbxref);
+		soyBean.setSoyGeneInfo(soyAnno);
+		soyBean.update();
+	}
 	
-	
+	private static void updateZeaMaize() {
+		String soyDbxref = "/media/winE/Bioinformatics/GenomeData/maize/ZmB73_5a_xref.txt";
+		String maizeGeneInfo = "/media/winE/Bioinformatics/GenomeData/maize/ZmB73_5a_gene_descriptors.txt/ZmB73_5a_gene_descriptors.txt";
+		MaizeGDB maizeGDB = new MaizeGDB();
+		maizeGDB.setMaizeDbxref(soyDbxref);
+		maizeGDB.setMaizeGeneInfo(maizeGeneInfo);
+		maizeGDB.update();
+	}
 	
 	
 	

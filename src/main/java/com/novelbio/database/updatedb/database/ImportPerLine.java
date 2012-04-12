@@ -19,6 +19,8 @@ abstract class ImportPerLine
 	static HashSet<Integer> hashTaxID = null;
 	static String taxIDfile = "";
 	int readFromLine = 1;
+	//多此一举的设定，回头慢慢修正
+	int num = 2;
 	/**
 	 * 将无法升级的行写入该文本
 	 */
@@ -30,16 +32,17 @@ abstract class ImportPerLine
 		txtWriteExcep = new TxtReadandWrite(txtWriteExcepFile, true);
 	}
 	/**
+	 * 多此一举的设定
 	 * 覆盖该方法来设定从第几行开始读取
 	 */
 	protected void setReadFromLine() {
-		this.readFromLine = 2;
+		this.readFromLine = num;
 	}
 	/**
-	 * 覆盖该方法来设定从第几行开始读取
+	 * 设定从第几行开始读取
 	 */
 	protected void setReadFromLine(int num) {
-		this.readFromLine = num;
+		this.num = num;
 	}
 	int taxID = 0;
 	/**

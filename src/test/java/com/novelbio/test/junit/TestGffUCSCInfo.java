@@ -52,7 +52,7 @@ public class TestGffUCSCInfo extends TestCase{
 	{
 		for (String loc : lsAllLoc) {
 			GffDetailGene gffDetailGene= gffHashUCSC.searchLOC(loc);
-			int atgsite = gffDetailGene.getLongestSplit().getATGSsite();
+			int atgsite = gffDetailGene.getLongestSplit().getATGsite();
 			int tsssite = gffDetailGene.getLongestSplit().getTSSsite();
 			int tessite = gffDetailGene.getLongestSplit().getTESsite();
 			int uagsite = gffDetailGene.getLongestSplit().getUAGsite();
@@ -127,7 +127,7 @@ public class TestGffUCSCInfo extends TestCase{
 	private void testAAsite(GffDetailGene gffDetailGene)
 	{
 		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
-		int atgsite = gffGeneIsoInfo.getATGSsite();
+		int atgsite = gffGeneIsoInfo.getATGsite();
 		int site2 = gffGeneIsoInfo.getLocDistmRNASite(atgsite, 2);
 		if (site2 > 0) {
 			if (gffGeneIsoInfo.isCis5to3()) {

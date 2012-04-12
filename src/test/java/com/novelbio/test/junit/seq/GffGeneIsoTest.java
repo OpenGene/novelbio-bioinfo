@@ -9,7 +9,7 @@ import org.junit.Test;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoTrans;
-import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 
 public class GffGeneIsoTest extends TestCase {
 	@Test

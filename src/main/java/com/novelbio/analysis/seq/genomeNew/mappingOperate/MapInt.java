@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.genomeNew.mappingOperate;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 
 public interface MapInt {
 	/**

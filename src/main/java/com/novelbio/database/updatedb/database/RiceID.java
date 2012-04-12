@@ -48,34 +48,34 @@ public class RiceID{
 	public void update()
 	{
 		RiceTIGRGFFID riceTIGRGFFID = new RiceTIGRGFFID();
-//		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID);
-//		riceTIGRGFFID.setInsertAccID(false);
-//		riceTIGRGFFID.updateFile(gffTIGR, false);
+		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID);
+		riceTIGRGFFID.setInsertAccID(false);
+		riceTIGRGFFID.updateFile(gffTIGR, false);
 		
 		RiceRapDBID riceRapDBID = new RiceRapDBID();
-//		riceRapDBID.setTxtWriteExcep(rapDBoutID);
-//		riceRapDBID.setInsertAccID(false);
-//		riceRapDBID.updateFile(gffRapDB, false);
+		riceRapDBID.setTxtWriteExcep(rapDBoutID);
+		riceRapDBID.setInsertAccID(false);
+		riceRapDBID.updateFile(gffRapDB, false);
 		
 		RiceRap2MSU riceRap2MSU = new RiceRap2MSU();
-//		riceRap2MSU.updateFile(rap2MSU, false);
+		riceRap2MSU.updateFile(rap2MSU, false);
 		
 		riceRapDBID.setInsertAccID(true);
-//		riceRapDBID.setTxtWriteExcep(rapDBoutID + "_2");
-//		riceRapDBID.updateFile(rapDBoutID, false);
+		riceRapDBID.setTxtWriteExcep(rapDBoutID + "_2");
+		riceRapDBID.updateFile(rapDBoutID, false);
 		
 		riceTIGRGFFID.setInsertAccID(true);
-//		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID + "_2");
-//		riceTIGRGFFID.updateFile(tigrDBoutID, false);
+		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID + "_2");
+		riceTIGRGFFID.updateFile(tigrDBoutID, false);
 		
 /////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		RiceRapDBInfo riceRapDBInfo = new RiceRapDBInfo();
-//		riceRapDBInfo.updateFile(gffRapDB, false);
+		riceRapDBInfo.updateFile(gffRapDB, false);
 		
 		RiceTIGRInfo riceTIGRInfo = new RiceTIGRInfo();
-//		riceTIGRInfo.updateFile(gffTIGR, false);
-//		
+		riceTIGRInfo.updateFile(gffTIGR, false);
+		
 		RiceTIGRGO riceTIGRGO = new RiceTIGRGO();
 		riceTIGRGO.updateFile(tigrGoSlim, false);
 	}

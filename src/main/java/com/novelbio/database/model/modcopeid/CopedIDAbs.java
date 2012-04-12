@@ -587,11 +587,11 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	/**
 	 * 依次输入需要升级的GO信息，最后升级 这里只是先获取GO的信息，最后调用升级method的时候再升级
 	 * 可以连续不断的添加
-	 * @param GOID
-	 * @param GOdatabase
-	 * @param GOevidence
-	 * @param GORef
-	 * @param gOQualifiy
+	 * @param GOID 必填
+	 * @param GOdatabase 没有就设置为 null 
+	 * @param GOevidence 没有就设置为 null 
+	 * @param GORef 没有就设置为 null 
+	 * @param gOQualifiy 没有就设置为 null 
 	 */
 	@Override
 	public void setUpdateGO(String GOID, String GOdatabase, String GOevidence,

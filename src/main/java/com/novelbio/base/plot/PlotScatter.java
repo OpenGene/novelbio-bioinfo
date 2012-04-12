@@ -29,6 +29,7 @@ import de.erichseifert.gral.graphics.DrawingContext;
 import de.erichseifert.gral.plots.BarPlot;
 import de.erichseifert.gral.plots.PlotArea;
 import de.erichseifert.gral.plots.XYPlot;
+import de.erichseifert.gral.plots.XYPlot.XYNavigationDirection;
 import de.erichseifert.gral.plots.areas.AreaRenderer;
 import de.erichseifert.gral.plots.areas.DefaultAreaRenderer2D;
 import de.erichseifert.gral.plots.axes.Axis;
@@ -615,7 +616,7 @@ public class PlotScatter extends PlotNBCInteractive{
 		else {
 			 plot.getPlotArea().setSetting(PlotArea.BACKGROUND, new Color(0, 0, 0, 0));
 		}
-		
+		///以下是我修改gral的源码添加的方法，不过后来发现他似乎有更好的
 		if (lsAxisNotMove.size() == 0) {
 			plot.setAxisNotMove(null);
 			plot.setAxisNotZoom(null);
@@ -626,6 +627,13 @@ public class PlotScatter extends PlotNBCInteractive{
 				plot.setAxisNotZoom(string);
 			}
 		}
+		///////////////他自己提供的方法，限定一个方向的放大或者缩小//////////////////////
+		///////////////以下没写完全
+//		if (lsAxisNotMove.size() != 0) {
+//			
+//			plot.getNavigator().setDirection(XYNavigationDirection.HORIZONTAL);
+//		}
+		
 	}
 	/**
 	 * fill the insets with BG color, means fill the marginal area between the frame and the plot border.<br>

@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 import org.junit.experimental.max.MaxCore;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeak;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashPeak;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashBin;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -164,7 +164,7 @@ public class MapReads {
 	 public ArrayList<String[]> getChIPBG(String peakBedFile, int firstlinels1)
 	 {
 		 ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		 GffHashPeak gffHashPeak = new GffHashPeak(true, 1, 2, 3, firstlinels1);
+		 GffHashBin gffHashPeak = new GffHashBin(true, 1, 2, 3, firstlinels1);
 		 gffHashPeak.ReadGffarray(peakBedFile);
 		 
 		 double allReads = 0; int numAll = 0; double max = 0;
@@ -178,7 +178,7 @@ public class MapReads {
 				if (info[i] == 0) { 
 					continue;
 				}
-				GffCodPeak gffcodPeak = gffHashPeak.searchLocation(chrID, i*invNum);
+				GffCodPeak gffcodPeak = gffHashPeak.searchLocatioClone(chrID, i*invNum);
 				if (gffcodPeak != null && gffcodPeak.isInsideLoc()) {
 					continue;
 				}
@@ -1141,6 +1141,7 @@ public class MapReads {
 	
 	
 	/**
+	 * 填充每个MapInfo
 	 * 经过标准化，和equations修正
 	 * @param lsmapInfo
 	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
@@ -1153,6 +1154,7 @@ public class MapReads {
 		}
 	}
 	/**
+	 * 填充每个MapInfo
 	 * 经过标准化，和equations修正
 	 * @param lsmapInfo
 	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确

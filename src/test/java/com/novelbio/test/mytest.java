@@ -106,30 +106,11 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
- 
-	 
-		double[] x = new double[100];
-		double[] y = new double[100];
-		for (int i = 0; i < x.length; i++) {
-			x[i] = i*2;
-			y[i] = 10;
-		}
-		PlotScatter plotScatter = new PlotScatter();
-		plotScatter.setAxisX(0, 10000);
-		plotScatter.setAxisY(0, 12);
-//		plotScatter.mapNum2ChangeX(0, 0, resolution.length, chrLength, interval);
-		DotStyle dotStyle = new DotStyle();
-		dotStyle.setColor(new Color(0, 0, 255, 255));
-		dotStyle.setStyle(DotStyle.STYLE_AREA);
-		plotScatter.addXY(x, y, dotStyle);
-		plotScatter.setBg(Color.WHITE,false);
-		plotScatter.setAlpha(false);
-		plotScatter.setTitle( " Reads Density", null);
-		plotScatter.setTitleX("Chromosome Length", null, 0);
-		plotScatter.setTitleY("Normalized Reads Counts", null, (int)12/5);
-		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
-	 
-		plotScatter.saveToFile("/media/winE/Bioinformatics/GenomeData/yeast/Pichia/aaa3.png", 10000, 1000);
+		System.out.println(Double.class.equals(Double.class));
+		;
+
+		
+		
 	}
 	
 	
@@ -448,7 +429,7 @@ public class mytest {
 	public void calUTR5length() throws Exception {
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
-				.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+				.ReadGff(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
 		int geneNum = 0;
 		int gene20bp = 0;
@@ -481,7 +462,7 @@ public class mytest {
 	public static void calIntron() throws Exception {
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
-				.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+				.ReadGff(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
 		ArrayList<Integer> lsIntron = new ArrayList<Integer>();
 		TreeSet<Integer> treeIntron = new TreeSet<Integer>();
@@ -515,7 +496,7 @@ public class mytest {
 	public static void testHanyan() throws Exception {
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
-				.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+				.ReadGff(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
 		txtReadandWrite
 				.setParameter(
@@ -542,7 +523,7 @@ public class mytest {
 			// continue;
 			// }
 			GffCodGene gffCodGene = (GffCodGene) gffHashUCSCgene
-					.searchLocation(ss[0], Integer.parseInt(ss[1]));
+					.searchLocatioClone(ss[0], Integer.parseInt(ss[1]));
 			if (gffCodGene != null && gffCodGene.findCod()) {
 				if (gffCodGene.getGffDetailThis().isCis5to3() != ss[5]
 						.equals("+")) {
@@ -555,7 +536,7 @@ public class mytest {
 				continue;
 			}
 			GffCodGene gffCodGene2 = (GffCodGene) gffHashUCSCgene
-					.searchLocation(ss[0], Integer.parseInt(ss[2]));
+					.searchLocatioClone(ss[0], Integer.parseInt(ss[2]));
 			if (gffCodGene2 != null && gffCodGene2.findCod()) {
 				if (gffCodGene2.getGffDetailThis().isCis5to3() != ss[5]
 						.equals("+")) {
@@ -589,7 +570,7 @@ public class mytest {
 				NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
-				.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+				.ReadGff(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
 		int seqNum = 0;
 		int consensusSeq = 0;
@@ -642,7 +623,7 @@ public class mytest {
 				NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
-				.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+				.ReadGff(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
 		GffDetailGene gffDetailGene = (GffDetailGene) gffHashUCSCgene
 				.getLocHashtable().get("NM_032526");
@@ -665,7 +646,7 @@ public class mytest {
 				NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
-				.ReadGffarrayExcep(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+				.ReadGff(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
 		int seqNum = 0;
 		int consensusSeq = 0;

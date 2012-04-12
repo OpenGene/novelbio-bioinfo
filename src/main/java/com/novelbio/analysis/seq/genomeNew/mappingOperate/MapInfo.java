@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodAbs;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.plot.java.HeatChartDataInt;
 /**
  * 内建根据weight排序的方法
@@ -33,8 +33,8 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	static int compareInfo = COMPARE_WEIGHT;
 	
 	String chrID = "";
-	int startLoc = GffCodAbs.LOC_ORIGINAL;
-	int endLoc = GffCodAbs.LOC_ORIGINAL;
+	int startLoc = ListCodAbs.LOC_ORIGINAL;
+	int endLoc = ListCodAbs.LOC_ORIGINAL;
 	double weight = 0; // 比较的标签，可以是表达等
 	//从小到大排序
 	static boolean min2max = true;
@@ -43,7 +43,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	//核酸序列
 	String nrSeq = "";
 	private double[] value = null;
-	int flagLoc = GffCodAbs.LOC_ORIGINAL;
+	int flagLoc = ListCodAbs.LOC_ORIGINAL;
 	boolean cis5to3 = true;
 	/**
 	 * 本坐标的方向，用于基因的Tss和Tes等运算

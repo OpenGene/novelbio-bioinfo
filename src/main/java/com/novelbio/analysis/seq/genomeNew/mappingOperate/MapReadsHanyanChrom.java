@@ -62,12 +62,12 @@ public class MapReadsHanyanChrom extends MapReads{
 		
 		//需要根据方向来筛选reads
 		if (cis5to3 != null) {
-			GffCodGene gffCodGene = gffHashGene.searchLocation(tmp[colChrID], Integer.parseInt(tmp[colStartNum]));
+			GffCodGene gffCodGene = gffHashGene.searchLocatioClone(tmp[colChrID], Integer.parseInt(tmp[colStartNum]));
 			//如果位点一在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
 			if (gffCodGene.isInsideLoc() && cis5to3 == (gffCodGene.getGffDetailThis().isCis5to3() == tmp[colCis5To3].equals("+")) ) {
 				return super.addLoc(tmp, uniqReads, tmpOld, startCod, null, chrBpReads, readsNum);
 			}
-			GffCodGene gffCodGene2 = gffHashGene.searchLocation(tmp[colChrID], Integer.parseInt(tmp[colEndNum]));
+			GffCodGene gffCodGene2 = gffHashGene.searchLocatioClone(tmp[colChrID], Integer.parseInt(tmp[colEndNum]));
 			//如果位点二在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
 			if (gffCodGene2.isInsideLoc() && cis5to3 == (gffCodGene2.getGffDetailThis().isCis5to3() == tmp[colCis5To3].equals("+")) ) {
 				return super.addLoc(tmp, uniqReads, tmpOld, startCod, null, chrBpReads, readsNum);

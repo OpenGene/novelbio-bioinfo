@@ -3,9 +3,9 @@ package com.novelbio.analysis.seq.snpNCBI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.analysis.seq.genomeNew.listOperate.ElementAbs;
-import com.novelbio.analysis.seq.genomeNew.listOperate.ListAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.listOperate.ElementAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 
 /**
  * pfam domain的数据库，指定每个蛋白都有哪些domain
