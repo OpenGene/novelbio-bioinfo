@@ -20,6 +20,10 @@ import org.apache.log4j.Logger;
  *
  */
 public class GffGeneIsoCis extends GffGeneIsoInfo {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8473636267008365629L;
 	private static final Logger logger = Logger.getLogger(GffGeneIsoCis.class);
 
 	public GffGeneIsoCis(String IsoName, GffDetailGene gffDetailGene, String geneType) {
@@ -28,35 +32,12 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	}
 
 	public GffGeneIsoCis(String IsoName, String ChrID, int coord, String geneType) {
-		super(IsoName, ChrID, coord, geneType);
+		super(IsoName, ChrID, geneType);
 		super.setCis5to3(true);
 	}
 	public GffGeneIsoCis(String IsoName, String ChrID, String geneType) {
 		super(IsoName, ChrID, geneType);
 		super.setCis5to3(true);
-	}
-	
-	
-
-
-	
-	
-
-
-
-
-	@Override
-	public GffGeneIsoCis clone() {
-		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis(getName(), chrID,coord, getGeneType());
-		this.clone(gffGeneIsoCis);
-		return gffGeneIsoCis;
-	}
-	
-	@Override
-	public GffGeneIsoCis cloneDeep() {
-		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis(getName(), chrID,coord, getGeneType());
-		this.cloneDeep(gffGeneIsoCis);
-		return gffGeneIsoCis;
 	}
 
 	@Override

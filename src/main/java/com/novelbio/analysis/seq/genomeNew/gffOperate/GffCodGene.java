@@ -24,7 +24,7 @@ public class GffCodGene extends ListCodAbs<GffDetailGene>
 		GffGeneIsoInfo gffGeneIsoInfoTmp = null;
 		GffGeneIsoInfo gffGeneIsoInfo;
 		if (isInsideLoc()) {
-			gffGeneIsoInfo = getCodInExon(getGffDetailThis());
+			gffGeneIsoInfo = getCodInExon(getGffDetailThis(), super.getCoord());
 			if (  gffGeneIsoInfo != null ) {
 				if (gffGeneIsoInfo.ismRNA()) {
 					return gffGeneIsoInfo;
@@ -35,13 +35,13 @@ public class GffCodGene extends ListCodAbs<GffDetailGene>
 			}
 		}
 		if (isInsideUp()) {
-			gffGeneIsoInfo = getCodInExon(getGffDetailUp());
+			gffGeneIsoInfo = getCodInExon(getGffDetailUp(), super.getCoord());
 			if (  gffGeneIsoInfo != null && gffGeneIsoInfo.ismRNA()) {
 				return gffGeneIsoInfo;
 			}
 		}
 		if (isInsideDown()) {
-			gffGeneIsoInfo = getCodInExon(getGffDetailDown());
+			gffGeneIsoInfo = getCodInExon(getGffDetailDown(), super.getCoord());
 			if (  gffGeneIsoInfo != null && gffGeneIsoInfo.ismRNA()) {
 				return gffGeneIsoInfo;
 			}
@@ -60,24 +60,24 @@ public class GffCodGene extends ListCodAbs<GffDetailGene>
 	 * @param gffDetailGene
 	 * @return
 	 */
-	private GffGeneIsoInfo getCodInExon(GffDetailGene gffDetailGene)
+	private GffGeneIsoInfo getCodInExon(GffDetailGene gffDetailGene, int coord)
 	{
 		//先找最长转录本，看snp是否在该转录本的exon中，不在的话，找其他所有转录本,看是否在基因的表达区中
 		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
-		if (!gffGeneIsoInfo.ismRNA() || gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_EXON
-				|| gffGeneIsoInfo.getCod2ATGmRNA() < 0 
-				|| gffGeneIsoInfo.getCod2UAG() > 0 ) {
+		if (!gffGeneIsoInfo.ismRNA() || gffGeneIsoInfo.getCodLoc(coord) != GffGeneIsoInfo.COD_LOC_EXON
+				|| gffGeneIsoInfo.getCod2ATGmRNA(coord) < 0 
+				|| gffGeneIsoInfo.getCod2UAG(coord) > 0 ) {
 			for (GffGeneIsoInfo gffGeneIsoInfo2 : gffDetailGene.getLsCodSplit()) {
-				if (gffGeneIsoInfo2.getCodLoc() == GffGeneIsoInfo.COD_LOC_EXON 
-						&& gffGeneIsoInfo2.getCod2ATGmRNA() >= 0 
-						&& gffGeneIsoInfo2.getCod2UAG() <= 0)  {
+				if (gffGeneIsoInfo2.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_EXON 
+						&& gffGeneIsoInfo2.getCod2ATGmRNA(coord) >= 0 
+						&& gffGeneIsoInfo2.getCod2UAG(coord) <= 0)  {
 					gffGeneIsoInfo = gffGeneIsoInfo2;
 					break;
 				}
 			}
 		}
 		//找到了
-		if (gffGeneIsoInfo.getCodLoc() == GffGeneIsoInfo.COD_LOC_EXON) {
+		if (gffGeneIsoInfo.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_EXON) {
 			return gffGeneIsoInfo;
 		}
 		return null;

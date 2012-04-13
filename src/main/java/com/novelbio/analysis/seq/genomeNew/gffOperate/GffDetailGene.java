@@ -312,7 +312,7 @@ public class GffDetailGene extends ListDetailAbs
 		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
 		if (isCodInGeneExtend(coord)) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
-				if (gffGeneIsoInfo.isCodInIsoExtend()) {
+				if (gffGeneIsoInfo.isCodInIsoExtend(coord)) {
 					hashCopedID.add(gffGeneIsoInfo.getCopedID());
 				}
 			}
@@ -328,30 +328,19 @@ public class GffDetailGene extends ListDetailAbs
 					anno[2] = anno[2]+"//"+copedID.getDescription();
 				}
 			}
-			if (getLongestSplit().isCodInIsoExtend()) {
-				anno[4] = getLongestSplit().getCodLocStr();
+			if (getLongestSplit().isCodInIsoExtend(coord)) {
+				anno[4] = getLongestSplit().getCodLocStr(coord);
 			}
 			else {
 				for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
-					if (gffGeneIsoInfo.isCodInIsoExtend()) {
-						anno[4] = gffGeneIsoInfo.getCodLocStr();
+					if (gffGeneIsoInfo.isCodInIsoExtend(coord)) {
+						anno[4] = gffGeneIsoInfo.getCodLocStr(coord);
 						break;
 					}
 				}
 			}
 		}
 		return anno;
-	}
-
-	@Override
-	public GffDetailGene clone() {
-		GffDetailGene gffDetailGene = new GffDetailGene(getParentName(), getName(), cis5to3);
-		this.clone(gffDetailGene);
-		gffDetailGene.taxID = taxID;
-		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			gffDetailGene.lsGffGeneIsoInfos.add(gffGeneIsoInfo.clone());
-		}
-		return gffDetailGene;
 	}
 	
 	/**

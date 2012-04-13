@@ -38,7 +38,8 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	{
 		HashSet<GffDetailGene> hashGffDetailGeneAnno = new HashSet<GffDetailGene>();
 		ArrayList<String[]> lsAnno = new ArrayList<String[]>();
-		
+		fsef
+		//TODO: 这里修改tss和tes后，gffDetailgene要修改tss和tes，gffiso也要修改tss和tes
 		Set<GffDetailGene> gffUpGene = getStructureUpGene(Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
 		for (GffDetailGene gffDetailGene : gffUpGene) {
 			if (hashGffDetailGeneAnno.contains(gffDetailGene))
@@ -357,9 +358,9 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
-		if (gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoTss()
+		if (gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoTss(coord)
 		||
-		(!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend())
+		(!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend(coord))
 		)
 		{
 			return true;
@@ -371,9 +372,9 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
-		if (!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoTss()
+		if (!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoTss(coord)
 		||
-		(gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend())
+		(gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend(coord))
 		)
 		{
 			return true;

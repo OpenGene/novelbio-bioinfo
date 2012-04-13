@@ -1,16 +1,11 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import org.omg.CosNaming._BindingIteratorImplBase;
 
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.CompSubArray;
-import com.novelbio.base.dataStructure.CompSubArrayCluster;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.listOperate.ListComb;
@@ -677,55 +672,6 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 		return getLocDistmRNA(getTESsite(), coord);
 	}
 	/**
-	 * 查找坐标在第几个外显子或内含子中
-	 * 并且指出在是在外显子还是内含子
-	 * 是否在UTR中
-	 * 同时填充		
-	 * cod2ATG
-		cod2cdsEnd 
-		cod2start 
-		cod2end 
-		等
-	 */
-	protected void codSearchNum()
-	{
-		if (coord < 0) {
-			return;
-		}
-		int ExIntronnum = getLocInEleNum(coord);
-		if (ExIntronnum == 0) {
-			codLoc = COD_LOC_OUT;
-		}
-		else if (ExIntronnum > 0) {
-			codLoc = COD_LOC_EXON;
-			if((coord < ATGsite && isCis5to3()) || (coord > ATGsite && !isCis5to3())){        //坐标小于atg，在5‘UTR中,也是在外显子中
-				codLocUTR = COD_LOCUTR_5UTR;
-			}
-			else if((coord > UAGsite && isCis5to3()) || (coord < UAGsite && !isCis5to3())){       //大于cds起始区，在3‘UTR中
-				codLocUTR = COD_LOCUTR_3UTR; 
-			}
-		}
-		else {
-			codLoc = COD_LOC_INTRON;
-		}
-		if (codLocUTR == COD_LOCUTR_5UTR) {
-			cod2UTRstartmRNA = getLocDistmRNA(getTSSsite(), coord);
-			cod2UTRendmRNA = getLocDistmRNA(coord, getATGsite());
-		}
-		else if (codLocUTR == COD_LOCUTR_3UTR) {
-			cod2UTRstartmRNA = getLocDistmRNA(getUAGsite(), coord);
-			cod2UTRendmRNA = getLocDistmRNA(coord, getTESsite());
-		}
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		cod2ATGmRNA = getLocDistmRNA(ATGsite, coord);
-		cod2UAGmRNA = getLocDistmRNA(UAGsite, coord);
-		cod2ExInStart = getCod2ExInStart(coord);
-		cod2ExInEnd = getCod2ExInEnd(coord);
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		numExIntron = Math.abs(ExIntronnum);
-	}
-	protected abstract void setCod2SiteAbs();
-	/**
 	 * 保存某个坐标和所在的内含子外显子数目
 	 */
 	HashMap<Integer, Integer> hashLocExInNum;
@@ -884,13 +830,13 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 	}
 	
 	/**
-	 * 文字形式的定位描述
+	 * 文字形式的定位描述, <b>首先在gffDetailGene中设定tss，tes这两项</b><br>
 	 * null: 不在该转录本内
 	 * 
 	 * 指定条件，将符合条件的peak抓出来并做注释，主要是筛选出合适的peak然后做后续比较工作
 	 * 不符合的会跳过
-	 * @param filterTss 是否进行tss筛选，null不进行，如果进行，那么必须是int[2],0：tss上游多少bp  1：tss下游多少bp，都为正数 <b>只有当filterGeneBody为false时，tss下游才会发会作用</b>
-	 * @param filterGenEnd 是否进行geneEnd筛选，null不进行，如果进行，那么必须是int[2],0：geneEnd上游多少bp  1：geneEnd下游多少bp，都为正数<b>只有当filterGeneBody为false时，geneEnd上游才会发会作用</b>
+	 * @param filterTss 是否进行tss筛选<b>只有当filterGeneBody为false时，tss下游才会发会作用</b>
+	 * @param filterGenEnd 是否进行geneEnd筛选<b>只有当filterGeneBody为false时，geneEnd上游才会发会作用</b>
 	 * @param filterGeneBody 是否处于geneBody，true，将处于geneBody的基因全部筛选出来，false，不进行geneBody的筛选<br>
 	 * <b>以下条件只有当filterGeneBody为false时才能发挥作用</b>
 	 * @param filter5UTR 是否处于5UTR中
@@ -901,99 +847,43 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 	 * n+1: 基因名<br>
 	 * n+2: 基因信息<br>
 	 **/
-	public String getCodLocStrFilter(boolean filterTss, boolean filterGenEnd, 
+	public String getCodLocStrFilter(int coord, boolean filterTss, boolean filterGenEnd, 
 			boolean filterGeneBody,boolean filter5UTR, boolean filter3UTR,boolean filterExon, boolean filterIntron) {
 		boolean filter = false;
-		if (filterTss != null) {
-			if (cod2TSS >= -filterTss[0] && cod2TSS <= filterTss[1]) {
+		if (filterTss == true) {
+			if (isCodInIsoTss(coord)) {
 				filter = true;
 			}
 		}
-		if (filterGenEnd != null) {
-			if (cod2TES >= -filterGenEnd[0] && cod2TES <= filterGenEnd[1]) {
+		if (filterGenEnd == true) {
+			if (isCodInIsoGenEnd(coord)) {
 				filter = true;
 			}
 		}
 		
-		if (filterGeneBody && getCodLoc() != COD_LOC_OUT) {
+		if (filterGeneBody && getCodLoc(coord) != COD_LOC_OUT) {
 			filter = true;
 		}
-		else if (filter5UTR && getCodLocUTR() == COD_LOCUTR_5UTR) {
+		else if (filter5UTR && getCodLocUTR(coord) == COD_LOCUTR_5UTR) {
 			filter = true;
 		}
-		else if (filter3UTR && getCodLocUTR() == COD_LOCUTR_3UTR) {
+		else if (filter3UTR && getCodLocUTR(coord) == COD_LOCUTR_3UTR) {
 			filter = true;
 		}
-		else if (filterExon && getCodLoc() == COD_LOC_EXON) {
+		else if (filterExon && getCodLoc(coord) == COD_LOC_EXON) {
 			filter = true;
 		}
-		else if (filterIntron && getCodLoc() == COD_LOC_INTRON) {
+		else if (filterIntron && getCodLoc(coord) == COD_LOC_INTRON) {
 			filter = true;
 		}
 		
 		if (filter) {
-			return getCodLocStr();
+			return getCodLocStr(coord);
 		}
 		else {
 			return null;
 		}
 	}
-	
-	
-	public abstract GffGeneIsoInfo clone();
-	/**
-	 * 连lsIso也复制
-	 * @return
-	 */
-	public abstract GffGeneIsoInfo cloneDeep();
-	
-	
-	protected void clone(GffGeneIsoInfo gffGeneIsoInfo)
-	{
-		for (ExonInfo exonInfo : this) {
-			gffGeneIsoInfo.add(exonInfo.clone());
-		}
-		
-		gffGeneIsoInfo.ATGsite = ATGsite;
-		gffGeneIsoInfo.hashLocExInEnd = hashLocExInEnd;
-		gffGeneIsoInfo.hashLocExInNum = hashLocExInNum;
-		gffGeneIsoInfo.hashLocExInStart =hashLocExInStart;
-		gffGeneIsoInfo.listName = listName;
-		gffGeneIsoInfo.lengthIso = lengthIso;
-		gffGeneIsoInfo.mRNA = mRNA;
-		gffGeneIsoInfo.taxID = taxID;
-		gffGeneIsoInfo.UAGsite = UAGsite;
-		gffGeneIsoInfo.flagTypeGene = flagTypeGene;
-		gffGeneIsoInfo.numExIntron = numExIntron;
-		gffGeneIsoInfo.UAGsite = UAGsite;
-		if (coord > 0) {
-			gffGeneIsoInfo.setCoord(coord);
-		}
-	}
-
-	protected void cloneDeep(GffGeneIsoInfo gffGeneIsoInfo)
-	{
-		for (ExonInfo is : this) {
-			ExonInfo exonInfo = is.clone();
-			gffGeneIsoInfo.add(exonInfo);
-		}
-		gffGeneIsoInfo.ATGsite = ATGsite;
-		gffGeneIsoInfo.hashLocExInEnd = new HashMap<Integer, Integer>();
-		gffGeneIsoInfo.hashLocExInNum = new HashMap<Integer, Integer>();
-		gffGeneIsoInfo.hashLocExInStart = new HashMap<Integer, Integer>();
-		gffGeneIsoInfo.listName = listName;
-		gffGeneIsoInfo.lengthIso = lengthIso;
-		gffGeneIsoInfo.mRNA = mRNA;
-		gffGeneIsoInfo.taxID = taxID;
-		gffGeneIsoInfo.UAGsite = UAGsite;
-		gffGeneIsoInfo.flagTypeGene = flagTypeGene;
-		gffGeneIsoInfo.numExIntron = numExIntron;
-		gffGeneIsoInfo.UAGsite = UAGsite;
-		if (coord > 0) {
-			gffGeneIsoInfo.setCoord(coord);
-		}
-	}
-
 	/**
 	 * 如果两个转录本方向不一致，则不能进行比较
 	 * 比较两个转录本之间的差距有多大

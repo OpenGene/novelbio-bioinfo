@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 
 
 
@@ -20,7 +21,7 @@ import com.novelbio.base.dataStructure.listOperate.ListAbs;
  * @author zong0jie
  *
  */
-public class GffHashBin extends ListHash<GffDetailPeak, GffCodPeak, GffCodPeakDU>{
+public class GffHashBin extends ListHash<ListDetailAbs>{
 	
 	boolean peakcis = true;
 	int colChrID = 1;
@@ -141,10 +142,10 @@ public class GffHashBin extends ListHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 	        });
 		//////////////////////////正式读取，类似GffUCSC的读取方法///////////////////////
 	 	//实例化三个表
-			locHashtable =new HashMap<String, GffDetailPeak>();//存储每个LOCID和其具体信息的对照表
-			Chrhash=new LinkedHashMap<String, ListAbs<GffDetailPeak>>();
+			locHashtable =new HashMap<String, ListDetailAbs>();//存储每个LOCID和其具体信息的对照表
+			Chrhash=new LinkedHashMap<String, ListAbs<ListDetailAbs>>();
 			LOCIDList=new ArrayList<String>();//顺序存储每个peak号，不管是否重叠
-			ListAbs<GffDetailPeak> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+			ListAbs<ListDetailAbs> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 			
 			String chrnametmpString="";
 			int tmppeakstart=-1;
@@ -167,7 +168,7 @@ public class GffHashBin extends ListHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 //							   LOCChrHashIDList.add(gffDetail.getLocString());
 //						   }
 					}
-					LOCList=new ListAbs<GffDetailPeak>();//新建一个LOCList并放入Chrhash
+					LOCList=new ListAbs<ListDetailAbs>();//新建一个LOCList并放入Chrhash
 					Chrhash.put(chrnametmpString, LOCList);
 				}
 				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,14 +176,14 @@ public class GffHashBin extends ListHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 				
 				//添加重叠peak
 				//看本peak的起点是否小于上个peak的终点，如果小于，则说明本peak和上个peak连续
-				GffDetailPeak lastGffdetailpeak;
+				ListDetailAbs lastGffdetailpeak;
 				LOCIDList.add(tmppeakstart+"_"+tmppeakend);//添加入LOCIDList
-				if(LOCList.size()>0 && tmppeakstart < (lastGffdetailpeak = LOCList.get(LOCList.size()-1)).numberend )
+				if(LOCList.size()>0 && tmppeakstart < (lastGffdetailpeak = LOCList.get(LOCList.size()-1)).getEndAbs() )
 				{   //修改基因起点和终点
-					if(tmppeakstart<lastGffdetailpeak.numberstart)
-						lastGffdetailpeak.numberstart=tmppeakstart;
-					if(tmppeakend>lastGffdetailpeak.numberend)
-						lastGffdetailpeak.numberend=tmppeakend;
+					if(tmppeakstart < lastGffdetailpeak.getStartAbs())
+						lastGffdetailpeak.setStartAbs(tmppeakstart);
+					if(tmppeakend>lastGffdetailpeak.getEndAbs())
+						lastGffdetailpeak.setEndAbs(tmppeakend);
 					//将基因(转录本ID)装入LOCList					
 					//将本基因(转录本)的ID装入locString中
 					lastGffdetailpeak.setName(lastGffdetailpeak.getName()+"/"+tmppeakstart+"_"+tmppeakend);
@@ -197,10 +198,10 @@ public class GffHashBin extends ListHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 				}
 				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//添加新peak 
-				GffDetailPeak gffdetailpeak=new GffDetailPeak(chrnametmpString, tmppeakstart+"_"+tmppeakend, peakcis);
+				ListDetailAbs gffdetailpeak=new ListDetailAbs(chrnametmpString, tmppeakstart+"_"+tmppeakend, peakcis);
 				//正反向,所有peak都一个方向的
-				gffdetailpeak.numberstart=tmppeakstart;
-				gffdetailpeak.numberend=tmppeakend;
+				gffdetailpeak.setStartAbs(tmppeakstart);
+				gffdetailpeak.setEndAbs(tmppeakend);
 				
 				LOCList.add(gffdetailpeak);  
 				locHashtable.put(gffdetailpeak.getName(), gffdetailpeak);
@@ -211,14 +212,4 @@ public class GffHashBin extends ListHash<GffDetailPeak, GffCodPeak, GffCodPeakDU
 //			}
 			//System.out.println(mm);
 	}
-	@Override
-	protected GffCodPeak setGffCod(String chrID, int Coordinate) {
-		return new GffCodPeak(chrID, Coordinate);
-	}
-	@Override
-	protected GffCodPeakDU setGffCodDu(ArrayList<GffDetailPeak> lsgffDetail,
-			GffCodPeak gffCod1, GffCodPeak gffCod2) {
-		return new GffCodPeakDU(lsgffDetail, gffCod1, gffCod2);
-	}
-	
 }

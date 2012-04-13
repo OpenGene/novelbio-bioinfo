@@ -194,9 +194,6 @@ public class ListDetailAbs{
 		this.tes2DownGene = tes2DownGene;
 	}
 
-
-	///////////////////////////////////////////////  与 coord 有关的属性和方法  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 	/**
 	 * 本基因终点到下一个基因边界的距离
 	 */
@@ -227,7 +224,18 @@ public class ListDetailAbs{
 	public int getStartAbs() {
 		return numberstart;
 	}
-	
+	/**
+	 * @param numberend 条目终点,终点位置总是大于起点，无视基因方向
+	 */
+	public void setEndAbs(int numberend) {
+		this.numberend = numberend;
+	}
+	/**
+	 * @param numberstart 条目起点,起点位置总是小于终点，无视条目方向
+	 */
+	public void setStartAbs(int numberstart) {
+		this.numberstart = numberstart;
+	}
 	/**
 	 * 坐标是否在基因的内部，包括Tss和GeneEnd的拓展区域
 	 */

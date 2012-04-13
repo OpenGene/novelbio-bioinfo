@@ -10,32 +10,19 @@ import org.apache.log4j.Logger;
 
 public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	private static final Logger logger = Logger.getLogger(GffGeneIsoTrans.class);
-	public GffGeneIsoTrans(String IsoName, GffDetailGene gffDetailGene, String geneTpye) {
-		super(IsoName, gffDetailGene, geneTpye);
+	public GffGeneIsoTrans(String IsoName, GffDetailGene gffDetailGene, String geneType) {
+		super(IsoName, gffDetailGene, geneType);
 		super.setCis5to3(false);
 	}
-	public GffGeneIsoTrans(String IsoName, String chrID, int coord, String geneTpye) {
-		super(IsoName, chrID, coord, geneTpye);
+	public GffGeneIsoTrans(String IsoName, String chrID, int coord, String geneType) {
+		super(IsoName, chrID, geneType);
 		super.setCis5to3(false);
 	}
 	public GffGeneIsoTrans(String IsoName, String ChrID, String geneType) {
 		super(IsoName, ChrID, geneType);
 		super.setCis5to3(false);
 	}
-	@Override
-	public GffGeneIsoTrans clone() {
-		GffGeneIsoTrans gffGeneIsoTrans = new GffGeneIsoTrans(getName(), chrID, coord, getGeneType());
-		this.clone(gffGeneIsoTrans);
-		gffGeneIsoTrans.setCoord(getCoord());
-		return gffGeneIsoTrans;
-	}
-	@Override
-	public GffGeneIsoTrans cloneDeep() {
-		GffGeneIsoTrans gffGeneIsoTrans = new GffGeneIsoTrans(getName(), chrID, coord, getGeneType());
-		this.cloneDeep(gffGeneIsoTrans);
-		gffGeneIsoTrans.setCoord(getCoord());
-		return gffGeneIsoTrans;
-	}
+	
 	@Override
 	public int getStartAbs() {
 		return get(size() - 1).getEndCis();
@@ -44,7 +31,6 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 
 	@Override
 	public int getEndAbs() {
-		// TODO Auto-generated method stub
 		return get(0).getStartCis();
 	}
 
@@ -67,14 +53,6 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 					+ strand + "\t.\t" + "ID=exon:" + getName()  + ":" + (i+1) +";"+ "Parent=" + getName() + " \r\n";
 		}
 		return geneExon;
-	}
-	@Override
-	protected void setCod2SiteAbs() {
-		cod2ATG =  ATGsite - coord; //CnnnATG    AtgnC
-		cod2UAG = UAGsite - coord; //CnuaG    UAGnnnC
-		cod2TSS = getTSSsite() - coord;
-		cod2TES = getTESsite() - coord;
-		
 	}
 	
 }
