@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genomeNew.gffOperate;
+package com.novelbio.base.dataStructure.listOperate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,10 +7,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
 
 /**
  * 获得Gff的项目信息<br/>

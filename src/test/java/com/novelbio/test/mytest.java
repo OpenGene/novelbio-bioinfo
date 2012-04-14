@@ -59,11 +59,13 @@ import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.mapping.FastQMapAbs;
 import com.novelbio.analysis.seq.mapping.FastQMapBwa;
 import com.novelbio.analysis.seq.mapping.FastQMapSoap;
@@ -78,6 +80,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
+import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.GraphicCope;
@@ -106,11 +109,14 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		System.out.println(Double.class.equals(Double.class));
-		;
-
-		
-		
+		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis("jjj", "jui", "hgiu");
+		gffGeneIsoCis.add(new ExonInfo("jjj", true, 0, 24));
+		gffGeneIsoCis.add(new ExonInfo("jjj", true, 10, 124));
+		gffGeneIsoCis.add(new ExonInfo("jjj", true, 20, 1224));
+		GffGeneIsoCis gffGeneIsoCis2 = gffGeneIsoCis.clone();
+		gffGeneIsoCis.get(0).setStartAbs(224);
+		System.out.println(gffGeneIsoCis.get(0).getStartAbs());
+		System.out.println(gffGeneIsoCis2.get(0).getStartAbs());
 	}
 	
 	

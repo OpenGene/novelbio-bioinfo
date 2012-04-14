@@ -235,8 +235,6 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 //		this.lsIsoform = lsIsoform;
 //		this.cis5to3 = cis5to3;
 //	}
-
-	GffDetailGene gffDetailGene;
 //	public GffDetailGene getThisGffDetailGene() {
 //		return gffDetailGene;
 //	}
@@ -671,21 +669,7 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 	public int getCod2TESmRNA(int coord) {
 		return getLocDistmRNA(getTESsite(), coord);
 	}
-	/**
-	 * 保存某个坐标和所在的内含子外显子数目
-	 */
-	HashMap<Integer, Integer> hashLocExInNum;
-	/**
-	 * 保存某个坐标到所在的内含子/外显子起点的距离
-	 */
-	HashMap<Integer, Integer> hashLocExInStart;
 
-	/**
-	 * 保存某个坐标到所在的内含子/外显子终点的距离
-	 */
-	HashMap<Integer, Integer> hashLocExInEnd;
-
-	
 	/**
 	 * 返回能和本loc组成一个氨基酸的头部nr的坐标，从1开始计算
 	 * @param location
@@ -1099,5 +1083,21 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 		aaNum = aaNum + 1;
 		return (aaNum+2)/3;
 	}
-
+	public GffGeneIsoInfo clone()
+	{
+		GffGeneIsoInfo result = null;
+		result = (GffGeneIsoInfo) super.clone();
+		result.ATGsite = ATGsite;
+		result.chrID = chrID;
+		result.downTes = downTes;
+		result.downTss = downTss;
+		result.flagTypeGene = flagTypeGene;
+		result.lengthIso = lengthIso;
+		result.mRNA = mRNA;
+		result.taxID = taxID;
+		result.UAGsite = UAGsite;
+		result.upTes = upTes;
+		result.upTss = upTss;
+		return result;
+	}
 }

@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  * @author zong0jie
  *
  */
-public class ListDetailAbs{
+public class ListDetailAbs implements Cloneable{
 	/**
 	 * 根据cis在起点的上游多少bp，在此范围内则认为在tss区域
 	 */
@@ -100,6 +100,8 @@ public class ListDetailAbs{
 		this.ItemName = ItemName;
 		this.cis5to3 = cis5to3;
 	}
+
+	public ListDetailAbs() {}
 	
 	private static Logger logger = Logger.getLogger(ListDetailAbs.class);
 	
@@ -433,5 +435,29 @@ public class ListDetailAbs{
 	
 	public int getLen() {
 		return Math.abs(numberend-numberstart) + 1;
+	}
+	
+	public ListDetailAbs clone()
+	{
+		ListDetailAbs result = null;
+		try {
+			result = (ListDetailAbs) super.clone();
+			result.cis5to3 = cis5to3;
+			result.downGeneEnd3UTR = downGeneEnd3UTR;
+			result.downTss = downTss;
+			result.ItemName = ItemName;
+			result.itemNum = itemNum;
+			result.number = number;
+			result.numberend = numberend;
+			result.numberstart = numberstart;
+			result.parentName = parentName;
+			result.tes2DownGene = tes2DownGene;
+			result.tss2UpGene = tss2UpGene;
+			result.upGeneEnd3UTR = upGeneEnd3UTR;
+			result.upTss = upTss;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 }

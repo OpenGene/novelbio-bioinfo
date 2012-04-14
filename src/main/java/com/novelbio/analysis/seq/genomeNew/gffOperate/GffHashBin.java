@@ -12,6 +12,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
+import com.novelbio.base.dataStructure.listOperate.ListHash;
 
 
 
@@ -21,7 +22,7 @@ import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
  * @author zong0jie
  *
  */
-public class GffHashBin extends ListHash<ListDetailAbs>{
+public class GffHashBin extends ListHash<ListDetailBin>{
 	
 	boolean peakcis = true;
 	int colChrID = 1;
@@ -124,6 +125,7 @@ public class GffHashBin extends ListHash<ListDetailAbs>{
 	 * 0：chrID 同一个chrID 表示为同一类型中的细分
 	 * 1：start
 	 * 2：end
+	 * 3: score
 	 * @param lsInfo
 	 */
 	public void ReadGff(ArrayList<String[]> lstmpPeakinfo) 
@@ -142,10 +144,10 @@ public class GffHashBin extends ListHash<ListDetailAbs>{
 	        });
 		//////////////////////////正式读取，类似GffUCSC的读取方法///////////////////////
 	 	//实例化三个表
-			locHashtable =new HashMap<String, ListDetailAbs>();//存储每个LOCID和其具体信息的对照表
-			Chrhash=new LinkedHashMap<String, ListAbs<ListDetailAbs>>();
+			locHashtable =new HashMap<String, ListDetailBin>();//存储每个LOCID和其具体信息的对照表
+			Chrhash=new LinkedHashMap<String, ListAbs<ListDetailBin>>();
 			LOCIDList=new ArrayList<String>();//顺序存储每个peak号，不管是否重叠
-			ListAbs<ListDetailAbs> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+			ListAbs<ListDetailBin> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 			
 			String chrnametmpString="";
 			int tmppeakstart=-1;
@@ -168,7 +170,7 @@ public class GffHashBin extends ListHash<ListDetailAbs>{
 //							   LOCChrHashIDList.add(gffDetail.getLocString());
 //						   }
 					}
-					LOCList=new ListAbs<ListDetailAbs>();//新建一个LOCList并放入Chrhash
+					LOCList=new ListAbs<ListDetailBin>();//新建一个LOCList并放入Chrhash
 					Chrhash.put(chrnametmpString, LOCList);
 				}
 				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,7 +178,7 @@ public class GffHashBin extends ListHash<ListDetailAbs>{
 				
 				//添加重叠peak
 				//看本peak的起点是否小于上个peak的终点，如果小于，则说明本peak和上个peak连续
-				ListDetailAbs lastGffdetailpeak;
+				ListDetailBin lastGffdetailpeak;
 				LOCIDList.add(tmppeakstart+"_"+tmppeakend);//添加入LOCIDList
 				if(LOCList.size()>0 && tmppeakstart < (lastGffdetailpeak = LOCList.get(LOCList.size()-1)).getEndAbs() )
 				{   //修改基因起点和终点
@@ -198,7 +200,7 @@ public class GffHashBin extends ListHash<ListDetailAbs>{
 				}
 				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//添加新peak 
-				ListDetailAbs gffdetailpeak=new ListDetailAbs(chrnametmpString, tmppeakstart+"_"+tmppeakend, peakcis);
+				ListDetailBin gffdetailpeak=new ListDetailBin(chrnametmpString, tmppeakstart+"_"+tmppeakend, peakcis);
 				//正反向,所有peak都一个方向的
 				gffdetailpeak.setStartAbs(tmppeakstart);
 				gffdetailpeak.setEndAbs(tmppeakend);

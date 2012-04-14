@@ -363,8 +363,8 @@ public class GffDetailGene extends ListDetailAbs
 			GffGeneIsoInfo gffGeneIsoInfoAddTmp = lsIsoAdd.get(i);
 			
 
-			GffGeneIsoInfo gffGeneIsoInfo = gffGeneIsoInfoTmp.cloneDeep();
-			GffGeneIsoInfo gffGeneIsoInfoAdd = gffGeneIsoInfoAddTmp.cloneDeep();
+			GffGeneIsoInfo gffGeneIsoInfo = gffGeneIsoInfoTmp.clone();
+			GffGeneIsoInfo gffGeneIsoInfoAdd = gffGeneIsoInfoAddTmp.clone();
 			//
 			if (gffGeneIsoInfo.isCis5to3() != gffGeneIsoInfoAdd.isCis5to3()) {
 				lsGeneIsoInfosFinal.add(gffGeneIsoInfo);
@@ -448,8 +448,8 @@ public class GffDetailGene extends ListDetailAbs
 		ArrayList<GffGeneIsoInfo> lsIsoThis = getLsCodSplit();
 		for (GffGeneIsoInfo gffGeneIsoInfoTmp : lsIsoThis) {
 			for (GffGeneIsoInfo gffGeneIsoInfoAddTmp : lsIsoAdd) {
-				GffGeneIsoInfo gffGeneIsoInfo = gffGeneIsoInfoTmp.cloneDeep();
-				GffGeneIsoInfo gffGeneIsoInfoAdd = gffGeneIsoInfoAddTmp.cloneDeep();
+				GffGeneIsoInfo gffGeneIsoInfo = gffGeneIsoInfoTmp.clone();
+				GffGeneIsoInfo gffGeneIsoInfoAdd = gffGeneIsoInfoAddTmp.clone();
 				//
 				if (gffGeneIsoInfo.isCis5to3() != gffGeneIsoInfoAdd.isCis5to3()) {
 					lsGeneIsoInfosFinal.add(gffGeneIsoInfo);
@@ -626,6 +626,18 @@ public class GffDetailGene extends ListDetailAbs
 		return false;
 	}
 	
+	public GffDetailGene clone()
+	{
+		GffDetailGene result = null;
+		result = (GffDetailGene) super.clone();
+		result.taxID = taxID;
+		result.lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			lsGffGeneIsoInfos.add(gffGeneIsoInfo);
+		}
+		return result;
+
+	}
  
 	
 }

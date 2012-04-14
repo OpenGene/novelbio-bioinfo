@@ -47,8 +47,9 @@ public class ExonInfo extends ListDetailAbs implements Comparable<ExonInfo>
 	}
 	public ExonInfo clone()
 	{
-		ExonInfo exonInfo = new ExonInfo(getName(), isCis5to3(), numberstart, numberend);
-		return exonInfo;
+		ExonInfo result = null;
+		result = (ExonInfo) super.clone();
+		return result;
 	}
 	/**
 	 * 不能判断不同染色体上相同的坐标位点

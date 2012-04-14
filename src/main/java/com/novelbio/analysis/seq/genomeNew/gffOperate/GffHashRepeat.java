@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.listOperate.ListHash;
 
 
 public class GffHashRepeat extends ListHash<GffDetailRepeat>{

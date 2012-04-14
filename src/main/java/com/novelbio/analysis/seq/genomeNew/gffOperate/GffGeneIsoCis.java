@@ -69,5 +69,11 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		}
 		return geneExon;
 	}
+	@Override
+	public GffGeneIsoCis clone() {
+		GffGeneIsoCis result = null;
+		result = (GffGeneIsoCis) super.clone();
+		return result;
 	
+	}
 }

@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListHash;
 
 
 
@@ -31,7 +32,7 @@ import com.novelbio.base.dataStructure.listOperate.ListAbs;
  * 
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
-public class GffHashCG extends ListHash<GffDetailCG, GffCodCG, GffCodCGDU>
+public class GffHashCG extends ListHash<GffDetailCG>
 {	
 
 	/**
@@ -54,88 +55,91 @@ public class GffHashCG extends ListHash<GffDetailCG, GffCodCG, GffCodCGDU>
 	 * @throws Exception 
 	 */
 	public void ReadGffarrayExcep(String gfffilename) throws Exception 
-	{
-		  //实例化三个表
-		   locHashtable =new HashMap<String, GffDetailCG>();//存储每个LOCID和其具体信息的对照表
-		   Chrhash = new LinkedHashMap<String, ListAbs<GffDetailCG>>();//一个哈希表来存储每条染色体
-		   LOCIDList = new ArrayList<String>();//顺序存储每个基因号，这个打算用于提取随机基因号
-		   //为读文件做准备
-		   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);
-		   BufferedReader reader=txtgff.readfile();//open gff file
-	       
-		   String[] ss = null;//存储分割数组的临时变量
-		   String content="";
-		   //临时变量
-		   ListAbs<GffDetailCG> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
-		   String chrnametmpString=""; //染色体的临时名字
-		   
-		   reader.readLine();//跳过第一行
-		   while((content=reader.readLine())!=null)//读到结尾
-		   {
-			   ss=content.split("\t");
-			   chrnametmpString=ss[1].toLowerCase();//小写
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			    //新的染色体
-			   if (!Chrhash.containsKey(chrnametmpString)) //新的染色体
-			   {
-				   if(LOCList!=null)//如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
-				   {
-					   //我收集的一个list/array排序的方法，很简单易用
-					   Collections.sort(LOCList,new Comparator<ListDetailAbs>(){
-				            public int compare(ListDetailAbs arg0, ListDetailAbs arg1) {
-				                int Compareresult;
-				            	if(arg0.getStartAbs()<arg1.getStartAbs())
-				            		Compareresult=-1;
-				            	else if (arg0.getStartAbs()==arg1.getStartAbs()) 
-				            		Compareresult=0;
-				            	else 
-				            		Compareresult=1;
-				            	return Compareresult;
-				            }
-				        });
-					   //排序完后把CG号装入LOCIDList
-					   for (GffDetailCG gffDetail : LOCList) {
-						   LOCIDList.add(gffDetail.getName());
-					   }
-				   }
-				   LOCList=new ListAbs<GffDetailCG>();//新建一个LOCList并放入Chrhash
-				   Chrhash.put(chrnametmpString, LOCList);
-			   }
-			  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			   //每一行就是一个CG
-			   GffDetailCG gffGCtmpDetail=new GffDetailCG(chrnametmpString, ss[0]+"_"+ss[1]+"_"+ss[4]+"_"+ss[2], true);
-			   gffGCtmpDetail.numberstart =Integer.parseInt(ss[2]);
-			   gffGCtmpDetail.numberend = Integer.parseInt(ss[3]);
-			   gffGCtmpDetail.lengthCpG=Integer.parseInt(ss[5]);
-			   gffGCtmpDetail.numCpG=Integer.parseInt(ss[6]);
-			   gffGCtmpDetail.numGC=Integer.parseInt(ss[7]);
-			   gffGCtmpDetail.perCpG=Double.parseDouble(ss[8]);
-			   gffGCtmpDetail.perGC=Double.parseDouble(ss[9]);
-			   gffGCtmpDetail.obsExp=Double.parseDouble(ss[10]);
-			   //装入LOCList和locHashtable
-			   LOCList.add(gffGCtmpDetail);  
-			   locHashtable.put(gffGCtmpDetail.getName(), gffGCtmpDetail);
-		   }
-		   /////////////////////////////////////////////////////////////////////////////////////////////
-		   LOCList.trimToSize();
-		   //最后结束后再排个序。
-		   Collections.sort(LOCList,new Comparator<GffDetailCG>(){
-	            public int compare(GffDetailCG arg0, GffDetailCG arg1) {
-	                int Compareresult;
-	            	if(arg0.numberstart<arg1.numberstart)
-	            		Compareresult=-1;
-	            	else if (arg0.numberstart==arg1.numberstart) 
-	            		Compareresult=0;
-	            	else 
-	            		Compareresult=1;
-	            	return Compareresult;
-	            }});
-		 //排序完后装入LOCIDList
-		   for (ListDetailAbs gffDetail : LOCList) {
-			   LOCIDList.add(gffDetail.getName());
+ {
+		GffHashCG gffHashCG = new GffHashCG();
+		// 实例化三个表
+		locHashtable = new HashMap<String, GffDetailCG>();// 存储每个LOCID和其具体信息的对照表
+		Chrhash = new LinkedHashMap<String, ListAbs<GffDetailCG>>();// 一个哈希表来存储每条染色体
+		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
+		// 为读文件做准备
+		TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
+		BufferedReader reader = txtgff.readfile();// open gff file
+
+		String[] ss = null;// 存储分割数组的临时变量
+		String content = "";
+		// 临时变量
+		ListAbs<GffDetailCG> LOCList = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+		String chrnametmpString = ""; // 染色体的临时名字
+
+		reader.readLine();// 跳过第一行
+		while ((content = reader.readLine()) != null)// 读到结尾
+		{
+			ss = content.split("\t");
+			chrnametmpString = ss[1].toLowerCase();// 小写
+			// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			// 新的染色体
+			if (!Chrhash.containsKey(chrnametmpString)) // 新的染色体
+			{
+				if (LOCList != null)// 如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
+				{
+					// 我收集的一个list/array排序的方法，很简单易用
+					Collections.sort(LOCList, new Comparator<ListDetailAbs>() {
+						public int compare(ListDetailAbs arg0,
+								ListDetailAbs arg1) {
+							int Compareresult;
+							if (arg0.getStartAbs() < arg1.getStartAbs())
+								Compareresult = -1;
+							else if (arg0.getStartAbs() == arg1.getStartAbs())
+								Compareresult = 0;
+							else
+								Compareresult = 1;
+							return Compareresult;
+						}
+					});
+					// 排序完后把CG号装入LOCIDList
+					for (GffDetailCG gffDetail : LOCList) {
+						LOCIDList.add(gffDetail.getName());
+					}
+				}
+				LOCList = new ListAbs<GffDetailCG>();// 新建一个LOCList并放入Chrhash
+				Chrhash.put(chrnametmpString, LOCList);
+			}
+			// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			// 每一行就是一个CG
+			GffDetailCG gffGCtmpDetail = new GffDetailCG(chrnametmpString, ss[0] + "_" + ss[1] + "_" + ss[4] + "_" + ss[2], true);
+			gffGCtmpDetail.setStartAbs(Integer.parseInt(ss[2]));
+			gffGCtmpDetail.setEndAbs(Integer.parseInt(ss[3]));
+			gffGCtmpDetail.lengthCpG = Integer.parseInt(ss[5]);
+			gffGCtmpDetail.numCpG = Integer.parseInt(ss[6]);
+			gffGCtmpDetail.numGC = Integer.parseInt(ss[7]);
+			gffGCtmpDetail.perCpG = Double.parseDouble(ss[8]);
+			gffGCtmpDetail.perGC = Double.parseDouble(ss[9]);
+			gffGCtmpDetail.obsExp = Double.parseDouble(ss[10]);
+			// 装入LOCList和locHashtable
+			LOCList.add(gffGCtmpDetail);
+			locHashtable.put(gffGCtmpDetail.getName(), gffGCtmpDetail);
 		}
-		   txtgff.close();
-		 /////////////////////////////////////////////////////////////////////////////////////////////////
+		// ///////////////////////////////////////////////////////////////////////////////////////////
+		LOCList.trimToSize();
+		// 最后结束后再排个序。
+		Collections.sort(LOCList, new Comparator<GffDetailCG>() {
+			public int compare(GffDetailCG arg0, GffDetailCG arg1) {
+				int Compareresult;
+				if (arg0.getStartAbs() < arg1.getStartAbs())
+					Compareresult = -1;
+				else if (arg0.getStartAbs() == arg1.getStartAbs())
+					Compareresult = 0;
+				else
+					Compareresult = 1;
+				return Compareresult;
+			}
+		});
+		// 排序完后装入LOCIDList
+		for (ListDetailAbs gffDetail : LOCList) {
+			LOCIDList.add(gffDetail.getName());
+		}
+		txtgff.close();
+		// ///////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
 	/**
@@ -150,7 +154,7 @@ public class GffHashCG extends ListHash<GffDetailCG, GffCodCG, GffCodCGDU>
 		for (int i = 0; i < LOCNum; i++) 
 		{
 			GffDetailCG gffDetailCG= locHashtable.get(LOCIDList.get(i));
-			int tmpLength=gffDetailCG.numberend-gffDetailCG.numberstart;
+			int tmpLength=gffDetailCG.getEndAbs() - gffDetailCG.getStartAbs();
 			String tmpCGClass="CpG";//就只有一种CpG
 			if (hashCGLength.containsKey(tmpCGClass)) //含有已知的repeat，则把repeat的长度累加上去
 			{
@@ -163,14 +167,5 @@ public class GffHashCG extends ListHash<GffDetailCG, GffCodCG, GffCodCGDU>
 			}
 		}
 		return hashCGLength;
-	}
-	@Override
-	protected GffCodCG setGffCod(String chrID, int Coordinate) {
-		return new GffCodCG(chrID, Coordinate);
-	}
-
-	@Override
-	protected GffCodCGDU setGffCodDu(ArrayList<GffDetailCG> lsgffDetail, GffCodCG gffCod1, GffCodCG gffCod2) {
-		return new GffCodCGDU(lsgffDetail, gffCod1, gffCod2);
 	}
 }

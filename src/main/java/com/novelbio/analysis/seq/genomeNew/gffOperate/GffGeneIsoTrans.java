@@ -8,6 +8,8 @@ import java.util.HashMap;
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
+
 public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	private static final Logger logger = Logger.getLogger(GffGeneIsoTrans.class);
 	public GffGeneIsoTrans(String IsoName, GffDetailGene gffDetailGene, String geneType) {
@@ -53,6 +55,13 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 					+ strand + "\t.\t" + "ID=exon:" + getName()  + ":" + (i+1) +";"+ "Parent=" + getName() + " \r\n";
 		}
 		return geneExon;
+	}
+	@Override
+	public GffGeneIsoTrans clone() {
+		GffGeneIsoTrans result = null;
+		result = (GffGeneIsoTrans) super.clone();
+		return result;
+	
 	}
 	
 }

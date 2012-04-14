@@ -7,11 +7,7 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeak;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeakDU;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailPeak;
-
-public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>{
+public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements Cloneable{
 	private static Logger logger = Logger.getLogger(ListAbs.class);
 	/**
 	 * 
@@ -27,7 +23,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>{
 	 * value: 正数，element中，
 	 * 负数，两个element之间
 	 */
-	HashMap<Integer, Integer> hashCodInEleNum;
+//	HashMap<Integer, Integer> hashCodInEleNum;
 	/**
 	 * 保存某个坐标到所在的内含子/外显子起点的距离
 	 */
@@ -633,6 +629,23 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>{
 		}
 		return lsAbsDu;
 	}
+	/**
+	 * 已测试，能用
+	 */
+	@SuppressWarnings("unchecked")
+	public ListAbs<E> clone() {
+		ListAbs<E> result = null;
+		result = (ListAbs<E>) super.clone();
+		result.cis5to3 = cis5to3;
+		result.hashLocExInEnd = hashLocExInEnd;
+		result.hashLocExInStart = hashLocExInStart;
+		result.listName = listName;
+		result.clear();
+		for (E ele : this) {
+			result.add((E) ele.clone());
+		}
+		return result;
+	}
 }
 
 
@@ -921,6 +934,4 @@ class CompM2S implements Comparator<ListDetailAbs>
 		}
 		return -comp;
 	}
-	
-
 }
