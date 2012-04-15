@@ -16,26 +16,9 @@ public class ListCodAbs<T extends ListDetailAbs> {
 	/**
 	 * 构造函数赋初值
 	 */
-	protected  ListCodAbs(String chrID, int Coordinate) {
+	public  ListCodAbs(String chrID, int Coordinate) {
 		this.chrID = chrID;
 		this.Coordinate = Coordinate;
-	}
-	/**
-	 * 将另一个lsInfo的信息全部复制过来。不是clone
-	 * 主要是方便其他类在这个基础上生成
-	 * @param lsInfo
-	 */
-	protected  ListCodAbs(ListCodAbs<T> lsInfo) {
-		this.booFindCod = lsInfo.booFindCod;
-		this.ChrHashListNumDown = lsInfo.ChrHashListNumDown;
-		this.ChrHashListNumThis = lsInfo.ChrHashListNumThis;
-		this.ChrHashListNumUp = lsInfo.ChrHashListNumUp;
-		this.chrID = lsInfo.chrID;
-		this.Coordinate = lsInfo.Coordinate;
-		this.gffDetailDown = lsInfo.gffDetailDown;
-		this.gffDetailThis = lsInfo.gffDetailThis;
-		this.gffDetailUp = lsInfo.gffDetailUp;
-		this.insideLOC = lsInfo.insideLOC;
 	}
 	String chrID = "";
 	int Coordinate = -1;

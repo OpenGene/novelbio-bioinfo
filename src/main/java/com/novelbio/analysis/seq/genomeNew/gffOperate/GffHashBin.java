@@ -11,6 +11,9 @@ import java.util.LinkedList;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListBin;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.dataStructure.listOperate.ListHash;
 
@@ -22,7 +25,7 @@ import com.novelbio.base.dataStructure.listOperate.ListHash;
  * @author zong0jie
  *
  */
-public class GffHashBin extends ListHash<ListDetailBin>{
+public class GffHashBin extends ListHash<ListDetailBin, ListCodAbs<ListDetailBin>, ListCodAbsDu<ListDetailBin,ListCodAbs<ListDetailBin>>, ListBin<ListDetailBin>>{
 	
 	boolean peakcis = true;
 	int colChrID = 1;
@@ -145,9 +148,13 @@ public class GffHashBin extends ListHash<ListDetailBin>{
 		//////////////////////////正式读取，类似GffUCSC的读取方法///////////////////////
 	 	//实例化三个表
 			locHashtable =new HashMap<String, ListDetailBin>();//存储每个LOCID和其具体信息的对照表
-			Chrhash=new LinkedHashMap<String, ListAbs<ListDetailBin>>();
+			Chrhash=new LinkedHashMap<String, ListBin<ListDetailBin>>();
+			
+//			Chrhash=new LinkedHashMap<String, ListBin>();
+			
+			
 			LOCIDList=new ArrayList<String>();//顺序存储每个peak号，不管是否重叠
-			ListAbs<ListDetailBin> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+			ListBin<ListDetailBin> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 			
 			String chrnametmpString="";
 			int tmppeakstart=-1;
@@ -170,7 +177,7 @@ public class GffHashBin extends ListHash<ListDetailBin>{
 //							   LOCChrHashIDList.add(gffDetail.getLocString());
 //						   }
 					}
-					LOCList=new ListAbs<ListDetailBin>();//新建一个LOCList并放入Chrhash
+					LOCList=new ListBin<ListDetailBin>();//新建一个LOCList并放入Chrhash
 					Chrhash.put(chrnametmpString, LOCList);
 				}
 				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -28,13 +28,13 @@ import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.test.testextend.a;
 
-public abstract class GffHashGeneAbs extends ListHash<GffDetailGene> implements GffHashGeneInf
+public abstract class GffHashGeneAbs extends ListHash<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf
 {
 	int taxID = 0;
 	String acc2GeneIDfile = "";
 	String gfffile = "";
 	public GffHashGeneAbs() {
-		Chrhash = new LinkedHashMap<String, ListAbs<GffDetailGene>>();
+		Chrhash = new LinkedHashMap<String, ListGff>();
 		hashGeneID2Acc = new HashMap<String, String>();
 	}
 	private static Logger logger = Logger.getLogger(GffHashGeneAbs.class);
@@ -127,7 +127,7 @@ public abstract class GffHashGeneAbs extends ListHash<GffDetailGene> implements 
 		if (lsGffDetailGenesAll.size() != 0) {
 			return lsGffDetailGenesAll;
 		}
-		for (ListAbs<GffDetailGene> lsGffDetailGenes : Chrhash.values()) {
+		for (ListGff lsGffDetailGenes : Chrhash.values()) {
 			lsGffDetailGenesAll.addAll(lsGffDetailGenes);
 		}
 		return lsGffDetailGenesAll;
@@ -157,10 +157,10 @@ public abstract class GffHashGeneAbs extends ListHash<GffDetailGene> implements 
 		int errorNum=0;//看UCSC中有多少基因的TSS不是最长转录本的起点
 		/////////////////////正   式   计   算//////////////////////////////////////////
 		
-		for(Entry<String, ListAbs<GffDetailGene>> entry:Chrhash.entrySet())
+		for(Entry<String, ListGff> entry:Chrhash.entrySet())
 		{
 			String key = entry.getKey();
-			ListAbs<GffDetailGene> value = entry.getValue();
+			ListGff value = entry.getValue();
 			int chrLOCNum=value.size();
 			allupBpLength=allupBpLength+chrLOCNum*upBp;
 		    //一条一条染色体的去检查内含子和外显子的长度
@@ -248,33 +248,18 @@ public abstract class GffHashGeneAbs extends ListHash<GffDetailGene> implements 
 		return hashGeneID2Acc;
 	}
 	
-	@Override
-	public GffCodGene searchLocation(String chrID, int Coordinate) {
-		ListCodAbs<GffDetailGene> lsTmp = super.searchLocation(chrID, Coordinate);
-		GffCodGene gffCodGene = new GffCodGene(lsTmp);
-		return gffCodGene;
-	}
-	
-	@Override
-	protected GffCodGeneDU searchLocation(String chrID, int coord1, int coord2) {
-		ListCodAbsDu<GffDetailGene, ListCodAbs<GffDetailGene>> lsTmp = super.searchLocation(chrID, coord1, coord2);
-		GffCodGeneDU gffCodGeneDU = new GffCodGeneDU(lsTmp);
-		return gffCodGeneDU;
-	}
-	
-	
 	/**
 	 * 将基因装入GffHash中
 	 * @param chrID
 	 * @param gffDetailGene
 	 */
 	public void addGffDetailGene(String chrID, GffDetailGene gffDetailGene) {
-		
-		if (!Chrhash.containsKey(chrID.toLowerCase())) {
-			ListAbs<GffDetailGene> lsGffDetailGenes = new ListAbs<GffDetailGene>();
+		chrID = chrID.toLowerCase();
+		if (!Chrhash.containsKey(chrID)) {
+			ListGff lsGffDetailGenes = new ListGff();
 			Chrhash.put(chrID, lsGffDetailGenes);
 		}
-		ListAbs<GffDetailGene> lsGffDetailGenes = Chrhash.get(chrID.toLowerCase());
+		ListGff lsGffDetailGenes = Chrhash.get(chrID);
 		lsGffDetailGenes.add(gffDetailGene);
 	}
 	
@@ -347,18 +332,6 @@ public abstract class GffHashGeneAbs extends ListHash<GffDetailGene> implements 
 			txtWrite.writefileln(geneGFF.trim());
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }
 	

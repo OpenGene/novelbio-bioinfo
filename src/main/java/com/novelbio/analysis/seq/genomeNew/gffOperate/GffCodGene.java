@@ -15,8 +15,8 @@ public class GffCodGene extends ListCodAbs<GffDetailGene>
 	 * 从原始的ListCodAbs生成本类
 	 * @param lsSuper
 	 */
-	public GffCodGene(ListCodAbs<GffDetailGene> lsSuper) {
-		super(lsSuper);
+	public GffCodGene(String chrID, int Coordinate) {
+		super(chrID, Coordinate);
 	}
 	
 	/**
@@ -85,10 +85,4 @@ public class GffCodGene extends ListCodAbs<GffDetailGene>
 		}
 		return null;
 	}
-
-	public static GffCodGene convert2Class(ListCodAbs<GffDetailGene> lsSuper)
-	{
-		return new GffCodGene(lsSuper);
-	}
-	
 }

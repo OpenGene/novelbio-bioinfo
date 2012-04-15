@@ -1,16 +1,11 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.chipseq.regDensity.RegDensity;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;

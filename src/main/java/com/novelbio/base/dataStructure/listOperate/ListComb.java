@@ -2,6 +2,7 @@ package com.novelbio.base.dataStructure.listOperate;
 
 import java.util.ArrayList;
 
+import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
 /**
@@ -10,7 +11,8 @@ import org.apache.log4j.Logger;
  * @author zong0jie
  *
  */
-public class ListComb extends  ListAbs <T, E, K>{
+public class ListComb<M extends ListDetailAbs>
+extends ListAbs<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>,ListCodAbsDu<ListDetailComb<M>,  ListCodAbs<ListDetailComb<M>>>> {
 	/**
 	 * 
 	 */
@@ -19,13 +21,13 @@ public class ListComb extends  ListAbs <T, E, K>{
 	/**
 	 * 全体待比较的listabs信息
 	 */
-	ArrayList<ListAbs<T, E, K>> lsAllListAbs = new ArrayList<ListAbs<T, E, K>>();
-	ListAbs<T, E, K> lsAllID = null;
+	ArrayList<ListAbs<M, ListCodAbs<M>, ListCodAbsDu<M, ListCodAbs<M>>>> lsAllListAbs = new ArrayList<ListAbs<M, ListCodAbs<M>, ListCodAbsDu<M, ListCodAbs<M>>>>();
+	ListAbs<M, ListCodAbs<M>, ListCodAbsDu<M, ListCodAbs<M>>>  lsAllID = null;
 	/**
 	 * 保存所有exon合并后的边界
 	 */
 	ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
-	public void addListAbs(ListAbs<T, E, K> lsListAbs) {
+	public void addListAbs(ListAbs<M, ListCodAbs<M>,ListCodAbsDu<M, ListCodAbs<M>>> lsListAbs) {
 		if (isCis5to3() == null) {
 			setCis5to3(lsListAbs.isCis5to3());
 		}
@@ -62,12 +64,12 @@ public class ListComb extends  ListAbs <T, E, K>{
 	private void combExon()
 	{
 		lsExonBounder.clear();
-		T exonOld =  lsAllID.get(0);
+		M exonOld =  lsAllID.get(0);
 		int[] exonBoundOld = new int[]{exonOld.getStartCis(), exonOld.getEndCis()};
 		boolean allFinal = false;//最后一个exon是否需要添加入list中
 		lsExonBounder.add(exonBoundOld);
 		for (int i = 1; i < lsAllID.size(); i++) {
-			T ele = lsAllID.get(i);
+			M ele = lsAllID.get(i);
 			int[] exonBound = new int[]{ele.getStartCis(), ele.getEndCis()};
 			if (cis5to3 )
 			{
@@ -103,18 +105,18 @@ public class ListComb extends  ListAbs <T, E, K>{
 	private void setExonCluster()
 	{
 		for (int[] exonBound : lsExonBounder) {
-			ListDetailComb<T> elementComb = new ListDetailComb<T>(); //ExonCluster(gffDetailGene.getParentName(), exonBound[0], exonBound[1]);
+			ListDetailComb<M> elementComb = new ListDetailComb<M>(); //ExonCluster(gffDetailGene.getParentName(), exonBound[0], exonBound[1]);
 			for (int m = 0; m < lsAllListAbs.size(); m ++) {
-				ListAbs<T, E, K> lsAbs = lsAllListAbs.get(m);
+			ListAbs<M, ListCodAbs<M>, ListCodAbsDu<M, ListCodAbs<M>>> lsAbs = lsAllListAbs.get(m);
 				if (lsAbs.isCis5to3() != isCis5to3()) {
 					logger.error("方向不一致，不能比较");
 				}
-				ArrayList<T> lsExonClusterTmp = new ArrayList<T>();
+				ArrayList<M> lsExonClusterTmp = new ArrayList<M>();
 				//从1开始计数
 				int beforeExonNum = 0;//如果本isoform正好没有落在bounder组中的exon，那么就要记录该isoform的前后两个exon的位置，用于查找跨过和没有跨过的exon
 				boolean junc = false;//如果本isoform正好没有落在bounder组中的exon，那么就需要记录跳过的exon的位置，就将这个flag设置为true
 				for (int i = 0; i < lsAbs.size(); i++) {
-					T ele = lsAbs.get(i);
+					M ele = lsAbs.get(i);
 					if (isCis5to3()) {
 						if (ele.getEndCis() < exonBound[0]) {
 							junc = true;
@@ -166,17 +168,33 @@ public class ListComb extends  ListAbs <T, E, K>{
 	}
 	
 	/**
-	 * 返回有差异的exon系列
+	 * 返回有差异的exon系列List
 	 * @return
 	 */
-	public ArrayList<ListDetailComb<T>> getDifExonCluster() {
+	public ArrayList<ListDetailComb<M>> getDifExonCluster() {
 		copeList();
-		ArrayList<ListDetailComb<T>> lsDifExon = new ArrayList<ListDetailComb<T>>();
-		for (ListDetailComb<T> elementComb : this) {
+		ArrayList<ListDetailComb<M>> lsDifExon = new ArrayList<ListDetailComb<M>>();
+		for (ListDetailComb<M> elementComb : this) {
 			if (!elementComb.isSameEle()) {
 				lsDifExon.add(elementComb);
 			}
 		}
 		return lsDifExon;
 	}
+
+	@Override
+	protected ListCodAbs<ListDetailComb<M>> creatGffCod(String listName,
+			int Coordinate) {
+		ListCodAbs<ListDetailComb<M>> result = new ListCodAbs<ListDetailComb<M>>(listName, Coordinate);
+		return result;
+	}
+
+	@Override
+	protected ListCodAbsDu<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>> creatGffCodDu(
+			ListCodAbs<ListDetailComb<M>> gffCod1,
+			ListCodAbs<ListDetailComb<M>> gffCod2) {
+		ListCodAbsDu<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>> result = new ListCodAbsDu<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>>(gffCod1, gffCod2);
+		return result;
+	}
+
 }

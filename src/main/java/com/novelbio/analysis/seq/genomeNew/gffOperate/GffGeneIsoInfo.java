@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.dataStructure.listOperate.ListComb;
 import com.novelbio.database.model.modcopeid.CopedID;
 
@@ -21,7 +22,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
  * 如果反向则从大到小排列，且int0&gt;int1
  * @return
  */
-public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
+public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo, ListCodAbs<ExonInfo>, ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>>{
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
 	/**
 	 * 
@@ -1098,6 +1099,20 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo>{
 		result.UAGsite = UAGsite;
 		result.upTes = upTes;
 		result.upTss = upTss;
+		return result;
+	}
+	
+
+	@Override
+	protected ListCodAbs<ExonInfo> creatGffCod(String listName, int Coordinate) {
+		ListCodAbs<ExonInfo> result = new ListCodAbs<ExonInfo>(listName, Coordinate);
+		return result;
+	}
+
+	@Override
+	protected ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> creatGffCodDu(
+			ListCodAbs<ExonInfo> gffCod1, ListCodAbs<ExonInfo> gffCod2) {
+		ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> result = new ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>(gffCod1, gffCod2);
 		return result;
 	}
 }

@@ -13,15 +13,19 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.test.mytest;
-
+/**
+ * 待检查
+ * @author zong0jie
+ *
+ */
 public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	private static Logger logger = Logger.getLogger(GffCodGeneDU.class); 
 	public GffCodGeneDU(ArrayList<GffDetailGene> lsgffDetail,
 			GffCodGene gffCod1, GffCodGene gffCod2) {
 		super(lsgffDetail, gffCod1, gffCod2);
 	}
-	public GffCodGeneDU(ListCodAbsDu<GffDetailGene, ListCodAbs<GffDetailGene>> lsDu) {
-		super(lsDu);
+	public GffCodGeneDU(GffCodGene gffCod1, GffCodGene gffCod2) {
+		super(gffCod1, gffCod2);
 	}
 	/**
 	 * 获得gffDetailGene的具体信息，如果该gffDetailGene包含多个copedID，则用“///”分割
@@ -51,11 +55,10 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 			hashGffDetailGeneAnno.add(gffDetailGene);
 			String[] anno = null;
 			try {
-				anno = getAnnoCod(gffDetailGene, "peak_left_point:");
+				anno = getAnnoCod(gffCod1.getCoord(), gffDetailGene, "peak_left_point:");
 			} catch (Exception e) {
 				System.out.println("stop");
 			}
-			
 			lsAnno.add(anno);
 		}
 		
@@ -76,7 +79,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 				continue;
 			hashGffDetailGeneAnno.add(gffDetailGene);
 			
-			String[] anno = getAnnoCod(gffDetailGene, "peak_right_point:");
+			String[] anno = getAnnoCod(gffCod2.getCoord(), gffDetailGene, "peak_right_point:");
 			lsAnno.add(anno);
 		}
 		return lsAnno;
@@ -90,7 +93,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	 * 2：description<br>
 	 * 3：文字形式的定位描述
 	 */
-	private String[] getAnnoCod(GffDetailGene gffDetailGene, String peakPointInfo)
+	private String[] getAnnoCod(int coord, GffDetailGene gffDetailGene, String peakPointInfo)
 	{
 		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
 		String[] anno = new String[4];
@@ -108,7 +111,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 			anno[2] = anno[2] + "///" + copedID.getDescription();
 		}
 		anno[0] = anno[0].replaceFirst("///", ""); anno[1] = anno[1].replaceFirst("///", ""); anno[2] = anno[2].replaceFirst("///", "");
-		anno[3] = peakPointInfo+gffDetailGene.getLongestSplit().getCodLocStr();
+		anno[3] = peakPointInfo+gffDetailGene.getLongestSplit().getCodLocStr(coord);
 		return anno;
 	}
 	/**
@@ -218,7 +221,10 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	}
 	
 	ArrayList<GffDetailGene[]> lsGffDetailGenes = null;
+	 这个方法有问题，连带了调用它的方法也有问题
+	 主要就是cod是否在同一个基因内 的方法的调用
 	/**
+	 * 
 	 * 看两个坐标点是否处在同一个geneDetail中
 	 * @return
 	 * lsGffDetailGenes - gffDetailGene[2] <br>
@@ -312,79 +318,6 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		return lsGffDetailGenes;
 	}
 	
-	
-	
-	
-	/**
-	 * 将这两个端点中，涉及到Tss的基因全部提取出来
-	 * @return
-	 */
-	public Set<GffDetailGene> getTSSGene() {
-		/**
-		 * 待返回的基因
-		 */
-		Set<GffDetailGene> setGffDetailGenes = new LinkedHashSet<GffDetailGene>();
-		//在前面基因的最长转录本范围内
-		if (gffCod1 != null)
-		{
-			//上一个基因有关系
-			if (isUpTss(gffCod1.getGffDetailUp(), gffCod1.getCoord())) {
-				setGffDetailGenes.add(gffCod1.getGffDetailUp());
-			}
-			//本基因关系
-			if (isUpTss(gffCod1.getGffDetailThis(), gffCod1.getCoord())) {
-				setGffDetailGenes.add(gffCod1.getGffDetailThis());
-			}
-		}
-		
-		if (lsgffDetailsMid != null) {
-			for (GffDetailGene gffDetailGene : lsgffDetailsMid) {
-				setGffDetailGenes.add(gffDetailGene);
-			}
-		}
-	
-		if (gffCod2 != null)
-		{
-			//上一个基因有关系
-			if (isDownTss(gffCod2.getGffDetailThis(), gffCod2.getCoord()))
-			{
-				setGffDetailGenes.add(gffCod2.getGffDetailThis());
-			}
-			//本基因关系
-			if (isDownTss(gffCod2.getGffDetailDown(), gffCod2.getCoord())) {
-				setGffDetailGenes.add(gffCod2.getGffDetailDown());
-			}
-		}
-		return setGffDetailGenes;
-	}
-	
-	private boolean isUpTss(GffDetailGene gffDetailGene, int coord) {
-		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
-			return false;
-		}
-		if (gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoTss(coord)
-		||
-		(!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend(coord))
-		)
-		{
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean isDownTss(GffDetailGene gffDetailGene, int coord) {
-		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
-			return false;
-		}
-		if (!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoTss(coord)
-		||
-		(gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend(coord))
-		)
-		{
-			return true;
-		}
-		return false;
-	}
 	
 	/**
 	 * 需要检查
@@ -489,7 +422,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		 * 标记，0表示需要去除，1表示保留
 		 */
 		int[] flag = null;
-		flag = getInRegion2Cod(gffDetailGene1, gffDetailGene2, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
+		flag = getInRegion2Cod(getGffCod1().getCoord(), getGffCod2().getCoord(),gffDetailGene1, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
 	
 		boolean flagResult = false;
 		for (int i = flag.length - 1; i >= 0 ; i--) {
@@ -508,7 +441,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	}
 	
 	/**
-	 * 仅考虑两个点不在同一个基因内部的情况时，第一个点的情况
+	 * 仅考虑两个点不在同一个基因内部的情况时，顺式第一个点或反式第二个点的情况//或// 顺式后一个位点或反式前一个位点
 	 * 当cod覆盖方向和转录本方向一致的时候采用
 	 * 效率稍低但是很全面，每个isoform都会判断
 	 * @param gffDetailGene
@@ -524,7 +457,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	 * int[iso.size] 标记其中每个转录本是否合格，0不合格1合格
 	 * 
 	 */
-	private int[] isInRegion1CodCisRegion_Cis5to3(GffDetailGene gffDetailGene, boolean startCod,int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron)
+	private int[] isInRegion1CodCisRegion_Cis5to3(int coord, GffDetailGene gffDetailGene, boolean startCod,int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron)
  {
 		/**
 		 * 标记，0表示需要去除，1表示保留
@@ -533,77 +466,79 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		// 正向
 		for (int i = 0; i < gffDetailGene.getLsCodSplit().size(); i++) {
 			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLsCodSplit().get(i);
+			//顺式前一个位点或反式后一个位点
 			if (gffGeneIsoInfo.isCis5to3() && startCod
 			||
 			!gffGeneIsoInfo.isCis5to3() && !startCod
 			) {
 				if (Tss != null) {
-					if (gffGeneIsoInfo.getCod2Tss() <= Tss[1]) {
+					if (gffGeneIsoInfo.getCod2Tss(coord) <= Tss[1]) {
 						flag[i] = 1;
 					}
 				}
 				if (Tes != null) {
-					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes() <= Tes[1]) {
+					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes(coord) <= Tes[1]) {
 						flag[i] = 1;
 					}
 				}
 				if (geneBody) {
 					// 在基因下游肯定是在基因外了
-					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes() <= 0) {
+					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes(coord) <= 0) {
 						flag[i] = 1;
 					}
 				}
 				if (UTR5) {
 					if (flag[i] == 0 && geneBody == false
 							&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
-							&& gffGeneIsoInfo.getCod2ATG() <= 0) {
+							&& gffGeneIsoInfo.getCod2ATG(coord) <= 0) {
 						flag[i] = 1;
 					}
 				}
 				if (UTR3) {
 					if (flag[i] == 0 && geneBody == false
 							&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
-							&& gffGeneIsoInfo.getCod2Tes() <= 0) {
+							&& gffGeneIsoInfo.getCod2Tes(coord) <= 0) {
 						flag[i] = 1;
 					}
 				}
 				if (Exon) {
-					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes() <= 0) {
+					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes(coord) <= 0) {
 						flag[i] = 1;
 					}
 				}
 				if (Intron) {
 					if (flag[i] == 0
-							&& gffGeneIsoInfo.getCod2Tes() <= 0
-							&& gffGeneIsoInfo.getCodExInNum() < gffGeneIsoInfo.size()) {
+							&& gffGeneIsoInfo.getCod2Tes(coord) <= 0
+							&& gffGeneIsoInfo.getLocInEleNum(coord) < gffGeneIsoInfo.size()) {
 						flag[i] = 1;
 					}
 				}
 			}
+			//顺式后一个位点或反式前一个位点
 			else if (gffGeneIsoInfo.isCis5to3() && !startCod
 					||
 					!gffGeneIsoInfo.isCis5to3() && startCod
 					) {
 				if (Tss != null) {
-					if (gffGeneIsoInfo.getCod2Tss() >= Tss[0]) {
+					if (gffGeneIsoInfo.getCod2Tss(coord) >= Tss[0]) {
 						flag[i] = 1;
 					}
 				}
 				if (Tes != null) {
-					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes() >= Tes[0]) {
+					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes(coord) >= Tes[0]) {
 						flag[i] = 1;
 					}
 				}
 				if (geneBody) {
 					// 在基因下游肯定是在基因外了
-					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tss() >= 0) {
+					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tss(coord) >= 0) {
 						flag[i] = 1;
 					}
 				}
 				if (UTR5) {
 					if (flag[i] == 0 && geneBody == false
 							&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
-							&& gffGeneIsoInfo.getCod2Tss() >= 0) {
+							&& gffGeneIsoInfo.getCod2Tss(coord) >= 0) {
 						flag[i] = 1;
 					}
 				}
@@ -611,21 +546,21 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 					if (flag[i] == 0
 							&& geneBody == false
 							&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
-							&& (gffGeneIsoInfo.getCod2UAG() >= 0)) {
+							&& (gffGeneIsoInfo.getCod2UAG(coord) >= 0)) {
 						flag[i] = 1;
 					}
 				}
 				if (Exon) {
-					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tss() >= 0) {
+					if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tss(coord) >= 0) {
 						flag[i] = 1;
 					}
 				}
 				if (Intron) {
 					if (flag[i] == 0
-							&& gffGeneIsoInfo.getCod2Tss() >= 0
-							&& (gffGeneIsoInfo.getCodExInNum() < 0
-									|| gffGeneIsoInfo.getCodExInNum() > 1
-									|| (gffGeneIsoInfo.getCodExInNum() == 1 && gffGeneIsoInfo.codLoc == GffGeneIsoInfo.COD_LOC_INTRON))) 
+							&& gffGeneIsoInfo.getCod2Tss(coord) >= 0
+							&& (gffGeneIsoInfo.getLocInEleNum(coord) < 0
+									|| gffGeneIsoInfo.getLocInEleNum(coord) > 1
+									|| (gffGeneIsoInfo.getLocInEleNum(coord) == 1 && gffGeneIsoInfo.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_INTRON))) 
 					{
 						flag[i] = 1;
 					}
@@ -652,50 +587,49 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	 * @param Intron
 	 * @return
 	 */
-	private int[] getInRegion2Cod(GffDetailGene gffDetailGene1, GffDetailGene gffDetailGene2, int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron)
+	private int[] getInRegion2Cod(int coord1, int coord2, GffDetailGene gffDetailGene, int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron)
 	{
+		//一个是起点，一个是终点
+		int coordStart = 0; int coordEnd = 0;
 		/**
 		 * 标记，0表示需要去除，1表示保留
 		 */
-		int[] flag = new int[gffDetailGene1.getLsCodSplit().size()];
-		for (int i = 0; i < gffDetailGene1.getLsCodSplit().size(); i++) {
-			GffGeneIsoInfo gffGeneIsoInfo1 = null;
-			GffGeneIsoInfo gffGeneIsoInfo2 = null;
+		int[] flag = new int[gffDetailGene.getLsCodSplit().size()];
+		for (int i = 0; i < gffDetailGene.getLsCodSplit().size(); i++) {
+			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLsCodSplit().get(i);
 			//输入的是同一个GffGeneDetail。不过每一个gffGeneDetail含有一个cod，并且 cod1 绝对值< cod2 绝对值
 			//那么以下需要将cod1在基因中的位置小于cod2，所以当gene反向的时候需要将cod反向
-			if (gffDetailGene1.getLsCodSplit().get(i).isCis5to3()) {
-				gffGeneIsoInfo1 = gffDetailGene1.getLsCodSplit().get(i);
-				gffGeneIsoInfo2 = gffDetailGene2.getLsCodSplit().get(i);
+			if (gffDetailGene.getLsCodSplit().get(i).isCis5to3()) {
+				coordStart = Math.min(coord1, coord2); coordEnd = Math.max(coord1, coord2);
 			}
 			else {
-				gffGeneIsoInfo1 = gffDetailGene2.getLsCodSplit().get(i);
-				gffGeneIsoInfo2 = gffDetailGene1.getLsCodSplit().get(i);
+				coordStart = Math.max(coord1, coord2); coordEnd = Math.min(coord1, coord2);
 			}
 			if (Tss != null) {
-				if (gffGeneIsoInfo1.getCod2Tss() <= Tss[1] && gffGeneIsoInfo2.getCod2Tss() >= Tss[0]) {
+				if (gffGeneIsoInfo.getCod2Tss(coordStart) <= Tss[1] && gffGeneIsoInfo.getCod2Tss(coordEnd) >= Tss[0]) {
 					flag[i] = 1;
 				}
 			}
 			if (Tes != null) {
-				if (flag[i] == 0 && gffGeneIsoInfo1.getCod2Tes() <= Tes[1] && gffGeneIsoInfo2.getCod2Tes() >= Tes[0]) {
+				if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes(coordStart) <= Tes[1] && gffGeneIsoInfo.getCod2Tes(coordEnd) >= Tes[0]) {
 					flag[i] = 1;
 				}
 			}
 			if (geneBody) {
 				// 在基因下游肯定是在基因外了
-				if (flag[i] == 0 && gffGeneIsoInfo1.getCod2Tes() <= 0 && gffGeneIsoInfo2.getCod2Tss() >= 0) {
+				if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes(coordStart) <= 0 && gffGeneIsoInfo.getCod2Tss(coordEnd) >= 0) {
 					flag[i] = 1;
 				}
 			}
 			if (UTR5) {
 				if (flag[i] == 0 && geneBody == false
-						&& (gffGeneIsoInfo1.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo1.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo1.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
+						&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
 						&& 
-						gffGeneIsoInfo1.getCod2ATG() <=0 && gffGeneIsoInfo2.getCod2Tss() >= 0
+						gffGeneIsoInfo.getCod2ATG(coordStart) <=0 && gffGeneIsoInfo.getCod2Tss(coordEnd) >= 0
 						&&
-						(gffGeneIsoInfo1.getCodExInNum() != gffGeneIsoInfo2.getCodExInNum()  
+						(gffGeneIsoInfo.getLocInEleNum(coordStart) != gffGeneIsoInfo.getLocInEleNum(coordStart)  
 								||
-						gffGeneIsoInfo1.getCodExInNum() == gffGeneIsoInfo2.getCodExInNum() && (gffGeneIsoInfo1.getCodLoc() == GffGeneIsoInfo.COD_LOC_EXON || gffGeneIsoInfo2.getCodLoc() == GffGeneIsoInfo.COD_LOC_EXON)		
+						gffGeneIsoInfo.getLocInEleNum(coordStart) == gffGeneIsoInfo.getLocInEleNum(coordStart) && (gffGeneIsoInfo.getCodLoc(coordStart) == GffGeneIsoInfo.COD_LOC_EXON || gffGeneIsoInfo.getCodLoc(coordEnd) == GffGeneIsoInfo.COD_LOC_EXON)		
 						)
 						) {
 					flag[i] = 1;
@@ -703,13 +637,13 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 			}
 			if (UTR3) {
 				if (flag[i] == 0 && geneBody == false
-						&& (gffGeneIsoInfo1.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo1.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo1.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
+						&& (gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_MRNA_TE) || gffGeneIsoInfo.getGeneType().equals(GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT))
 						&& 
-						gffGeneIsoInfo1.getCod2Tes() <= 0 && gffGeneIsoInfo2.getCod2UAG() >= 0
+						gffGeneIsoInfo.getCod2Tes(coordStart) <= 0 && gffGeneIsoInfo.getCod2UAG(coordEnd) >= 0
 						&&
-						(gffGeneIsoInfo1.getCodExInNum() != gffGeneIsoInfo2.getCodExInNum()  
+						(gffGeneIsoInfo.getLocInEleNum(coordStart) != gffGeneIsoInfo.getLocInEleNum(coordEnd)  
 								||
-						gffGeneIsoInfo1.getCodExInNum() == gffGeneIsoInfo2.getCodExInNum() && (gffGeneIsoInfo1.getCodLoc() == GffGeneIsoInfo.COD_LOC_EXON || gffGeneIsoInfo2.getCodLoc() == GffGeneIsoInfo.COD_LOC_EXON)		
+						gffGeneIsoInfo.getLocInEleNum(coordStart) == gffGeneIsoInfo.getLocInEleNum(coordEnd) && (gffGeneIsoInfo.getCodLoc(coordStart) == GffGeneIsoInfo.COD_LOC_EXON || gffGeneIsoInfo.getCodLoc(coordEnd) == GffGeneIsoInfo.COD_LOC_EXON)		
 						)
 								) {
 					flag[i] = 1;
@@ -717,9 +651,9 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 			}
 			if (Exon) {
 				if (flag[i] == 0 &&
-						(gffGeneIsoInfo1.getCodExInNum() != gffGeneIsoInfo2.getCodExInNum()  
+						(gffGeneIsoInfo.getLocInEleNum(coordStart) != gffGeneIsoInfo.getLocInEleNum(coordEnd)  
 								||
-						gffGeneIsoInfo1.getCodExInNum() == gffGeneIsoInfo2.getCodExInNum() && (gffGeneIsoInfo1.getCodLoc() == GffGeneIsoInfo.COD_LOC_EXON || gffGeneIsoInfo2.getCodLoc() == GffGeneIsoInfo.COD_LOC_EXON)		
+						gffGeneIsoInfo.getLocInEleNum(coordStart) == gffGeneIsoInfo.getLocInEleNum(coordEnd) && (gffGeneIsoInfo.getCodLoc(coordStart) == GffGeneIsoInfo.COD_LOC_EXON || gffGeneIsoInfo.getCodLoc(coordEnd) == GffGeneIsoInfo.COD_LOC_EXON)		
 						)
 					) {
 					flag[i] = 1;
@@ -727,14 +661,13 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 			}
 			if (Intron) {
 				if (flag[i] == 0 &&
-						(gffGeneIsoInfo1.getCodExInNum() != gffGeneIsoInfo2.getCodExInNum() && gffGeneIsoInfo1.getCodExInNum() != 0 && gffGeneIsoInfo2.getCodExInNum() != 0)
-								||
-								
-						(gffGeneIsoInfo1.getCodExInNum() == gffGeneIsoInfo2.getCodExInNum() && (gffGeneIsoInfo1.getCodLoc() == GffGeneIsoInfo.COD_LOC_INTRON || gffGeneIsoInfo2.getCodLoc() == GffGeneIsoInfo.COD_LOC_INTRON) )
+						(gffGeneIsoInfo.getLocInEleNum(coordStart) != gffGeneIsoInfo.getLocInEleNum(coordEnd) && gffGeneIsoInfo.getLocInEleNum(coordStart) != 0 && gffGeneIsoInfo.getLocInEleNum(coordEnd) != 0)
 						||
-						(gffGeneIsoInfo1.getCodExInNum() == 0 && (gffGeneIsoInfo2.getCodExInNum() >= 2 || gffGeneIsoInfo2.getCodLoc() == GffGeneIsoInfo.COD_LOC_INTRON))
+						(gffGeneIsoInfo.getLocInEleNum(coordStart) == gffGeneIsoInfo.getLocInEleNum(coordEnd) && (gffGeneIsoInfo.getCodLoc(coordStart) == GffGeneIsoInfo.COD_LOC_INTRON || gffGeneIsoInfo.getCodLoc(coordEnd) == GffGeneIsoInfo.COD_LOC_INTRON) )
 						||
-						(gffGeneIsoInfo2.getCodExInNum() == 0 && (gffGeneIsoInfo1.getCodExInNum() <= gffGeneIsoInfo1.getExonNum() - 1 || gffGeneIsoInfo2.getCodLoc() == GffGeneIsoInfo.COD_LOC_INTRON))
+						(gffGeneIsoInfo.getLocInEleNum(coordStart) == 0 && (gffGeneIsoInfo.getLocInEleNum(coordEnd) >= 2 || gffGeneIsoInfo.getCodLoc(coordEnd) == GffGeneIsoInfo.COD_LOC_INTRON))
+						||
+						(gffGeneIsoInfo.getLocInEleNum(coordEnd) == 0 && (gffGeneIsoInfo.getLocInEleNum(coordStart) <= gffGeneIsoInfo.getExonNum() - 1 || gffGeneIsoInfo.getCodLoc(coordStart) == GffGeneIsoInfo.COD_LOC_INTRON))
 				) 
 				{
 					flag[i] = 1;
@@ -744,12 +677,12 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		return flag;
 	}
 	
-	
 	/**
 	 * 将这两个端点中，涉及到Tes的基因全部提取出来
+	 * 不遍历iso
 	 * @return
 	 */
-	public Set<GffDetailGene> getTESGene() {
+	public Set<GffDetailGene> getTESGene(int[] tes) {
 		/**
 		 * 待返回的基因
 		 */
@@ -758,11 +691,11 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		if (gffCod1 != null)
 		{
 			//上一个基因有关系
-			if (isUpTes(gffCod1.getGffDetailUp(), gffCod1.getCoord())) {
+			if (isUpTes(gffCod1.getGffDetailUp(), gffCod1.getCoord(), tes)) {
 				setGffDetailGenes.add(gffCod1.getGffDetailUp());
 			}
 			//本基因关系
-			if (isUpTes(gffCod1.getGffDetailThis(), gffCod1.getCoord())) {
+			if (isUpTes(gffCod1.getGffDetailThis(), gffCod1.getCoord(), tes)) {
 				setGffDetailGenes.add(gffCod1.getGffDetailThis());
 			}
 		}
@@ -774,24 +707,106 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		if (gffCod2 != null)
 		{
 			//上一个基因有关系
-			if (isDownTes(gffCod2.getGffDetailThis(), gffCod2.getCoord())) {
+			if (isDownTes(gffCod2.getGffDetailThis(), gffCod2.getCoord(), tes)) {
 				setGffDetailGenes.add(gffCod2.getGffDetailThis());
 			}
 			//本基因关系
-			if (isDownTes(gffCod2.getGffDetailDown(), gffCod2.getCoord())) {
+			if (isDownTes(gffCod2.getGffDetailDown(), gffCod2.getCoord(), tes)) {
+				setGffDetailGenes.add(gffCod2.getGffDetailDown());
+			}
+		}
+		return setGffDetailGenes;
+	}
+	/**
+	 * 待检查
+	 * 将这两个端点中，涉及到Tes的基因全部提取出来
+	 * 不遍历iso
+	 * @return
+	 */
+	private boolean isUpTes(GffDetailGene gffDetailGene, int coord, int[] tes) {
+		gffDetailGene.setTesRegion(tes[0], tes[1]);
+		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
+			return false;
+		}
+		if (gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend(coord)
+		||
+		(!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoGenEnd(coord) )
+		)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean isDownTes(GffDetailGene gffDetailGene, int coord, int[] tes) {
+		gffDetailGene.setTesRegion(tes[0], tes[1]);
+		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
+			return false;
+		}
+		if (!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend(coord)
+		||
+		(gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoGenEnd(coord))
+		)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	
+	
+	/**
+	 * 待检查
+	 * 将这两个端点中，涉及到Tss的基因全部提取出来
+	 * @return
+	 */
+	public Set<GffDetailGene> getTSSGene(int[] tss) {
+		/**
+		 * 待返回的基因
+		 */
+		Set<GffDetailGene> setGffDetailGenes = new LinkedHashSet<GffDetailGene>();
+		//在前面基因的最长转录本范围内
+		if (gffCod1 != null)
+		{
+			//上一个基因有关系
+			if (isUpTss(gffCod1.getGffDetailUp(), gffCod1.getCoord(), tss)) {
+				setGffDetailGenes.add(gffCod1.getGffDetailUp());
+			}
+			//本基因关系
+			if (isUpTss(gffCod1.getGffDetailThis(), gffCod1.getCoord(), tss)) {
+				setGffDetailGenes.add(gffCod1.getGffDetailThis());
+			}
+		}
+		
+		if (lsgffDetailsMid != null) {
+			for (GffDetailGene gffDetailGene : lsgffDetailsMid) {
+				setGffDetailGenes.add(gffDetailGene);
+			}
+		}
+	
+		if (gffCod2 != null)
+		{
+			//上一个基因有关系
+			if (isDownTss(gffCod2.getGffDetailThis(), gffCod2.getCoord(), tss))
+			{
+				setGffDetailGenes.add(gffCod2.getGffDetailThis());
+			}
+			//本基因关系
+			if (isDownTss(gffCod2.getGffDetailDown(), gffCod2.getCoord(), tss)) {
 				setGffDetailGenes.add(gffCod2.getGffDetailDown());
 			}
 		}
 		return setGffDetailGenes;
 	}
 	
-	private boolean isUpTes(GffDetailGene gffDetailGene, int coord) {
+	private boolean isUpTss(GffDetailGene gffDetailGene, int coord, int[] tss) {
+		gffDetailGene.setTssRegion(tss[0], tss[1]);
 		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
-		if (gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend()
+		if (gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoTss(coord)
 		||
-		(!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoGenEnd() )
+		(!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend(coord))
 		)
 		{
 			return true;
@@ -799,19 +814,22 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		return false;
 	}
 	
-	private boolean isDownTes(GffDetailGene gffDetailGene, int coord) {
+	private boolean isDownTss(GffDetailGene gffDetailGene, int coord, int[] tss) {
+		gffDetailGene.setTssRegion(tss[0], tss[1]);
 		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
-		if (!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend()
+		if (!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoTss(coord)
 		||
-		(gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoGenEnd())
+		(gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend(coord))
 		)
 		{
 			return true;
 		}
 		return false;
 	}
+	
+	
 	/**
 	 * 返回所有覆盖到的基因的copedID
 	 * @return
@@ -824,7 +842,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 			if (getGffCodLeft().isInsideUp())
 			{
 				for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodLeft().getGffDetailUp().getLsCodSplit()) {
-					if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
+					if (gffGeneIsoInfo.getCodLoc(getGffCodLeft().getCoord()) != GffGeneIsoInfo.COD_LOC_OUT) {
 						CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), getGffCodLeft().getGffDetailUp().getTaxID(), false);
 						if (hashCopedID.contains(copedID)) {
 							continue;
@@ -835,7 +853,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 				}
 			}
 			for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodLeft().getGffDetailThis().getLsCodSplit()) {
-				if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
+				if (gffGeneIsoInfo.getCodLoc(getGffCodLeft().getCoord()) != GffGeneIsoInfo.COD_LOC_OUT) {
 					CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), getGffCodLeft().getGffDetailThis().getTaxID(), false);
 					if (hashCopedID.contains(copedID)) {
 						continue;
@@ -863,7 +881,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		
 		if (getGffCodRight() != null && getGffCodRight().isInsideLoc()) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodRight().getGffDetailThis().getLsCodSplit()) {
-				if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
+				if (gffGeneIsoInfo.getCodLoc(getGffCodRight().getCoord()) != GffGeneIsoInfo.COD_LOC_OUT) {
 					CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), getGffCodRight().getGffDetailThis().getTaxID(), false);
 					if (hashCopedID.contains(copedID)) {
 						continue;
@@ -875,7 +893,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 			if (getGffCodRight().isInsideDown())
 			{
 				for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodRight().getGffDetailDown().getLsCodSplit()) {
-					if (gffGeneIsoInfo.getCodLoc() != GffGeneIsoInfo.COD_LOC_OUT) {
+					if (gffGeneIsoInfo.getCodLoc(getGffCodRight().getCoord()) != GffGeneIsoInfo.COD_LOC_OUT) {
 						CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), getGffCodRight().getGffDetailDown().getTaxID(), false);
 						if (hashCopedID.contains(copedID)) {
 							continue;

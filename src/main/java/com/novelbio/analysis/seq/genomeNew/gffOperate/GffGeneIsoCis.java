@@ -7,6 +7,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 /**
  * 名字通通小写
  * 计算距离时，SnnnC<br>
@@ -76,4 +79,5 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		return result;
 	
 	}
+
 }

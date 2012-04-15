@@ -15,11 +15,21 @@ import org.apache.log4j.Logger;
  * @locHashtable hash（LOCID）--GeneInforlist
  * @LOCIDList 顺序存储每个基因号或条目号
  */
-public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T>, K extends ListCodAbsDu<T, E>> {
+public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T>, K extends ListCodAbsDu<T, E>, M extends ListAbs<T, E, K>>
+{
 	/**
 	 * 起点默认为开区间
 	 */
 	int startRegion = 1;
+	/**
+	 * 这个是真正的查找用hash表<br>
+	 * 这个哈希表来存储
+	 * hash（ChrID）--ChrList--GeneInforList(GffDetail类)<br>
+	 * 其中ChrID为小写，
+	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
+	 * chr格式，全部小写 chr1,chr2,chr11<br>
+	 */
+	protected LinkedHashMap<String, M> Chrhash;
 	/**
 	 * 起点是否为闭区间，不是则为开区间，<br>
 	 * False: 开区间的意思是，24表示从0开始计数的24位，也就是实际的25位<br>
@@ -77,7 +87,7 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 			return hashLoc2Num;
 		}
 		hashLoc2Num = new LinkedHashMap<String, Integer>();
-		for (ListAbs<T, E, K> listAbs : Chrhash.values()) {
+		for (M listAbs : Chrhash.values()) {
 			listAbs.getHashLocNum(hashLoc2Num);
 		}
 		return hashLoc2Num;
@@ -93,7 +103,7 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 			return locHashtable;
 		}
 		locHashtable = new LinkedHashMap<String, T>();
-		for (ListAbs<T, E, K> listAbs : Chrhash.values()) {
+		for (M listAbs : Chrhash.values()) {
 			listAbs.getLocHashtable(locHashtable);
 		}
 		return locHashtable;
@@ -103,7 +113,7 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 	 * @param chrID
 	 * @return
 	 */
-	public ListAbs<T, E, K> getListDetail(String chrID)
+	public M getListDetail(String chrID)
 	{
 		chrID = chrID.toLowerCase();
 		return Chrhash.get(chrID);
@@ -141,21 +151,13 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 			return LOCChrHashIDList;
 		}
 		LOCChrHashIDList = new ArrayList<String>();
-		for (ListAbs<T, E, K> lsAbs : Chrhash.values()) {
+		for (M lsAbs : Chrhash.values()) {
 			LOCChrHashIDList.addAll(lsAbs.getLOCIDList());
 		}
 		return LOCChrHashIDList;
 	}
 	
-	/**
-	 * 这个是真正的查找用hash表<br>
-	 * 这个哈希表来存储
-	 * hash（ChrID）--ChrList--GeneInforList(GffDetail类)<br>
-	 * 其中ChrID为小写，
-	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
-	 * chr格式，全部小写 chr1,chr2,chr11<br>
-	 */
-	protected LinkedHashMap<String,ListAbs<T, E, K>> Chrhash;
+
 	
 	/**
 	 * 返回真正的查找用hash表<br>
@@ -165,7 +167,7 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	protected HashMap<String,ListAbs<T, E, K>> getChrhash()
+	protected HashMap<String, M> getChrhash()
 	{
 		return Chrhash;
 	}
@@ -177,7 +179,7 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 	 */
 	public E searchLocation(String chrID, int cod1) {
 		chrID = chrID.toLowerCase();
-		ListAbs<T, E, K> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
+		M Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			return null;
 		}
@@ -194,7 +196,7 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 	 */
 	public K searchLocation(String chrID, int cod1, int cod2) {
 		chrID = chrID.toLowerCase();
-		ListAbs<T, E, K> Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
+		M Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			return null;
 		}
@@ -226,7 +228,7 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 		Set<String> setChrID = getChrhash().keySet();
 		for (String string : setChrID) {
 			LinkedHashMap<int[], Integer> hashTmpResult = new LinkedHashMap<int[], Integer>();
-			ListAbs<T, E, K> lsPeak = getListDetail(string);
+			M lsPeak = getListDetail(string);
 			for (T gffDetailPeak : lsPeak) {
 				int[] interval = new int[2];
 				interval[0] = gffDetailPeak.getStartAbs();
@@ -327,7 +329,7 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 	 * 设定每个GffDetail的tss2UpGene和tes2DownGene
 	 */
 	private void setItemDistance() {
-		for (ListAbs<T, E, K> lsGffDetail : Chrhash.values()) {
+		for (M lsGffDetail : Chrhash.values()) {
 			for (int i = 0; i < lsGffDetail.size(); i++) {
 				T gffDetail = lsGffDetail.get(i);
 				T gffDetailUp = null;
