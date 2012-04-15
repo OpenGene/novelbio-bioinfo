@@ -30,30 +30,7 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 		this.gffCod2 = gffCod2;
 		calInfo();
 	}
-//	protected ListCodAbsDu(ListCodAbsDu<T, K> lsDu)
-//	{
-//		this.gffCod1 = lsDu.gffCod1;
-//		this.gffCod2 = lsDu.gffCod2;
-//		this.lsgffDetailsMid = lsDu.lsgffDetailsMid;
-//		this.opLeftBp = lsDu.opLeftBp;
-//		this.opLeftInCod = lsDu.opLeftInCod;
-//		this.opLeftInItem = lsDu.opLeftInItem;
-//		this.opRightBp = lsDu.opRightBp;
-//		this.opRightInCod = lsDu.opRightInCod;
-//		this.opRightInItem = lsDu.opRightInItem;
-//	}
-	public ListCodAbsDu(
-			ListCodAbsDu<T, K> lsDu) {
-		this.gffCod1 = lsDu.gffCod1;
-		this.gffCod2 = lsDu.gffCod2;
-		this.lsgffDetailsMid = lsDu.lsgffDetailsMid;
-		this.opLeftBp = lsDu.opLeftBp;
-		this.opLeftInCod = lsDu.opLeftInCod;
-		this.opLeftInItem = lsDu.opLeftInItem;
-		this.opRightBp = lsDu.opRightBp;
-		this.opRightInCod = lsDu.opRightInCod;
-		this.opRightInItem = lsDu.opRightInItem;
-	}
+
 	protected K gffCod1 = null;
 	public K getGffCod1() {
 		return gffCod1;

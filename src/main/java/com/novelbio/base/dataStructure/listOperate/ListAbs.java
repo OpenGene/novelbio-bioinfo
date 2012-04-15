@@ -615,12 +615,12 @@ public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>,
 		if (cod1 < 0 && cod2 < 0) {
 			return null;
 		}
-		ListCodAbs<E> gffCod1 = searchLocation(cod1);
-		ListCodAbs<E> gffCod2 = searchLocation(cod2);
+		T gffCod1 = searchLocation(cod1);
+		T gffCod2 = searchLocation(cod2);
 		if (gffCod1 == null) {
 			System.out.println("error");
 		}
-		ListCodAbsDu<E, T> lsAbsDu = new ListCodAbsDu<E, T>(gffCod1, gffCod2);
+		K lsAbsDu = creatGffCodDu(gffCod1, gffCod2);
 		
 		if (lsAbsDu.getGffCod1().getItemNumDown() >= 0) {
 			for (int i = lsAbsDu.getGffCod1().getItemNumDown(); i <= lsAbsDu.getGffCod2().getItemNumUp(); i++) {
@@ -642,7 +642,7 @@ public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>,
 	 * @param Coordinate
 	 * @return
 	 */
-	protected abstract K creatGffCodDu(String listName, int Coordinate);
+	protected abstract K creatGffCodDu(T gffCod1, T gffCod2);
 	/**
 	 * “—≤‚ ‘£¨ƒ‹”√
 	 */

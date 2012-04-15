@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
  * @author zong0jie
  *
  */
-public class ListComb<T extends ListDetailAbs> extends ListAbs<ListDetailComb<T>>{
+public class ListComb extends  ListAbs <T, E, K>{
 	/**
 	 * 
 	 */
@@ -19,13 +19,13 @@ public class ListComb<T extends ListDetailAbs> extends ListAbs<ListDetailComb<T>
 	/**
 	 * 全体待比较的listabs信息
 	 */
-	ArrayList<ListAbs<T>> lsAllListAbs = new ArrayList<ListAbs<T>>();
-	ListAbs<T> lsAllID = new ListAbs<T>();
+	ArrayList<ListAbs<T, E, K>> lsAllListAbs = new ArrayList<ListAbs<T, E, K>>();
+	ListAbs<T, E, K> lsAllID = null;
 	/**
 	 * 保存所有exon合并后的边界
 	 */
 	ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
-	public void addListAbs(ListAbs<T> lsListAbs) {
+	public void addListAbs(ListAbs<T, E, K> lsListAbs) {
 		if (isCis5to3() == null) {
 			setCis5to3(lsListAbs.isCis5to3());
 		}
@@ -46,10 +46,9 @@ public class ListComb<T extends ListDetailAbs> extends ListAbs<ListDetailComb<T>
 		if (copelist) {
 			return;
 		}
-		for (ListAbs<T> lsAbs : lsAllListAbs) {
-			for (T ele : lsAbs) {
-				lsAllID.add(ele);
-			}
+		lsAllID = lsAllListAbs.get(0).clone();
+		for (int i = 1; i < lsAllListAbs.size(); i++) {
+			lsAllID.addAll(lsAllListAbs.get(i));
 		}
 		lsAllID.sort();
 		combExon();
@@ -106,7 +105,7 @@ public class ListComb<T extends ListDetailAbs> extends ListAbs<ListDetailComb<T>
 		for (int[] exonBound : lsExonBounder) {
 			ListDetailComb<T> elementComb = new ListDetailComb<T>(); //ExonCluster(gffDetailGene.getParentName(), exonBound[0], exonBound[1]);
 			for (int m = 0; m < lsAllListAbs.size(); m ++) {
-				ListAbs<T> lsAbs = lsAllListAbs.get(m);
+				ListAbs<T, E, K> lsAbs = lsAllListAbs.get(m);
 				if (lsAbs.isCis5to3() != isCis5to3()) {
 					logger.error("方向不一致，不能比较");
 				}
