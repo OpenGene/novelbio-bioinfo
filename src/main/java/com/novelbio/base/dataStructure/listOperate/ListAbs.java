@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements Cloneable{
+public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>, K extends ListCodAbsDu<E, T>> extends ArrayList<E>  implements Cloneable{
 	private static Logger logger = Logger.getLogger(ListAbs.class);
 	/**
 	 * 
@@ -459,7 +459,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * @param lsOtherExon
 	 * @return
 	 */
-	public boolean compIso(ListAbs<E> lsOther)
+	public boolean compIso(ListAbs<E, T, K> lsOther)
 	{
 		if (lsOther.size() != size() ) {
 			return false;
@@ -568,12 +568,12 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * 采用clone的方法获得信息
 	 * 没找到就返回null
 	 */
-	public ListCodAbs<E> searchLocation(int Coordinate) {
+	public T searchLocation(int Coordinate) {
 		int[] locInfo = LocPosition(Coordinate);// 二分法查找peaknum的定位
 		if (locInfo == null) {
 			return null;
 		}
-		ListCodAbs<E> gffCod = new ListCodAbs<E>(listName, Coordinate);
+		T gffCod = creatGffCod(listName, Coordinate);
 		if (locInfo[0] == 1) // 定位在基因内
 		{
 			gffCod.setGffDetailThis( get(locInfo[1]) ); 
@@ -611,7 +611,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * @param cod2 必须大于0
 	 * @return
 	 */
-	public ListCodAbsDu<E, ListCodAbs<E>> searchLocationClone(int cod1, int cod2) {
+	public K searchLocationDu(int cod1, int cod2) {
 		if (cod1 < 0 && cod2 < 0) {
 			return null;
 		}
@@ -620,7 +620,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		if (gffCod1 == null) {
 			System.out.println("error");
 		}
-		ListCodAbsDu<E, ListCodAbs<E>> lsAbsDu = new ListCodAbsDu<E, ListCodAbs<E>>(gffCod1, gffCod2);
+		ListCodAbsDu<E, T> lsAbsDu = new ListCodAbsDu<E, T>(gffCod1, gffCod2);
 		
 		if (lsAbsDu.getGffCod1().getItemNumDown() >= 0) {
 			for (int i = lsAbsDu.getGffCod1().getItemNumDown(); i <= lsAbsDu.getGffCod2().getItemNumUp(); i++) {
@@ -630,12 +630,26 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return lsAbsDu;
 	}
 	/**
+	 * 生成一个全新的GffCod类
+	 * @param listName
+	 * @param Coordinate
+	 * @return
+	 */
+	protected abstract T creatGffCod(String listName, int Coordinate);
+	/**
+	 * 生成一个全新的GffCod类
+	 * @param listName
+	 * @param Coordinate
+	 * @return
+	 */
+	protected abstract K creatGffCodDu(String listName, int Coordinate);
+	/**
 	 * 已测试，能用
 	 */
 	@SuppressWarnings("unchecked")
-	public ListAbs<E> clone() {
-		ListAbs<E> result = null;
-		result = (ListAbs<E>) super.clone();
+	public ListAbs<E, T, K> clone() {
+		ListAbs<E, T, K> result = null;
+		result = (ListAbs<E, T, K>) super.clone();
 		result.cis5to3 = cis5to3;
 		result.hashLocExInEnd = hashLocExInEnd;
 		result.hashLocExInStart = hashLocExInStart;

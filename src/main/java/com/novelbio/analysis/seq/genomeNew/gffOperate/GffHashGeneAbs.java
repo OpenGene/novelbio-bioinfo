@@ -20,13 +20,15 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArrayCluster;
 import com.novelbio.base.dataStructure.CompSubArrayInfo;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.dataStructure.listOperate.ListHash;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.test.testextend.a;
 
-public abstract class GffHashGeneAbs extends ListHash<GffDetailGene,GffCodGene, GffCodGeneDU> implements GffHashGeneInf
+public abstract class GffHashGeneAbs extends ListHash<GffDetailGene> implements GffHashGeneInf
 {
 	int taxID = 0;
 	String acc2GeneIDfile = "";
@@ -168,8 +170,8 @@ public abstract class GffHashGeneAbs extends ListHash<GffDetailGene,GffCodGene, 
 				GffGeneIsoInfo gffGeneIsoInfoLong = tmpUCSCgene.getLongestSplit();
 				allGeneLength=allGeneLength + Math.abs(gffGeneIsoInfoLong.getTSSsite() - gffGeneIsoInfoLong.getTESsite() + 1);
 				///////////////////////看UCSC中有多少基因的TSS不是最长转录本的起点//////////////////////////
-				if ((tmpUCSCgene.cis5to3&&gffGeneIsoInfoLong.getTSSsite()>tmpUCSCgene.numberstart) 
-						|| ( !tmpUCSCgene.cis5to3&& gffGeneIsoInfoLong.getTSSsite()<tmpUCSCgene.numberend ))
+				if ((tmpUCSCgene.isCis5to3() && gffGeneIsoInfoLong.getTSSsite() > tmpUCSCgene.getStartAbs()) 
+						|| ( !tmpUCSCgene.isCis5to3() && gffGeneIsoInfoLong.getTSSsite() < tmpUCSCgene.getEndAbs() ))
 				{
 					errorNum++;
 				}
@@ -247,14 +249,17 @@ public abstract class GffHashGeneAbs extends ListHash<GffDetailGene,GffCodGene, 
 	}
 	
 	@Override
-	protected GffCodGene setGffCod(String chrID, int Coordinate) {
-		return new GffCodGene(chrID, Coordinate);
+	public GffCodGene searchLocation(String chrID, int Coordinate) {
+		ListCodAbs<GffDetailGene> lsTmp = super.searchLocation(chrID, Coordinate);
+		GffCodGene gffCodGene = new GffCodGene(lsTmp);
+		return gffCodGene;
 	}
 	
 	@Override
-	protected GffCodGeneDU setGffCodDu(ArrayList<GffDetailGene> lsgffDetail,
-			GffCodGene gffCod1, GffCodGene gffCod2) {
-		return new GffCodGeneDU(lsgffDetail, gffCod1, gffCod2);
+	protected GffCodGeneDU searchLocation(String chrID, int coord1, int coord2) {
+		ListCodAbsDu<GffDetailGene, ListCodAbs<GffDetailGene>> lsTmp = super.searchLocation(chrID, coord1, coord2);
+		GffCodGeneDU gffCodGeneDU = new GffCodGeneDU(lsTmp);
+		return gffCodGeneDU;
 	}
 	
 	

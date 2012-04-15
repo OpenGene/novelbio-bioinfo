@@ -9,6 +9,7 @@ import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.test.mytest;
@@ -18,6 +19,9 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	public GffCodGeneDU(ArrayList<GffDetailGene> lsgffDetail,
 			GffCodGene gffCod1, GffCodGene gffCod2) {
 		super(lsgffDetail, gffCod1, gffCod2);
+	}
+	public GffCodGeneDU(ListCodAbsDu<GffDetailGene, ListCodAbs<GffDetailGene>> lsDu) {
+		super(lsDu);
 	}
 	/**
 	 * 获得gffDetailGene的具体信息，如果该gffDetailGene包含多个copedID，则用“///”分割

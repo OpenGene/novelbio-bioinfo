@@ -11,9 +11,12 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
  */
 public class GffCodGene extends ListCodAbs<GffDetailGene>
 {
-	protected GffCodGene(String chrID, int Coordinate) {
-		super(chrID, Coordinate);
-		// TODO Auto-generated constructor stub
+	/**
+	 * 从原始的ListCodAbs生成本类
+	 * @param lsSuper
+	 */
+	public GffCodGene(ListCodAbs<GffDetailGene> lsSuper) {
+		super(lsSuper);
 	}
 	
 	/**
@@ -83,6 +86,9 @@ public class GffCodGene extends ListCodAbs<GffDetailGene>
 		return null;
 	}
 
-	
+	public static GffCodGene convert2Class(ListCodAbs<GffDetailGene> lsSuper)
+	{
+		return new GffCodGene(lsSuper);
+	}
 	
 }

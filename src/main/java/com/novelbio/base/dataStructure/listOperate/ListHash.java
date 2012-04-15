@@ -198,7 +198,7 @@ public abstract class ListHash < T extends ListDetailAbs> {
 		if (Loclist == null) {
 			return null;
 		}
-		return Loclist.searchLocationClone(cod1, cod2);
+		return Loclist.searchLocationDu(cod1, cod2);
 	}
 	/**
 	 * 给定ID，在其所对应的信息上加一
