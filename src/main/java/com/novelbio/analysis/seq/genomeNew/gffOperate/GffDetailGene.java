@@ -95,7 +95,62 @@ public class GffDetailGene extends ListDetailAbs
 		return -1;
 	}
 	
-	
+	/**
+	 * 划定Tss范围上游为负数，下游为正数
+	 * 同时设定里面当时含有的全部GffGeneIsoInfo
+	 * @param upTss
+	 * @param downTss
+	 */
+	@Override
+	public void setTssRegion(int upTss, int downTss) {
+		super.upTss = upTss;
+		super.downTss = downTss;
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			gffGeneIsoInfo.setTssRegion(upTss, downTss);
+		}
+	}
+	/**
+	 * 划定Tes范围上游为负数，下游为正数
+	 * 同时设定里面当时含有的全部GffGeneIsoInfo
+	 * @param upTes
+	 * @param downTes
+	 */
+	@Override
+	public void setTesRegion(int upTes, int downTes) {
+		this.upGeneEnd3UTR = upTes;
+		this.downGeneEnd3UTR = downTes;
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			gffGeneIsoInfo.setTesRegion(upTes, downTes);
+		}
+	}
+	/**
+	 * 划定Tss范围上游为负数，下游为正数
+	 * @param upTss
+	 * @param downTss
+	 */
+	public void setTssRegion(int[] Tss) {
+		if (Tss != null) {
+			this.upTss = Tss[0];
+			this.downTss = Tss[1];
+			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+				gffGeneIsoInfo.setTssRegion(upTss, downTss);
+			}
+		}
+	}
+	/**
+	 * 划定Tss范围上游为负数，下游为正数
+	 * @param upTss
+	 * @param downTss
+	 */
+	public void setTesRegion(int[] Tes) {
+		if (Tes != null) {
+			this.upGeneEnd3UTR = Tes[0];
+			this.downGeneEnd3UTR = Tes[1];
+			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+				gffGeneIsoInfo.setTesRegion(upGeneEnd3UTR, downGeneEnd3UTR);
+			}
+		}
+	}
 	/**
 	 * 顺序存储每个转录本的的坐标情况
 	 */
@@ -154,7 +209,7 @@ public class GffDetailGene extends ListDetailAbs
 		}
 	}
 	/**
-	 * 直接添加转录本，之后用addcds()方法给该转录本添加exon
+	 * 直接添加转录本，根据genedetail的信息设置cis5to3。之后用addcds()方法给该转录本添加exon
 	 */
 	protected void addsplitlist(String splitName, String geneTpye) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;

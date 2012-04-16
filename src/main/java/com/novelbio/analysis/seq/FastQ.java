@@ -16,7 +16,7 @@ import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashBin;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -1378,7 +1378,7 @@ public class FastQ extends SeqComb {
 	/**
 	 * 统计reads分布和每个reads质量的方法
 	 */
-	GffHashBin gffHashBin = new GffHashBin();
+	ListHashBin gffHashBin = new ListHashBin();
 	String gffreadsLen = "Reads Length";
 	String gffbpName = "BP";
 	/**

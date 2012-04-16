@@ -17,13 +17,14 @@ import org.apache.commons.math.stat.descriptive.rank.Min;
 import org.apache.log4j.Logger;
 import org.junit.experimental.max.MaxCore;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeak;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashBin;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -164,7 +165,7 @@ public class MapReads {
 	 public ArrayList<String[]> getChIPBG(String peakBedFile, int firstlinels1)
 	 {
 		 ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		 GffHashBin gffHashPeak = new GffHashBin(true, 1, 2, 3, firstlinels1);
+		 ListHashBin gffHashPeak = new ListHashBin(true, 1, 2, 3, firstlinels1);
 		 gffHashPeak.ReadGffarray(peakBedFile);
 		 
 		 double allReads = 0; int numAll = 0; double max = 0;
@@ -178,7 +179,7 @@ public class MapReads {
 				if (info[i] == 0) { 
 					continue;
 				}
-				GffCodPeak gffcodPeak = gffHashPeak.searchLocatioClone(chrID, i*invNum);
+				ListCodAbs<ListDetailBin> gffcodPeak = gffHashPeak.searchLocation(chrID, i*invNum);
 				if (gffcodPeak != null && gffcodPeak.isInsideLoc()) {
 					continue;
 				}

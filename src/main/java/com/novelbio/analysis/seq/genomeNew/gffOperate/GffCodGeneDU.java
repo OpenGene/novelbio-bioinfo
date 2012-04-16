@@ -46,7 +46,6 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	{
 		HashSet<GffDetailGene> hashGffDetailGeneAnno = new HashSet<GffDetailGene>();
 		ArrayList<String[]> lsAnno = new ArrayList<String[]>();
-		fsef
 		//TODO: 这里修改tss和tes后，gffDetailgene要修改tss和tes，gffiso也要修改tss和tes
 		Set<GffDetailGene> gffUpGene = getStructureUpGene(Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
 		for (GffDetailGene gffDetailGene : gffUpGene) {
@@ -177,7 +176,12 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 				}
 			}
 			else if (gffDetailGenes[0] != null && gffDetailGenes[1] != null) {
-				if (isInRegion2Cod(gffDetailGenes[0], gffDetailGenes[1], Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron)) {
+				if (!gffDetailGenes[0].equals(gffDetailGenes[1])) {
+					logger.error("理论上两者是一致的");
+				}
+				
+				
+				if (isInRegion2Cod(gffDetailGenes[0], Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron)) {
 					//只添加第一个的信息
 					hashGene.add(gffDetailGenes[0]);
 				}
@@ -221,8 +225,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	}
 	
 	ArrayList<GffDetailGene[]> lsGffDetailGenes = null;
-	 这个方法有问题，连带了调用它的方法也有问题
-	 主要就是cod是否在同一个基因内 的方法的调用
+
 	/**
 	 * 
 	 * 看两个坐标点是否处在同一个geneDetail中
@@ -230,7 +233,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	 * lsGffDetailGenes - gffDetailGene[2] <br>
 	 * 0: gffDetailGene 1: null 位点在前面的gff中 <br>
 	 * 0: null 1: gffDetailGene 位点在后面的gff中 <br>
-	 *  0: gffDetailGene 1: gffDetailGene 位点同时在两个gff中
+	 *  0: gffDetailGene 1: gffDetailGene 位点在同一个gffdetail中
 	 */
 	private ArrayList<GffDetailGene[]> getSameGeneDetail(int tssUp, int tesDown)
 	{
@@ -343,7 +346,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		 */
 		int[] flag = null;
 		//正向
-		flag = isInRegion1CodCisRegion_Cis5to3(gffDetailGene, true,Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
+		flag = isInRegion1CodCisRegion_Cis5to3(gffCod1.getCoord(), gffDetailGene, true,Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
 		boolean flagResult = false;
 		for (int i = flag.length - 1; i >= 0 ; i--) {
 			if (flag[i] == 0) {
@@ -381,7 +384,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		 * 标记，0表示需要去除，1表示保留
 		 */
 		int[] flag = null;
-		flag = isInRegion1CodCisRegion_Cis5to3(gffDetailGene, false, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
+		flag = isInRegion1CodCisRegion_Cis5to3(gffCod2.getCoord(), gffDetailGene, false, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
 		boolean flagResult = false;
 		for (int i = flag.length - 1; i >= 0 ; i--) {
 			if (flag[i] == 0) {
@@ -401,7 +404,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	
 	/**
 	 * 使用前先判定cod是否在两个相同的gffDetailGene内
-	 * 仅考虑两个点不在同一个基因内部的情况时，第一个点的情况
+	 * 仅考虑两个点在同一个基因内部的情况时
 	 * 效率稍低但是很全面，每个isoform都会判断
 	 * @param gffDetailGene
 	 * @param Tss
@@ -413,22 +416,21 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	 * @param Intron
 	 * @return
 	 */
-	private boolean isInRegion2Cod(GffDetailGene gffDetailGene1, GffDetailGene gffDetailGene2, int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron)
+	private boolean isInRegion2Cod(GffDetailGene gffDetailGene, int[] Tss, int[] Tes,boolean geneBody, Boolean UTR5, boolean UTR3, boolean Exon, boolean Intron)
 	{
-		if (gffDetailGene1 == null || gffDetailGene2 == null) {
+		if (gffDetailGene == null) {
 			return false;
 		}
 		/**
 		 * 标记，0表示需要去除，1表示保留
 		 */
 		int[] flag = null;
-		flag = getInRegion2Cod(getGffCod1().getCoord(), getGffCod2().getCoord(),gffDetailGene1, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
+		flag = getInRegion2Cod(getGffCod1().getCoord(), getGffCod2().getCoord(),gffDetailGene, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron);
 	
 		boolean flagResult = false;
 		for (int i = flag.length - 1; i >= 0 ; i--) {
 			if (flag[i] == 0) {
-				gffDetailGene1.removeIso(i);
-				gffDetailGene2.removeIso(i);
+				gffDetailGene.removeIso(i);
 			}
 			if (flagResult == true) {
 				continue;
@@ -724,7 +726,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	 * @return
 	 */
 	private boolean isUpTes(GffDetailGene gffDetailGene, int coord, int[] tes) {
-		gffDetailGene.setTesRegion(tes[0], tes[1]);
+		gffDetailGene.setTesRegion(tes);
 		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
@@ -739,7 +741,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	}
 	
 	private boolean isDownTes(GffDetailGene gffDetailGene, int coord, int[] tes) {
-		gffDetailGene.setTesRegion(tes[0], tes[1]);
+		gffDetailGene.setTesRegion(tes);
 		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
@@ -800,7 +802,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	}
 	
 	private boolean isUpTss(GffDetailGene gffDetailGene, int coord, int[] tss) {
-		gffDetailGene.setTssRegion(tss[0], tss[1]);
+		gffDetailGene.setTssRegion(tss);
 		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
@@ -815,7 +817,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	}
 	
 	private boolean isDownTss(GffDetailGene gffDetailGene, int coord, int[] tss) {
-		gffDetailGene.setTssRegion(tss[0], tss[1]);
+		gffDetailGene.setTssRegion(tss);
 		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}

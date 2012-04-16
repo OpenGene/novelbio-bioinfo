@@ -25,7 +25,7 @@ import com.novelbio.base.dataStructure.listOperate.ListHash;
  * @author zong0jie
  *
  */
-public class GffHashBin extends ListHash<ListDetailBin, ListCodAbs<ListDetailBin>, ListCodAbsDu<ListDetailBin,ListCodAbs<ListDetailBin>>, ListBin<ListDetailBin>>{
+public class ListHashBin extends ListHash<ListDetailBin, ListCodAbs<ListDetailBin>, ListCodAbsDu<ListDetailBin,ListCodAbs<ListDetailBin>>, ListBin<ListDetailBin>>{
 	
 	boolean peakcis = true;
 	int colChrID = 1;
@@ -53,7 +53,7 @@ public class GffHashBin extends ListHash<ListDetailBin, ListCodAbs<ListDetailBin
      * @param colPeakend 实际数字，默认为3
      * @param rowNum 如果rowEnd<1，则一直读到sheet1文件结尾，默认为-1
 	 */
-	public GffHashBin(boolean peakcis ,int colChrID,int colPeakstart,int colPeakend,int rowNum) {
+	public ListHashBin(boolean peakcis ,int colChrID,int colPeakstart,int colPeakend,int rowNum) {
 //		super();
 		this.peakcis = peakcis;
 		this.colChrID = colChrID;
@@ -62,7 +62,7 @@ public class GffHashBin extends ListHash<ListDetailBin, ListCodAbs<ListDetailBin
 		this.rowNum = rowNum;
 	}
 	
-	public GffHashBin() {}
+	public ListHashBin() {}
 	
 	/**
      * 最底层读取peak坐标文件的方法，读取生成的peak信息，只读取peak所在Chr列，peak正反向(最好都为正)，peak起点列，peak终点列，并且指定从第几行读起，所有行和列都是实际行和列<br>

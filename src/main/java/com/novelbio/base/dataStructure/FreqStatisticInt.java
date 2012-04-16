@@ -8,13 +8,13 @@ import org.apache.ibatis.migration.commands.NewCommand;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeak;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailPeak;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashBin;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
 import com.novelbio.base.dataStructure.listOperate.ElementAbsDouble;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.listOperate.ListAbsDouble;
 
 public class FreqStatisticInt{
-	GffHashBin gffHashBin = new GffHashBin();
+	ListHashBin gffHashBin = new ListHashBin();
 	String name = "Freq";
 
 	/**

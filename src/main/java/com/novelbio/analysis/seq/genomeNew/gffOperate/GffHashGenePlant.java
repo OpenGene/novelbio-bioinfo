@@ -130,14 +130,14 @@ public class GffHashGenePlant extends GffHashGeneAbs{
    {
 	   setHashName();
 		// 实例化四个表
-		Chrhash = new LinkedHashMap<String, ListAbs<GffDetailGene>>();// 一个哈希表来存储每条染色体
+		Chrhash = new LinkedHashMap<String, ListGff>();// 一个哈希表来存储每条染色体
 		locHashtable = new HashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
 		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
 		
 	   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);
 	   BufferedReader reader=txtgff.readfile();//open gff file
 	   
-	   ListAbs<GffDetailGene> LOCList = null;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+	   ListGff LOCList = null;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 	   //基因名字
 	   Pattern genepattern =Pattern.compile(GeneName, Pattern.CASE_INSENSITIVE);//to catch the LOC
 	   Matcher genematcher;
@@ -169,7 +169,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		 //新的染色体
 			if (!Chrhash.containsKey(chrnametmpString)) //新的染色体
 			{
-				LOCList=new ListAbs<GffDetailGene>();//新建一个LOCList并放入Chrhash
+				LOCList=new ListGff();//新建一个LOCList并放入Chrhash
 				LOCList.setName(chrnametmpString);
 				Chrhash.put(chrnametmpString, LOCList);
 			}
@@ -205,7 +205,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
       		   {
       			   gffDetailLOC=new GffDetailGene(chrnametmpString, genematcher.group(), ss[6].equals("+"));//新建一个基因类
       			   gffDetailLOC.setTaxID(taxID);
-      			   gffDetailLOC.numberstart=Integer.parseInt(ss[3].toLowerCase());gffDetailLOC.numberend=Integer.parseInt(ss[4]);//基因起止      		
+      			   gffDetailLOC.setStartAbs(  Integer.parseInt(ss[3].toLowerCase()) ); gffDetailLOC.setEndAbs( Integer.parseInt(ss[4]));//基因起止      		
       			   LOCList.add(gffDetailLOC);//添加进入LOClist
       			   locHashtable.put(gffDetailLOC.getName().toLowerCase(), gffDetailLOC);//添加进入hash（LOCID）--GeneInforlist哈希表，确定各个基因和他们的类之间的关系    
       			   LOCIDList.add(gffDetailLOC.getName());
@@ -288,7 +288,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   }
 			   else {
 				   gffDetailLOC.addExonUCSCGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
-				   if (gffDetailLOC.cis5to3) 
+				   if (gffDetailLOC.isCis5to3()) 
 					   cdsEnd = Integer.parseInt(ss[4]);
 				   else //反着装
 					   cdsStart = Integer.parseInt(ss[3]);

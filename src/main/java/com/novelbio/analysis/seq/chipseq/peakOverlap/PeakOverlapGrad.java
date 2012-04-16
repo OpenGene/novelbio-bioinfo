@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeakDU;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashBin;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
@@ -93,7 +93,7 @@ public class PeakOverlapGrad {
 	private String[] getOverlapInfo(ArrayList<String[]> lsPeak, ArrayList<String[]> lsSearch)
 	{
 		int overlapPeakNum = 0;
-		GffHashBin gffHashPeak = new GffHashBin();
+		ListHashBin gffHashPeak = new ListHashBin();
 		gffHashPeak.ReadGff(lsPeak);
 		for (String[] strings : lsSearch) {
 			String chrID = strings[0]; int start = Integer.parseInt(strings[1]); int end = Integer.parseInt(strings[2]);

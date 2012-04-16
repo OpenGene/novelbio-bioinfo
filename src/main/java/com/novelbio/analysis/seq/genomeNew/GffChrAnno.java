@@ -30,33 +30,6 @@ public class GffChrAnno extends GffChrAbs{
 		super(gffType, gffFile, null, null,null, 0);
 	}
 	
-	
-	int[] tss = new int[]{-1500, 1500};
-	int[] tes = null;
-	boolean genebody = false;
-	boolean UTR5 = false;
-	boolean UTR3 = false;
-	boolean exonFilter = false;
-	boolean intronFilter = false;
-	
-	public void setFilterTssTes(int[] filterTss, int[] filterGenEnd) {
-		this.tss = filterTss;
-		this.tes = filterGenEnd;
-
-	}
-	public void setFilterGeneBody(boolean filterGeneBody, boolean filterExon, boolean filterIntron)
-	{
-		this.genebody = filterGeneBody;
-		this.exonFilter = filterExon;
-		this.intronFilter = filterIntron;
-	}
-	
-	public void setFilterUTR(boolean filter5UTR, boolean filter3UTR)
-	{
-		this.UTR5 = filter5UTR;
-		this.UTR3 = filter3UTR;
-	}
-	
 	public static void main(String[] args) throws Exception {
 		GffChrAnno gffChrAnno = new GffChrAnno(NovelBioConst.GENOME_GFF_TYPE_UCSC, 
 				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ);
@@ -142,13 +115,13 @@ public class GffChrAnno extends GffChrAbs{
 		}
 		//在上一个gene内
 		if (gffCodGene.getGffDetailUp() != null) {
-			anno[0] = gffCodGene.getGffDetailUp().getInfo();
+			anno[0] = gffCodGene.getGffDetailUp().getInfo(summit);
 		}
 		if (gffCodGene.getGffDetailThis() != null) {
-			anno[1] = gffCodGene.getGffDetailThis().getInfo();
+			anno[1] = gffCodGene.getGffDetailThis().getInfo(summit);
 		}
 		if (gffCodGene.getGffDetailDown() != null) {
-			anno[2] = gffCodGene.getGffDetailDown().getInfo();
+			anno[2] = gffCodGene.getGffDetailDown().getInfo(summit);
 		}
 		return anno;
 	}
@@ -157,7 +130,12 @@ public class GffChrAnno extends GffChrAbs{
 		String[] anno = new String[3];
 		GffCodGene gffCodGene = gffHashGene.searchLocation(chrID, summit);
 		if (gffCodGene.isInsideLoc()) {
-			anno[1] = gffCodGene.getGffDetailThis().getLongestSplit().getCodLocStrFilter(tss, tes, genebody, UTR5, UTR3, exonFilter, intronFilter);
+			if (tss != null)
+				gffCodGene.getGffDetailThis().setTssRegion(tss[0], tss[1]);
+			if (tes != null)
+				gffCodGene.getGffDetailThis().setTesRegion(tes[0], tes[1]);
+			
+			anno[1] = gffCodGene.getGffDetailThis().getLongestSplit().getCodLocStrFilter(gffCodGene.getCoord(), filtertss, filtertes, genebody, UTR5, UTR3, exonFilter, intronFilter);
 		}
 		return anno;
 	}
@@ -238,7 +216,6 @@ public class GffChrAnno extends GffChrAbs{
 		return lsResult;
 	}
 	
-	
 	/**
 	 * 输入单个坐标位点，返回定位信息，用于统计位点的定位情况,如外显子还是内含子
 	 * 只判断最长转录本
@@ -287,46 +264,52 @@ public class GffChrAnno extends GffChrAbs{
 		int[] result = new int[8];
 		GffCodGene gffCodGene = gffHashGene.searchLocation(mapInfo.getChrID(), mapInfo.getFlagSite());
 		if (gffCodGene.isInsideLoc()) {
+			gffCodGene.getGffDetailThis().setTssRegion(tss);
+			gffCodGene.getGffDetailThis().setTesRegion(tes);
 			flagIntraGenic = true;
 			//Tss
-			if (gffCodGene.getGffDetailThis().getLongestSplit().getCod2Tss() < this.tss[1]) {
+			if (gffCodGene.getGffDetailThis().getLongestSplit().isCodInIsoTss(gffCodGene.getCoord()) ) {
 				result[7] ++;
 			}
 			//Exon
-			if (gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc() == GffGeneIsoInfo.COD_LOC_EXON) {
+			if (gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOC_EXON) {
 				result[1] ++;
 			}
-			else if (gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc() == GffGeneIsoInfo.COD_LOC_INTRON) {
+			else if (gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOC_INTRON) {
 				result[2] ++;
 			}
 			//UTR
-			if (gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc() == GffGeneIsoInfo.COD_LOCUTR_5UTR) {
+			if (gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOCUTR_5UTR) {
 				result[4] ++;
 			}
-			if (gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc() == GffGeneIsoInfo.COD_LOCUTR_3UTR) {
+			if (gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOCUTR_3UTR) {
 				result[5] ++;
 			}
 		}
 		else {
+			gffCodGene.getGffDetailUp().setTssRegion(tss);
+			gffCodGene.getGffDetailUp().setTesRegion(tes);
+			gffCodGene.getGffDetailDown().setTssRegion(tss);
+			gffCodGene.getGffDetailDown().setTesRegion(tes);
 			//UpNbp
-			if (gffCodGene.getGffDetailUp() != null && gffCodGene.getGffDetailUp().isCodInPromoter()) {
+			if (gffCodGene.getGffDetailUp() != null && gffCodGene.getGffDetailUp().isCodInPromoter(gffCodGene.getCoord())) {
 				result[0]++;flagIntraGenic =true;
 			}
-			else if (gffCodGene.getGffDetailDown() != null && gffCodGene.getGffDetailDown().isCodInPromoter()) {
+			else if (gffCodGene.getGffDetailDown() != null && gffCodGene.getGffDetailDown().isCodInPromoter(gffCodGene.getCoord())) {
 				result[0] ++;flagIntraGenic =true;
 			}
 			//GeneEnd
-			if (gffCodGene.getGffDetailUp() != null && gffCodGene.getGffDetailUp().isCodInGenEnd()) {
+			if (gffCodGene.getGffDetailUp() != null && gffCodGene.getGffDetailUp().isCodInGenEnd(gffCodGene.getCoord())) {
 				result[6] ++;flagIntraGenic =true;
 			}
-			else if ( gffCodGene.getGffDetailDown() != null && gffCodGene.getGffDetailDown().isCodInGenEnd()) {
+			else if ( gffCodGene.getGffDetailDown() != null && gffCodGene.getGffDetailDown().isCodInGenEnd(gffCodGene.getCoord())) {
 				result[6] ++;flagIntraGenic =true;
 			}
 			//Tss
-			if ( gffCodGene.getGffDetailUp() != null && !gffCodGene.getGffDetailUp().isCis5to3() && gffCodGene.getGffDetailUp().getLongestSplit().getCod2Tss() > this.tss[0]  ) {
+			if ( gffCodGene.getGffDetailUp() != null && !gffCodGene.getGffDetailUp().isCis5to3() && gffCodGene.getGffDetailUp().getLongestSplit().getCod2Tss(gffCodGene.getCoord()) > this.tss[0]  ) {
 				result[7] ++;flagIntraGenic =true;
 			}
-			else if (gffCodGene.getGffDetailDown() != null && gffCodGene.getGffDetailDown().isCis5to3() && gffCodGene.getGffDetailDown().getLongestSplit().getCod2Tss() > this.tss[0]) {
+			else if (gffCodGene.getGffDetailDown() != null && gffCodGene.getGffDetailDown().isCis5to3() && gffCodGene.getGffDetailDown().getLongestSplit().getCod2Tss(gffCodGene.getCoord()) > this.tss[0]) {
 				result[7] ++;flagIntraGenic =true;
 			}
 		}
@@ -335,7 +318,6 @@ public class GffChrAnno extends GffChrAbs{
 		}
 		return result;
 	}
-	
 	
 }
 

@@ -22,6 +22,10 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 	 */
 	int startRegion = 1;
 	/**
+	 * 终点默认为闭区间
+	 */
+	int endRegion = 0;
+	/**
 	 * 这个是真正的查找用hash表<br>
 	 * 这个哈希表来存储
 	 * hash（ChrID）--ChrList--GeneInforList(GffDetail类)<br>
@@ -43,9 +47,18 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 			this.startRegion = 1;
 	}
 	/**
+	 * 起点默认为开区间
+	 */
+	public int getStartRegion() {
+		return startRegion;
+	}
+	/**
 	 * 终点默认为闭区间
 	 */
-	int endRegion = 0;
+	public int getEndRegion() {
+		return endRegion;
+	}
+
 	/**
 	 * 起点是否为闭区间，不是则为开区间，<br>
 	 * False: 开区间的意思是，24表示从0开始计数的24位，也就是实际的25位<br>
@@ -167,7 +180,7 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	protected HashMap<String, M> getChrhash()
+	public HashMap<String, M> getChrhash()
 	{
 		return Chrhash;
 	}

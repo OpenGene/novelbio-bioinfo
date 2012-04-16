@@ -19,19 +19,19 @@ public class ListDetailAbs implements Cloneable{
 	/**
 	 * 根据cis在起点的上游多少bp，在此范围内则认为在tss区域
 	 */
-	int upTss = 0;
+	protected int upTss = 0;
 	/**
 	 * 根据cis在起点的下游多少bp，在此范围内则认为在tss区域
 	 */
-	int downTss = 0;
+	protected int downTss = 0;
 	/**
 	 * 根据cis在终点的上游多少bp，在此范围内则认为在tes区域
 	 */
-	int upGeneEnd3UTR = 0;
+	protected int upGeneEnd3UTR = 0;
 	/**
 	 * 根据cis在终点的下游多少bp，在此范围内则认为在tes区域
 	 */
-	int downGeneEnd3UTR = 0;
+	protected int downGeneEnd3UTR = 0;
 	/**
 	 * 划定Tss范围上游为负数，下游为正数
 	 * @param upTss
@@ -42,6 +42,18 @@ public class ListDetailAbs implements Cloneable{
 		this.downTss = downTss;
 	}
 	/**
+	 * 划定Tss范围上游为负数，下游为正数
+	 * @param upTss
+	 * @param downTss
+	 */
+	public void setTssRegion(int[] Tss) {
+		if (Tss != null) {
+			this.upTss = Tss[0];
+			this.downTss = Tss[1];
+		}
+	}
+	
+	/**
 	 * 划定Tes范围上游为负数，下游为正数
 	 * @param upTes
 	 * @param downTes
@@ -49,6 +61,17 @@ public class ListDetailAbs implements Cloneable{
 	public void setTesRegion(int upTes, int downTes) {
 		this.upGeneEnd3UTR = upTes;
 		this.downGeneEnd3UTR = downTes;
+	}
+	/**
+	 * 划定Tss范围上游为负数，下游为正数
+	 * @param upTss
+	 * @param downTss
+	 */
+	public void setTesRegion(int[] Tes) {
+		if (Tes != null) {
+			this.upGeneEnd3UTR = Tes[0];
+			this.downGeneEnd3UTR = Tes[1];
+		}
 	}
 	/**
 	 * 0：uptss

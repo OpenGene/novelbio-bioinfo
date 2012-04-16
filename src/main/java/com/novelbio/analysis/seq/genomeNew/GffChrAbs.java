@@ -2,19 +2,14 @@ package com.novelbio.analysis.seq.genomeNew;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
@@ -57,6 +52,43 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 //	public ArrayList<MapInfo> getLsMapInfos() {
 //		return lsMapInfos;
 //	}
+	
+	int[] tss = new int[]{-1500, 1500};
+	int[] tes = null;
+	boolean genebody = false;
+	boolean UTR5 = false;
+	boolean UTR3 = false;
+	boolean exonFilter = false;
+	boolean intronFilter = false;
+	boolean filtertss = false;
+	boolean filtertes = false;
+	public void setFilterTssTes(int[] filterTss, int[] filterGenEnd) {
+		if (filterTss != null)
+			this.filtertss = true;
+		else
+			this.filtertss = false;
+		
+		if (filterGenEnd != null)
+			this.filtertes = true;
+		else
+			this.filtertes = false;
+		
+		this.tss = filterTss;
+		this.tes = filterGenEnd;
+	}
+	public void setFilterGeneBody(boolean filterGeneBody, boolean filterExon, boolean filterIntron)
+	{
+		this.genebody = filterGeneBody;
+		this.exonFilter = filterExon;
+		this.intronFilter = filterIntron;
+	}
+	
+	public void setFilterUTR(boolean filter5UTR, boolean filter3UTR)
+	{
+		this.UTR5 = filter5UTR;
+		this.UTR3 = filter3UTR;
+	}
+	
 	public static GffHashGene getGffHashGene() {
 		return gffHashGene;
 	}
@@ -136,22 +168,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 		this.upBp = upBp;
 		this.downBp = downBp;
 	}
-	/**
-	 * 专门用于基因定位时的参数
-	 * 设定基因的定位区域信息
-	 * @param tssUpBp 设定基因的转录起点上游长度，默认为3000bp
-	 * @param tssDownBp 设定基因的转录起点下游长度，默认为2000bp
-	 * @param geneEnd3UTR 设定基因结尾向外延伸的长度，默认为100bp
-	 */
-	public void setGeneRange(int tssUpBp, int tssDownBp, int geneEnd3UTR) {
-		this.tssUpBp = tssUpBp;
-		this.tssDownBp = tssDownBp;
-		this.geneEnd3UTR = geneEnd3UTR;
-		GffDetailGene.setCodLocation(tssUpBp, tssDownBp, geneEnd3UTR);
-	}
 
-
-	
 	public static void setGffFile(String gffType, String gffFile)
 	{
 		if (FileOperate.isFileExist(gffFile)) {
@@ -315,7 +332,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	 */
 	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(ArrayList<MapInfo> lsMapInfos, String structure, int binNum)
 	{
-		HashMap<GffDetailGene,Double>  hashGffDetailGenes = getPeakGeneStructure(lsMapInfos, structure);
+		HashMap<GffDetailGene,Double>  hashGffDetailGenes = getPeakGeneStructure( lsMapInfos, structure);
 		 ArrayList<MapInfo> lsResult = getMapInfoFromGffGene(hashGffDetailGenes, structure);
 		 mapReads.getRegionLs(binNum, lsResult, 0);
 		 return lsResult;
@@ -450,7 +467,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 			if (mapInfo.getStart() <0 && mapInfo.getStart() > -1000) {
 				mapInfo.setStartLoc(0);;
 			}
-			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), structure );
+			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene( mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), structure );
 			for (GffDetailGene gffDetailGene : setGffDetailGene) {
 				if (hashGffDetailGenes.containsKey(gffDetailGene)) {
 					if (MapInfo.isMin2max()) {
@@ -472,6 +489,7 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	}
 	/**
 	 * 给定坐标区域，返回该peak所覆盖的GffDetailGene
+	 * @param tsstesRange 覆盖度，tss或tes的范围
 	 * @param chrID
 	 * @param startLoc
 	 * @param endLoc
@@ -481,10 +499,10 @@ private static final Logger logger = Logger.getLogger(GffChrGene.class);
 	private Set<GffDetailGene> getPeakStructureGene(String chrID, int startLoc, int endLoc, String structure) {
 		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(chrID, startLoc, endLoc);
 		if (structure.equals(GffDetailGene.TSS)) {
-			return gffCodGeneDU.getTSSGene();
+			return gffCodGeneDU.getTSSGene(tss);
 		}
 		else if (structure.equals(GffDetailGene.TES)) {
-			return gffCodGeneDU.getTESGene();
+			return gffCodGeneDU.getTESGene(tes);
 		}
 		else {
 			logger.error("暂时没有除Tss和Tes之外的基因结构");
