@@ -6,6 +6,7 @@ import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeSet;
@@ -1400,9 +1401,61 @@ public class FastQ extends SeqComb {
 		}
 		gffHashBin.ReadGff(lsInfo);
 	}
-	
-	
-	
-	
+	/**
+	 * 给定文件名，获得 文件名.fasta 和 文件名.
+	 * @param fileName
+	 * @param illuminaOffset 是否为illumina的offset
+	 */
+	public static void convertSff2FastQ(String fastaFile, boolean illuminaOffset) {
+		int offset = FASTQ_SANGER_OFFSET;
+		if (illuminaOffset)
+			offset = FASTQ_ILLUMINA_OFFSET;		
+
+		String fastaQuality = fastaFile + ".qual";
+		String fastQ = FileOperate.changeFileSuffix(fastaFile, null, "fastq");
+		TxtReadandWrite txtReadFasta = new TxtReadandWrite(fastaFile, false);
+		TxtReadandWrite txtReadQualtiy = new TxtReadandWrite(fastaQuality, false);
+		TxtReadandWrite txtOutFastQ = new TxtReadandWrite(fastQ, true);
+		
+		Iterator<String> txtQuality = txtReadQualtiy.readlines().iterator();
+		//计数器，因为每两行为一个单元
+		int num = 0;
+		String title = ""; String fasta = ""; String quality = "";
+		for (String contentFasta : txtReadFasta.readlines()) {
+			String contentQuality = txtQuality.next();
+			//标题行
+			if (num == 0) {
+				if (!contentFasta.equals(contentQuality)) {
+					logger.error("sff转换出错拉，看看fasta和quality是不是来自同一个文件");
+				}
+				title = "@" + contentFasta.substring(1);
+				num++;
+			}
+			//具体内容
+			else if (num == 1) {
+				fasta = contentFasta;
+				quality = convert2Phred(contentQuality, offset);
+				String tmpOut = title + TxtReadandWrite.huiche + fasta + TxtReadandWrite.huiche + "+" + TxtReadandWrite.huiche + quality;
+				txtOutFastQ.writefileln(tmpOut);
+				num = 0;
+			}
+		}
+		txtOutFastQ.close();
+	}
+	/**
+	 * 给定一系列offset，将数字转化为fastq的quality行
+	 * @param illumina 是否是illumina的offset 
+	 * @return
+	 */
+	private static String convert2Phred(String qualityNum, int offset)
+	{
+		String[] quality = qualityNum.split(" ");
+		char[] tmpResultChar = new char[quality.length];
+		for (int i = 0; i < quality.length; i++) {
+			String string = quality[i];
+			tmpResultChar[i] = (char) (offset + Integer.parseInt(string));
+		}
+		return String.valueOf(tmpResultChar);
+	}
 	
 }

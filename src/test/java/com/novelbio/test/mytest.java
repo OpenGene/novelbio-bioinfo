@@ -109,14 +109,7 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis("jjj", "jui", "hgiu");
-		gffGeneIsoCis.add(new ExonInfo("jjj", true, 0, 24));
-		gffGeneIsoCis.add(new ExonInfo("jjj", true, 10, 124));
-		gffGeneIsoCis.add(new ExonInfo("jjj", true, 20, 1224));
-		GffGeneIsoCis gffGeneIsoCis2 = gffGeneIsoCis.clone();
-		gffGeneIsoCis.get(0).setStartAbs(224);
-		System.out.println(gffGeneIsoCis.get(0).getStartAbs());
-		System.out.println(gffGeneIsoCis2.get(0).getStartAbs());
+		FastQ.convertSff2FastQ("/media/winF/NBC/Project/Project_Invitrogen/sRNA/R_2012_04_05_23_53_14_cnservice_CR_CR_22.fasta", true);
 	}
 	
 	
