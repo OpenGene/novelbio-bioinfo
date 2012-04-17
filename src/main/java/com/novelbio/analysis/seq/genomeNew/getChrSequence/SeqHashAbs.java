@@ -26,14 +26,22 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * 从小到大排列chrLength的list
 	 */
 	ArrayList<String[]> lsChrLen = null;
-
+	//是否要设定为DNA，也就是将序列中的U全部转化为T
+	boolean isDNAseq = false;
 	/**
 	 * 给碱基对照哈希表赋值 目前有A-T， G-C，N-N 的对应关系（包括了大小写的对应） 将来可能要添加新的
 	 */
 	protected static HashMap<Character, Character> getCompmap() {
 		return SeqFasta.getCompMap();
 	}
-	
+	/**
+	 * 是否要设定为DNA，也就是将序列中的U全部转化为T
+	 * 只有当序列为RNA时才会用到
+	 */
+	@Override
+	public void setDNAseq(boolean isDNAseq){
+		this.isDNAseq = isDNAseq;
+	}
 	String regx = null;
 	boolean append;
 	
@@ -228,7 +236,9 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	public SeqFasta getSeq(String chrID, long startlocation, long endlocation)
 	{
 		try {
-			return getSeqInfo(chrID, startlocation, endlocation);
+			SeqFasta seqFasta = getSeqInfo(chrID, startlocation, endlocation);
+			seqFasta.setDNA(isDNAseq);
+			return seqFasta;
 		} catch (IOException e) {
 			return null;
 		}

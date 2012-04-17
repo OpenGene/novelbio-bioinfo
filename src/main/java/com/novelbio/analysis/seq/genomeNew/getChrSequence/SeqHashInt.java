@@ -135,5 +135,9 @@ public interface SeqHashInt {
 	 * @param sep
 	 */
 	void setSep(String sep);
+	/**
+	 * 是否要设定为DNA，也就是将序列中的U全部转化为T
+	 */
+	public void setDNAseq(boolean isDNAseq);
 	
 }

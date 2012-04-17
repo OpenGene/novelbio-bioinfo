@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -127,9 +128,9 @@ public class SeqFastaHash extends SeqHashAbs {
 				// //////////////是否改变序列名字的大小写//////////////////////////////////////////////
 				if (CaseChange)
 					tmpSeqName = content.trim().substring(1).trim()
-							.toLowerCase().replace(" ", "_");// substring(1)，去掉>符号，然后统统改成小写
+							.toLowerCase();//.replace(" ", "_");// substring(1)，去掉>符号，然后统统改成小写
 				else
-					tmpSeqName = content.trim().substring(1).trim().replace(" ", "_");// substring(1)，去掉>符号，不变大小写
+					tmpSeqName = content.trim().substring(1).trim();//.replace(" ", "_");// substring(1)，去掉>符号，不变大小写
 				// ///////////////用正则表达式抓取序列名中的特定字符////////////////////////////////////////////////
 				if (regx == null || regx.trim().equals("")) {
 					Seq.setSeqName(tmpSeqName);
@@ -235,7 +236,9 @@ public class SeqFastaHash extends SeqHashAbs {
 	public SeqFasta getSeqFasta(String seqID) 
 	{
 		seqID = seqID.toLowerCase();
-		return hashSeq.get(seqID);
+		SeqFasta seqFasta = hashSeq.get(seqID);
+		seqFasta.setDNA(isDNAseq);
+		return seqFasta;
 	}
 	/**
 	 * 返回全部序列
@@ -244,6 +247,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	{
 		ArrayList<SeqFasta> lsresult = new ArrayList<SeqFasta>();
 		for (SeqFasta seqFasta : hashSeq.values()) {
+			seqFasta.setDNA(isDNAseq);
 			lsresult.add(seqFasta);
 		}
 		return lsresult;
@@ -306,7 +310,23 @@ public class SeqFastaHash extends SeqHashAbs {
 			txtOut.writefileln(seqFasta.toStringNRfasta());
 		}
 	}
-	
+	/**
+	 * 将<b>序列名</b>含有该正则表达式的序列写入文件<br>
+	 * 必须写上正则表达式
+	 * @param regx
+	 * @param seqOut
+	 */
+	public void writeToFile(String regx, String seqOut)
+	{
+		PatternOperate patternOperate = new PatternOperate(regx, false);
+		ArrayList<SeqFasta> lsFasta = getSeqFastaAll();
+		TxtReadandWrite txtOut = new TxtReadandWrite(seqOut, true);
+		for (SeqFasta seqFasta : lsFasta) {
+			if (patternOperate.getPat(seqFasta.getSeqName()) != null) {
+				txtOut.writefileln(seqFasta.toStringNRfasta());
+			}
+		}
+	}
 	
 	
 	

@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
+import org.hamcrest.core.Is;
 
 import com.novelbio.analysis.seq.reseq.SoapsnpInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -67,6 +68,9 @@ public class SeqFasta {
 		compmap.put(Character.valueOf('T'), Character.valueOf('A'));
 		compmap.put(Character.valueOf('t'), Character.valueOf('a'));
 		
+		compmap.put(Character.valueOf('U'), Character.valueOf('A'));
+		compmap.put(Character.valueOf('u'), Character.valueOf('a'));
+		
 		compmap.put(Character.valueOf('G'), Character.valueOf('C'));
 		compmap.put(Character.valueOf('g'), Character.valueOf('c'));
 		
@@ -88,8 +92,8 @@ public class SeqFasta {
 		compmap.put(Character.valueOf('X'), Character.valueOf('X'));
 		compmap.put(Character.valueOf('x'), Character.valueOf('x'));
 		
-		compmap.put(Character.valueOf('N'), Character.valueOf('A'));
-		compmap.put(Character.valueOf('n'), Character.valueOf('a'));
+		compmap.put(Character.valueOf('N'), Character.valueOf('N'));
+		compmap.put(Character.valueOf('n'), Character.valueOf('n'));
 		////////////////////////////////////////////////////////////////////////////////////////////
 		compmap.put(Character.valueOf('-'), Character.valueOf('-'));
 		compmap.put(Character.valueOf('\n'), Character.valueOf(' '));
@@ -362,8 +366,14 @@ public class SeqFasta {
 			return getHashCode3().get(DNAcode);
 		}
 	}
-	
-	
+	/**
+	 * 将RNA序列转化为DNA，也就是将U替换为T
+	 */
+	public void setDNA(boolean isDNAseq) {
+		if (isDNAseq) {
+			SeqSequence = SeqSequence.replace('u', 't').replace('U', 'T');
+		}
+	}
 	/**
 	 * 输入格式不标准的AA，将其改成标准格式AA
 	 * @param AA

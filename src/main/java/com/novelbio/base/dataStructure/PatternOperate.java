@@ -111,14 +111,19 @@ public class PatternOperate
     }
     
     String regex = "";
-    boolean thiscase = false;
+    boolean CASE_SENSITIVE = false;
 	 Pattern patInput;
 	 Matcher matInput;
-    public PatternOperate(String regex,boolean thiscase) {
+	 /**
+	  * 设定正则表达式
+	  * @param regex
+	  * @param CASE_SENSITIVE 大小写是否敏感
+	  */
+    public PatternOperate(String regex,boolean CASE_SENSITIVE) {
 		this.regex = regex;
-		this.thiscase = thiscase;
+		this.CASE_SENSITIVE = CASE_SENSITIVE;
 
-    	 if(!thiscase)//是否无视大小写
+    	 if(!CASE_SENSITIVE)//是否无视大小写
     	 {
     	     patInput=Pattern.compile(regex,Pattern.CASE_INSENSITIVE);
     	 }
