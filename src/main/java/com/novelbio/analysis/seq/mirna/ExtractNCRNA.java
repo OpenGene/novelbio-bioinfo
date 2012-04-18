@@ -24,7 +24,12 @@ public class ExtractNCRNA {
 		String hairpinFile = "/media/winE/Bioinformatics/DataBase/sRNA/mappingDB/hairpin.fa";
 		String outMiRNA = FileOperate.changeFileSuffix(hairpinFile, "_human", null);
 		regx = "Homo sapiens";
-		extractMiRNA(hairpinFile, outMiRNA, regx);
+//		extractMiRNAandRfam(hairpinFile, outMiRNA, regx);
+		
+		String rfamFile = "/media/winE/Bioinformatics/DataBase/sRNA/Rfam.fasta";
+		String outRfam = FileOperate.changeFileSuffix(rfamFile, "_human", null);
+		regx = "human";
+		extractMiRNAandRfam(rfamFile, outRfam, regx);
 	}
 	/**
 	 * 从NCBI的hairpin.fa文件中提取NCRNA
@@ -43,10 +48,11 @@ public class ExtractNCRNA {
 	 * @param outNCRNA
 	 * @param regx 物种的英文，人类就是Homo sapiens
 	 */
-	private void extractMiRNA(String hairpinFile, String outMiRNA, String regx)
+	private void extractMiRNAandRfam(String hairpinFile, String outMiRNA, String regx)
 	{
 		 SeqFastaHash seqFastaHash = new SeqFastaHash(hairpinFile,null,false, false);
 		 seqFastaHash.setDNAseq(true);
 		 seqFastaHash.writeToFile( regx ,outMiRNA );
 	}
+
 }
