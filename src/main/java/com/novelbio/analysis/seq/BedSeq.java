@@ -32,24 +32,8 @@ public class BedSeq extends SeqComb{
 	}
 	
 	public static void main(String[] args) {
-		BedSeq bedSeq = null;
-		String parentFile = "/media/winE/NBC/Project/Project_FY_Lab/Result/cufflink_evaluate/";
-		
-		bedSeq = new BedSeq(parentFile+"K0.bed");
-		System.out.print("\tK0MappedNum\t"+bedSeq.getSeqNum());
-		System.out.println();
-		
-		bedSeq = new BedSeq(parentFile+"K5.bed");
-		System.out.print("\tK5readsFilterNum\t"+bedSeq.getSeqNum());
-		System.out.println();
-		
-		bedSeq = new BedSeq(parentFile+"WT0.bed");
-		System.out.print("\tWT0readsFilterNum\t"+bedSeq.getSeqNum());
-		System.out.println();
-		
-		bedSeq = new BedSeq(parentFile+"WT5.bed");
-		System.out.print("\tWT5readsFilterNum\t"+bedSeq.getSeqNum());
-		System.out.println();
+		combPeaks("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/yulupeak/K27All_FHEFX2_sorted.txt", 2);
+
 	}
 	
 	/**
@@ -572,7 +556,42 @@ public class BedSeq extends SeqComb{
 		return hashValue;
 	}
 	
-	
+	/**
+	 * 输入经过排序的peakfile,或者说bedfile，将重叠的peak进行合并
+	 * 注意，结果中仅保留peak，没有保留其他多的信息
+	 * @param peakFile
+	 * @param readLines 从第几行开始读
+	 */
+	public static void combPeaks(String peakFile, int readLines)
+	{
+		if (readLines < 1) {
+			readLines = 1;
+		}
+		String out = FileOperate.changeFileSuffix(peakFile, "_comb", null);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(out, true);
+		TxtReadandWrite txtRead = new TxtReadandWrite(peakFile, false);
+		String lastchrID = null; int lastStart = 0; int lastEnd = 0;
+		for (String content : txtRead.readlines(readLines)) {
+			String[] ss = content.split("\t");
+			String chrID = ss[0];
+			int start = Integer.parseInt(ss[1]);
+			int end = Integer.parseInt(ss[2]);
+			if (!chrID.equals(lastchrID) || start >= lastEnd) {
+				if (lastchrID != null) {
+					txtWrite.writefileln(lastchrID + "\t" + lastStart + "\t" + lastEnd);
+				}
+				lastchrID = chrID;
+				lastStart = start;
+				lastEnd = end;
+				continue;
+			}
+			else if (start < lastEnd) {
+				if (lastEnd < end) {
+					lastEnd = end;
+				}
+			}
+		}
+	}
 	
 	
 }
