@@ -24,7 +24,7 @@ public interface FastQMapInt {
 	 * 实验组 fileName+"_Treat_SoapMap";
 	 * @return 返回reads的总数，也就是测序量，<b>双端的话不乘以2</b>
 	 */
-	public abstract SAMtools mapReads();
+	public abstract SamFile mapReads();
 	/**
 	 * 返回bed文件，如果是双端就返回双端的bed文件
 	 * 如果是单端就返回延长的bed文件，默认延长至extendTo bp

@@ -126,7 +126,11 @@ public class FastQ extends SeqComb {
 	 */
 	boolean flagPolyT = false;
 	boolean trimPolyT_left = false;
-	
+	/**
+	 * 接头是小写
+	 * 这种情况目前只在ion proton的数据中发现
+	 */
+	boolean adaptorLowercase = false;
 	/**
 	 * 是否将序列两边的NNN删除
 	 */
@@ -165,8 +169,7 @@ public class FastQ extends SeqComb {
 	 * 注意adapter里面不要有非ATGC的东西
 	 * @param adaptor
 	 */
-	public void setAdaptorLeft(String adaptor)
-	{
+	public void setAdaptorLeft(String adaptor) {
 		this.adaptorLeft = adaptor.trim();
 	}
 	/**
@@ -174,11 +177,16 @@ public class FastQ extends SeqComb {
 	 * 注意adapter里面不要有非ATGC的东西
 	 * @param adaptor
 	 */
-	public void setAdaptorRight(String adaptor)
-	{
+	public void setAdaptorRight(String adaptor) {
 		this.adaptorRight = adaptor.trim();
 	}
-
+	/**
+	 * 接头是小写 这种情况目前只在ion proton的数据中发现
+	 * 貌似454都这个德性
+	 */
+	public void setAdaptorLowercase(boolean adaptorLowercase) {
+		this.adaptorLowercase = adaptorLowercase;
+	}
 	//////////////////////////
 	/**
 	 * 返回第二个FastQ文件的文件名 如果没有则返回null
@@ -419,11 +427,11 @@ public class FastQ extends SeqComb {
 		String seqBlock2 = "";
 		while ((content = readerSeq.readLine()) != null) {
 			count ++;
-			seqBlock1 = seqBlock1 + content + "\r\n";
+			seqBlock1 = seqBlock1 + content + TxtReadandWrite.huiche;
 			
 			if (booPairEnd) {
 				content2 = readerSeq2.readLine();
-				seqBlock2 = seqBlock2 + content2 + "\r\n";
+				seqBlock2 = seqBlock2 + content2 + TxtReadandWrite.huiche;
 			}
 			
 			if (count == block)
@@ -480,7 +488,18 @@ public class FastQ extends SeqComb {
 						continue;
 					}
 				}
-				
+				///////////// Lowcase ///////////////////////////////////////////////////////
+				if (adaptorLowercase) {
+					seqBlock1 = trimLowCase(seqBlock1);
+					if (booPairEnd)
+						seqBlock2 = trimLowCase(seqBlock2);
+					
+					if (seqBlock1 == null || seqBlock2 == null) {
+						seqBlock1 = ""; seqBlock2 = "";
+						count = 0;// 清零
+						continue;
+					}
+				}
 				///////////////////  QC  /////////////////////////////////////////////////////////
 				
 				if (QCBlock(seqBlock1, seqBlock2)) {
@@ -518,9 +537,42 @@ public class FastQ extends SeqComb {
 	 * @param numMM
 	 * @return
 	 */
+	private String trimLowCase(String fastQBlock)
+	{
+		String ss = fastQBlock.split(TxtReadandWrite.huiche)[1];//获得的是序列而不是quality信息
+		char[] info = ss.toCharArray();
+		int numStart = 0;
+		//从前向后，遇到小写就计数
+		for (char c : info) {
+			if ((int)c > 90 )
+				numStart++;
+			else
+				break;
+		}
+		int numEnd = info.length;
+		for (int i = info.length - 1; i >= 0; i--) {
+			if ((int)info[i] > 90 )
+				numEnd--;
+			else
+				break;
+		}
+		if (numStart >= numEnd) {
+			numStart = numEnd;
+		}
+//		int numEnd = trimNNNRight(ss, 10, numMM);
+		return trimBlockSeq(fastQBlock, numStart, numEnd);
+	}
+	
+	
+	/**
+	 * cutOff选择10即认为10，包括10以下的序列都不好，需要cut掉
+	 * @param fastQBlock
+	 * @param numMM
+	 * @return
+	 */
 	private String trimNNN(String fastQBlock, int numMM)
 	{
-		String ss = fastQBlock.split("\r\n")[3];
+		String ss = fastQBlock.split(TxtReadandWrite.huiche)[3];
 		int numStart = trimNNNLeft(ss, 10, numMM);
 //		if (numStart > 0) {
 //			System.out.println(ss);
@@ -592,12 +644,12 @@ public class FastQ extends SeqComb {
 	
 	/**
 	 * 每四行一个block，用来处理该block的方法，主要是截短
-	 * block必须用"\r\n"换行
+	 * block必须用TxtReadandWrite.huiche换行
 	 * @param block
 	 * @param start 和substring一样的用法
 	 * @param end 和substring一样的用法
 	 * @return 返回截短后的string
-	 * 一样还是用"\r\n"换行，最后没有"\r\n"
+	 * 一样还是用TxtReadandWrite.huiche换行，最后没有TxtReadandWrite.huiche
 	 * 如果截短后的长度小于设定的最短reads长度，那么就返回null
 	 */
 	private String trimBlockSeq(String block, int start, int end)
@@ -605,13 +657,13 @@ public class FastQ extends SeqComb {
 		if (end - start + 1 < readsLenMin) {
 			return null;
 		}
-		String[] ss = block.split("\r\n");
+		String[] ss = block.split(TxtReadandWrite.huiche);
 		if (start == 0 && end == ss[3].length()) {
 			return block.trim();
 		}
 		ss[1] = ss[1].substring(start, end);
 		ss[3] = ss[3].substring(start, end);
-		String ssResult = ss[0] + "\r\n" + ss[1] + "\r\n" + ss[2] + "\r\n" + ss[3];
+		String ssResult = ss[0] + TxtReadandWrite.huiche + ss[1] + TxtReadandWrite.huiche + ss[2] + TxtReadandWrite.huiche + ss[3];
 		return ssResult;
 	}
 	/**
@@ -619,11 +671,11 @@ public class FastQ extends SeqComb {
 	 * @param block
 	 * @param mismatch 可以设定的稍微长一点点，因为里面有设定最长连续错配为1了，所以这里建议2-3
 	 * @return 返回截短后的string
-	 * 一样还是用"\r\n"换行，最后没有"\r\n"
+	 * 一样还是用TxtReadandWrite.huiche换行，最后没有TxtReadandWrite.huiche
 	 */
 	private String trimPolyAR(String fastQBlock, int mismatch)
 	{
-		String ss = fastQBlock.split("\r\n")[1];
+		String ss = fastQBlock.split(TxtReadandWrite.huiche)[1];
 		int num = super.trimPolyA(ss, mismatch,1);
 		if (flagPolyA && num == ss.length()) {
 			return null;
@@ -635,11 +687,11 @@ public class FastQ extends SeqComb {
 	 * @param block
 	 * @param mismatch 可以设定的稍微长一点点，因为里面有设定最长连续错配为1了，所以这里建议2-3
 	 * @return 返回截短后的string
-	 * 一样还是用"\r\n"换行，最后没有"\r\n"
+	 * 一样还是用TxtReadandWrite.huiche换行，最后没有TxtReadandWrite.huiche
 	 */
 	private String trimPolyTL(String fastQBlock, int mismatch)
 	{
-		String ss = fastQBlock.split("\r\n")[1];
+		String ss = fastQBlock.split(TxtReadandWrite.huiche)[1];
 		int num = super.trimPolyT(ss, mismatch,1);
 		if (flagPolyT && num == 0) {
 			return null;
@@ -656,7 +708,7 @@ public class FastQ extends SeqComb {
 		if (adaptorLeft.equals("") && adaptorRight.equals("")) {
 			return fastQBlock.trim();
 		}
-		String ss = fastQBlock.split("\r\n")[1];
+		String ss = fastQBlock.split(TxtReadandWrite.huiche)[1];
 		int leftNum = super.trimAdaptorL(ss, adaptorLeft, adaptorLeft.length(), adaptermaxMismach,adaptermaxConMismatch, 30);
 		int rightNum = super.trimAdaptorR(ss, adaptorRight,ss.length() - adaptorRight.length(), adaptermaxMismach,adaptermaxConMismatch, 30);
 		return trimBlockSeq(fastQBlock, leftNum, rightNum);
@@ -667,10 +719,10 @@ public class FastQ extends SeqComb {
 		if (seqBlock1 == null && seqBlock2 == null) {
 			return false;
 		}
-		String ss1 = seqBlock1.split("\r\n")[3];
+		String ss1 = seqBlock1.split(TxtReadandWrite.huiche)[3];
 		String ss2 = null;
 		if (seqBlock2 != null && !seqBlock2.equals("")) {
-			ss2 = seqBlock2.split("\r\n")[3];
+			ss2 = seqBlock2.split(TxtReadandWrite.huiche)[3];
 		}
 		else {
 			ss2 = null;
@@ -742,12 +794,12 @@ public class FastQ extends SeqComb {
 		}
 		char[] fastq = fastQSeq.toCharArray();
 		//reads长度分布，一般用于454
-		gffHashBin.addNumber(gffreadsLen, fastq.length);
+//		gffHashBin.addNumber(gffreadsLen, fastq.length);
 		for (int m = 0; m < fastq.length; m++) {
 			char c = fastq[m];
 			int qualityScore = (int) c - FASTQ_FORMAT_OFFSET;
 			/////////////////////////序列质量，每个碱基的质量分布统计/////////////////////////////////////////////////
-			gffHashBin.addNumber(m+gffbpName, qualityScore);
+//			gffHashBin.addNumber(m+gffbpName, qualityScore);
 			//////////////////////////////////////////////////////////////////////////
 			for (int i = Qvalue.length - 1; i >= 0; i--) {
 				if (qualityScore <= Qvalue[i]) {//注意是小于等于

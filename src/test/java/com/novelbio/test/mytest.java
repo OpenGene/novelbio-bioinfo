@@ -70,6 +70,7 @@ import com.novelbio.analysis.seq.mapping.FastQMapAbs;
 import com.novelbio.analysis.seq.mapping.FastQMapBwa;
 import com.novelbio.analysis.seq.mapping.FastQMapSoap;
 import com.novelbio.analysis.seq.mapping.SAMtools;
+import com.novelbio.analysis.seq.mapping.SamFile;
 import com.novelbio.analysis.seq.reseq.LastzAlign;
 import com.novelbio.analysis.seq.reseq.ModifySeq;
 import com.novelbio.analysis.tools.Mas3.getProbID;
@@ -109,7 +110,14 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		FastQ.convertSff2FastQ("/media/winF/NBC/Project/Project_Invitrogen/sRNA/R_2012_04_05_23_53_14_cnservice_CR_CR_22.fasta", true);
+		FastQ fastQ = new FastQ("/media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_miRNA.fastq", FastQ.QUALITY_LOW);
+		fastQ.setAdaptorLowercase(true);
+		fastQ.setTrimNNN(false);
+		fastQ.setReadsLenMin(5);
+//		fastQ.filterReads("/media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_miRNA_filtered.fastq");
+		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_miRNA_out.sam");
+		samFile.getUnMappedReads("/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_nonMiRNA.fq");
+		samFile.sam2bedSingleEnd(TxtReadandWrite.TXT, "/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_MiRNA.bed", false, false);
 	}
 	
 	

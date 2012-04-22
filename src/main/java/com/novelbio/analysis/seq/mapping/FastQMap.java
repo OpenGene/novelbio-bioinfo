@@ -73,8 +73,8 @@ public class FastQMap implements FastQMapInt{
 	}
 
 	@Override
-	public void mapReads() {
-		fastQMap.mapReads();
+	public SamFile mapReads() {
+		return fastQMap.mapReads();
 	}
 
 	@Override

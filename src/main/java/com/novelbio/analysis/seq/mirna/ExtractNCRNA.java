@@ -1,5 +1,7 @@
 package com.novelbio.analysis.seq.mirna;
 
+import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -12,6 +14,8 @@ public class ExtractNCRNA {
 	public static void main(String[] args) {
 		ExtractNCRNA extractNCRNA = new ExtractNCRNA();
 		extractNCRNA.pipleLine();
+//		SeqFasta seqFasta = new SeqFasta("fes", "TCTCCGACTCAGA");
+//		System.out.println(seqFasta.reservecom());
 	}
 	
 	private void pipleLine()
@@ -28,7 +32,7 @@ public class ExtractNCRNA {
 		
 		String rfamFile = "/media/winE/Bioinformatics/DataBase/sRNA/Rfam.fasta";
 		String outRfam = FileOperate.changeFileSuffix(rfamFile, "_human", null);
-		regx = "human";
+		regx = "Homo sapiens \\(human\\)";
 		extractMiRNAandRfam(rfamFile, outRfam, regx);
 	}
 	/**

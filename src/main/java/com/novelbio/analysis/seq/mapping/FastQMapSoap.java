@@ -91,10 +91,11 @@ public class FastQMapSoap extends FastQMapAbs{
 	
 	
 	/**
+	 * 什么也不返回
 	 * 将本seqFile进行mapping分析，做mapping之前先要进行过滤处理，mapping后直接转化成bed文件返回
 	 * @throws Exception
 	 */
-	public void mapReads()  {
+	public SamFile mapReads()  {
 		 IndexMake();
 		// soap -a TGACT.fastq -b TGACT2.fastq -D /NC_009443.fna.index -o soapMapping -2 soapMappingNotPair -m 20 -x 500
 		String cmd = "";
@@ -111,6 +112,7 @@ public class FastQMapSoap extends FastQMapAbs{
 		System.out.println(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.doInBackground("soapMapping");
+		return null;
 	}
 	
 	/**

@@ -432,15 +432,14 @@ public class TxtReadandWrite {
 		}
 	}
 	/**
-	 * 写入并换行
+	 * 写入并换行，通通没有flush
 	 * @param content
 	 *            ，要写入文件内容
 	 * @throws Exception
 	 */
 	public void writefileln(String content) {
 		try {
-			outputStream.write(content.getBytes());
-			outputStream.write(huiche.getBytes());
+			outputStream.write((content+huiche).getBytes());
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -457,8 +456,7 @@ public class TxtReadandWrite {
 			content2 = content2 + "\t" + content[i];
 		}
 		try {
-			outputStream.write(content2.getBytes());
-			outputStream.write(huiche.getBytes());
+			outputStream.write((content2+huiche).getBytes());
 		} catch (Exception e) {
 			// TODO: handle exception
 		}

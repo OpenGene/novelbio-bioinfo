@@ -16,6 +16,7 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -26,6 +27,7 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFileWriter;
 import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMRecord;
+import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.util.BlockCompressedInputStream;
 import net.sf.samtools.util.BlockCompressedStreamConstants;
 import net.sf.samtools.util.IOUtil;
@@ -38,33 +40,47 @@ import net.sf.samtools.util.IOUtil;
 public class SamFile {
 	Logger logger = Logger.getLogger(SamFile.class);
 	String fileName = "";
-	boolean getPairedBed = false;
+	boolean pairend = false;
 	/**
 	 * 单端延长240bp
 	 */
 	int extend = 240;
+	/**
+	 * mapping质量为10
+	 */
+	int mapQuality = 10;
+	/**
+	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
+	 */
+	SAMFileReader samFileReader;
+	/**
+	 * 是否为bam文件
+	 */
+	boolean bamFile = false;
+	
 	/**
 	 * 双端数据是否获得连在一起的bed文件
 	 * 如果输入是单端数据，则将序列延长返回bed文件
 	 * 注意：如果是双端文件，<b>不能预先排序</b>
 	 * @param getPairedBed
 	 */
-	public void setGetPairedBed(boolean getPairedBed) {
-		this.getPairedBed = getPairedBed;
+	public void setPairend(boolean pairend) {
+		this.pairend = pairend;
 	}
-	/**
-	 * mapping质量为10
-	 */
-	int mapQuality = 10;
+	//TODO 待扩充
 	public void setBedInfo(boolean pairendExtend, int mapQuality, int uniqMapping) {
 		
 	}
-	
-	SAMFileReader samFileReader;
-	boolean bamFile = false;
+	/**
+	 * 默认为10，也可设定为0
+	 * @param mapQuality
+	 */
+	public void setMapQuality(int mapQuality) {
+		this.mapQuality = mapQuality;
+	}
 	public SamFile(String samBamFile) {
 		File file = new File(samBamFile);
-		samFileReader = new SAMFileReader(file);
+//		samFileReader = new SAMFileReader(file);
 		this.fileName = samBamFile;
 		
 		final BufferedInputStream bufferedStream;
@@ -78,12 +94,20 @@ public class SamFile {
 			}
 	}
 	
+	private SAMFileReader getSamFileReader()
+	{
+		File file = new File(fileName);
+		samFileReader = new SAMFileReader(file);
+		return samFileReader;
+	}
 	public SAMFileHeader.SortOrder SORT_ORDER;
 	 /**
 	  * 根据后缀名保存为sam或bam
+	  * 实际上考虑调用samtools来做，这个有待测试
 	  * @param outFile
 	  */
 	public void sort(String outFile) {
+		SAMFileReader samFileReader = getSamFileReader();
 		File fileOut = new File(outFile);
 		long n = 0;
 		samFileReader.getFileHeader().setSortOrder(SORT_ORDER);
@@ -102,8 +126,44 @@ public class SamFile {
 		samFileReader.close();
 		writer.close();
 	}
-	
-	
+	/**
+	 * 提取sam文件中没有mapping山的reads，将其保存为单个fastq文件，序列质量默认为中等
+	 * @param 是否将非uniq的也提取出来
+	 * @return
+	 */
+	public FastQ getUnMappedReads(boolean nonUniq, String outFastQfile)
+	{
+		SAMFileReader samFileReader = getSamFileReader();
+		int wrongReadsNum = 0;
+		TxtReadandWrite txtBed = new TxtReadandWrite(outFastQfile, true);
+		String fastQline = "";
+		int flag = 0;
+		SAMRecordIterator samRecordIterator = samFileReader.iterator();
+		while (samRecordIterator.hasNext()) {
+			SAMRecord samRecord = null;
+			try {
+				samRecord = samRecordIterator.next();
+			} catch (Exception e) {
+				wrongReadsNum ++;
+				continue;
+			}
+
+			if (samRecord.getReadUnmappedFlag() || (nonUniq && samRecord.getAttribute("XT").equals("A:R"))) {
+				fastQline = "@" + samRecord.getReadName() + TxtReadandWrite.huiche + 
+						samRecord.getReadString() +
+						TxtReadandWrite.huiche + "+" + TxtReadandWrite.huiche + 
+						samRecord.getBaseQualityString();
+				txtBed.writefileln(fastQline);
+			}
+			flag++;
+			if (flag == 2091) {
+				System.out.println("stop");
+			}
+		}
+		System.out.println(wrongReadsNum);
+		FastQ fastQ = new FastQ(outFastQfile, FastQ.QUALITY_MIDIAN);
+		return fastQ;
+	}
 	
     /**
      * @param stream stream.markSupported() must be true
@@ -141,6 +201,7 @@ public class SamFile {
 	  * @param outFile
 	  */
 	public void sort(String outFile, boolean bam) {
+		SAMFileReader samFileReader = getSamFileReader();
 		File fileOut = new File(outFile);
 		long n = 0;
 		samFileReader.getFileHeader().setSortOrder(SORT_ORDER);
@@ -180,6 +241,7 @@ public class SamFile {
 	 */
 	public void index()
 	{
+		SAMFileReader samFileReader = getSamFileReader();
 		if (!bamFile) {
 			compress();
 		}
@@ -229,31 +291,65 @@ X 8 sequence mismatch
 5: strand
 6: mapping reads数，1表示uniqmapping
 	 */
-	public BedSeq sam2bed(String bedFileCompType, String bedFile, boolean uniqMapping, boolean extend) {
+	public BedSeq sam2bedSingleEnd(String bedFileCompType, String bedFile, boolean uniqMapping, boolean extend) {
 		TxtReadandWrite txtBed = new TxtReadandWrite(bedFileCompType, bedFile, true);
-		for (SAMRecord samRecord : samFileReader) {
+		SAMFileReader samFileReader = getSamFileReader();
+		SAMRecordIterator samRecordIterator = samFileReader.iterator();
+		int wrongReadsNum = 0;//计数有多少是出错的reads
+		while (samRecordIterator.hasNext()) {
+			SAMRecord samRecord = null;
+			try {
+				samRecord = samRecordIterator.next();
+			} catch (Exception e) {
+				wrongReadsNum ++;
+				continue;
+			}
+			//没有XT表示没有map上，否则就算是unmapped也可能是非uniq mapping
+//			if (samRecord.getAttribute("XT") == null || samRecord.getMappingQuality() < mapQuality) {
+//				continue;
+//			}
 			if (samRecord.getReadUnmappedFlag() || samRecord.getMappingQuality() < mapQuality) {
 				continue;
 			}
-			if (samRecord.getAttribute("XA") == null ) {
+			String[] tmpInfo = null; boolean flagNotUnique = false;
+			if (!uniqMapping && samRecord.getAttribute("XA") != null) {
+				tmpInfo = samRecord.getAttribute("XA").toString().split(";");
+				flagNotUnique = true;
+			}
+			
+			
+			//XA: Alternative hits; format: (chr,pos,CIGAR,NM;)*
+			/**
+			 * , XT:A:U flag in the sam file denotes unique read and XT:A:R denotes multiple mappings for that read.
+			 *  For paired-end reads, you might also want to consider the flag XT:A:M (one-mate recovered) which 
+			 *  means that one of the pairs is uniquely mapped and the other isn't.
+			 */
+			if ( ( uniqMapping && samRecord.getAttribute("XT").equals("A:U") )|| !uniqMapping ) {
 				String strand = "+"; int start = samRecord.getAlignmentStart(); int end = samRecord.getAlignmentEnd();
 				if (samRecord.getReadNegativeStrandFlag()) {
 					strand = "-";
 				}
 				if (extend) {
-					int[] startend = getLoc(samRecord.getAlignmentStart(), samRecord.getAlignmentEnd(), !samRecord.getMateNegativeStrandFlag());
+					int[] startend = getLoc(samRecord.getAlignmentStart(), samRecord.getAlignmentEnd(), !samRecord.getReadNegativeStrandFlag());
 					start = startend[0];
 					end = startend[1];
 				}
 				String tmpResult = samRecord.getReferenceName() + "\t" + start + "\t" + end
-						+ "\t" + samRecord.getAttribute("MD") + "\t" + samRecord.getCigarString() + "\t" + strand + "\t1";
+						+ "\t" + samRecord.getAttribute("MD") + "\t" + samRecord.getCigarString() + "\t" + strand + "\t";
+				//计数，mapping到了几次
+				if (!flagNotUnique) {
+					tmpResult = tmpResult + "1";
+				}
+				else {
+					 tmpResult = tmpResult + (tmpInfo.length + 1) + "";
+				}
+				
 				if (getSeqName) {
 					tmpResult = tmpResult + "\t" + samRecord.getReferenceName();
 				}
 				txtBed.writefileln(tmpResult);
 			}
-			else if (!uniqMapping && samRecord.getAttribute("XA") != null ) {
-				 String[] tmpInfo = samRecord.getAttribute("XA").toString().split(";");
+			if (flagNotUnique) {
 				 //添加新的信息
 				 for (String string : tmpInfo) {
 					String[] tmpResult = null;
@@ -289,12 +385,14 @@ X 8 sequence mismatch
 				 }
 			}
 		}
+		System.out.println(wrongReadsNum);
 		txtBed.close();
 		BedSeq bedSeq = new BedSeq(bedFile);
 		return bedSeq;
 	}
 	
 	/**
+	 * tobe checked
 	 * 返回双端，如果是单端文件，则返回延长的单端
 	 * 将sam文件改为bed文件，根据mapping质量和正反向进行筛选
 	 * <b>不能挑选跨染色体的融合基因<b>
@@ -325,6 +423,7 @@ X 8 sequence mismatch
 6: 
 	 */
 	public BedSeq sam2bedPairEnd(String bedFileCompType, String bedFile) {
+		SAMFileReader samFileReader = getSamFileReader();
 		TxtReadandWrite txtBed = new TxtReadandWrite(bedFileCompType, bedFile, true);
 		SAMRecord samRecordOld = null;
 		for (SAMRecord samRecord : samFileReader) {
