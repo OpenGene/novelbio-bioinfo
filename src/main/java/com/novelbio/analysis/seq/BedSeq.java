@@ -32,8 +32,6 @@ public class BedSeq extends SeqComb{
 	}
 	
 	public static void main(String[] args) {
-		combPeaks("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/yulupeak/K27All_FHEFX2_sorted.txt", 2);
-
 	}
 	
 	/**
@@ -562,16 +560,15 @@ public class BedSeq extends SeqComb{
 	 * @param peakFile
 	 * @param readLines 从第几行开始读
 	 */
-	public static void combPeaks(String peakFile, int readLines)
+	public void combPeaks(int readLines)
 	{
 		if (readLines < 1) {
 			readLines = 1;
 		}
-		String out = FileOperate.changeFileSuffix(peakFile, "_comb", null);
+		String out = FileOperate.changeFileSuffix(getFileName(), "_comb", null);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(out, true);
-		TxtReadandWrite txtRead = new TxtReadandWrite(peakFile, false);
 		String lastchrID = null; int lastStart = 0; int lastEnd = 0;
-		for (String content : txtRead.readlines(readLines)) {
+		for (String content : txtSeqFile.readlines(readLines)) {
 			String[] ss = content.split("\t");
 			String chrID = ss[0];
 			int start = Integer.parseInt(ss[1]);
@@ -591,6 +588,7 @@ public class BedSeq extends SeqComb{
 				}
 			}
 		}
+		txtWrite.close();
 	}
 	
 	

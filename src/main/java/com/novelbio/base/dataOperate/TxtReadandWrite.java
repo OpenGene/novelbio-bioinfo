@@ -1,5 +1,7 @@
 package com.novelbio.base.dataOperate;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -92,14 +94,26 @@ public class TxtReadandWrite {
 	
 	
 	File txtfile;
-	InputStream inputStream;
+	BufferedInputStream inputStream;
 	FileReader fileread;
-	OutputStream outputStream;
+	BufferedOutputStream outputStream;
 	BufferedReader bufread;
 	BufferedWriter bufwriter;
 	boolean createNew = false;
 	boolean append = true;
+	/**
+	 * 仅仅为了最后关闭zip用
+	 */
+	ArchiveOutputStream zipOutputStream;
 	
+	int bufferLen = 10000;
+	/**
+	 * 设定缓冲长度，默认为10000
+	 * @param bufferLen
+	 */
+	public void setBufferLen(int bufferLen) {
+		this.bufferLen = bufferLen;
+	}
 	
 	public String getFileName() {
 		return txtfile.getAbsolutePath();
@@ -166,40 +180,40 @@ public class TxtReadandWrite {
 	
 	private void createFile(String fileType, String fileName) throws Exception
 	{
-		outputStream = new FileOutputStream(txtfile,false);
+		outputStream = new BufferedOutputStream(new FileOutputStream(txtfile,false));
 		if (fileType.equals(TXT)) {
 			return;
 		}
 		
 		else if (fileType.equals(ZIP)) {
-			ZipArchiveOutputStream filewriterzip = new ZipArchiveOutputStream(txtfile);
+			zipOutputStream = new ZipArchiveOutputStream(txtfile);
 			ZipArchiveEntry entry = new ZipArchiveEntry(FileOperate.getFileNameSep(fileName)[0]);
 
-			filewriterzip.putArchiveEntry(entry);
+			zipOutputStream.putArchiveEntry(entry);
 //			filewriterzip.createArchiveEntry(txtfile, FileOperate.getFileNameSep(fileName)[0]+".txt");
-			outputStream = filewriterzip;
+			outputStream = new BufferedOutputStream(zipOutputStream, bufferLen);
 		}
 		else if (fileType.equals(GZIP)) {
-			outputStream = new GZIPOutputStream(outputStream);
+			outputStream = new BufferedOutputStream(new GZIPOutputStream(outputStream), bufferLen);
 		}
 		else if (fileType.equals(BZIP2)) {
-			outputStream = new BZip2CompressorOutputStream(outputStream);
+			outputStream = new BufferedOutputStream(new BZip2CompressorOutputStream(outputStream), bufferLen);
 		}
 	}
 	
 	private void getFile(String fileType, String fileName, boolean append) throws Exception
 	{
-		outputStream = new FileOutputStream(txtfile,append);
-		inputStream = new FileInputStream(txtfile);
+		outputStream = new BufferedOutputStream(new FileOutputStream(txtfile,append), bufferLen);
+		inputStream = new BufferedInputStream(new FileInputStream(txtfile), bufferLen);
 		fileread = new FileReader(txtfile);
 		if (fileType.equals(TXT)) {
 			return;
 		}
 		if (fileType.equals(ZIP)) {
-			ZipArchiveOutputStream filewriterzip = new ZipArchiveOutputStream(outputStream);
+			zipOutputStream = new ZipArchiveOutputStream(outputStream);
 //			ZipArchiveEntry archiveEntry = new ZipArchiveEntry(name);
 //			filewriterzip.putArchiveEntry(archiveEntry);
-			outputStream = filewriterzip;
+			outputStream = new BufferedOutputStream(zipOutputStream, bufferLen);
 			
 			ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(inputStream);
 			ArchiveEntry zipEntry = null;
@@ -208,15 +222,15 @@ public class TxtReadandWrite {
 					break;
 				}
 			}
-			inputStream = zipArchiveInputStream;
+			inputStream = new BufferedInputStream(zipArchiveInputStream, bufferLen);
 		}
 		else if (fileType.equals(GZIP)) {
-			inputStream = new GZIPInputStream(inputStream);
-			outputStream = new GZIPOutputStream(outputStream);
+			inputStream = new BufferedInputStream(new GZIPInputStream(inputStream), bufferLen);
+			outputStream = new BufferedOutputStream(new GZIPOutputStream(outputStream), bufferLen);
 		}
 		else if (fileType.equals(BZIP2)) {
-			inputStream = new BZip2CompressorInputStream(inputStream);
-			outputStream = new BZip2CompressorOutputStream(outputStream);
+			inputStream = new BufferedInputStream(new BZip2CompressorInputStream(inputStream), bufferLen);
+			outputStream = new BufferedOutputStream(new BZip2CompressorOutputStream(outputStream), bufferLen);
 		}
 	}
 	
@@ -228,7 +242,7 @@ public class TxtReadandWrite {
 	 */
 	@Deprecated
 	public BufferedReader readfile() throws Exception {
-		inputStream = new FileInputStream(txtfile);
+		inputStream = new BufferedInputStream(new FileInputStream(txtfile), bufferLen);
 		if (filetype.equals(ZIP)) {
 			ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(inputStream);
 			ArchiveEntry zipEntry = null;
@@ -237,13 +251,13 @@ public class TxtReadandWrite {
 					break;
 				}
 			}
-			inputStream = zipArchiveInputStream;
+			inputStream = new BufferedInputStream(zipArchiveInputStream, bufferLen);
 		}
 		else if (filetype.equals(GZIP)) {
-			inputStream = new GZIPInputStream(inputStream);
+			inputStream = new BufferedInputStream(new GZIPInputStream(inputStream), bufferLen);
 		}
 		else if (filetype.equals(BZIP2)) {
-			inputStream = new BZip2CompressorInputStream(inputStream);
+			inputStream = new BufferedInputStream(new BZip2CompressorInputStream(inputStream), bufferLen);
 		}
 		bufread = new BufferedReader(new   InputStreamReader(inputStream));
 		return bufread;
@@ -1321,8 +1335,7 @@ public class TxtReadandWrite {
 		}
 		try {
 			if (filetype.equals(ZIP)) {
-				ArchiveOutputStream fileOutputStream = (ArchiveOutputStream) outputStream;
-				fileOutputStream.closeArchiveEntry();
+				zipOutputStream.closeArchiveEntry();
 			}
 		} catch (Exception e) {
 		}
