@@ -49,7 +49,13 @@ public class JpanelPlot extends JPanel{
 	 * normal plot
 	 */
 	PlotNBC plotNBC;
+	/**
+	 * GRAL interactive pannel
+	 */
 	InteractivePanel inPanel;
+	/**
+	 * GRAL plot
+	 */
 	DrawableContainer plots;
 	/**
 	 * which figure type to plot
@@ -70,6 +76,8 @@ public class JpanelPlot extends JPanel{
 			plots = new DrawableContainer(new TableLayout(1));
 			plots.add(plotNBCInteractive.getPlot());
 			inPanel = new InteractivePanel(plots);
+			inPanel.setZoomable(plotNBCInteractive.isZoom());
+			inPanel.setPannable(plotNBCInteractive.isPannable());
 			add(inPanel);
 			repaint();
 			return;

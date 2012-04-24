@@ -57,7 +57,17 @@ public class SamFile {
 	 * 是否为bam文件
 	 */
 	boolean bamFile = false;
-	
+	/**
+	 * 是否为uniqMapping，默认为true
+	 */
+	boolean uniqMapping = true;
+	/**
+	 * 是否为uniqMapping，默认为true
+	 * @param uniqMapping
+	 */
+	public void setUniqMapping(boolean uniqMapping) {
+		this.uniqMapping = uniqMapping;
+	}
 	/**
 	 * 双端数据是否获得连在一起的bed文件
 	 * 如果输入是单端数据，则将序列延长返回bed文件
@@ -100,6 +110,51 @@ public class SamFile {
 		samFileReader = new SAMFileReader(file);
 		return samFileReader;
 	}
+	
+	public long getReadsNum(boolean mapped)
+	{
+		SAMFileReader samFileReader = getSamFileReader();
+		
+		SAMRecordIterator samRecordIterator = samFileReader.iterator();
+		long readsNum = 0;
+		while (samRecordIterator.hasNext()) {
+			SAMRecord samRecord = null;
+			try {
+				samRecord = samRecordIterator.next();
+			} catch (Exception e) {
+				continue;
+			}
+			if (mapped && samRecord.getReadUnmappedFlag()) {
+				continue;
+			}
+			readsNum++;
+		}
+		return readsNum;
+	}
+	/**
+	 * 注意大小写区分
+	 * @param ReadName reads的名字，只要写关键词就行了
+	 * @return 没找到就返回null
+	 */
+	public String getReads(String ReadName)
+	{
+		String result = "";
+		SAMFileReader samFileReader = getSamFileReader();
+		SAMRecordIterator samRecordIterator = samFileReader.iterator();
+		while (samRecordIterator.hasNext()) {
+			SAMRecord samRecord = null;
+			try {
+				samRecord = samRecordIterator.next();
+			} catch (Exception e) {
+				continue;
+			}
+			if (samRecord.getReadName().contains(ReadName)) {
+				return samRecord.getSAMString();
+			}
+		}
+		return null;
+	}
+	
 	public SAMFileHeader.SortOrder SORT_ORDER;
 	 /**
 	  * 根据后缀名保存为sam或bam
@@ -135,7 +190,7 @@ public class SamFile {
 	{
 		SAMFileReader samFileReader = getSamFileReader();
 		int wrongReadsNum = 0;
-		TxtReadandWrite txtBed = new TxtReadandWrite(outFastQfile, true);
+		TxtReadandWrite txtFastQ = new TxtReadandWrite(outFastQfile, true);
 		String fastQline = "";
 		int flag = 0;
 		SAMRecordIterator samRecordIterator = samFileReader.iterator();
@@ -153,13 +208,15 @@ public class SamFile {
 						samRecord.getReadString() +
 						TxtReadandWrite.huiche + "+" + TxtReadandWrite.huiche + 
 						samRecord.getBaseQualityString();
-				txtBed.writefileln(fastQline);
+				txtFastQ.writefileln(fastQline);
 			}
 			flag++;
 			if (flag == 2091) {
 				System.out.println("stop");
 			}
 		}
+		txtFastQ.close();
+		samFileReader.close();
 		System.out.println(wrongReadsNum);
 		FastQ fastQ = new FastQ(outFastQfile, FastQ.QUALITY_MIDIAN);
 		return fastQ;
@@ -226,6 +283,7 @@ public class SamFile {
 	}
 	
 	/**
+	 * 还没实现
 	 * 将sam文件压缩为bam文件
 	 * 如果是bam文件，则返回
 	 */
@@ -264,10 +322,9 @@ public class SamFile {
 	 *<b>非uniq mapping只支持bwa的结果</b>
 	 * 返回单端
 	 * 将sam文件改为bed文件，根据mapping质量和正反向进行筛选
-	 * <b>不能挑选跨染色体的融合基因<b>
+	 * <b>不能挑选跨染色体的融合基因</b>
 	 * @param bedFileCompType bed文件的压缩格式，TxtReadandWrite.TXT等设定
 	 * @param bedFile 最后产生的bedFile
-	 * @param uniqMapping 是否为uniqmapping
 	 * 如果不是uniqmapping，那么mapping数量在第七列
 	 * @return
 	 * 	/**
@@ -291,7 +348,7 @@ X 8 sequence mismatch
 5: strand
 6: mapping reads数，1表示uniqmapping
 	 */
-	public BedSeq sam2bedSingleEnd(String bedFileCompType, String bedFile, boolean uniqMapping, boolean extend) {
+	public BedSeq sam2bedSingleEnd(String bedFileCompType, String bedFile, boolean extend) {
 		TxtReadandWrite txtBed = new TxtReadandWrite(bedFileCompType, bedFile, true);
 		SAMFileReader samFileReader = getSamFileReader();
 		SAMRecordIterator samRecordIterator = samFileReader.iterator();
@@ -319,12 +376,13 @@ X 8 sequence mismatch
 			
 			
 			//XA: Alternative hits; format: (chr,pos,CIGAR,NM;)*
+//			System.out.println(samRecord.getAttribute("XT").getClass());
 			/**
 			 * , XT:A:U flag in the sam file denotes unique read and XT:A:R denotes multiple mappings for that read.
 			 *  For paired-end reads, you might also want to consider the flag XT:A:M (one-mate recovered) which 
 			 *  means that one of the pairs is uniquely mapped and the other isn't.
 			 */
-			if ( ( uniqMapping && samRecord.getAttribute("XT").equals("A:U") )|| !uniqMapping ) {
+			if ( ( uniqMapping && samRecord.getAttribute("XT").equals('U'))|| !uniqMapping ) {
 				String strand = "+"; int start = samRecord.getAlignmentStart(); int end = samRecord.getAlignmentEnd();
 				if (samRecord.getReadNegativeStrandFlag()) {
 					strand = "-";
@@ -345,7 +403,7 @@ X 8 sequence mismatch
 				}
 				
 				if (getSeqName) {
-					tmpResult = tmpResult + "\t" + samRecord.getReferenceName();
+					tmpResult = tmpResult + "\t" + samRecord.getReadName();
 				}
 				txtBed.writefileln(tmpResult);
 			}
@@ -387,6 +445,7 @@ X 8 sequence mismatch
 		}
 		System.out.println(wrongReadsNum);
 		txtBed.close();
+		samFileReader.close();
 		BedSeq bedSeq = new BedSeq(bedFile);
 		return bedSeq;
 	}
@@ -510,9 +569,9 @@ X 8 sequence mismatch
 		return result;
 	}
 	
-	boolean getSeqName = false;
+	boolean getSeqName = true;
 	/**
-	 * 是否在bed文件的最后一列加上seq的名字
+	 * 是否在bed文件的最后一列加上seq的名字, 默认加上序列名
 	 * @param getSeqName
 	 */
 	public void setGetSeqName(boolean getSeqName) {

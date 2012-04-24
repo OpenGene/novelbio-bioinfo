@@ -72,23 +72,8 @@ public class PlotScatter extends PlotNBCInteractive{
      * 内部坐标轴边界，如果外部没有设定坐标轴边界，就用内部的
      */
     Axis axisXMy = new Axis(Double.MAX_VALUE, Double.MIN_VALUE), axisYMy = new Axis(Double.MAX_VALUE, Double.MIN_VALUE);
-    ArrayList<String> lsAxisNotMove = new ArrayList<String>();
+
     /**
-     * set which axis is not move when moving or zooming
-     * @param AxisNotMove null will clean all the settings
-     */
-    public void setAxisNotMove(String... AxisNotMove) {
-    	if (AxisNotMove == null || AxisNotMove.length == 0) {
-			lsAxisNotMove.clear();
-		}
-    	for (String string : AxisNotMove) {
-    		this.lsAxisNotMove.add(string);
-    	}
-	}
-    
-    /**
-     * TODO: if style is line and y is much bigger than the Y axis length, than the point may not draw complete.
-     * so we should set the point just near the bound of figure. so that the line can be drawn on the figure
      * add point
      * @param x
      * @param y
@@ -113,7 +98,6 @@ public class PlotScatter extends PlotNBCInteractive{
     	else {
 			dataTable = hashDataTable.get(dotStyle);
 		}
-    	
     	
     	if (dotStyle.isDotName()) {
     		dataTable.add(x,y,name);
@@ -617,23 +601,24 @@ public class PlotScatter extends PlotNBCInteractive{
 			 plot.getPlotArea().setSetting(PlotArea.BACKGROUND, new Color(0, 0, 0, 0));
 		}
 		///以下是我修改gral的源码添加的方法，不过后来发现他似乎有更好的
-		if (lsAxisNotMove.size() == 0) {
-			plot.setAxisNotMove(null);
-			plot.setAxisNotZoom(null);
-		}
-		else {
-			for (String string : lsAxisNotMove) {
-				plot.setAxisNotMove(string);
-				plot.setAxisNotZoom(string);
-			}
-		}
+//		if (lsAxisNotMove.size() == 0) {
+//			plot.setAxisNotMove(null);
+//			plot.setAxisNotZoom(null);
+//		}
+//		else {
+//			for (String string : lsAxisNotMove) {
+//				plot.setAxisNotMove(string);
+//				plot.setAxisNotZoom(string);
+//			}
+//		}
 		///////////////他自己提供的方法，限定一个方向的放大或者缩小//////////////////////
 		///////////////以下没写完全
-//		if (lsAxisNotMove.size() != 0) {
-//			
-//			plot.getNavigator().setDirection(XYNavigationDirection.HORIZONTAL);
-//		}
-		
+		if (Xnavigator && Ynavigator)
+			plot.getNavigator().setDirection(XYNavigationDirection.ARBITRARY);
+		else if (Xnavigator && !Ynavigator)
+			plot.getNavigator().setDirection(XYNavigationDirection.HORIZONTAL);
+		else if (!Xnavigator && Ynavigator)
+			plot.getNavigator().setDirection(XYNavigationDirection.VERTICAL);
 	}
 	/**
 	 * fill the insets with BG color, means fill the marginal area between the frame and the plot border.<br>

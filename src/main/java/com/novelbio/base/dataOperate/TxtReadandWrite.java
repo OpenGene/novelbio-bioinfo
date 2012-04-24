@@ -106,13 +106,13 @@ public class TxtReadandWrite {
 	 */
 	ArchiveOutputStream zipOutputStream;
 	
-	int bufferLen = 10000;
+	static int bufferLen = 10000;
 	/**
 	 * 设定缓冲长度，默认为10000
 	 * @param bufferLen
 	 */
-	public void setBufferLen(int bufferLen) {
-		this.bufferLen = bufferLen;
+	public static void setBufferLen(int bufferLen) {
+		TxtReadandWrite.bufferLen = bufferLen;
 	}
 	
 	public String getFileName() {

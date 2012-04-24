@@ -260,8 +260,9 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 		seqHashAbs.setSep(sep);
 		
 	}
-
-
-
+	@Override
+	public void setDNAseq(boolean isDNAseq) {
+		seqHashAbs.setDNAseq(isDNAseq);
+	}
 	
 }

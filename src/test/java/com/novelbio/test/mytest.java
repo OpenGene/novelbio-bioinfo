@@ -110,14 +110,11 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		FastQ fastQ = new FastQ("/media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_miRNA.fastq", FastQ.QUALITY_LOW);
-		fastQ.setAdaptorLowercase(true);
-		fastQ.setTrimNNN(false);
-		fastQ.setReadsLenMin(5);
-//		fastQ.filterReads("/media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_miRNA_filtered.fastq");
-		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_miRNA_out.sam");
-		samFile.getUnMappedReads("/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_nonMiRNA.fq");
-		samFile.sam2bedSingleEnd(TxtReadandWrite.TXT, "/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_MiRNA.bed", false, false);
+		SamFile saMtoolsNBC = new SamFile("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_BWA_RealnDeDup.bam");
+		SamFile saMtoolsSBC = new SamFile("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/SBCmapping/A.sam");
+//		System.out.println("NBCreads:"+saMtoolsNBC.getReadsNum(true));
+		System.out.println("SBCreads:"+saMtoolsSBC.getReadsNum(true));
+//		System.out.println(saMtoolsNBC.getReads("7:7856:10367"));
 	}
 	
 	

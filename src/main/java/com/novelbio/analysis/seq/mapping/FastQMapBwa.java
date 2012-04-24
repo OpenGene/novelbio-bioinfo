@@ -237,6 +237,7 @@ public class FastQMapBwa extends FastQMapAbs{
 		cmdOperate.doInBackground("bwaMappingSAI");
 		SamFile samFile = new SamFile(outFileName);
 		samFile.setPairend(isPairEnd());
+		samFile.setUniqMapping(uniqMapping);
 		return samFile;
 	}
 	/**

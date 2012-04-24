@@ -256,8 +256,8 @@ public class FastQ extends SeqComb {
 			quality = QUALITY;
 //			hashFastQFilter.put(2, 1);
 			hashFastQFilter.put(10, 4);
-			hashFastQFilter.put(13, 8);
-			hashFastQFilter.put(20, 15);
+			hashFastQFilter.put(13, 10);
+			hashFastQFilter.put(20, 20);
 		} else if (QUALITY == QUALITY_MIDIAN
 				|| QUALITY == QUALITY_MIDIAN_PAIREND) {
 			quality = QUALITY;
@@ -608,7 +608,7 @@ public class FastQ extends SeqComb {
 				return i+con;//把最后不是a的还的加回去
 			}
 		}
-		logger.info("no useful seq: "+ seqIn);
+//		logger.info("no useful seq: "+ seqIn);
 		return 0;
 	}
 	/**
@@ -638,7 +638,7 @@ public class FastQ extends SeqComb {
 				return i - con;//把最后不是a的还的加回去
 			}
 		}
-		logger.info("no useful seq: "+ seqIn);
+//		logger.info("no useful seq: "+ seqIn);
 		return seqIn.length();
 	}
 	

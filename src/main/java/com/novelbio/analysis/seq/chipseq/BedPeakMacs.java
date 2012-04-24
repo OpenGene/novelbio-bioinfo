@@ -85,10 +85,10 @@ public class BedPeakMacs extends BedPeak {
 			name = " -n "+prix;
 		}
 		String cmd = "macs14 -t "+getFileName() +col+name + effge + mfole + pvalue + nolambda;//+ "-w";
-		TxtReadandWrite txtCmd = new TxtReadandWrite( outFilePath+"/macs.sh", true);
-		txtCmd.writefile(cmd);
-		txtCmd.close();
-		CmdOperate cmdOperate = new CmdOperate("sh "+outFilePath+"/macs.sh");
+//		TxtReadandWrite txtCmd = new TxtReadandWrite( outFilePath+"/macs.sh", true);
+//		txtCmd.writefile(cmd);
+//		txtCmd.close();
+		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.doInBackground("macs");
 		String peakFile = FileOperate.moveFile(PathDetail.getProjectPath()+"/"+prix+"_peaks.xls", outFilePath,true);
 		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_peaks.bed", outFilePath+"/TmpPeakInfo",true);

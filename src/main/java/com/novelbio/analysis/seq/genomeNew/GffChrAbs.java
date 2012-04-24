@@ -25,7 +25,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  *
  */
 public class GffChrAbs {
-private static final Logger logger = Logger.getLogger(GffChrGene.class);
+private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	
 	private int taxID = 0;
 	private int distanceMapInfo = 3000;

@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.genomeNew;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.AminoAcid;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
@@ -13,7 +12,6 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.dataStructure.listOperate.ElementAbs;
 import com.novelbio.generalConf.NovelBioConst;
 /**
  * 给定snp和indel等信息，获得改变的氨基酸等
@@ -109,7 +107,7 @@ public class GffChrSnpIndel extends GffChrAbs {
 			mapInfo.setExon(true);
 			//mRNA层面
 			//就算在外显子中，但是如果是非编码rna，或者在UTR区域中，也返回
-			if (!gffGeneIsoInfo.isCodInAAregion()) {
+			if (!gffGeneIsoInfo.isCodInAAregion(gffCodeGene.getCoord())) {
 				mapInfo.setProp( (double)gffGeneIsoInfo.getCod2TSSmRNA() / (gffGeneIsoInfo.getCod2TSSmRNA() - gffGeneIsoInfo.getCod2TESmRNA()) );
 				mapInfo.setGffIso(gffGeneIsoInfo);
 				return gffCodeGene;

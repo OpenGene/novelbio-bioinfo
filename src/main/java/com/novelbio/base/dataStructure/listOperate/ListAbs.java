@@ -378,7 +378,7 @@ public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>,
 	 * @param location 坐标
 	 *  * 该点在外显子中为正数，在内含子中为负数，为实际数目
 	 */
-	protected int getCod2ExInStart(int location) {
+	public int getCod2ExInStart(int location) {
 		if (hashLocExInStart == null) {
 			hashLocExInStart = new HashMap<Integer, Integer>();
 		}
@@ -410,7 +410,7 @@ public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>,
 	 * @param location 坐标
 	 *  * 该点在外显子中为正数，在内含子中为负数，为实际数目
 	 */
-	protected int getCod2ExInEnd(int location) {
+	public int getCod2ExInEnd(int location) {
 		if (hashLocExInEnd == null) {
 			hashLocExInEnd = new HashMap<Integer, Integer>();
 		}
