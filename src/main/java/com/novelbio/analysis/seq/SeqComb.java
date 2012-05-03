@@ -15,7 +15,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  *
  */
 public abstract class SeqComb {
-	protected TxtReadandWrite txtSeqFile = new TxtReadandWrite();
+	protected TxtReadandWrite txtSeqFile;
 	protected String seqFile = "";
 	protected int block = 1;
 	
@@ -23,6 +23,9 @@ public abstract class SeqComb {
 	 * fastQ文件里面的序列数量
 	 */
 	private int seqNum = -1;
+	private boolean readPattern = true;
+	
+	
 	
 	protected String compressInType = TxtReadandWrite.TXT;
 	protected String compressOutType = TxtReadandWrite.TXT;
@@ -38,16 +41,21 @@ public abstract class SeqComb {
 	 * 
 	 * 设定文件压缩格式
 	 * 从TxtReadandWrite.TXT来
-	 * @param cmpInType 输入的压缩格式
-	 * @param cmpOutType 输出的压缩格式
+	 * @param cmpInType 读取的压缩格式 null或""表示不变
+	 * @param cmpOutType 写入的压缩格式 null或""表示不变
 	 */
 	public void setCompressType(String cmpInType, String cmpOutType) {
 		if (cmpInType != null && !cmpInType.equals("")) {
 			this.compressInType = cmpInType;
-			txtSeqFile.setFiletype(cmpInType);
 		}
-		if (cmpOutType != null && !cmpInType.equals("")) {
+		if (cmpOutType != null && !cmpOutType.equals("")) {
 			this.compressOutType = cmpOutType;
+		}
+		if (readPattern) {
+			txtSeqFile.setFiletype(compressInType);
+		}
+		else {
+			txtSeqFile.setFiletype(compressOutType);
 		}
 	}
 	/**
@@ -74,7 +82,23 @@ public abstract class SeqComb {
 	public SeqComb(String seqFile, int block) {
 		this.seqFile = seqFile;
 		this.block = block;
-		txtSeqFile.setParameter(compressInType,seqFile, false, true);
+		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
+	}
+	/**
+	 * 
+	 * @param seqFile
+	 * @param block 每个序列占几行，譬如fastQ文件每个序列占4行
+	 */
+	public SeqComb(String seqFile, int block, boolean creatFile) {
+		this.seqFile = seqFile;
+		this.block = block;
+		this.readPattern = !creatFile;
+		if (creatFile == false) {
+			txtSeqFile = new TxtReadandWrite(compressInType, seqFile, creatFile);		
+		}
+		else {
+			txtSeqFile = new TxtReadandWrite(compressOutType, seqFile, creatFile);	
+		}
 	}
 	/**
 	 * 返回文件名

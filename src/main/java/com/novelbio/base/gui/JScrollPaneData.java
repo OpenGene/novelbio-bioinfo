@@ -1,22 +1,23 @@
 package com.novelbio.base.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 
-import com.novelbio.analysis.project.cdg.TmpScript;
-import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.fileOperate.FileOperate;
-
+/**
+ * JScrollPane的扩展，方便添加和删除行
+ * @author zong0jie
+ *
+ */
 public class JScrollPaneData extends JScrollPane{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4238706503361283499L;
 	DefaultTableModel defaultTableModel = null;
 	JTable jTabFInputGo = null;
 	/**

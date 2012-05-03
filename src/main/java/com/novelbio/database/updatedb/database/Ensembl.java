@@ -8,18 +8,23 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class Ensembl {
+	/**
+	 * 存储gffFile和对应的taxID
+	 */
 	LinkedHashMap<String, Integer> hashEnsemblTaxID = new LinkedHashMap<String, Integer>();
 	/**
 	 * 存储对应的gff文件，最好是ucsc格式的
 	 * 这个的目的是，如果ensemble没找到对应的基因，就到ucsc下面来查找对应的坐标，看该坐标下有没有对应的基因，然后写入数据库
 	 */
-	ArrayList<String> lsGffFile = new ArrayList<String>();
+	ArrayList<String> lsUCSCFile = new ArrayList<String>();
 	String taxIDFile = "";
 	GffHashGene gffHashGene = null;
 	public void setTaxIDFile(String taxIDFile) {
@@ -29,13 +34,13 @@ public class Ensembl {
 	 * 
 	 * 必须是txt文件
 	 * @param fileName 从ensembl下载的gtf文件
-	 * @param ucscGffFile UCSC的坐标文件，不是gtf格式的
+	 * @param ucscFile UCSC的坐标文件，不是gtf格式的
 	 * @param taxID
 	 */
-	public void setEnsemblFile(String fileName, String ucscGffFile, Integer taxID)
+	public void setEnsemblFile(String fileName, String ucscFile, Integer taxID)
 	{
 		hashEnsemblTaxID.put(fileName, taxID);
-		lsGffFile.add(ucscGffFile);
+		lsUCSCFile.add(ucscFile);
 	}
 	public void update() {
 		EnsembleGTF ensembleGTF = new EnsembleGTF();
@@ -45,13 +50,19 @@ public class Ensembl {
 			String fileName = entry.getKey();
 			int taxID = entry.getValue();
 			ensembleGTF.setTaxID(taxID);
-			ensembleGTF.setGffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, lsGffFile.get(i));
-			i ++;
+			ensembleGTF.setGffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, lsUCSCFile.get(i));
+			ensembleGTF.setTxtWriteExcep(FileOperate.changeFileSuffix(fileName, "_NotFindInDB", null));
 			ensembleGTF.updateFile(fileName, false);
+			i ++;
+			
 		}
 	}
 }
-
+/**
+ * 根据UCSC的坐标文件，将ensembl的gff文件搜索refseqID然后导入ncbi库，找不到的则导入uniID库
+ * @author zong0jie
+ *
+ */
 class EnsembleGTF extends ImportPerLine
 {
 	private static Logger logger = Logger.getLogger(EnsembleGTF.class);
@@ -136,6 +147,9 @@ class EnsembleGTF extends ImportPerLine
 		String[] ssID = ss[8].split(";");
 		ArrayList<String> lsRefID = new ArrayList<String>();
 		for (String string : ssID) {
+			if (string.contains("ENSBTAT00000064644")) {
+				System.out.println("stop");
+			}
 			if (string.contains("gene_id")) {
 				lsRefID.add(string.replace("gene_id", "").replace("\"", "").trim());
 			}
@@ -152,17 +166,17 @@ class EnsembleGTF extends ImportPerLine
 		CopedID copedID = new CopedID("", taxID);
 		copedID.setUpdateRefAccID(lsRefID);
 		copedID.setUpdateRefAccIDClear(true);
-		/**
-		 * 没找到对应的基因
-		 */
 		if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
-			GffCodGene gffCodGene = gffHashGene.searchLocation("chr"+ss[0], Integer.parseInt(ss[4]));
-			if (gffCodGene == null || !gffCodGene.isInsideLoc()) {
-				return true;
+			GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation("chr"+ss[0].toLowerCase().replace("chr", ""), Integer.parseInt(ss[3]),  Integer.parseInt(ss[4]));
+			if (gffCodGeneDu == null || gffCodGeneDu.getAllGffDetail().size() <= 0) {
+//				copedID.update(false);
+				return false;
 			}
-			copedID = gffCodGene.getGffDetailThis().getLongestSplit().getCopedID();
+			int geneNum = gffCodGeneDu.getAllGffDetail().size()/2;
+			copedID = gffCodGeneDu.getAllGffDetail().get(geneNum).getLongestSplit().getCopedID();
 			if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
-				return true;
+//				copedID.update(false);
+				return false;
 			}
 		}
 		

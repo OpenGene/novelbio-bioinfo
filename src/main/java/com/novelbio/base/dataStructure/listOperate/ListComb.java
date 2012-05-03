@@ -6,13 +6,18 @@ import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
 /**
+ * 需要检查
  * 多条listabs合并在一起
  * 其内部的元素即为
  * @author zong0jie
  *
  */
-public class ListComb<M extends ListDetailAbs>
-extends ListAbs<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>,ListCodAbsDu<ListDetailComb<M>,  ListCodAbs<ListDetailComb<M>>>> {
+//public class ListComb<M extends ListDetailAbs>
+//extends ListAbs<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>,ListCodAbsDu<ListDetailComb<M>,  ListCodAbs<ListDetailComb<M>>>> {
+public abstract class ListComb<T extends ListDetailAbs, M extends ListDetailComb<T>, E extends ListAbs<T>> 
+extends ListAbs<M>
+{
+	
 	/**
 	 * 
 	 */
@@ -21,13 +26,13 @@ extends ListAbs<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>,ListCodAbsDu<Li
 	/**
 	 * 全体待比较的listabs信息
 	 */
-	ArrayList<ListAbs<M, ListCodAbs<M>, ListCodAbsDu<M, ListCodAbs<M>>>> lsAllListAbs = new ArrayList<ListAbs<M, ListCodAbs<M>, ListCodAbsDu<M, ListCodAbs<M>>>>();
-	ListAbs<M, ListCodAbs<M>, ListCodAbsDu<M, ListCodAbs<M>>>  lsAllID = null;
+	ArrayList<E> lsAllListAbs = new ArrayList<E>();
+	E  lsAllID = null;
 	/**
 	 * 保存所有exon合并后的边界
 	 */
 	ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
-	public void addListAbs(ListAbs<M, ListCodAbs<M>,ListCodAbsDu<M, ListCodAbs<M>>> lsListAbs) {
+	public void addListAbs(E lsListAbs) {
 		if (isCis5to3() == null) {
 			setCis5to3(lsListAbs.isCis5to3());
 		}
@@ -48,7 +53,7 @@ extends ListAbs<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>,ListCodAbsDu<Li
 		if (copelist) {
 			return;
 		}
-		lsAllID = lsAllListAbs.get(0).clone();
+		lsAllID = (E) lsAllListAbs.get(0).clone();
 		for (int i = 1; i < lsAllListAbs.size(); i++) {
 			lsAllID.addAll(lsAllListAbs.get(i));
 		}
@@ -59,17 +64,18 @@ extends ListAbs<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>,ListCodAbsDu<Li
 	}
 	
 	/**
+	 * 待检查
 	 * 将经过排序的exonlist合并，获得几个连续的exon，用于分段
 	 */
 	private void combExon()
 	{
 		lsExonBounder.clear();
-		M exonOld =  lsAllID.get(0);
+		T exonOld =  lsAllID.get(0);
 		int[] exonBoundOld = new int[]{exonOld.getStartCis(), exonOld.getEndCis()};
 		boolean allFinal = false;//最后一个exon是否需要添加入list中
 		lsExonBounder.add(exonBoundOld);
 		for (int i = 1; i < lsAllID.size(); i++) {
-			M ele = lsAllID.get(i);
+			T ele = lsAllID.get(i);
 			int[] exonBound = new int[]{ele.getStartCis(), ele.getEndCis()};
 			if (cis5to3 )
 			{
@@ -105,18 +111,18 @@ extends ListAbs<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>,ListCodAbsDu<Li
 	private void setExonCluster()
 	{
 		for (int[] exonBound : lsExonBounder) {
-			ListDetailComb<M> elementComb = new ListDetailComb<M>(); //ExonCluster(gffDetailGene.getParentName(), exonBound[0], exonBound[1]);
+			M elementComb = createListDetailComb();//new ListDetailComb<M>(); //ExonCluster(gffDetailGene.getParentName(), exonBound[0], exonBound[1]);
 			for (int m = 0; m < lsAllListAbs.size(); m ++) {
-			ListAbs<M, ListCodAbs<M>, ListCodAbsDu<M, ListCodAbs<M>>> lsAbs = lsAllListAbs.get(m);
+			E lsAbs = lsAllListAbs.get(m);
 				if (lsAbs.isCis5to3() != isCis5to3()) {
 					logger.error("方向不一致，不能比较");
 				}
-				ArrayList<M> lsExonClusterTmp = new ArrayList<M>();
+				ArrayList<T> lsExonClusterTmp = new ArrayList<T>();
 				//从1开始计数
 				int beforeExonNum = 0;//如果本isoform正好没有落在bounder组中的exon，那么就要记录该isoform的前后两个exon的位置，用于查找跨过和没有跨过的exon
 				boolean junc = false;//如果本isoform正好没有落在bounder组中的exon，那么就需要记录跳过的exon的位置，就将这个flag设置为true
 				for (int i = 0; i < lsAbs.size(); i++) {
-					M ele = lsAbs.get(i);
+					T ele = lsAbs.get(i);
 					if (isCis5to3()) {
 						if (ele.getEndCis() < exonBound[0]) {
 							junc = true;
@@ -171,30 +177,19 @@ extends ListAbs<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>,ListCodAbsDu<Li
 	 * 返回有差异的exon系列List
 	 * @return
 	 */
-	public ArrayList<ListDetailComb<M>> getDifExonCluster() {
+	public ArrayList<M> getDifExonCluster() {
 		copeList();
-		ArrayList<ListDetailComb<M>> lsDifExon = new ArrayList<ListDetailComb<M>>();
-		for (ListDetailComb<M> elementComb : this) {
+		ArrayList<M> lsDifExon = new ArrayList<M>();
+		for (M elementComb : this) {
 			if (!elementComb.isSameEle()) {
 				lsDifExon.add(elementComb);
 			}
 		}
 		return lsDifExon;
 	}
-
-	@Override
-	protected ListCodAbs<ListDetailComb<M>> creatGffCod(String listName,
-			int Coordinate) {
-		ListCodAbs<ListDetailComb<M>> result = new ListCodAbs<ListDetailComb<M>>(listName, Coordinate);
-		return result;
-	}
-
-	@Override
-	protected ListCodAbsDu<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>> creatGffCodDu(
-			ListCodAbs<ListDetailComb<M>> gffCod1,
-			ListCodAbs<ListDetailComb<M>> gffCod2) {
-		ListCodAbsDu<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>> result = new ListCodAbsDu<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>>(gffCod1, gffCod2);
-		return result;
-	}
-
+	/**
+	 * 新建一个M，new一个就行了
+	 * @return
+	 */
+	abstract M createListDetailComb();
 }

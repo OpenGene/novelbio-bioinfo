@@ -24,16 +24,14 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.table.DefaultTableModel;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.gui.NumberOnlyDoc;
 import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.NumOnlyDoc;
+import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.nbcgui.controltest.CtrlGO;
 import com.novelbio.nbcgui.controltest.CtrlPath;
@@ -60,21 +58,21 @@ public class GuiPathJpanel extends JPanel{
 	private JProgressBar jProgressBarPath;
 	private JLabel jLabResultReviewPath;
 	private JLabel jLabInputReviewPath;
-	private JTextField jTxtDownValuePath;
+	private JTextFieldData jTxtDownValuePath;
 	private JLabel jLabDownValuePath;
-	private JTextField jTxtUpValuePath;
+	private JTextFieldData jTxtUpValuePath;
 	private JLabel jLabUpValuePath;
 	private JButton jBtnBGFilePath;
-	private JTextField jTxtBGPath;
+	private JTextFieldData jTxtBGPath;
 	private JLabel jLabBGPath;
 	private JLabel jLabPathPath;
-	private JTextField jTxtFilePathPath;
+	private JTextFieldData jTxtFilePathPath;
 	private JButton jBtnFileOpenPath;
-	private JTextField jTxtValColPath;
+	private JTextFieldData jTxtValColPath;
 	private JLabel jLabValueColPath;
 	private JCheckBox jChkCluster;
 	private JLabel jLabAccColPath;
-	private JTextField jTxtAccColPath;
+	private JTextFieldData jTxtAccColPath;
 	private JComboBox jCombBlastTaxPath;
 	private JCheckBox jChkBlastPath;
 	private ButtonGroup btnGroupPathMethod;
@@ -221,7 +219,7 @@ public class GuiPathJpanel extends JPanel{
 			jLabPathQtaxID.setText("Query Species");
 		}
 		{
-			jTxtFilePathPath = new JTextField();
+			jTxtFilePathPath = new JTextFieldData();
 			jTxtFilePathPath.addKeyListener(new KeyAdapter() {
 				public void keyTyped(KeyEvent evt) {
 					if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
@@ -258,8 +256,8 @@ public class GuiPathJpanel extends JPanel{
 			jLabPathPath.setText("InputData");
 		}
 		{
-			jTxtAccColPath = new JTextField();
-			jTxtAccColPath.setDocument(new NumOnlyDoc());
+			jTxtAccColPath = new JTextFieldData();
+			jTxtAccColPath.setNumOnly();
 		}
 		{
 			jLabAccColPath = new JLabel();
@@ -276,16 +274,16 @@ public class GuiPathJpanel extends JPanel{
 			jLabUpValuePath.setText("UpValue");
 		}
 		{
-			jTxtUpValuePath = new JTextField();
-			jTxtUpValuePath.setDocument(new NumberOnlyDoc(10,4));
+			jTxtUpValuePath = new JTextFieldData();
+			jTxtUpValuePath.setNumOnly(10,4);
 		}
 		{
 			jLabDownValuePath = new JLabel();
 			jLabDownValuePath.setText("DownValue");
 		}
 		{
-			jTxtDownValuePath = new JTextField();
-			jTxtDownValuePath.setDocument(new NumberOnlyDoc(10,4));
+			jTxtDownValuePath = new JTextFieldData();
+			jTxtDownValuePath.setNumOnly(10,4);
 
 		}
 		{
@@ -301,8 +299,8 @@ public class GuiPathJpanel extends JPanel{
 			});
 		}
 		{
-			jTxtValColPath = new JTextField();
-			jTxtValColPath.setDocument(new NumOnlyDoc());
+			jTxtValColPath = new JTextFieldData();
+			jTxtValColPath.setNumOnly();
 		}
 
 		{
@@ -371,7 +369,7 @@ public class GuiPathJpanel extends JPanel{
 			jLabBGPath.setAutoscrolls(true);
 		}
 		{
-			jTxtBGPath = new JTextField();
+			jTxtBGPath = new JTextFieldData();
 		}
 		{
 			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);

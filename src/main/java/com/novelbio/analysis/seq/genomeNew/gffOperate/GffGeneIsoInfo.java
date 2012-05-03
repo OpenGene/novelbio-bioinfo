@@ -7,7 +7,7 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.dataStructure.listOperate.ListComb;
 import com.novelbio.database.model.modcopeid.CopedID;
@@ -22,7 +22,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
  * 如果反向则从大到小排列，且int0&gt;int1
  * @return
  */
-public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo, ListCodAbs<ExonInfo>, ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>>{
+public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<ExonInfo>, ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>>{
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
 	/**
 	 * 
@@ -759,7 +759,7 @@ public abstract class GffGeneIsoInfo extends ListAbs<ExonInfo, ListCodAbs<ExonIn
 	 */
 	public CopedID getCopedID()
 	{
-		return new CopedID(getName(), taxID, false);
+		return new CopedID(getName(), taxID);
 	}
 	
 	/**

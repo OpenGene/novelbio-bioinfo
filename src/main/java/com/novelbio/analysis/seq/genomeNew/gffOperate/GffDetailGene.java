@@ -199,7 +199,7 @@ public class GffDetailGene extends ListDetailAbs
 			atg = Math.min(atg, uag);
 			uag = Math.min(atg, uag);
 		}
-		if (cis5to3) {
+		if (gffGeneIsoInfo.isCis5to3()) {
 			gffGeneIsoInfo.ATGsite = Math.min(atg, uag);
 			gffGeneIsoInfo.UAGsite = Math.max(atg, uag);
 		}

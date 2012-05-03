@@ -1,15 +1,12 @@
 package com.novelbio.analysis.seq.reseq;
 
-import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.hamcrest.core.Is;
-
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 

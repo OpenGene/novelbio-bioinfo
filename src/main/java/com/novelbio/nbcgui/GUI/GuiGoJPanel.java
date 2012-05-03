@@ -31,9 +31,8 @@ import javax.swing.table.DefaultTableModel;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.gui.NumberOnlyDoc;
+import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.NumOnlyDoc;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
@@ -62,20 +61,20 @@ public class GuiGoJPanel extends JPanel{
 	private JLabel jLabInputReviewGo;
 	private JLabel jLabGoType;
 	private JLabel jLabAlgorithm;
-	private JTextField jTxtDownValueGo;
+	private JTextFieldData jTxtDownValueGo;
 	private JLabel jLabDownValueGo;
-	private JTextField jTxtUpValueGo;
+	private JTextFieldData jTxtUpValueGo;
 	private JLabel jLabUpValueGo;
 	private JButton jBtnBGFileGo;
-	private JTextField jTxtBGGo;
+	private JTextFieldData jTxtBGGo;
 	private JLabel jLabBGGo;
 	private JLabel jLabPathGo;
-	private JTextField jTxtFilePathGo;
+	private JTextFieldData jTxtFilePathGo;
 	private JButton jBtnFileOpenGo;
-	private JTextField jTxtValColGo;
+	private JTextFieldData jTxtValColGo;
 	private JLabel jLabValueColGo;
 	private JLabel jLabAccColGo;
-	private JTextField jTxtAccColGo;
+	private JTextFieldData jTxtAccColGo;
 	private JRadioButton jRadBtnGoClassC;
 	private JRadioButton jRadBtnGoClassF;
 	private JRadioButton jRadBtnGoClassP;
@@ -262,7 +261,7 @@ public class GuiGoJPanel extends JPanel{
 			jLabGoQtaxID.setText("Query Species");
 		}
 		{
-			jTxtFilePathGo = new JTextField();
+			jTxtFilePathGo = new JTextFieldData();
 			jTxtFilePathGo.addKeyListener(new KeyAdapter() {
 				public void keyTyped(KeyEvent evt) {
 					if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
@@ -301,8 +300,8 @@ public class GuiGoJPanel extends JPanel{
 			jLabPathGo.setText("InputData");
 		}
 		{
-			jTxtAccColGo = new JTextField();
-			jTxtAccColGo.setDocument(new NumOnlyDoc());
+			jTxtAccColGo = new JTextFieldData();
+			jTxtAccColGo.setNumOnly();
 		}
 		{
 			jLabAccColGo = new JLabel();
@@ -323,16 +322,16 @@ public class GuiGoJPanel extends JPanel{
 			jLabUpValueGo.setText("UpValue");
 		}
 		{
-			jTxtUpValueGo = new JTextField();
-			jTxtUpValueGo.setDocument(new NumberOnlyDoc(10,4));
+			jTxtUpValueGo = new JTextFieldData();
+			jTxtUpValueGo.setNumOnly(10,4);
 		}
 		{
 			jLabDownValueGo = new JLabel();
 			jLabDownValueGo.setText("DownValue");
 		}
 		{
-			jTxtDownValueGo = new JTextField();
-			jTxtDownValueGo.setDocument(new NumberOnlyDoc(10,4));
+			jTxtDownValueGo = new JTextFieldData();
+			jTxtDownValueGo.setNumOnly(10,4);
 		}
 		{
 			jBtnBGFileGo = new JButton();
@@ -347,8 +346,8 @@ public class GuiGoJPanel extends JPanel{
 			});
 		}
 		{
-			jTxtValColGo = new JTextField();
-			jTxtValColGo.setDocument(new NumOnlyDoc());
+			jTxtValColGo = new JTextFieldData();
+			jTxtValColGo.setNumOnly();
 		}
 
 		{
@@ -437,7 +436,7 @@ public class GuiGoJPanel extends JPanel{
 			jLabBGGo.setAutoscrolls(true);
 		}
 		{
-			jTxtBGGo = new JTextField();
+			jTxtBGGo = new JTextFieldData();
 		}
 		{
 			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);

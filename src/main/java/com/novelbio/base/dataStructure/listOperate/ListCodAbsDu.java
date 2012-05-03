@@ -138,6 +138,7 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 	/**
 	 * 返回全部包含的gffDetail信息
 	 * @return
+	 * 空的则返回一个size为0的list
 	 */
 	public ArrayList<T> getAllGffDetail() {
 		ArrayList<T> lsGffDetailAll = new ArrayList<T>();

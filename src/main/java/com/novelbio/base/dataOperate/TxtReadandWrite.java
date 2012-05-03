@@ -149,8 +149,7 @@ public class TxtReadandWrite {
 	 * @return true：成功设置文本参数<br>
 	 *         false：没有设好文本参数
 	 */
-	public boolean setParameter(String fileType, String filepath, boolean createNew,
-			boolean append) {
+	public boolean setParameter(String fileType, String filepath, boolean createNew, boolean append) {
 		close();
 		this.filetype = fileType;
 		txtfile = new File(filepath);
@@ -158,11 +157,12 @@ public class TxtReadandWrite {
 		this.append = append;
 		try {
 			if (createNew) {
-				createFile(fileType, filepath);
+				createFile(fileType, filepath, append);
 				return true;
 			}
 			else if (txtfile.exists()) {
-				getFile(fileType, filepath, append);
+				try { createFile(filetype, txtfile.getAbsolutePath(), append); } catch (Exception e) { }
+				try { setReadFile(filetype); } catch (Exception e) { }
 				return true;
 			}
 		} catch (Exception e) {
@@ -171,16 +171,22 @@ public class TxtReadandWrite {
 		return false;
 	}
 	/**
-	 * 仅设定压缩格式
+	 * 仅设定压缩格式,没有测试
 	 * @param filetype
 	 */
 	public void setFiletype(String filetype) {
 		this.filetype = filetype;
+		try { createFile(filetype, txtfile.getAbsolutePath(), this.append); } catch (Exception e) {}
+		try {
+			setReadFile(filetype);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 	
-	private void createFile(String fileType, String fileName) throws Exception
+	private void createFile(String fileType, String fileName, boolean append) throws Exception
 	{
-		outputStream = new BufferedOutputStream(new FileOutputStream(txtfile,false));
+		outputStream = new BufferedOutputStream(new FileOutputStream(txtfile,append));
 		if (fileType.equals(TXT)) {
 			return;
 		}
@@ -201,20 +207,13 @@ public class TxtReadandWrite {
 		}
 	}
 	
-	private void getFile(String fileType, String fileName, boolean append) throws Exception
-	{
-		outputStream = new BufferedOutputStream(new FileOutputStream(txtfile,append), bufferLen);
+	private void setReadFile(String fileType) throws Exception {
 		inputStream = new BufferedInputStream(new FileInputStream(txtfile), bufferLen);
 		fileread = new FileReader(txtfile);
 		if (fileType.equals(TXT)) {
 			return;
 		}
 		if (fileType.equals(ZIP)) {
-			zipOutputStream = new ZipArchiveOutputStream(outputStream);
-//			ZipArchiveEntry archiveEntry = new ZipArchiveEntry(name);
-//			filewriterzip.putArchiveEntry(archiveEntry);
-			outputStream = new BufferedOutputStream(zipOutputStream, bufferLen);
-			
 			ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(inputStream);
 			ArchiveEntry zipEntry = null;
 			while ((zipEntry = zipArchiveInputStream.getNextEntry()) != null) {
@@ -226,11 +225,9 @@ public class TxtReadandWrite {
 		}
 		else if (fileType.equals(GZIP)) {
 			inputStream = new BufferedInputStream(new GZIPInputStream(inputStream), bufferLen);
-			outputStream = new BufferedOutputStream(new GZIPOutputStream(outputStream), bufferLen);
 		}
 		else if (fileType.equals(BZIP2)) {
 			inputStream = new BufferedInputStream(new BZip2CompressorInputStream(inputStream), bufferLen);
-			outputStream = new BufferedOutputStream(new BZip2CompressorOutputStream(outputStream), bufferLen);
 		}
 	}
 	
@@ -535,8 +532,7 @@ public class TxtReadandWrite {
 	 * @param sep 分隔符是什么
 	 * @throws Exception
 	 */
-	private void Rwritefile(double[] content, int colLen, String sep)
-			throws Exception {
+	private void Rwritefile(double[] content, int colLen, String sep) throws Exception {
 		for (int i = 0; i < content.length; i++) {
 			outputStream.write((content[i] + "" + sep).getBytes());
 			if ((i + 1) % colLen == 0) {

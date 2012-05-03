@@ -423,7 +423,14 @@ public class NovelBioConst {
 	 * R的density计算的结果图片，保存本次计算的数据，可用于计算motif在指定序列上的分布
 	 */
 	public final static String R_WORKSPACE_DENSITY_PIC = R_WORKSPACE_DENSITY + "density.jpeg";
-	
-	
+	/////////////////////////////////////  Blast   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * blast用的脚本，NCBI的脚本
+	 */
+	public final static String BLAST_NCBI_SCRIPT = "/usr/local/blast/legacy_blast.pl ";
+	/**
+	 * blast
+	 */
+	public final static String BLAST_NCBI_PATH  = "/usr/local/blast/";
 	
 }

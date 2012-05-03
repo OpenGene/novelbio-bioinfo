@@ -23,7 +23,7 @@ import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.listOperate.ListHash;
+import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.java.HeatChart;
 import com.novelbio.generalConf.Species;
@@ -102,7 +102,7 @@ private static Logger logger = Logger.getLogger(GffChr1.class);
 	/**
 	 * 本类用到的一个gffHash，用来读取gff文件
 	 */
-	protected ListHash gffHash;
+	protected ListHashSearch gffHash;
 	/**
 	 * 本类用到的一个mapreads，用来处理map文件
 	 */

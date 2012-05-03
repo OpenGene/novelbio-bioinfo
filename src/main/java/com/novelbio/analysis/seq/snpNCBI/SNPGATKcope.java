@@ -214,7 +214,7 @@ public class SNPGATKcope {
 					if (domainPfam == null) {
 						continue;
 					}
-					domainPfam.setAALoc(gffGeneIsoInfo.getCod2ATGmRNA()/3);
+					domainPfam.setAALoc(gffGeneIsoInfo.getCod2ATGmRNA(gffcod.getCoord())/3);
 					tmp = domainPfam.toString();
 					break;
 				}

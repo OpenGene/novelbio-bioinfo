@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
+
 
 /**
  * 获得Gff的项目信息<br/>
@@ -15,7 +17,7 @@ import org.apache.log4j.Logger;
  * @locHashtable hash（LOCID）--GeneInforlist
  * @LOCIDList 顺序存储每个基因号或条目号
  */
-public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T>, K extends ListCodAbsDu<T, E>, M extends ListAbs<T, E, K>>
+public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCodAbs<T>, K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>>
 {
 	/**
 	 * 起点默认为开区间
@@ -77,7 +79,7 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 	public String getGffFilename() {
 		return gfffilename;
 	}
-	Logger logger = Logger.getLogger(ListHash.class);
+	Logger logger = Logger.getLogger(ListHashSearch.class);
 	/**
 	 * 哈希表LOC--LOC细节<br>
 	 * 用于快速将LOC编号对应到LOC的细节<br>
@@ -169,9 +171,7 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 		}
 		return LOCChrHashIDList;
 	}
-	
 
-	
 	/**
 	 * 返回真正的查找用hash表<br>
 	 * 这个哈希表来存储
@@ -182,6 +182,9 @@ public abstract class ListHash < T extends ListDetailAbs, E extends ListCodAbs<T
 	 */
 	public HashMap<String, M> getChrhash()
 	{
+		if (Chrhash == null) {
+			Chrhash = new LinkedHashMap<String, M>();
+		}
 		return Chrhash;
 	}
 	/**

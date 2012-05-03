@@ -186,6 +186,9 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	public SeqFasta getSeq(String chrID, List<ExonInfo> lsInfo,
 			boolean getIntron) {
 		SeqFasta seqFasta = seqHashAbs.getSeq(chrID, lsInfo, getIntron);
+		if (seqFasta == null) {
+			return null;
+		}
 		seqFasta.setTOLOWCASE(TOLOWCASE);
 		return seqFasta;
 	}
@@ -196,22 +199,16 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 		seqFasta.setTOLOWCASE(TOLOWCASE);
 		return seqFasta;
 	}
-	//////////////////////  static method  ////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * 根据TOLOWCASE的选项，返回相应的seq序列
-	 * @param seq
-	 * @param TOLOWCASE null：不变，false：大写，true：小写
-	 * @return
-	 */
-	private static String getSeqCase(String seq, Boolean TOLOWCASE)
-	{
-		if (TOLOWCASE == null) {
-			return seq;
-		}
-		else {
-			return TOLOWCASE.equals(true) ?  seq.toLowerCase() :  seq.toUpperCase();
-		}
+	@Override
+	public void setSep(String sep) {
+		seqHashAbs.setSep(sep);
+		
 	}
+	@Override
+	public void setDNAseq(boolean isDNAseq) {
+		seqHashAbs.setDNAseq(isDNAseq);
+	}
+	//////////////////////  static method  ////////////////////////////////////////////////////////////////////////////////}
 
 	/**
 	 * 判断输入的长度是否在目的区间内，闭区间
@@ -255,14 +252,29 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 			}
 		}
 	}
-	@Override
-	public void setSep(String sep) {
-		seqHashAbs.setSep(sep);
-		
+	/**
+	 * 给定fasta文件，假设该fasta文件里面只有一种序列，蛋白或核酸，判断该fasta文件是蛋白，还是DNA，还是RNA
+	 * @return
+	 * SeqFasta.SEQ_DNA等
+	 */
+	public static int getSeqType(String fastaFile)
+	{
+		int readBp = 1000;//读取前1000个碱基来判断
+		TxtReadandWrite txtRead = new TxtReadandWrite(fastaFile, false);
+		StringBuilder stringBuilder = new StringBuilder();
+		for (String string : txtRead.readlines()) {
+			if (string.trim().startsWith(">")) {
+				continue;
+			}
+			stringBuilder.append(string);
+			if (stringBuilder.length() > readBp) {
+				break;
+			}
+		}
+		SeqFasta seqFasta = new SeqFasta("test", stringBuilder.toString());
+		return seqFasta.getSeqType();		
 	}
-	@Override
-	public void setDNAseq(boolean isDNAseq) {
-		seqHashAbs.setDNAseq(isDNAseq);
-	}
+	
+
 	
 }

@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 public class GffHashCufflinkGTF extends GffHashGeneAbs{
@@ -31,7 +31,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	@Override
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 		// 实例化四个表
-		Chrhash = new LinkedHashMap<String, ListAbs<GffDetailGene>>();// 一个哈希表来存储每条染色体
+		Chrhash = new LinkedHashMap<String, ListAbsSearch<GffDetailGene>>();// 一个哈希表来存储每条染色体
 		locHashtable = new HashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
 		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
 		HashMap<String, ArrayList<GffGeneIsoInfo>> hashChrIso = new HashMap<String, ArrayList<GffGeneIsoInfo>>();
@@ -104,7 +104,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	 */
 	private void copeChrInfo(List<GffGeneIsoInfo> lsGeneIsoInfos)
 	{
-		ListAbs<GffDetailGene> lsResult = new ListAbs<GffDetailGene>();
+		ListAbsSearch<GffDetailGene> lsResult = new ListAbsSearch<GffDetailGene>();
 		if (lsGeneIsoInfos == null)// 如果已经存在了LOCList，也就是前一个LOCList，那么截短并装入LOCChrHashIDList
 			return;
 		//排序

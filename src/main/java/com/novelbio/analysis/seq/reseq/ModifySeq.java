@@ -26,7 +26,7 @@ public class ModifySeq {
 	public void writeFastaFile(String fastaFileNew) {
 		TxtReadandWrite txtFastaNew = new TxtReadandWrite(fastaFileNew, true);
 		txtFastaNew.writefileln(">"+seqFasta.getSeqName());
-		txtFastaNew.writefilePerLine(seqFasta.getSeq(), 100);
+		txtFastaNew.writefilePerLine(seqFasta.toString(), 100);
 	}
 	
 	
@@ -72,14 +72,14 @@ public class ModifySeq {
 			LastzAlign lastzAlign = new LastzAlign();
 			String seq = seqModifyFastaHash.getSeqAll(strings[0].toLowerCase(), true);
 			String alignFile = pathInfo + strings[0]+".info";
-			lastzAlign.readInfo(alignFile, seqFasta.getSeq().length(), seq.length());
+			lastzAlign.readInfo(alignFile, seqFasta.toString().length(), seq.length());
 			lsModifyInfos.add( lastzAlign.getModifyInfo(seq) );
 		}
 		
 		ArrayList<ArrayList<ModifyInfo>> lsResult = ModifyInfo.delOverlap(lsModifyInfos);
 		modifySeq(lsResult.get(0));
 		TxtReadandWrite txtOutSeq = new TxtReadandWrite(outSeqFile, true);
-		txtOutSeq.writefilePerLine(seqFasta.getSeq(), 100);
+		txtOutSeq.writefilePerLine(seqFasta.toString(), 100);
 		txtOutSeq.close();
 		
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outNoModifySeqNameFile, true);
@@ -98,7 +98,7 @@ public class ModifySeq {
 		TxtReadandWrite txtStatistic = new TxtReadandWrite(statictis, true);
 		
 		try {
-			txtStatistic.ExcelWrite(lsresult, "\t", 1, 1);
+			txtStatistic.writefile(lsresult);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -122,7 +122,7 @@ public class ModifySeq {
 		ArrayList<ArrayList<ModifyInfo>> lsResult = ModifyInfo.delOverlap(lsModifyInfos);
 		modifySeq(lsResult.get(0));
 		TxtReadandWrite txtOutSeq = new TxtReadandWrite(outSeqFile, true);
-		txtOutSeq.writefilePerLine(seqFasta.getSeq(), 100);
+		txtOutSeq.writefilePerLine(seqFasta.toString(), 100);
 		txtOutSeq.close();
 		
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outNoModifySeqNameFile, true);
@@ -137,11 +137,11 @@ public class ModifySeq {
 		}
 		txtReadandWrite.close();
 		txtModifySeqInfoFile.close();
-		ArrayList<String[]> lsresult = seqFasta.getSeqInfo();
+		ArrayList<LocInfo> lsresult = seqFasta.getSeqInfo();
 		TxtReadandWrite txtStatistic = new TxtReadandWrite(statictis, true);
 		
 		try {
-			txtStatistic.ExcelWrite(lsresult, "\t", 1, 1);
+			txtStatistic.writefile(lsresult);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -182,7 +182,7 @@ public class ModifySeq {
 				tmpModifyInfo = modifyInfo;
 				String subseq = modifyInfo.getModifySeq().substring(0, modifyInfo.getCrossStartSiteSeq2End() - modifyInfo.getStartModify() +1).toUpperCase();
 //				seqFasta.modifySeq(modifyInfo.getStart(),modifyInfo.getCrossStartSiteSeq1End(),subseq,  modifyInfo.isBooStart(),true);
-				seqFasta.modifySeq(modifyInfo.getStart(),seqFasta.getSeq().length(),subseq,  modifyInfo.isBooStart(),true);
+				seqFasta.modifySeq(modifyInfo.getStart(),seqFasta.toString().length(),subseq,  modifyInfo.isBooStart(),true);
 				continue;
 			}
 			seqFasta.modifySeq(modifyInfo.getStart(), modifyInfo.getEnd(),modifyInfo.getModifySeq().toUpperCase(), modifyInfo.isBooStart(), modifyInfo.isBooEnd());

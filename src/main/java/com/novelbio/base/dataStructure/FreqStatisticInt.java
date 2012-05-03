@@ -10,7 +10,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeak;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailPeak;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
 import com.novelbio.base.dataStructure.listOperate.ElementAbsDouble;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListAbsDouble;
 
 public class FreqStatisticInt{
@@ -40,7 +40,7 @@ public class FreqStatisticInt{
 	public LinkedHashMap<int[], Integer> getFreq()
 	{
 		LinkedHashMap<int[], Integer> hashResult = new LinkedHashMap<int[], Integer>();
-		ListAbs<GffDetailPeak> lsPeak = gffHashBin.getListDetail(name);
+		ListAbsSearch<GffDetailPeak> lsPeak = gffHashBin.getListDetail(name);
 		for (GffDetailPeak gffDetailPeak : lsPeak) {
 			int[] interval = new int[2];
 			interval[0] = gffDetailPeak.getStartAbs();

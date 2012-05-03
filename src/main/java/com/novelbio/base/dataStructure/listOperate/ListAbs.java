@@ -5,25 +5,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
-
-public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>, K extends ListCodAbsDu<E, T>> extends ArrayList<E>  implements Cloneable{
-	private static Logger logger = Logger.getLogger(ListAbs.class);
+public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements Cloneable
+{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 4583552188474447935L;
+	private static final long serialVersionUID = -3356076601369239937L;
 	/**
 	 * 好像是分割同一个element的多个name的符号，待确认
 	 */
 	public static final String SEP = "/";
-
-	/**
-	 * 保存某个坐标和所在的element数目,
-	 * value: 正数，element中，
-	 * 负数，两个element之间
-	 */
-//	HashMap<Integer, Integer> hashCodInEleNum;
 	/**
 	 * 保存某个坐标到所在的内含子/外显子起点的距离
 	 */
@@ -34,7 +25,8 @@ public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>,
 	 */
 	HashMap<Integer, Integer> hashLocExInEnd;
 	
-	Boolean cis5to3 = null;
+	
+	
 	/**
 	 * 本条目的名字
 	 */
@@ -45,6 +37,9 @@ public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>,
 	public String getName() {
 		return listName;
 	}
+
+	Boolean cis5to3 = null;
+	
 	/**
 	 * 没有方向则返回null
 	 * @return
@@ -56,7 +51,6 @@ public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>,
 	public void setCis5to3(boolean cis5to3) {
 		this.cis5to3 = cis5to3;
  	}
-	
 	/**
 	 * 将list中的元素进行排序，如果element里面 start > end，那么就从大到小排序
 	 * 如果element里面start < end，那么就从小到大排序
@@ -73,6 +67,7 @@ public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>,
 			Collections.sort(this, new CompM2S());
 		}
 	}
+	
 	
 	/**
 	 * 返回实际第num个element间区的长度
@@ -239,139 +234,6 @@ public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>,
 		}
 		return -Math.abs(distance);
 	}
-	
-//	/**
-//	 * TO BE CHECKED
-//	 * 只有在cis存在的时候才能使用
-//	 * 返回距离loc有num Bp的坐标，在mRNA层面，在loc上游时num 为负数
-//	 * 在loc下游时num为正数
-//	 * 如果num Bp外就没有基因了，则返回-1；
-//	 * @param mRNAnum
-//	 * NnnnLoc 为-4位，当N与Loc重合时为0
-//	 */
-//	public int getLocDistmRNASite(int location, int mRNAnum) {
-//		if (getLocInEleNum(location) <= 0) {
-//			return -1;
-//		}
-//		if (mRNAnum < 0) {
-//			if (Math.abs(mRNAnum) <= getLoc2EleStart(location)) {
-//				return location + mRNAnum;
-//			} 
-//			else {
-//				int exonNum = getLocInEleNum(location) - 1;
-//				int remain = Math.abs(mRNAnum) - getLoc2EleStart(location);
-//				for (int i = exonNum - 1; i >= 0; i--) {
-//					GffDetailAbs tmpExon = get(i);
-//					// 一个一个外显子的向前遍历
-//					if (remain - tmpExon.getLen() > 0) {
-//						remain = remain - tmpExon.getLen();
-//						continue;
-//					}
-//					else {
-//						return tmpExon.getEndCis() - remain + 1;
-//					}
-//				}
-//				return -1;
-//			}
-//		}
-//		else {
-//			if (mRNAnum <= getLoc2EleEnd(location)) {
-//				return location + mRNAnum;
-//			} 
-//			else {
-//				int exonNum = getLocInEleNum(location) - 1;
-//				int remain = mRNAnum - getLoc2EleEnd(location);
-//				for (int i = exonNum + 1; i < size(); i++) {
-//					GffDetailAbs tmpExon = get(i);
-//					// 一个一个外显子的向前遍历
-//					if (remain - tmpExon.getLen() > 0) {
-//						remain = remain - tmpExon.getLen();
-//						continue;
-//					}
-//					else {
-//						return tmpExon.getStartCis() + remain - 1;
-//					}
-//				}
-//				return -1;
-//			}
-//		}
-//	}
-	/**
-	 * TO BE CHECKED
-	 * 返回距离loc有num Bp的坐标，在mRNA层面，在loc上游时num 为负数
-	 * 在loc下游时num为正数
-	 * 如果num Bp外就没有基因了，则返回-1；
-	 * @param mRNAnum
-	 * NnnnLoc 为-4位，当N与Loc重合时为0
-	 * LnnnnN为5位
-	 */
-	public int getLocDistmRNASite(int location, int mRNAnum) {
-		if (getLocInEleNum(location) <= 0) {
-			return -1;
-		}
-		if (mRNAnum < 0) {
-			if (Math.abs(mRNAnum) <= getCod2ExInStart(location)) {
-				if (isCis5to3()) {
-					return location + mRNAnum;
-				}
-				else
-					return  location + Math.abs(mRNAnum);
-			} 
-			else {
-				int exonNum = getLocInEleNum(location) - 1;
-				int remain = Math.abs(mRNAnum) - getCod2ExInStart(location);
-				for (int i = exonNum - 1; i >= 0; i--) {
-					E tmpExon = get(i);
-					// 一个一个外显子的向前遍历
-					if (remain - tmpExon.getLen() > 0) {
-						remain = remain - tmpExon.getLen();
-						continue;
-					}
-					else {
-						if (isCis5to3()) {
-							return tmpExon.getEndCis() - remain + 1;
-						}
-						else {
-							return tmpExon.getEndCis() + remain - 1;
-						}
-					}
-				}
-				return -1;
-			}
-		}
-		else {
-			if (mRNAnum <= getCod2ExInEnd(location)) {
-				if (isCis5to3()) {
-					return location + mRNAnum;
-				}
-				else {
-					return location - mRNAnum;
-				}
-			} 
-			else {
-				int exonNum = getLocInEleNum(location) - 1;
-				int remain = mRNAnum - getCod2ExInEnd(location);
-				for (int i = exonNum + 1; i < size(); i++) {
-					E tmpExon = get(i);
-					// 一个一个外显子的向前遍历
-					if (remain - tmpExon.getLen() > 0) {
-						remain = remain - tmpExon.getLen();
-						continue;
-					}
-					else {
-						if (isCis5to3()) {
-							return tmpExon.getStartCis() + remain - 1;
-						}
-						else {
-							return tmpExon.getStartCis() - remain + 1;
-						}
-					}
-				}
-				return -1;
-			}
-		}
-	}
-	
 	/**
 	 * 必须首先设定ListAbs的方向，并且该方向和其内部的element的方向要一致
 	 * 坐标到element 起点距离
@@ -452,56 +314,6 @@ public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>,
 	}
 	
 	/**
-	 * 依次比较两个list中的元素是否一致。内部调用每个元素的equals方法
-	 * 不比较name，如果需要比较name，那么就用equal
-	 * 暂时还没重写equal
-	 * 外显子比较如果一模一样则返回true；
-	 * @param lsOtherExon
-	 * @return
-	 */
-	public boolean compIso(ListAbs<E, T, K> lsOther)
-	{
-		if (lsOther.size() != size() ) {
-			return false;
-		}
-		for (int i = 0; i < lsOther.size(); i++) {
-			E otherT = lsOther.get(i);
-			E thisT = get(i);
-			if (!otherT.equals(thisT)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	/**
-	 * 返回每个ID对应的具体element
-	 * @return
-	 */
-	public void getLocHashtable(HashMap<String,E> hashLocMap)
-	{
-		for (E ele : this) {
-			String[] ss = ele.getName().split(SEP);
-			for (String string : ss) {
-				hashLocMap.put(string, ele);
-			}
-		}
-	}
-	/**
-	 * 返回每个ID对应的Num
-	 * @return
-	 */
-	public void getHashLocNum(HashMap<String,Integer> hashLocNum)
-	{
-		for (int i = 0; i < size(); i++) {
-			E ele = get(i);
-			String[] ss = ele.getName().split(SEP);
-			for (String string : ss) {
-				hashLocNum.put(string, i);
-			}
-		}
-	}
-	
-	/**
 	 * 返回每个ID对应的具体element
 	 * @return
 	 */
@@ -561,95 +373,139 @@ public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>,
 	public int getLocInEleNum(int location) {
 		return LocPosition(location)[3];
 	}
-
 	/**
-	 * 获得的每一个信息都是实际的而没有clone
-	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
-	 * 采用clone的方法获得信息
-	 * 没找到就返回null
+	 * 返回每个ID对应的具体element
+	 * 输入一个hashmap，在里面填充信息
+	 * @return
 	 */
-	public T searchLocation(int Coordinate) {
-		int[] locInfo = LocPosition(Coordinate);// 二分法查找peaknum的定位
-		if (locInfo == null) {
-			return null;
-		}
-		T gffCod = creatGffCod(listName, Coordinate);
-		if (locInfo[0] == 1) // 定位在基因内
-		{
-			gffCod.setGffDetailThis( get(locInfo[1]) ); 
-			gffCod.booFindCod = true;
-			gffCod.ChrHashListNumThis = locInfo[1];
-			gffCod.insideLOC = true;
-			if (locInfo[1] - 1 >= 0) {
-				gffCod.setGffDetailUp( get(locInfo[1]-1) );
-				gffCod.ChrHashListNumUp = locInfo[1]-1;
-				
-			}
-			if (locInfo[2] != -1) {
-				gffCod.setGffDetailDown(get(locInfo[2]));
-				gffCod.ChrHashListNumDown = locInfo[2];
-			}
-		} else if (locInfo[0] == 2) {
-			gffCod.insideLOC = false;
-			if (locInfo[1] >= 0) {
-				gffCod.setGffDetailUp( get(locInfo[1]) );
-				gffCod.ChrHashListNumUp = locInfo[1];		
-			}
-			if (locInfo[2] != -1) {
-				gffCod.setGffDetailDown( get(locInfo[2]) );
-				gffCod.ChrHashListNumDown = locInfo[2];
+	public void getLocHashtable(HashMap<String,E> hashLocMap)
+	{
+		for (E ele : this) {
+			String[] ss = ele.getName().split(SEP);
+			for (String string : ss) {
+				hashLocMap.put(string, ele);
 			}
 		}
-		return gffCod;
+	}
+	/**
+	 * 返回每个ID对应的Num
+	 * @return
+	 */
+	public void getHashLocNum(HashMap<String,Integer> hashLocNum)
+	{
+		for (int i = 0; i < size(); i++) {
+			E ele = get(i);
+			String[] ss = ele.getName().split(SEP);
+			for (String string : ss) {
+				hashLocNum.put(string, i);
+			}
+		}
+	}
+	/**
+	 * TO BE CHECKED
+	 * 返回距离loc有num Bp的坐标，在mRNA层面，在loc上游时num 为负数
+	 * 在loc下游时num为正数
+	 * 如果num Bp外就没有基因了，则返回-1；
+	 * @param mRNAnum
+	 * NnnnLoc 为-4位，当N与Loc重合时为0
+	 * LnnnnN为5位
+	 */
+	public int getLocDistmRNASite(int location, int mRNAnum) {
+		if (getLocInEleNum(location) <= 0) {
+			return -1;
+		}
+		if (mRNAnum < 0) {
+			if (Math.abs(mRNAnum) <= getCod2ExInStart(location)) {
+				if (isCis5to3()) {
+					return location + mRNAnum;
+				}
+				else
+					return  location + Math.abs(mRNAnum);
+			} 
+			else {
+				int exonNum = getLocInEleNum(location) - 1;
+				int remain = Math.abs(mRNAnum) - getCod2ExInStart(location);
+				for (int i = exonNum - 1; i >= 0; i--) {
+					E tmpExon = get(i);
+					// 一个一个外显子的向前遍历
+					if (remain - tmpExon.getLen() > 0) {
+						remain = remain - tmpExon.getLen();
+						continue;
+					}
+					else {
+						if (isCis5to3()) {
+							return tmpExon.getEndCis() - remain + 1;
+						}
+						else {
+							return tmpExon.getEndCis() + remain - 1;
+						}
+					}
+				}
+				return -1;
+			}
+		}
+		else {
+			if (mRNAnum <= getCod2ExInEnd(location)) {
+				if (isCis5to3()) {
+					return location + mRNAnum;
+				}
+				else {
+					return location - mRNAnum;
+				}
+			} 
+			else {
+				int exonNum = getLocInEleNum(location) - 1;
+				int remain = mRNAnum - getCod2ExInEnd(location);
+				for (int i = exonNum + 1; i < size(); i++) {
+					E tmpExon = get(i);
+					// 一个一个外显子的向前遍历
+					if (remain - tmpExon.getLen() > 0) {
+						remain = remain - tmpExon.getLen();
+						continue;
+					}
+					else {
+						if (isCis5to3()) {
+							return tmpExon.getStartCis() + remain - 1;
+						}
+						else {
+							return tmpExon.getStartCis() - remain + 1;
+						}
+					}
+				}
+				return -1;
+			}
+		}
+	}
+	/**
+	 * 依次比较两个list中的元素是否一致。内部调用每个元素的equals方法
+	 * 不比较name，如果需要比较name，那么就用equal
+	 * 暂时还没重写equal
+	 * 外显子比较如果一模一样则返回true；
+	 * @param lsOtherExon
+	 * @return
+	 */
+	public boolean compIso(ListAbs<E> lsOther)
+	{
+		if (lsOther.size() != size() ) {
+			return false;
+		}
+		for (int i = 0; i < lsOther.size(); i++) {
+			E otherT = lsOther.get(i);
+			E thisT = get(i);
+			if (!otherT.equals(thisT)) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
-	/**
-	 * 返回双坐标查询的结果，内部自动判断 cod1 和 cod2的大小
-	 * 如果cod1 和cod2 有一个小于0，那么坐标不存在，则返回null
-	 * @param chrID 内部自动小写
-	 * @param cod1 必须大于0
-	 * @param cod2 必须大于0
-	 * @return
-	 */
-	public K searchLocationDu(int cod1, int cod2) {
-		if (cod1 < 0 && cod2 < 0) {
-			return null;
-		}
-		T gffCod1 = searchLocation(cod1);
-		T gffCod2 = searchLocation(cod2);
-		if (gffCod1 == null) {
-			System.out.println("error");
-		}
-		K lsAbsDu = creatGffCodDu(gffCod1, gffCod2);
-		
-		if (lsAbsDu.getGffCod1().getItemNumDown() >= 0) {
-			for (int i = lsAbsDu.getGffCod1().getItemNumDown(); i <= lsAbsDu.getGffCod2().getItemNumUp(); i++) {
-				lsAbsDu.getLsGffDetailMid().add(get(i));
-			}
-		}
-		return lsAbsDu;
-	}
-	/**
-	 * 生成一个全新的GffCod类
-	 * @param listName
-	 * @param Coordinate
-	 * @return
-	 */
-	protected abstract T creatGffCod(String listName, int Coordinate);
-	/**
-	 * 生成一个全新的GffCod类
-	 * @param listName
-	 * @param Coordinate
-	 * @return
-	 */
-	protected abstract K creatGffCodDu(T gffCod1, T gffCod2);
 	/**
 	 * 已测试，能用
 	 */
 	@SuppressWarnings("unchecked")
-	public ListAbs<E, T, K> clone() {
-		ListAbs<E, T, K> result = null;
-		result = (ListAbs<E, T, K>) super.clone();
+	public ListAbs<E> clone() {
+		ListAbs<E> result = null;
+		result = (ListAbs<E>) super.clone();
 		result.cis5to3 = cis5to3;
 		result.hashLocExInEnd = hashLocExInEnd;
 		result.hashLocExInStart = hashLocExInStart;
@@ -661,8 +517,6 @@ public abstract class ListAbs <E extends ListDetailAbs, T extends ListCodAbs<E>,
 		return result;
 	}
 }
-
-
 
 
 class BinarySearch
@@ -890,6 +744,7 @@ class BinarySearch
 	}
 	
 }
+
 /**
  * 从小到大排序
  * @author zong0jie
@@ -949,3 +804,4 @@ class CompM2S implements Comparator<ListDetailAbs>
 		return -comp;
 	}
 }
+

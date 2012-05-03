@@ -328,7 +328,24 @@ public class SeqFastaHash extends SeqHashAbs {
 		}
 	}
 	
-	
-	
+	/**
+	 * 将<b>序列名用sep分割</b>然后将第几位的名字写入文件<br>
+	 * 必须写上正则表达式
+	 * @param sep 分隔符 
+	 * @param num 第几位的文本
+	 */
+	public void writeToFile(String sep, int num, String seqOut)
+	{
+		num--;
+		ArrayList<SeqFasta> lsFasta = getSeqFastaAll();
+		TxtReadandWrite txtOut = new TxtReadandWrite(seqOut, true);
+		for (SeqFasta seqFasta : lsFasta) {
+			SeqFasta seqFastaOut = seqFasta.clone();
+			String name = seqFasta.getSeqName().split(sep)[num];
+			seqFastaOut.setSeqName(name);
+			seqFastaOut.setDNA(true);
+			txtOut.writefileln(seqFastaOut.toStringNRfasta());
+		}
+	}
 }
 

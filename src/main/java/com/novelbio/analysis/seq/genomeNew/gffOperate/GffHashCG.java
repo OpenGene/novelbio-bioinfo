@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
-import com.novelbio.base.dataStructure.listOperate.ListHash;
+import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
+import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 
 
 
@@ -32,7 +32,7 @@ import com.novelbio.base.dataStructure.listOperate.ListHash;
  * 
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
-public class GffHashCG extends ListHash<GffDetailCG>
+public class GffHashCG extends ListHashSearch<GffDetailCG>
 {	
 
 	/**
@@ -59,7 +59,7 @@ public class GffHashCG extends ListHash<GffDetailCG>
 		GffHashCG gffHashCG = new GffHashCG();
 		// 实例化三个表
 		locHashtable = new HashMap<String, GffDetailCG>();// 存储每个LOCID和其具体信息的对照表
-		Chrhash = new LinkedHashMap<String, ListAbs<GffDetailCG>>();// 一个哈希表来存储每条染色体
+		Chrhash = new LinkedHashMap<String, ListAbsSearch<GffDetailCG>>();// 一个哈希表来存储每条染色体
 		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
 		// 为读文件做准备
 		TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
@@ -68,7 +68,7 @@ public class GffHashCG extends ListHash<GffDetailCG>
 		String[] ss = null;// 存储分割数组的临时变量
 		String content = "";
 		// 临时变量
-		ListAbs<GffDetailCG> LOCList = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+		ListAbsSearch<GffDetailCG> LOCList = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 		String chrnametmpString = ""; // 染色体的临时名字
 
 		reader.readLine();// 跳过第一行
@@ -101,7 +101,7 @@ public class GffHashCG extends ListHash<GffDetailCG>
 						LOCIDList.add(gffDetail.getName());
 					}
 				}
-				LOCList = new ListAbs<GffDetailCG>();// 新建一个LOCList并放入Chrhash
+				LOCList = new ListAbsSearch<GffDetailCG>();// 新建一个LOCList并放入Chrhash
 				Chrhash.put(chrnametmpString, LOCList);
 			}
 			// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

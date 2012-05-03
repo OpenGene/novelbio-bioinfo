@@ -2,9 +2,9 @@ package com.novelbio.analysis.seq.reseq;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.LocInfo;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.LocInfo;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 
@@ -49,7 +49,7 @@ public class GetSeqInfo extends SeqFastaHash{
  		TxtReadandWrite txtOut = new TxtReadandWrite(txtOutFile, true);
  		for (int i = 0; i < lsSeqFastas.size(); i++) {
 			txtOut.writefileln(">GapNum:"+i+"  "+lsResult.get(i).toString().replace(seqFasta.getSeqName(), ""));
-			txtOut.writefilePerLine(lsSeqFastas.get(i).getSeq(), 100);
+			txtOut.writefilePerLine(lsSeqFastas.get(i).toString(), 100);
 			txtOut.writefileln();
 		}
  		txtOut.close();

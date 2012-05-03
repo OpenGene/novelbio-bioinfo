@@ -2,8 +2,8 @@ package com.novelbio.analysis.seq.reseq;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.LocInfo;
-import com.novelbio.analysis.seq.genomeNew2.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.LocInfo;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class RunInfo {
@@ -31,7 +31,7 @@ public class RunInfo {
 		String out = "/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT2/resultResq/seq12th_manual_coped.txt";
 		String statistic = "/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT2/resultResq/seq12th_manual_copedStatistic.txt";
 		TxtReadandWrite txtOutSeq = new TxtReadandWrite(out, true);
-		txtOutSeq.writefilePerLine(seqFastaHash.getSeqFastaAll().get(0).getSeq(), 100);
+		txtOutSeq.writefilePerLine(seqFastaHash.getSeqFastaAll().get(0).toString(), 100);
 		txtOutSeq.close();
 		ArrayList<LocInfo> lsresult = seqFastaHash.getSeqFastaAll().get(0).getSeqInfo();
 		TxtReadandWrite txtStatistic = new TxtReadandWrite(statistic, true);

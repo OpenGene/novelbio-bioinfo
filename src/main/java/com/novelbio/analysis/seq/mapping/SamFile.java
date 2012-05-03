@@ -15,6 +15,7 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -38,6 +39,12 @@ import net.sf.samtools.util.IOUtil;
  *
  */
 public class SamFile {
+	public static final int MAPPING_ALLREADS = 2;
+	public static final int MAPPING_ALLMAPPEDREADS = 4;
+	public static final int MAPPING_UNMAPPED = 8;
+	public static final int MAPPING_UNIQUE = 16;
+	public static final int MAPPING_REPEAT = 32;
+	
 	Logger logger = Logger.getLogger(SamFile.class);
 	String fileName = "";
 	boolean pairend = false;
@@ -61,6 +68,21 @@ public class SamFile {
 	 * 是否为uniqMapping，默认为true
 	 */
 	boolean uniqMapping = true;
+	
+	
+	public static void main(String[] args) {
+		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_miRNA_Filtered_out.sam");
+		BedSeq bedSeq = samFile.sam2bedSingleEnd(TxtReadandWrite.TXT, "/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_miRNA_Filtered_out.bed", false);
+	}
+	
+	
+	/**
+	 * 返回文件名
+	 * @return
+	 */
+	public String getFileName() {
+		return fileName;
+	}
 	/**
 	 * 是否为uniqMapping，默认为true
 	 * @param uniqMapping
@@ -111,8 +133,47 @@ public class SamFile {
 		return samFileReader;
 	}
 	
-	public long getReadsNum(boolean mapped)
+	int allReadsNum = 0;
+	int unmappedReadsNum = 0;
+	int mappedReadsNum = 0;
+	int uniqMappedReadsNum = 0;
+	int repeatMappedReadsNum = 0;
+	boolean countReadsNum = false;
+	
+	/**
+	 * 返回readsNum
+	 * @return -1表示错误
+	 */
+	public long getReadsNum(int mappingType) {
+		if (!countReadsNum) {
+			getReadsNum();
+			countReadsNum = true;
+		}
+		if (mappingType == MAPPING_ALLREADS) {
+			return allReadsNum;
+		}
+		if (mappingType == MAPPING_UNMAPPED) {
+			return unmappedReadsNum;
+		}
+		if (mappingType == MAPPING_UNIQUE) {
+			return uniqMappedReadsNum;
+		}
+		if (mappingType == MAPPING_REPEAT) {
+			return repeatMappedReadsNum;
+		}
+		if (mappingType == MAPPING_ALLMAPPEDREADS) {
+			return mappedReadsNum;
+		}
+		return -1;
+	}
+	
+	private long getReadsNum()
 	{
+		allReadsNum = 0;
+		unmappedReadsNum = 0;
+		mappedReadsNum = 0;
+		uniqMappedReadsNum = 0;
+		repeatMappedReadsNum = 0;
 		SAMFileReader samFileReader = getSamFileReader();
 		
 		SAMRecordIterator samRecordIterator = samFileReader.iterator();
@@ -122,12 +183,22 @@ public class SamFile {
 			try {
 				samRecord = samRecordIterator.next();
 			} catch (Exception e) {
+				unmappedReadsNum ++;
 				continue;
 			}
-			if (mapped && samRecord.getReadUnmappedFlag()) {
-				continue;
+			allReadsNum ++;
+			if (!samRecord.getReadUnmappedFlag()) {
+				mappedReadsNum ++;
+				if (!samRecord.getAttribute("XT").equals("R")) {
+					uniqMappedReadsNum ++;
+				}
+				else {
+					repeatMappedReadsNum ++;
+				}
 			}
-			readsNum++;
+			else {
+				unmappedReadsNum ++;
+			}
 		}
 		return readsNum;
 	}
@@ -136,9 +207,8 @@ public class SamFile {
 	 * @param ReadName reads的名字，只要写关键词就行了
 	 * @return 没找到就返回null
 	 */
-	public String getReads(String ReadName)
+	public SAMRecord getReads(String ReadName)
 	{
-		String result = "";
 		SAMFileReader samFileReader = getSamFileReader();
 		SAMRecordIterator samRecordIterator = samFileReader.iterator();
 		while (samRecordIterator.hasNext()) {
@@ -149,7 +219,7 @@ public class SamFile {
 				continue;
 			}
 			if (samRecord.getReadName().contains(ReadName)) {
-				return samRecord.getSAMString();
+				return samRecord;
 			}
 		}
 		return null;
@@ -203,7 +273,7 @@ public class SamFile {
 				continue;
 			}
 
-			if (samRecord.getReadUnmappedFlag() || (nonUniq && samRecord.getAttribute("XT").equals("A:R"))) {
+			if (samRecord.getReadUnmappedFlag() || (nonUniq && samRecord.getAttribute("XT").equals("R"))) {
 				fastQline = "@" + samRecord.getReadName() + TxtReadandWrite.huiche + 
 						samRecord.getReadString() +
 						TxtReadandWrite.huiche + "+" + TxtReadandWrite.huiche + 
@@ -319,6 +389,7 @@ public class SamFile {
 		indexer.finish();
 	}
 	/**
+	 * <b>没有考虑bed文件的起点是0还是1</b>
 	 *<b>非uniq mapping只支持bwa的结果</b>
 	 * 返回单端
 	 * 将sam文件改为bed文件，根据mapping质量和正反向进行筛选
@@ -349,7 +420,8 @@ X 8 sequence mismatch
 6: mapping reads数，1表示uniqmapping
 	 */
 	public BedSeq sam2bedSingleEnd(String bedFileCompType, String bedFile, boolean extend) {
-		TxtReadandWrite txtBed = new TxtReadandWrite(bedFileCompType, bedFile, true);
+		BedSeq bedSeq = new BedSeq(bedFile, true);
+		bedSeq.setCompressType(null, bedFileCompType);
 		SAMFileReader samFileReader = getSamFileReader();
 		SAMRecordIterator samRecordIterator = samFileReader.iterator();
 		int wrongReadsNum = 0;//计数有多少是出错的reads
@@ -365,16 +437,16 @@ X 8 sequence mismatch
 //			if (samRecord.getAttribute("XT") == null || samRecord.getMappingQuality() < mapQuality) {
 //				continue;
 //			}
+			//mapping质量判定
 			if (samRecord.getReadUnmappedFlag() || samRecord.getMappingQuality() < mapQuality) {
 				continue;
 			}
 			String[] tmpInfo = null; boolean flagNotUnique = false;
+			//uniqMapping判定
 			if (!uniqMapping && samRecord.getAttribute("XA") != null) {
 				tmpInfo = samRecord.getAttribute("XA").toString().split(";");
 				flagNotUnique = true;
 			}
-			
-			
 			//XA: Alternative hits; format: (chr,pos,CIGAR,NM;)*
 //			System.out.println(samRecord.getAttribute("XT").getClass());
 			/**
@@ -383,70 +455,50 @@ X 8 sequence mismatch
 			 *  means that one of the pairs is uniquely mapped and the other isn't.
 			 */
 			if ( ( uniqMapping && samRecord.getAttribute("XT").equals('U'))|| !uniqMapping ) {
-				String strand = "+"; int start = samRecord.getAlignmentStart(); int end = samRecord.getAlignmentEnd();
-				if (samRecord.getReadNegativeStrandFlag()) {
-					strand = "-";
-				}
+				BedRecord bedRecord = new BedRecord();
+				bedRecord.setRefID(samRecord.getReferenceName()); bedRecord.setStart( samRecord.getAlignmentStart());
+				bedRecord.setEnd(samRecord.getAlignmentEnd());
+				bedRecord.setCIGAR(samRecord.getCigarString()); bedRecord.setStrand(!samRecord.getReadNegativeStrandFlag());
+				bedRecord.setMapQuality(samRecord.getMappingQuality());
 				if (extend) {
-					int[] startend = getLoc(samRecord.getAlignmentStart(), samRecord.getAlignmentEnd(), !samRecord.getReadNegativeStrandFlag());
-					start = startend[0];
-					end = startend[1];
+					bedRecord.extend(this.extend);
 				}
-				String tmpResult = samRecord.getReferenceName() + "\t" + start + "\t" + end
-						+ "\t" + samRecord.getAttribute("MD") + "\t" + samRecord.getCigarString() + "\t" + strand + "\t";
 				//计数，mapping到了几次
 				if (!flagNotUnique) {
-					tmpResult = tmpResult + "1";
+					bedRecord.setMappingNum(1);
 				}
 				else {
-					 tmpResult = tmpResult + (tmpInfo.length + 1) + "";
+					bedRecord.setMappingNum(tmpInfo.length + 1);
 				}
 				
 				if (getSeqName) {
-					tmpResult = tmpResult + "\t" + samRecord.getReadName();
+					bedRecord.setReadsName(samRecord.getReadName());
 				}
-				txtBed.writefileln(tmpResult);
+				bedSeq.writeBedRecord(bedRecord);
 			}
 			if (flagNotUnique) {
 				 //添加新的信息
 				 for (String string : tmpInfo) {
-					String[] tmpResult = null;
-					if (getSeqName) {
-						tmpResult = new String[8];
-					}
-					else {
-						tmpResult = new String[7];
-					}
+					BedRecord bedRecord = new BedRecord();
 					String[] info = string.split(",");
-					tmpResult[0] = info[0];
+					bedRecord.setRefID(info[0]);
 					int start1 = Integer.parseInt(info[1].substring(1)) -1;
 					int end1 =  start1 + samRecord.getReadLength();
-					if (extend) {
-						int[] startend = getLoc(start1, end1, info[1].charAt(0) == '+');
-						start1 = startend[0];
-						end1 = startend[1];
-					}
-					tmpResult[1] = start1 + "";
-					tmpResult[2] =  end1 + "";
-					try {
-						tmpResult[3] = info[2];
-					} catch (Exception e) {
-						tmpResult[3] = "none";
-					}
-					tmpResult[4] = info[2];
-					tmpResult[5] = info[1].charAt(0)+"";
-					tmpResult[6] = tmpInfo.length + 1 + "";
+					bedRecord.setStart(start1); bedRecord.setEnd(end1);
+					bedRecord.setCIGAR(info[2]);
+					bedRecord.setStrand(info[1].charAt(0));
+					bedRecord.setMappingNum(tmpInfo.length + 1);
+					bedRecord.setMapQuality(samRecord.getMappingQuality());
 					 if (getSeqName) {
-						 tmpResult[7] = samRecord.getReadName();
+						 bedRecord.setReadsName(samRecord.getReadName());
 					 }
-						txtBed.writefileln(tmpResult);
+					 bedSeq.writeBedRecord(bedRecord);
 				 }
 			}
 		}
 		System.out.println(wrongReadsNum);
-		txtBed.close();
+		bedSeq.closeWrite();
 		samFileReader.close();
-		BedSeq bedSeq = new BedSeq(bedFile);
 		return bedSeq;
 	}
 	
@@ -538,35 +590,6 @@ X 8 sequence mismatch
 		txtBed.close();
 		BedSeq bedSeq = new BedSeq(bedFile);
 		return bedSeq;
-	}
-	/**
-	 * 给定samRecord，根据extend的长度和方向，返回start，end
-	 * @param samRecord
-	 * @return
-	 * int[2] 0: start
-	 * 1: end
-	 */
-	private int[] getLoc(int start, int end, boolean Strand)
-	{
-		int[] result = new int[2];
-		if (end - start >= extend) {
-			result[0] = start;
-			result[1] = end;
-		}
-		else {
-			//正向
-			if (Strand) {
-				result[0] = start;
-				result[1] = start + extend;
-			
-			}
-			//反向
-			else {
-				result[0] = end - extend;
-				result[1] = end;
-			}
-		}
-		return result;
 	}
 	
 	boolean getSeqName = true;

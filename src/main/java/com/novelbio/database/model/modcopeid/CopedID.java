@@ -742,5 +742,10 @@ public class CopedID implements CopedIDInt{
 		copedID.setUpdateAccIDNoCoped(accID);
 		
 	}
+
+	@Override
+	public String getDBinfo() {
+		return copedID.getDBinfo();
+	}
 	
 }

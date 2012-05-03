@@ -3,6 +3,7 @@ package com.novelbio.base.plot;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -427,7 +428,7 @@ public class PlotScatter extends PlotNBCInteractive{
     
 //	@Override
 	protected void draw(int width, int heigh) {
-		drawPlot(width, heigh);
+		drawPlot();
 		toImage(width, heigh);
 	}
 	/**
@@ -435,17 +436,20 @@ public class PlotScatter extends PlotNBCInteractive{
 	 * @return
 	 */
 	public Drawable getPlot() {
-		drawPlot(10, 10);
+		drawPlot();
 		return plot;
 	}
 	public void clearData() {
 		plot = null;
 	}
+	public void changeSetting() {
+		//TODO 修改配置文件获得图片的改变，初步考虑修改hashDataTable里面的dotstyle
+	}
 	/**
 	 * @param width
 	 * @param heigh
 	 */
-	protected void drawPlot(int width, int heigh) {
+	protected void drawPlot() {
 		for (Entry<DotStyle, DataTable> entry : hashDataTable.entrySet()) {
 			DotStyle dotStyle = entry.getKey();
 			DataTable dataTable = entry.getValue();
@@ -483,7 +487,6 @@ public class PlotScatter extends PlotNBCInteractive{
         plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.INTERSECTION, -Double.MAX_VALUE);
         plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.INTERSECTION, -Double.MAX_VALUE);
 	}
-
 	
 	protected void toImage(int width, int heigh) {
 		int imageType = (alpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
@@ -544,7 +547,19 @@ public class PlotScatter extends PlotNBCInteractive{
 			//the third column is the name column
 			pointRenderer.setSetting(PointRenderer.VALUE_COLUMN, colValue);
 		}
-        plot.getPointRenderer(dataSeries).setSetting(PointRenderer.VALUE_DISPLAYED, dotStyle.isValueVisible());
+		//如果每个点的数值可见
+		if ( dotStyle.isValueVisible()) {
+			try {
+				plot.getPointRenderer(dataSeries).setSetting(PointRenderer.VALUE_DISPLAYED, dotStyle.isValueVisible());
+			} catch (Exception e) {
+		        PointRenderer points = new DefaultPointRenderer2D();
+		        points.setSetting(PointRenderer.SHAPE,  new Ellipse2D.Double(1, 1, 1, 1));
+		        points.setSetting(PointRenderer.COLOR, new Color(0, 0, 0, 0));
+		        points.setSetting(PointRenderer.VALUE_DISPLAYED, dotStyle.isValueVisible());
+		        plot.setPointRenderer(dataSeries, points);
+			}
+		}
+        
 	}
 	
 	private void setAxisAndTitle()

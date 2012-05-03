@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArrayCluster;
 import com.novelbio.base.dataStructure.CompSubArrayInfo;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.Species;

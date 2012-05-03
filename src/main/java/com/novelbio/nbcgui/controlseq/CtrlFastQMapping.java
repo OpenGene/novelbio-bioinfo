@@ -17,6 +17,7 @@ import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.mapping.FastQMapAbs;
 import com.novelbio.analysis.seq.mapping.FastQMapBwa;
 import com.novelbio.analysis.seq.mapping.SAMtools;
+import com.novelbio.analysis.seq.mapping.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -260,10 +261,10 @@ public class CtrlFastQMapping {
 				}
 				
 				fastQ.setFilePath("", chrFile);
-				SAMtools saMtools = fastQ.mapReads();
-				ss[0] = saMtools.getFileName();
+				SamFile samFile = fastQ.mapReads();
+				ss[0] = samFile.getFileName();
 				
-				lsResult.add(new String[]{ ss[1] + ss[2], "SamFormat", saMtools.getSeqNum()+""});
+				lsResult.add(new String[]{ ss[1] + ss[2], "SamFormat", samFile.getReadsNum(SamFile.MAPPING_UNIQUE) + ""});
 				
 			}
 		}
@@ -280,10 +281,10 @@ public class CtrlFastQMapping {
 				}
 				
 				fastQ.setFilePath("", chrFile);
-				SAMtools saMtools = fastQ.mapReads();
-				ss0[0] = saMtools.getFileName();
+				SamFile samFile = fastQ.mapReads();
+				ss0[0] = samFile.getFileName();
 				
-				lsResult.add(new String[]{ ss0[1] + ss0[2], "SamFormat",saMtools.getSeqNum()+""});
+				lsResult.add(new String[]{ ss0[1] + ss0[2], "SamFormat",samFile.getReadsNum(SamFile.MAPPING_UNIQUE) + ""});
 				
 			}
 			//TODO 这里可能有错

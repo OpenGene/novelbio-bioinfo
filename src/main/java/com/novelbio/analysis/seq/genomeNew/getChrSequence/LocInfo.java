@@ -60,17 +60,18 @@ public class LocInfo {
 	 * return locName +"\t"+ chrID +"\t"+ startLoc +"\t"+ endLoc;
 	 */
 	public String toString() {
+		String mylocName = "", mychrID = "";
 		if (locName != null && !locName.equals("")) {
-			locName = locName + "\t";
+			mylocName = locName + "\t";
 		}
 		else
-			locName = "";
+			mylocName = "";
 		if (chrID != null && !chrID.equals("")) {
-			chrID = chrID + "\t";
+			mychrID = chrID + "\t";
 		}
 		else {
-			chrID = "";
+			mychrID = "";
 		}
-		return locName +chrID + startLoc +"\t"+ endLoc;
+		return mylocName +mychrID + startLoc +"\t"+ endLoc;
 	}
 }

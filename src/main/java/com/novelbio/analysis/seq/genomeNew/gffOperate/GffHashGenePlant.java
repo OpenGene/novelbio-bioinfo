@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.Species;
 

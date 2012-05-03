@@ -1,8 +1,8 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 
-public class ListGff extends ListAbs<GffDetailGene, GffCodGene, GffCodGeneDU>{
+public class ListGff extends ListAbsSearch<GffDetailGene, GffCodGene, GffCodGeneDU>{
 
 	/**
 	 * 
@@ -17,8 +17,8 @@ public class ListGff extends ListAbs<GffDetailGene, GffCodGene, GffCodGeneDU>{
 
 	@Override
 	protected GffCodGeneDU creatGffCodDu(GffCodGene gffCod1, GffCodGene gffCod2) {
-		// TODO Auto-generated method stub
-		return null;
+		GffCodGeneDU gffCodGeneDU = new GffCodGeneDU(gffCod1, gffCod2);
+		return gffCodGeneDU;
 	}
 
 }

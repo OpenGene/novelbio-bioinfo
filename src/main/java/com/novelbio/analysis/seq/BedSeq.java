@@ -1,9 +1,12 @@
 package com.novelbio.analysis.seq;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
@@ -22,18 +25,130 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 5: strand <br>
  * 6: mappingNum. 1 means unique mapping
  * @author zong0jie
- *
  */
-public class BedSeq extends SeqComb{	
+public class BedSeq extends SeqComb{
 	private static Logger logger = Logger.getLogger(BedSeq.class);  
+	/**
+	 * mappingNum. 1 means unique mapping
+	 * 一般在第六列
+	 */
+	public static final int MAPPING_NUM_COLUMN = 6;
+	/**
+	 * mappingNum. 1 means unique mapping
+	 * 一般在第六列
+	 */
+	public static final int MAPPING_NUM_STRAND = 5;
 	
 	public BedSeq(String bedFile) {
 		super(bedFile, 1);
 	}
-	
+	/**
+	 * 新建一个bed，可以往里面写东西的那种
+	 * 注意写完后务必调用{@link #closeWrite()}方法关闭写入流并将bed写入转化为bed读取
+	 * @param bedFile
+	 * @param creatBed
+	 */
+	public BedSeq(String bedFile, boolean creatBed) {
+		super(bedFile, 1, creatBed);
+	}
 	public static void main(String[] args) {
 	}
-	
+	/**
+	 * <b>写完后务必用 {@link #closeWrite} 方法关闭</b>
+	 * 创建的时候要设定为creat模式
+	 * @param bedRecord
+	 */
+	public void writeBedRecord(BedRecord bedRecord) {
+		txtSeqFile.writefileln(bedRecord.toString());
+	}
+	/**
+	 * 内部关闭
+	 * @param lsBedRecord
+	 */
+	public void wirteBedRecord(List<BedRecord> lsBedRecord) {
+		for (BedRecord bedRecord : lsBedRecord) {
+			txtSeqFile.writefileln(bedRecord.toString());
+		}
+		closeWrite();
+	}
+	/**
+	 * 写完后务必用此方法关闭
+	 * 关闭输入流，并将bedseq写入转化为bedseq读取
+	 */
+	public void closeWrite() {
+		txtSeqFile.close();
+		super.compressInType = super.compressOutType;
+		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
+	}
+	public Iterable<BedRecord> readlines() {
+		try {
+			return readPerlines();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	/**
+	 * 从第几行开始读，是实际行
+	 * @param lines 如果lines小于1，则从头开始读取
+	 * @return
+	 */
+	public Iterable<BedRecord> readlines(int lines) {
+		lines = lines - 1;
+		try {
+			Iterable<BedRecord> itContent = readPerlines();
+			if (lines > 0) {
+				for (int i = 0; i < lines; i++) {
+					itContent.iterator().hasNext();
+				}
+			}
+			return itContent;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	/**
+	 * 迭代读取文件
+	 * @param filename
+	 * @return
+	 * @throws Exception 
+	 * @throws IOException
+	 */
+	private Iterable<BedRecord> readPerlines() throws Exception {
+		 final BufferedReader bufread =  txtSeqFile.readfile(); 
+		return new Iterable<BedRecord>() {
+			public Iterator<BedRecord> iterator() {
+				return new Iterator<BedRecord>() {
+					public boolean hasNext() {
+						return bedRecord != null;
+					}
+
+					public BedRecord next() {
+						BedRecord retval = bedRecord;
+						bedRecord = getLine();
+						return retval;
+					}
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+					BedRecord getLine() {
+						BedRecord bedRecord = null;
+						try {
+							String linestr = bufread.readLine();
+							if (linestr == null) {
+								return null;
+							}
+							bedRecord = new BedRecord(linestr);
+						} catch (IOException ioEx) {
+							bedRecord = null;
+						}
+						return bedRecord;
+					}
+					BedRecord bedRecord = getLine();
+				};
+			}
+		};
+	}
+
 	/**
 	 * 指定bed文件，以及需要排序的列数，产生排序结果
 	 * @param chrID ChrID所在的列，从1开始记数，按照字母数字排序
@@ -42,7 +157,8 @@ public class BedSeq extends SeqComb{
 	 * @throws Exception
 	 */
 	public BedSeq sortBedFile(int chrID, String sortBedFile,int...arg)  {
-		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
+		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，
+		//第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
 		String tmpTxt = "";
 		if (!compressInType.equals(TxtReadandWrite.TXT))
 		{
@@ -236,8 +352,8 @@ public class BedSeq extends SeqComb{
 			txtOut.setParameter(compressOutType, outFileName, true, false);
 			String content = "";
 			//质量列,一百个
-			String qstring = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-			qstring = qstring + qstring + qstring + qstring + qstring + qstring + qstring + qstring + qstring;
+			String qstring = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+			qstring = qstring + qstring + qstring + qstring + qstring;
 			while ((content = reader.readLine()) != null) {
 				String[] ss = content.split("\t");
 				txtOut.writefileln("@A80TF3ABXX:6:1:1223:2180#/1");
@@ -590,6 +706,5 @@ public class BedSeq extends SeqComb{
 		}
 		txtWrite.close();
 	}
-	
 	
 }

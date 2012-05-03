@@ -2,16 +2,20 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.ListHash;
+import com.novelbio.base.dataStructure.listOperate.ListBin;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
+import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 
 
-public class GffHashRepeat extends ListHash<GffDetailRepeat>{
+public class GffHashRepeat extends ListHashSearch<GffDetailRepeat, ListCodAbs<GffDetailRepeat>, 
+ListCodAbsDu<GffDetailRepeat, ListCodAbs<GffDetailRepeat>>, ListBin<GffDetailRepeat>>
+{
 
 	/**
 	 * 最底层读取gff的方法，本方法只能读取UCSCRepeat文件<br>
@@ -34,7 +38,7 @@ public class GffHashRepeat extends ListHash<GffDetailRepeat>{
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 		  //实例化三个表
 		   locHashtable =new HashMap<String, GffDetailRepeat>();//存储每个LOCID和其具体信息的对照表
-		   Chrhash=new HashMap<String, ArrayList<GffDetailRepeat>>();//一个哈希表来存储每条染色体
+		   Chrhash=new LinkedHashMap<String, ListBin<GffDetailRepeat>>();//一个哈希表来存储每条染色体
 		   LOCIDList=new ArrayList<String>();//顺序存储每个基因号，这个打算用于提取随机基因号
 		   LOCChrHashIDList=new ArrayList<String>();
 		   //为读文件做准备
@@ -44,7 +48,7 @@ public class GffHashRepeat extends ListHash<GffDetailRepeat>{
 		   String[] ss = null;//存储分割数组的临时变量
 		   String content="";
 		   //临时变量
-		   ArrayList<GffDetailRepeat> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+		   ListBin<GffDetailRepeat> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 		   String chrnametmpString=""; //染色体的临时名字
 		   
 		   reader.readLine();//跳过第一行
@@ -60,30 +64,30 @@ public class GffHashRepeat extends ListHash<GffDetailRepeat>{
 				   {
 					   LOCList.trimToSize();
 					   for (GffDetailRepeat gffDetail : LOCList) {
-						   LOCChrHashIDList.add(gffDetail.locString);
+						   LOCChrHashIDList.add(gffDetail.getName());
 					   }
 				   }
-				   LOCList=new ArrayList<GffDetailRepeat>();//新建一个LOCList并放入Chrhash
+				   LOCList=new ListBin<GffDetailRepeat>();//新建一个LOCList并放入Chrhash
 				   Chrhash.put(chrnametmpString, LOCList);
 			   }
 			  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			   //每一行就是一个repeat
 			   GffDetailRepeat gffRepeatmpDetail=new GffDetailRepeat(chrnametmpString, ss[5]+"_"+ss[6]+"_"+ss[9], ss[9].equals("+"));
-			   gffRepeatmpDetail.numberstart=Integer.parseInt(ss[6]);
-			   gffRepeatmpDetail.numberend=Integer.parseInt(ss[7]);
+			   gffRepeatmpDetail.setStartAbs(Integer.parseInt(ss[6]));
+			   gffRepeatmpDetail.setEndAbs(Integer.parseInt(ss[7]));
 			   //装入LOCList和locHashtable
 			   
 			   gffRepeatmpDetail.repeatFamily=ss[12];
 			   gffRepeatmpDetail.repeatClass=ss[11];
 			   gffRepeatmpDetail.repeatName=ss[10];
-			   LOCIDList.add(gffRepeatmpDetail.locString);
+			   LOCIDList.add(gffRepeatmpDetail.getName());
 			   LOCList.add(gffRepeatmpDetail);  
-			   locHashtable.put(gffRepeatmpDetail.locString, gffRepeatmpDetail);
+			   locHashtable.put(gffRepeatmpDetail.getName(), gffRepeatmpDetail);
 		   }
 		   /////////////////////////////////////////////////////////////////////////////////////////////
 		   LOCList.trimToSize();
 		   for (GffDetailRepeat gffDetail : LOCList) {
-			   LOCChrHashIDList.add(gffDetail.locString);
+			   LOCChrHashIDList.add(gffDetail.getName());
 		   }
 		   txtgff.close();
 		 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,7 +105,7 @@ public class GffHashRepeat extends ListHash<GffDetailRepeat>{
 		for (int i = 0; i < LOCNum; i++) 
 		{
 			GffDetailRepeat gffDetailRepeat=locHashtable.get(LOCIDList.get(i));
-			int tmpLength=gffDetailRepeat.numberend-gffDetailRepeat.numberstart;
+			int tmpLength=gffDetailRepeat.getLen();
 			String tmprepeatClass=gffDetailRepeat.repeatClass+"/"+gffDetailRepeat.repeatFamily;
 			if (hashRepeatLength.containsKey(tmprepeatClass)) //含有已知的repeat，则把repeat的长度累加上去
 			{
@@ -114,11 +118,6 @@ public class GffHashRepeat extends ListHash<GffDetailRepeat>{
 			}
 		}
 		return hashRepeatLength;
-	}
-
-	@Override
-	protected GffCodRepeat setGffCod(String chrID, int Coordinate) {
-		return new GffCodRepeat(chrID, Coordinate);
 	}
 
 }

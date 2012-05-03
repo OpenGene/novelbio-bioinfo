@@ -442,6 +442,4 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		}
 		return lsSeqfasta;
 	}
-	
-	
 }

@@ -62,7 +62,20 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	// ArrayList<AGene2Go> lsGene2Gos = null;
 
 	static HashMap<Integer, String> hashDBtype = new HashMap<Integer, String>();
-
+	/**
+	 * 如果输入的是accID，那么返回该accID对应的数据库
+	 * 如果没有则返回null
+	 * @return
+	 */
+	@Override
+	public String getDBinfo() {
+		return this.databaseType;
+	}
+	
+	/**
+	 * 该物种的symbol应该是属于哪个数据库
+	 * @return
+	 */
 	private String getDatabaseTyep() {
 		if (hashDBtype.size() == 0) {
 			hashDBtype.put(39947, NovelBioConst.DBINFO_RICE_TIGR);
@@ -475,11 +488,10 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	Boolean uniqID = null;
 	/**
 	 * 在采用refaccID作为参照进行升级ID的时候，是否必须是uniqID
-	 * uniqID：用给定的参考ID能找到数据库中的唯一基因
+	 * @param uniqID	用给定的参考ID能找到数据库中的唯一基因
 	 * true：只有当uniqID时才升级
 	 * null：默认参数--非uniqID也升级，不过只升级第一个基因
 	 * false：非uniqID也升级，升级搜索到的全部ID，该功能尚未实现
-	 * @param uniqID
 	 */
 	@Override
 	public void setUpdateRefAccIDClear(Boolean uniqID) {
@@ -528,7 +540,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 	}
 	boolean overrideDBinfo = false;
-	String databaseType = "";
+	String databaseType = null;
 
 	/**
 	 * 记录该ID的物种ID和数据库信息，用于修正以前的数据库
@@ -640,6 +652,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		BlastInfo blastInfo = new BlastInfo(null, 0, SubAccID, SubTaxID);
 		if (blastInfo.getSubjectTab().equals(CopedID.IDTYPE_ACCID)) {
 			logger.error("没有该blast的accID："+SubAccID);
+			return;
 		}
 		blastInfo.setQueryID(genUniID);
 		blastInfo.setQueryTax(getTaxID());

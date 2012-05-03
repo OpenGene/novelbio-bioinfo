@@ -26,13 +26,20 @@ public class CopedIDuni extends CopedIDAbs{
 		this.accID = accID;
 		this.genUniID = genUniID;
 		this.idType = idType;
-		if (taxID == 0) {
+		this.taxID = taxID;
+		if (taxID == 0 || (accID != null && !accID.equals("")) && (databaseType == null || databaseType.equals("")) ) {
 			UniProtID uniProtID = new UniProtID();
 			uniProtID.setAccID(accID);
 			uniProtID.setGenUniID(genUniID);
 			ArrayList<UniProtID> lsTmp = servUniProtID.queryLsUniProtID(uniProtID);
 			if (lsTmp.size() > 0) {
-				this.taxID = lsTmp.get(0).getTaxID();
+				if (taxID == 0) {
+					this.taxID = lsTmp.get(0).getTaxID();
+				}
+				//accID存在并且databasetype不存在，才能用accID获得databasetype
+				if ( (accID != null && !accID.equals("")) && (databaseType == null || databaseType.equals(""))) {
+					this.databaseType = lsTmp.get(0).getDBInfo();
+				}
 			}
 			else {
 				logger.error("可能没有该genuniID："+genUniID);

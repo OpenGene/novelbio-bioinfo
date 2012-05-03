@@ -16,7 +16,7 @@ import javax.swing.JButton;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.NumOnlyDoc;
+import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.nbcgui.controltools.CtrlCombFile;
 import com.novelbio.nbcgui.controltools.CtrlMedian;
 
@@ -33,7 +33,7 @@ import javax.swing.SwingConstants;
 
 public class GuiToolsJpanel extends JPanel {
 	private JTextField jtxtFileNameMedian;
-	private JTextField jtxtAccID;
+	private JTextFieldData jtxtAccID;
 	private JTextField jtxtColNum;
 	private JTextField jtxtAccIDComp;
 
@@ -64,8 +64,8 @@ public class GuiToolsJpanel extends JPanel {
 		springLayout.putConstraint(SpringLayout.NORTH, btnOpenfileMedian, 1, SpringLayout.NORTH, jtxtFileNameMedian);
 		add(btnOpenfileMedian);
 		
-		jtxtAccID = new JTextField();
-		jtxtAccID.setDocument(new NumOnlyDoc());
+		jtxtAccID = new JTextFieldData();
+		jtxtAccID.setNumOnly();
 		springLayout.putConstraint(SpringLayout.NORTH, jtxtAccID, 94, SpringLayout.NORTH, this);
 		springLayout.putConstraint(SpringLayout.WEST, jtxtAccID, 9, SpringLayout.WEST, this);
 		springLayout.putConstraint(SpringLayout.SOUTH, jtxtAccID, 120, SpringLayout.NORTH, this);

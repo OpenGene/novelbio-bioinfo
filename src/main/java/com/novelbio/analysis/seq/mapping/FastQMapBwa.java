@@ -66,13 +66,19 @@ public class FastQMapBwa extends FastQMapAbs{
 	 *  base error rate if FLOAT. In the latter case, the maximum edit distance is automatically chosen 
 	 *  for different read lengths. [0.04]
 	 */
-	double mismatch = 0.05;
+	String mismatch = "2";
 	/**
-	 * 百分之多少的mismatch
+	 * 百分之多少的mismatch，或者几个mismatch
 	 * @param mismatch
 	 */
 	public void setMismatch(double mismatch) {
-		this.mismatch = mismatch;
+		if (mismatch >= 1 || mismatch == 0) {
+			this.mismatch = (int)mismatch+"";
+		}
+		else {
+			this.mismatch = mismatch + "";
+		}
+		
 	}
 	/**
 	 * 双端只做unique mapping

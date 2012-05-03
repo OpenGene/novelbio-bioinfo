@@ -248,6 +248,12 @@ GO_REF:0000004<br>
 	 */
 	void setUpdateBlastInfo(String SubGenUniID, String subIDtype,
 			String subDBInfo, int SubTaxID, double evalue, double identities);
+	/**
+	 * 如果输入的是accID，那么返回该accID对应的数据库
+	 * 如果没有则返回null
+	 * @return
+	 */
+	String getDBinfo();
 
 
 

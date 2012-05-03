@@ -68,7 +68,7 @@ public class FastQ extends SeqComb {
 	private int adaptermaxConMismatch = 1;
 	
 	public static void main(String[] args) {
-		FastQ.convertSff2FastQ("/media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_miRNA.fasta", true);
+		FastQ.convertSff2FastQ("/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_miRNA.fasta", true);
 		
 	}
 	
@@ -184,7 +184,7 @@ public class FastQ extends SeqComb {
 	 * 接头是小写 这种情况目前只在ion proton的数据中发现
 	 * 貌似454都这个德性
 	 */
-	public void setAdaptorLowercase(boolean adaptorLowercase) {
+	public void setCaseLowAdaptor(boolean adaptorLowercase) {
 		this.adaptorLowercase = adaptorLowercase;
 	}
 	//////////////////////////
@@ -654,7 +654,7 @@ public class FastQ extends SeqComb {
 	 */
 	private String trimBlockSeq(String block, int start, int end)
 	{
-		if (end - start + 1 < readsLenMin) {
+		if (end - start < readsLenMin) {
 			return null;
 		}
 		String[] ss = block.split(TxtReadandWrite.huiche);

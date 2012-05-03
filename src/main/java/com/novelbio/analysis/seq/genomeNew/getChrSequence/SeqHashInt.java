@@ -111,6 +111,7 @@ public interface SeqHashInt {
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
+	 * 没有染色体或序列超出范围则返回null
 	 */
 	public SeqFasta getSeq(String chrID, List<ExonInfo> lsInfo, boolean getIntron);
 	

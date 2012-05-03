@@ -6,8 +6,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ComboBoxModel;
@@ -29,12 +27,11 @@ import javax.swing.table.DefaultTableModel;
 
 
 import com.novelbio.analysis.annotation.pathway.kegg.kGpath.Scr2Target;
-import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.NumOnlyDoc;
+import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 
@@ -61,7 +58,7 @@ public class GuiSrcToTrgJpanel extends JPanel{
 	private JTextField jTxtFilePathPath;
 	private JButton jBtnFileOpenPath;
 	private JLabel jLabAccColPath;
-	private JTextField jTxtAccColPath;
+	private JTextFieldData jTxtAccColPath;
 	private JComboBox jCombBlastTaxPath;
 	private JCheckBox jChkBlastPath;
 	private ButtonGroup btnGroupPathMethod;
@@ -129,8 +126,8 @@ public class GuiSrcToTrgJpanel extends JPanel{
 			jLabPathPath.setText("InputData");
 		}
 		{
-			jTxtAccColPath = new JTextField();
-			jTxtAccColPath.setDocument(new NumOnlyDoc());
+			jTxtAccColPath = new JTextFieldData();
+			jTxtAccColPath.setNumOnly();
 		}
 		{
 			jLabAccColPath = new JLabel();

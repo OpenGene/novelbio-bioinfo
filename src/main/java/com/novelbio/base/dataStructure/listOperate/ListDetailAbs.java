@@ -119,7 +119,9 @@ public class ListDetailAbs implements Cloneable{
 	 */
 	public ListDetailAbs(String chrID, String ItemName,Boolean cis5to3)
 	{
-		this.parentName = chrID.toLowerCase();
+		if (chrID != null) {
+			this.parentName = chrID.toLowerCase();
+		}
 		this.ItemName = ItemName;
 		this.cis5to3 = cis5to3;
 	}
@@ -260,6 +262,28 @@ public class ListDetailAbs implements Cloneable{
 	 */
 	public void setStartAbs(int numberstart) {
 		this.numberstart = numberstart;
+	}
+	/**
+	 * @param numberend 条目终点,根据基因方向确定
+	 */
+	public void setEndCis(int numberend) {
+		if (isCis5to3() == null || isCis5to3()) {
+			this.numberend = numberend;
+		}
+		else {
+			this.numberstart = numberend;
+		}
+	}
+	/**
+	 * @param numberstart 条目起点,根据基因方向确定
+	 */
+	public void setStartCis(int numberstart) {
+		if (isCis5to3() == null || isCis5to3()) {
+			this.numberstart = numberstart;
+		}
+		else {
+			this.numberend = numberstart;
+		}
 	}
 	/**
 	 * 坐标是否在基因的内部，包括Tss和GeneEnd的拓展区域

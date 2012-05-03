@@ -34,8 +34,7 @@ import com.novelbio.analysis.coexp.simpCoExp.SimpCoExp;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.NumOnlyDoc;
-import com.novelbio.base.gui.NumberOnlyDoc;
+import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 
@@ -62,7 +61,7 @@ public class GuiPearsonJpanel extends JPanel{
 	private JTextField jTxtFilePathPath;
 	private JButton jBtnFileOpenPath;
 	private JLabel jLabAccColPath;
-	private JTextField jTxtAccColPath;
+	private JTextFieldData jTxtAccColPath;
 	private JComboBox jCombSelSpePath;
 	private JLabel jLabPathQtaxID;
 	private JScrollPane jScrollPaneInputPath;
@@ -126,8 +125,8 @@ public class GuiPearsonJpanel extends JPanel{
 			jLabPathPath.setText("InputData");
 		}
 		{
-			jTxtAccColPath = new JTextField();
-			jTxtAccColPath.setDocument(new NumberOnlyDoc(5));
+			jTxtAccColPath = new JTextFieldData();
+			jTxtAccColPath.setNumOnly(5);
 		}
 		{
 			jLabAccColPath = new JLabel();

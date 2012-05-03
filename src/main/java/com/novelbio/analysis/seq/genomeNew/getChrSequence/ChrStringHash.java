@@ -26,7 +26,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class ChrStringHash extends SeqHashAbs{
 	private static Logger logger = Logger.getLogger(ChrStringHash.class);
-
+	
 	/**
 	 * 随机硬盘读取染色体文件的方法 注意
 	 * 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
@@ -44,7 +44,6 @@ public class ChrStringHash extends SeqHashAbs{
 		super(chrFilePath, regx, CaseChange);
 		setFile();
 	}
-	
 	/**
 	 * 将染色体信息读入哈希表,按照RandomAccessFile保存，并返回 哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10
 	 * 哈希表的值是染色体的序列，其中无空格
@@ -145,7 +144,11 @@ public class ChrStringHash extends SeqHashAbs{
 	 */
 	protected SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation)
 			throws IOException {
+
 		startlocation--;
+		if (startlocation == 16861459L) {
+			System.out.println("stop");
+		}
 		RandomAccessFile chrRASeqFile = hashChrSeqFile.get(chrID.toLowerCase());// 判断文件是否存在
 		if (chrRASeqFile == null) {
 			logger.error( "无该染色体: "+ chrID);
@@ -196,7 +199,12 @@ public class ChrStringHash extends SeqHashAbs{
 		
 		if (rowendNum - rowstartNum == 0) {
 			String seqResult = chrRASeqFile.readLine();
-			seqResult = seqResult.substring(0, endrowBias - startrowBias);
+			try {
+				seqResult = seqResult.substring(0, endrowBias - startrowBias);
+			} catch (Exception e) {
+				System.out.println("stop");
+			}
+			
 			seqFasta.setSeq(seqResult);
 		} else {
 			for (int i = 0; i < rowendNum - rowstartNum; i++) {

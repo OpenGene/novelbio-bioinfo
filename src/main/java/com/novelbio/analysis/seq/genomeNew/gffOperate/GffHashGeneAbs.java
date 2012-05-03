@@ -19,16 +19,16 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArrayCluster;
 import com.novelbio.base.dataStructure.CompSubArrayInfo;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-import com.novelbio.base.dataStructure.listOperate.ListHash;
+import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.test.testextend.a;
 
-public abstract class GffHashGeneAbs extends ListHash<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf
+public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf
 {
 	int taxID = 0;
 	String acc2GeneIDfile = "";

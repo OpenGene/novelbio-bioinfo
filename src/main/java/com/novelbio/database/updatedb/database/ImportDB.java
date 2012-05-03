@@ -19,14 +19,14 @@ public class ImportDB {
 //		updateRiceID();//只导了前两个
 //		updateTAIR();
 //		 updateZB();
-//		updateEnsembl();
+		updateEnsembl();
 //		updateYeast();
 
 
 //		updateMicroarray();
 //		updateSoyBean();
-		updateZeaMaize();
-		updateBlast();
+//		updateZeaMaize();
+//		updateBlast();
 //		updateAffy();
 	}
 	/**
@@ -77,17 +77,24 @@ public class ImportDB {
 	}
 	private static void updateEnsembl()
 	{
-		String ensemblFileMouse = "/media/winE/Bioinformatics/DataBase/Mus_musculus.NCBIM37.65.gtf"; 
-		String ucscGffFileMouse = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/refseqSortUsing.txt";
-		int taxIDMouse = 10090;
+//		String ensemblFileMouse = "/media/winE/Bioinformatics/DataBase/Mus_musculus.NCBIM37.65.gtf"; 
+//		String ucscGffFileMouse = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/refseqSortUsing.txt";
+//		int taxIDMouse = 10090;
 		Ensembl ensembl = new Ensembl();
 //		ensembl.setEnsemblFile(ensemblFileMouse, ucscGffFileMouse, taxIDMouse);
 		
-		String ensemblFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/Gallus_gallus.WASHUC2.65.gtf";
-		String ucscGffFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/chicken_Refseq_UCSCGFF";
-		int taxIDChicken = 9031;
-		ensembl.setEnsemblFile(ensemblFileChicken, ucscGffFileChicken, taxIDChicken);
+//		String ensemblFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/Gallus_gallus.WASHUC2.65.gtf";
+//		String ucscGffFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/chicken_Refseq_UCSCGFF";
+//		ensembl.setEnsemblFile(ensemblFileChicken, ucscGffFileChicken, taxIDChicken);
+//		ensembl.update();
+		
+		String ensemblFileCow = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_Ensembl.GTF";
+		String ucscFileCow = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_UCSC";
+		int taxIDCow = 9913;
+		ensembl.setEnsemblFile(ensemblFileCow, ucscFileCow, taxIDCow);
 		ensembl.update();
+		
+		
 	}
 	private static void updateRiceID()
 	{
@@ -113,7 +120,7 @@ public class ImportDB {
 		String blastFile = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA";
 		String outFIle = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA_out";
 		int queryTaxID = 0;
-		Blast blast = new Blast();
+		BlastUp2DB blast = new BlastUp2DB();
 		blast.setQueryID(CopedID.IDTYPE_ACCID);
 		blast.setBlastID(CopedID.IDTYPE_GENEID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_ENSEMBL);
@@ -126,7 +133,7 @@ public class ImportDB {
 		blastFile = "/media/winE/Bioinformatics/BLAST/result/rice/tigrrice2tairath";
 		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
 		queryTaxID = 39947;
-		blast = new Blast();
+		blast = new BlastUp2DB();
 		blast.setQueryID(CopedID.IDTYPE_ACCID);
 		blast.setBlastID(CopedID.IDTYPE_ACCID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_RICE_TIGR);
@@ -139,7 +146,7 @@ public class ImportDB {
 		blastFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/dre_nr2hsa_refseq";
 		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
 		queryTaxID = 7955;
-		blast = new Blast();
+		blast = new BlastUp2DB();
 		blast.setQueryID(CopedID.IDTYPE_GENEID);
 		blast.setBlastID(CopedID.IDTYPE_GENEID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
@@ -152,7 +159,7 @@ public class ImportDB {
 		blastFile = "/media/winE/Bioinformatics/BLAST/result/Pichia/pichia2SSC.txt";
 		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
 		queryTaxID = 4922;
-		blast = new Blast();
+		blast = new BlastUp2DB();
 		blast.setQueryID(CopedID.IDTYPE_ACCID);
 		blast.setBlastID(CopedID.IDTYPE_ACCID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_PPA_ID);
@@ -165,7 +172,7 @@ public class ImportDB {
 		blastFile = "/media/winE/Bioinformatics/BLAST/result/maize/maize2AthFinal5b.txt";
 		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
 		queryTaxID = 4577;
-		blast = new Blast();
+		blast = new BlastUp2DB();
 		blast.setQueryID(CopedID.IDTYPE_ACCID);
 		blast.setBlastID(CopedID.IDTYPE_ACCID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
@@ -173,12 +180,12 @@ public class ImportDB {
 		blast.setSubTaxID(3702);
 		blast.setTaxID(queryTaxID);
 		blast.setTxtWriteExcep(outFIle);
-		blast.updateFile(blastFile, false);
+//		blast.updateFile(blastFile, false);
 		/////////////////   soybean   /////////////////////////
 		blastFile = "/media/winE/Bioinformatics/BLAST/result/soybean/soybean2Ath.xls";
 		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
 		queryTaxID = 3847;
-		blast = new Blast();
+		blast = new BlastUp2DB();
 		blast.setQueryID(CopedID.IDTYPE_ACCID);
 		blast.setBlastID(CopedID.IDTYPE_ACCID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_GLYMAX_SOYBASE);
@@ -186,7 +193,7 @@ public class ImportDB {
 		blast.setSubTaxID(3702);
 		blast.setTaxID(queryTaxID);
 		blast.setTxtWriteExcep(outFIle);
-//		blast.updateFile(blastFile, false);
+		blast.updateFile(blastFile, false);
 	}
 	
 	private static void updateAffy()
@@ -359,7 +366,7 @@ public class ImportDB {
 	}
 	
 	private static void updateSoyBean() {
-		String soyDbxref = "/media/winE/Bioinformatics/GenomeData/soybean/ncbi/dbxref.xls";
+		String soyDbxref = "/media/winE/Bioinformatics/GenomeData/soybean/dbxref";
 		String soyAnno = "/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_annotation_info.txt";
 		SoyBean soyBean = new SoyBean();
 		soyBean.setSoyDbxref(soyDbxref);

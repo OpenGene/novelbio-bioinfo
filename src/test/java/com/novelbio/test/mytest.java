@@ -87,6 +87,7 @@ import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.Rplot;
+import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
@@ -110,11 +111,9 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		SamFile saMtoolsNBC = new SamFile("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_BWA_RealnDeDup.bam");
-		SamFile saMtoolsSBC = new SamFile("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/SBCmapping/A.sam");
-//		System.out.println("NBCreads:"+saMtoolsNBC.getReadsNum(true));
-		System.out.println("SBCreads:"+saMtoolsSBC.getReadsNum(true));
-//		System.out.println(saMtoolsNBC.getReads("7:7856:10367"));
+		CopedID copedID = new CopedID("ENSBTAT00000064644", 0);
+	
+		System.out.println(copedID.getTaxID());
 	}
 	
 	

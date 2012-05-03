@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.ElementAbs;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
+import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 
 /**
  * pfam domain的数据库，指定每个蛋白都有哪些domain
  * @author zong0jie
  *
  */
-public class DomainPfam extends ListAbs<DomainDetail>{
+public class DomainPfam extends ListAbsSearch<DomainDetail, ListCodAbs<DomainDetail>, ListCodAbsDu<DomainDetail,ListCodAbs<DomainDetail>>>{
 	static HashMap<String, DomainPfam> hashDomain = new HashMap<String, DomainPfam>();
 	String accID = "";
 	
@@ -22,11 +24,6 @@ public class DomainPfam extends ListAbs<DomainDetail>{
 	
 	public String getAccID() {
 		return accID;
-	}
-	
-	public void addDomainDetail(DomainDetail domainDetail)
-	{
-		lsElement.add(domainDetail);
 	}
 	
 	public static HashMap<String, DomainPfam> readDomain(String pfamFileTxt)
@@ -45,7 +42,7 @@ public class DomainPfam extends ListAbs<DomainDetail>{
 				domainPfam = new DomainPfam(tmpAccID);
 				hashDomain.put(tmpAccID, domainPfam);
 			}
-			domainPfam.addDomainDetail(new DomainDetail(string));
+			domainPfam.add(new DomainDetail(string));
 		}
 		return hashDomain;
 	}
@@ -76,12 +73,12 @@ public class DomainPfam extends ListAbs<DomainDetail>{
 		String result = "";
 		int domainNum = getLocInEleNum(aaLoc);
 		if (domainNum > 0) {
-			result = "inside domain: " + "\tdomain name:" + lsElement.get(getLocInEleNum(domainNum - 1)).getName();
+			result = "inside domain: " + "\tdomain name:" + get(getLocInEleNum(domainNum - 1)).getName();
 		}
 		else if (domainNum < 0) {
 			result = "outside domain: ";
-			result = result + "\tbetween domain " + lsElement.get(-domainNum - 1).getName() + 
-			" and " + lsElement.get(-domainNum - 1).getName();
+			result = result + "\tbetween domain " + get(-domainNum - 1).getName() + 
+			" and " + get(-domainNum - 1).getName();
 		}
 		else {
 			result = "outside domain: ";
@@ -94,69 +91,56 @@ public class DomainPfam extends ListAbs<DomainDetail>{
 		}
 		return result;
 	}
+
+	@Override
+	protected ListCodAbs<DomainDetail> creatGffCod(String listName,
+			int Coordinate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected ListCodAbsDu<DomainDetail, ListCodAbs<DomainDetail>> creatGffCodDu(
+			ListCodAbs<DomainDetail> gffCod1, ListCodAbs<DomainDetail> gffCod2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }
 
 
-class DomainDetail implements ElementAbs
+class DomainDetail extends ListDetailAbs
 {
 	/**
 	 * 输入pfam批量结果中的某一行，获得该domain的具体信息
 	 * @param domainPfamLine
 	 */
 	public DomainDetail(String domainPfamLine) {
+		super();
 		String[] ss = domainPfamLine.split("\t");
-		this.startLoc = Integer.parseInt(ss[1]);
-		this.endLoc = Integer.parseInt(ss[2]);
+		super.setParentName(ss[0]);
+		super.setCis5to3(true);
+		super.setName(ss[6]);
+		super.setStartAbs(Integer.parseInt(ss[1]));
+		super.setEndAbs(Integer.parseInt(ss[2]));
 		this.domainID = ss[5];
-		this.Name = ss[6];
 	}
 	
 	
 	
-	public DomainDetail(int startLoc, int endLoc, String name, String description) {
-		this.startLoc = startLoc;
-		this.endLoc = endLoc;
-		this.Name = name;
+	public DomainDetail(String parentName, int startLoc, int endLoc, String name, String description) {
+		super(parentName, name, true);
+		super.setStartAbs(startLoc);
+		super.setEndAbs(endLoc);
 		this.Description = description;
 	}
-	
-	int startLoc = 0;
-	int endLoc = 0;
 	String domainID = "";
-	String Name = "";
 	String Description = "";
-	public String getName() {
-		return Name;
-	}
 	public String getDescription() {
 		return Description;
 	}
 	public String getDomainID() {
 		return domainID;
 	}
-	@Override
-	public int getStart() {
-		return this.startLoc;
-	}
 	
-	@Override
-	public int getEnd() {
-		return this.endLoc;
-	}
-	
-	@Override
-	public void setStart(int startLoc) {
-		this.startLoc = startLoc;
-	}
-
-	@Override
-	public void setEnd(int endLoc) {
-		this.endLoc = endLoc;
-	}
-
-	@Override
-	public int getLen() {
-		return Math.abs(startLoc - endLoc) + 1;
-	}
 }

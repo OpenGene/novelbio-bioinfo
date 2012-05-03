@@ -12,7 +12,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfoSnpIndel;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 
@@ -202,7 +202,7 @@ public class GffChrSeq extends GffChrAbs{
 		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
 		ArrayList<String> lsID = gffHashGene.getLOCChrHashIDList();
 		for (String string : lsID) {
-			String geneID = string.split(ListAbs.SEP)[0];
+			String geneID = string.split(ListAbsSearch.SEP)[0];
 			SeqFasta seqFasta = getPromoter(geneID, upBp, downBp);
 			if (seqFasta == null) {
 				logger.error("没有提取到序列"+geneID);
@@ -232,6 +232,7 @@ public class GffChrSeq extends GffChrAbs{
 	}
 	/**
 	 * 获得某个物种的全部cds序列，从refseq中提取更加精确
+	 * 每个基因只选取其中一条序列
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
 	 * @param IsoName 转录本的名字
 	 * @param cis5to3 正反向，在提出的正向转录本的基础上，是否需要反向互补
@@ -247,14 +248,14 @@ public class GffChrSeq extends GffChrAbs{
 		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		for (String string : lsID) {
-			gffGeneIsoInfo = gffHashGene.searchISO(string.split(ListAbs.SEP)[0]);
+			gffGeneIsoInfo = gffHashGene.searchISO(string.split(ListAbsSearch.SEP)[0]);
 			ArrayList<ExonInfo> lsCDS = gffGeneIsoInfo.getIsoInfoCDS();
 			if (lsCDS.size() > 0) {
 				SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), lsCDS, false);
 				if (seq == null || seq.length() < 3) {
 					continue;
 				}
-				seq.setSeqName(string.split(ListAbs.SEP)[0]);
+				seq.setSeqName(string.split(ListAbsSearch.SEP)[0]);
 				lsResult.add(seq);
 			}
 		}
@@ -262,7 +263,7 @@ public class GffChrSeq extends GffChrAbs{
 	}
 	
 	/**
-	 * 获得某个物种的全部cds的每个ISO序列，从refseq中提取更加精确
+	 * 获得某个物种的全部cds，也就是从ATG到UAG的每个ISO序列，从refseq中提取更加精确
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
 	 * @param IsoName 转录本的名字
 	 * @param cis5to3 正反向，在提出的正向转录本的基础上，是否需要反向互补
@@ -278,12 +279,44 @@ public class GffChrSeq extends GffChrAbs{
 		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
 		GffDetailGene gffDetailGene = null;
 		for (String string : lsID) {
-			gffDetailGene = gffHashGene.searchLOC(string.split(ListAbs.SEP)[0]);
+			gffDetailGene = gffHashGene.searchLOC(string.split(ListAbsSearch.SEP)[0]);
 			gffDetailGene.removeDupliIso();
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				ArrayList<ExonInfo> lsCDS = gffGeneIsoInfo.getIsoInfoCDS();
 				if (lsCDS.size() > 0) {
 					SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), lsCDS, false);
+					if (seq == null || seq.length() < 3) {
+						continue;
+					}
+					seq.setSeqName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+					lsResult.add(seq);
+				}
+			}
+		}
+		return lsResult;
+	}
+	/**
+	 * 获得某个物种的全部RNA全长序列的每个ISO序列，从refseq中提取更加精确
+	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
+	 * @param IsoName 转录本的名字
+	 * @param cis5to3 正反向，在提出的正向转录本的基础上，是否需要反向互补
+	 * @param startExon 具体某个exon
+	 * @param endExon 具体某个Intron
+	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
+	 * @param getIntron
+	 * @return
+	 */
+	public ArrayList<SeqFasta> getSeqAllIso()
+	{
+		ArrayList<String> lsID = gffHashGene.getLOCChrHashIDList();
+		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
+		GffDetailGene gffDetailGene = null;
+		for (String string : lsID) {
+			gffDetailGene = gffHashGene.searchLOC(string.split(ListAbsSearch.SEP)[0]);
+			gffDetailGene.removeDupliIso();
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				if (gffGeneIsoInfo.size() > 0) {
+					SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, false);
 					if (seq == null || seq.length() < 3) {
 						continue;
 					}
@@ -306,7 +339,7 @@ public class GffChrSeq extends GffChrAbs{
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		GffDetailGene gffDetailGene = null;
 		for (String string : lsID) {
-			gffDetailGene = gffHashGene.searchLOC(string.split(ListAbs.SEP)[0]);
+			gffDetailGene = gffHashGene.searchLOC(string.split(ListAbsSearch.SEP)[0]);
 			gffDetailGene.removeDupliIso();
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				CopedID copedID = new CopedID(gffDetailGene.getName().split(GffDetailGene.SEP_GENE_NAME)[0], gffHashGene.getTaxID());

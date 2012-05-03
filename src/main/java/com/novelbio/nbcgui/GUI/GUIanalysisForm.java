@@ -56,6 +56,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiToolsJpanel guiTools;
 	private GuiFastQJpanel guiFastQ;
 	private GuiLimmaJpanel guiLimma;
+	private GuiBlast guiBlast; 
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -112,7 +113,8 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiLimma = new GuiLimmaJpanel();
 				jTabbedPane1.addTab("Microarray", null, guiLimma, null);
 				
-
+				guiBlast = new GuiBlast();
+				jTabbedPane1.addTab("Blast", null, guiBlast, null);
 			}
 			pack();
 			this.setSize(1049, 699);

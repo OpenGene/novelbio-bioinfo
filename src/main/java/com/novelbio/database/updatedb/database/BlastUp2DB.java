@@ -3,8 +3,8 @@ package com.novelbio.database.updatedb.database;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 
-public class Blast extends ImportPerLine{
-	public  Blast() {
+public class BlastUp2DB extends ImportPerLine{
+	public  BlastUp2DB() {
 		this.readFromLine = 1;
 	}
 	int subTaxID = 0;
@@ -12,7 +12,19 @@ public class Blast extends ImportPerLine{
 	public void setQueryDBinfo(String queryDBinfo) {
 		this.queryDBinfo = queryDBinfo;
 	}
-	
+	/**
+	 * ref|NP_002932| 这种类型的，就会用正则表达式去抓里面的ID
+	 */
+	boolean idtypeBlast = false;
+	/**
+	 *  ref|NP_002932| 这种类型的，就会用正则表达式去抓里面的ID
+	 *  id必须在第一个 “|” 和第二个 “|” 中间
+	 *  这时候就要将其设定为true。否则的话会将blast的第二列全部导入
+	 * @param idtypeBlast 默认是false
+	 */
+	public void setIdtypeBlast(boolean idtypeBlast) {
+		this.idtypeBlast = idtypeBlast;
+	}
 	/**
 	 * blast到的物种ID
 	 * @param subTaxID
@@ -20,7 +32,11 @@ public class Blast extends ImportPerLine{
 	public void setSubTaxID(int subTaxID) {
 		this.subTaxID = subTaxID;
 	}
-	String blastDBinfo= NovelBioConst.DBINFO_NCBIID;
+	String blastDBinfo= null;
+	/**
+	 * 设定blast到的ID的数据库
+	 * @param blastDBinfo
+	 */
 	public void setBlastDBinfo(String blastDBinfo)
 	{
 		this.blastDBinfo = blastDBinfo;
@@ -30,6 +46,7 @@ public class Blast extends ImportPerLine{
 	String blastIDType = CopedID.IDTYPE_ACCID;
 	/**
 	 * 第一列，是accID还是geneID还是UniID
+	 * @param IDtype 默认是CopedID.IDTYPE_ACCID
 	 * @return
 	 */
 	public void setQueryID(String IDtype) {
@@ -37,7 +54,7 @@ public class Blast extends ImportPerLine{
 	}
 	/**
 	 * blast到的ID是accID还是geneID还是UniID
-	 * @param blastID
+	 * @param blastID 默认是CopedID.IDTYPE_ACCID
 	 */
 	public void setBlastID(String blastID) {
 		this.blastIDType = blastID;
@@ -58,7 +75,16 @@ public class Blast extends ImportPerLine{
 			copedID.setUpdateBlastInfo(ss[1],blastIDType,  blastDBinfo, subTaxID, Double.parseDouble(ss[10]), Double.parseDouble(ss[2]));
 		}
 		else {
-			copedID.setUpdateBlastInfo(ss[1], blastDBinfo, subTaxID, Double.parseDouble(ss[10]), Double.parseDouble(ss[2]));
+			String accID = ss[1];
+			if (idtypeBlast) {
+				accID = CopedID.getBlastAccID(ss[1]);
+			}
+			//如果没有blastDBinfo，就用已有的accID去获得该blastDBinfo
+			if (blastDBinfo == null || blastDBinfo.equals("")) {
+				CopedID copedIDBlast = new CopedID(accID, subTaxID);
+				blastDBinfo = copedIDBlast.getDBinfo();
+			}
+			copedID.setUpdateBlastInfo(accID, blastDBinfo, subTaxID, Double.parseDouble(ss[10]), Double.parseDouble(ss[2]));
 		}
 		return copedID.update(false);
 	}

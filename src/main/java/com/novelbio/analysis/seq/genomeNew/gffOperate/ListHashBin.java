@@ -10,12 +10,12 @@ import java.util.LinkedList;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
-import com.novelbio.base.dataStructure.listOperate.ListHash;
+import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 
 
 
@@ -25,7 +25,7 @@ import com.novelbio.base.dataStructure.listOperate.ListHash;
  * @author zong0jie
  *
  */
-public class ListHashBin extends ListHash<ListDetailBin, ListCodAbs<ListDetailBin>, ListCodAbsDu<ListDetailBin,ListCodAbs<ListDetailBin>>, ListBin<ListDetailBin>>{
+public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDetailBin>, ListCodAbsDu<ListDetailBin,ListCodAbs<ListDetailBin>>, ListBin<ListDetailBin>>{
 	
 	boolean peakcis = true;
 	int colChrID = 1;
@@ -65,6 +65,7 @@ public class ListHashBin extends ListHash<ListDetailBin, ListCodAbs<ListDetailBi
 	public ListHashBin() {}
 	
 	/**
+	 * 可以覆盖
      * 最底层读取peak坐标文件的方法，读取生成的peak信息，只读取peak所在Chr列，peak正反向(最好都为正)，peak起点列，peak终点列，并且指定从第几行读起，所有行和列都是实际行和列<br>
      * <b>peak</b> 正反向最好都为正，方便后续处理<br>
      * 输入Gff文件，<b>其中peak可以不按照顺序排列，本类内部会给排序</b>，最后获得两个哈希表和一个list表, 结构如下：<br>
@@ -121,8 +122,8 @@ public class ListHashBin extends ListHash<ListDetailBin, ListCodAbs<ListDetailBi
 		ReadGff(lsTmpInfo);
 	}
 
-	
 	/**
+	 * 可以覆盖它
 	 * 内部有排序
 	 * 用list来表示peak的信息，必须
 	 * 0：chrID 同一个chrID 表示为同一类型中的细分

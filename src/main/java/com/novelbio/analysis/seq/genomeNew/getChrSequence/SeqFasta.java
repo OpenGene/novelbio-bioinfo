@@ -15,7 +15,7 @@ import com.novelbio.base.dataStructure.PatternOperate;
  * 本类专门用来装fasta文件的具体信息，的超类
  * 本类与Seq没有关系
  */
-public class SeqFasta {
+public class SeqFasta implements Cloneable {
 	private String SeqName;
 	private String SeqSequence;
 	private static Logger logger = Logger.getLogger(SeqFasta.class);
@@ -23,7 +23,8 @@ public class SeqFasta {
 	
 	public static final int SEQ_UNKNOWN = 128;
 	public static final int SEQ_PRO = 256;
-	public static final int SEQ_NR = 512;
+	public static final int SEQ_DNA = 512;
+	public static final int SEQ_RNA = 1024;
 	/**
 	 * 结果的文件是否转化为大小写 True：小写 False：大写 null：不变
 	 * @return
@@ -533,15 +534,6 @@ public class SeqFasta {
 	}
 	
 	/**
-	 * 获得具体序列的反向互补序列
-	 */
-	public SeqFasta getSeqRC2() {
-		String seq = reservecomplement(SeqSequence);
-		SeqFasta seqFasta = new SeqFasta(SeqName, seq);
-		seqFasta.cis5to3 = !cis5to3;
-		return seqFasta;
-	}
-	/**
 	 * 输入序列坐标信息：序列名-序列起点和终点 返回序列
 	 * 
 	 * @param hashSeq
@@ -591,6 +583,7 @@ public class SeqFasta {
 
 	/**
 	 * 输入序列，互补对照表 获得反向互补序列
+	 * 出错则返回null;
 	 */
 	private String reservecomplement(String sequence) {
 		if (compmap == null) {
@@ -605,7 +598,7 @@ public class SeqFasta {
 				recomseq.append(compmap.get(sequence.charAt(i)));
 			} else {
 				logger.error(SeqName + " 含有未知碱基 " + sequence.charAt(i));
-				return SeqName + "含有未知碱基 " + sequence.charAt(i);
+				return null;
 			}
 		}
 		return recomseq.toString();
@@ -642,7 +635,7 @@ public class SeqFasta {
 		seqFasta.SeqName = SeqName;
 		seqFasta.cis5to3 = !cis5to3;
 		seqFasta.AA3Len = AA3Len;
-		seqFasta.SeqSequence = reservecom(SeqSequence);
+		seqFasta.SeqSequence = reservecomplement(SeqSequence);
 		return seqFasta;
 	}
 	
@@ -667,7 +660,6 @@ public class SeqFasta {
 		if (!booend) {
 			endSeq = SEP_SEQ;
 		}
-		
 		if (start < end) {
 			start --;
 		}
@@ -954,7 +946,11 @@ public class SeqFasta {
 		}
 		return lsResult;
 	}
-	
+	/**
+	 * 判断该序列是DNA，RNA，还是蛋白，或者也不知道是什么
+	 * @return
+	 * SeqFasta.SEQ_DNA等
+	 */
 	public int getSeqType()
 	{
 		int len = 2000;
@@ -963,8 +959,11 @@ public class SeqFasta {
 		}
 		char[] chr = SeqSequence.substring(0, len).toCharArray();
 		int num = 0;
-
+		boolean flagFindU = false;
 		for (char c : chr) {
+			if (c == 'u' || c == 'U') {
+				flagFindU = true;
+			}
 			if (getCompMap().containsKey(c)) {
 				continue;
 			}
@@ -973,7 +972,10 @@ public class SeqFasta {
 			}
 		}
 		if (num == 0) {
-			return SEQ_NR;
+			if (flagFindU) {
+				return SEQ_RNA;
+			}
+			return SEQ_DNA;
 		}
 		else if ((double)num/length() < 0.1) {
 			return SEQ_UNKNOWN;
@@ -989,8 +991,18 @@ public class SeqFasta {
 	}
 	
 	public SeqFasta clone() {
-		SeqFasta seqFasta = new SeqFasta(SeqName, SeqSequence);
-		seqFasta.cis5to3 = cis5to3;
+		SeqFasta seqFasta = null;
+		try {
+			seqFasta = (SeqFasta) super.clone();
+			seqFasta.SeqName = SeqName;
+			seqFasta.AA3Len = AA3Len;
+			seqFasta.SeqSequence = SeqSequence;
+			seqFasta.TOLOWCASE = TOLOWCASE;
+			seqFasta.cis5to3 = cis5to3;
+			return seqFasta;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
 		return seqFasta;
 	}
 }
