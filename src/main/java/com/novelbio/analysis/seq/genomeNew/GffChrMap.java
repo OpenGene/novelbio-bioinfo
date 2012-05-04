@@ -247,7 +247,7 @@ public class GffChrMap extends GffChrAbs {
 		plotScatter.setAxisY(0, axisY);
 		plotScatter.setMapNum2ChangeX(0, 0, resolution.length, chrLength, interval);
 		DotStyle dotStyle = new DotStyle();
-		Paint colorGradient = DotStyle.getGridentColor(GraphicsUtils.deriveDarker(Color.blue), GraphicsUtils.deriveBrighter(Color.blue));
+		Paint colorGradient = DotStyle.getGridentColor(GraphicsUtils.deriveDarker(Color.blue), Color.blue);
 		dotStyle.setColor(colorGradient);
 		dotStyle.setStyle(DotStyle.STYLE_AREA);
 		plotScatter.addXY(resolutionDoub, chrReads, dotStyle);
@@ -519,6 +519,15 @@ public class GffChrMap extends GffChrAbs {
 		txtWrite.close();
 	}
 	/**
+	 * 根据全部基因做出TSS图
+	 * @param binNum 分成几份
+	 * @param resultFile 输出文件
+	 * @param geneStructure GffDetailGene.TSS
+	 */
+	public void plotRegionDensity(int binNum, String resultFile, String geneStructure) {
+		plotGeneDensity(null, 0, binNum, resultFile, geneStructure);
+	}
+	/**
 	 * 根据前面设定upBp和downBp 根据指定的基因做出TSS图
 	 * @param fileName 基因文件，必须第一列为geneID，内部去重复, 如果没有文件，则返回全体基因
 	 * @param rowStart 从第几行开始读
@@ -699,11 +708,11 @@ public class GffChrMap extends GffChrAbs {
 
 			double weight = MathComput.sum(tmp);
 			MapInfo mapInfo = new MapInfo(string);
-			mapInfo.setWeight(weight);
+			mapInfo.setScore(weight);
 			mapInfo.setDouble(tmp2);
 			mapInfo.setFlagLoc(combatgSite);
 			CopedID copedID = new CopedID(string, 0, false);
-			mapInfo.setTitle(copedID.getSymbol());
+			mapInfo.setName(copedID.getSymbol());
 			lsMapInfo.add(mapInfo);
 		}
 		Collections.sort(lsMapInfo);

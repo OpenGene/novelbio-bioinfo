@@ -254,7 +254,7 @@ public class HeatChart {
 		for (int i = 0; i < lsHeatChartDataInts.size(); i++) {
 			HeatChartDataInt heatChartDataInt = lsHeatChartDataInts.get(i);
 			zValues[i] = heatChartDataInt.getDouble();
-			xValues[i] = heatChartDataInt.getTitle();
+			xValues[i] = heatChartDataInt.getName();
 		}
 		lowValue = min(zValues);
 		highValue = max(zValues);

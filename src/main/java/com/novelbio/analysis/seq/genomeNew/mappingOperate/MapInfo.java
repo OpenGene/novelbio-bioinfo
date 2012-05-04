@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
@@ -26,38 +27,52 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 */
 	public static final int COMPARE_LOCFLAG = 200;
 	/**
-	 * 比较mapinfo的weight
+	 * 比较mapinfo的score
 	 */
-	public static final int COMPARE_WEIGHT = 300;
+	public static final int COMPARE_SCORE = 300;
 	
-	static int compareInfo = COMPARE_WEIGHT;
+	static int compareInfo = COMPARE_SCORE;
 	
-	String chrID = "";
-	int startLoc = ListCodAbs.LOC_ORIGINAL;
-	int endLoc = ListCodAbs.LOC_ORIGINAL;
-	double weight = 0; // 比较的标签，可以是表达等
+	protected String refID = "";
+	protected int startLoc = ListCodAbs.LOC_ORIGINAL;
+	protected int endLoc = ListCodAbs.LOC_ORIGINAL;
+	protected Double score = null; // 比较的标签，可以是表达等
 	//从小到大排序
 	static boolean min2max = true;
-	String title = "";
-	String description = "";
+	protected String name = "";
+	protected String description = "";
 	//核酸序列
-	String nrSeq = "";
+	SeqFasta seqFasta = new SeqFasta();
 	private double[] value = null;
-	int flagLoc = ListCodAbs.LOC_ORIGINAL;
-	boolean cis5to3 = true;
+	protected int flagLoc = ListCodAbs.LOC_ORIGINAL;
+	/**
+	 * null表示没有方向
+	 */
+	protected Boolean cis5to3 = null;
 	/**
 	 * 本坐标的方向，用于基因的Tss和Tes等运算
 	 * @param cis5to3
 	 */
-	public void setCis5to3(boolean cis5to3) {
+	public void setCis5to3(Boolean cis5to3) {
 		this.cis5to3 = cis5to3;
 	}
 	/**
 	 * 本坐标的方向，用于基因的Tss和Tes等运算
+	 * 如果无方向，则返回true
 	 * @return
 	 */
-	public boolean isCis5to3() {
+	public Boolean isCis5to3() {
 		return cis5to3;
+	}
+	/**
+	 * 和{@link #isCis5to3()} 类似的功能，只不过true和null返回"+"，false返回"-"
+	 * @return
+	 */
+	public String getStrand() {
+		if (cis5to3 == null || cis5to3 == true) {
+			return "+";
+		}
+		return "-";
 	}
 	boolean correct = true;
 	/**
@@ -87,11 +102,11 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 */
 	public MapInfo(String chrID, int startLoc, int endLoc, int flagLoc ,double weight, String title)
 	{
-		this.chrID = chrID;
+		this.refID = chrID;
 		this.startLoc = startLoc;
 		this.endLoc = endLoc;
-		this.weight = weight;
-		this.title = title;
+		this.score = weight;
+		this.name = title;
 		this.flagLoc = flagLoc;
 	}
 	
@@ -103,7 +118,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 */
 	public MapInfo(String chrID, int startLoc, int endLoc)
 	{
-		this.chrID = chrID;
+		this.refID = chrID;
 		this.startLoc = Math.min(startLoc, endLoc);
 		this.endLoc = Math.max(startLoc, endLoc);
 		if (startLoc > endLoc) {
@@ -118,8 +133,38 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	public static void setCompType(int COMPARE_TYPE) {
 		compareInfo = COMPARE_TYPE;
 	}
-	
-	
+	/**
+	 * 按照方向进行延长
+	 * 如果序列比设定的长度要长，则跳过
+	 * @param length
+	 */
+	public void extend(int length) {
+		if (Length() >= length) {
+			return;
+		}
+		if (cis5to3 == null || cis5to3) {
+			endLoc = startLoc + length;
+		}
+		else {
+			startLoc = endLoc - length;
+		}
+	}
+	/**
+	 * 左右两端各延长range bp
+	 * 如果总长度超过range * 2，则返回
+	 * @param length
+	 */
+	public void extendCenter(int range) {
+		if (Length() >= range*2) {
+			return;
+		}
+		int loc = getMidLoc();
+		startLoc = loc - range;
+		endLoc = loc + range;
+	}
+	public int Length() {
+		return Math.abs(endLoc - startLoc);
+	}
 	/**
 	 * @param chrID
 	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
@@ -129,9 +174,9 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 */
 	public MapInfo(String chrID,double weight, String title)
 	{
-		this.chrID = chrID;
-		this.weight = weight;
-		this.title = title;
+		this.refID = chrID;
+		this.score = weight;
+		this.name = title;
 	}
 	/**
 	 * 设定一个位点，譬如ATGsite，SummitSite之类的
@@ -144,8 +189,8 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 * 设定标题之类的东西，symbol好了
 	 * @param title
 	 */
-	public void setTitle(String title) {
-		this.title = title;
+	public void setName(String title) {
+		this.name = title;
 	}
 	/**
 	 * 对于该位点的具体描述，可以是序列
@@ -163,34 +208,45 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	}
 
 	/**
-	 * 该区域的核酸序列
+	 * 该区域的核酸序列，默认不用该名字替换seqFasta自己的名字
 	 * @param aaSeq
 	 */
-	public void setNrSeq(String nrSeq) {
-		this.nrSeq = nrSeq;
+	public void setSeq(SeqFasta seqFasta) {
+		this.seqFasta = seqFasta;
+	}
+	/**
+	 * 该区域的核酸序列
+	 * @param seqFasta
+	 * @param setName 是否用本MapInfo名字替换seqFasta的名字
+	 */
+	public void setSeq(SeqFasta seqFasta, boolean setName) {
+		this.seqFasta = seqFasta;
+		if (setName) {
+			this.seqFasta.setSeqName(getName());
+		}
 	}
 	/**
 	 * 该区域的核酸序列
 	 * @param aaSeq
 	 */
-	public String getNrSeq() {
-		return nrSeq;
+	public SeqFasta getSeqFasta() {
+		return seqFasta;
 	}
-	
+	public MapInfo() { }
 	/**
 	 * @param chrID
 	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
 	 * @param endLoc 从0开始
 	 * @param flag 比较的标签，可以是表达值等
-	 * @param title 本条目的名字，譬如基因名等
+	 * @param name 本条目的名字，譬如基因名等
 	 */
 	public MapInfo(String chrID)
 	{
-		this.chrID = chrID;
+		this.refID = chrID;
 	}
 	
-	public void setWeight(double weight) {
-		this.weight = weight;
+	public void setScore(double score) {
+		this.score = score;
 	}
 	/**
 	 * 是否从小到大排序
@@ -198,8 +254,11 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	public static void sortPath(boolean min2max) {
 		MapInfo.min2max = min2max;
 	}
-	public String getChrID() {
-		return chrID;
+	public String getRefID() {
+		return refID;
+	}
+	public void setRefID(String refID) {
+		this.refID = refID;
 	}
 	/**
 	 * 获得指定的位点，譬如summit或者atgsite等等
@@ -209,10 +268,13 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 * @return
 	 */
 	public int getFlagSite() {
-		if ( startLoc <0 || endLoc <0 || (flagLoc >= startLoc && flagLoc <= endLoc)) {
+		if ( startLoc < -10000 || endLoc < -10000 || (flagLoc >= startLoc && flagLoc <= endLoc)) {
 			return flagLoc;
 		}
 		return (int)((double)(startLoc+endLoc)/2+0.5) ;
+	}
+	public int getMidLoc() {
+		return (startLoc + endLoc)/2;
 	}
 	/**
 	 * 获得起点坐标
@@ -241,8 +303,8 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 * 应该是一个唯一标识名用来确定每一个基因，暂时无法做到确定转录本
 	 * @return
 	 */
-	public String getTitle() {
-		return title;
+	public String getName() {
+		return name;
 	}
  
 	public double getMean() {
@@ -258,7 +320,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	@Override
 	public int compareTo(MapInfo map) {
 		if (compareInfo == COMPARE_LOCFLAG) {
-			int i = chrID.compareTo(map.chrID);
+			int i = refID.compareTo(map.refID);
 			if (i != 0) {
 				return i;
 			}
@@ -273,7 +335,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 			}
 		}
 		else if (compareInfo == COMPARE_LOCSITE) {
-			int i = chrID.compareTo(map.chrID);
+			int i = refID.compareTo(map.refID);
 			if (i != 0) {
 				return i;
 			}
@@ -296,14 +358,14 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 			}
 		}
 		else {
-			if (weight == map.weight) {
+			if (score == map.score) {
 				return 0;
 			}
 			if (min2max) {
-				return weight < map.weight ? -1:1;
+				return score < map.score ? -1:1;
 			}
 			else {
-				return weight > map.weight ? -1:1;
+				return score > map.score ? -1:1;
 			}
 		}
 	
@@ -336,12 +398,15 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 * 
 	 * @return
 	 */
-	public double getWeight() {
-		return weight;
+	public double getScore() {
+		if (score == null) {
+			return 0;
+		}
+		return score;
 	}
 	
 	public MapInfo clone() {
-		MapInfo mapInfo = new MapInfo(chrID, startLoc, endLoc, flagLoc, weight, title);
+		MapInfo mapInfo = new MapInfo(refID, startLoc, endLoc, flagLoc, score, name);
 		double[] value2 = new double[value.length];
 		for (int i = 0; i < value2.length; i++) {
 			value2[i] = value[i];
@@ -361,13 +426,13 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		Collections.sort(lsmapinfo, new Comparator<MapInfo>() {
 			@Override
 			public int compare(MapInfo o1, MapInfo o2) {
-				if (o1.getChrID().equals(o2.getChrID())) {
+				if (o1.getRefID().equals(o2.getRefID())) {
 					if (o1.getFlagSite() == o2.getFlagSite()) {
 						return 0;
 					}
 					return o1.getFlagSite() < o2.getFlagSite() ? -1:1;
 				}
-				return o1.getChrID().compareTo(o2.getChrID());
+				return o1.getRefID().compareTo(o2.getRefID());
 			}
 		});
 		String chrIDOld = "";
@@ -375,18 +440,18 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		HashMap<String, MapInfo> hashMapInfo = new HashMap<String, MapInfo>();
 		for (MapInfo mapInfo : lsmapinfo) {
 			ArrayList<double[]> lsTmp = null;
-			if (!hashLsMapInfo.containsKey(mapInfo.getChrID())) {
+			if (!hashLsMapInfo.containsKey(mapInfo.getRefID())) {
 				lsTmp = new ArrayList<double[]>();
-				hashLsMapInfo.put(mapInfo.getChrID(), lsTmp);
+				hashLsMapInfo.put(mapInfo.getRefID(), lsTmp);
 			}
 			else {
-				lsTmp = hashLsMapInfo.get(mapInfo.chrID);
+				lsTmp = hashLsMapInfo.get(mapInfo.refID);
 			}
 			double[] info = new double[2];
 			info[0] = mapInfo.getFlagSite();
-			info[1] = mapInfo.getWeight();
+			info[1] = mapInfo.getScore();
 			lsTmp.add(info);
-			hashMapInfo.put(mapInfo.getChrID()+mapInfo.getFlagSite(), mapInfo);
+			hashMapInfo.put(mapInfo.getRefID()+mapInfo.getFlagSite(), mapInfo);
 		}
 		
 		ArrayList<MapInfo> lsResult = new ArrayList<MapInfo>();
@@ -520,6 +585,26 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 			result[i] = result[i]/lsmapinfo.size();
 		}
 		return result;
+	}
+	
+	/**
+	 * 还没实现
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		return super.equals(obj);
+	}
+	
+	/**
+	 * 仅判断坐标是否一致
+	 * 就是判断start和end是否一致
+	 */
+	public boolean equalsLoc(MapInfo mapInfo) {
+		if (mapInfo.getStart() == getStart() && mapInfo.getEnd() == getEnd()) {
+			return true;
+		}
+		return false;
 	}
 	
 //	boolean isExon = false;

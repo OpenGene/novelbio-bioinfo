@@ -1310,6 +1310,7 @@ public class TxtReadandWrite {
 	}
 
 	/**
+	 * 必须关闭
 	 * 关闭流文件
 	 */
 	public void close() {
@@ -1340,6 +1341,16 @@ public class TxtReadandWrite {
 		} catch (Exception e) {
 		}
 	}
+	   protected void finalize() {
+         close();
+         try {
+			super.finalize();
+		} catch (Throwable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+       }
 }
 ////大文件排
  class TestCountWords {  

@@ -79,9 +79,9 @@ public class MapReads {
 	{
 		int tmp = 0;
 		for (MapInfo mapInfo : lsRange) {
-			int[] chrNumInfo = hashChrBpReads.get(mapInfo.getChrID().toLowerCase());
+			int[] chrNumInfo = hashChrBpReads.get(mapInfo.getRefID().toLowerCase());
 			if (chrNumInfo == null) {
-				System.out.println("没有该染色体：" + mapInfo.getChrID());
+				System.out.println("没有该染色体：" + mapInfo.getRefID());
 				continue;
 			}
 			for (int i = mapInfo.getStart()/invNum; i < mapInfo.getEnd()/invNum; i++) {
@@ -414,7 +414,7 @@ public class MapReads {
 	
 	/**
 	 * 获得Mapping文件中最长和最短chr的长度
-	 * @param chrID
+	 * @param refID
 	 * @return int[]
 	 * 0: 最短chr长度
 	 * 1: 最长chr长度

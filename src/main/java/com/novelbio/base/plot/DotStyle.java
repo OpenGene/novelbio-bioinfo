@@ -13,6 +13,7 @@ import de.erichseifert.gral.util.GraphicsUtils;
 
 /**
  * 将数据的点分成几块，每一块都标记不同的颜色和点的样式
+ * 重写了equal但是没有重写hash
  * @author zong0jie
  *
  */
@@ -38,10 +39,6 @@ public class DotStyle {
 	Rectangle2D.Double rectangele = null;
 	Rectangle2D.Double line = null;
 	Polygon TRIANGLE = null;
-	/**
-	 * 起个组名，表示这个style是属于哪一组
-	 */
-	String group = "";
 	/**
 	 * 颜色
 	 */
@@ -89,12 +86,6 @@ public class DotStyle {
 	public void setColor(Paint color) {
 		this.color = color;
 	}
-	public void setGroup(String group) {
-		this.group = group;
-	}
-	public String getGroup() {
-		return group;
-	}
 	public Paint getColor() {
 		return color;
 	}
@@ -107,19 +98,19 @@ public class DotStyle {
 	/**
 	 * whether dot have a string name
 	 */
-	boolean dotname = false;
+	String dotname = null;
 	/**
-	 * whether dot have a string name
-	 * setting by PlotScatter Class
+	 * 设置该点显示的文字，如果不设置，就为该点的y轴坐标
+	 * @param dotname
 	 */
-	protected void setDotname(boolean dotname) {
+	public void setName(String dotname) {
 		this.dotname = dotname;
 	}
 	/**
-	 * whether dot have a string name
-	 * setting by PlotScatter Class
+	 * 该点显示的文字，如果不设置，则返回null
+	 * @return
 	 */
-	protected boolean isDotName() {
+	public String getName() {
 		return dotname;
 	}
 	/**
@@ -183,7 +174,7 @@ public class DotStyle {
 	public DotStyle clone() {
 		DotStyle dotStyle = new DotStyle();
 		dotStyle.color = color;
-		dotStyle.group = group;
+		dotStyle.dotname = dotname;
 		dotStyle.size = size;
 		dotStyle.style = style;
 		return dotStyle;
@@ -204,7 +195,7 @@ public class DotStyle {
 		DotStyle otherObj = (DotStyle) obj;
 
 		if (this.color.equals(otherObj.color)
-				&& this.group.equals(otherObj.group)
+				&& this.dotname.equals(otherObj.dotname)
 				&& this.size == otherObj.size
 				&& this.style == otherObj.style
 				) {
@@ -212,13 +203,13 @@ public class DotStyle {
 		}
 		return false;
 	}
-	/**
-	 * 重写hash
-	 */
-	public int hashCode()
-	{
-		return size + style + group.hashCode() + color.hashCode()*100;
-	}
+//	/**
+//	 * 重写hash
+//	 */
+//	public int hashCode()
+//	{
+//		return size + style + group.hashCode() + color.hashCode()*100;
+//	}
 	public static Paint getGridentColor(Color color) {
 		return new LinearGradientPaint(0f,0f, 0f,1f,
 			                                        new float[] { 0.0f, 1.0f },

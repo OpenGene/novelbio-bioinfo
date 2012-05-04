@@ -56,8 +56,8 @@ public class SiteInfo {
 			ArrayList<String[]> ls = ExcelTxtRead.readLsExcelTxt(string, 2);
 			for (String[] strings : ls) {
 				MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(taxID, strings[0], Integer.parseInt(strings[1]), strings[2], strings[4]);
-				hashChrLocSnp.put(mapInfoSnpIndel.getChrID()+sep+mapInfoSnpIndel.getStart(), mapInfoSnpIndel);
-				hashFileChrLocSnpTmp.put(mapInfoSnpIndel.getChrID()+sep+mapInfoSnpIndel.getStart(), mapInfoSnpIndel);
+				hashChrLocSnp.put(mapInfoSnpIndel.getRefID()+sep+mapInfoSnpIndel.getStart(), mapInfoSnpIndel);
+				hashFileChrLocSnpTmp.put(mapInfoSnpIndel.getRefID()+sep+mapInfoSnpIndel.getStart(), mapInfoSnpIndel);
 			}
 		}
 		setMapInfo(hashFileChrLocSnp, hashChrLocSnp);
@@ -86,9 +86,9 @@ public class SiteInfo {
 			ArrayList<MapInfoSnpIndel> lsFileNoMapInfo = getNoSiteMapInfo(hashFileChrLocSnp.get(fileName), hashChrLocSnp);
 			MapInfoSnpIndel.getSiteInfo(lsFileNoMapInfo, hashSnpSamFile.get(fileName));
 			for (MapInfoSnpIndel mapInfoSnpIndel : lsFileNoMapInfo) {
-				String key = mapInfoSnpIndel.getChrID() + sep + mapInfoSnpIndel.getStart();
+				String key = mapInfoSnpIndel.getRefID() + sep + mapInfoSnpIndel.getStart();
 				MapInfoSnpIndel otherMap = hashChrLocSnp.get(key);//正常的别的样本的信息
-				String tmpResult = mapInfoSnpIndel.getChrID()+"\t"+mapInfoSnpIndel.getStart()+"\t"+otherMap.getRefBase()+"\t" +mapInfoSnpIndel.getAllelic_depths_Ref();
+				String tmpResult = mapInfoSnpIndel.getRefID()+"\t"+mapInfoSnpIndel.getStart()+"\t"+otherMap.getRefBase()+"\t" +mapInfoSnpIndel.getAllelic_depths_Ref();
 				tmpResult = tmpResult + "\t" +otherMap.getThisBase() + "\t" + mapInfoSnpIndel.getSeqType(otherMap);
 				txtOut.writefileln(tmpResult);
 			}
@@ -113,7 +113,7 @@ public class SiteInfo {
 			if (!hashTmp.containsKey(key)) {
 		
 				MapInfoSnpIndel mapInfoSnpIndelTmp = hashAll.get(key);
-				MapInfoSnpIndel mapInfoSnpIndelTmpResult = new MapInfoSnpIndel(taxID, mapInfoSnpIndelTmp.getChrID(), mapInfoSnpIndelTmp.getStart(), mapInfoSnpIndelTmp.getRefBase(), mapInfoSnpIndelTmp.getThisBase());
+				MapInfoSnpIndel mapInfoSnpIndelTmpResult = new MapInfoSnpIndel(taxID, mapInfoSnpIndelTmp.getRefID(), mapInfoSnpIndelTmp.getStart(), mapInfoSnpIndelTmp.getRefBase(), mapInfoSnpIndelTmp.getThisBase());
 				lsResult.add(mapInfoSnpIndelTmpResult);
 			}
 		}

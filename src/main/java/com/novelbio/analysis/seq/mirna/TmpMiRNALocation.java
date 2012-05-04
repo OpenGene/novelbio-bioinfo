@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListGff;
@@ -9,7 +10,11 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-
+/**
+ * 读取miRNA.dat的信息，构建listabs表，方便给定mirID和loc，从而查找到底是5p还是3p
+ * @author zong0jie
+ *
+ */
 public class TmpMiRNALocation extends ListHashBin{
 	private static final long serialVersionUID = 7551704881799402654L;
 	public static void main(String[] args) {
@@ -60,6 +65,8 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 	protected void ReadGffarrayExcep(String rnadataFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
 		ListBin<ListDetailBin> lsMiRNA = null; ListDetailBin listDetailBin = null;
+		super.locHashtable = new HashMap<String, ListDetailBin>();
+		super.LOCIDList = new ArrayList<String>();
 		boolean flagSpecies = false;//标记是否为我们想要的物种
 		boolean flagSQ = false;//标记是否提取序列
 		String seqMiRNA = "";//miRNA前体的具体序列
@@ -91,6 +98,8 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 					String accID = sepInfo[1].split("=")[1];
 					accID = accID.replace("\"", "");
 					listDetailBin.setName(accID);
+					locHashtable.put(listDetailBin.getName(), listDetailBin);
+					LOCIDList.add(listDetailBin.getName());
 				}
 			}
 			if (flagSpecies && sepInfo[0].equals("SQ")) {
@@ -102,7 +111,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		}
 	}
 	/**
-	 * 如果没有找到，则返回输入的mirName
+	 * 如果没有找到，则返回null
 	 * @param mirName mir的名字
 	 * @param start 具体的
 	 * @param end

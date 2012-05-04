@@ -7,8 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -156,7 +158,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	}
 
 	@Override
-	public SeqFasta getSeq(boolean cisseq, String chrID, long startlocation,
+	public SeqFasta getSeq(Boolean cisseq, String chrID, long startlocation,
 			long endlocation) {
 		SeqFasta seqFasta = seqHashAbs.getSeq(cisseq, chrID, startlocation, endlocation);
 		if (seqFasta == null) {
@@ -173,8 +175,24 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 		seqFasta.setTOLOWCASE(TOLOWCASE);
 		return seqFasta;
 	}
-
-
+	/**
+	 * 根据给定的mapInfo，获得序列，注意序列并没有根据cis5to3进行反向
+	 * 自动给seqfasta添加名字
+	 * @param mapInfo
+	 */
+	@Override
+	public void getSeq(MapInfo mapInfo) {
+		seqHashAbs.getSeq(mapInfo);
+	}
+	/**
+	 * 根据给定的mapInfo，获得序列，注意序列并没有根据cis5to3进行反向，只是标记了cis5to3
+	 * @param mapInfo
+	 */
+	public void getSeq(ArrayList<? extends MapInfo> lsMapInfos) {
+		for (MapInfo mapInfo : lsMapInfos) {
+			getSeq(mapInfo);
+		}
+	}
 	@Override
 	public SeqFasta getSeq(boolean cisseq, String chrID, List<ExonInfo> lsInfo,
 			boolean getIntron) {

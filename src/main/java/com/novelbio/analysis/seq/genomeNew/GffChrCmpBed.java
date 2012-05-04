@@ -111,7 +111,7 @@ public class GffChrCmpBed extends GffChrAbs {
 			int[] is = lsCmpRegion.get(i);
 			MapInfo mapInfo = new MapInfo(chrID, is[0], is[1]);
 			MapReads.CmpMapReg(mapReads, mapReads2, mapInfo);
-			result[i] = mapInfo.getWeight();
+			result[i] = mapInfo.getScore();
 		}
 		return result;
 	}

@@ -13,5 +13,5 @@ public interface HeatChartDataInt {
 	/**
 	 * 返回文件的title
 	 */
-	public String getTitle();
+	public String getName();
 }

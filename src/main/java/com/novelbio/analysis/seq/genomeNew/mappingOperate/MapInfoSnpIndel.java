@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.AminoAcid;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.tools.Mas3.getProbID;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -45,7 +44,7 @@ public class MapInfoSnpIndel extends MapInfo{
 	{
 		super(samString.split("\t")[0]);
 		String[] ss = samString.split("\t");
-		this.chrID = ss[0];
+		this.refID = ss[0];
 		this.startLoc = Integer.parseInt(ss[1]);
 		this.refBase = ss[2];
 		this.Read_Depth_Filtered = Integer.parseInt(ss[3]);
@@ -55,7 +54,7 @@ public class MapInfoSnpIndel extends MapInfo{
 	public void setSamToolsPilup(String samString)
 	{
 		String[] ss = samString.split("\t");
-		this.chrID = ss[0];
+		this.refID = ss[0];
 //		this.startLoc = Integer.parseInt(ss[1]);
 		this.refBase = ss[2];
 		this.Read_Depth_Filtered = Integer.parseInt(ss[3]);
@@ -267,10 +266,10 @@ public class MapInfoSnpIndel extends MapInfo{
 		HashMap<String, ArrayList<MapInfoSnpIndel>> hashChrIDMapInfo = new LinkedHashMap<String, ArrayList<MapInfoSnpIndel>>();
 		//按照chr位置装入hash表
 		for (MapInfoSnpIndel mapInfo : lsSite) {
-			ArrayList<MapInfoSnpIndel> lsMap = hashChrIDMapInfo.get(mapInfo.getChrID());
+			ArrayList<MapInfoSnpIndel> lsMap = hashChrIDMapInfo.get(mapInfo.getRefID());
 			if (lsMap == null) {
 				lsMap = new ArrayList<MapInfoSnpIndel>();
-				hashChrIDMapInfo.put(mapInfo.getChrID(), lsMap);
+				hashChrIDMapInfo.put(mapInfo.getRefID(), lsMap);
 			}
 			lsMap.add(mapInfo);
 		}
@@ -741,7 +740,7 @@ public class MapInfoSnpIndel extends MapInfo{
 	 */
 	private void setSnpIndelRs() {
 		SnpIndelRs snpIndelRs = new SnpIndelRs();
-		snpIndelRs.setChrID(chrID);
+		snpIndelRs.setChrID(refID);
 		snpIndelRs.setTaxID(this.taxID);
 		if (snpRsID != null && !snpRsID.equals("")) {
 			snpIndelRs.setSnpRsID(snpRsID);
@@ -785,7 +784,7 @@ public class MapInfoSnpIndel extends MapInfo{
 		if (!this.type.equals(TYPE_MISMATCH)) {
 			startLoc = startLoc - 1; 
 		}
-		String result = chrID + "\t" + startLoc + "\t" + refBase + "\t" + this.Allelic_depths_Ref + "\t" + thisBase + "\t" + 
+		String result = refID + "\t" + startLoc + "\t" + refBase + "\t" + this.Allelic_depths_Ref + "\t" + thisBase + "\t" + 
 		this.Allelic_depths_Alt + "\t" + quality + "\t" + this.Filter + "\t" + this.Allele_Frequency + "\t" + getAllele_Balance_Hets() + "\t" + isExon()+"\t" + prop +"\t"+
 		refAAnr +"\t"+this.refAAseq + "\t" + thisAAnr +"\t"+this.thisAaSeq ;
 		if (refAAseq != null && refAAseq.length() ==3 && thisAaSeq != null && thisAaSeq.length() == 3) {

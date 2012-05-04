@@ -101,7 +101,7 @@ public class GffChrSnpIndel extends GffChrAbs {
 	 * 返回该snp的定位信息
 	 */
 	private GffCodGene getSnp(MapInfoSnpIndel mapInfo) {
-		GffCodGene gffCodeGene = gffHashGene.searchLocation(mapInfo.getChrID(), mapInfo.getFlagSite());
+		GffCodGene gffCodeGene = gffHashGene.searchLocation(mapInfo.getRefID(), mapInfo.getFlagSite());
 		GffGeneIsoInfo gffGeneIsoInfo = gffCodeGene.getCodInExonIso();
 		if (gffGeneIsoInfo != null ) {
 			mapInfo.setExon(true);
@@ -129,10 +129,10 @@ public class GffChrSnpIndel extends GffChrAbs {
 			ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
 
 			if (lsTmp == null) {
-				NR = seqHash.getSeq(gffGeneIsoInfo.isCis5to3(), mapInfo.getChrID(), LocStart, LocEnd);
+				NR = seqHash.getSeq(gffGeneIsoInfo.isCis5to3(), mapInfo.getRefID(), LocStart, LocEnd);
 			}
 			else {
-				NR = seqHash.getSeq(mapInfo.getChrID(), lsTmp, false);
+				NR = seqHash.getSeq(mapInfo.getRefID(), lsTmp, false);
 			}
 			mapInfo.setRefAAnr(NR.toString());
 //			System.out.println(seqHash.getSeq(mapInfo.getChrID(),  gffGeneIsoInfo.getRangeIso(LocStart-4, LocEnd+4), false));
@@ -143,7 +143,7 @@ public class GffChrSnpIndel extends GffChrAbs {
 			AminoAcid aminoAcidThis = new AminoAcid(NRthis);
 			mapInfo.setThisAaSeq(aminoAcidThis.convertDNA2AA());
 			mapInfo.setOrfShift(aminoAcidThis.getOrfShitf());
-			mapInfo.setTitle(gffGeneIsoInfo.getName());
+			mapInfo.setName(gffGeneIsoInfo.getName());
 			mapInfo.setGffIso(gffGeneIsoInfo);
 		}
 		else {
@@ -169,8 +169,8 @@ public class GffChrSnpIndel extends GffChrAbs {
 	 * 返回该snp的定位信息
 	 */
 	private GffCodGene getIndel(MapInfoSnpIndel mapInfo) {
-		GffCodGene gffCodeGeneStart = gffHashGene.searchLocation(mapInfo.getChrID(), mapInfo.getStart());
-		GffCodGene gffCodeGeneEnd = gffHashGene.searchLocation(mapInfo.getChrID(), mapInfo.getEnd());
+		GffCodGene gffCodeGeneStart = gffHashGene.searchLocation(mapInfo.getRefID(), mapInfo.getStart());
+		GffCodGene gffCodeGeneEnd = gffHashGene.searchLocation(mapInfo.getRefID(), mapInfo.getEnd());
 		GffGeneIsoInfo gffGeneIsoInfoStart = gffCodeGeneStart.getCodInExonIso();
 		GffGeneIsoInfo gffGeneIsoInfoEnd = gffCodeGeneEnd.getCodInExonIso();
 		
@@ -194,7 +194,7 @@ public class GffChrSnpIndel extends GffChrAbs {
 			if (lsTmp == null) {
 				return gffCodeGeneStart;
 			}
-			SeqFasta NR = seqHash.getSeq(mapInfo.getChrID(), lsTmp, false);
+			SeqFasta NR = seqHash.getSeq(mapInfo.getRefID(), lsTmp, false);
 			mapInfo.setRefAAseq(NR.toStringAA());
 			mapInfo.setRefAAnr(NR.toString());
 			String NRthis = replaceSnpIndel(gffGeneIsoInfoStart.isCis5to3(), NR.toString(), mapInfo, gffGeneIsoInfoStart.getLocAAbeforeBias(mapInfo.getFlagSite()));
@@ -202,7 +202,7 @@ public class GffChrSnpIndel extends GffChrAbs {
 			AminoAcid aminoAcidThis = new AminoAcid(NRthis);
 			mapInfo.setThisAaSeq(aminoAcidThis.convertDNA2AA());
 			mapInfo.setOrfShift(aminoAcidThis.getOrfShitf());
-			mapInfo.setTitle(gffGeneIsoInfoStart.getName());
+			mapInfo.setName(gffGeneIsoInfoStart.getName());
 			mapInfo.setGffIso(gffGeneIsoInfoStart);
 		}
 		else {
@@ -254,7 +254,7 @@ public class GffChrSnpIndel extends GffChrAbs {
 	 */
 	public int getSnpReadsNum(MapInfo mapInfo)
 	{
-		double[] readsNum = mapReads.getRengeInfo(1, mapInfo.getChrID(), mapInfo.getFlagSite(), mapInfo.getFlagSite(), 0);
+		double[] readsNum = mapReads.getRengeInfo(1, mapInfo.getRefID(), mapInfo.getFlagSite(), mapInfo.getFlagSite(), 0);
 		int Num = (int)MathComput.mean(readsNum);
 		return Num;
 	}

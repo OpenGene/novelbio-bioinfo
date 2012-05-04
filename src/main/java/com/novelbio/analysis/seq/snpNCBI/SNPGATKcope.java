@@ -204,7 +204,7 @@ public class SNPGATKcope {
 		for (int i = 1; i < lsSnp.size(); i++) {
 			String[] ss = lsSnp.get(i);
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(0, ss[0], Integer.parseInt(ss[1]), ss[3], ss[4]);
-			GffCodGene gffcod = gffHashGene.searchLocation(mapInfoSnpIndel.getChrID(), mapInfoSnpIndel.getStart());
+			GffCodGene gffcod = gffHashGene.searchLocation(mapInfoSnpIndel.getRefID(), mapInfoSnpIndel.getStart());
 			String tmp = "";
 			if (gffcod.isInsideLoc()) {
 				GffDetailGene gffDetailGene = gffcod.getGffDetailThis();

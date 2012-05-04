@@ -160,7 +160,7 @@ public class GffChrSeq extends GffChrAbs{
 		
 		SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), cis5to3, 0, 0, gffGeneIsoInfo.getIsoInfoCDS(), getIntron);
 		seq.setSeqName(IsoName);
-		return seq.toStringAA(true, 0);
+		return seq.toStringAA();
 	}
 	/**
 	 * 提取基因promoter附近的序列

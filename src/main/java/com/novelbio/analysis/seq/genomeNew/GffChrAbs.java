@@ -132,6 +132,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		setGffFile(gffType, gffFile);
 		setChrFile(chrFile, null);
 		this.setMapReads(readsBed, binNum);
+		loadChrFile();
 	}
 	/**
 	 * @param gffType
@@ -148,6 +149,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		setGffFile(gffType, gffFile);
 		setChrFile(chrFile, regx);
 		this.setMapReads(readsBed, binNum);
+		loadChrFile();
 	}
 	/**
 	 * 设定mapreads的标准化方法
@@ -186,9 +188,10 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	public static void setChrFile(String chrFile, String regx) {
 		GffChrAbs.chrFile = chrFile;
 		GffChrAbs.chrRegx = regx;
+		loadChrFile();
 	}
 	
-	public void loadChrFile() {
+	public static void loadChrFile() {
 		if (FileOperate.isFileExist(chrFile) || FileOperate.isFileDirectory(chrFile)) {
 			 seqHash = new SeqHash(chrFile, chrRegx);
 		}
@@ -264,7 +267,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 				mapInfo.setStartLoc(Integer.parseInt(strings[1]));
 				mapInfo.setEndLoc(Integer.parseInt(strings[2]));
 			} catch (Exception e) {
-				logger.error("该坐标有问题："+mapInfo.getChrID());
+				logger.error("该坐标有问题："+mapInfo.getRefID());
 				continue;
 			}
 		
@@ -272,7 +275,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 				mapInfo.setStartLoc(0);;
 			}
 			if (colScore > 0) {
-				mapInfo.setWeight(Double.parseDouble(strings[3]));
+				mapInfo.setScore(Double.parseDouble(strings[3]));
 			}
 			lsMapInfos.add(mapInfo);
 		}
@@ -305,7 +308,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 			try {
 				mapInfo.setFlagLoc(Integer.parseInt(strings[1]));
 			} catch (Exception e) {
-				logger.error("该坐标有问题："+mapInfo.getChrID());
+				logger.error("该坐标有问题："+mapInfo.getRefID());
 				continue;
 			}
 			mapInfo.setStartLoc(mapInfo.getFlagSite() - region);
@@ -314,7 +317,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 				mapInfo.setStartLoc(0);;
 			}
 			if (colScore > 0) {
-				mapInfo.setWeight(Double.parseDouble(strings[2]));
+				mapInfo.setScore(Double.parseDouble(strings[2]));
 			}
 			lsMapInfos.add(mapInfo);
 		}
@@ -330,7 +333,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param binNum 分成几块
 	 * @return
 	 */
-	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(ArrayList<MapInfo> lsMapInfos, String structure, int binNum)
+	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(ArrayList<? extends MapInfo> lsMapInfos, String structure, int binNum)
 	{
 		HashMap<GffDetailGene,Double>  hashGffDetailGenes = getPeakGeneStructure( lsMapInfos, structure);
 		 ArrayList<MapInfo> lsResult = getMapInfoFromGffGene(hashGffDetailGenes, structure);
@@ -427,7 +430,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		mapReads.getRegionLs(binNum, lsMapInfoGene, 0);
 		if (lsGeneValue.get(0).length <= 1) {
 			for (MapInfo mapInfo : lsMapInfoGene) {
-				mapInfo.setWeight(MathComput.mean(mapInfo.getDouble()));
+				mapInfo.setScore(MathComput.mean(mapInfo.getDouble()));
 			}
 		}
 		return lsMapInfoGene;
@@ -452,7 +455,6 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 
 	
 	/**
-	 * 
 	 * 给定peak的信息，chrID和起点终点，返回被peak覆盖到Tss的基因名和覆盖情况，用于做Tss图
 	 * 自动去冗余基因
 	 * @param lsPeakInfo mapInfo必须有 chrID 和 startLoc 和 endLoc 三项 
@@ -460,29 +462,29 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @return
 	 * 基因和权重的hash表
 	 */
-	private HashMap<GffDetailGene,Double> getPeakGeneStructure(ArrayList<MapInfo> lsMapInfos, String structure) {
+	private HashMap<GffDetailGene,Double> getPeakGeneStructure(ArrayList<? extends MapInfo> lsMapInfos, String structure) {
 		//存储最后的基因和权重
 		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
 		for (MapInfo mapInfo : lsMapInfos) {
 			if (mapInfo.getStart() <0 && mapInfo.getStart() > -1000) {
 				mapInfo.setStartLoc(0);;
 			}
-			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene( mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), structure );
+			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene( mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd(), structure );
 			for (GffDetailGene gffDetailGene : setGffDetailGene) {
 				if (hashGffDetailGenes.containsKey(gffDetailGene)) {
 					if (MapInfo.isMin2max()) {
-						if (mapInfo.getWeight() < hashGffDetailGenes.get(gffDetailGene)) {
-							hashGffDetailGenes.put(gffDetailGene, mapInfo.getWeight());
+						if (mapInfo.getScore() < hashGffDetailGenes.get(gffDetailGene)) {
+							hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
 						}
 					}
 					else {
-						if (mapInfo.getWeight() > hashGffDetailGenes.get(gffDetailGene)) {
-							hashGffDetailGenes.put(gffDetailGene, mapInfo.getWeight());
+						if (mapInfo.getScore() > hashGffDetailGenes.get(gffDetailGene)) {
+							hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
 						}
 					}
 				}
 				else
-					hashGffDetailGenes.put(gffDetailGene, mapInfo.getWeight());
+					hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
 			}
 		}
 		return hashGffDetailGenes;
@@ -528,7 +530,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 			else 
 				mapInfo = new MapInfo(gffDetailGene.getParentName(), tss - Math.abs(downBp), tss + Math.abs(upBp), tss, 0, gffDetailGene.getLongestSplit().getName());
 			mapInfo.setCis5to3(gffDetailGene.isCis5to3());
-			mapInfo.setWeight(value);
+			mapInfo.setScore(value);
 			return mapInfo;
 		}
 		else if (structure.equals(GffDetailGene.TES)) {
@@ -539,7 +541,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 			else 
 				mapInfo = new MapInfo(gffDetailGene.getParentName(), tes - Math.abs(downBp), tes + Math.abs(upBp), tes, 0, gffDetailGene.getLongestSplit().getName());
 			mapInfo.setCis5to3(gffDetailGene.isCis5to3());
-			mapInfo.setWeight(value);
+			mapInfo.setScore(value);
 			return mapInfo;
 		}
 		else {

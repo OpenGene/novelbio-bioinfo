@@ -21,7 +21,7 @@ public class ExonInfo extends ListDetailAbs implements Comparable<ExonInfo>
 	/**
 	 * 根据正反向自动设定起点和终点
 	 * @param start
-	 * @param end
+	 * @param endLoc
 	 * @param cis
 	 */
 	public ExonInfo() {

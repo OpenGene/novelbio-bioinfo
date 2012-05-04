@@ -31,14 +31,14 @@ public interface MapInt {
 	 */
 	@Override
 	public int compareTo(MapInfo map) {
-		if (flag == map.weight) {
+		if (flag == map.score) {
 			return 0;
 		}
 		if (min2max) {
-			return flag < map.weight ? -1:1;
+			return flag < map.score ? -1:1;
 		}
 		else {
-			return flag > map.weight ? -1:1;
+			return flag > map.score ? -1:1;
 		}
 	}
 	

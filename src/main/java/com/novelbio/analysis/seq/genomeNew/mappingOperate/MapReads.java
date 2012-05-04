@@ -17,6 +17,8 @@ import org.apache.commons.math.stat.descriptive.rank.Min;
 import org.apache.log4j.Logger;
 import org.junit.experimental.max.MaxCore;
 
+import com.novelbio.analysis.seq.BedRecord;
+import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -263,7 +265,7 @@ public class MapReads {
 	/**
 	 * 标记mapping个数的列
 	 */
-	int colUnique = 7;
+	int colUnique = BedRecord.COL_MAPNUM + 1;
 	boolean booUniqueMapping = true;
 	Boolean cis5to3 = null;
 	/**
@@ -408,15 +410,14 @@ public class MapReads {
 		int[] SumChrBpReads=null;//直接从0开始记录，1代表第二个invNum,也和实际相同
 		/////////////////读文件的准备工作///////////////////////////////////////////////////
 		TxtReadandWrite txtmap=new TxtReadandWrite(mapFile,false);
-		BufferedReader bufmap=txtmap.readfile();
-		String content=""; String lastChr="";
+		String lastChr="";
 		long[] readsChrNum = new long[1];
 		long[] readsPipNum = new long[1];
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		//先假设mapping结果已经排序好，并且染色体已经分开好。
 		boolean flag = true;// 当没有该染色体时标记为false并且跳过所有该染色体上的坐标
 		int[] tmpOld = new int[2]; int count = 0;
-		while ((content = bufmap.readLine()) != null) {
+		for (String content : txtmap.readlines()) {
 			String[] tmp = content.split(sep);
 			if (!tmp[colChrID].trim().toLowerCase().equals(lastChr)) // 出现了新的chrID，则开始剪切老的chrBpReads,然后新建chrBpReads，最后装入哈希表
 			{
@@ -873,7 +874,7 @@ public class MapReads {
 	}
 	/**
 	 * 获得Mapping文件中最长和最短chr的长度
-	 * @param chrID
+	 * @param refID
 	 * @return int[]
 	 * 0: 最短chr长度
 	 * 1: 最长chr长度
@@ -1150,7 +1151,7 @@ public class MapReads {
 	 */
 	public void getRegionLs(List<MapInfo> lsmapInfo, int thisInvNum, int type) {
 		for (MapInfo mapInfo : lsmapInfo) {
-			double[] Info = getRengeInfo(thisInvNum, mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), type);
+			double[] Info = getRengeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd(), type);
 			mapInfo.setDouble(Info);
 		}
 	}
@@ -1162,7 +1163,7 @@ public class MapReads {
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
 	public void getRegion(MapInfo mapInfo, int thisInvNum, int type) {
-		double[] Info = getRengeInfo(thisInvNum, mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), type);
+		double[] Info = getRengeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd(), type);
 		mapInfo.setDouble(Info);
 	}
 	/**
@@ -1175,10 +1176,10 @@ public class MapReads {
 	public void getRegionLs(int binNum, List<MapInfo> lsmapInfo, int type) {
 		for (int i = 0; i < lsmapInfo.size(); i++) {
 			MapInfo mapInfo = lsmapInfo.get(i);
-			double[] Info = getRengeInfo(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), binNum, type);
+			double[] Info = getRengeInfo(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd(), binNum, type);
 			if (Info == null) {
 				lsmapInfo.remove(i); i--;
-				logger.error("出现未知ID："+mapInfo.getTitle() + " "+mapInfo.getChrID() + " " + mapInfo.getStart() + " "+ mapInfo.getEnd());
+				logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStart() + " "+ mapInfo.getEnd());
 				continue;
 			}
 			mapInfo.setDouble(Info);
@@ -1192,9 +1193,9 @@ public class MapReads {
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
 	public void getRegion(int binNum, MapInfo mapInfo, int type) {
-			double[] Info = getRengeInfo(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd(), binNum, type);
+			double[] Info = getRengeInfo(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd(), binNum, type);
 			if (Info == null) {
-				logger.error("出现未知ID："+mapInfo.getTitle() + " "+mapInfo.getChrID() + " " + mapInfo.getStart() + " "+ mapInfo.getEnd());
+				logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStart() + " "+ mapInfo.getEnd());
 			}
 			mapInfo.setDouble(Info);
 	}
@@ -1240,9 +1241,9 @@ public class MapReads {
 	 */
 	public static void CmpMapReg(MapReads mapReads, MapReads mapReads2, MapInfo mapInfo)
 	{
-		double value1 = mapReads.regionMean(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd());
-		double value2 = mapReads2.regionMean(mapInfo.getChrID(), mapInfo.getStart(), mapInfo.getEnd());
-		mapInfo.setWeight(value1/value2);
+		double value1 = mapReads.regionMean(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd());
+		double value2 = mapReads2.regionMean(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd());
+		mapInfo.setScore(value1/value2);
 	}
 	
 }

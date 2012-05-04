@@ -23,24 +23,25 @@ public class ExtractNCRNA {
 		String refseqFile = "/media/winE/Bioinformatics/DataBase/sRNA/rna.fa";
 		String outNCRNA = "/media/winE/Bioinformatics/DataBase/sRNA/refseqNCrna.fa";
 		String regx = "NR_\\d+|XR_\\d+";
-//		extractNCRNA(refseqFile, outNCRNA, regx);
+		extractNCRNA(refseqFile, outNCRNA, regx);
 		
 		String hairpinFile = "/media/winE/Bioinformatics/DataBase/sRNA/mappingDB/hairpin.fa";
 		String outMiRNA = FileOperate.changeFileSuffix(hairpinFile, "_human", null);
 		regx = "Homo sapiens";
-//		extractMiRNAandRfam(hairpinFile, outMiRNA, regx);
+		extractMiRNAandRfam(hairpinFile, outMiRNA, regx);
 		
-		String rfamFile = "/media/winE/Bioinformatics/DataBase/sRNA/Rfam.fasta";
+		String rfamFile = "/media/winE/Bioinformatics/DataBase/sRNA/rfam/Rfam.fasta";
 		String outRfam = FileOperate.changeFileSuffix(rfamFile, "_human", null);
 		regx = "Homo sapiens \\(human\\)";
-//		extractMiRNAandRfam(rfamFile, outRfam, regx);
+		extractMiRNAandRfam(rfamFile, outRfam, regx);
 		
-		
-		String matureRNA = "/media/winE/Bioinformatics/DataBase/sRNA/miRBase/mature_human.fa";
+		String matureRNA = "/media/winE/Bioinformatics/DataBase/sRNA/miRBase/hairpin_human.fa";
 		String outMatureRNA = FileOperate.changeFileSuffix(matureRNA, "_Final", null);
 		extractMiRNA(matureRNA, outMatureRNA);
 		
-		
+//		String matureRNA = "/media/winE/Bioinformatics/DataBase/sRNA/miRBase/hairpin_human.fa";
+//		String outMatureRNA = FileOperate.changeFileSuffix(matureRNA, "_Final", null);
+//		extractMiRNA(matureRNA, outMatureRNA);
 	}
 	/**
 	 * 从NCBI的hairpin.fa文件中提取NCRNA

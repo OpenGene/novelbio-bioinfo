@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 
 public interface SeqHashInt {
 	/**
@@ -73,7 +74,7 @@ public interface SeqHashInt {
 	 *            序列终点
 	 * @return
 	 */
-	public SeqFasta getSeq(boolean cisseq, String chrID, long startlocation, long endlocation);
+	public SeqFasta getSeq(Boolean cisseq, String chrID, long startlocation, long endlocation);
 	
 	/**
 	 * 给出peak位点，查找指定范围的sequence，根据CaseChange改变大小写
@@ -140,5 +141,11 @@ public interface SeqHashInt {
 	 * 是否要设定为DNA，也就是将序列中的U全部转化为T
 	 */
 	public void setDNAseq(boolean isDNAseq);
+	/**
+	 * 根据给定的mapInfo，获得序列，注意序列并没有根据cis5to3进行反向
+	 * 会用mapInfo的名字替换seqfasta的名字
+	 * @param mapInfo
+	 */
+	void getSeq(MapInfo mapInfo);
 	
 }

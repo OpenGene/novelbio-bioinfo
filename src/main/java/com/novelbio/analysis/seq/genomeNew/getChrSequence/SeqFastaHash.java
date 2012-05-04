@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -149,6 +150,7 @@ public class SeqFastaHash extends SeqHashAbs {
 		}
 		// /////////离开循环后，再做一次总结/////////////////////
 		putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append);
+		txtSeqFile.close();
 	}
 
 	/**
@@ -237,6 +239,10 @@ public class SeqFastaHash extends SeqHashAbs {
 	{
 		seqID = seqID.toLowerCase();
 		SeqFasta seqFasta = hashSeq.get(seqID);
+		if (seqFasta == null) {
+			logger.error("没有该ID：" + seqID);
+			return null;
+		}
 		seqFasta.setDNA(isDNAseq);
 		return seqFasta;
 	}
@@ -309,6 +315,7 @@ public class SeqFastaHash extends SeqHashAbs {
 		for (SeqFasta seqFasta : lsFasta) {
 			txtOut.writefileln(seqFasta.toStringNRfasta());
 		}
+		txtOut.close();
 	}
 	/**
 	 * 将<b>序列名</b>含有该正则表达式的序列写入文件<br>
@@ -326,6 +333,7 @@ public class SeqFastaHash extends SeqHashAbs {
 				txtOut.writefileln(seqFasta.toStringNRfasta());
 			}
 		}
+		txtOut.close();
 	}
 	
 	/**
@@ -346,6 +354,7 @@ public class SeqFastaHash extends SeqHashAbs {
 			seqFastaOut.setDNA(true);
 			txtOut.writefileln(seqFastaOut.toStringNRfasta());
 		}
+		txtOut.close();
 	}
 }
 

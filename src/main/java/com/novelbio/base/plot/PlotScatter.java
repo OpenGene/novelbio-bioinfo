@@ -78,34 +78,14 @@ public class PlotScatter extends PlotNBCInteractive{
      * add point
      * @param x
      * @param y
+     * @param dotStyle 如果是不同名字的点，需要创建新的dotStyle
      */
-    public void addXY(double x, double y, DotStyle dotStyle, String name) {
-    	if (name == null || name.trim().equals("")) {
-			dotStyle.setDotname(false);
-		}
-    	else {
-			dotStyle.setDotname(true);
-		}
-    	DataTable dataTable = null;
-    	if (!hashDataTable.containsKey(dotStyle)) {
-    		if (dotStyle.isDotName()) {
-    			dataTable = new DataTable(Double.class, Double.class, String.class);
-			}
-    		else {
-    			dataTable = new DataTable(Double.class, Double.class);
-			}
-			hashDataTable.put(dotStyle, dataTable);
-		}
-    	else {
-			dataTable = hashDataTable.get(dotStyle);
-		}
-    	
-    	if (dotStyle.isDotName()) {
-    		dataTable.add(x,y,name);
-		}
-    	else {
+    public void addXY(double x, double y, DotStyle dotStyle) {
+    	DataTable dataTable = getDataTable(dotStyle);
+    	if (dotStyle.getName() != null)
+    		dataTable.add(x,y,dotStyle.getName());
+    	else
 			dataTable.add(x,y);
-		}
     }
     /**
      * add point array, x.length must equals y.length
@@ -116,16 +96,12 @@ public class PlotScatter extends PlotNBCInteractive{
     	if (x.length != y.length) {
 			return;
 		}
-    	DataTable dataTable = null;
-    	if (!hashDataTable.containsKey(dotStyle)) {
-    		dataTable = new DataTable(Double.class, Double.class);
-			hashDataTable.put(dotStyle, dataTable);
-		}
-    	else {
-			dataTable = hashDataTable.get(dotStyle);
-		}
+    	DataTable dataTable = getDataTable(dotStyle);
     	for (int i = 0; i < x.length; i++) {
-    		dataTable.add(x[i],y[i]);
+    		if (dotStyle.getName() != null)
+    			dataTable.add(x[i],y[i], dotStyle.getName());
+    		else
+    			dataTable.add(x[i],y[i]);
 		}
     }
     /**
@@ -134,16 +110,12 @@ public class PlotScatter extends PlotNBCInteractive{
      * @param y
      */
     public void addXY(Collection<double[]> lsXY, DotStyle dotStyle) {
-    	DataTable dataTable = null;
-    	if (!hashDataTable.containsKey(dotStyle)) {
-    		dataTable = new DataTable(Double.class, Double.class);
-			hashDataTable.put(dotStyle, dataTable);
-		}
-    	else {
-			dataTable = hashDataTable.get(dotStyle);
-		}
+    	DataTable dataTable = getDataTable(dotStyle);
     	for (double[] ds : lsXY) {
-			dataTable.add(ds[0],ds[1]);
+    		if (dotStyle.getName() != null)
+    			dataTable.add(ds[0], ds[1], dotStyle.getName());
+    		else
+    			dataTable.add(ds[0], ds[1]);
 		}
     }
     /**
@@ -152,24 +124,67 @@ public class PlotScatter extends PlotNBCInteractive{
      * @param x
      * @param y
      */
-    public void addXY(Collection<? extends Number> lsX, Collection<? extends Number> lsY,DotStyle dotStyle) {
+    public void addXY(Collection<? extends Number> lsX, Collection<? extends Number> lsY, DotStyle dotStyle) {
     	if (lsX.size() != lsY.size()) {
 			return;
 		}
-    	DataTable dataTable = null;
+    	DataTable dataTable = getDataTable(dotStyle);
+    	for (Number numberX : lsX) {
+			Number numberY = lsY.iterator().next();
+    		if (dotStyle.getName() != null)
+    			dataTable.add(numberX.doubleValue(), numberY.doubleValue(), dotStyle.getName());
+    		else
+    			dataTable.add(numberX.doubleValue(), numberY.doubleValue());
+    	}
+    }
+    //////////////////////////////////////////
+    /**
+     * 给定一个dotstyle，返回该dotstyle所对应的datatable
+     * 同时将该datatable所对应的dataseries装入plot
+     * @param dotStyle
+     * @return
+     */
+    private DataTable getDataTable(DotStyle dotStyle) {
+    	DataTable dataTable = null; DataSeries dataSeries = null;
     	if (!hashDataTable.containsKey(dotStyle)) {
-    		dataTable = new DataTable(Double.class, Double.class);
+    		if (dotStyle.getName() != null) {
+    			dataTable = new DataTable(Double.class, Double.class, String.class);
+//    			dataSeries = new DataSeries( dataTable,0,1,2);
+			}
+    		else {
+    			dataTable = new DataTable(Double.class, Double.class);
+//    			dataSeries = new DataSeries( dataTable,0,1);
+			}
 			hashDataTable.put(dotStyle, dataTable);
+			if (plot == null) {
+				plot = new XYPlot(dataTable);
+			}
+			else {
+				plot.add(dataTable);
+			}
+			setPointStyle(dataTable, dotStyle);
 		}
     	else {
 			dataTable = hashDataTable.get(dotStyle);
 		}
-    	for (Number numberX : lsX) {
-			Number numberY = lsY.iterator().next();
-			dataTable.add(numberX.doubleValue(), numberY.doubleValue());
-		}
+    	return dataTable;
     }
+   
+    ////////////////////////////////////////////////////////////////
+    public void changeDotStyle(DotStyle dotStyle) {
+		DataTable dataTable = hashDataTable.get(dotStyle);
+		setPointStyle(dataTable, dotStyle);
+	}
+    
+    
+    
+    
+    
+    
+    
+    
     /**
+     * 待修正，将dataTable装入hash表中
      * using data to plot the histogram
      * @param lsNum data 
      * @param breakNum Number of subdivisions for analysis.
@@ -450,24 +465,24 @@ public class PlotScatter extends PlotNBCInteractive{
 	 * @param heigh
 	 */
 	protected void drawPlot() {
-		for (Entry<DotStyle, DataTable> entry : hashDataTable.entrySet()) {
-			DotStyle dotStyle = entry.getKey();
-			DataTable dataTable = entry.getValue();
-			DataSeries dataSeries = null;
-			if (dotStyle.isDotName()) {
-				dataSeries = new DataSeries(dotStyle.getGroup(), dataTable,0,1,2);
-			}
-			else {
-				dataSeries = new DataSeries(dotStyle.getGroup(), dataTable,0,1);
-			}
-			if (plot == null) {
-				plot = new XYPlot(dataSeries);
-			}
-			else {
-				plot.add(dataSeries);
-			}
-			setPointStyle(dataSeries, dotStyle);
-		}
+//		for (Entry<DotStyle, DataTable> entry : hashDataTable.entrySet()) {
+//			DotStyle dotStyle = entry.getKey();
+//			DataTable dataTable = entry.getValue();
+//			DataSeries dataSeries = null;
+//			if (dotStyle.isDotName()) {
+//				dataSeries = new DataSeries(dotStyle.getGroup(), dataTable,0,1,2);
+//			}
+//			else {
+//				dataSeries = new DataSeries(dotStyle.getGroup(), dataTable,0,1);
+//			}
+//			if (plot == null) {
+//				plot = new XYPlot(dataSeries);
+//			}
+//			else {
+//				plot.add(dataSeries);
+//			}
+//			setPointStyle(dataSeries, dotStyle);
+//		}
         // Style the plot area
 //        plot.getPlotArea().setSetting(PlotArea.BORDER, new BasicStroke(2f));
     
@@ -537,28 +552,25 @@ public class PlotScatter extends PlotNBCInteractive{
 	        points.setSetting(PointRenderer.COLOR, dotStyle.getColor());
 	        plot.setPointRenderer(dataSeries, points);
 		}
-		//规定，dotname在第3列，dotvalue也就是常规value在第二列
-		if (dotStyle.isDotName()) {
-			int colValue = 1;
-			if (dataSeries.getColumnCount() == 2) {
-				colValue = 2;
-			}
-			PointRenderer pointRenderer = plot.getPointRenderer(dataSeries);
-			//the third column is the name column
-			pointRenderer.setSetting(PointRenderer.VALUE_COLUMN, colValue);
-		}
 		//如果每个点的数值可见
 		if ( dotStyle.isValueVisible()) {
-			try {
-				plot.getPointRenderer(dataSeries).setSetting(PointRenderer.VALUE_DISPLAYED, dotStyle.isValueVisible());
-			} catch (Exception e) {
-		        PointRenderer points = new DefaultPointRenderer2D();
-		        points.setSetting(PointRenderer.SHAPE,  new Ellipse2D.Double(1, 1, 1, 1));
-		        points.setSetting(PointRenderer.COLOR, new Color(0, 0, 0, 0));
-		        points.setSetting(PointRenderer.VALUE_DISPLAYED, dotStyle.isValueVisible());
-		        plot.setPointRenderer(dataSeries, points);
+			PointRenderer pointRenderer = plot.getPointRenderer(dataSeries);
+			//如果没有点的渲染，譬如shape是没有点的，那么就新建透明点
+			if (pointRenderer == null) {
+				pointRenderer = new DefaultPointRenderer2D();
+				pointRenderer.setSetting(PointRenderer.SHAPE,  new Ellipse2D.Double(1, 1, 1, 1));
+				pointRenderer.setSetting(PointRenderer.COLOR, new Color(0, 0, 0, 0));
+				plot.setPointRenderer(dataSeries, pointRenderer);
 			}
+			pointRenderer.setSetting(PointRenderer.VALUE_DISPLAYED, dotStyle.isValueVisible());
 		}
+		//规定，dotname在第3列，dotvalue也就是常规value在第二列
+		if (dotStyle.getName() != null) {
+			PointRenderer pointRenderer = plot.getPointRenderer(dataSeries);
+			//the third column is the name column，从0开始计数的
+			pointRenderer.setSetting(PointRenderer.VALUE_COLUMN, 2);
+		}
+
         
 	}
 	

@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public abstract class SeqHashAbs implements SeqHashInt{
@@ -107,7 +108,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	/**
 	 * 在读取chr长度文件后，可以通过此获得所有chr的长度信息
 	 * 
-	 * @param chrID
+	 * @param refID
 	 * @return ArrayList<String[]> 0: chrID 1: chr长度 并且按照chr长度从小到大排序
 	 */
 	public ArrayList<String[]> getChrLengthInfo() {
@@ -149,7 +150,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	}
 	/**
 	 * 在读取chr长度文件后，可以通过此获得每条chr的长度
-	 * @param chrID 内部自动转换为小写
+	 * @param refID 内部自动转换为小写
 	 * @return
 	 */
 	public long getChrLenMin() 
@@ -158,7 +159,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	}
 	/**
 	 * 在读取chr长度文件后，可以通过此获得每条chr的长度
-	 * @param chrID 内部自动转换为小写
+	 * @param refID 内部自动转换为小写
 	 * @return
 	 */
 	public long getChrLenMax() 
@@ -257,12 +258,15 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 *            序列终点
 	 * @return
 	 */
-	public SeqFasta getSeq(boolean cisseq, String chrID, long startlocation,
+	public SeqFasta getSeq(Boolean cisseq, String chrID, long startlocation,
 			long endlocation) {
 		SeqFasta seqFasta = getSeq(chrID, startlocation, endlocation);
 
 		if (seqFasta == null) {
 			return null;
+		}
+		if (cisseq == null) {
+			cisseq = true;
 		}
 		if (cisseq ) {
 			return seqFasta;
@@ -422,7 +426,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	/**
 	 * 按顺序提取闭区间序列，每一个区段保存为一个SeqFasta对象
 	 * SeqFasta的名字为chrID:起点坐标-终点坐标 都是闭区间
-	 * @param chrID 序列ID
+	 * @param refID 序列ID
 	 * @param lsInfo 具体的区间
 	 * @return
 	 */
@@ -441,5 +445,11 @@ public abstract class SeqHashAbs implements SeqHashInt{
 			lsSeqfasta.add(seqFasta);
 		}
 		return lsSeqfasta;
+	}
+	@Override
+	public void getSeq(MapInfo mapInfo) {
+		SeqFasta seqFasta = getSeq(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd());
+		seqFasta.setSeqName(mapInfo.getName());
+		mapInfo.setSeq(seqFasta, true);
 	}
 }

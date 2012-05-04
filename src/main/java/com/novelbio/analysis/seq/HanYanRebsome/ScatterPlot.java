@@ -91,13 +91,13 @@ public class ScatterPlot {
 		}
 		for (int i = lsmaArrayList.size() - 1; i >=  lsmaArrayList.size() - geneNum; i--) {
 			double[] x =lsmaArrayList.get(i).getDouble();
-			double[] y = gffChrMap2.getGeneReadsHYRefseq(lsmaArrayList.get(i).getChrID());
+			double[] y = gffChrMap2.getGeneReadsHYRefseq(lsmaArrayList.get(i).getRefID());
 			if (y == null) {
 				y = new double[x.length];
 			}
-			txtOutx = new TxtReadandWrite(FileOperate.changeFileSuffix(outFile, "_"+lsmaArrayList.get(i).getChrID()+"_x", "txt"), true);
+			txtOutx = new TxtReadandWrite(FileOperate.changeFileSuffix(outFile, "_"+lsmaArrayList.get(i).getRefID()+"_x", "txt"), true);
 			txtOutx.Rwritefile(x);
-			txtOuty = new TxtReadandWrite(FileOperate.changeFileSuffix(outFile, "_"+lsmaArrayList.get(i).getChrID()+"_y", "txt"), true);
+			txtOuty = new TxtReadandWrite(FileOperate.changeFileSuffix(outFile, "_"+lsmaArrayList.get(i).getRefID()+"_y", "txt"), true);
 			txtOuty.Rwritefile(y);
 			txtOutx.close();
 			txtOuty.close();

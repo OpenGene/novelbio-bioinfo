@@ -19,7 +19,6 @@ public class SeqFasta implements Cloneable {
 	private String SeqName;
 	private String SeqSequence;
 	private static Logger logger = Logger.getLogger(SeqFasta.class);
-	private boolean cis5to3 = true;
 	
 	public static final int SEQ_UNKNOWN = 128;
 	public static final int SEQ_PRO = 256;
@@ -40,10 +39,7 @@ public class SeqFasta implements Cloneable {
 	public int length() {
 		return SeqSequence.length();
 	}
-	
-	public void setCis5to3(boolean cis5to3) {
-		this.cis5to3 = cis5to3;
-	}
+
 	/**
 	 * 反向互补哈希表
 	 */
@@ -489,30 +485,32 @@ public class SeqFasta implements Cloneable {
 		this.SeqName = seqName;
 		this.SeqSequence = SeqSequence;
 	}
+	
+	public SeqFasta(String SeqSequence)
+	{
+		getCompMap();
+		this.SeqSequence = SeqSequence;
+	}
+	/**
+	 * @param seqName
+	 * @param SeqSequence
+	 * @param cis5to3 仅仅标记一下，并不会反向序列
+	 */
 	public SeqFasta(String seqName, String SeqSequence, boolean cis5to3)
 	{
 		getCompMap();
 		this.SeqName = seqName;
-		
-		this.cis5to3 = cis5to3;
 		if (cis5to3) {
 			this.SeqSequence = SeqSequence;
 		}
 		else {
-			this.SeqSequence = reservecom(SeqSequence);
+			this.SeqSequence = reservecomplement(SeqSequence);
 		}
 	}
 	
-	protected SeqFasta() {
+	public SeqFasta() {
 		getCompMap();
 	}
-	/**
-	 * 本序列在生成的时候是正向还是反向，实际没有影响
-	 * @return
-	 */
-	public boolean isCis5to3() {
-		return cis5to3;
-	};
 	/**
 	 * 设定序列名
 	 */
@@ -633,7 +631,6 @@ public class SeqFasta implements Cloneable {
 		SeqFasta seqFasta = new SeqFasta();
 		seqFasta.TOLOWCASE = TOLOWCASE;
 		seqFasta.SeqName = SeqName;
-		seqFasta.cis5to3 = !cis5to3;
 		seqFasta.AA3Len = AA3Len;
 		seqFasta.SeqSequence = reservecomplement(SeqSequence);
 		return seqFasta;
@@ -669,7 +666,6 @@ public class SeqFasta implements Cloneable {
 				return;
 			}
 			start --;
-			
 		}
 		else if (end < 0){
 			end = start;
@@ -880,7 +876,7 @@ public class SeqFasta implements Cloneable {
 	 * @return
 	 */
 	public String toStringAA() {
-		return toStringAA(isCis5to3(), 0);
+		return toStringAA(true, 0);
 	}
 	/**
 	 * 给定motif，在序列上查找相应的正则表达式<br>
@@ -998,7 +994,6 @@ public class SeqFasta implements Cloneable {
 			seqFasta.AA3Len = AA3Len;
 			seqFasta.SeqSequence = SeqSequence;
 			seqFasta.TOLOWCASE = TOLOWCASE;
-			seqFasta.cis5to3 = cis5to3;
 			return seqFasta;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();

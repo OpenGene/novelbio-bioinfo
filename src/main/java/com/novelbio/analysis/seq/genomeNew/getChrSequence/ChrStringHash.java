@@ -17,6 +17,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -233,7 +235,7 @@ public class ChrStringHash extends SeqHashAbs{
 	/**
 	 * 获得每条染色体对应的bufferedreader类，方便从头读取
 	 * 
-	 * @param chrID
+	 * @param refID
 	 * @return
 	 */
 	public HashMap<String, BufferedReader> getBufChrSeq() {
@@ -255,6 +257,5 @@ public class ChrStringHash extends SeqHashAbs{
 		}
 		return effGenomSize;
 	}
-
 
 }

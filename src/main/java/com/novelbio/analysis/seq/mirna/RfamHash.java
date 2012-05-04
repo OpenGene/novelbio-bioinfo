@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
@@ -15,8 +16,8 @@ public class RfamHash {
 	public static void main(String[] args) {
 		RfamHash rfamHash = new RfamHash();
 		String rfamFile = "/media/winE/Bioinformatics/DataBase/sRNA/rfam/rfam.txt";
-		String mapBedFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_Rfam.bed";
-		String outFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/resultRfam/CR_Rfam.txt";
+		String mapBedFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_Rfam.bed";
+		String outFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/resultRfam/TG_Rfam.txt";
 		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
 	}
 	
@@ -67,11 +68,10 @@ public class RfamHash {
 	 * @param bedFile
 	 */
 	private void readRfamBed(String bedFile) {
-		TxtReadandWrite txtReadBed = new TxtReadandWrite(bedFile, false);
-		for (String string : txtReadBed.readlines()) {
-			String[] ss = string.split("\t");
-			String RfamID = ss[0].split("//")[0];
-			Double thisCount = (double)1/Integer.parseInt(ss[BedSeq.MAPPING_NUM_COLUMN]);
+		BedSeq bedSeq = new BedSeq(bedFile);
+		for (BedRecord bedRecord : bedSeq.readlines()) {
+			String RfamID = bedRecord.getRefID().split("//")[0];
+			Double thisCount = (double)1/bedRecord.getMappingNum();
 			if (hashRfam2Counts.containsKey(RfamID)) {
 				double newCounts = hashRfam2Counts.get(RfamID) + thisCount;
 				hashRfam2Counts.put(RfamID, newCounts);

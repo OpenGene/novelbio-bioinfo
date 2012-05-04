@@ -31,6 +31,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.nbcgui.controltest.CtrlGO;
@@ -79,7 +80,7 @@ public class GuiPathJpanel extends JPanel{
 	private ButtonGroup btnGroupPathClass;
 	private JComboBox jCombSelSpePath;
 	private JLabel jLabPathQtaxID;
-	private JScrollPane jScrollPaneInputPath;
+	private JScrollPaneData jScrollPaneInputPath;
 	////////////
 	static int QtaxID = 0;//查询物种ID
 	static int StaxID = 9606;//blast物种ID
@@ -304,7 +305,7 @@ public class GuiPathJpanel extends JPanel{
 		}
 
 		{
-			jScrollPaneInputPath = new JScrollPane();
+			jScrollPaneInputPath = new JScrollPaneData();
 		}
 		{
 			jLabInputReviewPath = new JLabel();
@@ -433,16 +434,14 @@ public class GuiPathJpanel extends JPanel{
 	 */
 	private void setPathProview(String filePath)
 	{
-		ExcelOperate excelOperate = new ExcelOperate();
-		excelOperate.openExcel(filePath);
-		String[][] PathRawData = excelOperate.ReadExcel(1, 1, excelOperate.getRowCount(), excelOperate.getColCount());
+		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(filePath, 1);
 		String[][] tableValue = null;
-		DefaultTableModel jTabInputPath = new DefaultTableModel(tableValue,PathRawData[0]);
+		DefaultTableModel jTabInputPath = new DefaultTableModel(tableValue,lsInfo.get(0));
 		JTable jTabFInputPath = new JTable();
 		jScrollPaneInputPath.setViewportView(jTabFInputPath);
 		jTabFInputPath.setModel(jTabInputPath);
-		for (int i = 1; i < PathRawData.length; i++) {
-			jTabInputPath.addRow(PathRawData[i]);
+		for (int i = 1; i < lsInfo.size(); i++) {
+			jTabInputPath.addRow(lsInfo.get(i));
 		}
 		
 	}

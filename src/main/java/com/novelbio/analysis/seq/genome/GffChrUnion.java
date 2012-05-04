@@ -636,7 +636,7 @@ public class GffChrUnion {
 
 	/**
 	 * 在读取chr长度文件后，可以通过此获得所有chr的长度信息
-	 * @param chrID
+	 * @param refID
 	 * @return
 	 * 0: chrID 
 	 * 1: chr长度
@@ -681,7 +681,7 @@ public class GffChrUnion {
 	}
 	/**
 	 * 在读取chr长度文件后，可以通过此获得最长和最短chr的长度
-	 * @param chrID
+	 * @param refID
 	 * @return
 	 * 0: 最短chr长度
 	 *  1: 最长chr长度

@@ -250,7 +250,7 @@ public class SnpIndelRs {
 	}
 	/**
 	 * snp在哪条染色体上
-	 * @param chrID
+	 * @param refID
 	 */
 	public String getChrID() {
 		return chrID;

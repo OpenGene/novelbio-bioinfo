@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
+import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailRepeat;
@@ -25,8 +26,8 @@ public class ReadsOnRepeatGene {
 		String repeatGffFile = "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/rmsk.txt";
 		String geneGffUCSC = "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/hg19_refSeqSortUsing.txt";
 		String outPath = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/resultRepeat/";
-		String prix = "CR";
-		String bedFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_Genomic.bed";
+		String prix = "TG";
+		String bedFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_Genomic.bed";
 		readsInfo.readGff(repeatGffFile, geneGffUCSC);
 		readsInfo.countReadsInfo(bedFile);
 		readsInfo.writeToFileGeneProp(outPath + prix + "_GeneProp.txt");
@@ -63,21 +64,14 @@ public class ReadsOnRepeatGene {
 	
 
 	public void countReadsInfo(String bedFile) {
-		TxtReadandWrite txtBed = new TxtReadandWrite(bedFile, false);
-		for (String string : txtBed.readlines()) {
-			String[] ss = string.split("\t");
-			int mapNum = Integer.parseInt(ss[BedSeq.MAPPING_NUM_COLUMN]);
-			int start = Integer.parseInt(ss[1]), end = Integer.parseInt(ss[2]);
-			boolean cis = false;
-			if (ss[BedSeq.MAPPING_NUM_STRAND].equals("+")) {
-				cis = true;
-			}
-			String repeatInfo = searchReadsRepeat(ss[0], start, end);
+		BedSeq bedSeq = new BedSeq(bedFile);
+		for (BedRecord bedRecord : bedSeq.readlines()) {
+			String repeatInfo = searchReadsRepeat(bedRecord.getRefID(), bedRecord.getStart(), bedRecord.getEnd());
 			if (repeatInfo != null) {
-				addHashRepeat(repeatInfo, mapNum);
+				addHashRepeat(repeatInfo, bedRecord.getMappingNum());
 			}
-			int[] geneLocInfo = searchGene(cis, ss[0], start, end);
-			addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,mapNum);
+			int[] geneLocInfo = searchGene(bedRecord.isCis5to3(), bedRecord.getRefID(), bedRecord.getStart(), bedRecord.getEnd());
+			addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,bedRecord.getMappingNum());
 		}
 	}
 	

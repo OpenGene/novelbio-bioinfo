@@ -341,7 +341,7 @@ public class ChrStringHash {
 	}
 	/**
 	 * 获得每条染色体对应的bufferedreader类，方便从头读取
-	 * @param chrID
+	 * @param refID
 	 * @return
 	 */
 	public static HashMap<String, BufferedReader> getBufChrSeq()
@@ -389,7 +389,7 @@ public class ChrStringHash {
 	
 	/**
 	 * 在读取chr长度文件后，可以通过此获得所有chr的长度信息
-	 * @param chrID
+	 * @param refID
 	 * @return ArrayList<String[]>
 	 * 0: chrID
 	 * 1: chr长度

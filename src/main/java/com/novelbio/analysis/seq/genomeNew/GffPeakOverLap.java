@@ -266,7 +266,7 @@ public class GffPeakOverLap
 	 * 为gffMPeakDetial查找gffHashplusPeak后获得的交集情况<br>
 	 * @param parentName
 	 * @param start
-	 * @param end
+	 * @param endLoc
 	 */
 	private int twoSiteLocation(GffDetailPeak gffMPeakDetial,ListHashBin gffHashplusPeak) 
 	{

@@ -72,6 +72,34 @@ public class BedSeq extends SeqComb{
 		closeWrite();
 	}
 	/**
+	 * 读取前几行，不影响{@link #readlines()}
+	 * @param num
+	 * @return
+	 */
+	public ArrayList<BedRecord> readHeadLines(int num) {
+		ArrayList<BedRecord> lsResult = new ArrayList<BedRecord>();
+		int i = 0;
+		for (BedRecord bedRecord : readlines()) {
+			if (i >= num) {
+				break;
+			}
+			lsResult.add(bedRecord);
+		}
+		return lsResult;
+	}
+	/**
+	 * 读取前几行，不影响{@link #readlines()}
+	 * @param num
+	 * @return
+	 */
+	public BedRecord readFirstLine() {
+		int i = 0;
+		for (BedRecord bedRecord : readlines()) {
+			return bedRecord;
+		}
+		return null;
+	}
+	/**
 	 * 写完后务必用此方法关闭
 	 * 关闭输入流，并将bedseq写入转化为bedseq读取
 	 */
@@ -207,7 +235,16 @@ public class BedSeq extends SeqComb{
 		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
 		return sortBedFile(1, sortBedFile, 2,3);
 	}
-	
+	/**
+	 * 指定bed文件，按照chrID和坐标进行排序<br>
+	 * @param sortBedFile 排序后的文件全名<br>
+	 * 返回名字为FileOperate.changeFileSuffix(getFileName(), "_sorted", null);
+	 */
+	public BedSeq sortBedFile()  {
+		String file = FileOperate.changeFileSuffix(getFileName(), "_sorted", null);
+		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
+		return sortBedFile(file);
+	}
 	/**
 	 * 专门给徐龙勇的GSM307618过滤的文件，
 	 * chr11   79993182        79993208        -       2119.5.3904     0       CTTGGGGCAGAAGAGCCCTTGCAGCC
@@ -670,41 +707,54 @@ public class BedSeq extends SeqComb{
 		return hashValue;
 	}
 	
+	public BedSeq combBedFile() {
+		return combBedFile(0);
+	}
+	public BedSeq combBedFile(String outFile) {
+		return combBedFile(0, outFile);
+	}
+	@Deprecated
+	public BedSeq combBedFile(int readLines) {
+		String out = FileOperate.changeFileSuffix(getFileName(), "_comb", null);
+		return combBedFile(0, out);
+	}
+	
 	/**
 	 * 输入经过排序的peakfile,或者说bedfile，将重叠的peak进行合并
 	 * 注意，结果中仅保留peak，没有保留其他多的信息
 	 * @param peakFile
 	 * @param readLines 从第几行开始读
 	 */
-	public void combPeaks(int readLines)
+	public BedSeq combBedFile(int readLines, String outFile)
 	{
+		BedSeq bedSeqResult = new BedSeq(outFile, true);
 		if (readLines < 1) {
 			readLines = 1;
 		}
-		String out = FileOperate.changeFileSuffix(getFileName(), "_comb", null);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(out, true);
-		String lastchrID = null; int lastStart = 0; int lastEnd = 0;
-		for (String content : txtSeqFile.readlines(readLines)) {
-			String[] ss = content.split("\t");
-			String chrID = ss[0];
-			int start = Integer.parseInt(ss[1]);
-			int end = Integer.parseInt(ss[2]);
-			if (!chrID.equals(lastchrID) || start >= lastEnd) {
-				if (lastchrID != null) {
-					txtWrite.writefileln(lastchrID + "\t" + lastStart + "\t" + lastEnd);
+		BedRecord bedRecordLast = null;
+		for (BedRecord bedRecord : readlines(readLines)) {
+			if (bedRecordLast == null)
+				bedRecordLast = bedRecord;
+			if	(!bedRecord.getRefID().equals(bedRecordLast.getRefID()) || bedRecord.getStart() >= bedRecordLast.getEnd()) {
+				bedSeqResult.writeBedRecord(bedRecordLast);
+				bedRecordLast = bedRecord;
+				//因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
+				if (bedRecordLast.getReadsNum() == 1) {
+					bedRecordLast.setReadsNum(1);
 				}
-				lastchrID = chrID;
-				lastStart = start;
-				lastEnd = end;
 				continue;
 			}
-			else if (start < lastEnd) {
-				if (lastEnd < end) {
-					lastEnd = end;
+			else if (bedRecord.getStart() < bedRecordLast.getEnd()) {
+				//发现一个overlap就加上1，表示该区域有多条reads
+				bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
+				if (bedRecordLast.getEnd() < bedRecord.getEnd()) {
+					bedRecordLast.setEndLoc(bedRecord.getEnd());
 				}
 			}
 		}
-		txtWrite.close();
+		bedSeqResult.writeBedRecord(bedRecordLast);
+		bedSeqResult.closeWrite();
+		return bedSeqResult;
 	}
 	
 }

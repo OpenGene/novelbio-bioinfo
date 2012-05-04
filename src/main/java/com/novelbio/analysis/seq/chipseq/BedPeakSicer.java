@@ -278,7 +278,7 @@ is 1E-2.
 	}
 	/**
 	 * 指定bed文件，以及需要排序的列数，产生排序结果
-	 * @param chrID ChrID所在的列，从1开始记数，按照字母数字排序
+	 * @param refID ChrID所在的列，从1开始记数，按照字母数字排序
 	 * @param sortBedFile 排序后的文件全名
 	 * @param arg 除ChrID外，其他需要排序的列，按照数字排序
 	 */

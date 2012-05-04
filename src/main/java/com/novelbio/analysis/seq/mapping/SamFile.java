@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -456,10 +457,10 @@ X 8 sequence mismatch
 			 */
 			if ( ( uniqMapping && samRecord.getAttribute("XT").equals('U'))|| !uniqMapping ) {
 				BedRecord bedRecord = new BedRecord();
-				bedRecord.setRefID(samRecord.getReferenceName()); bedRecord.setStart( samRecord.getAlignmentStart());
-				bedRecord.setEnd(samRecord.getAlignmentEnd());
-				bedRecord.setCIGAR(samRecord.getCigarString()); bedRecord.setStrand(!samRecord.getReadNegativeStrandFlag());
-				bedRecord.setMapQuality(samRecord.getMappingQuality());
+				bedRecord.setRefID(samRecord.getReferenceName()); bedRecord.setStartLoc( samRecord.getAlignmentStart());
+				bedRecord.setEndLoc(samRecord.getAlignmentEnd());
+				bedRecord.setCIGAR(samRecord.getCigarString()); bedRecord.setCis5to3(!samRecord.getReadNegativeStrandFlag());
+				bedRecord.setMapQuality(samRecord.getMappingQuality()); bedRecord.setSeq(new SeqFasta(samRecord.getReadString()));
 				if (extend) {
 					bedRecord.extend(this.extend);
 				}
@@ -472,7 +473,7 @@ X 8 sequence mismatch
 				}
 				
 				if (getSeqName) {
-					bedRecord.setReadsName(samRecord.getReadName());
+					bedRecord.setName(samRecord.getReadName());
 				}
 				bedSeq.writeBedRecord(bedRecord);
 			}
@@ -484,13 +485,14 @@ X 8 sequence mismatch
 					bedRecord.setRefID(info[0]);
 					int start1 = Integer.parseInt(info[1].substring(1)) -1;
 					int end1 =  start1 + samRecord.getReadLength();
-					bedRecord.setStart(start1); bedRecord.setEnd(end1);
+					bedRecord.setStartLoc(start1); bedRecord.setEndLoc(end1);
 					bedRecord.setCIGAR(info[2]);
-					bedRecord.setStrand(info[1].charAt(0));
+					bedRecord.setCis5to3(info[1].charAt(0));
 					bedRecord.setMappingNum(tmpInfo.length + 1);
 					bedRecord.setMapQuality(samRecord.getMappingQuality());
+					bedRecord.setSeq(new SeqFasta(samRecord.getReadString()));
 					 if (getSeqName) {
-						 bedRecord.setReadsName(samRecord.getReadName());
+						 bedRecord.setName(samRecord.getReadName());
 					 }
 					 bedSeq.writeBedRecord(bedRecord);
 				 }

@@ -262,7 +262,7 @@ public class GffChrAnno extends GffChrAbs{
 	{
 		boolean flagIntraGenic = false;//在gene内的标记
 		int[] result = new int[8];
-		GffCodGene gffCodGene = gffHashGene.searchLocation(mapInfo.getChrID(), mapInfo.getFlagSite());
+		GffCodGene gffCodGene = gffHashGene.searchLocation(mapInfo.getRefID(), mapInfo.getFlagSite());
 		if (gffCodGene.isInsideLoc()) {
 			gffCodGene.getGffDetailThis().setTssRegion(tss);
 			gffCodGene.getGffDetailThis().setTesRegion(tes);

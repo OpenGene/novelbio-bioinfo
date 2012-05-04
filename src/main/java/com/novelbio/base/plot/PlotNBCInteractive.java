@@ -77,10 +77,10 @@ public abstract class PlotNBCInteractive extends PlotNBC{
     /**
      * check whether just figure the figure or all the picture area(include the axis margn)
      */
-	boolean plotareaAll = false;
+	boolean plotareaAll = true;
 	/**
 	 * check whether just figure the figure or all the picture area(include the axis margn)
-	 * @param plotareaAll
+	 * @param plotareaAll default true
 	 */
 	public void setPlotareaAll(boolean plotareaAll) {
 		this.plotareaAll = plotareaAll;
