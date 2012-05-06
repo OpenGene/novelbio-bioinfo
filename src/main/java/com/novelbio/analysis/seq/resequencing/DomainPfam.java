@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.snpNCBI;
+package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +15,7 @@ import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
  *
  */
 public class DomainPfam extends ListAbsSearch<DomainDetail, ListCodAbs<DomainDetail>, ListCodAbsDu<DomainDetail,ListCodAbs<DomainDetail>>>{
+	private static final long serialVersionUID = -4658442601484192818L;
 	static HashMap<String, DomainPfam> hashDomain = new HashMap<String, DomainPfam>();
 	String accID = "";
 	
@@ -95,15 +96,13 @@ public class DomainPfam extends ListAbsSearch<DomainDetail, ListCodAbs<DomainDet
 	@Override
 	protected ListCodAbs<DomainDetail> creatGffCod(String listName,
 			int Coordinate) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ListCodAbs<DomainDetail>(listName, Coordinate);
 	}
 
 	@Override
 	protected ListCodAbsDu<DomainDetail, ListCodAbs<DomainDetail>> creatGffCodDu(
 			ListCodAbs<DomainDetail> gffCod1, ListCodAbs<DomainDetail> gffCod2) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ListCodAbsDu<DomainDetail, ListCodAbs<DomainDetail>>(gffCod1, gffCod2);
 	}
 	
 }
@@ -125,8 +124,6 @@ class DomainDetail extends ListDetailAbs
 		super.setEndAbs(Integer.parseInt(ss[2]));
 		this.domainID = ss[5];
 	}
-	
-	
 	
 	public DomainDetail(String parentName, int startLoc, int endLoc, String name, String description) {
 		super(parentName, name, true);

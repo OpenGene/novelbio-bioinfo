@@ -19,29 +19,18 @@ public abstract class CtrlGOPath {
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
 	
 	FunctionTest functionTest = null;
-	/**
-	 * 是否需要blast
-	 */
+	/**  是否需要blast */
 	boolean blast = false;
-	/**
-	 * 查找物种
-	 */
+	/** 查找物种 */
 	int QtaxID = 0;
-	/**
-	 * blast物种
-	 */
+	/**  blast物种 */
 	int[] StaxID = null;
-	/**
-	 * blast的evalue
-	 */
+	/** blast的evalue */
 	double evalue = 1e-10;
-	
 	int[] colID = new int[2];
 	String resultExcel = "";
 	double up = -1;
 	double down = -1;
-
-//	String[] prix = new String[2];
 	boolean cluster = false;
 	/**
 	 * 结果,key： 时期等
@@ -60,17 +49,9 @@ public abstract class CtrlGOPath {
 	public HashMap<String, LinkedHashMap<String,ArrayList<String[]>>> getHashResult() {
 		return hashResultGene;
 	}
-
 	/**
-	 * @param elimGo
-	 * @param geneFileXls
-	 * @param GOClass GOInfoAbs.GO_BP
-	 * @param colAccID
-	 * @param colFC
-	 * @param backGroundFile
 	 * @param QtaxID
 	 * @param blast
-	 * @param StaxID
 	 * @param evalue
 	 */
 	protected CtrlGOPath( int QtaxID, boolean blast, double evalue) {
@@ -123,7 +104,6 @@ public abstract class CtrlGOPath {
 		return result;
 	}
 	/**
-	 * 
 	 * 给定文件，和文件分割符，以及第几列，获得该列的基因ID
 	 * @param lsAccID2Value  arraylist-string[] 如果 string[2],则第二个为上下调关系，判断上下调
 	 * 如果string[1]则不判断上下调
@@ -154,10 +134,7 @@ public abstract class CtrlGOPath {
 					else if (Double.parseDouble(strings[1]) >= up) {
 						lsUp.add(copedID);
 					}
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
-				
+				} catch (Exception e) { }
 			}
 			hashCluster.put("Up", lsUp);
 			hashCluster.put("Down", lsDown);
@@ -222,8 +199,7 @@ public abstract class CtrlGOPath {
 	 * @return
 	 */
 	protected abstract LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<String[]> lsResultTest);
-	
-	
+
 	public void saveExcel(String excelPath) {
 		ExcelOperate excelResult = new ExcelOperate();
 		excelResult.openExcel(excelPath);

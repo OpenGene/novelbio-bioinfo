@@ -8,7 +8,6 @@ public class GffCodRepeat extends ListCodAbs<GffDetailRepeat>{
 		super(chrID, Coordinate);
 		// TODO Auto-generated constructor stub
 	}
-
 	@Override
 	public GffDetailRepeat getGffDetailUp() {
 		return (GffDetailRepeat)gffDetailUp;

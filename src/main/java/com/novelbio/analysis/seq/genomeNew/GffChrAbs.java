@@ -264,15 +264,10 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 			MapInfo mapInfo = new MapInfo(strings[0]);
 			
 			try {
-				mapInfo.setStartLoc(Integer.parseInt(strings[1]));
-				mapInfo.setEndLoc(Integer.parseInt(strings[2]));
+				mapInfo.setStartEndLoc(Integer.parseInt(strings[1]),Integer.parseInt(strings[2]));
 			} catch (Exception e) {
 				logger.error("该坐标有问题："+mapInfo.getRefID());
 				continue;
-			}
-		
-			if (mapInfo.getStart() <0 && mapInfo.getStart() > -1000) {
-				mapInfo.setStartLoc(0);;
 			}
 			if (colScore > 0) {
 				mapInfo.setScore(Double.parseDouble(strings[3]));
@@ -311,11 +306,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 				logger.error("该坐标有问题："+mapInfo.getRefID());
 				continue;
 			}
-			mapInfo.setStartLoc(mapInfo.getFlagSite() - region);
-			mapInfo.setEndLoc(mapInfo.getFlagSite() + region);
-			if (mapInfo.getStart() <0 && mapInfo.getStart() > -1000) {
-				mapInfo.setStartLoc(0);;
-			}
+			mapInfo.setStartEndLoc(mapInfo.getFlagSite() - region, mapInfo.getFlagSite() + region);
 			if (colScore > 0) {
 				mapInfo.setScore(Double.parseDouble(strings[2]));
 			}
@@ -466,9 +457,6 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		//存储最后的基因和权重
 		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
 		for (MapInfo mapInfo : lsMapInfos) {
-			if (mapInfo.getStart() <0 && mapInfo.getStart() > -1000) {
-				mapInfo.setStartLoc(0);;
-			}
 			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene( mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd(), structure );
 			for (GffDetailGene gffDetailGene : setGffDetailGene) {
 				if (hashGffDetailGenes.containsKey(gffDetailGene)) {

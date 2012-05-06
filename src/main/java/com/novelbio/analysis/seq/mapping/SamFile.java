@@ -457,10 +457,9 @@ X 8 sequence mismatch
 			 */
 			if ( ( uniqMapping && samRecord.getAttribute("XT").equals('U'))|| !uniqMapping ) {
 				BedRecord bedRecord = new BedRecord();
-				bedRecord.setRefID(samRecord.getReferenceName()); bedRecord.setStartLoc( samRecord.getAlignmentStart());
-				bedRecord.setEndLoc(samRecord.getAlignmentEnd());
+				bedRecord.setRefID(samRecord.getReferenceName()); bedRecord.setStartEndLoc( samRecord.getAlignmentStart(),samRecord.getAlignmentEnd());
 				bedRecord.setCIGAR(samRecord.getCigarString()); bedRecord.setCis5to3(!samRecord.getReadNegativeStrandFlag());
-				bedRecord.setMapQuality(samRecord.getMappingQuality()); bedRecord.setSeq(new SeqFasta(samRecord.getReadString()));
+				bedRecord.setMapQuality(samRecord.getMappingQuality()); bedRecord.setSeq(new SeqFasta(samRecord.getReadString()), false);
 				if (extend) {
 					bedRecord.extend(this.extend);
 				}
@@ -485,12 +484,12 @@ X 8 sequence mismatch
 					bedRecord.setRefID(info[0]);
 					int start1 = Integer.parseInt(info[1].substring(1)) -1;
 					int end1 =  start1 + samRecord.getReadLength();
-					bedRecord.setStartLoc(start1); bedRecord.setEndLoc(end1);
+					bedRecord.setStartEndLoc(start1, end1);
 					bedRecord.setCIGAR(info[2]);
 					bedRecord.setCis5to3(info[1].charAt(0));
 					bedRecord.setMappingNum(tmpInfo.length + 1);
 					bedRecord.setMapQuality(samRecord.getMappingQuality());
-					bedRecord.setSeq(new SeqFasta(samRecord.getReadString()));
+					bedRecord.setSeq(new SeqFasta(samRecord.getReadString()), false);
 					 if (getSeqName) {
 						 bedRecord.setName(samRecord.getReadName());
 					 }

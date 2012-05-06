@@ -24,38 +24,59 @@ import com.novelbio.database.model.modcopeid.CopedID;
  */
 public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<ExonInfo>, ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>>{
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6015332335255457620L;
-	/**
-	 * 标记codInExon处在外显子中
-	 */
+	/** 标记codInExon处在外显子中 */
 	public static final int COD_LOC_EXON = 100;
-	/**
-	 * 标记codInExon处在内含子中
-	 */
+	/** 标记codInExon处在内含子中 */
 	public static final int COD_LOC_INTRON = 200;
-	/**
-	 * 标记codInExon不在转录本中
-	 */
+	/** 标记codInExon不在转录本中  */
 	public static final int COD_LOC_OUT = 300;
-	/**
-	 * 标记codInExon处在5UTR中
-	 */
+	/**  标记codInExon处在5UTR中  */
 	public static final int COD_LOCUTR_5UTR = 5000;
-	/**
-	 * 标记codInExon处在3UTR中
-	 */
+	/**  标记codInExon处在3UTR中 */
 	public static final int COD_LOCUTR_3UTR = 3000;
-	/**
-	 * 标记codInExon不在UTR中
-	 */
+	/** 标记codInExon不在UTR中 */
 	public static final int COD_LOCUTR_OUT = 0;	
-	/**
-	 * 哺乳动物基因间为Tss上游5000bp
-	 */
+	/** 哺乳动物基因间为Tss上游5000bp */
 	public static int PROMOTER_INTERGENIC_MAMMUM = 5000;
+	/**  哺乳动物为Distal Promoter Tss上游1000bp，以内的就为Proximal Promoter */
+	public static int PROMOTER_DISTAL_MAMMUM = 1000;
+	/** InterGenic_ */
+	public static final String PROMOTER_INTERGENIC_STR = "InterGenic_";
+	/**  Distal Promoter_ */
+	public static final String PROMOTER_DISTAL_STR = "Distal Promoter_";
+	/**  Proximal Promoter_ */
+	public static final String PROMOTER_PROXIMAL_STR = "Proximal Promoter_";
+	/**  Proximal Promoter_  */
+	public static final String PROMOTER_DOWNSTREAMTSS_STR = "Promoter DownStream Of Tss_";
+	public static final String TYPE_GENE_MRNA = "mRNA";
+	public static final String TYPE_GENE_MIRNA = "miRNA";
+	public static final String TYPE_GENE_PSEU_TRANSCRIPT = "pseudogenic_transcript";
+	public static final String TYPE_GENE_MRNA_TE = "mRNA_TE_gene";
+	public static final String TYPE_GENE_TRNA = "tRNA";
+	public static final String TYPE_GENE_SNORNA = "snoRNA";
+	public static final String TYPE_GENE_SNRNA = "snRNA";
+	public static final String TYPE_GENE_RRNA = "rRNA";
+	public static final String TYPE_GENE_NCRNA = "ncRNA";
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private String flagTypeGene = TYPE_GENE_MRNA;
+	/** 设定基因的转录起点上游长度，默认为0 */
+	protected int upTss = 0;
+	/** 设定基因的转录起点下游长度，默认为0  */
+	protected int downTss=0;
+	/**  设定基因的转录终点点上游长度，默认为0 */
+	protected int upTes=0;
+	/** 设定基因结尾向外延伸的长度，默认为0 */
+	protected int downTes=100;
+	String chrID = "";
+	private int taxID = 0;
+	/** 该转录本的ATG的第一个字符坐标，从1开始计数  */
+	protected int ATGsite = ListCodAbs.LOC_ORIGINAL;
+	/** 该转录本的Coding region end的最后一个字符坐标，从1开始计数 */
+	protected int UAGsite = ListCodAbs.LOC_ORIGINAL;
+	/** 该转录本的长度 */
+	protected int lengthIso = ListCodAbs.LOC_ORIGINAL;
 	/**
 	 * 设定DISTAL Promoter区域在TSS上游的多少bp外，默认1000
 	 * 目前仅和annotation的文字有关
@@ -74,39 +95,13 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			int pROMOTER_INTERGENIC_MAMMUM) {
 		PROMOTER_INTERGENIC_MAMMUM = pROMOTER_INTERGENIC_MAMMUM;
 	}
-	/**
-	 * 哺乳动物为Distal Promoter Tss上游1000bp，以内的就为Proximal Promoter
-	 */
-	public static int PROMOTER_DISTAL_MAMMUM = 1000;
-	/**
-	 * InterGenic_
-	 */
-	public static final String PROMOTER_INTERGENIC_STR = "InterGenic_";
-	/**
-	 * Distal Promoter_
-	 */
-	public static final String PROMOTER_DISTAL_STR = "Distal Promoter_";
-	/**
-	 * Proximal Promoter_
-	 */
-	public static final String PROMOTER_PROXIMAL_STR = "Proximal Promoter_";
-	/**
-	 * Proximal Promoter_
-	 */
-	public static final String PROMOTER_DOWNSTREAMTSS_STR = "Promoter DownStream Of Tss_";
-	public static final String TYPE_GENE_MRNA = "mRNA";
-	public static final String TYPE_GENE_MIRNA = "miRNA";
-	public static final String TYPE_GENE_PSEU_TRANSCRIPT = "pseudogenic_transcript";
-	public static final String TYPE_GENE_MRNA_TE = "mRNA_TE_gene";
-	public static final String TYPE_GENE_TRNA = "tRNA";
-	public static final String TYPE_GENE_SNORNA = "snoRNA";
-	public static final String TYPE_GENE_SNRNA = "snRNA";
-	public static final String TYPE_GENE_RRNA = "rRNA";
-	public static final String TYPE_GENE_NCRNA = "ncRNA";
-	
-	private String flagTypeGene = TYPE_GENE_MRNA;
-	
-	String chrID = "";
+	public GffGeneIsoInfo(String IsoName, GffDetailGene gffDetailGene, String geneType) {
+		super.listName = IsoName;
+		this.flagTypeGene = geneType;
+		this.chrID = gffDetailGene.getParentName();
+		setTssRegion(gffDetailGene.getTssRegion()[0], gffDetailGene.getTssRegion()[1]);
+		setTesRegion(gffDetailGene.getTesRegion()[0], gffDetailGene.getTesRegion()[1]);
+	}
 	/**
 	 * 返回该基因的类型
 	 * @return
@@ -114,30 +109,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public String getGeneType() {
 		return flagTypeGene;
 	}
-	private int taxID = 0;
 	protected void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
 	public int getTaxID() {
 		return taxID;
 	}
-	/**
-	 * 设定基因的转录起点上游长度，默认为0
-	 */
-	protected int upTss = 0;
-	
-	/**
-	 * 设定基因的转录起点下游长度，默认为0
-	 */
-	protected int downTss=0;
-	/**
-	 * 设定基因的转录终点点上游长度，默认为0
-	 */
-	protected int upTes=0;
-	/**
-	 * 设定基因结尾向外延伸的长度，默认为0
-	 */
-	protected int downTes=100;
 	/**
 	 * 跟随gffDetailGene的设定
 	 * 划定Tss范围上游为负数，下游为正数
@@ -204,16 +181,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return true;
 	}
-	
 
-	
-	public GffGeneIsoInfo(String IsoName, GffDetailGene gffDetailGene, String geneType) {
-		super.listName = IsoName;
-		this.flagTypeGene = geneType;
-		this.chrID = gffDetailGene.getParentName();
-		setTssRegion(gffDetailGene.getTssRegion()[0], gffDetailGene.getTssRegion()[1]);
-		setTesRegion(gffDetailGene.getTesRegion()[0], gffDetailGene.getTesRegion()[1]);
-	}
 	/**
 	 * 没有设定tss和tes的范围
 	 * @param IsoName
@@ -225,20 +193,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		this.flagTypeGene = geneType;
 		this.chrID = chrID;
 	}
-	
-//	/**
-//	 * 仅仅初始化给查找时用
-//	 * @param IsoName
-//	 * @param lsIsoform
-//	 */
-//	protected GffGeneIsoInfo(String IsoName, ArrayList<int[]> lsIsoform, boolean cis5to3) {
-//		this.IsoName = IsoName;
-//		this.lsIsoform = lsIsoform;
-//		this.cis5to3 = cis5to3;
-//	}
-//	public GffDetailGene getThisGffDetailGene() {
-//		return gffDetailGene;
-//	}
 	public String getChrID() {
 		return chrID;
 	}
@@ -251,44 +205,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public boolean ismRNA() {
 		return mRNA;
 	}
-	
-	/**
-	 * 该转录本的ATG的第一个字符坐标，从1开始计数
-	 */
-	protected int ATGsite = ListCodAbs.LOC_ORIGINAL;
-	/**
-	 * 该转录本的Coding region end的最后一个字符坐标，从1开始计数
-	 */
-	protected int UAGsite = ListCodAbs.LOC_ORIGINAL;
-
-	  /**
-     * 转录本中外显子的具体信息<br>
-     * exon成对出现，第一个exon坐标是该转录本的起点，最后一个exon坐标是该转录本的终点，正向从小到大排列且int[0]<int[1]<br>
-     * 反向从大到小排列且int[0]>int[1]<br>
-     */
-//	protected ArrayList<ExonInfo> lsElement = new ArrayList<ExonInfo>();
-	
-	/**
-	 * 该转录本的长度
-	 */
-	protected int lengthIso = ListCodAbs.LOC_ORIGINAL;
-	/**
-	 * 给转录本添加exon坐标，当基因为反向时UCSC的exon的格式是 <br>
-	 * NM_021170	chr1	-	934341	935552	934438	935353	4	934341,934905,935071,935245,	934812,934993,935167,935552, <br>
-	 * 那么exon为934341,934905,935071,935245和934812,934993,935167,935552, <br>
-	 * 是从小到大排列的<br>
-	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加 <br>
-	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
-	 */
-//	protected abstract void addExonUCSC(int locStart, int locEnd);
-	/**
-	 * 这个要确认
-	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
-	 * 当gene为反方向时，exon是从大到小排列的<br>
-	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加 <br>
-	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
-	 */
-//	protected abstract void addExonGFF(int locStart, int locEnd);
 	/**
 	 * 只能用于排序好的水稻和拟南芥GFF文件中
 	 * 这个要确认
@@ -304,7 +220,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		 * 正向从小到大添加 且 int0<int1
 		 * 反向从大到小添加 且 int0>int1
 		 */
-//		ExonInfo tmpexon = new ExonInfo(this, locStart, locEnd, isCis5to3());
 		ExonInfo tmpexon = new ExonInfo(getName(), isCis5to3(), locStart, locEnd);
 		if (size() > 0) {
 			ExonInfo exon = get(size() - 1);
@@ -345,18 +260,15 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 */
 	public int getTESsite() {
 		return get(size() -1).getEndCis();
-		
 	}
-	public int getExonNum()
-	{
+	public int getExonNum() {
 		return size();
 	}
 	/**
 	 * 获得5UTR的长度
 	 * @return
 	 */
-	public int getLenUTR5()
-	{
+	public int getLenUTR5() {
 		return Math.abs(super.getLocDistmRNA(getTSSsite(), this.ATGsite) ) + 1;
 	}
 	
@@ -364,8 +276,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 获得3UTR的长度
 	 * @return
 	 */
-	public int getLenUTR3()
-	{
+	public int getLenUTR3() {
 		return Math.abs(super.getLocDistmRNA(this.UAGsite, getTESsite() )) + 1;
 	}
 	 /**
@@ -373,8 +284,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
      * num 为实际个数。如果num=0则返回全部Exon的长度。
      * @return 
      */
-	public int getLenExon(int num)
-	{
+	public int getLenExon(int num) {
 		if (num < 0 || num > size()) {
 			return -1000000000;
 		}
@@ -397,8 +307,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
      * num 为实际个数。如果num=0则返回全部Intron的长度。
      * @return 
      */
-	public int getLenIntron(int num)
-	{
+	public int getLenIntron(int num) {
 		if (num < 0 || num > size()) {
 			return -1000000000;
 		}
@@ -413,104 +322,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		num--;
 		return Math.abs(get(num + 1).getStartCis() - get(num).getEndAbs()) - 1;
 	}
-	
-//	
-//	/**
-//	 * 坐标到该转录本起点的距离，考虑正反向
-//	 * 坐标在起点上游为负数，下游为正数
-//	 */
-//	protected int cod2TSS = ListCodAbs.LOC_ORIGINAL;
-//	/**
-//	 * 坐标到该转录本终点的距离，考虑正反向
-//	 * 坐标在终点上游为负数，下游为正数
-//	 */
-//	protected int cod2TES = ListCodAbs.LOC_ORIGINAL;
-//	
-//	/**
-//	 * 只有当坐标处在外显子中才有距离，不包含内含子
-//	 * 坐标到该转录本起点的距离，只看mRNA水平，考虑正反向
-//	 * 只有当坐标处在外显子中才有距离，不包含内含子\
-//	 * 因为cod在外显子中，所以肯定在tss下游，所以该值始终为正数
-//	 */
-//	protected int cod2TSSmRNA = ListCodAbs.LOC_ORIGINAL;
-//	/**
-//	 * 只有当坐标处在外显子中才有距离，不包含内含子
-//	 * 坐标到该转录本终点的距离，只看mRNA水平，考虑正反向
-//	 * 不去除内含子的直接用getCod2UAG
-//	 * 因为cod在外显子中，所以肯定在tss下游，所以该值始终为正数
-//	 */
-//	protected int cod2TESmRNA = ListCodAbs.LOC_ORIGINAL;
-//	/**
-//	 * 只有当坐标处在外显子中才有距离，不包含内含子<br>
-//	 * 坐标到该转录本atg的距离，只看mRNA水平，考虑正反向<br>
-//	 * 坐标在起点上游为负数，下游为正数<br>
-//	 */
-//	protected int cod2ATGmRNA= ListCodAbs.LOC_ORIGINAL;
-//	/**
-//	 * 只有当坐标处在外显子中才有距离，不包含内含子<br>
-//	 * 坐标到该转录本uag的距离，只看mRNA水平，考虑正反向<br>
-//	 * 坐标在终点上游为负数，下游为正数<br>
-//	 * Cnn nn  nuaG 距离为8
-//	 */
-//	protected int cod2UAGmRNA = ListCodAbs.LOC_ORIGINAL;
-//	
-//	
-//	/**
-//	 * 如果坐标在外显子/内含子中，
-//	 * 坐标与该外显子/内含子起点的距离
-//	 * 都为正数
-//	 */
-//	protected int cod2ExInStart = ListCodAbs.LOC_ORIGINAL;
-//	/**
-//	 * 如果坐标在外显子/内含子中，
-//	 * 坐标与该外显子/内含子终点的距离
-//	 * 都为正数
-//	 */
-//	protected int cod2ExInEnd = ListCodAbs.LOC_ORIGINAL;
-//	/**
-//	 * 包含内含子
-//	 * 坐标到ATG的距离，考虑正反向.
-//	 * 在ATG上游为负数，下游为正数
-//	 * @return
-//	 */
-//	protected int cod2ATG = ListCodAbs.LOC_ORIGINAL;
-//	/**
-//	 * 包含内含子
-//	 * 坐标到UAG的距离，考虑正反向.
-//	 * 在UAG上游为负数，下游为正数
-//	 * @return
-//	 */
-//	protected int cod2UAG = ListCodAbs.LOC_ORIGINAL;
-//	/**
-//	 * 坐标在第几个外显子或内含子中，如果不在就为负数
-//	 * 实际数目，从1开始记数
-//	 */
-//	protected int numExIntron = 0;
-//	
-//	/**
-//	 * 坐标在5UTR、3UTR还是不在
-//	 */
-//	protected int codLocUTR = COD_LOCUTR_OUT;
-//	/**
-//	 * 使用前先判定在UTR中
-//	 * 如果坐标在UTR中，坐标距离UTR的起点，注意这个会去除内含子
-//	 * 不去除内含子的直接用cod2start/cod2cdsEnd
-//	 */
-//	protected int cod2UTRstartmRNA = ListCodAbs.LOC_ORIGINAL;
-//	/**
-//	 * 使用前先判定在UTR中
-//	 * 如果坐标在UTR中，坐标距离UTR的终点，注意这个会去除内含子
-//	 * 不去除内含子的直接用cod2atg/cod2End
-//	 */
-//	protected int cod2UTRendmRNA = ListCodAbs.LOC_ORIGINAL;
-//
-//	/**
-//	 * 坐标在外显子、内含子还是在该转录本外
-//	 * 与codLocExon和codLocIntron比较即可
-//	 */
-//	protected int codLoc = 0;
-	
-	
 	/**
 	 * 在转录本的哪个位置
 	 * 0: 有COD_LOC_EXON，COD_LOC_INTRON，COD_LOC_OUT三种
@@ -590,7 +401,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			return coord - getATGsite();
 		}
 		else {
-			return -(coord - getTSSsite());
+			return -(coord - getATGsite());
 		}
 	}
 	/**
@@ -670,7 +481,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getCod2TESmRNA(int coord) {
 		return getLocDistmRNA(getTESsite(), coord);
 	}
-
 	/**
 	 * 返回能和本loc组成一个氨基酸的头部nr的坐标，从1开始计算
 	 * @param location
@@ -681,10 +491,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return  getLocDistmRNASite(location, -startLen%3);
 	}
 	/**
-	 * 返回能和本loc组成一个氨基酸的头部nr的偏移，也就是向前偏移几个碱基
+	 * 返回能和本loc组成一个氨基酸的头部nr的偏移，也就是向前偏移几个碱基，不考虑内含子
 	 * 恒为负数，正数就说明出错了
 	 * @param location
-	 * @return
+	 * @return 如果本位点就是一个氨基酸的第一个位点，则返回0
 	 */
 	public int getLocAAbeforeBias(int location) {
 		int startLen = getLocDistmRNA(ATGsite,location);
@@ -695,16 +505,15 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @param location
 	 * @return
 	 */
-	public int getLocAAend(int location)
-	{
+	public int getLocAAend(int location) {
 		int startLen = getLocDistmRNA(ATGsite, location);
 		return  getLocDistmRNASite(location, 2 - startLen%3);
 	}
 	/**
-	 * 返回能和本loc组成一个氨基酸的尾部nr的偏移，也就是向后偏移几个碱基
+	 * 返回能和本loc组成一个氨基酸的尾部nr的偏移，也就是向后偏移几个碱基，不考虑内含子
 	 * 恒为正数，负数就说明出错了
 	 * @param location
-	 * @return
+	 * @return 如果本位点就是一个氨基酸的最后一个位点，也就是第三位，则返回0
 	 */
 	public int getLocAAendBias(int location) {
 		int startLen = getLocDistmRNA(ATGsite,location);
@@ -730,7 +539,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			start = Math.max(startLoc, EndLoc);
 			end = Math.min(startLoc, EndLoc);
 		}
-		
 		int exonNumStart = getLocInEleNum(start) - 1;
 		int exonNumEnd =getLocInEleNum(end) - 1;
 		
@@ -749,7 +557,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			lsresult.add(get(i));
 		}
 		ExonInfo exonInfo2 = new ExonInfo(getName(), isCis5to3(), get(exonNumEnd).getStartCis(), end);
-
 		lsresult.add(exonInfo2);
 		return lsresult;
 	}
@@ -757,11 +564,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 返回该GeneIsoName所对应的CopedID，因为是NM号所以不需要指定TaxID
 	 * @return
 	 */
-	public CopedID getCopedID()
-	{
+	public CopedID getCopedID() {
 		return new CopedID(getName(), taxID);
 	}
-	
 	/**
 	 * 文字形式的定位描述
 	 * @return
@@ -845,7 +650,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 				filter = true;
 			}
 		}
-		
 		if (filterGeneBody && getCodLoc(coord) != COD_LOC_OUT) {
 			filter = true;
 		}
@@ -984,7 +788,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return lsTmp;
 	}
 	
-	
 	/**
 	 * 重写equal
 	 * 比较是否为同一个转录本
@@ -1101,8 +904,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		result.upTss = upTss;
 		return result;
 	}
-	
-
 	@Override
 	protected ListCodAbs<ExonInfo> creatGffCod(String listName, int Coordinate) {
 		ListCodAbs<ExonInfo> result = new ListCodAbs<ExonInfo>(listName, Coordinate);

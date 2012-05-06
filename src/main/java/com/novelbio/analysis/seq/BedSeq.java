@@ -748,7 +748,7 @@ public class BedSeq extends SeqComb{
 				//发现一个overlap就加上1，表示该区域有多条reads
 				bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
 				if (bedRecordLast.getEnd() < bedRecord.getEnd()) {
-					bedRecordLast.setEndLoc(bedRecord.getEnd());
+					bedRecordLast.setStartEndLoc(bedRecordLast.getStart(), bedRecord.getEnd());
 				}
 			}
 		}

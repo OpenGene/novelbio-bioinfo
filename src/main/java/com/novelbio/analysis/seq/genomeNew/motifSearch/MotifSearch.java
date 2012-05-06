@@ -8,10 +8,6 @@ import java.util.Hashtable;
 import com.novelbio.analysis.seq.genome.GffChrUnion;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
-
-
-
-
 /**
  * 全基因组查看motif的类，用于获得某个motif的背景
  * 正则表达式查找某个motif并且获得其位置，考虑生成density图

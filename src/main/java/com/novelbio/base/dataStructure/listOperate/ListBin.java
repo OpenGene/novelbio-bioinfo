@@ -5,12 +5,7 @@ package com.novelbio.base.dataStructure.listOperate;
  *
  */
 public class ListBin<T extends ListDetailAbs> extends ListAbsSearch<T, ListCodAbs<T>, ListCodAbsDu<T,ListCodAbs<T>>>{
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8632727637919902406L;
-	
 	String description = "";
 	/**
 	 * 根据需要设定描述

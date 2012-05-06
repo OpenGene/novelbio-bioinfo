@@ -19,8 +19,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	public static final String TEST_GO = "go";
 	public static final String TEST_KEGGPATH = "KEGGpathway";
 	
-	public AbstFunTest(ArrayList<CopedID> lsCopedIDsTest, ArrayList<CopedID> lsCopedIDsBG, boolean blast)
-	{
+	public AbstFunTest(ArrayList<CopedID> lsCopedIDsTest, ArrayList<CopedID> lsCopedIDsBG, boolean blast) {
 		this.lsCopedIDsTest = lsCopedIDsTest;
 		this.lsCopedIDsBG = lsCopedIDsBG;
 		this.blast = blast;
@@ -28,8 +27,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	
 	public AbstFunTest() {}
 	
-	public void setBlast(boolean blast, double evalue, int... blastTaxID)
-	{
+	public void setBlast(boolean blast, double evalue, int... blastTaxID) {
 		this.blast = blast;
 		this.blastTaxID = blastTaxID;
 		this.blastEvalue = evalue;
@@ -45,15 +43,10 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	double blastEvalue = 1e-10;
 	ArrayList<CopedID> lsCopedIDsTest = null;
 	ArrayList<CopedID> lsCopedIDsBG = null;
-	/**
-	 * genUniID item,item格式
-	 */
+	/** genUniID item,item格式  */
 	ArrayList<String[]> lsTest = null;
-	/**
-	 * genUniID item,item格式
-	 */
+	/** genUniID item,item格式 */
 	ArrayList<String[]> lsBG = null;
-	
 	String BGfile = "";
 	/**
 	 * gene2CopedID的对照表，多个accID对应同一个geneID的时候就用这个hash来处理
@@ -404,8 +397,6 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 */
 	public void setGoType(String goType) {
 	}
-	
-	
 	/**
 	 * 输入
 	 * * blast：

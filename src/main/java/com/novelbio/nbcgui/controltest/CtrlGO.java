@@ -19,9 +19,7 @@ import com.novelbio.generalConf.NovelBioConst;
 public class CtrlGO extends CtrlGOPath{
 
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
-	/**
-	 * 用单例模式
-	 */
+	/** 用单例模式 */
 	private static CtrlGO ctrlGO = null;
 
 	String GOClass = Go2Term.GO_BP;
@@ -113,5 +111,4 @@ public class CtrlGO extends CtrlGOPath{
 		title[6] = "P-Value"; title[7] = "FDR"; title[8] = "Enrichment"; title[9] = "(-log2P)";
 		return title;
 	}
-
 }

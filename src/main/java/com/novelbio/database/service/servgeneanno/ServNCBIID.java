@@ -17,11 +17,6 @@ public class ServNCBIID extends AbsGetSpring implements MapNCBIID{
 	private static Logger logger = Logger.getLogger(ServNCBIID.class);
 	@Inject
 	private MapNCBIID mapNCBIID;
-
-	
-//	static{
-//		mapNCBIID = (MapNCBIID) factory.getBean("mapNCBIID");
-//	}
 	public ServNCBIID()  
 	{
 		mapNCBIID = (MapNCBIID) factory.getBean("mapNCBIID");
@@ -149,8 +144,5 @@ public class ServNCBIID extends AbsGetSpring implements MapNCBIID{
 		else {
 			return lsResult.get(0);
 		}
-		
 	}
-	
-	
 }

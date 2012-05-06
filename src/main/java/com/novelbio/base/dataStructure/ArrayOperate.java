@@ -20,8 +20,7 @@ public class ArrayOperate {
 	 * @param sep
 	 * @return
 	 */
-	public static String cmbString(String[] ss, String sep)
-	{
+	public static String cmbString(String[] ss, String sep) {
 		String result = "";
 		if (ss.length < 1) {
 			return "";
@@ -32,8 +31,6 @@ public class ArrayOperate {
 		}
 		return result;
 	}
-	
-	
 	/**
 	 * 给定lsString，将lsString看作ArrayList-String[]，纵向将其合并为String[][]，也就是类似cbind
 	 * @param lsStrings
@@ -52,7 +49,6 @@ public class ArrayOperate {
 		}
 		return result;
 	}
-
 	/**
 	 * 二维[][]的合并，给定AT[][]和BT[][]
 	 * 将AT[][]和BT[][]合并，可以指定BT插入在AT的哪一列中
@@ -90,7 +86,6 @@ public class ArrayOperate {
 		}
 		return result;
 	}
- 
 	/**
 	 * 二维[][]的合并，给定AT[][]和BT[][]
 	 * 将AT[][]和BT[][]合并，可以指定BT插入在AT的哪一列中

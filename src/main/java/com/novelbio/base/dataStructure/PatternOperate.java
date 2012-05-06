@@ -132,11 +132,4 @@ public class PatternOperate
     		 patInput=Pattern.compile(regex);
 		}
 	}
-
-    
 }
-
-
-
-
-

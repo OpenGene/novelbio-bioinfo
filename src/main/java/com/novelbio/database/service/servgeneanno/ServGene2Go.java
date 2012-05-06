@@ -18,11 +18,10 @@ public class ServGene2Go extends AbsGetSpring implements MapGene2Go {
 	private static Logger logger = Logger.getLogger(ServGene2Go.class);
 	@Inject
 	private MapGene2Go mapGene2Go;
-	public ServGene2Go()  
-	{
+	public ServGene2Go() {
 		mapGene2Go = (MapGene2Go) factory.getBean("mapGene2Go");
 	}
-
+	
 	public ArrayList<Gene2Go> queryLsGene2Go(int geneID, int taxID) {
 		Gene2Go gene2Go = new Gene2Go();
 		gene2Go.setGeneUniID(geneID + "");

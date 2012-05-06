@@ -18,9 +18,7 @@ import com.novelbio.generalConf.NovelBioConst;
 public class CtrlPath extends CtrlGOPath {
 
 	private static final Logger logger = Logger.getLogger(CtrlPath.class);
-	/**
-	 * 用单例模式
-	 */
+	/** 用单例模式  */
 	private static CtrlPath ctrlPath = null;
 
 	/**

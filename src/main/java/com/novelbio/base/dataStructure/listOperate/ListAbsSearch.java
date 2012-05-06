@@ -9,73 +9,7 @@ import org.apache.log4j.Logger;
 
 public abstract class ListAbsSearch <E extends ListDetailAbs, T extends ListCodAbs<E>, K extends ListCodAbsDu<E, T>> extends ListAbs<E>  implements Cloneable{
 	private static Logger logger = Logger.getLogger(ListAbsSearch.class);
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4583552188474447935L;
-	/**
-	 * 保存某个坐标和所在的element数目,
-	 * value: 正数，element中，
-	 * 负数，两个element之间
-	 */
-//	HashMap<Integer, Integer> hashCodInEleNum;
-
-//	/**
-//	 * TO BE CHECKED
-//	 * 只有在cis存在的时候才能使用
-//	 * 返回距离loc有num Bp的坐标，在mRNA层面，在loc上游时num 为负数
-//	 * 在loc下游时num为正数
-//	 * 如果num Bp外就没有基因了，则返回-1；
-//	 * @param mRNAnum
-//	 * NnnnLoc 为-4位，当N与Loc重合时为0
-//	 */
-//	public int getLocDistmRNASite(int location, int mRNAnum) {
-//		if (getLocInEleNum(location) <= 0) {
-//			return -1;
-//		}
-//		if (mRNAnum < 0) {
-//			if (Math.abs(mRNAnum) <= getLoc2EleStart(location)) {
-//				return location + mRNAnum;
-//			} 
-//			else {
-//				int exonNum = getLocInEleNum(location) - 1;
-//				int remain = Math.abs(mRNAnum) - getLoc2EleStart(location);
-//				for (int i = exonNum - 1; i >= 0; i--) {
-//					GffDetailAbs tmpExon = get(i);
-//					// 一个一个外显子的向前遍历
-//					if (remain - tmpExon.getLen() > 0) {
-//						remain = remain - tmpExon.getLen();
-//						continue;
-//					}
-//					else {
-//						return tmpExon.getEndCis() - remain + 1;
-//					}
-//				}
-//				return -1;
-//			}
-//		}
-//		else {
-//			if (mRNAnum <= getLoc2EleEnd(location)) {
-//				return location + mRNAnum;
-//			} 
-//			else {
-//				int exonNum = getLocInEleNum(location) - 1;
-//				int remain = mRNAnum - getLoc2EleEnd(location);
-//				for (int i = exonNum + 1; i < size(); i++) {
-//					GffDetailAbs tmpExon = get(i);
-//					// 一个一个外显子的向前遍历
-//					if (remain - tmpExon.getLen() > 0) {
-//						remain = remain - tmpExon.getLen();
-//						continue;
-//					}
-//					else {
-//						return tmpExon.getStartCis() + remain - 1;
-//					}
-//				}
-//				return -1;
-//			}
-//		}
-//	}
 	/**
 	 * 获得的每一个信息都是实际的而没有clone
 	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
@@ -167,5 +101,3 @@ public abstract class ListAbsSearch <E extends ListDetailAbs, T extends ListCodA
 		return result;
 	}
 }
-
-

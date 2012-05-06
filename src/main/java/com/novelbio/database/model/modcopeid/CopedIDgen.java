@@ -63,8 +63,6 @@ public class CopedIDgen extends CopedIDAbs{
 		ServNCBIID servGeneAnno = new ServNCBIID();
 		return servGeneAnno.queryGenUniID(geneID, taxID, dbInfo);
 	}
-	
-
 	@Override
 	protected void setGoInfo() {
 		goInfoAbs = new GOInfoGenID(genUniID, taxID);

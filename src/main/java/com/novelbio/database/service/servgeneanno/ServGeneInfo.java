@@ -16,8 +16,7 @@ public class ServGeneInfo extends AbsGetSpring implements MapGeneInfo {
 	private static Logger logger = Logger.getLogger(ServGeneInfo.class);
 	@Inject
 	private MapGeneInfo mapGeneInfo;
-	public ServGeneInfo()  
-	{
+	public ServGeneInfo() {
 		mapGeneInfo = (MapGeneInfo) factory.getBean("mapGeneInfo");
 	}
 	@Override
@@ -72,7 +71,6 @@ public class ServGeneInfo extends AbsGetSpring implements MapGeneInfo {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
 		}
 	}
 }

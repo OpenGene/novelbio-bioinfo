@@ -16,29 +16,21 @@ public class ServBlastInfo extends AbsGetSpring implements MapBlastInfo {
 	@Inject
 	MapBlastInfo mapBlastInfo;
 	
-	public ServBlastInfo()
-	{
+	public ServBlastInfo() {
 		mapBlastInfo = (MapBlastInfo)factory.getBean("mapBlastInfo");
 	}
-	
 	@Override
 	public BlastInfo queryBlastInfo(BlastInfo qBlastInfo) {
-		// TODO Auto-generated method stub
 		return mapBlastInfo.queryBlastInfo(qBlastInfo);
 	}
-
 	@Override
 	public ArrayList<BlastInfo> queryLsBlastInfo(BlastInfo qBlastInfo) {
-		// TODO Auto-generated method stub
 		return mapBlastInfo.queryLsBlastInfo(qBlastInfo);
 	}
-
 	@Override
 	public void insertBlastInfo(BlastInfo blastInfo) {
-		// TODO Auto-generated method stub
 		mapBlastInfo.insertBlastInfo(blastInfo);
 	}
-
 	@Override
 	public void updateBlastInfo(BlastInfo blastInfo) {
 		// TODO Auto-generated method stub
@@ -88,6 +80,4 @@ public class ServBlastInfo extends AbsGetSpring implements MapBlastInfo {
 			mapBlastInfo.updateBlastInfo(blastInfo);
 		}
 	}
-	
-	
 }

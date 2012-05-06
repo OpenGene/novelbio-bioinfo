@@ -118,6 +118,11 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 */
 	public MapInfo(String chrID, int startLoc, int endLoc)
 	{
+		if (startLoc < 0)
+			startLoc = 0;
+		if (endLoc < 0)
+			endLoc = 0;
+		
 		this.refID = chrID;
 		this.startLoc = Math.min(startLoc, endLoc);
 		this.endLoc = Math.max(startLoc, endLoc);
@@ -208,25 +213,29 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	}
 
 	/**
-	 * 该区域的核酸序列，默认不用该名字替换seqFasta自己的名字
+	 * 该区域的核酸序列，默认根据cis5to3进行反向序列
 	 * @param aaSeq
 	 */
 	public void setSeq(SeqFasta seqFasta) {
+		if (cis5to3 != null && cis5to3 == false) {
+			seqFasta = seqFasta.reservecom();
+		}
 		this.seqFasta = seqFasta;
 	}
 	/**
 	 * 该区域的核酸序列
 	 * @param seqFasta
-	 * @param setName 是否用本MapInfo名字替换seqFasta的名字
+	 * @param setName 是否根据cis5to3进行反向序列
 	 */
-	public void setSeq(SeqFasta seqFasta, boolean setName) {
-		this.seqFasta = seqFasta;
-		if (setName) {
-			this.seqFasta.setSeqName(getName());
+	public void setSeq(SeqFasta seqFasta, boolean reservecom) {
+		if (reservecom && cis5to3 != null && cis5to3 == false) {
+			seqFasta = seqFasta.reservecom();
 		}
+		this.seqFasta = seqFasta;
 	}
 	/**
 	 * 该区域的核酸序列
+	 * 注意设定的时候是否已经反向过了
 	 * @param aaSeq
 	 */
 	public SeqFasta getSeqFasta() {
@@ -240,8 +249,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 * @param flag 比较的标签，可以是表达值等
 	 * @param name 本条目的名字，譬如基因名等
 	 */
-	public MapInfo(String chrID)
-	{
+	public MapInfo(String chrID) {
 		this.refID = chrID;
 	}
 	
@@ -278,24 +286,36 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	}
 	/**
 	 * 获得起点坐标
+	 * start恒小于end
 	 * @return
 	 */
 	public int getStart()
 	{
 		return startLoc;
 	}
-	public void setEndLoc(int endLoc) {
-		this.endLoc = endLoc;
-	}
-	public void setStartLoc(int startLoc) {
-		this.startLoc = startLoc;
+	/** 
+	 * 如果start 大于end，则设定cis5to3为false
+	 * 结果start恒小于end
+	 * @param start 小于0自动设置为0
+	 * @param endLoc 小于0自动设置为0
+	 */
+	public void setStartEndLoc(int startLoc, int endLoc) {
+		if (startLoc < 0)
+			startLoc = 0;
+		if (endLoc < 0)
+			endLoc = 0;
+		
+		this.startLoc = Math.min(startLoc, endLoc);
+		this.endLoc = Math.max(startLoc, endLoc);
+		if (startLoc > endLoc) {
+			setCis5to3(false);
+		}
 	}
 	/**
-	 * 获得终点坐标
+	 * 获得终点坐标，start恒小于end
 	 * @return
 	 */
-	public int getEnd()
-	{
+	public int getEnd() {
 		return endLoc;
 	}
 	/**
@@ -315,7 +335,8 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	}
 	/**
 	 * 用于比较的，从小到大比
-	 * 根据weight排序
+	 * 先比refID，然后比start，end，或者比flag或者比score
+	 * 比score的时候就不考虑refID了
 	 */
 	@Override
 	public int compareTo(MapInfo map) {
@@ -357,7 +378,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 				return startLoc > map.startLoc ? -1:1;
 			}
 		}
-		else {
+		else if (compareInfo == COMPARE_SCORE) {
 			if (score == map.score) {
 				return 0;
 			}
@@ -368,7 +389,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 				return score > map.score ? -1:1;
 			}
 		}
-	
+		return 0;
 	}
 	/**
 	 * 这个在设定的时候，会根据mapinfo的方向进行，也就是说如果该mapInfo为正向，则直接赋值
@@ -606,22 +627,5 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		}
 		return false;
 	}
-	
-//	boolean isExon = false;
-//	/**
-//	 * 是否在外显子中
-//	 * @return
-//	 */
-//	public boolean isExon()
-//	{
-//		return isExon;
-//	}
-//	/**
-//	 * 设定是否在外显子中
-//	 * @param isExon
-//	 */
-//	public void setExon(boolean isExon) {
-//		this.isExon = isExon;
-//	}
 	
 }

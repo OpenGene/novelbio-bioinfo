@@ -1000,8 +1000,7 @@ public class MapReads {
 	 * @param endLoc
 	 * @return double
 	 */
-	public double regionMin(String chrID, int startLoc, int endLoc)
-	{
+	public double regionMin(String chrID, int startLoc, int endLoc) {
 		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
 		return new Min().evaluate(info);
 	}
@@ -1013,8 +1012,7 @@ public class MapReads {
 	 * @param endLoc
 	 * @return double
 	 */
-	public double regionMax(String chrID, int startLoc, int endLoc)
-	{
+	public double regionMax(String chrID, int startLoc, int endLoc) {
 		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
 		return new Max().evaluate(info);
 	}
@@ -1053,7 +1051,6 @@ public class MapReads {
 			logger.error("越界了："+ chrID + " " + startLoc + " " + endLoc);
 			return null;
 		}
-		
 		ArrayList<int[]> lsResult = new ArrayList<int[]>();
 		
 		boolean flag0 = false;
@@ -1082,8 +1079,7 @@ public class MapReads {
 	 * @param endLoc
 	 * @return double
 	 */
-	public double regionSD(String chrID, int startLoc, int endLoc)
-	{
+	public double regionSD(String chrID, int startLoc, int endLoc) {
 		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
 		return new StandardDeviation().evaluate(info);
 	}
@@ -1094,8 +1090,7 @@ public class MapReads {
 	 * @param lsLoc 一个转录本的exon list
 	 * @return
 	 */
-	public double regionSD(String chrID, List<int[]> lsLoc)
-	{
+	public double regionSD(String chrID, List<int[]> lsLoc) {
 		return new StandardDeviation().evaluate(getRegionInfo(chrID, lsLoc));
 	}
 	/**

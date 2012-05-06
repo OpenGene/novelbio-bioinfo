@@ -12,20 +12,12 @@ import org.apache.log4j.Logger;
  * @author zong0jie
  *
  */
-//public class ListComb<M extends ListDetailAbs>
-//extends ListAbs<ListDetailComb<M>, ListCodAbs<ListDetailComb<M>>,ListCodAbsDu<ListDetailComb<M>,  ListCodAbs<ListDetailComb<M>>>> {
 public abstract class ListComb<T extends ListDetailAbs, M extends ListDetailComb<T>, E extends ListAbs<T>> 
 extends ListAbs<M>
 {
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -5877021643535236697L;
 	private static Logger logger = Logger.getLogger(ListComb.class);
-	/**
-	 * 全体待比较的listabs信息
-	 */
+	/** 全体待比较的listabs信息  */
 	ArrayList<E> lsAllListAbs = new ArrayList<E>();
 	E  lsAllID = null;
 	/**
@@ -41,10 +33,9 @@ extends ListAbs<M>
 		}
 		lsAllListAbs.add(lsListAbs);
 	}
-	
-	
+
+	/** 将输入的多条ListAbs整理成想要的格式，并且按照element进行分段 */
 	boolean copelist = false;
-	
 	/**
 	 * 将输入的多条ListAbs整理成想要的格式，并且按照element进行分段
 	 */

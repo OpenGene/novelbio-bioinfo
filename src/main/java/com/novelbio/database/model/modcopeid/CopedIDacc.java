@@ -9,9 +9,6 @@ import com.novelbio.database.model.modgo.GOInfoGenID;
 import com.novelbio.database.model.modgo.GOInfoUniID;
 
 public class CopedIDacc extends CopedIDAbs{
-	 
-
-	
 	/**
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
 	 * 
@@ -34,20 +31,14 @@ public class CopedIDacc extends CopedIDAbs{
 	
 	@Override
 	protected void setGenInfo() {
-		// TODO Auto-generated method stub
 		
 	}
-
 	@Override
 	protected AgeneUniID getGenUniID(String genUniID, String dbInfo) {
 		return null;
 	}
-
 	@Override
 	protected void setGoInfo() {
 		goInfoAbs = new GOInfoUniID(accID, taxID);
 	}
-
-	
-	
 }

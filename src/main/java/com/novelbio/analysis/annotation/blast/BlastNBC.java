@@ -25,7 +25,14 @@ public class BlastNBC {
 	public static final String BLAST_BLASTN_NR2NR_WITH_NR = "blastn ";
 	public static final String BLAST_BLASTX_NR2AA_WITH_AA = "blastx ";
 	public static final String BLAST_BLASTP_AA2AA_WITH_AA = "blastp";
-	
+	private static Logger logger = Logger.getLogger(BlastNBC.class);
+	String blastAll = "blastall ";
+	String formatDB = "formatdb ";
+	String blastInputType = "-p ";
+	String queryFasta = "";
+	/**待比对的数据库，如果是fasta文件，则会自动建索引*/
+	String databaseSeq = "";
+	String blastType = BLAST_TBLASTN_AA2NR_WITH_AA;
 	/**
 	 * @param QfastaType 输入的fasta类型，是核酸还是蛋白
 	 * @param SfastaType 输出的fasta类型，是核酸还是蛋白
@@ -81,7 +88,6 @@ public class BlastNBC {
 		}
 		return hashBlastType;
 	}
-	
 	/**
 	 * @return blast输出结果的哈希表
 	 * key：说明
@@ -92,16 +98,8 @@ public class BlastNBC {
 		hashBlastType.put("Normal Type With Alignment", 0);
 		hashBlastType.put("Simple Table", 8);
 		return hashBlastType;
-	}
-	
-	
-	private static Logger logger = Logger.getLogger(BlastNBC.class);
-	
-	
+	}	
 	public static void main(String[] args) {
-//		BlastNBC.getFasta("/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/protein/protein.fa");
-		
-		
 		String databaseSeq = "/media/winE/Bioinformatics/BLAST/DataBase/hsaProtein/protein.fa";
 		String queryFasta = "/media/winE/Bioinformatics/GenomeData/Cow/Cow_refRNA.seq";
 		BlastNBC blastNBC = new BlastNBC();
@@ -114,12 +112,6 @@ public class BlastNBC {
 		blastNBC.setResultAlignNum(1);
 		blastNBC.blast();
 	}
-	
-	String blastAll = "blastall ";
-	String formatDB = "formatdb ";
-	String blastInputType = "-p ";
-	
-	String blastType = BLAST_TBLASTN_AA2NR_WITH_AA;
 	/**
 	 * 设定blast的模式
 	 * @param blastType
@@ -128,16 +120,13 @@ public class BlastNBC {
 	public void setBlastType(String blastType) {
 		this.blastType = blastType;
 	}
-
-	String queryFasta = "";
 	/**
 	 * 待query的fasta文件
 	 * @param queryFasta
 	 */
 	public void setQueryFastaFile(String queryFasta) {
 		this.queryFasta = queryFasta;
-	}
-	String databaseSeq = "";
+	}	
 	/**
 	 * 待比对的数据库，如果是fasta文件，则会自动建索引
 	 * @param databaseSeq
@@ -153,7 +142,6 @@ public class BlastNBC {
 	public void setResultFile(String resultFile) {
 		this.resultFile = resultFile;
 	}
-	
 	int cpuNum = 2;
 	/**
 	 * 设定cpu使用数量，感觉设定了没用
@@ -194,13 +182,9 @@ public class BlastNBC {
 	public void setResultAlignNum(int resultAlignNum) {
 		this.resultAlignNum = resultAlignNum;
 	}
-	/**
-	 * @param evalue 最低相似度，越小相似度越高。最好是0到1之间，默认0.1。一般不用改
-	 */
+	/** @param evalue 最低相似度，越小相似度越高。最好是0到1之间，默认0.1。一般不用改  */
 	double evalue = 0.1;
-	/**
-	 * @param evalue 最低相似度，越小相似度越高。最好是0到1之间，默认0.1。一般不用改
-	 */
+	/** @param evalue 最低相似度，越小相似度越高。最好是0到1之间，默认0.1。一般不用改 */
 	public void setEvalue(double evalue) {
 		this.evalue = evalue;
 	}
@@ -291,6 +275,4 @@ public class BlastNBC {
 		SeqFastaHash seqFastaHash = new SeqFastaHash(fastaFile, "\\w+_\\d+", false, false, false);
 		seqFastaHash.writeToFile(FileOperate.changeFileSuffix(fastaFile, "_cleanID", null));
 	}
-
-	
 }

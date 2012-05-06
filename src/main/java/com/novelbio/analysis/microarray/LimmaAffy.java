@@ -326,8 +326,7 @@ public class LimmaAffy {
 	 * @param compInfo
 	 * @return
 	 */
-	private String getWriteInfo(String outpath, String compInfo)
-	{
+	private String getWriteInfo(String outpath, String compInfo) {
 //		outpath = FileOperate.addSep(outpath);
 		outpath = FileOperate.getParentPathName(outpath) + FileOperate.getFileNameSep(outpath)[0];
 		String script = "write.table(topTable(fit2.eBayes, coef=\"" + compInfo + "\", adjust=\"fdr\", sort.by=\"B\", number=50000),  file=\""+outpath + compInfo+".xls\", row.names=F, sep=\"\\t\")"+TxtReadandWrite.huiche;
@@ -340,8 +339,7 @@ public class LimmaAffy {
 	 * 1: colnames(design) = c("H","S")
 	 * @return
 	 */
-	private String[] getDesign()
-	{
+	private String[] getDesign() {
 		String scriptDesign = "design = model.matrix(~ -1+factor(c(";
 		String scriptColName = "colnames(design) = c(";
 		//按照列进行排序
@@ -408,8 +406,7 @@ public class LimmaAffy {
 	 * 将标准化数据写入文本的script
 	 * write.exprs(esetOld, file = "adfs")
 	 */
-	private String scriptWriteNormData()
-	{
+	private String scriptWriteNormData() {
 		String script = "write.exprs(esetOld, file=\"" + normDataFileRaw + "\")";
 		return script;
 	}

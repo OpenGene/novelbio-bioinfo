@@ -15,6 +15,8 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  */
 public class Equations {
+	private static Logger logger = Logger.getLogger(Equations.class);
+	ArrayList<double[]> lsXY = new ArrayList<double[]>();
 	double min = Double.MIN_VALUE;
 	double max = Double.MAX_VALUE;
 	public void setMin(double min){
@@ -23,10 +25,7 @@ public class Equations {
 	public void setMax(double max) {
 		this.max = max;
 	}
-	
-	private static Logger logger = Logger.getLogger(Equations.class);
-	
-	ArrayList<double[]> lsXY = new ArrayList<double[]>();
+
 	/**
 	 * 给定一系列的数据，分为两列，获得一个xy的曲线
 	 * @param file 没有文件则直接返回

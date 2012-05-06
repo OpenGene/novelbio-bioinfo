@@ -4,15 +4,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import com.novelbio.analysis.annotation.copeID.CopedID;
 import com.novelbio.analysis.annotation.network.AbsNetEntity;
 import com.novelbio.analysis.annotation.network.AbsNetRelate;
-import com.novelbio.analysis.annotation.pathway.kegg.pathEntity.KegEntity;
-import com.novelbio.database.DAO.KEGGDAO.DaoKEntry;
-import com.novelbio.database.DAO.KEGGDAO.DaoKRealtion;
-import com.novelbio.database.entity.friceDB.NCBIID;
-import com.novelbio.database.entity.kegg.KGentry;
-import com.novelbio.database.entity.kegg.KGrelation;
 
 public class KeggNetEntity extends AbsNetEntity{
 	String keggID = "";

@@ -285,10 +285,7 @@ public class CopedID implements CopedIDInt{
 	public String[] getAnno(boolean blast) {
 		return copedID.getAnno(blast);
 	}
-	
-	
-	public static String[] getTitleAnno(boolean blast)
-	{
+	public static String[] getTitleAnno(boolean blast) {
 		String[] titleAnno = null;
 		if (blast) {
 			titleAnno = new String[6];
@@ -357,8 +354,7 @@ public class CopedID implements CopedIDInt{
 	 * @param accID
 	 * @return accID without .1
 	 */
-	public static String removeDot(String accID)
-	{
+	public static String removeDot(String accID) {
 		if (accID == null) {
 			return null;
 		}
@@ -517,8 +513,6 @@ public class CopedID implements CopedIDInt{
 		}
 		return lsResult;
 	}
-	
-	
 /////////////////////// 私有 static 方法 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 给定一个accessID，如果该access是NCBIID，则返回NCBIID的geneID
@@ -532,8 +526,6 @@ public class CopedID implements CopedIDInt{
 	public static ArrayList<String> getNCBIUniTax(String accID,int taxID) {
 		return CopedIDAbs.getNCBIUniTax(accID, taxID);
 	}
-
-	
 	/**
 	 * 读取数据库中的taxID表，将其中的species读取出来并保存为taxID,speciesInfo
 	 * @return
@@ -595,7 +587,6 @@ public class CopedID implements CopedIDInt{
 		ServTaxID servTaxID = new ServTaxID();
 		return servTaxID.getHashTaxIDName();
 	}
-	
 	/**
 	 * GO对应GeneOntology的hash表
 	 * @return
@@ -620,12 +611,10 @@ public class CopedID implements CopedIDInt{
 	 */
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		
 		if (obj == null) return false;
 		
 		if (getClass() != obj.getClass()) return false;
 		CopedID otherObj = (CopedID)obj;
-		
 		if (
 				//geneID相同且都不为“”，可以认为两个基因相同
 				(!copedID.genUniID.trim().equals("")
@@ -655,7 +644,6 @@ public class CopedID implements CopedIDInt{
 		}
 		return false;
 	}
-
 	/**
 	 * 重写hashcode
 	 */
@@ -676,7 +664,6 @@ public class CopedID implements CopedIDInt{
 	@Override
 	public void setUpdateGeneID(String geneUniID, String idType) {
 		copedID.setUpdateGeneID(geneUniID, idType);
-		
 	}
 
 	@Override
@@ -716,7 +703,6 @@ public class CopedID implements CopedIDInt{
 	public void setUpdateBlastInfo(String SubAccID, String subDBInfo,
 			int SubTaxID, double evalue, double identities) {
 		copedID.setUpdateBlastInfo(SubAccID, subDBInfo, SubTaxID, evalue, identities);
-		
 	}
 
 	@Override
@@ -727,20 +713,17 @@ public class CopedID implements CopedIDInt{
 	@Override
 	public void setUpdateRefAccIDClear(Boolean uniqID) {
 		copedID.setUpdateRefAccIDClear(uniqID);
-		
 	}
 
 	@Override
 	public void setUpdateBlastInfo(String SubGenUniID, String subIDtype,
 			String subDBInfo, int SubTaxID, double evalue, double identities) {
 		copedID.setUpdateBlastInfo(SubGenUniID, subIDtype, subDBInfo, SubTaxID, evalue, identities);
-		
 	}
 
 	@Override
 	public void setUpdateAccIDNoCoped(String accID) {
 		copedID.setUpdateAccIDNoCoped(accID);
-		
 	}
 
 	@Override

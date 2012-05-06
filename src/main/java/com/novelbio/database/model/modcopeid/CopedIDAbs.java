@@ -29,39 +29,32 @@ import com.novelbio.generalConf.NovelBioConst;
 
 public abstract class CopedIDAbs implements CopedIDInt {
 	private static Logger logger = Logger.getLogger(CopedIDAbs.class);
-	/**
-	 * 物种id
-	 */
-	int taxID = 0;
-	/**
-	 * idType，必须是IDTYPE中的一种
-	 */
-	String idType = CopedID.IDTYPE_ACCID;
-
-	/**
-	 * 具体的accID
-	 */
-	String accID = "";
-
-	String genUniID = "";
-
-	String symbol = null;
-
-	// BlastInfo blastInfo = null;
-
-	/**
-	 * 譬方和多个物种进行blast，然后结合这些物种的信息，取并集
-	 */
-	ArrayList<BlastInfo> lsBlastInfos = null;
-
-	double evalue = 10;
-
-//	KegGenEntryKO kegGenEntryKO = null;
-
-	AGeneInfo geneInfo = null;
-	// ArrayList<AGene2Go> lsGene2Gos = null;
-
 	static HashMap<Integer, String> hashDBtype = new HashMap<Integer, String>();
+	
+	/**  物种id  */
+	int taxID = 0;
+	/**  idType，必须是IDTYPE中的一种 */
+	String idType = CopedID.IDTYPE_ACCID;
+	/** 具体的accID */
+	String accID = "";
+	String genUniID = "";
+	String symbol = null;
+	/** 譬方和多个物种进行blast，然后结合这些物种的信息，取并集 */
+	ArrayList<BlastInfo> lsBlastInfos = null;
+	double evalue = 10;
+	AGeneInfo geneInfo = null;
+	KeggInfo keggInfo;
+	GOInfoAbs goInfoAbs = null;
+	
+	// //////////////////// service 层
+	ServBlastInfo servBlastInfo = new ServBlastInfo();
+	ServNCBIID servNCBIID = new ServNCBIID();
+	ServUniProtID servUniProtID = new ServUniProtID();
+	ServGeneInfo servGeneInfo = new ServGeneInfo();
+	ServUniGeneInfo servUniGeneInfo = new ServUniGeneInfo();
+	ServGene2Go servGene2Go = new ServGene2Go();
+	ServUniGene2Go servUniGene2Go = new ServUniGene2Go();
+	// ///////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 如果输入的是accID，那么返回该accID对应的数据库
 	 * 如果没有则返回null
@@ -71,7 +64,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	public String getDBinfo() {
 		return this.databaseType;
 	}
-	
 	/**
 	 * 该物种的symbol应该是属于哪个数据库
 	 * @return
@@ -90,27 +82,9 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		return result;
 	}
-
-	KeggInfo keggInfo;
-
-	GOInfoAbs goInfoAbs = null;
-
-	// //////////////////// service 层
-	// ////////////////////////////////////////////////////
-	ServBlastInfo servBlastInfo = new ServBlastInfo();
-	ServNCBIID servNCBIID = new ServNCBIID();
-	ServUniProtID servUniProtID = new ServUniProtID();
-	ServGeneInfo servGeneInfo = new ServGeneInfo();
-	ServUniGeneInfo servUniGeneInfo = new ServUniGeneInfo();
-	ServGene2Go servGene2Go = new ServGene2Go();
-	ServUniGene2Go servUniGene2Go = new ServUniGene2Go();
-	// ///////////////////////////////////////////////////////////////////////////////////////////
-
 	// ///////////////// Blast setting
-	// /////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 设定多个物种进行blast 每次设定后都会刷新
-	 * 
 	 * @param evalue
 	 * @param StaxID
 	 */
@@ -137,7 +111,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 
 	/**
 	 * 单个物种的blast 获得本copedID blast到对应物种的第一个copedID，没有就返回null
-	 * 
 	 * @param StaxID
 	 * @param evalue
 	 * @return
@@ -153,7 +126,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 
 	/**
 	 * 获得设定的第一个blast的对象，首先要设定blast的目标
-	 * 
 	 * @param blastInfo
 	 * @return
 	 */
@@ -170,7 +142,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	/**
 	 * blast多个物种 首先要设定blast的目标 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 给定一系列的目标物种的taxID，获得CopedIDlist 如果没有结果，返回一个空的lsResult
-	 * 
 	 * @param evalue
 	 * @param StaxID
 	 * @return
@@ -192,15 +163,12 @@ public abstract class CopedIDAbs implements CopedIDInt {
 
 	/**
 	 * blast多个物种 首先要设定blast的目标 用方法： setBlastInfo(double evalue, int... StaxID)
-	 * 
 	 * @return 返回blast的信息，包括evalue等，该list和getCopedIDLsBlast()得到的list是一一对应的
 	 */
 	public ArrayList<BlastInfo> getLsBlastInfos() {
 		return lsBlastInfos;
 	}
-
 	// ////////////////// normal setting
-	// /////////////////////////////////////////////////////////////////
 	/**
 	 * idType，必须是IDTYPE中的一种
 	 * 不过在设定了lsRefAccID后，可以根据具体的lsRefAccID去查找数据库并确定idtype
@@ -212,23 +180,19 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		ArrayList<String> lsIDtype = getUpdateGenUniID();
 		return lsIDtype.get(0);
 	}
-
 	/**
 	 * 具体的accID
 	 */
 	public String getAccID() {
 		return this.accID;
 	}
-
 	/**
 	 * 获得geneID
-	 * 
 	 * @return
 	 */
 	public String getGenUniID() {
 		return this.genUniID;
 	}
-
 	public int getTaxID() {
 		if (taxID <= 0) {
 			if (getIDtype().equals(CopedID.IDTYPE_ACCID)) {
@@ -237,10 +201,8 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		return taxID;
 	}
-
 	/**
 	 * 获得该基因的description
-	 * 
 	 * @return
 	 */
 	public String getDescription() {
@@ -250,10 +212,8 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		return geneInfo.getDescrp().replaceAll("\"", "");
 	}
-
 	/**
 	 * 获得该基因的symbol
-	 * 
 	 * @return
 	 */
 	public String getSymbol() {
@@ -265,7 +225,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 * 设定geneInfo信息
 	 */
 	protected abstract void setGenInfo();
-
 	protected void setSymbolDescrip() {
 		if (geneInfo != null || symbol != null) {
 			return;
@@ -300,10 +259,8 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			return ageneUniID.getAccID();
 		}
 	}
-
 	/**
 	 * * 指定一个dbInfo，返回该dbInfo所对应的accID，没有则返回null
-	 * 
 	 * @param dbInfo
 	 * @return
 	 */
@@ -314,19 +271,15 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		return null;
 	}
-
 	/**
 	 * * 指定一个dbInfo，返回该dbInfo所对应的AgeneUniID，没有则返回null
-	 * 
 	 * @param dbInfo
 	 * @return
 	 */
 	protected abstract AgeneUniID getGenUniID(String genUniID, String dbInfo);
-
 	/**
 	 * 先设定blast的情况 如果blast * 0:symbol 1:description  2:subjectSpecies 3:evalue
 	 * 4:symbol 5:description 如果不blast 0:symbol 1:description
-	 * 
 	 * @return
 	 */
 	public String[] getAnno(boolean blast) {
@@ -365,9 +318,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		return tmpAnno;
 	}
-
 	// ////////////////////////////////GOInfo
-	// ////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 设定 goInfoAbs的信息
 	 */
@@ -381,7 +332,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	}
 	/**
 	 * 返回该基因所对应的GOInfo信息，不包含Blast
-	 * 
 	 * @return
 	 */
 	protected GOInfoAbs getGOInfo() {
@@ -390,7 +340,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		return goInfoAbs;
 	}
-
 	/**
 	 * 返回该CopedID所对应的Gene2GOInfo <br>
 	 * GO_BP<br>
@@ -403,7 +352,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	public ArrayList<AGene2Go> getGene2GO(String GOType) {
 		return getGOInfo().getLsGene2Go(GOType);
 	}
-
 	/**
 	 * blast多个物种 首先设定blast的物种 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 获得经过blast的GoInfo
@@ -446,7 +394,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	}
 	/**
 	 * 获得相关的Kegg信息
-	 * 
 	 * @return
 	 */
 	public KeggInfo getKeggInfo() {
@@ -456,7 +403,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		keggInfo = new KeggInfo(idType, genUniID, taxID);
 		return keggInfo;
 	}
-
 	/**
 	 * blast多个物种 首先设定blast的物种 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 获得经过blast的KegPath
@@ -478,9 +424,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 
 	}
-
 	// ///////////////// update method
-	// //////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
 	 */
@@ -557,7 +501,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		this.overrideDBinfo = overlapDBinfo;
 	}
-
 	/**
 	 * 输入已知的geneUniID和IDtype
 	 * 
@@ -591,9 +534,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		this.accID = accID;
 	}
 	
-	/**
-	 * 记录升级的GO信息的，每次升级完毕后都清空
-	 */
+	/** 记录升级的GO信息的，每次升级完毕后都清空 */
 	ArrayList<Gene2Go> lsGOInfoUpdate = new ArrayList<Gene2Go>();
 
 	/**
@@ -1104,7 +1045,6 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	}
 
 	// /////////////////////////// 重写equals等
-	// ////////////////////////////////////
 	/**
 	 * 只要两个ncbiid的geneID相同，就认为这两个NCBIID相同
 	 * 但是如果geneID为0，也就是NCBIID根本没有初始化，那么直接返回false

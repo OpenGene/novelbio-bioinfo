@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.snpNCBI;
+package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,6 +6,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.apache.poi.ss.util.SSCellRange;
 
 import com.novelbio.analysis.seq.genomeNew.GffChrSnpIndel;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
@@ -20,59 +23,57 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class SNPGATKcope {
+	Logger logger = Logger.getLogger(SNPGATKcope.class);
 	GffChrSnpIndel gffChrSnpIndel;
 	public SNPGATKcope() {
 		gffChrSnpIndel = new GffChrSnpIndel(NovelBioConst.GENOME_GFF_TYPE_UCSC, 
 				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
 	}
 
-	public static void main(String[] args) {
+	public static void main22(String[] args) {
 		SNPGATKcope snpgatKcope = new SNPGATKcope();
 		snpgatKcope.setDomainInfo("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/AllsnpCoped.txt",
 				"/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/pfam/pfamInfo.txt", "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/Allsnp_pfam.xls");
 	}
-	public static void main22(String[] args) {
+	public static void main(String[] args) {
 		SNPGATKcope snpgatKcope = new SNPGATKcope();
 		
 		ArrayList<String> lsResult = new ArrayList<String>();
 		TxtReadandWrite txtOut = new TxtReadandWrite();
 		
 		lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/B_BWA_SNPrecal_IndelFiltered.vcf");
-		txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/B_Result2.xls", true);
+		txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/B_Result_New.xls", true);
 		txtOut.writefile(lsResult);
-//		
+		
 		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/C_BWA_SNPrecal_IndelFiltered.vcf");
-		 txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/C_Result2.xls", true);
+		 txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/C_Result_New.xls", true);
 		txtOut.writefile(lsResult);
 		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_BWA_SNPrecal_IndelFiltered.vcf");
-		 txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_Result2.xls", true);
+		 txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_Result_New.xls", true);
 		txtOut.writefile(lsResult);
 		
 		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_BWA_SNPrecal_IndelFiltered.vcf");
-		txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_Result2.xls", true);
+		txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_Result_New.xls", true);
 		txtOut.writefile(lsResult);
 		
-		String Parent = "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/";
-		String A = Parent + "A_Result2.xls";
-		String B = Parent + "B_Result2.xls";
-		String C = Parent + "C_Result2.xls";
-		String D = Parent + "D_Result2.xls";
-		String out = Parent + "all.xls";
-		snpgatKcope.writeAllSnp(out, A,B,C,D);
+//		String Parent = "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/";
+//		String A = Parent + "A_Result2.xls";
+//		String B = Parent + "B_Result2.xls";
+//		String C = Parent + "C_Result2.xls";
+//		String D = Parent + "D_Result2.xls";
+//		String out = Parent + "all.xls";
+//		snpgatKcope.writeAllSnp(out, A,B,C,D);
 	}
-	
-	
-	
 	/**
 	 * 将gatk里面vcf文件中，random的chr全部删除
 	 */
 	public ArrayList<String> copeGATKsnp(int taxID, String vcfFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(vcfFile, false);
 		ArrayList<String> lsResult = new ArrayList<String>();
+		
 		for (String string : txtRead.readlines()) {
 			if (string.startsWith("#")) continue;
 			String[] ss = string.split("\t");
-
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(taxID, ss[0], Integer.parseInt(ss[1]), ss[3], ss[4]);
 			mapInfoSnpIndel.setBaseInfo(ss[7]);
 			mapInfoSnpIndel.setQuality(ss[5]);
@@ -82,7 +83,11 @@ public class SNPGATKcope {
 				mapInfoSnpIndel.setDBSnpID(ss[2]);
 			}
 			gffChrSnpIndel.getSnpIndel(mapInfoSnpIndel);
-			lsResult.add(mapInfoSnpIndel.toString());
+			try {
+				lsResult.add(mapInfoSnpIndel.toString());
+			} catch (Exception e) {
+				logger.error("本位点出错：" + ss[1]);
+			}
 		}
 		lsResult.add(0,MapInfoSnpIndel.getMyTitle());
 		return lsResult;
@@ -208,7 +213,6 @@ public class SNPGATKcope {
 			String tmp = "";
 			if (gffcod.isInsideLoc()) {
 				GffDetailGene gffDetailGene = gffcod.getGffDetailThis();
-				
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 					DomainPfam domainPfam = DomainPfam.getDomainPfam(gffGeneIsoInfo.getName());
 					if (domainPfam == null) {
@@ -226,10 +230,5 @@ public class SNPGATKcope {
 		}
 		txtOut.close();
 	}
-	
-	
-	
-	
-	
 	
 }

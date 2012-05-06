@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.snpNCBI;
+package com.novelbio.analysis.seq.resequencing;
 
 public class RsSnp {
 	int rsId = 0;

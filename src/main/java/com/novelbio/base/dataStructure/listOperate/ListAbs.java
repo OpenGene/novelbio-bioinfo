@@ -7,39 +7,23 @@ import java.util.HashMap;
 
 public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements Cloneable
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3356076601369239937L;
-	/**
-	 * 好像是分割同一个element的多个name的符号，待确认
-	 */
+	/** 好像是分割同一个element的多个name的符号，待确认*/
 	public static final String SEP = "/";
-	/**
-	 * 保存某个坐标到所在的内含子/外显子起点的距离
-	 */
+	/**保存某个坐标到所在的内含子/外显子起点的距离 */
 	HashMap<Integer, Integer> hashLocExInStart;
-
-	/**
-	 * 保存某个坐标到所在的内含子/外显子终点的距离
-	 */
+	/** 保存某个坐标到所在的内含子/外显子终点的距离 */
 	HashMap<Integer, Integer> hashLocExInEnd;
-	
-	
-	
-	/**
-	 * 本条目的名字
-	 */
+	/** 本条目的名字 */
 	protected String listName = "";
+	/** 方向 */
+	Boolean cis5to3 = null;
 	public void setName(String listName) {
 		this.listName = listName;
 	}
 	public String getName() {
 		return listName;
 	}
-
-	Boolean cis5to3 = null;
-	
 	/**
 	 * 没有方向则返回null
 	 * @return
@@ -47,7 +31,6 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	public Boolean isCis5to3() {
 		return cis5to3;
 	}
-	
 	public void setCis5to3(boolean cis5to3) {
 		this.cis5to3 = cis5to3;
  	}
@@ -67,8 +50,6 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 			Collections.sort(this, new CompM2S());
 		}
 	}
-	
-	
 	/**
 	 * 返回实际第num个element间区的长度
 	 * @param num 实际数目
@@ -88,12 +69,10 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * @param num 实际数目
 	 * @return
 	 */
-	public int getEleLen(int num)
-	{
+	public int getEleLen(int num) {
 		return get(num-1).getLen();
 	}
-	public int getLen()
-	{
+	public int getLen() {
 		if (cis5to3 != null) {
 			return Math.abs(get(0).getStartCis() - get(size()-1).getEndCis()) + 1;
  		}
@@ -299,9 +278,6 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		hashLocExInEnd.put(location, loc2ExInEnd);
 		return loc2ExInEnd;
 	}
-	
-
-	
 	/**
 	 * 获得所有element的长度之和
 	 */
@@ -312,7 +288,6 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 		return isoLen;
 	}
-	
 	/**
 	 * 返回每个ID对应的具体element
 	 * @return
@@ -517,8 +492,11 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return result;
 	}
 }
-
-
+/**
+ * 内建的二分法查找类，专门用于ListAbs查找
+ * @author zong0jie
+ *
+ */
 class BinarySearch
 {
 	/**

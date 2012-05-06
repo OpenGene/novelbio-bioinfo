@@ -22,7 +22,6 @@ public class FileOperate {
 	
 	public FileOperate() {
 	}
-
 	/**
 	 * 读取文本文件内容
 	 * 

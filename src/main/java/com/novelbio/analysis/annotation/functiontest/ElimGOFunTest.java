@@ -24,9 +24,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		super(blast, GoType, evalue, blastTaxID);
 		this.GoType = GoType;
 	}
-	
 	public ElimGOFunTest() {}
-	
 	int NumGOID = 300;
 	
 	/**
@@ -64,8 +62,6 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		lsFinal.add(0,title);
 		return lsFinal;
 	}
-	
-	
 	/**
 	 * @param run 是否要新运行一次
 	 * @return 结果加标题了<br>

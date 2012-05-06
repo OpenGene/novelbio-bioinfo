@@ -17,7 +17,7 @@ import com.novelbio.base.dataStructure.PatternOperate;
  */
 public class SeqFasta implements Cloneable {
 	private String SeqName;
-	private String SeqSequence;
+	private String SeqSequence = "";
 	private static Logger logger = Logger.getLogger(SeqFasta.class);
 	
 	public static final int SEQ_UNKNOWN = 128;
@@ -376,14 +376,10 @@ public class SeqFasta implements Cloneable {
 	 * @param AA
 	 * @return
 	 */
-	private static String getAAformate(String AA)
-	{
-		
+	private static String getAAformate(String AA) {
 		if (AA.trim().equals(AA1_STOP) || AA.trim().equals(AA3_STOP)) {
 			return AA.trim();
 		}
-		
-		
 		AA = AA.trim();
 		if (AA.length() == 1) {
 			return AA.toUpperCase();
@@ -399,8 +395,6 @@ public class SeqFasta implements Cloneable {
 			return null;
 		}
 	}
-	
-	
 	/**
 	 * 获得氨基酸的特性，极性，电荷等，按照genedoc的分类标准
 	 * @return
@@ -639,24 +633,33 @@ public class SeqFasta implements Cloneable {
 	/**
 	 * 待测试
 	 * 指定范围，然后用指定的序列去替换原来的序列
-	 * @param start 要替换序列的起点，实际位点,并且包含该位点
+	 * @param start 要替换序列的起点，实际位点,并且包含该位点 如果start<= 0，则不考虑end，直接将序列插到最前面
+	 * 如果start比序列长，则不考虑end，直接将序列插到最后面
 	 * @param end 要替换序列的终点，实际位点,并且包含该位点，<br>
-	 * 如果end<0，说明是插入紧挨着start位点之后<br>
 	 * 如果 start == end 那么就是将该点替换成指定序列<br>
-	 * 如果 start > end && end >0 说明出错
+	 * 如果 start > end 说明是插入紧挨着start位点之后<br>
 	 * @param seq 要替换的序列
-	 * @param boostart 替换序列的前部是否有问题
-	 * @param booend 替换序列的后部是否有问题
+	 * @param boostart 替换序列的前部是否插入XXX true：插入
+	 * @param booend 替换序列的后部是否插入XXX true：插入
 	 */
-	public void modifySeq(int start, int end, String seq,boolean boostart, boolean booend) {
+	public void modifySeq(int start, int end, String seq, boolean boostart, boolean booend) {
 		String startSeq = "";
 		String endSeq = "";
-		if (!boostart) {
+		String FinalSeq = null;
+		if (boostart)
 			startSeq = SEP_SEQ;
-		}
-		if (!booend) {
+		if (booend)
 			endSeq = SEP_SEQ;
+
+		if (start <= 0) {
+			SeqSequence = startSeq + seq.toUpperCase() + endSeq + SeqSequence;
+			return;
 		}
+		if (start >= SeqSequence.length() + 1) {
+			SeqSequence = SeqSequence + startSeq + seq.toUpperCase() + endSeq;
+			return;
+		}
+		
 		if (start < end) {
 			start --;
 		}
@@ -667,14 +670,10 @@ public class SeqFasta implements Cloneable {
 			}
 			start --;
 		}
-		else if (end < 0){
+		else if (start > end){
 			end = start;
 		}
-		else if (start > end && end > 0) {//插入的序列横跨了，这个在外面处理
-			logger.error("start < end: "+ start + " "+ end);
-		}
-		
-		String FinalSeq = SeqSequence.substring(0, start) + startSeq + seq.toUpperCase() + endSeq + SeqSequence.substring(end);
+		FinalSeq = SeqSequence.substring(0, start) + startSeq + seq.toUpperCase() + endSeq + SeqSequence.substring(end);
 		SeqSequence = FinalSeq;
 	}
 	
@@ -685,7 +684,7 @@ public class SeqFasta implements Cloneable {
 		snpSite--;
 		char[] chrSeq = SeqSequence.toCharArray();
 		chrSeq[snpSite] = replace;
-		String FinalSeq = chrSeq.toString();
+		String FinalSeq = String.copyValueOf(chrSeq);
 		SeqSequence = FinalSeq;
 	}
 	
@@ -705,8 +704,8 @@ public class SeqFasta implements Cloneable {
 	 */
 	public String toString()
 	{
-		if (SeqSequence == null) {
-			return null;
+		if (SeqSequence.equals("")) {
+			return "";
 		}
 		if (TOLOWCASE == null) {
 			return SeqSequence;
@@ -847,36 +846,51 @@ public class SeqFasta implements Cloneable {
 		result = result + Math.max(chrSeq1.length, chrSeq2.length) - i;
 		return result;
 	}
+	
+	/**@return 将nr序列转变为单字母aa序列，首先正反向之后，然后按照该顺序进行orf选择 */
+	public String toStringAA() {
+		return toStringAA(true, 0, true);
+	}
 	/**
-	 * 将nr序列转变为aa序列，首先正反向之后，然后按照该顺序进行orf选择
+	 * @param AAnum true 单字母AA，false 三字母AA
+	 * @return 将nr序列转变为aa序列，首先正反向之后，然后按照该顺序进行orf选择 
+	 */
+	public String toStringAA(boolean AAnum) {
+		return toStringAA(true, 0, AAnum);
+	}
+	/**
+	 * 将nr序列转变为单字母aa序列，首先正反向之后，然后按照该顺序进行orf选择
 	 * @param cis 是正向 false：反向互补
 	 * @param orf 第几个orf，0，1，2
 	 * @return
 	 */
 	public String toStringAA(boolean cis,int orf) {
-		String seq = "";
-		if (!cis) {
-			seq = reservecom(SeqSequence);
-		}
-		else {
-			seq = SeqSequence;
-		}
-		char[] nrChar = seq.toCharArray();
-		StringBuilder resultAA = new StringBuilder();
-		for (int i = orf; i < nrChar.length - 3; i = i+3) {
-			String tmp = String.valueOf(new char[]{nrChar[i],nrChar[i+1],nrChar[i+2]});
-			resultAA.append(convertDNACode2AA(tmp, true));
-		}
-		return resultAA.toString();
+		return toStringAA(true, 0, true);
 	}
 	/**
 	 * 将nr序列转变为aa序列，首先正反向之后，然后按照该顺序进行orf选择
 	 * @param cis 是正向 false：反向互补
 	 * @param orf 第几个orf，0，1，2
+	 * @param AAnum true 单字母AA，false 三字母AA
 	 * @return
 	 */
-	public String toStringAA() {
-		return toStringAA(true, 0);
+	public String toStringAA(boolean cis,int orf, boolean AAnum) {
+		if (SeqSequence == null) {
+			return "";
+		}
+		char[] nrChar = null;
+		if (!cis) {
+			nrChar = reservecom(SeqSequence).toCharArray();
+		}
+		else {
+			nrChar = SeqSequence.toCharArray();
+		}
+		StringBuilder resultAA = new StringBuilder();
+		for (int i = orf; i <= nrChar.length - 3; i = i+3) {
+			String tmp = String.valueOf(new char[]{nrChar[i],nrChar[i+1],nrChar[i+2]});
+			resultAA.append(convertDNACode2AA(tmp, AAnum));
+		}
+		return resultAA.toString();
 	}
 	/**
 	 * 给定motif，在序列上查找相应的正则表达式<br>

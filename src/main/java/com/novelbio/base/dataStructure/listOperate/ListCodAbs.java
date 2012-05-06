@@ -9,19 +9,30 @@ package com.novelbio.base.dataStructure.listOperate;
  */
 public class ListCodAbs<T extends ListDetailAbs> {
 
-	/**
-	 * 所有坐标的起始信息
-	 */
+	/** 所有坐标的起始信息  */
 	public static final int LOC_ORIGINAL = -1000000000;
+	String chrID = "";
+	int Coordinate = -1;
+	/**  坐标是否查到 查找到/没找到  */
+	protected boolean booFindCod = false;
+	/** 上个条目在ChrHash-list中的编号，从0开始，<b>如果上个条目不存在，则为-1*/
+	protected int ChrHashListNumUp = -1;
+	/** 为本条目在ChrHash-list中的编号，从0开始<br> 如果本条目不存在，则为-1 */
+	protected int ChrHashListNumThis = -1;
+	/** 为下个条目在ChrHash-list中的编号，从0开始，<b>如果下个条目不存在，则为-1 */
+	protected int ChrHashListNumDown = -1;
 	/**
-	 * 构造函数赋初值
+	 * 为上个条目的具体信息，如果没有则为null(譬如定位在最前端)<br>
+	 * 1: 如果在条目内，为下个条目的具体信息<br>
+	 * 如果在条目间，为下个条目的具体信息，如果没有则为null(譬如定位在最前端)
 	 */
+	protected T gffDetailUp = null;
+	
+	/**  构造函数赋初值 */
 	public  ListCodAbs(String chrID, int Coordinate) {
 		this.chrID = chrID;
 		this.Coordinate = Coordinate;
 	}
-	String chrID = "";
-	int Coordinate = -1;
 	/**
 	 * 返回染色体
 	 * @return
@@ -36,10 +47,6 @@ public class ListCodAbs<T extends ListDetailAbs> {
 	public int getCoord() {
 		return Coordinate;
 	}
-	/**
-	 * 坐标是否查到 查找到/没找到
-	 */
-	protected boolean booFindCod = false;
 	/**
 	 * 是否成功找到cod
 	 * @return
@@ -106,12 +113,7 @@ public class ListCodAbs<T extends ListDetailAbs> {
 		gffDetailDown.setTesRegion(0, downTes);
 		return gffDetailDown.isCodInGeneExtend(Coordinate);
 	}
-	/**
-	 * 为上个条目的具体信息，如果没有则为null(譬如定位在最前端)<br>
-	 * 1: 如果在条目内，为下个条目的具体信息<br>
-	 * 如果在条目间，为下个条目的具体信息，如果没有则为null(譬如定位在最前端)
-	 */
-	protected T gffDetailUp = null;
+
 	/**
 	 * 只有geneDetail用到
 	 * 获得上个条目的具体信息
@@ -155,11 +157,8 @@ public class ListCodAbs<T extends ListDetailAbs> {
 	public void setGffDetailDown(T gffDetailDown) {
 		this.gffDetailDown = gffDetailDown;
 	}
-	
-	/**
-	 * 上个条目在ChrHash-list中的编号，从0开始，<b>如果上个条目不存在，则为-1</b><br>
-	 */
-	protected int ChrHashListNumUp = -1;
+
+	/** 上个条目在ChrHash-list中的编号，从0开始，<b>如果上个条目不存在，则为-1*/
 	public void setChrHashListNumUp(int chrHashListNumUp) {
 		ChrHashListNumUp = chrHashListNumUp;
 	}
@@ -169,12 +168,10 @@ public class ListCodAbs<T extends ListDetailAbs> {
 	public int getItemNumUp() {
 		return ChrHashListNumUp;
 	}
-	
 	/**
 	 * 为本条目在ChrHash-list中的编号，从0开始<br>
 	 * 如果本条目不存在，则为-1<br>
 	 */
-	protected int ChrHashListNumThis = -1;
 	public void setChrHashListNumThis(int chrHashListNumThis) {
 		ChrHashListNumThis = chrHashListNumThis;
 	}
@@ -185,11 +182,7 @@ public class ListCodAbs<T extends ListDetailAbs> {
 	public int getItemNumThis() {
 		return ChrHashListNumThis;
 	}
-	
-	/**
-	 * 为下个条目在ChrHash-list中的编号，从0开始，<b>如果下个条目不存在，则为-1</b>
-	 */
-	protected int ChrHashListNumDown = -1;
+	/** 为下个条目在ChrHash-list中的编号，从0开始，<b>如果下个条目不存在，则为-1 */
 	public void setChrHashListNumDown(int chrHashListNumDown) {
 		ChrHashListNumDown = chrHashListNumDown;
 	}
@@ -199,6 +192,4 @@ public class ListCodAbs<T extends ListDetailAbs> {
 	public int getItemNumDown() {
 		return ChrHashListNumDown;
 	}
-	
-	
 }

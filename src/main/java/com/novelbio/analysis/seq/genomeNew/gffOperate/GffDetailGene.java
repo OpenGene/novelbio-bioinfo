@@ -44,14 +44,12 @@ public class GffDetailGene extends ListDetailAbs
 	public final static String UTR3 = "3utr";
 	public final static String TSS = "tss";
 	public final static String TES = "tes";
-	/**
-	 * 两个转录本在一个基因下，那么这个基因名可能是结合了两个名字，用该符号分割
-	 */
+	/** 两个转录本在一个基因下，那么这个基因名可能是结合了两个名字，用该符号分割 */
 	public final static String SEP_GENE_NAME = "/";
-	/**
-	 * 同一个iso如果有多个名字，则用该符号分割ISO
-	 */
+	/**  同一个iso如果有多个名字，则用该符号分割ISO */
 	private final static String SEP_ISO_NAME = "@//@";
+	/** 顺序存储每个转录本的的坐标情况 */
+	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
 	int taxID = 0;
 	
 	protected void setTaxID(int taxID) {
@@ -73,7 +71,6 @@ public class GffDetailGene extends ListDetailAbs
 		int id = getIsoID(isoName);
 		removeIso(id);
 	}
-	
 	/**
 	 * 从0开始计数
 	 * 返回-1表示没有该转录本 
@@ -94,7 +91,6 @@ public class GffDetailGene extends ListDetailAbs
 		}
 		return -1;
 	}
-	
 	/**
 	 * 划定Tss范围上游为负数，下游为正数
 	 * 同时设定里面当时含有的全部GffGeneIsoInfo
@@ -152,11 +148,6 @@ public class GffDetailGene extends ListDetailAbs
 		}
 	}
 	/**
-	 * 顺序存储每个转录本的的坐标情况
-	 */
-	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
-		
-	/**
 	 * @param chrID
 	 * @param locString
 	 * @param cis5to3
@@ -164,7 +155,6 @@ public class GffDetailGene extends ListDetailAbs
 	public GffDetailGene(String chrID, String locString, boolean cis5to3) {
 		super(chrID, locString, cis5to3);
 	}
-
 	/**
 	 * 针对水稻拟南芥的GFF文件和UCSC的文件
 	 * 给最后一个转录本添加exon坐标，<br>
@@ -181,8 +171,7 @@ public class GffDetailGene extends ListDetailAbs
 	 * 当gene为反方向时，exon是从大到小排列的
 	 * 在添加exon的时候，如果本CDS与UTR之间是连着的，那么就将本CDS和UTR连在一起，放在一个exon中 如果不连，就按原来的来
 	 */
-	protected void addExonGFFCDSUTR(int locStart,int locEnd)
-	{
+	protected void addExonGFFCDSUTR(int locStart,int locEnd) {
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExonGFFCDSUTR(locStart, locEnd);
 	}
@@ -191,8 +180,7 @@ public class GffDetailGene extends ListDetailAbs
 	 * 给最后一个转录本添加ATG和UAG坐标，<br>
 	 * 加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
 	 */
-	protected void addATGUAG(int atg, int uag)
-	{
+	protected void addATGUAG(int atg, int uag) {
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		if (Math.abs(atg - uag)<=1) {
 			gffGeneIsoInfo.mRNA = false;
@@ -258,16 +246,14 @@ public class GffDetailGene extends ListDetailAbs
      * 给定编号(从0开始，编号不是转录本的具体ID)<br>
      * 返回某个转录本的具体信息
      */
-    public GffGeneIsoInfo getIsolist(int splitnum)
-    {  
+    public GffGeneIsoInfo getIsolist(int splitnum) {  
     	return lsGffGeneIsoInfos.get(splitnum);//include one special loc start number to end number	
     }
     /**
      * 给定转录本名(UCSC里实际上是基因名)<br>
      * 没有则返回null
      */
-    public GffGeneIsoInfo getIsolist(String splitID)
-    {
+    public GffGeneIsoInfo getIsolist(String splitID) {
     	int index = getIsoID(splitID);
     	if (index == -1) {
     		logger.info("cannotFind the ID: "+ splitID);
@@ -323,8 +309,7 @@ public class GffDetailGene extends ListDetailAbs
      * 3UTR也直接返回全长3UTR
      * @return 
      */
-	public int getTypeLength(String type,int num)  
-	{
+	public int getTypeLength(String type,int num) {
 		GffGeneIsoInfo gffGeneIsoInfo = getLongestSplit();
 		//TODO 如果超出需要返回0
 		if (type.equals(INTRON)) {
@@ -398,8 +383,7 @@ public class GffDetailGene extends ListDetailAbs
 	 * 如果两个iso有交集但是交集小于0.3，则合并，否则增加一个新的iso
 	 * @param gffDetailGene
 	 */
-	public void addIso(GffDetailGene gffDetailGene)
-	{
+	public void addIso(GffDetailGene gffDetailGene) {
 		ArrayList<GffGeneIsoInfo> lsGeneIsoInfosFinal = new ArrayList<GffGeneIsoInfo>();
 		ArrayList<GffGeneIsoInfo> lsIsoAdd = gffDetailGene.getLsCodSplit();
 		ArrayList<GffGeneIsoInfo> lsIsoThis = getLsCodSplit();
@@ -686,8 +670,5 @@ public class GffDetailGene extends ListDetailAbs
 			lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 		}
 		return result;
-
 	}
- 
-	
 }

@@ -24,18 +24,9 @@ public class ServSnpIndelRs extends AbsGetSpring implements MapSnpIndelRs{
 	}
 	@Autowired
 	private MapSnpIndelRs mapSnpIndelRs;
-	
-	
 	public ServSnpIndelRs() {
 		mapSnpIndelRs = (MapSnpIndelRs) factory.getBean("mapSnpIndelRs");
-	}
-	
-//	static MapSnpIndelRs mapSnpIndelRs;
-//	static{
-//		mapSnpIndelRs = (MapSnpIndelRs) factory.getBean("mapSnpIndelRs");
-//	}
-	private static ServNCBIID info; 
-	
+	}	
 	@Override
 	public SnpIndelRs querySnpIndelRs(SnpIndelRs snpIndelRs) {
 		return mapSnpIndelRs.querySnpIndelRs(snpIndelRs);

@@ -30,15 +30,15 @@ import com.novelbio.test.testextend.a;
 
 public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf
 {
+	private static Logger logger = Logger.getLogger(GffHashGeneAbs.class);
 	int taxID = 0;
 	String acc2GeneIDfile = "";
 	String gfffile = "";
+	
 	public GffHashGeneAbs() {
 		Chrhash = new LinkedHashMap<String, ListGff>();
 		hashGeneID2Acc = new HashMap<String, String>();
 	}
-	private static Logger logger = Logger.getLogger(GffHashGeneAbs.class);
-	
 	/**
 	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面
 	 * @param gfffilename
@@ -54,15 +54,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
-//	/**
-//	 * 哈希表geneID--LOC细节<br>
-//	 * 用于快速将geneID编号对应到LOC的细节<br>
-//	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的条目编号 <br>
-//	 */
-//	public HashMap<String,GffDetailGene> getLocHashtable() {
-//		return hashGeneIDGffDetail;
-//	}
-	
 	/**
 	 * 输入基因名，返回基因的坐标信息等
 	 * 可以输入accID
@@ -190,7 +181,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		System.out.println("getGeneStructureLength: 看UCSC中有多少基因的TSS不是最长转录本的起点"+errorNum);
 		return lsbackground;
 	}
-	
 	/**
 	 * 获得Gene2GeneID在数据库中的信息，并且写入文本，一般不用
 	 */
@@ -247,7 +237,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		return hashGeneID2Acc;
 	}
-	
 	/**
 	 * 将基因装入GffHash中
 	 * @param chrID
@@ -262,7 +251,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		ListGff lsGffDetailGenes = Chrhash.get(chrID);
 		lsGffDetailGenes.add(gffDetailGene);
 	}
-	
 	/**
 	 * 
 	 * 将文件写入GTF中
@@ -298,10 +286,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			txtWrite.writefileln(geneGTF.trim());
 		}
 	}
-	
 	@Override
 	public void writeToGFFIso(String GFFfile, String title) {
-
 		TxtReadandWrite txtGtf = new TxtReadandWrite(GFFfile, true);
 		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(Chrhash);
 		//把得到的ChrID排个序
@@ -315,7 +301,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		txtGtf.close();
 	}
-	
 	/**
 	 * 将一个染色体中的信息写入文本，按照GTF格式
 	 * @param txtWrite
@@ -334,17 +319,3 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	}
 	
 }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	

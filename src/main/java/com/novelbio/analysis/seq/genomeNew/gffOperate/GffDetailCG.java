@@ -27,32 +27,19 @@ public class GffDetailCG extends ListDetailAbs
 {
 	public GffDetailCG(String chrID, String locString, boolean cis5to3) {
 		super(chrID, locString, cis5to3);
-		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * CpG长度
-	 */
+	/** CpG长度  */
 	protected int lengthCpG=0;
-	/**
-	 * CpG数量
-	 */
+	/** CpG数量 */
 	protected int numCpG=0;
-	/**
-	 * GC数量
-	 */
+	/** GC数量  */
 	protected int numGC=0;
-	/**
-	 * CpG百分比
-	 */
+	/**  CpG百分比 */
 	protected double perCpG=0;
-	/**
-	 * GC百分比
-	 */
+	/** GC百分比 */
 	protected double perGC=0;
-	/**
-	 * 显著性
-	 */
+	/** 显著性 */
 	protected double obsExp=0;
 	/**
 	 * CpG长度

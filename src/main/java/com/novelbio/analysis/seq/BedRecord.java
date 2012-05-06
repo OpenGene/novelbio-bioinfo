@@ -50,8 +50,7 @@ public class BedRecord extends MapInfo {
 		super();
 		String[] ss = bedline.split("\t");
 		setRefID(ss[COL_CHRID]);
-		setStartLoc(Integer.parseInt(ss[COL_START]));
-		setEndLoc(Integer.parseInt(ss[COL_END]));
+		setStartEndLoc(Integer.parseInt(ss[COL_START]), Integer.parseInt(ss[COL_END]));
 		if (ss.length > COL_NAME && ss[COL_NAME] != null && !ss[COL_NAME].equals("")) {
 			setName(ss[COL_NAME]);
 		}
@@ -62,7 +61,7 @@ public class BedRecord extends MapInfo {
 			setCis5to3(ss[COL_STRAND]);
 		}
 		if (ss.length > COL_SEQ && ss[COL_SEQ] != null && !ss[COL_SEQ].equals("")) {
-			setSeq(new SeqFasta("", ss[COL_SEQ]), true);
+			setSeq(new SeqFasta("", ss[COL_SEQ]), false);
 		}
 		if (ss.length > COL_MAPNUM && ss[COL_MAPNUM] != null && !ss[COL_MAPNUM].equals("")) {
 			mappingNum = Integer.parseInt(ss[COL_MAPNUM]);

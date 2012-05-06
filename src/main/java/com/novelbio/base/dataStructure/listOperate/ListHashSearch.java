@@ -19,13 +19,22 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
  */
 public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCodAbs<T>, K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>>
 {
+	Logger logger = Logger.getLogger(ListHashSearch.class);
 	/**
-	 * 起点默认为开区间
+	 * 哈希表LOC--LOC细节<br>
+	 * 用于快速将LOC编号对应到LOC的细节<br>
+	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的条目编号 <br>
+	  * 会有有多个LOCID共用一个区域的情况，所以有多个不同的LOCID指向同一个GffdetailUCSCgene<br>
 	 */
+	protected HashMap<String,T> locHashtable;
+	/**
+	 * 哈希表LOC--在arraylist上的Num<br>
+	 * 用于快速将LOC编号对应到其对应的chr上的位置<br>
+	 */
+	protected HashMap<String,Integer> hashLoc2Num;
+	/**  起点默认为开区间  */
 	int startRegion = 1;
-	/**
-	 * 终点默认为闭区间
-	 */
+	/**  终点默认为闭区间 */
 	int endRegion = 0;
 	/**
 	 * 这个是真正的查找用hash表<br>
@@ -36,6 +45,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
 	protected LinkedHashMap<String, M> Chrhash;
+	
 	/**
 	 * 起点是否为闭区间，不是则为开区间，<br>
 	 * False: 开区间的意思是，24表示从0开始计数的24位，也就是实际的25位<br>
@@ -79,19 +89,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	public String getGffFilename() {
 		return gfffilename;
 	}
-	Logger logger = Logger.getLogger(ListHashSearch.class);
-	/**
-	 * 哈希表LOC--LOC细节<br>
-	 * 用于快速将LOC编号对应到LOC的细节<br>
-	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的条目编号 <br>
-	  * 会有有多个LOCID共用一个区域的情况，所以有多个不同的LOCID指向同一个GffdetailUCSCgene<br>
-	 */
-	protected HashMap<String,T> locHashtable;
-	/**
-	 * 哈希表LOC--在arraylist上的Num<br>
-	 * 用于快速将LOC编号对应到其对应的chr上的位置<br>
-	 */
-	protected HashMap<String,Integer> hashLoc2Num;
+
 	/**
 	 * 返回哈希表 LOC--LOC细节<br/>
 	 * 用于快速将LOC编号对应到LOC的细节
@@ -128,8 +126,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * @param chrID
 	 * @return
 	 */
-	public M getListDetail(String chrID)
-	{
+	public M getListDetail(String chrID) {
 		chrID = chrID.toLowerCase();
 		return Chrhash.get(chrID);
 	}
@@ -138,7 +135,6 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * 这个ID与locHash一一对应，但是不能用它来确定某条目的前一个或后一个条目
 	 */
 	protected ArrayList<String> LOCIDList;
-	
 	/**
 	 * 返回List顺序存储每个基因号或条目号，这个打算用于提取随机基因号。
 	 * 不能通过该方法获得某个LOC在基因上的定位
@@ -146,7 +142,6 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	public ArrayList<String> getLOCIDList() {
 		return LOCIDList;
 	}
-	
 	/**
 	 * 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就用"/"隔开，
 	 * 那么该list中的元素用split("/")分割后，上locHashtable就可提取相应的GffDetail，目前主要是Peak用到
@@ -154,7 +149,6 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * 其中TigrGene的ID每个就是一个LOCID，也就是说TIGR的ID不需要进行切割，当然切了也没关系
 	 */
 	protected ArrayList<String> LOCChrHashIDList;
-	
 	/**
 	 * 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就用ListAbs.SEP隔开，
 	 * 那么该list中的元素用split("/")分割后，上locHashtable就可提取相应的GffDetail，目前主要是Peak用到
@@ -255,8 +249,6 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		}
 		return hashResult;
 	}
-	
- 
 	/**
 	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面
 	 * @param gfffilename
@@ -275,7 +267,6 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 			e.printStackTrace();
 		}
 	}
-	
 	/**
 	 * @本方法需要被覆盖
 	 * 最底层读取gff的方法<br>
@@ -294,11 +285,6 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * @throws Exception 
 	 */
 	protected abstract void ReadGffarrayExcep(String gfffilename) throws Exception;
-
- 
-	
-	
-	
 	/**
 	 * 需要覆盖
 	 * 查找某个特定LOC的信息
@@ -306,7 +292,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * @param LOCID 给定某LOC的名称，注意名称是一个短的名字，譬如在UCSC基因中，不是locstring那种好几个基因连在一起的名字，而是单个的短的名字
 	 * @return 返回该LOCID的具体GffDetail信息，用相应的GffDetail类接收
 	 */
-	public T searchLOC(String LOCID){
+	public T searchLOC(String LOCID) {
 		return  locHashtable.get(LOCID.toLowerCase());
 	}
 	/**
@@ -317,8 +303,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * @param LOCNum 该染色体上待查寻LOC的int序号
 	 * @return  返回该LOCID的具体GffDetail信息，用相应的GffDetail类接收
 	 */
-	public T searchLOC(String chrID,int LOCNum)
-	{
+	public T searchLOC(String chrID,int LOCNum) {
 		chrID = chrID.toLowerCase();
 		return Chrhash.get(chrID).get(LOCNum);
 	}
@@ -382,7 +367,6 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		}
 	}
 
-
 	/**
 	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面，本方发为空，直接继承即可
 	 */
@@ -390,9 +374,4 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	{
 		
 	}
-
-
-
-	
-	
 }

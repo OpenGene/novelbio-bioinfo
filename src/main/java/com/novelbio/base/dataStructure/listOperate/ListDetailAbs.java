@@ -16,22 +16,27 @@ import org.apache.log4j.Logger;
  *
  */
 public class ListDetailAbs implements Cloneable{
-	/**
-	 * 根据cis在起点的上游多少bp，在此范围内则认为在tss区域
-	 */
+	/** 根据cis在起点的上游多少bp，在此范围内则认为在tss区域  */
 	protected int upTss = 0;
-	/**
-	 * 根据cis在起点的下游多少bp，在此范围内则认为在tss区域
-	 */
+	/** 根据cis在起点的下游多少bp，在此范围内则认为在tss区域 */
 	protected int downTss = 0;
-	/**
-	 * 根据cis在终点的上游多少bp，在此范围内则认为在tes区域
-	 */
+	/** 根据cis在终点的上游多少bp，在此范围内则认为在tes区域 */
 	protected int upGeneEnd3UTR = 0;
-	/**
-	 * 根据cis在终点的下游多少bp，在此范围内则认为在tes区域
-	 */
+	/** 根据cis在终点的下游多少bp，在此范围内则认为在tes区域 */
 	protected int downGeneEnd3UTR = 0;
+	/**
+	 * LOCID，<br>
+	 * 水稻：LOC_Os01g01110<br>
+	 * 拟南芥：AT1G01110<br>
+	 * UCSC:XM_0101010/XM_032020<br>
+	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
+	 * peak: peak起点_peak终点
+	 */
+	private String ItemName = ""; //loc name
+	/**  染色体编号，都小写 */
+	protected String parentName="";
+	/** 转录方向，假设同一基因不管多少转录本都同一转录方向 */
+	protected Boolean cis5to3 = null; 
 	/**
 	 * 划定Tss范围上游为负数，下游为正数
 	 * @param upTss
@@ -89,23 +94,7 @@ public class ListDetailAbs implements Cloneable{
 	public int[] getTesRegion() {
 		return new int[]{upGeneEnd3UTR, downGeneEnd3UTR};
 	}
-	/**
-	 * LOCID，<br>
-	 * 水稻：LOC_Os01g01110<br>
-	 * 拟南芥：AT1G01110<br>
-	 * UCSC:XM_0101010/XM_032020<br>
-	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
-	 * peak: peak起点_peak终点
-	 */
-	private String ItemName = ""; //loc name
-	/**
-	 * 染色体编号，都小写
-	 */
-	protected String parentName="";
-	/**
-	 * 转录方向，假设同一基因不管多少转录本都同一转录方向
-	 */
-	protected Boolean cis5to3 = null; 
+
 	/**
 	 * 没有就设定为""或null
 	 * @param chrID 染色体编号，自动变成小写
@@ -144,7 +133,6 @@ public class ListDetailAbs implements Cloneable{
 	public int getNumber() {
 		return number;
 	}
-	
 	/**
 	 * 该条目在List-GffDetail中的具体位置
 	 */
@@ -410,11 +398,7 @@ public class ListDetailAbs implements Cloneable{
 		}
 		return false;
 	}
-	
 /////////////////////////////  重写equals等  ////////////////////////////////////
-
-	
-
 	/**
 	 * 只比较locString、numberstart、numberend、ChrID、cis5to3
 	 * 不比较coord
@@ -435,9 +419,7 @@ public class ListDetailAbs implements Cloneable{
 		parentName.equals(otherObj.parentName) &&
 		getItemNum() == otherObj.getItemNum() &&
 		cis5to3 == otherObj.cis5to3;
-	} 
-
-	
+	}
 	/**
 	 * 重写hashcode
 	 */

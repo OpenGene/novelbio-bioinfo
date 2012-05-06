@@ -1,26 +1,14 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
-import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.Species;
-
-
-
-
 
 /**
  * 获得Gff的基因数组信息,本类必须实例化才能使用<br/>
@@ -331,10 +319,4 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	   LOCList.trimToSize();
 	   txtgff.close();
    }
-
-
-	
 }
-
-
-
