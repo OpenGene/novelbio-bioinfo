@@ -55,25 +55,26 @@ public class BedRecord extends MapInfo {
 			setName(ss[COL_NAME]);
 		}
 		if (ss.length > COL_SCORE && ss[COL_SCORE] != null && !ss[COL_SCORE].equals("")) {
-			score = Double.parseDouble(ss[COL_SCORE]);
+			try { score = Double.parseDouble(ss[COL_SCORE]); } catch (Exception e) {}
 		}
 		if (ss.length > COL_STRAND && ss[COL_STRAND] != null && !ss[COL_STRAND].equals("")) {
 			setCis5to3(ss[COL_STRAND]);
 		}
 		if (ss.length > COL_SEQ && ss[COL_SEQ] != null && !ss[COL_SEQ].equals("")) {
-			setSeq(new SeqFasta("", ss[COL_SEQ]), false);
+			try { setSeq(new SeqFasta("", ss[COL_SEQ]), false); } catch (Exception e) {  }
 		}
 		if (ss.length > COL_MAPNUM && ss[COL_MAPNUM] != null && !ss[COL_MAPNUM].equals("")) {
-			mappingNum = Integer.parseInt(ss[COL_MAPNUM]);
+			try { 	mappingNum = Integer.parseInt(ss[COL_MAPNUM]); } catch (Exception e) { 	}
 		}
 		if (ss.length > COL_CIGAR && ss[COL_CIGAR] != null && !ss[COL_CIGAR].equals("")) {
-			CIGAR = ss[COL_CIGAR];
+			try { CIGAR = ss[COL_CIGAR]; 	} catch (Exception e) { }
+			
 		}
 		if (ss.length > COL_MAPQ && ss[COL_MAPQ] != null && !ss[COL_MAPQ].equals("")) {
-			mapQuality = Integer.parseInt(ss[COL_MAPQ]);
+			try { mapQuality = Integer.parseInt(ss[COL_MAPQ]); } catch (Exception e) { }
 		}
 		if (ss.length > COL_READSNUM && ss[COL_READSNUM] != null && !ss[COL_READSNUM].equals("")) {
-			readsNum = Integer.parseInt(ss[COL_READSNUM]);
+			try { readsNum = Integer.parseInt(ss[COL_READSNUM]); } catch (Exception e) { }
 		}
 	}
 	
@@ -103,7 +104,6 @@ public class BedRecord extends MapInfo {
 		}
 		return readsNum;
 	}
-
 	/**
 	 * "+"或"-"
 	 * @param strand
@@ -119,7 +119,7 @@ public class BedRecord extends MapInfo {
 			this.cis5to3 = false;
 		}
 		else {
-			logger.equals("出现未知strand");
+//			logger.equals("出现未知strand");
 		}
 	}
 	/**

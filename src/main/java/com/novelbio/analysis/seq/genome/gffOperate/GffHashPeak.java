@@ -55,9 +55,9 @@ public class GffHashPeak extends GffHash{
 	            public int compare(String[] arg0, String[] arg1) {
 	            	int i=arg0[0].compareTo(arg1[0]);
 	            	if(i==0){
-	            		 if( Integer.parseInt(arg0[1])< Integer.parseInt(arg1[1]))
+	            		 if( Integer.parseInt(arg0[1].trim())< Integer.parseInt(arg1[1].trim()))
 	 	                {	return -1;}
-	 	                else if (Integer.parseInt(arg0[1])== Integer.parseInt(arg1[1])) 
+	 	                else if (Integer.parseInt(arg0[1].trim())== Integer.parseInt(arg1[1].trim())) 
 	 	                { 	return 0;}
 	 	                else
 	 	                {   return 1;}
@@ -80,8 +80,8 @@ public class GffHashPeak extends GffHash{
 			int peakNum=peakInfo.length;
 			for (int i = 0; i < peakNum; i++) {
 				chrnametmpString=lstmpPeakinfo.get(i)[0].toLowerCase();
-				tmppeakstart=Integer.parseInt(lstmpPeakinfo.get(i)[1]);
-				tmppeakend=Integer.parseInt(lstmpPeakinfo.get(i)[2]);
+				tmppeakstart=Integer.parseInt(lstmpPeakinfo.get(i)[1].trim());
+				tmppeakend=Integer.parseInt(lstmpPeakinfo.get(i)[2].trim());
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//新的染色体
 				if (!Chrhash.containsKey(chrnametmpString)) //新的染色体

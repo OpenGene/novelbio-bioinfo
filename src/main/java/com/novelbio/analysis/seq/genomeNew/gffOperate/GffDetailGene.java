@@ -273,7 +273,9 @@ public class GffDetailGene extends ListDetailAbs
 			else
 				lslength.add(gffGeneIsoInfo.getLen());
 		}
-		int max = lslength.get(0); int id = 0;
+		int max = lslength.get(0);
+		int id = 0;
+		
 		for (int i = 0; i < lslength.size(); i++) {
 			if (lslength.get(i) > max)
 			{
@@ -645,13 +647,43 @@ public class GffDetailGene extends ListDetailAbs
 		}
 		return geneGFF;
 	}
+	/**
+	 * 获得坐标到该ItemEnd的距离
+	 * 如果本基因包含了两条方向相反的基因，那么判断长的那条
+	 * 坐标到条目终点的位置，考虑正反向<br/>
+	 * 将该基因按照 >--------5start>--------->3end------->方向走
+	 * 如果坐标在end的5方向，则为负数
+	 * 如果坐标在end的3方向，则为正数
+	 * @return
+	 */
+	public Integer getCod2End(int coord) {
+		if (cis5to3 != null) {
+			return super.getCod2End(coord);
+		}
+		return getLongestSplit().getCod2Tes(coord);
+	}
 	
+	/**
+	 * 获得坐标到该ItemStart的距离,如果coord小于0说明有问题，则返回null
+	 * 用之前先设定coord
+	 * 考虑item的正反
+	 * 坐标到条目终点的位置，考虑正反向<br/>
+	 * 将该基因按照 >--------5start>--------->3end------->方向走
+	 * 如果坐标在start的5方向，则为负数
+	 * 如果坐标在start的3方向，则为正数
+	 * @return
+	 */
+	public Integer getCod2Start(int coord) {
+		if (cis5to3 != null) {
+			return super.getCod2End(coord);
+		}
+		return getLongestSplit().getCod2Tss(coord);
+	}
 	/**
 	 * 判断是否存在该名字的转录本
 	 * @param IsoName
 	 */
-	private boolean isContainsIso(String IsoName)
-	{
+	private boolean isContainsIso(String IsoName) {
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			if (gffGeneIsoInfo.getName().toLowerCase().contains(IsoName.toLowerCase())) {
 				return true;
@@ -659,15 +691,17 @@ public class GffDetailGene extends ListDetailAbs
 		}
 		return false;
 	}
-	
-	public GffDetailGene clone()
-	{
+	/**
+	 * 浅度clone，lsGffGeneIsoInfos 克隆了。
+	 * 但是每个iso没有被clone
+	 */
+	public GffDetailGene clone() {
 		GffDetailGene result = null;
 		result = (GffDetailGene) super.clone();
 		result.taxID = taxID;
 		result.lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			lsGffGeneIsoInfos.add(gffGeneIsoInfo);
+			result.getLsCodSplit().add(gffGeneIsoInfo);
 		}
 		return result;
 	}

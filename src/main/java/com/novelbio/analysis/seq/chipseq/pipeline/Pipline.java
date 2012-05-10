@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
+import com.novelbio.analysis.seq.chipseq.PeakMacs;
 import com.novelbio.analysis.seq.chipseq.peakAnnotation.PeakAnno;
 import com.novelbio.analysis.seq.chipseq.peakAnnotation.peakLoc.PeakLOC;
 import com.novelbio.analysis.seq.chipseq.preprocess.Comb;
@@ -78,7 +78,7 @@ public class Pipline {
 		}
 	}
 	public static void peakCalling(String bedFile,String outFilePath, String prix) {
-		BedPeakMacs bedPeakMacs = new BedPeakMacs(bedFile);
+		PeakMacs bedPeakMacs = new PeakMacs(bedFile);
 		try {
 			bedPeakMacs.peakCallling(Comb.getProjectPath()+"/../..", null, "hs", outFilePath, prix);
 //			bedPeakMacs.peakCallling(Comb.getProjectPath()+"", null, "hs", outFilePath, prix); //ÕýÊ½ÓÃ

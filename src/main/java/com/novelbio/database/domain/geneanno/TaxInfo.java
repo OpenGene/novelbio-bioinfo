@@ -14,10 +14,18 @@ import com.novelbio.database.service.servgeneanno.ServTaxID;
  */
 public class TaxInfo {
 	ServTaxID servTaxID = new ServTaxID();
-	/**
-	 * NCBI的物种ID
-	 */	
+	/** NCBI的物种ID */	
 	private int taxID;
+	/** KEGG上的缩写 */
+	private String abbr;//缩写
+	/** 拉丁名 */
+	private String latin;//常用名
+	/** 常用名 */
+	private String comName;//常用名
+	/** 中文名 */
+	private String chnName;//中文名
+	/** 染色体长度信息，包括总长度和每条染色体长度 */
+	private String chrInfo;
 	/**
 	 * NCBI的物种ID
 	 * @param taxID
@@ -28,40 +36,27 @@ public class TaxInfo {
 		}
 		this.taxID=taxID;
 	}
-	/**
-	 * NCBI的物种ID
-	 */
+	/** NCBI的物种ID */
 	public int getTaxID() {
 		return this.taxID;
 	}
 	
-	/**
-	 * KEGG上的缩写
-	 */
-	private String abbr;//缩写
-	/**
-	 * KEGG上的缩写
-	 */
+
+	/** KEGG上的缩写 */
 	public void setAbbr(String abbr) {
 		if (abbr == null) {
 			return;
 		}
 		this.abbr=abbr.trim();
 	}
-	/**
-	 * KEGG上的缩写
-	 */
+	/** KEGG上的缩写 */
 	public String getAbbr() {
 		if (abbr == null) {
 			return "";
 		}
 		return this.abbr;
 	}
-	
-	/**
-	 * 拉丁名
-	 */
-	private String latin;//常用名
+
 	/**
 	 * 拉丁名
 	 */
@@ -80,11 +75,6 @@ public class TaxInfo {
 		}
 		return this.latin;
 	}
-	
-	/**
-	 * 常用名
-	 */
-	private String comName;//常用名
 	/**
 	 * 常用名
 	 */
@@ -103,11 +93,6 @@ public class TaxInfo {
 		}
 		return this.comName;
 	}
-	
-	/**
-	 * 中文名
-	 */
-	private String chnName;//中文名
 	/**
 	 * 中文名
 	 */

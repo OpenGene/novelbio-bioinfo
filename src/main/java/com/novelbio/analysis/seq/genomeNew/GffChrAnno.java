@@ -155,7 +155,8 @@ public class GffChrAnno extends GffChrAbs{
 		if (gffCodGeneDu == null) {
 			return null;
 		}
-		ArrayList<String[]> lsAnno = gffCodGeneDu.getAnno(tss, tes, genebody, UTR5, UTR3, exonFilter, intronFilter);
+		ArrayList<String[]> lsAnno = null;
+		lsAnno = gffCodGeneDu.getAnno(tss, tes, genebody, UTR5, UTR3, exonFilter, intronFilter);
 		return lsAnno;
 	}
 
@@ -201,8 +202,7 @@ public class GffChrAnno extends GffChrAbs{
 			else if (strings.length == 3) {
 				int tmpStart = Integer.parseInt(strings[1].trim());
 				int tmpEnd = Integer.parseInt(strings[2].trim());
-				mapInfo.setStartLoc(Math.min(tmpStart, tmpEnd));
-				mapInfo.setEndLoc(Math.max(tmpStart, tmpEnd));
+				mapInfo.setStartEndLoc(Math.min(tmpStart, tmpEnd), Math.max(tmpStart, tmpEnd));
 			}
 			else {
 				String tmp = "";
@@ -235,6 +235,9 @@ public class GffChrAnno extends GffChrAbs{
 		int[] result = new int[8];
 		for (MapInfo mapInfo : lsMapInfos) {
 			int[] tmp = searchSite(mapInfo);
+			if (tmp == null) {
+				continue;
+			}
 			for (int i = 0; i < tmp.length; i++) {
 				result[i] = result[i] + tmp[i];
 			}
@@ -263,6 +266,9 @@ public class GffChrAnno extends GffChrAbs{
 		boolean flagIntraGenic = false;//在gene内的标记
 		int[] result = new int[8];
 		GffCodGene gffCodGene = gffHashGene.searchLocation(mapInfo.getRefID(), mapInfo.getFlagSite());
+		if (gffCodGene == null) {
+			return null;
+		}
 		if (gffCodGene.isInsideLoc()) {
 			gffCodGene.getGffDetailThis().setTssRegion(tss);
 			gffCodGene.getGffDetailThis().setTesRegion(tes);
@@ -287,10 +293,15 @@ public class GffChrAnno extends GffChrAbs{
 			}
 		}
 		else {
-			gffCodGene.getGffDetailUp().setTssRegion(tss);
-			gffCodGene.getGffDetailUp().setTesRegion(tes);
-			gffCodGene.getGffDetailDown().setTssRegion(tss);
-			gffCodGene.getGffDetailDown().setTesRegion(tes);
+			if (gffCodGene.getGffDetailUp() != null ) {
+				gffCodGene.getGffDetailUp().setTssRegion(tss);
+				gffCodGene.getGffDetailUp().setTesRegion(tes);
+			}
+			if (gffCodGene.getGffDetailDown() != null) {
+				gffCodGene.getGffDetailDown().setTssRegion(tss);
+				gffCodGene.getGffDetailDown().setTesRegion(tes);
+			}
+
 			//UpNbp
 			if (gffCodGene.getGffDetailUp() != null && gffCodGene.getGffDetailUp().isCodInPromoter(gffCodGene.getCoord())) {
 				result[0]++;flagIntraGenic =true;

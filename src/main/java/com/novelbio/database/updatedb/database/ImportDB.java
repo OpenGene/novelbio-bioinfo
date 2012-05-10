@@ -88,8 +88,14 @@ public class ImportDB {
 //		ensembl.setEnsemblFile(ensemblFileChicken, ucscGffFileChicken, taxIDChicken);
 //		ensembl.update();
 		
-		String ensemblFileCow = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_Ensembl.GTF";
-		String ucscFileCow = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_UCSC";
+//		String ensemblFileCow = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_Ensembl.GTF";
+//		String ucscFileCow = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_UCSC";
+//		int taxIDCow = 9913;
+//		ensembl.setEnsemblFile(ensemblFileCow, ucscFileCow, taxIDCow);
+//		ensembl.update();
+		
+		String ensemblFilePig = "/media/winE/Bioinformatics/GenomeData/pig/pig_ensembl_UCSC";
+		String ucscFilePig = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_UCSC";
 		int taxIDCow = 9913;
 		ensembl.setEnsemblFile(ensemblFileCow, ucscFileCow, taxIDCow);
 		ensembl.update();

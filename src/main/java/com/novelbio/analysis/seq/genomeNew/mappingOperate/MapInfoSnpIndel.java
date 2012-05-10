@@ -891,11 +891,14 @@ public class MapInfoSnpIndel extends MapInfo {
 				lsMapInfos = hashChrIDMapInfo.get(tmpChrID);
 				mapInfoIndex = 0;
 			}
-			if (lsMapInfos == null)
+			if (lsMapInfos == null) {
+				logger.error("出现未知 chrID：" + tmpChrID);
 				break;
+			}
+				
 			//所有lsMapInfos中的信息都查找完毕了
 			if (mapInfoIndex >= lsMapInfos.size()) {
-				break;
+				continue;
 			}
 			//一行一行找下去，直到找到所需要的位点
 			if (Integer.parseInt(ss[1]) < lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart()) {

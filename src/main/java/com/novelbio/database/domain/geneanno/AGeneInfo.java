@@ -113,38 +113,38 @@ public abstract class AGeneInfo {
 	 */
 	public void setDBinfo(String fromDB) {
 		this.dbInfo = fromDB.trim();
-		if (symbol != null && symbol.contains(SEP_INFO)) {
-			symbol = dbInfo + SEP_INFO + symbol.split(SEP_INFO)[1];
+		if (symbol != null && symbol.contains(SepSign.SEP_INFO)) {
+			symbol = dbInfo + SepSign.SEP_INFO + symbol.split(SepSign.SEP_INFO)[1];
 		}
-		if (synonyms != null && synonyms.contains(SEP_INFO)) {
-			synonyms = dbInfo + SEP_INFO + synonyms.split(SEP_INFO)[1];
+		if (synonyms != null && synonyms.contains(SepSign.SEP_INFO)) {
+			synonyms = dbInfo + SepSign.SEP_INFO + synonyms.split(SepSign.SEP_INFO)[1];
 		}
-		if (dbXrefs != null && dbXrefs.contains(SEP_INFO)) {
-			dbXrefs = dbInfo + SEP_INFO + dbXrefs.split(SEP_INFO)[1];
+		if (dbXrefs != null && dbXrefs.contains(SepSign.SEP_INFO)) {
+			dbXrefs = dbInfo + SepSign.SEP_INFO + dbXrefs.split(SepSign.SEP_INFO)[1];
 		}
-		if (chromosome != null && chromosome.contains(SEP_INFO)) {
-			chromosome = dbInfo + SEP_INFO + chromosome.split(SEP_INFO)[1];
+		if (chromosome != null && chromosome.contains(SepSign.SEP_INFO)) {
+			chromosome = dbInfo + SepSign.SEP_INFO + chromosome.split(SepSign.SEP_INFO)[1];
 		}
-		if (mapLocation != null && mapLocation.contains(SEP_INFO)) {
-			mapLocation = dbInfo + SEP_INFO + mapLocation.split(SEP_INFO)[1];
+		if (mapLocation != null && mapLocation.contains(SepSign.SEP_INFO)) {
+			mapLocation = dbInfo + SepSign.SEP_INFO + mapLocation.split(SepSign.SEP_INFO)[1];
 		}
-		if (description != null && description.contains(SEP_INFO)) {
-			description = dbInfo + SEP_INFO + description.split(SEP_INFO)[1];
+		if (description != null && description.contains(SepSign.SEP_INFO)) {
+			description = dbInfo + SepSign.SEP_INFO + description.split(SepSign.SEP_INFO)[1];
 		}
-		if (otherDesign != null && otherDesign.contains(SEP_INFO)) {
-			otherDesign = dbInfo + SEP_INFO + otherDesign.split(SEP_INFO)[1];
+		if (otherDesign != null && otherDesign.contains(SepSign.SEP_INFO)) {
+			otherDesign = dbInfo + SepSign.SEP_INFO + otherDesign.split(SepSign.SEP_INFO)[1];
 		}
-		if (nomStat != null && nomStat.contains(SEP_INFO)) {
-			nomStat = dbInfo + SEP_INFO + nomStat.split(SEP_INFO)[1];
+		if (nomStat != null && nomStat.contains(SepSign.SEP_INFO)) {
+			nomStat = dbInfo + SepSign.SEP_INFO + nomStat.split(SepSign.SEP_INFO)[1];
 		}
-		if (fullNameNome != null && fullNameNome.contains(SEP_INFO)) {
-			fullNameNome = dbInfo + SEP_INFO + fullNameNome.split(SEP_INFO)[1];
+		if (fullNameNome != null && fullNameNome.contains(SepSign.SEP_INFO)) {
+			fullNameNome = dbInfo + SepSign.SEP_INFO + fullNameNome.split(SepSign.SEP_INFO)[1];
 		}
-		if (dbXrefs != null && dbXrefs.contains(SEP_INFO)) {
-			dbXrefs = dbInfo + SEP_INFO + dbXrefs.split(SEP_INFO)[1];
+		if (dbXrefs != null && dbXrefs.contains(SepSign.SEP_INFO)) {
+			dbXrefs = dbInfo + SepSign.SEP_INFO + dbXrefs.split(SepSign.SEP_INFO)[1];
 		}
-		if (locusTag != null && locusTag.contains(SEP_INFO)) {
-			locusTag = dbInfo + SEP_INFO + locusTag.split(SEP_INFO)[1];
+		if (locusTag != null && locusTag.contains(SepSign.SEP_INFO)) {
+			locusTag = dbInfo + SepSign.SEP_INFO + locusTag.split(SepSign.SEP_INFO)[1];
 		}
 	}
 	
@@ -163,7 +163,7 @@ public abstract class AGeneInfo {
 			this.pubmedID = pubmedID;
 		}
 		else {
-			this.pubmedID = this.pubmedID + SEP_INFO + pubmedID;
+			this.pubmedID = this.pubmedID + SepSign.SEP_INFO + pubmedID;
 		}
 	}
 	/**
@@ -184,7 +184,7 @@ public abstract class AGeneInfo {
 		if (pubmedID != null && !pubmedID.equals("")) {
 			return lsPubmedIDs;
 		}
-		String[] ss = pubmedID.split(SEP_INFO);
+		String[] ss = pubmedID.split(SepSign.SEP_INFO);
 		for (String string : ss) {
 			lsPubmedIDs.add(string);
 		}
@@ -402,7 +402,7 @@ public abstract class AGeneInfo {
 			return;
 		}
 		else {
-			this.pubmedID = this.pubmedID + SEP_ID + pubmedIDs;
+			this.pubmedID = this.pubmedID + SepSign.SEP_ID + pubmedIDs;
 		}
 		
 	}
@@ -429,7 +429,7 @@ public abstract class AGeneInfo {
 		}
 		else {
 			if (sepWithDBinfo) {
-				inputFieldFinal = dbInfo + SEP_INFO + inputField;
+				inputFieldFinal = dbInfo + SepSign.SEP_INFO + inputField;
 			}
 			else {
 				inputFieldFinal = inputField;
@@ -445,16 +445,16 @@ public abstract class AGeneInfo {
 			//如果数据库已经存在了
 			else if (thisField.contains(dbInfo)) {
 				if (sepWithDBinfo) {
-					String result = thisField.replace(dbInfo+SEP_INFO, inputFieldFinal + SEP_INFO_SAMEDB);
+					String result = thisField.replace(dbInfo+SepSign.SEP_INFO, inputFieldFinal + SepSign.SEP_INFO_SAMEDB);
 					logger.error("出现相同数据库但是不同的注释："+ result);
 					return result;
 				}
 				else {
-					return thisField + SEP_ID + inputFieldFinal;
+					return thisField + SepSign.SEP_ID + inputFieldFinal;
 				}
 			}
 			else {
-				return thisField + SEP_ID + inputFieldFinal;
+				return thisField + SepSign.SEP_ID + inputFieldFinal;
 			}
 		}
 	}
@@ -464,21 +464,6 @@ public abstract class AGeneInfo {
 	 */
 	static HashMap<Integer, String> hashDBinfo = new HashMap<Integer, String>();
 	
-	
-	
-	/**
-	 * 分割两个来源的ID或两个Description
-	 */
-	public static final String SEP_ID = "@//@";
-	/**
-	 * 分割同一个数据库的两个不同的注释信息
-	 */
-	public static final String SEP_INFO_SAMEDB = "//";
-	/**
-	 * 分割 NCBIID的title和内容
-	 * 如NCBI@@protein coding
-	 */
-	public static final String SEP_INFO = "@@";
 	/**
 	 * 拷贝信息，将信息全部复制过来
 	 * @param geneInfo
@@ -585,8 +570,8 @@ public abstract class AGeneInfo {
 		if (inputField.equals("-") || inputField.equals("")) {
 			return false;
 		}
-		if (inputField.contains(SEP_INFO)) {
-			if (thisField.toLowerCase().replace("-", " ").contains(inputField.split(SEP_INFO)[1].toLowerCase().replace("-", " "))) {
+		if (inputField.contains(SepSign.SEP_INFO)) {
+			if (thisField.toLowerCase().replace("-", " ").contains(inputField.split(SepSign.SEP_INFO)[1].toLowerCase().replace("-", " "))) {
 				return false;
 			}
 		}
@@ -607,16 +592,16 @@ public abstract class AGeneInfo {
 		if (info == null || info.equals("")) {
 			return null;
 		}
-		String[] ss = info.split(SEP_ID);
+		String[] ss = info.split(SepSign.SEP_ID);
 		if (ss.length == 1) {
-			return ss[0].split(SEP_INFO)[1];
+			return ss[0].split(SepSign.SEP_INFO)[1];
 		}
 		/**
 		 * 用来保存具体的信息
 		 */
 		HashMap<String, String> hashInfo = new HashMap<String, String>();
 		for (String string : ss) {
-			String[] ss2 = string.split(SEP_INFO);
+			String[] ss2 = string.split(SepSign.SEP_INFO);
 			hashInfo.put(ss2[0], ss2[1]);
 		}
 		if (getDatabaseType() != null) {
@@ -631,6 +616,6 @@ public abstract class AGeneInfo {
 				return result;
 			}
 		}
-		return ss[0].split(SEP_INFO)[1];
+		return ss[0].split(SepSign.SEP_INFO)[1];
 	}
 }

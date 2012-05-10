@@ -2,7 +2,7 @@ package com.novelbio.analysis.seq;
 
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 
-import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
+import com.novelbio.analysis.seq.chipseq.PeakMacs;
 import com.novelbio.analysis.seq.mapping.FastQMap;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -46,7 +46,7 @@ public class CtrlSeq {
 		bedSeqSE = bedSeqSE.sortBedFile(1, sortBedFile, 2,3);
 		BedSeq bedSeq = fastQMap.getBedFile(bedFile);
 		bedSeq.sortBedFile(FileOperate.changeFileSuffix(bedFile, "_sort", null));
-		BedPeakMacs bedPeakMacs = new BedPeakMacs(sortBedFile);
+		PeakMacs bedPeakMacs = new PeakMacs(sortBedFile);
 		bedPeakMacs.peakCallling(".", null, "os", peakCallingFile, "ZHY");
 	}
 	public static void ZHY2N() {
@@ -71,7 +71,7 @@ public class CtrlSeq {
 		bedSeqSE = bedSeqSE.sortBedFile(1, sortBedFile, 2,3);
 		BedSeq bedSeq = fastQMap.getBedFile(bedFile);
 		bedSeq.sortBedFile(FileOperate.changeFileSuffix(bedFile, "_sort", null));
-		BedPeakMacs bedPeakMacs = new BedPeakMacs(sortBedFile);
+		PeakMacs bedPeakMacs = new PeakMacs(sortBedFile);
 		bedPeakMacs.peakCallling(".", null, "os", peakCallingFile, "ZHY");
 	}
 	public static void ZHY3N() {
@@ -96,7 +96,7 @@ public class CtrlSeq {
 		bedSeqSE = bedSeqSE.sortBedFile(1, sortBedFile, 2,3);
 		BedSeq bedSeq = fastQMap.getBedFile(bedFile);
 		bedSeq.sortBedFile(FileOperate.changeFileSuffix(bedFile, "_sort", null));
-		BedPeakMacs bedPeakMacs = new BedPeakMacs(sortBedFile);
+		PeakMacs bedPeakMacs = new PeakMacs(sortBedFile);
 		bedPeakMacs.peakCallling(".", null, "os", peakCallingFile, "ZHY");
 	}
 	
@@ -123,7 +123,7 @@ public class CtrlSeq {
 		
 		BedSeq bedSeq = fastQMap.getBedFile(bedFile);
 		bedSeq.sortBedFile(FileOperate.changeFileSuffix(bedFile, "_sort", null));
-		BedPeakMacs bedPeakMacs = new BedPeakMacs(sortBedFile);
+		PeakMacs bedPeakMacs = new PeakMacs(sortBedFile);
 		bedPeakMacs.peakCallling(".", null, "mm", peakCallingFile, "WE");
 	}
 	public static void CDGKE() {
@@ -148,7 +148,7 @@ public class CtrlSeq {
 		bedSeqSE = bedSeqSE.sortBedFile(1, sortBedFile, 2,3);
 		BedSeq bedSeq = fastQMap.getBedFile(bedFile);
 		bedSeq.sortBedFile(FileOperate.changeFileSuffix(bedFile, "_sort", null));
-		BedPeakMacs bedPeakMacs = new BedPeakMacs(sortBedFile);
+		PeakMacs bedPeakMacs = new PeakMacs(sortBedFile);
 		bedPeakMacs.peakCallling(".", null, "mm", peakCallingFile, "KE");
 	}
 	public static void CDGFX2() {
@@ -173,7 +173,7 @@ public class CtrlSeq {
 		bedSeqSE = bedSeqSE.sortBedFile(1, sortBedFile, 2,3);
 		BedSeq bedSeq = fastQMap.getBedFile(bedFile);
 		bedSeq.sortBedFile(FileOperate.changeFileSuffix(bedFile, "_sort", null));
-		BedPeakMacs bedPeakMacs = new BedPeakMacs(sortBedFile);
+		PeakMacs bedPeakMacs = new PeakMacs(sortBedFile);
 		bedPeakMacs.peakCallling(".", null, "mm", peakCallingFile, "FX2");
 	}
 	public static void CDG2W() {
@@ -198,7 +198,7 @@ public class CtrlSeq {
 		bedSeqSE = bedSeqSE.sortBedFile(1, sortBedFile, 2,3);
 		BedSeq bedSeq = fastQMap.getBedFile(bedFile);
 		bedSeq.sortBedFile(FileOperate.changeFileSuffix(bedFile, "_sort", null));
-		BedPeakMacs bedPeakMacs = new BedPeakMacs(sortBedFile);
+		PeakMacs bedPeakMacs = new PeakMacs(sortBedFile);
 		bedPeakMacs.peakCallling(".", null, "mm", peakCallingFile, "2W");
 	}
 	public static void CDG2K() {
@@ -223,7 +223,7 @@ public class CtrlSeq {
 		bedSeqSE = bedSeqSE.sortBedFile(1, sortBedFile, 2,3);
 		BedSeq bedSeq = fastQMap.getBedFile(bedFile);
 		bedSeq.sortBedFile(FileOperate.changeFileSuffix(bedFile, "_sort", null));
-		BedPeakMacs bedPeakMacs = new BedPeakMacs(sortBedFile);
+		PeakMacs bedPeakMacs = new PeakMacs(sortBedFile);
 		bedPeakMacs.peakCallling(".", null, "mm", peakCallingFile, "2K");
 	}
 }

@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq;
 
-import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
+import com.novelbio.analysis.seq.chipseq.PeakMacs;
 import com.novelbio.analysis.seq.mapping.FastQMap;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -35,7 +35,7 @@ public class ChIPSeqComb {
 		bedSeqSE = bedSeqSE.sortBedFile(1, bedFileSEsort, 2,3);
 		BedSeq bedSeq = fastQMap.getBedFile(bedFileExtend);
 		bedSeq = bedSeq.sortBedFile(1, bedFileExtendSort, 2,3);
-		BedPeakMacs bedPeakMacs = new BedPeakMacs(bedFileSEsort);
+		PeakMacs bedPeakMacs = new PeakMacs(bedFileSEsort);
 		bedPeakMacs.peakCallling(".", null, species, peakCalling, prix);
 	}
 	

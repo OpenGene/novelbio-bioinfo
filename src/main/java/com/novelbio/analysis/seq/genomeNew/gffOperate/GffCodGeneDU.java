@@ -171,7 +171,8 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 				continue;
 			}
 			else if (gffDetailGenes[0] != null && gffDetailGenes[1] == null) {
-				if (isInRegion1CodUp(gffDetailGenes[0], Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron)) {
+				GffDetailGene gffDetailGene = gffDetailGenes[0].clone();
+				if (isInRegion1CodUp(gffDetailGene, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron)) {
 					hashGene.add(gffDetailGenes[0]);
 				}
 			}
@@ -179,9 +180,8 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 				if (!gffDetailGenes[0].equals(gffDetailGenes[1])) {
 					logger.error("理论上两者是一致的");
 				}
-				
-				
-				if (isInRegion2Cod(gffDetailGenes[0], Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron)) {
+				GffDetailGene gffDetailGene = gffDetailGenes[0].clone();
+				if (isInRegion2Cod(gffDetailGene, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron)) {
 					//只添加第一个的信息
 					hashGene.add(gffDetailGenes[0]);
 				}
@@ -215,8 +215,10 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 			if (gffDetailGenes[0] == null && gffDetailGenes[1] == null) {
 				continue;
 			}
+			//TODO
 			else if (gffDetailGenes[0] == null && gffDetailGenes[1] != null) {
-				if (isInRegion1CodDown(gffDetailGenes[1], Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron)) {
+				GffDetailGene gffDetailGene = gffDetailGenes[1].clone();
+				if (isInRegion1CodDown(gffDetailGene, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron)) {
 					hashGene.add(gffDetailGenes[1]);
 				}
 			}
@@ -323,6 +325,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	
 	
 	/**
+	 * <b>内部会删除iso信息，所以输入的gffDetail必须是clone的</b>
 	 * 需要检查
 	 * 仅考虑两个点不在同一个基因内部的情况时，第一个点的情况
 	 * 效率稍低但是很全面，每个isoform都会判断
@@ -362,6 +365,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 		return flagResult;
 	}
 	/**
+	 * <b>内部会删除iso信息，所以输入的gffDetail必须是clone的</b>
 	 * 需要检查
 	 * 仅考虑两个点不在同一个基因内部的情况时，第二个点的情况
 	 * 效率稍低但是很全面，每个isoform都会判断
@@ -403,6 +407,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	
 	
 	/**
+	 * <b>内部会删除iso信息，所以输入的gffDetail必须是clone的</b>
 	 * 使用前先判定cod是否在两个相同的gffDetailGene内
 	 * 仅考虑两个点在同一个基因内部的情况时
 	 * 效率稍低但是很全面，每个isoform都会判断
@@ -726,10 +731,10 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	 * @return
 	 */
 	private boolean isUpTes(GffDetailGene gffDetailGene, int coord, int[] tes) {
-		gffDetailGene.setTesRegion(tes);
 		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
+		gffDetailGene.setTesRegion(tes);
 		if (gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend(coord)
 		||
 		(!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoGenEnd(coord) )
@@ -741,10 +746,10 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	}
 	
 	private boolean isDownTes(GffDetailGene gffDetailGene, int coord, int[] tes) {
-		gffDetailGene.setTesRegion(tes);
 		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
+		gffDetailGene.setTesRegion(tes);
 		if (!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend(coord)
 		||
 		(gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoGenEnd(coord))
@@ -802,10 +807,10 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	}
 	
 	private boolean isUpTss(GffDetailGene gffDetailGene, int coord, int[] tss) {
-		gffDetailGene.setTssRegion(tss);
 		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
+		gffDetailGene.setTssRegion(tss);
 		if (gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoTss(coord)
 		||
 		(!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend(coord))
@@ -817,10 +822,10 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene>{
 	}
 	
 	private boolean isDownTss(GffDetailGene gffDetailGene, int coord, int[] tss) {
-		gffDetailGene.setTssRegion(tss);
 		if (gffDetailGene == null || !gffDetailGene.isCodInGeneExtend(coord)) {
 			return false;
 		}
+		gffDetailGene.setTssRegion(tss);
 		if (!gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoTss(coord)
 		||
 		(gffDetailGene.getLongestSplit().isCis5to3() && gffDetailGene.getLongestSplit().isCodInIsoExtend(coord))

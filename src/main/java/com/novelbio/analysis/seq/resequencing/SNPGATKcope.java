@@ -21,7 +21,11 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.NovelBioConst;
-
+/**
+ * 读取GATK的结果文件，然后标记每个snp的信息，所在基因等等
+ * @author zong0jie
+ *
+ */
 public class SNPGATKcope {
 	Logger logger = Logger.getLogger(SNPGATKcope.class);
 	GffChrSnpIndel gffChrSnpIndel;

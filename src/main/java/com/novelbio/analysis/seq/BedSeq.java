@@ -149,7 +149,6 @@ public class BedSeq extends SeqComb{
 					public boolean hasNext() {
 						return bedRecord != null;
 					}
-
 					public BedRecord next() {
 						BedRecord retval = bedRecord;
 						bedRecord = getLine();
@@ -706,7 +705,10 @@ public class BedSeq extends SeqComb{
 		}
 		return hashValue;
 	}
-	
+	/**
+	 * 从第一行开始合并
+	 * @return
+	 */
 	public BedSeq combBedFile() {
 		return combBedFile(0);
 	}
@@ -734,10 +736,17 @@ public class BedSeq extends SeqComb{
 		BedRecord bedRecordLast = null;
 		for (BedRecord bedRecord : readlines(readLines)) {
 			if (bedRecordLast == null)
-				bedRecordLast = bedRecord;
+			{
+				bedRecordLast = new BedRecord();
+				bedRecordLast.setRefID(bedRecord.getRefID());
+				bedRecordLast.setStartEndLoc(bedRecord.getStart(), bedRecord.getEnd());
+			}
+				
 			if	(!bedRecord.getRefID().equals(bedRecordLast.getRefID()) || bedRecord.getStart() >= bedRecordLast.getEnd()) {
 				bedSeqResult.writeBedRecord(bedRecordLast);
-				bedRecordLast = bedRecord;
+				bedRecordLast = new BedRecord();
+				bedRecordLast.setRefID(bedRecord.getRefID());
+				bedRecordLast.setStartEndLoc(bedRecord.getStart(), bedRecord.getEnd());
 				//因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
 				if (bedRecordLast.getReadsNum() == 1) {
 					bedRecordLast.setReadsNum(1);

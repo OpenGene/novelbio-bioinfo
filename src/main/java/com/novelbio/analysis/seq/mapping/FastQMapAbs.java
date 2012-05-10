@@ -55,7 +55,6 @@ public abstract class FastQMapAbs extends FastQ implements FastQMapInt{
 	 */
 	public FastQMapAbs(String seqFile1, int QUALITY) {
 		super(seqFile1, QUALITY);
-		// TODO Auto-generated constructor stub
 	}
 	/**
 	 * 双端mapping
@@ -65,7 +64,6 @@ public abstract class FastQMapAbs extends FastQ implements FastQMapInt{
 	 */
 	public FastQMapAbs(String seqFile1,String seqFile2, int QUALITY) {
 		super(seqFile1, seqFile2, QUALITY);
-		// TODO Auto-generated constructor stub
 	}
 	
 	/**
@@ -77,7 +75,6 @@ public abstract class FastQMapAbs extends FastQ implements FastQMapInt{
 	 */
 	public FastQMapAbs(String seqFile1,String seqFile2, int FastQFormateOffset,int QUALITY) {
 		super(seqFile1, seqFile2, FastQFormateOffset, QUALITY);
-		// TODO Auto-generated constructor stub
 	}
 	/**
 	 * 设定插入片段长度，默认是solexa的长度，150-500

@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import com.novelbio.analysis.seq.chipseq.BedPeakMacs;
+import com.novelbio.analysis.seq.chipseq.PeakMacs;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
@@ -15,7 +15,7 @@ public class CDGtools {
 //		copeNovoAlign2Bed(parentFile+"GSM651192_ChIPSeq_Dpy-30_Mus_musculus_MM9_novoalign_genome_alignment.txt",
 //				bedFileNrom, bedFileLen);
 //		System.out.println("format finish");
-		BedPeakMacs bedPeakMacs = new BedPeakMacs(bedFileNrom);
+		PeakMacs bedPeakMacs = new PeakMacs(bedFileNrom);
 		bedPeakMacs = bedPeakMacs.sortBedFile(1, parentFile + "Dpy-30SortNorm.bed", 2,3);
 		System.out.println("sortFinish");
 		bedPeakMacs.peakCallling(null, "mm", parentFile, "Dpy-30");

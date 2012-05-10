@@ -51,7 +51,7 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
      * @param colChrID 实际数字，默认为1
      * @param colPeakstart 实际数字，默认为2
      * @param colPeakend 实际数字，默认为3
-     * @param rowNum 如果rowEnd<1，则一直读到sheet1文件结尾，默认为-1
+     * @param rowNum 起点，从第几行开始读
 	 */
 	public ListHashBin(boolean peakcis ,int colChrID,int colPeakstart,int colPeakend,int rowNum) {
 //		super();

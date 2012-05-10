@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genomeNew;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -488,6 +489,9 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 */
 	private Set<GffDetailGene> getPeakStructureGene(String chrID, int startLoc, int endLoc, String structure) {
 		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(chrID, startLoc, endLoc);
+		if (gffCodGeneDU == null) {
+			return new HashSet<GffDetailGene>();
+		}
 		if (structure.equals(GffDetailGene.TSS)) {
 			return gffCodGeneDU.getTSSGene(tss);
 		}

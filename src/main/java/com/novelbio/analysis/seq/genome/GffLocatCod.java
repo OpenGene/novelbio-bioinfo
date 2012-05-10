@@ -752,11 +752,11 @@ public class GffLocatCod extends GffChrUnion
 		{
 			GffCodInfoUCSCgene tmpresult=null;String chrID = LOCIDInfo[i][0].toLowerCase(); int summit = Integer.parseInt(LOCIDInfo[i][1].trim());
 			try {
-				if (summit == 4332972) {
-					System.out.println("error");
-				}
-				
 				tmpresult = (GffCodInfoUCSCgene)gffSearch.searchLocation(chrID, summit, gffHash);
+				if (tmpresult == null) {
+					System.out.println(chrID);
+					continue;
+				}
 			} catch (Exception e) {
 				System.out.println("peakStatistic "+LOCIDInfo[i][0].toLowerCase()+" " + LOCIDInfo[i][1]);
 				continue;

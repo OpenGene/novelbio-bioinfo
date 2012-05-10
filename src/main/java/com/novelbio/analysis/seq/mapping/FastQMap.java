@@ -54,13 +54,6 @@ public class FastQMap implements FastQMapInt{
 	public FastQMap filterReads(String fileFilterOut) {
 		return new FastQMap(fastQMap.filterReads(fileFilterOut));
 	}
-	
-	
-	@Override
-	public void setExtendTo(int extendTo) {
-		fastQMap.setExtendTo(extendTo);
-		
-	}
 
 	@Override
 	public void setInsertSize(int minInsertLen, int maxInsertLen) {
@@ -77,12 +70,10 @@ public class FastQMap implements FastQMapInt{
 		return fastQMap.mapReads();
 	}
 
-	@Override
 	public BedSeq getBedFile(String bedFile) {
 		return fastQMap.getBedFile(bedFile);
 	}
 
-	@Override
 	public BedSeq getBedFileSE(String bedFile) {
 		return fastQMap.getBedFileSE(bedFile);
 	}

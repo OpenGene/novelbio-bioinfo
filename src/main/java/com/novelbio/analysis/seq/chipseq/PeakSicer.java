@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -15,8 +16,8 @@ import com.novelbio.generalConf.NovelBioConst;
  * @author zong0jie
  *
  */
-public class BedPeakSicer extends BedPeak {
-	private static Logger logger = Logger.getLogger(BedPeakSicer.class);
+public class PeakSicer extends PeakCalling {
+	private static Logger logger = Logger.getLogger(PeakSicer.class);
 	private static final String SICER_PATH = NovelBioConst.PEAKCALLING_SICER_PATH;
 	/**
 	 * 这个需要更新
@@ -27,7 +28,7 @@ public class BedPeakSicer extends BedPeak {
 	public static final String SPECIES_C_ELEGAN = "ce";
 	public static final String SPECIES_DROSOPHYLIA = "dm3";
 	public static final String SPECIES_MOUSE = "mm9";
-	public BedPeakSicer(String bedFile) {
+	public PeakSicer(String bedFile) {
 		super(bedFile);
 		// TODO Auto-generated constructor stub
 	}
@@ -35,21 +36,13 @@ public class BedPeakSicer extends BedPeak {
 	public static final int HISTONE_TYPE_H3K4 = 200;
 	public static final int HISTONE_TYPE_H3K27 = 600;
 	
-	/**
-	 * 单个样本有对照
-	 */
+	/** 单个样本有对照 */
 	String cmdSingleCol = "sh "+ FileOperate.addSep(SICER_PATH) + "SICER.sh ";
-	/**
-	 * 单个样本无对照
-	 */
+	/**  单个样本无对照 */
 	String cmdSingle = "sh "+ FileOperate.addSep(SICER_PATH) + "SICER-rb.sh ";
-	/**
-	 * 两个样本比较，每个都有对照
-	 */
+	/** 两个样本比较，每个都有对照 */
 	String cmdCompCol = "sh "+ FileOperate.addSep(SICER_PATH) + "SICER-df.sh ";
-	/**
-	 * 两个样本比较，每个没对照
-	 */
+	/** 两个样本比较，每个没对照 */
 	String cmdComp = "sh "+ FileOperate.addSep(SICER_PATH) + "SICER-df-rb.sh ";
 	/**
 	 * 表示从reads的一头到该fragment的终点的距离
@@ -59,20 +52,13 @@ public class BedPeakSicer extends BedPeak {
 	double FDR = 0.01;
 	/**
 	 * E-value is not p-value. Suggestion for first try on histone modification data: E-
-value=100. If you find ~10000 islands using this evalue, an empirical estimate of FDR
-is 1E-2.
+	value=100. If you find ~10000 islands using this evalue, an empirical estimate of FDR
+	is 1E-2.
 	 */
 	int Evalue = 100;
-
+	String species = "";
 
 	public static void main(String[] args) {
-		String parString = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/Mapping/";
-		BedPeakSicer bedPeakSicer = new BedPeakSicer(parString + "nature2007K27seSort.bed");
-		bedPeakSicer.setGffFile(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ);
-		bedPeakSicer.setChIPType(BedPeakSicer.HISTONE_TYPE_H3K27);
-		bedPeakSicer.setFilterTssTes(new int[]{-2000,2000}, null);
-		bedPeakSicer.peakCallling(null, BedPeakSicer.SPECIES_MOUSE, "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/nature2007/k27/result/PeakCallingSICER", "nature2007Sicer");
-		
 		
 	}
 	/**
@@ -132,7 +118,7 @@ is 1E-2.
 	}
 	 
 	@Override
-	public void peakCallling(String bedCol, String species, String outFilePath, String fileName) {
+	public void peakCallling() {
 		ArrayList<String[]> lsIn = null;
 		if (bedCol == null || bedCol.trim().equals("")) {
 			lsIn = peakCallingSingle(species, outFilePath);
@@ -152,22 +138,20 @@ is 1E-2.
 	 * @return
 	 * 返回peakcalling的结果，包含标题
 	 */
-	private ArrayList<String[]> peakCallingSingle(String species, String outDir)
+	private ArrayList<String[]> peakCallingSingle()
 	{
-		String bedFile = super.getFileName();
-		String parentPath = FileOperate.deleteSep(FileOperate.getParentPathName(bedFile));
-		
-		String cmd = cmdSingle + parentPath + " " + FileOperate.getFileName(bedFile) + " ";
+		String parentPath = FileOperate.deleteSep(FileOperate.getParentPathName(file));
+		String outDir = FileOperate.getParentPathName(outPrefix);
+		String cmd = cmdSingle + parentPath + " " + FileOperate.getFileName(file) + " ";
 		cmd = cmd + outDir + " ";
 		cmd = cmd + species + " ";
 		cmd = cmd + redundancy_threshold + " " + windowSize + " " + fragment_size + " " + effectiveGenomeSize + " " + gapSIze + " " + Evalue + " ";
-		
 		logger.info(cmd);
 		System.out.println(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.doInBackground("SICER_Peak");
 		
-		String in = FileOperate.addSep(outDir) + FileOperate.getFileNameSep(bedFile)[0] 
+		String in = FileOperate.addSep(outDir) + FileOperate.getFileNameSep(file)[0] 
 		+ "-W"+windowSize+"-G"+gapSIze + "-E"+ Evalue + ".scoreisland";
 		
 		TxtReadandWrite txtRead = new TxtReadandWrite(in, false);
@@ -192,11 +176,10 @@ is 1E-2.
 	 */
 	private ArrayList<String[]> peakCallingCol(String bedCol, String species)
 	{
-		String bedFile = super.getFileName();
-		String parentPath = FileOperate.deleteSep(FileOperate.getParentPathName(bedFile));
+		String parentPath = FileOperate.deleteSep(FileOperate.getParentPathName(file));
 //		String parentCol = FileOperate.deleteSep(FileOperate.getParentPathName(bedCol));
 
-		String cmd = cmdSingleCol + parentPath + " " + FileOperate.getFileName(bedFile) + " ";
+		String cmd = cmdSingleCol + parentPath + " " + FileOperate.getFileName(file) + " ";
 		cmd = cmd + bedCol + " ";                   //FileOperate.getFileName(bedCol) + " ";
 		cmd = cmd + parentPath + " ";
 		cmd = cmd + species + " ";
@@ -205,7 +188,7 @@ is 1E-2.
 
 		cmdOperate.doInBackground("SICER_Peak");
 		//输出结果的文件名估计会有问题
-		String in = FileOperate.addSep(parentPath) + " " + FileOperate.getFileNameSep(bedFile)[0] + "-W"+windowSize+"-G"+gapSIze + "-E" + ".scoreisland";
+		String in = FileOperate.addSep(parentPath) + " " + FileOperate.getFileNameSep(file)[0] + "-W"+windowSize+"-G"+gapSIze + "-E" + ".scoreisland";
 		//TODO
 		TxtReadandWrite txtRead = new TxtReadandWrite(in, false);
 		ArrayList<String[]> lsIn = txtRead.ExcelRead("\t", 1, 1, -1, -1, 0);
@@ -214,9 +197,6 @@ is 1E-2.
 		lsIn.add(0,title);
 		return lsIn;
 	}
-	
-	
-	
 	/**
 	 * 两组之间比较，每一组都有control
 	 * @param bedTreat1
@@ -228,8 +208,7 @@ is 1E-2.
 	 * @param prix
 	 */
 	public void peakCallingComp(String bedCol1, String bedTreat2, String bedCol2, String species,
-			String outFilePath, String prix)
-	{
+			String outFilePath, String prix) {
 		
 	}
 	/**
@@ -259,38 +238,17 @@ is 1E-2.
 		String[] title = new String[]{"ChrID","StartLoc","EndLoc","Score"};
 		lsIn.add(0,title);
 	}
-	
-	
-	public BedPeakSicer filterWYR(String filterOut) throws Exception {
-		BedSeq bedSeq = super.filterWYR(filterOut);
-		return new BedPeakSicer(bedSeq.getFileName());
+	@Override
+	public boolean setFileFormat(FormatSeq fileformat) {
+		if (fileformat != FormatSeq.BED) {
+			logger.error("SICER不支持除bed文件以外的格式类型");
+			return false;
+		}
+		return true;
 	}
-
-	/**
-	 * 指定bed文件，以及需要排序的列数，产生排序结果
-	 * @param chrID ChrID所在的列，从1开始记数，按照字母数字排序
-	 * @param sortBedFile 排序后的文件全名
-	 * @param arg 除ChrID外，其他需要排序的列，按照数字排序
-	 */
-	public BedPeakSicer sortBedFile(int chrID, String sortBedFile,int...arg) {
-		super.sortBedFile(chrID, sortBedFile, arg);
-		return new BedPeakSicer(super.getFileName());
+	@Override
+	public void setSpecies(String species) {
+		this.species = species;
 	}
-	/**
-	 * 指定bed文件，以及需要排序的列数，产生排序结果
-	 * @param refID ChrID所在的列，从1开始记数，按照字母数字排序
-	 * @param sortBedFile 排序后的文件全名
-	 * @param arg 除ChrID外，其他需要排序的列，按照数字排序
-	 */
-	public BedPeakSicer sortBedFile(String sortBedFile) {
-		super.sortBedFile(sortBedFile);
-		return new BedPeakSicer(super.getFileName());
-	}
-
-
-	
-	
-	
-	
 	
 }

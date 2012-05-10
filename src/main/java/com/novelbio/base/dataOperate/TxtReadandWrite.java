@@ -819,6 +819,9 @@ public class TxtReadandWrite {
 		if (rowEndNum <= 0) {
 			rowEndNum = ExcelRows();
 		}
+		if (rowStartNum < 0) {
+			rowStartNum = 1;
+		}
 		int readlines = rowEndNum - rowStartNum + 1;
 		int readcolumns = columnEndNum - columnStartNum + 1;
 		// System.out.println(readlines);

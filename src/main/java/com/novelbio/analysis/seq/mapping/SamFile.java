@@ -394,6 +394,7 @@ public class SamFile {
 	 *<b>非uniq mapping只支持bwa的结果</b>
 	 * 返回单端
 	 * 将sam文件改为bed文件，根据mapping质量和正反向进行筛选
+	 * bed文件的score列为mapping quality
 	 * <b>不能挑选跨染色体的融合基因</b>
 	 * @param bedFileCompType bed文件的压缩格式，TxtReadandWrite.TXT等设定
 	 * @param bedFile 最后产生的bedFile
@@ -460,6 +461,7 @@ X 8 sequence mismatch
 				bedRecord.setRefID(samRecord.getReferenceName()); bedRecord.setStartEndLoc( samRecord.getAlignmentStart(),samRecord.getAlignmentEnd());
 				bedRecord.setCIGAR(samRecord.getCigarString()); bedRecord.setCis5to3(!samRecord.getReadNegativeStrandFlag());
 				bedRecord.setMapQuality(samRecord.getMappingQuality()); bedRecord.setSeq(new SeqFasta(samRecord.getReadString()), false);
+				bedRecord.setScore(samRecord.getMappingQuality());
 				if (extend) {
 					bedRecord.extend(this.extend);
 				}
@@ -489,6 +491,7 @@ X 8 sequence mismatch
 					bedRecord.setCis5to3(info[1].charAt(0));
 					bedRecord.setMappingNum(tmpInfo.length + 1);
 					bedRecord.setMapQuality(samRecord.getMappingQuality());
+					bedRecord.setScore(samRecord.getMappingQuality());
 					bedRecord.setSeq(new SeqFasta(samRecord.getReadString()), false);
 					 if (getSeqName) {
 						 bedRecord.setName(samRecord.getReadName());
