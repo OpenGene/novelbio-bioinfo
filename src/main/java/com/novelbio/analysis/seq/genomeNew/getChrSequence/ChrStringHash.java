@@ -148,9 +148,6 @@ public class ChrStringHash extends SeqHashAbs{
 			throws IOException {
 
 		startlocation--;
-		if (startlocation == 16861459L) {
-			System.out.println("stop");
-		}
 		RandomAccessFile chrRASeqFile = hashChrSeqFile.get(chrID.toLowerCase());// 判断文件是否存在
 		if (chrRASeqFile == null) {
 			logger.error( "无该染色体: "+ chrID);
@@ -201,12 +198,7 @@ public class ChrStringHash extends SeqHashAbs{
 		
 		if (rowendNum - rowstartNum == 0) {
 			String seqResult = chrRASeqFile.readLine();
-			try {
-				seqResult = seqResult.substring(0, endrowBias - startrowBias);
-			} catch (Exception e) {
-				System.out.println("stop");
-			}
-			
+			seqResult = seqResult.substring(0, endrowBias - startrowBias);
 			seqFasta.setSeq(seqResult);
 		} else {
 			for (int i = 0; i < rowendNum - rowstartNum; i++) {
@@ -214,6 +206,7 @@ public class ChrStringHash extends SeqHashAbs{
 			}
 			String endline = chrRASeqFile.readLine();
 			endline = endline.substring(0, endrowBias);
+	
 			sequence.append(endline);
 			String seqResult = sequence.toString();
 			seqFasta.setSeq(seqResult);

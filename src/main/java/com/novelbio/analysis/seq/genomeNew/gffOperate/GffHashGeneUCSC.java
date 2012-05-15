@@ -115,11 +115,11 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				// 添加一个转录本，然后将相应信息:
 				// 第一项是该转录本的Coding region start，第二项是该转录本的Coding region
 				// end,从第三项开始是该转录本的Exon坐标信息
-				lastGffdetailUCSCgene.addATGUAG(Integer.parseInt(geneInfo[5]) + getStartRegion(), Integer.parseInt(geneInfo[6]) + getEndRegion());
+				lastGffdetailUCSCgene.setATGUAG(Integer.parseInt(geneInfo[5]) + getStartRegion(), Integer.parseInt(geneInfo[6]) + getEndRegion());
 				
 				int exonCount = Integer.parseInt(geneInfo[7]);
 				for (int i = 0; i < exonCount; i++) {
-					lastGffdetailUCSCgene.addExonUCSCGFF(Integer.parseInt(exonStarts[i]) + getStartRegion(), Integer.parseInt(exonEnds[i]) + getEndRegion());
+					lastGffdetailUCSCgene.addExon(Integer.parseInt(exonStarts[i]) + getStartRegion(), Integer.parseInt(exonEnds[i]) + getEndRegion());
 				}
 				// 将基因(转录本ID)装入LOCList
 				LOCIDList.add(geneInfo[0]);
@@ -146,10 +146,10 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			// 添加一个转录本，然后将相应信息:
 			// 第一项是该转录本的Coding region start，第二项是该转录本的Coding region
 			// end,从第三项开始是该转录本的Exon坐标信息
-			gffDetailUCSCgene.addATGUAG(Integer.parseInt(geneInfo[5]) + getStartRegion(), Integer.parseInt(geneInfo[6]) + getEndRegion());
+			gffDetailUCSCgene.setATGUAG(Integer.parseInt(geneInfo[5]) + getStartRegion(), Integer.parseInt(geneInfo[6]) + getEndRegion());
 			int exonCount = Integer.parseInt(geneInfo[7]);
 			for (int i = 0; i < exonCount; i++) {
-				gffDetailUCSCgene.addExonUCSCGFF(Integer.parseInt(exonStarts[i]) + getStartRegion(),Integer.parseInt(exonEnds[i]) + getEndRegion());
+				gffDetailUCSCgene.addExon(Integer.parseInt(exonStarts[i]) + getStartRegion(),Integer.parseInt(exonEnds[i]) + getEndRegion());
 			}
 			LOCList.add(gffDetailUCSCgene);
 			LOCIDList.add(geneInfo[0]);

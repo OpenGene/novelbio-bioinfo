@@ -156,12 +156,15 @@ public class GffDetailGene extends ListDetailAbs
 		super(chrID, locString, cis5to3);
 	}
 	/**
-	 * 针对水稻拟南芥的GFF文件和UCSC的文件
 	 * 给最后一个转录本添加exon坐标，<br>
 	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加
 	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
+	 * <b>如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo</b>
 	 */
-	protected void addExonUCSCGFF(int locStart,int locEnd) {
+	protected void addExon(int locStart,int locEnd) {
+		if (lsGffGeneIsoInfos.size() == 0) {//如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo
+			addsplitlist(getName(), "pseudo");
+		}
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExon(locStart, locEnd);
 	}
@@ -179,23 +182,22 @@ public class GffDetailGene extends ListDetailAbs
 	/**
 	 * 给最后一个转录本添加ATG和UAG坐标，<br>
 	 * 加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
+	 * 会自动判定输入的起点是否小于已有的atg，终点是否大于已有的uag
+	 * 是的话，才会设定，否则就不设定
 	 */
-	protected void addATGUAG(int atg, int uag) {
+	protected void setATGUAG(int atg, int uag) {
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
-		if (Math.abs(atg - uag)<=1) {
-			gffGeneIsoInfo.mRNA = false;
-			atg = Math.min(atg, uag);
-			uag = Math.min(atg, uag);
-		}
-		if (gffGeneIsoInfo.isCis5to3()) {
-			gffGeneIsoInfo.ATGsite = Math.min(atg, uag);
-			gffGeneIsoInfo.UAGsite = Math.max(atg, uag);
-		}
-		else {
-			gffGeneIsoInfo.ATGsite = Math.max(atg, uag);
-			gffGeneIsoInfo.UAGsite = Math.min(atg, uag);
-		}
+		gffGeneIsoInfo.setATGUAG(atg, uag);
 	}
+	/**
+	 * 如果是非编码RNA，则将atg和uag设置为最后一位
+	 */
+	protected void setATGUAGncRNA() {
+		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
+		gffGeneIsoInfo.sort();
+		gffGeneIsoInfo.setATGUAGncRNA();
+	}
+	
 	/**
 	 * 直接添加转录本，根据genedetail的信息设置cis5to3。之后用addcds()方法给该转录本添加exon
 	 */

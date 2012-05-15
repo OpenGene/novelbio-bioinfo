@@ -36,7 +36,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	/**  idType，必须是IDTYPE中的一种 */
 	String idType = CopedID.IDTYPE_ACCID;
 	/** 具体的accID */
-	String accID = "";
+	String accID = null;
 	String genUniID = "";
 	String symbol = null;
 	/** 譬方和多个物种进行blast，然后结合这些物种的信息，取并集 */
@@ -181,9 +181,15 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		return lsIDtype.get(0);
 	}
 	/**
-	 * 具体的accID
+	 * 具体的accID，如果没有则根据物种随机抓一个出来
 	 */
 	public String getAccID() {
+		if (accID == null) {
+			accID = getAccIDDBinfo(getDatabaseTyep());
+		}
+		if (accID == null) {
+			accID = getAccIDDBinfo(null);
+		}
 		return this.accID;
 	}
 	/**

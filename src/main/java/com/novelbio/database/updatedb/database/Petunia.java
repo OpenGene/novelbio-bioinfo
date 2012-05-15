@@ -1,17 +1,20 @@
 package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
-
-import com.novelbio.analysis.generalConf.NovelBioConst;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
-还没改好
+import com.novelbio.generalConf.NovelBioConst;
 public class Petunia {
 	public static void main(String[] args) {
-		updateAffy2AccID(4102, "/media/winE/Bioinformatics/BLAST/result/petunia/Nembgen2plantGDBIDCoped.txt");
+		CopedID copedID = new CopedID("PH_TC2092", 0);
+		System.out.println(copedID.getTaxID());
+		;
+//		upDateInfo();
+//		updateAffy2AccID(4102, "/media/winE/Bioinformatics/BLAST/result/petunia/Nembgen2plantGDBIDCoped.txt");
+//		upDateBlastInfo();
 	}
 	
 	
@@ -25,7 +28,7 @@ public class Petunia {
 	}
 	
 	public static void upDateInfo() {
-		String seqIn = "/home/zong0jie/桌面/矮牵牛/Petunia_x_hybrida.mRNA.PUT.fasta";
+		String seqIn = "/media/winE/Bioinformatics/GenomeData/petunia/Petunia_x_hybrida.mRNA.PUT_Coped.fasta";
 		String regx = "PUT-159a-Petunia_x_hybrida-\\d+";
 		SeqFastaHash seqFastaHash = new SeqFastaHash(seqIn,regx, false, false);
 		ArrayList<SeqFasta> lsSeqFastas = seqFastaHash.getSeqFastaAll();
@@ -51,8 +54,7 @@ public class Petunia {
 		
 	}
 	
-	private static void updateAffy2AccID(int taxID, String affy2)
-	{
+	private static void updateAffy2AccID(int taxID, String affy2) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(affy2, false);
 		for (String content : txtRead.readlines()) {
 			String[] ss = content.split("\t");

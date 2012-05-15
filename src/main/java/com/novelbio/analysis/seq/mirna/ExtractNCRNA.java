@@ -6,7 +6,7 @@ import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * 从各个文件中提取ncRNA序列
+ * 从各个文件中提取ncRNA序列，用于做mapping的
  * @author zong0jie
  *
  */
@@ -20,22 +20,22 @@ public class ExtractNCRNA {
 	
 	private void pipleLine()
 	{
-		String refseqFile = "/media/winE/Bioinformatics/DataBase/sRNA/rna.fa";
-		String outNCRNA = "/media/winE/Bioinformatics/DataBase/sRNA/refseqNCrna.fa";
+		String refseqFile = "/media/winE/Bioinformatics/GenomeData/pig/RefSeq";
+		String outNCRNA = FileOperate.changeFileSuffix(refseqFile, "_ncRNA", "txt");
 		String regx = "NR_\\d+|XR_\\d+";
 		extractNCRNA(refseqFile, outNCRNA, regx);
 		
 		String hairpinFile = "/media/winE/Bioinformatics/DataBase/sRNA/mappingDB/hairpin.fa";
-		String outMiRNA = FileOperate.changeFileSuffix(hairpinFile, "_human", null);
-		regx = "Homo sapiens";
+		String outMiRNA = FileOperate.changeFileSuffix(hairpinFile, "_pig", null);
+		regx = "Sus scrofa";
 		extractMiRNAandRfam(hairpinFile, outMiRNA, regx);
 		
 		String rfamFile = "/media/winE/Bioinformatics/DataBase/sRNA/rfam/Rfam.fasta";
-		String outRfam = FileOperate.changeFileSuffix(rfamFile, "_human", null);
-		regx = "Homo sapiens \\(human\\)";
+		String outRfam = FileOperate.changeFileSuffix(rfamFile, "_pig", null);
+		regx = "Sus scrofa \\(pig\\)";
 		extractMiRNAandRfam(rfamFile, outRfam, regx);
 		
-		String matureRNA = "/media/winE/Bioinformatics/DataBase/sRNA/miRBase/hairpin_human.fa";
+		String matureRNA = "/media/winE/Bioinformatics/DataBase/sRNA/mappingDB/hairpin_pig.fa";
 		String outMatureRNA = FileOperate.changeFileSuffix(matureRNA, "_Final", null);
 		extractMiRNA(matureRNA, outMatureRNA);
 		

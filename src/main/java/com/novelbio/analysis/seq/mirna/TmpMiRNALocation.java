@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListGff;
@@ -65,7 +66,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 	protected void ReadGffarrayExcep(String rnadataFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
 		ListBin<ListDetailBin> lsMiRNA = null; ListDetailBin listDetailBin = null;
-		super.locHashtable = new HashMap<String, ListDetailBin>();
+		super.locHashtable = new LinkedHashMap<String, ListDetailBin>();
 		super.LOCIDList = new ArrayList<String>();
 		boolean flagSpecies = false;//标记是否为我们想要的物种
 		boolean flagSQ = false;//标记是否提取序列

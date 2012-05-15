@@ -35,15 +35,16 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		this.cis5to3 = cis5to3;
  	}
 	/**
-	 * 将list中的元素进行排序，如果element里面 start > end，那么就从大到小排序
-	 * 如果element里面start < end，那么就从小到大排序
+	 * 将list中的元素进行排序，如果反向，那么就从大到小排序
+	 * 如果正向，那么就从小到大排序
+	 * 内部有flag，排完后就不会再排第二次了
 	 */
 	public void sort()
 	{
 		if (cis5to3 == null) {
 			Collections.sort(this, new CompS2MAbs());
 		}
-		if (cis5to3) {
+		else if (cis5to3) {
 			Collections.sort(this, new CompS2M());
 		}
 		else {

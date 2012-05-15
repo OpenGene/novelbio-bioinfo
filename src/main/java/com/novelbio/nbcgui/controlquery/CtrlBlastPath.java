@@ -195,7 +195,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 			String[] tmpResultBlast = new String[8];
 			// ≥ı ºªØ
 			for (int j = 0; j < tmpResultBlast.length; j++) {
-				tmpResultBlast[i] = "";
+				tmpResultBlast[j] = "";
 			}
 			if (k < lsResult.size()) {
 				for (int j = 0; j < lsResult.get(k).length; j++) {
@@ -220,8 +220,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 	
 	
 	@Override
-	public void process(List<ProgressDataPath> data)
-	{
+	public void process(List<ProgressDataPath> data) {
 		if (isCancelled()) {
 			return;
 		}

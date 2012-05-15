@@ -325,12 +325,10 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		if (exon1.isCis5to3()) {
 			for (int i = 0; i < lsInfo.size(); i++) {
 				ExonInfo exon = lsInfo.get(i);
-				try {	
-					result = result + sep + getSeq(chrID, exon.getStartAbs(), exon.getEndAbs()).toString().toUpperCase(); 
-					if (getIntron && i < lsInfo.size()-1) {
-						result = result + sep + getSeq(chrID,exon.getEndCis()+1, lsInfo.get(i+1).getStartCis()-1).toString().toLowerCase();
-					}
-				} catch (Exception e) {e.printStackTrace();}
+				result = result + sep + getSeq(chrID, exon.getStartAbs(), exon.getEndAbs()).toString().toUpperCase(); 
+				if (getIntron && i < lsInfo.size()-1) {
+					result = result + sep + getSeq(chrID,exon.getEndCis()+1, lsInfo.get(i+1).getStartCis()-1).toString().toLowerCase();
+				}
 			}
 		}
 		else {

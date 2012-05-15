@@ -58,6 +58,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public static final String TYPE_GENE_SNRNA = "snRNA";
 	public static final String TYPE_GENE_RRNA = "rRNA";
 	public static final String TYPE_GENE_NCRNA = "ncRNA";
+	public static final String TYPE_GENE_MISCRNA = "miscRNA";
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	private String flagTypeGene = TYPE_GENE_MRNA;
@@ -230,8 +231,46 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		add(tmpexon);
 	}
-
+	/**
+	 * 给该转录本添加ATG和UAG坐标，<br>
+	 * 加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
+	 * 会自动判定输入的起点是否小于已有的atg，终点是否大于已有的uag
+	 * 是的话，才会设定，否则就不设定
+	 */
+	public void setATGUAG(int atg, int uag) {
+		if (Math.abs(atg - uag)<=1) {
+			mRNA = false;
+			atg = Math.min(atg, uag);
+			uag = Math.min(atg, uag);
+		}
+		if (isCis5to3()) {
+			if (ATGsite < 0 || ATGsite > Math.min(atg, uag)) {
+				ATGsite = Math.min(atg, uag);
+			}
+			if (UAGsite < 0 || UAGsite < Math.max(atg, uag)) {
+				UAGsite = Math.max(atg, uag);
+			}
+		}
+		else {
+			if (ATGsite < 0 || ATGsite < Math.max(atg, uag)) {
+				ATGsite = Math.max(atg, uag);
+			}
+			if (UAGsite < 0 || UAGsite > Math.min(atg, uag)) {
+				UAGsite = Math.min(atg, uag);
+			}
+		}
+	}
 	
+	
+	/**
+	 * 如果是非编码RNA，则将atg和uag设置为最后一位
+	 */
+	public void setATGUAGncRNA() {
+		if (ATGsite < 0 && UAGsite <0) {
+			ATGsite = get(size() - 1).getEndCis();
+			UAGsite = get(size() - 1).getEndCis();
+		}
+	}	
 	/**
 	 * 该转录本的ATG的第一个字符坐标，从1开始计数，是闭区间
 	 * @return
@@ -716,7 +755,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			add(0,exonInfo);
 		}
 		else {
-			logger.error("添加exon出错，请check");
+			logger.error("NCBI的Gff文件有问题，其exon会窜位，本次添加exon出错，请check: " + locStart + " " + locEnd);
 		}
 	}
 	/**

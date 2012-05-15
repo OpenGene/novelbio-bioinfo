@@ -19,14 +19,14 @@ public class ImportDB {
 //		updateRiceID();//只导了前两个
 //		updateTAIR();
 //		 updateZB();
-		updateEnsembl();
+//		updateEnsembl();
 //		updateYeast();
 
 
 //		updateMicroarray();
 //		updateSoyBean();
 //		updateZeaMaize();
-//		updateBlast();
+		updateBlast();
 //		updateAffy();
 	}
 	/**
@@ -94,10 +94,10 @@ public class ImportDB {
 //		ensembl.setEnsemblFile(ensemblFileCow, ucscFileCow, taxIDCow);
 //		ensembl.update();
 		
-		String ensemblFilePig = "/media/winE/Bioinformatics/GenomeData/pig/pig_ensembl_UCSC";
-		String ucscFilePig = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_UCSC";
-		int taxIDCow = 9913;
-		ensembl.setEnsemblFile(ensemblFileCow, ucscFileCow, taxIDCow);
+		String ensemblFilePig = "/media/winE/Bioinformatics/GenomeData/pig/gff/Sus_scrofa.Sscrofa10.2.67.gtf";
+		String ncbiFilePig = "/media/winE/Bioinformatics/GenomeData/pig/gff/ref_Sscrofa10.2_top_level_modify.gff3";
+		int taxIDpig = 9823;
+		ensembl.setEnsemblFile(ensemblFilePig, ncbiFilePig, taxIDpig);
 		ensembl.update();
 		
 		
@@ -199,6 +199,21 @@ public class ImportDB {
 		blast.setSubTaxID(3702);
 		blast.setTaxID(queryTaxID);
 		blast.setTxtWriteExcep(outFIle);
+//		blast.updateFile(blastFile, false);
+		
+		/////////////////   pig   /////////////////////////
+		blastFile = "/media/winE/Bioinformatics/GenomeData/pig/ncbiRef2Human";
+		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+		queryTaxID = 9823;
+		blast = new BlastUp2DB();
+		blast.setQueryID(CopedID.IDTYPE_ACCID);
+		blast.setBlastID(CopedID.IDTYPE_ACCID);
+		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
+		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI);
+		blast.setSubTaxID(9606);
+		blast.setTaxID(queryTaxID);
+		blast.setTxtWriteExcep(outFIle);
+		blast.setIdtypeBlast(true);
 		blast.updateFile(blastFile, false);
 	}
 	

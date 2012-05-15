@@ -55,7 +55,7 @@ public class ServNCBIID extends AbsGetSpring implements MapNCBIID{
 	 * 如果没找到，再去除dbinfo查找，如果还没找到，就返回Null
 	 * @param geneID
 	 * @param taxID
-	 * @param dbInfo
+	 * @param dbInfo 为null表示不设置
 	 * @return
 	 */
 	public NCBIID queryGenUniID(int geneID, int taxID, String dbInfo) {

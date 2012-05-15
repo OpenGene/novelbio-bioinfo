@@ -53,7 +53,7 @@ public class FYrna {
 	public static void cleanReads(String seqFile1, String seqFile2,String out)
 	{
 		FastQ fastQ = new FastQ(seqFile1, seqFile2, FastQ.FASTQ_ILLUMINA_OFFSET, FastQ.QUALITY_MIDIAN_PAIREND);
-		fastQ.setReadsLenMin(50);
+		fastQ.setLenReadsMin(50);
 		fastQ.filterReads(out);
 		
 		

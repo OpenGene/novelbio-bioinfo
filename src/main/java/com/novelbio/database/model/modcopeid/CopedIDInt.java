@@ -18,7 +18,7 @@ public interface CopedIDInt{
 	public String getIDtype();
 	
 	/**
-	 * 具体的accID
+	 * 具体的accID，如果没有则根据物种随机抓一个出来
 	 */
 	public String getAccID();
 

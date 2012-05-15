@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
@@ -19,7 +21,7 @@ public class Ensembl {
 	 */
 	LinkedHashMap<String, Integer> hashEnsemblTaxID = new LinkedHashMap<String, Integer>();
 	/**
-	 * 存储对应的gff文件，最好是ucsc格式的
+	 * 存储对应的gff文件，现在用NCBI的似乎更合适，如果享用ucsc格式的,就在下面改
 	 * 这个的目的是，如果ensemble没找到对应的基因，就到ucsc下面来查找对应的坐标，看该坐标下有没有对应的基因，然后写入数据库
 	 */
 	ArrayList<String> lsUCSCFile = new ArrayList<String>();
@@ -48,7 +50,7 @@ public class Ensembl {
 			String fileName = entry.getKey();
 			int taxID = entry.getValue();
 			ensembleGTF.setTaxID(taxID);
-			ensembleGTF.setGffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, lsUCSCFile.get(i));
+			ensembleGTF.setGffHashGene(NovelBioConst.GENOME_GFF_TYPE_NCBI, lsUCSCFile.get(i));
 			ensembleGTF.setTxtWriteExcep(FileOperate.changeFileSuffix(fileName, "_NotFindInDB", null));
 			ensembleGTF.updateFile(fileName, false);
 			i ++;
@@ -89,15 +91,24 @@ class EnsembleGTF extends ImportPerLine
 			if (num%10000 == 0) {
 				logger.info("import line number:" + num);
 			}
-			if (checkIfSame(oldContent, content)) {
-				continue;
-			}
-			if (!impPerLine(content)) {
-				if (txtWriteExcep != null) {
-					txtWriteExcep.writefileln(content);
+			String tmpString = checkIfSame(oldContent, content);
+			if (tmpString == null) {//发现新的内容，则将老的内容导入
+				if (!impPerLine(oldContent)) {
+					if (txtWriteExcep != null) {
+						txtWriteExcep.writefileln(oldContent);
+					}
 				}
+				oldContent = content;
 			}
-			oldContent = content;
+			else {
+				oldContent = tmpString;
+			}
+		}
+		//跳出循环后再导入最后一个oldContent
+		if (!impPerLine(oldContent)) {
+			if (txtWriteExcep != null) {
+				txtWriteExcep.writefileln(oldContent);
+			}
 		}
 		impEnd();
 		txtGene2Acc.close();
@@ -106,34 +117,36 @@ class EnsembleGTF extends ImportPerLine
 		}
 		logger.info("finished import file " + gene2AccFile);
 	}
+	
+	PatternOperate patTranscript = new PatternOperate("(?<=transcript_id \")\\w+", false);
+	
 	/**
-	 * 判断两行是不是来自同一个基因
+	 * 判断两行是不是来自同一个基因，如果来自同一个基因，就将新基因的坐标和老基因的坐标合并
 	 * @param oldLine
 	 * @param newLine
-	 * @return
+	 * @return null 表示是一个全新的line
 	 */
-	private boolean checkIfSame(String oldLine, String newLine)
-	{
+	private String checkIfSame(String oldLine, String newLine) {
 		if (oldLine == null) {
-			return false;
+			return null;
 		}
-		String OldInfo = oldLine.split("\t")[8];
-		String ThisInfo = newLine.split("\t")[8];
-		String[] ssOld = OldInfo.split(";");
-		String[] ssThis = ThisInfo.split(";");
-		if (ssOld.length < ssThis.length) {
-			return false;
+		String[] OldInfo = oldLine.split("\t");
+		String[] ThisInfo = newLine.split("\t");
+		String transIDold = patTranscript.getPatFirst(OldInfo[8]);
+		String transIDnew = patTranscript.getPatFirst(ThisInfo[8]);
+		if (!transIDold.equals(transIDnew)) {
+			return null;
 		}
-		for (int i = 0; i < ssThis.length; i++) {
-			if (ssOld[i].equals("") || ssOld[i].contains("exon_number") || ssOld[i].contains("gene_biotype") 
-			|| ssOld[i].contains("transcript_name")) {
-				continue;
-			}
-			if (!ssOld[i].equals(ssThis[i])) {
-				return false;
-			}
+		String[] tmpResult = null;
+		if (OldInfo[8].length() > ThisInfo[8].length()) {
+			tmpResult = OldInfo;
 		}
-		return true;
+		else {
+			tmpResult = ThisInfo;
+		}
+		tmpResult[3] = Math.min(Integer.parseInt(OldInfo[3]), Integer.parseInt(ThisInfo[3])) + "";
+		tmpResult[4] = Math.max(Integer.parseInt(OldInfo[4]), Integer.parseInt(ThisInfo[4])) + "";
+		return ArrayOperate.cmbString(tmpResult, "\t");
 	}
 	
 	/**
@@ -141,13 +154,14 @@ class EnsembleGTF extends ImportPerLine
 	 */
 	@Override
 	public boolean impPerLine(String lineContent) {
+		if (lineContent == null) {
+			return true;
+		}
+		
 		String[] ss = lineContent.split("\t");
 		String[] ssID = ss[8].split(";");
 		ArrayList<String> lsRefID = new ArrayList<String>();
 		for (String string : ssID) {
-			if (string.contains("ENSBTAT00000064644")) {
-				System.out.println("stop");
-			}
 			if (string.contains("gene_id")) {
 				lsRefID.add(string.replace("gene_id", "").replace("\"", "").trim());
 			}

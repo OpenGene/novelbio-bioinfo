@@ -109,6 +109,22 @@ public class PatternOperate
 		}
     	return lsresult;
     }
+    /**
+     * <b>简单处理，相对快速</b>
+     * 获得序列中指定的第一个正则表达式的值
+     * @param inputstr
+     * @param regex
+     * @param CASE
+     * @return 没有抓到的话，返回null
+     */
+    public String getPatFirst(String inputstr)
+    {
+    	 matInput=patInput.matcher(inputstr);
+    	 while (matInput.find()) {
+    		 return matInput.group();
+		}
+    	return null;
+    }
     
     String regex = "";
     boolean CASE_SENSITIVE = false;

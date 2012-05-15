@@ -18,11 +18,7 @@ public class GffHashGene implements GffHashGeneInf{
 		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 				"/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/new/novelbioModify_a15m1bf_All_highAll20111220.GTF");
 		gffHashGene.writeToGFFIso("/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/novelbioModify_a15m1bf_All_high60MISO20111220.GFF3", "novelbio");
-		
-		
 	}
-	
-	
 	
 	GffHashGeneAbs gffHashGene = null;
 	public GffHashGene(String GffType, String gffFile)
@@ -31,13 +27,16 @@ public class GffHashGene implements GffHashGeneInf{
 			gffHashGene = new GffHashGeneUCSC();
 		}
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_TIGR) ) {
-			gffHashGene = new GffHashGenePlant(Species.RICE);
+			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_TIGR);
 		}
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_TAIR)) {
-			gffHashGene = new GffHashGenePlant(Species.ARABIDOPSIS);
+			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_TAIR);
 		}
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF)) {
 			gffHashGene = new GffHashCufflinkGTF();
+		}
+		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_NCBI)) {
+			gffHashGene = new GffHashGeneNCBI();
 		}
 		gffHashGene.ReadGffarray(gffFile);
 	}

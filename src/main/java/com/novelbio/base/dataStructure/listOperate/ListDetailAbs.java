@@ -442,8 +442,8 @@ public class ListDetailAbs implements Cloneable{
 		gffDetailAbs.cis5to3 = cis5to3;
 		gffDetailAbs.ItemName = ItemName;
 		gffDetailAbs.itemNum = itemNum;
-		gffDetailAbs.numberstart = numberstart;
-		gffDetailAbs.numberend = numberend;
+		gffDetailAbs.numberstart = getStartAbs();
+		gffDetailAbs.numberend = getEndAbs();
 		gffDetailAbs.tes2DownGene = tes2DownGene;
 		gffDetailAbs.tss2UpGene = tss2UpGene;
 		gffDetailAbs.number = number;

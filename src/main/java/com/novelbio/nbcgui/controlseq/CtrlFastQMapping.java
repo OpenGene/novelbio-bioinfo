@@ -216,7 +216,7 @@ public class CtrlFastQMapping {
 				lsResult.add(new String[]{ss[1] + ss[2], "RawData", fastQ.getSeqNum()+""});
 				
 				fastQ.setTrimNNN(trimNNN);
-				fastQ.setReadsLenMin(retainBp);
+				fastQ.setLenReadsMin(retainBp);
 				fastQ = fastQ.filterReads(filterOut);
 				ss[0] = fastQ.getFileName();
 				lsResult.add(new String[]{ ss[1] + ss[2], "FilteredReads",fastQ.getSeqNum()+""});
@@ -232,7 +232,7 @@ public class CtrlFastQMapping {
 				lsResult.add(new String[]{ss0[1] + ss0[2], "RawData", fastQ.getSeqNum()+""});
 				
 				fastQ.setTrimNNN(trimNNN);
-				fastQ.setReadsLenMin(retainBp);
+				fastQ.setLenReadsMin(retainBp);
 				fastQ = fastQ.filterReads(filterOut);
 				ss0[0] = fastQ.getFileName();
 				ss1[0] = fastQ.getSeqFile2();

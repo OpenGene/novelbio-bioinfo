@@ -270,8 +270,7 @@ public class GffChrSeq extends GffChrAbs{
 	 * @param getIntron
 	 * @return
 	 */
-	public ArrayList<SeqFasta> getSeqCDSAllIso()
-	{
+	public ArrayList<SeqFasta> getSeqCDSAllIso() {
 		ArrayList<String> lsID = gffHashGene.getLOCChrHashIDList();
 		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
 		GffDetailGene gffDetailGene = null;
@@ -303,23 +302,16 @@ public class GffChrSeq extends GffChrAbs{
 	 * @param getIntron
 	 * @return
 	 */
-	public ArrayList<SeqFasta> getSeqAllIso()
-	{
-		ArrayList<String> lsID = gffHashGene.getLOCChrHashIDList();
+	public ArrayList<SeqFasta> getSeqAllIso() {
 		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
-		GffDetailGene gffDetailGene = null;
-		for (String string : lsID) {
-			gffDetailGene = gffHashGene.searchLOC(string.split(ListAbsSearch.SEP)[0]);
-			gffDetailGene.removeDupliIso();
+		for (GffDetailGene gffDetailGene : gffHashGene.getLocHashtable().values()) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				if (gffGeneIsoInfo.size() > 0) {
-					SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, false);
-					if (seq == null || seq.length() < 3) {
-						continue;
-					}
-					seq.setSeqName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
-					lsResult.add(seq);
+				SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, false);
+				if (seq == null || seq.length() < 3) {
+					continue;
 				}
+				seq.setSeqName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+				lsResult.add(seq);
 			}
 		}
 		return lsResult;
@@ -330,14 +322,11 @@ public class GffChrSeq extends GffChrAbs{
 	 * 第二列：ISOID
 	 * @return
 	 */
-	public ArrayList<String[]> getGene2Iso()
-	{
+	public ArrayList<String[]> getGene2Iso() {
 		ArrayList<String> lsID = gffHashGene.getLOCChrHashIDList();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		GffDetailGene gffDetailGene = null;
-		for (String string : lsID) {
-			gffDetailGene = gffHashGene.searchLOC(string.split(ListAbsSearch.SEP)[0]);
-			gffDetailGene.removeDupliIso();
+		for (GffDetailGene gffDetailGene : gffHashGene.getLocHashtable().values()) {
+//			gffDetailGene.removeDupliIso();
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				CopedID copedID = new CopedID(gffDetailGene.getName().split(GffDetailGene.SEP_GENE_NAME)[0], gffHashGene.getTaxID());
 				String symbol = copedID.getSymbol();
@@ -350,4 +339,36 @@ public class GffChrSeq extends GffChrAbs{
 		}
 		return lsResult;
 	}
+	
+	/**
+	 * 内部自动close
+	 * @param gene2isoTxt
+	 * @param seqFastaTxt
+	 * @return
+	 */
+	public void getGene2Iso(String gene2isoTxt, String seqFastaTxt) {
+		TxtReadandWrite txtGen2Iso = new TxtReadandWrite(gene2isoTxt, true);
+		TxtReadandWrite txtFasta = new TxtReadandWrite(seqFastaTxt, true);
+		for (GffDetailGene gffDetailGene : gffHashGene.getLocHashtable().values()) {
+//			gffDetailGene.removeDupliIso();
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				CopedID copedID = new CopedID(gffDetailGene.getName().split(GffDetailGene.SEP_GENE_NAME)[0], gffHashGene.getTaxID());
+				String symbol = copedID.getSymbol();
+				if (symbol == null || symbol.equals("")) {
+					symbol = gffDetailGene.getName().split(GffDetailGene.SEP_GENE_NAME)[0];
+				}
+				String[] geneID2Iso = new String[]{symbol, gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]};;
+				txtGen2Iso.writefileln(geneID2Iso);
+				
+				SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, false);
+				seq.setSeqName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+				txtFasta.writefileln(seq.toStringNRfasta());
+			}
+		}
+		txtGen2Iso.close();
+		txtFasta.close();
+	}
+	
+	
+	
 }

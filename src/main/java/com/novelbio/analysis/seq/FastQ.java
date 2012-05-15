@@ -62,7 +62,7 @@ public class FastQ extends SeqComb {
 	/**
 	 * 最短reads的长度，小于该长度的reads就跳过
 	 */
-	private int readsLenMin = 25;
+	private int readsLenMin = 21;
 	
 	private int adaptermaxMismach = 2;
 	private int adaptermaxConMismatch = 1;
@@ -76,7 +76,7 @@ public class FastQ extends SeqComb {
 	/**
 	 * 设定最短reads的长度，小于该长度的reads就跳过，默认为25
 	 */
-	public void setReadsLenMin(int readsLenMin) {
+	public void setLenReadsMin(int readsLenMin) {
 		this.readsLenMin = readsLenMin;
 	}
 	/**
@@ -164,10 +164,14 @@ public class FastQ extends SeqComb {
 	
 	
 	String adaptorLeft = "";
+	/** 是否从序列开始扫描接头，当接头很长，只设定了一部分接头，或者有接头多聚体的时候选择 */
+	boolean adaptorLeftAll = false;
 	String adaptorRight = "";
+	/** 是否从序列开始扫描接头，当接头很长，只设定了一部分接头，或者有接头多聚体的时候选择 */
+	boolean adaptorRightAll = false;
 	/**
 	 * 注意adapter里面不要有非ATGC的东西
-	 * @param adaptor
+	 * @param adaptor 接头可以只写一部分
 	 */
 	public void setAdaptorLeft(String adaptor) {
 		this.adaptorLeft = adaptor.trim();
@@ -175,10 +179,22 @@ public class FastQ extends SeqComb {
 	/**
 	 * 设定了polyA就不要设定adaptor
 	 * 注意adapter里面不要有非ATGC的东西
-	 * @param adaptor
+	 * @param adaptor 接头可以只写一部分
 	 */
 	public void setAdaptorRight(String adaptor) {
 		this.adaptorRight = adaptor.trim();
+	}
+	/** 是否从序列开始扫描接头，当接头很长，只设定了一部分接头，或者有接头多聚体的时候选择
+	 * 默认只从设定的最长接头位置开始扫描
+	 */
+	public void setAdaptorLeftScanAll(boolean scanAll) {
+		this.adaptorLeftAll = scanAll;
+	}
+	/** 是否从序列开始扫描接头，当接头很长，只设定了一部分接头，或者有接头多聚体的时候选择
+	 * 默认只从设定的最长接头位置开始扫描
+	 */
+	public void setAdaptorRightScanAll(boolean scanAll) {
+		this.adaptorRightAll = scanAll;
 	}
 	/**
 	 * 接头是小写 这种情况目前只在ion proton的数据中发现
@@ -196,38 +212,30 @@ public class FastQ extends SeqComb {
 	public String getSeqFile2() {
 		return seqFile2;
 	}
-
 	/**
 	 * 返回FastQ的格式位移，一般是 FASTQ_SANGER_OFFSET 或 FASTQ_ILLUMINA_OFFSET
-	 * 
 	 * @return
 	 */
 	public int getOffset() {
 		setFastQFormat();
 		return offset;
 	}
-
 	/**
 	 * 返回文件设定的过滤质量
-	 * 
 	 * @return
 	 */
 	public int getQuality() {
 		return quality;
 	}
-
 	/**
 	 * 返回是否是双端测序的FastQ文件，其实也就是看是否有两个FastQ文件
-	 * 
 	 * @return
 	 */
 	public boolean isPairEnd() {
 		return booPairEnd;
 	}
-	
 	/**
 	 * 获得第一条reads的长度，返回负数说明出错
-	 * 
 	 * @return
 	 */
 	public int getFirstReadsLen() {
@@ -345,7 +353,6 @@ public class FastQ extends SeqComb {
 
 	/**
 	 * 自动判断 FastQ的格式
-	 * 
 	 * @param seqFile1
 	 * @param QUALITY
 	 */
@@ -359,6 +366,28 @@ public class FastQ extends SeqComb {
 			setCompressType(TxtReadandWrite.TXT, TxtReadandWrite.TXT);
 		}
 	}
+	/**
+	 * 待测试
+	 * 先去adaptoer，然后去polyA(右端)和polyT(左端)，然后去两端NNN，然后去总体低质量
+	 * 指定阈值，将fastQ文件进行过滤处理并产生新文件，那么本类的文件也会替换成新的文件
+	 * @param fileFilterOut
+	 *            结果文件后缀，如果指定的fastQ有两个文件，那么最后输出两个fileFilterOut<br>
+	 *            分别为_filtered_1和_filtered_2
+	 * @return 返回已经过滤好的FastQ，其实里面也就是换了两个FastQ文件而已
+	 * @throws Exception
+	 */
+	public FastQ filterReads() {
+		String fileFilterOut = FileOperate.changeFileSuffix(getFileName(), "_filtered", null);
+		setFastQFormat();
+		try {
+			return filterReadsExp( fileFilterOut);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("filter Error: "+ fileFilterOut);
+			return null;
+		}
+	}
+	
 	/**
 	 * 待测试
 	 * 先去adaptoer，然后去polyA(右端)和polyT(左端)，然后去两端NNN，然后去总体低质量
@@ -707,10 +736,19 @@ public class FastQ extends SeqComb {
 	private String trimAdaptor(String fastQBlock) {
 		if (adaptorLeft.equals("") && adaptorRight.equals("")) {
 			return fastQBlock.trim();
-		}
+		}//TODO
 		String ss = fastQBlock.split(TxtReadandWrite.huiche)[1];
-		int leftNum = super.trimAdaptorL(ss, adaptorLeft, adaptorLeft.length(), adaptermaxMismach,adaptermaxConMismatch, 30);
-		int rightNum = super.trimAdaptorR(ss, adaptorRight,ss.length() - adaptorRight.length(), adaptermaxMismach,adaptermaxConMismatch, 30);
+		int leftNum = 0; int rightNum = 0;
+		if (adaptorLeftAll)
+			leftNum = super.trimAdaptorL(ss, adaptorLeft, ss.length(), adaptermaxMismach,adaptermaxConMismatch, 30);
+		else
+			leftNum = super.trimAdaptorL(ss, adaptorLeft, adaptorLeft.length(), adaptermaxMismach,adaptermaxConMismatch, 30);
+		
+		if (adaptorRightAll)
+			rightNum = super.trimAdaptorR(ss, adaptorRight, 1, adaptermaxMismach,adaptermaxConMismatch, 30);
+		else
+			rightNum = super.trimAdaptorR(ss, adaptorRight,ss.length() - adaptorRight.length(), adaptermaxMismach,adaptermaxConMismatch, 30);
+		
 		return trimBlockSeq(fastQBlock, leftNum, rightNum);
 	}
 	

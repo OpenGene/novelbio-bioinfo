@@ -173,7 +173,7 @@ public abstract class SeqComb {
 	 * 过滤右侧接头序列的方法，用循环搜索，容许错配，但是不能够过虑含有gap的adaptor。
 	 * 算法，假设右侧最多只有一整个接头。那么先将接头直接对到右侧对齐，然后循环的将接头对到reads上去。
 	 * @param seqIn 输入序列 无所谓大小写
-	 * @param seqAdaptor 接头 无所谓大小写
+	 * @param seqAdaptor 接头 无所谓大小写 接头可以只写一部分
 	 * @param mapNum 第一次接头左端mapping到序列的第几个碱基上，从1开始记数，-1说明没找到 建议设定为：seqIn.length() +1- seqAdaptor.length()
 	 * @param numMM 最多容错几个mismatch 2个比较好
 	 * @param conNum 最多容错连续几个mismatch，1个比较好
@@ -187,6 +187,9 @@ public abstract class SeqComb {
 			return seqIn.length();
 		}
 		mapNum--;
+		if (mapNum < 0) {
+			mapNum =0;
+		}
 		seqIn = seqIn.toUpperCase();
 		seqAdaptor = seqAdaptor.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();

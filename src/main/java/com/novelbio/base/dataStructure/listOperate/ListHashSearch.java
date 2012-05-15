@@ -26,12 +26,12 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的条目编号 <br>
 	  * 会有有多个LOCID共用一个区域的情况，所以有多个不同的LOCID指向同一个GffdetailUCSCgene<br>
 	 */
-	protected HashMap<String,T> locHashtable;
+	protected LinkedHashMap<String,T> locHashtable;
 	/**
 	 * 哈希表LOC--在arraylist上的Num<br>
 	 * 用于快速将LOC编号对应到其对应的chr上的位置<br>
 	 */
-	protected HashMap<String,Integer> hashLoc2Num;
+	protected LinkedHashMap<String,Integer> hashLoc2Num;
 	/**  起点默认为开区间  */
 	int startRegion = 1;
 	/**  终点默认为闭区间 */

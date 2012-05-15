@@ -111,9 +111,10 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		CopedID copedID = new CopedID("ENSBTAT00000064644", 0);
+		CopedID copedID = new CopedID("NM_001206404", 0);
 	
 		System.out.println(copedID.getTaxID());
+		System.out.println(copedID.getDescription());
 	}
 	
 	
@@ -248,7 +249,7 @@ public class mytest {
 //			
 			fastQ.setTrimPolyA(true,false);
 			fastQ.setAdaptorRight("TCGTATGCCGTCTTCTGTT");
-			fastQ.setReadsLenMin(15);
+			fastQ.setLenReadsMin(15);
 			fastQ.setAdapterParam(6, 3);
 			fastQ = fastQ.filterReads("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/2.rawseq/2.filterAll.txt");
 			String chrFile = "/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/IndexBwa/TIGRrice6.1_NoRendunt.all.cDNA";
@@ -270,7 +271,7 @@ public class mytest {
 //			
 			fastQ.setTrimPolyA(true,false);
 			fastQ.setAdaptorRight("TCGTATGCCGTCTTCTGTT");
-			fastQ.setReadsLenMin(15);
+			fastQ.setLenReadsMin(15);
 			fastQ.setAdapterParam(6, 3);
 			fastQ = fastQ.filterReads("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/3.rawseq/3.filterAll.txt");
 

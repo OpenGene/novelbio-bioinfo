@@ -133,18 +133,13 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	   //mRNA可变剪接的序号
 	   Pattern mRNApattern =Pattern.compile(splitmRNA, Pattern.CASE_INSENSITIVE);//to catch the LOC
 	   Matcher mRNAmatcher;
-	   String content="";
 	   String chrnametmpString=""; //染色体的临时名字
 	   boolean UTR5start = false; boolean UTR3start = false; boolean UTR5end = false; boolean UTR3end = false;
 	   boolean CDSstart = false; boolean CDSend = false; boolean mRNAsplit = false;//是否结束了一个mRNA
 	   int cdsStart = -100; int cdsEnd = -100; int mRNAstart = -100;  int mRNAend = -100; 
 	   boolean ncRNA = false;
 	   GffDetailGene gffDetailLOC= null;
-	   while((content=reader.readLine())!=null)//读到结尾
-	   {
-		   if (content.contains("LOC_Os05g52120")) {
-			System.out.println("stop");
-		}
+	   for (String content : txtgff.readlines()) {
 		   if(content.charAt(0)=='#')
 			   continue;
 		   ////////////////// 需要进行替换的地方 /////////////////////////////////////////////////////////////
@@ -173,7 +168,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 						cdsStart = mRNAend;
 						cdsEnd = mRNAend;
 					}
-					gffDetailLOC.addATGUAG(cdsStart, cdsEnd);
+					gffDetailLOC.setATGUAG(cdsStart, cdsEnd);
 					if (cdsStart < 0 || cdsEnd < 0 || cdsStart > cdsEnd) {
 						System.out.println("GffHashPlantGeneError: 文件  " + gfffilename + "  本组或上组基因有问题，cdsStart或cdsEnd出错  " + gffDetailLOC.getName());
 					}
@@ -222,7 +217,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 					   cdsStart = mRNAend;
 					   cdsEnd = mRNAend;
 				   }
-				   gffDetailLOC.addATGUAG(cdsStart, cdsEnd);
+				   gffDetailLOC.setATGUAG(cdsStart, cdsEnd);
 				   if (cdsStart <0 || cdsEnd<0 || cdsStart >= cdsEnd) {
 					   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.getName());
 				   }
@@ -248,7 +243,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   //遇到5UTR
 		   else if (ss[2].equals("five_prime_UTR")) 
 		   {
-			   gffDetailLOC.addExonUCSCGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
+			   gffDetailLOC.addExon(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 			   //5UTR过去了
 			   UTR5start = false;
 			   UTR5end = true;//5UTR会有结束
@@ -267,7 +262,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 					   UTR5end = false;
 				   }
 				   else {
-					   gffDetailLOC.addExonUCSCGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
+					   gffDetailLOC.addExon(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 				   }
 				   CDSstart = false;
 				   CDSend = true;
@@ -275,7 +270,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 				   cdsEnd = Integer.parseInt(ss[4]);
 			   }
 			   else {
-				   gffDetailLOC.addExonUCSCGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
+				   gffDetailLOC.addExon(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 				   if (gffDetailLOC.isCis5to3()) 
 					   cdsEnd = Integer.parseInt(ss[4]);
 				   else //反着装
@@ -292,7 +287,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 				   CDSend = false; //已经不是紧跟着最后一个CDS了
 			   }
 			   else {
-				   gffDetailLOC.addExonUCSCGFF(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
+				   gffDetailLOC.addExon(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 			   }
 			   //5UTR过去了
 			   UTR3start = false;
@@ -310,7 +305,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   cdsStart = mRNAend;
 			   cdsEnd = mRNAend;
 		   }
-		   gffDetailLOC.addATGUAG(cdsStart,cdsEnd);
+		   gffDetailLOC.setATGUAG(cdsStart,cdsEnd);
 		   if (cdsStart <0 || cdsEnd<0 || cdsStart > cdsEnd) {
 			   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.getName());
 		   }

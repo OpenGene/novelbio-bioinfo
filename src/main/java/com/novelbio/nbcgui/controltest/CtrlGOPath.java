@@ -117,6 +117,9 @@ public abstract class CtrlGOPath {
 		if (lsAccID2Value.get(0).length == 1) {
 			ArrayList<CopedID> lsAll = new ArrayList<CopedID>();
 			for (String[] strings : lsAccID2Value) {
+				if (strings[0] == null || strings[0].trim().equals("")) {
+					continue;
+				}
 				CopedID copedID = new CopedID(strings[0], QtaxID, false);
 				lsAll.add(copedID);
 			}
@@ -126,6 +129,9 @@ public abstract class CtrlGOPath {
 			ArrayList<CopedID> lsUp = new ArrayList<CopedID>();
 			ArrayList<CopedID> lsDown = new ArrayList<CopedID>();
 			for (String[] strings : lsAccID2Value) {
+				if (strings[0] == null || strings[0].trim().equals("")) {
+					continue;
+				}
 				CopedID copedID = new CopedID(strings[0], QtaxID, false);
 				try {
 					if (Double.parseDouble(strings[1]) <= down) {
@@ -156,6 +162,9 @@ public abstract class CtrlGOPath {
 		hashResultGene.clear();
 		HashMap<String, ArrayList<CopedID>> hashCluster = new HashMap<String, ArrayList<CopedID>>();
 		for (String[] strings : lsAccID2Value) {
+			if (strings[0] == null || strings[0].trim().equals("")) {
+				continue;
+			}
 			CopedID copedID = new CopedID(strings[0], QtaxID, false);
 			if (hashCluster.containsKey(strings[1].trim())) {
 				ArrayList<CopedID> lsTmp = hashCluster.get(strings[1].trim());
