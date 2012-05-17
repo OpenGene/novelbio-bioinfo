@@ -3,10 +3,12 @@ package com.novelbio.analysis.seq.genomeNew.getChrSequence;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.ibatis.builder.xml.dynamic.TrimSqlNode;
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 import org.hamcrest.core.Is;
 
+import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.reseq.SoapsnpInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -16,14 +18,26 @@ import com.novelbio.base.dataStructure.PatternOperate;
  * 本类与Seq没有关系
  */
 public class SeqFasta implements Cloneable {
-	private String SeqName;
-	private String SeqSequence = "";
-	private static Logger logger = Logger.getLogger(SeqFasta.class);
 	
 	public static final int SEQ_UNKNOWN = 128;
 	public static final int SEQ_PRO = 256;
 	public static final int SEQ_DNA = 512;
 	public static final int SEQ_RNA = 1024;
+	public static int FASTQ_SANGER_OFFSET = 33;
+	public static int FASTQ_ILLUMINA_OFFSET = 64;
+	
+	private String SeqName;
+	private String SeqSequence = "";
+	private int fastqOffset = FASTQ_SANGER_OFFSET;
+	private String seqQuality = "";
+	private static Logger logger = Logger.getLogger(SeqFasta.class);
+	/** 裁剪序列时最短为多少 */
+	private int trimMinLen = 22;
+	/** 裁剪序列时最短为多少， 默认为22
+	 */
+	public void setTrimMinLen(int trimMinLen) {
+		this.trimMinLen = trimMinLen;
+	}
 	/**
 	 * 结果的文件是否转化为大小写 True：小写 False：大写 null：不变
 	 * @return
@@ -39,7 +53,22 @@ public class SeqFasta implements Cloneable {
 	public int length() {
 		return SeqSequence.length();
 	}
-
+	/**
+	 * 设定序列质量，用phred格式设定
+	 * @param fastaQuality
+	 */
+	public void setFastaQuality(String fastaQuality) {
+		this.seqQuality = fastaQuality;
+	}
+	/**
+	 * 设定偏移
+	 * FASTQ_SANGER_OFFSET
+	 * @param fastqOffset
+	 */
+	public void setFastqOffset(int fastqOffset) {
+		this.fastqOffset = fastqOffset;
+	}
+	
 	/**
 	 * 反向互补哈希表
 	 */
@@ -700,35 +729,6 @@ public class SeqFasta implements Cloneable {
 		SeqSequence = FinalSeq;
 	}
 	/**
-	 * 根据TOLOWCASE返回序列
-	 */
-	public String toString()
-	{
-		if (SeqSequence.equals("")) {
-			return "";
-		}
-		if (TOLOWCASE == null) {
-			return SeqSequence;
-		}
-		else {
-			return TOLOWCASE.equals(true) ?  SeqSequence.toLowerCase() :  SeqSequence.toUpperCase();
-		}
-	}
-	/**
-	 * 返回AA的fasta序列
-	 */
-	public String toStringAAfasta()
-	{
-		return ">" + SeqName + TxtReadandWrite.huiche + toStringAA(true, 0);
-	}
-	/**
-	 * 返回Nr的fasta序列
-	 */
-	public String toStringNRfasta()
-	{
-		return ">" + SeqName + TxtReadandWrite.huiche + toString();
-	}
-	/**
 	 * 统计序列中小写序列，N的数量以及X的数量等
 	 */
 	public ArrayList<LocInfo> getSeqInfo()
@@ -817,7 +817,6 @@ public class SeqFasta implements Cloneable {
 		return lsResult;
 	}
 	/**
-	 * 
 	 * @param lsInfo
 	 * @param info
 	 * @param start 内部会加上1
@@ -827,26 +826,6 @@ public class SeqFasta implements Cloneable {
 		LocInfo locInfo = new LocInfo(info, "", start, start+length-1, true);
 		lsInfo.add(locInfo);
 	}
-	
-	
-	/**
-	 * 比较两个序列是否一致，计数不一致的碱基数
-	 * 从头开始比较，头尾可以有空格，中间不能有。不是blast模式的比较
-	 */
-	public static int compare2Seq(String seq1, String seq2) {
-		char[] chrSeq1 = seq1.trim().toLowerCase().toCharArray();
-		char[] chrSeq2 = seq2.trim().toLowerCase().toCharArray();
-		int result = 0;
-		int i = Math.min(chrSeq1.length, chrSeq2.length);
-		for (int j = 0; j < i; j++) {
-			if (chrSeq1[j] != chrSeq2[j]) {
-				result ++ ;
-			}
-		}
-		result = result + Math.max(chrSeq1.length, chrSeq2.length) - i;
-		return result;
-	}
-	
 	/**@return 将nr序列转变为单字母aa序列，首先正反向之后，然后按照该顺序进行orf选择 */
 	public String toStringAA() {
 		return toStringAA(true, 0, true);
@@ -906,7 +885,6 @@ public class SeqFasta implements Cloneable {
 	public ArrayList<String[]> getMotifScanResult(String regex) {
 		return getMotifScanResult(regex,0);
 	}
-	
 	/**
 	 * 可能不能精确到单碱基
 	 * 给定motif，在序列上查找相应的正则表达式<br>
@@ -961,8 +939,7 @@ public class SeqFasta implements Cloneable {
 	 * @return
 	 * SeqFasta.SEQ_DNA等
 	 */
-	public int getSeqType()
-	{
+	public int getSeqType() {
 		int len = 2000;
 		if (len > length()) {
 			len = length() - 1;
@@ -994,24 +971,442 @@ public class SeqFasta implements Cloneable {
 			return SEQ_PRO;
 		}
 	}
-	public static String[] getMotifScanTitle()
-	{
-		String[] title = new String[]{"SeqName","Strand","MotifSeq","Distance2SeqEnd"};
-		return title;
+	/**
+	 * 根据TOLOWCASE返回序列
+	 */
+	public String toString() {
+		if (SeqSequence.equals("")) {
+			return "";
+		}
+		if (TOLOWCASE == null) {
+			return SeqSequence;
+		}
+		else {
+			return TOLOWCASE.equals(true) ?  SeqSequence.toLowerCase() :  SeqSequence.toUpperCase();
+		}
 	}
-	
+	/**
+	 * 返回AA的fasta序列
+	 */
+	public String toStringAAfasta() {
+		return ">" + SeqName + TxtReadandWrite.ENTER_LINUX + toStringAA(true, 0);
+	}
+	/**
+	 * 返回Nr的fasta序列
+	 */
+	public String toStringNRfasta() {
+		return ">" + SeqName + TxtReadandWrite.ENTER_LINUX + toString();
+	}
+	/**
+	 * 返回fastq格式的文本
+	 * @return
+	 */
+	public String toFastQ() {
+		if (seqQuality.length() != SeqSequence.length()) {
+			char[] quality = new char[SeqSequence.length()];
+			if (fastqOffset == FASTQ_ILLUMINA_OFFSET) {
+				for (int i = 0; i < quality.length; i++) {
+					quality[i] = 'f';
+				}
+			}
+			else {
+				for (int i = 0; i < quality.length; i++) {
+					quality[i] = 'A';
+				}
+			}
+			seqQuality = String.copyValueOf(quality);
+		}
+		return "@" + SeqName + TxtReadandWrite.ENTER_LINUX + SeqSequence + TxtReadandWrite.ENTER_LINUX + "+" + seqQuality;
+	}
+	//////////////////////// 过滤低质量的序列 ///////////////////////////////////////////
+	/**
+	 * 注意两个以下的adaptor无法过滤
+	 * 过滤右侧接头序列的方法，用循环搜索，容许错配，但是不能够过虑含有gap的adaptor。
+	 * 算法，假设右侧最多只有一整个接头。那么先将接头直接对到右侧对齐，然后循环的将接头对到reads上去。
+	 * @param minLen 最短多少，小于该长度就返回 null
+	 * @param seqAdaptorL 左端接头 无所谓大小写 接头可以只写一部分 null或""表示不用过滤该接头
+	 * @paran seqAdaptorR 右端接头 无所谓大小写 接头可以只写一部分 null或""表示不用过滤该接头
+	 * @param mapNum 第一次接头左端或右端mapping到序列的第几个碱基上，从1开始记数，-1说明没找到 建议设定为：seqIn.length() +1- seqAdaptor.length()
+	 * 如果mapNum<0, 则自动设定为seqIn.length() +1- seqAdaptor.length()等形式
+	 * @param numMM 最多容错几个mismatch 2个比较好
+	 * @param conNum 最多容错连续几个mismatch，1个比较好
+	 * @param perMm 最多容错百分比 设定为30吧，这个是怕adaptor太短
+	 * @return 返回该tag的第一个碱基在序列上的位置，从0开始记数
+	 * 也就是该adaptor前面有多少个碱基，可以直接用substring(0,return)来截取
+	 * -1说明没有adaptor
+	 */
+	public SeqFasta trimAdaptor(String seqAdaptorL, String seqAdaptorR, int mapNum, int numMM, int conNum, int perMm) {
+		int leftNum = 0, rightNum = SeqSequence.length();
+		if (seqAdaptorL != null && !seqAdaptorL.equals("")) {
+			if (mapNum >= 0)
+				leftNum = 	trimAdaptorL(SeqSequence, seqAdaptorL, SeqSequence.length() - mapNum, numMM,conNum, perMm);
+			else
+				leftNum = 	trimAdaptorL(SeqSequence, seqAdaptorL, seqAdaptorL.length(), numMM,conNum, perMm);
+		}
+		
+		if (seqAdaptorR != null && !seqAdaptorR.equals("")) {
+			if (mapNum >= 0)
+				rightNum = 	trimAdaptorR(SeqSequence, seqAdaptorR, mapNum, numMM,conNum, perMm);
+			else//TODO 确定这里设定多少合适：SeqSequence.length() - seqAdaptorL.length()
+				rightNum = 	trimAdaptorR(SeqSequence, seqAdaptorR, SeqSequence.length() - seqAdaptorL.length(), numMM,conNum, perMm);
+		}
+		return trimSeq(leftNum, rightNum);
+	}
+	/**
+	 * cutOff选择10即认为10，包括10以下的序列都不好，需要cut掉
+	 * @param fastQBlock
+	 * @param numMM
+	 * @return
+	 */
+	public SeqFasta trimNNN(String fastQBlock, int numMM) {
+		int numStart = trimNNNLeft(SeqSequence, 10, numMM);
+		int numEnd = trimNNNRight(SeqSequence, 10, numMM);
+		return trimSeq(numStart, numEnd);
+	}
+	/**
+	 * cutOff选择10即认为10，包括10以下的序列都不好，需要cut掉
+	 * @param fastQBlock
+	 * @param numMM
+	 * @return
+	 */
+	public SeqFasta trimLowCase() {
+		char[] info = SeqSequence.toCharArray();
+		int numStart = 0;
+		//从前向后，遇到小写就计数
+		for (char c : info) {
+			if ((int)c > 90 )
+				numStart++;
+			else
+				break;
+		}
+		int numEnd = info.length;
+		for (int i = info.length - 1; i >= 0; i--) {
+			if ((int)info[i] > 90 )
+				numEnd--;
+			else
+				break;
+		}
+		if (numStart >= numEnd) {
+			numStart = numEnd;
+		}
+//		int numEnd = trimNNNRight(ss, 10, numMM);
+		return trimSeq(numStart, numEnd);
+	}
+	/**
+	 * 过滤右侧polyA
+	 * @param block
+	 * @param mismatch 可以设定的稍微长一点点，因为里面有设定最长连续错配为1了，所以这里建议2-3
+	 * @return 返回截短后的string
+	 * 一样还是用TxtReadandWrite.huiche换行，最后没有TxtReadandWrite.huiche
+	 */
+	public SeqFasta trimPolyAR(String fastQBlock, int mismatch) {
+		String ss = fastQBlock.split(TxtReadandWrite.ENTER_LINUX)[1];
+		int num = 	trimPolyA(ss, mismatch,1);
+		return trimSeq(0, num);
+	}
+	/**
+	 * 过滤左侧polyT
+	 * @param block
+	 * @param mismatch 可以设定的稍微长一点点，因为里面有设定最长连续错配为1了，所以这里建议2-3
+	 * @return 返回截短后的string
+	 * 一样还是用TxtReadandWrite.huiche换行，最后没有TxtReadandWrite.huiche
+	 */
+	public SeqFasta trimPolyTL(String fastQBlock, int mismatch) {
+		String ss = fastQBlock.split(TxtReadandWrite.ENTER_LINUX)[1];
+		int num = trimPolyT(ss, mismatch,1);
+		return trimSeq(num, ss.length());
+	}
+	/**
+	 * 注意两个以下的adaptor无法过滤
+	 * 过滤右侧接头序列的方法，用循环搜索，容许错配，但是不能够过虑含有gap的adaptor。
+	 * 算法，假设右侧最多只有一整个接头。那么先将接头直接对到右侧对齐，然后循环的将接头对到reads上去。
+	 * @param seqIn 输入序列 无所谓大小写
+	 * @param seqAdaptor 接头 无所谓大小写 接头可以只写一部分
+	 * @param mapNum 第一次接头左端mapping到序列的第几个碱基上，从1开始记数，-1说明没找到 建议设定为：seqIn.length() +1- seqAdaptor.length()
+	 * @param numMM 最多容错几个mismatch 2个比较好
+	 * @param conNum 最多容错连续几个mismatch，1个比较好
+	 * @param perMm 最多容错百分比 设定为30吧，这个是怕adaptor太短
+	 * @return 返回该tag的第一个碱基在序列上的位置，从0开始记数
+	 * 也就是该adaptor前面有多少个碱基，可以直接用substring(0,return)来截取
+	 * -1说明没有adaptor
+	 */
+	private int trimAdaptorR(String seqIn, String seqAdaptor, int mapNum, int numMM, int conNum, float perMm) {
+		if (seqAdaptor.equals("")) {
+			return seqIn.length();
+		}
+		mapNum--;
+		if (mapNum < 0) {
+			mapNum =0;
+		}
+		seqIn = seqIn.toUpperCase();
+		seqAdaptor = seqAdaptor.toUpperCase();
+		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
+		char[] chrAdaptor = seqAdaptor.toCharArray(); int lenA = seqAdaptor.length();
+		int con = 0;//记录连续的非匹配的字符有几个
+//		从左到右搜索chrIn
+		for (int i = mapNum; i < lenIn; i++) {
+			int pm = 0; //perfect match
+			int mm = 0; //mismatch
+			for (int j = 0; j < lenA; j++) {
+				if (i+j >= lenIn)
+					break;
+				if (chrIn[i+j] == chrAdaptor[j] || chrIn[i+j] == 'N') {
+					pm++;
+					con = 0;
+				}
+				else {
+					con ++ ;
+					mm++;
+					if (mm > numMM || con > conNum)
+						break;
+				}
+			}
+			int lenAdaptor = pm + mm;
+//			float per = ((float)mm/lenAdaptor);
+			if (mm <= numMM && ((float)mm/lenAdaptor) <= perMm && lenAdaptor > 4) {
+				return i;
+			}
+		}
+		logger.info("haven't find adaptor: "+seqIn+" "+seqAdaptor);
+		return seqIn.length();
+	}
+	/**
+	 * 注意两个以下的adaptor无法过滤
+	 * 过滤左侧接头序列的方法，用循环搜索，容许错配，但是不能够过虑含有gap的adaptor。
+	 * 算法，假设左侧最多只有一整个接头。那么先将接头直接对到左侧对齐，然后循环的将接头对到reads上去。
+	 * @param seqIn 输入序列 无所谓大小写
+	 * @param seqAdaptor 接头 无所谓大小写
+	 * @param mapNum 第一次接头右端mapping到序列的第几个碱基上，从1开始记数，-1说明没找到 建议设定为：adaptorLeft.length()
+	 * @param numMM 最多容错几个mismatch 1个比较好
+	 * @param conNum 最多容错连续几个mismatch，1个比较好
+	 * @param perMm 最多容错百分比,100进制，设定为30吧，这个是怕adaptor太短
+	 * @return 返回该tag的最一个碱基在序列上的位置，从1开始记数
+	 * 也就是该adaptor前面有多少个碱基，可以直接用substring(return)来截取
+	 * -1说明没有adaptor
+	 */
+	private int trimAdaptorL(String seqIn, String seqAdaptor, int mapNum, int conNum, int numMM, int perMm) {
+		if (seqAdaptor.equals("")) {
+			return 0;
+		}
+		mapNum--;
+		seqIn = seqIn.toUpperCase();
+		seqAdaptor = seqAdaptor.toUpperCase();
+		char[] chrIn = seqIn.toCharArray(); //int lenIn = seqIn.length();
+		char[] chrAdaptor = seqAdaptor.toCharArray(); int lenA = seqAdaptor.length();
+		int con = 0;//记录连续的非匹配的字符有几个
+//		从右到左搜索chrIn
+		for (int i = mapNum; i >= 0 ; i--) {
+			int pm = 0; //perfect match
+			int mm = 0; //mismatch
+			for (int j = chrAdaptor.length-1; j >= 0; j--) {
+				if (i+j-lenA+1 < 0)
+					break;
+				if (chrIn[i+j-lenA+1] == chrAdaptor[j] || chrIn[i+j-lenA+1] == 'N') {
+					pm++; con = 0;
+				}
+				else {
+					con ++ ;
+					mm++;
+					if (mm > numMM || con > conNum)
+						break;
+				}
+			}
+			int lenAdaptor = pm + mm;
+//			float per = ((float)mm/lenAdaptor);
+			if (mm <= numMM && ((float)mm/lenAdaptor) <= perMm/100 && lenAdaptor > 4) {
+				return i+1;
+			}
+		}
+		logger.info("haven't find adaptor: "+seqIn+" "+seqAdaptor);
+		return 0;
+	}
+	/**
+	 * 过滤右侧polyA，当为AAANNNAAANANAA时，无视N继续过滤
+	 * @param seqIn
+	 * @param numMM 几个错配 一般为1
+	 * @return
+	 * 返回该Seq的第一个A在序列上的位置，从0开始记数
+	 * 如果没有A，返回值 == Seq.length()
+	 * 也就是该polyA前面有多少个碱基，可以直接用substring(0,return)来截取
+	 */
+	private int trimPolyA(String seqIn, int numMM, int maxConteniunNoneA) {
+		seqIn = seqIn.toUpperCase();
+		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
+		int numMismatch = 0;
+		int con = 0;//记录连续的非A的字符有几个
+		for (int i = lenIn-1; i >= 0; i--) {
+			if (chrIn[i] != 'A' && chrIn[i] != 'N') {
+				numMismatch++;
+				con++;
+			}
+			else {
+				con = 0;
+			}
+			if (numMismatch > numMM || con > maxConteniunNoneA) {
+				return i+con;//把最后不是a的还的加回去
+			}
+		}
+//		System.out.println(seqIn);
+		return 0;
+	}
+	/**
+	 * 过滤左侧polyT，当为TTTNNNTTTNTNTT时，无视N继续过滤
+	 * @param seqIn
+	 * @param numMM 几个错配 一般为1
+	 * @return
+	 * 返回该tag的最后一个碱基在序列上的位置，从1开始记数
+	 * 也就是该polyT有多少个碱基，可以直接用substring(return)来截取
+	 */
+	private int trimPolyT(String seqIn, int numMM, int maxConteniunNoneT) {
+		seqIn = seqIn.toUpperCase();
+		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
+		int numMismatch = 0;
+		int con = 0;//记录连续的非A的字符有几个
+		for (int i = 0; i < lenIn; i++) {
+			if (chrIn[i] != 'T' && chrIn[i] != 'N') {
+				numMismatch++;
+				con++;
+			}
+			else {
+				con = 0;
+			}
+			if (numMismatch > numMM || con > maxConteniunNoneT) {
+				return i-con+1;//把最后不是a的还的加回去
+			}
+		}
+//		System.out.println(seqIn);
+		return lenIn;
+	}
+	/**
+	 * 过滤左端低质量序列，Q10，Q13以下为低质量序列，一路剪切直到全部切光为止
+	 * @param seqIn 质量列
+	 * @param cutOff 低质量序列的cutOff, 小于等于他就会被cut
+	 * @param numMM 几个好的序列，就是说NNNCNNN这种，坏的中间夹一个好的 一般为1
+	 * @return
+	 * 	 * 返回该NNN的第最后一个碱基在序列上的位置，从1开始记数
+	 * 也就是该NNN有多少个碱基，可以直接用substring(return)来截取
+	 * 返回-1表示出错
+	 */
+	private int trimNNNLeft(String seqIn,int cutOff, int numMM) {
+		char[] chrIn = seqIn.toCharArray();
+		int numMismatch = 0;
+		int con = -1;//记录连续的低质量的字符有几个
+		for (int i = 0; i < chrIn.length; i++) {
+			if ((int)chrIn[i] - fastqOffset > cutOff) {
+				numMismatch++;
+				con++;
+			}
+			else {
+				con = -1;
+			}
+			if (numMismatch > numMM) {
+				return i - con;//把最后不是a的还的加回去
+			}
+		}
+//		logger.info("no useful seq: "+ seqIn);
+		return seqIn.length();
+	}
+	/**
+	 * 过滤右端低质量序列，Q10，Q13以下为低质量序列，一路剪切直到全部切光为止
+	 * @param seqIn 质量列
+	 * @param cutOff 低质量序列的cutOff, 小于等于他就会被cut
+	 * @param numMM 几个好的序列，就是说NNNCNNN这种，坏的中间夹一个好的 一般为1
+	 * @return
+	 * 	 * 返回该NNN的第一个碱基在序列上的位置，从0开始记数
+	 * 也就是该NNN前面有多少个碱基，可以直接用substring(0,return)来截取
+	 * 返回-1表示出错
+	 */
+	private int trimNNNRight(String seqIn,int cutOff, int numMM) {
+		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
+		int numMismatch = 0;
+		int con = 0;//记录连续的低质量的字符有几个
+		for (int i = lenIn-1; i >= 0; i--) {
+			if ((int)chrIn[i] - fastqOffset > cutOff) {
+				numMismatch++;
+				con++;
+			}
+			else {
+				con = 0;
+			}
+			if (numMismatch > numMM) {
+				return i+con;//把最后不是a的还的加回去
+			}
+		}
+//		logger.info("no useful seq: "+ seqIn);
+		return 0;
+	}
+	/**
+	 * 给定左右的坐标，然后将seqfasta截短
+	 * @param start 和substring一样的用法
+	 * @param end 和substring一样的用法
+	 * @return 返回截短后的string
+	 * 如果截短后的长度小于设定的最短reads长度，那么就返回null
+	 */
+	private SeqFasta trimSeq(int start, int end) {
+		if (end - start < trimMinLen) {
+			return null;
+		}
+		SeqFasta result = new SeqFasta();
+		if (start == 0 && end == seqQuality.length()) {
+			return clone();
+		}
+		result.SeqName = SeqName;
+		result.AA3Len = AA3Len;
+		result.TOLOWCASE = TOLOWCASE;
+		result.fastqOffset= fastqOffset;
+		result.trimMinLen = trimMinLen;
+		result.seqQuality = seqQuality.substring(start, end);
+		result.SeqSequence = SeqSequence.substring(start, end);
+		return result;
+	}
+	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * 克隆序列
+	 */
 	public SeqFasta clone() {
 		SeqFasta seqFasta = null;
 		try {
 			seqFasta = (SeqFasta) super.clone();
 			seqFasta.SeqName = SeqName;
 			seqFasta.AA3Len = AA3Len;
+			seqFasta.trimMinLen = trimMinLen;
 			seqFasta.SeqSequence = SeqSequence;
 			seqFasta.TOLOWCASE = TOLOWCASE;
+			seqFasta.seqQuality = seqQuality;
+			seqFasta.fastqOffset= fastqOffset;
 			return seqFasta;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
 		return seqFasta;
 	}
+	
+	////////////////////// static 方法 //////////////////////////////////////
+	/**
+	 * 当查找完motif后，获得motif的titile
+	 * @return
+	 */
+	public static String[] getMotifScanTitle() {
+		String[] title = new String[]{"SeqName","Strand","MotifSeq","Distance2SeqEnd"};
+		return title;
+	}
+	/**
+	 * 比较两个序列是否一致，计数不一致的碱基数
+	 * 从头开始比较，头尾可以有空格，中间不能有。不是blast模式的比较
+	 */
+	public static int compare2Seq(String seq1, String seq2) {
+		char[] chrSeq1 = seq1.trim().toLowerCase().toCharArray();
+		char[] chrSeq2 = seq2.trim().toLowerCase().toCharArray();
+		int result = 0;
+		int i = Math.min(chrSeq1.length, chrSeq2.length);
+		for (int j = 0; j < i; j++) {
+			if (chrSeq1[j] != chrSeq2[j]) {
+				result ++ ;
+			}
+		}
+		result = result + Math.max(chrSeq1.length, chrSeq2.length) - i;
+		return result;
+	}
 }
+
+

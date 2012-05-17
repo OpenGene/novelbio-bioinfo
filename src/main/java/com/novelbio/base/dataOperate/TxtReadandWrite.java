@@ -58,8 +58,8 @@ public class TxtReadandWrite {
 	public final static String ZIP = "zip";
 	public final static String TXT = "txt";
 	private String filetype = TXT;
-	public final static String huiche = "\n";
-	
+	public final static String ENTER_LINUX = "\n";
+	public final static String ENTER_WINDOWS = "\r\n";
 	@Deprecated
 	public TxtReadandWrite () {
 		
@@ -450,7 +450,7 @@ public class TxtReadandWrite {
 	 */
 	public void writefileln(String content) {
 		try {
-			outputStream.write((content+huiche).getBytes());
+			outputStream.write((content+ENTER_LINUX).getBytes());
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -467,7 +467,7 @@ public class TxtReadandWrite {
 			content2 = content2 + "\t" + content[i];
 		}
 		try {
-			outputStream.write((content2+huiche).getBytes());
+			outputStream.write((content2+ENTER_LINUX).getBytes());
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -481,7 +481,7 @@ public class TxtReadandWrite {
 	 */
 	public void writefileln() {
 		try {
-			outputStream.write(huiche.getBytes());
+			outputStream.write(ENTER_LINUX.getBytes());
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -497,7 +497,7 @@ public class TxtReadandWrite {
 			char[] mychar = content.toCharArray();
 			for (int i = 0; i < mychar.length; i++) {
 				if (i>0 && i%length == 0) {
-					outputStream.write(huiche.getBytes());
+					outputStream.write(ENTER_LINUX.getBytes());
 				}
 				outputStream.write(mychar[i]);
 			}
@@ -536,7 +536,7 @@ public class TxtReadandWrite {
 		for (int i = 0; i < content.length; i++) {
 			outputStream.write((content[i] + "" + sep).getBytes());
 			if ((i + 1) % colLen == 0) {
-				outputStream.write(huiche.getBytes());
+				outputStream.write(ENTER_LINUX.getBytes());
 			}
 		}
 
@@ -569,7 +569,7 @@ public class TxtReadandWrite {
 			for (int i = 0; i < content.length; i++) {
 				outputStream.write((content[i] + "" + sep).getBytes());
 				if ((i + 1) % colLen == 0) {
-					outputStream.write(huiche.getBytes());
+					outputStream.write(ENTER_LINUX.getBytes());
 				}
 			}
 			outputStream.flush();
@@ -640,7 +640,7 @@ public class TxtReadandWrite {
 			for (int i = 0; i < content.length; i++) {
 				outputStream.write((content[i] + "" + sep).getBytes());
 				if ((i + 1) % colLen == 0) {
-					outputStream.write(huiche.getBytes());
+					outputStream.write(ENTER_LINUX.getBytes());
 				}
 			}
 
@@ -670,7 +670,7 @@ public class TxtReadandWrite {
 		try {
 			for (int i = 0; i < lsContent.size(); i++) {
 				outputStream.write(lsContent.get(i).toString().getBytes());
-				outputStream.write(huiche.getBytes());
+				outputStream.write(ENTER_LINUX.getBytes());
 			}
 			outputStream.flush();
 		} catch (Exception e) {
@@ -1035,7 +1035,7 @@ public class TxtReadandWrite {
 					outputStream.write(tmp.getBytes());
 				}
 			}
-			outputStream.write(huiche.getBytes());// 换行
+			outputStream.write(ENTER_LINUX.getBytes());// 换行
 		}
 		outputStream.flush();// 写入文本
 	}
@@ -1060,7 +1060,7 @@ public class TxtReadandWrite {
 					outputStream.write(content[i][j].getBytes());
 				}
 			}
-			outputStream.write(huiche.getBytes());// 换行
+			outputStream.write(ENTER_LINUX.getBytes());// 换行
 		}
 		outputStream.flush();// 写入文本
 	}
@@ -1087,11 +1087,11 @@ public class TxtReadandWrite {
 					outputStream.write(content[i].getBytes());
 				}
 			}
-			outputStream.write(huiche.getBytes());
+			outputStream.write(ENTER_LINUX.getBytes());
 		} else// 竖着写入
 		{
 			for (int i = 0; i < content.length; i++) {
-				outputStream.write((content[i] + huiche).getBytes());
+				outputStream.write((content[i] + ENTER_LINUX).getBytes());
 			}
 		}
 		outputStream.flush();// 写入文本
@@ -1125,7 +1125,7 @@ public class TxtReadandWrite {
 						outputStream.write(content.get(i)[j].getBytes());
 					}
 				}
-				outputStream.write(huiche.getBytes());// 换行
+				outputStream.write(ENTER_LINUX.getBytes());// 换行
 			}
 			outputStream.flush();// 写入文本
 		} catch (Exception e) {
@@ -1163,7 +1163,7 @@ public class TxtReadandWrite {
 						outputStream.write(content.get(i)[column[j]].getBytes());
 					}
 				}
-				outputStream.write(huiche.getBytes());// 换行
+				outputStream.write(ENTER_LINUX.getBytes());// 换行
 			}
 			outputStream.flush();// 写入文本
 		} else {
@@ -1184,7 +1184,7 @@ public class TxtReadandWrite {
 						outputStream.write(content.get(i)[j].getBytes());
 					}
 				}
-				outputStream.write(huiche.getBytes());// 换行
+				outputStream.write(ENTER_LINUX.getBytes());// 换行
 			}
 			outputStream.flush();// 写入文本
 		}

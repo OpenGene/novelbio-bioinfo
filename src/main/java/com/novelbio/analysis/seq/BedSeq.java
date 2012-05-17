@@ -142,6 +142,7 @@ public class BedSeq extends SeqComb{
 	 * @throws IOException
 	 */
 	private Iterable<BedRecord> readPerlines() throws Exception {
+		txtSeqFile.setFiletype(compressInType);
 		 final BufferedReader bufread =  txtSeqFile.readfile(); 
 		return new Iterable<BedRecord>() {
 			public Iterator<BedRecord> iterator() {
@@ -240,9 +241,18 @@ public class BedSeq extends SeqComb{
 	 * 返回名字为FileOperate.changeFileSuffix(getFileName(), "_sorted", null);
 	 */
 	public BedSeq sortBedFile()  {
-		String file = FileOperate.changeFileSuffix(getFileName(), "_sorted", null);
+		String outFile = null;
+		if (!compressInType.equals(TxtReadandWrite.TXT)) {
+			if (getFileName().endsWith("gz") || getFileName().endsWith("bz") || getFileName().endsWith("zip")) {
+				outFile = getFileName().substring(0, getFileName().lastIndexOf("."));
+			}
+			outFile = FileOperate.changeFileSuffix(outFile, "_sorted", null);
+		}
+		else {
+			outFile = FileOperate.changeFileSuffix(getFileName(), "_sorted", null);
+		}
 		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
-		return sortBedFile(file);
+		return sortBedFile(outFile);
 	}
 	/**
 	 * 专门给徐龙勇的GSM307618过滤的文件，
@@ -329,45 +339,40 @@ public class BedSeq extends SeqComb{
 	 * @throws Exception 
 	 * @throws Exception 
 	 */
+	public BedSeq extend(int extendTo) {
+		String outFile = null;
+		if (!compressInType.equals(TxtReadandWrite.TXT)) {
+			if (getFileName().endsWith("gz") || getFileName().endsWith("bz") || getFileName().endsWith("zip")) {
+				outFile = getFileName().substring(0, getFileName().lastIndexOf("."));
+			}
+			outFile = FileOperate.changeFileSuffix(outFile, "_extend", null);
+		}
+		else {
+			outFile = FileOperate.changeFileSuffix(getFileName(), "_extend", null);
+		}
+		return extend(extendTo, outFile);
+	}
+	/**
+	 * 如果bed文件的坐标太短，根据正负链延长坐标至指定位置<br>
+	 * 标准bed文件格式为：chr1  \t  7345  \t  7370  \t  25  \t  52  \t  - <br>
+	 * 必须有第六列
+	 * @throws Exception 
+	 * @throws Exception 
+	 */
 	public BedSeq extend(int extendTo, String outFileName)
 	{
+		BedSeq bedSeq = new BedSeq(outFileName, true);
+		bedSeq.setCompressType(compressInType, compressOutType);
 		try {
-			txtSeqFile.setParameter(compressInType, seqFile, false, true);
-			BufferedReader reader = txtSeqFile.readfile();
-			
-			TxtReadandWrite txtOut = new TxtReadandWrite(compressOutType, outFileName, true);
-			
-			String content = "";
-			while ((content = reader.readLine()) != null) {
-				String[] ss = content.split("\t");
-				int end = Integer.parseInt(ss[2]); int start = Integer.parseInt(ss[1]);
-				int minus = end - start;
-				if (minus< 0) {logger.error("Bed 文件出错，有一列的终点小于起点"+content); }
-				
-				if (minus< extendTo ) {
-					if (ss[5].equals("+")) {
-						ss[2] = start + extendTo + "";
-					}
-					else {
-						ss[1] = end - extendTo + ""; 
-					}
-				}
-				String contString = "";
-				for (int i = 0; i < ss.length-1; i++) {
-					contString = contString+ss[i] + "\t";
-				}
-				contString = contString + ss[ss.length -1];
-				txtOut.writefile(contString+"\n", false);
-			}
-			txtSeqFile.close();
-			txtOut.close();
-			BedSeq bedSeq = new BedSeq(outFileName);
-			bedSeq.setCompressType(compressOutType, compressOutType);
-			return bedSeq;
-		} catch (Exception e) {
+			for (BedRecord bedRecord : readPerlines()) {
+			bedRecord.extend(extendTo);
+			bedSeq.writeBedRecord(bedRecord);
+		}
+			} catch (Exception e) {
 			logger.error("extend error! targetFile: " + getFileName() + "   resultFIle: "+ outFileName);
 		}
-		return null;
+		bedSeq.closeWrite();
+		return bedSeq;
 		
 	}
 	

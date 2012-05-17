@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 读取Rfam的文件，获得RfamID对应的具体信息
@@ -16,8 +17,28 @@ public class RfamHash {
 	public static void main(String[] args) {
 		RfamHash rfamHash = new RfamHash();
 		String rfamFile = "/media/winE/Bioinformatics/DataBase/sRNA/rfam/rfam.txt";
-		String mapBedFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_Rfam.bed";
-		String outFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/resultRfam/TG_Rfam.txt";
+		String mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX8/H36_rfam.bed";
+		String outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
+		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
+		
+		mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX7/H12_rfam.bed";
+		outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
+		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
+		
+		mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX6/C_rfam.bed";
+		outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
+		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
+		
+		mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX5/N36_rfam.bed";
+		outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
+		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
+		
+		mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX4/N6_rfam.bed";
+		outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
+		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
+		
+		mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX3/H6_rfam.bed";
+		outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
 		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
 	}
 	

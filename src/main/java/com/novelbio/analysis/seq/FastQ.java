@@ -456,11 +456,11 @@ public class FastQ extends SeqComb {
 		String seqBlock2 = "";
 		while ((content = readerSeq.readLine()) != null) {
 			count ++;
-			seqBlock1 = seqBlock1 + content + TxtReadandWrite.huiche;
+			seqBlock1 = seqBlock1 + content + TxtReadandWrite.ENTER_LINUX;
 			
 			if (booPairEnd) {
 				content2 = readerSeq2.readLine();
-				seqBlock2 = seqBlock2 + content2 + TxtReadandWrite.huiche;
+				seqBlock2 = seqBlock2 + content2 + TxtReadandWrite.ENTER_LINUX;
 			}
 			
 			if (count == block)
@@ -568,7 +568,7 @@ public class FastQ extends SeqComb {
 	 */
 	private String trimLowCase(String fastQBlock)
 	{
-		String ss = fastQBlock.split(TxtReadandWrite.huiche)[1];//获得的是序列而不是quality信息
+		String ss = fastQBlock.split(TxtReadandWrite.ENTER_LINUX)[1];//获得的是序列而不是quality信息
 		char[] info = ss.toCharArray();
 		int numStart = 0;
 		//从前向后，遇到小写就计数
@@ -601,7 +601,7 @@ public class FastQ extends SeqComb {
 	 */
 	private String trimNNN(String fastQBlock, int numMM)
 	{
-		String ss = fastQBlock.split(TxtReadandWrite.huiche)[3];
+		String ss = fastQBlock.split(TxtReadandWrite.ENTER_LINUX)[3];
 		int numStart = trimNNNLeft(ss, 10, numMM);
 //		if (numStart > 0) {
 //			System.out.println(ss);
@@ -686,13 +686,13 @@ public class FastQ extends SeqComb {
 		if (end - start < readsLenMin) {
 			return null;
 		}
-		String[] ss = block.split(TxtReadandWrite.huiche);
+		String[] ss = block.split(TxtReadandWrite.ENTER_LINUX);
 		if (start == 0 && end == ss[3].length()) {
 			return block.trim();
 		}
 		ss[1] = ss[1].substring(start, end);
 		ss[3] = ss[3].substring(start, end);
-		String ssResult = ss[0] + TxtReadandWrite.huiche + ss[1] + TxtReadandWrite.huiche + ss[2] + TxtReadandWrite.huiche + ss[3];
+		String ssResult = ss[0] + TxtReadandWrite.ENTER_LINUX + ss[1] + TxtReadandWrite.ENTER_LINUX + ss[2] + TxtReadandWrite.ENTER_LINUX + ss[3];
 		return ssResult;
 	}
 	/**
@@ -704,7 +704,7 @@ public class FastQ extends SeqComb {
 	 */
 	private String trimPolyAR(String fastQBlock, int mismatch)
 	{
-		String ss = fastQBlock.split(TxtReadandWrite.huiche)[1];
+		String ss = fastQBlock.split(TxtReadandWrite.ENTER_LINUX)[1];
 		int num = super.trimPolyA(ss, mismatch,1);
 		if (flagPolyA && num == ss.length()) {
 			return null;
@@ -720,7 +720,7 @@ public class FastQ extends SeqComb {
 	 */
 	private String trimPolyTL(String fastQBlock, int mismatch)
 	{
-		String ss = fastQBlock.split(TxtReadandWrite.huiche)[1];
+		String ss = fastQBlock.split(TxtReadandWrite.ENTER_LINUX)[1];
 		int num = super.trimPolyT(ss, mismatch,1);
 		if (flagPolyT && num == 0) {
 			return null;
@@ -737,8 +737,8 @@ public class FastQ extends SeqComb {
 		if (adaptorLeft.equals("") && adaptorRight.equals("")) {
 			return fastQBlock.trim();
 		}//TODO
-		String ss = fastQBlock.split(TxtReadandWrite.huiche)[1];
-		int leftNum = 0; int rightNum = 0;
+		String ss = fastQBlock.split(TxtReadandWrite.ENTER_LINUX)[1];
+		int leftNum = 0; int rightNum = ss.length();
 		if (adaptorLeftAll)
 			leftNum = super.trimAdaptorL(ss, adaptorLeft, ss.length(), adaptermaxMismach,adaptermaxConMismatch, 30);
 		else
@@ -757,10 +757,10 @@ public class FastQ extends SeqComb {
 		if (seqBlock1 == null && seqBlock2 == null) {
 			return false;
 		}
-		String ss1 = seqBlock1.split(TxtReadandWrite.huiche)[3];
+		String ss1 = seqBlock1.split(TxtReadandWrite.ENTER_LINUX)[3];
 		String ss2 = null;
 		if (seqBlock2 != null && !seqBlock2.equals("")) {
-			ss2 = seqBlock2.split(TxtReadandWrite.huiche)[3];
+			ss2 = seqBlock2.split(TxtReadandWrite.ENTER_LINUX)[3];
 		}
 		else {
 			ss2 = null;
@@ -1501,7 +1501,7 @@ public class FastQ extends SeqComb {
 			else if (num == 1) {
 				fasta = contentFasta;
 				quality = convert2Phred(contentQuality, offset);
-				String tmpOut = title + TxtReadandWrite.huiche + fasta + TxtReadandWrite.huiche + "+" + TxtReadandWrite.huiche + quality;
+				String tmpOut = title + TxtReadandWrite.ENTER_LINUX + fasta + TxtReadandWrite.ENTER_LINUX + "+" + TxtReadandWrite.ENTER_LINUX + quality;
 				txtOutFastQ.writefileln(tmpOut);
 				num = 0;
 			}

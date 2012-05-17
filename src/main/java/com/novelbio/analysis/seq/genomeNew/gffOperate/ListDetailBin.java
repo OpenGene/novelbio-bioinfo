@@ -1,8 +1,12 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
-
-public class ListDetailBin extends ListDetailAbs{
+/**
+ * 继承 Comparable 接口，只比较score
+ * @author zong0jie
+ *
+ */
+public class ListDetailBin extends ListDetailAbs implements Comparable<ListDetailBin>{
 
 	public ListDetailBin(String chrID, String ItemName, Boolean cis5to3) {
 		super(chrID, ItemName, cis5to3);
@@ -47,4 +51,19 @@ public class ListDetailBin extends ListDetailAbs{
 		result.score = score;
 		return result;
 	}
+
+	@Override
+	public int compareTo(ListDetailBin o) {
+		if (getScore() > o.getScore()) {
+			return 1;
+		}
+		else if (getScore() < o.getScore()) {
+			return -1;
+		}
+		else {
+			return 0;
+		}
+	}
+	
+	
 }

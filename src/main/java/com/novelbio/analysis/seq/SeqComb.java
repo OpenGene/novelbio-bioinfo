@@ -85,7 +85,6 @@ public abstract class SeqComb {
 		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
 	}
 	/**
-	 * 
 	 * @param seqFile
 	 * @param block 每个序列占几行，譬如fastQ文件每个序列占4行
 	 */

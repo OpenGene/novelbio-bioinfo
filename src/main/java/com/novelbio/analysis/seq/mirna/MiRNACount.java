@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
@@ -19,16 +21,47 @@ import com.novelbio.base.fileOperate.FileOperate;
  *
  */
 public class MiRNACount extends BedSeq {
+	Logger logger = Logger.getLogger(MiRNACount.class);
 	public static void main(String[] args) {
 		String rnadatFile = "/media/winE/Bioinformatics/DataBase/sRNA/miRNA.dat";
-		String hairpairMirna = "/media/winE/Bioinformatics/DataBase/sRNA/miRBase/hairpin_human_Final.fa";
-		String matureMirna = "/media/winE/Bioinformatics/DataBase/sRNA/miRBase/mature_human_Final.fa";
+		String hairpairMirna = "/media/winE/Bioinformatics/GenomeData/pig/smallRNA/hairpin_pig_Final.fa";
+		String matureMirna = "/media/winE/Bioinformatics/DataBase/sRNA/miRBase/mature_pig_Final.fa";
 		
 		
-		String bedFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_miRNA.bed";
-		String out = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/result/TG.txt";
+		String bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX9/N12_miRNA.bed";
+		String out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
 		
-		MiRNACount miRNACount = new MiRNACount(bedFile, "HSA", rnadatFile);
+		MiRNACount miRNACount = new MiRNACount(bedFile, "SSC", rnadatFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.outResult(out);
+		
+		bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX8/H36_miRNA.bed";
+		out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
+		miRNACount = new MiRNACount(bedFile, "SSC", rnadatFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.outResult(out);
+		
+		bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX7/H12_miRNA.bed";
+		out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
+		miRNACount = new MiRNACount(bedFile, "SSC", rnadatFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.outResult(out);
+		
+		bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX6/C_miRNA.bed";
+		out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
+		miRNACount = new MiRNACount(bedFile, "SSC", rnadatFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.outResult(out);
+		
+		bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX5/N36_miRNA.bed";
+		out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
+		miRNACount = new MiRNACount(bedFile, "SSC", rnadatFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.outResult(out);
+		
+		bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX4/N6_miRNA.bed";
+		out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
+		miRNACount = new MiRNACount(bedFile, "SSC", rnadatFile);
 		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
 		miRNACount.outResult(out);
 	}
@@ -56,6 +89,7 @@ public class MiRNACount extends BedSeq {
 	 */
 	public MiRNACount(String bedFile, String Species, String rnadatFile) {
 		super(bedFile);
+		tmpMiRNALocation.setSpecies(Species);
 		tmpMiRNALocation.ReadGffarray(rnadatFile);
 	}
 	/**
@@ -106,6 +140,7 @@ public class MiRNACount extends BedSeq {
 				listDetailBin = tmpMiRNALocation.getChrhash().get(matureID).get(0);
 			}
 			else {
+				logger.error("³öÏÖÎ´ÖªID£º" + mirID + " "  + matureID);
 				return null;
 			}
 		}

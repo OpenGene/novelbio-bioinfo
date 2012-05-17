@@ -127,7 +127,11 @@ public class Cell {
 	 * @return
 	 */
 	public double getGapScore(Cell cellPrev, int space,double gapDegrade) {
-		return space*Math.pow(gapDegrade,-cellPrev.getGapNum());	
+		if (gapDegrade != 1) {
+			return space*Math.pow(gapDegrade,-cellPrev.getGapNum());	
+		}
+		else
+			return space * -cellPrev.getGapNum();
 //		
 //		if (cellPrev.getGapNum() == 0) {
 //			return space;

@@ -258,7 +258,6 @@ public class GffDetailGene extends ListDetailAbs
     public GffGeneIsoInfo getIsolist(String splitID) {
     	int index = getIsoID(splitID);
     	if (index == -1) {
-    		logger.info("cannotFind the ID: "+ splitID);
 			return null;
 		}
     	return lsGffGeneIsoInfos.get(index);//include one special loc start number to end number	

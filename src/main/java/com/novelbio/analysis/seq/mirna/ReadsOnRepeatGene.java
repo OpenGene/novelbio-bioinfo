@@ -35,8 +35,8 @@ public class ReadsOnRepeatGene {
 		readsInfo.writeToFileRepeatName(outPath + prix + "_RepeatNameProp.txt");
 	}
 	
-	GffHashRepeat gffHashRepeat = new GffHashRepeat();
-	GffHashGene gffHashGene = new GffHashGene();
+	GffHashRepeat gffHashRepeat = null;
+	GffHashGene gffHashGene = null;
 	HashMap<String, Double> hashRepeatName = new HashMap<String, Double>();
 	HashMap<String, Double> hashRepeatFamily = new HashMap<String, Double>();
 	HashMap<String, Double> hashGeneInfo = new HashMap<String, Double>();
@@ -44,10 +44,17 @@ public class ReadsOnRepeatGene {
 	 * 读取repeat文件
 	 * @param repeatGffFile
 	 */
-	public void readGff(String repeatGffFile, String geneGffUCSC) {
-		gffHashRepeat.ReadGffarray(repeatGffFile);
-		gffHashGene.setParam(NovelBioConst.GENOME_GFF_TYPE_UCSC);
-		gffHashGene.readGffFile(geneGffUCSC);
+	public void readGff(String repeatGffFile, String geneGffType, String geneGffUCSC) {
+		if (repeatGffFile != null && !repeatGffFile.equals("")) {
+			gffHashRepeat = new GffHashRepeat();
+			gffHashRepeat.ReadGffarray(repeatGffFile);
+		}
+		if (geneGffUCSC != null && !geneGffUCSC.equals("")) {
+			gffHashGene = new GffHashGene();
+			gffHashGene.setParam(NovelBioConst.GENOME_GFF_TYPE_UCSC);
+			gffHashGene.readGffFile(geneGffUCSC);
+		}
+
 	}
 	
 	public HashMap<String, Double> getHashRepeatName() {
@@ -66,12 +73,17 @@ public class ReadsOnRepeatGene {
 	public void countReadsInfo(String bedFile) {
 		BedSeq bedSeq = new BedSeq(bedFile);
 		for (BedRecord bedRecord : bedSeq.readlines()) {
-			String repeatInfo = searchReadsRepeat(bedRecord.getRefID(), bedRecord.getStart(), bedRecord.getEnd());
-			if (repeatInfo != null) {
-				addHashRepeat(repeatInfo, bedRecord.getMappingNum());
+			String repeatInfo = null;
+			if (gffHashRepeat != null) {//如果没有读取repeat文件，则返回
+				repeatInfo = searchReadsRepeat(bedRecord.getRefID(), bedRecord.getStart(), bedRecord.getEnd());
+				if (repeatInfo != null) {
+					addHashRepeat(repeatInfo, bedRecord.getMappingNum());
+				}
 			}
-			int[] geneLocInfo = searchGene(bedRecord.isCis5to3(), bedRecord.getRefID(), bedRecord.getStart(), bedRecord.getEnd());
-			addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,bedRecord.getMappingNum());
+			if (gffHashGene != null) {
+				int[] geneLocInfo = searchGene(bedRecord.isCis5to3(), bedRecord.getRefID(), bedRecord.getStart(), bedRecord.getEnd());
+				addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,bedRecord.getMappingNum());
+			}
 		}
 	}
 	

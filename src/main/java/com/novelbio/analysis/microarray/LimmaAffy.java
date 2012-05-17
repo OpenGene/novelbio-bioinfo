@@ -265,12 +265,12 @@ public class LimmaAffy {
 			script = script + "\"" + string + "\", ";
 		}
 		script = script.substring(0, script.length() - 2);
-		script = script + ")" + TxtReadandWrite.huiche;
+		script = script + ")" + TxtReadandWrite.ENTER_LINUX;
 		if (NormType.equals(LimmaAffy.NORM_RMA)) {
-			script = script + "esetOld = rma(data)" +TxtReadandWrite.huiche;
+			script = script + "esetOld = rma(data)" +TxtReadandWrite.ENTER_LINUX;
 		}
 		else if (NormType.equals(LimmaAffy.NORM_GCRMA)) {
-			script = script + "esetOld = gcrma(data)"+TxtReadandWrite.huiche;
+			script = script + "esetOld = gcrma(data)"+TxtReadandWrite.ENTER_LINUX;
 		}
 		script = script + scriptWriteNormData();
 		return script;
@@ -291,9 +291,9 @@ public class LimmaAffy {
 		String[] scriptDesignName = getDesign();
 		String script = scriptReadNormTmpData();
 		if (dataConvertType.equals(DATA_CONVERT_LOG2)) {
-			script = "eset = log2(eset)"+TxtReadandWrite.huiche;
+			script = "eset = log2(eset)"+TxtReadandWrite.ENTER_LINUX;
 		}
-		script = script +TxtReadandWrite.huiche + scriptDesignName[0] + scriptDesignName[1];
+		script = script +TxtReadandWrite.ENTER_LINUX + scriptDesignName[0] + scriptDesignName[1];
 		
 		return script;
 	}
@@ -314,8 +314,8 @@ public class LimmaAffy {
 		for (String[] strings : lsCompInfo) {
 			script = script + strings[0] + "vs" + strings[1] + "=" + strings[0] + " - " + strings[1] + ",";
 		}
-		script = script + "levels=design)"+TxtReadandWrite.huiche;
-		script = script + "fit = lmFit(eset, design)"+TxtReadandWrite.huiche+ "fit2 = contrasts.fit(fit, contrast.matrix) "+TxtReadandWrite.huiche+"fit2.eBayes = eBayes(fit2)"+TxtReadandWrite.huiche;
+		script = script + "levels=design)"+TxtReadandWrite.ENTER_LINUX;
+		script = script + "fit = lmFit(eset, design)"+TxtReadandWrite.ENTER_LINUX+ "fit2 = contrasts.fit(fit, contrast.matrix) "+TxtReadandWrite.ENTER_LINUX+"fit2.eBayes = eBayes(fit2)"+TxtReadandWrite.ENTER_LINUX;
 		for (String[] strings : lsCompInfo) {
 			script = script + getWriteInfo(outPath, strings[0] + "vs" + strings[1]);
 		}
@@ -329,7 +329,7 @@ public class LimmaAffy {
 	private String getWriteInfo(String outpath, String compInfo) {
 //		outpath = FileOperate.addSep(outpath);
 		outpath = FileOperate.getParentPathName(outpath) + FileOperate.getFileNameSep(outpath)[0];
-		String script = "write.table(topTable(fit2.eBayes, coef=\"" + compInfo + "\", adjust=\"fdr\", sort.by=\"B\", number=50000),  file=\""+outpath + compInfo+".xls\", row.names=F, sep=\"\\t\")"+TxtReadandWrite.huiche;
+		String script = "write.table(topTable(fit2.eBayes, coef=\"" + compInfo + "\", adjust=\"fdr\", sort.by=\"B\", number=50000),  file=\""+outpath + compInfo+".xls\", row.names=F, sep=\"\\t\")"+TxtReadandWrite.ENTER_LINUX;
 		return script;
 	}
 	
@@ -372,13 +372,13 @@ public class LimmaAffy {
 			groupID = hashName2GroupID.get(strings[1]);
 			scriptDesign = scriptDesign +","+ groupID;
 		}
-		scriptDesign = scriptDesign + ")))"+TxtReadandWrite.huiche;
+		scriptDesign = scriptDesign + ")))"+TxtReadandWrite.ENTER_LINUX;
 		//依次获得每个分组的名称
 		for (String string : hashName2GroupID.keySet()) {
 			scriptColName = scriptColName + "\""+string + "\",";
 		}
 		scriptColName = scriptColName.substring(0, scriptColName.length()-1);
-		scriptColName = scriptColName + ")"+TxtReadandWrite.huiche;
+		scriptColName = scriptColName + ")"+TxtReadandWrite.ENTER_LINUX;
 		String[] design = new String[2];
 		design[0] = scriptDesign; design[1] = scriptColName;
 		return design;
@@ -416,7 +416,7 @@ public class LimmaAffy {
 	 * @return
 	 */
 	private String scriptReadNormTmpData() {
-		String script = "library(limma)" + TxtReadandWrite.huiche;
+		String script = "library(limma)" + TxtReadandWrite.ENTER_LINUX;
 		script = script +  "eset=read.table(file=\""+txtTmpNormData+"\",he=T,sep=\"\\t\",row.names=1)";
 		return script;
 	}

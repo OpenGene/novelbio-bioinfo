@@ -275,9 +275,9 @@ public class SamFile {
 			}
 
 			if (samRecord.getReadUnmappedFlag() || (nonUniq && samRecord.getAttribute("XT").equals("R"))) {
-				fastQline = "@" + samRecord.getReadName() + TxtReadandWrite.huiche + 
+				fastQline = "@" + samRecord.getReadName() + TxtReadandWrite.ENTER_LINUX + 
 						samRecord.getReadString() +
-						TxtReadandWrite.huiche + "+" + TxtReadandWrite.huiche + 
+						TxtReadandWrite.ENTER_LINUX + "+" + TxtReadandWrite.ENTER_LINUX + 
 						samRecord.getBaseQualityString();
 				txtFastQ.writefileln(fastQline);
 			}

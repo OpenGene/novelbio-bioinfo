@@ -119,7 +119,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	   setHashName();
 		// 实例化四个表
 		Chrhash = new LinkedHashMap<String, ListGff>();// 一个哈希表来存储每条染色体
-		locHashtable = new HashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
+		locHashtable = new LinkedHashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
 		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
 		
 	   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);

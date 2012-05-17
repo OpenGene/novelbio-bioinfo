@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 
 
@@ -140,6 +141,12 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * 不能通过该方法获得某个LOC在基因上的定位
 	 */
 	public ArrayList<String> getLOCIDList() {
+		if (LOCIDList == null) {
+			LOCIDList = new ArrayList<String>();
+			for (M m : Chrhash.values()) {
+				LOCIDList.add(m.getName().split(GffDetailGene.SEP_GENE_NAME)[0]);
+			}
+		}
 		return LOCIDList;
 	}
 	/**

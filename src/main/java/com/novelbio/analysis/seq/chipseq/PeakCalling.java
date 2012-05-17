@@ -30,6 +30,13 @@ public abstract class PeakCalling {
 	public PeakCalling(String file) {
 		this.file = file;
 	}
+	/**
+	 * 设定文件
+	 * @param file
+	 */
+	public void setFile(String file) {
+		this.file = file;
+	}
 	/** 文件格式，使用枚举FileFormat 
 	 * 如果输入了不支持的文件格式，则返回false
 	 * */

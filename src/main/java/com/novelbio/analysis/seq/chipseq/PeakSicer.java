@@ -17,6 +17,29 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class PeakSicer extends PeakCalling {
+	public static void main(String[] args) {
+		String bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/K4.KO.D4.sorted-1-removed.bed";
+		String outPrefix = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/sicer-df-K4/single/K4_K4";
+		PeakSicer peakSicer = new PeakSicer(bedFile);
+		peakSicer.setSpecies(SPECIES_MOUSE);
+		peakSicer.setEffectiveGenomeSize(85);
+		peakSicer.setChIPType(HISTONE_TYPE_H3K4);
+		peakSicer.setOutPrefix(outPrefix);
+		peakSicer.peakCallling();
+		
+		bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/K4.WT.D0.sorted-1-removed.bed";
+		outPrefix = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/sicer-df-K4/single/K4_WT0";
+		peakSicer.setFile(bedFile);
+		peakSicer.setOutPrefix(outPrefix);
+		peakSicer.peakCallling();
+		
+		bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/K4.WT.D4.sorted-1-removed.bed";
+		outPrefix = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/sicer-df-K4/single/K4_WT4";
+		peakSicer.setFile(bedFile);
+		peakSicer.setOutPrefix(outPrefix);
+		peakSicer.peakCallling();
+	}
+	
 	private static Logger logger = Logger.getLogger(PeakSicer.class);
 	private static final String SICER_PATH = NovelBioConst.PEAKCALLING_SICER_PATH;
 	/**
@@ -57,10 +80,15 @@ public class PeakSicer extends PeakCalling {
 	 */
 	int Evalue = 100;
 	String species = "";
-
-	public static void main(String[] args) {
-		
+	String bedCol = "";
+	/**
+	 * 设定对照
+	 * @param bedCol
+	 */
+	public void setBedCol(String bedCol) {
+		this.bedCol = bedCol;
 	}
+
 	/**
 	 * 设定fragment长度，默认250
 	 * @param fragment_size
@@ -121,12 +149,11 @@ public class PeakSicer extends PeakCalling {
 	public void peakCallling() {
 		ArrayList<String[]> lsIn = null;
 		if (bedCol == null || bedCol.trim().equals("")) {
-			lsIn = peakCallingSingle(species, outFilePath);
+			lsIn = peakCallingSingle();
 		}
 		else {
 			lsIn = peakCallingCol(bedCol, species);
 		}
-		super.annoFilter(lsIn, 1, 2, 3, FileOperate.addSep(outFilePath)+fileName);
 	}
 	
 	

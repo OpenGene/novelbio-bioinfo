@@ -10,7 +10,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modcopeid.CopedID;
 
 /**
- * 比对到RefSeq上的ncRNA
+ * 比对到RefSeq上的ncRNA，看其具体情况
  * @author zong0jie
  *
  */

@@ -222,7 +222,7 @@ public class ExcelTxtRead {
 	/**
 	 * 指定excel文件，以及需要读取的列和行
 	 * @param excelFile 待读取的excel文件
-	 * @param columnID 待读取的列，int[]中间是读取的第几列，读取结果会按照指定的列的顺序给出
+	 * @param columnID 待读取的列，int[]中间是读取的第几列，读取结果会按照指定的列的顺序给出，如果中间含有小于1的列，则跳过
 	 * @param rowStart
 	 * @param rowEnd 如果rowEnd<1，则一直读到sheet1文件结尾
 	 * @return
@@ -237,6 +237,9 @@ public class ExcelTxtRead {
 		
 		ArrayList<String[][]> lstmpResult=new ArrayList<String[][]>();
 		for (int i = 0; i < columnID.length; i++) {
+			if (columnID[i] < 1) {
+				continue;
+			}
 			String[][] tmpresult=excelOperate.ReadExcel(rowStart, columnID[i], rowEnd, columnID[i]);
 			lstmpResult.add(tmpresult);
 		}
@@ -248,7 +251,7 @@ public class ExcelTxtRead {
 	/**
 	 * 指定txt文件，以及需要读取的列和行
 	 * @param txtFile 待读取的txt文件
-	 * @param columnID 待读取的列，int[]中间是读取的第几列，读取结果会按照指定的列的顺序给出
+	 * @param columnID 待读取的列，int[]中间是读取的第几列，读取结果会按照指定的列的顺序给出，如果列数小于1，则跳过
 	 * @param rowStart
 	 * @param rowEnd 如果rowEnd=-1，则一直读到文件结尾
 	 * @return
@@ -264,6 +267,9 @@ public class ExcelTxtRead {
 
 		ArrayList<String[][]> lstmpResult=new ArrayList<String[][]>();
 		for (int i = 0; i < columnID.length; i++) {
+			if (columnID[i] < 1) {
+				continue;
+			}
 			String[][] tmpresult=txtOperate.ExcelRead(sep,rowStart, columnID[i], rowEnd, columnID[i]);
 			lstmpResult.add(tmpresult);
 		}

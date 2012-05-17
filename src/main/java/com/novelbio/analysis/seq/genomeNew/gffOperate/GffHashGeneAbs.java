@@ -97,6 +97,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	public GffGeneIsoInfo searchISO(String accID) {
 		GffDetailGene gffdetail = searchLOC(accID);
 		if (gffdetail == null) {
+    		logger.info("cannotFind the ID: "+ accID);
 			return null;
 		}
 		GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(accID);

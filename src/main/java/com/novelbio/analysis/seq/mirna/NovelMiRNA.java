@@ -15,6 +15,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
@@ -69,10 +70,10 @@ public class NovelMiRNA extends GffChrAbs{
 						flagNewID = false;
 				}
 				else if (i == 3) {
-					tmpOut = tmpOut + TxtReadandWrite.huiche + string.split(" ")[0];
+					tmpOut = tmpOut + TxtReadandWrite.ENTER_LINUX + string.split(" ")[0];
 				}
 				else if (i == 4) {
-					tmpOut = tmpOut + TxtReadandWrite.huiche + string;
+					tmpOut = tmpOut + TxtReadandWrite.ENTER_LINUX + string;
 					if (flagWriteIn) {
 						txtOut.writefileln(tmpOut);
 					}
