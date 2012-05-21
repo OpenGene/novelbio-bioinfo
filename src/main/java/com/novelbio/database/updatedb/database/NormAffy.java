@@ -2,6 +2,14 @@ package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
 
+import com.novelbio.analysis.annotation.blast.BlastNBC;
+import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.PatternOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 /**
@@ -17,6 +25,21 @@ import com.novelbio.generalConf.NovelBioConst;
  */
 public class NormAffy extends ImportPerLine
 {
+	public static void main(String[] args) {
+		String queryFasta = "/media/winE/Bioinformatics/Affymetrix/rice/Rice_target_modified.fa";
+		String subFasta = "/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/blast/GeneRefSeq.fa";
+		String outFile = "/media/winE/Bioinformatics/Affymetrix/rice/Affy2Loc.txt";
+		BlastNBC blastNBC = new BlastNBC();
+		blastNBC.setBlastType(BlastNBC.BLAST_BLASTN_NR2NR_WITH_NR);
+		blastNBC.setDatabaseSeq(subFasta);
+		blastNBC.setEvalue(0.001);
+		blastNBC.setQueryFastaFile(queryFasta);
+		blastNBC.setResultAlignNum(1);
+		blastNBC.setResultFile(outFile);
+		blastNBC.setResultSeqNum(2);
+		blastNBC.setResultType(8);
+		blastNBC.blast();
+	}
 	String dbInfo = "";
 	/**
 	 * 设定芯片来源，
@@ -60,5 +83,15 @@ public class NormAffy extends ImportPerLine
 				lsRefAccID.add(string);
 			}
 		}
+	}
+	
+	/**
+	 * 给定target的fasta文件，整理成常规fasta文件，然后去和指定物种的序列做blast
+	 * @param fastaFile
+	 */
+	public void toTargetFastaFile(String fastaFile) {
+		String regx = "(?<=target:\\w{0,100}:).+?(?=;)";
+		SeqFastaHash seqFastaHash = new SeqFastaHash(fastaFile, regx, false, false);
+		seqFastaHash.writeToFile(FileOperate.changeFileSuffix(fastaFile, "_modified", null));
 	}
 }

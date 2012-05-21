@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.Species;
 
 /**
@@ -37,19 +38,19 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	
 	private void setDB(String DB)
 	{
-		if (DB.equals(Species.ARABIDOPSIS)) {
+		if (DB.equals(NovelBioConst.GENOME_GFF_TYPE_TAIR)) {
 			GeneName="AT\\w{1}G\\d{5}";
 //			splitmRNA="(?<=AT\\w{1}G\\d{5}\\.)\\d";
 			splitmRNA="AT\\w{1}G\\d{5}\\.\\d";
 			this.taxID = 3702;
 		}
-		else if (DB.equals(Species.RICE)) {
+		else if (DB.equals(NovelBioConst.GENOME_GFF_TYPE_TIGR)) {
 			GeneName="LOC_Os\\d{2}g\\d{5}";
 //			splitmRNA="(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";
 			splitmRNA="LOC_Os\\d{2}g\\d{5}\\.\\d";
 			this.taxID = 39947;
 		}
-		else if (DB.equals(Species.Gmax)) {
+		else {
 			GeneName="Glyma\\d{2}g\\d{5}";
 //			splitmRNA="(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";
 			splitmRNA="Glyma\\d{2}g\\d{5}\\.\\d";
@@ -194,7 +195,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
       			   LOCIDList.add(gffDetailLOC.getName());
       		   }
       		   else {
-      			   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  在本行可能没有指定的基因ID  " +content);
+      			   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  在本行可能没有指定的基因ID  "+ splitmRNA + " " +content);
       		   }
       		   //重置标签，表示在5UTR和CDS的前面了，那么在后面 if 遇到的的就是第一个UTR或第一个CDS
       		   UTR5start = true; 

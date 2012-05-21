@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.chipseq.peakOverlap;
 
 import java.util.ArrayList;
 
+import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.chipseq.repeatMask.RepeatMask;
 import com.novelbio.analysis.seq.genome.GffPeakOverlap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -10,35 +11,34 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class PeakOverlap 
 {
-
 	public static void main(String[] args) {
+		BedSeq bedSeq = new BedSeq("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/FHE.all_SE.bed");
+		bedSeq = bedSeq.extend(240);
+		bedSeq.sortBedFile();
+	}
+	public static void main2(String[] args) {
 
 		try {
-			String parentFile1 = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/result/overlap/allPeak/";
-			 String fileN=parentFile1+"N_peaks_summit.xls";
+			String parentFile1 = "/home/zong0jie/桌面/新建文件夹/";
+			 String file2N=parentFile1+"FHE_Peak_FilteredP30FE3_add.xls";
 			 
 			 String parentFile2 = "/media/winE/NBC/Project/ChIPSeq_CDG101101CT/result/annotation/";
-			 String  file2N=parentFile1+"2N_peaks_summit.xls";
-			 String  file3N=parentFile1+"3N_peaks_summit.xls";
+			 String  fileN=parentFile1+"FHE_peaks.xls";
 			/**
 			 * 每个peakOverlap的细节
 			 */
 			 String parentFile3 = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/annotation/";
-			 String txtPeakOverlapFileN2N=parentFile1+"Nvs2N";
-			 String txtPeakOverlapFileN2NStic=parentFile1+"Nvs2Nstatistic";
-			 String txtPeakOverlapFileN3N=parentFile1+"Nvs3N";
-			 String txtPeakOverlapFileN3NStic=parentFile1+"Nvs3Nstatistic";
-			 String txtPeakOverlapFile2N3N=parentFile1+"2Nvs3N";
-			 String txtPeakOverlapFile2N3NStic=parentFile1+"2Nvs3Nstatistic";
+			 String txtPeakOverlapFileN2N=parentFile1+"FHEvsFHEadd";
+			 String txtPeakOverlapFileN2NStic=parentFile1+"FHEvsFHEaddstatistic";
 
 			PeakOverLap(fileN,file2N,txtPeakOverlapFileN2N);
-		    PeakStatistic("N", "2N",fileN,file2N,txtPeakOverlapFileN2NStic);
+		    PeakStatistic("FHE", "FHEadd",fileN,file2N,txtPeakOverlapFileN2NStic);
 		    
-			PeakOverLap(fileN,file3N,txtPeakOverlapFileN3N);
-		    PeakStatistic("N", "3N",fileN,file3N,txtPeakOverlapFileN3NStic);
-		    
-			PeakOverLap(file2N,file3N,txtPeakOverlapFile2N3N);
-		    PeakStatistic("2N", "3N",file2N,file3N,txtPeakOverlapFile2N3NStic);
+//			PeakOverLap(fileN,file3N,txtPeakOverlapFileN3N);
+//		    PeakStatistic("N", "3N",fileN,file3N,txtPeakOverlapFileN3NStic);
+//		    
+//			PeakOverLap(file2N,file3N,txtPeakOverlapFile2N3N);
+//		    PeakStatistic("2N", "3N",file2N,file3N,txtPeakOverlapFile2N3NStic);
 		    
 	
 		} catch (Exception e) {}

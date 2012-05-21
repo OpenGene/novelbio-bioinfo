@@ -317,6 +317,30 @@ public class GffChrSeq extends GffChrAbs{
 		return lsResult;
 	}
 	/**
+	 * 获得某个物种的全部RNA全长序列的每个gene的最长序列，从refseq中提取更加精确
+	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
+	 * @param IsoName 转录本的名字
+	 * @param cis5to3 正反向，在提出的正向转录本的基础上，是否需要反向互补
+	 * @param startExon 具体某个exon
+	 * @param endExon 具体某个Intron
+	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
+	 * @param getIntron
+	 * @return
+	 */
+	public ArrayList<SeqFasta> getSeqAll() {
+		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
+		for (GffDetailGene gffDetailGene : gffHashGene.getLocHashtable().values()) {
+			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+				SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, false);
+				if (seq == null || seq.length() < 3) {
+					continue;
+				}
+				seq.setSeqName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+				lsResult.add(seq);
+		}
+		return lsResult;
+	}
+	/**
 	 * 返回gene2Iso的列表
 	 * 第一列：geneID
 	 * 第二列：ISOID

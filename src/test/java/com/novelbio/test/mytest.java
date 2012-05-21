@@ -111,7 +111,7 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		CopedID copedID = new CopedID("NM_001206404", 0);
+		CopedID copedID = new CopedID("Os.22949.1.S1_at", 0);
 	
 		System.out.println(copedID.getTaxID());
 		System.out.println(copedID.getDescription());

@@ -326,11 +326,18 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	public String getName() {
 		return name;
 	}
- 
-	public double getMean() {
+	/** 如果不存在，则返回null */
+	public Double getMean() {
+		if (value == null) {
+			return null;
+		}
 		return MathComput.mean(value);
 	}
+	/** 如果不存在，则返回null */
 	public double getMedian() {
+		if (value == null) {
+			return null;
+		}
 		return MathComput.median(value);
 	}
 	/**
@@ -406,17 +413,19 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 */
 	@Override
 	public double[] getDouble() {
+		if (value == null) {
+			return null;
+		}
 		double[] valueTmp = new double[value.length];
 		for (int i = 0; i < valueTmp.length; i++) {
 			valueTmp[i] = value[i];
 		}
-		if (!cis5to3 && correct) {
+		if (cis5to3 != null && !cis5to3 && correct) {
 			ArrayOperate.convertArray(valueTmp);
 		}
 		return valueTmp;
 	}
 	/**
-	 * 
 	 * @return
 	 */
 	public double getScore() {

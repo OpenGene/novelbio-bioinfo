@@ -69,7 +69,6 @@ public class GffChrAnno extends GffChrAbs{
 		lsInfo.remove(0);
 		colChrID--; colStart--; colEnd--;
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		
 		for (String[] strings : lsInfo) {
 			String chrID = strings[colChrID];
 			int start =  (int)Double.parseDouble(strings[colStart]);

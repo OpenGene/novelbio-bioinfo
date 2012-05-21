@@ -99,6 +99,10 @@ public class MicroArrayBlast {
 		}
 		//将去重复和排序的比对结果导入数据库
 		for (String[] strings : lsFinal) {
+			if (Double.parseDouble(strings[2]) < 90 || Double.parseDouble(strings[10]) > 1e-90) {
+				continue;
+			}
+			
 			CopedID copedID = new CopedID(strings[0], taxID);
 
 			//如果数据库中没有这个ID，那么就导入数据库

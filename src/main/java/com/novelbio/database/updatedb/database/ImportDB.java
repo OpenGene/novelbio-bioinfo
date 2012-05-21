@@ -23,10 +23,10 @@ public class ImportDB {
 //		updateYeast();
 
 
-//		updateMicroarray();
+		updateMicroarray();
 //		updateSoyBean();
 //		updateZeaMaize();
-		updateBlast();
+//		updateBlast();
 //		updateAffy();
 	}
 	/**
@@ -262,14 +262,14 @@ public class ImportDB {
 //		normAffy.updateFile(affyFile, false);
 
 		/////////   rice  //////////////////////////////////////////////;
-//		affyFile = "/media/winE/Bioinformatics/Affymetrix/rice/Rice.na31.annot.csv/Rice.na31.annot.csv";
-//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
-//		taxID = 39947;
-//		normAffy = new NormAffy();
-//		normAffy.setTaxID(taxID);
-//		normAffy.setTxtWriteExcep(outFile);
-//		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
-//		normAffy.updateFile(affyFile, false);
+		affyFile = "/media/winE/Bioinformatics/Affymetrix/rice/Rice.na31.annot.csv/Rice.na31.annot.csv";
+		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+		taxID = 39947;
+		normAffy = new NormAffy();
+		normAffy.setTaxID(taxID);
+		normAffy.setTxtWriteExcep(outFile);
+		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
+		normAffy.updateFile(affyFile, false);
 
 		/////////   Pig Porcine  //////////////////////////////////////////////;
 //		affyFile = "";
@@ -292,14 +292,14 @@ public class ImportDB {
 //		normAffy.updateFile(affyFile, false);
 		
 		/////////   Rat  //////////////////////////////////////////////;
-		affyFile = "/media/winE/Bioinformatics/Affymetrix/Mouse/Mouse Genome 430 2.0 Array/Mouse430_2.na31.annot.csvTT/Mouse430_2.na31.annot.csv";
-		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
-		taxID = 10090;
-		normAffy = new NormAffy();
-		normAffy.setTaxID(taxID);
-		normAffy.setTxtWriteExcep(outFile);
-		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
-		normAffy.updateFile(affyFile, false);
+//		affyFile = "/media/winE/Bioinformatics/Affymetrix/Mouse/Mouse Genome 430 2.0 Array/Mouse430_2.na31.annot.csvTT/Mouse430_2.na31.annot.csv";
+//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+//		taxID = 10090;
+//		normAffy = new NormAffy();
+//		normAffy.setTaxID(taxID);
+//		normAffy.setTxtWriteExcep(outFile);
+//		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
+//		normAffy.updateFile(affyFile, false);
 
 		/////////   Bovine  //////////////////////////////////////////////;
 //		affyFile = "/media/winE/Bioinformatics/Affymetrix/";
@@ -355,7 +355,7 @@ public class ImportDB {
 	}
 	
 	private static void updateMicroarray() {
-		String zerbfishFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfishRefSeq.xls";
+		String zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/rice/Affy2Loc.txt";
 		String zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
 		MicroArrayBlast microArrayBlast = null;
 		////////////////////  °ßÂíÓã  /////////////////////////////
@@ -364,8 +364,16 @@ public class ImportDB {
 		microArrayBlast = new MicroArrayBlast();
 		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_ZEBRAFISH);
 		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
+//		microArrayBlast.updateFile(zerbfishFile, false);
+//		microArrayBlast.updateFile(zerbfishFile2, false);
+		
+
+		////////////////////  Ë®µ¾  /////////////////////////////
+		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/rice/Affy2Loc.txt";
+		microArrayBlast = new MicroArrayBlast();
+		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
+		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
 		microArrayBlast.updateFile(zerbfishFile, false);
-		microArrayBlast.updateFile(zerbfishFile2, false);
 	}
 	
 	private static void updateYeast()

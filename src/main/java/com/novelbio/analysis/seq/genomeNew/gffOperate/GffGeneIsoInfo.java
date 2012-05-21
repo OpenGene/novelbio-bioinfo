@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import javax.swing.text.MaskFormatter;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
@@ -649,7 +651,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			result = result + "Exon:exon_Position_Number_is:" + getLocInEleNum(coord);
 		}
 		else if (codLoc == COD_LOC_INTRON) {
-			result = result + "Intron_intron_Position_Number_is:" + getLocInEleNum(coord);
+			result = result + "Intron_intron_Position_Number_is:" + Math.abs(getLocInEleNum(coord));
 		}
 		//gene end
 		if (isCodInIsoGenEnd(coord)) {

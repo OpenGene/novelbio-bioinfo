@@ -36,7 +36,8 @@ public class GuiToolsJpanel extends JPanel {
 	private JTextFieldData jtxtAccID;
 	private JTextField jtxtColNum;
 	private JTextField jtxtAccIDComp;
-
+	GUIFileOpen guiFileOpenComb = new GUIFileOpen();
+	GUIFileOpen guiFileOpenMed = new GUIFileOpen();
 	/**
 	 * Create the panel.
 	 */
@@ -100,8 +101,7 @@ public class GuiToolsJpanel extends JPanel {
 		springLayout.putConstraint(SpringLayout.WEST, btnSaveasMedian, 117, SpringLayout.EAST, jtxtColNum);
 		btnSaveasMedian.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				GUIFileOpen guiFileOpen = new GUIFileOpen();
-				String filename = guiFileOpen.saveFileName("txt/excel2003", "txt","xls");
+				String filename = guiFileOpenMed.saveFileName("txt/excel2003", "txt","xls");
 				String inFile = jtxtFileNameMedian.getText();
 				String txtAccID = jtxtAccID.getText();
 				String txtColID = jtxtColNum.getText();
@@ -128,8 +128,7 @@ public class GuiToolsJpanel extends JPanel {
 		jTab.setModel(jTabInput);
 		btnAddlineCompare.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				GUIFileOpen guiFileOpen = new GUIFileOpen();
-				String filename = guiFileOpen.openFileName("txt/excel2003", "txt","xls");
+				String filename = guiFileOpenComb.openFileName("txt/excel2003", "txt","xls");
 				jTabInput.addRow(new String[]{filename,""});
 			}
 		});

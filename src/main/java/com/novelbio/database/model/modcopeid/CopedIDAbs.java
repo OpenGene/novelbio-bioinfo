@@ -82,6 +82,8 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		return result;
 	}
+	/** 设定是否将blast的结果进行了查找 */
+	boolean blastFlag = false;
 	// ///////////////// Blast setting
 	/**
 	 * 设定多个物种进行blast 每次设定后都会刷新
@@ -107,6 +109,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 				}
 			}
 		}
+		blastFlag = false;
 	}
 
 	/**
@@ -117,11 +120,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 */
 	@Override
 	public CopedID getCopedIDBlast() {
-		if (lsBlastInfos == null || lsBlastInfos.size() == 0) {
-			return null;
-		}
-		BlastInfo blastInfo = lsBlastInfos.get(0);
-		return getBlastCopedID(blastInfo);
+		return getCopedIDLsBlast().get(0);
 	}
 
 	/**
@@ -138,7 +137,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 				blastInfo.getSubjectTax());
 		return copedID;
 	}
-
+	ArrayList<CopedID> lsBlastCopedID = new ArrayList<CopedID>();
 	/**
 	 * blast多个物种 首先要设定blast的目标 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 给定一系列的目标物种的taxID，获得CopedIDlist 如果没有结果，返回一个空的lsResult
@@ -148,17 +147,20 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 */
 	@Override
 	public ArrayList<CopedID> getCopedIDLsBlast() {
-		ArrayList<CopedID> lsResult = new ArrayList<CopedID>();
+		if (blastFlag) {
+			return lsBlastCopedID;
+		}
+		blastFlag = true;
 		if (lsBlastInfos == null || lsBlastInfos.size() == 0) {
-			return lsResult;
+			return lsBlastCopedID;
 		}
 		for (BlastInfo blastInfo : lsBlastInfos) {
 			CopedID copedID = getBlastCopedID(blastInfo);
 			if (copedID != null) {
-				lsResult.add(copedID);
+				lsBlastCopedID.add(copedID);
 			}
 		}
-		return lsResult;
+		return lsBlastCopedID;
 	}
 
 	/**

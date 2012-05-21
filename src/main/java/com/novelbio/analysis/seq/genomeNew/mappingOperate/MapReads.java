@@ -724,15 +724,13 @@ public class MapReads {
 	 * @param endNum 终点坐标，为实际终点
 	 * 如果(endNum - startNum + 1) / thisInvNum >0.7，则将binNum设置为1
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
-	 * @return
+	 * @return 如果没有找到该染色体位点，则返回null
 	 */
 	public  double[] getRengeInfo(int thisInvNum,String chrID,int startNum,int endNum,int type)
 	{	
 		if (startNum <=0 && endNum <=0) {
 			startNum = 1; endNum = (int)getChrLen(chrID);
 		}
-		
-		
 		if (startNum > endNum) {
 			logger.error("起点不能比终点大: "+chrID+" "+startNum+" "+endNum);
 		}
@@ -781,7 +779,7 @@ public class MapReads {
 	 * @param endNum 终点坐标，为实际终点
 	 * @param binNum 待分割的区域数目
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
-	 * @return
+	 * @return 如果没有找到该染色体位点，则返回null
 	 */
 	public  double[] getRengeInfo(String chrID,int startNum,int endNum,int binNum,int type) 
 	{
@@ -794,8 +792,7 @@ public class MapReads {
 		}
 		
 		int[] invNumReads = hashChrBpReads.get(chrID.toLowerCase());
-		if (invNumReads == null) 
-		{
+		if (invNumReads == null) {
 			return null;
 		}
 		startNum--; endNum--;
@@ -1151,7 +1148,8 @@ public class MapReads {
 		}
 	}
 	/**
-	 * 填充每个MapInfo
+	 * 填充每个MapInfo，如果没有找到该染色体位点，则填充null
+
 	 * 经过标准化，和equations修正
 	 * @param lsmapInfo
 	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确

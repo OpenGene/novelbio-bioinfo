@@ -362,32 +362,32 @@ public class MathComput {
 	 */
 	public static void sort(int[] unsortNum, boolean smallToBig)
 	{
-		int tmp=-10000;
-		int length=unsortNum.length;
+		int tmp = -10000;
+		int length = unsortNum.length;
 		if (smallToBig) {
-			for(int i=1;i<length;i++) {
-				tmp=unsortNum[i];
-				int j=i;
-				for(;j>0;j--) {
-					if(tmp<unsortNum[j-1]) {
-						unsortNum[j]=unsortNum[j-1];
+			for(int i = 1;i<length;i++) {
+				tmp = unsortNum[i];
+				int j = i;
+				for(;j > 0; j --) {
+					if(tmp < unsortNum[j-1]) {
+						unsortNum[j] = unsortNum[j-1];
 					}
 					else break;
 				}
-				unsortNum[j]= tmp;
+				unsortNum[j] = tmp;
 			}
 		}
 		else {
-			for(int i=1;i<length;i++) {
-				tmp=unsortNum[i];
-				int j=i;
-				for(;j>0;j--) {
-					if(tmp>unsortNum[j-1]) {
-						unsortNum[j]=unsortNum[j-1];
+			for(int i = 1; i < length; i ++) {
+				tmp = unsortNum[i];
+				int j = i;
+				for(;j > 0;j --) {
+					if(tmp > unsortNum[j-1]) {
+						unsortNum[j] = unsortNum[j-1];
 					}
 					else break;
 				}
-				unsortNum[j]= tmp;
+				unsortNum[j] = tmp;
 			}
 		}
 	}

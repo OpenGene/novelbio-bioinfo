@@ -11,12 +11,10 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
-import javax.print.attribute.standard.Fidelity;
-
 import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
-import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.FastQRecord;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -366,6 +364,116 @@ public class FastQ extends SeqComb {
 			setCompressType(TxtReadandWrite.TXT, TxtReadandWrite.TXT);
 		}
 	}
+	
+	/**
+	 * 读取前几行，不影响{@link #readlines()}
+	 * @param num
+	 * @return
+	 */
+	public ArrayList<FastQRecord> readHeadLines(int num) {
+		ArrayList<FastQRecord> lsResult = new ArrayList<FastQRecord>();
+		int i = 0;
+		for (FastQRecord fastQRecord : readlines()) {
+			if (i >= num) {
+				break;
+			}
+			lsResult.add(fastQRecord);
+		}
+		return lsResult;
+	}
+	/**
+	 * 读取前几行，不影响{@link #readlines()}
+	 * @param num
+	 * @return
+	 */
+	public FastQRecord readFirstLine() {
+		int i = 0;
+		for (FastQRecord fastQRecord : readlines()) {
+			return fastQRecord;
+		}
+		return null;
+	}
+	/**
+	 * 写完后务必用此方法关闭
+	 * 关闭输入流，并将fastQ写入转化为fastQ读取
+	 */
+	public void closeWrite() {
+		txtSeqFile.close();
+		super.compressInType = super.compressOutType;
+		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
+	}
+	public Iterable<FastQRecord> readlines() {
+		try {
+			return readPerlines();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	/**
+	 * 从第几行开始读，是实际行
+	 * @param lines 如果lines小于1，则从头开始读取
+	 * @return
+	 */
+	public Iterable<FastQRecord> readlines(int lines) {
+		lines = lines - 1;
+		try {
+			Iterable<FastQRecord> itContent = readPerlines();
+			if (lines > 0) {
+				for (int i = 0; i < lines; i++) {
+					itContent.iterator().hasNext();
+				}
+			}
+			return itContent;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	/**
+	 * 迭代读取文件
+	 * @param filename
+	 * @return
+	 * @throws Exception 
+	 * @throws IOException
+	 */
+	private Iterable<FastQRecord> readPerlines() throws Exception {
+		txtSeqFile.setFiletype(compressInType);
+		 final BufferedReader bufread =  txtSeqFile.readfile(); 
+		return new Iterable<FastQRecord>() {
+			public Iterator<FastQRecord> iterator() {
+				return new Iterator<FastQRecord>() {
+					FastQRecord fastQRecord = getLine();
+					public boolean hasNext() {
+						return fastQRecord != null;
+					}
+					public FastQRecord next() {
+						FastQRecord retval = fastQRecord;
+						fastQRecord = getLine();
+						return retval;
+					}
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+					FastQRecord getLine() {
+						FastQRecord fastQRecord = null;
+						try {
+							String linestr = bufread.readLine();
+							for (int i = 0; i < 3; i++) {
+								String lineTmp = bufread.readLine();
+								if (linestr == null) {
+									return null;
+								}
+								linestr = linestr + TxtReadandWrite.ENTER_LINUX + lineTmp;
+							}
+							fastQRecord = new FastQRecord(linestr);
+						} catch (IOException ioEx) {
+							fastQRecord = null;
+						}
+						return fastQRecord;
+					}
+				};
+			}
+		};
+	}	
 	/**
 	 * 待测试
 	 * 先去adaptoer，然后去polyA(右端)和polyT(左端)，然后去两端NNN，然后去总体低质量
@@ -412,7 +520,155 @@ public class FastQ extends SeqComb {
 			return null;
 		}
 	}
-	
+	/**
+	 * 待测试
+	 * 先去adaptoer，然后去polyA(右端)和polyT(左端)，然后去两端NNN，然后去总体低质量
+	 * 指定阈值，将fastQ文件进行过滤处理并产生新文件，那么本类的文件也会替换成新的文件
+	 * 
+	 * @param Qvalue_Num
+	 *            二维数组 每一行代表一个Qvalue 以及最多出现的个数 int[0][0] = 13 int[0][1] = 7
+	 *            :表示质量低于Q13的个数小于7个
+	 * @param fileFilterOut
+	 *            结果文件后缀，如果指定的fastQ有两个文件，那么最后输出两个fileFilterOut<br>
+	 *            分别为fileFilterOut_1和fileFilterOut_2
+	 * @return 返回已经过滤好的FastQ，其实里面也就是换了两个FastQ文件而已
+	 * @throws Exception
+	 */
+	private FastQ filterReadsExp2(String fileFilterOut) throws Exception {
+		setFastQFormat();
+		FastQ fastQ = new FastQ(fileFilterOut, FastQ.QUALITY_MIDIAN);
+		for (FastQRecord fastQRecord : readlines()) {
+			
+		}
+		BufferedReader readerSeq = txtSeqFile.readfile();
+		BufferedReader readerSeq2 = null;
+		TxtReadandWrite txtOutFile = new TxtReadandWrite();
+		String suffix = "fq";
+		if (compressOutType == TxtReadandWrite.GZIP) {
+			suffix = "gz";
+		}
+		if (!booPairEnd) 
+			txtOutFile.setParameter(compressOutType, fileFilterOut.trim(), true, false);
+		else 
+			txtOutFile.setParameter(compressOutType, FileOperate.changeFileSuffix(fileFilterOut.trim(), "_1", suffix), true, false);
+		
+		TxtReadandWrite txtOutFile2 = new TxtReadandWrite();;
+		if (booPairEnd) {
+			txtSeqFile2.reSetInfo();
+			readerSeq2 = txtSeqFile2.readfile();
+			txtOutFile2.setParameter(compressOutType, FileOperate.changeFileSuffix(fileFilterOut.trim(), "_2", suffix), true, false);
+		}
+
+		String content = "";
+		String content2 = null;
+		int count = 0;
+		String seqBlock1 = "";
+		String seqBlock2 = "";
+		while ((content = readerSeq.readLine()) != null) {
+			count ++;
+			seqBlock1 = seqBlock1 + content + TxtReadandWrite.ENTER_LINUX;
+			
+			if (booPairEnd) {
+				content2 = readerSeq2.readLine();
+				seqBlock2 = seqBlock2 + content2 + TxtReadandWrite.ENTER_LINUX;
+			}
+			
+			if (count == block)
+			{
+				seqBlock1 = seqBlock1.trim();
+				if (booPairEnd)
+					seqBlock2 = seqBlock2.trim();
+				
+				//////////////  adaptor  ///////////////////////////////////////////////
+				seqBlock1 = trimAdaptor(seqBlock1);
+				if (booPairEnd)
+					seqBlock2 = trimAdaptor(seqBlock2);
+				
+				
+				if (seqBlock1 == null || seqBlock2 == null) {
+					seqBlock1 = ""; seqBlock2 = "";
+					count = 0;// 清零
+					continue;
+				}
+				///////////// polyA ///////////////////////////////////////////////////////
+				if (trimPolyA_right) {
+					seqBlock1 = trimPolyAR(seqBlock1, 2);
+					if (booPairEnd)
+						seqBlock2 = trimPolyAR(seqBlock2, 2);
+					
+					if (seqBlock1 == null || seqBlock2 == null) {
+						seqBlock1 = ""; seqBlock2 = "";
+						count = 0;// 清零
+						continue;
+					}
+				}
+				///////////// polyT ///////////////////////////////////////////////////////
+				if (trimPolyT_left) {
+					seqBlock1 = trimPolyTL(seqBlock1, 2);
+					if (booPairEnd)
+						seqBlock2 = trimPolyTL(seqBlock2, 2);
+					
+					if (seqBlock1 == null || seqBlock2 == null) {
+						seqBlock1 = ""; seqBlock2 = "";
+						count = 0;// 清零
+						continue;
+					}
+				}
+			
+				///////////////  tail NNN  ////////////////////////////////////////////
+				if (trimNNN) {
+					seqBlock1 = trimNNN(seqBlock1, 2);
+					if (booPairEnd)
+						seqBlock2 = trimNNN(seqBlock2, 2);
+					
+					if (seqBlock1 == null || seqBlock2 == null) {
+						seqBlock1 = ""; seqBlock2 = "";
+						count = 0;// 清零
+						continue;
+					}
+				}
+				///////////// Lowcase ///////////////////////////////////////////////////////
+				if (adaptorLowercase) {
+					seqBlock1 = trimLowCase(seqBlock1);
+					if (booPairEnd)
+						seqBlock2 = trimLowCase(seqBlock2);
+					
+					if (seqBlock1 == null || seqBlock2 == null) {
+						seqBlock1 = ""; seqBlock2 = "";
+						count = 0;// 清零
+						continue;
+					}
+				}
+				///////////////////  QC  /////////////////////////////////////////////////////////
+				
+				if (QCBlock(seqBlock1, seqBlock2)) {
+					txtOutFile.writefileln(seqBlock1);
+					if (booPairEnd) {
+						txtOutFile2.writefileln(seqBlock2);
+					}
+				}
+				// 清空
+				seqBlock1 = "";
+				seqBlock2 = "";
+				count = 0;// 清零
+				continue;
+			}
+		}
+		FastQ fastQ1 = null;
+
+		if (booPairEnd) {
+			fastQ1 = new FastQ(fileFilterOut.trim() + "_1", fileFilterOut.trim()
+					+ "_2", offset, quality);
+		} else {
+			fastQ1 = new FastQ(fileFilterOut.trim(), null, offset, quality);
+		}
+		fastQ1.setCompressType(compressOutType, compressOutType);
+		txtSeqFile.close();
+		txtSeqFile2.close();
+		txtOutFile.close();
+		txtOutFile2.close();
+		return fastQ1;
+	}
 	/**
 	 * 待测试
 	 * 先去adaptoer，然后去polyA(右端)和polyT(左端)，然后去两端NNN，然后去总体低质量

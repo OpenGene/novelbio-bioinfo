@@ -97,12 +97,23 @@ public class PatternOperate
      * @param CASE
      * @return 没有抓到的话，返回null
      */
-    public ArrayList<String> getPat(String inputstr)
+    public ArrayList<String> getPat(String inputstr) {
+    	return getPat(inputstr, 0);
+    }
+    /**
+     * <b>简单处理，相对快速</b>
+     * 获得序列中指定的所有正则表达式的值
+     * @param inputstr
+     * @param regex
+     * @param CASE
+     * @return 没有抓到的话，返回null
+     */
+    public ArrayList<String> getPat(String inputstr, int groupID)
     {
     	ArrayList<String> lsresult = new ArrayList<String>();
     	 matInput=patInput.matcher(inputstr);
     	 while (matInput.find()) {
-			lsresult.add(matInput.group());
+			lsresult.add(matInput.group(groupID));
 		}
     	 if (lsresult.size() == 0) {
 			return null;
@@ -117,14 +128,25 @@ public class PatternOperate
      * @param CASE
      * @return 没有抓到的话，返回null
      */
-    public String getPatFirst(String inputstr)
-    {
+    public String getPatFirst(String inputstr) {
+    	return getPatFirst(inputstr, 0);
+    }
+    /**
+     * <b>简单处理，相对快速</b>
+     * 获得序列中指定的第一个正则表达式的值
+     * @param inputstr
+     * @param regex
+     * @param CASE
+     * @return 没有抓到的话，返回null
+     */
+    public String getPatFirst(String inputstr, int groupID)  {
     	 matInput=patInput.matcher(inputstr);
     	 while (matInput.find()) {
-    		 return matInput.group();
+    		 return matInput.group(groupID);
 		}
     	return null;
     }
+
     
     String regex = "";
     boolean CASE_SENSITIVE = false;

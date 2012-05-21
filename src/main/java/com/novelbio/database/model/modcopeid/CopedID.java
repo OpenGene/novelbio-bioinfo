@@ -213,8 +213,7 @@ public class CopedID implements CopedIDInt{
 		copedID.setBlastInfo(evalue,StaxID);
 	}
 	
-	public ArrayList<BlastInfo> getLsBlastInfos()
-	{
+	public ArrayList<BlastInfo> getLsBlastInfos() {
 		return copedID.getLsBlastInfos();
 	}
 ///////////////////////   »ñµÃblast  copedID  ///////////////////////////////////////////////////////////////////
