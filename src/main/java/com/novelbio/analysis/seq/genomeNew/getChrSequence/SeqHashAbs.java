@@ -240,7 +240,14 @@ public abstract class SeqHashAbs implements SeqHashInt{
 			SeqFasta seqFasta = getSeqInfo(chrID, startlocation, endlocation);
 			seqFasta.setDNA(isDNAseq);
 			return seqFasta;
-		} catch (IOException e) {
+		} catch (Exception e) {
+			try {
+				@SuppressWarnings("unused")
+				SeqFasta seqFasta = getSeqInfo(chrID, startlocation, endlocation);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			return null;
 		}
 	}

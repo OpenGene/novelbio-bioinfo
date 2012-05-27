@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.mapping;
 
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -10,7 +10,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  *
  */
-public abstract class FastQMapAbs extends FastQ implements FastQMapInt{
+public abstract class FastQMapAbs extends FastQOld implements FastQMapInt{
 	/**
 	 * 将单端bed文件延长至240bp
 	 */
@@ -136,7 +136,7 @@ public abstract class FastQMapAbs extends FastQ implements FastQMapInt{
 	 */
 	public FastQMapAbs filterReads(String fileFilterOut)
 	{
-		FastQ fastQ = null;
+		FastQOld fastQ = null;
 		try {
 			fastQ = super.filterReads(fileFilterOut);	
 		} catch (Exception e) {
@@ -149,7 +149,7 @@ public abstract class FastQMapAbs extends FastQ implements FastQMapInt{
 		return fastQMapAbs;
 	}
 
-	protected abstract FastQMapAbs createFastQMap(FastQ fastQ);
+	protected abstract FastQMapAbs createFastQMap(FastQOld fastQ);
 	/**
 	 * 设定mapping质量，根据不同的测序长度进行默认20
 	 */

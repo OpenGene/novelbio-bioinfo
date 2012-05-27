@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.chipseq;
 
 import java.util.ArrayList;
 
+import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedSeq;
@@ -167,8 +168,8 @@ public class PeakSicer extends PeakCalling {
 	 */
 	private ArrayList<String[]> peakCallingSingle()
 	{
-		String parentPath = FileOperate.deleteSep(FileOperate.getParentPathName(file));
-		String outDir = FileOperate.getParentPathName(outPrefix);
+		String parentPath = FileOperate.removeSep(FileOperate.getParentPathName(file));
+		String outDir = FileOperate.removeSep(FileOperate.getParentPathName(outPrefix));
 		String cmd = cmdSingle + parentPath + " " + FileOperate.getFileName(file) + " ";
 		cmd = cmd + outDir + " ";
 		cmd = cmd + species + " ";
@@ -203,7 +204,7 @@ public class PeakSicer extends PeakCalling {
 	 */
 	private ArrayList<String[]> peakCallingCol(String bedCol, String species)
 	{
-		String parentPath = FileOperate.deleteSep(FileOperate.getParentPathName(file));
+		String parentPath = FileOperate.removeSep(FileOperate.getParentPathName(file));
 //		String parentCol = FileOperate.deleteSep(FileOperate.getParentPathName(bedCol));
 
 		String cmd = cmdSingleCol + parentPath + " " + FileOperate.getFileName(file) + " ";
@@ -251,7 +252,7 @@ public class PeakSicer extends PeakCalling {
 	public void peakCallingComp(String bedTreat2, String species, String prix)
 	{
 		String bedFile = super.getFileName();
-		String parentPath = FileOperate.deleteSep(FileOperate.getParentPathName(bedFile));
+		String parentPath = FileOperate.removeSep(FileOperate.getParentPathName(bedFile));
 		
 		String cmd = cmdComp +" " + super.getFileName() +" " + bedTreat2+ " " + species +" " + windowSize +" " + gapSIze +" " + Evalue +" " + FDR;
 		CmdOperate cmdOperate = new CmdOperate(cmd);

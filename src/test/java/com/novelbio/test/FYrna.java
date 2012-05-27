@@ -2,7 +2,7 @@ package com.novelbio.test;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -52,7 +52,7 @@ public class FYrna {
 	 */
 	public static void cleanReads(String seqFile1, String seqFile2,String out)
 	{
-		FastQ fastQ = new FastQ(seqFile1, seqFile2, FastQ.FASTQ_ILLUMINA_OFFSET, FastQ.QUALITY_MIDIAN_PAIREND);
+		FastQOld fastQ = new FastQOld(seqFile1, seqFile2, FastQOld.FASTQ_ILLUMINA_OFFSET, FastQOld.QUALITY_MIDIAN_PAIREND);
 		fastQ.setLenReadsMin(50);
 		fastQ.filterReads(out);
 		

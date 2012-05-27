@@ -34,7 +34,7 @@ public class CtrlSeq {
 		String sortBedFile = parentPath + "result/NseSort.bed";
 		String peakCallingFile = parentPath + "result/peakCalling";
 		
-		FastQ fastQ = new FastQ(fq, FastQ.QUALITY_MIDIAN);
+		FastQOld fastQ = new FastQOld(fq, FastQOld.QUALITY_MIDIAN);
 //		fastQ = fastQ.filterReads(FileOperate.changeFileSuffix(fq, "_filter", "fq"));
 		
 		FastQMap fastQMap = new FastQMap(FastQMap.MAPPING_BWA, fastQ, outFile, true);
@@ -59,7 +59,7 @@ public class CtrlSeq {
 		String sortBedFile = parentPath + "result/2NseSort.bed";
 		String peakCallingFile = parentPath + "result/peakCalling";
 		
-		FastQ fastQ = new FastQ(fq, FastQ.QUALITY_MIDIAN);
+		FastQOld fastQ = new FastQOld(fq, FastQOld.QUALITY_MIDIAN);
 //		fastQ = fastQ.filterReads(FileOperate.changeFileSuffix(fq, "_filter", "fq"));
 		
 		FastQMap fastQMap = new FastQMap(FastQMap.MAPPING_BWA, fastQ, outFile, true);
@@ -84,7 +84,7 @@ public class CtrlSeq {
 		String sortBedFile = parentPath + "result/3NseSort.bed";
 		String peakCallingFile = parentPath + "result/peakCalling";
 		
-		FastQ fastQ = new FastQ(fq, FastQ.QUALITY_MIDIAN);
+		FastQOld fastQ = new FastQOld(fq, FastQOld.QUALITY_MIDIAN);
 //		fastQ = fastQ.filterReads(FileOperate.changeFileSuffix(fq, "_filter", "fq"));
 		
 		FastQMap fastQMap = new FastQMap(FastQMap.MAPPING_BWA, fastQ, outFile, true);
@@ -110,7 +110,7 @@ public class CtrlSeq {
 		String sortBedFile = parentPath + "result/WEseSort.bed";
 		String peakCallingFile = parentPath + "result/peakCalling";
 		
-		FastQ fastQ = new FastQ(fq, FastQ.QUALITY_MIDIAN);
+		FastQOld fastQ = new FastQOld(fq, FastQOld.QUALITY_MIDIAN);
 //		fastQ = fastQ.filterReads(FileOperate.changeFileSuffix(fq, "_filter", "fq"));
 		
 		FastQMap fastQMap = new FastQMap(FastQMap.MAPPING_BWA, fastQ, outFile, true);
@@ -136,7 +136,7 @@ public class CtrlSeq {
 		String sortBedFile = parentPath + "result/KEseSort.bed";
 		String peakCallingFile = parentPath + "result/peakCalling";
 		
-		FastQ fastQ = new FastQ(fq, FastQ.QUALITY_MIDIAN);
+		FastQOld fastQ = new FastQOld(fq, FastQOld.QUALITY_MIDIAN);
 //		fastQ = fastQ.filterReads(FileOperate.changeFileSuffix(fq, "_filter", "fq"));
 		
 		FastQMap fastQMap = new FastQMap(FastQMap.MAPPING_BWA, fastQ, outFile, true);
@@ -161,7 +161,7 @@ public class CtrlSeq {
 		String sortBedFile = parentPath + "result/FX2seSort.bed";
 		String peakCallingFile = parentPath + "result/peakCalling";
 		
-		FastQ fastQ = new FastQ(fq, FastQ.QUALITY_MIDIAN);
+		FastQOld fastQ = new FastQOld(fq, FastQOld.QUALITY_MIDIAN);
 //		fastQ = fastQ.filterReads(FileOperate.changeFileSuffix(fq, "_filter", "fq"));
 		
 		FastQMap fastQMap = new FastQMap(FastQMap.MAPPING_BWA, fastQ, outFile, true);
@@ -186,7 +186,7 @@ public class CtrlSeq {
 		String sortBedFile = parentPath + "result/2WseSort.bed";
 		String peakCallingFile = parentPath + "result/peakCalling";
 		
-		FastQ fastQ = new FastQ(fq, FastQ.QUALITY_MIDIAN);
+		FastQOld fastQ = new FastQOld(fq, FastQOld.QUALITY_MIDIAN);
 //		fastQ = fastQ.filterReads(FileOperate.changeFileSuffix(fq, "_filter", "fq"));
 		
 		FastQMap fastQMap = new FastQMap(FastQMap.MAPPING_BWA, fastQ, outFile, true);
@@ -211,7 +211,7 @@ public class CtrlSeq {
 		String sortBedFile = parentPath + "result/2KseSort.bed";
 		String peakCallingFile = parentPath + "result/peakCalling";
 		
-		FastQ fastQ = new FastQ(fq, FastQ.QUALITY_MIDIAN);
+		FastQOld fastQ = new FastQOld(fq, FastQOld.QUALITY_MIDIAN);
 //		fastQ = fastQ.filterReads(FileOperate.changeFileSuffix(fq, "_filter", "fq"));
 		
 		FastQMap fastQMap = new FastQMap(FastQMap.MAPPING_BWA, fastQ, outFile, true);

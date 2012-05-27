@@ -24,7 +24,7 @@ public class ChIPSeqComb {
 		String bedFileExtend =mapping + prix +  "Extend.bed";
 		String bedFileExtendSort =mapping + prix +  "ExtendSort.bed";
 		
-		FastQ fastQ = new FastQ(fq, FastQ.QUALITY_MIDIAN);
+		FastQOld fastQ = new FastQOld(fq, FastQOld.QUALITY_MIDIAN);
 //		fastQ = fastQ.filterReads(FileOperate.changeFileSuffix(fq, "_filter", "fq"));
 		
 		FastQMap fastQMap = new FastQMap(FastQMap.MAPPING_BWA, fastQ, outFile, true);

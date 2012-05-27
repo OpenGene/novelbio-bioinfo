@@ -1,11 +1,25 @@
 package com.novelbio.database.updatedb.database;
 
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class SoyBean {
+	public static void main(String[] args) {
+		PatternOperate patternOperate = new PatternOperate("(?<=target:Soybean:).+?(?=;)", false);
+		String aa = patternOperate.getPatFirst(">target:Soybean:AFFX-BioB-M_at; affx|AFFX-BioB-M; ");
+		System.out.println(aa);
+//		SoyBean soyBean = new SoyBean();
+//		soyBean.getAffyIDseq("/media/winE/Bioinformatics/Affymetrix/soybean/Soybean.target");
+		
+		SeqFastaHash seqFastaHash = new SeqFastaHash("/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_peptide.fa/Gmax_109_peptide.fa", 
+				".+?(?=\\|)", false, false);
+		seqFastaHash.writeToFile(FileOperate.changeFileSuffix("/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_peptide.fa/Gmax_109_peptide_filtered.fa", "_seq", "fa"));
+	}
 	int taxID = 3847;
 	String soyDbxref = "";
 	String SoyGeneInfo = "";
@@ -37,6 +51,12 @@ public class SoyBean {
 		soyGeneInfo.setTaxID(taxID);
 		soyGeneInfo.setReadFromLine(1);
 		soyGeneInfo.setTxtWriteExcep(SoyGeneInfo);
+	}
+	
+	
+	public void getAffyIDseq(String affTargetFile) {
+		SeqFastaHash seqFastaHash = new SeqFastaHash(affTargetFile, "(?<=target:Soybean:).+?(?=;)", false, false);
+		seqFastaHash.writeToFile(FileOperate.changeFileSuffix(affTargetFile, "_seq", "fa"));
 	}
 }
 /**

@@ -19,13 +19,13 @@ import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * 新的miRNA的预测
+ * 新的miRNA的预测，基于miReap的算法
  * @author zong0jie
  *
  */
-public class NovelMiRNA extends GffChrAbs{
+public class NovelMiRNAReap extends GffChrAbs{
 	public static void main(String[] args) {
-		NovelMiRNA.getRNAfoldInfo("/media/winF/NBC/Project/Project_Invitrogen/sRNA/novelMiRNA/CR_mireap-xxx.aln",
+		NovelMiRNAReap.getRNAfoldInfo("/media/winF/NBC/Project/Project_Invitrogen/sRNA/novelMiRNA/CR_mireap-xxx.aln",
 				"/media/winF/NBC/Project/Project_Invitrogen/sRNA/novelMiRNA/CR_mireap-xxx.gff",
 				"/media/winF/NBC/Project/Project_Invitrogen/sRNA/novelMiRNA/CR_mireap.aln");
 	}
@@ -33,11 +33,14 @@ public class NovelMiRNA extends GffChrAbs{
 		String bedFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/novelMiRNA/TG_Genomic.bed";
 		String outMapFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/novelMiRNA/TG_MapFile.txt";
 		String outSeqFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/novelMiRNA/TG_SeqFile.txt";
-		NovelMiRNA novelMiRNA = new NovelMiRNA(NovelBioConst.GENOME_GFF_TYPE_UCSC,
+		NovelMiRNAReap novelMiRNA = new NovelMiRNAReap(NovelBioConst.GENOME_GFF_TYPE_UCSC,
 				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
 		novelMiRNA.setBedSeq(bedFile);
 		novelMiRNA.getNovelMiRNASeq( outMapFile, outSeqFile);
 	}
+	/** 读取mireap的gff和aln文件，将其装入listmirna，方便后面算表达 */
+	ListMiRNALocation listMiRNALocation = new ListMiRNALocation();
+	
 	/**
 	 * 给定mireap的aln文件和Gff文件，将gff里面记载的，aln里面的rnafold格式的文本提取出来
 	 * @param mireapAln
@@ -85,10 +88,8 @@ public class NovelMiRNA extends GffChrAbs{
 		txtOut.close();
 	}
 	
-	
-	public NovelMiRNA(String gffType, String gffFile, String chrFile) {
+	public NovelMiRNAReap(String gffType, String gffFile, String chrFile) {
 		super(gffType, gffFile, chrFile, null, 10);
-		// TODO Auto-generated constructor stub
 	}
 
 	BedSeq bedSeq = null;
@@ -101,7 +102,6 @@ public class NovelMiRNA extends GffChrAbs{
 	 * @param seqFile fasta格式，如下：<br>
 	 * >t0000035 3234<br>
 GAATGGATAAGGATTAGCGATGATACA<br>
-	
 	 */
 	public void getNovelMiRNASeq(String mapFile, String seqFile) {
 		String out = FileOperate.changeFileSuffix(bedSeq.getFileName(), "_Potential_DenoveMirna", null);
@@ -154,28 +154,6 @@ GAATGGATAAGGATTAGCGATGATACA<br>
 		String result = max + "";
 		return "t"+result.substring(1);
 	}
-//	/**
-//	 * 开始用mireap来代替本方法
-//	 * 给定合并的bed文件，获得序列
-//	 * @param bedSeq
-//	 * @return
-//	 */
-//	@Deprecated
-//	private void writeBedSeq(BedSeq bedSeq, int readsNum, String outTxt) {
-//		TxtReadandWrite txtOut = new TxtReadandWrite(outTxt, true);
-//		for (BedRecord bedRecord : bedSeq.readlines()) {
-//			if (bedRecord.getReadsNum() < readsNum) {
-//				continue;
-//			}
-//			bedRecord.extendCenter(100);
-//			getSeqHash().getSeq(bedRecord);
-//			//设定名字
-//			bedRecord.getSeqFasta().setSeqName(bedRecord.getName() + "_" + bedRecord.getReadsNum());
-//			txtOut.writefileln(bedRecord.getSeqFasta().toStringNRfasta());
-//		}
-//	}
-	
-	
 	/**
 	 * 获得reads不在基因上的序列
 	 */
@@ -189,7 +167,12 @@ GAATGGATAAGGATTAGCGATGATACA<br>
 		bedResult.closeWrite();
 		return bedResult;
 	}
-	
+	/**
+	 * 判定输入的reads是否位于intron或gene外或反向exon上
+	 * @param gffCodGene
+	 * @param bedCis
+	 * @return
+	 */
 	private boolean readsNotOnCDS(GffCodGene gffCodGene, boolean bedCis) {
 		if (gffCodGene == null) {
 			return true;
@@ -198,7 +181,12 @@ GAATGGATAAGGATTAGCGATGATACA<br>
 			return true;
 		}
 		GffDetailGene gffDetailGene = gffCodGene.getGffDetailThis();
-		int locInfo = gffDetailGene.getLongestSplit().getCodLoc(gffCodGene.getCoord());
+		int locInfo = 0;
+		try {
+			locInfo = gffDetailGene.getLongestSplit().getCodLoc(gffCodGene.getCoord());
+		} catch (Exception e) {
+			locInfo = gffDetailGene.getLongestSplit().getCodLoc(gffCodGene.getCoord());
+		}
 		if (locInfo == GffGeneIsoInfo.COD_LOC_INTRON 
 				|| locInfo == GffGeneIsoInfo.COD_LOC_OUT
 				|| bedCis != gffDetailGene.getLongestSplit().isCis5to3()
@@ -206,5 +194,79 @@ GAATGGATAAGGATTAGCGATGATACA<br>
 			return true;
 		}
 		return false;
+	}
+	/**
+	 * 将预测到的新miRNA写入一个文本
+	 * @param alnFile
+	 * @param outFilePre
+	 * @param outFileMature
+	 */
+	public static void writeNovelMiRNASeq(String alnFile, String outFilePre, String outFileMature) {
+		ArrayList<SeqFasta> lsSeqFastas = readReapResultPre(alnFile);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outFilePre, true);
+		for (SeqFasta seqFasta : lsSeqFastas) {
+			txtWrite.writefileln(seqFasta.toStringNRfasta());
+		}
+		ArrayList<SeqFasta> lsSeqFastasMature = readReapResultMature(alnFile);
+		TxtReadandWrite txtWriteMature = new TxtReadandWrite(outFileMature, true);
+		for (SeqFasta seqFasta : lsSeqFastasMature) {
+			txtWriteMature.writefileln(seqFasta.toStringNRfasta());
+		}
+		txtWriteMature.close();
+		txtWrite.close();
+	}
+	/**
+	 * 给定miReap文件，提取其中的序列
+	 * @param alnFile mirReap产生的结果序列文件
+	 * @param outSeq 提取出来的序列，方便后续做差异计算
+	 * @return 返回序列文件
+	 */
+	private static ArrayList<SeqFasta> readReapResultPre(String alnFile) {
+		ArrayList<SeqFasta> lsSeqFastas = new ArrayList<SeqFasta>();
+		TxtReadandWrite txtReadAln = new TxtReadandWrite(alnFile, false);
+		int countStart = 1;
+		SeqFasta seqFasta = new SeqFasta();
+		for (String string : txtReadAln.readlines()) {
+			if (countStart == 2) {
+				seqFasta = new SeqFasta();
+				seqFasta.setSeqName(string.split(" ")[0]);
+			}
+			else if (countStart == 3) {
+				seqFasta.setSeq(string.split(" ")[0]);
+				lsSeqFastas.add(seqFasta);
+			}
+			else if (string.equals("//")) {
+				countStart = 0;
+			}
+			countStart ++;
+		}
+		txtReadAln.close();
+		return lsSeqFastas;
+	}
+	/**
+	 * 给定miReap文件，提取其中的序列
+	 * @param alnFile mirReap产生的结果序列文件
+	 * @param outSeq 提取出来的序列，方便后续做差异计算
+	 * @return 返回序列文件
+	 */
+	private static ArrayList<SeqFasta> readReapResultMature(String alnFile) {
+		ArrayList<SeqFasta> lsSeqFastas = new ArrayList<SeqFasta>();
+		TxtReadandWrite txtReadAln = new TxtReadandWrite(alnFile, false);
+		int countStart = 1;
+		SeqFasta seqFasta = new SeqFasta();
+		for (String string : txtReadAln.readlines()) {
+			if (countStart >= 5 && string.contains("**")) {
+				seqFasta = new SeqFasta();
+				seqFasta.setSeqName(string.split(" ")[1]);
+				seqFasta.setSeq(string.split(" ")[0].replace("*", ""));
+				lsSeqFastas.add(seqFasta);
+			}
+			else if (string.equals("//")) {
+				countStart = 0;
+			}
+			countStart ++;
+		}
+		txtReadAln.close();
+		return lsSeqFastas;
 	}
 }

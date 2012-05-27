@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.apache.taglibs.standard.lang.jstl.NullLiteral;
 
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.analysis.seq.chipseq.preprocess.MapPeak;
 import com.novelbio.analysis.tools.formatConvert.bedFormat.Soap2Bed;
 import com.novelbio.base.cmd.CmdOperate;
@@ -84,7 +84,7 @@ public class FastQMapSoap extends FastQMapAbs{
 	 * @param outFileName 结果文件名
 	 * @param uniqMapping 是否uniqmapping，单端才有的参数
 	 */
-	protected FastQMapSoap(FastQ fastQ, String outFileName, boolean uniqMapping ) 
+	protected FastQMapSoap(FastQOld fastQ, String outFileName, boolean uniqMapping ) 
 	{
 		 this(fastQ.getFileName(), fastQ.getSeqFile2(),fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
 	}
@@ -126,7 +126,7 @@ public class FastQMapSoap extends FastQMapAbs{
 	 * 所以不需要指定新的mapping文件
 	 * 出错返回null
 	 */
-	protected FastQMapSoap createFastQMap(FastQ fastQ) 
+	protected FastQMapSoap createFastQMap(FastQOld fastQ) 
 	{
 		FastQMapSoap fastQSoapMap= new FastQMapSoap(fastQ.getFileName(), fastQ.getSeqFile2(), fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
 		return fastQSoapMap;

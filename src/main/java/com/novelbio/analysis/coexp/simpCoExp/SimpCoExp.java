@@ -170,8 +170,8 @@ public class SimpCoExp {
 			}
         });
         List<String[]> lsCoExpResult =  null;
-        if (lsCoExpValue.size() > 50000) {
-        	 lsCoExpResult = lsCoExpValue.subList(0, 50000);
+        if (lsCoExpValue.size() > 1500000) {
+        	 lsCoExpResult = lsCoExpValue.subList(0, 1500000);
 		}
         else {
         	 lsCoExpResult = lsCoExpValue;
@@ -182,10 +182,16 @@ public class SimpCoExp {
 		coExpTitle[0] = "GeneID";coExpTitle[1] = "GeneID";coExpTitle[2] = "pearson";coExpTitle[3] = "pvalue";coExpTitle[4] = "fdr";
 		lsCoExpResult.add(0,coExpTitle);
 
-		ExcelOperate excelCoExp = new ExcelOperate();
-		excelCoExp.openExcel(outFile, false);
-		String sheet1 = "GeneInteraction";
-		excelCoExp.WriteExcel(sheet1, 1, 1, lsCoExpResult);
+//		ExcelOperate excelCoExp = new ExcelOperate();
+//		excelCoExp.openExcel(outFile, false);
+//		String sheet1 = "GeneInteraction";
+//		excelCoExp.WriteExcel(sheet1, 1, 1, lsCoExpResult);
+		
+		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
+		for (String[] strings : lsCoExpResult) {
+			txtOut.writefileln(strings);
+		}
+		txtOut.close();
 	}
 	
 	
@@ -431,11 +437,12 @@ class CoexPair
 	double Pvalue = -1;
 	public static void setFirst(List<CoexpGenInfo> mylsGenInfos) {
 		//如果本次信息和上次的一样，那么就不进行计算
-		if (lsGenInfos != null && lsGenInfos.equals(mylsGenInfos)) {
-			return;
-		}
+//		if (lsGenInfos != null && lsGenInfos.equals(mylsGenInfos)) {
+//			return;
+//		}
 		//计算pearson系数
-		else {
+//		else
+		{
 			lsGenInfos = mylsGenInfos;
 			exp = new double[lsGenInfos.get(0).getExpValue().length][lsGenInfos.size()];
 			for (int i = 0; i < lsGenInfos.size(); i++) {

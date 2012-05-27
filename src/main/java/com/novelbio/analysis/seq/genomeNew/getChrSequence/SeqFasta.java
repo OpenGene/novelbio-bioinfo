@@ -8,7 +8,7 @@ import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 import org.hamcrest.core.Is;
 
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.analysis.seq.reseq.SoapsnpInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;

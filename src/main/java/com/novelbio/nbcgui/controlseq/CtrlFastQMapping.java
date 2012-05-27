@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.util.SSCellRange;
 
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.analysis.seq.mapping.FastQMapAbs;
 import com.novelbio.analysis.seq.mapping.FastQMapBwa;
 import com.novelbio.analysis.seq.mapping.SAMtools;
@@ -56,7 +56,7 @@ public class CtrlFastQMapping {
 	 */
 	boolean trimNNN = false;
 
-	int fastqQuality = FastQ.QUALITY_MIDIAN;
+	int fastqQuality = FastQOld.QUALITY_MIDIAN;
 
 	boolean uniqMapping = true;
 	/**
@@ -205,13 +205,13 @@ public class CtrlFastQMapping {
 	 */
 	private void filteredFastQ()
 	{
-		FastQ fastQ = null;
+		FastQOld fastQ = null;
 		if (libraryType == LIBRARY_SINGLE_END) {
 			for (int i = 0; i < lsFileName.size(); i ++) {
 				String[] ss = lsFileName.get(i);
 				String filterOut = outPathAndFileNamePrix + ss[1] + ss[2];
 				filterOut = FileOperate.changeFileSuffix(filterOut, "", "fq");
-				fastQ = new FastQ(ss[0], fastqQuality);
+				fastQ = new FastQOld(ss[0], fastqQuality);
 				
 				lsResult.add(new String[]{ss[1] + ss[2], "RawData", fastQ.getSeqNum()+""});
 				
@@ -227,7 +227,7 @@ public class CtrlFastQMapping {
 				String[] ss0 = lsFileName.get(i-1);
 				String[] ss1 = lsFileName.get(i);
 				String filterOut = outPathAndFileNamePrix + ss0[1] + ss0[2];
-				fastQ = new FastQ(ss0[0], ss1[0], fastqQuality);
+				fastQ = new FastQOld(ss0[0], ss1[0], fastqQuality);
 				
 				lsResult.add(new String[]{ss0[1] + ss0[2], "RawData", fastQ.getSeqNum()+""});
 				

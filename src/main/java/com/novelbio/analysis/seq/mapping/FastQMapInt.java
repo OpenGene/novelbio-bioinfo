@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.mapping;
 
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.FastQOld;
 
 public interface FastQMapInt {
 	/**

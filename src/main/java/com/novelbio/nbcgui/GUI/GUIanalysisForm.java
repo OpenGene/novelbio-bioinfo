@@ -119,7 +119,6 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 			pack();
 			this.setSize(1049, 699);
 		} catch (Exception e) {
-		    //add your error handling code here
 			e.printStackTrace();
 		}
 	}

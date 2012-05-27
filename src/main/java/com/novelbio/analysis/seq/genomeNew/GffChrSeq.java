@@ -41,8 +41,7 @@ public class GffChrSeq extends GffChrAbs{
 	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
 	 * @return
 	 */
-	public SeqFasta getSeq(String IsoName, boolean absIso,boolean getIntron)
-	{
+	public SeqFasta getSeq(String IsoName, boolean absIso,boolean getIntron) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (absIso)
 			gffGeneIsoInfo = gffHashGene.searchISO(IsoName);
@@ -59,8 +58,7 @@ public class GffChrSeq extends GffChrAbs{
 	 * @param getIntron
 	 * @return
 	 */
-	public SeqFasta getSeq(boolean cis5to3,String chrID, int startLoc, int endLoc)
-	{
+	public SeqFasta getSeq(boolean cis5to3,String chrID, int startLoc, int endLoc) {
 		return seqHash.getSeq(chrID, (long)startLoc, (long)endLoc);
 	}
 	
@@ -75,8 +73,7 @@ public class GffChrSeq extends GffChrAbs{
 	 * @param getIntron
 	 * @return
 	 */
-	public SeqFasta getSeq(String IsoName, boolean cis5to3,int startExon, int endExon, boolean absIso,boolean getIntron)
-	{
+	public SeqFasta getSeq(String IsoName, boolean cis5to3,int startExon, int endExon, boolean absIso,boolean getIntron) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (absIso)
 			gffGeneIsoInfo = gffHashGene.searchISO(IsoName);
@@ -99,8 +96,7 @@ public class GffChrSeq extends GffChrAbs{
 	 * @param getIntron 是否获得内含子
 	 * @return
 	 */
-	public SeqFasta getSeq(boolean cisseq, String IsoName, boolean absIso,boolean getIntron)
-	{
+	public SeqFasta getSeq(boolean cisseq, String IsoName, boolean absIso,boolean getIntron) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (absIso)
 			gffGeneIsoInfo = gffHashGene.searchISO(IsoName);
@@ -258,16 +254,8 @@ public class GffChrSeq extends GffChrAbs{
 		}
 		return lsResult;
 	}
-	
 	/**
 	 * 获得某个物种的全部cds，也就是从ATG到UAG的每个ISO序列，从refseq中提取更加精确
-	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
-	 * @param IsoName 转录本的名字
-	 * @param cis5to3 正反向，在提出的正向转录本的基础上，是否需要反向互补
-	 * @param startExon 具体某个exon
-	 * @param endExon 具体某个Intron
-	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
-	 * @param getIntron
 	 * @return
 	 */
 	public ArrayList<SeqFasta> getSeqCDSAllIso() {
@@ -279,6 +267,30 @@ public class GffChrSeq extends GffChrAbs{
 			gffDetailGene.removeDupliIso();
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				ArrayList<ExonInfo> lsCDS = gffGeneIsoInfo.getIsoInfoCDS();
+				if (lsCDS.size() > 0) {
+					SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), lsCDS, false);
+					if (seq == null || seq.length() < 3) {
+						continue;
+					}
+					seq.setSeqName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+					lsResult.add(seq);
+				}
+			}
+		}
+		return lsResult;
+	}
+	/**
+	 * 获得某个物种的全部3UTR序列，为了预测novel miRNA靶基因
+	 */
+	public ArrayList<SeqFasta> getSeq3UTRAll() {
+		ArrayList<String> lsID = gffHashGene.getLOCChrHashIDList();
+		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
+		GffDetailGene gffDetailGene = null;
+		for (String string : lsID) {
+			gffDetailGene = gffHashGene.searchLOC(string.split(ListAbsSearch.SEP)[0]);
+			gffDetailGene.removeDupliIso();
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				ArrayList<ExonInfo> lsCDS = gffGeneIsoInfo.get3UTRseq();
 				if (lsCDS.size() > 0) {
 					SeqFasta seq = seqHash.getSeq(gffGeneIsoInfo.getChrID(), lsCDS, false);
 					if (seq == null || seq.length() < 3) {

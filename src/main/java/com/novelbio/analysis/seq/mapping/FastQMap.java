@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.mapping;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.FastQOld;
 
 public class FastQMap implements FastQMapInt{
 	private static final Logger logger = Logger.getLogger(FastQMap.class);
@@ -33,7 +33,7 @@ public class FastQMap implements FastQMapInt{
 		}
 	}
 	
-	public FastQMap(String mappingType, FastQ fastQ,String outFile,boolean uniqMapping) {
+	public FastQMap(String mappingType, FastQOld fastQ,String outFile,boolean uniqMapping) {
 		if (mappingType.equals(FastQMap.MAPPING_BWA)) {
 			fastQMap = new FastQMapBwa(fastQ,outFile,uniqMapping);
 		}

@@ -862,18 +862,15 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return   info.hashCode();
 	}
-	
 	/**
-	 * 获得具体的编码序列
+	 * 获得具体的编码序列，待修正，可以调用getSeqLoc的方法提取序列
 	 * 没有结果就返回new list-exonInfo
 	 * @return
 	 */
-	public ArrayList<ExonInfo> getIsoInfoCDS()
-	{
+	public ArrayList<ExonInfo> getIsoInfoCDS() {
 		if (ATGsite == UAGsite) {
 			return new ArrayList<ExonInfo>();
 		}
-
 		ArrayList<ExonInfo> lsresult = new ArrayList<ExonInfo>();
 		int numAtg = getLocInEleNum(ATGsite) - 1;
 		int numUag = getLocInEleNum(UAGsite) - 1;
@@ -911,13 +908,75 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return lsresult;
 	}
+	/**
+	 * 获得3UTR的序列
+	 * @param startLoc
+	 * @param endLoc
+	 * @return
+	 */
+	public ArrayList<ExonInfo> get3UTRseq() {
+		return getSeqLoc(UAGsite, getTESsite());
+	}
+	/**
+	 * 给定坐标，不考虑起点和终点是否反了
+	 * 提取起点和终点之间的exonInfo，包括起点所在的那一部分exon和终点所在的那一部分exon
+	 * @param startLoc
+	 * @param endLoc
+	 * @return
+	 */
+	public ArrayList<ExonInfo> getSeqLoc(int startLoc, int endLoc) {
+		if (startLoc == endLoc) {
+			return new ArrayList<ExonInfo>();
+		}
+		int startSite = 0, endSite = 0;
+		if (isCis5to3()) {
+			startSite = Math.min(startLoc, endLoc); endSite = Math.max(startLoc, endLoc);
+		}
+		else {
+			startSite = Math.max(startLoc, endLoc); endSite = Math.min(startLoc, endLoc);
+		}
+		ArrayList<ExonInfo> lsresult = new ArrayList<ExonInfo>();
+		int numStart = getLocInEleNum(startSite) - 1; int numEnd = getLocInEleNum(endSite) - 1;
 	
+		for (int i = 0; i < size(); i++) {
+			ExonInfo exonTmp = get(i);
+			if (i < numStart) {
+				continue;
+			}
+			else if (i > numEnd) {
+				break;
+			}
+			else if (i == numStart) {
+				ExonInfo exonFinalTmp = new ExonInfo();
+				exonFinalTmp.setParentName(getName());
+				exonFinalTmp.setCis5to3(isCis5to3());
+				exonFinalTmp.setStartCis(startSite);
+				if (numStart == numEnd) {
+					exonFinalTmp.setEndCis(endSite);
+					lsresult.add(exonFinalTmp);
+					break;
+				}
+				else {
+					exonFinalTmp.setEndCis(exonTmp.getEndCis());
+					lsresult.add(exonFinalTmp);
+				}
+			}
+			else if (i == numEnd) {
+				ExonInfo exonFinalTmp = new ExonInfo(getName(), isCis5to3(), exonTmp.getStartCis(), endSite);
+				lsresult.add(exonFinalTmp);
+				break;
+			}
+			else {
+				lsresult.add(exonTmp);
+			}
+		}
+		return lsresult;
+	}
 	/**
 	 * 给定nr位点，换算为距离ATG多少aa位置
 	 * 直接给定nr的实际位点
 	 */
-	public int getAAsiteNum(int codSite)
-	{
+	public int getAAsiteNum(int codSite) {
 		if (Math.abs(ATGsite-UAGsite) < 2) {
 			return 0;
 		}
@@ -928,8 +987,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		aaNum = aaNum + 1;
 		return (aaNum+2)/3;
 	}
-	public GffGeneIsoInfo clone()
-	{
+	public GffGeneIsoInfo clone() {
 		GffGeneIsoInfo result = null;
 		result = (GffGeneIsoInfo) super.clone();
 		result.ATGsite = ATGsite;

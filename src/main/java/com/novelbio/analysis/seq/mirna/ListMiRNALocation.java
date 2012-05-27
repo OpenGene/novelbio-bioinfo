@@ -16,10 +16,12 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
  * @author zong0jie
  *
  */
-public class TmpMiRNALocation extends ListHashBin{
+public class ListMiRNALocation extends ListHashBin{
+	public static int TYPE_RNA_DATA = 10;
+	public static int TYPE_MIREAP = 15;
 	private static final long serialVersionUID = 7551704881799402654L;
 	public static void main(String[] args) {
-		TmpMiRNALocation tmpMiRNALocation = new TmpMiRNALocation();
+		ListMiRNALocation tmpMiRNALocation = new ListMiRNALocation();
 		tmpMiRNALocation.ReadGffarray("/media/winE/Bioinformatics/DataBase/sRNA/miRNA.dat");
 		System.out.println(tmpMiRNALocation.searchMirName("hsa-mir-16-2", 50, 65));
 	}
@@ -32,6 +34,23 @@ public class TmpMiRNALocation extends ListHashBin{
 	 */
 	public void setSpecies(String species) {
 		this.species = species;
+	}
+	int fileType = TYPE_RNA_DATA;
+	/**
+	 * 文件格式，可以是RNA.dat，也可以是miReap的结果
+	 * @param type
+	 */
+	public void setReadFileType(int type) {
+		this.fileType = type;
+	}
+	
+	protected void ReadGffarrayExcep(String rnadataFile) {
+		if (fileType == TYPE_RNA_DATA) {
+			ReadGffarrayExcepRNADat(rnadataFile);
+		}
+		else if (fileType == TYPE_MIREAP) {
+			ReadGffarrayExcepMirReap(rnadataFile);
+		}
 	}
 	/**
 	 * 读取RNA.dat，获得每个小RNA的序列信息
@@ -63,7 +82,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
      ggcucugcgg ccugcaggua gcgcgaaagu ccugcgcguc ccagaugccc                   50
 //
 	 */
-	protected void ReadGffarrayExcep(String rnadataFile) {
+	protected void ReadGffarrayExcepRNADat(String rnadataFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
 		ListBin<ListDetailBin> lsMiRNA = null; ListDetailBin listDetailBin = null;
 		super.locHashtable = new LinkedHashMap<String, ListDetailBin>();
@@ -111,6 +130,53 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 			}
 		}
 	}
+	
+	protected void ReadGffarrayExcepMirReap(String rnadataFile) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
+		ListBin<ListDetailBin> lsMiRNA = null; ListDetailBin listDetailBin = null;
+		super.locHashtable = new LinkedHashMap<String, ListDetailBin>();
+		super.LOCIDList = new ArrayList<String>();
+		int start = 0; int end = 0;
+		boolean cis5to3 = true;
+		for (String string : txtRead.readlines()) {
+			String[] ss = string.split("\t");
+			String name = ss[8].split(";")[0].split("=")[1];
+			if (ss[2].startsWith("precursor") ) {
+				lsMiRNA = new ListBin<ListDetailBin>();
+				lsMiRNA.setName(name);
+				lsMiRNA.setCis5to3(true);
+				cis5to3 = ss[6].equals("+");
+				if (cis5to3) {
+					start = Integer.parseInt(ss[3]);
+					end = Integer.parseInt(ss[4]);
+				}
+				else {
+					start = Integer.parseInt(ss[4]);
+					end = Integer.parseInt(ss[3]);
+				}
+				//装入chrHash
+				getChrhash().put(lsMiRNA.getName(), lsMiRNA);
+			}
+			if (ss[2].startsWith("mature")) {
+				listDetailBin = new ListDetailBin();
+				listDetailBin.setCis5to3(true);
+				//30..50
+				listDetailBin.setName(name);
+				if (cis5to3) {
+					listDetailBin.setStartAbs(Integer.parseInt(ss[3]) - start);
+					listDetailBin.setEndAbs(Integer.parseInt(ss[4]) - start);
+				}
+				else {
+					listDetailBin.setStartAbs(start - Integer.parseInt(ss[4]));
+					listDetailBin.setEndAbs(start - Integer.parseInt(ss[3]));
+				}
+				lsMiRNA.add(listDetailBin);
+				locHashtable.put(listDetailBin.getName(), listDetailBin);
+				LOCIDList.add(listDetailBin.getName());
+			}
+		}
+	}
+	
 	/**
 	 * 如果没有找到，则返回null
 	 * @param mirName mir的名字

@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modcopeid.CopedID;
 
@@ -60,6 +61,7 @@ public class MicroArrayBlast {
 	 */
 	public void updateFile(String gene2AccFile, boolean gzip) {
 		TxtReadandWrite txtGene2Acc;
+		TxtReadandWrite txtOut = new TxtReadandWrite(FileOperate.changeFileSuffix(gene2AccFile, "_out", "txt"), true);
 		if (gzip)
 			txtGene2Acc = new TxtReadandWrite(TxtReadandWrite.GZIP, gene2AccFile);
 		else 
@@ -136,10 +138,13 @@ public class MicroArrayBlast {
 //				copedID.setUpdateAccID(accID);
 			}
 			copedID.setUpdateDBinfo(dbInfo, true);
-			copedID.update(false);
+			if (copedID.update(false)) {
+				txtOut.writefileln(strings);
+			}
 		}
 		
-		
+		txtOut.close();
+		txtGene2Acc.close();
 	}
 	
 

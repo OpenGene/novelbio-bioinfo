@@ -96,12 +96,11 @@ public class ServTaxID extends AbsGetSpring  implements MapTaxID{
 		TaxInfo taxInfo = new TaxInfo();
 		ArrayList<TaxInfo> lsTaxID = mapTaxID.queryLsTaxInfo(taxInfo);
 		for (TaxInfo taxInfo2 : lsTaxID) {
-			if (taxInfo2.getAbbr() == null || taxInfo2.getAbbr().trim().equals("")) {
-				hashNameTaxID.put(taxInfo2.getComName().trim(), taxInfo2.getTaxID());
-				hashTaxIDName.put(taxInfo2.getTaxID(), taxInfo2.getComName().trim());
-				continue;
+			if (taxInfo2.getAbbr() != null || !taxInfo2.getAbbr().trim().equals("")) {
+				hashNameTaxIDUsual.put(taxInfo2.getComName().trim(), taxInfo2.getTaxID());
 			}
-			hashNameTaxIDUsual.put(taxInfo2.getComName().trim(), taxInfo2.getTaxID());
+			hashNameTaxID.put(taxInfo2.getComName().trim(), taxInfo2.getTaxID());
+			hashTaxIDName.put(taxInfo2.getTaxID(), taxInfo2.getComName().trim());			
 		}
 	}
 }

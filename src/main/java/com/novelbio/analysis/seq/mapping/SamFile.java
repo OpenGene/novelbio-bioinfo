@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -73,7 +73,7 @@ public class SamFile {
 	
 	public static void main(String[] args) {
 		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_miRNA_Filtered_out.sam");
-		BedSeq bedSeq = samFile.sam2bedSingleEnd(TxtReadandWrite.TXT, "/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_miRNA_Filtered_out.bed", false);
+		BedSeq bedSeq = samFile.toBedSingleEnd(TxtReadandWrite.TXT, "/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_miRNA_Filtered_out.bed", false);
 	}
 	
 	
@@ -257,7 +257,7 @@ public class SamFile {
 	 * @param 是否将非uniq的也提取出来
 	 * @return
 	 */
-	public FastQ getUnMappedReads(boolean nonUniq, String outFastQfile)
+	public FastQOld getUnMappedReads(boolean nonUniq, String outFastQfile)
 	{
 		SAMFileReader samFileReader = getSamFileReader();
 		int wrongReadsNum = 0;
@@ -289,7 +289,7 @@ public class SamFile {
 		txtFastQ.close();
 		samFileReader.close();
 		System.out.println(wrongReadsNum);
-		FastQ fastQ = new FastQ(outFastQfile, FastQ.QUALITY_MIDIAN);
+		FastQOld fastQ = new FastQOld(outFastQfile, FastQOld.QUALITY_MIDIAN);
 		return fastQ;
 	}
 	
@@ -421,7 +421,7 @@ X 8 sequence mismatch
 5: strand
 6: mapping reads数，1表示uniqmapping
 	 */
-	public BedSeq sam2bedSingleEnd(String bedFileCompType, String bedFile, boolean extend) {
+	public BedSeq toBedSingleEnd(String bedFileCompType, String bedFile, boolean extend) {
 		BedSeq bedSeq = new BedSeq(bedFile, true);
 		bedSeq.setCompressType(null, bedFileCompType);
 		SAMFileReader samFileReader = getSamFileReader();

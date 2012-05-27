@@ -215,7 +215,7 @@ public class FileOperate {
 		String name = ""; // 文件名
 		String houzhuiming = ""; // 后缀名
 		String[] filenamefinal;
-		filePath = deleteSep(filePath);
+		filePath = removeSep(filePath);
 		if (filename == null || filename.equals("*") )//|| filename.equals(""))
 		{
 			filename = ".*";
@@ -966,7 +966,7 @@ public class FileOperate {
 	 * @param path
 	 * @return
 	 */
-	public static String deleteSep(String path) {
+	public static String removeSep(String path) {
 		path = path.trim();
 		if (path.endsWith(File.separator)) {
 			path = path.substring(0, path.length() -1);

@@ -7,7 +7,7 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.base.cmd.CMDcallback;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateTime;
@@ -57,7 +57,7 @@ public class MapBwa {
 	 * @param outFileName 结果文件名
 	 * @param uniqMapping 是否uniqmapping，单端才有的参数
 	 */
-	public MapBwa(FastQ fastQ, String outFileName, boolean uniqMapping ) {
+	public MapBwa(FastQOld fastQ, String outFileName, boolean uniqMapping ) {
 		this.uniqMapping = uniqMapping;
 		this.outFileName = outFileName;
 		leftFq = fastQ.getFileName();
@@ -154,7 +154,7 @@ public class MapBwa {
 		this.mapQ = mapQ;
 	}
 	private int getOffset() {
-		FastQ fastQ = new FastQ(leftFq, FastQ.QUALITY_MIDIAN);
+		FastQOld fastQ = new FastQOld(leftFq, FastQOld.QUALITY_MIDIAN);
 		return fastQ.getOffset();
 	}
 	/**
@@ -175,7 +175,7 @@ public class MapBwa {
 		cmd = cmd + "-l 25 "; //种子长度
 		cmd = cmd + "-t 4 "; //4个线程
 		cmd = cmd + "-O 10 "; //Gap open penalty. gap罚分
-		if (getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
+		if (getOffset() == FastQOld.FASTQ_ILLUMINA_OFFSET) {
 			cmd = cmd + "-I "; //Illumina 的偏移
 		}
 		String sai1 = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(outFileName)[0];

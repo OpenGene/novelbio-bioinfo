@@ -6,7 +6,7 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.base.cmd.CMDcallback;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateTime;
@@ -57,7 +57,7 @@ public class FastQMapBwa extends FastQMapAbs{
 	 * @param outFileName 结果文件名
 	 * @param uniqMapping 是否uniqmapping，单端才有的参数
 	 */
-	protected FastQMapBwa(FastQ fastQ, String outFileName, boolean uniqMapping ) 
+	protected FastQMapBwa(FastQOld fastQ, String outFileName, boolean uniqMapping ) 
 	{
 		 this(fastQ.getFileName(), fastQ.getSeqFile2(),fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
 	}
@@ -150,7 +150,7 @@ public class FastQMapBwa extends FastQMapAbs{
 	 * 所以不需要指定新的mapping文件
 	 * 出错返回null
 	 */
-	protected FastQMapBwa createFastQMap(FastQ fastQ) 
+	protected FastQMapBwa createFastQMap(FastQOld fastQ) 
 	{
 		FastQMapBwa fastQSoapMap= new FastQMapBwa(fastQ.getFileName(), fastQ.getSeqFile2(), fastQ.getOffset(), fastQ.getQuality(), outFileName, uniqMapping);
 		return fastQSoapMap;

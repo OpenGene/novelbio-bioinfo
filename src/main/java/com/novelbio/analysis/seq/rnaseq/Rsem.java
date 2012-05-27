@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 import org.springframework.ui.context.Theme;
 
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.FastQOld;
 /**
  * 输入fastq文件，进行rsem分析
  * @author zong0jie
@@ -66,8 +66,8 @@ public class Rsem {
 	 */
 	private String getPhred64() {
 		if (phred64 == null) {
-			FastQ fastQ = new FastQ(lsUpFile.get(0), FastQ.QUALITY_MIDIAN);
-			if (fastQ.getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
+			FastQOld fastQ = new FastQOld(lsUpFile.get(0), FastQOld.QUALITY_MIDIAN);
+			if (fastQ.getOffset() == FastQOld.FASTQ_ILLUMINA_OFFSET) {
 				phred64 = true;
 			}
 			else {

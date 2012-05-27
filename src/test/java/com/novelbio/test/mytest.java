@@ -47,7 +47,7 @@ import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValue
 
 
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.analysis.seq.SeqComb;
 import com.novelbio.analysis.seq.blastZJ.Cell;
 import com.novelbio.analysis.seq.blastZJ.LongestCommonSubsequence;
@@ -111,9 +111,15 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		CopedID copedID = new CopedID("Os.22949.1.S1_at", 0);
-	
+		CopedID copedID = new CopedID("PH_CV292702", 0);
+		HashMap<Integer, String> hashMap = CopedID.getSpeciesTaxIDName();
+		String species = hashMap.get(copedID.getTaxID());
+		System.out.println(species);
+		copedID.setBlastInfo(1e-10, 3702);
 		System.out.println(copedID.getTaxID());
+		System.out.println(copedID.getDescription());
+		copedID = copedID.getCopedIDBlast();
+		System.out.println(copedID.getSymbol());
 		System.out.println(copedID.getDescription());
 	}
 	
@@ -244,7 +250,7 @@ public class mytest {
 //		name();
 		try {
 			String seqFile1 = "/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/2.rawseq/2.rawseq.txt";
-			FastQMapBwa fastQ = new FastQMapBwa(seqFile1,FastQ.QUALITY_MIDIAN,"" +
+			FastQMapBwa fastQ = new FastQMapBwa(seqFile1,FastQOld.QUALITY_MIDIAN,"" +
 					"/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/2.bwa_tigr6.1_norednuntcdna_withnopolya.sam" ,true);
 //			
 			fastQ.setTrimPolyA(true,false);
@@ -266,7 +272,7 @@ public class mytest {
 		}
 		try {
 			String seqFile1 = "/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/3.rawseq/3.rawseq.txt";
-			FastQMapBwa fastQ = new FastQMapBwa(seqFile1,FastQ.QUALITY_MIDIAN,"" +
+			FastQMapBwa fastQ = new FastQMapBwa(seqFile1,FastQOld.QUALITY_MIDIAN,"" +
 					"/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/3.bwa_tigr6.1_norednuntcdna_withnopolya.sam" ,true);
 //			
 			fastQ.setTrimPolyA(true,false);
@@ -369,8 +375,8 @@ public class mytest {
 		String parentPath = "/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/";
 		String seq1 = parentPath + "s_3_sep_filter_high.fasta_1";
 		String seq2 = parentPath + "s_3_sep_filter_high.fasta_2";
-		FastQ fastQ = new FastQ(seq1, seq2, FastQ.FASTQ_ILLUMINA_OFFSET,
-				FastQ.QUALITY_HIGM);
+		FastQOld fastQ = new FastQOld(seq1, seq2, FastQOld.FASTQ_ILLUMINA_OFFSET,
+				FastQOld.QUALITY_HIGM);
 		try {
 			fastQ.filterBarcode(
 					"/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/sf/barcodTest.fastq",
@@ -679,7 +685,7 @@ public class mytest {
 		String parentFile = "/media/winE/NBC/Project/Project_HY_Lab/TSC2+KO/";
 		try {
 			FastQSoapMap fastQSoapMap = new FastQSoapMap(parentFile
-					+ "TSC2KOBarcode_small.fq", FastQ.QUALITY_MIDIAN,
+					+ "TSC2KOBarcode_small.fq", FastQOld.QUALITY_MIDIAN,
 					parentFile + "TSC2KOsmallMap.fq", "soap", IndexFile, false);
 			fastQSoapMap.mapReads();
 			fastQSoapMap.copeSope2Bed(parentFile + "TSC2KOsmall.bed",
@@ -689,7 +695,7 @@ public class mytest {
 		}
 		try {
 			FastQSoapMap fastQSoapMap = new FastQSoapMap(parentFile
-					+ "TSC2KOBarcode_mid.fq", FastQ.QUALITY_MIDIAN, parentFile
+					+ "TSC2KOBarcode_mid.fq", FastQOld.QUALITY_MIDIAN, parentFile
 					+ "TSC2KOmidMap.fq", "soap", IndexFile, false);
 			fastQSoapMap.mapReads();
 			fastQSoapMap.copeSope2Bed(parentFile + "TSC2KOmid.bed", parentFile
@@ -699,7 +705,7 @@ public class mytest {
 		}
 		try {
 			FastQSoapMap fastQSoapMap = new FastQSoapMap(parentFile
-					+ "TSC2KOBarcode_large.fq", FastQ.QUALITY_MIDIAN,
+					+ "TSC2KOBarcode_large.fq", FastQOld.QUALITY_MIDIAN,
 					parentFile + "TSC2KOlargeMap.fq", "soap", IndexFile, false);
 			fastQSoapMap.mapReads();
 			fastQSoapMap.copeSope2Bed(parentFile + "TSC2KOlarge.bed",

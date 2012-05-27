@@ -358,6 +358,7 @@ public class ImportDB {
 		String zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/rice/Affy2Loc.txt";
 		String zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
 		MicroArrayBlast microArrayBlast = null;
+		int taxID = 0;
 		////////////////////  ∞ﬂ¬Ì”„  /////////////////////////////
 		zerbfishFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfishRefSeq.xls";
 		zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
@@ -372,7 +373,15 @@ public class ImportDB {
 		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/rice/Affy2Loc.txt";
 		microArrayBlast = new MicroArrayBlast();
 		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
+//		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
+//		microArrayBlast.updateFile(zerbfishFile, false);
+		
+		////////////////////  ¥Û∂π  /////////////////////////////
+		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/soybean/affy2Gly";
+		microArrayBlast = new MicroArrayBlast();
+		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_GLMAX);
 		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
+		microArrayBlast.setTaxID(3847);
 		microArrayBlast.updateFile(zerbfishFile, false);
 	}
 	

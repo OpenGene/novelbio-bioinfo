@@ -23,6 +23,55 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class MiRNACount extends BedSeq {
 	Logger logger = Logger.getLogger(MiRNACount.class);
 	public static void main(String[] args) {
+		String rnadatFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/sRNAall/XSQ/mireap-xxx.gff";
+		String hairpairMirna = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/sRNAall/XSQ/mireap-xxx_Pre.fa";
+		String matureMirna = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/sRNAall/XSQ/mireap-xxx_mature.fa";
+		
+		
+		String bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX3/H6_NovelMiRNA.bed";
+		String out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
+		
+		MiRNACount miRNACount = new MiRNACount(bedFile, ListMiRNALocation.TYPE_MIREAP,"SSC", rnadatFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.outResult(out);
+		
+		bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX4/N6_NovelMiRNA.bed";
+		out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
+		miRNACount = new MiRNACount(bedFile, ListMiRNALocation.TYPE_MIREAP,"SSC", rnadatFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.outResult(out);
+		
+		bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX5/N36_NovelMiRNA.bed";
+		out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
+		miRNACount = new MiRNACount(bedFile, ListMiRNALocation.TYPE_MIREAP,"SSC", rnadatFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.outResult(out);
+		
+		bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX6/C_NovelMiRNA.bed";
+		out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
+		miRNACount = new MiRNACount(bedFile, ListMiRNALocation.TYPE_MIREAP,"SSC", rnadatFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.outResult(out);
+		
+		bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX7/H12_NovelMiRNA.bed";
+		out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
+		miRNACount = new MiRNACount(bedFile, ListMiRNALocation.TYPE_MIREAP,"SSC", rnadatFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.outResult(out);
+		
+		bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX8/H36_NovelMiRNA.bed";
+		out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
+		miRNACount = new MiRNACount(bedFile, ListMiRNALocation.TYPE_MIREAP,"SSC", rnadatFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.outResult(out);
+		
+		bedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX9/N12_NovelMiRNA.bed";
+		out = FileOperate.changeFileSuffix(bedFile, "_Count", "txt");
+		miRNACount = new MiRNACount(bedFile, ListMiRNALocation.TYPE_MIREAP,"SSC", rnadatFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.outResult(out);
+	}
+	public static void main2(String[] args) {
 		String rnadatFile = "/media/winE/Bioinformatics/DataBase/sRNA/miRNA.dat";
 		String hairpairMirna = "/media/winE/Bioinformatics/GenomeData/pig/smallRNA/hairpin_pig_Final.fa";
 		String matureMirna = "/media/winE/Bioinformatics/DataBase/sRNA/miRBase/mature_pig_Final.fa";
@@ -66,10 +115,8 @@ public class MiRNACount extends BedSeq {
 		miRNACount.outResult(out);
 	}
 	
-	/**
-	 * 获得miRNA定位信息
-	 */
-	TmpMiRNALocation tmpMiRNALocation = new TmpMiRNALocation();
+	/** 获得miRNA定位信息 */
+	ListMiRNALocation tmpMiRNALocation = new ListMiRNALocation();
 	/**
 	 * miRNA前体
 	 */
@@ -83,13 +130,17 @@ public class MiRNACount extends BedSeq {
 		seqFastaHashPreMiRNA = new SeqFastaHash(hairpairMirna);
 	}
 	/**
+	 * 
 	 * 给定bed文件和物种名
 	 * @param bedFile
-	 * @param Species 人类为HSA
+	 * @param gffType 读取的是miReap的文件还是RNA.dat
+	 * @param Species
+	 * @param rnadatFile
 	 */
-	public MiRNACount(String bedFile, String Species, String rnadatFile) {
+	public MiRNACount(String bedFile, int gffType, String Species, String rnadatFile) {
 		super(bedFile);
 		tmpMiRNALocation.setSpecies(Species);
+		tmpMiRNALocation.setReadFileType(gffType);
 		tmpMiRNALocation.ReadGffarray(rnadatFile);
 	}
 	/**

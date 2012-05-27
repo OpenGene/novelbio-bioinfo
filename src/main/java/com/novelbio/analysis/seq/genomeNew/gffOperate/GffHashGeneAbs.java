@@ -136,8 +136,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * 5: allGeneLength <br>
 	 * @return 
 	 */
-	public ArrayList<Long> getGeneStructureLength(int upBp)
-	{
+	public ArrayList<Long> getGeneStructureLength(int upBp) {
 		ArrayList<Long> lsbackground=new ArrayList<Long>();
 		long allGeneLength=0;
 		long allIntronLength=0;

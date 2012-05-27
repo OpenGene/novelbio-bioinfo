@@ -116,7 +116,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 */
 	public ArrayList<String> getLsKo()
 	{
-		if (!boolsKgiDkeg2Kos) {
+		if (!boolsKgiDkeg2Kos || lsKgiDkeg2Kos == null) {
 			boolsKgiDkeg2Kos = true;
 			
 			if (getKegID() == null) {
