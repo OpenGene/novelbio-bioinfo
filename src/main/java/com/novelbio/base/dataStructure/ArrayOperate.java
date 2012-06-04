@@ -3,10 +3,13 @@ package com.novelbio.base.dataStructure;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -220,6 +223,73 @@ public class ArrayOperate {
 			}
 			result[resultNum] = Aarray[i];
 			resultNum++ ;
+		}
+		return result;
+	}
+	/**
+	 * <b>没有添加范围检测功能</b>
+	 * <b>同一列最多只能添加删除各一次</b><br>
+	 * 添加或者删除数组中的一些项目
+	 * @param <T>
+	 * @param Aarray 数组
+	 * @param lsIndelInfo 不要出现小于0项。需要删除哪几项，从0开始计算，正数表示添加，<b>添加在指定位置的前面</b>，
+	 * 负数表示删除，如果超出数组项，则忽略
+	 * 0: 添加或删除哪一项<b>必须为正数</b>，1：添加几个元素，或删除该元素<b>正数为添加，添加可以多个，当为最后一项+1时，只能添加不能删除，负数为删除，只能删除一个</b>
+	 * @param filling 默认填充的元素
+	 * @return
+	 */
+	public static<T> T[] indelElement(T[] Aarray,ArrayList<int[]> lsIndelInfo, T filling) {
+		// 0：修正第几位，1.负数删除，正数在前面添加一位
+		HashMap<Integer, TreeSet<Integer>> hashIndelInfo = new HashMap<Integer, TreeSet<Integer>>();
+		for (int[] i : lsIndelInfo) {
+			if (i[0] > Aarray.length || i[0] < 0)
+				continue;
+			if (hashIndelInfo.containsKey(Math.abs(i[0]))) {
+				TreeSet<Integer> lsDetail = hashIndelInfo.get(Math.abs(i[0]));
+				lsDetail.add(i[1]);
+			}
+			else {
+				TreeSet<Integer> lsDetail = new TreeSet<Integer>();
+				lsDetail.add(i[1]);
+				hashIndelInfo.put(Math.abs(i[0]), lsDetail);
+			}
+		}
+		///////// 计算最终数组长度 //////////////////
+		int finalLen = Aarray.length;
+		for (TreeSet<Integer> treeSet : hashIndelInfo.values()) {
+			for (Integer integer : treeSet) {
+				if (integer < 0)
+					finalLen --;//负数表示仅将该位点删除
+				else
+					finalLen = finalLen + integer;//正数表示在该位点之前添加若干个空位
+			}
+		}
+		T[] result=(T[]) Array.newInstance(Aarray.getClass().getComponentType(), finalLen);//new T[Astring.length+Bstring.length];
+		int resultNum = 0;//输出array的坐标
+		for (int i = 0; i < Aarray.length; i++) {
+			boolean flagDel = false;//是否跳过该ID
+			if (hashIndelInfo.containsKey(i)) {
+				//反向排列，也就是从大到小排序
+				NavigableSet<Integer> treeIndelInfo = hashIndelInfo.get(i).descendingSet();
+				for (Integer integer : treeIndelInfo) {
+					if (integer > 0) {
+						resultNum = resultNum + integer;
+					}
+					else {
+						flagDel = true;
+					}
+				}
+			}
+			//如果没有跳过
+			if (!flagDel) {
+				result[resultNum] = Aarray[i];
+				resultNum++ ;
+			}
+		}
+		for (int i = 0; i < result.length; i++) {
+			if (result[i] == null) {
+				result[i] = filling;
+			}
 		}
 		return result;
 	}
@@ -469,6 +539,7 @@ public class ArrayOperate {
 		return copyArray(array, array.length);
 	}
 	/**
+	 * using {@link #indelElement(Object[], int[])} replace<br>
 	 * 复制数组
 	 * @param <T>
 	 * @param array
@@ -476,6 +547,7 @@ public class ArrayOperate {
 	 * @return
 	 * 最后生成Length长度的array
 	 */
+	@Deprecated 
 	public static<T> T[] copyArray(T[] array, int Length) {
 		T[] result=(T[]) Array.newInstance(array.getClass().getComponentType(), Length);
 		for (int i = 0; i < array.length; i++) {
@@ -495,6 +567,7 @@ public class ArrayOperate {
 	 * @return
 	 * 最后生成Length长度的array
 	 */
+	@Deprecated
 	public static<T> T[] copyArray(T[] array, int Length,boolean start) {
 		T[] result=(T[]) Array.newInstance(array.getClass().getComponentType(), Length);
 		if (start) {
@@ -517,210 +590,6 @@ public class ArrayOperate {
 			}
 		}
 		return result;
-	}
-	
-	/**
-	 * @param <T> 实现compSubArray接口
-	 * @param lsThisList 第一个list
-	 * @param lsCmpList 第二个list
-	 * @param cis 是否正向的比，true：list的元素从小到大排列且每个cell小的在前大的在后
-	 * false：list的元素从大到小排列且每个cell大的在前小的在后
-	 * @return
-	 * list<br>
-	 * |<br>
-	 * |------ListlsElement|---listCell1：Element1,Element2<br>
-	 * |                          |---listCell2：Element3<br>
-	 * |             <br>
-	 * |             <br>
-	 * |<br>
-	 * |<br>
-	 * |<br>
-	 */
-	public<T extends CompSubArray> ArrayList<ArrayList<ArrayList<T>>> cmpLsaaa(ArrayList<T> lsThisList, ArrayList<T> lsCmpList, boolean cis)
-	{
-		ArrayList<ArrayList<ArrayList<T>>> lsResult = new ArrayList<ArrayList<ArrayList<T>>>();
-		int score = 0; // 打分，看最后这两个转录本有多相似
-		boolean flag1 = true;// 是否记录跨过的exon1
-		boolean flag2 = true;// 是否记录跨过的exon2
-		int i = 0;
-		int j = 0;
-		//每个单元的信息
-		ArrayList<ArrayList<T>> lsElement = new ArrayList<ArrayList<T>>();
-		ArrayList<T> lsThisCell = new ArrayList<T>();
-		ArrayList<T> lsCmpCell = new ArrayList<T>();
-		while (true) {
-			if (i >= lsThisList.size() || j >= lsCmpList.size()) {
-				break;
-			}
-			double[] exon1 = lsThisList.get(i).getCell();
-			double[] exon2 = lsCmpList.get(j).getCell();
-			double[] tmpFlag = null;
-			
-			if (cis)
-				tmpFlag = cmpArray(exon1, exon2);
-			else
-				tmpFlag = cmpArrayTrans(exon1, exon2);
-
-			if (tmpFlag[0] == 0) {
-				//两个element一样大小，则添加新的单元
-				lsElement = new ArrayList<ArrayList<T>>();
-				lsThisCell.add(lsThisList.get(i));
-				lsCmpCell.add(lsCmpList.get(j));
-				lsElement.add(lsThisCell); lsElement.add(lsCmpCell);
-				lsResult.add(lsElement);
-				lsThisCell = new ArrayList<T>();//新建cell
-				lsCmpCell = new ArrayList<T>();//新建cell
-				i++;j++;
-			}
-			//
-			else if (tmpFlag[0] < 4) //element1 的 尾部 在 element2 的 尾部 前
-			{
-				i++;
-				if (tmpFlag[0] != 1) {
-					flag2 = false;
-					if (lsThisCell.size() > 0) {
-						//如果已经有了该element，就跳过
-						double[] tmpThisLast =  lsThisCell.get(lsThisCell.size()-1).getCell(); // 获得最后一个cell
-						double[] tmpThis = lsThisList.get(i).getCell();
-						if (tmpThisLast[0] != tmpThis[0] || tmpThisLast[1] != tmpThis[1]) {
-							lsThisCell.add(lsThisList.get(i));
-						}
-						//如果已经有了该element，就跳过
-						double[] tmpCmpLast =  lsCmpCell.get(lsCmpCell.size()-1).getCell(); // 获得最后一个cell
-						double[] tmpCmp = lsCmpList.get(i).getCell();
-						if (tmpCmpLast[0] != tmpCmp[0] || tmpCmpLast[1] != tmpCmp[1]) {
-							lsCmpCell.add(lsCmpList.get(i));
-						}
-					}
-					lsThisCell.add(lsThisList.get(i));
-					lsCmpCell.add(lsCmpList.get(i));
-					score = score + 1;
-				}
-				//
-				else {
-					if (flag1) {
-						lsThisCell = new ArrayList<T>();//新建cell
-						lsCmpCell = new ArrayList<T>();//新建cell
-						lsCmpCell.add(lsCmpList.get(j));
-						score = score + 1;
-					} else {
-						flag1 = true; // 说明该element需要另起一组新的了
-						lsThisCell = new ArrayList<T>();//新建cell
-						lsCmpCell = new ArrayList<T>();//新建cell
-					}
-				}
-			} else if (tmpFlag[0] >= 4) {
-				j++;
-				// 跨过了该exon
-				if (tmpFlag[0] != 6) {
-					flag1 = false;
-					score = score + 1;
-				} else {
-					if (flag2) {
-						score = score + 1;
-					} else {
-						flag2 = true;
-					}
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * 目前只能最多输入两个arraylist
-	 * @param <T> 实现compSubArray接口
-	 * @param lsThisList 第一个list
-	 * @param lsCmpList 第二个list
-	 * @param min2max 输入的数据是否从小到大，true：list的元素从小到大排列
-	 * false：list的元素从大到小排列
-	 * @return
-	 * list<br>
-	 * |<br>
-	 * |------ListlsElement|---listCell1：Element1,Element2<br>
-	 * |                          |---listCell2：Element3<br>
-	 * |             <br>
-	 * |             <br>
-	 * |<br>
-	 * |<br>
-	 * |<br>d
-	 */
-	public static<T extends CompSubArray> ArrayList<CmpListCluster<T>> compList(boolean min2max, ArrayList<T>... lsThisList)
-	{
-		ArrayList<CmpListCluster<T>> lsCompResult = new ArrayList<CmpListCluster<T>>();
-		String flagThis = CmpListCluster.FLAGTHIS; String flagComp = CmpListCluster.FLAGCOMP;
-		ArrayList<T> lsTmp = new ArrayList<T>();
-		int th = 0;
-		int co = 0;
-		/////////////////////////////////////   将输入的数组元素标记好后，混在一起放入一个list中  ////////////////////////////////////////////
-		/////////////////////////////////////   目的是要获得经过排序的一个list     //////////////////////////////////////////////////////////////////////
-		while (true) {
-			if (th >= lsThisList[0].size() || co >= lsThisList[1].size()) {
-				break;
-			}
-			if (min2max) {
-				//假设输入的数组是经过排序，并且前小后大的
-				//依次比较本组和比较组的元素，然后装入list
-				if (lsThisList[0].get(th).getCell()[0] < lsThisList[1].get(co).getCell()[0]) {
-					T elementThis = lsThisList[0].get(th); elementThis.setFlag(flagThis);
-					lsTmp.add(elementThis);
-					th++;
-				}
-				else {
-					T elementThis = lsThisList[1].get(co); elementThis.setFlag(flagComp);
-					lsTmp.add(elementThis);
-					co++;
-				}
-			}
-			else {
-				//假设输入的数组是经过排序，并且前大后小的
-				//依次比较本组和比较组的元素，然后装入list
-				if (lsThisList[0].get(th).getCell()[1] > lsThisList[1].get(co).getCell()[1]) {
-					T elementThis = lsThisList[0].get(th); elementThis.setFlag(flagThis);
-					lsTmp.add(elementThis);
-					th++;
-				}
-				else {
-					T elementThis = lsThisList[1].get(co); elementThis.setFlag(flagComp);
-					lsTmp.add(elementThis);
-					co++;
-				}
-			}
-		}
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		if (th < lsThisList[0].size()) {
-			for (int i = th; i < lsThisList[0].size(); i++) {
-				T elementThis = lsThisList[0].get(th); elementThis.setFlag(flagThis);
-				lsTmp.add(elementThis);
-			}
-		}
-		if (co < lsThisList[1].size()) {
-			for (int i = co; i < lsThisList[1].size(); i++) {
-				T elementThis = lsThisList[1].get(co); elementThis.setFlag(flagComp);
-				lsTmp.add(elementThis);
-			}
-		}
-		
-		
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//将元素装入list中，并且成两组，this和compare----分组是在CompSubArrayCluster类中进行的
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		CmpListCluster<T> compSubArrayCluster = null;
-		for (int i = 0; i < lsTmp.size(); i++) {
-			T compSubArray = lsTmp.get(i);
-			if (i == 0) {
-				compSubArrayCluster = new CmpListCluster<T>();
-				compSubArrayCluster.addCompElement(compSubArray);
-				lsCompResult.add(compSubArrayCluster);
-				continue;
-			}
-			if (!compSubArrayCluster.addCompElement(compSubArray)) {
-				compSubArrayCluster = new CmpListCluster<T>();
-				compSubArrayCluster.addCompElement(compSubArray);
-				lsCompResult.add(compSubArrayCluster);
-			}
-		}
-		return lsCompResult;
 	}
 	/**
 	 * 二分法查找Coordinate的情况,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>

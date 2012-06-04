@@ -3,9 +3,10 @@ package com.novelbio.analysis.seq.genomeNew;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeakDU;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailPeak;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 
  
 
@@ -31,11 +32,11 @@ public class GffPeakOverLap
 	/**
 	 * 负链上的PeakHash
 	 */
-	HashMap<String, GffDetailPeak> gffMinusLocHash;
+	HashMap<String, ListDetailBin> gffMinusLocHash;
 	/**
 	 * 正链上的PeakHash
 	 */
-	HashMap<String, GffDetailPeak> gffPlusLocHash;
+	HashMap<String, ListDetailBin> gffPlusLocHash;
 	/**
 	 * 用之前两个peak文件都要按照chr进行排序，不过chr内部不用排序，也就是chr内部坐标不要求一致
 	 * 读取两个peak文件，输入两个文件名，默认两个文件中peak信息所在的列一样<br>
@@ -48,9 +49,7 @@ public class GffPeakOverLap
 	 * @param rowNum 从第几行读起
 	 * @throws Exception 
 	 */
-	public void readPeakFile(String filePlus,String fileMinus,int colChr,int peakStart,int peakEnd,int rowNum) throws Exception 
-	{
-	
+	public void readPeakFile(String filePlus,String fileMinus,int colChr,int peakStart,int peakEnd,int rowNum) {
 		gffHashPeakPlus = new ListHashBin(true, colChr, peakStart, peakEnd, rowNum);
 		gffHashPeakPlus.ReadGffarray(filePlus);
 		gffHashPeakMinus = new ListHashBin(true, colChr, peakStart, peakEnd, rowNum);
@@ -79,7 +78,7 @@ public class GffPeakOverLap
 		
 		for (int i = 0; i < plusNum; i++) 
 		{
-			GffDetailPeak tmpPlusDetail=gffPlusLocHash.get(lspeakPlusID.get(i));
+			ListDetailBin tmpPlusDetail=gffPlusLocHash.get(lspeakPlusID.get(i));
 			int tmplength=tmpPlusDetail.getEndAbs() - tmpPlusDetail.getStartAbs();
 			plusAllLength=plusAllLength+tmplength;
 		}
@@ -89,8 +88,7 @@ public class GffPeakOverLap
 	 * 获得Plus合并后所有peak的个数
 	 * @return
 	 */
-	public int getPlusNum() 
-	{
+	public int getPlusNum() {
 		return lspeakPlusCope.size();
 	}
 	
@@ -98,8 +96,7 @@ public class GffPeakOverLap
 	 * 获得Minus合并后所有peak的个数
 	 * @return
 	 */
-	public int getMinusNum() 
-	{
+	public int getMinusNum() {
 		return lspeakMinusCope.size();
 	}
 	
@@ -107,14 +104,12 @@ public class GffPeakOverLap
 	 * 获得Minus所有peak的长度
 	 * @return
 	 */
-	public int getMinusallLength() 
-	{
+	public int getMinusallLength() {
 		int minusAllLength=0;
 		int minusNum=lspeakMinusID.size();
 		
-		for (int i = 0; i < minusNum; i++) 
-		{
-			GffDetailPeak tmpMinusDetail=gffMinusLocHash.get(lspeakMinusID.get(i));
+		for (int i = 0; i < minusNum; i++) {
+			ListDetailBin tmpMinusDetail=gffMinusLocHash.get(lspeakMinusID.get(i));
 			int tmplength=tmpMinusDetail.getEndAbs() - tmpMinusDetail.getStartAbs();
 			minusAllLength=minusAllLength+tmplength;
 		}
@@ -171,8 +166,7 @@ public class GffPeakOverLap
 	 * @param peakOverlap true时将重叠peak合并来计算两条链上的peak交集
 	 *  false：A链上的peak不考虑重叠，与B链上已经和并重叠的peak计算两条链上的peak交集
 	 */
-	public ArrayList<String[]> compareMinus2Plus(boolean peakOverlap) 
-	{
+	public ArrayList<String[]> compareMinus2Plus(boolean peakOverlap) {
 		ArrayList<String[]> result=new ArrayList<String[]>();//存储最后结果
 		
 		if (peakOverlap) {
@@ -182,7 +176,7 @@ public class GffPeakOverLap
 			{
 				String tmpResult[ ] = new String[3];
 				String tmpPeakID = lspeakMinusCope.get(i).split("/")[0];
-				GffDetailPeak gffMinusPeakDetial = gffMinusLocHash.get(tmpPeakID);
+				ListDetailBin gffMinusPeakDetial = gffMinusLocHash.get(tmpPeakID);
 				String ChrID = gffMinusPeakDetial.getParentName();
 				int overlapLength = twoSiteLocation(gffMinusPeakDetial,gffHashPeakPlus);
 				tmpResult[0] = ChrID;
@@ -194,11 +188,10 @@ public class GffPeakOverLap
 		else {
 			int peakMinusNum = lspeakMinusID.size();
 			System.out.println(peakMinusNum);
-			for (int i = 0; i < peakMinusNum; i++) 
-			{
+			for (int i = 0; i < peakMinusNum; i++) {
 				String tmpResult[] = new String[3];
 				String tmpPeakID = lspeakMinusID.get(i);
-				GffDetailPeak gffMinusPeakDetial = gffMinusLocHash.get(tmpPeakID);
+				ListDetailBin gffMinusPeakDetial = gffMinusLocHash.get(tmpPeakID);
 				String ChrID = gffMinusPeakDetial.getParentName();
 				int overlapLength = twoSiteLocation(gffMinusPeakDetial,gffHashPeakPlus);
 				tmpResult[0] = ChrID;
@@ -221,8 +214,7 @@ public class GffPeakOverLap
 	 * @param peakOverlap true时将重叠peak合并来计算两条链上的peak交集
 	 *  false：A链上的peak不考虑重叠，与B链上已经和并重叠的peak计算两条链上的peak交集
 	 */
-	public ArrayList<String[]> comparePlus2Minus(boolean peakOverlap) 
-	{
+	public ArrayList<String[]> comparePlus2Minus(boolean peakOverlap) {
 		ArrayList<String[]> result=new ArrayList<String[]>();//存储最后结果
 		
 		if (peakOverlap) {
@@ -232,7 +224,7 @@ public class GffPeakOverLap
 			{
 				String tmpResult[]=new String[3];
 				String tmpPeakID=lspeakPlusCope.get(i).split("/")[0];
-				GffDetailPeak gffPlusPeakDetial=gffPlusLocHash.get(tmpPeakID);
+				ListDetailBin gffPlusPeakDetial=gffPlusLocHash.get(tmpPeakID);
 				String ChrID=gffPlusPeakDetial.getParentName();
 				int overlapLength=twoSiteLocation(gffPlusPeakDetial,gffHashPeakMinus);
 				tmpResult[0]=ChrID;
@@ -248,7 +240,7 @@ public class GffPeakOverLap
 			{
 				String tmpResult[]=new String[3];
 				String tmpPeakID=lspeakPlusID.get(i);
-				GffDetailPeak gffPlusPeakDetial=gffPlusLocHash.get(tmpPeakID);
+				ListDetailBin gffPlusPeakDetial=gffPlusLocHash.get(tmpPeakID);
 				String ChrID=gffPlusPeakDetial.getParentName();
 				int overlapLength=twoSiteLocation(gffPlusPeakDetial,gffHashPeakMinus);
 				tmpResult[0]=ChrID;
@@ -268,13 +260,12 @@ public class GffPeakOverLap
 	 * @param start
 	 * @param endLoc
 	 */
-	private int twoSiteLocation(GffDetailPeak gffMPeakDetial,ListHashBin gffHashplusPeak) 
-	{
+	private int twoSiteLocation(ListDetailBin gffMPeakDetial,ListHashBin gffHashplusPeak) {
 		String ChrID=gffMPeakDetial.getParentName();
 		int start=gffMPeakDetial.getStartAbs();
 		int end=gffMPeakDetial.getEndAbs();
 		
-		GffCodPeakDU lsSearchReslut = gffHashplusPeak.searchLocation(ChrID, start, end);//searchLocation(ChrID, start, end, gffHashplusPeak);
+		ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> lsSearchReslut = gffHashplusPeak.searchLocation(ChrID, start, end);//searchLocation(ChrID, start, end, gffHashplusPeak);
 		if (lsSearchReslut == null) {
 			return 0;
 		}
@@ -282,16 +273,13 @@ public class GffPeakOverLap
 		if (startOverlapLength == 100) {
 			return lsSearchReslut.getOpLeftBp();
 		}
-
 		int tmpOverlapLength=0;
 		tmpOverlapLength= lsSearchReslut.getOpLeftBp() + lsSearchReslut.getOpRightBp();
 		if (lsSearchReslut.getLsGffDetailMid() != null) {
-			for (GffDetailPeak gffDetailPeak : lsSearchReslut.getLsGffDetailMid()) {
+			for (ListDetailBin gffDetailPeak : lsSearchReslut.getLsGffDetailMid()) {
 				tmpOverlapLength = tmpOverlapLength + (int)gffDetailPeak.getLen();
 			}
 		}
-	
-		
 		if (tmpOverlapLength < 0) {
 			System.out.println("两个peak的交集为负数");
 			tmpOverlapLength = 0;

@@ -11,7 +11,11 @@ import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.Species;
-
+/**
+ * 读取大豆的GFF文件有问题，主要是5UTR和3UTR一块，需要修正
+ * @author zong0jie
+ *
+ */
 public class GffHashGene implements GffHashGeneInf{
 	
 	public static void main(String[] args) {
@@ -21,8 +25,7 @@ public class GffHashGene implements GffHashGeneInf{
 	}
 	
 	GffHashGeneAbs gffHashGene = null;
-	public GffHashGene(String GffType, String gffFile)
-	{
+	public GffHashGene(String GffType, String gffFile) {
 		if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_UCSC)) {
 			gffHashGene = new GffHashGeneUCSC();
 		}
@@ -37,6 +40,9 @@ public class GffHashGene implements GffHashGeneInf{
 		}
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_NCBI)) {
 			gffHashGene = new GffHashGeneNCBI();
+		}
+		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_GLYMAX)) {
+			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_GLYMAX);
 		}
 		gffHashGene.ReadGffarray(gffFile);
 	}
@@ -170,60 +176,6 @@ public class GffHashGene implements GffHashGeneInf{
 	 */
 	public void addGffDetailGene(String chrID, GffDetailGene gffDetailGene) {
 		gffHashGene.addGffDetailGene(chrID, gffDetailGene);
-	}
-	
-	
-	/**
-	 * 重建转录本时用到，比较两个算法的转录本之间的差异
-	 * 两个gffHashGene应该是同一个物种
-	 * @param gffHashGene 另一个转录本，本方法可逆--另一个调用该方法得到的结果一样
-	 * @return
-	 */
-	public static GffHashGene compHashGene(GffHashGene gffHashThis, GffHashGene gffHashGene, String chrLen, String gffHashGeneBed, int highExpReads)
-	{
-		
-		GffHashGene gffHashGeneResult = new GffHashGene();
-		//不是同一个物种就不比了
-		if (gffHashGene.getTaxID() != gffHashThis.getTaxID()) {
-			return null;
-		}
-		GffGeneCluster.setHighExpReads(highExpReads);
-		GffGeneCluster.setMapReads(chrLen, gffHashGeneBed);
-		for (Entry<String, ListGff> entry : gffHashThis.getChrhash().entrySet()) {
-			String chrID = entry.getKey();
-			System.out.println(chrID);
-			ArrayList<GffDetailGene> lsThisGffDetail = entry.getValue();
-			ArrayList<GffDetailGene> lsCmpGffDetail = gffHashGene.getChrhash().get(chrID);
-			if (lsCmpGffDetail == null) {
-				for (GffDetailGene gffDetailGene : lsThisGffDetail) {
-					gffHashGeneResult.addGffDetailGene(chrID, gffDetailGene);
-				}
-				continue;
-			}
-			ArrayList<CompSubArrayCluster>  lstmpArrayClusters = ArrayOperate.compLs2(lsThisGffDetail, lsCmpGffDetail,true);
-			for (CompSubArrayCluster compSubArrayCluster : lstmpArrayClusters) {
-				//比较每一组里面的this和comp的GffDetailGene
-				ArrayList<CompSubArrayInfo> lsThis = compSubArrayCluster.getLsCompSubArrayInfosThis();
-				ArrayList<GffDetailGene> lsGffGeneThis = new ArrayList<GffDetailGene>();
-				for (CompSubArrayInfo compSubArrayInfo : lsThis) {
-					GffDetailGene gene =(GffDetailGene)compSubArrayInfo.cmp;
-					lsGffGeneThis.add((GffDetailGene)compSubArrayInfo.cmp);
-				}
-				ArrayList<CompSubArrayInfo> lsComp = compSubArrayCluster.getLsCompSubArrayInfosComp();
-				ArrayList<GffDetailGene> lsGffGeneComp = new ArrayList<GffDetailGene>();
-				for (CompSubArrayInfo compSubArrayInfo : lsComp) {
-					lsGffGeneComp.add((GffDetailGene)compSubArrayInfo.cmp);
-				}
-				GffGeneCluster gffGeneCluster = new GffGeneCluster(gffHashThis, gffHashGene, lsGffGeneThis, lsGffGeneComp);
-
-				GffDetailGene gffdetail = gffGeneCluster.getCombGffDetail();
-				if (gffdetail == null) {
-					continue;
-				}
-				gffHashGeneResult.addGffDetailGene(chrID, gffdetail);
-			}
-		}
-		return gffHashGeneResult;
 	}
 
 	@Override

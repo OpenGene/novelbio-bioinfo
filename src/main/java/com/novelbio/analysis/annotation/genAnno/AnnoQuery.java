@@ -11,6 +11,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.Gene2GoInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
@@ -27,18 +28,9 @@ import com.novelbio.database.model.modcopeid.CopedID;
  */
 public class AnnoQuery {
 	public static void main(String[] args) {
-//		String parent = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/";
-//		annoGeneIDXls(parent + "MEF_WT2vsWT0outDifResult.xls",parent + "mouseMEF_WT2vsWT0outDifResult_Anno_new.xls",  10090, 1, 1, "",false, 9606);
-//		annoGeneIDXls(parent + "MEF_K02vsK00outDifResult.xls",parent + "mouseMEF_K02vsK00outDifResult_Anno_new.xls",  10090, 1, 1, "",false, 9606);
-		
-		
-		String parent = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/rsem/DEGseq/";
-		annoGeneIDXls(parent + "output_score.txt",parent + "output_score_Anno.txt",  10090, 2, 1, "",false, 9606);
-
-//		annoGeneIDXls(parent + "mouseMEF_K0vsWT0outDifResult.xls",parent + "mouseMEF_K0vsWT0outDifResult_Anno_new.xls",  10090, 1, 1, "",false, 9606);
-//		annoGeneIDXls(parent + "mouseMEF_K2vsWT2outDifResult.xls",parent + "mouseMEF_K2vsWT2outDifResult_Anno_new.xls",  10090, 1, 1, "",false, 9606);
-//		annoGeneIDXls(parent + "chickenK0vsWT0outDifResult.xls",parent + "mouseHeartK0vsWT0outDifResult_Anno_new.xls",  10090, 1, 1, "",false, 9606);
-//		annoGeneIDXls(parent + "chickenK5vsWT5outDifResult.xls",parent + "mouseHeartK0vsWT0outDifResult_Anno_new.xls",  10090, 1, 1, "",false, 9606);
+		String geneFile = "/home/zong0jie/×ÀÃæ/Gene.xls";
+		String out = FileOperate.changeFileSuffix(geneFile, "_geneID", null);
+		addGeneID(geneFile, out, 1, 9606);
 	}
 	/**
 	 * 
@@ -148,4 +140,17 @@ public class AnnoQuery {
 		return result;
 	}
 	
+	public static void addGeneID(String geneFile, String out, int colGeneID, int taxID) {
+		TxtReadandWrite txtOut = new TxtReadandWrite(out, true);
+		colGeneID--;
+		ArrayList<String[]> lsGeneInfo = ExcelTxtRead.readLsExcelTxt(geneFile, 1);
+		for (String[] string : lsGeneInfo) {
+			String accID = string[colGeneID];
+			CopedID copedID = new CopedID(accID, taxID);
+			String[] resString = ArrayOperate.copyArray(string, string.length + 1);
+			resString[resString.length - 1] = copedID.getGenUniID();
+			txtOut.writefileln(resString);
+		}
+		txtOut.close();
+	}
 }

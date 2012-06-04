@@ -52,7 +52,7 @@ public class PeakMacs extends PeakCalling {
 			logger.error("文件格式出错");
 			return false;
 		}
-		format = " --format " + format;
+		this.format = " --format " + format;
 		return true;
 	}
 
@@ -79,36 +79,21 @@ public class PeakMacs extends PeakCalling {
 		
 		double genomeSize = hashSpecies2GenomeSize.get(species)*effectiveGenomeSize;
 		effge = " -g "+genomeSize + " ";
-		
-//		else {
-//			//物种 目前只能是 os mm hs ce dm
-//			effge = " -g "+ species + " ";
-//		}
-		if (controlFile != null && !controlFile.trim().equals("")) {
+		if (FileOperate.isFileExist(controlFile)) {
 			col = " -c " + controlFile + " ";
 		}
+		if (outPrefix!= null && !outPrefix.equals("")) {
+			name = " -n " + outPrefix;
+		}
 		String cmd = "macs14 -t "+file +col+name + effge + mfole + pvalue + nolambda + format;//+ "-w";
-//		TxtReadandWrite txtCmd = new TxtReadandWrite( outFilePath+"/macs.sh", true);
-//		txtCmd.writefile(cmd);
-//		txtCmd.close();
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.doInBackground("macs");
-//		String peakFile = FileOperate.moveFile(PathDetail.getProjectPath()+"/"+prix+"_peaks.xls", outFilePath,true);
-//		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_peaks.bed", outFilePath+"/TmpPeakInfo",true);
-//		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_negative_peaks.xls", outFilePath+"/TmpPeakInfo"+prix+"/",true);
-//		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_model.r", outFilePath+"/TmpPeakInfo"+prix+"/",true);
-//		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_diag.xls", outFilePath+"/TmpPeakInfo"+prix+"/",true);
-//		FileOperate.moveFile(PathDetail.getProjectPath() + "/" + prix+"_summits.bed", outFilePath+"/TmpPeakInfo"+prix+"/",true);
-//		FileOperate.moveFolder(PathDetail.getProjectPath() + "/" + prix+"_MACS_wiggle", outFilePath+"/TmpPeakInfo"+prix+"/",true);
-//		FileOperate.delFile(outFilePath+"/macs.sh");
-//		copeMACSPeakFile(peakFile, FileOperate.changeFileSuffix(peakFile, "_summit", null));
 	}
 	
 	/**
 	 * 将Macs的peak文件添加第六列，为col_start+col_summitMid
 	 */
-	private void copeMACSPeakFile(String peakFile, String outPut)
-	{
+	private void copeMACSPeakFile(String peakFile, String outPut) {
 		TxtReadandWrite txtPeak = new TxtReadandWrite(peakFile, false);
 		ArrayList<String> lsTmp =  txtPeak.readfileLs();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();

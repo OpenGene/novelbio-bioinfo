@@ -654,7 +654,7 @@ public class FastQ extends SeqComb {
 		if (offset != 0) {
 			return;
 		}
-		int fastQformat = guessFastOFormat(getLsFastQSeq(1000));
+		int fastQformat = guessFastOFormat(getLsFastQSeq(500));
 		if (fastQformat == FASTQ_ILLUMINA_OFFSET) {
 			offset = FASTQ_ILLUMINA_OFFSET;
 			return;
@@ -677,9 +677,9 @@ public class FastQ extends SeqComb {
 		for (FastQRecord fastQRecord : readlines()) {
 			if (thisnum > Num) break;
 			if (fastQRecord.getSeqQuality().contains("BBB")) {
-				thisnum ++ ;
 				continue;
 			}
+			thisnum ++ ;
 			lsFastqRecord.add(fastQRecord);
 		}
 		return lsFastqRecord;

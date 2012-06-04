@@ -254,6 +254,10 @@ GO_REF:0000004<br>
 	 * @return
 	 */
 	String getDBinfo();
+	/**
+	 * 具体的accID，根据数据库情况抓一个出来
+	 */
+	String getAccIDDBinfo();
 
 
 

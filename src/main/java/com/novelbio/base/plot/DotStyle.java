@@ -1,5 +1,6 @@
 package com.novelbio.base.plot;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.LinearGradientPaint;
 import java.awt.Paint;
@@ -17,7 +18,7 @@ import de.erichseifert.gral.util.GraphicsUtils;
  * @author zong0jie
  *
  */
-public class DotStyle {
+public class DotStyle implements Cloneable{
 	/**
 	 * 画面积图，在基因组上测试过了，效果不错
 	 * Area没有线
@@ -71,6 +72,7 @@ public class DotStyle {
 	
 	/**
 	 * 设定大小
+	 * SIZE_M等
 	 * @param size
 	 */
 	public void setSize(int size) {
@@ -117,6 +119,7 @@ public class DotStyle {
 	 * 获得想要的图形，目前仅支持line，circle，rectangle
 	 * @param 需要扩大的倍数，高精度就扩大个3-5倍
 	 * @return
+	 * 如果是线型，则需要在外面修正一下
 	 */
 	public Shape getShape() {
 		if (style == STYLE_AREA || style == STYLE_BAR) {
@@ -166,18 +169,82 @@ public class DotStyle {
 			rectangele = new Rectangle2D.Double(x, y, w, h);
 			return rectangele;
 		}
-		else {
+		else if (style == STYLE_LINE) {
+			double x = 0; double y = 0;
+			double w = 0; double h = 0;
+			if (size == SIZE_S) {
+				w = 0.5; h = 0.5;
+			}
+			else if (size == SIZE_SM) {
+				w = 1.0; h = 1.0;
+			}
+			else if (size == SIZE_M) {
+				w = 2.0; h = 2.0;
+			}
+			else if (size == SIZE_MB) {
+				w = 3.0; h = 3.0;
+			}
+				
+			else if (size == SIZE_B) {
+				w = 4.0; h = 4.0;
+			}
+			rectangele = new Rectangle2D.Double(x, y, w, h);
+			return rectangele;
 		}
 		return null;
 	}
+	/**
+	 * 获得想要的图形，目前仅支持line，circle，rectangle
+	 * @param 需要扩大的倍数，高精度就扩大个3-5倍
+	 * @return
+	 * 如果是线型，则需要在外面修正一下
+	 */
+	public BasicStroke getBasicStroke() {
+		if (style == STYLE_LINE) {
+			double x = 0; double y = 0;
+			double w = 0; double h = 0;
+			if (size == SIZE_S) {
+				w = 0.5; h = 0.5;
+			}
+			else if (size == SIZE_SM) {
+				w = 1.0; h = 1.0;
+			}
+			else if (size == SIZE_M) {
+				w = 2.0; h = 2.0;
+			}
+			else if (size == SIZE_MB) {
+				w = 3.0; h = 3.0;
+			}
+				
+			else if (size == SIZE_B) {
+				w = 4.0; h = 4.0;
+			}
+			return new BasicStroke((float)w);
+		}
+		return null;
+	}
+	/**
+	 * 复制一个dotstyle
+	 */
 	@Override
 	public DotStyle clone() {
-		DotStyle dotStyle = new DotStyle();
-		dotStyle.color = color;
-		dotStyle.dotname = dotname;
-		dotStyle.size = size;
-		dotStyle.style = style;
-		return dotStyle;
+		try {
+			DotStyle dotStyle = (DotStyle) super.clone();
+			dotStyle.color = color;
+			dotStyle.dotname = dotname;
+			dotStyle.size = size;
+			dotStyle.style = style;
+			dotStyle.circle = circle;
+			dotStyle.line = line;
+			dotStyle.rectangele = rectangele;
+			dotStyle.TRIANGLE = TRIANGLE;
+			dotStyle.valueVisible = valueVisible;
+			return dotStyle;	
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	/**
 	 * 重写equals

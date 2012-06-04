@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import org.apache.log4j.Logger;
+import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
@@ -120,7 +121,11 @@ public abstract class CopedIDAbs implements CopedIDInt {
 	 */
 	@Override
 	public CopedID getCopedIDBlast() {
-		return getCopedIDLsBlast().get(0);
+		ArrayList<CopedID> lsCopedIDs = getCopedIDLsBlast();
+		if (lsCopedIDs.size() != 0) {
+			return lsCopedIDs.get(0);
+		}
+		return null;
 	}
 
 	/**
@@ -152,7 +157,7 @@ public abstract class CopedIDAbs implements CopedIDInt {
 		}
 		blastFlag = true;
 		if (lsBlastInfos == null || lsBlastInfos.size() == 0) {
-			return lsBlastCopedID;
+			return new ArrayList<CopedID>();
 		}
 		for (BlastInfo blastInfo : lsBlastInfos) {
 			CopedID copedID = getBlastCopedID(blastInfo);
@@ -193,6 +198,16 @@ public abstract class CopedIDAbs implements CopedIDInt {
 			accID = getAccIDDBinfo(null);
 		}
 		return this.accID;
+	}
+	/**
+	 * 具体的accID，根据数据库情况抓一个出来
+	 */
+	public String getAccIDDBinfo() {
+		 String accID = getAccIDDBinfo(getDatabaseTyep());
+		 if (accID == null) {
+			 accID = getAccIDDBinfo(null);
+		 }
+		 return accID;
 	}
 	/**
 	 * 获得geneID

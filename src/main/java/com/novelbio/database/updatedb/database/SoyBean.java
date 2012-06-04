@@ -16,9 +16,9 @@ public class SoyBean {
 //		SoyBean soyBean = new SoyBean();
 //		soyBean.getAffyIDseq("/media/winE/Bioinformatics/Affymetrix/soybean/Soybean.target");
 		
-		SeqFastaHash seqFastaHash = new SeqFastaHash("/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_peptide.fa/Gmax_109_peptide.fa", 
+		SeqFastaHash seqFastaHash = new SeqFastaHash("/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_cds.fa/Gmax_109_cds.fa", 
 				".+?(?=\\|)", false, false);
-		seqFastaHash.writeToFile(FileOperate.changeFileSuffix("/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_peptide.fa/Gmax_109_peptide_filtered.fa", "_seq", "fa"));
+		seqFastaHash.writeToFile(FileOperate.changeFileSuffix("/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_cds.fa/Gmax_109_cds.fa", "_seq", "fa"));
 	}
 	int taxID = 3847;
 	String soyDbxref = "";

@@ -214,16 +214,19 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 
 	/**
 	 * 该区域的核酸序列，默认根据cis5to3进行反向序列
+	 * seqfasta的name 用map的name去设定
 	 * @param aaSeq
 	 */
 	public void setSeq(SeqFasta seqFasta) {
 		if (cis5to3 != null && cis5to3 == false) {
 			seqFasta = seqFasta.reservecom();
 		}
+		seqFasta.setSeqName(getName());
 		this.seqFasta = seqFasta;
 	}
 	/**
 	 * 该区域的核酸序列
+	 * seqfasta的name 用map的name去设定
 	 * @param seqFasta
 	 * @param setName 是否根据cis5to3进行反向序列
 	 */
@@ -231,11 +234,13 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		if (reservecom && cis5to3 != null && cis5to3 == false) {
 			seqFasta = seqFasta.reservecom();
 		}
+		seqFasta.setSeqName(getName());
 		this.seqFasta = seqFasta;
 	}
 	/**
 	 * 该区域的核酸序列
 	 * 注意设定的时候是否已经反向过了
+	 * seqfasta的name 用map的name去设定
 	 * @param aaSeq
 	 */
 	public SeqFasta getSeqFasta() {
@@ -289,8 +294,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 * start恒小于end
 	 * @return
 	 */
-	public int getStart()
-	{
+	public int getStart() {
 		return startLoc;
 	}
 	/** 
@@ -334,7 +338,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		return MathComput.mean(value);
 	}
 	/** 如果不存在，则返回null */
-	public double getMedian() {
+	public Double getMedian() {
 		if (value == null) {
 			return null;
 		}
@@ -453,19 +457,19 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 * @return
 	 */
 	public static List<MapInfo> sortLsMapInfo(List<MapInfo> lsmapinfo, double distance) {
-		Collections.sort(lsmapinfo, new Comparator<MapInfo>() {
-			@Override
-			public int compare(MapInfo o1, MapInfo o2) {
-				if (o1.getRefID().equals(o2.getRefID())) {
-					if (o1.getFlagSite() == o2.getFlagSite()) {
-						return 0;
-					}
-					return o1.getFlagSite() < o2.getFlagSite() ? -1:1;
-				}
-				return o1.getRefID().compareTo(o2.getRefID());
-			}
-		});
-		String chrIDOld = "";
+		//排序
+//		Collections.sort(lsmapinfo, new Comparator<MapInfo>() {
+//			@Override
+//			public int compare(MapInfo o1, MapInfo o2) {
+//				if (o1.getRefID().equals(o2.getRefID())) {
+//					if (o1.getMidLoc() == o2.getMidLoc()) {
+//						return 0;
+//					}
+//					return o1.getMidLoc() < o2.getMidLoc() ? -1:1;
+//				}
+//				return o1.getRefID().compareTo(o2.getRefID());
+//			}
+//		});
 		HashMap<String, ArrayList<double[]>> hashLsMapInfo = new HashMap<String, ArrayList<double[]>>();
 		HashMap<String, MapInfo> hashMapInfo = new HashMap<String, MapInfo>();
 		for (MapInfo mapInfo : lsmapinfo) {
@@ -478,10 +482,10 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 				lsTmp = hashLsMapInfo.get(mapInfo.refID);
 			}
 			double[] info = new double[2];
-			info[0] = mapInfo.getFlagSite();
+			info[0] = mapInfo.getMidLoc();
 			info[1] = mapInfo.getScore();
 			lsTmp.add(info);
-			hashMapInfo.put(mapInfo.getRefID()+mapInfo.getFlagSite(), mapInfo);
+			hashMapInfo.put(mapInfo.getRefID() + mapInfo.getMidLoc(), mapInfo);
 		}
 		
 		ArrayList<MapInfo> lsResult = new ArrayList<MapInfo>();

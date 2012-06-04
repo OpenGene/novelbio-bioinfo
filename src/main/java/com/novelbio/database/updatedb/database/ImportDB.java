@@ -22,11 +22,11 @@ public class ImportDB {
 //		updateEnsembl();
 //		updateYeast();
 
-
+		
 		updateMicroarray();
 //		updateSoyBean();
 //		updateZeaMaize();
-//		updateBlast();
+		updateBlast();
 //		updateAffy();
 	}
 	/**
@@ -80,7 +80,7 @@ public class ImportDB {
 //		String ensemblFileMouse = "/media/winE/Bioinformatics/DataBase/Mus_musculus.NCBIM37.65.gtf"; 
 //		String ucscGffFileMouse = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/refseqSortUsing.txt";
 //		int taxIDMouse = 10090;
-		Ensembl ensembl = new Ensembl();
+		IDconvert ensembl = new IDconvert();
 //		ensembl.setEnsemblFile(ensemblFileMouse, ucscGffFileMouse, taxIDMouse);
 		
 //		String ensemblFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/Gallus_gallus.WASHUC2.65.gtf";
@@ -199,7 +199,7 @@ public class ImportDB {
 		blast.setSubTaxID(3702);
 		blast.setTaxID(queryTaxID);
 		blast.setTxtWriteExcep(outFIle);
-//		blast.updateFile(blastFile, false);
+		blast.updateFile(blastFile, false);
 		
 		/////////////////   pig   /////////////////////////
 		blastFile = "/media/winE/Bioinformatics/GenomeData/pig/ncbiRef2Human";
@@ -214,7 +214,7 @@ public class ImportDB {
 		blast.setTaxID(queryTaxID);
 		blast.setTxtWriteExcep(outFIle);
 		blast.setIdtypeBlast(true);
-		blast.updateFile(blastFile, false);
+//		blast.updateFile(blastFile, false);
 	}
 	
 	private static void updateAffy()
@@ -377,7 +377,7 @@ public class ImportDB {
 //		microArrayBlast.updateFile(zerbfishFile, false);
 		
 		////////////////////  ´ó¶¹  /////////////////////////////
-		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/soybean/affy2Gly";
+		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/soybean/affy2Gly_nr.txt";
 		microArrayBlast = new MicroArrayBlast();
 		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_GLMAX);
 		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);

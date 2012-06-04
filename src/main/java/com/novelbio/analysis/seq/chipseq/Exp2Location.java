@@ -18,6 +18,7 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
+ * 用 {@link #DifLoc2DifLoc}取代
  * 研究表达差异和位点差异的
  * 也就是读取一个差异基因表，然后研究两组的甲基化差异情况
  * x轴：差异表达的ratio
@@ -25,18 +26,8 @@ import com.novelbio.generalConf.NovelBioConst;
  * @author zong0jie
  *
  */
+@Deprecated 
 public class Exp2Location {
-	public static void main2(String[] args) {
-		BedSeq bedSeq = new BedSeq("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/K4.KO.D0.sorted-1-removed.bed.gz");
-		bedSeq.setCompressType(TxtReadandWrite.GZIP, TxtReadandWrite.TXT);
-		bedSeq = bedSeq.extend(240);
-		bedSeq.sortBedFile();
-		
-		bedSeq = new BedSeq("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/K4.KO.D4.sorted-1-removed.bed.gz");
-		bedSeq.setCompressType(TxtReadandWrite.GZIP, TxtReadandWrite.TXT);
-		bedSeq = bedSeq.extend(240);
-		bedSeq.sortBedFile();
-	}
 	public static void main(String[] args) {
 		String gffFile = NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ;
 		String sicerFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/sicer-df-K4/K4_K4-WT4_sorted-1-removed-W200-G600-summary";
@@ -64,19 +55,19 @@ public class Exp2Location {
 		Exp2Location exp2Location = new Exp2Location();
 		exp2Location.setReadPeak(true);
 		exp2Location.setGffFile(gffFile);
-//		exp2Location.setMapInfo(mapFile1, mapFile2);
-		exp2Location.setSicerScore(sicerFile, colChrID, colPeakStart, colPeakEnd, colScore);
+		exp2Location.setMapInfo(mapFile1, mapFile2);
+//		exp2Location.setSicerScore(sicerFile, colChrID, colPeakStart, colPeakEnd, colScore);
 		exp2Location.readDifExpGene(lsInput, 2, txtOutTss, txtOutGeneBody);
 	}
 	/** 正负2K */
-	int tssRegion = 2000;
+	int[] tssRegion = new int[]{-2000,2000};
 	GffHashGene gffHashGene = new GffHashGene();
 	MapReads mapReads1 = null;
 	MapReads mapReads2 = null;
 	/** 保存sicerdif的信息 */
 	ListHashBin listHashBin = null;
-	/** 默认读取sicer的结果, false则读取mapbed文件的结果 */
-	boolean readPeak = true;
+	/** 默认读取bed文件的结果, false则读取peak文件的结果 */
+	boolean readPeak = false;
 	/** 默认读取sicer的结果, false则读取mapbed文件的结果 */
 	public void setReadPeak(boolean readPeak) {
 		this.readPeak = readPeak;
@@ -96,13 +87,20 @@ public class Exp2Location {
 		mapReads2.setChrLenFile("/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/ChromFa_chrLen.list");
 		mapReads2.ReadMapFile();
 	}
-	
+	/**
+	 * 读取sicer文件的score分数，如果不是用sicer的score去做分析，那么就不用该方法
+	 * @param sicerFile
+	 * @param colChrID
+	 * @param colPeakStart
+	 * @param colPeakEnd
+	 * @param colScore
+	 */
 	private void setSicerScore( String sicerFile, int colChrID, int colPeakStart, int colPeakEnd, int colScore) {
 		listHashBin = new ListHashBin(true, colChrID, colPeakStart, colPeakEnd, 2);
 		listHashBin.setColScore(colScore);
 		listHashBin.ReadGffarray(sicerFile);
 	}
-	
+
 	/**
 	 * @param lsGene2Ratio 0: geneID 1：ratio
 	 * @param rowStart
@@ -131,20 +129,13 @@ public class Exp2Location {
 				lsOutGeneBody.add(strGeneBody);
 			}
 		}
-		
 		TxtReadandWrite txtTss = new TxtReadandWrite(txtOutTss, true);
 		TxtReadandWrite txtGeneBody = new TxtReadandWrite(txtOutGeneBody, true);
-		
 		txtTss.ExcelWrite(lsOutTss, "\t", 1, 1);
 		txtGeneBody.ExcelWrite(lsOutGeneBody, "\t", 1, 1);
-		
 		txtTss.close();
 		txtGeneBody.close();
-		
 	}
-	
-	
-	
 	/**
 	 * 给定基因，获得该基因tss附近sicer-dif的分数
 	 * @param geneID
@@ -157,10 +148,10 @@ public class Exp2Location {
 		}
 		int start = 0, end = 0;
 		if (gffGeneIsoInfo.isCis5to3()) {
-			start = gffGeneIsoInfo.getTSSsite() + tssRegion;
+			start = gffGeneIsoInfo.getTSSsite() + tssRegion[1];
 		}
 		else {
-			start = gffGeneIsoInfo.getTSSsite() - tssRegion;
+			start = gffGeneIsoInfo.getTSSsite() - tssRegion[1];
 		}
 		end = gffGeneIsoInfo.getTESsite();
 		
@@ -175,7 +166,6 @@ public class Exp2Location {
 		}
 		return score/lsBin.size();
 	}
-	
 	/**
 	 * 给定基因，获得该基因tss附近sicer-dif的分数
 	 * @param geneID
@@ -186,7 +176,16 @@ public class Exp2Location {
 		if (gffGeneIsoInfo == null) {
 			return null;
 		}
-		ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> lsDu = listHashBin.searchLocation(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getTSSsite() - tssRegion, gffGeneIsoInfo.getTSSsite() + tssRegion);
+		int start = 0, end = 0;
+		if (gffGeneIsoInfo.isCis5to3()) {
+			start = gffGeneIsoInfo.getTSSsite() + tssRegion[0];
+			end = gffGeneIsoInfo.getTSSsite() + tssRegion[1];
+		}
+		else {
+			start = gffGeneIsoInfo.getTSSsite() - tssRegion[0];
+			end = gffGeneIsoInfo.getTSSsite() - tssRegion[1];
+		}
+		ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> lsDu = listHashBin.searchLocation(gffGeneIsoInfo.getChrID(), start, end);
 		ArrayList<ListDetailBin> lsBin = lsDu.getAllGffDetail();
 		if (lsBin.size() == 0) {
 			return 1.0;
@@ -211,10 +210,10 @@ public class Exp2Location {
 		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getChrID());
 		int start = 0, end = 0;
 		if (gffGeneIsoInfo.isCis5to3()) {
-			start = gffGeneIsoInfo.getTSSsite() + tssRegion;
+			start = gffGeneIsoInfo.getTSSsite() + tssRegion[1];
 		}
 		else {
-			start = gffGeneIsoInfo.getTSSsite() - tssRegion;
+			start = gffGeneIsoInfo.getTSSsite() - tssRegion[1];
 		}
 		end = gffGeneIsoInfo.getTESsite();
 		mapInfo.setStartEndLoc(start, end);
@@ -235,7 +234,16 @@ public class Exp2Location {
 		if (gffGeneIsoInfo == null) {
 			return null;
 		}
-		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getChrID(),gffGeneIsoInfo.getTSSsite() - tssRegion, gffGeneIsoInfo.getTSSsite() + tssRegion);
+		int start = 0, end = 0;
+		if (gffGeneIsoInfo.isCis5to3()) {
+			start = gffGeneIsoInfo.getTSSsite() + tssRegion[0];
+			end = gffGeneIsoInfo.getTSSsite() + tssRegion[1];
+		}
+		else {
+			start = gffGeneIsoInfo.getTSSsite() - tssRegion[0];
+			end = gffGeneIsoInfo.getTSSsite() - tssRegion[1];
+		}
+		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getChrID(),start, end);
 		mapReads1.getRegion(mapInfo, 20, 0);
 		double score1 = mapInfo.getMean();
 		mapReads2.getRegion(mapInfo, 20, 0);

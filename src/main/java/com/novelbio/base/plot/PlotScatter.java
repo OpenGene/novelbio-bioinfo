@@ -4,17 +4,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import cern.colt.matrix.doublealgo.Statistic;
 
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.plot.java.BarInfo;
@@ -55,25 +50,16 @@ public class PlotScatter extends PlotNBCInteractive{
     public static final int INSETS_SIZE_M = 300;
     public static final int INSETS_SIZE_ML = 400;
     public static final int INSETS_SIZE_L = 500;
-    /**
-     * custom axis X's ticks
-     */
+    /** custom axis X's ticks */
     Map<Double, String> mapAxisX = null;
     Font fontTicksX = null;
-    /**
-     * custom axis Y's ticks
-     */
+    /** custom axis Y's ticks */
     Map<Double, String> mapAxisY = null;
     Font fontTicksY = null;
-    /**
-     * 坐标轴边界
-     */
+    /** 坐标轴边界 */
     Axis axisX = null, axisY = null;
-    /**
-     * 内部坐标轴边界，如果外部没有设定坐标轴边界，就用内部的
-     */
+    /**内部坐标轴边界，如果外部没有设定坐标轴边界，就用内部的 */
     Axis axisXMy = new Axis(Double.MAX_VALUE, Double.MIN_VALUE), axisYMy = new Axis(Double.MAX_VALUE, Double.MIN_VALUE);
-
     /**
      * add point
      * @param x
@@ -137,6 +123,14 @@ public class PlotScatter extends PlotNBCInteractive{
     			dataTable.add(numberX.doubleValue(), numberY.doubleValue());
     	}
     }
+    /**
+     * 除去加入的信息
+     * @param dotStyle
+     */
+    public void removeData(DotStyle dotStyle) {
+    	DataTable dataTable = getDataTable(dotStyle);
+    	plot.remove(dataTable);
+    }
     //////////////////////////////////////////
     /**
      * 给定一个dotstyle，返回该dotstyle所对应的datatable
@@ -175,14 +169,6 @@ public class PlotScatter extends PlotNBCInteractive{
 		DataTable dataTable = hashDataTable.get(dotStyle);
 		setPointStyle(dataTable, dotStyle);
 	}
-    
-    
-    
-    
-    
-    
-    
-    
     /**
      * 待修正，将dataTable装入hash表中
      * using data to plot the histogram
@@ -190,8 +176,7 @@ public class PlotScatter extends PlotNBCInteractive{
      * @param breakNum Number of subdivisions for analysis.
      * @param dotStyle
      */
-    public void addHistData(Collection<? extends Number> lsNum, int breakNum, BarStyle dotStyle)
-    {
+    public void addHistData(Collection<? extends Number> lsNum, int breakNum, BarStyle dotStyle) {
     	DataTable dataTable = new DataTable(Double.class);
     	for (Number number : lsNum) {
 			dataTable.add(number.doubleValue());//(number.doubleValue());
@@ -292,23 +277,7 @@ public class PlotScatter extends PlotNBCInteractive{
 			axis.setMax(max + range * extendRangeMax);
 		}
     }
-    /**
-     * using data to plot the Bar figure, 直接加入plot，不进入hash表
-     * @param lsNum data 
-     * @param breakNum Number of subdivisions for analysis.
-     * @param dotStyle
-     */
-    public void addBarPlot(List<BarInfo> lsBarInfos, BarStyle dotStyle)
-    {
-    	//TODO
-    	DataTable dataTable = new DataTable(Double.class);
-    	if (plot == null) {
-			plot = new BarPlot(dataTable);
-		}
-    	else {
-			plot.add(dataTable);
-		}
-    }
+
     
     /**
      *  设定坐标轴边界
@@ -457,9 +426,9 @@ public class PlotScatter extends PlotNBCInteractive{
 	public void clearData() {
 		plot = null;
 	}
-	public void changeSetting() {
-		//TODO 修改配置文件获得图片的改变，初步考虑修改hashDataTable里面的dotstyle
-	}
+//	public void changeSetting() {
+//		//TODO 修改配置文件获得图片的改变，初步考虑修改hashDataTable里面的dotstyle
+//	}
 	/**
 	 * @param width
 	 * @param heigh
@@ -530,8 +499,10 @@ public class PlotScatter extends PlotNBCInteractive{
 		else if (dotStyle.getStyle() == DotStyle.STYLE_LINE) {
 			 DefaultLineRenderer2D line = new DefaultLineRenderer2D();
 			 line.setSetting(DefaultLineRenderer2D.COLOR, dotStyle.getColor());
+			 line.setSetting(DefaultLineRenderer2D.STROKE, dotStyle.getBasicStroke());
 			 plot.setLineRenderer(dataSeries, line);
 			 plot.setPointRenderer(dataSeries, null);
+			 
 			//TODO 设置成常规的line
 //			plot.setSetting(BarPlot.BAR_WIDTH, 0.04);
 //		    plot.getPointRenderer(dataSeries).setSetting(PointRenderer.COLOR, dotStyle.getColor());

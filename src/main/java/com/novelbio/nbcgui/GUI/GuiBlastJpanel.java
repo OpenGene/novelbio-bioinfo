@@ -319,8 +319,8 @@ public class GuiBlastJpanel extends JPanel{
 						{
 							//设置anno结果框
 							{
-								titleAnno = new String[4];
-								titleAnno[0] ="QueryID";titleAnno[1] ="Symbol/AccID";titleAnno[2] ="Description";titleAnno[3] ="KeggID";
+								titleAnno = new String[5];
+								titleAnno[0] ="QueryID";titleAnno[1] = "AccID"; titleAnno[2] ="Symbol/AccID";titleAnno[3] ="Description";titleAnno[4] ="KeggID";
 								String[][] tableValue = null;
 								jTabAnno = new DefaultTableModel(tableValue,titleAnno);
 								jTabFAnno = new JTable();
@@ -331,9 +331,10 @@ public class GuiBlastJpanel extends JPanel{
 						else {
 							//设置anno结果框
 							{
-								titleAnno = new String[7];
-								titleAnno[0] ="QueryID";titleAnno[1] ="Symbol/AccID";titleAnno[2] ="Description";
-								titleAnno[3] ="evalue";titleAnno[4] ="BlastSymbol/AccID";titleAnno[5] ="BlastDescription";
+								titleAnno = new String[10];
+								titleAnno[0] ="QueryID";titleAnno[1] ="AccID";titleAnno[2] ="Symbol/AccID";titleAnno[3] ="Description"; titleAnno[4] ="KeggID";
+								titleAnno[5] ="evalue";titleAnno[6] ="BlastAccID"; titleAnno[7] ="BlastSymbol/AccID";titleAnno[8] ="BlastDescription";
+								titleAnno[9] ="BlastKeggID";
 								String[][] tableValue = null;
 								jTabAnno = new DefaultTableModel(tableValue,titleAnno);
 								jTabFAnno = new JTable();

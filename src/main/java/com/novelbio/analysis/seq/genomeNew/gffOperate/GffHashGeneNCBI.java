@@ -1,20 +1,16 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
-import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
-import com.novelbio.generalConf.NovelBioConst;
-import com.novelbio.generalConf.Species;
 
 /**
  * 应该是标准的gff3格式，仅用于NCBI的gff3文件
@@ -34,8 +30,8 @@ import com.novelbio.generalConf.Species;
  */
 public class GffHashGeneNCBI extends GffHashGeneAbs{
 	public static void main(String[] args) {
-		CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, "100170341", 0);
-		System.out.println(copedID.getSymbol());
+		String NCBIgff = "/media/winE/Bioinformatics/GenomeData/soybean/gff/ref_V1.0_top_level.gff3";
+		setGFF(NCBIgff);
 	}
 	
 	
@@ -58,10 +54,15 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	
 	/** gene类似名 */
 	private static HashSet<String> hashgene = new HashSet<String>();
+	/** "(?<=gene\\=)\\w+" */
 	PatternOperate patGeneName = null;
+	/**  "(?<=transcript_id\\=)\\w+" */
 	PatternOperate patmRNAName = null;
+	/** "(?<=Dbxref\\=GeneID\\:)\\d+" */
 	PatternOperate patGeneID = null;
+	/** "(?<=ID\\=)\\w+" */
 	PatternOperate patID = null;
+	/** "(?<=Parent\\=)\\w+" */
 	PatternOperate patParentID = null;
 	
 	private void setPattern() {
@@ -164,9 +165,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			   String[] mRNAname = getMrnaName(ss);
 			   try {
 				   gffDetailGene.addsplitlist(mRNAname[0], mRNAname[1]);//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
-			} catch (Exception e) {
+			   } catch (Exception e) {
 				  gffDetailGene = getGffDetailRnaID(rnaID);
 				   gffDetailGene.addsplitlist(mRNAname[0], mRNAname[1]);//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+				   logger.error(mRNAname[0] + " " + mRNAname[1]);
 			}
 			
 		   }
@@ -310,19 +312,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   }
 		   LOCList.add(gffDetailGene);
 	   }
-	   
-	   for (ListGff listGff : Chrhash.values()) {
-		   listGff.sort();
-		   for (GffDetailGene gffDetailGene : listGff) {
-			   for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				   gffGeneIsoInfo.setATGUAGncRNA();
-			   }
-		   }
-	   }
+
    }
    
    /**
     * 将NCBIgff中的chrID转换为标准ChrID，然后将其中的scaffold删除
+    * 同时修正tRNA的问题
     * @param NCBIgff /media/winE/Bioinformatics/GenomeData/pig/gff/ref_Sscrofa10.2_gnomon_top_level.gff3
     */
    public static void setGFF(String NCBIgff) {
@@ -330,12 +325,13 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   TxtReadandWrite txtGff = new TxtReadandWrite(NCBIgff, false);
 	   TxtReadandWrite txtGffOut = new TxtReadandWrite(FileOperate.changeFileSuffix(NCBIgff, "_modify", null), true);
 	   String chrID = "";
+	   boolean tRNAflag = false; String[] tRNAtmp = null;
 	   for (String string : txtGff.readlines()) {
 		   if (string.startsWith("#")) {
 			continue;
-		}
+		   }
 		   String[] ss = string.split("\t");
-		   if (ss[2].equals("match")) {
+		   if (ss[2].equals("match") || ss[0].startsWith("NW_")) {
 			   continue;
 		   }
 		   if (ss[2].equals("region")) {
@@ -345,15 +341,55 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			   else if (ss[8].contains("genome=mitochondrion")) {
 				   chrID = "chrm";
 			   }
+			   else if (ss[8].contains("genome=chloroplast")) {
+				   chrID = "chrc";
+			   }
 			   else {
 				   chrID = "chr" + PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];
 			   }
 		   }
 		   ss[0] = chrID;
+		   
+		   if (tRNAflag) {
+			   if (!ss[2].equals("tRNA")) {
+				   txtGffOut.writefileln(tRNAtmp);
+				   txtGffOut.writefileln(ss);
+			   }
+			   else {
+				   int start = minmax(true, tRNAtmp[3], tRNAtmp[4], ss[3], ss[4]);
+				   int end = minmax(false, tRNAtmp[3], tRNAtmp[4], ss[3], ss[4]);
+				   tRNAtmp[3] = start + "";
+				   tRNAtmp[4] = end + "";
+				   txtGffOut.writefileln(tRNAtmp);
+			   }
+			   tRNAflag = false;
+			   continue;
+		   }
+		   else {
+			   if (ss[2].equals("tRNA")) {
+				   tRNAflag = true;
+				   tRNAtmp = ss;
+				   continue;
+			   }
+		   }
 		   txtGffOut.writefileln(ss);
+		   
 	   }
 	   txtGff.close();
 	   txtGffOut.close();
    }
-   
+   /**
+    * 获得tRNA的两行的最小和最大值，作为tRNA的起点和终点
+    * @param min
+    * @param is
+    * @return
+    */
+   private static int minmax(boolean min,String...is) {
+	   int[] intis = new int[is.length];
+	   for (int i = 0; i < is.length; i++) {
+		intis[i] = Integer.parseInt(is[i]);
+	}
+	   MathComput.sort(intis, min);
+	   return intis[0];
+   }
 }

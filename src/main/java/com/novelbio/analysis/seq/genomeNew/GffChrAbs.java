@@ -247,7 +247,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param colChrID
 	 * @param colStartLoc
 	 * @param colEndLoc
-	 * @param colScore 打分，也就是权重，没有该列的话，就设置为0
+	 * @param colScore 打分，也就是权重，没有该列的话，就设置为 <= 0
 	 * @param rowStart
 	 */
 	public ArrayList<MapInfo> readFileRegionMapInfo(String txtExcel, int colChrID, int colStartLoc, int colEndLoc, int colScore,int rowStart)
@@ -325,8 +325,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param binNum 分成几块
 	 * @return
 	 */
-	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(ArrayList<? extends MapInfo> lsMapInfos, String structure, int binNum)
-	{
+	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(ArrayList<? extends MapInfo> lsMapInfos, String structure, int binNum) {
 		HashMap<GffDetailGene,Double>  hashGffDetailGenes = getPeakGeneStructure( lsMapInfos, structure);
 		 ArrayList<MapInfo> lsResult = getMapInfoFromGffGene(hashGffDetailGenes, structure);
 		 mapReads.getRegionLs(binNum, lsResult, 0);

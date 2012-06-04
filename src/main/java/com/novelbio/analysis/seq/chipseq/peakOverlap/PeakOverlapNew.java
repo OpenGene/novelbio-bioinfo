@@ -6,46 +6,18 @@ import com.novelbio.analysis.seq.chipseq.repeatMask.RepeatMask;
 import com.novelbio.analysis.seq.genomeNew.GffPeakOverLap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-
-
-public class PeakOverlapNew 
-{
-
+public class PeakOverlapNew {
 	public static void main(String[] args) {
-
 		try {
-			String parentFile1 = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/result/overlap/allPeak/";
-			 String fileN=parentFile1+"N_peaks_summit.xls";
-			 
-			 String parentFile2 = "/media/winE/NBC/Project/ChIPSeq_CDG101101CT/result/annotation/";
-			 String  file2N=parentFile1+"2N_peaks_summit.xls";
-			 String  file3N=parentFile1+"3N_peaks_summit.xls";
-			/**
-			 * 每个peakOverlap的细节
-			 */
-			 String parentFile3 = "/media/winE/NBC/Project/Project_ZDB_Lab/ZH/CSACHIP-SEQ/result/annotation/";
-			 String txtPeakOverlapFileN2N=parentFile1+"Nvs2N";
-			 String txtPeakOverlapFileN2NStic=parentFile1+"Nvs2Nstatistic";
-			 String txtPeakOverlapFileN3N=parentFile1+"Nvs3N";
-			 String txtPeakOverlapFileN3NStic=parentFile1+"Nvs3Nstatistic";
-			 String txtPeakOverlapFile2N3N=parentFile1+"2Nvs3N";
-			 String txtPeakOverlapFile2N3NStic=parentFile1+"2Nvs3Nstatistic";
-
+			String parentFile1 = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/allSingle/";
+			String fileN=parentFile1+"K4_WT0_anno.xls";
+			String  file2N=parentFile1+"K27_WT0.xls";
+			String txtPeakOverlapFileN2N=parentFile1+"K4_WT0_bivalent.txt";
 			PeakOverLap(fileN,file2N,txtPeakOverlapFileN2N);
-		    PeakStatistic("N", "2N",fileN,file2N,txtPeakOverlapFileN2NStic);
-		    
-			PeakOverLap(fileN,file3N,txtPeakOverlapFileN3N);
-		    PeakStatistic("N", "3N",fileN,file3N,txtPeakOverlapFileN3NStic);
-		    
-			PeakOverLap(file2N,file3N,txtPeakOverlapFile2N3N);
-		    PeakStatistic("2N", "3N",file2N,file3N,txtPeakOverlapFile2N3NStic);
-		    
-	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		System.gc();
-		
 	}
 	
 	/**
@@ -113,11 +85,11 @@ public class PeakOverlapNew
 		result2[1]=peakOverlapLength[0]+"";
 		resultexcel.add(result2);
 		String[] result3=new String[2];
-		result3[0]="Peak Overlap Proportion To "+PlusName+" Length";
+		result3[0]="Peak Overlap Proportion With "+PlusName+" Length";
 		result3[1]=(double)peakOverlapLength[0]/plusLength+"";
 		resultexcel.add(result3);
 		String[] result4=new String[2];
-		result4[0]="Peak Overlap Proportion To "+MinNam+" Length";
+		result4[0]="Peak Overlap Proportion With "+MinNam+" Length";
 		result4[1]=(double)peakOverlapLength[0]/minusLength+"";
 		resultexcel.add(result4);
 		
@@ -133,14 +105,16 @@ public class PeakOverlapNew
 		resultexcel.add(result6);
 		
 		String[] result7=new String[2];
-		result7[0]=MinNam+" To "+PlusName+" OverlapNum";
-		result7[1]=peakOverlapLength[1]+"";
+		result7[0]=PlusName+"To "+MinNam+" OverlapNum";
+		result7[1]=peakOverlapLength[3]+"";
 		resultexcel.add(result7);
 		
 		String[] result8=new String[2];
-		result8[0]=PlusName+"To "+MinNam+" OverlapNum";
-		result8[1]=peakOverlapLength[3]+"";
+		result8[0]=MinNam+" To "+PlusName+" OverlapNum";
+		result8[1]=peakOverlapLength[1]+"";
 		resultexcel.add(result8);
+		
+
 
 		String[] result9=new String[2];
 		result9[0]="peakOverlapProportion To "+PlusName+" Num";

@@ -46,6 +46,15 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	public void ReadGffarray(String gfffilename) {
 		this.acc2GeneIDfile = FileOperate.changeFileSuffix(gfffilename, "_accID2geneID", "list");
 		super.ReadGffarray(gfffilename);
+		   for (ListGff listGff : Chrhash.values()) {
+			   listGff.sort();
+			   for (GffDetailGene gffDetailGene : listGff) {
+				   for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+					   gffGeneIsoInfo.sort();
+					   gffGeneIsoInfo.setATGUAGncRNA();
+				   }
+			   }
+		   }
 	}
 	
 	public int getTaxID() {

@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 
@@ -55,7 +56,7 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 	}
 	
 	
-	List<String> lsGeneID = null;
+	List<String> lsAccID = null;
 	
 	/**
 	 * 准备工作，将geneID读入内存同时准备查找，同时返回总共查找的数量，给进度条计数
@@ -63,7 +64,7 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 	 * @throws Exception
 	 */
 	public int prepare(List<String> lsGeneID) {
-		this.lsGeneID = lsGeneID;
+		this.lsAccID = lsGeneID;
 		return lsGeneID.size();
 	}
 	
@@ -82,11 +83,12 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 			length = 6;
 		else 
 			length = 2;
-		
-		for (int i = 0; i<lsGeneID.size(); i++) {
-			String geneID = lsGeneID.get(i).trim();
+		int i = 0;
+		for (String accID : lsAccID) {
+			i ++;
+			accID = accID.trim();
 			try {
-				CopedID copedID = new CopedID(geneID, taxID);
+				CopedID copedID = new CopedID(accID, taxID);
 				copedID.setBlastInfo(1e-10, StaxID);
 				String[] tmpAnno = copedID.getAnno(blast);
 				if (tmpAnno == null) {
@@ -95,48 +97,36 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 						tmpAnno[j] = "";
 					}
 				}
-				//在tmpAnno的最前面加上accID
-				String[] tmpanno2 = null;
-				if (!blast) {
-					tmpanno2 = new String[tmpAnno.length+2];
-					for (int j = 1; j < tmpanno2.length-1; j++) {
-						tmpanno2[j]=tmpAnno[j-1];
-					}
-					tmpanno2[0]=lsGeneID.get(i);
-					tmpanno2[tmpanno2.length - 1] =copedID.getKeggInfo().getKegID();
-				}
-				else {
-					tmpanno2 = new String[tmpAnno.length+1];
-					for (int j = 1; j < tmpanno2.length; j++) {
-						tmpanno2[j]=tmpAnno[j-1];
-					}
-					tmpanno2[0]=lsGeneID.get(i);
-				}
-				
-			
+				//在tmpAnno的最前面加上accID，最尾部加上keggID
 				/////////去除物种那一列/////////////////////////////
-				String[] tmpanno3 = null;
-				if(blast)
-				{
-					tmpanno3 = new String[10];
-					int j = 0;
-					for (int m = 0; m < tmpanno2.length; m++) {
-						if (m == 3) {
-							continue;
-						}
-						tmpanno3[j] = tmpanno2[m]; j++;
-					}
+				ArrayList<int[]> lsIndelInfo = new ArrayList<int[]>();
+				lsIndelInfo.add(new int[]{0,2});
+				lsIndelInfo.add(new int[]{length, 1});
+				if (blast) {
+					lsIndelInfo.add(new int[]{2,-1});
+					lsIndelInfo.add(new int[]{3,1});
+					lsIndelInfo.add(new int[]{4,1});
+				}
+				String[] tmpResult = ArrayOperate.indelElement(tmpAnno, lsIndelInfo, "");
+				tmpResult[0] = accID;	//在tmpAnno的最前面加上accID
+				tmpResult[1] = copedID.getAccIDDBinfo();//第二列加上默认数据库的ID
+				if (!blast) {
+					tmpResult[tmpResult.length - 1] = copedID.getKeggInfo().getKegID(); //最尾部加上keggID
 				}
 				else {
-					tmpanno3 =  tmpanno2;
+					tmpResult[4] = copedID.getKeggInfo().getKegID(); //最尾部加上keggID
+					CopedID copedIDblast = copedID.getCopedIDBlast();
+					if (copedIDblast != null ) {
+						tmpResult[6] = copedIDblast.getAccIDDBinfo();//加上默认数据库的ID
+						tmpResult[tmpResult.length - 1] = copedIDblast.getKeggInfo().getKegID(); //最尾部加上keggID
+					}
 				}
 				///////////////////////////////////////////////////
 				ProgressData progressData = new ProgressData();
 				progressData.rowNum = i;
-				progressData.tmpInfo = tmpanno3;
+				progressData.tmpInfo = tmpResult;
 				publish(progressData);
-				lsDesp.add(tmpanno3);
-//				Thread.sleep(100);
+				lsDesp.add(tmpResult);
 			} catch (Exception e)
 			{
 				e.printStackTrace();

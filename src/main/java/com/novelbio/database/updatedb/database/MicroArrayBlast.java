@@ -100,8 +100,24 @@ public class MicroArrayBlast {
 			lsFinal.add(strings);
 		}
 		//将去重复和排序的比对结果导入数据库
+		boolean flag = true;//是否导入数据库
 		for (String[] strings : lsFinal) {
-			if (Double.parseDouble(strings[2]) < 90 || Double.parseDouble(strings[10]) > 1e-90) {
+			if (Double.parseDouble(strings[2]) > 90//一致序列大于90%
+					&&
+			(Double.parseDouble(strings[10]) < 1e-90
+			||
+			  (Double.parseDouble(strings[3]) > 100//比对长度大于100
+					&& 
+			  Double.parseDouble(strings[4])+Double.parseDouble(strings[5]) <= Double.parseDouble(strings[3])*0.03//错配和gap之和小于比对长度的0.03
+			  )
+		   )
+	      ) {
+				flag = true;
+			}
+			else {
+				flag = false;
+			}
+			if (!flag) {
 				continue;
 			}
 			
@@ -136,6 +152,7 @@ public class MicroArrayBlast {
 //					return;
 //				}
 //				copedID.setUpdateAccID(accID);
+				continue;
 			}
 			copedID.setUpdateDBinfo(dbInfo, true);
 			if (copedID.update(false)) {

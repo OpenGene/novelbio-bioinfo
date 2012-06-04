@@ -147,8 +147,8 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	            public int compare(String[] arg0, String[] arg1) {
 	            	int i=arg0[0].compareTo(arg1[0]);
 	            	if(i==0){
-	            		Integer a0 = Integer.parseInt(arg0[1]);
-	            		Integer a1 =  Integer.parseInt(arg1[1]);
+	            		Integer a0 = Integer.parseInt(arg0[1].trim());
+	            		Integer a1 =  Integer.parseInt(arg1[1].trim());
 	            		return a0.compareTo(a1);
 	            	}
 	               return i;
@@ -172,8 +172,8 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 			int peakNum=lstmpPeakinfo.size();
 			for (int i = 0; i < peakNum; i++) {
 				chrnametmpString=lstmpPeakinfo.get(i)[0].toLowerCase();
-				tmppeakstart=Integer.parseInt(lstmpPeakinfo.get(i)[1]);
-				tmppeakend=Integer.parseInt(lstmpPeakinfo.get(i)[2]);
+				tmppeakstart=Integer.parseInt(lstmpPeakinfo.get(i)[1].trim());
+				tmppeakend=Integer.parseInt(lstmpPeakinfo.get(i)[2].trim());
 				if (lstmpPeakinfo.get(i).length > 3) {
 					score = Double.parseDouble(lstmpPeakinfo.get(i)[3]);
 				}

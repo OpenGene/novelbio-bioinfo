@@ -126,6 +126,7 @@ public class NovelBioConst {
 	public final static String GENOME_GFF_TYPE_UCSC = "UCSC";
 	public final static String GENOME_GFF_TYPE_TIGR = "TIGR";
 	public final static String GENOME_GFF_TYPE_TAIR = "TAIR";
+	public final static String GENOME_GFF_TYPE_GLYMAX = "GLYMAX";
 	public final static String GENOME_GFF_TYPE_CUFFLINK_GTF = "CUFFLINK_GTF";
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,15 +227,15 @@ public class NovelBioConst {
 	public final static String GENOME_PATH_RICE_TIGR_STATISTIC = GENOME_PATH_RICE_TIGR+"statisticInof/";
 
 	//////////////////////////////////R系列//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public final static String R_SCRIPT = "Rscript ";
-
-	/**
-	 *  "/media/winE/Bioinformatics/R/practice_script/platform/"
-	 */
-	public final static String R_WORKSPACE = "/media/winE/Bioinformatics/R/practice_script/platform/";
+//	public final static String R_SCRIPT = "Rscript ";
+//
+//	/**
+//	 *  "/media/winE/Bioinformatics/R/practice_script/platform/"
+//	 */
+//	public final static String R_WORKSPACE = "/media/winE/Bioinformatics/R/practice_script/platform/";
 	
-//	public final static String R_WORKSPACE = "D:/Library/R/";
-//	public final static String R_SCRIPT = "D:/tools/R2_14/bin/Rscript ";
+	public final static String R_WORKSPACE = "D:/Library/R/";
+	public final static String R_SCRIPT = "D:/tools/R2_14/bin/Rscript ";
 	
 	/////////////////////////////常规Fisher/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**

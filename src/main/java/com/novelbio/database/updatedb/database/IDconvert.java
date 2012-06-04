@@ -14,8 +14,12 @@ import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.generalConf.NovelBioConst;
-
-public class Ensembl {
+/**
+ * ID转换，将ensembl的表转化为NCBI的表，以及类似功能
+ * @author zong0jie
+ *
+ */
+public class IDconvert {
 	/**
 	 * 存储gffFile和对应的taxID
 	 */
@@ -31,14 +35,12 @@ public class Ensembl {
 		this.taxIDFile = taxIDFile;
 	}
 	/**
-	 * 
 	 * 必须是txt文件
 	 * @param fileName 从ensembl下载的gtf文件
 	 * @param ucscFile UCSC的坐标文件，不是gtf格式的
 	 * @param taxID
 	 */
-	public void setEnsemblFile(String fileName, String ucscFile, Integer taxID)
-	{
+	public void setEnsemblFile(String fileName, String ucscFile, Integer taxID) {
 		hashEnsemblTaxID.put(fileName, taxID);
 		lsUCSCFile.add(ucscFile);
 	}
@@ -54,7 +56,6 @@ public class Ensembl {
 			ensembleGTF.setTxtWriteExcep(FileOperate.changeFileSuffix(fileName, "_NotFindInDB", null));
 			ensembleGTF.updateFile(fileName, false);
 			i ++;
-			
 		}
 	}
 }

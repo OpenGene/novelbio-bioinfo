@@ -8,6 +8,7 @@ import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.database.model.modcopeid.CopedID;
@@ -50,7 +51,13 @@ public class GffChrSeq extends GffChrAbs{
 		
 		return seqHash.getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, getIntron);
 	}
-	
+	/**
+	 * 给定坐标，获得该坐标所对应的序列
+	 * @return
+	 */
+	public void getSeq(MapInfo mapInfo) {
+		seqHash.getSeq(mapInfo);
+	}
 	/**
 	 * 给定坐标，提取序列
 	 * @param IsoName

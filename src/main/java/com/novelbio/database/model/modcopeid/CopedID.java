@@ -236,7 +236,10 @@ public class CopedID implements CopedIDInt{
 	public String getAccID() {
 		return copedID.getAccID();
 	}
-
+	@Override
+	public String getAccIDDBinfo() {
+		return copedID.getAccIDDBinfo();
+	}
 	@Override
 	public String getGenUniID() {
 		return copedID.getGenUniID();
@@ -276,7 +279,7 @@ public class CopedID implements CopedIDInt{
 	 * @param blast
 	 * @return
 	 * 	 * blast£º<br>
-	 * 			blast * 0:symbol 1:description 2:evalue 3:subjectSpecies 4:symbol 5:description <br>
+	 * 			blast * 0:symbol 1:description 2:subjectSpecies 3:evalue 4:symbol 5:description <br>
 			²»blast£º<br>
 						0:symbol 1:description<br>
 	 */
