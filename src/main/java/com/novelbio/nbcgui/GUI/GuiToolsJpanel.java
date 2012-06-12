@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.nbcgui.controltools.CtrlCombFile;
 import com.novelbio.nbcgui.controltools.CtrlMedian;
@@ -38,6 +39,7 @@ public class GuiToolsJpanel extends JPanel {
 	private JTextField jtxtAccIDComp;
 	GUIFileOpen guiFileOpenComb = new GUIFileOpen();
 	GUIFileOpen guiFileOpenMed = new GUIFileOpen();
+	JScrollPaneData scrollPane;
 	/**
 	 * Create the panel.
 	 */
@@ -112,7 +114,7 @@ public class GuiToolsJpanel extends JPanel {
 		springLayout.putConstraint(SpringLayout.NORTH, btnSaveasMedian, 1, SpringLayout.NORTH, jtxtAccID);
 		add(btnSaveasMedian);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPaneData();
 		springLayout.putConstraint(SpringLayout.WEST, scrollPane, 0, SpringLayout.WEST, jtxtFileNameMedian);
 		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -83, SpringLayout.SOUTH, this);
 		springLayout.putConstraint(SpringLayout.EAST, scrollPane, 456, SpringLayout.WEST, jtxtFileNameMedian);
@@ -121,15 +123,13 @@ public class GuiToolsJpanel extends JPanel {
 		JButton btnAddlineCompare = new JButton("AddFile");
 		springLayout.putConstraint(SpringLayout.NORTH, btnAddlineCompare, 110, SpringLayout.SOUTH, btnSaveasMedian);
 		springLayout.putConstraint(SpringLayout.WEST, btnAddlineCompare, 0, SpringLayout.WEST, btnOpenfileMedian);
-		String[][] tableValue = null;
-		final DefaultTableModel jTabInput = new DefaultTableModel(tableValue, new String[]{"FileName","FilePrix","CombCol"});
-		JTable jTab = new JTable();
-		scrollPane.setViewportView(jTab);
-		jTab.setModel(jTabInput);
+		scrollPane.setTitle(new String[]{"FileName","FilePrix","CombCol"});
 		btnAddlineCompare.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String filename = guiFileOpenComb.openFileName("txt/excel2003", "txt","xls");
-				jTabInput.addRow(new String[]{filename,""});
+				ArrayList<String> lsfilename = guiFileOpenComb.openLsFileName("txt/excel2003", "txt","xls");
+				for (String strings : lsfilename) {
+					scrollPane.addProview(new String[]{strings,""});
+				}
 			}
 		});
 		add(btnAddlineCompare);
@@ -148,10 +148,11 @@ public class GuiToolsJpanel extends JPanel {
 				CtrlCombFile ctrlCombFile = new CtrlCombFile();
 				String colAccID = jtxtAccIDComp.getText();
 				ctrlCombFile.setCompareCol(colAccID);
-				for (int i = 0; i < jTabInput.getRowCount(); i++) {
-					String fileName = jTabInput.getValueAt(i, 0).toString();
-					String filePrix = jTabInput.getValueAt(i, 1).toString().trim();
-					String colID = jTabInput.getValueAt(i, 2).toString().trim();
+				ArrayList<String[]> lsInfo = scrollPane.getLsDataInfo();
+				for (String[] strings : lsInfo) {
+					String fileName = strings[0].trim();
+					String filePrix = strings[1].trim();
+					String colID = strings[2].trim();
 					if (!FileOperate.isFileExist(fileName) || colID.equals("")) {
 						continue;
 					}
@@ -195,6 +196,16 @@ public class GuiToolsJpanel extends JPanel {
 		springLayout.putConstraint(SpringLayout.SOUTH, separator, -330, SpringLayout.SOUTH, this);
 		springLayout.putConstraint(SpringLayout.EAST, separator, -23, SpringLayout.EAST, this);
 		add(separator);
+		
+		JButton btnDelfile = new JButton("DelFile");
+		btnDelfile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				scrollPane.removeSelRows();
+			}
+		});
+		springLayout.putConstraint(SpringLayout.NORTH, btnDelfile, 27, SpringLayout.SOUTH, btnAddlineCompare);
+		springLayout.putConstraint(SpringLayout.WEST, btnDelfile, 29, SpringLayout.EAST, scrollPane);
+		add(btnDelfile);
 		
 		
 		

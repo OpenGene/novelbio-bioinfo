@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.genomeNew.getChrSequence;
 
+import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -23,8 +24,7 @@ public class SeqFasta implements Cloneable {
 	public static final int SEQ_PRO = 256;
 	public static final int SEQ_DNA = 512;
 	public static final int SEQ_RNA = 1024;
-	public static int FASTQ_SANGER_OFFSET = 33;
-	public static int FASTQ_ILLUMINA_OFFSET = 64;
+
 	
 	protected String SeqName;
 	protected String SeqSequence = "";
@@ -40,10 +40,28 @@ public class SeqFasta implements Cloneable {
 		this.TOLOWCASE = TOLOWCASE;
 	}
 	/**
+	 * 给定左右的坐标，然后将seqfasta截短
+	 * @param start 和substring一样的用法
+	 * @param end 和substring一样的用法
+	 * @return 返回截短后的string
+	 */
+	public SeqFasta trimSeq(int start, int end) {
+		SeqFasta seqFasta = new SeqFasta();
+		seqFasta.AA3Len = AA3Len;
+		seqFasta.SeqName = SeqName;
+		seqFasta.TOLOWCASE = TOLOWCASE;
+		if (SeqSequence == null) {
+			seqFasta.SeqSequence = SeqSequence;
+			return seqFasta;
+		}
+		seqFasta.SeqSequence = SeqSequence.substring(start, end);
+		return seqFasta;
+	}
+	/**
 	 * nr序列的长度
 	 * @return
 	 */
-	public int length() {
+	public int getLength() {
 		return SeqSequence.length();
 	}
 	
@@ -520,7 +538,7 @@ public class SeqFasta implements Cloneable {
 	/**
 	 * 设定序列名
 	 */
-	public void setSeqName(String SeqName) {
+	public void setName(String SeqName) {
 		 this.SeqName = SeqName;
 	}
 	/**
@@ -529,7 +547,6 @@ public class SeqFasta implements Cloneable {
 	public String getSeqName() {
 		return SeqName;
 	}
-	
 	/**
 	 * 设定序列
 	 */
@@ -718,8 +735,6 @@ public class SeqFasta implements Cloneable {
 	{
 		//string0: flag string1: location string2:endLoc
 		ArrayList<LocInfo> lsResult = new ArrayList<LocInfo>();
-		
-		
 		char[] seq = SeqSequence.toCharArray();
 		boolean flagBound = false; //边界模糊标记，XX
 		boolean flagGap = false; //gap标记，小写
@@ -924,8 +939,8 @@ public class SeqFasta implements Cloneable {
 	 */
 	public int getSeqType() {
 		int len = 2000;
-		if (len > length()) {
-			len = length() - 1;
+		if (len > getLength()) {
+			len = getLength() - 1;
 		}
 		char[] chr = SeqSequence.substring(0, len).toCharArray();
 		int num = 0;
@@ -947,7 +962,7 @@ public class SeqFasta implements Cloneable {
 			}
 			return SEQ_DNA;
 		}
-		else if ((double)num/length() < 0.1) {
+		else if ((double)num/getLength() < 0.1) {
 			return SEQ_UNKNOWN;
 		}
 		else {
@@ -958,9 +973,9 @@ public class SeqFasta implements Cloneable {
 	 * 根据TOLOWCASE返回序列
 	 */
 	public String toString() {
-		if (SeqSequence.equals("")) {
-			return "";
-		}
+//		if (SeqSequence.equals("")) {
+//			return "";
+//		}
 		if (TOLOWCASE == null) {
 			return SeqSequence;
 		}

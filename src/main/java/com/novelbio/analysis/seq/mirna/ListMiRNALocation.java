@@ -1,11 +1,9 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListBin;
@@ -19,7 +17,6 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 public class ListMiRNALocation extends ListHashBin{
 	public static int TYPE_RNA_DATA = 10;
 	public static int TYPE_MIREAP = 15;
-	private static final long serialVersionUID = 7551704881799402654L;
 	public static void main(String[] args) {
 		ListMiRNALocation tmpMiRNALocation = new ListMiRNALocation();
 		tmpMiRNALocation.ReadGffarray("/media/winE/Bioinformatics/DataBase/sRNA/miRNA.dat");
@@ -28,6 +25,7 @@ public class ListMiRNALocation extends ListHashBin{
 	
 	String species = "HSA";
 	/**
+	 * 为miRNA.dat中的物种名
 	 * 设定物种，默认为人类：HSA
 	 * 具体要检查RNA.data文件
 	 * @param species
@@ -38,7 +36,7 @@ public class ListMiRNALocation extends ListHashBin{
 	int fileType = TYPE_RNA_DATA;
 	/**
 	 * 文件格式，可以是RNA.dat，也可以是miReap的结果
-	 * @param type
+	 * @param type TYPE_RNA_DATA 或 TYPE_MIREAP
 	 */
 	public void setReadFileType(int type) {
 		this.fileType = type;

@@ -7,6 +7,7 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.base.cmd.CMDcallback;
 import com.novelbio.base.cmd.CmdOperate;
@@ -31,7 +32,6 @@ public class MapBwa {
 	 */
 	private static final int GENOME_SIZE_IN_MEMORY = 500000;
 	private static Logger logger = Logger.getLogger(FastQMapSoap.class);
-	private int mapQ = 10;
 	boolean uniqMapping = true;
 	String sampleGroup = "";
 	String outFileName = "";
@@ -42,6 +42,12 @@ public class MapBwa {
 	int minInsert = 0;
 	/**  默认是solexa的最长插入  */
 	int maxInsert = 500;
+	/** 含有几个gap */
+	int gapNum = 1;
+	/** gap的长度 */
+	int gapLength = 3;
+	/** 线程数量 */
+	int threadNum = 4;
 	/**
 	 * Maximum edit distance if the value is INT, or the fraction of missing alignments given 2% uniform
 	 *  base error rate if FLOAT. In the latter case, the maximum edit distance is automatically chosen 
@@ -102,16 +108,37 @@ public class MapBwa {
 			this.mismatch = mismatch + "";
 		}
 	}
-	
+	/**
+	 * 百分之多少的mismatch，或者几个mismatch
+	 * @param mismatch
+	 */
+	private String getMismatch() {
+		return "-n " + mismatch + " ";
+	}
+	/**
+	 * 设定bwa所在的文件夹以及待比对的路径
+	 * @param exePath 如果在根目录下则设置为""或null
+	 * @param chrFile
+	 */
 	public void setExePath(String exePath, String chrFile) {
-		this.ExePath = exePath;
+		if (exePath == null || exePath.trim().equals(""))
+			this.ExePath = "";
+		else
+			this.ExePath = FileOperate.addSep(exePath);
+	
 		this.chrFile = chrFile;
 	}
-	
+	/** 是否为双端 */
 	private boolean isPairend() {
 		return pairend;
 	}
-
+	/** 线程数量，默认4线程 */
+	public void setThreadNum(int threadNum) {
+		this.threadNum = threadNum;
+	}
+	private String getThreadNum() {
+		return "-t " + threadNum + " ";
+	}
 	/**
 	 * 是否将index读入内存，仅对双端测序有用
 	 */
@@ -141,7 +168,7 @@ public class MapBwa {
 		}
 	}
 	
-	private int gapLength = 3;
+
 	/**
 	 * 默认gap为3，如果是indel查找的话，设置到5或者6比较合适
 	 * @param gapLength
@@ -149,12 +176,23 @@ public class MapBwa {
 	public void setGapLength(int gapLength) {
 		this.gapLength = gapLength;
 	}
-
-	public void setMapQ(int mapQ) {
-		this.mapQ = mapQ;
+	/**
+	 * 默认gap为3，如果是indel查找的话，设置到5或者6比较合适
+	 * @param gapLength
+	 */
+	private String getGapLen() {
+		return "-e "+gapLength + " ";
+	}
+	/** 比对的时候容忍最多几个gap 默认为1，1个就够了，除非长度特别长或者是454*/
+	public void setGapNum(int gapnum) {
+		this.gapNum = gapnum;
+	}
+	/** 比对的时候容忍最多几个gap 默认为1，1个就够了，除非长度特别长或者是454*/
+	private String getGapNum() {
+		return "-o " + gapNum + " ";
 	}
 	private int getOffset() {
-		FastQOld fastQ = new FastQOld(leftFq, FastQOld.QUALITY_MIDIAN);
+		FastQ fastQ = new FastQ(leftFq, FastQ.QUALITY_MIDIAN);
 		return fastQ.getOffset();
 	}
 	/**
@@ -166,14 +204,9 @@ public class MapBwa {
 //		bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT.fastq > TGACT.sai
 //		bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT2.fastq > TGACT2.sai
 //		bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai TGACT2.sai barcod_TGACT.fastq 
-		
-		
 		String cmd = ""; cmd = ExePath + "bwa aln ";
-		cmd = cmd + "-n " + mismatch + " "; //5%的错误率
-		cmd = cmd + "-o 1 "; //一个gap
-		cmd = cmd + "-e " + gapLength + " "; //该gap最多5bp长
+		cmd = cmd + getMismatch() + getGapNum() + getGapLen() + getThreadNum(); //5%的错误率
 		cmd = cmd + "-l 25 "; //种子长度
-		cmd = cmd + "-t 4 "; //4个线程
 		cmd = cmd + "-O 10 "; //Gap open penalty. gap罚分
 		if (getOffset() == FastQOld.FASTQ_ILLUMINA_OFFSET) {
 			cmd = cmd + "-I "; //Illumina 的偏移
@@ -212,15 +245,7 @@ public class MapBwa {
 		}
 		//这里可能不需要，unique mapping不是在sam文件中设定的
 		else {
-//			if (uniqMapping) {
-//				cmd = super.ExePath + "bwa samse " + sampleGroup + "-n 100 ";
-//			}
-//			else {
-//				cmd = super.ExePath + "bwa samse " + sampleGroup + "-n 100 ";
-//			}
 			cmd = this.ExePath + "bwa samse " + sampleGroup + "-n 100 ";
-			
-			
 			cmd = cmd + chrFile + " " + sai1 + " "  + leftFq;
 			cmd = cmd + " > " + outFileName;
 		}
@@ -262,7 +287,7 @@ public class MapBwa {
 		cmd = cmd + getChrLen();//用哪种算法
 		//TODO :考虑是否自动判断为solid
 		cmd = cmd + chrFile;
-		System.out.println(cmd);
+		logger.info(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.doInBackground("bwaMakeIndex");
 	}

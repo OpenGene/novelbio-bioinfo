@@ -20,6 +20,8 @@ import javax.imageio.ImageWriter;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
 import javax.swing.JPanel;
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 import org.apache.log4j.Logger;
 
@@ -60,8 +62,7 @@ public abstract  class PlotNBC{
     /**
      * 画图，必须调用了该方法后才能保存图片
      */
-    public void drawData(int width, int heigh)
-    {
+    public void drawData(int width, int heigh) {
     	painted = true;
     	draw(width,heigh);
     }
@@ -127,21 +128,13 @@ public abstract  class PlotNBC{
     	File fileOut = new File(outputFile);
 		// Handle jpg without transparency.
 		if (ext.toLowerCase().equals("jpg") || ext.toLowerCase().equals("jpeg")) {
-			// Setup correct compression for jpeg.
-			Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("jpeg");
-			ImageWriter writer = (ImageWriter) iter.next();
-			ImageWriteParam iwp = writer.getDefaultWriteParam();
-			iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-			iwp.setCompressionQuality(quality);
 			try {
-				// Output the image.
-				FileImageOutputStream output = new FileImageOutputStream(fileOut);
-				writer.setOutput(output);
-				IIOImage image = new IIOImage(chart, null, null);
-				writer.write(null, image, iwp);
+				 ImageIO.write(chart,"jpg",fileOut);
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			writer.dispose();
+
+
 		} else {
 			try {
 				FileOutputStream fileOutputStream = new FileOutputStream(fileOut);
@@ -161,7 +154,22 @@ public abstract  class PlotNBC{
 			}
 		}
 	}
-    
+	
+	private static void saveGraphicJpeg(BufferedImage chart, File outputFile, float quality) throws IOException {
+		// Setup correct compression for jpeg.
+		Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("jpeg");
+		ImageWriter writer = (ImageWriter) iter.next();
+		ImageWriteParam iwp = writer.getDefaultWriteParam();
+		iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+		iwp.setCompressionQuality(quality);
+		
+		// Output the image.
+		FileImageOutputStream output = new FileImageOutputStream(outputFile);
+		writer.setOutput(output);
+		IIOImage image = new IIOImage(chart, null, null);
+		writer.write(null, image, iwp);
+		writer.dispose();
+	}
     /**
      * 最后保存在Graphics g中所对应的另一个BufferedImage中
      * 如果保存的图案的大小和显示图案大小一致，则赋值：bufferedImageResult = bufferedImage;

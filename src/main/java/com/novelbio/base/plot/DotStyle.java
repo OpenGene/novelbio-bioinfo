@@ -277,10 +277,16 @@ public class DotStyle implements Cloneable{
 //	{
 //		return size + style + group.hashCode() + color.hashCode()*100;
 //	}
-	public static Paint getGridentColor(Color color) {
+	public static Paint getGridentColorBrighter(Color color) {
 		return new LinearGradientPaint(0f,0f, 0f,1f,
 			                                        new float[] { 0.0f, 1.0f },
 				                                      new Color[] { color, GraphicsUtils.deriveBrighter(color) }
+			                      );
+	}
+	public static Paint getGridentColorDarker(Color color) {
+		return new LinearGradientPaint(0f,0f, 0f,1f,
+			                                        new float[] { 0.0f, 1.0f },
+				                                      new Color[] { color, GraphicsUtils.deriveDarker(color) }
 			                      );
 	}
 	public static Paint getGridentColor(Color color1, Color color2) {

@@ -317,7 +317,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 */
 	private SeqFasta getSeq(boolean cisseq, String chrID,List<ExonInfo> lsInfo, String sep, boolean getIntron) {
 		SeqFasta seqFasta = new SeqFasta();
-		seqFasta.setSeqName(chrID + "_" + lsInfo.get(0).getName() + "_");
+		seqFasta.setName(chrID + "_" + lsInfo.get(0).getName() + "_");
 		String myChrID = chrID;
 		if (CaseChange) {
 			myChrID = chrID.toLowerCase();
@@ -454,7 +454,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	@Override
 	public void getSeq(MapInfo mapInfo) {
 		SeqFasta seqFasta = getSeq(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd());
-		seqFasta.setSeqName(mapInfo.getName());
+		seqFasta.setName(mapInfo.getName());
 		mapInfo.setSeq(seqFasta, true);
 	}
 }

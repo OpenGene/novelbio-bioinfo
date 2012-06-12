@@ -14,6 +14,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Equations;
@@ -30,29 +31,9 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	
 	private int taxID = 0;
 	private int distanceMapInfo = 3000;
-	static GffHashGene gffHashGene = null;
-			
-	static SeqHash seqHash = null;
-	
+	GffHashGene gffHashGene = null;
+	SeqHash seqHash = null;
 	MapReads mapReads = null;
-//	/**
-//	 * 设定一系列的坐标位点
-//	 */
-//	ArrayList<MapInfo> lsMapInfos = null;
-//	/**
-//	 * 设定本次需要进行分析的MapInfo list
-//	 * @param lsMapInfos
-//	 */
-//	public void setLsMapInfos(ArrayList<MapInfo> lsMapInfos) {
-//		this.lsMapInfos = lsMapInfos;
-//	}
-//	/**
-//	 * 获得本次需要分析的MapInfo list
-//	 * @return
-//	 */
-//	public ArrayList<MapInfo> getLsMapInfos() {
-//		return lsMapInfos;
-//	}
 	
 	int[] tss = new int[]{-1500, 1500};
 	int[] tes = null;
@@ -63,6 +44,15 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	boolean intronFilter = false;
 	boolean filtertss = false;
 	boolean filtertes = false;
+	boolean HanYanFstrand = false;
+	public void setHanYanFstrand(boolean hanYanFstrand) {
+		HanYanFstrand = hanYanFstrand;
+	}
+	/**
+	 * 对于Tss和GeneEnd的定义
+	 * @param filterTss
+	 * @param filterGenEnd
+	 */
 	public void setFilterTssTes(int[] filterTss, int[] filterGenEnd) {
 		if (filterTss != null)
 			this.filtertss = true;
@@ -77,23 +67,22 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		this.tss = filterTss;
 		this.tes = filterGenEnd;
 	}
-	public void setFilterGeneBody(boolean filterGeneBody, boolean filterExon, boolean filterIntron)
-	{
+	
+	public void setFilterGeneBody(boolean filterGeneBody, boolean filterExon, boolean filterIntron) {
 		this.genebody = filterGeneBody;
 		this.exonFilter = filterExon;
 		this.intronFilter = filterIntron;
 	}
 	
-	public void setFilterUTR(boolean filter5UTR, boolean filter3UTR)
-	{
+	public void setFilterUTR(boolean filter5UTR, boolean filter3UTR) {
 		this.UTR5 = filter5UTR;
 		this.UTR3 = filter3UTR;
 	}
 	
-	public static GffHashGene getGffHashGene() {
+	public GffHashGene getGffHashGene() {
 		return gffHashGene;
 	}
-	public static SeqHash getSeqHash() {
+	public SeqHash getSeqHash() {
 		return seqHash;
 	}
 	public MapReads getMapReads() {
@@ -115,8 +104,8 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	int geneEnd3UTR = 100;
 	
 	
-	static String chrFile = "";
-	static String chrRegx = null;
+	String chrFile = "";
+	String chrRegx = null;
 	
 	
 	String equationsFile = "";
@@ -128,8 +117,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param readsBed
 	 * @param binNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
 	 */
-	public GffChrAbs(String gffType, String gffFile, String chrFile,String readsBed ,int binNum)
-	{
+	public GffChrAbs(String gffType, String gffFile, String chrFile,String readsBed ,int binNum) {
 		setGffFile(gffType, gffFile);
 		setChrFile(chrFile, null);
 		this.setMapReads(readsBed, binNum);
@@ -171,14 +159,11 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		this.upBp = upBp;
 		this.downBp = downBp;
 	}
-
-	public static void setGffFile(String gffType, String gffFile)
-	{
+	public void setGffFile(String gffType, String gffFile) {
 		if (FileOperate.isFileExist(gffFile)) {
 			gffHashGene = new GffHashGene(gffType, gffFile);
 		}
 	}
-	
 	/**
 	 chrFile 序列文件或序列文件夹
     regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，
@@ -186,13 +171,13 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param chrFile
 	 * @param regx
 	 */
-	public static void setChrFile(String chrFile, String regx) {
-		GffChrAbs.chrFile = chrFile;
-		GffChrAbs.chrRegx = regx;
+	public void setChrFile(String chrFile, String regx) {
+		this.chrFile = chrFile;
+		this.chrRegx = regx;
 		loadChrFile();
 	}
 	
-	public static void loadChrFile() {
+	public void loadChrFile() {
 		if (FileOperate.isFileExist(chrFile) || FileOperate.isFileDirectory(chrFile)) {
 			 seqHash = new SeqHash(chrFile, chrRegx);
 		}
@@ -204,18 +189,24 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 */
 	public void setMapReads(String readsFile, int binNum) {
 		if (FileOperate.isFileExist(readsFile)) {
-			mapReads = new MapReads(binNum, readsFile);
-			mapReads.setChrLenFile(getRefLenFile());
-			mapReads.setNormalType(mapNormType);
+			if (HanYanFstrand) {
+				mapReads = new MapReadsHanyanChrom(binNum, readsFile);
+				mapReads.setChrLenFile(getRefLenFile());
+				mapReads.setNormalType(mapNormType);
+			} else {
+				mapReads = new MapReads(binNum, readsFile);
+				mapReads.setChrLenFile(getRefLenFile());
+				mapReads.setNormalType(mapNormType);
+			}
 			setMapCorrect();
 		}
+
 	}
 	/**
 	 * 给定一个文本来修正  没有文件则直接返回
 	 * @param correctFile x第一列，y第二；列，从第一行开始读取
 	 */
-	public void setMapCorrect(String correctFile)
-	{
+	public void setMapCorrect(String correctFile) {
 		this.equationsFile = correctFile;
 		setMapCorrect();
 	}

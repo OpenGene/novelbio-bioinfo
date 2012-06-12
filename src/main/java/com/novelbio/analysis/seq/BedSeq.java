@@ -711,19 +711,26 @@ public class BedSeq extends SeqComb{
 		return hashValue;
 	}
 	/**
+	 * 输入经过排序的peakfile,或者说bedfile，将重叠的peak进行合并 注意，结果中仅保留peak，没有保留其他多的信息
 	 * 从第一行开始合并
 	 * @return
 	 */
-	public BedSeq combBedFile() {
-		return combBedFile(0);
+	public BedSeq combBedOverlap() {
+		return combBedOverlap(0);
 	}
-	public BedSeq combBedFile(String outFile) {
-		return combBedFile(0, outFile);
+	/**
+	 * 输入经过排序的peakfile,或者说bedfile，将重叠的peak进行合并 注意，结果中仅保留peak，没有保留其他多的信息
+	*/
+	public BedSeq combBedOverlap(String outFile) {
+		return combBedOverlap(0, outFile);
 	}
+	/**
+	 * 输入经过排序的peakfile,或者说bedfile，将重叠的peak进行合并 注意，结果中仅保留peak，没有保留其他多的信息
+	*/
 	@Deprecated
-	public BedSeq combBedFile(int readLines) {
+	public BedSeq combBedOverlap(int readLines) {
 		String out = FileOperate.changeFileSuffix(getFileName(), "_comb", null);
-		return combBedFile(0, out);
+		return combBedOverlap(0, out);
 	}
 	
 	/**
@@ -732,7 +739,7 @@ public class BedSeq extends SeqComb{
 	 * @param peakFile
 	 * @param readLines 从第几行开始读
 	 */
-	public BedSeq combBedFile(int readLines, String outFile)
+	public BedSeq combBedOverlap(int readLines, String outFile)
 	{
 		BedSeq bedSeqResult = new BedSeq(outFile, true);
 		if (readLines < 1) {
@@ -740,8 +747,7 @@ public class BedSeq extends SeqComb{
 		}
 		BedRecord bedRecordLast = null;
 		for (BedRecord bedRecord : readlines(readLines)) {
-			if (bedRecordLast == null)
-			{
+			if (bedRecordLast == null) {
 				bedRecordLast = new BedRecord();
 				bedRecordLast.setRefID(bedRecord.getRefID());
 				bedRecordLast.setStartEndLoc(bedRecord.getStart(), bedRecord.getEnd());
@@ -770,5 +776,38 @@ public class BedSeq extends SeqComb{
 		bedSeqResult.closeWrite();
 		return bedSeqResult;
 	}
-	
+	/**
+	 * 将所有mapping至genomic上的bed文件合并，这个是预测novel miRNA的
+	 * @param outFile 输出文件
+	 * @param bedSeqFile 输入文件
+	 */
+	public static BedSeq combBedFile(String outFile, String... bedSeqFile) {
+		BedSeq bedSeq = new BedSeq(outFile, true);
+		for (String string : bedSeqFile) {
+			BedSeq bedSeq2 = new BedSeq(string);
+			for (BedRecord bedRecord : bedSeq2.readlines()) {
+				bedSeq.writeBedRecord(bedRecord);
+			}
+			bedSeq2.closeWrite();
+		}
+		bedSeq.closeWrite();
+		return bedSeq;
+	}
+	/**
+	 * 将所有mapping至genomic上的bed文件合并，这个是预测novel miRNA的
+	 * @param outFile 输出文件
+	 * @param bedSeqFile 输入文件
+	 */
+	public static BedSeq combBedFile(String outFile, ArrayList<String> lsbedSeqFile) {
+		BedSeq bedSeq = new BedSeq(outFile, true);
+		for (String string : lsbedSeqFile) {
+			BedSeq bedSeq2 = new BedSeq(string);
+			for (BedRecord bedRecord : bedSeq2.readlines()) {
+				bedSeq.writeBedRecord(bedRecord);
+			}
+			bedSeq2.closeWrite();
+		}
+		bedSeq.closeWrite();
+		return bedSeq;
+	}
 }

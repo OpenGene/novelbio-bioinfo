@@ -17,12 +17,13 @@ import javax.swing.*;
 import org.apache.commons.math.analysis.solvers.LaguerreSolver;
 
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.base.plot.JpanelPlot;
 import com.novelbio.base.plot.PlotNBC;
 import com.novelbio.base.plot.java.HeatChartDataInt;
 
 /**
- *
+ *待修正，主要就是heatmap的方向问题
  * <p><strong>Title:</strong> HeatMap</p>
  *
  * <p>Description: HeatMap is a JPanel that displays a 2-dimensional array of
@@ -119,13 +120,28 @@ public class PlotHeatMap extends PlotNBC
 	 * 注意list中所有数据的维度应该一致
 	 * @param lsHeatChartDataInts data
 	 * @param useGraphicsYAxis If true, the data will be displayed with the y=0 row at the top of the screen. If false, the data will be displayed with the y=0 row at the bottom of the screen.
-
 	 */
+    @Deprecated
 	public PlotHeatMap(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts,boolean useGraphicsYAxis, Color[] colors) {
 		super();
 		data = copeHeatChartDataInt(lsHeatChartDataInts);
         updateGradient(colors,data, useGraphicsYAxis);
 
+//        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
+//        this.setDoubleBuffered(true);
+//        drawData();
+	}
+	/**
+	 * 给定实现HeatChart接口的数据集，然后画图
+	 * 自动将HeatChartDataInts中的title设置给xvalue
+	 * 注意list中所有数据的维度应该一致
+	 * @param lsHeatChartDataInts data
+
+	 */
+	public PlotHeatMap(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts, Color[] colors) {
+		super();
+		data = copeHeatChartDataInt(lsHeatChartDataInts);
+        updateGradient(colors,data, false);
 //        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
 //        this.setDoubleBuffered(true);
 //        drawData();
@@ -192,6 +208,28 @@ public class PlotHeatMap extends PlotNBC
 
         updateGradient(colors,data, useGraphicsYAxis);
         updateGradient2(colors2, data2, useGraphicsYAxis);
+
+//        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
+//        this.setDoubleBuffered(true);
+
+//        this.bg = Color.white;
+//        this.fg = Color.black;
+        
+        // this is the expensive function that draws the data plot into a 
+        // BufferedImage. The data plot is then cheaply drawn to the screen when
+        // needed, saving us a lot of time in the end.
+//        drawData();
+    }
+    /**
+     * @param data The data to display, must be a complete array (non-ragged)
+     * @param useGraphicsYAxis If true, the data will be displayed with the y=0 row at the top of the screen. If false, the data will be displayed with they=0 row at the bottom of the screen.
+     * @param colors A variable of the type Color[]. See also {@link #createMultiGradient} and {@link #createGradient}.
+     */
+    public PlotHeatMap(double[][] data, double[][] data2, Color[] colors, Color[] colors2) {
+        super();
+
+        updateGradient(colors,data, false);
+        updateGradient2(colors2, data2, false);
 
 //        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
 //        this.setDoubleBuffered(true);
@@ -639,8 +677,7 @@ public class PlotHeatMap extends PlotNBC
      *
      * This function should be called whenever the data or the gradient changes.
      */
-    protected void draw(int width, int heigh)
-    {
+    protected void draw(int width, int heigh) {
     	int imageType = (alpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
     	bufferedImage = new BufferedImage(data.length,data[0].length, imageType);
     	if (data2 != null) {
@@ -650,21 +687,19 @@ public class PlotHeatMap extends PlotNBC
     		drawData(bufferedImage, new Dimension(1,1));
 		}
 //    	graphics = bufferedImage.createGraphics();
-    	addPicInfo(width, heigh);
+    	addPicInfo( width, heigh);
+//    	bufferedImage = GraphicCope.rotateImage(bufferedImage, 90);
     }
  
 	
-    private void drawData(BufferedImage bufferedImage,Dimension cellSize)
-    {
+    private void drawData(BufferedImage bufferedImage,Dimension cellSize) {
        Graphics2D bufferedGraphics = bufferedImage.createGraphics();
        //可能是透明效果
 //       bufferedImage = bufferedGraphics.getDeviceConfiguration().createCompatibleImage(bufferedImage.getWidth(), bufferedImage.getHeight(), Transparency.TRANSLUCENT);  
 //       bufferedGraphics.dispose();  
 //       bufferedGraphics = bufferedImage.createGraphics();
-        for (int x = 0; x < data.length; x++)
-        {
-            for (int y = 0; y < data[0].length; y++)
-            {
+        for (int x = 0; x < data.length; x++) {
+            for (int y = 0; y < data[0].length; y++) {
                 bufferedGraphics.setColor(colors[dataColorIndices[x][y]]);
                 bufferedGraphics.fillRect(x, y, 1, 1);
                 //我的修改
@@ -677,13 +712,10 @@ public class PlotHeatMap extends PlotNBC
     }
  
     
-    private void drawData2(BufferedImage bufferedImage,Dimension cellSize)
-    {
+    private void drawData2(BufferedImage bufferedImage,Dimension cellSize){
        Graphics2D bufferedGraphics = bufferedImage.createGraphics();
-        for (int x = 0; x < data.length; x++)
-        {
-            for (int y = 0; y < data[0].length; y++)
-            {
+        for (int x = 0; x < data.length; x++) {
+            for (int y = 0; y < data[0].length; y++) {
             	Color color1 = colors[dataColorIndices[x][y]];
             	Color color2 = colors2[dataColorIndices2[x][y]];
             	Color color = addColor(color1, color2);

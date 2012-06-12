@@ -33,8 +33,6 @@ public class AnnoQuery {
 		addGeneID(geneFile, out, 1, 9606);
 	}
 	/**
-	 * 
-	 * 
 	 * 给arraytools的结果添加geneID,没有geneID则将本accID附加上去
 	 * 添加在第colNum列的后面，直接写入excel文件
 	 * @param txtExcelFile

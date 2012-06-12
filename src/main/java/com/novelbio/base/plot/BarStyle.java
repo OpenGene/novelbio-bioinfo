@@ -47,7 +47,7 @@ public class BarStyle extends DotStyle{
 	public BasicStroke getBasicStroke() {
 		return basicStroke;
 	}
-	public void setEdgeColor(Paint barEdgeColor) {
+	public void setColorEdge(Paint barEdgeColor) {
 		this.barEdgeColor = barEdgeColor;
 	}
 	public Paint getEdgeColor() {

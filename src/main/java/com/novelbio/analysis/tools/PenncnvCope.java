@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq;
+package com.novelbio.analysis.tools;
 
 import java.util.ArrayList;
 import java.util.Collection;

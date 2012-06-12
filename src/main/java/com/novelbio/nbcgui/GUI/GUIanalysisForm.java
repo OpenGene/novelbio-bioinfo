@@ -57,6 +57,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiFastQJpanel guiFastQ;
 	private GuiLimmaJpanel guiLimma;
 	private GuiBlast guiBlast; 
+	private GuiSeqMiRNA guiSeqMiRNA;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -115,6 +116,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiBlast = new GuiBlast();
 				jTabbedPane1.addTab("Blast", null, guiBlast, null);
+				
+				guiSeqMiRNA = new GuiSeqMiRNA();
+				jTabbedPane1.addTab("miRNA", null, guiSeqMiRNA, null);
 			}
 			pack();
 			this.setSize(1049, 699);

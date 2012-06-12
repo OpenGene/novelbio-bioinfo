@@ -14,17 +14,14 @@ import com.novelbio.base.dataStructure.MathComput;
  *
  */
 public class JScrollPaneData extends JScrollPane{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -4238706503361283499L;
+	
 	DefaultTableModel defaultTableModel = null;
 	JTable jTabFInputGo = null;
 	/**
-	 * 往jScrollPane中添加表格，第一列为表头
+	 * 往jScrollPane中添加表格，第一行为title
 	 */
-	public void setProview( List<String[]> lsInfo)
-	{
+	public void setProview( List<String[]> lsInfo) {
 		String[][] tableValue = null;
 		defaultTableModel = new DefaultTableModel(tableValue, lsInfo.get(0));
 		jTabFInputGo = new JTable();
@@ -37,8 +34,7 @@ public class JScrollPaneData extends JScrollPane{
 	/**
 	 * 往jScrollPane中添加表格，第一列为表头
 	 */
-	public void setTitle( String[] title)
-	{
+	public void setTitle( String[] title) {
 		String[][] tableValue = null;
 		defaultTableModel = new DefaultTableModel(tableValue, title);
 		jTabFInputGo = new JTable();
@@ -46,10 +42,9 @@ public class JScrollPaneData extends JScrollPane{
 		jTabFInputGo.setModel(defaultTableModel);
 	}
 	/**
-	 * 往jScrollPane中添加表格，第一列为表头
+	 * 往jScrollPane中添加表格，如果没有title，则第一行为title
 	 */
-	public void addProview( List<String[]> lsInfo)
-	{
+	public void addProview( List<String[]> lsInfo) {
 		if (defaultTableModel == null) {
 			setProview(lsInfo);
 			return;
@@ -59,15 +54,13 @@ public class JScrollPaneData extends JScrollPane{
 		}
 	}
 	/**
-	 * 往jScrollPane中添加表格，第一列为表头
+	 * 往jScrollPane中添加表格
 	 */
-	public void addProview(String[] info)
-	{
+	public void addProview(String[] info) {
 		defaultTableModel.addRow(info);
 	}
 	
-	public ArrayList<String[]> getLsDataInfo()
-	{
+	public ArrayList<String[]> getLsDataInfo() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
 			String[] tmpResult = new String[defaultTableModel.getColumnCount()];
@@ -82,8 +75,7 @@ public class JScrollPaneData extends JScrollPane{
 	 * 删除实际行
 	 * @param rowNum
 	 */
-	public void removeRow(int... rowNum)
-	{
+	public void removeRow(int... rowNum) {
 		MathComput.sort(rowNum, false);
 		for (int i : rowNum) {
 			if (i < 0 || i > defaultTableModel.getRowCount()) {
@@ -98,8 +90,7 @@ public class JScrollPaneData extends JScrollPane{
 	 * 获得绝对行数
 	 * @return
 	 */
-	public int[] getSelectRows()
-	{
+	public int[] getSelectRows() {
 		int selectRows=jTabFInputGo.getSelectedRows().length;// 取得用户所选行的行数
 		//单行
 		if(selectRows==1) {
@@ -116,9 +107,10 @@ public class JScrollPaneData extends JScrollPane{
 		}
 		return null;
 	}
-	
-	public void removeSelRows()
-	{
+	/**
+	 * 删除用户选定的行
+	 */
+	public void removeSelRows() {
 		removeRow(getSelectRows());
 	}
 }

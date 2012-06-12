@@ -13,9 +13,9 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 读取Rfam的文件，获得RfamID对应的具体信息
  * @author zong0jie
  */
-public class RfamHash {
+public class RfamStatistic {
 	public static void main(String[] args) {
-		RfamHash rfamHash = new RfamHash();
+		RfamStatistic rfamHash = new RfamStatistic();
 		String rfamFile = "/media/winE/Bioinformatics/DataBase/sRNA/rfam/rfam.txt";
 		String mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX8/H36_rfam.bed";
 		String outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");

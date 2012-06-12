@@ -22,4 +22,13 @@ public class BarInfo {
 	public void setBarName(String barName) {
 		this.barName = barName;
 	}
+	public String getBarName() {
+		return barName;
+	}
+	public double getX() {
+		return x;
+	}
+	public double getHeigth() {
+		return y;
+	}
 }

@@ -59,7 +59,7 @@ public class FastQ extends SeqComb {
 	public static int QUALITY_HIGM = 50;
 	public static int QUALITY_LOW_454 = 10454;
 	/** 第一条reads的长度 */
-	private int readsLen = 0;
+	private int readsLenAvg = 0;
 	/**
 	 * 最短reads的长度，小于该长度的reads就跳过
 	 */
@@ -105,12 +105,12 @@ public class FastQ extends SeqComb {
 	/** 记录barcode的长度 */
 	TreeSet<Integer> treeLenBarcode = new TreeSet<Integer>();
 	////////  参 数 设 定  ////////////////////
-	boolean trimPolyA_right = false;
-	boolean trimPolyT_left = false;
+	private boolean trimPolyA_right = false;
+	private boolean trimPolyT_left = false;
 	/** 接头是小写,这种情况目前只在ion proton的数据中发现 */
-	boolean adaptorLowercase = false;
+	private boolean adaptorLowercase = false;
 	/** 是否将序列两边的NNN删除  */
-	boolean trimNNN = true;
+	private boolean trimNNN = true;
 	/**
 	 * 是否将序列两边的NNN删除
 	 * 默认是删除的，但是感觉速度好慢然后cufflink还有问题
@@ -181,7 +181,7 @@ public class FastQ extends SeqComb {
 	 * @return
 	 */
 	public int getOffset() {
-		setFastQFormat();
+		setFastQFormatLen();
 		return offset;
 	}
 	/**
@@ -202,20 +202,12 @@ public class FastQ extends SeqComb {
 	 * 获得第一条reads的长度，返回负数说明出错
 	 * @return
 	 */
-	public int getFirstReadsLen() {
-		if (readsLen > 0) {
-			return readsLen;
+	public int getReadsLenAvg() {
+		if (readsLenAvg > 0) {
+			return readsLenAvg;
 		}
-		txtSeqFile.setParameter(compressInType, seqFile, false, true);
-		ArrayList<String> lsreads = null;
-		try {
-			lsreads = txtSeqFile.readFirstLines(4);
-		} catch (Exception e) {
-			logger.error(seqFile + " may not exits");
-			return -1;
-		}
-		readsLen = lsreads.get(3).trim().length();
-		return readsLen;
+		setFastQFormatLen();
+		return readsLenAvg;
 	}
 	
 	private void setHashFastQFilter(int QUALITY) {
@@ -485,7 +477,7 @@ public class FastQ extends SeqComb {
 	 * @throws Exception
 	 */
 	public FastQ filterReads(String fileFilterOut) {
-		setFastQFormat();
+		setFastQFormatLen();
 		try {
 			return filterReadsExp( fileFilterOut);
 		} catch (Exception e) {
@@ -509,7 +501,7 @@ public class FastQ extends SeqComb {
 	 * @throws Exception
 	 */
 	public FastQ[] filterReads(FastQ fastQSPE2, String fileFilterOut1, String fileFilterOut2) {
-		setFastQFormat();
+		setFastQFormatLen();
 		try {
 			return filterReadsExpPairEnd(fastQSPE2, fileFilterOut1, fileFilterOut2);
 		} catch (Exception e) {
@@ -650,11 +642,13 @@ public class FastQ extends SeqComb {
 	/**
 	 * 如果FastQ格式没有设定好，通过该方法设定FastQ格式
 	 */
-	private void setFastQFormat() {
+	private void setFastQFormatLen() {
 		if (offset != 0) {
 			return;
 		}
-		int fastQformat = guessFastOFormat(getLsFastQSeq(500));
+		ArrayList<FastQRecord> lsFastQRecordsTop500 = getLsFastQSeq(500);
+		int fastQformat = guessFastOFormat(lsFastQRecordsTop500);
+		readsLenAvg = getReadsLenAvg(lsFastQRecordsTop500);
 		if (fastQformat == FASTQ_ILLUMINA_OFFSET) {
 			offset = FASTQ_ILLUMINA_OFFSET;
 			return;
@@ -666,7 +660,6 @@ public class FastQ extends SeqComb {
 	}
 	/**
 	 * 提取FastQ文件中的质控序列，提取个5000行就差不多了 因为fastQ文件中质量都在第三行，所以只提取第三行的信息
-	 * 
 	 * @param Num
 	 *            提取多少行，指最后提取的行数
 	 * @return fastQ质控序列的list 出错返回null
@@ -720,7 +713,22 @@ public class FastQ extends SeqComb {
 		// 都没判断出来，猜测为illumina格式
 		return FASTQ_ILLUMINA_OFFSET;
 	}
-
+	/**
+	 * 给定一系列的fastQ格式，获得平均reads长度
+	 * @param lsFastQ
+	 *            :每一个string 就是一个fastQ
+	 * @return 平均reads长度
+	 */
+	private int getReadsLenAvg(ArrayList<FastQRecord> lsFastqRecord) {
+		if (lsFastqRecord.size() == 0) {
+			return 0;
+		}
+		int readsLenSum = 0;
+		for (FastQRecord fastQRecord : lsFastqRecord) {
+			readsLenSum = readsLenSum + fastQRecord.getLength();
+		}
+		return readsLenSum/lsFastqRecord.size();
+	}
 	/**
 	 * 将fastq文件转化为fasta文件<br>
 	 * 产生的文件为单端： fastaFile<br>
@@ -733,7 +741,7 @@ public class FastQ extends SeqComb {
 	public void convertToFasta(String fastaFile) throws Exception {
 		TxtReadandWrite txtFasta = new TxtReadandWrite(fastaFile, true);
 		for (FastQRecord fastQRecord : readlines()) {
-			txtFasta.writefile(fastQRecord.toStringNRfasta());
+			txtFasta.writefile(fastQRecord.getSeqFasta().toStringNRfasta());
 		}
 		txtFasta.close();
 	}

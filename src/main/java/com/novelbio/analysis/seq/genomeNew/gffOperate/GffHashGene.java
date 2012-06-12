@@ -159,16 +159,15 @@ public class GffHashGene implements GffHashGeneInf{
 	}
 	@Override
 	public int getTaxID() {
-		
 		return gffHashGene.getTaxID();
 	}
-	
-	public  HashMap<String, ListGff> getChrhash()
-	{
+	public  HashMap<String, ListGff> getChrhash() {
 		return gffHashGene.getChrhash();
 	}
- 
-	
+	/** 返回所有不重复GffDetailGene */
+	public ArrayList<GffDetailGene> getGffDetailAll() {
+		return gffHashGene.getGffDetailAll();
+	}
 	/**
 	 * 将基因装入GffHash中
 	 * @param chrID
@@ -177,15 +176,17 @@ public class GffHashGene implements GffHashGeneInf{
 	public void addGffDetailGene(String chrID, GffDetailGene gffDetailGene) {
 		gffHashGene.addGffDetailGene(chrID, gffDetailGene);
 	}
-
 	@Override
 	public void writeToGTF(String GTFfile, String title) {
 		gffHashGene.writeToGTF(GTFfile, title);
 	}
-	
 	@Override
 	public void writeToGFFIso(String GTFfile, String title) {
 		gffHashGene.writeToGFFIso(GTFfile, title);
+	}
+	@Override
+	public void writeGene2Iso(String Gene2IsoFile) {
+		gffHashGene.writeGene2Iso(Gene2IsoFile);
 	}	
 		
 }

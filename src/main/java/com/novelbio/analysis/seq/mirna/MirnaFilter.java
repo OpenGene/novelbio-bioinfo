@@ -3,18 +3,15 @@ package com.novelbio.analysis.seq.mirna;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 /**
- * 过滤华大的miRNA
+ * 过滤华大的miRNA，不是我们流水线的一部分
  * @author zong0jie
  *
  */
 public class MirnaFilter {
-	
 	public static void main(String[] args) {
 		MirnaFilter mirnaFilter = new MirnaFilter();
 		mirnaFilter.Filter("/home/zong0jie/桌面/ZHY/clean_fas_N/clean-miRNA.fas", "/home/zong0jie/桌面/ZHY/clean_fas_N/clean-miRNA.fasResult.txt");
 	}
-	
-	
 	/**
 	 * @param miRNAFile 输入的miRNA文件
 	 * 过滤华大的miRNA结果

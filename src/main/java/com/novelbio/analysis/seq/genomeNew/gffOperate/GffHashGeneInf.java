@@ -83,5 +83,10 @@ public interface GffHashGeneInf  {
 	 * @param title
 	 */
 	void writeToGFFIso(String GFFfile, String title);
+	/**
+	 * 主要用于Rsem，产生一个GeneID对应IsoID的表
+	 * @param Gene2IsoFile
+	 */
+	void writeGene2Iso(String Gene2IsoFile);
 
 }

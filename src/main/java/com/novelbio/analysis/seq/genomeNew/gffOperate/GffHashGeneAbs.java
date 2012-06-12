@@ -116,24 +116,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		return gffGeneIsoInfoOut;
 	}
 	/**
-	 * 保存所有gffDetailGene
-	 */
-	ArrayList<GffDetailGene> lsGffDetailGenesAll = new ArrayList<GffDetailGene>();
-	/**
-	 * 返回所有GffDetailGene
-	 * @return
-	 */
-	public ArrayList<GffDetailGene> getGffDetailGenesAll()
-	{
-		if (lsGffDetailGenesAll.size() != 0) {
-			return lsGffDetailGenesAll;
-		}
-		for (ListGff lsGffDetailGenes : Chrhash.values()) {
-			lsGffDetailGenesAll.addAll(lsGffDetailGenes);
-		}
-		return lsGffDetailGenesAll;
-	}
-	/**
 	 * 	返回外显子总长度，内含子总长度等信息，只统计最长转录本的信息
 	 * 有问题
 	 * 为一个ArrayList-Integer
@@ -314,9 +296,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * 将一个染色体中的信息写入文本，按照GTF格式
 	 * @param txtWrite
 	 * @param lsGffDetailGenes
+	 * @param title
 	 */
-	private void writeToGFFIso(TxtReadandWrite txtWrite, ArrayList<GffDetailGene> lsGffDetailGenes, String title)
-	{
+	private void writeToGFFIso(TxtReadandWrite txtWrite, ArrayList<GffDetailGene> lsGffDetailGenes, String title) {
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			gffDetailGene.removeDupliIso();
 			if (gffDetailGene.getLsCodSplit().size() <= 1) {
@@ -326,5 +308,21 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			txtWrite.writefileln(geneGFF.trim());
 		}
 	}
-	
+	@Override
+	public void writeGene2Iso(String Gene2IsoFile) {
+		TxtReadandWrite txtGtf = new TxtReadandWrite(Gene2IsoFile, true);
+		ArrayList<GffDetailGene> lsGffDetailGenes = getGffDetailAll();
+		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				CopedID copedID = gffGeneIsoInfo.getCopedID();
+				if (copedID.getIDtype() != CopedID.IDTYPE_ACCID || copedID.getSymbol() == null || copedID.getSymbol().equals("")) {
+					txtGtf.writefileln(copedID.getSymbol() + "\t" + gffGeneIsoInfo.getName());
+				}
+				else {
+					txtGtf.writefileln(gffDetailGene.getName().split(GffDetailGene.SEP_GENE_NAME)[0] + "\t" + gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+				}
+			}
+		}
+		txtGtf.close();
+	}
 }

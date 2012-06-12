@@ -260,8 +260,7 @@ public class GffChrAnno extends GffChrAbs{
 	 * 6: GeneEnd，在基因外的尾部 由setStatistic()方法的GeneEnd定义
 	 * 7: Tss 包括Tss上和Tss下，由filterTss定义
 	 */
-	private int[] searchSite(MapInfo mapInfo)
-	{
+	private int[] searchSite(MapInfo mapInfo) {
 		boolean flagIntraGenic = false;//在gene内的标记
 		int[] result = new int[8];
 		GffCodGene gffCodGene = gffHashGene.searchLocation(mapInfo.getRefID(), mapInfo.getFlagSite());

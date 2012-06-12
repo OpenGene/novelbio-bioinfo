@@ -134,14 +134,14 @@ public class SeqFastaHash extends SeqHashAbs {
 					tmpSeqName = content.trim().substring(1).trim();//.replace(" ", "_");// substring(1)，去掉>符号，不变大小写
 				// ///////////////用正则表达式抓取序列名中的特定字符////////////////////////////////////////////////
 				if (regx == null || regx.trim().equals("")) {
-					Seq.setSeqName(tmpSeqName);
+					Seq.setName(tmpSeqName);
 				} else {
 					matcher = pattern.matcher(tmpSeqName);
 					if (matcher.find()) {
-						Seq.setSeqName(matcher.group());
+						Seq.setName(matcher.group());
 					} else {
 						System.out.println("没找到该序列的特定名称，用全称代替 " + tmpSeqName);
-						Seq.setSeqName(tmpSeqName);
+						Seq.setName(tmpSeqName);
 					}
 				}
 				continue;
@@ -177,7 +177,7 @@ public class SeqFastaHash extends SeqHashAbs {
 			 { //连续向后加上"<"直到hash中没有这条名字为止，然后装入hash表
 				 while (hashSeq.containsKey(seqFasta.getSeqName()))
 				 {
-					 seqFasta.setSeqName(seqFasta.getSeqName()+"<");
+					 seqFasta.setName(seqFasta.getSeqName()+"<");
 				 }
 				 hashSeq.put(seqFasta.getSeqName(), seqFasta);
 				 lsSeqName.add(seqFasta.getSeqName());
@@ -185,7 +185,7 @@ public class SeqFastaHash extends SeqHashAbs {
 			 }
 			 else 
 			 {
-				if (tmpSeq.length()<seqFasta.length()) 
+				if (tmpSeq.getLength()<seqFasta.getLength()) 
 				{
 					hashSeq.put(seqFasta.getSeqName(), seqFasta);
 					hashChrLength.put(seqFasta.getSeqName(), (long) seq.length());
@@ -323,34 +323,62 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * @param regx
 	 * @param seqOut
 	 */
-	public void writeToFile(String regx, String seqOut)
-	{
+	public void writeToFile(String regx, String seqOut) {
 		PatternOperate patternOperate = new PatternOperate(regx, false);
 		ArrayList<SeqFasta> lsFasta = getSeqFastaAll();
 		TxtReadandWrite txtOut = new TxtReadandWrite(seqOut, true);
 		for (SeqFasta seqFasta : lsFasta) {
-			if (patternOperate.getPat(seqFasta.getSeqName()) != null) {
+			ArrayList<String> lsName = patternOperate.getPat(seqFasta.getSeqName());
+			if (lsName != null && lsName.size() > 0) {
 				txtOut.writefileln(seqFasta.toStringNRfasta());
 			}
 		}
 		txtOut.close();
 	}
-	
+	/**
+	 * 将<b>序列名</b>含有该正则表达式的序列写入文件<br>
+	 * 必须写上正则表达式
+	 * 例如序列名为：hsa-mir-101-1 MI0000103 Homo sapiens miR-101-1 stem-loop <br>
+	 * regSearch = Homo sapiens<br>
+	 * regWrite = hsa-mir-101-1<br>
+	 * 最后就会获得hsa-mir-101-1<br>
+	 * @param regxSearch 用该正则表达式查找序列名
+	 * @param regxWrite 找到后将序列名字设置为该正则表达式抓到的信息
+	 * @param seqOut
+	 */
+	public void writeToFile(String regxSearch, String regxWrite, String seqOut) {
+		PatternOperate patSearch = new PatternOperate(regxSearch, false);
+		PatternOperate patWrite = new PatternOperate(regxWrite, false);
+
+		ArrayList<SeqFasta> lsFasta = getSeqFastaAll();
+		TxtReadandWrite txtOut = new TxtReadandWrite(seqOut, true);
+		for (SeqFasta seqFasta : lsFasta) {
+			ArrayList<String> lsName = patSearch.getPat(seqFasta.getSeqName());
+			if (lsName != null && lsName.size() > 0) {
+				SeqFasta seqFastaNew = seqFasta.clone();
+				String name = patWrite.getPatFirst(seqFasta.getSeqName());
+				if (name != null && name.equals("")) {
+					seqFastaNew.setName(name);
+				}
+				txtOut.writefileln(seqFasta.toStringNRfasta());
+			}
+		}
+		txtOut.close();
+	}
 	/**
 	 * 将<b>序列名用sep分割</b>然后将第几位的名字写入文件<br>
 	 * 必须写上正则表达式
 	 * @param sep 分隔符 
 	 * @param num 第几位的文本
 	 */
-	public void writeToFile(String sep, int num, String seqOut)
-	{
+	public void writeToFile(String sep, int num, String seqOut) {
 		num--;
 		ArrayList<SeqFasta> lsFasta = getSeqFastaAll();
 		TxtReadandWrite txtOut = new TxtReadandWrite(seqOut, true);
 		for (SeqFasta seqFasta : lsFasta) {
 			SeqFasta seqFastaOut = seqFasta.clone();
 			String name = seqFasta.getSeqName().split(sep)[num];
-			seqFastaOut.setSeqName(name);
+			seqFastaOut.setName(name);
 			seqFastaOut.setDNA(true);
 			txtOut.writefileln(seqFastaOut.toStringNRfasta());
 		}

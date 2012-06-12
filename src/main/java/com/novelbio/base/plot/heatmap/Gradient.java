@@ -128,42 +128,34 @@ public class Gradient
      * @param colors An array of Color objects used for the gradient. The Color at index 0 will be the lowest color.
      * @param numSteps The number of steps in the gradient. 250 is a good number. 也就是多少阶渐变，阶数越多颜色越平滑
      */
-    public static Color[] createMultiGradient(Color[] colors, int numSteps)
-    {
+    public static Color[] createMultiGradient(Color[] colors, int numSteps) {
         //we assume a linear gradient, with equal spacing between colors
         //The final gradient will be made up of n 'sections', where n = colors.length - 1
         int numSections = colors.length - 1;
         int gradientIndex = 0; //points to the next open spot in the final gradient
         Color[] gradient = new Color[numSteps];
         Color[] temp;
-
-        if (numSections <= 0)
-        {
+        if (numSections <= 0) {
             throw new IllegalArgumentException("You must pass in at least 2 colors in the array!");
         }
 
-        for (int section = 0; section < numSections; section++)
-        {
+        for (int section = 0; section < numSections; section++) {
             //we divide the gradient into (n - 1) sections, and do a regular gradient for each
             temp = createGradient(colors[section], colors[section+1], numSteps / numSections);
-            for (int i = 0; i < temp.length; i++)
-            {
+            for (int i = 0; i < temp.length; i++) {
                 //copy the sub-gradient into the overall gradient
                 gradient[gradientIndex++] = temp[i];
             }
         }
 
-        if (gradientIndex < numSteps)
-        {
+        if (gradientIndex < numSteps) {
             //The rounding didn't work out in our favor, and there is at least
             // one unfilled slot in the gradient[] array.
             //We can just copy the final color there
-            for (/* nothing to initialize */; gradientIndex < numSteps; gradientIndex++)
-            {
+            for (/* nothing to initialize */; gradientIndex < numSteps; gradientIndex++) {
                 gradient[gradientIndex] = colors[colors.length - 1];
             }
         }
-
         return gradient;
     }
 }

@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.omg.CosNaming._BindingIteratorImplBase;
 
 public class FileOperate {
 	private static Logger logger = Logger.getLogger(FileOperate.class);
@@ -277,24 +278,18 @@ public class FileOperate {
 	}
 
 	/**
-	 * 新建目录,如果新文件夹存在则返回
+	 * 新建目录,如果新文件夹存在也返回ture
 	 * 
 	 * @param folderPath
 	 *            目录路径,最后不要加\\或/
 	 * @return 返回目录创建后的路径
 	 */
-	private static String createFolder(String folderPath) {
-		String txt = folderPath;
-		try {
-			File myFilePath = new File(txt);
-			txt = folderPath;
-			if (!myFilePath.exists()) {
-				myFilePath.mkdir();
-			}
-		} catch (Exception e) {
-			logger.error("创建目录操作出错");
+	private static boolean createFolder(String folderPath) {
+		File myFilePath = new File(folderPath);
+		if (!myFilePath.exists()) {
+			return myFilePath.mkdir();
 		}
-		return txt;
+		return true;
 	}
 
 	/**
@@ -324,19 +319,19 @@ public class FileOperate {
 			creatPath = getFileName(foldUpper) + File.separator + creatPath;
 			foldUpper = getParentPathName(foldUpper);
 		}
-		String txts = addSep(foldUpper);
-		try {
-			String txt;
-			StringTokenizer st = new StringTokenizer(creatPath, "/\\");
-			for (int i = 0; st.hasMoreTokens(); i++) {
-				txt = st.nextToken().trim();
-				txts = createFolder(txts + txt);
+		foldUpper = addSep(foldUpper);
+		String subFold = "";
+		String[] sepID = creatPath.split(File.separator);
+		String firstPath = foldUpper + sepID[0];
+		for (int i = 0; i < sepID.length; i++) {
+			subFold = subFold + sepID[i] + File.separator;
+			if (!createFolder(foldUpper + subFold)) {
+				logger.error("创建目录操作出错！" + foldUpper + subFold);
+				DeleteFolder(firstPath);
+				return false;
 			}
-			return true;
-		} catch (Exception e) {
-			logger.error("创建目录操作出错！");
-			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -616,8 +611,50 @@ public class FileOperate {
 			return resultFile + "."+ suffix;
 		}
 	}
-	
-	
+	/**
+	 * 只修输入的文件名，并不直接操作文件
+	 * 文件添加前缀并改后缀名，如果一样则不修改
+	 * @param FileName 原来文件的全名
+	 * @param append 要添加的后缀，譬如_1，_new，如果为null，则不添加
+	 * @param suffix 要添加的后缀名，譬如 txt， jpg ，自动去空格
+	 * suffix == null则不改变后缀名，suffix = "" 则去除后缀名
+	 */
+	public static String changeFilePrefix(String FileName, String append, String suffix) {
+		String resultFile = "";
+		if (append == null) {
+			append = "";
+		}
+		String parentPath = addSep(getParentPathName(FileName));
+		String[] fileName = getFileNameSep(FileName);
+		resultFile = parentPath + append + fileName[0];
+		if (suffix == null ) {
+			if (fileName[1] == null || fileName[1].equals("")) {
+				return resultFile;
+			}
+			else {
+				return resultFile + "."+ fileName[1];
+			}
+		}
+		else if (suffix.trim().equals("")) {
+			return resultFile;
+		}
+		else {
+			return resultFile + "."+ suffix;
+		}
+	}
+	/**
+	 * 直接操作文件
+	 * 文件添加前缀并改后缀名，如果一样则不修改
+	 * @param FileName 原来文件的全名
+	 * @param append 要添加的后缀，譬如_1，_new，如果为null，则不添加
+	 * @param suffix 要添加的后缀名，譬如 txt， jpg ，自动去空格
+	 * suffix == null则不改变后缀名，suffix = "" 则去除后缀名
+	 */
+	public static String changeFilePrefixReal(String FileName, String append, String suffix) {
+		String newFile = changeFilePrefix(FileName, append, suffix);
+		moveFile(FileName, getParentPathName(newFile), getFileName(newFile), true);
+		return newFile;
+	}
 	/**
 	 * 直接操作文件
 	 * 文件添加后缀并改后缀名，如果一样则不修改
@@ -631,7 +668,6 @@ public class FileOperate {
 		moveFile(FileName, getParentPathName(newFile), getFileName(newFile), true);
 		return newFile;
 	}
-	
 	/**
 	 * 文件改名,如果已有同名文件存在，则不改名并返回
 	 * 

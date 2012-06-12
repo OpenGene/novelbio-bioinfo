@@ -626,8 +626,15 @@ public class GffDetailGene extends ListDetailAbs
 		}
 		return geneGTF;
 	}
-	
+	/**
+	 * 返回gff格式的信息
+	 * @param title 公司名等信息
+	 * @return
+	 */
 	public String getGFFformate(String title) {
+		if (title == null || title.trim().equals("")) {
+			title = "novelbio";
+		}
 		String strand = "+";
 		if (!isCis5to3()) {
 			strand = "-";
@@ -676,7 +683,7 @@ public class GffDetailGene extends ListDetailAbs
 	 */
 	public Integer getCod2Start(int coord) {
 		if (cis5to3 != null) {
-			return super.getCod2End(coord);
+			return super.getCod2Start(coord);
 		}
 		return getLongestSplit().getCod2Tss(coord);
 	}

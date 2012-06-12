@@ -35,35 +35,25 @@ import de.erichseifert.gral.util.GraphicsUtils;
  * @author zong0jie
  * 
  */
-public class GffChrMap extends GffChrAbs {
+public class GffChrMap {
+	GffChrAbs gffChrAbs = null;
+	
 	Logger logger = Logger.getLogger(GffChrMap.class);
 	String fileName = "";
 	/**
-	 * 
+	 * 将GffChrAbs导入
+	 * @param gffChrAbs
 	 */
-	boolean HanYanFstrand = false;
-	
-	/**
-	 * @param gffType
-	 * @param gffFile
-	 * @param readsBed
-	 * @param binNum
-	 *            每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
-	 * @param HanYanFstrand
-	 *            是否选择韩燕模式，根据reads是否与基因的方向相一致而进行过滤工作，这个是专门针对韩燕的项目做的分析。
-	 */
-	public GffChrMap(String gffType, String gffFile, String chrFile,
-			String readsBed, int binNum, boolean HanYanFstrand) {
-		super(gffType, gffFile, chrFile, readsBed, binNum);
-		this.HanYanFstrand = HanYanFstrand;
+	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
 	}
-	
+
 	/**
 	 * 每隔多少位取样,如果设定为1，则算法会变化，然后会很精确
 	 * @return
 	 */
 	public int getThisInv() {
-		return mapReads.getBinNum();
+		return gffChrAbs.getMapReads().getBinNum();
 	}
 	/**
 	 * 按照染色体数，统计每个染色体上总位点数，每个位点数， string[4] 0: chrID 1: readsNum 2: readsPipNum
@@ -73,65 +63,16 @@ public class GffChrMap extends GffChrAbs {
 	 */
 	public ArrayList<String[]> getChrLenInfo() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		ArrayList<String> lsChrID = mapReads.getChrIDLs();
+		ArrayList<String> lsChrID = gffChrAbs.getMapReads().getChrIDLs();
 		for (String string : lsChrID) {
 			String[] chrInfoTmp = new String[4];
 			chrInfoTmp[0] = string;
-			chrInfoTmp[1] = mapReads.getChrReadsNum(string) + "";
-			chrInfoTmp[2] = mapReads.getChrReadsPipNum(string) + "";
-			chrInfoTmp[3] = mapReads.getChrReadsPipMean(string) + "";
+			chrInfoTmp[1] = gffChrAbs.getMapReads().getChrReadsNum(string) + "";
+			chrInfoTmp[2] = gffChrAbs.getMapReads().getChrReadsPipNum(string) + "";
+			chrInfoTmp[3] = gffChrAbs.getMapReads().getChrReadsPipMean(string) + "";
 			lsResult.add(chrInfoTmp);
 		}
 		return lsResult;
-	}
-
-	/**
-	 * @param gffType
-	 * @param gffFile
-	 * @param readsBed
-	 * @param binNum
-	 *            每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
-	 * @param HanYanFstrand
-	 *            是否选择韩燕模式，根据reads是否与基因的方向相一致而进行过滤工作，这个是专门针对韩燕的项目做的分析。
-	 */
-	public GffChrMap(String gffType, String gffFile, String chrFile,
-			String readsBed, int binNum) {
-		super(gffType, gffFile, chrFile, readsBed, binNum);
-		this.HanYanFstrand = false;
-	}
-
- 
-
-	/**
-	 * @param readsFile
-	 *            mapping的结果文件，必须排过序，一般为bed格式
-	 * @param binNum
-	 *            每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
-	 */
-	public void setMapReads(String readsFile, int binNum) {
-		if (FileOperate.isFileExist(readsFile)) {
-			if (HanYanFstrand) {
-				mapReads = new MapReadsHanyanChrom(binNum, readsFile);
-				mapReads.setChrLenFile(getRefLenFile());
-				mapReads.setNormalType(mapNormType);
-			} else {
-				mapReads = new MapReads(binNum, readsFile);
-				mapReads.setChrLenFile(getRefLenFile());
-				mapReads.setNormalType(mapNormType);
-			}
-		}
-		setMapCorrect();
-	}
-
-	/**
-	 * 读取bed文件
-	 */
-	public void readMapBed() {
-		try {
-			mapReads.ReadMapFile();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -148,7 +89,7 @@ public class GffChrMap extends GffChrAbs {
 	 */
 	public void setFilter(boolean uniqReads, int startCod, int colUnique,
 			boolean booUniqueMapping, Boolean cis5to3) {
-		mapReads.setFilter(uniqReads, startCod, colUnique, booUniqueMapping,
+		gffChrAbs.getMapReads().setFilter(uniqReads, startCod, colUnique, booUniqueMapping,
 				cis5to3);
 	}
 
@@ -162,9 +103,8 @@ public class GffChrMap extends GffChrAbs {
 	 * @return 没有的话就返回null
 	 */
 	public double[] getChrInfo(String chrID, int thisInvNum, int type) {
-		double[] tmpResult = mapReads.getRengeInfo(thisInvNum, chrID, 0, 0,
-				type);
-		mapReads.normDouble(tmpResult, super.mapNormType);
+		double[] tmpResult = gffChrAbs.getMapReads().getRengeInfo(thisInvNum, chrID, 0, 0, type);
+		gffChrAbs.getMapReads().normDouble(tmpResult, gffChrAbs.mapNormType);
 		return tmpResult;
 	}
 
@@ -178,7 +118,7 @@ public class GffChrMap extends GffChrAbs {
 	 * @throws Exception
 	 */
 	public void getAllChrDistR(GffChrMap gffChrMap2) {
-		ArrayList<String[]> chrlengthInfo = seqHash.getChrLengthInfo();
+		ArrayList<String[]> chrlengthInfo = gffChrAbs.getSeqHash().getChrLengthInfo();
 		for (int i = chrlengthInfo.size() - 1; i >= 0; i--) {
 			try {
 				getChrDist(chrlengthInfo.get(i)[0], maxresolution, gffChrMap2);
@@ -194,9 +134,9 @@ public class GffChrMap extends GffChrAbs {
 	 * @throws Exception
 	 */
 	public void plotAllChrDist(String outPathPrefix) {
-		ArrayList<String[]> chrlengthInfo = seqHash.getChrLengthInfo();
+		ArrayList<String[]> chrlengthInfo = gffChrAbs.getSeqHash().getChrLengthInfo();
 		//find the longest chromosome's density
-		double[] chrReads = getChrDensity(seqHash.getChrLengthInfo().get(seqHash.getChrLengthInfo().size() - 1)[0], maxresolution);
+		double[] chrReads = getChrDensity(gffChrAbs.getSeqHash().getChrLengthInfo().get(gffChrAbs.getSeqHash().getChrLengthInfo().size() - 1)[0], maxresolution);
 		double axisY = MathComput.median(chrReads, 95)*4;
 		for (int i = chrlengthInfo.size() - 1; i >= 0; i--) {
 			try {
@@ -218,10 +158,10 @@ public class GffChrMap extends GffChrAbs {
 	 * @throws Exception
 	 */
 	private void plotChrDist(String chrID, int maxresolution, double axisY, String outFileName) throws Exception {
-		int[] resolution = seqHash.getChrRes(chrID, maxresolution);
-		long chrLengthMax = seqHash.getChrLenMax();
+		int[] resolution = gffChrAbs.getSeqHash().getChrRes(chrID, maxresolution);
+		long chrLengthMax = gffChrAbs.getSeqHash().getChrLenMax();
 		double interval = ((int)(chrLengthMax/30)/1000)*1000;
-		long chrLength = seqHash.getChrLength(chrID);
+		long chrLength = gffChrAbs.getSeqHash().getChrLength(chrID);
 		
 		/////////////////////   plotScatter can only accept double data   //////////////////////////////
 		double[] resolutionDoub = new double[resolution.length];
@@ -299,10 +239,10 @@ public class GffChrMap extends GffChrAbs {
 	 */
 	private void getChrDist(String chrID, int maxresolution,
 			GffChrMap gffChrMap2) throws Exception {
-		int[] resolution = seqHash.getChrRes(chrID, maxresolution);
+		int[] resolution = gffChrAbs.getSeqHash().getChrRes(chrID, maxresolution);
 		double[] chrReads = getChrDensity(chrID.toLowerCase(),
 				resolution.length);
-		long chrLength = seqHash.getChrLength(chrID);
+		long chrLength = gffChrAbs.getSeqHash().getChrLength(chrID);
 		if (chrReads != null) {
 			TxtReadandWrite txtRparamater = new TxtReadandWrite();
 			// //////// 参 数 设 置 /////////////////////
@@ -311,8 +251,7 @@ public class GffChrMap extends GffChrAbs {
 			txtRparamater.writefile("Item" + "\t" + "Info" + "\r\n");// 必须要加上的，否则R读取会有问题
 			txtRparamater.writefile("tihsresolution" + "\t" + chrLength
 					+ "\r\n");
-			txtRparamater.writefile("maxresolution" + "\t"
-					+ seqHash.getChrLenMax() + "\r\n");
+			txtRparamater.writefile("maxresolution" + "\t" + gffChrAbs.getSeqHash().getChrLenMax() + "\r\n");
 			txtRparamater.writefile("ChrID" + "\t" + chrID + "\r\n");
 
 			// //////// 数 据 输 入 ///////////////////////
@@ -325,27 +264,15 @@ public class GffChrMap extends GffChrAbs {
 
 			// /////////如果第二条染色体上有东西，那么也写入文本/////////////////////////////////////////
 			if (gffChrMap2 != null) {
-				double[] chrReads2 = gffChrMap2.getChrDensity(
-						chrID.toLowerCase(), resolution.length);
-				txtRparamater
-						.setParameter(
-								NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_2Y,
-								true, false);
+				double[] chrReads2 = gffChrMap2.getChrDensity(chrID.toLowerCase(), resolution.length);
+				txtRparamater.setParameter(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_2Y, true, false);
 				txtRparamater.Rwritefile(chrReads2);
 			}
 			hist();
-			FileOperate
-					.changeFileName(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_X,
-							chrID + "readsx");
-			FileOperate
-					.changeFileName(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_Y,
-							chrID + "readsy");
-			FileOperate.changeFileName(
-					NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_2Y, chrID
-							+ "reads2y");
-			FileOperate.changeFileName(
-					NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_PARAM, chrID
-							+ "parameter");
+			FileOperate.changeFileName(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_X, chrID + "readsx");
+			FileOperate.changeFileName(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_Y, chrID + "readsy");
+			FileOperate.changeFileName(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_2Y, chrID + "reads2y");
+			FileOperate.changeFileName(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_PARAM, chrID + "parameter");
 		}
 	}
 
@@ -359,8 +286,8 @@ public class GffChrMap extends GffChrAbs {
 	 * @return 没有的话就返回null
 	 */
 	private double[] getChrDensity(String chrID, int binNum) {
-		double[] tmpResult = mapReads.getReadsDensity(chrID, 0, 0, binNum);
-		mapReads.normDouble(tmpResult, super.mapNormType);
+		double[] tmpResult = gffChrAbs.getMapReads().getReadsDensity(chrID, 0, 0, binNum);
+		gffChrAbs.getMapReads().normDouble(tmpResult, gffChrAbs.mapNormType);
 		return tmpResult;
 	}
 	/**
@@ -401,10 +328,10 @@ public class GffChrMap extends GffChrAbs {
 			String structure, int binNum, String outFile) {
 		ArrayList<MapInfo> lsMapInfos = null;
 		if (txtExcel != null && !txtExcel.trim().equals("")) {
-			lsMapInfos = super.readFileGeneMapInfo(txtExcel, colGeneID, colScore, rowStart, structure, binNum);
+			lsMapInfos = gffChrAbs.readFileGeneMapInfo(txtExcel, colGeneID, colScore, rowStart, structure, binNum);
 		}
 		else {
-			lsMapInfos = super.readGeneMapInfoAll(structure, binNum);
+			lsMapInfos = gffChrAbs.readGeneMapInfoAll(structure, binNum);
 		}
 		MapInfo.sortPath(SortS2M);
 		Collections.sort(lsMapInfos);
@@ -435,11 +362,11 @@ public class GffChrMap extends GffChrAbs {
 			int colChrID, int colSummit, int colRegion, int colScore,
 			int rowStart, double heapMapSmall, double heapMapBig, double scale,
 			int binNum, String outFile) {
-		ArrayList<MapInfo> lsMapInfos = super.readFileSiteMapInfo(txtExcel,
+		ArrayList<MapInfo> lsMapInfos = gffChrAbs.readFileSiteMapInfo(txtExcel,
 				colRegion, colChrID, colSummit, colScore, rowStart);
 		MapInfo.sortPath(SortS2M);
 		Collections.sort(lsMapInfos);
-		mapReads.getRegionLs(binNum, lsMapInfos, 0);
+		gffChrAbs.getMapReads().getRegionLs(binNum, lsMapInfos, 0);
 		return plotHeatMap(lsMapInfos, Color.BLUE, heapMapSmall, heapMapBig,
 				 FileOperate.changeFileSuffix(outFile, null, null));
 	}
@@ -479,16 +406,33 @@ public class GffChrMap extends GffChrAbs {
 					lsDouble.add(double1);
 				}
 			}
-			
-			
-			maxdata = MathComput.median(lsDouble, 95);
+			maxdata = MathComput.median(lsDouble, 99);
 		}
-		Color colorwhite = new Color(0, 0, 0, 0);
+		Color colorwhite = new Color(255, 255, 255, 255);
 		Color[] gradientColors = new Color[] { colorwhite, color};
 		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
-		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfo, false,  customGradient);
+		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfo,  customGradient);
 		heatMap.setRange(mindata, maxdata);
-		heatMap.saveToFile(outFile, 8000, 800);
+		heatMap.saveToFile(outFile, 2000, 1000);
+		
+		
+		
+//		HeatChart heatChart = new HeatChart(lsMapInfo,mindata,maxdata);
+//		Dimension bb = new Dimension();
+//		bb.setSize(1, 0.01);
+//		heatChart.setCellSize(bb );
+//		//Output the chart to a file.
+//		Color colorblue = Color.BLUE;
+//		Color colorRed = Color.WHITE;
+//		//map.setBackgroundColour(color);
+//		heatChart.setHighValueColour(colorblue);
+//		heatChart.setLowValueColour(colorRed);
+//		try {
+//			heatChart.saveToFile(new File(outFile));
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		return new double[]{mindata, maxdata};
 	}
 	/**
@@ -560,8 +504,8 @@ public class GffChrMap extends GffChrAbs {
 	 * @param geneStructure GffDetailGene.TSS
 	 */
 	public void plotTssPeak(String fileName, int rowStart, int binNum, String resultFile, String geneStructure) {
-		ArrayList<MapInfo> lsMapInfo = super.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
-		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
+		ArrayList<MapInfo> lsMapInfo = gffChrAbs.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
+		ArrayList<MapInfo> lsMapTssInfo = gffChrAbs.getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
 		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
 		for (double d : TssDensity) {
@@ -588,8 +532,8 @@ public class GffChrMap extends GffChrAbs {
 	 * @return 返回最大值和最小值的设定
 	 */
 	public double[] plotTssPeakHeatMap(Color color, String fileName,int heatMapSmall, int heatMapBig, int rowStart, int binNum, String resultFile, String geneStructure, boolean SortS2M) {
-		ArrayList<MapInfo> lsMapInfo = super.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
-		ArrayList<MapInfo> lsMapTssInfo = super.getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
+		ArrayList<MapInfo> lsMapInfo = gffChrAbs.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
+		ArrayList<MapInfo> lsMapTssInfo = gffChrAbs.getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
 		MapInfo.sortPath(SortS2M);
 		for (MapInfo mapInfo : lsMapTssInfo) {
 			mapInfo.setScore(MathComput.mean(mapInfo.getDouble()));
@@ -618,10 +562,10 @@ public class GffChrMap extends GffChrAbs {
 	public void plotTssGene(String fileName, int rowStart, int binNum, String resultFile, String geneStructure) {
 		ArrayList<MapInfo> lsMapInfo = null;
 		if (fileName == null || fileName.trim().equals("")) {
-			lsMapInfo = super.readGeneMapInfoAll(geneStructure, binNum);
+			lsMapInfo = gffChrAbs.readGeneMapInfoAll(geneStructure, binNum);
 		}
 		else {
-			lsMapInfo = super.readFileGeneMapInfo(fileName, 1, 0, rowStart, geneStructure, binNum);
+			lsMapInfo = gffChrAbs.readFileGeneMapInfo(fileName, 1, 0, rowStart, geneStructure, binNum);
 		}
 		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapInfo);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
@@ -638,7 +582,7 @@ public class GffChrMap extends GffChrAbs {
 	 * @return 如果没有则返回-1
 	 */
 	public double getGeneTss(String geneID, int tssUp, int tssDown) {
-		GffDetailGene gffDetailGene = gffHashGene.searchLOC(geneID);
+		GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
 		if (gffDetailGene == null) {
 			return -1;
 		}
@@ -656,7 +600,7 @@ public class GffChrMap extends GffChrAbs {
 		}
 		int tssStart = Math.min(tssStartR, tssEndR);
 		int tssEnd = Math.max(tssStartR, tssEndR);
-		double[] siteInfo = mapReads.getRengeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
+		double[] siteInfo = gffChrAbs.getMapReads().getRengeInfo(gffChrAbs.getMapReads().getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
 		if (siteInfo == null) {
 //			System.out.println("stop");
 			return -1;
@@ -670,7 +614,7 @@ public class GffChrMap extends GffChrAbs {
 	 * @param tssDown tss下游多少bp 负数在上游正数在下游
 	 */
 	public double getGeneBodySum(String geneID) {
-		GffDetailGene gffDetailGene = gffHashGene.searchLOC(geneID);
+		GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
 		if (gffDetailGene == null) {
 			return -1;
 		}
@@ -679,7 +623,7 @@ public class GffChrMap extends GffChrAbs {
 		int tesSite = gffGeneIsoInfo.getTESsite();
 		int tssStart = Math.min(tssSite, tesSite);
 		int tssEnd = Math.max(tssSite, tesSite);
-		double[] siteInfo = mapReads.getRengeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
+		double[] siteInfo = gffChrAbs.getMapReads().getRengeInfo(gffChrAbs.getMapReads().getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
 		return MathComput.sum(siteInfo);
 	}
 	// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -697,7 +641,7 @@ public class GffChrMap extends GffChrAbs {
 			return null;
 		}
 		// 获得具体转录本的信息
-		GffGeneIsoInfo gffGeneIsoInfoOut = gffHashGene.searchISO(geneID);
+		GffGeneIsoInfo gffGeneIsoInfoOut = gffChrAbs.getGffHashGene().searchISO(geneID);
 		return combineLoc(tmpResult, gffGeneIsoInfoOut.getLenUTR5() + 1);
 	}
 
@@ -708,20 +652,19 @@ public class GffChrMap extends GffChrAbs {
 	 * @return
 	 */
 	public int getCombAtgSite(String geneID) {
-		GffGeneIsoInfo gffGeneIsoInfoOut = gffHashGene.searchISO(geneID);
+		GffGeneIsoInfo gffGeneIsoInfoOut = gffChrAbs.getGffHashGene().searchISO(geneID);
 		int atgSite = gffGeneIsoInfoOut.getLenUTR5() + 1;
 		// 除以3是指3个碱基
 		return (int) Math.ceil((double) (atgSite - 1) / 3);
 	}
 
 	/**
-	 * 给定atg位点，获得该atg位点在合并后的序列中应该是第几个，从1开始
-	 * 
+	 * 给定基因名，获得该基因的atg位点在mRNA中应该是第几个位点，从1开始
 	 * @param atgSite
 	 * @return
 	 */
 	public int getAtgSite(String geneID) {
-		GffGeneIsoInfo gffGeneIsoInfoOut = gffHashGene.searchISO(geneID);
+		GffGeneIsoInfo gffGeneIsoInfoOut = gffChrAbs.getGffHashGene().searchISO(geneID);
 		return gffGeneIsoInfoOut.getLenUTR5() + 1;
 		// 除以3是指3个碱基
 	}
@@ -731,9 +674,8 @@ public class GffChrMap extends GffChrAbs {
 	 * @param firstlinls1
 	 * @return
 	 */
-	public ArrayList<String[]> getBG(String peakFile, int firstlinls1)
-	{
-		return mapReads.getChIPBG(peakFile, firstlinls1);
+	public ArrayList<String[]> getBG(String peakFile, int firstlinls1) {
+		return gffChrAbs.getMapReads().getChIPBG(peakFile, firstlinls1);
 	}
 	/**
 	 * 专为韩燕设计 将三个碱基合并为1个coding，取3个的最后一个碱基对应的reads数
@@ -756,11 +698,11 @@ public class GffChrMap extends GffChrAbs {
 	 * 返回经过排序的mapinfo的list，每一个mapInfo包含了该基因的核糖体信息
 	 */
 	public ArrayList<MapInfo> getChrInfo() {
-		ArrayList<String> lsChrID = mapReads.getChrIDLs();
+		ArrayList<String> lsChrID = gffChrAbs.getMapReads().getChrIDLs();
 		ArrayList<MapInfo> lsMapInfo = new ArrayList<MapInfo>();
 		for (String string : lsChrID) {
-			mapReads.setNormalType(MapReads.NORMALIZATION_NO);
-			GffGeneIsoInfo gffGeneIsoInfo = gffHashGene.searchISO(string);
+			gffChrAbs.getMapReads().setNormalType(MapReads.NORMALIZATION_NO);
+			GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(string);
 			if (!gffGeneIsoInfo.getGeneType().equals(
 					GffGeneIsoInfo.TYPE_GENE_MRNA)
 					&& !gffGeneIsoInfo.getGeneType().equals(
@@ -768,10 +710,10 @@ public class GffChrMap extends GffChrAbs {
 				continue;
 			}
 
-			double[] tmp = mapReads.getRengeInfo(mapReads.getBinNum(), string,
+			double[] tmp = gffChrAbs.getMapReads().getRengeInfo(gffChrAbs.getMapReads().getBinNum(), string,
 					0, 0, 0);
-			mapReads.setNormalType(super.mapNormType);
-			double[] tmp2 = mapReads.getRengeInfo(mapReads.getBinNum(), string,
+			gffChrAbs.getMapReads().setNormalType(gffChrAbs.mapNormType);
+			double[] tmp2 = gffChrAbs.getMapReads().getRengeInfo(gffChrAbs.getMapReads().getBinNum(), string,
 					0, 0, 0);
 			// ///////////////// 异 常 处 理
 			// /////////////////////////////////////////////////////////////////////
@@ -809,7 +751,7 @@ public class GffChrMap extends GffChrAbs {
 	 *            0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
 	public void getRegionLs(int binNum, ArrayList<MapInfo> lsmapInfo, int type) {
-		mapReads.getRegionLs(binNum, lsmapInfo, type);
+		gffChrAbs.getMapReads().getRegionLs(binNum, lsmapInfo, type);
 	}
 	/**
 	 * 经过标准化 将MapInfo中的double填充上相应的reads信息
@@ -821,7 +763,7 @@ public class GffChrMap extends GffChrAbs {
 	 *            0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
 	public void getRegion(int binNum, MapInfo mapInfo, int type) {
-		mapReads.getRegion(binNum, mapInfo, type);
+		gffChrAbs.getMapReads().getRegion(binNum, mapInfo, type);
 	}
 	
 	/**
@@ -831,6 +773,6 @@ public class GffChrMap extends GffChrAbs {
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
 	public void getRegion(MapInfo mapInfo, int thisInvNum, int type) {
-		mapReads.getRegion(mapInfo, thisInvNum, type);
+		gffChrAbs.getMapReads().getRegion(mapInfo, thisInvNum, type);
 	}
 }

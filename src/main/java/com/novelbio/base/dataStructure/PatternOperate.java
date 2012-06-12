@@ -95,7 +95,7 @@ public class PatternOperate
      * @param inputstr
      * @param regex
      * @param CASE
-     * @return 没有抓到的话，返回null
+     * @return 没有抓到的话，返回size=0的list
      */
     public ArrayList<String> getPat(String inputstr) {
     	return getPat(inputstr, 0);
@@ -106,7 +106,7 @@ public class PatternOperate
      * @param inputstr
      * @param regex
      * @param CASE
-     * @return 没有抓到的话，返回null
+     * @return 没有抓到的话，返回size=0的list
      */
     public ArrayList<String> getPat(String inputstr, int groupID)
     {
@@ -114,9 +114,6 @@ public class PatternOperate
     	 matInput=patInput.matcher(inputstr);
     	 while (matInput.find()) {
 			lsresult.add(matInput.group(groupID));
-		}
-    	 if (lsresult.size() == 0) {
-			return null;
 		}
     	return lsresult;
     }

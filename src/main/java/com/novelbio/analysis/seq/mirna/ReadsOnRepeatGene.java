@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailRepeat;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneCluster;
@@ -19,24 +20,14 @@ import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.generalConf.NovelBioConst;
-
-public class ReadsOnRepeatGene {
-	public static void main(String[] args) {
-		ReadsOnRepeatGene readsInfo = new ReadsOnRepeatGene();
-		String repeatGffFile = "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/rmsk.txt";
-		String geneGffUCSC = "/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/hg19_refSeqSortUsing.txt";
-		String outPath = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/resultRepeat/";
-		String prix = "TG";
-		String bedFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_Genomic.bed";
-		readsInfo.readGff(repeatGffFile, geneGffUCSC);
-		readsInfo.countReadsInfo(bedFile);
-		readsInfo.writeToFileGeneProp(outPath + prix + "_GeneProp.txt");
-		readsInfo.writeToFileRepeatFamily(outPath + prix + "_RepeatFamilyProp.txt");
-		readsInfo.writeToFileRepeatName(outPath + prix + "_RepeatNameProp.txt");
-	}
-	
+/**
+ * bed文件在repeat和gene上的分布情况，可以单独设定repeat或者是gene
+ * @author zong0jie
+ *
+ */
+public class ReadsOnRepeatGene {	
 	GffHashRepeat gffHashRepeat = null;
-	GffHashGene gffHashGene = null;
+	GffChrAbs gffChrAbs = null;
 	HashMap<String, Double> hashRepeatName = new HashMap<String, Double>();
 	HashMap<String, Double> hashRepeatFamily = new HashMap<String, Double>();
 	HashMap<String, Double> hashGeneInfo = new HashMap<String, Double>();
@@ -44,31 +35,29 @@ public class ReadsOnRepeatGene {
 	 * 读取repeat文件
 	 * @param repeatGffFile
 	 */
-	public void readGff(String repeatGffFile, String geneGffType, String geneGffUCSC) {
+	public void readGffGene(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
+	}
+	/**
+	 * 读取repeat文件，如果没有repeat则不读取
+	 * @param repeatGffFile
+	 */
+	public void readGffRepeat(String repeatGffFile) {
 		if (repeatGffFile != null && !repeatGffFile.equals("")) {
 			gffHashRepeat = new GffHashRepeat();
 			gffHashRepeat.ReadGffarray(repeatGffFile);
 		}
-		if (geneGffUCSC != null && !geneGffUCSC.equals("")) {
-			gffHashGene = new GffHashGene();
-			gffHashGene.setParam(NovelBioConst.GENOME_GFF_TYPE_UCSC);
-			gffHashGene.readGffFile(geneGffUCSC);
-		}
-
 	}
 	
-	public HashMap<String, Double> getHashRepeatName() {
+	private HashMap<String, Double> getHashRepeatName() {
 		return hashRepeatName;
 	}
-	public HashMap<String, Double> getHashRepeatFamily() {
+	private HashMap<String, Double> getHashRepeatFamily() {
 		return hashRepeatFamily;
 	}
-	public HashMap<String, Double> getHashGeneInfo() {
+	private HashMap<String, Double> getHashGeneInfo() {
 		return hashGeneInfo;
 	}
-	
-
-	
 
 	public void countReadsInfo(String bedFile) {
 		BedSeq bedSeq = new BedSeq(bedFile);
@@ -80,7 +69,7 @@ public class ReadsOnRepeatGene {
 					addHashRepeat(repeatInfo, bedRecord.getMappingNum());
 				}
 			}
-			if (gffHashGene != null) {
+			if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
 				int[] geneLocInfo = searchGene(bedRecord.isCis5to3(), bedRecord.getRefID(), bedRecord.getStart(), bedRecord.getEnd());
 				addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,bedRecord.getMappingNum());
 			}
@@ -169,7 +158,6 @@ public class ReadsOnRepeatGene {
 			hashGeneInfo.put(key, (double)1/mapNum);
 		}
 	}
-	
 	/**
 	 * 返回该reads所在的repeat的位置
 	 * @param chrID
@@ -185,7 +173,6 @@ public class ReadsOnRepeatGene {
 		}
 		return cod.getGffDetailThis().getRepName() + "///" + cod.getGffDetailThis().getRepFamily();
 	}
-	
 	/**
 	 * @param chrID
 	 * @param start
@@ -196,7 +183,7 @@ public class ReadsOnRepeatGene {
 	 * 实际上对于miRNA而言，只有处于外显子中考虑方向才有意义
 	 */
 	private int[] searchGene(boolean cis5to3, String chrID, int start, int end) {
-		GffCodGene gffCodGene = gffHashGene.searchLocation(chrID, (start+ end)/2);
+		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrID, (start+ end)/2);
 		if (!gffCodGene.isInsideLoc()) {
 			int[] result = new int[]{GffGeneIsoInfo.COD_LOC_OUT, 0};
 			return result;

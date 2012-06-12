@@ -221,7 +221,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		if (cis5to3 != null && cis5to3 == false) {
 			seqFasta = seqFasta.reservecom();
 		}
-		seqFasta.setSeqName(getName());
+		seqFasta.setName(getName());
 		this.seqFasta = seqFasta;
 	}
 	/**
@@ -234,7 +234,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 		if (reservecom && cis5to3 != null && cis5to3 == false) {
 			seqFasta = seqFasta.reservecom();
 		}
-		seqFasta.setSeqName(getName());
+		seqFasta.setName(getName());
 		this.seqFasta = seqFasta;
 	}
 	/**

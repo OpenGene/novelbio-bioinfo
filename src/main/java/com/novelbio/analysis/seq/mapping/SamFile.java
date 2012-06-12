@@ -254,10 +254,10 @@ public class SamFile {
 	}
 	/**
 	 * 提取sam文件中没有mapping山的reads，将其保存为单个fastq文件，序列质量默认为中等
-	 * @param 是否将非uniq的也提取出来
+	 * @param getNonUniq 是否将非uniq的也提取出来
 	 * @return
 	 */
-	public FastQOld getUnMappedReads(boolean nonUniq, String outFastQfile)
+	public FastQOld getUnMappedReads(boolean getNonUniq, String outFastQfile)
 	{
 		SAMFileReader samFileReader = getSamFileReader();
 		int wrongReadsNum = 0;
@@ -274,7 +274,7 @@ public class SamFile {
 				continue;
 			}
 
-			if (samRecord.getReadUnmappedFlag() || (nonUniq && samRecord.getAttribute("XT").equals("R"))) {
+			if (samRecord.getReadUnmappedFlag() || (getNonUniq && samRecord.getAttribute("XT").equals("R"))) {
 				fastQline = "@" + samRecord.getReadName() + TxtReadandWrite.ENTER_LINUX + 
 						samRecord.getReadString() +
 						TxtReadandWrite.ENTER_LINUX + "+" + TxtReadandWrite.ENTER_LINUX + 

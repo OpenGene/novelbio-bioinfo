@@ -191,7 +191,7 @@ public class ChrStringHash extends SeqHashAbs{
 		}
 		
 		SeqFasta seqFasta = new SeqFasta();
-		seqFasta.setSeqName(chrID + "_" + startlocation + "_" + endlocation);
+		seqFasta.setName(chrID + "_" + startlocation + "_" + endlocation);
 		// 定到目标坐标
 		StringBuilder sequence = new StringBuilder();
 		chrRASeqFile.seek(startRealCod);

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ListGff;
 
 
 /**
@@ -46,7 +47,10 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
 	protected LinkedHashMap<String, M> Chrhash;
-	
+	/**
+	 * 保存所有gffDetailGene
+	 */
+	ArrayList<T> lsGffDetailAll = new ArrayList<T>();
 	/**
 	 * 起点是否为闭区间，不是则为开区间，<br>
 	 * False: 开区间的意思是，24表示从0开始计数的24位，也就是实际的25位<br>
@@ -380,5 +384,18 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	protected void setOther()
 	{
 		
+	}
+	/**
+	 * 返回所有不重复GffDetailGene
+	 * @return
+	 */
+	public ArrayList<T> getGffDetailAll() {
+		if (lsGffDetailAll.size() != 0) {
+			return lsGffDetailAll;
+		}
+		for (M lsGffDetailGenes : Chrhash.values()) {
+			lsGffDetailAll.addAll(lsGffDetailGenes);
+		}
+		return lsGffDetailAll;
 	}
 }

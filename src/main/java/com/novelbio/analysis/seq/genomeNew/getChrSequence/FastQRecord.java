@@ -6,7 +6,10 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-public class FastQRecord extends SeqFasta implements Cloneable {
+public class FastQRecord implements Cloneable {
+	public static int FASTQ_SANGER_OFFSET = 33;
+	public static int FASTQ_ILLUMINA_OFFSET = 64;
+	SeqFasta seqFasta = new SeqFasta();
 	private static Logger logger = Logger.getLogger(FastQRecord.class);
 	protected int fastqOffset = FASTQ_SANGER_OFFSET;
 	protected String seqQuality = "";
@@ -15,7 +18,17 @@ public class FastQRecord extends SeqFasta implements Cloneable {
 	/** 裁剪序列时最短为多少 */
 	private int trimMinLen = 22;
 	public FastQRecord() {
-		// TODO Auto-generated constructor stub
+		seqFasta = new SeqFasta();
+		seqFasta.setTOLOWCASE(null);
+	}
+	public void setName(String SeqName) {
+		seqFasta.setName(SeqName);
+	}
+	public void setSeq(String Seq) {
+		seqFasta.setSeq(Seq);
+	}
+	public SeqFasta getSeqFasta() {
+		return seqFasta;
 	}
 	/**
 	 * 每四行一个记录，将这四行用linux回车隔开，然后输入
@@ -26,8 +39,8 @@ public class FastQRecord extends SeqFasta implements Cloneable {
 		if (ss.length == 1) {
 			ss = fastqlines.split(TxtReadandWrite.ENTER_WINDOWS);
 		}
-		setSeqName(ss[0].substring(1));
-		setSeq(ss[1]);
+		seqFasta.setName(ss[0].substring(1));
+		seqFasta.setSeq(ss[1]);
 		setFastaQuality(ss[3]);
 	}
 	
@@ -45,6 +58,9 @@ public class FastQRecord extends SeqFasta implements Cloneable {
 	}
 	public String getSeqQuality() {
 		return seqQuality;
+	}
+	public int getLength() {
+		return seqFasta.getLength();
 	}
 	/**
 	 * 设定偏移
@@ -76,19 +92,19 @@ public class FastQRecord extends SeqFasta implements Cloneable {
 		if ((seqAdaptorL == null || seqAdaptorL.equals("")) && (seqAdaptorR == null || seqAdaptorR.equals(""))) {
 			return this;
 		}
-		int leftNum = 0, rightNum = super.SeqSequence.length();
+		int leftNum = 0, rightNum = seqFasta.getLength();
 		if (seqAdaptorL != null && !seqAdaptorL.equals("")) {
 			if (mapNumLeft >= 0)
-				leftNum = 	trimAdaptorL(SeqSequence, seqAdaptorL, SeqSequence.length() - mapNumLeft, numMM,conNum, perMm);
+				leftNum = 	trimAdaptorL(seqFasta.toString(), seqAdaptorL, seqFasta.getLength() - mapNumLeft, numMM,conNum, perMm);
 			else
-				leftNum = 	trimAdaptorL(SeqSequence, seqAdaptorL, seqAdaptorL.length(), numMM,conNum, perMm);
+				leftNum = 	trimAdaptorL(seqFasta.toString(), seqAdaptorL, seqAdaptorL.length(), numMM,conNum, perMm);
 		}
 		
 		if (seqAdaptorR != null && !seqAdaptorR.equals("")) {
 			if (mapNumRight >= 0)
-				rightNum = 	trimAdaptorR(SeqSequence, seqAdaptorR, mapNumRight, numMM,conNum, perMm);
+				rightNum = 	trimAdaptorR(seqFasta.toString(), seqAdaptorR, mapNumRight, numMM,conNum, perMm);
 			else//TODO 确定这里设定多少合适：SeqSequence.length() - seqAdaptorL.length()
-				rightNum = 	trimAdaptorR(SeqSequence, seqAdaptorR, SeqSequence.length() - seqAdaptorR.length(), numMM,conNum, perMm);
+				rightNum = 	trimAdaptorR(seqFasta.toString(), seqAdaptorR, seqFasta.getLength() - seqAdaptorR.length(), numMM,conNum, perMm);
 		}
 		return trimSeq(leftNum, rightNum);
 	}
@@ -109,7 +125,7 @@ public class FastQRecord extends SeqFasta implements Cloneable {
 	 * @return
 	 */
 	public FastQRecord trimLowCase() {
-		char[] info = SeqSequence.toCharArray();
+		char[] info = seqFasta.toString().toCharArray();
 		int numStart = 0;
 		//从前向后，遇到小写就计数
 		for (char c : info) {
@@ -139,7 +155,7 @@ public class FastQRecord extends SeqFasta implements Cloneable {
 	 * 一样还是用TxtReadandWrite.huiche换行，最后没有TxtReadandWrite.huiche
 	 */
 	public FastQRecord trimPolyAR( int mismatch) {
-		int num = 	trimPolyA(SeqSequence, mismatch,1);
+		int num = 	trimPolyA(seqFasta.toString(), mismatch,1);
 		return trimSeq(0, num);
 	}
 	/**
@@ -150,8 +166,8 @@ public class FastQRecord extends SeqFasta implements Cloneable {
 	 * 一样还是用TxtReadandWrite.huiche换行，最后没有TxtReadandWrite.huiche
 	 */
 	public FastQRecord trimPolyTL( int mismatch) {
-		int num = trimPolyT(SeqSequence, mismatch,1);
-		return trimSeq(num, SeqSequence.length());
+		int num = trimPolyT(seqFasta.toString(), mismatch,1);
+		return trimSeq(num, seqFasta.getLength());
 	}
 	/**
 	 * 注意两个以下的adaptor无法过滤
@@ -388,13 +404,10 @@ public class FastQRecord extends SeqFasta implements Cloneable {
 		if (start == 0 && end == seqQuality.length()) {
 			return clone();
 		}
-		result.SeqName = SeqName;
-		result.AA3Len = AA3Len;
-		result.TOLOWCASE = TOLOWCASE;
+		result.seqFasta = seqFasta.trimSeq(start, end);
 		result.fastqOffset= fastqOffset;
 		result.trimMinLen = trimMinLen;
 		result.seqQuality = seqQuality.substring(start, end);
-		result.SeqSequence = SeqSequence.substring(start, end);
 		return result;
 	}
 	/**
@@ -402,8 +415,8 @@ public class FastQRecord extends SeqFasta implements Cloneable {
 	 * @return
 	 */
 	public String toString() {
-		if (seqQuality.length() != SeqSequence.length()) {
-			char[] quality = new char[SeqSequence.length()];
+		if (seqQuality.length() != seqFasta.getLength()) {
+			char[] quality = new char[seqFasta.getLength()];
 			if (fastqOffset == FASTQ_ILLUMINA_OFFSET) {
 				for (int i = 0; i < quality.length; i++) {
 					quality[i] = 'f';
@@ -416,14 +429,19 @@ public class FastQRecord extends SeqFasta implements Cloneable {
 			}
 			seqQuality = String.copyValueOf(quality);
 		}
-		return "@" + SeqName + TxtReadandWrite.ENTER_LINUX + SeqSequence + TxtReadandWrite.ENTER_LINUX + "+" + TxtReadandWrite.ENTER_LINUX + seqQuality;
+		return "@" + seqFasta.getSeqName() + TxtReadandWrite.ENTER_LINUX + seqFasta.toString() + TxtReadandWrite.ENTER_LINUX + "+" + TxtReadandWrite.ENTER_LINUX + seqQuality;
 	}
 	/**
 	 * 克隆序列
 	 */
 	public FastQRecord clone() {
 		FastQRecord seqFasta = null;
-		seqFasta = (FastQRecord) super.clone();
+		try {
+			seqFasta = (FastQRecord) super.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		seqFasta.seqQuality = seqQuality;
 		seqFasta.fastqOffset = fastqOffset;
 		seqFasta.trimMinLen = trimMinLen;
@@ -479,7 +497,7 @@ public class FastQRecord extends SeqFasta implements Cloneable {
 	 * @return
 	 */
 	public boolean QC() {
-		if (SeqSequence == null) {
+		if (seqFasta.SeqSequence == null) {
 			return false;
 		}
 		if (seqQuality.endsWith("BBBBBBB") ) {

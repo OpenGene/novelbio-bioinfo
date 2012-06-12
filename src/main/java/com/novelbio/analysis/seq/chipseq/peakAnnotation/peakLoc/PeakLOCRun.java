@@ -184,19 +184,19 @@ public class PeakLOCRun {
 	 */
 	public static void statisticNum() 
 	{
-		String ParentFile="/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/sicer-dif/compare/compare/";
-		String resultParentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/sicer-dif/compare/compare";
+		String ParentFile="/media/winF/NBC/Project/Project_Invitrogen/peakMacs/";
+		String resultParentFile = "/media/winF/NBC/Project/Project_Invitrogen/genestructure/";
 		int[] columnID=new int[2];
 		columnID[0] = 1;
 		columnID[1] = 4;
 		String[][] intronExonStatistic;
 		try {
-			String FpeaksFile=ParentFile+"W4W0OnlyDown_vs_K4_overlap.txt";
-			String prix = "W4W0OnlyDown_vs_K4_overlap";
+			String FpeaksFile=ParentFile+"Pax7_peaks_filtered.xls";
+			String prix = "Pax7";
 			
 			String genestructureBar = prix + "_bar.jpg";
 			String genestructureStatistic = prix + "_geneStructure";
-			intronExonStatistic = PeakLOC.getPeakStaticInfo(2000, FpeaksFile, "\t", columnID, 2, -1);
+			intronExonStatistic = PeakLOC.getPeakStaticInfo(3000, FpeaksFile, "\t", columnID, 2, -1);
 			TxtReadandWrite txtstatistic=new TxtReadandWrite();
 			txtstatistic.setParameter(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, true,false);
 			txtstatistic.ExcelWrite(intronExonStatistic, "\t");

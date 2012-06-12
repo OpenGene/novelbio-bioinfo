@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.plot.java.BarInfo;
@@ -38,6 +39,55 @@ import de.erichseifert.gral.util.Insets2D;
 import de.erichseifert.gral.util.Orientation;
 
 public class PlotScatter extends PlotNBCInteractive{
+	public static void main(String[] args) {
+		PlotScatter plotScatter = new PlotScatter();
+        Random random = new Random();
+		int num = 100;
+		double[] x = new double[num];
+		double[] y = new double[num];
+		for (int i = 0; i < x.length; i++) {
+			x[i] = random.nextGaussian();
+			y[i] = i;
+		}
+        // Create example data
+        ArrayList<Double> data = new  ArrayList<Double>();
+        for (int i = 0; i < 100; i++) {
+                data.add(random.nextGaussian());
+        }
+        
+        plotScatter = new PlotScatter();
+		plotScatter.setAxisX(-5, 5);
+		plotScatter.setAxisY(0, 0.3);
+		BarStyle dotStyle2 = new BarStyle();
+//		dotStyle2.setBasicStroke(new BasicStroke(2f));
+//		dotStyle2.setColor(DotStyle.getGridentColor(Color.red, GraphicsUtils.deriveBrighter(Color.red)));
+//		dotStyle2.setEdgeColor(DotStyle.getGridentColor( GraphicsUtils.deriveBrighter(Color.red),Color.red));
+//		dotStyle2.setValueVisible(true);
+//		dotStyle2.setBarWidth(10);
+//		plotScatter.addHistData(data, 15, dotStyle2);
+//		plotScatter.mapNum2ChangeX(0, 0, resolution.length, chrLength, interval);
+		DotStyle dotStyle = new DotStyle();
+		dotStyle.setValueVisible(true);
+		dotStyle.setColor(new Color(0, 0, 255, 255));
+		dotStyle.setStyle(DotStyle.STYLE_AREA);
+		plotScatter.addXY(x, y, dotStyle);
+		plotScatter.setAxisX(-10, 10);
+		plotScatter.setAxisY(-10, 10);
+		plotScatter.setBg(Color.WHITE);
+		plotScatter.setTitle( " Reads Density", null);
+		plotScatter.setTitleX("Chromosome Length", null, 2);
+		plotScatter.setTitleY("Normalized Reads Counts", null, 0.2);
+		plotScatter.setPlotareaAll(false);
+//		plotScatter.setAxisNotMove(XYPlot.AXIS_Y);
+		
+//		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
+		plotScatter.saveToFile("/media/winF/NBC/Project/Project_Invitrogen/peakMacs/test.png", 1000, 1000);
+	
+	}
+	
+	
+	
+	
 	HashMap<DotStyle, DataTable> hashDataTable = new HashMap<DotStyle, DataTable>();
 	
 	XYPlot plot;
@@ -138,7 +188,7 @@ public class PlotScatter extends PlotNBCInteractive{
      * @param dotStyle
      * @return
      */
-    private DataTable getDataTable(DotStyle dotStyle) {
+    protected DataTable getDataTable(DotStyle dotStyle) {
     	DataTable dataTable = null; DataSeries dataSeries = null;
     	if (!hashDataTable.containsKey(dotStyle)) {
     		if (dotStyle.getName() != null) {
@@ -204,8 +254,7 @@ public class PlotScatter extends PlotNBCInteractive{
      * @param breakNum Number of subdivisions for analysis.
      * @param dotStyle
      */
-    private void addHistData(DataTable dataTable, int breakNum, BarStyle barStyle)
-    {
+    private void addHistData(DataTable dataTable, int breakNum, BarStyle barStyle) {
     	Histogram1D histogram = new Histogram1D(dataTable, Orientation.VERTICAL, breakNum);
     	double min = dataTable.getStatistics().get(Statistics.MIN);
     	double max = dataTable.getStatistics().get(Statistics.MAX);
@@ -482,8 +531,12 @@ public class PlotScatter extends PlotNBCInteractive{
 		plot.setBounds(0, 0, width, heigh);
 		plot.draw(context);
 	}
-	
-	private void setPointStyle(DataSource dataSeries, DotStyle dotStyle)
+	/**
+	 * 设定某个已经添加入plot中的dataseries的格式类型
+	 * @param dataSeries
+	 * @param dotStyle
+	 */
+	void setPointStyle(DataSource dataSeries, DotStyle dotStyle)
 	{
 		if (dotStyle.getStyle() == DotStyle.STYLE_AREA) {
             AreaRenderer area = new DefaultAreaRenderer2D();
@@ -541,8 +594,6 @@ public class PlotScatter extends PlotNBCInteractive{
 			//the third column is the name column，从0开始计数的
 			pointRenderer.setSetting(PointRenderer.VALUE_COLUMN, 2);
 		}
-
-        
 	}
 	
 	private void setAxisAndTitle()
