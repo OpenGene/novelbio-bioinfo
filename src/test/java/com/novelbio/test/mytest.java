@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
@@ -111,16 +112,17 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		CopedID copedID = new CopedID("PH_CV292702", 0);
-		HashMap<Integer, String> hashMap = CopedID.getSpeciesTaxIDName();
-		String species = hashMap.get(copedID.getTaxID());
-		System.out.println(species);
-		copedID.setBlastInfo(1e-10, 3702);
-		System.out.println(copedID.getTaxID());
-		System.out.println(copedID.getDescription());
-		copedID = copedID.getCopedIDBlast();
-		System.out.println(copedID.getSymbol());
-		System.out.println(copedID.getDescription());
+		CopedID copedID = new CopedID("tp53", 9606);
+		CopedID copedID2 = new CopedID("tp53", 9606);
+		copedID2.setBlastInfo(1e10, 10090);
+		copedID2.getSymbol();
+		copedID2.setUpdateAccID("fefe");
+		HashSet<CopedID> hashSet = new HashSet<CopedID>();
+		hashSet.add(copedID);
+		hashSet.remove(copedID2);
+		System.out.println(hashSet.size());
+		
+		
 	}
 	
 	

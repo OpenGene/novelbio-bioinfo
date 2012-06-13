@@ -70,7 +70,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	/**
 	 * mRNA类似名
 	 */
-	private static HashMap<String, String> hashmRNA = new HashMap<String, String>();
+	private static HashMap<String, Integer> hashmRNA = new HashMap<String, Integer>();
 	/**
 	 * gene类似名
 	 */

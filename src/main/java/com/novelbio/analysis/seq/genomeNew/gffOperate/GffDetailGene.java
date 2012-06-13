@@ -30,8 +30,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
  * 本基因转录方向<br>
  * 本类中的几个方法都和Gff基因有关<br>
  */
-public class GffDetailGene extends ListDetailAbs
-{
+public class GffDetailGene extends ListDetailAbs {
 	private final static Logger logger = Logger.getLogger(GffDetailGene.class);
 	/**
 	 * 两个转录本的交集必须大于0.6才算是一个基因
@@ -50,6 +49,7 @@ public class GffDetailGene extends ListDetailAbs
 	private final static String SEP_ISO_NAME = "@//@";
 	/** 顺序存储每个转录本的的坐标情况 */
 	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
+	
 	int taxID = 0;
 	
 	protected void setTaxID(int taxID) {
@@ -163,7 +163,7 @@ public class GffDetailGene extends ListDetailAbs
 	 */
 	protected void addExon(int locStart,int locEnd) {
 		if (lsGffGeneIsoInfos.size() == 0) {//如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo
-			addsplitlist(getName(), "pseudo");
+			addsplitlist(getName(), GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT);
 		}
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExon(locStart, locEnd);
@@ -201,7 +201,7 @@ public class GffDetailGene extends ListDetailAbs
 	/**
 	 * 直接添加转录本，根据genedetail的信息设置cis5to3。之后用addcds()方法给该转录本添加exon
 	 */
-	protected void addsplitlist(String splitName, String geneTpye) {
+	protected void addsplitlist(String splitName, int geneTpye) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (cis5to3) {
 			gffGeneIsoInfo = new GffGeneIsoCis(splitName,this, geneTpye);
@@ -215,7 +215,7 @@ public class GffDetailGene extends ListDetailAbs
 	/**
 	 * 直接添加转录本，之后用addcds()方法给该转录本添加exon
 	 */
-	protected void addsplitlist(String splitName, String geneTpye, boolean cis5to3) {
+	protected void addsplitlist(String splitName, int geneTpye, boolean cis5to3) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (cis5to3) {
 			gffGeneIsoInfo = new GffGeneIsoCis(splitName,this, geneTpye);
@@ -379,6 +379,21 @@ public class GffDetailGene extends ListDetailAbs
 			}
 		}
 		return anno;
+	}
+	/**
+	 * 将gffDetailGene中含有新的名字的iso添加入本类
+	 * @param gffDetailGene
+	 */
+	public void addIsoSimple(GffDetailGene gffDetailGene) {
+		HashSet<String> hashIsoName = new HashSet<String>();
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			hashIsoName.add(gffGeneIsoInfo.getName());
+		}
+		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+			if (!hashIsoName.contains(gffGeneIsoInfo.getName())) {
+				lsGffGeneIsoInfos.add(gffGeneIsoInfo);
+			}
+		}
 	}
 	
 	/**
@@ -585,8 +600,7 @@ public class GffDetailGene extends ListDetailAbs
 	 * 同时重新设定该基因的numberstart和numberend
 	 * @param gffDetailGene
 	 */
-	public void addIso(GffGeneIsoInfo gffGeneIsoInfo)
-	{
+	public void addIso(GffGeneIsoInfo gffGeneIsoInfo) {
 		if (gffGeneIsoInfo == null || gffGeneIsoInfo.size() == 0) {
 			return;
 		}

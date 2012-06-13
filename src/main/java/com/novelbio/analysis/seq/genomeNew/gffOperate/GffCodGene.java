@@ -9,8 +9,7 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
  * @author zong0jie
  *
  */
-public class GffCodGene extends ListCodAbs<GffDetailGene>
-{
+public class GffCodGene extends ListCodAbs<GffDetailGene> {
 	/**
 	 * 从原始的ListCodAbs生成本类
 	 * @param lsSuper

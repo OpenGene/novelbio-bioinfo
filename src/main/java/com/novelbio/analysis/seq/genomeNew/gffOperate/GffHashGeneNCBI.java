@@ -48,7 +48,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	protected String regParentID = "(?<=Parent\\=)\\w+";
 
 	/** mRNA类似名 */
-	private static HashMap<String, String> hashmRNA = new HashMap<String, String>();
+	private static HashMap<String, Integer> hashmRNA = new HashMap<String, Integer>();
 	
 	
 	
@@ -164,10 +164,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			  
 			   String[] mRNAname = getMrnaName(ss);
 			   try {
-				   gffDetailGene.addsplitlist(mRNAname[0], mRNAname[1]);//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+				   gffDetailGene.addsplitlist(mRNAname[0], Integer.parseInt(mRNAname[1]));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 			   } catch (Exception e) {
 				  gffDetailGene = getGffDetailRnaID(rnaID);
-				   gffDetailGene.addsplitlist(mRNAname[0], mRNAname[1]);//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+				   gffDetailGene.addsplitlist(mRNAname[0], Integer.parseInt(mRNAname[1]));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 				   logger.error(mRNAname[0] + " " + mRNAname[1]);
 			}
 			
@@ -220,14 +220,14 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   String mRNAname = patmRNAName.getPatFirst(content[8]);//mRNApattern.matcher(content);
 	   if(mRNAname != null) {
 		   result[0] = mRNAname;
-		   result[1] = hashmRNA.get(content[2]);//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+		   result[1] = hashmRNA.get(content[2]) + "";//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 	   }
 	   else {
 		   try {
 			   String geneID = patGeneID.getPatFirst(content[8]);
 			   CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, geneID, taxID);
 			   result[0] = copedID.getAccID();//这里有问题
-			   result[1] = hashmRNA.get(content[2]);//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+			   result[1] = hashmRNA.get(content[2]) + "";//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   } catch (Exception e) {
 			   System.out.println("GffHashPlantGeneError: 文件  "+getGffFilename()+"  在本行可能没有指定的基因ID  " +content);
 			   return null;
@@ -287,7 +287,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   gffDetailGene = getGffDetailGenID(rnaID);
 		   hashRnaID2RnaName.put(rnaID, gffDetailGene.getName());
 		   rnaName = gffDetailGene.getName();
-		   gffDetailGene.addsplitlist(gffDetailGene.getName(), "ncRNA");
+		   gffDetailGene.addsplitlist(gffDetailGene.getName(), GffGeneIsoInfo.TYPE_GENE_NCRNA);
 	   }
 	   else {
 		   gffDetailGene = getGffDetailRnaID(rnaID);

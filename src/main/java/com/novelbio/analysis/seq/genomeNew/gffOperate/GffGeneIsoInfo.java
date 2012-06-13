@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.swing.text.MaskFormatter;
 
@@ -51,19 +52,25 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public static final String PROMOTER_PROXIMAL_STR = "Proximal Promoter_";
 	/**  Proximal Promoter_  */
 	public static final String PROMOTER_DOWNSTREAMTSS_STR = "Promoter DownStream Of Tss_";
-	public static final String TYPE_GENE_MRNA = "mRNA";
-	public static final String TYPE_GENE_MIRNA = "miRNA";
-	public static final String TYPE_GENE_PSEU_TRANSCRIPT = "pseudogenic_transcript";
-	public static final String TYPE_GENE_MRNA_TE = "mRNA_TE_gene";
-	public static final String TYPE_GENE_TRNA = "tRNA";
-	public static final String TYPE_GENE_SNORNA = "snoRNA";
-	public static final String TYPE_GENE_SNRNA = "snRNA";
-	public static final String TYPE_GENE_RRNA = "rRNA";
-	public static final String TYPE_GENE_NCRNA = "ncRNA";
-	public static final String TYPE_GENE_MISCRNA = "miscRNA";
+	public static final int TYPE_GENE_MRNA = 10;
+	public static final int TYPE_GENE_MIRNA = 15;
+	public static final int TYPE_GENE_PSEU_TRANSCRIPT = 20;
+	public static final int TYPE_GENE_MRNA_TE = 25;
+	public static final int TYPE_GENE_TRNA = 30;
+	public static final int TYPE_GENE_SNORNA = 35;
+	public static final int TYPE_GENE_SNRNA = 40;
+	public static final int TYPE_GENE_RRNA = 45;
+	public static final int TYPE_GENE_NCRNA = 50;
+	public static final int TYPE_GENE_MISCRNA = 55;
+	public static HashSet<Integer> hashMRNA = new HashSet<Integer>();
+	static {
+		hashMRNA.add(TYPE_GENE_MRNA);
+		hashMRNA.add(TYPE_GENE_PSEU_TRANSCRIPT);
+		hashMRNA.add(TYPE_GENE_MRNA_TE);
+	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	private String flagTypeGene = TYPE_GENE_MRNA;
+	private int flagTypeGene = TYPE_GENE_MRNA;
 	/** 设定基因的转录起点上游长度，默认为0 */
 	protected int upTss = 0;
 	/** 设定基因的转录起点下游长度，默认为0  */
@@ -98,7 +105,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			int pROMOTER_INTERGENIC_MAMMUM) {
 		PROMOTER_INTERGENIC_MAMMUM = pROMOTER_INTERGENIC_MAMMUM;
 	}
-	public GffGeneIsoInfo(String IsoName, GffDetailGene gffDetailGene, String geneType) {
+	public GffGeneIsoInfo(String IsoName, GffDetailGene gffDetailGene, int geneType) {
 		super.listName = IsoName;
 		this.flagTypeGene = geneType;
 		this.chrID = gffDetailGene.getParentName();
@@ -109,7 +116,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 返回该基因的类型
 	 * @return
 	 */
-	public String getGeneType() {
+	public int getGeneType() {
 		return flagTypeGene;
 	}
 	protected void setTaxID(int taxID) {
@@ -141,8 +148,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * coord是否在promoter区域的范围内，从Tss上游UpStreamTSSbp到Tss下游DownStreamTssbp
 	 * @return
 	 */
-	public boolean isCodInIsoTss(int coord)
-	{
+	public boolean isCodInIsoTss(int coord) {
 		int cod2tss = getCod2Tss(coord);
 		if (cod2tss >= upTss && cod2tss <= downTss) {
 			return true;
@@ -191,7 +197,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @param chrID
 	 * @param geneType
 	 */
-	public GffGeneIsoInfo(String IsoName, String chrID, String geneType) {
+	public GffGeneIsoInfo(String IsoName, String chrID, int geneType) {
 		super.listName = IsoName;
 		this.flagTypeGene = geneType;
 		this.chrID = chrID;
@@ -310,7 +316,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public int getLenUTR5() {
-		return Math.abs(super.getLocDistmRNA(getTSSsite(), this.ATGsite) ) + 1;
+		return Math.abs(super.getLocDistmRNA(getTSSsite(), this.ATGsite) );
 	}
 	
 	/**
@@ -318,7 +324,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public int getLenUTR3() {
-		return Math.abs(super.getLocDistmRNA(this.UAGsite, getTESsite() )) + 1;
+		return Math.abs(super.getLocDistmRNA(this.UAGsite, getTESsite() ));
 	}
 	 /**
      * @param num 指定第几个，如果超出，则返回-1000000000, 
@@ -625,17 +631,17 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		//promoter\
 		if (isCodInIsoTss(coord) && codLoc == COD_LOC_OUT) {
 			if (getCod2Tss(coord) > PROMOTER_INTERGENIC_MAMMUM) {
-				result = PROMOTER_INTERGENIC_STR;
+				result = result + PROMOTER_INTERGENIC_STR;
 			}
 			else if (getCod2Tss(coord) > PROMOTER_DISTAL_MAMMUM) {
-				result = PROMOTER_DISTAL_STR;
+				result = result + PROMOTER_DISTAL_STR;
 			}
 			else {
-				result = PROMOTER_PROXIMAL_STR;;
+				result = result + PROMOTER_PROXIMAL_STR;;
 			}
 		}
 		else if (isCodInIsoTss(coord) && codLoc != COD_LOC_OUT) {
-			result = PROMOTER_DOWNSTREAMTSS_STR;
+			result = result + PROMOTER_DOWNSTREAMTSS_STR;
 		}
 		
 		result = result + "Distance_to_Tss_is:" + Math.abs(getCod2Tss(coord)) + " ";

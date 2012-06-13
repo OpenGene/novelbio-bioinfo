@@ -155,7 +155,14 @@ public class GffChrAnno extends GffChrAbs{
 			return null;
 		}
 		ArrayList<String[]> lsAnno = null;
-		lsAnno = gffCodGeneDu.getAnno(tss, tes, genebody, UTR5, UTR3, exonFilter, intronFilter);
+		gffCodGeneDu.setExon(exonFilter);
+		gffCodGeneDu.setGeneBody(genebody);
+		gffCodGeneDu.setIntron(intronFilter);
+		gffCodGeneDu.setTes(tes);
+		gffCodGeneDu.setTss(tss);
+		gffCodGeneDu.setUTR3(UTR3);
+		gffCodGeneDu.setUTR5(UTR5);
+		lsAnno = gffCodGeneDu.getAnno();
 		return lsAnno;
 	}
 
