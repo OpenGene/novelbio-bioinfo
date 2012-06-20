@@ -50,22 +50,16 @@ public abstract class AgeneUniID {
 	 */
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		
 		if (obj == null) return false;
-		
 		if (getClass() != obj.getClass()) return false;
 		
 		AgeneUniID otherObj = (AgeneUniID)obj;
-		
-		if(getGenUniID() == null || getGenUniID().trim().equals("") || otherObj.getGenUniID() == null || otherObj.getGenUniID().trim().equals(""))
-		{
+		if(getGenUniID() == null || getGenUniID().trim().equals("") || otherObj.getGenUniID() == null || otherObj.getGenUniID().trim().equals("")) {
 			return false;
 		}
-		
 		if (getGenUniID().equals("0") || otherObj.getGenUniID().equals("0") ) {
 			return false;
 		}
-		
 		return getGenUniID().equals(otherObj.getGenUniID());
 	}
 	/**

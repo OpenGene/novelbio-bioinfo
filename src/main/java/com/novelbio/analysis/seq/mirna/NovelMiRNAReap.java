@@ -1,8 +1,6 @@
 package com.novelbio.analysis.seq.mirna;
 
-import java.awt.Stroke;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import com.novelbio.analysis.seq.BedRecord;
@@ -12,37 +10,24 @@ import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 新的miRNA的预测，基于miReap的算法
  * @author zong0jie
- *
  */
-public class NovelMiRNAReap {
-	GffChrAbs gffChrAbs = null;
+public class NovelMiRNAReap extends NovelMiRNApredict{
 	/** 读取mireap的gff和aln文件，将其装入listmirna，方便后面算表达 */
 	ListMiRNALocation listMiRNALocation = new ListMiRNALocation();
 	/** 给mireap准备的文件 */
 	String outMapFile = "";
 	/** 给mireap准备的文件 */
 	String outSeqFile = "";
-	/** 输入的一个bedseq文件 */
-	BedSeq bedSeq = null;
 	/** mireap的结果文件 */
 	String mireapAln = "";
 	/** mireap的结果文件 */
 	String mireapGff = "";
-	/**
-	 * @param gffChrAbs 设定gff即可
-	 */
-	public void setGffChrAbs(GffChrAbs gffChrAbs) {
-		this.gffChrAbs = gffChrAbs;
-	}
 	/**
 	 * 设定输入miReap程序的文件
 	 * @param outSeqFile mireap所需的序列文件
@@ -53,39 +38,11 @@ public class NovelMiRNAReap {
 		this.outMapFile = outMapFile;
 	}
 	/**
-	 * 与setBedSeq(String bedFile) 二选一
-	 * 将多个样本得到的mapping 至 genome上的bed文件合并，并作为输入mireap的文件
-	 * @param outFile
-	 * @param bedSeqFile
-	 */
-	public void setBedSeq(String outFile, String... bedSeqFile) {
-		BedSeq bedSeq = BedSeq.combBedFile(outFile, bedSeqFile);
-		setBedSeq(bedSeq.getFileName());
-	}
-	/**
-	 * 与setBedSeq(String bedFile) 二选一
-	 * 将多个样本得到的mapping 至 genome上的bed文件合并，并作为输入mireap的文件
-	 * @param outFile 获得合并的bed文件名
-	 * @param bedSeqFile
-	 */
-	public void setBedSeq(String outFile, ArrayList<String> lsBedSeqFile) {
-		BedSeq bedSeq = BedSeq.combBedFile(outFile, lsBedSeqFile);
-		setBedSeq(bedSeq.getFileName());
-	}
-	/**
-	 * 与setBedSeq(String outFile, String... bedSeqFile) 二选一
-	 * 样本得到的bed文件
-	 * @param bedFile
-	 */
-	public void setBedSeq(String bedFile) {
-		bedSeq = new BedSeq(bedFile);
-	}
-	/**
 	 * 将输入的bed文件排序，合并重复，然后mapping至genome上，获得所有在反向外显子和内含子的序列，
 	 * 然后将序列整理成mireap能识别的格式
 	 */
 	public void runBedFile() {
-		bedSeq = bedSeq.sortBedFile().combBedOverlap();
+//		bedSeq = bedSeq.sortBedFile().removeDuplicat();
 		getNovelMiRNASeq(outMapFile, outSeqFile);
 	}
 	/**
@@ -144,47 +101,6 @@ public class NovelMiRNAReap {
 		int max = 100000000 + i;
 		String result = max + "";
 		return "t"+result.substring(1);
-	}
-	/**
-	 * 遍历bed文件，获得reads不在基因上的序列
-	 */
-	private BedSeq getBedReadsNotOnCDS(String outBed) {
-		BedSeq bedResult = new BedSeq(outBed, true);
-		for (BedRecord bedRecord : bedSeq.readlines()) {
-			GffCodGene gffCod = gffChrAbs.getGffHashGene().searchLocation(bedRecord.getRefID(), bedRecord.getMidLoc());
-			if (readsNotOnCDS(gffCod, bedRecord.isCis5to3()))
-				bedResult.writeBedRecord(bedRecord);
-		}
-		bedResult.closeWrite();
-		return bedResult;
-	}
-	/**
-	 * 判定输入的reads是否位于intron或gene外或反向exon上
-	 * @param gffCodGene
-	 * @param bedCis
-	 * @return
-	 */
-	private boolean readsNotOnCDS(GffCodGene gffCodGene, boolean bedCis) {
-		if (gffCodGene == null) {
-			return true;
-		}
-		if (!gffCodGene.isInsideLoc()) {
-			return true;
-		}
-		GffDetailGene gffDetailGene = gffCodGene.getGffDetailThis();
-		int locInfo = 0;
-		try {
-			locInfo = gffDetailGene.getLongestSplit().getCodLoc(gffCodGene.getCoord());
-		} catch (Exception e) {
-			locInfo = gffDetailGene.getLongestSplit().getCodLoc(gffCodGene.getCoord());
-		}
-		if (locInfo == GffGeneIsoInfo.COD_LOC_INTRON 
-				|| locInfo == GffGeneIsoInfo.COD_LOC_OUT
-				|| bedCis != gffDetailGene.getLongestSplit().isCis5to3()
-				) {
-			return true;
-		}
-		return false;
 	}
 	//////////////////// miReap 预测完之后的处理 ////////////////////////////////////////////////////////////////////////////////////
 	/**

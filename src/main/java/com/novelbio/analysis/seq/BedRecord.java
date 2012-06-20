@@ -60,6 +60,7 @@ public class BedRecord extends MapInfo {
 		if (ss.length > COL_STRAND && ss[COL_STRAND] != null && !ss[COL_STRAND].equals("")) {
 			setCis5to3(ss[COL_STRAND]);
 		}
+		//将序列装入bedrecord，并且不进行反向
 		if (ss.length > COL_SEQ && ss[COL_SEQ] != null && !ss[COL_SEQ].equals("")) {
 			try { setSeq(new SeqFasta("", ss[COL_SEQ]), false); } catch (Exception e) {  }
 		}
@@ -196,5 +197,15 @@ public class BedRecord extends MapInfo {
 				result = result + "\t" + "";
 		}
 		return result;
+	}
+	
+	@Override
+	public BedRecord clone() {
+		BedRecord bedRecord = (BedRecord) super.clone();
+		bedRecord.CIGAR = CIGAR;
+		bedRecord.mappingNum = mappingNum;
+		bedRecord.mapQuality = mapQuality;
+		bedRecord.readsNum = readsNum;
+		return bedRecord;
 	}
 }

@@ -36,6 +36,7 @@ import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controltest.CtrlGO;
 import javax.swing.SpringLayout;
 
@@ -439,9 +440,9 @@ public class GuiGoJPanel extends JPanel{
 			jTxtBGGo = new JTextFieldData();
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
+			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
 			int i = 0;
-			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			ArrayList<String> keys = Species.getSpeciesName(false);
 			String[] speciesarray = new String[keys.size()+1];
 			for(String key:keys)
 			{
@@ -468,9 +469,9 @@ public class GuiGoJPanel extends JPanel{
 			jChkBlastGo.setText("Blast");
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
+			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
 			int i = 0;
-			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			ArrayList<String> keys = Species.getSpeciesName(false);
 			String[] speciesarray = new String[keys.size()+1];
 			for(String key:keys)
 			{

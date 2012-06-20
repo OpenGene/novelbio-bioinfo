@@ -20,13 +20,13 @@ public class PeakLOCRun {
 		columnID[0]=1;
 		columnID[1]=2;
 		columnID[2]=3;
-		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
-				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
+//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_MM9_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
+//				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ, "");
 		
 //		PeakLOC.prepare(NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_UCSC,
 //				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, "");
-//		PeakLOC.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_TIGR,
-//				NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, "");
+		PeakLOC.prepare(NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM,null,NovelBioConst.GENOME_GFF_TYPE_TIGR,
+				NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE, "");
 		statisticNum();
 		System.out.println("prepare ok");
 //		filterPeak();
@@ -182,17 +182,16 @@ public class PeakLOCRun {
 	 * 内含子外显子数量统计
 	 * @throws Exception
 	 */
-	public static void statisticNum() 
-	{
-		String ParentFile="/media/winF/NBC/Project/Project_Invitrogen/peakMacs/";
-		String resultParentFile = "/media/winF/NBC/Project/Project_Invitrogen/genestructure/";
+	public static void statisticNum() {
+		String ParentFile="/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/compareSICER/upanddown/";
+		String resultParentFile = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/compareSICER/upanddown/geneStructure/";
 		int[] columnID=new int[2];
 		columnID[0] = 1;
 		columnID[1] = 4;
 		String[][] intronExonStatistic;
 		try {
-			String FpeaksFile=ParentFile+"Pax7_peaks_filtered.xls";
-			String prix = "Pax7";
+			String FpeaksFile=ParentFile+"2NseSort-and-3NseSort-W200-G200-summary1.5fcDown.xls";
+			String prix = "2Nvs3NDown";
 			
 			String genestructureBar = prix + "_bar.jpg";
 			String genestructureStatistic = prix + "_geneStructure";
@@ -208,6 +207,95 @@ public class PeakLOCRun {
 			e.printStackTrace();
 		}
 		
+		try {
+			String FpeaksFile=ParentFile+"2NseSort-and-3NseSort-W200-G200-summary1.5fcUp.xls";
+			String prix = "2Nvs3NUp";
+			
+			String genestructureBar = prix + "_bar.jpg";
+			String genestructureStatistic = prix + "_geneStructure";
+			intronExonStatistic = PeakLOC.getPeakStaticInfo(3000, FpeaksFile, "\t", columnID, 2, -1);
+			TxtReadandWrite txtstatistic=new TxtReadandWrite();
+			txtstatistic.setParameter(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, true,false);
+			txtstatistic.ExcelWrite(intronExonStatistic, "\t");
+			barPlot();
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_RESULT_PIC, resultParentFile, genestructureBar,true);
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, resultParentFile,genestructureStatistic,true);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			String FpeaksFile=ParentFile+"NseSort-and-2NseSort-W200-G200-summary1.5fcDown.xls";
+			String prix = "Nvs2NDown";
+			
+			String genestructureBar = prix + "_bar.jpg";
+			String genestructureStatistic = prix + "_geneStructure";
+			intronExonStatistic = PeakLOC.getPeakStaticInfo(3000, FpeaksFile, "\t", columnID, 2, -1);
+			TxtReadandWrite txtstatistic=new TxtReadandWrite();
+			txtstatistic.setParameter(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, true,false);
+			txtstatistic.ExcelWrite(intronExonStatistic, "\t");
+			barPlot();
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_RESULT_PIC, resultParentFile, genestructureBar,true);
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, resultParentFile,genestructureStatistic,true);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			String FpeaksFile=ParentFile+"NseSort-and-2NseSort-W200-G200-summary1.5fcUp.xls";
+			String prix = "Nvs2NUp";
+			
+			String genestructureBar = prix + "_bar.jpg";
+			String genestructureStatistic = prix + "_geneStructure";
+			intronExonStatistic = PeakLOC.getPeakStaticInfo(3000, FpeaksFile, "\t", columnID, 2, -1);
+			TxtReadandWrite txtstatistic=new TxtReadandWrite();
+			txtstatistic.setParameter(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, true,false);
+			txtstatistic.ExcelWrite(intronExonStatistic, "\t");
+			barPlot();
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_RESULT_PIC, resultParentFile, genestructureBar,true);
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, resultParentFile,genestructureStatistic,true);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			String FpeaksFile=ParentFile+"NseSort-and-3NseSort-W200-G200-summary_1.5fc_Down.xls";
+			String prix = "Nvs3NDown";
+			
+			String genestructureBar = prix + "_bar.jpg";
+			String genestructureStatistic = prix + "_geneStructure";
+			intronExonStatistic = PeakLOC.getPeakStaticInfo(3000, FpeaksFile, "\t", columnID, 2, -1);
+			TxtReadandWrite txtstatistic=new TxtReadandWrite();
+			txtstatistic.setParameter(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, true,false);
+			txtstatistic.ExcelWrite(intronExonStatistic, "\t");
+			barPlot();
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_RESULT_PIC, resultParentFile, genestructureBar,true);
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, resultParentFile,genestructureStatistic,true);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			String FpeaksFile=ParentFile+"NseSort-and-3NseSort-W200-G200-summary_1.5fc_Up.xls";
+			String prix = "Nvs3NUp";
+			
+			String genestructureBar = prix + "_bar.jpg";
+			String genestructureStatistic = prix + "_geneStructure";
+			intronExonStatistic = PeakLOC.getPeakStaticInfo(3000, FpeaksFile, "\t", columnID, 2, -1);
+			TxtReadandWrite txtstatistic=new TxtReadandWrite();
+			txtstatistic.setParameter(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, true,false);
+			txtstatistic.ExcelWrite(intronExonStatistic, "\t");
+			barPlot();
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_RESULT_PIC, resultParentFile, genestructureBar,true);
+			FileOperate.moveFile(NovelBioConst.R_WORKSPACE_CHIP_GENESTRUCTURE_FILE, resultParentFile,genestructureStatistic,true);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	/**
 	 * 调用R画图

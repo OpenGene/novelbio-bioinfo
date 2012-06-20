@@ -159,8 +159,7 @@ public class Species {
 	/**
 	 * 读取Species的配置文件
 	 */
-	public HashMap<String, Species> getHashSpecies()
-	{
+	public HashMap<String, Species> getHashSpecies() {
 		if (hashSpecies != null) {
 			return hashSpecies;
 		}

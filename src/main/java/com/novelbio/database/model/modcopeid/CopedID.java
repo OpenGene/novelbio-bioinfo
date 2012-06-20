@@ -529,67 +529,6 @@ public class CopedID implements CopedIDInt{
 		return CopedIDAbs.getNCBIUniTax(accID, taxID);
 	}
 	/**
-	 * 读取数据库中的taxID表，将其中的species读取出来并保存为taxID,speciesInfo
-	 * @return
-	 * HashMap - key:Integer taxID
-	 * value: 0: Kegg缩写 1：拉丁名
-	 */
-	@Deprecated
-	public static HashMap<Integer, String[]> getSpecies() 
-	{
-		TaxInfo taxInfo = new TaxInfo();
-		ArrayList<TaxInfo> lsTaxID = MapFSTaxID.queryLsTaxInfo(taxInfo);
-		HashMap<Integer,String[]> hashTaxID = new HashMap<Integer, String[]>();
-		for (TaxInfo taxInfo2 : lsTaxID) {
-			if (taxInfo2.getAbbr() == null || taxInfo2.getAbbr().trim().equals("")) {
-				continue;
-			}
-			
-			hashTaxID.put( taxInfo2.getTaxID(),new String[]{taxInfo2.getAbbr(),taxInfo2.getLatin()});
-		}
-		return hashTaxID;
-	}
-	/**
-	 * 返回常用名对taxID
-	 * @param allID true返回全部ID， false返回常用ID--也就是有缩写的ID
-	 * @return
-	 */
-	public static HashMap<String, Integer> getSpeciesNameTaxID(boolean allID) {
-		ServTaxID servTaxID = new ServTaxID();
-		return servTaxID.getSpeciesNameTaxID(allID);
-	}
-	/**
-	 * 返回物种的常用名，并且按照字母排序（忽略大小写）
-	 * 可以配合getSpeciesNameTaxID方法来获得taxID
-	 * @param allID true返回全部ID， false返回常用ID--也就是有缩写的ID
-	 * @return
-	 */
-	public static ArrayList<String> getSpeciesName(boolean allID) {
-		ArrayList<String> lsResult = new ArrayList<String>();
-		ServTaxID servTaxID = new ServTaxID();
-		HashMap<String, Integer> hashSpecies = servTaxID.getSpeciesNameTaxID(allID);
-		for (String name : hashSpecies.keySet()) {
-			if (name != null && !name.equals("")) {
-				lsResult.add(name);
-			}
-		}
-		Collections.sort(lsResult, new Comparator<String>() {
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.compareToIgnoreCase(o2);
-			}
-		});
-		return lsResult;
-	}
-	/**
-	 * 返回taxID对常用名
-	 * @return
-	 */
-	public static HashMap<Integer,String> getSpeciesTaxIDName() {
-		ServTaxID servTaxID = new ServTaxID();
-		return servTaxID.getHashTaxIDName();
-	}
-	/**
 	 * GO对应GeneOntology的hash表
 	 * @return
 	 * HashMap - key:GO缩写 

@@ -22,6 +22,10 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class MapBwa {
+	public static void main(String[] args) {
+		
+	}
+	CmdOperate cmdOperate = null;
 	/** bwa所在路径 */
 	String ExePath = "";
 	String chrFile = "";
@@ -218,16 +222,16 @@ public class MapBwa {
 			sai1 = sai1 + ".sai";
 		String cmd1 = cmd + chrFile + " " + leftFq + " > " + sai1;
 		System.out.println(cmd1);
-		CmdOperate cmdOperate = new CmdOperate(cmd1);
-		cmdOperate.doInBackground("bwaMapping1");
+		cmdOperate = new CmdOperate(cmd1,"bwaMapping1");
+		cmdOperate.run();
 		
 		String sai2 = "";
 		if (isPairend()) {
 			sai2 = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(outFileName)[0] + "_2.sai"; 
 			String cmd2 = cmd + chrFile + " " + rightFq + " > " + sai2;
 			System.out.println(cmd2);
-			cmdOperate = new CmdOperate(cmd2);
-			cmdOperate.doInBackground("bwaMapping2");
+			cmdOperate = new CmdOperate(cmd2,"bwaMapping2");
+			cmdOperate.run();
 		}
 	
 		////////////////////////这里设定了将基因组读入内存的限制///////////////////////////////////////////////////////////////////
@@ -250,8 +254,8 @@ public class MapBwa {
 			cmd = cmd + " > " + outFileName;
 		}
 		System.out.println(cmd);
-		cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("bwaMappingSAI");
+		cmdOperate = new CmdOperate(cmd,"bwaMappingSAI");
+		cmdOperate.run();
 		SamFile samFile = new SamFile(outFileName);
 		samFile.setPairend(isPairend());
 		samFile.setUniqMapping(uniqMapping);
@@ -288,8 +292,11 @@ public class MapBwa {
 		//TODO :考虑是否自动判断为solid
 		cmd = cmd + chrFile;
 		logger.info(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("bwaMakeIndex");
+		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMakeIndex");
+		cmdOperate.run();
 	}
 	
+	public void suspend() {
+		
+	}
 }

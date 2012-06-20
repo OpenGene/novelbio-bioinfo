@@ -107,7 +107,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		//÷¥––
 		String command=NovelBioConst.R_SCRIPT + NovelBioConst.R_WORKSPACE_TOPGO_RSCRIPT;
 		CmdOperate cmdOperate = new CmdOperate(command);
-		cmdOperate.doInBackground();
+		cmdOperate.run();
 		//∂¡»°
 		TxtReadandWrite txtRGo2Gene = new TxtReadandWrite(NovelBioConst.R_WORKSPACE_TOPGO_GORESULT, false);
 		lsTestResult = txtRGo2Gene.ExcelRead("\t", 2, 2, txtRGo2Gene.ExcelRows(), txtRGo2Gene.ExcelColumns("\t"), 0);

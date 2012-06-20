@@ -30,7 +30,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select *
 		from ncbiid
 		<where>
-			<if test="geneID !=0 and geneID !=null">
+			<if test="geneID != null and geneID != 0">
 				GeneID = #{geneID} 
 			</if>
 			<if test="accessID !=null and accessID != ''">

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
@@ -17,7 +19,8 @@ import com.novelbio.base.plot.java.HeatChartDataInt;
  * @author zong0jie
  *
  */
-public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
+public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable{
+	Logger logger = Logger.getLogger(MapInfo.class);
 	/**
 	 * 比较mapinfo的起点终点
 	 */
@@ -196,6 +199,9 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 */
 	public void setName(String title) {
 		this.name = title;
+		if (seqFasta != null) {
+			seqFasta.setName(getName());
+		}
 	}
 	/**
 	 * 对于该位点的具体描述，可以是序列
@@ -228,7 +234,8 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	 * 该区域的核酸序列
 	 * seqfasta的name 用map的name去设定
 	 * @param seqFasta
-	 * @param setName 是否根据cis5to3进行反向序列
+	 * @param setName 
+	 * @param reservecom 是否根据cis5to3进行反向序列
 	 */
 	public void setSeq(SeqFasta seqFasta, boolean reservecom) {
 		if (reservecom && cis5to3 != null && cis5to3 == false) {
@@ -440,14 +447,36 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt{
 	}
 	
 	public MapInfo clone() {
-		MapInfo mapInfo = new MapInfo(refID, startLoc, endLoc, flagLoc, score, name);
-		double[] value2 = new double[value.length];
-		for (int i = 0; i < value2.length; i++) {
-			value2[i] = value[i];
+		
+		MapInfo mapInfo;
+		try {
+			mapInfo = (MapInfo) super.clone();
+			mapInfo.cis5to3 = cis5to3;
+			mapInfo.description = description;
+			mapInfo.correct = correct;
+			mapInfo.endLoc = endLoc;
+			mapInfo.flagLoc = flagLoc;
+			mapInfo.name = name;
+			mapInfo.refID = refID;
+			mapInfo.score = score;
+			mapInfo.seqFasta = seqFasta.clone();
+			mapInfo.startLoc = startLoc;
+					
+			double[] value2 = null;
+			if (value != null) {
+				value2 = new double[value.length];
+				for (int i = 0; i < value2.length; i++) {
+					value2[i] = value[i];
+				}
+			}
+			mapInfo.value = value2;
+			return mapInfo;
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		mapInfo.setDescription(getDescription());
-		mapInfo.setDouble(value2);
-		return mapInfo;
+		logger.error("克隆出错");
+		return null;
 	}
 	/**
 	 * 给定mapInfo的序列，用mapInfo的summit点来筛选peak，将summit点距离在distance以内的删除，只保留权重最大的那个mapInfo

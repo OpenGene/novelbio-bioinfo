@@ -716,13 +716,22 @@ public class BedSeq extends SeqComb{
 	 * @return
 	 */
 	public BedSeq combBedOverlap() {
-		return combBedOverlap(0);
+		return combBedOverlap(false);
+	}
+	/**
+	 * 输入经过排序的peakfile,或者说bedfile，将重叠的peak进行合并 注意，结果中除保留peak，还可选择是否根据方向进行合并，同时保留方向信息
+	 * 从第一行开始合并
+	 * @return
+	 */
+	public BedSeq combBedOverlap(boolean cis5to3) {
+		String outFile = FileOperate.changeFileSuffix(getFileName(), "_comb", null);
+		return combBedOverlap(cis5to3, 0, outFile);
 	}
 	/**
 	 * 输入经过排序的peakfile,或者说bedfile，将重叠的peak进行合并 注意，结果中仅保留peak，没有保留其他多的信息
 	*/
-	public BedSeq combBedOverlap(String outFile) {
-		return combBedOverlap(0, outFile);
+	public BedSeq combBedOverlap(String outFile, boolean cis5to3) {
+		return combBedOverlap(cis5to3, 0, outFile);
 	}
 	/**
 	 * 输入经过排序的peakfile,或者说bedfile，将重叠的peak进行合并 注意，结果中仅保留peak，没有保留其他多的信息
@@ -730,7 +739,22 @@ public class BedSeq extends SeqComb{
 	@Deprecated
 	public BedSeq combBedOverlap(int readLines) {
 		String out = FileOperate.changeFileSuffix(getFileName(), "_comb", null);
-		return combBedOverlap(0, out);
+		return combBedOverlap(false, 0, out);
+	}
+	/**
+	 * 输入经过排序的peakfile,或者说bedfile，将重叠的peak进行合并
+	 * 注意，结果中仅保留peak，没有保留其他多的信息
+	 * @param cis5to3 是否根据方向进行合并
+	 * @param peakFile
+	 * @param readLines 从第几行开始读
+	 */
+	public BedSeq combBedOverlap(boolean cis5to3, int readLines, String outFile) {
+		if (cis5to3) {
+			return combBedOverlapCis5to3(readLines, outFile);
+		}
+		else {
+			return combBedOverlap(readLines, outFile);
+		}
 	}
 	
 	/**
@@ -739,8 +763,7 @@ public class BedSeq extends SeqComb{
 	 * @param peakFile
 	 * @param readLines 从第几行开始读
 	 */
-	public BedSeq combBedOverlap(int readLines, String outFile)
-	{
+	private BedSeq combBedOverlap(int readLines, String outFile) {
 		BedSeq bedSeqResult = new BedSeq(outFile, true);
 		if (readLines < 1) {
 			readLines = 1;
@@ -752,7 +775,6 @@ public class BedSeq extends SeqComb{
 				bedRecordLast.setRefID(bedRecord.getRefID());
 				bedRecordLast.setStartEndLoc(bedRecord.getStart(), bedRecord.getEnd());
 			}
-				
 			if	(!bedRecord.getRefID().equals(bedRecordLast.getRefID()) || bedRecord.getStart() >= bedRecordLast.getEnd()) {
 				bedSeqResult.writeBedRecord(bedRecordLast);
 				bedRecordLast = new BedRecord();
@@ -776,6 +798,87 @@ public class BedSeq extends SeqComb{
 		bedSeqResult.closeWrite();
 		return bedSeqResult;
 	}
+	/**
+	 * 输入经过排序的peakfile,或者说bedfile，将重叠的peak进行合并
+	 * 注意，结果中仅保留peak，没有保留其他多的信息
+	 * @param peakFile
+	 * @param readLines 从第几行开始读
+	 */
+	private BedSeq combBedOverlapCis5to3(int readLines, String outFile) {
+			BedSeq bedSeqResult = new BedSeq(outFile, true);
+			if (readLines < 1) {
+				readLines = 1;
+			}
+			BedRecord bedRecordLast = null;
+			for (BedRecord bedRecord : readlines(readLines)) {
+				if (bedRecordLast == null) {
+					bedRecordLast = new BedRecord();
+					bedRecordLast.setRefID(bedRecord.getRefID());
+					bedRecordLast.setStartEndLoc(bedRecord.getStart(), bedRecord.getEnd());
+					bedRecordLast.setCis5to3(bedRecord.isCis5to3());
+				}
+				if	(!bedRecord.getRefID().equals(bedRecordLast.getRefID()) || bedRecord.getStart() >= bedRecordLast.getEnd() || bedRecord.isCis5to3() != bedRecordLast.isCis5to3()) {
+					bedSeqResult.writeBedRecord(bedRecordLast);
+					bedRecordLast = new BedRecord();
+					bedRecordLast.setRefID(bedRecord.getRefID());
+					bedRecordLast.setStartEndLoc(bedRecord.getStart(), bedRecord.getEnd());
+					bedRecordLast.setCis5to3(bedRecord.isCis5to3());
+					//因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
+					if (bedRecordLast.getReadsNum() == 1) {
+						bedRecordLast.setReadsNum(1);
+					}
+					continue;
+				}
+				else if (bedRecord.getStart() < bedRecordLast.getEnd()) {
+					//发现一个overlap就加上1，表示该区域有多条reads
+					bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
+					if (bedRecordLast.getEnd() < bedRecord.getEnd()) {
+						bedRecordLast.setStartEndLoc(bedRecordLast.getStart(), bedRecord.getEnd());
+					}
+				}
+			}
+			bedSeqResult.writeBedRecord(bedRecordLast);
+			bedSeqResult.closeWrite();
+			return bedSeqResult;
+		}
+	public BedSeq removeDuplicat() {
+		String out = FileOperate.changeFileSuffix(getFileName(), "_removeDup", null);
+		return removeDuplicat(out);
+	}
+	
+	/**
+	 * 输入经过排序的bedfile，将重复的bedrecord进行合并，合并的信息取第一条
+	 * @param peakFile 
+	 */
+	public BedSeq removeDuplicat(String outFile) {
+			BedSeq bedSeqResult = new BedSeq(outFile, true);
+			BedRecord bedRecordLast = null;
+			for (BedRecord bedRecord : readlines()) {
+				if (bedRecordLast == null) {
+					bedRecordLast = bedRecord.clone();
+					continue;
+				}
+				if	(!bedRecord.getRefID().equals(bedRecordLast.getRefID()) || 
+						bedRecord.getStart() != bedRecordLast.getStart() || bedRecord.getEnd() == bedRecordLast.getEnd()
+						|| bedRecord.isCis5to3() == bedRecordLast.isCis5to3()) {
+					bedSeqResult.writeBedRecord(bedRecordLast);
+					bedRecordLast = new BedRecord();
+					bedRecordLast = bedRecord;
+					//因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
+					if (bedRecordLast.getReadsNum() == 1) {
+						bedRecordLast.setReadsNum(1);
+					}
+					continue;
+				}
+				else {
+					//发现一个overlap就加上1，表示该区域有多条reads
+					bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
+				}
+			}
+			bedSeqResult.writeBedRecord(bedRecordLast);
+			bedSeqResult.closeWrite();
+			return bedSeqResult;
+		}
 	/**
 	 * 将所有mapping至genomic上的bed文件合并，这个是预测novel miRNA的
 	 * @param outFile 输出文件

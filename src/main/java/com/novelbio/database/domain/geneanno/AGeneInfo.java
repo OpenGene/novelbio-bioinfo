@@ -217,6 +217,10 @@ public abstract class AGeneInfo {
 	public String getSymb() {
 		return getInfoSep(symbol);
 	}
+	/**
+	 * 故意名字起的和symbol不一样，这样可以防止自动注入
+	 * @param symbol
+	 */
 	public void setSymb(String symbol) {
 		this.symbol = validateField(dbInfo, null, symbol,true);
 	}
@@ -227,6 +231,10 @@ public abstract class AGeneInfo {
 	public String getLocTag() {
 		return getInfoSep(locusTag);
 	}
+	/**
+	 * 故意名字起的和symbol不一样，这样可以防止自动注入
+	 * @param locusTag
+	 */
 	public void setLocTag(String locusTag) {
 		this.locusTag = validateField(dbInfo, null, locusTag,true);
 	}

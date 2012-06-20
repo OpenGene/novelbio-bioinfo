@@ -33,12 +33,12 @@ public class MappingMiRNA {
 	String exePath = "";
 	
 	////////////////////// 输出文件名 /////////////////////////////
-	String bedFileMiRNA = outPath + "_miRNA.bed";
-	String bedFileRfam = outPath + "_rfam.bed";
-	String bedFileNCRNA = outPath + "_ncRna.bed";
-	String bedFileGenome = outPath + "_Genome.bed";
+	String bedFileMiRNA = null;
+	String bedFileRfam = null;
+	String bedFileNCRNA = null;
+	String bedFileGenome = null;
 	/** 全部reads mapping至全基因组上 */
-	String bedFileGenomeAll = outPath + "_GenomeAll.bed";
+	String bedFileGenomeAll = null;
 	
 	/** 是否全部mapping至genome上，默认为true */
 	boolean mapping2Genome = true;
@@ -49,7 +49,8 @@ public class MappingMiRNA {
 	public void setRfamSeq(String rfamSeq) {
 		this.rfamSeq = rfamSeq;
 	}
-	public void setMiRNAseq(String miRNAseq) {
+	/** 设定前体序列 */
+	public void setMiRNApreSeq(String miRNAseq) {
 		this.miRNApreSeq = miRNAseq;
 	}
 	public void setNcRNAseq(String ncRNAseq) {
@@ -98,6 +99,14 @@ public class MappingMiRNA {
 	 * mapping的流水线
 	 */
 	public void mappingPipeline() {
+		bedFileMiRNA = outPath + "_miRNA.bed";
+		bedFileRfam = outPath + "_rfam.bed";
+		bedFileNCRNA = outPath + "_ncRna.bed";
+		bedFileGenome = outPath + "_Genome.bed";
+		/** 全部reads mapping至全基因组上 */
+		bedFileGenomeAll = outPath + "_GenomeAll.bed";
+		
+		
 		String fqFile = seqFile;
 		String samFile = "";
 		String unMappedFq = "";
@@ -144,7 +153,7 @@ public class MappingMiRNA {
 	 * @param unMappedFq
 	 */
 	private void mapping(String fqFile, String chrFile, String samFileName, String bedFile, String unMappedFq) {
-		outPath = FileOperate.addSep(outPath);
+//		outPath = FileOperate.addSep(outPath);
 		MapBwa mapBwa = new MapBwa(fqFile, samFileName, false);
 		mapBwa.setExePath(exePath, chrFile);
 		SamFile samFile = mapBwa.mapReads();

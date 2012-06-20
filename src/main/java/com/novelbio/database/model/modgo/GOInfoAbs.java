@@ -81,8 +81,7 @@ public abstract class GOInfoAbs{
 	 * @return
 	 * 没有则返回一个空的lsResult
 	 */
-	public ArrayList<AGene2Go> getLsGene2Go(String GOType)
-	{
+	public ArrayList<AGene2Go> getLsGene2Go(String GOType) {
 		setGene2Go();
 		
 		if (GOType.equals(Go2Term.GO_BP)) {

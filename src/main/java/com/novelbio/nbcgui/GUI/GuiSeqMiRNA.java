@@ -10,14 +10,21 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
+import com.novelbio.analysis.seq.mirna.ListMiRNALocation;
+import com.novelbio.analysis.seq.mirna.MappingMiRNA;
+import com.novelbio.analysis.seq.mirna.MiRNACount;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
+import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.nbcgui.controlseq.CtrlMiRNA;
 import javax.swing.JScrollPane;
 
@@ -26,9 +33,9 @@ public class GuiSeqMiRNA extends JPanel{
 	private JFrame frame;
 	private JTextField txtHairpineMiRNA;
 	private JTextField txtNCRNA;
-	private JTextField txtRfam;
+	private JTextField txtRfamSeq;
 	private JTextField txtGenomeSeq;
-	private JTextField txtGffFile;
+	private JTextField txtGffGeneFile;
 	private JTextField txtChromPath;
 	private JTextField txtRfamInfo;
 	private JTextField txtMatureMiRNA;
@@ -49,8 +56,8 @@ public class GuiSeqMiRNA extends JPanel{
 	JButton btnChrompath;
 	JButton btnRfaminfo;
 	JButton btnMatureMiRNA;
-	JComboBox combFileType;
-	JComboBox combSpecies;
+	JComboBoxData<Integer> combFileType;
+	JComboBoxData<String> combSpecies;
 	JButton btnRnadata;
 	JButton btnRunning;
 	JCheckBox chkMapping;
@@ -65,11 +72,18 @@ public class GuiSeqMiRNA extends JPanel{
 	JCheckBox chkbxExtractSeq;
 	JButton btnHairpinMiRNA;
 	JScrollPaneData sclpanFastq;
+	JButton btnRepeatgff;
+	JCheckBox chkPredictMiRNA;
+	JScrollPaneData sclNovelMiRNAbed;
+	JButton btnDelFastQfilerow;
 	
 	ArrayList<Component> lsComponentsMapping = new ArrayList<Component>();
 	ArrayList<Component> lsComponentsAnalysis = new ArrayList<Component>();
 	ArrayList<Component> lsComponentsMappingAndAnalysis = new ArrayList<Component>();
 	ArrayList<Component> lsComponentsExtractSeq = new ArrayList<Component>();
+	ArrayList<Component> lsComponentsPredictMiRNA = new ArrayList<Component>();
+	ArrayList<Component> lsComponentsAnalysisPredictMiRNA = new ArrayList<Component>();
+	HashSet<Component> lsComponentsAll = new HashSet<Component>();
 	private JLabel lblRfamregx;
 	private JTextField txtRfamRegx;
 	
@@ -77,6 +91,9 @@ public class GuiSeqMiRNA extends JPanel{
 	
 	CtrlMiRNA ctrlMiRNA = new CtrlMiRNA();
 	private JButton btnFastqfile;
+	private JTextField txtRepeatGff;
+	private JButton btnNovelmirnabed;
+	private JButton btnDelNovelMiRNAbedFileRow;
 	
 	/**
 	 * Launch the application.
@@ -110,10 +127,10 @@ public class GuiSeqMiRNA extends JPanel{
 		add(txtNCRNA);
 		txtNCRNA.setColumns(10);
 		
-		txtRfam = new JTextField();
-		txtRfam.setBounds(23, 137, 224, 18);
-		add(txtRfam);
-		txtRfam.setColumns(10);
+		txtRfamSeq = new JTextField();
+		txtRfamSeq.setBounds(23, 137, 224, 18);
+		add(txtRfamSeq);
+		txtRfamSeq.setColumns(10);
 		
 		btnHairpinMiRNA = new JButton("MiRNArefSeq");
 		btnHairpinMiRNA.setBounds(257, 97, 128, 24);
@@ -140,7 +157,7 @@ public class GuiSeqMiRNA extends JPanel{
 		btnRfam.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String fileName = guiFileOpen.openFileName("txt/fasta", "");
-				txtRfam.setText(fileName);
+				txtRfamSeq.setText(fileName);
 			}
 		});
 		add(btnRfam);
@@ -172,16 +189,16 @@ public class GuiSeqMiRNA extends JPanel{
 		chkMapAllBedFileToGenome.setBounds(25, 234, 245, 22);
 		add(chkMapAllBedFileToGenome);
 		
-		txtGffFile = new JTextField();
-		txtGffFile.setBounds(24, 259, 221, 18);
-		add(txtGffFile);
-		txtGffFile.setColumns(10);
+		txtGffGeneFile = new JTextField();
+		txtGffGeneFile.setBounds(24, 259, 221, 18);
+		add(txtGffGeneFile);
+		txtGffGeneFile.setColumns(10);
 		
 		btnGfffile = new JButton("GffGeneFile");
 		btnGfffile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String fileName = guiFileOpen.openFileName("txt/fasta", "");
-				txtGffFile.setText(fileName);
+				txtGffGeneFile.setText(fileName);
 			}
 		});
 		btnGfffile.setBounds(254, 256, 128, 24);
@@ -232,12 +249,12 @@ public class GuiSeqMiRNA extends JPanel{
 		});
 		add(btnMatureMiRNA);
 		
-		combFileType = new JComboBox();
-		combFileType.setBounds(25, 419, 120, 23);
+		combFileType = new JComboBoxData<Integer>();
+		combFileType.setBounds(25, 419, 166, 23);
 		add(combFileType);
 		
-		combSpecies = new JComboBox();
-		combSpecies.setBounds(166, 419, 173, 23);
+		combSpecies = new JComboBoxData<String>();
+		combSpecies.setBounds(208, 419, 173, 23);
 		add(combSpecies);
 		
 		txtRNAdataFile = new JTextField();
@@ -258,7 +275,7 @@ public class GuiSeqMiRNA extends JPanel{
 		btnRunning = new JButton("Running");
 		btnRunning.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO
+				running();
 			}
 		});
 		btnRunning.setBounds(705, 526, 92, 24);
@@ -267,15 +284,18 @@ public class GuiSeqMiRNA extends JPanel{
 		chkMapping = new JCheckBox("Mapping");
 		chkMapping.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				chkSelected(chkMapping.isSelected(), chkAnalysis.isSelected(), false);
+				if (!chkMapping.isSelected() && chkAnalysis.isSelected()) {
+					chkPredictMiRNA.setSelected(false);
+				}
 				chkbxExtractSeq.setSelected(false);
+				chkSelected(chkMapping.isSelected(), chkAnalysis.isSelected(), chkPredictMiRNA.isSelected(), false);
 			}
 		});
-		chkMapping.setBounds(155, 527, 86, 22);
+		chkMapping.setBounds(79, 527, 86, 22);
 		add(chkMapping);
 		
 		txtMiRNAbed = new JTextField();
-		txtMiRNAbed.setBounds(442, 46, 233, 18);
+		txtMiRNAbed.setBounds(442, 15, 233, 18);
 		add(txtMiRNAbed);
 		txtMiRNAbed.setColumns(10);
 		
@@ -286,11 +306,11 @@ public class GuiSeqMiRNA extends JPanel{
 				txtMiRNAbed.setText(fileName);
 			}
 		});
-		btnMirnabed.setBounds(705, 43, 105, 24);
+		btnMirnabed.setBounds(705, 12, 105, 24);
 		add(btnMirnabed);
 		
 		txtRfamBed = new JTextField();
-		txtRfamBed.setBounds(442, 80, 233, 18);
+		txtRfamBed.setBounds(442, 45, 233, 18);
 		add(txtRfamBed);
 		txtRfamBed.setColumns(10);
 		
@@ -301,11 +321,11 @@ public class GuiSeqMiRNA extends JPanel{
 				txtRfamBed.setText(fileName);
 			}
 		});
-		btnRfambed.setBounds(705, 77, 98, 24);
+		btnRfambed.setBounds(705, 42, 98, 24);
 		add(btnRfambed);
 		
 		txtNCRNAbed = new JTextField();
-		txtNCRNAbed.setBounds(442, 118, 233, 18);
+		txtNCRNAbed.setBounds(442, 75, 233, 18);
 		add(txtNCRNAbed);
 		txtNCRNAbed.setColumns(10);
 		
@@ -316,21 +336,25 @@ public class GuiSeqMiRNA extends JPanel{
 				txtNCRNAbed.setText(fileName);
 			}
 		});
-		btnNCRNAbed.setBounds(705, 115, 108, 24);
+		btnNCRNAbed.setBounds(705, 72, 108, 24);
 		add(btnNCRNAbed);
 		
 		chkAnalysis = new JCheckBox("Analysis");
 		chkAnalysis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				chkSelected(chkMapping.isSelected(), chkAnalysis.isSelected(), false);
+				if (!chkMapping.isSelected()) {
+					chkPredictMiRNA.setSelected(false);
+				}
 				chkbxExtractSeq.setSelected(false);
+				chkSelected(chkMapping.isSelected(), chkAnalysis.isSelected(), chkPredictMiRNA.isSelected(), false);
+				
 			}
 		});
-		chkAnalysis.setBounds(328, 528, 84, 22);
+		chkAnalysis.setBounds(221, 527, 84, 22);
 		add(chkAnalysis);
 		
 		txtHairPinRaw = new JTextField();
-		txtHairPinRaw.setBounds(442, 259, 233, 18);
+		txtHairPinRaw.setBounds(435, 325, 233, 18);
 		add(txtHairPinRaw);
 		txtHairPinRaw.setColumns(10);
 		
@@ -341,25 +365,25 @@ public class GuiSeqMiRNA extends JPanel{
 				txtHairPinRaw.setText(fileName);
 			}
 		});
-		btnHairepinfile.setBounds(705, 256, 111, 24);
+		btnHairepinfile.setBounds(698, 322, 111, 24);
 		add(btnHairepinfile);
 		
 		txtHairRegx = new JTextField();
-		txtHairRegx.setBounds(561, 235, 114, 18);
+		txtHairRegx.setBounds(554, 301, 114, 18);
 		add(txtHairRegx);
 		txtHairRegx.setColumns(10);
 		
 		JLabel lblHairregx = new JLabel("HairRegx");
-		lblHairregx.setBounds(442, 235, 65, 14);
+		lblHairregx.setBounds(435, 301, 65, 14);
 		add(lblHairregx);
 		
 		txtRefseqFile = new JTextField();
-		txtRefseqFile.setBounds(442, 356, 233, 18);
+		txtRefseqFile.setBounds(437, 423, 233, 18);
 		add(txtRefseqFile);
 		txtRefseqFile.setColumns(10);
 		
 		txtRfamRaw = new JTextField();
-		txtRfamRaw.setBounds(442, 329, 233, 18);
+		txtRfamRaw.setBounds(437, 396, 233, 18);
 		add(txtRfamRaw);
 		txtRfamRaw.setColumns(10);
 		
@@ -370,7 +394,7 @@ public class GuiSeqMiRNA extends JPanel{
 				txtRfamRaw.setText(fileName);
 			}
 		});
-		btnRfamfile.setBounds(705, 323, 96, 24);
+		btnRfamfile.setBounds(700, 390, 96, 24);
 		add(btnRfamfile);
 		
 		btnRefseqfile = new JButton("RefseqFile");
@@ -380,16 +404,16 @@ public class GuiSeqMiRNA extends JPanel{
 				txtRefseqFile.setText(fileName);
 			}
 		});
-		btnRefseqfile.setBounds(703, 353, 110, 24);
+		btnRefseqfile.setBounds(698, 420, 110, 24);
 		add(btnRefseqfile);
 		
 		txtOutPathPrefix = new JTextField();
-		txtOutPathPrefix.setBounds(442, 425, 233, 18);
+		txtOutPathPrefix.setBounds(439, 470, 233, 18);
 		add(txtOutPathPrefix);
 		txtOutPathPrefix.setColumns(10);
 		
 		JLabel lblOutpathprefix = new JLabel("OutPathPrefix");
-		lblOutpathprefix.setBounds(442, 405, 105, 14);
+		lblOutpathprefix.setBounds(440, 447, 105, 20);
 		add(lblOutpathprefix);
 		
 		btnOutpath = new JButton("OutPath");
@@ -399,26 +423,28 @@ public class GuiSeqMiRNA extends JPanel{
 				txtOutPathPrefix.setText(fileName);
 			}
 		});
-		btnOutpath.setBounds(705, 418, 95, 24);
+		btnOutpath.setBounds(709, 465, 95, 24);
 		add(btnOutpath);
 		
 		chkbxExtractSeq = new JCheckBox("extract seq");
 		chkbxExtractSeq.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				chkSelected(false, false, chkbxExtractSeq.isSelected());
 				chkAnalysis.setSelected(false);
 				chkMapping.setSelected(false);
+				chkPredictMiRNA.setSelected(false);
+				chkSelected(false, false, false, chkbxExtractSeq.isSelected());
+
 			}
 		});
-		chkbxExtractSeq.setBounds(486, 527, 110, 22);
+		chkbxExtractSeq.setBounds(534, 527, 110, 22);
 		add(chkbxExtractSeq);
 		
 		lblRfamregx = new JLabel("RfamRegx");
-		lblRfamregx.setBounds(442, 307, 92, 14);
+		lblRfamregx.setBounds(435, 373, 92, 14);
 		add(lblRfamregx);
 		
 		txtRfamRegx = new JTextField();
-		txtRfamRegx.setBounds(561, 305, 114, 18);
+		txtRfamRegx.setBounds(554, 371, 114, 18);
 		add(txtRfamRegx);
 		txtRfamRegx.setColumns(10);
 		
@@ -431,72 +457,133 @@ public class GuiSeqMiRNA extends JPanel{
 				}
 			}
 		});
-		btnFastqfile.setBounds(257, 12, 118, 24);
+		btnFastqfile.setBounds(257, 6, 118, 24);
 		add(btnFastqfile);
 		
 		sclpanFastq = new JScrollPaneData();
 		sclpanFastq.setBounds(22, 10, 228, 60);
 		add(sclpanFastq);
+		
+		txtRepeatGff = new JTextField();
+		txtRepeatGff.setBounds(442, 105, 233, 18);
+		add(txtRepeatGff);
+		txtRepeatGff.setColumns(10);
+		
+		btnRepeatgff = new JButton("RepeatGff");
+		btnRepeatgff.setBounds(705, 100, 118, 24);
+		add(btnRepeatgff);
+		
+		sclNovelMiRNAbed = new JScrollPaneData();
+		sclNovelMiRNAbed.setBounds(442, 152, 233, 104);
+		add(sclNovelMiRNAbed);
+		
+		btnDelFastQfilerow = new JButton("DelRow");
+		btnDelFastQfilerow.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sclpanFastq.removeSelRows();
+			}
+		});
+		btnDelFastQfilerow.setBounds(257, 42, 118, 24);
+		add(btnDelFastQfilerow);
+		
+		btnNovelmirnabed = new JButton("NovelMiRNABed");
+		btnNovelmirnabed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("bed file", "");
+				for (String string : lsFileName) {
+					sclNovelMiRNAbed.addProview(new String[]{string});
+				}
+				
+			}
+		});
+		btnNovelmirnabed.setBounds(705, 152, 145, 24);
+		add(btnNovelmirnabed);
+		
+		btnDelNovelMiRNAbedFileRow = new JButton("DelRow");
+		btnDelNovelMiRNAbedFileRow.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sclNovelMiRNAbed.removeSelRows();
+			}
+		});
+		btnDelNovelMiRNAbedFileRow.setBounds(705, 233, 118, 24);
+		add(btnDelNovelMiRNAbedFileRow);
+		
+		chkPredictMiRNA = new JCheckBox("PredictMiRNA");
+		chkPredictMiRNA.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				chkbxExtractSeq.setSelected(false);
+				if (!chkMapping.isSelected()) {
+					chkAnalysis.setSelected(false);
+				}
+				chkSelected(chkMapping.isSelected(), chkAnalysis.isSelected(), chkPredictMiRNA.isSelected(), false);
+				
+			}
+		});
+		chkPredictMiRNA.setBounds(369, 527, 131, 22);
+		add(chkPredictMiRNA);
 		initialize();
 	}
 	
 	
-	private void chkSelected(boolean booChkMap, boolean booChkAnalysis, boolean booChkExtractSeq) {
-		if (booChkMap && !booChkAnalysis && !booChkExtractSeq) {
-			for (Component component : lsComponentsAnalysis) {
+	private void chkSelected(boolean booChkMap, boolean booChkAnalysis, boolean booChkPredictMiRNA, boolean booChkExtractSeq) {
+		if (booChkMap && !booChkAnalysis && !booChkPredictMiRNA) {
+			for (Component component : lsComponentsAll)
 				component.setEnabled(false);
-			}
-			for (Component component : lsComponentsExtractSeq) {
-				component.setEnabled(false);
-			}
-			for (Component component : lsComponentsMapping) {
+			for (Component component : lsComponentsMapping)
 				component.setEnabled(true);
-			}
+			btnRunning.setEnabled(true);
 		}
-		if (booChkMap && booChkAnalysis && !booChkExtractSeq) {
-			for (Component component : lsComponentsAnalysis) {
+		else if (booChkMap && booChkAnalysis && !booChkPredictMiRNA) {
+			for (Component component : lsComponentsAll)
 				component.setEnabled(false);
-			}
-			for (Component component : lsComponentsExtractSeq) {
-				component.setEnabled(false);
-			}
-			for (Component component : lsComponentsMapping) {
+			for (Component component : lsComponentsMapping)
 				component.setEnabled(true);
-			}
-			for (Component component : lsComponentsMappingAndAnalysis) {
+			for (Component component : lsComponentsMappingAndAnalysis)
 				component.setEnabled(true);
-			}
+			btnRunning.setEnabled(true);
 		}
-		if (!booChkMap && booChkAnalysis && !booChkExtractSeq) {
-			for (Component component : lsComponentsMapping) {
+		else if (booChkMap && booChkAnalysis && booChkPredictMiRNA) {
+			for (Component component : lsComponentsAll)
 				component.setEnabled(false);
-			}
-			for (Component component : lsComponentsExtractSeq) {
-				component.setEnabled(false);
-			}
-			for (Component component : lsComponentsAnalysis) {
+			for (Component component : lsComponentsMapping)
 				component.setEnabled(true);
-			}
-		}
-		if (!booChkMap && !booChkAnalysis && booChkExtractSeq) {
-			for (Component component : lsComponentsMapping) {
-				component.setEnabled(false);
-			}
-			for (Component component : lsComponentsAnalysis) {
-				component.setEnabled(false);
-			}
-			for (Component component : lsComponentsExtractSeq) {
+			for (Component component : lsComponentsMappingAndAnalysis)
 				component.setEnabled(true);
-			}
+			btnRunning.setEnabled(true);
 		}
-		if (!booChkMap && !booChkAnalysis && !booChkExtractSeq) {
-			for (Component component : lsComponentsAnalysis) {
+		else if (!booChkMap && booChkAnalysis && !booChkPredictMiRNA) {
+			for (Component component : lsComponentsAll)
 				component.setEnabled(false);
-			}
-			for (Component component : lsComponentsExtractSeq) {
+			for (Component component : lsComponentsAnalysis)
+				component.setEnabled(true);
+			btnRunning.setEnabled(true);
+		}
+		else if (!booChkMap && booChkAnalysis && booChkPredictMiRNA) {
+			for (Component component : lsComponentsAll)
 				component.setEnabled(false);
-			}
-			for (Component component : lsComponentsMapping) {
+			for (Component component : lsComponentsAnalysis)
+				component.setEnabled(true);
+			for (Component component : lsComponentsAnalysisPredictMiRNA)
+				component.setEnabled(true);
+			btnRunning.setEnabled(true);
+		}
+		else if (!booChkMap && !booChkAnalysis && booChkPredictMiRNA) {
+			for (Component component : lsComponentsAll)
+				component.setEnabled(false);
+			for (Component component : lsComponentsPredictMiRNA)
+				component.setEnabled(true);
+			btnRunning.setEnabled(true);
+		}
+		
+		else if (booChkExtractSeq) {
+			for (Component component : lsComponentsAll)
+				component.setEnabled(false);
+			for (Component component : lsComponentsExtractSeq)
+				component.setEnabled(true);
+			btnRunning.setEnabled(true);
+		}
+		else if (!booChkMap && !booChkAnalysis && !booChkExtractSeq && !booChkPredictMiRNA) {
+			for (Component component : lsComponentsAll) {
 				component.setEnabled(false);
 			}
 			btnRunning.setEnabled(false);
@@ -507,15 +594,17 @@ public class GuiSeqMiRNA extends JPanel{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
 		lsComponentsMapping.add(txtNCRNA);
 		lsComponentsMapping.add(txtHairpineMiRNA);
-		lsComponentsMapping.add(txtRfam);
+		lsComponentsMapping.add(txtRfamSeq);
 		lsComponentsMapping.add(txtGenomeSeq);
-		lsComponentsMapping.add(txtGffFile);
+		lsComponentsMapping.add(txtGffGeneFile);
 		lsComponentsMapping.add(txtChromPath);
 		lsComponentsMapping.add(txtRfamInfo);
 		lsComponentsMapping.add(sclpanFastq);
 		
+		lsComponentsMapping.add(btnDelFastQfilerow);
 		lsComponentsMapping.add(btnHairpinMiRNA);
 		lsComponentsMapping.add(btnNCrna);
 		lsComponentsMapping.add(btnRfam);
@@ -533,6 +622,7 @@ public class GuiSeqMiRNA extends JPanel{
 		lsComponentsAnalysis.add(txtNCRNAbed);
 		lsComponentsAnalysis.add(txtRNAdataFile);
 		lsComponentsAnalysis.add(txtMatureMiRNA);
+		lsComponentsAnalysis.add(txtRepeatGff);
 		
 		lsComponentsAnalysis.add(btnHairpinMiRNA);
 		lsComponentsAnalysis.add(btnMirnabed);
@@ -542,6 +632,7 @@ public class GuiSeqMiRNA extends JPanel{
 		lsComponentsAnalysis.add(combSpecies);
 		lsComponentsAnalysis.add(btnRnadata);
 		lsComponentsAnalysis.add(btnMatureMiRNA);
+		lsComponentsAnalysis.add(btnRepeatgff);
 
 		
 		lsComponentsExtractSeq.add(txtHairPinRaw);
@@ -554,12 +645,35 @@ public class GuiSeqMiRNA extends JPanel{
 		lsComponentsExtractSeq.add(btnRfamfile);
 		lsComponentsExtractSeq.add(btnRefseqfile);
 		
+		
+		lsComponentsPredictMiRNA.add(btnDelNovelMiRNAbedFileRow);
+		lsComponentsPredictMiRNA.add(btnNovelmirnabed);
+		lsComponentsPredictMiRNA.add(sclNovelMiRNAbed);
+		lsComponentsPredictMiRNA.add(txtGffGeneFile);
+		lsComponentsPredictMiRNA.add(txtChromPath);
+		lsComponentsPredictMiRNA.add(btnGfffile);
+		lsComponentsPredictMiRNA.add(btnChrompath);
+		
 		lsComponentsMappingAndAnalysis.add(combFileType);
 		lsComponentsMappingAndAnalysis.add(combSpecies);
 		lsComponentsMappingAndAnalysis.add(txtRNAdataFile);
 		lsComponentsMappingAndAnalysis.add(btnRnadata);
 		lsComponentsMappingAndAnalysis.add(btnMatureMiRNA);
 		lsComponentsMappingAndAnalysis.add(txtMatureMiRNA);
+		
+		lsComponentsAnalysisPredictMiRNA.add(txtGffGeneFile);
+		lsComponentsAnalysisPredictMiRNA.add(txtChromPath);
+		lsComponentsAnalysisPredictMiRNA.add(btnGfffile);
+		lsComponentsAnalysisPredictMiRNA.add(btnChrompath);
+		
+		
+		lsComponentsAll.addAll(lsComponentsAnalysis);
+		lsComponentsAll.addAll(lsComponentsExtractSeq);
+		lsComponentsAll.addAll(lsComponentsMapping);
+		lsComponentsAll.addAll(lsComponentsMappingAndAnalysis);
+		lsComponentsAll.addAll(lsComponentsPredictMiRNA);
+		
+		
 		
 		chkMapping.setSelected(true);
 		for (Component component : lsComponentsAnalysis) {
@@ -573,13 +687,94 @@ public class GuiSeqMiRNA extends JPanel{
 		}
 		chkbxExtractSeq.setSelected(false);
 		chkAnalysis.setSelected(false);
-		sclpanFastq.setTitle(new String[]{"fastqFile"});
+		sclpanFastq.setTitle(new String[]{"FastqFile"});
+		sclNovelMiRNAbed.setTitle(new String[]{"BedFile"});
+		HashMap<String, Integer> hashFileType = new HashMap<String, Integer>();
+		hashFileType.put("miReapFile",ListMiRNALocation.TYPE_MIREAP);
+		hashFileType.put("miReapFile",ListMiRNALocation.TYPE_RNA_DATA);
+		combFileType.setItemHash(hashFileType);
+		
+		HashMap<String, String> hashSpecies = new HashMap<String, String>();
+		hashSpecies.put("human", "HSA");
+//		hashSpecies.put("miReapFile",ListMiRNALocation.TYPE_RNA_DATA);
+		combSpecies.setItemHash(hashSpecies);
+	}
+	
+	
+	private void running() {
+		if (chkMapping.isSelected()) {
+			ArrayList<String> lsPredictBed = new ArrayList<String>();
+			ArrayList<String[]> lsFile = sclpanFastq.getLsDataInfo();
+			for (String[] strings : lsFile) {
+				if (!FileOperate.isFileExist(strings[0])) {
+					continue;
+				}
+				runMapping(strings[0]);
+				String bedFile = ctrlMiRNA.getGenomeBed();
+				if (FileOperate.isFileExist(bedFile) && FileOperate.getFileSize(bedFile) > 1000) {
+					lsPredictBed.add(bedFile);
+				}
+				if (chkAnalysis.isSelected()) {
+					runCount(false);
+				}
+			}
+			if (chkPredictMiRNA.isSelected()) {
+				ctrlMiRNA.setLsBedFile(lsPredictBed);
+				runPredict(false);
+			}
+		}
+		else if (!chkMapping.isSelected() && chkAnalysis.isSelected()) {
+			runCount(true);
+		}
+		else if (!chkMapping.isSelected() && chkPredictMiRNA.isSelected()) {
+			runPredict(true);
+		}
 	}
 	
 	private void runMapping(String fastqFile) {
+		ctrlMiRNA = new CtrlMiRNA();
+		ctrlMiRNA.setOutPathPrix(txtOutPathPrefix.getText() + FileOperate.getFileNameSep(fastqFile)[0]);
 		ctrlMiRNA.setFastqFile(fastqFile);
 		ctrlMiRNA.setGenome(chkMapAllBedFileToGenome.isSelected(), txtGenomeSeq.getText());
 		ctrlMiRNA.setMirnaFile(txtMatureMiRNA.getText());
-//		ctrlMiRNA.setMiRNAinfo(combFileType.getSelectedItem(), combSpecies.getSelectedItem(), txtRNAdataFile.getText());
+		ctrlMiRNA.setMiRNAinfo(combFileType.getSelectedValue(), combSpecies.getSelectedValue(), txtRNAdataFile.getText());
+		ctrlMiRNA.setRefFile(txtHairpineMiRNA.getText(),txtRfamSeq.getText(), txtNCRNA.getText());
+		ctrlMiRNA.mapping();
+	}
+	
+	private void runPredict(boolean solo) {
+		if (solo) {
+			ctrlMiRNA = new CtrlMiRNA();
+			ctrlMiRNA.setOutPathPrix(txtOutPathPrefix.getText());
+			ArrayList<String[]> lsBedFileArray = sclNovelMiRNAbed.getLsDataInfo();
+			ArrayList<String> lsBedFile = new ArrayList<String>();
+			for (String[] strings : lsBedFileArray) {
+				if (FileOperate.isFileExist(strings[0]) && FileOperate.getFileSize(strings[0]) > 1000) {
+					lsBedFile.add(strings[0]);
+				}
+			}
+			if (lsBedFile.size() > 0) {
+				ctrlMiRNA.setLsBedFile(lsBedFile);
+			}
+		}
+		ctrlMiRNA.setGffInfo(NovelBioConst.GENOME_GFF_TYPE_UCSC, txtGffGeneFile.getText(), txtChromPath.getText());
+		ctrlMiRNA.runMiRNApredict();
+	}
+	/**
+	 * 是否单独运行，就是前面是否有mapping
+	 * @param solo 前面是否有mapping
+	 */
+	private void runCount(boolean solo) {
+		if (solo) {
+			ctrlMiRNA = new CtrlMiRNA();
+			ctrlMiRNA.setOutPathPrix(txtOutPathPrefix.getText());
+//			ctrlMiRNA.set
+		}
+		ctrlMiRNA.setMirnaFile(txtMatureMiRNA.getText());
+		ctrlMiRNA.setMiRNAinfo(combFileType.getSelectedValue(), combSpecies.getSelectedValue(), txtRNAdataFile.getText());
+		ctrlMiRNA.setGffInfo(NovelBioConst.GENOME_GFF_TYPE_UCSC, txtGffGeneFile.getText(), txtChromPath.getText());
+		ctrlMiRNA.setRepeat(txtRepeatGff.getText());
+		ctrlMiRNA.setRfamFile(txtRfamInfo.getText());
+		ctrlMiRNA.exeRunning(solo);
 	}
 }

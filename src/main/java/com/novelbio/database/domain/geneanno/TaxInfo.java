@@ -1,10 +1,7 @@
 package com.novelbio.database.domain.geneanno;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.database.mapper.geneanno.MapFSTaxID;
-import com.novelbio.database.model.modcopeid.CopedID;
 import com.novelbio.database.service.servgeneanno.ServTaxID;
 
 /**
@@ -24,8 +21,6 @@ public class TaxInfo {
 	private String comName;//常用名
 	/** 中文名 */
 	private String chnName;//中文名
-	/** 染色体长度信息，包括总长度和每条染色体长度 */
-	private String chrInfo;
 	/**
 	 * NCBI的物种ID
 	 * @param taxID
@@ -40,8 +35,6 @@ public class TaxInfo {
 	public int getTaxID() {
 		return this.taxID;
 	}
-	
-
 	/** KEGG上的缩写 */
 	public void setAbbr(String abbr) {
 		if (abbr == null) {
@@ -56,55 +49,42 @@ public class TaxInfo {
 		}
 		return this.abbr;
 	}
-
-	/**
-	 * 拉丁名
-	 */
+	/** 拉丁名 */
 	public void setLatin(String latin) {
 		if (latin == null) {
 			return;
 		}
 		this.latin=latin.trim();
 	}
-	/**
-	 * 拉丁名
-	 */
+	/** 拉丁名 */
 	public String getLatin() {
 		if (latin == null) {
 			return "";
 		}
 		return this.latin;
 	}
-	/**
-	 * 常用名
-	 */
+	/** 常用名 */
 	public void setComName(String comName) {
 		if (comName == null) {
 			return;
 		}
 		this.comName=comName.trim();
 	}
-	/**
-	 * 常用名
-	 */
+	/** 常用名 */
 	public String getComName() {
 		if (comName == null) {
 			return "";
 		}
 		return this.comName;
 	}
-	/**
-	 * 中文名
-	 */
+	/** 中文名 */
 	public void setChnName(String chnName) {
 		if (chnName == null) {
 			return;
 		}
 		this.chnName=chnName.trim();
 	}
-	/**
-	 * 中文名
-	 */
+	/** 中文名 */
 	public String getChnName() {
 		if (chnName == null) {
 			return "";
@@ -127,22 +107,12 @@ public class TaxInfo {
 		ServTaxID servTaxID = new ServTaxID();
 		return servTaxID.getHashTaxIDName();
 	}
-	
 	public void update() {
-		if (taxID == 0) {
-			return;
-		}
-		TaxInfo taxInfo = servTaxID.queryTaxInfo(taxID);
-		if (taxInfo == null) {
-			servTaxID.InsertTaxInfo(this);
-		}
-		else if (!equals(taxInfo)) {
-			servTaxID.upDateTaxInfo(this);
-		}
+		servTaxID.update(this);
 	}
-	
 	/**
 	 * 不仅仅比较taxID，全部比较一遍
+	 * 且比较染色体长度
 	 */
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

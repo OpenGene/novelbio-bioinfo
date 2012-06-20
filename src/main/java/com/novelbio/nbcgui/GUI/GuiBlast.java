@@ -18,6 +18,7 @@ import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.database.updatedb.database.BlastUp2DB;
 
 import javax.swing.JCheckBox;
@@ -213,7 +214,7 @@ public class GuiBlast extends JPanel {
 		
 		cmbQSpecies = new JComboBoxData();
 		cmbQSpecies.setBounds(467, 238, 320, 23);
-		cmbQSpecies.setItemHash(CopedID.getSpeciesNameTaxID(false));
+		cmbQSpecies.setItemHash(Species.getSpeciesNameTaxID(false));
 		add(cmbQSpecies);
 		
 		JLabel lblQueryspecies = new JLabel("QuerySpecies");
@@ -222,7 +223,7 @@ public class GuiBlast extends JPanel {
 		
 		cmbSSpecies = new JComboBoxData();
 		cmbSSpecies.setBounds(467, 318, 322, 23);
-		cmbSSpecies.setItemHash(CopedID.getSpeciesNameTaxID(false));
+		cmbSSpecies.setItemHash(Species.getSpeciesNameTaxID(false));
 		add(cmbSSpecies);
 		
 		JLabel lblSubjectspecies = new JLabel("SubjectSpecies");

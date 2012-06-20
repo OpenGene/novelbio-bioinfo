@@ -264,7 +264,7 @@ public class FisherTest {
 		//这个就是相对路径，必须在当前文件夹下运行
 		String command= NovelBioConst.R_SCRIPT+NovelBioConst.R_WORKSPACE_FISHER_SCRIPT;
 		CmdOperate cmdOperate = new CmdOperate(command);
-		cmdOperate.doInBackground();
+		cmdOperate.run();
 	}
 	
 }

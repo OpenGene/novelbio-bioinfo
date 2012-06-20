@@ -3,6 +3,8 @@ package com.novelbio.analysis.seq.mirna;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -15,6 +17,8 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
  *
  */
 public class ListMiRNALocation extends ListHashBin{
+	Logger logger = Logger.getLogger(ListMiRNALocation.class);
+	
 	public static int TYPE_RNA_DATA = 10;
 	public static int TYPE_MIREAP = 15;
 	public static void main(String[] args) {
@@ -185,6 +189,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 	public String searchMirName(String mirName, int start, int end) {
 		ListCodAbsDu<ListDetailBin,ListCodAbs<ListDetailBin>> lsDu = searchLocation(mirName, start, end);
 		if (lsDu == null) {
+			logger.error("出现未知miRNA名字：" + mirName);
 			return null;
 		}
 		ArrayList<ListDetailBin> lsResult = lsDu.getAllGffDetail();

@@ -30,7 +30,7 @@
  
     <bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
   		 <property name="driverClass" value="com.mysql.jdbc.Driver" />
-  		 <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/novelbio" />
+  		 <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/novelbio?useUnicode=true&amp;characterEncoding=utf-8" />  
   		 <property name="username" value="root"/>
   		 <property name="password" value=""/>
   		 <!-- 每60秒检查所有连接池中的空闲连接    --> 
@@ -62,6 +62,7 @@
                 <value>classpath:XML/IdMapper/*.xml</value>
                 <value>classpath:XML/KeggMapper/*.xml</value>
                 <value>classpath:XML/ReactMapper/*.xml</value>
+                <value>classpath:XML/InformationMapper/*.xml</value>
             </list>
         </property>
     </bean>
@@ -81,8 +82,8 @@
 
     <!-- 通过扫描的模式，扫描目录在com/hoo/mapper目录下，所有的mapper都继承SqlMapper接口的接口， 这样一个bean就可以了  -->
  	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.novelbio.database.mapper"/>
-      <property name="markerInterface" value="com.novelbio.database.mapper.MapperSql"/>
+		<property name="basePackage" value="com.novelbio.database.mapper"/>
+		<property name="markerInterface" value="com.novelbio.database.mapper.MapperSql"/>
     </bean> 
     
       <!-- 自动探测 enable component scanning (beware that this does not enable mapper scanning!)     --> 

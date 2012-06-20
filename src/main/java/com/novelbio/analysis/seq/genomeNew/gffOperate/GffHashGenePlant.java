@@ -38,24 +38,24 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	
 	private void setDB(String DB)
 	{
-		if (DB.equals(NovelBioConst.GENOME_GFF_TYPE_TAIR)) {
-			GeneName="AT\\w{1}G\\d{5}";
+		if (DB.equals(NovelBioConst.GENOME_GFF_TYPE_PLANT)) {
+			GeneName= "(?<=Name\\=)\\w+";
 //			splitmRNA="(?<=AT\\w{1}G\\d{5}\\.)\\d";
-			splitmRNA="AT\\w{1}G\\d{5}\\.\\d";
-			this.taxID = 3702;
+			splitmRNA= "(?<=Name\\=)\\w+";
+//			this.taxID = 3702;
 		}
 		else if (DB.equals(NovelBioConst.GENOME_GFF_TYPE_TIGR)) {
-			GeneName="LOC_Os\\d{2}g\\d{5}";
+			GeneName = "(?<=Alias\\=)\\w+";
 //			splitmRNA="(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";
-			splitmRNA="LOC_Os\\d{2}g\\d{5}\\.\\d";
-			this.taxID = 39947;
+			splitmRNA = "(?<=Alias\\=)\\w+";
+//			this.taxID = 39947;
 		}
-		else {
-			GeneName="Glyma\\d{2}g\\d{5}";
-//			splitmRNA="(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";
-			splitmRNA="Glyma\\d{2}g\\d{5}\\.\\d";
-			this.taxID = 3847;
-		}
+//		else {
+//			GeneName="Glyma\\d{2}g\\d{5}";
+////			splitmRNA="(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";
+//			splitmRNA="Glyma\\d{2}g\\d{5}\\.\\d";
+//			this.taxID = 3847;
+//		}
 	}
 	/**
 	 * 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  "AT\\w{1}G\\d{5}"

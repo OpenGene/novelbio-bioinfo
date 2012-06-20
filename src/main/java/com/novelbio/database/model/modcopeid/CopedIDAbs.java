@@ -19,6 +19,7 @@ import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ServBlastInfo;
 import com.novelbio.database.service.servgeneanno.ServGene2Go;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
@@ -318,13 +319,13 @@ public abstract class CopedIDAbs implements CopedIDInt {
 					&& getLsBlastInfos().size() > 0) {
 				for (int i = 0; i < getLsBlastInfos().size(); i++) {
 					if (tmpAnno[2] == null || tmpAnno[2].trim().equals("")) {
-						tmpAnno[2] = CopedID.getSpeciesTaxIDName().get(
+						tmpAnno[2] = Species.getSpeciesTaxIDName().get(
 								getLsBlastInfos().get(i).getSubjectTax());
 						tmpAnno[3] = getLsBlastInfos().get(i).getEvalue() + "";
 						tmpAnno[4] = getCopedIDLsBlast().get(i).getSymbol();
 						tmpAnno[5] = getCopedIDLsBlast().get(i).getDescription();
 					} else {
-						tmpAnno[2] = tmpAnno[2] + "//" + CopedID.getSpeciesTaxIDName().get(getLsBlastInfos().get(i).getSubjectTax());
+						tmpAnno[2] = tmpAnno[2] + "//" + Species.getSpeciesTaxIDName().get(getLsBlastInfos().get(i).getSubjectTax());
 						tmpAnno[3] = tmpAnno[3] + "//" + getLsBlastInfos().get(i).getEvalue();
 						tmpAnno[4] = tmpAnno[4] + "//" + getCopedIDLsBlast().get(i).getSymbol();
 						tmpAnno[5] = tmpAnno[5] + "//" + getCopedIDLsBlast().get(i).getDescription();

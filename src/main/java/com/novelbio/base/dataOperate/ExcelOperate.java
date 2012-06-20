@@ -353,8 +353,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param rowNum 指定实际行数
 	  * @return 返回该行列数，如果该行不存在，则返回0
 	  */
-	 public int getColCount(int rownum)
-	 {    
+	 public int getColCount(int rownum) {    
 		 return getColCount(1,rownum);
 	 }
 	 /**
@@ -363,29 +362,25 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param rowNum 指定实际行数
 	  * @return 返回该行列数，如果该行不存在，则返回0
 	  */
-	 public int getColCount(int sheetNum,int rowNum)
-	 {
+	 public int getColCount(int sheetNum,int rowNum) {
 		 rowNum--; sheetNum--;
-	   if (wb == null)
-	   {
+	   if (wb == null) {
 		 System.out.println("=============>WorkBook为空");
 		 return 0;
 	   }
 	   Sheet sheet = wb.getSheetAt(sheetNum);
-	   if (sheet == null)
-		 {
-			 System.out.println("=============>sheet为空");
-			 return 0;
-		 }
+	   if (sheet == null) {
+		   System.out.println("=============>sheet为空");
+		   return 0;
+	   }
 	   Row row=sheet.getRow(rowNum);
-	   if (row == null)
-		 {
-			 System.out.println("=============>row为空");
-			 return 0;
-		 }
+	   if (row == null) {
+		   System.out.println("=============>row为空");
+		   return 0;
+	   }
 	  
 	   int ColCount = -1;
-	   ColCount = row.getLastCellNum()+1;
+	   ColCount = row.getLastCellNum();
 	   return ColCount;
 	 }
 /////////////////////读取excel///////////////////////////////////////////////////////
@@ -401,8 +396,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * 如果行数超过文件实际行数，则多出来的数组设置为null<br/>
 	  * @return String[][]<br/>
 	  */
-	 public String[][]  ReadExcel(int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) 
-	 {
+	 public String[][]  ReadExcel(int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) {
 		 if (sheet != null) {
 			 sheetNum = wb.getSheetIndex(sheet);
 		 }
@@ -421,8 +415,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * 如果行数超过文件实际行数，则多出来的数组设置为null<br/>
 	  * @return String[][]<br/>
 	  */
-	 public ArrayList<String[]>  ReadLsExcel(int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) 
-	 {
+	 public ArrayList<String[]>  ReadLsExcel(int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) {
 		 if (sheet != null) {
 			 sheetNum = wb.getSheetIndex(sheet);
 		 }
@@ -442,9 +435,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * 如果行数超过文件实际行数，则多出来的数组设置为null<br/>
 	  * @return String[][]<br/>
 	  */
-	 public String[][]  ReadExcel(String sheetName, int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) 
-	 {
-		
+	 public String[][]  ReadExcel(String sheetName, int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) {
 		 sheetNum=wb.getSheetIndex(sheetName);
 		 if (sheetNum < 0) {
 			sheetNum = 0;
@@ -465,13 +456,11 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * 如果行数超过文件实际行数，则多出来的数组设置为null<br/>
 	  * @return String[][]<br/>
 	  */
-	 public ArrayList<String[]>  ReadLsExcel(String sheetName, int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) 
-	 {
-		
+	 public ArrayList<String[]>  ReadLsExcel(String sheetName, int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) {
 		 sheetNum=wb.getSheetIndex(sheetName);
 		 if (sheetNum < 0) {
-			sheetNum = 0;
-		}
+			 sheetNum = 0;
+		 }
 		 sheet = wb.getSheetAt(sheetNum);
 		 return  ReadLsExcel(sheetNum+1,  rowStartNum,  columnStartNum,  rowEndNum,  columnEndNum);
 	 }
@@ -492,20 +481,14 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * 有重载
 	  */
 	//读取一块excel，每次读一行,循环读
-	 public String[][] ReadExcel(int sheetNum, int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) 
- {
-		if (rowEndNum <= 0) {
-			rowEndNum = getRowCount(sheetNum);
-		}
-		if (columnEndNum <= 0) {
-			columnEndNum = getColCountSheet(sheetNum);
-		}
-
-		sheetNum--;
-		rowStartNum--;
-		columnStartNum--;
-		rowEndNum--;
-		columnEndNum--;
+	 public String[][] ReadExcel(int sheetNum, int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) {
+		 if (rowEndNum <= 0) {
+			 rowEndNum = getRowCount(sheetNum);
+		 }
+		 if (columnEndNum <= 0) {
+			 columnEndNum = getColCountSheet(sheetNum);
+		 }
+		 sheetNum--; rowStartNum--; columnStartNum--; rowEndNum--; columnEndNum--;
 
 		if (sheetNum < 0) {
 			sheetNum = wb.getSheetIndex(sheet);
@@ -552,31 +535,19 @@ public class ExcelOperate //目前是从网上搞的读取代码
 																					// this
 																					// condition
 																					// judge
-							switch (row.getCell((short) (j + columnStartNum))
-									.getCellType()) {
+							switch (row.getCell((short) (j + columnStartNum)).getCellType()) {
 							case Cell.CELL_TYPE_FORMULA:
 								// strExcelLine[i][j] = "FORMULA";
-								strExcelLine[i][j] = String.valueOf(
-										row.getCell(
-												(short) (j + columnStartNum))
-												.getNumericCellValue()).trim();
+								strExcelLine[i][j] = String.valueOf(row.getCell((short) (j + columnStartNum)).getNumericCellValue()).trim();
 								break;
 							case Cell.CELL_TYPE_NUMERIC: // 如果单元格里的数据类型为数据
-								strExcelLine[i][j] = String.valueOf(
-										row.getCell(
-												(short) (j + columnStartNum))
-												.getNumericCellValue()).trim();
+								strExcelLine[i][j] = String.valueOf(row.getCell((short) (j + columnStartNum)).getNumericCellValue()).trim();
 								break;
 							case Cell.CELL_TYPE_STRING:
-								strExcelLine[i][j] = row
-										.getCell((short) (j + columnStartNum))
-										.getStringCellValue().trim();
+								strExcelLine[i][j] = row.getCell((short) (j + columnStartNum)).getStringCellValue().trim();
 								break;
 							case Cell.CELL_TYPE_BOOLEAN:// 如果单元格里的数据类型为 Boolean
-								strExcelLine[i][j] = String.valueOf(
-										row.getCell(
-												(short) (j + columnStartNum))
-												.getBooleanCellValue()).trim();
+								strExcelLine[i][j] = String.valueOf(row.getCell((short) (j + columnStartNum)).getBooleanCellValue()).trim();
 							case Cell.CELL_TYPE_BLANK:
 								strExcelLine[i][j] = "";
 								break;
@@ -614,8 +585,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * 有重载
 	  */
 	//读取一块excel，每次读一行,循环读
-	 public ArrayList<String[]> ReadLsExcel(int sheetNum, int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) 
-	 {
+	 public ArrayList<String[]> ReadLsExcel(int sheetNum, int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) {
 		 if (rowEndNum <= 0) {
 			 rowEndNum = getRowCount(sheetNum);
 		}
@@ -623,41 +593,33 @@ public class ExcelOperate //目前是从网上搞的读取代码
 			columnEndNum = getColCountSheet(sheetNum);
 		}
 		sheetNum--;rowStartNum--;columnStartNum--;rowEndNum--;columnEndNum--;
-		
-		
-		if (sheetNum < 0)
-		{
+
+		if (sheetNum < 0) {
 			sheetNum = wb.getSheetIndex(sheet);
 		}
 		if (rowStartNum < 0) {
 			rowStartNum = 0;
 		}
 		ArrayList<String[]> LsExcelLine = new ArrayList<String[]>();
-		try 
-		{
+		try {
 			sheet = wb.getSheetAt(sheetNum);
 			row = sheet.getRow(rowStartNum);
 			int readrownum=rowEndNum-rowStartNum+1;//读的实际行数
 			int readcolumnnum=columnEndNum-columnStartNum+1;//读取的实际列数
 			//LsExcelLine = new String[readrownum][readcolumnnum];
 			
-			for(int i=0;i<readrownum;i++)
-			{
+			for(int i=0;i<readrownum;i++) {
 				row=sheet.getRow(rowStartNum+i);
-				if (row==null)//中间有空行，这个row就是null
-				{
+				if (row==null) {//中间有空行，这个row就是null
 					continue;
 				}
 				String[] tmpLine = new String[readcolumnnum];
-				for (int j = 0; j < readcolumnnum; j++) //考虑将cellcount换成readcolumnnum
-				{
-					
+				for (int j = 0; j < readcolumnnum; j++) {//考虑将cellcount换成readcolumnnum
 					try {
 						if (row.getCell((short)(j+columnStartNum)) != null) 
 						{ // add this condition
 							// judge
-							switch (row.getCell((short)(j+columnStartNum)).getCellType())
-							{
+							switch (row.getCell((short)(j+columnStartNum)).getCellType()) {
 							case Cell.CELL_TYPE_FORMULA:
 								//strExcelLine[i][j] = "FORMULA";
 								tmpLine[j] =  String.valueOf(row.getCell((short)(j+columnStartNum)).getNumericCellValue()).trim();
@@ -677,12 +639,9 @@ public class ExcelOperate //目前是从网上搞的读取代码
 								tmpLine[j] = "error";
 								break;
 							}
-				 
 						}
-				    
 					}
-					catch (Exception e) 
-					{
+					catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
@@ -690,15 +649,11 @@ public class ExcelOperate //目前是从网上搞的读取代码
 			}
 			
 		}
-		catch (Exception e) 
-		{
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return LsExcelLine;
 	 }
-	 
-	 
-	 
 	 /**
 	  *  读取单个内容，默认工作表，指定行、列。
 	  *  所有指定的行号和列号都只要真实编号，不需要减去1
@@ -709,8 +664,6 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	 public String  ReadExcel(int rowNum, int cellNum) {
 		 return  ReadExcel(this.sheetNum+1, rowNum, cellNum);
 	 }
-	 
-
 	 /**
 	  * 读取单个内容，指定工作表sheetNum、行、列。
 	  * 所有指定的Sheet编号，行号和列号都只要真实编号，不需要减去1
@@ -722,45 +675,42 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	 public String ReadExcel(int sheetNum, int rowNum, int cellNum) 
 	 {
 		 sheetNum--;rowNum--;cellNum--;
-		 if (sheetNum < 0)
-		 {
+		 if (sheetNum < 0) {
 			 sheetNum = wb.getSheetIndex(sheet);
 		 }
 		 if (rowNum < 0)
 			 return "";
-	  String strExcelCell = "";
-	  try {
-	   sheet = wb.getSheetAt(sheetNum);
-	   row = sheet.getRow(rowNum);
+		 String strExcelCell = "";
+		 try {
+			 sheet = wb.getSheetAt(sheetNum);
+			 row = sheet.getRow(rowNum);
 
-	   if (row.getCell((short) cellNum) != null) { // add this condition
-	    // judge
-	    switch (row.getCell((short) cellNum).getCellType()) 
-	    {
-	    case Cell.CELL_TYPE_FORMULA:
-	     strExcelCell = "FORMULA ";
-	    strExcelCell = String.valueOf(row.getCell((short) cellNum).getNumericCellValue()).trim();
-	    break;
-	    case Cell.CELL_TYPE_NUMERIC: {
-	     strExcelCell = String.valueOf(row.getCell((short) cellNum)
-	       .getNumericCellValue());
-	    }
-	     break;
-	    case Cell.CELL_TYPE_STRING:
-	     strExcelCell = row.getCell((short) cellNum).getStringCellValue().trim();//
-	     break;
-	    case Cell.CELL_TYPE_BLANK:
-	     strExcelCell = "";
-	     break;
-	    default:
-	     strExcelCell = "error";
-	     break;
-	    }
-	   }
-	  } catch (Exception e) {
-	   e.printStackTrace();
-	  }
-	  return strExcelCell;
+			 if (row.getCell((short) cellNum) != null) { // add this condition
+				 // judge
+				 switch (row.getCell((short) cellNum).getCellType()) {
+				 case Cell.CELL_TYPE_FORMULA:
+					 strExcelCell = "FORMULA ";
+					 strExcelCell = String.valueOf(row.getCell((short) cellNum).getNumericCellValue()).trim();
+					 break;
+				 case Cell.CELL_TYPE_NUMERIC: {
+					 strExcelCell = String.valueOf(row.getCell((short) cellNum).getNumericCellValue());
+				 }
+				 break;
+				 case Cell.CELL_TYPE_STRING:
+					 strExcelCell = row.getCell((short) cellNum).getStringCellValue().trim();//
+					 break;
+				 case Cell.CELL_TYPE_BLANK:
+					 strExcelCell = "";
+					 break;
+				 default:
+		    strExcelCell = "error";
+		    break;
+				 }
+			 }
+		 } catch (Exception e) {
+			 e.printStackTrace();
+		 }
+		 return strExcelCell;
 	 }
 ////////////////////写入excel方法 /////////////////////////////////////
 	    /**
@@ -772,8 +722,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	     * @param cellNum
 	     * @param content
 		 */
-	 public boolean WriteExcel(int rowNum, int cellNum,String content) 
-	 {
+	 public boolean WriteExcel(int rowNum, int cellNum,String content) {
 		 return WriteExcel(null, 1,rowNum, cellNum,content);
 	 }
  
@@ -788,8 +737,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	     * @param cellNum
 	     * @param content
 		 */
-	 public boolean WriteExcel(String sheetName, int rowNum, int cellNum,List<String[]> content) 
-	 {
+	 public boolean WriteExcel(String sheetName, int rowNum, int cellNum,List<String[]> content) {
 		 return WriteExcel(sheetName, -1, rowNum, cellNum, content);
 	 }
 	 /**
@@ -803,8 +751,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	     * @param cellNum
 	     * @param content
 		 */
-	 public boolean WriteExcel(String sheetName, int rowNum, int cellNum,String[][] content) 
-	 {
+	 public boolean WriteExcel(String sheetName, int rowNum, int cellNum,String[][] content) {
 		 return WriteExcel(sheetName, -1, rowNum, cellNum, content);
 	 }
 	/**
@@ -829,8 +776,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param cellNum 实际列
 	  * @param content
 	  */
-	 public boolean WriteExcel(int rowNum, int cellNum, List<String[]> content) 
-	 {
+	 public boolean WriteExcel(int rowNum, int cellNum, List<String[]> content) {
 		return WriteExcel(null, 1, rowNum, cellNum, content);
 	}
 	 /**
@@ -844,8 +790,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param cellNum
 	  * @param content
 	  */
-	 public boolean WriteExcel(int sheetNum, int rowNum, int cellNum, List<String[]> content) 
-	 {
+	 public boolean WriteExcel(int sheetNum, int rowNum, int cellNum, List<String[]> content) {
 		return WriteExcel(null, sheetNum, rowNum, cellNum, content);
 	}
 	 /**
@@ -862,10 +807,8 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param content
 	  * @return
 	  */
-	 private boolean WriteExcel(String sheetName ,int sheetNum, int rowNum, int cellNum, String content) 
-	 {
+	 private boolean WriteExcel(String sheetName ,int sheetNum, int rowNum, int cellNum, String content) {
 		resetExcel(); 
-		
 		if ((sheetNum <= -1 && sheetName == null) || rowNum < 0)
 			return false;
 
@@ -889,10 +832,8 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param content
 	  * @return
 	  */
-	 private boolean WriteExcel(String sheetName ,int sheetNum, int rowNum, int cellNum, List<String[]> content) 
-	 {
+	 private boolean WriteExcel(String sheetName ,int sheetNum, int rowNum, int cellNum, List<String[]> content) {
 		resetExcel();
-		
 		if ((sheetNum <= -1 && sheetName == null) || rowNum < 0)
 			return false;
 
@@ -917,10 +858,8 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	  * @param content
 	  * @return
 	  */
-	 private boolean WriteExcel(String sheetName ,int sheetNum, int rowNum, int cellNum, String[][] content) 
-	 {
+	 private boolean WriteExcel(String sheetName ,int sheetNum, int rowNum, int cellNum, String[][] content) {
 		resetExcel();
-		
 		if ((sheetNum <= -1 && sheetName == null) || rowNum < 0)
 			return false;
 
@@ -1094,8 +1033,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	     * @param content
 	     * @param raw true为写入某一行，设定false为写入某一列
 		 */
-	 public boolean WriteExcel(boolean save,int sheetNum, int rowNum, int cellNum, String[] content, boolean raw) 
-	 {
+	 public boolean WriteExcel(boolean save,int sheetNum, int rowNum, int cellNum, String[] content, boolean raw) {
 		 resetExcel();
 		 	sheetNum--;rowNum--;cellNum--;//将sheet和行列都还原为零状态
 		 	int writeNumber=content.length;//这个就是数组第一维的数量
@@ -1106,25 +1044,20 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	    		 try {
 	    			 sheet=wb.getSheetAt(sheetNum);  						 
 	    		 } 
-	    		 catch (Exception e) 
-	    		 {
+	    		 catch (Exception e) {
 	    			 sheet=wb.createSheet("sheet"+(getSheetCount()+1));//新建sheet					 
 	    		 }
 	    		  
-	    		 if(raw==true)//横着写入一行
-	    		 {	
+	    		 if(raw==true) {//横着写入一行
 	    			 row=sheet.getRow(rowNum);
-	    			 if(row==null)
-	    			 {
+	    			 if(row==null) {
 	    				 row=sheet.createRow(rowNum); 
 	    			 }
-	    			 for(int i=0;i<writeNumber;i++)
-	    			 {
+	    			 for(int i=0;i<writeNumber;i++) {
 	    				 String WriteContent=content[i];
 	    				 if(WriteContent==null) continue;
 	    				 cell=row.createCell((short)(cellNum+i));
-	     				 try
-	    				 {
+	     				 try {
 								double tmpValue = Double.parseDouble(WriteContent);
 								//cell.setCellType(0);
 								cell.setCellValue(tmpValue);
@@ -1133,20 +1066,16 @@ public class ExcelOperate //目前是从网上搞的读取代码
 						}
 	    			 }
 	    		 }
-	    		 else 
-	    		 {
-	    			 for(int i=0;i<writeNumber;i++)
-	    			 {
+	    		 else {
+	    			 for(int i=0;i<writeNumber;i++) {
 	    				 row=sheet.getRow(rowNum+i);
-	    				 if(row==null)
-	    				 {
+	    				 if(row==null) {
 	    					 row=sheet.createRow(rowNum+i); 
 	    				 }
 	    				 String WriteContent=content[i];
 	    				 if(WriteContent==null) continue;
 	    				 cell=row.createCell((short)(cellNum));
-	     				 try
-	    				 {
+	     				 try {
 								double tmpValue = Double.parseDouble(WriteContent);
 								//cell.setCellType(0);
 								cell.setCellValue(tmpValue);
@@ -1155,12 +1084,10 @@ public class ExcelOperate //目前是从网上搞的读取代码
 						}
 	    			 }
 	    		 }
-				 
 	    		 if(filename!=""&&save)	Save();
 	    		 return true;
 	    	 }
-	    	 catch (Exception e) 
-	    	 {
+	    	 catch (Exception e) {
 	    		 e.printStackTrace();
 	    		 return false;
 	    	 }
@@ -1182,8 +1109,7 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	     * @param content
 	     * @param raw true为写入某一行，设定false为写入某一列
 		 */
-	 public boolean WriteExcel(boolean save,int sheetNum, int rowNum, int cellNum, List<String> content, boolean raw) 
-	 {
+	 public boolean WriteExcel(boolean save,int sheetNum, int rowNum, int cellNum, List<String> content, boolean raw) {
 		 resetExcel();
 		 	sheetNum--;rowNum--;cellNum--;//将sheet和行列都还原为零状态
 		 	int writeNumber=content.size();//这个就是数组第一维的数量
@@ -1194,25 +1120,21 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	    		 try {
 	    			 sheet=wb.getSheetAt(sheetNum);  						 
 	    		 } 
-	    		 catch (Exception e) 
-	    		 {
+	    		 catch (Exception e) {
 	    			 sheet=wb.createSheet("sheet"+(getSheetCount()+1));//新建sheet					 
 	    		 }
 	    		  
 	    		 if(raw==true)//横着写入一行
 	    		 {	
 	    			 row=sheet.getRow(rowNum);
-	    			 if(row==null)
-	    			 {
+	    			 if(row==null) {
 	    				 row=sheet.createRow(rowNum); 
 	    			 }
-	    			 for(int i=0;i<writeNumber;i++)
-	    			 {
+	    			 for(int i=0;i<writeNumber;i++) {
 	    				 String WriteContent=content.get(i);
 	    				 if(WriteContent==null) continue;
 	    				 cell=row.createCell((short)(cellNum+i));
-	    				 try
-	    				 {
+	    				 try {
 								double tmpValue = Double.parseDouble(WriteContent);
 								//cell.setCellType(0);
 								cell.setCellValue(tmpValue);
@@ -1221,20 +1143,16 @@ public class ExcelOperate //目前是从网上搞的读取代码
 						}
 	    			 }
 	    		 }
-	    		 else 
-	    		 {
-	    			 for(int i=0;i<writeNumber;i++)
-	    			 {
+	    		 else {
+	    			 for(int i=0;i<writeNumber;i++) {
 	    				 row=sheet.getRow(rowNum+i);
-	    				 if(row==null)
-	    				 {
+	    				 if(row==null) {
 	    					 row=sheet.createRow(rowNum+i); 
 	    				 }
 	    				 String WriteContent=content.get(i);
 	    				 if(WriteContent==null) continue;
 	    				 cell=row.createCell((short)(cellNum));
-	     				 try
-	    				 {
+	     				 try {
 								double tmpValue = Double.parseDouble(WriteContent);
 								//cell.setCellType(0);
 								cell.setCellValue(tmpValue);
@@ -1243,12 +1161,10 @@ public class ExcelOperate //目前是从网上搞的读取代码
 						}
 	    			 }
 	    		 }
-				 
 	    		 if(filename!=""&&save)	Save();
 	    		 return true;
 	    	 }
-	    	 catch (Exception e) 
-	    	 {
+	    	 catch (Exception e) {
 	    		 e.printStackTrace();
 	    		 return false;
 	    	 }
@@ -1263,26 +1179,24 @@ public class ExcelOperate //目前是从网上搞的读取代码
 	    /**
 	     * 保存excel文件，使用以前的文件名。有重载
 		 */
-	 public boolean Save() 
-	 {
+	 public boolean Save() {
 		 if(filename=="") return false;
 		 try {
 			 FileOutputStream out = new FileOutputStream(filename);
 			 wb.write(out);
 			 out.close();
 			 return true;
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			return false;
+		 } catch (Exception e) {
+			 // TODO: handle exception
+			 e.printStackTrace();
+			 return false;
 		}
 	}
 	     /**
 	      * 输入文件名
 	     * 保存excel文件，另存为
 		 */
-	 public boolean Save(String newfilename) 
-	 {
+	 public boolean Save(String newfilename) {
 		 try {
 			 FileOutputStream out = new FileOutputStream(newfilename);
 			    wb.write(out);
@@ -1295,8 +1209,10 @@ public class ExcelOperate //目前是从网上搞的读取代码
 		}
 	}
 ///////////////////关闭对象////////////////////////////////
-	 public void Close() //暂时不会
-	 {
+	 /**
+	  * 暂时没功能
+	  */
+	 public void Close() {//暂时不会
 		 wb = null;// book [includes sheet]
 		 sheet = null;
 		 row = null;

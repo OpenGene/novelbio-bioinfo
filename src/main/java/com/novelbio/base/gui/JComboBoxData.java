@@ -19,11 +19,11 @@ import com.novelbio.database.model.modcopeid.CopedID;
  * @author zong0jie
  *
  */
-public class JComboBoxData extends JComboBox{
+public class JComboBoxData<T> extends JComboBox{
 	/**
 	 * 保存key和value的map
 	 */
-	HashMap<String, ?> hashInfo = null;
+	HashMap<String, T> hashInfo = null;
 	/**
 	 * null不排序
 	 * true：正序
@@ -42,7 +42,7 @@ public class JComboBoxData extends JComboBox{
 	 * 装载hash表
 	 * @param hashInfo
 	 */
-	public void setItemHash(HashMap<String, ?> hashInfo) {
+	public void setItemHash(HashMap<String, T> hashInfo) {
 		this.hashInfo = hashInfo;
 		setCombBox();
 	}
@@ -86,7 +86,7 @@ public class JComboBoxData extends JComboBox{
 		}
 	}
 	
-	public Object getSelectedValue() {
+	public T getSelectedValue() {
 		String key = (String) getSelectedItem();
 		if (hashInfo.get(key) == null) {
 			return null;

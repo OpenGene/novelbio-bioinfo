@@ -32,8 +32,8 @@ public class GffHashGene implements GffHashGeneInf{
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_TIGR) ) {
 			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_TIGR);
 		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_TAIR)) {
-			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_TAIR);
+		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_PLANT)) {
+			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_PLANT);
 		}
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF)) {
 			gffHashGene = new GffHashCufflinkGTF();
@@ -41,9 +41,9 @@ public class GffHashGene implements GffHashGeneInf{
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_NCBI)) {
 			gffHashGene = new GffHashGeneNCBI();
 		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_GLYMAX)) {
-			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_GLYMAX);
-		}
+//		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_GLYMAX)) {
+//			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_GLYMAX);
+//		}
 		gffHashGene.ReadGffarray(gffFile);
 	}
 	
@@ -59,36 +59,32 @@ public class GffHashGene implements GffHashGeneInf{
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_TIGR) ) {
 			gffHashGene = new GffHashGenePlant(Species.RICE);
 		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_TAIR)) {
+		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_PLANT)) {
 			gffHashGene = new GffHashGenePlant(Species.ARABIDOPSIS);
 		}
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF)) {
 			gffHashGene = new GffHashCufflinkGTF();
 		}
 	}
-	public void setTaxID(int taxID)
-	{
+	public void setTaxID(int taxID) {
 		gffHashGene.setTaxID(taxID);
 	}
 	/**
 	 * 读取信息
 	 * @param gffFile
 	 */
-	public void readGffFile(String gffFile)
-	{
+	public void readGffFile(String gffFile) {
 		gffHashGene.ReadGffarray(gffFile);
 	}
 	/**
 	 * 专门给冯英的项目用的，设定ref的Gffinfo
 	 */
-	public void setGffHash(GffHashGene gffHashRef)
-	{
+	public void setGffHash(GffHashGene gffHashRef) {
 		GffHashCufflinkGTF gff = (GffHashCufflinkGTF)gffHashGene;
 		gff.setGffHashRef(gffHashRef);
 	}
 	
-	public GffHashGene()
-	{
+	public GffHashGene() {
 		gffHashGene = new GffHashGeneUCSC();		 
 	}
 	@Override
@@ -99,7 +95,6 @@ public class GffHashGene implements GffHashGeneInf{
 	@Override
 	public void setEndRegion(boolean region) {
 		gffHashGene.setEndRegion(region);
-		
 	}
 	/**
 	 * 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就用ListAbs.SEP隔开，

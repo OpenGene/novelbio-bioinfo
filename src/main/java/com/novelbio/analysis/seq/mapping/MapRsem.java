@@ -127,8 +127,8 @@ public class MapRsem {
 		String cmd = exePathRsem + "rsem-prepare-reference  --transcript-to-gene-map ";
 		//TODO :考虑是否自动判断为solid
 		cmd = cmd + gene2isoFile + " " + refFile + " " + rsemIndex;
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("RsemMakeIndex");
+		CmdOperate cmdOperate = new CmdOperate(cmd,"RsemMakeIndex");
+		cmdOperate.run();
 	}
 	private String getOffset() {
 		if (lsLeftFq.get(0).getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
@@ -174,11 +174,8 @@ public class MapRsem {
 		}
 		cmd = cmd + " " + rsemIndex + " " + outPathPrefix;
 		logger.info(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("bwaMapping");
+		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMapping");
+		cmdOperate.run();
 		return null;//最后考虑返回一个bam文件
 	}
-	
-	
-	
 }

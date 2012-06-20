@@ -31,7 +31,6 @@ public class FastQMapSoap extends FastQMapAbs{
 	public void setMisMatch(int mismatch) {
 		this.mismatch = mismatch;
 	}
-	
 	/**
 	 * Ë«¶ËÖ»×öunique mapping
 	 * @param seqFile1
@@ -110,8 +109,8 @@ public class FastQMapSoap extends FastQMapAbs{
 		}
 		cmd = cmd+ " -u  "+ outFileName+"_NoMapping ";
 		System.out.println(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("soapMapping");
+		CmdOperate cmdOperate = new CmdOperate(cmd,"soapMapping");
+		cmdOperate.run();
 		return null;
 	}
 	
@@ -512,8 +511,8 @@ public class FastQMapSoap extends FastQMapAbs{
 		exeIndexPath = FileOperate.getParentPathName(ExePath) + "2bwt-builder ";
 		String cmd = exeIndexPath + chrFile;
 		System.out.println(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("soapIndex");
+		CmdOperate cmdOperate = new CmdOperate(cmd,"soapIndex");
+		cmdOperate.run();
 	}
 
 	@Override

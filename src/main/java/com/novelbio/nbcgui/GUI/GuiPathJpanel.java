@@ -34,6 +34,7 @@ import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controltest.CtrlGO;
 import com.novelbio.nbcgui.controltest.CtrlPath;
 import javax.swing.SpringLayout;
@@ -373,9 +374,9 @@ public class GuiPathJpanel extends JPanel{
 			jTxtBGPath = new JTextFieldData();
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
+			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
 			int i = 0;
-			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			ArrayList<String> keys = Species.getSpeciesName(false);
 			String[] speciesarray = new String[keys.size()+1];
 			for(String key:keys)
 			{
@@ -402,9 +403,9 @@ public class GuiPathJpanel extends JPanel{
 			jChkBlastPath.setText("Blast");
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
+			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
 			int i = 0;
-			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			ArrayList<String> keys = Species.getSpeciesName(false);
 			String[] speciesarray = new String[keys.size()+1];
 			for(String key:keys)
 			{

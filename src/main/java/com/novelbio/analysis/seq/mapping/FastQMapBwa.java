@@ -198,8 +198,8 @@ public class FastQMapBwa extends FastQMapAbs{
 		sai1 = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(sai1)[0] + ".sai"; 
 		String cmd1 = cmd + chrFile + " " + getFileName() + " > " + sai1;
 		System.out.println(cmd1);
-		CmdOperate cmdOperate = new CmdOperate(cmd1);
-		cmdOperate.doInBackground("bwaMapping1");
+		CmdOperate cmdOperate = new CmdOperate(cmd1, "bwaMapping1");
+		cmdOperate.run();
 		
 		String sai2 = "";
 		if (isPairEnd()) {
@@ -207,8 +207,8 @@ public class FastQMapBwa extends FastQMapAbs{
 			sai2 = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(sai2)[0] + ".sai"; 
 			String cmd2 = cmd + chrFile + " " + getSeqFile2() + " > " + sai2;
 			System.out.println(cmd2);
-			cmdOperate = new CmdOperate(cmd2);
-			cmdOperate.doInBackground("bwaMapping2");
+			cmdOperate = new CmdOperate(cmd2, "bwaMapping2");
+			cmdOperate.run();
 		}
 	
 		////////////////////////这里设定了将基因组读入内存的限制///////////////////////////////////////////////////////////////////
@@ -239,8 +239,8 @@ public class FastQMapBwa extends FastQMapAbs{
 			cmd = cmd + " > " + outFileName;
 		}
 		System.out.println(cmd);
-		cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("bwaMappingSAI");
+		cmdOperate = new CmdOperate(cmd,"bwaMappingSAI");
+		cmdOperate.run();
 		SamFile samFile = new SamFile(outFileName);
 		samFile.setPairend(isPairEnd());
 		samFile.setUniqMapping(uniqMapping);
@@ -312,8 +312,8 @@ public class FastQMapBwa extends FastQMapAbs{
 		//TODO :考虑是否自动判断为solid
 		cmd = cmd + chrFile;
 		System.out.println(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("bwaMakeIndex");
+		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMakeIndex");
+		cmdOperate.run();
 	}
 	
 	/**

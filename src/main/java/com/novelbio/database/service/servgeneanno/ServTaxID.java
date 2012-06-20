@@ -33,7 +33,6 @@ public class ServTaxID extends AbsGetSpring  implements MapTaxID{
 	}
 	@Override
 	public TaxInfo queryTaxInfo(TaxInfo taxInfo) {
-		// TODO Auto-generated method stub
 		return mapTaxID.queryTaxInfo(taxInfo);
 	}
 	/**
@@ -48,16 +47,30 @@ public class ServTaxID extends AbsGetSpring  implements MapTaxID{
 		taxInfo.setTaxID(taxID);
 		return mapTaxID.queryTaxInfo(taxInfo);
 	}
+	/**
+	 * 没有就插入，有就升级
+	 * @param taxInfo
+	 */
+	public void update(TaxInfo taxInfo) {
+		if (taxInfo.getTaxID() == 0) {
+			return;
+		}
+		TaxInfo taxInfoQ = queryTaxInfo(taxInfo.getTaxID());
+		if (taxInfoQ == null) {
+			InsertTaxInfo(taxInfo);
+		}
+		else if (!taxInfoQ.equals(taxInfo)) {
+			upDateTaxInfo(taxInfo);
+		}
+	}
 	@Override
 	public ArrayList<TaxInfo> queryLsTaxInfo(TaxInfo taxInfo) {
-		// TODO Auto-generated method stub
 		return mapTaxID.queryLsTaxInfo(taxInfo);
 	}
 
 	@Override
 	public void InsertTaxInfo(TaxInfo taxInfo) {
 		mapTaxID.InsertTaxInfo(taxInfo);
-		
 	}
 
 	@Override

@@ -33,6 +33,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.species.Species;
 
 
 /**
@@ -182,9 +183,9 @@ public class GuiSrcToTrgJpanel extends JPanel{
 			});
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
+			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
 			int i = 0;
-			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			ArrayList<String> keys = Species.getSpeciesName(false);
 			String[] speciesarray = new String[keys.size()+1];
 			for(String key:keys)
 			{
@@ -211,9 +212,9 @@ public class GuiSrcToTrgJpanel extends JPanel{
 			jChkBlastPath.setText("Blast");
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
+			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
 			int i = 0;
-			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			ArrayList<String> keys = Species.getSpeciesName(false);
 			String[] speciesarray = new String[keys.size()+1];
 			for(String key:keys)
 			{

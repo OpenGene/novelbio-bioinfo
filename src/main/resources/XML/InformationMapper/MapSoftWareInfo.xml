@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.information.MapSoftWareInfo">
+	<resultMap id="softwareMap" type="SoftWareInfo">
+		<result property="softName" column="softname"/>
+		<result property="descrip" column="description"/>
+		<result property="web" column="website"/>
+		<result property="installPath" column="installpath"/>
+		<result property="locationPath" column="path"/>
+		<result property="use" column="usages"/>
+		<result property="ver" column="version"/>
+		<result property="isPath" column="ispath"/>
+	</resultMap>
+	<select id="querySoftWareInfo" parameterType="SoftWareInfo" resultMap="softwareMap">
+		select *
+		from softwareinfo
+		<where>
+			<if test="softName !=null and softName !='' ">
+				 softname = #{softName}
+			</if>
+			<if test="use !=null and use != '' ">
+				and usages = #{use}
+			</if>
+			<if test="ver !=null and ver != '' ">
+				and version = #{ver}
+			</if>
+		</where>
+	</select>
+	<select id="queryLsSoftWareInfo" parameterType="SoftWareInfo" resultMap="softwareMap">
+			select *
+			from softwareinfo
+		<where>
+			<if test="softName !=null and softName !='' ">
+				 softname=#{softName}
+			</if>
+			<if test="use !=null and use != '' ">
+				and usages=#{use}
+			</if>
+			<if test="ver !=null and ver != '' ">
+				and version=#{ver}
+			</if>
+		</where>
+	</select>
+	<insert id="insertSoftWareInfo" parameterType="SoftWareInfo">
+		insert into softwareinfo (softname,description,website,installpath,path,usages,version,ispath)
+		values (#{softName},#{descrip},#{web},#{installPath},#{locationPath},#{use},#{ver},#{isPath})
+	</insert>
+	<update id="updateSoftWareInfo" parameterType="SoftWareInfo">
+		update softwareinfo
+		<set>
+			<if test="softName !=null and softName != ''">
+				softname = #{softName},
+			</if>
+			<if test="descrip !=null and descrip != ''">
+				description = #{descrip},
+			</if>
+			<if test="web !=null and web !=''">
+				website = #{web},
+			</if>
+			<if test="installPath != null">
+				installpath = #{installPath},
+			</if>
+			<if test="locationPath != null">
+				path = #{locationPath},
+			</if>
+			<if test="use !=null and use != '' ">
+				usages = #{use},
+			</if>
+			<if test="ver != null  and ver != '' ">
+				version = #{ver},
+			</if>
+			<if test="isPath != null  and isPath != '' ">
+				ispath = #{isPath},
+			</if>
+		</set>
+		<where>
+			<if test="softName !=null and softName != '' ">
+				 softname=#{softName}
+			</if>
+			<if test="use !=null and use != '' ">
+				and usages=#{use}
+			</if>
+			<if test="ver !=null and ver != '' ">
+				and version=#{ver}
+			</if>
+		</where>
+	</update>
+</mapper>

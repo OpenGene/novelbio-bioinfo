@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.ibatis.migration.commands.NewCommand;
 
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
@@ -15,6 +16,8 @@ import com.novelbio.analysis.seq.mirna.ReadsOnNCrna;
 import com.novelbio.analysis.seq.mirna.ReadsOnRepeatGene;
 import com.novelbio.analysis.seq.mirna.RfamStatistic;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftMapping;
+import com.novelbio.database.model.species.Species;
 
 /**
  * microRNA测序分析
@@ -23,6 +26,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  *
  */
 public class CtrlMiRNA {
+	Species species = new Species();
 	/** mapping 序列 */
 	MappingMiRNA mappingMiRNA = new MappingMiRNA();
 	/** 计算小RNA表达 */
@@ -33,24 +37,15 @@ public class CtrlMiRNA {
 	ReadsOnNCrna readsOnNCrna = new ReadsOnNCrna();
 	/** 输出文件夹以及前缀 */
 	String outPathPrefix = "";
-	
-	/** gffType */
-	String gffType = "";
-	/** hg19的gff之类，用于小RNA定位等 */
-	String gffFile = "";
-	/** 染色体文件 */
-	String chrFa = "";
+	/** 输出文件夹的子文件夹，是临时文件夹 */
+	String outPathPrefixTmp = "";
 	/** 设定gff和chrome */
 	GffChrAbs gffChrAbs = null;
-	/** miRNA前体 */
-	String hairpinMiRNA = "";
-	/** miRNA成熟体 */
-	String matureMiRNA = "";
-	
 	/** repeat 的gff文件 */
 	String repeatFile = null;
 	/** Rfam比对 */
 	RfamStatistic rfamStatistic = new RfamStatistic();
+	/** rfam的信息比较文件，类似一个键值表 */
 	String rfamFile = "";
 	String mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX8/H36_rfam.bed";
 	/**新的miRNA预测 
@@ -59,30 +54,47 @@ public class CtrlMiRNA {
 	NovelMiRNAReap novelMiRNAReap = new NovelMiRNAReap();
 	/** 预测新miRNA所需的reads */
 	ArrayList<String> lsBedFileNovelMiRNA = new ArrayList<String>();
+	boolean changeSpecies = true;
+	String miRNAcountMiRNAbed = "";
+	String readsOnRepeatGeneGenomebed = "";
+	String rfamStatisticRfambed = "";
 	
-	
+	public void setBedFileCountMiRNA(String miRNAcountMiRNAbed, String readsOnRepeatGeneGenomebed, String rfamStatisticRfambed) {
+		this.miRNAcountMiRNAbed = miRNAcountMiRNAbed;
+		this.readsOnRepeatGeneGenomebed = readsOnRepeatGeneGenomebed;
+		this.rfamStatisticRfambed = rfamStatisticRfambed;
+	}
 	public CtrlMiRNA() {
 		mappingMiRNA.setExePath("");
 	}
-	/**
-	 * 设定待比对的序列
-	 * @param miRNAseq 前体序列
-	 * @param rfamSeq
-	 * @param refNcRnaSeq
-	 */
-	public void setRefFile(String miRNAseq, String rfamSeq, String refNcRnaSeq) {
-		this.hairpinMiRNA = miRNAseq;
-		mappingMiRNA.setMiRNAseq(miRNAseq);
-		mappingMiRNA.setNcRNAseq(refNcRnaSeq);
-		mappingMiRNA.setRfamSeq(rfamSeq);
+	public void setTaxID(int taxID) {
+		changeSpecies = true;
+		species.setTaxID(taxID);
 	}
+	public ArrayList<String> getVersion() {
+		return species.getVersion();
+	}
+	public void setVersion(String version) {
+		species.setVersion(version);
+	}
+	/** 设定待比对的序列 */
+	private void setFile() {
+		if (!changeSpecies) {
+			return;
+		}
+		changeSpecies = false;
+		mappingMiRNA.setMiRNApreSeq(species.getMiRNAhairpinFile());
+		mappingMiRNA.setNcRNAseq(species.getRefseqNCfile());
+		mappingMiRNA.setRfamSeq(species.getRfamFile());
+		mappingMiRNA.setGenome(species.getIndexChr(SoftMapping.bwa));//默认bwa做mapping
+	}
+
 	/**
 	 * 设定基因组的序列，必须是一个文件
 	 * @param mappingAll2Genome 是否将全体reads mapping至基因组上去
 	 * @param genomeSeq 序列文件，最好是index
 	 */
-	public void setGenome(boolean mappingAll2Genome, String genomeSeq) {
-		mappingMiRNA.setGenome(genomeSeq);
+	public void setGenome(boolean mappingAll2Genome) {
 		mappingMiRNA.setMapping2Genome(mappingAll2Genome);
 	}
 	/** 设定输入的测序文件 */
@@ -92,33 +104,13 @@ public class CtrlMiRNA {
 	/** 设定输出文件夹和前缀 */
 	public void setOutPathPrix(String outPathPrefix) {
 		this.outPathPrefix = outPathPrefix;
-		mappingMiRNA.setOutPath(outPathPrefix);
+		this.outPathPrefixTmp = FileOperate.getParentPathName(outPathPrefix) + "tmpMapping";
+		FileOperate.createFolders(outPathPrefixTmp);
+		mappingMiRNA.setOutPath(outPathPrefixTmp);
 	}
-	/**
-	 * 设定预测新miRNA所需的信息
-	 * @param gffType gff类型
-	 * @param geneGffFile gff文件
-	 * @param chromFa 该gff所对应的序列
-	 */
-	public void setGffInfo(String gffType, String geneGffFile, String chromFa) {
-		this.gffType = gffType;
-		this.gffFile = geneGffFile;
-		this.chrFa = chromFa;
-	}
-	/** 设定repeat的gff文件 */
-	public void setRepeat(String repeatFile) {
-		this.repeatFile = repeatFile;
-	}
-	/** 设定rfam的文件 */
+	/** rfam的信息比较文件，类似一个键值表 */
 	public void setRfamFile(String rfamFile) {
 		this.rfamFile = rfamFile;
-	}
-	/** 
-	 * miRNA计算表达使用
-	 * 设定miRNA的前体序列和成熟序列 
-	 * */
-	public void setMirnaFile(String matureMirna) {
-		this.matureMiRNA = matureMirna;
 	}
 	/**
 	 * miRNA计算表达使用
@@ -139,21 +131,34 @@ public class CtrlMiRNA {
 	public void mapping() {
 		mappingMiRNA.mappingPipeline();
 	}
-	public void exeRunning() {
-		countMiRNA();
-		countRfam();
-		if (!FileOperate.isFileExist(gffFile)) {
-			gffChrAbs = new GffChrAbs(gffType, gffFile, chrFa, null, 0);
+	/**
+	 * 返回mapping至基因组上的bed文件
+	 * 必须要等mapping完后才能获取
+	 */
+	public String getGenomeBed() {
+		return mappingMiRNA.getOutGenomebed();
+	}
+	/** 计算miRNA表达 */
+	public void exeRunning(boolean solo) {
+		countMiRNA(solo);
+		countRfam(solo);
+		gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrPath()[1], species.getChrPath()[0], null, 0);
+		if (gffChrAbs.getGffHashGene() == null) {
 			readGffInfo();
-			countRepeatGene();
-			miRNApredict();
+			countRepeatGene(solo);
 		}
 	}
 	/**
 	 * 将指定的bed文件输入
 	 * @param bedSeqFile
 	 */
-	private void miRNApredict() {
+	public void runMiRNApredict() {
+		gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrPath()[1], species.getChrPath()[0], null, 0);
+		readGffInfo();
+		if (lsBedFileNovelMiRNA.size() <= 0) {
+			return;
+		}
+		
 		//////////新建文件夹
 		String novelMiRNAPath = outPathPrefix + "miRNApredictReap/";
 		if (!FileOperate.createFolders(novelMiRNAPath)) {
@@ -161,16 +166,21 @@ public class CtrlMiRNA {
 			return;
 		}
 		//////////
-		novelMiRNAReap.setBedSeq(novelMiRNAPath + "_", lsBedFileNovelMiRNA);
+		novelMiRNAReap.setBedSeq(novelMiRNAPath + "allSample.bed", lsBedFileNovelMiRNA);
 		novelMiRNAReap.setGffChrAbs(gffChrAbs);
 		novelMiRNAReap.setNovelMiRNAMiReapInputFile(novelMiRNAPath + "mireapSeq.fa", novelMiRNAPath + "mireapMap.txt");
 		novelMiRNAReap.runBedFile();
 	}
 	/** 计算miRNA表达 */
-	private void countMiRNA() {
-		miRNACount.setMiRNAfile(hairpinMiRNA, matureMiRNA);
-		if (FileOperate.isFileExist(mappingMiRNA.getOutMiRNAbed()) && FileOperate.getFileSize(mappingMiRNA.getOutMiRNAbed()) > 1000) {
+	private void countMiRNA(boolean solo) {
+		miRNACount.setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
+		if (!solo && FileOperate.isFileExist(mappingMiRNA.getOutMiRNAbed()) && FileOperate.getFileSize(mappingMiRNA.getOutMiRNAbed()) > 1000) {
 			miRNACount.setBedSeqMiRNA(mappingMiRNA.getOutMiRNAbed());
+			miRNACount.countMiRNA();
+			miRNACount.outResult(outPathPrefix);
+		}
+		else if (solo && FileOperate.isFileExist(miRNAcountMiRNAbed) && FileOperate.getFileSize(miRNAcountMiRNAbed) > 1000) {
+			miRNACount.setBedSeqMiRNA(miRNAcountMiRNAbed);
 			miRNACount.countMiRNA();
 			miRNACount.outResult(outPathPrefix);
 		}
@@ -180,19 +190,32 @@ public class CtrlMiRNA {
 		readsOnRepeatGene.readGffGene(gffChrAbs);
 		readsOnRepeatGene.readGffRepeat(repeatFile);
 	}
-	/** 读取repeat和gene信息 */
-	private void countRepeatGene() {
-		if (FileOperate.isFileExist(mappingMiRNA.getOutGenomebed()) && FileOperate.getFileSize(mappingMiRNA.getOutGenomebed()) > 1000) {
+	/** 读取repeat和gene信息并计数
+	 * @param solo 单独计数
+	 *  */
+	private void countRepeatGene(boolean solo) {
+		if (!solo && FileOperate.isFileExist(mappingMiRNA.getOutGenomebed()) && FileOperate.getFileSize(mappingMiRNA.getOutGenomebed()) > 1000) {
 			readsOnRepeatGene.countReadsInfo(mappingMiRNA.getOutGenomebed());
 			readsOnRepeatGene.writeToFileGeneProp(outPathPrefix + "_geneProp.txt");
 			readsOnRepeatGene.writeToFileRepeatFamily(outPathPrefix + "_RepeatFamily.txt");
 			readsOnRepeatGene.writeToFileRepeatName(outPathPrefix + "_RepeatName.txt");
 		}
+		else if (solo && FileOperate.isFileExist(readsOnRepeatGeneGenomebed) && FileOperate.getFileSize(readsOnRepeatGeneGenomebed) > 1000) {
+			readsOnRepeatGene.countReadsInfo(readsOnRepeatGeneGenomebed);
+			readsOnRepeatGene.writeToFileGeneProp(outPathPrefix + "_geneProp.txt");
+			readsOnRepeatGene.writeToFileRepeatFamily(outPathPrefix + "_RepeatFamily.txt");
+			readsOnRepeatGene.writeToFileRepeatName(outPathPrefix + "_RepeatName.txt");
+		}
 	}
-	
-	private void countRfam() {
-		if (FileOperate.isFileExist(mappingMiRNA.getOutRfambed()) && FileOperate.getFileSize(mappingMiRNA.getOutRfambed()) > 1000) {
+	/** 读取rfam信息并计数
+	 * @param solo 单独计数
+	 *  */
+	private void countRfam(boolean solo) {
+		if (!solo && FileOperate.isFileExist(mappingMiRNA.getOutRfambed()) && FileOperate.getFileSize(mappingMiRNA.getOutRfambed()) > 1000) {
 			rfamStatistic.countRfamInfo(rfamFile, mappingMiRNA.getOutRfambed(), outPathPrefix + "_RfamStatistics.txt");
+		}
+		else if (solo && FileOperate.isFileExist(rfamStatisticRfambed) && FileOperate.getFileSize(rfamStatisticRfambed) > 1000) {
+			rfamStatistic.countRfamInfo(rfamFile, rfamStatisticRfambed, outPathPrefix + "_RfamStatistics.txt");
 		}
 	}
 }

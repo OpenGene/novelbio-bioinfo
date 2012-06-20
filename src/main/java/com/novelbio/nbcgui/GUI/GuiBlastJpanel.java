@@ -36,6 +36,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlquery.CtrlBlastAnno;
 import com.novelbio.nbcgui.controlquery.CtrlBlastGo;
 import com.novelbio.nbcgui.controlquery.CtrlBlastPath;
@@ -561,12 +562,12 @@ public class GuiBlastJpanel extends JPanel{
 	}
 	private JComboBox getJCobTaxSelect() {
 		if(jCobTaxSelect == null) {
-			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
+			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
 			
 			
 //			String[] speciesarray = new String[hashTaxID.size()];
 			int i = 0;
-			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			ArrayList<String> keys = Species.getSpeciesName(false);
 			String[] speciesarray = new String[keys.size()+1];
 			for(String key:keys)
 			{
@@ -665,9 +666,9 @@ public class GuiBlastJpanel extends JPanel{
 
 
 		if(jCmbSpeciesBlast == null) {
-			final HashMap<String, Integer> hashTaxID = CopedID.getSpeciesNameTaxID(false);
+			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
 			int i = 0;
-			ArrayList<String> keys = CopedID.getSpeciesName(false);
+			ArrayList<String> keys = Species.getSpeciesName(false);
 			String[] speciesarray = new String[keys.size()];
 			for(String key:keys)
 			{

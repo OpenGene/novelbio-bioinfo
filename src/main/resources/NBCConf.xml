@@ -5,7 +5,7 @@
     
 <configuration>
 	<typeAliases>
-	<!-- FriceDB Single Table aliases-->
+	<!-- Novelbio Single Table aliases-->
 		<typeAlias alias="GeneInfo" type="com.novelbio.database.domain.geneanno.GeneInfo" />
 		<typeAlias alias="Gene2Go" type="com.novelbio.database.domain.geneanno.Gene2Go" />
 		<typeAlias alias="NCBIID" type="com.novelbio.database.domain.geneanno.NCBIID" />
@@ -15,11 +15,13 @@
 		<typeAlias alias="TaxInfo" type="com.novelbio.database.domain.geneanno.TaxInfo" />
 		<typeAlias alias="SnpIndelRs" type="com.novelbio.database.domain.geneanno.SnpIndelRs" />
 		<typeAlias alias="BlastInfo" type="com.novelbio.database.domain.geneanno.BlastInfo" />
-	<!-- Frice Complex Query aliases -->
+		<typeAlias alias="Go2Term" type="com.novelbio.database.domain.geneanno.Go2Term" />
+	<!-- species file -->
+		<typeAlias alias="SpeciesFile" type="com.novelbio.database.domain.geneanno.SpeciesFile" />
+	<!-- Novelbio Complex Query aliases -->
 		<typeAlias alias="Gene2GoInfo" type="com.novelbio.database.domain.geneanno.Gene2GoInfo" />
 		<typeAlias alias="Uni2GoInfo" type="com.novelbio.database.domain.geneanno.Uni2GoInfo" />
-		<typeAlias alias="Go2Term" type="com.novelbio.database.domain.geneanno.Go2Term" />
-		<!--KEGG aliases-->
+	<!--KEGG aliases-->
 		<typeAlias alias="KGentry" type="com.novelbio.database.domain.kegg.KGentry" />
 		<typeAlias alias="KGpathway" type="com.novelbio.database.domain.kegg.KGpathway" />
 		<typeAlias alias="KGreaction" type="com.novelbio.database.domain.kegg.KGreaction" />
@@ -30,7 +32,6 @@
 		<typeAlias alias="KGIDgen2Keg" type="com.novelbio.database.domain.kegg.KGIDgen2Keg" />
 		<typeAlias alias="KGIDkeg2Ko" type="com.novelbio.database.domain.kegg.KGIDkeg2Ko" />
 	<!--KEGG complex query aliases-->
-		<typeAlias alias="NCBIID" type="com.novelbio.database.domain.geneanno.NCBIID" />
 		<typeAlias alias="KGCgen2Ko" type="com.novelbio.database.domain.kegg.KGCgen2Ko" />
 		<typeAlias alias="KGCgen2Entry" type="com.novelbio.database.domain.kegg.KGCgen2Entry" />
 		<typeAlias alias="KGCentry2Gen" type="com.novelbio.database.domain.kegg.KGCentry2Gen" />
@@ -40,5 +41,7 @@
 		<typeAlias alias="KGNIdKeg" type="com.novelbio.database.domain.kegg.noGene.KGNIdKeg" />
 	<!--React No Gene query aliases-->
 		<typeAlias alias="RctInteract" type="com.novelbio.database.domain.react.RctInteract" />
+	<!--Informations-->
+		<typeAlias alias="SoftWareInfo" type="com.novelbio.database.domain.information.SoftWareInfo" />
 	</typeAliases>
 </configuration>

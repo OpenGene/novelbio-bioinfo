@@ -80,6 +80,9 @@ public class GUIFileOpen  extends JFrame {
 			FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensionFinal);
 			chooser.setFileFilter(filter);	
 		}
+		if (currendDir != null) {
+			chooser.setCurrentDirectory(currendDir);
+		}
 		chooser.setMultiSelectionEnabled(true);
 		int returnVal = chooser.showOpenDialog(getParent());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -106,6 +109,9 @@ public class GUIFileOpen  extends JFrame {
 		if (extensionFinal != null) {
 			FileNameExtensionFilter filter = new FileNameExtensionFilter(description, extensionFinal);
 			chooser.setFileFilter(filter);
+		}
+		if (currendDir != null) {
+			chooser.setCurrentDirectory(currendDir);
 		}
 		int returnVal = chooser.showSaveDialog(getParent());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {

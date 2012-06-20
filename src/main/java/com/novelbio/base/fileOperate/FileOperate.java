@@ -856,7 +856,7 @@ public class FileOperate {
 		}
 	}
 	/**
-	 * 判断文件是否存在，给的是绝对路径
+	 * 判断文件是否存在，并且不是文件夹，给的是绝对路径
 	 * @param fileName 如果为null, 直接返回false
 	 * @return
 	 */
@@ -865,11 +865,23 @@ public class FileOperate {
 			return false;
 		}
 		File file = new File(fileName);
-		if (file.exists()) {// 没有文件，则返回空
+		if (file.exists() && !file.isDirectory()) {// 没有文件，则返回空
 			return true;
 		} else {
 			return false;
 		}
+	}
+	/**
+	 * 判断文件是否存在，并且有一定的大小而不是空文件
+	 * @param fileName 如果为null, 直接返回false
+	 * @param size 大小
+	 * @return
+	 */
+	public static boolean isFileExist(String fileName, int size) {
+		if (isFileExist(fileName) && getFileSize(fileName) >= size) {
+			return true;
+		}
+		return false;
 	}
 	/**
 	 * 判断文件是否为文件夹,null直接返回false
