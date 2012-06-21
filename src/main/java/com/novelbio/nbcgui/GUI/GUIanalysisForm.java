@@ -42,9 +42,6 @@ import javax.swing.SwingUtilities;
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
 public class GUIanalysisForm extends javax.swing.JFrame {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6809702573230604814L;
 	private JTabbedPane jTabbedPane1;
 	private GuiGoJPanel guiGoJPanel;

@@ -21,7 +21,9 @@ public class MiRNAmapPipline {
 	/** 输出文件夹，主要是bed文件 */
 	String outPath;
 	/** 输出的临时文件夹，主要保存mapping的中间文件 */
-	String outPathTmp;
+	String outPathTmpMapping;
+	/** 输出的临时文件夹，主要保存mapping的中间文件 */
+	String outPathTmpBed;
 	String outputPrefix;
 
 	/** rfam数据库中的序列 */
@@ -77,9 +79,10 @@ public class MiRNAmapPipline {
 		this.seqFile = seqFile;
 	}
 	/** 设定输出临时文件夹，必须是文件夹 */
-	public void setOutPath(String outPath, String outPathTmp) {
+	public void setOutPath(String outPath, String outPathTmpMapping, String outPathTmpBed) {
 		this.outPath = FileOperate.addSep(outPath);
-		this.outPathTmp = FileOperate.addSep(outPathTmp);
+		this.outPathTmpMapping = FileOperate.addSep(outPathTmpMapping);
+		this.outPathTmpBed = FileOperate.addSep(outPathTmpBed);
 	}
 	/** 比对miRNA的bed文件结果 */
 	public String getOutMiRNAbed() {
@@ -103,15 +106,15 @@ public class MiRNAmapPipline {
 	}
 	/** mapping的流水线 */
 	public void mappingPipeline() {
-		String outputFinal = outPath + outputPrefix;
-		bedFileMiRNA = outputFinal +  "_miRNA.bed";
-		bedFileRfam = outputFinal + "_rfam.bed";
-		bedFileNCRNA = outputFinal + "_ncRna.bed";
-		bedFileGenome = outputFinal + "_Genome.bed";
+		String outputBed = outPathTmpBed + outputPrefix;
+		bedFileMiRNA = outputBed +  "_miRNA.bed";
+		bedFileRfam = outputBed + "_rfam.bed";
+		bedFileNCRNA = outputBed + "_ncRna.bed";
+		bedFileGenome = outputBed + "_Genome.bed";
 		/** 全部reads mapping至全基因组上 */
-		bedFileGenomeAll = outputFinal + "_GenomeAll.bed";
+		bedFileGenomeAll = outputBed + "_GenomeAll.bed";
 		
-		String outputTmpFinal = outPathTmp + outputPrefix;
+		String outputTmpFinal = outPathTmpMapping + outputPrefix;
 		String fqFile = seqFile;
 		String samFile = "";
 		String unMappedFq = "";

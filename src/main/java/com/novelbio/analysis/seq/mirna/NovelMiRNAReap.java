@@ -42,7 +42,6 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 	 * 然后将序列整理成mireap能识别的格式
 	 */
 	public void runBedFile() {
-//		bedSeq = bedSeq.sortBedFile().removeDuplicat();
 		getNovelMiRNASeq(outMapFile, outSeqFile);
 	}
 	/**
@@ -67,7 +66,7 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 	 * GAATGGATAAGGATTAGCGATGATACA<br>
 	 */
 	private void writeMireapFormat(BedSeq bedSeq, String mapFile, String seqFile) {
-		int i = 1;//名字，写成t00001这种类型
+		int readsName_TNum = 1;//名字，写成t00001这种类型
 		TxtReadandWrite txtOutMapInfo = new TxtReadandWrite(mapFile, true);
 		TxtReadandWrite txtOutSeq = new TxtReadandWrite(seqFile, true);
 		BedRecord bedRecordLast = bedSeq.readFirstLine();
@@ -76,21 +75,28 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 				bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
 			}
 			else {
-				txtOutMapInfo.writefileln(getID(i) + "\t" + bedRecordLast.getRefID() + "\t" + bedRecordLast.getStart() + "\t" + bedRecordLast.getEnd() + "\t" + bedRecordLast.getStrand());
-				SeqFasta seqFasta = bedRecordLast.getSeqFasta();
-				seqFasta.setName(getID(i) + " " + bedRecordLast.getReadsNum());
-				txtOutSeq.writefileln(seqFasta.toStringNRfasta());
+				writeMiReapMapInfoAndSeq(txtOutMapInfo, txtOutSeq, bedRecordLast, readsName_TNum);
 				bedRecordLast = bedRecord;
+				readsName_TNum++;
 			}
-			i++;
 		}
-		txtOutMapInfo.writefileln(getID(i) + "\t" + bedRecordLast.getRefID() + "\t" + bedRecordLast.getStart() + "\t" + bedRecordLast.getEnd() + "\t" + bedRecordLast.getStrand());
-		SeqFasta seqFasta = bedRecordLast.getSeqFasta();
-		seqFasta.setName(getID(i) + " " + bedRecordLast.getReadsNum());
-		txtOutSeq.writefileln(seqFasta.toStringNRfasta());
+		writeMiReapMapInfoAndSeq(txtOutMapInfo, txtOutSeq, bedRecordLast, readsName_TNum);
 		
 		txtOutMapInfo.close();
 		txtOutSeq.close();
+	}
+	/**
+	 * 将bed文件写入txt文本中
+	 * @param txtOutMapInfo
+	 * @param txtOutSeq
+	 * @param bedRecord
+	 * @param readsName_TNum 类似t0000035这种格式的num
+	 */
+	private void writeMiReapMapInfoAndSeq(TxtReadandWrite txtOutMapInfo, TxtReadandWrite txtOutSeq, BedRecord bedRecord, int readsName_TNum) {
+		txtOutMapInfo.writefileln(getID(readsName_TNum) + "\t" + bedRecord.getRefID() + "\t" + bedRecord.getStart() + "\t" + bedRecord.getEnd() + "\t" + bedRecord.getStrand());
+		SeqFasta seqFasta = bedRecord.getSeqFasta();
+		seqFasta.setName(getID(readsName_TNum) + " " + bedRecord.getReadsNum());
+		txtOutSeq.writefileln(seqFasta.toStringNRfasta());
 	}
 	/**
 	 * 给定一个int，返回ID
@@ -187,14 +193,16 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 	 */
 	public void getRNAfoldInfo(String outPlot) {
 		TxtReadandWrite txtReadGff = new TxtReadandWrite(mireapGff, false);
+		TxtReadandWrite txtReadMirAln = new TxtReadandWrite(mireapAln, false);
+		TxtReadandWrite txtOut = new TxtReadandWrite(outPlot, true);
+		
 		HashSet<String> hashID = new HashSet<String>();
 		for (String string : txtReadGff.readlines()) {
 //			chr10	mireap	precursor	99546111	99546203	.	-	.	ID=xxx-m0001;Count=3;mfe=-29.50
 			String mirID = string.split("\t")[8].split(";")[0].split("=")[1];
 			hashID.add(mirID);
 		}
-		TxtReadandWrite txtReadMirAln = new TxtReadandWrite(mireapAln, false);
-		TxtReadandWrite txtOut = new TxtReadandWrite(outPlot, true);
+
 		int i = 1; boolean flagNewID = true; boolean flagWriteIn = true;
 		String tmpOut = "";
 		for (String string : txtReadMirAln.readlines()) {

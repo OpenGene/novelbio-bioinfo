@@ -34,8 +34,9 @@ public class CtrlMiRNA {
 	String outputPrefix;
 	String outPath = "";
 	/** 输出文件夹的子文件夹，是临时文件夹 */
-	String outPathTmp = "";
-
+	String outPathTmpMapping = "";
+	String outPathTmpBed = "";
+	
 	/** rfam的信息比较文件，类似一个键值表 */
 	String rfamFile = "";
 	String mapBedFile = "";
@@ -99,8 +100,10 @@ public class CtrlMiRNA {
 	public void setOutPath(String outputPrefix, String outPath) {
 		this.outputPrefix = outputPrefix;
 		this.outPath = FileOperate.addSep(outPath);
-		this.outPathTmp = FileOperate.addSep(outPath) + "tmpMapping";
-		FileOperate.createFolders(outPathTmp);
+		this.outPathTmpMapping = FileOperate.addSep(outPath) + "tmpMapping";
+		FileOperate.createFolders(outPathTmpMapping);
+		this.outPathTmpBed = FileOperate.addSep(outPath) + "tmpBed";
+		FileOperate.createFolders(outPathTmpBed);
 	}
 	/** rfam的信息比较文件，类似一个键值表 */
 	public void setRfamFile(String rfamFile) {
@@ -123,7 +126,7 @@ public class CtrlMiRNA {
 	public void mapping() {
 		setConfigFile();
 		miRNAmappingPipline.setSample(outputPrefix, fastqFile);
-		miRNAmappingPipline.setOutPath(outPath, outPathTmp);
+		miRNAmappingPipline.setOutPath(outPath, outPathTmpMapping, outPathTmpBed);
 		miRNAmappingPipline.mappingPipeline();
 	}
 	/** 设定待比对的序列 */

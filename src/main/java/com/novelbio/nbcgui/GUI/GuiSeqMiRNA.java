@@ -604,11 +604,10 @@ public class GuiSeqMiRNA extends JPanel{
 	}
 	
 	private void runPredict(boolean solo) {
+		String[] outPrefix = getTxtOutPathAndPrefix();
 		if (solo) {
-			String[] outPrefix = getTxtOutPathAndPrefix();
 			ctrlMiRNA = new CtrlMiRNA();
 			ctrlMiRNA.setTaxID(combSpecies.getSelectedValue());
-			ctrlMiRNA.setOutPath(outPrefix[0], outPrefix[1]);
 			ArrayList<String[]> lsBedFileArray = sclNovelMiRNAbed.getLsDataInfo();
 			ArrayList<String> lsBedFile = new ArrayList<String>();
 			for (String[] strings : lsBedFileArray) {
@@ -620,6 +619,7 @@ public class GuiSeqMiRNA extends JPanel{
 				ctrlMiRNA.setLsBedFile(lsBedFile);
 			}
 		}
+		ctrlMiRNA.setOutPath(outPrefix[0], outPrefix[1]);
 		ctrlMiRNA.runMiRNApredict();
 	}
 	/**
