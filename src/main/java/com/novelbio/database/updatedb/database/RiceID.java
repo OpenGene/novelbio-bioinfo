@@ -11,7 +11,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class RiceID{
@@ -224,7 +224,7 @@ class RiceRapDBID extends ImportPerLine
 		if (lsRefID.size() == 0) {
 			return true;
 		}
-		CopedID copedID = new CopedID("", 39947);
+		GeneInfo copedID = new GeneInfo("", 39947);
 		copedID.setUpdateRefAccID(lsRefID);
 		//如果需要插入了，就不管是不是ncbiID都插入进去
 		if (insertAccID) {
@@ -240,7 +240,7 @@ class RiceRapDBID extends ImportPerLine
 		}
 		//否则只插入ncbi表中
 		else {
-			if (copedID.getIDtype().equals(CopedID.IDTYPE_GENEID)) {
+			if (copedID.getIDtype().equals(GeneInfo.IDTYPE_GENEID)) {
 				for (String[] strings : lsAccIDInfo) 
 				{
 					copedID.setUpdateAccID(strings[0]);
@@ -294,7 +294,7 @@ class RiceRap2MSU extends ImportPerLine
 			lsRef.add(tmpLOC2Info2[0]);
 		}
 		////////////////////////////
-		CopedID copedID = new CopedID("", 39947);
+		GeneInfo copedID = new GeneInfo("", 39947);
 		copedID.setUpdateRefAccID(lsRef);
 		for (String[] strings : lstmpLOC) {
 			copedID.setUpdateAccID(strings[0]);
@@ -345,9 +345,9 @@ class RapDBGO extends ImportPerLine
 					lsRefID.add(tmpOsID);
 				}
 			}
-			CopedID copedID = new CopedID("", 39947);
+			GeneInfo copedID = new GeneInfo("", 39947);
 			copedID.setUpdateRefAccID(lsRefID);
-			if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+			if (copedID.getIDtype().equals(GeneInfo.IDTYPE_ACCID)) {
 				return false;
 			}
 			
@@ -396,7 +396,7 @@ class RiceTIGRGFFID extends ImportPerLine
 				return true;
 			}
 			String LOCID = ssLOC[ssLOC.length-1].split("=")[1];
-			CopedID copedID = new CopedID(LOCID, 39947);
+			GeneInfo copedID = new GeneInfo(LOCID, 39947);
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_RICE_TIGR, true);
 			return copedID.update(insertAccID);
 	}
@@ -501,7 +501,7 @@ class RiceRapDBInfo extends ImportPerLine
 			return true;
 		}
 		
-		CopedID copedID = new CopedID("", 39947);
+		GeneInfo copedID = new GeneInfo("", 39947);
 		copedID.setUpdateRefAccID(lsRefID);
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setSymb(symbol);
@@ -561,7 +561,7 @@ class RiceTIGRInfo extends ImportPerLine
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setSymb(LOCID); geneInfo.setDescrp(description);
 		geneInfo.setDBinfo(NovelBioConst.DBINFO_RICE_TIGR);
-		CopedID copedID = new CopedID("", 39947);
+		GeneInfo copedID = new GeneInfo("", 39947);
 		copedID.setUpdateRefAccID(LOCID);
 		copedID.setUpdateGeneInfo(geneInfo);
 		return copedID.update(false);
@@ -578,7 +578,7 @@ class RiceTIGRGO extends ImportPerLine
 	public boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
 		String LocID = ss[0].trim();
-		CopedID copedID = new CopedID(LocID, 39947);
+		GeneInfo copedID = new GeneInfo(LocID, 39947);
 		for (int j = 1; j < ss.length; j++) 
 		{//每个GOID都装入
 			copedID.setUpdateGO(ss[j].trim(), NovelBioConst.DBINFO_RICE_TIGR, null, null, null);

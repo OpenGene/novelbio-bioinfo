@@ -7,7 +7,7 @@ import org.apache.poi.hssf.record.cont.ContinuableRecord;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
@@ -127,17 +127,17 @@ class IdmappingSelected extends ImportPerLine
 		if (!hashTaxID.contains(taxID)) {
 			return true;
 		}
-		CopedID copedID = null;
+		GeneInfo copedID = null;
 		//如果geneID存在，那么就新建一个geneUniID的类
 		ArrayList<String> lsRefAccID = new ArrayList<String>();
 		if (!ss[2].equals("")) {
 			if (!ss[2].contains(";")) {
-				copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[2], taxID);
+				copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, ss[2], taxID);
 			}
 			else {
 				String[] geneIDs = ss[2].split(";");
 				for (String string : geneIDs) {
-					copedID = new CopedID(CopedID.IDTYPE_GENEID, string, taxID);
+					copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, string, taxID);
 					if (updateInfo(ss[0], copedID, NovelBioConst.DBINFO_UNIPROT_GenralID) && !updateUniprotID) {
 						return false;
 					}
@@ -160,7 +160,7 @@ class IdmappingSelected extends ImportPerLine
 		}
 		else {
 			//就是要给一个完全没有的ID
-			copedID = new CopedID("", taxID);
+			copedID = new GeneInfo("", taxID);
 			lsRefAccID = new ArrayList<String>();
 			addListAccID(ss[3], lsRefAccID);
 			addListAccID(ss[4], lsRefAccID);
@@ -209,7 +209,7 @@ class IdmappingSelected extends ImportPerLine
 	 * @param updateUniprotID 搜索不到的ID是否导入uniID表中
 	 * @return
 	 */
-	private boolean updateInfo(String ssID, CopedID copedID, String dbInfo)
+	private boolean updateInfo(String ssID, GeneInfo copedID, String dbInfo)
 	{
 		if (ssID == null || ssID.equals("")) {
 			return true;
@@ -290,18 +290,18 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 		if (!hashTaxID.contains(taxID)) {
 			return true;
 		}
-		CopedID copedID = null;
+		GeneInfo copedID = null;
 		//如果geneID存在，那么就新建一个geneUniID的类
 		ArrayList<String> lsRefAccID = new ArrayList<String>();
 		if (!ss[2].equals("")) {
 			if (!ss[2].contains(";")) {
-				copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[2], taxID);
+				copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, ss[2], taxID);
 			}
 			else {
 				String[] geneIDs = ss[2].split(";");
 				for (String string : geneIDs) {
-					copedID = new CopedID(CopedID.IDTYPE_GENEID, string, taxID);
-					if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+					copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, string, taxID);
+					if (copedID.getIDtype().equals(GeneInfo.IDTYPE_ACCID)) {
 						return false;
 					}
 					updateGO(ss[6], copedID, NovelBioConst.DBINFO_UNIPROTID);
@@ -312,7 +312,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 		}
 		else {
 			//就是要给一个完全没有的ID
-			copedID = new CopedID("", taxID);
+			copedID = new GeneInfo("", taxID);
 			lsRefAccID = new ArrayList<String>();
 			addListAccID(ss[3], lsRefAccID);
 			addListAccID(ss[4], lsRefAccID);
@@ -323,7 +323,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 			addListAccID(ss[21], lsRefAccID);
  			copedID.setUpdateRefAccID(lsRefAccID);
 		}
-		if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+		if (copedID.getIDtype().equals(GeneInfo.IDTYPE_ACCID)) {
 			return false;
 		}
 		if (ss[6] != null && !ss[6].equals("")) {
@@ -348,7 +348,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 	}
 	
 	
-	private boolean updateGO(String ssGOID, CopedID copedID, String dbInfo)
+	private boolean updateGO(String ssGOID, GeneInfo copedID, String dbInfo)
 	{
 		String[] ss = ssGOID.split(";");
 		for (String string : ss) {
@@ -359,7 +359,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 		}
 		return true;
 	}
-	private boolean updatePubmed(String ssPubmed, CopedID copedID)
+	private boolean updatePubmed(String ssPubmed, GeneInfo copedID)
 	{
 		String[] ss = ssPubmed.split(";");
 		for (String string : ss) {

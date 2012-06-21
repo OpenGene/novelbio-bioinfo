@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 /**
  * 功能分析的类
@@ -63,7 +63,7 @@ public class FunctionTest implements FunTestInt{
 	}
 
 	@Override
-	public void setLsTest(ArrayList<CopedID> lsCopedIDs) {
+	public void setLsTest(ArrayList<GeneID> lsCopedIDs) {
 		funTest.setLsTest(lsCopedIDs);
 	}
 
@@ -89,7 +89,7 @@ public class FunctionTest implements FunTestInt{
 		txtOut.ExcelWrite(lsBG, "\t", 1, 1);
 	}
 	@Override
-	public void setLsBGCopedID(ArrayList<CopedID> lsBGaccID) {
+	public void setLsBGCopedID(ArrayList<GeneID> lsBGaccID) {
 		funTest.setLsBGCopedID(lsBGaccID);
 	}
 

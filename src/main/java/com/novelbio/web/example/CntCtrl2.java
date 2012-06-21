@@ -21,7 +21,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.web.model.User;
 import com.novelbio.web.validator.UserValidator;
 @SessionAttributes("currUser")
@@ -137,7 +137,7 @@ public final class CntCtrl2 {
     	ModelAndView mav = new ModelAndView("test");
     	HashMap<String, Object> hashMap = new HashMap<String, Object>();
     	
-    	CopedID copedID = new CopedID(message, 9606, false);
+    	GeneID copedID = new GeneID(message, 9606, false);
     	
     	hashMap.put("message", copedID.getDescription());
     	hashMap.put("counter", topicId);

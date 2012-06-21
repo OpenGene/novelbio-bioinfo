@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 /**
  * 将GffHash和GffHashGene的方法全部列在了这里
  * @author zong0jie
@@ -63,7 +63,7 @@ public interface GffHashGeneInf  {
 	 * @return
 	 * 没有就返回null
 	 */
-	GffDetailGene searchLOC(CopedID copedID);
+	GffDetailGene searchLOC(GeneID copedID);
 	/**
 	 * 给定LOCID，返回所对应的转录本
 	 * @param LOCID

@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 /**
  * 本开闭区间已经设定
@@ -171,9 +171,9 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			e.printStackTrace();
 		}
 		for (String accID : lsInfo) {
-			ArrayList<CopedID> lsCopedIDs = CopedID.getLsCopedID(
+			ArrayList<GeneID> lsCopedIDs = GeneID.getLsCopedID(
 					accID.split("\t")[0], 0, false);
-			if (lsCopedIDs.size() == 1 && lsCopedIDs.get(0).getIDtype() != CopedID.IDTYPE_ACCID) {
+			if (lsCopedIDs.size() == 1 && lsCopedIDs.get(0).getIDtype() != GeneID.IDTYPE_ACCID) {
 				taxID = lsCopedIDs.get(0).getTaxID();
 				break;
 			}

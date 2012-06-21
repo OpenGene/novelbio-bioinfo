@@ -16,7 +16,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
@@ -43,11 +43,11 @@ public class PenncnvCope {
 	
 	String state = "";
 	
-	HashMap<CopedID, HashMap<String, String>> hashGeneCnv = new HashMap<CopedID, HashMap<String,String>>();
+	HashMap<GeneID, HashMap<String, String>> hashGeneCnv = new HashMap<GeneID, HashMap<String,String>>();
 	/**
 	 * 用于copedID排序
 	 */
-	LinkedHashSet<CopedID> hashCopedID = new LinkedHashSet<CopedID>();
+	LinkedHashSet<GeneID> hashCopedID = new LinkedHashSet<GeneID>();
 	/**
 	 * 用于sample排序
 	 */
@@ -106,8 +106,8 @@ public class PenncnvCope {
 	 */
 	private void setLoc(String chrID, int cod1, int cod2, String sampleName, String cnvstate) {
 		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(chrID, cod1, cod2);
-		ArrayList<CopedID> lsCoveredGenes = gffCodGeneDU.getAllCoveredGenes();
-		for (CopedID copedID : lsCoveredGenes) {
+		ArrayList<GeneID> lsCoveredGenes = gffCodGeneDU.getAllCoveredGenes();
+		for (GeneID copedID : lsCoveredGenes) {
 			if (!hashCopedID.contains(copedID)) {
 				hashCopedID.add(copedID);
 			}
@@ -136,7 +136,7 @@ public class PenncnvCope {
 			title[k] = string; k++;
 		}
 		
-		for (CopedID copedID : hashCopedID) {
+		for (GeneID copedID : hashCopedID) {
 			String[] tmpResult = new String[hashSample.size() + 3];
 			tmpResult[0] = copedID.getAccID();
 			tmpResult[1] = copedID.getSymbol();

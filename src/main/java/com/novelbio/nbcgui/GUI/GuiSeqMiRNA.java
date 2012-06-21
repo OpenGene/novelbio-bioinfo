@@ -15,30 +15,19 @@ import java.util.HashSet;
 
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 
 import com.novelbio.analysis.seq.mirna.ListMiRNALocation;
-import com.novelbio.analysis.seq.mirna.MappingMiRNA;
-import com.novelbio.analysis.seq.mirna.MiRNACount;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
-import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlseq.CtrlMiRNA;
-import javax.swing.JScrollPane;
 
 public class GuiSeqMiRNA extends JPanel{
 	private static final long serialVersionUID = -5940420720636777182L;
 	private JFrame frame;
-	private JTextField txtHairpineMiRNA;
-	private JTextField txtNCRNA;
-	private JTextField txtRfamSeq;
-	private JTextField txtGenomeSeq;
-	private JTextField txtGffGeneFile;
-	private JTextField txtChromPath;
 	private JTextField txtRfamInfo;
-	private JTextField txtMatureMiRNA;
 	private JTextField txtRNAdataFile;
 	private JTextField txtMiRNAbed;
 	private JTextField txtRfamBed;
@@ -48,16 +37,10 @@ public class GuiSeqMiRNA extends JPanel{
 	private JTextField txtRefseqFile;
 	private JTextField txtRfamRaw;
 	private JTextField txtOutPathPrefix;
-	JButton btnNCrna;
-	JButton btnRfam;
-	JButton btnGenome;
 	JCheckBox chkMapAllBedFileToGenome;
-	JButton btnGfffile;
-	JButton btnChrompath;
 	JButton btnRfaminfo;
-	JButton btnMatureMiRNA;
 	JComboBoxData<Integer> combFileType;
-	JComboBoxData<String> combSpecies;
+	JComboBoxData<Integer> combSpecies;
 	JButton btnRnadata;
 	JButton btnRunning;
 	JCheckBox chkMapping;
@@ -69,10 +52,9 @@ public class GuiSeqMiRNA extends JPanel{
 	JButton btnRfamfile;
 	JButton btnRefseqfile;
 	JButton btnOutpath;
+	JButton btnGenomeBed;
 	JCheckBox chkbxExtractSeq;
-	JButton btnHairpinMiRNA;
 	JScrollPaneData sclpanFastq;
-	JButton btnRepeatgff;
 	JCheckBox chkPredictMiRNA;
 	JScrollPaneData sclNovelMiRNAbed;
 	JButton btnDelFastQfilerow;
@@ -91,9 +73,9 @@ public class GuiSeqMiRNA extends JPanel{
 	
 	CtrlMiRNA ctrlMiRNA = new CtrlMiRNA();
 	private JButton btnFastqfile;
-	private JTextField txtRepeatGff;
 	private JButton btnNovelmirnabed;
 	private JButton btnDelNovelMiRNAbedFileRow;
+	private JTextField txtGenomeBed;
 	
 	/**
 	 * Launch the application.
@@ -117,110 +99,17 @@ public class GuiSeqMiRNA extends JPanel{
 	public GuiSeqMiRNA() {
 		setLayout(null);
 		
-		txtHairpineMiRNA = new JTextField();
-		txtHairpineMiRNA.setBounds(24, 103, 221, 18);
-		add(txtHairpineMiRNA);
-		txtHairpineMiRNA.setColumns(10);
-		
-		txtNCRNA = new JTextField();
-		txtNCRNA.setBounds(25, 166, 221, 18);
-		add(txtNCRNA);
-		txtNCRNA.setColumns(10);
-		
-		txtRfamSeq = new JTextField();
-		txtRfamSeq.setBounds(23, 137, 224, 18);
-		add(txtRfamSeq);
-		txtRfamSeq.setColumns(10);
-		
-		btnHairpinMiRNA = new JButton("MiRNArefSeq");
-		btnHairpinMiRNA.setBounds(257, 97, 128, 24);
-		btnHairpinMiRNA.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.openFileName("txt/fasta", "");
-				txtHairpineMiRNA.setText(fileName);
-			}
-		});
-		add(btnHairpinMiRNA);
-		
-		btnNCrna = new JButton("NCrnaRefSeq");
-		btnNCrna.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.openFileName("txt/fasta", "");
-				txtNCRNA.setText(fileName);
-			}
-		});
-		btnNCrna.setBounds(257, 161, 130, 24);
-		add(btnNCrna);
-		
-		btnRfam = new JButton("RfamRefseq");
-		btnRfam.setBounds(256, 134, 125, 24);
-		btnRfam.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.openFileName("txt/fasta", "");
-				txtRfamSeq.setText(fileName);
-			}
-		});
-		add(btnRfam);
-		
-		JLabel lblSettingRefence = new JLabel("Setting Refence");
-		lblSettingRefence.setBounds(24, 77, 118, 14);
-		add(lblSettingRefence);
-		
 		JLabel lblSettingGenomeIndex = new JLabel("Setting Genome Index");
-		lblSettingGenomeIndex.setBounds(28, 191, 159, 14);
+		lblSettingGenomeIndex.setBounds(24, 169, 159, 14);
 		add(lblSettingGenomeIndex);
-		
-		txtGenomeSeq = new JTextField();
-		txtGenomeSeq.setBounds(27, 213, 224, 18);
-		add(txtGenomeSeq);
-		txtGenomeSeq.setColumns(10);
-		
-		btnGenome = new JButton("Genome");
-		btnGenome.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.openFileName("txt/fasta", "");
-				txtGenomeSeq.setText(fileName);
-			}
-		});
-		btnGenome.setBounds(266, 209, 118, 24);
-		add(btnGenome);
+
 		//是否将全部的bed文件mapping至基因组上，用于看基因组上的reads分布
 		chkMapAllBedFileToGenome = new JCheckBox("mapping all bedFile to Genome");
-		chkMapAllBedFileToGenome.setBounds(25, 234, 245, 22);
+		chkMapAllBedFileToGenome.setBounds(21, 187, 245, 22);
 		add(chkMapAllBedFileToGenome);
 		
-		txtGffGeneFile = new JTextField();
-		txtGffGeneFile.setBounds(24, 259, 221, 18);
-		add(txtGffGeneFile);
-		txtGffGeneFile.setColumns(10);
-		
-		btnGfffile = new JButton("GffGeneFile");
-		btnGfffile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.openFileName("txt/fasta", "");
-				txtGffGeneFile.setText(fileName);
-			}
-		});
-		btnGfffile.setBounds(254, 256, 128, 24);
-		add(btnGfffile);
-		
-		txtChromPath = new JTextField();
-		txtChromPath.setBounds(24, 293, 221, 18);
-		add(txtChromPath);
-		txtChromPath.setColumns(10);
-		
-		btnChrompath = new JButton("ChromPath");
-		btnChrompath.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.openFilePathName("txt/fasta", "");
-				txtChromPath.setText(fileName);
-			}
-		});
-		btnChrompath.setBounds(251, 287, 128, 24);
-		add(btnChrompath);
-		
 		txtRfamInfo = new JTextField();
-		txtRfamInfo.setBounds(26, 329, 219, 18);
+		txtRfamInfo.setBounds(23, 226, 219, 18);
 		add(txtRfamInfo);
 		txtRfamInfo.setColumns(10);
 		
@@ -231,34 +120,19 @@ public class GuiSeqMiRNA extends JPanel{
 				txtRfamInfo.setText(fileName);
 			}
 		});
-		btnRfaminfo.setBounds(251, 326, 128, 24);
+		btnRfaminfo.setBounds(254, 224, 128, 24);
 		add(btnRfaminfo);
 		
-		txtMatureMiRNA = new JTextField();
-		txtMatureMiRNA.setBounds(24, 372, 221, 18);
-		add(txtMatureMiRNA);
-		txtMatureMiRNA.setColumns(10);
-		
-		btnMatureMiRNA = new JButton("MatureMirna");
-		btnMatureMiRNA.setBounds(251, 369, 130, 24);
-		btnMatureMiRNA.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.openFileName("txt/fasta", "");
-				txtMatureMiRNA.setText(fileName);
-			}
-		});
-		add(btnMatureMiRNA);
-		
 		combFileType = new JComboBoxData<Integer>();
-		combFileType.setBounds(25, 419, 166, 23);
+		combFileType.setBounds(22, 440, 166, 23);
 		add(combFileType);
 		
-		combSpecies = new JComboBoxData<String>();
-		combSpecies.setBounds(208, 419, 173, 23);
+		combSpecies = new JComboBoxData<Integer>();
+		combSpecies.setBounds(24, 323, 173, 23);
 		add(combSpecies);
 		
 		txtRNAdataFile = new JTextField();
-		txtRNAdataFile.setBounds(30, 460, 217, 18);
+		txtRNAdataFile.setBounds(23, 478, 247, 18);
 		add(txtRNAdataFile);
 		txtRNAdataFile.setColumns(10);
 		
@@ -269,7 +143,7 @@ public class GuiSeqMiRNA extends JPanel{
 				txtRNAdataFile.setText(fileName);
 			}
 		});
-		btnRnadata.setBounds(260, 457, 96, 24);
+		btnRnadata.setBounds(294, 475, 96, 24);
 		add(btnRnadata);
 		
 		btnRunning = new JButton("Running");
@@ -457,24 +331,15 @@ public class GuiSeqMiRNA extends JPanel{
 				}
 			}
 		});
-		btnFastqfile.setBounds(257, 6, 118, 24);
+		btnFastqfile.setBounds(258, 12, 118, 24);
 		add(btnFastqfile);
 		
 		sclpanFastq = new JScrollPaneData();
-		sclpanFastq.setBounds(22, 10, 228, 60);
+		sclpanFastq.setBounds(22, 10, 228, 143);
 		add(sclpanFastq);
 		
-		txtRepeatGff = new JTextField();
-		txtRepeatGff.setBounds(442, 105, 233, 18);
-		add(txtRepeatGff);
-		txtRepeatGff.setColumns(10);
-		
-		btnRepeatgff = new JButton("RepeatGff");
-		btnRepeatgff.setBounds(705, 100, 118, 24);
-		add(btnRepeatgff);
-		
 		sclNovelMiRNAbed = new JScrollPaneData();
-		sclNovelMiRNAbed.setBounds(442, 152, 233, 104);
+		sclNovelMiRNAbed.setBounds(429, 169, 237, 119);
 		add(sclNovelMiRNAbed);
 		
 		btnDelFastQfilerow = new JButton("DelRow");
@@ -483,7 +348,7 @@ public class GuiSeqMiRNA extends JPanel{
 				sclpanFastq.removeSelRows();
 			}
 		});
-		btnDelFastQfilerow.setBounds(257, 42, 118, 24);
+		btnDelFastQfilerow.setBounds(258, 126, 118, 24);
 		add(btnDelFastQfilerow);
 		
 		btnNovelmirnabed = new JButton("NovelMiRNABed");
@@ -496,7 +361,7 @@ public class GuiSeqMiRNA extends JPanel{
 				
 			}
 		});
-		btnNovelmirnabed.setBounds(705, 152, 145, 24);
+		btnNovelmirnabed.setBounds(689, 168, 145, 24);
 		add(btnNovelmirnabed);
 		
 		btnDelNovelMiRNAbedFileRow = new JButton("DelRow");
@@ -505,7 +370,7 @@ public class GuiSeqMiRNA extends JPanel{
 				sclNovelMiRNAbed.removeSelRows();
 			}
 		});
-		btnDelNovelMiRNAbedFileRow.setBounds(705, 233, 118, 24);
+		btnDelNovelMiRNAbedFileRow.setBounds(697, 262, 118, 24);
 		add(btnDelNovelMiRNAbedFileRow);
 		
 		chkPredictMiRNA = new JCheckBox("PredictMiRNA");
@@ -521,6 +386,29 @@ public class GuiSeqMiRNA extends JPanel{
 		});
 		chkPredictMiRNA.setBounds(369, 527, 131, 22);
 		add(chkPredictMiRNA);
+		
+		JLabel lblFiletype = new JLabel("FileType");
+		lblFiletype.setBounds(24, 414, 69, 14);
+		add(lblFiletype);
+		
+		JLabel lblSpecies = new JLabel("Species");
+		lblSpecies.setBounds(24, 297, 69, 14);
+		add(lblSpecies);
+		
+		txtGenomeBed = new JTextField();
+		txtGenomeBed.setBounds(446, 110, 229, 18);
+		add(txtGenomeBed);
+		txtGenomeBed.setColumns(10);
+		
+		btnGenomeBed = new JButton("GenomeBed");
+		btnGenomeBed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String fileName = guiFileOpen.openFileName("bed", "");
+				txtGenomeBed.setText(fileName);
+			}
+		});
+		btnGenomeBed.setBounds(706, 106, 138, 24);
+		add(btnGenomeBed);
 		initialize();
 	}
 	
@@ -595,44 +483,31 @@ public class GuiSeqMiRNA extends JPanel{
 	 */
 	private void initialize() {
 		
-		lsComponentsMapping.add(txtNCRNA);
-		lsComponentsMapping.add(txtHairpineMiRNA);
-		lsComponentsMapping.add(txtRfamSeq);
-		lsComponentsMapping.add(txtGenomeSeq);
-		lsComponentsMapping.add(txtGffGeneFile);
-		lsComponentsMapping.add(txtChromPath);
 		lsComponentsMapping.add(txtRfamInfo);
 		lsComponentsMapping.add(sclpanFastq);
 		
 		lsComponentsMapping.add(btnDelFastQfilerow);
-		lsComponentsMapping.add(btnHairpinMiRNA);
-		lsComponentsMapping.add(btnNCrna);
-		lsComponentsMapping.add(btnRfam);
-		lsComponentsMapping.add(btnGenome);
 		lsComponentsMapping.add(chkMapAllBedFileToGenome);
-		lsComponentsMapping.add(btnGfffile);
-		lsComponentsMapping.add(btnChrompath);
 		lsComponentsMapping.add(btnRfaminfo);
 		lsComponentsMapping.add(btnFastqfile);
+		lsComponentsMapping.add(combSpecies);
 		
 
-		lsComponentsAnalysis.add(txtHairpineMiRNA);
 		lsComponentsAnalysis.add(txtMiRNAbed);
 		lsComponentsAnalysis.add(txtRfamBed);
 		lsComponentsAnalysis.add(txtNCRNAbed);
 		lsComponentsAnalysis.add(txtRNAdataFile);
-		lsComponentsAnalysis.add(txtMatureMiRNA);
-		lsComponentsAnalysis.add(txtRepeatGff);
+		lsComponentsAnalysis.add(txtRfamInfo);
+		lsComponentsAnalysis.add(txtGenomeBed);
 		
-		lsComponentsAnalysis.add(btnHairpinMiRNA);
 		lsComponentsAnalysis.add(btnMirnabed);
 		lsComponentsAnalysis.add(btnRfambed);
 		lsComponentsAnalysis.add(btnNCRNAbed);
 		lsComponentsAnalysis.add(combFileType);
 		lsComponentsAnalysis.add(combSpecies);
 		lsComponentsAnalysis.add(btnRnadata);
-		lsComponentsAnalysis.add(btnMatureMiRNA);
-		lsComponentsAnalysis.add(btnRepeatgff);
+		lsComponentsAnalysis.add(btnRfaminfo);
+		lsComponentsAnalysis.add(btnGenomeBed);
 
 		
 		lsComponentsExtractSeq.add(txtHairPinRaw);
@@ -649,32 +524,18 @@ public class GuiSeqMiRNA extends JPanel{
 		lsComponentsPredictMiRNA.add(btnDelNovelMiRNAbedFileRow);
 		lsComponentsPredictMiRNA.add(btnNovelmirnabed);
 		lsComponentsPredictMiRNA.add(sclNovelMiRNAbed);
-		lsComponentsPredictMiRNA.add(txtGffGeneFile);
-		lsComponentsPredictMiRNA.add(txtChromPath);
-		lsComponentsPredictMiRNA.add(btnGfffile);
-		lsComponentsPredictMiRNA.add(btnChrompath);
 		
 		lsComponentsMappingAndAnalysis.add(combFileType);
 		lsComponentsMappingAndAnalysis.add(combSpecies);
 		lsComponentsMappingAndAnalysis.add(txtRNAdataFile);
-		lsComponentsMappingAndAnalysis.add(btnRnadata);
-		lsComponentsMappingAndAnalysis.add(btnMatureMiRNA);
-		lsComponentsMappingAndAnalysis.add(txtMatureMiRNA);
-		
-		lsComponentsAnalysisPredictMiRNA.add(txtGffGeneFile);
-		lsComponentsAnalysisPredictMiRNA.add(txtChromPath);
-		lsComponentsAnalysisPredictMiRNA.add(btnGfffile);
-		lsComponentsAnalysisPredictMiRNA.add(btnChrompath);
-		
+		lsComponentsMappingAndAnalysis.add(btnRnadata);		
 		
 		lsComponentsAll.addAll(lsComponentsAnalysis);
 		lsComponentsAll.addAll(lsComponentsExtractSeq);
 		lsComponentsAll.addAll(lsComponentsMapping);
 		lsComponentsAll.addAll(lsComponentsMappingAndAnalysis);
 		lsComponentsAll.addAll(lsComponentsPredictMiRNA);
-		
-		
-		
+				
 		chkMapping.setSelected(true);
 		for (Component component : lsComponentsAnalysis) {
 			component.setEnabled(false);
@@ -691,11 +552,10 @@ public class GuiSeqMiRNA extends JPanel{
 		sclNovelMiRNAbed.setTitle(new String[]{"BedFile"});
 		HashMap<String, Integer> hashFileType = new HashMap<String, Integer>();
 		hashFileType.put("miReapFile",ListMiRNALocation.TYPE_MIREAP);
-		hashFileType.put("miReapFile",ListMiRNALocation.TYPE_RNA_DATA);
+		hashFileType.put("miRNAdata",ListMiRNALocation.TYPE_RNA_DATA);
 		combFileType.setItemHash(hashFileType);
 		
-		HashMap<String, String> hashSpecies = new HashMap<String, String>();
-		hashSpecies.put("human", "HSA");
+		HashMap<String, Integer> hashSpecies = Species.getSpeciesNameTaxID(false);           // new HashMap<String, String>();
 //		hashSpecies.put("miReapFile",ListMiRNALocation.TYPE_RNA_DATA);
 		combSpecies.setItemHash(hashSpecies);
 	}
@@ -733,18 +593,18 @@ public class GuiSeqMiRNA extends JPanel{
 	
 	private void runMapping(String fastqFile) {
 		ctrlMiRNA = new CtrlMiRNA();
+		ctrlMiRNA.setTaxID(combSpecies.getSelectedValue());
 		ctrlMiRNA.setOutPathPrix(txtOutPathPrefix.getText() + FileOperate.getFileNameSep(fastqFile)[0]);
 		ctrlMiRNA.setFastqFile(fastqFile);
-		ctrlMiRNA.setGenome(chkMapAllBedFileToGenome.isSelected(), txtGenomeSeq.getText());
-		ctrlMiRNA.setMirnaFile(txtMatureMiRNA.getText());
+		ctrlMiRNA.setGenome(chkMapAllBedFileToGenome.isSelected());
 		ctrlMiRNA.setMiRNAinfo(combFileType.getSelectedValue(), combSpecies.getSelectedValue(), txtRNAdataFile.getText());
-		ctrlMiRNA.setRefFile(txtHairpineMiRNA.getText(),txtRfamSeq.getText(), txtNCRNA.getText());
 		ctrlMiRNA.mapping();
 	}
 	
 	private void runPredict(boolean solo) {
 		if (solo) {
 			ctrlMiRNA = new CtrlMiRNA();
+			ctrlMiRNA.setTaxID(combSpecies.getSelectedValue());
 			ctrlMiRNA.setOutPathPrix(txtOutPathPrefix.getText());
 			ArrayList<String[]> lsBedFileArray = sclNovelMiRNAbed.getLsDataInfo();
 			ArrayList<String> lsBedFile = new ArrayList<String>();
@@ -757,7 +617,6 @@ public class GuiSeqMiRNA extends JPanel{
 				ctrlMiRNA.setLsBedFile(lsBedFile);
 			}
 		}
-		ctrlMiRNA.setGffInfo(NovelBioConst.GENOME_GFF_TYPE_UCSC, txtGffGeneFile.getText(), txtChromPath.getText());
 		ctrlMiRNA.runMiRNApredict();
 	}
 	/**
@@ -767,13 +626,12 @@ public class GuiSeqMiRNA extends JPanel{
 	private void runCount(boolean solo) {
 		if (solo) {
 			ctrlMiRNA = new CtrlMiRNA();
+			ctrlMiRNA.setTaxID(combSpecies.getSelectedValue());
 			ctrlMiRNA.setOutPathPrix(txtOutPathPrefix.getText());
 //			ctrlMiRNA.set
 		}
-		ctrlMiRNA.setMirnaFile(txtMatureMiRNA.getText());
 		ctrlMiRNA.setMiRNAinfo(combFileType.getSelectedValue(), combSpecies.getSelectedValue(), txtRNAdataFile.getText());
-		ctrlMiRNA.setGffInfo(NovelBioConst.GENOME_GFF_TYPE_UCSC, txtGffGeneFile.getText(), txtChromPath.getText());
-		ctrlMiRNA.setRepeat(txtRepeatGff.getText());
+		ctrlMiRNA.setBedFileCountMiRNA(txtMiRNAbed.getText(),  txtGenomeBed.getText(), txtRfamBed.getText(), txtNCRNAbed.getText());
 		ctrlMiRNA.setRfamFile(txtRfamInfo.getText());
 		ctrlMiRNA.exeRunning(solo);
 	}

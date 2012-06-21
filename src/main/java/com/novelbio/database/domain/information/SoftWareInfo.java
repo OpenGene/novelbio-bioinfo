@@ -8,7 +8,7 @@ import java.util.HashMap;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.service.servinformation.ServSoftWareInfo;
 
 /**

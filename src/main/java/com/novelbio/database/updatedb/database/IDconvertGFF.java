@@ -16,7 +16,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 /**
  * ID转换，已知两个gff文件，将一个gff与另一个gff进行比对，找到相同的基因然后做ID转换。
@@ -41,7 +41,7 @@ public class IDconvertGFF {
 //		iDconvertGFF.setDBinfo(dbInfo);
 //		iDconvertGFF.updateDBNCBI();
 		
-		CopedID copedID = new CopedID("Gma.3013.1.S1_s_at", taxID);
+		GeneID copedID = new GeneID("Gma.3013.1.S1_s_at", taxID);
 		System.out.println(copedID.getSymbol());
 		System.out.println(copedID.getAccIDDBinfo());
 	}
@@ -95,12 +95,12 @@ public class IDconvertGFF {
 	 * @param gffCodGeneDU
 	 */
 	private boolean updateInfo(GffGeneIsoInfo gffGeneIsoInfo, GffCodGeneDU gffCodGeneDU) {
-		CopedID copedIDUp = new CopedID(gffGeneIsoInfo.getName(), taxID);
-		ArrayList<CopedID> lsCoveredCopedID = new ArrayList<CopedID>();
+		GeneID copedIDUp = new GeneID(gffGeneIsoInfo.getName(), taxID);
+		ArrayList<GeneID> lsCoveredCopedID = new ArrayList<GeneID>();
 		if (gffCodGeneDU != null) {
 			lsCoveredCopedID = gffCodGeneDU.getAllCoveredGenes();
 			if (lsCoveredCopedID != null && lsCoveredCopedID.size() > 0) {
-				CopedID copedIDmid = lsCoveredCopedID.get(lsCoveredCopedID.size()/2);
+				GeneID copedIDmid = lsCoveredCopedID.get(lsCoveredCopedID.size()/2);
 				copedIDUp.setUpdateRefAccID(copedIDmid.getAccID());
 			}
 		}
@@ -112,7 +112,7 @@ public class IDconvertGFF {
 		Collection<GffDetailGene> lsGffDetailGenes = gffHashGeneDestination.getLocHashtable().values();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), taxID);
+				GeneID copedID = new GeneID(gffGeneIsoInfo.getName(), taxID);
 				copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBIID, true);
 				copedID.update(true);
 			}

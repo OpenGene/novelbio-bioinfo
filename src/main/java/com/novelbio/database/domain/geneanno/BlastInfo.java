@@ -3,7 +3,7 @@ package com.novelbio.database.domain.geneanno;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 /**
  * 
@@ -11,8 +11,8 @@ import com.novelbio.database.model.modcopeid.CopedID;
  * 按照evalue从小到大排序
  */
 public class BlastInfo implements Comparable<BlastInfo>{
-	CopedID copedIDQ = null;
-	CopedID copedIDS = null;
+	GeneID copedIDQ = null;
+	GeneID copedIDS = null;
 	
 	private String queryID;
 	private void setDate()
@@ -37,13 +37,13 @@ public class BlastInfo implements Comparable<BlastInfo>{
 			taxIDS = 0;
 		
 	     if (AccIDQ != null && !AccIDQ.equals("")) {
-			copedIDQ = new CopedID(AccIDQ, taxIDQ);
+			copedIDQ = new GeneID(AccIDQ, taxIDQ);
 			this.queryID = copedIDQ.getGenUniID();
 			this.queryTax = copedIDQ.getTaxID();
 	     }
 		
 	     if (AccIDS != null && !AccIDS.equals("")) {
-	    	 copedIDS = new CopedID(AccIDS, taxIDS);
+	    	 copedIDS = new GeneID(AccIDS, taxIDS);
 	    	 this.subjectID = copedIDS.getGenUniID();
 	    	 this.subjectTax = copedIDS.getTaxID();
 	    	 this.subjectTab = copedIDS.getIDtype();
@@ -62,13 +62,13 @@ public class BlastInfo implements Comparable<BlastInfo>{
 			taxIDS = 0;
 		
 	     if (AccIDQ != null && !AccIDQ.equals("")) {
-			copedIDQ = new CopedID(AccIDQ, taxIDQ);
+			copedIDQ = new GeneID(AccIDQ, taxIDQ);
 			this.queryID = copedIDQ.getGenUniID();
 			this.queryTax = copedIDQ.getTaxID();
 	     }
 		
 	     if (genUniIDS != null && !genUniIDS.equals("")) {
-	    	 copedIDS = new CopedID(IDType, genUniIDS, taxIDS);
+	    	 copedIDS = new GeneID(IDType, genUniIDS, taxIDS);
 	    	 this.subjectID = copedIDS.getGenUniID();
 	    	 this.subjectTax = copedIDS.getTaxID();
 	    	 this.subjectTab = copedIDS.getIDtype();
@@ -89,9 +89,9 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		
 		try {
 			int geneIDQ = Integer.parseInt(genUniQ);
-			copedIDQ = new CopedID(CopedID.IDTYPE_GENEID, genUniQ, taxIDQ);
+			copedIDQ = new GeneID(GeneID.IDTYPE_GENEID, genUniQ, taxIDQ);
 		} catch (Exception e) {
-			copedIDQ = new CopedID(CopedID.IDTYPE_UNIID, genUniQ, taxIDQ);
+			copedIDQ = new GeneID(GeneID.IDTYPE_UNIID, genUniQ, taxIDQ);
 		}
 		
 		if (genUniQ != null && !genUniQ.equals("") && !genUniQ.equals("0")) {
@@ -101,9 +101,9 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		/////////////////////////////////////////////////////////////////////////////
 		try {
 			int geneIDS = Integer.parseInt(genUniS);
-			copedIDS = new CopedID(CopedID.IDTYPE_GENEID, genUniS, taxIDS);
+			copedIDS = new GeneID(GeneID.IDTYPE_GENEID, genUniS, taxIDS);
 		} catch (Exception e) {
-			copedIDS = new CopedID(CopedID.IDTYPE_UNIID, genUniS, taxIDS);
+			copedIDS = new GeneID(GeneID.IDTYPE_UNIID, genUniS, taxIDS);
 		}
 		
 		if (genUniS != null && !genUniS.equals("") && !genUniS.equals("0")) {

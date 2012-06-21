@@ -8,7 +8,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetail;
 import com.novelbio.database.domain.AbsPathway;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniProtID;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 /**
  * 保存网络图中单个节点信息的类，每个节点用entityID进行区分，所以必须在初始化的时候手工<br>
@@ -43,7 +43,7 @@ public abstract class AbsNetEntity {
 	/**
 	 * 该节点包括若干个CopedID
 	 */
-	HashSet<CopedID> hashCopedIDs = new HashSet<CopedID>();
+	HashSet<GeneID> hashCopedIDs = new HashSet<GeneID>();
 	
 	/**
 	 * 该节点的ID，用来表示这个唯一点。
@@ -66,13 +66,13 @@ public abstract class AbsNetEntity {
 	/**
 	 * 该节点包括若干个CopedID
 	 */
-	public HashSet<CopedID> getHashCopedIDs() {
+	public HashSet<GeneID> getHashCopedIDs() {
 		return hashCopedIDs;
 	}
 	/**
 	 * 该节点包括若干个CopedID
 	 */
-	public void addCopedID(CopedID copedID)
+	public void addCopedID(GeneID copedID)
 	{
 		hashCopedIDs.add(copedID);
 	}

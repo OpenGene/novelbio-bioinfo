@@ -11,13 +11,13 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class ElimGOFunTest extends NovelGOFunTest{
 	private static final Logger logger = Logger.getLogger(ElimGOFunTest.class);
-	public ElimGOFunTest(ArrayList<CopedID> lsCopedIDsTest, ArrayList<CopedID> lsCopedIDsBG, boolean blast, String GoType) {
+	public ElimGOFunTest(ArrayList<GeneID> lsCopedIDsTest, ArrayList<GeneID> lsCopedIDsBG, boolean blast, String GoType) {
 		super(lsCopedIDsTest, lsCopedIDsBG, blast, GoType);
 	}
 	public ElimGOFunTest(boolean blast,String GoType, double evalue, int...blastTaxID) {
@@ -184,9 +184,9 @@ public class ElimGOFunTest extends NovelGOFunTest{
 			//每一个Go所对应的基因
 			for (String string : lsCoGeneID)
 			{
-				ArrayList<CopedID> lscopedIDs = hashgene2CopedID.get(string);
+				ArrayList<GeneID> lscopedIDs = hashgene2CopedID.get(string);
 				//每一个基因所含有的多个copedID，也就是多个不同的accID
-				for (CopedID copedID : lscopedIDs) {
+				for (GeneID copedID : lscopedIDs) {
 					String[] tmpresultRaw = copedID.getAnno(blast);
 					String[] anno = copyAnno(copedID.getAccID(), tmpresultRaw);
 					String[] result = new String[anno.length + 2];

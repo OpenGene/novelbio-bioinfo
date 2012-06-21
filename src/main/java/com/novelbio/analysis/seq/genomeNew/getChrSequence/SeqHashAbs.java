@@ -19,22 +19,21 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public abstract class SeqHashAbs implements SeqHashInt{
 	private static Logger logger = Logger.getLogger(SeqHashAbs.class);
-	/**
-	 * 保存chrID和chrLength的对应关系
-	 */
+	/** 保存chrID和chrLength的对应关系 */
 	LinkedHashMap<String, Long> hashChrLength = new LinkedHashMap<String, Long>();
-	/**
-	 * 从小到大排列chrLength的list
-	 */
+	/** 从小到大排列chrLength的list */
 	ArrayList<String[]> lsChrLen = null;
-	//是否要设定为DNA，也就是将序列中的U全部转化为T
+	/** 是否要设定为DNA，也就是将序列中的U全部转化为T */
 	boolean isDNAseq = false;
-	/**
-	 * 给碱基对照哈希表赋值 目前有A-T， G-C，N-N 的对应关系（包括了大小写的对应） 将来可能要添加新的
-	 */
-	protected static HashMap<Character, Character> getCompmap() {
-		return SeqFasta.getCompMap();
-	}
+	/** 抓取chrID的正则表达式 */
+	String regx = null;	
+	String chrFile = "";
+	/** 是否将序列名改为小写 */
+	boolean CaseChange = true;
+	/** 将序列名称按顺序读入list */
+	public ArrayList<String> lsSeqName;
+	/** 外显子之间用什么来分割，默认为"" */
+	String sep = "";
 	/**
 	 * 是否要设定为DNA，也就是将序列中的U全部转化为T
 	 * 只有当序列为RNA时才会用到
@@ -43,53 +42,27 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	public void setDNAseq(boolean isDNAseq){
 		this.isDNAseq = isDNAseq;
 	}
-	String regx = null;
-	boolean append;
-	
-	String chrFile = "";
 	/**
-	 * 是否将序列名改为小写
+	 * 外显子之间用什么来分割，默认为""
+	 * @param sep
 	 */
-	boolean CaseChange = true;
-//	/**
-//	 * @param chrFilePath
-//	 */
-//	public SeqHashAbs(String chrFile) 
-//	{
-//		this.chrFile = chrFile;
-//	}
-//	
-//	/**
-//	 * @param chrFile
-//	 * @param regx 序列名的正则表达式，null不设定
-//	 * @param TOLOWCASE 是否将序列结果改为小写 True：小写，False：大写，null不变
-//	 */
-//	public SeqHashAbs(String chrFile, String regx, Boolean TOLOWCASE) 
-//	{
-//		this.chrFile = chrFile;
-//		this.regx = regx;
-//		this.TOLOWCASE = TOLOWCASE;
-//	}
+	@Override
+	public void setSep(String sep) {
+		this.sep = sep;
+	}
 	/**
-	 * 
 	 * @param chrFile
 	 * @param regx 序列名的正则表达式，null和"   "都不设定
 	 * @param CaseChange 是否将序列名改为小写
 	 * @param TOLOWCASE 是否将序列结果改为小写 True：小写，False：大写，null不变
 	 */
-	public SeqHashAbs(String chrFile, String regx,boolean CaseChange) 
-	{
+	public SeqHashAbs(String chrFile, String regx,boolean CaseChange) {
 		this.chrFile = chrFile;
 		if (regx != null && !regx.trim().equals("")) {
 			this.regx = regx;
 		}
 		this.CaseChange = CaseChange;
 	}
-	
-	/**
-	 * 将序列名称按顺序读入list
-	 */
-	public ArrayList<String> lsSeqName;
 	/**
 	 * 获得所有序列的名字
 	 * @return
@@ -106,6 +79,30 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		return hashChrLength;
 	}
 	/**
+	 * 在读取chr长度文件后，可以通过此获得每条chr的长度
+	 * @param chrID 内部自动转换为小写
+	 * @return
+	 */
+	public long getChrLength(String chrID) {
+		return getHashChrLength().get(chrID.toLowerCase());
+	}
+	/**
+	 * 在读取chr长度文件后，可以通过此获得每条chr的长度
+	 * @param refID 内部自动转换为小写
+	 * @return
+	 */
+	public long getChrLenMin() {
+		return Integer.parseInt(getChrLengthInfo().get(0)[1]);
+	}
+	/**
+	 * 在读取chr长度文件后，可以通过此获得每条chr的长度
+	 * @param refID 内部自动转换为小写
+	 * @return
+	 */
+	public long getChrLenMax() {
+		return Integer.parseInt(getChrLengthInfo().get(getChrLengthInfo().size()-1)[1]);
+	}
+	/**
 	 * 在读取chr长度文件后，可以通过此获得所有chr的长度信息
 	 * 
 	 * @param refID
@@ -118,67 +115,30 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		lsChrLen = new ArrayList<String[]>();
 		for (Entry<String, Long> entry : hashChrLength.entrySet()) {
 			String[] tmpResult = new String[2];
-			String chrID = entry.getKey();
-			long lengthChrSeq = entry.getValue();
-			tmpResult[0] = chrID;
-			tmpResult[1] = lengthChrSeq + "";
+			tmpResult[0] = entry.getKey();
+			tmpResult[1] = entry.getValue() + "";
 			lsChrLen.add(tmpResult);
 		}
-		// //////////////////////////把lsChrLength按照chrLen从小到大进行排序/////////////////////////////////////////////////////////////////////////////
+		//把lsChrLength按照chrLen从小到大进行排序
 		Collections.sort(lsChrLen, new Comparator<String[]>() {
 			public int compare(String[] arg0, String[] arg1) {
-				if (Integer.parseInt(arg0[1]) < Integer.parseInt(arg1[1]))
-					return -1;
-				else if (Integer.parseInt(arg0[1]) == Integer.parseInt(arg1[1]))
-					return 0;
-				else
-					return 1;
+				Integer a1 = Integer.parseInt(arg0[1]);
+				Integer a2 = Integer.parseInt(arg1[1]);
+				return a1.compareTo(a2);
 			}
 		});
-		// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		return lsChrLen;
-	}
-	
-	/**
-	 * 在读取chr长度文件后，可以通过此获得每条chr的长度
-	 * @param chrID 内部自动转换为小写
-	 * @return
-	 */
-	public long getChrLength(String chrID) 
-	{
-		return getHashChrLength().get(chrID.toLowerCase());
-	}
-	/**
-	 * 在读取chr长度文件后，可以通过此获得每条chr的长度
-	 * @param refID 内部自动转换为小写
-	 * @return
-	 */
-	public long getChrLenMin() 
-	{
-		return Integer.parseInt(getChrLengthInfo().get(0)[1]);
-	}
-	/**
-	 * 在读取chr长度文件后，可以通过此获得每条chr的长度
-	 * @param refID 内部自动转换为小写
-	 * @return
-	 */
-	public long getChrLenMax() 
-	{
-		return Integer.parseInt(getChrLengthInfo().get(getChrLengthInfo().size()-1)[1]);
 	}
 	/**
 	 * 指定最长染色体的值，返回按比例每条染色体相应值下染色体的坐标数组,resolution和int[resolution]，可用于画图
 	 * 那么resolution就是返回的int[]的长度
-	 * 
 	 * @param chrID
 	 * @param maxresolution
 	 */
 	public int[] getChrRes(String chrID, int maxresolution) throws Exception {
 		ArrayList<String[]> chrLengthArrayList = getChrLengthInfo();
-		int binLen = Integer.parseInt(chrLengthArrayList.get(chrLengthArrayList
-				.size() - 1)[1]) / maxresolution;
+		int binLen = Integer.parseInt(chrLengthArrayList.get(chrLengthArrayList.size() - 1)[1]) / maxresolution;
 		int resolution = (int) (hashChrLength.get(chrID) / binLen);
-
 		Long chrLength = hashChrLength.get(chrID.toLowerCase());
 		double binLength = (double) chrLength / resolution;
 		int[] chrLengtharray = new int[resolution];
@@ -190,8 +150,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	/**
 	 * 具体读取文件
 	 */
-	protected void setFile()
-	{
+	protected void setFile() {
 		try {
 			setChrFile();
 		} catch (Exception e) {
@@ -199,15 +158,14 @@ public abstract class SeqHashAbs implements SeqHashInt{
 			e.printStackTrace();
 		}
 	}
-	
-	
+	/**
+	 * 读取序列
+	 * @throws Exception
+	 */
 	protected abstract void setChrFile() throws Exception;
-	
 	/**
 	 * 当设定Chr文件后，可以将序列长度输出到文件 输出文件为 chrID(小写)+“\t”+chrLength+换行 不是顺序输出
-	 * 
-	 * @param outFile
-	 *            待输出的文件名，带上全部路径
+	 * @param outFile 待输出的文件名，带上全部路径
 	 * @throws IOException
 	 */
 	public void saveChrLengthToFile(String outFile) {
@@ -226,32 +184,24 @@ public abstract class SeqHashAbs implements SeqHashInt{
 			e.printStackTrace();
 		}
 	}
-	protected abstract SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation) throws IOException;
-	
 	/**
 	 * @param chrID 染色体编号或序列名
 	 * @param startlocation 起点
 	 * @param endlocation 终点
 	 * @return 返回序列，出错就返回null
 	 */
-	public SeqFasta getSeq(String chrID, long startlocation, long endlocation)
-	{
+	public SeqFasta getSeq(String chrID, long startlocation, long endlocation) {
 		try {
 			SeqFasta seqFasta = getSeqInfo(chrID, startlocation, endlocation);
 			seqFasta.setDNA(isDNAseq);
 			return seqFasta;
 		} catch (Exception e) {
-			try {
-				@SuppressWarnings("unused")
-				SeqFasta seqFasta = getSeqInfo(chrID, startlocation, endlocation);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			logger.error("提取出错："+chrID + startlocation + "_" + endlocation);
 			return null;
 		}
 	}
-	
+	/** 提取序列 */
+	protected abstract SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation) throws IOException;
 	/**
 	 * * 输入染色体list信息 输入序列坐标以及是否为反向互补,其中ChrID为 chr1，chr2，chr10类型 返回序列
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
@@ -265,46 +215,33 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 *            序列终点
 	 * @return
 	 */
-	public SeqFasta getSeq(Boolean cisseq, String chrID, long startlocation,
-			long endlocation) {
+	public SeqFasta getSeq(Boolean cisseq, String chrID, long startlocation, long endlocation) {
 		SeqFasta seqFasta = getSeq(chrID, startlocation, endlocation);
-
-		if (seqFasta == null) {
-			return null;
-		}
-		if (cisseq == null) {
-			cisseq = true;
-		}
-		if (cisseq ) {
+		if (seqFasta == null) return null;
+		if (cisseq == null) cisseq = true;
+		
+		if (cisseq )
 			return seqFasta;
-		} else {
+		else
 			return seqFasta.reservecom();
-		}
 	}
-
 	/**
 	 * 给出peak位点，查找指定范围的sequence，根据CaseChange改变大小写
 	 * <br>
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
 	 * @param chr
-	 *            ,
-	 * @param peaklocation
-	 *            peak summit点坐标
-	 * @param region
-	 *            peak左右的范围
-	 * @param cisseq
-	 *            true:正向链 false：反向互补链
+	 * @param peaklocation peak summit点坐标
+	 * @param region peak左右的范围
+	 * @param cisseq true:正向链 false：反向互补链
 	 */
-	public SeqFasta getSeq(String chr, int peaklocation, int region,
-			boolean cisseq) {
-		if (CaseChange) {
+	public SeqFasta getSeq(String chr, int peaklocation, int region, boolean cisseq) {
+		if (CaseChange)
 			chr = chr.toLowerCase();
-		}
+
 		int startnum = peaklocation - region;
 		int endnum = peaklocation + region;
 		return getSeq(cisseq, chr, startnum, endnum);
 	}
-
 	/**
 	 * seqname = chrID_第一个外显子的起点_第一个外显子的终点
 	 * 完全兼容gffgeneinfo获得的序列
@@ -358,15 +295,6 @@ public abstract class SeqHashAbs implements SeqHashInt{
 			return seqFasta.reservecom();
 		}
 	}
-	String sep = "";
-	/**
-	 * 外显子之间用什么来分割，默认为""
-	 * @param sep
-	 */
-	@Override
-	public void setSep(String sep) {
-		this.sep = sep;
-	}
 	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
 	 * 不管转录本的方向，总是从基因组的5‘向3’提取。
@@ -378,7 +306,6 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	public SeqFasta getSeq(boolean cisseq, String chrID,List<ExonInfo> lsInfo, boolean getIntron) {
 		return getSeq(cisseq, chrID, lsInfo, sep, getIntron);
 	}
-	
 	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
@@ -390,7 +317,6 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		 ExonInfo exon1 = lsInfo.get(0);
 		 return this.getSeq(exon1.isCis5to3(), chrID, lsInfo, getIntron);
 	}
-	
 	/**
 	 * 测试git
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
@@ -410,24 +336,19 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	@Override
 	public SeqFasta getSeq(String chrID,boolean cisseq, int start, int end, List<ExonInfo> lsInfo, boolean getIntron) {
 		start--;
-		if (start < 0) {
-			start = 0;
-		}
-		if (end <= 0 || end > lsInfo.size()) {
+		if (start < 0) start = 0;
+		
+		if (end <= 0 || end > lsInfo.size()) 
 			end = lsInfo.size();
-		}
+		
 		ExonInfo exon1 = lsInfo.get(0);
 		List<ExonInfo> lsExon = lsInfo.subList(start, end);
 		SeqFasta seq = getSeq(exon1.isCis5to3(), chrID, lsExon, getIntron);
-		if (cisseq) {
+		if (cisseq)
 			return seq;
-		}
-		else {
+		else
 			return seq.reservecom();
-		}
 	}
-	
-	
 	/**
 	 * 按顺序提取闭区间序列，每一个区段保存为一个SeqFasta对象
 	 * SeqFasta的名字为chrID:起点坐标-终点坐标 都是闭区间

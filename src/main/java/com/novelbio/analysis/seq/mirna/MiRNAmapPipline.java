@@ -15,7 +15,7 @@ import com.novelbio.generalConf.NovelBioConst;
  * @author zong0jie
  *
  */
-public class MappingMiRNA {
+public class MiRNAmapPipline {
 	/** 序列文件 */
 	String seqFile = "";
 	/** 输出路径和前缀 */

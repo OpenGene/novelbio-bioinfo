@@ -32,13 +32,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    </where>
 	</select>
 	<insert id="insertSpeciesFile" parameterType="SpeciesFile">
-		insert into ncbiid (taxid,version,publishyear,chrompath,chromseq,indexchr,indexrefseq,gffgenefile,
+		insert into speciesfile (taxid,version,publishyear,chrompath,chromseq,indexchr,indexrefseq,gffgenefile,
 		gffrepeatfile,rfamfile,refsefile,refseqncfile,mirnafile,mirnahairpinfile,chrominfo)
 		values (#{taxID},#{version},#{publishYear},#{chromPath},#{chromSeq},#{indexChr},#{indexRefseq},#{gffGeneFile}
 		,#{gffRepeatFile},#{rfamFile},#{refseqFile},#{refseqNCfile},#{miRNAfile},#{miRNAhairpinFile},#{chromInfo})
 	</insert>
-	<update id="updateNCBIID" parameterType="NCBIID">
-		update ncbiid
+	<update id="updateSpeciesFile" parameterType="NCBIID">
+		update speciesfile
 		<set>
 			<if test="taxID !=null and taxID !=0">
 				taxid = #{taxID},

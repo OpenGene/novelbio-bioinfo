@@ -15,12 +15,6 @@ import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
  *
  */
 public class SpeciesFile {
-	public static void main(String[] args) {
-		GFFtype[] gff = GFFtype.values();
-		for (GFFtype gfFtype : gff) {
-			System.out.println(gfFtype);
-		}
-	}
 	int taxID = 0;
 	/** 文件版本 */
 	String version = "";
@@ -38,7 +32,6 @@ public class SpeciesFile {
 	String indexChr;
 	/** 各种gffgene文件放在一起，有ucsc，ncbi，tigr，tair等等
 	 * GffType SepSign.SEP_INFO Gfffile SepSign.SEP_ID GffType SepSign.SEP_INFO Gfffile
-	 *  
 	 *  */
 	String gffGeneFile;
 	/** gff的repeat文件，从ucsc下载 */
@@ -74,13 +67,6 @@ public class SpeciesFile {
 	boolean searched = false;
 	/** 查找的service层 */
 	ServSpeciesFile servSpeciesFile = new ServSpeciesFile();
-	
-//	/** 设定染色体长度信息 */
-//	public void setChrInfo(ArrayList<String>) {
-//		
-//	}
-//	/** 获得染色体长度信息 */
-//	public void getChrLen
 	
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
@@ -158,7 +144,7 @@ public class SpeciesFile {
 	}
 	public String getIndexChromFa(SoftMapping softMapping) {
 		filledHashIndexPath(indexChr, hashSoftware2ChrIndexPath);
-		return hashSoftware2ChrIndexPath.get(softMapping);
+		return hashSoftware2ChrIndexPath.get(softMapping.toString());
 	}
 
 	public void setIndexRefseq(String indexRefseq) {
@@ -303,6 +289,6 @@ public class SpeciesFile {
 	
 	}
 	public static enum GFFtype {
-		NCBI , UCSC,PLANT,TIGR,CUFFLINKS
+		GFF_NCBI , GFF_UCSC,GFF_PLANT,GFF_TIGR,GFF_CUFFLINKS
 	}
 }

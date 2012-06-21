@@ -24,7 +24,7 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.test.testextend.a;
 
@@ -72,7 +72,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	public GffDetailGene searchLOC(String accID) {
 		GffDetailGene gffDetailGene = super.searchLOC(accID);
 		if (gffDetailGene == null) {
-			CopedID copedID = new CopedID(accID, taxID, false);
+			GeneID copedID = new GeneID(accID, taxID, false);
 			String locID = null;
 			try {
 				locID = getHashGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
@@ -91,7 +91,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @return
 	 * 没有就返回null
 	 */
-	public GffDetailGene searchLOC(CopedID copedID) {
+	public GffDetailGene searchLOC(GeneID copedID) {
 		String locID = getHashGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
 		return super.searchLOC(locID);
 	}
@@ -180,7 +180,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		
 		ArrayList<String> lsAccID = getLOCIDList();
 		for (String accID : lsAccID) {
-			CopedID copedID = new CopedID(accID, taxID, false);
+			GeneID copedID = new GeneID(accID, taxID, false);
 			String[] tmpAccID = new String[2];
 			tmpAccID[0] = copedID.getAccID();
 			tmpAccID[1] = copedID.getGenUniID();
@@ -314,8 +314,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		ArrayList<GffDetailGene> lsGffDetailGenes = getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				CopedID copedID = gffGeneIsoInfo.getCopedID();
-				if (copedID.getIDtype() != CopedID.IDTYPE_ACCID || copedID.getSymbol() == null || copedID.getSymbol().equals("")) {
+				GeneID copedID = gffGeneIsoInfo.getCopedID();
+				if (copedID.getIDtype() != GeneID.IDTYPE_ACCID || copedID.getSymbol() == null || copedID.getSymbol().equals("")) {
 					txtGtf.writefileln(copedID.getSymbol() + "\t" + gffGeneIsoInfo.getName());
 				}
 				else {

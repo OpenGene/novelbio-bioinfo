@@ -10,7 +10,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
@@ -32,7 +32,7 @@ public class Scr2Target {
 	 */
 	public static void getGene2RelateKo(String pathName, List<String> accID,String ResultFIleScr2Target, String resultFIleAttribute,int QtaxID,boolean blast,int subTaxID,double evalue) throws Exception
 	{
-		CopedID copedID = null;
+		GeneID copedID = null;
 		ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
 		ServKEntry servKEntry = new ServKEntry();
 		//丛数据库获得taxID
@@ -40,7 +40,7 @@ public class Scr2Target {
 		{
 			for (int i = 0; i < accID.size(); i++) 
 			{
-				copedID = new CopedID(accID.get(i), 0);
+				copedID = new GeneID(accID.get(i), 0);
 				if (copedID.getTaxID() != 0) {
 					QtaxID = copedID.getTaxID();
 					break;
@@ -440,7 +440,7 @@ public class Scr2Target {
 			}
 			else if (qGenKegInfo[3] !=null)
 			{
-				CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, qGenKegInfo[1], QtaxID);
+				GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, qGenKegInfo[1], QtaxID);
 				queryGenInfo[0] = copedID.getSymbol();
 				queryGenInfo[2] = copedID.getDescription();
 				queryGenInfo[1] = QtaxID + "";
@@ -450,7 +450,7 @@ public class Scr2Target {
 			{
 				//如果geneID存在
 				if (qGenKegInfo[1] != null) {
-					CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, qGenKegInfo[1], QtaxID);
+					GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, qGenKegInfo[1], QtaxID);
 					queryGenInfo[0] = copedID.getSymbol();
 					queryGenInfo[2] = copedID.getDescription();
 					queryGenInfo[1] = QtaxID + "";
@@ -461,7 +461,7 @@ public class Scr2Target {
 				}
 				
 				queryGenInfo[3] = qGenKegInfo[4]; queryGenInfo[4] = qGenKegInfo[5];
-				CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, qGenKegInfo[6], 0);
+				GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, qGenKegInfo[6], 0);
 				//如果没有symbol
 				queryGenInfo[5] = copedID.getSymbol();
 				queryGenInfo[6] = copedID.getDescription();

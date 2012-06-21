@@ -20,7 +20,6 @@ import org.omg.CosNaming._BindingIteratorImplBase;
 
 public class FileOperate {
 	private static Logger logger = Logger.getLogger(FileOperate.class);
-	
 	public FileOperate() {
 	}
 	/**
@@ -123,7 +122,7 @@ public class FileOperate {
 			   FileInputStream fis = null;
                try{
                    fis = new FileInputStream(file);  
-                   return fis.available()/1024;
+                   return (double)fis.available()/1024;
                }catch(Exception e1){
             	   logger.error("IO出错！");
                    return -1000000000;
@@ -207,25 +206,21 @@ public class FileOperate {
 	 *            文件 wfese 认作 "wfese"和""<br>
 	 * @return 返回包含目标文件名的ArrayList。里面是string[2] 1:文件名 2：后缀
 	 */
-	public static ArrayList<String[]> getFoldFileName(String filePath,
-			String filename, String suffix) {
+	public static ArrayList<String[]> getFoldFileName(String filePath, String filename, String suffix) {
 		// 匹配文件名与后缀名
-		Pattern pattern = Pattern.compile("(.*)\\.(\\w*)",
-				Pattern.CASE_INSENSITIVE);
+		Pattern pattern = Pattern.compile("(.*)\\.(\\w*)", Pattern.CASE_INSENSITIVE);
 		Matcher matcher;
 		String name = ""; // 文件名
 		String houzhuiming = ""; // 后缀名
 		String[] filenamefinal;
 		filePath = removeSep(filePath);
-		if (filename == null || filename.equals("*") )//|| filename.equals(""))
-		{
+		if (filename == null || filename.equals("*") ) {//|| filename.equals(""))
 			filename = ".*";
 		}
 		if (suffix.equals("*")) {
 			suffix = ".*";
 		}
 		// ================================================================//
-
 		ArrayList<String[]> ListFilename = new ArrayList<String[]>();
 		File file = new File(filePath);
 		if (!file.exists()) {// 没有文件，则返回空
@@ -291,7 +286,9 @@ public class FileOperate {
 		}
 		return true;
 	}
-
+public static void main(String[] args) {
+	createFolders("/home/zong0jie/Desktop/platformtest/output/test");
+}
 	/**
 	 * 多级目录创建
 	 * 
@@ -302,17 +299,16 @@ public class FileOperate {
 	 * @return 返回创建文件后的路径 例如 c:/myf/a/b/c
 	 */
 	public static boolean createFolders(String folderPath) {
-		if (isFileExist(folderPath)) {
-			if (isFileDirectory(folderPath))
-				return true;
-			else
-				return false;
-		}
+		if (isFileExist(folderPath))
+			return false;
+		if (isFileDirectory(folderPath))
+			return true;
+		
 		String foldUpper = folderPath;
 		String creatPath = "";
 		boolean flag = true;
 		while (flag) {
-			if (isFileExist(foldUpper)) {
+			if (isFileDirectory(foldUpper)) {
 				flag = false;
 				break;
 			}
@@ -333,14 +329,10 @@ public class FileOperate {
 		}
 		return true;
 	}
-
 	/**
 	 * 新建文件
-	 * 
-	 * @param filePathAndName
-	 *            文本文件完整绝对路径及文件名
-	 * @param fileContent
-	 *            文本文件内容
+	 * @param filePathAndName 文本文件完整绝对路径及文件名
+	 * @param fileContent 文本文件内容
 	 * @return
 	 */
 	public static void createFile(String filePathAndName, String fileContent) {
@@ -362,16 +354,11 @@ public class FileOperate {
 			logger.error("创建文件操作出错");
 		}
 	}
-
 	/**
 	 * 有编码方式的文件创建
-	 * 
-	 * @param filePathAndName
-	 *            文本文件完整绝对路径及文件名
-	 * @param fileContent
-	 *            文本文件内容
-	 * @param encoding
-	 *            编码方式 例如 GBK 或者 UTF-8
+	 * @param filePathAndName 文本文件完整绝对路径及文件名
+	 * @param fileContent 文本文件内容
+	 * @param encoding 编码方式 例如 GBK 或者 UTF-8
 	 * @return
 	 */
 	public static void createFile(String filePathAndName, String fileContent,
@@ -392,12 +379,9 @@ public class FileOperate {
 			logger.error("创建文件操作出错");
 		}
 	}
-
 	/**
 	 * 删除文件
-	 * 
-	 * @param filePathAndName
-	 *            文本文件完整绝对路径及文件名 文件不存在则返回false
+	 * @param filePathAndName 文本文件完整绝对路径及文件名 文件不存在则返回false
 	 * @return Boolean 成功删除返回true遭遇异常返回false
 	 */
 	public static boolean delFile(String filePathAndName) {
@@ -417,12 +401,9 @@ public class FileOperate {
 		}
 		return bea;
 	}
-
 	/**
 	 * 删除文件夹
-	 * 
-	 * @param folderPath
-	 *            文件夹完整绝对路径
+	 * @param folderPath 文件夹完整绝对路径
 	 * @return
 	 */
 	public static void delFolder(String folderPath) {
@@ -436,7 +417,6 @@ public class FileOperate {
 			logger.error("删除文件夹操作出错");
 		}
 	}
-
 	/**
 	 * 删除指定文件夹下所有文件,
 	 * 
@@ -470,7 +450,6 @@ public class FileOperate {
 		}
 		return bea;
 	}
-
 	/**
 	 * 复制单个文件
 	 * 
@@ -565,21 +544,15 @@ public class FileOperate {
 			logger.error("复制整个文件夹内容操作出错");
 		}
 	}
-
 	/**
 	 * 文件改名,如果已有同名文件存在，则不改名并返回
-	 * 
-	 * @param oldName
-	 *            包含全部路径的文件名
-	 * @param newName
-	 *            要修改的文件名,不包含路径
+	 * @param oldName 包含全部路径的文件名
+	 * @param newName 要修改的文件名,不包含路径
 	 * @return
 	 */
 	public static void changeFileName(String oldName, String newName) {
 		changeFileName(oldName, newName,false);
 	}
-	
-	
 	/**
 	 * 只修输入的文件名，并不直接操作文件
 	 * 文件添加后缀并改后缀名，如果一样则不修改
@@ -681,7 +654,6 @@ public class FileOperate {
 		// 文件原地址
 		File oldFile = new File(oldName);
 		// 文件新（目标）地址
-
 		File fnew = new File(oldFile.getParentFile() + File.separator + newName);
 		if (fnew.exists()&&!cover) // 如果有文件存在，则不变
 		{
@@ -693,22 +665,14 @@ public class FileOperate {
 		}
 		oldFile.renameTo(fnew);
 	}
-	
-	
-	
-	
-	
-	
 	/**
 	 * 移动文件，如果新地址有同名文件，则不移动并返回<br>
 	 * 可以创建一级新文件夹<br>
 	 * 如果没有文件则返回<br>
 	 * 注意：新文件夹后不要加\\<br>
 	 * 
-	 * @param oldPath
-	 *            文件路径
-	 * @param newPath
-	 *            新文件所在的文件夹
+	 * @param oldPath 文件路径
+	 * @param newPath  新文件所在的文件夹
 	 * @return 新文件夹路径名
 	 * null:没有成功
 	 */
@@ -761,8 +725,7 @@ public class FileOperate {
 			fnew.delete();
 		}
 		if (!oldFile.renameTo(fnew)) {
-			if (copyFile(oldFileName, newPath + newName, cover))
-			{
+			if (copyFile(oldFileName, newPath + newName, cover)) {
 				oldFile.delete();
 				return true;
 			}
@@ -874,10 +837,10 @@ public class FileOperate {
 	/**
 	 * 判断文件是否存在，并且有一定的大小而不是空文件
 	 * @param fileName 如果为null, 直接返回false
-	 * @param size 大小
+	 * @param size 大小 K为单位
 	 * @return
 	 */
-	public static boolean isFileExist(String fileName, int size) {
+	public static boolean isFileExistAndBigThanSize(String fileName, double size) {
 		if (isFileExist(fileName) && getFileSize(fileName) >= size) {
 			return true;
 		}

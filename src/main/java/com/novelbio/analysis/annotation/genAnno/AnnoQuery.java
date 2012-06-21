@@ -20,7 +20,7 @@ import com.novelbio.database.domain.geneanno.Uni2GoInfo;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 /**
  * ÅúÁ¿×¢ÊÍ
  * @author zong0jie
@@ -99,8 +99,8 @@ public class AnnoQuery {
 		String[] result = ArrayOperate.copyArray(info, info.length + 2);
 		result[result.length - 1] = "";
 		result[result.length - 2] = "";
-		CopedID copedID = new CopedID(accID, taxID);
-		if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+		GeneInfo copedID = new GeneInfo(accID, taxID);
+		if (copedID.getIDtype().equals(GeneInfo.IDTYPE_ACCID)) {
 			return result;
 		}
 		else {
@@ -122,8 +122,8 @@ public class AnnoQuery {
 		result[result.length - 1] = "";result[result.length - 2] = "";
 		result[result.length - 3] = "";result[result.length - 4] = "";
 		result[result.length - 5] = "";
-		CopedID copedID = new CopedID(accID, taxID);
-		if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+		GeneInfo copedID = new GeneInfo(accID, taxID);
+		if (copedID.getIDtype().equals(GeneInfo.IDTYPE_ACCID)) {
 			return result;
 		}
 		else {
@@ -144,7 +144,7 @@ public class AnnoQuery {
 		ArrayList<String[]> lsGeneInfo = ExcelTxtRead.readLsExcelTxt(geneFile, 1);
 		for (String[] string : lsGeneInfo) {
 			String accID = string[colGeneID];
-			CopedID copedID = new CopedID(accID, taxID);
+			GeneInfo copedID = new GeneInfo(accID, taxID);
 			String[] resString = ArrayOperate.copyArray(string, string.length + 1);
 			resString[resString.length - 1] = copedID.getGenUniID();
 			txtOut.writefileln(resString);

@@ -1,15 +1,10 @@
 package com.novelbio.analysis.seq.genomeNew.getChrSequence;
 
-import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.ibatis.builder.xml.dynamic.TrimSqlNode;
-import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
-import org.hamcrest.core.Is;
 
-import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.analysis.seq.reseq.SoapsnpInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -19,18 +14,66 @@ import com.novelbio.base.dataStructure.PatternOperate;
  * 本类与Seq没有关系
  */
 public class SeqFasta implements Cloneable {
-	
+	private static Logger logger = Logger.getLogger(SeqFasta.class);
+
 	public static final int SEQ_UNKNOWN = 128;
 	public static final int SEQ_PRO = 256;
 	public static final int SEQ_DNA = 512;
 	public static final int SEQ_RNA = 1024;
 
+	public static final String AA3_Ala = "Ala";
+	public static final String AA3_Arg = "Arg";
+	public static final String AA3_Asp = "Asp";
+	public static final String AA3_Cys = "Cys";
+	public static final String AA3_Gln = "Gln";
+	public static final String AA3_Glu = "Glu";
+	public static final String AA3_His = "His";
+	public static final String AA3_Ile = "Ile";
+	public static final String AA3_Gly = "Gly";
+	public static final String AA3_Asn = "Asn";
+	public static final String AA3_Leu = "Leu";
+	public static final String AA3_Lys = "Lys";
+	public static final String AA3_Met = "Met";
+	public static final String AA3_Phe = "Phe";
+	public static final String AA3_Pro = "Pro";
+	public static final String AA3_Ser = "Ser";
+	public static final String AA3_Thr = "Thr";
+	public static final String AA3_Trp = "Trp";
+	public static final String AA3_Tyr = "Tyr";
+	public static final String AA3_Val = "Val";
+	/** 用X表示 */
+	public static final String AA3_STOP = "***";
 	
+	public static final String AA1_Ala = "A";
+	public static final String AA1_Arg = "R";
+	public static final String AA1_Asp = "D";
+	public static final String AA1_Cys = "C";
+	public static final String AA1_Gln = "Q";
+	public static final String AA1_Glu = "E";
+	public static final String AA1_His = "H";
+	public static final String AA1_Ile = "I";
+	public static final String AA1_Gly = "G";
+	public static final String AA1_Asn = "N";
+	public static final String AA1_Leu = "L";
+	public static final String AA1_Lys = "K";
+	public static final String AA1_Met = "M";
+	public static final String AA1_Phe = "F";
+	public static final String AA1_Pro = "P";
+	public static final String AA1_Ser = "S";
+	public static final String AA1_Thr = "T";
+	public static final String AA1_Trp = "W";
+	public static final String AA1_Tyr = "Y";
+	public static final String AA1_Val = "V";
+	/** 用X表示 */
+	public static final String AA1_STOP = "*";
+	/** 反向互补哈希表 */
+	private static HashMap<Character, Character> compmap = null;// 碱基翻译哈希表
+	/** 蛋白一位和三位编号转换 */
+	static HashMap<String, String> hashAAchange = null;
+	/** 三联密码子的配对情况表 */
+	static HashMap<String, String> hashCode3 = null;
 	protected String SeqName;
 	protected String SeqSequence = "";
-
-	private static Logger logger = Logger.getLogger(SeqFasta.class);
-
 	/**
 	 * 结果的文件是否转化为大小写 True：小写 False：大写 null：不变
 	 * @return
@@ -38,6 +81,13 @@ public class SeqFasta implements Cloneable {
 	protected Boolean TOLOWCASE = null;
 	public void setTOLOWCASE(Boolean TOLOWCASE) {
 		this.TOLOWCASE = TOLOWCASE;
+	}
+	/**
+	 * nr序列的长度
+	 * @return
+	 */
+	public int getLength() {
+		return SeqSequence.length();
 	}
 	/**
 	 * 给定左右的坐标，然后将seqfasta截短
@@ -57,19 +107,6 @@ public class SeqFasta implements Cloneable {
 		seqFasta.SeqSequence = SeqSequence.substring(start, end);
 		return seqFasta;
 	}
-	/**
-	 * nr序列的长度
-	 * @return
-	 */
-	public int getLength() {
-		return SeqSequence.length();
-	}
-	
-	/**
-	 * 反向互补哈希表
-	 */
-	private static HashMap<Character, Character> compmap = null;// 碱基翻译哈希表
-
 	/**
 	 * 获得互补配对hash表<br>
 		 * 生物信息学中常用的 18 个碱基字母 字母 碱基 单碱基 A A C C G G I I T T U U<br>
@@ -128,62 +165,7 @@ public class SeqFasta implements Cloneable {
 		compmap.put(Character.valueOf('r'), Character.valueOf('y'));
 		return compmap;
 	}
-	public static final String AA3_Ala = "Ala";
-	public static final String AA3_Arg = "Arg";
-	public static final String AA3_Asp = "Asp";
-	public static final String AA3_Cys = "Cys";
-	public static final String AA3_Gln = "Gln";
-	public static final String AA3_Glu = "Glu";
-	public static final String AA3_His = "His";
-	public static final String AA3_Ile = "Ile";
-	public static final String AA3_Gly = "Gly";
-	public static final String AA3_Asn = "Asn";
-	public static final String AA3_Leu = "Leu";
-	public static final String AA3_Lys = "Lys";
-	public static final String AA3_Met = "Met";
-	public static final String AA3_Phe = "Phe";
-	public static final String AA3_Pro = "Pro";
-	public static final String AA3_Ser = "Ser";
-	public static final String AA3_Thr = "Thr";
-	public static final String AA3_Trp = "Trp";
-	public static final String AA3_Tyr = "Tyr";
-	public static final String AA3_Val = "Val";
-	/**
-	 * 用X表示
-	 */
-	public static final String AA3_STOP = "***";
-	
-	public static final String AA1_Ala = "A";
-	public static final String AA1_Arg = "R";
-	public static final String AA1_Asp = "D";
-	public static final String AA1_Cys = "C";
-	public static final String AA1_Gln = "Q";
-	public static final String AA1_Glu = "E";
-	public static final String AA1_His = "H";
-	public static final String AA1_Ile = "I";
-	public static final String AA1_Gly = "G";
-	public static final String AA1_Asn = "N";
-	public static final String AA1_Leu = "L";
-	public static final String AA1_Lys = "K";
-	public static final String AA1_Met = "M";
-	public static final String AA1_Phe = "F";
-	public static final String AA1_Pro = "P";
-	public static final String AA1_Ser = "S";
-	public static final String AA1_Thr = "T";
-	public static final String AA1_Trp = "W";
-	public static final String AA1_Tyr = "Y";
-	public static final String AA1_Val = "V";
-	/**
-	 * 用X表示
-	 */
-	public static final String AA1_STOP = "*";
- 
-	/**
-	 * 三联密码子的配对情况表
-	 */
-	static HashMap<String, String> hashCode3 = null;
-	private static HashMap<String, String> getHashCode3()
-	{
+	private static HashMap<String, String> getHashCode3() {
 		if (hashCode3 != null) {
 			return hashCode3;
 		}
@@ -327,14 +309,7 @@ public class SeqFasta implements Cloneable {
 		return hashAAquality;
 	}
 
-	
-	/**
-	 * 蛋白一位和三位编号转换
-	 */
-	static HashMap<String, String> hashAAchange = null;
-	/**
-	 * 蛋白一位和三位编号转换
-	 */
+	/** 蛋白一位和三位编号转换 */
 	private static HashMap<String, String> getHashAAchange()
 	{
 		if (hashAAchange != null) {
@@ -731,8 +706,7 @@ public class SeqFasta implements Cloneable {
 	/**
 	 * 统计序列中小写序列，N的数量以及X的数量等
 	 */
-	public ArrayList<LocInfo> getSeqInfo()
-	{
+	public ArrayList<LocInfo> getSeqInfo() {
 		//string0: flag string1: location string2:endLoc
 		ArrayList<LocInfo> lsResult = new ArrayList<LocInfo>();
 		char[] seq = SeqSequence.toCharArray();
@@ -946,20 +920,18 @@ public class SeqFasta implements Cloneable {
 		int num = 0;
 		boolean flagFindU = false;
 		for (char c : chr) {
-			if (c == 'u' || c == 'U') {
+			if (c == 'u' || c == 'U')
 				flagFindU = true;
-			}
-			if (getCompMap().containsKey(c)) {
+			
+			if (getCompMap().containsKey(c))
 				continue;
-			}
-			else {
+			else
 				num ++ ;
-			}
 		}
 		if (num == 0) {
-			if (flagFindU) {
+			if (flagFindU)
 				return SEQ_RNA;
-			}
+			
 			return SEQ_DNA;
 		}
 		else if ((double)num/getLength() < 0.1) {
@@ -969,13 +941,8 @@ public class SeqFasta implements Cloneable {
 			return SEQ_PRO;
 		}
 	}
-	/**
-	 * 根据TOLOWCASE返回序列
-	 */
+	/** 根据TOLOWCASE返回序列 */
 	public String toString() {
-//		if (SeqSequence.equals("")) {
-//			return "";
-//		}
 		if (TOLOWCASE == null) {
 			return SeqSequence;
 		}
@@ -983,22 +950,15 @@ public class SeqFasta implements Cloneable {
 			return TOLOWCASE.equals(true) ?  SeqSequence.toLowerCase() :  SeqSequence.toUpperCase();
 		}
 	}
-	/**
-	 * 返回AA的fasta序列
-	 */
+	/** 返回AA的fasta序列 */
 	public String toStringAAfasta() {
 		return ">" + SeqName + TxtReadandWrite.ENTER_LINUX + toStringAA(true, 0);
 	}
-	/**
-	 * 返回Nr的fasta序列
-	 */
+	/** 返回Nr的fasta序列 */
 	public String toStringNRfasta() {
 		return ">" + SeqName + TxtReadandWrite.ENTER_LINUX + toString();
 	}
-
-	/**
-	 * 克隆序列
-	 */
+	/** 克隆序列 */
 	public SeqFasta clone() {
 		SeqFasta seqFasta = null;
 		try {
@@ -1013,7 +973,6 @@ public class SeqFasta implements Cloneable {
 		}
 		return seqFasta;
 	}
-	
 	////////////////////// static 方法 //////////////////////////////////////
 	/**
 	 * 当查找完motif后，获得motif的titile
@@ -1042,5 +1001,3 @@ public class SeqFasta implements Cloneable {
 	}
 	
 }
-
-

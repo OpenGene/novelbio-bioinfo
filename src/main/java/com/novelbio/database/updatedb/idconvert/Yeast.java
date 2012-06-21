@@ -8,7 +8,7 @@ import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class Yeast {
@@ -131,12 +131,12 @@ public class Yeast {
 			if (!genUniID2[0].equals("0")) {
 				aGeneInfo = new GeneInfo();
 				aGeneInfo.setGeneUniID(genUniID2[0]);
-				aGeneInfo.setIDType(CopedID.IDTYPE_GENEID);
+				aGeneInfo.setIDType(GeneInfo.IDTYPE_GENEID);
 			}
 			else {
 				aGeneInfo = new UniGeneInfo();
 				aGeneInfo.setGeneUniID(genUniID2[1]);
-				aGeneInfo.setIDType(CopedID.IDTYPE_UNIID);
+				aGeneInfo.setIDType(GeneInfo.IDTYPE_UNIID);
 			}
 			
 			//Symbol
@@ -235,11 +235,11 @@ public class Yeast {
 			AGeneInfo aGeneInfo = null;
 			if (!genUniID[0].equals("0")) {
 				aGeneInfo = new GeneInfo();
-				aGeneInfo.setIDType(CopedID.IDTYPE_GENEID);
+				aGeneInfo.setIDType(GeneInfo.IDTYPE_GENEID);
 			}
 			else if (genUniID[1] != null || !genUniID[1].equals("")) {
 				aGeneInfo = new UniGeneInfo();
-				aGeneInfo.setIDType(CopedID.IDTYPE_UNIID);
+				aGeneInfo.setIDType(GeneInfo.IDTYPE_UNIID);
 			}
 			aGeneInfo.setGeneUniID(genUniID[0]);
 			aGeneInfo.setDescrp(ss[3]);

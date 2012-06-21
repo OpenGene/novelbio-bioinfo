@@ -11,7 +11,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 
@@ -19,7 +19,27 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	public static final String TEST_GO = "go";
 	public static final String TEST_KEGGPATH = "KEGGpathway";
 	
-	public AbstFunTest(ArrayList<CopedID> lsCopedIDsTest, ArrayList<CopedID> lsCopedIDsBG, boolean blast) {
+	int taxID = 0;
+	boolean blast = false;
+	int[] blastTaxID = null;
+	double blastEvalue = 1e-10;
+	ArrayList<GeneID> lsCopedIDsTest = null;
+	ArrayList<GeneID> lsCopedIDsBG = null;
+	/** genUniID item,item格式  */
+	ArrayList<String[]> lsTest = null;
+	/** genUniID item,item格式 */
+	ArrayList<String[]> lsBG = null;
+	String BGfile = "";
+	/**
+	 * gene2CopedID的对照表，多个accID对应同一个geneID的时候就用这个hash来处理
+	 * 用途，当做elimFisher的时候，最后会得到一系列的geneID，而每个geneID可能对应了多个accID
+	 * 这时候就用geneID作为key，将accID放入value的list中。
+	 * 但是很可能value里面的copedID有相同的accID，这时候为了避免这种情况，我新建了一个hashAcc2CopedID
+	 * 专门用于去冗余
+	 */
+	HashMap<String, ArrayList<GeneID>> hashgene2CopedID = new HashMap<String, ArrayList<GeneID>>();
+	
+	public AbstFunTest(ArrayList<GeneID> lsCopedIDsTest, ArrayList<GeneID> lsCopedIDsBG, boolean blast) {
 		this.lsCopedIDsTest = lsCopedIDsTest;
 		this.lsCopedIDsBG = lsCopedIDsBG;
 		this.blast = blast;
@@ -37,25 +57,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		this.blastTaxID = taxID;
 	}
 	
-	int taxID = 0;
-	boolean blast = false;
-	int[] blastTaxID = null;
-	double blastEvalue = 1e-10;
-	ArrayList<CopedID> lsCopedIDsTest = null;
-	ArrayList<CopedID> lsCopedIDsBG = null;
-	/** genUniID item,item格式  */
-	ArrayList<String[]> lsTest = null;
-	/** genUniID item,item格式 */
-	ArrayList<String[]> lsBG = null;
-	String BGfile = "";
-	/**
-	 * gene2CopedID的对照表，多个accID对应同一个geneID的时候就用这个hash来处理
-	 * 用途，当做elimFisher的时候，最后会得到一系列的geneID，而每个geneID可能对应了多个accID
-	 * 这时候就用geneID作为key，将accID放入value的list中。
-	 * 但是很可能value里面的copedID有相同的accID，这时候为了避免这种情况，我新建了一个hashAcc2CopedID
-	 * 专门用于去冗余
-	 */
-	HashMap<String, ArrayList<CopedID>> hashgene2CopedID = new HashMap<String, ArrayList<CopedID>>();
+
 	
 	/**
 	 * 设定物种
@@ -76,15 +78,15 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * @param lsTest
 	 * @return
 	 */
-	private ArrayList<String[]> getLsTestFromLsBG(ArrayList<CopedID> lsTest)
+	private ArrayList<String[]> getLsTestFromLsBG(ArrayList<GeneID> lsTest)
 	{
 		//去冗余用的
-		HashSet<CopedID> hashCopedIDs = new HashSet<CopedID>();
-		for (CopedID copedID : lsTest) {
+		HashSet<GeneID> hashCopedIDs = new HashSet<GeneID>();
+		for (GeneID copedID : lsTest) {
 			hashCopedIDs.add(copedID);
 		}
 		if (blast) {
-			for (CopedID copedID : hashCopedIDs) {
+			for (GeneID copedID : hashCopedIDs) {
 				copedID.setBlastInfo(blastEvalue, blastTaxID);
 			}
 		}
@@ -97,8 +99,8 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 			hashBG.put(strings[0], strings[1]);
 		}
 		ArrayList<String[]> lsout = new ArrayList<String[]>();
-		ArrayList<CopedID> lsNo = new ArrayList<CopedID>();
-		for (CopedID copedID : hashCopedIDs) {
+		ArrayList<GeneID> lsNo = new ArrayList<GeneID>();
+		for (GeneID copedID : hashCopedIDs) {
 			String tmpresult = hashBG.get(copedID.getGenUniID());
 			if (tmpresult == null) {
 				lsNo.add(copedID);
@@ -122,12 +124,12 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		return lsBG;
 	}
 	public void setLsTestAccID(ArrayList<String> lsCopedID) {
-		lsCopedIDsTest = new ArrayList<CopedID>();
+		lsCopedIDsTest = new ArrayList<GeneID>();
 		lsTestResult = new ArrayList<String[]>();
 		lsAnno = null;
 		
 		for (String string : lsCopedID) {
-			CopedID copedID = new CopedID(string, taxID, false);
+			GeneID copedID = new GeneID(string, taxID, false);
 			if (blast) {
 				copedID.setBlastInfo(blastEvalue, blastTaxID);
 			}
@@ -137,7 +139,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		lsTest = getLsTestFromLsBG( lsCopedIDsTest);
 	}
 	
-	public void setLsTest(ArrayList<CopedID> lsCopedIDs) {
+	public void setLsTest(ArrayList<GeneID> lsCopedIDs) {
 		this.lsCopedIDsTest = lsCopedIDs;
 		lsAnno = null;
 		fillCopedIDInfo(lsCopedIDsTest);
@@ -167,7 +169,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	public void setLsBGAccID(String fileName, int colNum) {
 		lsTestResult = new ArrayList<String[]>();
 		if (lsCopedIDsBG == null) {
-			lsCopedIDsBG = new ArrayList<CopedID>();
+			lsCopedIDsBG = new ArrayList<GeneID>();
 		}
 		lsCopedIDsBG.clear();
 		
@@ -181,7 +183,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 			logger.error("BG accID file is not correct: "+ fileName);
 		}
 		for (String[] strings : accID) {
-			CopedID copedID = new CopedID(strings[0], taxID, false);
+			GeneID copedID = new GeneID(strings[0], taxID, false);
 			if (blast) {
 				copedID.setBlastInfo(blastEvalue, blastTaxID);
 			}
@@ -194,9 +196,9 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * 读取背景文件，指定读取某一列
 	 * @param fileName
 	 */
-	public void setLsBGCopedID(ArrayList<CopedID> lsBGaccID) {
+	public void setLsBGCopedID(ArrayList<GeneID> lsBGaccID) {
 		lsTestResult = new ArrayList<String[]>();
-		for (CopedID copedID : lsBGaccID) {
+		for (GeneID copedID : lsBGaccID) {
 			copedID.setBlastInfo(blastEvalue, blastTaxID);
 		}
 		this.lsCopedIDsBG = lsBGaccID;
@@ -318,19 +320,19 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * geneID goID,goID,goID的样式
 	 * 并按照genUniID去冗余
 	 */
-	protected abstract ArrayList<String[]> convert2Item(Collection<CopedID> lsCopedIDs);
+	protected abstract ArrayList<String[]> convert2Item(Collection<GeneID> lsCopedIDs);
 	
 	/**
 	 * 设定hashgene2CopedID，就是一个geneID会对应多个accID的这种
 	 * @param lsCopedIDs
 	 */
-	private void fillCopedIDInfo(ArrayList<CopedID> lsCopedIDs)
+	private void fillCopedIDInfo(ArrayList<GeneID> lsCopedIDs)
 	{
 		//////////////  先 清 空  ////////////////////////
 		HashSet<String> hashAccID = new HashSet<String>();
 		hashgene2CopedID.clear();
 		////////////////////////////////////////////
-		for (CopedID copedID : lsCopedIDs) {
+		for (GeneID copedID : lsCopedIDs) {
 			//去冗余，accID相同去掉
 			if (hashAccID.contains(copedID.getAccID())) {
 				continue;
@@ -340,7 +342,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 				hashgene2CopedID.get(copedID.getGenUniID()).add(copedID);
 			}
 			else {
-				ArrayList<CopedID> lstmp = new ArrayList<CopedID>();
+				ArrayList<GeneID> lstmp = new ArrayList<GeneID>();
 				lstmp.add(copedID);
 				hashgene2CopedID.put(copedID.getGenUniID(), lstmp);
 			}

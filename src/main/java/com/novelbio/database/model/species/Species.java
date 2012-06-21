@@ -130,7 +130,7 @@ public class Species {
 	 * @param version
 	 * @return
 	 */
-	public String getGffRepeat(String version) {
+	public String getGffRepeat() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getGffRepeatFile();
 	}
@@ -169,10 +169,10 @@ public class Species {
 	}
 	/** 自动化升级 */
 	public void update() {
-		if (FileOperate.isFileExist(updateTaxInfoFile, 100))
+		if (FileOperate.isFileExistAndBigThanSize(updateTaxInfoFile, 0.05))
 			updateTaxInfo(updateTaxInfoFile);
 		
-		if (FileOperate.isFileExist(updateSpeciesFile, 100))
+		if (FileOperate.isFileExistAndBigThanSize(updateSpeciesFile, 0.05))
 			updateSpeciesFile(updateSpeciesFile);
 	}
 	/**
@@ -224,13 +224,13 @@ public class Species {
 			SpeciesFile speciesFile = new SpeciesFile();
 			String[] info = lsInfo.get(i);
 			int m = hashName2ColNum.get("taxid");
-			speciesFile.setTaxID(Integer.parseInt(info[m]));
+			speciesFile.setTaxID((int)Double.parseDouble(info[m]));
 			
 			m = hashName2ColNum.get("version");
 			speciesFile.setVersion(info[m]);
 			
 			m = hashName2ColNum.get("publishyear");
-			speciesFile.setPublishYear(Integer.parseInt(info[m]));
+			speciesFile.setPublishYear((int)Double.parseDouble(info[m]));
 			
 			m = hashName2ColNum.get("chrompath");
 			speciesFile.setChromPath(info[m]);

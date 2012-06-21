@@ -7,7 +7,7 @@ import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.service.ServAnno;
 
 
@@ -72,7 +72,7 @@ public class SymbolDesp
 			////////////////////////////////////////直接搜数据库///////////////////////////////////////////////////
 			for (int j = 0; j < tmpRefID.length; j++)
 			{
-				CopedID copedID = new CopedID(tmpRefID[j], taxID, false);
+				GeneID copedID = new GeneID(tmpRefID[j], taxID, false);
 				String[] tmpAnno = copedID.getAnno(false, 0, 0);
 				String symbol = tmpAnno[0];
 				String description = tmpAnno[1];

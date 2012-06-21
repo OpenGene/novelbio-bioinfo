@@ -24,7 +24,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.domain.geneanno.Gene2GoInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 
 public class SimpCoExp {
@@ -146,7 +146,7 @@ public class SimpCoExp {
 				dou[j] = Double.parseDouble(rawData[i][j+1]);
 			}
 			CoexpGenInfo coexpGenInfo = new CoexpGenInfo(rawData[i][0], taxID, dou);
-			if (filterNoDB && coexpGenInfo.getCopedID().getAccID().equals(CopedID.IDTYPE_ACCID)) {
+			if (filterNoDB && coexpGenInfo.getCopedID().getAccID().equals(GeneID.IDTYPE_ACCID)) {
 				continue;
 			}
 			lsCoexpInfo.add(coexpGenInfo); //如果有注释信息，则装入list
@@ -313,7 +313,7 @@ public class SimpCoExp {
 			}
 			else 
 			{
-				CopedID copedID = new CopedID(result[i][0], taxID);
+				GeneID copedID = new GeneID(result[i][0], taxID);
 				String[] tmpResult = new String[6];
 				///////////////////////////////////////////////////////////////////////////////////
 				//这一段放if里：只有当数据库中有时才计数
@@ -332,7 +332,7 @@ public class SimpCoExp {
 			}
 			else 
 			{
-				CopedID copedID = new CopedID(result[i][1], taxID, false);
+				GeneID copedID = new GeneID(result[i][1], taxID, false);
 				///////////////////////////////////////////////////////////////////////////////////
 				//这一段放if里：只有当数据库中有时才计数
 				//放在if外：不管数据库中是否含有都计数
@@ -379,15 +379,15 @@ public class SimpCoExp {
  */
 class CoexpGenInfo
 {
-	CopedID copedID;
+	GeneID copedID;
 	double[] expValue;
 	
 	public CoexpGenInfo(String accID, int taxID,double[] expValue) {
-		copedID = new CopedID(accID, taxID, false);
+		copedID = new GeneID(accID, taxID, false);
 		this.expValue = expValue;
 	}
 	
-	public CopedID getCopedID() {
+	public GeneID getCopedID() {
 		return copedID;
 	}
 	

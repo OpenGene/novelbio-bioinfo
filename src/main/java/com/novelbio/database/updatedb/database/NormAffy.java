@@ -10,7 +10,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 /**
  * 常规affy的注释文件，仅导入affy探针，其他注释通通不导入<br>
@@ -58,11 +58,11 @@ public class NormAffy extends ImportPerLine
 		if (ss[0].startsWith("Probe")) {
 			return true;
 		}
-		CopedID copedID = new CopedID(ss[0], taxID);
+		GeneID copedID = new GeneID(ss[0], taxID);
 		copedID.setUpdateDBinfo(dbInfo, true);
 		if (!ss[18].equals("---")) {
 			String[] ssGeneID = ss[18].split("///");
-			copedID.setUpdateGeneID(ssGeneID[0].trim(), CopedID.IDTYPE_GENEID);
+			copedID.setUpdateGeneID(ssGeneID[0].trim(), GeneID.IDTYPE_GENEID);
 		}
 		ArrayList<String> lsRefAccID = new ArrayList<String>();
 //		addRefAccID(lsRefAccID, ss[8]);

@@ -10,7 +10,7 @@ import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class Yeast {
@@ -104,12 +104,12 @@ class YeastDBxref extends ImportPerLine
 		if (ss[1].equals("IUBMB") || ss[1].equals("TCDB") || ss[1].equals("DIP") || ss[1].equals("BioGRID") || ss[1].equals("MetaCyc") || ss[1].equals("EUROSCARF")) {
 			return true;
 		}
-		CopedID copedID = null;
+		GeneInfo copedID = null;
 		if (ss[1].equals("NCBI") && ss[2].equals("Gene ID")) {
-			copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[0], taxID);
+			copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, ss[0], taxID);
 		}
 		else {
-			copedID = new CopedID(ss[0], taxID);
+			copedID = new GeneInfo(ss[0], taxID);
 		}
 		
 		if (ss[1].equals("NCBI") && ss[2].equals("RefSeq protein version ID")) {
@@ -199,7 +199,7 @@ class SGD_features extends ImportPerLine
 		if (ss.length < 16) {
 			return true;
 		}
-		CopedID copedID = new CopedID(ss[0], taxID);
+		GeneInfo copedID = new GeneInfo(ss[0], taxID);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SSC_ID, false);
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setTypeOfGene(ss[1]);
@@ -249,7 +249,7 @@ class Gene_Association extends ImportPerLine
 			return true;
 		}
 		String[] ss = lineContent.split("\t");
-		CopedID copedID = new CopedID(ss[1], taxID);
+		GeneInfo copedID = new GeneInfo(ss[1], taxID);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SSC_ID, false);
 		copedID.setUpdateGO(ss[4], ss[14], ss[6], ss[5], ss[0]);
 		return copedID.update(false);
@@ -277,7 +277,7 @@ class Ppa_ncbi_geneid extends ImportPerLine
 		String[] ss = lineContent.split("\t");
 		String accID = ss[0].split(":")[1];
 		String genUniID =ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim();
-		CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, genUniID, taxID);
+		GeneInfo copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, genUniID, taxID);
 		copedID.setUpdateAccID(accID);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_PPA_ID, false);
 		return copedID.update(true);
@@ -304,13 +304,13 @@ class Pipas_Fun extends ImportPerLine
 	boolean impPerLine(String lineContent) {
 		boolean flag0 = true, flag1 = true, flag2 = true, flag3 = true;
 		String[] ss = lineContent.split("\t");
-		CopedID copedID = new CopedID(ss[0], taxID);
+		GeneInfo copedID = new GeneInfo(ss[0], taxID);
 		
 		if (ss.length >= 2) {
-			copedID.setUpdateRefAccIDAdd(ss[1]);
+			copedID.addUpdateRefAccID(ss[1]);
 		}
 		if (ss.length >= 3) {
-			copedID.setUpdateRefAccIDAdd(ss[2]);
+			copedID.addUpdateRefAccID(ss[2]);
 		}
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_PPA_ID, true);
 		flag0 = copedID.update(true);
@@ -348,7 +348,7 @@ class Pipas_GO_Slim extends ImportPerLine
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
 		ss[0] = "PAS_"+ss[0];
-		CopedID copedID = new CopedID(ss[0], taxID);
+		GeneInfo copedID = new GeneInfo(ss[0], taxID);
 		
 		String[] ssGo = ss[1].split(";");
 		for (String string2 : ssGo) {

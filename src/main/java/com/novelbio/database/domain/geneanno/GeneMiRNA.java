@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.ibatis.migration.commands.NewCommand;
 
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 /**
  * 本表要导入专门的miRDB数据库中
@@ -13,7 +13,7 @@ import com.novelbio.database.model.modcopeid.CopedID;
  */
 public class GeneMiRNA {
 	public static void main(String[] args) {
-		CopedID copedID = new CopedID("let-7", 0);
+		GeneID copedID = new GeneID("let-7", 0);
 		System.out.println(copedID.getTaxID());
 	}
 	/**

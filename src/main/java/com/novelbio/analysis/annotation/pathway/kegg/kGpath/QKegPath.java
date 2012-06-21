@@ -10,7 +10,7 @@ import java.util.List;
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
 import com.novelbio.database.domain.geneanno.*;
 import com.novelbio.database.domain.kegg.*;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
 import com.novelbio.database.service.servkegg.ServKPathRelation;
@@ -59,15 +59,15 @@ public class QKegPath {
 	 */
 	public static String[] getKeggID(int taxID, String[] geneIDInfo,boolean blast,int subTaxID,double evalue ) 
 	{
-		CopedID copedID = null;
+		GeneID copedID = null;
 		if (geneIDInfo[1]!=null) {
-			copedID = new CopedID(CopedID.IDTYPE_GENEID, geneIDInfo[1], taxID);
+			copedID = new GeneID(GeneID.IDTYPE_GENEID, geneIDInfo[1], taxID);
 		}
 		else if (geneIDInfo[2]!=null) {
-			copedID = new CopedID(CopedID.IDTYPE_UNIID, geneIDInfo[2], taxID);
+			copedID = new GeneID(GeneID.IDTYPE_UNIID, geneIDInfo[2], taxID);
 		}
 		else {
-			copedID = new CopedID(geneIDInfo[0], taxID);
+			copedID = new GeneID(geneIDInfo[0], taxID);
 		}
 		copedID.setBlastInfo(evalue, subTaxID);
 		
@@ -82,8 +82,8 @@ public class QKegPath {
 		}
 		kegIDInfo[4] = copedID.getLsBlastInfos().get(0).getEvalue() + "";
 		kegIDInfo[5] = subTaxID + "";
-		kegIDInfo[6] = copedID.getCopedIDBlast().getGenUniID();
-		ArrayList<String> lsKO =  copedID.getCopedIDBlast().getKeggInfo().getLsKo();
+		kegIDInfo[6] = copedID.getGeneIDBlast().getGenUniID();
+		ArrayList<String> lsKO =  copedID.getGeneIDBlast().getKeggInfo().getLsKo();
 		if (lsKO == null || lsKO.size() == 0) {
 			return kegIDInfo;
 		}
@@ -115,11 +115,11 @@ public class QKegPath {
 		 * 1:geneID 	
 		 * 2:UniProtID :如果1没有这个才有
 		 */
-		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
+		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (int i = 0; i < accID.size(); i++) 
 		{
-			CopedID copedID = new CopedID(accID.get(i), taxID);
+			GeneID copedID = new GeneID(accID.get(i), taxID);
 			try {
 				if (hashCopedID.contains(copedID)) {
 					continue;
@@ -132,10 +132,10 @@ public class QKegPath {
 		
 			String[] geneInfo = new String[3];
 			geneInfo[0] = accID.get(i);
-			if (copedID.getIDtype().equals(CopedID.IDTYPE_GENEID)) {
+			if (copedID.getIDtype().equals(GeneID.IDTYPE_GENEID)) {
 				geneInfo[1] = copedID.getGenUniID();
 			}
-			else if (copedID.getIDtype().equals(CopedID.IDTYPE_UNIID)) {
+			else if (copedID.getIDtype().equals(GeneID.IDTYPE_UNIID)) {
 				geneInfo[2] = copedID.getGenUniID();
 			}
 			lsResult.add(geneInfo);

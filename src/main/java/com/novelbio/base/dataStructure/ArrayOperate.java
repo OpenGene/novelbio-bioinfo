@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
@@ -179,6 +180,13 @@ public class ArrayOperate {
 			}
 		}
 		return result;
+	}
+	public static<T> LinkedHashSet<T> removeDuplicate(Collection<T> colToverrideHashCode) {
+		LinkedHashSet<T> setRemoveDuplicate = new LinkedHashSet<T>();
+		for (T t : setRemoveDuplicate) {
+			setRemoveDuplicate.add(t);
+		}
+		return setRemoveDuplicate;
 	}
 	
 	/**

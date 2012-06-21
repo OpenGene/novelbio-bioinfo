@@ -93,7 +93,7 @@ import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
 import com.novelbio.generalConf.NovelBioConst;
@@ -112,12 +112,12 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		CopedID copedID = new CopedID("tp53", 9606);
-		CopedID copedID2 = new CopedID("tp53", 9606);
+		GeneInfo copedID = new GeneInfo("tp53", 9606);
+		GeneInfo copedID2 = new GeneInfo("tp53", 9606);
 		copedID2.setBlastInfo(1e10, 10090);
 		copedID2.getSymbol();
 		copedID2.setUpdateAccID("fefe");
-		HashSet<CopedID> hashSet = new HashSet<CopedID>();
+		HashSet<GeneInfo> hashSet = new HashSet<GeneInfo>();
 		hashSet.add(copedID);
 		hashSet.remove(copedID2);
 		System.out.println(hashSet.size());

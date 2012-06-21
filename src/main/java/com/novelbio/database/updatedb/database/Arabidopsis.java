@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
@@ -126,7 +126,7 @@ class TAIR_NCBI_GENEID_mapping extends ImportPerLine
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
-		CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[0], this.taxID);
+		GeneInfo copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, ss[0], this.taxID);
 		copedID.setUpdateAccID(ss[1]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ATH_TAIR, true);
 		return copedID.update(true);
@@ -160,7 +160,7 @@ class TAIR_NCBI_REFSEQ_mapping_PROT_RNA extends ImportPerLine
 			return false;
 		}
 		String[] ss = lineContent.split("\t");
-		CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[0], this.taxID);
+		GeneInfo copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, ss[0], this.taxID);
 		copedID.setUpdateAccID(ss[2]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ATH_TAIR, true);
 		copedID.setUpdateAccID(ss[1]);
@@ -196,7 +196,7 @@ class TAIR_Model_cDNA_associations extends ImportPerLine
 			return false;
 		}
 		String[] ss = lineContent.split("\t");
-		CopedID copedID = new CopedID(ss[0], taxID);
+		GeneInfo copedID = new GeneInfo(ss[0], taxID);
 		copedID.setUpdateRefAccID(ss[0], ss[1]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ATH_TAIR, true);
 		if (!copedID.update(true)) {
@@ -231,7 +231,7 @@ class Uniprot2AGI extends ImportPerLine
 		String[] ssAtID = ss[1].split(";");
 		//如果一个uniprotID对应多个atID，那么就导入多次
 		for (String string : ssAtID) {
-			CopedID copedID = new CopedID(ss[0], taxID);
+			GeneInfo copedID = new GeneInfo(ss[0], taxID);
 			copedID.setUpdateRefAccID(string);
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_UNIPROT_GenralID, false);
 			if (!copedID.update(false)) {
@@ -253,7 +253,7 @@ class TAIR_functional_descriptions extends ImportPerLine
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
-		CopedID copedID = new CopedID(ss[0], taxID);
+		GeneInfo copedID = new GeneInfo(ss[0], taxID);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ATH_TAIR, true);
 
 		GeneInfo geneInfo = new GeneInfo();
@@ -317,7 +317,7 @@ class ATH_GO_GOSLIM extends ImportPerLine
 		if (ss[0].equals("AT3G18140")) {
 			System.out.println("stop");
 		}
-		CopedID copedID = new CopedID(ss[0], taxID);
+		GeneInfo copedID = new GeneInfo(ss[0], taxID);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ATH_TAIR, true);
 		copedID.setUpdateGO(ss[5], NovelBioConst.DBINFO_ATH_TAIR, ss[9], ss[12], ss[13]);
 		return copedID.update(false);

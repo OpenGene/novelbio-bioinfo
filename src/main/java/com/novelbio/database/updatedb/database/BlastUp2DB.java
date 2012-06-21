@@ -1,6 +1,6 @@
 package com.novelbio.database.updatedb.database;
 
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class BlastUp2DB extends ImportPerLine{
@@ -42,8 +42,8 @@ public class BlastUp2DB extends ImportPerLine{
 		this.blastDBinfo = blastDBinfo;
 	}
 	
-	String queryIDType = CopedID.IDTYPE_ACCID;
-	String blastIDType = CopedID.IDTYPE_ACCID;
+	String queryIDType = GeneID.IDTYPE_ACCID;
+	String blastIDType = GeneID.IDTYPE_ACCID;
 	/**
 	 * 第一列，是accID还是geneID还是UniID
 	 * @param IDtype 默认是CopedID.IDTYPE_ACCID
@@ -62,26 +62,26 @@ public class BlastUp2DB extends ImportPerLine{
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
-		CopedID copedID = null;
-		if (!queryIDType.equals(CopedID.IDTYPE_ACCID)) {
-				copedID = new CopedID(queryIDType, ss[0], taxID);
+		GeneID copedID = null;
+		if (!queryIDType.equals(GeneID.IDTYPE_ACCID)) {
+				copedID = new GeneID(queryIDType, ss[0], taxID);
 		}
 		else {
-			copedID = new CopedID(ss[0], taxID);
+			copedID = new GeneID(ss[0], taxID);
 		}
 		
 		copedID.setUpdateDBinfo(queryDBinfo, false);
-		if (!blastIDType.equals(CopedID.IDTYPE_ACCID)) {
+		if (!blastIDType.equals(GeneID.IDTYPE_ACCID)) {
 			copedID.setUpdateBlastInfo(ss[1],blastIDType,  blastDBinfo, subTaxID, Double.parseDouble(ss[10]), Double.parseDouble(ss[2]));
 		}
 		else {
 			String accID = ss[1];
 			if (idtypeBlast) {
-				accID = CopedID.getBlastAccID(ss[1]);
+				accID = GeneID.getBlastAccID(ss[1]);
 			}
 			//如果没有blastDBinfo，就用已有的accID去获得该blastDBinfo
 			if (blastDBinfo == null || blastDBinfo.equals("")) {
-				CopedID copedIDBlast = new CopedID(accID, subTaxID);
+				GeneID copedIDBlast = new GeneID(accID, subTaxID);
 				blastDBinfo = copedIDBlast.getDBinfo();
 			}
 			copedID.setUpdateBlastInfo(accID, blastDBinfo, subTaxID, Double.parseDouble(ss[10]), Double.parseDouble(ss[2]));

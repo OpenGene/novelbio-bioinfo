@@ -14,8 +14,7 @@ import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 
 
 public class GffHashRepeat extends ListHashSearch<GffDetailRepeat, ListCodAbs<GffDetailRepeat>, 
-ListCodAbsDu<GffDetailRepeat, ListCodAbs<GffDetailRepeat>>, ListBin<GffDetailRepeat>>
-{
+ListCodAbsDu<GffDetailRepeat, ListCodAbs<GffDetailRepeat>>, ListBin<GffDetailRepeat>> {
 
 	/**
 	 * 最底层读取gff的方法，本方法只能读取UCSCRepeat文件<br>
@@ -37,7 +36,7 @@ ListCodAbsDu<GffDetailRepeat, ListCodAbs<GffDetailRepeat>>, ListBin<GffDetailRep
 	@Override
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 		  //实例化三个表
-		   locHashtable =new HashMap<String, GffDetailRepeat>();//存储每个LOCID和其具体信息的对照表
+		   locHashtable =new LinkedHashMap<String, GffDetailRepeat>();//存储每个LOCID和其具体信息的对照表
 		   Chrhash=new LinkedHashMap<String, ListBin<GffDetailRepeat>>();//一个哈希表来存储每条染色体
 		   LOCIDList=new ArrayList<String>();//顺序存储每个基因号，这个打算用于提取随机基因号
 		   LOCChrHashIDList=new ArrayList<String>();

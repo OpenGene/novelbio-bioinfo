@@ -1,7 +1,7 @@
 package com.novelbio.database.updatedb.database;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
@@ -22,7 +22,7 @@ public class UpdateAffyBlast {
 		TxtReadandWrite txtRead = new TxtReadandWrite(affy2, false);
 		for (String content : txtRead.readlines()) {
 			String[] ss = content.split("\t");
-			CopedID copedID = new CopedID(ss[0], taxID);
+			GeneID copedID = new GeneID(ss[0], taxID);
 			copedID.setUpdateRefAccID(ss[1]);
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_AFFY_GLMAX, true);
 			copedID.update(true);

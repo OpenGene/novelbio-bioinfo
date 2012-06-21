@@ -216,8 +216,8 @@ public class BedSeq extends SeqComb{
 			cmd = cmd + tmpTxt + " > " + sortBedFile;
 		}
 		
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("sortBed");
+		CmdOperate cmdOperate = new CmdOperate(cmd,"sortBed");
+		cmdOperate.run();
 		BedSeq bedSeq = new BedSeq(sortBedFile);
 		bedSeq.setCompressType(compressOutType, compressOutType);
 		if (!compressInType.equals(TxtReadandWrite.TXT))

@@ -8,7 +8,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class AmiGO {
@@ -458,7 +458,7 @@ Example:O43526-2
 		if (!hashTaxID.contains(taxID)) {
 			return true;
 		}
-		CopedID copedID = new CopedID(ss[1], taxID);
+		GeneInfo copedID = new GeneInfo(ss[1], taxID);
 		//找到合适的表，NCBI或UniProt，并导入UniID
 		copedID.setUpdateRefAccID(ss[1],ss[2]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_UNIPROT_UNIID, false);

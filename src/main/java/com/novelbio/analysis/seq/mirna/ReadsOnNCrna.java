@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 /**
  * 比对到RefSeq上的ncRNA，看其具体情况
  * @author zong0jie
@@ -17,7 +17,7 @@ public class ReadsOnNCrna {
 		String bedFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_RefNcRNA.bed";
 		String outFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/resultNcRNA/TG_NCrna.txt";
 		ReadsOnNCrna readsOnNCrna = new ReadsOnNCrna();
-		readsOnNCrna.setBedSe(bedFile);
+		readsOnNCrna.setBedSed(bedFile);
 		readsOnNCrna.searchNCrna();
 		readsOnNCrna.writeToFile(outFile);
 	}
@@ -29,7 +29,7 @@ public class ReadsOnNCrna {
 	 */
 	HashMap<String, String[]> hashNCrna = new HashMap<String, String[]>();
 	BedSeq bedSeq;
-	public void setBedSe(String bedseqFile) {
+	public void setBedSed(String bedseqFile) {
 		bedSeq = new BedSeq(bedseqFile);
 	}
 	public void searchNCrna() {
@@ -40,7 +40,7 @@ public class ReadsOnNCrna {
 			}
 			else {
 				String[] info = new String[3];
-				CopedID copedID = new CopedID(bedRecord.getRefID(), 0);
+				GeneID copedID = new GeneID(bedRecord.getRefID(), 0);
 				info[0] = copedID.getSymbol();
 				info[1] = copedID.getDescription();
 				info[2] = (double)1/bedRecord.getMappingNum() + "";

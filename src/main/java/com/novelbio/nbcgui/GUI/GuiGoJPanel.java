@@ -34,7 +34,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controltest.CtrlGO;

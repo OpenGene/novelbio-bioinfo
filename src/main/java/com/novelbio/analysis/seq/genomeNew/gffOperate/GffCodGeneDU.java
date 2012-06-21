@@ -15,7 +15,7 @@ import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.test.mytest;
 
 /**
@@ -240,13 +240,13 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 *         3：文字形式的定位描述
 	 */
 	private String[] getAnnoCod(int coord, GffDetailGene gffDetailGene, String peakPointInfo) {
-		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
+		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
 		String[] anno = new String[4];
 		for (int i = 0; i < anno.length; i++)
 			anno[i] = "";
 
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			CopedID copedID = new CopedID(gffGeneIsoInfo.getName(), gffDetailGene.getTaxID(), false);
+			GeneID copedID = new GeneID(gffGeneIsoInfo.getName(), gffDetailGene.getTaxID(), false);
 			if (hashCopedID.contains(copedID)) {
 				continue;
 			}
@@ -272,13 +272,13 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 *         3：Covered
 	 */
 	private String[] getAnnoMid(GffDetailGene gffDetailGene) {
-		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
+		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
 		String[] anno = new String[4];
 		for (int i = 0; i < anno.length; i++)
 			anno[i] = "";
 
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			CopedID copedID = new CopedID(gffGeneIsoInfo.getName(),
+			GeneID copedID = new GeneID(gffGeneIsoInfo.getName(),
 					gffDetailGene.getTaxID(), false);
 			if (hashCopedID.contains(copedID)) {
 				continue;
@@ -558,15 +558,15 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 * 由前面的设定，将所有符合要求的gene的全部提取出来
 	 * @return
 	 */
-	public ArrayList<CopedID> getCoveredGene() {
+	public ArrayList<GeneID> getCoveredGene() {
 		setHashCoveredGenInfo();
 		// 用来去冗余的
-		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
-		ArrayList<CopedID> lsCopedIDs = new ArrayList<CopedID>();
+		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
+		ArrayList<GeneID> lsCopedIDs = new ArrayList<GeneID>();
 	
 		for (GffDetailGene gffDetailGene : hashGffDetailGene) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				CopedID copedID = new CopedID(gffGeneIsoInfo.getName(),
+				GeneID copedID = new GeneID(gffGeneIsoInfo.getName(),
 						getGffCodLeft().getGffDetailUp().getTaxID(),
 						false);
 				if (hashCopedID.contains(copedID)) {
@@ -729,15 +729,15 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 * @return
 	 */
 	@Deprecated
-	public ArrayList<CopedID> getAllCoveredGenes() {
+	public ArrayList<GeneID> getAllCoveredGenes() {
 		// 用来去冗余的
-		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
-		ArrayList<CopedID> lsCopedIDs = new ArrayList<CopedID>();
+		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
+		ArrayList<GeneID> lsCopedIDs = new ArrayList<GeneID>();
 		if (getGffCodLeft() != null && getGffCodLeft().isInsideLoc()) {
 			if (getGffCodLeft().isInsideUp()) {
 				for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodLeft().getGffDetailUp().getLsCodSplit()) {
 					if (gffGeneIsoInfo.getCodLoc(getGffCodLeft().getCoord()) != GffGeneIsoInfo.COD_LOC_OUT) {
-						CopedID copedID = new CopedID(gffGeneIsoInfo.getName(),
+						GeneID copedID = new GeneID(gffGeneIsoInfo.getName(),
 								getGffCodLeft().getGffDetailUp().getTaxID(),
 								false);
 						if (hashCopedID.contains(copedID)) {
@@ -751,7 +751,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 			for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodLeft()
 					.getGffDetailThis().getLsCodSplit()) {
 				if (gffGeneIsoInfo.getCodLoc(getGffCodLeft().getCoord()) != GffGeneIsoInfo.COD_LOC_OUT) {
-					CopedID copedID = new CopedID(gffGeneIsoInfo.getName(),
+					GeneID copedID = new GeneID(gffGeneIsoInfo.getName(),
 							getGffCodLeft().getGffDetailThis().getTaxID(),
 							false);
 					if (hashCopedID.contains(copedID)) {
@@ -768,7 +768,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene
 						.getLsCodSplit()) {
 					// 看是否真正的落在该基因内部
-					CopedID copedID = new CopedID(gffGeneIsoInfo.getName(),
+					GeneID copedID = new GeneID(gffGeneIsoInfo.getName(),
 							gffDetailGene.getTaxID(), false);
 					if (hashCopedID.contains(copedID)) {
 						continue;
@@ -783,7 +783,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 			for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodRight()
 					.getGffDetailThis().getLsCodSplit()) {
 				if (gffGeneIsoInfo.getCodLoc(getGffCodRight().getCoord()) != GffGeneIsoInfo.COD_LOC_OUT) {
-					CopedID copedID = new CopedID(gffGeneIsoInfo.getName(),
+					GeneID copedID = new GeneID(gffGeneIsoInfo.getName(),
 							getGffCodRight().getGffDetailThis().getTaxID(),
 							false);
 					if (hashCopedID.contains(copedID)) {
@@ -797,7 +797,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 				for (GffGeneIsoInfo gffGeneIsoInfo : getGffCodRight()
 						.getGffDetailDown().getLsCodSplit()) {
 					if (gffGeneIsoInfo.getCodLoc(getGffCodRight().getCoord()) != GffGeneIsoInfo.COD_LOC_OUT) {
-						CopedID copedID = new CopedID(gffGeneIsoInfo.getName(),
+						GeneID copedID = new GeneID(gffGeneIsoInfo.getName(),
 								getGffCodRight().getGffDetailDown().getTaxID(),
 								false);
 						if (hashCopedID.contains(copedID)) {

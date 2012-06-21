@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class MaizeGDB {
@@ -82,18 +82,18 @@ class MaizeAccID extends ImportPerLine
 		if (ss[1].equals("GO"))
 			return true;
 		
-		CopedID copedID = null;
+		GeneInfo copedID = null;
 		if (ss[0].startsWith("AC"))
-			copedID = new CopedID(ss[0], taxID);
+			copedID = new GeneInfo(ss[0], taxID);
 		else
-			copedID = new CopedID(ss[0].split("_")[0], taxID);
+			copedID = new GeneInfo(ss[0].split("_")[0], taxID);
 		
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB, true);
 		//是否成功升级的标志。因为后面要升级两次
 		boolean flag = false;
 		//如果是geneID
 		if (ss[1].equals("EntrezGene")) {
-			copedID.setUpdateGeneID(ss[2], CopedID.IDTYPE_GENEID);
+			copedID.setUpdateGeneID(ss[2], GeneInfo.IDTYPE_GENEID);
 			//geneID的话就不是其他的数据库ID，就不需要再导入一次了
 			return copedID.update(uniProtID);
 		}
@@ -133,7 +133,7 @@ class MaizeGeneInfo extends ImportPerLine
 		if (ss.length < 4)
 			return true;
 		
-		CopedID copedID = new CopedID(ss[0], taxID);
+		GeneInfo copedID = new GeneInfo(ss[0], taxID);
 		AGeneInfo geneInfo = new GeneInfo();
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB, false);
 		geneInfo.setDescrp(ss[3]);
@@ -157,11 +157,11 @@ class MaizeGO extends ImportPerLine
 		if (!ss[1].equals("GO"))
 			return true;
 			
-		CopedID copedID = null;
+		GeneInfo copedID = null;
 		if (ss[0].startsWith("AC"))
-			copedID = new CopedID(ss[0], taxID);
+			copedID = new GeneInfo(ss[0], taxID);
 		else
-			copedID = new CopedID(ss[0].split("_")[0], taxID);
+			copedID = new GeneInfo(ss[0].split("_")[0], taxID);
 			
 		copedID.setUpdateGO(ss[2], NovelBioConst.DBINFO_MAIZE_MGDB, null, null, null);
 		return copedID.update(false);

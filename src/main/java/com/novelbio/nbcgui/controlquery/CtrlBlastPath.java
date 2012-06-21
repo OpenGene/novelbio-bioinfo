@@ -10,7 +10,7 @@ import javax.swing.SwingWorker;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.kegg.KGentry;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 
 
@@ -148,8 +148,8 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 	{
 		String[] tmpAccIDInfo = new String[] { accID, ""};
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		CopedID copedID = new CopedID(accID, taxID);
-		if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+		GeneID copedID = new GeneID(accID, taxID);
+		if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
 			return null;
 		}
 		tmpAccIDInfo[1] = copedID.getSymbol();
@@ -175,7 +175,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 		// blast基因的GO信息
 		ArrayList<String[]> lsResultBlast = new ArrayList<String[]>();
 
-		CopedID copedIDblast = copedID.getCopedIDBlast();
+		GeneID copedIDblast = copedID.getGeneIDBlast();
 		if (copedIDblast == null) {
 			for (String[] strings : lsResult) {
 				String[] result = ArrayOperate.copyArray(strings, 8);

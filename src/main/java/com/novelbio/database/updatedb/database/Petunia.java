@@ -5,11 +5,11 @@ import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 public class Petunia {
 	public static void main(String[] args) {
-		CopedID copedID = new CopedID("PH_TC2092", 0);
+		GeneID copedID = new GeneID("PH_TC2092", 0);
 		System.out.println(copedID.getTaxID());
 		;
 //		upDateInfo();
@@ -33,7 +33,7 @@ public class Petunia {
 		SeqFastaHash seqFastaHash = new SeqFastaHash(seqIn,regx, false, false);
 		ArrayList<SeqFasta> lsSeqFastas = seqFastaHash.getSeqFastaAll();
 		for (SeqFasta seqFasta : lsSeqFastas) {
-			CopedID copedID = new CopedID(seqFasta.getSeqName(), 4102);
+			GeneID copedID = new GeneID(seqFasta.getSeqName(), 4102);
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_PLANTGDB_ACC, true);
 			copedID.update(true);
 		}
@@ -45,7 +45,7 @@ public class Petunia {
 		TxtReadandWrite txtBlast = new TxtReadandWrite(filepath, false);
 		for (String content : txtBlast.readlines()) {
 			String[] ss = content.split("\t");
-			CopedID copedID = new CopedID(ss[0], 4102);
+			GeneID copedID = new GeneID(ss[0], 4102);
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_PLANTGDB_ACC, true);
 			copedID.setUpdateBlastInfo(ss[1], NovelBioConst.DBINFO_ATH_TAIR, 3702, Double.parseDouble(ss[10]), Double.parseDouble(ss[2]));
 			copedID.update(true);
@@ -58,7 +58,7 @@ public class Petunia {
 		TxtReadandWrite txtRead = new TxtReadandWrite(affy2, false);
 		for (String content : txtRead.readlines()) {
 			String[] ss = content.split("\t");
-			CopedID copedID = new CopedID(ss[0], taxID);
+			GeneID copedID = new GeneID(ss[0], taxID);
 			copedID.setUpdateRefAccID(ss[1]);
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ROCHE, true);
 			copedID.update(true);

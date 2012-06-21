@@ -10,7 +10,7 @@ import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.service.servgeneanno.ServGene2Go;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
@@ -42,7 +42,7 @@ public class KeggIDcvt {
 		{
 			String[] ss=content.split("\t"); 
 			long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim());
-			CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, geneID + "", 0);
+			GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID + "", 0);
 			if (copedID.getTaxID() > 0) {
 				TaxID = copedID.getTaxID();
 				break;

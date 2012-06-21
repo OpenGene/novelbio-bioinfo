@@ -35,7 +35,7 @@ import org.jdesktop.application.Application;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlquery.CtrlBlastAnno;
 import com.novelbio.nbcgui.controlquery.CtrlBlastGo;
@@ -377,7 +377,7 @@ public class GuiBlastJpanel extends JPanel{
 					}
 					List<String> lsGenID2 = new ArrayList<String>();
 					for (String string : lsGenID) {
-						lsGenID2.add(CopedID.removeDot(string));
+						lsGenID2.add(GeneID.removeDot(string));
 					}
 					
 					

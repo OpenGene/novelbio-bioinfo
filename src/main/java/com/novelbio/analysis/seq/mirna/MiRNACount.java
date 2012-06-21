@@ -46,8 +46,8 @@ public class MiRNACount {
 	 * @param Species 为miRNA.dat中的物种名，如果文件不是miRNA.dat，那就不用写了
 	 * @param rnadatFile
 	 */
-	public void setMiRNAinfo(int fileType, String Species, String rnadatFile) {
-		tmpMiRNALocation.setSpecies(Species);
+	public void setMiRNAinfo(int fileType, int taxID, String rnadatFile) {
+		tmpMiRNALocation.setSpecies(taxID);
 		tmpMiRNALocation.setReadFileType(fileType);
 		tmpMiRNALocation.ReadGffarray(rnadatFile);
 	}

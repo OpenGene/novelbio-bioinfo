@@ -1,16 +1,19 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
+import com.novelbio.base.fileOperate.FileOperate;
 /**
  * 读取miRNA.dat的信息，构建listabs表，方便给定mirID和loc，从而查找到底是5p还是3p
  * @author zong0jie
@@ -26,16 +29,19 @@ public class ListMiRNALocation extends ListHashBin{
 		tmpMiRNALocation.ReadGffarray("/media/winE/Bioinformatics/DataBase/sRNA/miRNA.dat");
 		System.out.println(tmpMiRNALocation.searchMirName("hsa-mir-16-2", 50, 65));
 	}
-	
+	/** taxID对应RNA.data中的String */
+	HashMap<Integer, String> hashSpecies = new HashMap<Integer, String>();
+	int taxID = 9606;
 	String species = "HSA";
+
 	/**
 	 * 为miRNA.dat中的物种名
 	 * 设定物种，默认为人类：HSA
 	 * 具体要检查RNA.data文件
 	 * @param species
 	 */
-	public void setSpecies(String species) {
-		this.species = species;
+	public void setSpecies(int taxID) {
+		this.taxID = taxID;
 	}
 	int fileType = TYPE_RNA_DATA;
 	/**
@@ -45,13 +51,33 @@ public class ListMiRNALocation extends ListHashBin{
 	public void setReadFileType(int type) {
 		this.fileType = type;
 	}
-	
+	/**
+	 * 读取miRNA.data文件，同时读取和它一起的整理好的taxID2species文件
+	 */
 	protected void ReadGffarrayExcep(String rnadataFile) {
 		if (fileType == TYPE_RNA_DATA) {
+			String fileName = FileOperate.changeFileSuffix(rnadataFile, "_taxID2Species", "txt");
+			readTaxID2Species(fileName);
+			species = hashSpecies.get(taxID);
 			ReadGffarrayExcepRNADat(rnadataFile);
 		}
 		else if (fileType == TYPE_MIREAP) {
 			ReadGffarrayExcepMirReap(rnadataFile);
+		}
+	}
+	/** 读取taxID对应miRNA.dat中的物种名
+	 * 物种名类似 人类：HSA 等
+	 * 具体要检查 RNA.data 文件<br>
+	 * 第一列 taxID<br>
+	 * 第二列 species
+	 */
+	private void readTaxID2Species(String rnaDataSpecies) {
+		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(rnaDataSpecies, new int[]{1,2}, 1, -1);
+		for (String[] strings : lsInfo) {
+			if (strings == null || strings[0] == null || strings[0].trim().equals("")) {
+				continue;
+			}
+			hashSpecies.put(Integer.parseInt(strings[0]), strings[1]);
 		}
 	}
 	/**

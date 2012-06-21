@@ -12,7 +12,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 /**
  * ID转换，将ensembl的表转化为NCBI的表，以及类似功能
@@ -176,10 +176,10 @@ class EnsembleGTF extends ImportPerLine
 				lsRefID.add(string.replace("protein_id", "").replace("\"", "").trim());
 			}
 		}
-		CopedID copedID = new CopedID("", taxID);
+		GeneID copedID = new GeneID("", taxID);
 		copedID.setUpdateRefAccID(lsRefID);
 		copedID.setUpdateRefAccIDClear(true);
-		if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+		if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
 			GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation("chr"+ss[0].toLowerCase().replace("chr", ""), Integer.parseInt(ss[3]),  Integer.parseInt(ss[4]));
 			if (gffCodGeneDu == null || gffCodGeneDu.getAllGffDetail().size() <= 0) {
 //				copedID.update(false);
@@ -187,7 +187,7 @@ class EnsembleGTF extends ImportPerLine
 			}
 			int geneNum = gffCodGeneDu.getAllGffDetail().size()/2;
 			copedID = gffCodGeneDu.getAllGffDetail().get(geneNum).getLongestSplit().getCopedID();
-			if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+			if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
 //				copedID.update(false);
 				return false;
 			}

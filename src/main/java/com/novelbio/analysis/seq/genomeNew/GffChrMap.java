@@ -24,7 +24,7 @@ import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.PlotHeatMap;
 import com.novelbio.base.plot.java.HeatChart;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 import de.erichseifert.gral.util.GraphicsUtils;
@@ -733,7 +733,7 @@ public class GffChrMap {
 			mapInfo.setScore(weight);
 			mapInfo.setDouble(tmp2);
 			mapInfo.setFlagLoc(combatgSite);
-			CopedID copedID = new CopedID(string, 0, false);
+			GeneID copedID = new GeneID(string, 0, false);
 			mapInfo.setName(copedID.getSymbol());
 			lsMapInfo.add(mapInfo);
 		}

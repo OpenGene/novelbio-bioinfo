@@ -6,13 +6,13 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.novelbio.database.domain.kegg.KGpathway;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.model.modkegg.KeggInfo;
 
 public class KEGGPathwayFunTest extends AbstFunTest{
 
-	public KEGGPathwayFunTest(ArrayList<CopedID> lsCopedIDsTest,
-			ArrayList<CopedID> lsCopedIDsBG, boolean blast) {
+	public KEGGPathwayFunTest(ArrayList<GeneID> lsCopedIDsTest,
+			ArrayList<GeneID> lsCopedIDsBG, boolean blast) {
 		super(lsCopedIDsTest, lsCopedIDsBG, blast);
 	}
 	
@@ -33,10 +33,10 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 	}
 
 	@Override
-	protected ArrayList<String[]> convert2Item(Collection<CopedID> lsCopedIDs) {
+	protected ArrayList<String[]> convert2Item(Collection<GeneID> lsCopedIDs) {
 		HashSet<String> hashGenUniID = new HashSet<String>();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-			for (CopedID copedID : lsCopedIDs) {
+			for (GeneID copedID : lsCopedIDs) {
 				if (hashGenUniID.contains(copedID.getGenUniID())) {
 					continue;
 				}
@@ -73,7 +73,7 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 	@Override
 	public ArrayList<String[]> setGene2Item() {
 		ArrayList<String[]> lsFinal = new ArrayList<String[]>();
-		for (CopedID copedID : lsCopedIDsTest) {
+		for (GeneID copedID : lsCopedIDsTest) {
 			ArrayList<KGpathway> lsPath = null;
 			//获得具体的GO信息
 			lsPath = copedID.getKegPath(blast);

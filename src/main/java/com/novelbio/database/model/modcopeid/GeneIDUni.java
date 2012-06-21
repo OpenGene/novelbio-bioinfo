@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import com.novelbio.database.domain.geneanno.AgeneUniID;
+import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.model.modgo.GOInfoUniID;
-import com.novelbio.database.service.servgeneanno.ServNCBIID;
-import com.novelbio.database.service.servgeneanno.ServUniGeneInfo;
-import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
-public class CopedIDuni extends CopedIDAbs{
-	private static Logger logger = Logger.getLogger(CopedIDuni.class);
+public class GeneIDUni extends GeneIDabs{
+	private static Logger logger = Logger.getLogger(GeneIDUni.class);
 	/**
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
 	 * @param accID
@@ -22,12 +20,12 @@ public class CopedIDuni extends CopedIDAbs{
 	 * @param taxID
 	 *            物种ID
 	 */
-	public CopedIDuni(String accID,String idType, String genUniID, int taxID) {
+	public GeneIDUni(String accID,String idType, String genUniID, int taxID) {
 		this.accID = accID;
 		this.genUniID = genUniID;
 		this.idType = idType;
 		this.taxID = taxID;
-		if (taxID == 0 || (accID != null && !accID.equals("")) && (databaseType == null || databaseType.equals("")) ) {
+		if (taxID == 0 || accID != null) {
 			UniProtID uniProtID = new UniProtID();
 			uniProtID.setAccID(accID);
 			uniProtID.setGenUniID(genUniID);
@@ -36,9 +34,8 @@ public class CopedIDuni extends CopedIDAbs{
 				if (taxID == 0) {
 					this.taxID = lsTmp.get(0).getTaxID();
 				}
-				//accID存在并且databasetype不存在，才能用accID获得databasetype
-				if ( (accID != null && !accID.equals("")) && (databaseType == null || databaseType.equals(""))) {
-					this.databaseType = lsTmp.get(0).getDBInfo();
+				if ( accID != null ) {
+					this.geneIDDBinfo = lsTmp.get(0).getDBInfo();
 				}
 			}
 			else {
@@ -46,7 +43,6 @@ public class CopedIDuni extends CopedIDAbs{
 			}
 			return;
 		}
-		this.taxID = taxID;
 	}
 	protected void setGenInfo() {
 		UniGeneInfo uniGeneInfo = new UniGeneInfo();
@@ -63,5 +59,13 @@ public class CopedIDuni extends CopedIDAbs{
 	protected void setGoInfo() {
 		goInfoAbs = new GOInfoUniID(genUniID, taxID);
 	}
-
+	@Override
+	public void setBlastInfo(double evalue, int... StaxID) {
+		lsBlastInfos = new ArrayList<BlastInfo>();
+		for (int i : StaxID) {
+			BlastInfo blastInfo = servBlastInfo.queryBlastInfo(genUniID,taxID, i,evalue);
+			addLsBlastInfo(blastInfo);
+		}
+		isBlastedFlag = false;
+	}
 }

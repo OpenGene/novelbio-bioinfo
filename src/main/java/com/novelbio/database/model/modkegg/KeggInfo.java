@@ -5,20 +5,20 @@ import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 public class KeggInfo implements KeggInfoInter{
 
 	KeggInfoAbs keggInfoAbs;
 	public KeggInfo(String idType, String genUniAccID, int taxID)
 	{
-		if (idType.equals(CopedID.IDTYPE_UNIID)) {
+		if (idType.equals(GeneID.IDTYPE_UNIID)) {
 			keggInfoAbs = new KeggInfoUniID(genUniAccID, taxID);
 		}
-		else if (idType.equals(CopedID.IDTYPE_GENEID)) {
+		else if (idType.equals(GeneID.IDTYPE_GENEID)) {
 			keggInfoAbs = new KeggInfoGenID(genUniAccID, taxID);
 		}
-		else if (idType.equals(CopedID.IDTYPE_ACCID)) {
+		else if (idType.equals(GeneID.IDTYPE_ACCID)) {
 			keggInfoAbs = new KeggInfoAccID(genUniAccID, taxID);
 		}
 	}

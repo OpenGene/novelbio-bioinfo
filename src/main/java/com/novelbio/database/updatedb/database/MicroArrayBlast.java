@@ -8,7 +8,7 @@ import java.util.HashSet;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.NCBIID;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 /**
  * 将Microarray与本物中序列blast的结果导入数据库
@@ -46,7 +46,7 @@ public class MicroArrayBlast {
 		this.dbInfo = dbInfo;
 	}
 	
-	String geneIDType = CopedID.IDTYPE_ACCID;
+	String geneIDType = GeneID.IDTYPE_ACCID;
 	/**
 	 * blast到的ID是accID还是geneID还是UniID
 	 * @param blastID
@@ -121,11 +121,11 @@ public class MicroArrayBlast {
 				continue;
 			}
 			
-			CopedID copedID = new CopedID(strings[0], taxID);
+			GeneID copedID = new GeneID(strings[0], taxID);
 
 			//如果数据库中没有这个ID，那么就导入数据库
-			if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
-				if (!geneIDType.equals(CopedID.IDTYPE_ACCID)) {
+			if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+				if (!geneIDType.equals(GeneID.IDTYPE_ACCID)) {
 					copedID.setUpdateGeneID(strings[1], geneIDType);
 				}
 				else {

@@ -120,7 +120,7 @@ public class BedRecord extends MapInfo {
 			this.cis5to3 = false;
 		}
 		else {
-//			logger.equals("出现未知strand");
+			logger.equals("出现未知strand");
 		}
 	}
 	/**

@@ -21,7 +21,7 @@ import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTest
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.react.RctInteract;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.service.servgeneanno.ServNCBIID;
 import com.novelbio.database.service.servgeneanno.ServTaxID;
 //@ContextConfiguration("classpath:spring.xml")

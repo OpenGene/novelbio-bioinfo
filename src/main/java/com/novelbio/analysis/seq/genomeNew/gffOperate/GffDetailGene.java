@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 /**
  * 考虑将其中的iso装入hash表中，以加快查找效率
  * 重写了clone但是没有重写equals和hash
@@ -82,8 +82,8 @@ public class GffDetailGene extends ListDetailAbs {
 			GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(i);
 			String[] tmpName = gffGeneIsoInfo.getName().split(SEP_ISO_NAME);
 			for (String string : tmpName) {
-				string = CopedID.removeDot(string);
-				if(string.equalsIgnoreCase( CopedID.removeDot(isoName) ))
+				string = GeneID.removeDot(string);
+				if(string.equalsIgnoreCase( GeneID.removeDot(isoName) ))
 				{
 					return i;
 				}
@@ -347,14 +347,14 @@ public class GffDetailGene extends ListDetailAbs {
 		for (int i = 0; i < anno.length; i++) {
 			anno[i] = "";
 		}
-		HashSet<CopedID> hashCopedID = new HashSet<CopedID>();
+		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
 		if (isCodInGeneExtend(coord)) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
 				if (gffGeneIsoInfo.isCodInIsoExtend(coord)) {
 					hashCopedID.add(gffGeneIsoInfo.getCopedID());
 				}
 			}
-			for (CopedID copedID : hashCopedID) {
+			for (GeneID copedID : hashCopedID) {
 				if (anno.equals("")) {
 					anno[0] = copedID.getAccID();
 					anno[1] = copedID.getSymbol();

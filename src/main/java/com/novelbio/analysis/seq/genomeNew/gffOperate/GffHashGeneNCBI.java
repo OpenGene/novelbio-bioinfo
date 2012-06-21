@@ -10,7 +10,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 /**
  * 应该是标准的gff3格式，仅用于NCBI的gff3文件
@@ -200,7 +200,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   if (geneID == null) {
 			System.out.println("stop");
 		}
-		   CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, geneID, taxID);
+		   GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
 		   geneName = copedID.getAccID();
 	   }
 	   if (geneName == null) {
@@ -225,7 +225,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   else {
 		   try {
 			   String geneID = patGeneID.getPatFirst(content[8]);
-			   CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, geneID, taxID);
+			   GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
 			   result[0] = copedID.getAccID();//这里有问题
 			   result[1] = hashmRNA.get(content[2]) + "";//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   } catch (Exception e) {
@@ -250,7 +250,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   return;
 	   }
 	   if (taxID == 0 && numCopedIDsearch < 20) {
-		   	ArrayList<CopedID> lsCopedIDs = CopedID.getLsCopedID(geneName, taxID, false);
+		   	ArrayList<GeneID> lsCopedIDs = GeneID.getLsCopedID(geneName, taxID, false);
 		   	if (lsCopedIDs.size() == 1) {
 		   		taxID = lsCopedIDs.get(0).getTaxID();
 		   	}

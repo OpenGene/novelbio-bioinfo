@@ -8,7 +8,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArrayCluster;
 import com.novelbio.base.dataStructure.CompSubArrayInfo;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.Species;
 /**
@@ -132,11 +132,11 @@ public class GffHashGene implements GffHashGeneInf{
 	}
 
 	public GffDetailGene searchLOC(String LOCID) {
-		LOCID = CopedID.removeDot(LOCID);
+		LOCID = GeneID.removeDot(LOCID);
 		return gffHashGene.searchLOC(LOCID);
 	}
 	@Override
-	public GffDetailGene searchLOC(CopedID copedID) {
+	public GffDetailGene searchLOC(GeneID copedID) {
 		return gffHashGene.searchLOC(copedID);
 	}
 

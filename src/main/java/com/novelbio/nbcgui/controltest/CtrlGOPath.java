@@ -11,7 +11,7 @@ import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.generalConf.NovelBioConst;
 
@@ -112,27 +112,27 @@ public abstract class CtrlGOPath {
 	 */
 	public void doInBackgroundNorm(ArrayList<String[]> lsAccID2Value, double up, double down) {
 		hashResultGene.clear();
-		HashMap<String, ArrayList<CopedID>> hashCluster = new LinkedHashMap<String, ArrayList<CopedID>>();
+		HashMap<String, ArrayList<GeneID>> hashCluster = new LinkedHashMap<String, ArrayList<GeneID>>();
 		//分上下调
 		if (lsAccID2Value.get(0).length == 1) {
-			ArrayList<CopedID> lsAll = new ArrayList<CopedID>();
+			ArrayList<GeneID> lsAll = new ArrayList<GeneID>();
 			for (String[] strings : lsAccID2Value) {
 				if (strings[0] == null || strings[0].trim().equals("")) {
 					continue;
 				}
-				CopedID copedID = new CopedID(strings[0], QtaxID, false);
+				GeneID copedID = new GeneID(strings[0], QtaxID, false);
 				lsAll.add(copedID);
 			}
 			hashCluster.put("All", lsAll);
 		}
 		else {
-			ArrayList<CopedID> lsUp = new ArrayList<CopedID>();
-			ArrayList<CopedID> lsDown = new ArrayList<CopedID>();
+			ArrayList<GeneID> lsUp = new ArrayList<GeneID>();
+			ArrayList<GeneID> lsDown = new ArrayList<GeneID>();
 			for (String[] strings : lsAccID2Value) {
 				if (strings[0] == null || strings[0].trim().equals("")) {
 					continue;
 				}
-				CopedID copedID = new CopedID(strings[0], QtaxID, false);
+				GeneID copedID = new GeneID(strings[0], QtaxID, false);
 				try {
 					if (Double.parseDouble(strings[1]) <= down) {
 						lsDown.add(copedID);
@@ -146,7 +146,7 @@ public abstract class CtrlGOPath {
 			hashCluster.put("Down", lsDown);
 		}
 		
-		for (Entry<String, ArrayList<CopedID>> entry : hashCluster.entrySet()) {
+		for (Entry<String, ArrayList<GeneID>> entry : hashCluster.entrySet()) {
 			getResult(entry.getKey(), entry.getValue());
 		}
 	}
@@ -160,24 +160,24 @@ public abstract class CtrlGOPath {
 	 */
 	public void doInBackgroundCluster(ArrayList<String[]> lsAccID2Value) {
 		hashResultGene.clear();
-		HashMap<String, ArrayList<CopedID>> hashCluster = new HashMap<String, ArrayList<CopedID>>();
+		HashMap<String, ArrayList<GeneID>> hashCluster = new HashMap<String, ArrayList<GeneID>>();
 		for (String[] strings : lsAccID2Value) {
 			if (strings[0] == null || strings[0].trim().equals("")) {
 				continue;
 			}
-			CopedID copedID = new CopedID(strings[0], QtaxID, false);
+			GeneID copedID = new GeneID(strings[0], QtaxID, false);
 			if (hashCluster.containsKey(strings[1].trim())) {
-				ArrayList<CopedID> lsTmp = hashCluster.get(strings[1].trim());
+				ArrayList<GeneID> lsTmp = hashCluster.get(strings[1].trim());
 				lsTmp.add(copedID);
 			}
 			else {
-				ArrayList<CopedID> lsTmp = new ArrayList<CopedID>();
+				ArrayList<GeneID> lsTmp = new ArrayList<GeneID>();
 				lsTmp.add(copedID);
 				hashCluster.put(strings[1].trim(), lsTmp);
 			}
 		}
 		
-		for (Entry<String, ArrayList<CopedID>> entry : hashCluster.entrySet()) {
+		for (Entry<String, ArrayList<GeneID>> entry : hashCluster.entrySet()) {
 			getResult(entry.getKey(), entry.getValue());
 		}
 	}
@@ -190,7 +190,7 @@ public abstract class CtrlGOPath {
 	 * @return
 	 * 没有就返回null
 	 */
-	private void getResult(String prix,ArrayList<CopedID>lsCopedIDs)
+	private void getResult(String prix,ArrayList<GeneID>lsCopedIDs)
 	{
 		functionTest.setLsTest(lsCopedIDs);
 		ArrayList<String[]> lsResultTest = functionTest.getTestResult();

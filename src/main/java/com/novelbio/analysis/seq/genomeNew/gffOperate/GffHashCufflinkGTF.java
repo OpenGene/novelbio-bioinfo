@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	GffHashGene gffHashRef;
@@ -137,8 +137,8 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				lsResult.add(gffDetailGene);
 				locHashtable.put(gffGeneIsoInfo.getName().toLowerCase(), gffDetailGene);
-				locHashtable.put(CopedID.removeDot(gffGeneIsoInfo.getName()).toLowerCase(), gffDetailGene);
-				locHashtable.put(CopedID.removeDot(gffDetailGene.getName()).toLowerCase(), gffDetailGene);
+				locHashtable.put(GeneID.removeDot(gffGeneIsoInfo.getName()).toLowerCase(), gffDetailGene);
+				locHashtable.put(GeneID.removeDot(gffDetailGene.getName()).toLowerCase(), gffDetailGene);
 				continue;
 			}
 			
@@ -149,17 +149,17 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			if (compResult[2] > GffDetailGene.OVERLAP_RATIO || compResult[3] > GffDetailGene.OVERLAP_RATIO) {
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				locHashtable.put(gffGeneIsoInfo.getName().toLowerCase(), gffDetailGene);
-				locHashtable.put(CopedID.removeDot(gffGeneIsoInfo.getName()).toLowerCase(), gffDetailGene);
+				locHashtable.put(GeneID.removeDot(gffGeneIsoInfo.getName()).toLowerCase(), gffDetailGene);
 
 			}
 			else {
 				
 				gffDetailGene = new GffDetailGene(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getName(), gffGeneIsoInfo.isCis5to3());
-				locHashtable.put(CopedID.removeDot(gffDetailGene.getName()).toLowerCase(), gffDetailGene);
+				locHashtable.put(GeneID.removeDot(gffDetailGene.getName()).toLowerCase(), gffDetailGene);
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				lsResult.add(gffDetailGene);
 				locHashtable.put(gffGeneIsoInfo.getName().toLowerCase(), gffDetailGene);
-				locHashtable.put(CopedID.removeDot(gffGeneIsoInfo.getName()).toLowerCase(), gffDetailGene);
+				locHashtable.put(GeneID.removeDot(gffGeneIsoInfo.getName()).toLowerCase(), gffDetailGene);
 				continue;
 			}
 		}

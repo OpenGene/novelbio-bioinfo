@@ -2,7 +2,7 @@ package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
 
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 public interface FunTestInt {
 	
@@ -26,7 +26,7 @@ public interface FunTestInt {
 	 * 给定accID的copedID，设定待检验的样本
 	 * @param lsCopedID
 	 */
-	public void setLsTest(ArrayList<CopedID> lsCopedIDs);
+	public void setLsTest(ArrayList<GeneID> lsCopedIDs);
 	/**
 	 * 最好能第一时间设定
 	 * 读取genUniID item,item格式的表
@@ -45,7 +45,7 @@ public interface FunTestInt {
 	 * 读取背景文件，指定读取某一列
 	 * @param fileName
 	 */
-	public void setLsBGCopedID(ArrayList<CopedID> lsBGaccID);
+	public void setLsBGCopedID(ArrayList<GeneID> lsBGaccID);
 	/**
 	 * 每次设置新的LsCopedTest后必须重置
 	 */

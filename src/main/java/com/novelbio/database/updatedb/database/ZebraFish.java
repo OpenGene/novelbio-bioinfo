@@ -9,7 +9,7 @@ import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class ZebraFish {
@@ -78,7 +78,7 @@ class Zb2GeneID extends ImportPerLine
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
-		CopedID copedID = new CopedID(CopedID.IDTYPE_GENEID, ss[2], 7955);
+		GeneInfo copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, ss[2], 7955);
 		copedID.setUpdateAccID(ss[0]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_DRE_ZFIN, true);
 		copedID.update(true);
@@ -118,7 +118,7 @@ class ZbRefSeqID extends ImportPerLine
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
-		CopedID copedID = new CopedID(ss[0], 7955);
+		GeneInfo copedID = new GeneInfo(ss[0], 7955);
 		copedID.setUpdateRefAccID(ss[2]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_DRE_ZFIN, true);
 		copedID.update(true);
@@ -151,7 +151,7 @@ class ZBGO extends ImportPerLine
 			return true;
 		}
 		String[] ss = lineContent.split("\t");
-		CopedID copedID = new CopedID(ss[1], 7955);
+		GeneInfo copedID = new GeneInfo(ss[1], 7955);
 		String pubmed = "";
 		if (ss[5].contains("PMID")) {
 			pubmed = ss[5].split("\\|")[1].trim();

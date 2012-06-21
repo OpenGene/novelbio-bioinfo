@@ -10,7 +10,7 @@ import javax.swing.SwingWorker;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 
 
@@ -195,8 +195,8 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	{
 		String[] tmpAccIDInfo = new String[]{accID, "", "",""};
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		CopedID copedID = new CopedID(accID, taxID);
-		if (copedID.getIDtype().equals(CopedID.IDTYPE_ACCID)) {
+		GeneID copedID = new GeneID(accID, taxID);
+		if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
 			return null;
 		}
 		tmpAccIDInfo[1] = copedID.getGenUniID();
@@ -218,7 +218,7 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 		//blast基因的GO信息
 		ArrayList<String[]> lsResultBlast = new ArrayList<String[]>();
 		
-		CopedID copedIDblast = copedID.getCopedIDBlast();
+		GeneID copedIDblast = copedID.getGeneIDBlast();
 		if (copedIDblast == null) {
 			for (String[] strings : lsResult) {
 				String[] result = ArrayOperate.copyArray(strings, 15);

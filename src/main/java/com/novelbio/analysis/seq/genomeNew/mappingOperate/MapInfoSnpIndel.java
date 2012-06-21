@@ -15,7 +15,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.tools.Mas3.getProbID;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.SnpIndelRs;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.service.servgeneanno.ServSnpIndelRs;
 import com.novelbio.database.updatedb.database.CopeDBSnp132;
 /**
@@ -786,7 +786,7 @@ public class MapInfoSnpIndel extends MapInfo {
 		result = result + "\t" + snpRsID;
 		if (getGffIso() != null) {
 			result = result + "\t" + getGffIso().getName();
-			CopedID copedID = new CopedID(getGffIso().getName(), taxID, false);
+			GeneID copedID = new GeneID(getGffIso().getName(), taxID, false);
 			result = result + "\t" + copedID.getSymbol() +"\t"+copedID.getDescription();
 		}
 		else

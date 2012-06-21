@@ -1,7 +1,9 @@
 package com.novelbio.database.updatedb.database;
 
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
@@ -13,6 +15,8 @@ import com.novelbio.generalConf.NovelBioConst;
 public class ImportDB {
 
 	public static void main(String[] args) {
+//		updateSoftInfo();
+		updateSpecies();
 		
 //		updateNCBIID();
 //		updateUniprotID();
@@ -23,10 +27,10 @@ public class ImportDB {
 //		updateYeast();
 
 		
-		updateMicroarray();
+//		updateMicroarray();
 //		updateSoyBean();
 //		updateZeaMaize();
-		updateBlast();
+//		updateBlast();
 //		updateAffy();
 	}
 	/**
@@ -127,8 +131,8 @@ public class ImportDB {
 		String outFIle = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA_out";
 		int queryTaxID = 0;
 		BlastUp2DB blast = new BlastUp2DB();
-		blast.setQueryID(CopedID.IDTYPE_ACCID);
-		blast.setBlastID(CopedID.IDTYPE_GENEID);
+		blast.setQueryID(GeneID.IDTYPE_ACCID);
+		blast.setBlastID(GeneID.IDTYPE_GENEID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_ENSEMBL);
 		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
 		blast.setSubTaxID(9606);
@@ -140,8 +144,8 @@ public class ImportDB {
 		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
 		queryTaxID = 39947;
 		blast = new BlastUp2DB();
-		blast.setQueryID(CopedID.IDTYPE_ACCID);
-		blast.setBlastID(CopedID.IDTYPE_ACCID);
+		blast.setQueryID(GeneID.IDTYPE_ACCID);
+		blast.setBlastID(GeneID.IDTYPE_ACCID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_RICE_TIGR);
 		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
 		blast.setSubTaxID(3702);
@@ -153,8 +157,8 @@ public class ImportDB {
 		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
 		queryTaxID = 7955;
 		blast = new BlastUp2DB();
-		blast.setQueryID(CopedID.IDTYPE_GENEID);
-		blast.setBlastID(CopedID.IDTYPE_GENEID);
+		blast.setQueryID(GeneID.IDTYPE_GENEID);
+		blast.setBlastID(GeneID.IDTYPE_GENEID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
 		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
 		blast.setSubTaxID(9606);
@@ -166,8 +170,8 @@ public class ImportDB {
 		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
 		queryTaxID = 4922;
 		blast = new BlastUp2DB();
-		blast.setQueryID(CopedID.IDTYPE_ACCID);
-		blast.setBlastID(CopedID.IDTYPE_ACCID);
+		blast.setQueryID(GeneID.IDTYPE_ACCID);
+		blast.setBlastID(GeneID.IDTYPE_ACCID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_PPA_ID);
 		blast.setBlastDBinfo(NovelBioConst.DBINFO_SSC_ID);
 		blast.setSubTaxID(4932);
@@ -179,8 +183,8 @@ public class ImportDB {
 		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
 		queryTaxID = 4577;
 		blast = new BlastUp2DB();
-		blast.setQueryID(CopedID.IDTYPE_ACCID);
-		blast.setBlastID(CopedID.IDTYPE_ACCID);
+		blast.setQueryID(GeneID.IDTYPE_ACCID);
+		blast.setBlastID(GeneID.IDTYPE_ACCID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
 		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
 		blast.setSubTaxID(3702);
@@ -192,8 +196,8 @@ public class ImportDB {
 		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
 		queryTaxID = 3847;
 		blast = new BlastUp2DB();
-		blast.setQueryID(CopedID.IDTYPE_ACCID);
-		blast.setBlastID(CopedID.IDTYPE_ACCID);
+		blast.setQueryID(GeneID.IDTYPE_ACCID);
+		blast.setBlastID(GeneID.IDTYPE_ACCID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_GLYMAX_SOYBASE);
 		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
 		blast.setSubTaxID(3702);
@@ -206,8 +210,8 @@ public class ImportDB {
 		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
 		queryTaxID = 9823;
 		blast = new BlastUp2DB();
-		blast.setQueryID(CopedID.IDTYPE_ACCID);
-		blast.setBlastID(CopedID.IDTYPE_ACCID);
+		blast.setQueryID(GeneID.IDTYPE_ACCID);
+		blast.setBlastID(GeneID.IDTYPE_ACCID);
 		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
 		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI);
 		blast.setSubTaxID(9606);
@@ -364,29 +368,25 @@ public class ImportDB {
 		zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
 		microArrayBlast = new MicroArrayBlast();
 		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_ZEBRAFISH);
-		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
+		microArrayBlast.setGeneID(GeneID.IDTYPE_ACCID);
 //		microArrayBlast.updateFile(zerbfishFile, false);
 //		microArrayBlast.updateFile(zerbfishFile2, false);
-		
-
 		////////////////////  Ë®µ¾  /////////////////////////////
 		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/rice/Affy2Loc.txt";
 		microArrayBlast = new MicroArrayBlast();
 		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
 //		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
 //		microArrayBlast.updateFile(zerbfishFile, false);
-		
 		////////////////////  ´ó¶¹  /////////////////////////////
 		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/soybean/affy2Gly_nr.txt";
 		microArrayBlast = new MicroArrayBlast();
 		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_GLMAX);
-		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
+		microArrayBlast.setGeneID(GeneID.IDTYPE_ACCID);
 		microArrayBlast.setTaxID(3847);
 		microArrayBlast.updateFile(zerbfishFile, false);
 	}
 	
-	private static void updateYeast()
-	{
+	private static void updateYeast() {
 		String yeastDBxrefFile = "/media/winE/Bioinformatics/GenomeData/yeast/dbxref.tab.txt";
 		String SGD_featuresFile = "/media/winE/Bioinformatics/GenomeData/yeast/SGD_features.tab.txt";
 		String Gene_AssociationFile ="/media/winE/Bioinformatics/GenomeData/yeast/gene_association.sgd/gene_association.sgd";
@@ -421,6 +421,16 @@ public class ImportDB {
 		maizeGDB.update();
 	}
 	
-	
-	
+	private static void updateSoftInfo() {
+		String softToolsFile = "/media/winE/bioinformaticsTools/SoftwareInfo_english.xls";
+		SoftWareInfo.updateInfo(softToolsFile);
+	}
+	private static void updateSpecies() {
+		String speciesFile = "/media/winE/Bioinformatics/GenomeData/SpeciesFile.xls";
+		String taxInfoFile = "";
+		Species species = new Species();
+		species.setUpdateSpeciesFile(speciesFile);
+		species.setUpdateTaxInfo(taxInfoFile);
+		species.update();
+	}
 }

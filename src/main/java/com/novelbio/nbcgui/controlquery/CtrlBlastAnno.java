@@ -9,7 +9,7 @@ import javax.swing.SwingWorker;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 
 
@@ -88,7 +88,7 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 			i ++;
 			accID = accID.trim();
 			try {
-				CopedID copedID = new CopedID(accID, taxID);
+				GeneID copedID = new GeneID(accID, taxID);
 				copedID.setBlastInfo(1e-10, StaxID);
 				String[] tmpAnno = copedID.getAnno(blast);
 				if (tmpAnno == null) {
@@ -115,7 +115,7 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 				}
 				else {
 					tmpResult[4] = copedID.getKeggInfo().getKegID(); //最尾部加上keggID
-					CopedID copedIDblast = copedID.getCopedIDBlast();
+					GeneID copedIDblast = copedID.getGeneIDBlast();
 					if (copedIDblast != null ) {
 						tmpResult[6] = copedIDblast.getAccIDDBinfo();//加上默认数据库的ID
 						tmpResult[tmpResult.length - 1] = copedIDblast.getKeggInfo().getKegID(); //最尾部加上keggID

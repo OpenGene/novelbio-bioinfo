@@ -14,7 +14,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
@@ -50,7 +50,7 @@ public class IsoJunNum {
 		ArrayList<String[]> lsIsoInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 1, -1, 1, -1);
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtOutFile, true);
 		for (String[] strings : lsIsoInfo) {
-			String geneID = CopedID.removeDot(strings[14].split(":")[0]);
+			String geneID = GeneID.removeDot(strings[14].split(":")[0]);
 			if (geneID.equals("K0")) {
 				continue;
 			}

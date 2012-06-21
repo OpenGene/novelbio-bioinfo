@@ -8,15 +8,15 @@ import java.util.HashSet;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
 public class NovelGOFunTest extends AbstFunTest{
 	String GoType = Go2Term.GO_BP;
 	ServGo2Term servGo2Term = new ServGo2Term();
-	public NovelGOFunTest(ArrayList<CopedID> lsCopedIDsTest,
-			ArrayList<CopedID> lsCopedIDsBG, boolean blast, String GoType) {
+	public NovelGOFunTest(ArrayList<GeneID> lsCopedIDsTest,
+			ArrayList<GeneID> lsCopedIDsBG, boolean blast, String GoType) {
 		super(lsCopedIDsTest, lsCopedIDsBG, blast);
 		this.GoType = GoType;
 	}
@@ -36,10 +36,10 @@ public class NovelGOFunTest extends AbstFunTest{
 	}
 	
 	@Override
-	protected ArrayList<String[]> convert2Item(Collection<CopedID> lsCopedIDs) {
+	protected ArrayList<String[]> convert2Item(Collection<GeneID> lsCopedIDs) {
 		HashSet<String> hashGenUniID = new HashSet<String>();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-			for (CopedID copedID : lsCopedIDs) {
+			for (GeneID copedID : lsCopedIDs) {
 				if (hashGenUniID.contains(copedID.getGenUniID())) {
 					continue;
 				}
@@ -79,7 +79,7 @@ public class NovelGOFunTest extends AbstFunTest{
 	@Override
 	public ArrayList<String[]> setGene2Item() {
 		ArrayList<String[]> lsFinal = new ArrayList<String[]>();
-		for (CopedID copedID : lsCopedIDsTest) {
+		for (GeneID copedID : lsCopedIDsTest) {
 			ArrayList<AGene2Go> lsGen2Go = null;
 			//获得具体的GO信息
 			if (blast)

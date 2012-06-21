@@ -9,7 +9,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.updatedb.database.MicroArrayBlast;
 import com.novelbio.generalConf.NovelBioConst;
 
@@ -70,16 +70,16 @@ public class ID2Exp {
 	 */
 	private ArrayList<String[]> mergeInfo() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		HashMap<CopedID, String[]> hashGene2Exp = new HashMap<CopedID, String[]>();
+		HashMap<GeneID, String[]> hashGene2Exp = new HashMap<GeneID, String[]>();
 		for (String[] strings : lsMicroarrayInfo) {
-			CopedID copedID = new CopedID(strings[0], taxID);
+			GeneID copedID = new GeneID(strings[0], taxID);
 			hashGene2Exp.put(copedID, strings);
 		}
 		for (String[] strings : lsMethyInfo) {
 			String[] ssID = strings[0].split("///");
 			boolean flag = false;
 			for (String string : ssID) {
-				CopedID copedID = new CopedID(string, taxID);
+				GeneID copedID = new GeneID(string, taxID);
 				if (hashGene2Exp.containsKey(copedID)) {
 					flag = true;
 					String[] tmpResult = ArrayOperate.combArray(strings, hashGene2Exp.get(copedID), 0);

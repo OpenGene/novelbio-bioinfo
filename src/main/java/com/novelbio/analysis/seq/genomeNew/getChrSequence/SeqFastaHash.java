@@ -28,9 +28,16 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 
 public class SeqFastaHash extends SeqHashAbs {
+	private static Logger logger = Logger.getLogger(SeqFastaHash.class);  
 	Boolean TOLOWCASE = null;
+	/**
+	 * 将序列信息读入哈希表并返回<br>
+	 * 哈希表的键是序列名，根据情况不改变大小写或改为小写<br>
+	 * 哈希表的值是序列，其中无空格<br>
+	 */
+	public HashMap<String,SeqFasta> hashSeq;
 	
-	
+	boolean append = false;
 	/**
 	 * @param chrFile
 	 * @param regx 序列名的正则表达式，null不设定
@@ -42,8 +49,6 @@ public class SeqFastaHash extends SeqHashAbs {
 		super(chrFile, "", true);
 		setFile();
 	}
-	
-	
 	/**
 	 * @param chrFile
 	 * @param regx 序列名的正则表达式，null不设定
@@ -72,19 +77,6 @@ public class SeqFastaHash extends SeqHashAbs {
 		this.TOLOWCASE = TOLOWCASE;
 		setFile();
 	}
-	
-	private static Logger logger = Logger.getLogger(SeqFastaHash.class);  
-
-
-	/**
-	 * 将序列信息读入哈希表并返回<br>
-	 * 哈希表的键是序列名，根据情况不改变大小写或改为小写<br>
-	 * 哈希表的值是序列，其中无空格<br>
-	 */
-	public HashMap<String,SeqFasta> hashSeq;
-	
-	boolean append = false;
-
 	/**
 	 * 读取序列文件，将序列保存入Seqhash哈希表<br/>
 	 * 读取完毕后，生成<br/>
@@ -99,8 +91,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * @return
 	 * @throws Exception 
 	 */
-	protected void setChrFile() throws Exception
-	{
+	protected void setChrFile() throws Exception {
 		Pattern pattern = null;
 		if (regx == null) {
 			pattern = Pattern.compile("", Pattern.CASE_INSENSITIVE); // flags
@@ -152,7 +143,6 @@ public class SeqFastaHash extends SeqHashAbs {
 		putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append);
 		txtSeqFile.close();
 	}
-
 	/**
 	 *  如果没有同名序列，直接装入hash表
 	 *  对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
@@ -175,16 +165,14 @@ public class SeqFastaHash extends SeqHashAbs {
 		} else {// 对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
 			if (append)
 			 { //连续向后加上"<"直到hash中没有这条名字为止，然后装入hash表
-				 while (hashSeq.containsKey(seqFasta.getSeqName()))
-				 {
+				 while (hashSeq.containsKey(seqFasta.getSeqName())) {
 					 seqFasta.setName(seqFasta.getSeqName()+"<");
 				 }
 				 hashSeq.put(seqFasta.getSeqName(), seqFasta);
 				 lsSeqName.add(seqFasta.getSeqName());
 				 hashChrLength.put(seqFasta.getSeqName(), (long) seq.length());
 			 }
-			 else 
-			 {
+			 else {
 				if (tmpSeq.getLength()<seqFasta.getLength()) 
 				{
 					hashSeq.put(seqFasta.getSeqName(), seqFasta);
@@ -194,7 +182,6 @@ public class SeqFastaHash extends SeqHashAbs {
 			}
 		 }
 	}
-	
 	/**
 	 * 输入序列信息：序列名,正反向
 	 * 返回序列
@@ -203,8 +190,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * @param cisseq序列正反向，蛋白序列就输true
 	 * 如果没有序列则返回null
 	 */
-	public String getSeqAll(String SeqID,boolean cisseq) 
-	{
+	public String getSeqAll(String SeqID,boolean cisseq) {
 		if (hashSeq.containsKey(SeqID)) {
 			if (cisseq) {
 				return hashSeq.get(SeqID).toString().toLowerCase();
@@ -214,14 +200,12 @@ public class SeqFastaHash extends SeqHashAbs {
 		}
 	   return null;
 	}
-	
 	/**
 	 * 输入序列名
 	 * 输入序列坐标，起点和终点
 	 * 返回序列
 	 */
-	protected SeqFasta getSeqInfo(String seqID, long startlocation, long endlocation) throws IOException 
-	{
+	protected SeqFasta getSeqInfo(String seqID, long startlocation, long endlocation) throws IOException {
 		SeqFasta targetChr=hashSeq.get(seqID);
 		if (targetChr == null) {
 			logger.error("没有该序列 " +seqID);
@@ -229,14 +213,12 @@ public class SeqFastaHash extends SeqHashAbs {
 		}
 		return targetChr.getSubSeq((int)startlocation, (int)endlocation, true);
 	}
-	
 	/**
 	 * 输入序列名，自动转变为小写
 	 * 输入序列坐标，起点和终点
 	 * 返回序列
 	 */
-	public SeqFasta getSeqFasta(String seqID) 
-	{
+	public SeqFasta getSeqFasta(String seqID) {
 		seqID = seqID.toLowerCase();
 		SeqFasta seqFasta = hashSeq.get(seqID);
 		if (seqFasta == null) {
@@ -249,8 +231,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	/**
 	 * 返回全部序列
 	 */
-	public ArrayList<SeqFasta>  getSeqFastaAll()
-	{
+	public ArrayList<SeqFasta>  getSeqFastaAll() {
 		ArrayList<SeqFasta> lsresult = new ArrayList<SeqFasta>();
 		for (SeqFasta seqFasta : hashSeq.values()) {
 			seqFasta.setDNA(isDNAseq);
@@ -258,9 +239,6 @@ public class SeqFastaHash extends SeqHashAbs {
 		}
 		return lsresult;
 	}
-	
-
-	
 	/**
 	 * 将指定长度的序列写入文本，主要用于做lastz分析,后缀名通通改为.fasta
 	 * @param filePath 写入文件路径
@@ -272,8 +250,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * @param sepFile 是否分为不同文件保存
 	 * @param writelen
 	 */
-	public void writeFileSep(String filePath, String prix, int[] len, boolean sepFile, int writelen)
-	{
+	public void writeFileSep(String filePath, String prix, int[] len, boolean sepFile, int writelen) {
 		filePath = FileOperate.addSep(filePath);
 		TxtReadandWrite txtResultSeqName = new TxtReadandWrite(filePath + prix + "seqName.txt", true);
 		TxtReadandWrite txtReadandWrite = null;
@@ -281,13 +258,10 @@ public class SeqFastaHash extends SeqHashAbs {
 			txtReadandWrite = new TxtReadandWrite(filePath + prix + ".fasta", true);
 			txtResultSeqName.writefileln(txtReadandWrite.getFileName());
 		}
-
 		for (Entry<String, SeqFasta> entry : hashSeq.entrySet()) {
 			SeqFasta seqFasta = entry.getValue();
-			if (SeqHash.testSeqLen(seqFasta.toString().length(), len))//长度在目标范围内
-			{
+			if (SeqHash.testSeqLen(seqFasta.toString().length(), len)) {//长度在目标范围内
 				if (sepFile) {
-					
 					TxtReadandWrite txtReadandWrite2 = new TxtReadandWrite(filePath + prix + seqFasta.getSeqName().replace(" ", "_")+".fasta", true);
 					txtReadandWrite2.writefileln(">"+seqFasta.getSeqName().trim().replace(" ", "_"));
 					txtReadandWrite2.writefilePerLine(seqFasta.toString(), writelen);
@@ -304,12 +278,10 @@ public class SeqFastaHash extends SeqHashAbs {
 		if (!sepFile) {
 			txtReadandWrite.close();
 		}
-		
 		txtResultSeqName.close();
 	}
 	
-	public void writeToFile(String seqOut)
-	{
+	public void writeToFile(String seqOut) {
 		ArrayList<SeqFasta> lsFasta = getSeqFastaAll();
 		TxtReadandWrite txtOut = new TxtReadandWrite(seqOut, true);
 		for (SeqFasta seqFasta : lsFasta) {

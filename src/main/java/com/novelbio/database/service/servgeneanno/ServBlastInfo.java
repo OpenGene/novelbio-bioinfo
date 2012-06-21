@@ -43,8 +43,7 @@ public class ServBlastInfo extends AbsGetSpring implements MapBlastInfo {
 	 * @param evalue 如果evalue <= -1或evalue >=5，则不起作用
 	 * @return
 	 */
-	public BlastInfo queryBlastInfo(String queryID, int taxIDQ, int taxIDS, double evalue)
-	{
+	public BlastInfo queryBlastInfo(String queryID, int taxIDQ, int taxIDS, double evalue) {
 		BlastInfo blastInfoTmp = new BlastInfo();
 		blastInfoTmp.setEvalue(evalue);
 		blastInfoTmp.setQueryID(queryID);
@@ -71,12 +70,14 @@ public class ServBlastInfo extends AbsGetSpring implements MapBlastInfo {
 	 * @param blastInfo
 	 */
 	public void updateBlast(BlastInfo blastInfo) {
-		BlastInfo blastInfo2 = queryBlastInfo(blastInfo.getQueryID(), blastInfo.getQueryTax(), blastInfo.getSubjectTax(), 2);
+		BlastInfo blastInfo2 = queryBlastInfo(blastInfo.getQueryID(), blastInfo.getQueryTax(), blastInfo.getSubjectTax(), 1);
 		if (blastInfo2 == null) {
 			mapBlastInfo.insertBlastInfo(blastInfo);
 		}
 		//evalue小于等于blastinfo 或者evalue相同但是identity更大
-		else if (blastInfo2.getEvalue() < blastInfo.getEvalue() || (blastInfo2.getEvalue() == blastInfo.getEvalue() && blastInfo2.getIdentities() > blastInfo.getIdentities()  )) {
+		else if (blastInfo2.getEvalue() < blastInfo.getEvalue()
+				|| (blastInfo2.getEvalue() == blastInfo.getEvalue()
+				    && blastInfo2.getIdentities() > blastInfo.getIdentities()  )) {
 			mapBlastInfo.updateBlastInfo(blastInfo);
 		}
 	}

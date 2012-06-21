@@ -10,7 +10,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class MaizeGDB {
@@ -136,9 +136,9 @@ public class MaizeGDB {
 	}
 	
 	public void upDateGeneInfo(int maizeTaxID, String tmpMaizeID, String tmpDescription) {
-		CopedID copedID = new CopedID(tmpMaizeID, maizeTaxID, false);
+		GeneInfo copedID = new GeneInfo(tmpMaizeID, maizeTaxID, false);
 		AGeneInfo geneInfo = null;
-		if (copedID.getIDtype().equals(CopedID.IDTYPE_GENEID)) {
+		if (copedID.getIDtype().equals(GeneInfo.IDTYPE_GENEID)) {
 			geneInfo = new GeneInfo();
 		}
 		else {
@@ -161,7 +161,7 @@ public class MaizeGDB {
  				tmpMaizeID = tmpAccID;
  			}
 			if (ss[1].equals("GO")) {
-				CopedID copedID = new CopedID(tmpMaizeID, maizeTaxID, false);
+				GeneInfo copedID = new GeneInfo(tmpMaizeID, maizeTaxID, false);
 				UpDateFriceDB.upDateGenGO(copedID, ss[2], NovelBioConst.DBINFO_MAIZE_MGDB);
 			}
  		}

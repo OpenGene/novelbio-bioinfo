@@ -8,8 +8,10 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class CodeCounter {
 	public static void main(String[] args) {
-		CodeCounter codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio/analysis/seq/genome", "/media/winD/fedora/codestatistics/genomeMinusCodeLines.txt");
-		codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio", "/media/winD/fedora/codestatistics/allCodeLines.txt");
+		CodeCounter codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio", "/media/winD/fedora/codestatistics/allCodeLines.txt");
+		codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio/analysis/seq/genome", "/media/winD/fedora/codestatistics/genomeMinusCodeLines.txt");
+//		codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio", "/media/winD/fedora/codestatistics/allCodeLines.txt");
+		codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio/project", "/media/winD/fedora/codestatistics/projectMinusCodeLines.txt");
 
 	}
 	TxtReadandWrite txtOut;
@@ -56,14 +58,14 @@ public class CodeCounter {
 				if (childs[i].getName().startsWith(".")) {
 					continue;
 				}
-				System.out.println("path:"+childs[i].getPath());
+//				System.out.println("path:"+childs[i].getPath());
 				txtOut.writefileln("path:"+childs[i].getPath());
 				tree(childs[i].getPath());
 			}else{
 				if (!childs[i].getName().matches(".*\\.java$")) {
 					continue;
 				}
-				System.out.println("当前"+childs[i].getName()+"代码行数:");
+//				System.out.println("当前"+childs[i].getName()+"代码行数:");
 				txtOut.writefileln("当前"+childs[i].getName()+"代码行数:");
 				parse(childs[i]);
 				getCodeCounter();
@@ -112,10 +114,10 @@ public class CodeCounter {
 	 */
 	private void getCodeCounter(){
 		totalLines=normalLines+spaceLines+commentLines;
-		System.out.println("普通代码行数:"+normalLines);
-		System.out.println("空白代码行数:"+spaceLines);
-		System.out.println("注释代码行数:"+commentLines);
-		System.out.println("代码总行数:"+totalLines);
+//		System.out.println("普通代码行数:"+normalLines);
+//		System.out.println("空白代码行数:"+spaceLines);
+//		System.out.println("注释代码行数:"+commentLines);
+//		System.out.println("代码总行数:"+totalLines);
 		txtOut.writefileln("普通代码行数:"+normalLines);
 		txtOut.writefileln("空白代码行数:"+spaceLines);
 		txtOut.writefileln("注释代码行数:"+commentLines);

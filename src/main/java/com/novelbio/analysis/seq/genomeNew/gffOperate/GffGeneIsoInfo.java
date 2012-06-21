@@ -13,7 +13,7 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.dataStructure.listOperate.ListComb;
-import com.novelbio.database.model.modcopeid.CopedID;
+import com.novelbio.database.model.modcopeid.GeneID;
 
 /**
  * 记录该转录本的具体坐标信息,
@@ -611,8 +611,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 返回该GeneIsoName所对应的CopedID，因为是NM号所以不需要指定TaxID
 	 * @return
 	 */
-	public CopedID getCopedID() {
-		return new CopedID(getName(), taxID);
+	public GeneID getCopedID() {
+		return new GeneID(getName(), taxID);
 	}
 	/**
 	 * 文字形式的定位描述

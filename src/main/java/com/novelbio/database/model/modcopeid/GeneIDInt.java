@@ -10,7 +10,7 @@ import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
 
-public interface CopedIDInt{
+public interface GeneIDInt{
  
 	/**
 	 * idType，必须是IDTYPE中的一种
@@ -83,7 +83,7 @@ public interface CopedIDInt{
 	 * @param StaxID
 	 * @return
 	 */
-	public ArrayList<CopedID> getCopedIDLsBlast();
+	public ArrayList<GeneID> getLsBlastGeneID();
  
 	/**
 	 * 设定多个物种进行blast
@@ -127,7 +127,7 @@ public interface CopedIDInt{
 	 * @param evalue
 	 * @return
 	 */
-	CopedID getCopedIDBlast();
+	GeneID getGeneIDBlast();
 	/**
 	 * 	blast多个物种
 	 * 首先设定blast的物种
@@ -236,7 +236,7 @@ GO_REF:0000004<br>
 	 * false：非uniqID也升级，升级搜索到的全部ID，该功能尚未实现
 	 * @param uniqID
 	 */
-	void setUpdateRefAccIDAdd(String[] refAccID);
+	void addUpdateRefAccID(String[] refAccID);
 	/**
 	 * 如果blast到geneUniID上去
 	 * @param SubGenUniID

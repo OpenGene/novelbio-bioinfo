@@ -19,49 +19,27 @@ public class RfamStatistic {
 		String rfamFile = "/media/winE/Bioinformatics/DataBase/sRNA/rfam/rfam.txt";
 		String mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX8/H36_rfam.bed";
 		String outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
-		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
-		
-		mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX7/H12_rfam.bed";
-		outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
-		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
-		
-		mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX6/C_rfam.bed";
-		outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
-		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
-		
-		mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX5/N36_rfam.bed";
-		outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
-		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
-		
-		mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX4/N6_rfam.bed";
-		outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
-		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
-		
-		mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX3/H6_rfam.bed";
-		outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
-		rfamHash.countRfamInfo(rfamFile, mapBedFile, outFile);
+		rfamHash.countRfamInfo(rfamFile, mapBedFile);
 	}
 	
-	
-	/**
-	 * RfamID2Info的信息
-	 */
-	HashMap<String, String[]> hashRfamID2Info = new HashMap<String, String[]>();	
-	/**
-	 * 具体看每个RfamID的counts
-	 */
-	HashMap<String, Double> hashRfam2Counts = new HashMap<String, Double>();
-	
+	/** RfamID2Info的信息 */
+	HashMap<String, String[]> mapRfamID2Info = new HashMap<String, String[]>();	
+	/** 具体看每个RfamID的counts */
+	HashMap<String, Double> mapRfam2Counts = new HashMap<String, Double>();
+	String outputFile = "";
+	public void setOutputFile(String outputFile) {
+		this.outputFile = outputFile;
+	}
 	/**
 	 * @param rfamFile rfam的数据库
 	 * @param mapBedFile mapping至Rfam序列的bed文件
 	 * @param outFile 输出文件
 	 */
-	public void countRfamInfo(String rfamFile, String mapBedFile, String outFile) {
+	public void countRfamInfo(String rfamFile, String mapBedFile) {
 		readRfamFile(rfamFile);
 		readRfamBed(mapBedFile);
 		ArrayList<String[]> lsResult = getInfo();
-		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
+		TxtReadandWrite txtOut = new TxtReadandWrite(outputFile, true);
 		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
 	}
 	/**
@@ -75,7 +53,7 @@ public class RfamStatistic {
 			String key = ss[2];
 			String[] value = new String[4];
 			value[0] = ss[3]; value[1] = ss[4]; value[2] = ss[11]; value[3] = ss[18];
-			hashRfamID2Info.put(key, value);
+			mapRfamID2Info.put(key, value);
 		}
 	}
 	
@@ -93,12 +71,12 @@ public class RfamStatistic {
 		for (BedRecord bedRecord : bedSeq.readlines()) {
 			String RfamID = bedRecord.getRefID().split("//")[0];
 			Double thisCount = (double)1/bedRecord.getMappingNum();
-			if (hashRfam2Counts.containsKey(RfamID)) {
-				double newCounts = hashRfam2Counts.get(RfamID) + thisCount;
-				hashRfam2Counts.put(RfamID, newCounts);
+			if (mapRfam2Counts.containsKey(RfamID)) {
+				double newCounts = mapRfam2Counts.get(RfamID) + thisCount;
+				mapRfam2Counts.put(RfamID, newCounts);
 				continue;
 			}
-			hashRfam2Counts.put(RfamID, thisCount);
+			mapRfam2Counts.put(RfamID, thisCount);
 		}
 	}
 	
@@ -108,8 +86,8 @@ public class RfamStatistic {
 	 */
 	private ArrayList<String[]> getInfo() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		for (Entry<String, Double> entry : hashRfam2Counts.entrySet()) {
-			String[] rfamInfo = hashRfamID2Info.get(entry.getKey());
+		for (Entry<String, Double> entry : mapRfam2Counts.entrySet()) {
+			String[] rfamInfo = mapRfamID2Info.get(entry.getKey());
 			String[] tmpResult = new String[rfamInfo.length + 2];
 			tmpResult[0] = entry.getKey();
 			tmpResult[1] = entry.getValue() + "";
