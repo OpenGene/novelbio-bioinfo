@@ -592,9 +592,11 @@ public class GuiSeqMiRNA extends JPanel{
 	}
 	
 	private void runMapping(String fastqFile) {
+		String[] outPrefix = getTxtOutPathAndPrefix();
+
 		ctrlMiRNA = new CtrlMiRNA();
 		ctrlMiRNA.setTaxID(combSpecies.getSelectedValue());
-		ctrlMiRNA.setOutPathPrix(txtOutPathPrefix.getText() + FileOperate.getFileNameSep(fastqFile)[0]);
+		ctrlMiRNA.setOutPath(outPrefix[0] + FileOperate.getFileNameSep(fastqFile)[0] , outPrefix[1]);
 		ctrlMiRNA.setFastqFile(fastqFile);
 		ctrlMiRNA.setGenome(chkMapAllBedFileToGenome.isSelected());
 		ctrlMiRNA.setMiRNAinfo(combFileType.getSelectedValue(), combSpecies.getSelectedValue(), txtRNAdataFile.getText());
@@ -603,9 +605,10 @@ public class GuiSeqMiRNA extends JPanel{
 	
 	private void runPredict(boolean solo) {
 		if (solo) {
+			String[] outPrefix = getTxtOutPathAndPrefix();
 			ctrlMiRNA = new CtrlMiRNA();
 			ctrlMiRNA.setTaxID(combSpecies.getSelectedValue());
-			ctrlMiRNA.setOutPathPrix(txtOutPathPrefix.getText());
+			ctrlMiRNA.setOutPath(outPrefix[0], outPrefix[1]);
 			ArrayList<String[]> lsBedFileArray = sclNovelMiRNAbed.getLsDataInfo();
 			ArrayList<String> lsBedFile = new ArrayList<String>();
 			for (String[] strings : lsBedFileArray) {
@@ -625,14 +628,33 @@ public class GuiSeqMiRNA extends JPanel{
 	 */
 	private void runCount(boolean solo) {
 		if (solo) {
+			String[] outPrefix = getTxtOutPathAndPrefix();
 			ctrlMiRNA = new CtrlMiRNA();
 			ctrlMiRNA.setTaxID(combSpecies.getSelectedValue());
-			ctrlMiRNA.setOutPathPrix(txtOutPathPrefix.getText());
+			ctrlMiRNA.setOutPath(outPrefix[0], outPrefix[1]);
 //			ctrlMiRNA.set
 		}
 		ctrlMiRNA.setMiRNAinfo(combFileType.getSelectedValue(), combSpecies.getSelectedValue(), txtRNAdataFile.getText());
 		ctrlMiRNA.setBedFileCountMiRNA(txtMiRNAbed.getText(),  txtGenomeBed.getText(), txtRfamBed.getText(), txtNCRNAbed.getText());
 		ctrlMiRNA.setRfamFile(txtRfamInfo.getText());
 		ctrlMiRNA.exeRunning(solo);
+	}
+	/**
+	 * 将输出的那个txtprefix分割为outpath和prefix
+	 * @return
+	 * 1: prefix<br>
+	 * 0: path
+	 */
+	private String[] getTxtOutPathAndPrefix() {
+		String[] result = new String[2];
+		String out = txtOutPathPrefix.getText();
+		if (out.endsWith("\\|/")) {
+			result[0] = "";
+			result[1] = out;
+			return result;
+		}
+		result[0] = FileOperate.getFileName(out);
+		result[1] = FileOperate.getParentPathName(out);
+		return result;
 	}
 }

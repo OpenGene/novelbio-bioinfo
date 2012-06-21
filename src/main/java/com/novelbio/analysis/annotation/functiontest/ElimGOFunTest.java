@@ -151,11 +151,11 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		return true;
 	}
 
+	
 	/**
 	 * 不包含标题
 	 * 将elim的GO2Gene改成正规的Go2Gene 的List并返回
-	 * @param hashElimGo2Gene topGO中所含有的go2gene的信息
-	 * @oaram lsResultTable topGO所生成的GO结果的table
+	 * @param lsResultTable topGO所生成的GO结果的table
 	 * @param lsGeneID 该次分析的的所有差异基因列表
 	 * @return
 	 * Go富集分析的Go2Gene表格<br>
@@ -169,14 +169,9 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	private ArrayList<String[]> getElimGo2Gene(ArrayList<String[]> lsResultTable, ArrayList<String> lsGeneID)
 	{
 		HashMap<String, ArrayList<String>> hashElimGo2Gene = null;
-		try {
-			hashElimGo2Gene = getGo2GeneBG(NovelBioConst.R_WORKSPACE_TOPGO_GOINFO);
-		} catch (Exception e) {
-			logger.error("ElimFisher stopped: "+ NovelBioConst.R_WORKSPACE_TOPGO_GOINFO + " file error");
-		}
+		hashElimGo2Gene = getGo2GeneBG(NovelBioConst.R_WORKSPACE_TOPGO_GOINFO);
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		for (int i = 1; i < lsResultTable.size(); i++) 
-		{
+		for (int i = 1; i < lsResultTable.size(); i++) {
 			//某个GO中所含有的所有背景基因
 			ArrayList<String> lsTmpGeneID = hashElimGo2Gene.get(lsResultTable.get(i)[0]);
 			//获得某个GO中所含有的所有差异基因
@@ -208,16 +203,11 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	 * @return
 	 * @throws Exception 
 	 */
-	private static HashMap<String,ArrayList<String>> getGo2GeneBG(String RGoInfo) throws Exception
-	{
+	private static HashMap<String,ArrayList<String>> getGo2GeneBG(String RGoInfo) {
 		TxtReadandWrite txtRGo2Gene = new TxtReadandWrite(RGoInfo, false);
-		BufferedReader reader = txtRGo2Gene.readfile();
-		String content = "";
 		HashMap<String, ArrayList<String>> hashGo2Gene = new HashMap<String, ArrayList<String>>();
 		ArrayList<String> lsGOGene = null;
-		while((content = reader.readLine())!= null)
-		{
-			
+		for (String content : txtRGo2Gene.readlines()) {
 			if (content.startsWith("#")) {
 				lsGOGene = new ArrayList<String>();
 				hashGo2Gene.put(content.replace("#", "").trim(), lsGOGene);

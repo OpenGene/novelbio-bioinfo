@@ -22,20 +22,19 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class MapBwa {
-	public static void main(String[] args) {
-		
-	}
-	CmdOperate cmdOperate = null;
-	/** bwa所在路径 */
-	String ExePath = "";
-	String chrFile = "";
+	private static Logger logger = Logger.getLogger(FastQMapSoap.class);
 	/**
 	 * 在此大小以下的genome直接读入内存以帮助快速mapping
 	 * 单位，KB
 	 * 似乎该值双端才有用
 	 */
 	private static final int GENOME_SIZE_IN_MEMORY = 500000;
-	private static Logger logger = Logger.getLogger(FastQMapSoap.class);
+	
+	CmdOperate cmdOperate = null;
+	/** bwa所在路径 */
+	String ExePath = "";
+	String chrFile;
+
 	boolean uniqMapping = true;
 	String sampleGroup = "";
 	String outFileName = "";
@@ -64,7 +63,7 @@ public class MapBwa {
 
 	/**
 	 * @param fastQ
-	 * @param outFileName 结果文件名
+	 * @param outFileName 结果文件名，后缀自动改为sam
 	 * @param uniqMapping 是否uniqmapping，单端才有的参数
 	 */
 	public MapBwa(FastQOld fastQ, String outFileName, boolean uniqMapping ) {
@@ -77,9 +76,7 @@ public class MapBwa {
 	 * 双端只做unique mapping
 	 * @param seqFile1
 	 * @param seqFile2 没有就写null
-	 * @param FastQFormateOffset
-	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
-	 * @param outFileName 结果文件名
+	 * @param outFileName 结果文件名，后缀自动改为sam
 	 */
 	public MapBwa(String seqFile1, String seqFile2, String outFileName) {
 		leftFq = seqFile1;
@@ -89,10 +86,8 @@ public class MapBwa {
 	}
 	/**
 	 * @param seqFile1
-	 * @param FastQFormateOffset
-	 * @param QUALITY 质量 有三档高中低 QUALITY_HIGH等
-	 * @param outFilePath 结果文件名
-	 * @param IndexFile
+	 * @param outFileName 结果文件名，后缀自动改为sam
+	 * @param uniqMapping 是否unique mapping
 	 */
 	public MapBwa(String seqFile,String outFileName, boolean uniqMapping) {
 		leftFq = seqFile;
@@ -171,8 +166,6 @@ public class MapBwa {
 			this.sampleGroup = " -r " + "\""+sampleGroup+"\"" + " ";
 		}
 	}
-	
-
 	/**
 	 * 默认gap为3，如果是indel查找的话，设置到5或者6比较合适
 	 * @param gapLength
@@ -203,6 +196,7 @@ public class MapBwa {
 	 * 参数设定不能用于solid
 	 */
 	public SamFile mapReads() {
+		outFileName = addSamToFileName(outFileName);
 		IndexMake();
 //		linux命令如下
 //		bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT.fastq > TGACT.sai
@@ -261,15 +255,21 @@ public class MapBwa {
 		samFile.setUniqMapping(uniqMapping);
 		return samFile;
 	}
-	
+	private String addSamToFileName(String outFileName) {
+		if (outFileName.endsWith(".sam"))
+			return outFileName;
+		else if (outFileName.endsWith("."))
+			return outFileName + "sam";
+		else
+			return outFileName + ".sam";
+	}
 	/**
 	 * 根据基因组大小判断采用哪种编码方式
 	 * @return 已经在前后预留空格，直接添加上idex就好
 	 * 小于500MB的用 -a is
 	 * 大于500MB的用 -a bwtsw
 	 */
-	private String getChrLen()
-	{
+	private String getChrLen() {
 		TxtReadandWrite txt = new TxtReadandWrite(chrFile, false);
 		long size = (long) FileOperate.getFileSize(chrFile);
 		if (size/1024 > 500) {

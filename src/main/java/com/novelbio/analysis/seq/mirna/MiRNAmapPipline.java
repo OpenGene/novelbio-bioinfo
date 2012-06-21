@@ -18,9 +18,12 @@ import com.novelbio.generalConf.NovelBioConst;
 public class MiRNAmapPipline {
 	/** 序列文件 */
 	String seqFile = "";
-	/** 输出路径和前缀 */
-	String outPath = "";
-	
+	/** 输出文件夹，主要是bed文件 */
+	String outPath;
+	/** 输出的临时文件夹，主要保存mapping的中间文件 */
+	String outPathTmp;
+	String outputPrefix;
+
 	/** rfam数据库中的序列 */
 	String rfamSeq = "";
 	/** miRNA序列 */
@@ -37,14 +40,16 @@ public class MiRNAmapPipline {
 	String bedFileRfam = null;
 	String bedFileNCRNA = null;
 	String bedFileGenome = null;
-	/** 全部reads mapping至全基因组上 */
-	String bedFileGenomeAll = null;
 	
 	/** 是否全部mapping至genome上，默认为true */
-	boolean mapping2Genome = true;
+	boolean mappingAll2Genome = true;
+	/** 全部reads mapping至全基因组上后产生的bed文件 */
+	String bedFileGenomeAll = null;
+
+	
 	/** 是否全部mapping至genome上，默认为true */
-	public void setMapping2Genome(boolean mapping2Genome) {
-		this.mapping2Genome = mapping2Genome;
+	public void setMappingAll2Genome(boolean mappingAll2Genome) {
+		this.mappingAll2Genome = mappingAll2Genome;
 	}
 	public void setRfamSeq(String rfamSeq) {
 		this.rfamSeq = rfamSeq;
@@ -64,16 +69,17 @@ public class MiRNAmapPipline {
 		this.exePath = exePath;
 	}
 	/**
-	 * @param seqFile 序列
-	 * @param outPath 输出文件夹
-	 * @param prix 文件前缀
+	 * @param outputPrefix 输出前缀
+	 * @param seqFile 输出文件夹
 	 */
-	public void setSample(String seqFile) {
+	public void setSample(String outputPrefix, String seqFile) {
+		this.outputPrefix = outputPrefix;
 		this.seqFile = seqFile;
 	}
-	/** 设定输出文件夹和前缀 */
-	public void setOutPath(String outPathPrefix) {
-		this.outPath = outPathPrefix;
+	/** 设定输出临时文件夹，必须是文件夹 */
+	public void setOutPath(String outPath, String outPathTmp) {
+		this.outPath = FileOperate.addSep(outPath);
+		this.outPathTmp = FileOperate.addSep(outPathTmp);
 	}
 	/** 比对miRNA的bed文件结果 */
 	public String getOutMiRNAbed() {
@@ -95,52 +101,51 @@ public class MiRNAmapPipline {
 	public String getOutGenomeAllbed() {
 		return bedFileGenomeAll;
 	}
-	/**
-	 * mapping的流水线
-	 */
+	/** mapping的流水线 */
 	public void mappingPipeline() {
-		bedFileMiRNA = outPath + "_miRNA.bed";
-		bedFileRfam = outPath + "_rfam.bed";
-		bedFileNCRNA = outPath + "_ncRna.bed";
-		bedFileGenome = outPath + "_Genome.bed";
+		String outputFinal = outPath + outputPrefix;
+		bedFileMiRNA = outputFinal +  "_miRNA.bed";
+		bedFileRfam = outputFinal + "_rfam.bed";
+		bedFileNCRNA = outputFinal + "_ncRna.bed";
+		bedFileGenome = outputFinal + "_Genome.bed";
 		/** 全部reads mapping至全基因组上 */
-		bedFileGenomeAll = outPath + "_GenomeAll.bed";
+		bedFileGenomeAll = outputFinal + "_GenomeAll.bed";
 		
-		
+		String outputTmpFinal = outPathTmp + outputPrefix;
 		String fqFile = seqFile;
 		String samFile = "";
 		String unMappedFq = "";
 		if (FileOperate.isFileExist(miRNApreSeq)) {
-			samFile = outPath + "_miRNA.sam";
-			unMappedFq = outPath + "_unMap2miRNA.fq";
+			samFile = outputTmpFinal + "_miRNA.sam";
+			unMappedFq = outputTmpFinal + "_unMap2miRNA.fq";
 			mapping(fqFile, miRNApreSeq, samFile, bedFileMiRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 	
 		if (FileOperate.isFileExist(rfamSeq)) {
-			samFile = outPath + "_rfam.sam";
-			unMappedFq = outPath + "_unMap2rfam.fq";
+			samFile = outputTmpFinal + "_rfam.sam";
+			unMappedFq = outputTmpFinal + "_unMap2rfam.fq";
 			mapping(fqFile, rfamSeq, samFile, bedFileRfam, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(ncRNAseq)) {
-			samFile = outPath + "_ncRna.sam";
-			unMappedFq = outPath + "_unMap2ncRna.fq";
+			samFile = outputTmpFinal + "_ncRna.sam";
+			unMappedFq = outputTmpFinal + "_unMap2ncRna.fq";
 			mapping(fqFile, ncRNAseq, samFile, bedFileNCRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(genome)) {
-			samFile = outPath + "_Genome.sam";
-			unMappedFq = outPath + "_unMapped.fq";
+			samFile = outputTmpFinal + "_Genome.sam";
+			unMappedFq = outputTmpFinal + "_unMapped.fq";
 			mapping(fqFile, genome, samFile, bedFileGenome, unMappedFq);
 		}
 		
-		if (mapping2Genome && FileOperate.isFileExist(genome)) {
+		if (mappingAll2Genome && FileOperate.isFileExist(genome)) {
 			fqFile = seqFile;
-			samFile = outPath + "_GenomeAll.sam";
-			unMappedFq = outPath + "_unMapped.fq";
+			samFile = outputTmpFinal + "_GenomeAll.sam";
+			unMappedFq = outputTmpFinal + "_unMapped.fq";
 			mapping(fqFile, genome, samFile, bedFileGenomeAll, unMappedFq);
 		}
 	}
@@ -153,7 +158,6 @@ public class MiRNAmapPipline {
 	 * @param unMappedFq
 	 */
 	private void mapping(String fqFile, String chrFile, String samFileName, String bedFile, String unMappedFq) {
-//		outPath = FileOperate.addSep(outPath);
 		MapBwa mapBwa = new MapBwa(fqFile, samFileName, false);
 		mapBwa.setExePath(exePath, chrFile);
 		SamFile samFile = mapBwa.mapReads();
