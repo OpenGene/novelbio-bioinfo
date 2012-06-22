@@ -17,16 +17,7 @@ public abstract class NovelMiRNApredict {
 	/** 查找定位在反向exon和intron上的序列 */
 	GffChrAbs gffChrAbs = null;
 	/** 输入的一个bedseq文件 */
-	BedSeq bedSeq = null;
-	/** 待比对的序列，必须是一个完整的fasta文件 */
-	String chromfaSeq = "";
-	/**
-	 * 设定待比对的序列，必须是一个完整的fasta文件
-	 * @param chromfaSeq
-	 */
-	public void setChromfaSeq(String chromfaSeq) {
-		this.chromfaSeq = chromfaSeq;
-	}
+	BedSeq bedSeqInput = null;
 	/**
 	 * @param gffChrAbs 设定gff即可
 	 */
@@ -41,7 +32,7 @@ public abstract class NovelMiRNApredict {
 	 */
 	public void setBedSeq(String outFile, String... bedSeqFile) {
 		BedSeq bedSeq = BedSeq.combBedFile(outFile, bedSeqFile);
-		setBedSeq(bedSeq.getFileName());
+		setBedSeqInput(bedSeq.getFileName());
 	}
 	/**
 	 * 与setBedSeq(String bedFile) 二选一
@@ -49,17 +40,17 @@ public abstract class NovelMiRNApredict {
 	 * @param outFile 获得合并的bed文件名
 	 * @param lsBedSeqFile 一系列的bed文件
 	 */
-	public void setBedSeq(String outFile, ArrayList<String> lsBedSeqFile) {
+	public void setBedSeqInput(String outFile, ArrayList<String> lsBedSeqFile) {
 		BedSeq bedSeq = BedSeq.combBedFile(outFile, lsBedSeqFile);
-		setBedSeq(bedSeq.getFileName());
+		setBedSeqInput(bedSeq.getFileName());
 	}
 	/**
 	 * 与setBedSeq(String outFile, String... bedSeqFile) 二选一
 	 * 样本得到的bed文件
 	 * @param bedFile
 	 */
-	public void setBedSeq(String bedFile) {
-		bedSeq = new BedSeq(bedFile);
+	public void setBedSeqInput(String bedFile) {
+		bedSeqInput = new BedSeq(bedFile);
 	}
 	/**
 	 * 遍历bed文件，获得reads不在基因上的序列
@@ -67,7 +58,10 @@ public abstract class NovelMiRNApredict {
 	 */
 	protected BedSeq getBedReadsNotOnCDS(String outBed) {
 		BedSeq bedResult = new BedSeq(outBed, true);
-		for (BedRecord bedRecord : bedSeq.readlines()) {
+		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null) {
+			return new BedSeq(bedSeqInput.getFileName());
+		}
+		for (BedRecord bedRecord : bedSeqInput.readlines()) {
 			GffCodGene gffCod = gffChrAbs.getGffHashGene().searchLocation(bedRecord.getRefID(), bedRecord.getMidLoc());
 			if (readsNotOnCDS(gffCod, bedRecord.isCis5to3()))
 				bedResult.writeBedRecord(bedRecord);

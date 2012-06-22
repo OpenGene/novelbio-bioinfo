@@ -171,7 +171,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			e.printStackTrace();
 		}
 		for (String accID : lsInfo) {
-			ArrayList<GeneID> lsCopedIDs = GeneID.getLsCopedID(
+			ArrayList<GeneID> lsCopedIDs = GeneID.createLsCopedID(
 					accID.split("\t")[0], 0, false);
 			if (lsCopedIDs.size() == 1 && lsCopedIDs.get(0).getIDtype() != GeneID.IDTYPE_ACCID) {
 				taxID = lsCopedIDs.get(0).getTaxID();

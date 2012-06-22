@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-
+/**
+ * 考虑将其拆分成为三个不同的list，一个cis，一个trans，一个null
+ * @author zong0jie
+ *
+ * @param <E>
+ */
 public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements Cloneable
 {
 	private static final long serialVersionUID = -3356076601369239937L;
@@ -39,8 +44,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * 如果正向，那么就从小到大排序
 	 * 内部有flag，排完后就不会再排第二次了
 	 */
-	public void sort()
-	{
+	public void sort() {
 		if (cis5to3 == null) {
 			Collections.sort(this, new CompS2MAbs());
 		}
@@ -56,8 +60,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * @param num 实际数目
 	 * @return
 	 */
-	public int getInterGenic(int num)
-	{
+	public int getInterGenic(int num) {
 		if (cis5to3 == null) {
 			return get(num).getStartAbs() - get(num - 1).getEndAbs();
 		}
@@ -73,6 +76,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	public int getEleLen(int num) {
 		return get(num-1).getLen();
 	}
+	
 	public int getLen() {
 		if (cis5to3 != null) {
 			return Math.abs(get(0).getStartCis() - get(size()-1).getEndCis()) + 1;
@@ -728,8 +732,7 @@ class BinarySearch
  * 从小到大排序
  * @author zong0jie
  */
-class CompS2M implements Comparator<ListDetailAbs>
-{
+class CompS2M implements Comparator<ListDetailAbs> {
 	@Override
 	public int compare(ListDetailAbs o1, ListDetailAbs o2) {
 		Integer o1start = o1.getStartCis();
@@ -748,8 +751,7 @@ class CompS2M implements Comparator<ListDetailAbs>
  * 从小到大排序，用绝对坐标值排序
  * @author zong0jie
  */
-class CompS2MAbs implements Comparator<ListDetailAbs>
-{
+class CompS2MAbs implements Comparator<ListDetailAbs> {
 	@Override
 	public int compare(ListDetailAbs o1, ListDetailAbs o2) {
 		Integer o1start = o1.getStartAbs();
@@ -768,8 +770,7 @@ class CompS2MAbs implements Comparator<ListDetailAbs>
  * 从大到小排序
  * @author zong0jie
  */
-class CompM2S implements Comparator<ListDetailAbs>
-{
+class CompM2S implements Comparator<ListDetailAbs> {
 	@Override
 	public int compare(ListDetailAbs o1, ListDetailAbs o2) {
 		Integer o1start = o1.getStartCis();

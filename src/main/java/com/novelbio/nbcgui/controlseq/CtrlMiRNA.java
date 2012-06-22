@@ -178,7 +178,7 @@ public class CtrlMiRNA {
 			return;
 		}
 		//////////
-		novelMiRNAReap.setBedSeq(novelMiRNAPath + "allSample.bed", lsBedFileNovelMiRNA);
+		novelMiRNAReap.setBedSeqInput(novelMiRNAPath + "allSample.bed", lsBedFileNovelMiRNA);
 		novelMiRNAReap.setGffChrAbs(gffChrAbs);
 		novelMiRNAReap.setNovelMiRNAMiReapInputFile(novelMiRNAPath + "mireapSeq.fa", novelMiRNAPath + "mireapMap.txt");
 		novelMiRNAReap.runBedFile();

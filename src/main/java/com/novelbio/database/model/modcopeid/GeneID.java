@@ -142,7 +142,7 @@ public class GeneID implements GeneIDInt{
 	 * @param taxID
 	 * @param blastType 具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
 	 */
-	public static ArrayList<GeneID> getLsCopedID(String accID,int taxID,boolean blastType) {
+	public static ArrayList<GeneID> createLsCopedID(String accID,int taxID,boolean blastType) {
 		ArrayList<GeneID> lsCopedIDs = new ArrayList<GeneID>();
 		if (blastType) 
 			accID = accID.split("\\|")[1];

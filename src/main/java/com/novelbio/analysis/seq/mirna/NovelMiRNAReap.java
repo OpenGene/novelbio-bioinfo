@@ -28,6 +28,15 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 	String mireapAln = "";
 	/** mireap的结果文件 */
 	String mireapGff = "";
+	/** 待比对的序列，必须是一个完整的fasta文件 */
+	String chromfaSeq = "";
+	/**
+	 * 设定待比对的序列，必须是一个完整的fasta文件
+	 * @param chromfaSeq
+	 */
+	public void setChromfaSeq(String chromfaSeq) {
+		this.chromfaSeq = chromfaSeq;
+	}
 	/**
 	 * 设定输入miReap程序的文件
 	 * @param outSeqFile mireap所需的序列文件
@@ -52,7 +61,7 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 	GAATGGATAAGGATTAGCGATGATACA<br>
 	 */
 	private void getNovelMiRNASeq(String mapFile, String seqFile) {
-		String out = FileOperate.changeFileSuffix(bedSeq.getFileName(), "_Potential_DenoveMirna", null);
+		String out = FileOperate.changeFileSuffix(bedSeqInput.getFileName(), "_Potential_DenoveMirna", null);
 		BedSeq bedSeq = getBedReadsNotOnCDS(out);
 		bedSeq = bedSeq.sortBedFile();
 		writeMireapFormat(bedSeq, mapFile, seqFile);

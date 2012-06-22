@@ -44,6 +44,10 @@ public class SoftWareInfo {
 		this.softName = softName;
 		searched = false;
 	}
+	public void setName(Enum softName) {
+		this.softName = softName.toString();
+		searched = false;
+	}
 	public String getName() {
 		querySoftWareInfo();
 		return softName;

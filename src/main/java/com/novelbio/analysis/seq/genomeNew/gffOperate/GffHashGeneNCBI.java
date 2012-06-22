@@ -250,7 +250,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   return;
 	   }
 	   if (taxID == 0 && numCopedIDsearch < 20) {
-		   	ArrayList<GeneID> lsCopedIDs = GeneID.getLsCopedID(geneName, taxID, false);
+		   	ArrayList<GeneID> lsCopedIDs = GeneID.createLsCopedID(geneName, taxID, false);
 		   	if (lsCopedIDs.size() == 1) {
 		   		taxID = lsCopedIDs.get(0).getTaxID();
 		   	}
