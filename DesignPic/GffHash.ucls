@@ -3,7 +3,7 @@
   <class id="1" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU" 
     project="NBCplatform" 
     file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodGeneDU.java" binary="false">    
-    <position height="-1" width="-1" x="361" y="166"/>    
+    <position height="-1" width="-1" x="332" y="166"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
@@ -76,7 +76,7 @@
   <class id="9" corner="BOTTOM_RIGHT" language="java" 
     name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoTrans" project="NBCplatform" 
     file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffGeneIsoTrans.java" binary="false">    
-    <position height="-1" width="-1" x="1366" y="1604"/>    
+    <position height="-1" width="-1" x="1340" y="1608"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
@@ -94,7 +94,7 @@
   <class id="11" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene" 
     project="NBCplatform" 
     file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffHashGene.java" binary="false">    
-    <position height="-1" width="-1" x="1027" y="230"/>    
+    <position height="-1" width="-1" x="1141" y="224"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
@@ -121,7 +121,7 @@
   <class id="14" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene" 
     project="NBCplatform" 
     file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/gffOperate/GffCodGene.java" binary="false">    
-    <position height="-1" width="-1" x="334" y="379"/>    
+    <position height="-1" width="-1" x="307" y="398"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
@@ -140,7 +140,7 @@
     name="com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash" project="NBCplatform" 
     file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/getChrSequence/ChrStringHash.java" 
     binary="false">    
-    <position height="-1" width="-1" x="2847" y="1244"/>    
+    <position height="-1" width="-1" x="2741" y="1188"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
@@ -149,7 +149,7 @@
   <class id="17" corner="BOTTOM_RIGHT" language="java" 
     name="com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta" project="NBCplatform" 
     file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/getChrSequence/SeqFasta.java" binary="false">    
-    <position height="-1" width="-1" x="2883" y="-636"/>    
+    <position height="-1" width="-1" x="2885" y="-682"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
@@ -159,7 +159,7 @@
     name="com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash" project="NBCplatform" 
     file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/getChrSequence/SeqFastaHash.java" 
     binary="false">    
-    <position height="-1" width="-1" x="3213" y="1254"/>    
+    <position height="-1" width="-1" x="3083" y="1259"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
@@ -177,7 +177,7 @@
   <class id="20" corner="BOTTOM_RIGHT" language="java" 
     name="com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHashAbs" project="NBCplatform" 
     file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/getChrSequence/SeqHashAbs.java" binary="false">    
-    <position height="-1" width="-1" x="2980" y="831"/>    
+    <position height="-1" width="-1" x="2894" y="836"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
@@ -195,7 +195,7 @@
   <class id="22" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.GffChrSeq" 
     project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/GffChrSeq.java" 
     binary="false">    
-    <position height="-1" width="-1" x="2420" y="-657"/>    
+    <position height="-1" width="-1" x="2416" y="-679"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
@@ -213,7 +213,7 @@
   <class id="24" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.GffChrAnno" 
     project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/GffChrAnno.java" 
     binary="false">    
-    <position height="-1" width="-1" x="2008" y="-655"/>    
+    <position height="-1" width="-1" x="2030" y="-733"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
@@ -241,27 +241,27 @@
     name="com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfoSnpIndel" project="NBCplatform" 
     file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/mappingOperate/MapInfoSnpIndel.java" 
     binary="false">    
-    <position height="-1" width="-1" x="917" y="-1358"/>    
+    <position height="-1" width="-1" x="877" y="-1372"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
   <association id="28">    
-    <end type="SOURCE" refId="11" navigable="false">      
+    <end type="SOURCE" refId="23" navigable="false">      
       <attribute id="29" name="gffHashGene"/>      
       <multiplicity id="30" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="10" navigable="true"/>    
+    <end type="TARGET" refId="11" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="31">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="6"/>  
-  </generalization>  
+  <dependency id="31">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="17"/>  
+  </dependency>  
   <generalization id="32">    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="10"/>  
+    <end type="SOURCE" refId="25"/>    
+    <end type="TARGET" refId="23"/>  
   </generalization>  
   <association id="33">    
     <end type="SOURCE" refId="7" navigable="false">      
@@ -271,142 +271,138 @@
     <end type="TARGET" refId="6" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="36">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="1"/>  
-  </dependency>  
-  <generalization id="37">    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="13"/>  
-  </generalization>  
-  <dependency id="38">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="12"/>  
-  </dependency>  
-  <dependency id="39">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="12"/>  
-  </dependency>  
-  <dependency id="40">    
-    <end type="SOURCE" refId="9"/>    
-    <end type="TARGET" refId="12"/>  
-  </dependency>  
-  <dependency id="41">    
-    <end type="SOURCE" refId="19"/>    
-    <end type="TARGET" refId="17"/>  
-  </dependency>  
-  <generalization id="42">    
-    <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="13"/>  
-  </generalization>  
-  <generalization id="43">    
-    <end type="SOURCE" refId="15"/>    
-    <end type="TARGET" refId="10"/>  
-  </generalization>  
-  <generalization id="44">    
-    <end type="SOURCE" refId="24"/>    
-    <end type="TARGET" refId="23"/>  
-  </generalization>  
-  <generalization id="45">    
-    <end type="SOURCE" refId="18"/>    
-    <end type="TARGET" refId="20"/>  
-  </generalization>  
-  <dependency id="46">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="14"/>  
-  </dependency>  
-  <generalization id="47">    
-    <end type="SOURCE" refId="9"/>    
-    <end type="TARGET" refId="6"/>  
-  </generalization>  
-  <realization id="48">    
-    <end type="SOURCE" refId="20"/>    
-    <end type="TARGET" refId="21"/>  
-  </realization>  
-  <generalization id="49">    
-    <end type="SOURCE" refId="16"/>    
-    <end type="TARGET" refId="20"/>  
-  </generalization>  
-  <generalization id="50">    
+  <generalization id="36">    
     <end type="SOURCE" refId="27"/>    
     <end type="TARGET" refId="26"/>  
   </generalization>  
-  <association id="51">    
-    <end type="SOURCE" refId="23" navigable="false">      
-      <attribute id="52" name="gffHashGene"/>      
-      <multiplicity id="53" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="11" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="54">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="7"/>  
-  </dependency>  
-  <generalization id="55">    
-    <end type="SOURCE" refId="22"/>    
-    <end type="TARGET" refId="23"/>  
+  <generalization id="37">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="6"/>  
   </generalization>  
-  <generalization id="56">    
-    <end type="SOURCE" refId="8"/>    
+  <generalization id="38">    
+    <end type="SOURCE" refId="3"/>    
     <end type="TARGET" refId="10"/>  
   </generalization>  
-  <realization id="57">    
-    <end type="SOURCE" refId="19"/>    
-    <end type="TARGET" refId="21"/>  
-  </realization>  
-  <association id="58">    
+  <association id="39">    
     <end type="SOURCE" refId="23" navigable="false">      
-      <attribute id="59" name="seqHash"/>      
-      <multiplicity id="60" minimum="0" maximum="1"/>    
+      <attribute id="40" name="seqHash"/>      
+      <multiplicity id="41" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="19" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="61">    
-    <end type="SOURCE" refId="14"/>    
-    <end type="TARGET" refId="7"/>  
-  </dependency>  
-  <association id="62">    
-    <end type="SOURCE" refId="27" navigable="false">      
-      <attribute id="63" name="gffGeneIsoInfo"/>      
-      <multiplicity id="64" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="65">    
-    <end type="SOURCE" refId="22"/>    
-    <end type="TARGET" refId="17"/>  
-  </dependency>  
-  <association id="66">    
-    <end type="SOURCE" refId="19" navigable="false">      
-      <attribute id="67" name="seqHashAbs"/>      
-      <multiplicity id="68" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="20" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="69">    
-    <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="14"/>  
-  </dependency>  
-  <generalization id="70">    
-    <end type="SOURCE" refId="25"/>    
+  <generalization id="42">    
+    <end type="SOURCE" refId="24"/>    
     <end type="TARGET" refId="23"/>  
   </generalization>  
-  <generalization id="71">    
-    <end type="SOURCE" refId="4"/>    
+  <generalization id="43">    
+    <end type="SOURCE" refId="18"/>    
+    <end type="TARGET" refId="20"/>  
+  </generalization>  
+  <generalization id="44">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="10"/>  
+  </generalization>  
+  <generalization id="45">    
+    <end type="SOURCE" refId="10"/>    
     <end type="TARGET" refId="13"/>  
   </generalization>  
-  <association id="72">    
+  <realization id="46">    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="21"/>  
+  </realization>  
+  <generalization id="47">    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="10"/>  
+  </generalization>  
+  <association id="48">    
     <end type="SOURCE" refId="26" navigable="false">      
-      <attribute id="73" name="seqFasta"/>      
-      <multiplicity id="74" minimum="0" maximum="1"/>    
+      <attribute id="49" name="seqFasta"/>      
+      <multiplicity id="50" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="17" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <dependency id="51">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="12"/>  
+  </dependency>  
+  <dependency id="52">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="14"/>  
+  </dependency>  
+  <realization id="53">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="21"/>  
+  </realization>  
+  <generalization id="54">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="6"/>  
+  </generalization>  
+  <association id="55">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="56" name="gffHashGene"/>      
+      <multiplicity id="57" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="58">    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="17"/>  
+  </dependency>  
+  <generalization id="59">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="13"/>  
+  </generalization>  
+  <dependency id="60">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="7"/>  
+  </dependency>  
+  <dependency id="61">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="12"/>  
+  </dependency>  
+  <association id="62">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="63" name="seqHashAbs"/>      
+      <multiplicity id="64" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="20" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="65">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="20"/>  
+  </generalization>  
+  <dependency id="66">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="7"/>  
+  </dependency>  
+  <dependency id="67">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="14"/>  
+  </dependency>  
+  <dependency id="68">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="12"/>  
+  </dependency>  
+  <association id="69">    
+    <end type="SOURCE" refId="27" navigable="false">      
+      <attribute id="70" name="gffGeneIsoInfo"/>      
+      <multiplicity id="71" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="72">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <generalization id="73">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="13"/>  
+  </generalization>  
   <classifier-display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
     visibility="true">    
     <attributes public="false" package="false" protected="false" private="false"/>    
