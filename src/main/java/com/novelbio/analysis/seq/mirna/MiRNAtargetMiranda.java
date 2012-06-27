@@ -1,50 +1,62 @@
 package com.novelbio.analysis.seq.mirna;
 
-import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 预测miRNA的靶基因miranda
  * @author zong0jie
  *
  */
-public class MiRNAtargetMiranda {
-//	GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
-	GffChrSeq gffChrSeq = null;
-	public static void main(String[] args) {
-		MiRNAtargetMiranda miRNAtarget = new MiRNAtargetMiranda();
-		miRNAtarget.getMir2Target("/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/sRNAall/noveltarget/predict", "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/sRNAall/noveltarget/predictOutput");
+public class MiRNAtargetMiranda extends MiRNAtargetAbs{
+	Logger logger = Logger.getLogger(MiRNAtargetMiranda.class);
+	
+	int targetScore = 150;
+	int targetEnergy = -15;
+	
+	/** 默认150 */
+	public void setTargetScore(int targetScore) {
+		this.targetScore = targetScore;
 	}
-	public void setGffChrSeq(GffChrSeq gffChrSeq) {
-		this.gffChrSeq = gffChrSeq;
+	private String getTargetScore() {
+		return "-sc " + targetScore + " ";
 	}
-	/**
-	 * 将所有含有3UTR的基因的3UTR序列写入文本
-	 * @param outFile
-	 */
-	public void get3UTRseq(String outFile) {
-		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
-		ArrayList<SeqFasta> ls3UTR = gffChrSeq.getSeq3UTRAll();
-		for (SeqFasta seqFasta : ls3UTR) {
-			txtOut.writefileln(seqFasta.toStringNRfasta());
+	/** 默认-15，输入的数会取绝对值再加负号 */
+	public void setTargetEnergy(int targetEnergy) {
+		this.targetEnergy = -Math.abs(targetEnergy);
+	}
+	private String getTargetEnergy() {
+		return "-en " + targetEnergy + " ";
+	}
+	
+	public void mirnaPredict() {
+		try {
+			mirnaPredictExp();
+		} catch (InterruptedException e) {
+			logger.error("出错");
+			e.printStackTrace();
 		}
-		txtOut.close();
+	}
+	private void mirnaPredictExp() throws InterruptedException {
+		String cmd = exePath + "miranda";
+		cmd = cmd + getInputMiRNAseq() + getInput3UTRseq() + getTargetScore() + getTargetEnergy();
+		CmdOperate cmdOperate = new CmdOperate(cmd, "miranda_miRNA_predict");
+		cmdOperate.run();
+		Thread.sleep(2000);
+		modifyMirandaResult_To_Mir2Target();
 	}
 	/**
 	 * 给定miRanda的输出文件，将其整理成需要的格式
 	 * @param miRandaOut
+	 * "mirName","targetGene", "score","Energy"
 	 */
-	public void getMir2Target(String miRandaOut, String outFile) {
-		TxtReadandWrite txtRead = new TxtReadandWrite(miRandaOut, false);
-		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
+	private void modifyMirandaResult_To_Mir2Target() {
+		TxtReadandWrite txtRead = new TxtReadandWrite(predictResultFile, false);
+		TxtReadandWrite txtOut = new TxtReadandWrite(predictResultFinal, true);
+		txtOut.writefileln(new String[]{"mirName","targetGene", "score","Energy"});
 		boolean start = true;//标记扫描的起点
 		String[] pair = null;
 		for (String string : txtRead.readlines()) {

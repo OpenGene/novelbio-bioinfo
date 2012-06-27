@@ -38,14 +38,14 @@ public class SoftWareInfo {
 	/** ≤È’“”√µƒ */
 	ServSoftWareInfo servSoftWareInfo = new ServSoftWareInfo();
 
-
 	public SoftWareInfo() { }
+	
 	public void setName(String softName) {
-		this.softName = softName;
+		this.softName = softName.toLowerCase();
 		searched = false;
 	}
-	public void setName(Enum softName) {
-		this.softName = softName.toString();
+	public void setName(SoftWare softName) {
+		this.softName = softName.toString().toLowerCase();
 		searched = false;
 	}
 	public String getName() {
@@ -239,8 +239,7 @@ public class SoftWareInfo {
 			softWareInfo.update();
 		}
 	}
-	public static enum SoftMapping {
-		bwa, bowtie, bowtie2, tophat, rsem
+	public static enum SoftWare {
+		bwa, bowtie, bowtie2, tophat, rsem,miranada, RNAhybrid, mirDeep, miReap
 	}
-
 }

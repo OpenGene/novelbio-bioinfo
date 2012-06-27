@@ -13,8 +13,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class CtrlCombFile {
 	CombineTab combineTab = new CombineTab();
 	String oufFile = "";
-	public void clean()
-	{
+	public void clean() {
 		combineTab = new CombineTab();
 	}
 	public void setOufFile(String oufFile) {
@@ -33,7 +32,7 @@ public class CtrlCombFile {
 		for (String[] strings : lsStrColID) {
 			lsColID.add(Integer.parseInt(strings[0]));
 		}
-		combineTab.setColID(lsColID);
+		combineTab.setColCompareOverlapID(lsColID);
 	}
 	/**
 	 *  获得每个文件名, 对于每个文件，设定它的ID列
@@ -51,13 +50,13 @@ public class CtrlCombFile {
 		for (int i = 0; i < colDetail.length; i++) {
 			colDetail[i] = Integer.parseInt(lsResult.get(i)[0]);
 		}
-		combineTab.setColDetai(condTxt, codName, colDetail);
+		combineTab.setColExtractDetai(condTxt, codName, colDetail);
 	}
 	
 	public void output() {
-		ArrayList<String[]> lsOut = combineTab.exeToFile();
+		ArrayList<String[]> lsOut = combineTab.getResultLsUnion();
 //		if (lsOut.size() > 60000) {
-			JOptionPane.showMessageDialog(null, "Result num is bigger than 60000, so save to txt file", "alert", JOptionPane.INFORMATION_MESSAGE);
+//			JOptionPane.showMessageDialog(null, "Result num is bigger than 60000, so save to txt file", "alert", JOptionPane.INFORMATION_MESSAGE);
 			TxtReadandWrite txtWrite = new TxtReadandWrite(oufFile, true);
 			txtWrite.ExcelWrite(lsOut, "\t", 1, 1);
 			return;

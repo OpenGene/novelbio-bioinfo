@@ -66,7 +66,7 @@ public class MapBwa {
 	 * @param outFileName 结果文件名，后缀自动改为sam
 	 * @param uniqMapping 是否uniqmapping，单端才有的参数
 	 */
-	public MapBwa(FastQOld fastQ, String outFileName, boolean uniqMapping ) {
+	public MapBwa(FastQ fastQ, String outFileName, boolean uniqMapping ) {
 		this.uniqMapping = uniqMapping;
 		this.outFileName = outFileName;
 		leftFq = fastQ.getFileName();

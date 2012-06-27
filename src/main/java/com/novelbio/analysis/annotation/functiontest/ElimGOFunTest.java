@@ -129,8 +129,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	 * 填充strGeneID：待写入文本的geneID，可以被topGO识别并计算
 	 * @return
 	 */
-	private boolean setStrGeneID()
-	{
+	private boolean setStrGeneID() {
 		ArrayList<String[]> lstest = new ArrayList<String[]>();
 		for (String[] strings : lsTest) {
 			if (strings[1] == null || strings[1].trim().equals("")) {
@@ -166,19 +165,15 @@ public class ElimGOFunTest extends NovelGOFunTest{
 			不blast：<br>title2[0]="GOID";title2[1]="GOTerm"
 						title2[2]="QueryID";title2[3]="QuerySymbol";title2[4]="Description";<br>
 	 */
-	private ArrayList<String[]> getElimGo2Gene(ArrayList<String[]> lsResultTable, ArrayList<String> lsGeneID)
-	{
-		HashMap<String, ArrayList<String>> hashElimGo2Gene = null;
-		hashElimGo2Gene = getGo2GeneBG(NovelBioConst.R_WORKSPACE_TOPGO_GOINFO);
+	private ArrayList<String[]> getElimGo2Gene(ArrayList<String[]> lsResultTable, ArrayList<String> lsGeneID) {
+		HashMap<String, ArrayList<String>> hashGo2LsGene = null;
+		hashGo2LsGene = getGo2GeneAll(NovelBioConst.R_WORKSPACE_TOPGO_GOINFO);
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (int i = 1; i < lsResultTable.size(); i++) {
-			//某个GO中所含有的所有背景基因
-			ArrayList<String> lsTmpGeneID = hashElimGo2Gene.get(lsResultTable.get(i)[0]);
-			//获得某个GO中所含有的所有差异基因
-			ArrayList<String> lsCoGeneID = ArrayOperate.getCoLs(lsTmpGeneID, lsGeneID);
-			//每一个Go所对应的基因
-			for (String string : lsCoGeneID)
-			{
+			ArrayList<String> lsTmpGeneID = hashGo2LsGene.get(lsResultTable.get(i)[0]); //某个GO中所含有的所有背景基因
+			ArrayList<String> lsGO2GeneID = ArrayOperate.getCoLs(lsTmpGeneID, lsGeneID); //获得某个GO中所含有的所有差异基因
+			
+			for (String string : lsGO2GeneID) {
 				ArrayList<GeneID> lscopedIDs = hashgene2CopedID.get(string);
 				//每一个基因所含有的多个copedID，也就是多个不同的accID
 				for (GeneID copedID : lscopedIDs) {
@@ -186,24 +181,40 @@ public class ElimGOFunTest extends NovelGOFunTest{
 					String[] anno = copyAnno(copedID.getAccID(), tmpresultRaw);
 					String[] result = new String[anno.length + 2];
 					result[0] = lsResultTable.get(i)[0]; result[1] = lsResultTable.get(i)[1]; result[2] = copedID.getAccID();
+					
 					int m = 4;
 					for (int j = 3; j < result.length; j++) {
 						result[j] = anno[m - 3];
 						m++;
 					}
+					
 					lsResult.add(result);
 				}
 			}
 		}
 		return lsResult;
 	}
+	private static HashMap<String,ArrayList<String>> getGo2GeneAll(String RGoInfo) {
+		try {
+			return getGo2GeneAllTry(RGoInfo);
+		} catch (Exception e) {
+			try {
+				Thread.sleep(2000);
+				return getGo2GeneAllTry(RGoInfo);
+			} catch (Exception e2) {
+				e2.printStackTrace();
+				return null;
+			}
+		}
+	}
 	/**
-	 * 读取RGoInfo文件，将里面的GO2Gene的信息保存为ArrayList--ArrayList-String
+	 * 输入每个GO对应的全部基因文件，由R产生<br>
+	 * 读取RGoInfo文件，将里面的GO2Gene的信息保存为<br>
 	 * hash--GOID-lsGeneID
 	 * @return
 	 * @throws Exception 
 	 */
-	private static HashMap<String,ArrayList<String>> getGo2GeneBG(String RGoInfo) {
+	private static HashMap<String,ArrayList<String>> getGo2GeneAllTry(String RGoInfo) {
 		TxtReadandWrite txtRGo2Gene = new TxtReadandWrite(RGoInfo, false);
 		HashMap<String, ArrayList<String>> hashGo2Gene = new HashMap<String, ArrayList<String>>();
 		ArrayList<String> lsGOGene = null;

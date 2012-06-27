@@ -851,34 +851,56 @@ public class BedSeq extends SeqComb{
 	 * @param peakFile 
 	 */
 	public BedSeq removeDuplicat(String outFile) {
-			BedSeq bedSeqResult = new BedSeq(outFile, true);
-			BedRecord bedRecordLast = null;
-			for (BedRecord bedRecord : readlines()) {
-				if (bedRecordLast == null) {
-					bedRecordLast = bedRecord.clone();
-					continue;
-				}
-				if	(!bedRecord.getRefID().equals(bedRecordLast.getRefID()) || 
-						bedRecord.getStart() != bedRecordLast.getStart() || bedRecord.getEnd() == bedRecordLast.getEnd()
-						|| bedRecord.isCis5to3() == bedRecordLast.isCis5to3()) {
-					bedSeqResult.writeBedRecord(bedRecordLast);
-					bedRecordLast = new BedRecord();
-					bedRecordLast = bedRecord;
-					//因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
-					if (bedRecordLast.getReadsNum() == 1) {
-						bedRecordLast.setReadsNum(1);
-					}
-					continue;
-				}
-				else {
-					//发现一个overlap就加上1，表示该区域有多条reads
-					bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
-				}
+		BedSeq bedSeqResult = new BedSeq(outFile, true);
+		BedRecord bedRecordLast = null;
+		for (BedRecord bedRecord : readlines()) {
+			if (bedRecordLast == null) {
+				bedRecordLast = bedRecord.clone();
+				continue;
 			}
-			bedSeqResult.writeBedRecord(bedRecordLast);
-			bedSeqResult.closeWrite();
-			return bedSeqResult;
+			if (!bedRecord.getRefID().equals(bedRecordLast.getRefID())
+					|| bedRecord.getStart() != bedRecordLast.getStart()
+					|| bedRecord.getEnd() == bedRecordLast.getEnd()
+					|| bedRecord.isCis5to3() == bedRecordLast.isCis5to3()) {
+				bedSeqResult.writeBedRecord(bedRecordLast);
+				bedRecordLast = new BedRecord();
+				bedRecordLast = bedRecord;
+				// 因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
+				if (bedRecordLast.getReadsNum() == 1) {
+					bedRecordLast.setReadsNum(1);
+				}
+				continue;
+			} else {
+				// 发现一个overlap就加上1，表示该区域有多条reads
+				bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
+			}
 		}
+		bedSeqResult.writeBedRecord(bedRecordLast);
+		bedSeqResult.closeWrite();
+		return bedSeqResult;
+	}
+	
+	public ArrayList<String[]> getChrReadsNum() {
+		HashMap<String, int[]> hashChrID2ReadsNum = new HashMap<String, int[]>();
+		for (BedRecord bedRecord : readlines()) {
+			if (hashChrID2ReadsNum.containsKey(bedRecord.getRefID())) {
+				int[] ReadsNum = hashChrID2ReadsNum.get(bedRecord.getRefID());
+				ReadsNum[0] = ReadsNum[0] + bedRecord.getReadsNum();
+			}
+			else {
+				hashChrID2ReadsNum.put(bedRecord.getRefID(), new int[]{bedRecord.getReadsNum(), 0});
+			}
+		}
+		
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		for (Entry<String, int[]> entry : hashChrID2ReadsNum.entrySet()) {
+			String[] info = new String[]{entry.getKey(), entry.getValue()[0] + ""};
+			lsResult.add(info);
+		}
+		return lsResult;
+	}
+	
+	
 	/**
 	 * 将所有mapping至genomic上的bed文件合并，这个是预测novel miRNA的
 	 * @param outFile 输出文件

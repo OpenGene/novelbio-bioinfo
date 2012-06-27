@@ -30,6 +30,10 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 	String mireapGff = "";
 	/** 待比对的序列，必须是一个完整的fasta文件 */
 	String chromfaSeq = "";
+	
+	public void setOutPath(String outPath) {
+		//TODO
+	}
 	/**
 	 * 设定待比对的序列，必须是一个完整的fasta文件
 	 * @param chromfaSeq

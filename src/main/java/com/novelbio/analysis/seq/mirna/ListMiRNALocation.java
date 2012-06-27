@@ -24,6 +24,7 @@ public class ListMiRNALocation extends ListHashBin{
 	
 	public static int TYPE_RNA_DATA = 10;
 	public static int TYPE_MIREAP = 15;
+	public static int TYPE_MIRDEEP = 25;
 	public static void main(String[] args) {
 		ListMiRNALocation tmpMiRNALocation = new ListMiRNALocation();
 		tmpMiRNALocation.ReadGffarray("/media/winE/Bioinformatics/DataBase/sRNA/miRNA.dat");
@@ -63,6 +64,9 @@ public class ListMiRNALocation extends ListHashBin{
 		}
 		else if (fileType == TYPE_MIREAP) {
 			ReadGffarrayExcepMirReap(rnadataFile);
+		}
+		else if (fileType == TYPE_MIRDEEP) {
+			ReadGffarrayExcepMirDeep(rnadataFile);
 		}
 	}
 	/** 读取taxID对应miRNA.dat中的物种名
@@ -204,7 +208,51 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 			}
 		}
 	}
-	
+	protected void ReadGffarrayExcepMirDeep(String rnadataFile) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
+		ListBin<ListDetailBin> lsMiRNA = null; ListDetailBin listDetailBin = null;
+		super.locHashtable = new LinkedHashMap<String, ListDetailBin>();
+		super.LOCIDList = new ArrayList<String>();
+		int start = 0; int end = 0;
+		boolean cis5to3 = true;
+		for (String string : txtRead.readlines()) {
+			String[] ss = string.split("\t");
+			String name = ss[8].split(";")[0].split("=")[1];
+			if (ss[2].startsWith("precursor") ) {
+				lsMiRNA = new ListBin<ListDetailBin>();
+				lsMiRNA.setName(name);
+				lsMiRNA.setCis5to3(true);
+				cis5to3 = ss[6].equals("+");
+				if (cis5to3) {
+					start = Integer.parseInt(ss[3]);
+					end = Integer.parseInt(ss[4]);
+				}
+				else {
+					start = Integer.parseInt(ss[4]);
+					end = Integer.parseInt(ss[3]);
+				}
+				//装入chrHash
+				getChrhash().put(lsMiRNA.getName(), lsMiRNA);
+			}
+			if (ss[2].startsWith("mature")) {
+				listDetailBin = new ListDetailBin();
+				listDetailBin.setCis5to3(true);
+				//30..50
+				listDetailBin.setName(name);
+				if (cis5to3) {
+					listDetailBin.setStartAbs(Integer.parseInt(ss[3]) - start);
+					listDetailBin.setEndAbs(Integer.parseInt(ss[4]) - start);
+				}
+				else {
+					listDetailBin.setStartAbs(start - Integer.parseInt(ss[4]));
+					listDetailBin.setEndAbs(start - Integer.parseInt(ss[3]));
+				}
+				lsMiRNA.add(listDetailBin);
+				locHashtable.put(listDetailBin.getName(), listDetailBin);
+				LOCIDList.add(listDetailBin.getName());
+			}
+		}
+	}
 	/**
 	 * 如果没有找到，则返回null
 	 * @param mirName mir的名字

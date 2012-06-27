@@ -1,9 +1,6 @@
 package com.novelbio.base.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -12,14 +9,14 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
-import com.novelbio.database.model.modcopeid.GeneID;
-
 /**
- * JComboBox的扩展，方便操作
+ * JComboBox的扩展，方便操作<br>
+ * T: 选择的Item所对应的类
  * @author zong0jie
  *
  */
 public class JComboBoxData<T> extends JComboBox{
+	private static final long serialVersionUID = -1651148386751801706L;
 	/**
 	 * 保存key和value的map
 	 */

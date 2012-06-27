@@ -12,7 +12,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
 import com.novelbio.database.domain.geneanno.TaxInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftMapping;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.mapper.geneanno.MapFSTaxID;
 import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
 import com.novelbio.database.service.servgeneanno.ServTaxID;
@@ -44,6 +44,9 @@ public class Species {
 	public Species(int taxID, String version) {
 		this.taxID = taxID;
 		querySpecies();
+	}
+	public int getTaxID() {
+		return taxID;
 	}
 	/**
 	 * 设定taxID，如果设定的是全新的taxID，那么会重新设定version
@@ -98,11 +101,16 @@ public class Species {
 			}
 		});
 	}
+	/** 常用名 */
+	public String getCommonName() {
+		return taxInfo.getComName();
+	}
 	/**
 	 * 获得chr文件
 	 * @return
+	 * 0: regex 1: path
 	 */
-	public String[] getChrPath() {
+	public String[] getChrRegxAndPath() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromFaPath();
 	}
@@ -155,7 +163,7 @@ public class Species {
 		return speciesFile.getRefseqNCfile();
 	}
 	/** 指定mapping的软件，获得该软件所对应的索引文件 */
-	public String getIndexChr(SoftMapping softMapping) {
+	public String getIndexChr(SoftWare softMapping) {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getIndexChromFa(softMapping);
 	}

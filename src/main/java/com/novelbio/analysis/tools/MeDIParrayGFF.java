@@ -87,7 +87,7 @@ public class MeDIParrayGFF {
 /**
  * 将一个文件夹中所有的Gff文件整理为MEME可识别的文件
  * @param ratiogff
- * @param outFile
+ * @param mirandaResultOut
  * @throws Exception
  */
 	public static void formatPath(String filePath) {

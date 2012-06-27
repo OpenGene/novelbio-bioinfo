@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftMapping;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
 
 /**
@@ -142,7 +142,7 @@ public class SpeciesFile {
 	public void setIndexSeq(String indexSeq) {
 		this.indexChr = indexSeq;
 	}
-	public String getIndexChromFa(SoftMapping softMapping) {
+	public String getIndexChromFa(SoftWare softMapping) {
 		filledHashIndexPath(indexChr, hashSoftware2ChrIndexPath);
 		return hashSoftware2ChrIndexPath.get(softMapping.toString());
 	}

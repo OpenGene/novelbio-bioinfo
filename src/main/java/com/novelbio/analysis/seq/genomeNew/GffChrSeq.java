@@ -17,6 +17,9 @@ import com.novelbio.generalConf.NovelBioConst;
 public class GffChrSeq {
 	private static Logger logger = Logger.getLogger(GffChrSeq.class);
 	GffChrAbs gffChrAbs = null;
+	
+	public GffChrSeq() {}
+	
 	public GffChrSeq(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}

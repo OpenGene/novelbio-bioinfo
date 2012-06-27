@@ -11,13 +11,14 @@ import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mirna.MiRNAmapPipline;
 import com.novelbio.analysis.seq.mirna.MiRNACount;
+import com.novelbio.analysis.seq.mirna.NovelMiRNADeep;
 import com.novelbio.analysis.seq.mirna.NovelMiRNAReap;
 import com.novelbio.analysis.seq.mirna.ReadsOnNCrna;
 import com.novelbio.analysis.seq.mirna.ReadsOnRepeatGene;
 import com.novelbio.analysis.seq.mirna.RfamStatistic;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftMapping;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
 /**
@@ -27,6 +28,7 @@ import com.novelbio.database.model.species.Species;
  */
 public class CtrlMiRNA {
 	Species species = new Species();
+	SoftWareInfo softWareInfo = new SoftWareInfo();
 	/** 输入的待比对序列 */
 	String fastqFile = "";
 
@@ -61,6 +63,7 @@ public class CtrlMiRNA {
 	ReadsOnNCrna readsOnNCrna = new ReadsOnNCrna();
 	/**新的miRNA预测   未来考虑用list来放置多个如mireap和mirdeep等预测方法  */
 	NovelMiRNAReap novelMiRNAReap = new NovelMiRNAReap();
+	NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
 	
 	/**
 	 * 设定miRNA数据计算的bed文件，是从mapping获得的
@@ -135,13 +138,13 @@ public class CtrlMiRNA {
 			return;
 		}
 		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftMapping.bwa.toString());
+		softWareInfo.setName(SoftWare.bwa.toString());
 		changeSpecies = false;
 		miRNAmappingPipline.setExePath(softWareInfo.getExePath());
 		miRNAmappingPipline.setMiRNApreSeq(species.getMiRNAhairpinFile());
 		miRNAmappingPipline.setNcRNAseq(species.getRefseqNCfile());
 		miRNAmappingPipline.setRfamSeq(species.getRfamFile());
-		miRNAmappingPipline.setGenome(species.getIndexChr(SoftMapping.bwa));//默认bwa做mapping
+		miRNAmappingPipline.setGenome(species.getIndexChr(SoftWare.bwa));//默认bwa做mapping
 	}
 	/**
 	 * 返回mapping至基因组上的bed文件
@@ -155,7 +158,7 @@ public class CtrlMiRNA {
 		countMiRNA(solo);
 		countRfam(solo);
 		countNCrna(solo);
-		gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrPath()[1], species.getChrPath()[0], null, 0);
+		gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0], null, 0);
 		if (gffChrAbs.getGffHashGene() != null) {
 			readGffInfo();
 			countRepeatGene(solo);
@@ -166,22 +169,36 @@ public class CtrlMiRNA {
 	 * @param bedSeqFile
 	 */
 	public void runMiRNApredict() {
-		gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrPath()[1], species.getChrPath()[0], null, 0);
+		gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0], null, 0);
 		readGffInfo();
 		if (lsBedFileNovelMiRNA.size() <= 0) {
 			return;
 		}
 		//////////新建文件夹
-		String novelMiRNAPath = outPath + outputPrefix + "miRNApredictReap/";
-		if (!FileOperate.createFolders(novelMiRNAPath)) {
-			JOptionPane.showMessageDialog(null, "cannot create fold: " + novelMiRNAPath, "fold create error",JOptionPane.ERROR_MESSAGE);
+		String novelMiRNAPathReap = outPath + outputPrefix + "miRNApredictReap/";
+		if (!FileOperate.createFolders(novelMiRNAPathReap)) {
+			JOptionPane.showMessageDialog(null, "cannot create fold: " + novelMiRNAPathReap, "fold create error",JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		String novelMiRNAPathDeep = outPath + outputPrefix + "miRNApredictDeep/";
+		if (!FileOperate.createFolders(novelMiRNAPathDeep)) {
+			JOptionPane.showMessageDialog(null, "cannot create fold: " + novelMiRNAPathDeep, "fold create error",JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		//////////
-		novelMiRNAReap.setBedSeqInput(novelMiRNAPath + "allSample.bed", lsBedFileNovelMiRNA);
+		novelMiRNAReap.setBedSeqInput(novelMiRNAPathReap + "allSample.bed", lsBedFileNovelMiRNA);
 		novelMiRNAReap.setGffChrAbs(gffChrAbs);
-		novelMiRNAReap.setNovelMiRNAMiReapInputFile(novelMiRNAPath + "mireapSeq.fa", novelMiRNAPath + "mireapMap.txt");
+		novelMiRNAReap.setNovelMiRNAMiReapInputFile(novelMiRNAPathReap + "mireapSeq.fa", novelMiRNAPathReap + "mireapMap.txt");
 		novelMiRNAReap.runBedFile();
+		
+		novelMiRNADeep.setBedSeqInput(novelMiRNAPathReap + "allSample.bed", lsBedFileNovelMiRNA);
+		softWareInfo.setName(SoftWare.mirDeep);
+		novelMiRNADeep.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bowtie));
+		novelMiRNADeep.setGffChrAbs(gffChrAbs);
+		novelMiRNADeep.setMiRNASeq(species.getMiRNAmatureFile(), null, species.getMiRNAhairpinFile());
+		novelMiRNADeep.setSpecies(species.getCommonName());
+		novelMiRNADeep.setOutPath(novelMiRNAPathDeep);
+		novelMiRNADeep.predict();
 	}
 	/** 计算miRNA表达 */
 	private void countMiRNA(boolean solo) {

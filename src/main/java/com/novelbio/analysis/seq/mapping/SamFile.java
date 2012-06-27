@@ -389,6 +389,13 @@ public class SamFile {
 		}
 		indexer.finish();
 	}
+	public BedSeq toBedSingleEnd(boolean extend) {
+		String append = "";
+		if (extend) {
+			append = "_extendTo"+ this.extend;
+		}
+		return toBedSingleEnd(TxtReadandWrite.TXT, FileOperate.changeFileSuffix(getFileName(), append, "bed"), extend);
+	}
 	/**
 	 * <b>没有考虑bed文件的起点是0还是1</b>
 	 *<b>非uniq mapping只支持bwa的结果</b>
@@ -399,6 +406,7 @@ public class SamFile {
 	 * @param bedFileCompType bed文件的压缩格式，TxtReadandWrite.TXT等设定
 	 * @param bedFile 最后产生的bedFile
 	 * 如果不是uniqmapping，那么mapping数量在第七列
+	 * @param extend 是否延长bed文件
 	 * @return
 	 * 	/**
 	 * 将一行的信息提取为bed文件的格式

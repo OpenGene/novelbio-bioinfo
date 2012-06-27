@@ -528,7 +528,7 @@ public class GffChrMap {
 	 *            基因结构，目前只有 GffDetailGene.TSS 和 GffDetailGene.TES
 	 * @param binNum
 	 *            最后分成几块
-	 * @param outFile
+	 * @param mirandaResultOut
 	 * @return 返回最大值和最小值的设定
 	 */
 	public double[] plotTssPeakHeatMap(Color color, String fileName,int heatMapSmall, int heatMapBig, int rowStart, int binNum, String resultFile, String geneStructure, boolean SortS2M) {

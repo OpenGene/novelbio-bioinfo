@@ -18,6 +18,9 @@ public abstract class NovelMiRNApredict {
 	GffChrAbs gffChrAbs = null;
 	/** 输入的一个bedseq文件 */
 	BedSeq bedSeqInput = null;
+	
+	public abstract void setOutPath(String outPath);
+	
 	/**
 	 * @param gffChrAbs 设定gff即可
 	 */
