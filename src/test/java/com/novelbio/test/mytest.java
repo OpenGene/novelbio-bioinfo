@@ -48,6 +48,7 @@ import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValue
 
 
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.analysis.seq.SeqComb;
 import com.novelbio.analysis.seq.blastZJ.Cell;
@@ -57,6 +58,7 @@ import com.novelbio.analysis.seq.chipseq.PeakCalling;
 import com.novelbio.analysis.seq.chipseq.PeakMacs;
 import com.novelbio.analysis.seq.chipseq.PeakSicer;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.FastQRecord;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
@@ -112,17 +114,21 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		GeneInfo copedID = new GeneInfo("tp53", 9606);
-		GeneInfo copedID2 = new GeneInfo("tp53", 9606);
-		copedID2.setBlastInfo(1e10, 10090);
-		copedID2.getSymbol();
-		copedID2.setUpdateAccID("fefe");
-		HashSet<GeneInfo> hashSet = new HashSet<GeneInfo>();
-		hashSet.add(copedID);
-		hashSet.remove(copedID2);
-		System.out.println(hashSet.size());
+		FastQ fastQ1 = new FastQ("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG100914/ChIP_Seq_CDG100913_Mapping/input/m46_1.fq", FastQ.QUALITY_MIDIAN);
+		FastQ fastQ2 = new FastQ("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG100914/ChIP_Seq_CDG100913_Mapping/input/m46_2.fq", FastQ.QUALITY_MIDIAN);
 		
-		
+		FastQ fastQ1out = new FastQ(fastQ1.getFileName()+"_outtest", true);
+		FastQ fastQ2out = new FastQ(fastQ2.getFileName()+"_outtest", true);
+		Iterator<FastQRecord> itFastq1 = fastQ1.readlinesIterator();
+		Iterator<FastQRecord> itFastq2 = fastQ2.readlinesIterator();
+		for (int i = 0; i < 10000; i++) {
+			FastQRecord fastQRecord1 = itFastq1.next();
+			FastQRecord fastQRecord2 = itFastq2.next();
+			fastQ1out.writeFastQRecord(fastQRecord1);
+			fastQ2out.writeFastQRecord(fastQRecord2);
+		}
+		fastQ1out.closeWrite();
+		fastQ2out.closeWrite();
 	}
 	
 	

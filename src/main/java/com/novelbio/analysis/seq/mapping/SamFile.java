@@ -61,26 +61,18 @@ public class SamFile {
 	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
 	 */
 	SAMFileReader samFileReader;
-	/**
-	 * 是否为bam文件
-	 */
+	/** 是否为bam文件 */
 	boolean bamFile = false;
-	/**
-	 * 是否为uniqMapping，默认为true
-	 */
+	
 	boolean uniqMapping = true;
 	
+	int allReadsNum = 0;
+	int unmappedReadsNum = 0;
+	int mappedReadsNum = 0;
+	int uniqMappedReadsNum = 0;
+	int repeatMappedReadsNum = 0;
+	boolean countReadsNum = false;
 	
-	public static void main(String[] args) {
-		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_miRNA_Filtered_out.sam");
-		BedSeq bedSeq = samFile.toBedSingleEnd(TxtReadandWrite.TXT, "/media/winF/NBC/Project/Project_Invitrogen/sRNA/CR_miRNA_Filtered_out.bed", false);
-	}
-	
-	
-	/**
-	 * 返回文件名
-	 * @return
-	 */
 	public String getFileName() {
 		return fileName;
 	}
@@ -113,7 +105,6 @@ public class SamFile {
 	}
 	public SamFile(String samBamFile) {
 		File file = new File(samBamFile);
-//		samFileReader = new SAMFileReader(file);
 		this.fileName = samBamFile;
 		
 		final BufferedInputStream bufferedStream;
@@ -121,6 +112,7 @@ public class SamFile {
 			try {
 				bufferedStream = new BufferedInputStream(new FileInputStream(file));
 				this.bamFile = isBAMFile(bufferedStream);
+				bufferedStream.close();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -134,12 +126,7 @@ public class SamFile {
 		return samFileReader;
 	}
 	
-	int allReadsNum = 0;
-	int unmappedReadsNum = 0;
-	int mappedReadsNum = 0;
-	int uniqMappedReadsNum = 0;
-	int repeatMappedReadsNum = 0;
-	boolean countReadsNum = false;
+
 	
 	/**
 	 * 返回readsNum
@@ -190,17 +177,21 @@ public class SamFile {
 			allReadsNum ++;
 			if (!samRecord.getReadUnmappedFlag()) {
 				mappedReadsNum ++;
-				if (!samRecord.getAttribute("XT").equals("R")) {
-					uniqMappedReadsNum ++;
-				}
-				else {
-					repeatMappedReadsNum ++;
+				try {
+					if (!samRecord.getAttribute("XT").equals("R")) {
+						uniqMappedReadsNum ++;
+					}
+					else {
+						repeatMappedReadsNum ++;
+					}
+				} catch (Exception e) {
 				}
 			}
 			else {
 				unmappedReadsNum ++;
 			}
 		}
+		samFileReader.close();
 		return readsNum;
 	}
 	/**
@@ -220,6 +211,8 @@ public class SamFile {
 				continue;
 			}
 			if (samRecord.getReadName().contains(ReadName)) {
+				samRecordIterator.close();
+				samFileReader.close();
 				return samRecord;
 			}
 		}
@@ -290,6 +283,8 @@ public class SamFile {
 		samFileReader.close();
 		System.out.println(wrongReadsNum);
 		FastQOld fastQ = new FastQOld(outFastQfile, FastQOld.QUALITY_MIDIAN);
+		samRecordIterator.close();
+		samFileReader.close();
 		return fastQ;
 	}
 	
@@ -368,8 +363,7 @@ public class SamFile {
 	/**
 	 * 待检查
 	 */
-	public void index()
-	{
+	public void index() {
 		SAMFileReader samFileReader = getSamFileReader();
 		if (!bamFile) {
 			compress();
@@ -510,6 +504,7 @@ X 8 sequence mismatch
 		}
 		System.out.println(wrongReadsNum);
 		bedSeq.closeWrite();
+		samRecordIterator.close();
 		samFileReader.close();
 		return bedSeq;
 	}
@@ -600,6 +595,7 @@ X 8 sequence mismatch
 			txtBed.writefile(tmpResult, false);
 		}
 		txtBed.close();
+		samFileReader.close();
 		BedSeq bedSeq = new BedSeq(bedFile);
 		return bedSeq;
 	}

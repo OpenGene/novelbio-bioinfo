@@ -18,6 +18,7 @@ public class ServTaxID extends AbsGetSpring  implements MapTaxID{
 	 * 全体物种ID
 	 */
 	static HashMap<String, Integer> hashNameTaxID = new LinkedHashMap<String, Integer>();
+	static ArrayList<Integer> lsAllTaxID = new ArrayList<Integer>();
 	/**
 	 * 仅包含有缩写的物种
 	 */
@@ -99,13 +100,19 @@ public class ServTaxID extends AbsGetSpring  implements MapTaxID{
 		setHashTaxID();
 		return hashTaxIDName;
 	}
-	
+	/**
+	 * 返回taxID对常用名
+	 * @return
+	 */
+	public ArrayList< Integer> getLsAllTaxID() {
+		setHashTaxID();
+		return lsAllTaxID;
+	}
 	private void setHashTaxID()
 	{
 		if (hashNameTaxID.size()>0 && hashTaxIDName.size() > 0) {
 			return;
 		}
-		
 		TaxInfo taxInfo = new TaxInfo();
 		ArrayList<TaxInfo> lsTaxID = mapTaxID.queryLsTaxInfo(taxInfo);
 		for (TaxInfo taxInfo2 : lsTaxID) {
@@ -113,7 +120,8 @@ public class ServTaxID extends AbsGetSpring  implements MapTaxID{
 				hashNameTaxIDUsual.put(taxInfo2.getComName().trim(), taxInfo2.getTaxID());
 			}
 			hashNameTaxID.put(taxInfo2.getComName().trim(), taxInfo2.getTaxID());
-			hashTaxIDName.put(taxInfo2.getTaxID(), taxInfo2.getComName().trim());			
+			hashTaxIDName.put(taxInfo2.getTaxID(), taxInfo2.getComName().trim());
+			lsAllTaxID.add(taxInfo2.getTaxID());
 		}
 	}
 }

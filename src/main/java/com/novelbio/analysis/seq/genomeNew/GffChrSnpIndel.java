@@ -18,24 +18,10 @@ import com.novelbio.generalConf.NovelBioConst;
  * @author zong0jie
  *
  */
-public class GffChrSnpIndel extends GffChrAbs {
-
-	public GffChrSnpIndel(String gffType, String gffFile, String chrFile, String regx) {
-		super(gffType, gffFile, chrFile, regx, null, 0);
-		loadChrFile();
-	}
-	
-	public GffChrSnpIndel(String gffType, String gffFile, String chrFile) {
-		this(gffType, gffFile, chrFile, null);
-		loadChrFile();
-	}
-	
-	public static void main(String[] args) {
-		GffChrSeq gffChrSeq = new GffChrSeq(NovelBioConst.GENOME_GFF_TYPE_UCSC,  null, NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
-//		gffChrSeq.setGffFile(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, "/media/winE/NBC/Project/Project_FY_Lab/Result/cufflinkAll/cufcompare/cmpAll.combined_cope.gtf");
-		gffChrSeq.loadChrFile();
-		SeqFasta aaa = gffChrSeq.getSeq(true, "chr1", 1, 1);
-		System.out.println(aaa);
+public class GffChrSnpIndel {
+	GffChrAbs gffChrAbs;
+	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
 	}
 	/**
 	 * 根据indel或者snp注释上该snp的信息
@@ -61,7 +47,7 @@ public class GffChrSnpIndel extends GffChrAbs {
 	 * 返回该snp的定位信息
 	 */
 	private GffCodGene getSnp(MapInfoSnpIndel mapInfo) {
-		GffCodGene gffCodeGene = gffHashGene.searchLocation(mapInfo.getRefID(), mapInfo.getRefSnpIndelStart());
+		GffCodGene gffCodeGene = gffChrAbs.getGffHashGene().searchLocation(mapInfo.getRefID(), mapInfo.getRefSnpIndelStart());
 		GffGeneIsoInfo gffGeneIsoInfo = gffCodeGene.getCodInExonIso();
 		if (gffGeneIsoInfo != null ) {
 			mapInfo.setGffIso(gffGeneIsoInfo);
@@ -84,10 +70,10 @@ public class GffChrSnpIndel extends GffChrAbs {
 			SeqFasta NR = null;
 			ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
 			if (lsTmp == null) {
-				NR = seqHash.getSeq(gffGeneIsoInfo.isCis5to3(), mapInfo.getRefID(), LocStart, LocEnd);
+				NR = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), mapInfo.getRefID(), LocStart, LocEnd);
 			}
 			else {
-				NR = seqHash.getSeq(mapInfo.getRefID(), lsTmp, false);
+				NR = gffChrAbs.getSeqHash().getSeq(mapInfo.getRefID(), lsTmp, false);
 			}
 			mapInfo.setSeq(NR,false);
 			mapInfo.setReplaceLoc(-gffGeneIsoInfo.getLocAAbeforeBias(mapInfo.getRefSnpIndelStart()) + 1);
@@ -114,8 +100,8 @@ public class GffChrSnpIndel extends GffChrAbs {
 	 * 返回该snp的定位信息
 	 */
 	private GffCodGene getIndel(MapInfoSnpIndel mapInfo) {
-		GffCodGene gffCodeGeneStart = gffHashGene.searchLocation(mapInfo.getRefID(), mapInfo.getRefSnpIndelStart());
-		GffCodGene gffCodeGeneEnd = gffHashGene.searchLocation(mapInfo.getRefID(), mapInfo.getRefSnpIndelEnd());
+		GffCodGene gffCodeGeneStart = gffChrAbs.getGffHashGene().searchLocation(mapInfo.getRefID(), mapInfo.getRefSnpIndelStart());
+		GffCodGene gffCodeGeneEnd = gffChrAbs.getGffHashGene().searchLocation(mapInfo.getRefID(), mapInfo.getRefSnpIndelEnd());
 		GffGeneIsoInfo gffGeneIsoInfoStart = gffCodeGeneStart.getCodInExonIso();
 		GffGeneIsoInfo gffGeneIsoInfoEnd = gffCodeGeneEnd.getCodInExonIso();
 		//起点和终点在同一个外显子中
@@ -133,7 +119,7 @@ public class GffChrSnpIndel extends GffChrAbs {
 			if (lsTmp == null) {
 				return gffCodeGeneStart;
 			}
-			SeqFasta NR = seqHash.getSeq(mapInfo.getRefID(), lsTmp, false);
+			SeqFasta NR = gffChrAbs.getSeqHash().getSeq(mapInfo.getRefID(), lsTmp, false);
 			mapInfo.setSeq(NR,false);//因为上面已经反向过了
 			mapInfo.setReplaceLoc(-gffGeneIsoInfoStart.getLocAAbeforeBias(mapInfo.getRefSnpIndelStartCis()) + 1);
 		}
@@ -162,8 +148,8 @@ public class GffChrSnpIndel extends GffChrAbs {
 	public void readSnpNum(String excelfile, int colChrID, int colSummit, String bedFile, String outFile ) {
 		ArrayList<String[]> lsTmp = ExcelTxtRead.readLsExcelTxt(excelfile, 1, 0, 1, 0);
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		setMapReads(bedFile, 1);
-		loadMapReads();
+		gffChrAbs.setMapReads(bedFile, 1);
+		gffChrAbs.loadMapReads();
 		for (String[] strings : lsTmp) {
 			MapInfo mapInfo = new MapInfo(strings[colChrID], Integer.parseInt(strings[colSummit]), Integer.parseInt(strings[colSummit]) );
 			int Num = getSnpReadsNum(mapInfo);
@@ -179,9 +165,8 @@ public class GffChrSnpIndel extends GffChrAbs {
 	 * 位点在mapInfo的flagsite
 	 * @param mapInfo
 	 */
-	public int getSnpReadsNum(MapInfo mapInfo)
-	{
-		double[] readsNum = mapReads.getRengeInfo(1, mapInfo.getRefID(), mapInfo.getFlagSite(), mapInfo.getFlagSite(), 0);
+	public int getSnpReadsNum(MapInfo mapInfo) {
+		double[] readsNum = gffChrAbs.getMapReads().getRengeInfo(1, mapInfo.getRefID(), mapInfo.getFlagSite(), mapInfo.getFlagSite(), 0);
 		int Num = (int)MathComput.mean(readsNum);
 		return Num;
 	}

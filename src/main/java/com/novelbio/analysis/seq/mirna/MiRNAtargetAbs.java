@@ -53,11 +53,13 @@ public abstract class MiRNAtargetAbs {
 	 * @param mirandaResultOut + " "
 	 */
 	public String getInput3UTRseq() {
+		try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
+		
 		if (FileOperate.isFileExistAndBigThanSize(inputUTR3seq, 1)) {
 			return inputUTR3seq;
 		}
 		if (inputUTR3seq == null || inputUTR3seq.equals("")) {
-			inputUTR3seq = FileOperate.changeFilePrefix(predictResultFinal, "_3UTR", "fasta");
+			inputUTR3seq = FileOperate.changeFileSuffix(predictResultFinal, "_3UTR", "fasta");
 		}
 		TxtReadandWrite txtOut = new TxtReadandWrite(inputUTR3seq, true);
 		ArrayList<SeqFasta> ls3UTR = gffChrSeq.getSeq3UTRAll();
@@ -65,7 +67,7 @@ public abstract class MiRNAtargetAbs {
 			txtOut.writefileln(seqFasta.toStringNRfasta());
 		}
 		txtOut.close();
-		return inputUTR3seq + " ";
+		return inputUTR3seq;
 	}
 	
 	public void setExePath(String exePath) {

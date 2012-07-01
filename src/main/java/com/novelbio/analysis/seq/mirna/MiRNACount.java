@@ -21,6 +21,19 @@ import com.novelbio.base.fileOperate.FileOperate;
  *
  */
 public class MiRNACount {
+	public static void main(String[] args) {
+		String bedFile = "/home/zong0jie/Desktop/platformtest/output/testmiRNApredictDeep/novelMiRNAbed/_miRNA.bed";
+		String hairpairMirna = "/home/zong0jie/Desktop/platformtest/output/testmiRNApredictDeep/novelMiRNA/hairpin.fa";
+		String matureMirna = "/home/zong0jie/Desktop/platformtest/output/testmiRNApredictDeep/novelMiRNA/mature.fa";
+		String rnadatFile = "/home/zong0jie/Desktop/platformtest/output/testmiRNApredictDeep/run/output.mrd";
+		String outFilePrefix = "/home/zong0jie/Desktop/platformtest/output/testmiRNApredictDeep/predict_deep_count";
+		
+		MiRNACount miRNACount = new MiRNACount();
+		miRNACount.setBedSeqMiRNA(bedFile);
+		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
+		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_MIRDEEP, 9606, rnadatFile);
+		miRNACount.getOutResult(outFilePrefix);
+	}
 	Logger logger = Logger.getLogger(MiRNACount.class);
 	
 	/** 获得miRNA定位信息 */
@@ -67,10 +80,14 @@ public class MiRNACount {
 	 * 输出文件前缀，就是miRNA的计数
 	 * @param outFilePrefix
 	 */
-	public void outResult(String outFilePrefix) {
+	public void getOutResult(String outFilePrefix) {
 		countMiRNA();
-		String outMirValue = FileOperate.changeFileSuffix(outFilePrefix, "_MirValue", null);
-		String outMirMatureValue = FileOperate.changeFileSuffix(outFilePrefix, "_MirMatureValue", null);
+		String outMirValue = outFilePrefix + "MirValue";
+		String outMirMatureValue = outFilePrefix + "MirMatureValue";
+		
+		System.out.println(outMirValue);
+		System.out.println(outMirValue);
+		
 		TxtReadandWrite txtMirValue = new TxtReadandWrite(outMirValue, true);
 		TxtReadandWrite txtMirMatureValue = new TxtReadandWrite(outMirMatureValue, true);
 		for (Entry<String, Double> entry : hashMiRNAvalue.entrySet()) {

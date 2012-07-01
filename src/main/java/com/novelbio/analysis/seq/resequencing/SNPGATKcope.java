@@ -30,8 +30,6 @@ public class SNPGATKcope {
 	Logger logger = Logger.getLogger(SNPGATKcope.class);
 	GffChrSnpIndel gffChrSnpIndel;
 	public SNPGATKcope() {
-		gffChrSnpIndel = new GffChrSnpIndel(NovelBioConst.GENOME_GFF_TYPE_UCSC, 
-				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ, NovelBioConst.GENOME_PATH_UCSC_HG19_CHROM);
 	}
 
 	public static void main22(String[] args) {
@@ -213,7 +211,7 @@ public class SNPGATKcope {
 		for (int i = 1; i < lsSnp.size(); i++) {
 			String[] ss = lsSnp.get(i);
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(0, ss[0], Integer.parseInt(ss[1]), ss[3], ss[4]);
-			GffCodGene gffcod = gffHashGene.searchLocation(mapInfoSnpIndel.getRefID(), mapInfoSnpIndel.getStart());
+			GffCodGene gffcod = gffHashGene.searchLocation(mapInfoSnpIndel.getRefID(), mapInfoSnpIndel.getRefSnpIndelStart());
 			String tmp = "";
 			if (gffcod.isInsideLoc()) {
 				GffDetailGene gffDetailGene = gffcod.getGffDetailThis();

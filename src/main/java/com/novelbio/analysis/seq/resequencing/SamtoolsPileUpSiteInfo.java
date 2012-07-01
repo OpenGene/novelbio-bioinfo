@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import org.apache.velocity.runtime.directive.Stop;
-
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfoSnpIndel;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -47,7 +45,7 @@ public class SamtoolsPileUpSiteInfo {
 		/** 保存总体无冗余snp位点信息 
 		 *  key：chrID + sep + mapInfoSnpIndel.getRefSnpIndelStart()
 		 * */
-		LinkedHashMap<String, MapInfoSnpIndel> hashChrLocSnp = new LinkedHashMap<String, MapInfoSnpIndel>();
+		LinkedHashMap<String, MapInfoSnpIndel> hashChr2NonRedundentSnp = new LinkedHashMap<String, MapInfoSnpIndel>();
 		/** 分文件保存每个文件的snp位点信息 <br>
 		 * key: 某时期所对应的snp文件<br>
 		 * value: 该时期每个snp位点所对应的MapInfoSnpIndel
@@ -66,12 +64,12 @@ public class SamtoolsPileUpSiteInfo {
 			for (String[] strings : ls) {
 				MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(taxID, strings[0], Integer.parseInt(strings[1]), strings[2], strings[4]);
 				/**总体snp的hash*/
-				hashChrLocSnp.put(mapInfoSnpIndel.getRefID()+sep+mapInfoSnpIndel.getRefSnpIndelStart(), mapInfoSnpIndel);
+				hashChr2NonRedundentSnp.put(mapInfoSnpIndel.getRefID()+sep+mapInfoSnpIndel.getRefSnpIndelStart(), mapInfoSnpIndel);
 				/**每个单独处理的snp的hash*/
 				hashFileChrLocSnpTmp.put(mapInfoSnpIndel.getRefID()+sep+mapInfoSnpIndel.getRefSnpIndelStart(), mapInfoSnpIndel);
 			}
 		}
-		setMapInfo(hashFileChrLocSnp, hashChrLocSnp);
+		setMapInfo(hashFileChrLocSnp, hashChr2NonRedundentSnp);
 	}
 	/**
 	 * 

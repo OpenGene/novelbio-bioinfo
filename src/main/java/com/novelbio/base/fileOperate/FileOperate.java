@@ -20,6 +20,9 @@ import org.omg.CosNaming._BindingIteratorImplBase;
 
 public class FileOperate {
 	private static Logger logger = Logger.getLogger(FileOperate.class);
+	public static void main(String[] args) {
+		System.out.println(FileOperate.isFileExistAndBigThanSize("/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/expression/targetGene/miranda_LFJ_3UTR.fasta", 1));
+	}
 	/**
 	 * 读取文本文件内容
 	 * 
@@ -284,9 +287,6 @@ public class FileOperate {
 		}
 		return true;
 	}
-public static void main(String[] args) {
-	createFolders("/home/zong0jie/Desktop/platformtest/output/test");
-}
 	/**
 	 * 多级目录创建
 	 * 
@@ -592,7 +592,7 @@ public static void main(String[] args) {
 	 */
 	public static String changeFilePrefixReal(String FileName, String append, String suffix) {
 		String newFile = changeFilePrefix(FileName, append, suffix);
-		moveFile(FileName, getParentPathName(newFile), getFileName(newFile), true);
+		moveSingleFile(FileName, getParentPathName(newFile), getFileName(newFile), true);
 		return newFile;
 	}
 	/**
@@ -636,7 +636,7 @@ public static void main(String[] args) {
 	 */
 	public static String changeFileSuffixReal(String FileName, String append, String suffix) {
 		String newFile = changeFileSuffix(FileName, append, suffix);
-		moveFile(FileName, getParentPathName(newFile), getFileName(newFile), true);
+		moveSingleFile(FileName, getParentPathName(newFile), getFileName(newFile), true);
 		return newFile;
 	}
 	/**
@@ -664,23 +664,37 @@ public static void main(String[] args) {
 	 * 移动文件或文件夹，如果新地址有同名文件，则不移动并返回<br>
 	 * 可以创建一级新文件夹<br>
 	 * 如果没有文件则返回<br>
-	 * 注意：新文件夹后不要加\\<br>
 	 * 
 	 * @param oldPath 文件路径
 	 * @param newPath  新文件所在的文件夹
 	 * @return 是否移动成功
 	 */
 	public static boolean moveFile(String oldPath, String newPath, boolean cover) {
+		return moveFile(oldPath, newPath, cover, "");
+	}
+	/**
+	 * @param oldPath
+	 * @param newPath
+	 * @param NewName 新文件或文件夹名
+	 * @param cover
+	 * @return
+	 */
+	public static boolean moveFile(String oldPath, String newPath, String NewName,boolean cover) {
 		newPath = addSep(newPath);
 		boolean okFlag = false;
-
-		File oldFile = new File(oldPath);
+		
+		if (NewName==null || NewName.trim().equals("")) {
+			NewName = getFileName(oldPath);
+		}
+		
 		if (isFileExist(oldPath)) {
-			okFlag = moveFile(oldPath, newPath, oldFile.getName(), cover);
+			okFlag = moveSingleFile(oldPath, newPath, NewName, cover);
 		}
 		else if (isFileDirectory(oldPath)) {
+			newPath = newPath + NewName;
 			okFlag = moveFoldFile(oldPath, newPath, "", cover);
 		}
+		deleteDirectory(oldPath);
 		return okFlag;
 	}
 	/**
@@ -696,11 +710,16 @@ public static void main(String[] args) {
 		boolean okFlag = false;
 
 		if (isFileExist(oldPath)) {
-			okFlag = moveFile(oldPath, newPath, NewNameOrPrefix, cover);
+			if (NewNameOrPrefix==null || NewNameOrPrefix.trim().equals("")) {
+				NewNameOrPrefix = FileOperate.getFileName(oldPath);
+			}
+			okFlag = moveSingleFile(oldPath, newPath, NewNameOrPrefix, cover);
 		}
 		else if (isFileDirectory(oldPath)) {
+			newPath = newPath + getFileName(oldPath);
 			okFlag = moveFoldFile(oldPath, newPath, NewNameOrPrefix, cover);
 		}
+		deleteDirectory(oldPath);
 		return okFlag;
 	}
 	/**
@@ -720,7 +739,7 @@ public static void main(String[] args) {
 	 * @return true 成功
 	 * false 失败
 	 */
-	private static boolean moveFile(String oldFileName, String newPath, String newName, boolean cover) {
+	private static boolean moveSingleFile(String oldFileName, String newPath, String newName, boolean cover) {
 		newPath = addSep(newPath);
 		// 文件原地址
 		File oldFile = new File(oldFileName);
@@ -756,7 +775,6 @@ public static void main(String[] args) {
 	 * 如果新文件夹不存在，就创建新文件夹，不过似乎只能创建一级文件夹。移动顺利则返回true
 	 * 
 	 * @param oldfolderfile
-	 *            要移动的文件目录,目录都无所谓加不加"/"
 	 * @param newfolderfile
 	 *            目标文件目录
 	 * @param prix
@@ -765,7 +783,7 @@ public static void main(String[] args) {
 	 *            是否覆盖
 	 * @throws Exception
 	 */
-	private static boolean moveFoldFile(String oldfolderfile, String newfolderfile, String prix, boolean cover) {
+	public static boolean moveFoldFile(String oldfolderfile, String newfolderfile, String prix, boolean cover) {
 		// 如果sPath不以文件分隔符结尾，自动添加文件分隔符
 		oldfolderfile = addSep(oldfolderfile);
 		newfolderfile = addSep(newfolderfile);
@@ -776,16 +794,16 @@ public static void main(String[] args) {
 		if (files == null)
 			return false;
 		
-		File newDir = new File(newfolderfile);// 目标
-		if (!newDir.exists()) {
-			newDir.mkdirs();
+		if (!isFileDirectory(newfolderfile)) {
+			if (!createFolders(newfolderfile)) {
+				return false;
+			}
 		}
 		// 文件移动
 		for (int i = 0; i < files.length; i++) {
 			if (files[i].isDirectory()) // 如果子文件是文件夹，则递归调用本函数，精彩的用法！！
 			{
-				ok = moveFoldFile(files[i].getPath(),
-						newfolderfile + files[i].getName(), prix, cover);
+				ok = moveFoldFile(files[i].getPath(), newfolderfile + files[i].getName(), prix, cover);
 				// 成功，删除原文件
 				if (ok) {
 					files[i].delete();
@@ -855,17 +873,12 @@ public static void main(String[] args) {
 			return false;
 		}
 	}
-	/**
-	 * 判断文件是否为文件
-	 * @param fileName
-	 * @return
-	 */
-	public static boolean isFile(String fileName) {
+	public static boolean isFileFoldExist(String fileName) {
 		if (fileName == null) {
 			return false;
 		}
 		File file = new File(fileName);
-		if (file.isFile()) {// 没有文件，则返回空
+		if (file.exists() || file.isDirectory()) {// 没有文件，则返回空
 			return true;
 		} else {
 			return false;

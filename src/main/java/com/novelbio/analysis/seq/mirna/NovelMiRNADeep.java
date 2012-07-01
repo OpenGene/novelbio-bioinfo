@@ -1,13 +1,17 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.mapping.MapBowtie;
+import com.novelbio.analysis.tools.compare.runCompSimple;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -23,17 +27,37 @@ import com.novelbio.database.model.species.Species;
  */
 public class NovelMiRNADeep extends NovelMiRNApredict{
 	public static void main(String[] args) {
-		Species species = new Species(9606);
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.bowtie);
-		String bedFile = "/home/zong0jie/Desktop/platformtest/testCR_miRNA_Filtered_Genome.bed";
+		String parent = "/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/tmpBed/";
+		calNovelMiRNAexp(parent + "LFJ2BW1_CGATGT_L002_R1_001_filtered_Genome.bed", "2BW1");
+		calNovelMiRNAexp(parent + "LFJ2BW2_TTAGGC_L002_R1_001_filtered_Genome.bed", "2BW2");
+		calNovelMiRNAexp(parent + "LFJA3_ATCACG_L002_R1_001_filtered_Genome.bed", "A3");
+		calNovelMiRNAexp(parent + "LFJmjj_TGACCA_L002_R1_001_filtered_Genome.bed", "mjj");
+
+	}
+	public static void calNovelMiRNAexp(String bedFile, String prefix) {		
 		NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
 		novelMiRNADeep.setBedSeqInput(bedFile);
 		novelMiRNADeep.setOutPath("/home/zong0jie/Desktop/platformtest/output/testmiRNApredictDeep/");
-		novelMiRNADeep.setFastaOut("/home/zong0jie/Desktop/platformtest/output/testmiRNApredictDeep/CR_predict.fa");
+		novelMiRNADeep.setOutPrefix(prefix);
+		novelMiRNADeep.setCalNovelMiRNACountNovelMiRNASeq("/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/LFJmiRNApredictDeep/novelMiRNA/hairpin.fa", 
+				"/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/LFJmiRNApredictDeep/novelMiRNA/mature.fa", 
+				"/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/LFJmiRNApredictDeep/run/output.mrd");
+		novelMiRNADeep.getMirCount();
+	}
+	public static void pipeline(String[] args) {
+		Species species = new Species(9606);
+		SoftWareInfo softWareInfo = new SoftWareInfo();
+		softWareInfo.setName(SoftWare.bowtie);
+		String bedFile = "/home/zong0jie/Desktop/platformtest/testCR_miRNA_Filtered_Genome_Tmp.bed";
+		NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
+		novelMiRNADeep.setBedSeqInput(bedFile);
+		novelMiRNADeep.setOutPath("/home/zong0jie/Desktop/platformtest/output/testmiRNApredictDeep/");
+		novelMiRNADeep.setFastaOut("/home/zong0jie/Desktop/platformtest/output/testmiRNApredictDeep/CR_predict_Tmp.fa");
 		novelMiRNADeep.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bowtie));
 		novelMiRNADeep.setMiRNASeq(species.getMiRNAmatureFile(), null, species.getMiRNAhairpinFile());
-		novelMiRNADeep.predict();		
+		novelMiRNADeep.setOutPrefix("LFJ");
+		novelMiRNADeep.predict();
+		novelMiRNADeep.getMirCount();
 	}
 	Logger logger = Logger.getLogger(NovelMiRNADeep.class);
 	
@@ -53,10 +77,20 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 	String reportFile;
 	boolean createReportFile = true;
 	String outPath = null;
+	String outPrefix = "";
+	
+	String novelMiRNAhairpin = "";
+	String novelMiRNAmature = "";
+	String novelMiRNAdeepMrdFile = "";
 	
 	@Override
 	public void setOutPath(String outPath) {
-		this.outPath = outPath;
+		this.outPath = FileOperate.addSep(outPath);
+	}
+	public void setOutPrefix(String outPrefix) {
+		if (outPrefix != null && !outPrefix.trim().equals("")) {
+			this.outPrefix = outPrefix.trim() + "_";
+		}
 	}
 	/**
 	 * 从bed文件转变为fasta格式，或直接设定fasta文件
@@ -102,19 +136,19 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 		return "-t " + species + " ";
 	}
 	private String getMatureMiRNA() {
-		if (FileOperate.isFileExistAndBigThanSize(matureMiRNA, 1)) {
+		if (!FileOperate.isFileExistAndBigThanSize(matureMiRNA, 1)) {
 			return "none ";
 		}
 		return matureMiRNA + " ";
 	}
 	private String getMatureRelateMiRNA() {
-		if (FileOperate.isFileExistAndBigThanSize(matureRelateMiRNA, 1)) {
+		if (!FileOperate.isFileExistAndBigThanSize(matureRelateMiRNA, 1)) {
 			return "none ";
 		}
 		return matureRelateMiRNA + " ";
 	}
 	private String getPrecursorsMiRNA() {
-		if (FileOperate.isFileExistAndBigThanSize(hairpinMiRNA, 1)) {
+		if (!FileOperate.isFileExistAndBigThanSize(hairpinMiRNA, 1)) {
 			return "none ";
 		}
 		return hairpinMiRNA + " ";
@@ -219,19 +253,143 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 	private void moveFile() {
 		ArrayList<String> lsFileName = new ArrayList<String>();
 		String suffix = getResultFileSuffixFromReportLog();
+		
 		String expression_html = "expression_" + suffix + ".html";
+		String result_html = "result_" + suffix + ".html";
 		String miRNAs_expressed_all_samples = "miRNAs_expressed_all_samples_" + suffix + ".csv";
+		String mirDeep_result_Path = "result_" + suffix + ".csv";
+		
 		String expression_analyses_Path = "expression_analyses/expression_analyses_" + suffix;
 		String mirDeep_runs_Path = "mirdeep_runs/run_" + suffix;
+		String mirDeep_pdfs_Path = "pdfs_" + suffix;
 		
 		lsFileName.add(expression_html);
+		lsFileName.add(result_html);
 		lsFileName.add(miRNAs_expressed_all_samples);
+		lsFileName.add(mirDeep_result_Path);
+		
 		lsFileName.add(expression_analyses_Path);
 		lsFileName.add(mirDeep_runs_Path);
+		lsFileName.add(mirDeep_pdfs_Path);
+		
 		lsFileName.add(getReportFileRandom());
 		
 		for (String string : lsFileName) {
-			FileOperate.moveFile(string, outPath, true);
+			String fileName = FileOperate.getFileName(string);
+			FileOperate.moveFile(string, outPath, outPrefix +fileName.replace("_" + suffix, ""), true);
+			System.out.println("move:" + string + "     to:" + outPrefix +fileName.replace("_" + suffix, ""));
 		}
+		String outFinal = outPath + outPrefix;
+		
+		novelMiRNAdeepMrdFile = outFinal + "run" + "/output.mrd";
+		novelMiRNAhairpin = outFinal + "novelMiRNA/hairpin.fa";
+		novelMiRNAmature = outFinal + "novelMiRNA/mature.fa";
+		
+		extractHairpinSeqMatureSeq(novelMiRNAdeepMrdFile, outFinal + "result.csv", novelMiRNAmature, novelMiRNAhairpin);
+	}
+	private void extractHairpinSeqMatureSeq(String run_output_mrd, String result_csv, String outMatureSeq, String outPreSeq) {
+		FileOperate.createFolders(FileOperate.getParentPathName(outMatureSeq));
+		FileOperate.createFolders(FileOperate.getParentPathName(outPreSeq));
+		
+		TxtReadandWrite txtReadResult = new TxtReadandWrite(result_csv, false);
+		TxtReadandWrite txtReadMrd = new TxtReadandWrite(run_output_mrd, false);
+		
+		TxtReadandWrite txtWriteMature = new TxtReadandWrite(outMatureSeq, true);
+		TxtReadandWrite txtWritePre = new TxtReadandWrite(outPreSeq, true);
+		
+		HashSet<String> setMirPredictName = new HashSet<String>();
+		boolean flagGetPredictMiRNA = false;
+		for (String string : txtReadResult.readlines()) {
+			if (string.equals("novel miRNAs predicted by miRDeep2")) {
+				flagGetPredictMiRNA = true;
+			}
+			if (string.trim().equals("") && flagGetPredictMiRNA == true) {
+				break;
+			}
+			if (flagGetPredictMiRNA) {
+				String[] ss = string.split("\t");
+				setMirPredictName.add(ss[0]);
+			}
+		}
+		boolean flagFindMiRNA = false;
+		String mirName ="", mirSeq = "", mirModel = "";
+		for (String string : txtReadMrd.readlines()) {
+			if (string.startsWith(">")) {
+				flagFindMiRNA = false;
+				mirName = string.substring(1).trim();
+				if (setMirPredictName.contains(mirName)) {
+					flagFindMiRNA = true;
+				}
+			}
+			if (flagFindMiRNA && string.startsWith("exp")) {
+				mirModel = string.replace("exp", "").trim();
+			}
+			if (flagFindMiRNA && string.startsWith("pri_seq ")) {
+				mirSeq = string.replace("pri_seq ", "").trim();
+				ArrayList<SeqFasta> lSeqFastas = getMirDeepSeq(mirName, mirModel, mirSeq);
+				txtWritePre.writefileln(lSeqFastas.get(0).toStringNRfasta());
+				txtWriteMature.writefileln(lSeqFastas.get(1).toStringNRfasta());
+				txtWriteMature.writefileln(lSeqFastas.get(2).toStringNRfasta());
+			}
+		}
+		txtReadMrd.close();
+		txtReadResult.close();
+		txtWriteMature.close();
+		txtWritePre.close();
+	}
+	/**
+	 * 给定RNAdeep的结果文件，从里面提取序列
+	 * @param seqName
+	 * @param mirModel
+	 * @param mirSeq
+	 * @return
+	 * 0: precess
+	 * 1: mature
+	 * 2: star
+	 */
+	private ArrayList<SeqFasta> getMirDeepSeq(String seqName, String mirModel, String mirSeq) {
+		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
+		
+		SeqFasta seqFasta = new SeqFasta(seqName, mirSeq);
+		seqFasta.setDNA(true);
+		
+		int startS = mirModel.indexOf("S"); int endS = mirModel.lastIndexOf("S");
+		int startM = mirModel.indexOf("M"); int endM = mirModel.lastIndexOf("M");
+		
+		SeqFasta seqFastaMature = new SeqFasta(seqName + "_mature", mirSeq.substring(startM, endM));
+		seqFastaMature.setDNA(true);
+		SeqFasta seqFastaStar = new SeqFasta(seqName + "_star", mirSeq.substring(startS, endS));
+		seqFastaStar.setDNA(true);
+		
+		lsResult.add(seqFasta);
+		lsResult.add(seqFastaMature);
+		lsResult.add(seqFastaStar);
+		return lsResult;
+	}
+	public void setCalNovelMiRNACountNovelMiRNASeq(String novelMiRNAhairpin, String novelMiRNAmature, String novelMiRNAdeepMrdFile) {
+		this.novelMiRNAhairpin = novelMiRNAhairpin;
+		this.novelMiRNAmature = novelMiRNAmature;
+		this.novelMiRNAdeepMrdFile = novelMiRNAdeepMrdFile;
+	}
+	public void getMirCount() {
+		FastQ fastQ = bedSeqInput.getFastQ();
+		
+		SoftWareInfo softWareInfo = new SoftWareInfo();
+		softWareInfo.setName(SoftWare.bwa);
+		MiRNAmapPipline miRNAmapPipline = new MiRNAmapPipline();
+		
+		miRNAmapPipline.setExePath(softWareInfo.getExePath());
+		miRNAmapPipline.setMiRNApreSeq(novelMiRNAhairpin);
+		miRNAmapPipline.setOutPath(outPath, outPath +"novelMiRNAmapping", outPath + "novelMiRNAbed");
+		
+		miRNAmapPipline.setSample(outPrefix, fastQ.getFileName());
+		miRNAmapPipline.mappingMiRNA();
+		String bedSeqMiRNAnovel = miRNAmapPipline.getOutMiRNAbed();
+		
+		MiRNACount miRNACount = new MiRNACount();
+		miRNACount.setBedSeqMiRNA(bedSeqMiRNAnovel);
+		miRNACount.setMiRNAfile(novelMiRNAhairpin, novelMiRNAmature);
+		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_MIRDEEP, 0, novelMiRNAdeepMrdFile);
+		miRNACount.getOutResult(outPath + outPrefix);
 	}
 }

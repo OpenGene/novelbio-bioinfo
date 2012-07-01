@@ -2,23 +2,20 @@ package com.novelbio.analysis.seq;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.sql.Struct;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.TreeSet;
 
-import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
+import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.FastQRecord;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -33,15 +30,6 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 
  */
 public class FastQ extends SeqComb {
-	public static void main(String[] args) {
-		String fastqFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/WE_add.clean.fq.gz";
-		
-		FastQ fastQS = new FastQ(fastqFile, FastQ.QUALITY_MIDIAN);
-		fastQS.setCompressType(TxtReadandWrite.GZIP, TxtReadandWrite.TXT);
-		fastQS.setAdaptorLeft("GCACGGCTTC");
-		fastQS.setAdaptorRight("CCTAGCCTGGT");
-		fastQS.filterReads();
-	}
 	private static Logger logger = Logger.getLogger(FastQ.class);
 	public static int FASTQ_SANGER_OFFSET = 33;
 	public static int FASTQ_ILLUMINA_OFFSET = 64;
@@ -69,9 +57,23 @@ public class FastQ extends SeqComb {
 	String adaptorLeft = "";
 	String adaptorRight = "";
 	/** 是否从序列开始扫描接头，当接头很长，只设定了一部分接头，或者有接头多聚体的时候选择 */
-	boolean adaptorLeftAll = false;
+	boolean adaptorScanLeftStart = false;
 	/** 是否从序列开始扫描接头，当接头很长，只设定了一部分接头，或者有接头多聚体的时候选择 */
-	boolean adaptorRightAll = false;
+	boolean adaptorScanRightStart = false;
+	
+	int noAdaptorReads = 0;
+	int readsNum = 0;
+	
+	public int getReadsNumNoAdaptor() {
+		return noAdaptorReads;
+	}
+	
+	public int getSeqNum() {
+		if (readsNum == 0) {
+			readsNum = super.getSeqNum();
+		}
+		return readsNum;
+	}
 	/**
 	 * 设定最短reads的长度，小于该长度的reads就跳过，默认为25
 	 */
@@ -136,7 +138,7 @@ public class FastQ extends SeqComb {
 	}
 	/**
 	 * 注意adapter里面不要有非ATGC的东西
-	 * @param adaptor 接头可以只写一部分
+	 * @param adaptor 接头可以只写一部分，不能为null
 	 */
 	public void setAdaptorLeft(String adaptor) {
 		this.adaptorLeft = adaptor.trim();
@@ -144,7 +146,7 @@ public class FastQ extends SeqComb {
 	/**
 	 * 设定了polyA就不要设定adaptor
 	 * 注意adapter里面不要有非ATGC的东西
-	 * @param adaptor 接头可以只写一部分
+	 * @param adaptor 接头可以只写一部分，不能为null
 	 */
 	public void setAdaptorRight(String adaptor) {
 		this.adaptorRight = adaptor.trim();
@@ -153,13 +155,13 @@ public class FastQ extends SeqComb {
 	 * 默认只从设定的最长接头位置开始扫描
 	 */
 	public void setAdaptorLeftScanAll(boolean scanAll) {
-		this.adaptorLeftAll = scanAll;
+		this.adaptorScanLeftStart = scanAll;
 	}
 	/** 是否从序列开始扫描接头，当接头很长，只设定了一部分接头，或者有接头多聚体的时候选择
 	 * 默认只从设定的最长接头位置开始扫描
 	 */
 	public void setAdaptorRightScanAll(boolean scanAll) {
-		this.adaptorRightAll = scanAll;
+		this.adaptorScanRightStart = scanAll;
 	}
 	/**
 	 * 接头是小写 这种情况目前只在ion proton的数据中发现
@@ -364,7 +366,13 @@ public class FastQ extends SeqComb {
 	}
 	/**
 	 * 返回Iterator-FastQRecord
-	 * 这样可以直接用next来获得下一个
+	 * 这样可以直接用next来获得下一个，
+	 * 也就是：<br>
+	 * Iterator < FastQRecord > it = Fastq.readlinesIterator()<br>
+	 * for(FastqRecord fastqrc : it)<br>
+	 * { 
+	 * 。。。。
+	 * }
 	 * @return
 	 */
 	public Iterator<FastQRecord> readlinesIterator() {
@@ -525,14 +533,17 @@ public class FastQ extends SeqComb {
 	 * @throws Exception
 	 */
 	private FastQ filterReadsExp(String fileFilterOut) throws Exception {
+		int readsNumFilter = 0; readsNum = 0;
+		
 		FastQ fastQ = new FastQ(fileFilterOut, true);
 		fastQ.setCompressType(compressOutType, compressOutType);
 		int mapNumLeft = -1, mapNumRight = 1;
-		if (adaptorLeftAll)
+		if (adaptorScanLeftStart)
 			mapNumLeft = 1;
-		if (adaptorRightAll)
+		if (adaptorScanRightStart)
 			mapNumRight = 1;
 		for (FastQRecord fastQRecord : readlines()) {
+			readsNum++;
 			fastQRecord.setFastqOffset(offset);
 			fastQRecord.setTrimMinLen(readsLenMin);
 			fastQRecord = fastQRecord.trimAdaptor(adaptorLeft, adaptorRight, mapNumLeft, mapNumRight, adaptermaxMismach, adaptermaxConMismatch, 20);
@@ -555,8 +566,12 @@ public class FastQ extends SeqComb {
 				if (fastQRecord == null) continue;
 			}
 			if (!fastQRecord.QC()) continue;
+			
+			readsNumFilter++;
 			fastQ.writeFastQRecord(fastQRecord);
 		}
+		fastQ.readsNum = readsNumFilter;
+		fastQ.noAdaptorReads = FastQRecord.getErrorTrimAdapterReadsNum();
 		fastQ.closeWrite();
 		return fastQ;
 	}
@@ -572,6 +587,8 @@ public class FastQ extends SeqComb {
 	 * @throws Exception
 	 */
 	private FastQ[] filterReadsExpPairEnd(FastQ fastQS2, String fileFilterOut1, String fileFilterOut2) throws Exception {
+		int readsNumFilter = 0; readsNum = 0;
+		FastQRecord.setErrorTrimAdapterReadsNum(0);
 		FastQ fastQ1 = new FastQ(fileFilterOut1, true);
 		FastQ fastQ2 = new FastQ(fileFilterOut2, true);
 		fastQ1.setCompressType(compressOutType, compressOutType);
@@ -580,12 +597,13 @@ public class FastQ extends SeqComb {
 		Iterator<FastQRecord> itFastqRecord = fastQS2.readlinesIterator();
 		
 		int mapNumLeft = -1, mapNumRight = 1;
-		if (adaptorLeftAll)
+		if (adaptorScanLeftStart)
 			mapNumLeft = 1;
-		if (adaptorRightAll)
+		if (adaptorScanRightStart)
 			mapNumRight = 1;
 		
 		for (FastQRecord fastQRecord : readlines()) {
+			readsNum++;
 			FastQRecord fastQRecord2 = itFastqRecord.next();
 					
 			fastQRecord.setFastqOffset(offset);
@@ -614,11 +632,16 @@ public class FastQ extends SeqComb {
 				if (fastQRecord == null || fastQRecord2 == null) continue;
 			}
 			if (!fastQRecord.QC() && !fastQRecord2.QC() ) continue;
+			readsNumFilter++;
 			fastQ1.writeFastQRecord(fastQRecord);
 			fastQ2.writeFastQRecord(fastQRecord2);
 		}
 		fastQ1.closeWrite();
 		fastQ2.closeWrite();
+		fastQ1.noAdaptorReads = FastQRecord.getErrorTrimAdapterReadsNum();
+		fastQ2.noAdaptorReads = FastQRecord.getErrorTrimAdapterReadsNum();
+		fastQ1.readsNum = readsNumFilter;
+		fastQ2.readsNum = readsNumFilter;
 		return new FastQ[]{fastQ1, fastQ2};
 	}
 	/**
@@ -825,4 +848,14 @@ public class FastQ extends SeqComb {
 		return String.valueOf(tmpResultChar);
 	}
 	
+	public static HashMap<String, Integer> getMapReadsQuality() {
+		HashMap<String, Integer> mapReadsQualtiy = new LinkedHashMap<String, Integer>();
+		
+		mapReadsQualtiy.put("MidanQuality", QUALITY_MIDIAN);
+		mapReadsQualtiy.put("Midan_PEQuality", QUALITY_MIDIAN_PAIREND);
+		mapReadsQualtiy.put("HigtQuality", QUALITY_HIGM);
+		mapReadsQualtiy.put("LowQuality", QUALITY_LOW);
+		mapReadsQualtiy.put("LowQuality454", QUALITY_LOW_454);
+		return mapReadsQualtiy;
+	}
 }

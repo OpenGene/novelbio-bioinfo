@@ -17,6 +17,15 @@ public class FastQRecord implements Cloneable {
 	protected int quality = QUALITY_MIDIAN;
 	/** 裁剪序列时最短为多少 */
 	private int trimMinLen = 22;
+	
+	private static int errorTrimAdapterReadsNum = 0;
+	public static void setErrorTrimAdapterReadsNum(int errorTrimAdapterReadsNum) {
+		FastQRecord.errorTrimAdapterReadsNum = errorTrimAdapterReadsNum;
+	}
+	public static int getErrorTrimAdapterReadsNum() {
+		return errorTrimAdapterReadsNum;
+	}
+	
 	public FastQRecord() {
 		seqFasta = new SeqFasta();
 		seqFasta.setTOLOWCASE(null);
@@ -220,7 +229,7 @@ public class FastQRecord implements Cloneable {
 				return i;
 			}
 		}
-		logger.info("haven't find adaptor: "+seqIn+" "+seqAdaptor);
+//		logger.info("haven't find adaptor: "+seqIn+" "+seqAdaptor);
 		return seqIn.length();
 	}
 	/**
@@ -269,7 +278,7 @@ public class FastQRecord implements Cloneable {
 				return i+1;
 			}
 		}
-		logger.info("haven't find adaptor: "+seqIn+" "+seqAdaptor);
+//		logger.info("haven't find adaptor: "+seqIn+" "+seqAdaptor);
 		return 0;
 	}
 	/**

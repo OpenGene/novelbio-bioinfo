@@ -11,6 +11,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.species.Species;
 
 /**
  * 同时用miranda和RNAhybrid分析，结果取并集
@@ -18,14 +19,29 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  *
  */
 public class CtrlMiRNAtargetPredict {
+	public static void main(String[] args) {
+		CtrlMiRNAtargetPredict ctrlMiRNAtargetPredict = new CtrlMiRNAtargetPredict();
+		Species species = new Species();
+		species.setTaxID(9606);
+		
+//		GffChrAbs gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], null, 0);
+		
+//		ctrlMiRNAtargetPredict.setGffChrAbs(gffChrAbs);
+		ctrlMiRNAtargetPredict.setInputMiRNAseq("/home/zong0jie/Desktop/platformtest/predictTarget/mature_human_Final.fa");
+		ctrlMiRNAtargetPredict.setInputUTR3File("/home/zong0jie/Desktop/platformtest/predictTarget/pig3UTR");
+		ctrlMiRNAtargetPredict.setMirTargetOverlap("/home/zong0jie/Desktop/platformtest/predictTarget/outResult");
+		ctrlMiRNAtargetPredict.setSpeciesType(RNAhybridClass.human);
+		ctrlMiRNAtargetPredict.setTargetEnergy(15);
+		ctrlMiRNAtargetPredict.setTargetPvalue(0.05);
+		ctrlMiRNAtargetPredict.setTargetScore(150);
+		ctrlMiRNAtargetPredict.predict();
+	}
 	MiRNAtargetMiranda miranda = new MiRNAtargetMiranda();
 	MiRNAtargetRNAhybrid miRNAtargetRNAhybrid = new MiRNAtargetRNAhybrid();
 	String txtMirTargetOverlap;
 	/** 本方法和setInputUTR3File二选一 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		miranda.setGffChrAbs(gffChrAbs);
-		String UTR3file = miranda.getInput3UTRseq();
-		miRNAtargetRNAhybrid.setInputUTR3File(UTR3file);
 	}
 	/** 设定UTR3的序列，没有的话就从gffChrSeq中提取 */
 	public void setInputUTR3File(String inputUTR3seq) {
@@ -33,7 +49,6 @@ public class CtrlMiRNAtargetPredict {
 			return;
 		}
 		miranda.setInputUTR3File(inputUTR3seq);
-		miRNAtargetRNAhybrid.setInputUTR3File(inputUTR3seq);
 	}
 	public void setInputMiRNAseq(String inputMiRNAseq) {
 		miranda.setInputMiRNAseq(inputMiRNAseq);
@@ -45,8 +60,8 @@ public class CtrlMiRNAtargetPredict {
 	 */
 	public void setMirTargetOverlap(String txtMirTargetOverlap) {
 		this.txtMirTargetOverlap = txtMirTargetOverlap;
-		miranda.setOutFile(FileOperate.changeFilePrefix(txtMirTargetOverlap, "_miranda", null));
-		miRNAtargetRNAhybrid.setOutFile(FileOperate.changeFilePrefix(txtMirTargetOverlap, "_miRNAtarget", null));
+		miranda.setOutFile(FileOperate.changeFilePrefix(txtMirTargetOverlap, "miranda_", null));
+		miRNAtargetRNAhybrid.setOutFile(FileOperate.changeFilePrefix(txtMirTargetOverlap, "miRNAtarget_", null));
 	}
 	/** RNAhybrid的物种类型 */
 	public void setSpeciesType(RNAhybridClass rAhybridClass) {
@@ -67,14 +82,18 @@ public class CtrlMiRNAtargetPredict {
 	}
 	
 	public void predict() {
+		String UTR3file = miranda.getInput3UTRseq();
+		miRNAtargetRNAhybrid.setInputUTR3File(UTR3file);
+		
 		SoftWareInfo softWareInfo = new SoftWareInfo();
 		softWareInfo.setName(SoftWare.miranada);
 		miranda.setExePath(softWareInfo.getExePath());
 		softWareInfo.setName(SoftWare.RNAhybrid);
 		miRNAtargetRNAhybrid.setExePath(softWareInfo.getExePath());
-		miranda.mirnaPredict();
 		miRNAtargetRNAhybrid.mirnaPredict();
-		ArrayList<String[]> lsOverlapTarget = overLap(miranda.getPredictResultFile(), miRNAtargetRNAhybrid.getPredictResultFinal());
+		miranda.mirnaPredict();
+		
+		ArrayList<String[]> lsOverlapTarget = overLap(miranda.getPredictResultFinal(), miRNAtargetRNAhybrid.getPredictResultFinal());
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtMirTargetOverlap, true);
 		txtOut.ExcelWrite(lsOverlapTarget, "\t", 1, 1);
 	}
@@ -83,8 +102,8 @@ public class CtrlMiRNAtargetPredict {
 		CombineTab combineTab = new CombineTab();
 		combineTab.setStrNull(null);
 		combineTab.setColExtractDetai(txtInputFileMiranda, "mirnada", 2,3,4);
-		combineTab.setColExtractDetai(txtInputFileMiRNAhybrid, "mirnada", 2,3,4);
-		combineTab.setColCompareOverlapID(1);
+		combineTab.setColExtractDetai(txtInputFileMiRNAhybrid, "rnaHybrid", 3,4);
+		combineTab.setColCompareOverlapID(1, 2);
 		ArrayList<String[]> lsCombine = combineTab.getResultLsIntersection();
 		return lsCombine;
 	}

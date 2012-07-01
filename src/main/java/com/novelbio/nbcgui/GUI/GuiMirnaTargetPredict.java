@@ -135,9 +135,11 @@ public class GuiMirnaTargetPredict  extends JPanel {
 		btnRun = new JButton("Run");
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				species.setTaxID(cmbSpecies.getSelectedValue());
 				GffChrAbs gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0], null, 0);
-				ctrlMiRNAtargetPredict.setGffChrAbs(gffChrAbs);
+				ctrlMiRNAtargetPredict.setMirTargetOverlap(txtOutput.getText());
 				
+				ctrlMiRNAtargetPredict.setGffChrAbs(gffChrAbs);
 				ctrlMiRNAtargetPredict.setTargetEnergy(Integer.parseInt(txtEnergy.getText()));
 				ctrlMiRNAtargetPredict.setTargetPvalue(Double.parseDouble(txtPvalue.getText()));
 				ctrlMiRNAtargetPredict.setTargetScore(Integer.parseInt(txtScore.getText()));
@@ -146,7 +148,7 @@ public class GuiMirnaTargetPredict  extends JPanel {
 				ctrlMiRNAtargetPredict.setInputUTR3File(txtUTR3Seq.getText());
 				ctrlMiRNAtargetPredict.setSpeciesType(cmbRNAhybridSpeciesType.getSelectedValue());
 				
-				ctrlMiRNAtargetPredict.setMirTargetOverlap(txtOutput.getText());
+				
 				ctrlMiRNAtargetPredict.predict();
 			}
 		});

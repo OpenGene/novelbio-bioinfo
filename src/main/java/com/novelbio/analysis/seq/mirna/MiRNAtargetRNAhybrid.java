@@ -38,8 +38,8 @@ public class MiRNAtargetRNAhybrid extends MiRNAtargetAbs{
 	}
 	
 	private void mirnaPredictRun() {
-		String cmd = exePath + "RNAhybrid";
-		cmd = cmd + getRNAhybridClass() + "-t " + getInput3UTRseq() + "-q " + getInputMiRNAseq() + "> " + predictResultFile;
+		String cmd = exePath + "RNAhybrid ";
+		cmd = cmd + getRNAhybridClass() + "-t " + getInput3UTRseq() + " -q " + getInputMiRNAseq() + "> " + predictResultFile;
 		CmdOperate cmdOperate = new CmdOperate(cmd, "miranda_miRNA_predict");
 		cmdOperate.run();
 	}
@@ -49,6 +49,7 @@ public class MiRNAtargetRNAhybrid extends MiRNAtargetAbs{
 		TxtReadandWrite txtOut = new TxtReadandWrite(predictResultFinal, true);
 		boolean blockFlag = false;
 		String block = null;
+		txtOut.writefileln("mirName\ttargetGene\tPvalue\tEnergy");
 		for (String string : txtRead.readlines()) {
 			if (string.startsWith("target:") && block != null) {
 				blockFlag = true;

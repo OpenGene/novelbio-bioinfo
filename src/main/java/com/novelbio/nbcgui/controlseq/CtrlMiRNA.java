@@ -199,6 +199,7 @@ public class CtrlMiRNA {
 		novelMiRNADeep.setSpecies(species.getCommonName());
 		novelMiRNADeep.setOutPath(novelMiRNAPathDeep);
 		novelMiRNADeep.predict();
+		novelMiRNADeep.getMirCount();
 	}
 	/** 计算miRNA表达 */
 	private void countMiRNA(boolean solo) {
@@ -206,12 +207,12 @@ public class CtrlMiRNA {
 		if (!solo && FileOperate.isFileExist(miRNAmappingPipline.getOutMiRNAbed()) && FileOperate.getFileSize(miRNAmappingPipline.getOutMiRNAbed()) > 1000) {
 			miRNACount.setBedSeqMiRNA(miRNAmappingPipline.getOutMiRNAbed());
 			miRNACount.countMiRNA();
-			miRNACount.outResult(outPath + outputPrefix);
+			miRNACount.getOutResult(outPath + outputPrefix);
 		}
 		else if (solo && FileOperate.isFileExist(miRNAcountMiRNAbed) && FileOperate.getFileSize(miRNAcountMiRNAbed) > 1000) {
 			miRNACount.setBedSeqMiRNA(miRNAcountMiRNAbed);
 			miRNACount.countMiRNA();
-			miRNACount.outResult(outPath + outputPrefix);
+			miRNACount.getOutResult(outPath + outputPrefix);
 		}
 	}
 	/** 读取信息 */

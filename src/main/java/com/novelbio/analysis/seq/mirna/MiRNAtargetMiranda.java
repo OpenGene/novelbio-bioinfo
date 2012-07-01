@@ -41,8 +41,8 @@ public class MiRNAtargetMiranda extends MiRNAtargetAbs{
 		}
 	}
 	private void mirnaPredictExp() throws InterruptedException {
-		String cmd = exePath + "miranda";
-		cmd = cmd + getInputMiRNAseq() + getInput3UTRseq() + getTargetScore() + getTargetEnergy();
+		String cmd = exePath + "miranda ";
+		cmd = cmd + getInputMiRNAseq() + getInput3UTRseq() + " " + getTargetScore() + getTargetEnergy() + "-out " + getPredictResultFile();
 		CmdOperate cmdOperate = new CmdOperate(cmd, "miranda_miRNA_predict");
 		cmdOperate.run();
 		Thread.sleep(2000);

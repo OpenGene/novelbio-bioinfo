@@ -1,346 +1,327 @@
 package com.novelbio.nbcgui.controlseq;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
-import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.util.SSCellRange;
 
-import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.FastQOld;
-import com.novelbio.analysis.seq.mapping.FastQMapAbs;
-import com.novelbio.analysis.seq.mapping.FastQMapBwa;
-import com.novelbio.analysis.seq.mapping.SAMtools;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.FastQRecord;
+import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.mapping.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.species.Species;
 
 public class CtrlFastQMapping {
+
 	private static Logger logger = Logger.getLogger(CtrlFastQMapping.class);
-	public static final int COPE_FILTERING = 2;
-	public static final int COPE_MAPPING = 4;
-	public static final int COPE_TOBED = 8;
-	public static final int COPE_BEDEXTEND = 16;
-	public static final int COPE_BEDSORT = 32;
-	
 	
 	public static final int LIBRARY_SINGLE_END = 128;
 	public static final int LIBRARY_PAIR_END = 256;
 	public static final int LIBRARY_MATE_PAIR = 512;
 	
-	public static final int FILEFORMAT_FASTQ = 3;
-	public static final int FILEFORMAT_SAM = 6;
-	public static final int FILEFORMAT_BED = 9;
-	
-	/**
-	 * 建库方式
-	 */
-	int libraryType = LIBRARY_SINGLE_END;
-	int fileformat = FILEFORMAT_FASTQ;
-	/**
-	 * 设定文件格式 FILEFORMAT_FASTQ 等等
-	 * @param fileformat
-	 */
-	public void setFileformat(int fileformat) {
-		this.fileformat = fileformat;
-	}
-	/**
-	 * 是否删除两端
-	 */
+	boolean filter = true;
 	boolean trimNNN = false;
-
 	int fastqQuality = FastQOld.QUALITY_MIDIAN;
-
 	boolean uniqMapping = true;
-	/**
-	 * 将bed文件延长至多少bp
-	 * 小于等于0表示不延长
-	 */
-	int bedExtend = 240;
-	int retainBp = 25;
-	/**
-	 * 读取配置文件，也就是物种与genome序列的对应文件
-	 */
-	int taxID = 0;
+	int readsLenMin = 18;
+	int libraryType = LIBRARY_SINGLE_END;
+	String adaptorLeft = "";
+	String adaptorRight = "";
+	boolean adaptorLowercase =false;
 	
-	ArrayList<String[]> lsResult = new ArrayList<String[]>();
+	/** 排列顺序与lsFastQfileLeft和lsFastQfileRight相同 
+	 * 表示分组
+	 * */
+	ArrayList<String> lsCondition = new ArrayList<String>();
+	ArrayList<String> lsFastQfileLeft = new ArrayList<String>();
+	ArrayList<String> lsFastQfileRight = new ArrayList<String>();
 	
+	String outFilePrefix = "";
 	
-	public void setTaxID(int taxID) {
-		this.taxID = taxID;
+	HashMap<String, ArrayList<FastQ[]>> mapCondition2LsFastQLR = new HashMap<String, ArrayList<FastQ[]>>();
+	
+	HashMap<String, FastQ[]> mapCondition2CombFastQLRFiltered = new HashMap<String, FastQ[]>();
+	
+	boolean mapping = false;
+	int gapLen = 5;
+	int mismatch = 2;
+	int thread = 4;
+	String chrIndexFile;
+	
+	Species species;
+	SoftWareInfo softWareInfo = new SoftWareInfo();
+	
+	TxtReadandWrite txtReport;
+	public void setAdaptorLeft(String adaptorLeft) {
+		this.adaptorLeft = adaptorLeft;
 	}
-	public void setUniqMapping(boolean uniqMapping) {
-		this.uniqMapping = uniqMapping;
+	public void setAdaptorLowercase(boolean adaptorLowercase) {
+		this.adaptorLowercase = adaptorLowercase;
 	}
-	public void setTrimNNN(boolean trimNNN) {
-		this.trimNNN = trimNNN;
+	public void setAdaptorRight(String adaptorRight) {
+		this.adaptorRight = adaptorRight;
 	}
 	public void setFastqQuality(int fastqQuality) {
 		this.fastqQuality = fastqQuality;
 	}
-
-	/**
-	 * 将bed文件延长至多少bp
-	 * 小于等于0表示不延长
-	 */
-	public void setBedExtend(int bedExtend) {
-		this.bedExtend = bedExtend;
+	public void setFilter(boolean filter) {
+		this.filter = filter;
 	}
-	boolean sortBed = false;
-	public void setSortBed(boolean sortBed) {
-		this.sortBed = sortBed;
-	}
-	
-	static HashMap<Integer, String> hashBWA = new HashMap<Integer, String>();
-	static HashMap<Integer, HashMap<String, Double>> hashChrLen= new HashMap<Integer, HashMap<String,Double>>();
-	String outPathAndFileNamePrix = "";
-	/**
-	 * 输出文件路径和文件名
-	 * @param outPathAndFileNamePrix
-	 */
-	public void setOutPathAndFileNamePrix(String outPathAndFileNamePrix) {
-		this.outPathAndFileNamePrix = outPathAndFileNamePrix.trim();
-	}
-	/**
-	 * 文件名，0：文件名，1：文件的prix，2：group
-	 * 因为后边涉及到删减
-	 */
-	LinkedList<String[]> lsFileName = new LinkedList<String[]>();
-	TreeSet<Integer> treeCopeInfo = new TreeSet<Integer>();
-	/**
-	 * whether the sequencing data is single end or pair end
-	 * @param singleEnd
-	 */
 	public void setLibraryType(int libraryType) {
 		this.libraryType = libraryType;
 	}
-	
-	/**
-	 * 根据双端或者单端返回表格
-	 * @return
-	 */
-	public ArrayList<String[]> getlsGetFileInfo()
-	{
-		GUIFileOpen guiFileOpen = new GUIFileOpen();
-		ArrayList<String> lsFileName = guiFileOpen.openLsFileName("Sequencing File");
-		ArrayList<String[]> lsFileResult = new ArrayList<String[]>();
-		
-		for (String string : lsFileName) {
-			String[] tmpResult = null;
-			tmpResult = new String[]{string, FileOperate.getFileNameSep(string)[0], "1"};
-			lsFileResult.add(tmpResult);
+	public void setReadsLenMin(int readsLenMin) {
+		this.readsLenMin = readsLenMin;
+	}
+	public void setSpecies(Species species) {
+		this.species = species;
+	}
+	public void setTrimNNN(boolean trimNNN) {
+		this.trimNNN = trimNNN;
+	}
+	public void setUniqMapping(boolean uniqMapping) {
+		this.uniqMapping = uniqMapping;
+	}
+	public void setChrIndexFile(String chrIndexFile) {
+		if (FileOperate.isFileExistAndBigThanSize(chrIndexFile, 10)) {
+			this.chrIndexFile = chrIndexFile;
 		}
-		return lsFileResult;
 	}
-	
-	public void setFile(LinkedList<String[]> lsFile) {
-		this.lsFileName = lsFile;
+	public void setMapping(boolean mapping) {
+		this.mapping = mapping;
+	}
+	public void setOutFilePrefix(String outFilePrefix) {
+		if (FileOperate.isFileDirectory(outFilePrefix)) {
+			outFilePrefix = FileOperate.addSep(outFilePrefix);
+		}
+		this.outFilePrefix = outFilePrefix;
+	}
+	public void setGapLen(int gapLen) {
+		this.gapLen = gapLen;
+	}
+	public void setMismatch(int mismatch) {
+		this.mismatch = mismatch;
+	}
+	public void setThread(int thread) {
+		this.thread = thread;
 	}
 	/**
-	 * add cope type
-	 * @param copeInfo such as COPE_FILTERING
+	 * arraylist - string[3]: <br>
+	 * 0: fastqFile <br>
+	 * 1: prefix <br>
+	 * 2: group
 	 */
-	public void setCopeInfo(int copeInfo) {
-		treeCopeInfo.add(copeInfo);
+	public void setLsFastQfileLeft(ArrayList<String> lsFastQfileLeft) {
+		this.lsFastQfileLeft = lsFastQfileLeft;
+	}
+	public void setLsFastQfileRight(ArrayList<String> lsFastQfileRight) {
+		this.lsFastQfileRight = lsFastQfileRight;
+	}
+	/**必须对每个文件都有一个前缀 */
+	public void setLsPrefix(ArrayList<String> lsPrefix) {
+		this.lsCondition = lsPrefix;
 	}
 	
 	public void running() {
-		lsResult.clear();
-		lsResult.add(new String[]{"SampleName", "SampleFormat", "ReadsNum"});
-		sortFile();
-		if (fileformat == FILEFORMAT_FASTQ && treeCopeInfo.contains(COPE_FILTERING)) {
-			filteredFastQ();
+		txtReport = new TxtReadandWrite(outFilePrefix + "reportInfo", true);
+		
+		setMapCondition2LsFastQLR();
+		
+		if (filter) {
+			txtReport.writefileln("Sample\tAllReads\tFilteredReads");
+			filteredReads();
 		}
-		if (fileformat == FILEFORMAT_FASTQ && treeCopeInfo.contains(COPE_MAPPING)) {
+		combineAllFastqFile();
+		if (mapping) {
+			txtReport.writefileln("Sample\tReadsNum\tUniqueMappedReads\tUniqeMappingRates");
 			mapping();
-			fileformat = FILEFORMAT_SAM;
 		}
-		if (fileformat == FILEFORMAT_SAM && treeCopeInfo.contains(COPE_TOBED)) {
-			convertToBed();
-			fileformat = FILEFORMAT_BED;
-		}
-		if (fileformat == FILEFORMAT_BED && treeCopeInfo.contains(COPE_BEDEXTEND)) {
-			extendBed();
-		}
-		if (fileformat == FILEFORMAT_BED && treeCopeInfo.contains(COPE_BEDSORT)) {
-			sortBed();
-		}
-		lsFileName.clear();
-		lsResult.clear();
-		hashBWA.clear();
-		treeCopeInfo.clear();
-		TxtReadandWrite txtStatistic = new TxtReadandWrite(outPathAndFileNamePrix + "statistics", true);
-		txtStatistic.ExcelWrite(lsResult, "\t", 1, 1);
+		txtReport.close();
 	}
 	
-	
-	/**
-	 * 相同的group放在一起，如果多个group都相同，则将相同的prix放在一起
-	 */
-	private void sortFile() {
-		Collections.sort(lsFileName, new Comparator<String[]>() {
-			@Override
-			public int compare(String[] o1, String[] o2) {
-				int group = o1[2].compareTo(o2[2]);
-				if (group == 0) {
-					group = o1[1].compareTo(o2[1]);
-				}
-				if (group == 0) {
-					group = o1[0].compareTo(o2[0]);
-				}
-				return group;
-			}
-		});
-	}
-	/**
-	 * filter Fastq文件
-	 * 然后
-	 */
-	private void filteredFastQ()
-	{
-		FastQOld fastQ = null;
-		if (libraryType == LIBRARY_SINGLE_END) {
-			for (int i = 0; i < lsFileName.size(); i ++) {
-				String[] ss = lsFileName.get(i);
-				String filterOut = outPathAndFileNamePrix + ss[1] + ss[2];
-				filterOut = FileOperate.changeFileSuffix(filterOut, "", "fq");
-				fastQ = new FastQOld(ss[0], fastqQuality);
-				
-				lsResult.add(new String[]{ss[1] + ss[2], "RawData", fastQ.getSeqNum()+""});
-				
-				fastQ.setTrimNNN(trimNNN);
-				fastQ.setLenReadsMin(retainBp);
-				fastQ = fastQ.filterReads(filterOut);
-				ss[0] = fastQ.getFileName();
-				lsResult.add(new String[]{ ss[1] + ss[2], "FilteredReads",fastQ.getSeqNum()+""});
-			}
-		}
-		else {
-			for (int i = 1; i < lsFileName.size(); i = i + 2) {
-				String[] ss0 = lsFileName.get(i-1);
-				String[] ss1 = lsFileName.get(i);
-				String filterOut = outPathAndFileNamePrix + ss0[1] + ss0[2];
-				fastQ = new FastQOld(ss0[0], ss1[0], fastqQuality);
-				
-				lsResult.add(new String[]{ss0[1] + ss0[2], "RawData", fastQ.getSeqNum()+""});
-				
-				fastQ.setTrimNNN(trimNNN);
-				fastQ.setLenReadsMin(retainBp);
-				fastQ = fastQ.filterReads(filterOut);
-				ss0[0] = fastQ.getFileName();
-				ss1[0] = fastQ.getSeqFile2();
-				
-				lsResult.add(new String[]{ ss0[1] + ss0[2], "FilteredReads", fastQ.getSeqNum()+""});
-			}
-		}
-	
-	}
-	/**
-	 * 将lsFileName里面的文件做mapping
-	 * mapping后用sam替换lsFileName里面的文件
-	 */
-	private void mapping()
-	{
-		String chrFile = hashBWA.get(taxID).trim();		
-		if (libraryType == LIBRARY_SINGLE_END) {
-			for (int i = 0; i < lsFileName.size(); i ++) {
-				String[] ss = lsFileName.get(i);
-				String filterOut = outPathAndFileNamePrix + ss[1] + ss[2];
-				filterOut = FileOperate.changeFileSuffix(filterOut, "", "sam");
-				FastQMapBwa fastQ = new FastQMapBwa(ss[0], fastqQuality, filterOut, uniqMapping);
-				
-				if (lsResult.size() == 0) {
-					lsResult.add(new String[]{ ss[1] + ss[2], "FastQFormat", fastQ.getSeqNum()+""});
-				}
-				
-				fastQ.setFilePath("", chrFile);
-				SamFile samFile = fastQ.mapReads();
-				ss[0] = samFile.getFileName();
-				
-				lsResult.add(new String[]{ ss[1] + ss[2], "SamFormat", samFile.getReadsNum(SamFile.MAPPING_UNIQUE) + ""});
-				
-			}
-		}
-		else {
-			for (int i = 1; i < lsFileName.size(); i = i + 2) {
-				String[] ss0 = lsFileName.get(i-1);
-				String[] ss1 = lsFileName.get(i);
-				String filterOut = outPathAndFileNamePrix + ss0[1] + ss0[2];
-				filterOut = FileOperate.changeFileSuffix(filterOut, "", "sam");
-				FastQMapBwa fastQ = new FastQMapBwa(ss0[0], ss1[0], fastqQuality, filterOut, uniqMapping);
-				
-				if (lsResult.size() == 0) {
-					lsResult.add(new String[]{ ss0[1] + ss0[2], "FastQFormat", fastQ.getSeqNum()+""});
-				}
-				
-				fastQ.setFilePath("", chrFile);
-				SamFile samFile = fastQ.mapReads();
-				ss0[0] = samFile.getFileName();
-				
-				lsResult.add(new String[]{ ss0[1] + ss0[2], "SamFormat",samFile.getReadsNum(SamFile.MAPPING_UNIQUE) + ""});
-				
-			}
-			//TODO 这里可能有错
-			for (int i = lsFileName.size() - 1; i >= 0; i = i - 2) {
-				lsFileName.remove(i);
-			}
-		}
-	}
-	/**
-	 * 将sam文件转化为bed文件
-	 * @throws Exception 
-	 */
-	private void convertToBed()
-	{
-		for (int i = 0; i < lsFileName.size(); i ++) {
-			String[] ss = lsFileName.get(i);
-			String filterOutSE = outPathAndFileNamePrix + ss[1] + ss[2];
-			filterOutSE = FileOperate.changeFileSuffix(filterOutSE, "_SE", "bed");
-			SAMtools saMtools = new SAMtools(ss[0], false, 10);
-			BedSeq bedSeq = saMtools.sam2bed(TxtReadandWrite.TXT, filterOutSE, uniqMapping);
+	private void mapping() {
+		softWareInfo.setName(SoftWare.bwa);
+		for (Entry<String, FastQ[]> entry : mapCondition2CombFastQLRFiltered.entrySet()) {
+			String prefix = entry.getKey();
+			FastQ[] fastQs = entry.getValue();
+			MapBwa mapBwa = new MapBwa();
 			
-			lsResult.add(new String[]{ ss[1] + ss[2], "BedFormat", bedSeq.getSeqNum()+""});
+			if (chrIndexFile != null)
+				mapBwa.setExePath(softWareInfo.getExePath(), chrIndexFile);
+			else
+				mapBwa.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bwa));
 
-			ss[0] = bedSeq.getFileName();
+			mapBwa.setFqFile(fastQs[0], fastQs[1]);
+			mapBwa.setOutFileName(outFilePrefix + prefix);
+			mapBwa.setGapLength(gapLen);
+			mapBwa.setMismatch(mismatch);
+			if (libraryType == LIBRARY_MATE_PAIR) {
+				mapBwa.setInsertSize(200, 4000);
+			}
+			else if (libraryType == LIBRARY_PAIR_END) {
+				mapBwa.setInsertSize(150, 500);
+			}
+			mapBwa.setThreadNum(thread);
+			mapBwa.setUniqMapping(true);
+			SamFile samFile = mapBwa.mapReads();
+			long uniqueMappedReads = samFile.getReadsNum(SamFile.MAPPING_UNIQUE);
+			if (fastQs[1] != null)
+				txtReport.writefileln(prefix + "\t" + fastQs[0].getSeqNum()*2 + "\t" + uniqueMappedReads + "\t" + (double)uniqueMappedReads/(fastQs[0].getSeqNum()*2));
+			else
+				txtReport.writefileln(prefix + "\t" + fastQs[0].getSeqNum() + "\t" + uniqueMappedReads + "\t" + (double)uniqueMappedReads/fastQs[0].getSeqNum());
 		}
 	}
 	
-	private void extendBed()
-	{
-		if (bedExtend <= 0) {
+	/** 将输入文件整理成
+	 * map Prefix--leftList  rightList
+	 * 的形式
+	 */
+	private void setMapCondition2LsFastQLR() {
+		for (int i = 0; i < lsCondition.size(); i++) {
+			String prefix = lsCondition.get(i);
+			ArrayList<FastQ[]> lsPrefixFastQLR = new ArrayList<FastQ[]>();
+			if (mapCondition2LsFastQLR.containsKey(prefix)) {
+				lsPrefixFastQLR = mapCondition2LsFastQLR.get(prefix);
+			}
+			else {
+				mapCondition2LsFastQLR.put(prefix, lsPrefixFastQLR);
+			}
+			FastQ[] tmpFastQLR = new FastQ[2];
+			setFastqLR(tmpFastQLR, lsFastQfileLeft, lsFastQfileRight, i);
+			lsPrefixFastQLR.add(tmpFastQLR);
+		}
+	}
+	private void setFastqLR(FastQ[] tmpFastQLR, ArrayList<String> lsFastqL, ArrayList<String> lsFastqR, int num) {
+		String fastqL = "", fastqR = "";
+		String compressType = TxtReadandWrite.TXT;
+		if (lsFastqL.size() > num) {
+			fastqL = lsFastqL.get(num);
+		}
+		if (lsFastqR.size() > num) {
+			fastqR = lsFastqR.get(num);
+		}
+		if (FileOperate.isFileExistAndBigThanSize(fastqL, 10) && FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
+			if (fastqL.endsWith(".gz")) {
+				compressType = TxtReadandWrite.GZIP;
+			}
+			tmpFastQLR[0] = new FastQ(fastqL, fastqQuality);
+			tmpFastQLR[1] = new FastQ(fastqR, fastqQuality);;
+			setFastQParameter(tmpFastQLR[0], compressType);
+		}
+		else if (FileOperate.isFileExistAndBigThanSize(fastqL, 10)) {
+			tmpFastQLR[0] = new FastQ(fastqL, fastqQuality);
+			setFastQParameter(tmpFastQLR[0], compressType);
+		}
+		else if (FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
+			tmpFastQLR[0] = new FastQ(fastqR, fastqQuality);
+			setFastQParameter(tmpFastQLR[0], compressType);
+		}
+	}
+	private void filteredReads() {
+		HashSet<String> setPrefix = new HashSet<String>();
+		for (String string : lsCondition) {
+			setPrefix.add(string);
+		}
+		for (String prefix : setPrefix) {
+			int allReads = 0;
+			int filteredReads = 0;
+			ArrayList<FastQ[]> lsFastQLR = mapCondition2LsFastQLR.get(prefix);
+			ArrayList<FastQ[]> lsFiltered = new ArrayList<FastQ[]>();
+			for (FastQ[] fastq : lsFastQLR) {
+				FastQ[] fastQFiltered = filteredFastQFile(fastq[0], fastq[1]);
+				allReads = allReads + fastq[0].getSeqNum();
+				filteredReads = filteredReads + fastQFiltered[0].getSeqNum();
+				lsFiltered.add(fastQFiltered);
+			}
+			mapCondition2LsFastQLR.put(prefix, lsFiltered);
+			
+			if (lsFastQLR.get(0)[1] != null)
+				txtReport.writefileln(prefix + "\t" + allReads*2 + "\t" + filteredReads*2);
+			else
+				txtReport.writefileln(prefix + "\t" + allReads + "\t" + filteredReads);
+
+		}
+		txtReport.writefileln();
+	}
+	private FastQ[] filteredFastQFile(FastQ fastq1, FastQ fastq2) {
+		FastQ[] fasQFiltered = new FastQ[2];
+		if (filter) {
+			if (fastq2 != null) {
+				fasQFiltered = fastq1.filterReads(fastq2);
+			}
+			else {
+				fasQFiltered[0] = fastq1.filterReads();
+			}
+		}
+		else {
+			fasQFiltered[0] = fastq1;
+			fasQFiltered[1] = fastq2;
+		}
+		return fasQFiltered;
+	}
+	private void combineAllFastqFile() {
+		for (Entry<String, ArrayList<FastQ[]>> entry : mapCondition2LsFastQLR.entrySet()) {
+			combineFastqFile(entry.getKey(), entry.getValue());
+		}
+	}
+	private void combineFastqFile(String condition, ArrayList<FastQ[]> lsFastq) {
+		if (lsFastq.size() == 1) {
+			mapCondition2CombFastQLRFiltered.put(condition, lsFastq.get(0));
 			return;
 		}
-		for (int i = 0; i < lsFileName.size(); i ++) {
-			String[] ss = lsFileName.get(i);
-			String filterOutExtend = outPathAndFileNamePrix + ss[1] + ss[2];
-			filterOutExtend = FileOperate.changeFileSuffix(filterOutExtend, "_Extend", "bed");
-			BedSeq bedSeq = new BedSeq(ss[0]);
-			bedSeq = bedSeq.extend(bedExtend, filterOutExtend);
-			ss[0] = bedSeq.getFileName();
+		
+		FastQ fastQL, fastQR;
+		boolean PairEnd = false;
+		if (filter) condition = condition + "_filtered";
+		
+		if (lsFastq.get(0)[1] == null) {
+			fastQL = new FastQ(outFilePrefix + condition + "_Combine.fq", true);
 		}
+		else {
+			fastQL = new FastQ(outFilePrefix + condition + "_Combine_1.fq", true);
+			PairEnd = true;
+		}
+		fastQR = new FastQ(outFilePrefix + condition + "_Combine_2.fq", true);
+		for (FastQ[] fastQs : lsFastq) {
+			for (FastQRecord fastQRecord : fastQs[0].readlines()) {
+				fastQL.writeFastQRecord(fastQRecord);
+			}
+			if (PairEnd) {
+				for (FastQRecord fastQRecord : fastQs[1].readlines()) {
+					fastQR.writeFastQRecord(fastQRecord);
+				}
+			}
+		}
+		
+		fastQL.closeWrite();
+		if (PairEnd) fastQR.closeWrite();
+		
+		mapCondition2CombFastQLRFiltered.put(condition, new FastQ[]{fastQL, fastQR});
+	}
+	private void setFastQParameter(FastQ fastQ, String compressType) {
+		fastQ.setAdaptorLeft(adaptorLeft);
+		fastQ.setAdaptorRight(adaptorRight);
+		fastQ.setAdaptorLeftScanAll(true);
+		fastQ.setAdaptorRightScanAll(true);
+		fastQ.setCaseLowAdaptor(adaptorLowercase);
+		fastQ.setCompressType(compressType, TxtReadandWrite.TXT);
+		fastQ.setLenReadsMin(readsLenMin);
+		fastQ.setTrimNNN(trimNNN);
 	}
 	
-	private void sortBed()
-	{
-		for (int i = 0; i < lsFileName.size(); i ++) {
-			String[] ss = lsFileName.get(i);
-			String filterOutExtend = outPathAndFileNamePrix + ss[1] + ss[2];
-			filterOutExtend = FileOperate.changeFileSuffix(filterOutExtend, "_Sorted", "bed");
-			BedSeq bedSeq = new BedSeq(ss[0]);
-			bedSeq = bedSeq.sortBedFile(filterOutExtend);
-			
-			double coverage = bedSeq.getCoverage(hashChrLen.get(taxID)).get(BedSeq.ALLMAPPEDREADS)[1];
-			lsResult.add(new String[]{ ss[1] + ss[2], "BedFormatCoverage", coverage + ""});
-			
-			ss[0] = bedSeq.getFileName();
-		}
+	public static HashMap<String, Integer> getMapLibrary() {
+		HashMap<String, Integer> mapReadsQualtiy = new LinkedHashMap<String, Integer>();
+		mapReadsQualtiy.put("SingleEnd", LIBRARY_SINGLE_END);
+		mapReadsQualtiy.put("PairEnd", LIBRARY_PAIR_END);
+		mapReadsQualtiy.put("MatePair", LIBRARY_MATE_PAIR);
+		return mapReadsQualtiy;
 	}
-	
 }

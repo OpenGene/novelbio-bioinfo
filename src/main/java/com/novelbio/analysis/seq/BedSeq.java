@@ -8,8 +8,11 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import org.apache.log4j.Logger;
 
+import org.apache.log4j.Logger;
+import org.junit.runners.Parameterized.Parameters;
+
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.FastQRecord;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -373,17 +376,52 @@ public class BedSeq extends SeqComb{
 		}
 		bedSeq.closeWrite();
 		return bedSeq;
-		
 	}
 	
+	/**
+	 * 从含有序列的bed文件获得fastQ文件
+	 * @param outFileName fastQ文件全名（包括路径）
+	 * @throws Exception
+	 */
+	public FastQ getFastQ() {
+		String outFileName = FileOperate.changeFileSuffix(getFileName(), "", "fastq");
+		return getFastQ(outFileName);
+	}
+	/**
+	 * 从含有序列的bed文件获得fastQ文件
+	 * @param outFileName fastQ文件全名（包括路径）
+	 * @throws Exception
+	 */
+	public FastQ getFastQ(String outFileName) {
+		FastQ fastQ = new FastQ(outFileName, true);
+		fastQ.setCompressType(compressOutType, compressOutType);
+		for (BedRecord bedRecord : readlines()) {
+			FastQRecord fastQRecord = new FastQRecord();
+			fastQRecord.setName(bedRecord.getName());
+			fastQRecord.setFastaQuality(getQuality(bedRecord.getSeqFasta().getLength()));
+			fastQRecord.setFastqOffset(FastQRecord.FASTQ_SANGER_OFFSET);
+			fastQRecord.setSeq(bedRecord.getSeqFasta().toString());
+			fastQ.writeFastQRecord(fastQRecord);
+		}
+		fastQ.closeWrite();
+		return fastQ;
+	}
+	
+	private String getQuality(int length) {
+		char[] qualityChar = new char[length];
+		for (int i = 0; i < qualityChar.length; i++) {
+			qualityChar[i] = 'f';
+		}
+		return String.copyValueOf(qualityChar);
+	}
 	/**
 	 * 从含有序列的bed文件获得fastQ文件
 	 * @param colSeqNum 序列文件在第几列，实际列
 	 * @param outFileName fastQ文件全名（包括路径）
 	 * @throws Exception
 	 */
-	public void getFastQ(int colSeqNum, String outFileName)
-	{
+	@Deprecated
+	public void getFastQ(int colSeqNum, String outFileName) {
 		colSeqNum--;
 		txtSeqFile.setParameter(compressInType, seqFile, false, true);
 		BufferedReader reader;

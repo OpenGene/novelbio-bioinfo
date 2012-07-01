@@ -9,7 +9,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 public class CodeCounter {
 	public static void main(String[] args) {
 		CodeCounter codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio", "/media/winD/fedora/codestatistics/allCodeLines.txt");
-		codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio/analysis/seq/genome", "/media/winD/fedora/codestatistics/genomeMinusCodeLines.txt");
+		codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio/analysis/seq/mirna", "/media/winD/fedora/codestatistics/mirnaCodeLines.txt");
 		codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio/project", "/media/winD/fedora/codestatistics/projectMinusCodeLines.txt");
 
 	}
@@ -22,7 +22,6 @@ public class CodeCounter {
 	private long spaceLines=0;
 	/**总行数*/
 	private long totalLines=0;
-	
 	/**普通行数*/
 	private long normalLinesAll=0;
 	/**注释行数*/

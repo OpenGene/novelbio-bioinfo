@@ -8,6 +8,7 @@ import java.util.HashMap;
 import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
@@ -21,6 +22,13 @@ import com.novelbio.database.service.servgeneanno.ServTaxID;
  * @author zong0jie
  */
 public class Species {
+	/** 全部物种 */
+	public static final int ALL_SPECIES = 10;
+	/** 有Kegg缩写名的物种 */
+	public static final int KEGGNAME_SPECIES = 20;
+	/** 有数据库序列等信息的物种 */
+	public static final int SEQINFO_SPECIES = 30;
+	
 	int taxID = 0;
 	TaxInfo taxInfo = new TaxInfo();
 	String version;
@@ -39,7 +47,9 @@ public class Species {
 	public Species(int taxID) {
 		this.taxID = taxID;
 		querySpecies();
-		this.version = lsVersion.get(0)[0];
+		if (lsVersion.size() > 0) {
+			this.version = lsVersion.get(0)[0];
+		}
 	}
 	public Species(int taxID, String version) {
 		this.taxID = taxID;
@@ -83,6 +93,18 @@ public class Species {
 		return lsVersionOut;
 	}
 	/**
+	 * 获得数据库中该物种的所有版本
+	 * 倒序排列，主要用于gui中的选框
+	 * @return
+	 */
+	public HashMap<String, String> getMapVersion() {
+		HashMap<String, String> mapVersion = new HashMap<String, String>();
+		for (String[] string : lsVersion) {
+			mapVersion.put(string[0] + "_year_" +string[1], string[0]);
+		}
+		return mapVersion;
+	}
+	/**
 	 * 获得该物种的信息
 	 */
 	private void querySpecies() {
@@ -104,6 +126,10 @@ public class Species {
 	/** 常用名 */
 	public String getCommonName() {
 		return taxInfo.getComName();
+	}
+	/** 常用名 */
+	public String getKeggAbbrName() {
+		return taxInfo.getAbbr();
 	}
 	/**
 	 * 获得chr文件
@@ -228,9 +254,10 @@ public class Species {
 			hashName2ColNum.put(title[i].trim().toLowerCase(), i);
 		}
 		
-		for (int i = 1; i < lsInfo.size()-1; i++) {
+		for (int i = 1; i < lsInfo.size(); i++) {
 			SpeciesFile speciesFile = new SpeciesFile();
 			String[] info = lsInfo.get(i);
+			info = ArrayOperate.copyArray(info, title.length);
 			int m = hashName2ColNum.get("taxid");
 			speciesFile.setTaxID((int)Double.parseDouble(info[m]));
 			
@@ -281,9 +308,39 @@ public class Species {
 	 * @param allID true返回全部ID， false返回常用ID--也就是有缩写的ID
 	 * @return
 	 */
+	@Deprecated
 	public static HashMap<String, Integer> getSpeciesNameTaxID(boolean allID) {
 		ServTaxID servTaxID = new ServTaxID();
 		return servTaxID.getSpeciesNameTaxID(allID);
+	}
+	/**
+	 * 返回常用名对taxID
+	 * @param speciesType 根据不同的
+	 * @return
+	 */
+	public static HashMap<String, Species> getSpeciesName2Species(int speciesType) {
+		HashMap<String, Species> mapSpeciesName2Species = new HashMap<String, Species>();
+		ServTaxID servTaxID = new ServTaxID();
+		ServSpeciesFile servSpeciesFile = new ServSpeciesFile();
+		ArrayList<Integer> lsTaxID = servTaxID.getLsAllTaxID();
+		for (Integer taxID : lsTaxID) {
+			Species species = new Species(taxID);
+			if (speciesType == ALL_SPECIES) {
+			}
+			else if (speciesType == KEGGNAME_SPECIES) {
+				if (species.getKeggAbbrName().equals("")) {
+					continue;
+				}
+			}
+			else if (speciesType == SEQINFO_SPECIES) {
+				ArrayList<SpeciesFile> lsSpeciesFiles = servSpeciesFile.queryLsSpeciesFile(taxID, null);
+				if (lsSpeciesFiles.size() == 0) {
+					continue;
+				}
+			}
+			mapSpeciesName2Species.put(species.getCommonName(), species);
+		}
+		return mapSpeciesName2Species;
 	}
 	/**
 	 * 返回物种的常用名，并且按照字母排序（忽略大小写）
@@ -291,6 +348,7 @@ public class Species {
 	 * @param allID true返回全部ID， false返回常用ID--也就是有缩写的ID
 	 * @return
 	 */
+	@Deprecated
 	public static ArrayList<String> getSpeciesName(boolean allID) {
 		ArrayList<String> lsResult = new ArrayList<String>();
 		ServTaxID servTaxID = new ServTaxID();
@@ -312,6 +370,7 @@ public class Species {
 	 * 返回taxID对常用名
 	 * @return
 	 */
+	@Deprecated
 	public static HashMap<Integer,String> getSpeciesTaxIDName() {
 		ServTaxID servTaxID = new ServTaxID();
 		return servTaxID.getHashTaxIDName();

@@ -26,7 +26,11 @@ public class ServSpeciesFile extends AbsGetSpring implements MapSpeciesFile{
 	}
 	@Override
 	public ArrayList<SpeciesFile> queryLsSpeciesFile(SpeciesFile speciesFile) {
-		return mapSpeciesFile.queryLsSpeciesFile(speciesFile);
+		ArrayList<SpeciesFile> lsResult = mapSpeciesFile.queryLsSpeciesFile(speciesFile);
+		if (lsResult == null) {
+			lsResult = new ArrayList<SpeciesFile>();
+		}
+		return lsResult;
 	}
 
 	@Override
@@ -49,10 +53,10 @@ public class ServSpeciesFile extends AbsGetSpring implements MapSpeciesFile{
 		}
 		SpeciesFile speciesFile = new SpeciesFile();
 		speciesFile.setTaxID(taxID);
-		if (version != null && version.equals("")) {
-			speciesFile.setVersion(version);
+		if (version != null && !version.trim().equals("")) {
+			speciesFile.setVersion(version.trim());
 		}
-		return mapSpeciesFile.queryLsSpeciesFile(speciesFile);
+		return queryLsSpeciesFile(speciesFile);
 	}
 	/**
 	 * 没有就插入，有就升级

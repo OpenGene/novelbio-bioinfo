@@ -70,7 +70,7 @@ public class MapTophat {
 	/** 输出文件 */
 	String outPathPrefix = "";
 	MapBowtie mapBowtie = new MapBowtie();
-
+	
 	/**
 	 * 设定tophat所在的文件夹以及待比对的路径
 	 * 

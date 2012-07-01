@@ -121,7 +121,6 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		super.LOCIDList = new ArrayList<String>();
 		boolean flagSpecies = false;//标记是否为我们想要的物种
 		boolean flagSQ = false;//标记是否提取序列
-		String seqMiRNA = "";//miRNA前体的具体序列
 		for (String string : txtRead.readlines()) {
 			if (string.startsWith("//")) {
 				flagSpecies = false;
@@ -208,48 +207,70 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 			}
 		}
 	}
+	/**
+	 * 读取mirdeep文件夹下的run_26_06_2012_t_12_25_36/output.mrd
+	 * @param rnadataFile
+	 */
 	protected void ReadGffarrayExcepMirDeep(String rnadataFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
 		ListBin<ListDetailBin> lsMiRNA = null; ListDetailBin listDetailBin = null;
 		super.locHashtable = new LinkedHashMap<String, ListDetailBin>();
 		super.LOCIDList = new ArrayList<String>();
-		int start = 0; int end = 0;
-		boolean cis5to3 = true;
 		for (String string : txtRead.readlines()) {
-			String[] ss = string.split("\t");
-			String name = ss[8].split(";")[0].split("=")[1];
-			if (ss[2].startsWith("precursor") ) {
+			if (string.startsWith(">") ) {
 				lsMiRNA = new ListBin<ListDetailBin>();
-				lsMiRNA.setName(name);
+				lsMiRNA.setName(string.substring(1).trim());
 				lsMiRNA.setCis5to3(true);
-				cis5to3 = ss[6].equals("+");
-				if (cis5to3) {
-					start = Integer.parseInt(ss[3]);
-					end = Integer.parseInt(ss[4]);
-				}
-				else {
-					start = Integer.parseInt(ss[4]);
-					end = Integer.parseInt(ss[3]);
-				}
 				//装入chrHash
 				getChrhash().put(lsMiRNA.getName(), lsMiRNA);
 			}
-			if (ss[2].startsWith("mature")) {
-				listDetailBin = new ListDetailBin();
-				listDetailBin.setCis5to3(true);
-				//30..50
-				listDetailBin.setName(name);
-				if (cis5to3) {
-					listDetailBin.setStartAbs(Integer.parseInt(ss[3]) - start);
-					listDetailBin.setEndAbs(Integer.parseInt(ss[4]) - start);
+			if (string.startsWith("exp")) {
+				String mirModel = string.replace("exp", "").trim();
+				setMatureMiRNAdeep(lsMiRNA, mirModel);
+			}
+		}
+	}
+	/**
+	 * fffffffffffffffffffffMMMMMMMMMMMMMMMMMMMMMMllllllllllllllllllllllllllllllllSSSSSSSSSSSSSSSSSSSSSSfffffffffffffffff
+	 * M: mature mirna
+	 * S: star mirna
+	 */
+	private void setMatureMiRNAdeep(ListBin<ListDetailBin> lsMirnaMautre, String mirModelString) {
+		char[] mirModel = mirModelString.toCharArray();
+		boolean MstartFlag = false;
+		boolean SstartFlag = false;
+		ListDetailBin listDetailBin = null;
+		for (int i = 0; i < mirModel.length; i++) {
+			if (mirModel[i] == 'f' || mirModel[i] == 'I') {
+				if (MstartFlag) {
+					listDetailBin.setEndAbs(i);
+					MstartFlag = false;
 				}
-				else {
-					listDetailBin.setStartAbs(start - Integer.parseInt(ss[4]));
-					listDetailBin.setEndAbs(start - Integer.parseInt(ss[3]));
+				if (SstartFlag) {
+					listDetailBin.setEndAbs(i);
+					SstartFlag = false;
 				}
-				lsMiRNA.add(listDetailBin);
-				locHashtable.put(listDetailBin.getName(), listDetailBin);
-				LOCIDList.add(listDetailBin.getName());
+				continue;
+			}
+			else if (mirModel[i] == 'M') {
+				if (!MstartFlag) {
+					listDetailBin = new ListDetailBin();
+					listDetailBin.setName(lsMirnaMautre.getName() + "_mature");
+					listDetailBin.setCis5to3(true);
+					listDetailBin.setStartAbs(i+1);
+					lsMirnaMautre.add(listDetailBin);
+					MstartFlag = true;
+				}
+			}
+			else if (mirModel[i] == 'S') {
+				if (!SstartFlag) {
+					listDetailBin = new ListDetailBin();
+					listDetailBin.setName(lsMirnaMautre.getName() + "_star");
+					listDetailBin.setCis5to3(true);
+					listDetailBin.setStartAbs(i+1);
+					lsMirnaMautre.add(listDetailBin);
+					SstartFlag = true;
+				}
 			}
 		}
 	}
@@ -273,6 +294,12 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		return lsResult.get(0).getName();
 	}
 	
-	
+	public static HashMap<String, Integer> getMapType2TypeID() {
+		HashMap<String, Integer> mapType2TypID = new LinkedHashMap<String, Integer>();
+		mapType2TypID.put("RNAdata", TYPE_RNA_DATA);
+		mapType2TypID.put("mirDeep", TYPE_MIRDEEP);
+		mapType2TypID.put("mirReap", TYPE_MIREAP);
+		return mapType2TypID;
+	}
 	
 }

@@ -34,7 +34,7 @@ public class MapBwa {
 	/** bwa所在路径 */
 	String ExePath = "";
 	String chrFile;
-
+	/** 没有意义 */
 	boolean uniqMapping = true;
 	String sampleGroup = "";
 	String outFileName = "";
@@ -60,7 +60,8 @@ public class MapBwa {
 
 	/** 是否将index读入内存，仅对双端有效 */
 	boolean readInMemory = false;
-
+	
+	public MapBwa() {}
 	/**
 	 * @param fastQ
 	 * @param outFileName 结果文件名，后缀自动改为sam
@@ -94,6 +95,42 @@ public class MapBwa {
 		this.outFileName = outFileName;
 		this.uniqMapping = uniqMapping;
 		pairend = false;
+	}
+	/** 输入已经过滤好的fastq文件 */
+	public void setFqFile(String leftFq, String rightFq) {
+		if (FileOperate.isFileExistAndBigThanSize(leftFq, 10) && FileOperate.isFileExistAndBigThanSize(rightFq, 10)) {
+			this.leftFq = leftFq;
+			this.rightFq = rightFq;
+			pairend = true;
+		}
+		else if (FileOperate.isFileExistAndBigThanSize(leftFq, 10)) {
+			this.leftFq = leftFq;
+			pairend = false;
+		}
+		else if (FileOperate.isFileExistAndBigThanSize(rightFq, 10)) {
+			this.leftFq = rightFq;
+			pairend = false;
+		}
+	}
+	/** 输入已经过滤好的fastq文件 */
+	public void setFqFile(FastQ leftFq, FastQ rightFq) {
+		String leftFqFile = "", rightFqFile = "";
+		if (leftFq != null) {
+			leftFqFile = leftFq.getFileName();
+		}
+		if (rightFq != null) {
+			rightFqFile = rightFq.getFileName();
+		}
+		setFqFile(leftFqFile, rightFqFile);
+	}
+	/**
+	 * @param outFileName 结果文件名，后缀自动改为sam
+	 */
+	public void setOutFileName(String outFileName) {
+		this.outFileName = outFileName;
+	}
+	public void setUniqMapping(boolean uniqMapping) {
+		this.uniqMapping = uniqMapping;
 	}
 	/**
 	 * 百分之多少的mismatch，或者几个mismatch

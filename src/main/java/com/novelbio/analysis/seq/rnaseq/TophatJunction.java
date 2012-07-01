@@ -11,12 +11,14 @@ public class TophatJunction {
 	 * key condition--
 	 * key：junction: 
 	 * value：int[2]；分别是对应的junction坐标和reads数
+	 * 一个junction1 对应多个junction2，也就是junction是横跨两个exon的，那么左端为junction1，右端为junction2.
+	 * 由于可变剪接存在，所以一个jun1可能对应多个jun2，也就是不同的exon连接在一起。
 	 */
-	HashMap<String, HashMap<String, ArrayList<int[]>>> hashJunction = new HashMap<String, HashMap<String,ArrayList<int[]>>>();
+	HashMap<String, HashMap<String, ArrayList<int[]>>> mapCond_To_Jun1toLsJun2LocAndReadsNum = new HashMap<String, HashMap<String,ArrayList<int[]>>>();
 	/**
 	 * condition--junction 对和具体的reads数
 	 */
-	HashMap<String, HashMap<String,Integer>>  hashJunctionBoth = new HashMap<String, HashMap<String,Integer>>();
+	HashMap<String, HashMap<String,Integer>>  mapCond_To_JunLoc2ReadsNum = new HashMap<String, HashMap<String,Integer>>();
 	String cond = "oneJunFile";
 	/**
 	 * 不加条件的和不加条件的搭配
@@ -27,26 +29,30 @@ public class TophatJunction {
 		setJunFile(junctionFile, cond);
 	}
 	
-	
+	public int getJunNum(String condition) {
+		return mapCond_To_JunLoc2ReadsNum.get(condition).size();
+	}
 	/**
-	 * 读取junction文件
+	 * 读取junction文件，文件中每个剪接位点只能出现一次
 	 * @param junctionFile
 	 */
 	public void setJunFile(String junctionFile, String condition) {
 		//获得对应的hash表
-		HashMap<String,  ArrayList<int[]>> tmpHashJunction = null;
-		if (hashJunction.containsKey(condition))
-			tmpHashJunction = hashJunction.get(condition);
+		HashMap<String,  ArrayList<int[]>> tmpMapJun1toLsJun2AndReadsNum = null;
+		if (mapCond_To_Jun1toLsJun2LocAndReadsNum.containsKey(condition))
+			tmpMapJun1toLsJun2AndReadsNum = mapCond_To_Jun1toLsJun2LocAndReadsNum.get(condition);
 		else
-			tmpHashJunction = new HashMap<String, ArrayList<int[]>>();
-			hashJunction.put(condition, tmpHashJunction);
+			tmpMapJun1toLsJun2AndReadsNum = new HashMap<String, ArrayList<int[]>>();
+			mapCond_To_Jun1toLsJun2LocAndReadsNum.put(condition, tmpMapJun1toLsJun2AndReadsNum);
 		
 		HashMap<String,Integer> tmpHashJunctionBoth = null;
-		if (hashJunctionBoth.containsKey(condition)) 
-			tmpHashJunctionBoth = hashJunctionBoth.get(condition);
-		else 
+		if (mapCond_To_JunLoc2ReadsNum.containsKey(condition)) 
+			tmpHashJunctionBoth = mapCond_To_JunLoc2ReadsNum.get(condition);
+		else {
 			tmpHashJunctionBoth = new HashMap<String, Integer>();
-			hashJunctionBoth.put(condition, tmpHashJunctionBoth);
+			mapCond_To_JunLoc2ReadsNum.put(condition, tmpHashJunctionBoth);
+		}
+			
 		
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(junctionFile, false);
 		for (String string : txtReadandWrite.readfileLs()) {
@@ -70,8 +76,8 @@ public class TophatJunction {
 				tmpHashJunctionBoth.put(strJunBoth, Integer.parseInt(ss[4]));
 			}
 			
-			if (tmpHashJunction.containsKey(strjunct1)) {
-				ArrayList<int[]> lsJun2 = tmpHashJunction.get(strjunct1);
+			if (tmpMapJun1toLsJun2AndReadsNum.containsKey(strjunct1)) {
+				ArrayList<int[]> lsJun2 = tmpMapJun1toLsJun2AndReadsNum.get(strjunct1);
 				int[] info = new int[]{junct2, Integer.parseInt(ss[4])};
 				lsJun2.add(info);
 			}
@@ -79,11 +85,11 @@ public class TophatJunction {
 				ArrayList<int[]> lsJun2 = new ArrayList<int[]>();
 				int[] info = new int[]{junct2, Integer.parseInt(ss[4])};
 				lsJun2.add(info);
-				tmpHashJunction.put(strjunct1, lsJun2);
+				tmpMapJun1toLsJun2AndReadsNum.put(strjunct1, lsJun2);
 			}
 			
-			if (tmpHashJunction.containsKey(strjunct2)) {
-				ArrayList<int[]> lsJun2 = tmpHashJunction.get(strjunct2);
+			if (tmpMapJun1toLsJun2AndReadsNum.containsKey(strjunct2)) {
+				ArrayList<int[]> lsJun2 = tmpMapJun1toLsJun2AndReadsNum.get(strjunct2);
 				int[] info = new int[]{junct1, Integer.parseInt(ss[4])};
 				lsJun2.add(info);
 			}
@@ -91,7 +97,7 @@ public class TophatJunction {
 				ArrayList<int[]> lsJun2 = new ArrayList<int[]>();
 				int[] info = new int[]{junct1, Integer.parseInt(ss[4])};
 				lsJun2.add(info);
-				tmpHashJunction.put(strjunct2, lsJun2);
+				tmpMapJun1toLsJun2AndReadsNum.put(strjunct2, lsJun2);
 			}
 		}
 	}
@@ -115,7 +121,7 @@ public class TophatJunction {
 	 */
 	public int getJunctionSite(String chrID, int locSite,String condition)
 	{
-		HashMap<String, ArrayList<int[]>> tmpHashJunction = hashJunction.get(condition);
+		HashMap<String, ArrayList<int[]>> tmpHashJunction = mapCond_To_Jun1toLsJun2LocAndReadsNum.get(condition);
 		if (tmpHashJunction == null) {
 			return 0;
 		}
@@ -147,7 +153,7 @@ public class TophatJunction {
 	 */
 	public int getJunctionSite(String chrID, int locStartSite, int locEndSite, String condition)
 	{
-		HashMap<String, Integer> tmpHashJunctionBoth = hashJunctionBoth.get(condition);
+		HashMap<String, Integer> tmpHashJunctionBoth = mapCond_To_JunLoc2ReadsNum.get(condition);
 		int locS = Math.min(locStartSite, locEndSite);
 		int locE = Math.max(locStartSite, locEndSite);
 		String key = chrID.toLowerCase() + "//" + locS +"///"+chrID.toLowerCase() + "//" + locE;

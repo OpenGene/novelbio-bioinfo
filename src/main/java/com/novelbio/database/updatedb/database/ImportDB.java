@@ -426,7 +426,7 @@ public class ImportDB {
 		SoftWareInfo.updateInfo(softToolsFile);
 	}
 	private static void updateSpecies() {
-		String speciesFile = "/media/winE/Bioinformatics/GenomeData/SpeciesFile.xls";
+		String speciesFile = "/media/winE/Bioinformatics/GenomeData/SpeciesFile2.txt";
 		String taxInfoFile = "";
 		Species species = new Species();
 		species.setUpdateSpeciesFile(speciesFile);

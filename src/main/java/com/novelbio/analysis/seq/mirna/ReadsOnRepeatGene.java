@@ -19,13 +19,27 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 /**
  * bed文件在repeat和gene上的分布情况，可以单独设定repeat或者是gene
  * @author zong0jie
  *
  */
-public class ReadsOnRepeatGene {	
+public class ReadsOnRepeatGene {
+	public static void main(String[] args) {
+		Species species = new Species(9913);
+		GffChrAbs gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], null, 0);
+		ReadsOnRepeatGene readsOnRepeatGene = new ReadsOnRepeatGene();
+		
+		readsOnRepeatGene.readGffGene(gffChrAbs);
+//		readsOnRepeatGene.readGffRepeat("/media/winE/Bioinformatics/GenomeData/Cow/cow_repeat_201110");
+		readsOnRepeatGene.countReadsInfo("/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/tmpBed/LFJ2BW1_CGATGT_L002_R1_001_filtered_Genome.bed");
+//		readsOnRepeatGene.writeToFileRepeatFamily("/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/repeatFamily");
+//		readsOnRepeatGene.writeToFileRepeatName("/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/repeatName");
+		readsOnRepeatGene.writeToFileGeneProp("/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/GeneName");
+	}
 	GffHashRepeat gffHashRepeat = null;
 	GffChrAbs gffChrAbs = null;
 	HashMap<String, Double> hashRepeatName = new HashMap<String, Double>();
@@ -43,22 +57,11 @@ public class ReadsOnRepeatGene {
 	 * @param repeatGffFile
 	 */
 	public void readGffRepeat(String repeatGffFile) {
-		if (repeatGffFile != null && !repeatGffFile.equals("")) {
+		if (FileOperate.isFileExistAndBigThanSize(repeatGffFile, 10)) {
 			gffHashRepeat = new GffHashRepeat();
 			gffHashRepeat.ReadGffarray(repeatGffFile);
 		}
 	}
-	
-	private HashMap<String, Double> getHashRepeatName() {
-		return hashRepeatName;
-	}
-	private HashMap<String, Double> getHashRepeatFamily() {
-		return hashRepeatFamily;
-	}
-	private HashMap<String, Double> getHashGeneInfo() {
-		return hashGeneInfo;
-	}
-
 	public void countReadsInfo(String bedFile) {
 		BedSeq bedSeq = new BedSeq(bedFile);
 		for (BedRecord bedRecord : bedSeq.readlines()) {
@@ -71,7 +74,10 @@ public class ReadsOnRepeatGene {
 			}
 			if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
 				int[] geneLocInfo = searchGene(bedRecord.isCis5to3(), bedRecord.getRefID(), bedRecord.getStart(), bedRecord.getEnd());
-				addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,bedRecord.getMappingNum());
+				if (geneLocInfo != null) {
+					addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,bedRecord.getMappingNum());
+				}
+				
 			}
 		}
 	}
@@ -136,6 +142,9 @@ public class ReadsOnRepeatGene {
 	 * @param mapNum 非uniq mapping的话，mapping到了多少不同的ref上
 	 */
 	private void addHashGene(int geneLocType, boolean cis,int mapNum) {
+		if (mapNum == 0) {
+			return;
+		}
 		String key = null;
 		if (geneLocType == GffGeneIsoInfo.COD_LOC_EXON) {
 			if (cis) {
@@ -168,7 +177,7 @@ public class ReadsOnRepeatGene {
 	 */
 	private String searchReadsRepeat(String chrID, int start, int end) {
 		ListCodAbs<GffDetailRepeat> cod = gffHashRepeat.searchLocation(chrID, (start+ end)/2);
-		if (!cod.isInsideLoc()) {
+		if (cod == null || !cod.isInsideLoc()) {
 			return null;
 		}
 		return cod.getGffDetailThis().getRepName() + "///" + cod.getGffDetailThis().getRepFamily();
@@ -184,6 +193,9 @@ public class ReadsOnRepeatGene {
 	 */
 	private int[] searchGene(boolean cis5to3, String chrID, int start, int end) {
 		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrID, (start+ end)/2);
+		if (gffCodGene == null) {
+			return null;
+		}
 		if (!gffCodGene.isInsideLoc()) {
 			int[] result = new int[]{GffGeneIsoInfo.COD_LOC_OUT, 0};
 			return result;

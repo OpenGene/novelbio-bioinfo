@@ -24,7 +24,7 @@ import com.novelbio.database.updatedb.database.CopeDBSnp132;
  * @author zong0jie
  *
  */
-public class MapInfoSnpIndel extends MapInfo {
+public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 	public static final String TYPE_INSERT = "insert";
 	public static final String TYPE_DELETION = "deletion";
 	public static final String TYPE_MISMATCH = "mismatch";
@@ -42,17 +42,96 @@ public class MapInfoSnpIndel extends MapInfo {
 	int taxID = 0;
 	private static Logger logger = Logger.getLogger(MapInfoSnpIndel.class);
 	SnpIndelRs snpIndelRs;
-//	String refAAseq = "";
-//	String thisAaSeq = "";
 	String thisBase = "";
 	String refBase = "";
 	String thisAAnr = "";
 	/** snp在基因中的位置，0-1之间，0.1表示snp在基因长度*0.1的位置处  */
 	double prop = 0;
-	/** 本snp或indel所在的起点 */
-	int refSnpIndelStart = 0;
-	/** 本snp或indel所在的refgenome上的终点，如果为snp，则起点和终点一样 */
-	int refSnpIndelEnd = 0;
+//	/** 本snp或indel所在的起点 */
+//	int startLoc = 0;
+//	/** 本snp或indel所在的refgenome上的终点，如果为snp，则起点和终点一样 */
+//	int endLoc = 0;
+	MapInfo mapInfo = new MapInfo();
+	/**
+	 * 移码，0，1，2三种
+	 */
+	int orfShift = 0; 
+	/**
+	 * snp或indel所在的转录本
+	 */
+	GffGeneIsoInfo gffGeneIsoInfo;
+	ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
+	
+	/** AD
+	 * Allelic depths for the ref and alt alleles in the order listed
+	 */
+	int Allelic_depths_Ref = 0;
+	/**  AD
+	 * Allelic depths for the ref and alt alleles in the order listed
+	 */
+	int Allelic_depths_Alt = 0;
+	/**  DP
+	 * Read Depth (only filtered reads used for calling
+	 */
+	int Read_Depth_Filtered = 0;
+	/**
+	 * GQ
+	 * The Genotype Quality, as a Phred-scaled confidence at the true genotype is the one provided in GT. In diploid case, 
+	 * if GT is 0/1, then GQ is really L(0/1) / (L(0/0) + L(0/1) + L(1/1)), where L is the likelihood of the NGS sequencing data
+	 *  under the model of that the sample is 0/0, 0/1/, or 1/1. 
+	 * 好像是碱基的质量
+	 */
+	double Genotype_Quality = 0;
+	/**
+	 * AF
+	 * Allele Frequency, for each ALT allele, in the same order as listed
+	 * 1表示纯合子，0.5表示杂合，多个样本可能结果会不同
+	 */
+	double Allele_Frequency = 1;
+	/**
+	 * AN
+	 * 总共多少个等位，一般都为2个，ref一个，改变一个，出现3个的时候我暂时没见过，所以可以日志一下看看情况
+	 */
+	int Total_number_of_alleles = 2;
+	/**
+	 * SB, 
+	 * How much evidence is there for Strand Bias (the variation being seen on only the forward or only the reverse strand) in the reads?
+	 *  Higher SB values denote more bias (and therefore are more likely to indicate false positive calls).
+	 */
+	double Strand_Bias = 0;
+	//##INFO=<ID=AB,Number=1,Type=Float,Description="Allele Balance for hets (ref/(ref+alt))">
+	//##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes, for each ALT allele, in the same order as listed">
+	//##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
+	//##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
+	//##INFO=<ID=BaseQRankSum,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt Vs. Ref base qualities">
+	//##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
+	//##INFO=<ID=DP,Number=1,Type=Integer,Description="Filtered Depth">
+	//##INFO=<ID=DS,Number=0,Type=Flag,Description="Were any of the samples downsampled?">
+	//##INFO=<ID=Dels,Number=1,Type=Float,Description="Fraction of Reads Containing Spanning Deletions">
+	//##INFO=<ID=FS,Number=1,Type=Float,Description="Phred-scaled p-value using Fisher's exact test to detect strand bias">
+	//##INFO=<ID=HRun,Number=1,Type=Integer,Description="Largest Contiguous Homopolymer Run of Variant Allele In Either Direction">
+	//##INFO=<ID=HaplotypeScore,Number=1,Type=Float,Description="Consistency of the site with at most two segregating haplotypes">
+	//##INFO=<ID=InbreedingCoeff,Number=1,Type=Float,Description="Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared against the Hardy-Weinberg expectation">
+	//##INFO=<ID=MQ,Number=1,Type=Float,Description="RMS Mapping Quality">
+	//##INFO=<ID=MQ0,Number=1,Type=Integer,Description="Total Mapping Quality Zero Reads">
+	//##INFO=<ID=MQRankSum,Number=1,Type=Float,Description="Z-score From Wilcoxon rank sum test of Alt vs. Ref read mapping qualities">
+	//##INFO=<ID=QD,Number=1,Type=Float,Description="Variant Confidence/Quality by Depth">
+	//##INFO=<ID=ReadPosRankSum,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt vs. Ref read position bias">
+	//##INFO=<ID=SB,Number=1,Type=Float,Description="Strand Bias">
+	//##INFO=<ID=VQSLOD,Number=1,Type=Float,Description="Log odds ratio of being a true variant versus being false under the trained gaussian mixture model">
+	//##INFO=<ID=culprit,Number=1,Type=String,Description="The annotation which was the worst performing in the Gaussian mixture model, likely the reason why the variant was filtered out">
+    //##SelectVariants="analysis_type=SelectVariants input_file=[] sample_metadata=[] read_buffer_size=null phone_home=STANDARD read_filter=[] intervals=null excludeIntervals=null reference_sequence=/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa rodBind=[A_BWA_raw_SnpsIndels.vcf] rodToIntervalTrackName=null BTI_merge_rule=UNION nonDeterministicRandomSeed=false DBSNP=null downsampling_type=null downsample_to_fraction=null downsample_to_coverage=null baq=OFF baqGapOpenPenalty=40.0 performanceLog=null useOriginalQualities=false defaultBaseQualities=-1 validation_strictness=SILENT unsafe=null num_threads=1 interval_merging=ALL read_group_black_list=null processingTracker=null restartProcessingTracker=false processingTrackerStatusFile=null processingTrackerID=-1 allow_intervals_with_unindexed_bam=false disable_experimental_low_memory_sharding=false logging_level=INFO log_to_file=null help=false out=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub NO_HEADER=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub sample_name=null sample_expressions=null sample_file=null select_expressions=[] excludeNonVariants=false excludeFiltered=false keepOriginalAC=false discordance= concordance= inputAF= keepAFSpectrum=false afFile= family_structure_file=null family_structure= mendelianViolation=false mendelianViolationQualThreshold=0.0 select_random_number=0 select_random_fraction=0.0 selectSNPs=true selectIndels=false outMVFile=null"
+	//##UnifiedGenotyper="analysis_type=UnifiedGenotyper input_file=[A_BWA_recal.bam] sample_metadata=[] read_buffer_size=null phone_home=STANDARD read_filter=[] intervals=[/media/winE/Bioinformatics/snp/snp/target_intervals.bed/target_intervals.bed] excludeIntervals=null reference_sequence=/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa rodBind=[/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/snp/dbsnp_132.hg19_cope.vcf] rodToIntervalTrackName=null BTI_merge_rule=UNION nonDeterministicRandomSeed=false DBSNP=null downsampling_type=null downsample_to_fraction=null downsample_to_coverage=500 baq=OFF baqGapOpenPenalty=40.0 performanceLog=null useOriginalQualities=false defaultBaseQualities=-1 validation_strictness=SILENT unsafe=null num_threads=4 interval_merging=ALL read_group_black_list=null processingTracker=null restartProcessingTracker=false processingTrackerStatusFile=null processingTrackerID=-1 allow_intervals_with_unindexed_bam=false disable_experimental_low_memory_sharding=false logging_level=INFO log_to_file=null help=false genotype_likelihoods_model=BOTH p_nonref_model=EXACT heterozygosity=0.001 pcr_error_rate=1.0E-4 genotyping_mode=DISCOVERY output_mode=EMIT_VARIANTS_ONLY standard_min_confidence_threshold_for_calling=50.0 standard_min_confidence_threshold_for_emitting=10.0 noSLOD=false assume_single_sample_reads=null abort_at_too_much_coverage=-1 min_base_quality_score=17 min_mapping_quality_score=20 max_deletion_fraction=0.05 min_indel_count_for_genotyping=5 indel_heterozygosity=1.25E-4 indelGapContinuationPenalty=10.0 indelGapOpenPenalty=45.0 indelHaplotypeSize=80 doContextDependentGapPenalties=true getGapPenaltiesFromData=false indel_recal_file=indel.recal_data.csv indelDebug=false dovit=false GSA_PRODUCTION_ONLY=false exactCalculation=LINEAR_EXPERIMENTAL ignoreSNPAlleles=false output_all_callable_bases=false genotype=false out=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub NO_HEADER=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub debug_file=null metrics_file=null annotation=[AlleleBalance, DepthOfCoverage, FisherStrand]"
+	//##source=SelectVariants
+	
+	/** 该snp的质量 */
+	String quality = "";
+	/** 是否符合标准 */
+	String Filter = "";
+	
+	public String getRefID() {
+		return mapInfo.getRefID();
+	}
 	/**
 	 * snp在基因中的位置，0-1之间，0.1表示snp在基因长度*0.1的位置处
 	 * 越小越靠近头部
@@ -73,47 +152,33 @@ public class MapInfoSnpIndel extends MapInfo {
 	 * @return
 	 */
 	public int getRefSnpIndelStart() {
-		return refSnpIndelStart;
+		return mapInfo.getStart();
 	}
 	/** 本snp或indel所在的refgenome上的终点，如果为snp，则起点和终点一样 */
 	public int getRefSnpIndelEnd() {
-		return refSnpIndelEnd;
+		return mapInfo.getEnd();
 	}
 	/**
 	 * 按照方向获得snp或indel在ref上的起点
 	 * @return
 	 */
 	public int getRefSnpIndelStartCis() {
-		if (cis5to3) {
-			return refSnpIndelStart;
+		if (mapInfo.isCis5to3()) {
+			return mapInfo.getStart();
 		}
 		else {
-			return refSnpIndelEnd;
+			return mapInfo.getEnd();
 		}
 	}
 	/** 按照方向获得snp或indel在ref上的终点，如果为snp则起点和终点一样 */
 	public int getRefSnpIndelEndCis() {
-		if (cis5to3) {
-			return refSnpIndelEnd;
+		if (mapInfo.isCis5to3()) {
+			return mapInfo.getEnd();
 		}
 		else {
-			return refSnpIndelStart;
+			return mapInfo.getStart();
 		}
 	}
-	
-//	/**
-//	 * 输入samtools产生的pile up文件的一行，然后填充本类
-//	 * 注意没有设定refSnpIndelEnd
-//	 * @param samString
-//	 */
-//	public MapInfoSnpIndel(String samString) {
-//		String[] ss = samString.split("\t");
-//		this.refID = ss[0];
-//		this.refSnpIndelStart = Integer.parseInt(ss[1]);
-//		this.refBase = ss[2];
-//		this.Read_Depth_Filtered = Integer.parseInt(ss[3]);
-//		setAllenInfo(ss[4]);
-//	}
 	/**
 	 *  在已有refbase信息的基础上，查找该refSnpIndelStart位点有哪些indel或snp
 	 *  找到的indel所对应的refbase可能和原来的refbase不一样
@@ -121,9 +186,8 @@ public class MapInfoSnpIndel extends MapInfo {
 	 */
 	public void setSamToolsPilup(String samString) {
 		String[] ss = samString.split("\t");
-		this.refID = ss[0];
-		this.refSnpIndelStart = Integer.parseInt(ss[1]);//本行舍不设定都无所谓，因为输入的时候就是要求相同的ID
-//		this.refBase = ss[2];//ref就不设定了
+		mapInfo.setRefID(ss[0]);
+		mapInfo.startLoc = Integer.parseInt(ss[1]);//本行舍不设定都无所谓，因为输入的时候就是要求相同的ID
 		this.Read_Depth_Filtered = Integer.parseInt(ss[3]);
 		setAllenInfo(ss[4]);
 	}
@@ -135,18 +199,19 @@ public class MapInfoSnpIndel extends MapInfo {
 	 * @param thisBase 本序列
 	 */
 	public MapInfoSnpIndel(int taxID,String chrID, int snpLoc, String refBase, String thisBase) {
-		super(chrID);
+		mapInfo = new MapInfo(chrID);
 		this.taxID = taxID;
 		//flagLoc有东西说明是snp
 		if (refBase.trim().length() == 1 && thisBase.trim().length() == 1) {
-			this.refSnpIndelStart = snpLoc;
+			mapInfo.setStartEndLoc(snpLoc, snpLoc);
 		}
 		else {
-			this.refSnpIndelStart = snpLoc;
-			this.refSnpIndelEnd = snpLoc+ refBase.trim().length() - 1;
+			mapInfo.setStartEndLoc(snpLoc, snpLoc+ refBase.trim().length() - 1);
 		}
+		
 	    this.refBase = refBase;
 	    this.thisBase = thisBase;
+	    
 	    if (refBase.length() == 1 && thisBase.length() == 1) {
 	    	this.type = TYPE_MISMATCH;
 		}
@@ -319,12 +384,10 @@ public class MapInfoSnpIndel extends MapInfo {
 		if (num == -1) {
 			return "";
 		}
-		String tmpResult = getRefID()+"\t"+getRefSnpIndelStart()+"\t" + mapInfoSnpIndel.getRefBase()+"\t" +getAllelic_depths_Ref();
+		String tmpResult = mapInfo.getRefID()+"\t"+getRefSnpIndelStart()+"\t" + mapInfoSnpIndel.getRefBase()+"\t" +getAllelic_depths_Ref();
 		tmpResult = tmpResult + "\t" +mapInfoSnpIndel.getThisBase() + "\t" + getSeqTypeNum(mapInfoSnpIndel);
 		return tmpResult;
 	}
-	
-	
 	/**
 	 * 返回所有的非ref的基因以及对应的种类和数量
 	 * list-string[3]
@@ -349,12 +412,13 @@ public class MapInfoSnpIndel extends MapInfo {
 	 * 获得实际的起点，indel需要加上1
 	 * @return
 	 */
+	@Deprecated
 	public int getStartRealaaa() {
 		if (type.equals(TYPE_MISMATCH)) {
-			return getStart();
+			return mapInfo.getStart();
 		}
 		else {
-			return getStart() + 1;
+			return mapInfo.getStart() + 1;
 		}
 	}
 	
@@ -368,83 +432,7 @@ public class MapInfoSnpIndel extends MapInfo {
 	public void setRefBase(String refBase) {
 		this.refBase = refBase;
 	}
-	
-	/**
-	 * 移码，0，1，2三种
-	 */
-	int orfShift = 0; 
-	/**
-	 * snp或indel所在的转录本
-	 */
-	GffGeneIsoInfo gffGeneIsoInfo;
-	ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
-	
-	/** AD
-	 * Allelic depths for the ref and alt alleles in the order listed
-	 */
-	int Allelic_depths_Ref = 0;
-	/**  AD
-	 * Allelic depths for the ref and alt alleles in the order listed
-	 */
-	int Allelic_depths_Alt = 0;
-	/**  DP
-	 * Read Depth (only filtered reads used for calling
-	 */
-	int Read_Depth_Filtered = 0;
-	/**
-	 * GQ
-	 * The Genotype Quality, as a Phred-scaled confidence at the true genotype is the one provided in GT. In diploid case, 
-	 * if GT is 0/1, then GQ is really L(0/1) / (L(0/0) + L(0/1) + L(1/1)), where L is the likelihood of the NGS sequencing data
-	 *  under the model of that the sample is 0/0, 0/1/, or 1/1. 
-	 * 好像是碱基的质量
-	 */
-	double Genotype_Quality = 0;
-	/**
-	 * AF
-	 * Allele Frequency, for each ALT allele, in the same order as listed
-	 * 1表示纯合子，0.5表示杂合，多个样本可能结果会不同
-	 */
-	double Allele_Frequency = 1;
-	/**
-	 * AN
-	 * 总共多少个等位，一般都为2个，ref一个，改变一个，出现3个的时候我暂时没见过，所以可以日志一下看看情况
-	 */
-	int Total_number_of_alleles = 2;
-	/**
-	 * SB, 
-	 * How much evidence is there for Strand Bias (the variation being seen on only the forward or only the reverse strand) in the reads?
-	 *  Higher SB values denote more bias (and therefore are more likely to indicate false positive calls).
-	 */
-	double Strand_Bias = 0;
-	//##INFO=<ID=AB,Number=1,Type=Float,Description="Allele Balance for hets (ref/(ref+alt))">
-	//##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes, for each ALT allele, in the same order as listed">
-	//##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
-	//##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
-	//##INFO=<ID=BaseQRankSum,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt Vs. Ref base qualities">
-	//##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
-	//##INFO=<ID=DP,Number=1,Type=Integer,Description="Filtered Depth">
-	//##INFO=<ID=DS,Number=0,Type=Flag,Description="Were any of the samples downsampled?">
-	//##INFO=<ID=Dels,Number=1,Type=Float,Description="Fraction of Reads Containing Spanning Deletions">
-	//##INFO=<ID=FS,Number=1,Type=Float,Description="Phred-scaled p-value using Fisher's exact test to detect strand bias">
-	//##INFO=<ID=HRun,Number=1,Type=Integer,Description="Largest Contiguous Homopolymer Run of Variant Allele In Either Direction">
-	//##INFO=<ID=HaplotypeScore,Number=1,Type=Float,Description="Consistency of the site with at most two segregating haplotypes">
-	//##INFO=<ID=InbreedingCoeff,Number=1,Type=Float,Description="Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared against the Hardy-Weinberg expectation">
-	//##INFO=<ID=MQ,Number=1,Type=Float,Description="RMS Mapping Quality">
-	//##INFO=<ID=MQ0,Number=1,Type=Integer,Description="Total Mapping Quality Zero Reads">
-	//##INFO=<ID=MQRankSum,Number=1,Type=Float,Description="Z-score From Wilcoxon rank sum test of Alt vs. Ref read mapping qualities">
-	//##INFO=<ID=QD,Number=1,Type=Float,Description="Variant Confidence/Quality by Depth">
-	//##INFO=<ID=ReadPosRankSum,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt vs. Ref read position bias">
-	//##INFO=<ID=SB,Number=1,Type=Float,Description="Strand Bias">
-	//##INFO=<ID=VQSLOD,Number=1,Type=Float,Description="Log odds ratio of being a true variant versus being false under the trained gaussian mixture model">
-	//##INFO=<ID=culprit,Number=1,Type=String,Description="The annotation which was the worst performing in the Gaussian mixture model, likely the reason why the variant was filtered out">
-    //##SelectVariants="analysis_type=SelectVariants input_file=[] sample_metadata=[] read_buffer_size=null phone_home=STANDARD read_filter=[] intervals=null excludeIntervals=null reference_sequence=/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa rodBind=[A_BWA_raw_SnpsIndels.vcf] rodToIntervalTrackName=null BTI_merge_rule=UNION nonDeterministicRandomSeed=false DBSNP=null downsampling_type=null downsample_to_fraction=null downsample_to_coverage=null baq=OFF baqGapOpenPenalty=40.0 performanceLog=null useOriginalQualities=false defaultBaseQualities=-1 validation_strictness=SILENT unsafe=null num_threads=1 interval_merging=ALL read_group_black_list=null processingTracker=null restartProcessingTracker=false processingTrackerStatusFile=null processingTrackerID=-1 allow_intervals_with_unindexed_bam=false disable_experimental_low_memory_sharding=false logging_level=INFO log_to_file=null help=false out=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub NO_HEADER=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub sample_name=null sample_expressions=null sample_file=null select_expressions=[] excludeNonVariants=false excludeFiltered=false keepOriginalAC=false discordance= concordance= inputAF= keepAFSpectrum=false afFile= family_structure_file=null family_structure= mendelianViolation=false mendelianViolationQualThreshold=0.0 select_random_number=0 select_random_fraction=0.0 selectSNPs=true selectIndels=false outMVFile=null"
-	//##UnifiedGenotyper="analysis_type=UnifiedGenotyper input_file=[A_BWA_recal.bam] sample_metadata=[] read_buffer_size=null phone_home=STANDARD read_filter=[] intervals=[/media/winE/Bioinformatics/snp/snp/target_intervals.bed/target_intervals.bed] excludeIntervals=null reference_sequence=/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa rodBind=[/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/snp/dbsnp_132.hg19_cope.vcf] rodToIntervalTrackName=null BTI_merge_rule=UNION nonDeterministicRandomSeed=false DBSNP=null downsampling_type=null downsample_to_fraction=null downsample_to_coverage=500 baq=OFF baqGapOpenPenalty=40.0 performanceLog=null useOriginalQualities=false defaultBaseQualities=-1 validation_strictness=SILENT unsafe=null num_threads=4 interval_merging=ALL read_group_black_list=null processingTracker=null restartProcessingTracker=false processingTrackerStatusFile=null processingTrackerID=-1 allow_intervals_with_unindexed_bam=false disable_experimental_low_memory_sharding=false logging_level=INFO log_to_file=null help=false genotype_likelihoods_model=BOTH p_nonref_model=EXACT heterozygosity=0.001 pcr_error_rate=1.0E-4 genotyping_mode=DISCOVERY output_mode=EMIT_VARIANTS_ONLY standard_min_confidence_threshold_for_calling=50.0 standard_min_confidence_threshold_for_emitting=10.0 noSLOD=false assume_single_sample_reads=null abort_at_too_much_coverage=-1 min_base_quality_score=17 min_mapping_quality_score=20 max_deletion_fraction=0.05 min_indel_count_for_genotyping=5 indel_heterozygosity=1.25E-4 indelGapContinuationPenalty=10.0 indelGapOpenPenalty=45.0 indelHaplotypeSize=80 doContextDependentGapPenalties=true getGapPenaltiesFromData=false indel_recal_file=indel.recal_data.csv indelDebug=false dovit=false GSA_PRODUCTION_ONLY=false exactCalculation=LINEAR_EXPERIMENTAL ignoreSNPAlleles=false output_all_callable_bases=false genotype=false out=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub NO_HEADER=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub debug_file=null metrics_file=null annotation=[AlleleBalance, DepthOfCoverage, FisherStrand]"
-	//##source=SelectVariants
-	
-	/** 该snp的质量 */
-	String quality = "";
-	/** 是否符合标准 */
-	String Filter = "";
+
 	public String getQuality() {
 		return quality;
 	}
@@ -594,13 +582,6 @@ public class MapInfoSnpIndel extends MapInfo {
 		}
 	}
 	/**
-	 * 无用
-	 */
-	@Deprecated
-	public int getFlagSite() {
-		return flagLoc;
-	}
-	/**
 	 * 实际的序列
 	 * @return
 	 */
@@ -614,9 +595,8 @@ public class MapInfoSnpIndel extends MapInfo {
 	public String getRefBase() {
 		return refBase;
 	}
-	
 	public String getRefAAseq() {
-		return seqFasta.toStringAA();
+		return mapInfo.getSeqFasta().toStringAA();
 	}
 	
 	/**
@@ -629,7 +609,7 @@ public class MapInfoSnpIndel extends MapInfo {
 	 * @return
 	 */
 	private SeqFasta replaceSnpIndel(String replace, int startLoc, int endLoc) {
-		SeqFasta seqFasta = getSeqFasta().clone();
+		SeqFasta seqFasta = mapInfo.getSeqFasta().clone();
 		if (seqFasta.toString().equals("")) {
 			return new SeqFasta();
 		}
@@ -664,7 +644,7 @@ public class MapInfoSnpIndel extends MapInfo {
 			}
 		}
 		String seq = maxIndelType.split(SEP)[0];
-		if (cis5to3 != null && !cis5to3) {
+		if ( mapInfo.isCis5to3() != null && ! mapInfo.isCis5to3()) {
 			seq = SeqFasta.reservecom(seq);
 		}
 		if (gffGeneIsoInfo == null)
@@ -694,8 +674,8 @@ public class MapInfoSnpIndel extends MapInfo {
 			return;
 		}
 		setProp( (double)gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart()) / (gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart())  - gffGeneIsoInfo.getCod2TESmRNA(getRefSnpIndelStart())) );
-		setCis5to3(gffGeneIsoInfo.isCis5to3());
-		setName(gffGeneIsoInfo.getName());
+		 mapInfo.setCis5to3(gffGeneIsoInfo.isCis5to3());
+		 mapInfo.setName(gffGeneIsoInfo.getName());
 	}
 	/**
 	 * 获得所在的转录本
@@ -740,7 +720,7 @@ public class MapInfoSnpIndel extends MapInfo {
 	 */
 	private void setSnpIndelRs() {
 		SnpIndelRs snpIndelRs = new SnpIndelRs();
-		snpIndelRs.setChrID(refID);
+		snpIndelRs.setChrID(mapInfo.getRefID());
 		snpIndelRs.setTaxID(this.taxID);
 		if (snpRsID != null && !snpRsID.equals("")) {
 			snpIndelRs.setSnpRsID(snpRsID);
@@ -762,18 +742,13 @@ public class MapInfoSnpIndel extends MapInfo {
 		return snpIndelRs;
 	}
 	public String toString() {
-		int flagLoc = this.flagLoc;
-		if (!this.type.equals(TYPE_MISMATCH)) {
-			flagLoc = flagLoc - 1; 
-		}
-		
-		String refnr = getSeqFasta().toString();
-		String refaa = getSeqFasta().toStringAA(false);
+		String refnr =  mapInfo.getSeqFasta().toString();
+		String refaa =  mapInfo.getSeqFasta().toStringAA(false);
 		String thisnr =  getThisAAnr().toString();
 		String thisaa = getThisAAnr().toStringAA(false);
 		
 		
-		String result = refID + "\t" + refSnpIndelStart + "\t" + refBase + "\t" + this.Allelic_depths_Ref + "\t" + thisBase + "\t" + 
+		String result =  mapInfo.getRefID() + "\t" + getRefSnpIndelStart() + "\t" + refBase + "\t" + this.Allelic_depths_Ref + "\t" + thisBase + "\t" + 
 		this.Allelic_depths_Alt + "\t" + quality + "\t" + this.Filter + "\t" + this.Allele_Frequency + "\t" + getAllele_Balance_Hets() + "\t" + isExon()+"\t" + prop +"\t"+
 		refnr +"\t"+refaa + "\t" + thisnr +"\t"+thisaa;
 		if (refaa.length() ==3  && thisaa.length() == 3) {
@@ -798,10 +773,9 @@ public class MapInfoSnpIndel extends MapInfo {
 	 * 先比refID，然后比start，end，或者比flag或者比score
 	 * 比score的时候就不考虑refID了
 	 */
-	@Override
-	public int compareTo(MapInfo map) {
-		MapInfoSnpIndel mapInfoOther = (MapInfoSnpIndel) map;
-		if (compareInfo == COMPARE_LOCFLAG) {
+	public int compareTo(MapInfoSnpIndel mapInfoOther) {
+		mapInfo.compareTo(mapInfoOther.mapInfo);
+		if (mapInfoOther.compareInfo == COMPARE_LOCFLAG) {
 			int i = refID.compareTo(mapInfoOther.refID);
 			if (i != 0) {
 				return i;
@@ -821,22 +795,22 @@ public class MapInfoSnpIndel extends MapInfo {
 			if (i != 0) {
 				return i;
 			}
-			if (refSnpIndelStart == mapInfoOther.refSnpIndelStart) {
-				if (refSnpIndelEnd == mapInfoOther.refSnpIndelEnd) {
+			if (startLoc == mapInfoOther.startLoc) {
+				if (endLoc == mapInfoOther.endLoc) {
 					return 0;
 				}
 				if (min2max) {
-					return refSnpIndelEnd < mapInfoOther.refSnpIndelEnd ? -1:1;
+					return endLoc < mapInfoOther.endLoc ? -1:1;
 				}
 				else {
-					return refSnpIndelEnd > mapInfoOther.refSnpIndelEnd ? -1:1;
+					return endLoc > mapInfoOther.endLoc ? -1:1;
 				}
 			}
 			if (min2max) {
-				return refSnpIndelStart < mapInfoOther.refSnpIndelStart ? -1:1;
+				return startLoc < mapInfoOther.startLoc ? -1:1;
 			}
 			else {
-				return refSnpIndelStart > mapInfoOther.refSnpIndelStart ? -1:1;
+				return startLoc > mapInfoOther.startLoc ? -1:1;
 			}
 		}
 		else if (compareInfo == COMPARE_SCORE) {
@@ -865,7 +839,7 @@ public class MapInfoSnpIndel extends MapInfo {
 	 */
 	public static void getSiteInfo(List<MapInfoSnpIndel> lsSite, String txtSamToolsFile) {
 		// 排序，以提高效率
-		MapInfo.setCompType(MapInfo.COMPARE_LOCSITE);
+		MapInfo.setCompareType(MapInfo.COMPARE_LOCSITE);
 		Collections.sort(lsSite);
 		/** 每个chrID对应一组mapinfo，也就是一个list */
 		HashMap<String, ArrayList<MapInfoSnpIndel>> hashChrIDMapInfo = new LinkedHashMap<String, ArrayList<MapInfoSnpIndel>>();

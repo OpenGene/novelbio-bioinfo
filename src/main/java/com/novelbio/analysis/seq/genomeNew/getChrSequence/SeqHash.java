@@ -31,7 +31,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 		if (this.chrFile.equals(chrFile)) {
 			return;
 		}
-		if (FileOperate.isFile(chrFile)) {
+		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
 			seqHashAbs =new SeqFastaHash(chrFile, "", true, false);
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {
@@ -54,7 +54,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	 */
 	public SeqHash(String chrFile, String regx)
 	{
-		if (FileOperate.isFile(chrFile)) {
+		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
 			seqHashAbs =new SeqFastaHash(chrFile, regx, true, false);
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {
@@ -71,7 +71,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	 */
 	public SeqHash(String chrFile, String regx,Boolean TOLOWCASE)
 	{
-		if (FileOperate.isFile(chrFile)) {
+		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
 			seqHashAbs =new SeqFastaHash(chrFile, regx, true, false);
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {
@@ -92,7 +92,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	 */
 	public SeqHash(String chrFile, String regx, boolean CaseChange,Boolean TOLOWCASE, boolean append)
 	{
-		if (FileOperate.isFile(chrFile)) {
+		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
 			seqHashAbs =new SeqFastaHash(chrFile, regx, CaseChange, append);
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {

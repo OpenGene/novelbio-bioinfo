@@ -15,6 +15,14 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  */
 public class FilterGene {
 	String filename = "";
+	ArrayList<String[]> lsInfo = null;
+	/**
+	 * key: gene
+	 * value: gene所对应的行
+	 */
+	HashMap<String, ArrayList<String[]>> hashInfo = new HashMap<String, ArrayList<String[]>>();
+	String flag = "TRUE";
+	int geneCol = 0;
 	
 	public static void main(String[] args) {
 		String filename = "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinal/All_Result_Filtered.txt";
@@ -30,8 +38,6 @@ public class FilterGene {
 		filterGene.setFilename(filename, geneCol);
 		filterGene.getWantedGene(outFile,aGene, bGene, cGene);
 	}
-	
-	
 	
 	public void setFilename(String filename, int Colgene) {
 		this.filename = filename;
@@ -52,14 +58,7 @@ public class FilterGene {
 			lsTmpInfo.add(strings);
 		}
 	}
-	ArrayList<String[]> lsInfo = null;
-	/**
-	 * key: gene
-	 * value: gene所对应的行
-	 */
-	HashMap<String, ArrayList<String[]>> hashInfo = new HashMap<String, ArrayList<String[]>>();
-	String flag = "TRUE";
-	int geneCol = 0;
+
 	
 	public void getWantedGene(String outFile, int[]... flagCol) {
 		ArrayList<HashSet<String>> lsHashGene = new ArrayList<HashSet<String>>();
@@ -71,9 +70,6 @@ public class FilterGene {
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 		txtOut.ExcelWrite(lsGeneInfo, "\t", 1, 1);
 	}
-	
-	
-	
 	/**
 	 * 根据给定列，判断该列是否为true，如果为true，则提取相应的gene
 	 */

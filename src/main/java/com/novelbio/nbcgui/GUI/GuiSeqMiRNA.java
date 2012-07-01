@@ -16,6 +16,7 @@ import java.util.HashSet;
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
 
+import com.novelbio.analysis.seq.mirna.ExtractSmallRNASeq;
 import com.novelbio.analysis.seq.mirna.ListMiRNALocation;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -32,8 +33,7 @@ public class GuiSeqMiRNA extends JPanel{
 	private JTextField txtMiRNAbed;
 	private JTextField txtRfamBed;
 	private JTextField txtNCRNAbed;
-	private JTextField txtHairPinRaw;
-	private JTextField txtHairRegx;
+	private JTextField txtRNAdataRegx;
 	private JTextField txtRefseqFile;
 	private JTextField txtRfamRaw;
 	private JTextField txtOutPathPrefix;
@@ -48,7 +48,6 @@ public class GuiSeqMiRNA extends JPanel{
 	JButton btnRfambed;
 	JButton btnNCRNAbed;
 	JCheckBox chkAnalysis;
-	JButton btnHairepinfile;
 	JButton btnRfamfile;
 	JButton btnRefseqfile;
 	JButton btnOutpath;
@@ -124,7 +123,7 @@ public class GuiSeqMiRNA extends JPanel{
 		add(btnRfaminfo);
 		
 		combFileType = new JComboBoxData<Integer>();
-		combFileType.setBounds(22, 440, 166, 23);
+		combFileType.setBounds(17, 394, 166, 23);
 		add(combFileType);
 		
 		combSpecies = new JComboBoxData<Integer>();
@@ -227,28 +226,13 @@ public class GuiSeqMiRNA extends JPanel{
 		chkAnalysis.setBounds(221, 527, 84, 22);
 		add(chkAnalysis);
 		
-		txtHairPinRaw = new JTextField();
-		txtHairPinRaw.setBounds(435, 325, 233, 18);
-		add(txtHairPinRaw);
-		txtHairPinRaw.setColumns(10);
+		txtRNAdataRegx = new JTextField();
+		txtRNAdataRegx.setBounds(27, 448, 114, 18);
+		add(txtRNAdataRegx);
+		txtRNAdataRegx.setColumns(10);
 		
-		btnHairepinfile = new JButton("HairPinFile");
-		btnHairepinfile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.openFileName("txt", "");
-				txtHairPinRaw.setText(fileName);
-			}
-		});
-		btnHairepinfile.setBounds(698, 322, 111, 24);
-		add(btnHairepinfile);
-		
-		txtHairRegx = new JTextField();
-		txtHairRegx.setBounds(554, 301, 114, 18);
-		add(txtHairRegx);
-		txtHairRegx.setColumns(10);
-		
-		JLabel lblHairregx = new JLabel("HairRegx");
-		lblHairregx.setBounds(435, 301, 65, 14);
+		JLabel lblHairregx = new JLabel("RNAdataFile HairRegx");
+		lblHairregx.setBounds(24, 420, 213, 25);
 		add(lblHairregx);
 		
 		txtRefseqFile = new JTextField();
@@ -339,7 +323,7 @@ public class GuiSeqMiRNA extends JPanel{
 		add(sclpanFastq);
 		
 		sclNovelMiRNAbed = new JScrollPaneData();
-		sclNovelMiRNAbed.setBounds(429, 169, 237, 119);
+		sclNovelMiRNAbed.setBounds(438, 168, 237, 119);
 		add(sclNovelMiRNAbed);
 		
 		btnDelFastQfilerow = new JButton("DelRow");
@@ -361,7 +345,7 @@ public class GuiSeqMiRNA extends JPanel{
 				
 			}
 		});
-		btnNovelmirnabed.setBounds(689, 168, 145, 24);
+		btnNovelmirnabed.setBounds(705, 164, 145, 24);
 		add(btnNovelmirnabed);
 		
 		btnDelNovelMiRNAbedFileRow = new JButton("DelRow");
@@ -370,7 +354,7 @@ public class GuiSeqMiRNA extends JPanel{
 				sclNovelMiRNAbed.removeSelRows();
 			}
 		});
-		btnDelNovelMiRNAbedFileRow.setBounds(697, 262, 118, 24);
+		btnDelNovelMiRNAbedFileRow.setBounds(705, 262, 118, 24);
 		add(btnDelNovelMiRNAbedFileRow);
 		
 		chkPredictMiRNA = new JCheckBox("PredictMiRNA");
@@ -388,7 +372,7 @@ public class GuiSeqMiRNA extends JPanel{
 		add(chkPredictMiRNA);
 		
 		JLabel lblFiletype = new JLabel("FileType");
-		lblFiletype.setBounds(24, 414, 69, 14);
+		lblFiletype.setBounds(24, 373, 69, 14);
 		add(lblFiletype);
 		
 		JLabel lblSpecies = new JLabel("Species");
@@ -396,7 +380,7 @@ public class GuiSeqMiRNA extends JPanel{
 		add(lblSpecies);
 		
 		txtGenomeBed = new JTextField();
-		txtGenomeBed.setBounds(446, 110, 229, 18);
+		txtGenomeBed.setBounds(442, 110, 233, 18);
 		add(txtGenomeBed);
 		txtGenomeBed.setColumns(10);
 		
@@ -508,18 +492,14 @@ public class GuiSeqMiRNA extends JPanel{
 		lsComponentsAnalysis.add(btnRnadata);
 		lsComponentsAnalysis.add(btnRfaminfo);
 		lsComponentsAnalysis.add(btnGenomeBed);
-
-		
-		lsComponentsExtractSeq.add(txtHairPinRaw);
-		lsComponentsExtractSeq.add(txtHairRegx);
+		lsComponentsExtractSeq.add(txtRNAdataRegx);
 		lsComponentsExtractSeq.add(txtRfamRegx);
 		lsComponentsExtractSeq.add(txtRefseqFile);
 		lsComponentsExtractSeq.add(txtRfamRaw);
-		
-		lsComponentsExtractSeq.add(btnHairepinfile);
 		lsComponentsExtractSeq.add(btnRfamfile);
 		lsComponentsExtractSeq.add(btnRefseqfile);
-		
+		lsComponentsExtractSeq.add(txtRNAdataFile);
+		lsComponentsExtractSeq.add(btnRnadata);
 		
 		lsComponentsPredictMiRNA.add(btnDelNovelMiRNAbedFileRow);
 		lsComponentsPredictMiRNA.add(btnNovelmirnabed);
@@ -528,14 +508,15 @@ public class GuiSeqMiRNA extends JPanel{
 		lsComponentsMappingAndAnalysis.add(combFileType);
 		lsComponentsMappingAndAnalysis.add(combSpecies);
 		lsComponentsMappingAndAnalysis.add(txtRNAdataFile);
-		lsComponentsMappingAndAnalysis.add(btnRnadata);		
+		lsComponentsMappingAndAnalysis.add(btnRnadata);
+		lsComponentsMappingAndAnalysis.add(txtRNAdataRegx);
 		
 		lsComponentsAll.addAll(lsComponentsAnalysis);
 		lsComponentsAll.addAll(lsComponentsExtractSeq);
 		lsComponentsAll.addAll(lsComponentsMapping);
 		lsComponentsAll.addAll(lsComponentsMappingAndAnalysis);
 		lsComponentsAll.addAll(lsComponentsPredictMiRNA);
-				
+
 		chkMapping.setSelected(true);
 		for (Component component : lsComponentsAnalysis) {
 			component.setEnabled(false);
@@ -588,6 +569,9 @@ public class GuiSeqMiRNA extends JPanel{
 		}
 		else if (!chkMapping.isSelected() && chkPredictMiRNA.isSelected()) {
 			runPredict(true);
+		}
+		else if (chkbxExtractSeq.isSelected()) {
+			runExtractSeq();
 		}
 	}
 	
@@ -657,4 +641,17 @@ public class GuiSeqMiRNA extends JPanel{
 		result[1] = FileOperate.getParentPathName(out);
 		return result;
 	}
+	/**
+	 * 是否单独运行，就是前面是否有mapping
+	 * @param solo 前面是否有mapping
+	 */
+	private void runExtractSeq() {
+		ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
+		extractSmallRNASeq.setRNAdata(txtRNAdataFile.getText(), txtRNAdataRegx.getText().trim());
+		extractSmallRNASeq.setRefseqFile(txtRefseqFile.getText());
+		extractSmallRNASeq.setRfamFile(txtRfamRaw.getText(), txtRfamRegx.getText());
+		extractSmallRNASeq.setOutPathPrefix(txtOutPathPrefix.getText());
+		extractSmallRNASeq.getSeq();
+	}
+	
 }

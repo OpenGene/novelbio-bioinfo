@@ -21,17 +21,11 @@ import com.novelbio.base.plot.java.HeatChartDataInt;
  */
 public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable{
 	Logger logger = Logger.getLogger(MapInfo.class);
-	/**
-	 * 比较mapinfo的起点终点
-	 */
+	/** 比较mapinfo的起点终点 */
 	public static final int COMPARE_LOCSITE = 100;
-	/**
-	 * 比较mapinfo的flag site
-	 */
+	/** 比较mapinfo的flag site */
 	public static final int COMPARE_LOCFLAG = 200;
-	/**
-	 * 比较mapinfo的score
-	 */
+	/** 比较mapinfo的score */
 	public static final int COMPARE_SCORE = 300;
 	
 	static int compareInfo = COMPARE_SCORE;
@@ -48,10 +42,15 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 	SeqFasta seqFasta = new SeqFasta();
 	private double[] value = null;
 	protected int flagLoc = ListCodAbs.LOC_ORIGINAL;
-	/**
-	 * null表示没有方向
-	 */
+	/** null表示没有方向 */
 	protected Boolean cis5to3 = null;
+	/**
+	 * 是否用cis5to3的信息来翻转Value的double[]
+	 * 默认翻转
+	 */
+	boolean correctUseCis5to3ToConvertValue = true;
+	
+	public MapInfo() { }
 	/**
 	 * 本坐标的方向，用于基因的Tss和Tes等运算
 	 * @param cis5to3
@@ -77,17 +76,14 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 		}
 		return "-";
 	}
-	boolean correct = true;
 	/**
 	 * 是否用cis5to3的信息来翻转Value的double[]
 	 * 默认翻转
 	 * @param correct
 	 */
-	public void setCorrectUseCis5to3(boolean correct)
-	{
-		this.correct = correct;
+	public void setCorrectUseCis5to3(boolean correctUseCis5to3ToConvertValue) {
+		this.correctUseCis5to3ToConvertValue = correctUseCis5to3ToConvertValue;
 	}
-	
 	/**
 	 * 是否从小到大排序
 	 * @return
@@ -99,12 +95,21 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 	 * @param chrID
 	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
 	 * @param endLoc 从0开始
+	 * @param flag 比较的标签，可以是表达值等
+	 * @param name 本条目的名字，譬如基因名等
+	 */
+	public MapInfo(String chrID) {
+		this.refID = chrID;
+	}
+	/**
+	 * @param chrID
+	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
+	 * @param endLoc 从0开始
 	 * @param flagLoc 特定的一个位点坐标，譬如ATGsite，summitSite等
 	 * @param flag 比较的标签，可以是表达值等
 	 * @param title 本条目的名字，譬如基因名等
 	 */
-	public MapInfo(String chrID, int startLoc, int endLoc, int flagLoc ,double weight, String title)
-	{
+	public MapInfo(String chrID, int startLoc, int endLoc, int flagLoc ,double weight, String title) {
 		this.refID = chrID;
 		this.startLoc = startLoc;
 		this.endLoc = endLoc;
@@ -112,15 +117,13 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 		this.name = title;
 		this.flagLoc = flagLoc;
 	}
-	
 	/**
 	 * 如果startLoc < endLoc,则cis5to3设定为反向
 	 * @param chrID
 	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
 	 * @param endLoc 从0开始
 	 */
-	public MapInfo(String chrID, int startLoc, int endLoc)
-	{
+	public MapInfo(String chrID, int startLoc, int endLoc) {
 		if (startLoc < 0)
 			startLoc = 0;
 		if (endLoc < 0)
@@ -138,7 +141,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 	 * 默认COMPARE_WEIGHT
 	 * @param COMPARE_TYPE
 	 */
-	public static void setCompType(int COMPARE_TYPE) {
+	public static void setCompareType(int COMPARE_TYPE) {
 		compareInfo = COMPARE_TYPE;
 	}
 	/**
@@ -180,8 +183,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 	 * @param flag 比较的标签，可以是表达值等
 	 * @param title 本条目的名字，譬如基因名等
 	 */
-	public MapInfo(String chrID,double weight, String title)
-	{
+	public MapInfo(String chrID,double weight, String title) {
 		this.refID = chrID;
 		this.score = weight;
 		this.name = title;
@@ -217,13 +219,16 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 	public String getDescription() {
 		return description;
 	}
-
 	/**
 	 * 该区域的核酸序列，默认根据cis5to3进行反向序列
 	 * seqfasta的name 用map的name去设定
 	 * @param aaSeq
 	 */
 	public void setSeq(SeqFasta seqFasta) {
+		if (seqFasta == null) {
+			this.seqFasta = null;
+			return;
+		}
 		if (cis5to3 != null && cis5to3 == false) {
 			seqFasta = seqFasta.reservecom();
 		}
@@ -253,18 +258,6 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 	public SeqFasta getSeqFasta() {
 		return seqFasta;
 	}
-	public MapInfo() { }
-	/**
-	 * @param chrID
-	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
-	 * @param endLoc 从0开始
-	 * @param flag 比较的标签，可以是表达值等
-	 * @param name 本条目的名字，譬如基因名等
-	 */
-	public MapInfo(String chrID) {
-		this.refID = chrID;
-	}
-	
 	public void setScore(double score) {
 		this.score = score;
 	}
@@ -431,7 +424,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 		for (int i = 0; i < valueTmp.length; i++) {
 			valueTmp[i] = value[i];
 		}
-		if (cis5to3 != null && !cis5to3 && correct) {
+		if (cis5to3 != null && !cis5to3 && correctUseCis5to3ToConvertValue) {
 			ArrayOperate.convertArray(valueTmp);
 		}
 		return valueTmp;
@@ -453,7 +446,7 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 			mapInfo = (MapInfo) super.clone();
 			mapInfo.cis5to3 = cis5to3;
 			mapInfo.description = description;
-			mapInfo.correct = correct;
+			mapInfo.correctUseCis5to3ToConvertValue = correctUseCis5to3ToConvertValue;
 			mapInfo.endLoc = endLoc;
 			mapInfo.flagLoc = flagLoc;
 			mapInfo.name = name;
@@ -486,19 +479,6 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 	 * @return
 	 */
 	public static List<MapInfo> sortLsMapInfo(List<MapInfo> lsmapinfo, double distance) {
-		//排序
-//		Collections.sort(lsmapinfo, new Comparator<MapInfo>() {
-//			@Override
-//			public int compare(MapInfo o1, MapInfo o2) {
-//				if (o1.getRefID().equals(o2.getRefID())) {
-//					if (o1.getMidLoc() == o2.getMidLoc()) {
-//						return 0;
-//					}
-//					return o1.getMidLoc() < o2.getMidLoc() ? -1:1;
-//				}
-//				return o1.getRefID().compareTo(o2.getRefID());
-//			}
-//		});
 		HashMap<String, ArrayList<double[]>> hashLsMapInfo = new HashMap<String, ArrayList<double[]>>();
 		HashMap<String, MapInfo> hashMapInfo = new HashMap<String, MapInfo>();
 		for (MapInfo mapInfo : lsmapinfo) {
