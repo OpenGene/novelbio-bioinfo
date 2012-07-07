@@ -86,28 +86,28 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
 				jTabbedPane1.setPreferredSize(new java.awt.Dimension(1035, 682));
 				guiBlastJpanel = new GuiBlastJpanel();
-				jTabbedPane1.addTab("Gene Query", null, guiBlastJpanel, null);
+				jTabbedPane1.addTab("Query", null, guiBlastJpanel, null);
 				
 				guiGoJPanel= new GuiGoJPanel();
-				jTabbedPane1.addTab("GO Analysis", null, guiGoJPanel, null);
+				jTabbedPane1.addTab("GO", null, guiGoJPanel, null);
 				
 				guiPathJpanel = new GuiPathJpanel();
-				jTabbedPane1.addTab("Pathway Analysis", null, guiPathJpanel, null);
+				jTabbedPane1.addTab("Pathway", null, guiPathJpanel, null);
 				
 				guiSrcToTrg = new GuiSrcToTrgJpanel();
-				jTabbedPane1.addTab("Gene-Act Network", null, guiSrcToTrg, null);
+				jTabbedPane1.addTab("Gene-Act", null, guiSrcToTrg, null);
 				
 			
 				guiPearson = new GuiPearsonJpanel();
-				jTabbedPane1.addTab("Co-Exp Network", null, guiPearson, null);
+				jTabbedPane1.addTab("CoExp", null, guiPearson, null);
 				guiDegreeAdd = new GuiDegreeAddJpanel();
-				jTabbedPane1.addTab("Network Analysis", null, guiDegreeAdd, null);
+				jTabbedPane1.addTab("Degree", null, guiDegreeAdd, null);
 				
 				guiTools = new GuiToolsJpanel();
 				jTabbedPane1.addTab("Tools", null, guiTools, null);
 				
 				guiFastQ = new GuiFastQJpanel();
-				jTabbedPane1.addTab("fastQ", null, guiFastQ, null);
+				jTabbedPane1.addTab("FastQ", null, guiFastQ, null);
 				
 				guiLimma = new GuiLimmaJpanel();
 				jTabbedPane1.addTab("Microarray", null, guiLimma, null);

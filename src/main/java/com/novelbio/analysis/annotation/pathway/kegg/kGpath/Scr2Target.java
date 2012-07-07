@@ -32,7 +32,7 @@ public class Scr2Target {
 	 */
 	public static void getGene2RelateKo(String pathName, List<String> accID,String ResultFIleScr2Target, String resultFIleAttribute,int QtaxID,boolean blast,int subTaxID,double evalue) throws Exception
 	{
-		GeneID copedID = null;
+		GeneID geneID = null;
 		ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
 		ServKEntry servKEntry = new ServKEntry();
 		//丛数据库获得taxID
@@ -40,9 +40,9 @@ public class Scr2Target {
 		{
 			for (int i = 0; i < accID.size(); i++) 
 			{
-				copedID = new GeneID(accID.get(i), 0);
-				if (copedID.getTaxID() != 0) {
-					QtaxID = copedID.getTaxID();
+				geneID = new GeneID(accID.get(i), 0);
+				if (geneID.getTaxID() != 0) {
+					QtaxID = geneID.getTaxID();
 					break;
 				}
 			}

@@ -34,6 +34,10 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	public ArrayList<String> lsSeqName;
 	/** 外显子之间用什么来分割，默认为"" */
 	String sep = "";
+	
+	public String getChrFile() {
+		return chrFile;
+	}
 	/**
 	 * 是否要设定为DNA，也就是将序列中的U全部转化为T
 	 * 只有当序列为RNA时才会用到

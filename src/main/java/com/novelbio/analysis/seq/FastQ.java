@@ -64,6 +64,79 @@ public class FastQ extends SeqComb {
 	int noAdaptorReads = 0;
 	int readsNum = 0;
 	
+	/**
+	 * 默认中等质量控制
+	 */
+	private int quality = QUALITY_MIDIAN;
+	
+	/**
+	 * fastQ里面asc||码的指标与个数
+	 */
+	HashMap<Integer, Integer> hashFastQFilter = new HashMap<Integer, Integer>();
+
+	// ///////////////////////// barcode 所需的变量///////////////////////////////////////////////////////////////////
+	/**  记录barcode的信息 key: barcode 的序列 value: barcode所对应的名字 */
+	HashMap<String, String> hashBarcodeName = new HashMap<String, String>();
+	/** 顺序记录barcode，这个是如果错配的话，可以在该list里面查找  */
+	ArrayList<String> lsBarCode = new ArrayList<String>();
+	/** 记录barcode的长度 */
+	TreeSet<Integer> treeLenBarcode = new TreeSet<Integer>();
+	////////  参 数 设 定  ////////////////////
+	private boolean trimPolyA_right = false;
+	private boolean trimPolyT_left = false;
+	/** 接头是小写,这种情况目前只在ion proton的数据中发现 */
+	private boolean adaptorLowercase = false;
+	/** 是否将序列两边的NNN删除  */
+	private boolean trimNNN = true;
+	/**
+	 * 自动判断 FastQ的格式
+	 * @param seqFile
+	 * @param QUALITY
+	 */
+	public FastQ(String seqFile1, boolean creatNew) {
+		super(seqFile1, 4, creatNew);
+	}
+	/**
+	 * 自动判断 FastQ的格式
+	 * @param seqFile
+	 * @param QUALITY
+	 */
+	public FastQ(String seqFile1, int QUALITY) {
+		this(seqFile1, 0, QUALITY);
+		String houzhui = FileOperate.getFileNameSep(seqFile1)[1];
+		if (houzhui.equals("gz")) {
+			setCompressType(TxtReadandWrite.GZIP, TxtReadandWrite.TXT);
+		}
+		else {
+			setCompressType(TxtReadandWrite.TXT, TxtReadandWrite.TXT);
+		}
+	}
+	/**
+	 * 输入前先判断文件是否存在,最好能判断两个文件是否是同一个测序的两端 那么可以判断是否为fastQ格式和fasQ格式第一行是否一致
+	 * 标准文件名的话，自动判断是否为gz压缩
+	 * @param seqFile1  序列文件
+	 * @param fastQFormat 哪种fastQ格式，现在有FASTQ_SANGER_OFFSET，FASTQ_ILLUMINA_OFFSET两种
+	 *            不知道就写0，程序会从文件中判断
+	 * @param QUALITY QUALITY_LOW等
+	 * 
+	 */
+	public FastQ(String seqFile,  int FastQFormateOffset, int QUALITY) {
+		super(seqFile, 4);// fastQ一般4行为一个序列
+		String houzhui = FileOperate.getFileNameSep(seqFile)[1];
+		if (houzhui.equals("gz")) {
+			setCompressType(TxtReadandWrite.GZIP, TxtReadandWrite.TXT);
+		}
+		else {
+			setCompressType(TxtReadandWrite.TXT, TxtReadandWrite.TXT);
+		}
+		txtSeqFile.setParameter(compressInType, seqFile, false,true);
+		if (FastQFormateOffset == FASTQ_SANGER_OFFSET) {
+			offset = 33;
+		} else if (FastQFormateOffset == FASTQ_ILLUMINA_OFFSET) {
+			offset = 64;
+		}
+		setHashFastQFilter(QUALITY);
+	}
 	public int getReadsNumNoAdaptor() {
 		return noAdaptorReads;
 	}
@@ -89,30 +162,7 @@ public class FastQ extends SeqComb {
 		this.adaptermaxConMismatch = maxConMismatch;
 		this.adaptermaxMismach = maxMismach;
 	}
-	/**
-	 * 默认中等质量控制
-	 */
-	private int quality = QUALITY_MIDIAN;
 	
-	/**
-	 * fastQ里面asc||码的指标与个数
-	 */
-	HashMap<Integer, Integer> hashFastQFilter = new HashMap<Integer, Integer>();
-
-	// ///////////////////////// barcode 所需的变量///////////////////////////////////////////////////////////////////
-	/**  记录barcode的信息 key: barcode 的序列 value: barcode所对应的名字 */
-	HashMap<String, String> hashBarcodeName = new HashMap<String, String>();
-	/** 顺序记录barcode，这个是如果错配的话，可以在该list里面查找  */
-	ArrayList<String> lsBarCode = new ArrayList<String>();
-	/** 记录barcode的长度 */
-	TreeSet<Integer> treeLenBarcode = new TreeSet<Integer>();
-	////////  参 数 设 定  ////////////////////
-	private boolean trimPolyA_right = false;
-	private boolean trimPolyT_left = false;
-	/** 接头是小写,这种情况目前只在ion proton的数据中发现 */
-	private boolean adaptorLowercase = false;
-	/** 是否将序列两边的NNN删除  */
-	private boolean trimNNN = true;
 	/**
 	 * 是否将序列两边的NNN删除
 	 * 默认是删除的，但是感觉速度好慢然后cufflink还有问题
@@ -245,61 +295,9 @@ public class FastQ extends SeqComb {
 			hashFastQFilter.put(20, 10);
 		}
 	}
-	/**
-	 * 输入前先判断文件是否存在,最好能判断两个文件是否是同一个测序的两端 那么可以判断是否为fastQ格式和fasQ格式第一行是否一致
-	 * 标准文件名的话，自动判断是否为gz压缩
-	 * @param seqFile1
-	 *            序列文件
-	 * @param fastQFormat
-	 *            哪种fastQ格式，现在有FASTQ_SANGER_OFFSET，FASTQ_ILLUMINA_OFFSET两种
-	 *            不知道就写0，程序会从文件中判断
-	 * @param QUALITY
-	 *            QUALITY_LOW等
-	 * 
-	 */
-	public FastQ(String seqFile,  int FastQFormateOffset, int QUALITY) {
-		super(seqFile, 4);// fastQ一般4行为一个序列
-		String houzhui = FileOperate.getFileNameSep(seqFile)[1];
-		if (houzhui.equals("gz")) {
-			setCompressType(TxtReadandWrite.GZIP, TxtReadandWrite.TXT);
-		}
-		else {
-			setCompressType(TxtReadandWrite.TXT, TxtReadandWrite.TXT);
-		}
-		txtSeqFile.setParameter(compressInType, seqFile, false,true);
-		if (FastQFormateOffset == FASTQ_SANGER_OFFSET) {
-			offset = 33;
-		} else if (FastQFormateOffset == FASTQ_ILLUMINA_OFFSET) {
-			offset = 64;
-		}
-		setHashFastQFilter(QUALITY);
-	}
 
 	public void setCompressType(String cmpInType, String cmpOutType) {
 		super.setCompressType(cmpInType, cmpOutType);
-	}
-	/**
-	 * 自动判断 FastQ的格式
-	 * @param seqFile
-	 * @param QUALITY
-	 */
-	public FastQ(String seqFile1, int QUALITY) {
-		this(seqFile1, 0, QUALITY);
-		String houzhui = FileOperate.getFileNameSep(seqFile1)[1];
-		if (houzhui.equals("gz")) {
-			setCompressType(TxtReadandWrite.GZIP, TxtReadandWrite.TXT);
-		}
-		else {
-			setCompressType(TxtReadandWrite.TXT, TxtReadandWrite.TXT);
-		}
-	}
-	/**
-	 * 自动判断 FastQ的格式
-	 * @param seqFile
-	 * @param QUALITY
-	 */
-	public FastQ(String seqFile1, boolean creatNew) {
-		super(seqFile1, 4, creatNew);
 	}
 	/**
 	 * 读取前几行，不影响{@link #readlines()}

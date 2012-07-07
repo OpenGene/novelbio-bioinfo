@@ -54,9 +54,9 @@ public class SamFile {
 	 */
 	int extend = 240;
 	/**
-	 * mapping质量为10
+	 * mapping质量为0
 	 */
-	int mapQuality = 10;
+	int mapQuality = 0;
 	/**
 	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
 	 */
@@ -178,7 +178,7 @@ public class SamFile {
 			if (!samRecord.getReadUnmappedFlag()) {
 				mappedReadsNum ++;
 				try {
-					if (!samRecord.getAttribute("XT").equals("R")) {
+					if (!samRecord.getAttribute("XT").equals('R')) {
 						uniqMappedReadsNum ++;
 					}
 					else {
@@ -267,7 +267,7 @@ public class SamFile {
 				continue;
 			}
 
-			if (samRecord.getReadUnmappedFlag() || (getNonUniq && samRecord.getAttribute("XT").equals("R"))) {
+			if (samRecord.getReadUnmappedFlag() || (getNonUniq && samRecord.getAttribute("XT").equals('R'))) {
 				fastQline = "@" + samRecord.getReadName() + TxtReadandWrite.ENTER_LINUX + 
 						samRecord.getReadString() +
 						TxtReadandWrite.ENTER_LINUX + "+" + TxtReadandWrite.ENTER_LINUX + 

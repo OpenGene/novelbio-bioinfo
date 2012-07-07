@@ -117,7 +117,7 @@ public class SamtoolsPileUpSiteInfo {
 		for (String key : hashAll.keySet()) {
 			if (!hashTmp.containsKey(key)) {
 				MapInfoSnpIndel mapInfoSnpIndelTmp = hashAll.get(key);
-				MapInfoSnpIndel mapInfoSnpIndelTmpResult = new MapInfoSnpIndel(taxID, mapInfoSnpIndelTmp.getRefID(), mapInfoSnpIndelTmp.getRefSnpIndelStart(), mapInfoSnpIndelTmp.getRefBase(), mapInfoSnpIndelTmp.getThisBase());
+				MapInfoSnpIndel mapInfoSnpIndelTmpResult = new MapInfoSnpIndel(taxID, mapInfoSnpIndelTmp.getRefID(), mapInfoSnpIndelTmp.getRefSnpIndelStart(), mapInfoSnpIndelTmp.getRefBase(), mapInfoSnpIndelTmp.getThisSeq());
 				lsResult.add(mapInfoSnpIndelTmpResult);
 			}
 		}

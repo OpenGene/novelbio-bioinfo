@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genomeNew;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
@@ -230,7 +231,7 @@ public class GffChrSeq {
 	 * 每个基因只选取其中一条序列
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
 	 * @param IsoName 转录本的名字
-	 * @param cis5to3 正反向，在提出的正向转录本的基础上，是否需要反向互补
+	 * @param FilteredStrand 正反向，在提出的正向转录本的基础上，是否需要反向互补
 	 * @param startExon 具体某个exon
 	 * @param endExon 具体某个Intron
 	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
@@ -308,7 +309,7 @@ public class GffChrSeq {
 	 * 获得某个物种的全部RNA全长序列的每个ISO序列，从refseq中提取更加精确
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
 	 * @param IsoName 转录本的名字
-	 * @param cis5to3 正反向，在提出的正向转录本的基础上，是否需要反向互补
+	 * @param FilteredStrand 正反向，在提出的正向转录本的基础上，是否需要反向互补
 	 * @param startExon 具体某个exon
 	 * @param endExon 具体某个Intron
 	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
@@ -333,7 +334,7 @@ public class GffChrSeq {
 	 * 获得某个物种的全部RNA全长序列的每个gene的最长序列，从refseq中提取更加精确
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
 	 * @param IsoName 转录本的名字
-	 * @param cis5to3 正反向，在提出的正向转录本的基础上，是否需要反向互补
+	 * @param FilteredStrand 正反向，在提出的正向转录本的基础上，是否需要反向互补
 	 * @param startExon 具体某个exon
 	 * @param endExon 具体某个Intron
 	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
@@ -360,10 +361,15 @@ public class GffChrSeq {
 	 * @return
 	 */
 	public void writeIsoFasta(String seqFastaTxt) {
+		HashSet<String> setRemoveRedundent = new HashSet<String>();
 		TxtReadandWrite txtFasta = new TxtReadandWrite(seqFastaTxt, true);
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffChrAbs.getGffHashGene().getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				if (setRemoveRedundent.contains(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0])) {
+					continue;
+				}
+				setRemoveRedundent.add(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
 				SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, false);
 				seq.setName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
 				txtFasta.writefileln(seq.toStringNRfasta());

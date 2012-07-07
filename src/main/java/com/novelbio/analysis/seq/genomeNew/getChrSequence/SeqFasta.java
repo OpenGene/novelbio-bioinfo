@@ -858,7 +858,7 @@ public class SeqFasta implements Cloneable {
 		return getMotifScanResult(regex,0);
 	}
 	/**
-	 * 可能不能精确到单碱基
+	 * 可能不能精确到单碱基<b>同时搜索正反向</b>
 	 * 给定motif，在序列上查找相应的正则表达式<br>
 	 * 返回正向序列和反向序列查找的结果<br>
 	 * List-string [4] <br>
@@ -875,27 +875,33 @@ public class SeqFasta implements Cloneable {
 	public ArrayList<String[]> getMotifScanResult(String regex, int site) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		ArrayList<String[]> lsTmpResultFor = PatternOperate.getPatLoc(toString(), regex, false);
-		if (lsTmpResultFor != null && lsTmpResultFor.size() > 0) {
-			for (String[] strings : lsTmpResultFor) {
-				String[] tmpResult = new String[4];
-				tmpResult[0] = getSeqName();
-				tmpResult[1] = "+";
-				tmpResult[2] = strings[0];
-				if (site != 0)
-					tmpResult[3] = (Integer.parseInt(strings[2]) + site) * -1 + "";
-				else 
-					tmpResult[3] = strings[2];
-				
-				lsResult.add(tmpResult);
-			}
-		}
 		ArrayList<String[]> lsTmpResultRev = PatternOperate.getPatLoc(reservecom().toString(), regex, false);
+
+		copeMotifResultToList(true, lsTmpResultFor, site, lsResult);
+		copeMotifResultToList(false, lsTmpResultRev, site, lsResult);
+		
+		return lsResult;
+	}
+	/**
+	 * @param strand 序列方向
+	 * @param lsTmpResult 找到的motif信息，来自PatternOperate.getPatLoc()方法
+	 * 最后返回motif到site点，那么<b>负数</b>表示motif在site的上游，<b>正数</b>表示motif在site的下游
+	 * @param site 距离该序列终点的位置，上游为负数，下游为正数。譬如tss距离seq终点500bp，则site为-500。
+	 * 也就是序列取到tss下游500bp。
+	 * @param lsResult 返回的list
+	 */
+	private void copeMotifResultToList(boolean strand, ArrayList<String[]> lsTmpResultRev, int site, ArrayList<String[]> lsResult) {
 		if (lsTmpResultRev != null && lsTmpResultRev.size() > 0) {
 			for (String[] strings : lsTmpResultRev) {
 				String[] tmpResult = new String[4];
 				tmpResult[0] = getSeqName();
-				tmpResult[1] = "-";
-				tmpResult[2] = strings[0];
+				if (strand)
+					tmpResult[1] = "+";
+				else
+					tmpResult[1] = "-";
+
+				tmpResult[2] = strings[0];//具体的motif序列
+				
 				if (site != 0)
 					tmpResult[3] = (Integer.parseInt(strings[1]) + site) * -1 + "";
 				else
@@ -904,8 +910,8 @@ public class SeqFasta implements Cloneable {
 				lsResult.add(tmpResult);
 			}
 		}
-		return lsResult;
 	}
+	
 	/**
 	 * 判断该序列是DNA，RNA，还是蛋白，或者也不知道是什么
 	 * @return

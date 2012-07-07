@@ -96,7 +96,7 @@ class ImpGen2Acc extends ImportPerLine
 		if (!hashTaxID.contains(taxID)) {
 			return true;
 		}
-		GeneInfo copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, ss[1], taxID);
+		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
 
 		copedID.setUpdateAccID(ss[3]);
 		if (ss[3].startsWith("NM_") || ss[3].startsWith("NR_"))
@@ -150,7 +150,7 @@ class ImpGen2Ensembl extends ImportPerLine
 		if (!hashTaxID.contains(taxID)) {
 			return true;
 		}
-		GeneInfo copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, ss[1], taxID);
+		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
  
 		
 		copedID.setUpdateAccID(ss[2]);
@@ -194,12 +194,12 @@ AP_000048	P68969
  */
 class ImpGeneRef2UniID extends ImportPerLine
 {
-	static GeneInfo copedID;
+	static GeneID copedID;
 	@Override
 	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
-		if (copedID == null || !copedID.getAccID().equals(GeneInfo.removeDot(ss[0]))) {
-			copedID = new GeneInfo(ss[0],0);
+		if (copedID == null || !copedID.getAccID().equals(GeneID.removeDot(ss[0]))) {
+			copedID = new GeneID(ss[0],0);
 			if (copedID.getTaxID() == 0 || !hashTaxID.contains(copedID.getTaxID())) {
 				return true;
 			}
@@ -224,7 +224,7 @@ class ImpGene2Info extends ImportPerLine
 		if (!hashTaxID.contains(taxID)) {
 			return true;
 		}
-		GeneInfo copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, ss[1], taxID);
+		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setDBinfo(NovelBioConst.DBINFO_NCBI_ACC_GenralID);
 		geneInfo.setSep("\\|");
@@ -262,7 +262,7 @@ class ImpGene2Pub extends ImportPerLine
 			return true;
 		}
 		AGeneInfo geneInfo = new GeneInfo();
-		GeneInfo copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, ss[1], taxID);
+		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
 		geneInfo.setPubID(ss[2]);
 		copedID.setUpdateGeneInfo(geneInfo);
 		return copedID.update(false);
@@ -284,7 +284,7 @@ class ImpGene2GO extends ImportPerLine
 		if (!hashTaxID.contains(taxID)) {
 			return true;
 		}
-		GeneInfo copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, ss[1], taxID);
+		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
 		if (ss[6] == null || ss[6].equals("") || ss[6].equals("-")) {
 			copedID.setUpdateGO(ss[2], NovelBioConst.DBINFO_NCBI, ss[3], null, ss[4]);
 		}

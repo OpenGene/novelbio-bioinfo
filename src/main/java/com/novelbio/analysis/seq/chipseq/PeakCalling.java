@@ -44,7 +44,7 @@ public abstract class PeakCalling {
 	/** 物种，可以根据物种选择相应的参数，一般是 genome size */
 	public abstract void setSpecies(String species);
 	/**输出文件路径和前缀 */
-	public void setOutPrefix(String outPrefix) {
+	public void setOutPathPrefix(String outPrefix) {
 		this.outPrefix = outPrefix;
 	}
 	/** 对照，一般是input control，对照文件必须与实验组格式一致 */

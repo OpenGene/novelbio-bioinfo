@@ -25,19 +25,19 @@ public class PeakSicer extends PeakCalling {
 		peakSicer.setSpecies(SPECIES_MOUSE);
 		peakSicer.setEffectiveGenomeSize(85);
 		peakSicer.setChIPType(HISTONE_TYPE_H3K4);
-		peakSicer.setOutPrefix(outPrefix);
+		peakSicer.setOutPathPrefix(outPrefix);
 		peakSicer.peakCallling();
 		
 		bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/K4.WT.D0.sorted-1-removed.bed";
 		outPrefix = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/sicer-df-K4/single/K4_WT0";
 		peakSicer.setFile(bedFile);
-		peakSicer.setOutPrefix(outPrefix);
+		peakSicer.setOutPathPrefix(outPrefix);
 		peakSicer.peakCallling();
 		
 		bedFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/K4.WT.D4.sorted-1-removed.bed";
 		outPrefix = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/yulufile/sicer-df-K4/single/K4_WT4";
 		peakSicer.setFile(bedFile);
-		peakSicer.setOutPrefix(outPrefix);
+		peakSicer.setOutPathPrefix(outPrefix);
 		peakSicer.peakCallling();
 	}
 	
@@ -54,7 +54,6 @@ public class PeakSicer extends PeakCalling {
 	public static final String SPECIES_MOUSE = "mm9";
 	public PeakSicer(String bedFile) {
 		super(bedFile);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public static final int HISTONE_TYPE_H3K4 = 200;
@@ -176,8 +175,8 @@ public class PeakSicer extends PeakCalling {
 		cmd = cmd + redundancy_threshold + " " + windowSize + " " + fragment_size + " " + effectiveGenomeSize + " " + gapSIze + " " + Evalue + " ";
 		logger.info(cmd);
 		System.out.println(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("SICER_Peak");
+		CmdOperate cmdOperate = new CmdOperate(cmd, "SICER_Peak");
+		cmdOperate.run();
 		
 		String in = FileOperate.addSep(outDir) + FileOperate.getFileNameSep(file)[0] 
 		+ "-W"+windowSize+"-G"+gapSIze + "-E"+ Evalue + ".scoreisland";
@@ -212,12 +211,12 @@ public class PeakSicer extends PeakCalling {
 		cmd = cmd + parentPath + " ";
 		cmd = cmd + species + " ";
 		cmd = cmd + redundancy_threshold + " " + windowSize + " " + fragment_size + effectiveGenomeSize + gapSIze + FDR;
-		CmdOperate cmdOperate = new CmdOperate(cmd);
+		CmdOperate cmdOperate = new CmdOperate(cmd, "SICER_Peak");
 
-		cmdOperate.doInBackground("SICER_Peak");
+		cmdOperate.run();
 		//输出结果的文件名估计会有问题
 		String in = FileOperate.addSep(parentPath) + " " + FileOperate.getFileNameSep(file)[0] + "-W"+windowSize+"-G"+gapSIze + "-E" + ".scoreisland";
-		//TODO
+
 		TxtReadandWrite txtRead = new TxtReadandWrite(in, false);
 		ArrayList<String[]> lsIn = txtRead.ExcelRead("\t", 1, 1, -1, -1, 0);
 		//title肯定有问题
@@ -249,16 +248,14 @@ public class PeakSicer extends PeakCalling {
 	 * @param outFilePath
 	 * @param prix
 	 */
-	public void peakCallingComp(String bedTreat2, String species, String prix)
-	{
-		String bedFile = super.getFileName();
-		String parentPath = FileOperate.removeSep(FileOperate.getParentPathName(bedFile));
+	public void peakCallingComp(String bedTreat2, String species, String prix) {
+		String parentPath = FileOperate.removeSep(FileOperate.getParentPathName(file));
 		
-		String cmd = cmdComp +" " + super.getFileName() +" " + bedTreat2+ " " + species +" " + windowSize +" " + gapSIze +" " + Evalue +" " + FDR;
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("SICER_Peak");
+		String cmd = cmdComp +" " + file +" " + bedTreat2+ " " + species +" " + windowSize +" " + gapSIze +" " + Evalue +" " + FDR;
+		CmdOperate cmdOperate = new CmdOperate(cmd, "SICER_Peak");
+		cmdOperate.run();
 		//输出结果的文件名估计会有问题
-		String in = FileOperate.addSep(parentPath) + " " + FileOperate.getFileNameSep(bedFile)[0] + "-W"+windowSize+"-G"+gapSIze + "-E" + ".scoreisland";
+		String in = FileOperate.addSep(parentPath) + " " + FileOperate.getFileNameSep(file)[0] + "-W"+windowSize+"-G"+gapSIze + "-E" + ".scoreisland";
 		//TODO
 		TxtReadandWrite txtRead = new TxtReadandWrite(in, false);
 		ArrayList<String[]> lsIn = txtRead.ExcelRead("\t", 1, 1, -1, -1, 0);

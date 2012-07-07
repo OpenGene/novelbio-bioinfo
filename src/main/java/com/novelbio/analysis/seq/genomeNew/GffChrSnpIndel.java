@@ -29,14 +29,13 @@ public class GffChrSnpIndel {
 	 * @return
 	 */
 	public GffCodGene getSnpIndel(MapInfoSnpIndel mapInfo) {
-		if (mapInfo.getType().equals(MapInfoSnpIndel.TYPE_MISMATCH)) {
+		if (mapInfo.getType() == MapInfoSnpIndel.TYPE_MISMATCH) {
 			return getSnp(mapInfo);
 		}
 		else {
 			return getIndel(mapInfo);
 		}
 	}
-	
 	/**
 	 * 待检验
 	 * 给定mapInfo，其中mapInfo的flagLoc为snp坐标位点，chrID为染色体位置
@@ -107,7 +106,7 @@ public class GffChrSnpIndel {
 		//起点和终点在同一个外显子中
 		if (gffGeneIsoInfoStart != null && gffGeneIsoInfoEnd != null && 
 				gffGeneIsoInfoStart.equals(gffGeneIsoInfoEnd) &&
-				gffGeneIsoInfoStart.getLocInEleNum(mapInfo.getRefSnpIndelStart()) == gffGeneIsoInfoEnd.getLocInEleNum(mapInfo.getRefSnpIndelEnd()) 
+				gffGeneIsoInfoStart.getNumCodInEle(mapInfo.getRefSnpIndelStart()) == gffGeneIsoInfoEnd.getNumCodInEle(mapInfo.getRefSnpIndelEnd()) 
 				&& gffGeneIsoInfoStart.isCodInAAregion(mapInfo.getRefSnpIndelStart())) {
 			mapInfo.setExon(true);
 			mapInfo.setGffIso(gffGeneIsoInfoStart);

@@ -72,9 +72,9 @@ public class DomainPfam extends ListAbsSearch<DomainDetail, ListCodAbs<DomainDet
 	
 	public String toString() {
 		String result = "";
-		int domainNum = getLocInEleNum(aaLoc);
+		int domainNum = getNumCodInEle(aaLoc);
 		if (domainNum > 0) {
-			result = "inside domain: " + "\tdomain name:" + get(getLocInEleNum(domainNum - 1)).getName();
+			result = "inside domain: " + "\tdomain name:" + get(getNumCodInEle(domainNum - 1)).getName();
 		}
 		else if (domainNum < 0) {
 			result = "outside domain: ";

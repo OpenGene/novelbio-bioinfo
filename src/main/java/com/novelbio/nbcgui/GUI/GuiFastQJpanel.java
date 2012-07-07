@@ -254,11 +254,13 @@ public class GuiFastQJpanel extends JPanel {
 					ctrlFastQMapping.setAdaptorLowercase(chckbxLowcaseAdaptor.isSelected());
 					ctrlFastQMapping.setFastqQuality(cmbReadsQuality.getSelectedValue());
 					ctrlFastQMapping.setTrimNNN(chckbxTrimEnd.isSelected());
+					try { ctrlFastQMapping.setReadsLenMin(Integer.parseInt(txtMinReadsLen.getText())); } catch (Exception e2) { }
+					
 				}
 				if (chckbxMapping.isSelected()) {
 					ctrlFastQMapping.setMapping(true);					
 					try { ctrlFastQMapping.setGapLen(Integer.parseInt(txtGapLength.getText())); } catch (Exception e2) { 	}
-					try { ctrlFastQMapping.setMismatch(Integer.parseInt(txtMisMatch.getText())); } catch (Exception e2) { 	}
+					try { ctrlFastQMapping.setMismatch(Double.parseDouble(txtMisMatch.getText())); } catch (Exception e2) {}
 					try { ctrlFastQMapping.setThread(Integer.parseInt(txtThreadNum.getText())); } catch (Exception e2) { 	}
 					ctrlFastQMapping.setChrIndexFile(txtMappingIndex.getText());
 					//TODO

@@ -80,8 +80,19 @@ public class SpeciesFile {
 	public String getVersion() {
 		return version;
 	}
-	public String getChromInfo() {
-		return chromInfo;
+	/**
+	 * @return
+	 * key: chrID Ð¡Ð´
+	 * value£º length
+	 */
+	public HashMap<String, Long> getMapChromInfo() {
+		HashMap<String, Long> mapChrID2Len = new HashMap<String, Long>(); 
+		String[] chrID2Lens = chromInfo.split(SepSign.SEP_ID);
+		for (String chrid2Len : chrID2Lens) {
+			String[] ss = chrid2Len.split(SepSign.SEP_INFO);
+			mapChrID2Len.put(ss[0].toLowerCase(), Long.parseLong(ss[1]));
+		}
+		return mapChrID2Len;
 	}
 	public void setChromPath(String chromPath) {
 		this.chromPath = chromPath;

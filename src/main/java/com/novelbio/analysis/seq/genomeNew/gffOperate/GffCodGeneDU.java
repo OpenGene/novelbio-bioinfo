@@ -484,8 +484,8 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 						&& GffGeneIsoInfo.hashMRNA.contains(gffGeneIsoInfo.getGeneType())
 						&& gffGeneIsoInfo.getCod2ATG(coordStart) <= 0
 						&& gffGeneIsoInfo.getCod2Tss(coordEnd) >= 0
-						&& (gffGeneIsoInfo.getLocInEleNum(coordStart) != gffGeneIsoInfo.getLocInEleNum(coordStart) 
-						|| gffGeneIsoInfo.getLocInEleNum(coordStart) == gffGeneIsoInfo.getLocInEleNum(coordStart)
+						&& (gffGeneIsoInfo.getNumCodInEle(coordStart) != gffGeneIsoInfo.getNumCodInEle(coordStart) 
+						|| gffGeneIsoInfo.getNumCodInEle(coordStart) == gffGeneIsoInfo.getNumCodInEle(coordStart)
 								&& (gffGeneIsoInfo.getCodLoc(coordStart) == GffGeneIsoInfo.COD_LOC_EXON 
 					                 || gffGeneIsoInfo.getCodLoc(coordEnd) == GffGeneIsoInfo.COD_LOC_EXON))) 
 				{
@@ -498,8 +498,8 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 						&& GffGeneIsoInfo.hashMRNA.contains(gffGeneIsoInfo.getGeneType())
 						&& gffGeneIsoInfo.getCod2Tes(coordStart) <= 0
 						&& gffGeneIsoInfo.getCod2UAG(coordEnd) >= 0
-						&& (gffGeneIsoInfo.getLocInEleNum(coordStart) != gffGeneIsoInfo.getLocInEleNum(coordEnd) 
-						|| gffGeneIsoInfo.getLocInEleNum(coordStart) == gffGeneIsoInfo.getLocInEleNum(coordEnd)
+						&& (gffGeneIsoInfo.getNumCodInEle(coordStart) != gffGeneIsoInfo.getNumCodInEle(coordEnd) 
+						|| gffGeneIsoInfo.getNumCodInEle(coordStart) == gffGeneIsoInfo.getNumCodInEle(coordEnd)
 								&& (gffGeneIsoInfo.getCodLoc(coordStart) == GffGeneIsoInfo.COD_LOC_EXON 
 								|| gffGeneIsoInfo.getCodLoc(coordEnd) == GffGeneIsoInfo.COD_LOC_EXON))) 
 				{
@@ -517,8 +517,8 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 						&& 
 				      (
 						(gffGeneIsoInfo.getCod2Tss(coordStart) <= 0 && gffGeneIsoInfo.getCod2Tes(coordEnd) > 0) 
-						|| gffGeneIsoInfo.getLocInEleNum(coordStart) != gffGeneIsoInfo.getLocInEleNum(coordEnd) 
-					    || (gffGeneIsoInfo.getLocInEleNum(coordStart) == gffGeneIsoInfo.getLocInEleNum(coordEnd)
+						|| gffGeneIsoInfo.getNumCodInEle(coordStart) != gffGeneIsoInfo.getNumCodInEle(coordEnd) 
+					    || (gffGeneIsoInfo.getNumCodInEle(coordStart) == gffGeneIsoInfo.getNumCodInEle(coordEnd)
 								&&
 								gffGeneIsoInfo.getCodLoc(coordStart) == GffGeneIsoInfo.COD_LOC_EXON )
 					 )
@@ -530,16 +530,16 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 			if (Intron) {
 				if (flag[i] == 0
 						&& gffGeneIsoInfo.getExonNum() > 1 &&
-				( (gffGeneIsoInfo.getLocInEleNum(coordStart) != gffGeneIsoInfo.getLocInEleNum(coordEnd)
-				    && gffGeneIsoInfo.getLocInEleNum(coordStart) != 0 && gffGeneIsoInfo.getLocInEleNum(coordEnd) != 0)
+				( (gffGeneIsoInfo.getNumCodInEle(coordStart) != gffGeneIsoInfo.getNumCodInEle(coordEnd)
+				    && gffGeneIsoInfo.getNumCodInEle(coordStart) != 0 && gffGeneIsoInfo.getNumCodInEle(coordEnd) != 0)
 				|| (gffGeneIsoInfo.getCod2Tss(coordStart) <= 0 && gffGeneIsoInfo.getCod2Tes(coordEnd) > 0)
 				||
-				(gffGeneIsoInfo.getLocInEleNum(coordStart) == gffGeneIsoInfo.getLocInEleNum(coordEnd) 
+				(gffGeneIsoInfo.getNumCodInEle(coordStart) == gffGeneIsoInfo.getNumCodInEle(coordEnd) 
 						      && gffGeneIsoInfo.getCodLoc(coordStart) == GffGeneIsoInfo.COD_LOC_INTRON  )
-				|| (gffGeneIsoInfo.getLocInEleNum(coordStart) == 0 && (gffGeneIsoInfo.getLocInEleNum(coordEnd) >= 2 
+				|| (gffGeneIsoInfo.getNumCodInEle(coordStart) == 0 && (gffGeneIsoInfo.getNumCodInEle(coordEnd) >= 2 
 					          || gffGeneIsoInfo.getCodLoc(coordEnd) == GffGeneIsoInfo.COD_LOC_INTRON))
-				|| (gffGeneIsoInfo.getLocInEleNum(coordEnd) == 0 
-						      && (gffGeneIsoInfo.getLocInEleNum(coordStart) <= gffGeneIsoInfo.getExonNum() - 1 
+				|| (gffGeneIsoInfo.getNumCodInEle(coordEnd) == 0 
+						      && (gffGeneIsoInfo.getNumCodInEle(coordStart) <= gffGeneIsoInfo.getExonNum() - 1 
 						          || gffGeneIsoInfo.getCodLoc(coordStart) == GffGeneIsoInfo.COD_LOC_INTRON))
 			   )
 		) {

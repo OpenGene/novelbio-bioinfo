@@ -141,7 +141,7 @@ public class WebFetchOld {
 	/**
 	 * 设置提交的http头，目前模拟IE7.0的浏览器 设置成了默认的恢复策略，在发生异常时候将自动重试3次，但是不知道该怎么改掉
 	 */
-	private void HttpSetting(final HttpMethod method) {
+	private void HttpSetting(final HttpMethod method, String lastURL) {
 		// 设置成了默认的恢复策略，在发生异常时候将自动重试3次
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
 				new DefaultHttpMethodRetryHandler());
@@ -152,7 +152,7 @@ public class WebFetchOld {
 		method.setRequestHeader("Accept-Language", "zh-cn,zh;q=0.5");
 		// method.setRequestHeader("Host", "www.douban.com");
 		method.setRequestHeader("Connection", "Keep-Alive");
-
+		method.setRequestHeader("Referer", lastURL);
 		method
 				.setRequestHeader("User-Agent",
 						"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 2.0.50727)");// "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 2.0.50727)");
@@ -169,17 +169,17 @@ public class WebFetchOld {
 	/**
 	 * Method提交的准备工作 ，可以通过修改本类的redirectNum属性来修改重定向的次数
 	 */
-	private HttpMethod MethodReady(HttpMethod methodready, boolean changCookies)// 这里都是引用传递，所以只要最后关掉其中一个就可以了
+	private HttpMethod MethodReady(HttpMethod methodready, boolean changCookies, String lastURL)// 这里都是引用传递，所以只要最后关掉其中一个就可以了
 	{
 		/**
 		 * 设置输入的method 的Http头
 		 */
-		HttpSetting(methodready);
+		HttpSetting(methodready, lastURL);
 
 		/**
 		 * 设置可能的重定向的Http头
 		 */
-		HttpSetting(redirect);
+		HttpSetting(redirect, lastURL);
 
 		/**
 		 * 设置cookies
@@ -375,7 +375,7 @@ public class WebFetchOld {
 			/**
 			 * 获得最后一个direct的GetMethod对象
 			 */
-			get = (GetMethod) MethodReady(get, ChangeCookies);
+			get = (GetMethod) MethodReady(get, ChangeCookies,url);
 
 			// httpClient.executeMethod( httpFinally );
 			InputStream instream = get.getResponseBodyAsStream();
@@ -415,7 +415,7 @@ public class WebFetchOld {
 	 *            待保存的文件夹，默认最后加上"/"，如"/media/"之类
 	 */
 	public void getDownLoad(String url, String saveFilePath,
-			boolean changCookies) {
+			boolean changCookies, String lastURL) {
 		// 提取url中的文件名，为最后"/"后的所有名字
 		String[] stUrlSplit = url.split("/");
 		String stFileName = stUrlSplit[stUrlSplit.length - 1];
@@ -431,7 +431,7 @@ public class WebFetchOld {
 			/**
 			 * 获得最后一个direct的GetMethod对象
 			 */
-			get = (GetMethod) MethodReady(get, changCookies);
+			get = (GetMethod) MethodReady(get, changCookies,lastURL);
 			InputStream instream = get.getResponseBodyAsStream();
 			FileOutputStream out = new FileOutputStream(new File(saveFilePath
 					+ stFileName));
@@ -501,7 +501,7 @@ public class WebFetchOld {
 		 */
 		post = PostData(post, postContent);
 		try {
-			httpFinally = MethodReady(post, changeCookies);
+			httpFinally = MethodReady(post, changeCookies, url);
 			InputStream instream = httpFinally.getResponseBodyAsStream();
 			// 在目标页面情况未知的条件下，不推荐使用getResponseBodyAsString()方法
 			BufferedReader reader = new BufferedReader(new InputStreamReader(

@@ -598,17 +598,17 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 	 */
 	private static int[] getLsMapInfoUpDown(List<MapInfo> lsmapinfo)
 	{
-			int maxUp = 0; int maxDown = 0;
-			for (MapInfo mapInfo : lsmapinfo) {
-				int tmpUp = mapInfo.getFlagSite() - mapInfo.getStart();
-				int tmpDown = mapInfo.getEnd() - mapInfo.getFlagSite();
-				if (tmpUp > maxUp) {
-					maxUp = tmpUp;
-				}
-				if (tmpDown > maxDown) {
-					tmpDown = maxDown;
-				}
+		int maxUp = 0; int maxDown = 0;
+		for (MapInfo mapInfo : lsmapinfo) {
+			int tmpUp = mapInfo.getFlagSite() - mapInfo.getStart();
+			int tmpDown = mapInfo.getEnd() - mapInfo.getFlagSite();
+			if (tmpUp > maxUp) {
+				maxUp = tmpUp;
 			}
+			if (tmpDown > maxDown) {
+				tmpDown = maxDown;
+			}
+		}
 		return new int[]{maxUp,maxDown};
 	}
 	
@@ -631,12 +631,27 @@ public class MapInfo implements Comparable<MapInfo>, HeatChartDataInt, Cloneable
 	}
 	
 	/**
-	 * 还没实现
+	 * 仅比较refID，startLoc,endLoc,score.flagLoc
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		// TODO Auto-generated method stub
-		return super.equals(obj);
+		if (this == obj) return true;
+		if (obj == null) return false;
+		
+		if (getClass() != obj.getClass()) return false;
+		MapInfo otherObj = (MapInfo)obj;
+		if (
+				cis5to3 == otherObj.cis5to3
+				&& refID.equals(otherObj.refID)
+				&& startLoc == otherObj.startLoc
+				&& endLoc == otherObj.endLoc
+				&& score == otherObj.score
+				&& flagLoc == otherObj.flagLoc
+			)
+		{
+			return true;
+		}
+		return false;
 	}
 	
 	/**

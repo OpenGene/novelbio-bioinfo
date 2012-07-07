@@ -458,7 +458,7 @@ Example:O43526-2
 		if (!hashTaxID.contains(taxID)) {
 			return true;
 		}
-		GeneInfo copedID = new GeneInfo(ss[1], taxID);
+		GeneID copedID = new GeneID(ss[1], taxID);
 		//找到合适的表，NCBI或UniProt，并导入UniID
 		copedID.setUpdateRefAccID(ss[1],ss[2]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_UNIPROT_UNIID, false);

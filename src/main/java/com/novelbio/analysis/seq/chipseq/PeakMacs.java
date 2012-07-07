@@ -86,8 +86,8 @@ public class PeakMacs extends PeakCalling {
 			name = " -n " + outPrefix;
 		}
 		String cmd = "macs14 -t "+file +col+name + effge + mfole + pvalue + nolambda + format;//+ "-w";
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("macs");
+		CmdOperate cmdOperate = new CmdOperate(cmd, "macs");
+		cmdOperate.run();
 	}
 	
 	/**

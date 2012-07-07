@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -24,6 +25,7 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.test.testextend.a;
@@ -114,6 +116,29 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			gffGeneIsoInfoOut = gffdetail.getLongestSplit();
 		}
 		return gffGeneIsoInfoOut;
+	}
+	/**
+	 * 返回全体内含子，长度从小到大排序
+	 * @return
+	 */
+	public ArrayList<Integer> getLsIntronSortedS2M() {
+		ArrayList<Integer> lsIntronLen = new ArrayList<Integer>();
+		for(Entry<String, ListGff> entry:Chrhash.entrySet()) {
+			String key = entry.getKey();
+			ListGff value = entry.getValue();
+			int chrLOCNum=value.size();
+		    //一条一条染色体的去检查内含子和外显子的长度
+		    for (int i = 0; i < chrLOCNum; i++) {
+				GffDetailGene tmpUCSCgene=value.get(i);
+				GffGeneIsoInfo gffGeneIsoInfoLong = tmpUCSCgene.getLongestSplit();
+				gffGeneIsoInfoLong.getLsIntron();
+				for (ExonInfo intronInfo : gffGeneIsoInfoLong) {
+					lsIntronLen.add(intronInfo.getLen());
+				}
+			}
+		}
+		Collections.sort(lsIntronLen);
+		return lsIntronLen;
 	}
 	/**
 	 * 	返回外显子总长度，内含子总长度等信息，只统计最长转录本的信息
@@ -249,8 +274,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param title 给该GTF起个名字
 	 */
 	@Override
-	public void writeToGTF(String GTFfile,String title)
-	{
+	public void writeToGTF(String GTFfile,String title) {
 		TxtReadandWrite txtGtf = new TxtReadandWrite(GTFfile, true);
 		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(Chrhash);
 		//把得到的ChrID排个序
@@ -269,16 +293,22 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param txtWrite
 	 * @param lsGffDetailGenes
 	 */
-	private void writeToGTF(TxtReadandWrite txtWrite, ArrayList<GffDetailGene> lsGffDetailGenes, String title)
-	{
+	private void writeToGTF(TxtReadandWrite txtWrite, ArrayList<GffDetailGene> lsGffDetailGenes, String title) {
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			gffDetailGene.removeDupliIso();
 			String geneGTF = gffDetailGene.getGTFformate(title);
 			txtWrite.writefileln(geneGTF.trim());
 		}
 	}
+	/**
+	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GTF格式
+	 * 也就是说，仅含有一个转录本的基因就不写入文本了
+	 * @param txtWrite
+	 * @param lsGffDetailGenes
+	 * @param title
+	 */
 	@Override
-	public void writeToGFFIso(String GFFfile, String title) {
+	public void writeToGFFIsoMoreThanOne(String GFFfile, String title) {
 		TxtReadandWrite txtGtf = new TxtReadandWrite(GFFfile, true);
 		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(Chrhash);
 		//把得到的ChrID排个序
@@ -288,17 +318,18 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		for (String string : treeSet) {
 			ArrayList<GffDetailGene> lsGffDetailGenes = Chrhash.get(string);
-			writeToGFFIso(txtGtf, lsGffDetailGenes, title);
+			writeToGFFIsoMoreThanOne(txtGtf, lsGffDetailGenes, title);
 		}
 		txtGtf.close();
 	}
 	/**
-	 * 将一个染色体中的信息写入文本，按照GTF格式
+	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GTF格式
+	 * 也就是说，仅含有一个转录本的基因就不写入文本了
 	 * @param txtWrite
 	 * @param lsGffDetailGenes
 	 * @param title
 	 */
-	private void writeToGFFIso(TxtReadandWrite txtWrite, ArrayList<GffDetailGene> lsGffDetailGenes, String title) {
+	private void writeToGFFIsoMoreThanOne(TxtReadandWrite txtWrite, ArrayList<GffDetailGene> lsGffDetailGenes, String title) {
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			gffDetailGene.removeDupliIso();
 			if (gffDetailGene.getLsCodSplit().size() <= 1) {
@@ -311,18 +342,37 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	@Override
 	public void writeGene2Iso(String Gene2IsoFile) {
 		TxtReadandWrite txtGtf = new TxtReadandWrite(Gene2IsoFile, true);
+		HashSet<String> setRemoveRedundentID = new HashSet<String>();
 		ArrayList<GffDetailGene> lsGffDetailGenes = getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				GeneID copedID = gffGeneIsoInfo.getCopedID();
 				if (copedID.getIDtype() != GeneID.IDTYPE_ACCID || copedID.getSymbol() == null || copedID.getSymbol().equals("")) {
-					txtGtf.writefileln(copedID.getSymbol() + "\t" + gffGeneIsoInfo.getName());
+					String symbol = copedID.getSymbol();
+					if (symbol.equals("")) {
+						symbol = copedID.getAccID();
+					}
+					if (isNotRedundent(setRemoveRedundentID, symbol, gffGeneIsoInfo.getName())) {
+						txtGtf.writefileln(symbol + "\t" + gffGeneIsoInfo.getName());
+					}
 				}
 				else {
-					txtGtf.writefileln(gffDetailGene.getName().split(GffDetailGene.SEP_GENE_NAME)[0] + "\t" + gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+					if (isNotRedundent(setRemoveRedundentID, gffDetailGene.getName().split(GffDetailGene.SEP_GENE_NAME)[0], gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0])) {
+						txtGtf.writefileln(gffDetailGene.getName().split(GffDetailGene.SEP_GENE_NAME)[0] + "\t" + gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+					}
 				}
 			}
 		}
 		txtGtf.close();
+	}
+	
+	private boolean isNotRedundent(HashSet<String> setRemoveRedundentID, String symbol, String geneID) {
+		if (setRemoveRedundentID.contains(symbol + SepSign.SEP_ID + geneID)) {
+			return false;
+		}
+		else {
+			setRemoveRedundentID.add(symbol + SepSign.SEP_ID + geneID);
+			return true;
+		}
 	}
 }

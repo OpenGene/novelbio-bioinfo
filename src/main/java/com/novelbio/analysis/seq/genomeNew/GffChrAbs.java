@@ -20,6 +20,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.species.Species;
 /**
  * GffHashGene和SeqHash都是static，也就是一次只能对一个物种进行分析
  * MapReads不是static，也就是可以同时处理多个mapping文件
@@ -28,12 +29,11 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class GffChrAbs {
 private static final Logger logger = Logger.getLogger(GffChrAbs.class);
-	
-	private int taxID = 0;
 	private int distanceMapInfo = 3000;
 	GffHashGene gffHashGene = null;
 	SeqHash seqHash = null;
 	MapReads mapReads = null;
+	Species species;
 	
 	int[] tss = new int[]{-1500, 1500};
 	int[] tes = null;
@@ -44,10 +44,82 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	boolean intronFilter = false;
 	boolean filtertss = false;
 	boolean filtertes = false;
+
 	boolean HanYanFstrand = false;
+	
+	/** 标准化方法，默认为不标准化 */
+	int mapNormType = MapReads.NORMALIZATION_NO;
+	/** 主要用于画图 */
+	int upBp = 5000;//tss和tes以及其他位点的上游长度，默认5000
+	int downBp = 5000;//tss和tes以及其他位点的下游长度，默认5000
+	int tssUpBp = 3000;
+	int tssDownBp = 2000;
+	int geneEnd3UTR = 100;
+	
+//	String chrFile = "";
+	String chrRegx = null;
+	String equationsFile = "";
+
+	public GffChrAbs() {}
+	public GffChrAbs(Species species) {
+		setSpecies(species);
+	}	
+	public GffChrAbs(int taxID) {
+		setTaxID(taxID);
+	}
+	/**
+	 * @param gffType
+	 * @param gffFile
+	 * @param chrFile 序列文件或序列文件夹
+	 * @param regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，
+	   则用该正则表达式提取含有该文件名的文件 单文件默认为"";文件夹默认为"\\bchr\\w*"；
+	 * @param readsBed
+	 * @param binNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
+	 */
+	public GffChrAbs(String gffType, String gffFile, String chrFile, String regx, String readsBed, int binNum) {
+		setGffFile(0, gffType, gffFile);
+		setChrFile(chrFile, regx);
+		this.setMapReads(readsBed, binNum);
+	}
+	/**
+	 * @param gffType
+	 * @param gffFile
+	 * @param chrFile
+	 * @param readsBed
+	 * @param binNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
+	 */
+	public GffChrAbs(String gffType, String gffFile, String chrFile,String readsBed ,int binNum) {
+		setGffFile(0, gffType, gffFile);
+		setChrFile(chrFile, null);
+		this.setMapReads(readsBed, binNum);
+	}
+	public void setTaxID(int taxID) {
+		this.species = new Species(taxID);
+		setGffFile(species.getTaxID(), species.getGffFile()[0], species.getGffFile()[1]);
+		setChrFile(species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0]);
+	}
+	public void setSpecies(Species species) {
+		this.species = species;
+		setGffFile(species.getTaxID(), species.getGffFile()[0], species.getGffFile()[1]);
+		setChrFile(species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0]);
+	}
+
+	public int getTaxID() {
+		return species.getTaxID();
+	}
 	public void setHanYanFstrand(boolean hanYanFstrand) {
 		HanYanFstrand = hanYanFstrand;
 	}
+	public GffHashGene getGffHashGene() {
+		return gffHashGene;
+	}
+	public SeqHash getSeqHash() {
+		return seqHash;
+	}
+	public MapReads getMapReads() {
+		return mapReads;
+	}
+
 	/**
 	 * 对于Tss和GeneEnd的定义
 	 * @param filterTss
@@ -67,78 +139,15 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		this.tss = filterTss;
 		this.tes = filterGenEnd;
 	}
-	
+
 	public void setFilterGeneBody(boolean filterGeneBody, boolean filterExon, boolean filterIntron) {
 		this.genebody = filterGeneBody;
 		this.exonFilter = filterExon;
 		this.intronFilter = filterIntron;
 	}
-	
 	public void setFilterUTR(boolean filter5UTR, boolean filter3UTR) {
 		this.UTR5 = filter5UTR;
 		this.UTR3 = filter3UTR;
-	}
-	
-	public GffHashGene getGffHashGene() {
-		return gffHashGene;
-	}
-	public SeqHash getSeqHash() {
-		return seqHash;
-	}
-	public MapReads getMapReads() {
-		return mapReads;
-	}
-	
-	/**
-	 * 标准化方法，默认为不标准化
-	 */
-	int mapNormType = MapReads.NORMALIZATION_NO;
-	/**
-	 * 主要用于画图
-	 */
-	int upBp = 5000;//tss和tes以及其他位点的上游长度，默认5000
-	int downBp = 5000;//tss和tes以及其他位点的下游长度，默认5000
-	
-	int tssUpBp = 3000;
-	int tssDownBp = 2000;
-	int geneEnd3UTR = 100;
-	
-	
-	String chrFile = "";
-	String chrRegx = null;
-	
-	
-	String equationsFile = "";
-	/**
-	 * 
-	 * @param gffType
-	 * @param gffFile
-	 * @param chrFile
-	 * @param readsBed
-	 * @param binNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
-	 */
-	public GffChrAbs(String gffType, String gffFile, String chrFile,String readsBed ,int binNum) {
-		setGffFile(gffType, gffFile);
-		setChrFile(chrFile, null);
-		this.setMapReads(readsBed, binNum);
-		loadChrFile();
-	}
-	/**
-	 * @param gffType
-	 * @param gffFile
-	 * @param chrFile 序列文件或序列文件夹
-	 * @param regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，
-	   则用该正则表达式提取含有该文件名的文件 单文件默认为"";文件夹默认为"\\bchr\\w*"；
-	 * @param readsBed
-	 * @param binNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
-
-	 */
-	public GffChrAbs(String gffType, String gffFile, String chrFile, String regx, String readsBed, int binNum)
-	{
-		setGffFile(gffType, gffFile);
-		setChrFile(chrFile, regx);
-		this.setMapReads(readsBed, binNum);
-		loadChrFile();
 	}
 	/**
 	 * 设定mapreads的标准化方法
@@ -159,9 +168,10 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		this.upBp = upBp;
 		this.downBp = downBp;
 	}
-	public void setGffFile(String gffType, String gffFile) {
+	public void setGffFile(int taxID, String gffType, String gffFile) {
 		if (FileOperate.isFileExist(gffFile)) {
 			gffHashGene = new GffHashGene(gffType, gffFile);
+			gffHashGene.setTaxID(taxID);
 		}
 	}
 	/**
@@ -172,17 +182,10 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param regx
 	 */
 	public void setChrFile(String chrFile, String regx) {
-		this.chrFile = chrFile;
-		this.chrRegx = regx;
-		loadChrFile();
-	}
-	
-	public void loadChrFile() {
 		if (FileOperate.isFileExist(chrFile) || FileOperate.isFileDirectory(chrFile)) {
 			 seqHash = new SeqHash(chrFile, chrRegx);
 		}
 	}
-	
 	/**
 	 * @param readsFile mapping的结果文件，必须排过序，一般为bed格式
 	 * @param binNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
@@ -200,7 +203,6 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 			}
 			setMapCorrect();
 		}
-
 	}
 	/**
 	 * 给定一个文本来修正  没有文件则直接返回
@@ -210,27 +212,20 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		this.equationsFile = correctFile;
 		setMapCorrect();
 	}
-	/**
-	 * 设定用qpcr等参数校正mapping结果
-	 */
-	protected void setMapCorrect()
-	{
+	/** 设定用qpcr等参数校正mapping结果 */
+	protected void setMapCorrect() {
 		Equations equations = new Equations();
 		equations.setXYFile(equationsFile);
 		if (mapReads != null) {
-			mapReads.setEquations(equations);
+			mapReads.setFormulatToCorrectReads(equations);
 		}
 	}
 	public void loadMapReads() {
-		try {
-			mapReads.ReadMapFile();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		try { mapReads.ReadMapFile(); }
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
 	/**
 	 * 获得指定文件内的坐标信息
 	 * 如果两个位点终点的间距在distanceMapInfo以内，就会删除那个权重低的
@@ -241,8 +236,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param colScore 打分，也就是权重，没有该列的话，就设置为 <= 0
 	 * @param rowStart
 	 */
-	public ArrayList<MapInfo> readFileRegionMapInfo(String txtExcel, int colChrID, int colStartLoc, int colEndLoc, int colScore,int rowStart)
-	{
+	public ArrayList<MapInfo> readFileRegionMapInfo(String txtExcel, int colChrID, int colStartLoc, int colEndLoc, int colScore,int rowStart) {
 		int[] columnID = null;
 		if (colScore <= 0 ) {
 			 columnID = new int[]{colChrID,colStartLoc,colEndLoc};
@@ -254,7 +248,6 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		ArrayList<MapInfo> lsMapInfos = new ArrayList<MapInfo>();
 		for (String[] strings : lstmp) {
 			MapInfo mapInfo = new MapInfo(strings[0]);
-			
 			try {
 				mapInfo.setStartEndLoc(Integer.parseInt(strings[1]),Integer.parseInt(strings[2]));
 			} catch (Exception e) {
@@ -538,14 +531,11 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param RefSeqFile
 	 * @return
 	 */
-	public String getRefLenFile()
-	{
-		
-		String outFile = FileOperate.changeFileSuffix(FileOperate.removeSep(chrFile), "_chrLen", "list");
+	public String getRefLenFile() {
+		String outFile = FileOperate.changeFileSuffix(FileOperate.removeSep(seqHash.getChrFile()), "_chrLen", "list");
 		if (FileOperate.isFileExist(outFile)) {
 			return outFile;
 		}
-		 loadChrFile();
 		ArrayList<String[]> lsChrLen = seqHash.getChrLengthInfo();
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outFile, true);
 		txtReadandWrite.ExcelWrite(lsChrLen, "\t", 1, 1);

@@ -16,7 +16,7 @@ public class FastQRecord implements Cloneable {
 	/** 序列质量控制，低于该质量就说明本记录有问题 */
 	protected int quality = QUALITY_MIDIAN;
 	/** 裁剪序列时最短为多少 */
-	private int trimMinLen = 22;
+	private int readsMinLen = 22;
 	
 	private static int errorTrimAdapterReadsNum = 0;
 	public static void setErrorTrimAdapterReadsNum(int errorTrimAdapterReadsNum) {
@@ -56,7 +56,7 @@ public class FastQRecord implements Cloneable {
 	/** 裁剪序列时最短为多少， 默认为22
 	 */
 	public void setTrimMinLen(int trimMinLen) {
-		this.trimMinLen = trimMinLen;
+		this.readsMinLen = trimMinLen;
 	}
 	/**
 	 * 设定序列质量，用phred格式设定
@@ -351,11 +351,12 @@ public class FastQRecord implements Cloneable {
 	 * 返回-1表示出错
 	 */
 	private int trimNNNLeft(String seqIn,int cutOff, int numMM) {
+		char[] chrSeq = this.seqFasta.SeqSequence.toCharArray();
 		char[] chrIn = seqIn.toCharArray();
 		int numMismatch = 0;
 		int con = -1;//记录连续的低质量的字符有几个
 		for (int i = 0; i < chrIn.length; i++) {
-			if ((int)chrIn[i] - fastqOffset > cutOff) {
+			if ((int)chrIn[i] - fastqOffset > cutOff && chrSeq[i] != 'N' && chrSeq[i] != 'n') {
 				numMismatch++;
 				con++;
 			}
@@ -380,11 +381,12 @@ public class FastQRecord implements Cloneable {
 	 * 返回-1表示出错
 	 */
 	private int trimNNNRight(String seqIn,int cutOff, int numMM) {
+		char[] chrSeq = this.seqFasta.SeqSequence.toCharArray();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		int numMismatch = 0;
 		int con = 0;//记录连续的低质量的字符有几个
 		for (int i = lenIn-1; i >= 0; i--) {
-			if ((int)chrIn[i] - fastqOffset > cutOff) {
+			if ((int)chrIn[i] - fastqOffset > cutOff && chrSeq[i] != 'N' && chrSeq[i] != 'n') {
 				numMismatch++;
 				con++;
 			}
@@ -406,7 +408,7 @@ public class FastQRecord implements Cloneable {
 	 * 如果截短后的长度小于设定的最短reads长度，那么就返回null
 	 */
 	private FastQRecord trimSeq(int start, int end) {
-		if (end - start < trimMinLen) {
+		if (end - start < readsMinLen) {
 			return null;
 		}
 		FastQRecord result = new FastQRecord();
@@ -415,7 +417,7 @@ public class FastQRecord implements Cloneable {
 		}
 		result.seqFasta = seqFasta.trimSeq(start, end);
 		result.fastqOffset= fastqOffset;
-		result.trimMinLen = trimMinLen;
+		result.readsMinLen = readsMinLen;
 		result.seqQuality = seqQuality.substring(start, end);
 		return result;
 	}
@@ -453,7 +455,7 @@ public class FastQRecord implements Cloneable {
 		}
 		seqFasta.seqQuality = seqQuality;
 		seqFasta.fastqOffset = fastqOffset;
-		seqFasta.trimMinLen = trimMinLen;
+		seqFasta.readsMinLen = readsMinLen;
 		return seqFasta;
 	}
 
@@ -507,6 +509,9 @@ public class FastQRecord implements Cloneable {
 	 */
 	public boolean QC() {
 		if (seqFasta.SeqSequence == null) {
+			return false;
+		}
+		if (seqFasta.SeqSequence.length() < readsMinLen) {
 			return false;
 		}
 		if (seqQuality.endsWith("BBBBBBB") ) {

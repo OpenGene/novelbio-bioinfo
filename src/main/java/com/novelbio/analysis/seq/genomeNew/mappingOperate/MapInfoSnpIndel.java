@@ -8,12 +8,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import javax.swing.text.html.parser.Entity;
 
+import org.apache.log4j.Logger;
+import org.omg.CosNaming._BindingIteratorImplBase;
+
+import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.tools.Mas3.getProbID;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.domain.geneanno.SnpIndelRs;
 import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.service.servgeneanno.ServSnpIndelRs;
@@ -24,44 +32,33 @@ import com.novelbio.database.updatedb.database.CopeDBSnp132;
  * @author zong0jie
  *
  */
-public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
-	public static final String TYPE_INSERT = "insert";
-	public static final String TYPE_DELETION = "deletion";
-	public static final String TYPE_MISMATCH = "mismatch";
-	public static final String TYPE_CORRECT = "correct";
-	public static final String SEP = "@//@";
+public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
+	public static final int TYPE_INSERT = 40;
+	public static final int TYPE_DELETION = 30;
+	public static final int TYPE_MISMATCH = 20;
+	public static final int TYPE_CORRECT = 10;
+//	public static final String SEP = "@//@";
 	/**  snp的类型，TYPE_INSERT等 */
-	String type = TYPE_CORRECT;
+	String sampleName = "";;
 	/** 
 	 * <b>里面都是正向的序列</b>
-	 * 该位置可能有不止一种的插入缺失或是碱基替换类型，那么就用该hash表来存储这么多种信息
-	 * allen的碱基+sep+Type
+	 * 该位置可能有不止一种的插入缺失或是碱基替换类型，那么就用该hash表来存储这么多种信息<br>
+	 *Key: referenceSeq + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + snpType <br>
 	 * value: 数量，用数组仅仅为了能够传递地址  */
-	HashMap<String, int[]> hashAlle = new HashMap<String, int[]>();
+	HashMap<String, SiteSnpIndelInfo> mapAllen2Num = new HashMap<String, SiteSnpIndelInfo>();
 
 	int taxID = 0;
 	private static Logger logger = Logger.getLogger(MapInfoSnpIndel.class);
-	SnpIndelRs snpIndelRs;
-	String thisBase = "";
+	String chrID;
 	String refBase = "";
-	String thisAAnr = "";
 	/** snp在基因中的位置，0-1之间，0.1表示snp在基因长度*0.1的位置处  */
 	double prop = 0;
-//	/** 本snp或indel所在的起点 */
-//	int startLoc = 0;
-//	/** 本snp或indel所在的refgenome上的终点，如果为snp，则起点和终点一样 */
-//	int endLoc = 0;
-	MapInfo mapInfo = new MapInfo();
-	/**
-	 * 移码，0，1，2三种
-	 */
-	int orfShift = 0; 
+	/** 本snp或indel所在的起点 */
+	int refSnpIndelStart = 0;
 	/**
 	 * snp或indel所在的转录本
 	 */
-	GffGeneIsoInfo gffGeneIsoInfo;
-	ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
-	
+	GffGeneIsoInfo gffGeneIsoInfo;	
 	/** AD
 	 * Allelic depths for the ref and alt alleles in the order listed
 	 */
@@ -128,12 +125,63 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 	String quality = "";
 	/** 是否符合标准 */
 	String Filter = "";
-	
-	public String getRefID() {
-		return mapInfo.getRefID();
+	/**
+	 * @param taxID 物种
+	 * @param chrID 染色体号
+	 * @param snpLoc snp位点
+	 * @param referenceSeq ref的序列
+	 * @param thisSeq 本序列
+	 */
+	public MapInfoSnpIndel(GffChrAbs gffChrAbs,String chrID, int snpLoc, String referenceSeq, String thisSeq) {
+		this.taxID = gffChrAbs.getTaxID();
+		this.chrID = chrID;
+		//flagLoc有东西说明是snp
+		this.refSnpIndelStart = snpLoc;
+	    this.refBase = referenceSeq.charAt(0) + "";
+	    setGffIso(gffChrAbs);
+	    
+	    SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, referenceSeq, thisSeq);
+	    mapAllen2Num.put(siteSnpIndelInfo.getSiteTypeInfo(), siteSnpIndelInfo);
 	}
 	/**
-	 * snp在基因中的位置，0-1之间，0.1表示snp在基因长度*0.1的位置处
+	 * @param taxID 物种
+	 * @param chrID 染色体号
+	 * @param snpLoc snp位点
+	 * @param referenceSeq ref的序列
+	 * @param thisSeq 本序列
+	 */
+	public MapInfoSnpIndel(int taxID, GffChrAbs gffChrAbs, String pileUpLine) {
+		this.taxID = taxID;
+		setSamToolsPilup(pileUpLine, gffChrAbs);
+	}
+	/**
+	 * @param taxID 物种
+	 * @param chrID 染色体号
+	 * @param snpLoc snp位点
+	 * @param referenceSeq ref的序列
+	 * @param thisSeq 本序列
+	 */
+	public MapInfoSnpIndel(String chrID, int snpLoc) {
+		this.chrID = chrID;
+		//flagLoc有东西说明是snp
+		this.refSnpIndelStart = snpLoc;
+	}
+	/**
+	 * snp或indel所在的转录本
+	 * 同时设定setProp，cis5to3，和name，都用gffGeneIsoInfo的信息
+	 */
+	private void setGffIso(GffChrAbs gffChrAbs) {
+		if (gffChrAbs == null)
+			return;
+
+		this.gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchLocation(chrID, refSnpIndelStart).getCodInExonIso();
+		if (gffGeneIsoInfo == null) {
+			return;
+		}
+		setProp( (double)gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart()) / (gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart())  - gffGeneIsoInfo.getCod2TESmRNA(getRefSnpIndelStart())) );
+	}
+	/**
+	 * refBase在基因中的位置，0-1之间，0.1表示snp在基因长度*0.1的位置处
 	 * 越小越靠近头部
 	 * 0-1之间
 	 */
@@ -141,93 +189,18 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 		this.prop = prop;
 	}
 	/**
-	 * snp在基因长度的百分比
-	 * 越小越靠近头部
-	 */
-	public double getProp() {
-		return prop;
-	}
-	/**
-	 * 获得snp或indel在ref上的起点，实际位点
-	 * @return
-	 */
-	public int getRefSnpIndelStart() {
-		return mapInfo.getStart();
-	}
-	/** 本snp或indel所在的refgenome上的终点，如果为snp，则起点和终点一样 */
-	public int getRefSnpIndelEnd() {
-		return mapInfo.getEnd();
-	}
-	/**
-	 * 按照方向获得snp或indel在ref上的起点
-	 * @return
-	 */
-	public int getRefSnpIndelStartCis() {
-		if (mapInfo.isCis5to3()) {
-			return mapInfo.getStart();
-		}
-		else {
-			return mapInfo.getEnd();
-		}
-	}
-	/** 按照方向获得snp或indel在ref上的终点，如果为snp则起点和终点一样 */
-	public int getRefSnpIndelEndCis() {
-		if (mapInfo.isCis5to3()) {
-			return mapInfo.getEnd();
-		}
-		else {
-			return mapInfo.getStart();
-		}
-	}
-	/**
 	 *  在已有refbase信息的基础上，查找该refSnpIndelStart位点有哪些indel或snp
 	 *  找到的indel所对应的refbase可能和原来的refbase不一样
 	 * @param samString
 	 */
-	public void setSamToolsPilup(String samString) {
+	public void setSamToolsPilup(String samString, GffChrAbs gffChrAbs) {
 		String[] ss = samString.split("\t");
-		mapInfo.setRefID(ss[0]);
-		mapInfo.startLoc = Integer.parseInt(ss[1]);//本行舍不设定都无所谓，因为输入的时候就是要求相同的ID
+		this.refSnpIndelStart = Integer.parseInt(ss[1]);//本行舍不设定都无所谓，因为输入的时候就是要求相同的ID
+		this.refBase = ss[2];
 		this.Read_Depth_Filtered = Integer.parseInt(ss[3]);
-		setAllenInfo(ss[4]);
-	}
-	/**
-	 * @param taxID 物种
-	 * @param chrID 染色体号
-	 * @param snpLoc snp位点
-	 * @param refBase ref的序列
-	 * @param thisBase 本序列
-	 */
-	public MapInfoSnpIndel(int taxID,String chrID, int snpLoc, String refBase, String thisBase) {
-		mapInfo = new MapInfo(chrID);
-		this.taxID = taxID;
-		//flagLoc有东西说明是snp
-		if (refBase.trim().length() == 1 && thisBase.trim().length() == 1) {
-			mapInfo.setStartEndLoc(snpLoc, snpLoc);
-		}
-		else {
-			mapInfo.setStartEndLoc(snpLoc, snpLoc+ refBase.trim().length() - 1);
-		}
-		
-	    this.refBase = refBase;
-	    this.thisBase = thisBase;
-	    
-	    if (refBase.length() == 1 && thisBase.length() == 1) {
-	    	this.type = TYPE_MISMATCH;
-		}
-	    else if (refBase.length() < thisBase.length()) {
-			this.type = TYPE_INSERT;
-		}
-	    else if (refBase.length() > thisBase.length()) {
-			this.type = TYPE_DELETION;
-		}
-	    hashAlle.put(thisBase + SEP + type, new int[]{0});
-	}
-	/**
-	 * 返回snp的类型，TYPE_INSERT等
-	 */
-	public String getType() {
-		return this.type;
+		this.chrID = ss[0];
+		setGffIso(gffChrAbs);
+		setAllenInfo(refBase, ss[4], gffChrAbs);
 	}
 	/**
 	 * 重新设定Allelic_depths_Ref，和hashAlle信息
@@ -245,20 +218,21 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 	 *  <b>‘$’</b> marks the end of a read segment.
 	 * @param pileUpInfo 输入 ...........,.............,....,....,.,.,..,..,...,....,.^!. 这种东西
 	 */
-	private void setAllenInfo(String pileUpInfo) {
-		Allelic_depths_Ref = 0; hashAlle = new HashMap<String, int[]>();
+	private void setAllenInfo(String refBase, String pileUpInfo, GffChrAbs gffChrAbs) {
+		Allelic_depths_Ref = 0; mapAllen2Num = new HashMap<String, SiteSnpIndelInfo>();
+		String referenceSeq = refBase, thisSeq = refBase;
 		char[] pipInfo = pileUpInfo.toCharArray();
 		for (int i = 0; i < pipInfo.length; i++) {
 			char c = pipInfo[i];
-			if (c == '$')
-				continue;
-			if (c == '^') {
-				i ++;
+			if (c == '$') continue;
+			if (c == '^' ) {
+				i ++; continue;
+			}
+			else if (c == 'n' || c== 'N') {
 				continue;
 			}
-			else if (c == ',' || c == '.' ) {
-				Allelic_depths_Ref++;
-				continue;
+			else if (c == ',' || c == '.') {
+				Allelic_depths_Ref++; continue;
 			}
 			else if (c == '+' || c == '-') {
 				int tmpInDelNum = 0;
@@ -266,6 +240,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 				//如果开头是“+”号，则获得+号后的数字，也就是indel的长度
 				for (; i < pipInfo.length; i++) {
 					char tmpNum = pipInfo[i];
+					//转换为数字字符
 					if (tmpNum >= 48 && tmpNum <=57) {
 						tmpInDelNum = tmpInDelNum*10 + tmpNum -  48;
 					}
@@ -281,20 +256,28 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 					tmpSeq[j] = pipInfo[i];
 				}
 				String indel = String.copyValueOf(tmpSeq);
-				//装入hash表
-				String type = "";
-				if (c == '+')
+				int type = TYPE_CORRECT;
+				if (c == '+') {
 					type = TYPE_INSERT;
-				else
-					type = TYPE_DELETION;
-				String indelInfo = (indel+SEP+type).toLowerCase();
-				if (hashAlle.containsKey(indelInfo)) {
-					int[] tmpNum = hashAlle.get(indelInfo);
-					tmpNum[0]++;
+					referenceSeq = refBase;
+					thisSeq = refBase + indel;
 				}
 				else {
-					int[] tmpNum = new int[]{1};
-					hashAlle.put(indelInfo, tmpNum);
+					type = TYPE_DELETION;
+					referenceSeq = refBase + indel;
+					thisSeq = refBase;
+				}
+				SiteSnpIndelInfo siteSnpIndelInfo = null;
+				String indelInfo = (referenceSeq + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + type).toLowerCase();
+				
+				if (mapAllen2Num.containsKey(indelInfo)) {
+					siteSnpIndelInfo = mapAllen2Num.get(indelInfo);
+					siteSnpIndelInfo.addThisBaseNum();
+				}
+				else {
+					siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, referenceSeq, thisSeq);
+					siteSnpIndelInfo.setThisBaseNum(1);
+					mapAllen2Num.put(indelInfo, siteSnpIndelInfo);
 				}
 			}
 			else if (c == '*') {
@@ -302,38 +285,58 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 			}
 			//mismatch
 			else {
-				type = TYPE_MISMATCH;
-				String mismatchInfo = (pipInfo[i] + SEP + TYPE_MISMATCH).toLowerCase();
-				if (hashAlle.containsKey(mismatchInfo)) {
-					int[] tmpNum = hashAlle.get(mismatchInfo);
-					tmpNum[0]++;
+				SiteSnpIndelInfo siteSnpIndelInfo = null;
+				thisSeq = pipInfo[i] + "";
+				String mismatchInfo = (refBase + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + TYPE_MISMATCH).toLowerCase();
+				if (mapAllen2Num.containsKey(mismatchInfo)) {
+					siteSnpIndelInfo = mapAllen2Num.get(mismatchInfo);
+					siteSnpIndelInfo.addThisBaseNum();
 				}
 				else {
-					int[] tmpNum = new int[]{1};
-					hashAlle.put(mismatchInfo, tmpNum);
+					siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, refBase, thisSeq);
+					siteSnpIndelInfo.setThisBaseNum(1);
+					mapAllen2Num.put(mismatchInfo, siteSnpIndelInfo);
 				}
 			}
 		}
+	}
+	public String getRefID() {
+		return chrID;
+	}
+
+	/**
+	 * 获得snp或indel在ref上的起点，实际位点
+	 * @return
+	 */
+	public int getRefSnpIndelStart() {
+		return refSnpIndelStart;
 	}
 	/**
 	 * 给定序列和错配方式，返回所含有的reads堆叠数
 	 * 因为本位点可能有多种错配，所以给定一个然后查找，看能找到几个
 	 * 从hash表中获得
-	 * @param seqInfo
-	 * @param seqType
+	 * @param referenceSeq
+	 * @param thisSeq
+	 * @param snpType
 	 * @return
 	 */
-	public int getSeqType(String seqInfo, String seqType) {
-		String tmpInfo = (seqInfo.trim()+SEP+seqType).toLowerCase();
-		int[] num = hashAlle.get(tmpInfo);
-		if (num == null) {
-			return 0;
-		}
-		else {
-			return num[0];
-		}
+	public SiteSnpIndelInfo getSnpIndel(String referenceSeq, String thisSeq, int snpType) {
+		String tmpInfo = (referenceSeq + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + snpType ).toLowerCase();
+		SiteSnpIndelInfo siteSnpIndelInfo = mapAllen2Num.get(tmpInfo);
+		return siteSnpIndelInfo;
 	}
-	
+	/**
+	 * 给定序列和错配方式，返回所含有的reads堆叠数
+	 * 因为本位点可能有多种错配，所以给定一个然后查找，看能找到几个
+	 * 从hash表中获得
+	 * @param referenceSeq
+	 * @param thisSeq
+	 * @param snpType
+	 * @return
+	 */
+	public SiteSnpIndelInfo getSnpIndelNum(SiteSnpIndelInfo siteSnpIndelInfo) {
+		return mapAllen2Num.get(siteSnpIndelInfo.getSiteTypeInfo());
+	}
 	/**
 	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
 	 * 注意，输入的mapInfoSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>
@@ -343,27 +346,12 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 	 * @param mapInfoSnpIndel 正常的别的样本的信息
 	 * @return 出错返回-1
 	 */
-	public int getSeqTypeNum(MapInfoSnpIndel mapInfoSnpIndel) {
+	public SiteSnpIndelInfo getSnpIndelNum(MapInfoSnpIndel mapInfoSnpIndel) {
 		if (mapInfoSnpIndel.getRefSnpIndelStart() != getRefSnpIndelStart()) {
 			logger.error("输入的查找位点不是同一个，本位点：" + getRefSnpIndelStart() + "查找位点：" + mapInfoSnpIndel.getRefSnpIndelStart());
-			return -1;
+			return null;
 		}
-		String seqInfo = "";
-		if (mapInfoSnpIndel.getType().equals(TYPE_DELETION)) {
-			seqInfo = mapInfoSnpIndel.getRefBase().substring(1);
-		}
-		else if (mapInfoSnpIndel.getType().equals(TYPE_INSERT)) {
-			seqInfo = mapInfoSnpIndel.getThisBase().substring(1);
-		}
-		else {
-			seqInfo = mapInfoSnpIndel.getThisBase();
-		}
-		String tmpInfo = (seqInfo.trim()+SEP+mapInfoSnpIndel.getType()).toLowerCase();
-		int[] num = hashAlle.get(tmpInfo);
-		if (num == null)
-			return 0;
-		else
-			return num[0];
+		return getBigAllenInfo();
 	}
 	/**
 	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
@@ -377,62 +365,61 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 	 * 出错返回"";
 	 */
 	public String getSeqTypeNumStr(MapInfoSnpIndel mapInfoSnpIndel) {
+		SiteSnpIndelInfo siteSnpIndelInfoQuery = mapInfoSnpIndel.getBigAllenInfo();
+		return getSeqTypeNumStr(siteSnpIndelInfoQuery);
+	}
+	/**
+	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
+	 * 注意，输入的mapInfoSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>
+	 * 此外输入的indel在查找的时候会将第一位删除，因为GATK出来的第一位是indel的前一位<br>
+	 * 返回该种形式错配以及相应序列所含有的reads堆叠数
+	 * 从hash表中获得
+	 * @param mapInfoSnpIndel 正常的别的样本的信息
+	 * @return 返回描述性的话:<br>
+	 * refID \t  refStart \t refBase  \t  depth \t indelBase  \t indelNum   <br>
+	 * 出错返回"";
+	 */
+	public String getSeqTypeNumStr(SiteSnpIndelInfo siteSnpIndelInfoQuery) {
 		//也就是用别的位点的检测出的错配信息去查找本位点的错配信息，最后返回string结果
 		//这里不能用mapInfoSnpIndel.getRefBase()来代替otherMap.getRefBase()
 		//因为mapInfoSnpIndel.getRefBase()可能并不是真正的ref，特别为缺失的时候
-		int num = getSeqTypeNum(mapInfoSnpIndel);
-		if (num == -1) {
+		SiteSnpIndelInfo siteSnpIndelInfo = getSnpIndelNum(siteSnpIndelInfoQuery);
+		if (siteSnpIndelInfo == null) {
 			return "";
 		}
-		String tmpResult = mapInfo.getRefID()+"\t"+getRefSnpIndelStart()+"\t" + mapInfoSnpIndel.getRefBase()+"\t" +getAllelic_depths_Ref();
-		tmpResult = tmpResult + "\t" +mapInfoSnpIndel.getThisBase() + "\t" + getSeqTypeNum(mapInfoSnpIndel);
+		String tmpResult = getRefID()+"\t"+getRefSnpIndelStart()+"\t" + siteSnpIndelInfoQuery.getReferenceSeq()+"\t" +getAllelic_depths_Ref();
+		tmpResult = tmpResult + "\t" +siteSnpIndelInfo.getThisSeq() + "\t" + siteSnpIndelInfo.getThisBaseNum();
 		return tmpResult;
 	}
 	/**
-	 * 返回所有的非ref的基因以及对应的种类和数量
-	 * list-string[3]
-	 * 0：seq
-	 * 1：type
-	 * 2：num
-	 * @return
+	 * 返回数量最大的snp位点
 	 */
-	public ArrayList<String[]> getAllAllenInfo() {
-		ArrayList<String[]> lsAllenInfo = new ArrayList<String[]>();
-		for (Entry<String, int[]> entry : hashAlle.entrySet()) {
-			String[] tmpInfo = new String[3];
-			tmpInfo[0] = entry.getKey().split(SEP)[0];
-			tmpInfo[1] = entry.getKey().split(SEP)[1];
-			tmpInfo[2] = entry.getValue() + "";
-			lsAllenInfo.add(tmpInfo);
+	public SiteSnpIndelInfo getBigAllenInfo() {
+		ArrayList<SiteSnpIndelInfo> lsAllenInfo = ArrayOperate.getArrayListValue(mapAllen2Num);
+		Collections.sort(lsAllenInfo, Collections.reverseOrder());
+		if (lsAllenInfo.size() > 0) {
+			return lsAllenInfo.get(0);
 		}
-		return lsAllenInfo;
+		return null;
 	}
 	/**
-	 * 我忘了这个是干啥的了，
-	 * 获得实际的起点，indel需要加上1
-	 * @return
+	 * 返回所有的非ref的基因以及对应的种类和数量 
 	 */
-	@Deprecated
-	public int getStartRealaaa() {
-		if (type.equals(TYPE_MISMATCH)) {
-			return mapInfo.getStart();
-		}
-		else {
-			return mapInfo.getStart() + 1;
-		}
-	}
-	
-	boolean isExon = false;
-	public void setExon(boolean isExon) {
-		this.isExon = isExon;
-	}
-	public boolean isExon() {
-		return isExon;
+	public ArrayList<SiteSnpIndelInfo> getLsAllenInfoSortBig2Small() {
+		ArrayList<SiteSnpIndelInfo> lsAllenInfo = ArrayOperate.getArrayListValue(mapAllen2Num);
+		Collections.sort(lsAllenInfo, Collections.reverseOrder());
+		return lsAllenInfo;
 	}
 	public void setRefBase(String refBase) {
 		this.refBase = refBase;
 	}
-
+	/**
+	 * snp在基因长度的百分比
+	 * 越小越靠近头部
+	 */
+	public double getProp() {
+		return prop;
+	}
 	public String getQuality() {
 		return quality;
 	}
@@ -498,13 +485,6 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 	}
 	public void setFilter(String filter) {
 		Filter = filter;
-	}
-	/**
-	 * DBsnp的ID
-	 * @return
-	 */
-	public String getSnpRsID() {
-		return snpRsID;
 	}
 	/**
 	 * SB, How much evidence is there for Strand Bias (the variation being seen
@@ -582,101 +562,13 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 		}
 	}
 	/**
-	 * 实际的序列
-	 * @return
-	 */
-	public String getThisBase() {
-		return thisBase;
-	}
-	/**
 	 * 参考序列
 	 * @return
 	 */
 	public String getRefBase() {
 		return refBase;
 	}
-	public String getRefAAseq() {
-		return mapInfo.getSeqFasta().toStringAA();
-	}
-	
-	/**
-	 * 跟方向相关
-	 * 给定序列和起始位点，用snp位点去替换序列，同时将本次替换是否造成移码写入orfshift
-	 * @param thisBase 给定序列--该序列必须是正向，然后
-	 * @param cis5to3 给定序列的正反向
-	 * @param startLoc  在序列的哪一个点开始替换. 0表示插到最前面。1表示从第一个开始替换
-	 * 如果ref为""，则将序列插入在startBias那个碱基的后面
-	 * @return
-	 */
-	private SeqFasta replaceSnpIndel(String replace, int startLoc, int endLoc) {
-		SeqFasta seqFasta = mapInfo.getSeqFasta().clone();
-		if (seqFasta.toString().equals("")) {
-			return new SeqFasta();
-		}
-		seqFasta.modifySeq(startLoc, endLoc, replace, false, false);
-		//修改移码
-		orfShift = Math.abs(replace.length() - refBase.length())%3;
-		return seqFasta;
-	}
-	/** snp所在refnr上的位置 */
-	int replaceLoc = 0;
-	/**
-	 * 用于snp位点的替换，也就是用新的snp或indel来替换老的位点
-	 * @param replaceLoc 当序列为正向时的位置，所要替换的点在序列上的位置，内部根据方向自动颠倒
-	 */
-	public void setReplaceLoc(int replaceLoc) {
-		this.replaceLoc = replaceLoc;
-	}
-	/**
-	 * 如果一个位点有两个以上的snp，就可能会出错
-	 * 获得本snp位置最多变异的AA序列
-	 * 注意要通过{@link #setCis5to3(Boolean)}来设定 插入序列在基因组上是正向还是反向
-	 * 还要通过{@link #setReplaceLoc(int)}来设定插入在refnr上的位置
-	 * @return 没有的话就返回一个空的seqfasta
-	 */
-	public SeqFasta getThisAAnr() {
-		int max = -1;
-		String maxIndelType = "";//获得变异最大的点的序列
-		for (Entry<String, int[]> entry : hashAlle.entrySet()) {
-			if (entry.getValue()[0] > max) {
-				maxIndelType = entry.getKey();
-				max = entry.getValue()[0];
-			}
-		}
-		String seq = maxIndelType.split(SEP)[0];
-		if ( mapInfo.isCis5to3() != null && ! mapInfo.isCis5to3()) {
-			seq = SeqFasta.reservecom(seq);
-		}
-		if (gffGeneIsoInfo == null)
-			return new SeqFasta();
-		
-		int startReplace = replaceLoc;
-		int endReplace = startReplace + refBase.length() - 1;
-		return replaceSnpIndel(seq, startReplace, endReplace);
-	}
-	
-	/**
-	 * 移码突变，注意调用前务必先调用
-	 * {@link #getThisAAnr()}
-	 * @param orfShift
-	 */
-	public int getOrfShift() {
-		return orfShift;
-	}
 
-	/**
-	 * snp或indel所在的转录本
-	 * 同时设定setProp，cis5to3，和name，都用gffGeneIsoInfo的信息
-	 */
-	public void setGffIso(GffGeneIsoInfo gffGeneIsoInfo) {
-		this.gffGeneIsoInfo = gffGeneIsoInfo;
-		if (gffGeneIsoInfo == null) {
-			return;
-		}
-		setProp( (double)gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart()) / (gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart())  - gffGeneIsoInfo.getCod2TESmRNA(getRefSnpIndelStart())) );
-		 mapInfo.setCis5to3(gffGeneIsoInfo.isCis5to3());
-		 mapInfo.setName(gffGeneIsoInfo.getName());
-	}
 	/**
 	 * 获得所在的转录本
 	 * @return
@@ -698,187 +590,82 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 			return false;
 		}
 	}
-	
-	String snpRsID = "";
-	/**
-	 * 设定snpID，自动获得对应的DBsnp信息
-	 * @param snpRsID
-	 */
-	public void setDBSnpID(String snpRsID) {
-		if (snpRsID != null && !snpRsID.trim().equals("")) {
-			if (!snpRsID.equals(snpRsID)) {
-				logger.error("本dbspnID与输入的dbsnpID不对应："+snpRsID + snpIndelRs.getSnpRsID());
-			}
-		}
-		this.snpRsID = snpRsID;
-	}
-	
-	
-	/**
-	 * 设定DBsnp的信息，有设定flag就当snp，没有设定flag就当indel
-	 * @param snpIndelRs
-	 */
-	private void setSnpIndelRs() {
-		SnpIndelRs snpIndelRs = new SnpIndelRs();
-		snpIndelRs.setChrID(mapInfo.getRefID());
-		snpIndelRs.setTaxID(this.taxID);
-		if (snpRsID != null && !snpRsID.equals("")) {
-			snpIndelRs.setSnpRsID(snpRsID);
-			this.snpIndelRs = servSnpIndelRs.querySnpIndelRs(snpIndelRs);
-			return;
-		}
-		else
-			return;
-	}
-	/**
-	 * 如果在SNPDB中有记载，获得记载的信息
-	 * @return
-	 */
-	public SnpIndelRs getSnpIndelRs() {
-		if (snpIndelRs != null) {
-			return snpIndelRs;
-		}
-		setSnpIndelRs();
-		return snpIndelRs;
-	}
-	public String toString() {
-		String refnr =  mapInfo.getSeqFasta().toString();
-		String refaa =  mapInfo.getSeqFasta().toStringAA(false);
-		String thisnr =  getThisAAnr().toString();
-		String thisaa = getThisAAnr().toStringAA(false);
-		
-		
-		String result =  mapInfo.getRefID() + "\t" + getRefSnpIndelStart() + "\t" + refBase + "\t" + this.Allelic_depths_Ref + "\t" + thisBase + "\t" + 
-		this.Allelic_depths_Alt + "\t" + quality + "\t" + this.Filter + "\t" + this.Allele_Frequency + "\t" + getAllele_Balance_Hets() + "\t" + isExon()+"\t" + prop +"\t"+
-		refnr +"\t"+refaa + "\t" + thisnr +"\t"+thisaa;
-		if (refaa.length() ==3  && thisaa.length() == 3) {
-			result = result + "\t" + SeqFasta.cmpAAquality(refaa, thisaa);
-		}
-		else {
-			result = result + "\t" + "";
-		}
-		result = result + "\t" + this.getOrfShift();
-		result = result + "\t" + snpRsID;
-		if (getGffIso() != null) {
-			result = result + "\t" + getGffIso().getName();
-			GeneID copedID = new GeneID(getGffIso().getName(), taxID, false);
-			result = result + "\t" + copedID.getSymbol() +"\t"+copedID.getDescription();
-		}
-		else
-			result = result + "\t \t \t " ;
-		return result;
-	}
 	/**
 	 * 用于比较的，从小到大比
 	 * 先比refID，然后比start，end，或者比flag或者比score
 	 * 比score的时候就不考虑refID了
 	 */
 	public int compareTo(MapInfoSnpIndel mapInfoOther) {
-		mapInfo.compareTo(mapInfoOther.mapInfo);
-		if (mapInfoOther.compareInfo == COMPARE_LOCFLAG) {
-			int i = refID.compareTo(mapInfoOther.refID);
-			if (i != 0) {
-				return i;
-			}
-			if (flagLoc == mapInfoOther.flagLoc) {
-				return 0;
-			}
-			if (min2max) {
-				return flagLoc < mapInfoOther.flagLoc ? -1:1;
-			}
-			else {
-				return flagLoc > mapInfoOther.flagLoc ? -1:1;
-			}
+		int i = chrID.compareTo(mapInfoOther.chrID);
+		if (i != 0) {
+			return i;
 		}
-		else if (compareInfo == COMPARE_LOCSITE) {
-			int i = refID.compareTo(mapInfoOther.refID);
-			if (i != 0) {
-				return i;
-			}
-			if (startLoc == mapInfoOther.startLoc) {
-				if (endLoc == mapInfoOther.endLoc) {
-					return 0;
-				}
-				if (min2max) {
-					return endLoc < mapInfoOther.endLoc ? -1:1;
-				}
-				else {
-					return endLoc > mapInfoOther.endLoc ? -1:1;
-				}
-			}
-			if (min2max) {
-				return startLoc < mapInfoOther.startLoc ? -1:1;
-			}
-			else {
-				return startLoc > mapInfoOther.startLoc ? -1:1;
-			}
-		}
-		else if (compareInfo == COMPARE_SCORE) {
-			if (score == mapInfoOther.score) {
-				return 0;
-			}
-			if (min2max) {
-				return score < mapInfoOther.score ? -1:1;
-			}
-			else {
-				return score > mapInfoOther.score ? -1:1;
-			}
-		}
-		return 0;
+		Integer site1 = refSnpIndelStart;
+		Integer site2 = mapInfoOther.refSnpIndelStart;
+		return site1.compareTo(site2);
 	}
-	/////////////////////////////////////// 静态方法，获得所有指定区域的位点的信息 ///////////////////////////////
-	public static String getMyTitle() {
-		String result = "ChrID\tSnpLoc\tRefBase\tAllelic_depths_Ref\tThisBase\tAllelic_depths_Alt \tQuality\tFilter\tAllele_Frequency\tAllele_Balance_Hets()\tIsInExon\tDistance_To_Start\t" + 
-		"RefAAnr\tRefAAseq\tThisAAnr\tThisAASeq\tAA_chemical_property\tOrfShift\tSnpDB_ID\tGeneAccID\tGeneSymbol\tGeneDescription";
-		return result;
+	/**
+	 * 尚未实现
+	 */
+	public MapInfoSnpIndel clone() {
+		MapInfoSnpIndel mapInfoSnpIndel;
+		try {
+			//TODO
+			mapInfoSnpIndel = (MapInfoSnpIndel) super.clone();
+			mapInfoSnpIndel.Allele_Frequency = mapInfoSnpIndel.Allele_Frequency;
+			return mapInfoSnpIndel;
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		logger.error("克隆出错");
+		return null;
 	}
 	/**
 	 * 给定选中的mapInfo，读取samtools产生的pileup file获得每个位点的具体信息
 	 * @param lsSite 仅包含refbase和坐标信息
-	 * @param txtSamToolsFile samtools产生的文件
+	 * @param samToolsPleUpFile samtools产生的文件
 	 */
-	public static void getSiteInfo(List<MapInfoSnpIndel> lsSite, String txtSamToolsFile) {
-		// 排序，以提高效率
-		MapInfo.setCompareType(MapInfo.COMPARE_LOCSITE);
-		Collections.sort(lsSite);
+	public static void getSiteInfo(List<MapInfoSnpIndel> lsSite, String samToolsPleUpFile, GffChrAbs gffChrAbs) {
 		/** 每个chrID对应一组mapinfo，也就是一个list */
-		HashMap<String, ArrayList<MapInfoSnpIndel>> hashChrIDMapInfo = new LinkedHashMap<String, ArrayList<MapInfoSnpIndel>>();
-		// 按照chr位置装入hash表
-		for (MapInfoSnpIndel mapInfo : lsSite) {
-			ArrayList<MapInfoSnpIndel> lsMap = hashChrIDMapInfo.get(mapInfo.getRefID());
-			if (lsMap == null) {
-				lsMap = new ArrayList<MapInfoSnpIndel>();
-				hashChrIDMapInfo.put(mapInfo.getRefID(), lsMap);
-			}
-			lsMap.add(mapInfo);
-		}
-		for (ArrayList<MapInfoSnpIndel> lsMapInfos : hashChrIDMapInfo.values()) {
-			Collections.sort(lsMapInfos);
-		}
-		TxtReadandWrite txtReadSam = new TxtReadandWrite(txtSamToolsFile, false);
-		String tmpChrID = ""; ArrayList<MapInfoSnpIndel> lsMapInfos = null;
+		HashMap<String, ArrayList<MapInfoSnpIndel>> mapSortedChrID2MapInfo = sortLsMapInfoSnpIndel(lsSite);
+		getSiteInfo(mapSortedChrID2MapInfo, samToolsPleUpFile, gffChrAbs);
+	}
+	
+	/**
+	 * 给定选中的mapInfo，读取samtools产生的pileup file获得每个位点的具体信息
+	 * @param mapSortedChrID2LsMapInfo LsMapInfo排过序的list
+	 * @param samToolsPleUpFile
+	 * @param gffChrAbs
+	 * @return 新建一个hash表然后返回，这个hash表与输入的表是deep copy关系
+	 */
+	public static HashMap<String, ArrayList<MapInfoSnpIndel>> getSiteInfo(HashMap<String, ArrayList<MapInfoSnpIndel>> mapSortedChrID2LsMapInfo, String samToolsPleUpFile, GffChrAbs gffChrAbs) {
+		HashMap<String, ArrayList<MapInfoSnpIndel>> mapSortedChrID2LsMapInfoResult = copyHashMap(mapSortedChrID2LsMapInfo);
+		/** 每个chrID对应一组mapinfo，也就是一个list */
+		TxtReadandWrite txtReadSam = new TxtReadandWrite(samToolsPleUpFile, false);
+		String tmpChrID = ""; ArrayList<MapInfoSnpIndel> lsMapInfos = null; ArrayList<MapInfoSnpIndel> lsMapInfosNew = null;
 		int mapInfoIndex = 0;// 依次进行下去
-		for (String content : txtReadSam.readlines()) {
-			String[] ss = content.split("\t");
+		for (String samtoolsLine : txtReadSam.readlines()) {
+			String[] ss = samtoolsLine.split("\t");
 			if (!ss[0].equals(tmpChrID)) {
 				tmpChrID = ss[0];
-				lsMapInfos = hashChrIDMapInfo.get(tmpChrID);
+				lsMapInfos = mapSortedChrID2LsMapInfoResult.get(tmpChrID);
 				mapInfoIndex = 0;
+				if (lsMapInfos == null) {
+					logger.info("出现未知 chrID：" + tmpChrID);
+					continue;
+				}
 			}
-			if (lsMapInfos == null) {
-				logger.error("出现未知 chrID：" + tmpChrID);
-				break;
-			}
-				
+			
+			if (lsMapInfos == null) continue;
 			//所有lsMapInfos中的信息都查找完毕了
-			if (mapInfoIndex >= lsMapInfos.size()) {
-				continue;
-			}
+			if (mapInfoIndex >= lsMapInfos.size()) continue;
+			
 			//一行一行找下去，直到找到所需要的位点
 			if (Integer.parseInt(ss[1]) < lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart()) {
 				continue;
 			} else if (Integer.parseInt(ss[1]) == lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart()) {
-				lsMapInfos.get(mapInfoIndex).setSamToolsPilup(content);
+				lsMapInfos.get(mapInfoIndex).setSamToolsPilup(samtoolsLine, gffChrAbs);
 				mapInfoIndex++;
 			} else {
 				while (mapInfoIndex < lsMapInfos.size()&& Integer.parseInt(ss[1]) > lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart()) {
@@ -887,12 +674,42 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>{
 				if (mapInfoIndex >= lsMapInfos.size()) {
 					continue;
 				} else if (Integer.parseInt(ss[1]) == lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart()) {
-					lsMapInfos.get(mapInfoIndex).setSamToolsPilup(content);
+					lsMapInfos.get(mapInfoIndex).setSamToolsPilup(samtoolsLine, gffChrAbs);
 					mapInfoIndex++;
 				}
 			}
 		}
-		logger.info("readOverFile:" + txtSamToolsFile);
+		logger.info("readOverFile:" + samToolsPleUpFile);
+		return mapSortedChrID2LsMapInfoResult;
 	}
-
+	private static HashMap<String, ArrayList<MapInfoSnpIndel>> copyHashMap(HashMap<String, ArrayList<MapInfoSnpIndel>> mapSortedChrID2LsMapInfo) {
+		HashMap<String, ArrayList<MapInfoSnpIndel>> mapResult = new HashMap<String, ArrayList<MapInfoSnpIndel>>();
+		for (Entry<String, ArrayList<MapInfoSnpIndel>> entry : mapSortedChrID2LsMapInfo.entrySet()) {
+			ArrayList<MapInfoSnpIndel> lsNew = new ArrayList<MapInfoSnpIndel>();
+			ArrayList<MapInfoSnpIndel> lsOld = entry.getValue();
+			for (MapInfoSnpIndel mapInfoSnpIndel : lsOld) {
+				MapInfoSnpIndel mapInfoSnpIndelNew = new MapInfoSnpIndel(mapInfoSnpIndel.getRefID(), mapInfoSnpIndel.getRefSnpIndelStart());
+				lsNew.add(mapInfoSnpIndelNew);
+			}
+			mapResult.put(entry.getKey(), lsNew);
+		}
+		return mapResult;
+	}
+	private static HashMap<String, ArrayList<MapInfoSnpIndel>> sortLsMapInfoSnpIndel(List<MapInfoSnpIndel> lsSite) {
+		/** 每个chrID对应一组mapinfo，也就是一个list */
+		HashMap<String, ArrayList<MapInfoSnpIndel>> hashChrIDMapInfo = new LinkedHashMap<String, ArrayList<MapInfoSnpIndel>>();
+		// 按照chr位置装入hash表
+		for (MapInfoSnpIndel mapInfoSnpIndel : lsSite) {
+			ArrayList<MapInfoSnpIndel> lsMap = hashChrIDMapInfo.get(mapInfoSnpIndel.getRefID());
+			if (lsMap == null) {
+				lsMap = new ArrayList<MapInfoSnpIndel>();
+				hashChrIDMapInfo.put(mapInfoSnpIndel.getRefID(), lsMap);
+			}
+			lsMap.add(mapInfoSnpIndel);
+		}
+		for (ArrayList<MapInfoSnpIndel> lsMapInfos : hashChrIDMapInfo.values()) {
+			Collections.sort(lsMapInfos);
+		}
+		return hashChrIDMapInfo;
+	}
 }

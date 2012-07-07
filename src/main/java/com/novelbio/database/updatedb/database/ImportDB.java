@@ -125,8 +125,7 @@ public class ImportDB {
 		riceID.update();
 	}
 	
-	private static void updateBlast()
-	{
+	private static void updateBlast() {
 		String blastFile = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA";
 		String outFIle = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA_out";
 		int queryTaxID = 0;
@@ -203,7 +202,7 @@ public class ImportDB {
 		blast.setSubTaxID(3702);
 		blast.setTaxID(queryTaxID);
 		blast.setTxtWriteExcep(outFIle);
-		blast.updateFile(blastFile, false);
+//		blast.updateFile(blastFile, false);
 		
 		/////////////////   pig   /////////////////////////
 		blastFile = "/media/winE/Bioinformatics/GenomeData/pig/ncbiRef2Human";
@@ -217,8 +216,23 @@ public class ImportDB {
 		blast.setSubTaxID(9606);
 		blast.setTaxID(queryTaxID);
 		blast.setTxtWriteExcep(outFIle);
-		blast.setIdtypeBlast(true);
+		blast.setIDisBlastType(true);
 //		blast.updateFile(blastFile, false);
+		
+		/////////////////   cow   /////////////////////////
+		blastFile = "/media/winE/Bioinformatics/BLAST/result/cow/cowRefPro2humRefPro";
+		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+		queryTaxID = 9913;
+		blast = new BlastUp2DB();
+		blast.setQueryID(GeneID.IDTYPE_GENEID);
+		blast.setBlastID(GeneID.IDTYPE_GENEID);
+		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
+		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI);
+		blast.setSubTaxID(9606);
+		blast.setTaxID(queryTaxID);
+		blast.setTxtWriteExcep(outFIle);
+		blast.setIDisBlastType(true);
+		blast.updateFile(blastFile, false);
 	}
 	
 	private static void updateAffy()
@@ -426,7 +440,7 @@ public class ImportDB {
 		SoftWareInfo.updateInfo(softToolsFile);
 	}
 	private static void updateSpecies() {
-		String speciesFile = "/media/winE/Bioinformatics/GenomeData/SpeciesFile2.txt";
+		String speciesFile = "/media/winE/Bioinformatics/GenomeData/SpeciesFile.xls";
 		String taxInfoFile = "";
 		Species species = new Species();
 		species.setUpdateSpeciesFile(speciesFile);

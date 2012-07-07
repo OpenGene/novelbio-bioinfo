@@ -24,29 +24,6 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class IDconvertGFF {
-	
-	public static void main(String[] args) {
-		String gffFileQuery = "/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_gene.gff3/Gmax_109_gene.gff3"; 
-		String gffTypeQuery = NovelBioConst.GENOME_GFF_TYPE_GLYMAX;
-		String gffFileDestination = "/media/winE/Bioinformatics/GenomeData/soybean/gff/ref_V1.0_top_level_modify.gff3"; 
-		String gffFileDensitnation = NovelBioConst .GENOME_GFF_TYPE_NCBI;
-		String dbInfo = NovelBioConst.DBINFO_GLYMAX_SOYBASE;
-		int taxID = 3847;
-//		String outFile = "/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_gene.gff3/outFile";
-//		IDconvertGFF iDconvertGFF = new IDconvertGFF();
-//		iDconvertGFF.setGffDestination(gffFileDestination, gffFileDensitnation);
-//		iDconvertGFF.setGffQuery(gffFileQuery, gffTypeQuery);
-//		iDconvertGFF.setTaxID(taxID);
-//		iDconvertGFF.setTxtOut(outFile);
-//		iDconvertGFF.setDBinfo(dbInfo);
-//		iDconvertGFF.updateDBNCBI();
-		
-		GeneID copedID = new GeneID("Gma.3013.1.S1_s_at", taxID);
-		System.out.println(copedID.getSymbol());
-		System.out.println(copedID.getAccIDDBinfo());
-	}
-	
-	
 	int taxID = 0;
 	/** ´ý×ª»¯µÄgff */
 	GffHashGene gffHashGeneQuery = null;

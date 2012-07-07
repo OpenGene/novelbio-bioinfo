@@ -136,9 +136,9 @@ public class MaizeGDB {
 	}
 	
 	public void upDateGeneInfo(int maizeTaxID, String tmpMaizeID, String tmpDescription) {
-		GeneInfo copedID = new GeneInfo(tmpMaizeID, maizeTaxID, false);
+		GeneID copedID = new GeneID(tmpMaizeID, maizeTaxID, false);
 		AGeneInfo geneInfo = null;
-		if (copedID.getIDtype().equals(GeneInfo.IDTYPE_GENEID)) {
+		if (copedID.getIDtype().equals(GeneID.IDTYPE_GENEID)) {
 			geneInfo = new GeneInfo();
 		}
 		else {
@@ -161,7 +161,7 @@ public class MaizeGDB {
  				tmpMaizeID = tmpAccID;
  			}
 			if (ss[1].equals("GO")) {
-				GeneInfo copedID = new GeneInfo(tmpMaizeID, maizeTaxID, false);
+				GeneID copedID = new GeneID(tmpMaizeID, maizeTaxID, false);
 				UpDateFriceDB.upDateGenGO(copedID, ss[2], NovelBioConst.DBINFO_MAIZE_MGDB);
 			}
  		}

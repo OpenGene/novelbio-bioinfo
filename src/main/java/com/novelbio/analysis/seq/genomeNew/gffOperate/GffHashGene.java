@@ -21,7 +21,7 @@ public class GffHashGene implements GffHashGeneInf{
 	public static void main(String[] args) {
 		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 				"/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/new/novelbioModify_a15m1bf_All_highAll20111220.GTF");
-		gffHashGene.writeToGFFIso("/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/novelbioModify_a15m1bf_All_high60MISO20111220.GFF3", "novelbio");
+		gffHashGene.writeToGFFIsoMoreThanOne("/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/novelbioModify_a15m1bf_All_high60MISO20111220.GFF3", "novelbio");
 	}
 	
 	GffHashGeneAbs gffHashGene = null;
@@ -67,7 +67,9 @@ public class GffHashGene implements GffHashGeneInf{
 		}
 	}
 	public void setTaxID(int taxID) {
-		gffHashGene.setTaxID(taxID);
+		if (taxID > 0) {
+			gffHashGene.setTaxID(taxID);
+		}
 	}
 	/**
 	 * 读取信息
@@ -163,6 +165,10 @@ public class GffHashGene implements GffHashGeneInf{
 	public ArrayList<GffDetailGene> getGffDetailAll() {
 		return gffHashGene.getGffDetailAll();
 	}
+	/** 返回所有不重复GffDetailGene */
+	public ArrayList<Integer> getLsIntronSortedS2M() {
+		return gffHashGene.getLsIntronSortedS2M();
+	}
 	/**
 	 * 将基因装入GffHash中
 	 * @param chrID
@@ -176,8 +182,8 @@ public class GffHashGene implements GffHashGeneInf{
 		gffHashGene.writeToGTF(GTFfile, title);
 	}
 	@Override
-	public void writeToGFFIso(String GTFfile, String title) {
-		gffHashGene.writeToGFFIso(GTFfile, title);
+	public void writeToGFFIsoMoreThanOne(String GTFfile, String title) {
+		gffHashGene.writeToGFFIsoMoreThanOne(GTFfile, title);
 	}
 	@Override
 	public void writeGene2Iso(String Gene2IsoFile) {

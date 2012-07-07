@@ -52,7 +52,7 @@ public class CtrlFastQMapping {
 	
 	boolean mapping = false;
 	int gapLen = 5;
-	int mismatch = 2;
+	double mismatch = 2;
 	int thread = 4;
 	String chrIndexFile;
 	
@@ -107,7 +107,7 @@ public class CtrlFastQMapping {
 	public void setGapLen(int gapLen) {
 		this.gapLen = gapLen;
 	}
-	public void setMismatch(int mismatch) {
+	public void setMismatch(Double mismatch) {
 		this.mismatch = mismatch;
 	}
 	public void setThread(int thread) {
@@ -137,11 +137,13 @@ public class CtrlFastQMapping {
 		
 		if (filter) {
 			txtReport.writefileln("Sample\tAllReads\tFilteredReads");
+			txtReport.writefile("", true);
 			filteredReads();
 		}
 		combineAllFastqFile();
 		if (mapping) {
 			txtReport.writefileln("Sample\tReadsNum\tUniqueMappedReads\tUniqeMappingRates");
+			txtReport.writefile("", true);
 			mapping();
 		}
 		txtReport.close();
@@ -177,6 +179,7 @@ public class CtrlFastQMapping {
 				txtReport.writefileln(prefix + "\t" + fastQs[0].getSeqNum()*2 + "\t" + uniqueMappedReads + "\t" + (double)uniqueMappedReads/(fastQs[0].getSeqNum()*2));
 			else
 				txtReport.writefileln(prefix + "\t" + fastQs[0].getSeqNum() + "\t" + uniqueMappedReads + "\t" + (double)uniqueMappedReads/fastQs[0].getSeqNum());
+			txtReport.writefile("", true);
 		}
 	}
 	
@@ -208,10 +211,17 @@ public class CtrlFastQMapping {
 		if (lsFastqR.size() > num) {
 			fastqR = lsFastqR.get(num);
 		}
-		if (FileOperate.isFileExistAndBigThanSize(fastqL, 10) && FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
+		if (FileOperate.isFileExistAndBigThanSize(fastqL, 10)) {
 			if (fastqL.endsWith(".gz")) {
 				compressType = TxtReadandWrite.GZIP;
 			}
+		}
+		else if (FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
+			if (fastqR.endsWith(".gz")) {
+				compressType = TxtReadandWrite.GZIP;
+			}
+		}
+		if (FileOperate.isFileExistAndBigThanSize(fastqL, 10) && FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
 			tmpFastQLR[0] = new FastQ(fastqL, fastqQuality);
 			tmpFastQLR[1] = new FastQ(fastqR, fastqQuality);;
 			setFastQParameter(tmpFastQLR[0], compressType);

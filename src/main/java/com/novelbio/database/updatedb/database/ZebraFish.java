@@ -13,18 +13,6 @@ import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class ZebraFish {
-	public static void main(String[] args) {
-		ZebraFish zebraFish = new ZebraFish();
-		zebraFish.updateZbGeneID("/home/zong0jie/桌面/danio_rerio/gene2geneID.txt");
-		zebraFish.updateZbGO("/home/zong0jie/桌面/danio_rerio/gene_association.zfin");
-		zebraFish.updateZbRefSeqID("/home/zong0jie/桌面/danio_rerio/gene2refseq.txt", NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
-		zebraFish.updateZbRefSeqID("/home/zong0jie/桌面/danio_rerio/ensembl_1_to_1.txt", NovelBioConst.DBINFO_ENSEMBL);
-		zebraFish.getSeq("/media/winE/Bioinformatics/GenomeData/danio_rerio/sequence/NCBI_rna.fa", 
-				"/media/winE/Bioinformatics/GenomeData/danio_rerio/sequence/NCBI_coped_rna.fa", "\\w{2}_\\d+");
-		
-		zebraFish.updateAffy2AccID(7955, "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfishRefSeq.xls");
-	}
-	
 	String ZbGeneIDFile = "";
 	String ZbGOFile = "";
 	String ZbRefSeqFile = "";
@@ -78,7 +66,7 @@ class Zb2GeneID extends ImportPerLine
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
-		GeneInfo copedID = new GeneInfo(GeneInfo.IDTYPE_GENEID, ss[2], 7955);
+		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[2], 7955);
 		copedID.setUpdateAccID(ss[0]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_DRE_ZFIN, true);
 		copedID.update(true);
@@ -118,7 +106,7 @@ class ZbRefSeqID extends ImportPerLine
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
-		GeneInfo copedID = new GeneInfo(ss[0], 7955);
+		GeneID copedID = new GeneID(ss[0], 7955);
 		copedID.setUpdateRefAccID(ss[2]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_DRE_ZFIN, true);
 		copedID.update(true);
@@ -151,7 +139,7 @@ class ZBGO extends ImportPerLine
 			return true;
 		}
 		String[] ss = lineContent.split("\t");
-		GeneInfo copedID = new GeneInfo(ss[1], 7955);
+		GeneID copedID = new GeneID(ss[1], 7955);
 		String pubmed = "";
 		if (ss[5].contains("PMID")) {
 			pubmed = ss[5].split("\\|")[1].trim();

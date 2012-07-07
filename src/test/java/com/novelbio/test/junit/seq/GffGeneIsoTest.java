@@ -49,10 +49,10 @@ public class GffGeneIsoTest extends TestCase {
 		aa = gffGeneIsoCis.getLocDistmRNA(3, 5);
 		assertEquals(1, aa);
 		
-		aa = gffGeneIsoCis.getLocInEleNum(3);
+		aa = gffGeneIsoCis.getNumCodInEle(3);
 		assertEquals(1, aa);
 		
-		aa = gffGeneIsoCis.getLocInEleNum(4);
+		aa = gffGeneIsoCis.getNumCodInEle(4);
 		assertEquals(-1, aa);
 	}
 	

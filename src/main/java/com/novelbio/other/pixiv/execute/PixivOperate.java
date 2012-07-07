@@ -228,7 +228,23 @@ public class PixivOperate
 		} catch (Exception e) {}
 	}
     
-    
+    /**
+     * 给定网址，获得所有作者的菜单
+     * @param AuthorUrl pixiv某个作者的网址
+     * @param SavePath 保存txt文本
+     * @throws IOException 
+     */
+    public void downloadPictureDirectlyTest() throws IOException 
+    {
+    	pixiv.GetFetch("http://www.pixiv.net/member_illust.php?mode=medium&illust_id=28353378", true);
+    	
+//    	BufferedReader bufferedReader = pixiv.GetFetch("http://www.pixiv.net/member_illust.php?mode=big&illust_id=28353378", true);
+//    	String content = "";
+//    	while ((content = bufferedReader.readLine()) != null) {
+//    		System.out.println(content);
+//		}
+    	pixiv.getDownLoad("http://i2.pixiv.net/img50/img/banri620/28353378.jpg", "/media/winF/NBC/Project/Project_ZDB_Lab/HY/BZ_20120521/mappingresult/", true, "http://www.pixiv.net/member_illust.php?mode=big&illust_id=28353378");
+	}
     
     
     

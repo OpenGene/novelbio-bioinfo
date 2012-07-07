@@ -377,7 +377,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 */
 	private int[] getCodLocInfo(int coord) {
 		int codLoc[] = new int[2];
-		int ExIntronnum = getLocInEleNum(coord);
+		int ExIntronnum = getNumCodInEle(coord);
 		if (ExIntronnum == 0) {
 			codLoc[0] = COD_LOC_OUT;
 		}
@@ -503,7 +503,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return getLocDistmRNA(ATGsite, coord);
 	}
 	/**
-	 * 使用前先判定在Exon中，坐标到UAG的距离，mRNA水平
+	 * 使用前先判定在Exon中，坐标到UAG最后一个字母的距离，mRNA水平
 	 * 不去除内含子的直接用getCod2UAG
 	 * 坐标在终点上游为负数，下游为正数<br>
 	 * 如果不在内含子中，则为很大的负数，大概-10000000
@@ -586,8 +586,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			start = Math.max(startLoc, EndLoc);
 			end = Math.min(startLoc, EndLoc);
 		}
-		int exonNumStart = getLocInEleNum(start) - 1;
-		int exonNumEnd =getLocInEleNum(end) - 1;
+		int exonNumStart = getNumCodInEle(start) - 1;
+		int exonNumEnd =getNumCodInEle(end) - 1;
 		
 		if (exonNumStart < 0 || exonNumEnd < 0) {
 			return null;
@@ -654,10 +654,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		//exon intron
 		if (codLoc == COD_LOC_EXON) {
-			result = result + "Exon:exon_Position_Number_is:" + getLocInEleNum(coord);
+			result = result + "Exon:exon_Position_Number_is:" + getNumCodInEle(coord);
 		}
 		else if (codLoc == COD_LOC_INTRON) {
-			result = result + "Intron_intron_Position_Number_is:" + Math.abs(getLocInEleNum(coord));
+			result = result + "Intron_intron_Position_Number_is:" + Math.abs(getNumCodInEle(coord));
 		}
 		//gene end
 		if (isCodInIsoGenEnd(coord)) {
@@ -834,40 +834,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return lsTmp;
 	}
-	
-	/**
-	 * 重写equal
-	 * 比较是否为同一个转录本
-	 * 不比较两个转录本的名字，也不比较coord
-	 */
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		
-		GffGeneIsoInfo otherObj = (GffGeneIsoInfo)obj;
-		//物种，起点终点，ATG，UAG，外显子长度，转录本名字等都一致
-		boolean flag =  this.getTaxID() == otherObj.getTaxID() && this.getChrID().equals(otherObj.getChrID()) && this.getATGsite() == otherObj.getATGsite()
-		&& this.getUAGsite() == otherObj.getUAGsite() && this.getTSSsite() == otherObj.getTSSsite()
-		&& this.getListLen() == otherObj.getListLen();
-		if (flag && compIso(otherObj) ) {
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * 重写hash
-	 * @return
-	 */
-	public int hashcode()
-	{
-		String info = this.getTaxID() + "//" + this.getChrID() + "//" + this.getATGsite() + "//" + this.getUAGsite() + "//" + this.getTSSsite() + "//" + this.getListLen();
-		for (ExonInfo exonInfo : this) {
-			info = info + "@@"+exonInfo.getName();
-		}
-		return   info.hashCode();
-	}
 	/**
 	 * 获得具体的编码序列，待修正，可以调用getSeqLoc的方法提取序列
 	 * 没有结果就返回new list-exonInfo
@@ -878,8 +844,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			return new ArrayList<ExonInfo>();
 		}
 		ArrayList<ExonInfo> lsresult = new ArrayList<ExonInfo>();
-		int numAtg = getLocInEleNum(ATGsite) - 1;
-		int numUag = getLocInEleNum(UAGsite) - 1;
+		int numAtg = getNumCodInEle(ATGsite) - 1;
+		int numUag = getNumCodInEle(UAGsite) - 1;
 		for (int i = 0; i < size(); i++) {
 			ExonInfo exonTmp = get(i);
 			if (i < numAtg) {
@@ -915,6 +881,31 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return lsresult;
 	}
 	/**
+	 * 获得Intron的list信息，从前到后排序
+	 * 没有结果就返回new list-exonInfo
+	 * @return
+	 */
+	public ArrayList<ExonInfo> getLsIntron() {
+		ArrayList<ExonInfo> lsresult = new ArrayList<ExonInfo>();
+		ExonInfo intronInfo = null;
+		for (int i = 0; i < size(); i++) {
+			ExonInfo exonInfo = get(i);
+			if (i > 0) {
+				intronInfo.setEndCis(exonInfo.getStartCis());
+			}
+			if (i == size() - 1) {
+				break;
+			}
+			intronInfo = new ExonInfo();
+			lsresult.add(intronInfo);
+			intronInfo.setCis5to3(exonInfo.isCis5to3());
+			intronInfo.setName(exonInfo.getName());
+			intronInfo.setStartCis(exonInfo.getEndCis());
+		}
+		return lsresult;
+	}
+	
+	/**
 	 * 获得3UTR的序列
 	 * @param startLoc
 	 * @param endLoc
@@ -942,7 +933,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			startSite = Math.max(startLoc, endLoc); endSite = Math.min(startLoc, endLoc);
 		}
 		ArrayList<ExonInfo> lsresult = new ArrayList<ExonInfo>();
-		int numStart = getLocInEleNum(startSite) - 1; int numEnd = getLocInEleNum(endSite) - 1;
+		int numStart = getNumCodInEle(startSite) - 1; int numEnd = getNumCodInEle(endSite) - 1;
 	
 		for (int i = 0; i < size(); i++) {
 			ExonInfo exonTmp = get(i);
@@ -992,6 +983,38 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		aaNum = aaNum + 1;
 		return (aaNum+2)/3;
+	}
+	/**
+	 * 重写equal
+	 * 比较是否为同一个转录本
+	 * 不比较两个转录本的名字，也不比较coord
+	 */
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		
+		GffGeneIsoInfo otherObj = (GffGeneIsoInfo)obj;
+		//物种，起点终点，ATG，UAG，外显子长度，转录本名字等都一致
+		boolean flag =  this.getTaxID() == otherObj.getTaxID() && this.getChrID().equals(otherObj.getChrID()) && this.getATGsite() == otherObj.getATGsite()
+		&& this.getUAGsite() == otherObj.getUAGsite() && this.getTSSsite() == otherObj.getTSSsite()
+		&& this.getListLen() == otherObj.getListLen();
+		if (flag && compIso(otherObj) ) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 重写hash
+	 * @return
+	 */
+	public int hashcode() {
+		String info = this.getTaxID() + "//" + this.getChrID() + "//" + this.getATGsite() + "//" + this.getUAGsite() + "//" + this.getTSSsite() + "//" + this.getListLen();
+		for (ExonInfo exonInfo : this) {
+			info = info + "@@"+exonInfo.getName();
+		}
+		return   info.hashCode();
 	}
 	public GffGeneIsoInfo clone() {
 		GffGeneIsoInfo result = null;

@@ -22,7 +22,7 @@ public class BlastUp2DB extends ImportPerLine{
 	 *  这时候就要将其设定为true。否则的话会将blast的第二列全部导入
 	 * @param idtypeBlast 默认是false
 	 */
-	public void setIdtypeBlast(boolean idtypeBlast) {
+	public void setIDisBlastType(boolean idtypeBlast) {
 		this.idtypeBlast = idtypeBlast;
 	}
 	/**

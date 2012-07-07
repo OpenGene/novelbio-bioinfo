@@ -21,24 +21,14 @@ import com.novelbio.generalConf.NovelBioConst;
  * @author zong0jie
  *
  */
-public class GffChrAnno extends GffChrAbs{
+public class GffChrAnno {
 	private static final Logger logger = Logger.getLogger(GffChrAnno.class);
-	public GffChrAnno(String gffType, String gffFile, String chrFile,String regx) {
-		super(gffType, gffFile, chrFile, null, 0);
-	}
-	public GffChrAnno(String gffType, String gffFile) {
-		super(gffType, gffFile, null, null,null, 0);
-	}
 	
-	public static void main(String[] args) throws Exception {
-		GffChrAnno gffChrAnno = new GffChrAnno(NovelBioConst.GENOME_GFF_TYPE_UCSC, 
-				NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ);
-		String parentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/result/PeakCalling/";
-		String txtFile = parentFile + "2KseSort-W200-G600-E100.scoreisland";
-		String out = parentFile + "2KSICERanno.txt";
-		gffChrAnno.annoFile(txtFile, 1, 2, 3, out);
-	}
+	GffChrAbs gffChrAbs;
 	
+	public GffChrAnno(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
+	}	
 	/**
 	 * 首先设定需要注释的区域，如tss，tes，genebody等
 	 * 给定txt的文件，和染色体编号，染色体起点终点，和输出文件，将peak覆盖到的区域注释出来
@@ -49,8 +39,6 @@ public class GffChrAnno extends GffChrAbs{
 	 * @param outTxtFile
 	 */
 	public void annoFile(String txtFile, int colChrID, int colStart, int colEnd, String outTxtFile) {
-//		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(txtFile, false);
-//		ArrayList<String[]> lsIn = txtReadandWrite.ExcelRead("\t", 1, 1, txtReadandWrite.ExcelRows(), -1, 0);
 		ArrayList<String[]> lsIn = ExcelTxtRead.readLsExcelTxt(txtFile, 1);
 		ArrayList<String[]> lsOut = getAnno(lsIn, colChrID, colStart, colEnd);
 		TxtReadandWrite txtOut = new TxtReadandWrite(outTxtFile, true);
@@ -108,7 +96,7 @@ public class GffChrAnno extends GffChrAbs{
 				anno[i][j] = "";
 			}
 		}
-		GffCodGene gffCodGene = gffHashGene.searchLocation(chrID, summit);
+		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrID, summit);
 		if (gffCodGene == null) {
 			return anno;
 		}
@@ -127,14 +115,15 @@ public class GffChrAnno extends GffChrAbs{
 	
 	public String[] getGenInfoFilter(String chrID, int summit) {
 		String[] anno = new String[3];
-		GffCodGene gffCodGene = gffHashGene.searchLocation(chrID, summit);
+		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrID, summit);
 		if (gffCodGene.isInsideLoc()) {
-			if (tss != null)
-				gffCodGene.getGffDetailThis().setTssRegion(tss[0], tss[1]);
-			if (tes != null)
-				gffCodGene.getGffDetailThis().setTesRegion(tes[0], tes[1]);
+			if (gffChrAbs.tss != null)
+				gffCodGene.getGffDetailThis().setTssRegion(gffChrAbs.tss[0], gffChrAbs.tss[1]);
+			if (gffChrAbs.tes != null)
+				gffCodGene.getGffDetailThis().setTesRegion(gffChrAbs.tes[0], gffChrAbs.tes[1]);
 			
-			anno[1] = gffCodGene.getGffDetailThis().getLongestSplit().getCodLocStrFilter(gffCodGene.getCoord(), filtertss, filtertes, genebody, UTR5, UTR3, exonFilter, intronFilter);
+			anno[1] = gffCodGene.getGffDetailThis().getLongestSplit().getCodLocStrFilter(gffCodGene.getCoord(), gffChrAbs.filtertss, 
+					gffChrAbs.filtertes, gffChrAbs.genebody, gffChrAbs.UTR5, gffChrAbs.UTR3, gffChrAbs.exonFilter, gffChrAbs.intronFilter);
 		}
 		return anno;
 	}
@@ -150,18 +139,18 @@ public class GffChrAnno extends GffChrAbs{
 	 * 3：两端是具体信息，中间是covered
 	 */
 	public ArrayList<String[]> getGenInfoFilter(String chrID, int startCod, int endCod) {
-		GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation(chrID, startCod, endCod);
+		GffCodGeneDU gffCodGeneDu = gffChrAbs.getGffHashGene().searchLocation(chrID, startCod, endCod);
 		if (gffCodGeneDu == null) {
 			return null;
 		}
 		ArrayList<String[]> lsAnno = null;
-		gffCodGeneDu.setExon(exonFilter);
-		gffCodGeneDu.setGeneBody(genebody);
-		gffCodGeneDu.setIntron(intronFilter);
-		gffCodGeneDu.setTes(tes);
-		gffCodGeneDu.setTss(tss);
-		gffCodGeneDu.setUTR3(UTR3);
-		gffCodGeneDu.setUTR5(UTR5);
+		gffCodGeneDu.setExon(gffChrAbs.exonFilter);
+		gffCodGeneDu.setGeneBody(gffChrAbs.genebody);
+		gffCodGeneDu.setIntron(gffChrAbs.intronFilter);
+		gffCodGeneDu.setTes(gffChrAbs.tes);
+		gffCodGeneDu.setTss(gffChrAbs.tss);
+		gffCodGeneDu.setUTR3(gffChrAbs.UTR3);
+		gffCodGeneDu.setUTR5(gffChrAbs.UTR5);
 		lsAnno = gffCodGeneDu.getAnno();
 		return lsAnno;
 	}
@@ -181,13 +170,13 @@ public class GffChrAnno extends GffChrAbs{
 		ArrayList<MapInfo> lsTmpMapInfos = ReadInfo(lsIn);
 		int[] region = getStatisticInfo(lsTmpMapInfos);
 		TxtReadandWrite txtOut = new TxtReadandWrite(outTxtFile, true);
-		txtOut.writefileln("Up" + tssUpBp +"bp\t"+region[0]);
+		txtOut.writefileln("Up" + gffChrAbs.tssUpBp +"bp\t"+region[0]);
 		txtOut.writefileln("Exon\t"+region[1]);
 		txtOut.writefileln("Intron\t"+region[2]);
 		txtOut.writefileln("InterGenic\t"+region[3]);
 		txtOut.writefileln("5UTR\t"+region[4]);
 		txtOut.writefileln("3UTR\t"+region[5]);
-		txtOut.writefileln("GeneEnd"+geneEnd3UTR+"\t"+region[6]);
+		txtOut.writefileln("GeneEnd"+gffChrAbs.geneEnd3UTR+"\t"+region[6]);
 		txtOut.writefileln("Tss\t"+region[7]);
 		txtOut.close();
 	}
@@ -225,7 +214,7 @@ public class GffChrAnno extends GffChrAbs{
 	/**
 	 * 输入单个坐标位点，返回定位信息，用于统计位点的定位情况,如外显子还是内含子
 	 * 只判断最长转录本
-	 * @param mapInfo
+	 * @param mapinfoRefSeqIntactAA
 	 * @param summit true：用flagSite进行定位，false：用两端进行定位
 	 * @return int[8]
 	 * 0: UpNbp,N由setStatistic()方法的TSS定义
@@ -270,13 +259,13 @@ public class GffChrAnno extends GffChrAbs{
 	private int[] searchSite(MapInfo mapInfo) {
 		boolean flagIntraGenic = false;//在gene内的标记
 		int[] result = new int[8];
-		GffCodGene gffCodGene = gffHashGene.searchLocation(mapInfo.getRefID(), mapInfo.getFlagSite());
+		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(mapInfo.getRefID(), mapInfo.getFlagSite());
 		if (gffCodGene == null) {
 			return null;
 		}
 		if (gffCodGene.isInsideLoc()) {
-			gffCodGene.getGffDetailThis().setTssRegion(tss);
-			gffCodGene.getGffDetailThis().setTesRegion(tes);
+			gffCodGene.getGffDetailThis().setTssRegion(gffChrAbs.tss);
+			gffCodGene.getGffDetailThis().setTesRegion(gffChrAbs.tes);
 			flagIntraGenic = true;
 			//Tss
 			if (gffCodGene.getGffDetailThis().getLongestSplit().isCodInIsoTss(gffCodGene.getCoord()) ) {
@@ -299,12 +288,12 @@ public class GffChrAnno extends GffChrAbs{
 		}
 		else {
 			if (gffCodGene.getGffDetailUp() != null ) {
-				gffCodGene.getGffDetailUp().setTssRegion(tss);
-				gffCodGene.getGffDetailUp().setTesRegion(tes);
+				gffCodGene.getGffDetailUp().setTssRegion(gffChrAbs.tss);
+				gffCodGene.getGffDetailUp().setTesRegion(gffChrAbs.tes);
 			}
 			if (gffCodGene.getGffDetailDown() != null) {
-				gffCodGene.getGffDetailDown().setTssRegion(tss);
-				gffCodGene.getGffDetailDown().setTesRegion(tes);
+				gffCodGene.getGffDetailDown().setTssRegion(gffChrAbs.tss);
+				gffCodGene.getGffDetailDown().setTesRegion(gffChrAbs.tes);
 			}
 
 			//UpNbp
@@ -322,10 +311,12 @@ public class GffChrAnno extends GffChrAbs{
 				result[6] ++;flagIntraGenic =true;
 			}
 			//Tss
-			if ( gffCodGene.getGffDetailUp() != null && !gffCodGene.getGffDetailUp().isCis5to3() && gffCodGene.getGffDetailUp().getLongestSplit().getCod2Tss(gffCodGene.getCoord()) > this.tss[0]  ) {
+			if ( gffCodGene.getGffDetailUp() != null && !gffCodGene.getGffDetailUp().isCis5to3() 
+					&& gffCodGene.getGffDetailUp().getLongestSplit().getCod2Tss(gffCodGene.getCoord()) > this.gffChrAbs.tss[0]  ) {
 				result[7] ++;flagIntraGenic =true;
 			}
-			else if (gffCodGene.getGffDetailDown() != null && gffCodGene.getGffDetailDown().isCis5to3() && gffCodGene.getGffDetailDown().getLongestSplit().getCod2Tss(gffCodGene.getCoord()) > this.tss[0]) {
+			else if (gffCodGene.getGffDetailDown() != null && gffCodGene.getGffDetailDown().isCis5to3() 
+					&& gffCodGene.getGffDetailDown().getLongestSplit().getCod2Tss(gffCodGene.getCoord()) > this.gffChrAbs.tss[0]) {
 				result[7] ++;flagIntraGenic =true;
 			}
 		}

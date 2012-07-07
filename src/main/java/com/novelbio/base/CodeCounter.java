@@ -89,8 +89,10 @@ public class CodeCounter {
 				line=line.trim();//È¥³ý¿Õ¸ñ
 				if(line.matches("^[\\s&&[^\\n]]*$")
 						|| line.equals("{") || line.equals("}") 
-						|| line.equals("});") 
-						|| line.startsWith("import") || line.startsWith("package")) {
+						|| line.equals("});")
+						|| line.startsWith("import") || line.startsWith("package")
+					)
+				{
 					   spaceLines ++;   spaceLinesAll ++;
 				}else if((line.startsWith("/*"))&& !line.endsWith("*/")) {
 					   commentLines ++;   commentLinesAll ++;

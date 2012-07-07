@@ -73,13 +73,13 @@ class SoyDbXref extends ImportPerLine
 	boolean impPerLine(String lineContent) {
 		//第一个glmaxID，第二个 ncbiID，第三个geneID
 		String[] ss = lineContent.split("\t");
-		GeneInfo copedID = new GeneInfo(ss[0], taxID);
+		GeneID copedID = new GeneID(ss[0], taxID);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_GLYMAX_SOYBASE, true);
-		copedID.setUpdateGeneID(ss[2], GeneInfo.IDTYPE_GENEID);
+		copedID.setUpdateGeneID(ss[2], GeneID.IDTYPE_GENEID);
 		copedID.update(true);
-		copedID = new GeneInfo(ss[1], taxID);
+		copedID = new GeneID(ss[1], taxID);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_GENEAC, true);
-		copedID.setUpdateGeneID(ss[2], GeneInfo.IDTYPE_GENEID);
+		copedID.setUpdateGeneID(ss[2], GeneID.IDTYPE_GENEID);
 		return copedID.update(true);
 	}
 }
@@ -97,10 +97,10 @@ class SoyGeneInfo extends ImportPerLine
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
-		GeneInfo copedID = new GeneInfo(ss[0], taxID);
+		GeneID copedID = new GeneID(ss[0], taxID);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_GLYMAX_SOYBASE, true);
 		GeneInfo geneInfo = new GeneInfo();
-		geneInfo.setSymb(GeneInfo.removeDot(ss[0]));
+		geneInfo.setSymb(GeneID.removeDot(ss[0]));
 		if (ss.length < 9) {
 			geneInfo.setDescrp("");
 		}

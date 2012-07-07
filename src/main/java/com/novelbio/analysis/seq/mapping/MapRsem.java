@@ -10,12 +10,26 @@ import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.species.Species;
 /**
  * 还没返回结果的bam文件
  * @author zong0jie
  *
  */
 public class MapRsem {
+	public static void main(String[] args) {
+		String fastqFile = "/media/winF/NBC/Project/RNA-Seq_HPWtest/FangLan/3_AGTTCC_L003_R1_001_filtered.fq";
+		String outFile = "/media/winF/NBC/Project/RNA-Seq_HPWtest/FangLan/rsem2/N";
+		MapRsem mapRsem = new MapRsem();
+		Species species = new Species(10090);
+		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		mapRsem.setExePath("", "");
+		mapRsem.setThreadNum(4);
+		mapRsem.setLeftFq(fastqFile);
+		mapRsem.setGffChrAbs(gffChrAbs);
+		mapRsem.setOutPathPrefix(outFile);
+		mapRsem.mapReads();
+	}
 	private static Logger logger = Logger.getLogger(MapRsem.class);
 	
 	GffChrSeq gffChrSeq = null;
@@ -42,17 +56,9 @@ public class MapRsem {
 	 * 设定Gff文件和chrFile
 	 * @param gffFile
 	 */
-	public void setFileChr(String gffType, String gffFile, String chrFile) {
-		gffChrAbs = new GffChrAbs(gffType, gffFile, chrFile, null, 0);
-		gene2isoFile = FileOperate.changeFileSuffix(gffFile,"_gene2iso","txt");
-		if (!FileOperate.isFileExist(gene2isoFile)) {
-			gffChrAbs.getGffHashGene().writeGene2Iso(gene2isoFile);
-		}
+	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
 		gffChrSeq = new GffChrSeq(gffChrAbs);
-		refFile = FileOperate.changeFileSuffix(chrFile, "_RefGene", "fastq");
-		if (!FileOperate.isFileExist(refFile)) {
-			gffChrSeq.writeIsoFasta(refFile);
-		}
 	}
 	/**
 	 * 设定bwa所在的文件夹以及待比对的路径
@@ -74,12 +80,7 @@ public class MapRsem {
 	 * 设定Gff文件和refFile
 	 * @param gffFile
 	 */
-	public void setFileRef(String gffType, String gffFile, String refFile) {
-		gffChrAbs = new GffChrAbs(gffType, gffFile, null, null, 0);
-		gene2isoFile = FileOperate.changeFileSuffix(gffFile,"_gene2iso","txt");
-		if (!FileOperate.isFileExist(gene2isoFile)) {
-			gffChrAbs.getGffHashGene().writeGene2Iso(gene2isoFile);
-		}
+	public void setFileRef(String refFile) {
 		this.refFile = refFile;
 	}
 	public void setThreadNum(int threadNum) {
@@ -87,7 +88,17 @@ public class MapRsem {
 			this.threadNum = threadNum;
 		}
 	}
-	
+	private void createGene2IsoAndRefSeq() {
+		if (!FileOperate.isFileExist(refFile)) {
+			refFile = FileOperate.changeFileSuffix(gffChrAbs.getSeqHash().getChrFile(), "_RefGene", "fastq");
+			if (!FileOperate.isFileExist(refFile))
+				gffChrSeq.writeIsoFasta(refFile);
+		}
+		gene2isoFile = FileOperate.changeFileSuffix(gffChrAbs.getGffHashGene().getGffFilename(),"_gene2iso","txt");
+		if (!FileOperate.isFileExist(gene2isoFile)) {
+			gffChrAbs.getGffHashGene().writeGene2Iso(gene2isoFile);
+		}
+	}
 	private String getThreadNum() {
 		return "-p " + threadNum + " ";
 	}
@@ -121,6 +132,7 @@ public class MapRsem {
 	 * @param bowtie2
 	 */
 	private void IndexMakeBowtie() {
+		createGene2IsoAndRefSeq();
 		rsemIndex = FileOperate.changeFileSuffix(refFile, "_rsemIndex", "");
 		if (FileOperate.isFileExist(rsemIndex + ".3.ebwt") == true)
 			return;
@@ -134,7 +146,7 @@ public class MapRsem {
 		if (lsLeftFq.get(0).getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
 			return " --phred64-quals ";
 		}
-		return "";
+		return " --phred33-quals ";
 	}
 	private String getBowtiePath() {
 		if (exePathBowtie != null && !exePathBowtie.equals("")) {

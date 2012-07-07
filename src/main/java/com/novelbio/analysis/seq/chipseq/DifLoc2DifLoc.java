@@ -157,7 +157,7 @@ public class DifLoc2DifLoc {
 	 */
 	public void readDifExpGene(int type, ArrayList<String[]> lsGene2Ratio, int rowStart, String txtOut, String mapPrix) {
 		ArrayList<String[]> lsOut = new ArrayList<String[]>();
-		lsOut.add(new String[]{"geneID", "geneExp" + mapPrix, "methylation" + mapPrix});
+		lsOut.add(new String[]{"geneID", mapPrix, "methylation"});
 		for (String[] strings : lsGene2Ratio) {
 			Double Info = null;
 			if (readPeak) {

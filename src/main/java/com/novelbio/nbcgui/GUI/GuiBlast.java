@@ -181,7 +181,7 @@ public class GuiBlast extends JPanel {
 				if (!textQDBinfo.getText().trim().equals("")) {
 					blast.setQueryDBinfo(textQDBinfo.getText().trim());
 				}
-				blast.setIdtypeBlast(chbRefStyle.isSelected());
+				blast.setIDisBlastType(chbRefStyle.isSelected());
 				blast.setSubTaxID((Integer)cmbSSpecies.getSelectedValue());
 				blast.setTaxID((Integer)cmbQSpecies.getSelectedValue());
 				blast.setTxtWriteExcep(FileOperate.changeFileSuffix(textUpDateBlast.getText(), "_cannotUpDate", null));

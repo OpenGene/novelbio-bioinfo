@@ -160,9 +160,9 @@ public class GuiSrcToTrgJpanel extends JPanel{
 			jBtbSavePath.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					GUIFileOpen guiFileOpen = new GUIFileOpen();
-					String savefilename = guiFileOpen.saveFileName("txt", "txt");
-					if (!FileOperate.getFileNameSep(savefilename)[1].equals("txt")) {
-						savefilename = savefilename+".txt";
+					String savefilename = guiFileOpen.saveFileName("excel", "xls");
+					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
+						savefilename = savefilename+".xls";
 					}
 					try {
 						ArrayList<String[]> lsAccIDstr = ExcelTxtRead.readLsExcelTxt(jTxtFilePathPath.getText(), new int[]{Integer.parseInt(jTxtAccColPath.getText())}, 1, -1);

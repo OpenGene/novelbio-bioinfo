@@ -8,8 +8,11 @@ import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceIns
 
 import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.FastQOld;
+import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.species.Species;
 
 /**
  * 还没返回结果的bam文件 tophat的mapping * tophat -r 120 -a 10 -m 1 -i 20 -I 6000
@@ -30,6 +33,21 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 
  */
 public class MapTophat {
+	public static void main(String[] args) {
+		String fastqFile = "/media/winF/NBC/Project/RNA-Seq_HPWtest/FangLan/3_AGTTCC_L003_R1_001_filtered.fq";
+		Species species = new Species(10090);
+		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		MapTophat mapTophat = new MapTophat();
+		mapTophat.setAnchorLength(10);
+		mapTophat.setAnchorMismatch(0);
+		mapTophat.setBowtieVersion(MapBowtie.VERSION_BOWTIE1);
+		mapTophat.setExePath("", species.getIndexChr(SoftWare.bowtie));
+		mapTophat.setGffChrAbs(gffChrAbs);
+		mapTophat.setLeftFq(fastqFile);
+		mapTophat.setOutPathPrefix("/media/winF/NBC/Project/RNA-Seq_HPWtest/FangLan/tophatN");
+		mapTophat.setThreadNum(4);
+	}
+	
 	private static Logger logger = Logger.getLogger(MapTophat.class);
 
 	/** 可能是表示有方向的测序，无方向 */
@@ -70,7 +88,14 @@ public class MapTophat {
 	/** 输出文件 */
 	String outPathPrefix = "";
 	MapBowtie mapBowtie = new MapBowtie();
+	GffChrAbs gffChrAbs;
+	boolean booSetIntronMin = false;
+	boolean booSetIntronMax = false;
 	
+	
+	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
+	}
 	/**
 	 * 设定tophat所在的文件夹以及待比对的路径
 	 * 
@@ -94,7 +119,6 @@ public class MapTophat {
 	private String getOutPathPrefix() {
 		return "-o " + outPathPrefix + " ";
 	}
-
 	/**
 	 * 插入长度，默认是illumina：450
 	 * 
@@ -103,7 +127,6 @@ public class MapTophat {
 	public void setInsert(int insert) {
 		maxInsert = insert;
 	}
-
 	/**
 	 * 设置左端的序列，设置会把以前的清空
 	 * 
@@ -116,7 +139,6 @@ public class MapTophat {
 			lsLeftFq.add(fastQ);
 		}
 	}
-
 	/**
 	 * 设置右端的序列，设置会把以前的清空
 	 * 
@@ -159,16 +181,25 @@ public class MapTophat {
 	private String getAnchorMismatch() {
 		return "-m " + anchorMismatch + " ";
 	}
-
-	/**
-	 * 内含子最短多少，默认50，需根据不同物种进行设置
-	 * 
-	 * @param intronLenMin
-	 */
-	public void setIntronLenMin(int intronLenMin) {
-		this.intronLenMin = intronLenMin;
+	private void setIntronLen() {
+		if (booSetIntronMax && booSetIntronMin) {
+			return;
+		}
+		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
+			ArrayList<Integer> lsIntronSortedS2M = gffChrAbs.getGffHashGene().getLsIntronSortedS2M();
+			int intronLenMin = lsIntronSortedS2M.get(50);
+			int intronLenMax = lsIntronSortedS2M.get(lsIntronSortedS2M.size() - 50);
+			if (intronLenMin < this.intronLenMin) {
+				this.intronLenMin = intronLenMin;
+				booSetIntronMin = true;
+			}
+			if (intronLenMax < this.intronLenMax) {
+				this.intronLenMax = intronLenMax;
+				booSetIntronMax = true;
+			}
+		}
 	}
-
+	
 	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
 	private String getIntronLenMin() {
 		return "-i " + intronLenMin + " ";
@@ -181,8 +212,17 @@ public class MapTophat {
 	 */
 	public void setIntronLenMax(int intronLenMax) {
 		this.intronLenMax = intronLenMax;
+		booSetIntronMax = true;
 	}
-
+	/**
+	 * 内含子最短多少，默认50，需根据不同物种进行设置
+	 * 
+	 * @param intronLenMin
+	 */
+	public void setIntronLenMin(int intronLenMin) {
+		this.intronLenMin = intronLenMin;
+		booSetIntronMin = true;
+	}
 	/** 内含子最长多少，默认500000，需根据不同物种进行设置 */
 	private String getIntronLenMax() {
 		return "-I " + intronLenMax + " ";
@@ -240,11 +280,14 @@ public class MapTophat {
 
 	/** 错配，这个走默认比较好，默认为2 */
 	public void setMismatch(int mismatch) {
+		if (mismatch > 2) {
+			mismatch = 2;
+		}
 		this.mismatch = mismatch;
 	}
 
 	/** 错配，这个走默认比较好，默认为2 */
-	public String getMismatch() {
+	private String getMismatch() {
 		return "--read-mismatches " + mismatch + " ";
 	}
 
@@ -269,10 +312,8 @@ public class MapTophat {
 		}
 		return "";
 	}
-
 	/**
 	 * 用gtf文件辅助mapping
-	 * 
 	 * @param gtfFile
 	 */
 	public void setGtfFile(String gtfFile) {
@@ -281,10 +322,9 @@ public class MapTophat {
 
 	/**
 	 * 先不设定，考虑集成--transcriptome-index那个选项
-	 * 
 	 * @return
 	 */
-	public String getGtfFile() {
+	private String getGtfFile() {
 		if (FileOperate.isFileExist(gtfFile)) {
 			return "-G " + gtfFile + " ";
 		}
@@ -359,7 +399,6 @@ public class MapTophat {
 		 * /NBC/Project/RNASeq_GF110614/rawdata/data/Col_L1_2.fq,/media
 		 * /winE/NBC/Project/RNASeq_GF110614/rawdata/data/Col_L2_2.fq
 		 */
-
 		String cmd = "";
 		cmd = ExePathBowtie + "tophat " + getBowtie();
 		if (pairend) {

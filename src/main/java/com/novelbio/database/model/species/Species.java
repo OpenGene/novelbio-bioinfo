@@ -132,6 +132,15 @@ public class Species {
 		return taxInfo.getAbbr();
 	}
 	/**
+	 * @return
+	 * key: chrID 小写
+	 * value： length
+	 */
+	public HashMap<String, Long> getMapChromInfo() {
+		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		return speciesFile.getMapChromInfo();
+	}
+	/**
 	 * 获得chr文件
 	 * @return
 	 * 0: regex 1: path
@@ -187,6 +196,11 @@ public class Species {
 	public String getRefseqNCfile() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefseqNCfile();
+	}
+	/** 获得本物中指定version的refseq的序列 */
+	public String getRefseqFile() {
+		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		return speciesFile.getRefseqFile();
 	}
 	/** 指定mapping的软件，获得该软件所对应的索引文件 */
 	public String getIndexChr(SoftWare softMapping) {

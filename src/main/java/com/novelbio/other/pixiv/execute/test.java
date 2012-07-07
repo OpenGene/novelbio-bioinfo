@@ -1,5 +1,7 @@
 package com.novelbio.other.pixiv.execute;
 
+import java.io.IOException;
+
 
 
 public class test {
@@ -8,8 +10,8 @@ public class test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-	 
-		changPiixvName();
+		testDownLoad();
+//		changPiixvName();
 		try {
 //			compDon2Chan();
 		} catch (Exception e) {
@@ -34,7 +36,16 @@ public class test {
 		**/
 		System.out.print("finish");
 	}
-	
+	private static void testDownLoad() {
+		PixivOperate aaa=new PixivOperate();
+		aaa.getcookies();
+		try {
+			aaa.downloadPictureDirectlyTest();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	private static void changPiixvName() {
 			PixivOperate aaa=new PixivOperate();

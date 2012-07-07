@@ -16,7 +16,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 public class SeqHash implements SeqHashInt{
 private static Logger logger = Logger.getLogger(SeqHash.class);
-	String chrFile = "";
+//	String chrFile = "";
 	SeqHashAbs seqHashAbs = null;
 	/**
 	 * 重名文件就返回，认为一样的东西
@@ -26,11 +26,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	 * @param TOLOWCASE 是否将最后结果的序列转化为小写 True：小写，False：大写，null不变 默认为null
 	 * 默认为false
 	 */
-	public SeqHash(String chrFile)
-	{
-		if (this.chrFile.equals(chrFile)) {
-			return;
-		}
+	public SeqHash(String chrFile) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
 			seqHashAbs =new SeqFastaHash(chrFile, "", true, false);
 		}
@@ -43,7 +39,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	 * @return
 	 */
 	public String getChrFile() {
-		return chrFile;
+		return seqHashAbs.getChrFile();
 	}
 	/**
 	 * @param chrFile 序列文件或序列文件夹
@@ -52,8 +48,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	 * @param TOLOWCASE 是否将最后结果的序列转化为小写 True：小写，False：大写，null不变 默认为null
 	 * 默认为false
 	 */
-	public SeqHash(String chrFile, String regx)
-	{
+	public SeqHash(String chrFile, String regx) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
 			seqHashAbs =new SeqFastaHash(chrFile, regx, true, false);
 		}
@@ -186,7 +181,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	}
 	/**
 	 * 根据给定的mapInfo，获得序列，注意序列并没有根据cis5to3进行反向，只是标记了cis5to3
-	 * @param mapInfo
+	 * @param mapinfoRefSeqIntactAA
 	 */
 	public void getSeq(ArrayList<? extends MapInfo> lsMapInfos) {
 		for (MapInfo mapInfo : lsMapInfos) {

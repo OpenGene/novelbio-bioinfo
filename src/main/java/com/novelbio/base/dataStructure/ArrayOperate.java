@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -251,9 +252,12 @@ public class ArrayOperate {
 	 * 添加或者删除数组中的一些项目
 	 * @param <T>
 	 * @param Aarray 数组
-	 * @param lsIndelInfo 不要出现小于0项。需要删除哪几项，从0开始计算，正数表示添加，<b>添加在指定位置的前面</b>，
-	 * 负数表示删除，如果超出数组项，则忽略
-	 * 0: 添加或删除哪一项<b>必须为正数</b>，1：添加几个元素，或删除该元素<b>正数为添加，添加可以多个，当为最后一项+1时，只能添加不能删除，负数为删除，只能删除一个</b>
+	 * @param lsIndelInfo 不要出现小于0项。需要删除哪几项，从0开始计算，<br>
+	 * 正数：添加<b>添加在指定位置的前面</b>，<br>
+	 * 负数：删除，如果超出数组项，则忽略<br>
+	 * 0: 添加或删除哪一项<b>必须为正数</b>，<br>
+	 * 1：添加几个元素，或删除该元素<br>
+	 * <b>正数为添加，添加可以多个，当为最后一项+1时，只能添加不能删除<br>负数为删除，只能删除一个</b>
 	 * @param filling 默认填充的元素
 	 * @return
 	 */
@@ -497,7 +501,7 @@ public class ArrayOperate {
 	 * @param hashMap
 	 * 	 * 没有返回null
 	 */
-	public static<K,V> ArrayList<K> getArrayListKey(HashMap<K, V> hashMap) {
+	public static<K,V> ArrayList<K> getArrayListKey(Map<K, V> hashMap) {
 		if (hashMap == null || hashMap.size() == 0) {
 			return null;
 		}
@@ -514,11 +518,11 @@ public class ArrayOperate {
 	 * @param <K> key
 	 * @param <V> value
 	 * @param hashMap
-	 * 	 * 没有返回null
+	 * 	 * 没有返回 空的 list
 	 */
-	public static<K,V> ArrayList<V> getArrayListValue(HashMap<K, V> hashMap) {
+	public static<K,V> ArrayList<V> getArrayListValue(Map<K, V> hashMap) {
 		if (hashMap == null || hashMap.size() == 0) {
-			return null;
+			return new ArrayList<V>();
 		}
 		ArrayList<V> lsResult = new ArrayList<V>();
 		Collection<V> values = hashMap.values();
@@ -535,7 +539,7 @@ public class ArrayOperate {
 	 * @param hashset
 	 * 没有返回一个空的arraylist
 	 */
-	public static<K> ArrayList<K> getArrayListValue(HashSet<K> hashset) {
+	public static<K> ArrayList<K> getArrayListValue(Set<K> hashset) {
 		if (hashset == null || hashset.size() == 0) {
 			return new ArrayList<K>();
 		}

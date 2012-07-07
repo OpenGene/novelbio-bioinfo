@@ -194,8 +194,8 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		else {
 			locSmall = Math.max(loc1, loc2);  locBig = Math.min(loc1, loc2);
 		}
-		int locSmallExInNum = getLocInEleNum(locSmall); 
-		int locBigExInNum = getLocInEleNum(locBig);
+		int locSmallExInNum = getNumCodInEle(locSmall); 
+		int locBigExInNum = getNumCodInEle(locBig);
 		
 		int distance = ListCodAbs.LOC_ORIGINAL;
 		
@@ -220,9 +220,8 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	}
 	/**
 	 * 必须首先设定ListAbs的方向，并且该方向和其内部的element的方向要一致
-	 * 坐标到element 起点距离
+	 * 坐标到element 起点距离，如果重叠则为0
 	 * @param location 坐标
-	 *  * 该点在外显子中为正数，在内含子中为负数，为实际数目
 	 */
 	public int getCod2ExInStart(int location) {
 		if (hashLocExInStart == null) {
@@ -232,7 +231,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 			return hashLocExInStart.get(location);
 		}
 		int loc2ExInStart = -1000000000;
-		int exIntronNum = getLocInEleNum(location);
+		int exIntronNum = getNumCodInEle(location);
 		int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
 		if (exIntronNum > 0) {
 			if (cis5to3 != null)
@@ -252,9 +251,8 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	}
 
 	/**
-	 * 坐标到element 终点距离
+	 * 坐标到element 终点距离，当重叠时，为0
 	 * @param location 坐标
-	 *  * 该点在外显子中为正数，在内含子中为负数，为实际数目
 	 */
 	public int getCod2ExInEnd(int location) {
 		if (hashLocExInEnd == null) {
@@ -264,13 +262,13 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 			return hashLocExInEnd.get(location);
 		}
 		int loc2ExInEnd = -1000000000;
-		int exIntronNum = getLocInEleNum(location);
+		int exIntronNum = getNumCodInEle(location);
 		int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
 		if (exIntronNum > 0) {
 			if (cis5to3 != null)
-				 loc2ExInEnd = Math.abs(get(NumExon).getEndCis()- location);//距离本外显子终止  Cnnnnnnn
+				 loc2ExInEnd = Math.abs(get(NumExon).getEndCis() - location);//距离本外显子终止  Cnnnnnnn
 			else
-				 loc2ExInEnd = Math.abs(get(NumExon).getEndAbs()- location);//距离本外显子终止  Cnnnnnnn
+				 loc2ExInEnd = Math.abs(get(NumExon).getEndAbs() - location);//距离本外显子终止  Cnnnnnnn
 		}
 		else if(exIntronNum < 0) 
 		{   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
@@ -350,7 +348,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * 为实际数目，从1开始计数
 	 * @return
 	 */
-	public int getLocInEleNum(int location) {
+	public int getNumCodInEle(int location) {
 		return LocPosition(location)[3];
 	}
 	/**
@@ -391,7 +389,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * LnnnnN为5位
 	 */
 	public int getLocDistmRNASite(int location, int mRNAnum) {
-		if (getLocInEleNum(location) <= 0) {
+		if (getNumCodInEle(location) <= 0) {
 			return -1;
 		}
 		if (mRNAnum < 0) {
@@ -403,7 +401,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 					return  location + Math.abs(mRNAnum);
 			} 
 			else {
-				int exonNum = getLocInEleNum(location) - 1;
+				int exonNum = getNumCodInEle(location) - 1;
 				int remain = Math.abs(mRNAnum) - getCod2ExInStart(location);
 				for (int i = exonNum - 1; i >= 0; i--) {
 					E tmpExon = get(i);
@@ -434,7 +432,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 				}
 			} 
 			else {
-				int exonNum = getLocInEleNum(location) - 1;
+				int exonNum = getNumCodInEle(location) - 1;
 				int remain = mRNAnum - getCod2ExInEnd(location);
 				for (int i = exonNum + 1; i < size(); i++) {
 					E tmpExon = get(i);
