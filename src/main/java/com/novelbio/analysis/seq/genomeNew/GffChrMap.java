@@ -104,7 +104,7 @@ public class GffChrMap {
 	 */
 	public double[] getChrInfo(String chrID, int thisInvNum, int type) {
 		double[] tmpResult = gffChrAbs.getMapReads().getRengeInfo(thisInvNum, chrID, 0, 0, type);
-		gffChrAbs.getMapReads().normDouble(tmpResult, gffChrAbs.mapNormType);
+		gffChrAbs.getMapReads().normDouble(tmpResult);
 		return tmpResult;
 	}
 
@@ -287,7 +287,7 @@ public class GffChrMap {
 	 */
 	private double[] getChrDensity(String chrID, int binNum) {
 		double[] tmpResult = gffChrAbs.getMapReads().getReadsDensity(chrID, 0, 0, binNum);
-		gffChrAbs.getMapReads().normDouble(tmpResult, gffChrAbs.mapNormType);
+		gffChrAbs.getMapReads().normDouble(tmpResult);
 		return tmpResult;
 	}
 	/**
@@ -703,10 +703,8 @@ public class GffChrMap {
 		for (String string : lsChrID) {
 			gffChrAbs.getMapReads().setNormalType(MapReads.NORMALIZATION_NO);
 			GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(string);
-			if (!gffGeneIsoInfo.getGeneType().equals(
-					GffGeneIsoInfo.TYPE_GENE_MRNA)
-					&& !gffGeneIsoInfo.getGeneType().equals(
-							GffGeneIsoInfo.TYPE_GENE_MRNA_TE)) {
+			if (gffGeneIsoInfo.getGeneType() != GffGeneIsoInfo.TYPE_GENE_MRNA
+					&& gffGeneIsoInfo.getGeneType() != GffGeneIsoInfo.TYPE_GENE_MRNA_TE) {
 				continue;
 			}
 

@@ -36,11 +36,13 @@ public class PeakMacs extends PeakCalling {
 	 * @return
 	 */
 	String nolambda = "";
-	String format = "";
-	String species = "";
+	String format = enumParam.get(FormatSeq.BED);
 	public void setNoLambda() {
 		nolambda = " --nolambda "; 
 	}
+	/**
+	 * 默认是bed文件
+	 */
 	@Override
 	public boolean setFileFormat(FormatSeq fileformat) {
 		if (fileformat == FormatSeq.FASTQ) {
@@ -54,11 +56,6 @@ public class PeakMacs extends PeakCalling {
 		}
 		this.format = " --format " + format;
 		return true;
-	}
-
-	@Override
-	public void setSpecies(String species) {
-		this.species = species;
 	}
 	/**
 	 * 默认参数：-m 5, --mfold=200
@@ -77,7 +74,7 @@ public class PeakMacs extends PeakCalling {
 		String mfole = " -m 3,500 ";
 		String pvalue = " -p 1e-2 ";
 		
-		double genomeSize = hashSpecies2GenomeSize.get(species)*effectiveGenomeSize;
+		double genomeSize = species.getChromLenAll()*effectiveGenomeSize;
 		effge = " -g "+genomeSize + " ";
 		if (FileOperate.isFileExist(controlFile)) {
 			col = " -c " + controlFile + " ";

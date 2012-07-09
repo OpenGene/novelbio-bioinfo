@@ -11,17 +11,16 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 
 public class GffGeneIsoTrans extends GffGeneIsoInfo{
+	private static final long serialVersionUID = -3187469258704218874L;
+	
 	private static final Logger logger = Logger.getLogger(GffGeneIsoTrans.class);
+	
+	public GffGeneIsoTrans(String IsoName, int geneType) {
+		super(IsoName, geneType);
+		super.setCis5to3(false);
+	}
 	public GffGeneIsoTrans(String IsoName, GffDetailGene gffDetailGene, int geneType) {
 		super(IsoName, gffDetailGene, geneType);
-		super.setCis5to3(false);
-	}
-	public GffGeneIsoTrans(String IsoName, String chrID, int coord, int geneType) {
-		super(IsoName, chrID, geneType);
-		super.setCis5to3(false);
-	}
-	public GffGeneIsoTrans(String IsoName, String ChrID, int geneType) {
-		super(IsoName, ChrID, geneType);
 		super.setCis5to3(false);
 	}
 	

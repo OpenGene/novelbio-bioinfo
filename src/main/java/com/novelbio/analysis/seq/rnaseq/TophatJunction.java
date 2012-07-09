@@ -52,7 +52,6 @@ public class TophatJunction {
 			tmpHashJunctionBoth = new HashMap<String, Integer>();
 			mapCond_To_JunLoc2ReadsNum.put(condition, tmpHashJunctionBoth);
 		}
-			
 		
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(junctionFile, false);
 		for (String string : txtReadandWrite.readfileLs()) {
@@ -107,8 +106,7 @@ public class TophatJunction {
 	 * @param locSite
 	 * @return
 	 */
-	public int getJunctionSite(String chrID, int locSite)
-	{
+	public int getJunctionSite(String chrID, int locSite) {
 		return getJunctionSite(chrID, locSite, cond);
 	}
 	
@@ -139,8 +137,7 @@ public class TophatJunction {
 		}
 	}
 	
-	public int getJunctionSite(String chrID, int locStartSite, int locEndSite)
-	{
+	public int getJunctionSite(String chrID, int locStartSite, int locEndSite) {
 		return getJunctionSite(chrID, locStartSite, locEndSite, cond);
 	}
 	
@@ -151,8 +148,7 @@ public class TophatJunction {
 	 * @param locEndSite
 	 * @return
 	 */
-	public int getJunctionSite(String chrID, int locStartSite, int locEndSite, String condition)
-	{
+	public int getJunctionSite(String chrID, int locStartSite, int locEndSite, String condition) {
 		HashMap<String, Integer> tmpHashJunctionBoth = mapCond_To_JunLoc2ReadsNum.get(condition);
 		int locS = Math.min(locStartSite, locEndSite);
 		int locE = Math.max(locStartSite, locEndSite);

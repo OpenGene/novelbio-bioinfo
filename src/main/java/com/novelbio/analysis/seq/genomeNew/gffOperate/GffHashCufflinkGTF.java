@@ -31,21 +31,18 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	@Override
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 		// 实例化四个表
-		Chrhash = new LinkedHashMap<String, ListAbsSearch<GffDetailGene>>();// 一个哈希表来存储每条染色体
-		locHashtable = new HashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
+		Chrhash = new LinkedHashMap<String, ListGff>();// 一个哈希表来存储每条染色体
+		locHashtable = new LinkedHashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
 		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
 		HashMap<String, ArrayList<GffGeneIsoInfo>> hashChrIso = new HashMap<String, ArrayList<GffGeneIsoInfo>>();
 		TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
-		BufferedReader reader = txtgff.readfile();// open gff file
 		// 基因名字
-		
-		String content = "";
 		String chrnametmpString = ""; // 染色体的临时名字
 		ArrayList<GffGeneIsoInfo> lsGeneIsoInfos = null;
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		String tmpChrID = "";
 		String tmpTranscriptName = "";
-		while ((content = reader.readLine()) != null)// 读到结尾
+		for (String content : txtgff.readlines() )// 读到结尾
 		{
 			if (content.charAt(0) == '#')
 				continue;
@@ -69,9 +66,10 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 				tmpTranscriptName = isoName;
 				boolean cis = getLocCis(ss[6], chrnametmpString, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 				if (cis) 
-					gffGeneIsoInfo = new GffGeneIsoCis(isoName, chrnametmpString, GffGeneIsoInfo.TYPE_GENE_MRNA);
+					gffGeneIsoInfo = new GffGeneIsoCis(isoName, GffGeneIsoInfo.TYPE_GENE_MRNA);
+//					(isoName, chrnametmpString, GffGeneIsoInfo.TYPE_GENE_MRNA);
 				else 
-					gffGeneIsoInfo = new GffGeneIsoTrans(isoName, chrnametmpString, GffGeneIsoInfo.TYPE_GENE_MRNA);
+					gffGeneIsoInfo = new GffGeneIsoTrans(isoName, GffGeneIsoInfo.TYPE_GENE_MRNA);
 				lsGeneIsoInfos.add(gffGeneIsoInfo);
 				continue;
 			}
@@ -79,9 +77,9 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 				tmpTranscriptName = ss[8].split(";")[1].replace("transcript_id", "").replace("\"", "").trim();
 				boolean cis = getLocCis(ss[6], chrnametmpString, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 				if (cis) 
-					gffGeneIsoInfo = new GffGeneIsoCis(tmpTranscriptName, chrnametmpString, GffGeneIsoInfo.TYPE_GENE_MRNA);
+					gffGeneIsoInfo = new GffGeneIsoCis(tmpTranscriptName, GffGeneIsoInfo.TYPE_GENE_MRNA);
 				else 
-					gffGeneIsoInfo = new GffGeneIsoTrans(tmpTranscriptName, chrnametmpString, GffGeneIsoInfo.TYPE_GENE_MRNA);
+					gffGeneIsoInfo = new GffGeneIsoTrans(tmpTranscriptName, GffGeneIsoInfo.TYPE_GENE_MRNA);
 				lsGeneIsoInfos.add(gffGeneIsoInfo);
 			}
 			gffGeneIsoInfo.addExon( Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
@@ -90,11 +88,11 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		txtgff.close();
 	}
 	
-	private void CopeChrIso(HashMap<String, ArrayList<GffGeneIsoInfo>> hashChrIso)
-	{
-		ArrayList<ArrayList<GffGeneIsoInfo>> lsTmp = ArrayOperate.getArrayListValue(hashChrIso);
-		for (ArrayList<GffGeneIsoInfo> arrayList : lsTmp) {
-			copeChrInfo(arrayList);
+	private void CopeChrIso(HashMap<String, ArrayList<GffGeneIsoInfo>> hashChrIso) {
+		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(hashChrIso);
+		for (String chrID : lsChrID) {
+			ArrayList<GffGeneIsoInfo> arrayList = hashChrIso.get(chrID);
+			copeChrInfo(chrID, arrayList);
 		}
 	}
 	
@@ -102,9 +100,8 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	/**
 	 * 整理某条染色体的信息
 	 */
-	private void copeChrInfo(List<GffGeneIsoInfo> lsGeneIsoInfos)
-	{
-		ListAbsSearch<GffDetailGene> lsResult = new ListAbsSearch<GffDetailGene>();
+	private void copeChrInfo(String chrID, List<GffGeneIsoInfo> lsGeneIsoInfos) {
+		ListGff lsResult = new ListGff();
 		if (lsGeneIsoInfos == null)// 如果已经存在了LOCList，也就是前一个LOCList，那么截短并装入LOCChrHashIDList
 			return;
 		//排序
@@ -133,7 +130,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGeneIsoInfos) {
 			gffGeneIsoInfo.sort();
 			if (gffDetailGene == null) {
-				gffDetailGene = new GffDetailGene(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getName(), gffGeneIsoInfo.isCis5to3());
+				gffDetailGene = new GffDetailGene(chrID, gffGeneIsoInfo.getName(), gffGeneIsoInfo.isCis5to3());
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				lsResult.add(gffDetailGene);
 				locHashtable.put(gffGeneIsoInfo.getName().toLowerCase(), gffDetailGene);
@@ -154,7 +151,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			}
 			else {
 				
-				gffDetailGene = new GffDetailGene(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getName(), gffGeneIsoInfo.isCis5to3());
+				gffDetailGene = new GffDetailGene(chrID, gffGeneIsoInfo.getName(), gffGeneIsoInfo.isCis5to3());
 				locHashtable.put(GeneID.removeDot(gffDetailGene.getName()).toLowerCase(), gffDetailGene);
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				lsResult.add(gffDetailGene);
@@ -163,8 +160,8 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 				continue;
 			}
 		}
-		lsResult.setName(lsGeneIsoInfos.get(0).getChrID());
-		Chrhash.put(lsGeneIsoInfos.get(0).getChrID(), lsResult);
+		lsResult.setName(chrID);
+		Chrhash.put(chrID, lsResult);
 	}
 	
 	
@@ -202,10 +199,10 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 				int a = Integer.MAX_VALUE;
 				int b = Integer.MAX_VALUE;
 				if (gffCodGene.getGffDetailUp() != null) {
-					a = gffCodGene.getGffDetailUp().getCod2End();
+					a = gffCodGene.getGffDetailUp().getCod2End(LocID);
 				}
 				if (gffCodGene.getGffDetailDown() != null) {
-					b = gffCodGene.getGffDetailDown().getCod2Start();
+					b = gffCodGene.getGffDetailDown().getCod2Start(LocID);
 				}
 				if (a < b) {
 					return gffCodGene.getGffDetailUp().isCis5to3();

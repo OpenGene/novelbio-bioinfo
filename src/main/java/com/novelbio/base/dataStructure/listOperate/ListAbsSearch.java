@@ -1,15 +1,11 @@
 package com.novelbio.base.dataStructure.listOperate;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-
 import org.apache.log4j.Logger;
 
 public abstract class ListAbsSearch <E extends ListDetailAbs, T extends ListCodAbs<E>, K extends ListCodAbsDu<E, T>> extends ListAbs<E>  implements Cloneable{
 	private static Logger logger = Logger.getLogger(ListAbsSearch.class);
 	private static final long serialVersionUID = 4583552188474447935L;
+
 	/**
 	 * 获得的每一个信息都是实际的而没有clone
 	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
@@ -17,36 +13,24 @@ public abstract class ListAbsSearch <E extends ListDetailAbs, T extends ListCodA
 	 * 没找到就返回null
 	 */
 	public T searchLocation(int Coordinate) {
-		int[] locInfo = LocPosition(Coordinate);// 二分法查找peaknum的定位
-		if (locInfo == null) {
+		CoordLocationInfo coordLocationInfo = LocPosition(Coordinate);
+		if (coordLocationInfo == null) {
 			return null;
 		}
 		T gffCod = creatGffCod(listName, Coordinate);
-		if (locInfo[0] == 1) // 定位在基因内
-		{
-			gffCod.setGffDetailThis( get(locInfo[1]) ); 
+		if (coordLocationInfo.isInsideElement()) {
+			gffCod.setGffDetailThis( get(coordLocationInfo.getElementNumThisElementFrom0() ) ); 
 			gffCod.booFindCod = true;
-			gffCod.ChrHashListNumThis = locInfo[1];
+			gffCod.ChrHashListNumThis = coordLocationInfo.getElementNumThisElementFrom0();
 			gffCod.insideLOC = true;
-			if (locInfo[1] - 1 >= 0) {
-				gffCod.setGffDetailUp( get(locInfo[1]-1) );
-				gffCod.ChrHashListNumUp = locInfo[1]-1;
-				
-			}
-			if (locInfo[2] != -1) {
-				gffCod.setGffDetailDown(get(locInfo[2]));
-				gffCod.ChrHashListNumDown = locInfo[2];
-			}
-		} else if (locInfo[0] == 2) {
-			gffCod.insideLOC = false;
-			if (locInfo[1] >= 0) {
-				gffCod.setGffDetailUp( get(locInfo[1]) );
-				gffCod.ChrHashListNumUp = locInfo[1];		
-			}
-			if (locInfo[2] != -1) {
-				gffCod.setGffDetailDown( get(locInfo[2]) );
-				gffCod.ChrHashListNumDown = locInfo[2];
-			}
+		}
+		if (coordLocationInfo.getElementNumLastElementFrom0() >= 0) {
+			gffCod.setGffDetailUp( get(coordLocationInfo.getElementNumLastElementFrom0()) );
+			gffCod.ChrHashListNumUp = coordLocationInfo.getElementNumLastElementFrom0();
+		}
+		if (coordLocationInfo.getElementNumNextElementFrom0() >= 0) {
+			gffCod.setGffDetailDown(get(coordLocationInfo.getElementNumNextElementFrom0()));
+			gffCod.ChrHashListNumDown = coordLocationInfo.getElementNumNextElementFrom0();
 		}
 		return gffCod;
 	}

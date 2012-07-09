@@ -11,6 +11,7 @@ public class CodeCounter {
 		CodeCounter codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio", "/media/winD/fedora/codestatistics/allCodeLines.txt");
 		codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio/analysis/seq/mirna", "/media/winD/fedora/codestatistics/mirnaCodeLines.txt");
 		codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/main/java/com/novelbio/project", "/media/winD/fedora/codestatistics/projectMinusCodeLines.txt");
+		codeCounter = new CodeCounter("/media/winD/fedora/gitnbc/src/test/java", "/media/winD/fedora/codestatistics/testCodeLines.txt");
 
 	}
 	TxtReadandWrite txtOut;
@@ -88,7 +89,7 @@ public class CodeCounter {
 			while((line=br.readLine())!=null){
 				line=line.trim();//È¥³ý¿Õ¸ñ
 				if(line.matches("^[\\s&&[^\\n]]*$")
-						|| line.equals("{") || line.equals("}") 
+						|| line.equals("{") || line.equals("}")
 						|| line.equals("});")
 						|| line.startsWith("import") || line.startsWith("package")
 					)

@@ -12,6 +12,7 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.NovelBioConst;
+//TODO 需要设定物种
 /**
  * SICER首先要配置SICER他的脚本的路径，设置他里面的物种，effective genome size等
  * @author zong0jie
@@ -52,9 +53,7 @@ public class PeakSicer extends PeakCalling {
 	public static final String SPECIES_C_ELEGAN = "ce";
 	public static final String SPECIES_DROSOPHYLIA = "dm3";
 	public static final String SPECIES_MOUSE = "mm9";
-	public PeakSicer(String bedFile) {
-		super(bedFile);
-	}
+
 	
 	public static final int HISTONE_TYPE_H3K4 = 200;
 	public static final int HISTONE_TYPE_H3K27 = 600;
@@ -79,8 +78,11 @@ public class PeakSicer extends PeakCalling {
 	is 1E-2.
 	 */
 	int Evalue = 100;
-	String species = "";
 	String bedCol = "";
+	
+	public PeakSicer(String bedFile) {
+		super(bedFile);
+	}
 	/**
 	 * 设定对照
 	 * @param bedCol
@@ -271,9 +273,4 @@ public class PeakSicer extends PeakCalling {
 		}
 		return true;
 	}
-	@Override
-	public void setSpecies(String species) {
-		this.species = species;
-	}
-	
 }

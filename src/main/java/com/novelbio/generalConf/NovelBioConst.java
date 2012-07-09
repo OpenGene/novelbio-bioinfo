@@ -1,6 +1,8 @@
 package com.novelbio.generalConf;
 
 public class NovelBioConst {
+	public  final static String COMPANY_NAME_ABBR = "Novelbio";
+	
 	public  final static String DBINFO_NCBI = "NCBI";
 	public  final static String DBINFO_NCBIID = "NCBIID";
 	public final static String DBINFO_UNIPROTID = "UniProtID";

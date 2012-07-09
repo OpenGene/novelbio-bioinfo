@@ -140,6 +140,17 @@ public class Species {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMapChromInfo();
 	}
+	/** 染色体全长序列 */
+	public long getChromLenAll() {
+		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		HashMap<String, Long> hashChrID2Len = speciesFile.getMapChromInfo();
+		ArrayList<Long> lsChrLen = ArrayOperate.getArrayListValue(hashChrID2Len);
+		Long len = 0L;
+		for (Long chrLen : lsChrLen) {
+			len = len + chrLen;
+		}
+		return len;
+	}
 	/**
 	 * 获得chr文件
 	 * @return

@@ -199,8 +199,7 @@ public class SamFile {
 	 * @param ReadName reads的名字，只要写关键词就行了
 	 * @return 没找到就返回null
 	 */
-	public SAMRecord getReads(String ReadName)
-	{
+	public SAMRecord getReads(String ReadName) {
 		SAMFileReader samFileReader = getSamFileReader();
 		SAMRecordIterator samRecordIterator = samFileReader.iterator();
 		while (samRecordIterator.hasNext()) {

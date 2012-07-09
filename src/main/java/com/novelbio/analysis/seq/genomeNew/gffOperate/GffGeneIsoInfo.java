@@ -13,6 +13,7 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.dataStructure.listOperate.ListComb;
+import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modcopeid.GeneID;
 
 /**
@@ -79,36 +80,23 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	protected int upTes=0;
 	/** 设定基因结尾向外延伸的长度，默认为0 */
 	protected int downTes=100;
-	String chrID = "";
-	private int taxID = 0;
 	/** 该转录本的ATG的第一个字符坐标，从1开始计数  */
 	protected int ATGsite = ListCodAbs.LOC_ORIGINAL;
 	/** 该转录本的Coding region end的最后一个字符坐标，从1开始计数 */
 	protected int UAGsite = ListCodAbs.LOC_ORIGINAL;
 	/** 该转录本的长度 */
 	protected int lengthIso = ListCodAbs.LOC_ORIGINAL;
-	/**
-	 * 设定DISTAL Promoter区域在TSS上游的多少bp外，默认1000
-	 * 目前仅和annotation的文字有关
-	 * 1000bp以内为 Proximal Promoter_
-	 * @param pROMOTER_DISTAL_MAMMUM
-	 */
-	public static void setPROMOTER_DISTAL_MAMMUM(int pROMOTER_DISTAL_MAMMUM) {
-		PROMOTER_DISTAL_MAMMUM = pROMOTER_DISTAL_MAMMUM;
+	GffDetailGene gffDetailGene;
+	
+	public GffGeneIsoInfo(String IsoName, int geneType) {
+		super.listName = IsoName;
+		this.flagTypeGene = geneType;
 	}
-	/**
-	 * 设定intergeneic区域在TSS上游的多少bp外，默认5000
-	 * 目前仅和annotation的文字有关
-	 * @param pROMOTER_INTERGENIC_MAMMUM
-	 */
-	public static void setPROMOTER_INTERGENIC_MAMMUM(
-			int pROMOTER_INTERGENIC_MAMMUM) {
-		PROMOTER_INTERGENIC_MAMMUM = pROMOTER_INTERGENIC_MAMMUM;
-	}
+	
 	public GffGeneIsoInfo(String IsoName, GffDetailGene gffDetailGene, int geneType) {
 		super.listName = IsoName;
 		this.flagTypeGene = geneType;
-		this.chrID = gffDetailGene.getParentName();
+		this.gffDetailGene = gffDetailGene;
 		setTssRegion(gffDetailGene.getTssRegion()[0], gffDetailGene.getTssRegion()[1]);
 		setTesRegion(gffDetailGene.getTesRegion()[0], gffDetailGene.getTesRegion()[1]);
 	}
@@ -119,11 +107,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getGeneType() {
 		return flagTypeGene;
 	}
-	protected void setTaxID(int taxID) {
-		this.taxID = taxID;
-	}
 	public int getTaxID() {
-		return taxID;
+		return gffDetailGene.getTaxID();
 	}
 	/**
 	 * 跟随gffDetailGene的设定
@@ -190,20 +175,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return true;
 	}
-
-	/**
-	 * 没有设定tss和tes的范围
-	 * @param IsoName
-	 * @param chrID
-	 * @param geneType
-	 */
-	public GffGeneIsoInfo(String IsoName, String chrID, int geneType) {
-		super.listName = IsoName;
-		this.flagTypeGene = geneType;
-		this.chrID = chrID;
-	}
 	public String getChrID() {
-		return chrID;
+		return gffDetailGene.getParentName();
 	}
 	protected boolean mRNA = true;
 	/**
@@ -612,7 +585,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public GeneID getCopedID() {
-		return new GeneID(getName(), taxID);
+		return new GeneID(getName(), gffDetailGene.getTaxID());
 	}
 	/**
 	 * 文字形式的定位描述
@@ -712,7 +685,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		else if (filterIntron && getCodLoc(coord) == COD_LOC_INTRON) {
 			filter = true;
 		}
-		
 		if (filter) {
 			return getCodLocStr(coord);
 		}
@@ -995,7 +967,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (getClass() != obj.getClass()) return false;
 		
 		GffGeneIsoInfo otherObj = (GffGeneIsoInfo)obj;
-		//物种，起点终点，ATG，UAG，外显子长度，转录本名字等都一致
+		//物种，起点终点，ATG，UAG，外显子长度 等都一致
 		boolean flag =  this.getTaxID() == otherObj.getTaxID() && this.getChrID().equals(otherObj.getChrID()) && this.getATGsite() == otherObj.getATGsite()
 		&& this.getUAGsite() == otherObj.getUAGsite() && this.getTSSsite() == otherObj.getTSSsite()
 		&& this.getListLen() == otherObj.getListLen();
@@ -1006,27 +978,29 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	
 	/**
-	 * 重写hash
+	 * 重写hash，不包含基因名信息，包含基因taxID，chrID，atg，uag，tss，长度，以及每一个exon的信息
 	 * @return
 	 */
 	public int hashcode() {
 		String info = this.getTaxID() + "//" + this.getChrID() + "//" + this.getATGsite() + "//" + this.getUAGsite() + "//" + this.getTSSsite() + "//" + this.getListLen();
 		for (ExonInfo exonInfo : this) {
-			info = info + "@@"+exonInfo.getName();
+			info = info + SepSign.SEP_INFO + exonInfo.getName();
 		}
 		return   info.hashCode();
 	}
+	/**
+	 * 它的父级，也就是gffDetailGene，并不复制
+	 */
 	public GffGeneIsoInfo clone() {
 		GffGeneIsoInfo result = null;
 		result = (GffGeneIsoInfo) super.clone();
 		result.ATGsite = ATGsite;
-		result.chrID = chrID;
+		result.gffDetailGene = gffDetailGene;
 		result.downTes = downTes;
 		result.downTss = downTss;
 		result.flagTypeGene = flagTypeGene;
 		result.lengthIso = lengthIso;
 		result.mRNA = mRNA;
-		result.taxID = taxID;
 		result.UAGsite = UAGsite;
 		result.upTes = upTes;
 		result.upTss = upTss;
@@ -1043,5 +1017,24 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			ListCodAbs<ExonInfo> gffCod1, ListCodAbs<ExonInfo> gffCod2) {
 		ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> result = new ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>(gffCod1, gffCod2);
 		return result;
+	}
+	
+	/**
+	 * 设定DISTAL Promoter区域在TSS上游的多少bp外，默认1000
+	 * 目前仅和annotation的文字有关
+	 * 1000bp以内为 Proximal Promoter_
+	 * @param pROMOTER_DISTAL_MAMMUM
+	 */
+	public static void setPROMOTER_DISTAL_MAMMUM(int pROMOTER_DISTAL_MAMMUM) {
+		PROMOTER_DISTAL_MAMMUM = pROMOTER_DISTAL_MAMMUM;
+	}
+	/**
+	 * 设定intergeneic区域在TSS上游的多少bp外，默认5000
+	 * 目前仅和annotation的文字有关
+	 * @param pROMOTER_INTERGENIC_MAMMUM
+	 */
+	public static void setPROMOTER_INTERGENIC_MAMMUM(
+			int pROMOTER_INTERGENIC_MAMMUM) {
+		PROMOTER_INTERGENIC_MAMMUM = pROMOTER_INTERGENIC_MAMMUM;
 	}
 }

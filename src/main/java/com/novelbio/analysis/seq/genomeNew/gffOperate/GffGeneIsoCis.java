@@ -29,17 +29,13 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	private static final long serialVersionUID = 8473636267008365629L;
 	private static final Logger logger = Logger.getLogger(GffGeneIsoCis.class);
 
+	public GffGeneIsoCis(String IsoName, int geneType) {
+		super(IsoName, geneType);
+		super.setCis5to3(true);
+	}
+	
 	public GffGeneIsoCis(String IsoName, GffDetailGene gffDetailGene, int geneType) {
 		super(IsoName, gffDetailGene, geneType);
-		super.setCis5to3(true);
-	}
-
-	public GffGeneIsoCis(String IsoName, String ChrID, int coord, int geneType) {
-		super(IsoName, ChrID, geneType);
-		super.setCis5to3(true);
-	}
-	public GffGeneIsoCis(String IsoName, String ChrID, int geneType) {
-		super(IsoName, ChrID, geneType);
 		super.setCis5to3(true);
 	}
 

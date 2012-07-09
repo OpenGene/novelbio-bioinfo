@@ -114,21 +114,8 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		FastQ fastQ1 = new FastQ("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG100914/ChIP_Seq_CDG100913_Mapping/input/m46_1.fq", FastQ.QUALITY_MIDIAN);
-		FastQ fastQ2 = new FastQ("/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG100914/ChIP_Seq_CDG100913_Mapping/input/m46_2.fq", FastQ.QUALITY_MIDIAN);
-		
-		FastQ fastQ1out = new FastQ(fastQ1.getFileName()+"_outtest", true);
-		FastQ fastQ2out = new FastQ(fastQ2.getFileName()+"_outtest", true);
-		Iterator<FastQRecord> itFastq1 = fastQ1.readlinesIterator();
-		Iterator<FastQRecord> itFastq2 = fastQ2.readlinesIterator();
-		for (int i = 0; i < 10000; i++) {
-			FastQRecord fastQRecord1 = itFastq1.next();
-			FastQRecord fastQRecord2 = itFastq2.next();
-			fastQ1out.writeFastQRecord(fastQRecord1);
-			fastQ2out.writeFastQRecord(fastQRecord2);
-		}
-		fastQ1out.closeWrite();
-		fastQ2out.closeWrite();
+		GeneID geneID = new GeneID("NM_022834", 0);
+		System.out.println(geneID.getTaxID());
 	}
 	
 	

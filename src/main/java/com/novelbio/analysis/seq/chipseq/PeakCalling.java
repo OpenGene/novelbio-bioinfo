@@ -4,22 +4,11 @@ import java.util.HashMap;
 
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
+import com.novelbio.database.model.species.Species;
 
 public abstract class PeakCalling {
-	public static final String SPECIES_RICE = "os";
-	public static final String SPECIES_HUMAN = "hs";
-	public static final String SPECIES_C_ELEGAN = "ce";
-	public static final String SPECIES_DROSOPHYLIA = "dm";
-	public static final String SPECIES_MOUSE = "mm";
-	public static final String SPECIES_ARABIDOPSIS = "ath";
+
 	static HashMap<String, Long> hashSpecies2GenomeSize = new HashMap<String, Long>();
-	static
-	{
-		hashSpecies2GenomeSize.put(SPECIES_HUMAN, 3095677436L);
-		hashSpecies2GenomeSize.put(SPECIES_RICE, 372317579L);
-		hashSpecies2GenomeSize.put(SPECIES_ARABIDOPSIS, 119667757L);
-		hashSpecies2GenomeSize.put(SPECIES_MOUSE, 2725749214L);
-	}
 	double effectiveGenomeSize = 0.85;
 	/** 输入的文件 */
 	String file = null;
@@ -27,6 +16,9 @@ public abstract class PeakCalling {
 	String controlFile = null;
 	/**输出文件路径和前缀 */
 	String outPrefix = "";
+	Species species;
+	
+	
 	public PeakCalling(String file) {
 		this.file = file;
 	}
@@ -37,12 +29,18 @@ public abstract class PeakCalling {
 	public void setFile(String file) {
 		this.file = file;
 	}
+	/** 物种，可以根据物种选择相应的参数，一般是 genome size */
+	public void setSpecies(Species species) {
+		this.species = species;
+	}
+	/** 物种，可以根据物种选择相应的参数，一般是 genome size */
+	public void setSpecies(int taxID) {
+		this.species = new Species(taxID);
+	}
 	/** 文件格式，使用枚举FileFormat 
 	 * 如果输入了不支持的文件格式，则返回false
 	 * */
 	public abstract boolean setFileFormat(FormatSeq fileformat);
-	/** 物种，可以根据物种选择相应的参数，一般是 genome size */
-	public abstract void setSpecies(String species);
 	/**输出文件路径和前缀 */
 	public void setOutPathPrefix(String outPrefix) {
 		this.outPrefix = outPrefix;

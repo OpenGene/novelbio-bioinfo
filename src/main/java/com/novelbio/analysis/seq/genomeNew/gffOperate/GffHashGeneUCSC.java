@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
+import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modcopeid.GeneID;
 
 /**
@@ -23,7 +24,6 @@ import com.novelbio.database.model.modcopeid.GeneID;
  *
  */
 public class GffHashGeneUCSC extends GffHashGeneAbs{
-
 	/**
 	 * @Override
 	 * 最底层读取gff的方法，本方法只能读取UCSCknown gene<br>
@@ -48,16 +48,11 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 		Chrhash = new LinkedHashMap<String, ListGff>();// 一个哈希表来存储每条染色体
 		locHashtable = new LinkedHashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
 		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
-
 		TxtReadandWrite txtGffRead = new TxtReadandWrite(gfffilename, false);
-		BufferedReader readGff = txtGffRead.readfile();
-
-		ListGff LOCList = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
-		String content = "";
-		readGff.readLine();// 跳过第一行
+		ListGff lsChromGene = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 		String chrnametmpString = "";
 		// int mm=0;//计数的东西
-		while ((content = readGff.readLine()) != null) {
+		for (String content : txtGffRead.readlines(2)) {
 			content = content.replace("\"", "");
 			String[] geneInfo = content.split("\t");
 			String[] exonStarts = geneInfo[8].split(",");
@@ -67,26 +62,26 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			// 新的染色体
 			if (!Chrhash.containsKey(chrnametmpString)) // 新的染色体
 			{
-				if (LOCList != null)// 如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
+				if (lsChromGene != null)// 如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
 				{
-					LOCList.trimToSize();
+					lsChromGene.trimToSize();
 				}
-				LOCList = new ListGff();// 新建一个LOCList并放入Chrhash
-				LOCList.setName(chrnametmpString);
-				Chrhash.put(chrnametmpString, LOCList);
+				lsChromGene = new ListGff();// 新建一个LOCList并放入Chrhash
+				lsChromGene.setName(chrnametmpString);
+				Chrhash.put(chrnametmpString, lsChromGene);
 			}
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			// 添加转录本
 			// 看本基因的转录起点是否小于上个基因的转录终点，如果小于，则说明本基因是上个基因的一个转录本
 			GffDetailGene lastGffdetailUCSCgene = null; double[] overlapInfo = null;
-			if (LOCList.size() > 0 ) {
-				lastGffdetailUCSCgene = (GffDetailGene) LOCList.get(LOCList.size() - 1);
+			if (lsChromGene.size() > 0 ) {
+				lastGffdetailUCSCgene = (GffDetailGene) lsChromGene.get(lsChromGene.size() - 1);
 				double[] regionLast = new double[]{lastGffdetailUCSCgene.getStartAbs(), lastGffdetailUCSCgene.getEndAbs()};
 				double[] regionThis = new double[]{Double.parseDouble(geneInfo[3])+getStartRegion(), Double.parseDouble(geneInfo[4])+getEndRegion() };
 				overlapInfo = ArrayOperate.cmpArray(regionLast, regionThis);
 			}
 			
-			if (LOCList.size() > 0 
+			if (lsChromGene.size() > 0 
 //					&& // 如果转录本方向不同，那就新开一个转录本
 //					geneInfo[2].equals("+") == lastGffdetailUCSCgene.isCis5to3()
 					&&
@@ -105,7 +100,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				}
 				
 				// 将本基因(转录本)的ID装入locString中
-				lastGffdetailUCSCgene.setName(lastGffdetailUCSCgene.getName() + ListAbsSearch.SEP + geneInfo[0]);
+				lastGffdetailUCSCgene.setName(lastGffdetailUCSCgene.getName() + SepSign.SEP_ID + geneInfo[0]);
 				if (Math.abs(Integer.parseInt(geneInfo[5]) - Integer.parseInt(geneInfo[6])) <= 2) {
 					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], GffGeneIsoInfo.TYPE_GENE_MIRNA, geneInfo[2].equals("+"));
 				}
@@ -125,7 +120,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				LOCIDList.add(geneInfo[0]);
 				// 将locHashtable中相应的项目也修改，同时加入新的项目
 				// 因为UCSC里面没有转录本一说，只有两个LOCID共用一个区域的情况，所以只能够两个不同的LOCID指向同一个GffdetailUCSCgene
-				String[] allLOCID = lastGffdetailUCSCgene.getName().split(ListAbsSearch.SEP);
+				String[] allLOCID = lastGffdetailUCSCgene.getName().split(SepSign.SEP_ID);
 				for (int i = 0; i < allLOCID.length; i++) {
 					locHashtable.put(allLOCID[i].toLowerCase(), lastGffdetailUCSCgene);
 				}
@@ -133,7 +128,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			}
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			// 添加新基因
-			GffDetailGene gffDetailUCSCgene = new GffDetailGene(chrnametmpString, geneInfo[0], geneInfo[2].equals("+"));
+			GffDetailGene gffDetailUCSCgene = new GffDetailGene(lsChromGene, geneInfo[0], geneInfo[2].equals("+"));
 			gffDetailUCSCgene.setTaxID(taxID);
 			gffDetailUCSCgene.setStartAbs(  Integer.parseInt(geneInfo[3]) + getStartRegion() );
 			gffDetailUCSCgene.setEndAbs(  Integer.parseInt(geneInfo[4]) + getEndRegion() );
@@ -151,11 +146,11 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			for (int i = 0; i < exonCount; i++) {
 				gffDetailUCSCgene.addExon(Integer.parseInt(exonStarts[i]) + getStartRegion(),Integer.parseInt(exonEnds[i]) + getEndRegion());
 			}
-			LOCList.add(gffDetailUCSCgene);
+			lsChromGene.add(gffDetailUCSCgene);
 			LOCIDList.add(geneInfo[0]);
 			locHashtable.put(geneInfo[0].toLowerCase(), gffDetailUCSCgene);
 		}
-		LOCList.trimToSize();
+		lsChromGene.trimToSize();
 		txtGffRead.close();
 	}
 	

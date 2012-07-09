@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Set;
+
+import org.apache.commons.collections.functors.IfClosure;
+import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
+
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
+import com.novelbio.database.domain.geneanno.SepSign;
 /**
  * 考虑将其拆分成为三个不同的list，一个cis，一个trans，一个null
  * @author zong0jie
@@ -12,9 +20,11 @@ import java.util.HashMap;
  */
 public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements Cloneable
 {
+	public static void main(String[] args) {
+		ListAbs<ListDetailAbs> listAbs = new ListAbs<ListDetailAbs>();
+		
+	}
 	private static final long serialVersionUID = -3356076601369239937L;
-	/** 好像是分割同一个element的多个name的符号，待确认*/
-	public static final String SEP = "/";
 	/**保存某个坐标到所在的内含子/外显子起点的距离 */
 	HashMap<Integer, Integer> hashLocExInStart;
 	/** 保存某个坐标到所在的内含子/外显子终点的距离 */
@@ -23,6 +33,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	protected String listName = "";
 	/** 方向 */
 	Boolean cis5to3 = null;
+	
 	public void setName(String listName) {
 		this.listName = listName;
 	}
@@ -39,22 +50,6 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	public void setCis5to3(boolean cis5to3) {
 		this.cis5to3 = cis5to3;
  	}
-	/**
-	 * 将list中的元素进行排序，如果反向，那么就从大到小排序
-	 * 如果正向，那么就从小到大排序
-	 * 内部有flag，排完后就不会再排第二次了
-	 */
-	public void sort() {
-		if (cis5to3 == null) {
-			Collections.sort(this, new CompS2MAbs());
-		}
-		else if (cis5to3) {
-			Collections.sort(this, new CompS2M());
-		}
-		else {
-			Collections.sort(this, new CompM2S());
-		}
-	}
 	/**
 	 * 返回实际第num个element间区的长度
 	 * @param num 实际数目
@@ -161,16 +156,14 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return false;
 	}
 	
-	public int getStart()
-	{
+	public int getStart() {
 		if (cis5to3 != null) {
 			return get(0).getStartCis();
 		}
 		return get(0).getStartAbs();
 	}
 	
-	public int getEnd()
-	{
+	public int getEnd() {
 		if (cis5to3 != null) {
 			return get(size() - 1).getEndCis();
 		}
@@ -270,8 +263,8 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 			else
 				 loc2ExInEnd = Math.abs(get(NumExon).getEndAbs() - location);//距离本外显子终止  Cnnnnnnn
 		}
-		else if(exIntronNum < 0) 
-		{   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
+		//0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
+		else if(exIntronNum < 0) {
 			if (cis5to3 != null) 
 				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartCis() - location) - 1;// 距后一个外显子 nnCnnnnN
 			else
@@ -295,12 +288,11 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * 返回每个ID对应的具体element
 	 * @return
 	 */
-	public HashMap<String,Integer> getHash2Num()
-	{
+	public HashMap<String,Integer> getHash2Num() {
 		HashMap<String, Integer> hashID2Num = new HashMap<String, Integer>();
 		for (int i = 0; i < size(); i++) {
 			E ele = get(i);
-			String[] ss = ele.getName().split(SEP);
+			String[] ss = ele.getName().split(SepSign.SEP_ID);
 			for (String string : ss) {
 				hashID2Num.put(string, i);
 			}
@@ -312,8 +304,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * 如果两个Item是重叠的，就用ListAbs.SEP隔开，
 	 * @return
 	 */
-	public ArrayList<String> getLOCIDList()
-	{
+	public ArrayList<String> getLOCIDList() {
 		ArrayList<String> lsLocID = new ArrayList<String>();
 		for (E ele : this) {
 			lsLocID.add(ele.getName());
@@ -330,7 +321,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * 不在为0
 	 * 为实际数目
 	 */
-	public int[] LocPosition( int Coordinate) {
+	protected CoordLocationInfo LocPosition( int Coordinate) {
 		if (cis5to3 == null) {
 			return BinarySearch.LocPositionAbs(this, Coordinate);
 		}
@@ -349,17 +340,16 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * @return
 	 */
 	public int getNumCodInEle(int location) {
-		return LocPosition(location)[3];
+		return LocPosition(location).getElementNumThisAbs();
 	}
 	/**
 	 * 返回每个ID对应的具体element
 	 * 输入一个hashmap，在里面填充信息
 	 * @return
 	 */
-	public void getLocHashtable(HashMap<String,E> hashLocMap)
-	{
+	public void getLocHashtable(HashMap<String,E> hashLocMap) {
 		for (E ele : this) {
-			String[] ss = ele.getName().split(SEP);
+			String[] ss = ele.getName().split(SepSign.SEP_ID);
 			for (String string : ss) {
 				hashLocMap.put(string, ele);
 			}
@@ -369,11 +359,10 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * 返回每个ID对应的Num
 	 * @return
 	 */
-	public void getHashLocNum(HashMap<String,Integer> hashLocNum)
-	{
+	public void getHashLocNum(HashMap<String,Integer> hashLocNum) {
 		for (int i = 0; i < size(); i++) {
 			E ele = get(i);
-			String[] ss = ele.getName().split(SEP);
+			String[] ss = ele.getName().split(SepSign.SEP_ID);
 			for (String string : ss) {
 				hashLocNum.put(string, i);
 			}
@@ -476,7 +465,22 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 		return true;
 	}
-	
+	/**
+	 * 将list中的元素进行排序，如果反向，那么就从大到小排序
+	 * 如果正向，那么就从小到大排序
+	 * 内部有flag，排完后就不会再排第二次了
+	 */
+	public void sort() {
+		if (cis5to3 == null) {
+			Collections.sort(this, new CompS2MAbs());
+		}
+		else if (cis5to3) {
+			Collections.sort(this, new CompS2M());
+		}
+		else {
+			Collections.sort(this, new CompM2S());
+		}
+	}
 	/**
 	 * 已测试，能用
 	 */
@@ -494,14 +498,75 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 		return result;
 	}
+	/**
+	 * 给定一系列ListElement，以及一个方向。
+	 * 将相同方向的ListElement提取出来，然后合并，然后找出这些element的共同边界
+	 * @param cis5to3
+	 * @param lsIso
+	 * @return
+	 */
+	public static ArrayList<int[]> getCombSep(boolean cis5to3, ArrayList<? extends ListAbs<? extends ListDetailAbs>> lsIso) {
+		ArrayList<? extends ListDetailAbs> lsAllelement = combListAbs(cis5to3, lsIso);
+		ArrayList<int[]> lsSep = getLsElementSep(cis5to3, lsAllelement);
+		return lsSep;
+	}
+	/**
+	 * 将一个List中的Iso全部合并起来。
+	 * @param gffDetailGene
+	 */
+	private static ArrayList<? extends ListDetailAbs> combListAbs(boolean cis5to3, ArrayList<? extends ListAbs<? extends ListDetailAbs>> lsIso) {
+		ArrayList<ListDetailAbs> lsAll = new ArrayList<ListDetailAbs>();
+		//将全部的exon放在一个list里面并且排序
+		for (ListAbs<? extends ListDetailAbs> listAbs : lsIso) {
+			if (listAbs.isCis5to3() != cis5to3) {
+				continue;
+			}
+			lsAll.addAll(listAbs);
+		}
+		Collections.sort(lsAll);
+		return lsAll;
+	}
+	/**
+	 * 将经过排序的exonlist合并，获得几个连续的exon，用于分段
+	 */
+	private static ArrayList<int[]> getLsElementSep(boolean cis5to3, ArrayList<? extends ListDetailAbs> lsAll) {
+		ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
+		int[] exonOld = new int[]{lsAll.get(0).getStartCis(), lsAll.get(0).getEndCis()};
+		lsExonBounder.add(exonOld);
+		for (int i = 1; i < lsAll.size(); i++) {
+			int[] exon = new int[]{lsAll.get(i).getStartCis(), lsAll.get(i).getEndCis()};
+			if (cis5to3) {
+				if (exon[0] <= exonOld[1]) {
+					if (exon[1] > exonOld[1]) {
+						exonOld[1] = exon[1];
+					}
+				}
+				else {
+					exonOld = exon.clone();
+					lsExonBounder.add(exonOld);
+				}
+			}
+			else {
+				if (exon[0] >= exonOld[1]) {
+					if (exon[1] < exonOld[1]) {
+						exonOld[1] = exon[1];
+					}
+				}
+				else {
+					exonOld = exon.clone();
+					lsExonBounder.add(exonOld);
+				}
+			}
+		}
+		return lsExonBounder;
+	}
 }
 /**
  * 内建的二分法查找类，专门用于ListAbs查找
  * @author zong0jie
  *
  */
-class BinarySearch
-{
+class BinarySearch {
 	/**
 	 * 二分法查找location所在的位点,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
 	 * 返回一个int[3]数组，<br>
@@ -512,36 +577,29 @@ class BinarySearch
 	 * 不在为0
 	 * 为实际数目
 	 */
-	protected static int[] LocPositionCis(ArrayList<? extends ListDetailAbs> lsElement, int Coordinate) {
+	protected static CoordLocationInfo LocPositionCis(ArrayList<? extends ListDetailAbs> lsElement, int Coordinate) {
 		if (lsElement == null) {
 			return null;
 		}
-		int[] LocInfo = new int[4];
+		CoordLocationInfo coordLocationInfo = new CoordLocationInfo(lsElement.size());
 		int endnum = 0;
 		endnum = lsElement.size() - 1;
 		int beginnum = 0;
 		int number = 0;
 		// 在第一个Item之前
 		if (Coordinate < lsElement.get(beginnum).getStartCis()){
-			LocInfo[0] = 2;
-			LocInfo[1] = -1;
-			LocInfo[2] = 0;
-			LocInfo[3] = 0;
-			return LocInfo;
+			coordLocationInfo.setElementInsideOutSideNum(0);
+			return coordLocationInfo;
 		}
 		// 在最后一个Item之后
 		else if (Coordinate >= lsElement.get(endnum).getStartCis()) {
 			if (Coordinate > lsElement.get(endnum).getEndCis()) {
-				LocInfo[0] = 2;
-				LocInfo[3] = 0;
+				coordLocationInfo.setElementInsideOutSideNum(-lsElement.size());
 			}
 			else {
-				LocInfo[0] = 1;
-				LocInfo[3] = endnum + 1;
+				coordLocationInfo.setElementInsideOutSideNum(lsElement.size());
 			}
-			LocInfo[1] = endnum;
-			LocInfo[2] = -1;
-			return LocInfo;
+			return coordLocationInfo;
 		}
 		do {
 			number = (beginnum + endnum + 1) / 2;// 3/2=1,5/2=2
@@ -557,26 +615,19 @@ class BinarySearch
 				beginnum = number;
 			}
 		} while ((endnum - beginnum) > 1);
-		LocInfo[1] = beginnum;
-		LocInfo[2] = endnum;
 		if (Coordinate <= lsElement.get(beginnum).getEndCis())// 不知道会不会出现PeakNumber比biginnum小的情况
 		{ // location在基因内部
-			LocInfo[0] = 1;
-			LocInfo[3] = LocInfo[1] + 1;
-			return LocInfo;
+			coordLocationInfo.setElementInsideOutSideNum(beginnum + 1);
+			return coordLocationInfo;
 		}
 		else if (Coordinate >= lsElement.get(endnum).getStartCis())// 不知道会不会出现PeakNumber比biginnum小的情况
 		{ // location在基因内部
-			LocInfo[0] = 1;
-			LocInfo[1] = endnum;
-			LocInfo[2] = endnum + 1;
-			LocInfo[3] = LocInfo[1] + 1;
-			return LocInfo;
+			coordLocationInfo.setElementInsideOutSideNum(endnum + 1);
+			return coordLocationInfo;
 		}
 		// location在基因外部
-		LocInfo[0] = 2;
-		LocInfo[3] = -LocInfo[1] - 1;
-		return LocInfo;
+		coordLocationInfo.setElementInsideOutSideNum(-beginnum - 1);
+		return coordLocationInfo;
 	}
 
 	/**
@@ -589,36 +640,29 @@ class BinarySearch
 	 * 不在为0
 	 * 为实际数目
 	 */
-	protected static int[] LocPositionTran(ArrayList<? extends ListDetailAbs> lsElement, int Coordinate) {
+	protected static CoordLocationInfo LocPositionTran(ArrayList<? extends ListDetailAbs> lsElement, int Coordinate) {
 		if (lsElement == null) {
 			return null;
 		}
-		int[] LocInfo = new int[4];
+		CoordLocationInfo coordLocationInfo = new CoordLocationInfo(lsElement.size());
 		int endnum = 0;
 		endnum = lsElement.size() - 1;
 		int beginnum = 0;
 		int number = 0;
 		// 在第一个Item之前
 		if (Coordinate > lsElement.get(beginnum).getStartCis()){
-			LocInfo[0] = 2;
-			LocInfo[1] = -1;
-			LocInfo[2] = 0;
-			LocInfo[3] = 0;
-			return LocInfo;
+			coordLocationInfo.setElementInsideOutSideNum(0);
+			return coordLocationInfo;
 		}
 		// 在最后一个Item之后
 		else if (Coordinate <= lsElement.get(endnum).getStartCis()) {
 			if (Coordinate < lsElement.get(endnum).getEndCis()) {
-				LocInfo[0] = 2;
-				LocInfo[3] = 0;
+				coordLocationInfo.setElementInsideOutSideNum(-lsElement.size());
 			}
 			else {
-				LocInfo[0] = 1;
-				LocInfo[3] = endnum + 1;
+				coordLocationInfo.setElementInsideOutSideNum(lsElement.size());
 			}
-			LocInfo[1] = endnum;
-			LocInfo[2] = -1;
-			return LocInfo;
+			return coordLocationInfo;
 		}
 		do {
 			number = (beginnum + endnum + 1) / 2;// 3/2=1,5/2=2
@@ -634,26 +678,18 @@ class BinarySearch
 				beginnum = number;
 			}
 		} while ((endnum - beginnum) > 1);
-		LocInfo[1] = beginnum;
-		LocInfo[2] = endnum;
-		if (Coordinate >= lsElement.get(beginnum).getEndCis())
-		{ // location在基因内部
-			LocInfo[0] = 1;
-			LocInfo[3] = LocInfo[1] + 1;
-			return LocInfo;
+		if (Coordinate >= lsElement.get(beginnum).getEndCis()) { // location在基因内部
+			coordLocationInfo.setElementInsideOutSideNum(beginnum + 1);
+			return coordLocationInfo;
 		}
 		else if (Coordinate <= lsElement.get(endnum).getStartCis()) 
 		{// location在基因内部
-			LocInfo[0] = 1;
-			LocInfo[1] = endnum;
-			LocInfo[2] = endnum + 1;
-			LocInfo[3] = LocInfo[1] + 1;
-			return LocInfo;
+			coordLocationInfo.setElementInsideOutSideNum(endnum + 1);
+			return coordLocationInfo;
 		}
 		// location在基因外部
-		LocInfo[0] = 2;
-		LocInfo[3] = -LocInfo[1] - 1;
-		return LocInfo;
+		coordLocationInfo.setElementInsideOutSideNum(-beginnum - 1);
+		return coordLocationInfo;
 	}
 	/**
 	 * 二分法查找location所在的位点,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
@@ -665,36 +701,29 @@ class BinarySearch
 	 * 不在为0
 	 * 为实际数目
 	 */
-	protected static int[] LocPositionAbs(ArrayList<? extends ListDetailAbs> lsElement, int Coordinate) {
+	protected static CoordLocationInfo LocPositionAbs(ArrayList<? extends ListDetailAbs> lsElement, int Coordinate) {
 		if (lsElement == null) {
 			return null;
 		}
-		int[] LocInfo = new int[4];
+		CoordLocationInfo coordLocationInfo = new CoordLocationInfo(lsElement.size());
 		int endnum = 0;
 		endnum = lsElement.size() - 1;
 		int beginnum = 0;
 		int number = 0;
 		// 在第一个Item之前
 		if (Coordinate < lsElement.get(beginnum).getStartAbs()){
-			LocInfo[0] = 2;
-			LocInfo[1] = -1;
-			LocInfo[2] = 0;
-			LocInfo[3] = 0;
-			return LocInfo;
+			coordLocationInfo.setElementInsideOutSideNum(0);
+			return coordLocationInfo;
 		}
 		// 在最后一个Item之后
 		else if (Coordinate >= lsElement.get(endnum).getStartAbs()) {
 			if (Coordinate > lsElement.get(endnum).getEndAbs()) {
-				LocInfo[0] = 2;
-				LocInfo[3] = 0;
+				coordLocationInfo.setElementInsideOutSideNum(-lsElement.size());
 			}
 			else {
-				LocInfo[0] = 1;
-				LocInfo[3] = endnum + 1;
+				coordLocationInfo.setElementInsideOutSideNum(lsElement.size());
 			}
-			LocInfo[1] = endnum;
-			LocInfo[2] = -1;
-			return LocInfo;
+			return coordLocationInfo;
 		}
 		do {
 			number = (beginnum + endnum + 1) / 2;// 3/2=1,5/2=2
@@ -710,18 +739,12 @@ class BinarySearch
 				beginnum = number;
 			}
 		} while ((endnum - beginnum) > 1);
-		LocInfo[1] = beginnum;
-		LocInfo[2] = endnum;
-		if (Coordinate <= lsElement.get(beginnum).getEndAbs())// 不知道会不会出现PeakNumber比biginnum小的情况
-		{ // location在基因内部
-			LocInfo[0] = 1;
-			LocInfo[3] = LocInfo[1] + 1;
-			return LocInfo;
+		if (Coordinate <= lsElement.get(beginnum).getEndAbs()) {
+			coordLocationInfo.setElementInsideOutSideNum(beginnum + 1);
+			return coordLocationInfo;
 		}
-		// location在基因外部
-		LocInfo[0] = 2;
-		LocInfo[3] = -LocInfo[1] - 1;
-		return LocInfo;
+		coordLocationInfo.setElementInsideOutSideNum(-beginnum-1);
+		return coordLocationInfo;
 	}
 	
 }
@@ -780,6 +803,109 @@ class CompM2S implements Comparator<ListDetailAbs> {
 			return -o1end.compareTo(o2end);
 		}
 		return -comp;
+	}
+}
+/**
+ * 前提，第一个element的起点就是list的起点，最后一个element的终点就是list的终点
+ * 否则就要<b>重写getElementNumThisAbs() 方法</b>
+ * 
+ * 二分法查找location所在的位点所保存的信息
+ * 返回一个int[3]数组，<br>
+ * 0: 1-基因内 2-基因外<br>
+ * 1：本基因序号（定位在基因内） / 上个基因的序号(定位在基因外) -1表示前面没有基因<br>
+ * 2：下个基因的序号 -1表示后面没有基因
+ * 3：单独的一个标签，该点在外显子中为正数，在内含子中为负数
+ * 不在为0
+ * 从0开始的数目，可以直接用get(i)提取
+ */
+
+class CoordLocationInfo {
+	/**待查找的list的元素个数 */
+	int listSize;
+	/** 表示该点在第几个元素中<br>
+	 * 正数表示在第几个元素中，譬如在第几个exon中或第几个基因中，实际数目<br>
+	 * 负数表示在第几个intron中或第几个间隔中，实际数目。
+	 * 如果在list最前面，则为0。如果在list最后面，则为负数的list.size()
+	 */
+	int elementInsideOutSideNumAbs = 0;
+	
+	public CoordLocationInfo(int listSize) {
+		this.listSize = listSize;
+	}
+	/** 表示该点在第几个元素中，<b>实际数目</b><br>
+	 * 正数表示在第几个元素中，譬如在第几个exon中或第几个基因中，实际数目<br>
+	 * 负数表示在第几个intron中或第几个间隔中。
+	 * 如果在list最前面，则为0。如果在list最后面，则为负数的list.size()
+	 */
+	public void setElementInsideOutSideNum(int elementInsideOutSideNumAbs) {
+		this.elementInsideOutSideNumAbs = elementInsideOutSideNumAbs;
+	}
+	
+	public boolean isInsideElement() {
+		if (elementInsideOutSideNumAbs > 0) {
+			return true;
+		}
+		return false;
+	}
+	/**
+	 * 返回该点所在的元素，一直返回正数。如果在list外，返回-1<br>
+	 * 计数从0开始<br>
+	 * <b>-1表示前面没有基因</b>
+	 * @return
+	 */
+	public int getElementNumLastElementFrom0() {
+		if (elementInsideOutSideNumAbs > 0) {
+			return elementInsideOutSideNumAbs - 2;
+		}
+		else if (elementInsideOutSideNumAbs < 0) {
+			return Math.abs(elementInsideOutSideNumAbs) - 1;
+		}
+		else {
+			return -1;
+		}
+	}
+	/**
+	 * 返回该点所在的Element，一直返回正数。如果在element之外，返回-1
+	 * 计数从0开始
+	 * @return
+	 */
+	public int getElementNumThisElementFrom0() {
+		if (elementInsideOutSideNumAbs > 0) {
+			return elementInsideOutSideNumAbs - 1;
+		}
+		else {
+			return -1;
+		}
+	}
+	/**
+	 * 返回该点所在的元素，一直返回正数。如果在list外，返回-1<br>
+	 * 计数从0开始<br>
+	 * <b>-1表示后面没有基因</b>
+	 * @return
+	 */
+	public int getElementNumNextElementFrom0() {
+		if (elementInsideOutSideNumAbs >= 0 && elementInsideOutSideNumAbs < listSize) {
+			return elementInsideOutSideNumAbs;
+		}
+		else if (elementInsideOutSideNumAbs < 0 && Math.abs(elementInsideOutSideNumAbs) < listSize) {
+			return Math.abs(elementInsideOutSideNumAbs);
+		}
+		else {
+			return -1;
+		}
+	}
+	/**
+	 * 前提，第一个element的起点就是list的起点，最后一个element的终点就是list的终点<br>
+	 * 返回该点所在的元素，从1开始，<br>
+	 * 正数表示在第几个元素中，譬如在第几个exon中或第几个基因中，实际数目<br>
+	 * 负数表示在第几个intron中或第几个间隔中。<br>
+	 * 如果<b>在list最前面或最后面，则为0</b>。
+	 */
+	public int getElementNumThisAbs() {
+		if (elementInsideOutSideNumAbs == -listSize) {
+			return 0;
+		}
+		return elementInsideOutSideNumAbs;
 	}
 }
 

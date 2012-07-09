@@ -46,6 +46,7 @@ public class MapTophat {
 		mapTophat.setLeftFq(fastqFile);
 		mapTophat.setOutPathPrefix("/media/winF/NBC/Project/RNA-Seq_HPWtest/FangLan/tophatN");
 		mapTophat.setThreadNum(4);
+		mapTophat.mapReads();
 	}
 	
 	private static Logger logger = Logger.getLogger(MapTophat.class);

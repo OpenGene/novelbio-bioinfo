@@ -165,6 +165,7 @@ public class CtrlFastQMapping {
 			mapBwa.setOutFileName(outFilePrefix + prefix);
 			mapBwa.setGapLength(gapLen);
 			mapBwa.setMismatch(mismatch);
+			mapBwa.setSampleGroup(prefix, null, null, null);
 			if (libraryType == LIBRARY_MATE_PAIR) {
 				mapBwa.setInsertSize(200, 4000);
 			}

@@ -29,7 +29,7 @@ public class FreqStatisticInt{
 			return;
 		}
 		GffDetailPeak gffDetailPeak = gffCodPeak.getGffDetailThis();
-		gffDetailPeak.addNumber();
+		gffDetailPeak.addReadsInElementNum();
 	}
 	/**
 	 * 返回区间以及每个区间的数量
@@ -45,7 +45,7 @@ public class FreqStatisticInt{
 			int[] interval = new int[2];
 			interval[0] = gffDetailPeak.getStartAbs();
 			interval[1]= gffDetailPeak.getEndAbs();
-			hashResult.put(interval, gffDetailPeak.getNumber());
+			hashResult.put(interval, gffDetailPeak.getReadsInElementNum());
 		}
 		return hashResult;
 	}

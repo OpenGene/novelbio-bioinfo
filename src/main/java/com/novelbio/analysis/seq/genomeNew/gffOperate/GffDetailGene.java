@@ -1,15 +1,20 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo.ExonCluster;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.generalConf.NovelBioConst;
 /**
  * 考虑将其中的iso装入hash表中，以加快查找效率
  * 重写了clone但是没有重写equals和hash
@@ -43,14 +48,30 @@ public class GffDetailGene extends ListDetailAbs {
 	public final static String UTR3 = "3utr";
 	public final static String TSS = "tss";
 	public final static String TES = "tes";
-	/** 两个转录本在一个基因下，那么这个基因名可能是结合了两个名字，用该符号分割 */
-	public final static String SEP_GENE_NAME = "/";
-	/**  同一个iso如果有多个名字，则用该符号分割ISO */
-	private final static String SEP_ISO_NAME = "@//@";
 	/** 顺序存储每个转录本的的坐标情况 */
 	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
-	
+	ListGff listGff;
 	int taxID = 0;
+	
+	boolean removeDuplicateIso = false;
+	
+	/**
+	 * 一个基因如果有不止一个的转录本，那么这些转录本的同一区域的exon就可以提取出来，并放入该list
+	 * 也就是每个exoncluster就是一个exon类，表示 
+	 */
+	ArrayList<ExonCluster> lsExonClusters = new ArrayList<ExonCluster>();
+	
+	/**
+	 * @param chrID 内部小写
+	 * @param locString
+	 * @param cis5to3
+	 */
+	public GffDetailGene(String chrID, String locString, boolean cis5to3) {
+		super(chrID, locString, cis5to3);
+	}
+	public GffDetailGene(ListGff listGff, String locString, boolean cis5to3) {
+		super(listGff, locString, cis5to3);
+	}
 	
 	protected void setTaxID(int taxID) {
 		this.taxID = taxID;
@@ -80,11 +101,10 @@ public class GffDetailGene extends ListDetailAbs {
 	private int getIsoID(String isoName) {
 		for (int i = 0; i < lsGffGeneIsoInfos.size(); i++) {
 			GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(i);
-			String[] tmpName = gffGeneIsoInfo.getName().split(SEP_ISO_NAME);
+			String[] tmpName = gffGeneIsoInfo.getName().split(SepSign.SEP_ID);
 			for (String string : tmpName) {
 				string = GeneID.removeDot(string);
-				if(string.equalsIgnoreCase( GeneID.removeDot(isoName) ))
-				{
+				if(string.equalsIgnoreCase( GeneID.removeDot(isoName) )) {
 					return i;
 				}
 			}
@@ -120,42 +140,6 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 	}
 	/**
-	 * 划定Tss范围上游为负数，下游为正数
-	 * @param upTss
-	 * @param downTss
-	 */
-	public void setTssRegion(int[] Tss) {
-		if (Tss != null) {
-			this.upTss = Tss[0];
-			this.downTss = Tss[1];
-			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-				gffGeneIsoInfo.setTssRegion(upTss, downTss);
-			}
-		}
-	}
-	/**
-	 * 划定Tss范围上游为负数，下游为正数
-	 * @param upTss
-	 * @param downTss
-	 */
-	public void setTesRegion(int[] Tes) {
-		if (Tes != null) {
-			this.upGeneEnd3UTR = Tes[0];
-			this.downGeneEnd3UTR = Tes[1];
-			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-				gffGeneIsoInfo.setTesRegion(upGeneEnd3UTR, downGeneEnd3UTR);
-			}
-		}
-	}
-	/**
-	 * @param chrID
-	 * @param locString
-	 * @param cis5to3
-	 */
-	public GffDetailGene(String chrID, String locString, boolean cis5to3) {
-		super(chrID, locString, cis5to3);
-	}
-	/**
 	 * 给最后一个转录本添加exon坐标，<br>
 	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加
 	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
@@ -178,7 +162,6 @@ public class GffDetailGene extends ListDetailAbs {
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExonGFFCDSUTR(locStart, locEnd);
 	}
-	
 	/**
 	 * 给最后一个转录本添加ATG和UAG坐标，<br>
 	 * 加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
@@ -197,11 +180,11 @@ public class GffDetailGene extends ListDetailAbs {
 		gffGeneIsoInfo.sort();
 		gffGeneIsoInfo.setATGUAGncRNA();
 	}
-	
 	/**
 	 * 直接添加转录本，根据genedetail的信息设置cis5to3。之后用addcds()方法给该转录本添加exon
 	 */
 	protected void addsplitlist(String splitName, int geneTpye) {
+		removeDuplicateIso = false;
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (cis5to3) {
 			gffGeneIsoInfo = new GffGeneIsoCis(splitName,this, geneTpye);
@@ -209,13 +192,13 @@ public class GffDetailGene extends ListDetailAbs {
 		else {
 			gffGeneIsoInfo = new GffGeneIsoTrans(splitName,this, geneTpye);
 		}
-		gffGeneIsoInfo.setTaxID(this.taxID);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 	}
 	/**
 	 * 直接添加转录本，之后用addcds()方法给该转录本添加exon
 	 */
 	protected void addsplitlist(String splitName, int geneTpye, boolean cis5to3) {
+		removeDuplicateIso = false;
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (cis5to3) {
 			gffGeneIsoInfo = new GffGeneIsoCis(splitName,this, geneTpye);
@@ -223,7 +206,6 @@ public class GffDetailGene extends ListDetailAbs {
 		else {
 			gffGeneIsoInfo = new GffGeneIsoTrans(splitName,this, geneTpye);
 		}
-		gffGeneIsoInfo.setTaxID(this.taxID);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 	}
 	/**
@@ -232,10 +214,9 @@ public class GffDetailGene extends ListDetailAbs {
 	public int getSplitlistNumber() {
 		return lsGffGeneIsoInfos.size();
     }
-	
 	/**
 	 * 转录方向，假设同一基因不管多少转录本都同一转录方向
-	 * 如果为null，说明没有方向，一个转录本里面既有正向也有反向，总体就没有方向
+	 * 如果为null，则返回最长转录本的方向
 	 */
 	public Boolean isCis5to3() {
 		if (cis5to3 == null) {
@@ -243,12 +224,11 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		return this.cis5to3;
 	}
-	
     /**
      * 给定编号(从0开始，编号不是转录本的具体ID)<br>
      * 返回某个转录本的具体信息
      */
-    public GffGeneIsoInfo getIsolist(int splitnum) {  
+    public GffGeneIsoInfo getIsolist(int splitnum) {
     	return lsGffGeneIsoInfos.get(splitnum);//include one special loc start number to end number	
     }
     /**
@@ -262,7 +242,11 @@ public class GffDetailGene extends ListDetailAbs {
 		}
     	return lsGffGeneIsoInfos.get(index);//include one special loc start number to end number	
     }
-
+	/** 获得该基因中最长的一条转录本的信息 */
+	public GffGeneIsoInfo getLongestSplit() {
+		int id = getLongestSplitID();
+		return lsGffGeneIsoInfos.get(id);
+	}
     private int getLongestSplitID() {
     	if (lsGffGeneIsoInfos.size() == 1) {
 			return 0;
@@ -278,23 +262,12 @@ public class GffDetailGene extends ListDetailAbs {
 		int id = 0;
 		
 		for (int i = 0; i < lslength.size(); i++) {
-			if (lslength.get(i) > max)
-			{
+			if (lslength.get(i) > max) {
 				max = lslength.get(i);
 				id = i;
 			}
 		}
 		return id;
-	}
-    
-	/**
-	 * 获得该基因中最长的一条转录本的信息
-	 * 
-	 * @return <br>
-	 */
-	public GffGeneIsoInfo getLongestSplit() {
-		int id = getLongestSplitID();
-		return lsGffGeneIsoInfos.get(id);
 	}
 	/**
 	 * 返回所有的转录本信息
@@ -314,24 +287,23 @@ public class GffDetailGene extends ListDetailAbs {
      */
 	public int getTypeLength(String type,int num) {
 		GffGeneIsoInfo gffGeneIsoInfo = getLongestSplit();
-		//TODO 如果超出需要返回0
+		if (num > gffGeneIsoInfo.size()) {
+			return 0;
+		}
 		if (type.equals(INTRON)) {
 			return gffGeneIsoInfo.getLenIntron(num);
 		}
 		if (type.equals(EXON)) {
 			return gffGeneIsoInfo.getLenExon(num);
 		}
-		if (type.equals(UTR5)) 
-		{
+		if (type.equals(UTR5)) {
 			return gffGeneIsoInfo.getLenUTR5();
 		}
-		if (type.equals(UTR3)) 
-		{
+		if (type.equals(UTR3)) {
 			return gffGeneIsoInfo.getLenUTR3();
 		}
 		return -1000000;
 	}
-	
 	/**
 	 * 是否在该基因内，具体情况
 	 * @return
@@ -385,6 +357,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @param gffDetailGene
 	 */
 	public void addIsoSimple(GffDetailGene gffDetailGene) {
+		removeDuplicateIso = false;
 		HashSet<String> hashIsoName = new HashSet<String>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			hashIsoName.add(gffGeneIsoInfo.getName());
@@ -402,6 +375,8 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @param gffDetailGene
 	 */
 	public void addIso(GffDetailGene gffDetailGene) {
+		removeDuplicateIso = false;
+		//TODO 待检查
 		ArrayList<GffGeneIsoInfo> lsGeneIsoInfosFinal = new ArrayList<GffGeneIsoInfo>();
 		ArrayList<GffGeneIsoInfo> lsIsoAdd = gffDetailGene.getLsCodSplit();
 		ArrayList<GffGeneIsoInfo> lsIsoThis = getLsCodSplit();
@@ -493,8 +468,9 @@ public class GffDetailGene extends ListDetailAbs {
 	 * 如果两个iso有交集但是交集小于0.3，则合并，否则增加一个新的iso
 	 * @param gffDetailGene
 	 */
-	public void addIsoOls(GffDetailGene gffDetailGene)
-	{
+	public void addIsoOls(GffDetailGene gffDetailGene) {
+		removeDuplicateIso = false;
+		//TODO 待检查
 		ArrayList<GffGeneIsoInfo> lsGeneIsoInfosFinal = new ArrayList<GffGeneIsoInfo>();
 		ArrayList<GffGeneIsoInfo> lsIsoAdd = gffDetailGene.getLsCodSplit();
 		ArrayList<GffGeneIsoInfo> lsIsoThis = getLsCodSplit();
@@ -574,8 +550,11 @@ public class GffDetailGene extends ListDetailAbs {
 	/**
 	 * 去除重复Isoform
 	 */
-	public void removeDupliIso()
-	{
+	public void removeDupliIso() {
+		if (removeDuplicateIso) {
+			return;
+		}
+		removeDuplicateIso = true;
 		HashMap<GffGeneIsoInfo, Integer> hashIso = new HashMap<GffGeneIsoInfo, Integer>();
 		ArrayList<GffGeneIsoInfo> lsResult = new ArrayList<GffGeneIsoInfo>();
 		int numIso = 0;
@@ -585,7 +564,7 @@ public class GffDetailGene extends ListDetailAbs {
 				int num = hashIso.get(gffGeneIsoInfo);
 				//获得原来的iso
 				GffGeneIsoInfo gffGeneIsoInfoInside = lsResult.get(num);
-				gffGeneIsoInfoInside.setName(gffGeneIsoInfoInside.getName() + SEP_ISO_NAME + gffGeneIsoInfo.getName());
+				gffGeneIsoInfoInside.setName(gffGeneIsoInfoInside.getName() + SepSign.SEP_ID + gffGeneIsoInfo.getName());
 				continue;
 			}
 			lsResult.add(gffGeneIsoInfo);
@@ -601,6 +580,8 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @param gffDetailGene
 	 */
 	public void addIso(GffGeneIsoInfo gffGeneIsoInfo) {
+		removeDuplicateIso = false;
+		//TODO
 		if (gffGeneIsoInfo == null || gffGeneIsoInfo.size() == 0) {
 			return;
 		}
@@ -632,11 +613,82 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 	}
 	
+	/** 按照分组好的边界exon，将每个转录本进行划分 */
+	private void setExonCluster() {
+		ArrayList<GffGeneIsoInfo> lsIsos = getLsCodSplit();
+		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(isCis5to3(), lsGffGeneIsoInfos);
+		for (int[] exonBound : lsExonBound) {
+			ExonCluster exonCluster = new ExonCluster(getParentName(), exonBound[0], exonBound[1]);
+			for (GffGeneIsoInfo gffGeneIsoInfo : lsIsos) {
+				if (gffGeneIsoInfo.isCis5to3() != isCis5to3()) {
+					continue;
+				}
+				
+				ArrayList<ExonInfo> lsExonClusterTmp = new ArrayList<ExonInfo>();
+				int beforeExonNum = 0;//如果本isoform正好没有落在bounder组中的exon，那么就要记录该isoform的前后两个exon的位置，用于查找跨过和没有跨过的exon
+				boolean junc = false;//如果本isoform正好没有落在bounder组中的exon，那么就需要记录跳过的exon的位置，就将这个flag设置为true
+				for (int i = 0; i < gffGeneIsoInfo.size(); i++) {
+					ExonInfo exon = gffGeneIsoInfo.get(i);
+					if (isCis5to3()) {
+						if (exon.getEndCis() < exonBound[0]) {
+							junc = true;
+							beforeExonNum = i;
+							continue;
+						}
+						else if (exon.getStartCis() >= exonBound[0] && exon.getEndCis() <= exonBound[1]) {
+							lsExonClusterTmp.add(exon);
+							junc = false;
+						}
+						else if (exon.getStartCis() > exonBound[1]) {
+							break;
+						}
+					}
+					else {
+						if (exon.getEndCis() > exonBound[0]) {
+							junc = true;
+							beforeExonNum = i;
+							continue;
+						}
+						else if (exon.getStartCis() <= exonBound[0] && exon.getEndCis() >= exonBound[1]) {
+							lsExonClusterTmp.add(exon);
+							junc = false;
+						}
+						else if (exon.getStartCis() < exonBound[1]) {
+							break;
+						}
+					}
+				}
+				if (lsExonClusterTmp.size() > 0) {
+					exonCluster.addExonCluster(gffGeneIsoInfo.getName(), lsExonClusterTmp);
+				}
+				if (junc && beforeExonNum < gffGeneIsoInfo.size()-1) {
+					exonCluster.setIso2JunctionStartExonNum(gffGeneIsoInfo.getName(), beforeExonNum);
+				}
+			}
+			lsExonClusters.add(exonCluster);
+		}
+	}
+	/**
+	 * 返回有差异的exon系列
+	 * @return
+	 */
+	public ArrayList<ExonCluster> getDifExonCluster() {
+		setExonCluster();
+		ArrayList<ExonCluster> lsDifExon = new ArrayList<ExonCluster>();
+		for (ExonCluster exonClusters : lsExonClusters) {
+			if (exonClusters.isSameExon()) {
+				continue;
+			}
+			lsDifExon.add(exonClusters);
+		}
+		return lsDifExon;
+	}
+	
 	public String getGTFformate(String title) {
 		String geneGTF = "";
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
 			gffGeneIsoInfo.sort();
-			geneGTF = geneGTF + gffGeneIsoInfo.getGTFformat(getName().split(SEP_GENE_NAME)[0], title);
+			geneGTF = geneGTF + gffGeneIsoInfo.getGTFformat(getName().split(SepSign.SEP_ID)[0], title);
 		}
 		return geneGTF;
 	}
@@ -647,15 +699,15 @@ public class GffDetailGene extends ListDetailAbs {
 	 */
 	public String getGFFformate(String title) {
 		if (title == null || title.trim().equals("")) {
-			title = "novelbio";
+			title = NovelBioConst.COMPANY_NAME_ABBR;
 		}
 		String strand = "+";
 		if (!isCis5to3()) {
 			strand = "-";
 		}
 		String geneGFF = getParentName() + "\t" +title + "\tgene\t" + getStartAbs()+ "\t" + getEndAbs()
-        + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=" + getName().split(SEP_GENE_NAME)[0]
-        +";Name="+getName().split(SEP_GENE_NAME)[0]+ ";Name="+getName().split(SEP_GENE_NAME)[0] + " \r\n";
+        + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=" + getName().split(SepSign.SEP_ID)[0]
+        +";Name="+getName().split(SepSign.SEP_ID)[0]+ ";Name="+getName().split(SepSign.SEP_ID)[0] + " \r\n";
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
 			String strandmRNA = "+";
 			if (!gffGeneIsoInfo.isCis5to3()) {
@@ -663,9 +715,9 @@ public class GffDetailGene extends ListDetailAbs {
 			}
 			geneGFF = geneGFF + getParentName() + "\t" +title + "\tmRNA\t" +gffGeneIsoInfo.getStartAbs()+ "\t" + gffGeneIsoInfo.getEndAbs()
 	        + "\t"+"."+"\t" +strandmRNA+"\t.\t"+ "ID=" + gffGeneIsoInfo.getName() 
-	        +";Name="+gffGeneIsoInfo.getName()+ ";Parent="+ getName().split(SEP_GENE_NAME)[0] + " \r\n";
+	        +";Name="+gffGeneIsoInfo.getName()+ ";Parent="+ getName().split(SepSign.SEP_ID)[0] + " \r\n";
 			gffGeneIsoInfo.sort();
-			geneGFF = geneGFF + gffGeneIsoInfo.getGFFformat(getName().split(SEP_GENE_NAME)[0], title);
+			geneGFF = geneGFF + gffGeneIsoInfo.getGFFformat(getName().split(SepSign.SEP_ID)[0], title);
 		}
 		return geneGFF;
 	}

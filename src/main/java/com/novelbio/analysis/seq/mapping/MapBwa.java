@@ -22,6 +22,13 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class MapBwa {
+	public static void main(String[] args) {
+		MapBwa mapBwa = new MapBwa();
+		mapBwa.setSampleGroup("asa", null, null, null);
+		System.out.println(mapBwa.sampleGroup);
+	}
+	
+	
 	private static Logger logger = Logger.getLogger(FastQMapSoap.class);
 	/**
 	 * 在此大小以下的genome直接读入内存以帮助快速mapping
@@ -190,18 +197,31 @@ public class MapBwa {
 		this.maxInsert = maxInsertLen;
 	}
 	/**
-	 * 本次mapping的组
-	 * @param sampleGroup
-	 * "@RQ\tID:< ID >\tLB:< LIBRARY_NAME >\tSM:< SAMPLE_NAME >\tPL:ILLUMINA" <br>
-	 * example: "@RG\tID:Exome1\tLB:Exome1\tSM:Exome1\tPL:ILLUMINA"
+	 * 本次mapping的组，所有参数都不能有空格
+	 * @param sampleID 
+	 * @param LibraryName
+	 * @param SampleName
+	 * @param Platform
 	 */
-	public void setSampleGroup(String sampleGroup) {
-		if (sampleGroup.trim().equals("")) {
-			this.sampleGroup = "";
+	public void setSampleGroup(String sampleID, String LibraryName, String SampleName, String Platform) {
+		if (sampleID == null || sampleID.equals("")) {
+			sampleGroup = "";
+			return;
 		}
-		else {
-			this.sampleGroup = " -r " + "\""+sampleGroup+"\"" + " ";
+		this.sampleGroup = " -r " + "\""+"@RG\\tID:" + sampleID;
+		if (LibraryName != null && !LibraryName.trim().equals("")) {
+			sampleGroup = sampleGroup + "\\tLB:" + LibraryName.trim();
 		}
+		
+		if (SampleName != null && !SampleName.trim().equals(""))
+			sampleGroup = sampleGroup + "\\tSM:" + SampleName.trim();
+		else
+			sampleGroup = sampleGroup + "\\tSM:" + sampleID.trim();
+		
+		if (Platform != null && !Platform.trim().equals(""))
+			sampleGroup = sampleGroup + "\\tPL:" + Platform + "\"";
+		else
+			sampleGroup = sampleGroup + "\\tPL:Illumina" + "\"";
 	}
 	/**
 	 * 默认gap为3，如果是indel查找的话，设置到5或者6比较合适

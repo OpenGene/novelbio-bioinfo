@@ -7,15 +7,19 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoTrans;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ListGff;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 
 public class GffGeneIsoTest extends TestCase {
 	@Test
 	public void testGffGeneIsoCis()
 	{
-		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis("aaa", "chr1", "fsefes");
+		GffDetailGene gffDetailGene = new GffDetailGene("chr1","sefes", true);
+		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis("aaa",gffDetailGene, GffGeneIsoInfo.TYPE_GENE_MRNA);
 		gffGeneIsoCis.add(new ExonInfo("", true, 0, 3));
 		gffGeneIsoCis.add(new ExonInfo("",true,5, 10));
 		gffGeneIsoCis.add(new ExonInfo("",true,20, 30));
@@ -59,7 +63,8 @@ public class GffGeneIsoTest extends TestCase {
 	@Test
 	public void testGffGeneIsoTrans()
 	{
-		GffGeneIsoTrans gffGeneIsoCis = new GffGeneIsoTrans("aaa", "chr1", "fsefes");
+		GffDetailGene gffDetailGene = new GffDetailGene("chr1","sefes", true);
+		GffGeneIsoTrans gffGeneIsoCis = new GffGeneIsoTrans("aaa",gffDetailGene, GffGeneIsoInfo.TYPE_GENE_MRNA);
 		gffGeneIsoCis.add(new ExonInfo("", false, 50, 40));
 		gffGeneIsoCis.add(new ExonInfo("", false, 30, 10));
 		gffGeneIsoCis.add(new ExonInfo("", false, 10, 5));

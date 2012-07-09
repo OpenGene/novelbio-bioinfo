@@ -357,8 +357,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 					}
 				}
 				else {
-					if (isNotRedundent(setRemoveRedundentID, gffDetailGene.getName().split(GffDetailGene.SEP_GENE_NAME)[0], gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0])) {
-						txtGtf.writefileln(gffDetailGene.getName().split(GffDetailGene.SEP_GENE_NAME)[0] + "\t" + gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+					if (isNotRedundent(setRemoveRedundentID, gffDetailGene.getName().split(SepSign.SEP_ID)[0], gffGeneIsoInfo.getName().split(SepSign.SEP_ID)[0])) {
+						txtGtf.writefileln(gffDetailGene.getName().split(SepSign.SEP_ID)[0] + "\t" + gffGeneIsoInfo.getName().split(SepSign.SEP_ID)[0]);
 					}
 				}
 			}

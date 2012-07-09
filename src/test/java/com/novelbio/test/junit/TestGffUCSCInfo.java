@@ -19,6 +19,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
+import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class TestGffUCSCInfo extends TestCase{
@@ -31,7 +32,7 @@ public class TestGffUCSCInfo extends TestCase{
 	public void setUp() throws Exception
 	{
 		//UCSC test
-		gffHashUCSC = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ);
+		gffHashUCSC = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		gffCodInfoUCSCgenechr1_1385068 = (GffCodGene) gffHashUCSC.searchLocation("chr1", 1385069);//
 		lsAllLoc = gffHashUCSC.getLOCIDList();
 		hashGffDetail = gffHashUCSC.getLocHashtable();
@@ -42,7 +43,7 @@ public class TestGffUCSCInfo extends TestCase{
 	{
 		Boolean aa = true;
 		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.findCod());
-		assertEquals("NM_022834/NM_199121",gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().getName());
+		assertEquals("NM_022834"+SepSign.SEP_ID+"NM_199121",gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().getName());
 		assertEquals(aa,gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().isCis5to3());
 		assertEquals(aa,gffCodInfoUCSCgenechr1_1385068.getGffDetailDown().isCis5to3());
 		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.isInsideLoc());

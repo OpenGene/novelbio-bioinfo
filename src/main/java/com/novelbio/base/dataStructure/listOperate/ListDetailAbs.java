@@ -2,6 +2,9 @@ package com.novelbio.base.dataStructure.listOperate;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
+import com.novelbio.database.domain.geneanno.SepSign;
+
 /**
  * 本类重写了equal代码，用于比较两个loc是否一致
  * 重写了hashcode 仅比较ChrID + "//" + locString + "//" + numberstart + "//" + numberstart;
@@ -15,7 +18,10 @@ import org.apache.log4j.Logger;
  * @author zong0jie
  *
  */
-public class ListDetailAbs implements Cloneable{
+public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
+	/** 父树 */
+	ListAbs listAbs;
+	
 	/** 根据cis在起点的上游多少bp，在此范围内则认为在tss区域  */
 	protected int upTss = 0;
 	/** 根据cis在起点的下游多少bp，在此范围内则认为在tss区域 */
@@ -36,7 +42,57 @@ public class ListDetailAbs implements Cloneable{
 	/**  染色体编号，都小写 */
 	protected String parentName="";
 	/** 转录方向，假设同一基因不管多少转录本都同一转录方向 */
-	protected Boolean cis5to3 = null; 
+	protected Boolean cis5to3 = null;
+	/** 本区域内有多少条reads */
+	int readsInElementNumber = 0;
+	
+	/** 本条目起点,起点位置总是小于终点，无视基因方向 */
+	protected int numberstart = ListCodAbs.LOC_ORIGINAL; // loc start number 
+	/** 本条目终点，终点位置总是大于起点，无视基因方向 */
+	protected int numberend = ListCodAbs.LOC_ORIGINAL; //loc end number
+	/** 本基因起点到上一个基因边界的距离 */
+	protected int tss2UpGene = ListCodAbs.LOC_ORIGINAL;
+	/** 本基因终点到下一个基因边界的距离 */
+	protected int tes2DownGene = ListCodAbs.LOC_ORIGINAL;
+	/** 该条目在List-GffDetail中的具体位置 */
+	protected int itemNum = ListCodAbs.LOC_ORIGINAL;
+	
+	public ListDetailAbs() {}
+	/**
+	 * 没有就设定为""或null
+	 * @param chrID 染色体编号，自动变成小写
+	 * @param locString 	 * LOCID，<br>
+	 * 水稻：LOC_Os01g01110<br>
+	 * 拟南芥：AT1G01110<br>
+	 * UCSC:XM_0101010/XM_032020<br>
+	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
+	 * peak: peak起点_peak终点
+	 * @param cis5to3 不确定就输入null
+	 */
+	public ListDetailAbs(String chrID, String ItemName, Boolean cis5to3) {
+		if (chrID != null) {
+			this.parentName = chrID.toLowerCase();
+		}
+		this.ItemName = ItemName;
+		this.cis5to3 = cis5to3;
+	}
+	/**
+	 * 没有就设定为""或null
+	 * @param chrID 染色体编号，自动变成小写
+	 * @param locString 	 * LOCID，<br>
+	 * 水稻：LOC_Os01g01110<br>
+	 * 拟南芥：AT1G01110<br>
+	 * UCSC:XM_0101010/XM_032020<br>
+	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
+	 * peak: peak起点_peak终点
+	 * @param cis5to3 不确定就输入null
+	 */
+	public ListDetailAbs(ListAbs listAbs, String ItemName, Boolean cis5to3) {
+		this.listAbs = listAbs;
+		this.parentName = listAbs.getName().toLowerCase();
+		this.ItemName = ItemName;
+		this.cis5to3 = cis5to3;
+	}
 	/**
 	 * 划定Tss范围上游为负数，下游为正数
 	 * @param upTss
@@ -52,10 +108,8 @@ public class ListDetailAbs implements Cloneable{
 	 * @param downTss
 	 */
 	public void setTssRegion(int[] Tss) {
-		if (Tss != null) {
-			this.upTss = Tss[0];
-			this.downTss = Tss[1];
-		}
+		if (Tss != null)
+			setTssRegion(Tss[0], Tss[1]);
 	}
 	
 	/**
@@ -73,10 +127,8 @@ public class ListDetailAbs implements Cloneable{
 	 * @param downTss
 	 */
 	public void setTesRegion(int[] Tes) {
-		if (Tes != null) {
-			this.upGeneEnd3UTR = Tes[0];
-			this.downGeneEnd3UTR = Tes[1];
-		}
+		if (Tes != null)
+			setTesRegion(Tes[0], Tes[1]);
 	}
 	/**
 	 * 0：uptss
@@ -94,52 +146,22 @@ public class ListDetailAbs implements Cloneable{
 	public int[] getTesRegion() {
 		return new int[]{upGeneEnd3UTR, downGeneEnd3UTR};
 	}
-
-	/**
-	 * 没有就设定为""或null
-	 * @param chrID 染色体编号，自动变成小写
-	 * @param locString 	 * LOCID，<br>
-	 * 水稻：LOC_Os01g01110<br>
-	 * 拟南芥：AT1G01110<br>
-	 * UCSC:XM_0101010/XM_032020<br>
-	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
-	 * peak: peak起点_peak终点
-	 * @param cis5to3 不确定就输入null
-	 */
-	public ListDetailAbs(String chrID, String ItemName,Boolean cis5to3)
-	{
-		if (chrID != null) {
-			this.parentName = chrID.toLowerCase();
-		}
-		this.ItemName = ItemName;
-		this.cis5to3 = cis5to3;
-	}
-
-	public ListDetailAbs() {}
-	
 	private static Logger logger = Logger.getLogger(ListDetailAbs.class);
 	
-	int number = 0;
-	/**
-	 * 计数加一
-	 */
-	public void addNumber() {
-		number++;
+	/** 计数加一 */
+	public void addReadsInElementNum() {
+		readsInElementNumber++;
 	}
 	/**
 	 * 本区域内出现多少的元素，必须前面调用addNumber添加
 	 * @return
 	 */
-	public int getNumber() {
-		return number;
+	public int getReadsInElementNum() {
+		return readsInElementNumber;
 	}
-	/**
-	 * 该条目在List-GffDetail中的具体位置
-	 */
-	protected int itemNum = ListCodAbs.LOC_ORIGINAL;
-	/**
-	 * 该条目在List-GffDetail中的具体位置
-	 */
+	/** 
+	 * <b>好像没用</b>
+	 * 该条目在List-GffDetail中的具体位置 */
 	public int getItemNum() {
 		return this.itemNum;
 	}
@@ -154,6 +176,10 @@ public class ListDetailAbs implements Cloneable{
      */
 	public String getName() {
 		return this.ItemName;
+	}
+	/** 单独的一个ID */
+	public String getNameSingle() {
+		return this.ItemName.split(SepSign.SEP_ID)[0];
 	}
     /**
  	 * LOCID，<br>
@@ -173,51 +199,19 @@ public class ListDetailAbs implements Cloneable{
 	public void setParentName(String parentName) {
 		this.parentName = parentName;
 	}
-	/**
-	 * @GffHashGene
-	 * 本条目起点,起点位置总是小于终点，无视基因方向
-	 * @GffHashItem
-	 * 条目起点,起点位置总是小于终点，无视条目方向
-	 */
-	protected int numberstart = ListCodAbs.LOC_ORIGINAL; // loc start number 
-	
-	/**
-	 * @GffHashGene
-	 * 本条目终点，终点位置总是大于起点，无视基因方向
-	 * @GffHashItem
-	 * 条目终点，终点位置总是大于起点，无视条目方向
-	 */
-	protected int numberend = ListCodAbs.LOC_ORIGINAL; //loc end number
-	/**
-	 * 本基因起点到上一个基因边界的距离
-	 */
-	protected int tss2UpGene = ListCodAbs.LOC_ORIGINAL;
-	/**
-	 * 本基因起点到上一个基因边界的距离
-	 */
+	/** 本基因起点到上一个基因边界的距离  */
 	public void setTss2UpGene(int tss2UpGene) {
 		this.tss2UpGene = tss2UpGene;
 	}
-	/**
-	 * 本基因终点到下一个基因边界的距离
-	 */
-	protected int tes2DownGene = ListCodAbs.LOC_ORIGINAL;
-	/**
-	 * 本基因终点到下一个基因边界的距离
-	 */
+	/** 本基因终点到下一个基因边界的距离 */
 	public void setTes2DownGene(int tes2DownGene) {
 		this.tes2DownGene = tes2DownGene;
 	}
-
-	/**
-	 * 本基因终点到下一个基因边界的距离
-	 */
+	/** 本基因终点到下一个基因边界的距离 */
 	public int getTes2DownGene() {
 		return tes2DownGene;
 	}
-	/**
-	 * 本基因起点到上一个基因边界的距离
-	 */
+	/** 本基因起点到上一个基因边界的距离 */
 	public int getTss2UpGene() {
 		return tss2UpGene;
 	}
@@ -312,7 +306,6 @@ public class ListDetailAbs implements Cloneable{
 		}
 		return false;
 	}
-	
 	/**
 	 * 是否在基因内，不拓展
 	 * @return
@@ -323,7 +316,6 @@ public class ListDetailAbs implements Cloneable{
 		}
 		return false;
 	}
-	
 	/**
 	 * 所属listAbs编号，都小写
 	 */
@@ -341,7 +333,6 @@ public class ListDetailAbs implements Cloneable{
 	public void setCis5to3(Boolean cis5to3) {
 		this.cis5to3 = cis5to3;
 	}
-
 	/**
 	 * 获得坐标到该ItemEnd的距离
 	 * 用之前先设定coord
@@ -364,7 +355,6 @@ public class ListDetailAbs implements Cloneable{
 			return numberstart- coord;
 		}
 	}
-	
 	/**
 	 * 获得坐标到该ItemStart的距离,如果coord小于0说明有问题，则返回null
 	 * 用之前先设定coord
@@ -387,10 +377,7 @@ public class ListDetailAbs implements Cloneable{
 			return numberend - coord;
 		}
 	}
-
-	/**
-	 * 坐标是否在基因内
-	 * @return
+	/** 坐标是否在基因内
 	 */
 	public boolean isCodInSide(int coord) {
 		if (coord >= numberstart && coord <=  numberend) {
@@ -398,6 +385,7 @@ public class ListDetailAbs implements Cloneable{
 		}
 		return false;
 	}
+	
 /////////////////////////////  重写equals等  ////////////////////////////////////
 	/**
 	 * 只比较locString、numberstart、numberend、ChrID、cis5to3
@@ -420,15 +408,12 @@ public class ListDetailAbs implements Cloneable{
 		getItemNum() == otherObj.getItemNum() &&
 		cis5to3 == otherObj.cis5to3;
 	}
-	/**
-	 * 重写hashcode
-	 */
+	/** 重写hashcode */
 	public int hashCode(){
 		String hash = "";
 		hash = parentName + "//" + ItemName + "//" + numberstart + "//" + numberstart;
 		return hash.hashCode();
 	}
-	
 	/**
 	 * 将本类的信息全部复制到gffDetailAbs上去
 	 * locString，ChrID，cis5to3不复制
@@ -436,8 +421,7 @@ public class ListDetailAbs implements Cloneable{
 	 * @param gffDetailAbs1
 	 * @param gffDetailAbs2
 	 */
-	protected void clone(ListDetailAbs gffDetailAbs)
-	{
+	protected void clone(ListDetailAbs gffDetailAbs) {
 		gffDetailAbs.parentName = parentName;
 		gffDetailAbs.cis5to3 = cis5to3;
 		gffDetailAbs.ItemName = ItemName;
@@ -446,17 +430,18 @@ public class ListDetailAbs implements Cloneable{
 		gffDetailAbs.numberend = getEndAbs();
 		gffDetailAbs.tes2DownGene = tes2DownGene;
 		gffDetailAbs.tss2UpGene = tss2UpGene;
-		gffDetailAbs.number = number;
+		gffDetailAbs.readsInElementNumber = readsInElementNumber;
 	}
+	/** 没有方向则返回startAbs */
 	public int getStartCis() {
-		if (isCis5to3()) {
+		if (isCis5to3() == null || isCis5to3()) {
 			return numberstart;
 		}
 		return numberend;
 	}
-	
+	/** 没有方向则返回endAbs */
 	public int getEndCis() {
-		if (isCis5to3()) {
+		if (isCis5to3() == null || isCis5to3()) {
 			return numberend;
 		}
 		return numberstart;
@@ -466,8 +451,7 @@ public class ListDetailAbs implements Cloneable{
 		return Math.abs(numberend-numberstart) + 1;
 	}
 	
-	public ListDetailAbs clone()
-	{
+	public ListDetailAbs clone() {
 		ListDetailAbs result = null;
 		try {
 			result = (ListDetailAbs) super.clone();
@@ -476,7 +460,7 @@ public class ListDetailAbs implements Cloneable{
 			result.downTss = downTss;
 			result.ItemName = ItemName;
 			result.itemNum = itemNum;
-			result.number = number;
+			result.readsInElementNumber = readsInElementNumber;
 			result.numberend = numberend;
 			result.numberstart = numberstart;
 			result.parentName = parentName;
@@ -488,5 +472,25 @@ public class ListDetailAbs implements Cloneable{
 			e.printStackTrace();
 		}
 		return result;
+	}
+	@Override
+	public int compareTo(ListDetailAbs o) {
+		Integer o1start = getStartCis(); Integer o1end = getEndCis();
+		Integer o2start = o.getStartCis(); Integer o2end = o.getEndCis();
+		if (isCis5to3() == null || isCis5to3()) {
+			int result = o1start.compareTo(o2start);
+			if (result == 0) {
+				return o1end.compareTo(o2end);
+			}
+			return result;
+		}
+		else {
+				int result = - o1start.compareTo(o2start);
+				if (result == 0) {
+					return - o1end.compareTo(o2end);
+				}
+				return result;
+			}
+	
 	}
 }

@@ -18,6 +18,8 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.gui.JTextFieldData;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controltools.CtrlCombFile;
 import com.novelbio.nbcgui.controltools.CtrlMedian;
 
@@ -206,6 +208,36 @@ public class GuiToolsJpanel extends JPanel {
 		springLayout.putConstraint(SpringLayout.NORTH, btnDelfile, 27, SpringLayout.SOUTH, btnAddlineCompare);
 		springLayout.putConstraint(SpringLayout.WEST, btnDelfile, 29, SpringLayout.EAST, scrollPane);
 		add(btnDelfile);
+		
+		JButton btnImportspeciesinfo = new JButton("ImportSpeciesInfo");
+		btnImportspeciesinfo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String speciesFile = guiFileOpenComb.openFileName("txt/xls", "");
+				if (FileOperate.isFileExistAndBigThanSize(speciesFile, 0.1)) {
+					Species species = new Species();
+					species.setUpdateSpeciesFile(speciesFile);
+					species.update();
+				}
+			}
+		});
+		springLayout.putConstraint(SpringLayout.WEST, btnImportspeciesinfo, 89, SpringLayout.WEST, this);
+		springLayout.putConstraint(SpringLayout.SOUTH, btnImportspeciesinfo, -10, SpringLayout.SOUTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, btnImportspeciesinfo, 335, SpringLayout.WEST, this);
+		add(btnImportspeciesinfo);
+		
+		JButton btnImportSoftwareInfo = new JButton("ImportSoftwareInfo");
+		btnImportSoftwareInfo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String softToolsFile = guiFileOpenComb.openFileName("txt/xls", "");
+				if (FileOperate.isFileExistAndBigThanSize(softToolsFile, 0.1)) {
+					SoftWareInfo.updateInfo(softToolsFile);
+				}
+			}
+		});
+		springLayout.putConstraint(SpringLayout.WEST, btnImportSoftwareInfo, 33, SpringLayout.EAST, btnImportspeciesinfo);
+		springLayout.putConstraint(SpringLayout.SOUTH, btnImportSoftwareInfo, -10, SpringLayout.SOUTH, this);
+		springLayout.putConstraint(SpringLayout.EAST, btnImportSoftwareInfo, 286, SpringLayout.EAST, btnImportspeciesinfo);
+		add(btnImportSoftwareInfo);
 		
 		
 		

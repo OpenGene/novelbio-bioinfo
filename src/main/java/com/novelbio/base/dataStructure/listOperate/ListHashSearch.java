@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListGff;
+import com.novelbio.database.domain.geneanno.SepSign;
 
 
 /**
@@ -148,7 +149,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		if (LOCIDList == null) {
 			LOCIDList = new ArrayList<String>();
 			for (M m : Chrhash.values()) {
-				LOCIDList.add(m.getName().split(GffDetailGene.SEP_GENE_NAME)[0]);
+				LOCIDList.add(m.getName().split(SepSign.SEP_ID)[0]);
 			}
 		}
 		return LOCIDList;
@@ -228,14 +229,13 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * @param name
 	 * @param location
 	 */
-	public void addNumber(String chrID, int location)
-	{
+	public void addNumber(String chrID, int location) {
 		ListCodAbs<T> gffCodPeak = searchLocation(chrID, location);
 		if (!gffCodPeak.isInsideLoc()) {
 			return;
 		}
 		T gffDetailPeak = gffCodPeak.getGffDetailThis();
-		gffDetailPeak.addNumber();
+		gffDetailPeak.addReadsInElementNum();
 	}
 	/**
 	 * 返回区间以及每个区间的数量，前面必须add过
@@ -243,8 +243,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * value：具体数量
 	 * @return
 	 */
-	public LinkedHashMap<String,LinkedHashMap<int[], Integer>> getFreq()
-	{
+	public LinkedHashMap<String,LinkedHashMap<int[], Integer>> getFreq() {
 		LinkedHashMap<String, LinkedHashMap<int[], Integer>> hashResult = new LinkedHashMap<String, LinkedHashMap<int[],Integer>>();
 		Set<String> setChrID = getChrhash().keySet();
 		for (String string : setChrID) {
@@ -254,7 +253,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 				int[] interval = new int[2];
 				interval[0] = gffDetailPeak.getStartAbs();
 				interval[1]= gffDetailPeak.getEndAbs();
-				hashTmpResult.put(interval, gffDetailPeak.getNumber());
+				hashTmpResult.put(interval, gffDetailPeak.getReadsInElementNum());
 			}
 			hashResult.put(string, hashTmpResult);
 		}
