@@ -5,7 +5,7 @@ package com.novelbio.base;
  * 2. 在循环中添加 addCount(int num) 以增加计数器<br>
  * 3. 在循环中添加 suspendCheck()  来挂起线程<br>
  * 4. 在循环中检查 flagRun 来终止循环
- * 5: 在循环中添加runGetInfo.setRunningInfo() 方法来获取运行时出现的信息
+ * 5: 在循环中添加 setRunInfo() 方法来获取运行时出现的信息
  * @author zong0jie
  *
  */
@@ -70,7 +70,15 @@ public abstract class RunProcess<T> implements Runnable{
 	}
 	/** 运行模块写在这个里面，这样结束后自动会将flagFinish设定为true */
 	protected abstract void running();
-	
+	/**
+	 * 设定输入的信息，内部回调
+	 * @param runInfo
+	 */
+	protected void setRunInfo(T runInfo) {
+		if (runGetInfo != null) {
+			runGetInfo.setRunningInfo(runInfo);
+		}
+	}
 	public boolean isFinished() {
 		return flagFinish;
 	}

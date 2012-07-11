@@ -141,7 +141,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo>{
 				AnnoQueryDisplayInfo annoQueryDisplayInfo = new AnnoQueryDisplayInfo();
 				annoQueryDisplayInfo.setCountNum(count);
 				annoQueryDisplayInfo.setTmpInfo(strings2);
-				runGetInfo.setRunningInfo(annoQueryDisplayInfo);
+				setRunInfo(annoQueryDisplayInfo);
 			}
 			
 		}

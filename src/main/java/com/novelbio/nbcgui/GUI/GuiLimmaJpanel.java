@@ -114,7 +114,7 @@ public class GuiLimmaJpanel extends JPanel {
 				ArrayList<String[]> lsFile = scrollPaneCel.getLsDataInfo();
 				limmaAffy.cleanRawData();
 				for (String[] strings : lsFile) {
-					if (FileOperate.isFile(strings[0])) {
+					if (FileOperate.isFileFoldExist(strings[0])) {
 						limmaAffy.addCelFile(strings[0], strings[1]);
 					}
 				}

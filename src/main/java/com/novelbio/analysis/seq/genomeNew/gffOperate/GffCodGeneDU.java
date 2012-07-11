@@ -12,6 +12,7 @@ import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 
+import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
@@ -25,6 +26,20 @@ import com.novelbio.test.mytest;
  * 
  */
 public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
+	public static void main(String[] args) {
+		GffChrAbs gffChrAbs = new GffChrAbs(10090);
+		GffCodGeneDU gffCodGeneDu = gffChrAbs.getGffHashGene().searchLocation("chrX", 	133526666	, 133526780);
+		ArrayList<String[]> lsAnno = null;
+		gffCodGeneDu.setExon(false);
+		gffCodGeneDu.setGeneBody(false);
+		gffCodGeneDu.setIntron(false);
+		gffCodGeneDu.setTes(null);
+		gffCodGeneDu.setTss(new int[]{-2000,2000});
+		gffCodGeneDu.setUTR3(false);
+		gffCodGeneDu.setUTR5(false);
+		lsAnno = gffCodGeneDu.getAnno();
+		System.out.println("stop");
+	}
 	private static Logger logger = Logger.getLogger(GffCodGeneDU.class);
 	/** 是否需要查询Iso */
 	private boolean flagSearchAnno = false;
@@ -45,6 +60,10 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 * 保存最后选择到的gene key: geneName + sep +chrID
 	 * */
 	HashSet<GffDetailGene> hashGffDetailGene;
+	/** 左侧坐标保存的基因信息，Up和Down之间没有交集 */
+	LinkedHashSet<GffDetailGene> setGffDetailGenesLeft = null;
+	/** 右侧坐标保存的基因信息，Up和Down之间没有交集 */
+	LinkedHashSet<GffDetailGene> setGffDetailGenesRight = null;
 	/**
 	 * 设定tss的范围，默认为null
 	 * 
@@ -169,12 +188,8 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		
 		hashGffDetailGene = new LinkedHashSet<GffDetailGene>();
 		//TODO: 这里修改tss和tes后，gffDetailgene要修改tss和tes，gffiso也要修改tss和tes
-		getStructureGene(tss, tes, geneBody, utr5, utr3, exon, intron);
-		for (GffDetailGene gffDetailGene : lsGffDetailGenesUp) {
+		for (GffDetailGene gffDetailGene : setGffDetailGenesLeft) {
 			hashGffDetailGene.add(gffDetailGene);
-			if (gffCod1.getCoord() == 80391798) {
-				System.out.println("stop");
-			}
 			String[] anno = getAnnoCod(gffCod1.getCoord(), gffDetailGene, "peak_Left_point:");
 			String[] anno2 = getAnnoCod(gffCod2.getCoord(), gffDetailGene, "peak_Right_point:");
 			anno[3] = anno[3] + "  " + anno2[3];
@@ -191,7 +206,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 				lsAnno.add(anno);
 			}
 		}
-		for (GffDetailGene gffDetailGene : lsGffDetailGenesDown) {
+		for (GffDetailGene gffDetailGene : setGffDetailGenesRight) {
 			if (hashGffDetailGene.contains(gffDetailGene))
 				continue;
 			hashGffDetailGene.add(gffDetailGene);
@@ -211,7 +226,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		hashGffDetailGene = new LinkedHashSet<GffDetailGene>();
 		//TODO: 这里修改tss和tes后，gffDetailgene要修改tss和tes，gffiso也要修改tss和tes
 		getStructureGene(tss, tes, geneBody, utr5, utr3, exon, intron);
-		for (GffDetailGene gffDetailGene : lsGffDetailGenesUp) {
+		for (GffDetailGene gffDetailGene : setGffDetailGenesLeft) {
 			hashGffDetailGene.add(gffDetailGene);
 		}
 		if (lsgffDetailsMid != null) {
@@ -223,7 +238,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 				hashGffDetailGene.add(gffDetailGene);
 			}
 		}
-		for (GffDetailGene gffDetailGene : lsGffDetailGenesDown) {
+		for (GffDetailGene gffDetailGene : setGffDetailGenesRight) {
 			if (hashGffDetailGene.contains(gffDetailGene))
 				continue;
 			hashGffDetailGene.add(gffDetailGene);
@@ -325,62 +340,53 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		}
 		setSameGeneDetail(tssUp, tesDown);
 		ArrayList<GffDetailGene> lsRemove = new ArrayList<GffDetailGene>();
-		for (GffDetailGene gffDetailGenes : lsGffDetailGenesUp) {
-			GffDetailGene gffDetailGene = gffDetailGenes.clone();
+		for (GffDetailGene gffDetailGene : setGffDetailGenesLeft) {
 			if (!isInRegion2Cod(gffDetailGene, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron)) {
-//				logger.error("看下这边是不是正确：出现了需要删除的iso");
 				lsRemove.add(gffDetailGene);
-//				lsGffDetailGenesUp.remove(gffDetailGene);
 			}
 		}
 		for (GffDetailGene gffDetailGene : lsRemove) {
-			lsGffDetailGenesUp.remove(gffDetailGene);
+			setGffDetailGenesLeft.remove(gffDetailGene);
 		}
 		lsRemove.clear();
-		for (GffDetailGene gffDetailGenes : lsGffDetailGenesDown) {
-			GffDetailGene gffDetailGene = gffDetailGenes.clone();
+		for (GffDetailGene gffDetailGene : setGffDetailGenesRight) {			
 			if (!isInRegion2Cod(gffDetailGene, Tss, Tes, geneBody, UTR5, UTR3, Exon, Intron)) {
-//				logger.error("看下这边是不是正确：出现了需要删除的iso");
 				lsRemove.add(gffDetailGene);
-//				lsGffDetailGenesDown.remove(gffDetailGene);
 			}
 		}
 		for (GffDetailGene gffDetailGene : lsRemove) {
-			lsGffDetailGenesDown.remove(gffDetailGene);
+			setGffDetailGenesRight.remove(gffDetailGene);
 		}
 	}
-	/** Up和Down之间没有交集 */
-	LinkedHashSet<GffDetailGene> lsGffDetailGenesUp = null;
-	/** Up和Down之间没有交集 */
-	LinkedHashSet<GffDetailGene> lsGffDetailGenesDown = null;
+
 	/**
 	 * 获得端点所牵涉到的基因
 	 * @return lsGffDetailGenes - gffDetailGene 与之相关的坐标
 	 */
 	private void setSameGeneDetail(int tssUp, int tesDown) {
-		lsGffDetailGenesUp = new LinkedHashSet<GffDetailGene>();
-		lsGffDetailGenesDown = new LinkedHashSet<GffDetailGene>();
+		setGffDetailGenesLeft = new LinkedHashSet<GffDetailGene>();
+		setGffDetailGenesRight = new LinkedHashSet<GffDetailGene>();
 		// //////////////// up /////////////////////////////////
 		if (this.gffCod1.isInsideUpExtend(tssUp, tesDown)) {
-			lsGffDetailGenesUp.add(gffCod1.getGffDetailUp());
+			setGffDetailGenesLeft.add(gffCod1.getGffDetailUp().clone());
 		}
 		// //////////////////// this /////////////////////////////////
 		if (this.gffCod1.isInsideLoc()) {
-			lsGffDetailGenesUp.add(gffCod1.getGffDetailThis());
+			setGffDetailGenesLeft.add(gffCod1.getGffDetailThis().clone());
 		}
 		if (this.gffCod1.isInsideDownExtend(tssUp, tesDown)) {
-			lsGffDetailGenesUp.add(gffCod1.getGffDetailDown());
+			setGffDetailGenesLeft.add(gffCod1.getGffDetailDown().clone());
 		}
 		// //////////////////////////// cod2
 		//说明上一个点与本点不在同一个基因内
-		if (this.gffCod2.isInsideUpExtend(tssUp, tesDown) && !lsGffDetailGenesUp.contains(gffCod2.getGffDetailUp())) {
-			lsGffDetailGenesDown.add(gffCod2.getGffDetailUp());
+		if (this.gffCod2.isInsideUpExtend(tssUp, tesDown) && !setGffDetailGenesLeft.contains(gffCod2.getGffDetailUp())) {
+			setGffDetailGenesRight.add(gffCod2.getGffDetailUp().clone());
 		}
-		if (this.gffCod2.isInsideLoc() && !lsGffDetailGenesUp.contains(gffCod2.getGffDetailThis())) {
-			lsGffDetailGenesDown.add(gffCod2.getGffDetailThis());
+		if (this.gffCod2.isInsideLoc() && !setGffDetailGenesLeft.contains(gffCod2.getGffDetailThis())) {
+			setGffDetailGenesRight.add(gffCod2.getGffDetailThis().clone());
 		}
-		if (this.gffCod2.isInsideDownExtend(tssUp, tesDown) && !lsGffDetailGenesUp.contains(gffCod2.getGffDetailDown())) {
-			lsGffDetailGenesDown.add(gffCod2.getGffDetailDown());
+		if (this.gffCod2.isInsideDownExtend(tssUp, tesDown) && !setGffDetailGenesLeft.contains(gffCod2.getGffDetailDown())) {
+			setGffDetailGenesRight.add(gffCod2.getGffDetailDown().clone());
 		}
 	}
 	/**

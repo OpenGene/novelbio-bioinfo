@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.omg.CosNaming._BindingIteratorImplBase;
 
+import com.novelbio.analysis.tools.compare.runCompSimple;
+
 public class FileOperate {
 	private static Logger logger = Logger.getLogger(FileOperate.class);
 	public static void main(String[] args) {
@@ -1033,4 +1035,22 @@ public class FileOperate {
 		}
 		return path;
 	}
+	/**
+	 * 返回本软件所在路径，后面带上"/"符号
+	 * @return
+	 */
+	 public static String getProjectPath() {
+		 java.net.URL url = FileOperate.class.getProtectionDomain().getCodeSource().getLocation();
+		 String filePath = null;
+		 try {
+			 filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
+		 } catch (Exception e) {
+			 e.printStackTrace();
+		 }
+		 if (filePath.endsWith(".jar"))
+			 filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
+		 java.io.File file = new java.io.File(filePath);
+		 filePath = file.getAbsolutePath();
+		 return addSep(filePath);
+	 }
 }

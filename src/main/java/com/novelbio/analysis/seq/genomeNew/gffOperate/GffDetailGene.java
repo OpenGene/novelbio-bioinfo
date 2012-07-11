@@ -557,18 +557,11 @@ public class GffDetailGene extends ListDetailAbs {
 		removeDuplicateIso = true;
 		HashMap<GffGeneIsoInfo, Integer> hashIso = new HashMap<GffGeneIsoInfo, Integer>();
 		ArrayList<GffGeneIsoInfo> lsResult = new ArrayList<GffGeneIsoInfo>();
-		int numIso = 0;
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			//如果发现重复iso，则获得原来那个iso在lsResult里面的位置，并且将原来的iso的名字添上
 			if (hashIso.containsKey(gffGeneIsoInfo)) {
-				int num = hashIso.get(gffGeneIsoInfo);
-				//获得原来的iso
-				GffGeneIsoInfo gffGeneIsoInfoInside = lsResult.get(num);
-				gffGeneIsoInfoInside.setName(gffGeneIsoInfoInside.getName() + SepSign.SEP_ID + gffGeneIsoInfo.getName());
 				continue;
 			}
 			lsResult.add(gffGeneIsoInfo);
-			hashIso.put(gffGeneIsoInfo, numIso); numIso ++;
 		}
 		this.lsGffGeneIsoInfos = lsResult;
 	}

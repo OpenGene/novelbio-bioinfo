@@ -8,6 +8,7 @@ import java.util.Hashtable;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 
 
 /**
@@ -18,7 +19,10 @@ import com.novelbio.base.dataStructure.ArrayOperate;
  *
  */
 public class ComTxt {
-
+	public static void main(String[] args) {
+		String aa = FileOperate.getProjectPath();
+		System.out.println(aa);
+	}
 	/**
 	 * 
 	 * 有的时候待比较的项目有这样的特点，每一个项目用“: \ ”等符号隔开，
