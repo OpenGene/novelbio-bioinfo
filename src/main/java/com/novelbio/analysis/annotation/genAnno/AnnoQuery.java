@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
+import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -26,52 +27,105 @@ import com.novelbio.database.model.modcopeid.GeneID;
  * @author zong0jie
  *
  */
-public class AnnoQuery {
-	public static void main(String[] args) {
-		String geneFile = "/home/zong0jie/桌面/Gene.xls";
-		String out = FileOperate.changeFileSuffix(geneFile, "_geneID", null);
-		addGeneID(geneFile, out, 1, 9606);
-	}
+public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
+//	public static void main(String[] args) {
+//		String geneFile = "/media/winF/NBC/Project/RNA-Seq_CR_20111201/CR.xls";
+//		String txtOut = FileOperate.changeFileSuffix(geneFile, "_annotest", null);
+//		AnnoQuery annoQuery = new AnnoQuery();
+//		annoQuery.setColAccIDFrom1(1);
+//		annoQuery.setFirstLineFrom1(2);
+//		annoQuery.setGeneIDFile(geneFile);
+//		annoQuery.writeTo(txtFile);
+//	}
+	
+	ArrayList<String[]> lsGeneID;
+	ArrayList<String[]> lsResult;
+	int colAccID = 0;
+	String regex = "";
+	boolean blast = false;
+	int taxIDthis = 0;
+	int taxIDblastTo = 0;
+	
+	int firstLine = 0;
 	/**
-	 * 给arraytools的结果添加geneID,没有geneID则将本accID附加上去
-	 * 添加在第colNum列的后面，直接写入excel文件
-	 * @param txtExcelFile
-	 * @param txtOut
-	 * @param taxID
-	 * @param firstLines
-	 * @param colNum 实际列
-	 * @param regx 正则表达式 如果为""则不切割
-	 * @param blast
-	 * @param StaxID
+	 * 可以输入txt或excel
+	 * @param geneIDfile
 	 */
-	public static void annoGeneIDXls(String txtExcelFile, String txtOutFile, int taxID, int firstLines,int colNum,String regex, boolean blast, int StaxID) {
-		ArrayList<String[]> lsGeneID = ExcelTxtRead.readLsExcelTxt(txtExcelFile, 1);
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		if (firstLines <= 1) {
-			firstLines = 1;
+	public void setGeneIDFile(String geneIDfile) {
+		lsGeneID = ExcelTxtRead.readLsExcelTxt(geneIDfile, 1);
+	}
+	/** 输入待查找的gene列表信息 */
+	public void setLsGeneID(ArrayList<String[]> lsGeneID) {
+		this.lsGeneID = lsGeneID;
+	}
+	/** 第一行从哪里开始，实际行 */
+	public void setFirstLineFrom1(int firstLine) {
+		if (firstLine >= 1) {
+			this.firstLine = firstLine - 1;
 		}
-		if (firstLines > 1) {
-			lsResult.add(getTitle(lsGeneID.get(firstLines - 2), blast));
+	}
+	public void setColAccIDFrom1(int colAccID) {
+		this.colAccID = colAccID - 1;
+	}
+	public ArrayList<String[]> getLsResult() {
+		return lsResult;
+	}
+	public void writeTo(String txtFile) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(txtFile, true);
+		txtWrite.ExcelWrite(lsResult, "\t", 1, 1);
+	}
+	public void setTaxIDthis(int taxIDthis) {
+		this.taxIDthis = taxIDthis;
+	}
+	public void setTaxIDblastTo(int taxIDblastTo) {
+		this.taxIDblastTo = taxIDblastTo;
+	}
+	public void setBlast(boolean blast) {
+		this.blast = blast;
+	}
+	@Override
+	protected void running() {
+		anno();
+	}
+	
+	private void anno() {
+		lsResult = new ArrayList<String[]>();
+		if (firstLine >= 1) {
+			lsResult.add(getTitle(lsGeneID.get(firstLine - 1), blast));
 		}
-		for (int i = firstLines - 1; i < lsGeneID.size(); i++) {
-			String accID = lsGeneID.get(i)[colNum-1];
+		for (int i = firstLine; i < lsGeneID.size(); i++) {
+			String accID = lsGeneID.get(i)[colAccID];
 			if (regex != null && !regex.equals("")) {
 				accID = accID.split(regex)[0];
 			}
 			String[] tmpResult = null;
 			if (blast) {
-				tmpResult = getInfoBlast(lsGeneID.get(i), taxID, StaxID, 1e-10, accID);
+				tmpResult = getInfoBlast(lsGeneID.get(i), taxIDthis, taxIDblastTo, 1e-10, accID);
 			}
 			else {
-				tmpResult = getInfo(lsGeneID.get(i), taxID, accID);
+				tmpResult = getInfo(lsGeneID.get(i), taxIDthis, accID);
 			}
 			lsResult.add(tmpResult);
+			
+			suspendCheck();
+			setRunInfo(i, tmpResult);
+			if (flagStop) {
+				break;
+			}
 		}
-		TxtReadandWrite txtOut = new TxtReadandWrite(txtOutFile, true);
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
 	}
-	private static String[] getTitle(String[] title, boolean blast)
-	{
+	
+	private void setRunInfo(int num, String[] tmpInfo) {
+		AnnoQueryDisplayInfo annoQueryDisplayInfo = new AnnoQueryDisplayInfo();
+		annoQueryDisplayInfo.countNum = num;
+		annoQueryDisplayInfo.tmpInfo = tmpInfo;
+		runGetInfo.setRunningInfo(annoQueryDisplayInfo);
+	}
+	
+	public String[] getTitle() {
+		return getTitle(lsGeneID.get(firstLine - 1), blast);
+	}
+	private static String[] getTitle(String[] title, boolean blast) {
 		if (!blast) {
 			title = ArrayOperate.copyArray(title, title.length + 2);
 			title[title.length - 1] = "Description";
@@ -94,13 +148,12 @@ public class AnnoQuery {
 	 * @param accColNum 具体该info的哪个column，实际column
 	 * @return
 	 */
-	private static String[] getInfo(String[] info, int taxID, String accID)
-	{
+	private static String[] getInfo(String[] info, int taxID, String accID) {
 		String[] result = ArrayOperate.copyArray(info, info.length + 2);
 		result[result.length - 1] = "";
 		result[result.length - 2] = "";
-		GeneInfo copedID = new GeneInfo(accID, taxID);
-		if (copedID.getIDtype().equals(GeneInfo.IDTYPE_ACCID)) {
+		GeneID copedID = new GeneID(accID, taxID);
+		if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
 			return result;
 		}
 		else {
@@ -116,14 +169,13 @@ public class AnnoQuery {
 	 * @param accColNum 具体该info的哪个column，实际column
 	 * @return
 	 */
-	private static String[] getInfoBlast(String[] info, int taxID, int subTaxID, double evalue, String accID)
-	{
+	private static String[] getInfoBlast(String[] info, int taxID, int subTaxID, double evalue, String accID) {
 		String[] result = ArrayOperate.copyArray(info, info.length + 5);
 		result[result.length - 1] = "";result[result.length - 2] = "";
 		result[result.length - 3] = "";result[result.length - 4] = "";
 		result[result.length - 5] = "";
-		GeneInfo copedID = new GeneInfo(accID, taxID);
-		if (copedID.getIDtype().equals(GeneInfo.IDTYPE_ACCID)) {
+		GeneID copedID = new GeneID(accID, taxID);
+		if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
 			return result;
 		}
 		else {
@@ -144,11 +196,30 @@ public class AnnoQuery {
 		ArrayList<String[]> lsGeneInfo = ExcelTxtRead.readLsExcelTxt(geneFile, 1);
 		for (String[] string : lsGeneInfo) {
 			String accID = string[colGeneID];
-			GeneInfo copedID = new GeneInfo(accID, taxID);
+			GeneID copedID = new GeneID(accID, taxID);
 			String[] resString = ArrayOperate.copyArray(string, string.length + 1);
 			resString[resString.length - 1] = copedID.getGenUniID();
 			txtOut.writefileln(resString);
 		}
 		txtOut.close();
 	}
+	
+	public static class AnnoQueryDisplayInfo {
+		int countNum;
+		String[] tmpInfo;
+		public void setCountNum(int countNum) {
+			this.countNum = countNum;
+		}
+		public void setTmpInfo(String[] tmpInfo) {
+			this.tmpInfo = tmpInfo;
+		}
+		public int getCountNum() {
+			return countNum;
+		}
+		public String[] getTmpInfo() {
+			return tmpInfo;
+		}
+	}
 }
+
+

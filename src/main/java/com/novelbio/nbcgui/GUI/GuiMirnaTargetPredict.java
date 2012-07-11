@@ -169,11 +169,11 @@ public class GuiMirnaTargetPredict  extends JPanel {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		cmbSpecies.setItemHash(Species.getSpeciesNameTaxID(false));
+		cmbSpecies.setMapItem(Species.getSpeciesNameTaxID(false));
 		txtEnergy.setNumOnly();
 		txtScore.setNumOnly();
 		txtPvalue.setNumOnly(5);
-		cmbRNAhybridSpeciesType.setItemHash(MiRNAtargetRNAhybrid.getMapSpeciesType2HybridClass());
+		cmbRNAhybridSpeciesType.setMapItem(MiRNAtargetRNAhybrid.getMapSpeciesType2HybridClass());
 		txtEnergy.setText(15 + "");
 		txtScore.setText(140 + "");
 		txtPvalue.setText(0.001 + "");

@@ -56,6 +56,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiBlast guiBlast; 
 	private GuiSeqMiRNA guiSeqMiRNA;
 	private GuiMirnaTargetPredict guiMirnaTargetPredict;
+	private GuiBatchAnno guiBatchAnno;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -87,6 +88,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				jTabbedPane1.setPreferredSize(new java.awt.Dimension(1035, 682));
 				guiBlastJpanel = new GuiBlastJpanel();
 				jTabbedPane1.addTab("Query", null, guiBlastJpanel, null);
+				
+				guiBatchAnno = new GuiBatchAnno();
+				jTabbedPane1.addTab("BatchAnnotation", null, guiBatchAnno, null);
 				
 				guiGoJPanel= new GuiGoJPanel();
 				jTabbedPane1.addTab("GO", null, guiGoJPanel, null);
@@ -120,6 +124,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiMirnaTargetPredict = new GuiMirnaTargetPredict();
 				jTabbedPane1.addTab("miRNAtargetPredict", null, guiMirnaTargetPredict, null);
+				
 			}
 			pack();
 			this.setSize(1049, 699);

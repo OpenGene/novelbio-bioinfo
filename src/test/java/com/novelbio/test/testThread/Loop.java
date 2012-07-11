@@ -10,7 +10,6 @@ public class Loop  extends RunProcess {
 		Loop loop = new Loop();
 		Thread thread = new Thread(loop);
 		thread.start();
-		System.out.println("current:  " + loop.getProperty());
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -19,7 +18,7 @@ public class Loop  extends RunProcess {
 		}
 		loop.setSuspend();
 		System.out.println("current:  " + loop.getProperty());
-	System.out.println(thread.isAlive());
+		System.out.println(thread.isAlive());
 		Thread.sleep(2000);
 		loop.setResume();
 		Thread.sleep(1000);
@@ -28,17 +27,14 @@ public class Loop  extends RunProcess {
 		System.out.println(thread.isAlive());
 	}
 
-	public void run() {
-		setAllLoopNum(1000);
+	public void running() {
 		for (int i = 0; i < 1000; i++) {
 			System.out.println(i);
 			try { Thread.sleep(100); } catch (InterruptedException e) {}
-			if (!flagRun){
+			if (!flagStop){
 				break;
 			}
-				
-			stopCheck();
-			count++;
+			suspendCheck();
 		}
 	}
 	

@@ -74,11 +74,8 @@ public interface GeneIDInt{
 	 */
 	public KeggInfo getKeggInfo();
 	/**
-	 * blast多个物种
-	 * 首先要设定blast的目标
-	 * 用方法： setBlastInfo(double evalue, int... StaxID)
-	 * 给定一系列的目标物种的taxID，获得CopedIDlist
-	 * 如果没有结果，直接返回null
+	 * blast多个物种 首先要设定blast的目标 用方法： setBlastInfo(double evalue, int... StaxID)
+	 * 给定一系列的目标物种的taxID，获得CopedIDlist 如果没有结果，返回一个空的lsResult
 	 * @param evalue
 	 * @param StaxID
 	 * @return

@@ -130,7 +130,7 @@ public class GuiToolsJpanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsfilename = guiFileOpenComb.openLsFileName("txt/excel2003", "txt","xls");
 				for (String strings : lsfilename) {
-					scrollPane.addProview(new String[]{strings,""});
+					scrollPane.addRow(new String[]{strings,""});
 				}
 			}
 		});

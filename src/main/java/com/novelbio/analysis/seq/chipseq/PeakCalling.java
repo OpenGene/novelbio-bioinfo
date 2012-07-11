@@ -18,7 +18,6 @@ public abstract class PeakCalling {
 	String outPrefix = "";
 	Species species;
 	
-	
 	public PeakCalling(String file) {
 		this.file = file;
 	}

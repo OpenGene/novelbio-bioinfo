@@ -186,7 +186,7 @@ class EnsembleGTF extends ImportPerLine
 				return false;
 			}
 			int geneNum = gffCodGeneDu.getAllGffDetail().size()/2;
-			copedID = gffCodGeneDu.getAllGffDetail().get(geneNum).getLongestSplit().getCopedID();
+			copedID = gffCodGeneDu.getAllGffDetail().get(geneNum).getLongestSplit().getGeneID();
 			if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
 //				copedID.update(false);
 				return false;

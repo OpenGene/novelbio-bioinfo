@@ -56,7 +56,16 @@ public class JScrollPaneData extends JScrollPane{
 	/**
 	 * 往jScrollPane中添加表格
 	 */
-	public void addProview(String[] info) {
+	public void addRow(String[] info) {
+		if (defaultTableModel == null) {
+			String[][] tableValue = null;
+			defaultTableModel = new DefaultTableModel(tableValue, info);
+			jTabFInputGo = new JTable();
+			setViewportView(jTabFInputGo);
+			jTabFInputGo.setModel(defaultTableModel);
+			return;
+		}
+		
 		defaultTableModel.addRow(info);
 	}
 	
@@ -112,6 +121,13 @@ public class JScrollPaneData extends JScrollPane{
 	 */
 	public void removeSelRows() {
 		removeRow(getSelectRows());
+	}
+	/** 不稳定 */
+	public void clean() {
+//		String[][] tableValue = null;
+		jTabFInputGo = new JTable();
+		setViewportView(jTabFInputGo);
+		jTabFInputGo.setModel(null);
 	}
 }
 

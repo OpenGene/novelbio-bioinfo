@@ -16,6 +16,15 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class MiRNAmapPipline {
+	public static void main(String[] args) {
+		String fqFile = "/media/winF/NBC/Project/Project_CRZ_Lab/result/tmpMapping/Y1A_filtered_unMap2miRNA.fq";
+		String rfamSeq = "/media/winE/Bioinformatics/GenomeData/Rice/sRNA/osa_rfam.fa";
+		String samFile = "/media/winF/NBC/Project/Project_CRZ_Lab/result/tmpMapping/Y1A_filtered_rfam.sam";
+		String bedFile = "/media/winF/NBC/Project/Project_CRZ_Lab/result/tmpBed/Y1A_filtered_rfam.bed";
+		String unMappedFq = "/media/winF/NBC/Project/Project_CRZ_Lab/result/tmpMapping/Y1A_filtered_unMap2rfam.fq";
+		MiRNAmapPipline mAmapPipline = new MiRNAmapPipline();
+		mAmapPipline.mapping(fqFile, rfamSeq, samFile, bedFile, unMappedFq);
+	}
 	/** 序列文件 */
 	String seqFile = "";
 	/** 输出文件夹，主要是bed文件 */
@@ -189,6 +198,7 @@ public class MiRNAmapPipline {
 		MapBwa mapBwa = new MapBwa(fqFile, samFileName, false);
 		mapBwa.setExePath(exePath, chrFile);
 		SamFile samFile = mapBwa.mapReads();
+		try { Thread.sleep(1000); } catch (Exception e) { }
 		samFile.toBedSingleEnd(TxtReadandWrite.TXT,  bedFile, false);
 		if (unMappedFq != null && !unMappedFq.equals("")) {
 			samFile.getUnMappedReads(false, unMappedFq);

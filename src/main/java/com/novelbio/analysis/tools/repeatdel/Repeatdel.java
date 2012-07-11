@@ -57,7 +57,7 @@ public class Repeatdel {
 		
 		ExcelOperate excelOperate = new ExcelOperate();
 		excelOperate.openExcel(outFile);
-		excelOperate.WriteExcel(1, 1, lsResult, true);
+		excelOperate.WriteExcel(1, 1, lsResult);
 	}
 	
 	

@@ -48,6 +48,6 @@ public class getProbID {
 		}
 		ExcelOperate excelResult = new ExcelOperate();
 		excelResult.openExcel(resultExcel);
-		excelResult.WriteExcel(true, 1, 1, lsResult);
+		excelResult.WriteExcel( 1, 1, lsResult);
 	}
 }

@@ -51,7 +51,7 @@ public class GuiLimmaJpanel extends JPanel {
 				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("affy raw data", "*");
 				for (String string : lsFileName) {
 					String abbr = FileOperate.getFileNameSep(string)[0];
-					scrollPaneCel.addProview(new String[]{string,abbr});
+					scrollPaneCel.addRow(new String[]{string,abbr});
 				}
 			}
 		});
@@ -102,7 +102,7 @@ public class GuiLimmaJpanel extends JPanel {
 		springLayout.putConstraint(SpringLayout.WEST, btnSetSample, 0, SpringLayout.WEST, scrollPaneCel);
 		btnSetSample.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPaneSample.addProview(new String[]{"",""});
+				scrollPaneSample.addRow(new String[]{"",""});
 			}
 		});
 		btnSetSample.setMargin(new Insets(0, 0, 0, 0));
@@ -151,7 +151,7 @@ public class GuiLimmaJpanel extends JPanel {
 		JButton btnSetDesign = new JButton("addDesign");
 		btnSetDesign.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPaneDesign.addProview(new String[]{"",""});
+				scrollPaneDesign.addRow(new String[]{"",""});
 			}
 		});
 		btnSetDesign.setMargin(new Insets(0, 0, 0, 0));

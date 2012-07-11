@@ -74,8 +74,7 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 	 * @return
 	 * @throws Exception 
 	 */
-	public ArrayList<String[]> doInBackground() throws Exception 
-	{
+	public ArrayList<String[]> doInBackground() throws Exception {
 		System.out.println("run");
 		ArrayList<String[]> lsDesp = new ArrayList<String[]>();
 		int length = 0;

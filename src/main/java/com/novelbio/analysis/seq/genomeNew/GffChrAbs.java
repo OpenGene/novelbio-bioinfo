@@ -20,6 +20,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.species.Species;
 /**
  * GffHashGene和SeqHash都是static，也就是一次只能对一个物种进行分析
@@ -351,12 +352,11 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param Structure 基因的哪个部分的结构 
 	 * @param binNum 最后结果分成几块
 	 */
-	public ArrayList<MapInfo> readGeneMapInfoAll(String Structure, int binNum)
-	{
+	public ArrayList<MapInfo> readGeneMapInfoAll(String Structure, int binNum) {
 		ArrayList<String> lsGeneID = gffHashGene.getLOCChrHashIDList();
 		ArrayList<String[]> lstmp = new ArrayList<String[]>();
 		for (String string : lsGeneID) {
-			lstmp.add(new String[]{string.split(GffDetailGene.SEP_GENE_NAME)[0]});
+			lstmp.add(new String[]{string.split(SepSign.SEP_ID)[0]});
 		}
 		return getLsGeneMapInfo(lstmp, Structure, binNum);
 	}

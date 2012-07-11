@@ -9,13 +9,18 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +49,7 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
+import org.apache.velocity.tools.config.Data;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 
 
@@ -79,6 +85,7 @@ import com.novelbio.analysis.seq.reseq.ModifySeq;
 import com.novelbio.analysis.tools.Mas3.getProbID;
 import com.novelbio.analysis.tools.formatConvert.bedFormat.Soap2Bed;
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -114,10 +121,64 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		GeneID geneID = new GeneID("NM_022834", 0);
-		System.out.println(geneID.getTaxID());
+		String fileName = "/media/winF/NBC/Project/Project_CRZ_Lab/result/tmpBed/Y6A_filtered_rfam.bed";
+		
+		DateTime dateTime = new DateTime();
+		dateTime.setStartTime();
+		File tmp = new File(fileName);
+		LineNumberReader lnr = new LineNumberReader(new BufferedReader(new FileReader(tmp)));  
+		lnr.skip(FileOperate.getFileSizeLong(fileName));  
+		System.out.println(lnr.getLineNumber());
+		System.out.println(dateTime.getEclipseTime());
+		dateTime.setStartTime();
+		TxtReadandWrite txtRead = new TxtReadandWrite(fileName, false);
+		int m = 0;
+		for (String string : txtRead.readlines()) {
+			m++;
+		}
+		System.out.println(m);
+		System.out.println(dateTime.getEclipseTime());
+		
+		dateTime.setStartTime();
+		System.out.println(getLineNumber(fileName));
+		System.out.println(dateTime.getEclipseTime());
 	}
-	
+	private static int getLineNumber(String fileName) {  
+		         long start = System.currentTimeMillis();  
+		         int lineNum = 0;  
+		         char[] buf = new char[100000];  
+		         LineNumberReader lnr = null;  
+		   
+		         try {  
+		             lnr = new LineNumberReader(new InputStreamReader(  
+		                     new FileInputStream(fileName)));  
+		   
+		             while (lnr.read(buf) != -1) {  
+		                 ;  
+		             }  
+		   
+		             lineNum = lnr.getLineNumber() + 1;  
+		         } catch (FileNotFoundException e) {  
+		             e.printStackTrace();  
+		         } catch (IOException e) {  
+		             e.printStackTrace();  
+		         } finally {  
+		             try {  
+		                 if (null != lnr) {  
+		                     lnr.close();  
+		                 }  
+		             } catch (IOException ex) {  
+		                 ex.printStackTrace();  
+		             }  
+		         }  
+		   
+		         long end = System.currentTimeMillis();  
+		   
+		         System.out.println("Use Time: " + (end - start) + " Line Num: "  
+		                 + lineNum);  
+		   
+		         return lineNum;  
+		     }  
 	
 	private static int getAllPeakLen(String txtFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(txtFile, false);

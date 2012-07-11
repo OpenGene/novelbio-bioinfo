@@ -46,7 +46,7 @@ public class GuiBlast extends JPanel {
 	int subjectType = SeqFasta.SEQ_UNKNOWN;
 	
 	private void setCombBlastType() {
-		combBlastType.setItemHash(BlastNBC.getHashBlast(queryType, subjectType));
+		combBlastType.setMapItem(BlastNBC.getHashBlast(queryType, subjectType));
 	}
 	
 	
@@ -99,7 +99,7 @@ public class GuiBlast extends JPanel {
 		add(combBlastType);
 		
 		combResultType = new JComboBoxData();
-		combResultType.setItemHash(BlastNBC.getHashResultType());
+		combResultType.setMapItem(BlastNBC.getHashResultType());
 		combResultType.setBounds(10, 440, 249, 23);
 		add(combResultType);
 		
@@ -214,7 +214,7 @@ public class GuiBlast extends JPanel {
 		
 		cmbQSpecies = new JComboBoxData();
 		cmbQSpecies.setBounds(467, 238, 320, 23);
-		cmbQSpecies.setItemHash(Species.getSpeciesNameTaxID(false));
+		cmbQSpecies.setMapItem(Species.getSpeciesNameTaxID(false));
 		add(cmbQSpecies);
 		
 		JLabel lblQueryspecies = new JLabel("QuerySpecies");
@@ -223,7 +223,7 @@ public class GuiBlast extends JPanel {
 		
 		cmbSSpecies = new JComboBoxData();
 		cmbSSpecies.setBounds(467, 318, 322, 23);
-		cmbSSpecies.setItemHash(Species.getSpeciesNameTaxID(false));
+		cmbSSpecies.setMapItem(Species.getSpeciesNameTaxID(false));
 		add(cmbSSpecies);
 		
 		JLabel lblSubjectspecies = new JLabel("SubjectSpecies");

@@ -207,8 +207,8 @@ public class BlastNBC {
 		String cmd = "perl " + NovelBioConst.BLAST_NCBI_SCRIPT + blastAll + blastInputType + blastType
 				+ "-i " + queryFasta + " -d " + databaseSeq  + " -o " + resultFile
 				+ " -a " + cpuNum +" -F F " + " -e " + evalue + " -m " + resultType + " -v "+resultSeqNum + " -b " + resultAlignNum + " --path " + NovelBioConst.BLAST_NCBI_PATH;
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("blast");
+		CmdOperate cmdOperate = new CmdOperate(cmd,"blast");
+		cmdOperate.run();
 		return true;
 	}
 	/**
@@ -240,8 +240,8 @@ public class BlastNBC {
 		}
 		String cmd = "perl " + NovelBioConst.BLAST_NCBI_SCRIPT + formatDB + " -i " + databaseSeq + " -p "+ seqTypePro + " -o T " 
 				+ "--path " + NovelBioConst.BLAST_NCBI_PATH;
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.doInBackground("blastFormatDB");
+		CmdOperate cmdOperate = new CmdOperate(cmd,"blastFormatDB");
+		cmdOperate.run();
 		return true;
 	}
 	/**
@@ -252,14 +252,14 @@ public class BlastNBC {
 		boolean indexExist = false;
 		int seqType = SeqHash.getSeqType(databaseSeq);
 		if (seqType == SeqFasta.SEQ_DNA || seqType == SeqFasta.SEQ_RNA) {
-			indexExist = FileOperate.isFileExist(databaseSeq + ".nhr") && FileOperate.isFile(databaseSeq + ".nin") 
-					&& FileOperate.isFile(databaseSeq + ".nog") && FileOperate.isFile(databaseSeq + ".nsd")
-					 && FileOperate.isFile(databaseSeq + ".nsi") && FileOperate.isFile(databaseSeq + ".nsq");
+			indexExist = FileOperate.isFileExist(databaseSeq + ".nhr") && FileOperate.isFileExist(databaseSeq + ".nin") 
+					&& FileOperate.isFileExist(databaseSeq + ".nog") && FileOperate.isFileExist(databaseSeq + ".nsd")
+					 && FileOperate.isFileExist(databaseSeq + ".nsi") && FileOperate.isFileExist(databaseSeq + ".nsq");
 		}
 		else if (seqType == SeqFasta.SEQ_PRO) {
-			indexExist = FileOperate.isFileExist(databaseSeq + ".phr") && FileOperate.isFile(databaseSeq + ".pin") 
-					&& FileOperate.isFile(databaseSeq + ".pog") && FileOperate.isFile(databaseSeq + ".psd")
-					 && FileOperate.isFile(databaseSeq + ".psi") && FileOperate.isFile(databaseSeq + ".psq");
+			indexExist = FileOperate.isFileExist(databaseSeq + ".phr") && FileOperate.isFileExist(databaseSeq + ".pin") 
+					&& FileOperate.isFileExist(databaseSeq + ".pog") && FileOperate.isFileExist(databaseSeq + ".psd")
+					 && FileOperate.isFileExist(databaseSeq + ".psi") && FileOperate.isFileExist(databaseSeq + ".psq");
 		}
 		else {
 			logger.error("序列出现未知字符");

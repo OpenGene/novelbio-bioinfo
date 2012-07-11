@@ -1,21 +1,15 @@
 package com.novelbio.analysis.seq.chipseq.peakAnnotation.peakLoc;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.seq.chipseq.prepare.GenomeBasePrepare;
-import com.novelbio.analysis.seq.genome.GffLocatCod;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashUCSCgene;
-import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.plot.Rplot;
 
-
- 
 /**
  * 将peak定位到基因上，并确定是外显子还内含子
  * @author zong0jie

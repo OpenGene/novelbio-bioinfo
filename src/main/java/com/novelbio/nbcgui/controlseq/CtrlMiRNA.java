@@ -158,18 +158,16 @@ public class CtrlMiRNA {
 		countMiRNA(solo);
 		countRfam(solo);
 		countNCrna(solo);
-		gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0], null, 0);
-		if (gffChrAbs.getGffHashGene() != null) {
-			readGffInfo();
-			countRepeatGene(solo);
-		}
+		countRepeatGene(solo);
 	}
 	/**
 	 * 将指定的bed文件输入
 	 * @param bedSeqFile
 	 */
 	public void runMiRNApredict() {
-		gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0], null, 0);
+		if (gffChrAbs != null) {
+			gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0], null, 0);
+		}
 		readGffInfo();
 		if (lsBedFileNovelMiRNA.size() <= 0) {
 			return;
@@ -204,19 +202,22 @@ public class CtrlMiRNA {
 	/** 计算miRNA表达 */
 	private void countMiRNA(boolean solo) {
 		miRNACount.setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
-		if (!solo && FileOperate.isFileExist(miRNAmappingPipline.getOutMiRNAbed()) && FileOperate.getFileSize(miRNAmappingPipline.getOutMiRNAbed()) > 1000) {
+		if (!solo && FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutMiRNAbed(),1)) {
 			miRNACount.setBedSeqMiRNA(miRNAmappingPipline.getOutMiRNAbed());
 			miRNACount.countMiRNA();
-			miRNACount.getOutResult(outPath + outputPrefix);
+			miRNACount.writeResultToOut(outPath + outputPrefix);
 		}
-		else if (solo && FileOperate.isFileExist(miRNAcountMiRNAbed) && FileOperate.getFileSize(miRNAcountMiRNAbed) > 1000) {
+		else if (solo && FileOperate.isFileExistAndBigThanSize(miRNAcountMiRNAbed,1)) {
 			miRNACount.setBedSeqMiRNA(miRNAcountMiRNAbed);
 			miRNACount.countMiRNA();
-			miRNACount.getOutResult(outPath + outputPrefix);
+			miRNACount.writeResultToOut(outPath + outputPrefix);
 		}
 	}
 	/** 读取信息 */
 	private void readGffInfo() {
+		if (gffChrAbs != null) {
+			gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0], null, 0);
+		}
 		readsOnRepeatGene.readGffGene(gffChrAbs);
 		readsOnRepeatGene.readGffRepeat(species.getGffRepeat());
 	}
@@ -226,12 +227,14 @@ public class CtrlMiRNA {
 	private void countRepeatGene(boolean solo) {
 		String outFinal = outPath + outputPrefix;
 		if (!solo && FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutGenomebed(), 10) ) {
+			readGffInfo();
 			readsOnRepeatGene.countReadsInfo(miRNAmappingPipline.getOutGenomebed());
 			readsOnRepeatGene.writeToFileGeneProp(outFinal + "_geneProp.txt");
 			readsOnRepeatGene.writeToFileRepeatFamily(outFinal + "_RepeatFamily.txt");
 			readsOnRepeatGene.writeToFileRepeatName(outFinal + "_RepeatName.txt");
 		}
 		else if (solo && FileOperate.isFileExistAndBigThanSize(readsOnRepeatGeneGenomebed, 10)) {
+			readGffInfo();
 			readsOnRepeatGene.countReadsInfo(readsOnRepeatGeneGenomebed);
 			readsOnRepeatGene.writeToFileGeneProp(outFinal + "_geneProp.txt");
 			readsOnRepeatGene.writeToFileRepeatFamily(outFinal + "_RepeatFamily.txt");
@@ -259,6 +262,9 @@ public class CtrlMiRNA {
 		}
 		else if (solo && FileOperate.isFileExist(readsOnNCrnaBed) && FileOperate.getFileSize(readsOnNCrnaBed) > 1000) {
 			readsOnNCrna.setBedSed(readsOnNCrnaBed);
+		}
+		else {
+			return;
 		}
 		readsOnNCrna.searchNCrna();
 		readsOnNCrna.writeToFile(outPath + outputPrefix + "_NCrnaStatistics.txt");

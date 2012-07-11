@@ -27,7 +27,7 @@ public class runCompSimple {
 		String FileB=lsFileName.get(1)[0]+"."+lsFileName.get(1)[1];
 		System.out.println(lsFileName.get(0)[0]+"."+lsFileName.get(0)[1]);
 		String outputFilePath="IntersectionResults";
-		FileOperate.createFolder(thisFilePath+"/"+outputFilePath);
+		FileOperate.createFolders(thisFilePath+"/"+outputFilePath);
 		try {
 			CompareListSimple.getFileToList(thisFilePath,outputFilePath, FileA, FileB, false,"InterSection.xls",lsFileName.get(0)[0]+"Only.xls", lsFileName.get(1)[0]+"Only.xls");
 		} catch (Exception e) {

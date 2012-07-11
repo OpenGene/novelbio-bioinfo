@@ -10,6 +10,7 @@ import java.util.Collections;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
@@ -36,10 +37,29 @@ import de.erichseifert.gral.util.GraphicsUtils;
  * 
  */
 public class GffChrMap {
-	GffChrAbs gffChrAbs = null;
+	
+	public static void main(String[] args) {
+		int taxID = 4932;
+		String bedFile = "/media/winF/NBC/Project/Project_Invitrogen/WHB_yeast/mapping/WHB_nonUnique.bed";
+		BedSeq bedSeq = new BedSeq(bedFile);
+		bedSeq = bedSeq.sortBedFile();
+		bedSeq = bedSeq.extend(250);
+		GffChrAbs gffChrAbs = new GffChrAbs(taxID);
+		gffChrAbs.setMapReads(bedSeq.getFileName(), 1);
+		gffChrAbs.loadMapReads();
+		gffChrAbs.setPlotRegion(2000, 2000);
+		GffChrMap gffChrMap = new GffChrMap(gffChrAbs);
+		gffChrMap.plotAllChrDist("/media/winF/NBC/Project/Project_Invitrogen/WHB_yeast/mapping/readsChrDensity_NoneUnique/WHB_nonUniqueMapping");		
+//		gffChrMap.plotTssAllGene(1000, "/media/winF/NBC/Project/Project_Invitrogen/WHB_yeast/mapping/tss", GffDetailGene.TSS);
+	}
+	
+	GffChrAbs gffChrAbs;
 	
 	Logger logger = Logger.getLogger(GffChrMap.class);
 	String fileName = "";
+	public GffChrMap(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
+	}
 	/**
 	 * 将GffChrAbs导入
 	 * @param gffChrAbs
@@ -47,7 +67,6 @@ public class GffChrMap {
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
-
 	/**
 	 * 每隔多少位取样,如果设定为1，则算法会变化，然后会很精确
 	 * @return

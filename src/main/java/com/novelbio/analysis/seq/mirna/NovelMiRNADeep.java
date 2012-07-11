@@ -390,6 +390,6 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 		miRNACount.setBedSeqMiRNA(bedSeqMiRNAnovel);
 		miRNACount.setMiRNAfile(novelMiRNAhairpin, novelMiRNAmature);
 		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_MIRDEEP, 0, novelMiRNAdeepMrdFile);
-		miRNACount.getOutResult(outPath + outPrefix);
+		miRNACount.writeResultToOut(outPath + outPrefix);
 	}
 }

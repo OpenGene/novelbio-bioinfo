@@ -1,20 +1,12 @@
 package com.novelbio.analysis.seq.mapping;
 
-import java.util.ArrayList;
-import java.util.Date;
-
-import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.FastQOld;
-import com.novelbio.base.cmd.CMDcallback;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 在set里面有很多参数可以设定，不设定就用默认
@@ -327,7 +319,6 @@ public class MapBwa {
 	 * 大于500MB的用 -a bwtsw
 	 */
 	private String getChrLen() {
-		TxtReadandWrite txt = new TxtReadandWrite(chrFile, false);
 		long size = (long) FileOperate.getFileSize(chrFile);
 		if (size/1024 > 500) {
 			return " -a bwtsw ";

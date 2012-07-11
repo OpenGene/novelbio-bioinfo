@@ -323,7 +323,7 @@ public class GffDetailGene extends ListDetailAbs {
 		if (isCodInGeneExtend(coord)) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
 				if (gffGeneIsoInfo.isCodInIsoExtend(coord)) {
-					hashCopedID.add(gffGeneIsoInfo.getCopedID());
+					hashCopedID.add(gffGeneIsoInfo.getGeneID());
 				}
 			}
 			for (GeneID copedID : hashCopedID) {

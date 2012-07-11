@@ -60,7 +60,6 @@ public class TxtReadandWrite {
 	private String filetype = TXT;
 	public final static String ENTER_LINUX = "\n";
 	public final static String ENTER_WINDOWS = "\r\n";
-	@Deprecated
 	public TxtReadandWrite () {
 		
 	}
@@ -194,7 +193,6 @@ public class TxtReadandWrite {
 		else if (fileType.equals(ZIP)) {
 			zipOutputStream = new ZipArchiveOutputStream(txtfile);
 			ZipArchiveEntry entry = new ZipArchiveEntry(FileOperate.getFileNameSep(fileName)[0]);
-
 			zipOutputStream.putArchiveEntry(entry);
 //			filewriterzip.createArchiveEntry(txtfile, FileOperate.getFileNameSep(fileName)[0]+".txt");
 			outputStream = new BufferedOutputStream(zipOutputStream, bufferLen);

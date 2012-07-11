@@ -2,18 +2,25 @@ package com.novelbio.analysis.seq.genomeNew;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import antlr.debug.TraceAdapter;
+
+import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
+import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
@@ -21,14 +28,72 @@ import com.novelbio.generalConf.NovelBioConst;
  * @author zong0jie
  *
  */
-public class GffChrAnno {
+public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo>{
 	private static final Logger logger = Logger.getLogger(GffChrAnno.class);
 	
+	public static void main(String[] args) {
+		String txtFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/WE.clean.fq/result/annotation/WE_peaks_summit.xls";
+		GffChrAnno gffChrAnno = new GffChrAnno(new GffChrAbs(10090));
+		gffChrAnno.setColChrID(1);
+		gffChrAnno.setColStartEnd(2, 3);
+		gffChrAnno.setColSummit(6);
+		gffChrAnno.setSearchSummit(false);
+		gffChrAnno.annoFile(txtFile, FileOperate.changeFileSuffix(txtFile, "_anno_summit", null));
+	}
+	
+	
 	GffChrAbs gffChrAbs;
+	/** true查找peak的最高点，也就是找单个点，
+	 * false查找peak两端，看夹住了什么基因
+	 *  */
+	boolean searchSummit = false;
+	
+	String txtExcel = "";
+	int colChrID = 0;
+	int colStart = 0;
+	int colEnd = 0;
+	int colSummit = -1;
+	
+	ArrayList<String[]> lsGeneInfo = new ArrayList<String[]>();
+	ArrayList<String[]> lsResult = new ArrayList<String[]>();
+	
+	public GffChrAnno() {
+		// TODO Auto-generated constructor stub
+	}
 	
 	public GffChrAnno(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
-	}	
+	}
+	public void setSpecies(int taxID) {
+		this.gffChrAbs = new GffChrAbs(taxID);
+	}
+	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
+	}
+	public void setColStartEnd(int colStart, int colEnd) {
+		this.colStart = colStart - 1;
+		this.colEnd = colEnd - 1;
+		searchSummit = false;
+	}
+	
+	public void setColChrID(int colChrID) {
+		this.colChrID = colChrID - 1;
+	}
+	public void setColSummit(int colSummit) {
+		this.colSummit = colSummit - 1;
+		searchSummit = true;
+	}
+
+	/** true查找peak的最高点，也就是找单个点，
+	 * false查找peak两端，看夹住了什么基因
+	 * 默认false
+	 *  */
+	public void setSearchSummit(boolean searchSummit) {
+		this.searchSummit = searchSummit;
+	}
+	public void setLsGeneInfo(ArrayList<String[]> lsGeneInfo) {
+		this.lsGeneInfo = lsGeneInfo;
+	}
 	/**
 	 * 首先设定需要注释的区域，如tss，tes，genebody等
 	 * 给定txt的文件，和染色体编号，染色体起点终点，和输出文件，将peak覆盖到的区域注释出来
@@ -38,13 +103,20 @@ public class GffChrAnno {
 	 * @param colEnd
 	 * @param outTxtFile
 	 */
-	public void annoFile(String txtFile, int colChrID, int colStart, int colEnd, String outTxtFile) {
-		ArrayList<String[]> lsIn = ExcelTxtRead.readLsExcelTxt(txtFile, 1);
-		ArrayList<String[]> lsOut = getAnno(lsIn, colChrID, colStart, colEnd);
+	public void annoFile(String txtFile, String outTxtFile) {
+		this.lsGeneInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 1);
+		ArrayList<String[]> lsResult = getAnno();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outTxtFile, true);
-		txtOut.ExcelWrite(lsOut, "\t", 1, 1);
+		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
 	}
-
+	
+	@Override
+	protected void running() {
+		lsResult = getAnno();
+	}
+	public ArrayList<String[]> getLsResult() {
+		return lsResult;
+	}
 	/**
 	 * 给定list，返回注释好信息的list，包含title
 	 * @param lsInfo 第一行是标题行
@@ -52,80 +124,76 @@ public class GffChrAnno {
 	 * @param colStart 实际列
 	 * @param colEnd 实际列
 	 */
-	public ArrayList<String[]> getAnno(ArrayList<String[]> lsInfo, int colChrID, int colStart, int colEnd) {
-		String[] titleOld = lsInfo.get(0);
-		lsInfo.remove(0);
-		colChrID--; colStart--; colEnd--;
+	public ArrayList<String[]> getAnno() {
+		List<String[]> lsGeneInfoTmp = lsGeneInfo.subList(1, lsGeneInfo.size());
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		for (String[] strings : lsInfo) {
-			String chrID = strings[colChrID];
-			int start =  (int)Double.parseDouble(strings[colStart]);
-			int end =  (int)Double.parseDouble(strings[colEnd]);
-			ArrayList<String[]> lsanno = getGenInfoFilter(chrID, start, end);
-			if (lsanno == null) {
-				continue;
+		lsResult.add(0,getTitleGeneInfoFilterAnno());
+		
+		int count = 0;
+		for (String[] strings : lsGeneInfoTmp) {
+			ArrayList<String[]> lsTmpResult = getGeneInfoAnno(strings);
+			lsResult.addAll(lsTmpResult);
+			
+			count++;
+			suspendCheck();
+			if (flagStop) return lsResult;
+			for (String[] strings2 : lsTmpResult) {
+				AnnoQueryDisplayInfo annoQueryDisplayInfo = new AnnoQueryDisplayInfo();
+				annoQueryDisplayInfo.setCountNum(count);
+				annoQueryDisplayInfo.setTmpInfo(strings2);
+				runGetInfo.setRunningInfo(annoQueryDisplayInfo);
 			}
-			for (String[] strings2 : lsanno) {
-				String[] tmpResult = new String[strings.length + strings2.length];
-				for (int i = 0; i < strings.length; i++) {
-					tmpResult[i] = strings[i];
-				}
-				for (int i = 0; i < strings2.length; i++) {
-					tmpResult[i+strings.length] = strings2[i];
-				}
-				lsResult.add(tmpResult);
-			}
+			
 		}
-		//添加title
-		String[] title = ArrayOperate.copyArray(titleOld, titleOld.length + 4);
-		title[title.length - 1] = "Location"; title[title.length - 2] = "Description"; title[title.length - 3] = "Symbol"; title[title.length - 4] = "AccID";
-		lsResult.add(0,title);
 		return lsResult;
 	}
 	
+
 	/**
-	 * 给定染色体位置和坐标，返回注释信息
-	 * @param chrID
-	 * @param summit
+	 * 给定一个基因定位文件的一行，返回注释信息
+	 * @param geneLocInfo
 	 * @return
 	 */
-	public String[][] getGenInfo(String chrID, int summit) {
-		String[][] anno = new String[3][4];
-		for (int i = 0; i < anno.length; i++) {
-			for (int j = 0; j < anno[0].length; j++) {
-				anno[i][j] = "";
+	private ArrayList<String[] > getGeneInfoAnno(String[] geneLocInfo) {
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		String chrID = geneLocInfo[colChrID];
+		int start =  (int)Double.parseDouble(geneLocInfo[colStart]);
+		int end =  (int)Double.parseDouble(geneLocInfo[colEnd]);
+		int summit = 0;
+		try {
+			summit =  (int)Double.parseDouble(geneLocInfo[colSummit]);
+		} catch (Exception e) {
+			summit = (start + end)/2;
+		}
+		ArrayList<String[]> lsanno = null;
+		if (searchSummit) {
+			lsanno = getGenInfoFilterSummitSingle(chrID, summit);
+		}
+		else {
+			lsanno = getGenInfoFilterPeakSingle(chrID, start, end);
+		}
+		if (lsanno == null) {
+			return lsResult;
+		}
+		for (String[] strings2 : lsanno) {
+			String[] tmpResult = new String[geneLocInfo.length + strings2.length];
+			for (int i = 0; i < geneLocInfo.length; i++) {
+				tmpResult[i] = geneLocInfo[i];
 			}
+			for (int i = 0; i < strings2.length; i++) {
+				tmpResult[i+geneLocInfo.length] = strings2[i];
+			}
+			lsResult.add(tmpResult);
 		}
-		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrID, summit);
-		if (gffCodGene == null) {
-			return anno;
-		}
-		//在上一个gene内
-		if (gffCodGene.getGffDetailUp() != null) {
-			anno[0] = gffCodGene.getGffDetailUp().getInfo(summit);
-		}
-		if (gffCodGene.getGffDetailThis() != null) {
-			anno[1] = gffCodGene.getGffDetailThis().getInfo(summit);
-		}
-		if (gffCodGene.getGffDetailDown() != null) {
-			anno[2] = gffCodGene.getGffDetailDown().getInfo(summit);
-		}
-		return anno;
+		return lsResult;
 	}
 	
-	public String[] getGenInfoFilter(String chrID, int summit) {
-		String[] anno = new String[3];
-		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrID, summit);
-		if (gffCodGene.isInsideLoc()) {
-			if (gffChrAbs.tss != null)
-				gffCodGene.getGffDetailThis().setTssRegion(gffChrAbs.tss[0], gffChrAbs.tss[1]);
-			if (gffChrAbs.tes != null)
-				gffCodGene.getGffDetailThis().setTesRegion(gffChrAbs.tes[0], gffChrAbs.tes[1]);
-			
-			anno[1] = gffCodGene.getGffDetailThis().getLongestSplit().getCodLocStrFilter(gffCodGene.getCoord(), gffChrAbs.filtertss, 
-					gffChrAbs.filtertes, gffChrAbs.genebody, gffChrAbs.UTR5, gffChrAbs.UTR3, gffChrAbs.exonFilter, gffChrAbs.intronFilter);
-		}
-		return anno;
+	public String[] getTitleGeneInfoFilterAnno() {
+		String[] titleOld = lsGeneInfo.get(0);
+		//添加title
+		String[] title = ArrayOperate.copyArray(titleOld, titleOld.length + 4);
+		title[title.length - 1] = "Location"; title[title.length - 2] = "Description"; title[title.length - 3] = "Symbol"; title[title.length - 4] = "AccID";
+		return title;
 	}
 	/**
 	 * peak注释
@@ -138,7 +206,7 @@ public class GffChrAnno {
 	 * 2：description<br>
 	 * 3：两端是具体信息，中间是covered
 	 */
-	public ArrayList<String[]> getGenInfoFilter(String chrID, int startCod, int endCod) {
+	private ArrayList<String[]> getGenInfoFilterPeakSingle(String chrID, int startCod, int endCod) {
 		GffCodGeneDU gffCodGeneDu = gffChrAbs.getGffHashGene().searchLocation(chrID, startCod, endCod);
 		if (gffCodGeneDu == null) {
 			return null;
@@ -154,178 +222,57 @@ public class GffChrAnno {
 		lsAnno = gffCodGeneDu.getAnno();
 		return lsAnno;
 	}
-
-	
-	
 	/**
-	 * 给定txt的文件，和染色体编号，染色体起点终点，和输出文件，将peak覆盖到的区域注释出来
-	 * @param txtFile
-	 * @param colChrID
-	 * @param colStart
-	 * @param colEnd
-	 * @param outTxtFile
-	 */
-	public void getSummitStatistic(String txtFile, int colChrID, int colSummit, int rowStart, String outTxtFile) {
-		ArrayList<String[]> lsIn = ExcelTxtRead.readLsExcelTxt(txtFile, new int[]{colChrID, colSummit}, rowStart, 0);
-		ArrayList<MapInfo> lsTmpMapInfos = ReadInfo(lsIn);
-		int[] region = getStatisticInfo(lsTmpMapInfos);
-		TxtReadandWrite txtOut = new TxtReadandWrite(outTxtFile, true);
-		txtOut.writefileln("Up" + gffChrAbs.tssUpBp +"bp\t"+region[0]);
-		txtOut.writefileln("Exon\t"+region[1]);
-		txtOut.writefileln("Intron\t"+region[2]);
-		txtOut.writefileln("InterGenic\t"+region[3]);
-		txtOut.writefileln("5UTR\t"+region[4]);
-		txtOut.writefileln("3UTR\t"+region[5]);
-		txtOut.writefileln("GeneEnd"+gffChrAbs.geneEnd3UTR+"\t"+region[6]);
-		txtOut.writefileln("Tss\t"+region[7]);
-		txtOut.close();
-	}
-	/**
-	 * 给定坐标信息list，返回该坐标所对应的mapinfo
-	 * @param lsIn  string[2] 则返回 chrID summit
-	 * string[3] 则返回chrID start end
+	 * 单个坐标的中间位点定位
+	 * 给定染色体位置和坐标，返回注释信息
+	 * @param chrID
+	 * @param summit
 	 * @return
 	 */
-	protected ArrayList<MapInfo> ReadInfo(ArrayList<String[]> lsIn)
-	{
-		ArrayList<MapInfo> lsResult = new ArrayList<MapInfo>();
-		for (String[] strings : lsIn) {
-			MapInfo mapInfo = new MapInfo(strings[0]);
-			if (strings.length == 2) {
-				mapInfo.setFlagLoc(Integer.parseInt(strings[1].trim()));
-			}
-			else if (strings.length == 3) {
-				int tmpStart = Integer.parseInt(strings[1].trim());
-				int tmpEnd = Integer.parseInt(strings[2].trim());
-				mapInfo.setStartEndLoc(Math.min(tmpStart, tmpEnd), Math.max(tmpStart, tmpEnd));
-			}
-			else {
-				String tmp = "";
-				for (String string : strings) {
-					tmp = tmp + "\t" + string;
-				}
-				logger.error("出现未知ID："+ tmp.trim());
-			}
-			lsResult.add(mapInfo);
-		}
-		return lsResult;
-	}
-	
-	/**
-	 * 输入单个坐标位点，返回定位信息，用于统计位点的定位情况,如外显子还是内含子
-	 * 只判断最长转录本
-	 * @param mapinfoRefSeqIntactAA
-	 * @param summit true：用flagSite进行定位，false：用两端进行定位
-	 * @return int[8]
-	 * 0: UpNbp,N由setStatistic()方法的TSS定义
-	 * 1: Exon<br>
-	 * 2: Intron<br>
-	 * 3: InterGenic--基因间<br>
-	 * 4: 5UTR
-	 * 5: 3UTR
-	 * 6: GeneEnd，在基因外的尾部 由setStatistic()方法的GeneEnd定义
-	 * 7: Tss 包括Tss上和Tss下，由filterTss定义
-	 */
-	public int[] getStatisticInfo(ArrayList<MapInfo> lsMapInfos) {
-		int[] result = new int[8];
-		for (MapInfo mapInfo : lsMapInfos) {
-			int[] tmp = searchSite(mapInfo);
-			if (tmp == null) {
-				continue;
-			}
-			for (int i = 0; i < tmp.length; i++) {
-				result[i] = result[i] + tmp[i];
-			}
-		}
-		return result;
-	}
-	
-	
-	
-	/**
-	 * 输入单个坐标位点，返回定位信息，用于统计位点的定位情况
-	 * 只判断最长转录本
-	 * @param mapInfo
-	 * @return int[8]
-	 * 0: UpNbp,N由setStatistic()方法的TSS定义
-	 * 1: Exon<br>
-	 * 2: Intron<br>
-	 * 3: InterGenic--基因间<br>
-	 * 4: 5UTR
-	 * 5: 3UTR
-	 * 6: GeneEnd，在基因外的尾部 由setStatistic()方法的GeneEnd定义
-	 * 7: Tss 包括Tss上和Tss下，由filterTss定义
-	 */
-	private int[] searchSite(MapInfo mapInfo) {
-		boolean flagIntraGenic = false;//在gene内的标记
-		int[] result = new int[8];
-		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(mapInfo.getRefID(), mapInfo.getFlagSite());
+	private ArrayList<String[]> getGenInfoFilterSummitSingle(String chrID, int summit) {
+		ArrayList<String[]> lsResultAnno = new ArrayList<String[]>();
+		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrID, summit);
 		if (gffCodGene == null) {
-			return null;
+			return lsResultAnno;
 		}
-		if (gffCodGene.isInsideLoc()) {
-			gffCodGene.getGffDetailThis().setTssRegion(gffChrAbs.tss);
-			gffCodGene.getGffDetailThis().setTesRegion(gffChrAbs.tes);
-			flagIntraGenic = true;
-			//Tss
-			if (gffCodGene.getGffDetailThis().getLongestSplit().isCodInIsoTss(gffCodGene.getCoord()) ) {
-				result[7] ++;
-			}
-			//Exon
-			if (gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOC_EXON) {
-				result[1] ++;
-			}
-			else if (gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOC_INTRON) {
-				result[2] ++;
-			}
-			//UTR
-			if (gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOCUTR_5UTR) {
-				result[4] ++;
-			}
-			if (gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOCUTR_3UTR) {
-				result[5] ++;
-			}
+		//在上一个gene内
+		if (gffCodGene.getGffDetailUp() != null) {
+			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailUp().getLongestSplit(), summit);
 		}
-		else {
-			if (gffCodGene.getGffDetailUp() != null ) {
-				gffCodGene.getGffDetailUp().setTssRegion(gffChrAbs.tss);
-				gffCodGene.getGffDetailUp().setTesRegion(gffChrAbs.tes);
-			}
-			if (gffCodGene.getGffDetailDown() != null) {
-				gffCodGene.getGffDetailDown().setTssRegion(gffChrAbs.tss);
-				gffCodGene.getGffDetailDown().setTesRegion(gffChrAbs.tes);
-			}
-
-			//UpNbp
-			if (gffCodGene.getGffDetailUp() != null && gffCodGene.getGffDetailUp().isCodInPromoter(gffCodGene.getCoord())) {
-				result[0]++;flagIntraGenic =true;
-			}
-			else if (gffCodGene.getGffDetailDown() != null && gffCodGene.getGffDetailDown().isCodInPromoter(gffCodGene.getCoord())) {
-				result[0] ++;flagIntraGenic =true;
-			}
-			//GeneEnd
-			if (gffCodGene.getGffDetailUp() != null && gffCodGene.getGffDetailUp().isCodInGenEnd(gffCodGene.getCoord())) {
-				result[6] ++;flagIntraGenic =true;
-			}
-			else if ( gffCodGene.getGffDetailDown() != null && gffCodGene.getGffDetailDown().isCodInGenEnd(gffCodGene.getCoord())) {
-				result[6] ++;flagIntraGenic =true;
-			}
-			//Tss
-			if ( gffCodGene.getGffDetailUp() != null && !gffCodGene.getGffDetailUp().isCis5to3() 
-					&& gffCodGene.getGffDetailUp().getLongestSplit().getCod2Tss(gffCodGene.getCoord()) > this.gffChrAbs.tss[0]  ) {
-				result[7] ++;flagIntraGenic =true;
-			}
-			else if (gffCodGene.getGffDetailDown() != null && gffCodGene.getGffDetailDown().isCis5to3() 
-					&& gffCodGene.getGffDetailDown().getLongestSplit().getCod2Tss(gffCodGene.getCoord()) > this.gffChrAbs.tss[0]) {
-				result[7] ++;flagIntraGenic =true;
-			}
+		if (gffCodGene.getGffDetailThis() != null) {
+			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailThis().getLongestSplit(), summit);
 		}
-		if (flagIntraGenic == false) {
-			result[3] ++;
+		if (gffCodGene.getGffDetailDown() != null) {
+			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailDown().getLongestSplit(), summit);
 		}
-		return result;
+		return lsResultAnno;
 	}
-	
+	/**
+	 * 注释
+	 * @param gffGeneIsoInfo
+	 * @param coord
+	 * @return 0：symbol
+	 * 1：description
+	 * blast ：2 evalue 3 symol 4 description
+	 * location
+	 */
+	private void getAnnoLocSumit(ArrayList<String[]> lsAnno, GffGeneIsoInfo gffGeneIsoInfo, int coord) {
+		if (gffGeneIsoInfo.isCodLocFilter(coord, gffChrAbs.filtertss, gffChrAbs.filtertes, gffChrAbs.genebody, gffChrAbs.UTR5, gffChrAbs.UTR3, gffChrAbs.exonFilter, gffChrAbs.intronFilter)) {
+			return;
+		}
+		
+		String[] tmpAnno = null;
+		tmpAnno = new String[4];
+		
+		tmpAnno[0] = gffGeneIsoInfo.getName();
+		GeneID geneID = gffGeneIsoInfo.getGeneID();
+		tmpAnno[1] = geneID.getSymbol();
+		tmpAnno[2] = geneID.getDescription();
+		tmpAnno[3] = gffGeneIsoInfo.getCodLocStr(coord);
+		
+		lsAnno.add(tmpAnno);
+	}
+
 }
 
 /**

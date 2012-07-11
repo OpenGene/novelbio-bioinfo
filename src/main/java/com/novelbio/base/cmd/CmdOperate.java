@@ -22,7 +22,7 @@ import com.novelbio.generalConf.NovelBioConst;
  * 如果只是随便用用，那么调用doInBackground方法就好
  * @author zong0jie
  */
-public class CmdOperate extends RunProcess{
+public class CmdOperate extends RunProcess<String>{
 	private static Logger logger = Logger.getLogger(CmdOperate.class);
 	
 	public static void main(String[] args) throws InterruptedException {
@@ -59,7 +59,6 @@ public class CmdOperate extends RunProcess{
 	 */
 	public CmdOperate(String cmd) {
 		this.cmd = cmd;
-		setAllLoopNum(1);
 		shPID = false;
 	}
 	/**
@@ -69,7 +68,6 @@ public class CmdOperate extends RunProcess{
 	 */
 	public CmdOperate(String cmd, String cmdWriteInFileName) {
 		this.cmd = cmd;
-		setAllLoopNum(1);
 		setCmdFile(cmdWriteInFileName);
 	}
 	/**
@@ -80,13 +78,11 @@ public class CmdOperate extends RunProcess{
 		for (String string : lsCmd) {
 			cmd = cmd + string + "\n";
 		}
-		setAllLoopNum(1);
 		shPID = false;
 	}
 	/** 设定需要运行的命令 */
 	public void setCmd(String cmd) {
 		this.cmd = cmd;
-		setAllLoopNum(1);
 		shPID = false;
 	}
 
@@ -119,7 +115,6 @@ public class CmdOperate extends RunProcess{
 						logger.error(info);
 						System.out.println(info);
 						lsErr.add(info);
-						count ++;
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -144,7 +139,6 @@ public class CmdOperate extends RunProcess{
 			logger.info(ls_1);
 			System.out.println(ls_1);
 			lsIn.add(ls_1);
-			count ++;
 		}		
 		process.waitFor();
 		
@@ -175,12 +169,6 @@ public class CmdOperate extends RunProcess{
 		} catch (Exception e) {
 			logger.error("cmd cannot executed correctly: " + cmd);
 		}
-	}
-	
-	/** 获得比例，不一定有用，还不如外部循环判断来的靠谱 */
-	@Deprecated
-	public double getProperty() {
-		return (double)count/allLoopNum;
 	}
 	/** 不能实现 */
 	@Deprecated

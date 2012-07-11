@@ -225,7 +225,7 @@ public class ExtractSmallRNASeq {
 				String name = seqFasta.getSeqName().split("\t")[0];
 				name = name.replace(";", "//");
 				seqFastaNew.setName(name);
-				txtOut.writefileln(seqFasta.toStringNRfasta());
+				txtOut.writefileln(seqFastaNew.toStringNRfasta());
 			}
 		}
 		 txtOut.close();

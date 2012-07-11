@@ -150,7 +150,50 @@ public class FileOperate {
            return -1000000000;
        }
 	}
-	
+	/**
+	 * <b>未经测试</b>
+	 * 给定文件路径，返回大小，单位为K
+	 * @param filePath
+	 * @return
+	 * 没有文件返回0；出错返回-1000000000
+	 */
+	public static long getFileSizeLong(String filePath) {
+		File file = new File(filePath);
+		long totalsize = 0;
+		if (!file.exists()) {
+			return 0;
+		}
+		if (file.isFile()) {
+			   FileInputStream fis = null;
+               try{
+                   fis = new FileInputStream(file);  
+                   return fis.available();
+               }catch(Exception e1){
+            	   logger.error("IO出错！");
+                   return -1000000000;
+               }
+		}
+		else if (file.isDirectory()) {
+			ArrayList<String[]> lsFileName = getFoldFileName(filePath);
+			
+			for (String[] strings : lsFileName) {
+				String fileName = null;
+				//获得文件名
+				if (strings[1].equals("")) {
+					fileName = addSep(filePath) + strings[0];
+				}
+				else {
+					fileName = addSep(filePath) + strings[0] + "." + strings[1];
+				}
+				totalsize = totalsize + getFileSizeLong(fileName);
+			}
+			return totalsize;
+		}
+		else {
+     	   logger.error("出错！");
+           return -1000000000;
+       }
+	}
 	/**
 	 * 给定路径名，返回其名字,不带后缀名<br>
 	 * 如给定/home/zong0jie.aa.txt/和/home/zong0jie.aa.txt<br>

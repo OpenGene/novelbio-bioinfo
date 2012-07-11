@@ -346,7 +346,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		ArrayList<GffDetailGene> lsGffDetailGenes = getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				GeneID copedID = gffGeneIsoInfo.getCopedID();
+				GeneID copedID = gffGeneIsoInfo.getGeneID();
 				if (copedID.getIDtype() != GeneID.IDTYPE_ACCID || copedID.getSymbol() == null || copedID.getSymbol().equals("")) {
 					String symbol = copedID.getSymbol();
 					if (symbol.equals("")) {

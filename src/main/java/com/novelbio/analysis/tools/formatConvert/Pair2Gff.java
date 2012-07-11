@@ -129,8 +129,8 @@ public class Pair2Gff {
 		ArrayList<ArrayList<String[]>> lsPeak = getMeDIP(gffPair, gffRMA532, gffRMA635, contProbNum, ratio);
 		ExcelOperate excelOperate = new ExcelOperate();
 		excelOperate.openExcel(excelResultFile);
-		excelOperate.WriteExcel(prix[0], 1, 1, lsPeak.get(0), true);
-		excelOperate.WriteExcel(prix[1], 1, 1, lsPeak.get(1), true);
+//		excelOperate.WriteExcel(prix[0], 1, 1, lsPeak.get(0), true);
+//		excelOperate.WriteExcel(prix[1], 1, 1, lsPeak.get(1), true);
 	}
 	
 	/**

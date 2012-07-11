@@ -84,6 +84,10 @@ public class ReadsOnRepeatGene {
 	
 
 	public void writeToFileRepeatName(String outFile) {
+		if (hashRepeatName.size() == 0) {
+			return;
+		}
+		
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 		ArrayList<String> lsKey = ArrayOperate.getArrayListKey(hashRepeatName);
 		Collections.sort(lsKey);
@@ -94,6 +98,10 @@ public class ReadsOnRepeatGene {
 		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
 	}
 	public void writeToFileRepeatFamily(String outFile) {
+		if (hashRepeatFamily.size() == 0) {
+			return;
+		}
+		
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 		ArrayList<String> lsKey = ArrayOperate.getArrayListKey(hashRepeatFamily);
 		Collections.sort(lsKey);
@@ -104,6 +112,10 @@ public class ReadsOnRepeatGene {
 		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
 	}
 	public void writeToFileGeneProp(String outFile) {
+		if (hashGeneInfo.size() == 0) {
+			return;
+		}
+		
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 		ArrayList<String> lsKey = ArrayOperate.getArrayListKey(hashGeneInfo);
 		Collections.sort(lsKey);

@@ -1,65 +1,76 @@
 package com.novelbio.base;
 /**
- * 进度条多线程，需要
- * 1. setAllLoopNum 来设定循环数目
- * 2. 在循环中添加 count++以增加计数器
- * 3. 在循环中添加 stopCheck 来终止线程
+ * 进度条多线程，需要以下操作 <br>
+ * 1. setAllLoopNum 来设定循环数目<br>
+ * 2. 在循环中添加 addCount(int num) 以增加计数器<br>
+ * 3. 在循环中添加 suspendCheck()  来挂起线程<br>
+ * 4. 在循环中检查 flagRun 来终止循环
+ * 5: 在循环中添加runGetInfo.setRunningInfo() 方法来获取运行时出现的信息
  * @author zong0jie
  *
  */
-public abstract class RunProcess implements Runnable{
-	protected boolean flagRun = true;
-	/** 计数器 */
-	protected int count = 0;
-	/** 总体循环数 */
-	protected int allLoopNum = 1;
+public abstract class RunProcess<T> implements Runnable{
+	protected RunGetInfo<T> runGetInfo;
+	
+	protected boolean flagStop = false;
 	protected boolean suspendFlag = false;
 	/** 是否结束 */
 	boolean flagFinish = false;
-	/**
-	 * 设定总循环数
-	 * @param allLoopNum
-	 */
-	protected void setAllLoopNum(int allLoopNum) {
-		this.allLoopNum = allLoopNum;
+	
+	public void setRunGetInfo(RunGetInfo<T> runGetInfo) {
+		this.runGetInfo = runGetInfo;
 	}
-	/** 获得比例 */
-	public double getProperty() {
-		return (double)count/allLoopNum;
-	}
+
 	/** 程序暂停 */
 	public void setSuspend() {
 		this.suspendFlag = true;
 	}
-	/** 进程恢复 
-	 * */
+	/** 进程恢复 */
 	public synchronized void setResume() {
-		this.suspendFlag = false;
-		notify();
+		synchronized (this) {
+			if (suspendFlag == false) {
+				return;
+			}
+			this.suspendFlag = false;
+			if (runGetInfo != null) {
+				runGetInfo.wakeupThread();
+			}
+			notify();
+		}
 	}
 	/** 终止线程，在循环中添加<br>
 	 * if (!flagRun)<br>
 	*			break; */
 	public void stopThread() {
-		flagRun = false;
+		synchronized (this) {
+			flagStop = true;
+		}
 	}
 	/**
 	 * 放在循环中，检查是否终止线程
 	 */
-	protected void stopCheck() {
+	protected void suspendCheck() {
 		synchronized (this) {
 			while (suspendFlag){
+				if (runGetInfo != null) {
+					runGetInfo.suspendThread();
+				}
 				try {wait();} catch (InterruptedException e) {}
 			}
 		}
 	}
+	
 	@Override
 	public void run() {
 		running();
 		flagFinish = true;
+		if (runGetInfo != null) {
+			runGetInfo.done();
+		}
 	}
 	/** 运行模块写在这个里面，这样结束后自动会将flagFinish设定为true */
 	protected abstract void running();
+	
 	public boolean isFinished() {
 		return flagFinish;
 	}

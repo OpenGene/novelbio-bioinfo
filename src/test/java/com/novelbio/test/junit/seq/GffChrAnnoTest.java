@@ -13,7 +13,7 @@ public class GffChrAnnoTest {
 		
 		GffChrAnno gffChrAnno = new GffChrAnno(NovelBioConst.GENOME_GFF_TYPE_TIGR, NovelBioConst.GENOME_PATH_RICE_TIGR_GFF_GENE);
 		gffChrAnno.setFilterTssTes(new int[]{-1500,0}, null);
-		ArrayList<String[]> ls = gffChrAnno.getGenInfoFilter("chr8",6571400,6572799);
+		ArrayList<String[]> ls = gffChrAnno.getGenInfoFilterPeakSingle("chr8",6571400,6572799);
 		System.out.println(ls.get(0)[0]);
 	}
 }

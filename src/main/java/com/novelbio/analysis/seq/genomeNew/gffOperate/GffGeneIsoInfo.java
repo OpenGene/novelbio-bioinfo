@@ -584,7 +584,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 返回该GeneIsoName所对应的CopedID，因为是NM号所以不需要指定TaxID
 	 * @return
 	 */
-	public GeneID getCopedID() {
+	public GeneID getGeneID() {
 		return new GeneID(getName(), gffDetailGene.getTaxID());
 	}
 	/**
@@ -659,6 +659,34 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 **/
 	public String getCodLocStrFilter(int coord, boolean filterTss, boolean filterGenEnd, 
 			boolean filterGeneBody,boolean filter5UTR, boolean filter3UTR,boolean filterExon, boolean filterIntron) {
+		boolean filter = isCodLocFilter(coord, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron);
+		if (filter) {
+			return getCodLocStr(coord);
+		}
+		else {
+			return null;
+		}
+	}
+	/**
+	 * 文字形式的定位描述, <b>首先在gffDetailGene中设定tss，tes这两项</b><br>
+	 * null: 不在该转录本内
+	 * 
+	 * 指定条件，将符合条件的peak抓出来并做注释，主要是筛选出合适的peak然后做后续比较工作
+	 * 不符合的会跳过
+	 * @param filterTss 是否进行tss筛选<b>只有当filterGeneBody为false时，tss下游才会发会作用</b>
+	 * @param filterGenEnd 是否进行geneEnd筛选<b>只有当filterGeneBody为false时，geneEnd上游才会发会作用</b>
+	 * @param filterGeneBody 是否处于geneBody，true，将处于geneBody的基因全部筛选出来，false，不进行geneBody的筛选<br>
+	 * <b>以下条件只有当filterGeneBody为false时才能发挥作用</b>
+	 * @param filter5UTR 是否处于5UTR中
+	 * @param filter3UTR 是否处于3UTR中
+	 * @param filterExon 是否处于外显子中
+	 * @param filterIntron 是否处于内含子中
+	 * 0-n:输入的loc信息<br>
+	 * n+1: 基因名<br>
+	 * n+2: 基因信息<br>
+	 **/
+	public boolean isCodLocFilter(int coord, boolean filterTss, boolean filterGenEnd, 
+			boolean filterGeneBody,boolean filter5UTR, boolean filter3UTR,boolean filterExon, boolean filterIntron) {
 		boolean filter = false;
 		if (filterTss == true) {
 			if (isCodInIsoTss(coord)) {
@@ -685,12 +713,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		else if (filterIntron && getCodLoc(coord) == COD_LOC_INTRON) {
 			filter = true;
 		}
-		if (filter) {
-			return getCodLocStr(coord);
-		}
-		else {
-			return null;
-		}
+		return filter;
 	}
 	/**
 	 * 如果两个转录本方向不一致，则不能进行比较

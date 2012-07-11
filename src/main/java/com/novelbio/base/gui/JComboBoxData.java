@@ -39,13 +39,12 @@ public class JComboBoxData<T> extends JComboBox{
 	 * ×°ÔØhash±í
 	 * @param hashInfo
 	 */
-	public void setItemHash(HashMap<String, T> hashInfo) {
+	public void setMapItem(HashMap<String, T> hashInfo) {
 		this.hashInfo = hashInfo;
 		setCombBox();
 	}
 	
-	private void setCombBox()
-	{
+	private void setCombBox() {
 		ArrayList<String> lsInfo = new ArrayList<String>();
 		for (String string : hashInfo.keySet()) {
 			if (string != null) {

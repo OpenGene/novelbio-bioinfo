@@ -130,7 +130,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 			if (string.startsWith("ID") && sepInfo[4].contains(species)) {
 				flagSpecies = true;
 				lsMiRNA = new ListBin<ListDetailBin>();
-				lsMiRNA.setName(sepInfo[1]);
+				lsMiRNA.setName(sepInfo[1].toLowerCase());
 				lsMiRNA.setCis5to3(true);
 				//×°ÈëchrHash
 				getChrhash().put(lsMiRNA.getName(), lsMiRNA);
@@ -171,7 +171,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		boolean cis5to3 = true;
 		for (String string : txtRead.readlines()) {
 			String[] ss = string.split("\t");
-			String name = ss[8].split(";")[0].split("=")[1];
+			String name = ss[8].split(";")[0].split("=")[1].toLowerCase();
 			if (ss[2].startsWith("precursor") ) {
 				lsMiRNA = new ListBin<ListDetailBin>();
 				lsMiRNA.setName(name);

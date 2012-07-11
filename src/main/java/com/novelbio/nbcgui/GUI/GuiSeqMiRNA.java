@@ -277,7 +277,7 @@ public class GuiSeqMiRNA extends JPanel{
 		btnOutpath = new JButton("OutPath");
 		btnOutpath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.saveFileName("prefix", "");
+				String fileName = guiFileOpen.saveFileNameAndPath("prefix", "");
 				txtOutPathPrefix.setText(fileName);
 			}
 		});
@@ -311,7 +311,7 @@ public class GuiSeqMiRNA extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("fastq", "");
 				for (String string : lsFileName) {
-					sclpanFastq.addProview(new String[]{string});
+					sclpanFastq.addRow(new String[]{string});
 				}
 			}
 		});
@@ -340,7 +340,7 @@ public class GuiSeqMiRNA extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("bed file", "");
 				for (String string : lsFileName) {
-					sclNovelMiRNAbed.addProview(new String[]{string});
+					sclNovelMiRNAbed.addRow(new String[]{string});
 				}
 				
 			}
@@ -534,11 +534,11 @@ public class GuiSeqMiRNA extends JPanel{
 		HashMap<String, Integer> hashFileType = new HashMap<String, Integer>();
 		hashFileType.put("miReapFile",ListMiRNALocation.TYPE_MIREAP);
 		hashFileType.put("miRNAdata",ListMiRNALocation.TYPE_RNA_DATA);
-		combFileType.setItemHash(hashFileType);
+		combFileType.setMapItem(hashFileType);
 		
 		HashMap<String, Integer> hashSpecies = Species.getSpeciesNameTaxID(false);           // new HashMap<String, String>();
 //		hashSpecies.put("miReapFile",ListMiRNALocation.TYPE_RNA_DATA);
-		combSpecies.setItemHash(hashSpecies);
+		combSpecies.setMapItem(hashSpecies);
 	}
 	
 	
@@ -632,7 +632,7 @@ public class GuiSeqMiRNA extends JPanel{
 	private String[] getTxtOutPathAndPrefix() {
 		String[] result = new String[2];
 		String out = txtOutPathPrefix.getText();
-		if (out.endsWith("\\|/")) {
+		if (FileOperate.isFileDirectory(out) || out.endsWith("\\|/")) {
 			result[0] = "";
 			result[1] = out;
 			return result;

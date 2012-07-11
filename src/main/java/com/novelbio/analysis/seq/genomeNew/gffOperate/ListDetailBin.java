@@ -6,7 +6,7 @@ import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
  * @author zong0jie
  *
  */
-public class ListDetailBin extends ListDetailAbs implements Comparable<ListDetailBin>{
+public class ListDetailBin extends ListDetailAbs{
 
 	public ListDetailBin(String chrID, String ItemName, Boolean cis5to3) {
 		super(chrID, ItemName, cis5to3);
@@ -53,11 +53,12 @@ public class ListDetailBin extends ListDetailAbs implements Comparable<ListDetai
 	}
 
 	@Override
-	public int compareTo(ListDetailBin o) {
-		if (getScore() > o.getScore()) {
+	public int compareTo(ListDetailAbs o) {
+		ListDetailBin listDetailBin = (ListDetailBin)o;
+		if (getScore() > listDetailBin.getScore()) {
 			return 1;
 		}
-		else if (getScore() < o.getScore()) {
+		else if (getScore() < listDetailBin.getScore()) {
 			return -1;
 		}
 		else {

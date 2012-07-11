@@ -110,7 +110,7 @@ public class GuiFastQJpanel extends JPanel {
 		txtMinReadsLen.setColumns(10);
 		
 		cmbReadsQuality = new JComboBoxData<Integer>();
-		cmbReadsQuality.setItemHash(FastQ.getMapReadsQuality());
+		cmbReadsQuality.setMapItem(FastQ.getMapReadsQuality());
 		cmbReadsQuality.setBounds(121, 252, 153, 23);
 		add(cmbReadsQuality);
 		
@@ -152,13 +152,13 @@ public class GuiFastQJpanel extends JPanel {
 		cmbSpecies.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Species species = cmbSpecies.getSelectedValue();
-				cmbSpeciesVersion.setItemHash(species.getMapVersion());
+				cmbSpeciesVersion.setMapItem(species.getMapVersion());
 			}
 		});
-		cmbSpecies.setItemHash(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
+		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
 		cmbSpecies.setBounds(10, 402, 147, 23);
 		//≥ı ºªØcmbSpeciesVersion
-		try { cmbSpeciesVersion.setItemHash(cmbSpecies.getSelectedValue().getMapVersion()); 	} catch (Exception e) { }
+		try { cmbSpeciesVersion.setMapItem(cmbSpecies.getSelectedValue().getMapVersion()); 	} catch (Exception e) { }
 		
 		add(cmbSpecies);
 		
@@ -281,7 +281,7 @@ public class GuiFastQJpanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileRigth = guiFileOpen.openLsFileName("fastqFile", "");
 				for (String string : lsFileRigth) {
-					scrollPaneFastqRight.addProview(new String[]{string});
+					scrollPaneFastqRight.addRow(new String[]{string});
 				}
 			}
 		});
@@ -363,7 +363,7 @@ public class GuiFastQJpanel extends JPanel {
 		add(chckbxLowcaseAdaptor);
 		
 		cmbLibrary = new JComboBoxData<Integer>();
-		cmbLibrary.setItemHash(CtrlFastQMapping.getMapLibrary());
+		cmbLibrary.setMapItem(CtrlFastQMapping.getMapLibrary());
 		cmbLibrary.setBounds(470, 402, 134, 23);
 		add(cmbLibrary);
 		
@@ -376,7 +376,7 @@ public class GuiFastQJpanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileLeft = guiFileOpen.openLsFileName("fastqFile", "");
 				for (String string : lsFileLeft) {
-					scrollPaneFastqLeft.addProview(new String[]{string, ""});
+					scrollPaneFastqLeft.addRow(new String[]{string, ""});
 				}
 			}
 		});
