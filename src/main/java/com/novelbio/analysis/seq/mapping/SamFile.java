@@ -50,6 +50,11 @@ public class SamFile {
 	String fileName = "";
 	boolean pairend = false;
 	/**
+	 * 非unique mapping的序列是否只随机抽取一条
+	 * @param notUniqueRandomSelectReads
+	 */
+	boolean notUniqueRandomSelectReads = false;
+	/**
 	 * 单端延长240bp
 	 */
 	int extend = 240;
@@ -82,6 +87,13 @@ public class SamFile {
 	 */
 	public void setUniqMapping(boolean uniqMapping) {
 		this.uniqMapping = uniqMapping;
+	}
+	/**
+	 * 非unique mapping的序列是否只随机抽取一条
+	 * @param notUniqueRandomSelectReads
+	 */
+	public void setNotUniqueRandomSelectOneRead(boolean notUniqueRandomSelectReads) {
+		this.notUniqueRandomSelectReads = notUniqueRandomSelectReads;
 	}
 	/**
 	 * 双端数据是否获得连在一起的bed文件
@@ -119,8 +131,7 @@ public class SamFile {
 			}
 	}
 	
-	private SAMFileReader getSamFileReader()
-	{
+	private SAMFileReader getSamFileReader() {
 		File file = new File(fileName);
 		samFileReader = new SAMFileReader(file);
 		return samFileReader;
@@ -155,8 +166,7 @@ public class SamFile {
 		return -1;
 	}
 	
-	private long getReadsNum()
-	{
+	private long getReadsNum() {
 		allReadsNum = 0;
 		unmappedReadsNum = 0;
 		mappedReadsNum = 0;
@@ -479,7 +489,7 @@ X 8 sequence mismatch
 				}
 				bedSeq.writeBedRecord(bedRecord);
 			}
-			if (flagNotUnique) {
+			if (flagNotUnique && !notUniqueRandomSelectReads) {
 				 //添加新的信息
 				 for (String string : tmpInfo) {
 					BedRecord bedRecord = new BedRecord();

@@ -16,15 +16,6 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class MiRNAmapPipline {
-	public static void main(String[] args) {
-		String fqFile = "/media/winF/NBC/Project/Project_CRZ_Lab/result/tmpMapping/Y1A_filtered_unMap2miRNA.fq";
-		String rfamSeq = "/media/winE/Bioinformatics/GenomeData/Rice/sRNA/osa_rfam.fa";
-		String samFile = "/media/winF/NBC/Project/Project_CRZ_Lab/result/tmpMapping/Y1A_filtered_rfam.sam";
-		String bedFile = "/media/winF/NBC/Project/Project_CRZ_Lab/result/tmpBed/Y1A_filtered_rfam.bed";
-		String unMappedFq = "/media/winF/NBC/Project/Project_CRZ_Lab/result/tmpMapping/Y1A_filtered_unMap2rfam.fq";
-		MiRNAmapPipline mAmapPipline = new MiRNAmapPipline();
-		mAmapPipline.mapping(fqFile, rfamSeq, samFile, bedFile, unMappedFq);
-	}
 	/** 序列文件 */
 	String seqFile = "";
 	/** 输出文件夹，主要是bed文件 */
@@ -134,35 +125,35 @@ public class MiRNAmapPipline {
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			samFile = outputTmpFinal + "miRNA.sam";
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq";
-			mapping(fqFile, miRNApreSeq, samFile, bedFileMiRNA, unMappedFq);
+			mapping(fqFile, miRNApreSeq, samFile, bedFileMiRNA,false, false, unMappedFq);
 			fqFile = unMappedFq;
 		}
 	
 		if (FileOperate.isFileExist(rfamSeq)) {
 			samFile = outputTmpFinal + "rfam.sam";
 			unMappedFq = outputTmpFinal + "unMap2rfam.fq";
-			mapping(fqFile, rfamSeq, samFile, bedFileRfam, unMappedFq);
+			mapping(fqFile, rfamSeq, samFile, bedFileRfam,false, false, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(ncRNAseq)) {
 			samFile = outputTmpFinal + "ncRna.sam";
 			unMappedFq = outputTmpFinal + "unMap2ncRna.fq";
-			mapping(fqFile, ncRNAseq, samFile, bedFileNCRNA, unMappedFq);
+			mapping(fqFile, ncRNAseq, samFile, bedFileNCRNA,false, false, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(genome)) {
 			samFile = outputTmpFinal + "Genome.sam";
 			unMappedFq = outputTmpFinal + "unMapped.fq";
-			mapping(fqFile, genome, samFile, bedFileGenome, unMappedFq);
+			mapping(fqFile, genome, samFile, bedFileGenome, false, true, unMappedFq);
 		}
 		
 		if (mappingAll2Genome && FileOperate.isFileExist(genome)) {
 			fqFile = seqFile;
 			samFile = outputTmpFinal + "GenomeAll.sam";
 			unMappedFq = outputTmpFinal + "unMapped.fq";
-			mapping(fqFile, genome, samFile, bedFileGenomeAll, unMappedFq);
+			mapping(fqFile, genome, samFile, bedFileGenomeAll, true, true, unMappedFq);
 		}
 	}
 	/** 仅mapping至MiRNA上 */
@@ -182,22 +173,25 @@ public class MiRNAmapPipline {
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			samFile = outputTmpFinal + "miRNA.sam";
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq";
-			mapping(fqFile, miRNApreSeq, samFile, bedFileMiRNA, unMappedFq);
+			mapping(fqFile, miRNApreSeq, samFile, bedFileMiRNA, false, false, unMappedFq);
 			fqFile = unMappedFq;
 		}
 	}
 	/**
-	 * 将小RNAmapping至序列上去
 	 * @param fqFile
 	 * @param chrFile
 	 * @param samFileName
 	 * @param bedFile
+	 * @param uniqueMapping
+	 * @param notUniqueMappedReadsRandomSelectOne
 	 * @param unMappedFq
 	 */
-	private void mapping(String fqFile, String chrFile, String samFileName, String bedFile, String unMappedFq) {
-		MapBwa mapBwa = new MapBwa(fqFile, samFileName, false);
+	private void mapping(String fqFile, String chrFile, String samFileName, String bedFile, boolean uniqueMapping, boolean notUniqueMappedReadsRandomSelectOne,String unMappedFq) {
+		MapBwa mapBwa = new MapBwa(fqFile, samFileName);
 		mapBwa.setExePath(exePath, chrFile);
 		SamFile samFile = mapBwa.mapReads();
+		samFile.setUniqMapping(uniqueMapping);
+		samFile.setNotUniqueRandomSelectOneRead(notUniqueMappedReadsRandomSelectOne);
 		try { Thread.sleep(1000); } catch (Exception e) { }
 		samFile.toBedSingleEnd(TxtReadandWrite.TXT,  bedFile, false);
 		if (unMappedFq != null && !unMappedFq.equals("")) {

@@ -30,8 +30,7 @@ import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.test.testextend.a;
 
-public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf
-{
+public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf {
 	private static Logger logger = Logger.getLogger(GffHashGeneAbs.class);
 	int taxID = 0;
 	String acc2GeneIDfile = "";

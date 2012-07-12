@@ -2,6 +2,9 @@ package com.novelbio.base.dataOperate;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
+
+import org.omg.CosNaming._BindingIteratorImplBase;
 /**
  * 时间日期类
  * 可以用来计算程序运行时间
@@ -40,6 +43,18 @@ public class DateTime {
 	     SimpleDateFormat formatDate= new SimpleDateFormat( "yyyy-MM-dd");
 	     Date currentDate = new Date(); //得到当前系统时间
 	     return formatDate.format(currentDate); //将日期时间格式化
+	}
+	/**
+	 * 返回当前日期加上一个随机数，做唯一文件编码用，格式 "yyyy-MM-dd"
+	 * @return
+	 */
+	public static String getDateAndRandom() {
+	     SimpleDateFormat formatDate= new SimpleDateFormat( "yyyy-MM-ddhhss");
+	     Date currentDate = new Date(); //得到当前系统时间
+	     String date = formatDate.format(currentDate); //将日期时间格式化
+	     Random random = new Random(System.currentTimeMillis());
+	     short Tmp = (short)random.nextInt();
+	     return date + Tmp;
 	}
 	/**
 	 * 返回当前日期，格式 "yyyy-MM-dd"

@@ -366,7 +366,7 @@ public class FileOperate {
 			subFold = subFold + sepID[i] + File.separator;
 			if (!createFolder(foldUpper + subFold)) {
 				logger.error("创建目录操作出错！" + foldUpper + subFold);
-				DeleteFolder(firstPath);
+				DeleteFileFolder(firstPath);
 				return false;
 			}
 		}
@@ -995,7 +995,7 @@ public class FileOperate {
 	 *            要删除的目录或文件
 	 * @return 删除成功返回 true，否则返回 false。
 	 */
-	public static boolean DeleteFolder(String sPath) {
+	public static boolean DeleteFileFolder(String sPath) {
 		boolean flag = false;
 		File file = new File(sPath);
 		// 判断目录或文件是否存在
@@ -1036,21 +1036,22 @@ public class FileOperate {
 		return path;
 	}
 	/**
-	 * 返回本软件所在路径，后面带上"/"符号
+	 * 返回本软件所在路径，务必返回绝对路径，后面带上"/"符号
 	 * @return
 	 */
 	 public static String getProjectPath() {
-		 java.net.URL url = FileOperate.class.getProtectionDomain().getCodeSource().getLocation();
-		 String filePath = null;
-		 try {
-			 filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
-		 } catch (Exception e) {
-			 e.printStackTrace();
-		 }
-		 if (filePath.endsWith(".jar"))
-			 filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
-		 java.io.File file = new java.io.File(filePath);
-		 filePath = file.getAbsolutePath();
-		 return addSep(filePath);
+		 return "/media/winD/fedora/gitnbc/";
+//		 java.net.URL url = FileOperate.class.getProtectionDomain().getCodeSource().getLocation();
+//		 String filePath = null;
+//		 try {
+//			 filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
+//		 } catch (Exception e) {
+//			 e.printStackTrace();
+//		 }
+//		 if (filePath.endsWith(".jar"))
+//			 filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
+//		 java.io.File file = new java.io.File(filePath);
+//		 filePath = file.getAbsolutePath();
+//		 return addSep(filePath);
 	 }
 }

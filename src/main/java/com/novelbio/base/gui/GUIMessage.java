@@ -12,6 +12,6 @@ public class GUIMessage {
 //		if (!FileOperate.createFolders(folderPath)) {
 //			JOptionPane.showMessageDialog(null, "cannot create fold", "foldcreaterror",JOptionPane.ERROR_MESSAGE);
 //		}
-		FileOperate.DeleteFolder("/media/winF/NBC/Project/Project_Invitrogen/sRNA/novelMiRNA/sfe");
+		FileOperate.DeleteFileFolder("/media/winF/NBC/Project/Project_Invitrogen/sRNA/novelMiRNA/sfe");
 	}
 }

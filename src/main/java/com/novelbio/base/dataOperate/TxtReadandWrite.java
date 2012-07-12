@@ -1094,7 +1094,21 @@ public class TxtReadandWrite {
 		}
 		outputStream.flush();// 写入文本
 	}
-
+	/**
+	 * 效率太低，待修正
+	 * 将数据按照excel的方法写入List<string[]>,null和""都不写入，最后写入一个换行
+	 * 内部close()
+	 * @param sep
+	 *            txt文本的分割符,为正则表达式，tab是"\t"
+	 * @param rowStartNum
+	 *            实际写入起始行
+	 * @param columnStartNum
+	 *            实际写入起始列
+	 * @throws Exception
+	 */
+	public void ExcelWrite(List<String[]> content) {
+		ExcelWrite(content, "\t", 1, 1);
+	}
 	/**
 	 * 效率太低，待修正
 	 * 将数据按照excel的方法写入List<string[]>,null和""都不写入，最后写入一个换行

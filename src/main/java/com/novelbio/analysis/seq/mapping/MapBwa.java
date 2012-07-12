@@ -33,8 +33,6 @@ public class MapBwa {
 	/** bwa所在路径 */
 	String ExePath = "";
 	String chrFile;
-	/** 没有意义 */
-	boolean uniqMapping = true;
 	String sampleGroup = "";
 	String outFileName = "";
 	String leftFq = "";
@@ -66,8 +64,7 @@ public class MapBwa {
 	 * @param outFileName 结果文件名，后缀自动改为sam
 	 * @param uniqMapping 是否uniqmapping，单端才有的参数
 	 */
-	public MapBwa(FastQ fastQ, String outFileName, boolean uniqMapping ) {
-		this.uniqMapping = uniqMapping;
+	public MapBwa(FastQ fastQ, String outFileName) {
 		this.outFileName = outFileName;
 		leftFq = fastQ.getFileName();
 		pairend = false;
@@ -89,10 +86,9 @@ public class MapBwa {
 	 * @param outFileName 结果文件名，后缀自动改为sam
 	 * @param uniqMapping 是否unique mapping
 	 */
-	public MapBwa(String seqFile,String outFileName, boolean uniqMapping) {
+	public MapBwa(String seqFile,String outFileName) {
 		leftFq = seqFile;
 		this.outFileName = outFileName;
-		this.uniqMapping = uniqMapping;
 		pairend = false;
 	}
 	/** 输入已经过滤好的fastq文件 */
@@ -127,9 +123,6 @@ public class MapBwa {
 	 */
 	public void setOutFileName(String outFileName) {
 		this.outFileName = outFileName;
-	}
-	public void setUniqMapping(boolean uniqMapping) {
-		this.uniqMapping = uniqMapping;
 	}
 	/**
 	 * 百分之多少的mismatch，或者几个mismatch
@@ -301,7 +294,6 @@ public class MapBwa {
 		cmdOperate.run();
 		SamFile samFile = new SamFile(outFileName);
 		samFile.setPairend(isPairend());
-		samFile.setUniqMapping(uniqMapping);
 		return samFile;
 	}
 	private String addSamToFileName(String outFileName) {
