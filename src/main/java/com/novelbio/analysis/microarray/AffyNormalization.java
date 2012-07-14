@@ -46,9 +46,10 @@ public class AffyNormalization {
 				txtOutScript.writefileln(getWorkSpace(content));
 			else if (content.startsWith("#filename"))
 				txtOutScript.writefileln(getFileName(content));
-			else if (content.startsWith("#NormalizedMethod")) {
+			else if (content.startsWith("#NormalizedMethod"))
 				txtOutScript.writefileln(getMethodType(content));
-			} 
+			else if (content.startsWith("#readCelFile"))
+				txtOutScript.writefileln(getRawDataFile(content));
 			else {
 				txtOutScript.writefileln(content);
 			}
@@ -64,6 +65,15 @@ public class AffyNormalization {
 	private String getFileName(String content) {
 		String fileRawdata = content.split(SepSign.SEP_ID)[1];
 		fileRawdata = fileRawdata.replace("{$filename}", outFileName);
+		return fileRawdata;
+	}
+	private String getRawDataFile(String content) {
+		String celFileName = "\"" + lsRawCelFile.get(0) + "\"";
+		for (int i = 1; i < lsRawCelFile.size(); i++) {
+			celFileName = celFileName + ", \"" + lsRawCelFile.get(i) + "\"";
+		}
+		String fileRawdata = content.split(SepSign.SEP_ID)[1];
+		fileRawdata = fileRawdata.replace("{$RawCelFile}", celFileName);
 		return fileRawdata;
 	}
 	private String getMethodType(String content) {
