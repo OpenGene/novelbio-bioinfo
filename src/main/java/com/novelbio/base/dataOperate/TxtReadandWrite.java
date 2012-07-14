@@ -237,6 +237,13 @@ public class TxtReadandWrite {
 	 */
 	@Deprecated
 	public BufferedReader readfile() throws Exception {
+		if (inputStream != null) {
+			inputStream.close();
+		}
+		if (bufread != null) {
+			bufread.close();
+		}
+		
 		inputStream = new BufferedInputStream(new FileInputStream(txtfile), bufferLen);
 		if (filetype.equals(ZIP)) {
 			ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(inputStream);
@@ -254,12 +261,12 @@ public class TxtReadandWrite {
 		else if (filetype.equals(BZIP2)) {
 			inputStream = new BufferedInputStream(new BZip2CompressorInputStream(inputStream), bufferLen);
 		}
+
 		bufread = new BufferedReader(new   InputStreamReader(inputStream));
 		return bufread;
 	}
 	
-	public Iterable<String> readlines()
-	{
+	public Iterable<String> readlines() {
 		try {
 			return readPerlines();
 		} catch (Exception e) {
@@ -1329,32 +1336,17 @@ public class TxtReadandWrite {
 	 * 关闭流文件
 	 */
 	public void close() {
-		try {
-			outputStream.flush();
-		} catch (Exception e) {
-		}
-		try {
-			fileread.close();
-		} catch (Exception e) {
-		}
-		try {
-			bufread.close();
-		} catch (Exception e) {
-		}
-		try {
-			bufwriter.close();
-		} catch (Exception e) {
-		}
+		try { outputStream.flush(); } catch (Exception e) {}
+		try { fileread.close(); } catch (Exception e) {}
+		try { bufread.close(); } catch (Exception e) {}
+		try { bufwriter.close(); } catch (Exception e) {}
+		try { inputStream.close(); } catch (Exception e) {}
+		try { outputStream.close(); } catch (Exception e) {}
 		try {
 			if (filetype.equals(ZIP)) {
 				zipOutputStream.closeArchiveEntry();
 			}
-		} catch (Exception e) {
-		}
-		try {
-			outputStream.close();
-		} catch (Exception e) {
-		}
+		} catch (Exception e) { }
 	}
 	   protected void finalize() {
          close();

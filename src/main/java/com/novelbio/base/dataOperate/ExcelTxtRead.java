@@ -114,12 +114,12 @@ public class ExcelTxtRead {
 	 * @param DelFirst 是否将第一列空位或者null的行删除
 	 * @return
 	 */
-	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int[] columnID,int rowStart,int rowEnd, boolean DelFirst)
-	{
+	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int[] columnID,int rowStart,int rowEnd, boolean DelFirst) {
 		return readLsExcelTxt( excelFile, columnID, rowStart, rowEnd,  DelFirst,  "\t");
 	}
 	
 	/**
+	 * 内部close
 	 * 给定文件，xls2003/2007/txt，获得它们的信息，用arraylist-string[]保存
 	 * @param File 文件名
 	 * @param firstlinels1 从第几行开始读去
@@ -127,8 +127,7 @@ public class ExcelTxtRead {
 	 * @return
 	 * @throws Exception
 	 */
-	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int firstlinels1)
-	{
+	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int firstlinels1) {
 		ArrayList<String[]> ls1=null;
 		if (ExcelOperate.isExcel(excelFile)) {
 			ExcelOperate excel = new ExcelOperate(excelFile);
@@ -139,7 +138,6 @@ public class ExcelTxtRead {
 		TxtReadandWrite txt = new TxtReadandWrite(excelFile, false);
 		int txtRowNum = txt.ExcelRows();
 		ls1=txt.ExcelRead("\t", firstlinels1, 1,txtRowNum , -1, 0);//从目标行读取
-		txt.close();
 		return ls1;
 	}
 	

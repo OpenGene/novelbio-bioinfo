@@ -28,38 +28,13 @@ import com.novelbio.generalConf.NovelBioTitleItem;
  * @author zong0jie
  *
  */
-public class DiffExpDESeq {
+public class DiffExpDESeq extends DiffExpAbs {
 	String rawScript = "/media/winE/Bioinformatics/R/Protocol/DESeqJava.txt";
-	String workSpace = "";
-	String fileNameRawdata = "";
-	String outScript = "";
 	/** 实验是否有重复，貌似有一次重复就算有重复了 */
 	boolean isRepeatExp = false;
 	
-	ArrayList<String[]> lsGeneInfo = new ArrayList<String[]>();
-	/**
-	 * 一系列的表示基因分组的列<br>
-	 * 0: colNum, 实际number<br>
-	 * 1: SampleGroupName
-	 */
-	ArrayList<String[]> lsSampleColumn2GroupName;
-	/**基因唯一ID，必须没有重复 */
-	int colAccID = 0;
-	/**
-	 * 比较组，可以输入一系列组
-	 * map: condition to compare group <br>
-	 * FileName <br>
-	 * To<br>
-	 * 0：treatment<br>
-	 * 1：control
-	 */
-	HashMap<String, String[]> mapOutFileName2Compare = new LinkedHashMap<String, String[]>();
-	
-	boolean calculate = false;
-	
 	public static void main(String[] args) {
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt("/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/miRNA并集Deseq.txt", 1);
-		
 		DiffExpDESeq deSeq = new DiffExpDESeq();
 		ArrayList<String[]> lsSampleColumn2GroupName = new ArrayList<String[]>();
 		lsSampleColumn2GroupName.add(new String[] {"2","A"});
@@ -68,7 +43,7 @@ public class DiffExpDESeq {
 		lsSampleColumn2GroupName.add(new String[] {"5","B"});
 		lsSampleColumn2GroupName.add(new String[] {"6","C"});
 		lsSampleColumn2GroupName.add(new String[] {"7","C"});
-		deSeq.setSampGroup(lsSampleColumn2GroupName);
+		deSeq.setCol2Sample(lsSampleColumn2GroupName);
 		deSeq.setColID(1);
 		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
 		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
@@ -77,102 +52,17 @@ public class DiffExpDESeq {
 		deSeq.getResultFileName();
 	}
 	
-	public DiffExpDESeq() {
-		setWorkSpace();
-		setOutScript();
-		setFileNameRawdata();
-	}
-	/**
-	 * 一系列的表示基因分组的列<br>
-	 * 0: colNum, 实际number<br>
-	 * 1: SampleGroupName
-	 */
-	public void setSampGroup(ArrayList<String[]> lsSampleColumn2GroupName) {
-		this.lsSampleColumn2GroupName = lsSampleColumn2GroupName;
-		//按列进行排序
-		Collections.sort(lsSampleColumn2GroupName, new Comparator<String[]>() {
-			public int compare(String[] o1, String[] o2) {
-				Integer col1 = Integer.parseInt(o1[0]);
-				Integer col2 = Integer.parseInt(o2[0]);
-				return col1.compareTo(col2);
-			}
-		});
-		calculate = false;
-	}
-	/**
-	 * 设定输出文件夹和比较组
-	 * @param fileName
-	 * @param comparePair
-	 */
-	public void addFileName2Compare(String fileName, String[] comparePair) {
-		mapOutFileName2Compare.put(fileName, comparePair);
-		calculate = false;
-	}
-	public void setGeneInfo(ArrayList<String[]> lsGeneInfo) {
-		this.lsGeneInfo = lsGeneInfo;
-		calculate = false;
-	}
-	/** 基因标记行，实际行 */
-	public void setColID(int colID) {
-		this.colAccID = colID - 1;
-		calculate = false;
-	}
-	private void setWorkSpace() {
-		workSpace = FileOperate.getProjectPath() + "Tmp/";
-	}
-	private void setOutScript() {
-		outScript = workSpace + "deseq_"+ DateTime.getDateAndRandom() +".R";
-	}
-	private void setFileNameRawdata() {
-		fileNameRawdata = workSpace + "deseqGeneInfo_"+ DateTime.getDateDetail() + ".txt";
-	}
-	/** 仅供测试 */
-	public String getOutScript() {
-		generateScript();
-		return outScript;
-	}
-	/** 仅供测试 */
-	public String getFileNameRawdata() {
-		return fileNameRawdata;
-	}
 	/** 仅供测试 */
 	public boolean isRepeatExp() {
 		return isRepeatExp;
 	}
-	public ArrayList<String> getResultFileName() {
-		calculateResult();
-		return ArrayOperate.getArrayListKey(mapOutFileName2Compare);
+	protected void setOutScriptPath() {
+		outScript = workSpace + "deseq_"+ DateTime.getDateAndRandom() +".R";
 	}
-	/** 计算差异 */
-	private void calculateResult() {
-		if (calculate) {
-			return;
-		}
-		calculate = true;
-		writeToGeneFile();
-		generateScript();
-		Rrunning();
-		modifyResult();
-		clean();
+	protected void setFileNameRawdata() {
+		fileNameRawdata = workSpace + "deseqGeneInfo_"+ DateTime.getDateDetail() + ".txt";
 	}
-	private void writeToGeneFile() {
-		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
-		txtWrite.ExcelWrite(getAnalysisGeneInfo(), "\t", 1, 1);
-	}
-	private ArrayList<String[]> getAnalysisGeneInfo() {
-		ArrayList<String[]> lsResultGeneInfo = new ArrayList<String[]>();
-		for (String[] strings : lsGeneInfo) {
-			String[] tmpResult = new String[lsSampleColumn2GroupName.size() + 1];
-			tmpResult[0] = strings[colAccID];
-			for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
-				int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]) - 1;
-				tmpResult[i + 1] = strings[colNum];
-			}
-			lsResultGeneInfo.add(tmpResult);
-		}
-		return lsResultGeneInfo;
-	}
-	private void generateScript() {
+	protected void generateScript() {
 		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript, false);
 		TxtReadandWrite txtOutScript = new TxtReadandWrite(outScript, true);
 		for (String content : txtReadScript.readlines()) {
@@ -199,20 +89,10 @@ public class DiffExpDESeq {
 		}
 		txtOutScript.close();
 	}
-	
-	private String getWorkSpace(String content) {
-		String RworkSpace = content.split(SepSign.SEP_ID)[1];
-		RworkSpace = RworkSpace.replace("$workspace", workSpace);
-		return RworkSpace;
-	}
-	private String getFileName(String content) {
-		String fileRawdata = content.split(SepSign.SEP_ID)[1];
-		fileRawdata = fileRawdata.replace("$filename", fileNameRawdata);
-		return fileRawdata;
-	}
+
 	private String getGroupFactorAndSetIsRepeatExp(String content) {
 		String Group = content.split(SepSign.SEP_ID)[1];
-		Group = Group.replace("$Group", getGroupFactorAndSetRepeatExp());
+		Group = Group.replace("{$Group}", getGroupFactorAndSetRepeatExp());
 		return Group;
 	}
 	/**
@@ -236,6 +116,11 @@ public class DiffExpDESeq {
 		}
 		return result;
 	}
+	/**
+	 * 根据是否重复，选择不同的代码
+	 * @param content
+	 * @return
+	 */
 	private String getIsDuplicateDate(String content) {
 		String[] tmpResult = content.split(SepSign.SEP_ID);
 		if (isRepeatExp) {
@@ -249,25 +134,16 @@ public class DiffExpDESeq {
 		String[] writeFinal = new String[2];
 		String compareGroupWrite = "\"" + compareGroup[1] + "\", \"" + compareGroup[0] + "\"";//先输入control再输入treatment
 		String[] write = content.split(SepSign.SEP_ID);
-		writeFinal[0] = write[1].replace("$CompareGroup", compareGroupWrite);
-		writeFinal[1] = write[2].replace("$OutFileName", outFileName);
+		writeFinal[0] = write[1].replace("{$CompareGroup}", compareGroupWrite);
+		writeFinal[1] = write[2].replace("{$OutFileName}", outFileName);
 		return writeFinal;
 	}
 	
-	private void Rrunning() {
-		String cmd = NovelBioConst.R_SCRIPT + outScript;
-		CmdOperate cmdOperate = new CmdOperate(cmd, "DEseq");
-		cmdOperate.run();
+	@Override
+	protected void run() {
+		Rrunning("DEseq");
 	}
-	
-	private void modifyResult() {
-		for (Entry<String, String[]> entry : mapOutFileName2Compare.entrySet()) {
-			String fileName = entry.getKey();
-			String[] groupPaire = entry.getValue();
-			modifyResult(fileName, groupPaire[0], groupPaire[1]);
-		}
-	}
-	private void modifyResult(String outFileName, String treatName, String controlName) {
+	protected void modifySingleResultFile(String outFileName, String treatName, String controlName) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		ArrayList<String[]> lsDifGene = ExcelTxtRead.readLsExcelTxt(outFileName, 1);
 		String[] title = new String[]{NovelBioTitleItem.AccID.toString() , treatName, controlName, NovelBioTitleItem.FoldChange.toString(),
@@ -289,15 +165,10 @@ public class DiffExpDESeq {
 			//
 			lsResult.add(tmpResult);
 		}
-		//防止出错
+		//防止R还没输出结果就去读取
 		try { Thread.sleep(50); } catch (Exception e) { }
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
 		txtOutFinal.ExcelWrite(lsResult, "\t", 1, 1);
-	}
-	/** 删除中间文件 */
-	private void clean() {
-		FileOperate.DeleteFileFolder(outScript);
-		FileOperate.DeleteFileFolder(fileNameRawdata);
 	}
  }

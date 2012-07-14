@@ -52,7 +52,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiPearsonJpanel guiPearson;
 	private GuiToolsJpanel guiTools;
 	private GuiFastQJpanel guiFastQ;
-	private GuiLimmaJpanel guiLimma;
+	private GuiDifGeneJpanel guiDifGene;
 	private GuiBlast guiBlast; 
 	private GuiSeqMiRNA guiSeqMiRNA;
 	private GuiMirnaTargetPredict guiMirnaTargetPredict;
@@ -113,8 +113,8 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiFastQ = new GuiFastQJpanel();
 				jTabbedPane1.addTab("FastQ", null, guiFastQ, null);
 				
-				guiLimma = new GuiLimmaJpanel();
-				jTabbedPane1.addTab("Microarray", null, guiLimma, null);
+				guiDifGene = new GuiDifGeneJpanel();
+				jTabbedPane1.addTab("DifGene", null, guiDifGene, null);
 				
 				guiBlast = new GuiBlast();
 				jTabbedPane1.addTab("Blast", null, guiBlast, null);

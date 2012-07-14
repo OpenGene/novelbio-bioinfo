@@ -2,6 +2,7 @@ package com.novelbio.test.analysis.diffexpress;
 
 import java.util.ArrayList;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,7 +37,7 @@ public class TestDiffExpDESeq extends TestCase {
 		lsSampleColumn2GroupName.add(new String[] {"5","B"});
 		lsSampleColumn2GroupName.add(new String[] {"6","C"});
 		lsSampleColumn2GroupName.add(new String[] {"7","C"});
-		deSeq.setSampGroup(lsSampleColumn2GroupName);
+		deSeq.setCol2Sample(lsSampleColumn2GroupName);
 		deSeq.setColID(1);
 		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
 		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
@@ -47,7 +48,7 @@ public class TestDiffExpDESeq extends TestCase {
 	}
 	private void assertScriptDuplicate(ArrayList<String> lsScript) {
 		assertEquals("filePath = \"" + FileOperate.getProjectPath() + "Tmp/\"", lsScript.get(0));
-		assertEquals("fileName = \"" +  FileOperate.getProjectPath()  + deSeq.getFileNameRawdata() + "\"", lsScript.get(1));
+		assertEquals("fileName = \"" + deSeq.getFileNameRawdata() + "\"", lsScript.get(1));
 		assertEquals("setwd(filePath)", lsScript.get(2));
 		assertEquals("library(DESeq)", lsScript.get(3));
 		assertEquals("data = read.table(fileName, he=T, sep=\"\\t\", row.names=1)", lsScript.get(4));	
@@ -64,13 +65,13 @@ public class TestDiffExpDESeq extends TestCase {
 		}
 		assertEquals(true, deSeq.isRepeatExp());
 
-		assertEquals("res = nbinomTest( cds, \"A\", \"B\" )", lsScript.get(9));
+		assertEquals("res = nbinomTest( cds, \"B\", \"A\" )", lsScript.get(9));
 		assertEquals("write.table( res, file=\""+ FileOperate.getProjectPath() + "AvsB.xls" +"\",sep=\"\\t\",row.names=F  )", lsScript.get(10));
 		
-		assertEquals("res = nbinomTest( cds, \"A\", \"C\" )", lsScript.get(11));
+		assertEquals("res = nbinomTest( cds, \"C\", \"A\" )", lsScript.get(11));
 		assertEquals("write.table( res, file=\""+ FileOperate.getProjectPath() + "AvsC.xls" +"\",sep=\"\\t\",row.names=F  )", lsScript.get(12));
 		
-		assertEquals("res = nbinomTest( cds, \"C\", \"B\" )", lsScript.get(13));
+		assertEquals("res = nbinomTest( cds, \"B\", \"C\" )", lsScript.get(13));
 		assertEquals("write.table( res, file=\""+ FileOperate.getProjectPath() + "CvsB.xls" +"\",sep=\"\\t\",row.names=F  )", lsScript.get(14));
 	}
 	
@@ -82,7 +83,7 @@ public class TestDiffExpDESeq extends TestCase {
 		lsSampleColumn2GroupName.add(new String[] {"5","E"});
 		lsSampleColumn2GroupName.add(new String[] {"6","F"});
 		lsSampleColumn2GroupName.add(new String[] {"7","G"});
-		deSeq.setSampGroup(lsSampleColumn2GroupName);
+		deSeq.setCol2Sample(lsSampleColumn2GroupName);
 		deSeq.setColID(1);
 		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
 		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
@@ -93,7 +94,7 @@ public class TestDiffExpDESeq extends TestCase {
 	}
 	private void assertScriptNoDuplicate(ArrayList<String> lsScript) {
 		assertEquals("filePath = \"" + FileOperate.getProjectPath() + "Tmp/\"", lsScript.get(0));
-		assertEquals("fileName = \"" +  FileOperate.getProjectPath()  + deSeq.getFileNameRawdata() + "\"", lsScript.get(1));
+		assertEquals("fileName = \"" + deSeq.getFileNameRawdata() + "\"", lsScript.get(1));
 		assertEquals("setwd(filePath)", lsScript.get(2));
 		assertEquals("library(DESeq)", lsScript.get(3));
 		assertEquals("data = read.table(fileName, he=T, sep=\"\\t\", row.names=1)", lsScript.get(4));	
@@ -110,13 +111,17 @@ public class TestDiffExpDESeq extends TestCase {
 		}
 		assertEquals(true, deSeq.isRepeatExp());
 
-		assertEquals("res = nbinomTest( cds, \"A\", \"B\" )", lsScript.get(9));
+		assertEquals("res = nbinomTest( cds, \"B\", \"A\" )", lsScript.get(9));
 		assertEquals("write.table( res, file=\""+ FileOperate.getProjectPath() + "AvsB.xls" +"\",sep=\"\\t\",row.names=F  )", lsScript.get(10));
 		
-		assertEquals("res = nbinomTest( cds, \"A\", \"C\" )", lsScript.get(11));
+		assertEquals("res = nbinomTest( cds, \"C\", \"A\" )", lsScript.get(11));
 		assertEquals("write.table( res, file=\""+ FileOperate.getProjectPath() + "AvsC.xls" +"\",sep=\"\\t\",row.names=F  )", lsScript.get(12));
 		
-		assertEquals("res = nbinomTest( cds, \"C\", \"B\" )", lsScript.get(13));
+		assertEquals("res = nbinomTest( cds, \"B\", \"C\" )", lsScript.get(13));
 		assertEquals("write.table( res, file=\""+ FileOperate.getProjectPath() + "CvsB.xls" +"\",sep=\"\\t\",row.names=F  )", lsScript.get(14));
+	}
+	@After
+	public void tearDown() {
+		deSeq.clean();
 	}
 }
