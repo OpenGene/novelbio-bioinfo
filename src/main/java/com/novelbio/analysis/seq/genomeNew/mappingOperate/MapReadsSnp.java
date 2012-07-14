@@ -153,8 +153,8 @@ public class MapReadsSnp {
 	private int[] compareSnpDif(MapInfoSnpIndel mapInfoSnpIndelMut, MapInfoSnpIndel mapInfoSnpIndelWT) {
 		int[] result = new int[2];
 		
-		SiteSnpIndelInfo siteSnpIndelInfoMut = mapInfoSnpIndelMut.getBigAllenInfo();
-		SiteSnpIndelInfo siteSnpIndelInfoWT = mapInfoSnpIndelWT.getBigAllenInfo();
+		SiteSnpIndelInfo siteSnpIndelInfoMut = mapInfoSnpIndelMut.getSiteSnpInfoBigAllen();
+		SiteSnpIndelInfo siteSnpIndelInfoWT = mapInfoSnpIndelWT.getSiteSnpInfoBigAllen();
 		//mut没有snp
 		if (siteSnpIndelInfoMut == null || siteSnpIndelInfoMut.getThisBaseNum() == 0) {
 			return null;
@@ -272,13 +272,13 @@ public class MapReadsSnp {
 			}
 			numSite = mapInfoSnpIndel.getRefSnpIndelStart();
 			//因为这个染色体数组只能保存int，所以将double的小数乘以10000，然后保存
-			if (mapInfoSnpIndel.getBigAllenInfo() == null
-					|| (mapInfoSnpIndel.getBigAllenInfo().getThisBaseNum() < minSnpReadsFirstScan
-					     && (double)mapInfoSnpIndel.getBigAllenInfo().getThisBaseNum()/mapInfoSnpIndel.getRead_Depth_Filtered() < minSnpProp )) {
+			if (mapInfoSnpIndel.getSiteSnpInfoBigAllen() == null
+					|| (mapInfoSnpIndel.getSiteSnpInfoBigAllen().getThisBaseNum() < minSnpReadsFirstScan
+					     && (double)mapInfoSnpIndel.getSiteSnpInfoBigAllen().getThisBaseNum()/mapInfoSnpIndel.getRead_Depth_Filtered() < minSnpProp )) {
 				chrBpReads[numSite] = 0;
 				continue;
 			}
-			chrBpReads[numSite] = (int) (mapInfoSnpIndel.getBigAllenInfo().getThisBaseProp() * foldPlus);
+			chrBpReads[numSite] = (int) (mapInfoSnpIndel.getSiteSnpInfoBigAllen().getThisBaseProp() * foldPlus);
 		}
 		if (flagExistChrID) {
 			addSumArrayToMapResult(sampleID, lastChr, chrBpReads);

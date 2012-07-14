@@ -37,7 +37,6 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	public static final int TYPE_DELETION = 30;
 	public static final int TYPE_MISMATCH = 20;
 	public static final int TYPE_CORRECT = 10;
-//	public static final String SEP = "@//@";
 	/**  snp的类型，TYPE_INSERT等 */
 	String sampleName = "";;
 	/** 
@@ -63,10 +62,6 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * Allelic depths for the ref and alt alleles in the order listed
 	 */
 	int Allelic_depths_Ref = 0;
-	/**  AD
-	 * Allelic depths for the ref and alt alleles in the order listed
-	 */
-	int Allelic_depths_Alt = 0;
 	/**  DP
 	 * Read Depth (only filtered reads used for calling
 	 */
@@ -200,7 +195,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		this.Read_Depth_Filtered = Integer.parseInt(ss[3]);
 		this.chrID = ss[0];
 		setGffIso(gffChrAbs);
-		setAllenInfo(refBase, ss[4], gffChrAbs);
+		setAllenInfo(ss[4], gffChrAbs);
 	}
 	/**
 	 * 重新设定Allelic_depths_Ref，和hashAlle信息
@@ -218,7 +213,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 *  <b>‘$’</b> marks the end of a read segment.
 	 * @param pileUpInfo 输入 ...........,.............,....,....,.,.,..,..,...,....,.^!. 这种东西
 	 */
-	private void setAllenInfo(String refBase, String pileUpInfo, GffChrAbs gffChrAbs) {
+	private void setAllenInfo(String pileUpInfo, GffChrAbs gffChrAbs) {
 		Allelic_depths_Ref = 0; mapAllen2Num = new HashMap<String, SiteSnpIndelInfo>();
 		String referenceSeq = refBase, thisSeq = refBase;
 		char[] pipInfo = pileUpInfo.toCharArray();
@@ -256,19 +251,16 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 					tmpSeq[j] = pipInfo[i];
 				}
 				String indel = String.copyValueOf(tmpSeq);
-				int type = TYPE_CORRECT;
 				if (c == '+') {
-					type = TYPE_INSERT;
 					referenceSeq = refBase;
 					thisSeq = refBase + indel;
 				}
 				else {
-					type = TYPE_DELETION;
 					referenceSeq = refBase + indel;
 					thisSeq = refBase;
 				}
 				SiteSnpIndelInfo siteSnpIndelInfo = null;
-				String indelInfo = (referenceSeq + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + type).toLowerCase();
+				String indelInfo = SiteSnpIndelInfo.getMismatchInfo(referenceSeq, thisSeq);
 				
 				if (mapAllen2Num.containsKey(indelInfo)) {
 					siteSnpIndelInfo = mapAllen2Num.get(indelInfo);
@@ -287,7 +279,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			else {
 				SiteSnpIndelInfo siteSnpIndelInfo = null;
 				thisSeq = pipInfo[i] + "";
-				String mismatchInfo = (refBase + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + TYPE_MISMATCH).toLowerCase();
+				String mismatchInfo = SiteSnpIndelInfo.getMismatchInfo(referenceSeq, thisSeq);
 				if (mapAllen2Num.containsKey(mismatchInfo)) {
 					siteSnpIndelInfo = mapAllen2Num.get(mismatchInfo);
 					siteSnpIndelInfo.addThisBaseNum();
@@ -299,6 +291,12 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				}
 			}
 		}
+	}
+	
+	public void addAllenInfo(GffChrAbs gffChrAbs, String referenceSeq, String thisSeq) {
+		SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, referenceSeq, thisSeq);
+		mapAllen2Num.put(SiteSnpIndelInfo.getMismatchInfo(referenceSeq, thisSeq), siteSnpIndelInfo);
+
 	}
 	public String getRefID() {
 		return chrID;
@@ -320,8 +318,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @param snpType
 	 * @return
 	 */
-	public SiteSnpIndelInfo getSnpIndel(String referenceSeq, String thisSeq, int snpType) {
-		String tmpInfo = (referenceSeq + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + snpType ).toLowerCase();
+	public SiteSnpIndelInfo getSnpIndel(String referenceSeq, String thisSeq) {
+		String tmpInfo = SiteSnpIndelInfo.getMismatchInfo(referenceSeq, thisSeq);
 		SiteSnpIndelInfo siteSnpIndelInfo = mapAllen2Num.get(tmpInfo);
 		return siteSnpIndelInfo;
 	}
@@ -351,7 +349,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			logger.error("输入的查找位点不是同一个，本位点：" + getRefSnpIndelStart() + "查找位点：" + mapInfoSnpIndel.getRefSnpIndelStart());
 			return null;
 		}
-		return getBigAllenInfo();
+		return getSiteSnpInfoBigAllen();
 	}
 	/**
 	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
@@ -365,7 +363,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * 出错返回"";
 	 */
 	public String getSeqTypeNumStr(MapInfoSnpIndel mapInfoSnpIndel) {
-		SiteSnpIndelInfo siteSnpIndelInfoQuery = mapInfoSnpIndel.getBigAllenInfo();
+		SiteSnpIndelInfo siteSnpIndelInfoQuery = mapInfoSnpIndel.getSiteSnpInfoBigAllen();
 		return getSeqTypeNumStr(siteSnpIndelInfoQuery);
 	}
 	/**
@@ -394,7 +392,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	/**
 	 * 返回数量最大的snp位点
 	 */
-	public SiteSnpIndelInfo getBigAllenInfo() {
+	public SiteSnpIndelInfo getSiteSnpInfoBigAllen() {
 		ArrayList<SiteSnpIndelInfo> lsAllenInfo = ArrayOperate.getArrayListValue(mapAllen2Num);
 		Collections.sort(lsAllenInfo, Collections.reverseOrder());
 		if (lsAllenInfo.size() > 0) {
@@ -437,13 +435,6 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		return Filter;
 	}
 	/**
-	 * 设定thisSite测序深度
-	 * @return
-	 */
-	public void setAllelicDepthsAlt(int Allelic_depths_Alt) {
-		this. Allelic_depths_Alt = Allelic_depths_Alt;
-	}
-	/**
 	 * 设定refSite测序深度
 	 * @return
 	 */
@@ -455,13 +446,6 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 */
 	public double getAllele_Frequency() {
 		return Allele_Frequency;
-	}
-	/**
-	 * AD Allelic depths for the ref and alt alleles in the order listed
-	 * @return
-	 */
-	public int getAllelic_depths_Alt() {
-		return Allelic_depths_Alt;
 	}
 	/**
 	 * AD Allelic depths for the ref and alt alleles in the order listed
@@ -511,26 +495,18 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		return Total_number_of_alleles;
 	}
 	/**
-	 * Allele Balance for hets
-	 * (ref/(ref+alt))
-	 * @return
-	 */
-	public double getAllele_Balance_Hets() {
-		return (double)Allelic_depths_Ref/(Allelic_depths_Ref+Allelic_depths_Alt);
-	}
-	/**
+	 * 这里我删除了一个Allelic_depths_Alt的项目，考虑如何很好的添加进去
 	 * 设置
 	 * GT:AD:DP:GQ:PL	0/1:53,10:63:99:150,0,673
 	 */
-	public void setFlag(String flagTitle, String flagDetail)
-	{
+	public void setFlag(String flagTitle, String flagDetail) {
+		//TODO 这里我删除了一个Allelic_depths_Alt的项目，考虑如何很好的添加进去
 		String[] ssFlag = flagTitle.split(":");
 		String[] ssValue = flagDetail.split(":");
 		for (int i = 0; i < ssFlag.length; i++) {
 			if (ssFlag[i].equals("AD")) {
 				String[] info = ssValue[i].split(",");
 				Allelic_depths_Ref = Integer.parseInt(info[0]);
-				Allelic_depths_Alt = Integer.parseInt(info[1]); 
 			}
 			else if (ssFlag[i].equals("DP")) {
 				Read_Depth_Filtered = Integer.parseInt(ssValue[i]); 

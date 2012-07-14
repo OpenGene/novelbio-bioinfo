@@ -16,6 +16,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfoSnpIndel;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteSnpIndelInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -76,22 +77,24 @@ public class SNPGATKcope {
 		for (String string : txtRead.readlines()) {
 			if (string.startsWith("#")) continue;
 			String[] ss = string.split("\t");
+			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(ss[0], Integer.parseInt(ss[1]));
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(taxID, ss[0], Integer.parseInt(ss[1]), ss[3], ss[4]);
 			mapInfoSnpIndel.setBaseInfo(ss[7]);
 			mapInfoSnpIndel.setQuality(ss[5]);
 			mapInfoSnpIndel.setFlag(ss[8], ss[9]);
 			mapInfoSnpIndel.setFilter(ss[6]);
+			mapInfoSnpIndel.setAllelicDepthsRef(Allelic_depths_Ref);
+			mapInfoSnpIndel.addAllenInfo(gffChrSnpIndel, referenceSeq, thisSeq);
 			if (!ss[2].equals(".")) {
-				mapInfoSnpIndel.setDBSnpID(ss[2]);
+				mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq).setDBSnpID(ss[2]);
 			}
-			gffChrSnpIndel.getSnpIndel(mapInfoSnpIndel);
 			try {
-				lsResult.add(mapInfoSnpIndel.toString());
+				lsResult.add(mapInfoSnpIndel.getSiteSnpInfoBigAllen().toString());
 			} catch (Exception e) {
 				logger.error("本位点出错：" + ss[1]);
 			}
 		}
-		lsResult.add(0,MapInfoSnpIndel.getMyTitle());
+		lsResult.add(0,SiteSnpIndelInfo.getMyTitle());
 		return lsResult;
 	}
 	
@@ -100,7 +103,7 @@ public class SNPGATKcope {
 		ArrayList<String> lsTag = new ArrayList<String>();
 		for (String string : txtFile) {
 			lsTag.add(FileOperate.getFileName(string));
-			lsAll.add(ExcelTxtRead.readLsExcelTxt(string, 1, 0, 1, 0));
+			lsAll.add(ExcelTxtRead.readLsExcelTxt(string, 1));
 		}
 		getSnpAll(lsTag, lsAll, 0, 1, "_//@@//_", outFile);
 		

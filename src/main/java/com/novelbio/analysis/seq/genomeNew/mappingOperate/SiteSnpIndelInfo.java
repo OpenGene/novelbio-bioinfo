@@ -18,7 +18,7 @@ import com.novelbio.database.service.servgeneanno.ServSnpIndelRs;
  * 对于单个位点的snp与indel的情况
  * @author zong0jie
  */
-abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
+public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 	private static Logger logger = Logger.getLogger(SiteSnpIndelInfo.class);
 	//TODO 添加是否引起剪接位点变化的flag
 	public static final int SPLIT_ATG = 12;
@@ -104,6 +104,14 @@ abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 	/** 本snp占总snp的比例 */
 	public double getThisBaseProp() {
 		return (double)thisBaseNum/mapInfoSnpIndel.getRead_Depth_Filtered();
+	}
+	/**
+	 * Allele Balance for hets
+	 * (ref/(ref+alt))
+	 * @return
+	 */
+	public double getAllele_Balance_Hets() {
+		return (double)mapInfoSnpIndel.getAllelic_depths_Ref()/(mapInfoSnpIndel.getAllelic_depths_Ref()+thisBaseNum);
 	}
 	/**
 	 * 如果一个位点有两个以上的snp，就可能会出错
@@ -230,7 +238,7 @@ abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 		String thisaa = getThisAAnr().toStringAA(false);
 		
 		String result =  mapinfoRefSeqIntactAA.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart() + "\t" + referenceSeq + "\t" + mapInfoSnpIndel.getAllelic_depths_Ref() + "\t" + thisSeq + "\t" + 
-		getThisBaseNum() + "\t" + mapInfoSnpIndel.quality + "\t" + mapInfoSnpIndel.Filter + "\t" + "\t" + mapInfoSnpIndel.getAllele_Balance_Hets() + "\t" + isExon()+"\t" + mapInfoSnpIndel.getProp() +"\t"+
+		getThisBaseNum() + "\t" + mapInfoSnpIndel.quality + "\t" + mapInfoSnpIndel.Filter + "\t" + "\t" + getAllele_Balance_Hets() + "\t" + isExon()+"\t" + mapInfoSnpIndel.getProp() +"\t"+
 		refnr +"\t"+refaa + "\t" + thisnr +"\t"+thisaa;
 		if (refaa.length() ==3  && thisaa.length() == 3) {
 			result = result + "\t" + SeqFasta.cmpAAquality(refaa, thisaa);
@@ -249,11 +257,25 @@ abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 			result = result + "\t \t \t " ;
 		return result;
 	}
+	/**
+	 * 必须与	public static String getMismatchInfo(String referenceSeq, String thisSeq)一致
+	 * @return
+	 */
+	public String getMismatchInfo() {
+		return (referenceSeq + SepSign.SEP_ID + thisSeq).toLowerCase();
+	}
 	/////////////////////////////////////// 静态方法，获得所有指定区域的位点的信息 ///////////////////////////////
 	public static String getMyTitle() {
 		String result = "ChrID\tSnpLoc\tRefBase\tAllelic_depths_Ref\tThisBase\tAllelic_depths_Alt \tQuality\tFilter\tAllele_Balance_Hets()\tIsInExon\tDistance_To_Start\t" + 
 		"RefAAnr\tRefAAseq\tThisAAnr\tThisAASeq\tAA_chemical_property\tOrfShift\tSnpDB_ID\tGeneAccID\tGeneSymbol\tGeneDescription";
 		return result;
+	}
+	/**
+	 * 必须与 public String getMismatchInfo() 一致
+	 * @return
+	 */
+	public static String getMismatchInfo(String referenceSeq, String thisSeq) {
+		return (referenceSeq + SepSign.SEP_ID + thisSeq).toLowerCase();
 	}
 }
 /**

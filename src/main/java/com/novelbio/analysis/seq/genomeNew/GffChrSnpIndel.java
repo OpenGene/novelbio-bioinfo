@@ -145,7 +145,7 @@ public class GffChrSnpIndel {
 	
 	
 	public void readSnpNum(String excelfile, int colChrID, int colSummit, String bedFile, String outFile ) {
-		ArrayList<String[]> lsTmp = ExcelTxtRead.readLsExcelTxt(excelfile, 1, 0, 1, 0);
+		ArrayList<String[]> lsTmp = ExcelTxtRead.readLsExcelTxt(excelfile, 1);
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		gffChrAbs.setMapReads(bedFile, 1);
 		gffChrAbs.loadMapReads();
