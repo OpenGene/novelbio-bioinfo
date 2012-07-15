@@ -121,11 +121,11 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	/** 是否符合标准 */
 	String Filter = "";
 	/**
-	 * @param taxID 物种
-	 * @param chrID 染色体号
-	 * @param snpLoc snp位点
-	 * @param referenceSeq ref的序列
-	 * @param thisSeq 本序列
+	 * @param gffChrAbs
+	 * @param chrID
+	 * @param snpLoc
+	 * @param referenceSeq
+	 * @param thisSeq
 	 */
 	public MapInfoSnpIndel(GffChrAbs gffChrAbs,String chrID, int snpLoc, String referenceSeq, String thisSeq) {
 		this.taxID = gffChrAbs.getTaxID();
@@ -139,22 +139,17 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	    mapAllen2Num.put(siteSnpIndelInfo.getSiteTypeInfo(), siteSnpIndelInfo);
 	}
 	/**
-	 * @param taxID 物种
-	 * @param chrID 染色体号
-	 * @param snpLoc snp位点
-	 * @param referenceSeq ref的序列
-	 * @param thisSeq 本序列
+	 * @param taxID
+	 * @param gffChrAbs
+	 * @param pileUpLine
 	 */
 	public MapInfoSnpIndel(int taxID, GffChrAbs gffChrAbs, String pileUpLine) {
 		this.taxID = taxID;
 		setSamToolsPilup(pileUpLine, gffChrAbs);
 	}
 	/**
-	 * @param taxID 物种
 	 * @param chrID 染色体号
 	 * @param snpLoc snp位点
-	 * @param referenceSeq ref的序列
-	 * @param thisSeq 本序列
 	 */
 	public MapInfoSnpIndel(String chrID, int snpLoc) {
 		this.chrID = chrID;
@@ -190,10 +185,10 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 */
 	public void setSamToolsPilup(String samString, GffChrAbs gffChrAbs) {
 		String[] ss = samString.split("\t");
+		this.chrID = ss[0];
 		this.refSnpIndelStart = Integer.parseInt(ss[1]);//本行舍不设定都无所谓，因为输入的时候就是要求相同的ID
 		this.refBase = ss[2];
 		this.Read_Depth_Filtered = Integer.parseInt(ss[3]);
-		this.chrID = ss[0];
 		setGffIso(gffChrAbs);
 		setAllenInfo(ss[4], gffChrAbs);
 	}
@@ -260,7 +255,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 					thisSeq = refBase;
 				}
 				SiteSnpIndelInfo siteSnpIndelInfo = null;
-				String indelInfo = SiteSnpIndelInfo.getMismatchInfo(referenceSeq, thisSeq);
+				String indelInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
 				
 				if (mapAllen2Num.containsKey(indelInfo)) {
 					siteSnpIndelInfo = mapAllen2Num.get(indelInfo);
@@ -279,7 +274,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			else {
 				SiteSnpIndelInfo siteSnpIndelInfo = null;
 				thisSeq = pipInfo[i] + "";
-				String mismatchInfo = SiteSnpIndelInfo.getMismatchInfo(referenceSeq, thisSeq);
+				String mismatchInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
 				if (mapAllen2Num.containsKey(mismatchInfo)) {
 					siteSnpIndelInfo = mapAllen2Num.get(mismatchInfo);
 					siteSnpIndelInfo.addThisBaseNum();
@@ -295,7 +290,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	
 	public void addAllenInfo(GffChrAbs gffChrAbs, String referenceSeq, String thisSeq) {
 		SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, referenceSeq, thisSeq);
-		mapAllen2Num.put(SiteSnpIndelInfo.getMismatchInfo(referenceSeq, thisSeq), siteSnpIndelInfo);
+		mapAllen2Num.put(SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq), siteSnpIndelInfo);
 
 	}
 	public String getRefID() {
@@ -310,16 +305,18 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		return refSnpIndelStart;
 	}
 	/**
+	 * 
 	 * 给定序列和错配方式，返回所含有的reads堆叠数
 	 * 因为本位点可能有多种错配，所以给定一个然后查找，看能找到几个
 	 * 从hash表中获得
+	 * @param chrID
+	 * @param snpStartSite
 	 * @param referenceSeq
 	 * @param thisSeq
-	 * @param snpType
 	 * @return
 	 */
 	public SiteSnpIndelInfo getSnpIndel(String referenceSeq, String thisSeq) {
-		String tmpInfo = SiteSnpIndelInfo.getMismatchInfo(referenceSeq, thisSeq);
+		String tmpInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
 		SiteSnpIndelInfo siteSnpIndelInfo = mapAllen2Num.get(tmpInfo);
 		return siteSnpIndelInfo;
 	}

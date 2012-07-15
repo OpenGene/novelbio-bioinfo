@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.util.SSCellRange;
 
+import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.genomeNew.GffChrSnpIndel;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
@@ -21,23 +22,22 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.generalConf.NovelBioConst;
 /**
- * 读取GATK的结果文件，然后标记每个snp的信息，所在基因等等
+ * 读取几个GATK的vcf结果文件，然后获得并集snp，并标记每个snp的信息，所在基因等等
  * @author zong0jie
- *
  */
 public class SNPGATKcope {
 	Logger logger = Logger.getLogger(SNPGATKcope.class);
-	GffChrSnpIndel gffChrSnpIndel;
-	public SNPGATKcope() {
-	}
-
-	public static void main22(String[] args) {
-		SNPGATKcope snpgatKcope = new SNPGATKcope();
-		snpgatKcope.setDomainInfo("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/AllsnpCoped.txt",
-				"/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/pfam/pfamInfo.txt", "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/Allsnp_pfam.xls");
-	}
+	GffChrAbs gffChrAbs;
+	int colChrID, colSnpStart, colRefsequence, colThisSequence;
+	ArrayList<String> lsVcfFiles = new ArrayList<String>();
+	/**多个vcf文件的并集snp */
+	ArrayList<MapInfoSnpIndel> lsUnionSnp = new ArrayList<MapInfoSnpIndel>();
+	/** 用于多个样本的snp去冗余的，其中key表示该snp所在的起点信息，value就是该位点具体的snp情况 */
+	HashMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel = new HashMap<String, MapInfoSnpIndel>();
+	
 	public static void main(String[] args) {
 		SNPGATKcope snpgatKcope = new SNPGATKcope();
 		
@@ -67,34 +67,50 @@ public class SNPGATKcope {
 //		String out = Parent + "all.xls";
 //		snpgatKcope.writeAllSnp(out, A,B,C,D);
 	}
+	public static void main22(String[] args) {
+		SNPGATKcope snpgatKcope = new SNPGATKcope();
+		snpgatKcope.setDomainInfo("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/AllsnpCoped.txt",
+				"/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/pfam/pfamInfo.txt", "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/Allsnp_pfam.xls");
+	}
+	
+	public SNPGATKcope() {
+	}
+	public void addVcfFile(String vcfFile) {
+		lsVcfFiles.add(vcfFile);
+	}
+	public void setColInfo(int colChrID, int colSnpStart, int colRefsequence, int colThisSequence) {
+		this.colChrID = colChrID;
+		this.colSnpStart = colSnpStart;
+		this.colRefsequence = colRefsequence;
+		this.colThisSequence = colThisSequence;
+	}
 	/**
 	 * 将gatk里面vcf文件中，random的chr全部删除
 	 */
-	public ArrayList<String> copeGATKsnp(int taxID, String vcfFile) {
+	private ArrayList<String> copeGATKsnp(int taxID, String vcfFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(vcfFile, false);
-		ArrayList<String> lsResult = new ArrayList<String>();
-		
 		for (String string : txtRead.readlines()) {
 			if (string.startsWith("#")) continue;
 			String[] ss = string.split("\t");
-			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(ss[0], Integer.parseInt(ss[1]));
-			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(taxID, ss[0], Integer.parseInt(ss[1]), ss[3], ss[4]);
+			int snpStart;
+			try { snpStart = Integer.parseInt(ss[colSnpStart]); } catch (Exception e) { continue; }
+			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, ss[colChrID], snpStart, ss[colRefsequence], ss[colThisSequence]);
 			mapInfoSnpIndel.setBaseInfo(ss[7]);
 			mapInfoSnpIndel.setQuality(ss[5]);
 			mapInfoSnpIndel.setFlag(ss[8], ss[9]);
 			mapInfoSnpIndel.setFilter(ss[6]);
 			mapInfoSnpIndel.setAllelicDepthsRef(Allelic_depths_Ref);
-			mapInfoSnpIndel.addAllenInfo(gffChrSnpIndel, referenceSeq, thisSeq);
+			mapInfoSnpIndel.addAllenInfo(gffChrAbs, ss[colRefsequence], ss[colThisSequence]);
 			if (!ss[2].equals(".")) {
-				mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq).setDBSnpID(ss[2]);
+				mapInfoSnpIndel.getSnpIndel(ss[colRefsequence], ss[colThisSequence]).setDBSnpID(ss[2]);
 			}
+			//TODO 多个样本的snp需要去冗余
 			try {
-				lsResult.add(mapInfoSnpIndel.getSiteSnpInfoBigAllen().toString());
+				lsUnionSnp.add(mapInfoSnpIndel);
 			} catch (Exception e) {
 				logger.error("本位点出错：" + ss[1]);
 			}
 		}
-		lsResult.add(0,SiteSnpIndelInfo.getMyTitle());
 		return lsResult;
 	}
 	
@@ -105,26 +121,24 @@ public class SNPGATKcope {
 			lsTag.add(FileOperate.getFileName(string));
 			lsAll.add(ExcelTxtRead.readLsExcelTxt(string, 1));
 		}
-		getSnpAll(lsTag, lsAll, 0, 1, "_//@@//_", outFile);
-		
+		getSnpUnion(lsTag, lsAll, outFile);
 	}
 	
 	
-	public void getSnpAll(ArrayList<String> tag, ArrayList<ArrayList<String[]>> ls, int colChrID, int colStartLoc, String sep,String txtOut)
-	{
+	public void getSnpUnion(ArrayList<String> lsSampleName, ArrayList<ArrayList<String[]>> lsSampleDetailInfo, String txtOut) {
 		HashMap<String, HashMap<String, String[]>> hashInfo = new HashMap<String, HashMap<String,String[]>>();
-		for (int i = 0; i < tag.size(); i++) {
-			HashMap<String, String[]> hashLoc2Info = name(colChrID, colStartLoc, sep, ls.get(i));
-			hashInfo.put(tag.get(i), hashLoc2Info);
+		for (int i = 0; i < lsSampleName.size(); i++) {
+			HashMap<String, String[]> hashLoc2Info = name(colChrID, colStartLoc, lsSampleDetailInfo.get(i));
+			hashInfo.put(lsSampleName.get(i), hashLoc2Info);
 		}
-		ArrayList<String[]> lsLocAll = getAllSNP(colChrID, colStartLoc, sep, ls);
-		for (int i = 0; i < tag.size(); i++) {
-			TxtReadandWrite txtWrite = new TxtReadandWrite(FileOperate.changeFileSuffix(txtOut, "_"+tag.get(i) +"_Allsnp", "xls"), true);
-			HashMap<String, String[]> hashTmpSnp = hashInfo.get(tag.get(i));
+		ArrayList<String[]> lsLocAll = getAllSNP(colChrID, colStartLoc, lsSampleDetailInfo);
+		for (int i = 0; i < lsSampleName.size(); i++) {
+			TxtReadandWrite txtWrite = new TxtReadandWrite(FileOperate.changeFileSuffix(txtOut, "_"+lsSampleName.get(i) +"_Allsnp", "xls"), true);
+			HashMap<String, String[]> hashTmpSnp = hashInfo.get(lsSampleName.get(i));
 			for (String[] strings : lsLocAll) {
-				String[] tmpSnp = hashTmpSnp.get(strings[0] + sep +strings[1]);
+				String[] tmpSnp = hashTmpSnp.get(strings[0] + SepSign.SEP_ID +strings[1]);
 				if (tmpSnp == null) {
-					String[] tmp = new String[ls.get(0).get(0).length];
+					String[] tmp = new String[lsSampleDetailInfo.get(0).get(0).length];
 					for (int j = 0; j < tmp.length; j++) {
 						tmp[j] = "";
 					}
@@ -141,16 +155,18 @@ public class SNPGATKcope {
 	}
 
 	/**
-	 * 
 	 * 给定一组snp，装入hash表中
-	 * @param ls
+	 * @param colChrID
+	 * @param colStartLoc
 	 * @param sep 分隔chrID和startLoc的符号
+	 * @param ls
 	 * @return
 	 */
-	public HashMap<String, String[]> name(int colChrID, int colStartLoc, String sep, ArrayList<String[]> ls) {
+	public HashMap<String, String[]> name(String refseq, String thisSeq, ArrayList<String[]> ls) {
 		HashMap<String, String[]> hashResult = new HashMap<String, String[]>();
 		for (String[] strings : ls) {
-			String key = strings[colChrID] + sep + strings[colStartLoc];
+			String
+			String key = SiteSnpIndelInfo.getMismatchInfo(referenceSeq, thisSeq);strings[colChrID] + sep + strings[colStartLoc];
 			if (hashResult.containsKey(key)) {
 				System.out.println("error");
 			}
@@ -158,7 +174,7 @@ public class SNPGATKcope {
 		}
 		return hashResult;
 	}
-	
+	private void 
 	/**
 	 * 获得所有snp的位点，并且排序
 	 * @param colChrID
@@ -167,8 +183,7 @@ public class SNPGATKcope {
 	 * @param ls
 	 * @return
 	 */
-	private ArrayList<String[]> getAllSNP(int colChrID, int colStartLoc, String sep,ArrayList< ArrayList<String[]>> ls)
-	{
+	private ArrayList<String[]> getAllSNP(int colChrID, int colStartLoc, String sep,ArrayList< ArrayList<String[]>> ls) {
 		HashSet<String> hashNoRedunt = new HashSet<String>();
 		ArrayList<String[]> lsTmpResult = new ArrayList<String[]>();
 		//去冗余的加入arraylist

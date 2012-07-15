@@ -259,10 +259,13 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 	}
 	/**
 	 * 必须与	public static String getMismatchInfo(String referenceSeq, String thisSeq)一致
+	 * 返回一个string，记录snp的位置信息
+	 * chrid + SepSign.SEP_ID+ locstart + SepSign.SEP_ID + referenceSeq + SepSign.SEP_ID + thisSeq
 	 * @return
 	 */
 	public String getMismatchInfo() {
-		return (referenceSeq + SepSign.SEP_ID + thisSeq).toLowerCase();
+		return (mapInfoSnpIndel.getRefID() + SepSign.SEP_ID+ mapInfoSnpIndel.getRefSnpIndelStart() 
+				+ SepSign.SEP_ID + referenceSeq + SepSign.SEP_ID + thisSeq).toLowerCase();
 	}
 	/////////////////////////////////////// 静态方法，获得所有指定区域的位点的信息 ///////////////////////////////
 	public static String getMyTitle() {
@@ -272,10 +275,13 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 	}
 	/**
 	 * 必须与 public String getMismatchInfo() 一致
+	 * 返回一个string，记录snp的位置信息
+	 * chrid + SepSign.SEP_ID+ locstart + SepSign.SEP_ID + referenceSeq + SepSign.SEP_ID + thisSeq
 	 * @return
 	 */
-	public static String getMismatchInfo(String referenceSeq, String thisSeq) {
-		return (referenceSeq + SepSign.SEP_ID + thisSeq).toLowerCase();
+	public static String getMismatchInfo(String chrID, int Loc, String referenceSeq, String thisSeq) {
+		return (chrID + SepSign.SEP_ID + Loc + SepSign.SEP_ID + referenceSeq 
+				+ SepSign.SEP_ID + thisSeq).toLowerCase();
 	}
 }
 /**
