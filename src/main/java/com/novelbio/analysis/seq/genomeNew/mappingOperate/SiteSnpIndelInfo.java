@@ -197,15 +197,7 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 
 	@Override
 	public int hashCode() {
-		//TODO 需要修正
-		return (mapinfoRefSeqIntactAA.getSeqFasta().toString().hashCode() + SepSign.SEP_INFO + thisSeq).hashCode() + thisBaseNum;
-	}
-	/** 返回snp类型
-	 * (referenceSeq + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + snpType).toLowerCase()
-	 * @return
-	 */
-	public String getSiteTypeInfo() {
-		return (referenceSeq + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + snpType).toLowerCase();
+		return getMismatchInfo().hashCode() + thisBaseNum;
 	}
 	@Override
 	public int compareTo(SiteSnpIndelInfo o) {

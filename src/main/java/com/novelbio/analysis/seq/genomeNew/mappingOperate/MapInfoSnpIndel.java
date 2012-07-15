@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genomeNew.mappingOperate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -136,7 +137,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	    setGffIso(gffChrAbs);
 	    
 	    SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, referenceSeq, thisSeq);
-	    mapAllen2Num.put(siteSnpIndelInfo.getSiteTypeInfo(), siteSnpIndelInfo);
+	    mapAllen2Num.put(siteSnpIndelInfo.getMismatchInfo(), siteSnpIndelInfo);
 	}
 	/**
 	 * @param taxID
@@ -177,6 +178,9 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 */
 	private void setProp(double prop) {
 		this.prop = prop;
+	}
+	public String getRefID() {
+		return chrID;
 	}
 	/**
 	 *  在已有refbase信息的基础上，查找该refSnpIndelStart位点有哪些indel或snp
@@ -291,12 +295,20 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	public void addAllenInfo(GffChrAbs gffChrAbs, String referenceSeq, String thisSeq) {
 		SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, referenceSeq, thisSeq);
 		mapAllen2Num.put(SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq), siteSnpIndelInfo);
-
 	}
-	public String getRefID() {
-		return chrID;
+	/**
+	 * 将另一个mapInfoSnpIndel的所有snpIndel信息装入本类，那么如果遇到相同的snpIndel就跳过
+	 * @param mapInfoSnpIndel
+	 */
+	public void addAllenInfo(MapInfoSnpIndel mapInfoSnpIndel) {
+		Collection<SiteSnpIndelInfo> colSiteSnpIndelInfos = mapInfoSnpIndel.mapAllen2Num.values();
+		for (SiteSnpIndelInfo siteSnpIndelInfo : colSiteSnpIndelInfos) {
+			if (mapAllen2Num.containsKey(siteSnpIndelInfo.getMismatchInfo())) {
+				continue;
+			}
+			mapAllen2Num.put(siteSnpIndelInfo.getMismatchInfo(), siteSnpIndelInfo);
+		}
 	}
-
 	/**
 	 * 获得snp或indel在ref上的起点，实际位点
 	 * @return
@@ -330,7 +342,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @return
 	 */
 	public SiteSnpIndelInfo getSnpIndelNum(SiteSnpIndelInfo siteSnpIndelInfo) {
-		return mapAllen2Num.get(siteSnpIndelInfo.getSiteTypeInfo());
+		return mapAllen2Num.get(siteSnpIndelInfo.getMismatchInfo());
 	}
 	/**
 	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
@@ -612,8 +624,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @param gffChrAbs
 	 * @return 新建一个hash表然后返回，这个hash表与输入的表是deep copy关系
 	 */
-	public static HashMap<String, ArrayList<MapInfoSnpIndel>> getSiteInfo(HashMap<String, ArrayList<MapInfoSnpIndel>> mapSortedChrID2LsMapInfo, String samToolsPleUpFile, GffChrAbs gffChrAbs) {
-		HashMap<String, ArrayList<MapInfoSnpIndel>> mapSortedChrID2LsMapInfoResult = copyHashMap(mapSortedChrID2LsMapInfo);
+	public static HashMap<String, ArrayList<MapInfoSnpIndel>> getSiteInfo(HashMap<String, ArrayList<MapInfoSnpIndel>> mapChrID2SortedLsMapInfo, String samToolsPleUpFile, GffChrAbs gffChrAbs) {
+		HashMap<String, ArrayList<MapInfoSnpIndel>> mapSortedChrID2LsMapInfoResult = copyHashMap(mapChrID2SortedLsMapInfo);
 		/** 每个chrID对应一组mapinfo，也就是一个list */
 		TxtReadandWrite txtReadSam = new TxtReadandWrite(samToolsPleUpFile, false);
 		String tmpChrID = ""; ArrayList<MapInfoSnpIndel> lsMapInfos = null; ArrayList<MapInfoSnpIndel> lsMapInfosNew = null;

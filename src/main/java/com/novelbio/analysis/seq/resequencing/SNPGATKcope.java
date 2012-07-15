@@ -38,35 +38,35 @@ public class SNPGATKcope {
 	/** 用于多个样本的snp去冗余的，其中key表示该snp所在的起点信息，value就是该位点具体的snp情况 */
 	HashMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel = new HashMap<String, MapInfoSnpIndel>();
 	
-	public static void main(String[] args) {
-		SNPGATKcope snpgatKcope = new SNPGATKcope();
-		
-		ArrayList<String> lsResult = new ArrayList<String>();
-		TxtReadandWrite txtOut = new TxtReadandWrite();
-		
-		lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/B_BWA_SNPrecal_IndelFiltered.vcf");
-		txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/B_Result_New.xls", true);
-		txtOut.writefile(lsResult);
-		
-		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/C_BWA_SNPrecal_IndelFiltered.vcf");
-		 txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/C_Result_New.xls", true);
-		txtOut.writefile(lsResult);
-		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_BWA_SNPrecal_IndelFiltered.vcf");
-		 txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_Result_New.xls", true);
-		txtOut.writefile(lsResult);
-		
-		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_BWA_SNPrecal_IndelFiltered.vcf");
-		txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_Result_New.xls", true);
-		txtOut.writefile(lsResult);
-		
-//		String Parent = "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/";
-//		String A = Parent + "A_Result2.xls";
-//		String B = Parent + "B_Result2.xls";
-//		String C = Parent + "C_Result2.xls";
-//		String D = Parent + "D_Result2.xls";
-//		String out = Parent + "all.xls";
-//		snpgatKcope.writeAllSnp(out, A,B,C,D);
-	}
+//	public static void main(String[] args) {
+//		SNPGATKcope snpgatKcope = new SNPGATKcope();
+//		
+//		ArrayList<String> lsResult = new ArrayList<String>();
+//		TxtReadandWrite txtOut = new TxtReadandWrite();
+//		
+//		lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/B_BWA_SNPrecal_IndelFiltered.vcf");
+//		txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/B_Result_New.xls", true);
+//		txtOut.writefile(lsResult);
+//		
+//		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/C_BWA_SNPrecal_IndelFiltered.vcf");
+//		 txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/C_Result_New.xls", true);
+//		txtOut.writefile(lsResult);
+//		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_BWA_SNPrecal_IndelFiltered.vcf");
+//		 txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/A_Result_New.xls", true);
+//		txtOut.writefile(lsResult);
+//		
+//		 lsResult = snpgatKcope.copeGATKsnp(9606, "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_BWA_SNPrecal_IndelFiltered.vcf");
+//		txtOut = new TxtReadandWrite("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/D_Result_New.xls", true);
+//		txtOut.writefile(lsResult);
+//		
+////		String Parent = "/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/";
+////		String A = Parent + "A_Result2.xls";
+////		String B = Parent + "B_Result2.xls";
+////		String C = Parent + "C_Result2.xls";
+////		String D = Parent + "D_Result2.xls";
+////		String out = Parent + "all.xls";
+////		snpgatKcope.writeAllSnp(out, A,B,C,D);
+//	}
 	public static void main22(String[] args) {
 		SNPGATKcope snpgatKcope = new SNPGATKcope();
 		snpgatKcope.setDomainInfo("/media/winE/NBC/Project/Project_HXW_Lab/exome_capture/mapping/snpFinalNew/AllsnpCoped.txt",
@@ -87,13 +87,15 @@ public class SNPGATKcope {
 	/**
 	 * 将gatk里面vcf文件中，random的chr全部删除
 	 */
-	private ArrayList<String> copeGATKsnp(int taxID, String vcfFile) {
+	private void addVcfToLsSnpIndel(int taxID, String vcfFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(vcfFile, false);
 		for (String string : txtRead.readlines()) {
 			if (string.startsWith("#")) continue;
 			String[] ss = string.split("\t");
+			
 			int snpStart;
 			try { snpStart = Integer.parseInt(ss[colSnpStart]); } catch (Exception e) { continue; }
+			
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, ss[colChrID], snpStart, ss[colRefsequence], ss[colThisSequence]);
 			mapInfoSnpIndel.setBaseInfo(ss[7]);
 			mapInfoSnpIndel.setQuality(ss[5]);
@@ -101,118 +103,20 @@ public class SNPGATKcope {
 			mapInfoSnpIndel.setFilter(ss[6]);
 			mapInfoSnpIndel.setAllelicDepthsRef(Allelic_depths_Ref);
 			mapInfoSnpIndel.addAllenInfo(gffChrAbs, ss[colRefsequence], ss[colThisSequence]);
+			
 			if (!ss[2].equals(".")) {
 				mapInfoSnpIndel.getSnpIndel(ss[colRefsequence], ss[colThisSequence]).setDBSnpID(ss[2]);
 			}
-			//TODO 多个样本的snp需要去冗余
-			try {
+			if (mapSiteInfo2MapInfoSnpIndel.containsKey(mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart())) {
+				mapInfoSnpIndel.addAllenInfo(mapInfoSnpIndel);
+				continue;
+			}
+			else {
 				lsUnionSnp.add(mapInfoSnpIndel);
-			} catch (Exception e) {
-				logger.error("本位点出错：" + ss[1]);
 			}
-		}
-		return lsResult;
-	}
-	
-	public void writeAllSnp(String outFile, String... txtFile) {
-		ArrayList<ArrayList<String[]>> lsAll = new ArrayList<ArrayList<String[]>>();
-		ArrayList<String> lsTag = new ArrayList<String>();
-		for (String string : txtFile) {
-			lsTag.add(FileOperate.getFileName(string));
-			lsAll.add(ExcelTxtRead.readLsExcelTxt(string, 1));
-		}
-		getSnpUnion(lsTag, lsAll, outFile);
-	}
-	
-	
-	public void getSnpUnion(ArrayList<String> lsSampleName, ArrayList<ArrayList<String[]>> lsSampleDetailInfo, String txtOut) {
-		HashMap<String, HashMap<String, String[]>> hashInfo = new HashMap<String, HashMap<String,String[]>>();
-		for (int i = 0; i < lsSampleName.size(); i++) {
-			HashMap<String, String[]> hashLoc2Info = name(colChrID, colStartLoc, lsSampleDetailInfo.get(i));
-			hashInfo.put(lsSampleName.get(i), hashLoc2Info);
-		}
-		ArrayList<String[]> lsLocAll = getAllSNP(colChrID, colStartLoc, lsSampleDetailInfo);
-		for (int i = 0; i < lsSampleName.size(); i++) {
-			TxtReadandWrite txtWrite = new TxtReadandWrite(FileOperate.changeFileSuffix(txtOut, "_"+lsSampleName.get(i) +"_Allsnp", "xls"), true);
-			HashMap<String, String[]> hashTmpSnp = hashInfo.get(lsSampleName.get(i));
-			for (String[] strings : lsLocAll) {
-				String[] tmpSnp = hashTmpSnp.get(strings[0] + SepSign.SEP_ID +strings[1]);
-				if (tmpSnp == null) {
-					String[] tmp = new String[lsSampleDetailInfo.get(0).get(0).length];
-					for (int j = 0; j < tmp.length; j++) {
-						tmp[j] = "";
-					}
-					tmp[0] = strings[0];
-					tmp[1] = strings[1];
-					txtWrite.writefileln(tmp);
-				}
-				else {
-					txtWrite.writefileln(tmpSnp);
-				}
-			}
-			txtWrite.close();
 		}
 	}
 
-	/**
-	 * 给定一组snp，装入hash表中
-	 * @param colChrID
-	 * @param colStartLoc
-	 * @param sep 分隔chrID和startLoc的符号
-	 * @param ls
-	 * @return
-	 */
-	public HashMap<String, String[]> name(String refseq, String thisSeq, ArrayList<String[]> ls) {
-		HashMap<String, String[]> hashResult = new HashMap<String, String[]>();
-		for (String[] strings : ls) {
-			String
-			String key = SiteSnpIndelInfo.getMismatchInfo(referenceSeq, thisSeq);strings[colChrID] + sep + strings[colStartLoc];
-			if (hashResult.containsKey(key)) {
-				System.out.println("error");
-			}
-			hashResult.put(key, strings);
-		}
-		return hashResult;
-	}
-	private void 
-	/**
-	 * 获得所有snp的位点，并且排序
-	 * @param colChrID
-	 * @param colStartLoc
-	 * @param sep 分隔chrID和startLoc的符号
-	 * @param ls
-	 * @return
-	 */
-	private ArrayList<String[]> getAllSNP(int colChrID, int colStartLoc, String sep,ArrayList< ArrayList<String[]>> ls) {
-		HashSet<String> hashNoRedunt = new HashSet<String>();
-		ArrayList<String[]> lsTmpResult = new ArrayList<String[]>();
-		//去冗余的加入arraylist
-		for (List<String[]> list : ls) {
-			for (String[] strings : list) {
-				String tmp = strings[colChrID] + sep + strings[colStartLoc];
-				if (hashNoRedunt.contains(tmp)) {
-					continue;
-				}
-				hashNoRedunt.add(tmp);
-				String[] tmpInfo = new String[]{strings[colChrID], strings[colStartLoc]};
-				lsTmpResult.add(tmpInfo);
-			}
-		}
-		//排序
-		Collections.sort(lsTmpResult, new Comparator<String[]>() {
-			@Override
-			public int compare(String[] o1, String[] o2) {
-				if (o1[0].compareTo(o2[0]) == 0) {
-					Integer a = Integer.parseInt(o1[1]);
-					Integer b = Integer.parseInt(o2[1]);
-					return a.compareTo(b);
-				}
-				return o1[0].compareTo(o2[0]);
-			}
-		});
-		return lsTmpResult;
-	}
-	
 	
 	/**
 	 * 给定文本，和domain信息，获得具体domain的信息
