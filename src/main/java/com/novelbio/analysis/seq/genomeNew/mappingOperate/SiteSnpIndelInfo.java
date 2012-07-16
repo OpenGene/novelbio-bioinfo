@@ -1,7 +1,9 @@
 package com.novelbio.analysis.seq.genomeNew.mappingOperate;
 
+import java.awt.image.RescaleOp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
@@ -20,7 +22,7 @@ import com.novelbio.database.service.servgeneanno.ServSnpIndelRs;
  * 对于单个位点的snp与indel的情况
  * @author zong0jie
  */
-public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
+public abstract class SiteSnpIndelInfo {
 	private static Logger logger = Logger.getLogger(SiteSnpIndelInfo.class);
 	//TODO 添加是否引起剪接位点变化的flag
 	public static final int SPLIT_ATG = 12;
@@ -30,6 +32,8 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 	/** deletion 跨过一个intron，这就影响了一个start和一个end */
 	public static final int SPLIT_SPLIT_START_END = SPLIT_SPLIT_START + SPLIT_SPLIT_END;
 	public static final int SPLIT_SPLIT_NONE = 0;
+	
+	String sampleName;
 	
 	MapInfoSnpIndel mapInfoSnpIndel;
 	/** snp所在refnr上的位置 */
@@ -54,7 +58,7 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 	/** 样本名对应该样本这类型snp的reads数量
 	 * value为int[1]，仅仅用来保存snp数量
 	 *  */
-	HashMap<String, int[]> mapSample2thisBaseNum = new HashMap<String, int[]>();
+	HashMap<String, SampleSnpReadsQuality> mapSample2thisBaseNum = new HashMap<String, SampleSnpReadsQuality>();
 	/**
 	 * @param mapInfoSnpIndel 必须含有 GffIso 信息
 	 * @param gffChrAbs
@@ -80,17 +84,12 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 	}
 	/** 如果snp位点在exon上，那么就设置ref序列的氨基酸的信息 */
 	protected abstract void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs);
-	
-	public void setThisBaseNum(String sampleName, int thisBaseNum) {
-		mapSample2thisBaseNum.put(sampleName, new int[]{thisBaseNum});
-	}
-	/**计数加一 */
-	protected void addThisBaseNum(String sampleName) {
-		if (mapSample2thisBaseNum.containsKey(sampleName)) {
-			int[] num = mapSample2thisBaseNum.get(sampleName);
-			num[0] = num[0] + 1;
-		}
-		setThisBaseNum(sampleName, 1);
+	/**
+	 * 设定样本名，那么后面获取的都是该样本的信息
+	 * @param sampleName
+	 */
+	public void setSampleName(String sampleName) {
+		this.sampleName = sampleName;
 	}
 	/**
 	 * 移码突变
@@ -109,24 +108,64 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 	public int getSnpIndelType() {
 		return snpType;
 	}
-	public int getThisBaseNum(String sampleName) {
-		int[] num = mapSample2thisBaseNum.get(sampleName);
-		if (num == null) {
+
+	public void setThisReadsNum(int readsNum) {
+		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
+		if (sampleSnpReadsQuality == null) {
+			return;
+		}
+		 sampleSnpReadsQuality.thisReadsNum = readsNum;
+	}
+	public int getThisReadsNum() {
+		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
+		if (sampleSnpReadsQuality == null) {
 			return 0;
 		}
-		return num[0];
+		return sampleSnpReadsQuality.thisReadsNum;
 	}
-	/** 本snp占总snp的比例 */
-	public double getThisBaseProp(String sampleName) {
-		return (double)getThisBaseNum(sampleName)/mapInfoSnpIndel.getRead_Depth_Filtered();
+	public void setQuality(String Quality) {
+		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
+		if (sampleSnpReadsQuality == null) {
+			return;
+		}
+		 sampleSnpReadsQuality.quality = Quality;
 	}
-	/**
-	 * Allele Balance for hets
-	 * (ref/(ref+alt))
-	 * @return
-	 */
-	public double getAllele_Balance_Hets() {
-		return (double)mapInfoSnpIndel.getAllelic_depths_Ref()/(mapInfoSnpIndel.getAllelic_depths_Ref()+thisBaseNum);
+	public String getQuality() {
+		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
+		if (sampleSnpReadsQuality == null) {
+			return "";
+		}
+		return sampleSnpReadsQuality.quality;
+	}
+
+	public void setFiltered(String Filter) {
+		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
+		if (sampleSnpReadsQuality == null) {
+			return;
+		}
+		 sampleSnpReadsQuality.Filter = Filter;
+	}
+	public String getFiltered() {
+		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
+		if (sampleSnpReadsQuality == null) {
+			return "";
+		}
+		return sampleSnpReadsQuality.Filter;
+	}
+	/**计数加一 */
+	protected void addThisBaseNum() {
+		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
+		sampleSnpReadsQuality.addThisReadsNum();
+	}
+	protected void setOrAddSampleInfo(String sampleName) {
+		if (!mapSample2thisBaseNum.containsKey(sampleName)) {
+			mapSample2thisBaseNum.put(sampleName, new SampleSnpReadsQuality());
+		}
+		this.sampleName = sampleName;
+	}
+	/** 本snp占总reads的比例 */
+	public double getThisBasePropss() {
+		return (double)getThisReadsNum()/mapInfoSnpIndel.getReadsDepth();
 	}
 	/**
 	 * 如果一个位点有两个以上的snp，就可能会出错
@@ -146,8 +185,8 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 		return replaceSnpIndel(seq, snpOnReplaceLocStart, snpOnReplaceLocEnd);
 	}
 	
-	public String getRefAAnr() {
-		return mapinfoRefSeqIntactAA.getSeqFasta().toStringAA();
+	public SeqFasta getRefAAnr() {
+		return mapinfoRefSeqIntactAA.getSeqFasta();
 	}
 	/**
 	 * 跟方向相关
@@ -176,7 +215,8 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 		if (snpRsID != null && !snpRsID.trim().equals("")) {
 			SnpIndelRs snpIndelRs = new SnpIndelRs();
 			snpIndelRs.setSnpRsID(snpRsID);
-			this.snpIndelRs = servSnpIndelRs.querySnpIndelRs(snpIndelRs);
+			//TODO snp信息去查找数据库
+//			this.snpIndelRs = servSnpIndelRs.querySnpIndelRs(snpIndelRs);
 		}
 	}
 	/**
@@ -198,6 +238,10 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 		}
 		return true;
 	}
+	public boolean isCDS() {
+		return isInCDS;
+	}
+	
 	/**
 	 * 如果在SNPDB中有记载，获得记载的信息
 	 * @return
@@ -209,17 +253,16 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 		setSnpIndelRs();
 		return snpIndelRs;
 	}
-
+	/**
+	 * 仅考虑位点信息
+	 */
 	@Override
 	public int hashCode() {
-		return getMismatchInfo().hashCode() + thisBaseNum;
+		return getMismatchInfo().hashCode();
 	}
-	@Override
-	public int compareTo(SiteSnpIndelInfo o) {
-		Integer thisNum = thisBaseNum;
-		Integer otherNum = o.thisBaseNum;
-		return thisNum.compareTo(otherNum);
-	}
+	/**
+	 * 仅比较位点，不比较里面的sample
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
@@ -230,7 +273,8 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 		if (
 				mapinfoRefSeqIntactAA.equals(otherObj.mapinfoRefSeqIntactAA)
 				&& thisSeq.equals(otherObj.thisSeq)
-				&& thisBaseNum == otherObj.thisBaseNum
+				&& mapInfoSnpIndel.getRefID().equals(otherObj.mapInfoSnpIndel.getRefID())
+				&& mapInfoSnpIndel.getRefSnpIndelStart() == otherObj.mapInfoSnpIndel.getRefSnpIndelStart()
 				&& snpType == otherObj.snpType
 			)
 		{
@@ -245,7 +289,7 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 		String thisaa = getThisAAnr().toStringAA(false);
 		
 		String result =  mapinfoRefSeqIntactAA.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart() + "\t" + referenceSeq + "\t" + mapInfoSnpIndel.getAllelic_depths_Ref() + "\t" + thisSeq + "\t" + 
-		getThisBaseNum() + "\t" + mapInfoSnpIndel.quality + "\t" + mapInfoSnpIndel.Filter + "\t" + "\t" + getAllele_Balance_Hets() + "\t" + isExon()+"\t" + mapInfoSnpIndel.getProp() +"\t"+
+		getThisReadsNum() + "\t" + getQuality() + "\t" + getFiltered() + "\t" + isExon()+"\t" + mapInfoSnpIndel.getProp() +"\t"+
 		refnr +"\t"+refaa + "\t" + thisnr +"\t"+thisaa;
 		if (refaa.length() ==3  && thisaa.length() == 3) {
 			result = result + "\t" + SeqFasta.cmpAAquality(refaa, thisaa);
@@ -273,6 +317,23 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 	public String getMismatchInfo() {
 		return (mapInfoSnpIndel.getRefID() + SepSign.SEP_ID+ mapInfoSnpIndel.getRefSnpIndelStart() 
 				+ SepSign.SEP_ID + referenceSeq + SepSign.SEP_ID + thisSeq).toLowerCase();
+	}
+	/**
+	 * 将另一个siteSnpIndelInfo中Snp的数量加到本类中来，相当于合并样本信息。
+	 * 但是如果本SnpInfo已经有了某个样本信息，则跳过输入项目的样本信息
+	 * @param siteSnpIndelInfo
+	 */
+	public void addSiteSnpIndelInfo(SiteSnpIndelInfo siteSnpIndelInfo) {
+		if (!getMismatchInfo().equals(siteSnpIndelInfo.getMismatchInfo())) {
+			return;
+		}
+		HashMap<String, SampleSnpReadsQuality> mapSample2SnpInfo = siteSnpIndelInfo.mapSample2thisBaseNum;
+		for (Entry<String, SampleSnpReadsQuality> entry : mapSample2SnpInfo.entrySet()) {
+			if (mapSample2thisBaseNum.containsKey(entry.getKey())) {
+				continue;
+			}
+			mapSample2thisBaseNum.put(entry.getKey(), entry.getValue());
+		}
 	}
 	/////////////////////////////////////// 静态方法，获得所有指定区域的位点的信息 ///////////////////////////////
 	public static String getMyTitle() {
@@ -397,11 +458,12 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	@Override
 	protected void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs) {
 		int refStart = mapInfoSnpIndel.getRefSnpIndelStart();
+		
 		int refEnd = refStart + referenceSeq.length() - 1;
 		int refStartCis = refStart; int refEndCis = refEnd;
 		
 		GffGeneIsoInfo gffGeneIsoInfo = mapInfoSnpIndel.getGffIso();
-		if (gffGeneIsoInfo.isCis5to3()) {
+		if (!gffGeneIsoInfo.isCis5to3()) {
 			refStartCis = refEnd; refEndCis = refStart;
 		}
 		setLocationInfo(gffGeneIsoInfo, refStartCis, refEndCis);
@@ -462,11 +524,18 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		int[] bounder = new int[]{refStartCis, refEndCis};
 		//将起点和终点转换到距离最近的exon上去
 		if (gffGeneIsoInfo.getCodLoc(refStartCis) != GffGeneIsoInfo.COD_LOC_EXON) {
-			int startExonNum = gffGeneIsoInfo.getNumCodInEle(refStartCis);
+			int startExonNum = Math.abs(gffGeneIsoInfo.getNumCodInEle(refStartCis));
+			//TODO check
+			if (startExonNum == -1) {
+				startExonNum = 0;
+			}
 			bounder[0] = gffGeneIsoInfo.get(startExonNum).getStartCis();
 		}
 		else if (gffGeneIsoInfo.getCodLoc(refEndCis) != GffGeneIsoInfo.COD_LOC_EXON) {
-			int endExonNum = gffGeneIsoInfo.getNumCodInEle(refEndCis) - 1;
+			int endExonNum = Math.abs(gffGeneIsoInfo.getNumCodInEle(refEndCis)) - 1;
+			if (endExonNum == -1) {
+				endExonNum = gffGeneIsoInfo.size() - 1;
+			}
 			bounder[1] = gffGeneIsoInfo.get(endExonNum).getEndCis();
 		}
 		return bounder;
@@ -536,5 +605,20 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 
 		snpOnReplaceLocStart = -gffGeneIsoInfo.getLocAAbeforeBias(refStartCis) + 1;
 		snpOnReplaceLocEnd = snpOnReplaceLocStart + deletionLen;
+	}
+}
+
+class SampleSnpReadsQuality {
+	/** 该snp的质量 */
+	String quality = "";
+	/** 是否符合标准 */
+	String Filter = "";
+	int thisReadsNum;
+	public SampleSnpReadsQuality() {}
+	public SampleSnpReadsQuality(int thisReadsNum) {
+		this.thisReadsNum = thisReadsNum;
+	}
+	public void addThisReadsNum() {
+		thisReadsNum = thisReadsNum + 1;
 	}
 }
