@@ -34,12 +34,13 @@ import com.novelbio.database.updatedb.database.CopeDBSnp132;
  *
  */
 public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
+	private static Logger logger = Logger.getLogger(MapInfoSnpIndel.class);
+
 	public static final int TYPE_INSERT = 40;
 	public static final int TYPE_DELETION = 30;
 	public static final int TYPE_MISMATCH = 20;
 	public static final int TYPE_CORRECT = 10;
-	/**  snp的类型，TYPE_INSERT等 */
-	String sampleName = "";;
+
 	/** 
 	 * <b>里面都是正向的序列</b>
 	 * 该位置可能有不止一种的插入缺失或是碱基替换类型，那么就用该hash表来存储这么多种信息<br>
@@ -47,8 +48,6 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * value: 数量，用数组仅仅为了能够传递地址  */
 	HashMap<String, SiteSnpIndelInfo> mapAllen2Num = new HashMap<String, SiteSnpIndelInfo>();
 
-	int taxID = 0;
-	private static Logger logger = Logger.getLogger(MapInfoSnpIndel.class);
 	String chrID;
 	String refBase = "";
 	/** snp在基因中的位置，0-1之间，0.1表示snp在基因长度*0.1的位置处  */
@@ -58,40 +57,14 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	/**
 	 * snp或indel所在的转录本
 	 */
-	GffGeneIsoInfo gffGeneIsoInfo;	
-	/** AD
-	 * Allelic depths for the ref and alt alleles in the order listed
-	 */
-	int Allelic_depths_Ref = 0;
-	/**  DP
-	 * Read Depth (only filtered reads used for calling
-	 */
-	int Read_Depth_Filtered = 0;
-	/**
-	 * GQ
-	 * The Genotype Quality, as a Phred-scaled confidence at the true genotype is the one provided in GT. In diploid case, 
-	 * if GT is 0/1, then GQ is really L(0/1) / (L(0/0) + L(0/1) + L(1/1)), where L is the likelihood of the NGS sequencing data
-	 *  under the model of that the sample is 0/0, 0/1/, or 1/1. 
-	 * 好像是碱基的质量
-	 */
-	double Genotype_Quality = 0;
-	/**
-	 * AF
-	 * Allele Frequency, for each ALT allele, in the same order as listed
-	 * 1表示纯合子，0.5表示杂合，多个样本可能结果会不同
-	 */
-	double Allele_Frequency = 1;
-	/**
-	 * AN
-	 * 总共多少个等位，一般都为2个，ref一个，改变一个，出现3个的时候我暂时没见过，所以可以日志一下看看情况
-	 */
-	int Total_number_of_alleles = 2;
-	/**
-	 * SB, 
-	 * How much evidence is there for Strand Bias (the variation being seen on only the forward or only the reverse strand) in the reads?
-	 *  Higher SB values denote more bias (and therefore are more likely to indicate false positive calls).
-	 */
-	double Strand_Bias = 0;
+	GffGeneIsoInfo gffGeneIsoInfo;
+	GffChrAbs gffChrAbs;
+	/** 样本和正常reads之间的关系 */
+	HashMap<String, SampleRefReadsInfo> mapSample2NormReadsInfo = new HashMap<String, SampleRefReadsInfo>();
+	
+	
+	
+	
 	//##INFO=<ID=AB,Number=1,Type=Float,Description="Allele Balance for hets (ref/(ref+alt))">
 	//##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes, for each ALT allele, in the same order as listed">
 	//##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
@@ -117,10 +90,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	//##UnifiedGenotyper="analysis_type=UnifiedGenotyper input_file=[A_BWA_recal.bam] sample_metadata=[] read_buffer_size=null phone_home=STANDARD read_filter=[] intervals=[/media/winE/Bioinformatics/snp/snp/target_intervals.bed/target_intervals.bed] excludeIntervals=null reference_sequence=/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa rodBind=[/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/snp/dbsnp_132.hg19_cope.vcf] rodToIntervalTrackName=null BTI_merge_rule=UNION nonDeterministicRandomSeed=false DBSNP=null downsampling_type=null downsample_to_fraction=null downsample_to_coverage=500 baq=OFF baqGapOpenPenalty=40.0 performanceLog=null useOriginalQualities=false defaultBaseQualities=-1 validation_strictness=SILENT unsafe=null num_threads=4 interval_merging=ALL read_group_black_list=null processingTracker=null restartProcessingTracker=false processingTrackerStatusFile=null processingTrackerID=-1 allow_intervals_with_unindexed_bam=false disable_experimental_low_memory_sharding=false logging_level=INFO log_to_file=null help=false genotype_likelihoods_model=BOTH p_nonref_model=EXACT heterozygosity=0.001 pcr_error_rate=1.0E-4 genotyping_mode=DISCOVERY output_mode=EMIT_VARIANTS_ONLY standard_min_confidence_threshold_for_calling=50.0 standard_min_confidence_threshold_for_emitting=10.0 noSLOD=false assume_single_sample_reads=null abort_at_too_much_coverage=-1 min_base_quality_score=17 min_mapping_quality_score=20 max_deletion_fraction=0.05 min_indel_count_for_genotyping=5 indel_heterozygosity=1.25E-4 indelGapContinuationPenalty=10.0 indelGapOpenPenalty=45.0 indelHaplotypeSize=80 doContextDependentGapPenalties=true getGapPenaltiesFromData=false indel_recal_file=indel.recal_data.csv indelDebug=false dovit=false GSA_PRODUCTION_ONLY=false exactCalculation=LINEAR_EXPERIMENTAL ignoreSNPAlleles=false output_all_callable_bases=false genotype=false out=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub NO_HEADER=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VCFWriterStub debug_file=null metrics_file=null annotation=[AlleleBalance, DepthOfCoverage, FisherStrand]"
 	//##source=SelectVariants
 	
-	/** 该snp的质量 */
-	String quality = "";
-	/** 是否符合标准 */
-	String Filter = "";
+	public MapInfoSnpIndel() {}
 	/**
 	 * @param gffChrAbs
 	 * @param chrID
@@ -128,40 +98,18 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @param referenceSeq
 	 * @param thisSeq
 	 */
-	public MapInfoSnpIndel(GffChrAbs gffChrAbs,String chrID, int snpLoc, String referenceSeq, String thisSeq) {
-		this.taxID = gffChrAbs.getTaxID();
+	public MapInfoSnpIndel(GffChrAbs gffChrAbs,String chrID, int refSnpIndelStart) {
+		this.gffChrAbs = gffChrAbs;
 		this.chrID = chrID;
 		//flagLoc有东西说明是snp
-		this.refSnpIndelStart = snpLoc;
-	    this.refBase = referenceSeq.charAt(0) + "";
-	    setGffIso(gffChrAbs);
-	    
-	    SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, referenceSeq, thisSeq);
-	    mapAllen2Num.put(siteSnpIndelInfo.getMismatchInfo(), siteSnpIndelInfo);
-	}
-	/**
-	 * @param taxID
-	 * @param gffChrAbs
-	 * @param pileUpLine
-	 */
-	public MapInfoSnpIndel(int taxID, GffChrAbs gffChrAbs, String pileUpLine) {
-		this.taxID = taxID;
-		setSamToolsPilup(pileUpLine, gffChrAbs);
-	}
-	/**
-	 * @param chrID 染色体号
-	 * @param snpLoc snp位点
-	 */
-	public MapInfoSnpIndel(String chrID, int snpLoc) {
-		this.chrID = chrID;
-		//flagLoc有东西说明是snp
-		this.refSnpIndelStart = snpLoc;
+		this.refSnpIndelStart = refSnpIndelStart;
+	    setGffIso();
 	}
 	/**
 	 * snp或indel所在的转录本
 	 * 同时设定setProp，cis5to3，和name，都用gffGeneIsoInfo的信息
 	 */
-	private void setGffIso(GffChrAbs gffChrAbs) {
+	private void setGffIso() {
 		if (gffChrAbs == null)
 			return;
 
@@ -169,32 +117,131 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		if (gffGeneIsoInfo == null) {
 			return;
 		}
-		setProp( (double)gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart()) / (gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart())  - gffGeneIsoInfo.getCod2TESmRNA(getRefSnpIndelStart())) );
+		setProp();
 	}
 	/**
 	 * refBase在基因中的位置，0-1之间，0.1表示snp在基因长度*0.1的位置处
 	 * 越小越靠近头部
 	 * 0-1之间
 	 */
-	private void setProp(double prop) {
-		this.prop = prop;
+	private void setProp() {
+		this.prop = (double)gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart())
+				/ 
+				(gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart())  - gffGeneIsoInfo.getCod2TESmRNA(getRefSnpIndelStart()));
 	}
 	public String getRefID() {
 		return chrID;
+	}
+	/**
+	 * 设定该snp的质量
+	 * GATK的第6列，从0计算为第5列
+	 */
+	public void setQuality(String sampleName, String quality, String snpINFO) {
+		this.quality = quality;
+	}
+	public void setSnpFilter(String snpINFO) {
+		this.Filter = snpINFO;
+	}
+	public String getSnpINFO() {
+		return Filter;
+	}
+	/**
+	 * 设定refSite测序深度
+	 * @return
+	 */
+	public void setAllelicDepthsRef(int Allelic_depths_Ref) {
+		this. Allelic_depths_Ref = Allelic_depths_Ref;
+	}
+	/**
+	 * AD Allelic depths for the ref and alt alleles in the order listed
+	 * @return
+	 */
+	public int getAllelic_depths_Ref() {
+		return Allelic_depths_Ref;
+	}
+	/**
+	 * GQ The Genotype Quality, as a Phred-scaled confidence at the true genotype is the one provided in GT.
+	 *  In diploid case, if GT is 0/1, then GQ is really L(0/1) / (L(0/0) + L(0/1) + L(1/1)), where L is the likelihood 
+	 *  of the NGS sequencing data under the model of that the sample is 0/0, 0/1/, or 1/1. 好像是碱基的质量
+	 * @return
+	 */
+	public double getGenotype_Quality() {
+		return Genotype_Quality;
+	}
+	
+	public int getRead_Depth_Filtered() {
+		return Read_Depth_Filtered;
+	}
+	public void setFilter(String filter) {
+		Filter = filter;
+	}
+	/**
+	 * SB, How much evidence is there for Strand Bias (the variation being seen
+	 *  on only the forward or only the reverse strand) in the reads? Higher SB 
+	 *  values denote more bias (and therefore are more likely to indicate false 
+	 *  positive calls).
+	 * @return
+	 */
+	public double getStrand_Bias() {
+		return Strand_Bias;
+	}
+	/**
+	 * 物种ID
+	 * @return
+	 */
+	public int getTaxID() {
+		return taxID;
+	}
+	/**
+	 * 这里我删除了一个Allelic_depths_Alt的项目，考虑如何很好的添加进去
+	 * 设置
+	 * GT:AD:DP:GQ:PL	0/1:53,10:63:99:150,0,673
+	 */
+	public void setFlag(String flagTitle, String flagDetail) {
+		//TODO 这里我删除了一个Allelic_depths_Alt的项目，考虑如何很好的添加进去
+		String[] ssFlag = flagTitle.split(":");
+		String[] ssValue = flagDetail.split(":");
+		for (int i = 0; i < ssFlag.length; i++) {
+			if (ssFlag[i].equals("AD")) {
+				String[] info = ssValue[i].split(",");
+				Allelic_depths_Ref = Integer.parseInt(info[0]);
+			}
+			else if (ssFlag[i].equals("DP")) {
+				Read_Depth_Filtered = Integer.parseInt(ssValue[i]); 
+			}
+			else if (ssFlag[i].equals("GQ")) {
+				Genotype_Quality = Double.parseDouble(ssValue[i]);
+			}
+		}
+	}
+	/**
+	 * 就看这三项：AF,AN,SB
+	 *  AB=0.841;AC=1;AF=0.50;AN=2;BaseQRankSum=0.097;DP=63;Dels=0.00;FS=0.000;HRun=0;HaplotypeScore=0.0000;
+	 *  给定GATKinfo，设定信息
+	 * @param GATKInfo
+	 */
+	public void setBaseInfo(String GATKInfo) {
+		String[] ssValue = GATKInfo.split(";");
+		for (String string : ssValue) {
+			String[] tmpInfo = string.split("=");
+			if (tmpInfo[0].equals("SB")) {
+				Strand_Bias =  Double.parseDouble(tmpInfo[1]);
+			}
+		}
 	}
 	/**
 	 *  在已有refbase信息的基础上，查找该refSnpIndelStart位点有哪些indel或snp
 	 *  找到的indel所对应的refbase可能和原来的refbase不一样
 	 * @param samString
 	 */
-	public void setSamToolsPilup(String samString, GffChrAbs gffChrAbs) {
+	public void setSamToolsPilup(String sampleName, String samString, GffChrAbs gffChrAbs) {
 		String[] ss = samString.split("\t");
 		this.chrID = ss[0];
 		this.refSnpIndelStart = Integer.parseInt(ss[1]);//本行舍不设定都无所谓，因为输入的时候就是要求相同的ID
 		this.refBase = ss[2];
-		this.Read_Depth_Filtered = Integer.parseInt(ss[3]);
-		setGffIso(gffChrAbs);
-		setAllenInfo(ss[4], gffChrAbs);
+		this.gffChrAbs = gffChrAbs;
+		setGffIso();
+		setAllenInfo(sampleName, Integer.parseInt(ss[3]), ss[4]);
 	}
 	/**
 	 * 重新设定Allelic_depths_Ref，和hashAlle信息
@@ -212,8 +259,10 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 *  <b>‘$’</b> marks the end of a read segment.
 	 * @param pileUpInfo 输入 ...........,.............,....,....,.,.,..,..,...,....,.^!. 这种东西
 	 */
-	private void setAllenInfo(String pileUpInfo, GffChrAbs gffChrAbs) {
-		Allelic_depths_Ref = 0; mapAllen2Num = new HashMap<String, SiteSnpIndelInfo>();
+	private void setAllenInfo(String sampleName, int readsDepth, String pileUpInfo) {
+		SampleRefReadsInfo sampleRefReadsInfo = new SampleRefReadsInfo(readsDepth);
+		mapSample2NormReadsInfo.put(sampleName, sampleRefReadsInfo);		
+		int Allelic_depths_Ref = 0; mapAllen2Num = new HashMap<String, SiteSnpIndelInfo>();
 		String referenceSeq = refBase, thisSeq = refBase;
 		char[] pipInfo = pileUpInfo.toCharArray();
 		for (int i = 0; i < pipInfo.length; i++) {
@@ -263,11 +312,11 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				
 				if (mapAllen2Num.containsKey(indelInfo)) {
 					siteSnpIndelInfo = mapAllen2Num.get(indelInfo);
-					siteSnpIndelInfo.addThisBaseNum();
+					siteSnpIndelInfo.addThisBaseNum(sampleName);
 				}
 				else {
 					siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, referenceSeq, thisSeq);
-					siteSnpIndelInfo.setThisBaseNum(1);
+					siteSnpIndelInfo.setThisBaseNum(sampleName, 1);
 					mapAllen2Num.put(indelInfo, siteSnpIndelInfo);
 				}
 			}
@@ -281,11 +330,11 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				String mismatchInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
 				if (mapAllen2Num.containsKey(mismatchInfo)) {
 					siteSnpIndelInfo = mapAllen2Num.get(mismatchInfo);
-					siteSnpIndelInfo.addThisBaseNum();
+					siteSnpIndelInfo.addThisBaseNum(sampleName);
 				}
 				else {
 					siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, refBase, thisSeq);
-					siteSnpIndelInfo.setThisBaseNum(1);
+					siteSnpIndelInfo.setThisBaseNum(sampleName, 1);
 					mapAllen2Num.put(mismatchInfo, siteSnpIndelInfo);
 				}
 			}
@@ -371,9 +420,9 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * refID \t  refStart \t refBase  \t  depth \t indelBase  \t indelNum   <br>
 	 * 出错返回"";
 	 */
-	public String getSeqTypeNumStr(MapInfoSnpIndel mapInfoSnpIndel) {
+	public String getSeqTypeNumStr(String sampleName, MapInfoSnpIndel mapInfoSnpIndel) {
 		SiteSnpIndelInfo siteSnpIndelInfoQuery = mapInfoSnpIndel.getSiteSnpInfoBigAllen();
-		return getSeqTypeNumStr(siteSnpIndelInfoQuery);
+		return getSeqTypeNumStr(sampleName, siteSnpIndelInfoQuery);
 	}
 	/**
 	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
@@ -381,12 +430,13 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * 此外输入的indel在查找的时候会将第一位删除，因为GATK出来的第一位是indel的前一位<br>
 	 * 返回该种形式错配以及相应序列所含有的reads堆叠数
 	 * 从hash表中获得
-	 * @param mapInfoSnpIndel 正常的别的样本的信息
+	 * @param SampleName
+	 * @param SiteSnpIndelInfo 正常的别的样本的信息
 	 * @return 返回描述性的话:<br>
 	 * refID \t  refStart \t refBase  \t  depth \t indelBase  \t indelNum   <br>
 	 * 出错返回"";
 	 */
-	public String getSeqTypeNumStr(SiteSnpIndelInfo siteSnpIndelInfoQuery) {
+	public String getSeqTypeNumStr(String sampleName, SiteSnpIndelInfo siteSnpIndelInfoQuery) {
 		//也就是用别的位点的检测出的错配信息去查找本位点的错配信息，最后返回string结果
 		//这里不能用mapInfoSnpIndel.getRefBase()来代替otherMap.getRefBase()
 		//因为mapInfoSnpIndel.getRefBase()可能并不是真正的ref，特别为缺失的时候
@@ -395,7 +445,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			return "";
 		}
 		String tmpResult = getRefID()+"\t"+getRefSnpIndelStart()+"\t" + siteSnpIndelInfoQuery.getReferenceSeq()+"\t" +getAllelic_depths_Ref();
-		tmpResult = tmpResult + "\t" +siteSnpIndelInfo.getThisSeq() + "\t" + siteSnpIndelInfo.getThisBaseNum();
+		tmpResult = tmpResult + "\t" +siteSnpIndelInfo.getThisSeq() + "\t" + siteSnpIndelInfo.getThisBaseNum(sampleName);
 		return tmpResult;
 	}
 	/**
@@ -427,125 +477,10 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	public double getProp() {
 		return prop;
 	}
-	public String getQuality() {
-		return quality;
-	}
-	/**
-	 * 设定该snp的质量
-	 * GATK的第6列，从0计算为第5列
-	 */
-	public void setQuality(String quality) {
-		this.quality = quality;
-	}
-	public void setSnpFilter(String snpINFO) {
-		this.Filter = snpINFO;
-	}
-	public String getSnpINFO() {
-		return Filter;
-	}
-	/**
-	 * 设定refSite测序深度
-	 * @return
-	 */
-	public void setAllelicDepthsRef(int Allelic_depths_Ref) {
-		this. Allelic_depths_Ref = Allelic_depths_Ref;
-	}
-	/**
-	 * AF Allele Frequency, for each ALT allele, in the same order as listed 1表示纯合子，0.5表示杂合，多个样本可能结果会不同
-	 */
-	public double getAllele_Frequency() {
-		return Allele_Frequency;
-	}
-	/**
-	 * AD Allelic depths for the ref and alt alleles in the order listed
-	 * @return
-	 */
-	public int getAllelic_depths_Ref() {
-		return Allelic_depths_Ref;
-	}
-	/**
-	 * GQ The Genotype Quality, as a Phred-scaled confidence at the true genotype is the one provided in GT.
-	 *  In diploid case, if GT is 0/1, then GQ is really L(0/1) / (L(0/0) + L(0/1) + L(1/1)), where L is the likelihood 
-	 *  of the NGS sequencing data under the model of that the sample is 0/0, 0/1/, or 1/1. 好像是碱基的质量
-	 * @return
-	 */
-	public double getGenotype_Quality() {
-		return Genotype_Quality;
+	public String getQuality(String sampleName) {
+		return mapSample2NormReadsInfo.get(sampleName).getQuality();
 	}
 	
-	public int getRead_Depth_Filtered() {
-		return Read_Depth_Filtered;
-	}
-	public void setFilter(String filter) {
-		Filter = filter;
-	}
-	/**
-	 * SB, How much evidence is there for Strand Bias (the variation being seen
-	 *  on only the forward or only the reverse strand) in the reads? Higher SB 
-	 *  values denote more bias (and therefore are more likely to indicate false 
-	 *  positive calls).
-	 * @return
-	 */
-	public double getStrand_Bias() {
-		return Strand_Bias;
-	}
-	/**
-	 * 物种ID
-	 * @return
-	 */
-	public int getTaxID() {
-		return taxID;
-	}
-	/**
-	 * AN 总共多少个等位，一般都为2个，ref一个，改变一个，出现3个的时候我暂时没见过，所以可以日志一下看看情况
-	 * @return
-	 */
-	public int getTotal_number_of_alleles() {
-		return Total_number_of_alleles;
-	}
-	/**
-	 * 这里我删除了一个Allelic_depths_Alt的项目，考虑如何很好的添加进去
-	 * 设置
-	 * GT:AD:DP:GQ:PL	0/1:53,10:63:99:150,0,673
-	 */
-	public void setFlag(String flagTitle, String flagDetail) {
-		//TODO 这里我删除了一个Allelic_depths_Alt的项目，考虑如何很好的添加进去
-		String[] ssFlag = flagTitle.split(":");
-		String[] ssValue = flagDetail.split(":");
-		for (int i = 0; i < ssFlag.length; i++) {
-			if (ssFlag[i].equals("AD")) {
-				String[] info = ssValue[i].split(",");
-				Allelic_depths_Ref = Integer.parseInt(info[0]);
-			}
-			else if (ssFlag[i].equals("DP")) {
-				Read_Depth_Filtered = Integer.parseInt(ssValue[i]); 
-			}
-			else if (ssFlag[i].equals("GQ")) {
-				Genotype_Quality = Double.parseDouble(ssValue[i]);
-			}
-		}
-	}
-	/**
-	 * 就看这三项：AF,AN,SB
-	 *  AB=0.841;AC=1;AF=0.50;AN=2;BaseQRankSum=0.097;DP=63;Dels=0.00;FS=0.000;HRun=0;HaplotypeScore=0.0000;
-	 *  给定GATKinfo，设定信息
-	 * @param GATKInfo
-	 */
-	public void setBaseInfo(String GATKInfo) {
-		String[] ssValue = GATKInfo.split(";");
-		for (String string : ssValue) {
-			String[] tmpInfo = string.split("=");
-			if (tmpInfo[0].equals("AF")) {
-				Allele_Frequency = Double.parseDouble(tmpInfo[1]);
-			}
-			else if (tmpInfo[0].equals("AN")) {
-				Total_number_of_alleles = Integer.parseInt(tmpInfo[1]);
-			}
-			else if (tmpInfo[0].equals("SB")) {
-				Strand_Bias =  Double.parseDouble(tmpInfo[1]);
-			}
-		}
-	}
 	/**
 	 * 参考序列
 	 * @return
@@ -597,10 +532,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		try {
 			//TODO
 			mapInfoSnpIndel = (MapInfoSnpIndel) super.clone();
-			mapInfoSnpIndel.Allele_Frequency = mapInfoSnpIndel.Allele_Frequency;
 			return mapInfoSnpIndel;
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		logger.error("克隆出错");
@@ -698,3 +631,75 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		return hashChrIDMapInfo;
 	}
 }
+
+class SampleRefReadsInfo {
+	public SampleRefReadsInfo(int readDepth) {
+		this.readDepth = readDepth;
+	}
+	/** AD
+	 * Allelic depths for the ref and alt alleles in the order listed
+	 */
+	int Allelic_depths_Ref = 0;
+	/**  DP
+	 * Read Depth (only filtered reads used for calling
+	 */
+	int readDepth = 0;
+	/**
+	 * GQ
+	 * The Genotype Quality, as a Phred-scaled confidence at the true genotype is the one provided in GT. In diploid case, 
+	 * if GT is 0/1, then GQ is really L(0/1) / (L(0/0) + L(0/1) + L(1/1)), where L is the likelihood of the NGS sequencing data
+	 *  under the model of that the sample is 0/0, 0/1/, or 1/1. 
+	 * 好像是碱基的质量
+	 */
+	double Genotype_Quality = 0;
+	/**
+	 * SB, 
+	 * How much evidence is there for Strand Bias (the variation being seen on only the forward or only the reverse strand) in the reads?
+	 *  Higher SB values denote more bias (and therefore are more likely to indicate false positive calls).
+	 */
+	double Strand_Bias = 0;
+	/** 该snp的质量 */
+	String quality = "";
+	/** 是否符合标准 */
+	String Filter = "";
+	
+	public void setRefDepth(int allelic_depths_Ref) {
+		this.Allelic_depths_Ref = allelic_depths_Ref;
+	}
+	public void setGenotype_Quality(double genotype_Quality) {
+		Genotype_Quality = genotype_Quality;
+	}
+	public void setStrand_Bias(double strand_Bias) {
+		Strand_Bias = strand_Bias;
+	}
+	public void setQuality(String quality) {
+		this.quality = quality;
+	}
+	public void setFilter(String filter) {
+		Filter = filter;
+	}
+	
+	public int getAllelic_depths_Ref() {
+		return Allelic_depths_Ref;
+	}
+	public double getGenotype_Quality() {
+		return Genotype_Quality;
+	}
+	public String getFilter() {
+		return Filter;
+	}
+	public String getQuality() {
+		return quality;
+	}
+	public int getReadDepth() {
+		return readDepth;
+	}
+	public double getStrand_Bias() {
+		return Strand_Bias;
+	}
+}
+
+
+
+
+

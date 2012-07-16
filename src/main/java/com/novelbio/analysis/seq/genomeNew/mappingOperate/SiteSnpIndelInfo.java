@@ -1,7 +1,9 @@
 package com.novelbio.analysis.seq.genomeNew.mappingOperate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
@@ -44,10 +46,15 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 	boolean isInCDS = false;
 	/** 用MapInfoSnpIndel的type */
 	int snpType = MapInfoSnpIndel.TYPE_CORRECT;
-	int thisBaseNum = 0;
+
 	int splitType = SPLIT_SPLIT_NONE;
 	SnpIndelRs snpIndelRs;
 	ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
+	
+	/** 样本名对应该样本这类型snp的reads数量
+	 * value为int[1]，仅仅用来保存snp数量
+	 *  */
+	HashMap<String, int[]> mapSample2thisBaseNum = new HashMap<String, int[]>();
 	/**
 	 * @param mapInfoSnpIndel 必须含有 GffIso 信息
 	 * @param gffChrAbs
@@ -74,12 +81,16 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 	/** 如果snp位点在exon上，那么就设置ref序列的氨基酸的信息 */
 	protected abstract void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs);
 	
-	public void setThisBaseNum(int thisBaseNum) {
-		this.thisBaseNum = thisBaseNum;
+	public void setThisBaseNum(String sampleName, int thisBaseNum) {
+		mapSample2thisBaseNum.put(sampleName, new int[]{thisBaseNum});
 	}
 	/**计数加一 */
-	protected void addThisBaseNum() {
-		this.thisBaseNum++;
+	protected void addThisBaseNum(String sampleName) {
+		if (mapSample2thisBaseNum.containsKey(sampleName)) {
+			int[] num = mapSample2thisBaseNum.get(sampleName);
+			num[0] = num[0] + 1;
+		}
+		setThisBaseNum(sampleName, 1);
 	}
 	/**
 	 * 移码突变
@@ -98,12 +109,16 @@ public abstract class SiteSnpIndelInfo implements Comparable<SiteSnpIndelInfo> {
 	public int getSnpIndelType() {
 		return snpType;
 	}
-	public int getThisBaseNum() {
-		return thisBaseNum;
+	public int getThisBaseNum(String sampleName) {
+		int[] num = mapSample2thisBaseNum.get(sampleName);
+		if (num == null) {
+			return 0;
+		}
+		return num[0];
 	}
 	/** 本snp占总snp的比例 */
-	public double getThisBaseProp() {
-		return (double)thisBaseNum/mapInfoSnpIndel.getRead_Depth_Filtered();
+	public double getThisBaseProp(String sampleName) {
+		return (double)getThisBaseNum(sampleName)/mapInfoSnpIndel.getRead_Depth_Filtered();
 	}
 	/**
 	 * Allele Balance for hets
