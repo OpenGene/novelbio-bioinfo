@@ -556,6 +556,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			LinkedList<String> lsTmpInfo = copyList(lsResultTmp);
 			lsTmpInfo.add(siteSnpIndelInfo.getReferenceSeq());
 			lsTmpInfo.add(siteSnpIndelInfo.getThisSeq());
+			lsTmpInfo.add(siteSnpIndelInfo.getSnpIndelRs().getSnpRsID());
 			if (lsSampleNames == null) {
 				lsSampleNames = mapSample2NormReadsInfo.keySet();
 			}
@@ -581,8 +582,10 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				lsTmpInfo.add(siteSnpIndelInfo.getRefAAnr().toStringAA());
 				lsTmpInfo.add(siteSnpIndelInfo.getThisAAnr().toString());
 				lsTmpInfo.add(siteSnpIndelInfo.getThisAAnr().toStringAA());
+				lsTmpInfo.add(siteSnpIndelInfo.getSplitTypeEffected());
 			}
 			else {
+				lsTmpInfo.add("");
 				lsTmpInfo.add("");
 				lsTmpInfo.add("");
 				lsTmpInfo.add("");
@@ -603,7 +606,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		}
 		return lsResult;
 	}
-	private String[] getStrArray(List<String> lsInfo) {
+	private static String[] getStrArray(List<String> lsInfo) {
 		String[] strarray = new String[lsInfo.size()];
 		int i = 0;
 		for (String string : lsInfo) {
@@ -641,17 +644,58 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		logger.error("克隆出错");
 		return null;
 	}
+	public static String[] getTitle(Collection<String> lsSampleNames) {
+		LinkedList<String> lsTitle = new LinkedList<String>();
+		lsTitle.add("ChrID");
+		lsTitle.add("Loc");
+		lsTitle.add("GeneID");
+		lsTitle.add("Distance2GeneStart");
+		lsTitle.add("RefSequence");
+		lsTitle.add("ThisSequence");
+		lsTitle.add("DBsnpID");
+		for (String sampleName : lsSampleNames) {
+			lsTitle.add(sampleName + "_ReadsDepth");
+			lsTitle.add(sampleName + "_ThisReadsNum");
+			lsTitle.add(sampleName + "_FilteredFlag");
+			lsTitle.add(sampleName + "_Quality");
+		}
+		lsTitle.add("RefAAnr");
+		lsTitle.add("RefAA");
+		lsTitle.add("ThisAAnr");
+		lsTitle.add("ThisAA");
+		lsTitle.add("split info");
+		String[] infpoStrings = getStrArray(lsTitle);
+		return infpoStrings;
+	}
 	/**
 	 * 给定选中的mapInfo，读取samtools产生的pileup file获得每个位点的具体信息
+	 * @param sampleName
 	 * @param lsSite 仅包含refbase和坐标信息
 	 * @param samToolsPleUpFile samtools产生的文件
+	 * @param gffChrAbs
 	 */
 	public static void getSiteInfo(String sampleName, List<MapInfoSnpIndel> lsSite, String samToolsPleUpFile, GffChrAbs gffChrAbs) {
 		/** 每个chrID对应一组mapinfo，也就是一个list */
 		HashMap<String, ArrayList<MapInfoSnpIndel>> mapSortedChrID2MapInfo = sortLsMapInfoSnpIndel(lsSite);
 		getSiteInfo(sampleName, mapSortedChrID2MapInfo, samToolsPleUpFile, gffChrAbs);
 	}
-	
+	public static HashMap<String, ArrayList<MapInfoSnpIndel>> sortLsMapInfoSnpIndel(List<MapInfoSnpIndel> lsSite) {
+		/** 每个chrID对应一组mapinfo，也就是一个list */
+		HashMap<String, ArrayList<MapInfoSnpIndel>> hashChrIDMapInfo = new LinkedHashMap<String, ArrayList<MapInfoSnpIndel>>();
+		// 按照chr位置装入hash表
+		for (MapInfoSnpIndel mapInfoSnpIndel : lsSite) {
+			ArrayList<MapInfoSnpIndel> lsMap = hashChrIDMapInfo.get(mapInfoSnpIndel.getRefID());
+			if (lsMap == null) {
+				lsMap = new ArrayList<MapInfoSnpIndel>();
+				hashChrIDMapInfo.put(mapInfoSnpIndel.getRefID(), lsMap);
+			}
+			lsMap.add(mapInfoSnpIndel);
+		}
+		for (ArrayList<MapInfoSnpIndel> lsMapInfos : hashChrIDMapInfo.values()) {
+			Collections.sort(lsMapInfos);
+		}
+		return hashChrIDMapInfo;
+	}
 	/**
 	 * 给定选中的mapInfo，读取samtools产生的pileup file获得每个位点的具体信息
 	 * @param sampleName 样本名字。如果输入的mapSortedChrID2LsMapInfo已经有该样本信息，那么就跳过
@@ -712,23 +756,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			mapInfoSnpIndel.setSamToolsPilup(samtoolsLine, gffChrAbs);
 		}
 	}
-	private static HashMap<String, ArrayList<MapInfoSnpIndel>> sortLsMapInfoSnpIndel(List<MapInfoSnpIndel> lsSite) {
-		/** 每个chrID对应一组mapinfo，也就是一个list */
-		HashMap<String, ArrayList<MapInfoSnpIndel>> hashChrIDMapInfo = new LinkedHashMap<String, ArrayList<MapInfoSnpIndel>>();
-		// 按照chr位置装入hash表
-		for (MapInfoSnpIndel mapInfoSnpIndel : lsSite) {
-			ArrayList<MapInfoSnpIndel> lsMap = hashChrIDMapInfo.get(mapInfoSnpIndel.getRefID());
-			if (lsMap == null) {
-				lsMap = new ArrayList<MapInfoSnpIndel>();
-				hashChrIDMapInfo.put(mapInfoSnpIndel.getRefID(), lsMap);
-			}
-			lsMap.add(mapInfoSnpIndel);
-		}
-		for (ArrayList<MapInfoSnpIndel> lsMapInfos : hashChrIDMapInfo.values()) {
-			Collections.sort(lsMapInfos);
-		}
-		return hashChrIDMapInfo;
-	}
+
 }
 
 class SampleRefReadsInfo {

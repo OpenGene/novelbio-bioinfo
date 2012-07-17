@@ -24,14 +24,6 @@ import com.novelbio.database.service.servgeneanno.ServSnpIndelRs;
  */
 public abstract class SiteSnpIndelInfo {
 	private static Logger logger = Logger.getLogger(SiteSnpIndelInfo.class);
-	//TODO 添加是否引起剪接位点变化的flag
-	public static final int SPLIT_ATG = 12;
-	public static final int SPLIT_UAG = 24;
-	public static final int SPLIT_SPLIT_START = 36;
-	public static final int SPLIT_SPLIT_END = 48;
-	/** deletion 跨过一个intron，这就影响了一个start和一个end */
-	public static final int SPLIT_SPLIT_START_END = SPLIT_SPLIT_START + SPLIT_SPLIT_END;
-	public static final int SPLIT_SPLIT_NONE = 0;
 	
 	String sampleName;
 	
@@ -51,7 +43,7 @@ public abstract class SiteSnpIndelInfo {
 	/** 用MapInfoSnpIndel的type */
 	int snpType = MapInfoSnpIndel.TYPE_CORRECT;
 
-	int splitType = SPLIT_SPLIT_NONE;
+	SplitType splitType = SplitType.NONE;
 	SnpIndelRs snpIndelRs;
 	ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
 	
@@ -100,6 +92,9 @@ public abstract class SiteSnpIndelInfo {
 	}
 	public String getThisSeq() {
 		return thisSeq;
+	}
+	public String getSplitTypeEffected() {
+		return splitType.toString();
 	}
 	/** 在该snp或indel情况下，相对的ref的序列 */
 	public String getReferenceSeq() {
@@ -217,6 +212,9 @@ public abstract class SiteSnpIndelInfo {
 			snpIndelRs.setSnpRsID(snpRsID);
 			//TODO snp信息去查找数据库
 //			this.snpIndelRs = servSnpIndelRs.querySnpIndelRs(snpIndelRs);
+			
+			//临时方案
+			this.snpIndelRs = snpIndelRs;
 		}
 	}
 	/**
@@ -230,7 +228,10 @@ public abstract class SiteSnpIndelInfo {
 		snpIndelRs.setLocStart(mapInfoSnpIndel.getRefSnpIndelStart());
 		//TODO 输入待查询的序列
 //		snpIndelRs.setObserved(observed);
-		this.snpIndelRs = servSnpIndelRs.querySnpIndelRs(snpIndelRs);
+//		this.snpIndelRs = servSnpIndelRs.querySnpIndelRs(snpIndelRs);
+		
+		//临时方案
+		this.snpIndelRs = snpIndelRs;
 	}
 	public boolean isExon() {
 		if (codLocInfo != GffGeneIsoInfo.COD_LOC_EXON) {
@@ -410,18 +411,18 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		int cod2ATGmRNA = gffGeneIsoInfo.getCod2ATGmRNA(codLoc);
 		int cod2UAGmRNA = gffGeneIsoInfo.getCod2UAGmRNA(codLoc);
 		if (cod2ATGmRNA >= 0 && cod2ATGmRNA <= 2) {
-			splitType = SPLIT_ATG;
+			splitType = SplitType.ATG;
 		}
 		else if (cod2UAGmRNA <= 0 && cod2UAGmRNA >= -2) {
-			splitType = SPLIT_UAG;
+			splitType = SplitType.UAG;
 		}
 		else {
 			int locNum = gffGeneIsoInfo.getNumCodInEle(codLoc);
 			if (locNum != 1 && gffGeneIsoInfo.getCod2ExInStart(codLoc) <= 1) {
-				splitType = SPLIT_SPLIT_START;
+				splitType = SplitType.EXON_START;
 			}
 			else if (locNum != gffGeneIsoInfo.size() && gffGeneIsoInfo.getCod2ExInEnd(codLoc) <= 1) {
-				splitType = SPLIT_SPLIT_END;
+				splitType = SplitType.EXON_END;
 			}
 		}
 	}
@@ -547,32 +548,37 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	 * @param refEndCis 必须在exon中
 	 */
 	private void setEffectSplitType(GffGeneIsoInfo gffGeneIsoInfo, int refStartCis, int refEndCis) {
-		splitType = 0;
+		splitType = SplitType.NONE;
 		int codStart2ATGmRNA = gffGeneIsoInfo.getCod2ATGmRNA(refStartCis);
 		int codEnd2ATGmRNA = gffGeneIsoInfo.getCod2ATGmRNA(refEndCis);
-		int codStart2UAGmRNA = gffGeneIsoInfo.getCod2UAG(refStartCis);
-		int codEnd2UAGmRNA = gffGeneIsoInfo.getCod2ATG(refEndCis);
+		int codStart2UAGmRNA = gffGeneIsoInfo.getCod2UAGmRNA(refStartCis);
+		int codEnd2UAGmRNA = gffGeneIsoInfo.getCod2UAGmRNA(refEndCis);
 		
 		if (codStart2ATGmRNA <=0 && codEnd2ATGmRNA >= 0 //横跨atg
 			|| 	codStart2ATGmRNA >= 0 && codStart2ATGmRNA <= 2
 		  ) {
-			splitType = SPLIT_ATG;
+			splitType = SplitType.ATG;
 		}
 		else if (codStart2UAGmRNA <= 0 && codEnd2UAGmRNA >= 0
 				|| codEnd2ATGmRNA <= 0 && codEnd2ATGmRNA >= -2
 		) {
-			splitType = SPLIT_UAG;
+			splitType = SplitType.UAG;
 		}
 		else if (gffGeneIsoInfo.getNumCodInEle(refStartCis) != gffGeneIsoInfo.getNumCodInEle(refEndCis)) {
-			splitType = SPLIT_SPLIT_START_END;
+			splitType = SplitType.EXON_START_END;
 		}
 		else {
 			int locNum = gffGeneIsoInfo.getNumCodInEle(refStartCis);
 			if (locNum != 1 && gffGeneIsoInfo.getCod2ExInStart(refStartCis) <= 1) {
-				splitType = SPLIT_SPLIT_START;
+				splitType = SplitType.EXON_START;
 			}
 			if (locNum != gffGeneIsoInfo.size() && gffGeneIsoInfo.getCod2ExInEnd(refEndCis) <= 1) {
-				splitType = splitType + SPLIT_SPLIT_END;
+				if (splitType == SplitType.EXON_END) {
+					splitType = SplitType.EXON_START_END;
+				}
+				else {
+					splitType = SplitType.EXON_END;
+				}
 			}
 		}
 	}
@@ -620,5 +626,18 @@ class SampleSnpReadsQuality {
 	}
 	public void addThisReadsNum() {
 		thisReadsNum = thisReadsNum + 1;
+	}
+}
+
+enum SplitType {
+	ATG("atg"), UAG("uag"), EXON_START("exon start"), EXON_END("exon end"),
+	/** deletion 跨过一个intron，这就影响了一个start和一个end */
+	EXON_START_END("exon start and end"), NONE("none");
+	String name;
+	SplitType(String name) {
+		this.name =name;
+	}
+	public String toString() {
+		return name;
 	}
 }

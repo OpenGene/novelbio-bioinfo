@@ -401,6 +401,9 @@ public class SnpIndelRs {
 	 * dbSNP Reference SNP (rs) identifier
 	 */
 	public String getSnpRsID() {
+		if (snpRsID == null) {
+			return "";
+		}
 		return snpRsID;
 	}
 
