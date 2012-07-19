@@ -339,12 +339,12 @@ public class GffDetailGene extends ListDetailAbs {
 				}
 			}
 			if (getLongestSplit().isCodInIsoExtend(coord)) {
-				anno[4] = getLongestSplit().getCodLocStr(coord);
+				anno[4] = getLongestSplit().toStringCodLocStr(coord);
 			}
 			else {
 				for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
 					if (gffGeneIsoInfo.isCodInIsoExtend(coord)) {
-						anno[4] = gffGeneIsoInfo.getCodLocStr(coord);
+						anno[4] = gffGeneIsoInfo.toStringCodLocStr(coord);
 						break;
 					}
 				}
@@ -570,7 +570,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 * 效率低下，等待优化
 	 * 用于冯英的项目，添加新的转录本
 	 * 同时重新设定该基因的numberstart和numberend
-	 * @param gffDetailGene
+	 * @param gffDetailGeneParent
 	 */
 	public void addIso(GffGeneIsoInfo gffGeneIsoInfo) {
 		removeDuplicateIso = false;
@@ -605,7 +605,21 @@ public class GffDetailGene extends ListDetailAbs {
 			numberend = gffGeneIsoInfo.getEndAbs();
 		}
 	}
-	
+	/**
+	 * 返回有差异的exon系列
+	 * @return
+	 */
+	public ArrayList<ExonCluster> getDifExonCluster() {
+		setExonCluster();
+		ArrayList<ExonCluster> lsDifExon = new ArrayList<ExonCluster>();
+		for (ExonCluster exonClusters : lsExonClusters) {
+			if (exonClusters.isSameExon()) {
+				continue;
+			}
+			lsDifExon.add(exonClusters);
+		}
+		return lsDifExon;
+	}
 	/** 按照分组好的边界exon，将每个转录本进行划分 */
 	private void setExonCluster() {
 		ArrayList<GffGeneIsoInfo> lsIsos = getLsCodSplit();
@@ -661,22 +675,6 @@ public class GffDetailGene extends ListDetailAbs {
 			lsExonClusters.add(exonCluster);
 		}
 	}
-	/**
-	 * 返回有差异的exon系列
-	 * @return
-	 */
-	public ArrayList<ExonCluster> getDifExonCluster() {
-		setExonCluster();
-		ArrayList<ExonCluster> lsDifExon = new ArrayList<ExonCluster>();
-		for (ExonCluster exonClusters : lsExonClusters) {
-			if (exonClusters.isSameExon()) {
-				continue;
-			}
-			lsDifExon.add(exonClusters);
-		}
-		return lsDifExon;
-	}
-	
 	public String getGTFformate(String title) {
 		String geneGTF = "";
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {

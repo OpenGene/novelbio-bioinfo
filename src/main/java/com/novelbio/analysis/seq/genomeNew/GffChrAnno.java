@@ -268,7 +268,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo>{
 		GeneID geneID = gffGeneIsoInfo.getGeneID();
 		tmpAnno[1] = geneID.getSymbol();
 		tmpAnno[2] = geneID.getDescription();
-		tmpAnno[3] = gffGeneIsoInfo.getCodLocStr(coord);
+		tmpAnno[3] = gffGeneIsoInfo.toStringCodLocStr(coord);
 		
 		lsAnno.add(tmpAnno);
 	}

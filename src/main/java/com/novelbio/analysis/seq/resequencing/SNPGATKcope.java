@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.util.SSCellRange;
 
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
-import com.novelbio.analysis.seq.genomeNew.GffChrSnpIndel;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
@@ -62,7 +61,7 @@ public class SNPGATKcope {
 		
 		
 		snpgatKcope.execute();
-		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result.test");
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withoutSampileup.xls");
 	}
 	
 	public SNPGATKcope() {
@@ -104,7 +103,7 @@ public class SNPGATKcope {
 	 * @param colDBsnp vcf是3
 	 */
 	public void setColDBsnp(int colDBsnp) {
-		this.colSnpDBID = colDBsnp;
+		this.colSnpDBID = colDBsnp - 1;
 	}
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
@@ -160,8 +159,8 @@ public class SNPGATKcope {
 			setDepthAlt(siteSnpIndelInfo, inputLines[colFlagTitle], inputLines[colFlagDetail]);
 		}
 		if (colSnpDBID>=0) {
-			if (!inputLines[colBaseInfo].equals(".")) {
-				siteSnpIndelInfo.setDBSnpID(inputLines[colBaseInfo]);
+			if (!inputLines[colSnpDBID].equals(".")) {
+				siteSnpIndelInfo.setDBSnpID(inputLines[colSnpDBID]);
 			}
 		}
 	}
@@ -186,11 +185,15 @@ public class SNPGATKcope {
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
 		txtOut.writefileln(MapInfoSnpIndel.getTitle(lsSample));
 		for (MapInfoSnpIndel mapInfoSnpIndel : lsUnionSnp) {
-			ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(lsSample);
+			if (mapInfoSnpIndel.getRefSnpIndelStart() == 2983963) {
+				System.out.println("stop");
+			}
+			ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(lsSample, true);
 			for (String[] strings : lsResult) {
 				txtOut.writefileln(strings);
 			}
 		}
+		txtOut.close();
 	}
 	/**
 	 * 给定文本，和domain信息，获得具体domain的信息

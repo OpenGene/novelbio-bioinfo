@@ -273,7 +273,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		anno[0] = anno[0].replaceFirst("///", "");
 		anno[1] = anno[1].replaceFirst("///", "");
 		anno[2] = anno[2].replaceFirst("///", "");
-		anno[3] = peakPointInfo + gffDetailGene.getLongestSplit().getCodLocStr(coord);
+		anno[3] = peakPointInfo + gffDetailGene.getLongestSplit().toStringCodLocStr(coord);
 		return anno;
 	}
 

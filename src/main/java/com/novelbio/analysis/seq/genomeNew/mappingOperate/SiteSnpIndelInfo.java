@@ -46,7 +46,6 @@ public abstract class SiteSnpIndelInfo {
 	SplitType splitType = SplitType.NONE;
 	SnpIndelRs snpIndelRs;
 	ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
-	
 	/** 样本名对应该样本这类型snp的reads数量
 	 * value为int[1]，仅仅用来保存snp数量
 	 *  */
@@ -103,7 +102,6 @@ public abstract class SiteSnpIndelInfo {
 	public int getSnpIndelType() {
 		return snpType;
 	}
-
 	public void setThisReadsNum(int readsNum) {
 		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
 		if (sampleSnpReadsQuality == null) {
@@ -132,7 +130,6 @@ public abstract class SiteSnpIndelInfo {
 		}
 		return sampleSnpReadsQuality.quality;
 	}
-
 	public void setFiltered(String Filter) {
 		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
 		if (sampleSnpReadsQuality == null) {
@@ -161,6 +158,18 @@ public abstract class SiteSnpIndelInfo {
 	/** 本snp占总reads的比例 */
 	public double getThisBasePropss() {
 		return (double)getThisReadsNum()/mapInfoSnpIndel.getReadsDepth();
+	}
+	/**
+	 * 返回变化的AA的化学性质改变形式，不在cds中则返回""；
+	 * @return
+	 */
+	public String getAAattrConvert() {
+		if (isCDS() && referenceSeq.length() == 1 && thisSeq.length() == 1) {
+			String refAA = getRefAAnr().toStringAA();
+			String thisAA = getThisAAnr().toStringAA();
+			return SeqFasta.cmpAAquality(refAA, thisAA);
+		}
+		return "";
 	}
 	/**
 	 * 如果一个位点有两个以上的snp，就可能会出错

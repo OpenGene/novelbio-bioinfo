@@ -103,7 +103,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 	}
 	/** 设定物种 */
 	public void setSpecies(String species) {
-		this.species = species;
+		this.species = species.replace(" ", "_");
 	}
 	/**
 	 * 设定一个随机的report的类型，采用日期时间+随机数的方式

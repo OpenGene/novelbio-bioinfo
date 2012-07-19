@@ -66,7 +66,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	/** 样本和正常reads之间的关系 */
 	HashMap<String, SampleRefReadsInfo> mapSample2NormReadsInfo = new HashMap<String, SampleRefReadsInfo>();
 	String sampleName = "";
-	
+	/** 要是已经在sam pileUp里面搜索过了，那么就设定该样本的sample是可以找到的 */
+
 	public MapInfoSnpIndel() {}
 	/**
 	 * @param gffChrAbs
@@ -79,19 +80,9 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		this.refSnpIndelStart = refSnpIndelStart;
 	    setGffIso();
 	}
-	/**
-	 * snp或indel所在的转录本
-	 * 同时设定setProp，cis5to3，和name，都用gffGeneIsoInfo的信息
-	 */
-	private void setGffIso() {
-		if (gffChrAbs == null)
-			return;
-
-		this.gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchLocation(chrID, refSnpIndelStart).getCodInExonIso();
-		if (gffGeneIsoInfo == null) {
-			return;
-		}
-		setProp();
+	protected void setSearchSamPileUpFileTrue() {
+		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
+		sampleRefReadsInfo.setSearchSampileupFile(true);
 	}
 	/**
 	 * refBase在基因中的位置，0-1之间，0.1表示snp在基因长度*0.1的位置处
@@ -175,6 +166,46 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	public int getTaxID() {
 		return gffChrAbs.getTaxID();
 	}
+	public void setRefBase(String refBase) {
+		this.refBase = refBase;
+	}
+	/**
+	 * snp在基因长度的百分比
+	 * 越小越靠近头部
+	 * -1表示没有该项目
+	 */
+	public double getProp() {
+		return prop;
+	}
+	/**
+	 * 参考序列
+	 * @return
+	 */
+	public String getRefBase() {
+		return refBase;
+	}
+
+	/**
+	 * 获得所在的转录本
+	 * @return
+	 */
+	public GffGeneIsoInfo getGffIso() {
+		return gffGeneIsoInfo;
+	}
+	/**
+	 * 判断另一个snp或者indel是不是与本mapInfo在同一个转录本中
+	 * 两个mapInfoSnpIndel都必须有gffGeneIsoInfo设置好
+	 * @param mapInfoSnpIndel
+	 * @return
+	 */
+	public boolean isSameIso(MapInfoSnpIndel mapInfoSnpIndel) {
+		if (gffGeneIsoInfo.equals(mapInfoSnpIndel.getGffIso())) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	/**
 	 * 这里我删除了一个Allelic_depths_Alt的项目，考虑如何很好的添加进去
 	 * 设置
@@ -240,6 +271,20 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		setAllenInfo(Integer.parseInt(ss[3]), ss[4]);
 	}
 	/**
+	 * snp或indel所在的转录本
+	 * 同时设定setProp，cis5to3，和name，都用gffGeneIsoInfo的信息
+	 */
+	private void setGffIso() {
+		if (gffChrAbs == null || (gffGeneIsoInfo != null && prop >= 0))
+			return;
+//TODO
+		this.gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchLocation(chrID, refSnpIndelStart).getCodInExonIso();
+		if (gffGeneIsoInfo == null) {
+			return;
+		}
+		setProp();
+	}
+	/**
 	 * 重新设定Allelic_depths_Ref，和hashAlle信息
 	 *  给定samtools产生的pile up那个pileup信息，计算该位点的堆叠情况<br>
 	 * 格式如下<br> ...........,.............,....,....,.,.,..,..,...,....,.^!.<br>解释:<br>
@@ -257,7 +302,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 */
 	private void setAllenInfo(int readsDepth, String pileUpInfo) {
 		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
-		sampleRefReadsInfo.setReadDepth(0); mapAllen2Num = new HashMap<String, SiteSnpIndelInfo>();
+		sampleRefReadsInfo.setSearchSampileupFile(true);
+		sampleRefReadsInfo.setReadDepth(0);
 		String referenceSeq = refBase, thisSeq = refBase;
 		char[] pipInfo = pileUpInfo.toCharArray();
 		for (int i = 0; i < pipInfo.length; i++) {
@@ -307,7 +353,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				
 				if (mapAllen2Num.containsKey(indelInfo)) {
 					siteSnpIndelInfo = mapAllen2Num.get(indelInfo);
-					siteSnpIndelInfo.setSampleName(sampleName);
+					siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
 					siteSnpIndelInfo.addThisBaseNum();
 				}
 				else {
@@ -376,35 +422,6 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		return refSnpIndelStart;
 	}
 	/**
-	 * 
-	 * 给定序列和错配方式，返回所含有的reads堆叠数
-	 * 因为本位点可能有多种错配，所以给定一个然后查找，看能找到几个
-	 * 从hash表中获得
-	 * @param referenceSeq
-	 * @param thisSeq
-	 * @return
-	 */
-	public SiteSnpIndelInfo getSnpIndel(String referenceSeq, String thisSeq) {
-		String tmpInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
-		SiteSnpIndelInfo siteSnpIndelInfo = mapAllen2Num.get(tmpInfo);
-		siteSnpIndelInfo.setSampleName(sampleName);
-		return siteSnpIndelInfo;
-	}
-	/**
-	 * 给定序列和错配方式，返回所含有的reads堆叠数
-	 * 因为本位点可能有多种错配，所以给定一个然后查找，看能找到几个
-	 * 从hash表中获得
-	 * @param referenceSeq
-	 * @param thisSeq
-	 * @param snpType
-	 * @return
-	 */
-	public SiteSnpIndelInfo getSnpIndel(SiteSnpIndelInfo siteSnpIndelInfo) {
-		SiteSnpIndelInfo siteSnpIndelInfo2 =  mapAllen2Num.get(siteSnpIndelInfo.getMismatchInfo());
-		siteSnpIndelInfo2.setSampleName(sampleName);
-		return siteSnpIndelInfo2;
-	}
-	/**
 	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
 	 * 注意，输入的mapInfoSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>
 	 * 此外输入的indel在查找的时候会将第一位删除，因为GATK出来的第一位是indel的前一位<br>
@@ -420,6 +437,91 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		}
 		SiteSnpIndelInfo siteSnpIndelInfoQuery = mapInfoSnpIndelQuery.getSiteSnpInfoBigAllen();
 		return getSnpIndel(siteSnpIndelInfoQuery);
+	}
+	/**
+	 * 给定序列和错配方式，返回所含有的reads堆叠数
+	 * 因为本位点可能有多种错配，所以给定一个然后查找，看能找到几个
+	 * 从hash表中获得
+	 * @param referenceSeq
+	 * @param thisSeq
+	 * @param snpType
+	 * @return
+	 */
+	public SiteSnpIndelInfo getSnpIndel(SiteSnpIndelInfo siteSnpIndelInfo) {
+		return getSnpIndel(siteSnpIndelInfo.referenceSeq, siteSnpIndelInfo.thisSeq);
+	}
+	/**
+	 * 给定序列和错配方式，返回所含有的reads堆叠数
+	 * 因为本位点可能有多种错配，所以给定一个然后查找，看能找到几个
+	 * 从hash表中获得
+	 * @param referenceSeq
+	 * @param thisSeq
+	 * @return
+	 */
+	public SiteSnpIndelInfo getSnpIndel(String referenceSeq, String thisSeq) {
+		String tmpInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
+		SiteSnpIndelInfo siteSnpIndelInfo =  mapAllen2Num.get(tmpInfo);
+		if (siteSnpIndelInfo == null) {
+			siteSnpIndelInfo = getSiteSnpIndelInfoNone(referenceSeq, thisSeq);
+		}
+		if (siteSnpIndelInfo != null) {
+			siteSnpIndelInfo.setSampleName(sampleName);
+		}
+		return siteSnpIndelInfo;
+	}
+	/**
+	 * 返回数量最大的snp位点
+	 * 已经设定了sampleName
+	 */
+	public SiteSnpIndelInfo getSiteSnpInfoBigAllen() {
+		ArrayList<SiteSnpIndelInfo> lsAllenInfo = getLsAllenInfoSortBig2Small();
+		if (lsAllenInfo.size() > 0) {
+			return lsAllenInfo.get(0);
+		}
+		return null;
+	}
+	/**
+	 * 返回所有的非ref的基因以及对应的种类和数量
+	 * 每个都设定sampleName
+	 */
+	public ArrayList<SiteSnpIndelInfo> getLsAllenInfoSortBig2Small() {
+		ArrayList<SiteSnpIndelInfo> lsAllenInfo = ArrayOperate.getArrayListValue(mapAllen2Num);
+		if (lsAllenInfo.size() == 0) {
+			SiteSnpIndelInfo siteSnpIndelInfo = getSiteSnpIndelInfoNone(refBase, refBase);
+			if (siteSnpIndelInfo != null) {
+				lsAllenInfo.add(siteSnpIndelInfo);
+			}
+			return lsAllenInfo;
+		}
+		for (SiteSnpIndelInfo siteSnpIndelInfo : lsAllenInfo) {
+			siteSnpIndelInfo.setSampleName(sampleName);
+		}
+		Collections.sort(lsAllenInfo, new compMapInfoSnpIndelBig2Small(sampleName));
+		return lsAllenInfo;
+	}
+	//TODO check
+	/** 根据是否查找过samPileUp文件，返回空值或是设定为0的SiteSnpIndelInfo */
+	private SiteSnpIndelInfo getSiteSnpIndelInfoNone(String refSequence, String thisSequence) {
+		SampleRefReadsInfo sampleRefReadsInfo = mapSample2NormReadsInfo.get(sampleName);
+		if (sampleRefReadsInfo == null) {
+			return null;
+		}
+		if (sampleRefReadsInfo.isSearchSampileupFile() == true) {
+			SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, refSequence, thisSequence);
+			siteSnpIndelInfo.setSampleName(sampleName);
+			siteSnpIndelInfo.setThisReadsNum(0);
+			return siteSnpIndelInfo;
+		}
+		else {
+			return null;
+		}
+	}
+	/**
+	 * 返回全部snp类型和样本的信息
+	 * @return
+	 */
+	public ArrayList<String[]> toStringLsSnp() {
+		return toStringLsSnp(null,false);
 	}
 	/**
 	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
@@ -458,91 +560,20 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		return tmpResult;
 	}
 	/**
-	 * 返回数量最大的snp位点
-	 * 已经设定了sampleName
-	 */
-	public SiteSnpIndelInfo getSiteSnpInfoBigAllen() {
-		ArrayList<SiteSnpIndelInfo> lsAllenInfo = ArrayOperate.getArrayListValue(mapAllen2Num);
-		Collections.sort(lsAllenInfo, new compMapInfoSnpIndelBig2Small(sampleName));
-		if (lsAllenInfo.size() > 0) {
-			SiteSnpIndelInfo siteSnpIndelInfo = lsAllenInfo.get(0);
-			siteSnpIndelInfo.setSampleName(sampleName);
-			return siteSnpIndelInfo;
-		}
-		return null;
-	}
-	/**
-	 * 返回所有的非ref的基因以及对应的种类和数量
-	 * 每个都设定sampleName
-	 */
-	public ArrayList<SiteSnpIndelInfo> getLsAllenInfoSortBig2Small() {
-		ArrayList<SiteSnpIndelInfo> lsAllenInfo = ArrayOperate.getArrayListValue(mapAllen2Num);
-		for (SiteSnpIndelInfo siteSnpIndelInfo : lsAllenInfo) {
-			siteSnpIndelInfo.setSampleName(sampleName);
-		}
-		Collections.sort(lsAllenInfo, new compMapInfoSnpIndelBig2Small(sampleName));
-		return lsAllenInfo;
-	}
-	public void setRefBase(String refBase) {
-		this.refBase = refBase;
-	}
-	/**
-	 * snp在基因长度的百分比
-	 * 越小越靠近头部
-	 * -1表示没有该项目
-	 */
-	public double getProp() {
-		return prop;
-	}
-	/**
-	 * 参考序列
-	 * @return
-	 */
-	public String getRefBase() {
-		return refBase;
-	}
-
-	/**
-	 * 获得所在的转录本
-	 * @return
-	 */
-	public GffGeneIsoInfo getGffIso() {
-		return gffGeneIsoInfo;
-	}
-	/**
-	 * 判断另一个snp或者indel是不是与本mapInfo在同一个转录本中
-	 * 两个mapInfoSnpIndel都必须有gffGeneIsoInfo设置好
-	 * @param mapInfoSnpIndel
-	 * @return
-	 */
-	public boolean isSameIso(MapInfoSnpIndel mapInfoSnpIndel) {
-		if (gffGeneIsoInfo.equals(mapInfoSnpIndel.getGffIso())) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	/**
 	 * 返回全部snp类型和样本的信息
 	 * @return
 	 */
-	public ArrayList<String[]> toStringLsSnp() {
-		return toStringLsSnp(null);
-	}
-	
-	/**
-	 * 返回全部snp类型和样本的信息
-	 * @return
-	 */
-	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames) {
+	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		LinkedList<String> lsResultTmp = new LinkedList<String>();
 		lsResultTmp.add(chrID);//0
 		lsResultTmp.add(refSnpIndelStart + "");//1
 		
-		if (gffGeneIsoInfo != null)
+		if (gffGeneIsoInfo != null) {
 			lsResultTmp.add(gffGeneIsoInfo.getName());
+			lsResultTmp.add(gffGeneIsoInfo.getGeneID().getSymbol());
+			lsResultTmp.add(gffGeneIsoInfo.getGeneID().getDescription());
+		}
 		else
 			lsResultTmp.add("");
 		if (prop >= 0)
@@ -553,6 +584,9 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		//对于每个snp的样式
 		for (Entry<String, SiteSnpIndelInfo> entry : mapAllen2Num.entrySet()) {
 			SiteSnpIndelInfo siteSnpIndelInfo = entry.getValue();
+			if (getGATK && !isGATKfiltered(siteSnpIndelInfo)) {
+				continue;
+			}
 			LinkedList<String> lsTmpInfo = copyList(lsResultTmp);
 			lsTmpInfo.add(siteSnpIndelInfo.getReferenceSeq());
 			lsTmpInfo.add(siteSnpIndelInfo.getThisSeq());
@@ -563,9 +597,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			for (String sampleName : lsSampleNames) {
 				SampleRefReadsInfo sampleRefReadsInfo = mapSample2NormReadsInfo.get(sampleName);
 				if (sampleRefReadsInfo == null) {
-					for (int i = 0; i < 4; i++) {
+					for (int i = 0; i < 4; i++)
 						lsTmpInfo.add("");
-					}
 					continue;
 				}
 				siteSnpIndelInfo.setSampleName(sampleName);
@@ -582,14 +615,12 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				lsTmpInfo.add(siteSnpIndelInfo.getRefAAnr().toStringAA());
 				lsTmpInfo.add(siteSnpIndelInfo.getThisAAnr().toString());
 				lsTmpInfo.add(siteSnpIndelInfo.getThisAAnr().toStringAA());
+				lsTmpInfo.add(siteSnpIndelInfo.getAAattrConvert());
 				lsTmpInfo.add(siteSnpIndelInfo.getSplitTypeEffected());
 			}
 			else {
-				lsTmpInfo.add("");
-				lsTmpInfo.add("");
-				lsTmpInfo.add("");
-				lsTmpInfo.add("");
-				lsTmpInfo.add("");
+				for (int i = 0; i < 6; i++)
+					lsTmpInfo.add("");
 			}
 			String[] infpoStrings = getStrArray(lsTmpInfo);
 			lsResult.add(infpoStrings);
@@ -597,7 +628,16 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		return lsResult;
 	}
 	
-	
+	private boolean isGATKfiltered(SiteSnpIndelInfo siteSnpIndelInfo) {
+		boolean result = false;
+		HashMap<String, SampleSnpReadsQuality> mapSample2Snp = siteSnpIndelInfo.mapSample2thisBaseNum;
+		for (SampleSnpReadsQuality sampleSnpReadsQuality : mapSample2Snp.values()) {
+			if (sampleSnpReadsQuality.quality != null && !sampleSnpReadsQuality.quality.equals("")) {
+				return true;
+			}
+		}
+		return result;
+	}
 	
 	private LinkedList<String> copyList(List<String> lsSrc) {
 		LinkedList<String> lsResult = new LinkedList<String>();
@@ -649,6 +689,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		lsTitle.add("ChrID");
 		lsTitle.add("Loc");
 		lsTitle.add("GeneID");
+		lsTitle.add("GeneSymbol");
+		lsTitle.add("Description");
 		lsTitle.add("Distance2GeneStart");
 		lsTitle.add("RefSequence");
 		lsTitle.add("ThisSequence");
@@ -659,10 +701,13 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			lsTitle.add(sampleName + "_FilteredFlag");
 			lsTitle.add(sampleName + "_Quality");
 		}
+		lsTitle.add("OrfShift");
+		lsTitle.add("IsInExon");
 		lsTitle.add("RefAAnr");
 		lsTitle.add("RefAA");
 		lsTitle.add("ThisAAnr");
 		lsTitle.add("ThisAA");
+		lsTitle.add("Chemical Transform");
 		lsTitle.add("split info");
 		String[] infpoStrings = getStrArray(lsTitle);
 		return infpoStrings;
@@ -734,6 +779,9 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				}
 				else {
 					while (mapInfoIndex < lsMapInfos.size()&& loc > lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart()) {
+						MapInfoSnpIndel mapInfoSnpIndel = lsMapInfos.get(mapInfoIndex);
+						mapInfoSnpIndel.setSampleName(sampleName);
+						mapInfoSnpIndel.setSearchSamPileUpFileTrue();
 						mapInfoIndex++;
 					}
 					if (mapInfoIndex >= lsMapInfos.size()) {
@@ -787,7 +835,14 @@ class SampleRefReadsInfo {
 	 *  Higher SB values denote more bias (and therefore are more likely to indicate false positive calls).
 	 */
 	double Strand_Bias = 0;
-
+	
+	boolean searchSampileupFile = false;
+	protected void setSearchSampileupFile(boolean searchSampileupFile) {
+		this.searchSampileupFile = searchSampileupFile;
+	}
+	public boolean isSearchSampileupFile() {
+		return searchSampileupFile;
+	}
 	public void setReadDepth(int readDepth) {
 		this.readDepth = readDepth;
 	}

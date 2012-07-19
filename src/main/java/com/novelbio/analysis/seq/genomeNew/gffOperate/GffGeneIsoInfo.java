@@ -86,7 +86,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	protected int UAGsite = ListCodAbs.LOC_ORIGINAL;
 	/** 该转录本的长度 */
 	protected int lengthIso = ListCodAbs.LOC_ORIGINAL;
-	GffDetailGene gffDetailGene;
+
+	protected boolean ismRNA = true;
+
+	GffDetailGene gffDetailGeneParent;
 	
 	public GffGeneIsoInfo(String IsoName, int geneType) {
 		super.listName = IsoName;
@@ -96,7 +99,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public GffGeneIsoInfo(String IsoName, GffDetailGene gffDetailGene, int geneType) {
 		super.listName = IsoName;
 		this.flagTypeGene = geneType;
-		this.gffDetailGene = gffDetailGene;
+		this.gffDetailGeneParent = gffDetailGene;
 		setTssRegion(gffDetailGene.getTssRegion()[0], gffDetailGene.getTssRegion()[1]);
 		setTesRegion(gffDetailGene.getTesRegion()[0], gffDetailGene.getTesRegion()[1]);
 	}
@@ -108,7 +111,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return flagTypeGene;
 	}
 	public int getTaxID() {
-		return gffDetailGene.getTaxID();
+		return gffDetailGeneParent.getTaxID();
 	}
 	/**
 	 * 跟随gffDetailGene的设定
@@ -144,8 +147,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * coord是否在geneEnd区域的范围内
 	 * @return
 	 */
-	public boolean isCodInIsoGenEnd(int coord)
-	{
+	public boolean isCodInIsoGenEnd(int coord) {
 		int cod2tes = getCod2Tes(coord);
 		if (cod2tes >= upTes && cod2tes <= downTes) {
 			return true;
@@ -165,8 +167,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 如果本转录本是非编码RNA，直接返回false；
 	 * @return
 	 */
-	public boolean isCodInAAregion(int coord)
-	{
+	public boolean isCodInAAregion(int coord) {
 		if (!ismRNA() || getCodLoc(coord) != GffGeneIsoInfo.COD_LOC_EXON) {
 			return false;
 		}
@@ -176,16 +177,15 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return true;
 	}
 	public String getChrID() {
-		return gffDetailGene.getParentName();
+		return gffDetailGeneParent.getParentName();
 	}
-	protected boolean mRNA = true;
 	/**
 	 * 是否是mRNA有atg和uag，
 	 * 暂时只能使用UCSCgene
 	 * @return
 	 */
 	public boolean ismRNA() {
-		return mRNA;
+		return ismRNA;
 	}
 	/**
 	 * 只能用于排序好的水稻和拟南芥GFF文件中
@@ -220,7 +220,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 */
 	public void setATGUAG(int atg, int uag) {
 		if (Math.abs(atg - uag)<=1) {
-			mRNA = false;
+			ismRNA = false;
 			atg = Math.min(atg, uag);
 			uag = Math.min(atg, uag);
 		}
@@ -231,8 +231,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			if (UAGsite < 0 || UAGsite < Math.max(atg, uag)) {
 				UAGsite = Math.max(atg, uag);
 			}
-		}
-		else {
+		} else {
 			if (ATGsite < 0 || ATGsite < Math.max(atg, uag)) {
 				ATGsite = Math.max(atg, uag);
 			}
@@ -241,8 +240,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			}
 		}
 	}
-	
-	
 	/**
 	 * 如果是非编码RNA，则将atg和uag设置为最后一位
 	 */
@@ -297,7 +294,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public int getLenUTR3() {
-		return Math.abs(super.getLocDistmRNA(this.UAGsite, getTESsite() ));
+		return Math.abs(super.getLocDistmRNA(this.UAGsite, getTESsite() ) );
 	}
 	 /**
      * @param num 指定第几个，如果超出，则返回-1000000000, 
@@ -308,16 +305,15 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (num < 0 || num > size()) {
 			return -1000000000;
 		}
-		else if (num == 0) 
-		{
+		else if (num == 0) {
 			int allExonLength = 0;
-			for (int i = 0; i < size(); i++) // 0-0 0-1 1-0 1-1
-			{ // 2-1 2-0 1-1 1-0 0-1 0-tss cood
+			 // 0-0 0-1 1-0 1-1
+			// 2-1 2-0 1-1 1-0 0-1 0-tss cood
+			for (int i = 0; i < size(); i++) { 			
 				allExonLength = allExonLength + get(i).getLen();
 			}
 			return allExonLength;
-		}
-		else {
+		} else {
 			num--;
 			return get(num).getLen();
 		}
@@ -331,11 +327,11 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (num < 0 || num > size()) {
 			return -1000000000;
 		}
-		else if (num == 0) 
-		{
+		else if (num == 0) {
 			int allIntronLength = 0;
-			for (int i = 1; i < size(); i++) // 0-0 0-1 1-0 1-1
-			{ // 2-1 2-0 1-1 1-0 0-1 0-tss cood
+			// 0-0 0-1 1-0 1-1
+			// 2-1 2-0 1-1 1-0 0-1 0-tss cood
+			for (int i = 1; i < size(); i++) { 
 				allIntronLength = allIntronLength + Math.abs(get(i).getStartCis() - get(i-1).getEndCis()) - 1;
 			}
 		}
@@ -353,16 +349,16 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		int ExIntronnum = getNumCodInEle(coord);
 		if (ExIntronnum == 0) {
 			codLoc[0] = COD_LOC_OUT;
-		}
+		} 
 		else if (ExIntronnum > 0) {
 			codLoc[0] = COD_LOC_EXON;
 			if((coord < ATGsite && isCis5to3()) || (coord > ATGsite && !isCis5to3())){        //坐标小于atg，在5‘UTR中,也是在外显子中
 				codLoc[1] = COD_LOCUTR_5UTR;
-			}
+			} 
 			else if((coord > UAGsite && isCis5to3()) || (coord < UAGsite && !isCis5to3())){       //大于cds起始区，在3‘UTR中
 				codLoc[1] = COD_LOCUTR_3UTR; 
 			}
-		}
+		} 
 		else {
 			codLoc[0] = COD_LOC_INTRON;
 		}
@@ -376,7 +372,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getCodLoc(int coord) {
 		return getCodLocInfo(coord)[0];
 	}
-	
 	/**
 	 * 在转录本的哪个位置
 	 * 有COD_LOCUTR_5UTR，COD_LOCUTR_3UTR，两种
@@ -393,7 +388,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getCod2Tss(int coord) {
 		if (isCis5to3()) {
 			return coord - getTSSsite();
-		}
+		} 
 		else {
 			return -(coord - getTSSsite());
 		}
@@ -406,7 +401,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getCod2Tes(int coord) {
 		if (isCis5to3()) {
 			return coord - getTESsite();
-		}
+		} 
 		else {
 			return -(coord - getTESsite());
 		}
@@ -419,7 +414,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getCod2ATG(int coord) {
 		if (isCis5to3()) {
 			return coord - getATGsite();
-		}
+		} 
 		else {
 			return -(coord - getATGsite());
 		}
@@ -432,7 +427,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getCod2UAG(int coord) {
 		if (isCis5to3()) {
 			return coord - getUAGsite();
-		}
+		} 
 		else {
 			return -(coord - getUAGsite());
 		}
@@ -445,7 +440,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		int location = getCodLocUTR(coord);
 		if (location == COD_LOCUTR_5UTR) {
 			return getLocDistmRNA(getTSSsite(), coord);
-		}
+		} 
 		else if (location == COD_LOCUTR_3UTR) {
 			return getLocDistmRNA(getUAGsite(), coord);
 		}
@@ -540,17 +535,36 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return 2 - startLen%3;
 	}
 	/**
+	 * 获得具体的编码序列，待修正，可以调用getSeqLoc的方法提取序列
+	 * 没有结果就返回new list-exonInfo
+	 * @return
+	 */
+	public ArrayList<ExonInfo> getIsoInfoCDS() {
+		if (ATGsite == UAGsite) {
+			return new ArrayList<ExonInfo>();
+		}
+		return getRangeIso(ATGsite, UAGsite);
+	}
+	/**
+	 * 获得3UTR的序列
+	 * @param startLoc
+	 * @param endLoc
+	 * @return
+	 */
+	public ArrayList<ExonInfo> get3UTRseq() {
+		return getRangeIso(UAGsite, getTESsite());
+	}
+	/**
 	 * 指定一个起点和一个终点坐标，将这两个坐标间的外显子区域提取出来并返回
 	 * 按照基因的方向排序
 	 * 大小无所谓，最后返回不依赖 startLoc和EndLoc的大小关系
-	 * 如果这两个坐标不在外显子中，则返回null
+	 * 如果这两个坐标不在外显子中，则返回空的list
 	 * @return
 	 */
-	public ArrayList<ExonInfo> getRangeIso(int startLoc, int EndLoc)
-	{
+	public ArrayList<ExonInfo> getRangeIso(int startLoc, int EndLoc) {
 		ArrayList<ExonInfo> lsresult = new ArrayList<ExonInfo>();
-		int start = 0;
-		int end = 0;
+		int start = 0, end = 0;
+		
 		if (isCis5to3()) {
 			start = Math.min(startLoc, EndLoc);
 			end = Math.max(startLoc, EndLoc);
@@ -563,7 +577,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		int exonNumEnd =getNumCodInEle(end) - 1;
 		
 		if (exonNumStart < 0 || exonNumEnd < 0) {
-			return null;
+			return lsresult;
 		}
 		
 		if (exonNumStart == exonNumEnd) {
@@ -571,101 +585,14 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			lsresult.add(exonInfo);
 			return lsresult;
 		}
-		ExonInfo exonInfo = new ExonInfo(getName(), isCis5to3(), start, get(exonNumStart).getEndCis());
-		lsresult.add(exonInfo);
+		ExonInfo exonInfoStart = new ExonInfo(getName(), isCis5to3(), start, get(exonNumStart).getEndCis());
+		lsresult.add(exonInfoStart);
 		for (int i = exonNumStart+1; i < exonNumEnd; i++) {
 			lsresult.add(get(i));
 		}
 		ExonInfo exonInfo2 = new ExonInfo(getName(), isCis5to3(), get(exonNumEnd).getStartCis(), end);
 		lsresult.add(exonInfo2);
 		return lsresult;
-	}
-	/**
-	 * 返回该GeneIsoName所对应的CopedID，因为是NM号所以不需要指定TaxID
-	 * @return
-	 */
-	public GeneID getGeneID() {
-		return new GeneID(getName(), gffDetailGene.getTaxID());
-	}
-	/**
-	 * 文字形式的定位描述
-	 * @return
-	 * null: 不在该转录本内
-	 */
-	public String getCodLocStr(int coord) {
-		String result = "gene_position:";
-		if ( isCis5to3()) {
-			result = result + "forward ";
-		}
-		else {
-			result = result + "reverse ";
-		}
-		int codLoc = getCodLoc(coord);
-		//promoter\
-		if (isCodInIsoTss(coord) && codLoc == COD_LOC_OUT) {
-			if (getCod2Tss(coord) > PROMOTER_INTERGENIC_MAMMUM) {
-				result = result + PROMOTER_INTERGENIC_STR;
-			}
-			else if (getCod2Tss(coord) > PROMOTER_DISTAL_MAMMUM) {
-				result = result + PROMOTER_DISTAL_STR;
-			}
-			else {
-				result = result + PROMOTER_PROXIMAL_STR;;
-			}
-		}
-		else if (isCodInIsoTss(coord) && codLoc != COD_LOC_OUT) {
-			result = result + PROMOTER_DOWNSTREAMTSS_STR;
-		}
-		
-		result = result + "Distance_to_Tss_is:" + Math.abs(getCod2Tss(coord)) + " ";
-		//UTR
-		if (getCodLocUTR(coord) == COD_LOCUTR_5UTR) {
-			result = result + "5UTR_";
-		}
-		else if (getCodLocUTR(coord) == COD_LOCUTR_3UTR) {
-			result = result + "3UTR_";
-		}
-		//exon intron
-		if (codLoc == COD_LOC_EXON) {
-			result = result + "Exon:exon_Position_Number_is:" + getNumCodInEle(coord);
-		}
-		else if (codLoc == COD_LOC_INTRON) {
-			result = result + "Intron_intron_Position_Number_is:" + Math.abs(getNumCodInEle(coord));
-		}
-		//gene end
-		if (isCodInIsoGenEnd(coord)) {
-			result = result + "Distance_to_GeneEnd: "+ getCod2Tes(coord);
-		}
-		return result;
-	}
-	
-	/**
-	 * 文字形式的定位描述, <b>首先在gffDetailGene中设定tss，tes这两项</b><br>
-	 * null: 不在该转录本内
-	 * 
-	 * 指定条件，将符合条件的peak抓出来并做注释，主要是筛选出合适的peak然后做后续比较工作
-	 * 不符合的会跳过
-	 * @param filterTss 是否进行tss筛选<b>只有当filterGeneBody为false时，tss下游才会发会作用</b>
-	 * @param filterGenEnd 是否进行geneEnd筛选<b>只有当filterGeneBody为false时，geneEnd上游才会发会作用</b>
-	 * @param filterGeneBody 是否处于geneBody，true，将处于geneBody的基因全部筛选出来，false，不进行geneBody的筛选<br>
-	 * <b>以下条件只有当filterGeneBody为false时才能发挥作用</b>
-	 * @param filter5UTR 是否处于5UTR中
-	 * @param filter3UTR 是否处于3UTR中
-	 * @param filterExon 是否处于外显子中
-	 * @param filterIntron 是否处于内含子中
-	 * 0-n:输入的loc信息<br>
-	 * n+1: 基因名<br>
-	 * n+2: 基因信息<br>
-	 **/
-	public String getCodLocStrFilter(int coord, boolean filterTss, boolean filterGenEnd, 
-			boolean filterGeneBody,boolean filter5UTR, boolean filter3UTR,boolean filterExon, boolean filterIntron) {
-		boolean filter = isCodLocFilter(coord, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron);
-		if (filter) {
-			return getCodLocStr(coord);
-		}
-		else {
-			return null;
-		}
 	}
 	/**
 	 * 文字形式的定位描述, <b>首先在gffDetailGene中设定tss，tes这两项</b><br>
@@ -716,22 +643,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return filter;
 	}
 	/**
-	 * 如果两个转录本方向不一致，则不能进行比较
-	 * 比较两个转录本之间的差距有多大
-	 * @param gffGeneIsoInfo
-	 * @return
-	 */
-	public  ListComb<ExonInfo> compIsoLs(GffGeneIsoInfo gffGeneIsoInfo) {
-		if (this.isCis5to3() != gffGeneIsoInfo.isCis5to3()) {
-			return null;
-		}
-		ListComb<ExonInfo> lsResult = new ListComb<ExonInfo>();
-		lsResult.addListAbs(this);
-		lsResult.addListAbs(gffGeneIsoInfo);
-		return lsResult;
-	}
-	
-	/**
 	 * 假设是安顺序添加的ID
 	 * 这个要确认
 	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
@@ -776,8 +687,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @param title 该GTF文件的名称
 	 * @return
 	 */
-	protected String getGTFformat(String geneID, String title)
-	{
+	protected String getGTFformat(String geneID, String title) {
 		String strand = "+";
 		if (!isCis5to3()) {
 			strand = "-";
@@ -790,8 +700,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @param title 该GTF文件的名称
 	 * @return
 	 */
-	protected String getGFFformat(String geneID, String title)
-	{
+	protected String getGFFformat(String geneID, String title) {
 		String strand = "+";
 		if (!isCis5to3()) {
 			strand = "-";
@@ -802,7 +711,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	protected abstract String getGTFformatExon(String geneID, String title, String strand);
 	protected abstract String getGFFformatExonMISO(String geneID, String title, String strand);
 
-	
 	/**
 	 * 可能不是很精确
 	 * 返回距离Tss的一系列坐标的实际坐标
@@ -811,8 +719,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 最后获得的结果正向int[0] < int[1]
 	 * 反向 int[0] > int[1]
 	 */
-	public ArrayList<int[]> getRegionNearTss(Collection<int[]> isList)
-	{
+	public ArrayList<int[]> getRegionNearTss(Collection<int[]> isList) {
 		ArrayList<int[]> lsTmp = new ArrayList<int[]>();
 		int tsssite = getTSSsite();
 		for (int[] is : isList) {
@@ -828,52 +735,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			lsTmp.add(tmp);
 		}
 		return lsTmp;
-	}
-	/**
-	 * 获得具体的编码序列，待修正，可以调用getSeqLoc的方法提取序列
-	 * 没有结果就返回new list-exonInfo
-	 * @return
-	 */
-	public ArrayList<ExonInfo> getIsoInfoCDS() {
-		if (ATGsite == UAGsite) {
-			return new ArrayList<ExonInfo>();
-		}
-		ArrayList<ExonInfo> lsresult = new ArrayList<ExonInfo>();
-		int numAtg = getNumCodInEle(ATGsite) - 1;
-		int numUag = getNumCodInEle(UAGsite) - 1;
-		for (int i = 0; i < size(); i++) {
-			ExonInfo exonTmp = get(i);
-			if (i < numAtg) {
-				continue;
-			}
-			else if (i > numUag) {
-				break;
-			}
-			else if (i == numAtg) {
-				ExonInfo exonFinalTmp = new ExonInfo();
-				exonFinalTmp.setParentName(getName());
-				exonFinalTmp.setCis5to3(isCis5to3());
-				exonFinalTmp.setStartCis(ATGsite);
-				if (numAtg == numUag) {
-					exonFinalTmp.setEndCis(UAGsite);
-					lsresult.add(exonFinalTmp);
-					break;
-				}
-				else {
-					exonFinalTmp.setEndCis(exonTmp.getEndCis());
-					lsresult.add(exonFinalTmp);
-				}
-			}
-			else if (i == numUag) {
-				ExonInfo exonFinalTmp = new ExonInfo(getName(), isCis5to3(), exonTmp.getStartCis(), UAGsite);
-				lsresult.add(exonFinalTmp);
-				break;
-			}
-			else {
-				lsresult.add(exonTmp);
-			}
-		}
-		return lsresult;
 	}
 	/**
 	 * 获得Intron的list信息，从前到后排序
@@ -899,71 +760,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return lsresult;
 	}
-	
-	/**
-	 * 获得3UTR的序列
-	 * @param startLoc
-	 * @param endLoc
-	 * @return
-	 */
-	public ArrayList<ExonInfo> get3UTRseq() {
-		return getSeqLoc(UAGsite, getTESsite());
-	}
-	/**
-	 * 给定坐标，不考虑起点和终点是否反了
-	 * 提取起点和终点之间的exonInfo，包括起点所在的那一部分exon和终点所在的那一部分exon
-	 * @param startLoc
-	 * @param endLoc
-	 * @return
-	 */
-	public ArrayList<ExonInfo> getSeqLoc(int startLoc, int endLoc) {
-		if (startLoc == endLoc) {
-			return new ArrayList<ExonInfo>();
-		}
-		int startSite = 0, endSite = 0;
-		if (isCis5to3()) {
-			startSite = Math.min(startLoc, endLoc); endSite = Math.max(startLoc, endLoc);
-		}
-		else {
-			startSite = Math.max(startLoc, endLoc); endSite = Math.min(startLoc, endLoc);
-		}
-		ArrayList<ExonInfo> lsresult = new ArrayList<ExonInfo>();
-		int numStart = getNumCodInEle(startSite) - 1; int numEnd = getNumCodInEle(endSite) - 1;
-	
-		for (int i = 0; i < size(); i++) {
-			ExonInfo exonTmp = get(i);
-			if (i < numStart) {
-				continue;
-			}
-			else if (i > numEnd) {
-				break;
-			}
-			else if (i == numStart) {
-				ExonInfo exonFinalTmp = new ExonInfo();
-				exonFinalTmp.setParentName(getName());
-				exonFinalTmp.setCis5to3(isCis5to3());
-				exonFinalTmp.setStartCis(startSite);
-				if (numStart == numEnd) {
-					exonFinalTmp.setEndCis(endSite);
-					lsresult.add(exonFinalTmp);
-					break;
-				}
-				else {
-					exonFinalTmp.setEndCis(exonTmp.getEndCis());
-					lsresult.add(exonFinalTmp);
-				}
-			}
-			else if (i == numEnd) {
-				ExonInfo exonFinalTmp = new ExonInfo(getName(), isCis5to3(), exonTmp.getStartCis(), endSite);
-				lsresult.add(exonFinalTmp);
-				break;
-			}
-			else {
-				lsresult.add(exonTmp);
-			}
-		}
-		return lsresult;
-	}
 	/**
 	 * 给定nr位点，换算为距离ATG多少aa位置
 	 * 直接给定nr的实际位点
@@ -978,6 +774,92 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		aaNum = aaNum + 1;
 		return (aaNum+2)/3;
+	}
+	/**
+	 * 返回该GeneIsoName所对应的CopedID，因为是NM号所以不需要指定TaxID
+	 * @return
+	 */
+	public GeneID getGeneID() {
+		return new GeneID(getName(), gffDetailGeneParent.getTaxID());
+	}
+	/**
+	 * 文字形式的定位描述, <b>首先在gffDetailGene中设定tss，tes这两项</b><br>
+	 * null: 不在该转录本内
+	 * 
+	 * 指定条件，将符合条件的peak抓出来并做注释，主要是筛选出合适的peak然后做后续比较工作
+	 * 不符合的会跳过
+	 * @param filterTss 是否进行tss筛选<b>只有当filterGeneBody为false时，tss下游才会发会作用</b>
+	 * @param filterGenEnd 是否进行geneEnd筛选<b>只有当filterGeneBody为false时，geneEnd上游才会发会作用</b>
+	 * @param filterGeneBody 是否处于geneBody，true，将处于geneBody的基因全部筛选出来，false，不进行geneBody的筛选<br>
+	 * <b>以下条件只有当filterGeneBody为false时才能发挥作用</b>
+	 * @param filter5UTR 是否处于5UTR中
+	 * @param filter3UTR 是否处于3UTR中
+	 * @param filterExon 是否处于外显子中
+	 * @param filterIntron 是否处于内含子中
+	 * 0-n:输入的loc信息<br>
+	 * n+1: 基因名<br>
+	 * n+2: 基因信息<br>
+	 **/
+	public String toStringCodLocStrFilter(int coord, boolean filterTss, boolean filterGenEnd, 
+			boolean filterGeneBody,boolean filter5UTR, boolean filter3UTR,boolean filterExon, boolean filterIntron) {
+		boolean filter = isCodLocFilter(coord, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron);
+		if (filter) {
+			return toStringCodLocStr(coord);
+		}
+		else {
+			return null;
+		}
+	}
+	/**
+	 * 文字形式的定位描述
+	 * @return
+	 * null: 不在该转录本内
+	 */
+	public String toStringCodLocStr(int coord) {
+		String result = "gene_position:";
+		if ( isCis5to3()) {
+			result = result + "forward ";
+		}
+		else {
+			result = result + "reverse ";
+		}
+		int codLoc = getCodLoc(coord);
+		//promoter\
+		if (isCodInIsoTss(coord) && codLoc == COD_LOC_OUT) {
+			if (getCod2Tss(coord) > PROMOTER_INTERGENIC_MAMMUM) {
+				result = result + PROMOTER_INTERGENIC_STR;
+			}
+			else if (getCod2Tss(coord) > PROMOTER_DISTAL_MAMMUM) {
+				result = result + PROMOTER_DISTAL_STR;
+			}
+			else {
+				result = result + PROMOTER_PROXIMAL_STR;;
+			}
+		}
+		else if (isCodInIsoTss(coord) && codLoc != COD_LOC_OUT) {
+			result = result + PROMOTER_DOWNSTREAMTSS_STR;
+		}
+		
+		result = result + "Distance_to_Tss_is:" + Math.abs(getCod2Tss(coord)) + " ";
+		//UTR
+		if (getCodLocUTR(coord) == COD_LOCUTR_5UTR) {
+			result = result + "5UTR_";
+		}
+		else if (getCodLocUTR(coord) == COD_LOCUTR_3UTR) {
+			result = result + "3UTR_";
+		}
+		//exon intron
+		if (codLoc == COD_LOC_EXON) {
+			result = result + "Exon:exon_Position_Number_is:" + getNumCodInEle(coord);
+		}
+		else if (codLoc == COD_LOC_INTRON) {
+			result = result + "Intron_intron_Position_Number_is:" + Math.abs(getNumCodInEle(coord));
+		}
+		//gene end
+		if (isCodInIsoGenEnd(coord)) {
+			result = result + "Distance_to_GeneEnd: "+ getCod2Tes(coord);
+		}
+		return result;
 	}
 	/**
 	 * 重写equal
@@ -1018,12 +900,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		GffGeneIsoInfo result = null;
 		result = (GffGeneIsoInfo) super.clone();
 		result.ATGsite = ATGsite;
-		result.gffDetailGene = gffDetailGene;
+		result.gffDetailGeneParent = gffDetailGeneParent;
 		result.downTes = downTes;
 		result.downTss = downTss;
 		result.flagTypeGene = flagTypeGene;
 		result.lengthIso = lengthIso;
-		result.mRNA = mRNA;
+		result.ismRNA = ismRNA;
 		result.UAGsite = UAGsite;
 		result.upTes = upTes;
 		result.upTss = upTss;
