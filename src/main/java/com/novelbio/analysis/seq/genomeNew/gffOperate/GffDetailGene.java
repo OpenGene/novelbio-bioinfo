@@ -93,6 +93,13 @@ public class GffDetailGene extends ListDetailAbs {
 		removeIso(id);
 	}
 	/**
+	 * 返回所有的转录本信息
+	 * @param coord
+	 */
+	public ArrayList<GffGeneIsoInfo> getLsCodSplit() {
+		return lsGffGeneIsoInfos;
+	}
+	/**
 	 * 从0开始计数
 	 * 返回-1表示没有该转录本 
 	 * @param isoName
@@ -268,13 +275,6 @@ public class GffDetailGene extends ListDetailAbs {
 			}
 		}
 		return id;
-	}
-	/**
-	 * 返回所有的转录本信息
-	 * @param coord
-	 */
-	public ArrayList<GffGeneIsoInfo> getLsCodSplit() {
-		return lsGffGeneIsoInfos;
 	}
     /**
      * 获得该基因中最长的一条转录本的部分区域的信息。已经考虑过开闭区间问题
