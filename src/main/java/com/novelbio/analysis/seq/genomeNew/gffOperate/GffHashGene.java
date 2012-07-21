@@ -149,7 +149,9 @@ public class GffHashGene implements GffHashGeneInf{
 	public GffCodGeneDU searchLocation(String chrID, int cod1, int cod2) {
 		return gffHashGene.searchLocation(chrID, cod1, cod2);
 	}
-
+	public ArrayList<String> getLsChrID() {
+		return ArrayOperate.getArrayListKey(gffHashGene.getChrhash());
+	}
 	@Override
 	public String getGffFilename() {
 		return gffHashGene.getGffFilename();
@@ -189,5 +191,5 @@ public class GffHashGene implements GffHashGeneInf{
 	public void writeGene2Iso(String Gene2IsoFile) {
 		gffHashGene.writeGene2Iso(Gene2IsoFile);
 	}	
-		
+	
 }

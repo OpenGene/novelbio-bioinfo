@@ -64,14 +64,26 @@ public class SeqFasta implements Cloneable {
 	public static final String AA1_Trp = "W";
 	public static final String AA1_Tyr = "Y";
 	public static final String AA1_Val = "V";
+	
 	/** 用X表示 */
 	public static final String AA1_STOP = "*";
 	/** 反向互补哈希表 */
 	private static HashMap<Character, Character> compmap = null;// 碱基翻译哈希表
 	/** 蛋白一位和三位编号转换 */
-	static HashMap<String, String> hashAAchange = null;
+	static HashMap<String, String> mapAA1toAA3 = null;
+	/**  蛋白性质表  */
+	static HashMap<String, String[]> mapAA2ChamicalQuality = null;
 	/** 三联密码子的配对情况表 */
-	static HashMap<String, String> hashCode3 = null;
+	static HashMap<String, String> mapDNACodToAA3 = null;
+	/** 三联密码子的配对情况表 */
+	static HashMap<String, String> mapDNAcodToAA1 = null;
+	/**
+	 * 当用指定序列来插入或替换本序列中的位置时，如果插入的位置并不是很确定
+	 * 譬如插入一段序列到 10-20上去，但是是否精确插入到10并不清楚，那么该区域再加上一段XXX用以标记
+	 */
+	private static final String SEP_SEQ = "XXXXXXX";
+	
+	
 	protected String SeqName;
 	protected String SeqSequence = "";
 	/**
@@ -79,34 +91,11 @@ public class SeqFasta implements Cloneable {
 	 * @return
 	 */
 	protected Boolean TOLOWCASE = null;
-	public void setTOLOWCASE(Boolean TOLOWCASE) {
-		this.TOLOWCASE = TOLOWCASE;
-	}
-	/**
-	 * nr序列的长度
-	 * @return
-	 */
-	public int getLength() {
-		return SeqSequence.length();
-	}
-	/**
-	 * 给定左右的坐标，然后将seqfasta截短
-	 * @param start 和substring一样的用法
-	 * @param end 和substring一样的用法
-	 * @return 返回截短后的string
-	 */
-	public SeqFasta trimSeq(int start, int end) {
-		SeqFasta seqFasta = new SeqFasta();
-		seqFasta.AA3Len = AA3Len;
-		seqFasta.SeqName = SeqName;
-		seqFasta.TOLOWCASE = TOLOWCASE;
-		if (SeqSequence == null) {
-			seqFasta.SeqSequence = SeqSequence;
-			return seqFasta;
-		}
-		seqFasta.SeqSequence = SeqSequence.substring(start, end);
-		return seqFasta;
-	}
+
+
+	/** 默认返回三字母长度的氨基酸 */
+	boolean AA3Len = true;
+	
 	/**
 	 * 获得互补配对hash表<br>
 		 * 生物信息学中常用的 18 个碱基字母 字母 碱基 单碱基 A A C C G G I I T T U U<br>
@@ -166,188 +155,253 @@ public class SeqFasta implements Cloneable {
 		return compmap;
 	}
 	private static HashMap<String, String> getHashCode3() {
-		if (hashCode3 != null) {
-			return hashCode3;
+		if (mapDNACodToAA3 != null) {
+			return mapDNACodToAA3;
 		}
-		hashCode3 =  new HashMap<String, String>();
-		hashCode3.put("UUU", AA3_Phe); hashCode3.put("UCU", AA3_Ser);   hashCode3.put("UAU", AA3_Tyr);   hashCode3.put("UGU", AA3_Cys);  
-		hashCode3.put("UUC", AA3_Phe); hashCode3.put("UCC", AA3_Ser);   hashCode3.put("UAC", AA3_Tyr);   hashCode3.put("UGC", AA3_Cys);  
-		hashCode3.put("UUA", AA3_Leu); hashCode3.put("UCA", AA3_Ser);   hashCode3.put("UAA", AA3_STOP);  hashCode3.put("UGA", AA3_STOP); 
-		hashCode3.put("UUG", AA3_Leu); hashCode3.put("UCG", AA3_Ser);   hashCode3.put("UAG", AA3_STOP);  hashCode3.put("UGG", AA3_Trp);  
+		mapDNACodToAA3 =  new HashMap<String, String>();
+		mapDNACodToAA3.put("UUU", AA3_Phe); mapDNACodToAA3.put("UCU", AA3_Ser);   mapDNACodToAA3.put("UAU", AA3_Tyr);   mapDNACodToAA3.put("UGU", AA3_Cys);  
+		mapDNACodToAA3.put("UUC", AA3_Phe); mapDNACodToAA3.put("UCC", AA3_Ser);   mapDNACodToAA3.put("UAC", AA3_Tyr);   mapDNACodToAA3.put("UGC", AA3_Cys);  
+		mapDNACodToAA3.put("UUA", AA3_Leu); mapDNACodToAA3.put("UCA", AA3_Ser);   mapDNACodToAA3.put("UAA", AA3_STOP);  mapDNACodToAA3.put("UGA", AA3_STOP); 
+		mapDNACodToAA3.put("UUG", AA3_Leu); mapDNACodToAA3.put("UCG", AA3_Ser);   mapDNACodToAA3.put("UAG", AA3_STOP);  mapDNACodToAA3.put("UGG", AA3_Trp);  
 		
-		hashCode3.put("CUU", AA3_Leu); hashCode3.put("CCU", AA3_Pro);  hashCode3.put("CAU", AA3_His);   hashCode3.put("CGU",AA3_Arg);
-		hashCode3.put("CUC", AA3_Leu); hashCode3.put("CCC", AA3_Pro);  hashCode3.put("CAC", AA3_His);   hashCode3.put("CGC", AA3_Arg);
-		hashCode3.put("CUA", AA3_Leu); hashCode3.put("CCA", AA3_Pro);  hashCode3.put("CAA", AA3_Gln);   hashCode3.put("CGA", AA3_Arg);
-		hashCode3.put("CUG", AA3_Leu); hashCode3.put("CCG", AA3_Pro);  hashCode3.put("CAG", AA3_Gln);   hashCode3.put("CGG", AA3_Arg);
+		mapDNACodToAA3.put("CUU", AA3_Leu); mapDNACodToAA3.put("CCU", AA3_Pro);  mapDNACodToAA3.put("CAU", AA3_His);   mapDNACodToAA3.put("CGU",AA3_Arg);
+		mapDNACodToAA3.put("CUC", AA3_Leu); mapDNACodToAA3.put("CCC", AA3_Pro);  mapDNACodToAA3.put("CAC", AA3_His);   mapDNACodToAA3.put("CGC", AA3_Arg);
+		mapDNACodToAA3.put("CUA", AA3_Leu); mapDNACodToAA3.put("CCA", AA3_Pro);  mapDNACodToAA3.put("CAA", AA3_Gln);   mapDNACodToAA3.put("CGA", AA3_Arg);
+		mapDNACodToAA3.put("CUG", AA3_Leu); mapDNACodToAA3.put("CCG", AA3_Pro);  mapDNACodToAA3.put("CAG", AA3_Gln);   mapDNACodToAA3.put("CGG", AA3_Arg);
 		
-		hashCode3.put("AUU", AA3_Ile);   hashCode3.put("ACU", AA3_Thr); hashCode3.put("AAU", AA3_Asn);  hashCode3.put("AGU", AA3_Ser);
-		hashCode3.put("AUC", AA3_Ile);   hashCode3.put("ACC", AA3_Thr); hashCode3.put("AAC", AA3_Asn);  hashCode3.put("AGC", AA3_Ser);
-		hashCode3.put("AUA", AA3_Ile);   hashCode3.put("ACA", AA3_Thr); hashCode3.put("AAA", AA3_Lys);  hashCode3.put("AGA", AA3_Arg);
-		hashCode3.put("AUG", AA3_Met); hashCode3.put("ACG", AA3_Thr); hashCode3.put("AAG", AA3_Lys);  hashCode3.put("AGG", AA3_Arg);
+		mapDNACodToAA3.put("AUU", AA3_Ile);   mapDNACodToAA3.put("ACU", AA3_Thr); mapDNACodToAA3.put("AAU", AA3_Asn);  mapDNACodToAA3.put("AGU", AA3_Ser);
+		mapDNACodToAA3.put("AUC", AA3_Ile);   mapDNACodToAA3.put("ACC", AA3_Thr); mapDNACodToAA3.put("AAC", AA3_Asn);  mapDNACodToAA3.put("AGC", AA3_Ser);
+		mapDNACodToAA3.put("AUA", AA3_Ile);   mapDNACodToAA3.put("ACA", AA3_Thr); mapDNACodToAA3.put("AAA", AA3_Lys);  mapDNACodToAA3.put("AGA", AA3_Arg);
+		mapDNACodToAA3.put("AUG", AA3_Met); mapDNACodToAA3.put("ACG", AA3_Thr); mapDNACodToAA3.put("AAG", AA3_Lys);  mapDNACodToAA3.put("AGG", AA3_Arg);
 		
-		hashCode3.put("GUU", AA3_Val); hashCode3.put("GCU", AA3_Ala); hashCode3.put("GAU", AA3_Asp);  hashCode3.put("GGU", AA3_Gly);
-		hashCode3.put("GUC", AA3_Val); hashCode3.put("GCC", AA3_Ala); hashCode3.put("GAC", AA3_Asp);  hashCode3.put("GGC", AA3_Gly);
-		hashCode3.put("GUA", AA3_Val); hashCode3.put("GCA", AA3_Ala); hashCode3.put("GAA", AA3_Glu);  hashCode3.put("GGA", AA3_Gly);
-		hashCode3.put("GUG", AA3_Val); hashCode3.put("GCG", AA3_Ala); hashCode3.put("GAG", AA3_Glu);  hashCode3.put("GGG", AA3_Gly);
+		mapDNACodToAA3.put("GUU", AA3_Val); mapDNACodToAA3.put("GCU", AA3_Ala); mapDNACodToAA3.put("GAU", AA3_Asp);  mapDNACodToAA3.put("GGU", AA3_Gly);
+		mapDNACodToAA3.put("GUC", AA3_Val); mapDNACodToAA3.put("GCC", AA3_Ala); mapDNACodToAA3.put("GAC", AA3_Asp);  mapDNACodToAA3.put("GGC", AA3_Gly);
+		mapDNACodToAA3.put("GUA", AA3_Val); mapDNACodToAA3.put("GCA", AA3_Ala); mapDNACodToAA3.put("GAA", AA3_Glu);  mapDNACodToAA3.put("GGA", AA3_Gly);
+		mapDNACodToAA3.put("GUG", AA3_Val); mapDNACodToAA3.put("GCG", AA3_Ala); mapDNACodToAA3.put("GAG", AA3_Glu);  mapDNACodToAA3.put("GGG", AA3_Gly);
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		hashCode3.put("TTT", AA3_Phe); hashCode3.put("TCT", AA3_Ser);   hashCode3.put("TAT", AA3_Tyr);   hashCode3.put("TGT", AA3_Cys);  
-		hashCode3.put("TTC", AA3_Phe); hashCode3.put("TCC", AA3_Ser);   hashCode3.put("TAC", AA3_Tyr);   hashCode3.put("TGC", AA3_Cys);  
-		hashCode3.put("TTA", AA3_Leu); hashCode3.put("TCA", AA3_Ser);   hashCode3.put("TAA", AA3_STOP);  hashCode3.put("TGA", AA3_STOP); 
-		hashCode3.put("TTG", AA3_Leu); hashCode3.put("TCG", AA3_Ser);   hashCode3.put("TAG", AA3_STOP);  hashCode3.put("TGG", AA3_Trp);  
+		mapDNACodToAA3.put("TTT", AA3_Phe); mapDNACodToAA3.put("TCT", AA3_Ser);   mapDNACodToAA3.put("TAT", AA3_Tyr);   mapDNACodToAA3.put("TGT", AA3_Cys);  
+		mapDNACodToAA3.put("TTC", AA3_Phe); mapDNACodToAA3.put("TCC", AA3_Ser);   mapDNACodToAA3.put("TAC", AA3_Tyr);   mapDNACodToAA3.put("TGC", AA3_Cys);  
+		mapDNACodToAA3.put("TTA", AA3_Leu); mapDNACodToAA3.put("TCA", AA3_Ser);   mapDNACodToAA3.put("TAA", AA3_STOP);  mapDNACodToAA3.put("TGA", AA3_STOP); 
+		mapDNACodToAA3.put("TTG", AA3_Leu); mapDNACodToAA3.put("TCG", AA3_Ser);   mapDNACodToAA3.put("TAG", AA3_STOP);  mapDNACodToAA3.put("TGG", AA3_Trp);  
 		                                                         
-		hashCode3.put("CTT", AA3_Leu); hashCode3.put("CCT", AA3_Pro);  hashCode3.put("CAT", AA3_His);   hashCode3.put("CGT", AA3_Arg);
-		hashCode3.put("CTC", AA3_Leu);// hashCode.put("CCC", "Pro");  hashCode.put("CAC", "His");   hashCode.put("CGC", "Arg");
-		hashCode3.put("CTA", AA3_Leu); //hashCode.put("CCA", "Pro");  hashCode.put("CAA", "Gln");   hashCode.put("CGA", "Arg");
-		hashCode3.put("CTG", AA3_Leu); //hashCode.put("CCG", "Pro");  hashCode.put("CAG", "Gln");   hashCode.put("CGG", "Arg");
+		mapDNACodToAA3.put("CTT", AA3_Leu); mapDNACodToAA3.put("CCT", AA3_Pro);  mapDNACodToAA3.put("CAT", AA3_His);   mapDNACodToAA3.put("CGT", AA3_Arg);
+		mapDNACodToAA3.put("CTC", AA3_Leu);// hashCode.put("CCC", "Pro");  hashCode.put("CAC", "His");   hashCode.put("CGC", "Arg");
+		mapDNACodToAA3.put("CTA", AA3_Leu); //hashCode.put("CCA", "Pro");  hashCode.put("CAA", "Gln");   hashCode.put("CGA", "Arg");
+		mapDNACodToAA3.put("CTG", AA3_Leu); //hashCode.put("CCG", "Pro");  hashCode.put("CAG", "Gln");   hashCode.put("CGG", "Arg");
 		                           
-		hashCode3.put("ATT", AA3_Ile);   hashCode3.put("ACT", AA3_Thr); hashCode3.put("AAT", AA3_Asn);  hashCode3.put("AGT", AA3_Ser);
-		hashCode3.put("ATC", AA3_Ile);   //hashCode.put("ACC", "Thr"); hashCode.put("AAC", "Asn");  hashCode.put("AGC", "Ser");
-		hashCode3.put("ATA", AA3_Ile);   //hashCode.put("ACA", "Thr"); hashCode.put("AAA", "Lys");  hashCode.put("AGA", "Arg");
-		hashCode3.put("ATG", AA3_Met); //hashCode.put("ACG", "Thr"); hashCode.put("AAG", "Lys");  hashCode.put("AGG", "Arg");
+		mapDNACodToAA3.put("ATT", AA3_Ile);   mapDNACodToAA3.put("ACT", AA3_Thr); mapDNACodToAA3.put("AAT", AA3_Asn);  mapDNACodToAA3.put("AGT", AA3_Ser);
+		mapDNACodToAA3.put("ATC", AA3_Ile);   //hashCode.put("ACC", "Thr"); hashCode.put("AAC", "Asn");  hashCode.put("AGC", "Ser");
+		mapDNACodToAA3.put("ATA", AA3_Ile);   //hashCode.put("ACA", "Thr"); hashCode.put("AAA", "Lys");  hashCode.put("AGA", "Arg");
+		mapDNACodToAA3.put("ATG", AA3_Met); //hashCode.put("ACG", "Thr"); hashCode.put("AAG", "Lys");  hashCode.put("AGG", "Arg");
 		                           
-		hashCode3.put("GTT", AA3_Val); hashCode3.put("GCT", AA3_Ala); hashCode3.put("GAT", AA3_Asp);  hashCode3.put("GGT", AA3_Gly);
-		hashCode3.put("GTC", AA3_Val);// hashCode.put("GCC", "Ala"); hashCode.put("GAC", "Asp");  hashCode.put("GGC", "Gly");
-		hashCode3.put("GTA", AA3_Val); //hashCode.put("GCA", "Ala"); hashCode.put("GAA", "Glu");  hashCode.put("GGA", "Gly");
-		hashCode3.put("GTG", AA3_Val); //hashCode.put("GCG", "Ala"); hashCode.put("GAG", "Glu");  hashCode.put("GGG", "Gly");
+		mapDNACodToAA3.put("GTT", AA3_Val); mapDNACodToAA3.put("GCT", AA3_Ala); mapDNACodToAA3.put("GAT", AA3_Asp);  mapDNACodToAA3.put("GGT", AA3_Gly);
+		mapDNACodToAA3.put("GTC", AA3_Val);// hashCode.put("GCC", "Ala"); hashCode.put("GAC", "Asp");  hashCode.put("GGC", "Gly");
+		mapDNACodToAA3.put("GTA", AA3_Val); //hashCode.put("GCA", "Ala"); hashCode.put("GAA", "Glu");  hashCode.put("GGA", "Gly");
+		mapDNACodToAA3.put("GTG", AA3_Val); //hashCode.put("GCG", "Ala"); hashCode.put("GAG", "Glu");  hashCode.put("GGG", "Gly");
 
-		return hashCode3;
+		return mapDNACodToAA3;
 	}
-	/**
-	 * 三联密码子的配对情况表
-	 */
-	static HashMap<String, String> hashCode1 = null;
-	private static HashMap<String, String> getHashCode1()
-	{
-		if (hashCode1 != null) {
-			return hashCode1;
+
+	private static HashMap<String, String> getHashCode1() {
+		if (mapDNAcodToAA1 != null) {
+			return mapDNAcodToAA1;
 		}
-		hashCode1 =  new HashMap<String, String>();
-		hashCode1.put("UUU", AA1_Phe); hashCode1.put("UCU", AA1_Ser);   hashCode1.put("UAU", AA1_Tyr);   hashCode1.put("UGU", AA1_Cys);  
-		hashCode1.put("UUC", AA1_Phe); hashCode1.put("UCC", AA1_Ser);   hashCode1.put("UAC", AA1_Tyr);   hashCode1.put("UGC", AA1_Cys);  
-		hashCode1.put("UUA", AA1_Leu); hashCode1.put("UCA", AA1_Ser);   hashCode1.put("UAA", AA1_STOP);  hashCode1.put("UGA", AA1_STOP); 
-		hashCode1.put("UUG", AA1_Leu); hashCode1.put("UCG", AA1_Ser);   hashCode1.put("UAG", AA1_STOP);  hashCode1.put("UGG", AA1_Trp);  
+		mapDNAcodToAA1 =  new HashMap<String, String>();
+		mapDNAcodToAA1.put("UUU", AA1_Phe); mapDNAcodToAA1.put("UCU", AA1_Ser);   mapDNAcodToAA1.put("UAU", AA1_Tyr);   mapDNAcodToAA1.put("UGU", AA1_Cys);  
+		mapDNAcodToAA1.put("UUC", AA1_Phe); mapDNAcodToAA1.put("UCC", AA1_Ser);   mapDNAcodToAA1.put("UAC", AA1_Tyr);   mapDNAcodToAA1.put("UGC", AA1_Cys);  
+		mapDNAcodToAA1.put("UUA", AA1_Leu); mapDNAcodToAA1.put("UCA", AA1_Ser);   mapDNAcodToAA1.put("UAA", AA1_STOP);  mapDNAcodToAA1.put("UGA", AA1_STOP); 
+		mapDNAcodToAA1.put("UUG", AA1_Leu); mapDNAcodToAA1.put("UCG", AA1_Ser);   mapDNAcodToAA1.put("UAG", AA1_STOP);  mapDNAcodToAA1.put("UGG", AA1_Trp);  
 		
-		hashCode1.put("CUU", AA1_Leu); hashCode1.put("CCU", AA1_Pro);  hashCode1.put("CAU", AA1_His);   hashCode1.put("CGU",AA1_Arg);
-		hashCode1.put("CUC", AA1_Leu); hashCode1.put("CCC", AA1_Pro);  hashCode1.put("CAC", AA1_His);   hashCode1.put("CGC", AA1_Arg);
-		hashCode1.put("CUA", AA1_Leu); hashCode1.put("CCA", AA1_Pro);  hashCode1.put("CAA", AA1_Gln);   hashCode1.put("CGA", AA1_Arg);
-		hashCode1.put("CUG", AA1_Leu); hashCode1.put("CCG", AA1_Pro);  hashCode1.put("CAG", AA1_Gln);   hashCode1.put("CGG", AA1_Arg);
+		mapDNAcodToAA1.put("CUU", AA1_Leu); mapDNAcodToAA1.put("CCU", AA1_Pro);  mapDNAcodToAA1.put("CAU", AA1_His);   mapDNAcodToAA1.put("CGU",AA1_Arg);
+		mapDNAcodToAA1.put("CUC", AA1_Leu); mapDNAcodToAA1.put("CCC", AA1_Pro);  mapDNAcodToAA1.put("CAC", AA1_His);   mapDNAcodToAA1.put("CGC", AA1_Arg);
+		mapDNAcodToAA1.put("CUA", AA1_Leu); mapDNAcodToAA1.put("CCA", AA1_Pro);  mapDNAcodToAA1.put("CAA", AA1_Gln);   mapDNAcodToAA1.put("CGA", AA1_Arg);
+		mapDNAcodToAA1.put("CUG", AA1_Leu); mapDNAcodToAA1.put("CCG", AA1_Pro);  mapDNAcodToAA1.put("CAG", AA1_Gln);   mapDNAcodToAA1.put("CGG", AA1_Arg);
 		
-		hashCode1.put("AUU", AA1_Ile);   hashCode1.put("ACU", AA1_Thr); hashCode1.put("AAU", AA1_Asn);  hashCode1.put("AGU", AA1_Ser);
-		hashCode1.put("AUC", AA1_Ile);   hashCode1.put("ACC", AA1_Thr); hashCode1.put("AAC", AA1_Asn);  hashCode1.put("AGC", AA1_Ser);
-		hashCode1.put("AUA", AA1_Ile);   hashCode1.put("ACA", AA1_Thr); hashCode1.put("AAA", AA1_Lys);  hashCode1.put("AGA", AA1_Arg);
-		hashCode1.put("AUG", AA1_Met); hashCode1.put("ACG", AA1_Thr); hashCode1.put("AAG", AA1_Lys);  hashCode1.put("AGG", AA1_Arg);
+		mapDNAcodToAA1.put("AUU", AA1_Ile);   mapDNAcodToAA1.put("ACU", AA1_Thr); mapDNAcodToAA1.put("AAU", AA1_Asn);  mapDNAcodToAA1.put("AGU", AA1_Ser);
+		mapDNAcodToAA1.put("AUC", AA1_Ile);   mapDNAcodToAA1.put("ACC", AA1_Thr); mapDNAcodToAA1.put("AAC", AA1_Asn);  mapDNAcodToAA1.put("AGC", AA1_Ser);
+		mapDNAcodToAA1.put("AUA", AA1_Ile);   mapDNAcodToAA1.put("ACA", AA1_Thr); mapDNAcodToAA1.put("AAA", AA1_Lys);  mapDNAcodToAA1.put("AGA", AA1_Arg);
+		mapDNAcodToAA1.put("AUG", AA1_Met); mapDNAcodToAA1.put("ACG", AA1_Thr); mapDNAcodToAA1.put("AAG", AA1_Lys);  mapDNAcodToAA1.put("AGG", AA1_Arg);
 		
-		hashCode1.put("GUU", AA1_Val); hashCode1.put("GCU", AA1_Ala); hashCode1.put("GAU", AA1_Asp);  hashCode1.put("GGU", AA1_Gly);
-		hashCode1.put("GUC", AA1_Val); hashCode1.put("GCC", AA1_Ala); hashCode1.put("GAC", AA1_Asp);  hashCode1.put("GGC", AA1_Gly);
-		hashCode1.put("GUA", AA1_Val); hashCode1.put("GCA", AA1_Ala); hashCode1.put("GAA", AA1_Glu);  hashCode1.put("GGA", AA1_Gly);
-		hashCode1.put("GUG", AA1_Val); hashCode1.put("GCG", AA1_Ala); hashCode1.put("GAG", AA1_Glu);  hashCode1.put("GGG", AA1_Gly);
+		mapDNAcodToAA1.put("GUU", AA1_Val); mapDNAcodToAA1.put("GCU", AA1_Ala); mapDNAcodToAA1.put("GAU", AA1_Asp);  mapDNAcodToAA1.put("GGU", AA1_Gly);
+		mapDNAcodToAA1.put("GUC", AA1_Val); mapDNAcodToAA1.put("GCC", AA1_Ala); mapDNAcodToAA1.put("GAC", AA1_Asp);  mapDNAcodToAA1.put("GGC", AA1_Gly);
+		mapDNAcodToAA1.put("GUA", AA1_Val); mapDNAcodToAA1.put("GCA", AA1_Ala); mapDNAcodToAA1.put("GAA", AA1_Glu);  mapDNAcodToAA1.put("GGA", AA1_Gly);
+		mapDNAcodToAA1.put("GUG", AA1_Val); mapDNAcodToAA1.put("GCG", AA1_Ala); mapDNAcodToAA1.put("GAG", AA1_Glu);  mapDNAcodToAA1.put("GGG", AA1_Gly);
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		hashCode1.put("TTT", AA1_Phe); hashCode1.put("TCT", AA1_Ser);   hashCode1.put("TAT", AA1_Tyr);   hashCode1.put("TGT", AA1_Cys);  
-		hashCode1.put("TTC", AA1_Phe); hashCode1.put("TCC", AA1_Ser);   hashCode1.put("TAC", AA1_Tyr);   hashCode1.put("TGC", AA1_Cys);  
-		hashCode1.put("TTA", AA1_Leu); hashCode1.put("TCA", AA1_Ser);   hashCode1.put("TAA", AA1_STOP);  hashCode1.put("TGA", AA1_STOP); 
-		hashCode1.put("TTG", AA1_Leu); hashCode1.put("TCG", AA1_Ser);   hashCode1.put("TAG", AA1_STOP);  hashCode1.put("TGG", AA1_Trp);  
+		mapDNAcodToAA1.put("TTT", AA1_Phe); mapDNAcodToAA1.put("TCT", AA1_Ser);   mapDNAcodToAA1.put("TAT", AA1_Tyr);   mapDNAcodToAA1.put("TGT", AA1_Cys);  
+		mapDNAcodToAA1.put("TTC", AA1_Phe); mapDNAcodToAA1.put("TCC", AA1_Ser);   mapDNAcodToAA1.put("TAC", AA1_Tyr);   mapDNAcodToAA1.put("TGC", AA1_Cys);  
+		mapDNAcodToAA1.put("TTA", AA1_Leu); mapDNAcodToAA1.put("TCA", AA1_Ser);   mapDNAcodToAA1.put("TAA", AA1_STOP);  mapDNAcodToAA1.put("TGA", AA1_STOP); 
+		mapDNAcodToAA1.put("TTG", AA1_Leu); mapDNAcodToAA1.put("TCG", AA1_Ser);   mapDNAcodToAA1.put("TAG", AA1_STOP);  mapDNAcodToAA1.put("TGG", AA1_Trp);  
 		                                                         
-		hashCode1.put("CTT", AA1_Leu); hashCode1.put("CCT", AA1_Pro);  hashCode1.put("CAT", AA1_His);   hashCode1.put("CGT", AA1_Arg);
-		hashCode1.put("CTC", AA1_Leu);// hashCode.put("CCC", "Pro");  hashCode.put("CAC", "His");   hashCode.put("CGC", "Arg");
-		hashCode1.put("CTA", AA1_Leu); //hashCode.put("CCA", "Pro");  hashCode.put("CAA", "Gln");   hashCode.put("CGA", "Arg");
-		hashCode1.put("CTG", AA1_Leu); //hashCode.put("CCG", "Pro");  hashCode.put("CAG", "Gln");   hashCode.put("CGG", "Arg");
+		mapDNAcodToAA1.put("CTT", AA1_Leu); mapDNAcodToAA1.put("CCT", AA1_Pro);  mapDNAcodToAA1.put("CAT", AA1_His);   mapDNAcodToAA1.put("CGT", AA1_Arg);
+		mapDNAcodToAA1.put("CTC", AA1_Leu);// hashCode.put("CCC", "Pro");  hashCode.put("CAC", "His");   hashCode.put("CGC", "Arg");
+		mapDNAcodToAA1.put("CTA", AA1_Leu); //hashCode.put("CCA", "Pro");  hashCode.put("CAA", "Gln");   hashCode.put("CGA", "Arg");
+		mapDNAcodToAA1.put("CTG", AA1_Leu); //hashCode.put("CCG", "Pro");  hashCode.put("CAG", "Gln");   hashCode.put("CGG", "Arg");
 		                           
-		hashCode1.put("ATT", AA1_Ile);   hashCode1.put("ACT", AA1_Thr); hashCode1.put("AAT", AA1_Asn);  hashCode1.put("AGT", AA1_Ser);
-		hashCode1.put("ATC", AA1_Ile);   //hashCode.put("ACC", "Thr"); hashCode.put("AAC", "Asn");  hashCode.put("AGC", "Ser");
-		hashCode1.put("ATA", AA1_Ile);   //hashCode.put("ACA", "Thr"); hashCode.put("AAA", "Lys");  hashCode.put("AGA", "Arg");
-		hashCode1.put("ATG", AA1_Met); //hashCode.put("ACG", "Thr"); hashCode.put("AAG", "Lys");  hashCode.put("AGG", "Arg");
+		mapDNAcodToAA1.put("ATT", AA1_Ile);   mapDNAcodToAA1.put("ACT", AA1_Thr); mapDNAcodToAA1.put("AAT", AA1_Asn);  mapDNAcodToAA1.put("AGT", AA1_Ser);
+		mapDNAcodToAA1.put("ATC", AA1_Ile);   //hashCode.put("ACC", "Thr"); hashCode.put("AAC", "Asn");  hashCode.put("AGC", "Ser");
+		mapDNAcodToAA1.put("ATA", AA1_Ile);   //hashCode.put("ACA", "Thr"); hashCode.put("AAA", "Lys");  hashCode.put("AGA", "Arg");
+		mapDNAcodToAA1.put("ATG", AA1_Met); //hashCode.put("ACG", "Thr"); hashCode.put("AAG", "Lys");  hashCode.put("AGG", "Arg");
 		                           
-		hashCode1.put("GTT", AA1_Val); hashCode1.put("GCT", AA1_Ala); hashCode1.put("GAT", AA1_Asp);  hashCode1.put("GGT", AA1_Gly);
-		hashCode1.put("GTC", AA1_Val);// hashCode.put("GCC", "Ala"); hashCode.put("GAC", "Asp");  hashCode.put("GGC", "Gly");
-		hashCode1.put("GTA", AA1_Val); //hashCode.put("GCA", "Ala"); hashCode.put("GAA", "Glu");  hashCode.put("GGA", "Gly");
-		hashCode1.put("GTG", AA1_Val); //hashCode.put("GCG", "Ala"); hashCode.put("GAG", "Glu");  hashCode.put("GGG", "Gly");
+		mapDNAcodToAA1.put("GTT", AA1_Val); mapDNAcodToAA1.put("GCT", AA1_Ala); mapDNAcodToAA1.put("GAT", AA1_Asp);  mapDNAcodToAA1.put("GGT", AA1_Gly);
+		mapDNAcodToAA1.put("GTC", AA1_Val);// hashCode.put("GCC", "Ala"); hashCode.put("GAC", "Asp");  hashCode.put("GGC", "Gly");
+		mapDNAcodToAA1.put("GTA", AA1_Val); //hashCode.put("GCA", "Ala"); hashCode.put("GAA", "Glu");  hashCode.put("GGA", "Gly");
+		mapDNAcodToAA1.put("GTG", AA1_Val); //hashCode.put("GCG", "Ala"); hashCode.put("GAG", "Glu");  hashCode.put("GGG", "Gly");
 
-		return hashCode1;
+		return mapDNAcodToAA1;
 	}
-	/**
-	 * 蛋白性质表
-	 */
-	static HashMap<String, String[]> hashAAquality = null;
 	/**
 	 * 蛋白性质表
 	 */
 	private static HashMap<String, String[]> getHashAAquality()
 	{
-		if (hashAAquality != null) {
-			return hashAAquality;
+		if (mapAA2ChamicalQuality != null) {
+			return mapAA2ChamicalQuality;
 		}
-		hashAAquality = new HashMap<String, String[]>();
-		hashAAquality.put(AA3_Asp, new String[]{"polar","charged","negatively"});    hashAAquality.put(AA1_Asp, new String[]{"polar","charged","negatively"});
-		hashAAquality.put(AA3_Glu, new String[]{"polar","charged","negatively"});     hashAAquality.put(AA1_Glu, new String[]{"polar","charged","negatively"});
-		hashAAquality.put(AA3_His, new String[]{"polar","charged","positively"});		hashAAquality.put(AA1_His, new String[]{"polar","charged","positively"});
-		hashAAquality.put(AA3_Lys, new String[]{"polar","charged","positively"});		hashAAquality.put(AA1_Lys, new String[]{"polar","charged","positively"});
-		hashAAquality.put(AA3_Arg, new String[]{"polar","charged","positively"});		hashAAquality.put(AA1_Arg, new String[]{"polar","charged","positively"});
+		mapAA2ChamicalQuality = new HashMap<String, String[]>();
+		mapAA2ChamicalQuality.put(AA3_Asp, new String[]{"polar","charged","negatively"});    mapAA2ChamicalQuality.put(AA1_Asp, new String[]{"polar","charged","negatively"});
+		mapAA2ChamicalQuality.put(AA3_Glu, new String[]{"polar","charged","negatively"});     mapAA2ChamicalQuality.put(AA1_Glu, new String[]{"polar","charged","negatively"});
+		mapAA2ChamicalQuality.put(AA3_His, new String[]{"polar","charged","positively"});		mapAA2ChamicalQuality.put(AA1_His, new String[]{"polar","charged","positively"});
+		mapAA2ChamicalQuality.put(AA3_Lys, new String[]{"polar","charged","positively"});		mapAA2ChamicalQuality.put(AA1_Lys, new String[]{"polar","charged","positively"});
+		mapAA2ChamicalQuality.put(AA3_Arg, new String[]{"polar","charged","positively"});		mapAA2ChamicalQuality.put(AA1_Arg, new String[]{"polar","charged","positively"});
 
-		hashAAquality.put(AA3_Asn, new String[]{"polar","uncharged","amide"});		hashAAquality.put(AA1_Asn, new String[]{"polar","uncharged","amide"});
-		hashAAquality.put(AA3_Gln, new String[]{"polar","uncharged","amide"});		hashAAquality.put(AA1_Gln, new String[]{"polar","uncharged","amide"});
+		mapAA2ChamicalQuality.put(AA3_Asn, new String[]{"polar","uncharged","amide"});		mapAA2ChamicalQuality.put(AA1_Asn, new String[]{"polar","uncharged","amide"});
+		mapAA2ChamicalQuality.put(AA3_Gln, new String[]{"polar","uncharged","amide"});		mapAA2ChamicalQuality.put(AA1_Gln, new String[]{"polar","uncharged","amide"});
 
- 		hashAAquality.put(AA3_Ser, new String[]{"polar","uncharged","alcohol"}); 		hashAAquality.put(AA1_Ser, new String[]{"polar","uncharged","alcohol"});
- 		hashAAquality.put(AA3_Thr, new String[]{"polar","uncharged","alcohol"}); 		hashAAquality.put(AA1_Thr, new String[]{"polar","uncharged","alcohol"});
+ 		mapAA2ChamicalQuality.put(AA3_Ser, new String[]{"polar","uncharged","alcohol"}); 		mapAA2ChamicalQuality.put(AA1_Ser, new String[]{"polar","uncharged","alcohol"});
+ 		mapAA2ChamicalQuality.put(AA3_Thr, new String[]{"polar","uncharged","alcohol"}); 		mapAA2ChamicalQuality.put(AA1_Thr, new String[]{"polar","uncharged","alcohol"});
 		
- 		hashAAquality.put(AA3_Leu, new String[]{"nonpolar","hydrophobic","aliphatic"});		hashAAquality.put(AA1_Leu, new String[]{"nonpolar","hydrophobic","aliphatic"});
-		hashAAquality.put(AA3_Ile, new String[]{"nonpolar","hydrophobic","aliphatic"});		hashAAquality.put(AA1_Ile, new String[]{"nonpolar","hydrophobic","aliphatic"});
-		hashAAquality.put(AA3_Val, new String[]{"nonpolar","hydrophobic","aliphatic"});		hashAAquality.put(AA1_Val, new String[]{"nonpolar","hydrophobic","aliphatic"});
+ 		mapAA2ChamicalQuality.put(AA3_Leu, new String[]{"nonpolar","hydrophobic","aliphatic"});		mapAA2ChamicalQuality.put(AA1_Leu, new String[]{"nonpolar","hydrophobic","aliphatic"});
+		mapAA2ChamicalQuality.put(AA3_Ile, new String[]{"nonpolar","hydrophobic","aliphatic"});		mapAA2ChamicalQuality.put(AA1_Ile, new String[]{"nonpolar","hydrophobic","aliphatic"});
+		mapAA2ChamicalQuality.put(AA3_Val, new String[]{"nonpolar","hydrophobic","aliphatic"});		mapAA2ChamicalQuality.put(AA1_Val, new String[]{"nonpolar","hydrophobic","aliphatic"});
 
-		hashAAquality.put(AA3_Phe, new String[]{"nonpolar","hydrophobic","aromatic"});		hashAAquality.put(AA1_Phe, new String[]{"nonpolar","hydrophobic","aromatic"});
-		hashAAquality.put(AA3_Tyr, new String[]{"nonpolar","hydrophobic","aromatic"});		hashAAquality.put(AA1_Tyr, new String[]{"nonpolar","hydrophobic","aromatic"});
-		hashAAquality.put(AA3_Trp, new String[]{"nonpolar","hydrophobic","aromatic"});		hashAAquality.put(AA1_Trp, new String[]{"nonpolar","hydrophobic","aromatic"});
+		mapAA2ChamicalQuality.put(AA3_Phe, new String[]{"nonpolar","hydrophobic","aromatic"});		mapAA2ChamicalQuality.put(AA1_Phe, new String[]{"nonpolar","hydrophobic","aromatic"});
+		mapAA2ChamicalQuality.put(AA3_Tyr, new String[]{"nonpolar","hydrophobic","aromatic"});		mapAA2ChamicalQuality.put(AA1_Tyr, new String[]{"nonpolar","hydrophobic","aromatic"});
+		mapAA2ChamicalQuality.put(AA3_Trp, new String[]{"nonpolar","hydrophobic","aromatic"});		mapAA2ChamicalQuality.put(AA1_Trp, new String[]{"nonpolar","hydrophobic","aromatic"});
 
-		hashAAquality.put(AA3_Ala, new String[]{"nonpolar","small","small"});		hashAAquality.put(AA1_Ala, new String[]{"nonpolar","small","small"});
-		hashAAquality.put(AA3_Gly, new String[]{"nonpolar","small","small"});		hashAAquality.put(AA1_Gly, new String[]{"nonpolar","small","small"});
+		mapAA2ChamicalQuality.put(AA3_Ala, new String[]{"nonpolar","small","small"});		mapAA2ChamicalQuality.put(AA1_Ala, new String[]{"nonpolar","small","small"});
+		mapAA2ChamicalQuality.put(AA3_Gly, new String[]{"nonpolar","small","small"});		mapAA2ChamicalQuality.put(AA1_Gly, new String[]{"nonpolar","small","small"});
 
- 		hashAAquality.put(AA3_Met, new String[]{"nonpolar","hydrophobic","sulfur"}); 		hashAAquality.put(AA1_Met, new String[]{"nonpolar","hydrophobic","sulfur"});
-		hashAAquality.put(AA3_Cys, new String[]{"nonpolar","not_group","sulfur"});		hashAAquality.put(AA1_Cys, new String[]{"nonpolar","not_group","sulfur"});
+ 		mapAA2ChamicalQuality.put(AA3_Met, new String[]{"nonpolar","hydrophobic","sulfur"}); 		mapAA2ChamicalQuality.put(AA1_Met, new String[]{"nonpolar","hydrophobic","sulfur"});
+		mapAA2ChamicalQuality.put(AA3_Cys, new String[]{"nonpolar","not_group","sulfur"});		mapAA2ChamicalQuality.put(AA1_Cys, new String[]{"nonpolar","not_group","sulfur"});
 		
-		hashAAquality.put(AA3_Pro, new String[]{"nonpolar","not_group","other"});		hashAAquality.put(AA1_Pro, new String[]{"nonpolar","not_group","other"});
-		hashAAquality.put(AA3_STOP, new String[]{"Stop_Code","Stop_Code","Stop_Code"});		hashAAquality.put(AA1_STOP, new String[]{"Stop_Code","Stop_Code","Stop_Code"});
+		mapAA2ChamicalQuality.put(AA3_Pro, new String[]{"nonpolar","not_group","other"});		mapAA2ChamicalQuality.put(AA1_Pro, new String[]{"nonpolar","not_group","other"});
+		mapAA2ChamicalQuality.put(AA3_STOP, new String[]{"Stop_Code","Stop_Code","Stop_Code"});		mapAA2ChamicalQuality.put(AA1_STOP, new String[]{"Stop_Code","Stop_Code","Stop_Code"});
 
-		return hashAAquality;
+		return mapAA2ChamicalQuality;
 	}
 
 	/** 蛋白一位和三位编号转换 */
-	private static HashMap<String, String> getHashAAchange()
-	{
-		if (hashAAchange != null) {
-			return hashAAchange;
+	private static HashMap<String, String> setMapAA1toAA3() {
+		if (mapAA1toAA3 != null) {
+			return mapAA1toAA3;
 		}
-		hashAAchange = new HashMap<String, String>();
-		hashAAchange.put( AA1_Asp, AA3_Asp);     hashAAchange.put( AA3_Asp, AA1_Asp);
-		hashAAchange.put( AA1_Arg, AA3_Arg);     hashAAchange.put( AA3_Arg, AA1_Arg);
-		hashAAchange.put( AA1_Asp, AA3_Asp);     hashAAchange.put( AA3_Asp, AA1_Asp);
-		hashAAchange.put( AA1_Cys, AA3_Cys);     hashAAchange.put( AA3_Cys, AA1_Cys);
-		hashAAchange.put( AA1_Gln, AA3_Gln);     hashAAchange.put( AA3_Gln, AA1_Gln);
-		hashAAchange.put( AA1_Glu, AA3_Glu);     hashAAchange.put( AA3_Glu, AA1_Glu);
-		hashAAchange.put( AA1_His, AA3_His);     hashAAchange.put( AA3_His, AA1_His);
-		hashAAchange.put( AA1_Ile, AA3_Ile);     hashAAchange.put( AA3_Ile, AA1_Ile);
-		hashAAchange.put( AA1_Gly, AA3_Gly);     hashAAchange.put( AA3_Gly, AA1_Gly);
-		hashAAchange.put( AA1_Asn, AA3_Asn);     hashAAchange.put( AA3_Asn, AA1_Asn);
-		hashAAchange.put( AA1_Leu, AA3_Leu);     hashAAchange.put( AA3_Leu, AA1_Leu);
-		hashAAchange.put( AA1_Lys, AA3_Lys);     hashAAchange.put( AA3_Lys, AA1_Lys);
-		hashAAchange.put( AA1_Met, AA3_Met);     hashAAchange.put( AA3_Met, AA1_Met);
-		hashAAchange.put( AA1_Phe, AA3_Phe);     hashAAchange.put( AA3_Phe, AA1_Phe);
-		hashAAchange.put( AA1_Pro, AA3_Pro);     hashAAchange.put( AA3_Pro, AA1_Pro);
-		hashAAchange.put( AA1_Ser, AA3_Ser);     hashAAchange.put( AA3_Ser, AA1_Ser);
-		hashAAchange.put( AA1_Thr, AA3_Thr);     hashAAchange.put( AA3_Thr, AA1_Thr);
-		hashAAchange.put( AA1_Trp, AA3_Trp);     hashAAchange.put( AA3_Trp, AA1_Trp);
-		hashAAchange.put( AA1_Tyr, AA3_Tyr);     hashAAchange.put( AA3_Tyr, AA1_Tyr);
-		hashAAchange.put( AA1_Val, AA3_Val);     hashAAchange.put( AA3_Val, AA1_Val);
+		mapAA1toAA3 = new HashMap<String, String>();
+		mapAA1toAA3.put( AA1_Asp, AA3_Asp);     mapAA1toAA3.put( AA3_Asp, AA1_Asp);
+		mapAA1toAA3.put( AA1_Arg, AA3_Arg);     mapAA1toAA3.put( AA3_Arg, AA1_Arg);
+		mapAA1toAA3.put( AA1_Asp, AA3_Asp);     mapAA1toAA3.put( AA3_Asp, AA1_Asp);
+		mapAA1toAA3.put( AA1_Cys, AA3_Cys);     mapAA1toAA3.put( AA3_Cys, AA1_Cys);
+		mapAA1toAA3.put( AA1_Gln, AA3_Gln);     mapAA1toAA3.put( AA3_Gln, AA1_Gln);
+		mapAA1toAA3.put( AA1_Glu, AA3_Glu);     mapAA1toAA3.put( AA3_Glu, AA1_Glu);
+		mapAA1toAA3.put( AA1_His, AA3_His);     mapAA1toAA3.put( AA3_His, AA1_His);
+		mapAA1toAA3.put( AA1_Ile, AA3_Ile);     mapAA1toAA3.put( AA3_Ile, AA1_Ile);
+		mapAA1toAA3.put( AA1_Gly, AA3_Gly);     mapAA1toAA3.put( AA3_Gly, AA1_Gly);
+		mapAA1toAA3.put( AA1_Asn, AA3_Asn);     mapAA1toAA3.put( AA3_Asn, AA1_Asn);
+		mapAA1toAA3.put( AA1_Leu, AA3_Leu);     mapAA1toAA3.put( AA3_Leu, AA1_Leu);
+		mapAA1toAA3.put( AA1_Lys, AA3_Lys);     mapAA1toAA3.put( AA3_Lys, AA1_Lys);
+		mapAA1toAA3.put( AA1_Met, AA3_Met);     mapAA1toAA3.put( AA3_Met, AA1_Met);
+		mapAA1toAA3.put( AA1_Phe, AA3_Phe);     mapAA1toAA3.put( AA3_Phe, AA1_Phe);
+		mapAA1toAA3.put( AA1_Pro, AA3_Pro);     mapAA1toAA3.put( AA3_Pro, AA1_Pro);
+		mapAA1toAA3.put( AA1_Ser, AA3_Ser);     mapAA1toAA3.put( AA3_Ser, AA1_Ser);
+		mapAA1toAA3.put( AA1_Thr, AA3_Thr);     mapAA1toAA3.put( AA3_Thr, AA1_Thr);
+		mapAA1toAA3.put( AA1_Trp, AA3_Trp);     mapAA1toAA3.put( AA3_Trp, AA1_Trp);
+		mapAA1toAA3.put( AA1_Tyr, AA3_Tyr);     mapAA1toAA3.put( AA3_Tyr, AA1_Tyr);
+		mapAA1toAA3.put( AA1_Val, AA3_Val);     mapAA1toAA3.put( AA3_Val, AA1_Val);
 
-		return hashAAchange;
+		return mapAA1toAA3;
+	}
+
+	
+	public SeqFasta(String seqName, String SeqSequence) {
+		getCompMap();
+		this.SeqName = seqName;
+		this.SeqSequence = SeqSequence;
+	}
+	public SeqFasta(String SeqSequence) {
+		getCompMap();
+		this.SeqSequence = SeqSequence;
 	}
 	/**
-	 * 默认返回三字母长度的氨基酸
+	 * @param seqName
+	 * @param SeqSequence
+	 * @param cis5to3 仅仅标记一下，并不会反向序列
 	 */
-	boolean AA3Len = true;
+	public SeqFasta(String seqName, String SeqSequence, boolean cis5to3) {
+		getCompMap();
+		this.SeqName = seqName;
+		if (cis5to3) {
+			this.SeqSequence = SeqSequence;
+		}
+		else {
+			this.SeqSequence = reservecomplement(SeqSequence);
+		}
+	}
+	public SeqFasta() {
+		getCompMap();
+	}
+	
 	/**
 	 * 默认返回三字母长度的氨基酸
 	 */
 	public void setAA3Len(boolean aA3Len) {
 		AA3Len = aA3Len;
+	}
+	public void setTOLOWCASE(Boolean TOLOWCASE) {
+		this.TOLOWCASE = TOLOWCASE;
+	}
+	/**
+	 * 将RNA序列转化为DNA，也就是将U替换为T
+	 */
+	public void setDNA(boolean isDNAseq) {
+		if (isDNAseq) {
+			SeqSequence = SeqSequence.replace('u', 't').replace('U', 'T');
+		}
+	}
+	/** 设定序列名 */
+	public void setName(String SeqName) {
+		 this.SeqName = SeqName;
+	}
+	/** 获得序列名 */
+	public String getSeqName() {
+		return SeqName;
+	}
+	/** 设定序列 */
+	public void setSeq(String Seq) {
+		 this.SeqSequence = Seq;
+	}
+	/**
+	 * nr序列的长度
+	 * @return
+	 */
+	public int getLength() {
+		return SeqSequence.length();
+	}
+	/**
+	 * 给定左右的坐标，然后将seqfasta截短
+	 * @param start 和substring一样的用法
+	 * @param end 和substring一样的用法
+	 * @return 返回截短后的string
+	 */
+	public SeqFasta trimSeq(int start, int end) {
+		SeqFasta seqFasta = new SeqFasta();
+		seqFasta.AA3Len = AA3Len;
+		seqFasta.SeqName = SeqName;
+		seqFasta.TOLOWCASE = TOLOWCASE;
+		if (SeqSequence == null) {
+			seqFasta.SeqSequence = SeqSequence;
+			return seqFasta;
+		}
+		seqFasta.SeqSequence = SeqSequence.substring(start, end);
+		return seqFasta;
 	}
 	/**
 	 * 指定三联密码子，将其转换为蛋白编码
@@ -369,179 +423,10 @@ public class SeqFasta implements Cloneable {
 		}
 	}
 	/**
-	 * 将RNA序列转化为DNA，也就是将U替换为T
-	 */
-	public void setDNA(boolean isDNAseq) {
-		if (isDNAseq) {
-			SeqSequence = SeqSequence.replace('u', 't').replace('U', 'T');
-		}
-	}
-	/**
-	 * 输入格式不标准的AA，将其改成标准格式AA
-	 * @param AA
-	 * @return
-	 */
-	private static String getAAformate(String AA) {
-		if (AA.trim().equals(AA1_STOP) || AA.trim().equals(AA3_STOP)) {
-			return AA.trim();
-		}
-		AA = AA.trim();
-		if (AA.length() == 1) {
-			return AA.toUpperCase();
-		}
-		else if (AA.length() == 3) {
-			AA = AA.toLowerCase();
-			char[] aa = AA.toCharArray();
-			aa[0] = (char)((int)aa[0] - 32);
-			return String.valueOf(aa);
-		}
-		else {
-			logger.error("input error AA: "+AA);
-			return null;
-		}
-	}
-	/**
-	 * 获得氨基酸的特性，极性，电荷等，按照genedoc的分类标准
-	 * @return
-	 * string[3]: 0：极性--带电荷--负电
-	 * 1：
-	 */
-	public static String[] getAAquality(String AA) {
-		AA = getAAformate(AA);
-		return getHashAAquality().get(AA);
-	}
-	/**
-	 * 将氨基酸在单字母和三字母之间转换
-	 */
-	public static String convertAA(String AA) {
-		AA = getAAformate(AA);
-		return getHashAAchange().get(AA);
-	}
-	/**
-	 * 
-	 * 输入的是DNA三联密码字
-	 * 比较两个氨基酸的化学性质，返回差异点，返回最大差异
-	 * 譬如如果极性不同就返回极性
-	 * 格式 polar --> nonpolar等
-	 * 都一样则返回"";
-	 * @param DNAcode1 第一个DNA编码
-	 * @param DNAcode2 第二个DNA编码
-	 * @return
-	 */
-	public static String cmpAAqualityDNA(String DNAcode1, String DNAcode2)
-	{
-		String AA1 = convertDNACode2AA(DNAcode1, true);
-		String AA2 = convertDNACode2AA(DNAcode2, true);
-		return compareAAquality(AA1, AA2);
-	}
-	
-	/**
-	 * 输入的是氨基酸，无所谓三字符还是单字符
-	 * 比较两个氨基酸的化学性质，返回差异点，返回最大差异
-	 * 譬如如果极性不同就返回极性
-	 * 格式 polar --> nonpolar等
-	 * 都一样则返回"";
-	 */
-	public static String cmpAAquality(String AA1, String AA2)
-	{
-		AA1 = getAAformate(AA1);
-		AA2 = getAAformate(AA2);
-		return compareAAquality(AA1, AA2);
-	}
-	/**
-	 * 输入的是氨基酸，必须是标准格式
-	 * 比较两个氨基酸的化学性质，返回差异点，返回最大差异
-	 * 譬如如果极性不同就返回极性
-	 * 格式 polar --> nonpolar等
-	 * 都一样则返回"";
-	 */
-	private static String compareAAquality(String AA1, String AA2)
-	{
-		if (AA1.equals(AA2)) {
-			return "same Amio Acid";
-		}
-		String[] aaInfo1 = getHashAAquality().get(AA1);
-		String[] aaInfo2 = getHashAAquality().get(AA2);
-		if (aaInfo1 == null || aaInfo2 ==null) {
-			return "";
-		}
-		for (int i = 0; i < aaInfo1.length; i++) {
-			if (!aaInfo1[i].equals(aaInfo2[i])) {
-				return aaInfo1[i] + " --> " + aaInfo2[i];
-			}
-		}
-		return "same chemical property";	
-	}
-	/**
-	 * 当用指定序列来插入或替换本序列中的位置时，如果插入的位置并不是很确定
-	 * 譬如插入一段序列到 10-20上去，但是是否精确插入到10并不清楚，那么该区域再加上一段XXX用以标记
-	 */
-	private static final String SEP_SEQ = "XXXXXXX";
-	
-	public SeqFasta(String seqName, String SeqSequence)
-	{
-		getCompMap();
-		this.SeqName = seqName;
-		this.SeqSequence = SeqSequence;
-	}
-	
-	public SeqFasta(String SeqSequence)
-	{
-		getCompMap();
-		this.SeqSequence = SeqSequence;
-	}
-	/**
-	 * @param seqName
-	 * @param SeqSequence
-	 * @param cis5to3 仅仅标记一下，并不会反向序列
-	 */
-	public SeqFasta(String seqName, String SeqSequence, boolean cis5to3)
-	{
-		getCompMap();
-		this.SeqName = seqName;
-		if (cis5to3) {
-			this.SeqSequence = SeqSequence;
-		}
-		else {
-			this.SeqSequence = reservecomplement(SeqSequence);
-		}
-	}
-	
-	public SeqFasta() {
-		getCompMap();
-	}
-	/**
-	 * 设定序列名
-	 */
-	public void setName(String SeqName) {
-		 this.SeqName = SeqName;
-	}
-	/**
-	 * 获得序列名
-	 */
-	public String getSeqName() {
-		return SeqName;
-	}
-	/**
-	 * 设定序列
-	 */
-	public void setSeq(String Seq) {
-		 this.SeqSequence = Seq;
-	}
-	
-	/**
 	 * 输入序列坐标信息：序列名-序列起点和终点 返回序列
-	 * 
-	 * @param hashSeq
-	 *            序列的哈希表，键为序列名称，值为具体序列
-	 * @param chr
-	 *            序列参数之序列名，用来在哈希表中查找具体某条序列
-	 * @param startlocation
-	 *            序列起点
-	 * @param endlocation
-	 *            序列终点
-	 * @param cisseq序列正反向
-	 *            ，蛋白序列就输true
+	 * @param startlocation 序列起点
+	 * @param endlocation 序列终点
+	 * @param cisseq序列正反向，蛋白序列就输true
 	 */
 	public SeqFasta getSubSeq(int startlocation, int endlocation, boolean cisseq) {
 		String sequence = getsequence(startlocation, endlocation);
@@ -553,11 +438,9 @@ public class SeqFasta implements Cloneable {
 
 	/**
 	 * 输入序列坐标，起点和终点 返回序列
+	 * 如果位点超过了范围，那么修正位点
 	 */
 	private String getsequence(int startlocation, int endlocation) {
-		/**
-		 * 如果位点超过了范围，那么修正位点
-		 */
 		int length = SeqSequence.length();
 		if (startlocation < 1 || startlocation >= length || endlocation < 1
 				|| endlocation >= length) {
@@ -582,28 +465,27 @@ public class SeqFasta implements Cloneable {
 	 * 出错则返回null;
 	 */
 	private String reservecomplement(String sequence) {
-		if (compmap == null) {
-			getCompMap();
+		String[] revSeq = reservecomInfo(sequence);
+		if (revSeq[1] != null) {
+			logger.error(SeqName + " 含有未知碱基 " + revSeq[1]);
 		}
-		StringBuilder recomseq = new StringBuilder();
-		int length = sequence.length();
-		Character base;
-		for (int i = length - 1; i >= 0; i--) {
-			base = compmap.get(sequence.charAt(i));
-			if (base != null) {
-				recomseq.append(compmap.get(sequence.charAt(i)));
-			} else {
-				logger.error(SeqName + " 含有未知碱基 " + sequence.charAt(i));
-				return null;
-			}
-		}
-		return recomseq.toString();
+		return revSeq[0];
 	}
-
 	/**
 	 * 输入序列，互补对照表 获得反向互补序列
 	 */
 	public static String reservecom(String sequence) {
+		String[] revSeq = reservecomInfo(sequence);
+		return revSeq[0];
+	}
+	/**
+	 * @param sequence
+	 * @return
+	 * 0：seq 出错则返回null
+	 * 1：如果出错，记录出错位置
+	 */
+	private static String[] reservecomInfo(String sequence) {
+		String[] result = new String[2];
 		if (compmap == null) {
 			getCompMap();
 		}
@@ -615,12 +497,16 @@ public class SeqFasta implements Cloneable {
 			if (base != null) {
 				recomseq.append(compmap.get(sequence.charAt(i)));
 			} else {
-				return "第"+ i+ "位含有未知碱基: " + sequence.charAt(i);
+				result[1] = i + "";
+				break;
 			}
 		}
-		return recomseq.toString();
+		//出错了result[1] 才会有记录
+		if (result[1] == null) {
+			result[0] = recomseq.toString();
+		}
+		return result;
 	}
-	
 	/**
 	 * 输入序列，互补对照表 获得反向互补序列
 	 * 其中SeqName不变，cis5to3反向，序列反向互补
@@ -707,96 +593,10 @@ public class SeqFasta implements Cloneable {
 	 * 统计序列中小写序列，N的数量以及X的数量等
 	 */
 	public ArrayList<LocInfo> getSeqInfo() {
-		//string0: flag string1: location string2:endLoc
-		ArrayList<LocInfo> lsResult = new ArrayList<LocInfo>();
-		char[] seq = SeqSequence.toCharArray();
-		boolean flagBound = false; //边界模糊标记，XX
-		boolean flagGap = false; //gap标记，小写
-		boolean flagAmbitious = false; //不确定碱基标记，NNN
-		int bound = 0; int gap = 0; int ambitious = 0;
-		int startBound = 0; int startGap = 0; int startAmbitious = 0;
-		for (int i = 0; i < seq.length; i++) {
-			if (seq[i] < 'a' && seq[i] != 'X' && seq[i] != 'N') {
-				if (flagAmbitious) {
-					addList(lsResult, "ambitious", startAmbitious, ambitious);
-					flagAmbitious = false; //不确定碱基标记，NNN
-				}
-				if (flagGap) {
-					addList(lsResult, "gap", startGap, gap);
-					flagGap = false; //gap标记，小写
-				}
-				if (flagBound) {
-					addList(lsResult, "bound", startBound, bound);
-					flagBound = false; //边界模糊标记，XX
-				}
-			}
-			else if (seq[i] == 'X' ) {
-				if (flagAmbitious) {
-					addList(lsResult, "ambitious", startAmbitious, ambitious);
-					flagAmbitious = false; //不确定碱基标记，NNN
-				}
-				if (flagGap) {
-					addList(lsResult, "gap", startGap, gap);
-					flagGap = false; //gap标记，小写
-				}
-				if (flagBound) {
-					bound ++;
-				}
-				else {
-					flagBound = true;
-					bound = 0;
-					startBound = i;
-				}
-			} 
-			else if (seq[i] == 'N') {
-				if (flagAmbitious) {
-					ambitious ++;
-				}
-				else {
-					flagAmbitious = true;
-					ambitious = 0;
-					startAmbitious = i;
-				}
-				if (flagGap) {
-					addList(lsResult, "gap", startGap, gap);
-					flagGap = false; // gap标记，小写
-				}
-				if (flagBound) {
-					addList(lsResult, "bound",startBound, bound);
-					flagBound = false; // 边界模糊标记，XX
-				}
-			}
-			else if (seq[i] >= 'a') {
-				System.out.println("i");
-				if (flagAmbitious) {
-					addList(lsResult, "ambitious", startAmbitious, ambitious);
-					flagAmbitious = false; //不确定碱基标记，NNN
-				}
-				if (flagGap) {
-					gap ++;
-				}
-				else {
-					flagGap = true;
-					gap = 0;
-					startGap = i;
-				}
-				if (flagBound) {
-					addList(lsResult, "bound", startBound, bound);
-					flagBound = false; //边界模糊标记，XX
-				}
-			}
-		}
-		return lsResult;
-	}
-	/**
-	 * @param lsInfo
-	 * @param info
-	 * @param start 内部会加上1
-	 * @param length
-	 */
-	private void addList(ArrayList<LocInfo> lsInfo, String info, int start, int length) {
-		LocInfo locInfo = new LocInfo(info, "", start, start+length-1, true);
-		lsInfo.add(locInfo);
+		StatisticSeqInfo statisticSeqInfo = new StatisticSeqInfo();
+		statisticSeqInfo.setSeq(SeqSequence);
+		statisticSeqInfo.statistics();
+		return statisticSeqInfo.getLsSeqInfo();
 	}
 	/**@return 将nr序列转变为单字母aa序列，首先正反向之后，然后按照该顺序进行orf选择 */
 	public String toStringAA() {
@@ -935,8 +735,7 @@ public class SeqFasta implements Cloneable {
 				num ++ ;
 		}
 		if (num == 0) {
-			if (flagFindU)
-				return SEQ_RNA;
+			if (flagFindU) return SEQ_RNA;
 			
 			return SEQ_DNA;
 		}
@@ -1005,5 +804,223 @@ public class SeqFasta implements Cloneable {
 		result = result + Math.max(chrSeq1.length, chrSeq2.length) - i;
 		return result;
 	}
+	/**
+	 * 输入格式不标准的AA，将其改成标准格式AA
+	 * @param AA
+	 * @return
+	 */
+	private static String getAAformate(String AA) {
+		if (AA.trim().equals(AA1_STOP) || AA.trim().equals(AA3_STOP)) {
+			return AA.trim();
+		}
+		AA = AA.trim();
+		if (AA.length() == 1) {
+			return AA.toUpperCase();
+		}
+		else if (AA.length() == 3) {
+			AA = AA.toLowerCase();
+			char[] aa = AA.toCharArray();
+			aa[0] = (char)((int)aa[0] - 32);
+			return String.valueOf(aa);
+		}
+		else {
+			logger.error("input error AA: "+AA);
+			return null;
+		}
+	}
+	/**
+	 * 获得氨基酸的特性，极性，电荷等，按照genedoc的分类标准
+	 * @return
+	 * string[3]: 0：极性--带电荷--负电
+	 * 1：
+	 */
+	public static String[] getAAquality(String AA) {
+		AA = getAAformate(AA);
+		return getHashAAquality().get(AA);
+	}
+	/**
+	 * 将氨基酸在单字母和三字母之间转换
+	 */
+	public static String convertAA(String AA) {
+		AA = getAAformate(AA);
+		return setMapAA1toAA3().get(AA);
+	}
+	/**
+	 * 
+	 * 输入的是DNA三联密码字
+	 * 比较两个氨基酸的化学性质，返回差异点，返回最大差异
+	 * 譬如如果极性不同就返回极性
+	 * 格式 polar --> nonpolar等
+	 * 都一样则返回"";
+	 * @param DNAcode1 第一个DNA编码
+	 * @param DNAcode2 第二个DNA编码
+	 * @return
+	 */
+	public static String cmpAAqualityDNA(String DNAcode1, String DNAcode2) {
+		String AA1 = convertDNACode2AA(DNAcode1, true);
+		String AA2 = convertDNACode2AA(DNAcode2, true);
+		return compareAAquality(AA1, AA2);
+	}
+	
+	/**
+	 * 输入的是氨基酸，无所谓三字符还是单字符
+	 * 比较两个氨基酸的化学性质，返回差异点，返回最大差异
+	 * 譬如如果极性不同就返回极性
+	 * 格式 polar --> nonpolar等
+	 * 都一样则返回"";
+	 */
+	public static String cmpAAquality(String AA1, String AA2) {
+		AA1 = getAAformate(AA1);
+		AA2 = getAAformate(AA2);
+		return compareAAquality(AA1, AA2);
+	}
+	/**
+	 * 输入的是氨基酸，必须是标准格式
+	 * 比较两个氨基酸的化学性质，返回差异点，返回最大差异
+	 * 譬如如果极性不同就返回极性
+	 * 格式 polar --> nonpolar等
+	 * 都一样则返回"";
+	 */
+	private static String compareAAquality(String AA1, String AA2) {
+		if (AA1.equals(AA2)) {
+			return "same Amio Acid";
+		}
+		String[] aaInfo1 = getHashAAquality().get(AA1);
+		String[] aaInfo2 = getHashAAquality().get(AA2);
+		if (aaInfo1 == null || aaInfo2 ==null) {
+			return "";
+		}
+		for (int i = 0; i < aaInfo1.length; i++) {
+			if (!aaInfo1[i].equals(aaInfo2[i])) {
+				return aaInfo1[i] + " --> " + aaInfo2[i];
+			}
+		}
+		return "same chemical property";	
+	}
+}
+/**
+ * 统计序列中有多少是NN，有多少是可能的gap，有多少是边界不清楚
+ * 有多少大写，多少小写
+ * @author zong0jie
+ *
+ */
+class StatisticSeqInfo {
+
+	//string0: flag string1: location string2:endLoc
+	ArrayList<LocInfo> lsResult = new ArrayList<LocInfo>();
+	char[] seq;
+	boolean flagBound = false; //边界模糊标记，XX
+	boolean flagGap = false; //gap标记，小写
+	boolean flagAmbitious = false; //不确定碱基标记，NNN
+	int bound = 0; int gap = 0; int ambitious = 0;
+	int startBound = 0; int startGap = 0; int startAmbitious = 0;
+	
+	/**
+	 * 设定要统计的序列
+	 * @param seq
+	 */
+	public void setSeq(char[] seq) {
+		this.seq = seq;
+	}
+	/**
+	 * 设定要统计的序列
+	 * @param seq
+	 */
+	public void setSeq(String seq) {
+		this.seq = seq.toCharArray();
+	}
+	/**
+	 * 获得结果
+	 * @return
+	 */
+	public ArrayList<LocInfo> getLsSeqInfo() {
+		return lsResult;
+	}
+	public void statistics() {
+		for (int i = 0; i < seq.length; i++) {
+			if (seq[i] < 'a' && seq[i] != 'X' && seq[i] != 'N') {
+				if (flagAmbitious) {
+					addList(lsResult, "ambitious", startAmbitious, ambitious);
+					flagAmbitious = false; //不确定碱基标记，NNN
+				}
+				if (flagGap) {
+					addList(lsResult, "gap", startGap, gap);
+					flagGap = false; //gap标记，小写
+				}
+				if (flagBound) {
+					addList(lsResult, "bound", startBound, bound);
+					flagBound = false; //边界模糊标记，XX
+				}
+			}
+			else if (seq[i] == 'X' ) {
+				if (flagAmbitious) {
+					addList(lsResult, "ambitious", startAmbitious, ambitious);
+					flagAmbitious = false; //不确定碱基标记，NNN
+				}
+				if (flagGap) {
+					addList(lsResult, "gap", startGap, gap);
+					flagGap = false; //gap标记，小写
+				}
+				if (flagBound) {
+					bound ++;
+				}
+				else {
+					flagBound = true;
+					bound = 0;
+					startBound = i;
+				}
+			} 
+			else if (seq[i] == 'N') {
+				if (flagAmbitious) {
+					ambitious ++;
+				}
+				else {
+					flagAmbitious = true;
+					ambitious = 0;
+					startAmbitious = i;
+				}
+				if (flagGap) {
+					addList(lsResult, "gap", startGap, gap);
+					flagGap = false; // gap标记，小写
+				}
+				if (flagBound) {
+					addList(lsResult, "bound",startBound, bound);
+					flagBound = false; // 边界模糊标记，XX
+				}
+			}
+			else if (seq[i] >= 'a') {
+				System.out.println("i");
+				if (flagAmbitious) {
+					addList(lsResult, "ambitious", startAmbitious, ambitious);
+					flagAmbitious = false; //不确定碱基标记，NNN
+				}
+				if (flagGap) {
+					gap ++;
+				}
+				else {
+					flagGap = true;
+					gap = 0;
+					startGap = i;
+				}
+				if (flagBound) {
+					addList(lsResult, "bound", startBound, bound);
+					flagBound = false; //边界模糊标记，XX
+				}
+			}
+		}
+	}
+	
+	
+	/**
+	 * @param lsInfo
+	 * @param info
+	 * @param start 内部会加上1
+	 * @param length
+	 */
+	private void addList(ArrayList<LocInfo> lsInfo, String info, int start, int length) {
+		LocInfo locInfo = new LocInfo(info, "", start, start+length-1, true);
+		lsInfo.add(locInfo);
+	}
+	
 	
 }

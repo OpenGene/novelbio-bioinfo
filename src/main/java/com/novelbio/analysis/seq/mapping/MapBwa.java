@@ -3,7 +3,6 @@ package com.novelbio.analysis.seq.mapping;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.FastQ;
-import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -248,7 +247,7 @@ public class MapBwa {
 		cmd = cmd + getMismatch() + getGapNum() + getGapLen() + getThreadNum(); //5%的错误率
 		cmd = cmd + "-l 25 "; //种子长度
 		cmd = cmd + "-O 10 "; //Gap open penalty. gap罚分
-		if (getOffset() == FastQOld.FASTQ_ILLUMINA_OFFSET) {
+		if (getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
 			cmd = cmd + "-I "; //Illumina 的偏移
 		}
 		String sai1 = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(outFileName)[0];

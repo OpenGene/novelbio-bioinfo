@@ -29,13 +29,8 @@ import com.novelbio.database.model.modcopeid.GeneID;
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
 public class GffHashGeneNCBI extends GffHashGeneAbs{
-	public static void main(String[] args) {
-		String NCBIgff = "/media/winE/Bioinformatics/GenomeData/soybean/gff/ref_V1.0_top_level.gff3";
-		setGFF(NCBIgff);
-	}
-	
-	
 	private static Logger logger = Logger.getLogger(GffHashGeneNCBI.class);
+	
 	/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  NCBI的ID  */
 	protected String regGeneName = "(?<=gene\\=)\\w+";
 	/**  可变剪接mRNA的正则，默认 NCBI的ID */
@@ -46,12 +41,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	protected String regID = "(?<=ID\\=)\\w+";
 	/** parentID的正则 */
 	protected String regParentID = "(?<=Parent\\=)\\w+";
-
 	/** mRNA类似名 */
-	private static HashMap<String, Integer> hashmRNA = new HashMap<String, Integer>();
-	
-	
-	
+	//TODO 考虑用enum的map来实现
+	private static HashMap<String, Integer> mapMRNA2ID = new HashMap<String, Integer>();
+
 	/** gene类似名 */
 	private static HashSet<String> hashgene = new HashSet<String>();
 	/** "(?<=gene\\=)\\w+" */
@@ -65,28 +58,28 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	/** "(?<=Parent\\=)\\w+" */
 	PatternOperate patParentID = null;
 	
-	private void setPattern() {
-		patGeneName = new PatternOperate(regGeneName, false);
-		patmRNAName = new PatternOperate(regSplitmRNA, false);
-		patGeneID = new PatternOperate(regGeneID, false);
-		patID = new PatternOperate(regID, false);
-		patParentID = new PatternOperate(regParentID, false);
-	}
+	private HashMap<String, String> hashGenID2GeneName = new HashMap<String, String>();
+	private HashMap<String, String> hashRnaID2GeneID = new HashMap<String, String>();
+	private HashMap<String, String> hashRnaID2RnaName = new HashMap<String, String>();
+	private LinkedHashMap<String, GffDetailGene> hashGenID2GffDetail = new LinkedHashMap<String, GffDetailGene>();
+	
+	int numCopedIDsearch = 0;//查找taxID的次数最多10次
+
 	/**
 	 * 设定mRNA和gene的类似名，在gff文件里面出现的
 	 */
 	private void setHashName() {
-		if (hashmRNA.isEmpty()) {
-			hashmRNA.put("mRNA_TE_gene",GffGeneIsoInfo.TYPE_GENE_MRNA_TE);
-			hashmRNA.put("mRNA",GffGeneIsoInfo.TYPE_GENE_MRNA);
-			hashmRNA.put("miRNA",GffGeneIsoInfo.TYPE_GENE_MIRNA);
+		if (mapMRNA2ID.isEmpty()) {
+			mapMRNA2ID.put("mRNA_TE_gene",GffGeneIsoInfo.TYPE_GENE_MRNA_TE);
+			mapMRNA2ID.put("mRNA",GffGeneIsoInfo.TYPE_GENE_MRNA);
+			mapMRNA2ID.put("miRNA",GffGeneIsoInfo.TYPE_GENE_MIRNA);
 //			hashmRNA.put("tRNA",GffGeneIsoInfo.TYPE_GENE_TRNA);
-			hashmRNA.put("pseudogenic_transcript",GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT);
-			hashmRNA.put("snoRNA",GffGeneIsoInfo.TYPE_GENE_SNORNA);
-			hashmRNA.put("snRNA",GffGeneIsoInfo.TYPE_GENE_SNRNA);
-			hashmRNA.put("rRNA",GffGeneIsoInfo.TYPE_GENE_RRNA);
-			hashmRNA.put("ncRNA",GffGeneIsoInfo.TYPE_GENE_NCRNA);
-			hashmRNA.put("transcript",GffGeneIsoInfo.TYPE_GENE_MISCRNA);
+			mapMRNA2ID.put("pseudogenic_transcript",GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT);
+			mapMRNA2ID.put("snoRNA",GffGeneIsoInfo.TYPE_GENE_SNORNA);
+			mapMRNA2ID.put("snRNA",GffGeneIsoInfo.TYPE_GENE_SNRNA);
+			mapMRNA2ID.put("rRNA",GffGeneIsoInfo.TYPE_GENE_RRNA);
+			mapMRNA2ID.put("ncRNA",GffGeneIsoInfo.TYPE_GENE_NCRNA);
+			mapMRNA2ID.put("transcript",GffGeneIsoInfo.TYPE_GENE_MISCRNA);
 		}
 		if (hashgene.isEmpty()) {
 			hashgene.add("gene");
@@ -95,12 +88,13 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			hashgene.add("tRNA");
 		}
 	}
-	private HashMap<String, String> hashGenID2GeneName = new HashMap<String, String>();
-	private HashMap<String, String> hashRnaID2GeneID = new HashMap<String, String>();
-	private HashMap<String, String> hashRnaID2RnaName = new HashMap<String, String>();
-	private LinkedHashMap<String, GffDetailGene> hashGenID2GffDetail = new LinkedHashMap<String, GffDetailGene>();
-	
-	
+	private void setPattern() {
+		patGeneName = new PatternOperate(regGeneName, false);
+		patmRNAName = new PatternOperate(regSplitmRNA, false);
+		patGeneID = new PatternOperate(regGeneID, false);
+		patID = new PatternOperate(regID, false);
+		patParentID = new PatternOperate(regParentID, false);
+	}
 	/**
 	 * 最底层读取gff的方法，本方法只能读取UCSCknown gene<br>
 	 * 输入Gff文件，最后获得两个哈希表和一个list表<br/>
@@ -118,22 +112,19 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起： NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
-   protected void ReadGffarrayExcep(String gfffilename) throws Exception
-   {
+   protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 	   setHashName();
 	   setPattern();
 	   locHashtable = new LinkedHashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
 	   LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
 	   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);	   
-	   String chrnametmpString=""; //染色体的临时名字
-//	   GffDetailGene gffDetailLOC= null;
-	   int m = 0;
+	   String tmpChrName="";
+	   
 	   for (String content : txtgff.readlines()) {
-		   m++;
 		   if(content.charAt(0)=='#') continue;
 		   String[] ss = content.split("\t");//按照tab分开
 		   
-		   chrnametmpString = ss[0].toLowerCase();//小写的chrID
+		   tmpChrName = ss[0].toLowerCase();//小写的chrID
 
 		   /** 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中   */
 		   if (hashgene.contains(ss[2])) {//when read the # and the line contains gene, it means the new LOC
@@ -142,7 +133,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			   hashGenID2GeneName.put(genID, geneName);
 			   GffDetailGene gffDetailLOC = getGffDetailGenID(patID.getPatFirst(ss[8]));
 			   if (gffDetailLOC == null) {
-				   gffDetailLOC=new GffDetailGene(chrnametmpString, geneName, ss[6].equals("+"));//新建一个基因类
+				   gffDetailLOC=new GffDetailGene(tmpChrName, geneName, ss[6].equals("+"));//新建一个基因类
 			   }
 			   gffDetailLOC.setTaxID(taxID);
 			   gffDetailLOC.setStartAbs( Integer.parseInt(ss[3])); gffDetailLOC.setEndAbs( Integer.parseInt(ss[4]));//基因起止      		
@@ -155,7 +146,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
       	    * 不管怎么加都是从第一个cds开始加到最后一个cds，正向的话就是从小加到大，反向就是从大加到小。
       	    * 一旦出现了mRNA，就要开始指定5UTR，3UTR，CDS的起点和终止
       	    */
-		   else if (hashmRNA.containsKey(ss[2])) {
+		   else if (mapMRNA2ID.containsKey(ss[2])) {
 			   String rnaID = patID.getPatFirst(ss[8]);
 			   hashRnaID2RnaName.put(rnaID, patmRNAName.getPatFirst(ss[8]));
 			   hashRnaID2GeneID.put(rnaID, patParentID.getPatFirst(ss[8]));
@@ -220,14 +211,14 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   String mRNAname = patmRNAName.getPatFirst(content[8]);//mRNApattern.matcher(content);
 	   if(mRNAname != null) {
 		   result[0] = mRNAname;
-		   result[1] = hashmRNA.get(content[2]) + "";//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+		   result[1] = mapMRNA2ID.get(content[2]) + "";//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 	   }
 	   else {
 		   try {
 			   String geneID = patGeneID.getPatFirst(content[8]);
 			   GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
 			   result[0] = copedID.getAccID();//这里有问题
-			   result[1] = hashmRNA.get(content[2]) + "";//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+			   result[1] = mapMRNA2ID.get(content[2]) + "";//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   } catch (Exception e) {
 			   System.out.println("GffHashPlantGeneError: 文件  "+getGffFilename()+"  在本行可能没有指定的基因ID  " +content);
 			   return null;
@@ -235,7 +226,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   }
 	   return result;
    }
-   int numCopedIDsearch = 0;//查找taxID的次数最多10次
    /**
     * 设定taxID
     * @param geneName
@@ -294,9 +284,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   }
 	   return gffDetailGene.getIsolist(rnaName);		
 	}
-
-   
-   
    /**
     * 将locGff中的信息整理然后装入ChrHash中
     */
@@ -314,13 +301,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   }
 
    }
-   
    /**
     * 将NCBIgff中的chrID转换为标准ChrID，然后将其中的scaffold删除
     * 同时修正tRNA的问题
     * @param NCBIgff /media/winE/Bioinformatics/GenomeData/pig/gff/ref_Sscrofa10.2_gnomon_top_level.gff3
     */
-   public static void setGFF(String NCBIgff) {
+   public static void modifyNCBIgffFile(String NCBIgff) {
 	   String regxChrID = "(?<=chromosome\\=)\\w+";
 	   TxtReadandWrite txtGff = new TxtReadandWrite(NCBIgff, false);
 	   TxtReadandWrite txtGffOut = new TxtReadandWrite(FileOperate.changeFileSuffix(NCBIgff, "_modify", null), true);

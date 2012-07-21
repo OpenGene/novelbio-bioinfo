@@ -18,13 +18,9 @@ import com.novelbio.database.domain.geneanno.SepSign;
  *
  * @param <E>
  */
-public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements Cloneable
-{
-	public static void main(String[] args) {
-		ListAbs<ListDetailAbs> listAbs = new ListAbs<ListDetailAbs>();
-		
-	}
+public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements Cloneable {
 	private static final long serialVersionUID = -3356076601369239937L;
+	
 	/**保存某个坐标到所在的内含子/外显子起点的距离 */
 	HashMap<Integer, Integer> hashLocExInStart;
 	/** 保存某个坐标到所在的内含子/外显子终点的距离 */
@@ -90,7 +86,6 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 			}
 		}
 	}
-	
 	/**
 	 * 在下游返回正数，上游返回负数
 	 * @param loc
@@ -104,7 +99,6 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 			return -Math.abs(loc - getStart());
 		}
 	}
-	
 	/**
 	 * 在下游返回正数，上游返回负数
 	 * @param loc
@@ -118,7 +112,6 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 			return -Math.abs(loc - getEnd());
 		}
 	}
-	
 	/**
 	 * 输入的loc是否在本list的范围外
 	 * @return
@@ -155,14 +148,12 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 		return false;
 	}
-	
 	public int getStart() {
 		if (cis5to3 != null) {
 			return get(0).getStartCis();
 		}
 		return get(0).getStartAbs();
 	}
-	
 	public int getEnd() {
 		if (cis5to3 != null) {
 			return get(size() - 1).getEndCis();
@@ -259,9 +250,9 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
 		if (exIntronNum > 0) {
 			if (cis5to3 != null)
-				 loc2ExInEnd = Math.abs(get(NumExon).getEndCis() - location);//距离本外显子终止  Cnnnnnnn
+				loc2ExInEnd = Math.abs(get(NumExon).getEndCis() - location);//距离本外显子终止  Cnnnnnnn
 			else
-				 loc2ExInEnd = Math.abs(get(NumExon).getEndAbs() - location);//距离本外显子终止  Cnnnnnnn
+				loc2ExInEnd = Math.abs(get(NumExon).getEndAbs() - location);//距离本外显子终止  Cnnnnnnn
 		}
 		//0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
 		else if(exIntronNum < 0) {
@@ -451,8 +442,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * @param lsOtherExon
 	 * @return
 	 */
-	public boolean compIso(ListAbs<E> lsOther)
-	{
+	public boolean compIso(ListAbs<E> lsOther) {
 		if (lsOther.size() != size() ) {
 			return false;
 		}
@@ -501,24 +491,33 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	/**
 	 * 给定一系列ListElement，以及一个方向。
 	 * 将相同方向的ListElement提取出来，然后合并，然后找出这些element的共同边界
-	 * @param cis5to3
+	 * @param cis5to3 null,不考虑方向
 	 * @param lsIso
 	 * @return
 	 */
-	public static ArrayList<int[]> getCombSep(boolean cis5to3, ArrayList<? extends ListAbs<? extends ListDetailAbs>> lsIso) {
+	public static ArrayList<int[]> getCombSep(Boolean cis5to3, ArrayList<? extends ListAbs<? extends ListDetailAbs>> lsIso) {
 		ArrayList<? extends ListDetailAbs> lsAllelement = combListAbs(cis5to3, lsIso);
-		ArrayList<int[]> lsSep = getLsElementSep(cis5to3, lsAllelement);
+		ArrayList<int[]> lsSep = null;
+		if (cis5to3 != null) {
+			lsSep = getLsElementSep(cis5to3, lsAllelement);
+		}
+		else {
+			lsSep = getLsElementSep(lsAllelement);
+		}
 		return lsSep;
 	}
 	/**
+	 * 
 	 * 将一个List中的Iso全部合并起来。
-	 * @param gffDetailGene
+	 * @param cis5to3 null,不考虑方向
+	 * @param lsIso
+	 * @return
 	 */
-	private static ArrayList<? extends ListDetailAbs> combListAbs(boolean cis5to3, ArrayList<? extends ListAbs<? extends ListDetailAbs>> lsIso) {
+	private static ArrayList<? extends ListDetailAbs> combListAbs(Boolean cis5to3, ArrayList<? extends ListAbs<? extends ListDetailAbs>> lsIso) {
 		ArrayList<ListDetailAbs> lsAll = new ArrayList<ListDetailAbs>();
 		//将全部的exon放在一个list里面并且排序
 		for (ListAbs<? extends ListDetailAbs> listAbs : lsIso) {
-			if (listAbs.isCis5to3() != cis5to3) {
+			if (cis5to3 != null && listAbs.isCis5to3() != cis5to3) {
 				continue;
 			}
 			lsAll.addAll(listAbs);
@@ -556,6 +555,27 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 					exonOld = exon.clone();
 					lsExonBounder.add(exonOld);
 				}
+			}
+		}
+		return lsExonBounder;
+	}
+	/**
+	 * 将经过排序的exonlist合并，获得几个连续的exon，用于分段
+	 */
+	private static ArrayList<int[]> getLsElementSep(ArrayList<? extends ListDetailAbs> lsAll) {
+		ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
+		int[] exonOld = new int[]{lsAll.get(0).getStartAbs(), lsAll.get(0).getEndAbs()};
+		lsExonBounder.add(exonOld);
+		for (int i = 1; i < lsAll.size(); i++) {
+			int[] exon = new int[]{lsAll.get(i).getStartAbs(), lsAll.get(i).getEndAbs()};
+			if (exon[0] <= exonOld[1]) {
+				if (exon[1] > exonOld[1]) {
+					exonOld[1] = exon[1];
+				}
+			}
+			else {
+				exonOld = exon.clone();
+				lsExonBounder.add(exonOld);
 			}
 		}
 		return lsExonBounder;

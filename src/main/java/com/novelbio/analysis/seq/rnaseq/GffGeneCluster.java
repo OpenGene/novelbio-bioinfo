@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genomeNew.gffOperate;
+package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,8 +9,11 @@ import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.rnaseq.TophatJunction;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.CompSubArrayCluster;
@@ -62,8 +65,7 @@ public class GffGeneCluster {
 	static MapReads mapReads;
 	
 	static TophatJunction tophatJunction = new TophatJunction();
-	public static void geneInso(String junctionFile)
-	{
+	public static void geneInso(String junctionFile) {
 		tophatJunction.setJunFile(junctionFile);
 	}
 	
@@ -150,8 +152,7 @@ public class GffGeneCluster {
 	 * @param gffGeneIsoInfo
 	 * @return
 	 */
-	private GffGeneIsoInfo findSameIso(GffGeneIsoInfo gffGeneIsoInfo, GffDetailGene gffDetailGene)
-	{
+	private GffGeneIsoInfo findSameIso(GffGeneIsoInfo gffGeneIsoInfo, GffDetailGene gffDetailGene) {
 		if (gffGeneIsoInfo.getName().contains("01852")) {
 			System.out.println("stop");
 		}
@@ -165,8 +166,7 @@ public class GffGeneCluster {
 	/**
 	 * 比较两个转录本之间的异同，然后合并到gffGeneIsoInfoIn，获得一个最可信的转录本
 	 */
-	private void compIso(GffGeneIsoInfo gffGeneIsoInfoIn, GffGeneIsoInfo gffGeneIsoInfoCmp)
-	{
+	private void compIso(GffGeneIsoInfo gffGeneIsoInfoIn, GffGeneIsoInfo gffGeneIsoInfoCmp) {
 		if (gffGeneIsoInfoIn == null) {
 			gffGeneIsoInfoIn = gffGeneIsoInfoCmp;
 			return;

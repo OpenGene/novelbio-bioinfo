@@ -42,8 +42,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		String tmpChrID = "";
 		String tmpTranscriptName = "";
-		for (String content : txtgff.readlines() )// 读到结尾
-		{
+		for (String content : txtgff.readlines() ) {
 			if (content.charAt(0) == '#')
 				continue;
 			String[] ss = content.split("\t");// 按照tab分开
@@ -172,8 +171,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	 * @param LocID
 	 * @return
 	 */
-	private boolean getLocCis(String ss, String chrID, int LocIDStart, int LocIDEnd)
-	{
+	private boolean getLocCis(String ss, String chrID, int LocIDStart, int LocIDEnd) {
 		if (ss.equals("+")) {
 			return true;
 		}
@@ -184,13 +182,10 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			if (gffHashRef == null) {
 				return true;
 			}
-			
-			
 			int LocID = (LocIDStart + LocIDEnd )/2;
 			GffCodGene gffCodGene = gffHashRef.searchLocation(chrID, LocID);
 			if (gffCodGene == null) {
 				return true;
-//				System.out.println("error");
 			}
 			if (gffCodGene.isInsideLoc()) {
 				return gffCodGene.getGffDetailThis().isCis5to3();

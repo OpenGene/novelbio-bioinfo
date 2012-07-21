@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.mirna;
 
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.analysis.seq.chipseq.pipeline.Pipline;
 import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.mapping.SamFile;

@@ -2,8 +2,10 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
@@ -54,13 +56,11 @@ public class GffDetailGene extends ListDetailAbs {
 	int taxID = 0;
 	
 	boolean removeDuplicateIso = false;
-	
 	/**
 	 * 一个基因如果有不止一个的转录本，那么这些转录本的同一区域的exon就可以提取出来，并放入该list
 	 * 也就是每个exoncluster就是一个exon类，表示 
 	 */
 	ArrayList<ExonCluster> lsExonClusters = new ArrayList<ExonCluster>();
-	
 	/**
 	 * @param chrID 内部小写
 	 * @param locString
@@ -568,7 +568,7 @@ public class GffDetailGene extends ListDetailAbs {
 	
 	/**
 	 * 效率低下，等待优化
-	 * 用于冯英的项目，添加新的转录本
+	 * 添加新的转录本
 	 * 同时重新设定该基因的numberstart和numberend
 	 * @param gffDetailGeneParent
 	 */
@@ -610,7 +610,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @return
 	 */
 	public ArrayList<ExonCluster> getDifExonCluster() {
-		setExonCluster();
+		lsExonClusters = GffGeneIsoInfo.getExonCluster(isCis5to3(), getParentName(), lsGffGeneIsoInfos);
 		ArrayList<ExonCluster> lsDifExon = new ArrayList<ExonCluster>();
 		for (ExonCluster exonClusters : lsExonClusters) {
 			if (exonClusters.isSameExon()) {
@@ -620,61 +620,38 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		return lsDifExon;
 	}
-	/** 按照分组好的边界exon，将每个转录本进行划分 */
-	private void setExonCluster() {
-		ArrayList<GffGeneIsoInfo> lsIsos = getLsCodSplit();
-		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(isCis5to3(), lsGffGeneIsoInfos);
-		for (int[] exonBound : lsExonBound) {
-			ExonCluster exonCluster = new ExonCluster(getParentName(), exonBound[0], exonBound[1]);
-			for (GffGeneIsoInfo gffGeneIsoInfo : lsIsos) {
-				if (gffGeneIsoInfo.isCis5to3() != isCis5to3()) {
-					continue;
-				}
-				
-				ArrayList<ExonInfo> lsExonClusterTmp = new ArrayList<ExonInfo>();
-				int beforeExonNum = 0;//如果本isoform正好没有落在bounder组中的exon，那么就要记录该isoform的前后两个exon的位置，用于查找跨过和没有跨过的exon
-				boolean junc = false;//如果本isoform正好没有落在bounder组中的exon，那么就需要记录跳过的exon的位置，就将这个flag设置为true
-				for (int i = 0; i < gffGeneIsoInfo.size(); i++) {
-					ExonInfo exon = gffGeneIsoInfo.get(i);
-					if (isCis5to3()) {
-						if (exon.getEndCis() < exonBound[0]) {
-							junc = true;
-							beforeExonNum = i;
-							continue;
-						}
-						else if (exon.getStartCis() >= exonBound[0] && exon.getEndCis() <= exonBound[1]) {
-							lsExonClusterTmp.add(exon);
-							junc = false;
-						}
-						else if (exon.getStartCis() > exonBound[1]) {
-							break;
-						}
-					}
-					else {
-						if (exon.getEndCis() > exonBound[0]) {
-							junc = true;
-							beforeExonNum = i;
-							continue;
-						}
-						else if (exon.getStartCis() <= exonBound[0] && exon.getEndCis() >= exonBound[1]) {
-							lsExonClusterTmp.add(exon);
-							junc = false;
-						}
-						else if (exon.getStartCis() < exonBound[1]) {
-							break;
-						}
-					}
-				}
-				if (lsExonClusterTmp.size() > 0) {
-					exonCluster.addExonCluster(gffGeneIsoInfo.getName(), lsExonClusterTmp);
-				}
-				if (junc && beforeExonNum < gffGeneIsoInfo.size()-1) {
-					exonCluster.setIso2JunctionStartExonNum(gffGeneIsoInfo.getName(), beforeExonNum);
-				}
-			}
-			lsExonClusters.add(exonCluster);
+	/**
+	 * 给定一个转录本，返回与之最接近的转录本，相似度必须在指定范围内
+	 * 没有
+	 * @param gffGeneIsoInfo
+	 * @param likelyhood 相似度 0-1之间
+	 * @return 没有则返回null
+	 */
+	public GffGeneIsoInfo getSimilarIso(GffGeneIsoInfo gffGeneIsoInfo, double likelyhood) {
+		HashMap<int[], GffGeneIsoInfo> mapCompInfo2GeneIso = new HashMap<int[], GffGeneIsoInfo>();
+		ArrayList<int[]> lsCompInfo = new ArrayList<int[]>();
+		for (GffGeneIsoInfo gffGeneIsoInfoRef : lsGffGeneIsoInfos) {
+			int[] compareInfo = GffGeneIsoInfo.compareIso(gffGeneIsoInfoRef, gffGeneIsoInfo);
+			mapCompInfo2GeneIso.put(compareInfo, gffGeneIsoInfoRef);
+			lsCompInfo.add(compareInfo);
 		}
+		//排序，挑选出最相似的转录本
+		Collections.sort(lsCompInfo, new Comparator<int[]>() {
+			public int compare(int[] o1, int[] o2) {
+				Double int1 = (double)o1[0]/o1[1];
+				Double int2 = (double)o2[0]/o2[1];
+				return -int1.compareTo(int2);
+			}
+		});
+		int[] compareInfo = lsCompInfo.get(0);
+		double ratio = (double)compareInfo[0]/Math.min(compareInfo[2], compareInfo[3]);
+		if (ratio < likelyhood) {
+			return null;
+		}
+		return mapCompInfo2GeneIso.get(lsCompInfo.get(0));
+		
 	}
+
 	public String getGTFformate(String title) {
 		String geneGTF = "";
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {

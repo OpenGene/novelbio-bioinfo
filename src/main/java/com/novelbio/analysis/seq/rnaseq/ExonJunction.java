@@ -29,8 +29,8 @@ public class ExonJunction {
 		mouse();
 	}
 	static GffHashGene gffHashGene = null;
-	public static void mouse()
-	{
+	
+	public static void mouse() {
 		gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/mouseNovelbioRefGTF/novelbioModify_a15m1bf_All_highAll.GTF");
 		ExonJunction exonJunction = new ExonJunction();
@@ -48,8 +48,7 @@ public class ExonJunction {
 		}
 		txtOut.close();
 	}
-	public static void mouseHeart()
-	{
+	public static void mouseHeart() {
 		gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/mouseNovelbioRefGTF/novelbioModify_a15m1bf_All_highAll.GTF");
 		ExonJunction exonJunction = new ExonJunction();
@@ -67,8 +66,7 @@ public class ExonJunction {
 		}
 		txtOut.close();
 	}
-	public static void chicken()
-	{
+	public static void chicken() {
 		gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 				"/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/new/novelbioModify_a15m1bf_All_highAll20111220.GTF");
 		ExonJunction exonJunction = new ExonJunction();
@@ -105,20 +103,14 @@ public class ExonJunction {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			gffDetailGene.removeDupliIso();
-			if (gffDetailGene.getLsCodSplit().size() <= 1) {
+			
+			if (gffDetailGene.getLsCodSplit().size() <= 1)
 				continue;
-			}
-			int tmpIso = 0;//计数，看有多少iso与gffDetailGene同方向，如果只有一个，则跳过该基因
-			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				if (gffGeneIsoInfo.isCis5to3() == gffDetailGene.isCis5to3()) {
-					tmpIso++;
-				}
-			}
-			if (tmpIso == 1) {
+			if (isOnlyOneIso(gffDetailGene))
 				continue;
-			}
+			
 			ArrayList<ChisqTest> lsChisqTestTmp = calGeneDifIso(gffDetailGene);
-			if (lsChisqTestTmp == null) {
+			if (lsChisqTestTmp.size() == 0) {
 				continue;
 			}
 			lsChisqTests.add(lsChisqTestTmp.get(0));
@@ -126,11 +118,27 @@ public class ExonJunction {
 		Collections.sort(lsChisqTests);
 		return lsChisqTests;
 	}
-	
+	/**
+	 * 计数，看有多少iso与gffDetailGene同方向，如果只有一个，则跳过该基因
+	 * @param gffDetailGene
+	 * @return
+	 */
+	private boolean isOnlyOneIso(GffDetailGene gffDetailGene) {
+		int tmpIso = 0;
+		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+			if (gffGeneIsoInfo.isCis5to3() == gffDetailGene.isCis5to3()) {
+				tmpIso++;
+			}
+		}
+		if (tmpIso <= 1) {
+			return true;
+		}
+		return false;
+	}
 	private ArrayList<ChisqTest> calGeneDifIso(GffDetailGene gffDetailGene) {
 		ArrayList<ExonCluster> lsExonClusters = gffDetailGene.getDifExonCluster();
 		if (lsExonClusters == null || lsExonClusters.size() == 0) {
-			return null;
+			return new ArrayList<ChisqTest>();
 		}
 		//外显子的具体坐标
 		ArrayList<String> lsLocation = new ArrayList<String>();
@@ -167,7 +175,7 @@ public class ExonJunction {
 			}
 			ArrayList<ExonInfo> lsExon = exonCluster.getAllExons();
 			int junc = 0;//跨过该exon的iso是否存在，0不存在，1存在
-			if (exonCluster.getHashIsoExonNum().size() > 0) {
+			if (exonCluster.getHashIsoName2ExonNum().size() > 0) {
 				junc = 1;
 			}
 			ArrayList<long[]> lsExonTmp = new ArrayList<long[]>();
@@ -187,10 +195,16 @@ public class ExonJunction {
 		}
 		return lsCondJun;
 	}
-	
+	/**
+	 * 获得跳过该exonCluster组的readsNum
+	 * @param gffDetailGene
+	 * @param exonCluster
+	 * @param condition
+	 * @return
+	 */
 	private long getJunReadsNum(GffDetailGene gffDetailGene, ExonCluster exonCluster, String condition) {
 		long result = 0;
-		HashMap<String, Integer> hashTmp = exonCluster.getHashIsoExonNum();
+		HashMap<String, Integer> hashTmp = exonCluster.getHashIsoName2ExonNum();
 		for (Entry<String, Integer> entry : hashTmp.entrySet()) {
 			String isoName = entry.getKey();
 			int exonNum = entry.getValue();
@@ -198,7 +212,7 @@ public class ExonJunction {
 			if (exonNum >= gffGeneIsoInfo.size()-1) {
 				continue;
 			}
-			//检查本步是否正确
+			//TODO 检查本步是否正确
 			result = result + tophatJunction.getJunctionSite(gffDetailGene.getParentName(), gffGeneIsoInfo.get(exonNum).getEndCis(), gffGeneIsoInfo.get(exonNum+1).getStartCis(), condition);
 		}
 		return result;

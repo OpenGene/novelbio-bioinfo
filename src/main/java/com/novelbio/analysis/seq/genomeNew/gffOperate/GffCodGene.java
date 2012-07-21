@@ -1,7 +1,5 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
-import java.util.ArrayList;
-
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 
 /**
@@ -17,7 +15,6 @@ public class GffCodGene extends ListCodAbs<GffDetailGene> {
 	public GffCodGene(String chrID, int Coordinate) {
 		super(chrID, Coordinate);
 	}
-	
 	/**
 	 * 获得cod在exon里面的iso信息，没有则返回null，首先查找最长转录本的信息
 	 * 返回第一个找到的iso信息
@@ -48,7 +45,6 @@ public class GffCodGene extends ListCodAbs<GffDetailGene> {
 				return gffGeneIsoInfo;
 			}
 		}
-		
 		
 		if (gffGeneIsoInfoTmp != null) {
 			return gffGeneIsoInfoTmp;

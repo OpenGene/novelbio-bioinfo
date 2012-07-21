@@ -56,14 +56,12 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
      * @param rowNum 起点，从第几行开始读
 	 */
 	public ListHashBin(boolean peakcis ,int colChrID,int colPeakstart,int colPeakend,int rowNum) {
-//		super();
 		this.peakcis = peakcis;
 		this.colChrID = colChrID;
 		this.colPeakstart = colPeakstart;
 		this.colPeakend = colPeakend;
 		this.rowNum = rowNum;
 	}
-	
 	public ListHashBin() {}
 	/**
 	 * 设定score所在的列
@@ -87,8 +85,7 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
      * <b>LOCChrHashIDList </b><br>
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将多个重叠的peak放在一起： peak起点_peak终点/peak起点_peak终点_...<br>
 	 */
-	protected void ReadGffarrayExcep(String gfffilename) throws Exception 
-	{
+	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 		TxtReadandWrite txtPeakInfo=new TxtReadandWrite(gfffilename,false);
 		//先把txt文本中的peak信息读取
 		int[] colNum=new int[4];
@@ -101,8 +98,7 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	 * 本方法和setInt取一个
 	 * @param lsInterval 这个是插入的区间
 	 */
-	public void setInterval(String name, ArrayList<int[]> lsInterval)
-	{
+	public void setInterval(String name, ArrayList<int[]> lsInterval) {
 		ArrayList<String[]> lsTmpInfo = new ArrayList<String[]>();
 		for (int[] is : lsInterval) {
 			String[] tmpInfo = new String[3];
@@ -117,8 +113,7 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	 * 本方法和setInterval取一个
 	 * @param lsInterval 这个是插入的单个数值，用于统计测序每个碱基的数量等
 	 */
-	public void setInt(String name, ArrayList<Integer> lsInterval)
-	{
+	public void setInt(String name, ArrayList<Integer> lsInterval) {
 		ArrayList<String[]> lsTmpInfo = new ArrayList<String[]>();
 		for (Integer is : lsInterval) {
 			String[] tmpInfo = new String[3];
@@ -140,101 +135,80 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	 * 3: score
 	 * @param lsInfo
 	 */
-	public void ReadGff(ArrayList<String[]> lstmpPeakinfo) 
-	{
+	public void ReadGff(ArrayList<String[]> lstmpPeakinfo) {
 		////对临时list进行排序,首先按照Chr排序，然后按照具体坐标排序
-	     Collections.sort(lstmpPeakinfo,new Comparator<String[]>(){
-	            public int compare(String[] arg0, String[] arg1) {
-	            	int i=arg0[0].compareTo(arg1[0]);
-	            	if(i==0){
-	            		Integer a0 = Integer.parseInt(arg0[1].trim());
-	            		Integer a1 =  Integer.parseInt(arg1[1].trim());
-	            		return a0.compareTo(a1);
-	            	}
-	               return i;
-	            }
-	        });
-		//////////////////////////正式读取，类似GffUCSC的读取方法///////////////////////
-	 	//实例化三个表
-			locHashtable =new LinkedHashMap<String, ListDetailBin>();//存储每个LOCID和其具体信息的对照表
-			Chrhash=new LinkedHashMap<String, ListBin<ListDetailBin>>();
-			
-//			Chrhash=new LinkedHashMap<String, ListBin>();
-			
-			
-			LOCIDList=new ArrayList<String>();//顺序存储每个peak号，不管是否重叠
-			ListBin<ListDetailBin> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
-			
-			String chrnametmpString="";
-			int tmppeakstart=-1;
-			int tmppeakend=-1;
-			double score = -1;
-			int peakNum=lstmpPeakinfo.size();
-			for (int i = 0; i < peakNum; i++) {
-				chrnametmpString=lstmpPeakinfo.get(i)[0].toLowerCase();
-				tmppeakstart=Integer.parseInt(lstmpPeakinfo.get(i)[1].trim());
-				tmppeakend=Integer.parseInt(lstmpPeakinfo.get(i)[2].trim());
-				if (lstmpPeakinfo.get(i).length > 3) {
-					score = Double.parseDouble(lstmpPeakinfo.get(i)[3]);
+		Collections.sort(lstmpPeakinfo,new Comparator<String[]>(){
+			public int compare(String[] arg0, String[] arg1) {
+				int i=arg0[0].compareTo(arg1[0]);
+				if(i==0){
+					Integer a0 = Integer.parseInt(arg0[1].trim());
+					Integer a1 =  Integer.parseInt(arg1[1].trim());
+					return a0.compareTo(a1);
 				}
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				//新的染色体
-				if (!Chrhash.containsKey(chrnametmpString)) //新的染色体
-				{
-					if(LOCList!=null)//如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
-					{
-						LOCList.trimToSize();
-						 //把peak名称顺序装入LOCIDList
-//						   for (GffDetailPeak gffDetail : LOCList) {
-//							   LOCChrHashIDList.add(gffDetail.getLocString());
-//						   }
-					}
-					LOCList=new ListBin<ListDetailBin>();//新建一个LOCList并放入Chrhash
-					Chrhash.put(chrnametmpString, LOCList);
-				}
-				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				
-				
-				//添加重叠peak
-				//看本peak的起点是否小于上个peak的终点，如果小于，则说明本peak和上个peak连续
-				ListDetailBin lastGffdetailpeak;
-				LOCIDList.add(tmppeakstart+"_"+tmppeakend);//添加入LOCIDList
-				if(LOCList.size()>0 && tmppeakstart < (lastGffdetailpeak = LOCList.get(LOCList.size()-1)).getEndAbs() )
-				{   //修改基因起点和终点
-					if(tmppeakstart < lastGffdetailpeak.getStartAbs())
-						lastGffdetailpeak.setStartAbs(tmppeakstart);
-					if(tmppeakend>lastGffdetailpeak.getEndAbs())
-						lastGffdetailpeak.setEndAbs(tmppeakend);
-					//将基因(转录本ID)装入LOCList					
-					//将本基因(转录本)的ID装入locString中
-					lastGffdetailpeak.setName(lastGffdetailpeak.getName()+"/"+tmppeakstart+"_"+tmppeakend);
-					if (colScore > 0) {
-						lastGffdetailpeak.setScore((lastGffdetailpeak.getScore() + score)/2);
-					}
-					
-					//将新值装入locHashtable	
-					//将locHashtable中相应的项目也修改，同时加入新的项目
-					//因为UCSC里面没有转录本一说，只有两个LOCID共用一个区域的情况，所以只能够两个不同的LOCID指向同一个GffdetailUCSCgene
-					String[] allPeakID = lastGffdetailpeak.getName().split("/");
-					for (int m= 0; m < allPeakID.length; m++) {
-						locHashtable.put(allPeakID[m], lastGffdetailpeak);
-					}
-					continue;
-				}
-				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				//添加新peak 
-				ListDetailBin gffdetailpeak=new ListDetailBin(chrnametmpString, tmppeakstart+"_"+tmppeakend, peakcis);
-				//正反向,所有peak都一个方向的
-				gffdetailpeak.setStartAbs(tmppeakstart);
-				gffdetailpeak.setEndAbs(tmppeakend);
-				gffdetailpeak.setScore(score);
-				LOCList.add(gffdetailpeak);  
-				locHashtable.put(gffdetailpeak.getName(), gffdetailpeak);
+				return i;
 			}
-			LOCList.trimToSize();
-//			for (GffDetailPeak gffDetail : LOCList) {
-//				LOCChrHashIDList.add(gffDetail.getLocString());
-//			}
-			//System.out.println(mm);
+		});
+		//////////////////////////正式读取，类似GffUCSC的读取方法///////////////////////
+	     //实例化三个表
+	     locHashtable =new LinkedHashMap<String, ListDetailBin>();//存储每个LOCID和其具体信息的对照表
+	     Chrhash=new LinkedHashMap<String, ListBin<ListDetailBin>>();
+	     LOCIDList=new ArrayList<String>();//顺序存储每个peak号，不管是否重叠
+	     ListBin<ListDetailBin> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+	     
+	     String tmpChrName = "";
+	     int tmppeakstart=-1; int tmppeakend=-1; double score = -1;
+	     int peakNum=lstmpPeakinfo.size();
+	     
+	     for (int i = 0; i < peakNum; i++) {
+	    	 tmpChrName=lstmpPeakinfo.get(i)[0].toLowerCase();
+	    	 tmppeakstart=Integer.parseInt(lstmpPeakinfo.get(i)[1].trim());
+	    	 tmppeakend=Integer.parseInt(lstmpPeakinfo.get(i)[2].trim());
+	    	 if (lstmpPeakinfo.get(i).length > 3) {
+	    		 score = Double.parseDouble(lstmpPeakinfo.get(i)[3]);
+	    	 }
+	    	 //出现新的染色体
+	    	 if (!Chrhash.containsKey(tmpChrName)) {
+	    		 if(LOCList!=null) {
+	    			 LOCList.trimToSize();
+	    		 }
+	    		 LOCList=new ListBin<ListDetailBin>();
+	    		 Chrhash.put(tmpChrName, LOCList);
+	    	 }				
+	    	 //添加重叠peak
+	    	 //看本peak的起点是否小于上个peak的终点，如果小于，则说明本peak和上个peak连续
+	    	 ListDetailBin lastGffdetailpeak;
+	    	 LOCIDList.add(tmppeakstart+"_"+tmppeakend);//添加入LOCIDList
+	    	 if(LOCList.size()>0 && tmppeakstart < (lastGffdetailpeak = LOCList.get(LOCList.size()-1)).getEndAbs() )
+	    	 {   //修改基因起点和终点
+	    		 if(tmppeakstart < lastGffdetailpeak.getStartAbs())
+	    			 lastGffdetailpeak.setStartAbs(tmppeakstart);
+	    		 if(tmppeakend>lastGffdetailpeak.getEndAbs())
+	    			 lastGffdetailpeak.setEndAbs(tmppeakend);
+	    		 //将基因(转录本ID)装入LOCList					
+	    		 //将本基因(转录本)的ID装入locString中
+	    		 lastGffdetailpeak.setName(lastGffdetailpeak.getName()+"/"+tmppeakstart+"_"+tmppeakend);
+	    		 if (colScore > 0) {
+	    			 lastGffdetailpeak.setScore((lastGffdetailpeak.getScore() + score)/2);
+	    		 }
+	    		 
+	    		 //将新值装入locHashtable，将locHashtable中相应的项目也修改，同时加入新的项目
+	    		 //因为UCSC里面没有转录本一说，只有两个LOCID共用一个区域的情况，所以只能够两个不同的LOCID指向同一个GffdetailUCSCgene
+	    		 String[] allPeakID = lastGffdetailpeak.getName().split("/");
+	    		 for (int m= 0; m < allPeakID.length; m++) {
+	    			 locHashtable.put(allPeakID[m], lastGffdetailpeak);
+	    		 }
+	    		 continue;
+	    	 }
+	    	 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	    	 //添加新peak 
+	    	 ListDetailBin gffdetailpeak=new ListDetailBin(tmpChrName, tmppeakstart+"_"+tmppeakend, peakcis);
+	    	 //正反向,所有peak都一个方向的
+	    	 gffdetailpeak.setStartAbs(tmppeakstart);
+	    	 gffdetailpeak.setEndAbs(tmppeakend);
+	    	 gffdetailpeak.setScore(score);
+	    	 LOCList.add(gffdetailpeak);  
+	    	 locHashtable.put(gffdetailpeak.getName(), gffdetailpeak);
+	     }
+	     LOCList.trimToSize();
 	}
 }

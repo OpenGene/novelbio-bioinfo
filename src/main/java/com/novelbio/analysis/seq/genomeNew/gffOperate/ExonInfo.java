@@ -82,12 +82,12 @@ public class ExonInfo extends ListDetailAbs {
 		 * list--每个isoform中该组的所有exon
 		 */
 		ArrayList<ArrayList<ExonInfo>> lsExonCluster = new ArrayList<ArrayList<ExonInfo>>();
-		ArrayList<String> lsIsoName = new ArrayList<String>();
+		ArrayList<GffGeneIsoInfo> lsIsoParent = new ArrayList<GffGeneIsoInfo>();
 		
 		/**
-		 * 存储那些跳过exon的转录本，记录跳过的是哪一个exon，只记录前一个exon的位置 
+		 * 如果本组中该IsoName的转录本正好没有exon落在组中，也就是跳过去了，那么记录该Iso在本组的前一个exon的Num
 		 */
-		HashMap<String, Integer> hashIsoExonNum = new HashMap<String, Integer>();
+		HashMap<String, Integer> hashIsoName2ExonNum = new HashMap<String, Integer>();
 		
 		public ExonCluster(String chrID, int start, int end) {
 			this.chrID = chrID;
@@ -98,17 +98,20 @@ public class ExonInfo extends ListDetailAbs {
 			return chrID + ":" + startLoc + "-" + endLoc;
 		}
 		
-		public void addExonCluster(String isoName, ArrayList<ExonInfo> lsExon) {
+		public void addExonCluster(GffGeneIsoInfo gffGeneIsoInfo, ArrayList<ExonInfo> lsExon) {
 			lsExonCluster.add(lsExon);
-			lsIsoName.add(isoName);
+			lsIsoParent.add(gffGeneIsoInfo);
 		}
-		
+		/**
+		 * 本组中是否为相同的exon，如果相同了那么也就没有可变剪接的说法了
+		 * @return
+		 */
 		public boolean isSameExon() {
 			if (sameExon != null) {
 				return sameExon;
 			}
-			//如果本组中没有exon并且也没有跨越的junction，说明本组没有可变的exon
-			if (lsExonCluster.size() >= 1 && hashIsoExonNum.size() >= 1) {
+			//如果本组中有不止一个exon的转录本，并且还有跨越的junction，说明本组有可变的exon
+			if (lsExonCluster.size() >= 1 && hashIsoName2ExonNum.size() >= 1) {
 				sameExon = false;
 				return false;
 			}
@@ -123,6 +126,7 @@ public class ExonInfo extends ListDetailAbs {
 					sameExon = false;
 					break;
 				}
+				//比较第一个就行了，因为如果有两个直接就返回false了
 				ExonInfo exon = lsExonCluster.get(i).get(0);
 				if (!exon.equals(exonOld)) {
 					sameExon = false;
@@ -154,15 +158,19 @@ public class ExonInfo extends ListDetailAbs {
 			}
 		}
 		/**
+		 * 如果本组中该IsoName的转录本正好没有exon落在组中，也就是跳过去了，那么记录该Iso在本组的前一个exon的Num
 		 * @param Isoname
 		 * @param exonNumStart
 		 */
 		public void setIso2JunctionStartExonNum(String Isoname, int exonNumStart) {
-			hashIsoExonNum.put(Isoname, exonNumStart);
+			hashIsoName2ExonNum.put(Isoname, exonNumStart);
 		}
-		
-		public HashMap<String, Integer> getHashIsoExonNum() {
-			return hashIsoExonNum;
+		/**
+		 * 如果本组中该IsoName的转录本正好没有exon落在组中，也就是跳过去了，那么记录该Iso在本组的前一个exon的Num
+		 * @return
+		 */
+		public HashMap<String, Integer> getHashIsoName2ExonNum() {
+			return hashIsoName2ExonNum;
 		}
 
 		

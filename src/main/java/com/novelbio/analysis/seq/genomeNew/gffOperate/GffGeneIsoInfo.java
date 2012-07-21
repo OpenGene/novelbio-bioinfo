@@ -9,6 +9,8 @@ import javax.swing.text.MaskFormatter;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo.ExonCluster;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
@@ -70,7 +72,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		hashMRNA.add(TYPE_GENE_MRNA_TE);
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
 	private int flagTypeGene = TYPE_GENE_MRNA;
 	/** 设定基因的转录起点上游长度，默认为0 */
 	protected int upTss = 0;
@@ -923,7 +924,120 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> result = new ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>(gffCod1, gffCod2);
 		return result;
 	}
-	
+	/**
+	 * 返回两个iso比较的信息
+	 * 0说明完全不相同。方向不同或没有交集则直接返回0
+	 * @param gffGeneIsoInfo1
+	 * @param gffGeneIsoInfo2
+	 * @return int[2] <br>
+	 * 0:有多少exon的边界是相同的<br>
+	 * 1:总体边界数<br>
+	 * 2: gffGeneIsoInfo1-Size<br>
+	 * 3: gffGeneIsoInfo2-Size<br>
+	 */
+	public static int[] compareIso(GffGeneIsoInfo gffGeneIsoInfo1, GffGeneIsoInfo gffGeneIsoInfo2) {
+		//完全没有交集
+		if (!gffGeneIsoInfo1.isCis5to3().equals(gffGeneIsoInfo2.isCis5to3()) 
+				|| gffGeneIsoInfo1.getEndAbs() <= gffGeneIsoInfo2.getStartAbs() 
+				|| gffGeneIsoInfo1.getStartAbs() >= gffGeneIsoInfo2.getEndAbs()) {
+			return new int[]{0,gffGeneIsoInfo1.size() * 2, gffGeneIsoInfo1.size()*2, gffGeneIsoInfo2.size()*2};
+		}
+		ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();
+		lsGffGeneIsoInfos.add(gffGeneIsoInfo1); lsGffGeneIsoInfos.add(gffGeneIsoInfo2);
+		ArrayList<ExonCluster> lsExonClusters = getExonCluster(gffGeneIsoInfo1.isCis5to3(), gffGeneIsoInfo1.getName(), lsGffGeneIsoInfos);
+		//相同的边界数量，一个外显子有两个相同边界
+		int sameBounds = 0;
+		
+		for (ExonCluster exonCluster : lsExonClusters) {
+			sameBounds = getSameBoundsNum(exonCluster);
+		}
+		return new int[]{sameBounds, lsExonClusters.size()*2, gffGeneIsoInfo1.size()*2, gffGeneIsoInfo2.size()*2};
+	}
+	/**
+	 * 当exoncluster中的exon不一样时，查看具体有几条边是相同的。
+	 * 因为一致的exon也仅有2条相同边，所以返回的值为0，1，2
+	 * @param exonCluster
+	 * @return
+	 */
+	private static int getSameBoundsNum(ExonCluster exonCluster) {
+		if (exonCluster.isSameExon()) {
+			return 2;
+		}
+
+		ArrayList<ArrayList<ExonInfo>> lsExon = exonCluster.lsExonCluster;
+		if (lsExon.size() <= 1) {
+			return 0;
+		}
+		ArrayList<ExonInfo> lsExon1 = lsExon.get(0);
+		ArrayList<ExonInfo> lsExon2 = lsExon.get(1);
+		
+		if (lsExon1.get(0).getStartAbs() == lsExon2.get(0).getStartAbs()
+			|| lsExon1.get(0).getEndAbs() == lsExon2.get(0).getEndAbs() ) {
+			return 1;
+		}
+		
+		if (lsExon1.get(lsExon1.size() - 1).getStartAbs() == lsExon2.get(lsExon2.size() - 1).getStartAbs()
+				|| lsExon1.get(lsExon1.size() - 1).getEndAbs() == lsExon2.get(lsExon2.size() - 1).getEndAbs()) {
+			return 1;
+		}
+		return 0;
+	}
+	/** 按照分组好的边界exon，将每个转录本进行划分 */
+	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3, String chrID, ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos) {
+		ArrayList<ExonCluster> lsResult = new ArrayList<ExonInfo.ExonCluster>();
+		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(cis5To3, lsGffGeneIsoInfos);
+		for (int[] exonBound : lsExonBound) {
+			ExonCluster exonCluster = new ExonCluster(chrID, exonBound[0], exonBound[1]);
+			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+				if (gffGeneIsoInfo.isCis5to3() != cis5To3) {
+					continue;
+				}
+				
+				ArrayList<ExonInfo> lsExonClusterTmp = new ArrayList<ExonInfo>();
+				int beforeExonNum = 0;//如果本isoform正好没有落在bounder组中的exon，那么就要记录该isoform的前后两个exon的位置，用于查找跨过和没有跨过的exon
+				boolean junc = false;//如果本isoform正好没有落在bounder组中的exon，那么就需要记录跳过的exon的位置，就将这个flag设置为true
+				for (int i = 0; i < gffGeneIsoInfo.size(); i++) {
+					ExonInfo exon = gffGeneIsoInfo.get(i);
+					if (cis5To3) {
+						if (exon.getEndCis() < exonBound[0]) {
+							junc = true;
+							beforeExonNum = i;
+							continue;
+						}
+						else if (exon.getStartCis() >= exonBound[0] && exon.getEndCis() <= exonBound[1]) {
+							lsExonClusterTmp.add(exon);
+							junc = false;
+						}
+						else if (exon.getStartCis() > exonBound[1]) {
+							break;
+						}
+					}
+					else {
+						if (exon.getEndCis() > exonBound[0]) {
+							junc = true;
+							beforeExonNum = i;
+							continue;
+						}
+						else if (exon.getStartCis() <= exonBound[0] && exon.getEndCis() >= exonBound[1]) {
+							lsExonClusterTmp.add(exon);
+							junc = false;
+						}
+						else if (exon.getStartCis() < exonBound[1]) {
+							break;
+						}
+					}
+				}
+				if (lsExonClusterTmp.size() > 0) {
+					exonCluster.addExonCluster(gffGeneIsoInfo, lsExonClusterTmp);
+				}
+				if (junc && beforeExonNum < gffGeneIsoInfo.size()-1) {
+					exonCluster.setIso2JunctionStartExonNum(gffGeneIsoInfo.getName(), beforeExonNum);
+				}
+			}
+			lsResult.add(exonCluster);
+		}
+		return lsResult;
+	}
 	/**
 	 * 设定DISTAL Promoter区域在TSS上游的多少bp外，默认1000
 	 * 目前仅和annotation的文字有关
