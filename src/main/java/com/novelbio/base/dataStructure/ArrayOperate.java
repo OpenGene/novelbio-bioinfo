@@ -614,90 +614,6 @@ public class ArrayOperate {
 		return result;
 	}
 	/**
-	 * 二分法查找Coordinate的情况,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
-	 * 返回一个int[3]数组，<br>
-	 * 0: 1-基因内 2-基因外<br>
-	 * 1：本基因序号（定位在基因内） / 上个基因的序号(定位在基因外) -1表示前面没有基因<br>
-	 * 2：下个基因的序号 -1表示后面没有基因<br>
-	 * 3: 和上一个节点的距离，如果在起点则为-1<br>
-	 * 4：和下一个节点的距离，如果在终点则为-1<br>
-	 */
-	private<T extends CompSubArray> double[] LocPositionT(ArrayList<T> lsTarget, double Coordinate) {
-		ArrayList<double[]> lsTmp = new ArrayList<double[]>();
-		for (T t : lsTarget) {
-			lsTmp.add(t.getCell());
-		}
-		return LocPosition(lsTmp, Coordinate);
-	}
-	
-		
-	
-		
-	
-	
-	/**
-	 * 待检查
-	 * 二分法查找Coordinate的情况,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
-	 * 返回一个int[3]数组，<br>
-	 * 0: 1-基因内 2-基因外<br>
-	 * 1：本基因序号（定位在基因内） / 上个基因的序号(定位在基因外) -1表示前面没有基因<br>
-	 * 2：下个基因的序号 -1表示后面没有基因
-	 * 3: 和上一个节点的距离，如果在起点则为-1
-	 * 4：和下一个节点的距离，如果在终点则为-1
-	 */
-	private double[] LocPosition(ArrayList<double[]> lsTarget, double Coordinate) {
-		double[] LocInfo = new double[3];
-		int endnum = lsTarget.size() - 1;
-		int beginnum = 0;
-		int number = 0;
-		// 在第一个Item之前
-		if (Coordinate < lsTarget.get(beginnum)[0]) {
-			LocInfo[0] = 2;
-			LocInfo[1] = -1;
-			LocInfo[2] = 0;
-			LocInfo[3] = -1;
-			LocInfo[4] = lsTarget.get(beginnum)[0] - Coordinate;
-			return LocInfo;
-		}
-		// 在最后一个Item之后
-		else if (Coordinate > lsTarget.get(endnum)[1]) {
-			LocInfo[1] = endnum;
-			LocInfo[2] = -1;
-			LocInfo[0] = 2;
-			LocInfo[3] = Coordinate - lsTarget.get(endnum)[1];
-			LocInfo[4] = -1;
-			return LocInfo;
-		}
-		do {
-			number = (beginnum + endnum + 1) / 2;// 3/2=1,5/2=2
-			if (Coordinate == lsTarget.get(number)[0]) {
-				beginnum = number;
-				endnum = number + 1;
-				break;
-			}
-			else if (Coordinate < lsTarget.get(number)[0]
-					&& number != 0) {
-				endnum = number;
-			} else {
-				beginnum = number;
-			}
-		} while ((endnum - beginnum) > 1);
-		LocInfo[1] = beginnum;
-		LocInfo[2] = endnum;
-		if (Coordinate <= lsTarget.get(beginnum)[1])// 不知道会不会出现PeakNumber比biginnum小的情况
-		{ // location在基因内部
-			LocInfo[0] = 1;
-			LocInfo[3] = Coordinate - lsTarget.get(beginnum)[0];
-			LocInfo[4] = lsTarget.get(beginnum)[1] - Coordinate;
-			return LocInfo;
-		}
-		// location在基因外部
-		LocInfo[0] = 2;
-		return LocInfo;
-	}
-	
-	
-	/**
 	 * 比较两个区域之间的overlap的数值和比例
 	 * 数组必须只有两个值，并且是闭区间
 		 * 结果信息：
@@ -706,6 +622,7 @@ public class ArrayOperate {
 		 * 2：overlap占1的比值<br>
 		 * 3：overlap占2的比值<br>
 		 */
+	@Deprecated
 	public static double[] cmpArray(double[] region1, double[] region2) {
 		/**
 		 * 结果信息：

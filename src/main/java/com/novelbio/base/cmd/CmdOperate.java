@@ -209,3 +209,12 @@ public class CmdOperate extends RunProcess<String>{
 	}
 
 }
+class ProgressData
+{
+	public String strcmdInfo;
+	/**
+	 * true : info
+	 * false : error
+	 */
+	public boolean info;
+}

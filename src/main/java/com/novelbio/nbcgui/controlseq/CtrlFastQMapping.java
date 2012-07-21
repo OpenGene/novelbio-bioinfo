@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.FastQ;
-import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.FastQRecord;
 import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.mapping.SamFile;
@@ -29,7 +28,7 @@ public class CtrlFastQMapping {
 	
 	boolean filter = true;
 	boolean trimNNN = false;
-	int fastqQuality = FastQOld.QUALITY_MIDIAN;
+	int fastqQuality = FastQ.QUALITY_MIDIAN;
 	boolean uniqMapping = true;
 	int readsLenMin = 18;
 	int libraryType = LIBRARY_SINGLE_END;
@@ -173,7 +172,6 @@ public class CtrlFastQMapping {
 				mapBwa.setInsertSize(150, 500);
 			}
 			mapBwa.setThreadNum(thread);
-			mapBwa.setUniqMapping(true);
 			SamFile samFile = mapBwa.mapReads();
 			long uniqueMappedReads = samFile.getReadsNum(SamFile.MAPPING_UNIQUE);
 			if (fastQs[1] != null)
