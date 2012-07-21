@@ -20,7 +20,7 @@ public class MapBwa {
 	}
 	
 	
-	private static Logger logger = Logger.getLogger(FastQMapSoap.class);
+	private static Logger logger = Logger.getLogger(MapBwa.class);
 	/**
 	 * 在此大小以下的genome直接读入内存以帮助快速mapping
 	 * 单位，KB

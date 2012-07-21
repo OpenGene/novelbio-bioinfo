@@ -1,10 +1,16 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 
 import org.omg.CORBA.FREE_MEM;
+import org.w3c.dom.ls.LSException;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo.ExonCluster;
@@ -102,19 +108,139 @@ public class GffGeneClusterNew {
 	 * @param gffGeneIsoInfoRef
 	 * @param gffGeneIsoInfoThis
 	 */
-	private void compareIso(GffGeneIsoInfo gffGeneIsoInfoRef, GffGeneIsoInfo gffGeneIsoInfoThis) {
+	private void compareIso(String IsoName, GffGeneIsoInfo gffGeneIsoInfoRef, GffGeneIsoInfo gffGeneIsoInfoThis) {
 		ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();
-		//设定名字，防止gffGeneIsoInfoRef和gffGeneIsoInfoThis一个名字
-		//但是添加名字后，就会变掉了
-		gffGeneIsoInfoRef.setName("REF" + SepSign.SEP_ID + gffGeneIsoInfoRef.getName());
-		gffGeneIsoInfoThis.setName("THIS" + SepSign.SEP_ID + gffGeneIsoInfoRef.getName());
-		
-		lsGffGeneIsoInfos.add(gffGeneIsoInfoRef); lsGffGeneIsoInfos.add(gffGeneIsoInfoThis);
+		lsGffGeneIsoInfos.add(gffGeneIsoInfoRef); 
+		lsGffGeneIsoInfos.add(gffGeneIsoInfoThis);
 		
 		ArrayList<ExonCluster> lsExonClusters = GffGeneIsoInfo.getExonCluster(gffGeneIsoInfoRef.isCis5to3(), gffGeneIsoInfoRef.getChrID(), lsGffGeneIsoInfos);
-		//TODO 开始比较每个exon，并进行修正
+		
+		//装载最后的结果iso
+		GffGeneIsoInfo gffGeneIsoInfo = new GffGeneIsoCis(IsoName, gffGeneIsoInfoRef.getGffDetailGeneParent(), gffGeneIsoInfoRef.getGeneType());
+		
+		boolean leftBoth = false;
+		for (int i = 0; i < lsExonClusters.size(); i++) {
+			ExonCluster exonCluster = lsExonClusters.get(i);
+			ArrayList<ExonInfo> lsExonInfosRef = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoRef);
+			ArrayList<ExonInfo> lsExonInfosThis = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoThis);
+			
+			if (lsExonInfosRef.size() > 0 || lsExonInfosThis.size() > 0 ) {
+				leftBoth = true;
+			}
+			
+		}
+		
 	}
-	
+	private ArrayList<ExonInfo> compExonMid() {
+		
+		
+		return null;
+	}
+	/**
+	 * 比较本组
+	 * @return int[2]
+	 * 0: 左端一致
+	 * 1: 右端一致
+	 */
+	private int[] compareLsExonInfo(ExonCluster exonCluster) {
+		ArrayList<ArrayList<ExonInfo>> lsLsExonInfo = ArrayOperate.getArrayListValue(exonCluster.getMapIso2LsExon());
+		ArrayList<ExonInfo> lsExonInfosRef = lsLsExonInfo.get(0);
+		ArrayList<ExonInfo> lsExonInfosThis = lsLsExonInfo.get(1);
+		if (lsExonInfosRef.size() == 0 || lsExonInfosThis.size() == 0) {
+			return new int[]{1, 1};
+		}
+		else {
+			int[] result = new int[2]; result[0] = 1; result[1] = 1;
+			if (lsExonInfosRef.get(0).getStartCis() == lsExonInfosThis.get(0).getStartCis()) {
+				result[0] = 0;
+			}
+			if (lsExonInfosRef.get(lsExonInfosRef.size() - 1).getEndCis() == lsExonInfosThis.get(lsExonInfosThis.size() - 1).getEndCis())  {
+				result[1] = 0;
+			}
+			return result;
+		}
+	}
+	/**
+	 * 返回左端
+	 * @param gffGeneIsoInfoRef
+	 * @param lsExonInfosRef
+	 * @param gffGeneIsoInfoThis
+	 * @param lsExonInfosThis
+	 * @return
+	 */
+	private ArrayList<ExonInfo> compareExonLeft(GffGeneIsoInfo gffGeneIsoInfoRef, ArrayList<ExonInfo> lsExonInfosRef, GffGeneIsoInfo gffGeneIsoInfoThis, ArrayList<ExonInfo> lsExonInfosThis) {
+		//如果都是起点
+		if (gffGeneIsoInfoRef.indexOf(lsExonInfosRef.get(0)) == 0 && gffGeneIsoInfoThis.indexOf(lsExonInfosThis.get(0)) == 0) {
+			return getBoundListExonInfo(gffGeneIsoInfoRef.isCis5to3(), true, lsExonInfosRef, lsExonInfosThis);
+		}
+		else {
+			if (gffGeneIsoInfoRef.indexOf(lsExonInfosRef.get(0)) != 0) {
+				return lsExonInfosRef;
+			}
+			else {
+				return lsExonInfosThis;
+			}
+		}
+	}
+	/**
+	 * 返回右端
+	 * @param gffGeneIsoInfoRef
+	 * @param lsExonInfosRef
+	 * @param gffGeneIsoInfoThis
+	 * @param lsExonInfosThis
+	 * @return
+	 */
+	private ArrayList<ExonInfo> compareExonRight(GffGeneIsoInfo gffGeneIsoInfoRef, ArrayList<ExonInfo> lsExonInfosRef, GffGeneIsoInfo gffGeneIsoInfoThis, ArrayList<ExonInfo> lsExonInfosThis) {
+		//如果都是终点
+		if (gffGeneIsoInfoRef.indexOf(lsExonInfosRef.get(lsExonInfosRef.size() - 1)) == gffGeneIsoInfoRef.size() - 1 
+				&& gffGeneIsoInfoThis.indexOf(lsExonInfosThis.get(lsExonInfosThis.size() - 1)) == gffGeneIsoInfoThis.size() - 1 ) {
+			return getBoundListExonInfo(gffGeneIsoInfoRef.isCis5to3(), false, lsExonInfosRef, lsExonInfosThis);
+		}
+		else {
+			if (gffGeneIsoInfoRef.indexOf(lsExonInfosRef.get(lsExonInfosRef.size() - 1)) != gffGeneIsoInfoRef.size() - 1 ) {
+				return lsExonInfosRef;
+			}
+			else {
+				return lsExonInfosThis;
+			}
+		}
+	}
+	/**
+	 * 当ref和this的exon都在边界时，返回长的
+	 * @param cis
+	 * @param start
+	 * @param lsExonInfosRef
+	 * @param lsExonInfosThis
+	 * @return
+	 */
+	private ArrayList<ExonInfo> getBoundListExonInfo(boolean cis, boolean start, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
+		int refBound = 0, thisBound = 0;
+		if (start) {
+			refBound = lsExonInfosRef.get(0).getStartCis();
+			thisBound = lsExonInfosThis.get(0).getStartCis();
+		}
+		else {
+			refBound = lsExonInfosRef.get(lsExonInfosRef.size() - 1).getEndCis();
+			thisBound = lsExonInfosThis.get(lsExonInfosThis.size() - 1).getEndCis();
+		}
+		
+		if ( (cis && start) || (!cis && !start)) {
+			if (refBound <= thisBound) {
+				return lsExonInfosRef;
+			}
+			else {
+				return lsExonInfosThis;
+			}
+		}
+		else {
+			if (refBound >= thisBound) {
+				return lsExonInfosRef;
+			}
+			else {
+				return lsExonInfosThis;
+			}
+		}
+	}
 	/**
 	 * 重建转录本时用到，比较两个算法的转录本之间的差异
 	 * 两个gffHashGene应该是同一个物种

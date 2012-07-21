@@ -20,8 +20,7 @@ public class ExonInfo extends ListDetailAbs {
 		numberend = Math.max(start, end);
 	}
 	
-	public void setStartCis(int startLoc)
-	{
+	public void setStartCis(int startLoc) {
 		if (cis5to3) {
 			numberstart = startLoc;
 		}
@@ -29,8 +28,7 @@ public class ExonInfo extends ListDetailAbs {
 			numberend = startLoc;
 		}
 	}
-	public void setEndCis(int endLoc)
-	{
+	public void setEndCis(int endLoc) {
 		if (cis5to3) {
 			numberend = endLoc;
 		}
@@ -38,8 +36,7 @@ public class ExonInfo extends ListDetailAbs {
 			numberstart = endLoc;
 		}
 	}
-	public ExonInfo clone()
-	{
+	public ExonInfo clone() {
 		ExonInfo result = null;
 		result = (ExonInfo) super.clone();
 		return result;
@@ -80,10 +77,11 @@ public class ExonInfo extends ListDetailAbs {
 		/**
 		 * list--所有isoform
 		 * list--每个isoform中该组的所有exon
+		 * 如果该iso跳过了这个exon，则里面装空的list
 		 */
 		ArrayList<ArrayList<ExonInfo>> lsExonCluster = new ArrayList<ArrayList<ExonInfo>>();
 		ArrayList<GffGeneIsoInfo> lsIsoParent = new ArrayList<GffGeneIsoInfo>();
-		
+		HashMap<GffGeneIsoInfo, ArrayList<ExonInfo>> mapIso2LsExon = new HashMap<GffGeneIsoInfo, ArrayList<ExonInfo>>();
 		/**
 		 * 如果本组中该IsoName的转录本正好没有exon落在组中，也就是跳过去了，那么记录该Iso在本组的前一个exon的Num
 		 */
@@ -97,10 +95,17 @@ public class ExonInfo extends ListDetailAbs {
 		public String getLocInfo() {
 			return chrID + ":" + startLoc + "-" + endLoc;
 		}
-		
+		/**
+		 * 如果该iso跳过了这个exon，则里面装空的list
+		 * @param gffGeneIsoInfo
+		 * @param lsExon
+		 */
 		public void addExonCluster(GffGeneIsoInfo gffGeneIsoInfo, ArrayList<ExonInfo> lsExon) {
 			lsExonCluster.add(lsExon);
-			lsIsoParent.add(gffGeneIsoInfo);
+			mapIso2LsExon.put(gffGeneIsoInfo, lsExon);
+		}
+		public HashMap<GffGeneIsoInfo, ArrayList<ExonInfo>> getMapIso2LsExon() {
+			return mapIso2LsExon;
 		}
 		/**
 		 * 本组中是否为相同的exon，如果相同了那么也就没有可变剪接的说法了

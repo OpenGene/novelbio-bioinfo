@@ -6,8 +6,4 @@ package com.novelbio.analysis.seq;
  */
 public enum FormatSeq {
 	 FASTQ, SAM, BAM, BED;
-
-	 public static void main(String[] args) {
-		 System.out.println( FormatSeq.SAM == FormatSeq.BED);
-	}
 }

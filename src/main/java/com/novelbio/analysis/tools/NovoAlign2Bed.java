@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq;
+package com.novelbio.analysis.tools;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,23 +7,7 @@ import com.novelbio.analysis.seq.chipseq.PeakMacs;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-public class CDGtools {
-	public static void main(String[] args) throws Exception {
-		String parentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIP-Seq_XLY_Paper/Cell_Dpy30/";
-		String bedFileNrom = parentFile+"Dpy-30MappingNorm.bed";
-		String bedFileLen = parentFile+"Dpy-30MappingLen.bed";
-//		copeNovoAlign2Bed(parentFile+"GSM651192_ChIPSeq_Dpy-30_Mus_musculus_MM9_novoalign_genome_alignment.txt",
-//				bedFileNrom, bedFileLen);
-//		System.out.println("format finish");
-		PeakMacs bedPeakMacs = new PeakMacs(bedFileNrom);
-		bedPeakMacs = bedPeakMacs.sortBedFile(1, parentFile + "Dpy-30SortNorm.bed", 2,3);
-		System.out.println("sortFinish");
-		bedPeakMacs.peakCallling(null, "mm", parentFile, "Dpy-30");
-		System.out.println("Peakfinish");
-//		BedSeq bedSeq = new BedSeq(bedFileLen);
-//		bedSeq.sortBedFile(1, parentFile + "Dpy-30SortLen.bed", 2,3);
-//		System.out.println("finish");
-	}
+public class NovoAlign2Bed {
 	/**
 	 * 将novoalign获得的mapping结果转化为标准bed文件和延长bed文件
 	 * @throws Exception 

@@ -159,6 +159,13 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	public int getReadsInElementNum() {
 		return readsInElementNumber;
 	}
+	/**
+	 * 从0开始，位于list的第几个位置
+	 * @param itemNum
+	 */
+	public void setItemNum(int itemNum) {
+		this.itemNum = itemNum;
+	}
 	/** 
 	 * <b>好像没用</b>
 	 * 该条目在List-GffDetail中的具体位置 */

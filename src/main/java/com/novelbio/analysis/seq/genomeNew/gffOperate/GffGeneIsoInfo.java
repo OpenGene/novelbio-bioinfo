@@ -114,6 +114,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getTaxID() {
 		return gffDetailGeneParent.getTaxID();
 	}
+	public GffDetailGene getGffDetailGeneParent() {
+		return gffDetailGeneParent;
+	}
 	/**
 	 * 跟随gffDetailGene的设定
 	 * 划定Tss范围上游为负数，下游为正数
@@ -982,7 +985,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return 0;
 	}
-	/** 按照分组好的边界exon，将每个转录本进行划分 */
+	/** 按照分组好的边界exon，将每个转录本进行划分，划分好的ExonCluster里面每组的lsExon都是考虑了方向然后按照方向顺序装进去的 */
 	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3, String chrID, ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos) {
 		ArrayList<ExonCluster> lsResult = new ArrayList<ExonInfo.ExonCluster>();
 		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(cis5To3, lsGffGeneIsoInfos);
@@ -1027,9 +1030,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 						}
 					}
 				}
-				if (lsExonClusterTmp.size() > 0) {
-					exonCluster.addExonCluster(gffGeneIsoInfo, lsExonClusterTmp);
-				}
+
+				exonCluster.addExonCluster(gffGeneIsoInfo, lsExonClusterTmp);
 				if (junc && beforeExonNum < gffGeneIsoInfo.size()-1) {
 					exonCluster.setIso2JunctionStartExonNum(gffGeneIsoInfo.getName(), beforeExonNum);
 				}
