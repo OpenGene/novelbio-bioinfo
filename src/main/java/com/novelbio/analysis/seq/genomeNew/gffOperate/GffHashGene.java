@@ -5,12 +5,9 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.CompSubArrayCluster;
-import com.novelbio.base.dataStructure.CompSubArrayInfo;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
-import com.novelbio.generalConf.Species;
 /**
  * 读取大豆的GFF文件有问题，主要是5UTR和3UTR一块，需要修正
  * @author zong0jie

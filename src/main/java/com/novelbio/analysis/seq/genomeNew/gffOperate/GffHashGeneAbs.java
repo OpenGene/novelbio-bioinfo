@@ -3,32 +3,20 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.CompSubArrayCluster;
-import com.novelbio.base.dataStructure.CompSubArrayInfo;
-import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modcopeid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
-import com.novelbio.test.testextend.a;
 
 public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf {
 	private static Logger logger = Logger.getLogger(GffHashGeneAbs.class);

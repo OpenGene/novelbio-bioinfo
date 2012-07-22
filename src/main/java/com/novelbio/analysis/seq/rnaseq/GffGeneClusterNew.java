@@ -96,7 +96,6 @@ public class GffGeneClusterNew {
 				for (GffDetailGene gffDetailGeneCalculate : lsgffArrayList) {//获得另一个GffHash里面的GffDetailGene
 					for (GffGeneIsoInfo gffIsoThis : gffDetailGeneCalculate.getLsCodSplit()) {//遍历该GffDetailGene的转录本，并挑选出最接近的进行比较
 						GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getSimilarIso(gffIsoThis, likelyhood).clone();
-						gffDetailGeneRef.removeIso(gffIsoRef.getName());
 						//TODO 新建一个gffDetail然后放进去可能比较合适把
 					}
 				}
@@ -108,39 +107,98 @@ public class GffGeneClusterNew {
 	 * @param gffGeneIsoInfoRef
 	 * @param gffGeneIsoInfoThis
 	 */
+	@SuppressWarnings("unused")
 	private void compareIso(String IsoName, GffGeneIsoInfo gffGeneIsoInfoRef, GffGeneIsoInfo gffGeneIsoInfoThis) {
+		GffGeneIsoInfo gffGeneIsoInfoRefDuplicate = gffGeneIsoInfoRef.clone();
+		gffGeneIsoInfoRef.clear();//最后装在这个里面，所以现在清空
+		
 		ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();
-		lsGffGeneIsoInfos.add(gffGeneIsoInfoRef); 
+		lsGffGeneIsoInfos.add(gffGeneIsoInfoRefDuplicate); 
 		lsGffGeneIsoInfos.add(gffGeneIsoInfoThis);
 		
 		ArrayList<ExonCluster> lsExonClusters = GffGeneIsoInfo.getExonCluster(gffGeneIsoInfoRef.isCis5to3(), gffGeneIsoInfoRef.getChrID(), lsGffGeneIsoInfos);
-		
-		//装载最后的结果iso
-		GffGeneIsoInfo gffGeneIsoInfo = new GffGeneIsoCis(IsoName, gffGeneIsoInfoRef.getGffDetailGeneParent(), gffGeneIsoInfoRef.getGeneType());
-		
-		boolean leftBoth = false;
+//		装载最后的结果iso
+//		GffGeneIsoInfo gffGeneIsoInfo = new GffGeneIsoCis(IsoName, gffGeneIsoInfoRef.getGffDetailGeneParent(), gffGeneIsoInfoRef.getGeneType());
+		int[] boundBoth = getBothStartNumEndNum(lsExonClusters);
+		boolean addRefLs = true;//是否添加的是Ref的lsexoninfo
+		int[] boundInfo = new int[]{0, 0};;//比较上组exon的边界0，表示一致 1表示不一致
 		for (int i = 0; i < lsExonClusters.size(); i++) {
 			ExonCluster exonCluster = lsExonClusters.get(i);
-			ArrayList<ExonInfo> lsExonInfosRef = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoRef);
+			ArrayList<ExonInfo> lsExonInfosRef = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoRefDuplicate);
 			ArrayList<ExonInfo> lsExonInfosThis = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoThis);
-			
-			if (lsExonInfosRef.size() > 0 || lsExonInfosThis.size() > 0 ) {
-				leftBoth = true;
+			//相同的就直接装进去
+			if (exonCluster.isSameExon()) {
+				gffGeneIsoInfoRef.add(lsExonInfosRef.get(0));
+				boundInfo = new int[]{0, 0};
+				continue;
 			}
 			
+			ArrayList<ExonInfo> lsExonInfos = null;
+			if (boundBoth[0] == i) {
+				addRefLs = compareExonLeft(gffGeneIsoInfoRefDuplicate, lsExonInfosRef, gffGeneIsoInfoThis, lsExonInfosThis);
+			}
+			else if (boundInfo[1] == 0) {//前面的边是一致的
+				if (boundBoth[1] == i) {//TODO 添加right边界的信息
+					addRefLs = compareExonRight(gffGeneIsoInfoRefDuplicate, lsExonInfosRef, gffGeneIsoInfoThis, lsExonInfosThis);
+				}
+				else {
+					addRefLs = compExonMid(lsExonInfosRef, lsExonInfosThis);
+				}
+			}
+			//当boundInfo[1] != 0时，紧跟上一次添加的就好
+			lsExonInfos = (addRefLs? lsExonInfosRef : lsExonInfosThis);
+			for (ExonInfo exonInfo : lsExonInfos) {
+				gffGeneIsoInfoRef.add(exonInfo);
+			}
+			boundInfo = compareLsExonInfo(exonCluster);
 		}
 		
 	}
-	private ArrayList<ExonInfo> compExonMid() {
-		
-		
-		return null;
+	/**
+	 * lsExonClusters是两个转录本比较的结果，如下图<br>
+	 * 0----1-----2-----3-----4<br>
+	 * A----B-----C-----D----E 第一个转录本<br>
+	 * *----*-----a-----b 第二个转录本<br>
+	 * 返回其中较晚出现的起点和较早出现的终点坐标，也就是a和b的坐标，从0开始
+	 * 那么就是返回2和3
+	 * @param lsExonClusters
+	 * @return
+	 */
+	private int[] getBothStartNumEndNum(ArrayList<ExonCluster> lsExonClusters) {
+		int start = -1, end = -1;
+		for (int i = 0; i < lsExonClusters.size(); i++) {
+			ExonCluster exonCluster = lsExonClusters.get(i);
+			ArrayList<ArrayList<ExonInfo>> lsLsExonInfo = ArrayOperate.getArrayListValue(exonCluster.getMapIso2LsExon());
+			ArrayList<ExonInfo> lsExonInfo1 = lsLsExonInfo.get(0);
+			ArrayList<ExonInfo> lsExonInfo2 = lsLsExonInfo.get(1);
+			if (lsExonInfo1.size() > 0 && lsExonInfo2.size() > 0) {
+				if (start == -1) {
+					start = i;
+				}
+				end = i;
+			}
+		}
+		return new int[]{start, end};
 	}
 	/**
-	 * 比较本组
-	 * @return int[2]
-	 * 0: 左端一致
-	 * 1: 右端一致
+	 * 当两个样本进行比较时，直接返回lsExonInfosThis
+	 * 也就是用新的转录本替代旧的
+	 * 但是如果lsExonInfosThis为空，那就返回lsExonInfosRef
+	 * @param lsExonInfosRef
+	 * @param lsExonInfosThis
+	 * @return
+	 */
+	private boolean compExonMid(ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
+		if (lsExonInfosThis.size() == 0) {
+			return true;
+		}
+		return false;
+	}
+	/**
+	 * 比较本组exon的边界
+	 * @return int[2] 0一致 1不一致
+	 * 0: 左端
+	 * 1: 右端
 	 */
 	private int[] compareLsExonInfo(ExonCluster exonCluster) {
 		ArrayList<ArrayList<ExonInfo>> lsLsExonInfo = ArrayOperate.getArrayListValue(exonCluster.getMapIso2LsExon());
@@ -160,37 +218,40 @@ public class GffGeneClusterNew {
 			return result;
 		}
 	}
+
 	/**
 	 * 返回左端
 	 * @param gffGeneIsoInfoRef
-	 * @param lsExonInfosRef
+	 * @param lsExonInfosRef 必须不为0
 	 * @param gffGeneIsoInfoThis
-	 * @param lsExonInfosThis
-	 * @return
+	 * @param lsExonInfosThis 必须不为0
+	 * @return true RefExon
+	 * false ThisExon
 	 */
-	private ArrayList<ExonInfo> compareExonLeft(GffGeneIsoInfo gffGeneIsoInfoRef, ArrayList<ExonInfo> lsExonInfosRef, GffGeneIsoInfo gffGeneIsoInfoThis, ArrayList<ExonInfo> lsExonInfosThis) {
+	private boolean compareExonLeft(GffGeneIsoInfo gffGeneIsoInfoRef, ArrayList<ExonInfo> lsExonInfosRef, GffGeneIsoInfo gffGeneIsoInfoThis, ArrayList<ExonInfo> lsExonInfosThis) {
 		//如果都是起点
 		if (gffGeneIsoInfoRef.indexOf(lsExonInfosRef.get(0)) == 0 && gffGeneIsoInfoThis.indexOf(lsExonInfosThis.get(0)) == 0) {
 			return getBoundListExonInfo(gffGeneIsoInfoRef.isCis5to3(), true, lsExonInfosRef, lsExonInfosThis);
 		}
 		else {
 			if (gffGeneIsoInfoRef.indexOf(lsExonInfosRef.get(0)) != 0) {
-				return lsExonInfosRef;
+				return true;
 			}
 			else {
-				return lsExonInfosThis;
+				return false;
 			}
 		}
 	}
 	/**
 	 * 返回右端
 	 * @param gffGeneIsoInfoRef
-	 * @param lsExonInfosRef
-	 * @param gffGeneIsoInfoThis
+	 * @param lsExonInfosRef 必须不为0
+	 * @param gffGeneIsoInfoThis 必须不为0
 	 * @param lsExonInfosThis
-	 * @return
+	 * @return true RefExon
+	 * false ThisExon
 	 */
-	private ArrayList<ExonInfo> compareExonRight(GffGeneIsoInfo gffGeneIsoInfoRef, ArrayList<ExonInfo> lsExonInfosRef, GffGeneIsoInfo gffGeneIsoInfoThis, ArrayList<ExonInfo> lsExonInfosThis) {
+	private boolean compareExonRight(GffGeneIsoInfo gffGeneIsoInfoRef, ArrayList<ExonInfo> lsExonInfosRef, GffGeneIsoInfo gffGeneIsoInfoThis, ArrayList<ExonInfo> lsExonInfosThis) {
 		//如果都是终点
 		if (gffGeneIsoInfoRef.indexOf(lsExonInfosRef.get(lsExonInfosRef.size() - 1)) == gffGeneIsoInfoRef.size() - 1 
 				&& gffGeneIsoInfoThis.indexOf(lsExonInfosThis.get(lsExonInfosThis.size() - 1)) == gffGeneIsoInfoThis.size() - 1 ) {
@@ -198,10 +259,10 @@ public class GffGeneClusterNew {
 		}
 		else {
 			if (gffGeneIsoInfoRef.indexOf(lsExonInfosRef.get(lsExonInfosRef.size() - 1)) != gffGeneIsoInfoRef.size() - 1 ) {
-				return lsExonInfosRef;
+				return true;
 			}
 			else {
-				return lsExonInfosThis;
+				return false;
 			}
 		}
 	}
@@ -211,9 +272,10 @@ public class GffGeneClusterNew {
 	 * @param start
 	 * @param lsExonInfosRef
 	 * @param lsExonInfosThis
-	 * @return
+	 * @return  true RefExon
+	 * false ThisExon
 	 */
-	private ArrayList<ExonInfo> getBoundListExonInfo(boolean cis, boolean start, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
+	private boolean getBoundListExonInfo(boolean cis, boolean start, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
 		int refBound = 0, thisBound = 0;
 		if (start) {
 			refBound = lsExonInfosRef.get(0).getStartCis();
@@ -226,71 +288,19 @@ public class GffGeneClusterNew {
 		
 		if ( (cis && start) || (!cis && !start)) {
 			if (refBound <= thisBound) {
-				return lsExonInfosRef;
+				return true;
 			}
 			else {
-				return lsExonInfosThis;
+				return false;
 			}
 		}
 		else {
 			if (refBound >= thisBound) {
-				return lsExonInfosRef;
+				return true;
 			}
 			else {
-				return lsExonInfosThis;
+				return false;
 			}
 		}
-	}
-	/**
-	 * 重建转录本时用到，比较两个算法的转录本之间的差异
-	 * 两个gffHashGene应该是同一个物种
-	 * @param gffHashGene 另一个转录本，本方法可逆--另一个调用该方法得到的结果一样
-	 * @return
-	 */
-	public static GffHashGene compHashGene(GffHashGene gffHashThis, GffHashGene gffHashGene, String chrLen, String gffHashGeneBed, int highExpReads)
-	{
-		
-		GffHashGene gffHashGeneResult = new GffHashGene();
-		//不是同一个物种就不比了
-		if (gffHashGene.getTaxID() != gffHashThis.getTaxID()) {
-			return null;
-		}
-		GffGeneCluster.setHighExpReads(highExpReads);
-		GffGeneCluster.setMapReads(chrLen, gffHashGeneBed);
-		for (Entry<String, ArrayList<GffDetailGene>> entry : gffHashThis.getChrhash().entrySet()) {
-			String chrID = entry.getKey();
-			System.out.println(chrID);
-			ArrayList<GffDetailGene> lsThisGffDetail = entry.getValue();
-			ArrayList<GffDetailGene> lsCmpGffDetail = gffHashGene.getChrhash().get(chrID);
-			if (lsCmpGffDetail == null) {
-				for (GffDetailGene gffDetailGene : lsThisGffDetail) {
-					gffHashGeneResult.addGffDetailGene(chrID, gffDetailGene);
-				}
-				continue;
-			}
-			ArrayList<CompSubArrayCluster>  lstmpArrayClusters = ArrayOperate.compLs2(lsThisGffDetail, lsCmpGffDetail,true);
-			for (CompSubArrayCluster compSubArrayCluster : lstmpArrayClusters) {
-				//比较每一组里面的this和comp的GffDetailGene
-				ArrayList<CompSubArrayInfo> lsThis = compSubArrayCluster.getLsCompSubArrayInfosThis();
-				ArrayList<GffDetailGene> lsGffGeneThis = new ArrayList<GffDetailGene>();
-				for (CompSubArrayInfo compSubArrayInfo : lsThis) {
-					GffDetailGene gene =(GffDetailGene)compSubArrayInfo.cmp;
-					lsGffGeneThis.add((GffDetailGene)compSubArrayInfo.cmp);
-				}
-				ArrayList<CompSubArrayInfo> lsComp = compSubArrayCluster.getLsCompSubArrayInfosComp();
-				ArrayList<GffDetailGene> lsGffGeneComp = new ArrayList<GffDetailGene>();
-				for (CompSubArrayInfo compSubArrayInfo : lsComp) {
-					lsGffGeneComp.add((GffDetailGene)compSubArrayInfo.cmp);
-				}
-				GffGeneCluster gffGeneCluster = new GffGeneCluster(gffHashThis, gffHashGene, lsGffGeneThis, lsGffGeneComp);
-
-				GffDetailGene gffdetail = gffGeneCluster.getCombGffDetail();
-				if (gffdetail == null) {
-					continue;
-				}
-				gffHashGeneResult.addGffDetailGene(chrID, gffdetail);
-			}
-		}
-		return gffHashGeneResult;
 	}
 }
