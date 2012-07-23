@@ -50,10 +50,15 @@ public abstract class DiffExpAbs {
 	
 	boolean calculate = false;
 	
+	String rawScript = "";
+	
 	public DiffExpAbs() {
 		setWorkSpace();
 		setOutScriptPath();
 		setFileNameRawdata();
+	}
+	public void setRawScript(String rawScript) {
+		this.rawScript = rawScript;
 	}
 	/**
 	 * 一系列的表示基因分组的列<br>

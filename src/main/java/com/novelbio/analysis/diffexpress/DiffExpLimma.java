@@ -3,6 +3,7 @@ package com.novelbio.analysis.diffexpress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -12,7 +13,6 @@ import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.generalConf.NovelBioTitleItem;
 
 public class DiffExpLimma extends DiffExpAbs{
-	String rawScript = "/media/winE/Bioinformatics/R/Protocol/Microarray/limmaSimpleJava.txt";
 	boolean log2Transform = false;
 	/** 比较矩阵设计好后需要将每个ID对应到试验名上 <br>
 	 * 譬如：<br>
@@ -25,22 +25,27 @@ public class DiffExpLimma extends DiffExpAbs{
 	HashMap<Integer, String> mapID2Sample = new HashMap<Integer, String>();
 	
 	public static void main(String[] args) {
-		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt("/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/miRNA并集Deseq.txt", 1);
-		DiffExpLimma deSeq = new DiffExpLimma();
-		ArrayList<String[]> lsSampleColumn2GroupName = new ArrayList<String[]>();
-		lsSampleColumn2GroupName.add(new String[] {"2","A"});
-		lsSampleColumn2GroupName.add(new String[] {"3","A"});
-		lsSampleColumn2GroupName.add(new String[] {"4","B"});
-		lsSampleColumn2GroupName.add(new String[] {"5","B"});
-		lsSampleColumn2GroupName.add(new String[] {"6","C"});
-		lsSampleColumn2GroupName.add(new String[] {"7","C"});
-		deSeq.setCol2Sample(lsSampleColumn2GroupName);
-		deSeq.setColID(1);
-		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "Tmp/AvsB.xls", new String[]{"A","B"});
-		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "Tmp/AvsC.xls", new String[]{"A","C"});
-		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "Tmp/CvsB.xls", new String[]{"C","B"});
-		deSeq.setGeneInfo(lsInfo);
-		deSeq.getResultFileName();
+		System.out.println(PathDetail.getProjectPath());
+//		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt("/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/miRNA并集Deseq.txt", 1);
+//		DiffExpLimma deSeq = new DiffExpLimma();
+//		ArrayList<String[]> lsSampleColumn2GroupName = new ArrayList<String[]>();
+//		lsSampleColumn2GroupName.add(new String[] {"2","A"});
+//		lsSampleColumn2GroupName.add(new String[] {"3","A"});
+//		lsSampleColumn2GroupName.add(new String[] {"4","B"});
+//		lsSampleColumn2GroupName.add(new String[] {"5","B"});
+//		lsSampleColumn2GroupName.add(new String[] {"6","C"});
+//		lsSampleColumn2GroupName.add(new String[] {"7","C"});
+//		deSeq.setCol2Sample(lsSampleColumn2GroupName);
+//		deSeq.setColID(1);
+//		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "Tmp/AvsB.xls", new String[]{"A","B"});
+//		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "Tmp/AvsC.xls", new String[]{"A","C"});
+//		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "Tmp/CvsB.xls", new String[]{"C","B"});
+//		deSeq.setGeneInfo(lsInfo);
+//		deSeq.getResultFileName();
+	}
+	public DiffExpLimma() {
+		rawScript = "/media/winE/Bioinformatics/R/Protocol/Microarray/limmaSimpleJava.txt";
+		rawScript = PathDetail.getProjectPath() + "script/limmaSimpleJava.txt";
 	}
 	
 	@Override

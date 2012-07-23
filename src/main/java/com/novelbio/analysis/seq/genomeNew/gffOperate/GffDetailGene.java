@@ -610,7 +610,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @return
 	 */
 	public ArrayList<ExonCluster> getDifExonCluster() {
-		lsExonClusters = GffGeneIsoInfo.getExonCluster(isCis5to3(), getParentName(), lsGffGeneIsoInfos);
+		lsExonClusters = GffGeneIsoInfo.getExonCluster(isCis5to3(), lsGffGeneIsoInfos);
 		ArrayList<ExonCluster> lsDifExon = new ArrayList<ExonCluster>();
 		for (ExonCluster exonClusters : lsExonClusters) {
 			if (exonClusters.isSameExon()) {

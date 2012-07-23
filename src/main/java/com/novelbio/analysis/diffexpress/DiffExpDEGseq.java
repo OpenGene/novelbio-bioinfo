@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -18,7 +19,6 @@ import com.novelbio.generalConf.NovelBioTitleItem;
  * @author zong0jie
  */
 public class DiffExpDEGseq extends DiffExpAbs {
-	String rawScript = "/media/winE/Bioinformatics/R/Protocol/DEGseqJava.txt";
 	String outPutSuffix = "_Path";
 	public static void main(String[] args) {
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt("/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/miRNA并集Deseq.txt", 1);
@@ -37,6 +37,11 @@ public class DiffExpDEGseq extends DiffExpAbs {
 		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
 		deSeq.setGeneInfo(lsInfo);
 		deSeq.getResultFileName();
+	}
+	public DiffExpDEGseq() {
+		rawScript = "/media/winE/Bioinformatics/R/Protocol/DEGseqJava.txt";
+		rawScript = PathDetail.getProjectPath() + "script/DEGseqJava.txt";
+
 	}
 	/** 基因标记列，实际列，用在R里面，所以不需要减1 */
 	public void setColID(int colID) {

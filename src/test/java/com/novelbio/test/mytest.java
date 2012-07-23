@@ -35,12 +35,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
+import javax.servlet.jsp.tagext.TryCatchFinally;
 import javax.swing.tree.ExpandVetoException;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.math.stat.correlation.PearsonsCorrelation;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.apache.commons.math.stat.descriptive.rank.Max;
@@ -55,7 +57,6 @@ import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValue
 
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FastQ;
-import com.novelbio.analysis.seq.FastQOld;
 import com.novelbio.analysis.seq.SeqComb;
 import com.novelbio.analysis.seq.blastZJ.Cell;
 import com.novelbio.analysis.seq.blastZJ.LongestCommonSubsequence;
@@ -75,15 +76,10 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
-import com.novelbio.analysis.seq.mapping.FastQMapAbs;
-import com.novelbio.analysis.seq.mapping.FastQMapBwa;
-import com.novelbio.analysis.seq.mapping.FastQMapSoap;
-import com.novelbio.analysis.seq.mapping.SAMtools;
 import com.novelbio.analysis.seq.mapping.SamFile;
 import com.novelbio.analysis.seq.reseq.LastzAlign;
 import com.novelbio.analysis.seq.reseq.ModifySeq;
 import com.novelbio.analysis.tools.Mas3.getProbID;
-import com.novelbio.analysis.tools.formatConvert.bedFormat.Soap2Bed;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.ExcelOperate;
@@ -106,7 +102,6 @@ import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
 import com.novelbio.generalConf.NovelBioConst;
-import com.novelbio.generalConf.Species;
  import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
@@ -121,28 +116,11 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		String fileName = "/media/winF/NBC/Project/Project_CRZ_Lab/result/tmpBed/Y6A_filtered_rfam.bed";
 		
-		DateTime dateTime = new DateTime();
-		dateTime.setStartTime();
-		File tmp = new File(fileName);
-		LineNumberReader lnr = new LineNumberReader(new BufferedReader(new FileReader(tmp)));  
-		lnr.skip(FileOperate.getFileSizeLong(fileName));  
-		System.out.println(lnr.getLineNumber());
-		System.out.println(dateTime.getEclipseTime());
-		dateTime.setStartTime();
-		TxtReadandWrite txtRead = new TxtReadandWrite(fileName, false);
-		int m = 0;
-		for (String string : txtRead.readlines()) {
-			m++;
-		}
-		System.out.println(m);
-		System.out.println(dateTime.getEclipseTime());
-		
-		dateTime.setStartTime();
-		System.out.println(getLineNumber(fileName));
-		System.out.println(dateTime.getEclipseTime());
 	}
+	
+	
+	
 	private static int getLineNumber(String fileName) {  
 		         long start = System.currentTimeMillis();  
 		         int lineNum = 0;  

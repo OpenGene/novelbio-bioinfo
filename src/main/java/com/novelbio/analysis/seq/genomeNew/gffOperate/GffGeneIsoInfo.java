@@ -947,7 +947,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo1); lsGffGeneIsoInfos.add(gffGeneIsoInfo2);
-		ArrayList<ExonCluster> lsExonClusters = getExonCluster(gffGeneIsoInfo1.isCis5to3(), gffGeneIsoInfo1.getName(), lsGffGeneIsoInfos);
+		ArrayList<ExonCluster> lsExonClusters = getExonCluster(gffGeneIsoInfo1.isCis5to3(), lsGffGeneIsoInfos);
 		//相同的边界数量，一个外显子有两个相同边界
 		int sameBounds = 0;
 		
@@ -986,7 +986,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return 0;
 	}
 	/** 按照分组好的边界exon，将每个转录本进行划分，划分好的ExonCluster里面每组的lsExon都是考虑了方向然后按照方向顺序装进去的 */
-	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3, String chrID, ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos) {
+	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3,  ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos) {
+		String chrID = lsGffGeneIsoInfos.get(0).getChrID();
 		ArrayList<ExonCluster> lsResult = new ArrayList<ExonInfo.ExonCluster>();
 		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(cis5To3, lsGffGeneIsoInfos);
 		for (int[] exonBound : lsExonBound) {

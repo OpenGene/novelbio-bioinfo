@@ -1,5 +1,7 @@
 package com.novelbio.base;
 
+import com.novelbio.base.fileOperate.FileOperate;
+
 
 public class PathDetail {
 	 public static String getProjectPath() {
@@ -14,6 +16,6 @@ public class PathDetail {
 		 filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
 		 java.io.File file = new java.io.File(filePath);
 		 filePath = file.getAbsolutePath();
-		 return filePath;
+		 return FileOperate.addSep(filePath);
 		 }
 }

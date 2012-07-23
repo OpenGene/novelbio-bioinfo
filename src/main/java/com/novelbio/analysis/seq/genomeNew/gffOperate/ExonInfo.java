@@ -44,6 +44,8 @@ public class ExonInfo extends ListDetailAbs {
 	/**
 	 * 不能判断不同染色体上相同的坐标位点
 	 * 不比较两个exon所在转录本的名字
+	 * 也不比较他们自己的名字
+	 * 仅比较坐标和方向
 	 */
 	public boolean equals(Object elementAbs) {
 		if (this == elementAbs) return true;

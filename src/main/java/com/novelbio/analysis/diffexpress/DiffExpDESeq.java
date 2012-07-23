@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -29,7 +30,6 @@ import com.novelbio.generalConf.NovelBioTitleItem;
  *
  */
 public class DiffExpDESeq extends DiffExpAbs {
-	String rawScript = "/media/winE/Bioinformatics/R/Protocol/DESeqJava.txt";
 	/** 实验是否有重复，貌似有一次重复就算有重复了 */
 	boolean isRepeatExp = false;
 	
@@ -50,6 +50,12 @@ public class DiffExpDESeq extends DiffExpAbs {
 		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
 		deSeq.setGeneInfo(lsInfo);
 		deSeq.getResultFileName();
+	}
+	
+	public DiffExpDESeq() {
+		rawScript = "/media/winE/Bioinformatics/R/Protocol/DESeqJava.txt";
+		rawScript = PathDetail.getProjectPath() + "script/DESeqJava.txt";
+
 	}
 	
 	/** 仅供测试 */
