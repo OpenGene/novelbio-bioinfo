@@ -29,12 +29,12 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的条目编号 <br>
 	  * 会有有多个LOCID共用一个区域的情况，所以有多个不同的LOCID指向同一个GffdetailUCSCgene<br>
 	 */
-	protected LinkedHashMap<String,T> locHashtable;
+	protected LinkedHashMap<String,T> mapName2DetailAbs;
 	/**
 	 * 哈希表LOC--在arraylist上的Num<br>
 	 * 用于快速将LOC编号对应到其对应的chr上的位置<br>
 	 */
-	protected LinkedHashMap<String,Integer> hashLoc2Num;
+	protected LinkedHashMap<String,Integer> mapName2DetailNum;
 	/**  起点默认为开区间  */
 	int startRegion = 1;
 	/**  终点默认为闭区间 */
@@ -47,11 +47,22 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	protected LinkedHashMap<String, M> Chrhash;
-	/**
-	 * 保存所有gffDetailGene
-	 */
+	protected LinkedHashMap<String, M> mapChrID2ListGff;
+	/** 保存所有gffDetailGene */
 	ArrayList<T> lsGffDetailAll = new ArrayList<T>();
+	/** 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就取其中的第一个 */
+	protected ArrayList<String> lsNameAll;
+	/**
+	 * 这个List顺序存储每个基因号或条目号，这个打算用于提取随机基因号，实际上是所有条目按顺序放入，但是不考虑转录本(UCSC)或是重复(Peak)
+	 * 这个ID与locHash一一对应，但是不能用它来确定某条目的前一个或后一个条目
+	 */
+	protected ArrayList<String> lsNameNoRedundent;
+	
+	String gfffilename = "";
+	
+	public String getGffFilename() {
+		return gfffilename;
+	}
 	/**
 	 * 起点是否为闭区间，不是则为开区间，<br>
 	 * False: 开区间的意思是，24表示从0开始计数的24位，也就是实际的25位<br>
@@ -76,7 +87,6 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	public int getEndRegion() {
 		return endRegion;
 	}
-
 	/**
 	 * 起点是否为闭区间，不是则为开区间，<br>
 	 * False: 开区间的意思是，24表示从0开始计数的24位，也就是实际的25位<br>
@@ -89,43 +99,35 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		else 
 			this.endRegion = 1;
 	}
-	
-	String gfffilename = "";
-	
-	public String getGffFilename() {
-		return gfffilename;
-	}
-
 	/**
 	 * 返回哈希表 LOC--LOC细节<br/>
 	 * 用于快速将LOC编号对应到LOC的细节
 	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的基因编号 <br/>
 	 */
-	public HashMap<String,Integer> getHashLocNum() {
-		if (hashLoc2Num != null) {
-			return hashLoc2Num;
+	public HashMap<String,Integer> getMapName2DetailNum() {
+		if (mapName2DetailNum != null) {
+			return mapName2DetailNum;
 		}
-		hashLoc2Num = new LinkedHashMap<String, Integer>();
-		for (M listAbs : Chrhash.values()) {
-			listAbs.getHashLocNum(hashLoc2Num);
+		mapName2DetailNum = new LinkedHashMap<String, Integer>();
+		for (M listAbs : mapChrID2ListGff.values()) {
+			mapName2DetailNum.putAll(listAbs.getMapName2DetailAbsNum());
 		}
-		return hashLoc2Num;
+		return mapName2DetailNum;
 	}
-	
 	/**
 	 * 返回哈希表 LOC--LOC细节<br/>
 	 * 用于快速将LOC编号对应到LOC的细节
 	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的基因编号 <br/>
 	 */
-	public HashMap<String,T> getLocHashtable() {
-		if (locHashtable != null) {
-			return locHashtable;
+	public HashMap<String,T> getMapName2Detail() {
+		if (mapName2DetailAbs != null) {
+			return mapName2DetailAbs;
 		}
-		locHashtable = new LinkedHashMap<String, T>();
-		for (M listAbs : Chrhash.values()) {
-			listAbs.getLocHashtable(locHashtable);
+		mapName2DetailAbs = new LinkedHashMap<String, T>();
+		for (M listAbs : mapChrID2ListGff.values()) {
+			mapName2DetailAbs.putAll(listAbs.getMapName2DetailAbs());
 		}
-		return locHashtable;
+		return mapName2DetailAbs;
 	}
 	/**
 	 * 给定一个chrID，返回该chrID所对应的ListAbs
@@ -134,48 +136,35 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 */
 	public M getListDetail(String chrID) {
 		chrID = chrID.toLowerCase();
-		return Chrhash.get(chrID);
+		return mapChrID2ListGff.get(chrID);
 	}
-	/**
-	 * 这个List顺序存储每个基因号或条目号，这个打算用于提取随机基因号，实际上是所有条目按顺序放入，但是不考虑转录本(UCSC)或是重复(Peak)
-	 * 这个ID与locHash一一对应，但是不能用它来确定某条目的前一个或后一个条目
-	 */
-	protected ArrayList<String> LOCIDList;
+
 	/**
 	 * 返回List顺序存储每个基因号或条目号，这个打算用于提取随机基因号。
 	 * 不能通过该方法获得某个LOC在基因上的定位
+	 * 每个gffDetail返回一个Name
 	 */
-	public ArrayList<String> getLOCIDList() {
-		if (LOCIDList == null) {
-			LOCIDList = new ArrayList<String>();
-			for (M m : Chrhash.values()) {
-				LOCIDList.add(m.getName().split(SepSign.SEP_ID)[0]);
+	public ArrayList<String> getLsNameNoRedundent() {
+		if (lsNameNoRedundent == null) {
+			lsNameNoRedundent = new ArrayList<String>();
+			for (M lsGff : mapChrID2ListGff.values()) {
+				for (T gff : lsGff) {
+					lsNameNoRedundent.add(gff.getNameSingle());
+				}
 			}
 		}
-		return LOCIDList;
+		return lsNameNoRedundent;
 	}
-	/**
-	 * 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就用"/"隔开，
-	 * 那么该list中的元素用split("/")分割后，上locHashtable就可提取相应的GffDetail，目前主要是Peak用到
-	 * 顺序获得，可以获得某个LOC在基因上的定位。
-	 * 其中TigrGene的ID每个就是一个LOCID，也就是说TIGR的ID不需要进行切割，当然切了也没关系
-	 */
-	protected ArrayList<String> LOCChrHashIDList;
-	/**
-	 * 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就用ListAbs.SEP隔开，
-	 * 那么该list中的元素用split("/")分割后，上locHashtable就可提取相应的GffDetail，目前主要是Peak用到
-	 * 顺序获得，可以获得某个LOC在基因上的定位。
-	 * 其中TigrGene的ID每个就是一个LOCID，也就是说TIGR的ID不需要进行切割，当然切了也没关系
-	 */
-	public ArrayList<String> getLOCChrHashIDList() {
-		if (LOCChrHashIDList != null) {
-			return LOCChrHashIDList;
+	/** 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就全加入 */
+	public ArrayList<String> getLsNameAll() {
+		if (lsNameAll != null) {
+			return lsNameAll;
 		}
-		LOCChrHashIDList = new ArrayList<String>();
-		for (M lsAbs : Chrhash.values()) {
-			LOCChrHashIDList.addAll(lsAbs.getLOCIDList());
+		lsNameAll = new ArrayList<String>();
+		for (M lsGff : mapChrID2ListGff.values()) {
+			lsNameAll.addAll(lsGff.getLsNameAll());
 		}
-		return LOCChrHashIDList;
+		return lsNameAll;
 	}
 
 	/**
@@ -186,12 +175,11 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	public HashMap<String, M> getChrhash()
-	{
-		if (Chrhash == null) {
-			Chrhash = new LinkedHashMap<String, M>();
+	public HashMap<String, M> getChrhash() {
+		if (mapChrID2ListGff == null) {
+			mapChrID2ListGff = new LinkedHashMap<String, M>();
 		}
-		return Chrhash;
+		return mapChrID2ListGff;
 	}
 	/**
 	 * 获得的每一个信息都是实际的而没有clone
@@ -272,6 +260,8 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 			ReadGffarrayExcep(gfffilename);
 			setItemDistance();
 			setOther();
+			getMapName2DetailNum();
+			getMapName2Detail();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -303,7 +293,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * @return 返回该LOCID的具体GffDetail信息，用相应的GffDetail类接收
 	 */
 	public T searchLOC(String LOCID) {
-		return  locHashtable.get(LOCID.toLowerCase());
+		return  getMapName2Detail().get(LOCID.toLowerCase());
 	}
 	/**
 	 * 需要覆盖
@@ -315,7 +305,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 */
 	public T searchLOC(String chrID,int LOCNum) {
 		chrID = chrID.toLowerCase();
-		return Chrhash.get(chrID).get(LOCNum);
+		return mapChrID2ListGff.get(chrID).get(LOCNum);
 	}
 	
 	/**
@@ -331,16 +321,16 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 */
 	public String[] getLOCNum(String LOCID) {
 		String[] result = new String[2];
-		T ele = locHashtable.get(LOCID);
+		T ele = getMapName2Detail().get(LOCID);
 		result[0] = ele.getParentName();
-		result[1] = getHashLocNum().get(LOCID) + "";
+		result[1] = getMapName2DetailNum().get(LOCID) + "";
 		return result;
 	}
 	/**
 	 * 设定每个GffDetail的tss2UpGene和tes2DownGene
 	 */
 	private void setItemDistance() {
-		for (M lsGffDetail : Chrhash.values()) {
+		for (M lsGffDetail : mapChrID2ListGff.values()) {
 			for (int i = 0; i < lsGffDetail.size(); i++) {
 				T gffDetail = lsGffDetail.get(i);
 				T gffDetailUp = null;
@@ -376,7 +366,6 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 			}
 		}
 	}
-
 	/**
 	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面，本方发为空，直接继承即可
 	 */
@@ -392,7 +381,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		if (lsGffDetailAll.size() != 0) {
 			return lsGffDetailAll;
 		}
-		for (M lsGffDetailGenes : Chrhash.values()) {
+		for (M lsGffDetailGenes : mapChrID2ListGff.values()) {
 			lsGffDetailAll.addAll(lsGffDetailGenes);
 		}
 		return lsGffDetailAll;

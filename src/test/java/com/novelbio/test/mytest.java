@@ -116,7 +116,16 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		
+		ArrayList<int[]> lsAA = new ArrayList<int[]>();
+		lsAA.add(new int[]{1});
+		lsAA.add(new int[]{2});
+		lsAA.add(new int[]{3});
+		ArrayList<int[]> lsbb = (ArrayList<int[]>) lsAA.clone();
+		lsAA.remove(0);
+		System.out.println(lsbb.get(0)[0]);
+		System.out.println(lsAA.get(0)[0]);
+		lsAA.get(0)[0] = 100;
+		System.out.println(lsbb.get(1)[0]);
 	}
 	
 	
@@ -474,14 +483,14 @@ public class mytest {
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
 				.ReadGff(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
-		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
+		ArrayList<String> lsGene = gffHashUCSCgene.getLsNameAll();
 		int geneNum = 0;
 		int gene20bp = 0;
 		int geneNun = 0;
 		for (String string : lsGene) {
 			String geneID = string.split("/")[0];
 			GffDetailGene gffDetailGene = (GffDetailGene) gffHashUCSCgene
-					.getLocHashtable().get(geneID);
+					.getMapName2Detail().get(geneID);
 			if (gffDetailGene.getLongestSplit().ismRNA()) {
 				geneNum++;
 				if (gffDetailGene.getLongestSplit().getLenUTR5() < 20) {
@@ -507,13 +516,13 @@ public class mytest {
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
 				.ReadGff(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
-		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
+		ArrayList<String> lsGene = gffHashUCSCgene.getLsNameAll();
 		ArrayList<Integer> lsIntron = new ArrayList<Integer>();
 		TreeSet<Integer> treeIntron = new TreeSet<Integer>();
 		for (String string : lsGene) {
 			String geneID = string.split("/")[0];
 			GffDetailGene gffDetailGene = (GffDetailGene) gffHashUCSCgene
-					.getLocHashtable().get(geneID);
+					.getMapName2Detail().get(geneID);
 			if (gffDetailGene.getLongestSplit().ismRNA()) {
 				int a = gffDetailGene.getLongestSplit().getIsoInfo().size();
 				for (int i = 0; i < a - 1; i++) {
@@ -615,13 +624,13 @@ public class mytest {
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
 				.ReadGff(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
-		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
+		ArrayList<String> lsGene = gffHashUCSCgene.getLsNameAll();
 		int seqNum = 0;
 		int consensusSeq = 0;
 		for (String string : lsGene) {
 			String geneID = string.split("/")[0];
 			GffDetailGene gffDetailGene = (GffDetailGene) gffHashUCSCgene
-					.getLocHashtable().get(geneID);
+					.getMapName2Detail().get(geneID);
 			ArrayList<int[]> iso = gffDetailGene.getLongestSplit().getIsoInfo();
 			String tmpseq = chrStringHash.getSeq(gffDetailGene.isCis5to3(),
 					gffDetailGene.getParentName(), iso, false);
@@ -668,9 +677,9 @@ public class mytest {
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
 				.ReadGff(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
-		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
+		ArrayList<String> lsGene = gffHashUCSCgene.getLsNameAll();
 		GffDetailGene gffDetailGene = (GffDetailGene) gffHashUCSCgene
-				.getLocHashtable().get("NM_032526");
+				.getMapName2Detail().get("NM_032526");
 		ArrayList<int[]> iso = gffDetailGene.getLongestSplit().getIsoInfo();
 		String tmpseq = chrStringHash.getSeq(gffDetailGene.isCis5to3(),
 				gffDetailGene.getParentName(), iso, false);
@@ -691,13 +700,13 @@ public class mytest {
 		GffHashGeneUCSC gffHashUCSCgene = new GffHashGeneUCSC();
 		gffHashUCSCgene
 				.ReadGff(NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
-		ArrayList<String> lsGene = gffHashUCSCgene.getLOCChrHashIDList();
+		ArrayList<String> lsGene = gffHashUCSCgene.getLsNameAll();
 		int seqNum = 0;
 		int consensusSeq = 0;
 		for (String string : lsGene) {
 			String geneID = string.split("/")[0];
 			GffDetailGene gffDetailGene = (GffDetailGene) gffHashUCSCgene
-					.getLocHashtable().get(geneID);
+					.getMapName2Detail().get(geneID);
 			ArrayList<int[]> iso = gffDetailGene.getLongestSplit().getIsoInfo();
 			String tmpseq = chrStringHash.getSeq(gffDetailGene.isCis5to3(),
 					gffDetailGene.getParentName(), iso, false);

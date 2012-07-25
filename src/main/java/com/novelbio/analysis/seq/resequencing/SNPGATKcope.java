@@ -57,8 +57,6 @@ public class SNPGATKcope {
 		snpgatKcope.addSampileupFile("2B", parentPath + "2B_detailmpileup.txt");
 		snpgatKcope.addSampileupFile("3A", parentPath + "3A_detailmpileup.txt");
 		snpgatKcope.addSampileupFile("3B", parentPath + "3B_detailmpileup.txt");
-
-		
 		
 		snpgatKcope.execute();
 		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withoutSampileup.xls");

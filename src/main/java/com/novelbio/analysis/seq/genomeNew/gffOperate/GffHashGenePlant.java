@@ -1,6 +1,4 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
-import java.io.BufferedReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -9,7 +7,6 @@ import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.generalConf.NovelBioConst;
-import com.novelbio.generalConf.Species;
 
 /**
  * 获得Gff的基因数组信息,本类必须实例化才能使用<br/>
@@ -27,6 +24,18 @@ import com.novelbio.generalConf.Species;
  */
 public class GffHashGenePlant extends GffHashGeneAbs{
 	/**
+	 * 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  "AT\\w{1}G\\d{5}"
+	 * 水稻是 "LOC_Os\\d{2}g\\d{5}";
+	 */
+	protected String GeneName="AT\\w{1}G\\d{5}";
+	/** 可变剪接mRNA的正则，水稻是："(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";，默认拟南芥" (?<=AT\\w{1}G\\d{5}\\.)\\d" */
+	protected String splitmRNA="(?<=AT\\w{1}G\\d{5}\\.)\\d";
+	/** mRNA类似名 */
+	private static HashMap<String, Integer> hashmRNA = new HashMap<String, Integer>();
+	/** gene类似名 */
+	private static HashSet<String> hashgene = new HashSet<String>();
+	
+	/**
 	 * @param gfffilename
 	 * @param Species 水稻还是拟南芥，只有这两个选择 在Species类中的常量
 	 * Species.ARABIDOPSIS和DB.equals(Species.RICE
@@ -36,48 +45,17 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		setDB(DB);
 	}
 	
-	private void setDB(String DB)
-	{
+	private void setDB(String DB) {
 		if (DB.equals(NovelBioConst.GENOME_GFF_TYPE_PLANT)) {
 			GeneName= "(?<=Name\\=)\\w+";
-//			splitmRNA="(?<=AT\\w{1}G\\d{5}\\.)\\d";
 			splitmRNA= "(?<=Name\\=)\\w+";
-//			this.taxID = 3702;
 		}
 		else if (DB.equals(NovelBioConst.GENOME_GFF_TYPE_TIGR)) {
 			GeneName = "(?<=Alias\\=)\\w+";
-//			splitmRNA="(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";
 			splitmRNA = "(?<=Alias\\=)\\w+";
-//			this.taxID = 39947;
 		}
-//		else {
-//			GeneName="Glyma\\d{2}g\\d{5}";
-////			splitmRNA="(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";
-//			splitmRNA="Glyma\\d{2}g\\d{5}\\.\\d";
-//			this.taxID = 3847;
-//		}
 	}
-	/**
-	 * 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  "AT\\w{1}G\\d{5}"
-	 * 水稻是 "LOC_Os\\d{2}g\\d{5}";
-	 */
-	protected String GeneName="AT\\w{1}G\\d{5}";
-	
-	/**
-	 * 可变剪接mRNA的正则，水稻是："(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";，默认拟南芥" (?<=AT\\w{1}G\\d{5}\\.)\\d"
-	 */
-	protected String splitmRNA="(?<=AT\\w{1}G\\d{5}\\.)\\d";
-	/**
-	 * mRNA类似名
-	 */
-	private static HashMap<String, Integer> hashmRNA = new HashMap<String, Integer>();
-	/**
-	 * gene类似名
-	 */
-	private static HashSet<String> hashgene = new HashSet<String>();
-	/**
-	 * 设定mRNA和gene的类似名，在gff文件里面出现的
-	 */
+	/** 设定mRNA和gene的类似名，在gff文件里面出现的 */
 	private void setHashName() {
 		if (hashmRNA.isEmpty()) {
 			hashmRNA.put("mRNA_TE_gene",GffGeneIsoInfo.TYPE_GENE_MRNA_TE);
@@ -115,16 +93,12 @@ public class GffHashGenePlant extends GffHashGeneAbs{
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起： NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
-   protected void ReadGffarrayExcep(String gfffilename) throws Exception
-   {
+   protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 	   setHashName();
 		// 实例化四个表
-		Chrhash = new LinkedHashMap<String, ListGff>();// 一个哈希表来存储每条染色体
-		locHashtable = new LinkedHashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
-		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
+		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();// 一个哈希表来存储每条染色体
 		
 	   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);
-	   BufferedReader reader=txtgff.readfile();//open gff file
 	   
 	   ListGff LOCList = null;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 	   //基因名字
@@ -151,11 +125,11 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   String[] ss = content.split("\t");//按照tab分开
 		   chrnametmpString=ss[0].toLowerCase();//小写的chrID
 		 //新的染色体
-			if (!Chrhash.containsKey(chrnametmpString)) //新的染色体
+			if (!mapChrID2ListGff.containsKey(chrnametmpString)) //新的染色体
 			{
 				LOCList=new ListGff();//新建一个LOCList并放入Chrhash
 				LOCList.setName(chrnametmpString);
-				Chrhash.put(chrnametmpString, LOCList);
+				mapChrID2ListGff.put(chrnametmpString, LOCList);
 			}
 		   /**
 		    * 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中
@@ -185,14 +159,11 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			    * chr格式，全部小写 chr1,chr2,chr11
 			    */
 			   genematcher = genepattern.matcher(content);//查找基因名字
-      		   if(genematcher.find())//找到了
-      		   {
+      		   if(genematcher.find()) {
       			   gffDetailLOC=new GffDetailGene(chrnametmpString, genematcher.group(), ss[6].equals("+"));//新建一个基因类
       			   gffDetailLOC.setTaxID(taxID);
       			   gffDetailLOC.setStartAbs(  Integer.parseInt(ss[3].toLowerCase()) ); gffDetailLOC.setEndAbs( Integer.parseInt(ss[4]));//基因起止      		
       			   LOCList.add(gffDetailLOC);//添加进入LOClist
-      			   locHashtable.put(gffDetailLOC.getName().toLowerCase(), gffDetailLOC);//添加进入hash（LOCID）--GeneInforlist哈希表，确定各个基因和他们的类之间的关系    
-      			   LOCIDList.add(gffDetailLOC.getName());
       		   }
       		   else {
       			   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  在本行可能没有指定的基因ID  "+ splitmRNA + " " +content);

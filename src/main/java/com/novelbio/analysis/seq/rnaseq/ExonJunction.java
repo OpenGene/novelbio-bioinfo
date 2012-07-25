@@ -143,7 +143,7 @@ public class ExonJunction {
 		//外显子的具体坐标
 		ArrayList<String> lsLocation = new ArrayList<String>();
 		ArrayList<ArrayList<long[]>> lsExonInfo = calDifExonJun(gffDetailGene, lsLocation);
-		return calLsExonInfo(gffDetailGene.getName(),lsExonInfo, lsLocation);
+		return calLsExonInfo(gffDetailGene.getNameSingle(),lsExonInfo, lsLocation);
 	}
 	/**
 	 * 给定转录本的分布情况，计算pvalue等指标

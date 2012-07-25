@@ -198,7 +198,7 @@ public class DifLoc2DifLoc {
 	 * @param txtOutInfo
 	 */
 	public void readDifExpGene(int type, String prefix1, String prefix2,  String txtOutInfo) {
-		ArrayList<String> lsGeneID = gffHashGene.getLOCIDList();
+		ArrayList<String> lsGeneID = gffHashGene.getLsNameNoRedundent();
 		readDifExpGene(type, prefix1, prefix2, lsGeneID, txtOutInfo);
 	}
 	/**

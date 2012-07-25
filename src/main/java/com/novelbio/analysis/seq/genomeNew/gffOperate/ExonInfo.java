@@ -19,7 +19,17 @@ public class ExonInfo extends ListDetailAbs {
 		numberstart = Math.min(start, end);
 		numberend = Math.max(start, end);
 	}
-	
+	/**
+	 * 根据正反向自动设定起点和终点
+	 * @param start
+	 * @param end
+	 * @param cis
+	 */
+	public ExonInfo(GffGeneIsoInfo gffGeneIsoInfo, boolean cis, int start, int end) {
+		super(gffGeneIsoInfo, start + "_" +end, cis);
+		numberstart = Math.min(start, end);
+		numberend = Math.max(start, end);
+	}
 	public void setStartCis(int startLoc) {
 		if (cis5to3) {
 			numberstart = startLoc;

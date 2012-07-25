@@ -622,7 +622,6 @@ public class ArrayOperate {
 		 * 2：overlap占1的比值<br>
 		 * 3：overlap占2的比值<br>
 		 */
-	@Deprecated
 	public static double[] cmpArray(double[] region1, double[] region2) {
 		/**
 		 * 结果信息：

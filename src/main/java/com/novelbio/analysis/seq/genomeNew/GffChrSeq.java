@@ -11,9 +11,6 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
-import com.novelbio.database.model.modcopeid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class GffChrSeq {
 	private static Logger logger = Logger.getLogger(GffChrSeq.class);
@@ -122,8 +119,7 @@ public class GffChrSeq {
 	 * @param getIntron
 	 * @return
 	 */
-	public SeqFasta getSeqCDS(String IsoName, boolean cis5to3, boolean absIso,boolean getIntron)
-	{
+	public SeqFasta getSeqCDS(String IsoName, boolean cis5to3, boolean absIso,boolean getIntron) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (absIso)
 			gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(IsoName);
@@ -146,8 +142,7 @@ public class GffChrSeq {
 	 * @param getIntron
 	 * @return
 	 */
-	public String getSeqProtein(String IsoName, boolean cis5to3, boolean absIso,boolean getIntron)
-	{
+	public String getSeqProtein(String IsoName, boolean cis5to3, boolean absIso,boolean getIntron) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (absIso)
 			gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(IsoName);
@@ -196,9 +191,8 @@ public class GffChrSeq {
 	 */
 	public ArrayList<SeqFasta> getGenomePromoterSeq(int upBp, int downBp) {
 		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
-		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLOCChrHashIDList();
-		for (String string : lsID) {
-			String geneID = string.split(ListAbsSearch.SEP)[0];
+		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
+		for (String geneID : lsID) {
 			SeqFasta seqFasta = getPromoter(geneID, upBp, downBp);
 			if (seqFasta == null) {
 				logger.error("没有提取到序列"+geneID);
@@ -230,42 +224,37 @@ public class GffChrSeq {
 	 * 获得某个物种的全部cds序列，从refseq中提取更加精确
 	 * 每个基因只选取其中一条序列
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
-	 * @param IsoName 转录本的名字
-	 * @param FilteredStrand 正反向，在提出的正向转录本的基础上，是否需要反向互补
-	 * @param startExon 具体某个exon
-	 * @param endExon 具体某个Intron
-	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
-	 * @param getIntron
 	 * @return
 	 */
 	public ArrayList<SeqFasta> getSeqCDSAll() {
-		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLOCChrHashIDList();
+		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
 		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
 		GffGeneIsoInfo gffGeneIsoInfo = null;
-		for (String string : lsID) {
-			gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(string.split(ListAbsSearch.SEP)[0]);
+		for (String geneID : lsID) {
+			gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
 			ArrayList<ExonInfo> lsCDS = gffGeneIsoInfo.getIsoInfoCDS();
 			if (lsCDS.size() > 0) {
 				SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), lsCDS, false);
 				if (seq == null || seq.getLength() < 3) {
 					continue;
 				}
-				seq.setName(string.split(ListAbsSearch.SEP)[0]);
+				seq.setName(geneID);
 				lsResult.add(seq);
 			}
 		}
 		return lsResult;
 	}
+	//TODO 可以新建一个类将这些5UTR，3UTR，Promoter等全部装进去
 	/**
 	 * 获得某个物种的全部cds，也就是从ATG到UAG的每个ISO序列，从refseq中提取更加精确
 	 * @return
 	 */
 	public ArrayList<SeqFasta> getSeqCDSAllIso() {
-		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLOCChrHashIDList();
+		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameAll();
 		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
 		GffDetailGene gffDetailGene = null;
-		for (String string : lsID) {
-			gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(string.split(ListAbsSearch.SEP)[0]);
+		for (String geneID : lsID) {
+			gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
 			gffDetailGene.removeDupliIso();
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				ArrayList<ExonInfo> lsCDS = gffGeneIsoInfo.getIsoInfoCDS();
@@ -274,7 +263,7 @@ public class GffChrSeq {
 					if (seq == null || seq.getLength() < 3) {
 						continue;
 					}
-					seq.setName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+					seq.setName(gffGeneIsoInfo.getName());
 					lsResult.add(seq);
 				}
 			}
@@ -285,11 +274,11 @@ public class GffChrSeq {
 	 * 获得某个物种的全部3UTR序列，为了预测novel miRNA靶基因
 	 */
 	public ArrayList<SeqFasta> getSeq3UTRAll() {
-		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLOCChrHashIDList();
+		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
 		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
 		GffDetailGene gffDetailGene = null;
-		for (String string : lsID) {
-			gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(string.split(ListAbsSearch.SEP)[0]);
+		for (String geneID : lsID) {
+			gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
 			gffDetailGene.removeDupliIso();
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				ArrayList<ExonInfo> lsCDS = gffGeneIsoInfo.get3UTRseq();
@@ -298,7 +287,7 @@ public class GffChrSeq {
 					if (seq == null || seq.getLength() < 3) {
 						continue;
 					}
-					seq.setName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+					seq.setName(gffGeneIsoInfo.getName());
 					lsResult.add(seq);
 				}
 			}
@@ -324,7 +313,7 @@ public class GffChrSeq {
 				if (seq == null || seq.getLength() < 3) {
 					continue;
 				}
-				seq.setName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+				seq.setName(gffGeneIsoInfo.getName());
 				lsResult.add(seq);
 			}
 		}
@@ -349,7 +338,7 @@ public class GffChrSeq {
 				if (seq == null || seq.getLength() < 3) {
 					continue;
 				}
-				seq.setName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+				seq.setName(gffGeneIsoInfo.getName());
 				lsResult.add(seq);
 		}
 		return lsResult;
@@ -366,12 +355,12 @@ public class GffChrSeq {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffChrAbs.getGffHashGene().getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				if (setRemoveRedundent.contains(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0])) {
+				if (setRemoveRedundent.contains(gffGeneIsoInfo.getName())) {
 					continue;
 				}
-				setRemoveRedundent.add(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+				setRemoveRedundent.add(gffGeneIsoInfo.getName());
 				SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, false);
-				seq.setName(gffGeneIsoInfo.getName().split(GffGeneIsoInfo.SEP)[0]);
+				seq.setName(gffGeneIsoInfo.getName());
 				txtFasta.writefileln(seq.toStringNRfasta());
 			}
 		}

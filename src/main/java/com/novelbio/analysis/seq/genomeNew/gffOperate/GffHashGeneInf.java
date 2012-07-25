@@ -38,7 +38,7 @@ public interface GffHashGeneInf  {
 	 * 返回List顺序存储每个基因号或条目号，这个打算用于提取随机基因号。
 	 * 不能通过该方法获得某个LOC在基因上的定位
 	 */
-	public ArrayList<String> getLOCIDList();
+	public ArrayList<String> getLsNameNoRedundent();
 	/**
 	 * 返回读取的Gff文件名
 	 * @return

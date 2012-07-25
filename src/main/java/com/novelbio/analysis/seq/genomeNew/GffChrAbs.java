@@ -353,7 +353,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param binNum 最后结果分成几块
 	 */
 	public ArrayList<MapInfo> readGeneMapInfoAll(String Structure, int binNum) {
-		ArrayList<String> lsGeneID = gffHashGene.getLOCChrHashIDList();
+		ArrayList<String> lsGeneID = gffHashGene.getLsNameAll();
 		ArrayList<String[]> lstmp = new ArrayList<String[]>();
 		for (String string : lsGeneID) {
 			lstmp.add(new String[]{string.split(SepSign.SEP_ID)[0]});

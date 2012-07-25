@@ -34,7 +34,7 @@ public class TestGffUCSCInfo extends TestCase{
 		//UCSC test
 		gffHashUCSC = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
 		gffCodInfoUCSCgenechr1_1385068 = (GffCodGene) gffHashUCSC.searchLocation("chr1", 1385069);//
-		lsAllLoc = gffHashUCSC.getLOCIDList();
+		lsAllLoc = gffHashUCSC.getLsNameNoRedundent();
 		hashGffDetail = gffHashUCSC.getLocHashtable();
 	}
 	//HG19µÄ°¸Àý

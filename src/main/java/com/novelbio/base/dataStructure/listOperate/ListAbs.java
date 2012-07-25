@@ -26,7 +26,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	/** 保存某个坐标到所在的内含子/外显子终点的距离 */
 	HashMap<Integer, Integer> hashLocExInEnd;
 	/** 本条目的名字 */
-	protected String listName = "";
+	protected String listName;
 	/** 方向 */
 	Boolean cis5to3 = null;
 	
@@ -34,6 +34,9 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		this.listName = listName;
 	}
 	public String getName() {
+		if (listName == null) {
+			listName = get(0).getParentName();
+		}
 		return listName;
 	}
 	/**
@@ -276,14 +279,14 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return isoLen;
 	}
 	/**
-	 * 返回每个ID对应的具体element
+	 * 返回每个ID对应的具体element的编号
 	 * @return
 	 */
-	public HashMap<String,Integer> getHash2Num() {
+	public HashMap<String,Integer> getMapName2DetailAbsNum() {
 		HashMap<String, Integer> hashID2Num = new HashMap<String, Integer>();
 		for (int i = 0; i < size(); i++) {
-			E ele = get(i);
-			String[] ss = ele.getName().split(SepSign.SEP_ID);
+			E lsDetail = get(i);
+			ArrayList<String> ss = lsDetail.getName();
 			for (String string : ss) {
 				hashID2Num.put(string, i);
 			}
@@ -291,14 +294,31 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return hashID2Num;
 	}
 	/**
-	 * 返回本ListAbs中的所有string名字\
-	 * 如果两个Item是重叠的，就用ListAbs.SEP隔开，
+	 * 返回每个ID对应的具体element
+	 * 输入一个hashmap，在里面填充信息
 	 * @return
 	 */
-	public ArrayList<String> getLOCIDList() {
+	public HashMap<String, E> getMapName2DetailAbs() {
+		HashMap<String, E> mapName2DetailAbs = new HashMap<String, E>();
+		for (E ele : this) {
+			ArrayList<String> ss = ele.getName();
+			for (String string : ss) {
+				mapName2DetailAbs.put(string, ele);
+			}
+		}
+		return mapName2DetailAbs;
+	}
+	/**
+	 * 返回本ListAbs中的所有string名字
+	 * 如果两个Item是重叠的，取全部ID
+	 * @return
+	 */
+	public ArrayList<String> getLsNameAll() {
 		ArrayList<String> lsLocID = new ArrayList<String>();
 		for (E ele : this) {
-			lsLocID.add(ele.getName());
+			for (String name : ele.getName()) {
+				lsLocID.add(name);
+			}
 		}
 		return lsLocID;
 	}
@@ -333,32 +353,8 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	public int getNumCodInEle(int location) {
 		return LocPosition(location).getElementNumThisAbs();
 	}
-	/**
-	 * 返回每个ID对应的具体element
-	 * 输入一个hashmap，在里面填充信息
-	 * @return
-	 */
-	public void getLocHashtable(HashMap<String,E> hashLocMap) {
-		for (E ele : this) {
-			String[] ss = ele.getName().split(SepSign.SEP_ID);
-			for (String string : ss) {
-				hashLocMap.put(string, ele);
-			}
-		}
-	}
-	/**
-	 * 返回每个ID对应的Num
-	 * @return
-	 */
-	public void getHashLocNum(HashMap<String,Integer> hashLocNum) {
-		for (int i = 0; i < size(); i++) {
-			E ele = get(i);
-			String[] ss = ele.getName().split(SepSign.SEP_ID);
-			for (String string : ss) {
-				hashLocNum.put(string, i);
-			}
-		}
-	}
+
+
 	/**
 	 * TO BE CHECKED
 	 * 返回距离loc有num Bp的坐标，在mRNA层面，在loc上游时num 为负数
@@ -442,7 +438,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * @param lsOtherExon
 	 * @return
 	 */
-	public boolean compIso(ListAbs<E> lsOther) {
+	public boolean equalsIso(ListAbs<E> lsOther) {
 		if (lsOther.size() != size() ) {
 			return false;
 		}

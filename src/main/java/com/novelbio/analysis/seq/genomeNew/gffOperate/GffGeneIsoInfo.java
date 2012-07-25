@@ -2,10 +2,7 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-
-import javax.swing.text.MaskFormatter;
 
 import org.apache.log4j.Logger;
 
@@ -14,7 +11,6 @@ import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-import com.novelbio.base.dataStructure.listOperate.ListComb;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modcopeid.GeneID;
 
@@ -104,6 +100,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		setTssRegion(gffDetailGene.getTssRegion()[0], gffDetailGene.getTssRegion()[1]);
 		setTesRegion(gffDetailGene.getTesRegion()[0], gffDetailGene.getTesRegion()[1]);
 	}
+
 	/**
 	 * 返回该基因的类型
 	 * @return
@@ -113,6 +110,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	public int getTaxID() {
 		return gffDetailGeneParent.getTaxID();
+	}
+	public void setGffDetailGeneParent(GffDetailGene gffDetailGeneParent) {
+		this.gffDetailGeneParent = gffDetailGeneParent;
 	}
 	public GffDetailGene getGffDetailGeneParent() {
 		return gffDetailGeneParent;
@@ -206,7 +206,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		 * 正向从小到大添加 且 int0<int1
 		 * 反向从大到小添加 且 int0>int1
 		 */
-		ExonInfo tmpexon = new ExonInfo(getName(), isCis5to3(), locStart, locEnd);
+		ExonInfo tmpexon = new ExonInfo(this, isCis5to3(), locStart, locEnd);
 		if (size() > 0) {
 			ExonInfo exon = get(size() - 1);
 			if (Math.abs(exon.getEndCis() - tmpexon.getStartCis()) == 1) {
@@ -585,16 +585,16 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		
 		if (exonNumStart == exonNumEnd) {
-			ExonInfo exonInfo = new ExonInfo(getName(), isCis5to3(), start, end);
+			ExonInfo exonInfo = new ExonInfo(this, isCis5to3(), start, end);
 			lsresult.add(exonInfo);
 			return lsresult;
 		}
-		ExonInfo exonInfoStart = new ExonInfo(getName(), isCis5to3(), start, get(exonNumStart).getEndCis());
+		ExonInfo exonInfoStart = new ExonInfo(this, isCis5to3(), start, get(exonNumStart).getEndCis());
 		lsresult.add(exonInfoStart);
 		for (int i = exonNumStart+1; i < exonNumEnd; i++) {
 			lsresult.add(get(i));
 		}
-		ExonInfo exonInfo2 = new ExonInfo(getName(), isCis5to3(), get(exonNumEnd).getStartCis(), end);
+		ExonInfo exonInfo2 = new ExonInfo(this, isCis5to3(), get(exonNumEnd).getStartCis(), end);
 		lsresult.add(exonInfo2);
 		return lsresult;
 	}
@@ -655,7 +655,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
 	 */
 	protected void addExon(int locStart, int locEnd) {
-		ExonInfo exonInfo = new ExonInfo(getName(),isCis5to3(), locStart, locEnd);
+		ExonInfo exonInfo = new ExonInfo(this,isCis5to3(), locStart, locEnd);
 		if (size() == 0) {
 			add(exonInfo);
 			return;
@@ -758,8 +758,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			}
 			intronInfo = new ExonInfo();
 			lsresult.add(intronInfo);
+			intronInfo.setParentListAbs(this);
 			intronInfo.setCis5to3(exonInfo.isCis5to3());
-			intronInfo.setName(exonInfo.getName());
+			intronInfo.addItemName(exonInfo.getNameSingle());
 			intronInfo.setStartCis(exonInfo.getEndCis());
 		}
 		return lsresult;
@@ -880,12 +881,11 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		boolean flag =  this.getTaxID() == otherObj.getTaxID() && this.getChrID().equals(otherObj.getChrID()) && this.getATGsite() == otherObj.getATGsite()
 		&& this.getUAGsite() == otherObj.getUAGsite() && this.getTSSsite() == otherObj.getTSSsite()
 		&& this.getListLen() == otherObj.getListLen();
-		if (flag && compIso(otherObj) ) {
+		if (flag && equalsIso(otherObj) ) {
 			return true;
 		}
 		return false;
 	}
-	
 	/**
 	 * 重写hash，不包含基因名信息，包含基因taxID，chrID，atg，uag，tss，长度，以及每一个exon的信息
 	 * @return
@@ -952,7 +952,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		int sameBounds = 0;
 		
 		for (ExonCluster exonCluster : lsExonClusters) {
-			sameBounds = getSameBoundsNum(exonCluster);
+			sameBounds = sameBounds + getSameBoundsNum(exonCluster);
 		}
 		return new int[]{sameBounds, lsExonClusters.size()*2, gffGeneIsoInfo1.size()*2, gffGeneIsoInfo2.size()*2};
 	}
@@ -968,12 +968,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 
 		ArrayList<ArrayList<ExonInfo>> lsExon = exonCluster.lsExonCluster;
-		if (lsExon.size() <= 1) {
-			return 0;
-		}
+
 		ArrayList<ExonInfo> lsExon1 = lsExon.get(0);
 		ArrayList<ExonInfo> lsExon2 = lsExon.get(1);
-		
+		if (lsExon1.size() == 0 || lsExon2.size() == 0) {
+			return 0;
+		}
 		if (lsExon1.get(0).getStartAbs() == lsExon2.get(0).getStartAbs()
 			|| lsExon1.get(0).getEndAbs() == lsExon2.get(0).getEndAbs() ) {
 			return 1;

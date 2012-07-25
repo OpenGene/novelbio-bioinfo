@@ -32,8 +32,7 @@ import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
  * 
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
-public class GffHashCG extends ListHashSearch<GffDetailCG>
-{	
+public class GffHashCG extends ListHashSearch<GffDetailCG, gffc<T>, gffc<T,E>, ListAbsSearch<T,E,K>> {
 
 	/**
 	 * 最底层读取gff的方法<br>
@@ -58,9 +57,7 @@ public class GffHashCG extends ListHashSearch<GffDetailCG>
  {
 		GffHashCG gffHashCG = new GffHashCG();
 		// 实例化三个表
-		locHashtable = new HashMap<String, GffDetailCG>();// 存储每个LOCID和其具体信息的对照表
 		Chrhash = new LinkedHashMap<String, ListAbsSearch<GffDetailCG>>();// 一个哈希表来存储每条染色体
-		LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
 		// 为读文件做准备
 		TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
 		BufferedReader reader = txtgff.readfile();// open gff file

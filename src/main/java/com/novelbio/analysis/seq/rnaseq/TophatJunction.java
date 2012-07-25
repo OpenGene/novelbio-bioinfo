@@ -117,8 +117,7 @@ public class TophatJunction {
 	 * @param locSite
 	 * @return
 	 */
-	public int getJunctionSite(String chrID, int locSite,String condition)
-	{
+	public int getJunctionSite(String chrID, int locSite,String condition) {
 		HashMap<String, ArrayList<int[]>> tmpHashJunction = mapCond_To_Jun1toLsJun2LocAndReadsNum.get(condition);
 		if (tmpHashJunction == null) {
 			return 0;
@@ -153,8 +152,7 @@ public class TophatJunction {
 		int locS = Math.min(locStartSite, locEndSite);
 		int locE = Math.max(locStartSite, locEndSite);
 		String key = chrID.toLowerCase() + "//" + locS +"///"+chrID.toLowerCase() + "//" + locE;
-		if (tmpHashJunctionBoth.containsKey(key) )
-		{
+		if (tmpHashJunctionBoth.containsKey(key) ) {
 			return tmpHashJunctionBoth.get(key);
 		}
 		else {

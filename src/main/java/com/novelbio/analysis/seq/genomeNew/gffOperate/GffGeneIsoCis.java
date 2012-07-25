@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 /**
@@ -55,7 +56,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		for (int i = 0; i < size(); i++) {
 			ExonInfo exons = get(i);
 			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" + exons.getStartAbs() + "\t" + exons.getEndAbs()
-		     + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=exon:" + getName()  + ":" + (i+1) +";Parent=" + getName() + " \r\n";
+		     + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=exon:" + getName()  + ":" + (i+1) +";Parent=" + getName() + " "+TxtReadandWrite.ENTER_LINUX;
 		}
 		return geneExon;
 	}
@@ -64,7 +65,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		String geneExon = "";
 		for (ExonInfo exons : this) {
 			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" + exons.getStartAbs()  + "\t" + exons.getEndAbs() 
-		     + "\t"+"."+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id \""+getName()+"\"; \r\n";
+		     + "\t"+"."+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id \""+getName()+"\"; "+TxtReadandWrite.ENTER_LINUX;
 		}
 		return geneExon;
 	}

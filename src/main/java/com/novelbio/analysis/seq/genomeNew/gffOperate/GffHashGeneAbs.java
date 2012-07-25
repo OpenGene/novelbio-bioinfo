@@ -25,7 +25,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	String gfffile = "";
 	
 	public GffHashGeneAbs() {
-		Chrhash = new LinkedHashMap<String, ListGff>();
+		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 		hashGeneID2Acc = new HashMap<String, String>();
 	}
 	/**
@@ -35,16 +35,16 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	public void ReadGffarray(String gfffilename) {
 		this.acc2GeneIDfile = FileOperate.changeFileSuffix(gfffilename, "_accID2geneID", "list");
 		super.ReadGffarray(gfffilename);
-		   for (ListGff listGff : Chrhash.values()) {
-			   listGff.sort();
-			   for (GffDetailGene gffDetailGene : listGff) {
-				   for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-					   gffGeneIsoInfo.sort();
-					   gffGeneIsoInfo.setATGUAGncRNA();
-				   }
-				   gffDetailGene.removeDupliIso();
-			   }
-		   }
+		for (ListGff listGff : mapChrID2ListGff.values()) {
+			listGff.sort();
+			for (GffDetailGene gffDetailGene : listGff) {
+				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+					gffGeneIsoInfo.sort();
+					gffGeneIsoInfo.setATGUAGncRNA();
+				}
+				gffDetailGene.removeDupliIso();
+			}
+		}
 	}
 	
 	public int getTaxID() {
@@ -111,7 +111,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 */
 	public ArrayList<Integer> getLsIntronSortedS2M() {
 		ArrayList<Integer> lsIntronLen = new ArrayList<Integer>();
-		for(Entry<String, ListGff> entry:Chrhash.entrySet()) {
+		for(Entry<String, ListGff> entry:mapChrID2ListGff.entrySet()) {
 			String key = entry.getKey();
 			ListGff value = entry.getValue();
 			int chrLOCNum=value.size();
@@ -152,7 +152,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		int errorNum=0;//看UCSC中有多少基因的TSS不是最长转录本的起点
 		/////////////////////正   式   计   算//////////////////////////////////////////
 		
-		for(Entry<String, ListGff> entry:Chrhash.entrySet())
+		for(Entry<String, ListGff> entry:mapChrID2ListGff.entrySet())
 		{
 			String key = entry.getKey();
 			ListGff value = entry.getValue();
@@ -191,7 +191,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	private ArrayList<String[]> getGene2ID() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		
-		ArrayList<String> lsAccID = getLOCIDList();
+		ArrayList<String> lsAccID = getLsNameNoRedundent();
 		for (String accID : lsAccID) {
 			GeneID copedID = new GeneID(accID, taxID, false);
 			String[] tmpAccID = new String[2];
@@ -248,11 +248,11 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 */
 	public void addGffDetailGene(String chrID, GffDetailGene gffDetailGene) {
 		chrID = chrID.toLowerCase();
-		if (!Chrhash.containsKey(chrID)) {
+		if (!mapChrID2ListGff.containsKey(chrID)) {
 			ListGff lsGffDetailGenes = new ListGff();
-			Chrhash.put(chrID, lsGffDetailGenes);
+			mapChrID2ListGff.put(chrID, lsGffDetailGenes);
 		}
-		ListGff lsGffDetailGenes = Chrhash.get(chrID);
+		ListGff lsGffDetailGenes = mapChrID2ListGff.get(chrID);
 		lsGffDetailGenes.add(gffDetailGene);
 	}
 	/**
@@ -264,14 +264,14 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	@Override
 	public void writeToGTF(String GTFfile,String title) {
 		TxtReadandWrite txtGtf = new TxtReadandWrite(GTFfile, true);
-		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(Chrhash);
+		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(mapChrID2ListGff);
 		//把得到的ChrID排个序
 		TreeSet<String> treeSet = new TreeSet<String>();
 		for (String string : lsChrID) {
 			treeSet.add(string);
 		}
 		for (String string : treeSet) {
-			ArrayList<GffDetailGene> lsGffDetailGenes = Chrhash.get(string);
+			ArrayList<GffDetailGene> lsGffDetailGenes = mapChrID2ListGff.get(string);
 			writeToGTF(txtGtf, lsGffDetailGenes, title);
 		}
 		txtGtf.close();
@@ -298,14 +298,14 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	@Override
 	public void writeToGFFIsoMoreThanOne(String GFFfile, String title) {
 		TxtReadandWrite txtGtf = new TxtReadandWrite(GFFfile, true);
-		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(Chrhash);
+		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(mapChrID2ListGff);
 		//把得到的ChrID排个序
 		TreeSet<String> treeSet = new TreeSet<String>();
 		for (String string : lsChrID) {
 			treeSet.add(string);
 		}
 		for (String string : treeSet) {
-			ArrayList<GffDetailGene> lsGffDetailGenes = Chrhash.get(string);
+			ArrayList<GffDetailGene> lsGffDetailGenes = mapChrID2ListGff.get(string);
 			writeToGFFIsoMoreThanOne(txtGtf, lsGffDetailGenes, title);
 		}
 		txtGtf.close();
@@ -345,8 +345,11 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 					}
 				}
 				else {
-					if (isNotRedundent(setRemoveRedundentID, gffDetailGene.getName().split(SepSign.SEP_ID)[0], gffGeneIsoInfo.getName().split(SepSign.SEP_ID)[0])) {
-						txtGtf.writefileln(gffDetailGene.getName().split(SepSign.SEP_ID)[0] + "\t" + gffGeneIsoInfo.getName().split(SepSign.SEP_ID)[0]);
+					if (gffGeneIsoInfo.getName().contains(SepSign.SEP_ID)) {
+						logger.error(gffGeneIsoInfo.getName());
+					}
+					if (isNotRedundent(setRemoveRedundentID, gffDetailGene.getNameSingle(), gffGeneIsoInfo.getName())) {
+						txtGtf.writefileln(gffDetailGene.getNameSingle() + "\t" + gffGeneIsoInfo.getName());
 					}
 				}
 			}

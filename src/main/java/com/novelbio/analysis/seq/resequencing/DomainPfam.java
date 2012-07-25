@@ -1,6 +1,5 @@
 package com.novelbio.analysis.seq.resequencing;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -18,6 +17,8 @@ public class DomainPfam extends ListAbsSearch<DomainDetail, ListCodAbs<DomainDet
 	private static final long serialVersionUID = -4658442601484192818L;
 	static HashMap<String, DomainPfam> hashDomain = new HashMap<String, DomainPfam>();
 	String accID = "";
+	/** 该蛋白上某个位点的坐标，第一位是1 */
+	int aaLoc = 0;
 	
 	public DomainPfam(String accID) {
 		this.accID = accID;
@@ -27,8 +28,7 @@ public class DomainPfam extends ListAbsSearch<DomainDetail, ListCodAbs<DomainDet
 		return accID;
 	}
 	
-	public static HashMap<String, DomainPfam> readDomain(String pfamFileTxt)
-	{
+	public static HashMap<String, DomainPfam> readDomain(String pfamFileTxt) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(pfamFileTxt, false);
 		hashDomain = new HashMap<String, DomainPfam>();
 		String tmpAccID = "";	DomainPfam domainPfam = null;
@@ -48,16 +48,10 @@ public class DomainPfam extends ListAbsSearch<DomainDetail, ListCodAbs<DomainDet
 		return hashDomain;
 	}
 	
-	public static DomainPfam getDomainPfam(String geneID)
-	{
+	public static DomainPfam getDomainPfam(String geneID) {
 		return hashDomain.get(geneID);
 	}
-	
-	/**
-	 * 该蛋白上某个位点的坐标，第一位是1
-	 */
-	int aaLoc = 0;
-	
+
 	public void setAALoc(int aaLoc) {
 		this.aaLoc = aaLoc;
 	}
@@ -108,8 +102,10 @@ public class DomainPfam extends ListAbsSearch<DomainDetail, ListCodAbs<DomainDet
 }
 
 
-class DomainDetail extends ListDetailAbs
-{
+class DomainDetail extends ListDetailAbs {
+	String domainID = "";
+	String Description = "";
+	
 	/**
 	 * 输入pfam批量结果中的某一行，获得该domain的具体信息
 	 * @param domainPfamLine
@@ -119,7 +115,7 @@ class DomainDetail extends ListDetailAbs
 		String[] ss = domainPfamLine.split("\t");
 		super.setParentName(ss[0]);
 		super.setCis5to3(true);
-		super.setName(ss[6]);
+		super.addItemName(ss[6]);
 		super.setStartAbs(Integer.parseInt(ss[1]));
 		super.setEndAbs(Integer.parseInt(ss[2]));
 		this.domainID = ss[5];
@@ -131,8 +127,7 @@ class DomainDetail extends ListDetailAbs
 		super.setEndAbs(endLoc);
 		this.Description = description;
 	}
-	String domainID = "";
-	String Description = "";
+
 	public String getDescription() {
 		return Description;
 	}

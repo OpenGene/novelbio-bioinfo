@@ -46,7 +46,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	private static HashMap<String, Integer> mapMRNA2ID = new HashMap<String, Integer>();
 
 	/** gene类似名 */
-	private static HashSet<String> hashgene = new HashSet<String>();
+	private static HashSet<String> setIsGene = new HashSet<String>();
 	/** "(?<=gene\\=)\\w+" */
 	PatternOperate patGeneName = null;
 	/**  "(?<=transcript_id\\=)\\w+" */
@@ -58,7 +58,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	/** "(?<=Parent\\=)\\w+" */
 	PatternOperate patParentID = null;
 	
-	private HashMap<String, String> hashGenID2GeneName = new HashMap<String, String>();
+	private HashMap<String, String> mapGenID2GeneName = new HashMap<String, String>();
 	private HashMap<String, String> hashRnaID2GeneID = new HashMap<String, String>();
 	private HashMap<String, String> hashRnaID2RnaName = new HashMap<String, String>();
 	private LinkedHashMap<String, GffDetailGene> hashGenID2GffDetail = new LinkedHashMap<String, GffDetailGene>();
@@ -81,11 +81,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			mapMRNA2ID.put("ncRNA",GffGeneIsoInfo.TYPE_GENE_NCRNA);
 			mapMRNA2ID.put("transcript",GffGeneIsoInfo.TYPE_GENE_MISCRNA);
 		}
-		if (hashgene.isEmpty()) {
-			hashgene.add("gene");
-			hashgene.add("transposable_element_gene");
-			hashgene.add("pseudogene");
-			hashgene.add("tRNA");
+		if (setIsGene.isEmpty()) {
+			setIsGene.add("gene");
+			setIsGene.add("transposable_element_gene");
+			setIsGene.add("pseudogene");
+			setIsGene.add("tRNA");
 		}
 	}
 	private void setPattern() {
@@ -115,8 +115,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
    protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 	   setHashName();
 	   setPattern();
-	   locHashtable = new LinkedHashMap<String, GffDetailGene>();// 存储每个LOCID和其具体信息的对照表
-	   LOCIDList = new ArrayList<String>();// 顺序存储每个基因号，这个打算用于提取随机基因号
 	   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);	   
 	   String tmpChrName="";
 	   
@@ -127,19 +125,17 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   tmpChrName = ss[0].toLowerCase();//小写的chrID
 
 		   /** 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中   */
-		   if (hashgene.contains(ss[2])) {//when read the # and the line contains gene, it means the new LOC
+		   if (setIsGene.contains(ss[2])) {//when read the # and the line contains gene, it means the new LOC
 			   String genID = patID.getPatFirst(ss[8]);
 			   String geneName = getGeneName(ss[8]); setTaxID(ss, geneName);
-			   hashGenID2GeneName.put(genID, geneName);
+			   mapGenID2GeneName.put(genID, geneName);
 			   GffDetailGene gffDetailLOC = getGffDetailGenID(patID.getPatFirst(ss[8]));
 			   if (gffDetailLOC == null) {
 				   gffDetailLOC=new GffDetailGene(tmpChrName, geneName, ss[6].equals("+"));//新建一个基因类
 			   }
 			   gffDetailLOC.setTaxID(taxID);
 			   gffDetailLOC.setStartAbs( Integer.parseInt(ss[3])); gffDetailLOC.setEndAbs( Integer.parseInt(ss[4]));//基因起止      		
-			   locHashtable.put(gffDetailLOC.getName().toLowerCase(), gffDetailLOC);//添加进入hash（LOCID）--GeneInforlist哈希表，确定各个基因和他们的类之间的关系    
 			   hashGenID2GffDetail.put(genID, gffDetailLOC);
-			   LOCIDList.add(gffDetailLOC.getName());
       	   }
 		   /**
       	    * 当读取到mRNA时，就是说是可变剪接时，添加一个新的可变剪接list
@@ -275,9 +271,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   if (rnaName == null) {
 		   hashRnaID2GeneID.put(rnaID, rnaID);
 		   gffDetailGene = getGffDetailGenID(rnaID);
-		   hashRnaID2RnaName.put(rnaID, gffDetailGene.getName());
-		   rnaName = gffDetailGene.getName();
-		   gffDetailGene.addsplitlist(gffDetailGene.getName(), GffGeneIsoInfo.TYPE_GENE_NCRNA);
+		   hashRnaID2RnaName.put(rnaID, gffDetailGene.getNameSingle());
+		   rnaName = gffDetailGene.getNameSingle();
+		   gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), GffGeneIsoInfo.TYPE_GENE_NCRNA);
 	   }
 	   else {
 		   gffDetailGene = getGffDetailRnaID(rnaID);
@@ -288,14 +284,14 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     * 将locGff中的信息整理然后装入ChrHash中
     */
    private void setGffList() {
-	   Chrhash = new LinkedHashMap<String, ListGff>();
+	   mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 	   ListGff LOCList = null;
 	   for (GffDetailGene gffDetailGene : hashGenID2GffDetail.values()) {
 			 //新的染色体
-		   if (!Chrhash.containsKey(gffDetailGene.getParentName())) { //新的染色体 
+		   if (!mapChrID2ListGff.containsKey(gffDetailGene.getParentName())) { //新的染色体 
 			   LOCList = new ListGff();//新建一个LOCList并放入Chrhash
 			   LOCList.setName(gffDetailGene.getParentName());
-			   Chrhash.put(gffDetailGene.getParentName(), LOCList);
+			   mapChrID2ListGff.put(gffDetailGene.getParentName(), LOCList);
 		   }
 		   LOCList.add(gffDetailGene);
 	   }

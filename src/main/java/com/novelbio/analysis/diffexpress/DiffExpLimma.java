@@ -45,7 +45,7 @@ public class DiffExpLimma extends DiffExpAbs{
 	}
 	public DiffExpLimma() {
 		rawScript = "/media/winE/Bioinformatics/R/Protocol/Microarray/limmaSimpleJava.txt";
-		rawScript = PathDetail.getProjectPath() + "script/limmaSimpleJava.txt";
+//		rawScript = PathDetail.getProjectPath() + "script/limmaSimpleJava.txt";
 	}
 	
 	@Override

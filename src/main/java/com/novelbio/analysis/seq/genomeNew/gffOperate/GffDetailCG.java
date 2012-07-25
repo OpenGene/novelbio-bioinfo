@@ -23,12 +23,7 @@ import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
  * @author zong0jie
  *
  */
-public class GffDetailCG extends ListDetailAbs
-{
-	public GffDetailCG(String chrID, String locString, boolean cis5to3) {
-		super(chrID, locString, cis5to3);
-	}
-
+public class GffDetailCG extends ListDetailAbs {
 	/** CpG长度  */
 	protected int lengthCpG=0;
 	/** CpG数量 */
@@ -41,6 +36,10 @@ public class GffDetailCG extends ListDetailAbs
 	protected double perGC=0;
 	/** 显著性 */
 	protected double obsExp=0;
+	
+	public GffDetailCG(String chrID, String locString, boolean cis5to3) {
+		super(chrID, locString, cis5to3);
+	}
 	/**
 	 * CpG长度
 	 * @return
@@ -64,8 +63,7 @@ public class GffDetailCG extends ListDetailAbs
 	}
 	@Override
 	public GffDetailCG clone() {
-		GffDetailCG gffDetailCG = new GffDetailCG(getParentName(), getName(), cis5to3);
-		super.clone(gffDetailCG);
+		GffDetailCG gffDetailCG = (GffDetailCG) super.clone();
 		gffDetailCG.numGC = numGC;
 		gffDetailCG.lengthCpG=lengthCpG;
 		gffDetailCG.numCpG=numCpG;

@@ -1,11 +1,11 @@
 package com.novelbio.base.dataStructure.listOperate;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
-import com.novelbio.database.domain.geneanno.SepSign;
-
 /**
+ * compare的比较取决于父节点的方向，如果父节点的方向为null，则按照绝对值排序，如果是cis，那么就按cis的排序，如果为trans就按照trans的方式排序
  * 本类重写了equal代码，用于比较两个loc是否一致
  * 重写了hashcode 仅比较ChrID + "//" + locString + "//" + numberstart + "//" + numberstart;
  * 存储Gff文件中每个条目的具体信息，直接用于GffPeak文件
@@ -20,7 +20,7 @@ import com.novelbio.database.domain.geneanno.SepSign;
  */
 public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	/** 父树 */
-	ListAbs listAbs;
+	ListAbs<? extends ListDetailAbs> listAbs;
 	
 	/** 根据cis在起点的上游多少bp，在此范围内则认为在tss区域  */
 	protected int upTss = 0;
@@ -38,7 +38,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
 	 * peak: peak起点_peak终点
 	 */
-	private String ItemName = ""; //loc name
+	private ArrayList<String> lsItemName = new ArrayList<String>(); //loc name
 	/**  染色体编号，都小写 */
 	protected String parentName="";
 	/** 转录方向，假设同一基因不管多少转录本都同一转录方向 */
@@ -73,7 +73,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 		if (chrID != null) {
 			this.parentName = chrID.toLowerCase();
 		}
-		this.ItemName = ItemName;
+		this.lsItemName.add(ItemName);
 		this.cis5to3 = cis5to3;
 	}
 	/**
@@ -87,11 +87,14 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	 * peak: peak起点_peak终点
 	 * @param cis5to3 不确定就输入null
 	 */
-	public ListDetailAbs(ListAbs listAbs, String ItemName, Boolean cis5to3) {
+	public ListDetailAbs(ListAbs<? extends ListDetailAbs> listAbs, String ItemName, Boolean cis5to3) {
 		this.listAbs = listAbs;
 		this.parentName = listAbs.getName().toLowerCase();
-		this.ItemName = ItemName;
+		this.lsItemName.add(ItemName);
 		this.cis5to3 = cis5to3;
+	}
+	public void setParentListAbs(ListAbs<? extends ListDetailAbs> listAbs) {
+		this.listAbs = listAbs;
 	}
 	/**
 	 * 划定Tss范围上游为负数，下游为正数
@@ -173,20 +176,20 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 		return this.itemNum;
 	}
     /**
-     * Item的名字
+     * Item的名字，返回第一个
  	 * LOCID，<br>
 	 * 水稻：LOC_Os01g01110<br>
 	 * 拟南芥：AT1G01110<br>
-	 * UCSC:XM_0101010/XM_032020<br>
+	 * UCSC:XM_0101010<br>
 	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
 	 * peak: peak起点_peak终点
      */
-	public String getName() {
-		return this.ItemName;
-	}
-	/** 单独的一个ID */
 	public String getNameSingle() {
-		return this.ItemName.split(SepSign.SEP_ID)[0];
+		return this.lsItemName.get(0);
+	}
+	/** 全体item的名字 */
+	public ArrayList<String > getName() {
+		return this.lsItemName;
 	}
     /**
  	 * LOCID，<br>
@@ -196,8 +199,8 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
 	 * peak: peak起点_peak终点
      */
-	public void setName(String locString) {
-		this.ItemName = locString;
+	public void addItemName(String itemName) {
+		this.lsItemName.add(itemName);
 	}
 	/**
 	 * 染色体编号等信息，父ID
@@ -408,7 +411,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 		
 		ListDetailAbs otherObj = (ListDetailAbs)obj;
 		
-		return ItemName.equals(otherObj.ItemName) && 
+		return lsItemName.equals(otherObj.lsItemName) && 
 		numberend == otherObj.numberend && 
 		numberstart == otherObj.numberstart &&
 		parentName.equals(otherObj.parentName) &&
@@ -418,26 +421,8 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	/** 重写hashcode */
 	public int hashCode(){
 		String hash = "";
-		hash = parentName + "//" + ItemName + "//" + numberstart + "//" + numberstart;
+		hash = parentName + "//" + getName().hashCode() + "//" + numberstart + "//" + numberstart;
 		return hash.hashCode();
-	}
-	/**
-	 * 将本类的信息全部复制到gffDetailAbs上去
-	 * locString，ChrID，cis5to3不复制
-	 * cod2Start,cod2End不复制
-	 * @param gffDetailAbs1
-	 * @param gffDetailAbs2
-	 */
-	protected void clone(ListDetailAbs gffDetailAbs) {
-		gffDetailAbs.parentName = parentName;
-		gffDetailAbs.cis5to3 = cis5to3;
-		gffDetailAbs.ItemName = ItemName;
-		gffDetailAbs.itemNum = itemNum;
-		gffDetailAbs.numberstart = getStartAbs();
-		gffDetailAbs.numberend = getEndAbs();
-		gffDetailAbs.tes2DownGene = tes2DownGene;
-		gffDetailAbs.tss2UpGene = tss2UpGene;
-		gffDetailAbs.readsInElementNumber = readsInElementNumber;
 	}
 	/** 没有方向则返回startAbs */
 	public int getStartCis() {
@@ -465,7 +450,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 			result.cis5to3 = cis5to3;
 			result.downGeneEnd3UTR = downGeneEnd3UTR;
 			result.downTss = downTss;
-			result.ItemName = ItemName;
+			result.lsItemName = (ArrayList<String>) lsItemName.clone();
 			result.itemNum = itemNum;
 			result.readsInElementNumber = readsInElementNumber;
 			result.numberend = numberend;
@@ -482,19 +467,31 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	}
 	@Override
 	public int compareTo(ListDetailAbs o) {
-		Integer o1start = getStartCis(); Integer o1end = getEndCis();
-		Integer o2start = o.getStartCis(); Integer o2end = o.getEndCis();
-		if (isCis5to3() == null || isCis5to3()) {
-			int result = o1start.compareTo(o2start);
+		Integer o1startCis = getStartCis(); Integer o1endCis = getEndCis();
+		Integer o2startCis = o.getStartCis(); Integer o2endCis = o.getEndCis();
+		
+		Integer o1startAbs = getStartAbs(); Integer o1endAbs = getEndAbs();
+		Integer o2startAbs = o.getStartAbs(); Integer o2endAbs = o.getEndAbs();
+		
+		if (listAbs.isCis5to3() == null) {
+			int result = o1startAbs.compareTo(o2startAbs);
 			if (result == 0) {
-				return o1end.compareTo(o2end);
+				return o1endAbs.compareTo(o2endAbs);
+			}
+			return result;
+		}
+		
+		else if (listAbs.isCis5to3()) {
+			int result = o1startCis.compareTo(o2startCis);
+			if (result == 0) {
+				return o1endCis.compareTo(o2endCis);
 			}
 			return result;
 		}
 		else {
-				int result = - o1start.compareTo(o2start);
+				int result = - o1startCis.compareTo(o2startCis);
 				if (result == 0) {
-					return - o1end.compareTo(o2end);
+					return - o1endCis.compareTo(o2endCis);
 				}
 				return result;
 			}

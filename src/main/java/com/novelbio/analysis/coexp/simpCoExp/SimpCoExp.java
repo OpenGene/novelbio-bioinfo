@@ -1,37 +1,24 @@
 package com.novelbio.analysis.coexp.simpCoExp;
 
-import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.security.auth.callback.LanguageCallback;
-import javax.swing.tree.ExpandVetoException;
-
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.stat.correlation.PearsonsCorrelation;
-import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
-import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.database.domain.geneanno.Gene2GoInfo;
-import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modcopeid.GeneID;
 
 
 public class SimpCoExp {
-	
-	
 	private static Logger logger = Logger.getLogger(SimpCoExp.class);
-	static String RworkSpace = "/media/winE/Bioinformatics/R/practice_script/platform/coExp";
 	/**
 	 * 
 	 * @param inFile 读取excel文件
@@ -193,11 +180,6 @@ public class SimpCoExp {
 		}
 		txtOut.close();
 	}
-	
-	
-	
-	
-	
 	/**
 	 * 获得pearson算好的内容，第一列为基因，第二列为基因，第三列：pearson值，第四列 pvalue，第五列 fdr，注意后续处理要去除其中的引号
 	 * @param lsCoexpGenInfos
@@ -259,14 +241,6 @@ public class SimpCoExp {
 		return lsResult;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
 	/**
 	 * 给定src2target，进行注释，不管scr和trg是否在数据库存在，都进行计数
 	 * @param result
@@ -296,23 +270,20 @@ public class SimpCoExp {
 	 * 5: Degree
 	 * @throws Exception 
 	 */
-	private static Object[] annotationScr2Trg(String[][] result,int taxID) throws Exception
-	{
+	private static Object[] annotationScr2Trg(String[][] result,int taxID) throws Exception {
 		/**
 		 * key accID
 		 * value 0:accID 1:symbol 2: Description 3:InDegree 4:OutDegree 5:AllDegree
 		 */
 		Hashtable<String,String[]> hashAccID = new Hashtable<String, String[]>();
-		for (int i = 0; i < result.length; i++) 
-		{
+		for (int i = 0; i < result.length; i++) {
 			//将geneID1装入hash，并计算degree
 			if (hashAccID.containsKey(result[i][0])) {
 				String[] tmpResult = hashAccID.get(result[i][0]);
 				tmpResult[4] = Integer.parseInt(tmpResult[4]) +1 +"";
 				tmpResult[5] = Integer.parseInt(tmpResult[5]) +1 +"";
 			}
-			else 
-			{
+			else {
 				GeneID copedID = new GeneID(result[i][0], taxID);
 				String[] tmpResult = new String[6];
 				///////////////////////////////////////////////////////////////////////////////////
@@ -330,8 +301,7 @@ public class SimpCoExp {
 				tmpResult[3] = Integer.parseInt(tmpResult[3]) +1 +"";
 				tmpResult[5] = Integer.parseInt(tmpResult[5]) +1 +"";
 			}
-			else 
-			{
+			else {
 				GeneID copedID = new GeneID(result[i][1], taxID, false);
 				///////////////////////////////////////////////////////////////////////////////////
 				//这一段放if里：只有当数据库中有时才计数
@@ -423,8 +393,7 @@ class CoexpGenInfo
  * @author zong0jie
  *
  */
-class CoexPair
-{
+class CoexPair {
 	private static Logger logger = Logger.getLogger(SimpCoExp.class);
 	static List<CoexpGenInfo> lsGenInfos = null;
 	static double[][] exp = null;
@@ -435,20 +404,32 @@ class CoexPair
 	CoexpGenInfo coexpGenInfo2 = null;
 	double corValue = -1;
 	double Pvalue = -1;
+	
+	public double getCorValue() {
+		return corValue;
+	}
+	public double getPvalue() {
+		return Pvalue;
+	}
+	/**
+	 * 首先用setFirst()设定coexp的情况和数据矩阵
+	 * @param coexpGenInfo1
+	 * @param coexpGenInfo2
+	 */
+	public CoexPair(CoexpGenInfo coexpGenInfo1, CoexpGenInfo coexpGenInfo2) {
+		this.coexpGenInfo1 = coexpGenInfo1;
+		this.coexpGenInfo2 = coexpGenInfo2;
+		int i = lsGenInfos.indexOf(coexpGenInfo1);
+		int j = lsGenInfos.indexOf(coexpGenInfo2);
+		corValue = corInfo[i][j];
+		Pvalue = corPvalue[i][j];
+	}
 	public static void setFirst(List<CoexpGenInfo> mylsGenInfos) {
-		//如果本次信息和上次的一样，那么就不进行计算
-//		if (lsGenInfos != null && lsGenInfos.equals(mylsGenInfos)) {
-//			return;
-//		}
-		//计算pearson系数
-//		else
-		{
-			lsGenInfos = mylsGenInfos;
-			exp = new double[lsGenInfos.get(0).getExpValue().length][lsGenInfos.size()];
-			for (int i = 0; i < lsGenInfos.size(); i++) {
-				for (int j = 0; j < lsGenInfos.get(0).getExpValue().length ; j++) {
-					exp[j][i] = lsGenInfos.get(i).getExpValue()[j];
-				}
+		lsGenInfos = mylsGenInfos;
+		exp = new double[lsGenInfos.get(0).getExpValue().length][lsGenInfos.size()];
+		for (int i = 0; i < lsGenInfos.size(); i++) {
+			for (int j = 0; j < lsGenInfos.get(0).getExpValue().length ; j++) {
+				exp[j][i] = lsGenInfos.get(i).getExpValue()[j];
 			}
 		}
 		PearsonsCorrelation pearson = new PearsonsCorrelation(exp);
@@ -461,26 +442,4 @@ class CoexPair
 		}
 	}
 	
-	
-	/**
-	 * 首先用setFirst()设定coexp的情况和数据矩阵
-	 * @param coexpGenInfo1
-	 * @param coexpGenInfo2
-	 */
-	public CoexPair(CoexpGenInfo coexpGenInfo1, CoexpGenInfo coexpGenInfo2)
-	{
-		this.coexpGenInfo1 = coexpGenInfo1;
-		this.coexpGenInfo2 = coexpGenInfo2;
-		int i = lsGenInfos.indexOf(coexpGenInfo1);
-		int j = lsGenInfos.indexOf(coexpGenInfo2);
-		corValue = corInfo[i][j];
-		Pvalue = corPvalue[i][j];
-	}
-	
-	public double getCorValue() {
-		return corValue;
-	}
-	public double getPvalue() {
-		return Pvalue;
-	}
 }

@@ -117,8 +117,8 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 	protected void ReadGffarrayExcepRNADat(String rnadataFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
 		ListBin<ListDetailBin> lsMiRNA = null; ListDetailBin listDetailBin = null;
-		super.locHashtable = new LinkedHashMap<String, ListDetailBin>();
-		super.LOCIDList = new ArrayList<String>();
+		super.mapName2DetailAbs = new LinkedHashMap<String, ListDetailBin>();
+		super.lsNameNoRedundent = new ArrayList<String>();
 		boolean flagSpecies = false;//标记是否为我们想要的物种
 		boolean flagSQ = false;//标记是否提取序列
 		for (String string : txtRead.readlines()) {
@@ -149,8 +149,8 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 					String accID = sepInfo[1].split("=")[1];
 					accID = accID.replace("\"", "");
 					listDetailBin.setName(accID);
-					locHashtable.put(listDetailBin.getName(), listDetailBin);
-					LOCIDList.add(listDetailBin.getName());
+					mapName2DetailAbs.put(listDetailBin.getName(), listDetailBin);
+					lsNameNoRedundent.add(listDetailBin.getName());
 				}
 			}
 			if (flagSpecies && sepInfo[0].equals("SQ")) {
@@ -165,8 +165,8 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 	protected void ReadGffarrayExcepMirReap(String rnadataFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
 		ListBin<ListDetailBin> lsMiRNA = null; ListDetailBin listDetailBin = null;
-		super.locHashtable = new LinkedHashMap<String, ListDetailBin>();
-		super.LOCIDList = new ArrayList<String>();
+		super.mapName2DetailAbs = new LinkedHashMap<String, ListDetailBin>();
+		super.lsNameNoRedundent = new ArrayList<String>();
 		int start = 0; int end = 0;
 		boolean cis5to3 = true;
 		for (String string : txtRead.readlines()) {
@@ -202,8 +202,8 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 					listDetailBin.setEndAbs(start - Integer.parseInt(ss[3]));
 				}
 				lsMiRNA.add(listDetailBin);
-				locHashtable.put(listDetailBin.getName(), listDetailBin);
-				LOCIDList.add(listDetailBin.getName());
+				mapName2DetailAbs.put(listDetailBin.getName(), listDetailBin);
+				lsNameNoRedundent.add(listDetailBin.getName());
 			}
 		}
 	}
@@ -214,8 +214,8 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 	protected void ReadGffarrayExcepMirDeep(String rnadataFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
 		ListBin<ListDetailBin> lsMiRNA = null; ListDetailBin listDetailBin = null;
-		super.locHashtable = new LinkedHashMap<String, ListDetailBin>();
-		super.LOCIDList = new ArrayList<String>();
+		super.mapName2DetailAbs = new LinkedHashMap<String, ListDetailBin>();
+		super.lsNameNoRedundent = new ArrayList<String>();
 		for (String string : txtRead.readlines()) {
 			if (string.startsWith(">") ) {
 				lsMiRNA = new ListBin<ListDetailBin>();

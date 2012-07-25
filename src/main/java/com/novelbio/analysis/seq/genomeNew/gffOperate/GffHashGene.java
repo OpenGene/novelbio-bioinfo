@@ -38,9 +38,6 @@ public class GffHashGene implements GffHashGeneInf{
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_NCBI)) {
 			gffHashGene = new GffHashGeneNCBI();
 		}
-//		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_GLYMAX)) {
-//			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_GLYMAX);
-//		}
 		gffHashGene.ReadGffarray(gffFile);
 	}
 	
@@ -54,10 +51,10 @@ public class GffHashGene implements GffHashGeneInf{
 			gffHashGene = new GffHashGeneUCSC();
 		}
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_TIGR) ) {
-			gffHashGene = new GffHashGenePlant(Species.RICE);
+			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_TIGR);
 		}
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_PLANT)) {
-			gffHashGene = new GffHashGenePlant(Species.ARABIDOPSIS);
+			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_PLANT);
 		}
 		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF)) {
 			gffHashGene = new GffHashCufflinkGTF();
@@ -90,23 +87,25 @@ public class GffHashGene implements GffHashGeneInf{
 	public ArrayList<Long> getGeneStructureLength(int upBp) {
 		return gffHashGene.getGeneStructureLength(upBp);
 	}
-
+	public void removeDuplicateIso() {
+		HashMap<String, ListGff> mapChrID2LsGff = getChrhash();
+		for (ListGff listGff : mapChrID2LsGff.values()) {
+			for (GffDetailGene gffDetailGene : listGff) {
+				gffDetailGene.removeDupliIso();
+			}
+		}
+	}
 	@Override
 	public void setEndRegion(boolean region) {
 		gffHashGene.setEndRegion(region);
 	}
-	/**
-	 * 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就用ListAbs.SEP隔开，
-	 * 那么该list中的元素用split("/")分割后，上locHashtable就可提取相应的GffDetail，目前主要是Peak用到
-	 * 顺序获得，可以获得某个LOC在基因上的定位。
-	 * 其中TigrGene的ID每个就是一个LOCID，也就是说TIGR的ID不需要进行切割，当然切了也没关系
-	 */
-	public ArrayList<String> getLOCChrHashIDList() {
-		return gffHashGene.getLOCChrHashIDList();
+	/** 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就全加入 */
+	public ArrayList<String> getLsNameAll() {
+		return gffHashGene.getLsNameAll();
 	}
 	@Override
-	public ArrayList<String> getLOCIDList() {
-		return gffHashGene.getLOCIDList();
+	public ArrayList<String> getLsNameNoRedundent() {
+		return gffHashGene.getLsNameNoRedundent();
 	}
 
 	@Override
@@ -119,7 +118,7 @@ public class GffHashGene implements GffHashGeneInf{
 	}
 
 	public HashMap<String, GffDetailGene> getLocHashtable() {
-		return gffHashGene.getLocHashtable();
+		return gffHashGene.getMapName2Detail();
 	}
 
 	public GffCodGene searchLocation(String chrID, int Coordinate) {
@@ -189,4 +188,8 @@ public class GffHashGene implements GffHashGeneInf{
 		gffHashGene.writeGene2Iso(Gene2IsoFile);
 	}	
 	
+	public void addListGff(ListGff listGff) {
+		String chrID = listGff.getName();
+		gffHashGene.getChrhash().put(chrID.toLowerCase(), listGff);
+	}
 }

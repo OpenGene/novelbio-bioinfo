@@ -51,7 +51,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	/////////////////////////////////////   º«ÑàµÄÏîÄ¿   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public void drawHeatMap(String resultFilePath, String prefix, int AtgUp, int AtgDown,int normalizedType) throws Exception {
 		resultFilePath = FileOperate.addSep(resultFilePath);
-		ArrayList<String> lsgenID = gffHash.getLOCChrHashIDList();
+		ArrayList<String> lsgenID = gffHash.getLsNameAll();
 		ArrayList<String> lsgeneIDresult = new ArrayList<String>();
 		for (String string : lsgenID) {
 			lsgeneIDresult.add(string.split("/")[0]);

@@ -46,8 +46,7 @@ public class GffDetailRepeat extends ListDetailAbs
 	}
 	@Override
 	public GffDetailRepeat clone() {
-		GffDetailRepeat gffDetailRepeat = new GffDetailRepeat(getParentName(), getName(), cis5to3);
-		this.clone(gffDetailRepeat);
+		GffDetailRepeat gffDetailRepeat = (GffDetailRepeat) super.clone();
 		gffDetailRepeat.repeatName = repeatName;
 		gffDetailRepeat.repeatClass = repeatClass;
 		gffDetailRepeat.repeatFamily = repeatFamily;

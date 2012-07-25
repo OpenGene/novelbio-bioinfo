@@ -55,15 +55,15 @@ public class GffPeakOverLap
 		gffHashPeakMinus = new ListHashBin(true, colChr, peakStart, peakEnd, rowNum);
 		gffHashPeakMinus.ReadGffarray(fileMinus);
 		
-		lspeakMinusID = gffHashPeakMinus.getLOCIDList();
-		lspeakPlusID = gffHashPeakPlus.getLOCIDList();
+		lspeakMinusID = gffHashPeakMinus.getLsNameNoRedundent();
+		lspeakPlusID = gffHashPeakPlus.getLsNameNoRedundent();
 		
-		lspeakMinusCope = gffHashPeakMinus.getLOCChrHashIDList();
-		lspeakPlusCope = gffHashPeakPlus.getLOCChrHashIDList();
+		lspeakMinusCope = gffHashPeakMinus.getLsNameAll();
+		lspeakPlusCope = gffHashPeakPlus.getLsNameAll();
 		
 		
-		gffMinusLocHash = gffHashPeakMinus.getLocHashtable();
-		gffPlusLocHash = gffHashPeakPlus.getLocHashtable();
+		gffMinusLocHash = gffHashPeakMinus.getMapName2Detail();
+		gffPlusLocHash = gffHashPeakPlus.getMapName2Detail();
 		
 	}
 	
