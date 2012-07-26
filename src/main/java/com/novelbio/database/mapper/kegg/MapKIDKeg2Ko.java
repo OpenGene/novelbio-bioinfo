@@ -6,7 +6,6 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.mapper.MapperSql;
-import com.novelbio.database.util.Util;
 
 public interface MapKIDKeg2Ko extends MapperSql {
 

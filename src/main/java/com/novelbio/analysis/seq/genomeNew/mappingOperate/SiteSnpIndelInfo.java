@@ -34,7 +34,7 @@ public abstract class SiteSnpIndelInfo {
 	/** 移码，0，1，2三种 */
 	int orfShift = 0; 
 	/** 如果snp落在了exon上，则该类来保存ref所影响到的氨基酸的序列 */
-	MapInfo mapinfoRefSeqIntactAA = new MapInfo();
+	SiteInfo mapinfoRefSeqIntactAA = new SiteInfo();
 	String referenceSeq;
 	String thisSeq;
 	/** 位点处在内含子还是外显子还是基因外，如果是deletion，那么优先看是否覆盖了exon */

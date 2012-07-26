@@ -1,11 +1,10 @@
 package com.novelbio.base;
 /**
+ * T: 本次running打算输出的中间信息
  * 进度条多线程，需要以下操作 <br>
- * 1. setAllLoopNum 来设定循环数目<br>
- * 2. 在循环中添加 addCount(int num) 以增加计数器<br>
- * 3. 在循环中添加 suspendCheck()  来挂起线程<br>
- * 4. 在循环中检查 flagRun 来终止循环
- * 5: 在循环中添加 setRunInfo() 方法来获取运行时出现的信息
+ * 1. 在循环中添加 suspendCheck()  来挂起线程<br>
+ * 2. 在循环中检查 flagRun 来终止循环<br>
+ * 3: 在循环中添加 setRunInfo() 方法来获取运行时出现的信息
  * @author zong0jie
  *
  */
@@ -17,16 +16,16 @@ public abstract class RunProcess<T> implements Runnable{
 	/** 是否结束 */
 	boolean flagFinish = false;
 	
+	/** 给定运行中需要修改的信息 */
 	public void setRunGetInfo(RunGetInfo<T> runGetInfo) {
 		this.runGetInfo = runGetInfo;
 	}
-
 	/** 程序暂停 */
-	public void setSuspend() {
+	public void threadSuspend() {
 		this.suspendFlag = true;
 	}
 	/** 进程恢复 */
-	public synchronized void setResume() {
+	public synchronized void threadResume() {
 		synchronized (this) {
 			if (suspendFlag == false) {
 				return;
@@ -59,7 +58,6 @@ public abstract class RunProcess<T> implements Runnable{
 			}
 		}
 	}
-	
 	@Override
 	public void run() {
 		running();

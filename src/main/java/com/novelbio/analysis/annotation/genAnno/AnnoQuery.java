@@ -205,15 +205,15 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	}
 	
 	public static class AnnoQueryDisplayInfo {
-		int countNum;
+		long countNum;
 		String[] tmpInfo;
-		public void setCountNum(int countNum) {
+		public void setCountNum(long countNum) {
 			this.countNum = countNum;
 		}
 		public void setTmpInfo(String[] tmpInfo) {
 			this.tmpInfo = tmpInfo;
 		}
-		public int getCountNum() {
+		public long getCountNum() {
 			return countNum;
 		}
 		public String[] getTmpInfo() {

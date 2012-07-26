@@ -338,6 +338,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			for (int i = 1; i < size(); i++) { 
 				allIntronLength = allIntronLength + Math.abs(get(i).getStartCis() - get(i-1).getEndCis()) - 1;
 			}
+			return allIntronLength;
 		}
 		num--;
 		return Math.abs(get(num + 1).getStartCis() - get(num).getEndAbs()) - 1;
@@ -555,8 +556,15 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @param endLoc
 	 * @return
 	 */
-	public ArrayList<ExonInfo> get3UTRseq() {
+	public ArrayList<ExonInfo> getUTR3seq() {
 		return getRangeIso(UAGsite, getTESsite());
+	}
+	/**
+	 * 获得5UTR的序列
+	 * @return
+	 */
+	public ArrayList<ExonInfo> getUTR5seq() {
+		return getRangeIso(getTSSsite(), ATGsite);
 	}
 	/**
 	 * 指定一个起点和一个终点坐标，将这两个坐标间的外显子区域提取出来并返回

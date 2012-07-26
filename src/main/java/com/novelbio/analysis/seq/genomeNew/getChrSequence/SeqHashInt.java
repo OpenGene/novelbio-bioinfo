@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 
 public interface SeqHashInt {
 	/**
@@ -58,9 +58,13 @@ public interface SeqHashInt {
 	 * @throws IOException
 	 */
 	public void saveChrLengthToFile(String outFile) ;
+	/**
+	 * 获得所有序列的名字
+	 * @return
+	 */
+	public ArrayList<String> getLsSeqName();
+	
 	public SeqFasta getSeq(String chrID, long startlocation, long endlocation);
-	
-	
 	/**
 	 * * 输入染色体list信息 输入序列坐标以及是否为反向互补,其中ChrID为 chr1，chr2，chr10类型 返回序列
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
@@ -75,38 +79,18 @@ public interface SeqHashInt {
 	 * @return
 	 */
 	public SeqFasta getSeq(Boolean cisseq, String chrID, long startlocation, long endlocation);
-	
 	/**
 	 * 给出peak位点，查找指定范围的sequence，根据CaseChange改变大小写
 	 * <br>
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
 	 * @param chr
 	 *            ,
-	 * @param peaklocation
-	 *            peak summit点坐标
-	 * @param region
-	 *            peak左右的范围
-	 * @param cisseq
-	 *            true:正向链 false：反向互补链
+	 * @param peaklocation peak summit点坐标
+	 * @param region peak左右的范围
+	 * @param cisseq true:正向链 false：反向互补链
 	 */
-	public SeqFasta getSeq(String chr, int peaklocation, int region,
-			boolean cisseq);
+	public SeqFasta getSeq(String chr, int peaklocation, int region, boolean cisseq);
 
-	/**
-	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
-	 * 不管转录本的方向，总是从基因组的5‘向3’提取。
-	 * 方向需要人工设定cisseq
-	 * @param cisseq 正反向，是否需要反向互补。
-	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
-	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
-	 */
-	public SeqFasta getSeq(boolean cisseq, String chrID,List<ExonInfo> lsInfo, boolean getIntron);
-	
-	/**
-	 * 获得所有序列的名字
-	 * @return
-	 */
-	public ArrayList<String> getLsSeqName();
 	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
@@ -115,7 +99,6 @@ public interface SeqHashInt {
 	 * 没有染色体或序列超出范围则返回null
 	 */
 	public SeqFasta getSeq(String chrID, List<ExonInfo> lsInfo, boolean getIntron);
-	
 	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
@@ -130,8 +113,7 @@ public interface SeqHashInt {
 	 * @param getIntron 是否获取内含子，内含子自动小写
 	 * @return
 	 */
-	SeqFasta getSeq(String chrID, boolean cisseq, int start, int end,
-			List<ExonInfo> lsInfo, boolean getIntron);
+	SeqFasta getSeq(String chrID, int start, int end, List<ExonInfo> lsInfo, boolean getIntron);
 	/**
 	 * 外显子之间用什么分割
 	 * @param sep
@@ -146,6 +128,6 @@ public interface SeqHashInt {
 	 * 会用mapInfo的名字替换seqfasta的名字
 	 * @param mapInfo
 	 */
-	void getSeq(MapInfo mapInfo);
+	void getSeq(SiteInfo mapInfo);
 	
 }

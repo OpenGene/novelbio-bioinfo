@@ -1,21 +1,15 @@
 package com.novelbio.analysis.seq.genomeNew.getChrSequence;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;

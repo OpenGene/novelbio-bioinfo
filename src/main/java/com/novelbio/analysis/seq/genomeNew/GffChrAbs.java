@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
@@ -475,10 +476,10 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		if (gffCodGeneDU == null) {
 			return new HashSet<GffDetailGene>();
 		}
-		if (structure.equals(GffDetailGene.TSS)) {
+		if (structure.equals(GeneStructure.TSS)) {
 			return gffCodGeneDU.getTSSGene(tss);
 		}
-		else if (structure.equals(GffDetailGene.TES)) {
+		else if (structure.equals(GeneStructure.TES)) {
 			return gffCodGeneDU.getTESGene(tes);
 		}
 		else {
@@ -497,7 +498,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 */
 	private MapInfo getStructureLoc(GffDetailGene gffDetailGene, Double value,String structure)
 	{
-		if (structure.equals(GffDetailGene.TSS)) {
+		if (structure.equals(GeneStructure.TSS)) {
 			int tss = gffDetailGene.getLongestSplit().getTSSsite();
 			MapInfo mapInfo = null;
 			if (gffDetailGene.isCis5to3())
@@ -508,7 +509,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 			mapInfo.setScore(value);
 			return mapInfo;
 		}
-		else if (structure.equals(GffDetailGene.TES)) {
+		else if (structure.equals(GeneStructure.TES)) {
 			int tes = gffDetailGene.getLongestSplit().getTESsite();
 			MapInfo mapInfo = null;
 			if (gffDetailGene.isCis5to3())

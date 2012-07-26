@@ -6,7 +6,6 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.novelbio.database.domain.kegg.KGrelation;
 import com.novelbio.database.mapper.MapperSql;
-import com.novelbio.database.util.Util;
 
 
 public interface MapKRelation extends MapperSql {

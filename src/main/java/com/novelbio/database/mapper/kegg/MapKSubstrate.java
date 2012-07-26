@@ -6,7 +6,6 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.novelbio.database.domain.kegg.KGsubstrate;
 import com.novelbio.database.mapper.MapperSql;
-import com.novelbio.database.util.Util;
 
 
 public interface MapKSubstrate extends MapperSql{

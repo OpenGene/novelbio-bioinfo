@@ -163,7 +163,7 @@ public class ExtractSmallRNASeq {
 		lsResult.add(seqFasta);
 		for (ListDetailBin listDetailBin : lsSeqLocation) {
 			SeqFasta seqFastaMature = new SeqFasta();
-			seqFastaMature.setName(listDetailBin.getName());
+			seqFastaMature.setName(listDetailBin.getNameSingle());
 			seqFastaMature.setSeq(finalSeq.substring(listDetailBin.getStartAbs()-1, listDetailBin.getEndAbs()));
 			seqFastaMature.setDNA(true);
 			lsResult.add(seqFastaMature);
@@ -185,7 +185,7 @@ public class ExtractSmallRNASeq {
 				if (sepInfo[1].contains("product")) {
 					String accID = sepInfo[1].split("=")[1];
 					accID = accID.replace("\"", "");
-					lsMiRNAhairpin.setName(accID);
+					lsMiRNAhairpin.addItemName(accID);
 					lsResult.add(lsMiRNAhairpin);
 				}
 			}

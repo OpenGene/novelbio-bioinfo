@@ -6,7 +6,6 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.mapper.MapperSql;
-import com.novelbio.database.util.Util;
 
 public interface MapGo2Term extends MapperSql{
 

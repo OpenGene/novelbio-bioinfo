@@ -129,63 +129,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		return lsIntronLen;
 	}
 	/**
-	 * 	返回外显子总长度，内含子总长度等信息，只统计最长转录本的信息
-	 * 有问题
-	 * 为一个ArrayList-Integer
-	 * 0: all5UTRLength <br>
-	 * 1: all3UTRLength <br>
-	 * 2: allExonLength 不包括5UTR和3UTR的长度 <br> 
-	 * 3: allIntronLength <br>
-	 * 4: allup2kLength <br>
-	 * 5: allGeneLength <br>
-	 * @return 
-	 */
-	public ArrayList<Long> getGeneStructureLength(int upBp) {
-		ArrayList<Long> lsbackground=new ArrayList<Long>();
-		long allGeneLength=0;
-		long allIntronLength=0;
-		long allExonLength=0;
-		long all5UTRLength=0;
-		long all3UTRLength=0;
-		long allupBpLength=0;
-		
-		int errorNum=0;//看UCSC中有多少基因的TSS不是最长转录本的起点
-		/////////////////////正   式   计   算//////////////////////////////////////////
-		
-		for(Entry<String, ListGff> entry:mapChrID2ListGff.entrySet())
-		{
-			String key = entry.getKey();
-			ListGff value = entry.getValue();
-			int chrLOCNum=value.size();
-			allupBpLength=allupBpLength+chrLOCNum*upBp;
-		    //一条一条染色体的去检查内含子和外显子的长度
-		    for (int i = 0; i < chrLOCNum; i++) 
-			{
-				GffDetailGene tmpUCSCgene=value.get(i);
-				GffGeneIsoInfo gffGeneIsoInfoLong = tmpUCSCgene.getLongestSplit();
-				allGeneLength=allGeneLength + Math.abs(gffGeneIsoInfoLong.getTSSsite() - gffGeneIsoInfoLong.getTESsite() + 1);
-				///////////////////////看UCSC中有多少基因的TSS不是最长转录本的起点//////////////////////////
-				if ((tmpUCSCgene.isCis5to3() && gffGeneIsoInfoLong.getTSSsite() > tmpUCSCgene.getStartAbs()) 
-						|| ( !tmpUCSCgene.isCis5to3() && gffGeneIsoInfoLong.getTSSsite() < tmpUCSCgene.getEndAbs() ))
-				{
-					errorNum++;
-				}
-				all5UTRLength = all5UTRLength + gffGeneIsoInfoLong.getLenUTR5();
-				all3UTRLength = all3UTRLength + gffGeneIsoInfoLong.getLenUTR3();
-				allExonLength = allExonLength + gffGeneIsoInfoLong.getLenExon(0); 
-				allIntronLength = allIntronLength + gffGeneIsoInfoLong.getLenIntron(0); 
-			}
-		}
-		lsbackground.add(all5UTRLength);
-		lsbackground.add(all3UTRLength);
-		lsbackground.add(allExonLength);
-		lsbackground.add(allIntronLength);
-		lsbackground.add(allupBpLength);
-		lsbackground.add(allGeneLength);
-		System.out.println("getGeneStructureLength: 看UCSC中有多少基因的TSS不是最长转录本的起点"+errorNum);
-		return lsbackground;
-	}
-	/**
 	 * 获得Gene2GeneID在数据库中的信息，并且写入文本，一般不用
 	 */
 	private ArrayList<String[]> getGene2ID() {

@@ -133,7 +133,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 				lsMiRNA.setName(sepInfo[1].toLowerCase());
 				lsMiRNA.setCis5to3(true);
 				//装入chrHash
-				getChrhash().put(lsMiRNA.getName(), lsMiRNA);
+				getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
 			}
 			if (flagSpecies && sepInfo[0].equals("FT")) {
 				if (sepInfo[1].equals("miRNA")) {
@@ -148,9 +148,9 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 				if (sepInfo[1].contains("product")) {
 					String accID = sepInfo[1].split("=")[1];
 					accID = accID.replace("\"", "");
-					listDetailBin.setName(accID);
-					mapName2DetailAbs.put(listDetailBin.getName(), listDetailBin);
-					lsNameNoRedundent.add(listDetailBin.getName());
+					listDetailBin.addItemName(accID);
+					mapName2DetailAbs.put(listDetailBin.getNameSingle(), listDetailBin);
+					lsNameNoRedundent.add(listDetailBin.getNameSingle());
 				}
 			}
 			if (flagSpecies && sepInfo[0].equals("SQ")) {
@@ -186,13 +186,13 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 					end = Integer.parseInt(ss[3]);
 				}
 				//装入chrHash
-				getChrhash().put(lsMiRNA.getName(), lsMiRNA);
+				getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
 			}
 			if (ss[2].startsWith("mature")) {
 				listDetailBin = new ListDetailBin();
 				listDetailBin.setCis5to3(true);
 				//30..50
-				listDetailBin.setName(name);
+				listDetailBin.addItemName(name);
 				if (cis5to3) {
 					listDetailBin.setStartAbs(Integer.parseInt(ss[3]) - start);
 					listDetailBin.setEndAbs(Integer.parseInt(ss[4]) - start);
@@ -202,8 +202,8 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 					listDetailBin.setEndAbs(start - Integer.parseInt(ss[3]));
 				}
 				lsMiRNA.add(listDetailBin);
-				mapName2DetailAbs.put(listDetailBin.getName(), listDetailBin);
-				lsNameNoRedundent.add(listDetailBin.getName());
+				mapName2DetailAbs.put(listDetailBin.getNameSingle(), listDetailBin);
+				lsNameNoRedundent.add(listDetailBin.getNameSingle());
 			}
 		}
 	}
@@ -222,7 +222,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 				lsMiRNA.setName(string.substring(1).trim());
 				lsMiRNA.setCis5to3(true);
 				//装入chrHash
-				getChrhash().put(lsMiRNA.getName(), lsMiRNA);
+				getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
 			}
 			if (string.startsWith("exp")) {
 				String mirModel = string.replace("exp", "").trim();
@@ -255,7 +255,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 			else if (mirModel[i] == 'M') {
 				if (!MstartFlag) {
 					listDetailBin = new ListDetailBin();
-					listDetailBin.setName(lsMirnaMautre.getName() + "_mature");
+					listDetailBin.addItemName(lsMirnaMautre.getName() + "_mature");
 					listDetailBin.setCis5to3(true);
 					listDetailBin.setStartAbs(i+1);
 					lsMirnaMautre.add(listDetailBin);
@@ -265,7 +265,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 			else if (mirModel[i] == 'S') {
 				if (!SstartFlag) {
 					listDetailBin = new ListDetailBin();
-					listDetailBin.setName(lsMirnaMautre.getName() + "_star");
+					listDetailBin.addItemName(lsMirnaMautre.getName() + "_star");
 					listDetailBin.setCis5to3(true);
 					listDetailBin.setStartAbs(i+1);
 					lsMirnaMautre.add(listDetailBin);
@@ -291,7 +291,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		if (lsResult.size() == 0) {
 			return null;
 		}
-		return lsResult.get(0).getName();
+		return lsResult.get(0).getNameSingle();
 	}
 	
 	public static HashMap<String, Integer> getMapType2TypeID() {

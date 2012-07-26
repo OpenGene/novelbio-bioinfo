@@ -13,6 +13,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
+import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
 import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 /**
@@ -37,17 +38,15 @@ import com.novelbio.generalConf.NovelBioConst;
  */
 public class GffDetailGene extends ListDetailAbs {
 	private final static Logger logger = Logger.getLogger(GffDetailGene.class);
-	/**
-	 * 两个转录本的交集必须大于0.6才算是一个基因
-	 */
+	/** 两个转录本的交集必须大于0.6才算是一个基因 */
 	public final static double OVERLAP_RATIO = 0.6;
-	public final static String INTRON = "intron";
-	public final static String EXON_WITHOUT_UTR = "exon_without_utr";
-	public final static String EXON = "exon";
-	public final static String UTR5 = "5utr";
-	public final static String UTR3 = "3utr";
-	public final static String TSS = "tss";
-	public final static String TES = "tes";
+//	public final static String INTRON = "intron";
+//	public final static String CDS = "cds";
+//	public final static String EXON = "exon";
+//	public final static String UTR5 = "5utr";
+//	public final static String UTR3 = "3utr";
+//	public final static String TSS = "tss";
+//	public final static String TES = "tes";
 	/** 顺序存储每个转录本的的坐标情况 */
 	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
 	ListGff listGff;
@@ -276,28 +275,28 @@ public class GffDetailGene extends ListDetailAbs {
 	}
     /**
      * 获得该基因中最长的一条转录本的部分区域的信息。已经考虑过开闭区间问题
-     * @param type 指定为INTRON,UTR5等，是该类的常量里面的数值
+     * @param type 指定为INTRON,EXON,UTR5,UTR3
      * @param num 如果type为"Intron"或"Exon"，指定第几个，如果超出，则返回0
      * num 为实际个数。
      * 如果5UTR直接返回全长5UTR
      * 3UTR也直接返回全长3UTR
      * @return 
      */
-	public int getTypeLength(String type,int num) {
+	public int getTypeLength(GeneStructure geneStructure,int num) {
 		GffGeneIsoInfo gffGeneIsoInfo = getLongestSplit();
 		if (num > gffGeneIsoInfo.size()) {
 			return 0;
 		}
-		if (type.equals(INTRON)) {
+		if (geneStructure.equals(GeneStructure.INTRON)) {
 			return gffGeneIsoInfo.getLenIntron(num);
 		}
-		if (type.equals(EXON)) {
+		if (geneStructure.equals(GeneStructure.EXON)) {
 			return gffGeneIsoInfo.getLenExon(num);
 		}
-		if (type.equals(UTR5)) {
+		if (geneStructure.equals(GeneStructure.UTR5)) {
 			return gffGeneIsoInfo.getLenUTR5();
 		}
-		if (type.equals(UTR3)) {
+		if (geneStructure.equals(GeneStructure.UTR3)) {
 			return gffGeneIsoInfo.getLenUTR3();
 		}
 		return -1000000;
@@ -561,5 +560,9 @@ public class GffDetailGene extends ListDetailAbs {
 		result.taxID = taxID;
 		result.lsGffGeneIsoInfos = (ArrayList<GffGeneIsoInfo>) lsGffGeneIsoInfos.clone();
 		return result;
+	}
+	
+	public static enum GeneStructure {
+		ALLLENGTH,INTRON, CDS, EXON, UTR5, UTR3, TSS, TES
 	}
 }

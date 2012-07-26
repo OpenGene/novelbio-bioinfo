@@ -21,6 +21,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
@@ -67,8 +68,14 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo>{
 	public void setSpecies(int taxID) {
 		this.gffChrAbs = new GffChrAbs(taxID);
 	}
+	public void setSpecies(Species species) {
+		this.gffChrAbs = new GffChrAbs(species);
+	}
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
+	}
+	public GffChrAbs getGffChrAbs() {
+		return gffChrAbs;
 	}
 	public void setColStartEnd(int colStart, int colEnd) {
 		this.colStart = colStart - 1;
@@ -143,7 +150,6 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo>{
 				annoQueryDisplayInfo.setTmpInfo(strings2);
 				setRunInfo(annoQueryDisplayInfo);
 			}
-			
 		}
 		return lsResult;
 	}

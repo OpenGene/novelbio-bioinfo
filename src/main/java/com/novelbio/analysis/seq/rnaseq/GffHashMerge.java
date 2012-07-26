@@ -60,7 +60,7 @@ public class GffHashMerge {
 		for (String chrID : lsChrID) {
 			ArrayList<ListGff> lsGffAll = new ArrayList<ListGff>();
 			for (GffHashGene gffHashGene : lsGffHashGenes) {
-				ListGff listGff = gffHashGene.getChrhash().get(chrID);
+				ListGff listGff = gffHashGene.getMapChrID2LsGff().get(chrID);
 				if (listGff == null) {
 					continue;
 				}
@@ -125,7 +125,7 @@ public class GffHashMerge {
 	 * @param endLoc ´Ó0¿ªÊ¼
 	 */
 	private void addGffGene_Into_GffCluster(GffGeneCluster gffGeneCluster, GffHashGene gffHashGene, String chrID, int startID, int endID) {
-		ListGff lsGff = gffHashGene.getChrhash().get(chrID);
+		ListGff lsGff = gffHashGene.getMapChrID2LsGff().get(chrID);
 		ArrayList<GffDetailGene> lsGffSubGene = new ArrayList<GffDetailGene>();
 		for (int i = startID; i <= endID; i++) {
 			lsGffSubGene.add(lsGff.get(i));

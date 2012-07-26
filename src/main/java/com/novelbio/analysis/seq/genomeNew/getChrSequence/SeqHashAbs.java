@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public abstract class SeqHashAbs implements SeqHashInt{
@@ -158,7 +159,6 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		try {
 			setChrFile();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -300,17 +300,6 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		}
 	}
 	/**
-	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
-	 * 不管转录本的方向，总是从基因组的5‘向3’提取。
-	 * 方向需要人工设定cisseq
-	 * @param cisseq 正反向，是否需要反向互补，正向永远是5to3。
-	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
-	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
-	 */
-	public SeqFasta getSeq(boolean cisseq, String chrID,List<ExonInfo> lsInfo, boolean getIntron) {
-		return getSeq(cisseq, chrID, lsInfo, sep, getIntron);
-	}
-	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
@@ -319,10 +308,9 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	@Override
 	public SeqFasta getSeq(String chrID,List<ExonInfo> lsInfo, boolean getIntron) {
 		 ExonInfo exon1 = lsInfo.get(0);
-		 return this.getSeq(exon1.isCis5to3(), chrID, lsInfo, getIntron);
+		 return this.getSeq(exon1.isCis5to3(), chrID, lsInfo, sep,getIntron);
 	}
 	/**
-	 * 测试git
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
 	 * 仅获得起始exon到终止exon（包括起点和终点）的exon list
@@ -338,7 +326,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @return
 	 */
 	@Override
-	public SeqFasta getSeq(String chrID,boolean cisseq, int start, int end, List<ExonInfo> lsInfo, boolean getIntron) {
+	public SeqFasta getSeq(String chrID, int start, int end, List<ExonInfo> lsInfo, boolean getIntron) {
 		start--;
 		if (start < 0) start = 0;
 		
@@ -347,11 +335,8 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		
 		ExonInfo exon1 = lsInfo.get(0);
 		List<ExonInfo> lsExon = lsInfo.subList(start, end);
-		SeqFasta seq = getSeq(exon1.isCis5to3(), chrID, lsExon, getIntron);
-		if (cisseq)
-			return seq;
-		else
-			return seq.reservecom();
+		SeqFasta seq = getSeq(exon1.isCis5to3(), chrID, lsExon,sep, getIntron);
+		return seq;
 	}
 	/**
 	 * 按顺序提取闭区间序列，每一个区段保存为一个SeqFasta对象
@@ -377,7 +362,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		return lsSeqfasta;
 	}
 	@Override
-	public void getSeq(MapInfo mapInfo) {
+	public void getSeq(SiteInfo mapInfo) {
 		SeqFasta seqFasta = getSeq(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd());
 		seqFasta.setName(mapInfo.getName());
 		mapInfo.setSeq(seqFasta, true);

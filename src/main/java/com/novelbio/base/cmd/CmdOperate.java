@@ -172,13 +172,13 @@ public class CmdOperate extends RunProcess<String>{
 	}
 	/** 不能实现 */
 	@Deprecated
-	public void setSuspend() {
+	public void threadSuspend() {
 	}
 	/** 
 	 * 不能实现 
 	 * */
 	@Deprecated
-	public synchronized void setResume() {
+	public synchronized void threadResume() {
 	}
 	/** 终止线程，在循环中添加 */
 	public void stopThread() {

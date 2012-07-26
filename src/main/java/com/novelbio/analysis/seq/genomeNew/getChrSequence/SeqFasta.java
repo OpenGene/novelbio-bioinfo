@@ -383,6 +383,9 @@ public class SeqFasta implements Cloneable {
 	 * @return
 	 */
 	public int getLength() {
+		if (SeqSequence == null) {
+			return 0;
+		}
 		return SeqSequence.length();
 	}
 	/**
@@ -748,6 +751,9 @@ public class SeqFasta implements Cloneable {
 	}
 	/** 根据TOLOWCASE返回序列 */
 	public String toString() {
+		if (SeqSequence == null) {
+			return "";
+		}
 		if (TOLOWCASE == null) {
 			return SeqSequence;
 		}

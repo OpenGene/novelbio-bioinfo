@@ -14,7 +14,6 @@ import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.mapper.geneanno.MapFSTaxID;
 import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
 import com.novelbio.database.service.servgeneanno.ServTaxID;
 /**
@@ -400,25 +399,5 @@ public class Species {
 		ServTaxID servTaxID = new ServTaxID();
 		return servTaxID.getHashTaxIDName();
 	}
-	/**
-	 * 读取数据库中的taxID表，将其中的species读取出来并保存为taxID,speciesInfo
-	 * @return
-	 * HashMap - key:Integer taxID
-	 * value: 0: Kegg缩写 1：拉丁名
-	 */
-	@Deprecated
-	public static HashMap<Integer, String[]> getSpecies() 
-	{
-		TaxInfo taxInfo = new TaxInfo();
-		ArrayList<TaxInfo> lsTaxID = MapFSTaxID.queryLsTaxInfo(taxInfo);
-		HashMap<Integer,String[]> hashTaxID = new HashMap<Integer, String[]>();
-		for (TaxInfo taxInfo2 : lsTaxID) {
-			if (taxInfo2.getAbbr() == null || taxInfo2.getAbbr().trim().equals("")) {
-				continue;
-			}
-			
-			hashTaxID.put( taxInfo2.getTaxID(),new String[]{taxInfo2.getAbbr(),taxInfo2.getLatin()});
-		}
-		return hashTaxID;
-	}
+
 }

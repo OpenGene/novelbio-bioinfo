@@ -6,7 +6,6 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.mapper.MapperSql;
-import com.novelbio.database.util.Util;
 
 public interface MapUniGeneInfo extends MapperSql {
 	

@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.novelbio.analysis.seq.genomeNew.GffChrStatistics;
 import com.novelbio.database.model.modcopeid.GeneID;
 /**
  * 将GffHash和GffHashGene的方法全部列在了这里
@@ -10,21 +11,6 @@ import com.novelbio.database.model.modcopeid.GeneID;
  *
  */
 public interface GffHashGeneInf  {
-	
-	/**
-	 * 	返回外显子总长度，内含子总长度等信息，只统计最长转录本的信息
-	 * 有问题
-	 * 为一个ArrayList-Integer
-	 * 0: all5UTRLength <br>
-	 * 1: all3UTRLength <br>
-	 * 2: allExonLength 不包括5UTR和3UTR的长度 <br> 
-	 * 3: allIntronLength <br>
-	 * 4: allup2kLength <br>
-	 * 5: allGeneLength <br>
-	 * @return 
-	 */
-	public ArrayList<Long> getGeneStructureLength(int upBp);
-
 	/**
 	 * 起点是否为闭区间，不是则为开区间，<br>
 	 * False: 开区间的意思是，24表示从0开始计数的24位，也就是实际的25位<br>
@@ -32,8 +18,6 @@ public interface GffHashGeneInf  {
 	 * UCSC的默认文件的终点是闭区间间
 	 */
 	public void setEndRegion(boolean region);
-	
-	
 	/**
 	 * 返回List顺序存储每个基因号或条目号，这个打算用于提取随机基因号。
 	 * 不能通过该方法获得某个LOC在基因上的定位

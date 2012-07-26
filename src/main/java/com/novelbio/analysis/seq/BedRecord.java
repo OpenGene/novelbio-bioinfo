@@ -4,12 +4,13 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
  /**
   * BedSeq每一行的信息
   * @author zong0jie
   *
   */
-public class BedRecord extends MapInfo {
+public class BedRecord extends SiteInfo {
 	static private Logger logger = Logger.getLogger(BedRecord.class);
 	
 	
@@ -41,6 +42,7 @@ public class BedRecord extends MapInfo {
 	String CIGAR = null;
 	Integer mapQuality = null;
 	
+	String readLineInfo = "";
 	
 	
 	public BedRecord() {
@@ -48,6 +50,7 @@ public class BedRecord extends MapInfo {
 	}
 	public BedRecord(String bedline) {
 		super();
+		readLineInfo = bedline;
 		String[] ss = bedline.split("\t");
 		setRefID(ss[COL_CHRID]);
 		setStartEndLoc(Integer.parseInt(ss[COL_START]), Integer.parseInt(ss[COL_END]));
@@ -144,6 +147,10 @@ public class BedRecord extends MapInfo {
 	}
 	public void setMapQuality(Integer mapQuality) {
 		this.mapQuality = mapQuality;
+	}
+	/** 返回原始文件中读取时的信息 */
+	public String getRawStringInfo() {
+		return readLineInfo;
 	}
 	/**
 	 * 返回本bedrecord所对应的line信息

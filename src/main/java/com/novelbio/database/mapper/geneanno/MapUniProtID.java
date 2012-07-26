@@ -6,7 +6,6 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.MapperSql;
-import com.novelbio.database.util.Util;
 
 public interface MapUniProtID extends MapperSql{
 
