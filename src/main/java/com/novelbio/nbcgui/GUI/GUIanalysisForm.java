@@ -56,7 +56,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiBlast guiBlast; 
 	private GuiSeqMiRNA guiSeqMiRNA;
 	private GuiMirnaTargetPredict guiMirnaTargetPredict;
-	private GuiBatchAnno guiBatchAnno;
+	private GuiAnnoGene guiAnnoGene;
+	private GuiAnnoPeak guiAnnoPeak;
+	private GuiPeakStatistics guiPeakStatistics;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -89,21 +91,27 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiBlastJpanel = new GuiBlastJpanel();
 				jTabbedPane1.addTab("Query", null, guiBlastJpanel, null);
 				
-				guiBatchAnno = new GuiBatchAnno();
-				jTabbedPane1.addTab("BatchAnnotation", null, guiBatchAnno, null);
+				guiAnnoGene = new GuiAnnoGene();
+				jTabbedPane1.addTab("GeneAnno", null, guiAnnoGene, null);
+				
+				guiAnnoPeak = new GuiAnnoPeak();
+				jTabbedPane1.addTab("PeakAnno", null, guiAnnoPeak, null);
+				
+				guiPeakStatistics = new GuiPeakStatistics();
+				jTabbedPane1.addTab("PeakStatistics", guiPeakStatistics);
 				
 				guiGoJPanel= new GuiGoJPanel();
 				jTabbedPane1.addTab("GO", null, guiGoJPanel, null);
 				
 				guiPathJpanel = new GuiPathJpanel();
-				jTabbedPane1.addTab("Pathway", null, guiPathJpanel, null);
+				jTabbedPane1.addTab("Path", null, guiPathJpanel, null);
 				
 				guiSrcToTrg = new GuiSrcToTrgJpanel();
-				jTabbedPane1.addTab("Gene-Act", null, guiSrcToTrg, null);
-				
+				jTabbedPane1.addTab("GeneAct", null, guiSrcToTrg, null);
 			
 				guiPearson = new GuiPearsonJpanel();
 				jTabbedPane1.addTab("CoExp", null, guiPearson, null);
+				
 				guiDegreeAdd = new GuiDegreeAddJpanel();
 				jTabbedPane1.addTab("Degree", null, guiDegreeAdd, null);
 				
@@ -123,11 +131,11 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				jTabbedPane1.addTab("miRNA", null, guiSeqMiRNA, null);
 				
 				guiMirnaTargetPredict = new GuiMirnaTargetPredict();
-				jTabbedPane1.addTab("miRNAtargetPredict", null, guiMirnaTargetPredict, null);
+				jTabbedPane1.addTab("miRNAtarget", null, guiMirnaTargetPredict, null);
 				
 			}
 			pack();
-			this.setSize(1049, 699);
+			this.setSize(1050, 699);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

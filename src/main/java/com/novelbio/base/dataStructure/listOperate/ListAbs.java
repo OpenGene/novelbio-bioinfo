@@ -151,12 +151,14 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 		return false;
 	}
+	/** 根据方向返回 */
 	public int getStart() {
 		if (cis5to3 != null) {
 			return get(0).getStartCis();
 		}
 		return get(0).getStartAbs();
 	}
+	/** 根据方向返回 */
 	public int getEnd() {
 		if (cis5to3 != null) {
 			return get(size() - 1).getEndCis();

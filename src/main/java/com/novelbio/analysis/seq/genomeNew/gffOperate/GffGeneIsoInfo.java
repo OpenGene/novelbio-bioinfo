@@ -338,6 +338,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			for (int i = 1; i < size(); i++) { 
 				allIntronLength = allIntronLength + Math.abs(get(i).getStartCis() - get(i-1).getEndCis()) - 1;
 			}
+			return allIntronLength;
 		}
 		num--;
 		return Math.abs(get(num + 1).getStartCis() - get(num).getEndAbs()) - 1;

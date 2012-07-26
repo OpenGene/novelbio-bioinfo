@@ -1,16 +1,13 @@
 package com.novelbio.analysis.seq.genomeNew.getChrSequence;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -176,15 +173,15 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	 * @param mapInfo
 	 */
 	@Override
-	public void getSeq(MapInfo mapInfo) {
+	public void getSeq(SiteInfo mapInfo) {
 		seqHashAbs.getSeq(mapInfo);
 	}
 	/**
 	 * 根据给定的mapInfo，获得序列，注意序列并没有根据cis5to3进行反向，只是标记了cis5to3
 	 * @param mapinfoRefSeqIntactAA
 	 */
-	public void getSeq(ArrayList<? extends MapInfo> lsMapInfos) {
-		for (MapInfo mapInfo : lsMapInfos) {
+	public void getSeq(ArrayList<? extends SiteInfo> lsMapInfos) {
+		for (SiteInfo mapInfo : lsMapInfos) {
 			getSeq(mapInfo);
 		}
 	}

@@ -133,7 +133,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 				lsMiRNA.setName(sepInfo[1].toLowerCase());
 				lsMiRNA.setCis5to3(true);
 				//装入chrHash
-				getChrhash().put(lsMiRNA.getName(), lsMiRNA);
+				getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
 			}
 			if (flagSpecies && sepInfo[0].equals("FT")) {
 				if (sepInfo[1].equals("miRNA")) {
@@ -186,7 +186,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 					end = Integer.parseInt(ss[3]);
 				}
 				//装入chrHash
-				getChrhash().put(lsMiRNA.getName(), lsMiRNA);
+				getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
 			}
 			if (ss[2].startsWith("mature")) {
 				listDetailBin = new ListDetailBin();
@@ -222,7 +222,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 				lsMiRNA.setName(string.substring(1).trim());
 				lsMiRNA.setCis5to3(true);
 				//装入chrHash
-				getChrhash().put(lsMiRNA.getName(), lsMiRNA);
+				getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
 			}
 			if (string.startsWith("exp")) {
 				String mirModel = string.replace("exp", "").trim();

@@ -719,30 +719,27 @@ public class TxtReadandWrite {
 	}
 
 	/**
-	 * 按照excel方法读取文本时使用，用于 获得文本中最长行的列数，效率似乎有点低下
+	 * 按照excel方法读取文本时使用，用于 获得文本中前5000行中最长行的列数
 	 * @param sep
 	 *            该行的分隔符，为正则表达式，tab为"\t"
 	 * @return 返回指定行的列数
 	 * @throws Exception
 	 */
 	public int ExcelColumns(String sep){
-		int excelRows = ExcelRows();
-		try {
-			BufferedReader readasexcel = readfile();
-			int colNum=0;
-			for (int i = 0; i < excelRows - 1; i++) {
-				String tmpstr = readasexcel.readLine();
-				int TmpColNum = tmpstr.split(sep).length;
-				if (TmpColNum>colNum) {
-					colNum=TmpColNum;
-				}
+		int colNum=0;
+
+		int excelRows = 5000; int rowNum = 0;
+		for (String tmpstr : readlines()) {
+			if (rowNum > excelRows) {
+				break;
 			}
-			return colNum;
-		} catch (Exception e) {
-			logger.error("get Columns error: "+ getFileName());
-			return -1;
+			rowNum++;
+			int TmpColNum = tmpstr.split(sep).length;
+			if (TmpColNum>colNum) {
+				colNum=TmpColNum;
+			}
 		}
-		
+		return colNum;
 	}
 
 	/**
@@ -888,66 +885,47 @@ public class TxtReadandWrite {
 	public ArrayList<String[]> ExcelRead(String sep, int rowStartNum,
 			int columnStartNum, int rowEndNum, int columnEndNum, int colNotNone)
 	{
-
 		ArrayList<String[]> result = new ArrayList<String[]>();
-		try {
-			if (columnEndNum <= 0) {
-				columnEndNum =	ExcelColumns(sep);
+		if (columnEndNum <= 0) {
+			columnEndNum =	ExcelColumns(sep);
+		}
+		
+		int readlines = rowEndNum - rowStartNum + 1;
+		int countRows = 0;
+				
+		String[] tmp;// 两个临时变量
+		for (String content : readlines(rowStartNum)) {
+			if (rowEndNum > 0 && countRows > readlines ) {
+				break;
 			}
-			if (rowEndNum <= 0) {
-				rowEndNum = ExcelRows();
+			
+			if (content.trim().equals("")) {
+				continue;
 			}
-			int readlines = rowEndNum - rowStartNum + 1;
-			// System.out.println(readlines);
-			// System.out.println(readcolumns);
-
-
-			// 先跳过前面的好多行
-			bufread = readfile();
-			for (int i = 0; i < rowStartNum - 1; i++) {
-				if (bufread.readLine() == null)// 如果文本中没有那么多行
-				{
-					return null;
-				}
+			tmp = content.split(sep);
+			int tmpLength = tmp.length;
+			if (colNotNone > 0 && (tmp[colNotNone - 1] == null || tmp[colNotNone - 1].trim().equals(""))) {
+				continue;
 			}
-			// 正式读取
-			String content = "";
-			String[] tmp;// 两个临时变量
-			for (int i = 0; i < readlines; i++) {
-				if ((content = bufread.readLine()) == null)// 读完了
-				{
-					break;
-				}
-				if (content.trim().equals("")) {
-					continue;
-				}
-				tmp = content.split(sep);
-				int tmpLength = tmp.length;
-				if (colNotNone > 0 && (tmp[colNotNone - 1] == null || tmp[colNotNone - 1].trim().equals(""))) {
-					continue;
-				}
-				String[] tmpResult = null;
-				if (columnEndNum > tmpLength) {
-					tmpResult = new String[tmpLength - columnStartNum + 1];
-				} else {
-					tmpResult = new String[columnEndNum - columnStartNum + 1];
-				}
-				for (int j = 0; j < tmpResult.length; j++) {
+			String[] tmpResult = null;
+			if (columnEndNum > tmpLength) {
+				tmpResult = new String[tmpLength - columnStartNum + 1];
+			} else {
+				tmpResult = new String[columnEndNum - columnStartNum + 1];
+			}
+			for (int j = 0; j < tmpResult.length; j++) {
+				tmpResult[j] = "";
+			}
+			for (int j = 0; j < tmpResult.length; j++) {
+				int colNum = columnStartNum - 1 + j;
+				if (tmp[colNum] == null) {
 					tmpResult[j] = "";
+				} else {
+					tmpResult[j] = tmp[colNum];
 				}
-				for (int j = 0; j < tmpResult.length; j++) {
-					int colNum = columnStartNum - 1 + j;
-					if (tmp[colNum] == null) {
-						tmpResult[j] = "";
-					} else {
-						tmpResult[j] = tmp[colNum];
-					}
-				}
-				result.add(tmpResult);
 			}
-		} catch (Exception e) {
-			logger.error("read Excel Error: "+ getFileName());
-			close();
+			result.add(tmpResult);
+			countRows ++;
 		}
 		close();
 		return result;

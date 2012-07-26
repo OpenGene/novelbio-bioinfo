@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 
 public interface SeqHashInt {
 	/**
@@ -146,6 +146,6 @@ public interface SeqHashInt {
 	 * 会用mapInfo的名字替换seqfasta的名字
 	 * @param mapInfo
 	 */
-	void getSeq(MapInfo mapInfo);
+	void getSeq(SiteInfo mapInfo);
 	
 }

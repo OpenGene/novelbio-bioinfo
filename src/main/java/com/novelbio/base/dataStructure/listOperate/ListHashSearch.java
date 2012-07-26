@@ -175,7 +175,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	public HashMap<String, M> getChrhash() {
+	public HashMap<String, M> getMapChrID2LsGff() {
 		if (mapChrID2ListGff == null) {
 			mapChrID2ListGff = new LinkedHashMap<String, M>();
 		}
@@ -189,7 +189,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 */
 	public E searchLocation(String chrID, int cod1) {
 		chrID = chrID.toLowerCase();
-		M Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
+		M Loclist =  getMapChrID2LsGff().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			return null;
 		}
@@ -206,7 +206,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 */
 	public K searchLocation(String chrID, int cod1, int cod2) {
 		chrID = chrID.toLowerCase();
-		M Loclist =  getChrhash().get(chrID);// 某一条染色体的信息
+		M Loclist =  getMapChrID2LsGff().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			return null;
 		}
@@ -233,7 +233,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 */
 	public LinkedHashMap<String,LinkedHashMap<int[], Integer>> getFreq() {
 		LinkedHashMap<String, LinkedHashMap<int[], Integer>> hashResult = new LinkedHashMap<String, LinkedHashMap<int[],Integer>>();
-		Set<String> setChrID = getChrhash().keySet();
+		Set<String> setChrID = getMapChrID2LsGff().keySet();
 		for (String string : setChrID) {
 			LinkedHashMap<int[], Integer> hashTmpResult = new LinkedHashMap<int[], Integer>();
 			M lsPeak = getListDetail(string);

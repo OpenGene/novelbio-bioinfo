@@ -4,15 +4,18 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
+import com.novelbio.base.RunGetInfo;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.nbcgui.GUI.GuiBatchAnno;
+import com.novelbio.nbcgui.GUI.GuiAnnoGene;
 
-public class CtrlBatchAnnoGene extends CtrlBatchAnno{
+public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayInfo> {
+	GuiAnnoGene guiAnnoBatch;	
+
 	AnnoQuery annoQuery = new AnnoQuery();
 	Species species;
 
-	public CtrlBatchAnnoGene(GuiBatchAnno guiBatchAnno) {
-		super.guiBatchAnno = guiBatchAnno;
+	public CtrlBatchAnnoGene(GuiAnnoGene guiBatchAnno) {
+		this.guiAnnoBatch = guiBatchAnno;
 		annoQuery.setRunGetInfo(this);
 	}
 	public void setSpecies(Species species) {
@@ -24,8 +27,8 @@ public class CtrlBatchAnnoGene extends CtrlBatchAnno{
 		annoQuery.setTaxIDthis(taxID);
 	}
 	public void setListQuery(ArrayList<String[]> lsGeneInfo) {
-		guiBatchAnno.getProcessBar().setMinimum(0);
-		guiBatchAnno.getProcessBar().setMaximum(lsGeneInfo.size() - 1);
+		guiAnnoBatch.getProcessBar().setMinimum(0);
+		guiAnnoBatch.getProcessBar().setMaximum(lsGeneInfo.size() - 1);
 		annoQuery.setLsGeneID(lsGeneInfo);
 		annoQuery.setFirstLineFrom1(2);
 	}
@@ -47,17 +50,32 @@ public class CtrlBatchAnnoGene extends CtrlBatchAnno{
 	public ArrayList<String[]> getResult() {
 		return annoQuery.getLsResult();
 	}
-	@Override
-	public void setColPeakSummit(int colSummit) {
-		return;
-	}
-	@Override
-	public void setColPeakStartEnd(int start, int end) {
-		return;
-	}
-	@Override
-	public void setIsSummitSearch(boolean summitSearch) {
-		return;
-	}
 
+	@Override
+	public void setRunningInfo(AnnoQueryDisplayInfo info) {
+		guiAnnoBatch.getProcessBar().setValue((int) info.getCountNum());
+		guiAnnoBatch.getJScrollPaneDataResult().addRow(info.getTmpInfo());
+	}
+	
+	@Override
+	public void done() {
+		guiAnnoBatch.getProcessBar().setValue(guiAnnoBatch.getProcessBar().getMaximum());
+		guiAnnoBatch.getBtnSave().setEnabled(true);
+		guiAnnoBatch.getBtnRun().setEnabled(true);
+	}
+	@Override
+	public void suspendThread() {
+		// TODO Auto-generated method stub
+		guiAnnoBatch.getBtnRun().setEnabled(true);
+	}
+	@Override
+	public void wakeupThread() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void interruptThread() {
+		// TODO Auto-generated method stub
+		guiAnnoBatch.getBtnRun().setEnabled(true);
+	}
 }

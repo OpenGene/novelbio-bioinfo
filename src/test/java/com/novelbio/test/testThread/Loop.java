@@ -16,11 +16,11 @@ public class Loop  extends RunProcess {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		loop.setSuspend();
+		loop.threadSuspend();
 		System.out.println("current:  " + loop.getProperty());
 		System.out.println(thread.isAlive());
 		Thread.sleep(2000);
-		loop.setResume();
+		loop.threadResume();
 		Thread.sleep(1000);
 		loop.stopThread();
 		Thread.sleep(1000);

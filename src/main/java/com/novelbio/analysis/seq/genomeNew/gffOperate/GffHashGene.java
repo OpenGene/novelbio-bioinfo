@@ -83,12 +83,9 @@ public class GffHashGene implements GffHashGeneInf{
 	public GffHashGene() {
 		gffHashGene = new GffHashGeneUCSC();		 
 	}
-	@Override
-	public ArrayList<Long> getGeneStructureLength(int upBp) {
-		return gffHashGene.getGeneStructureLength(upBp);
-	}
+	
 	public void removeDuplicateIso() {
-		HashMap<String, ListGff> mapChrID2LsGff = getChrhash();
+		HashMap<String, ListGff> mapChrID2LsGff = getMapChrID2LsGff();
 		for (ListGff listGff : mapChrID2LsGff.values()) {
 			for (GffDetailGene gffDetailGene : listGff) {
 				gffDetailGene.removeDupliIso();
@@ -146,7 +143,7 @@ public class GffHashGene implements GffHashGeneInf{
 		return gffHashGene.searchLocation(chrID, cod1, cod2);
 	}
 	public ArrayList<String> getLsChrID() {
-		return ArrayOperate.getArrayListKey(gffHashGene.getChrhash());
+		return ArrayOperate.getArrayListKey(gffHashGene.getMapChrID2LsGff());
 	}
 	@Override
 	public String getGffFilename() {
@@ -156,8 +153,8 @@ public class GffHashGene implements GffHashGeneInf{
 	public int getTaxID() {
 		return gffHashGene.getTaxID();
 	}
-	public  HashMap<String, ListGff> getChrhash() {
-		return gffHashGene.getChrhash();
+	public  HashMap<String, ListGff> getMapChrID2LsGff() {
+		return gffHashGene.getMapChrID2LsGff();
 	}
 	/** 返回所有不重复GffDetailGene */
 	public ArrayList<GffDetailGene> getGffDetailAll() {
@@ -190,6 +187,6 @@ public class GffHashGene implements GffHashGeneInf{
 	
 	public void addListGff(ListGff listGff) {
 		String chrID = listGff.getName();
-		gffHashGene.getChrhash().put(chrID.toLowerCase(), listGff);
+		gffHashGene.getMapChrID2LsGff().put(chrID.toLowerCase(), listGff);
 	}
 }

@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public abstract class SeqHashAbs implements SeqHashInt{
@@ -377,7 +378,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		return lsSeqfasta;
 	}
 	@Override
-	public void getSeq(MapInfo mapInfo) {
+	public void getSeq(SiteInfo mapInfo) {
 		SeqFasta seqFasta = getSeq(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd());
 		seqFasta.setName(mapInfo.getName());
 		mapInfo.setSeq(seqFasta, true);

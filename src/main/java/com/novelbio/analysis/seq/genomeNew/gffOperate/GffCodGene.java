@@ -58,8 +58,7 @@ public class GffCodGene extends ListCodAbs<GffDetailGene> {
 	 * @param gffDetailGene
 	 * @return
 	 */
-	private GffGeneIsoInfo getCodInExon(GffDetailGene gffDetailGene, int coord)
-	{
+	private GffGeneIsoInfo getCodInExon(GffDetailGene gffDetailGene, int coord) {
 		//先找最长转录本，看snp是否在该转录本的exon中，不在的话，找其他所有转录本,看是否在基因的表达区中
 		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
 		if (!gffGeneIsoInfo.ismRNA() || gffGeneIsoInfo.getCodLoc(coord) != GffGeneIsoInfo.COD_LOC_EXON

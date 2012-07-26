@@ -1,23 +1,15 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.database.model.modcopeid.GeneID;
-import com.novelbio.test.mytest;
 
 /**
  * 待检查，默认走全部覆盖该基因，没有5UTR和3UTR
@@ -26,21 +18,8 @@ import com.novelbio.test.mytest;
  * 
  */
 public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
-	public static void main(String[] args) {
-		GffChrAbs gffChrAbs = new GffChrAbs(10090);
-		GffCodGeneDU gffCodGeneDu = gffChrAbs.getGffHashGene().searchLocation("chrX", 	133526666	, 133526780);
-		ArrayList<String[]> lsAnno = null;
-		gffCodGeneDu.setExon(false);
-		gffCodGeneDu.setGeneBody(false);
-		gffCodGeneDu.setIntron(false);
-		gffCodGeneDu.setTes(null);
-		gffCodGeneDu.setTss(new int[]{-2000,2000});
-		gffCodGeneDu.setUTR3(false);
-		gffCodGeneDu.setUTR5(false);
-		lsAnno = gffCodGeneDu.getAnno();
-		System.out.println("stop");
-	}
 	private static Logger logger = Logger.getLogger(GffCodGeneDU.class);
+	
 	/** 是否需要查询Iso */
 	private boolean flagSearchAnno = false;
 	/** 是否需要查询Hash */
@@ -360,8 +339,10 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	}
 
 	/**
+	 * 
 	 * 获得端点所牵涉到的基因
-	 * @return lsGffDetailGenes - gffDetailGene 与之相关的坐标
+	 * @param tssUp
+	 * @param tesDown 向下扩展多少bp
 	 */
 	private void setSameGeneDetail(int tssUp, int tesDown) {
 		setGffDetailGenesLeft = new LinkedHashSet<GffDetailGene>();

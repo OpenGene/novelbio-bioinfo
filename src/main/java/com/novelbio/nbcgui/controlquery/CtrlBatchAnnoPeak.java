@@ -7,37 +7,39 @@ import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceIns
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
+import com.novelbio.base.RunGetInfo;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.nbcgui.GUI.GuiBatchAnno;
+import com.novelbio.nbcgui.GUI.GuiAnnoGene;
+import com.novelbio.nbcgui.GUI.GuiAnnoPeak;
 
-public class CtrlBatchAnnoPeak extends CtrlBatchAnno{
+public class CtrlBatchAnnoPeak implements RunGetInfo<AnnoQuery.AnnoQueryDisplayInfo>{
+	GuiAnnoPeak guiAnnoPeak;
 	GffChrAnno gffChrAnno = new GffChrAnno();
 	Species species;
+	int[] filterTss;
+	int[] filterTes;
+	boolean filterGeneBody = true;
+	boolean filterExon = false;
+	boolean filterIntron = false;
+	boolean filter5UTR = false;
+	boolean filter3UTR = false;
 	
-	public CtrlBatchAnnoPeak(GuiBatchAnno guiBatchAnno) {
-		super.guiBatchAnno = guiBatchAnno;
+	public CtrlBatchAnnoPeak(GuiAnnoPeak guiAnnoPeak) {
+		this.guiAnnoPeak = guiAnnoPeak;
 		gffChrAnno.setRunGetInfo(this);
 	}
 	public void setSpecies(Species species) {
 		this.species = species;
-		gffChrAnno.setSpecies(species.getTaxID());
+		gffChrAnno.setSpecies(species);
 	}
 	public void setSpecies(int taxID) {
 		this.species = new Species(taxID);
 		gffChrAnno.setSpecies(taxID);
 	}
 	public void setListQuery(ArrayList<String[]> lsGeneInfo) {
-		guiBatchAnno.getProcessBar().setMinimum(0);
-		guiBatchAnno.getProcessBar().setMaximum(lsGeneInfo.size() - 1);
+		guiAnnoPeak.getProcessBar().setMinimum(0);
+		guiAnnoPeak.getProcessBar().setMaximum(lsGeneInfo.size() - 1);
 		gffChrAnno.setLsGeneInfo(lsGeneInfo);
-	}
-	//不发挥功能
-	public void setColumnAccIDFrom1(int colAccID) {
-		return;
-	}
-	//不发挥功能
-	public void setBlastTo(boolean blast, int subjectID) {
-		return;
 	}
 	public void setColPeakSummit(int colSummit) {
 		gffChrAnno.setColSummit(colSummit);
@@ -48,16 +50,56 @@ public class CtrlBatchAnnoPeak extends CtrlBatchAnno{
 	public void setIsSummitSearch(boolean summitSearch) {
 		gffChrAnno.setSearchSummit(summitSearch);
 	}
+	public void setTssRange(int[] tss) {
+		filterTss = tss;
+	}
+	public void setTesRange(int[] tes) {
+		filterTes = tes;
+	}
+	public void setFilterGeneBody(boolean filterGeneBody) {
+		this.filterGeneBody = filterGeneBody;
+	}
 	public void execute() {
+		gffChrAnno.getGffChrAbs().setFilterTssTes(filterTss, filterTes);
+		gffChrAnno.getGffChrAbs().setFilterGeneBody(filterGeneBody, filterExon, filterIntron);
+		gffChrAnno.getGffChrAbs().setFilterUTR(filter5UTR, filter3UTR);
 		Thread thread = new Thread(gffChrAnno);
 		thread.start();
 	}
 	public ArrayList<String[]> getResult() {
 		return gffChrAnno.getLsResult();
 	}
-	@Override
+
 	public String[] getTitle() {
 		return gffChrAnno.getTitleGeneInfoFilterAnno();
-		
 	}
+	
+	
+	@Override
+	public void setRunningInfo(AnnoQueryDisplayInfo info) {
+		guiAnnoPeak.getProcessBar().setValue((int) info.getCountNum());
+		guiAnnoPeak.getJScrollPaneDataResult().addRow(info.getTmpInfo());
+	}
+	
+	@Override
+	public void done() {
+		guiAnnoPeak.getProcessBar().setValue(guiAnnoPeak.getProcessBar().getMaximum());
+		guiAnnoPeak.getBtnSave().setEnabled(true);
+		guiAnnoPeak.getBtnRun().setEnabled(true);
+	}
+	@Override
+	public void suspendThread() {
+		gffChrAnno.threadSuspend();
+		guiAnnoPeak.getBtnRun().setEnabled(true);
+	}
+	@Override
+	public void wakeupThread() {
+		gffChrAnno.threadResume();
+		guiAnnoPeak.getBtnRun().setEnabled(false);
+	}
+	@Override
+	public void interruptThread() {
+		guiAnnoPeak.getBtnRun().setEnabled(true);
+	}
+	
 }

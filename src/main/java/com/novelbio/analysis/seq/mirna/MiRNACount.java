@@ -126,9 +126,9 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		}
 		ListDetailBin listDetailBin = listMiRNALocation.searchLOC(matureID);
 		if (listDetailBin == null) {
-			ListBin<ListDetailBin > lsInfo = listMiRNALocation.getChrhash().get(matureID);
+			ListBin<ListDetailBin > lsInfo = listMiRNALocation.getMapChrID2LsGff().get(matureID);
 			if (lsInfo != null) {
-				listDetailBin = listMiRNALocation.getChrhash().get(matureID).get(0);
+				listDetailBin = listMiRNALocation.getMapChrID2LsGff().get(matureID).get(0);
 			}
 			else {
 				if (!matureID.endsWith(flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix)) {
