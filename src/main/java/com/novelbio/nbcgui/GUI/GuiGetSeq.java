@@ -503,10 +503,4 @@ public class GuiGetSeq extends JPanel {
 	public JButton getBtnOpen() {
 		return btnOpenfile;
 	}
-	public JButton getBtnSave() {
-		return btnSave;
-	}
-	public JButton getBtnRun() {
-		return btnRun;
-	}
 }

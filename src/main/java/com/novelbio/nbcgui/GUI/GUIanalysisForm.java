@@ -60,6 +60,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiAnnoPeak guiAnnoPeak;
 	private GuiPeakStatistics guiPeakStatistics;
 	private GuiGetSeq guiGetSeq;
+
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
