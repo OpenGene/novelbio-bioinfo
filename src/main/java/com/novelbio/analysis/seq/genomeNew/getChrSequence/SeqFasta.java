@@ -670,7 +670,7 @@ public class SeqFasta implements Cloneable {
 	 * 2: 具体的motif序列<br>
 	 * 3: motif最后一个碱基与本序列site点的距离
 	 * @param regex
-	 * @param site 距离该序列终点的位置，上游为负数，下游为正数。譬如tss距离seq终点500bp，则site为-500。
+	 * @param site 距离该序列终点的位置，上游为负数，下游为正数。譬如该位点为tss，并且tss距离seq终点500bp，则site为-500。
 	 * 也就是序列取到tss下游500bp。
 	 * 最后返回motif到site点，那么<b>负数</b>表示motif在site的上游，<b>正数</b>表示motif在site的下游
 	 * @return

@@ -70,7 +70,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				logger.error("Ã»ÓÐ¸ÃaccID£º"+accID);
 				return null;
 			}
-		
 			gffDetailGene = super.searchLOC(locID);
 		}
 		return gffDetailGene;

@@ -3,10 +3,13 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.openxml4j.opc.EncryptionOption;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo.ExonCluster;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -14,6 +17,7 @@ import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 /**
@@ -563,6 +567,34 @@ public class GffDetailGene extends ListDetailAbs {
 	}
 	
 	public static enum GeneStructure {
-		ALLLENGTH,INTRON, CDS, EXON, UTR5, UTR3, TSS, TES
+		ALLLENGTH,INTRON, CDS, EXON, UTR5, UTR3, TSS, TES;
+		/**
+		 * 返回文字对应的GeneStructure
+		 * @return
+		 */
+		public static HashMap<String, GeneStructure> getMapInfo2GeneStr() {
+			HashMap<String, GeneStructure> mapStr2GeneStructure = new HashMap<String, GffDetailGene.GeneStructure>();
+			mapStr2GeneStructure.put("Full Length", ALLLENGTH);
+			mapStr2GeneStructure.put("Intron", INTRON);
+			mapStr2GeneStructure.put("CDS", CDS);
+			mapStr2GeneStructure.put("Exon", EXON);
+			mapStr2GeneStructure.put("5-UTR", UTR5);
+			mapStr2GeneStructure.put("3-UTR", UTR3);
+			mapStr2GeneStructure.put("Tss", TSS);
+			mapStr2GeneStructure.put("Tes", TES);
+			return mapStr2GeneStructure;
+		}
+		/**
+		 * 返回GeneStructure对应的文字
+		 * @return
+		 */
+		public static HashMap<GeneStructure, String> getMapGene2Str() {
+			HashMap<GeneStructure, String> mapGeneStructure2Str = new HashMap<GffDetailGene.GeneStructure, String>();
+			HashMap<String, GeneStructure> mapStr2GeneStructure = getMapInfo2GeneStr();
+			for (Entry<String, GeneStructure> entry : mapStr2GeneStructure.entrySet()) {
+				mapGeneStructure2Str.put(entry.getValue(), entry.getKey());
+			}
+			return mapGeneStructure2Str;
+		}
 	}
 }

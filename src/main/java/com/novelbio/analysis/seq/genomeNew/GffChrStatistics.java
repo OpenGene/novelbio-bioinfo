@@ -49,6 +49,8 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	
 	int firstLine = 1;
 	String fileName = "";
+	/** 读取了多少文件，给进度条使用 */
+	long allnumber = 0;
 	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
@@ -91,7 +93,16 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	protected void running() {
 		getSummitStatistic();
 	}
-	
+	public void clean() {
+		UTR5num = 0;
+		UTR3num = 0;
+		exonNum = 0;
+		intronNum = 0;
+		tssNum = 0;	
+		tesNum = 0;
+		interGenic = 0;
+		intraGenic = 0;
+	}
 	/**
 	 * 给定txt的文件，和染色体编号，染色体起点终点，和输出文件，将peak覆盖到的区域注释出来
 	 * @param txtFile
@@ -101,6 +112,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	 * @param outTxtFile
 	 */
 	private void getSummitStatistic() {
+		allnumber = 0;
 		if (bedFile)
 			readBedFile(fileName);
 		else
@@ -108,23 +120,33 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	}	
 	private void readBedFile(String bedFile) {
 		BedSeq bedSeqFile = new BedSeq(bedFile);
+		int i = 0;
 		for (BedRecord bedRecord : bedSeqFile.readlines(firstLine)) {
 			bedRecord.setFlagLoc(bedRecord.getMidLoc());
 			searchSite(bedRecord);
 			
-			GffChrStatiscticsProcessInfo anno = new GffChrStatiscticsProcessInfo(bedRecord.getRawStringInfo().getBytes().length);
-			setRunInfo(anno);
+			allnumber = allnumber + bedRecord.getRawStringInfo().getBytes().length;
+			if (i%1000 == 0) {
+				GffChrStatiscticsProcessInfo anno = new GffChrStatiscticsProcessInfo((int)(allnumber/1000000));
+				setRunInfo(anno);
+			}
+			i++;
 			if (flagStop) break;
 		}
 	}
 	private void readNormFile(String peakFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(peakFile, false);
-		for (String readLine : txtRead.readFirstLines(firstLine)) {
+		int i = 0;
+		for (String readLine : txtRead.readlines(firstLine)) {
 			SiteInfo siteInfo = readInfo(readLine.split("\t"));
 			searchSite(siteInfo);
 			
-			GffChrStatiscticsProcessInfo anno = new GffChrStatiscticsProcessInfo(readLine.getBytes().length);
-			setRunInfo(anno);
+			allnumber = allnumber + readLine.getBytes().length;
+			if (i%1000 == 0) {
+				GffChrStatiscticsProcessInfo anno = new GffChrStatiscticsProcessInfo((int)(allnumber/1000000));
+				setRunInfo(anno);
+			}
+			i++;
 			if (flagStop) break;
 		}
 	}

@@ -282,6 +282,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	}
 	/**
 	 * 返回每个ID对应的具体element的编号
+	 * key都是小写
 	 * @return
 	 */
 	public HashMap<String,Integer> getMapName2DetailAbsNum() {
@@ -290,7 +291,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 			E lsDetail = get(i);
 			ArrayList<String> ss = lsDetail.getName();
 			for (String string : ss) {
-				hashID2Num.put(string, i);
+				hashID2Num.put(string.toLowerCase(), i);
 			}
 		}
 		return hashID2Num;
@@ -298,6 +299,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	/**
 	 * 返回每个ID对应的具体element
 	 * 输入一个hashmap，在里面填充信息
+	 * key都是小写
 	 * @return
 	 */
 	public HashMap<String, E> getMapName2DetailAbs() {
@@ -305,7 +307,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		for (E ele : this) {
 			ArrayList<String> ss = ele.getName();
 			for (String string : ss) {
-				mapName2DetailAbs.put(string, ele);
+				mapName2DetailAbs.put(string.toLowerCase(), ele);
 			}
 		}
 		return mapName2DetailAbs;

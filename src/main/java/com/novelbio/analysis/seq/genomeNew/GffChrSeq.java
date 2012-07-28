@@ -2,20 +2,26 @@ package com.novelbio.analysis.seq.genomeNew;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
+import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-
-public class GffChrSeq {
+/**
+ * 在GffChrAbs中设定Tss和Tes的范围
+ * setGetSeqIso 和 setGetSeqSite，谁后设定就提取谁
+ * @author zong0jie
+ *
+ */
+public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	private static Logger logger = Logger.getLogger(GffChrSeq.class);
 	GffChrAbs gffChrAbs = null;
 	
@@ -26,11 +32,29 @@ public class GffChrSeq {
 	boolean getIntron;
 	/** 提取全基因组序列的时候，是每个LOC提取一条序列还是提取全部 */
 	boolean getAllIso;
+	/** 是否提取氨基酸 */
+	boolean getAAseq = false;
+	
+	
+	/** 是提取位点还是提取基因 */
+	boolean booGetIsoSeq = false;
+	LinkedHashSet<GffGeneIsoInfo> setIsoToGetSeq = new LinkedHashSet<GffGeneIsoInfo>();
+	ArrayList<SiteInfo> lsSiteInfos = new ArrayList<SiteInfo>();
+	
+	/** 默认存入文件，否则返回一个listSeqFasta */
+	boolean saveToFile = true;
+	ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
+	TxtReadandWrite txtOutFile;
+	String outFile = "";
 	
 	public GffChrSeq() {}
 	
 	public GffChrSeq(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
+	}
+	/** 默认是ture */
+	public void setSaveToFile(boolean saveToFile) {
+		this.saveToFile = saveToFile;
 	}
 	/** 提取单个基因的时候<br>
 	 * true：提取该基因对应的转录本<br>
@@ -51,6 +75,9 @@ public class GffChrSeq {
 	public void setGetIntron(boolean getIntron) {
 		this.getIntron = getIntron;
 	}
+	public void setGetAAseq(boolean getAAseq) {
+		this.getAAseq = getAAseq;
+	}
 	/**
 	 * 将GffChrAbs导入，其中gffChrAbs务必初始化chrSeq和gffhashgene这两项
 	 * @param gffChrAbs
@@ -58,6 +85,195 @@ public class GffChrSeq {
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
+	public void setOutPutFile(String outPutFile) {
+		this.outFile = outPutFile;
+	}
+	/** 待提取基因的哪一个部分 */
+	public void setGeneStructure(GeneStructure geneStructure) {
+		this.geneStructure = geneStructure;
+	}
+	/**
+	 * 输入名字提取序列，内部会去除重复基因
+	 * @param lsIsoName
+	 */
+	public void setGetSeqIso(ArrayList<String> lsIsoName) {
+		setIsoToGetSeq.clear();
+		for (String string : lsIsoName) {
+			GffGeneIsoInfo gffGeneIsoInfo = getIso(string);
+			if (gffGeneIsoInfo != null) {
+				setIsoToGetSeq.add(gffGeneIsoInfo);
+			}
+		}
+		booGetIsoSeq = true;
+	}
+	/**
+	 * 输入名字提取序列，内部会去除重复基因
+	 * @param lsIsoName
+	 */
+	public void setGetSeqIsoGenomWide() {
+		setIsoToGetSeq.clear();
+		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
+		GffDetailGene gffDetailGene = null;
+		for (String geneID : lsID) {
+			gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
+			if (getAllIso) {
+				setIsoToGetSeq.addAll(getGeneSeqAllIso(gffDetailGene));
+			}
+			else {
+				setIsoToGetSeq.addAll(getGeneSeqLongestIso(gffDetailGene));
+			}
+		}
+		booGetIsoSeq = true;
+	}
+	public int getNumOfQuerySeq() {
+		if (booGetIsoSeq) {
+			return setIsoToGetSeq.size();
+		}
+		else {
+			return lsSiteInfos.size();
+		}
+	}
+	private LinkedList<GffGeneIsoInfo> getGeneSeqAllIso(GffDetailGene gffDetailGene) {
+		LinkedList<GffGeneIsoInfo> lsResult = new LinkedList<GffGeneIsoInfo>();
+		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+			lsResult.add(gffGeneIsoInfo);
+		}
+		return lsResult;
+	}
+	private LinkedList<GffGeneIsoInfo> getGeneSeqLongestIso(GffDetailGene gffDetailGene) {
+		LinkedList<GffGeneIsoInfo> lsResult = new LinkedList<GffGeneIsoInfo>();
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		lsResult.add(gffGeneIsoInfo);
+		return lsResult;
+	}
+	/**
+	 * 输入位点提取序列
+	 * @param lsIsoName
+	 */
+	public void setGetSeqSite(ArrayList<SiteInfo> lsSiteName) {
+		lsSiteInfos = lsSiteName;
+		booGetIsoSeq = false;
+	}
+	/** 如果不是保存在文件中，就可以通过这个来获得结果 */
+	public ArrayList<SeqFasta> getLsResult() {
+		return lsResult;
+	}
+	/**
+	 * 用指定motif搜索指定基因的指定区域，返回得到的motif
+	 * 并写入文本
+	 * @param regex
+	 * 	给定motif，在全基因组的指定序列上查找相应的正则表达式<br>
+	 * 返回正向序列和反向序列查找的结果<br>
+	 * List-string [4] <br>
+	 * 0: seqName<br>
+	 * 1: strand : + / -<br>
+	 * 2: 具体的motif序列<br>
+	 * 3: motif最后一个碱基与本序列终点的距离
+	 */
+	public ArrayList<String[]> motifPromoterScan(String regex) {
+		ArrayList<String[]> lsMotifResult = new ArrayList<String[]>();
+		if (booGetIsoSeq) {
+			for (GffGeneIsoInfo gffGeneIsoInfo : setIsoToGetSeq) {
+				SeqFasta seqFasta = getSeq(gffGeneIsoInfo);
+				if (seqFasta == null || seqFasta.getLength() < 3) {
+					continue;
+				}
+				lsMotifResult.addAll(seqFasta.getMotifScanResult(regex));
+			}
+		}
+		return lsMotifResult;
+	}
+
+	@Override
+	protected void running() {
+		getSeq();
+	}
+	/**
+	 * 提取全基因组的promoter附近的序列
+	 * @param upBp tss上游多少bp，负数，如果正数就在下游
+	 * @param downBp tss下游多少bp，正数，如果负数就在上游
+	 * @return
+	 */
+	private void getSeq() {
+		if (saveToFile)
+			txtOutFile = new TxtReadandWrite(outFile, true);
+		
+		int num = 0;
+		boolean isGetSeq = false;
+		if (booGetIsoSeq) {
+			for (GffGeneIsoInfo gffGeneIsoInfo : setIsoToGetSeq) {
+				num++;
+				SeqFasta seqFasta = getSeq(gffGeneIsoInfo);
+				isGetSeq = copeSeqFasta(seqFasta);
+				
+				suspendCheck();
+				if (flagStop) {
+					break;
+				}
+				setTmpInfo(isGetSeq, seqFasta, num);
+			}
+		}
+		else {
+			for (SiteInfo siteInfo : lsSiteInfos) {
+				num++;
+				getSeq(siteInfo);
+				SeqFasta seqFasta = siteInfo.getSeqFasta();
+				seqFasta.setName(siteInfo.getRefID() + "_" + siteInfo.getStart() + "_" + siteInfo.getEnd() + "_" + siteInfo.getFlagSite());
+				isGetSeq = copeSeqFasta(seqFasta);
+				
+				suspendCheck();
+				if (flagStop) {
+					break;
+				}
+				setTmpInfo(isGetSeq, seqFasta, num);
+			}
+		}
+		if (saveToFile)
+			txtOutFile.close();
+	}
+	/** 设定中间参数 */
+	private void setTmpInfo(boolean isGetSeq, SeqFasta seqFasta, int number) {
+		if (!isGetSeq) {
+			return;
+		}
+		GffChrSeqProcessInfo gffChrSeqProcessInfo = new GffChrSeqProcessInfo(number);
+		if (getAAseq) {
+			gffChrSeqProcessInfo.setSeqFasta(seqFasta.toStringAAfasta());
+		}
+		else {
+			gffChrSeqProcessInfo.setSeqFasta(seqFasta.toStringNRfasta());
+		}
+		setRunInfo(gffChrSeqProcessInfo);
+	}
+	
+	private GffGeneIsoInfo getIso(String IsoName) {
+		if (absIso)
+			return gffChrAbs.getGffHashGene().searchISO(IsoName);
+		else
+			return gffChrAbs.getGffHashGene().searchLOC(IsoName).getLongestSplit();
+	}
+	
+	
+	/** 返回是否获取本序列 */
+	private boolean copeSeqFasta(SeqFasta seqFasta) {
+		if (seqFasta == null || seqFasta.getLength() < 3) {
+			return false;
+		}
+		if (saveToFile) {
+			if (getAAseq) {
+				txtOutFile.writefileln(seqFasta.toStringAAfasta());
+			}
+			else {
+				txtOutFile.writefileln(seqFasta.toStringNRfasta());
+			}
+		}
+		else {
+			lsResult.add(seqFasta);
+		}
+		return true;
+	}
+
+
 	/**
 	 * 给定坐标，获得该坐标所对应的序列
 	 * @return
@@ -75,10 +291,6 @@ public class GffChrSeq {
 	public SeqFasta getSeq(boolean cis5to3,String chrID, int startLoc, int endLoc) {
 		return gffChrAbs.getSeqHash().getSeq(chrID, (long)startLoc, (long)endLoc);
 	}
-	
-	public void setGeneStructure(GeneStructure geneStructure) {
-		this.geneStructure = geneStructure;
-	}
 	/**
 	 * 设定外显子范围，获得具体序列
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
@@ -90,22 +302,13 @@ public class GffChrSeq {
 	 * @return
 	 */
 	public SeqFasta getSeq(String IsoName, int startExon, int endExon, boolean getIntron) {
-		GffGeneIsoInfo gffGeneIsoInfo = null;
-		if (absIso)
-			gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(IsoName);
-		else
-			gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchLOC(IsoName).getLongestSplit();
-		
+		GffGeneIsoInfo gffGeneIsoInfo = getIso(IsoName);
 		SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), startExon, endExon, gffGeneIsoInfo, getIntron);
 		seqFasta.setName(IsoName);
 		return seqFasta;
 	}
 	public SeqFasta getSeq(String IsoName) {
-		GffGeneIsoInfo gffGeneIsoInfo = null;
-		if (absIso)
-			gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(IsoName);
-		else
-			gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchLOC(IsoName).getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = getIso(IsoName);
 		return getSeq(gffGeneIsoInfo);
 	}
 	/**
@@ -116,6 +319,9 @@ public class GffChrSeq {
 	 * @return
 	 */
 	public SeqFasta getSeq(GffGeneIsoInfo gffGeneIsoInfo) {
+		if (gffGeneIsoInfo == null) {
+			return null;
+		}
 		ArrayList<ExonInfo> lsExonInfos = null;
 		if (geneStructure.equals(GeneStructure.ALLLENGTH) || geneStructure.equals(GeneStructure.EXON)) {
 			lsExonInfos = gffGeneIsoInfo;
@@ -133,10 +339,13 @@ public class GffChrSeq {
 			lsExonInfos = gffGeneIsoInfo.getUTR5seq();
 		}
 		else if (geneStructure.equals(GeneStructure.TSS)) {
-			getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),gffChrAbs.tss[0], gffChrAbs.tss[1]);
+			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),gffChrAbs.tss[0], gffChrAbs.tss[1]);
 		}
 		else if (geneStructure.equals(GeneStructure.TES)) {
-			getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),gffChrAbs.tes[0], gffChrAbs.tes[1]);
+			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),gffChrAbs.tes[0], gffChrAbs.tes[1]);
+		}
+		if (lsExonInfos.size() == 0) {
+			return null;
 		}
 		SeqFasta seqFastaResult = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), lsExonInfos, getIntron);
 		seqFastaResult.setName(gffGeneIsoInfo.getName());
@@ -172,183 +381,6 @@ public class GffChrSeq {
 		return seq;
 	}
 	/**
-	 * 提取全基因组的promoter附近的序列
-	 * @param upBp tss上游多少bp，负数，如果正数就在下游
-	 * @param downBp tss下游多少bp，正数，如果负数就在上游
-	 * @return
-	 */
-	public ArrayList<SeqFasta> getGenomeWideSeq() {
-		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
-		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
-		GffDetailGene gffDetailGene = null;
-		for (String geneID : lsID) {
-			gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
-			if (getAllIso) {
-				lsResult.addAll(getGeneSeqAllIso(gffDetailGene));
-			}
-			else {
-				lsResult.add(getGeneSeqLongestIso(gffDetailGene));
-			}
-		}
-		return lsResult;
-	}
-	private LinkedList<SeqFasta> getGeneSeqAllIso(GffDetailGene gffDetailGene) {
-		LinkedList<SeqFasta> lsResult = new LinkedList<SeqFasta>();
-		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			SeqFasta seqFasta = getSeq(gffGeneIsoInfo);
-			if (seqFasta == null || seqFasta.getLength() < 3) {
-				continue;
-			}
-			lsResult.add(seqFasta);
-		}
-		return lsResult;
-	}
-	private SeqFasta getGeneSeqLongestIso(GffDetailGene gffDetailGene) {
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
-		return getSeq(gffGeneIsoInfo);
-	}
-	/**
-	 * 用指定motif搜索全基因组基因的promoter区域，返回得到的motif
-	 * 并写入文本
-	 * @param outTxtFile
-	 * @param regex
-	 * @param upBp
-	 * @param downBp
-	 */
-	public void motifPromoterScan(String outTxtFile, String regex, int upBp, int downBp) {
-		ArrayList<SeqFasta> lsPromoterSeq = getGenomePromoterSeq(upBp, downBp);
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		lsResult.add(SeqFasta.getMotifScanTitle());
-		for (SeqFasta seqFasta : lsPromoterSeq) {
-			lsResult.addAll(seqFasta.getMotifScanResult(regex));
-		}
-		TxtReadandWrite txtMotifOut = new TxtReadandWrite(outTxtFile, true);
-		txtMotifOut.ExcelWrite(lsResult, "\t", 1, 1);
-	}
-	/**
-	 * 获得某个物种的全部cds序列，从refseq中提取更加精确
-	 * 每个基因只选取其中一条序列
-	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
-	 * @return
-	 */
-	public ArrayList<SeqFasta> getSeqCDSAll() {
-		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
-		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
-		GffGeneIsoInfo gffGeneIsoInfo = null;
-		for (String geneID : lsID) {
-			gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
-			ArrayList<ExonInfo> lsCDS = gffGeneIsoInfo.getIsoInfoCDS();
-			if (lsCDS.size() > 0) {
-				SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), lsCDS, false);
-				if (seq == null || seq.getLength() < 3) {
-					continue;
-				}
-				seq.setName(geneID);
-				lsResult.add(seq);
-			}
-		}
-		return lsResult;
-	}
-	//TODO 可以新建一个类将这些5UTR，3UTR，Promoter等全部装进去
-	/**
-	 * 获得某个物种的全部cds，也就是从ATG到UAG的每个ISO序列，从refseq中提取更加精确
-	 * @return
-	 */
-	public ArrayList<SeqFasta> getSeqCDSAllIso() {
-		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameAll();
-		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
-		GffDetailGene gffDetailGene = null;
-		for (String geneID : lsID) {
-			gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
-			gffDetailGene.removeDupliIso();
-			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				ArrayList<ExonInfo> lsCDS = gffGeneIsoInfo.getIsoInfoCDS();
-				if (lsCDS.size() > 0) {
-					SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), lsCDS, false);
-					if (seq == null || seq.getLength() < 3) {
-						continue;
-					}
-					seq.setName(gffGeneIsoInfo.getName());
-					lsResult.add(seq);
-				}
-			}
-		}
-		return lsResult;
-	}
-	/**
-	 * 获得某个物种的全部3UTR序列，为了预测novel miRNA靶基因
-	 */
-	public ArrayList<SeqFasta> getSeq3UTRAll() {
-		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
-		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
-		GffDetailGene gffDetailGene = null;
-		for (String geneID : lsID) {
-			gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
-			gffDetailGene.removeDupliIso();
-			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				ArrayList<ExonInfo> lsCDS = gffGeneIsoInfo.getUTR3seq();
-				if (lsCDS.size() > 0) {
-					SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), lsCDS, false);
-					if (seq == null || seq.getLength() < 3) {
-						continue;
-					}
-					seq.setName(gffGeneIsoInfo.getName());
-					lsResult.add(seq);
-				}
-			}
-		}
-		return lsResult;
-	}
-	/**
-	 * 获得某个物种的全部RNA全长序列的每个ISO序列，从refseq中提取更加精确
-	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
-	 * @param IsoName 转录本的名字
-	 * @param FilteredStrand 正反向，在提出的正向转录本的基础上，是否需要反向互补
-	 * @param startExon 具体某个exon
-	 * @param endExon 具体某个Intron
-	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
-	 * @param getIntron
-	 * @return
-	 */
-	public ArrayList<SeqFasta> getSeqAllIso() {
-		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
-		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getLocHashtable().values()) {
-			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, false);
-				if (seq == null || seq.getLength() < 3) {
-					continue;
-				}
-				seq.setName(gffGeneIsoInfo.getName());
-				lsResult.add(seq);
-			}
-		}
-		return lsResult;
-	}
-	/**
-	 * 获得某个物种的全部RNA全长序列的每个gene的最长序列，从refseq中提取更加精确
-	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
-	 * @param IsoName 转录本的名字
-	 * @param FilteredStrand 正反向，在提出的正向转录本的基础上，是否需要反向互补
-	 * @param startExon 具体某个exon
-	 * @param endExon 具体某个Intron
-	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
-	 * @param getIntron
-	 * @return
-	 */
-	public ArrayList<SeqFasta> getSeqAll() {
-		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
-		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getLocHashtable().values()) {
-			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
-				SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, false);
-				if (seq == null || seq.getLength() < 3) {
-					continue;
-				}
-				seq.setName(gffGeneIsoInfo.getName());
-				lsResult.add(seq);
-		}
-		return lsResult;
-	}
-	/**
 	 * 可以给rsem使用
 	 * 内部自动close
 	 * @param seqFastaTxt
@@ -371,4 +403,23 @@ public class GffChrSeq {
 		}
 		txtFasta.close();
 	}
+	
+	public static class GffChrSeqProcessInfo {
+		int number;
+		ArrayList<String> lsTmpInfo = new ArrayList<String>();
+		public GffChrSeqProcessInfo(int number) {
+			this.number = number;
+		}
+		public void setSeqFasta(String string) {
+			lsTmpInfo.add(string);
+		}
+		public int getNumber() {
+			return number;
+		}
+		public ArrayList<String> getLsTmpInfo() {
+			return lsTmpInfo;
+		}
+	}
+
 }
+

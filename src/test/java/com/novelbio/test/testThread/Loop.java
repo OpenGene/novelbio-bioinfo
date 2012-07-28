@@ -22,7 +22,7 @@ public class Loop  extends RunProcess {
 		Thread.sleep(2000);
 		loop.threadResume();
 		Thread.sleep(1000);
-		loop.stopThread();
+		loop.threadStop();
 		Thread.sleep(1000);
 		System.out.println(thread.isAlive());
 	}

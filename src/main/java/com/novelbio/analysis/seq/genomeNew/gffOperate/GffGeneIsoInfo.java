@@ -15,6 +15,7 @@ import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modcopeid.GeneID;
 
 /**
+ * 	重写hash，不包含基因名信息，包含基因taxID，chrID，atg，uag，tss，长度，以及每一个exon的信息<br>
  * 记录该转录本的具体坐标信息,
  * 第一项开始是exon的信息，exon成对出现，为int[2] 
  * 0: 该外显子起点，闭区间，从1开始记数<br>

@@ -37,7 +37,7 @@ public class CmdOperate extends RunProcess<String>{
 			Thread.sleep(100);
 			System.out.println(count ++ );
 			if (count == 20) {
-				cmdOperate.stopThread();
+				cmdOperate.threadStop();
 			}
 		}
 		System.out.println(cmdOperate.isFinished());
@@ -181,7 +181,7 @@ public class CmdOperate extends RunProcess<String>{
 	public synchronized void threadResume() {
 	}
 	/** 终止线程，在循环中添加 */
-	public void stopThread() {
+	public void threadStop() {
 //		process.destroy() 无法杀死线程
 		int pid = -10;
 		try {

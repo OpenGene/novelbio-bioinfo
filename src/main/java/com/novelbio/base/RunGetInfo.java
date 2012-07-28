@@ -8,9 +8,11 @@ public interface RunGetInfo<T> {
 	/** 线程完毕进行的操作 */
 	public void done();
 	/** 线程挂起进行的操作 */
-	public void suspendThread();
+	public void threadSuspend();
 	/** 线程恢复进行的操作 */
-	public void wakeupThread();
+	public void threadResume();
 	/** 线程中断进行的操作 */
-	public void interruptThread();
+	public void threadStop();
+	/** 运行该线程 */
+	public void execute();
 }

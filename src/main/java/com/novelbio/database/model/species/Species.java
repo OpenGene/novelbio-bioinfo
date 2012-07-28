@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
-
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -30,7 +28,7 @@ public class Species {
 	
 	int taxID = 0;
 	TaxInfo taxInfo = new TaxInfo();
-	String version;
+	String version = "";;
 	/** 有哪些版本,0：version 1：year<br>
 	 * 按照年代从大到小排序
 	 */
@@ -399,5 +397,20 @@ public class Species {
 		ServTaxID servTaxID = new ServTaxID();
 		return servTaxID.getHashTaxIDName();
 	}
-
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		
+		if (getClass() != obj.getClass()) return false;
+		Species otherObj = (Species)obj;
+		if (
+				getTaxID() == otherObj.getTaxID() 
+				&& version.equals(otherObj.version)
+				)
+		{
+			return true;
+		}
+		return false;
+	}
 }

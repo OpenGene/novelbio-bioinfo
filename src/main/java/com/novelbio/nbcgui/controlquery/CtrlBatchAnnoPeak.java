@@ -88,17 +88,17 @@ public class CtrlBatchAnnoPeak implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 		guiAnnoPeak.getBtnRun().setEnabled(true);
 	}
 	@Override
-	public void suspendThread() {
+	public void threadSuspend() {
 		gffChrAnno.threadSuspend();
 		guiAnnoPeak.getBtnRun().setEnabled(true);
 	}
 	@Override
-	public void wakeupThread() {
+	public void threadResume() {
 		gffChrAnno.threadResume();
 		guiAnnoPeak.getBtnRun().setEnabled(false);
 	}
 	@Override
-	public void interruptThread() {
+	public void threadStop() {
 		guiAnnoPeak.getBtnRun().setEnabled(true);
 	}
 	

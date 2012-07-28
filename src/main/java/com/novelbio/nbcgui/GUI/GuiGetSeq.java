@@ -1,11 +1,20 @@
 package com.novelbio.nbcgui.GUI;
 
+import javax.swing.ButtonGroup;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
+import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -13,12 +22,18 @@ import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlquery.CtrlPeakStatistics;
+import com.novelbio.nbcgui.controlseq.CtrlGetSeq;
 
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 import javax.swing.JProgressBar;
+import javax.swing.JSpinner;
+import javax.swing.JRadioButton;
+
+import org.omg.CosNaming._BindingIteratorImplBase;
 
 /**
  * 批量注释，各种注释
@@ -27,15 +42,15 @@ import javax.swing.JProgressBar;
  */
 public class GuiGetSeq extends JPanel {
 	private static final long serialVersionUID = -4438216387830519443L;
-	private JTextField txtColChrID;
-	private JTextField txtColPeakStartMid;
-	JCheckBox chckSetColSummit;
 	JLabel lblPeakstartcolumn;
-	JProgressBar progressBar;
 	JScrollPaneData scrollPaneData;
 	JButton btnSave;
-	private JScrollPaneData scrollPaneDataResult;
-	
+	JCheckBox chckbxGenomwide;
+	JComboBoxData<GffDetailGene.GeneStructure> cmbGeneStructure;
+	JButton btnOpenfile;
+	JLabel lblTssTes;
+	JCheckBox chckbxGetaminoacid;
+	JProgressBar progressBar;
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	
 	CtrlPeakStatistics ctrlPeakStatistics;
@@ -47,11 +62,25 @@ public class GuiGetSeq extends JPanel {
 	ArrayList<String[]> lsGeneInfo;
 	private JTextField txtTssUp;
 	private JTextField txtTssDown;
-	private JTextField txtTesUp;
-	private JTextField txtTesDown;
 	
 	String readFile = "";
+	JSpinner spinColChr;
+	private JSpinner spinStart;
+	private JSpinner spinEnd;
+	private JRadioButton rdbtnSite;
+	private JRadioButton rdbtnGene;
+	private JRadioButton rdbtnRegion;
+
+	ArrayList<Component> lsCompRegion = new ArrayList<Component>();
+	ArrayList<Component> lsCompSite = new ArrayList<Component>();
+	ArrayList<Component> lsCompGene = new ArrayList<Component>();
 	
+	ButtonGroup btnGroupRand;
+	private JTextField txtSavePath;
+	
+	CtrlGetSeq ctrlGetSeq = new CtrlGetSeq(this);
+	
+	int maxSeqNum = 30000;
 	/**
 	 * Create the panel.
 	 */
@@ -59,45 +88,26 @@ public class GuiGetSeq extends JPanel {
 		setLayout(null);
 		
 		scrollPaneData = new JScrollPaneData();
-		scrollPaneData.setBounds(12, 30, 693, 207);
+		scrollPaneData.setBounds(12, 30, 693, 460);
 		add(scrollPaneData);
 		
-		JButton btnOpenfile = new JButton("OpenBedFile");
+		btnOpenfile = new JButton("OpenFile");
 		btnOpenfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				readFile = guiFileOpen.openFileName("excel/txt", "");
-				lsGeneInfo = ExcelTxtRead.readLsExcelTxtFile(readFile, 1, 1, 50, -1);
+				lsGeneInfo = ExcelTxtRead.readLsExcelTxt(readFile, 1);
 				scrollPaneData.setLsInfo(lsGeneInfo);
 			}
 		});
-		btnOpenfile.setBounds(717, 30, 131, 24);
+		btnOpenfile.setBounds(717, 30, 120, 24);
 		add(btnOpenfile);
 		
-		chckSetColSummit = new JCheckBox("SetColSummit");
-		chckSetColSummit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				selectChckPeakRangeAnno(chckSetColSummit.isSelected());
-			}
-		});
-		chckSetColSummit.setBounds(717, 147, 131, 22);
-		add(chckSetColSummit);
-		
-		txtColChrID = new JTextField();
-		txtColChrID.setBounds(717, 204, 114, 18);
-		add(txtColChrID);
-		txtColChrID.setColumns(10);
-		
-		JLabel lblChridcolumn = new JLabel("ChrIDColumn");
-		lblChridcolumn.setBounds(717, 178, 114, 14);
+		JLabel lblChridcolumn = new JLabel("ColChrID");
+		lblChridcolumn.setBounds(723, 197, 114, 14);
 		add(lblChridcolumn);
 		
-		txtColPeakStartMid = new JTextField();
-		txtColPeakStartMid.setBounds(717, 253, 114, 18);
-		add(txtColPeakStartMid);
-		txtColPeakStartMid.setColumns(10);
-		
-		lblPeakstartcolumn = new JLabel("PeakSummitColumn");
-		lblPeakstartcolumn.setBounds(717, 236, 157, 14);
+		lblPeakstartcolumn = new JLabel("Start");
+		lblPeakstartcolumn.setBounds(723, 255, 52, 14);
 		add(lblPeakstartcolumn);
 		
 		cmbSpeciesVersion = new JComboBoxData<String>();
@@ -105,58 +115,23 @@ public class GuiGetSeq extends JPanel {
 		cmbSpeciesVersion.setBounds(717, 101, 118, 23);
 		add(cmbSpeciesVersion);
 		
-		btnSave = new JButton("Save");
+		btnSave = new JButton("SavePath");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String fileName = guiFileOpen.saveFileName("txt", "");
-				TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
-				txtOut.ExcelWrite(ctrlPeakStatistics.getResult(), "\t", 1, 1);
+				txtSavePath.setText(fileName);
 			}
 		});
-		btnSave.setBounds(717, 561, 118, 24);
+		btnSave.setBounds(640, 496, 118, 24);
 		add(btnSave);
-		
-		progressBar = new JProgressBar();
-		progressBar.setBounds(12, 571, 693, 14);
-		add(progressBar);
-		
-		scrollPaneDataResult = new JScrollPaneData();
-		scrollPaneDataResult.setBounds(12, 262, 693, 290);
-		add(scrollPaneDataResult);
 		
 		btnRun = new JButton("Run");
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				progressBar.setMinimum(0);
-				progressBar.setValue(0);
-				
-				btnRun.setEnabled(false);
-				ctrlPeakStatistics.setQueryFile(readFile);
-
-				try { ctrlPeakStatistics.setColPeakSummit(Integer.parseInt(txtColPeakStartMid.getText()));
-				} catch (Exception e2) { }
-				try { ctrlPeakStatistics.setColChrID(Integer.parseInt(txtColChrID.getText()));
-				} catch (Exception e2) { }
-				
- 				int[] tss = new int[]{0,0};
-				int[] tes = new int[]{0,0};
-				try { tss[0] = Integer.parseInt(txtTssUp.getText()); } catch (Exception e2) { }
-				try { tss[1] = Integer.parseInt(txtTssDown.getText()); } catch (Exception e2) { }
-				try { tes[0] = Integer.parseInt(txtTesUp.getText()); } catch (Exception e2) { }
-				try { tes[1] = Integer.parseInt(txtTesDown.getText()); } catch (Exception e2) { }
-				
-				ctrlPeakStatistics.setTssRange(tss);
-				ctrlPeakStatistics.setTesRange(tes);
-				
-				Species species = cmbSpecies.getSelectedValue();
-				species.setVersion(cmbSpeciesVersion.getSelectedValue());
-				
-				ctrlPeakStatistics.setSpecies(species);
-				ctrlPeakStatistics.execute();
-				btnSave.setEnabled(false);
+				running();
 			}
 		});
-		btnRun.setBounds(717, 525, 118, 24);
+		btnRun.setBounds(749, 541, 118, 24);
 		add(btnRun);
 		
 		cmbSpecies = new JComboBoxData<Species>();
@@ -170,79 +145,363 @@ public class GuiGetSeq extends JPanel {
 		add(cmbSpecies);
 		
 		txtTssUp = new JTextField();
-		txtTssUp.setBounds(720, 355, 52, 18);
+		txtTssUp.setBounds(717, 468, 52, 18);
 		add(txtTssUp);
 		txtTssUp.setColumns(10);
 		
 		txtTssDown = new JTextField();
-		txtTssDown.setBounds(784, 355, 52, 18);
+		txtTssDown.setBounds(785, 468, 52, 18);
 		add(txtTssDown);
 		txtTssDown.setColumns(10);
 		
-		JLabel lblTss = new JLabel("Tss");
-		lblTss.setBounds(717, 329, 69, 14);
-		add(lblTss);
+		lblTssTes = new JLabel("Tss");
+		lblTssTes.setBounds(717, 422, 69, 14);
+		add(lblTssTes);
 		
 		JLabel lblUp = new JLabel("Up");
-		lblUp.setBounds(717, 338, 69, 14);
+		lblUp.setBounds(726, 448, 43, 14);
 		add(lblUp);
 		
 		JLabel lblDown = new JLabel("Down");
-		lblDown.setBounds(779, 338, 69, 14);
+		lblDown.setBounds(791, 448, 52, 14);
 		add(lblDown);
 		
-		txtTesUp = new JTextField();
-		txtTesUp.setBounds(721, 411, 52, 18);
-		add(txtTesUp);
-		txtTesUp.setColumns(10);
+		spinColChr = new JSpinner();
+		spinColChr.setBounds(723, 223, 55, 18);
+		add(spinColChr);
 		
-		JLabel lblUp_1 = new JLabel("Up");
-		lblUp_1.setBounds(717, 396, 69, 14);
-		add(lblUp_1);
+		spinStart = new JSpinner();
+		spinStart.setBounds(723, 272, 52, 18);
+		add(spinStart);
 		
-		txtTesDown = new JTextField();
-		txtTesDown.setBounds(784, 411, 52, 18);
-		add(txtTesDown);
-		txtTesDown.setColumns(10);
+		spinEnd = new JSpinner();
+		spinEnd.setBounds(800, 272, 52, 18);
+		add(spinEnd);
 		
-		JLabel lblDown_1 = new JLabel("Down");
-		lblDown_1.setBounds(784, 396, 69, 14);
-		add(lblDown_1);
+		JLabel lblEnd = new JLabel("End");
+		lblEnd.setBounds(800, 255, 69, 14);
+		add(lblEnd);
 		
-		JLabel lblTes = new JLabel("Tes");
-		lblTes.setBounds(717, 385, 69, 14);
-		add(lblTes);
+		rdbtnRegion = new JRadioButton("Region");
+		rdbtnRegion.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				selectRegion();
+			}
+		});
+		rdbtnRegion.setBounds(713, 131, 81, 22);
+		add(rdbtnRegion);
+		
+		rdbtnSite = new JRadioButton("Site");
+		rdbtnSite.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				selectSite();
+			}
+		});
+		rdbtnSite.setBounds(794, 131, 81, 22);
+		add(rdbtnSite);
+		
+		rdbtnGene = new JRadioButton("Gene");
+		rdbtnGene.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				selectGene();
+			}
+		});
+		rdbtnGene.setBounds(713, 157, 81, 22);
+		add(rdbtnGene);
+		
+		cmbGeneStructure = new JComboBoxData<GffDetailGene.GeneStructure>();
+		cmbGeneStructure.setBounds(721, 356, 131, 23);
+		add(cmbGeneStructure);
+		cmbGeneStructure.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				changeGeneStructure();
+			}
+		});
+		
+		JLabel lblGeneStructure = new JLabel("GeneStructure");
+		lblGeneStructure.setBounds(717, 333, 131, 14);
+		add(lblGeneStructure);
+		
+		chckbxGenomwide = new JCheckBox("GenomWide");
+		chckbxGenomwide.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				selectGenomeWide(chckbxGenomwide.isSelected());
+			}
+		});
+		chckbxGenomwide.setBounds(717, 309, 131, 22);
+		add(chckbxGenomwide);
+		
+		txtSavePath = new JTextField();
+		txtSavePath.setBounds(16, 501, 603, 18);
+		add(txtSavePath);
+		txtSavePath.setColumns(10);
+		
+		progressBar = new JProgressBar();
+		progressBar.setBounds(18, 548, 698, 14);
+		add(progressBar);
+		
+		chckbxGetaminoacid = new JCheckBox("getAminoAcid");
+		chckbxGetaminoacid.setBounds(720, 392, 131, 22);
+		add(chckbxGetaminoacid);
 		
 		initial();
 	}
 	
 	private void initial() {
-		chckSetColSummit.setSelected(true);
-		selectChckPeakRangeAnno(chckSetColSummit.isSelected());
 		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
 		Species species = cmbSpecies.getSelectedValue();
 		cmbSpeciesVersion.setMapItem(species.getMapVersion());
-		btnSave.setEnabled(false);
+		cmbGeneStructure.setMapItem(GeneStructure.getMapInfo2GeneStr());
+		cmbGeneStructure.setSelectedIndex(0);
+				
+		lsCompGene.add(spinColChr);
+		lsCompGene.add(chckbxGenomwide);
+		lsCompGene.add(cmbGeneStructure);
+		
+		lsCompRegion.add(spinColChr);
+		lsCompRegion.add(spinStart);
+		lsCompRegion.add(spinEnd);
+		
+		lsCompSite.add(spinColChr);
+		lsCompSite.add(spinStart);
+		lsCompSite.add(txtTssUp);
+		lsCompSite.add(txtTssDown);
+		
+		btnGroupRand = new ButtonGroup();
+		btnGroupRand.add(rdbtnSite);
+		btnGroupRand.add(rdbtnGene);
+		btnGroupRand.add(rdbtnRegion);
+		chckbxGetaminoacid.setEnabled(false);
+		selectRegion();
+		rdbtnRegion.setSelected(true);
 	}
-	private void selectChckPeakRangeAnno(boolean isSelected) {
-		if (isSelected) {
-			lblPeakstartcolumn.setText("PeakStartColumn");
-			txtColChrID.setEnabled(true);
-			txtColPeakStartMid.setEnabled(true);
+	
+	private void selectRegion() {
+		chckbxGenomwide.setSelected(false);
+		selectGenomeWide(false);
+		
+		for (Component component : lsCompSite) {
+			component.setEnabled(false);
+		}
+		for (Component component : lsCompGene) {
+			component.setEnabled(false);
+		}
+		for (Component component : lsCompRegion) {
+			component.setEnabled(true);
+		}
+		lblPeakstartcolumn.setText("Start");
+	}
+	private void selectSite() {
+		chckbxGenomwide.setSelected(false);
+		selectGenomeWide(false);
+		
+		for (Component component : lsCompRegion) {
+			component.setEnabled(false);
+		}
+		for (Component component : lsCompGene) {
+			component.setEnabled(false);
+		}
+		for (Component component : lsCompSite) {
+			component.setEnabled(true);
+		}
+		lblPeakstartcolumn.setText("ColSite");
+	}	
+	private void selectGene() {
+		for (Component component : lsCompRegion) {
+			component.setEnabled(false);
+		}
+		for (Component component : lsCompSite) {
+			component.setEnabled(false);
+		}
+		for (Component component : lsCompGene) {
+			component.setEnabled(true);
+		}
+		spinColChr.setValue(1);
+		chckbxGenomwide.setSelected(false);
+		selectGenomeWide(false);
+		changeGeneStructure();
+	}
+	
+	private void selectGenomeWide(boolean selected) {
+		if (selected)
+			btnOpenfile.setEnabled(false);
+		else
+			btnOpenfile.setEnabled(true);
+	}
+	private void changeGeneStructure() {
+		if (!cmbGeneStructure.isEnabled()) {
+			txtTssUp.setEnabled(false);
+			txtTssDown.setEnabled(false);
+			return;
+		}
+		
+		if (cmbGeneStructure.getSelectedValue().equals(GeneStructure.TSS) || cmbGeneStructure.getSelectedValue().equals(GeneStructure.TES)) {
+			if (cmbGeneStructure.getSelectedValue().equals(GeneStructure.TSS)) {
+				lblTssTes.setText("Tss");
+			}
+			else if (cmbGeneStructure.getSelectedValue().equals(GeneStructure.TES)) {
+				lblTssTes.setText("Tes");
+			}
+			txtTssUp.setEnabled(true);
+			txtTssDown.setEnabled(true);
 		}
 		else {
-			txtColChrID.setText("");
-			txtColChrID.setEnabled(false);
-			txtColPeakStartMid.setText("");
-			txtColPeakStartMid.setEnabled(false);
+			if (cmbGeneStructure.getSelectedValue().equals(GeneStructure.CDS) 
+					|| cmbGeneStructure.getSelectedValue().equals(GeneStructure.EXON)
+					|| cmbGeneStructure.getSelectedValue().equals(GeneStructure.ALLLENGTH))
+			{
+				chckbxGetaminoacid.setEnabled(true);
+			}
+			txtTssUp.setEnabled(false);
+			txtTssDown.setEnabled(false);
 		}
 	}
 	
-	public JProgressBar getProcessBar() {
+	private void running() {
+		if (rdbtnSite.isSelected()) {
+			int colChrID = (Integer) spinColChr.getValue() - 1;
+			int colSite = (Integer) spinStart.getValue() - 1;
+			int upStream = Integer.parseInt(txtTssUp.getText());
+			int downStream = Integer.parseInt(txtTssDown.getText());
+			runGetSeqSite(lsGeneInfo, colChrID, colSite, upStream, downStream);
+		}
+		else if (rdbtnRegion.isSelected()) {
+			int colChrID = (Integer) spinColChr.getValue() - 1;
+			int colStart = (Integer) spinStart.getValue() - 1;
+			int colEnd = (Integer) spinEnd.getValue() - 1;
+			runGetSeqRegion(lsGeneInfo, colChrID, colStart, colEnd);
+		}
+		else if (rdbtnGene.isSelected() ) {
+			int upStream = 0, downStream = 0;
+			try { upStream = Integer.parseInt(txtTssUp.getText()); } catch (Exception e) { }
+			try { downStream = Integer.parseInt(txtTssDown.getText()); } catch (Exception e) { }
+			if (!chckbxGenomwide.isSelected()) {
+				int colGeneID = (Integer) spinColChr.getValue() - 1;
+				runGetSeqGene(lsGeneInfo, colGeneID, upStream, downStream);
+			}
+			else {
+				runGetSeqGeneGenomeWide(upStream, downStream);
+			}
+		}
+	}
+	
+	private void runGetSeqRegion(ArrayList<String[]> lsInfo, int colChrID, int colStart, int colEnd) {
+		Species species = cmbSpecies.getSelectedValue();
+		species.setVersion(cmbSpeciesVersion.getSelectedValue());
+		ctrlGetSeq.setSpecies(species);
+		ctrlGetSeq.setOutPutFile(txtSavePath.getText());
+		ctrlGetSeq.setGetAAseq(chckbxGetaminoacid.isSelected());
+		
+		ArrayList<SiteInfo> lsSiteInfo = new ArrayList<SiteInfo>();
+		for (String[] info : lsInfo) {
+			String chrID = info[colChrID];
+			int start, end;
+			try {
+				start = Integer.parseInt(info[colStart]);
+				end = Integer.parseInt(info[colEnd]);
+			} catch (Exception e) {
+				continue;
+			}
+			SiteInfo siteInfo = new SiteInfo(chrID, start, end);
+			lsSiteInfo.add(siteInfo);
+		}
+		
+		if (lsSiteInfo.size() > maxSeqNum) {
+			JOptionPane.showMessageDialog(null, "To Protect Your HardDisk, Only " + maxSeqNum + " Sequence Will Be Queried.", "Warning", JOptionPane.WARNING_MESSAGE);
+		}
+		ctrlGetSeq.setGetSeqSite(lsSiteInfo);
+		ctrlGetSeq.execute();
+	}
+	/**
+	 * @param lsInfo
+	 * @param colChrID
+	 * @param colSummit
+	 * @param upstream 上游为负数
+	 * @param dowstream 下游为正数
+	 */
+	private void runGetSeqSite(ArrayList<String[]> lsInfo, int colChrID, int colSummit, int upstream, int dowstream) {
+		Species species = cmbSpecies.getSelectedValue();
+		species.setVersion(cmbSpeciesVersion.getSelectedValue());
+		ctrlGetSeq.setSpecies(species);
+		ctrlGetSeq.setOutPutFile(txtSavePath.getText());
+		ctrlGetSeq.setGetAAseq(chckbxGetaminoacid.isSelected());
+		
+		ArrayList<SiteInfo> lsSiteInfo = new ArrayList<SiteInfo>();
+		for (String[] info : lsInfo) {
+			String chrID = info[colChrID];
+			int Summit = 0;
+			try {
+				Summit = Integer.parseInt(info[colSummit]);
+			} catch (Exception e) {
+				continue;
+			}
+			int start = Summit + upstream;
+			int end = Summit + dowstream;
+			SiteInfo siteInfo = new SiteInfo(chrID, start, end);
+			lsSiteInfo.add(siteInfo);
+		}
+		
+		if (lsSiteInfo.size() > maxSeqNum) {
+			JOptionPane.showMessageDialog(null, "To Protect Your HardDisk, Only " + maxSeqNum + " Sequence Will Be Queried.", "Warning", JOptionPane.WARNING_MESSAGE);
+		}
+		ctrlGetSeq.setGetSeqSite(lsSiteInfo);
+		ctrlGetSeq.execute();
+	}
+	
+	/**
+	 * @param lsInfo
+	 * @param colChrID
+	 * @param colSummit
+	 * @param upstream 上游为负数
+	 * @param dowstream 下游为正数
+	 */
+	private void runGetSeqGene(ArrayList<String[]> lsInfo, int colGeneID, int upstream, int dowstream) {
+		Species species = cmbSpecies.getSelectedValue();
+		species.setVersion(cmbSpeciesVersion.getSelectedValue());
+		ctrlGetSeq.setSpecies(species);
+		ctrlGetSeq.setOutPutFile(txtSavePath.getText());
+		ctrlGetSeq.setGetAAseq(chckbxGetaminoacid.isSelected());
+		ctrlGetSeq.setUpAndDownStream(new int[]{upstream, dowstream});
+		ctrlGetSeq.setAbsIso(true);
+		ctrlGetSeq.setGetAllIso(true);
+		ctrlGetSeq.setGeneStructure(cmbGeneStructure.getSelectedValue());
+		ctrlGetSeq.setGetIntron(false);
+		
+		ArrayList<String> lsIsoName = new ArrayList<String>();
+		for (String[] info : lsInfo) {
+			lsIsoName.add(info[colGeneID]);
+		}
+		ctrlGetSeq.setGetSeqIso(lsIsoName);
+		ctrlGetSeq.execute();
+	}
+	
+	/**
+	 * @param lsInfo
+	 * @param colChrID
+	 * @param colSummit
+	 * @param upstream 上游为负数
+	 * @param dowstream 下游为正数
+	 */
+	private void runGetSeqGeneGenomeWide(int upstream, int dowstream) {
+ 		Species species = cmbSpecies.getSelectedValue();
+		species.setVersion(cmbSpeciesVersion.getSelectedValue());
+		ctrlGetSeq.setSpecies(species);
+		ctrlGetSeq.setOutPutFile(txtSavePath.getText());
+		ctrlGetSeq.setGetAAseq(chckbxGetaminoacid.isSelected());
+		ctrlGetSeq.setUpAndDownStream(new int[]{upstream, dowstream});
+		ctrlGetSeq.setAbsIso(true);
+		ctrlGetSeq.setGetAllIso(true);
+		ctrlGetSeq.setGeneStructure(cmbGeneStructure.getSelectedValue());
+		ctrlGetSeq.setGetIntron(false);
+		ctrlGetSeq.setGetSeqIsoGenomWide();
+		ctrlGetSeq.execute();
+	}
+	
+	public JProgressBar getProgressBar() {
 		return progressBar;
 	}
-	public JScrollPaneData getJScrollPaneDataResult() {
-		return scrollPaneDataResult;
+	public JButton getBtnOpen() {
+		return btnOpenfile;
 	}
 	public JButton getBtnSave() {
 		return btnSave;

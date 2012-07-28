@@ -57,6 +57,8 @@ public class GffChrMap {
 	
 	Logger logger = Logger.getLogger(GffChrMap.class);
 	String fileName = "";
+	int maxresolution = 10000;
+	
 	public GffChrMap(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
@@ -93,31 +95,22 @@ public class GffChrMap {
 		}
 		return lsResult;
 	}
-
 	/**
-	 * @param uniqReads
-	 *            当reads mapping至同一个位置时，是否仅保留一个reads
-	 * @param startCod
-	 *            从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
-	 * @param colUnique
-	 *            Unique的reads在哪一列 novelbio的标记在第七列，从1开始计算
-	 * @param booUniqueMapping
-	 *            重复的reads是否只选择一条
-	 * @param cis5to3
-	 *            是否仅选取某一方向的reads，null不考虑
+	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
+	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
+	 * @param colUnique Unique的reads在哪一列 novelbio的标记在第七列，从1开始计算
+	 * @param booUniqueMapping 重复的reads是否只选择一条
+	 * @param cis5to3 是否仅选取某一方向的reads，null不考虑
 	 */
 	public void setFilter(boolean uniqReads, int startCod, int colUnique,
 			boolean booUniqueMapping, Boolean cis5to3) {
 		gffChrAbs.getMapReads().setFilter(uniqReads, startCod, colUnique, booUniqueMapping,
 				cis5to3);
 	}
-
 	/**
 	 * 返回某条染色体上的reads情况，不是密度图，只是简单的计算reads在一个染色体上的情况 主要用于RefSeq时，一个基因上的reads情况
-	 * 
 	 * @param chrID
-	 * @param thisInvNum
-	 *            每个区间几bp
+	 * @param thisInvNum 每个区间几bp
 	 * @parm type 取样方法 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 * @return 没有的话就返回null
 	 */
@@ -125,26 +118,6 @@ public class GffChrMap {
 		double[] tmpResult = gffChrAbs.getMapReads().getRengeInfo(thisInvNum, chrID, 0, 0, type);
 		gffChrAbs.getMapReads().normDouble(tmpResult);
 		return tmpResult;
-	}
-
-	int maxresolution = 10000;
-
-	/**
-	 * 画出所有染色体上密度图
-	 * 用R画
-	 * @param gffChrMap2
-	 *            是否有第二条染色体，没有的话就是null
-	 * @throws Exception
-	 */
-	public void getAllChrDistR(GffChrMap gffChrMap2) {
-		ArrayList<String[]> chrlengthInfo = gffChrAbs.getSeqHash().getChrLengthInfo();
-		for (int i = chrlengthInfo.size() - 1; i >= 0; i--) {
-			try {
-				getChrDist(chrlengthInfo.get(i)[0], maxresolution, gffChrMap2);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 	}
 	/**
 	 * 画出所有染色体上密度图
@@ -195,16 +168,6 @@ public class GffChrMap {
 			logger.error("出现未知chrID：" + chrID);
 			return;
 		}
-		
-		
-		//////////////////////////////////////
-//		double[] x = new double[1000];
-//		double[] y = new double[1000];
-//		for (int i = 0; i < x.length; i++) {
-//			x[i] = i*2;
-//			y[i] = 10;
-//		}
-		////////////////////////////////////////
 		if (chrReads == null) {
 			return;
 		}
@@ -243,57 +206,6 @@ public class GffChrMap {
 		
 		plotScatter.saveToFile(outFileName, 10000, 1000);
 	}
-	/**
-	 * 给定染色体，返回该染色体上reads分布
-	 * 
-	 * @param chrID
-	 *            第几个软色体
-	 * @param maxresolution
-	 *            最长分辨率
-	 * @param gffChrMap2
-	 *            如果需要画第二条染色体的图，也就是对称了画
-	 * @param 输出文件名
-	 *            ，带后缀"_chrID"
-	 * @throws Exception
-	 */
-	private void getChrDist(String chrID, int maxresolution,
-			GffChrMap gffChrMap2) throws Exception {
-		int[] resolution = gffChrAbs.getSeqHash().getChrRes(chrID, maxresolution);
-		double[] chrReads = getChrDensity(chrID.toLowerCase(),
-				resolution.length);
-		long chrLength = gffChrAbs.getSeqHash().getChrLength(chrID);
-		if (chrReads != null) {
-			TxtReadandWrite txtRparamater = new TxtReadandWrite();
-			// //////// 参 数 设 置 /////////////////////
-			txtRparamater.setParameter(
-					NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_PARAM, true, false);
-			txtRparamater.writefile("Item" + "\t" + "Info" + "\r\n");// 必须要加上的，否则R读取会有问题
-			txtRparamater.writefile("tihsresolution" + "\t" + chrLength
-					+ "\r\n");
-			txtRparamater.writefile("maxresolution" + "\t" + gffChrAbs.getSeqHash().getChrLenMax() + "\r\n");
-			txtRparamater.writefile("ChrID" + "\t" + chrID + "\r\n");
-
-			// //////// 数 据 输 入 ///////////////////////
-			txtRparamater.setParameter(
-					NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_X, true, false);
-			txtRparamater.Rwritefile(resolution);
-			txtRparamater.setParameter(
-					NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_Y, true, false);
-			txtRparamater.Rwritefile(chrReads);
-
-			// /////////如果第二条染色体上有东西，那么也写入文本/////////////////////////////////////////
-			if (gffChrMap2 != null) {
-				double[] chrReads2 = gffChrMap2.getChrDensity(chrID.toLowerCase(), resolution.length);
-				txtRparamater.setParameter(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_2Y, true, false);
-				txtRparamater.Rwritefile(chrReads2);
-			}
-			hist();
-			FileOperate.changeFileName(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_X, chrID + "readsx");
-			FileOperate.changeFileName(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_Y, chrID + "readsy");
-			FileOperate.changeFileName(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_2Y, chrID + "reads2y");
-			FileOperate.changeFileName(NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_PARAM, chrID + "parameter");
-		}
-	}
 
 	/**
 	 * 返回某条染色体上的reads情况，是密度图 主要用于基因组上，一条染色体上的reads情况
@@ -309,20 +221,6 @@ public class GffChrMap {
 		gffChrAbs.getMapReads().normDouble(tmpResult);
 		return tmpResult;
 	}
-	/**
-	 * 调用R画图
-	 * 
-	 * @throws Exception
-	 */
-	private void hist() throws Exception {
-		// 这个就是相对路径，必须在当前文件夹下运行
-		String command = "Rscript "
-				+ NovelBioConst.R_WORKSPACE_CHIP_CHRREADS_RSCRIPT;
-		Runtime r = Runtime.getRuntime();
-		Process p = r.exec(command);
-		p.waitFor();
-	}
-
 	/**
 	 * @param color
 	 * @param SortS2M
@@ -359,9 +257,7 @@ public class GffChrMap {
 	}
 
 	/**
-	 * 
 	 * 获得summit位点，画summit位点附近的reads图
-	 * 
 	 * @param SortS2M
 	 *            是否从小到大排序
 	 * @param txtExcel

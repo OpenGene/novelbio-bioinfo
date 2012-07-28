@@ -145,7 +145,9 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	public SeqFasta getSeq(String chrID, long startlocation, long endlocation)
 	{
 		SeqFasta seqFasta = seqHashAbs.getSeq(chrID, startlocation, endlocation);
-		seqFasta.setTOLOWCASE(TOLOWCASE);
+		if (seqFasta != null) {
+			seqFasta.setTOLOWCASE(TOLOWCASE);
+		}
 		return seqFasta;
 	}
 
@@ -153,10 +155,9 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	public SeqFasta getSeq(Boolean cisseq, String chrID, long startlocation,
 			long endlocation) {
 		SeqFasta seqFasta = seqHashAbs.getSeq(cisseq, chrID, startlocation, endlocation);
-		if (seqFasta == null) {
-			return null;
+		if (seqFasta != null) {
+			seqFasta.setTOLOWCASE(TOLOWCASE);
 		}
-		seqFasta.setTOLOWCASE(TOLOWCASE);
 		return seqFasta;
 	}
 
@@ -164,7 +165,9 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	public SeqFasta getSeq(String chr, int peaklocation, int region,
 			boolean cisseq) {
 		SeqFasta seqFasta = seqHashAbs.getSeq(chr, peaklocation, region, cisseq);
-		seqFasta.setTOLOWCASE(TOLOWCASE);
+		if (seqFasta != null) {
+			seqFasta.setTOLOWCASE(TOLOWCASE);
+		}
 		return seqFasta;
 	}
 	/**
@@ -188,16 +191,17 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	@Override
 	public SeqFasta getSeq(String chrID, List<ExonInfo> lsInfo, boolean getIntron) {
 		SeqFasta seqFasta = seqHashAbs.getSeq(chrID, lsInfo, getIntron);
-		if (seqFasta == null) {
-			return null;
+		if (seqFasta != null) {
+			seqFasta.setTOLOWCASE(TOLOWCASE);
 		}
-		seqFasta.setTOLOWCASE(TOLOWCASE);
 		return seqFasta;
 	}
 	@Override
 	public SeqFasta getSeq(String chrID, int start, int end, List<ExonInfo> lsInfo, boolean getIntron) {
 		SeqFasta seqFasta = seqHashAbs.getSeq(chrID, start, end, lsInfo, getIntron);
-		seqFasta.setTOLOWCASE(TOLOWCASE);
+		if (seqFasta != null) {
+			seqFasta.setTOLOWCASE(TOLOWCASE);
+		}
 		return seqFasta;
 	}
 	@Override

@@ -59,6 +59,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiAnnoGene guiAnnoGene;
 	private GuiAnnoPeak guiAnnoPeak;
 	private GuiPeakStatistics guiPeakStatistics;
+	private GuiGetSeq guiGetSeq;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -133,6 +134,8 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiMirnaTargetPredict = new GuiMirnaTargetPredict();
 				jTabbedPane1.addTab("miRNAtarget", null, guiMirnaTargetPredict, null);
 				
+				guiGetSeq = new GuiGetSeq();
+				jTabbedPane1.add("GetSeq", guiGetSeq);
 			}
 			pack();
 			this.setSize(1050, 699);

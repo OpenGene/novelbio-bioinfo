@@ -19,7 +19,6 @@ public class CtrlPeakStatistics implements RunGetInfo<GffChrStatistics.GffChrSta
 	boolean filter5UTR = false;
 	boolean filter3UTR = false;
 	
-	long runningNum = 0;
 	Species species;
 	
 	String readFile = "";
@@ -53,7 +52,7 @@ public class CtrlPeakStatistics implements RunGetInfo<GffChrStatistics.GffChrSta
 		long fileSizeLong = FileOperate.getFileSizeLong(readFile);
 		int fileSize = (int)(fileSizeLong/1000000);
 		guiPeakStatistics.getProcessBar().setMaximum(fileSize);
-		
+		gffChrStatistics.clean();
 		gffChrStatistics.setSpecies(species);
 		gffChrStatistics.setFileName(readFile);
 		
@@ -65,27 +64,26 @@ public class CtrlPeakStatistics implements RunGetInfo<GffChrStatistics.GffChrSta
 	}
 	@Override
 	public void setRunningInfo(GffChrStatiscticsProcessInfo info) {
-		runningNum = runningNum + info.getReadsize();
-		guiPeakStatistics.getProcessBar().setValue((int)(runningNum/1000000));
+		guiPeakStatistics.getProcessBar().setValue(info.getReadsize());
 	}
 	@Override
 	public void done() {
-		guiPeakStatistics.getProcessBar().setValue(0);
+		guiPeakStatistics.getProcessBar().setValue(guiPeakStatistics.getProcessBar().getMaximum());
 		guiPeakStatistics.getBtnSave().setEnabled(true);
 		guiPeakStatistics.getBtnRun().setEnabled(true);
 		guiPeakStatistics.getJScrollPaneDataResult().setLsInfo(getResult());
 	}
 	@Override
-	public void suspendThread() {
+	public void threadSuspend() {
 		guiPeakStatistics.getBtnRun().setEnabled(true);
 	}
 	@Override
-	public void wakeupThread() {
+	public void threadResume() {
 		gffChrStatistics.threadResume();
 		guiPeakStatistics.getBtnRun().setEnabled(false);
 	}
 	@Override
-	public void interruptThread() {
+	public void threadStop() {
 		gffChrStatistics.threadSuspend();
 		guiPeakStatistics.getBtnRun().setEnabled(true);
 	}

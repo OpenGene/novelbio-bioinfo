@@ -32,7 +32,7 @@ public abstract class RunProcess<T> implements Runnable{
 			}
 			this.suspendFlag = false;
 			if (runGetInfo != null) {
-				runGetInfo.wakeupThread();
+				runGetInfo.threadResume();
 			}
 			notify();
 		}
@@ -40,7 +40,7 @@ public abstract class RunProcess<T> implements Runnable{
 	/** 终止线程，在循环中添加<br>
 	 * if (!flagRun)<br>
 	*			break; */
-	public void stopThread() {
+	public void threadStop() {
 		synchronized (this) {
 			flagStop = true;
 		}
@@ -52,7 +52,7 @@ public abstract class RunProcess<T> implements Runnable{
 		synchronized (this) {
 			while (suspendFlag){
 				if (runGetInfo != null) {
-					runGetInfo.suspendThread();
+					runGetInfo.threadSuspend();
 				}
 				try {wait();} catch (InterruptedException e) {}
 			}

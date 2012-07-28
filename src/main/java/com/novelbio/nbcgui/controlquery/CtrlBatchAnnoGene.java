@@ -64,17 +64,17 @@ public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 		guiAnnoBatch.getBtnRun().setEnabled(true);
 	}
 	@Override
-	public void suspendThread() {
+	public void threadSuspend() {
 		// TODO Auto-generated method stub
 		guiAnnoBatch.getBtnRun().setEnabled(true);
 	}
 	@Override
-	public void wakeupThread() {
+	public void threadResume() {
 		// TODO Auto-generated method stub
 		
 	}
 	@Override
-	public void interruptThread() {
+	public void threadStop() {
 		// TODO Auto-generated method stub
 		guiAnnoBatch.getBtnRun().setEnabled(true);
 	}
