@@ -701,21 +701,19 @@ public class TxtReadandWrite {
 				content2 = content;
 			}
 			
-			if (content2.equals(""))
-			{
-				readasexcel.close();
+			if (content2.equals("")) {
+				close();
 				return rowNum - 1;
 			}
-			else
-			{
-				readasexcel.close();
+			else {
+				close();
 				return rowNum;
 			}
 		} catch (Exception e) {
 			logger.error("excelRows error: "+ getFileName());
+			close();
 			return -1;
 		}
-		
 	}
 
 	/**
@@ -783,8 +781,7 @@ public class TxtReadandWrite {
 		BufferedReader readasexcel = readfile();
 		// 先跳过前面的好多行
 		for (int i = 0; i < rowNum - 1; i++) {
-			if (readasexcel.readLine() == null)// 如果文本中没有那么多行
-			{
+			if (readasexcel.readLine() == null) {
 				return "";
 			}
 		}
@@ -793,8 +790,12 @@ public class TxtReadandWrite {
 		String[] tmp;// 两个临时变量
 		content = readasexcel.readLine();
 		tmp = content.split(sep);
+		
+		close();
+		
 		if (tmp.length < columnNum)
 			return "";
+		
 		return tmp[columnNum - 1];
 	}
 
@@ -817,7 +818,6 @@ public class TxtReadandWrite {
 	public String[][] ExcelRead(String sep, int rowStartNum,
 			int columnStartNum, int rowEndNum, int columnEndNum)
 			throws Exception {
-		BufferedReader readasexcel = readfile();
 		if (rowEndNum <= 0) {
 			rowEndNum = ExcelRows();
 		}
@@ -829,6 +829,7 @@ public class TxtReadandWrite {
 		// System.out.println(readlines);
 		// System.out.println(readcolumns);
 		String[][] result = new String[readlines][readcolumns];
+		BufferedReader readasexcel = readfile();
 
 		// 先跳过前面的好多行
 		for (int i = 0; i < rowStartNum - 1; i++) {
@@ -859,6 +860,7 @@ public class TxtReadandWrite {
 					result[i][j] = "";
 			}
 		}
+		close();
 		return result;
 	}
 

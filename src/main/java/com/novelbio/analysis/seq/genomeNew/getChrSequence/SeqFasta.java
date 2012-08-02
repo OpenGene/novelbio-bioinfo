@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
 import com.novelbio.analysis.seq.reseq.SoapsnpInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -714,7 +715,6 @@ public class SeqFasta implements Cloneable {
 			}
 		}
 	}
-	
 	/**
 	 * 判断该序列是DNA，RNA，还是蛋白，或者也不知道是什么
 	 * @return
@@ -911,7 +911,6 @@ public class SeqFasta implements Cloneable {
  *
  */
 class StatisticSeqInfo {
-
 	//string0: flag string1: location string2:endLoc
 	ArrayList<LocInfo> lsResult = new ArrayList<LocInfo>();
 	char[] seq;
@@ -1015,8 +1014,6 @@ class StatisticSeqInfo {
 			}
 		}
 	}
-	
-	
 	/**
 	 * @param lsInfo
 	 * @param info
@@ -1027,6 +1024,4 @@ class StatisticSeqInfo {
 		LocInfo locInfo = new LocInfo(info, "", start, start+length-1, true);
 		lsInfo.add(locInfo);
 	}
-	
-	
 }

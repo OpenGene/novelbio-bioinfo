@@ -1,18 +1,19 @@
 package com.novelbio.analysis.seq;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
  /**
-  * BedSeq每一行的信息
+  * BedSeq每一行的信息<br>
+  * 兼容 bamToBed的 12行信息格式
   * @author zong0jie
   *
   */
 public class BedRecord extends SiteInfo {
 	static private Logger logger = Logger.getLogger(BedRecord.class);
-	
 	
 	static final int COL_CHRID = 0;
 	static final int COL_START = 1;
@@ -20,16 +21,19 @@ public class BedRecord extends SiteInfo {
 	static final int COL_NAME = 3;
 	static final int COL_SCORE = 4;
 	static final int COL_STRAND = 5;
-	static final int COL_SEQ = 6;
+	static final int COL_CIGAR = 6;
 	public static final int COL_MAPNUM = 7;
-	static final int COL_CIGAR = 8;
+	static final int COL_SEQ = 8;
+	/** 是否为unique mapping的列 */
 	static final int COL_MAPQ = 9;
-	static final int COL_READSNUM = 10;
+	static final int COL_SPLIT_READS_LEN = 10;
+	static final int COL_SPLIT_READS_START = 11;
+	static final int COL_READSNUM = 12;
 
 	/**
 	 * 对上面总共列的计数，上面如果增加或者删减了列，这里要相应的修正
 	 */
-	static final int ALL_COLNUM = 11;
+	static final int ALL_COLNUM = 13;
 	
 	/**
 	 * mapping到了几个上去
@@ -44,6 +48,10 @@ public class BedRecord extends SiteInfo {
 	
 	String readLineInfo = "";
 	
+	/** 类似9,53,28 */
+	String splitLen;
+	/** 0,2134,11171 */
+	String splitStart;
 	
 	public BedRecord() {
 		super(null);
@@ -53,7 +61,8 @@ public class BedRecord extends SiteInfo {
 		readLineInfo = bedline;
 		String[] ss = bedline.split("\t");
 		setRefID(ss[COL_CHRID]);
-		setStartEndLoc(Integer.parseInt(ss[COL_START]), Integer.parseInt(ss[COL_END]));
+		//Bed的起点一般要加上1
+		setStartEndLoc(Integer.parseInt(ss[COL_START]) + 1, Integer.parseInt(ss[COL_END]));
 		if (ss.length > COL_NAME && ss[COL_NAME] != null && !ss[COL_NAME].equals("")) {
 			setName(ss[COL_NAME]);
 		}
@@ -80,8 +89,15 @@ public class BedRecord extends SiteInfo {
 		if (ss.length > COL_READSNUM && ss[COL_READSNUM] != null && !ss[COL_READSNUM].equals("")) {
 			try { readsNum = Integer.parseInt(ss[COL_READSNUM]); } catch (Exception e) { }
 		}
+		
+		if (ss.length > COL_SPLIT_READS_LEN && ss[COL_SPLIT_READS_LEN] != null && !ss[COL_SPLIT_READS_LEN].equals("")) {
+			try { splitLen = ss[COL_SPLIT_READS_LEN]; } catch (Exception e) {  }
+		}
+		if (ss.length > COL_SPLIT_READS_START && ss[COL_SPLIT_READS_START] != null && !ss[COL_SPLIT_READS_START].equals("")) {
+			try { splitStart = ss[COL_SPLIT_READS_START]; } catch (Exception e) {  }
+		}
 	}
-	
+	/** 是否为unique mapping，不是的话mapping到了几个不同的位点上去 */
 	public void setMappingNum(int mappingNum) {
 		this.mappingNum = mappingNum;
 	}
@@ -91,13 +107,53 @@ public class BedRecord extends SiteInfo {
 	public String getCIGAR() {
 		return CIGAR;
 	}
+	/** 是否为unique mapping，不是的话mapping到了几个不同的位点上去 */
 	public Integer getMappingNum() {
+		if (mappingNum == null) {
+			return 1;
+		}
 		return mappingNum;
 	}
 	public Integer getMapQuality() {
+		if (mapQuality == null) {
+			return 30;
+		}
 		return mapQuality;
 	}
-
+	/** 该bed文件是否被割成了一段一段的 */
+	public boolean isJunctionCovered() {
+		if (splitLen != null && !splitLen.equals("") && splitLen.contains(",")
+				&& splitStart != null && !splitStart.equals("") && splitStart.contains(",")
+				) {
+			return true;
+		}
+		return false;
+	}
+	/** 如果是mapping到junction上去，一条bed文件记录会被切成被切成的几块的样子保存在这里。
+	 * 也就是一段一段的bed，那么返回每一段的信息，
+	 * 都是绝对坐标，从1开始
+	 * @return
+	 */
+	public ArrayList<int[]> getLsGetSplitInfo() {
+		ArrayList<int[]> lsStartEnd = new ArrayList<int[]>();
+		if (splitLen == null || splitLen.equals("") || !splitLen.contains(",")) {
+			int[] startend = new int[2];
+			startend[0] = startLoc;
+			startend[1] = endLoc;
+			lsStartEnd.add(startend);
+			return lsStartEnd;
+		}
+		String[] splitLenArray = splitLen.trim().split(",");
+		String[] splitLocArray = splitStart.trim().split(",");
+		for (int i = 0; i < splitLenArray.length; i++) {
+			int[] startend = new int[2];
+			startend[0] = startLoc + Integer.parseInt(splitLocArray[i]);
+			startend[1] = startend[0] + Integer.parseInt(splitLenArray[i]) - 1;
+			lsStartEnd.add(startend);
+		}
+		return lsStartEnd;
+	
+	}
 	/**
 	 * 如果没有这一项，则返回1
 	 * @return
@@ -160,7 +216,8 @@ public class BedRecord extends SiteInfo {
 	public String toString() {
 		String[] strings = new String[ALL_COLNUM];
 		strings[COL_CHRID] = refID;
-		strings[COL_START] = startLoc + "";
+		//Bed的起点是从0开始计算的，所以实际位点要减去1
+		strings[COL_START] = (startLoc - 1) + "";
 		strings[COL_END] = endLoc +"";
 		strings[COL_CIGAR] = CIGAR;
 		strings[COL_MAPNUM] = mappingNum + "";
@@ -174,6 +231,9 @@ public class BedRecord extends SiteInfo {
 		strings[COL_NAME] = name;
 		strings[COL_SCORE] = score + "";
 		strings[COL_READSNUM] = readsNum + "";
+		strings[COL_SPLIT_READS_LEN] = splitLen + "";
+		strings[COL_SPLIT_READS_START] = splitStart + "";
+		
 		if (cis5to3 != null) {
 			if (cis5to3) {
 				strings[COL_STRAND] = "+";

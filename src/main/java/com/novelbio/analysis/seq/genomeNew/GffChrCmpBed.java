@@ -10,7 +10,6 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 比较两个bed文件之间的区别
@@ -19,13 +18,11 @@ import com.novelbio.generalConf.NovelBioConst;
  * 
  */
 public class GffChrCmpBed extends GffChrAbs {
-
- 
-	public GffChrCmpBed(String gffType, String gffFile, String chrFile) {
-		super(gffType, gffFile, chrFile, null, 0);
-		// TODO Auto-generated constructor stub
+	public static void main(String[] args) {
+		
 	}
-
+	
+	
 	MapReads mapReads2;
 
 	/**
@@ -36,10 +33,12 @@ public class GffChrCmpBed extends GffChrAbs {
 	 */
 	public void setMapReadsCmp(String readsFile2, int binNum) {
 		if (FileOperate.isFileExist(readsFile2)) {
-			mapReads2 = new MapReads(binNum, readsFile2);
-			mapReads2.setChrLenFile(getRefLenFile());
+			mapReads2 = new MapReads();
+			mapReads2.setBedSeq(readsFile2);
+			mapReads2.setInvNum(binNum);
+			mapReads2.setMapChrID2Len(super.species.getMapChromInfo());
 			mapReads2.setNormalType(mapNormType);
-			mapReads2.ReadMapFile();
+			mapReads2.running();
 		}
 	}
 
@@ -56,9 +55,8 @@ public class GffChrCmpBed extends GffChrAbs {
 			int[] region, double filterValue, boolean bigThan, String txtOutFile) {
 		colAccID--;
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtOutFile, true);
-		ArrayList<String[]> lsResult = ExcelTxtRead.readLsExcelTxt(
-				txtExcelFile, 1, -1, 1, -1);
-		String[] title = lsResult.get(0);
+		ArrayList<String[]> lsResult = ExcelTxtRead.readLsExcelTxt(txtExcelFile, 1);
+		//没有读去title
 		List<String[]> lsTmp = lsResult.subList(1, lsResult.size());
 		for (String[] strings : lsTmp) {
 			String geneID = strings[colAccID].split("/")[0];
@@ -79,16 +77,13 @@ public class GffChrCmpBed extends GffChrAbs {
 
 	/**
 	 * 直接Tss区域进行比较，设定TSS前后范围 提供比值
-	 * 
 	 * @param geneID
+	 * @param region 比较区域
 	 * @return
 	 */
 	private double compRegionTssXLY(String geneID, int[] region) {
 		ArrayList<int[]> lsDectect = new ArrayList<int[]>();
 		lsDectect.add(region);
-		// lsDectect.add(new int[]{-1000,1000});
-		// lsDectect.add(new int[]{1000,3000});
-
 		GffGeneIsoInfo gffGeneIsoInfo = gffHashGene.searchISO(geneID);
 		ArrayList<int[]> lsTmpTss = gffGeneIsoInfo.getRegionNearTss(lsDectect);
 		return compRegion(gffGeneIsoInfo.getChrID(), lsTmpTss)[0];

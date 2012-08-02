@@ -15,7 +15,9 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructur
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsHanyanChrom;
+import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Equations;
@@ -30,7 +32,7 @@ import com.novelbio.database.model.species.Species;
  *
  */
 public class GffChrAbs {
-private static final Logger logger = Logger.getLogger(GffChrAbs.class);
+	private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	private int distanceMapInfo = 3000;
 	GffHashGene gffHashGene = null;
 	SeqHash seqHash = null;
@@ -58,7 +60,6 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	int tssDownBp = 2000;
 	int geneEnd3UTR = 100;
 	
-//	String chrFile = "";
 	String chrRegx = null;
 	String equationsFile = "";
 
@@ -101,6 +102,9 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		setChrFile(species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0]);
 	}
 	public void setSpecies(Species species) {
+		if (this.species != null && this.species.equals(species)) {
+			return;
+		}
 		this.species = species;
 		setGffFile(species.getTaxID(), species.getGffFile()[0], species.getGffFile()[1]);
 		setChrFile(species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0]);
@@ -167,7 +171,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param downBp tss和tes以及其他位点的下游长度，默认5000
 	 */
 	public void setPlotRegion(int upBp, int downBp) {
-		this.upBp = upBp;
+		this.upBp = Math.abs(upBp);
 		this.downBp = downBp;
 	}
 	public void setGffFile(int taxID, String gffType, String gffFile) {
@@ -188,6 +192,13 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 			 seqHash = new SeqHash(chrFile, chrRegx);
 		}
 	}
+	/** 输入已经配置好的mapReads对象，但是标准化和校正都由GffChrAbs提供 */
+	public void setMapReads(MapReads mapReads) {
+		this.mapReads = mapReads;
+		setMapCorrect();
+		mapReads.setNormalType(mapNormType);
+		mapReads.setMapChrID2Len(species.getMapChromInfo());
+	}
 	/**
 	 * @param readsFile mapping的结果文件，必须排过序，一般为bed格式
 	 * @param binNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
@@ -195,14 +206,15 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	public void setMapReads(String readsFile, int binNum) {
 		if (FileOperate.isFileExist(readsFile)) {
 			if (HanYanFstrand) {
-				mapReads = new MapReadsHanyanChrom(binNum, readsFile);
-				mapReads.setChrLenFile(getRefLenFile());
-				mapReads.setNormalType(mapNormType);
+				mapReads = new MapReadsHanyanChrom();
 			} else {
-				mapReads = new MapReads(binNum, readsFile);
-				mapReads.setChrLenFile(getRefLenFile());
-				mapReads.setNormalType(mapNormType);
+				mapReads = new MapReads();
 			}
+			mapReads.setBedSeq(readsFile);
+			mapReads.setInvNum(binNum);
+			mapReads.setMapChrID2Len(species.getMapChromInfo());
+			mapReads.setNormalType(mapNormType);
+
 			setMapCorrect();
 		}
 	}
@@ -223,7 +235,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		}
 	}
 	public void loadMapReads() {
-		try { mapReads.ReadMapFile(); }
+		try { mapReads.running(); }
 		catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -274,8 +286,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param colSummit
 	 * @param rowStart
 	 */
-	public ArrayList<MapInfo> readFileSiteMapInfo(String txtExcel,int region ,int colChrID, int colSummit, int colScore, int rowStart)
-	{
+	public ArrayList<MapInfo> readFileSiteMapInfo(String txtExcel,int region ,int colChrID, int colSummit, int colScore, int rowStart) {
 		int[] columnID = null;
 		if (colScore <= 0 ) {
 			 columnID = new int[]{colChrID, colSummit, colScore};
@@ -311,7 +322,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param binNum 分成几块
 	 * @return
 	 */
-	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(ArrayList<? extends MapInfo> lsMapInfos, String structure, int binNum) {
+	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(ArrayList<? extends MapInfo> lsMapInfos, GeneStructure structure, int binNum) {
 		HashMap<GffDetailGene,Double>  hashGffDetailGenes = getPeakGeneStructure( lsMapInfos, structure);
 		 ArrayList<MapInfo> lsResult = getMapInfoFromGffGene(hashGffDetailGenes, structure);
 		 mapReads.getRegionLs(binNum, lsResult, 0);
@@ -329,7 +340,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param Structure 基因的哪个部分的结构 
 	 * @param binNum 最后结果分成几块
 	 */
-	public ArrayList<MapInfo> readFileGeneMapInfo(String txtExcel,int colGeneID, int colScore, int rowStart, String Structure, int binNum)
+	public ArrayList<MapInfo> readFileGeneMapInfo(String txtExcel,int colGeneID, int colScore, int rowStart, GeneStructure Structure, int binNum)
 	{
 		////////////////////     读 文 件   ////////////////////////////////////////////
 		int[] columnID = null;
@@ -353,7 +364,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param Structure 基因的哪个部分的结构 
 	 * @param binNum 最后结果分成几块
 	 */
-	public ArrayList<MapInfo> readGeneMapInfoAll(String Structure, int binNum) {
+	public ArrayList<MapInfo> readGeneMapInfoAll(GeneStructure Structure, int binNum) {
 		ArrayList<String> lsGeneID = gffHashGene.getLsNameAll();
 		ArrayList<String[]> lstmp = new ArrayList<String[]>();
 		for (String string : lsGeneID) {
@@ -370,7 +381,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param binNum 最后结果分成几块
 	 * @return
 	 */
-	public ArrayList<MapInfo> getLsGeneMapInfo(ArrayList<String[]> lsGeneValue, String Structure, int binNum) {
+	public ArrayList<MapInfo> getLsGeneMapInfo(ArrayList<String[]> lsGeneValue, GeneStructure Structure, int binNum) {
 		//有权重的就使用这个hash
  		HashMap<GffDetailGene, Double> hashGene2Value = new HashMap<GffDetailGene, Double>();
 
@@ -420,8 +431,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param structure
 	 * @return
 	 */
-	private ArrayList<MapInfo> getMapInfoFromGffGene(HashMap<GffDetailGene,Double> setgffDetailGenes, String structure)
-	{
+	private ArrayList<MapInfo> getMapInfoFromGffGene(HashMap<GffDetailGene,Double> setgffDetailGenes, GeneStructure structure) {
 		ArrayList<MapInfo> lsMapInfos = new ArrayList<MapInfo>();
 		for (Entry<GffDetailGene, Double> gffDetailValue : setgffDetailGenes.entrySet()) {
 			lsMapInfos.add(getStructureLoc(gffDetailValue.getKey(),gffDetailValue.getValue(), structure));
@@ -438,7 +448,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @return
 	 * 基因和权重的hash表
 	 */
-	private HashMap<GffDetailGene,Double> getPeakGeneStructure(ArrayList<? extends MapInfo> lsMapInfos, String structure) {
+	private HashMap<GffDetailGene,Double> getPeakGeneStructure(ArrayList<? extends MapInfo> lsMapInfos, GeneStructure structure) {
 		//存储最后的基因和权重
 		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
 		for (MapInfo mapInfo : lsMapInfos) {
@@ -471,7 +481,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param structure GffDetailGene.TSS等
 	 * @return
 	 */
-	private Set<GffDetailGene> getPeakStructureGene(String chrID, int startLoc, int endLoc, String structure) {
+	private Set<GffDetailGene> getPeakStructureGene(String chrID, int startLoc, int endLoc, GeneStructure structure) {
 		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(chrID, startLoc, endLoc);
 		if (gffCodGeneDU == null) {
 			return new HashSet<GffDetailGene>();
@@ -496,7 +506,7 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	 * @param structure GffDetailGene.TSS等
 	 * @return
 	 */
-	private MapInfo getStructureLoc(GffDetailGene gffDetailGene, Double value,String structure)
+	private MapInfo getStructureLoc(GffDetailGene gffDetailGene, Double value,GeneStructure structure)
 	{
 		if (structure.equals(GeneStructure.TSS)) {
 			int tss = gffDetailGene.getLongestSplit().getTSSsite();
@@ -526,21 +536,5 @@ private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 		}
 	}
 
-	/**
-	 * 获得每条转录本的长度，如果outFile不存在，那么必须给出一个outFile的文件名
-	 * 并且SeqHash对象是存在的
-	 * @param RefSeqFile
-	 * @return
-	 */
-	public String getRefLenFile() {
-		String outFile = FileOperate.changeFileSuffix(FileOperate.removeSep(seqHash.getChrFile()), "_chrLen", "list");
-		if (FileOperate.isFileExist(outFile)) {
-			return outFile;
-		}
-		ArrayList<String[]> lsChrLen = seqHash.getChrLengthInfo();
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outFile, true);
-		txtReadandWrite.ExcelWrite(lsChrLen, "\t", 1, 1);
-		return outFile;
-	}
 	
 }

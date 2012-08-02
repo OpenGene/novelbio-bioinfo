@@ -160,7 +160,7 @@ public class GuiDifGeneJpanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String geneFile = guiFileOpen.openFileName("txt/excel", "");
 				lsGeneInfo = ExcelTxtRead.readLsExcelTxt(geneFile, 1);
-				scrollPaneNormData.addProview(lsGeneInfo);
+				scrollPaneNormData.setItemLs(lsGeneInfo);
 			}
 		});
 		btnOpenfile.setBounds(505, 537, 118, 24);

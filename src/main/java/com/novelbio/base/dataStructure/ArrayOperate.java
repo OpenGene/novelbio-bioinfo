@@ -589,7 +589,6 @@ public class ArrayOperate {
 	 * @return
 	 * 最后生成Length长度的array
 	 */
-	@Deprecated
 	public static<T> T[] copyArray(T[] array, int Length,boolean start) {
 		T[] result=(T[]) Array.newInstance(array.getClass().getComponentType(), Length);
 		if (start) {

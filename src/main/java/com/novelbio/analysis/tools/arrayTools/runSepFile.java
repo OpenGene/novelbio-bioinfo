@@ -19,7 +19,7 @@ public class runSepFile {
 //			//thisFilePath=thisFilePath.substring(1);
 //		} catch (URISyntaxException e1) {
 //			// TODO Auto-generated catch block
-//			e1.printStackTrace();
+//			e1.printStackTrace();/
 //		}//这个不乱码;
 //		System.out.println(thisFilePath);
 //		System.out.println("test");
@@ -27,10 +27,10 @@ public class runSepFile {
 //		String excelFile=lsFileName.get(0)[0]+"."+lsFileName.get(0)[1];
 //		System.out.println(lsFileName.get(0)[0]+"."+lsFileName.get(0)[1]);
 		
-		String thisFilePath = "/home/zong0jie/桌面/";
-		String excelFile = "新建 Microsoft Office Excel 工作表.xls";
+		String thisFilePath = "/home/zong0jie/桌面/DifGene/";
+		String excelFile = "Mus表达谱（Affymentrix）-2.xls";
 		try {
-			ArrayTools.seperateFile(thisFilePath,excelFile,"ArrayToolsInput");
+			ArrayTools.seperateFile(thisFilePath,excelFile,"MusArrayToolsInput");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

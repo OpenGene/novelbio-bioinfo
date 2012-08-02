@@ -33,22 +33,22 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 	}
 
 	@Override
-	protected ArrayList<String[]> convert2Item(Collection<GeneID> lsCopedIDs) {
+	protected ArrayList<String[]> convert2Item(Collection<GeneID> lsGeneIDs) {
 		HashSet<String> hashGenUniID = new HashSet<String>();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-			for (GeneID copedID : lsCopedIDs) {
-				if (hashGenUniID.contains(copedID.getGenUniID())) {
+			for (GeneID geneID : lsGeneIDs) {
+				if (hashGenUniID.contains(geneID.getGenUniID())) {
 					continue;
 				}
-				hashGenUniID.add(copedID.getGenUniID());
+				hashGenUniID.add(geneID.getGenUniID());
 				ArrayList<KGpathway> lsPath = null;
-				lsPath = copedID.getKegPath(blast);
+				lsPath = geneID.getKegPath(blast);
 				
 				if (lsPath == null || lsPath.size() == 0) {
 					continue;
 				}
 				String[] tmpResult = new String[2];
-				tmpResult[0] = copedID.getGenUniID();
+				tmpResult[0] = geneID.getGenUniID();
 				for (KGpathway kGpathway : lsPath) {
 					if (tmpResult[1] == null || tmpResult[1].trim().equals("")) {
 						tmpResult[1] = kGpathway.getPathName();

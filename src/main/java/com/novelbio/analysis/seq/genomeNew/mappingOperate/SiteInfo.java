@@ -121,19 +121,23 @@ public class SiteInfo implements Comparable<SiteInfo> {
 	}
 	/**
 	 * 本坐标的方向，用于基因的Tss和Tes等运算
-	 * 如果无方向，则返回true
+	 * 如果无方向，则返回null
 	 * @return
 	 */
 	public Boolean isCis5to3() {
 		return cis5to3;
 	}
 	/**
-	 * 和{@link #isCis5to3()} 类似的功能，只不过true和null返回"+"，false返回"-"
+	 * 和{@link #isCis5to3()} 类似的功能，只不过true返回"+"，false返回"-"
+	 * null 返回 ""
 	 * @return
 	 */
 	public String getStrand() {
-		if (cis5to3 == null || cis5to3 == true) {
+		if (cis5to3 == true) {
 			return "+";
+		}
+		else if (cis5to3 == null) {
+			return "";
 		}
 		return "-";
 	}

@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
@@ -26,6 +27,7 @@ import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.PlotHeatMap;
 import com.novelbio.base.plot.java.HeatChart;
 import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 import de.erichseifert.gral.util.GraphicsUtils;
@@ -53,11 +55,14 @@ public class GffChrMap {
 //		gffChrMap.plotTssAllGene(1000, "/media/winF/NBC/Project/Project_Invitrogen/WHB_yeast/mapping/tss", GffDetailGene.TSS);
 	}
 	
-	GffChrAbs gffChrAbs;
+	GffChrAbs gffChrAbs = new GffChrAbs();
 	
 	Logger logger = Logger.getLogger(GffChrMap.class);
 	String fileName = "";
 	int maxresolution = 10000;
+	
+	public GffChrMap() {
+	}
 	
 	public GffChrMap(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
@@ -68,6 +73,9 @@ public class GffChrMap {
 	 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
+	}
+	public void setSpecies(Species species) {
+		gffChrAbs.setSpecies(species);
 	}
 	/**
 	 * 每隔多少位取样,如果设定为1，则算法会变化，然后会很精确
@@ -98,14 +106,11 @@ public class GffChrMap {
 	/**
 	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
 	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
-	 * @param colUnique Unique的reads在哪一列 novelbio的标记在第七列，从1开始计算
 	 * @param booUniqueMapping 重复的reads是否只选择一条
 	 * @param cis5to3 是否仅选取某一方向的reads，null不考虑
 	 */
-	public void setFilter(boolean uniqReads, int startCod, int colUnique,
-			boolean booUniqueMapping, Boolean cis5to3) {
-		gffChrAbs.getMapReads().setFilter(uniqReads, startCod, colUnique, booUniqueMapping,
-				cis5to3);
+	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean cis5to3) {
+		gffChrAbs.getMapReads().setFilter(uniqReads, startCod, booUniqueMapping, cis5to3);
 	}
 	/**
 	 * 返回某条染色体上的reads情况，不是密度图，只是简单的计算reads在一个染色体上的情况 主要用于RefSeq时，一个基因上的reads情况
@@ -242,7 +247,7 @@ public class GffChrMap {
 	public double[] plotTssHeatMap(Color color, boolean SortS2M,
 			String txtExcel, int colGeneID, int colScore, int rowStart,
 			double heapMapSmall, double heapMapBig,
-			String structure, int binNum, String outFile) {
+			GeneStructure structure, int binNum, String outFile) {
 		ArrayList<MapInfo> lsMapInfos = null;
 		if (txtExcel != null && !txtExcel.trim().equals("")) {
 			lsMapInfos = gffChrAbs.readFileGeneMapInfo(txtExcel, colGeneID, colScore, rowStart, structure, binNum);
@@ -418,7 +423,7 @@ public class GffChrMap {
 	 * @param resultFile 输出文件
 	 * @param geneStructure GffDetailGene.TSS
 	 */
-	public void plotTssPeak(String fileName, int rowStart, int binNum, String resultFile, String geneStructure) {
+	public void plotTssPeak(String fileName, int rowStart, int binNum, String resultFile, GeneStructure geneStructure) {
 		ArrayList<MapInfo> lsMapInfo = gffChrAbs.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
 		ArrayList<MapInfo> lsMapTssInfo = gffChrAbs.getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
 		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
@@ -446,7 +451,7 @@ public class GffChrMap {
 	 * @param mirandaResultOut
 	 * @return 返回最大值和最小值的设定
 	 */
-	public double[] plotTssPeakHeatMap(Color color, String fileName,int heatMapSmall, int heatMapBig, int rowStart, int binNum, String resultFile, String geneStructure, boolean SortS2M) {
+	public double[] plotTssPeakHeatMap(Color color, String fileName,int heatMapSmall, int heatMapBig, int rowStart, int binNum, String resultFile, GeneStructure geneStructure, boolean SortS2M) {
 		ArrayList<MapInfo> lsMapInfo = gffChrAbs.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
 		ArrayList<MapInfo> lsMapTssInfo = gffChrAbs.getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
 		MapInfo.sortPath(SortS2M);
@@ -463,7 +468,7 @@ public class GffChrMap {
 	 * @param resultFile 输出文件
 	 * @param geneStructure GffDetailGene.TSS
 	 */
-	public void plotTssAllGene(int binNum, String resultFile, String geneStructure) {
+	public void plotTssAllGene(int binNum, String resultFile, GeneStructure geneStructure) {
 		plotTssGene(null, 0, binNum, resultFile, geneStructure);
 	}
 	/**
@@ -474,7 +479,7 @@ public class GffChrMap {
 	 * @param resultFile 输出文件
 	 * @param geneStructure GffDetailGene.TSS
 	 */
-	public void plotTssGene(String fileName, int rowStart, int binNum, String resultFile, String geneStructure) {
+	public void plotTssGene(String fileName, int rowStart, int binNum, String resultFile, GeneStructure geneStructure) {
 		ArrayList<MapInfo> lsMapInfo = null;
 		if (fileName == null || fileName.trim().equals("")) {
 			lsMapInfo = gffChrAbs.readGeneMapInfoAll(geneStructure, binNum);

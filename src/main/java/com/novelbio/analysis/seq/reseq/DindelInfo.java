@@ -2,8 +2,6 @@ package com.novelbio.analysis.seq.reseq;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 /**
  * 保存Dindel软件得到的信息，每一行一个DindelInfo 类
@@ -24,8 +22,7 @@ public class DindelInfo implements Comparable<DindelInfo>{
 	String  altBase = "";
 	int scoreQuality = 0;
 	String filter = "";
-	private DindelInfo(String value)
-	{
+	private DindelInfo(String value) {
 		setParam(value);
 	}
 	public int getStart() {
@@ -63,8 +60,7 @@ public class DindelInfo implements Comparable<DindelInfo>{
 		return lsdDindelInfos;
 	}
 	
-	private void setParam(String value)
-	{
+	private void setParam(String value) {
 		String[] ss = value.split("\t");
 		seqName = ss[0];
 		startSeq = Integer.parseInt(ss[1]);

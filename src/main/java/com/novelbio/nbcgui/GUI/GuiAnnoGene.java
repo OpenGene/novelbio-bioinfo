@@ -56,7 +56,7 @@ public class GuiAnnoGene extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String excelFile = guiFileOpen.openFileName("excel/txt", "");
 				lsGeneInfo = ExcelTxtRead.readLsExcelTxt(excelFile, 1);
-				scrollPaneData.setLsInfo(lsGeneInfo);
+				scrollPaneData.setItemLs(lsGeneInfo);
 			}
 		});
 		btnOpenfile.setBounds(717, 30, 118, 24);

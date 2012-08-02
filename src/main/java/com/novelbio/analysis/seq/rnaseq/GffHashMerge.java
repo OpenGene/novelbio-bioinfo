@@ -1,31 +1,83 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListGff;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class GffHashMerge {
 	public static void main(String[] args) {
+		mouse();
+//		checken();
+	}
+	public static void mouse() {
+		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcripts.gtf";
+		String gffFinal = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf";
+		String gffFinalStatistics = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcriptomeStatistics.txt";
+		Species species = new Species(10090);
+		GffHashMerge gffHashMerge = new GffHashMerge();
+//		gffHashMerge.setSpecies(species);
+//		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFile()[0], species.getGffFile()[1]));
+//		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffhashGeneCuf));
+//		
+//		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
+//		gffHashGene.removeDuplicateIso();
+//		gffHashGene.writeToGTF(gffFinal, "novelbio");
+		
+		gffHashMerge = new GffHashMerge();
+		gffHashMerge.setSpecies(species);
+		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFile()[0], species.getGffFile()[1]));
+		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffFinal));
+		
+		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
+		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
+		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
+	}
+	
+	public static void checken() {
 		String gffHashGeneRef = "/media/winF/NBC/Project/Project_FY/chicken/chicken_ensembl_Gtf";
 		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/transcripts.gtf";
-		GffHashMerge gffHashMerge = new GffHashMerge();
+		String gffFinal = "/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/finalTranscript.gtf";
+		String gffFinalStatistics = "/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/transcriptomeStatistics.txt";
 		
+		GffHashMerge gffHashMerge = new GffHashMerge();
+		gffHashMerge.setSpecies(new Species(9013));
 		gffHashMerge.setGffHashGeneRef(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffHashGeneRef));
 		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffhashGeneCuf));
-
-		GffHashGene gffHashGeneResult = gffHashMerge.getGffHashGeneResult();
-		gffHashGeneResult.removeDuplicateIso();
-		gffHashGeneResult.writeToGTF("/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/test2.gtf", "novelbio");
 		
+		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
+		gffHashGene.removeDuplicateIso();
+		gffHashGene.writeToGTF(gffFinal, "novelbio");
+		
+		gffHashMerge = new GffHashMerge();
+		gffHashMerge.setSpecies(new Species(9013));
+		gffHashMerge.setGffHashGeneRef(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffHashGeneRef));
+		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffFinal));
+		
+		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
+		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
+		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
 	GffHashGene gffHashGeneRef = new GffHashGene();
 	ArrayList<GffHashGene> lsGffHashGenes = new ArrayList<GffHashGene>();
+	/** key小写 */
+	HashMap<String, ArrayList<GffGeneCluster>> mapChrID2LsGffCluster = new HashMap<String, ArrayList<GffGeneCluster>>();
+	
 	GffHashGene gffHashGeneResult = new GffHashGene();
+	/**统计转录本信息时用到 */
+	Species species;
+	/**新的转录本如果长度小于1000，并且没有内含子，就有可能是假基因，就删除 */
+	int minGeneLen = 1000;
+	
 	boolean calculate = false;
 	
 	public void setGffHashGeneRef(GffHashGene gffHashGeneRef) {
@@ -41,16 +93,24 @@ public class GffHashMerge {
 		lsGffHashGenes.add(gffHashGene);
 		calculate = false;
 	}
-	public GffHashGene getGffHashGeneResult() {
+	public void setSpecies(Species species) {
+		this.species = species;
+	}
+	public GffHashGene getGffHashGeneModifyResult() {
 		if (!calculate) {
 			fillGffHashGeneResult();
+			modifyGff();
 		}
 		return gffHashGeneResult;
+	}
+	public TranscriptomStatistics getStatisticsCompareGff() {
+		fillGffHashGeneResult();
+		return statisticTranscriptome();
 	}
 	/**
 	 * 将Gff信息装入mapChrID2LsGffGeneCluster
 	 */
-	public void fillGffHashGeneResult() {
+	private void fillGffHashGeneResult() {
 		if (calculate) {
 			return;
 		}
@@ -60,7 +120,7 @@ public class GffHashMerge {
 		for (String chrID : lsChrID) {
 			ArrayList<ListGff> lsGffAll = new ArrayList<ListGff>();
 			for (GffHashGene gffHashGene : lsGffHashGenes) {
-				ListGff listGff = gffHashGene.getMapChrID2LsGff().get(chrID);
+				ListGff listGff = gffHashGene.getMapChrID2LsGff().get(chrID.toLowerCase());
 				if (listGff == null) {
 					continue;
 				}
@@ -68,9 +128,10 @@ public class GffHashMerge {
 			}
 			ArrayList<int[]> lsGeneBound = ListAbs.getCombSep(null, lsGffAll);
 			ArrayList<GffGeneCluster> lsGff = getListGeneCluster(chrID, lsGeneBound, lsGffHashGenes);
-			addChrIDlist(lsGff);
+			mapChrID2LsGffCluster.put(chrID.toLowerCase(), lsGff);
 		}
 	}
+	
 	/**
 	 * 将某一条染色体的所有gffhashgene的信息按照划分的区域装入mapChrID2LsGffGeneCluster
 	 * @param chrID
@@ -136,12 +197,46 @@ public class GffHashMerge {
 		gffGeneCluster.addLsGffDetailGene(gffHashGene.getGffFilename(), lsGffSubGene);
 	}
 	
-	private void addChrIDlist( ArrayList<GffGeneCluster> lsGeneCluster) {
+	private void modifyGff() {
+		for (ArrayList<GffGeneCluster> listGffGeneClusters : mapChrID2LsGffCluster.values()) {
+			modifyAndAddChrIDlist(listGffGeneClusters);
+		}
+	}
+	
+	private void modifyAndAddChrIDlist( ArrayList<GffGeneCluster> lsGeneCluster) {
 		ListGff listGff = new ListGff();
 		for (GffGeneCluster gffGeneCluster : lsGeneCluster) {
 			ArrayList<GffDetailGene> lsGene = gffGeneCluster.getCombinedGffGene();
-			listGff.addAll(lsGene);
+			boolean shortGene = true;
+			for (GffDetailGene gffDetailGene : lsGene) {
+				//长度大于指定长度，或者最长转录本含有内含子，就可以认为不是假基因
+				if (gffDetailGene.getLen() > minGeneLen || gffDetailGene.getLongestSplit().size() > 1) {
+					shortGene = false;
+					break;
+				}
+			}
+			if (!shortGene) {
+				listGff.addAll(lsGene);
+			}
 		}
 		gffHashGeneResult.addListGff(listGff);
+	}
+	
+	private TranscriptomStatistics statisticTranscriptome() {
+		TranscriptomStatistics transcriptomStatistics = new TranscriptomStatistics();
+		prepareStatistics(transcriptomStatistics);
+		for (ArrayList<GffGeneCluster> listGffGeneClusters : mapChrID2LsGffCluster.values()) {
+			statisticsLsGffGeneCluster(transcriptomStatistics, listGffGeneClusters);
+		}
+		return transcriptomStatistics;
+	}
+	private void prepareStatistics(TranscriptomStatistics transcriptomStatistics) {
+		SeqHash seqFastaHash = new SeqHash(species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0]);
+		transcriptomStatistics.setSeqFastaHash(seqFastaHash);
+	}
+	private void statisticsLsGffGeneCluster(TranscriptomStatistics transcriptomStatistics, ArrayList<GffGeneCluster> lsGeneCluster) {
+		for (GffGeneCluster gffGeneCluster : lsGeneCluster) {
+			transcriptomStatistics.addGeneCluster(gffGeneCluster);
+		}
 	}
 }

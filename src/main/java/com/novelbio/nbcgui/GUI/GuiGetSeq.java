@@ -96,7 +96,7 @@ public class GuiGetSeq extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				readFile = guiFileOpen.openFileName("excel/txt", "");
 				lsGeneInfo = ExcelTxtRead.readLsExcelTxt(readFile, 1);
-				scrollPaneData.setLsInfo(lsGeneInfo);
+				scrollPaneData.setItemLs(lsGeneInfo);
 			}
 		});
 		btnOpenfile.setBounds(717, 30, 120, 24);
@@ -502,5 +502,11 @@ public class GuiGetSeq extends JPanel {
 	}
 	public JButton getBtnOpen() {
 		return btnOpenfile;
+	}
+	public JButton getBtnSave() {
+		return btnSave;
+	}
+	public JButton getBtnRun() {
+		return btnRun;
 	}
 }

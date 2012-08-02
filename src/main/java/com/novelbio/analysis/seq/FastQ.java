@@ -101,6 +101,14 @@ public class FastQ extends SeqComb {
 	 * @param seqFile
 	 * @param QUALITY
 	 */
+	public FastQ(String seqFile1) {
+		this(seqFile1, 0, FastQ.QUALITY_MIDIAN);
+	}
+	/**
+	 * 自动判断 FastQ的格式
+	 * @param seqFile
+	 * @param QUALITY
+	 */
 	public FastQ(String seqFile1, int QUALITY) {
 		this(seqFile1, 0, QUALITY);
 		String houzhui = FileOperate.getFileNameSep(seqFile1)[1];

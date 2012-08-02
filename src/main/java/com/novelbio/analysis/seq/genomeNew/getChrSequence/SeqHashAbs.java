@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -298,6 +299,15 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		else {
 			return seqFasta.reservecom();
 		}
+	}
+	/**
+	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
+	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
+	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
+	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
+	 */
+	public SeqFasta getSeq(GffGeneIsoInfo gffGeneIsoInfo, boolean getIntron) {
+		 return getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, getIntron);
 	}
 	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>

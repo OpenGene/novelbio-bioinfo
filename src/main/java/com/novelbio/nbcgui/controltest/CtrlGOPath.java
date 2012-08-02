@@ -8,14 +8,19 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
+import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.generalConf.NovelBioConst;
-
-public abstract class CtrlGOPath {
+/**
+ * 考虑添加进度条
+ * @author zong0jie
+ *
+ */
+public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
 	
 	FunctionTest functionTest = null;
@@ -32,6 +37,7 @@ public abstract class CtrlGOPath {
 	double up = -1;
 	double down = -1;
 	boolean cluster = false;
+	String bgFile = "";
 	/**
 	 * 结果,key： 时期等
 	 * value：具体的结果
@@ -59,14 +65,16 @@ public abstract class CtrlGOPath {
 		this.blast = blast;
 		this.evalue = evalue;
 	}
-	
+	public void running() {
+		
+	}
 	/**
 	 * 最好第一时间输入
 	 * 简单的判断下输入的是geneID还是geneID2Item表
 	 * @param fileName
 	 */
-	public void setLsBG(String fileName)
-	{
+	public void setLsBG(String fileName) {
+		bgFile = fileName;
 		boolean flagGeneID = testBGfile(fileName);
 		if (flagGeneID) {
 			functionTest.setLsBGItem(fileName);
@@ -91,8 +99,7 @@ public abstract class CtrlGOPath {
 	 * @param fileName
 	 * @return
 	 */
-	private boolean testBGfile(String fileName)
-	{
+	private boolean testBGfile(String fileName) {
 		boolean result = false;
 		ArrayList<String[]> lsArrayList = ExcelTxtRead.readLsExcelTxtFile(fileName, 1, 1, 100, -1);//readLsExcelTxt(fileName, 1, 100, 1, -1);
 		for (String[] strings : lsArrayList) {
@@ -190,8 +197,7 @@ public abstract class CtrlGOPath {
 	 * @return
 	 * 没有就返回null
 	 */
-	private void getResult(String prix,ArrayList<GeneID>lsCopedIDs)
-	{
+	private void getResult(String prix,ArrayList<GeneID>lsCopedIDs) {
 		functionTest.setLsTest(lsCopedIDs);
 		ArrayList<String[]> lsResultTest = functionTest.getTestResult();
 		if (lsResultTest == null) {
@@ -227,4 +233,11 @@ public abstract class CtrlGOPath {
 	 */
 	protected abstract void copeFile(String prix, String excelPath);
 
+}
+
+class GoPathInfo {
+	int num = 0;
+	public GoPathInfo(int num) {
+		this.num = num;
+	}
 }

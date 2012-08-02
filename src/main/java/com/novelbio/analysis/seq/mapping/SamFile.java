@@ -495,8 +495,8 @@ X 8 sequence mismatch
 					BedRecord bedRecord = new BedRecord();
 					String[] info = string.split(",");
 					bedRecord.setRefID(info[0]);
-					int start1 = Integer.parseInt(info[1].substring(1)) -1;
-					int end1 =  start1 + samRecord.getReadLength();
+					int start1 = Integer.parseInt(info[1].substring(1));
+					int end1 =  start1 + samRecord.getReadLength() - 1;
 					bedRecord.setStartEndLoc(start1, end1);
 					bedRecord.setCIGAR(info[2]);
 					bedRecord.setCis5to3(info[1].charAt(0));

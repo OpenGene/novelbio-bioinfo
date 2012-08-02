@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -187,6 +188,14 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 		for (SiteInfo mapInfo : lsMapInfos) {
 			getSeq(mapInfo);
 		}
+	}
+
+	public SeqFasta getSeq(GffGeneIsoInfo gffGeneIsoInfo, boolean getIntron) {
+		SeqFasta seqFasta = seqHashAbs.getSeq(gffGeneIsoInfo, getIntron);
+		if (seqFasta != null) {
+			seqFasta.setTOLOWCASE(TOLOWCASE);
+		}
+		return seqFasta;
 	}
 	@Override
 	public SeqFasta getSeq(String chrID, List<ExonInfo> lsInfo, boolean getIntron) {

@@ -8,15 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.util.CollectionUtils;
 
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-import edu.uci.ics.jung.algorithms.scoring.HITS.Scores;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.Graph;
 /**
  * 保存LastZ得到的信息，每一行一个lastZ类
  * @author zong0jie

@@ -5,29 +5,33 @@ import java.util.HashMap;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 
 public class XiaoBai {
 	public static void main(String[] args) {
 		overlap();
 	}
 	public static void overlap() {
-		String excelFile = "/home/zong0jie/桌面/新建文件夹 (3)/company.xls";
-		String queryFile = "/home/zong0jie/桌面/新建文件夹 (3)/Sample.xls";
-		String outFile = "/home/zong0jie/桌面/新建文件夹 (3)/out.xls";
+		String queryFile = "/media/winE/NBC/Project/Project_ZHY_Lab/张宏宇2012/miRNA/miRNA-Target.xls";
+		String excelFile = "/media/winE/NBC/Project/Project_ZHY_Lab/张宏宇2012/miRNA/ZHYNvs3N.xls";
+		String outFile = "/media/winE/NBC/Project/Project_ZHY_Lab/张宏宇2012/miRNA/ZHYNvs3N_Target.xls";
 		
-		HashMap<String, String> mapID2Factory = new HashMap<String, String>();
+		HashMap<String, String[]> mapSub_ID2Line = new HashMap<String, String[]>();
 		ArrayList<String[]> lsExcel = ExcelTxtRead.readLsExcelTxt(excelFile, 1);
 		ArrayList<String[]> lsQuery = ExcelTxtRead.readLsExcelTxt(queryFile, 1);
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 		
 		for (String[] strings : lsExcel) {
-			mapID2Factory.put(strings[0].trim().toLowerCase(), strings[1]);
+			mapSub_ID2Line.put(strings[0].trim().toLowerCase(), strings);
 		}
 		for (String[] strings : lsQuery) {
-			String[] result = new String[2];
-			result[0] = strings[0].trim();
-			result[1] = mapID2Factory.get(result[0].toLowerCase());
+			String ID = strings[0].trim();
+			String[] resultQuery = mapSub_ID2Line.get(ID.toLowerCase());
+			if (resultQuery == null) {
+				continue;
+			}
+			String[] result = ArrayOperate.combArray(strings, resultQuery, 0);
 			txtOut.writefileln(result);
 		}
 		txtOut.close();

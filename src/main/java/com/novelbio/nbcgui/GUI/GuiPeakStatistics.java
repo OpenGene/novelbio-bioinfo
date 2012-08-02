@@ -67,7 +67,7 @@ public class GuiPeakStatistics extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				readFile = guiFileOpen.openFileName("excel/txt", "");
 				lsGeneInfo = ExcelTxtRead.readLsExcelTxtFile(readFile, 1, 1, 50, -1);
-				scrollPaneData.setLsInfo(lsGeneInfo);
+				scrollPaneData.setItemLs(lsGeneInfo);
 			}
 		});
 		btnOpenfile.setBounds(717, 30, 131, 24);

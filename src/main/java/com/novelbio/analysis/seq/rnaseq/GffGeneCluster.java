@@ -26,7 +26,13 @@ public class GffGeneCluster {
 		 *差距是小于但不等于 所以设定为10表示10以下的差距才会修正，但是不会修正10
 	 */
 	int boundMaxFalseGapBp = 10;
-	
+	/** 是否已经将refgff放置在isContainsRef中 
+	 * 这里的算法是首先将refGffGene放置在lsGeneCluster的最前面。
+	 * 然后如果存在Ref，则将第一位的lsGeneCluster放置在lsGenesRef
+	 * 如果不存在Ref，则将最长的LsGene放置在LsGenesRef
+	 * 那么这个标签就是来确定该步骤是否已经完成
+	 * */
+	boolean setRefLsGene = false;
 	/** 最后比完的结果放在这里 */
 	ArrayList<GffDetailGene> lsCombGenesResult;
 	/**
@@ -44,9 +50,12 @@ public class GffGeneCluster {
 	 * 如果存在reference<b>其中第一个一定是Reference的GffGene</b>
 	 */
 	ArrayList<ArrayList<GffDetailGene>> lsGeneCluster = new ArrayList<ArrayList<GffDetailGene>>();
-	ArrayList<String> lsIsoName = new ArrayList<String>();
+	/**依次添加的GffHash的名字 */
+	ArrayList<String> lsListGffName = new ArrayList<String>();
 	
-	double likelyhood = 0.5;
+	double likelyhood = 0.7;
+	
+	ArrayList<ArrayList<ExonClusterBoundInfo>> lsIso2ExonBoundInfoStatistics = new ArrayList<ArrayList<ExonClusterBoundInfo>>();
 	/**
 	 * 是否含有refGffDetailGene，没有说明Ref跳过了这个loc
 	 * @param isContainsRef
@@ -56,12 +65,42 @@ public class GffGeneCluster {
 	}
 	public void addLsGffDetailGene(String isoName, ArrayList<GffDetailGene> lsGffDetailGenes) {
 		lsGeneCluster.add(lsGffDetailGenes);
-		lsIsoName.add(isoName);
+		lsListGffName.add(isoName);
+	}
+	/** 当输入了Ref和This两个GffHash的时候才能用 */
+	public ArrayList<GffDetailGene> getThisGffGene() {
+		setRefGffGene();
+		if (isContainsRef) {
+			if (lsGeneCluster.size() == 0) {
+				return new ArrayList<GffDetailGene>();
+			}
+			else {
+				return lsGeneCluster.get(0);
+			}
+		}
+		else {
+			return lsGenesRef;
+		}
+	}
+	public ArrayList<GffDetailGene> getRefGffGene() {
+		setRefGffGene();
+		if (isContainsRef) {
+			return lsGenesRef;
+		}
+		else {
+			return null;
+		}
 	}
 	
+	/** 获得修饰好的GffDetailGene
+	 * @return
+	 */
 	public ArrayList<GffDetailGene> getCombinedGffGene() {
-		setRefGffGene();
-		return getCompareGffGene();
+		if (lsCombGenesResult == null) {
+			setRefGffGene();
+			lsCombGenesResult = compareAndModify_GffGene();
+		}
+		return lsCombGenesResult;
 	}
 	/**
 	 * 当ref和this的exon都在边界时，如果两个外显子的边界差距在指定bp以内(譬如10bp以内)，就修正为靠近内侧的
@@ -85,6 +124,10 @@ public class GffGeneCluster {
 	 * 为合并做好准备
 	 */
 	private void setRefGffGene() {
+		if (setRefLsGene) {
+			return;
+		}
+		setRefLsGene = true;
 		if (isContainsRef) {
 			lsGenesRef = lsGeneCluster.get(0);
 			lsGeneCluster.remove(0);
@@ -98,6 +141,9 @@ public class GffGeneCluster {
 	private int getLongestGffGene_In_LsGeneCluster() {
 		int lengthGffGene = 0;
 		int index = 0;
+		if (lsGeneCluster.size() == 1) {
+			return 0;
+		}
 		for (int i = 0; i < lsGeneCluster.size(); i++) {
 			for (GffDetailGene gffDetailGene : lsGeneCluster.get(i)) {
 				if (gffDetailGene.getLen() > lengthGffGene) {
@@ -108,8 +154,8 @@ public class GffGeneCluster {
 		}
 		return index;
 	}
-	
-	private ArrayList<GffDetailGene> getCompareGffGene() {
+
+	private ArrayList<GffDetailGene> compareAndModify_GffGene() {
 		ArrayList<GffDetailGene> lsGffDetailGenes = new ArrayList<GffDetailGene>();
 		for (GffDetailGene gffDetailGeneRefRaw : lsGenesRef) {//遍历每个GffDetail
 			GffDetailGene gffDetailGeneRef = gffDetailGeneRefRaw.clone();
@@ -142,13 +188,13 @@ public class GffGeneCluster {
 		return lsGffDetailGenes;
 	}
 	/**
-	 * 仅供Junit测试使用
+	 * public出来仅仅是提供给Junit测试使用
 	 * 比较两个方向相同，有交集的GffGeneIso的信息，修正gffGeneIsoInfoRef
 	 * @param gffGeneIsoInfoRef
 	 * @param gffGeneIsoInfoThis
 	 * @return 返回全新的GffGeneIsoInfo
 	 */
-	public GffGeneIsoInfo compareIso(GffGeneIsoInfo gffGeneIsoInfoRef, GffGeneIsoInfo gffGeneIsoInfoThis) {
+	public GffGeneIsoInfo compareIso(GffGeneIsoInfo gffGeneIsoInfoRef, GffGeneIsoInfo gffGeneIsoInfoThis) {		
 		GffGeneIsoInfo gffGeneIsoInfoResult = gffGeneIsoInfoRef.clone();
 		if (gffGeneIsoInfoThis == null || gffGeneIsoInfoThis.size() == 0 || gffGeneIsoInfoRef.equalsIso(gffGeneIsoInfoThis)) {
 			return gffGeneIsoInfoResult;
@@ -161,7 +207,7 @@ public class GffGeneCluster {
 		ArrayList<ExonCluster> lsExonClusters = GffGeneIsoInfo.getExonCluster(gffGeneIsoInfoRef.isCis5to3(), lsGffGeneIsoInfos);
 
 		int[] tailBoundInfo = getBothStartNumEndNum(lsExonClusters);
-		ArrayList<ExonClusterBoundInfo> lsSelectStatistics = new ArrayList<ExonClusterBoundInfo>();//用于统计exon修正数量的
+		ArrayList<ExonClusterBoundInfo> lsExonBoundInfoStatistics = new ArrayList<ExonClusterBoundInfo>();//用于统计exon修正数量的
 		
 		ExonClusterBoundInfo lastExonClusterBoundInfo = new ExonClusterBoundInfo(gffGeneIsoInfoRef, gffGeneIsoInfoThis);
 		lastExonClusterBoundInfo.booStartUnify = true;
@@ -172,15 +218,15 @@ public class GffGeneCluster {
 			exonClusterBoundInfo.setLasteExonClusterBoundInfo(lastExonClusterBoundInfo);
 			exonClusterBoundInfo.setLsExonClustersAndNum(lsExonClusters, exonClusterNum);
 			exonClusterBoundInfo.setTailBoundInfo(tailBoundInfo);
-			ArrayList<ExonInfo> lsExonInfos = exonClusterBoundInfo.calculate();
 			
-			for (ExonInfo exonInfo : lsExonInfos) {
-				gffGeneIsoInfoResult.add(exonInfo);
-			}
-			lsSelectStatistics.add(exonClusterBoundInfo);
+			ArrayList<ExonInfo> lsExonInfos = exonClusterBoundInfo.calculate();
+			gffGeneIsoInfoResult.addAll(lsExonInfos);
+			
+			lsExonBoundInfoStatistics.add(exonClusterBoundInfo);
 			lastExonClusterBoundInfo = exonClusterBoundInfo;
 		}
-		statisticsIsoAndExon(lsSelectStatistics);
+		//TODO
+		lsIso2ExonBoundInfoStatistics.add(lsExonBoundInfoStatistics);
 		return gffGeneIsoInfoResult;
 	}
 	/**
@@ -231,16 +277,9 @@ public class GffGeneCluster {
 		}
 		return new int[]{start, end};
 	}
-	/**
-	 * 统计修正的iso和exon边界
-	 * @param lsSelectExonStatistics
-	 */
-	private void statisticsIsoAndExon(ArrayList<ExonClusterBoundInfo> lsSelectExonStatistics) {
-		
-	}
 }
 /**
- * 存储某个exoncluster的起点和终点的情况
+ * 存储某个exoncluster中ref和this的exon的起点和终点是否一致
  * @author zong0jie
  */
 class ExonClusterBoundInfo {
@@ -319,7 +358,7 @@ class ExonClusterBoundInfo {
 	public boolean isSelectRefEnd() {
 		return selectRefEnd;
 	}
-	
+	/** 获得最后选定的exon */
 	public ArrayList<ExonInfo> calculate() {
 		ExonCluster exonCluster = lsExonClusters.get(thisExonClusterNum);
 		ArrayList<ExonInfo> lsExonInfosRef = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoRef);

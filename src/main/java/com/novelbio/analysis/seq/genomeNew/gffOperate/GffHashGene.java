@@ -46,7 +46,7 @@ public class GffHashGene implements GffHashGeneInf{
 	 * @param GffType
 	 * @param gffFile
 	 */
-	public void setParam(String GffType) {
+	public void setGffType(String GffType) {
 		if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_UCSC)) {
 			gffHashGene = new GffHashGeneUCSC();
 		}
@@ -184,7 +184,7 @@ public class GffHashGene implements GffHashGeneInf{
 	public void writeGene2Iso(String Gene2IsoFile) {
 		gffHashGene.writeGene2Iso(Gene2IsoFile);
 	}	
-	
+	/** 自动判断染色体 */
 	public void addListGff(ListGff listGff) {
 		String chrID = listGff.getName();
 		gffHashGene.getMapChrID2LsGff().put(chrID.toLowerCase(), listGff);

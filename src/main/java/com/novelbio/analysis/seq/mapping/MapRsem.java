@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.mapping;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -10,6 +11,8 @@ import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 /**
  * 还没返回结果的bam文件
@@ -47,11 +50,27 @@ public class MapRsem {
 	String exePathBowtie = "";
 	/** 线程数 */
 	int threadNum = 4;
-	ArrayList<FastQ> lsLeftFq = new ArrayList<FastQ>();
-	ArrayList<FastQ> lsRightFq = new ArrayList<FastQ>();
+	List<FastQ> lsLeftFq;
+	List<FastQ> lsRightFq;
 	boolean pairend = false;
 	/** 输出文件夹以及前缀 */
 	String outPathPrefix = "";
+	
+	public MapRsem() {
+		// TODO Auto-generated constructor stub
+	}
+	/** 直接输入过滤好的fastq，线程和输出路径，就可以开始运行，其他啥也不用管了 */
+	public MapRsem(Species species) {
+		gffChrSeq = new GffChrSeq();
+		gffChrSeq.setSpecies(species);
+		SoftWareInfo softWareInfoRsem = new SoftWareInfo();
+		softWareInfoRsem.setName(SoftWare.rsem);
+		SoftWareInfo softWareInfoBowtie = new SoftWareInfo();
+		softWareInfoBowtie.setName(SoftWare.bowtie);
+		
+		setExePath(softWareInfoRsem.getExePath(), softWareInfoBowtie.getExePath());
+	}
+
 	/**
 	 * 设定Gff文件和chrFile
 	 * @param gffFile
@@ -106,8 +125,22 @@ public class MapRsem {
 	 * 设置左端的序列，设置会把以前的清空
 	 * @param fqFile
 	 */
+	public void setLeftFq(List<FastQ> lsLeftFastQs) {
+		this.lsLeftFq = lsLeftFastQs;
+	}
+	/**
+	 * 设置左端的序列，设置会把以前的清空
+	 * @param fqFile
+	 */
+	public void setRightFq(List<FastQ> lsRightFastQs) {
+		this.lsRightFq = lsRightFastQs;
+	}
+	/**
+	 * 设置左端的序列，设置会把以前的清空
+	 * @param fqFile
+	 */
 	public void setLeftFq(String... fqFile) {
-		lsLeftFq.clear();
+		lsLeftFq = new ArrayList<FastQ>();
 		for (String string : fqFile) {
 			FastQ fastQ = new FastQ(string, FastQ.QUALITY_MIDIAN);
 			lsLeftFq.add(fastQ);
@@ -118,7 +151,7 @@ public class MapRsem {
 	 * @param fqFile
 	 */
 	public void setRightFq(String... fqFile) {
-		lsRightFq.clear();
+		lsRightFq = new ArrayList<FastQ>();
 		for (String string : fqFile) {
 			FastQ fastQ = new FastQ(string, FastQ.QUALITY_MIDIAN);
 			lsRightFq.add(fastQ);

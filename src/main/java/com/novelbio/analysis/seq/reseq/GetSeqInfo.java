@@ -55,5 +55,4 @@ public class GetSeqInfo extends SeqFastaHash{
  		txtOut.close();
 	}
 	
-	
 }

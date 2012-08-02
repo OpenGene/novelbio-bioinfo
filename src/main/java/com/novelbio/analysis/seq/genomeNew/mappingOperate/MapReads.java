@@ -1,35 +1,14 @@
 package com.novelbio.analysis.seq.genomeNew.mappingOperate;
 
-
-import java.io.BufferedReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map.Entry;
 
-import org.apache.commons.math.stat.descriptive.moment.Mean;
-import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
-import org.apache.commons.math.stat.descriptive.rank.Max;
-import org.apache.commons.math.stat.descriptive.rank.Min;
 import org.apache.log4j.Logger;
-import org.junit.experimental.max.MaxCore;
 
 import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
-import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
-import com.novelbio.base.fileOperate.FileOperate;
-
+import com.novelbio.database.model.species.Species;
 /**
+ * 输入的mapping结果已经排序好，并且染色体已经分开好。
  * 不考虑内存限制的编
  * 
  * @author zong0jie
@@ -37,8 +16,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class MapReads extends MapReadsAbs{
 	private static Logger logger = Logger.getLogger(MapReads.class);
-	
-	/**
+		/**
 	 * 将每个double[]求和/double.length
 	 * 也就是将每个点除以该gene的平均测序深度
 	 */
@@ -50,56 +28,30 @@ public class MapReads extends MapReadsAbs{
 	public static final int NORMALIZATION_ALL_READS = 256;
 	/** 不标准化 */
 	public static final int NORMALIZATION_NO = 64;
-	
-	 /** 每条序列的reads数量，long[]只有0有效，只是为了地址传递 */
-	 HashMap<String, long[]> mapChrID2ReadsNum = new HashMap<String, long[]>();
-	 /** 每条序列的堆叠bp数量，long[]只有0有效，只是为了地址传递 */
-	 HashMap<String, long[]> mapChrID2PipNum = new HashMap<String, long[]>();
-	 /** 每条序列的平均堆叠高度，int[]只有0有效，只是为了地址传递 */
-	 HashMap<String, Double> mapChrID2PipMean = new HashMap<String, Double>();
+ 
 	 
-	 /** ChrID所在的列 */
-	 int colChrID = 0;
-	 /** 起点所在的列 */
-	 int colStartNum = 1;
-	 /** 终点所在的列 */
-	 int colEndNum = 2;
-	 /** 方向列,bed文件一般在第六列 */
-	 int colCis5To3 = 5;
-	 /**
-	  * 起点是否为开区间
-	  * 常规的bed是1
-	  */
-	 int startRegion = 1;
-	 /** 终点是否为开区间 */
-	 int endRegion = 0;
-	 /**
-	  * 是否有剪接列，如果没有则小于0, 从bam转到的bed文件中才有的列，主要在RNA-Seq中使用
-	  * 为第11列
-	  */
-	 int colSplit = -1;
-	 /**
-	  * 剪接列的起点等：如0,34,68，如果没有则小于0, 从bam转到的bed文件中才有的列，主要在RNA-Seq中使用
-	  * 为第12列
-	  */
-	 int splitStart = -1;
+
 	 /** 对于结果的标准化方法 */
 	 int NormalType = NORMALIZATION_ALL_READS;
-	 /** 总共有多少reads参与了mapping，这个从ReadMapFile才能得到。*/
-	 long allReadsNum = 0;
 	 boolean uniqReads = false;
 	 int startCod = -1;
-	 /**
-	  * 标记mapping个数的列
-	  */
-	 int colUnique = BedRecord.COL_MAPNUM + 1;
 	 boolean booUniqueMapping = true;
 	 /** 仅选取某个方向的reads */
 	 Boolean FilteredStrand = null;
-
+	 Species species;
+	 
+	 long readsSize = 0;
+	 
+	 public void setSpecies(Species species) {
+		mapChrID2Len = species.getMapChromInfo();
+	}
 	
 	 /** 总共有多少reads参与了mapping，这个从ReadMapFile才能得到。 */
 	public long getAllReadsNum() {
+		long allReadsNum = 0;
+		for (ChrMapReadsInfo chrMapReadsInfo : mapChrID2ReadsInfo.values()) {
+			allReadsNum = allReadsNum + chrMapReadsInfo.getReadsChrNum();
+		}
 		return allReadsNum;
 	}
 	/**
@@ -109,49 +61,30 @@ public class MapReads extends MapReadsAbs{
 	 * @param booUniqueMapping 重复的reads是否只选择一条
 	 * @param cis5to3 是否仅选取某一方向的reads，null不考虑
 	 */
-	public void setFilter(boolean uniqReads, int startCod, int colUnique, boolean booUniqueMapping, Boolean FilteredStrand) {
+	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean FilteredStrand) {
 		this.uniqReads = uniqReads;
 		this.startCod = startCod;
-		this.colUnique = colUnique;
 		this.booUniqueMapping = booUniqueMapping;
 		this.FilteredStrand = FilteredStrand;
-	}
-
-	/**
-	 * @param invNum
-	 *            每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
-	 * @param mapFile
-	 *            mapping的结果文件，一般为bed格式
-	 */
-	public MapReads(int invNum, String mapFile) {
-		super(invNum, mapFile);
-	}
-	/**
-	 * @param chrLenFile 给定文件，指定每条染色体的长度<br>
-	 * 文件格式为： chrID \t chrLen   如 chr1 \t  23456
-	 * @param invNum 每隔多少位计数
-	 * @param mapFile mapping的结果文件，一般为bed格式
-	 */
-	public MapReads(String chrLenFile,int invNum, String mapFile) {
-		super(chrLenFile, invNum, mapFile);
 	}
 	/**
 	 * 从这里得到的实际某条染色体所包含的reads书目
 	 */
 	public long getChrReadsNum(String chrID) {
-		return mapChrID2ReadsNum.get(chrID.toLowerCase())[0];
+		return mapChrID2ReadsInfo.get(chrID.toLowerCase()).getReadsChrNum();
 	}
 	/**
-	 * 从这里得到的实际某条染色体的长度
+	 * 从这里得到的实际某条染色体的高度总和
 	 */
 	public long getChrReadsPipNum(String chrID) {
-		return mapChrID2PipNum.get(chrID.toLowerCase())[0];
+		return mapChrID2ReadsInfo.get(chrID.toLowerCase()).getReadsPipNum();
 	}
 	/**
 	 * 从这里得到的实际某条染色体高度的平均值
 	 */
 	public double getChrReadsPipMean(String chrID) {
-		return mapChrID2PipMean.get(chrID.toLowerCase());
+		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
+		return chrMapReadsInfo.getReadsPipNum()/chrMapReadsInfo.chrLength;
 	}
 	 /**
 	  * 设定标准化方法，可以随时设定，不一定要在读取文件前
@@ -161,55 +94,22 @@ public class MapReads extends MapReadsAbs{
 	 public void setNormalType(int normalType) {
 		NormalType = normalType;
 	}
-	 /**
-	  * <b>RNA-Seq使用</b><br>
-	  * 剪接位点列的设定
-	  * @param colSplit 是否有剪接列，如果没有则小于0, 从bam转到的bed文件中才有的列，主要在RNA-Seq中使用。如果有的话，一般为11列
-	  * @param splitStart 剪接列的起点等：如0,34,68，如果没有则小于0, 从bam转到的bed文件中才有的列，主要在RNA-Seq中使用。如果有的话，一般为12列
-	  */
-	 public void setSplit( int colSplit, int splitStart)  {
-		 colSplit--; splitStart--;
-		 this.colSplit = colSplit;
-		 this.splitStart = splitStart;
-	 }
-	 /**
-	  * 起点是否为开区间,
-	  * 常规的bed是1，bed文件不用修改
-	  */
-	public void setstartRegion(int startRegion) {
-		this.startRegion = startRegion;
-	}
-	/**
-	 * 设定坐标文件中ChrID和 起点，终点的列数，<b>如果是常规的bed文件，那么这个不用修改</b>
-	 * @param colChrID ChrID所在的列
-	 * @param colStartNum 起点所在的
-	 * @param colEndNum 终点所在的列
-	 */
-	public void setColNum(int colChrID,int colStartNum,int colEndNum, int colCis5To3) {
-		colChrID--; colStartNum--;colEndNum--;colCis5To3--;
-		this.colChrID = colChrID;
-		this.colStartNum = colStartNum;
-		this.colEndNum = colEndNum;
-		this.colCis5To3 = colCis5To3;
-	}
-
+	 
 	private void setChrLenFromReadBed() {
 		if (mapChrID2Len.size() > 0)
 			return;
 		
-		TxtReadandWrite txtMap = new TxtReadandWrite(mapFile, false);
-		String chrID = ""; String[] lastSs = null;
-		for (String content : txtMap.readlines()) {
-			String[] ss = content.split("\t");
-			if (!ss[colChrID].equals(chrID)) {
-				if (lastSs != null) {
-					mapChrID2Len.put(chrID.toLowerCase(), Long.parseLong(lastSs[colEndNum]));
+		String chrID = ""; BedRecord lastBedRecord = null;
+		for (BedRecord bedRecord : bedSeq.readlines()) {
+			if (!bedRecord.getRefID().equals(chrID)) {
+				if (lastBedRecord != null) {
+					mapChrID2Len.put(chrID.toLowerCase(), (long)lastBedRecord.getEnd());
 				}
-				chrID = ss[colChrID];
+				chrID = bedRecord.getRefID();
 			}
-			lastSs = ss;
+			lastBedRecord = bedRecord;
 		}
-		mapChrID2Len.put(lastSs[colChrID].toLowerCase(), Long.parseLong(lastSs[colEndNum]));
+		mapChrID2Len.put(lastBedRecord.getRefID().toLowerCase(), (long)lastBedRecord.getEnd());
 	}
 	/**
 	 * 经过标准化，和equations修正
@@ -236,105 +136,67 @@ public class MapReads extends MapReadsAbs{
 	 * 当输入为macs的bed文件时，自动<b>跳过chrm项目</b><br>
 	 * 所有chr项目都小写
 	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。注意，mapping文件中的chrID和chrLengthFile中的chrID要一致，否则会出错
-	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
-	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
-	 * @param colUnique Unique的reads在哪一列
-	 * @param booUniqueMapping 重复的reads是否只选择一条
-	 * @param FilteredStrand 是否仅选取某一方向的reads，null不考虑
-	 * @return 返回所有mapping的reads数量
 	 * @throws Exception
 	 */
-	protected long ReadMapFileExp() throws Exception {
+	protected void ReadMapFileExp() throws Exception {
 		setChrLenFromReadBed();
-		colUnique--;
-		if (startCod > 0 && colCis5To3 < 0) {
+		BedRecord bedRecordFirst = bedSeq.readFirstLine();
+		if (startCod > 0 && bedRecordFirst.isCis5to3() == null) {
 			logger.error("不能设定startCod，因为没有设定方向列");
-			return -1;
+			return;
 		}
-//		看一下startRegion是否起作用
- 		//所谓结算就是说每隔invNum的bp就把这invNumbp内每个bp的Reads叠加数取平均或中位数，保存进chrBpReads中
-		/////////////////////////////////////////获得每条染色体的长度并保存在hashChrLength中////////////////////////////////////////////////////
-		int[] chrBpReads=null;//保存每个bp的reads累计数
-		int[] SumChrBpReads=null;//直接从0开始记录，1代表第二个invNum,也和实际相同
-		/////////////////读文件的准备工作///////////////////////////////////////////////////
-		TxtReadandWrite txtmap=new TxtReadandWrite(mapFile,false);
+		
+		int[] chrBpReads = null;//保存每个bp的reads累计数
 		String lastChr="";
-		long[] readsChrNum = new long[1];
-		long[] readsPipNum = new long[1];
-		////////////////////////////////////////////////////////////////////////////////////////////////
-		//先假设mapping结果已经排序好，并且染色体已经分开好。
 		boolean flag = true;// 当没有该染色体时标记为false并且跳过所有该染色体上的坐标
-		int[] tmpOld = new int[2];
-		for (String content : txtmap.readlines()) {
-			String[] tmp = content.split(sep);
-			if (!tmp[colChrID].trim().toLowerCase().equals(lastChr)) // 出现了新的chrID，则开始剪切老的chrBpReads,然后新建chrBpReads，最后装入哈希表
-			{
+		ChrMapReadsInfo chrMapReadsInfo = null;
+		int[] tmpOld = new int[2];//更新 tmpOld
+		
+		int readsNum = 0;
+		
+		for (BedRecord bedRecord : bedSeq.readlines()) {
+			readsNum++;
+			
+			String tmpChrID = bedRecord.getRefID().toLowerCase();
+			if (!tmpChrID.equals(lastChr)) {
 				tmpOld = new int[2];//更新 tmpOld
-				if (!lastChr.equals("") && flag){ // 前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
-					sumChrBp(chrBpReads, 1, SumChrBpReads, readsPipNum);
+				
+				if (!lastChr.equals("") && flag) { // 前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
+					chrMapReadsInfo.sumChrBp(chrBpReads);
 				}
-				lastChr = tmp[colChrID].trim().toLowerCase();// 实际这是新出现的ChrID
-				if (booPrintChrID) {
-					System.out.println(lastChr);
-				}
-				int chrLength = 0;
-				try {
-					chrLength =  mapChrID2Len.get(lastChr.toLowerCase()).intValue();
-					flag = true;
-				} catch (Exception e) {
+				lastChr = tmpChrID;// 实际这是新出现的ChrID
+				logger.info(lastChr);
+				
+				Long chrLength = mapChrID2Len.get(lastChr.toLowerCase());
+				flag = true;
+				if (chrLength == null) {
 					logger.error("出现未知chrID "+lastChr);
 					flag = false; continue;
 				}
 
-				chrBpReads = new int[chrLength + 1];// 同样为方便，0位记录总长度。这样实际bp就是实际长度
-				chrBpReads[0] = (int) chrLength;
-				// //////////SumChrBpReads设定//////////////////////////////////
-				// 这个不是很精确，最后一位可能不准，但是实际应用中无所谓了,为方便，0位记录总长度。这样实际bp就是实际长度
-				int SumLength = chrBpReads.length / invNum + 1;// 保证不会溢出，这里是要让SumChrBpReads长一点
-				SumChrBpReads = new int[SumLength];// 直接从0开始记录，1代表第二个invNum,也和实际相同
-				// //////////将新出现的chr装入哈希表////////////////////////////////
-				mapChr2BpReads.put(lastChr, SumChrBpReads);// 将新出现的chrID和新建的SumChrBpReads装入hash表
-				readsChrNum = new long[1];
-				mapChrID2ReadsNum.put(lastChr, readsChrNum);
-				readsPipNum = new long[1];
-				mapChrID2PipNum.put(lastChr, readsPipNum);
-				// ///////////将每一条序列长度装入lsChrLength///////////////////
-				String[] tmpChrLen = new String[2];
-				tmpChrLen[0] = lastChr;
-				tmpChrLen[1] = chrLength + "";
-				lsChrLength.add(tmpChrLen);
+				chrBpReads = new int[(int) (chrLength + 1)];// 同样为方便，0位记录总长度。这样实际bp就是实际长度
+				chrBpReads[0] = chrLength.intValue();
+				chrMapReadsInfo = new ChrMapReadsInfo(lastChr, getChrLen(lastChr), invNum, summeryType, FormulatToCorrectReads);
+				mapChrID2ReadsInfo.put(lastChr, chrMapReadsInfo);
 			}
-			////////////////////按照位点加和chrBpReads////////////////////////////////
-			if (flag == false) //没有该基因则跳过
+			if (flag == false) //没有该染色体则跳过
 				continue;
-			//TODO 这里 uniqe mapping 的设置需要修改，因为万一 tmp[colUnique]里面不是数字呢？
-			if (!booUniqueMapping || colUnique < 0 || tmp.length <= colUnique || Integer.parseInt(tmp[colUnique]) <= 1) {
-				tmpOld = addLoc(tmp, uniqReads, tmpOld, startCod, FilteredStrand, chrBpReads,readsChrNum);
+			tmpOld = addLoc(bedRecord, uniqReads, tmpOld, startCod, FilteredStrand, chrBpReads,chrMapReadsInfo);
+			
+			suspendCheck();
+			if (flagStop) {
+				break;
+			}
+			readsSize = readsSize + bedRecord.getRawStringInfo().getBytes().length;
+			if (readsNum%1000 == 0) {
+				MapReadsProcessInfo mapReadsProcessInfo = new MapReadsProcessInfo(readsSize);
+				setRunInfo(mapReadsProcessInfo);
 			}
 		}
-		///////////////////循环结束后还要将最后一次的内容做总结////////////////////////////////////
 		if (flag) {
-			sumChrBp(chrBpReads, 1, SumChrBpReads, readsPipNum);
-		}
-		 ////////////////////////////把lsChrLength按照chrLen从小到大进行排序/////////////////////////////////////////////////////////////////////////////
-		  Collections.sort(lsChrLength,new Comparator<String[]>(){
-	            public int compare(String[] arg0, String[] arg1)
-	            {
-	               if( Integer.parseInt(arg0[1])<Integer.parseInt(arg1[1]))
-	            	   return -1;
-	            else if (Integer.parseInt(arg0[1])==Integer.parseInt(arg1[1])) 
-					return 0;
-	             else 
-					return 1;
-	            }
-	        });
-		  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		  allReadsNum = 0;
-		  for (Entry<String, long[]> entry : mapChrID2ReadsNum.entrySet()) {
-			allReadsNum = allReadsNum + entry.getValue()[0];
-			mapChrID2PipMean.put(entry.getKey(), (double)mapChrID2PipNum.get(entry.getKey())[0]/mapChrID2Len.get(entry.getKey()));
-		  }
-		  return allReadsNum;
+			chrMapReadsInfo.sumChrBp(chrBpReads);
+		}		
+		return;
 	}
 	/**
 	 * 具体加和的处理方法
@@ -350,18 +212,17 @@ public class MapReads extends MapReadsAbs{
 	 * @return
 	 * 本位点的信息，用于下一次判断是否是同一位点
 	 */
-	protected int[] addLoc(String[] tmp,boolean uniqReads,int[] tmpOld,int startCod, Boolean cis5to3, int[] chrBpReads, long[] readsNum) {
-		boolean cis5to3This = true;
-		if (colCis5To3 >= 0 && tmp.length > colCis5To3) {
-			cis5to3This = tmp[colCis5To3].trim().equals("+");
-		}
-		if (cis5to3 != null && cis5to3This != cis5to3.booleanValue()) {
+	protected int[] addLoc(BedRecord bedRecord,boolean uniqReads,int[] tmpOld,int startCod, Boolean cis5to3, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
+		boolean cis5to3This = bedRecord.isCis5to3();
+		if ((cis5to3 != null && bedRecord.isCis5to3() != cis5to3)
+				|| (booUniqueMapping && bedRecord.getMappingNum() > 1)
+				) {
 			return tmpOld;
 		}
 		
 		int[] tmpStartEnd = new int[2];
-		tmpStartEnd[0] = Integer.parseInt(tmp[colStartNum]) + startRegion;//本reads 的起点
-		tmpStartEnd[1] = Integer.parseInt(tmp[colEndNum]) + endRegion;//本reads的终点
+		tmpStartEnd[0] = bedRecord.getStart();
+		tmpStartEnd[1] = bedRecord.getEnd();
 
 		//如果本reads和上一个reads相同，则认为是线性扩增，跳过
 		if (uniqReads && tmpStartEnd[0] == tmpOld[0] && tmpStartEnd[1] == tmpOld[1] ) {
@@ -370,8 +231,8 @@ public class MapReads extends MapReadsAbs{
 
 		ArrayList<int[]> lsadd = null;
 		//如果没有可变剪接
-		if (colSplit >= 0 && splitStart >=0) {
-			lsadd = getStartEndLoc(tmpStartEnd[0], tmpStartEnd[1], tmp[colSplit], tmp[splitStart]);
+		if (bedRecord.isJunctionCovered()) {
+			lsadd = bedRecord.getLsGetSplitInfo();
 			lsadd = setStartCod(lsadd, startCod, cis5to3This);
 		}
 		else {
@@ -379,7 +240,7 @@ public class MapReads extends MapReadsAbs{
 			lsadd = setStartCod(lsadd, startCod, cis5to3This);
 		}
 		addChrLoc(chrBpReads, lsadd);
-		readsNum[0]++;
+		chrMapReadsInfo.readsAllNum = chrMapReadsInfo.readsAllNum + 1;
 		return tmpStartEnd;
 	}
 	/**
@@ -489,11 +350,11 @@ public class MapReads extends MapReadsAbs{
 			return;
 		}
 		if (NormalType == NORMALIZATION_NO) {
-			//就是啥也不干
-		}		
+			return;
+		}
 		else if (NormalType == NORMALIZATION_ALL_READS) {
 			for (int i = 0; i < doubleInfo.length; i++) {
-				doubleInfo[i] = doubleInfo[i]*1000000/allReadsNum;
+				doubleInfo[i] = doubleInfo[i]*1000000/getAllReadsNum();
 			}
 		}
 		else if (NormalType == NORMALIZATION_PER_GENE) {
@@ -506,3 +367,5 @@ public class MapReads extends MapReadsAbs{
 		}
 	}
 }
+
+

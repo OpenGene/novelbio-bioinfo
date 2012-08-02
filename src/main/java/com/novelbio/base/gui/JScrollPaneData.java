@@ -21,7 +21,7 @@ public class JScrollPaneData extends JScrollPane{
 	/**
 	 * 往jScrollPane中添加表格，第一行为title
 	 */
-	public void setLsInfo( List<String[]> lsInfo) {
+	public void setItemLs( List<String[]> lsInfo) {
 		String[][] tableValue = null;
 		defaultTableModel = new DefaultTableModel(tableValue, lsInfo.get(0));
 		jTabFInputGo = new JTable();
@@ -44,15 +44,16 @@ public class JScrollPaneData extends JScrollPane{
 	/**
 	 * 往jScrollPane中添加表格，如果没有title，则第一行为title
 	 */
-	public void addProview( List<String[]> lsInfo) {
+	public void addItemLs( List<String[]> lsInfo) {
 		if (defaultTableModel == null) {
-			setLsInfo(lsInfo);
+			setItemLs(lsInfo);
 			return;
 		}
 		for (String[] strings : lsInfo) {
 			defaultTableModel.addRow(strings);
 		}
 	}
+
 	/**
 	 * 往jScrollPane中添加表格
 	 */

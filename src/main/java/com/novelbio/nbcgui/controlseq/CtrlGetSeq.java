@@ -14,7 +14,6 @@ import com.novelbio.nbcgui.GUI.GuiGetSeq;
 
 public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 	int[] upAndDownStream = new int[2];
-	Species species;
 	GffChrAbs gffChrAbs;
 	GuiGetSeq guiGetSeq;
 	GffChrSeq gffChrSeq = new GffChrSeq();
@@ -29,10 +28,6 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 		gffChrSeq.setGffChrAbs(this.gffChrAbs);
 	}
 	public void setSpecies(Species species) {
-		if (this.species != null && this.species.equals(species)) {
-			return;
-		}
-		this.species = species;
 		gffChrAbs = new GffChrAbs(species);
 		gffChrSeq.setGffChrAbs(gffChrAbs);
 	}
@@ -83,7 +78,7 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 	/**
 	 * 输入名字提取序列，内部会去除重复基因
-	 * @param lsIsoName
+	 * @param lsListGffName
 	 */
 	public void setGetSeqIsoGenomWide() {
 		gffChrSeq.setGetSeqIsoGenomWide();

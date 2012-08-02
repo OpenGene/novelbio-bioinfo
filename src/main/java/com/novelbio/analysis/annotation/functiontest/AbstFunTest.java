@@ -78,8 +78,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * @param lsTest
 	 * @return
 	 */
-	private ArrayList<String[]> getLsTestFromLsBG(ArrayList<GeneID> lsTest)
-	{
+	private ArrayList<String[]> getLsTestFromLsBG(ArrayList<GeneID> lsTest) {
 		//去冗余用的
 		HashSet<GeneID> hashCopedIDs = new HashSet<GeneID>();
 		for (GeneID copedID : lsTest) {
@@ -262,8 +261,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * @throws Exception 
 	 * 没有就返回null
 	 */
-	public ArrayList<String[]> getTestResult()
-	{
+	public ArrayList<String[]> getTestResult() {
 		if (lsTestResult != null && lsTestResult.size() > 10) {
 			return lsTestResult;
 		}
@@ -287,8 +285,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * @throws Exception 
 	 * 没有就返回null
 	 */
-	protected ArrayList<String[]> doTest()
-	{
+	protected ArrayList<String[]> doTest() {
 		try {
 			ArrayList<String[]> lstest = new ArrayList<String[]>();
 			for (String[] strings : lsTest) {

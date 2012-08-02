@@ -12,27 +12,19 @@ import com.novelbio.database.model.modcopeid.GeneID;
  * 功能分析的类
  * @author zong0jie
  */
-public class FunctionTest implements FunTestInt{
+public class FunctionTest implements FunTestInt {
 	public static final String FUNCTION_GO_NOVELBIO = "gene ontology";
 	public static final String FUNCTION_GO_ELIM = "gene ontology elim";
 	public static final String FUNCTION_PATHWAY_KEGG = "pathway kegg";
 	public static final Logger logger = Logger.getLogger(FunctionTest.class);
 	AbstFunTest funTest = null;
 	
-	public static void main(String[] args) {
-		FunctionTest functionTest = new FunctionTest(FUNCTION_GO_ELIM, 39947, true, 1e-10, 3702);
-		functionTest.setLsBGAccID("/media/winE/Bioinformatics/GenomeData/Rice/RiceAffyBG.txt", 1);
-		functionTest.saveLsBGItem("/media/winE/Bioinformatics/GenomeData/Rice/RiceAffyBG2GOBlast.txt");
-	}
-	
-	
 	/**
 	 * 选择一种检验方式FUNCTION_GO_NOVELBIO等
 	 * 是否blast，如果blast那么blast到哪几个物种
 	 * @param functionType
 	 */
-	public FunctionTest(String functionType, int taxID, boolean blast, double blastevalue, int... blasttaxID)
-	{
+	public FunctionTest(String functionType, int taxID, boolean blast, double blastevalue, int... blasttaxID) {
 		if (functionType.equals(FUNCTION_GO_NOVELBIO)) {
 			funTest = new NovelGOFunTest(blast, Go2Term.GO_BP, blastevalue, blasttaxID);
 		}
@@ -51,8 +43,7 @@ public class FunctionTest implements FunTestInt{
 	/**
 	 * 只能用于GO分析中
 	 */
-	public void setGOtype(String goType)
-	{
+	public void setGOtype(String goType) {
 		funTest.setGoType(goType);
 	}
 	
@@ -125,7 +116,6 @@ public class FunctionTest implements FunTestInt{
 
 	@Override
 	public ArrayList<String[]> getItem2GenePvalue() {
-		// TODO Auto-generated method stub
 		return funTest.getItem2GenePvalue();
 	}
 

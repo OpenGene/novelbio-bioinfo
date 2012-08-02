@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -62,7 +63,11 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 		this.colPeakend = colPeakend;
 		this.rowNum = rowNum;
 	}
+
 	public ListHashBin() {}
+	public void setRowNum(int rowNum) {
+		this.rowNum = rowNum;
+	}
 	/**
 	 * 设定score所在的列
 	 * @param colScore
@@ -135,35 +140,24 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	 * 3: score
 	 * @param lsInfo
 	 */
-	public void ReadGff(ArrayList<String[]> lstmpPeakinfo) {
-		////对临时list进行排序,首先按照Chr排序，然后按照具体坐标排序
-		Collections.sort(lstmpPeakinfo,new Comparator<String[]>(){
-			public int compare(String[] arg0, String[] arg1) {
-				int i=arg0[0].compareTo(arg1[0]);
-				if(i==0){
-					Integer a0 = Integer.parseInt(arg0[1].trim());
-					Integer a1 =  Integer.parseInt(arg1[1].trim());
-					return a0.compareTo(a1);
-				}
-				return i;
-			}
-		});
+	public void ReadGff(List<String[]> lstmpPeakinfo) {
+		sortLsPeak(lstmpPeakinfo);
 		//////////////////////////正式读取，类似GffUCSC的读取方法///////////////////////
-	     //实例化三个表
 	     mapChrID2ListGff=new LinkedHashMap<String, ListBin<ListDetailBin>>();
 	     ListBin<ListDetailBin> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 	     
 	     String tmpChrName = "";
 	     int tmppeakstart=-1; int tmppeakend=-1; double score = -1;
-	     int peakNum=lstmpPeakinfo.size();
-	     
-	     for (int i = 0; i < peakNum; i++) {
-	    	 tmpChrName=lstmpPeakinfo.get(i)[0].toLowerCase();
-	    	 tmppeakstart=Integer.parseInt(lstmpPeakinfo.get(i)[1].trim());
-	    	 tmppeakend=Integer.parseInt(lstmpPeakinfo.get(i)[2].trim());
-	    	 if (lstmpPeakinfo.get(i).length > 3) {
-	    		 score = Double.parseDouble(lstmpPeakinfo.get(i)[3]);
-	    	 }
+	     for (String[] strings : lstmpPeakinfo) {
+	    	 tmpChrName=strings[0].toLowerCase();
+	    	 try {
+		    	 tmppeakstart=Integer.parseInt(strings[1].trim());
+		    	 tmppeakend=Integer.parseInt(strings[2].trim());
+			} catch (Exception e) { continue; }
+
+	    	 if (strings.length > 3) {
+	    		 score = Double.parseDouble(strings[3]);
+			}
 	    	 //出现新的染色体
 	    	 if (!mapChrID2ListGff.containsKey(tmpChrName)) {
 	    		 if(LOCList!=null) {
@@ -172,11 +166,10 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	    		 LOCList=new ListBin<ListDetailBin>();
 	    		 mapChrID2ListGff.put(tmpChrName, LOCList);
 	    	 }				
-	    	 //添加重叠peak
-	    	 //看本peak的起点是否小于上个peak的终点，如果小于，则说明本peak和上个peak连续
+	    	 //添加重叠peak，看本peak的起点是否小于上个peak的终点，如果小于，则说明本peak和上个peak连续
 	    	 ListDetailBin lastGffdetailpeak;
-	    	 if(LOCList.size()>0 && tmppeakstart < (lastGffdetailpeak = LOCList.get(LOCList.size()-1)).getEndAbs() )
-	    	 {   //修改基因起点和终点
+	    	 if(LOCList.size()>0 && tmppeakstart < (lastGffdetailpeak = LOCList.get(LOCList.size()-1)).getEndAbs() ) {   
+	    		 //修改基因起点和终点
 	    		 if(tmppeakstart < lastGffdetailpeak.getStartAbs())
 	    			 lastGffdetailpeak.setStartAbs(tmppeakstart);
 	    		 if(tmppeakend>lastGffdetailpeak.getEndAbs())
@@ -199,5 +192,20 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	    	 LOCList.add(gffdetailpeak);  
 	     }
 	     LOCList.trimToSize();
+	}
+	
+	private void sortLsPeak(List<String[]> lstmpPeakinfo) {
+		////对临时list进行排序,首先按照Chr排序，然后按照具体坐标排序
+		Collections.sort(lstmpPeakinfo,new Comparator<String[]>(){
+			public int compare(String[] arg0, String[] arg1) {
+				int i=arg0[0].compareTo(arg1[0]);
+				if(i==0){
+					Integer a0 = Integer.parseInt(arg0[1].trim());
+					Integer a1 =  Integer.parseInt(arg1[1].trim());
+					return a0.compareTo(a1);
+				}
+				return i;
+			}
+		});
 	}
 }

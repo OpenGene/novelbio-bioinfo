@@ -82,10 +82,10 @@ public class Exp2Location {
 	public void setMapInfo(String mapFile1, String mapFile2) {
 		mapReads1 = new MapReads(20, mapFile1);
 		mapReads1.setChrLenFile("/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/ChromFa_chrLen.list");
-		mapReads1.ReadMapFile();
+		mapReads1.running();
 		mapReads2 = new MapReads(20, mapFile2);
 		mapReads2.setChrLenFile("/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/ChromFa_chrLen.list");
-		mapReads2.ReadMapFile();
+		mapReads2.running();
 	}
 	/**
 	 * 读取sicer文件的score分数，如果不是用sicer的score去做分析，那么就不用该方法

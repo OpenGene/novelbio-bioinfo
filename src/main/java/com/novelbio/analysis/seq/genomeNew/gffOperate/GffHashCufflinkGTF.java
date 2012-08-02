@@ -12,6 +12,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 
 public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	GffHashGene gffHashRef;
+	double likelyhood = 0.4;//相似度在0.4以内的转录本都算为同一个基因
 	/**
 	 * 设定参考基因的Gff文件
 	 * @param gffHashRef
@@ -126,7 +127,10 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			double[] gffIsoRange = new double[]{gffGeneIsoInfo.getStartAbs(), gffGeneIsoInfo.getEndAbs()};
 			double[] gffGeneRange = new double[]{gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs()};
 			double[] compResult = ArrayOperate.cmpArray(gffIsoRange, gffGeneRange);
-			if (compResult[2] > GffDetailGene.OVERLAP_RATIO || compResult[3] > GffDetailGene.OVERLAP_RATIO) {
+			if (compResult[2] > GffDetailGene.OVERLAP_RATIO || compResult[3] > GffDetailGene.OVERLAP_RATIO
+					||
+					gffDetailGene.getSimilarIso(gffGeneIsoInfo, likelyhood) != null
+					) {
 				gffDetailGene.addIso(gffGeneIsoInfo);
 			}
 			else {

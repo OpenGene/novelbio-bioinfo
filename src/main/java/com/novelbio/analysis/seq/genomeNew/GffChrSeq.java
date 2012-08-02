@@ -15,6 +15,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructur
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.model.species.Species;
 /**
  * 在GffChrAbs中设定Tss和Tes的范围
  * setGetSeqIso 和 setGetSeqSite，谁后设定就提取谁
@@ -23,7 +24,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  */
 public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	private static Logger logger = Logger.getLogger(GffChrSeq.class);
-	GffChrAbs gffChrAbs = null;
+	GffChrAbs gffChrAbs = new GffChrAbs();
 	
 	GeneStructure geneStructure;
 	/** true,提取该转录本，false，提取该gene下的最长转录本 */
@@ -51,6 +52,9 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	
 	public GffChrSeq(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
+	}
+	public void setSpecies(Species species) {
+		gffChrAbs.setSpecies(species);
 	}
 	/** 默认是ture */
 	public void setSaveToFile(boolean saveToFile) {
@@ -108,7 +112,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 	/**
 	 * 输入名字提取序列，内部会去除重复基因
-	 * @param lsIsoName
+	 * @param lsListGffName
 	 */
 	public void setGetSeqIsoGenomWide() {
 		setIsoToGetSeq.clear();
@@ -148,7 +152,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 	/**
 	 * 输入位点提取序列
-	 * @param lsIsoName
+	 * @param lsListGffName
 	 */
 	public void setGetSeqSite(ArrayList<SiteInfo> lsSiteName) {
 		lsSiteInfos = lsSiteName;
@@ -272,8 +276,6 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		}
 		return true;
 	}
-
-
 	/**
 	 * 给定坐标，获得该坐标所对应的序列
 	 * @return

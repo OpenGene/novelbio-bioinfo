@@ -53,14 +53,17 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiToolsJpanel guiTools;
 	private GuiFastQJpanel guiFastQ;
 	private GuiDifGeneJpanel guiDifGene;
-	private GuiBlast guiBlast; 
+	private GuiBlast guiBlast;
 	private GuiSeqMiRNA guiSeqMiRNA;
 	private GuiMirnaTargetPredict guiMirnaTargetPredict;
 	private GuiAnnoGene guiAnnoGene;
 	private GuiAnnoPeak guiAnnoPeak;
 	private GuiPeakStatistics guiPeakStatistics;
 	private GuiGetSeq guiGetSeq;
-
+	private GuiBedTssAndChrome guiBedTssAndChrome;
+	private GuiRNASeqRsem guiRNASeqRsem;
+	
+	
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -123,6 +126,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiFastQ = new GuiFastQJpanel();
 				jTabbedPane1.addTab("FastQ", null, guiFastQ, null);
 				
+				guiRNASeqRsem = new GuiRNASeqRsem();
+				jTabbedPane1.addTab("RNArsem", guiRNASeqRsem);
+				
 				guiDifGene = new GuiDifGeneJpanel();
 				jTabbedPane1.addTab("DifGene", null, guiDifGene, null);
 				
@@ -137,6 +143,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiGetSeq = new GuiGetSeq();
 				jTabbedPane1.add("GetSeq", guiGetSeq);
+				
+				guiBedTssAndChrome = new GuiBedTssAndChrome();
+				jTabbedPane1.add("Tss", guiBedTssAndChrome);
 			}
 			pack();
 			this.setSize(1050, 699);
