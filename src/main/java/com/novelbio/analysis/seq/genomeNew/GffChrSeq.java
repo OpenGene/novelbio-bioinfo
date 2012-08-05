@@ -68,7 +68,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	public void setAbsIso(boolean absIso) {
 		this.absIso = absIso;
 	}
-	/** 提取全基因组序列的时候，是每个LOC提取一条序列还是提取全部 */
+	/** 提取全基因组序列的时候，是每个Gene提取一条Iso还是提取全部Iso */
 	public void setGetAllIso(boolean getAllIso) {
 		this.getAllIso = getAllIso;
 	}
@@ -193,12 +193,10 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		getSeq();
 	}
 	/**
-	 * 提取全基因组的promoter附近的序列
-	 * @param upBp tss上游多少bp，负数，如果正数就在下游
-	 * @param downBp tss下游多少bp，正数，如果负数就在上游
+	 * 先设定读取的序列，然后批量读取并写入文本
 	 * @return
 	 */
-	private void getSeq() {
+	public void getSeq() {
 		if (saveToFile)
 			txtOutFile = new TxtReadandWrite(outFile, true);
 		

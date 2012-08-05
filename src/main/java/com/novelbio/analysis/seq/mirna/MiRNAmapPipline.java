@@ -124,35 +124,35 @@ public class MiRNAmapPipline {
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			samFile = outputTmpFinal + "miRNA.sam";
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq";
-			mapping(fqFile, miRNApreSeq, samFile, bedFileMiRNA,false, false, unMappedFq);
+			mapping(fqFile, miRNApreSeq, samFile, bedFileMiRNA,false, true, unMappedFq);
 			fqFile = unMappedFq;
 		}
 	
 		if (FileOperate.isFileExist(rfamSeq)) {
 			samFile = outputTmpFinal + "rfam.sam";
 			unMappedFq = outputTmpFinal + "unMap2rfam.fq";
-			mapping(fqFile, rfamSeq, samFile, bedFileRfam,false, false, unMappedFq);
+			mapping(fqFile, rfamSeq, samFile, bedFileRfam,false, true, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(ncRNAseq)) {
 			samFile = outputTmpFinal + "ncRna.sam";
 			unMappedFq = outputTmpFinal + "unMap2ncRna.fq";
-			mapping(fqFile, ncRNAseq, samFile, bedFileNCRNA,false, false, unMappedFq);
+			mapping(fqFile, ncRNAseq, samFile, bedFileNCRNA,false, true, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(genome)) {
 			samFile = outputTmpFinal + "Genome.sam";
 			unMappedFq = outputTmpFinal + "unMapped.fq";
-			mapping(fqFile, genome, samFile, bedFileGenome, false, true, unMappedFq);
+			mapping(fqFile, genome, samFile, bedFileGenome, false, false, unMappedFq);
 		}
 		
 		if (mappingAll2Genome && FileOperate.isFileExist(genome)) {
 			fqFile = seqFile;
 			samFile = outputTmpFinal + "GenomeAll.sam";
 			unMappedFq = outputTmpFinal + "unMapped.fq";
-			mapping(fqFile, genome, samFile, bedFileGenomeAll, true, true, unMappedFq);
+			mapping(fqFile, genome, samFile, bedFileGenomeAll, true, false, unMappedFq);
 		}
 	}
 	/** Ωˆmapping÷¡MiRNA…œ */
@@ -182,17 +182,17 @@ public class MiRNAmapPipline {
 	 * @param samFileName
 	 * @param bedFile
 	 * @param uniqueMapping
-	 * @param notUniqueMappedReadsRandomSelectOne
+	 * @param uniqueMappedReadsRandomSelectOne
 	 * @param unMappedFq
 	 */
-	private void mapping(String fqFile, String chrFile, String samFileName, String bedFile, boolean uniqueMapping, boolean notUniqueMappedReadsRandomSelectOne,String unMappedFq) {
+	private void mapping(String fqFile, String chrFile, String samFileName, String bedFile, boolean uniqueMapping, boolean uniqueMappedReadsRandomSelectOne,String unMappedFq) {
 		MapBwa mapBwa = new MapBwa(fqFile, samFileName);
 		mapBwa.setExePath(exePath, chrFile);
 		SamFile samFile = mapBwa.mapReads();
 		samFile.setUniqMapping(uniqueMapping);
-		samFile.setNotUniqueRandomSelectOneRead(notUniqueMappedReadsRandomSelectOne);
+		samFile.setUniqueRandomSelectOneRead(uniqueMappedReadsRandomSelectOne);
 		try { Thread.sleep(1000); } catch (Exception e) { }
-		samFile.toBedSingleEnd(TxtReadandWrite.TXT,  bedFile, false);
+		samFile.toBedSingleEnd(TxtReadandWrite.TXT,  bedFile);
 		if (unMappedFq != null && !unMappedFq.equals("")) {
 			samFile.getUnMappedReads(false, unMappedFq);
 		}

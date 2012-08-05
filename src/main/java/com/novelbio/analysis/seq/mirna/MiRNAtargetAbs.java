@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -61,12 +62,13 @@ public abstract class MiRNAtargetAbs {
 		if (inputUTR3seq == null || inputUTR3seq.equals("")) {
 			inputUTR3seq = FileOperate.changeFileSuffix(predictResultFinal, "_3UTR", "fasta");
 		}
-		TxtReadandWrite txtOut = new TxtReadandWrite(inputUTR3seq, true);
-		ArrayList<SeqFasta> ls3UTR = gffChrSeq.getSeq3UTRAll();
-		for (SeqFasta seqFasta : ls3UTR) {
-			txtOut.writefileln(seqFasta.toStringNRfasta());
-		}
-		txtOut.close();
+		gffChrSeq.setSaveToFile(true);
+		gffChrSeq.setOutPutFile(inputUTR3seq);
+		gffChrSeq.setGeneStructure(GeneStructure.UTR3);
+		gffChrSeq.setGetAllIso(false);
+		gffChrSeq.setGetSeqIsoGenomWide();
+		//Ã·»°–Ú¡–
+		gffChrSeq.run();
 		return inputUTR3seq;
 	}
 	

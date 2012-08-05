@@ -8,7 +8,9 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.genomeNew.getChrSequence.FastQRecord;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 
 import net.sf.samtools.AlignmentBlock;
@@ -30,7 +32,9 @@ public class SamRecord extends SiteInfo {
 		this.samRecord = samRecord;
 		setSiteInfo(samRecord);
 	}
-
+	protected SAMRecord getSamRecord() {
+		return samRecord;
+	}
 	private void setSiteInfo(SAMRecord samRecord) {
 		super.setCis5to3(!samRecord.getReadNegativeStrandFlag());
 		super.setName(samRecord.getReadName());
@@ -56,9 +60,15 @@ public class SamRecord extends SiteInfo {
 		return isJunctionReads;
 	}
 
-	public List<AlignmentBlock> getAlignmentBlocks() {
+	public ArrayList<Align> getAlignmentBlocks() {
 		List<AlignmentBlock> lsAlignmentBlocks = samRecord.getAlignmentBlocks();
-		return lsAlignmentBlocks;
+		ArrayList<Align> lsAligns = new ArrayList<Align>();
+		for (AlignmentBlock alignmentBlock : lsAlignmentBlocks) {
+			Align align = new Align(alignmentBlock.getReadStart(), alignmentBlock.getLength() + alignmentBlock.getReadStart());
+			align.setCis5to3(isCis5to3());
+			lsAligns.add(align);
+		}
+		return lsAligns;
 	}
 
 	public boolean isMapped() {
@@ -159,7 +169,7 @@ public class SamRecord extends SiteInfo {
 
 	/** 给定一条reads，看是否为其成对的reads */
 	public boolean isPaireReads(SamRecord samRecord) {
-		if (isHavePairEnd()) {
+		if (!isHavePairEnd()) {
 			return false;
 		}
 		if (samRecord.getRefID().equals(getRefID())
@@ -177,7 +187,16 @@ public class SamRecord extends SiteInfo {
 			return false;
 		}
 	}
-
+	/**
+	 * 返回第一个记载的bedrecord 没有mapping上就返回null
+	 * */
+	public FastQRecord toFastQRecord() {
+		FastQRecord fastQRecord = new FastQRecord();
+		fastQRecord.setFastaQuality(samRecord.getBaseQualityString());
+		fastQRecord.setName(getName());
+		fastQRecord.setSeq(samRecord.getReadString());
+		return fastQRecord;
+	}
 	/**
 	 * 返回第一个记载的bedrecord 没有mapping上就返回null
 	 * */
@@ -196,6 +215,7 @@ public class SamRecord extends SiteInfo {
 		// 计数，mapping到了几次
 		bedRecord.setMappingNum(getNumMappedReadsInFile());
 		bedRecord.setName(samRecord.getReadName());
+		bedRecord.setAlignmentBlocks(getAlignmentBlocks());
 		return bedRecord;
 	}
 

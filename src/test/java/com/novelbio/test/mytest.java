@@ -120,10 +120,8 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/heartK0a14m1_2/accepted_hits.bam");
-		for (SamRecord samRecord : samFile.readLines()) {
-			samRecord.getInfo();
-		}
+		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_HXW/20120705/2B_recal.bam");
+		samFile.getSingleUnMappedReads();
 	}
 	
 	

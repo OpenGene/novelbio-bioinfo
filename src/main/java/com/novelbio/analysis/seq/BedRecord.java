@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
+import org.omg.CosNaming._BindingIteratorImplBase;
 
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
@@ -131,22 +132,35 @@ public class BedRecord extends SiteInfo {
 		}
 		return false;
 	}
+	public void setAlignmentBlocks(ArrayList<? extends Alignment> lsAlign) {
+		if (lsAlign.size() <= 1) {
+			return;
+		}
+		
+		splitLen = lsAlign.get(0).Length() + "";
+		splitStart = "0";
+		for (int i = 1; i < lsAlign.size(); i++) {
+			Alignment alignment = lsAlign.get(i);
+			splitStart = splitStart + "," + (alignment.getStartAbs() - getStartAbs());
+			splitLen = splitLen + "," + alignment.Length();
+		}
+	}
 	/** 如果是mapping到junction上去，一条bed文件记录会被切成被切成的几块的样子保存在这里。
 	 * 也就是一段一段的bed，那么返回每一段的信息，
 	 * 都是绝对坐标，从1开始
 	 * @return
 	 */
-	public ArrayList<? extends Alignment> getLsGetSplitInfo() {
+	public ArrayList<? extends Alignment> getAlignmentBlocks() {
 		ArrayList<Align> lsStartEnd = new ArrayList<Align>();
 		if (splitLen == null || splitLen.equals("") || !splitLen.contains(",")) {
-			Align align = new Align(startLoc, endLoc);
+			Align align = new Align(getStartAbs(), getEndAbs());
 			lsStartEnd.add(align);
 			return lsStartEnd;
 		}
 		String[] splitLenArray = splitLen.trim().split(",");
 		String[] splitLocArray = splitStart.trim().split(",");
 		for (int i = 0; i < splitLenArray.length; i++) {
-			int start = startLoc + Integer.parseInt(splitLocArray[i]);
+			int start = getStartAbs() + Integer.parseInt(splitLocArray[i]);
 			int end = start + Integer.parseInt(splitLenArray[i]) - 1;
 			Align align = new Align(start, end);
 			lsStartEnd.add(align);

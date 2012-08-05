@@ -232,7 +232,7 @@ public class MapReads extends MapReadsAbs{
 		ArrayList<int[]> lsadd = null;
 		//如果没有可变剪接
 		if (bedRecord.isJunctionCovered()) {
-			lsadd = bedRecord.getLsGetSplitInfo();
+			lsadd = bedRecord.getAlignmentBlocks();
 			lsadd = setStartCod(lsadd, startCod, cis5to3This);
 		}
 		else {
