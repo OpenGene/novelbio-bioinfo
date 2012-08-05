@@ -3,6 +3,8 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
@@ -17,6 +19,8 @@ import com.novelbio.database.model.species.Species;
  *
  */
 public class TranscriptomStatistics {
+	private static Logger logger = Logger.getLogger(TranscriptomStatistics.class);
+	
 	/** 全长aa至少长于50个氨基酸 */
 	static int minAAlen = 50;
 	
@@ -28,12 +32,20 @@ public class TranscriptomStatistics {
 	int allExonModifiedNum = 0;
 	/** 新的非编码基因的数量 */
 	int allNewNunCodingGeneNum = 0;
+
+	/** 新的有CDS的基因数量 */
+	int allNewCDSGeneNum = 0;
 	/** 新的有全长CDS的基因数量 */
 	int allNewCompleteCDSGeneNum = 0;
+	
 	/** 修饰过的Iso的数量 */
 	int allModifiedIso = 0;
 	/** 修饰过的Gene的数量 */
 	int allModifiedGene = 0;
+	
+	int allNoModifiedGene = 0;
+	
+	int totalGenes;
 	
 	SeqHash seqFastaHash;
 	
@@ -66,14 +78,17 @@ public class TranscriptomStatistics {
 		if (!gffGeneCluster.isContainsRef) {
 			ArrayList<GffDetailGene> lsGene = gffGeneCluster.getThisGffGene();
 			allGeneNewNum = allGeneNewNum + lsGene.size();
+			totalGenes = totalGenes + lsGene.size();
 			for (GffDetailGene gffDetailGene : lsGene) {
 				allIsoNewNum = allIsoNewNum + gffDetailGene.getLsCodSplit().size();
+			
 			}
 			addCodingGeneNum(gffGeneCluster);
 		}
 		//已有的进行修正
 		else {
 			addNewIsoNum(gffGeneCluster);
+			noModifiedGene(gffGeneCluster);
 			addModifiedIsoAndExon(gffGeneCluster);
 		}
 	}
@@ -87,9 +102,12 @@ public class TranscriptomStatistics {
 				SeqFasta seqFasta = seqFastaHash.getSeq(gffGeneIsoInfo, false);
 				SeqfastaStatisticsCDS seqfastaStatisticsCDS = new SeqfastaStatisticsCDS(seqFasta);
 				seqfastaStatisticsCDS.calculateAAseqInfo();
-				if (seqfastaStatisticsCDS.isFullCds() && seqfastaStatisticsCDS.getMstartAAlen() > minAAlen) {
-					allNewCompleteCDSGeneNum++;
+				if (seqfastaStatisticsCDS.getMstartAAlen() > minAAlen) {
+					allNewCDSGeneNum++;
 					mRNAgene = true;
+					if (seqfastaStatisticsCDS.isFullCds()) {
+						allNewCompleteCDSGeneNum++;
+					}
 					break;
 				}
 			}
@@ -115,14 +133,38 @@ public class TranscriptomStatistics {
 		}
 		allIsoNewNum = allIsoNewNum + (thisIsoNum - refIsoNum);
 	}
+	/** 没有修饰的基因数量 */
+	private void noModifiedGene(GffGeneCluster gffGeneCluster) {
+		ArrayList<GffDetailGene> lsGeneThis = gffGeneCluster.getThisGffGene();
+		ArrayList<GffDetailGene> lsGeneRef = gffGeneCluster.getRefGffGene();
+		boolean sameGene = false;
+		if (lsGeneRef.size() == 1 && lsGeneRef.size() == 1) {
+			GffDetailGene gffDetailGeneRef = lsGeneRef.get(0);
+			GffDetailGene gffDetailGeneThis = lsGeneThis.get(0);
+			if (gffDetailGeneRef.getLsCodSplit().size() == gffDetailGeneThis.getLsCodSplit().size()) {
+				for (GffGeneIsoInfo gffIsoThis : gffDetailGeneThis.getLsCodSplit()) {
+					GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getSimilarIso(gffIsoThis, gffGeneCluster.likelyhood);
+					if (!gffIsoRef.equalsIso(gffIsoThis)) {
+						sameGene = false;
+						break;
+					}
+					sameGene = true;
+				}
+			}
+		}
+		if (sameGene) {
+			allNoModifiedGene++;
+			totalGenes++;
+		}
+	}
 	/** 修饰的转录本和修饰的exon */
 	private void addModifiedIsoAndExon(GffGeneCluster gffGeneCluster) {
 		for (GffDetailGene gffDetailGeneRefRaw : gffGeneCluster.getRefGffGene()) {//遍历每个GffDetail
 			GffDetailGene gffDetailGeneRef = gffDetailGeneRefRaw.clone();
 			HashSet<GffGeneIsoInfo> setGffIsoRefSelect = new HashSet<GffGeneIsoInfo>();//所有选中的Iso的名字，也就是与cufflink预测的转录本相似的转录本
 
-			for (GffDetailGene gffDetailGeneCalculate : gffGeneCluster.getThisGffGene()) {//获得另一个GffHash里面的GffDetailGene
-				for (GffGeneIsoInfo gffIsoThis : gffDetailGeneCalculate.getLsCodSplit()) {//遍历该GffDetailGene的转录本，并挑选出最接近的进行比较	
+			for (GffDetailGene gffDetailGeneThis : gffGeneCluster.getThisGffGene()) {//获得另一个GffHash里面的GffDetailGene
+				for (GffGeneIsoInfo gffIsoThis : gffDetailGeneThis.getLsCodSplit()) {//遍历该GffDetailGene的转录本，并挑选出最接近的进行比较	
 					GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getSimilarIso(gffIsoThis, gffGeneCluster.likelyhood);
 					
 					if (gffIsoRef == null || gffIsoRef.equalsIso(gffIsoThis) ) {
@@ -135,6 +177,7 @@ public class TranscriptomStatistics {
 			allModifiedIso = allModifiedIso + setGffIsoRefSelect.size();
 			if (setGffIsoRefSelect.size() > 0) {
 				allModifiedGene ++;
+				totalGenes++;
 			}
 		}
 		
@@ -165,8 +208,11 @@ public class TranscriptomStatistics {
 		lsResult.add(new String[]{"allIsoNewNum", allIsoNewNum + ""});
 		lsResult.add(new String[]{"allModifiedIso", allModifiedIso + ""});
 		lsResult.add(new String[]{"allModifiedGene", allModifiedGene + ""});
+		lsResult.add(new String[]{"allNewCDSGeneNum", allNewCDSGeneNum + ""});
 		lsResult.add(new String[]{"allNewCompleteCDSGeneNum", allNewCompleteCDSGeneNum + ""});
 		lsResult.add(new String[]{"allNewNunCodingGeneNum", allNewNunCodingGeneNum + ""});
+		lsResult.add(new String[]{"allNoModifiedGene", allNoModifiedGene + ""});
+		lsResult.add(new String[]{"totalGenes", totalGenes + ""});
 		return lsResult;
 	}
 }

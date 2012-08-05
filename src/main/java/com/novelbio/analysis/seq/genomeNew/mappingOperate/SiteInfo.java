@@ -11,7 +11,7 @@ import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 
-public class SiteInfo implements Comparable<SiteInfo> {
+public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 
 	Logger logger = Logger.getLogger(MapInfo.class);
 	/** 比较mapinfo的起点终点 */
@@ -296,7 +296,7 @@ public class SiteInfo implements Comparable<SiteInfo> {
 	 * start恒小于end
 	 * @return
 	 */
-	public int getStart() {
+	public int getStartAbs() {
 		return startLoc;
 	}
 
@@ -304,7 +304,7 @@ public class SiteInfo implements Comparable<SiteInfo> {
 	 * 获得终点坐标，start恒小于end
 	 * @return
 	 */
-	public int getEnd() {
+	public int getEndAbs() {
 		return endLoc;
 	}
 	/**
@@ -451,8 +451,8 @@ public class SiteInfo implements Comparable<SiteInfo> {
 	public static int[] getLsMapInfoUpDown(List<? extends SiteInfo> lsSiteInfo) {
 		int maxUp = 0; int maxDown = 0;
 		for (SiteInfo siteInfo : lsSiteInfo) {
-			int tmpUp = siteInfo.getFlagSite() - siteInfo.getStart();
-			int tmpDown = siteInfo.getEnd() - siteInfo.getFlagSite();
+			int tmpUp = siteInfo.getFlagSite() - siteInfo.getStartAbs();
+			int tmpDown = siteInfo.getEndAbs() - siteInfo.getFlagSite();
 			if (tmpUp > maxUp) {
 				maxUp = tmpUp;
 			}
@@ -490,7 +490,7 @@ public class SiteInfo implements Comparable<SiteInfo> {
 	 * 就是判断start和end是否一致
 	 */
 	public boolean equalsLoc(SiteInfo mapInfo) {
-		if (mapInfo.getStart() == getStart() && mapInfo.getEnd() == getEnd()) {
+		if (mapInfo.getStartAbs() == getStartAbs() && mapInfo.getEndAbs() == getEndAbs()) {
 			return true;
 		}
 		return false;

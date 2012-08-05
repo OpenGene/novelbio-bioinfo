@@ -25,7 +25,7 @@ public class GffGeneCluster {
 		 * 注意只修正一个端点，也就是靠近内侧的，如括弧所标注
 		 *差距是小于但不等于 所以设定为10表示10以下的差距才会修正，但是不会修正10
 	 */
-	int boundMaxFalseGapBp = 10;
+	int boundMaxFalseGapBp = 9;
 	/** 是否已经将refgff放置在isContainsRef中 
 	 * 这里的算法是首先将refGffGene放置在lsGeneCluster的最前面。
 	 * 然后如果存在Ref，则将第一位的lsGeneCluster放置在lsGenesRef
@@ -146,8 +146,8 @@ public class GffGeneCluster {
 		}
 		for (int i = 0; i < lsGeneCluster.size(); i++) {
 			for (GffDetailGene gffDetailGene : lsGeneCluster.get(i)) {
-				if (gffDetailGene.getLen() > lengthGffGene) {
-					lengthGffGene = gffDetailGene.getLen();
+				if (gffDetailGene.Length() > lengthGffGene) {
+					lengthGffGene = gffDetailGene.Length();
 					index = i;
 				}
 			}
@@ -209,12 +209,12 @@ public class GffGeneCluster {
 		int[] tailBoundInfo = getBothStartNumEndNum(lsExonClusters);
 		ArrayList<ExonClusterBoundInfo> lsExonBoundInfoStatistics = new ArrayList<ExonClusterBoundInfo>();//用于统计exon修正数量的
 		
-		ExonClusterBoundInfo lastExonClusterBoundInfo = new ExonClusterBoundInfo(gffGeneIsoInfoRef, gffGeneIsoInfoThis);
+		ExonClusterBoundInfo lastExonClusterBoundInfo = new ExonClusterBoundInfo(gffGeneIsoInfoRef, gffGeneIsoInfoThis, boundMaxFalseGapBp);
 		lastExonClusterBoundInfo.booStartUnify = true;
 		lastExonClusterBoundInfo.booEndUnify = true;
 
 		for (int exonClusterNum = 0; exonClusterNum < lsExonClusters.size(); exonClusterNum++) {
-			ExonClusterBoundInfo exonClusterBoundInfo = new ExonClusterBoundInfo(gffGeneIsoInfoRef, gffGeneIsoInfoThis);
+			ExonClusterBoundInfo exonClusterBoundInfo = new ExonClusterBoundInfo(gffGeneIsoInfoRef, gffGeneIsoInfoThis, boundMaxFalseGapBp);
 			exonClusterBoundInfo.setLasteExonClusterBoundInfo(lastExonClusterBoundInfo);
 			exonClusterBoundInfo.setLsExonClustersAndNum(lsExonClusters, exonClusterNum);
 			exonClusterBoundInfo.setTailBoundInfo(tailBoundInfo);
@@ -320,11 +320,23 @@ class ExonClusterBoundInfo {
 		 * 注意只修正一个端点，也就是靠近内侧的，如括弧所标注
 		 *差距是小于但不等于 所以设定为10表示10以下的差距才会修正，但是不会修正10
 	 */
-	int boundMaxFalseGapBp = 10;
+	int boundMaxFalseGapBp = 1;
 	
-	public ExonClusterBoundInfo(GffGeneIsoInfo gffGeneIsoInfoRef, GffGeneIsoInfo gffGeneIsoInfoThis) {
+	/**
+	 * 当ref和this的exon都在两端时，如果两个外显子的边界差距在指定bp以内(譬如50bp以内)，就不修正
+	 * 如下<br>
+	 * //--------(10)-----20-------------30-----40----------------50---------(60)----------------<br>
+		//-----5-----------20--------------30-----40---------------50-------------70-------------<br>
+		//-------(10)-----20--------------30----40----------------50----------(60)-------------<br>
+		 * 注意只修正一个端点，也就是靠近内侧的，如括弧所标注
+		 *差距是小于但不等于 所以设定为10表示10以下的差距才会修正，但是不会修正10
+	 */
+	int boundMaxFalseGapBpTail = 150;
+	
+	public ExonClusterBoundInfo(GffGeneIsoInfo gffGeneIsoInfoRef, GffGeneIsoInfo gffGeneIsoInfoThis, int boundMaxFalseGapBp) {
 		this.gffGeneIsoInfoRef = gffGeneIsoInfoRef;
 		this.gffGeneIsoInfoThis = gffGeneIsoInfoThis;
+		this.boundMaxFalseGapBp = boundMaxFalseGapBp;
 	}
 	public void setTailBoundInfo(int[] tailBoundInfo) {
 		this.tailBoundInfo = tailBoundInfo;
@@ -388,7 +400,7 @@ class ExonClusterBoundInfo {
 		}
 		else if (tailBoundInfo[0] == thisExonClusterNum) {
 			compareExonStart(lsExonInfosRef, lsExonInfosThis);
-		} 
+		}
 		else if (tailBoundInfo[1] >= thisExonClusterNum) {
 			if (tailBoundInfo[1] == thisExonClusterNum)
 				compareExonEnd(lsExonInfosRef, lsExonInfosThis);
@@ -421,6 +433,27 @@ class ExonClusterBoundInfo {
 			//--------10--------25-------------35----40--------------------------------
 			//--------10-----20*-------------------------------(45)----50-------------
 			if (lsExonInfosRef.size() == 0 || lsExonInfosThis.size() == 0) {
+				selectRefEnd = true;
+			}
+			else {
+				int[] tmpEnd = getExonBound(false, lsExonInfosRef, lsExonInfosThis);
+				if (Math.abs(tmpEnd[0] - tmpEnd[1]) <= boundMaxFalseGapBp) {
+					selectRefEnd = true;
+				}
+			}
+		}
+		else if (lastExonClusterBoundInfo.isEndUnify()) {
+			if (lsExonInfosRef.size() == 0 || lsExonInfosThis.size() == 0) {
+				selectRefStart = false; selectRefEnd = false;
+				return;
+			}
+			
+			int[] tmpStart = getExonBound(true, lsExonInfosRef, lsExonInfosThis);
+			if (Math.abs(tmpStart[0] - tmpStart[1]) <= boundMaxFalseGapBp) {
+				selectRefStart = true;
+			}
+			int[] tmpEnd = getExonBound(false, lsExonInfosRef, lsExonInfosThis);
+			if (Math.abs(tmpEnd[0] - tmpEnd[1]) <= boundMaxFalseGapBp) {
 				selectRefEnd = true;
 			}
 		}
@@ -479,10 +512,9 @@ class ExonClusterBoundInfo {
 		//--------10-----20*-------------(30)-----40
 		//--------10--------25-------------35----40
 		//--------10-----20*-------------(30)----40
-		if (lastExonClusterBoundInfo.isEndUnify() == false && lastExonClusterBoundInfo.isSelectRefEnd() == true) {
+		if (!lastExonClusterBoundInfo.isEndUnify()&& lastExonClusterBoundInfo.isSelectRefEnd()) {
 			selectRefStart = true;
 		}
-		
 		//--------10-----20-------------------------------------50---60
 		//--------10-----20-------------35----40
 		//--------10-----20-------------35----40-------------50--60
@@ -490,8 +522,7 @@ class ExonClusterBoundInfo {
 			selectRefEnd = false;
 			return;
 		}
-
-		if (lsExonInfosThis.size() == 0) {
+		else if (lsExonInfosThis.size() == 0) {
 			//--------10-----20*-------------35*----40
 			//--------10--------25-------------------------------------50---60
 			//--------10-----20*-------------35*----40------------------------50--60
@@ -506,12 +537,19 @@ class ExonClusterBoundInfo {
 			return;
 		}
 		
+		if (lastExonClusterBoundInfo.isEndUnify()) {
+			int[] tmp = getExonBound(true, lsExonInfosRef, lsExonInfosThis);
+			if (Math.abs(tmp[0] - tmp[1]) <= boundMaxFalseGapBp) {
+				selectRefStart = true;
+			}
+			else
+				selectRefStart = false;
+		}
+		
 		//如果都是终点
 		if (gffGeneIsoInfoRef.indexOf(lsExonInfosRef.get(lsExonInfosRef.size() - 1)) == gffGeneIsoInfoRef.size() - 1 
 				&& gffGeneIsoInfoThis.indexOf(lsExonInfosThis.get(lsExonInfosThis.size() - 1)) == gffGeneIsoInfoThis.size() - 1 ) {
 			setMarginBoundOutSide(gffGeneIsoInfoRef.isCis5to3(), false, lsExonInfosRef, lsExonInfosThis);
-			setMarginBoundInSide(gffGeneIsoInfoRef.isCis5to3(), false, lsExonInfosRef, lsExonInfosThis);
-
 		}
 		else {
 			//--------10-----20--------------30---------40*----------------------------50*---60
@@ -550,22 +588,17 @@ class ExonClusterBoundInfo {
 	 */
 	private void setMarginBoundOutSide(boolean cis, boolean start, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {		
 		int refBound = 0, thisBound = 0;
-		if (start) {
-			refBound = lsExonInfosRef.get(0).getStartCis();
-			thisBound = lsExonInfosThis.get(0).getStartCis();
-		}
-		else {
-			refBound = lsExonInfosRef.get(lsExonInfosRef.size() - 1).getEndCis();
-			thisBound = lsExonInfosThis.get(lsExonInfosThis.size() - 1).getEndCis();
-		}
+		int tmp[] = getExonBound(start, lsExonInfosRef, lsExonInfosThis);
+		refBound = tmp[0]; thisBound = tmp[1];
+		
 		if (cis && start)
-			selectRefStart = (refBound <= thisBound? true:false);
+			selectRefStart = (refBound <= thisBound + boundMaxFalseGapBpTail ? true:false);
 		else if (cis && !start)
-			selectRefEnd = (refBound >= thisBound? true:false);
+			selectRefEnd = (refBound >= thisBound - boundMaxFalseGapBpTail ? true:false);
 		else if (!cis && start)
-			selectRefStart = (refBound >= thisBound? true:false);
+			selectRefStart = (refBound >= thisBound - boundMaxFalseGapBpTail ? true:false);
 		else if (!cis && !start)
-			selectRefEnd = (refBound <= thisBound? true:false);
+			selectRefEnd = (refBound <= thisBound + boundMaxFalseGapBpTail ? true:false);
 	}
 	
 	//TODO 以下，考虑是否仅仅选择ref靠近内侧的
@@ -581,36 +614,59 @@ class ExonClusterBoundInfo {
 	 * @param selectInfo 输入选择的位点，进行修正
 	 * 0：0 ref起点边界 1 this起点边界<br>
 	 * 1：0 ref终点边界 1 this终点边界<br>
-	 * @param cis
-	 * @param start
+	 * @param cis 正向还是反向
+	 * @param start 选择的是否为靠前的exon
 	 * @param lsExonInfosRef
 	 * @param lsExonInfosThis
 	 * @return 	
 	 */
 	private void setMarginBoundInSide(boolean cis, boolean start, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {		
 		int refBound = 0, thisBound = 0;
+		int tmp[] = getExonBound(!start, lsExonInfosRef, lsExonInfosThis);
+		refBound = tmp[0]; thisBound = tmp[1];
+
+		if (cis && start)
+			selectRefEnd = (refBound >= thisBound - boundMaxFalseGapBp ? true:false);
+		else if (cis && !start)
+			selectRefStart = (refBound <= thisBound + boundMaxFalseGapBp ? true:false);
+		else if (!cis && start)
+			selectRefEnd = (refBound <= thisBound + boundMaxFalseGapBp ? true:false);
+		else if (!cis && !start)
+			selectRefStart = (refBound >= thisBound - boundMaxFalseGapBp ? true:false);
+	}
+	/**
+	 * @param lsExonInfosRef size必须大于0
+	 * @param lsExonInfosThis size必须大于0
+	 * @param start 是否选择的是起点位点
+	 * @return
+	 * 0：refBound
+	 * 1：thisBound
+	 */
+	private int[] getExonBound(boolean start, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
+		boolean cis = lsExonInfosRef.get(0).isCis5to3();
+		int[] result = new int[2];
 		if (start) {
-			refBound = lsExonInfosRef.get(0).getEndCis();
-			thisBound = lsExonInfosThis.get(0).getEndCis();
+			if (cis) {
+				result[0] = lsExonInfosRef.get(0).getStartCis();
+				result[1] = lsExonInfosThis.get(0).getStartCis();
+			}
+			else {
+				result[0] = lsExonInfosRef.get(lsExonInfosRef.size() - 1).getStartCis();
+				result[1] = lsExonInfosThis.get(lsExonInfosThis.size() - 1).getStartCis();
+			}
 		}
 		else {
-			refBound = lsExonInfosRef.get(lsExonInfosRef.size() - 1).getStartCis();
-			thisBound = lsExonInfosThis.get(lsExonInfosThis.size() - 1).getStartCis();
+			if (cis) {
+				result[0] = lsExonInfosRef.get(lsExonInfosRef.size() - 1).getEndCis();
+				result[1] = lsExonInfosThis.get(lsExonInfosThis.size() - 1).getEndCis();
+			}
+			else {
+				result[0] = lsExonInfosRef.get(0).getEndCis();
+				result[1] = lsExonInfosThis.get(0).getEndCis();
+			}
 		}
-		
-		if (Math.abs(refBound - thisBound) >= boundMaxFalseGapBp) {
-			return;
-		}
-		if (cis && start)
-			selectRefEnd = (refBound >= thisBound? true:false);
-		else if (cis && !start)
-			selectRefStart = (refBound <= thisBound? true:false);
-		else if (!cis && start)
-			selectRefEnd = (refBound <= thisBound? true:false);
-		else if (!cis && !start)
-			selectRefStart = (refBound >= thisBound? true:false);
+		return result;
 	}
-	
 	/**
 	 * 比较本组exon的边界
 	 * @return int[2] 0一致 1不一致<br>
@@ -627,10 +683,14 @@ class ExonClusterBoundInfo {
 		if (lsExonInfos0.size() == 0 || lsExonInfos1.size() == 0) {
 			return;
 		}
-		if (lsExonInfos0.get(0).getStartCis() == lsExonInfos1.get(0).getStartCis()) {
+		if (lsExonInfos0.get(0).getStartCis() == lsExonInfos1.get(0).getStartCis()
+			|| Math.abs(lsExonInfos0.get(0).getStartCis() - lsExonInfos1.get(0).getStartCis()) <= boundMaxFalseGapBp	
+		) {
 			booStartUnify = true;
 		}
-		if (lsExonInfos0.get(lsExonInfos0.size() - 1).getEndCis() == lsExonInfos1.get(lsExonInfos1.size() - 1).getEndCis())  {
+		if (lsExonInfos0.get(lsExonInfos0.size() - 1).getEndCis() == lsExonInfos1.get(lsExonInfos1.size() - 1).getEndCis()
+			|| Math.abs(lsExonInfos0.get(lsExonInfos0.size() - 1).getEndCis() - lsExonInfos1.get(lsExonInfos1.size() - 1).getEndCis()) <= boundMaxFalseGapBp	
+		)  {
 			booEndUnify = true;
 		}
 	}

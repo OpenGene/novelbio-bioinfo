@@ -120,7 +120,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				GffGeneIsoInfo gffGeneIsoInfoLong = tmpUCSCgene.getLongestSplit();
 				gffGeneIsoInfoLong.getLsIntron();
 				for (ExonInfo intronInfo : gffGeneIsoInfoLong) {
-					lsIntronLen.add(intronInfo.getLen());
+					lsIntronLen.add(intronInfo.Length());
 				}
 			}
 		}

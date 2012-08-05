@@ -84,7 +84,7 @@ public class MapReads {
 				System.out.println("没有该染色体：" + mapInfo.getRefID());
 				continue;
 			}
-			for (int i = mapInfo.getStart()/invNum; i < mapInfo.getEnd()/invNum; i++) {
+			for (int i = mapInfo.getStartAbs()/invNum; i < mapInfo.getEndAbs()/invNum; i++) {
 				tmp = chrNumInfo[i];
 				chrNumInfo[i] = value;
 			}

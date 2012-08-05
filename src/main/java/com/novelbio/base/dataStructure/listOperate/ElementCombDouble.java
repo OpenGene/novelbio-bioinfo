@@ -109,7 +109,7 @@ public class ElementCombDouble<T extends ElementAbsDouble> implements ElementAbs
 	}
 	
 	@Override
-	public double getLen() {
+	public double Length() {
 		return Math.abs(getStartAbs()- getEndAbs());
 	}
 

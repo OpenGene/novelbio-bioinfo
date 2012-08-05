@@ -396,7 +396,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 */
 	public void getRegionLs(List<MapInfo> lsmapInfo, int thisInvNum, int type) {
 		for (MapInfo mapInfo : lsmapInfo) {
-			double[] Info = getRengeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd(), type);
+			double[] Info = getRengeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
 			mapInfo.setDouble(Info);
 		}
 	}
@@ -409,7 +409,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
 	public void getRegion(MapInfo mapInfo, int thisInvNum, int type) {
-		double[] Info = getRengeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd(), type);
+		double[] Info = getRengeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
 		mapInfo.setDouble(Info);
 	}
 	/**
@@ -422,10 +422,10 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	public void getRegionLs(int binNum, List<MapInfo> lsmapInfo, int type) {
 		for (int i = 0; i < lsmapInfo.size(); i++) {
 			MapInfo mapInfo = lsmapInfo.get(i);
-			double[] Info = getRengeInfo(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd(), binNum, type);
+			double[] Info = getRengeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
 			if (Info == null) {
 				lsmapInfo.remove(i); i--;
-				logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStart() + " "+ mapInfo.getEnd());
+				logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
 				continue;
 			}
 			mapInfo.setDouble(Info);
@@ -439,9 +439,9 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
 	public void getRegion(int binNum, MapInfo mapInfo, int type) {
-		double[] Info = getRengeInfo(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd(), binNum, type);
+		double[] Info = getRengeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
 		if (Info == null) {
-			logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStart() + " "+ mapInfo.getEnd());
+			logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
 		}
 		mapInfo.setDouble(Info);
 	}
@@ -592,8 +592,8 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param mapInfo
 	 */
 	public static void CmpMapReg(MapReads mapReads, MapReads mapReads2, MapInfo mapInfo) {
-		double value1 = mapReads.regionMean(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd());
-		double value2 = mapReads2.regionMean(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd());
+		double value1 = mapReads.regionMean(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs());
+		double value2 = mapReads2.regionMean(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs());
 		mapInfo.setScore(value1/value2);
 	}
 	public static class MapReadsProcessInfo {

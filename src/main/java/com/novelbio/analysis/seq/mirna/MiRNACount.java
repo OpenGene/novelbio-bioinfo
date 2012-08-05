@@ -175,7 +175,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	}
 	/** 一行一行处理 */
 	private void copeBedRecord(BedRecord bedRecord) {
-		String subName = listMiRNALocation.searchMirName(bedRecord.getRefID(), bedRecord.getStart(), bedRecord.getEnd());
+		String subName = listMiRNALocation.searchMirName(bedRecord.getRefID(), bedRecord.getStartAbs(), bedRecord.getEndAbs());
 		//找不到名字的在后面添加
 		if (subName == null) {
 			subName = bedRecord.getRefID() + flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix;

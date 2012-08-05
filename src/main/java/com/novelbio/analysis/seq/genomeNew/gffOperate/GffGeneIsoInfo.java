@@ -315,12 +315,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			 // 0-0 0-1 1-0 1-1
 			// 2-1 2-0 1-1 1-0 0-1 0-tss cood
 			for (int i = 0; i < size(); i++) { 			
-				allExonLength = allExonLength + get(i).getLen();
+				allExonLength = allExonLength + get(i).Length();
 			}
 			return allExonLength;
 		} else {
 			num--;
-			return get(num).getLen();
+			return get(num).Length();
 		}
 	}
 	 /**

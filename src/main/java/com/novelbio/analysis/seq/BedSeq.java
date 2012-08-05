@@ -62,6 +62,9 @@ public class BedSeq extends SeqComb{
 	 * @param bedRecord
 	 */
 	public void writeBedRecord(BedRecord bedRecord) {
+		if (bedRecord == null) {
+			return;
+		}
 		txtSeqFile.writefileln(bedRecord.toString());
 	}
 	/**
@@ -811,24 +814,24 @@ public class BedSeq extends SeqComb{
 			if (bedRecordLast == null) {
 				bedRecordLast = new BedRecord();
 				bedRecordLast.setRefID(bedRecord.getRefID());
-				bedRecordLast.setStartEndLoc(bedRecord.getStart(), bedRecord.getEnd());
+				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 			}
-			if	(!bedRecord.getRefID().equals(bedRecordLast.getRefID()) || bedRecord.getStart() >= bedRecordLast.getEnd()) {
+			if	(!bedRecord.getRefID().equals(bedRecordLast.getRefID()) || bedRecord.getStartAbs() >= bedRecordLast.getEndAbs()) {
 				bedSeqResult.writeBedRecord(bedRecordLast);
 				bedRecordLast = new BedRecord();
 				bedRecordLast.setRefID(bedRecord.getRefID());
-				bedRecordLast.setStartEndLoc(bedRecord.getStart(), bedRecord.getEnd());
+				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 				//因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
 				if (bedRecordLast.getReadsNum() == 1) {
 					bedRecordLast.setReadsNum(1);
 				}
 				continue;
 			}
-			else if (bedRecord.getStart() < bedRecordLast.getEnd()) {
+			else if (bedRecord.getStartAbs() < bedRecordLast.getEndAbs()) {
 				//发现一个overlap就加上1，表示该区域有多条reads
 				bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
-				if (bedRecordLast.getEnd() < bedRecord.getEnd()) {
-					bedRecordLast.setStartEndLoc(bedRecordLast.getStart(), bedRecord.getEnd());
+				if (bedRecordLast.getEndAbs() < bedRecord.getEndAbs()) {
+					bedRecordLast.setStartEndLoc(bedRecordLast.getStartAbs(), bedRecord.getEndAbs());
 				}
 			}
 		}
@@ -852,14 +855,14 @@ public class BedSeq extends SeqComb{
 				if (bedRecordLast == null) {
 					bedRecordLast = new BedRecord();
 					bedRecordLast.setRefID(bedRecord.getRefID());
-					bedRecordLast.setStartEndLoc(bedRecord.getStart(), bedRecord.getEnd());
+					bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 					bedRecordLast.setCis5to3(bedRecord.isCis5to3());
 				}
-				if	(!bedRecord.getRefID().equals(bedRecordLast.getRefID()) || bedRecord.getStart() >= bedRecordLast.getEnd() || bedRecord.isCis5to3() != bedRecordLast.isCis5to3()) {
+				if	(!bedRecord.getRefID().equals(bedRecordLast.getRefID()) || bedRecord.getStartAbs() >= bedRecordLast.getEndAbs() || bedRecord.isCis5to3() != bedRecordLast.isCis5to3()) {
 					bedSeqResult.writeBedRecord(bedRecordLast);
 					bedRecordLast = new BedRecord();
 					bedRecordLast.setRefID(bedRecord.getRefID());
-					bedRecordLast.setStartEndLoc(bedRecord.getStart(), bedRecord.getEnd());
+					bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 					bedRecordLast.setCis5to3(bedRecord.isCis5to3());
 					//因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
 					if (bedRecordLast.getReadsNum() == 1) {
@@ -867,11 +870,11 @@ public class BedSeq extends SeqComb{
 					}
 					continue;
 				}
-				else if (bedRecord.getStart() < bedRecordLast.getEnd()) {
+				else if (bedRecord.getStartAbs() < bedRecordLast.getEndAbs()) {
 					//发现一个overlap就加上1，表示该区域有多条reads
 					bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
-					if (bedRecordLast.getEnd() < bedRecord.getEnd()) {
-						bedRecordLast.setStartEndLoc(bedRecordLast.getStart(), bedRecord.getEnd());
+					if (bedRecordLast.getEndAbs() < bedRecord.getEndAbs()) {
+						bedRecordLast.setStartEndLoc(bedRecordLast.getStartAbs(), bedRecord.getEndAbs());
 					}
 				}
 			}
@@ -897,8 +900,8 @@ public class BedSeq extends SeqComb{
 				continue;
 			}
 			if (!bedRecord.getRefID().equals(bedRecordLast.getRefID())
-					|| bedRecord.getStart() != bedRecordLast.getStart()
-					|| bedRecord.getEnd() == bedRecordLast.getEnd()
+					|| bedRecord.getStartAbs() != bedRecordLast.getStartAbs()
+					|| bedRecord.getEndAbs() == bedRecordLast.getEndAbs()
 					|| bedRecord.isCis5to3() == bedRecordLast.isCis5to3()) {
 				bedSeqResult.writeBedRecord(bedRecordLast);
 				bedRecordLast = new BedRecord();

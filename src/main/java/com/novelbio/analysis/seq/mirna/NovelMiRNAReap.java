@@ -106,7 +106,7 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 	 * @param readsName_TNum 类似t0000035这种格式的num
 	 */
 	private void writeMiReapMapInfoAndSeq(TxtReadandWrite txtOutMapInfo, TxtReadandWrite txtOutSeq, BedRecord bedRecord, int readsName_TNum) {
-		txtOutMapInfo.writefileln(getID(readsName_TNum) + "\t" + bedRecord.getRefID() + "\t" + bedRecord.getStart() + "\t" + bedRecord.getEnd() + "\t" + bedRecord.getStrand());
+		txtOutMapInfo.writefileln(getID(readsName_TNum) + "\t" + bedRecord.getRefID() + "\t" + bedRecord.getStartAbs() + "\t" + bedRecord.getEndAbs() + "\t" + bedRecord.getStrand());
 		SeqFasta seqFasta = bedRecord.getSeqFasta();
 		seqFasta.setName(getID(readsName_TNum) + " " + bedRecord.getReadsNum());
 		txtOutSeq.writefileln(seqFasta.toStringNRfasta());

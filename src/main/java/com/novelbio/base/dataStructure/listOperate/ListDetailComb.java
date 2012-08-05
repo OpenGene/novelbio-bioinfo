@@ -123,7 +123,7 @@ public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 	}
 	
 	@Override
-	public int getLen() {
+	public int Length() {
 		return Math.abs(getStartAbs()- getEndAbs());
 	}
 

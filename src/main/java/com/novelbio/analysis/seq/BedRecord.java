@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.mapping.Align;
  /**
   * BedSeq每一行的信息<br>
   * 兼容 bamToBed的 12行信息格式
@@ -134,25 +136,22 @@ public class BedRecord extends SiteInfo {
 	 * 都是绝对坐标，从1开始
 	 * @return
 	 */
-	public ArrayList<int[]> getLsGetSplitInfo() {
-		ArrayList<int[]> lsStartEnd = new ArrayList<int[]>();
+	public ArrayList<? extends Alignment> getLsGetSplitInfo() {
+		ArrayList<Align> lsStartEnd = new ArrayList<Align>();
 		if (splitLen == null || splitLen.equals("") || !splitLen.contains(",")) {
-			int[] startend = new int[2];
-			startend[0] = startLoc;
-			startend[1] = endLoc;
-			lsStartEnd.add(startend);
+			Align align = new Align(startLoc, endLoc);
+			lsStartEnd.add(align);
 			return lsStartEnd;
 		}
 		String[] splitLenArray = splitLen.trim().split(",");
 		String[] splitLocArray = splitStart.trim().split(",");
 		for (int i = 0; i < splitLenArray.length; i++) {
-			int[] startend = new int[2];
-			startend[0] = startLoc + Integer.parseInt(splitLocArray[i]);
-			startend[1] = startend[0] + Integer.parseInt(splitLenArray[i]) - 1;
-			lsStartEnd.add(startend);
+			int start = startLoc + Integer.parseInt(splitLocArray[i]);
+			int end = start + Integer.parseInt(splitLenArray[i]) - 1;
+			Align align = new Align(start, end);
+			lsStartEnd.add(align);
 		}
 		return lsStartEnd;
-	
 	}
 	/**
 	 * 如果没有这一项，则返回1

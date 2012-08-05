@@ -92,7 +92,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	 */
 	public double getEleLen(int num)
 	{
-		return get(num-1).getLen();
+		return get(num-1).Length();
 	}
 	/**
 	 * 用时需谨慎
@@ -105,7 +105,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
  		}
 		else {
 			if (size() == 1) {
-				return get(0).getLen();
+				return get(0).Length();
 			}
 			else {
 				if (get(0).getStartAbs() < get(1).getStartAbs()) {
@@ -232,7 +232,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 			//double这里不需要加一
 			distance = getLoc2EleEnd(locSmall) + getLoc2EleStart(locBig);
 			for (int i = locSmallExInNum + 1; i <= locBigExInNum - 1; i++) {
-				distance = distance + get(i).getLen();
+				distance = distance + get(i).Length();
 			}
 		}
 		
@@ -325,8 +325,8 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 				for (int i = exonNum - 1; i >= 0; i--) {
 					E tmpExon = get(i);
 					// 一个一个外显子的向前遍历
-					if (remain - tmpExon.getLen() > 0) {
-						remain = remain - tmpExon.getLen();
+					if (remain - tmpExon.Length() > 0) {
+						remain = remain - tmpExon.Length();
 						continue;
 					}
 					else {
@@ -357,8 +357,8 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 				for (int i = exonNum + 1; i < size(); i++) {
 					E tmpExon = get(i);
 					// 一个一个外显子的向前遍历
-					if (remain - tmpExon.getLen() > 0) {
-						remain = remain - tmpExon.getLen();
+					if (remain - tmpExon.Length() > 0) {
+						remain = remain - tmpExon.Length();
 						continue;
 					}
 					else {
@@ -451,7 +451,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	public double getListLen() {
 		double isoLen = 0;
 		for (E exons : this) {
-			isoLen = isoLen + exons.getLen();
+			isoLen = isoLen + exons.Length();
 		}
 		return isoLen;
 	}

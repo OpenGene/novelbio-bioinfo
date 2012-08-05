@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
+
 /**
  * compare的比较取决于父节点的方向，如果父节点的方向为null，则按照绝对值排序，如果是cis，那么就按cis的排序，如果为trans就按照trans的方式排序
  * 本类重写了equal代码，用于比较两个loc是否一致
@@ -18,7 +20,7 @@ import org.apache.log4j.Logger;
  * @author zong0jie
  *
  */
-public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
+public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs>, Alignment {
 	/** 父树 */
 	ListAbs<? extends ListDetailAbs> listAbs;
 	
@@ -439,7 +441,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 		return numberstart;
 	}
 	
-	public int getLen() {
+	public int Length() {
 		return Math.abs(numberend-numberstart) + 1;
 	}
 	
@@ -495,6 +497,5 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 				}
 				return result;
 			}
-	
 	}
 }

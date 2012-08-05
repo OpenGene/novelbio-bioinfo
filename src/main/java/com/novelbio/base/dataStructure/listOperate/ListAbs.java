@@ -68,7 +68,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * @return
 	 */
 	public int getEleLen(int num) {
-		return get(num-1).getLen();
+		return get(num-1).Length();
 	}
 	
 	public int getLen() {
@@ -77,7 +77,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
  		}
 		else {
 			if (size() == 1) {
-				return get(0).getLen();
+				return get(0).Length();
 			}
 			else {
 				if (get(0).getStartAbs() < get(1).getStartAbs()) {
@@ -198,7 +198,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		else {
 			distance = getCod2ExInEnd(locSmall) + getCod2ExInStart(locBig) + 1;
 			for (int i = locSmallExInNum + 1; i <= locBigExInNum - 1; i++) {
-				distance = distance + get(i).getLen();
+				distance = distance + get(i).Length();
 			}
 		}
 		
@@ -276,7 +276,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	public int getListLen() {
 		int isoLen = 0;
 		for (E exons : this) {
-			isoLen = isoLen + exons.getLen();
+			isoLen = isoLen + exons.Length();
 		}
 		return isoLen;
 	}
@@ -386,8 +386,8 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 				for (int i = exonNum - 1; i >= 0; i--) {
 					E tmpExon = get(i);
 					// 一个一个外显子的向前遍历
-					if (remain - tmpExon.getLen() > 0) {
-						remain = remain - tmpExon.getLen();
+					if (remain - tmpExon.Length() > 0) {
+						remain = remain - tmpExon.Length();
 						continue;
 					}
 					else {
@@ -417,8 +417,8 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 				for (int i = exonNum + 1; i < size(); i++) {
 					E tmpExon = get(i);
 					// 一个一个外显子的向前遍历
-					if (remain - tmpExon.getLen() > 0) {
-						remain = remain - tmpExon.getLen();
+					if (remain - tmpExon.Length() > 0) {
+						remain = remain - tmpExon.Length();
 						continue;
 					}
 					else {

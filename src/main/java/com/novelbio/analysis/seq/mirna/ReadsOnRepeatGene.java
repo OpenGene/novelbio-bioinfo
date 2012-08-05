@@ -67,13 +67,13 @@ public class ReadsOnRepeatGene {
 		for (BedRecord bedRecord : bedSeq.readlines()) {
 			String repeatInfo = null;
 			if (gffHashRepeat != null) {//如果没有读取repeat文件，则返回
-				repeatInfo = searchReadsRepeat(bedRecord.getRefID(), bedRecord.getStart(), bedRecord.getEnd());
+				repeatInfo = searchReadsRepeat(bedRecord.getRefID(), bedRecord.getStartAbs(), bedRecord.getEndAbs());
 				if (repeatInfo != null) {
 					addHashRepeat(repeatInfo, bedRecord.getMappingNum());
 				}
 			}
 			if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
-				int[] geneLocInfo = searchGene(bedRecord.isCis5to3(), bedRecord.getRefID(), bedRecord.getStart(), bedRecord.getEnd());
+				int[] geneLocInfo = searchGene(bedRecord.isCis5to3(), bedRecord.getRefID(), bedRecord.getStartAbs(), bedRecord.getEndAbs());
 				if (geneLocInfo != null) {
 					addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,bedRecord.getMappingNum());
 				}

@@ -103,13 +103,13 @@ public class MapReads extends MapReadsAbs{
 		for (BedRecord bedRecord : bedSeq.readlines()) {
 			if (!bedRecord.getRefID().equals(chrID)) {
 				if (lastBedRecord != null) {
-					mapChrID2Len.put(chrID.toLowerCase(), (long)lastBedRecord.getEnd());
+					mapChrID2Len.put(chrID.toLowerCase(), (long)lastBedRecord.getEndAbs());
 				}
 				chrID = bedRecord.getRefID();
 			}
 			lastBedRecord = bedRecord;
 		}
-		mapChrID2Len.put(lastBedRecord.getRefID().toLowerCase(), (long)lastBedRecord.getEnd());
+		mapChrID2Len.put(lastBedRecord.getRefID().toLowerCase(), (long)lastBedRecord.getEndAbs());
 	}
 	/**
 	 * 经过标准化，和equations修正
@@ -221,8 +221,8 @@ public class MapReads extends MapReadsAbs{
 		}
 		
 		int[] tmpStartEnd = new int[2];
-		tmpStartEnd[0] = bedRecord.getStart();
-		tmpStartEnd[1] = bedRecord.getEnd();
+		tmpStartEnd[0] = bedRecord.getStartAbs();
+		tmpStartEnd[1] = bedRecord.getEndAbs();
 
 		//如果本reads和上一个reads相同，则认为是线性扩增，跳过
 		if (uniqReads && tmpStartEnd[0] == tmpOld[0] && tmpStartEnd[1] == tmpOld[1] ) {

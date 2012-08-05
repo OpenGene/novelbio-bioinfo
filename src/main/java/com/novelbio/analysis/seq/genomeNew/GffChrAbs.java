@@ -452,7 +452,7 @@ public class GffChrAbs {
 		//存储最后的基因和权重
 		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
 		for (MapInfo mapInfo : lsMapInfos) {
-			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene( mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd(), structure );
+			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene( mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), structure );
 			for (GffDetailGene gffDetailGene : setGffDetailGene) {
 				if (hashGffDetailGenes.containsKey(gffDetailGene)) {
 					if (MapInfo.isMin2max()) {

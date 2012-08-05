@@ -522,7 +522,7 @@ public class DifLoc2DifLoc {
 	private Double getRatio(MapInfo mapInfo, ArrayList<MapReads> lsMapReads) {
 		lsMapReads.get(0).getRegion(mapInfo, 20, 0);
 		if (mapInfo.getDouble() == null) {
-			logger.error("发现了未知ID：" + mapInfo.getRefID() + " " + mapInfo.getStart() + " " + mapInfo.getEnd());
+			logger.error("发现了未知ID：" + mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " " + mapInfo.getEndAbs());
 			return null;
 		}
 		Double score1 = mapInfo.getMean();

@@ -38,6 +38,9 @@ import javax.imageio.ImageIO;
 import javax.servlet.jsp.tagext.TryCatchFinally;
 import javax.swing.tree.ExpandVetoException;
 
+import net.sf.samtools.AlignmentBlock;
+import net.sf.samtools.SAMRecord;
+
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
@@ -77,6 +80,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.mapping.SamFile;
+import com.novelbio.analysis.seq.mapping.SamRecord;
 import com.novelbio.analysis.seq.reseq.LastzAlign;
 import com.novelbio.analysis.seq.reseq.ModifySeq;
 import com.novelbio.analysis.tools.Mas3.getProbID;
@@ -116,16 +120,10 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		ArrayList<int[]> lsAA = new ArrayList<int[]>();
-		lsAA.add(new int[]{1});
-		lsAA.add(new int[]{2});
-		lsAA.add(new int[]{3});
-		ArrayList<int[]> lsbb = (ArrayList<int[]>) lsAA.clone();
-		lsAA.remove(0);
-		System.out.println(lsbb.get(0)[0]);
-		System.out.println(lsAA.get(0)[0]);
-		lsAA.get(0)[0] = 100;
-		System.out.println(lsbb.get(1)[0]);
+		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/heartK0a14m1_2/accepted_hits.bam");
+		for (SamRecord samRecord : samFile.readLines()) {
+			samRecord.getInfo();
+		}
 	}
 	
 	

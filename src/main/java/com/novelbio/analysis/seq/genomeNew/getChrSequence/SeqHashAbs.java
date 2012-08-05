@@ -373,7 +373,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	}
 	@Override
 	public void getSeq(SiteInfo mapInfo) {
-		SeqFasta seqFasta = getSeq(mapInfo.getRefID(), mapInfo.getStart(), mapInfo.getEnd());
+		SeqFasta seqFasta = getSeq(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs());
 		seqFasta.setName(mapInfo.getName());
 		mapInfo.setSeq(seqFasta, true);
 	}

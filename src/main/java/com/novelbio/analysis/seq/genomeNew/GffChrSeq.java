@@ -222,7 +222,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 				num++;
 				getSeq(siteInfo);
 				SeqFasta seqFasta = siteInfo.getSeqFasta();
-				seqFasta.setName(siteInfo.getRefID() + "_" + siteInfo.getStart() + "_" + siteInfo.getEnd() + "_" + siteInfo.getFlagSite());
+				seqFasta.setName(siteInfo.getRefID() + "_" + siteInfo.getStartAbs() + "_" + siteInfo.getEndAbs() + "_" + siteInfo.getFlagSite());
 				isGetSeq = copeSeqFasta(seqFasta);
 				
 				suspendCheck();

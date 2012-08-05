@@ -17,7 +17,7 @@ import com.novelbio.generalConf.NovelBioConst;
 public class GffHashMerge {
 	public static void main(String[] args) {
 		mouse();
-//		checken();
+		checken();
 	}
 	public static void mouse() {
 		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcripts.gtf";
@@ -25,21 +25,21 @@ public class GffHashMerge {
 		String gffFinalStatistics = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcriptomeStatistics.txt";
 		Species species = new Species(10090);
 		GffHashMerge gffHashMerge = new GffHashMerge();
-//		gffHashMerge.setSpecies(species);
-//		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFile()[0], species.getGffFile()[1]));
-//		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffhashGeneCuf));
-//		
-//		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
-//		gffHashGene.removeDuplicateIso();
-//		gffHashGene.writeToGTF(gffFinal, "novelbio");
-		
+		gffHashMerge.setSpecies(species);
+		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFile()[0], species.getGffFile()[1]));
+		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffhashGeneCuf));
+		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
+		gffHashGene.removeDuplicateIso();
+		gffHashGene.writeToGTF(gffFinal, "novelbio");
+
 		gffHashMerge = new GffHashMerge();
 		gffHashMerge.setSpecies(species);
 		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFile()[0], species.getGffFile()[1]));
 		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffFinal));
-		
+
 		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
 		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
+
 		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
 	
@@ -207,13 +207,17 @@ public class GffHashMerge {
 		ListGff listGff = new ListGff();
 		for (GffGeneCluster gffGeneCluster : lsGeneCluster) {
 			ArrayList<GffDetailGene> lsGene = gffGeneCluster.getCombinedGffGene();
+	
 			boolean shortGene = true;
 			for (GffDetailGene gffDetailGene : lsGene) {
 				//长度大于指定长度，或者最长转录本含有内含子，就可以认为不是假基因
-				if (gffDetailGene.getLen() > minGeneLen || gffDetailGene.getLongestSplit().size() > 1) {
+				if (gffDetailGene.Length() > minGeneLen || gffDetailGene.getLongestSplit().size() > 1) {
 					shortGene = false;
 					break;
 				}
+			}
+			if (gffGeneCluster.isContainsRef) {
+				shortGene = false;
 			}
 			if (!shortGene) {
 				listGff.addAll(lsGene);
