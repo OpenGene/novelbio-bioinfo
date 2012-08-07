@@ -8,7 +8,7 @@ import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.nbcgui.GUI.GuiRunningBarAbs;
 
-public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>{
+public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo, MapReads>{
 	String bedFileName;
 	MapReads mapReads;
 	GuiRunningBarAbs guiRunningBarAbs;
@@ -60,7 +60,7 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>
 	}
 
 	@Override
-	public void done() {
+	public void done(MapReads runProcess) {
 		guiRunningBarAbs.getProcessBar().setValue(guiRunningBarAbs.getProcessBar().getMaximum());
 		guiRunningBarAbs.getBtnRun().setEnabled(true);
 		guiRunningBarAbs.getBtnSave().setEnabled(true);

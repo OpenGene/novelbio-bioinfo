@@ -39,16 +39,8 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 	ArrayBlockingQueue<FastQRecord> lsFastQRecords = new ArrayBlockingQueue<FastQRecord>(maxNumReadInLs);
 
 	
-	/**
-	 * 输入前先判断文件是否存在,最好能判断两个文件是否是同一个测序的两端 那么可以判断是否为fastQ格式和fasQ格式第一行是否一致
-	 * 标准文件名的话，自动判断是否为gz压缩
-	 * @param seqFile1  序列文件
-	 * @param fastQFormat 哪种fastQ格式，现在有FASTQ_SANGER_OFFSET，FASTQ_ILLUMINA_OFFSET两种
-	 *            不知道就写0，程序会从文件中判断
-	 * @param QUALITY QUALITY_LOW等
-	 * 
-	 */
-	public FastQRead(String seqFile) {
+	/** 标准文件名的话，自动判断是否为gz压缩 */
+	public void setFastqFile(String seqFile) {
 		txtSeqFile = new TxtReadandWrite(seqFile, false);
 		
 		String houzhui = FileOperate.getFileNameSep(seqFile)[1];
@@ -58,6 +50,14 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 		else {
 			setCompressType(TxtReadandWrite.TXT);
 		}
+	}
+	/** 不设定就会自动判定 */
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+	public int getOffset() {
+		setFastQFormatLen();
+		return offset;
 	}
 	/**
 	 * 设定文件压缩格式
@@ -112,6 +112,22 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	/**
+	 * 读取前几行，不影响{@link #readlines()}
+	 * @param num
+	 * @return
+	 */
+	public ArrayList<FastQRecord> readHeadLines(int num) {
+		ArrayList<FastQRecord> lsResult = new ArrayList<FastQRecord>();
+		int i = 0;
+		for (FastQRecord fastQRecord : readlines()) {
+			if (i >= num) {
+				break;
+			}
+			lsResult.add(fastQRecord);
+		}
+		return lsResult;
 	}
 	/**
 	 * 迭代读取文件
@@ -267,6 +283,9 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 			readsLenSum = readsLenSum + fastQRecord.getLength();
 		}
 		return readsLenSum/lsFastqRecord.size();
+	}
+	public void close() {
+		txtSeqFile.close();
 	}
 }
 

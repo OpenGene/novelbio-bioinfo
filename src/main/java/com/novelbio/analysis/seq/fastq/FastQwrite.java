@@ -32,6 +32,12 @@ public class FastQwrite {
 		}
 		txtSeqFile = new TxtReadandWrite(cmpOutType, seqFile, true);
 	}
+	protected String getFastqFile() {
+		if (txtSeqFile == null) {
+			return null;
+		}
+		return txtSeqFile.getFileName();
+	}
 	/**
 	 * 设定文件压缩格式
 	 * 从TxtReadandWrite.TXT来
@@ -63,7 +69,7 @@ public class FastQwrite {
 	 * 写完后务必用此方法关闭
 	 * 关闭输入流，并将fastQ写入转化为fastQ读取
 	 */
-	public void closeWrite() {
+	public void close() {
 		txtSeqFile.close();
 	}
 }

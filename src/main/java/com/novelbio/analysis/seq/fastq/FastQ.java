@@ -35,9 +35,6 @@ public class FastQ extends SeqComb {
 	public static int FASTQ_ILLUMINA_OFFSET = 64;
 	
 	private int offset = 0;
-	private boolean booPairEnd = false;
-	// 有时候有两个fastQ文件，这个仅仅在双端测序的时候出现，这时候需要协同过滤
-	private String seqFile2 = null;
 	public static int QUALITY_LOW = 10;
 	public static int QUALITY_MIDIAN = 20;
 	/**
@@ -230,13 +227,6 @@ public class FastQ extends SeqComb {
 	}
 	//////////////////////////
 	/**
-	 * 返回第二个FastQ文件的文件名 如果没有则返回null
-	 * @return
-	 */
-	public String getSeqFile2() {
-		return seqFile2;
-	}
-	/**
 	 * 返回FastQ的格式位移，一般是 FASTQ_SANGER_OFFSET 或 FASTQ_ILLUMINA_OFFSET
 	 * @return
 	 */
@@ -250,13 +240,6 @@ public class FastQ extends SeqComb {
 	 */
 	public int getQuality() {
 		return quality;
-	}
-	/**
-	 * 返回是否是双端测序的FastQ文件，其实也就是看是否有两个FastQ文件
-	 * @return
-	 */
-	public boolean isPairEnd() {
-		return booPairEnd;
 	}
 	/**
 	 * 获得第一条reads的长度，返回负数说明出错
@@ -552,24 +535,26 @@ public class FastQ extends SeqComb {
 			readsNum++;
 			fastQRecord.setFastqOffset(offset);
 			fastQRecord.setTrimMinLen(readsLenMin);
-			fastQRecord = fastQRecord.trimAdaptor(adaptorLeft, adaptorRight, mapNumLeft, mapNumRight, adaptermaxMismach, adaptermaxConMismatch, 20);
 			
-			if (fastQRecord == null) continue;
-			if (trimPolyA_right) {
-				fastQRecord = fastQRecord.trimPolyAR(2);
-				if (fastQRecord == null) continue;
+
+			fastQRecord.setFastqOffset(phredOffset);
+			fastQRecord.setTrimMinLen(readsLenMin);
+			fastQRecord.setMapFastqFilter(mapFastQFilter);
+			boolean filterSucess = fastQRecord.trimAdaptor(adaptorLeft, adaptorRight, mapNumLeft, 
+					mapNumRight, adaptermaxMismach, adaptermaxConMismatch, proportionMisMathch);
+			
+			if (!filterSucess) continue;
+			if (trimPolyA_right && !fastQRecord.trimPolyAR(2)) {
+				continue;
 			}
-			if (trimPolyT_left) {
-				fastQRecord = fastQRecord.trimPolyTL(2);
-				if (fastQRecord == null) continue;
+			if (trimPolyT_left && !fastQRecord.trimPolyTL(2)) {
+				continue;
 			}
-			if (trimNNN) {
-				fastQRecord = fastQRecord.trimNNN(2);
-				if (fastQRecord == null) continue;
+			if (trimNNN && !fastQRecord.trimNNN(2)) {
+				continue;
 			}
-			if (adaptorLowercase) {
-				fastQRecord = fastQRecord.trimLowCase();
-				if (fastQRecord == null) continue;
+			if (adaptorLowercase && !fastQRecord.trimLowCase()) {
+				continue;
 			}
 			if (!fastQRecord.QC()) continue;
 			

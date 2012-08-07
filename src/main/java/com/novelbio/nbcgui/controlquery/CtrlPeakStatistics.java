@@ -9,7 +9,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiPeakStatistics;
 
-public class CtrlPeakStatistics implements RunGetInfo<GffChrStatistics.GffChrStatiscticsProcessInfo>{
+public class CtrlPeakStatistics implements RunGetInfo<GffChrStatistics.GffChrStatiscticsProcessInfo, GffChrStatistics>{
 	GuiPeakStatistics guiPeakStatistics;
 	GffChrStatistics gffChrStatistics = new GffChrStatistics();
 	
@@ -67,7 +67,7 @@ public class CtrlPeakStatistics implements RunGetInfo<GffChrStatistics.GffChrSta
 		guiPeakStatistics.getProcessBar().setValue(info.getReadsize());
 	}
 	@Override
-	public void done() {
+	public void done(GffChrStatistics gffChrStatistics) {
 		guiPeakStatistics.getProcessBar().setValue(guiPeakStatistics.getProcessBar().getMaximum());
 		guiPeakStatistics.getBtnSave().setEnabled(true);
 		guiPeakStatistics.getBtnRun().setEnabled(true);

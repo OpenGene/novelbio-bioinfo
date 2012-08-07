@@ -8,11 +8,12 @@ import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.base.RunGetInfo;
+import com.novelbio.base.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiAnnoGene;
 import com.novelbio.nbcgui.GUI.GuiAnnoPeak;
 
-public class CtrlBatchAnnoPeak implements RunGetInfo<AnnoQuery.AnnoQueryDisplayInfo>{
+public class CtrlBatchAnnoPeak implements RunGetInfo<AnnoQuery.AnnoQueryDisplayInfo, GffChrAnno>{
 	GuiAnnoPeak guiAnnoPeak;
 	GffChrAnno gffChrAnno = new GffChrAnno();
 	Species species;
@@ -82,7 +83,7 @@ public class CtrlBatchAnnoPeak implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 	}
 	
 	@Override
-	public void done() {
+	public void done(GffChrAnno runProcess) {
 		guiAnnoPeak.getProcessBar().setValue(guiAnnoPeak.getProcessBar().getMaximum());
 		guiAnnoPeak.getBtnSave().setEnabled(true);
 		guiAnnoPeak.getBtnRun().setEnabled(true);

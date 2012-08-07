@@ -1,21 +1,25 @@
 package com.novelbio.analysis.seq.fastq;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.novelbio.base.RunGetInfo;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class FastQfilter implements RunGetInfo<FastqRecordInfoFilter>{
+public class FastQfilter implements RunGetInfo<FastqRecordInfoFilter, FastQfilterRecord>{
 	FastQRead fastQRead;
-	ArrayList<FastQfilterRecord> lsFilter = new ArrayList<FastQfilterRecord>();
-	int threadStopNum = 0;
-	FastQwrite fastqOut;
+	FastQwrite fastqWrite;
 	
-	static DateTime dateTime = new DateTime();
+	int allRawReadsNum, allFilteredReadsNum;
+	
+	/** 用作参数设定的 */
+	FastQfilterRecord fastQfilterRecordParam;
+	int threadStopNum = 0;
+	ArrayList<FastQfilterRecord> lsFilter = new ArrayList<FastQfilterRecord>();
+	
 	public static void main(String[] args) {
 		
-		dateTime.setStartTime();
 		FastQfilter fastQfilter = new FastQfilter();
 		fastQfilter.setInFastq("/media/winF/NBC/Project/Project_ZDB_Lab/HY/BZ_20120521/BZ171-9522_GTGAAA_L003_R2_001.fastq.gz");
 		fastQfilter.setOutFastq("/home/zong0jie/Desktop/BZ171-9522_GTGAAA_L003_R2_001.fastq_filter.txt");
@@ -29,13 +33,24 @@ public class FastQfilter implements RunGetInfo<FastqRecordInfoFilter>{
 //		System.out.println(dateTime.getEclipseTime());
 		
 	}
-	
+
+
+	public void setFastQRead(FastQRead fastQRead) {
+		this.fastQRead = fastQRead;
+	}
+	public void setFastqWrite(FastQwrite fastqWrite) {
+		this.fastqWrite = fastqWrite;
+	}
 	public void setInFastq(String fastqNameIn) {
-		fastQRead = new FastQRead(fastqNameIn);
+		fastQRead = new FastQRead();
+		fastQRead.setFastqFile(fastqNameIn);
 	}
 	
 	public void setOutFastq(String fastqNameOut) {
-		fastqOut = new FastQwrite(fastqNameOut);
+		fastqWrite = new FastQwrite(fastqNameOut);
+	}
+	public void setFilterParam(FastQfilterRecord fastQfilterRecord) {
+		this.fastQfilterRecordParam = fastQfilterRecord;
 	}
 	public void setFilterThreadNum(int threadFilterNum) {
 		for (int i = 0; i < threadFilterNum; i++) {
@@ -52,19 +67,19 @@ public class FastQfilter implements RunGetInfo<FastqRecordInfoFilter>{
 	@Override
 	public void setRunningInfo(FastqRecordInfoFilter info) {
 		synchronized (this) {
-			fastqOut.writeFastQRecord(info.fastQRecord);
+			fastqWrite.writeFastQRecord(info.fastQRecord);
 		}
 	}
 	
 	@Override
-	public void done() {
+	public void done(FastQfilterRecord fastQfilterRecord) {
 		synchronized (this) {
 			threadStopNum++;
+			allRawReadsNum = allRawReadsNum + fastQfilterRecord.getAllReadsNum();
+			allFilteredReadsNum = allFilteredReadsNum + fastQfilterRecord.getFilteredReadsNum();
 			if (threadStopNum == lsFilter.size()) {
 				//TODO
-				fastqOut.closeWrite();
-				System.out.println("finished");
-				System.out.println(dateTime.getEclipseTime());
+				fastqWrite.close();
 			}
 		}
 	}
@@ -95,9 +110,13 @@ public class FastQfilter implements RunGetInfo<FastqRecordInfoFilter>{
 
 	@Override
 	public void execute() {
-		if (fastqOut == null) {
+		for (FastQfilterRecord fastQfilterRecord : lsFilter) {
+			fastQfilterRecord.setParam(fastQfilterRecordParam);
+		}
+		
+		if (fastqWrite == null) {
 			String fastqNameOut = FileOperate.changeFileSuffix(fastQRead.getFileName(), "_filtered", null);
-			fastqOut = new FastQwrite(fastqNameOut);
+			fastqWrite = new FastQwrite(fastqNameOut);
 		}
 		Thread thread = new Thread(fastQRead);
 		thread.start();

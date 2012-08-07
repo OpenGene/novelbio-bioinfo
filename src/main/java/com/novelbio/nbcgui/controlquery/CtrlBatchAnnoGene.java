@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
 import com.novelbio.base.RunGetInfo;
+import com.novelbio.base.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiAnnoGene;
 
-public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayInfo> {
+public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayInfo, AnnoQuery> {
 	GuiAnnoGene guiAnnoBatch;	
 
 	AnnoQuery annoQuery = new AnnoQuery();
@@ -58,7 +59,7 @@ public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 	}
 	
 	@Override
-	public void done() {
+	public void done(AnnoQuery runProcess) {
 		guiAnnoBatch.getProcessBar().setValue(guiAnnoBatch.getProcessBar().getMaximum());
 		guiAnnoBatch.getBtnSave().setEnabled(true);
 		guiAnnoBatch.getBtnRun().setEnabled(true);
@@ -78,4 +79,5 @@ public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 		// TODO Auto-generated method stub
 		guiAnnoBatch.getBtnRun().setEnabled(true);
 	}
+
 }

@@ -56,7 +56,7 @@ public abstract class FastQRecordCope<T> extends RunProcess<T>{
 		}
 		return false;
 	}
-	/** 需要在running之前处理的信息，譬如计数等，不需要的话留空 */
+	/** 需要在running之前处理的信息，譬如计数、参数设定等，不需要的话留空 */
 	protected abstract void copeInfo();
 	/** 本类会网里面源源不断的输入record，只要处理这里的单个 FastQRecord就好 */
 	protected abstract void copeFastQRecord(FastQRecord fastQRecord);
