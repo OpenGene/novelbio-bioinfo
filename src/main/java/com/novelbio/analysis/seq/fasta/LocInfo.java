@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genomeNew.getChrSequence;
+package com.novelbio.analysis.seq.fasta;
 /**
  * 专门保存坐标信息的一个小类，可以当作结构体
  * @author zong0jie

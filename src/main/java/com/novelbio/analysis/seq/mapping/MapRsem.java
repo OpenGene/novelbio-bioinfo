@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.analysis.seq.genomeNew.GffChrSeq;

@@ -59,7 +59,6 @@ import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValue
 
 
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.FastQ;
 import com.novelbio.analysis.seq.SeqComb;
 import com.novelbio.analysis.seq.blastZJ.Cell;
 import com.novelbio.analysis.seq.blastZJ.LongestCommonSubsequence;
@@ -67,11 +66,12 @@ import com.novelbio.analysis.seq.blastZJ.SmithWaterman;
 import com.novelbio.analysis.seq.chipseq.PeakCalling;
 import com.novelbio.analysis.seq.chipseq.PeakMacs;
 import com.novelbio.analysis.seq.chipseq.PeakSicer;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.FastQRecord;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.fasta.ChrStringHash;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;

@@ -1,6 +1,6 @@
 package com.novelbio.database.updatedb.database;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;

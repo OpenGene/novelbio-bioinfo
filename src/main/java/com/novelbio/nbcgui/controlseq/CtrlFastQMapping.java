@@ -8,8 +8,8 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.FastQ;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.FastQRecord;
+import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.mapping.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

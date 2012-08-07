@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;

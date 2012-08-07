@@ -13,10 +13,18 @@ import com.novelbio.database.model.modcopeid.GeneID;
 public class BlastInfo implements Comparable<BlastInfo>{
 	GeneID copedIDQ = null;
 	GeneID copedIDS = null;
-	
+	private String blastDate;
+
+	private String subjectDB;
+	private double identities=0;
+	private double evalue = 100;
+	private int subjectTax;
+	private String subjectID;
+	private String queryDB;
+	private int queryTax;
 	private String queryID;
-	private void setDate()
-	{
+	
+	private void setDate() {
 		SimpleDateFormat formatDate= new SimpleDateFormat( "yyyy-MM-dd");
 	     Date currentDate = new Date(); //得到当前系统时间
 	     blastDate = formatDate.format(currentDate); //将日期时间格式化
@@ -28,8 +36,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	 * 如果是要导入数据库，必须用该方式new一个<br>
 	 * 还需要设定evalue, identity和queryDB, subjectDB
 	 */
-	public BlastInfo(String AccIDQ, int taxIDQ , String AccIDS, int taxIDS)
-	{
+	public BlastInfo(String AccIDQ, int taxIDQ , String AccIDS, int taxIDS) {
 		setDate();
 		if (taxIDQ < 0)
 			taxIDQ = 0;
@@ -53,8 +60,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	 * 如果是要导入数据库，必须用该方式new一个<br>
 	 * 还需要设定evalue, identity和queryDB, subjectDB
 	 */
-	public BlastInfo(String AccIDQ, int taxIDQ , String genUniIDS, String IDType,int taxIDS)
-	{
+	public BlastInfo(String AccIDQ, int taxIDQ , String genUniIDS, String IDType,int taxIDS) {
 		setDate();
 		if (taxIDQ < 0)
 			taxIDQ = 0;
@@ -78,8 +84,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	 * 如果是要导入数据库，必须用该方式new一个<br>
 	 * 还需要设定evalue, identity和queryDB, subjectDB
 	 */
-	public BlastInfo(int taxIDQ, String genUniQ, int taxIDS, String genUniS)
-	{
+	public BlastInfo(int taxIDQ, String genUniQ, int taxIDS, String genUniS) {
 		setDate();
 		
 		if (taxIDQ < 0)
@@ -88,7 +93,6 @@ public class BlastInfo implements Comparable<BlastInfo>{
 			taxIDS = 0;
 		
 		try {
-			int geneIDQ = Integer.parseInt(genUniQ);
 			copedIDQ = new GeneID(GeneID.IDTYPE_GENEID, genUniQ, taxIDQ);
 		} catch (Exception e) {
 			copedIDQ = new GeneID(GeneID.IDTYPE_UNIID, genUniQ, taxIDQ);
@@ -100,7 +104,6 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		}
 		/////////////////////////////////////////////////////////////////////////////
 		try {
-			int geneIDS = Integer.parseInt(genUniS);
 			copedIDS = new GeneID(GeneID.IDTYPE_GENEID, genUniS, taxIDS);
 		} catch (Exception e) {
 			copedIDS = new GeneID(GeneID.IDTYPE_UNIID, genUniS, taxIDS);
@@ -119,8 +122,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	 * @param evalue
 	 * @param identities
 	 */
-	public void setEvalue_Identity(double evalue, double identities)
-	{
+	public void setEvalue_Identity(double evalue, double identities) {
 		this.evalue = evalue;
 		this.identities = identities;
 	}
@@ -129,16 +131,14 @@ public class BlastInfo implements Comparable<BlastInfo>{
 //	 * @param queryDBInfo
 //	 * @param subDBInfo
 	 */
-	public void setQueryDB_SubDB(String queryDBInfo, String subDBInfo)
-	{
+	public void setQueryDB_SubDB(String queryDBInfo, String subDBInfo) {
 		this.queryDB = queryDBInfo;
 		this.subjectDB = subDBInfo;
 	}
 	/**
 	 * 设置查找的序列ID
 	 */
-	public void setQueryID(String queryID) 
-	{
+	public void setQueryID(String queryID) {
 		this.queryID=queryID.trim();
 	}
 	/**
@@ -148,12 +148,10 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		return this.queryID.trim();
 	}
 ///////////////////////////////////////////////////////////////////////////////////
-	private int queryTax;
 	/**
 	 * 设置查找序列的物种
 	 */
-	public void setQueryTax(int queryTax) 
-	{
+	public void setQueryTax(int queryTax) {
 		this.queryTax=queryTax;
 	}
 	/**
@@ -163,12 +161,10 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		return this.queryTax;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
-	private String queryDB;
 	/**
 	 * 设置查找序列的来源，譬如Agilent
 	 */
-	public void setQueryDB(String queryDB) 
-	{
+	public void setQueryDB(String queryDB) {
 		this.queryDB=queryDB;
 	}
 	/**
@@ -178,12 +174,10 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		return this.queryDB;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
-	private String subjectID;
 	/**
 	 * 设置Blast搜索到的序列的genUniID
 	 */
-	public void setSubjectID(String subjectID) 
-	{
+	public void setSubjectID(String subjectID) {
 		this.subjectID=subjectID;
 	}
 
@@ -194,7 +188,6 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		return this.subjectID;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
-	private int subjectTax;
 	/**
 	 * 设置Blast搜索到的序列的物种
 	 */
@@ -209,12 +202,10 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		return this.subjectTax;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
-	private String subjectDB;
 	/**
 	 * 设置Blast搜索到的序列的来源，如agilent
 	 */
-	public void setSubjectDB(String subjectDB) 
-	{
+	public void setSubjectDB(String subjectDB) {
 		this.subjectDB=subjectDB;
 	}
 	/**
@@ -224,12 +215,10 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		return this.subjectDB;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
-	private double identities=0;
 	/**
 	 * 设置查找的相似度,初值为0
 	 */
-	public void setIdentities(double identities) 
-	{
+	public void setIdentities(double identities) {
 		this.identities=identities;
 	}
 	/**
@@ -239,12 +228,10 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		return this.identities;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
-	private double evalue = 100;
 	/**
 	 * 设置查找的evalue，初值为100
 	 */
-	public void setEvalue(double evalue) 
-	{
+	public void setEvalue(double evalue) {
 		this.evalue=evalue;
 	}
 	/**
@@ -254,12 +241,10 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		return this.evalue;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
-	private String blastDate;
 	/**
 	 * 设置查找的日期
 	 */
-	public void setBlastDate(String blastDate) 
-	{
+	public void setBlastDate(String blastDate) {
 		this.blastDate=blastDate;
 	}
 	/**
@@ -273,8 +258,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	/**
 	 * 设置blast得到的数据是基于哪个表的，有NCBIID和UniprotID两个选择
 	 */
-	public void setSubjectTab(String subjectTab) 
-	{
+	public void setSubjectTab(String subjectTab) {
 		this.subjectTab=subjectTab;
 	}
 	/**

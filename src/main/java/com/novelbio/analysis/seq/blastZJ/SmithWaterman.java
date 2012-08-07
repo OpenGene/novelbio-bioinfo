@@ -1,46 +1,47 @@
 package com.novelbio.analysis.seq.blastZJ;
 
+import com.novelbio.analysis.seq.fasta.SeqFasta;
+
 /**
  * @author Paul Reiners
  * 
  */
 public class SmithWaterman extends SequenceAlignment {
-
 	private Cell highScoreCell;
-	double gapDegrade = 1;
+	double gapDegrade = 1.2;
+	/** 是否优先拼接尾部 */
+	boolean isTailPriority = false;
+	
 	/**
-	 * 
 	 * @param sequence1
 	 * @param sequence2
-	 * @param gradiet 梯度，这个在拼接时采用，就是说当最高点越接近序列的边缘时，得分越高，越处于序列的中部，得分越低
-	 * 那么最低点，也就是序列的中点打分即为gradiet
 	 */
-	public SmithWaterman(String sequence1, String sequence2, double gapDegrade) {
+	public SmithWaterman(String sequence1, String sequence2) {
 		super(sequence1, sequence2);
-		this.gapDegrade = gapDegrade;
 	}
 
-	public SmithWaterman(String sequence1, String sequence2, int match,
-			int mismatch, int gap, double gapDegrade) {
-		super(sequence1, sequence2, match, mismatch, gap);
+	/**
+	* @param gapDegrade 空位罚分的递减，按照指数下降的递减，底数为gapDegrade
+	*/
+	public void setGapDegrade(double gapDegrade) {
 		this.gapDegrade = gapDegrade;
 	}
-
 	protected void initialize() {
 		super.initialize();
-
 		highScoreCell = scoreTable[0][0];
 	}
-
-	protected void fillInCell(Cell currentCell, Cell cellAbove, Cell cellToLeft,
-         Cell cellAboveLeft) {
-      double rowSpaceScore = cellAbove.getScore() + currentCell.getGapScore(cellAbove, space,gapDegrade);
-      double colSpaceScore = cellToLeft.getScore() + currentCell.getGapScore(cellToLeft, space,gapDegrade);
+	/** 设定优先拼接尾部 */
+	public void setTailPriroity() {
+		isTailPriority = true;
+	}
+	protected void fillInCell(Cell currentCell, Cell cellAbove, Cell cellToLeft, Cell cellAboveLeft) {
+      double rowSpaceScore = cellAbove.getScore() + currentCell.getGapScore(cellAbove, spaceScore,gapDegrade);
+      double colSpaceScore = cellToLeft.getScore() + currentCell.getGapScore(cellToLeft, spaceScore,gapDegrade);
       double matchOrMismatchScore = cellAboveLeft.getScore();
       if (sequence2.charAt(currentCell.getRow() - 1) == sequence1.charAt(currentCell.getCol() - 1)) {
-         matchOrMismatchScore += match;
+         matchOrMismatchScore += matchScore;
       } else {
-         matchOrMismatchScore += mismatch;
+         matchOrMismatchScore += mismatchScore;
       }
       if (rowSpaceScore >= colSpaceScore) {
          if (matchOrMismatchScore >= rowSpaceScore) {
@@ -69,31 +70,33 @@ public class SmithWaterman extends SequenceAlignment {
             }
          }
       }
-      //将所有的分数都乘以一个梯度，也就是靠近序列尾部的权重会高，由此来增加
-      if (currentCell.getScore()*currentCell.getGradAllScore(sequence1.length(), sequence2.length(), 0.4) > highScoreCell.getScore()*highScoreCell.getGradAllScore(sequence1.length(), sequence2.length(), 0.4)) 
-      {
-         highScoreCell = currentCell;
-      }
-   }
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "[NeedlemanWunsch: sequence1=" + sequence1 + ", sequence2="
-				+ sequence2 + "]";
+      setHighScore(currentCell);
 	}
+	private void setHighScore(Cell scoreCell) {
+		if (!isTailPriority) {
+			if (scoreCell.getScore() > highScoreCell.getScore()) { 
+				highScoreCell = scoreCell; 
+			}
+		}
+		else {
+		      //将所有的分数都乘以一个梯度，也就是靠近序列尾部的权重会高，由此来增加
+		      if (scoreCell.getScore()*scoreCell.getGradAllScore(sequence1.length(), sequence2.length(), 0.4) 
+		    		  > 
+		      highScoreCell.getScore()*highScoreCell.getGradAllScore(sequence1.length(), sequence2.length(), 0.4)) 
+		      {
+		         highScoreCell = scoreCell;
+		      }
+		}
+	}
+
 
 	@Override
 	protected boolean traceBackIsNotDone(Cell currentCell) {
 		return currentCell.getScore() != 0;
 	}
-
+	/** 也就是最高分数的cell */
 	@Override
-	protected Cell getTracebackStartingCell() {
+	public Cell getTracebackStartingCell() {
 		return highScoreCell;
 	}
 

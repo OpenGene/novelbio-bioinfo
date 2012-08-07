@@ -5,9 +5,9 @@ import java.util.HashMap;
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.NovelBioConst;

@@ -13,7 +13,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.mapping.MapRsem;
 import com.novelbio.analysis.seq.mirna.MiRNAtargetRNAhybrid;
 import com.novelbio.base.fileOperate.FileOperate;

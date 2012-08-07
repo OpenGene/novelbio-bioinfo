@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.lf5.LF5Appender;
 import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;

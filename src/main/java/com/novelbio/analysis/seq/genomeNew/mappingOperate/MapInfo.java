@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;

@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genomeNew.getChrSequence;
+package com.novelbio.analysis.seq.fasta;
 
 import java.io.IOException;
 import java.util.ArrayList;

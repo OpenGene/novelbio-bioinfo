@@ -136,9 +136,8 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="16" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash" project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/getChrSequence/ChrStringHash.java" 
+  <class id="16" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.fasta.ChrStringHash" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/ChrStringHash.java" 
     binary="false">    
     <position height="-1" width="-1" x="2741" y="1188"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
@@ -146,18 +145,16 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="17" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta" project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/getChrSequence/SeqFasta.java" binary="false">    
+  <class id="17" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.fasta.SeqFasta" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqFasta.java" binary="false">    
     <position height="-1" width="-1" x="2885" y="-682"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="18" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash" project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/getChrSequence/SeqFastaHash.java" 
+  <class id="18" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.fasta.SeqFastaHash" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqFastaHash.java" 
     binary="false">    
     <position height="-1" width="-1" x="3083" y="1259"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
@@ -165,27 +162,26 @@
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="19" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash" 
-    project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/getChrSequence/SeqHash.java" binary="false">    
+  <class id="19" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.fasta.SeqHash" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqHash.java" binary="false">    
     <position height="-1" width="-1" x="2895" y="203"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <class id="20" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHashAbs" project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/getChrSequence/SeqHashAbs.java" binary="false">    
+  <class id="20" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.fasta.SeqHashAbs" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqHashAbs.java" 
+    binary="false">    
     <position height="-1" width="-1" x="2894" y="836"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      
       <operations public="true" package="false" protected="false" private="false"/>    
     </display>  
   </class>  
-  <interface id="21" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHashInt" project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genomeNew/getChrSequence/SeqHashInt.java" binary="false">    
+  <interface id="21" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.fasta.SeqHashInt" 
+    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqHashInt.java" 
+    binary="false">    
     <position height="-1" width="-1" x="3337" y="199"/>    
     <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
       <attributes public="false" package="false" protected="false" private="false"/>      

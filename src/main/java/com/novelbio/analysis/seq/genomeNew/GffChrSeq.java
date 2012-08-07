@@ -7,7 +7,7 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;

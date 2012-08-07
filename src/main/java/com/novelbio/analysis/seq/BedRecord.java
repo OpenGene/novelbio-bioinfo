@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.omg.CosNaming._BindingIteratorImplBase;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -153,7 +153,8 @@ public class BedRecord extends SiteInfo {
 	public ArrayList<? extends Alignment> getAlignmentBlocks() {
 		ArrayList<Align> lsStartEnd = new ArrayList<Align>();
 		if (splitLen == null || splitLen.equals("") || !splitLen.contains(",")) {
-			Align align = new Align(getStartAbs(), getEndAbs());
+			Align align = new Align(getStartCis(), getEndCis());
+			align.setCis5to3(isCis5to3());
 			lsStartEnd.add(align);
 			return lsStartEnd;
 		}
@@ -163,6 +164,7 @@ public class BedRecord extends SiteInfo {
 			int start = getStartAbs() + Integer.parseInt(splitLocArray[i]);
 			int end = start + Integer.parseInt(splitLenArray[i]) - 1;
 			Align align = new Align(start, end);
+			align.setCis5to3(isCis5to3());
 			lsStartEnd.add(align);
 		}
 		return lsStartEnd;

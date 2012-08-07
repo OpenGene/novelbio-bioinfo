@@ -1,16 +1,33 @@
-package com.novelbio.analysis.seq.genomeNew.getChrSequence;
+package com.novelbio.analysis.seq.fastq;
 
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.blastZJ.BlastSeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class FastQRecord implements Cloneable {
+	private static Logger logger = Logger.getLogger(FastQRecord.class);
+
 	public static int FASTQ_SANGER_OFFSET = 33;
 	public static int FASTQ_ILLUMINA_OFFSET = 64;
-	SeqFasta seqFasta = new SeqFasta();
-	private static Logger logger = Logger.getLogger(FastQRecord.class);
+	// ///////////////// fastq的质量
+	public static int QUALITY_LOW = 10;
+	public static int QUALITY_MIDIAN = 20;
+	/**
+	 * 双端的时候只有两个序列都是好的才保留
+	 */
+	public static int QUALITY_MIDIAN_PAIREND = 40;
+	public static int QUALITY_HIGM = 50;
+	public static int QUALITY_LOW_454 = 10454;
+	/**
+	 * fastQ里面asc||码的指标与个数
+	 */
+	static HashMap<Integer, Integer> hashFastQFilter = new HashMap<Integer, Integer>();
+	
+	private SeqFasta seqFasta = new SeqFasta();
 	protected int fastqOffset = FASTQ_SANGER_OFFSET;
 	protected String seqQuality = "";
 	/** 序列质量控制，低于该质量就说明本记录有问题 */
@@ -19,6 +36,56 @@ public class FastQRecord implements Cloneable {
 	private int readsMinLen = 22;
 	
 	private static int errorTrimAdapterReadsNum = 0;
+
+	/**
+	 * 将mismatich比对指标文件，看是否符合
+	 * @param thisFastQ
+	 * @return
+	 */
+	private static boolean filterFastQ(int[][] thisFastQ) {
+		for (int[] is : thisFastQ) {
+			Integer Num = hashFastQFilter.get(is[0]);
+			if (Num == null) {
+				continue;
+			} else if (Num < is[1]) {
+				return false;
+			}
+		}
+		return true;
+	}
+	/**
+	 * 设定全局过滤指标
+	 * 
+	 * @param QUALITY
+	 */
+	public static void setHashFastQFilter(int QUALITY) {
+		if (QUALITY == QUALITY_HIGM) {
+			hashFastQFilter.put(10, 2);
+			hashFastQFilter.put(13, 3);
+			hashFastQFilter.put(20, 7);
+		} else if (QUALITY == QUALITY_LOW) {
+			// hashFastQFilter.put(2, 1);
+			hashFastQFilter.put(10, 4);
+			hashFastQFilter.put(13, 10);
+			hashFastQFilter.put(20, 20);
+		} else if (QUALITY == QUALITY_MIDIAN
+				|| QUALITY == QUALITY_MIDIAN_PAIREND) {
+			// hashFastQFilter.put(2, 1);
+			hashFastQFilter.put(10, 2);
+			hashFastQFilter.put(13, 6);
+			hashFastQFilter.put(20, 10);
+		} else if (QUALITY == QUALITY_LOW_454) {
+			// hashFastQFilter.put(2, 1);
+			hashFastQFilter.put(10, 6);
+			hashFastQFilter.put(13, 15);
+			hashFastQFilter.put(20, 50);
+		} else {
+			// hashFastQFilter.put(2, 1);
+			hashFastQFilter.put(10, 2);
+			hashFastQFilter.put(13, 6);
+			hashFastQFilter.put(20, 10);
+		}
+	}
 	public static void setErrorTrimAdapterReadsNum(int errorTrimAdapterReadsNum) {
 		FastQRecord.errorTrimAdapterReadsNum = errorTrimAdapterReadsNum;
 	}
@@ -84,9 +151,8 @@ public class FastQRecord implements Cloneable {
 	 * 注意两个以下的adaptor无法过滤
 	 * 过滤右侧接头序列的方法，用循环搜索，容许错配，但是不能够过虑含有gap的adaptor。
 	 * 算法，假设右侧最多只有一整个接头。那么先将接头直接对到右侧对齐，然后循环的将接头对到reads上去。
-	 * @param minLen 最短多少，小于该长度就返回 null
 	 * @param seqAdaptorL 左端接头 无所谓大小写 接头可以只写一部分 null或""表示不用过滤该接头
-	 * @paran seqAdaptorR 右端接头 无所谓大小写 接头可以只写一部分 null或""表示不用过滤该接头
+	 * @param seqAdaptorR 右端接头 无所谓大小写 接头可以只写一部分 null或""表示不用过滤该接头
 	 * @param mapNumLeft 第一次接头左端或右端mapping到序列的第几个碱基上，从1开始记数，-1说明没找到 建议设定为：seqIn.length() +1- seqAdaptor.length()
 	 * 如果mapNum<0, 则自动设定为seqIn.length() +1- seqAdaptor.length()等形式
 	 * @param mapNumRight 同mapNumLeft，针对右端接头
@@ -224,14 +290,17 @@ public class FastQRecord implements Cloneable {
 				}
 			}
 			int lenAdaptor = pm + mm;
-//			float per = ((float)mm/lenAdaptor);
 			if (mm <= numMM && ((float)mm/lenAdaptor) <= perMm && lenAdaptor > 4) {
 				return i;
 			}
 		}
-//		logger.info("haven't find adaptor: "+seqIn+" "+seqAdaptor);
+		int num = blastSeq(false, seqIn, seqAdaptor, numMM, (int) perMm);
+		if (num > -1) {
+			return num;
+		}
 		return seqIn.length();
 	}
+
 	/**
 	 * 注意两个以下的adaptor无法过滤
 	 * 过滤左侧接头序列的方法，用循环搜索，容许错配，但是不能够过虑含有gap的adaptor。
@@ -246,7 +315,7 @@ public class FastQRecord implements Cloneable {
 	 * 也就是该adaptor前面有多少个碱基，可以直接用substring(return)来截取
 	 * -1说明没有adaptor
 	 */
-	private int trimAdaptorL(String seqIn, String seqAdaptor, int mapNum, int conNum, int numMM, int perMm) {
+	private int trimAdaptorL(String seqIn, String seqAdaptor, int mapNum, int conNum, int numMM, float perMm) {
 		if (seqAdaptor.equals("")) {
 			return 0;
 		}
@@ -278,8 +347,30 @@ public class FastQRecord implements Cloneable {
 				return i+1;
 			}
 		}
-//		logger.info("haven't find adaptor: "+seqIn+" "+seqAdaptor);
+		int num = blastSeq(true, seqIn, seqAdaptor, numMM, perMm);
+		if (num > -1) {
+			return num;
+		}
 		return 0;
+	}
+	
+	private int blastSeq(boolean leftAdaptor, String seqSeq, String seqAdaptor, int numMM, float perMm) {
+		BlastSeqFasta blastSeqFasta = new BlastSeqFasta(seqSeq, seqAdaptor);
+		blastSeqFasta.setSpaceScore(-2);
+		blastSeqFasta.blast();
+		if (blastSeqFasta.getGapNumQuery() + blastSeqFasta.getGapNumSubject() > numMM
+			|| blastSeqFasta.getMisMathchNum() > numMM 
+			|| (float)(blastSeqFasta.getGapNumQuery() + blastSeqFasta.getGapNumSubject() + blastSeqFasta.getMisMathchNum())/seqAdaptor.length() > perMm/100
+				) 
+		{
+			return -1;
+		}
+		if (leftAdaptor) {
+			return blastSeqFasta.getEndQuery();
+		}
+		else {
+			return blastSeqFasta.getStartQuery();
+		}
 	}
 	/**
 	 * 过滤右侧polyA，当为AAANNNAAANANAA时，无视N继续过滤
@@ -308,7 +399,6 @@ public class FastQRecord implements Cloneable {
 				return i+con;//把最后不是a的还的加回去
 			}
 		}
-//		System.out.println(seqIn);
 		return 0;
 	}
 	/**
@@ -337,7 +427,6 @@ public class FastQRecord implements Cloneable {
 				return i-con+1;//把最后不是a的还的加回去
 			}
 		}
-//		System.out.println(seqIn);
 		return lenIn;
 	}
 	/**
@@ -351,7 +440,7 @@ public class FastQRecord implements Cloneable {
 	 * 返回-1表示出错
 	 */
 	private int trimNNNLeft(String seqIn,int cutOff, int numMM) {
-		char[] chrSeq = this.seqFasta.SeqSequence.toCharArray();
+		char[] chrSeq = this.seqFasta.toString().toCharArray();
 		char[] chrIn = seqIn.toCharArray();
 		int numMismatch = 0;
 		int con = -1;//记录连续的低质量的字符有几个
@@ -367,7 +456,6 @@ public class FastQRecord implements Cloneable {
 				return i - con;//把最后不是a的还的加回去
 			}
 		}
-//		logger.info("no useful seq: "+ seqIn);
 		return seqIn.length();
 	}
 	/**
@@ -381,7 +469,7 @@ public class FastQRecord implements Cloneable {
 	 * 返回-1表示出错
 	 */
 	private int trimNNNRight(String seqIn,int cutOff, int numMM) {
-		char[] chrSeq = this.seqFasta.SeqSequence.toCharArray();
+		char[] chrSeq = this.seqFasta.toString().toCharArray();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		int numMismatch = 0;
 		int con = 0;//记录连续的低质量的字符有几个
@@ -394,10 +482,9 @@ public class FastQRecord implements Cloneable {
 				con = 0;
 			}
 			if (numMismatch > numMM) {
-				return i+con;//把最后不是a的还的加回去
+				return i+con;
 			}
 		}
-//		logger.info("no useful seq: "+ seqIn);
 		return 0;
 	}
 	/**
@@ -461,19 +548,29 @@ public class FastQRecord implements Cloneable {
 
 	/////////////////////////////// 序列质量控制，仅对fastq文件 //////////////////////////////
 	/**
+	 * 最开始要设定高中低档
+	 * 看本序列的质量是否符合要求 首先会判定质量是否以BBBBB结尾，是的话直接跳过 
+	 * @return
+	 */
+	public boolean QC() {
+		if (seqFasta.toString().length() < readsMinLen) {
+			return false;
+		}
+		if (this.fastqOffset == FASTQ_ILLUMINA_OFFSET && seqQuality.endsWith("BBBBBBB") ) {
+			return false;
+		}
+		/** 就看Q10，Q13和Q20就行了 */
+		int[][] seqQC1 = copeFastQ(2, 10, 13, 20);
+		return filterFastQ(seqQC1);
+	}
+	
+	/**
 	 * 给定一行fastQ的ascII码，同时指定一系列的Q值，返回asc||小于该Q值的char有多少
 	 * 按照Qvalue输入的顺序，输出就是相应的int[]
-	 * 
-	 * @param FASTQ_FORMAT_OFFSET
-	 *            offset是多少，FASTQ_SANGER_OFFSET和
-	 * @param fastQSeq
-	 *            具体的fastQ字符串
-	 * @param Qvalue
-	 *            Qvalue的阈值，可以指定多个<b>必须从小到大排列</b>，一般为Q13，有时为Q10，具体见维基百科的FASTQ
-	 *            format
+	 * @param Qvalue Qvalue的阈值，可以指定多个<b>必须从小到大排列</b>，一般为Q13，有时为Q10，具体见维基百科的FASTQ format
 	 * @return int 按照顺序，小于等于每个Qvalue的数量
 	 */
-	public int[][] copeFastQ(int... Qvalue) {
+	private int[][] copeFastQ(int... Qvalue) {
 		if (fastqOffset == 0) {
 			System.out.println("FastQ.copeFastQ ,没有指定offset");
 		}
@@ -482,13 +579,10 @@ public class FastQRecord implements Cloneable {
 			qNum[i][0] = Qvalue[i];
 		}
 		char[] fastq = seqQuality.toCharArray();
-		//reads长度分布，一般用于454
-//		gffHashBin.addNumber(gffreadsLen, fastq.length);
 		for (int m = 0; m < fastq.length; m++) {
 			char c = fastq[m];
 			int qualityScore = (int) c - fastqOffset;
 			/////////////////////////序列质量，每个碱基的质量分布统计/////////////////////////////////////////////////
-//			gffHashBin.addNumber(m+gffbpName, qualityScore);
 			//////////////////////////////////////////////////////////////////////////
 			for (int i = Qvalue.length - 1; i >= 0; i--) {
 				if (qualityScore <= Qvalue[i]) {//注意是小于等于
@@ -501,87 +595,4 @@ public class FastQRecord implements Cloneable {
 		}
 		return qNum;
 	}
-
-	/**
-	 * 最开始要设定高中低档
-	 * 看本序列的质量是否符合要求 首先会判定质量是否以BBBBB结尾，是的话直接跳过 
-	 * @return
-	 */
-	public boolean QC() {
-		if (seqFasta.SeqSequence == null) {
-			return false;
-		}
-		if (seqFasta.SeqSequence.length() < readsMinLen) {
-			return false;
-		}
-		if (seqQuality.endsWith("BBBBBBB") ) {
-			return false;
-		}
-		/** 就看Q10，Q13和Q20就行了 */
-		int[][] seqQC1 = copeFastQ(2, 10, 13, 20);
-		return filterFastQ(seqQC1);
-	}
-	///////////////////  fastq的质量  /////////////////////////////////////////////////////////////
-	public static int QUALITY_LOW = 10;
-	public static int QUALITY_MIDIAN = 20;
-	/**
-	 * 双端的时候只有两个序列都是好的才保留
-	 */
-	public static int QUALITY_MIDIAN_PAIREND = 40;
-	public static int QUALITY_HIGM = 50;
-	public static int QUALITY_LOW_454 = 10454;
-	/**
-	 * fastQ里面asc||码的指标与个数
-	 */
-	static HashMap<Integer, Integer> hashFastQFilter = new HashMap<Integer, Integer>();
-	/**
-	 * 将mismatich比对指标文件，看是否符合
-	 * @param thisFastQ
-	 * @return
-	 */
-	private static boolean filterFastQ(int[][] thisFastQ) {
-		for (int[] is : thisFastQ) {
-			Integer Num = hashFastQFilter.get(is[0]);
-			if (Num == null) {
-				continue;
-			} else if (Num < is[1]) {
-				return false;
-			}
-		}
-		return true;
-	}
-	/**
-	 * 设定全局过滤指标
-	 * @param QUALITY
-	 */
-	public static void setHashFastQFilter(int QUALITY) {
-		if (QUALITY == QUALITY_HIGM) {
-			hashFastQFilter.put(10, 2);
-			hashFastQFilter.put(13, 3);
-			hashFastQFilter.put(20, 7);
-		} else if (QUALITY == QUALITY_LOW) {
-//			hashFastQFilter.put(2, 1);
-			hashFastQFilter.put(10, 4);
-			hashFastQFilter.put(13, 10);
-			hashFastQFilter.put(20, 20);
-		} else if (QUALITY == QUALITY_MIDIAN
-				|| QUALITY == QUALITY_MIDIAN_PAIREND) {
-//			hashFastQFilter.put(2, 1);
-			hashFastQFilter.put(10, 2);
-			hashFastQFilter.put(13, 6);
-			hashFastQFilter.put(20, 10);
-		} else if (QUALITY == QUALITY_LOW_454) {
-//			hashFastQFilter.put(2, 1);
-			hashFastQFilter.put(10, 6);
-			hashFastQFilter.put(13, 15);
-			hashFastQFilter.put(20, 50);
-		}
-		else {
-//			hashFastQFilter.put(2, 1);
-			hashFastQFilter.put(10, 2);
-			hashFastQFilter.put(13, 6);
-			hashFastQFilter.put(20, 10);
-		}
-	}
-	
 }

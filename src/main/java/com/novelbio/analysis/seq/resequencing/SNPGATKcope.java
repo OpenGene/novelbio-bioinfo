@@ -207,7 +207,7 @@ public class SNPGATKcope {
 		ArrayList<String[]> lsSnp = ExcelTxtRead.readLsExcelTxt(txtExcelSNP, 1);
 		for (int i = 1; i < lsSnp.size(); i++) {
 			String[] ss = lsSnp.get(i);
-			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(0, ss[0], Integer.parseInt(ss[1]), ss[3], ss[4]);
+			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, chrID, refSnpIndelStart)//(0, ss[0], Integer.parseInt(ss[1]), ss[3], ss[4]);
 			GffCodGene gffcod = gffHashGene.searchLocation(mapInfoSnpIndel.getRefID(), mapInfoSnpIndel.getRefSnpIndelStart());
 			String tmp = "";
 			if (gffcod.isInsideLoc()) {

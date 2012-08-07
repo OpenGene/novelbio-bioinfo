@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 
@@ -291,6 +291,24 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	public int getMidLoc() {
 		return (startLoc + endLoc)/2;
 	}
+	@Override
+	public int getStartCis() {
+		if (isCis5to3()) {
+			return getStartAbs();
+		}
+		else {
+			return getEndAbs();
+		}
+	}
+	@Override
+	public int getEndCis() {
+		if (isCis5to3()) {
+			return getEndAbs();
+		}
+		else {
+			return getStartAbs();
+		}
+	}
 	/**
 	 * 获得起点坐标
 	 * start恒小于end
@@ -495,6 +513,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		}
 		return false;
 	}
+
 	
 
 }

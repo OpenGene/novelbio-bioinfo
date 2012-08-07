@@ -1,5 +1,6 @@
 package com.novelbio.base;
 /**
+ * <b>需要配合 RunGetInfo</b><br>
  * T: 本次running打算输出的中间信息
  * 进度条多线程，需要以下操作 <br>
  * 1. 在循环中添加 suspendCheck()  来挂起线程<br>
@@ -8,7 +9,7 @@ package com.novelbio.base;
  * @author zong0jie
  *
  */
-public abstract class RunProcess<T> implements Runnable{
+public abstract class RunProcess<T> implements Runnable {
 	protected RunGetInfo<T> runGetInfo;
 	
 	protected boolean flagStop = false;
@@ -73,8 +74,10 @@ public abstract class RunProcess<T> implements Runnable{
 	 * @param runInfo
 	 */
 	protected void setRunInfo(T runInfo) {
-		if (runGetInfo != null) {
-			runGetInfo.setRunningInfo(runInfo);
+		synchronized (this) {
+			if (runGetInfo != null) {
+				runGetInfo.setRunningInfo(runInfo);
+			}
 		}
 	}
 	public boolean isFinished() {

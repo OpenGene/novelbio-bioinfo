@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedRecord;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.model.species.Species;
 /**
@@ -229,47 +230,14 @@ public class MapReads extends MapReadsAbs{
 			return tmpOld;
 		}
 
-		ArrayList<int[]> lsadd = null;
+		ArrayList<? extends Alignment> lsadd = null;
 		//如果没有可变剪接
-		if (bedRecord.isJunctionCovered()) {
-			lsadd = bedRecord.getAlignmentBlocks();
-			lsadd = setStartCod(lsadd, startCod, cis5to3This);
-		}
-		else {
-			lsadd = getStartEndLoc(tmpStartEnd[0], tmpStartEnd[1], null,null);
-			lsadd = setStartCod(lsadd, startCod, cis5to3This);
-		}
+		lsadd = bedRecord.getAlignmentBlocks();
+		lsadd = setStartCod(lsadd, startCod, cis5to3This);
+
 		addChrLoc(chrBpReads, lsadd);
 		chrMapReadsInfo.readsAllNum = chrMapReadsInfo.readsAllNum + 1;
 		return tmpStartEnd;
-	}
-	/**
-	 * Chr1	5242	5444	A80W3KABXX:8:44:8581:122767#GGCTACAT/2	255	-	5242	5444	255,0,0	2	30,20,40	0,120,160
-	 * @param start 起点坐标 5242，绝对坐标闭区间
-	 * @param end 终点坐标 5444，绝对坐标闭区间
-	 * @param split 分割情况 30,20,40
-	 * @param splitStart 每个分割点的起点 0,35,68
-	 * @return 返回一组start和end
-	 * 根据间隔进行区分
-	 */
-	private ArrayList<int[]> getStartEndLoc(int start, int end, String split, String splitStart) {
-		ArrayList<int[]> lsStartEnd = new ArrayList<int[]>();
-		if (split == null || split.equals("") || !split.contains(",")) {
-			int[] startend = new int[2];
-			startend[0] = start;
-			startend[1] = end;
-			lsStartEnd.add(startend);
-			return lsStartEnd;
-		}
-		String[] splitLen = split.trim().split(",");
-		String[] splitLoc = splitStart.trim().split(",");
-		for (int i = 0; i < splitLen.length; i++) {
-			int[] startend = new int[2];
-			startend[0] = start + Integer.parseInt(splitLoc[i]);
-			startend[1] = startend[0] + Integer.parseInt(splitLen[i]) - 1;
-			lsStartEnd.add(startend);
-		}
-		return lsStartEnd;
 	}
 	/**
 	 * 根据正反向截取相应的区域，最后返回需要累加的ArrayList<int[]>
@@ -278,37 +246,42 @@ public class MapReads extends MapReadsAbs{
 	 * @return 如果cis5to3 = True，那么正着截取startCod长度的序列
 	 * 如果cis5to3 = False，那么反着截取startCod长度的序列
 	 */
-	private ArrayList<int[]> setStartCod(ArrayList<int[]> lsStartEnd, int StartCodLen, boolean cis5to3) {
+	private ArrayList<? extends Alignment> setStartCod(ArrayList<? extends Alignment> lsStartEnd, int StartCodLen, boolean cis5to3) {
 		if (StartCodLen <= 0) {
 			return lsStartEnd;
 		}
-		ArrayList<int[]> lsResult = new ArrayList<int[]>();
+		ArrayList<Align> lsResult = new ArrayList<Align>();
+		
 		if (cis5to3) {
 			for (int i = 0; i < lsStartEnd.size(); i++) {
-				if (StartCodLen - (lsStartEnd.get(i)[1] - lsStartEnd.get(i)[0] +1) > 0) {
-					lsResult.add(lsStartEnd.get(i));
-					StartCodLen = StartCodLen - (lsStartEnd.get(i)[1] - lsStartEnd.get(i)[0] +1);
+				Alignment alignment = lsStartEnd.get(i);
+				if (StartCodLen - lsStartEnd.get(i).Length() > 0) {
+					Align align = new Align(alignment.getStartAbs(), alignment.getEndAbs());
+					align.setCis5to3(alignment.isCis5to3());
+					lsResult.add(align);
+					StartCodLen = StartCodLen - alignment.Length();
 				}
 				else {
-					int[] last = new int[2];
-					last[0] = lsStartEnd.get(i)[0];
-					last[1] = lsStartEnd.get(i)[0] + StartCodLen - 1;
-					lsResult.add(last);
+					Align lastAlign = new Align(alignment.getStartAbs(), alignment.getStartAbs() + StartCodLen - 1);
+					lsResult.add(lastAlign);
 					break;
 				}
 			}
 		}
 		else {
 			for (int i = lsStartEnd.size() - 1; i >= 0; i--) {
-				if (StartCodLen - (lsStartEnd.get(i)[1] - lsStartEnd.get(i)[0] +1) > 0) {
-					lsResult.add(0,lsStartEnd.get(i));
-					StartCodLen = StartCodLen - (lsStartEnd.get(i)[1] - lsStartEnd.get(i)[0] + 1);
+				Alignment alignment = lsStartEnd.get(i);
+				if (StartCodLen - alignment.Length() > 0) {
+					Align align = new Align(alignment.getStartAbs(), alignment.getEndAbs());
+					align.setCis5to3(alignment.isCis5to3());
+					
+					lsResult.add(0,align);
+					StartCodLen = StartCodLen - alignment.Length();
 				}
 				else {
-					int[] last = new int[2];
-					last[1] = lsStartEnd.get(i)[1];
-					last[0] = last[1] - StartCodLen + 1;
-					lsResult.add(0,last);
+					Align align = new Align(alignment.getEndAbs() - StartCodLen + 1, alignment.getEndAbs());
+					align.setCis5to3(alignment.isCis5to3());
+					lsResult.add(0,align);
 				}
 			}
 		}
@@ -320,9 +293,9 @@ public class MapReads extends MapReadsAbs{
 	 * @param chrLoc 坐标位点，0为坐标长度，1开始为具体坐标，所以chrLoc[123] 就是实际123位的坐标
 	 * @param lsAddLoc 间断的坐标区域，为int[2] 的list，譬如 100-250，280-300这样子，注意提供的坐标都是闭区间，所以首位两端都要加上
 	 */
-	private void addChrLoc(int[] chrLoc, ArrayList<int[]> lsAddLoc) {
-		for (int[] is : lsAddLoc) {
-			for (int i = is[0]; i <= is[1]; i++) {
+	private void addChrLoc(int[] chrLoc, ArrayList<? extends Alignment> lsAddLoc) {
+		for (Alignment is : lsAddLoc) {
+			for (int i = is.getStartAbs(); i <=is.getEndAbs(); i++) {
 				if (i >= chrLoc.length) {
 					logger.info("超出范围："+ i);
 					break;

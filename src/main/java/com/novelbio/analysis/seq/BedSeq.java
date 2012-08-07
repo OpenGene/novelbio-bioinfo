@@ -12,7 +12,8 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.FastQRecord;
+import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;

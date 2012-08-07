@@ -12,8 +12,8 @@ import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.ChrStringHash;
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

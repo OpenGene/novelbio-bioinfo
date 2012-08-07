@@ -17,14 +17,14 @@ public class NeedlemanWunsch extends SequenceAlignment {
 
    protected void fillInCell(Cell currentCell, Cell cellAbove, Cell cellToLeft,
          Cell cellAboveLeft) {
-	   double rowSpaceScore = cellAbove.getScore() + space;
-	   double colSpaceScore = cellToLeft.getScore() + space;
+	   double rowSpaceScore = cellAbove.getScore() + spaceScore;
+	   double colSpaceScore = cellToLeft.getScore() + spaceScore;
 	   double matchOrMismatchScore = cellAboveLeft.getScore();
       if (sequence2.charAt(currentCell.getRow() - 1) == sequence1
             .charAt(currentCell.getCol() - 1)) {
-         matchOrMismatchScore += match;
+         matchOrMismatchScore += matchScore;
       } else {
-         matchOrMismatchScore += mismatch;
+         matchOrMismatchScore += mismatchScore;
       }
       if (rowSpaceScore >= colSpaceScore) {
          if (matchOrMismatchScore >= rowSpaceScore) {
@@ -51,7 +51,7 @@ public class NeedlemanWunsch extends SequenceAlignment {
    }
 
    @Override
-   protected Cell getTracebackStartingCell() {
+   public Cell getTracebackStartingCell() {
       return scoreTable[scoreTable.length - 1][scoreTable[0].length - 1];
    }
 
@@ -78,9 +78,9 @@ public class NeedlemanWunsch extends SequenceAlignment {
 
    protected int getInitialScore(int row, int col) {
       if (row == 0 && col != 0) {
-         return col * space;
+         return col * spaceScore;
       } else if (col == 0 && row != 0) {
-         return row * space;
+         return row * spaceScore;
       } else {
          return 0;
       }

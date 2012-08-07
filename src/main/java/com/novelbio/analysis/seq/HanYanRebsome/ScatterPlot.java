@@ -2,9 +2,9 @@ package com.novelbio.analysis.seq.HanYanRebsome;
 
 import java.util.ArrayList;
 
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genomeNew.GffChrMap;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

@@ -2,9 +2,9 @@ package com.novelbio.analysis.seq.reseq;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.LocInfo;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.LocInfo;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 

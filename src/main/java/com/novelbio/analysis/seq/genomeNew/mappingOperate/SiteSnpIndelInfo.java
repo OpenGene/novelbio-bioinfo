@@ -8,8 +8,8 @@ import java.util.Map.Entry;
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.database.domain.geneanno.SepSign;

@@ -9,31 +9,48 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  */
 public abstract class DynamicProgramming {
 
-   protected String sequence1;
-   protected String sequence2;
-   protected Cell[][] scoreTable;
-   protected boolean tableIsFilledIn;
-   protected boolean isInitialized;
+	protected String sequence1;
+	protected String sequence2;
+	protected Cell[][] scoreTable;
+	protected boolean tableIsFilledIn;
+	protected boolean isInitialized;
 
-   public DynamicProgramming(String sequence1, String sequence2) {
-      this.sequence1 = sequence1;
-      this.sequence2 = sequence2;
-      scoreTable = new Cell[sequence2.length() + 1][sequence1.length() + 1];
-   }
+	public DynamicProgramming(String sequence1, String sequence2) {
+		this.sequence1 = sequence1;
+		this.sequence2 = sequence2;
+		scoreTable = new Cell[sequence2.length() + 1][sequence1.length() + 1];
+	}
 
-   public double[][] getScoreTable() {
-      ensureTableIsFilledIn();
+	public double[][] getScoreTable() {
+		ensureTableIsFilledIn();
 
-      double[][] matrix = new double[scoreTable.length][scoreTable[0].length];
-      for (int i = 0; i < matrix.length; i++) {
-         for (int j = 0; j < matrix[i].length; j++) {
-            matrix[i][j] = scoreTable[i][j].getScore();
-         }
-      }
+		double[][] matrix = new double[scoreTable.length][scoreTable[0].length];
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[i].length; j++) {
+				matrix[i][j] = scoreTable[i][j].getScore();
+			}
+		}
+		return matrix;
+	}
+	protected void ensureTableIsFilledIn() {
+		if (!isInitialized) {
+			initialize();
+		}
+		if (!tableIsFilledIn) {
+			fillIn();
+		}
+	}
+	protected void initialize() {
+		for (int i = 0; i < scoreTable.length; i++) {
+			for (int j = 0; j < scoreTable[i].length; j++) {
+				scoreTable[i][j] = new Cell(i, j);
+			}
+		}
+		initializeScores();
+		initializePointers();
 
-      return matrix;
-   }
-
+		isInitialized = true;
+	}
    protected void initializeScores() {
       for (int i = 0; i < scoreTable.length; i++) {
          for (int j = 0; j < scoreTable[i].length; j++) {
@@ -43,45 +60,32 @@ public abstract class DynamicProgramming {
    }
 
    protected void initializePointers() {
-      for (int i = 0; i < scoreTable.length; i++) {
-         for (int j = 0; j < scoreTable[i].length; j++) {
-            scoreTable[i][j].setPrevCell(getInitialPointer(i, j));
-         }
-      }
+	   for (int i = 0; i < scoreTable.length; i++) {
+		   for (int j = 0; j < scoreTable[i].length; j++) {
+			   scoreTable[i][j].setPrevCell(getInitialPointer(i, j));
+		   }
+	   }
    }
-
-   protected void initialize() {
-      for (int i = 0; i < scoreTable.length; i++) {
-         for (int j = 0; j < scoreTable[i].length; j++) {
-            scoreTable[i][j] = new Cell(i, j);
-         }
-      }
-      initializeScores();
-      initializePointers();
-
-      isInitialized = true;
-   }
-
+   
    protected abstract Cell getInitialPointer(int row, int col);
 
    protected abstract int getInitialScore(int row, int col);
-
-   protected abstract void fillInCell(Cell currentCell, Cell cellAbove,
-         Cell cellToLeft, Cell cellAboveLeft);
-
+   
    protected void fillIn() {
-      for (int row = 1; row < scoreTable.length; row++) {
-         for (int col = 1; col < scoreTable[row].length; col++) {
-            Cell currentCell = scoreTable[row][col];
-            Cell cellAbove = scoreTable[row - 1][col];
-            Cell cellToLeft = scoreTable[row][col - 1];
-            Cell cellAboveLeft = scoreTable[row - 1][col - 1];
-            fillInCell(currentCell, cellAbove, cellToLeft, cellAboveLeft);
-         }
-      }
+	   for (int row = 1; row < scoreTable.length; row++) {
+		   for (int col = 1; col < scoreTable[row].length; col++) {
+			   Cell currentCell = scoreTable[row][col];
+			   Cell cellAbove = scoreTable[row - 1][col];
+			   Cell cellToLeft = scoreTable[row][col - 1];
+			   Cell cellAboveLeft = scoreTable[row - 1][col - 1];
+			   fillInCell(currentCell, cellAbove, cellToLeft, cellAboveLeft);
+		   }
+	   }
 
-      tableIsFilledIn = true;
+	   tableIsFilledIn = true;
    }
+
+   protected abstract void fillInCell(Cell currentCell, Cell cellAbove, Cell cellToLeft, Cell cellAboveLeft);
 
    abstract protected Object getTraceback();
 
@@ -144,12 +148,5 @@ public abstract class DynamicProgramming {
 	      }
 	   }
 
-   protected void ensureTableIsFilledIn() {
-      if (!isInitialized) {
-         initialize();
-      }
-      if (!tableIsFilledIn) {
-         fillIn();
-      }
-   }
+
 }

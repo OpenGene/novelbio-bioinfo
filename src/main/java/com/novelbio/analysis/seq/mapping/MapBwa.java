@@ -2,7 +2,7 @@ package com.novelbio.analysis.seq.mapping;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -137,7 +137,7 @@ public class MapBwa {
 	}
 	/**
 	 * 百分之多少的mismatch，或者几个mismatch
-	 * @param mismatch
+	 * @param mismatchScore
 	 */
 	private String getMismatch() {
 		return "-n " + mismatch + " ";

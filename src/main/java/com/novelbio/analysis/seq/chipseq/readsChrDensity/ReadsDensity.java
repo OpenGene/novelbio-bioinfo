@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.novelbio.analysis.seq.fasta.ChrStringHash;
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqHashAbs;
 import com.novelbio.analysis.seq.genome.GffChrUnion;
 import com.novelbio.analysis.seq.genome.getChrSequence.ChrSearch;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.ChrStringHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHashAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.NovelBioConst;

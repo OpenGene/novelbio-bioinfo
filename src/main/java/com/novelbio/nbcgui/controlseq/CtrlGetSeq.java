@@ -2,10 +2,10 @@ package com.novelbio.nbcgui.controlseq;
 
 import java.util.ArrayList;
 
+import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
 import com.novelbio.analysis.seq.genomeNew.GffChrSeq.GffChrSeqProcessInfo;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.base.RunGetInfo;

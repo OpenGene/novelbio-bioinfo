@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.FastQRecord;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 

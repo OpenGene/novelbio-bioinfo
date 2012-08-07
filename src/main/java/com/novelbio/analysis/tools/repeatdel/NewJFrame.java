@@ -13,7 +13,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.WindowConstants;
 import org.jdesktop.application.Application;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.base.gui.GUIFileOpen;
 
 import javax.swing.SwingUtilities;

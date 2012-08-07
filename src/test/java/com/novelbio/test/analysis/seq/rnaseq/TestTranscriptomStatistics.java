@@ -1,7 +1,7 @@
 package com.novelbio.test.analysis.seq.rnaseq;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqfastaStatisticsCDS;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqfastaStatisticsCDS;
 import com.novelbio.analysis.seq.rnaseq.TranscriptomStatistics;
 
 public class TestTranscriptomStatistics {

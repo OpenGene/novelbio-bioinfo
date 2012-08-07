@@ -13,6 +13,12 @@ public interface RunGetInfo<T> {
 	public void threadResume();
 	/** 线程中断进行的操作 */
 	public void threadStop();
-	/** 运行该线程 */
+	/** 
+	 * 先设定信息<br>
+	 * 	RunProcess.setRunGetInfo(this);<br>
+	 * 然后运行该线程<br>
+	 * 	Thread thread = new Thread(gffChrAnno);<br>
+		thread.start();
+	 *  */
 	public void execute();
 }

@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq;
+package com.novelbio.analysis.seq.fastq;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.FastQRecord;
+import com.novelbio.analysis.seq.SeqComb;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -708,9 +708,7 @@ public class FastQ extends SeqComb {
 	}
 	/**
 	 * 给定一系列的fastQ格式，猜测该fastQ是属于sanger还是solexa
-	 * 
-	 * @param lsFastQ
-	 *            :每一个string 就是一个fastQ
+	 * @param lsFastQ 每一个string 就是一个fastQ
 	 * @return FASTQ_ILLUMINA或者FASTQ_SANGER
 	 */
 	private int guessFastOFormat(ArrayList<FastQRecord> lsFastqRecord) {

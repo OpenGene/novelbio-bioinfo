@@ -3,7 +3,7 @@ package com.novelbio.database.domain.geneanno;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.analysis.seq.genomeNew.getChrSequence.SeqHash;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.service.servgeneanno.ServSpeciesFile;

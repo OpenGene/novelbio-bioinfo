@@ -28,7 +28,7 @@ public interface MapBlastInfo extends MapperSql {
 				and subjectDB = #{subjectDB} <br>
 			/if<br>
 	    /where <br>
-	 * @param BlastInfo
+	 * @param BlastResultInfo
 	 * @return
 	 */
 	public BlastInfo queryBlastInfo(BlastInfo qBlastInfo);
@@ -54,7 +54,7 @@ public interface MapBlastInfo extends MapperSql {
 				and subjectDB = #{subjectDB} <br>
 			/if<br>
 	    /where <br>
-	 * @param BlastInfo
+	 * @param BlastResultInfo
 	 * @return
 	 */
 	public ArrayList<BlastInfo> queryLsBlastInfo(BlastInfo qBlastInfo);
