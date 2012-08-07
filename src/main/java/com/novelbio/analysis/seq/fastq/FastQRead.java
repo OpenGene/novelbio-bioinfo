@@ -34,7 +34,6 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 	protected String compressInType = TxtReadandWrite.TXT;
 	
 	int readsLenAvg = 0;
-//	ArrayList<FastQfilterRecord> lsFilterRecords;
 
 	int maxNumReadInLs = 5000;
 	ArrayBlockingQueue<FastQRecord> lsFastQRecords = new ArrayBlockingQueue<FastQRecord>(maxNumReadInLs);
@@ -81,12 +80,11 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 	}
 	
 	/** 在每个filterReads中都设定本读取类 */
-	public void setLsFilterReads(ArrayList<FastQfilterRecord> lsFilterRecords) {
-		for (FastQfilterRecord fastqFilterRecord : lsFilterRecords) {
+	public void setLsFilterReads(ArrayList<? extends FastQRecordCope<?>> lsFilterRecords) {
+		for (FastQRecordCope<?> fastqFilterRecord : lsFilterRecords) {
 			fastqFilterRecord.setFastQRead(this);
 			fastqFilterRecord.setLsFastQRecords(lsFastQRecords);
 		}
-//		this.lsFilterRecords = lsFilterRecords;
 	}
 	/** 在每个filterReads中都设定本读取类 */
 	public void addFilterReads(FastQfilterRecord filterRecords) {

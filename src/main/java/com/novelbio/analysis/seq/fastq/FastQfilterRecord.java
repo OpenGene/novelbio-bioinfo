@@ -1,10 +1,8 @@
 package com.novelbio.analysis.seq.fastq;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
-import com.novelbio.base.RunProcess;
-class FastQfilterRecord extends RunProcess<FastqRecordInfoFilter> {
+class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 	int phredOffset;
 	int readsLenMin;
 	String adaptorLeft, adaptorRight;
@@ -18,80 +16,32 @@ class FastQfilterRecord extends RunProcess<FastqRecordInfoFilter> {
 	boolean adaptorLowercase = false;
 	
 	boolean adaptorScanLeftStart, adaptorScanRightStart;
+	int mapNumLeft = -1, mapNumRight = -1;
 	
 	int allReadsNum, filteredReadsNum;
 	
 	ArrayBlockingQueue<FastQRecord> lsFastQRecords;
 	
-	//主要是看读取是否完毕
-	FastQRead fastQRead;
-	
-	public void setLsFastQRecords(ArrayBlockingQueue<FastQRecord> lsFastQRecords) {
-		this.lsFastQRecords = lsFastQRecords;
-	}
-	/** 主要是看读取是否完毕 */
-	public void setFastQRead(FastQRead fastQRead) {
-		this.fastQRead = fastQRead;
-	}
 	@Override
-	protected void running() {
-		try {
-			filterReads();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void filterReads() throws InterruptedException {
-		int mapNumLeft = -1, mapNumRight = -1;
+	protected void copeInfo() {
 		if (adaptorScanLeftStart)
 			mapNumLeft = 1;
 		if (adaptorScanRightStart)
 			mapNumRight = 1;
-		
-
-		while (true) {
-			if (isReadingFinished()) {
-				break;
-			}
-			if (flagStop) {
-				break;
-			}
-			suspendCheck();
-			
-			FastQRecord fastQRecord = lsFastQRecords.poll();
-			if (fastQRecord == null) {
-				continue;
-			}
-			allReadsNum ++;
-			if (copeFastQRecord(fastQRecord, mapNumLeft, mapNumRight)) {
-				filteredReadsNum ++;
-			}
-		}
 	}
 	
-	private boolean isReadingFinished() throws InterruptedException {
-		while (lsFastQRecords.isEmpty()) {
-			if (fastQRead.isFinished()) {
-				return true;
-			}
-			Thread.sleep(10);
-		}
-		return false;
-	}
-	private boolean copeFastQRecord(FastQRecord fastQRecord, int mapNumLeft, int mapNumRight) {
-		if (fastQRecord == null) {
-			return false;
-		}
+	protected void copeFastQRecord(FastQRecord fastQRecord) {
+		allReadsNum ++;
+		
+		if (fastQRecord == null) return;
 		FastQRecord fastQRecordFilter = filterFastQRecord(fastQRecord, mapNumLeft, mapNumRight);
-		if (fastQRecordFilter == null) {
-			return false;
-		}
+		if (fastQRecordFilter == null) return;
+		
+		filteredReadsNum ++;
+
 		FastqRecordInfoFilter fastqRecordInfo = new FastqRecordInfoFilter(allReadsNum, fastQRecordFilter);
 		setRunInfo(fastqRecordInfo);
-		return true;
 	}
-	
 		
 	/** 没有通过过滤就返回null */
 	private FastQRecord filterFastQRecord(FastQRecord fastQRecord, int mapNumLeft, int mapNumRight) {
@@ -120,6 +70,7 @@ class FastQfilterRecord extends RunProcess<FastqRecordInfoFilter> {
 		
 		return fastQRecord;
 	}
+
 }
 class FastqRecordInfoFilter {
 	long readsNum = 0;
