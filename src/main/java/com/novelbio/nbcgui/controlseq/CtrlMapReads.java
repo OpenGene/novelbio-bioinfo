@@ -4,11 +4,12 @@ import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsAbs.MapReadsProcessInfo;
 import com.novelbio.base.RunGetInfo;
+import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.nbcgui.GUI.GuiRunningBarAbs;
 
-public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo, MapReads>{
+public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>{
 	String bedFileName;
 	MapReads mapReads;
 	GuiRunningBarAbs guiRunningBarAbs;
@@ -60,7 +61,7 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo,
 	}
 
 	@Override
-	public void done(MapReads runProcess) {
+	public void done(RunProcess<MapReadsProcessInfo> runProcess) {
 		guiRunningBarAbs.getProcessBar().setValue(guiRunningBarAbs.getProcessBar().getMaximum());
 		guiRunningBarAbs.getBtnRun().setEnabled(true);
 		guiRunningBarAbs.getBtnSave().setEnabled(true);

@@ -7,11 +7,15 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class FastQwrite {
+class FastQwrite {
 	private static Logger logger = Logger.getLogger(FastQ.class);
 	
+	boolean isTxtExist = false;
+	String txtFileName = "";
 	TxtReadandWrite txtSeqFile;
 	protected String cmpOutType = TxtReadandWrite.TXT;
+	
+	FastQwrite fastQwriteMate;
 	
 	public FastQwrite() {}
 	/**
@@ -23,6 +27,9 @@ public class FastQwrite {
 		setFastqFile(seqFile);
 	}
 	public void setFastqFile(String seqFile) {
+		if (txtSeqFile != null) {
+			txtSeqFile.close();
+		}
 		String houzhui = FileOperate.getFileNameSep(seqFile)[1];
 		if (houzhui.equals("gz")) {
 			setCompressType(TxtReadandWrite.GZIP);
@@ -30,13 +37,10 @@ public class FastQwrite {
 		else {
 			setCompressType(TxtReadandWrite.TXT);
 		}
-		txtSeqFile = new TxtReadandWrite(cmpOutType, seqFile, true);
+		txtFileName = seqFile;
 	}
 	protected String getFastqFile() {
-		if (txtSeqFile == null) {
-			return null;
-		}
-		return txtSeqFile.getFileName();
+		return txtFileName;
 	}
 	/**
 	 * 设定文件压缩格式
@@ -48,12 +52,29 @@ public class FastQwrite {
 			this.cmpOutType = cmpOutType;
 		}
 	}
+	public void setFastQwriteMate(FastQwrite fastQwriteMate) {
+		this.fastQwriteMate = fastQwriteMate;
+	}
+	
+	/**
+	 * <b>写完后务必用 {@link #closeWrite} 方法关闭</b>
+	 * 创建的时候要设定为creat模式
+	 * @param bedRecord
+	 */
+	protected void writeFastQRecord(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
+		txtSeqFile.writefileln(fastQRecord1.toString());
+		if (fastQwriteMate != null) {
+			fastQwriteMate.writeFastQRecord(fastQRecord2);
+		}
+	}
+	
 	/**
 	 * <b>写完后务必用 {@link #closeWrite} 方法关闭</b>
 	 * 创建的时候要设定为creat模式
 	 * @param bedRecord
 	 */
 	public void writeFastQRecord(FastQRecord fastQRecord) {
+		creatTxt();
 		txtSeqFile.writefileln(fastQRecord.toString());
 	}
 	/**
@@ -61,9 +82,17 @@ public class FastQwrite {
 	 * @param lsBedRecord
 	 */
 	public void wirteFastqRecord(List<FastQRecord> lsFastQRecords) {
+		creatTxt();
 		for (FastQRecord fastQRecord : lsFastQRecords) {
 			txtSeqFile.writefileln(fastQRecord.toString());
 		}
+	}
+	private void creatTxt() {
+		if (isTxtExist) {
+			return;
+		}
+		isTxtExist = true;
+		txtSeqFile = new TxtReadandWrite(cmpOutType, txtFileName, true);
 	}
 	/**
 	 * 写完后务必用此方法关闭
@@ -71,5 +100,8 @@ public class FastQwrite {
 	 */
 	public void close() {
 		txtSeqFile.close();
+		if (fastQwriteMate != null) {
+			fastQwriteMate.close();
+		}
 	}
 }

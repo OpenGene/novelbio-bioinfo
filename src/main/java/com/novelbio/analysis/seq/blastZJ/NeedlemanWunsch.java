@@ -12,7 +12,7 @@ public class NeedlemanWunsch extends SequenceAlignment {
 
    public NeedlemanWunsch(String sequence1, String sequence2, int match,
          int mismatch, int gap) {
-      super(sequence1, sequence2, match, mismatch, gap);
+      super(sequence1, sequence2);
    }
 
    protected void fillInCell(Cell currentCell, Cell cellAbove, Cell cellToLeft,

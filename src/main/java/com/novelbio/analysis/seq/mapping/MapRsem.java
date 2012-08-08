@@ -142,7 +142,7 @@ public class MapRsem {
 	public void setLeftFq(String... fqFile) {
 		lsLeftFq = new ArrayList<FastQ>();
 		for (String string : fqFile) {
-			FastQ fastQ = new FastQ(string, FastQ.QUALITY_MIDIAN);
+			FastQ fastQ = new FastQ(string);
 			lsLeftFq.add(fastQ);
 		}
 	}
@@ -153,7 +153,7 @@ public class MapRsem {
 	public void setRightFq(String... fqFile) {
 		lsRightFq = new ArrayList<FastQ>();
 		for (String string : fqFile) {
-			FastQ fastQ = new FastQ(string, FastQ.QUALITY_MIDIAN);
+			FastQ fastQ = new FastQ(string);
 			lsRightFq.add(fastQ);
 		}
 	}
@@ -207,14 +207,14 @@ public class MapRsem {
 		String cmd = exePathRsem + "rsem-calculate-expression " + getBowtiePath();
 		cmd = cmd + getOffset() + getPairend() + getThreadNum();
 		
-		cmd = cmd + " " + lsLeftFq.get(0).getFileName();
+		cmd = cmd + " " + lsLeftFq.get(0).getReadFileName();
 		for (int i = 1; i < lsLeftFq.size(); i++) {
-			cmd = cmd + "," + lsLeftFq.get(i).getFileName();
+			cmd = cmd + "," + lsLeftFq.get(i).getReadFileName();
 		}
 		if (lsRightFq.size() > 0) {
-			cmd = cmd + " " + lsRightFq.get(0).getFileName();
+			cmd = cmd + " " + lsRightFq.get(0).getReadFileName();
 			for (int i = 1; i < lsRightFq.size(); i++) {
-				cmd = cmd + "," + lsRightFq.get(i).getFileName();
+				cmd = cmd + "," + lsRightFq.get(i).getReadFileName();
 			}
 		}
 		cmd = cmd + " " + rsemIndex + " " + outPathPrefix;

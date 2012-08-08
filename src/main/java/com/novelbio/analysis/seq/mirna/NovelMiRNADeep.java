@@ -382,7 +382,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 		miRNAmapPipline.setMiRNApreSeq(novelMiRNAhairpin);
 		miRNAmapPipline.setOutPath(outPath, outPath +"novelMiRNAmapping", outPath + "novelMiRNAbed");
 		
-		miRNAmapPipline.setSample(outPrefix, fastQ.getFileName());
+		miRNAmapPipline.setSample(outPrefix, fastQ.getReadFileName());
 		miRNAmapPipline.mappingMiRNA();
 		String bedSeqMiRNAnovel = miRNAmapPipline.getOutMiRNAbed();
 		

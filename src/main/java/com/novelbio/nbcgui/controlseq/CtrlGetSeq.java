@@ -14,7 +14,7 @@ import com.novelbio.base.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiGetSeq;
 
-public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo, GffChrSeq>{
+public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 	int[] upAndDownStream = new int[2];
 	GffChrAbs gffChrAbs;
 	GuiGetSeq guiGetSeq;
@@ -114,7 +114,7 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo, Gf
 	}
 
 	@Override
-	public void done(GffChrSeq runProcess) {
+	public void done(RunProcess<GffChrSeqProcessInfo> runProcess) {
 		guiGetSeq.getProgressBar().setValue(guiGetSeq.getProgressBar().getMaximum());
 		guiGetSeq.getBtnOpen().setEnabled(true);
 		guiGetSeq.getBtnSave().setEnabled(true);
@@ -136,4 +136,5 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo, Gf
 	public void threadStop() {
 		gffChrSeq.threadStop();
 	}
+	
 }

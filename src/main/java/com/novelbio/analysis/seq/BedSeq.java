@@ -14,6 +14,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
+import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -403,7 +404,7 @@ public class BedSeq extends SeqComb{
 			FastQRecord fastQRecord = new FastQRecord();
 			fastQRecord.setName(bedRecord.getName());
 			fastQRecord.setFastaQuality(getQuality(bedRecord.getSeqFasta().getLength()));
-			fastQRecord.setFastqOffset(FastQRecord.FASTQ_SANGER_OFFSET);
+			fastQRecord.setFastqOffset(FastQ.FASTQ_SANGER_OFFSET);
 			fastQRecord.setSeq(bedRecord.getSeqFasta().toString());
 			fastQ.writeFastQRecord(fastQRecord);
 		}

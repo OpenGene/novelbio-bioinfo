@@ -10,7 +10,7 @@ package com.novelbio.base;
  *
  */
 public abstract class RunProcess<T> implements Runnable {
-	protected RunGetInfo<T, ? extends RunProcess<T>> runGetInfo;
+	protected RunGetInfo<T> runGetInfo;
 	
 	protected boolean flagStop = false;
 	protected boolean suspendFlag = false;
@@ -18,7 +18,7 @@ public abstract class RunProcess<T> implements Runnable {
 	boolean flagFinish = false;
 	
 	/** 给定运行中需要修改的信息 */
-	public void setRunGetInfo(RunGetInfo<T, ? extends RunProcess<T>> runGetInfo) {
+	public void setRunGetInfo(RunGetInfo<T> runGetInfo) {
 		this.runGetInfo = runGetInfo;
 	}
 	/** 程序暂停 */

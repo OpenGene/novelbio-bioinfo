@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import com.novelbio.analysis.seq.genomeNew.GffChrStatistics;
 import com.novelbio.analysis.seq.genomeNew.GffChrStatistics.GffChrStatiscticsProcessInfo;
 import com.novelbio.base.RunGetInfo;
+import com.novelbio.base.RunProcess;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiPeakStatistics;
 
-public class CtrlPeakStatistics implements RunGetInfo<GffChrStatistics.GffChrStatiscticsProcessInfo, GffChrStatistics>{
+public class CtrlPeakStatistics implements RunGetInfo<GffChrStatistics.GffChrStatiscticsProcessInfo>{
 	GuiPeakStatistics guiPeakStatistics;
 	GffChrStatistics gffChrStatistics = new GffChrStatistics();
 	
@@ -67,7 +68,7 @@ public class CtrlPeakStatistics implements RunGetInfo<GffChrStatistics.GffChrSta
 		guiPeakStatistics.getProcessBar().setValue(info.getReadsize());
 	}
 	@Override
-	public void done(GffChrStatistics gffChrStatistics) {
+	public void done(RunProcess<GffChrStatiscticsProcessInfo> runProcess) {
 		guiPeakStatistics.getProcessBar().setValue(guiPeakStatistics.getProcessBar().getMaximum());
 		guiPeakStatistics.getBtnSave().setEnabled(true);
 		guiPeakStatistics.getBtnRun().setEnabled(true);

@@ -65,7 +65,7 @@ public class MapBwa {
 	 */
 	public MapBwa(FastQ fastQ, String outFileName) {
 		this.outFileName = outFileName;
-		leftFq = fastQ.getFileName();
+		leftFq = fastQ.getReadFileName();
 		pairend = false;
 	}
 	/**
@@ -110,10 +110,10 @@ public class MapBwa {
 	public void setFqFile(FastQ leftFq, FastQ rightFq) {
 		String leftFqFile = "", rightFqFile = "";
 		if (leftFq != null) {
-			leftFqFile = leftFq.getFileName();
+			leftFqFile = leftFq.getReadFileName();
 		}
 		if (rightFq != null) {
-			rightFqFile = rightFq.getFileName();
+			rightFqFile = rightFq.getReadFileName();
 		}
 		setFqFile(leftFqFile, rightFqFile);
 	}
@@ -230,7 +230,7 @@ public class MapBwa {
 		return "-o " + gapNum + " ";
 	}
 	private int getOffset() {
-		FastQ fastQ = new FastQ(leftFq, FastQ.QUALITY_MIDIAN);
+		FastQ fastQ = new FastQ(leftFq);
 		return fastQ.getOffset();
 	}
 	/**
@@ -292,7 +292,6 @@ public class MapBwa {
 		cmdOperate = new CmdOperate(cmd,"bwaMappingSAI");
 		cmdOperate.run();
 		SamFile samFile = new SamFile(outFileName);
-		samFile.setPairend(isPairend());
 		return samFile;
 	}
 	private String addSamToFileName(String outFileName) {

@@ -14,10 +14,10 @@ public class FastQRecord implements Cloneable {
 	HashMap<Integer, Integer> mapFastQFilter = new HashMap<Integer, Integer>();
 	
 	private SeqFasta seqFasta = new SeqFasta();
-	protected int fastqOffset = FastQfile.FASTQ_SANGER_OFFSET;
+	protected int fastqOffset = FastQ.FASTQ_SANGER_OFFSET;
 	protected String seqQuality = "";
 	/** 序列质量控制，低于该质量就说明本记录有问题 */
-	protected int quality = FastQfile.QUALITY_MIDIAN;
+	protected int quality = FastQ.QUALITY_MIDIAN;
 	/** 裁剪序列时最短为多少 */
 	private int readsMinLen = 22;
 	
@@ -445,7 +445,7 @@ public class FastQRecord implements Cloneable {
 	public String toString() {
 		if (seqQuality.length() != seqFasta.getLength()) {
 			char[] quality = new char[seqFasta.getLength()];
-			if (fastqOffset == FastQfile.FASTQ_ILLUMINA_OFFSET) {
+			if (fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET) {
 				for (int i = 0; i < quality.length; i++) {
 					quality[i] = 'f';
 				}
@@ -488,7 +488,7 @@ public class FastQRecord implements Cloneable {
 		if (seqFasta.toString().length() < readsMinLen) {
 			return false;
 		}
-		if (this.fastqOffset == FastQfile.FASTQ_ILLUMINA_OFFSET && seqQuality.endsWith("BBBBBBB") ) {
+		if (this.fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET && seqQuality.endsWith("BBBBBBB") ) {
 			return false;
 		}
 		/** 就看Q10，Q13和Q20就行了 */

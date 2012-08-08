@@ -55,7 +55,7 @@ public class GuiSamToBed extends JPanel {
 		btnConverttobedfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SamFile samFile = new SamFile(txtSamFile.getText());
-				samFile.toBedSingleEnd(false);
+				samFile.toBedSingleEnd();
 			}
 		});
 		btnConverttobedfile.setBounds(12, 77, 194, 24);

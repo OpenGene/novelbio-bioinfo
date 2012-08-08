@@ -33,11 +33,11 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 	protected TxtReadandWrite txtSeqFile;
 	protected String compressInType = TxtReadandWrite.TXT;
 	
-	int readsLenAvg = 0;
-
+	/** 另一端的读取文件，双端读取的时候才有用，两端是对应的读 */
+	FastQRead fastQReadMate;
 	int maxNumReadInLs = 5000;
-	ArrayBlockingQueue<FastQRecord> lsFastQRecords = new ArrayBlockingQueue<FastQRecord>(maxNumReadInLs);
-
+	ArrayBlockingQueue<FastQRecord[]> lsFastQRecords = new ArrayBlockingQueue<FastQRecord[]>(maxNumReadInLs);
+	
 	
 	/** 标准文件名的话，自动判断是否为gz压缩 */
 	public void setFastqFile(String seqFile) {
@@ -91,6 +91,11 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 		filterRecords.setFastQRead(this);
 		filterRecords.setLsFastQRecords(lsFastQRecords);
 	}
+	/** 设定另一个FastqRead，也就是双端的另一端 */
+	protected void setFastQReadMate(FastQRead fastQReadMate) {
+		this.fastQReadMate = fastQReadMate;
+	}
+	
 	public Iterable<FastQRecord> readlines() {
 		return readlines(0);
 	}
@@ -179,6 +184,16 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 	@Override
 	protected void running() {
 		setFastQFormatLen();
+		if (fastQReadMate == null) {
+			readSE();
+		}
+		else {
+			readPE();
+		}
+		logger.info("finishedRead");
+	}
+	
+	private void readSE() {
 		long num = 0;
 		for (FastQRecord fastQRecord : readlines()) {
 			num++;
@@ -189,12 +204,29 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 			while (lsFastQRecords.size() == maxNumReadInLs) {
 				try { Thread.sleep(50); } catch (InterruptedException e) { }
 			}
-			setRunInfo(new FastqRecordInfoRead(num, fastQRecord));
-			lsFastQRecords.add(fastQRecord);
+			FastQRecord[] fastQRecords = new FastQRecord[]{fastQRecord};
+			setRunInfo(new FastqRecordInfoRead(num, fastQRecords));
+			lsFastQRecords.add(fastQRecords);
 		}
-		logger.info("finishedRead");
 	}
-	
+	private void readPE() {
+		long num = 0;
+		Iterator<FastQRecord> itMateFastqRecord = fastQReadMate.readlines().iterator();
+		for (FastQRecord fastQRecord : readlines()) {
+			FastQRecord fastQRecord2 = itMateFastqRecord.next();
+			num++;
+			suspendCheck();
+			if (flagStop) {
+				break;
+			}
+			while (lsFastQRecords.size() == maxNumReadInLs) {
+				try { Thread.sleep(50); } catch (InterruptedException e) { }
+			}
+			FastQRecord[] fastQRecords = new FastQRecord[]{fastQRecord, fastQRecord2};
+			setRunInfo(new FastqRecordInfoRead(num, fastQRecords));
+			lsFastQRecords.add(fastQRecords);
+		}
+	}
 	/**
 	 * 如果FastQ格式没有设定好，通过该方法设定FastQ格式
 	 */
@@ -204,7 +236,6 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 		}
 		ArrayList<FastQRecord> lsFastQRecordsTop500 = getLsFastQSeq(500);
 		int fastQformat = guessFastOFormat(lsFastQRecordsTop500);
-		readsLenAvg = getReadsLenAvg(lsFastQRecordsTop500);
 		if (fastQformat == FASTQ_ILLUMINA_OFFSET) {
 			offset = FASTQ_ILLUMINA_OFFSET;
 			return;
@@ -267,23 +298,6 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 		// 都没判断出来，猜测为illumina格式
 		return FASTQ_ILLUMINA_OFFSET;
 	}
-	
-	/**
-	 * 给定一系列的fastQ格式，获得平均reads长度
-	 * @param lsFastQ
-	 *            :每一个string 就是一个fastQ
-	 * @return 平均reads长度
-	 */
-	private int getReadsLenAvg(ArrayList<FastQRecord> lsFastqRecord) {
-		if (lsFastqRecord.size() == 0) {
-			return 0;
-		}
-		int readsLenSum = 0;
-		for (FastQRecord fastQRecord : lsFastqRecord) {
-			readsLenSum = readsLenSum + fastQRecord.getLength();
-		}
-		return readsLenSum/lsFastqRecord.size();
-	}
 	public void close() {
 		txtSeqFile.close();
 	}
@@ -291,8 +305,8 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 
 class FastqRecordInfoRead {
 	long readsNum = 0;
-	FastQRecord fastQRecord;
-	public FastqRecordInfoRead(long readsNum, FastQRecord fastQRecord) {
+	FastQRecord[] fastQRecord;
+	public FastqRecordInfoRead(long readsNum, FastQRecord[] fastQRecord) {
 		this.readsNum = readsNum;
 		this.fastQRecord = fastQRecord;
 	}

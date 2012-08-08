@@ -1,24 +1,17 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 import javax.swing.JButton;
-import javax.swing.JRadioButton;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
-import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
-import com.novelbio.base.RunGetInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.nbcgui.controlquery.CtrlBatchAnno;
-import com.novelbio.nbcgui.controlquery.CtrlBatchAnnoGene;
 import com.novelbio.nbcgui.controlquery.CtrlBatchAnnoPeak;
 
 import java.awt.event.ActionListener;
@@ -26,7 +19,6 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 import javax.swing.JProgressBar;
-import javax.swing.JComboBox;
 /**
  * 批量注释，各种注释
  * @author zong0jie
