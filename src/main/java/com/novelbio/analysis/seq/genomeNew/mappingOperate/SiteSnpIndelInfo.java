@@ -1,11 +1,9 @@
 package com.novelbio.analysis.seq.genomeNew.mappingOperate;
 
-import java.awt.image.RescaleOp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
@@ -19,7 +17,8 @@ import com.novelbio.database.service.servgeneanno.ServSnpIndelRs;
 
 
 /**
- * 对于单个位点的snp与indel的情况
+ * 对于单个位点的snp与indel的情况，可以保存多个不同的样本。
+ * 在setSampleName()方法中可设定样本名，并获得该样本的信息。
  * @author zong0jie
  */
 public abstract class SiteSnpIndelInfo {

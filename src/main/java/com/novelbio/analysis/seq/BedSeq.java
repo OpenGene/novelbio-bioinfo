@@ -408,7 +408,7 @@ public class BedSeq extends SeqComb{
 			fastQRecord.setSeq(bedRecord.getSeqFasta().toString());
 			fastQ.writeFastQRecord(fastQRecord);
 		}
-		fastQ.closeWrite();
+		fastQ.close();
 		return fastQ;
 	}
 	

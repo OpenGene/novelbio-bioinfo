@@ -27,9 +27,6 @@ class FastQwrite {
 		setFastqFile(seqFile);
 	}
 	public void setFastqFile(String seqFile) {
-		if (txtSeqFile != null) {
-			txtSeqFile.close();
-		}
 		String houzhui = FileOperate.getFileNameSep(seqFile)[1];
 		if (houzhui.equals("gz")) {
 			setCompressType(TxtReadandWrite.GZIP);
@@ -39,7 +36,7 @@ class FastQwrite {
 		}
 		txtFileName = seqFile;
 	}
-	protected String getFastqFile() {
+	protected String getFileName() {
 		return txtFileName;
 	}
 	/**

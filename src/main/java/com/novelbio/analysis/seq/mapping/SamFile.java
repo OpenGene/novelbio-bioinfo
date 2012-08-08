@@ -346,7 +346,7 @@ public class SamFile {
 				fastQ.writeFastQRecord(fastQRecord);
 			}
 		}
-		fastQ.closeWrite();
+		fastQ.close();
 		close();
 		return fastQ;
 	}

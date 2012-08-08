@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.fastq;
 import java.util.HashMap;
 
 /** 实际上是过滤的类，不过可以用其来设定过滤的参数 */
-class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
+public class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 	int phredOffset;
 	int quality = FastQ.QUALITY_MIDIAN;
 	int readsLenMin;
@@ -85,12 +85,15 @@ class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 	public void setFilterParamProportionMisMathch(int proportionMisMathch) {
 		this.proportionMisMathch = proportionMisMathch;
 	}
+	/** 默认为ture */
 	public void setFilterParamAdaptorScanLeftStart(boolean adaptorScanLeftStart) {
 		this.adaptorScanLeftStart = adaptorScanLeftStart;
 	}
+	/** 默认为ture */
 	public void setFilterParamAdaptorScanRightStart(boolean adaptorScanRightStart) {
 		this.adaptorScanRightStart = adaptorScanRightStart;
 	}
+	/** 默认为false */
 	public void setFilterParamTrimPolyA_right(boolean trimPolyA_right) {
 		this.trimPolyA_right = trimPolyA_right;
 	}
@@ -101,6 +104,10 @@ class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 	/**默认true */
 	public void setFilterParamTrimNNN(boolean trimNNN) {
 		this.trimNNN = trimNNN;
+	}	
+	/**默认false */
+	public void setFilterParamAdaptorLowercase(boolean adaptorLowercase) {
+		this.adaptorLowercase = adaptorLowercase;
 	}
 
 	/** 将一个fastqFilterRecord的参数导入本对象 */
@@ -117,6 +124,7 @@ class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 		trimPolyA_right = fastQfilterRecordParam.trimPolyA_right;
 		trimNNN = fastQfilterRecordParam.trimNNN;
 		trimPolyT_left = fastQfilterRecordParam.trimPolyT_left;
+		adaptorLowercase = fastQfilterRecordParam.adaptorLowercase;
 	}
 	protected void setPhredOffset(int phredOffset) {
 		this.phredOffset = phredOffset;

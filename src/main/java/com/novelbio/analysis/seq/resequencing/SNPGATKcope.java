@@ -36,6 +36,9 @@ public class SNPGATKcope {
 	int colSnpDBID = -1;
 	
 	ArrayList<String[]> lsSample2VcfFiles = new ArrayList<String[]>();
+	/** 0：sampleName<br>
+	 * 1：SampleFile
+	 */
 	ArrayList<String[]> lsSample2SamPileupFile = new ArrayList<String[]>();
 	/**多个vcf文件的并集snp */
 	ArrayList<MapInfoSnpIndel> lsUnionSnp = new ArrayList<MapInfoSnpIndel>();
@@ -110,13 +113,13 @@ public class SNPGATKcope {
 		for (String[] sample2vcf : lsSample2VcfFiles) {
 			addVcfToLsSnpIndel(sample2vcf[0], sample2vcf[1]);
 		}
-		HashMap<String, ArrayList<MapInfoSnpIndel>> mapInfoSnpIndel = MapInfoSnpIndel.sortLsMapInfoSnpIndel(lsUnionSnp);
+		HashMap<String, ArrayList<MapInfoSnpIndel>> mapInfoSnpIndel = MapInfoSnpIndel.sort_MapChrID2InfoSnpIndel(lsUnionSnp);
 		for (String[] sample2PileUp : lsSample2SamPileupFile) {
 			MapInfoSnpIndel.getSiteInfo(sample2PileUp[0], mapInfoSnpIndel, sample2PileUp[1], gffChrAbs);
 		}
 	}
 	/**
-	 * 将gatk里面vcf文件中，random的chr全部删除
+	 * 将gatk里面vcf文件中的snp信息加入mapSiteInfo2MapInfoSnpIndel中
 	 */
 	private void addVcfToLsSnpIndel(String sampleName, String vcfFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(vcfFile, false);
@@ -126,9 +129,11 @@ public class SNPGATKcope {
 			
 			int snpStart;
 			try { snpStart = Integer.parseInt(ss[colSnpStart]); } catch (Exception e) { continue; }
+			
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs,  ss[colChrID], snpStart);
 			mapInfoSnpIndel.setSampleName(sampleName);
 			setMapInfoSnpIndel(mapInfoSnpIndel, ss);
+			
 			String key = mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart();
 			if (mapSiteInfo2MapInfoSnpIndel.containsKey(key)) {
 				MapInfoSnpIndel maInfoSnpIndelExist = mapSiteInfo2MapInfoSnpIndel.get(mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart());
@@ -181,17 +186,21 @@ public class SNPGATKcope {
 			lsSample.add(strings[0]);
 		}
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
-		txtOut.writefileln(MapInfoSnpIndel.getTitle(lsSample));
+		txtOut.writefileln(MapInfoSnpIndel.getTitleFromSampleName(lsSample));
 		for (MapInfoSnpIndel mapInfoSnpIndel : lsUnionSnp) {
-			if (mapInfoSnpIndel.getRefSnpIndelStart() == 2983963) {
-				System.out.println("stop");
-			}
 			ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(lsSample, true);
 			for (String[] strings : lsResult) {
 				txtOut.writefileln(strings);
 			}
 		}
 		txtOut.close();
+	}
+	
+	public void filterSnp() {
+		for (MapInfoSnpIndel mapInfoSnpIndel : lsUnionSnp) {
+			
+		}
+		//TODO 过滤不平衡的snp
 	}
 	/**
 	 * 给定文本，和domain信息，获得具体domain的信息

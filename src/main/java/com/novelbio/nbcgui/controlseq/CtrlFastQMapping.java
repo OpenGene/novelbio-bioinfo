@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
+import com.novelbio.analysis.seq.fastq.FastQfilterRecord;
 import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.mapping.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -221,16 +222,16 @@ public class CtrlFastQMapping {
 			}
 		}
 		if (FileOperate.isFileExistAndBigThanSize(fastqL, 10) && FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
-			tmpFastQLR[0] = new FastQ(fastqL, fastqQuality);
-			tmpFastQLR[1] = new FastQ(fastqR, fastqQuality);;
+			tmpFastQLR[0] = new FastQ(fastqL);
+			tmpFastQLR[1] = new FastQ(fastqR);;
 			setFastQParameter(tmpFastQLR[0], compressType);
 		}
 		else if (FileOperate.isFileExistAndBigThanSize(fastqL, 10)) {
-			tmpFastQLR[0] = new FastQ(fastqL, fastqQuality);
+			tmpFastQLR[0] = new FastQ(fastqL);
 			setFastQParameter(tmpFastQLR[0], compressType);
 		}
 		else if (FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
-			tmpFastQLR[0] = new FastQ(fastqR, fastqQuality);
+			tmpFastQLR[0] = new FastQ(fastqR);
 			setFastQParameter(tmpFastQLR[0], compressType);
 		}
 	}
@@ -240,8 +241,8 @@ public class CtrlFastQMapping {
 			setPrefix.add(string);
 		}
 		for (String prefix : setPrefix) {
-			int allReads = 0;
-			int filteredReads = 0;
+			long allReads = 0;
+			long filteredReads = 0;
 			ArrayList<FastQ[]> lsFastQLR = mapCondition2LsFastQLR.get(prefix);
 			ArrayList<FastQ[]> lsFiltered = new ArrayList<FastQ[]>();
 			for (FastQ[] fastq : lsFastQLR) {
@@ -310,20 +311,21 @@ public class CtrlFastQMapping {
 			}
 		}
 		
-		fastQL.closeWrite();
-		if (PairEnd) fastQR.closeWrite();
+		fastQL.close();
+		if (PairEnd) fastQR.close();
 		
 		mapCondition2CombFastQLRFiltered.put(condition, new FastQ[]{fastQL, fastQR});
 	}
 	private void setFastQParameter(FastQ fastQ, String compressType) {
-		fastQ.setAdaptorLeft(adaptorLeft);
-		fastQ.setAdaptorRight(adaptorRight);
-		fastQ.setAdaptorLeftScanAll(true);
-		fastQ.setAdaptorRightScanAll(true);
-		fastQ.setCaseLowAdaptor(adaptorLowercase);
+		FastQfilterRecord fastQfilterRecord = new FastQfilterRecord();
+		fastQfilterRecord.setFilterParamAdaptorLeft(adaptorLeft.trim());
+		fastQfilterRecord.setFilterParamAdaptorRight(adaptorRight.trim());
+		fastQfilterRecord.setFilterParamAdaptorLowercase(adaptorLowercase);
+		fastQfilterRecord.setFilterParamReadsLenMin(readsLenMin);
+		fastQfilterRecord.setFilterParamQuality(this.fastqQuality);
+		fastQfilterRecord.setFilterParamTrimNNN(trimNNN);
+
 		fastQ.setCompressType(compressType, TxtReadandWrite.TXT);
-		fastQ.setLenReadsMin(readsLenMin);
-		fastQ.setTrimNNN(trimNNN);
 	}
 	
 	public static HashMap<String, Integer> getMapLibrary() {

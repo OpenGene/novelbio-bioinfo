@@ -560,7 +560,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		return tmpResult;
 	}
 	/**
-	 * 返回全部snp类型和样本的信息
+	 * 给定样本名，返回全部snp类型和样本的信息
 	 * @return
 	 */
 	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK) {
@@ -684,7 +684,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		logger.error("克隆出错");
 		return null;
 	}
-	public static String[] getTitle(Collection<String> lsSampleNames) {
+	/** 根据给定的样本名，产生title */
+	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames) {
 		LinkedList<String> lsTitle = new LinkedList<String>();
 		lsTitle.add("ChrID");
 		lsTitle.add("Loc");
@@ -721,35 +722,42 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 */
 	public static void getSiteInfo(String sampleName, List<MapInfoSnpIndel> lsSite, String samToolsPleUpFile, GffChrAbs gffChrAbs) {
 		/** 每个chrID对应一组mapinfo，也就是一个list */
-		HashMap<String, ArrayList<MapInfoSnpIndel>> mapSortedChrID2MapInfo = sortLsMapInfoSnpIndel(lsSite);
+		HashMap<String, ArrayList<MapInfoSnpIndel>> mapSortedChrID2MapInfo = sort_MapChrID2InfoSnpIndel(lsSite);
 		getSiteInfo(sampleName, mapSortedChrID2MapInfo, samToolsPleUpFile, gffChrAbs);
 	}
-	public static HashMap<String, ArrayList<MapInfoSnpIndel>> sortLsMapInfoSnpIndel(List<MapInfoSnpIndel> lsSite) {
+	/** 将输入文件整理为<br>
+	 * chrID----List--MapInfo<br>
+	 * 的格式<br>
+	 * @param lsSite
+	 * @return
+	 */
+	public static HashMap<String, ArrayList<MapInfoSnpIndel>> sort_MapChrID2InfoSnpIndel(List<MapInfoSnpIndel> lsSite) {
 		/** 每个chrID对应一组mapinfo，也就是一个list */
-		HashMap<String, ArrayList<MapInfoSnpIndel>> hashChrIDMapInfo = new LinkedHashMap<String, ArrayList<MapInfoSnpIndel>>();
+		HashMap<String, ArrayList<MapInfoSnpIndel>> mapChrID2MapInfo = new LinkedHashMap<String, ArrayList<MapInfoSnpIndel>>();
 		// 按照chr位置装入hash表
 		for (MapInfoSnpIndel mapInfoSnpIndel : lsSite) {
-			ArrayList<MapInfoSnpIndel> lsMap = hashChrIDMapInfo.get(mapInfoSnpIndel.getRefID());
+			ArrayList<MapInfoSnpIndel> lsMap = mapChrID2MapInfo.get(mapInfoSnpIndel.getRefID());
 			if (lsMap == null) {
 				lsMap = new ArrayList<MapInfoSnpIndel>();
-				hashChrIDMapInfo.put(mapInfoSnpIndel.getRefID(), lsMap);
+				mapChrID2MapInfo.put(mapInfoSnpIndel.getRefID(), lsMap);
 			}
 			lsMap.add(mapInfoSnpIndel);
 		}
-		for (ArrayList<MapInfoSnpIndel> lsMapInfos : hashChrIDMapInfo.values()) {
+		for (ArrayList<MapInfoSnpIndel> lsMapInfos : mapChrID2MapInfo.values()) {
 			Collections.sort(lsMapInfos);
 		}
-		return hashChrIDMapInfo;
+		return mapChrID2MapInfo;
 	}
 	/**
 	 * 给定选中的mapInfo，读取samtools产生的pileup file获得每个位点的具体信息
 	 * @param sampleName 样本名字。如果输入的mapSortedChrID2LsMapInfo已经有该样本信息，那么就跳过
-	 * @param mapSortedChrID2LsMapInfo LsMapInfo排过序的list
+	 * @param mapChrID2SortedLsMapInfo LsMapInfo排过序的list
 	 * @param samToolsPleUpFile
 	 * @param gffChrAbs
 	 * @return 新建一个hash表然后返回，这个hash表与输入的表是deep copy关系
 	 */
-	public static void getSiteInfo(String sampleName, HashMap<String, ArrayList<MapInfoSnpIndel>> mapChrID2SortedLsMapInfo, String samToolsPleUpFile, GffChrAbs gffChrAbs) {
+	public static void getSiteInfo(String sampleName, HashMap<String, ArrayList<MapInfoSnpIndel>> mapChrID2SortedLsMapInfo, 
+			String samToolsPleUpFile, GffChrAbs gffChrAbs) {
 		/** 每个chrID对应一组mapinfo，也就是一个list */
 		TxtReadandWrite txtReadSam = new TxtReadandWrite(samToolsPleUpFile, false);
 		String tmpChrID = ""; ArrayList<MapInfoSnpIndel> lsMapInfos = null;
@@ -872,7 +880,7 @@ class SampleRefReadsInfo {
 		return Strand_Bias;
 	}
 }
-
+/** 设定需要排序的样本，也就是输入的名字，然后根据该样本的信息进行排序 */
 class compMapInfoSnpIndelBig2Small implements Comparator<SiteSnpIndelInfo> {
 	String sampleName;
 	public compMapInfoSnpIndelBig2Small(String sampleName) {
