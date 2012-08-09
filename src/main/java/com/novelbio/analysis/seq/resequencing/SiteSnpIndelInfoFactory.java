@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genomeNew.mappingOperate;
+package com.novelbio.analysis.seq.resequencing;
 
 import org.apache.log4j.Logger;
 

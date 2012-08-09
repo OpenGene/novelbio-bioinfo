@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genomeNew.mappingOperate;
+package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,27 +8,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Map.Entry;
 
-import javax.swing.text.html.parser.Entity;
-
 import org.apache.log4j.Logger;
-import org.omg.CosNaming._BindingIteratorImplBase;
 
-import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.tools.Mas3.getProbID;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.database.domain.geneanno.SnpIndelRs;
-import com.novelbio.database.model.modcopeid.GeneID;
-import com.novelbio.database.service.servgeneanno.ServSnpIndelRs;
-import com.novelbio.database.updatedb.database.CopeDBSnp132;
+
 /**
  * 解析samtools产生的pile up信息，将每一行生成一个本类，专门存储堆叠信息
  * 有设定flag就当snp，没有设定flag就当indel
@@ -37,11 +25,6 @@ import com.novelbio.database.updatedb.database.CopeDBSnp132;
  */
 public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	private static Logger logger = Logger.getLogger(MapInfoSnpIndel.class);
-
-	public static final int TYPE_INSERT = 40;
-	public static final int TYPE_DELETION = 30;
-	public static final int TYPE_MISMATCH = 20;
-	public static final int TYPE_CORRECT = 10;
 
 	/** 
 	 * <b>里面都是正向的序列</b>
@@ -117,7 +100,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * AD Allelic depths for the ref and alt alleles in the order listed
 	 * @return
 	 */
-	public int getAllelic_depths_Ref() {
+	public int getReadsNumRef() {
 		SampleRefReadsInfo sampleRefReadsInfo = mapSample2NormReadsInfo.get(sampleName);
 		if (sampleRefReadsInfo == null) {
 			return 0;
@@ -138,7 +121,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		return sampleRefReadsInfo.Genotype_Quality;
 	}
 	
-	public int getReadsDepth() {
+	public int getReadsNumAll() {
 		SampleRefReadsInfo sampleRefReadsInfo = mapSample2NormReadsInfo.get(sampleName);
 		if (sampleRefReadsInfo == null) {
 			return 0;
@@ -555,8 +538,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		if (siteSnpIndelInfo == null) {
 			return "";
 		}
-		String tmpResult = getRefID()+"\t"+getRefSnpIndelStart()+"\t" + siteSnpIndelInfoQuery.getReferenceSeq()+"\t" +getAllelic_depths_Ref();
-		tmpResult = tmpResult + "\t" +siteSnpIndelInfo.getThisSeq() + "\t" + siteSnpIndelInfo.getThisReadsNum();
+		String tmpResult = getRefID()+"\t"+getRefSnpIndelStart()+"\t" + siteSnpIndelInfoQuery.getReferenceSeq()+"\t" +getReadsNumRef();
+		tmpResult = tmpResult + "\t" +siteSnpIndelInfo.getThisSeq() + "\t" + siteSnpIndelInfo.getReadsNum();
 		return tmpResult;
 	}
 	/**
@@ -603,8 +586,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				}
 				siteSnpIndelInfo.setSampleName(sampleName);
 				lsTmpInfo.add(sampleRefReadsInfo.getReadsDepth() + "");
-				lsTmpInfo.add(siteSnpIndelInfo.getThisReadsNum() + "");
-				lsTmpInfo.add(siteSnpIndelInfo.getFiltered());
+				lsTmpInfo.add(siteSnpIndelInfo.getReadsNum() + "");
+				lsTmpInfo.add(siteSnpIndelInfo.getVcfInfoFilter());
 				lsTmpInfo.add(siteSnpIndelInfo.getQuality());
 			}
 			
@@ -814,7 +797,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	}
 
 }
-
+/** 某个样本在该位点的reference reads数量 */
 class SampleRefReadsInfo {
 	public SampleRefReadsInfo() { }
 	
@@ -822,11 +805,11 @@ class SampleRefReadsInfo {
 		this.readDepth = readDepth;
 	}
 	/** AD
-	 * Allelic depths for the ref and alt alleles in the order listed
+	 * ref的reads数量
 	 */
 	int Allelic_depths_Ref = 0;
 	/**  DP
-	 * Read Depth (only filtered reads used for calling
+	 * 全部过滤后的reads数量，only filtered reads used for calling
 	 */
 	int readDepth = 0;
 	/**
@@ -863,6 +846,7 @@ class SampleRefReadsInfo {
 	public void setGenotype_Quality(double genotype_Quality) {
 		Genotype_Quality = genotype_Quality;
 	}
+	/** 设置GATK的vcf信息 */
 	public void setStrand_Bias(double strand_Bias) {
 		Strand_Bias = strand_Bias;
 	}
@@ -890,8 +874,8 @@ class compMapInfoSnpIndelBig2Small implements Comparator<SiteSnpIndelInfo> {
 	public int compare(SiteSnpIndelInfo o1, SiteSnpIndelInfo o2) {
 		o1.setSampleName(sampleName);
 		o2.setSampleName(sampleName);
-		Integer readsNum1 = o1.getThisReadsNum();
-		Integer readsNum2 = o2.getThisReadsNum();
+		Integer readsNum1 = o1.getReadsNum();
+		Integer readsNum2 = o2.getReadsNum();
 		return -readsNum1.compareTo(readsNum2);
 	}
 }

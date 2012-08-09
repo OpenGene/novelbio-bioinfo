@@ -379,7 +379,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 				}
 				else
 					return  location + Math.abs(mRNAnum);
-			} 
+			}
 			else {
 				int exonNum = getNumCodInEle(location) - 1;
 				int remain = Math.abs(mRNAnum) - getCod2ExInStart(location);

@@ -3,8 +3,8 @@ package com.novelbio.test.analysis.seq.genomeNew.mappingOperate;
 import org.junit.Test;
 
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfoSnpIndel;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteSnpIndelInfo;
+import com.novelbio.analysis.seq.resequencing.MapInfoSnpIndel;
+import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
 
 import junit.framework.TestCase;
 

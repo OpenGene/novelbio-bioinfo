@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genomeNew.mappingOperate;
+package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +10,7 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.domain.geneanno.SnpIndelRs;
 import com.novelbio.database.model.modcopeid.GeneID;
@@ -40,7 +41,7 @@ public abstract class SiteSnpIndelInfo {
 	int codLocInfo = 0;
 	boolean isInCDS = false;
 	/** 用MapInfoSnpIndel的type */
-	int snpType = MapInfoSnpIndel.TYPE_CORRECT;
+	SnpIndelType snpType = SnpIndelType.CORRECT;
 
 	SplitType splitType = SplitType.NONE;
 	SnpIndelRs snpIndelRs;
@@ -98,7 +99,7 @@ public abstract class SiteSnpIndelInfo {
 	public String getReferenceSeq() {
 		return referenceSeq;
 	}
-	public int getSnpIndelType() {
+	public SnpIndelType getSnpIndelType() {
 		return snpType;
 	}
 	public void setThisReadsNum(int readsNum) {
@@ -108,7 +109,7 @@ public abstract class SiteSnpIndelInfo {
 		}
 		 sampleSnpReadsQuality.thisReadsNum = readsNum;
 	}
-	public int getThisReadsNum() {
+	public int getReadsNum() {
 		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
 		if (sampleSnpReadsQuality == null) {
 			return 0;
@@ -129,19 +130,20 @@ public abstract class SiteSnpIndelInfo {
 		}
 		return sampleSnpReadsQuality.quality;
 	}
-	public void setFiltered(String Filter) {
+	public void setVcfFilterInfo(String Filter) {
 		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
 		if (sampleSnpReadsQuality == null) {
 			return;
 		}
-		 sampleSnpReadsQuality.Filter = Filter;
+		 sampleSnpReadsQuality.vcfFilterInfo = Filter;
 	}
-	public String getFiltered() {
+	
+	public String getVcfInfoFilter() {
 		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
 		if (sampleSnpReadsQuality == null) {
 			return "";
 		}
-		return sampleSnpReadsQuality.Filter;
+		return sampleSnpReadsQuality.vcfFilterInfo;
 	}
 	/**计数加一 */
 	protected void addThisBaseNum() {
@@ -156,7 +158,7 @@ public abstract class SiteSnpIndelInfo {
 	}
 	/** 本snp占总reads的比例 */
 	public double getThisBasePropss() {
-		return (double)getThisReadsNum()/mapInfoSnpIndel.getReadsDepth();
+		return (double)getReadsNum()/mapInfoSnpIndel.getReadsNumAll();
 	}
 	/**
 	 * 返回变化的AA的化学性质改变形式，不在cds中则返回""；
@@ -297,8 +299,8 @@ public abstract class SiteSnpIndelInfo {
 		String thisnr =  getThisAAnr().toString();
 		String thisaa = getThisAAnr().toStringAA(false);
 		
-		String result =  mapinfoRefSeqIntactAA.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart() + "\t" + referenceSeq + "\t" + mapInfoSnpIndel.getAllelic_depths_Ref() + "\t" + thisSeq + "\t" + 
-		getThisReadsNum() + "\t" + getQuality() + "\t" + getFiltered() + "\t" + isExon()+"\t" + mapInfoSnpIndel.getProp() +"\t"+
+		String result =  mapinfoRefSeqIntactAA.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart() + "\t" + referenceSeq + "\t" + mapInfoSnpIndel.getReadsNumRef() + "\t" + thisSeq + "\t" + 
+		getReadsNum() + "\t" + getQuality() + "\t" + getVcfInfoFilter() + "\t" + isExon()+"\t" + mapInfoSnpIndel.getProp() +"\t"+
 		refnr +"\t"+refaa + "\t" + thisnr +"\t"+thisaa;
 		if (refaa.length() ==3  && thisaa.length() == 3) {
 			result = result + "\t" + SeqFasta.cmpAAquality(refaa, thisaa);
@@ -360,6 +362,10 @@ public abstract class SiteSnpIndelInfo {
 		return (chrID + SepSign.SEP_ID + Loc + SepSign.SEP_ID + referenceSeq 
 				+ SepSign.SEP_ID + thisSeq).toLowerCase();
 	}
+	
+	public static enum SnpIndelType {
+		INSERT, DELETION, MISMATCH, CORRECT
+	}
 }
 /**
  * 貌似与SiteSnpIndelInfoSnp一模一样
@@ -374,7 +380,7 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		if (refBase.length() > 1) {
 			logger.error("refBase 大于1，可能不是插入，请核对：" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
 		}
-		super.snpType = MapInfoSnpIndel.TYPE_INSERT;
+		super.snpType = SnpIndelType.INSERT;
 	}
 	@Override
 	protected void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs) {
@@ -443,7 +449,7 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 class SiteSnpIndelInfoSnp extends SiteSnpIndelInfoInsert {
 	public SiteSnpIndelInfoSnp(MapInfoSnpIndel mapInfoSnpIndel, GffChrAbs gffChrAbs, String refBase, String thisBase) {
 		super(mapInfoSnpIndel, gffChrAbs, refBase, thisBase);
-		super.snpType = MapInfoSnpIndel.TYPE_MISMATCH;
+		super.snpType = SnpIndelType.MISMATCH;
 	}
 	protected void setOrfShift() {
 		orfShift = 0;
@@ -461,7 +467,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		if (refBase.length() <= 1 || thisBase.length() > 1) {
 			logger.error("本位点可能不是缺失，请核对：" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
 		}
-		super.snpType = MapInfoSnpIndel.TYPE_DELETION;
+		super.snpType = SnpIndelType.DELETION;
 	}
 
 	@Override
@@ -626,7 +632,7 @@ class SampleSnpReadsQuality {
 	/** 该snp的质量 */
 	String quality = "";
 	/** 是否符合标准 */
-	String Filter = "";
+	String vcfFilterInfo = "";
 	int thisReadsNum;
 	public SampleSnpReadsQuality() {}
 	public SampleSnpReadsQuality(int thisReadsNum) {

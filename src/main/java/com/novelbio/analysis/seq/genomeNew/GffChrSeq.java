@@ -26,7 +26,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	private static Logger logger = Logger.getLogger(GffChrSeq.class);
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
-	GeneStructure geneStructure;
+	GeneStructure geneStructure = GeneStructure.ALLLENGTH;
 	/** true,提取该转录本，false，提取该gene下的最长转录本 */
 	boolean absIso;
 	/** 是否提取内含子 */

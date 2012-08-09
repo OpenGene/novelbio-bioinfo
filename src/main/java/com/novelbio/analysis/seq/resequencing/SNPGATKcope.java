@@ -11,12 +11,12 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.util.SSCellRange;
 
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfoSnpIndel;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteSnpIndelInfo;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -45,6 +45,9 @@ public class SNPGATKcope {
 	/** 用于多个样本的snp去冗余的，其中key表示该snp所在的起点信息，value就是该位点具体的snp情况 */
 	HashMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel = new HashMap<String, MapInfoSnpIndel>();
 	
+	/** 用来过滤样本的 */
+	SnpSampleFilter sampleFilter = new SnpSampleFilter();
+	
 	public static void main(String[] args) {
 		String parentPath = "/media/winF/NBC/Project/Project_HXW/20120705/";
 		SNPGATKcope snpgatKcope = new SNPGATKcope();
@@ -56,13 +59,28 @@ public class SNPGATKcope {
 		snpgatKcope.addVcfFile("2B", parentPath + "2B_SNPrecal_IndelFiltered.vcf");
 		snpgatKcope.addVcfFile("3A", parentPath + "3A_SNPrecal_IndelFiltered.vcf");
 		snpgatKcope.addVcfFile("3B", parentPath + "3B_SNPrecal_IndelFiltered.vcf");
-		snpgatKcope.addSampileupFile("2A", parentPath + "2A_detailmpileup.txt");
-		snpgatKcope.addSampileupFile("2B", parentPath + "2B_detailmpileup.txt");
-		snpgatKcope.addSampileupFile("3A", parentPath + "3A_detailmpileup.txt");
-		snpgatKcope.addSampileupFile("3B", parentPath + "3B_detailmpileup.txt");
+//		snpgatKcope.addSampileupFile("2A", parentPath + "2A_detailmpileup.txt");
+//		snpgatKcope.addSampileupFile("2B", parentPath + "2B_detailmpileup.txt");
+//		snpgatKcope.addSampileupFile("3A", parentPath + "3A_detailmpileup.txt");
+//		snpgatKcope.addSampileupFile("3B", parentPath + "3B_detailmpileup.txt");
 		
+		SampleDetail sampleDetail2A = new SampleDetail();
+		sampleDetail2A.addSampleName("2A");
+		sampleDetail2A.setSampleRefHomoNum(0, 1);
+		sampleDetail2A.setSampleSnpIndelHetoNum(0, 0);
+		sampleDetail2A.setSampleSnpIndelHomoNum(0, 0);
+		snpgatKcope.addFilterSample(sampleDetail2A);
+		
+		SampleDetail sampleDetail2B = new SampleDetail();
+		sampleDetail2B.addSampleName("2B");
+		sampleDetail2B.setSampleRefHomoNum(0, 0);
+		sampleDetail2B.setSampleSnpIndelHetoNum(0, 1);
+		sampleDetail2B.setSampleSnpIndelHomoNum(0, 1);
+		sampleDetail2B.setSampleSnpIndelNum(1, 1);
+		snpgatKcope.addFilterSample(sampleDetail2B);
 		snpgatKcope.execute();
-		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withoutSampileup.xls");
+		snpgatKcope.filterSnp();
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_2Bvs2A.xls");
 	}
 	
 	public SNPGATKcope() {
@@ -73,6 +91,14 @@ public class SNPGATKcope {
 	}
 	public void addSampileupFile(String sampleName, String sampileupFile) {
 		lsSample2SamPileupFile.add(new String[]{sampleName, sampileupFile});
+	}
+	/** 重置过滤的样本信息 */
+	public void clearSampleFilterInfo() {
+		sampleFilter.clearSampleFilterInfo();
+	}
+	/** 过滤样本的具体信息 */
+	public void addFilterSample(SampleDetail sampleDetail) {
+		sampleFilter.addSampleFilterInfo(sampleDetail);
 	}
 	/**
 	 * @param colChrID vcf是1
@@ -132,7 +158,11 @@ public class SNPGATKcope {
 			
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs,  ss[colChrID], snpStart);
 			mapInfoSnpIndel.setSampleName(sampleName);
-			setMapInfoSnpIndel(mapInfoSnpIndel, ss);
+			try {
+				setMapInfoSnpIndel(mapInfoSnpIndel, ss);
+			} catch (Exception e) {
+				setMapInfoSnpIndel(mapInfoSnpIndel, ss);
+			}
 			
 			String key = mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart();
 			if (mapSiteInfo2MapInfoSnpIndel.containsKey(key)) {
@@ -156,7 +186,7 @@ public class SNPGATKcope {
 		if (colQuality >= 0)
 			siteSnpIndelInfo.setQuality(inputLines[colQuality]);
 		if (colFiltered >= 0)
-			siteSnpIndelInfo.setFiltered(inputLines[colFiltered]);
+			siteSnpIndelInfo.setVcfFilterInfo(inputLines[colFiltered]);
 		if (colFlagTitle >= 0 && colFlagDetail >= 0) {
 			mapInfoSnpIndel.setFlag(inputLines[colFlagTitle], inputLines[colFlagDetail]);
 			setDepthAlt(siteSnpIndelInfo, inputLines[colFlagTitle], inputLines[colFlagDetail]);
@@ -179,7 +209,19 @@ public class SNPGATKcope {
 			}
 		}
 	}
-	
+	/** 必须在execute之后执行 */
+	public void filterSnp() {
+		ArrayList<MapInfoSnpIndel> lsFilteredSnp = new ArrayList<MapInfoSnpIndel>();
+		for (MapInfoSnpIndel mapInfoSnpIndel : lsUnionSnp) {
+			if (mapInfoSnpIndel.getRefSnpIndelStart() == 3816854) {
+				logger.error("stop");
+			}
+			if (sampleFilter.isFilterdSnp(mapInfoSnpIndel)) {
+				lsFilteredSnp.add(mapInfoSnpIndel);
+			}
+		}
+		lsUnionSnp = lsFilteredSnp;
+	}
 	public void writeToFile(String txtFile) {
 		ArrayList<String> lsSample = new ArrayList<String>();
 		for (String[] strings : lsSample2VcfFiles) {
@@ -196,12 +238,7 @@ public class SNPGATKcope {
 		txtOut.close();
 	}
 	
-	public void filterSnp() {
-		for (MapInfoSnpIndel mapInfoSnpIndel : lsUnionSnp) {
-			
-		}
-		//TODO 过滤不平衡的snp
-	}
+
 	/**
 	 * 给定文本，和domain信息，获得具体domain的信息
 	 * @param txtExcelSNP
