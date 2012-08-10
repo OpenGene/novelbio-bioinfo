@@ -52,6 +52,10 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	/** 要是已经在sam pileUp里面搜索过了，那么就设定该样本的sample是可以找到的 */
 
 	public MapInfoSnpIndel() {}
+	/** @param gffChrAbs */
+	public MapInfoSnpIndel(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
+	}
 	/**
 	 * @param gffChrAbs
 	 * @param chrID
@@ -62,6 +66,13 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		this.chrID = chrID;
 		this.refSnpIndelStart = refSnpIndelStart;
 	    setGffIso();
+	}
+	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
+	}
+	public void setRefSnpIndelStart(String chrID, int refSnpIndelStart) {
+		this.chrID = chrID;
+		this.refSnpIndelStart = refSnpIndelStart;
 	}
 	protected void setSearchSamPileUpFileTrue() {
 		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
@@ -189,12 +200,79 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			return false;
 		}
 	}
+
+	/**
+	 * 根据设定的列信息，填充mapinfosnpindel信息
+	 */
+	public void setVcfLines(String sampleName, VcfCols vcfCols, String vcfLines) {
+		setSampleName(sampleName);
+		String[] inputLines = vcfLines.split("\t");
+		refSnpIndelStart = Integer.parseInt(inputLines[vcfCols.colSnpStart]); 
+		//TODO :chrID是否需要小写
+		chrID = inputLines[vcfCols.colChrID];
+		SiteSnpIndelInfo siteSnpIndelInfo = addAllenInfo(inputLines[vcfCols.colRefsequence], inputLines[vcfCols.colThisSequence]);
+		if (vcfCols.colBaseInfo >= 0)
+			setBaseInfo(inputLines[vcfCols.colBaseInfo]);
+		if (vcfCols.colQuality >= 0)
+			siteSnpIndelInfo.setQuality(inputLines[vcfCols.colQuality]);
+		if (vcfCols.colFiltered >= 0)
+			siteSnpIndelInfo.setVcfFilterInfo(inputLines[vcfCols.colFiltered]);
+		if (vcfCols.colFlagTitle >= 0 && vcfCols.colFlagDetail >= 0) {
+			setFlag(inputLines[vcfCols.colFlagTitle], inputLines[vcfCols.colFlagDetail]);
+			setDepthAlt(siteSnpIndelInfo, inputLines[vcfCols.colFlagTitle], inputLines[vcfCols.colFlagDetail]);
+		}
+		if (vcfCols.colSnpDBID>=0) {
+			if (!inputLines[vcfCols.colSnpDBID].equals(".")) {
+				siteSnpIndelInfo.setDBSnpID(inputLines[vcfCols.colSnpDBID]);
+			}
+		}
+	}
+	/**
+	 * 就看这三项：AF,AN,SB
+	 *  AB=0.841;AC=1;AF=0.50;AN=2;BaseQRankSum=0.097;DP=63;Dels=0.00;FS=0.000;HRun=0;HaplotypeScore=0.0000;
+	 *  给定GATKinfo，设定信息
+	 * @param GATKInfo
+	 */
+	private void setBaseInfo(String GATKInfo) {
+		String[] ssValue = GATKInfo.split(";");
+		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
+		for (String string : ssValue) {
+			String[] tmpInfo = string.split("=");
+			if (tmpInfo[0].equals("SB")) {
+				sampleRefReadsInfo.setStrand_Bias(Double.parseDouble(tmpInfo[1]));
+			}
+		}
+	}
+	private SampleRefReadsInfo getAndCreateSampleRefReadsInfo() {
+		SampleRefReadsInfo sampleRefReadsInfo = mapSample2NormReadsInfo.get(sampleName);
+		if (sampleRefReadsInfo == null) {
+			sampleRefReadsInfo = new SampleRefReadsInfo();
+			mapSample2NormReadsInfo.put(sampleName, sampleRefReadsInfo);
+		}
+		return sampleRefReadsInfo;
+	}
+	/** 设定vcf中的reads depth那个列，主要是设定从vcf中读取的reads depth信息<br>
+	 * "GT:AD:DP:GQ:PL", <br>
+	 * "0/1:119,100:315:99:3214,0,3784"<br>
+	 *  */
+	private void setDepthAlt(SiteSnpIndelInfo sampleRefReadsInfo, String flagTitle, String flagDetail) {
+		//TODO 这里我删除了一个Allelic_depths_Alt的项目，考虑如何很好的添加进去
+		String[] ssFlag = flagTitle.split(":");
+		String[] ssValue = flagDetail.split(":");
+		for (int i = 0; i < ssFlag.length; i++) {
+			if (ssFlag[i].equals("AD")) {
+				String[] info = ssValue[i].split(",");
+				sampleRefReadsInfo.setThisReadsNum(Integer.parseInt(info[1]));
+			}
+		}
+	}
 	/**
 	 * 这里我删除了一个Allelic_depths_Alt的项目，考虑如何很好的添加进去
-	 * 设置
-	 * GT:AD:DP:GQ:PL	0/1:53,10:63:99:150,0,673
+	 * 设置<br>
+	 * GT:AD:DP:GQ:PL<br>
+	 * 0/1:53,10:63:99:150,0,673<br>
 	 */
-	public void setFlag(String flagTitle, String flagDetail) {
+	private void setFlag(String flagTitle, String flagDetail) {
 		//TODO 这里我删除了一个Allelic_depths_Alt的项目，考虑如何很好的添加进去
 		String[] ssFlag = flagTitle.split(":");
 		String[] ssValue = flagDetail.split(":");
@@ -216,43 +294,28 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		}
 	}
 	/**
-	 * 就看这三项：AF,AN,SB
-	 *  AB=0.841;AC=1;AF=0.50;AN=2;BaseQRankSum=0.097;DP=63;Dels=0.00;FS=0.000;HRun=0;HaplotypeScore=0.0000;
-	 *  给定GATKinfo，设定信息
-	 * @param GATKInfo
+	 *  在已有refbase信息的基础上，查找该refSnpIndelStart位点有哪些indel或snp
+	 *  找到的indel所对应的refbase可能和原来的refbase不一样
+	 * @param samString
 	 */
-	public void setBaseInfo(String GATKInfo) {
-		String[] ssValue = GATKInfo.split(";");
-		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
-		for (String string : ssValue) {
-			String[] tmpInfo = string.split("=");
-			if (tmpInfo[0].equals("SB")) {
-				sampleRefReadsInfo.setStrand_Bias(Double.parseDouble(tmpInfo[1]));
-			}
-		}
-	}
-	private SampleRefReadsInfo getAndCreateSampleRefReadsInfo() {
-		SampleRefReadsInfo sampleRefReadsInfo = mapSample2NormReadsInfo.get(sampleName);
-		if (sampleRefReadsInfo == null) {
-			sampleRefReadsInfo = new SampleRefReadsInfo();
-			mapSample2NormReadsInfo.put(sampleName, sampleRefReadsInfo);
-		}
-		return sampleRefReadsInfo;
+	public void setSamToolsPilup(String samString, GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
+		setSamToolsPilup(samString);
 	}
 	/**
 	 *  在已有refbase信息的基础上，查找该refSnpIndelStart位点有哪些indel或snp
 	 *  找到的indel所对应的refbase可能和原来的refbase不一样
 	 * @param samString
 	 */
-	public void setSamToolsPilup(String samString, GffChrAbs gffChrAbs) {
+	public void setSamToolsPilup(String samString) {
 		String[] ss = samString.split("\t");
 		this.chrID = ss[0];
 		this.refSnpIndelStart = Integer.parseInt(ss[1]);//本行舍不设定都无所谓，因为输入的时候就是要求相同的ID
 		this.refBase = ss[2];
-		this.gffChrAbs = gffChrAbs;
 		setGffIso();
 		setAllenInfo(Integer.parseInt(ss[3]), ss[4]);
 	}
+
 	/**
 	 * snp或indel所在的转录本
 	 * 同时设定setProp，cis5to3，和name，都用gffGeneIsoInfo的信息
@@ -284,9 +347,10 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @param pileUpInfo 输入 ...........,.............,....,....,.,.,..,..,...,....,.^!. 这种东西
 	 */
 	private void setAllenInfo(int readsDepth, String pileUpInfo) {
+		clearSampleReadsNum();
 		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
 		sampleRefReadsInfo.setSearchSampileupFile(true);
-		sampleRefReadsInfo.setReadDepth(0);
+		sampleRefReadsInfo.setReadDepth(readsDepth);
 		String referenceSeq = refBase, thisSeq = refBase;
 		char[] pipInfo = pileUpInfo.toCharArray();
 		for (int i = 0; i < pipInfo.length; i++) {
@@ -367,6 +431,16 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				}
 			}
 		}
+	}
+	/** 有些已经在vcf里面查过的snp会有该snp的depth信息，所以这里先清空本样本所有snp数值 */
+	private void clearSampleReadsNum() {
+		for (SiteSnpIndelInfo siteSnpIndelInfo : mapAllen2Num.values()) {
+			siteSnpIndelInfo.setSampleName(sampleName);
+			siteSnpIndelInfo.setThisReadsNum(0);
+		}
+		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
+		sampleRefReadsInfo.readDepth = 0;
+		sampleRefReadsInfo.Allelic_depths_Ref = 0;
 	}
 	/** 返回加入的siteSnpIndelInfo */
 	public SiteSnpIndelInfo addAllenInfo(String referenceSeq, String thisSeq) {
@@ -557,8 +631,11 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			lsResultTmp.add(gffGeneIsoInfo.getGeneID().getSymbol());
 			lsResultTmp.add(gffGeneIsoInfo.getGeneID().getDescription());
 		}
-		else
+		else{
 			lsResultTmp.add("");
+			lsResultTmp.add("");
+			lsResultTmp.add("");
+		}
 		if (prop >= 0)
 			lsResultTmp.add(prop + "");
 		else
@@ -748,6 +825,9 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		for (String samtoolsLine : txtReadSam.readlines()) {
 			String[] ss = samtoolsLine.split("\t");
 			int loc = Integer.parseInt(ss[1]);
+			if (loc == 57512711) {
+				logger.error("stop");
+			}
 			if (!ss[0].equals(tmpChrID)) {
 				tmpChrID = ss[0];
 				lsMapInfos = mapChrID2SortedLsMapInfo.get(tmpChrID);
@@ -787,13 +867,13 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		logger.info("readOverFile:" + samToolsPleUpFile);
 	}
 	private static void addMapSiteInfo(GffChrAbs gffChrAbs, String sampleName, MapInfoSnpIndel mapInfoSnpIndel, String samtoolsLine) {
-		if (mapInfoSnpIndel.isContainsSample(sampleName)) {
-			return;
-		}
-		else {
+//		if (mapInfoSnpIndel.isContainsSample(sampleName)) {
+//			return;
+//		}
+//		else {
 			mapInfoSnpIndel.setSampleName(sampleName);
 			mapInfoSnpIndel.setSamToolsPilup(samtoolsLine, gffChrAbs);
-		}
+//		}
 	}
 
 }

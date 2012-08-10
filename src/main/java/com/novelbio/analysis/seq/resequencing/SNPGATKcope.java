@@ -30,15 +30,12 @@ import com.novelbio.generalConf.NovelBioConst;
 public class SNPGATKcope {
 	Logger logger = Logger.getLogger(SNPGATKcope.class);
 	GffChrAbs gffChrAbs;
-	
-	int colChrID = -1, colSnpStart = -1, colRefsequence = -1, colThisSequence = -1;
-	int colBaseInfo = -1, colQuality = -1, colFiltered = -1, colFlagTitle = -1, colFlagDetail = -1;
-	int colSnpDBID = -1;
-	
+
+	/** vcf的列 */
+	VcfCols vcfCols = new VcfCols();
 	ArrayList<String[]> lsSample2VcfFiles = new ArrayList<String[]>();
 	/** 0：sampleName<br>
-	 * 1：SampleFile
-	 */
+	 * 1：SampleFile  */
 	ArrayList<String[]> lsSample2SamPileupFile = new ArrayList<String[]>();
 	/**多个vcf文件的并集snp */
 	ArrayList<MapInfoSnpIndel> lsUnionSnp = new ArrayList<MapInfoSnpIndel>();
@@ -52,21 +49,21 @@ public class SNPGATKcope {
 		String parentPath = "/media/winF/NBC/Project/Project_HXW/20120705/";
 		SNPGATKcope snpgatKcope = new SNPGATKcope();
 		snpgatKcope.setGffChrAbs(new GffChrAbs(9606));
-		snpgatKcope.setColInfo(1, 2, 4, 5);
-		snpgatKcope.setColAttr(8, 6, 7, 9, 10);
-		snpgatKcope.setColDBsnp(3);
+		
 		snpgatKcope.addVcfFile("2A", parentPath + "2A_SNPrecal_IndelFiltered.vcf");
 		snpgatKcope.addVcfFile("2B", parentPath + "2B_SNPrecal_IndelFiltered.vcf");
-		snpgatKcope.addVcfFile("3A", parentPath + "3A_SNPrecal_IndelFiltered.vcf");
-		snpgatKcope.addVcfFile("3B", parentPath + "3B_SNPrecal_IndelFiltered.vcf");
-//		snpgatKcope.addSampileupFile("2A", parentPath + "2A_detailmpileup.txt");
-//		snpgatKcope.addSampileupFile("2B", parentPath + "2B_detailmpileup.txt");
+//		snpgatKcope.addVcfFile("3A", parentPath + "3A_SNPrecal_IndelFiltered.vcf");
+//		snpgatKcope.addVcfFile("3B", parentPath + "3B_SNPrecal_IndelFiltered.vcf");
+//		snpgatKcope.addSampileupFile("2A", parentPath + "2A_piluptest.txt");
+//		snpgatKcope.addSampileupFile("2B", parentPath + "2B_piluptest.txt");
+		snpgatKcope.addSampileupFile("2A", parentPath + "2A_detailmpileup.txt");
+		snpgatKcope.addSampileupFile("2B", parentPath + "2B_detailmpileup.txt");
 //		snpgatKcope.addSampileupFile("3A", parentPath + "3A_detailmpileup.txt");
 //		snpgatKcope.addSampileupFile("3B", parentPath + "3B_detailmpileup.txt");
 		
 		SampleDetail sampleDetail2A = new SampleDetail();
 		sampleDetail2A.addSampleName("2A");
-		sampleDetail2A.setSampleRefHomoNum(0, 1);
+		sampleDetail2A.setSampleRefHomoNum(1, 1);
 		sampleDetail2A.setSampleSnpIndelHetoNum(0, 0);
 		sampleDetail2A.setSampleSnpIndelHomoNum(0, 0);
 		snpgatKcope.addFilterSample(sampleDetail2A);
@@ -79,13 +76,14 @@ public class SNPGATKcope {
 		sampleDetail2B.setSampleSnpIndelNum(1, 1);
 		snpgatKcope.addFilterSample(sampleDetail2B);
 		snpgatKcope.execute();
-		snpgatKcope.filterSnp();
+//		snpgatKcope.filterSnp();
 		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_2Bvs2A.xls");
+		
+		snpgatKcope.filterSnp();
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_2Bvs2A_filter.xls");
+		
 	}
-	
-	public SNPGATKcope() {
-		colChrID = 0; colSnpStart = 1; colRefsequence = 3; colThisSequence = 4;
-	}
+
 	public void addVcfFile(String sampleName, String vcfFile) {
 		lsSample2VcfFiles.add(new String[]{sampleName, vcfFile});
 	}
@@ -99,38 +97,6 @@ public class SNPGATKcope {
 	/** 过滤样本的具体信息 */
 	public void addFilterSample(SampleDetail sampleDetail) {
 		sampleFilter.addSampleFilterInfo(sampleDetail);
-	}
-	/**
-	 * @param colChrID vcf是1
-	 * @param colSnpStart vcf是2
-	 * @param colRefsequence vcf是4
-	 * @param colThisSequence vcf是5
-	 */
-	public void setColInfo(int colChrID, int colSnpStart, int colRefsequence, int colThisSequence) {
-		this.colChrID = colChrID - 1;
-		this.colSnpStart = colSnpStart - 1;
-		this.colRefsequence = colRefsequence - 1;
-		this.colThisSequence = colThisSequence - 1;
-	}
-	/**
-	 * @param colBaseInfo vcf是8
-	 * @param colQuality vcf是6
-	 * @param colFiltered vcf是7
-	 * @param colFlagTitle vcf是9
-	 * @param colFlagDetail vcf是10
-	 */
-	public void setColAttr(int colBaseInfo, int colQuality, int colFiltered, int colFlagTitle, int colFlagDetail) {
-		this.colBaseInfo = colBaseInfo - 1;
-		this.colQuality = colQuality - 1;
-		this.colFiltered = colFiltered - 1;
-		this.colFlagTitle = colFlagTitle - 1;
-		this.colFlagDetail = colFlagDetail - 1;
-	}
-	/**
-	 * @param colDBsnp vcf是3
-	 */
-	public void setColDBsnp(int colDBsnp) {
-		this.colSnpDBID = colDBsnp - 1;
 	}
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
@@ -149,24 +115,19 @@ public class SNPGATKcope {
 	 */
 	private void addVcfToLsSnpIndel(String sampleName, String vcfFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(vcfFile, false);
-		for (String string : txtRead.readlines()) {
-			if (string.startsWith("#")) continue;
-			String[] ss = string.split("\t");
+		for (String vcfLines : txtRead.readlines()) {
+			if (vcfLines.startsWith("#")) continue;
+			String[] ss = vcfLines.split("\t");
 			
-			int snpStart;
-			try { snpStart = Integer.parseInt(ss[colSnpStart]); } catch (Exception e) { continue; }
+			try {Integer.parseInt(ss[vcfCols.colSnpStart]); } catch (Exception e) { continue; }
 			
-			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs,  ss[colChrID], snpStart);
+			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs);
 			mapInfoSnpIndel.setSampleName(sampleName);
-			try {
-				setMapInfoSnpIndel(mapInfoSnpIndel, ss);
-			} catch (Exception e) {
-				setMapInfoSnpIndel(mapInfoSnpIndel, ss);
-			}
+			mapInfoSnpIndel.setVcfLines(sampleName, vcfCols, vcfLines);
 			
 			String key = mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart();
 			if (mapSiteInfo2MapInfoSnpIndel.containsKey(key)) {
-				MapInfoSnpIndel maInfoSnpIndelExist = mapSiteInfo2MapInfoSnpIndel.get(mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart());
+				MapInfoSnpIndel maInfoSnpIndelExist = mapSiteInfo2MapInfoSnpIndel.get(key);
 				maInfoSnpIndelExist.addAllenInfo(mapInfoSnpIndel);
 				continue;
 			}
@@ -176,44 +137,11 @@ public class SNPGATKcope {
 			}
 		}
 	}
-	/**
-	 * 根据设定的列信息，填充mapinfosnpindel信息
-	 */
-	private void setMapInfoSnpIndel(MapInfoSnpIndel mapInfoSnpIndel, String[] inputLines) {
-		SiteSnpIndelInfo siteSnpIndelInfo = mapInfoSnpIndel.addAllenInfo(inputLines[colRefsequence], inputLines[colThisSequence]);
-		if (colBaseInfo >= 0)
-			mapInfoSnpIndel.setBaseInfo(inputLines[colBaseInfo]);
-		if (colQuality >= 0)
-			siteSnpIndelInfo.setQuality(inputLines[colQuality]);
-		if (colFiltered >= 0)
-			siteSnpIndelInfo.setVcfFilterInfo(inputLines[colFiltered]);
-		if (colFlagTitle >= 0 && colFlagDetail >= 0) {
-			mapInfoSnpIndel.setFlag(inputLines[colFlagTitle], inputLines[colFlagDetail]);
-			setDepthAlt(siteSnpIndelInfo, inputLines[colFlagTitle], inputLines[colFlagDetail]);
-		}
-		if (colSnpDBID>=0) {
-			if (!inputLines[colSnpDBID].equals(".")) {
-				siteSnpIndelInfo.setDBSnpID(inputLines[colSnpDBID]);
-			}
-		}
-	}
-	/** 设定vcf中的reads depth那个列，主要是设定从vcf中读取的reads depth信息 */
-	private void setDepthAlt(SiteSnpIndelInfo sampleRefReadsInfo, String flagTitle, String flagDetail) {
-		//TODO 这里我删除了一个Allelic_depths_Alt的项目，考虑如何很好的添加进去
-		String[] ssFlag = flagTitle.split(":");
-		String[] ssValue = flagDetail.split(":");
-		for (int i = 0; i < ssFlag.length; i++) {
-			if (ssFlag[i].equals("AD")) {
-				String[] info = ssValue[i].split(",");
-				sampleRefReadsInfo.setThisReadsNum(Integer.parseInt(info[1]));
-			}
-		}
-	}
 	/** 必须在execute之后执行 */
 	public void filterSnp() {
 		ArrayList<MapInfoSnpIndel> lsFilteredSnp = new ArrayList<MapInfoSnpIndel>();
 		for (MapInfoSnpIndel mapInfoSnpIndel : lsUnionSnp) {
-			if (mapInfoSnpIndel.getRefSnpIndelStart() == 3816854) {
+			if (mapInfoSnpIndel.getRefSnpIndelStart() == 1842968) {
 				logger.error("stop");
 			}
 			if (sampleFilter.isFilterdSnp(mapInfoSnpIndel)) {
@@ -230,6 +158,9 @@ public class SNPGATKcope {
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
 		txtOut.writefileln(MapInfoSnpIndel.getTitleFromSampleName(lsSample));
 		for (MapInfoSnpIndel mapInfoSnpIndel : lsUnionSnp) {
+			if (mapInfoSnpIndel.getRefSnpIndelStart() == 1842968) {
+				logger.error("stop");
+			}
 			ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(lsSample, true);
 			for (String[] strings : lsResult) {
 				txtOut.writefileln(strings);

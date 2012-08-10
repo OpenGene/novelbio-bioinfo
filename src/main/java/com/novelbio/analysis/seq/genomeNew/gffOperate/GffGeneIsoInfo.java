@@ -89,6 +89,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 
 	GffDetailGene gffDetailGeneParent;
 	
+	GeneID geneID;
+	
 	public GffGeneIsoInfo(String IsoName, int geneType) {
 		super.listName = IsoName;
 		this.flagTypeGene = geneType;
@@ -794,7 +796,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public GeneID getGeneID() {
-		return new GeneID(getName(), gffDetailGeneParent.getTaxID());
+		if (geneID == null) {
+			geneID = new GeneID(getName(), gffDetailGeneParent.getTaxID());
+		}
+		return geneID;
 	}
 	/**
 	 * 文字形式的定位描述, <b>首先在gffDetailGene中设定tss，tes这两项</b><br>
@@ -922,6 +927,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		result.UAGsite = UAGsite;
 		result.upTes = upTes;
 		result.upTss = upTss;
+		result.geneID = geneID;
 		return result;
 	}
 	@Override

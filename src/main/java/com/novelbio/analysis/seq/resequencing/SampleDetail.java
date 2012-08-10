@@ -23,11 +23,14 @@ public class SampleDetail {
 	
 	int SnpIndelAllMin = -1;
 	int snpIndelAllMax = -1;
+	/** 未知基因型的样本不得超过该比例 */
+	double unKnownProp = 0.3;
 	
 	int ThisSnpIndelHomoNum = 0;
 	int ThisSnpIndelHetoNum = 0;
 	int ThisRefHomo = 0;
 	int ThisSnpIndelAll = 0;
+	double ThisUnKnownSite = 0;
 	/** 设定样本名称 */
 	public void addSampleName(String sampleName) {
 		this.lsSampleName.add(sampleName);
@@ -51,21 +54,29 @@ public class SampleDetail {
 		this.SnpIndelAllMin = Math.min(SnpIndelAllMin, snpIndelAllMax);
 		this.snpIndelAllMax = Math.max(SnpIndelAllMin, snpIndelAllMax);
 	}
-	/** 数值清零，包括样本名也会被清空 */
-	protected void clearAll() {
+	/** 未知基因型的样本不得超过该比例，默认0.3 */
+	public void setSampleUnKnownProp(double unKnownProp) {
+		this.unKnownProp = unKnownProp;
+	}
+	/** 暴露出来仅供测试，数值清零，包括样本名也会被清空 */
+	public void clearAll() {
 		lsSampleName.clear();
 		ThisSnpIndelHomoNum = 0;
 		ThisSnpIndelHetoNum = 0;
 		ThisRefHomo = 0;
+		ThisUnKnownSite = 0;
+		ThisSnpIndelAll = 0;
 	}
-	/** 数值清零，不清空样本名 */
-	protected void clearData() {
+	/** 暴露出来仅供测试，数值清零，不清空样本名 */
+	public void clearData() {
 		ThisSnpIndelHomoNum = 0;
 		ThisSnpIndelHetoNum = 0;
 		ThisRefHomo = 0;
+		ThisUnKnownSite = 0;
+		ThisSnpIndelAll = 0;
 	}
-	/** 累计并计数 */
-	protected void addSnpIndelHomoHetoType(SnpIndelHomoHetoType snpIndelHomoHetoType) {
+	/** 暴露出来仅供测试，累计并计数 */
+	public void addSnpIndelHomoHetoType(SnpIndelHomoHetoType snpIndelHomoHetoType) {
 		if (snpIndelHomoHetoType == SnpIndelHomoHetoType.IndelHeto || snpIndelHomoHetoType == SnpIndelHomoHetoType.SnpHeto) {
 			ThisSnpIndelHetoNum++; ThisSnpIndelAll++;
 		}
@@ -78,11 +89,18 @@ public class SampleDetail {
 		else if (snpIndelHomoHetoType == SnpIndelHomoHetoType.SnpUnKonwn || snpIndelHomoHetoType == SnpIndelHomoHetoType.IndelUnKnown) {
 			ThisSnpIndelAll++;
 		}
+		else if (snpIndelHomoHetoType == SnpIndelHomoHetoType.UnKnown) {
+			ThisUnKnownSite++;
+		}
 	}
-	
-	protected boolean isQualified() {
+	/** 暴露出来仅供测试，是否合格 */
+	public boolean isQualified() {
+		if (ThisUnKnownSite/lsSampleName.size() >= unKnownProp) {
+			return false;
+		}
+		
 		if (compare(4, ThisRefHomo, RefHomoMin) && compare(2, ThisRefHomo, RefHomoMax)
-				&&compare(4, ThisSnpIndelHetoNum, RefHomoMin) && compare(2, ThisSnpIndelHetoNum, SnpIndelHetoNumMax)
+				&&compare(4, ThisSnpIndelHetoNum, SnpIndelHetoNumMin) && compare(2, ThisSnpIndelHetoNum, SnpIndelHetoNumMax)
 				&&compare(4, ThisSnpIndelHomoNum, SnpIndelHomoNumMin) && compare(2, ThisSnpIndelHomoNum, SnpIndelHomoNumMax)
 				&&compare(4, ThisSnpIndelAll, SnpIndelAllMin) && compare(2, ThisSnpIndelAll, snpIndelAllMax)
 				) {
