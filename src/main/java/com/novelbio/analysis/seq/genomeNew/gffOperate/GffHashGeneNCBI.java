@@ -11,6 +11,7 @@ import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modcopeid.GeneType;
 
 /**
  * 应该是标准的gff3格式，仅用于NCBI的gff3文件
@@ -43,7 +44,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	protected String regParentID = "(?<=Parent\\=)\\w+";
 	/** mRNA类似名 */
 	//TODO 考虑用enum的map来实现
-	private static HashMap<String, Integer> mapMRNA2ID = new HashMap<String, Integer>();
+	private static HashMap<String, GeneType> mapMRNA2GeneType = new HashMap<String, GeneType>();
 
 	/** gene类似名 */
 	private static HashSet<String> setIsGene = new HashSet<String>();
@@ -69,17 +70,18 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	 * 设定mRNA和gene的类似名，在gff文件里面出现的
 	 */
 	private void setHashName() {
-		if (mapMRNA2ID.isEmpty()) {
-			mapMRNA2ID.put("mRNA_TE_gene",GffGeneIsoInfo.TYPE_GENE_MRNA_TE);
-			mapMRNA2ID.put("mRNA",GffGeneIsoInfo.TYPE_GENE_MRNA);
-			mapMRNA2ID.put("miRNA",GffGeneIsoInfo.TYPE_GENE_MIRNA);
+		if (mapMRNA2GeneType.isEmpty()) {
+			mapMRNA2GeneType.put("mRNA_TE_gene",GeneType.mRNA_TE);
+			mapMRNA2GeneType.put("mRNA",GeneType.mRNA);
+			mapMRNA2GeneType.put("miRNA",GeneType.miRNA);
 //			hashmRNA.put("tRNA",GffGeneIsoInfo.TYPE_GENE_TRNA);
-			mapMRNA2ID.put("pseudogenic_transcript",GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT);
-			mapMRNA2ID.put("snoRNA",GffGeneIsoInfo.TYPE_GENE_SNORNA);
-			mapMRNA2ID.put("snRNA",GffGeneIsoInfo.TYPE_GENE_SNRNA);
-			mapMRNA2ID.put("rRNA",GffGeneIsoInfo.TYPE_GENE_RRNA);
-			mapMRNA2ID.put("ncRNA",GffGeneIsoInfo.TYPE_GENE_NCRNA);
-			mapMRNA2ID.put("transcript",GffGeneIsoInfo.TYPE_GENE_MISCRNA);
+			mapMRNA2GeneType.put("pseudogenic_transcript", GeneType.PSEU_TRANSCRIPT);
+			mapMRNA2GeneType.put("snoRNA", GeneType.snoRNA);
+			mapMRNA2GeneType.put("snRNA", GeneType.snRNA);
+			mapMRNA2GeneType.put("rRNA", GeneType.rRNA);
+			mapMRNA2GeneType.put("ncRNA", GeneType.ncRNA);
+			mapMRNA2GeneType.put("transcript",GeneType.miscRNA);
+			mapMRNA2GeneType.put("miscRNA",GeneType.miscRNA);
 		}
 		if (setIsGene.isEmpty()) {
 			setIsGene.add("gene");
@@ -142,7 +144,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
       	    * 不管怎么加都是从第一个cds开始加到最后一个cds，正向的话就是从小加到大，反向就是从大加到小。
       	    * 一旦出现了mRNA，就要开始指定5UTR，3UTR，CDS的起点和终止
       	    */
-		   else if (mapMRNA2ID.containsKey(ss[2])) {
+		   else if (mapMRNA2GeneType.containsKey(ss[2])) {
 			   String rnaID = patID.getPatFirst(ss[8]);
 			   hashRnaID2RnaName.put(rnaID, patmRNAName.getPatFirst(ss[8]));
 			   hashRnaID2GeneID.put(rnaID, patParentID.getPatFirst(ss[8]));
@@ -151,10 +153,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			  
 			   String[] mRNAname = getMrnaName(ss);
 			   try {
-				   gffDetailGene.addsplitlist(mRNAname[0], Integer.parseInt(mRNAname[1]));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+				   gffDetailGene.addsplitlist(mRNAname[0], mapMRNA2GeneType.get(mRNAname[1]));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 			   } catch (Exception e) {
 				  gffDetailGene = getGffDetailRnaID(rnaID);
-				   gffDetailGene.addsplitlist(mRNAname[0], Integer.parseInt(mRNAname[1]));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+				   gffDetailGene.addsplitlist(mRNAname[0], mapMRNA2GeneType.get(mRNAname[1]));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 				   logger.error(mRNAname[0] + " " + mRNAname[1]);
 			}
 			
@@ -200,21 +202,21 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     * @return
     * string[2]
     * 0: geneName
-    * 1: type
+    * 1: NCBI读取的type
     */
    private String[] getMrnaName(String[] content) {
 	   String[] result = new String[2];
 	   String mRNAname = patmRNAName.getPatFirst(content[8]);//mRNApattern.matcher(content);
 	   if(mRNAname != null) {
 		   result[0] = mRNAname;
-		   result[1] = mapMRNA2ID.get(content[2]) + "";//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+		   result[1] = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 	   }
 	   else {
 		   try {
 			   String geneID = patGeneID.getPatFirst(content[8]);
 			   GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
 			   result[0] = copedID.getAccID();//这里有问题
-			   result[1] = mapMRNA2ID.get(content[2]) + "";//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+			   result[1] = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   } catch (Exception e) {
 			   System.out.println("GffHashPlantGeneError: 文件  "+getGffFilename()+"  在本行可能没有指定的基因ID  " +content);
 			   return null;
@@ -273,7 +275,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   gffDetailGene = getGffDetailGenID(rnaID);
 		   hashRnaID2RnaName.put(rnaID, gffDetailGene.getNameSingle());
 		   rnaName = gffDetailGene.getNameSingle();
-		   gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), GffGeneIsoInfo.TYPE_GENE_NCRNA);
+		   gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), GeneType.ncRNA);
 	   }
 	   else {
 		   gffDetailGene = getGffDetailRnaID(rnaID);

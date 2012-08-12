@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.model.modcopeid.GeneType;
 
 public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	GffHashGene gffHashRef;
@@ -45,25 +46,17 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 				tmpChrID = ss[0].toLowerCase();
 				lsGeneIsoInfos = getChrID2LsGffGeneIso(tmpChrID, mapChrID2LsIso);
 			}
-			if (ss[2].equals(transcript)) {
+			if (ss[2].equals(transcript) 
+				|| !ss[8].split(";")[1].replace("transcript_id", "").replace("\"", "").trim().equals(tmpTranscriptName)) 
+			{
 				tmpTranscriptName = ss[8].split(";")[1].replace("transcript_id", "").replace("\"", "").trim();
+				
 				boolean cis = getLocCis(ss[6], tmpChrID, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
-				if (cis) 
-					gffGeneIsoInfo = new GffGeneIsoCis(tmpTranscriptName, GffGeneIsoInfo.TYPE_GENE_MRNA);
-				else 
-					gffGeneIsoInfo = new GffGeneIsoTrans(tmpTranscriptName, GffGeneIsoInfo.TYPE_GENE_MRNA);
+				gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(tmpTranscriptName, GeneType.mRNA, cis);
 				lsGeneIsoInfos.add(gffGeneIsoInfo);
-				continue;
-			}
-			//出现新的转录本名字
-			else if (!ss[8].split(";")[1].replace("transcript_id", "").replace("\"", "").trim().equals(tmpTranscriptName)) {
-				tmpTranscriptName = ss[8].split(";")[1].replace("transcript_id", "").replace("\"", "").trim();
-				boolean cis = getLocCis(ss[6], tmpChrID, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
-				if (cis) 
-					gffGeneIsoInfo = new GffGeneIsoCis(tmpTranscriptName, GffGeneIsoInfo.TYPE_GENE_MRNA);
-				else 
-					gffGeneIsoInfo = new GffGeneIsoTrans(tmpTranscriptName, GffGeneIsoInfo.TYPE_GENE_MRNA);
-				lsGeneIsoInfos.add(gffGeneIsoInfo);
+				if (ss[2].equals(transcript)) {
+					continue;
+				}
 			}
 			if (ss[2].equals("exon")) {
 				gffGeneIsoInfo.addExon( Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));

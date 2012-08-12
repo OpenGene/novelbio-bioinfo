@@ -3,22 +3,19 @@ package com.novelbio.analysis.seq.genomeNew.gffOperate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.openxml4j.opc.EncryptionOption;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo.ExonCluster;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modcopeid.GeneType;
 import com.novelbio.generalConf.NovelBioConst;
 /**
  * 考虑将其中的iso装入hash表中，以加快查找效率
@@ -155,7 +152,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 */
 	protected void addExon(int locStart,int locEnd) {
 		if (lsGffGeneIsoInfos.size() == 0) {//如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo
-			addsplitlist(getName().get(0), GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT);
+			addsplitlist(getName().get(0), GeneType.PSEU_TRANSCRIPT);
 		}
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExon(locStart, locEnd);
@@ -191,29 +188,19 @@ public class GffDetailGene extends ListDetailAbs {
 	/**
 	 * 直接添加转录本，根据genedetail的信息设置cis5to3。之后用addcds()方法给该转录本添加exon
 	 */
-	protected void addsplitlist(String splitName, int geneTpye) {
+	protected void addsplitlist(String splitName, GeneType geneTpye) {
 		removeDuplicateIso = false;
-		GffGeneIsoInfo gffGeneIsoInfo = null;
-		if (cis5to3) {
-			gffGeneIsoInfo = new GffGeneIsoCis(splitName,this, geneTpye);
-		}
-		else {
-			gffGeneIsoInfo = new GffGeneIsoTrans(splitName,this, geneTpye);
-		}
+		
+		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(splitName, this, geneTpye, cis5to3);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 	}
 	/**
 	 * 直接添加转录本，之后用addcds()方法给该转录本添加exon
 	 */
-	protected void addsplitlist(String splitName, int geneTpye, boolean cis5to3) {
+	protected void addsplitlist(String splitName, GeneType geneTpye, boolean cis5to3) {
 		removeDuplicateIso = false;
-		GffGeneIsoInfo gffGeneIsoInfo = null;
-		if (cis5to3) {
-			gffGeneIsoInfo = new GffGeneIsoCis(splitName,this, geneTpye);
-		}
-		else {
-			gffGeneIsoInfo = new GffGeneIsoTrans(splitName,this, geneTpye);
-		}
+		
+		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(splitName, this, geneTpye, cis5to3);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 	}
 	/**

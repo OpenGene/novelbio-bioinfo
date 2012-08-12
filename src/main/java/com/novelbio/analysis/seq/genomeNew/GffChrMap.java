@@ -27,6 +27,7 @@ import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.PlotHeatMap;
 import com.novelbio.base.plot.java.HeatChart;
 import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modcopeid.GeneType;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
@@ -623,8 +624,8 @@ public class GffChrMap {
 		for (String string : lsChrID) {
 			gffChrAbs.getMapReads().setNormalType(MapReads.NORMALIZATION_NO);
 			GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(string);
-			if (gffGeneIsoInfo.getGeneType() != GffGeneIsoInfo.TYPE_GENE_MRNA
-					&& gffGeneIsoInfo.getGeneType() != GffGeneIsoInfo.TYPE_GENE_MRNA_TE) {
+			if (gffGeneIsoInfo.getGeneType() != GeneType.mRNA
+					&& gffGeneIsoInfo.getGeneType() != GeneType.mRNA_TE) {
 				continue;
 			}
 

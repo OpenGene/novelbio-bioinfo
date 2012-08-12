@@ -61,6 +61,7 @@ public class BlastSeqFasta {
 	/** 默认1.1，越大下降越快 */
 	public void setGapDegrade(double gapDegrade) {
 		this.gapDegrade = gapDegrade;
+		
 	}
 	/** 默认-1 */
 	public void setSpaceScore(int spaceScore) {

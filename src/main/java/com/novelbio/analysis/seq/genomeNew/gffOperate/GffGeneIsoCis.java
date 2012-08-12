@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
+import com.novelbio.database.model.modcopeid.GeneType;
 /**
  * 名字通通小写
  * 计算距离时，SnnnC<br>
@@ -30,12 +31,12 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	private static final long serialVersionUID = 8473636267008365629L;
 	private static final Logger logger = Logger.getLogger(GffGeneIsoCis.class);
 
-	public GffGeneIsoCis(String IsoName, int geneType) {
+	public GffGeneIsoCis(String IsoName, GeneType geneType) {
 		super(IsoName, geneType);
 		super.setCis5to3(true);
 	}
 	
-	public GffGeneIsoCis(String IsoName, GffDetailGene gffDetailGene, int geneType) {
+	public GffGeneIsoCis(String IsoName, GffDetailGene gffDetailGene, GeneType geneType) {
 		super(IsoName, gffDetailGene, geneType);
 		super.setCis5to3(true);
 	}

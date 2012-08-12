@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.model.modcopeid.GeneType;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
@@ -31,7 +32,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	/** 可变剪接mRNA的正则，水稻是："(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";，默认拟南芥" (?<=AT\\w{1}G\\d{5}\\.)\\d" */
 	protected String splitmRNA="(?<=AT\\w{1}G\\d{5}\\.)\\d";
 	/** mRNA类似名 */
-	private static HashMap<String, Integer> hashmRNA = new HashMap<String, Integer>();
+	private static HashMap<String, GeneType> mapMRNA2GeneType = new HashMap<String, GeneType>();
 	/** gene类似名 */
 	private static HashSet<String> hashgene = new HashSet<String>();
 	
@@ -57,16 +58,20 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	}
 	/** 设定mRNA和gene的类似名，在gff文件里面出现的 */
 	private void setHashName() {
-		if (hashmRNA.isEmpty()) {
-			hashmRNA.put("mRNA_TE_gene",GffGeneIsoInfo.TYPE_GENE_MRNA_TE);
-			hashmRNA.put("mRNA",GffGeneIsoInfo.TYPE_GENE_MRNA);
-			hashmRNA.put("miRNA",GffGeneIsoInfo.TYPE_GENE_MIRNA);
-			hashmRNA.put("tRNA",GffGeneIsoInfo.TYPE_GENE_TRNA);
-			hashmRNA.put("pseudogenic_transcript",GffGeneIsoInfo.TYPE_GENE_PSEU_TRANSCRIPT);
-			hashmRNA.put("snoRNA",GffGeneIsoInfo.TYPE_GENE_SNORNA);
-			hashmRNA.put("snRNA",GffGeneIsoInfo.TYPE_GENE_SNRNA);
-			hashmRNA.put("rRNA",GffGeneIsoInfo.TYPE_GENE_RRNA);
-			hashmRNA.put("ncRNA",GffGeneIsoInfo.TYPE_GENE_NCRNA);
+		if (mapMRNA2GeneType.isEmpty()) {
+			
+
+			mapMRNA2GeneType.put("mRNA_TE_gene",GeneType.mRNA_TE);
+			mapMRNA2GeneType.put("mRNA",GeneType.mRNA);
+			mapMRNA2GeneType.put("miRNA",GeneType.miRNA);
+			mapMRNA2GeneType.put("tRNA",GeneType.tRNA);
+			mapMRNA2GeneType.put("pseudogenic_transcript", GeneType.PSEU_TRANSCRIPT);
+			mapMRNA2GeneType.put("snoRNA", GeneType.snoRNA);
+			mapMRNA2GeneType.put("snRNA", GeneType.snRNA);
+			mapMRNA2GeneType.put("rRNA", GeneType.rRNA);
+			mapMRNA2GeneType.put("ncRNA", GeneType.ncRNA);
+			mapMRNA2GeneType.put("transcript",GeneType.miscRNA);
+			mapMRNA2GeneType.put("miscRNA",GeneType.miscRNA);
 		}
 		
 		if (hashgene.isEmpty()) {
@@ -177,7 +182,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
       	    * 不管怎么加都是从第一个cds开始加到最后一个cds，正向的话就是从小加到大，反向就是从大加到小。
       	    * 一旦出现了mRNA，就要开始指定5UTR，3UTR，CDS的起点和终止
       	    */
-		   else if (hashmRNA.containsKey(ss[2])) 
+		   else if (mapMRNA2GeneType.containsKey(ss[2])) 
 		   {
 			   if (!ss[2].equals("mRNA")) {
 				ncRNA = true;
@@ -199,7 +204,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   if(mRNAmatcher.find())
 			   {
 				   //每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
-				   gffDetailLOC.addsplitlist(mRNAmatcher.group(), hashmRNA.get(ss[2]));	   
+				   gffDetailLOC.addsplitlist(mRNAmatcher.group(), mapMRNA2GeneType.get(ss[2]));	   
 				   //仿照UCSC的做法，如果是一个非编码的mRNA，那么cdsStart = cdsEnd = mRNAend
 				   mRNAstart = Integer.parseInt(ss[3]); mRNAend = Integer.parseInt(ss[4]); 
 				   cdsStart = -100; cdsEnd = -100;

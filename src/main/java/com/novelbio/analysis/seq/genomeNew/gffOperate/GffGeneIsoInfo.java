@@ -13,6 +13,7 @@ import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modcopeid.GeneType;
 
 /**
  * 	重写hash，不包含基因名信息，包含基因taxID，chrID，atg，uag，tss，长度，以及每一个exon的信息<br>
@@ -52,24 +53,15 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public static final String PROMOTER_PROXIMAL_STR = "Proximal Promoter_";
 	/**  Proximal Promoter_  */
 	public static final String PROMOTER_DOWNSTREAMTSS_STR = "Promoter DownStream Of Tss_";
-	public static final int TYPE_GENE_MRNA = 10;
-	public static final int TYPE_GENE_MIRNA = 15;
-	public static final int TYPE_GENE_PSEU_TRANSCRIPT = 20;
-	public static final int TYPE_GENE_MRNA_TE = 25;
-	public static final int TYPE_GENE_TRNA = 30;
-	public static final int TYPE_GENE_SNORNA = 35;
-	public static final int TYPE_GENE_SNRNA = 40;
-	public static final int TYPE_GENE_RRNA = 45;
-	public static final int TYPE_GENE_NCRNA = 50;
-	public static final int TYPE_GENE_MISCRNA = 55;
-	public static HashSet<Integer> hashMRNA = new HashSet<Integer>();
+	
+	public static HashSet<GeneType> hashMRNA = new HashSet<GeneType>();
 	static {
-		hashMRNA.add(TYPE_GENE_MRNA);
-		hashMRNA.add(TYPE_GENE_PSEU_TRANSCRIPT);
-		hashMRNA.add(TYPE_GENE_MRNA_TE);
+		hashMRNA.add(GeneType.mRNA);
+		hashMRNA.add(GeneType.PSEU_TRANSCRIPT);
+		hashMRNA.add(GeneType.mRNA_TE);
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	private int flagTypeGene = TYPE_GENE_MRNA;
+	private GeneType flagTypeGene = GeneType.mRNA;
 	/** 设定基因的转录起点上游长度，默认为0 */
 	protected int upTss = 0;
 	/** 设定基因的转录起点下游长度，默认为0  */
@@ -91,12 +83,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	
 	GeneID geneID;
 	
-	public GffGeneIsoInfo(String IsoName, int geneType) {
+	public GffGeneIsoInfo(String IsoName, GeneType geneType) {
 		super.listName = IsoName;
 		this.flagTypeGene = geneType;
 	}
 	
-	public GffGeneIsoInfo(String IsoName, GffDetailGene gffDetailGene, int geneType) {
+	public GffGeneIsoInfo(String IsoName, GffDetailGene gffDetailGene, GeneType geneType) {
 		super.listName = IsoName;
 		this.flagTypeGene = geneType;
 		this.gffDetailGeneParent = gffDetailGene;
@@ -108,7 +100,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 返回该基因的类型
 	 * @return
 	 */
-	public int getGeneType() {
+	public GeneType getGeneType() {
 		return flagTypeGene;
 	}
 	public int getTaxID() {
@@ -941,6 +933,27 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			ListCodAbs<ExonInfo> gffCod1, ListCodAbs<ExonInfo> gffCod2) {
 		ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> result = new ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>(gffCod1, gffCod2);
 		return result;
+	}
+	
+	public static GffGeneIsoInfo createGffGeneIso(String isoName, GffDetailGene gffDetailGene, GeneType geneType, boolean cis5to3) {
+		GffGeneIsoInfo gffGeneIsoInfo = null;
+		if (cis5to3) {
+			gffGeneIsoInfo = new GffGeneIsoCis(isoName, gffDetailGene, geneType);
+		}
+		else {
+			gffGeneIsoInfo = new GffGeneIsoTrans(isoName, gffDetailGene, geneType);
+		}
+		return gffGeneIsoInfo;
+	}
+	public static GffGeneIsoInfo createGffGeneIso(String isoName, GeneType geneType, boolean cis5to3) {
+		GffGeneIsoInfo gffGeneIsoInfo = null;
+		if (cis5to3) {
+			gffGeneIsoInfo = new GffGeneIsoCis(isoName, geneType);
+		}
+		else {
+			gffGeneIsoInfo = new GffGeneIsoTrans(isoName, geneType);
+		}
+		return gffGeneIsoInfo;
 	}
 	/**
 	 * 返回两个iso比较的信息
