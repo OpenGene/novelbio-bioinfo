@@ -32,10 +32,6 @@ public class TestSampleDetail extends TestCase{
 		assertEquals(false, sampleDetail2A.isQualified());
 		
 		sampleDetail2A.clearData();
-		sampleDetail2A.addSnpIndelHomoHetoType(SnpIndelHomoHetoType.SnpUnKonwn);
-		assertEquals(false, sampleDetail2A.isQualified());
-		
-		sampleDetail2A.clearData();
 		sampleDetail2A.addSnpIndelHomoHetoType(SnpIndelHomoHetoType.UnKnown);
 		assertEquals(false, sampleDetail2A.isQualified());
 		

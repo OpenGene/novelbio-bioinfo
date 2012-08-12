@@ -44,22 +44,25 @@ public class SNPGATKcope {
 	
 	/** 用来过滤样本的 */
 	SnpSampleFilter sampleFilter = new SnpSampleFilter();
+	/**过滤获得的causal snp */
+	ArrayList<SiteSnpIndelInfo> lsFilteredSite;
+	
 	
 	public static void main(String[] args) {
 		String parentPath = "/media/winF/NBC/Project/Project_HXW/20120705/";
 		SNPGATKcope snpgatKcope = new SNPGATKcope();
 		snpgatKcope.setGffChrAbs(new GffChrAbs(9606));
 		
-		snpgatKcope.addVcfFile("2A", parentPath + "2A_SNPrecal_IndelFiltered.vcf");
-		snpgatKcope.addVcfFile("2B", parentPath + "2B_SNPrecal_IndelFiltered.vcf");
-//		snpgatKcope.addVcfFile("3A", parentPath + "3A_SNPrecal_IndelFiltered.vcf");
-//		snpgatKcope.addVcfFile("3B", parentPath + "3B_SNPrecal_IndelFiltered.vcf");
+//		snpgatKcope.addVcfFile("2A", parentPath + "2A_SNPrecal_IndelFiltered.vcf");
+//		snpgatKcope.addVcfFile("2B", parentPath + "2B_SNPrecal_IndelFiltered.vcf");
+		snpgatKcope.addVcfFile("3A", parentPath + "3A_SNPrecal_IndelFiltered.vcf");
+		snpgatKcope.addVcfFile("3B", parentPath + "3B_SNPrecal_IndelFiltered.vcf");
 //		snpgatKcope.addSampileupFile("2A", parentPath + "2A_piluptest.txt");
 //		snpgatKcope.addSampileupFile("2B", parentPath + "2B_piluptest.txt");
-		snpgatKcope.addSampileupFile("2A", parentPath + "2A_detailmpileup.txt");
-		snpgatKcope.addSampileupFile("2B", parentPath + "2B_detailmpileup.txt");
-//		snpgatKcope.addSampileupFile("3A", parentPath + "3A_detailmpileup.txt");
-//		snpgatKcope.addSampileupFile("3B", parentPath + "3B_detailmpileup.txt");
+//		snpgatKcope.addSampileupFile("2A", parentPath + "2A_detailmpileup.txt");
+//		snpgatKcope.addSampileupFile("2B", parentPath + "2B_detailmpileup.txt");
+		snpgatKcope.addSampileupFile("3A", parentPath + "3A_detailmpileup.txt");
+		snpgatKcope.addSampileupFile("3B", parentPath + "3B_detailmpileup.txt");
 		
 		SampleDetail sampleDetail2A = new SampleDetail();
 		sampleDetail2A.addSampleName("2A");
@@ -71,16 +74,15 @@ public class SNPGATKcope {
 		SampleDetail sampleDetail2B = new SampleDetail();
 		sampleDetail2B.addSampleName("2B");
 		sampleDetail2B.setSampleRefHomoNum(0, 0);
-		sampleDetail2B.setSampleSnpIndelHetoNum(0, 1);
-		sampleDetail2B.setSampleSnpIndelHomoNum(0, 1);
 		sampleDetail2B.setSampleSnpIndelNum(1, 1);
+		sampleDetail2B.setSampleSnpIndelHetoLessNum(0, 0);
 		snpgatKcope.addFilterSample(sampleDetail2B);
 		snpgatKcope.execute();
 //		snpgatKcope.filterSnp();
-		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_2Bvs2A.xls");
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_3Bvs3A.xls");
 		
 		snpgatKcope.filterSnp();
-		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_2Bvs2A_filter.xls");
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_3Bvs3A_filter.xls");
 		
 	}
 
@@ -102,6 +104,8 @@ public class SNPGATKcope {
 		this.gffChrAbs = gffChrAbs;
 	}
 	public void execute() {
+		lsFilteredSite = null;
+
 		for (String[] sample2vcf : lsSample2VcfFiles) {
 			addVcfToLsSnpIndel(sample2vcf[0], sample2vcf[1]);
 		}
@@ -139,13 +143,13 @@ public class SNPGATKcope {
 	}
 	/** 必须在execute之后执行 */
 	public void filterSnp() {
+		lsFilteredSite = new ArrayList<SiteSnpIndelInfo>();
 		ArrayList<MapInfoSnpIndel> lsFilteredSnp = new ArrayList<MapInfoSnpIndel>();
 		for (MapInfoSnpIndel mapInfoSnpIndel : lsUnionSnp) {
-			if (mapInfoSnpIndel.getRefSnpIndelStart() == 1842968) {
-				logger.error("stop");
-			}
-			if (sampleFilter.isFilterdSnp(mapInfoSnpIndel)) {
+			SiteSnpIndelInfo siteSnpIndelInfo = sampleFilter.isFilterdSnp(mapInfoSnpIndel);
+			if (siteSnpIndelInfo != null) {
 				lsFilteredSnp.add(mapInfoSnpIndel);
+				lsFilteredSite.add(siteSnpIndelInfo);
 			}
 		}
 		lsUnionSnp = lsFilteredSnp;
@@ -156,12 +160,14 @@ public class SNPGATKcope {
 			lsSample.add(strings[0]);
 		}
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
-		txtOut.writefileln(MapInfoSnpIndel.getTitleFromSampleName(lsSample));
-		for (MapInfoSnpIndel mapInfoSnpIndel : lsUnionSnp) {
-			if (mapInfoSnpIndel.getRefSnpIndelStart() == 1842968) {
-				logger.error("stop");
-			}
-			ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(lsSample, true);
+		txtOut.writefileln(MapInfoSnpIndel.getTitleFromSampleName(lsSample, true));
+		SiteSnpIndelInfo siteSnpIndelInfo = null;
+		for (int i = 0; i < lsUnionSnp.size(); i++) {
+			if (lsFilteredSite != null)
+				siteSnpIndelInfo = lsFilteredSite.get(i);
+				
+			MapInfoSnpIndel mapInfoSnpIndel = lsUnionSnp.get(i);
+			ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(lsSample, false, siteSnpIndelInfo);
 			for (String[] strings : lsResult) {
 				txtOut.writefileln(strings);
 			}

@@ -1,4 +1,4 @@
-package com.novelbio.test.analysis.seq.genomeNew.mappingOperate;
+package com.novelbio.test.analysis.seq.resequencing;
 
 import org.junit.Test;
 
@@ -8,7 +8,7 @@ import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
 
 import junit.framework.TestCase;
 
-public class TestMapInfoSnpIndel extends TestCase{
+public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 	MapInfoSnpIndel mapInfoSnpIndel;
 	SiteSnpIndelInfo siteSnpIndelInfo;
 	GffChrAbs gffChrAbs;

@@ -409,6 +409,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 					siteSnpIndelInfo.setThisReadsNum(1);
 					mapAllen2Num.put(indelInfo, siteSnpIndelInfo);
 				}
+				referenceSeq = refBase; thisSeq = refBase;//复位reference
 			}
 			else if (c == '*') {
 				continue;
@@ -618,9 +619,21 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	}
 	/**
 	 * 给定样本名，返回全部snp类型和样本的信息
+	 * @param lsSampleNames 样本名
+	 * @param getGATK 是否仅将GATK认定的snp提取出来
 	 * @return
 	 */
 	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK) {
+		return toStringLsSnp(lsSampleNames, getGATK, null);
+	}
+	/**
+	 * 给定样本名，返回全部snp类型和样本的信息
+	 * @param lsSampleNames 样本名
+	 * @param getGATK 是否仅将GATK认定的snp提取出来
+	 * @param siteSnpIndelInput 在指定的site前面进行标记为ture，输入null则不反应
+	 * @return
+	 */
+	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, SiteSnpIndelInfo siteSnpIndelInput) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		LinkedList<String> lsResultTmp = new LinkedList<String>();
 		lsResultTmp.add(chrID);//0
@@ -648,6 +661,14 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				continue;
 			}
 			LinkedList<String> lsTmpInfo = copyList(lsResultTmp);
+			
+			if (siteSnpIndelInput != null && siteSnpIndelInput.getMismatchInfo().equals(siteSnpIndelInfo.getMismatchInfo())) {
+				lsTmpInfo.add("true");
+			}
+			else {
+				lsTmpInfo.add("false");
+			}
+			
 			lsTmpInfo.add(siteSnpIndelInfo.getReferenceSeq());
 			lsTmpInfo.add(siteSnpIndelInfo.getThisSeq());
 			lsTmpInfo.add(siteSnpIndelInfo.getSnpIndelRs().getSnpRsID());
@@ -687,7 +708,6 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		}
 		return lsResult;
 	}
-	
 	private boolean isGATKfiltered(SiteSnpIndelInfo siteSnpIndelInfo) {
 		boolean result = false;
 		HashMap<String, SampleSnpReadsQuality> mapSample2Snp = siteSnpIndelInfo.mapSample2thisBaseNum;
@@ -744,8 +764,16 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		logger.error("克隆出错");
 		return null;
 	}
-	/** 根据给定的样本名，产生title */
 	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames) {
+		return getTitleFromSampleName(lsSampleNames, false);
+	}
+	/** 
+	 * 根据给定的样本名，产生title
+	 * @param lsSampleNames
+	 * @param setSiteSnpIndelInfo 结果中是否指定snp的类型，如果指定，那么在该snp'类型前就会添加标记true或false，表示该snp才是想找的 差异snp
+	 * @return
+	 */
+	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames, boolean setSiteSnpIndelInfo) {
 		LinkedList<String> lsTitle = new LinkedList<String>();
 		lsTitle.add("ChrID");
 		lsTitle.add("Loc");
@@ -753,6 +781,9 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		lsTitle.add("GeneSymbol");
 		lsTitle.add("Description");
 		lsTitle.add("Distance2GeneStart");
+		if (setSiteSnpIndelInfo) {
+			lsTitle.add("isDifSnpIndel");
+		}
 		lsTitle.add("RefSequence");
 		lsTitle.add("ThisSequence");
 		lsTitle.add("DBsnpID");
@@ -825,9 +856,6 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		for (String samtoolsLine : txtReadSam.readlines()) {
 			String[] ss = samtoolsLine.split("\t");
 			int loc = Integer.parseInt(ss[1]);
-			if (loc == 57512711) {
-				logger.error("stop");
-			}
 			if (!ss[0].equals(tmpChrID)) {
 				tmpChrID = ss[0];
 				lsMapInfos = mapChrID2SortedLsMapInfo.get(tmpChrID);
