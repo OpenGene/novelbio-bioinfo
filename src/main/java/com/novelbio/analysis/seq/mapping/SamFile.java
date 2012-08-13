@@ -55,20 +55,6 @@ public class SamFile {
 //		txtOut = new TxtReadandWrite(FileOperate.changeFileSuffix(sam, "_statistics", "txt"), true);
 //		txtOut.ExcelWrite(lsMappingInfo);
 //		txtOut.close();
-//		
-//		sam = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/heartWTa14m1_1/accepted_hits.bam";
-//		samFile = new SamFile(sam);
-//		lsMappingInfo = samFile.getMappingInfo();
-//		txtOut = new TxtReadandWrite(FileOperate.changeFileSuffix(sam, "_statistics", "txt"), true);
-//		txtOut.ExcelWrite(lsMappingInfo);
-//		txtOut.close();
-//		
-//		sam = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/heartWTa14m1_2/accepted_hits.bam";
-//		samFile = new SamFile(sam);
-//		lsMappingInfo = samFile.getMappingInfo();
-//		txtOut = new TxtReadandWrite(FileOperate.changeFileSuffix(sam, "_statistics", "txt"), true);
-//		txtOut.ExcelWrite(lsMappingInfo);
-//		txtOut.close();
 
 	}
 	
@@ -102,14 +88,7 @@ public class SamFile {
 	
 	boolean uniqMapping = true;
 	
-	boolean countReadsNum = false;
-	double allReadsNum = 0;
-	double unmappedReadsNum = 0;
-	double mappedReadsNum = 0;
-	double uniqMappedReadsNum = 0;
-	double repeatMappedReadsNum = 0;
-	double junctionUniReads = 0;
-	double junctionAllReads = 0;
+	SamFileStatistics samFileStatistics;
 	
 	public SamFile() {}
 	/**读取已有文件 */
@@ -204,86 +183,14 @@ public class SamFile {
 		samFileReader = new SAMFileReader(file);
 		return samFileReader;
 	}
-	/**
-	 * 返回readsNum
-	 * @param mappingType MAPPING_ALLREADS等
-	 * @return -1表示错误
-	 */
-	public long getReadsNum(int mappingType) {
-		if (!countReadsNum) {
-			getReadsNum();
-			countReadsNum = true;
-		}
-		if (mappingType == MAPPING_ALLREADS) {
-			return (long)allReadsNum;
-		}
-		if (mappingType == MAPPING_UNMAPPED) {
-			return (long)unmappedReadsNum;
-		}
-		if (mappingType == MAPPING_UNIQUE) {
-			return (long)uniqMappedReadsNum;
-		}
-		if (mappingType == MAPPING_REPEAT) {
-			return (long)repeatMappedReadsNum;
-		}
-		if (mappingType == MAPPING_ALLMAPPEDREADS) {
-			return (long)mappedReadsNum;
-		}
-		return -1;
-	}
-	public ArrayList<String[]> getMappingInfo() {
-		if (!countReadsNum) {
-			getReadsNum();
-			countReadsNum = true;
-		}
-		
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		lsResult.add(new String[]{"allReadsNum", (long)allReadsNum+""});
-		lsResult.add(new String[]{"unmappedReadsNum", (long)unmappedReadsNum+""});
-		lsResult.add(new String[]{"mappedReadsNum", (long)mappedReadsNum+""});
-		lsResult.add(new String[]{"uniqMappedReadsNum", (long)uniqMappedReadsNum+""});
-		lsResult.add(new String[]{"repeatMappedReadsNum", (long)repeatMappedReadsNum+""});
-		lsResult.add(new String[]{"junctionAllReads", (long)junctionAllReads+""});
-		lsResult.add(new String[]{"junctionUniReads", (long)junctionUniReads+""});
 
-		return lsResult;
+	public SamFileStatistics getStatistics() {
+		samFileStatistics = new SamFileStatistics();
+		samFileStatistics.setSamFile(this);
+		samFileStatistics.statistics();
+		return samFileStatistics;
 	}
-	private long getReadsNum() {
-		allReadsNum = 0;
-		unmappedReadsNum = 0;
-		mappedReadsNum = 0;
-		uniqMappedReadsNum = 0;
-		repeatMappedReadsNum = 0;
-		junctionAllReads = 0;
-		junctionUniReads = 0;
-		
-		long readsNum = 0;
-		SAMFileReader samFileReader = getSamFileReader();
-		for (SamRecord samRecord : readLines()) {
-			int readsMappedNum = samRecord.getNumMappedReadsInFile();
-			allReadsNum = allReadsNum + (double)1/readsMappedNum;
-			if (samRecord.isMapped()) {
-				mappedReadsNum = mappedReadsNum + (double)1/readsMappedNum;
-				if (samRecord.isUniqueMapping()) {
-					uniqMappedReadsNum ++;
-					if (samRecord.isJunctionReads()) {
-						junctionUniReads ++;
-					}
-				}
-				else {
-					repeatMappedReadsNum = repeatMappedReadsNum + (double)1/readsMappedNum;
-				}
-				if (samRecord.isJunctionReads()) {
-					junctionAllReads = junctionAllReads + (double)1/readsMappedNum;
-				}
-			}
-			else {
-				unmappedReadsNum = unmappedReadsNum + (double)1/readsMappedNum;
-			}
-		}
-		samFileReader.close();
-		return readsNum;
-	}
+
 	/**
 	 * 注意大小写区分
 	 * @param ReadName reads的名字，只要写关键词就行了
@@ -611,6 +518,7 @@ public class SamFile {
 		samFileReader.close();
 		samFileWriter.close();
 	}
+	
 }
 /**
  * Constants used in reading & writing BAM files

@@ -258,7 +258,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs>, Alig
 		this.numberstart = numberstart;
 	}
 	/**
-	 * @param numberend 条目终点,根据基因方向确定
+	 * @param numberend 条目终点,根据基因方向确定,从1开始记数
 	 */
 	public void setEndCis(int numberend) {
 		if (isCis5to3() == null || isCis5to3()) {
@@ -269,7 +269,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs>, Alig
 		}
 	}
 	/**
-	 * @param numberstart 条目起点,根据基因方向确定
+	 * @param numberstart 条目起点,根据基因方向确定,从1开始记数
 	 */
 	public void setStartCis(int numberstart) {
 		if (isCis5to3() == null || isCis5to3()) {

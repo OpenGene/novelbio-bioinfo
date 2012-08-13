@@ -182,7 +182,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 				if (seqFasta == null || seqFasta.getLength() < 3) {
 					continue;
 				}
-				lsMotifResult.addAll(seqFasta.getMotifScanResult(regex));
+				lsMotifResult.addAll(seqFasta.getMotifScan().getMotifScanResult(regex));
 			}
 		}
 		return lsMotifResult;

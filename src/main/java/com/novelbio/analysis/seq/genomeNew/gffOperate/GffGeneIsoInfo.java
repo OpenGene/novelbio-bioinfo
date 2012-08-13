@@ -216,6 +216,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
 	 * 会自动判定输入的起点是否小于已有的atg，终点是否大于已有的uag
 	 * 是的话，才会设定，否则就不设定
+	 * @param atg 从1开始记数
+	 * @param uag 从1开始记数
 	 */
 	public void setATGUAG(int atg, int uag) {
 		if (Math.abs(atg - uag)<=1) {

@@ -65,14 +65,14 @@ public class SNPGATKcope {
 		snpgatKcope.addSampileupFile("3B", parentPath + "3B_detailmpileup.txt");
 		
 		SampleDetail sampleDetail2A = new SampleDetail();
-		sampleDetail2A.addSampleName("2A");
+		sampleDetail2A.addSampleName("3A");
 		sampleDetail2A.setSampleRefHomoNum(1, 1);
 		sampleDetail2A.setSampleSnpIndelHetoNum(0, 0);
 		sampleDetail2A.setSampleSnpIndelHomoNum(0, 0);
 		snpgatKcope.addFilterSample(sampleDetail2A);
 		
 		SampleDetail sampleDetail2B = new SampleDetail();
-		sampleDetail2B.addSampleName("2B");
+		sampleDetail2B.addSampleName("3B");
 		sampleDetail2B.setSampleRefHomoNum(0, 0);
 		sampleDetail2B.setSampleSnpIndelNum(1, 1);
 		sampleDetail2B.setSampleSnpIndelHetoLessNum(0, 0);

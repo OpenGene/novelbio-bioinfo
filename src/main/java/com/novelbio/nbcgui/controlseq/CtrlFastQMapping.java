@@ -13,6 +13,7 @@ import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.fastq.FastQfilterRecord;
 import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.mapping.SamFile;
+import com.novelbio.analysis.seq.mapping.SamFileStatistics;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -142,7 +143,7 @@ public class CtrlFastQMapping {
 		}
 		combineAllFastqFile();
 		if (mapping) {
-			txtReport.writefileln("Sample\tReadsNum\tUniqueMappedReads\tUniqeMappingRates");
+			txtReport.writefileln("Sample");
 			txtReport.writefile("", true);
 			mapping();
 		}
@@ -174,11 +175,10 @@ public class CtrlFastQMapping {
 			}
 			mapBwa.setThreadNum(thread);
 			SamFile samFile = mapBwa.mapReads();
-			long uniqueMappedReads = samFile.getReadsNum(SamFile.MAPPING_UNIQUE);
-			if (fastQs[1] != null)
-				txtReport.writefileln(prefix + "\t" + fastQs[0].getSeqNum()*2 + "\t" + uniqueMappedReads + "\t" + (double)uniqueMappedReads/(fastQs[0].getSeqNum()*2));
-			else
-				txtReport.writefileln(prefix + "\t" + fastQs[0].getSeqNum() + "\t" + uniqueMappedReads + "\t" + (double)uniqueMappedReads/fastQs[0].getSeqNum());
+			SamFileStatistics samFileStatistics = samFile.getStatistics();
+			
+			txtReport.writefileln(prefix);
+			txtReport.ExcelWrite(samFileStatistics.getMappingInfo());
 			txtReport.writefile("", true);
 		}
 	}

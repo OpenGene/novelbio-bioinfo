@@ -10,8 +10,8 @@ public class ExonInfo extends ListDetailAbs {
 	public ExonInfo() {}
 	/**
 	 * 根据正反向自动设定起点和终点
-	 * @param start
-	 * @param end
+	 * @param start 从1开始记数
+	 * @param end 从1开始记数
 	 * @param cis
 	 */
 	public ExonInfo(String IsoName, boolean cis, int start, int end) {
@@ -21,8 +21,8 @@ public class ExonInfo extends ListDetailAbs {
 	}
 	/**
 	 * 根据正反向自动设定起点和终点
-	 * @param start
-	 * @param end
+	 * @param start 从1开始记数
+	 * @param end 从1开始记数
 	 * @param cis
 	 */
 	public ExonInfo(GffGeneIsoInfo gffGeneIsoInfo, boolean cis, int start, int end) {
@@ -189,7 +189,6 @@ public class ExonInfo extends ListDetailAbs {
 		public HashMap<String, Integer> getHashIsoName2ExonNum() {
 			return hashIsoName2ExonNum;
 		}
-
 		
 	}
 }

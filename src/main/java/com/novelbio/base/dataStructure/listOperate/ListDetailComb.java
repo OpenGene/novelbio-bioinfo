@@ -128,27 +128,28 @@ public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 	}
 
 	@Override
-	public String getName() {
-		String name = lsElement.get(0).get(0).getName();
+	public ArrayList<String> getName() {
+		ArrayList<String> lsName = lsElement.get(0).get(0).getName();
 		for (int i = 1; i < lsElement.size(); i++) {
-			name = name + SEP + lsElement.get(i).get(0).getName();
+			lsName.addAll(lsElement.get(i).get(0).getName());
 		}
+		return lsName;
+	}
+	/** 假定几个转录本的来源一致 */
+	@Override
+	public String getParentName() {
+		String name = lsElement.get(0).get(0).getParentName();
 		return name;
 	}
 	@Override
-	public String getParentName() {
-		String name = lsElement.get(0).get(0).getName();
-		for (int i = 1; i < lsElement.size(); i++) {
-			name = name + SEP + lsElement.get(i).get(0).getName();
-		}
-		return name;
+	public String getNameSingle() {
+		return lsElement.get(0).get(0).getName().get(0);
 	}
 	/**
 	 * 输入的几个exon是不是一样的
 	 * @return
 	 */
-	public boolean isSameEle()
-	{
+	public boolean isSameEle() {
 		if (lsElement.size() != hashList2Num.size()) {
 			return false;
 		}

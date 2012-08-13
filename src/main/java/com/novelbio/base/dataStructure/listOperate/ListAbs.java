@@ -35,7 +35,12 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	}
 	public String getName() {
 		if (listName == null) {
-			listName = get(0).getParentName();
+			if (size() > 0) {
+				listName = get(0).getParentName();
+			}
+			else {
+				listName = "";
+			}
 		}
 		return listName;
 	}

@@ -1,5 +1,5 @@
 package com.novelbio.analysis.seq.fasta;
-
+/** 找到一段序列中最长的转录本等等 */
 public class SeqfastaStatisticsCDS {
 	
 	/** 最长aa所在的orf */
@@ -24,13 +24,11 @@ public class SeqfastaStatisticsCDS {
 	
 	SeqFasta seqFasta;
 	
-	public SeqfastaStatisticsCDS(SeqFasta seqFasta) {
+	protected SeqfastaStatisticsCDS(SeqFasta seqFasta) {
 		this.seqFasta = seqFasta;
+		calculateAAseqInfo();
 	}
-	
-	public void setSeqFasta(SeqFasta seqFasta) {
-		this.seqFasta = seqFasta;
-	}
+ 
 	public int getAllAAlen() {
 		return AllAAlen;
 	}
@@ -91,7 +89,7 @@ public class SeqfastaStatisticsCDS {
 		char[] aachar = aaseq.toCharArray();
 		for (int i = 0; i < aachar.length; i++) {
 			char c = aachar[i];
-			if (SeqFasta.AA1_STOP.equals(c+"")) {
+			if (CodeInfo.AA1_STOP.equals(c+"")) {
 				setAllLen(tmpStart, tmpAllAAlen, orf, cis5to3);
 				tmpAllAAlen = 0;
 				
@@ -106,7 +104,7 @@ public class SeqfastaStatisticsCDS {
 				if (mStart) {
 					tmpMstartAAlen++;
 				}
-				else if (SeqFasta.AA1_Met.equals(c+"") && !mStart) {
+				else if (CodeInfo.AA1_Met.equals(c+"") && !mStart) {
 					mStart = true;
 					tmpMstartAAlen++;
 				}

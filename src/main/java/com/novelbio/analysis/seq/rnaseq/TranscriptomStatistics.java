@@ -100,7 +100,7 @@ public class TranscriptomStatistics {
 			
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				SeqFasta seqFasta = seqFastaHash.getSeq(gffGeneIsoInfo, false);
-				SeqfastaStatisticsCDS seqfastaStatisticsCDS = new SeqfastaStatisticsCDS(seqFasta);
+				SeqfastaStatisticsCDS seqfastaStatisticsCDS = seqFasta.statisticsCDS();
 				seqfastaStatisticsCDS.calculateAAseqInfo();
 				if (seqfastaStatisticsCDS.getMstartAAlen() > minAAlen) {
 					allNewCDSGeneNum++;

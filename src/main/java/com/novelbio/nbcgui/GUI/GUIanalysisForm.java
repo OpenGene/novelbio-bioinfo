@@ -62,7 +62,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiGetSeq guiGetSeq;
 	private GuiBedTssAndChrome guiBedTssAndChrome;
 	private GuiRNASeqRsem guiRNASeqRsem;
-	
+	private GuiLinesStatistics guiLinesStatistics;
 	
 	/**
 	* Auto-generated main method to display this JFrame
@@ -146,6 +146,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiBedTssAndChrome = new GuiBedTssAndChrome();
 				jTabbedPane1.add("Tss", guiBedTssAndChrome);
+				
+				guiGetSeq = new GuiGetSeq();
+				jTabbedPane1.add("LinesStatistics", guiLinesStatistics);	
 			}
 			pack();
 			this.setSize(1050, 699);

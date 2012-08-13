@@ -379,19 +379,17 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @param gffDetailGeneParent
 	 */
 	public void addIso(GffGeneIsoInfo gffGeneIsoInfo) {
+		if (gffGeneIsoInfo == null || gffGeneIsoInfo.size() == 0)
+			return;
+	
 		gffGeneIsoInfo.setGffDetailGeneParent(this);
 		removeDuplicateIso = false;
-		//TODO
-		if (gffGeneIsoInfo == null || gffGeneIsoInfo.size() == 0) {
-			return;
-		}
-		
+
 		if (cis5to3 != null && gffGeneIsoInfo.isCis5to3() != cis5to3) {
 			cis5to3 = null;
 		}
 		for (GffGeneIsoInfo gffGeneIsoInfoOld : lsGffGeneIsoInfos) {
-			//比较两个list是否一致，exon的equals只比较起点终点
-			if (gffGeneIsoInfoOld.equalsIso(gffGeneIsoInfo)) {
+			if (gffGeneIsoInfoOld.equalsIso(gffGeneIsoInfo)) {//比较两个list是否一致，exon的equals只比较起点终点
 				return;
 			}
 		}
