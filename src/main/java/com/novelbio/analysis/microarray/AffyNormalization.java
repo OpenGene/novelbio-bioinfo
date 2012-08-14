@@ -24,19 +24,32 @@ public class AffyNormalization {
 	String readFile = "";
 	ArrayList<String> lsRawCelFile = new ArrayList<String>();
 	
-	public void setLsRawCelFile(ArrayList<String> lsRawCelFile) {
-		this.lsRawCelFile = lsRawCelFile;
-	}
-	
 	public AffyNormalization() {
+		rawScript = "/media/winE/Bioinformatics/R/Protocol/Microarray/Affymetirx芯片分析Java.txt";
 		setWorkSpace();
 		setOutScriptPath();
 	}
+
 	private void setWorkSpace() {
 		workSpace = FileOperate.getProjectPath() + "Tmp/";
 	}
-	protected void setOutScriptPath() {
-		outScript = workSpace + "DEGseq_" + DateTime.getDateAndRandom() + ".R";
+	private void setOutScriptPath() {
+		outScript = workSpace + "AffyNorm_" + DateTime.getDateAndRandom() + ".R";
+	}
+	public void setLsRawCelFile(ArrayList<String> lsRawCelFile) {
+		this.lsRawCelFile = lsRawCelFile;
+	}
+	public void setOutFileName(String outFileName) {
+		this.outFileName = outFileName;
+	}
+	/** NORM_RMA 等 */
+	public void setNormalizedType(int normalizedType) {
+		this.normalizedType = normalizedType;
+	}
+	/** 仅供测试 */
+	public String getOutScript() {
+		generateScript();
+		return outScript;
 	}
 	protected void generateScript() {
 		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript, false);
@@ -90,12 +103,21 @@ public class AffyNormalization {
 	 * 例如：
 	 * Rrunning("DEseq")
 	 */
-	protected void run() {
+	public void run() {
+		generateScript();
 		Rrunning("Normalize");
 	}
 	protected void Rrunning(String cmdName) {
 		String cmd = NovelBioConst.R_SCRIPT + outScript;
 		CmdOperate cmdOperate = new CmdOperate(cmd, cmdName);
 		cmdOperate.run();
+	}
+	
+	public static HashMap<String, Integer> getMapNormStr2ID() {
+		HashMap<String, Integer> mapNormStr2ID = new HashMap<String, Integer>();
+		mapNormStr2ID.put("RMA--Log2", NORM_RMA);
+		mapNormStr2ID.put("GCRMA--Log2", NORM_GCRMA);
+		mapNormStr2ID.put("MAS5--NoLog2", NORM_MAS5);
+		return mapNormStr2ID;
 	}
 }

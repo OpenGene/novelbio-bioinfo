@@ -40,7 +40,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	}
 	public DiffExpDEGseq() {
 		rawScript = "/media/winE/Bioinformatics/R/Protocol/DEGseqJava.txt";
-//		rawScript = PathDetail.getProjectPath() + "script/DEGseqJava.txt";
+//		rawScript = PathDetail.getProjectPath() + "rscript/DEGseqJava.txt";
 
 	}
 	/** 基因标记列，实际列，用在R里面，所以不需要减1 */

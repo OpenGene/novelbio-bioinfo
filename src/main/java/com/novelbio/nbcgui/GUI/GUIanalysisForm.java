@@ -63,6 +63,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiBedTssAndChrome guiBedTssAndChrome;
 	private GuiRNASeqRsem guiRNASeqRsem;
 	private GuiLinesStatistics guiLinesStatistics;
+	private GuiCelNormJpanel guiCelNormJpanel;
 	
 	/**
 	* Auto-generated main method to display this JFrame
@@ -132,6 +133,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiDifGene = new GuiDifGeneJpanel();
 				jTabbedPane1.addTab("DifGene", null, guiDifGene, null);
 				
+				guiCelNormJpanel = new GuiCelNormJpanel();
+				jTabbedPane1.addTab("Affymetrix", null, guiCelNormJpanel, null);
+				
 				guiBlast = new GuiBlast();
 				jTabbedPane1.addTab("Blast", null, guiBlast, null);
 				
@@ -147,8 +151,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiBedTssAndChrome = new GuiBedTssAndChrome();
 				jTabbedPane1.add("Tss", guiBedTssAndChrome);
 				
-				guiGetSeq = new GuiGetSeq();
+				guiLinesStatistics = new GuiLinesStatistics();
 				jTabbedPane1.add("LinesStatistics", guiLinesStatistics);	
+				
 			}
 			pack();
 			this.setSize(1050, 699);
