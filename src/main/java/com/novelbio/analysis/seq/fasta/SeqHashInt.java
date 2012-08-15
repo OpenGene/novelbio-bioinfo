@@ -68,15 +68,12 @@ public interface SeqHashInt {
 	/**
 	 * * 输入染色体list信息 输入序列坐标以及是否为反向互补,其中ChrID为 chr1，chr2，chr10类型 返回序列
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
-	 * @param cisseq
-	 *            正反向
-	 * @param chrID
-	 *            目的染色体名称，用来在哈希表中查找具体某条染色体
-	 * @param startlocation
-	 *            序列起点
-	 * @param endlocation
-	 *            序列终点
+	 * @param cisseq 正反向
+	 * @param chrID 目的染色体名称，用来在哈希表中查找具体某条染色体
+	 * @param startlocation 序列起点
+	 * @param endlocation 序列终点
 	 * @return
+	 * 没有就返回null
 	 */
 	public SeqFasta getSeq(Boolean cisseq, String chrID, long startlocation, long endlocation);
 	/**

@@ -304,6 +304,9 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	public SeqFasta getSeq(String IsoName, int startExon, int endExon, boolean getIntron) {
 		GffGeneIsoInfo gffGeneIsoInfo = getIso(IsoName);
 		SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), startExon, endExon, gffGeneIsoInfo, getIntron);
+		if (seqFasta == null) {
+			return null;
+		}
 		seqFasta.setName(IsoName);
 		return seqFasta;
 	}
@@ -348,6 +351,9 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			return null;
 		}
 		SeqFasta seqFastaResult = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), lsExonInfos, getIntron);
+		if (seqFastaResult == null) {
+			return null;
+		}
 		seqFastaResult.setName(gffGeneIsoInfo.getName());
 		return seqFastaResult;
 	}

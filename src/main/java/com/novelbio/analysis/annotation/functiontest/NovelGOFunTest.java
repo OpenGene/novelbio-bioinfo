@@ -8,7 +8,7 @@ import java.util.HashSet;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 

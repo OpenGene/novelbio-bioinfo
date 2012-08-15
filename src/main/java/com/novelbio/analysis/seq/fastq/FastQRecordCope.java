@@ -8,13 +8,13 @@ public abstract class FastQRecordCope<T> extends RunProcess<T>{
 	ArrayBlockingQueue<FastQRecord[]> lsFastQRecords;
 	//主要是看读取是否完毕
 	FastQRead fastQRead;
-	boolean singleEnd = true;
+	boolean pairEnd = false;
 
 	public void setLsFastQRecords(ArrayBlockingQueue<FastQRecord[]> lsFastQRecords) {
 		this.lsFastQRecords = lsFastQRecords;
 	}
-	public void setSingleEnd(boolean singleEnd) {
-		this.singleEnd = singleEnd;
+	public void setIsPairEnd(boolean isPairEnd) {
+		this.pairEnd = isPairEnd;
 	}
 	/** 主要是看读取是否完毕 */
 	public void setFastQRead(FastQRead fastQRead) {
@@ -45,7 +45,7 @@ public abstract class FastQRecordCope<T> extends RunProcess<T>{
 			if (fastQRecord == null) {
 				continue;
 			}
-			if (singleEnd) {
+			if (!pairEnd) {
 				copeFastQRecordSE(fastQRecord[0]);
 			}
 			else {

@@ -11,7 +11,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.generalConf.NovelBioConst;
 

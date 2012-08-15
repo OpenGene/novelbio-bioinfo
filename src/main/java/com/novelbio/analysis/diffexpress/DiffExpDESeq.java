@@ -53,9 +53,8 @@ public class DiffExpDESeq extends DiffExpAbs {
 	}
 	
 	public DiffExpDESeq() {
-		rawScript = "/media/winE/Bioinformatics/R/Protocol/DESeqJava.txt";
-//		rawScript = PathDetail.getProjectPath() + "script/DESeqJava.txt";
-
+//		rawScript = "/media/winE/Bioinformatics/R/Protocol/DESeqJava.txt";
+		rawScript = NovelBioConst.getRworkspace() + "DESeqJava.txt";
 	}
 	
 	/** ½ö¹©²âÊÔ */

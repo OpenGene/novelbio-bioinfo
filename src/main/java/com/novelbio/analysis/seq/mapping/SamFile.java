@@ -48,6 +48,7 @@ public class SamFile {
 		String sam = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/heartK0a14m1_1/accepted_hits.bam";
 		SamFile samFile = new SamFile(sam);
 		samFile.name();
+		samFile.toBedSingleEnd();
 //		
 //		sam = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/heartK0a14m1_2/accepted_hits.bam";
 //		samFile = new SamFile(sam);
@@ -86,7 +87,7 @@ public class SamFile {
 	/** 是否为bam文件 */
 	boolean bamFile = false;
 	
-	boolean uniqMapping = true;
+	boolean uniqMapping = false;
 	
 	SamFileStatistics samFileStatistics;
 	
@@ -515,8 +516,8 @@ public class SamFile {
 		samFileWriter.addAlignment(samRecord.getSamRecord());
 	}
 	public void close() {
-		samFileReader.close();
-		samFileWriter.close();
+		try { samFileReader.close(); } catch (Exception e) { }
+		try { samFileWriter.close(); } catch (Exception e) { }
 	}
 	
 }

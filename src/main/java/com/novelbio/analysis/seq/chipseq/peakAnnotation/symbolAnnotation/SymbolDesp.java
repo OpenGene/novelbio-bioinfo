@@ -7,7 +7,7 @@ import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.ServAnno;
 
 

@@ -9,7 +9,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListGff;
-import com.novelbio.database.model.modcopeid.GeneType;
+import com.novelbio.database.model.modgeneid.GeneType;
 
 /**
  * ≤ª∂‘Õ‚

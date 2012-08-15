@@ -9,7 +9,7 @@ import java.util.List;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.model.modcopeid.GeneType;
+import com.novelbio.database.model.modgeneid.GeneType;
 
 public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	GffHashGene gffHashRef;

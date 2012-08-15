@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 /**
  * 从NCBI的nt和nr数据库中获得指定物种的序列并整理为fasta格式
 	 * 整理成:<br>

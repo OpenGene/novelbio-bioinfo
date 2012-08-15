@@ -30,11 +30,14 @@ public class FastQ {
 	
 	public static void main(String[] args) {
 		FastQ fastQfile = new FastQ("/home/zong0jie/Desktop/BZ171-9522_GTGAAA_L003_R2_001.fastq.gz");
+		FastQ fastqQfile2 = new FastQ("/home/zong0jie/Desktop/BZ171-9522_GTGAAA_L003_R1_001.fastq.gz");
 		fastQfile.setFastqWrite("/home/zong0jie/Desktop/aaa.fq");
 		FastQfilterRecord fastQfilterRecordParam = new FastQfilterRecord();
 		fastQfilterRecordParam.setFilterParamTrimNNN(true);
 		fastQfile.setFilterParam(fastQfilterRecordParam);
+//		fastQfile.filterReads(fastqQfile2);
 		fastQfile.filterReads();
+
 	}
 	
 	/** ƒ¨»œ «∂¡»° */
@@ -108,6 +111,7 @@ public class FastQ {
 		else {
 			setFilterReadsOutName(false, fastQwrite.getFileName());
 		}
+		fastQfilter.setIsPairEnd(true);
 		filterReadsRun();
 		
 		while (!fastQfilter.isFinished) {

@@ -15,6 +15,7 @@ import com.novelbio.base.gui.GUIFileOpen;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
 
 public class GuiSamToBed extends JPanel {
 	private JTextField txtSamFile;
@@ -31,6 +32,10 @@ public class GuiSamToBed extends JPanel {
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	private JRadioButton rdbtnCis;
 	private JRadioButton rdbtnTrans;
+	private JTextField txtMappingNumSmall;
+	private JLabel lblTo;
+	private JTextField txtMappingNumBig;
+	private JCheckBox chckbxNonUniqueMapping;
 	/**
 	 * Create the panel.
 	 */
@@ -55,6 +60,12 @@ public class GuiSamToBed extends JPanel {
 		btnConverttobedfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SamFile samFile = new SamFile(txtSamFile.getText());
+				if (chckbxNonUniqueMapping.isSelected()) {
+					samFile.setUniqueRandomSelectOneRead(true);
+				}
+				else {
+					samFile.setUniqueRandomSelectOneRead(false);
+				}
 				samFile.toBedSingleEnd();
 			}
 		});
@@ -100,6 +111,11 @@ public class GuiSamToBed extends JPanel {
 					bedSeq.sortBedFile();
 				}
 				else if (rdbtnFilterstrand.isSelected()) {
+					int mappingNumSmall = 1; int mappingNumBig = 1;
+					try { mappingNumSmall = Integer.parseInt(txtMappingNumSmall.getText().trim()); 
+					mappingNumBig = Integer.parseInt(txtMappingNumBig.getText().trim()); 
+					} catch (Exception e2) { 	}
+					
 					Boolean strand = null;
 					if (rdbtnCis.isSelected()) {
 						strand = true;
@@ -108,16 +124,15 @@ public class GuiSamToBed extends JPanel {
 						strand = false;
 					}
 					
-					if (strand == null) {
-						return;
-					}
 					String bedFile = FileOperate.changeFileSuffix(txtBedFile.getText(), "_filtered", null);
 					BedSeq bedSeq2 = new BedSeq(bedFile, true);
 					for (BedRecord bedRecord : bedSeq.readlines()) {
-						if (bedRecord.isCis5to3() != strand) {
+						if (strand != null && bedRecord.isCis5to3() != strand) {
 							continue;
 						}
-						bedSeq2.writeBedRecord(bedRecord);
+						if (bedRecord.getMappingNum() >= mappingNumSmall && bedRecord.getMappingNum() <= mappingNumBig) {
+							bedSeq2.writeBedRecord(bedRecord);
+						}
 					}
 					bedSeq2.closeWrite();
 				}
@@ -148,6 +163,30 @@ public class GuiSamToBed extends JPanel {
 		initial();
 		buttonGroupCisTrans.add(rdbtnCis);
 		buttonGroupCisTrans.add(rdbtnTrans);
+		
+		txtMappingNumSmall = new JTextField();
+		txtMappingNumSmall.setText("1");
+		txtMappingNumSmall.setBounds(413, 235, 30, 18);
+		add(txtMappingNumSmall);
+		txtMappingNumSmall.setColumns(10);
+		
+		JLabel lblMappingnum = new JLabel("MappingNum");
+		lblMappingnum.setBounds(306, 237, 114, 14);
+		add(lblMappingnum);
+		
+		lblTo = new JLabel("To");
+		lblTo.setBounds(447, 237, 30, 14);
+		add(lblTo);
+		
+		txtMappingNumBig = new JTextField();
+		txtMappingNumBig.setText("1");
+		txtMappingNumBig.setBounds(486, 235, 36, 18);
+		add(txtMappingNumBig);
+		txtMappingNumBig.setColumns(10);
+		
+		chckbxNonUniqueMapping = new JCheckBox("Non Unique Mapping Get Random Reads");
+		chckbxNonUniqueMapping.setBounds(214, 78, 320, 22);
+		add(chckbxNonUniqueMapping);
 	}
 	
 	private void initial() {

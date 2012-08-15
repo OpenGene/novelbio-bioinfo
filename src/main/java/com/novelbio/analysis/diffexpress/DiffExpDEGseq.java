@@ -12,6 +12,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
+import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.NovelBioTitleItem;
 
 /**
@@ -39,8 +40,8 @@ public class DiffExpDEGseq extends DiffExpAbs {
 		deSeq.getResultFileName();
 	}
 	public DiffExpDEGseq() {
-		rawScript = "/media/winE/Bioinformatics/R/Protocol/DEGseqJava.txt";
-//		rawScript = PathDetail.getProjectPath() + "rscript/DEGseqJava.txt";
+//		rawScript = "/media/winE/Bioinformatics/R/Protocol/DEGseqJava.txt";
+		rawScript = NovelBioConst.getRworkspace() + "DEGseqJava.txt";
 
 	}
 	/** 基因标记列，实际列，用在R里面，所以不需要减1 */

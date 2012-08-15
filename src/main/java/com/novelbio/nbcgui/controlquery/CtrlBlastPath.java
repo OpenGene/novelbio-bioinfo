@@ -10,7 +10,7 @@ import javax.swing.SwingWorker;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.kegg.KGentry;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 
 

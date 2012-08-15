@@ -1,5 +1,7 @@
 package com.novelbio.generalConf;
 
+import com.novelbio.base.PathDetail;
+
 public class NovelBioConst {
 	public  final static String COMPANY_NAME_ABBR = "Novelbio";
 	
@@ -97,7 +99,7 @@ public class NovelBioConst {
 	/**
 	 * 相对路径文件夹
 	 */
-	public final static String PATH_POSITION_RELATE = "ConfFold/";
+	public final static String PATH_POSITION_RELATE = PathDetail.getProjectPath() + "ConfFold/";
 	/**
 	 * 9位Os号
 	 */
@@ -232,11 +234,14 @@ public class NovelBioConst {
 	//////////////////////////////////R系列//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public final static String R_SCRIPT = "Rscript ";
 
-	/**
-	 *  "/media/winE/Bioinformatics/R/practice_script/platform/"
-	 */
-	public final static String R_WORKSPACE = "/media/winE/Bioinformatics/R/practice_script/platform/";
-	
+//	public final static String R_WORKSPACE = "/media/winE/Bioinformatics/R/practice_script/platform/";
+	public final static String R_WORKSPACE = PathDetail.getProjectPath() + "rscript/";
+	public static String getRworkspace() {
+		return PathDetail.getProjectPath() + "rscript/";
+	}
+	public static String getRworkspaceTmp() {
+		return getRworkspace() + "tmp/";
+	}
 //	public final static String R_WORKSPACE = "D:/Library/R/";
 //	public final static String R_SCRIPT = "D:/tools/R2_14/bin/Rscript ";
 	

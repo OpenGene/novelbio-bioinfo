@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-import com.novelbio.database.model.modcopeid.GeneType;
+import com.novelbio.database.model.modgeneid.GeneType;
 /**
  * 名字通通小写
  * 计算距离时，SnnnC<br>

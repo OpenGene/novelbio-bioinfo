@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.modcopeid.GeneType;
+import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**

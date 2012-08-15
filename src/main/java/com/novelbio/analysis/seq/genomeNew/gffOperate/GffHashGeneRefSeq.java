@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 
 /**给定基因的mRNA序列和protein序列，生成一个GffHashGene，其中每个基因就是一个独立的ListGff */
 public class GffHashGeneRefSeq extends GffHashGeneAbs{

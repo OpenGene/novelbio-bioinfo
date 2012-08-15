@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.novelbio.database.domain.kegg.KGpathway;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modkegg.KeggInfo;
 
 public class KEGGPathwayFunTest extends AbstFunTest{

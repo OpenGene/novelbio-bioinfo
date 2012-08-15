@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 /**
  * 比对到RefSeq上的ncRNA，看其具体情况
  * @author zong0jie

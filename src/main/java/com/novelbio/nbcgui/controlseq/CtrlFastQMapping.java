@@ -324,7 +324,7 @@ public class CtrlFastQMapping {
 		fastQfilterRecord.setFilterParamReadsLenMin(readsLenMin);
 		fastQfilterRecord.setFilterParamQuality(this.fastqQuality);
 		fastQfilterRecord.setFilterParamTrimNNN(trimNNN);
-
+		fastQ.setFilterParam(fastQfilterRecord);
 		fastQ.setCompressType(compressType, TxtReadandWrite.TXT);
 	}
 	

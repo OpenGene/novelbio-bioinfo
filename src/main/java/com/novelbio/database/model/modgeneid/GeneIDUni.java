@@ -1,4 +1,4 @@
-package com.novelbio.database.model.modcopeid;
+package com.novelbio.database.model.modgeneid;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;

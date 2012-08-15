@@ -8,7 +8,7 @@ import com.novelbio.base.RunProcess;
 class FastQfilter implements RunGetInfo<FastqRecordInfoFilter>{
 	FastQRead fastQRead;
 	FastQwrite fastqWrite;
-	
+	boolean isPairEnd = false;
 	int allRawReadsNum, allFilteredReadsNum;
 	
 	/** 用作参数设定的 */
@@ -26,6 +26,9 @@ class FastQfilter implements RunGetInfo<FastqRecordInfoFilter>{
 	}
 	public void setFilterParam(FastQfilterRecord fastQfilterRecord) {
 		this.fastQfilterRecordParam = fastQfilterRecord;
+	}
+	public void setIsPairEnd(boolean isPairEnd) {
+		this.isPairEnd = isPairEnd;
 	}
 	public void setFilterThreadNum(int threadFilterNum) {
 		for (int i = 0; i < threadFilterNum; i++) {
@@ -97,6 +100,7 @@ class FastQfilter implements RunGetInfo<FastqRecordInfoFilter>{
 		 
 		for (FastQfilterRecord fastQfilterRecord : lsFilter) {
 			fastQfilterRecord.setParam(fastQfilterRecordParam);
+//			fastQfilterRecord.setIsPairEnd(isPairEnd);
 		}
 		
 		Thread thread = new Thread(fastQRead);

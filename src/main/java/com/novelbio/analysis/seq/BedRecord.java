@@ -133,7 +133,7 @@ public class BedRecord extends SiteInfo {
 		return false;
 	}
 	public void setAlignmentBlocks(ArrayList<? extends Alignment> lsAlign) {
-		if (lsAlign.size() <= 1) {
+		if (lsAlign.size() <= 0) {
 			return;
 		}
 		
@@ -150,7 +150,7 @@ public class BedRecord extends SiteInfo {
 	 * 都是绝对坐标，从1开始
 	 * @return
 	 */
-	public ArrayList<? extends Alignment> getAlignmentBlocks() {
+	public ArrayList<Align> getAlignmentBlocks() {
 		ArrayList<Align> lsStartEnd = new ArrayList<Align>();
 		if (splitLen == null || splitLen.equals("") || !splitLen.contains(",")) {
 			Align align = new Align(getStartCis(), getEndCis());

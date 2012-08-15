@@ -52,22 +52,29 @@ public class SamRecord extends SiteInfo {
 		if (isJunctionReads != null) {
 			return isJunctionReads;
 		}
-		if (getAlignmentBlocks().size() > 1) {
-			isJunctionReads = true;
+		if (samRecord.getCigar().toString().contains("N")) {
+			return true;
 		} else {
 			isJunctionReads = false;
 		}
 		return isJunctionReads;
 	}
-
+	/** 当为junction reads的时候才会有意义 */
 	public ArrayList<Align> getAlignmentBlocks() {
-		List<AlignmentBlock> lsAlignmentBlocks = samRecord.getAlignmentBlocks();
-		ArrayList<Align> lsAligns = new ArrayList<Align>();
-		for (AlignmentBlock alignmentBlock : lsAlignmentBlocks) {
-			Align align = new Align(alignmentBlock.getReadStart(), alignmentBlock.getLength() + alignmentBlock.getReadStart());
-			align.setCis5to3(isCis5to3());
-			lsAligns.add(align);
+		if (samRecord.getCigar().toString().contains("N")) {
+			List<AlignmentBlock> lsAlignmentBlocks = samRecord.getAlignmentBlocks();
+			ArrayList<Align> lsAligns = new ArrayList<Align>();
+			for (AlignmentBlock alignmentBlock : lsAlignmentBlocks) {
+				Align align = new Align(alignmentBlock.getReferenceStart(), alignmentBlock.getLength() + alignmentBlock.getReferenceStart() - 1);
+				align.setCis5to3(isCis5to3());
+				lsAligns.add(align);
+			}
+			return lsAligns;
 		}
+		ArrayList<Align> lsAligns = new ArrayList<Align>();
+		Align align = new Align(getStartAbs(), getEndAbs());
+		align.setCis5to3(isCis5to3());
+		lsAligns.add(align);
 		return lsAligns;
 	}
 
@@ -82,8 +89,14 @@ public class SamRecord extends SiteInfo {
 	public boolean isUniqueMapping() {
 		Object attrXT = samRecord.getAttribute("XT");
 		if (attrXT != null) {
-			if (!attrXT.equals("R"))
+			if (!attrXT.equals('R'))
 				return true;
+			else {
+				if (getNumMappedReads() == 1) {
+					return true;
+				}
+				return false;
+			}
 		}
 		Object attrCC = samRecord.getAttribute("NH");
 		if (attrCC != null) {
@@ -99,12 +112,23 @@ public class SamRecord extends SiteInfo {
 	public int getMapQuality() {
 		return samRecord.getMappingQuality();
 	}
-
 	/**
-	 * 本reads的权重，意思相同的reads在文件中有多少条 一般bwa出来的文件一行就是一条reads 而tophat出来的文件，一条reads
-	 * mapping在几个位置就有几行
+	 * reads的权重，意思相同的reads在本sam文件中出现了几次
+	 * bwa的结果，一条reads只有一行，所以恒返回1
+	 * tophat的结果，一条reads如果mapping至多个位置，在文件中就会出现多次，所以返回可能大于1
 	 * */
-	public int getNumMappedReadsInFile() {
+	protected int getMappedReadsWeight() {
+		Object attrCC = samRecord.getAttribute("NH");
+		if (attrCC != null) {
+			numMappedReadsInFile = (Integer) attrCC;
+			return numMappedReadsInFile;
+		}
+		return 1;
+	}
+	/**
+	 * 本序列可以mapping至几个不同位置
+	 * */
+	public int getNumMappedReads() {
 		if (numMappedReadsInFile > 0) {
 			return numMappedReadsInFile;
 		}
@@ -115,6 +139,10 @@ public class SamRecord extends SiteInfo {
 		}
 		String[] tmpInfo = null;
 		if (samRecord.getAttribute("XA") != null) {
+			if (samRecord.getAttribute("XT").equals('U')) {
+				numMappedReadsInFile = 1;
+				return numMappedReadsInFile;
+			}
 			tmpInfo = samRecord.getAttribute("XA").toString().split(";");
 			numMappedReadsInFile = tmpInfo.length + 1;
 			return numMappedReadsInFile;
@@ -213,7 +241,7 @@ public class SamRecord extends SiteInfo {
 		bedRecord.setSeq(getSeqFasta());
 		bedRecord.setScore(getMapQuality());
 		// 计数，mapping到了几次
-		bedRecord.setMappingNum(getNumMappedReadsInFile());
+		bedRecord.setMappingNum(getNumMappedReads());
 		bedRecord.setName(samRecord.getReadName());
 		bedRecord.setAlignmentBlocks(getAlignmentBlocks());
 		return bedRecord;
@@ -226,6 +254,11 @@ public class SamRecord extends SiteInfo {
 			return new ArrayList<BedRecord>();
 		}
 		lsBedRecords.add(toBedRecordSE());
+		
+		if (isUniqueMapping()) {
+			return lsBedRecords;
+		}
+		
 		/**
 		 * XA: Alternative hits; format: (chr,pos,CIGAR,NM;) XT:A:U flag in the
 		 * sam file denotes unique read and XT:A:R denotes multiple mappings for
@@ -250,7 +283,7 @@ public class SamRecord extends SiteInfo {
 			bedRecord.setStartEndLoc(start1, end1);
 			bedRecord.setCIGAR(info[2]);
 			bedRecord.setCis5to3(info[1].charAt(0));
-			bedRecord.setMappingNum(getNumMappedReadsInFile());
+			bedRecord.setMappingNum(getNumMappedReads());
 			bedRecord.setMapQuality(getMapQuality());
 			bedRecord.setScore(samRecord.getMappingQuality());
 			bedRecord.setSeq(new SeqFasta(samRecord.getReadString()), false);

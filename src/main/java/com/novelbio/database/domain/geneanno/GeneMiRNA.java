@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.ibatis.migration.commands.NewCommand;
 
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
  * 本表要导入专门的miRDB数据库中

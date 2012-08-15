@@ -25,16 +25,16 @@ public class AffyNormalization {
 	ArrayList<String> lsRawCelFile = new ArrayList<String>();
 	
 	public AffyNormalization() {
-		rawScript = "/media/winE/Bioinformatics/R/Protocol/Microarray/Affymetirx芯片分析Java.txt";
+		rawScript = NovelBioConst.getRworkspace() + "Affymetirx芯片分析Java.txt";
 		setWorkSpace();
 		setOutScriptPath();
 	}
 
 	private void setWorkSpace() {
-		workSpace = FileOperate.getProjectPath() + "Tmp/";
+		workSpace = NovelBioConst.getRworkspaceTmp();
 	}
 	private void setOutScriptPath() {
-		outScript = workSpace + "AffyNorm_" + DateTime.getDateAndRandom() + ".R";
+		outScript = NovelBioConst.getRworkspaceTmp() + "AffyNorm_" + DateTime.getDateAndRandom() + ".R";
 	}
 	public void setLsRawCelFile(ArrayList<String> lsRawCelFile) {
 		this.lsRawCelFile = lsRawCelFile;
@@ -106,6 +106,7 @@ public class AffyNormalization {
 	public void run() {
 		generateScript();
 		Rrunning("Normalize");
+		clean();
 	}
 	protected void Rrunning(String cmdName) {
 		String cmd = NovelBioConst.R_SCRIPT + outScript;
@@ -119,5 +120,10 @@ public class AffyNormalization {
 		mapNormStr2ID.put("GCRMA--Log2", NORM_GCRMA);
 		mapNormStr2ID.put("MAS5--NoLog2", NORM_MAS5);
 		return mapNormStr2ID;
+	}
+	
+	/** 删除中间文件 */
+	private void clean() {
+		FileOperate.DeleteFileFolder(outScript);
 	}
 }

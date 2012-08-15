@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
 import com.novelbio.database.domain.kegg.KGpathway;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 
 public class KeggInfoUniID extends KeggInfoAbs{
 	

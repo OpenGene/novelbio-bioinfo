@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 /**
  * 读取大豆的GFF文件有问题，主要是5UTR和3UTR一块，需要修正

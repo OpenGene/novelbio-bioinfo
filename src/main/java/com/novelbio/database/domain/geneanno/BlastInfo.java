@@ -3,7 +3,7 @@ package com.novelbio.database.domain.geneanno;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
  * 

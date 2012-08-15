@@ -10,6 +10,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
+import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.NovelBioTitleItem;
 
 public class DiffExpLimma extends DiffExpAbs{
@@ -44,8 +45,8 @@ public class DiffExpLimma extends DiffExpAbs{
 //		deSeq.getResultFileName();
 	}
 	public DiffExpLimma() {
-		rawScript = "/media/winE/Bioinformatics/R/Protocol/Microarray/limmaSimpleJava.txt";
-//		rawScript = PathDetail.getProjectPath() + "script/limmaSimpleJava.txt";
+//		rawScript = "/media/winE/Bioinformatics/R/Protocol/Microarray/limmaSimpleJava.txt";
+		rawScript = NovelBioConst.getRworkspace() + "limmaSimpleJava.txt";
 	}
 	
 	@Override

@@ -1,4 +1,4 @@
-package com.novelbio.database.model.modcopeid;
+package com.novelbio.database.model.modgeneid;
 
 import java.util.ArrayList;
 
@@ -233,7 +233,7 @@ GO_REF:0000004<br>
 	 * false：非uniqID也升级，升级搜索到的全部ID，该功能尚未实现
 	 * @param uniqID
 	 */
-	void addUpdateRefAccID(String[] refAccID);
+	void addUpdateRefAccID(String... refAccID);
 	/**
 	 * 如果blast到geneUniID上去
 	 * @param SubGenUniID

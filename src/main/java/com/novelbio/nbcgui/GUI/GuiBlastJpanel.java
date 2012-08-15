@@ -35,7 +35,7 @@ import org.jdesktop.application.Application;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlquery.CtrlBlastAnno;
 import com.novelbio.nbcgui.controlquery.CtrlBlastGo;

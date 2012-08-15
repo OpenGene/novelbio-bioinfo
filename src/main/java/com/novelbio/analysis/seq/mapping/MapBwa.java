@@ -203,9 +203,9 @@ public class MapBwa {
 			sampleGroup = sampleGroup + "\\tSM:" + sampleID.trim();
 		
 		if (Platform != null && !Platform.trim().equals(""))
-			sampleGroup = sampleGroup + "\\tPL:" + Platform + "\"";
+			sampleGroup = sampleGroup + "\\tPL:" + Platform + "\" ";
 		else
-			sampleGroup = sampleGroup + "\\tPL:Illumina" + "\"";
+			sampleGroup = sampleGroup + "\\tPL:Illumina" + "\" ";
 	}
 	/**
 	 * 默认gap为3，如果是indel查找的话，设置到5或者6比较合适

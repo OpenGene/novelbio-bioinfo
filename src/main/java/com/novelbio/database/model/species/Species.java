@@ -125,7 +125,7 @@ public class Species {
 		return taxInfo.getComName();
 	}
 	/** ≥£”√√˚ */
-	public String getKeggAbbrName() {
+	public String getAbbrName() {
 		return taxInfo.getAbbr();
 	}
 	/**
@@ -350,7 +350,7 @@ public class Species {
 			if (speciesType == ALL_SPECIES) {
 			}
 			else if (speciesType == KEGGNAME_SPECIES) {
-				if (species.getKeggAbbrName().equals("")) {
+				if (species.getAbbrName().equals("")) {
 					continue;
 				}
 			}

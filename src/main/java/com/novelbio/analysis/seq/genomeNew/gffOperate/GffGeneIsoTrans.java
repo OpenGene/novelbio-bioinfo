@@ -9,7 +9,7 @@ import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
-import com.novelbio.database.model.modcopeid.GeneType;
+import com.novelbio.database.model.modgeneid.GeneType;
 
 public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	private static final long serialVersionUID = -3187469258704218874L;

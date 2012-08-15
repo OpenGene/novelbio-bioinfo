@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.novelbio.analysis.seq.genomeNew.GffChrStatistics;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 /**
  * 将GffHash和GffHashGene的方法全部列在了这里
  * @author zong0jie

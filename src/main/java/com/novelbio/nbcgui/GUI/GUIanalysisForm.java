@@ -64,7 +64,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiRNASeqRsem guiRNASeqRsem;
 	private GuiLinesStatistics guiLinesStatistics;
 	private GuiCelNormJpanel guiCelNormJpanel;
-	
+	private GuiSamToBed guiSamToBed;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -126,6 +126,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiFastQ = new GuiFastQJpanel();
 				jTabbedPane1.addTab("FastQ", null, guiFastQ, null);
+				
+				guiSamToBed = new GuiSamToBed();
+				jTabbedPane1.addTab("SamToBed", null, guiSamToBed, null);
 				
 				guiRNASeqRsem = new GuiRNASeqRsem();
 				jTabbedPane1.addTab("RNArsem", guiRNASeqRsem);

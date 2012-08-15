@@ -1,4 +1,4 @@
-package com.novelbio.database.model.modcopeid;
+package com.novelbio.database.model.modgeneid;
 
 import java.io.EOFException;
 import java.util.ArrayList;
@@ -233,7 +233,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 			symbol = getGenName(getGenUniID(), getDatabaseTyep());
 		} else {
 			geneInfo.setTaxID(taxID);
-			symbol = geneInfo.getSymb();
+			symbol = geneInfo.getSymb().replace("@", "");
 		}
 		if (symbol == null || symbol.equals("")) {
 			symbol = getGenName(getGenUniID(), getDatabaseTyep());

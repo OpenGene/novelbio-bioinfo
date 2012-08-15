@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.w3c.dom.ls.LSSerializer;
 
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
@@ -13,6 +14,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.species.Species;
@@ -36,7 +38,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	long UTR3num = 0;
 	long exonNum = 0;
 	long intronNum = 0;
-	long tssNum = 0;	
+	long tssNum = 0;
 	long tesNum = 0;
 	
 	long interGenic = 0;
@@ -56,7 +58,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		this.gffChrAbs = gffChrAbs;
 	}
 	public void setSpecies(Species species) {
-		this.gffChrAbs = new GffChrAbs(species);;
+		this.gffChrAbs = new GffChrAbs(species);
 	}
 	/** tss的区间，上游负数下游正数，可以设置为-2000，-1000 */
 	public void setTssRegion(int[] tssRegion) {
@@ -122,8 +124,11 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		BedSeq bedSeqFile = new BedSeq(bedFile);
 		int i = 0;
 		for (BedRecord bedRecord : bedSeqFile.readlines(firstLine)) {
-			bedRecord.setFlagLoc(bedRecord.getMidLoc());
-			searchSite(bedRecord);
+			
+			ArrayList<SiteInfo> lsSiteInfos = getLsGetBedSiteInfo(bedRecord);
+			for (SiteInfo siteInfo : lsSiteInfos) {
+				searchSite(siteInfo);
+			}
 			
 			allnumber = allnumber + bedRecord.getRawStringInfo().getBytes().length;
 			if (i%1000 == 0) {
@@ -133,6 +138,16 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			i++;
 			if (flagStop) break;
 		}
+	}
+	private ArrayList<SiteInfo> getLsGetBedSiteInfo(BedRecord bedRecord) {
+		ArrayList<SiteInfo> lSiteInfos = new ArrayList<SiteInfo>();
+		ArrayList<Align> lsAligns = bedRecord.getAlignmentBlocks();
+		for (Align align : lsAligns) {
+			SiteInfo siteInfo = new SiteInfo(bedRecord.getRefID(), align.getStartCis(), align.getEndCis());
+			siteInfo.setFlagLoc( (align.getStartCis() + align.getEndCis())/2);
+			lSiteInfos.add(bedRecord);
+		}
+		return lSiteInfos;
 	}
 	private void readNormFile(String peakFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(peakFile, false);
@@ -157,9 +172,14 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	 * @return
 	 */
 	private SiteInfo readInfo(String[] readLine) {
-		SiteInfo siteInfo = new SiteInfo(readLine[colChrID]);
-		siteInfo.setFlagLoc(Integer.parseInt(readLine[colSummit].trim()));
-		return siteInfo;
+		try {
+			SiteInfo siteInfo = new SiteInfo(readLine[colChrID]);
+			siteInfo.setFlagLoc(Integer.parseInt(readLine[colSummit].trim()));
+			return siteInfo;
+		} catch (Exception e) {
+			return null;
+		}
+
 	}
 	/**
 	 * 输入单个坐标位点，返回定位信息，用于统计位点的定位情况
@@ -175,9 +195,12 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	 * 6: GeneEnd，在基因外的尾部 由setStatistic()方法的GeneEnd定义
 	 * 7: Tss 包括Tss上和Tss下，由filterTss定义
 	 */
-	private void searchSite(SiteInfo siteInfo) {		
+	private void searchSite(SiteInfo siteInfo) {
 		suspendCheck();
 		
+		if (siteInfo == null) {
+			return;
+		}
 		boolean flagIntraGenic = false;//在gene内的标记
 		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(siteInfo.getRefID(), siteInfo.getFlagSite());
 		if (gffCodGene == null) {
@@ -213,11 +236,19 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			tesNum++;
 		}
 		
+		boolean isInExon = false;
+		ArrayList<GffGeneIsoInfo> lsIso = gffDetailGene.getLsCodSplit();
+		
 		//Exon Intron
-		if (gffGeneIsoInfo.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_EXON) {
-			exonNum++;
+		// 每个转录本都查一遍
+		for (GffGeneIsoInfo gffGeneIsoInfo2 : lsIso) {
+			if (gffGeneIsoInfo2.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_EXON) {
+				exonNum++;
+				isInExon = true;
+				break;
+			}
 		}
-		else if (gffGeneIsoInfo.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_INTRON) {
+		if (!isInExon && gffGeneIsoInfo.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_INTRON) {
 			intronNum++;
 		}
 		

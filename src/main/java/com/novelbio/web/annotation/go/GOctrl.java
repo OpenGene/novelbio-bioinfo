@@ -19,7 +19,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.novelbio.database.domain.geneanno.NCBIID;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.service.servgeneanno.ServNCBIID;
 import com.novelbio.web.model.User;

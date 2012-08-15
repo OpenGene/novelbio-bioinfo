@@ -13,7 +13,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.domain.geneanno.SnpIndelRs;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ServSnpIndelRs;
 
 

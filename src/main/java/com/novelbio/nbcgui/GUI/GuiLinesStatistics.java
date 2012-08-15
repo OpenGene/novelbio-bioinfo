@@ -15,7 +15,7 @@ import java.awt.event.ActionEvent;
 public class GuiLinesStatistics extends JPanel {
 	private JTextField txtOpenFile;
 	private JTextField txtOutFile;
-	CtrlSamStatistics ctrlSamStatistics;
+	CtrlSamStatistics ctrlSamStatistics = new CtrlSamStatistics();
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	JCheckBox chckbxSambamfile;
 	/**

@@ -59,6 +59,7 @@ class FastQwrite {
 	 * @param bedRecord
 	 */
 	protected void writeFastQRecord(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
+//		creatTxt();
 		txtSeqFile.writefileln(fastQRecord1.toString());
 		if (fastQwriteMate != null) {
 			fastQwriteMate.writeFastQRecord(fastQRecord2);

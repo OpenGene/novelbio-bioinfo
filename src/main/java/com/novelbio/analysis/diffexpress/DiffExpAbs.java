@@ -25,7 +25,7 @@ public abstract class DiffExpAbs {
 	public static final int DESEQ = 20;
 	public static final int DEGSEQ = 30;
 	
-	String workSpace = "";
+	String workSpace;
 	String fileNameRawdata = "";
 	String outScript = "";
 	
@@ -53,7 +53,7 @@ public abstract class DiffExpAbs {
 	String rawScript = "";
 	
 	public DiffExpAbs() {
-		setWorkSpace();
+		setRworkspace();
 		setOutScriptPath();
 		setFileNameRawdata();
 	}
@@ -97,12 +97,13 @@ public abstract class DiffExpAbs {
 		this.colAccID = colID - 1;
 		calculate = false;
 	}
-	private void setWorkSpace() {
-		workSpace = FileOperate.getProjectPath() + "Tmp/";
-	}
 	protected abstract void setOutScriptPath();
 	
 	protected abstract void setFileNameRawdata();
+	
+	protected void setRworkspace() {
+		workSpace = NovelBioConst.getRworkspaceTmp();
+	}
 	/** ½ö¹©²âÊÔ */
 	public String getOutScript() {
 		generateScript();

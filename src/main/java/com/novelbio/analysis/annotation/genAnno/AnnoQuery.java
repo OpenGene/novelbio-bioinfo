@@ -21,7 +21,7 @@ import com.novelbio.database.domain.geneanno.Uni2GoInfo;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 /**
  * ÅúÁ¿×¢ÊÍ
  * @author zong0jie

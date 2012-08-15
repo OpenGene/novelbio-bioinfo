@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
  * 待检查，默认走全部覆盖该基因，没有5UTR和3UTR

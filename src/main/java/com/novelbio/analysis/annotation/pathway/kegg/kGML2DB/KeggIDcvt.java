@@ -10,7 +10,7 @@ import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.model.modcopeid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ServGene2Go;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;

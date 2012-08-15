@@ -9,8 +9,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.database.model.modcopeid.GeneID;
-import com.novelbio.database.model.modcopeid.GeneType;
+import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneType;
 
 /**
  * 本开闭区间已经设定

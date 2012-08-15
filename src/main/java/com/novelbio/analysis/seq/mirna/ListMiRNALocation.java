@@ -14,6 +14,7 @@ import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.species.Species;
 /**
  * 读取miRNA.dat的信息，构建listabs表，方便给定mirID和loc，从而查找到底是5p还是3p
  * @author zong0jie
@@ -32,9 +33,8 @@ public class ListMiRNALocation extends ListHashBin{
 	}
 	/** taxID对应RNA.data中的String */
 	HashMap<Integer, String> hashSpecies = new HashMap<Integer, String>();
-	int taxID = 9606;
-	String species = "HSA";
-
+	String species2 = "HSA";
+	Species species = new Species(9606);
 	/**
 	 * 为miRNA.dat中的物种名
 	 * 设定物种，默认为人类：HSA
@@ -42,7 +42,7 @@ public class ListMiRNALocation extends ListHashBin{
 	 * @param species
 	 */
 	public void setSpecies(int taxID) {
-		this.taxID = taxID;
+		species = new Species(taxID);
 	}
 	int fileType = TYPE_RNA_DATA;
 	/**
@@ -57,9 +57,6 @@ public class ListMiRNALocation extends ListHashBin{
 	 */
 	protected void ReadGffarrayExcep(String rnadataFile) {
 		if (fileType == TYPE_RNA_DATA) {
-			String fileName = FileOperate.changeFileSuffix(rnadataFile, "_taxID2Species", "txt");
-			readTaxID2Species(fileName);
-			species = hashSpecies.get(taxID);
 			ReadGffarrayExcepRNADat(rnadataFile);
 		}
 		else if (fileType == TYPE_MIREAP) {
@@ -67,21 +64,6 @@ public class ListMiRNALocation extends ListHashBin{
 		}
 		else if (fileType == TYPE_MIRDEEP) {
 			ReadGffarrayExcepMirDeep(rnadataFile);
-		}
-	}
-	/** 读取taxID对应miRNA.dat中的物种名
-	 * 物种名类似 人类：HSA 等
-	 * 具体要检查 RNA.data 文件<br>
-	 * 第一列 taxID<br>
-	 * 第二列 species
-	 */
-	private void readTaxID2Species(String rnaDataSpecies) {
-		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(rnaDataSpecies, new int[]{1,2}, 1, -1);
-		for (String[] strings : lsInfo) {
-			if (strings == null || strings[0] == null || strings[0].trim().equals("")) {
-				continue;
-			}
-			hashSpecies.put(Integer.parseInt(strings[0]), strings[1]);
 		}
 	}
 	/**
@@ -127,7 +109,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 				flagSQ = false;
 			}
 			String[] sepInfo = string.split(" +");
-			if (string.startsWith("ID") && sepInfo[4].contains(species)) {
+			if (string.startsWith("ID") && sepInfo[4].contains(species.getAbbrName().toUpperCase())) {
 				flagSpecies = true;
 				lsMiRNA = new ListBin<ListDetailBin>();
 				lsMiRNA.setName(sepInfo[1].toLowerCase());
