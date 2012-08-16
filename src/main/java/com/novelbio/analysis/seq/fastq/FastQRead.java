@@ -24,6 +24,18 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 
  */
 class FastQRead extends RunProcess<FastqRecordInfoRead>{
+	public static void main(String[] args) {
+		FastQRead fastQRead = new FastQRead();
+		fastQRead.setFastqFile("/home/zong0jie/Desktop/BZ170-269_CTTGTA_L003_R2_001.fastq.gz");
+		fastQRead.setFastQFormatLen();
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite("/home/zong0jie/Desktop/outtest.fq", true);
+		for (FastQRecord fastQRecord : fastQRead.readlines()) {
+			txtReadandWrite.writefileln(fastQRecord.toString());
+		}
+//		Thread thread = new Thread(fastQRead);
+//		thread.run();
+		
+	}
 	private static Logger logger = Logger.getLogger(FastQRead.class);
 	public static int FASTQ_SANGER_OFFSET = 33;
 	public static int FASTQ_ILLUMINA_OFFSET = 64;
@@ -53,6 +65,7 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 			setCompressType(TxtReadandWrite.TXT);
 		}
 		this.seqFile = seqFile;
+		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
 	}
 	/** 不设定就会自动判定 */
 	public void setOffset(int offset) {
@@ -153,8 +166,7 @@ class FastQRead extends RunProcess<FastqRecordInfoRead>{
 	 * @throws IOException
 	 */
 	private Iterable<FastQRecord> readPerlines() throws Exception {
-		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
-		 final BufferedReader bufread =  txtSeqFile.readfile(); 
+		final BufferedReader bufread =  txtSeqFile.readfile(); 
 		return new Iterable<FastQRecord>() {
 			public Iterator<FastQRecord> iterator() {
 				return new Iterator<FastQRecord>() {
