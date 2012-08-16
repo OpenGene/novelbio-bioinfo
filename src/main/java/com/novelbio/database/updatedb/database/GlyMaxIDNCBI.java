@@ -10,6 +10,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGenePlant;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 用id对应的方法，将gm的ID对应到NCBI上去
@@ -91,10 +92,9 @@ public class GlyMaxIDNCBI {
 		lsGffGene.add(gffDetailGene);
 	}
 	
-	public void readGFFFile(String gffFile, String txtOut)
-	{
+	public void readGFFFile(String gffFile, String txtOut) {
 		TxtReadandWrite txtOutGene = new TxtReadandWrite(txtOut, true);
-		GffHashGenePlant gffHashGene = new GffHashGenePlant(Species.Gmax);
+		GffHashGenePlant gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_PLANT);
 		gffHashGene.ReadGffarray(gffFile);
 		for (ArrayList<ListDetailBin> lsGffGene : hashLsGffGene.values()) {
 			for (ListDetailBin gffDetailGene : lsGffGene) {
@@ -104,7 +104,7 @@ public class GlyMaxIDNCBI {
 					lsOverlapGffGene = gffCodGeneDU.getLsGffDetailMid();
 				}
 				for (GffDetailGene gffDetailGene2 : lsOverlapGffGene) {
-					txtOutGene.writefileln(gffDetailGene2.getName() + "\t" + gffDetailGene.getName().split(sep)[0] + "\t" + gffDetailGene.getName().split(sep)[1]);
+					txtOutGene.writefileln(gffDetailGene2.getName() + "\t" + gffDetailGene.getName().get(0) + "\t" + gffDetailGene.getName().get(1));
 				}
 			}
 		}

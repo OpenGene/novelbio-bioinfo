@@ -1,30 +1,24 @@
 package com.novelbio.analysis.seq.fastq;
 
-import java.util.ArrayList;
-
-import com.novelbio.base.RunGetInfo;
 import com.novelbio.base.RunProcess;
+import com.novelbio.base.multithread.txtreadcopewrite.MTmulitCopeInfo;
+import com.novelbio.base.multithread.txtreadcopewrite.MTrecordCoper;
 
-class FastQfilter implements RunGetInfo<FastqRecordInfoFilter>{
-	FastQRead fastQRead;
+class FastQfilter extends MTmulitCopeInfo<FastQfilterRecorder, FastqRecordInfoFilter>{
+	FastQReader fastQRead;
 	FastQwrite fastqWrite;
 	boolean isPairEnd = false;
 	int allRawReadsNum, allFilteredReadsNum;
 	
 	/** 用作参数设定的 */
-	FastQfilterRecord fastQfilterRecordParam;
-	int threadStopNum = 0;
-	ArrayList<FastQfilterRecord> lsFilter = new ArrayList<FastQfilterRecord>();
+	FastQfilterRecorder fastQfilterRecordParam;
 	
 	boolean isFinished = false;
-	
-	public void setFastQRead(FastQRead fastQRead) {
-		this.fastQRead = fastQRead;
-	}
+
 	public void setFastqWrite(FastQwrite fastqWrite) {
 		this.fastqWrite = fastqWrite;
 	}
-	public void setFilterParam(FastQfilterRecord fastQfilterRecord) {
+	public void setFilterParam(FastQfilterRecorder fastQfilterRecord) {
 		this.fastQfilterRecordParam = fastQfilterRecord;
 	}
 	public void setIsPairEnd(boolean isPairEnd) {
@@ -32,14 +26,13 @@ class FastQfilter implements RunGetInfo<FastqRecordInfoFilter>{
 	}
 	public void setFilterThreadNum(int threadFilterNum) {
 		for (int i = 0; i < threadFilterNum; i++) {
-			FastQfilterRecord fastqFilterRecord = new FastQfilterRecord();
+			FastQfilterRecorder fastqFilterRecord = new FastQfilterRecorder();
 			//TODO 设定过滤参数
 			fastqFilterRecord.adaptorLowercase = false;
 			fastqFilterRecord.phredOffset = 33;
 			fastqFilterRecord.readsLenMin = 21;
-			this.lsFilter.add(fastqFilterRecord);
+			addMTcopedRecord(fastqFilterRecord);
 		}
-		fastQRead.setLsFilterReads(lsFilter);
 	}
 
 	@Override
@@ -52,28 +45,25 @@ class FastQfilter implements RunGetInfo<FastqRecordInfoFilter>{
 				fastqWrite.writeFastQRecord(info.fastQRecord1, info.fastQRecord2);
 			}
 		}
+		
 	}
-	
 	@Override
-	public void done(RunProcess<FastqRecordInfoFilter> runProcess) {
-		synchronized (this) {
-			threadStopNum++;
-			FastQfilterRecord fastQfilterRecord = (FastQfilterRecord) runProcess;
-			allRawReadsNum = allRawReadsNum + fastQfilterRecord.getAllReadsNum();
-			allFilteredReadsNum = allFilteredReadsNum + fastQfilterRecord.getFilteredReadsNum();
-			if (threadStopNum == lsFilter.size()) {
-				//TODO
-				fastqWrite.close();
-				fastQRead.close();
-				isFinished = true;
-			}
-		}
+	protected void doneOneThread(RunProcess<FastqRecordInfoFilter> runProcess) {
+		MTrecordCoper<FastqRecordInfoFilter> fastQRecordCope  = (MTrecordCoper)runProcess;
+		FastQfilterRecorder fastQfilterRecord = (FastQfilterRecorder)fastQRecordCope;
+		allRawReadsNum = allRawReadsNum + fastQfilterRecord.getAllReadsNum();
+		allFilteredReadsNum = allFilteredReadsNum + fastQfilterRecord.getFilteredReadsNum();
 	}
-
+	@Override
+	protected void doneAllThread() {
+		fastqWrite.close();
+		fastQRead.close();
+		isFinished = true;
+	}
 	@Override
 	public void threadSuspend() {
 		fastQRead.threadSuspend();
-		for (FastQfilterRecord fastqFilterRecord : lsFilter) {
+		for (FastQfilterRecorder fastqFilterRecord : lsCopeRecorders) {
 			fastqFilterRecord.threadSuspend();
 		}
 	}
@@ -81,7 +71,7 @@ class FastQfilter implements RunGetInfo<FastqRecordInfoFilter>{
 	@Override
 	public void threadResume() {
 		fastQRead.threadResume();
-		for (FastQfilterRecord fastqFilterRecord : lsFilter) {
+		for (FastQfilterRecorder fastqFilterRecord : lsCopeRecorders) {
 			fastqFilterRecord.threadResume();
 		}
 	}
@@ -89,28 +79,20 @@ class FastQfilter implements RunGetInfo<FastqRecordInfoFilter>{
 	@Override
 	public void threadStop() {
 		fastQRead.threadStop();
-		for (FastQfilterRecord fastqFilterRecord : lsFilter) {
+		for (FastQfilterRecorder fastqFilterRecord : lsCopeRecorders) {
 			fastqFilterRecord.threadStop();
 		}
 	}
 
 	@Override
-	public void execute() {
+	public void beforeExecute() {
 		isFinished = false;
-		 
-		for (FastQfilterRecord fastQfilterRecord : lsFilter) {
+		for (FastQfilterRecorder fastQfilterRecord : lsCopeRecorders) {
 			fastQfilterRecord.setParam(fastQfilterRecordParam);
-//			fastQfilterRecord.setIsPairEnd(isPairEnd);
-		}
-		
-		Thread thread = new Thread(fastQRead);
-		thread.start();
-		for (FastQfilterRecord fastqFilterRecord : lsFilter) {
-			fastqFilterRecord.setRunGetInfo(this);
-			thread = new Thread(fastqFilterRecord);
-			thread.start();
+			fastQfilterRecord.setIsPairEnd(isPairEnd);
 		}
 	}
+
 
 }
 

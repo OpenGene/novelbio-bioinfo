@@ -79,8 +79,7 @@ public class NCBI {
 9	1246502	VALIDATED	-	-	NP_047187.1	10954458	NC_001911.1	10954454	3040	4590	+	-<br>
 9	1246503	-	-	-	AAD12601.1	3282741	AF041837.1	3282736	-	-	?	-
  */
-class ImpGen2Acc extends ImportPerLine
- {
+class ImpGen2Acc extends ImportPerLine {
 	/**
 	 * 将gene2accion和gene2refseq.gz这两个文件导入数据库，仅导入指定的物种
 	 * 文件格式如下<br>

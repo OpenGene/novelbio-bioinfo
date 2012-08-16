@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.mapping;
+package com.novelbio.analysis.seq.sam;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;

@@ -16,9 +16,9 @@ public class ImportDB {
 
 	public static void main(String[] args) {
 //		updateSoftInfo();
-		updateSpecies();
+//		updateSpecies();
 		
-//		updateNCBIID();
+		updateNCBIID();
 //		updateUniprotID();
 //		updateRiceID();//只导了前两个
 //		updateTAIR();
@@ -38,7 +38,7 @@ public class ImportDB {
 	 */
 	private static void updateNCBIID()
 	{
-		String taxIDFile = "/media/winE/Bioinformatics/UpDateDB/常见物种IDKEGGAll.txt";
+		String taxIDFile = "/media/winE/Bioinformatics/UpDateDB/常见物种IDKEGG.txt";
 		String NCBIDBPath = "/media/winE/Bioinformatics/DataBase/";
 		String GOPath = "/media/winE/Bioinformatics/DataBase/GO/";
 		String gene2Acc = NCBIDBPath + "gene2accession.gz";

@@ -1,4 +1,4 @@
-package com.novelbio.base.multithread.txtreadcopewrite;
+package com.novelbio.analysis.seq.fastq;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,16 +8,29 @@ import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.apache.log4j.Logger;
-
-import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.fastq.FastQRecordCope;
-import com.novelbio.analysis.seq.fastq.FastQfilterRecord;
+import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.multithread.txtreadcopewrite.MTRecordRead;
+import com.novelbio.base.multithread.txtreadcopewrite.MTRecoreReader;
 
-/** 多线程中一个线程读取文件 */
-public class MTOneThreadReadFile {
-
+/**
+ * FastQ的各个指标<br>
+ * Q10: 0.1 <br>
+ * Q13: 0.05 <br>
+ * Q20: 0.01 <br>
+ * Q30: 0.001 <br>
+ * 2010年 Illumina HiSeq2000测序仪，双端50bp Q30>90% 双端100bp Q30>85%
+ * 
+ * @author zong0jie
+ * 
+ */
+class FastQReader extends MTRecoreReader<FastQRecord, FastqRecordInfoRead> {
+	private static Logger logger = Logger.getLogger(FastQReader.class);
+	public static int FASTQ_SANGER_OFFSET = 33;
+	public static int FASTQ_ILLUMINA_OFFSET = 64;
+	
+	private int offset = 0;
 	
 	String seqFile = "";
 	long readsNum = 0;
@@ -26,45 +39,53 @@ public class MTOneThreadReadFile {
 	protected String compressInType = TxtReadandWrite.TXT;
 	
 	/** 另一端的读取文件，双端读取的时候才有用，两端是对应的读 */
-	FastQRead fastQReadMate;
-	int maxNumReadInLs = 5000;
-	ArrayBlockingQueue<FastQRecord[]> lsFastQRecords = new ArrayBlockingQueue<FastQRecord[]>(maxNumReadInLs);
+	FastQReader fastQReadMate;
 	
-	/** 在每个filterReads中都设定本读取类 */
-	public void setLsFilterReads(ArrayList<? extends MTmulitCopeInfo<?>> lsCopeInfo) {
-		for (MTmulitCopeInfo<?> copeInfo : lsCopeInfo) {
-			copeInfo.setReadInfo(this);
-			copeInfo.setLsFastQRecords(lsFastQRecords);
+	int readsLenAvg = 0;
+	
+	/** 标准文件名的话，自动判断是否为gz压缩 */
+	public void setFastqFile(String seqFile) {
+		String houzhui = FileOperate.getFileNameSep(seqFile)[1];
+		if (houzhui.equals("gz")) {
+			setCompressType(TxtReadandWrite.GZIP);
 		}
+		else {
+			setCompressType(TxtReadandWrite.TXT);
+		}
+		this.seqFile = seqFile;
+		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
 	}
-	/** 在每个filterReads中都设定本读取类 */
-	public void addFilterReads(FastQfilterRecord filterRecords) {
-		filterRecords.setFastQRead(this);
-		filterRecords.setLsFastQRecords(lsFastQRecords);
+	/** 不设定就会自动判定 */
+	public void setOffset(int offset) {
+		this.offset = offset;
 	}
-	/** 设定另一个FastqRead，也就是双端的另一端 */
-	protected void setFastQReadMate(FastQRead fastQReadMate) {
-		this.fastQReadMate = fastQReadMate;
-	}
-	
-	public Iterable<FastQRecord> readlines() {
-		return readlines(0);
+	public int getOffset() {
+		setFastQFormatLen();
+		return offset;
 	}
 	/**
-	 * 读取前几行，不影响{@link #readlines()}
-	 * @param num
-	 * @return
+	 * 设定文件压缩格式
+	 * 从TxtReadandWrite.TXT来
+	 * @param cmpInType 读取的压缩格式 null或""表示不变
+	 * @param cmpOutType 写入的压缩格式 null或""表示不变
 	 */
-	public ArrayList<FastQRecord> readHeadLines(int num) {
-		ArrayList<FastQRecord> lsResult = new ArrayList<FastQRecord>();
-		int i = 0;
-		for (FastQRecord fastQRecord : readlines()) {
-			if (i >= num) {
-				break;
-			}
-			lsResult.add(fastQRecord);
+	public void setCompressType(String cmpInType) {
+		if (cmpInType != null && !cmpInType.equals("")) {
+			this.compressInType = cmpInType;
 		}
-		return lsResult;
+	}
+	/** 输入的压缩格式 */
+	public String getCompressInType() {
+		return compressInType;
+	}
+	/** 返回文件名 */
+	public String getFileName() {
+		return seqFile;
+	}
+	
+	/** 设定另一个FastqRead，也就是双端的另一端 */
+	protected void setFastQReadMate(FastQReader fastQReadMate) {
+		this.fastQReadMate = fastQReadMate;
 	}
 	/**
 	 * 从第几行开始读，是实际行
@@ -94,8 +115,7 @@ public class MTOneThreadReadFile {
 	 * @throws IOException
 	 */
 	private Iterable<FastQRecord> readPerlines() throws Exception {
-		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
-		 final BufferedReader bufread =  txtSeqFile.readfile(); 
+		final BufferedReader bufread =  txtSeqFile.readfile(); 
 		return new Iterable<FastQRecord>() {
 			public Iterator<FastQRecord> iterator() {
 				return new Iterator<FastQRecord>() {
@@ -149,16 +169,13 @@ public class MTOneThreadReadFile {
 		readsNum = 0;
 		for (FastQRecord fastQRecord : readlines()) {
 			readsNum++;
-			suspendCheck();
+			wait_To_Cope_AbsQueue();
 			if (flagStop) {
 				break;
 			}
-			while (lsFastQRecords.size() == maxNumReadInLs) {
-				try { Thread.sleep(50); } catch (InterruptedException e) { }
-			}
-			FastQRecord[] fastQRecords = new FastQRecord[]{fastQRecord};
-			setRunInfo(new FastqRecordInfoRead(readsNum, fastQRecords));
-			lsFastQRecords.add(fastQRecords);
+			FastqRecordInfoRead fastqRecordInfoRead = new FastqRecordInfoRead(readsNum, new FastQRecord[]{fastQRecord});
+			setRunInfo(fastqRecordInfoRead);
+			absQueue.add(fastqRecordInfoRead);
 		}
 	}
 	private void readPE() {
@@ -167,16 +184,13 @@ public class MTOneThreadReadFile {
 		for (FastQRecord fastQRecord : readlines()) {
 			FastQRecord fastQRecord2 = itMateFastqRecord.next();
 			readsNum++;
-			suspendCheck();
+			wait_To_Cope_AbsQueue();
 			if (flagStop) {
 				break;
 			}
-			while (lsFastQRecords.size() == maxNumReadInLs) {
-				try { Thread.sleep(50); } catch (InterruptedException e) { }
-			}
-			FastQRecord[] fastQRecords = new FastQRecord[]{fastQRecord, fastQRecord2};
-			setRunInfo(new FastqRecordInfoRead(readsNum, fastQRecords));
-			lsFastQRecords.add(fastQRecords);
+			FastqRecordInfoRead fastqRecordInfoRead = new FastqRecordInfoRead(readsNum, new FastQRecord[]{fastQRecord, fastQRecord2});
+			setRunInfo(fastqRecordInfoRead);
+			absQueue.add(fastqRecordInfoRead);
 		}
 	}
 	/**
@@ -283,5 +297,13 @@ public class MTOneThreadReadFile {
 	public void close() {
 		txtSeqFile.close();
 	}
+}
 
+class FastqRecordInfoRead implements MTRecordRead{
+	long readsNum = 0;
+	FastQRecord[] fastQRecord;
+	public FastqRecordInfoRead(long readsNum, FastQRecord[] fastQRecord) {
+		this.readsNum = readsNum;
+		this.fastQRecord = fastQRecord;
+	}
 }

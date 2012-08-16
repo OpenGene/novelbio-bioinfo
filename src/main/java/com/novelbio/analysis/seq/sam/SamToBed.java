@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.mapping;
+package com.novelbio.analysis.seq.sam;
 
 import com.novelbio.base.RunProcess;
 

@@ -4,7 +4,7 @@ import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.chipseq.pipeline.Pipline;
 import com.novelbio.analysis.seq.mapping.MapBwa;
-import com.novelbio.analysis.seq.mapping.SamFile;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.NovelBioConst;

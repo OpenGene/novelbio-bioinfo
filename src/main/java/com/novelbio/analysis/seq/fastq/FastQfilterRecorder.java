@@ -2,8 +2,11 @@ package com.novelbio.analysis.seq.fastq;
 
 import java.util.HashMap;
 
+import com.novelbio.base.multithread.txtreadcopewrite.MTRecordCope;
+import com.novelbio.base.multithread.txtreadcopewrite.MTrecordCoper;
+
 /** 实际上是过滤的类，不过可以用其来设定过滤的参数 */
-public class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
+public class FastQfilterRecorder extends MTrecordCoper<FastqRecordInfoFilter> {
 	int phredOffset;
 	int quality = FastQ.QUALITY_MIDIAN;
 	int readsLenMin;
@@ -25,7 +28,10 @@ public class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 	int allReadsNum, filteredReadsNum;
 	/** fastQ里面asc||码的指标与个数 */
 	HashMap<Integer, Integer> mapFastQFilter = new HashMap<Integer, Integer>();
+	//主要是看读取是否完毕
+	boolean pairEnd = false;
 	
+
 	/**
 	 * 设定全局过滤指标
 	 * 
@@ -59,6 +65,7 @@ public class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 			mapFastQFilter.put(20, 10);
 		}
 	}
+	///////////////////////////////////////////  参数设置  ///////////////////////////////////////////////////////////////////////
 	/** 序列最短多少 */
 	public void setFilterParamReadsLenMin(int readsLenMin) {
 		this.readsLenMin = readsLenMin;
@@ -111,7 +118,7 @@ public class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 	}
 
 	/** 将一个fastqFilterRecord的参数导入本对象 */
-	protected void setParam(FastQfilterRecord fastQfilterRecordParam) {
+	protected void setParam(FastQfilterRecorder fastQfilterRecordParam) {
 		readsLenMin = fastQfilterRecordParam.readsLenMin;
 		quality = fastQfilterRecordParam.quality;
 		adaptorLeft = fastQfilterRecordParam.adaptorLeft;
@@ -126,6 +133,10 @@ public class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 		trimPolyT_left = fastQfilterRecordParam.trimPolyT_left;
 		adaptorLowercase = fastQfilterRecordParam.adaptorLowercase;
 	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	protected void setIsPairEnd(boolean isPairEnd) {
+		this.pairEnd = isPairEnd;
+	}
 	protected void setPhredOffset(int phredOffset) {
 		this.phredOffset = phredOffset;
 	}
@@ -136,12 +147,35 @@ public class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 		return filteredReadsNum;
 	}
 	@Override
-	protected void copeInfo() {
+	protected void copeBeforeRun() {
 		if (adaptorScanLeftStart)
 			mapNumLeft = 1;
 		if (adaptorScanRightStart)
 			mapNumRight = 1;
 		setQualityFilter(quality);
+	}
+
+	/** 处理序列 */
+	protected void copeLsReads() throws InterruptedException {
+		while (true) {
+			if (isReadingFinished()) {
+				break;
+			}
+			if (flagStop) {
+				break;
+			}
+			suspendCheck();
+			FastqRecordInfoRead fastQrecordInfo = (FastqRecordInfoRead) absQueue.poll();
+			if (fastQrecordInfo == null) {
+				continue;
+			}
+			if (!pairEnd) {
+				copeFastQRecordSE(fastQrecordInfo.fastQRecord[0]);
+			}
+			else {
+				copeFastQRecordPE(fastQrecordInfo.fastQRecord[0], fastQrecordInfo.fastQRecord[1]);
+			}
+		}
 	}
 	
 	protected void copeFastQRecordSE(FastQRecord fastQRecord) {
@@ -156,7 +190,8 @@ public class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 		FastqRecordInfoFilter fastqRecordInfo = new FastqRecordInfoFilter(allReadsNum, fastQRecord);
 		setRunInfo(fastqRecordInfo);
 	}
-		
+
+	
 	/** 没有通过过滤就返回null */
 	private boolean filterFastQRecordSE(FastQRecord fastQRecord, int mapNumLeft, int mapNumRight) {
 		fastQRecord.setFastqOffset(phredOffset);
@@ -181,7 +216,7 @@ public class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 		if (!fastQRecord.QC()) return false;
 		return true;
 	}
-	@Override
+
 	protected void copeFastQRecordPE(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
 		allReadsNum ++;
 		
@@ -228,7 +263,7 @@ public class FastQfilterRecord extends FastQRecordCope<FastqRecordInfoFilter> {
 	}
 	
 }
-class FastqRecordInfoFilter {
+class FastqRecordInfoFilter implements MTRecordCope {
 	long readsNum = 0;
 	FastQRecord fastQRecord1;
 	FastQRecord fastQRecord2;

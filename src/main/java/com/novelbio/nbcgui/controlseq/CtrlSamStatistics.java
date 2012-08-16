@@ -1,6 +1,6 @@
 package com.novelbio.nbcgui.controlseq;
 
-import com.novelbio.analysis.seq.mapping.SamFile;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 

@@ -10,10 +10,10 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.fastq.FastQfilterRecord;
+import com.novelbio.analysis.seq.fastq.FastQfilterRecorder;
 import com.novelbio.analysis.seq.mapping.MapBwa;
-import com.novelbio.analysis.seq.mapping.SamFile;
-import com.novelbio.analysis.seq.mapping.SamFileStatistics;
+import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -149,40 +149,6 @@ public class CtrlFastQMapping {
 		}
 		txtReport.close();
 	}
-	
-	private void mapping() {
-		softWareInfo.setName(SoftWare.bwa);
-		for (Entry<String, FastQ[]> entry : mapCondition2CombFastQLRFiltered.entrySet()) {
-			String prefix = entry.getKey();
-			FastQ[] fastQs = entry.getValue();
-			MapBwa mapBwa = new MapBwa();
-			
-			if (chrIndexFile != null)
-				mapBwa.setExePath(softWareInfo.getExePath(), chrIndexFile);
-			else
-				mapBwa.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bwa));
-
-			mapBwa.setFqFile(fastQs[0], fastQs[1]);
-			mapBwa.setOutFileName(outFilePrefix + prefix);
-			mapBwa.setGapLength(gapLen);
-			mapBwa.setMismatch(mismatch);
-			mapBwa.setSampleGroup(prefix, null, null, null);
-			if (libraryType == LIBRARY_MATE_PAIR) {
-				mapBwa.setInsertSize(200, 4000);
-			}
-			else if (libraryType == LIBRARY_PAIR_END) {
-				mapBwa.setInsertSize(150, 500);
-			}
-			mapBwa.setThreadNum(thread);
-			SamFile samFile = mapBwa.mapReads();
-			SamFileStatistics samFileStatistics = samFile.getStatistics();
-			
-			txtReport.writefileln(prefix);
-			txtReport.ExcelWrite(samFileStatistics.getMappingInfo());
-			txtReport.writefile("", true);
-		}
-	}
-	
 	/** 将输入文件整理成
 	 * map Prefix--leftList  rightList
 	 * 的形式
@@ -317,7 +283,7 @@ public class CtrlFastQMapping {
 		mapCondition2CombFastQLRFiltered.put(condition, new FastQ[]{fastQL, fastQR});
 	}
 	private void setFastQParameter(FastQ fastQ, String compressType) {
-		FastQfilterRecord fastQfilterRecord = new FastQfilterRecord();
+		FastQfilterRecorder fastQfilterRecord = new FastQfilterRecorder();
 		fastQfilterRecord.setFilterParamAdaptorLeft(adaptorLeft.trim());
 		fastQfilterRecord.setFilterParamAdaptorRight(adaptorRight.trim());
 		fastQfilterRecord.setFilterParamAdaptorLowercase(adaptorLowercase);
@@ -328,6 +294,38 @@ public class CtrlFastQMapping {
 		fastQ.setCompressType(compressType, TxtReadandWrite.TXT);
 	}
 	
+	private void mapping() {
+		softWareInfo.setName(SoftWare.bwa);
+		for (Entry<String, FastQ[]> entry : mapCondition2CombFastQLRFiltered.entrySet()) {
+			String prefix = entry.getKey();
+			FastQ[] fastQs = entry.getValue();
+			MapBwa mapBwa = new MapBwa();
+			
+			if (chrIndexFile != null)
+				mapBwa.setExePath(softWareInfo.getExePath(), chrIndexFile);
+			else
+				mapBwa.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bwa));
+
+			mapBwa.setFqFile(fastQs[0], fastQs[1]);
+			mapBwa.setOutFileName(outFilePrefix + prefix);
+			mapBwa.setGapLength(gapLen);
+			mapBwa.setMismatch(mismatch);
+			mapBwa.setSampleGroup(prefix, null, null, null);
+			if (libraryType == LIBRARY_MATE_PAIR) {
+				mapBwa.setInsertSize(200, 4000);
+			}
+			else if (libraryType == LIBRARY_PAIR_END) {
+				mapBwa.setInsertSize(150, 500);
+			}
+			mapBwa.setThreadNum(thread);
+			SamFile samFile = mapBwa.mapReads();
+			SamFileStatistics samFileStatistics = samFile.getStatistics();
+			
+			txtReport.writefileln(prefix);
+			txtReport.ExcelWrite(samFileStatistics.getMappingInfo());
+			txtReport.writefile("", true);
+		}
+	}
 	public static HashMap<String, Integer> getMapLibrary() {
 		HashMap<String, Integer> mapReadsQualtiy = new LinkedHashMap<String, Integer>();
 		mapReadsQualtiy.put("SingleEnd", LIBRARY_SINGLE_END);

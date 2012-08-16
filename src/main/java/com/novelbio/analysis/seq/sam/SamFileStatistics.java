@@ -1,10 +1,12 @@
-package com.novelbio.analysis.seq.mapping;
+package com.novelbio.analysis.seq.sam;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+import com.novelbio.analysis.seq.mapping.MappingReadsType;
 
 /** 不要自己建立 */
 public class SamFileStatistics {
