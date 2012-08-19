@@ -6,7 +6,7 @@ import com.novelbio.base.multithread.txtreadcopewrite.MTRecordCope;
 import com.novelbio.base.multithread.txtreadcopewrite.MTrecordCoper;
 
 /** 实际上是过滤的类，不过可以用其来设定过滤的参数 */
-public class FastQfilterRecorder extends MTrecordCoper<FastqRecordInfoFilter> {
+public class FastQRecordFilter extends MTrecordCoper<FastqRecordInfoFilter> {
 	int phredOffset;
 	int quality = FastQ.QUALITY_MIDIAN;
 	int readsLenMin;
@@ -31,7 +31,6 @@ public class FastQfilterRecorder extends MTrecordCoper<FastqRecordInfoFilter> {
 	//主要是看读取是否完毕
 	boolean pairEnd = false;
 	
-
 	/**
 	 * 设定全局过滤指标
 	 * 
@@ -118,7 +117,7 @@ public class FastQfilterRecorder extends MTrecordCoper<FastqRecordInfoFilter> {
 	}
 
 	/** 将一个fastqFilterRecord的参数导入本对象 */
-	protected void setParam(FastQfilterRecorder fastQfilterRecordParam) {
+	protected void setParam(FastQRecordFilter fastQfilterRecordParam) {
 		readsLenMin = fastQfilterRecordParam.readsLenMin;
 		quality = fastQfilterRecordParam.quality;
 		adaptorLeft = fastQfilterRecordParam.adaptorLeft;

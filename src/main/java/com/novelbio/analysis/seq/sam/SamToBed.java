@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.sam;
 
-import com.novelbio.base.RunProcess;
+import com.novelbio.base.multithread.RunProcess;
 
 public class SamToBed extends RunProcess<Long>{
 	SamFile samFile;

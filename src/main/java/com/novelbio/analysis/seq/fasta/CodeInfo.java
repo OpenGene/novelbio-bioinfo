@@ -117,6 +117,7 @@ class CodeInfo {
 		
 		compmap.put(Character.valueOf('R'), Character.valueOf('Y'));
 		compmap.put(Character.valueOf('r'), Character.valueOf('y'));
+		
 		return compmap;
 	}
 	static HashMap<String, String> getHashCode3() {
@@ -299,17 +300,13 @@ class CodeInfo {
 		Character base;
 		for (int i = length - 1; i >= 0; i--) {
 			base = compmap.get(sequence.charAt(i));
-			if (base != null) {
-				recomseq.append(compmap.get(sequence.charAt(i)));
-			} else {
+			if (base == null) {
 				result[1] = i + "";
-				break;
+				base = sequence.charAt(i);
 			}
+			recomseq.append(compmap.get(sequence.charAt(i)));
 		}
-		//出错了result[1] 才会有记录
-		if (result[1] == null) {
-			result[0] = recomseq.toString();
-		}
+		result[0] = recomseq.toString();
 		return result;
 	}
 	
@@ -319,5 +316,121 @@ class CodeInfo {
 	public static String reservecom(String sequence) {
 		String[] revSeq = reservecomInfo(sequence);
 		return revSeq[0];
+	}
+	
+	/**
+	 * 指定三联密码子，将其转换为蛋白编码
+	 * @param DNAcode
+	 * @param AA1 是否转化为单字母AA，false转化为3字母AA
+	 * @return
+	 * null 表示没有找到，说明输入的序列有误
+	 */
+	 public static String convertDNACode2AA(String DNAcode, boolean AA1) {
+		 DNAcode = DNAcode.trim().toUpperCase();
+		 if (DNAcode.length() != 3) {
+			 return null;
+		 }
+		 String aa;
+		 if (AA1) {
+			 aa = CodeInfo.getHashCode1().get(DNAcode);
+			 if (aa == null) {
+				 aa = "X";
+			 }
+		 }
+		 else {
+			 aa = CodeInfo.getHashCode3().get(DNAcode);
+			 if (aa == null) {
+				 aa = "Xxx";
+			 }
+		 }
+		 return aa;
+	}
+	 /**
+	  * 输入的是氨基酸，无所谓三字符还是单字符
+	  * 比较两个氨基酸的化学性质，返回差异点，返回最大差异
+	  * 譬如如果极性不同就返回极性
+	  * 格式 polar --> nonpolar等
+	  * 都一样则返回"";
+	  */
+	public static String cmpAAquality(String AA1, String AA2) {
+		AA1 = getAAformate(AA1);
+		AA2 = getAAformate(AA2);
+		return compareAAquality(AA1, AA2);
+	}
+
+	/**
+	 * 获得氨基酸的特性，极性，电荷等，按照genedoc的分类标准
+	 * @return string[3]: 0：极性--带电荷--负电 1：
+	 */
+	public static String[] getAAquality(String AA) {
+		AA = getAAformate(AA);
+		return getHashAAquality().get(AA);
+	}
+	/**
+	 * 
+	 * 输入的是DNA三联密码字
+	 * 比较两个氨基酸的化学性质，返回差异点，返回最大差异
+	 * 譬如如果极性不同就返回极性
+	 * 格式 polar --> nonpolar等
+	 * 都一样则返回"";
+	 * @param DNAcode1 第一个DNA编码
+	 * @param DNAcode2 第二个DNA编码
+	 * @return
+	 */
+	public static String cmpAAqualityDNA(String DNAcode1, String DNAcode2) {
+		String AA1 = CodeInfo.convertDNACode2AA(DNAcode1, true);
+		String AA2 = CodeInfo.convertDNACode2AA(DNAcode2, true);
+		return compareAAquality(AA1, AA2);
+	}
+	/**
+	 * 将氨基酸在单字母和三字母之间转换
+	 */
+	public static String convertAA(String AA) {
+		AA = getAAformate(AA);
+		return setMapAA1toAA3().get(AA);
+	}
+	/**
+	 * 输入格式不标准的AA，将其改成标准格式AA
+	 * @param AA
+	 * @return
+	 */
+	 private static String getAAformate(String AA) {
+		 if (AA.trim().equals(CodeInfo.AA1_STOP) || AA.trim().equals(CodeInfo.AA3_STOP)) {
+			 return AA.trim();
+		 }
+		 AA = AA.trim();
+		 if (AA.length() == 1) {
+			 return AA.toUpperCase();
+		 }
+		 else if (AA.length() == 3) {
+			 AA = AA.toLowerCase();
+			 char[] aa = AA.toCharArray();
+			 aa[0] = (char)((int)aa[0] - 32);
+			 return String.valueOf(aa);
+		 }
+		 else {
+			 return null;
+		 }
+	 }
+	 
+	/**
+	 * 输入的是氨基酸，必须是标准格式 比较两个氨基酸的化学性质，返回差异点，返回最大差异 譬如如果极性不同就返回极性<br>
+	 * 格式 polar --> nonpolar等 都一样则返回"";
+	 */
+	private static String compareAAquality(String AA1, String AA2) {
+		if (AA1.equals(AA2)) {
+			return "same Amio Acid";
+		}
+		String[] aaInfo1 = CodeInfo.getHashAAquality().get(AA1);
+		String[] aaInfo2 = CodeInfo.getHashAAquality().get(AA2);
+		if (aaInfo1 == null || aaInfo2 == null) {
+			return "";
+		}
+		for (int i = 0; i < aaInfo1.length; i++) {
+			if (!aaInfo1[i].equals(aaInfo2[i])) {
+				return aaInfo1[i] + " --> " + aaInfo2[i];
+			}
+		}
+		return "same chemical property";
 	}
 }

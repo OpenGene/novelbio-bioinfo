@@ -104,6 +104,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return flagTypeGene;
 	}
 	public int getTaxID() {
+		if (gffDetailGeneParent == null) {
+			return 0;
+		}
 		return gffDetailGeneParent.getTaxID();
 	}
 	public void setGffDetailGeneParent(GffDetailGene gffDetailGeneParent) {
@@ -176,6 +179,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return true;
 	}
 	public String getChrID() {
+		if (gffDetailGeneParent == null) {
+			return "";
+		}
 		return gffDetailGeneParent.getParentName();
 	}
 	/**
@@ -242,6 +248,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 	}
 	/**
+	 * <b>必须先设定exon</b>
 	 * 如果是非编码RNA，则将atg和uag设置为最后一位
 	 */
 	public void setATGUAGncRNA() {

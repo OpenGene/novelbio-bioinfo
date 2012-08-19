@@ -37,6 +37,19 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	/** 外显子之间用什么来分割，默认为"" */
 	String sep = "";
 	
+	/**
+	 * @param chrFile
+	 * @param regx 序列名的正则表达式，null和"   "都不设定
+	 * @param CaseChange 是否将序列名改为小写
+	 * @param TOLOWCASE 是否将序列结果改为小写 True：小写，False：大写，null不变
+	 */
+	public SeqHashAbs(String chrFile, String regx,boolean CaseChange) {
+		this.chrFile = chrFile;
+		if (regx != null && !regx.trim().equals("")) {
+			this.regx = regx;
+		}
+		this.CaseChange = CaseChange;
+	}
 	public String getChrFile() {
 		return chrFile;
 	}
@@ -56,18 +69,12 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	public void setSep(String sep) {
 		this.sep = sep;
 	}
-	/**
-	 * @param chrFile
-	 * @param regx 序列名的正则表达式，null和"   "都不设定
-	 * @param CaseChange 是否将序列名改为小写
-	 * @param TOLOWCASE 是否将序列结果改为小写 True：小写，False：大写，null不变
-	 */
-	public SeqHashAbs(String chrFile, String regx,boolean CaseChange) {
-		this.chrFile = chrFile;
-		if (regx != null && !regx.trim().equals("")) {
-			this.regx = regx;
+	/** 根据是否大小写进行改名 */
+	protected String getChrIDisLowCase(String chrID) {
+		if (CaseChange) {
+			return chrID.toLowerCase();
 		}
-		this.CaseChange = CaseChange;
+		return chrID;
 	}
 	/**
 	 * 获得所有序列的名字

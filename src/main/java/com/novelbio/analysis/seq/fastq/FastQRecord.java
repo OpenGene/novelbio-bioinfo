@@ -69,7 +69,7 @@ public class FastQRecord implements Cloneable {
 		return seqQuality;
 	}
 	public int getLength() {
-		return seqFasta.getLength();
+		return seqFasta.Length();
 	}
 	/**
 	 * 设定偏移
@@ -100,10 +100,10 @@ public class FastQRecord implements Cloneable {
 		if ((seqAdaptorL == null || seqAdaptorL.equals("")) && (seqAdaptorR == null || seqAdaptorR.equals(""))) {
 			return true;
 		}
-		int leftNum = 0, rightNum = seqFasta.getLength();
+		int leftNum = 0, rightNum = seqFasta.Length();
 		if (seqAdaptorL != null && !seqAdaptorL.equals("")) {
 			if (mapNumLeft >= 0)
-				leftNum = trimAdaptorL(seqFasta.toString(), seqAdaptorL, seqFasta.getLength() - mapNumLeft, numMM,conNum, perMm);
+				leftNum = trimAdaptorL(seqFasta.toString(), seqAdaptorL, seqFasta.Length() - mapNumLeft, numMM,conNum, perMm);
 			else
 				leftNum = trimAdaptorL(seqFasta.toString(), seqAdaptorL, seqAdaptorL.length(), numMM,conNum, perMm);
 		}
@@ -112,7 +112,7 @@ public class FastQRecord implements Cloneable {
 			if (mapNumRight >= 0)
 				rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, mapNumRight, numMM,conNum, perMm);
 			else
-				rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, seqFasta.getLength() - seqAdaptorR.length(), numMM,conNum, perMm);
+				rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, seqFasta.Length() - seqAdaptorR.length(), numMM,conNum, perMm);
 		}
 		return trimSeq(leftNum, rightNum);
 	}
@@ -175,7 +175,7 @@ public class FastQRecord implements Cloneable {
 	 */
 	public boolean trimPolyTL( int mismatch) {
 		int num = trimPolyT(seqFasta.toString(), mismatch,1);
-		return trimSeq(num, seqFasta.getLength());
+		return trimSeq(num, seqFasta.Length());
 	}
 	/**
 	 * 注意两个以下的adaptor无法过滤
@@ -191,7 +191,7 @@ public class FastQRecord implements Cloneable {
 	 * 也就是该adaptor前面有多少个碱基，可以直接用substring(0,return)来截取
 	 * -1说明没有adaptor
 	 */
-	private int trimAdaptorR(String seqIn, String seqAdaptor, int mapNum, int numMM, int conNum, float perMm) {
+	public static int trimAdaptorR(String seqIn, String seqAdaptor, int mapNum, int numMM, int conNum, float perMm) {
 		if (seqAdaptor.equals("")) {
 			return seqIn.length();
 		}
@@ -222,9 +222,8 @@ public class FastQRecord implements Cloneable {
 						break;
 				}
 			}
-			int lenAdaptor = pm + mm;
-			if (mm <= numMM && ((float)mm/lenAdaptor) <= perMm && lenAdaptor > 4) {
-				return i;
+			if (isMatch(pm, mm, seqAdaptor.length(), numMM, perMm)) {
+				return i+1;
 			}
 		}
 		int num = blastSeq(false, seqIn, seqAdaptor, numMM, (int) perMm);
@@ -248,11 +247,14 @@ public class FastQRecord implements Cloneable {
 	 * 也就是该adaptor前面有多少个碱基，可以直接用substring(return)来截取
 	 * -1说明没有adaptor
 	 */
-	private int trimAdaptorL(String seqIn, String seqAdaptor, int mapNum, int conNum, int numMM, float perMm) {
+	public static int trimAdaptorL(String seqIn, String seqAdaptor, int mapNum, int conNum, int numMM, float perMm) {
 		if (seqAdaptor.equals("")) {
 			return 0;
 		}
 		mapNum--;
+		if (mapNum >= seqIn.length() || mapNum < 0) {
+			mapNum = seqIn.length() - 1;
+		}
 		seqIn = seqIn.toUpperCase();
 		seqAdaptor = seqAdaptor.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); //int lenIn = seqIn.length();
@@ -275,8 +277,7 @@ public class FastQRecord implements Cloneable {
 						break;
 				}
 			}
-			int lenAdaptor = pm + mm;
-			if (mm <= numMM && ((float)(mm/lenAdaptor)) <= perMm/100 && lenAdaptor > 4) {
+			if (isMatch(pm, mm, seqAdaptor.length(), numMM, perMm)) {
 				return i+1;
 			}
 		}
@@ -287,11 +288,20 @@ public class FastQRecord implements Cloneable {
 		return 0;
 	}
 	
-	private int blastSeq(boolean leftAdaptor, String seqSeq, String seqAdaptor, int numMM, float perMm) {
+	private static boolean isMatch(int pm, int mm, int seqAdaptorLen,int maxMMnum, float perMm) {
+		int lenAdaptor = pm + mm;
+		if (pm >= ((double)seqAdaptorLen * (1 - perMm/100)) 
+				&&  mm <= maxMMnum && ((float)mm/seqAdaptorLen) <= perMm/100 && lenAdaptor > 4) 
+		{
+			return true;
+		}
+		return false;
+	}
+	private static int blastSeq(boolean leftAdaptor, String seqSeq, String seqAdaptor, int numMM, float perMm) {
 		BlastSeqFasta blastSeqFasta = new BlastSeqFasta(seqSeq, seqAdaptor);
 		blastSeqFasta.setSpaceScore(-2);
 		blastSeqFasta.blast();
-		if (blastSeqFasta.getGapNumQuery() + blastSeqFasta.getGapNumSubject() > numMM
+		if ((double)blastSeqFasta.getMatchNum()/seqAdaptor.length() < (1-((double)perMm/100)) || blastSeqFasta.getGapNumQuery() + blastSeqFasta.getGapNumSubject() > numMM
 			|| blastSeqFasta.getMisMathchNum() > numMM 
 			|| (float)(blastSeqFasta.getGapNumQuery() + blastSeqFasta.getGapNumSubject() + blastSeqFasta.getMisMathchNum())/seqAdaptor.length() > perMm/100
 				) 
@@ -302,7 +312,7 @@ public class FastQRecord implements Cloneable {
 			return blastSeqFasta.getEndQuery();
 		}
 		else {
-			return blastSeqFasta.getStartQuery();
+			return blastSeqFasta.getStartQuery() + 1;
 		}
 	}
 	/**
@@ -443,8 +453,8 @@ public class FastQRecord implements Cloneable {
 	 * @return
 	 */
 	public String toString() {
-		if (seqQuality.length() != seqFasta.getLength()) {
-			char[] quality = new char[seqFasta.getLength()];
+		if (seqQuality.length() != seqFasta.Length()) {
+			char[] quality = new char[seqFasta.Length()];
 			if (fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET) {
 				for (int i = 0; i < quality.length; i++) {
 					quality[i] = 'f';

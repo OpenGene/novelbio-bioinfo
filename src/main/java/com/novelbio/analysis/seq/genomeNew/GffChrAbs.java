@@ -17,12 +17,12 @@ import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsHanyanChrom;
-import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.species.Species;
 /**

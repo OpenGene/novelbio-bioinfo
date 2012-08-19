@@ -19,13 +19,12 @@ public class ImportDB {
 //		updateSpecies();
 		
 		updateNCBIID();
-//		updateUniprotID();
+		updateUniprotID();
 //		updateRiceID();//只导了前两个
 //		updateTAIR();
 //		 updateZB();
 //		updateEnsembl();
 //		updateYeast();
-
 		
 //		updateMicroarray();
 //		updateSoyBean();
@@ -36,8 +35,7 @@ public class ImportDB {
 	/**
 	 * 升级从NCBI下载的信息
 	 */
-	private static void updateNCBIID()
-	{
+	private static void updateNCBIID() {
 		String taxIDFile = "/media/winE/Bioinformatics/UpDateDB/常见物种IDKEGG.txt";
 		String NCBIDBPath = "/media/winE/Bioinformatics/DataBase/";
 		String GOPath = "/media/winE/Bioinformatics/DataBase/GO/";
@@ -64,7 +62,7 @@ public class ImportDB {
 	 * 升级从UniProt下载的信息
 	 */
 	private static void updateUniprotID() {
-		String taxIDFile = "/media/winE/Bioinformatics/UpDateDB/常见物种IDKEGGAll.txt";
+		String taxIDFile = "/media/winE/Bioinformatics/UpDateDB/常见物种IDKEGG.txt";
 		String NCBIDBPath = "/media/winE/Bioinformatics/DataBase/";
 		String outUniIDFile = NCBIDBPath + "outIdmap.txt";
 		String idmappingSelectedFile = NCBIDBPath + "idmapping_selected.tab_sub.gz";
@@ -75,12 +73,8 @@ public class ImportDB {
 		uniProt.setOutUniIDFile(outUniIDFile);
 		uniProt.setImpgene_associationgoa_uniprotFile(impgene_associationgoa_uniprotFile);
 		uniProt.update();
-		
-		
-		
 	}
-	private static void updateEnsembl()
-	{
+	private static void updateEnsembl() {
 //		String ensemblFileMouse = "/media/winE/Bioinformatics/DataBase/Mus_musculus.NCBIM37.65.gtf"; 
 //		String ucscGffFileMouse = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/refseqSortUsing.txt";
 //		int taxIDMouse = 10090;
@@ -103,11 +97,9 @@ public class ImportDB {
 		int taxIDpig = 9823;
 		ensembl.setEnsemblFile(ensemblFilePig, ncbiFilePig, taxIDpig);
 		ensembl.update();
-		
-		
 	}
-	private static void updateRiceID()
-	{
+	
+	private static void updateRiceID() {
 		String riceParentPath = "/media/winE/Bioinformatics/DataBase/Rice/";
 		String gffRapDB = riceParentPath + "RAP_genes.gff3";
 		String gffTIGR =  riceParentPath + "Tigr_all.gff3";

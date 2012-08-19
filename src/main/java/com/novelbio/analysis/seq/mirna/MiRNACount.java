@@ -11,9 +11,9 @@ import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
-import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListBin;
+import com.novelbio.base.multithread.RunProcess;
 
 /**
  * 计算每个miRNA的表达，无法获得总表达值，只能获得每个表达值

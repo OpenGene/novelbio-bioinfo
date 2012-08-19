@@ -8,14 +8,6 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
  * 按照evalue从小到大排序
  */
 public class BlastSeqFasta {
-	public static void main(String[] args) {
-		SeqFasta seqFasta = new SeqFasta("satdgsegestaa");
-		SeqFasta seqFasta2 = new SeqFasta("sefsefsfesatdgseesegestsefsef");
-		BlastSeqFasta blastSeqFasta = new BlastSeqFasta(seqFasta, seqFasta2);
-		blastSeqFasta.blast();
-		System.out.println(blastSeqFasta.alignmentQuery);
-		System.out.println(blastSeqFasta.alignmentSubject);
-	}
 	
 	SeqFasta seqFastaQuery;
 	SeqFasta seqFastaSubject;

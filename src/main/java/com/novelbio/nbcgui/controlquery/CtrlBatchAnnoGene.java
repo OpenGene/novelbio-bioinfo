@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
-import com.novelbio.base.RunGetInfo;
-import com.novelbio.base.RunProcess;
+import com.novelbio.base.multithread.RunGetInfo;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiAnnoGene;
 
@@ -65,18 +65,15 @@ public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 		guiAnnoBatch.getBtnRun().setEnabled(true);
 	}
 	@Override
-	public void threadSuspend() {
-		// TODO Auto-generated method stub
+	public void threadSuspended(RunProcess<AnnoQueryDisplayInfo> runProcess) {
 		guiAnnoBatch.getBtnRun().setEnabled(true);
 	}
 	@Override
-	public void threadResume() {
-		// TODO Auto-generated method stub
-		
+	public void threadResumed(RunProcess<AnnoQueryDisplayInfo> runProcess) {
+		guiAnnoBatch.getBtnRun().setEnabled(false);
 	}
 	@Override
-	public void threadStop() {
-		// TODO Auto-generated method stub
+	public void threadStop(RunProcess<AnnoQueryDisplayInfo> runProcess) {
 		guiAnnoBatch.getBtnRun().setEnabled(true);
 	}
 

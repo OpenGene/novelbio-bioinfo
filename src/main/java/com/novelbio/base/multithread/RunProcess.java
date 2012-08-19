@@ -1,4 +1,4 @@
-package com.novelbio.base;
+package com.novelbio.base.multithread;
 /**
  * <b>需要配合 RunGetInfo</b><br>
  * T: 本次running打算输出的中间信息
@@ -26,34 +26,35 @@ public abstract class RunProcess<T> implements Runnable {
 		this.suspendFlag = true;
 	}
 	/** 进程恢复 */
-	public synchronized void threadResume() {
-		synchronized (this) {
-			if (suspendFlag == false) {
-				return;
-			}
-			this.suspendFlag = false;
-			if (runGetInfo != null) {
-				runGetInfo.threadResume();
-			}
-			notify();
+	public void threadResume() {
+		if (suspendFlag == false) {
+			return;
 		}
+		this.suspendFlag = false;
+		if (runGetInfo != null) {
+			runGetInfo.threadResumed(this);
+		}
+		notify();
 	}
 	/** 终止线程，在循环中添加<br>
 	 * if (!flagRun)<br>
 	*			break; */
 	public void threadStop() {
-		synchronized (this) {
-			flagStop = true;
+		threadResume();
+		flagStop = true;		
+		if (runGetInfo != null) {
+			runGetInfo.threadStop(this);
 		}
 	}
 	/**
 	 * 放在循环中，检查是否终止线程
 	 */
 	protected void suspendCheck() {
-		synchronized (this) {
+		byte[] lock = new byte[0];
+		synchronized (lock) {
 			while (suspendFlag){
 				if (runGetInfo != null) {
-					runGetInfo.threadSuspend();
+					runGetInfo.threadSuspended(this);
 				}
 				try {wait();} catch (InterruptedException e) {}
 			}
@@ -74,10 +75,8 @@ public abstract class RunProcess<T> implements Runnable {
 	 * @param runInfo
 	 */
 	protected void setRunInfo(T runInfo) {
-		synchronized (this) {
-			if (runGetInfo != null) {
-				runGetInfo.setRunningInfo(runInfo);
-			}
+		if (runGetInfo != null) {
+			runGetInfo.setRunningInfo(runInfo);
 		}
 	}
 	public boolean isFinished() {

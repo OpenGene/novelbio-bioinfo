@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.fasta;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -92,7 +93,7 @@ public class SeqFasta implements Cloneable {
 	 * nr序列的长度
 	 * @return
 	 */
-	public int getLength() {
+	public int Length() {
 		if (SeqSequence == null) {
 			return 0;
 		}
@@ -115,25 +116,6 @@ public class SeqFasta implements Cloneable {
 		}
 		seqFasta.SeqSequence = SeqSequence.substring(start, end);
 		return seqFasta;
-	}
-	/**
-	 * 指定三联密码子，将其转换为蛋白编码
-	 * @param DNAcode
-	 * @param AA1 是否转化为单字母AA，false转化为3字母AA
-	 * @return
-	 * null 表示没有找到，说明输入的序列有误
-	 */
-	 public static String convertDNACode2AA(String DNAcode, boolean AA1) {
-		 DNAcode = DNAcode.trim().toUpperCase();
-		if (DNAcode.length() != 3) {
-			logger.error("DNA三联密码长度不对：" + DNAcode);
-		}
-		if (AA1) {
-			return CodeInfo.getHashCode1().get(DNAcode);
-		}
-		else {
-			return CodeInfo.getHashCode3().get(DNAcode);
-		}
 	}
 	/**
 	 * 输入序列坐标信息：序列名-序列起点和终点 返回序列
@@ -312,7 +294,7 @@ public class SeqFasta implements Cloneable {
 		StringBuilder resultAA = new StringBuilder();
 		for (int i = orf; i <= nrChar.length - 3; i = i+3) {
 			String tmp = String.valueOf(new char[]{nrChar[i],nrChar[i+1],nrChar[i+2]});
-			resultAA.append(convertDNACode2AA(tmp, AAnum));
+			resultAA.append(CodeInfo.convertDNACode2AA(tmp, AAnum));
 		}
 		return resultAA.toString();
 	}
@@ -331,8 +313,8 @@ public class SeqFasta implements Cloneable {
 	 */
 	public int getSeqType() {
 		int len = 2000;
-		if (len > getLength()) {
-			len = getLength() - 1;
+		if (len > Length()) {
+			len = Length() - 1;
 		}
 		char[] chr = SeqSequence.substring(0, len).toCharArray();
 		int num = 0;
@@ -351,7 +333,7 @@ public class SeqFasta implements Cloneable {
 			
 			return SEQ_DNA;
 		}
-		else if ((double)num/getLength() < 0.1) {
+		else if ((double)num/Length() < 0.1) {
 			return SEQ_UNKNOWN;
 		}
 		else {
@@ -428,30 +410,7 @@ public class SeqFasta implements Cloneable {
 		result = result + Math.max(chrSeq1.length, chrSeq2.length) - i;
 		return result;
 	}
-	/**
-	 * 输入格式不标准的AA，将其改成标准格式AA
-	 * @param AA
-	 * @return
-	 */
-	private static String getAAformate(String AA) {
-		if (AA.trim().equals(CodeInfo.AA1_STOP) || AA.trim().equals(CodeInfo.AA3_STOP)) {
-			return AA.trim();
-		}
-		AA = AA.trim();
-		if (AA.length() == 1) {
-			return AA.toUpperCase();
-		}
-		else if (AA.length() == 3) {
-			AA = AA.toLowerCase();
-			char[] aa = AA.toCharArray();
-			aa[0] = (char)((int)aa[0] - 32);
-			return String.valueOf(aa);
-		}
-		else {
-			logger.error("input error AA: "+AA);
-			return null;
-		}
-	}
+
 	/**
 	 * 获得氨基酸的特性，极性，电荷等，按照genedoc的分类标准
 	 * @return
@@ -459,18 +418,16 @@ public class SeqFasta implements Cloneable {
 	 * 1：
 	 */
 	public static String[] getAAquality(String AA) {
-		AA = getAAformate(AA);
-		return CodeInfo.getHashAAquality().get(AA);
+		return CodeInfo.getAAquality(AA);
 	}
 	/**
 	 * 将氨基酸在单字母和三字母之间转换
 	 */
 	public static String convertAA(String AA) {
-		AA = getAAformate(AA);
-		return CodeInfo.setMapAA1toAA3().get(AA);
+		return CodeInfo.convertAA(AA);
 	}
+	
 	/**
-	 * 
 	 * 输入的是DNA三联密码字
 	 * 比较两个氨基酸的化学性质，返回差异点，返回最大差异
 	 * 譬如如果极性不同就返回极性
@@ -481,9 +438,7 @@ public class SeqFasta implements Cloneable {
 	 * @return
 	 */
 	public static String cmpAAqualityDNA(String DNAcode1, String DNAcode2) {
-		String AA1 = convertDNACode2AA(DNAcode1, true);
-		String AA2 = convertDNACode2AA(DNAcode2, true);
-		return compareAAquality(AA1, AA2);
+		return CodeInfo.cmpAAqualityDNA(DNAcode1, DNAcode2);
 	}
 	
 	/**
@@ -494,31 +449,38 @@ public class SeqFasta implements Cloneable {
 	 * 都一样则返回"";
 	 */
 	public static String cmpAAquality(String AA1, String AA2) {
-		AA1 = getAAformate(AA1);
-		AA2 = getAAformate(AA2);
-		return compareAAquality(AA1, AA2);
+		return CodeInfo.cmpAAquality(AA1, AA2);
 	}
-	/**
-	 * 输入的是氨基酸，必须是标准格式
-	 * 比较两个氨基酸的化学性质，返回差异点，返回最大差异
-	 * 譬如如果极性不同就返回极性
-	 * 格式 polar --> nonpolar等
-	 * 都一样则返回"";
-	 */
-	private static String compareAAquality(String AA1, String AA2) {
-		if (AA1.equals(AA2)) {
-			return "same Amio Acid";
-		}
-		String[] aaInfo1 = CodeInfo.getHashAAquality().get(AA1);
-		String[] aaInfo2 = CodeInfo.getHashAAquality().get(AA2);
-		if (aaInfo1 == null || aaInfo2 ==null) {
-			return "";
-		}
-		for (int i = 0; i < aaInfo1.length; i++) {
-			if (!aaInfo1[i].equals(aaInfo2[i])) {
-				return aaInfo1[i] + " --> " + aaInfo2[i];
+	
+	/** 依次读取碱基 */
+	public Iterable<Character> readBase() {
+		final char[] seq = toString().toCharArray();
+		return new Iterable<Character>() {
+			public Iterator<Character> iterator() {
+				return new Iterator<Character>() {
+					int index = 0;
+					Character base = getBase();
+					public boolean hasNext() {
+						return base != null;
+					}
+					public Character next() {
+						Character retval = base;
+						base = getBase();
+						return retval;
+					}
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+					Character getBase() {
+						if (index >= seq.length) {
+							return null;
+						}
+						Character base = seq[index];
+						index++;
+						return base;
+					}
+				};
 			}
-		}
-		return "same chemical property";	
+		};
 	}
 }

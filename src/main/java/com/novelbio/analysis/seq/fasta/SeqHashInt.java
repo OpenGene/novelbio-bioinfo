@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.fasta;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
@@ -126,5 +127,7 @@ public interface SeqHashInt {
 	 * @param mapInfo
 	 */
 	void getSeq(SiteInfo mapInfo);
+	/** 从头到尾遍历某条序列上的碱基 */
+	Iterable<Character> readBase(String refID);
 	
 }

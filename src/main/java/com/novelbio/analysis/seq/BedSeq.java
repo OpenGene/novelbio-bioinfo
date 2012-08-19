@@ -403,7 +403,7 @@ public class BedSeq extends SeqComb{
 		for (BedRecord bedRecord : readlines()) {
 			FastQRecord fastQRecord = new FastQRecord();
 			fastQRecord.setName(bedRecord.getName());
-			fastQRecord.setFastaQuality(getQuality(bedRecord.getSeqFasta().getLength()));
+			fastQRecord.setFastaQuality(getQuality(bedRecord.getSeqFasta().Length()));
 			fastQRecord.setFastqOffset(FastQ.FASTQ_SANGER_OFFSET);
 			fastQRecord.setSeq(bedRecord.getSeqFasta().toString());
 			fastQ.writeFastQRecord(fastQRecord);

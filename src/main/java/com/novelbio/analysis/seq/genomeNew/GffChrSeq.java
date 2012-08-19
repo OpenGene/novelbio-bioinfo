@@ -13,8 +13,8 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
-import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 /**
  * 在GffChrAbs中设定Tss和Tes的范围
@@ -179,7 +179,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (booGetIsoSeq) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : setIsoToGetSeq) {
 				SeqFasta seqFasta = getSeq(gffGeneIsoInfo);
-				if (seqFasta == null || seqFasta.getLength() < 3) {
+				if (seqFasta == null || seqFasta.Length() < 3) {
 					continue;
 				}
 				lsMotifResult.addAll(seqFasta.getMotifScan().getMotifScanResult(regex));
@@ -258,7 +258,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	
 	/** 返回是否获取本序列 */
 	private boolean copeSeqFasta(SeqFasta seqFasta) {
-		if (seqFasta == null || seqFasta.getLength() < 3) {
+		if (seqFasta == null || seqFasta.Length() < 3) {
 			return false;
 		}
 		if (saveToFile) {

@@ -1,6 +1,6 @@
 package com.novelbio.test.testThread;
 
-import com.novelbio.base.RunProcess;
+import com.novelbio.base.multithread.RunProcess;
 
 public class Loop  extends RunProcess {
 //	private boolean suspendFlag = false;// 控制线程的执行

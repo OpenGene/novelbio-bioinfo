@@ -47,8 +47,24 @@ public class SeqfastaStatisticsCDS {
 	public int getStartIndexAllAA() {
 		return startIndexAllAA;
 	}
+	public int getStartIndexAllNR() {
+		return startIndexAllAA * 3 + orfAllLen;
+	}
+	/** Maa序列从第几个氨基酸开始，从0开始记数 */
 	public int getStartIndexMAA() {
 		return startIndexMAA;
+	}
+	public int getStartIndexMNR() {
+		return startIndexMAA * 3 + orfMstartLen;
+	}
+	public int getEndIndexAllNR() {
+		return startIndexAllAA * 3 + getAllAAlen()*3 + orfAllLen;
+	}
+	public int getEndIndexMNR() {
+		return startIndexMAA * 3 + getMstartAAlen()*3 + orfMstartLen;
+	}
+	public int getEndIndexMAA() {
+		return startIndexMAA + getMstartAAlen();
 	}
 	public boolean isCis5to3AllLen() {
 		return cis5to3AllLen;

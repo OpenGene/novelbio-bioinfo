@@ -7,12 +7,12 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
-import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.Gene2GoInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;

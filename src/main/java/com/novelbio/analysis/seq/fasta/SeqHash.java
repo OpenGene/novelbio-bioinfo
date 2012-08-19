@@ -13,9 +13,16 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SeqHash implements SeqHashInt{
-private static Logger logger = Logger.getLogger(SeqHash.class);
-//	String chrFile = "";
+	private static Logger logger = Logger.getLogger(SeqHash.class);
+	
 	SeqHashAbs seqHashAbs = null;
+	/**
+	 * 结果的文件是否转化为小写
+	 * True：小写 False：大写
+	 * null：不变
+	 */
+	Boolean TOLOWCASE = null;
+	
 	/**
 	 * 重名文件就返回，认为一样的东西
 	 * @param chrFile 序列文件或序列文件夹
@@ -62,8 +69,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	 * @param TOLOWCASE 是否将最后结果的序列转化为小写 True：小写，False：大写，null不变 默认为null
 	 * 默认为false
 	 */
-	public SeqHash(String chrFile, String regx,Boolean TOLOWCASE)
-	{
+	public SeqHash(String chrFile, String regx,Boolean TOLOWCASE) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
 			seqHashAbs =new SeqFastaHash(chrFile, regx, true, false);
 		}
@@ -83,8 +89,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	 * true：如果出现重名序列，则在第二条名字后加上"<"作为标记 false：如果出现重名序列，则用长的序列去替换短的序列
 	 * 默认为false
 	 */
-	public SeqHash(String chrFile, String regx, boolean CaseChange,Boolean TOLOWCASE, boolean append)
-	{
+	public SeqHash(String chrFile, String regx, boolean CaseChange,Boolean TOLOWCASE, boolean append) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
 			seqHashAbs =new SeqFastaHash(chrFile, regx, CaseChange, append);
 		}
@@ -93,15 +98,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 		}
 		this.TOLOWCASE = TOLOWCASE;
 	}
-	
 
-	/**
-	 * 结果的文件是否转化为大小写
-	 * True：小写
-	 * False：大写
-	 * null：不变
-	 */
-	Boolean TOLOWCASE = null;
 	@Override
 	public LinkedHashMap<String, Long> getHashChrLength() {
 		return seqHashAbs.getHashChrLength();
@@ -143,8 +140,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	}
 	/////////////////////  提 取 序 列  /////////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
-	public SeqFasta getSeq(String chrID, long startlocation, long endlocation)
-	{
+	public SeqFasta getSeq(String chrID, long startlocation, long endlocation) {
 		SeqFasta seqFasta = seqHashAbs.getSeq(chrID, startlocation, endlocation);
 		if (seqFasta != null) {
 			seqFasta.setTOLOWCASE(TOLOWCASE);
@@ -153,8 +149,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	}
 
 	@Override
-	public SeqFasta getSeq(Boolean cisseq, String chrID, long startlocation,
-			long endlocation) {
+	public SeqFasta getSeq(Boolean cisseq, String chrID, long startlocation, long endlocation) {
 		SeqFasta seqFasta = seqHashAbs.getSeq(cisseq, chrID, startlocation, endlocation);
 		if (seqFasta != null) {
 			seqFasta.setTOLOWCASE(TOLOWCASE);
@@ -163,8 +158,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	}
 
 	@Override
-	public SeqFasta getSeq(String chr, int peaklocation, int region,
-			boolean cisseq) {
+	public SeqFasta getSeq(String chr, int peaklocation, int region, boolean cisseq) {
 		SeqFasta seqFasta = seqHashAbs.getSeq(chr, peaklocation, region, cisseq);
 		if (seqFasta != null) {
 			seqFasta.setTOLOWCASE(TOLOWCASE);
@@ -249,8 +243,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 					return false;
 			}
 		}
-		else // 有下限
-		{
+		else {// 有下限
 			if (seqlen < len[0]) //长度小于下限
 				return false;
 			else {  //长度大于下限
@@ -271,8 +264,7 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 	 * @return
 	 * SeqFasta.SEQ_DNA等
 	 */
-	public static int getSeqType(String fastaFile)
-	{
+	public static int getSeqType(String fastaFile) {
 		int readBp = 1000;//读取前1000个碱基来判断
 		TxtReadandWrite txtRead = new TxtReadandWrite(fastaFile, false);
 		StringBuilder stringBuilder = new StringBuilder();
@@ -287,6 +279,11 @@ private static Logger logger = Logger.getLogger(SeqHash.class);
 		}
 		SeqFasta seqFasta = new SeqFasta("test", stringBuilder.toString());
 		return seqFasta.getSeqType();		
+	}
+	
+	@Override
+	public Iterable<Character> readBase(String refID) {
+		return seqHashAbs.readBase(refID);
 	}
 	
 

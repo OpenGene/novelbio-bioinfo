@@ -569,7 +569,7 @@ public class GffChrMap {
 	/**
 	 * 给定atg位点，获得该atg位点在合并后的序列中应该是第几个，从1开始
 	 * 
-	 * @param atgSite
+	 * @param atgAASite
 	 * @return
 	 */
 	public int getCombAtgSite(String geneID) {
@@ -581,7 +581,7 @@ public class GffChrMap {
 
 	/**
 	 * 给定基因名，获得该基因的atg位点在mRNA中应该是第几个位点，从1开始
-	 * @param atgSite
+	 * @param atgAASite
 	 * @return
 	 */
 	public int getAtgSite(String geneID) {

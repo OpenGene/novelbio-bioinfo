@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.FisherTest;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.NovelBioConst;
 
@@ -17,7 +19,7 @@ import com.novelbio.generalConf.NovelBioConst;
  * @author zong0jie
  *
  */
-public class FisherTest {
+public class DoFisherTest {
 
 	/**
 	 * 这个是最完善的方法，其他的方法都是它内部的模块
@@ -38,8 +40,7 @@ public class FisherTest {
 	 * n+7:enrichment n+8:(-log2P) <br>
 	 * @throws Exception 
 	 */
-	public static ArrayList<String[]> getFisherResult(List<String[]> lsGene2Item,List<String[]> lsGene2ItemBG,ItemInfo itemInfo) throws Exception
-	{
+	public static ArrayList<String[]> getFisherResult(List<String[]> lsGene2Item,List<String[]> lsGene2ItemBG,ItemInfo itemInfo) throws Exception {
 		HashMap<String, ArrayList<String>> hashItem2DifGen = getHashItem2Gen(lsGene2Item);
 		HashMap<String, ArrayList<String>> hashItem2BGGen = getHashItem2Gen(lsGene2ItemBG);
 		int numDif = lsGene2Item.size();
@@ -99,12 +100,10 @@ public class FisherTest {
 	 * n+3:allInItemNum
 	 * n+4:AllNum
 	 */
-	public static<T> ArrayList<String[]> cope2HashForPvalue(HashMap<String, ArrayList<T>> hashDif,int NumDif,HashMap<String, ArrayList<T>> hashAll ,int NumAll,ItemInfo itemInfo) 
-	{
+	public static<T> ArrayList<String[]> cope2HashForPvalue(HashMap<String, ArrayList<T>> hashDif,int NumDif,HashMap<String, ArrayList<T>> hashAll ,int NumAll,ItemInfo itemInfo) {
 		ArrayList<String[]> lsResult=new ArrayList<String[]>();
 		//////////////////
-		for(Entry<String, ArrayList<T>> entry:hashDif.entrySet())
-		{
+		for(Entry<String, ArrayList<T>> entry:hashDif.entrySet()) {
 			String ItemID = entry.getKey();
 			ArrayList<T> lsGeneID = entry.getValue();
 			String[] strItemInfo = null;
@@ -112,7 +111,6 @@ public class FisherTest {
 				strItemInfo = itemInfo.getItemName(ItemID);
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("error");
 				continue;
 			}
 			 
@@ -153,8 +151,7 @@ public class FisherTest {
 	 * @param lsGene2Item string2 0：gene  1：item,item,item的形式，注意 1. gene不能有重复 2.每个gene内的item不能为空，且不能有重复
 	 * @return
 	 */
-	public static HashMap<String, ArrayList<String>> getHashItem2Gen(List<String[]> lsGene2Item)
-	{
+	public static HashMap<String, ArrayList<String>> getHashItem2Gen(List<String[]> lsGene2Item) {
 		HashMap<String, ArrayList<String>> hashResult = new HashMap<String, ArrayList<String>>();
 		for (String[] strings : lsGene2Item) {
 			String geneID = strings[0];
@@ -178,8 +175,7 @@ public class FisherTest {
 	 * @param item 某个GOID或pathID
 	 * @param tmpValue 该Item所含有的一个geneID信息，记得输入前去冗余。
 	 */
-	public static<T> void addHashInfo(HashMap<String, ArrayList<T>> hashItem2Gen,String item, T tmpValue)
-	{
+	public static<T> void addHashInfo(HashMap<String, ArrayList<T>> hashItem2Gen,String item, T tmpValue) {
 		if (hashItem2Gen.containsKey(item)) {
 			ArrayList<T> lsGeneID=hashItem2Gen.get(item);
 			lsGeneID.add(tmpValue);
@@ -220,34 +216,43 @@ public class FisherTest {
 		if (lsGOinfo.size() == 0) {
 			return null;
 		}
-		FileOperate.delAllFile(NovelBioConst.R_WORKSPACE_FISHER);
+		//计算fisher所遇到的最大值
 		int colNum = lsGOinfo.get(0).length; colNum = colNum - 5;
-		TxtReadandWrite txtGoInfo=new TxtReadandWrite();
-		txtGoInfo.setParameter(NovelBioConst.R_WORKSPACE_FISHER_INFO, true, false);
-		int column[]=new int[4]; column[0] = colNum + 1; column[1]= colNum + 2; column[2] = colNum + 3; column[3] = colNum + 4;
-		txtGoInfo.ExcelWrite(lsGOinfo, "\t", column, true, 1, 1);
-		callR();
-		TxtReadandWrite txtRresult=new TxtReadandWrite();
-		txtRresult.setParameter(NovelBioConst.R_WORKSPACE_FISHER_RESULT, false, true);
-		
-		String[][] RFisherResult=txtRresult.ExcelRead("\t", 2, 2, txtRresult.ExcelRows(), txtRresult.ExcelColumns(2, "\t"));
+		int max = 0;
+		for (String[] strings : lsGOinfo) {
+			int tmp = Integer.parseInt(strings[colNum + 1]) + Integer.parseInt(strings[colNum + 2]) + Integer.parseInt(strings[colNum + 3]) + Integer.parseInt(strings[colNum + 4]);
+			if (tmp > max) {
+				max = tmp; 
+			}
+		}
+		FisherTest fisherTest = new FisherTest(max);
 		ArrayList<String[]> lsFisherResult=new ArrayList<String[]>();
-	
-		
+		ArrayList<Double> lsPvalue = new ArrayList<Double>();
 		for (int i = 0; i < lsGOinfo.size(); i++) {
 			String[] tmp = lsGOinfo.get(i);
-			String[] tmp2=new String[tmp.length+RFisherResult[i].length-4];
-			for (int j = 0; j < tmp2.length; j++) {
+			String[] tmp2=new String[tmp.length+3];
+			
+			for (int j = 0; j < tmp.length; j++) {
 				if( j<tmp.length) {
 					tmp2[j]=tmp[j];
 				}
-				else {
-					tmp2[j]=RFisherResult[i][j-tmp.length+4];
-				}
 			}
+			int a = Integer.parseInt(tmp[colNum + 1]);
+			int b = Integer.parseInt(tmp[colNum + 2]);
+			int c = Integer.parseInt(tmp[colNum + 3]);
+			int d = Integer.parseInt(tmp[colNum + 4]);
+			double pvalue = fisherTest.getRightTailedP(a, b, c, d);
+			lsPvalue.add(pvalue);
+			tmp2[tmp.length] = pvalue + "";
+			tmp2[tmp.length + 2] = ((double)a/b)/((double)c/d) + "";
 			lsFisherResult.add(tmp2);
 		}
-		
+		ArrayList<Double> lsFDR = MathComput.pvalue2Fdr(lsPvalue);
+		for (int i = 0; i < lsFisherResult.size(); i++) {
+			String[] strings = lsFisherResult.get(i);
+			strings[strings.length - 2] = lsFDR.get(i) + "";
+		}
+
 		//排序
         Collections.sort(lsFisherResult,new Comparator<String[]>(){
             public int compare(String[] arg0, String[] arg1) {
@@ -256,15 +261,7 @@ public class FisherTest {
             }
         });
 		return lsFisherResult;
-		//FileOperate.delFile(writeRFIle);
-		//FileOperate.delFile(Rresult);
 		
-	}
-	private static void callR() throws Exception{
-		//这个就是相对路径，必须在当前文件夹下运行
-		String command= NovelBioConst.R_SCRIPT+NovelBioConst.R_WORKSPACE_FISHER_SCRIPT;
-		CmdOperate cmdOperate = new CmdOperate(command);
-		cmdOperate.run();
 	}
 	
 }

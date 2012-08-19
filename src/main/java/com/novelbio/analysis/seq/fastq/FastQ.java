@@ -32,14 +32,14 @@ public class FastQ {
 	
 	public static void main(String[] args) {
 //		FastQ fastQfile = new FastQ("/home/zong0jie/Desktop/FHE.clean.fq");
-		FastQ fastQfile = new FastQ("/home/zong0jie/Desktop/BZ171-9522_GTGAAA_L003_R2_001.fastq.gz");
-		FastQ fastqQfile2 = new FastQ("/home/zong0jie/Desktop/BZ171-9522_GTGAAA_L003_R1_001.fastq.gz");
-		fastQfile.setFastqWrite("/home/zong0jie/Desktop/aaa.fq");
-		FastQfilterRecorder fastQfilterRecordParam = new FastQfilterRecorder();
+		FastQ fastQfile = new FastQ("/home/zong0jie/Desktop/aaa_1.fq.gz");
+//		FastQ fastqQfile2 = new FastQ("/home/zong0jie/Desktop/aaa_2.fq.gz");
+		fastQfile.setFastqWrite("/home/zong0jie/Desktop/aaa_filter.fq");
+		FastQRecordFilter fastQfilterRecordParam = new FastQRecordFilter();
 		fastQfilterRecordParam.setFilterParamTrimNNN(true);
 		fastQfile.setFilterParam(fastQfilterRecordParam);
-		fastQfile.filterReads(fastqQfile2);
-//		fastQfile.filterReads();
+//		fastQfile.filterReads(fastqQfile2);
+		fastQfile.filterReads();
 	}
 	
 	/** 默认是读取 */
@@ -60,7 +60,7 @@ public class FastQ {
 		fastQRead.setCompressType(compressInType);
 		fastQwrite.setCompressType(compressOutType);
 	}
-	public void setFilterParam(FastQfilterRecorder fastQfilterRecordParam) {
+	public void setFilterParam(FastQRecordFilter fastQfilterRecordParam) {
 		fastQfilter.setFilterParam(fastQfilterRecordParam);
 	}
 	public void setFastqRead(String fileName) {
@@ -88,16 +88,18 @@ public class FastQ {
 	public long getSeqNum() {
 		return fastQRead.readsNum;
 	}
+	/**
+	 * @return null 出错
+	 */
 	public FastQ filterReads() {
 		if (fastQwrite.getFileName().trim().equals("")) {
 			setFilterReadsOutName(true, fastQRead.getFileName());
 		}
 		filterReadsRun();
 		
-		while (!fastQfilter.isFinished) {
-			try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+		if (!fastQfilter.isFinished(1000)) {
+			return null;
 		}
-		
 		FastQ fastQfileOut1 = new FastQ(fastQwrite.getFileName());
 		fastQfileOut1.fastQRead.readsNum = fastQfilter.allFilteredReadsNum;
 		return fastQfileOut1;
@@ -118,8 +120,8 @@ public class FastQ {
 		fastQfilter.setIsPairEnd(true);
 		filterReadsRun();
 		
-		while (!fastQfilter.isFinished) {
-			try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+		if (!fastQfilter.isFinished(500)) {
+			return null;
 		}
 		
 		FastQ fastQfileOut1 = new FastQ(fastQwrite.getFileName());

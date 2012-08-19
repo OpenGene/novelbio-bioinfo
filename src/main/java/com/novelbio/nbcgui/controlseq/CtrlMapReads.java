@@ -3,10 +3,10 @@ package com.novelbio.nbcgui.controlseq;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsAbs.MapReadsProcessInfo;
-import com.novelbio.base.RunGetInfo;
-import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.multithread.RunGetInfo;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.nbcgui.GUI.GuiRunningBarAbs;
 
 public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>{
@@ -69,24 +69,23 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>
 	}
 
 	@Override
-	public void threadSuspend() {
+	public void threadSuspended(RunProcess<MapReadsProcessInfo> runProcess) {
 		guiRunningBarAbs.getBtnRun().setEnabled(true);
 		
 	}
 
 	@Override
-	public void threadResume() {
+	public void threadResumed(RunProcess<MapReadsProcessInfo> runProcess) {
 		guiRunningBarAbs.getBtnRun().setEnabled(false);
 	}
 
 	@Override
-	public void threadStop() {
+	public void threadStop(RunProcess<MapReadsProcessInfo> runProcess) {
 		guiRunningBarAbs.getBtnRun().setEnabled(true);
 		guiRunningBarAbs.getBtnSave().setEnabled(true);
 		guiRunningBarAbs.getBtnOpen().setEnabled(true);
 	}
 
-	@Override
 	public void execute() {
 		guiRunningBarAbs.getBtnRun().setEnabled(false);
 		guiRunningBarAbs.getBtnSave().setEnabled(false);

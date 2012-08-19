@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.multithread.RunProcess;
 
 /** 多线程中一个线程读取文件<br>
  * T: 就是实际读取的内容，譬如String或FastQRecord<br>
@@ -20,12 +20,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  *
  */
 public abstract class MTRecoreReader <T, K extends MTRecordRead> extends RunProcess<K> {
-	String seqFile = "";
 	long readsNum = 0;
-	
-	protected TxtReadandWrite txtSeqFile;
-	protected String compressInType = TxtReadandWrite.TXT;
-	
+		
 	protected int maxNumReadInLs = 5000;
 	protected AbstractQueue<K> absQueue = new ArrayBlockingQueue<K>(maxNumReadInLs);
 	

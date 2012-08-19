@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.novelbio.analysis.seq.blastZJ.BlastSeqFasta;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
@@ -18,14 +19,48 @@ import com.novelbio.database.model.modgeneid.GeneType;
  *
  */
 public class FastaGetCDSFromProtein {
+	public static void main(String[] args) {
+		String nrseq = "ATGGAGCCTGGCAGCATGGAAAATCTGTCCATCGTGTACCAGAGCAGTGACTTCTTGGTGGTGAACAAGCATTGGGAT" +
+				"CTACGCATTGATAGCAAGACCTGGCAGGAGACCCTGACCCTACAGAAGCAACTATGTCACCGCTTCCCAGAACTGGCTGACCCTGACACC" +
+				"TGCTATGGGTTCAGGTTCTGCCACCAATTGGACTTCTCCACCAGTGGGGCGTTATGTGTGGCCCTGAATAAAGCAGCTGCAGGCAGCGCTTATAA" +
+				"ATGCTTCAAGGAACGGCGAGTCACCAAAGCCTACCTTGCACTAGTCCGGGGCCATGTCCAAAAAAGCCAGGTGACAATCAGCTATGCCATTGGCAGGA" +
+				"ACAGTACAGAGGGGCGGACCCACACCATGTGCATCGAGGGCACACACGGTTGCGAGAACCCTAAGCCAAGTCTCACAGAGCTGTTGGTTCTGGAGCATG" +
+				"GACAGTATGCTGGAGACCCTGTGTCCAAAGTGCTGCTGAAACCACTCACAGGCCGGACACACCAGCTTCGAGTACACTGCAGTGCCCTCGGCCACCCTATTGT" +
+				"GGGTGACTTGACTTATGGGCAGGCTGAGGACCAGGAGGACCAACCTTTCCGCATGATGTTGCACGCCTTCTACCTACGCATCCCCACACAGGCCGAGTGTGTGG" +
+				"AGGCCTGCACACCTGACCCCTTCCTGCCTGCCCTTGATGCCTGCTGGAGTCCCCATACCTGCATTCAACCCCTTGAAGAGCTCATCCAGGCCCTACAGACTGG" +
+				"CCCTGACCCAAACCCTGTGGACGGAGG" +
+				"GCACAGTCCCTCCACACCCCTGGCCAGGCCAGGTCGGCCGCCTCCTGAGACTGAGGCGCAGCGAGCATCATGCCTGCAGTGGCTATCAGAGTGGGCACTAGAGCCAGACAACTGA";
+		
+		
+		String proteinStartSeq = "MEPGSMENLSIVYQSSDFLVVNKHWDLRIDSKTWQETLTLQKQLCH" +
+				"RFPELADPDTCYGFRFCHQLDFSTSGALCVALNKAAAGSAYKCFKERRVTKAYLALVRGHV" +
+				"QKSQVTISYAIGRNSTEGRTHTMCIEGTHGCENPKPSLTELLVLEHGQYAGDPVSKVLLKPLTGR" +
+				"THQLRVHCSALGHPIVGDLTYGQAEDQEDQPFRMMLHAFYLRIPTQAECVEACTPDPFLPALDAC" +
+				"WSPHTCIQPLEELIQALQTGPDPNPVDGGHSPSTPLARPGRPPPETEAQRASCLQWLSEWALEPDN";
+		
+		SeqFasta seqFastaNR = new SeqFasta(nrseq);
+		
+		FastaGetCDSFromProtein fastaGetCDSFromProtein = new FastaGetCDSFromProtein(seqFastaNR, proteinStartSeq);
+		GffGeneIsoInfo gffGeneIsoInfo1 = fastaGetCDSFromProtein.getGffGeneIsoInfo();
+		GffGeneIsoInfo gffGeneIsoInfo2 = fastaGetCDSFromProtein.getGffGeneIsoInfoWtihProteinBlast();
+		System.out.println(gffGeneIsoInfo1.equals(gffGeneIsoInfo2));
+	}
 	SeqFasta seqFasta;
 	String proteinSeq;
+	boolean getBlastIso = false;
 	protected FastaGetCDSFromProtein(SeqFasta seqFasta, String protein) {
 		this.seqFasta = seqFasta;
 		setProtein(protein);
 	}
+	/** 是否通过blast的方法来获取序列
+	public void setGetBlastIso(boolean getBlastIso) {
+		this.getBlastIso = getBlastIso;
+	}
 	/** 输入蛋白序列 */
 	private void setProtein(String proteinSeq) {
+		if (proteinSeq == null) {
+			return;
+		}
 		proteinSeq = proteinSeq.trim();
 		if (proteinSeq.endsWith("*")) {
 			proteinSeq = proteinSeq.substring(0, proteinSeq.length() - 1);
@@ -45,9 +80,15 @@ public class FastaGetCDSFromProtein {
 		
 		return listGff;
 	}
+	/** 用blast的方法来找位点 */
 	public GffGeneIsoInfo getGffGeneIsoInfo() {
 		if (proteinSeq != null && !proteinSeq.trim().equals("")) {
-			return getGffGeneIsoInfoWtihProtein();
+			if (getBlastIso) {
+				return getGffGeneIsoInfoWtihProteinBlast();
+			}
+			else {
+				return getGffGeneIsoInfoWtihProteinNoBlast();
+			}
 		}
 		else {
 			return getGffGeneIsoInfoWtihOutProtein();
@@ -55,26 +96,22 @@ public class FastaGetCDSFromProtein {
 	}
 	private GffGeneIsoInfo getGffGeneIsoInfoWtihOutProtein() {
 		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, GeneType.ncRNA, true);
+		gffGeneIsoInfo.add(new ExonInfo(gffGeneIsoInfo, true, 1, seqFasta.Length()));
 		gffGeneIsoInfo.setATGUAGncRNA();
-		gffGeneIsoInfo.add(new ExonInfo(gffGeneIsoInfo, true, 1, seqFasta.getLength()));
 		return gffGeneIsoInfo;
 	}
-	
 	/** 返回该seqfastq和protein所对应的gffgeneiso */
-	private GffGeneIsoInfo getGffGeneIsoInfoWtihProtein() {
+	private GffGeneIsoInfo getGffGeneIsoInfoWtihProteinBlast() {
+		SeqfastaStatisticsCDS seqfastaStatisticsCDS = seqFasta.statisticsCDS();
+		int orf = seqfastaStatisticsCDS.getOrfAllLen();
+		boolean cis5to3 = seqfastaStatisticsCDS.isCis5to3AllLen();
 		ArrayList<BlastSeqFastaCompare> lsAllBlastSeqFasta = new ArrayList<BlastSeqFastaCompare>();
-		lsAllBlastSeqFasta.add(proteinBlast(true, 0, seqFasta.toStringAA(true, 0)));
-		lsAllBlastSeqFasta.add(proteinBlast(true, 1, seqFasta.toStringAA(true, 1)));
-		lsAllBlastSeqFasta.add(proteinBlast(true, 2, seqFasta.toStringAA(true, 2)));
-		lsAllBlastSeqFasta.add(proteinBlast(false, 0, seqFasta.toStringAA(false, 0)));
-		lsAllBlastSeqFasta.add(proteinBlast(false, 1, seqFasta.toStringAA(false, 1)));
-		lsAllBlastSeqFasta.add(proteinBlast(false, 2, seqFasta.toStringAA(false, 2)));
+		lsAllBlastSeqFasta.add(proteinBlast(cis5to3, orf, seqFasta.toStringAA(cis5to3, orf)));
 		
 		sortLsBlastSeqFasta(lsAllBlastSeqFasta);
 		BlastSeqFastaCompare blastSeqFasta = lsAllBlastSeqFasta.get(0);
 		return getGffGeneIsoInfo(blastSeqFasta);
 	}
-
 	/** 指定蛋白序列进行比较，看相似度有多高
 	 * @param proteinSeqFastq 蛋白序列
 	 * */
@@ -123,28 +160,30 @@ public class FastaGetCDSFromProtein {
 	/** 从比对的最近的位点向前扫描，直到扫描到最远的UAG位点，同时将UAG后面一位标记为ATG */
 	private int scanAtgSite(int orf, int alignAtgSite) {
 		char[] seq = seqFasta.SeqSequence.toUpperCase().toCharArray();
-		for (int i = alignAtgSite - 3; i >= 0; i = i - 3) {
+		for (int i = alignAtgSite - 1; i >= 0; i = i - 3) {
 			//找到了atg
-			if (isATG(new char[]{seq[i], seq[i+1], seq[i+2]})) {
-				return i;
+			if (isATG(new char[]{seq[i], seq[i + 1], seq[i + 2]})) {
+				return i + 1;
 			}
 			//找到了终止位点
-			else if (isUAG(new char[]{seq[i], seq[i+1], seq[i+2]})) {
+			else if (isUAG(new char[]{seq[i], seq[i + 1], seq[i + 2]})) {
 				return i + 3;
 			}
 		}
-		return orf;
+		return alignAtgSite;
 	}
-	
 	private int scanUagSite(int orf, int alignUagSite) {
 		char[] seq = seqFasta.SeqSequence.toUpperCase().toCharArray();
 		int finishSite = 0;
-		for (int i = alignUagSite ; i < seq.length - 3; i = i + 3) {
+		for (int i = alignUagSite - 3; i <= seq.length - 3; i = i + 3) {
 			//找到了atg
-			if (isUAG(new char[]{seq[i], seq[i+1], seq[i+2]})) {
+			if (isUAG(new char[]{seq[i], seq[i + 1], seq[i+2]})) {
 				return i + 3;
 			}
 			finishSite = i + 3;
+		}
+		if (finishSite == 0) {
+			return alignUagSite;
 		}
 		return finishSite;
 	}
@@ -160,7 +199,86 @@ public class FastaGetCDSFromProtein {
 		
 		return false;
 	}
+	
+	
+	/** 返回该seqfastq和protein所对应的gffgeneiso */
+	private GffGeneIsoInfo getGffGeneIsoInfoWtihProteinNoBlast() {
+		CompareInfo compareInfo = getStartEndSite();
+		if (compareInfo == null) {
+			compareInfo = getStartEndWithMaxCDS();
+		}
 
+		return getGffGeneIsoInfo(compareInfo, proteinSeq);
+	}
+	
+	private CompareInfo getStartEndWithMaxCDS() {
+		SeqfastaStatisticsCDS seqfastaStatisticsCDS = seqFasta.statisticsCDS();
+		CompareInfo compareInfo = new CompareInfo();
+		compareInfo.atgAASite = seqfastaStatisticsCDS.getStartIndexMAA() + 1;
+		compareInfo.uagAASite = seqfastaStatisticsCDS.getEndIndexMAA();
+		compareInfo.orf = seqfastaStatisticsCDS.getOrfMstartLen();
+		compareInfo.cis5to3 = seqfastaStatisticsCDS.isCis5to3MstartLen();
+		return compareInfo;
+	}
+	
+	private CompareInfo getStartEndSite () {
+		boolean cis5to3 = true;
+		CompareInfo compareInfo = null;
+		String proteinStartSite = proteinSeq.substring(0, 30);
+		String proteinEndSite = proteinSeq.substring(proteinSeq.length() - 30, proteinSeq.length());
+		String proteinSeqTranslate = null;
+		int atgsite = 0;
+		for (int orf = 0; orf < 3; orf++) {
+			proteinSeqTranslate = seqFasta.toStringAA(cis5to3, orf);
+			atgsite = FastQRecord.trimAdaptorR(proteinSeqTranslate, proteinStartSite, 0, 3, 10, 30);
+			if (atgsite >= 0 && atgsite < proteinSeqTranslate.length()) {
+				compareInfo = new CompareInfo();
+				compareInfo.atgAASite = atgsite;
+				compareInfo.cis5to3 = cis5to3;
+				compareInfo.orf = orf;
+				break;
+			}
+		}
+
+		
+		if (compareInfo == null) {
+			return null;
+		}
+		
+		int uagsite = FastQRecord.trimAdaptorL(proteinSeqTranslate, proteinEndSite, 0, 3, 10, 30);
+		if (uagsite > atgsite && uagsite <= proteinSeqTranslate.length()) {
+			compareInfo.uagAASite = uagsite;
+			return compareInfo;
+		}
+		return null;
+	}
+	
+	/** 根据比对的结果，获得该序列产生的GffGeneIsoInfo，本GffGeneIso是没有内含子的，只有Atg和Uag位点 */
+	private GffGeneIsoInfo getGffGeneIsoInfo(CompareInfo compareInfo, String proteinSeq) {
+		int atgSite, uagSite;
+		atgSite = compareInfo.atgAASite * 3 + compareInfo.orf - 2;
+		uagSite = compareInfo.uagAASite * 3 + compareInfo.orf + 3;
+		
+		boolean startWithM = isStartWithM(atgSite);
+
+		if (!startWithM) {
+			atgSite = scanAtgSite(compareInfo.orf, atgSite);
+		}
+		uagSite = scanUagSite(compareInfo.orf, uagSite);
+		
+		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, GeneType.mRNA, compareInfo.cis5to3);
+		gffGeneIsoInfo.setATGUAG(atgSite, uagSite);
+		gffGeneIsoInfo.add(new ExonInfo(gffGeneIsoInfo, compareInfo.cis5to3, 1, seqFasta.Length()));
+		return gffGeneIsoInfo;
+	}
+	
+	private boolean isStartWithM(int atgSite) {
+		String seq = seqFasta.toString().substring(atgSite-1, atgSite + 2).toUpperCase();
+		if (seq.startsWith("ATG") ) {
+			return true;
+		}
+		return false;
+	}
 }
 
 class BlastSeqFastaCompare extends BlastSeqFasta {
@@ -170,6 +288,15 @@ class BlastSeqFastaCompare extends BlastSeqFasta {
 	public BlastSeqFastaCompare(String seqFastaQuery, String seqFastaSubject) {
 		super(seqFastaQuery, seqFastaSubject);
 	}
+	boolean cis5to3;
+	int orf;
+}
+
+class CompareInfo {
+	/** 从1开始记数 */
+	int atgAASite;
+	/** 从1开始记数 */
+	int uagAASite;
 	boolean cis5to3;
 	int orf;
 }

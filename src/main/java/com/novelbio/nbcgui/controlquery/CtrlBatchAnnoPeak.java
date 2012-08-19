@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
-import com.novelbio.base.RunGetInfo;
-import com.novelbio.base.RunProcess;
+import com.novelbio.base.multithread.RunGetInfo;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiAnnoPeak;
 
@@ -86,17 +86,15 @@ public class CtrlBatchAnnoPeak implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 		guiAnnoPeak.getBtnRun().setEnabled(true);
 	}
 	@Override
-	public void threadSuspend() {
-		gffChrAnno.threadSuspend();
+	public void threadSuspended(RunProcess<AnnoQueryDisplayInfo> runProcess) {
 		guiAnnoPeak.getBtnRun().setEnabled(true);
 	}
 	@Override
-	public void threadResume() {
-		gffChrAnno.threadResume();
+	public void threadResumed(RunProcess<AnnoQueryDisplayInfo> runProcess) {
 		guiAnnoPeak.getBtnRun().setEnabled(false);
 	}
 	@Override
-	public void threadStop() {
+	public void threadStop(RunProcess<AnnoQueryDisplayInfo> runProcess) {
 		guiAnnoPeak.getBtnRun().setEnabled(true);
 	}
 	

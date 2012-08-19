@@ -13,9 +13,9 @@ import javax.swing.SwingWorker;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.generalConf.NovelBioConst;
 /**
  * 输入cmd，执行完毕后可以将结果输出到界面，目前cmd只支持英文，否则会出错 只要继承后重写process方法即可

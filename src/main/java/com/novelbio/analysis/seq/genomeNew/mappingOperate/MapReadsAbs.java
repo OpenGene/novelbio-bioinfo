@@ -14,11 +14,11 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
-import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.base.multithread.RunProcess;
 
 /**
  * 不考虑内存限制的编

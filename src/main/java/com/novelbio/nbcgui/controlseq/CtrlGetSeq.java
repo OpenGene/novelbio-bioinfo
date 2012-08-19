@@ -9,8 +9,8 @@ import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
 import com.novelbio.analysis.seq.genomeNew.GffChrSeq.GffChrSeqProcessInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
-import com.novelbio.base.RunGetInfo;
-import com.novelbio.base.RunProcess;
+import com.novelbio.base.multithread.RunGetInfo;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiGetSeq;
 
@@ -96,7 +96,7 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 	public ArrayList<SeqFasta> getLsResult() {
 		return gffChrSeq.getLsResult();
 	}
-	@Override
+
 	public void execute() {
 		gffChrAbs.setFilterTssTes(upAndDownStream, upAndDownStream);
 		guiGetSeq.getProgressBar().setMinimum(0);
@@ -122,19 +122,15 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 
 	@Override
-	public void threadSuspend() {
-		gffChrSeq.threadSuspend();
-		
+	public void threadSuspended(RunProcess<GffChrSeqProcessInfo> runProcess) {		
 	}
 
 	@Override
-	public void threadResume() {
-		gffChrSeq.threadResume();
+	public void threadResumed(RunProcess<GffChrSeqProcessInfo> runProcess) {
 	}
 
 	@Override
-	public void threadStop() {
-		gffChrSeq.threadStop();
+	public void threadStop(RunProcess<GffChrSeqProcessInfo> runProcess) {
 	}
 	
 }

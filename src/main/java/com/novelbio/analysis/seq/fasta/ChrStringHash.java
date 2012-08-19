@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -19,54 +21,50 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 作者：宗杰 20090617
  */
 public class ChrStringHash extends SeqHashAbs{
-	private static Logger logger = Logger.getLogger(ChrStringHash.class);
-	/**
-	 * 随机硬盘读取染色体文件的方法，貌似很伤硬盘，考虑用固态硬盘 注意
-	 * 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
-	 * 一个文本保存一条染色体，以fasta格式保存，每个文本以">"开头，然后接下来每行固定的碱基数(如UCSC为50个，TIGRRice为60个)
-	 * 文本文件名(不考虑后缀名，当然没有后缀名也行)应该是待查找的chrID
-	 * 最后本类生成一个Hashtable--chrID(String)---SeqFile(RandomAccessFile)表<br>
-	 * 和一个Hashtable--chrID(String)---SeqFile(BufferedReader)表<br>
-	 * @param chrFilePath
-	 * @param regx 一般为"\\bchr\\w*"， 用该正则表达式去查找文件名中含有Chr的文件，每一个文件就认为是一个染色体
-	 * @param CaseChange 是否将序列名转化为小写，一般转为小写
-	 */
-	public ChrStringHash(String chrFilePath,String regx, boolean CaseChange) {
-		super(chrFilePath, regx, CaseChange);
-		setFile();
+	public static void main(String[] args) {
+		ChrStringHash chrStringHash = new ChrStringHash("/home/zong0jie/Desktop/test/bam", null, true);
+		for (Character base : chrStringHash.readBase("chr22")) {
+			System.out.println(base);
+		}
 	}
-	/**
-	 * 将染色体信息读入哈希表,按照RandomAccessFile保存，并返回 哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10
-	 * 哈希表的值是染色体的序列，其中无空格
-	 */
-	HashMap<String, RandomAccessFile> hashChrSeqFile;
-	/**
-	 * 将染色体信息读入哈希表,按照BufferedReader保存，并返回 哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10
-	 * 哈希表的值是染色体的序列，其中无空格
-	 */
-	HashMap<String, BufferedReader> hashBufChrSeqFile;
+	private static Logger logger = Logger.getLogger(ChrStringHash.class);
+	
+	/** 以下哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10 */
+	HashMap<String, RandomAccessFile> mapChrID2RandomFile;
+	HashMap<String, BufferedReader> mapChrID2BufReader;
+	HashMap<String, TxtReadandWrite> mapChrID2Txt;
+
 	/**
 	 * Seq文件第二行的长度，也就是每行序列的长度+1，1是回车 现在是假设Seq文件第一行都是>ChrID,第二行开始都是Seq序列信息
 	 * 并且每一行的序列都等长
 	 */
 	int lengthRow = 0;
 	/**
+	 * 随机硬盘读取染色体文件的方法，貌似很伤硬盘，考虑用固态硬盘 注意
+	 * 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
+	 * 一个文本保存一条染色体，以fasta格式保存，每个文本以">"开头，然后接下来每行固定的碱基数(如UCSC为50个，TIGRRice为60个)
+	 * 文本文件名(不考虑后缀名，当然没有后缀名也行)应该是待查找的chrID
+	 * @param chrFilePath
+	 * @param regx null走默认，默认为"\\bchr\\w*"， 用该正则表达式去查找文件名中含有Chr的文件，每一个文件就认为是一个染色体
+	 * @param CaseChange 是否将序列名转化为小写，一般转为小写
+	 */
+	public ChrStringHash(String chrFilePath,String regx, boolean CaseChange) {
+		super(chrFilePath, regx, CaseChange);
+		setFile();
+	}
+
+	/**
 	 * 设定序列文件夹
 	 * @throws FileNotFoundException 
 	 */
 	protected void setChrFile() throws Exception {
-		chrFile = FileOperate.addSep(chrFile);
-		if (regx == null) {
-			regx = "\\bchr\\w*";
-		}
-		ArrayList<String[]> lsChrFile = FileOperate.getFoldFileName(chrFile,regx, "*");
-		hashChrSeqFile = new HashMap<String, RandomAccessFile>();
-		hashBufChrSeqFile = new HashMap<String, BufferedReader>();
-		lsSeqName = new ArrayList<String>();
+		ArrayList<String[]> lsChrFile = initialAndGetFileList();
+		RandomAccessFile chrRAseq = null;
+		TxtReadandWrite txtChrTmp = null;
+		BufferedReader bufChrSeq = null;
+		
 		for (int i = 0; i < lsChrFile.size(); i++) {
-			RandomAccessFile chrRAseq = null;
-			TxtReadandWrite txtChrTmp = new TxtReadandWrite();
-			BufferedReader bufChrSeq = null;
+
 			String[] chrFileName = lsChrFile.get(i);
 			String fileNam = "";
 			lsSeqName.add(chrFileName[0]);
@@ -76,29 +74,37 @@ public class ChrStringHash extends SeqHashAbs{
 				fileNam = chrFile + chrFileName[0] + "." + chrFileName[1];
 
 			chrRAseq = new RandomAccessFile(fileNam, "r");
-			txtChrTmp.setParameter(fileNam, false, true);
+			txtChrTmp = new TxtReadandWrite(fileNam, false);
 			bufChrSeq = txtChrTmp.readfile();
 			// 假设每一个文件的每一行Seq都相等
 			if (i == 0) {
-				chrRAseq.seek(0);
-				chrRAseq.readLine();
-				String seqRow = chrRAseq.readLine();
+				String seqRow = txtChrTmp.readFirstLines(3).get(2);
 				lengthRow = seqRow.length();// 每行几个碱基
 			}
-			if (CaseChange) {
-				hashChrSeqFile.put(chrFileName[0].toLowerCase(), chrRAseq);
-				hashBufChrSeqFile.put(chrFileName[0].toLowerCase(), bufChrSeq);
-			}
-			else {
-				hashChrSeqFile.put(chrFileName[0], chrRAseq);
-				hashBufChrSeqFile.put(chrFileName[0], bufChrSeq);
-			}
+			String chrID = getChrIDisLowCase(chrFileName[0]);
+			mapChrID2RandomFile.put(chrID, chrRAseq);
+			mapChrID2BufReader.put(chrID, bufChrSeq);
+			mapChrID2Txt.put(chrID, txtChrTmp);
 		}
 		setChrLength();
 	}
+	
+	/** 初始化并返回文件夹中的所有符合正则表达式的文本名 */
+	private ArrayList<String[]> initialAndGetFileList() {
+		chrFile = FileOperate.addSep(chrFile);
+		if (regx == null)
+			regx = "\\bchr\\w*";
+		
+		mapChrID2RandomFile = new HashMap<String, RandomAccessFile>();
+		mapChrID2BufReader = new HashMap<String, BufferedReader>();
+		mapChrID2Txt = new HashMap<String, TxtReadandWrite>();
+		lsSeqName = new ArrayList<String>();
+		return FileOperate.getFoldFileName(chrFile,regx, "*");
+	}
+	
 	/** 设定染色体长度 */
 	private void setChrLength() throws IOException {
-		for (Entry<String, RandomAccessFile> entry : hashChrSeqFile.entrySet()) {
+		for (Entry<String, RandomAccessFile> entry : mapChrID2RandomFile.entrySet()) {
 			String chrID = entry.getKey();
 			RandomAccessFile chrRAfile = entry.getValue();
 			// 设定到0位
@@ -122,7 +128,8 @@ public class ChrStringHash extends SeqHashAbs{
 	 */
 	protected SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation) throws IOException {
 		startlocation--;
-		RandomAccessFile chrRASeqFile = hashChrSeqFile.get(chrID.toLowerCase());// 判断文件是否存在
+		chrID = getChrIDisLowCase(chrID);
+		RandomAccessFile chrRASeqFile = mapChrID2RandomFile.get(chrID);// 判断文件是否存在
 		if (chrRASeqFile == null) {
 			logger.error( "无该染色体: "+ chrID);
 			return null;
@@ -183,7 +190,7 @@ public class ChrStringHash extends SeqHashAbs{
 	 * @return
 	 */
 	public BufferedReader getBufChrSeq(String chrID) {
-		return hashBufChrSeqFile.get(chrID.toLowerCase());
+		return mapChrID2BufReader.get(chrID.toLowerCase());
 	}
 	/**
 	 * 获得每条染色体对应的bufferedreader类，方便从头读取
@@ -191,7 +198,7 @@ public class ChrStringHash extends SeqHashAbs{
 	 * @return
 	 */
 	public HashMap<String, BufferedReader> getBufChrSeq() {
-		return hashBufChrSeqFile;
+		return mapChrID2BufReader;
 	}
 	/**
 	 * 返回有意义的碱基数量
@@ -200,7 +207,7 @@ public class ChrStringHash extends SeqHashAbs{
 	 */
 	public long getEffGenomeSize() throws IOException {
 		long effGenomSize = 0;
-		for (Map.Entry<String, BufferedReader> entry : hashBufChrSeqFile.entrySet()) {
+		for (Map.Entry<String, BufferedReader> entry : mapChrID2BufReader.entrySet()) {
 			BufferedReader chrReader = entry.getValue();
 			String content = "";
 			while ((content = chrReader.readLine()) != null) {
@@ -212,5 +219,84 @@ public class ChrStringHash extends SeqHashAbs{
 			}
 		}
 		return effGenomSize;
+	}
+	@Override
+	public Iterable<Character> readBase(String refID) {
+		final String myRefID = getChrIDisLowCase(refID);;
+		return new Iterable<Character>() {
+			@Override
+			public Iterator<Character> iterator() {
+				IteratorBase iteratorBase = new IteratorBase();
+				iteratorBase.setReader(mapChrID2Txt.get(myRefID));
+				return iteratorBase;
+			}
+		};
+	}
+}
+
+
+class IteratorBase implements Iterator<Character> {
+	TxtReadandWrite txtReader;
+	BufferedReader reader;
+	
+	char[] tmpSeq;
+	int index = 0;
+	
+	Character base;
+	
+	public void setReader(TxtReadandWrite txtRead) {
+		this.txtReader = txtRead;
+		try { reader = txtReader.readfile(); } catch (Exception e) { e.printStackTrace(); }
+		base = getBase();
+	}
+	@Override
+	public boolean hasNext() {
+		return base != null;
+	}
+
+	@Override
+	public Character next() {
+		Character retval = base;
+		base = getBase();
+		return retval;
+	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
+	
+	private Character getBase() {
+		try {
+			return getBaseWithExp();
+		} catch (IOException e) {
+			return null;
+		}
+	}
+	
+	private Character getBaseWithExp() throws IOException {
+		Character base = null;
+		if (tmpSeq == null || index >= tmpSeq.length) {
+			String lineTmp = reader.readLine();
+			if (lineTmp == null) {
+				return null;
+			}
+			lineTmp = lineTmp.trim();
+			/////skip blank lines
+			while (lineTmp.startsWith(">") || lineTmp.length() == 0) {
+				lineTmp = reader.readLine();
+				if (lineTmp == null) {
+					return null;
+				}
+				lineTmp = lineTmp.trim();
+			}
+			/////////////////
+			tmpSeq = lineTmp.toCharArray();
+			index = 0;
+		}
+
+		base = tmpSeq[index];
+		index++;
+		return base;
 	}
 }

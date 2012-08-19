@@ -2,7 +2,7 @@ package com.novelbio.base.multithread.txtreadcopewrite;
 
 import java.util.AbstractQueue;
 
-import com.novelbio.base.RunProcess;
+import com.novelbio.base.multithread.RunProcess;
 
 public abstract class MTrecordCoper<T extends MTRecordCope> extends RunProcess<MTRecordCope>{
 	

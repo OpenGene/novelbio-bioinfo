@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.genomeNew.GffChrStatistics;
 import com.novelbio.analysis.seq.genomeNew.GffChrStatistics.GffChrStatiscticsProcessInfo;
-import com.novelbio.base.RunGetInfo;
-import com.novelbio.base.RunProcess;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.multithread.RunGetInfo;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiPeakStatistics;
 
@@ -75,17 +75,15 @@ public class CtrlPeakStatistics implements RunGetInfo<GffChrStatistics.GffChrSta
 		guiPeakStatistics.getJScrollPaneDataResult().setItemLs(getResult());
 	}
 	@Override
-	public void threadSuspend() {
+	public void threadSuspended(RunProcess<GffChrStatiscticsProcessInfo> runProcess) {
 		guiPeakStatistics.getBtnRun().setEnabled(true);
 	}
 	@Override
-	public void threadResume() {
-		gffChrStatistics.threadResume();
+	public void threadResumed(RunProcess<GffChrStatiscticsProcessInfo> runProcess) {
 		guiPeakStatistics.getBtnRun().setEnabled(false);
 	}
 	@Override
-	public void threadStop() {
-		gffChrStatistics.threadSuspend();
+	public void threadStop(RunProcess<GffChrStatiscticsProcessInfo> runProcess) {
 		guiPeakStatistics.getBtnRun().setEnabled(true);
 	}
 }

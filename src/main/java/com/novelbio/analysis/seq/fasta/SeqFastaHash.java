@@ -4,12 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -112,11 +114,9 @@ public class SeqFastaHash extends SeqHashAbs {
 				Seq = new SeqFasta();
 				String tmpSeqName = "";
 				// //////////////是否改变序列名字的大小写//////////////////////////////////////////////
-				if (CaseChange)
-					tmpSeqName = content.trim().substring(1).trim()
-							.toLowerCase();//.replace(" ", "_");// substring(1)，去掉>符号，然后统统改成小写
-				else
-					tmpSeqName = content.trim().substring(1).trim();//.replace(" ", "_");// substring(1)，去掉>符号，不变大小写
+				tmpSeqName = content.trim().substring(1).trim();
+				tmpSeqName = getChrIDisLowCase(tmpSeqName);
+				
 				// ///////////////用正则表达式抓取序列名中的特定字符////////////////////////////////////////////////
 				if (regx == null || regx.trim().equals("")) {
 					Seq.setName(tmpSeqName);
@@ -167,7 +167,7 @@ public class SeqFastaHash extends SeqHashAbs {
 				 hashChrLength.put(seqFasta.getSeqName(), (long) seq.length());
 			 }
 			 else {
-				if (tmpSeq.getLength()<seqFasta.getLength()) 
+				if (tmpSeq.Length()<seqFasta.Length()) 
 				{
 					hashSeq.put(seqFasta.getSeqName(), seqFasta);
 					hashChrLength.put(seqFasta.getSeqName(), (long) seq.length());
@@ -185,9 +185,10 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * 如果没有序列则返回null
 	 */
 	public String getSeqAll(String SeqID,boolean cisseq) {
+		SeqID = getChrIDisLowCase(SeqID);
 		if (hashSeq.containsKey(SeqID)) {
 			if (cisseq) {
-				return hashSeq.get(SeqID).toString().toLowerCase();
+				return hashSeq.get(SeqID).toString();
 			} else {
 				return hashSeq.get(SeqID).reservecom().toString();
 			}
@@ -213,7 +214,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * 返回序列
 	 */
 	public SeqFasta getSeqFasta(String seqID) {
-		seqID = seqID.toLowerCase();
+		seqID = getChrIDisLowCase(seqID);
 		SeqFasta seqFasta = hashSeq.get(seqID);
 		if (seqFasta == null) {
 			logger.error("没有该ID：" + seqID);
@@ -349,6 +350,12 @@ public class SeqFastaHash extends SeqHashAbs {
 			txtOut.writefileln(seqFastaOut.toStringNRfasta());
 		}
 		txtOut.close();
+	}
+	@Override
+	public Iterable<Character> readBase(String refID) {
+		refID = getChrIDisLowCase(refID);
+		SeqFasta seqFasta = hashSeq.get(refID);
+		return seqFasta.readBase();
 	}
 }
 

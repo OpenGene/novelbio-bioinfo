@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.fastq.FastQfilterRecorder;
+import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
@@ -283,7 +283,7 @@ public class CtrlFastQMapping {
 		mapCondition2CombFastQLRFiltered.put(condition, new FastQ[]{fastQL, fastQR});
 	}
 	private void setFastQParameter(FastQ fastQ, String compressType) {
-		FastQfilterRecorder fastQfilterRecord = new FastQfilterRecorder();
+		FastQRecordFilter fastQfilterRecord = new FastQRecordFilter();
 		fastQfilterRecord.setFilterParamAdaptorLeft(adaptorLeft.trim());
 		fastQfilterRecord.setFilterParamAdaptorRight(adaptorRight.trim());
 		fastQfilterRecord.setFilterParamAdaptorLowercase(adaptorLowercase);

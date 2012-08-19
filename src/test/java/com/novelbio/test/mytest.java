@@ -27,10 +27,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -120,8 +122,12 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_HXW/20120705/2B_recal.bam");
-		samFile.getSingleUnMappedReads();
+		LinkedHashMap<Integer, String> mapTest = new LinkedHashMap<Integer, String>();
+		for (int i = 0; i < 10000; i++) {
+			mapTest.put(i, i+"");
+		}
+		String result = mapTest.get(10);
+		System.out.println(mapTest.get(10));
 	}
 	
 	

@@ -326,6 +326,9 @@ public class TxtReadandWrite {
 						} catch (IOException ioEx) {
 							line = null;
 						}
+						if (line == null) {
+							close();
+						}
 						return line;
 					}
 					String line = getLine();

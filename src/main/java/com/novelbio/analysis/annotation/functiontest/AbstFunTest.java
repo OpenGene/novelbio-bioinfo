@@ -305,7 +305,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 				lsbg.add(strings);
 			}
 	
-			lsTestResult = FisherTest.getFisherResult(lstest, lsbg, this);
+			lsTestResult = DoFisherTest.getFisherResult(lstest, lsbg, this);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("error: ");

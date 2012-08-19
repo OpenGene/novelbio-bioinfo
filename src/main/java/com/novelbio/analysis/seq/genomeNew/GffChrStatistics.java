@@ -15,8 +15,8 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.base.RunProcess;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 /**
  * 直接在这个里面设定tss和tes
