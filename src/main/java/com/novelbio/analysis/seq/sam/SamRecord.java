@@ -15,6 +15,7 @@ import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 
 import net.sf.samtools.AlignmentBlock;
+import net.sf.samtools.Cigar;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
@@ -44,7 +45,6 @@ public class SamRecord extends SiteInfo {
 		super.setStartEndLoc(samRecord.getAlignmentStart(),
 				samRecord.getAlignmentEnd());
 	}
-
 	public String getDescription() {
 		return samRecord.toString();
 	}
@@ -195,7 +195,9 @@ public class SamRecord extends SiteInfo {
 	public boolean isMateCis5to3() {
 		return !samRecord.getMateNegativeStrandFlag();
 	}
-
+	public Cigar getCigar() {
+		return samRecord.getCigar();
+	}
 	/** 给定一条reads，看是否为其成对的reads */
 	public boolean isPaireReads(SamRecord samRecord) {
 		if (!isHavePairEnd()) {
@@ -300,6 +302,10 @@ public class SamRecord extends SiteInfo {
 
 	public boolean equals(Object o) {
 		return samRecord.equals(o);
+	}
+	@Override
+	public String toString() {
+		return samRecord.getSAMString();
 	}
 
 }

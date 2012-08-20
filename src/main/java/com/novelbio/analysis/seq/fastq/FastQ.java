@@ -28,13 +28,13 @@ public class FastQ {
 	
 	FastQReader fastQRead = new FastQReader();
 	FastQwrite fastQwrite = new FastQwrite();
-	FastQfilter fastQfilter = new FastQfilter();
+	FastQfilter fastQfilter = new FastQfilter(this);
 	
 	public static void main(String[] args) {
 //		FastQ fastQfile = new FastQ("/home/zong0jie/Desktop/FHE.clean.fq");
-		FastQ fastQfile = new FastQ("/home/zong0jie/Desktop/aaa_1.fq.gz");
+		FastQ fastQfile = new FastQ("/media/winF/NBC/Project/RNASeq_Snp_WJ120725/rawdata/s_WT_sequence.txt.gz");
 //		FastQ fastqQfile2 = new FastQ("/home/zong0jie/Desktop/aaa_2.fq.gz");
-		fastQfile.setFastqWrite("/home/zong0jie/Desktop/aaa_filter.fq");
+//		fastQfile.setFastqWrite("/home/zong0jie/Desktop/aaa_filter.fq");
 		FastQRecordFilter fastQfilterRecordParam = new FastQRecordFilter();
 		fastQfilterRecordParam.setFilterParamTrimNNN(true);
 		fastQfile.setFilterParam(fastQfilterRecordParam);
@@ -92,12 +92,10 @@ public class FastQ {
 	 * @return null 出错
 	 */
 	public FastQ filterReads() {
-		if (fastQwrite.getFileName().trim().equals("")) {
-			setFilterReadsOutName(true, fastQRead.getFileName());
-		}
+		setFilterReadsOutName(true, getOutFileName());
 		filterReadsRun();
 		
-		if (!fastQfilter.isFinished(1000)) {
+		if (!fastQfilter.isFinished(500)) {
 			return null;
 		}
 		FastQ fastQfileOut1 = new FastQ(fastQwrite.getFileName());
@@ -109,14 +107,7 @@ public class FastQ {
 		fastQRead.setFastQReadMate(fastQfile2.fastQRead);
 		fastQwrite.setFastQwriteMate(fastQfile2.fastQwrite);
 		
-		if (fastQwrite.getFileName().trim().equals("") ) {
-			String writeName = fastQRead.getFileName();
-			writeName = FileOperate.changeFilePrefix(writeName, "_filtered", "fastq");
-			setFilterReadsOutName(false, fastQRead.getFileName());
-		}
-		else {
-			setFilterReadsOutName(false, fastQwrite.getFileName());
-		}
+		setFilterReadsOutName(false, getOutFileName());
 		fastQfilter.setIsPairEnd(true);
 		filterReadsRun();
 		
@@ -129,6 +120,17 @@ public class FastQ {
 		FastQ fastQfileOut2 = new FastQ(fastQfile2.fastQwrite.getFileName());
 		fastQfileOut2.fastQRead.readsNum = fastQfilter.allFilteredReadsNum;
 		return new FastQ[]{fastQfileOut1, fastQfileOut2};
+	}
+	private String getOutFileName() {
+		String writeName = fastQwrite.getFileName().trim();
+		if (writeName.equals("") ) {
+			String fileFastqRead = fastQRead.getFileName();
+			if (fileFastqRead.endsWith(".gz")) {
+				fileFastqRead = fileFastqRead.substring(0, fileFastqRead.length() - 3);//remove the ".gz"
+			}
+			writeName = FileOperate.changeFileSuffix(fileFastqRead, "_filtered", "fastq");
+		}
+		return writeName;
 	}
 	/** 设定过滤后的输出文件名 */
 	private void setFilterReadsOutName(boolean singleEnd, String outFileName) {

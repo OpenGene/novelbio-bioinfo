@@ -44,19 +44,6 @@ import net.sf.samtools.util.IOUtil;
  */
 public class SamFile {
 	public static void main(String[] args) {
-		
-		String sam = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/heartK0a14m1_1/accepted_hits.bam";
-		SamFile samFile = new SamFile(sam);
-		samFile.name();
-		samFile.toBedSingleEnd();
-//		
-//		sam = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/heartK0a14m1_2/accepted_hits.bam";
-//		samFile = new SamFile(sam);
-//		lsMappingInfo = samFile.getMappingInfo();
-//		txtOut = new TxtReadandWrite(FileOperate.changeFileSuffix(sam, "_statistics", "txt"), true);
-//		txtOut.ExcelWrite(lsMappingInfo);
-//		txtOut.close();
-
 	}
 	
 	
@@ -79,7 +66,7 @@ public class SamFile {
 	/**
 	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
 	 */
-	SAMFileReader samFileReader;
+	SamReader samReader = new SamReader();
 	SAMFileWriter samFileWriter;
 	
 	public SAMFileHeader.SortOrder SORT_ORDER;
@@ -112,7 +99,7 @@ public class SamFile {
 		File file = new File(samFileExist);
 		
 		final BufferedInputStream bufferedStream;
-		if (file != null)
+		if (file != null) {
 			try {
 				bufferedStream = new BufferedInputStream(new FileInputStream(file));
 				this.bamFile = isBAMFile(bufferedStream);
@@ -120,9 +107,14 @@ public class SamFile {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+		samReader.setFileName(samFileExist);
 	}
 	public String getFileName() {
 		return fileName;
+	}
+	public String getName() {
+		return samReader.getName();
 	}
 	/**
 	 * 是否为uniqMapping，默认为true
@@ -145,23 +137,7 @@ public class SamFile {
 	 * @param getPairedBed
 	 */
 	public boolean isPairend() {
-		if (pairend != null) {
-			 return pairend;
-		}
-		int countAll = 500;
-		int countLines = 0;
-		pairend = false;
-		for (SamRecord samRecord : readLines()) {
-			countLines++;
-			if (countLines > countAll) {
-				break;
-			}
-			if (samRecord.isHavePairEnd()) {
-				pairend = true;
-				break;
-			}
-		}
-		return pairend;
+		return samReader.isPairend();
 	}
 	//TODO 待扩充
 	public void setBedInfo(boolean pairendExtend, int mapQuality, int uniqMapping) {
@@ -175,15 +151,6 @@ public class SamFile {
 		this.mapQualityFilter = mapQuality;
 	}
 
-	public void name() {
-		SAMFileHeader samFileHeader = getSamFileReader().getFileHeader();
-		System.out.println(samFileHeader.toString());
-	}
-	private SAMFileReader getSamFileReader() {
-		File file = new File(fileName);
-		samFileReader = new SAMFileReader(file);
-		return samFileReader;
-	}
 
 	public SamFileStatistics getStatistics() {
 		samFileStatistics = new SamFileStatistics();
@@ -191,56 +158,22 @@ public class SamFile {
 		samFileStatistics.statistics();
 		return samFileStatistics;
 	}
-
+	
+	public Iterable<SamRecord> readLines() {
+		return samReader.readLines();
+	}
+	public Iterable<SamRecord> readLines(int num) {
+		return samReader.readLines(num);
+	}
 	/**
 	 * 注意大小写区分
 	 * @param ReadName reads的名字，只要写关键词就行了
 	 * @return 没找到就返回null
 	 */
-	public SAMRecord getReads(String ReadName) {
-		SAMFileReader samFileReader = getSamFileReader();
-		SAMRecordIterator samRecordIterator = samFileReader.iterator();
-		while (samRecordIterator.hasNext()) {
-			SAMRecord samRecord = null;
-			try {
-				samRecord = samRecordIterator.next();
-			} catch (Exception e) {
-				continue;
-			}
-			if (samRecord.getReadName().contains(ReadName)) {
-				samRecordIterator.close();
-				samFileReader.close();
-				return samRecord;
-			}
-		}
-		return null;
+	public SamRecord getReads(String ReadName) {
+		return samReader.getReads(ReadName);
 	}
 
-	 /**
-	  * 根据后缀名保存为sam或bam
-	  * 实际上考虑调用samtools来做，这个有待测试
-	  * @param outFile
-	  */
-	public void sort(String outFile) {
-		SAMFileReader samFileReader = getSamFileReader();
-		File fileOut = new File(outFile);
-		long n = 0;
-		samFileReader.getFileHeader().setSortOrder(SORT_ORDER);
-		/**
-		 * makeSAMOrBAMWriter() 根据后缀名保存为sam或bam
-		 */
-		final SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(samFileReader.getFileHeader(), false, fileOut);
-		final Iterator<SAMRecord> iterator = samFileReader.iterator();
-		while (iterator.hasNext()) {
-			writer.addAlignment(iterator.next());
-			if (++n % 10000000 == 0) logger.info("Read " + n + " records.");
-		}
-		
-		logger.info("Finished reading inputs, merging and writing to output now.");
-		
-		samFileReader.close();
-		writer.close();
-	}
 	/**
 	 * 提取sam文件中没有mapping上的reads，将其保存为单个fastq文件，序列质量默认为中等
 	 * @param getNonUniq 是否将非uniq的也提取出来
@@ -248,7 +181,7 @@ public class SamFile {
 	 */
 	public FastQ getUnMappedReads(boolean getNonUniq, String outFastQfile) {
 		FastQ fastQ = new FastQ(outFastQfile, true);
-		for (SamRecord samRecord : readLines()) {
+		for (SamRecord samRecord : samReader.readLines()) {
 			if (!samRecord.isMapped() || (getNonUniq && !samRecord.isUniqueMapping())) {
 				FastQRecord fastQRecord = samRecord.toFastQRecord();
 				fastQ.writeFastQRecord(fastQRecord);
@@ -270,11 +203,11 @@ public class SamFile {
 			return null;
 		}
 		SamFile samFile = new SamFile();
-		SAMFileHeader samFileHeader = getSamFileReader().getFileHeader();
+		SAMFileHeader samFileHeader = samReader.getsamfilehead();
 		samFile.setSamFileNew(samFileHeader, outSamFile, true);
 		
 		LinkedHashMap<String, SamRecord> mapName2Record = new LinkedHashMap<String, SamRecord>();
-		for (SamRecord samRecord : readLines()) {
+		for (SamRecord samRecord : samReader.readLines()) {
 			if (!samRecord.isHavePairEnd()) {
 				continue;
 			}
@@ -336,128 +269,48 @@ public class SamFile {
     }
     
     private static int readBytes(final InputStream stream, final byte[] buffer, final int offset, final int length)
-            throws IOException {
-            int bytesRead = 0;
-            while (bytesRead < length) {
-                final int count = stream.read(buffer, offset + bytesRead, length - bytesRead);
-                if (count <= 0) {
-                    break;
-                }
-                bytesRead += count;
-            }
-            return bytesRead;
-        }
-    
+    		throws IOException {
+    	int bytesRead = 0;
+    	while (bytesRead < length) {
+    		final int count = stream.read(buffer, offset + bytesRead, length - bytesRead);
+    		if (count <= 0) {
+    			break;
+    		}
+    		bytesRead += count;
+    	}
+    	return bytesRead;
+    }
+
+	 /**
+	  * 根据后缀名保存为sam或bam
+	  * 实际上考虑调用samtools来做，这个有待测试
+	  * @param outFile
+	  */
+	public void sort(String outFile) {
+		//TODO
+		
+	}
 	 /** 按照需要排序并保存
 	  * @param outFile
 	  */
 	public void sort(String outFile, boolean bam) {
-		SAMFileReader samFileReader = getSamFileReader();
-		File fileOut = new File(outFile);
-		long n = 0;
-		samFileReader.getFileHeader().setSortOrder(SORT_ORDER);
-		SAMFileWriter writer = null;
-		/**
-		 * makeSAMOrBAMWriter() 根据后缀名保存为sam或bam
-		 */
-		if (bam) {
-			writer = new SAMFileWriterFactory().makeBAMWriter(samFileReader.getFileHeader(), false, fileOut);
-		}
-		else {
-			writer = new SAMFileWriterFactory().makeSAMWriter(samFileReader.getFileHeader(), false, fileOut);
-		}
-		final Iterator<SAMRecord> iterator = samFileReader.iterator();
-		while (iterator.hasNext()) {
-			writer.addAlignment(iterator.next());
-			if (++n % 10000000 == 0) logger.info("Read " + n + " records.");
-		}
-		logger.info("Finished reading inputs, merging and writing to output now.");
-		samFileReader.close();
-		writer.close();
+		//TODO
 	}
-	
 	/**
 	 * 还没实现
 	 * 将sam文件压缩为bam文件
 	 * 如果是bam文件，则返回
 	 */
 	public void compress() {
-		if (bamFile) {
-			return;
-		}
+		//TODO
 	}
 	/**
 	 * 待检查
 	 */
 	public void index() {
-		SAMFileReader samFileReader = getSamFileReader();
-		if (!bamFile) {
-			compress();
-		}
-		File fileOut = new File(FileOperate.changeFileSuffix(fileName, null, "bai"));
-		BAMIndexer indexer = new BAMIndexer(fileOut, samFileReader.getFileHeader());
-
-		samFileReader.enableFileSource(true);
-		int totalRecords = 0;
-
-		// create and write the content
-		for (SAMRecord rec : samFileReader) {
-			if (++totalRecords % 1000000 == 0) {
-				logger.info(totalRecords + " reads processed ...");
-			}
-			indexer.processAlignment(rec);
-		}
-		indexer.finish();
+		//TODO
 	}
-	/**
-	 * 从第几行开始读，是实际行
-	 * @param lines 如果lines小于1，则从头开始读取
-	 * @return
-	 */
-	public Iterable<SamRecord> readlines(int lines) {
-		lines = lines - 1;
-		Iterable<SamRecord> itContent = readLines();
-		if (lines > 0) {
-			for (int i = 0; i < lines; i++) {
-				itContent.iterator().hasNext();
-			}
-		}
-		return itContent;
-	}
-	/**
-	 * 迭代读取文件
-	 */
-	public Iterable<SamRecord> readLines() {
-		final SAMRecordIterator samRecordIterator = getSamFileReader().iterator();
-		return new Iterable<SamRecord>() {
-			public Iterator<SamRecord> iterator() {
-				return new Iterator<SamRecord>() {
-					@Override
-					public boolean hasNext() {
-						return samRecordIterator.hasNext();
-					}
 
-					@Override
-					public SamRecord next() {
-						SAMRecord samRecord = null;
-						try {
-							samRecord = samRecordIterator.next();
-						} catch (Exception e) {
-							logger.error("出错");
-							return next();
-						}
-						
-						SamRecord samRecordThis = new SamRecord(samRecord);
-						return samRecordThis;
-					}
-					@Override
-					public void remove() {
-						samRecordIterator.remove();
-					}
-				};
-			}
-		};
-	}
 	
 	public BedSeq toBedSingleEnd() {
 		return toBedSingleEnd(TxtReadandWrite.TXT, FileOperate.changeFileSuffix(getFileName(), "", "bed"));
@@ -476,7 +329,7 @@ public class SamFile {
 	public BedSeq toBedSingleEnd(String bedFileCompType, String bedFile) {
 		BedSeq bedSeq = new BedSeq(bedFile, true);
 		bedSeq.setCompressType(null, bedFileCompType);
-		for (SamRecord samRecord : readLines()) {
+		for (SamRecord samRecord : samReader.readLines()) {
 			if (!samRecord.isMapped() || samRecord.getMapQuality() < mapQualityFilter
 					|| (uniqMapping && !samRecord.isUniqueMapping()) ) {
 				continue;
@@ -504,8 +357,8 @@ public class SamFile {
 	 * 将sam文件改为bed文件，根据mapping质量和正反向进行筛选
 	 */
 	public BedSeq sam2bedPairEnd(String bedFileCompType, String bedFile) {
-		
-		
+		//TODO
+		return null;
 	}
 	
 	
@@ -516,7 +369,7 @@ public class SamFile {
 		samFileWriter.addAlignment(samRecord.getSamRecord());
 	}
 	public void close() {
-		try { samFileReader.close(); } catch (Exception e) { }
+		samReader.close();
 		try { samFileWriter.close(); } catch (Exception e) { }
 	}
 	

@@ -38,9 +38,9 @@ public class FastQRecordFilter extends MTrecordCoper<FastqRecordInfoFilter> {
 	 */
 	private void setQualityFilter(int QUALITY) {
 		if (QUALITY == FastQ.QUALITY_HIGM) {
-			mapFastQFilter.put(10, 2);
+			mapFastQFilter.put(10, 1);
 			mapFastQFilter.put(13, 3);
-			mapFastQFilter.put(20, 7);
+			mapFastQFilter.put(20, 5);
 		} else if (QUALITY == FastQ.QUALITY_LOW) {
 			// hashFastQFilter.put(2, 1);
 			mapFastQFilter.put(10, 4);
@@ -56,7 +56,7 @@ public class FastQRecordFilter extends MTrecordCoper<FastqRecordInfoFilter> {
 			// hashFastQFilter.put(2, 1);
 			mapFastQFilter.put(10, 6);
 			mapFastQFilter.put(13, 15);
-			mapFastQFilter.put(20, 50);
+			mapFastQFilter.put(20, 30);
 		} else {
 			// hashFastQFilter.put(2, 1);
 			mapFastQFilter.put(10, 2);

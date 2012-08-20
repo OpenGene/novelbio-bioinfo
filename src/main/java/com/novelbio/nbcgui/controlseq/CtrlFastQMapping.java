@@ -55,9 +55,12 @@ public class CtrlFastQMapping {
 	int gapLen = 5;
 	double mismatch = 2;
 	int thread = 4;
-	String chrIndexFile;
 	
+	String chrIndexFile;
 	Species species;
+	boolean booChromOrRef = true;
+	
+	
 	SoftWareInfo softWareInfo = new SoftWareInfo();
 	
 	TxtReadandWrite txtReport;
@@ -82,8 +85,13 @@ public class CtrlFastQMapping {
 	public void setReadsLenMin(int readsLenMin) {
 		this.readsLenMin = readsLenMin;
 	}
-	public void setSpecies(Species species) {
+	/** 
+	 * @param species
+	 * @param booChromOrRef true mapping chromosome false mapping refseq
+	 */
+	public void setSpecies(Species species, boolean booChromOrRef) {
 		this.species = species;
+		this.booChromOrRef = booChromOrRef;
 	}
 	public void setTrimNNN(boolean trimNNN) {
 		this.trimNNN = trimNNN;
@@ -301,10 +309,17 @@ public class CtrlFastQMapping {
 			FastQ[] fastQs = entry.getValue();
 			MapBwa mapBwa = new MapBwa();
 			
-			if (chrIndexFile != null)
+			if (species.getTaxID() == 0) {
 				mapBwa.setExePath(softWareInfo.getExePath(), chrIndexFile);
-			else
-				mapBwa.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bwa));
+			}
+			else {
+				if (booChromOrRef) {
+					mapBwa.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bwa));
+				}
+				else {
+					mapBwa.setExePath(softWareInfo.getExePath(), species.getRefseqFile());
+				}
+			}
 
 			mapBwa.setFqFile(fastQs[0], fastQs[1]);
 			mapBwa.setOutFileName(outFilePrefix + prefix);
@@ -323,7 +338,6 @@ public class CtrlFastQMapping {
 			
 			txtReport.writefileln(prefix);
 			txtReport.ExcelWrite(samFileStatistics.getMappingInfo());
-			txtReport.writefile("", true);
 		}
 	}
 	public static HashMap<String, Integer> getMapLibrary() {

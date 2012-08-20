@@ -55,6 +55,11 @@ public class GuiFastQJpanel extends JPanel {
 	JButton btnRun;
 	JButton btnOpenFastQRight;
 	JButton btnDeleteFastQRight;
+	
+	ButtonGroup buttonGroupMappingTo = new ButtonGroup();
+	JRadioButton rdbtnMaptochrom;
+	JRadioButton rdbtnMaptorefseq;
+	
 	JCheckBox chckbxLowcaseAdaptor;
 	CtrlFastQMapping ctrlFastQMapping = new CtrlFastQMapping();
 	
@@ -153,6 +158,18 @@ public class GuiFastQJpanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				Species species = cmbSpecies.getSelectedValue();
 				cmbSpeciesVersion.setMapItem(species.getMapVersion());
+				if (species.getTaxID() == 0) {
+					txtMappingIndex.setEnabled(true);
+					btnMappingindex.setEnabled(true);
+					rdbtnMaptochrom.setEnabled(true);
+					rdbtnMaptorefseq.setEnabled(true);
+				}
+				else {
+					txtMappingIndex.setEnabled(false);
+					btnMappingindex.setEnabled(false);
+					rdbtnMaptochrom.setEnabled(false);
+					rdbtnMaptorefseq.setEnabled(false);
+				}
 			}
 		});
 		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
@@ -220,7 +237,7 @@ public class GuiFastQJpanel extends JPanel {
 		btnMappingindex.setBounds(387, 461, 134, 24);
 		btnMappingindex.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				txtMappingIndex.setText()
+				txtMappingIndex.setText(guiFileOpen.openFileName("fasta file", ""));
 			}
 		});
 		add(btnMappingindex);
@@ -267,7 +284,7 @@ public class GuiFastQJpanel extends JPanel {
 					ctrlFastQMapping.setLibraryType(cmbLibrary.getSelectedValue());
 					Species species = cmbSpecies.getSelectedValue();
 					species.setVersion(cmbSpeciesVersion.getSelectedValue());
-					ctrlFastQMapping.setSpecies(species);
+					ctrlFastQMapping.setSpecies(species, rdbtnMaptochrom.isSelected());
 					ctrlFastQMapping.setUniqMapping(chckbxUniqMapping.isSelected());
 				}
 				ctrlFastQMapping.setOutFilePrefix(txtSavePathAndPrefix.getText());
@@ -364,12 +381,20 @@ public class GuiFastQJpanel extends JPanel {
 		
 		cmbLibrary = new JComboBoxData<Integer>();
 		cmbLibrary.setMapItem(CtrlFastQMapping.getMapLibrary());
-		cmbLibrary.setBounds(470, 402, 134, 23);
+		cmbLibrary.setBounds(653, 402, 134, 23);
 		add(cmbLibrary);
 		
 		JLabel lblLibrary = new JLabel("Library");
-		lblLibrary.setBounds(398, 406, 69, 14);
+		lblLibrary.setBounds(568, 406, 69, 14);
 		add(lblLibrary);
+		
+		rdbtnMaptochrom = new JRadioButton("MapToChrom");
+		rdbtnMaptochrom.setBounds(393, 376, 151, 22);
+		add(rdbtnMaptochrom);
+		
+		rdbtnMaptorefseq = new JRadioButton("MapToRefSeq");
+		rdbtnMaptorefseq.setBounds(393, 406, 151, 22);
+		add(rdbtnMaptorefseq);
 
 		
 		btnOpenFastqLeft.addActionListener(new ActionListener() {
@@ -406,5 +431,10 @@ public class GuiFastQJpanel extends JPanel {
 		
 		chckbxMapping.setSelected(true);
 		chckbxFilterreads.setSelected(true);
+		txtMappingIndex.setEnabled(false);
+		btnMappingindex.setEnabled(false);
+		buttonGroupMappingTo.add(rdbtnMaptochrom);
+		buttonGroupMappingTo.add(rdbtnMaptorefseq);
+		rdbtnMaptochrom.setSelected(true);
 	}
 }

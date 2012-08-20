@@ -105,10 +105,10 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 //				
 //				guiPeakStatistics = new GuiPeakStatistics();
 //				jTabbedPane1.addTab("PeakStatistics", guiPeakStatistics);
-//				
+				
 				guiGoJPanel= new GuiGoJPanel();
 				jTabbedPane1.addTab("GO", null, guiGoJPanel, null);
-//				
+				
 //				guiPathJpanel = new GuiPathJpanel();
 //				jTabbedPane1.addTab("Path", null, guiPathJpanel, null);
 //				

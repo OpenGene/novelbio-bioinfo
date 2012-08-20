@@ -4,7 +4,8 @@ import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.base.multithread.txtreadcopewrite.MTmulitCopeInfo;
 import com.novelbio.base.multithread.txtreadcopewrite.MTrecordCoper;
 
-class FastQfilter extends MTmulitCopeInfo<FastQRecordFilter, FastqRecordInfoFilter>{
+class FastQfilter extends MTmulitCopeInfo<FastQRecordFilter, FastqRecordInfoFilter> {
+	FastQ fastQ;
 	FastQwrite fastqWrite;
 	boolean isPairEnd = false;
 	int allRawReadsNum, allFilteredReadsNum;
@@ -12,7 +13,9 @@ class FastQfilter extends MTmulitCopeInfo<FastQRecordFilter, FastqRecordInfoFilt
 	/** 用作参数设定的 */
 	FastQRecordFilter fastQfilterRecordParam;
 	
-	
+	public FastQfilter(FastQ fastQ) {
+		this.fastQ = fastQ;
+	}
 	public void setFastqWrite(FastQwrite fastqWrite) {
 		this.fastqWrite = fastqWrite;
 	}
@@ -26,9 +29,7 @@ class FastQfilter extends MTmulitCopeInfo<FastQRecordFilter, FastqRecordInfoFilt
 		for (int i = 0; i < threadFilterNum; i++) {
 			FastQRecordFilter fastqFilterRecord = new FastQRecordFilter();
 			//TODO 设定过滤参数
-			fastqFilterRecord.adaptorLowercase = false;
-			fastqFilterRecord.phredOffset = 33;
-			fastqFilterRecord.readsLenMin = 21;
+			fastqFilterRecord.phredOffset = fastQ.getOffset();
 			addMTcopedRecord(fastqFilterRecord);
 		}
 	}

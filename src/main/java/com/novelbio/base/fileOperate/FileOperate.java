@@ -62,7 +62,9 @@ public class FileOperate {
 		}
 		return st;
 	}
-
+	public static String getSepPath() {
+		return File.separator;
+	}
 	/**
 	 * 给定路径名，返回其上一层路径，带"/" 如给定 /wer/fw4e/sr/frw/s3er.txt 返回 /wer/fw4e/sr/frw/
 	 * 如果为相对路径的最上层，譬如给定的是soap 则返回“”

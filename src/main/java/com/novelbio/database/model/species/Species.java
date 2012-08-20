@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -28,7 +29,7 @@ public class Species {
 	
 	int taxID = 0;
 	TaxInfo taxInfo = new TaxInfo();
-	String version = "";;
+	String version = "";
 	/** 有哪些版本,0：version 1：year<br>
 	 * 按照年代从大到小排序
 	 */
@@ -95,7 +96,7 @@ public class Species {
 	 * @return
 	 */
 	public HashMap<String, String> getMapVersion() {
-		HashMap<String, String> mapVersion = new HashMap<String, String>();
+		LinkedHashMap<String, String> mapVersion = new LinkedHashMap<String, String>();
 		for (String[] string : lsVersion) {
 			mapVersion.put(string[0] + "_year_" +string[1], string[0]);
 		}
@@ -362,6 +363,7 @@ public class Species {
 			}
 			mapSpeciesName2Species.put(species.getCommonName(), species);
 		}
+		mapSpeciesName2Species.put("UnKnown Species", new Species());
 		return mapSpeciesName2Species;
 	}
 	/**
