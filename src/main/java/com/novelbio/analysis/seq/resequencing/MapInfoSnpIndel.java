@@ -351,87 +351,125 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
 		sampleRefReadsInfo.setSearchSampileupFile(true);
 		sampleRefReadsInfo.setReadDepth(readsDepth);
-		String referenceSeq = refBase, thisSeq = refBase;
+		String thisSeq = refBase;
 		char[] pipInfo = pileUpInfo.toCharArray();
 		for (int i = 0; i < pipInfo.length; i++) {
 			char c = pipInfo[i];
-			if (c == '$') continue;
+			if (c == '$' || c == '<' || c == '>') continue;
 			if (c == '^' ) {
-				i ++; continue;
+				i ++; continue;//^后面是mapping质量，所以跳过
 			}
-			else if (c == 'n' || c== 'N') {
+			else if (c == 'n' || c== 'N') {//不确定的错配不理会
+				if (isIndel(pipInfo, i)) {//后面是indel才将thisSeq设定为N，否则直接跳过
+					thisSeq = "N";
+				}
 				continue;
 			}
 			else if (c == ',' || c == '.') {
-				sampleRefReadsInfo.addRefDepth(1); continue;
+				if (!isIndel(pipInfo, i)) {
+					sampleRefReadsInfo.addRefDepth(1); continue;
+				}
 			}
 			else if (c == '+' || c == '-') {
-				int tmpInDelNum = 0;
-				i ++;
-				//如果开头是“+”号，则获得+号后的数字，也就是indel的长度
-				for (; i < pipInfo.length; i++) {
-					char tmpNum = pipInfo[i];
-					//转换为数字字符
-					if (tmpNum >= 48 && tmpNum <=57) {
-						tmpInDelNum = tmpInDelNum*10 + tmpNum -  48;
-					}
-					else {
-						i--;
-						break;
-					}
-				}
-				//获得具体的字符
-				char[] tmpSeq = new char[tmpInDelNum];
-				for (int j = 0; j < tmpSeq.length; j++) {
-					i++;
-					tmpSeq[j] = pipInfo[i];
-				}
-				String indel = String.copyValueOf(tmpSeq);
-				if (c == '+') {
-					referenceSeq = refBase;
-					thisSeq = refBase + indel;
-				}
-				else {
-					referenceSeq = refBase + indel;
-					thisSeq = refBase;
-				}
-				SiteSnpIndelInfo siteSnpIndelInfo = null;
-				String indelInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
-				
-				if (mapAllen2Num.containsKey(indelInfo)) {
-					siteSnpIndelInfo = mapAllen2Num.get(indelInfo);
-					siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
-					siteSnpIndelInfo.addThisBaseNum();
-				}
-				else {
-					siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, referenceSeq, thisSeq);
-					siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
-					siteSnpIndelInfo.setThisReadsNum(1);
-					mapAllen2Num.put(indelInfo, siteSnpIndelInfo);
-				}
-				referenceSeq = refBase; thisSeq = refBase;//复位reference
+				i = setIndel(thisSeq, c, pipInfo, i);
+				thisSeq = refBase;//复位reference
 			}
 			else if (c == '*') {
 				continue;
 			}
 			//mismatch
 			else {
-				SiteSnpIndelInfo siteSnpIndelInfo = null;
-				thisSeq = pipInfo[i] + "";
-				String mismatchInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
-				if (mapAllen2Num.containsKey(mismatchInfo)) {
-					siteSnpIndelInfo = mapAllen2Num.get(mismatchInfo);
-					siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
-					siteSnpIndelInfo.addThisBaseNum();
-				}
-				else {
-					siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, refBase, thisSeq);
-					siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
-					siteSnpIndelInfo.setThisReadsNum(1);
-					mapAllen2Num.put(mismatchInfo, siteSnpIndelInfo);
-				}
+				thisSeq = setMisMatchAndGetRefBase(pipInfo, i);
 			}
 		}
+	}
+	private boolean isIndel(char[] pipInfo, int thisIndex) {
+		int nextIndex = thisIndex + 1;
+		if (nextIndex < pipInfo.length && (pipInfo[nextIndex] == '+' || pipInfo[nextIndex] == '-'))
+			return true;
+		return false;
+	}
+	/** 设定indel信息，同时返回结果的index
+	 * 也就是输入的pipInfo读取到的位点
+	 * @param thisSeq
+	 * @param indelSymbol
+	 * @param pipInfo
+	 * @param index
+	 * @return
+	 */
+	private int setIndel(String thisSeq, char indelSymbol, char[] pipInfo, int index) {
+		String referenceSeq = refBase;
+		int tmpInDelNum = 0;
+		index ++;
+		//如果开头是“+”号，则获得+号后的数字，也就是indel的长度
+		for (; index < pipInfo.length; index++) {
+			char tmpNum = pipInfo[index];
+			//转换为数字字符
+			if (tmpNum >= 48 && tmpNum <=57) {
+				tmpInDelNum = tmpInDelNum*10 + tmpNum -  48;
+			}
+			else {//不是字符说明读过头了，就返回一位
+				index--;
+				break;
+			}
+		}
+		//获得具体的字符
+		char[] tmpSeq = new char[tmpInDelNum];
+		for (int j = 0; j < tmpSeq.length; j++) {
+			index++;
+			tmpSeq[j] = pipInfo[index];
+		}
+		String indel = String.copyValueOf(tmpSeq);
+		if (indelSymbol == '+') {
+			thisSeq = thisSeq + indel;
+		}
+		else {
+			referenceSeq = referenceSeq + indel;
+		}
+		SiteSnpIndelInfo siteSnpIndelInfo = null;
+		String indelInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
+		
+		if (mapAllen2Num.containsKey(indelInfo)) {
+			siteSnpIndelInfo = mapAllen2Num.get(indelInfo);
+			siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
+			siteSnpIndelInfo.addThisBaseNum();
+		}
+		else {
+			siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, referenceSeq, thisSeq);
+			siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
+			siteSnpIndelInfo.setThisReadsNum(1);
+			mapAllen2Num.put(indelInfo, siteSnpIndelInfo);
+		}
+		return index;
+	}
+	
+	/** 设定错配位点，如果错配位点后面还跟着插入或缺失，则直接返回。<br>
+	 * 否则就将错配装入snpInfo
+	 * @param referenceSeq
+	 * @param pipInfo
+	 * @param thisIndex
+	 * @return 如果是Indel，返回该位点错配的碱基序列
+	 * 如果不是Indel，返回refbase
+	 */
+	private String setMisMatchAndGetRefBase(char[] pipInfo, int thisIndex) {
+		String thisSeq = pipInfo[thisIndex] + "";
+		if (isIndel(pipInfo, thisIndex))
+			return thisSeq;
+		
+		SiteSnpIndelInfo siteSnpIndelInfo = null;
+		String mismatchInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, refBase, thisSeq);
+		if (mapAllen2Num.containsKey(mismatchInfo)) {
+			siteSnpIndelInfo = mapAllen2Num.get(mismatchInfo);
+			siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
+			siteSnpIndelInfo.addThisBaseNum();
+		}
+		else {
+			siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, refBase, thisSeq);
+			siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
+			siteSnpIndelInfo.setThisReadsNum(1);
+			mapAllen2Num.put(mismatchInfo, siteSnpIndelInfo);
+		}
+		return refBase;
 	}
 	/** 有些已经在vcf里面查过的snp会有该snp的depth信息，所以这里先清空本样本所有snp数值 */
 	private void clearSampleReadsNum() {
