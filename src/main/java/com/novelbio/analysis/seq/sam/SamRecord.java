@@ -1,24 +1,38 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.lang.reflect.Array;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 
 import net.sf.samtools.AlignmentBlock;
 import net.sf.samtools.Cigar;
+import net.sf.samtools.SAMBinaryTagAndUnsignedArrayValue;
+import net.sf.samtools.SAMBinaryTagAndValue;
+import net.sf.samtools.SAMException;
+import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileReader;
+import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMRecordIterator;
+import net.sf.samtools.SAMSequenceRecord;
+import net.sf.samtools.SAMValidationError;
+import net.sf.samtools.util.BinaryCodec;
+import net.sf.samtools.util.DateParser;
+import net.sf.samtools.util.Iso8601Date;
+import net.sf.samtools.util.StringUtil;
 
 public class SamRecord extends SiteInfo {
 	private static Logger logger = Logger.getLogger(SamRecord.class);
@@ -26,11 +40,30 @@ public class SamRecord extends SiteInfo {
 	Boolean isJunctionReads;
 	Boolean isHavePaireReads;
 	int numMappedReadsInFile = 0;
+	
+	
+    // From SAM specification
+    private static final int QNAME_COL = 0;
+    private static final int FLAG_COL = 1;
+    private static final int RNAME_COL = 2;
+    private static final int POS_COL = 3;
+    private static final int MAPQ_COL = 4;
+    private static final int CIGAR_COL = 5;
+    private static final int MRNM_COL = 6;
+    private static final int MPOS_COL = 7;
+    private static final int ISIZE_COL = 8;
+    private static final int SEQ_COL = 9;
+    private static final int QUAL_COL = 10;
+
+    private static final int NUM_REQUIRED_FIELDS = 11;
+
+    
+    
 	public SamRecord() {
 		// TODO Auto-generated constructor stub
 	}
 
-	protected SamRecord(SAMRecord samRecord) {
+	public SamRecord(SAMRecord samRecord) {
 		this.samRecord = samRecord;
 		setSiteInfo(samRecord);
 	}
@@ -47,8 +80,7 @@ public class SamRecord extends SiteInfo {
 	}
 	public String getDescription() {
 		return samRecord.toString();
-	}
-
+	}	  
 	public boolean isJunctionReads() {
 		if (isJunctionReads != null) {
 			return isJunctionReads;

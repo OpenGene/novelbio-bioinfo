@@ -83,7 +83,15 @@ public class Species {
 	 * 倒序排列
 	 * @return
 	 */
-	public ArrayList<String> getVersion() {
+	public String getVersion() {
+		return this.version;
+	}
+	/**
+	 * 获得数据库中该物种的所有版本
+	 * 倒序排列
+	 * @return
+	 */
+	public ArrayList<String> getVersionAll() {
 		ArrayList<String> lsVersionOut = new ArrayList<String>();
 		for (String[] string : lsVersion) {
 			lsVersionOut.add(string[0] + "_year_" +string[1]);

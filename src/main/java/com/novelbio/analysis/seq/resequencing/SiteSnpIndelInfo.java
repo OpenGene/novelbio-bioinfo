@@ -82,6 +82,12 @@ public abstract class SiteSnpIndelInfo {
 	public void setSampleName(String sampleName) {
 		this.sampleName = sampleName;
 	}
+	public boolean isContainSample(String sampleName) {
+		return mapSample2thisBaseNum.containsKey(sampleName);
+	}
+	public String getSampleName() {
+		return sampleName;
+	}
 	/**
 	 * ÒÆÂëÍ»±ä
 	 * @param orfShift
@@ -412,6 +418,9 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
 		if (lsTmp == null) {
 			NR = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), mapInfoSnpIndel.getRefID(), LocStart, LocEnd);
+		}
+		else if (lsTmp.size() == 0) {
+			return;
 		}
 		else {
 			NR = gffChrAbs.getSeqHash().getSeq(mapInfoSnpIndel.getRefID(), lsTmp, false);

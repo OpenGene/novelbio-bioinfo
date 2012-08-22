@@ -107,8 +107,10 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2B.setSampleSnpIndelNum(1, 1);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
-		boolean result = sampleFilter.isFilterdSnp(mapInfoSnpIndel);
-		assertEquals(true, result);
+		SiteSnpIndelInfo result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		result.setSampleName("2B");
+		System.out.println(result.getMismatchInfo());
+		assertEquals(6, result.getReadsNum());
 	}
 	//TODO 再测试仪个
 	/** 有三个基因型的位点 */
@@ -151,8 +153,8 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2B.setSampleSnpIndelHetoLessNum(0, 0);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
-		boolean result = sampleFilter.isFilterdSnp(mapInfoSnpIndel);
-		assertEquals(false, result);
+		SiteSnpIndelInfo result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		assertEquals(null, result);
 	}
 	
 	/** 有两个基因型的位点 */
@@ -194,8 +196,8 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2B.setSampleSnpIndelHetoLessNum(0, 0);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
-		boolean result = sampleFilter.isFilterdSnp(mapInfoSnpIndel);
-		assertEquals(false, result);
+		SiteSnpIndelInfo result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		assertEquals(null, result);
 	}
 	
 	/** 有三个基因型的位点 */
@@ -237,8 +239,9 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2B.setSampleSnpIndelHetoLessNum(0, 0);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
-		boolean result = sampleFilter.isFilterdSnp(mapInfoSnpIndel);
-		assertEquals(true, result);
+		SiteSnpIndelInfo result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		result.setSampleName("2B");
+		assertEquals(3, result.getReadsNum());
 		ArrayList<String> lsSample = new ArrayList<String>();
 		lsSample.add("2A"); lsSample.add("2B");
 		ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(lsSample, true);

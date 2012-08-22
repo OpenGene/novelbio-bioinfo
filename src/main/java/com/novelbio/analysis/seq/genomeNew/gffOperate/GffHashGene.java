@@ -22,6 +22,9 @@ public class GffHashGene implements GffHashGeneInf{
 	}
 	
 	GffHashGeneAbs gffHashGene = null;
+	public GffHashGene() {
+		gffHashGene = new GffHashGeneUCSC();		 
+	}
 	public GffHashGene(String GffType, String gffFile) {
 		if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_UCSC)) {
 			gffHashGene = new GffHashGeneUCSC();
@@ -41,6 +44,13 @@ public class GffHashGene implements GffHashGeneInf{
 		gffHashGene.ReadGffarray(gffFile);
 	}
 	
+	/** 如果是从Fasta序列而来的gff，就用这个包装 */
+	public void setGffHashGeneFromFasta(String seqFasta, String proteinSeq) {
+		GffHashGeneRefSeq gffHashGeneRefSeq = new GffHashGeneRefSeq();
+		gffHashGeneRefSeq.setProteinSeq(proteinSeq);
+		gffHashGeneRefSeq.ReadGffarray(seqFasta);
+		this.gffHashGene = gffHashGeneRefSeq;
+	}
 	/**
 	 * 只设定参数，不读取
 	 * @param GffType
@@ -78,10 +88,6 @@ public class GffHashGene implements GffHashGeneInf{
 	public void setGffHash(GffHashGene gffHashRef) {
 		GffHashCufflinkGTF gff = (GffHashCufflinkGTF)gffHashGene;
 		gff.setGffHashRef(gffHashRef);
-	}
-	
-	public GffHashGene() {
-		gffHashGene = new GffHashGeneUCSC();		 
 	}
 	
 	public void removeDuplicateIso() {

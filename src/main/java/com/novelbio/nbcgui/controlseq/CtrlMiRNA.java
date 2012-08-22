@@ -82,7 +82,7 @@ public class CtrlMiRNA {
 		species.setTaxID(taxID);
 	}
 	public ArrayList<String> getVersion() {
-		return species.getVersion();
+		return species.getVersionAll();
 	}
 	public void setVersion(String version) {
 		species.setVersion(version);

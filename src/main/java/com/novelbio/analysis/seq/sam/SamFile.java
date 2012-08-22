@@ -173,7 +173,9 @@ public class SamFile {
 	public SamRecord getReads(String ReadName) {
 		return samReader.getReads(ReadName);
 	}
-
+	public SAMFileHeader getHeader() {
+		return samReader.getsamfilehead();
+	}
 	/**
 	 * 提取sam文件中没有mapping上的reads，将其保存为单个fastq文件，序列质量默认为中等
 	 * @param getNonUniq 是否将非uniq的也提取出来

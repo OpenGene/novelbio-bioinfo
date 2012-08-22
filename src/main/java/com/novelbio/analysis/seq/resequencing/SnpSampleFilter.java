@@ -49,7 +49,6 @@ public class SnpSampleFilter {
 	/**判定为snp HetoLess所含有的ref比例不得大于该数值 */
 	static double Snp_HetoLess_Contain_SnpProp_Max = 0.1;
 	
-	
 	HashSet<SampleDetail> setSampleFilterInfo = new HashSet<SampleDetail>();
 	
 	/**添加样本过滤信息，注意大小写 */
@@ -60,12 +59,18 @@ public class SnpSampleFilter {
 	public void clearSampleFilterInfo() {
 		setSampleFilterInfo.clear();
 	}
+	public boolean isFilterdSnp(MapInfoSnpIndel mapInfoSnpIndel) {
+		if (getFilterdSnp(mapInfoSnpIndel) != null) {
+			return true;
+		}
+		return false;
+	}
 	/** 
 	 * 该样本是否通过质检
 	 * 如果通过质检了，就返回通过质检的那个snp类型
 	 * 否则返回null
 	 * */
-	public SiteSnpIndelInfo isFilterdSnp(MapInfoSnpIndel mapInfoSnpIndel) {
+	public SiteSnpIndelInfo getFilterdSnp(MapInfoSnpIndel mapInfoSnpIndel) {
 		SiteSnpIndelInfo siteSnpIndelInfoResult = null;
 		boolean isQualified = true;
 		for (SiteSnpIndelInfo siteSnpIndelInfo : mapInfoSnpIndel.getLsAllenInfoSortBig2Small()) {

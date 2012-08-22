@@ -62,6 +62,7 @@ public class FileOperate {
 		}
 		return st;
 	}
+	/** 文件尾巴加个 "/"  */
 	public static String getSepPath() {
 		return File.separator;
 	}

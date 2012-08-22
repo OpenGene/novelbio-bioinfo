@@ -280,7 +280,7 @@ public class SeqFastaHash extends SeqHashAbs {
 		ArrayList<SeqFasta> lsFasta = getSeqFastaAll();
 		TxtReadandWrite txtOut = new TxtReadandWrite(seqOut, true);
 		for (SeqFasta seqFasta : lsFasta) {
-			txtOut.writefileln(seqFasta.toStringNRfasta());
+			txtOut.writefileln(seqFasta.toStringNRfasta(50));
 		}
 		txtOut.close();
 	}

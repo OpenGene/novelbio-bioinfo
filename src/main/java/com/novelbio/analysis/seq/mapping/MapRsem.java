@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
@@ -36,6 +37,7 @@ public class MapRsem {
 	}
 	private static Logger logger = Logger.getLogger(MapRsem.class);
 	
+	Species species;
 	GffChrSeq gffChrSeq = null;
 	GffChrAnno gffChrAnno = null;
 	GffChrAbs gffChrAbs = null;
@@ -62,8 +64,9 @@ public class MapRsem {
 	}
 	/** 直接输入过滤好的fastq，线程和输出路径，就可以开始运行，其他啥也不用管了 */
 	public MapRsem(Species species) {
-		gffChrSeq = new GffChrSeq();
-		gffChrSeq.setSpecies(species);
+		this.species = species;
+		gffChrAbs = new GffChrAbs(species);
+		gffChrSeq = new GffChrSeq(gffChrAbs);
 		SoftWareInfo softWareInfoRsem = new SoftWareInfo();
 		softWareInfoRsem.setName(SoftWare.rsem);
 		SoftWareInfo softWareInfoBowtie = new SoftWareInfo();
@@ -110,11 +113,15 @@ public class MapRsem {
 	}
 	private void createGene2IsoAndRefSeq() {
 		if (!FileOperate.isFileExist(refFile)) {
-			refFile = FileOperate.changeFileSuffix(gffChrAbs.getSeqHash().getChrFile(), "_RefGene", "fastq");
+			String pathRsemIndex = FileOperate.getParentPathName(gffChrAbs.getSeqHash().getChrFile()) + "rsemRef" + species.getVersion().replace(" ", "") + FileOperate.getSepPath();
+			FileOperate.createFolders(pathRsemIndex);
+			
+			refFile = pathRsemIndex +  "RefGene.fa";
 			if (!FileOperate.isFileExist(refFile))
 				gffChrSeq.writeIsoFasta(refFile);
 		}
-		gene2isoFile = FileOperate.changeFileSuffix(gffChrAbs.getGffHashGene().getGffFilename(),"_gene2iso","txt");
+		String pathRsem = FileOperate.getParentPathName(refFile);
+		gene2isoFile = pathRsem +  "RefGene_gene2iso.txt";
 		if (!FileOperate.isFileExist(gene2isoFile)) {
 			gffChrAbs.getGffHashGene().writeGene2Iso(gene2isoFile);
 		}

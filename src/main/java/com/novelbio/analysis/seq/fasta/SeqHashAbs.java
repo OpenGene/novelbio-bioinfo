@@ -281,9 +281,9 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		if (exon1.isCis5to3()) {
 			for (int i = 0; i < lsInfo.size(); i++) {
 				ExonInfo exon = lsInfo.get(i);
-				result = result + sep + getSeq(chrID, exon.getStartAbs(), exon.getEndAbs()).toString().toUpperCase(); 
+				result = result + sep + getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs()).toString().toUpperCase(); 
 				if (getIntron && i < lsInfo.size()-1) {
-					result = result + sep + getSeq(chrID,exon.getEndCis()+1, lsInfo.get(i+1).getStartCis()-1).toString().toLowerCase();
+					result = result + sep + getSeq(myChrID,exon.getEndCis()+1, lsInfo.get(i+1).getStartCis()-1).toString().toLowerCase();
 				}
 			}
 		}
@@ -291,9 +291,9 @@ public abstract class SeqHashAbs implements SeqHashInt{
 			for (int i = lsInfo.size() - 1; i >= 0; i--) {
 				ExonInfo exon = lsInfo.get(i);
 				try {	
-					result = result + sep + getSeq(chrID, exon.getStartAbs(), exon.getEndAbs()).toString().toUpperCase();
+					result = result + sep + getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs()).toString().toUpperCase();
 					if (getIntron && i > 0) {
-						result = result + sep + getSeq(chrID,exon.getStartCis() + 1, lsInfo.get(i-1).getEndCis() - 1).toString().toLowerCase();;
+						result = result + sep + getSeq(myChrID,exon.getStartCis() + 1, lsInfo.get(i-1).getEndCis() - 1).toString().toLowerCase();;
 					}
 				} catch (Exception e) {e.printStackTrace();}
 			}

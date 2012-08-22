@@ -109,7 +109,12 @@ public class GffChrAbs {
 		setGffFile(species.getTaxID(), species.getGffFile()[0], species.getGffFile()[1]);
 		setChrFile(species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0]);
 	}
-
+	public void setGffHash(GffHashGene gffHashGene) {
+		this.gffHashGene = gffHashGene;
+	}
+	public void set(SeqHash seqHash) {
+		this.seqHash = seqHash;
+	}
 	public int getTaxID() {
 		return species.getTaxID();
 	}

@@ -137,8 +137,8 @@ public class SeqFasta implements Cloneable {
 	 */
 	private String getsequence(int startlocation, int endlocation) {
 		int length = SeqSequence.length();
-		if (startlocation < 1 || startlocation >= length || endlocation < 1
-				|| endlocation >= length) {
+		if (startlocation < 1 || startlocation > length || endlocation < 1
+				|| endlocation > length) {
 			logger.error("序列坐标错误 "+SeqName+" "+startlocation+" "+endlocation);
 			return "序列坐标错误 "+SeqName+" "+startlocation+" "+endlocation;
 		}
@@ -363,6 +363,26 @@ public class SeqFasta implements Cloneable {
 	/** 返回Nr的fasta序列 */
 	public String toStringNRfasta() {
 		return ">" + SeqName + TxtReadandWrite.ENTER_LINUX + toString();
+	}
+	/** 返回Nr的fasta序列 */
+	public String toStringNRfasta(int basePerLine) {
+		String result = ">" + SeqName;
+		char[] tmpAll = toString().toCharArray();
+		char[] tmpLines = new char[basePerLine];
+		int m = 0;
+		for (int i = 0; i < tmpAll.length; i++) {
+			if (m >= basePerLine) {
+				String tmpline = String.copyValueOf(tmpLines);
+				result = result + TxtReadandWrite.ENTER_LINUX + tmpline;
+				tmpLines = new char[basePerLine];
+				m = 0;
+			}
+			tmpLines[m] = tmpAll[i];
+			m++;
+		}
+		String tmpline = String.copyValueOf(tmpLines);
+		result = result + TxtReadandWrite.ENTER_LINUX + tmpline;
+		return result;
 	}
 	/** 克隆序列 */
 	public SeqFasta clone() {

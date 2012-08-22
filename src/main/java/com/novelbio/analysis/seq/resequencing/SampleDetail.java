@@ -79,6 +79,9 @@ public class SampleDetail {
 	public void setSampleUnKnownProp(double unKnownProp) {
 		this.unKnownProp = unKnownProp;
 	}
+	public void clearSampleName() {
+		lsSampleName.clear();
+	}
 	/** 暴露出来仅供测试，数值清零，包括样本名也会被清空 */
 	public void clearAll() {
 		lsSampleName.clear();

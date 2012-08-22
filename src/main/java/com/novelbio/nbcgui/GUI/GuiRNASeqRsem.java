@@ -168,7 +168,7 @@ public class GuiRNASeqRsem extends JPanel {
 				
 				int threadNum = 4;
 				try { threadNum = Integer.parseInt(txtThreadNum.getText()); } catch (Exception e1) { }
-				String out = txtSavePathAndPrefix.getName();
+				String out = txtSavePathAndPrefix.getText();
 				
 				HashMap<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq = getMapPrefix2LsFastq();
 				for (Entry<String, ArrayList<ArrayList<FastQ>>> entry : mapPrefix2LsFastq.entrySet()) {

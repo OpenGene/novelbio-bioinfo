@@ -53,8 +53,9 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 
 	public MapInfoSnpIndel() {}
 	/** @param gffChrAbs */
-	public MapInfoSnpIndel(GffChrAbs gffChrAbs) {
+	public MapInfoSnpIndel(GffChrAbs gffChrAbs, String sampleName) {
 		this.gffChrAbs = gffChrAbs;
+		this.sampleName = sampleName;
 	}
 	/**
 	 * @param gffChrAbs
@@ -67,6 +68,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		this.refSnpIndelStart = refSnpIndelStart;
 	    setGffIso();
 	}
+	
+	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
@@ -102,10 +105,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		this.sampleName = sampleName;
 	}
 	public boolean isContainsSample(String sampleName) {
-		if (mapSample2NormReadsInfo.containsKey(sampleName)) {
-			return true;
-		}
-		return false;
+		return mapSample2NormReadsInfo.containsKey(sampleName);
 	}
 	/**
 	 * AD Allelic depths for the ref and alt alleles in the order listed
@@ -193,7 +193,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @return
 	 */
 	public boolean isSameIso(MapInfoSnpIndel mapInfoSnpIndel) {
-		if (gffGeneIsoInfo.equals(mapInfoSnpIndel.getGffIso())) {
+		if (gffGeneIsoInfo != null && gffGeneIsoInfo.equals(mapInfoSnpIndel.getGffIso())) {
 			return true;
 		}
 		else {
@@ -360,13 +360,13 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				i ++; continue;//^后面是mapping质量，所以跳过
 			}
 			else if (c == 'n' || c== 'N') {//不确定的错配不理会
-				if (isIndel(pipInfo, i)) {//后面是indel才将thisSeq设定为N，否则直接跳过
+				if (isNextSiteIndel(pipInfo, i)) {//后面是indel才将thisSeq设定为N，否则直接跳过
 					thisSeq = "N";
 				}
 				continue;
 			}
 			else if (c == ',' || c == '.') {
-				if (!isIndel(pipInfo, i)) {
+				if (!isNextSiteIndel(pipInfo, i)) {
 					sampleRefReadsInfo.addRefDepth(1); continue;
 				}
 			}
@@ -383,7 +383,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			}
 		}
 	}
-	private boolean isIndel(char[] pipInfo, int thisIndex) {
+	private boolean isNextSiteIndel(char[] pipInfo, int thisIndex) {
 		int nextIndex = thisIndex + 1;
 		if (nextIndex < pipInfo.length && (pipInfo[nextIndex] == '+' || pipInfo[nextIndex] == '-'))
 			return true;
@@ -453,7 +453,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 */
 	private String setMisMatchAndGetRefBase(char[] pipInfo, int thisIndex) {
 		String thisSeq = pipInfo[thisIndex] + "";
-		if (isIndel(pipInfo, thisIndex))
+		if (isNextSiteIndel(pipInfo, thisIndex))
 			return thisSeq;
 		
 		SiteSnpIndelInfo siteSnpIndelInfo = null;
@@ -849,10 +849,10 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @param samToolsPleUpFile samtools产生的文件
 	 * @param gffChrAbs
 	 */
-	public static void getSiteInfo(String sampleName, List<MapInfoSnpIndel> lsSite, String samToolsPleUpFile, GffChrAbs gffChrAbs) {
+	public static void getSiteInfo_FromPileUp(String sampleName, List<MapInfoSnpIndel> lsSite, String samToolsPleUpFile, GffChrAbs gffChrAbs) {
 		/** 每个chrID对应一组mapinfo，也就是一个list */
 		HashMap<String, ArrayList<MapInfoSnpIndel>> mapSortedChrID2MapInfo = sort_MapChrID2InfoSnpIndel(lsSite);
-		getSiteInfo(sampleName, mapSortedChrID2MapInfo, samToolsPleUpFile, gffChrAbs);
+		getSiteInfo_FromPileUp(sampleName, mapSortedChrID2MapInfo, samToolsPleUpFile, gffChrAbs);
 	}
 	/** 将输入文件整理为<br>
 	 * chrID----List--MapInfo<br>
@@ -885,7 +885,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @param gffChrAbs
 	 * @return 新建一个hash表然后返回，这个hash表与输入的表是deep copy关系
 	 */
-	public static void getSiteInfo(String sampleName, HashMap<String, ArrayList<MapInfoSnpIndel>> mapChrID2SortedLsMapInfo, 
+	public static void getSiteInfo_FromPileUp(String sampleName, HashMap<String, ArrayList<MapInfoSnpIndel>> mapChrID2SortedLsMapInfo, 
 			String samToolsPleUpFile, GffChrAbs gffChrAbs) {
 		/** 每个chrID对应一组mapinfo，也就是一个list */
 		TxtReadandWrite txtReadSam = new TxtReadandWrite(samToolsPleUpFile, false);

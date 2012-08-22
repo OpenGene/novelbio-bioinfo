@@ -9,6 +9,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 /**
  * 根据snp信息，选择某几个处理里面都发生变化的基因
+ * 感觉没什么用
  * 输入的文件是选定的snp文件
  * @author zong0jie
  *

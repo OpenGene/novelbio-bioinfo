@@ -104,7 +104,7 @@ public class SamReader {
 						try {
 							samRecord = samRecordIterator.next();
 						} catch (Exception e) {
-							logger.error("³ö´í");
+							logger.error(e);
 							return next();
 						}
 						

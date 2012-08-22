@@ -17,6 +17,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGeneRefSeq;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -45,8 +46,9 @@ public class SNPGATKcope {
 	/** 用来过滤样本的 */
 	SnpSampleFilter sampleFilter = new SnpSampleFilter();
 	/**过滤获得的causal snp */
-	ArrayList<SiteSnpIndelInfo> lsFilteredSite;
-	
+	ArrayList<SiteSnpIndelInfo> lsFilteredSite = new ArrayList<SiteSnpIndelInfo>();
+	/** 多组样本之间比较的信息 */
+	ArrayList<SampleDetail> lsSampleDetailCompare = new ArrayList<SampleDetail>();
 	
 	public static void main(String[] args) {
 		String parentPath = "/media/winF/NBC/Project/Project_HXW/20120705/";
@@ -77,41 +79,65 @@ public class SNPGATKcope {
 		sampleDetail2B.setSampleSnpIndelNum(1, 1);
 		sampleDetail2B.setSampleSnpIndelHetoLessNum(0, 0);
 		snpgatKcope.addFilterSample(sampleDetail2B);
-		snpgatKcope.execute();
+		
+		snpgatKcope.readSnpInfoFromPileUp();
 //		snpgatKcope.filterSnp();
 		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_3Bvs3A.xls");
 		
 		snpgatKcope.filterSnp();
 		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_3Bvs3A_filter.xls");
-		
 	}
 
+	
 	public void addVcfFile(String sampleName, String vcfFile) {
 		lsSample2VcfFiles.add(new String[]{sampleName, vcfFile});
 	}
+	/** 在这些pileUp的文件中找已有的snp的具体细节 */
 	public void addSampileupFile(String sampleName, String sampileupFile) {
 		lsSample2SamPileupFile.add(new String[]{sampleName, sampileupFile});
 	}
 	/** 重置过滤的样本信息 */
 	public void clearSampleFilterInfo() {
-		sampleFilter.clearSampleFilterInfo();
+		lsSampleDetailCompare.clear();
 	}
 	/** 过滤样本的具体信息 */
 	public void addFilterSample(SampleDetail sampleDetail) {
-		sampleFilter.addSampleFilterInfo(sampleDetail);
+		lsSampleDetailCompare.add(sampleDetail);
 	}
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
-	public void execute() {
-		lsFilteredSite = null;
+	
+	public void readSnpInfoFromPileUp() {
+		lsFilteredSite.clear();
 
 		for (String[] sample2vcf : lsSample2VcfFiles) {
 			addVcfToLsSnpIndel(sample2vcf[0], sample2vcf[1]);
 		}
 		HashMap<String, ArrayList<MapInfoSnpIndel>> mapInfoSnpIndel = MapInfoSnpIndel.sort_MapChrID2InfoSnpIndel(lsUnionSnp);
 		for (String[] sample2PileUp : lsSample2SamPileupFile) {
-			MapInfoSnpIndel.getSiteInfo(sample2PileUp[0], mapInfoSnpIndel, sample2PileUp[1], gffChrAbs);
+			MapInfoSnpIndel.getSiteInfo_FromPileUp(sample2PileUp[0], mapInfoSnpIndel, sample2PileUp[1], gffChrAbs);
+		}
+	}
+	/** 
+	 * 不从vcf，而是从pileUp中获取snp的方法
+	 * 将pileUp的snp信息加入mapSiteInfo2MapInfoSnpIndel中
+	 * @param sampleName
+	 * @param sampleDetail 过滤器，设定过滤的状态
+	 * @param pileUpFile
+	 */
+	public void addPileupToLsSnpIndel(String sampleName, SampleDetail sampleDetail, String pileUpFile) {
+		TxtReadandWrite txtReadPileUp = new TxtReadandWrite(pileUpFile, false);
+		sampleDetail.clearSampleName();
+		sampleDetail.addSampleName(sampleName);
+		sampleFilter.clearSampleFilterInfo();
+		sampleFilter.addSampleFilterInfo(sampleDetail);
+		for (String pileupLines : txtReadPileUp.readlines()) {
+			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
+			mapInfoSnpIndel.setSamToolsPilup(pileupLines);
+			if (sampleFilter.isFilterdSnp(mapInfoSnpIndel)) {
+				addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
+			}
 		}
 	}
 	/**
@@ -125,28 +151,35 @@ public class SNPGATKcope {
 			
 			try {Integer.parseInt(ss[vcfCols.colSnpStart]); } catch (Exception e) { continue; }
 			
-			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs);
-			mapInfoSnpIndel.setSampleName(sampleName);
+			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
 			mapInfoSnpIndel.setVcfLines(sampleName, vcfCols, vcfLines);
 			
-			String key = mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart();
-			if (mapSiteInfo2MapInfoSnpIndel.containsKey(key)) {
-				MapInfoSnpIndel maInfoSnpIndelExist = mapSiteInfo2MapInfoSnpIndel.get(key);
-				maInfoSnpIndelExist.addAllenInfo(mapInfoSnpIndel);
-				continue;
-			}
-			else {
-				mapSiteInfo2MapInfoSnpIndel.put(key, mapInfoSnpIndel);
-				lsUnionSnp.add(mapInfoSnpIndel);
-			}
+			addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
+		}
+	}
+	private void addSnp_2_mapSiteInfo2MapInfoSnpIndel(MapInfoSnpIndel mapInfoSnpIndel) {
+		String key = mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart();
+		if (mapSiteInfo2MapInfoSnpIndel.containsKey(key)) {
+			MapInfoSnpIndel maInfoSnpIndelExist = mapSiteInfo2MapInfoSnpIndel.get(key);
+			maInfoSnpIndelExist.addAllenInfo(mapInfoSnpIndel);
+			return;
+		}
+		else {
+			mapSiteInfo2MapInfoSnpIndel.put(key, mapInfoSnpIndel);
+			lsUnionSnp.add(mapInfoSnpIndel);
 		}
 	}
 	/** 必须在execute之后执行 */
 	public void filterSnp() {
-		lsFilteredSite = new ArrayList<SiteSnpIndelInfo>();
+		sampleFilter.clearSampleFilterInfo();
+		for (SampleDetail sampleDetail : lsSampleDetailCompare) {
+			sampleFilter.addSampleFilterInfo(sampleDetail);
+		}
+		
+		lsFilteredSite.clear();
 		ArrayList<MapInfoSnpIndel> lsFilteredSnp = new ArrayList<MapInfoSnpIndel>();
 		for (MapInfoSnpIndel mapInfoSnpIndel : lsUnionSnp) {
-			SiteSnpIndelInfo siteSnpIndelInfo = sampleFilter.isFilterdSnp(mapInfoSnpIndel);
+			SiteSnpIndelInfo siteSnpIndelInfo = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
 			if (siteSnpIndelInfo != null) {
 				lsFilteredSnp.add(mapInfoSnpIndel);
 				lsFilteredSite.add(siteSnpIndelInfo);
