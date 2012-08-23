@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -887,7 +886,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @param lsSite
 	 * @return
 	 */
-	public static HashMap<String, ArrayList<MapInfoSnpIndel>> sort_MapChrID2InfoSnpIndel(List<MapInfoSnpIndel> lsSite) {
+	public static HashMap<String, ArrayList<MapInfoSnpIndel>> sort_MapChrID2InfoSnpIndel(Collection<MapInfoSnpIndel> lsSite) {
 		/** 每个chrID对应一组mapinfo，也就是一个list */
 		HashMap<String, ArrayList<MapInfoSnpIndel>> mapChrID2MapInfo = new LinkedHashMap<String, ArrayList<MapInfoSnpIndel>>();
 		// 按照chr位置装入hash表
