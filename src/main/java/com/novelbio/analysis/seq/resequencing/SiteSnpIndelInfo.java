@@ -174,7 +174,12 @@ public abstract class SiteSnpIndelInfo {
 		if (isCDS() && referenceSeq.length() == 1 && thisSeq.length() == 1) {
 			String refAA = getRefAAnr().toStringAA();
 			String thisAA = getThisAAnr().toStringAA();
-			return SeqFasta.cmpAAquality(refAA, thisAA);
+			try {
+				return SeqFasta.cmpAAquality(refAA, thisAA);
+			} catch (Exception e) {
+				logger.error("变化的AA的化学性质出错");
+				return "";
+			}
 		}
 		return "";
 	}

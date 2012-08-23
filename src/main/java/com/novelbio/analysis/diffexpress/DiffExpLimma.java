@@ -56,7 +56,7 @@ public class DiffExpLimma extends DiffExpAbs{
 
 	@Override
 	protected void setFileNameRawdata() {
-		fileNameRawdata = workSpace + "LimmaGeneInfo_" + DateTime.getDateDetail() + ".txt";
+		fileNameRawdata = workSpace + "LimmaGeneInfo_" + DateTime.getDateAndRandom() + ".txt";
 	}
 	public boolean isLog2Transform() {
 		return log2Transform;

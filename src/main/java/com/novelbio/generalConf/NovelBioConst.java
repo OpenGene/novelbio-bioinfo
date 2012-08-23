@@ -235,8 +235,8 @@ public class NovelBioConst {
 	public final static String GENOME_PATH_RICE_TIGR_STATISTIC = GENOME_PATH_RICE_TIGR+"statisticInof/";
 
 	//////////////////////////////////RÏµÁÐ//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	public final static String R_SCRIPT = "Rscript ";
-	public final static String R_SCRIPT = "D:/tools/R2_14/bin/Rscript ";
+	public final static String R_SCRIPT = "Rscript ";
+//	public final static String R_SCRIPT = "D:/tools/R2_14/bin/Rscript ";
 
 //	public final static String R_WORKSPACE = "/media/winE/Bioinformatics/R/practice_script/platform/";
 	public final static String R_WORKSPACE = PathDetail.getProjectPath() + "rscript" + FileOperate.getSepPath();

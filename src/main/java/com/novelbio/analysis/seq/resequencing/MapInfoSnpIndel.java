@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -158,6 +160,9 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @return
 	 */
 	public int getTaxID() {
+		if (gffChrAbs == null) {
+			return 0;
+		}
 		return gffChrAbs.getTaxID();
 	}
 	public void setRefBase(String refBase) {
@@ -227,6 +232,20 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			}
 		}
 	}
+	
+	/**
+	 * 根据设定的列信息，填充mapinfosnpindel信息
+	 * 仅仅读取snp信息，不读取多少snp信息
+	 */
+	public void setNBCLines(String sampleName, String novelBioLine) {
+		setSampleName(sampleName);
+		String[] inputLines = novelBioLine.split("\t");
+		//TODO :chrID是否需要小写
+		chrID = inputLines[0];
+		refSnpIndelStart = Integer.parseInt(inputLines[1]); 
+		addAllenInfo(inputLines[7], inputLines[8]);
+	}
+	
 	/**
 	 * 就看这三项：AF,AN,SB
 	 *  AB=0.841;AC=1;AF=0.50;AN=2;BaseQRankSum=0.097;DP=63;Dels=0.00;FS=0.000;HRun=0;HaplotypeScore=0.0000;
@@ -323,7 +342,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	private void setGffIso() {
 		if (gffChrAbs == null || (gffGeneIsoInfo != null && prop >= 0))
 			return;
-//TODO
+
 		this.gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchLocation(chrID, refSnpIndelStart).getCodInExonIso();
 		if (gffGeneIsoInfo == null) {
 			return;
@@ -613,13 +632,6 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		}
 	}
 	/**
-	 * 返回全部snp类型和样本的信息
-	 * @return
-	 */
-	public ArrayList<String[]> toStringLsSnp() {
-		return toStringLsSnp(null,false);
-	}
-	/**
 	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
 	 * 注意，输入的mapInfoSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>
 	 * 此外输入的indel在查找的时候会将第一位删除，因为GATK出来的第一位是indel的前一位<br>
@@ -655,6 +667,14 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		tmpResult = tmpResult + "\t" +siteSnpIndelInfo.getThisSeq() + "\t" + siteSnpIndelInfo.getReadsNum();
 		return tmpResult;
 	}
+	
+	/**
+	 * 返回全部snp类型和样本的信息
+	 * @return
+	 */
+	public ArrayList<String[]> toStringLsSnp() {
+		return toStringLsSnp(null,false);
+	}
 	/**
 	 * 给定样本名，返回全部snp类型和样本的信息
 	 * @param lsSampleNames 样本名
@@ -668,10 +688,10 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * 给定样本名，返回全部snp类型和样本的信息
 	 * @param lsSampleNames 样本名
 	 * @param getGATK 是否仅将GATK认定的snp提取出来
-	 * @param siteSnpIndelInput 在指定的site前面进行标记为ture，输入null则不反应
+	 * @param setMismatchInfo 仅选出指定的snp
 	 * @return
 	 */
-	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, SiteSnpIndelInfo siteSnpIndelInput) {
+	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, Set<String> setMismatchInfo) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		LinkedList<String> lsResultTmp = new LinkedList<String>();
 		lsResultTmp.add(chrID);//0
@@ -698,14 +718,11 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			if (getGATK && !isGATKfiltered(siteSnpIndelInfo)) {
 				continue;
 			}
-			LinkedList<String> lsTmpInfo = copyList(lsResultTmp);
+			if (!isFilteredSite(setMismatchInfo, siteSnpIndelInfo)) {
+				continue;
+			}
 			
-			if (siteSnpIndelInput != null && siteSnpIndelInput.getMismatchInfo().equals(siteSnpIndelInfo.getMismatchInfo())) {
-				lsTmpInfo.add("true");
-			}
-			else {
-				lsTmpInfo.add("false");
-			}
+			LinkedList<String> lsTmpInfo = copyList(lsResultTmp);
 			
 			lsTmpInfo.add(siteSnpIndelInfo.getReferenceSeq());
 			lsTmpInfo.add(siteSnpIndelInfo.getThisSeq());
@@ -746,6 +763,16 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		}
 		return lsResult;
 	}
+	private boolean isFilteredSite(Set<String> setMismatchInfo, SiteSnpIndelInfo siteSnpIndelInfo) {
+		if (setMismatchInfo == null || setMismatchInfo.size() == 0) {
+			return true;
+		}
+		else if (setMismatchInfo.contains(siteSnpIndelInfo.getMismatchInfo())) {
+			return true;
+		}
+		return false;
+	}
+	
 	private boolean isGATKfiltered(SiteSnpIndelInfo siteSnpIndelInfo) {
 		boolean result = false;
 		HashMap<String, SampleSnpReadsQuality> mapSample2Snp = siteSnpIndelInfo.mapSample2thisBaseNum;

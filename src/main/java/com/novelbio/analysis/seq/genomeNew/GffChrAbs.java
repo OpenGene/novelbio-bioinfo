@@ -116,6 +116,9 @@ public class GffChrAbs {
 		this.seqHash = seqHash;
 	}
 	public int getTaxID() {
+		if (species == null) {
+			return 0;
+		}
 		return species.getTaxID();
 	}
 	public void setHanYanFstrand(boolean hanYanFstrand) {

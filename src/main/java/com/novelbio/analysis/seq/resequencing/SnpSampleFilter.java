@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.resequencing;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
@@ -46,10 +47,23 @@ public class SnpSampleFilter {
 	static int Snp_HetoLess_ReadsAllNumMin = 3;
 	/** 判定为 Snp HetoLess的最少 ref reads数，必须大于这个值 */
 	static int Snp_HetoLess_Contain_RefNumMin = 2;
+	
+	//该数值同Snp_Hete_Contain_SnpProp_Min
 	/**判定为snp HetoLess所含有的ref比例不得大于该数值 */
-	static double Snp_HetoLess_Contain_SnpProp_Max = 0.1;
+//	static double Snp_HetoLess_Contain_SnpProp_Max = 0.1;
 	
 	HashSet<SampleDetail> setSampleFilterInfo = new HashSet<SampleDetail>();
+
+	/** 判定为Snp HetoLess的最少reads数 */
+	public static void setSnp_HetoLess_ReadsAllNumMin(
+			int snp_HetoLess_ReadsAllNumMin) {
+		Snp_HetoLess_ReadsAllNumMin = snp_HetoLess_ReadsAllNumMin;
+	}
+	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
+	public static void setSnp_Hete_Contain_SnpProp_Min(
+			double snp_Hete_Contain_SnpProp_Min) {
+		Snp_Hete_Contain_SnpProp_Min = snp_Hete_Contain_SnpProp_Min;
+	}
 	
 	/**添加样本过滤信息，注意大小写 */
 	public void addSampleFilterInfo(SampleDetail sampleDetail) {
@@ -60,7 +74,7 @@ public class SnpSampleFilter {
 		setSampleFilterInfo.clear();
 	}
 	public boolean isFilterdSnp(MapInfoSnpIndel mapInfoSnpIndel) {
-		if (getFilterdSnp(mapInfoSnpIndel) != null) {
+		if (getFilterdSnp(mapInfoSnpIndel).size() > 0) {
 			return true;
 		}
 		return false;
@@ -70,11 +84,10 @@ public class SnpSampleFilter {
 	 * 如果通过质检了，就返回通过质检的那个snp类型
 	 * 否则返回null
 	 * */
-	public SiteSnpIndelInfo getFilterdSnp(MapInfoSnpIndel mapInfoSnpIndel) {
-		SiteSnpIndelInfo siteSnpIndelInfoResult = null;
+	public ArrayList<SiteSnpIndelInfo> getFilterdSnp(MapInfoSnpIndel mapInfoSnpIndel) {
+		ArrayList<SiteSnpIndelInfo> lsSnpFiltered = new ArrayList<SiteSnpIndelInfo>();
 		boolean isQualified = true;
 		for (SiteSnpIndelInfo siteSnpIndelInfo : mapInfoSnpIndel.getLsAllenInfoSortBig2Small()) {
-			siteSnpIndelInfoResult = siteSnpIndelInfo;
 			for (SampleDetail sampleDetail : setSampleFilterInfo) {
 				sampleDetail.clearData();
 				for (String sampleName : sampleDetail.lsSampleName) {
@@ -82,20 +95,16 @@ public class SnpSampleFilter {
 					mapInfoSnpIndel.setSampleName(sampleName);
 					sampleDetail.addSnpIndelHomoHetoType(getSnpIndelType(mapInfoSnpIndel, siteSnpIndelInfo));
 				}
+				//只要有一组样本没有通过检验，就跳出
 				isQualified = sampleDetail.isQualified();
-				if (!isQualified) {
+				if (!isQualified) 
 					break;
-				}
 			}
 			if (isQualified) {
-				return siteSnpIndelInfoResult;
+				lsSnpFiltered.add(siteSnpIndelInfo);
 			}
 		}
-		//出来之后再判断一次
-		if (isQualified) {
-			return siteSnpIndelInfoResult;
-		}
-		return null;
+		return lsSnpFiltered;
 	}
 	/** 输入之前要指定样本名，
 	 * 返回指定的snpindel的信息 */
@@ -139,7 +148,7 @@ public class SnpSampleFilter {
 			return SnpIndelHomoHetoType.RefHomo;
 		}
 		else if (numRef >= Snp_HetoLess_Contain_RefNumMin && numAll >= Snp_HetoLess_ReadsAllNumMin
-				&& ((double)numSnpIndel/numAll <= Snp_HetoLess_Contain_SnpProp_Max || numSnpIndel == 1 )//只有1条snp很难说明问题 
+				&& ((double)numSnpIndel/numAll < Snp_Hete_Contain_SnpProp_Min || numSnpIndel == 1 )//只有1条snp很难说明问题 
 				) {
 			if (siteSnpIndelInfo == SnpIndelType.INSERT || siteSnpIndelInfo == SnpIndelType.DELETION) {
 				return SnpIndelHomoHetoType.IndelHetoLess;

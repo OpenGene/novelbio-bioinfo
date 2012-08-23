@@ -39,7 +39,7 @@ public abstract class DiffExpAbs {
 	/**基因唯一ID，必须没有重复 */
 	int colAccID = 0;
 	/**
-	 * 比较组，可以输入一系列组
+	 * 比较组与相应的输出文件名，可以输入一系列组
 	 * map: condition to compare group <br>
 	 * FileName <br>
 	 * To<br>

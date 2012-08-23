@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -45,8 +47,10 @@ public class SNPGATKcope {
 	
 	/** 用来过滤样本的 */
 	SnpSampleFilter sampleFilter = new SnpSampleFilter();
-	/**过滤获得的causal snp */
-	ArrayList<SiteSnpIndelInfo> lsFilteredSite = new ArrayList<SiteSnpIndelInfo>();
+	/**过滤获得的causal snp
+	 * 一个位点可能存在多个snp，所以装在list里面
+	 *  */
+	ArrayList<ArrayList<SiteSnpIndelInfo>> lsFilteredSite = new ArrayList<ArrayList<SiteSnpIndelInfo>>();
 	/** 多组样本之间比较的信息 */
 	ArrayList<SampleDetail> lsSampleDetailCompare = new ArrayList<SampleDetail>();
 	
@@ -122,24 +126,64 @@ public class SNPGATKcope {
 	/** 
 	 * 不从vcf，而是从pileUp中获取snp的方法
 	 * 将pileUp的snp信息加入mapSiteInfo2MapInfoSnpIndel中
+	 * 同时导出一份snp的信息表
 	 * @param sampleName
 	 * @param sampleDetail 过滤器，设定过滤的状态
 	 * @param pileUpFile
 	 */
 	public void addPileupToLsSnpIndel(String sampleName, SampleDetail sampleDetail, String pileUpFile) {
+		String outPutFile = FileOperate.changeFileSuffix(pileUpFile, "_SnpInfo", "txt");
+		TxtReadandWrite txtOut = new TxtReadandWrite(outPutFile, true);
+		
 		TxtReadandWrite txtReadPileUp = new TxtReadandWrite(pileUpFile, false);
 		sampleDetail.clearSampleName();
 		sampleDetail.addSampleName(sampleName);
 		sampleFilter.clearSampleFilterInfo();
 		sampleFilter.addSampleFilterInfo(sampleDetail);
+		int snpNum = 0;
+		int allNum = 0;
 		for (String pileupLines : txtReadPileUp.readlines()) {
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
 			mapInfoSnpIndel.setSamToolsPilup(pileupLines);
+
 			if (sampleFilter.isFilterdSnp(mapInfoSnpIndel)) {
 				addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
+				
+				ArrayList<String[]> lsInfo = mapInfoSnpIndel.toStringLsSnp();
+				for (String[] strings : lsInfo) {
+					txtOut.writefileln(strings);
+				}
+				
+				snpNum++;
+				if (snpNum %100 == 0) {
+					logger.info("找到" + snpNum + "个snp");
+				}
+			}
+			allNum++;
+			if (allNum %100000 == 0) {
+				logger.info("扫描过" + allNum + "个snp");
 			}
 		}
+		txtOut.close();
 	}
+	
+	/**
+	 * 将gatk里面vcf文件中的snp信息加入mapSiteInfo2MapInfoSnpIndel中
+	 */
+	public void addNBCToLsSnpIndel(String sampleName, String novelbioFile) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(novelbioFile, false);
+		for (String vcfLines : txtRead.readlines()) {
+			if (vcfLines.startsWith("#")) continue;
+			String[] ss = vcfLines.split("\t");
+			
+			try {Integer.parseInt(ss[vcfCols.colSnpStart]); } catch (Exception e) { continue; }
+			
+			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
+			mapInfoSnpIndel.setNBCLines(sampleName, vcfLines);
+			addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
+		}
+	}
+	
 	/**
 	 * 将gatk里面vcf文件中的snp信息加入mapSiteInfo2MapInfoSnpIndel中
 	 */
@@ -179,28 +223,36 @@ public class SNPGATKcope {
 		lsFilteredSite.clear();
 		ArrayList<MapInfoSnpIndel> lsFilteredSnp = new ArrayList<MapInfoSnpIndel>();
 		for (MapInfoSnpIndel mapInfoSnpIndel : lsUnionSnp) {
-			SiteSnpIndelInfo siteSnpIndelInfo = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
-			if (siteSnpIndelInfo != null) {
+			ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfo = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+			if (lsSiteSnpIndelInfo.size() > 0) {
 				lsFilteredSnp.add(mapInfoSnpIndel);
-				lsFilteredSite.add(siteSnpIndelInfo);
+				lsFilteredSite.add(lsSiteSnpIndelInfo);
 			}
 		}
 		lsUnionSnp = lsFilteredSnp;
 	}
 	public void writeToFile(String txtFile) {
-		ArrayList<String> lsSample = new ArrayList<String>();
+		LinkedHashSet<String> setSample = new LinkedHashSet<String>();
 		for (String[] strings : lsSample2VcfFiles) {
-			lsSample.add(strings[0]);
+			setSample.add(strings[0]);
 		}
+		for (String[] strings : lsSample2SamPileupFile) {
+			setSample.add(strings[0]);
+		}
+		
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
-		txtOut.writefileln(MapInfoSnpIndel.getTitleFromSampleName(lsSample, true));
-		SiteSnpIndelInfo siteSnpIndelInfo = null;
+		txtOut.writefileln(MapInfoSnpIndel.getTitleFromSampleName(setSample, true));
+		HashSet<String> setSnpSite = null;
 		for (int i = 0; i < lsUnionSnp.size(); i++) {
-			if (lsFilteredSite != null)
-				siteSnpIndelInfo = lsFilteredSite.get(i);
-				
+			if (lsFilteredSite != null && lsFilteredSite.size() > 0) {
+				setSnpSite = new HashSet<String>();
+				ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfos = lsFilteredSite.get(i);
+				for (SiteSnpIndelInfo siteSnpIndelInfo : lsSiteSnpIndelInfos) {
+					setSnpSite.add(siteSnpIndelInfo.getMismatchInfo());
+				}
+			}
 			MapInfoSnpIndel mapInfoSnpIndel = lsUnionSnp.get(i);
-			ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(lsSample, false, siteSnpIndelInfo);
+			ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(setSample, false, setSnpSite);
 			for (String[] strings : lsResult) {
 				txtOut.writefileln(strings);
 			}

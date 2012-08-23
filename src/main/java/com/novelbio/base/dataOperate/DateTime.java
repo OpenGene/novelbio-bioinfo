@@ -45,7 +45,7 @@ public class DateTime {
 	     return formatDate.format(currentDate); //将日期时间格式化
 	}
 	/**
-	 * 返回当前日期加上一个随机数，做唯一文件编码用，格式 "yyyy-MM-dd"
+	 * 返回当前日期加上一个随机数，做唯一文件编码用，格式 "yyyy-MM-ddhhss"
 	 * @return
 	 */
 	public static String getDateAndRandom() {
@@ -57,7 +57,7 @@ public class DateTime {
 	     return date + Tmp;
 	}
 	/**
-	 * 返回当前日期，格式 "yyyy-MM-dd"
+	 * 返回当前日期，格式 "yyyy-MM-dd-hh-mm-ss"
 	 * @return
 	 */
 	public static String getDateDetail() {

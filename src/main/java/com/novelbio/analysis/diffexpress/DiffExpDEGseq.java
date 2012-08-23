@@ -158,10 +158,10 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	protected void setOutScriptPath() {
 		outScript = workSpace + "DEGseq_" + DateTime.getDateAndRandom() + ".R";
 	}
-	/** 写成txt文本 */
+	/** 输入文件写成txt文本 */
 	@Override
 	protected void setFileNameRawdata() {
-		fileNameRawdata = workSpace + "DEGseqGeneInfo_" + DateTime.getDateDetail() + ".txt";
+		fileNameRawdata = workSpace + "DEGseqGeneInfo_" + DateTime.getDateAndRandom() + ".txt";
 	}
 	/**
 	 * 不需要提取专门的信息

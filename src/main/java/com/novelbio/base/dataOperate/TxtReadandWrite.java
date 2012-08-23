@@ -531,61 +531,6 @@ public class TxtReadandWrite {
 		}
 		
 	}
-
-	/**
-	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取
-	 * 
-	 * @param content
-	 * @param colLen 每行写几个
-	 * @param sep 分隔符是什么
-	 * @throws Exception
-	 */
-	private void Rwritefile(double[] content, int colLen, String sep) throws Exception {
-		for (int i = 0; i < content.length; i++) {
-			outputStream.write((content[i] + "" + sep).getBytes());
-			if ((i + 1) % colLen == 0) {
-				outputStream.write(ENTER_LINUX.getBytes());
-			}
-		}
-
-		outputStream.flush();
-	}
-
-	/**
-	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取,默认每行20个元素，用空格隔开
-	 * 
-	 * @param content
-	 */
-	public void Rwritefile(double[] content) {
-		try {
-			Rwritefile(content, 20, " ");
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-	}
-
-	/**
-	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取
-	 * 
-	 * @param content
-	 * @param colLen
-	 * @param sep
-	 * @throws Exception
-	 */
-	private void Rwritefile(int[] content, int colLen, String sep) {
-		try {
-			for (int i = 0; i < content.length; i++) {
-				outputStream.write((content[i] + "" + sep).getBytes());
-				if ((i + 1) % colLen == 0) {
-					outputStream.write(ENTER_LINUX.getBytes());
-				}
-			}
-			outputStream.flush();
-		} catch (Exception e) {
-			logger.error("file error: "+ getFileName());
-		}
-		
-	}
 	/**
 	 * 指定正则表达式，将文本中含有该正则表达式的行全部删除
 	 * @param regx
@@ -622,10 +567,18 @@ public class TxtReadandWrite {
 		
 		close();
 	}
-	
-	
-	
-	
+	/**
+	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取,默认每行20个元素，用空格隔开
+	 * 
+	 * @param content
+	 */
+	public void Rwritefile(double[] content) {
+		try {
+			Rwritefile(content, 20, " ");
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
 	/**
 	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取,默认每行20个元素，用空格隔开
 	 * 
@@ -636,8 +589,38 @@ public class TxtReadandWrite {
 	}
 
 	/**
+	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取,默认每行20个元素，用空格隔开
+	 * 内部close
+	 * @param content
+	 */
+	public void Rwritefile(String[] content) {
+		Rwritefile(content, 20, " ");
+	}
+	/**
 	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取
 	 * 
+	 * @param content
+	 * @param colLen
+	 * @param sep
+	 * @throws Exception
+	 */
+	private void Rwritefile(int[] content, int colLen, String sep) {
+		try {
+			for (int i = 0; i < content.length; i++) {
+				outputStream.write((content[i] + "" + sep).getBytes());
+				if ((i + 1) % colLen == 0) {
+					outputStream.write(ENTER_LINUX.getBytes());
+				}
+			}
+			outputStream.flush();
+		} catch (Exception e) {
+			logger.error("file error: "+ getFileName());
+		}
+		close();
+	}
+	/**
+	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取
+	 * 内部close
 	 * @param content
 	 * @param colLen
 	 * @param sep
@@ -656,18 +639,25 @@ public class TxtReadandWrite {
 		} catch (Exception e) {
 			logger.error("file error: "+getFileName());
 		}
-		
+		close();
 	}
-
 	/**
-	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取,默认每行20个元素，用空格隔开
-	 * 
+	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取
 	 * @param content
+	 * @param colLen 每行写几个
+	 * @param sep 分隔符是什么
+	 * @throws Exception
 	 */
-	public void Rwritefile(String[] content) {
-		Rwritefile(content, 20, " ");
+	private void Rwritefile(double[] content, int colLen, String sep) throws Exception {
+		for (int i = 0; i < content.length; i++) {
+			outputStream.write((content[i] + "" + sep).getBytes());
+			if ((i + 1) % colLen == 0) {
+				outputStream.write(ENTER_LINUX.getBytes());
+			}
+		}
+		outputStream.flush();
+		close();
 	}
-
 	/**
 	 * @param lsContent-T 注意T只能是string interge等简单的能转化为string的类
 	 *            ，要写入List--String文件内容,自动在每一行添加换行符huiche;

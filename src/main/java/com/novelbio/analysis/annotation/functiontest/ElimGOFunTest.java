@@ -1,22 +1,22 @@
 package com.novelbio.analysis.annotation.functiontest;
 
-import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgo.GOInfoAbs;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class ElimGOFunTest extends NovelGOFunTest{
 	private static final Logger logger = Logger.getLogger(ElimGOFunTest.class);
+
+	/** 和strGeneID一样的东西 */
+	ArrayList<String> lsGeneID = null;
+	
+	TopGO topGO = new TopGO();
+	
+	public ElimGOFunTest() {}
 	public ElimGOFunTest(ArrayList<GeneID> lsCopedIDsTest, ArrayList<GeneID> lsCopedIDsBG, boolean blast, String GoType) {
 		super(lsCopedIDsTest, lsCopedIDsBG, blast, GoType);
 	}
@@ -24,14 +24,10 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		super(blast, GoType, evalue, blastTaxID);
 		this.GoType = GoType;
 	}
-	public ElimGOFunTest() {}
-	int NumGOID = 300;
-	
-	/**
-	 * 设定参数
-	 */
-	public void setNumGOID(int NumGOID) {
-		this.NumGOID = NumGOID;
+
+	/** 设定展示多少个GO */
+	public void setDisplayGoNum(int NumGOID) {
+		topGO.setDisplayGoNum(NumGOID);
 	}
 
 	public ArrayList<String[]> getItem2GenePvalue() {
@@ -78,53 +74,14 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	 * @throws Exception 
 	 * 没有就返回null
 	 */
-	public ArrayList<String[]> getTestResult()
-	{
+	public ArrayList<String[]> getTestResult() {
 		if (lsTestResult != null && lsTestResult.size() > 0)
 			return lsTestResult;
 		if (!setStrGeneID())
 			return null;
-		return doTest();
-	}
-	
-	protected ArrayList<String[]> doTest() {
-		TxtReadandWrite txtParam = new TxtReadandWrite(NovelBioConst.R_WORKSPACE_TOPGO_PARAM, true);
-		String content = "";
-		if (GoType.equals(Go2Term.GO_BP)) 
-			content = "BP";
-		else if (GoType.equals(Go2Term.GO_MF)) 
-			content = "MF";
-		else if (GoType.equals(Go2Term.GO_CC)) 
-			content = "CC";
-		content =content + " "+NovelBioConst.R_WORKSPACE_TOPGO_GORESULT+" "+ NumGOID + " " + NovelBioConst.R_WORKSPACE_TOPGO_GOINFO;
-		txtParam.writefile(content); txtParam.close();
-		//BG
-		TxtReadandWrite txtTopGoBG = new TxtReadandWrite(NovelBioConst.R_WORKSPACE_TOPGO_BGGeneGo, true);
-		txtTopGoBG.ExcelWrite(lsBG, "\t", 1, 1); txtTopGoBG.close();
-		///////////////待分析geneID/////////////////////////////////////////////
-		TxtReadandWrite txtGenID= new TxtReadandWrite(NovelBioConst.R_WORKSPACE_TOPGO_GENEID, true);
-		txtGenID.Rwritefile(strGeneID); txtGenID.close();
-		//执行
-		String command=NovelBioConst.R_SCRIPT + NovelBioConst.R_WORKSPACE_TOPGO_RSCRIPT;
-		CmdOperate cmdOperate = new CmdOperate(command);
-		cmdOperate.run();
-		//读取
-		TxtReadandWrite txtRGo2Gene = new TxtReadandWrite(NovelBioConst.R_WORKSPACE_TOPGO_GORESULT, false);
-		lsTestResult = txtRGo2Gene.ExcelRead("\t", 2, 2, txtRGo2Gene.ExcelRows(), txtRGo2Gene.ExcelColumns("\t"), 0);
-		//去除"号
-		for (String[] strings : lsTestResult) 
-		{
-			for (int i = 0; i < strings.length; i++) {
-				strings[i] = strings[i].replace("\"", "");
-			}
-		}
+		lsTestResult = doTest();
 		return lsTestResult;
 	}
-	/**
-	 * 待写入文本的geneID，可以被topGO识别并计算
-	 */
-	String[] strGeneID = null;
-	ArrayList<String> lsGeneID = null;
 	/**
 	 * 填充strGeneID：待写入文本的geneID，可以被topGO识别并计算
 	 * @return
@@ -140,16 +97,20 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		if (lstest.size() == 0) {
 			return false;
 		}
-		
-		strGeneID = new String[lsTest.size()];//用于elim检验
 		lsGeneID = new ArrayList<String>();//和strGeneID一样的东西
 		for (int i = 0; i < lstest.size(); i++) {
-			strGeneID[i] = lstest.get(i)[0];
-			lsGeneID.add(strGeneID[i]);
+			lsGeneID.add( lstest.get(i)[0]);
 		}
 		return true;
 	}
-
+	
+	protected ArrayList<String[]> doTest() {
+		topGO.setGoType(GoType);
+		topGO.setLsBG(lsBG);
+		topGO.setLsGene(lsGeneID);
+		topGO.run();
+		return topGO.getLsTestResult();
+	}
 	
 	/**
 	 * 不包含标题
@@ -167,7 +128,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	 */
 	private ArrayList<String[]> getElimGo2Gene(ArrayList<String[]> lsResultTable, ArrayList<String> lsGeneID) {
 		HashMap<String, ArrayList<String>> hashGo2LsGene = null;
-		hashGo2LsGene = getGo2GeneAll(NovelBioConst.R_WORKSPACE_TOPGO_GOINFO);
+		hashGo2LsGene = topGO.getGo2GeneAll();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (int i = 1; i < lsResultTable.size(); i++) {
 			ArrayList<String> lsTmpGeneID = hashGo2LsGene.get(lsResultTable.get(i)[0]); //某个GO中所含有的所有背景基因
@@ -193,42 +154,5 @@ public class ElimGOFunTest extends NovelGOFunTest{
 			}
 		}
 		return lsResult;
-	}
-	private static HashMap<String,ArrayList<String>> getGo2GeneAll(String RGoInfo) {
-		try {
-			return getGo2GeneAllTry(RGoInfo);
-		} catch (Exception e) {
-			try {
-				Thread.sleep(2000);
-				return getGo2GeneAllTry(RGoInfo);
-			} catch (Exception e2) {
-				e2.printStackTrace();
-				return null;
-			}
-		}
-	}
-	/**
-	 * 输入每个GO对应的全部基因文件，由R产生<br>
-	 * 读取RGoInfo文件，将里面的GO2Gene的信息保存为<br>
-	 * hash--GOID-lsGeneID
-	 * @return
-	 * @throws Exception 
-	 */
-	private static HashMap<String,ArrayList<String>> getGo2GeneAllTry(String RGoInfo) {
-		TxtReadandWrite txtRGo2Gene = new TxtReadandWrite(RGoInfo, false);
-		HashMap<String, ArrayList<String>> hashGo2Gene = new HashMap<String, ArrayList<String>>();
-		ArrayList<String> lsGOGene = null;
-		for (String content : txtRGo2Gene.readlines()) {
-			if (content.startsWith("#")) {
-				lsGOGene = new ArrayList<String>();
-				hashGo2Gene.put(content.replace("#", "").trim(), lsGOGene);
-				continue;
-			}
-			if (content.trim().equals("")) {
-				continue;
-			}
-			lsGOGene.add(content.trim());
-		}
-		return hashGo2Gene;
 	}
 }

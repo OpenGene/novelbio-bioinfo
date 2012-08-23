@@ -65,7 +65,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 		outScript = workSpace + "deseq_"+ DateTime.getDateAndRandom() +".R";
 	}
 	protected void setFileNameRawdata() {
-		fileNameRawdata = workSpace + "deseqGeneInfo_"+ DateTime.getDateDetail() + ".txt";
+		fileNameRawdata = workSpace + "deseqGeneInfo_"+ DateTime.getDateAndRandom() + ".txt";
 	}
 	protected void generateScript() {
 		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript, false);
