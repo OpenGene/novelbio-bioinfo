@@ -3,11 +3,11 @@ package com.novelbio.test.analysis.seq.resequencing;
 import junit.framework.TestCase;
 
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
-import com.novelbio.analysis.seq.resequencing.SnpSampleFilter;
-import com.novelbio.analysis.seq.resequencing.SnpSampleFilter.SnpIndelHomoHetoType;
+import com.novelbio.analysis.seq.resequencing.SnpFilter;
+import com.novelbio.analysis.seq.resequencing.SnpFilter.SnpIndelHomoHetoType;
 
 public class TestSnpSampleFilter extends TestCase{
-	SnpSampleFilter snpSampleFilter = new SnpSampleFilter();
+	SnpFilter snpSampleFilter = new SnpFilter();
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();

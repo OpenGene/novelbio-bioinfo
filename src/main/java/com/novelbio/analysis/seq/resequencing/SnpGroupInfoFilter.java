@@ -1,16 +1,11 @@
 package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
-import org.apache.log4j.Logger;
-
-import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
-import com.novelbio.analysis.seq.resequencing.SnpSampleFilter.SnpIndelHomoHetoType;
-/** 某一组样本的过滤信息
+/** 一组样本的过滤，可以设定一组样本，然后根据一组样本里面的信息，进行过滤
  * 包括最少多少杂合snp，最多多少杂合snp等等
  *  */
-public class SampleDetail {
+public class SnpGroupInfoFilter {
 	ArrayList<String> lsSampleName = new ArrayList<String>();
 	int SnpIndelHomoNumMin = -1;
 	int SnpIndelHomoNumMax = -1;

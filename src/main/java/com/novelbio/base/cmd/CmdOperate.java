@@ -13,6 +13,7 @@ import javax.swing.SwingWorker;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
@@ -24,28 +25,7 @@ import com.novelbio.generalConf.NovelBioConst;
  */
 public class CmdOperate extends RunProcess<String>{
 	private static Logger logger = Logger.getLogger(CmdOperate.class);
-	
-	public static void main(String[] args) throws InterruptedException {
-		//执行
-		String command=NovelBioConst.R_SCRIPT + NovelBioConst.R_WORKSPACE_TOPGO_RSCRIPT;
-		CmdOperate cmdOperate = new CmdOperate(command, "Rtest");
-//		CmdOperate cmdOperate = new CmdOperate("sort /media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_miRNA.bed > /media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_miRNA_sorted.bed", "test");
-		Thread thread = new Thread(cmdOperate);
-		thread.start();
-		int count = 0;
-		while (!cmdOperate.isFinished()) {
-			Thread.sleep(100);
-			System.out.println(count ++ );
-			if (count == 20) {
-				cmdOperate.threadStop();
-			}
-		}
-		System.out.println(cmdOperate.isFinished());
-	}
-	/** 常规 */
-	public static final int CMD_TYPE_NORMAL = 2;
-	/** R语言 */
-	public static final int CMD_TYPE_R = 4;
+
 	/** 是否将pid加2，如果是写入文本然后sh执行，则需要加上2 */
 	boolean shPID = false;
 
@@ -53,6 +33,8 @@ public class CmdOperate extends RunProcess<String>{
 	Process process = null;
 	/** 待运行的命令 */
 	String cmd = "";
+	
+	String scriptFold = "";
 	/**
 	 * 直接运行，不写入文本
 	 * @param cmd
@@ -80,6 +62,11 @@ public class CmdOperate extends RunProcess<String>{
 		}
 		shPID = false;
 	}
+	
+	private void setScriptPath() {
+		PathDetail.getProjectPath() + ""
+	}
+	
 	/** 设定需要运行的命令 */
 	public void setCmd(String cmd) {
 		this.cmd = cmd;
@@ -154,7 +141,7 @@ public class CmdOperate extends RunProcess<String>{
 	public void setCmdFile(String cmdWriteInFileName) {
 		shPID = true;
 		logger.info(cmd);
-		String cmd1SH = NovelBioConst.PATH_POSITION_RELATE + cmdWriteInFileName
+		String cmd1SH = NovelBioConst.get + cmdWriteInFileName
 				+ DateTime.getDate() + ".sh";
 		TxtReadandWrite txtCmd1 = new TxtReadandWrite(cmd1SH, true);
 		txtCmd1.writefile(cmd);

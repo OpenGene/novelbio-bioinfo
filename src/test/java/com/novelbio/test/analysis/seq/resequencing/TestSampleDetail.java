@@ -1,12 +1,12 @@
 package com.novelbio.test.analysis.seq.resequencing;
 
-import com.novelbio.analysis.seq.resequencing.SampleDetail;
-import com.novelbio.analysis.seq.resequencing.SnpSampleFilter.SnpIndelHomoHetoType;
+import com.novelbio.analysis.seq.resequencing.SnpGroupInfoFilter;
+import com.novelbio.analysis.seq.resequencing.SnpFilter.SnpIndelHomoHetoType;
 
 import junit.framework.TestCase;
 
 public class TestSampleDetail extends TestCase{
-	SampleDetail sampleDetail2A = new SampleDetail();
+	SnpGroupInfoFilter sampleDetail2A = new SnpGroupInfoFilter();
 	@Override
 	protected void setUp() throws Exception {
 

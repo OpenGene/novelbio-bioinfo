@@ -40,7 +40,7 @@ public class SNPGATKcope {
 	ArrayList<String[]> lsSample2VcfFiles = new ArrayList<String[]>();
 	ArrayList<String[]> lsSample2NBCfiles = new ArrayList<String[]>();
 	ArrayList<String[]> lsSample2PileUpFiles = new ArrayList<String[]>();
-	HashMap<String, SampleDetail> setSample2SampleDetail = new HashMap<String, SampleDetail>();
+	HashMap<String, SnpGroupInfoFilter> setSample2SampleDetail = new HashMap<String, SnpGroupInfoFilter>();
 	/** 0：sampleName<br>
 	 * 1：SampleFile  */
 	ArrayList<String[]> lsSample2SamPileupFile = new ArrayList<String[]>();
@@ -55,10 +55,10 @@ public class SNPGATKcope {
 	
 	
 	/** 用来过滤样本的 */
-	SnpSampleFilter sampleFilter = new SnpSampleFilter();
+	SnpFilter sampleFilter = new SnpFilter();
 
 	/** 多组样本之间比较的信息 */
-	ArrayList<SampleDetail> lsSampleDetailCompare = new ArrayList<SampleDetail>();
+	ArrayList<SnpGroupInfoFilter> lsSampleDetailCompare = new ArrayList<SnpGroupInfoFilter>();
 	
 	public static void main(String[] args) {
 		String parentPath = "/media/winF/NBC/Project/Project_HXW/20120705/";
@@ -67,8 +67,8 @@ public class SNPGATKcope {
 		
 //		snpgatKcope.addVcfFile("2A", parentPath + "2A_SNPrecal_IndelFiltered.vcf");
 //		snpgatKcope.addVcfFile("2B", parentPath + "2B_SNPrecal_IndelFiltered.vcf");
-		snpgatKcope.addVcfFile("3A", parentPath + "3A_SNPrecal_IndelFiltered.vcf");
-		snpgatKcope.addVcfFile("3B", parentPath + "3B_SNPrecal_IndelFiltered.vcf");
+		snpgatKcope.addVcfToLsSnpIndel("3A", parentPath + "3A_SNPrecal_IndelFiltered.vcf");
+		snpgatKcope.addVcfToLsSnpIndel("3B", parentPath + "3B_SNPrecal_IndelFiltered.vcf");
 //		snpgatKcope.addSampileupFile("2A", parentPath + "2A_piluptest.txt");
 //		snpgatKcope.addSampileupFile("2B", parentPath + "2B_piluptest.txt");
 //		snpgatKcope.addSampileupFile("2A", parentPath + "2A_detailmpileup.txt");
@@ -76,14 +76,14 @@ public class SNPGATKcope {
 		snpgatKcope.addSampileupFile("3A", parentPath + "3A_detailmpileup.txt");
 		snpgatKcope.addSampileupFile("3B", parentPath + "3B_detailmpileup.txt");
 		
-		SampleDetail sampleDetail2A = new SampleDetail();
+		SnpGroupInfoFilter sampleDetail2A = new SnpGroupInfoFilter();
 		sampleDetail2A.addSampleName("3A");
 		sampleDetail2A.setSampleRefHomoNum(1, 1);
 		sampleDetail2A.setSampleSnpIndelHetoNum(0, 0);
 		sampleDetail2A.setSampleSnpIndelHomoNum(0, 0);
 		snpgatKcope.addFilterSample(sampleDetail2A);
 		
-		SampleDetail sampleDetail2B = new SampleDetail();
+		SnpGroupInfoFilter sampleDetail2B = new SnpGroupInfoFilter();
 		sampleDetail2B.addSampleName("3B");
 		sampleDetail2B.setSampleRefHomoNum(0, 0);
 		sampleDetail2B.setSampleSnpIndelNum(1, 1);
@@ -105,8 +105,8 @@ public class SNPGATKcope {
 	public void addSnpFromNBCfile(String sampleName, String nbcFile) {
 		lsSample2NBCfiles.add(new String[]{sampleName, nbcFile});
 	}
-	public void addSnpFromPileUpFile(String sampleName, SampleDetail sampleDetail, String pileUpfile) {
-		setSample2SampleDetail.put(sampleName, sampleDetail);
+	public void addSnpFromPileUpFile(String sampleName, SnpGroupInfoFilter snpGroupInfoFilter, String pileUpfile) {
+		setSample2SampleDetail.put(sampleName, snpGroupInfoFilter);
 		lsSample2PileUpFiles.add(new String[]{sampleName, pileUpfile});
 	}
 	
@@ -119,8 +119,8 @@ public class SNPGATKcope {
 		lsSampleDetailCompare.clear();
 	}
 	/** 过滤样本的具体信息 */
-	public void addFilterSample(SampleDetail sampleDetail) {
-		lsSampleDetailCompare.add(sampleDetail);
+	public void addFilterSample(SnpGroupInfoFilter snpGroupInfoFilter) {
+		lsSampleDetailCompare.add(snpGroupInfoFilter);
 	}
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
@@ -166,15 +166,15 @@ public class SNPGATKcope {
 	 * @param sampleDetail 过滤器，设定过滤的状态
 	 * @param pileUpFile
 	 */
-	private void addPileupToLsSnpIndel(String sampleName, SampleDetail sampleDetail, String pileUpFile) {
+	private void addPileupToLsSnpIndel(String sampleName, SnpGroupInfoFilter snpGroupInfoFilter, String pileUpFile) {
 		String outPutFile = FileOperate.changeFileSuffix(pileUpFile, "_SnpInfo", "txt");
 		TxtReadandWrite txtOut = new TxtReadandWrite(outPutFile, true);
 		
 		TxtReadandWrite txtReadPileUp = new TxtReadandWrite(pileUpFile, false);
-		sampleDetail.clearSampleName();
-		sampleDetail.addSampleName(sampleName);
+		snpGroupInfoFilter.clearSampleName();
+		snpGroupInfoFilter.addSampleName(sampleName);
 		sampleFilter.clearSampleFilterInfo();
-		sampleFilter.addSampleFilterInfo(sampleDetail);
+		sampleFilter.addSampleFilterInfo(snpGroupInfoFilter);
 		int snpNum = 0;
 		int allNum = 0;
 		for (String pileupLines : txtReadPileUp.readlines()) {
@@ -223,7 +223,7 @@ public class SNPGATKcope {
 			addNBCToLsSnpIndel(sample2NBCfile[0], sample2NBCfile[1]);
 		}
 		for (String[] sample2PileupFile : lsSample2PileUpFiles) {
-			SampleDetail sampleDetail = setSample2SampleDetail.get(sample2PileupFile[0]);
+			SnpGroupInfoFilter sampleDetail = setSample2SampleDetail.get(sample2PileupFile[0]);
 			addPileupToLsSnpIndel(sample2PileupFile[0], sampleDetail, sample2PileupFile[1]);
 		}
 		HashMap<String, ArrayList<MapInfoSnpIndel>> mapInfoSnpIndel = MapInfoSnpIndel.sort_MapChrID2InfoSnpIndel(mapSiteInfo2MapInfoSnpIndel.values());
@@ -234,8 +234,8 @@ public class SNPGATKcope {
 	/** 必须在readSnpDetailFromPileUp之后执行 */
 	public void filterSnp() {
 		sampleFilter.clearSampleFilterInfo();
-		for (SampleDetail sampleDetail : lsSampleDetailCompare) {
-			sampleFilter.addSampleFilterInfo(sampleDetail);
+		for (SnpGroupInfoFilter snpGroupInfoFilter : lsSampleDetailCompare) {
+			sampleFilter.addSampleFilterInfo(snpGroupInfoFilter);
 		}
 		
 		lsFilteredSite.clear();

@@ -17,7 +17,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.generalConf.NovelBioConst;
-import com.novelbio.generalConf.NovelBioTitleItem;
+import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
  * 1. 输入一个文本，并设定geneID列，该列没有重复
@@ -151,8 +151,8 @@ public class DiffExpDESeq extends DiffExpAbs {
 	protected void modifySingleResultFile(String outFileName, String treatName, String controlName) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		ArrayList<String[]> lsDifGene = ExcelTxtRead.readLsExcelTxt(outFileName, 1);
-		String[] title = new String[]{NovelBioTitleItem.AccID.toString() , treatName, controlName, NovelBioTitleItem.FoldChange.toString(),
-				NovelBioTitleItem.Log2FC.toString(), NovelBioTitleItem.Pvalue.toString(), NovelBioTitleItem.FDR.toString()};
+		String[] title = new String[]{TitleFormatNBC.AccID.toString() , treatName, controlName, TitleFormatNBC.FoldChange.toString(),
+				TitleFormatNBC.Log2FC.toString(), TitleFormatNBC.Pvalue.toString(), TitleFormatNBC.FDR.toString()};
 		lsResult.add(title);
 		
 		ArrayList<int[]> lsIndelItem = new ArrayList<int[]>();

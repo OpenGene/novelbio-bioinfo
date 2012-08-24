@@ -4,6 +4,9 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 
 public class PathDetail {
+	public static void main(String[] args) {
+		System.out.println(getProjectPath());
+	}
 	/** 返回jar所在的路径 */
 	public static String getProjectPath() {
 		java.net.URL url = PathDetail.class.getProtectionDomain().getCodeSource().getLocation();
@@ -13,11 +16,7 @@ public class PathDetail {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (filePath.endsWith(".jar"))
-			filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
-		
-		java.io.File file = new java.io.File(filePath);
-		filePath = file.getAbsolutePath();
+		filePath = FileOperate.getParentPathName(filePath);
 		return FileOperate.addSep(filePath);
 	}
 }
