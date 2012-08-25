@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -675,6 +676,13 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		return toStringLsSnp(null,false);
 	}
 	/**
+	 * 返回挑选出的snp类型和样本的信息
+	 * @return
+	 */
+	public ArrayList<String[]> toStringLsSnp(ArrayList<SiteSnpIndelInfo> lsMismatchInfo) {
+		return toStringLsSnp(null,false, lsMismatchInfo);
+	}
+	/**
 	 * 给定样本名，返回全部snp类型和样本的信息
 	 * @param lsSampleNames 样本名
 	 * @param getGATK 是否仅将GATK认定的snp提取出来
@@ -683,14 +691,21 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK) {
 		return toStringLsSnp(lsSampleNames, getGATK, null);
 	}
+	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, ArrayList<SiteSnpIndelInfo> lsMismatchInfo) {
+		HashSet<String> setSnpSite = new HashSet<String>();
+		for (SiteSnpIndelInfo siteSnpIndelInfo : lsMismatchInfo) {
+			setSnpSite.add(siteSnpIndelInfo.getMismatchInfo());
+		}
+		return getStringLsSnp(null,false, setSnpSite);
+	}
 	/**
 	 * 给定样本名，返回全部snp类型和样本的信息
-	 * @param lsSampleNames 样本名
-	 * @param getGATK 是否仅将GATK认定的snp提取出来
+	 * @param lsSampleNames 样本名, 全部就选null
+	 * @param getGATK 是否仅将GATK认定的snp提取出来 没有GATK就选false
 	 * @param setMismatchInfo 仅选出指定的snp
 	 * @return
 	 */
-	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, Set<String> setMismatchInfo) {
+	private ArrayList<String[]> getStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, Set<String> setMismatchInfo) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		LinkedList<String> lsResultTmp = new LinkedList<String>();
 		lsResultTmp.add(chrID);//0

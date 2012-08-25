@@ -311,7 +311,7 @@ public class GuiSeqMiRNA extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("fastq", "");
 				for (String string : lsFileName) {
-					sclpanFastq.addRow(new String[]{string});
+					sclpanFastq.addItem(new String[]{string});
 				}
 			}
 		});
@@ -329,7 +329,7 @@ public class GuiSeqMiRNA extends JPanel{
 		btnDelFastQfilerow = new JButton("DelRow");
 		btnDelFastQfilerow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				sclpanFastq.removeSelRows();
+				sclpanFastq.deleteSelRows();
 			}
 		});
 		btnDelFastQfilerow.setBounds(258, 126, 118, 24);
@@ -340,7 +340,7 @@ public class GuiSeqMiRNA extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("bed file", "");
 				for (String string : lsFileName) {
-					sclNovelMiRNAbed.addRow(new String[]{string});
+					sclNovelMiRNAbed.addItem(new String[]{string});
 				}
 				
 			}
@@ -351,7 +351,7 @@ public class GuiSeqMiRNA extends JPanel{
 		btnDelNovelMiRNAbedFileRow = new JButton("DelRow");
 		btnDelNovelMiRNAbedFileRow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				sclNovelMiRNAbed.removeSelRows();
+				sclNovelMiRNAbed.deleteSelRows();
 			}
 		});
 		btnDelNovelMiRNAbedFileRow.setBounds(705, 262, 118, 24);

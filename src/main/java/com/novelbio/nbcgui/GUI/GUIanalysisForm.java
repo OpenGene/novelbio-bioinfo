@@ -65,6 +65,8 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiLinesStatistics guiLinesStatistics;
 	private GuiCelNormJpanel guiCelNormJpanel;
 	private GuiSamToBed guiSamToBed;
+	private GuiSnpCalling guiSnpCalling;
+	
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -156,6 +158,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiLinesStatistics = new GuiLinesStatistics();
 				jTabbedPane1.add("LinesStatistics", guiLinesStatistics);	
+				
+				guiSnpCalling = new GuiSnpCalling();
+				jTabbedPane1.add("SnpCalling", guiSnpCalling);
 				
 			}
 			pack();

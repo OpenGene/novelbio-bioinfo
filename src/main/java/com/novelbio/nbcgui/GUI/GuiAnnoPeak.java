@@ -24,7 +24,7 @@ import javax.swing.JProgressBar;
  * @author zong0jie
  *
  */
-public class GuiAnnoPeak extends JPanel {
+public class GuiAnnoPeak extends JPanel implements GuiNeedOpenFile {
 	private static final long serialVersionUID = -4438216387830519443L;
 	private JTextField txtColChrID;
 	private JTextField txtColPeakStartMid;
@@ -249,6 +249,9 @@ public class GuiAnnoPeak extends JPanel {
 			txtColPeakEnd.setEditable(false);
 			lblPeakstartcolumn.setText("PeakMiddleColumn");
 		}
+	}
+	public void setGuiFileOpen(GUIFileOpen guiFileOpen) {
+		this.guiFileOpen = guiFileOpen;
 	}
 	
 	public JProgressBar getProcessBar() {

@@ -57,7 +57,7 @@ public class JScrollPaneData extends JScrollPane{
 	/**
 	 * 往jScrollPane中添加表格
 	 */
-	public void addRow(String[] info) {
+	public void addItem(String[] info) {
 		if (defaultTableModel == null) {
 			String[][] tableValue = null;
 			defaultTableModel = new DefaultTableModel(tableValue, info);
@@ -120,7 +120,7 @@ public class JScrollPaneData extends JScrollPane{
 	/**
 	 * 删除用户选定的行
 	 */
-	public void removeSelRows() {
+	public void deleteSelRows() {
 		removeRow(getSelectRows());
 	}
 	/** 不稳定 */

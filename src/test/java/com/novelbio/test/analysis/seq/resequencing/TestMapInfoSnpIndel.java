@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.MapInfoSnpIndel;
-import com.novelbio.analysis.seq.resequencing.SnpGroupInfoFilter;
+import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
 import com.novelbio.analysis.seq.resequencing.SnpFilter;
 import com.novelbio.analysis.seq.resequencing.VcfCols;
@@ -92,14 +92,14 @@ public class TestMapInfoSnpIndel extends TestCase {
 		
 		SnpFilter sampleFilter = new SnpFilter();
 		
-		SnpGroupInfoFilter sampleDetail2A = new SnpGroupInfoFilter();
+		SnpGroupFilterInfo sampleDetail2A = new SnpGroupFilterInfo();
 		sampleDetail2A.addSampleName("2A");
 		sampleDetail2A.setSampleRefHomoNum(1, 1);
 		sampleDetail2A.setSampleSnpIndelHetoNum(0, 0);
 		sampleDetail2A.setSampleSnpIndelHomoNum(0, 0);
 		sampleFilter.addSampleFilterInfo(sampleDetail2A);
 		
-		SnpGroupInfoFilter sampleDetail2B = new SnpGroupInfoFilter();
+		SnpGroupFilterInfo sampleDetail2B = new SnpGroupFilterInfo();
 		sampleDetail2B.addSampleName("2B");
 		sampleDetail2B.setSampleRefHomoNum(0, 0);
 		sampleDetail2B.setSampleSnpIndelHetoNum(0, 1);
@@ -136,7 +136,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		
 		SnpFilter sampleFilter = new SnpFilter();
 		
-		SnpGroupInfoFilter sampleDetail2A = new SnpGroupInfoFilter();
+		SnpGroupFilterInfo sampleDetail2A = new SnpGroupFilterInfo();
 		sampleDetail2A.addSampleName("2A");
 		sampleDetail2A.setSampleRefHomoNum(1, 1);
 		sampleDetail2A.setSampleSnpIndelHetoNum(0, 0);
@@ -144,7 +144,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		
 		sampleFilter.addSampleFilterInfo(sampleDetail2A);
 		
-		SnpGroupInfoFilter sampleDetail2B = new SnpGroupInfoFilter();
+		SnpGroupFilterInfo sampleDetail2B = new SnpGroupFilterInfo();
 		sampleDetail2B.addSampleName("2B");
 		sampleDetail2B.setSampleRefHomoNum(0, 0);
 		sampleDetail2B.setSampleSnpIndelHetoNum(0, 1);
@@ -179,7 +179,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		
 		SnpFilter sampleFilter = new SnpFilter();
 		
-		SnpGroupInfoFilter sampleDetail2A = new SnpGroupInfoFilter();
+		SnpGroupFilterInfo sampleDetail2A = new SnpGroupFilterInfo();
 		sampleDetail2A.addSampleName("2A");
 		sampleDetail2A.setSampleRefHomoNum(1, 1);
 		sampleDetail2A.setSampleSnpIndelHetoNum(0, 0);
@@ -187,7 +187,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		
 		sampleFilter.addSampleFilterInfo(sampleDetail2A);
 		
-		SnpGroupInfoFilter sampleDetail2B = new SnpGroupInfoFilter();
+		SnpGroupFilterInfo sampleDetail2B = new SnpGroupFilterInfo();
 		sampleDetail2B.addSampleName("2B");
 		sampleDetail2B.setSampleRefHomoNum(0, 0);
 		sampleDetail2B.setSampleSnpIndelHetoNum(0, 1);
@@ -222,7 +222,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		
 		SnpFilter sampleFilter = new SnpFilter();
 		
-		SnpGroupInfoFilter sampleDetail2A = new SnpGroupInfoFilter();
+		SnpGroupFilterInfo sampleDetail2A = new SnpGroupFilterInfo();
 		sampleDetail2A.addSampleName("2A");
 		sampleDetail2A.setSampleRefHomoNum(1, 1);
 		sampleDetail2A.setSampleSnpIndelHetoNum(0, 0);
@@ -230,7 +230,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		
 		sampleFilter.addSampleFilterInfo(sampleDetail2A);
 		
-		SnpGroupInfoFilter sampleDetail2B = new SnpGroupInfoFilter();
+		SnpGroupFilterInfo sampleDetail2B = new SnpGroupFilterInfo();
 		sampleDetail2B.addSampleName("2B");
 		sampleDetail2B.setSampleRefHomoNum(0, 0);
 		sampleDetail2B.setSampleSnpIndelHetoNum(0, 1);

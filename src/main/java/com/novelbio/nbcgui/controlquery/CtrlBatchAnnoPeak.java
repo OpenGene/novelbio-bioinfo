@@ -76,7 +76,7 @@ public class CtrlBatchAnnoPeak implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 	@Override
 	public void setRunningInfo(AnnoQueryDisplayInfo info) {
 		guiAnnoPeak.getProcessBar().setValue((int) info.getCountNum());
-		guiAnnoPeak.getJScrollPaneDataResult().addRow(info.getTmpInfo());
+		guiAnnoPeak.getJScrollPaneDataResult().addItem(info.getTmpInfo());
 	}
 	
 	@Override

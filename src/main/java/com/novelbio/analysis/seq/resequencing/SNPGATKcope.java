@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.util.SSCellRange;
@@ -39,8 +40,8 @@ public class SNPGATKcope {
 	/** 以下三个，都是从这些文本中获取snp的信息 */
 	ArrayList<String[]> lsSample2VcfFiles = new ArrayList<String[]>();
 	ArrayList<String[]> lsSample2NBCfiles = new ArrayList<String[]>();
-	ArrayList<String[]> lsSample2PileUpFiles = new ArrayList<String[]>();
-	HashMap<String, SnpGroupInfoFilter> setSample2SampleDetail = new HashMap<String, SnpGroupInfoFilter>();
+	ArrayList<SnpCalling> lsSample2PileUpFiles = new ArrayList<SnpCalling>();
+
 	/** 0：sampleName<br>
 	 * 1：SampleFile  */
 	ArrayList<String[]> lsSample2SamPileupFile = new ArrayList<String[]>();
@@ -58,32 +59,27 @@ public class SNPGATKcope {
 	SnpFilter sampleFilter = new SnpFilter();
 
 	/** 多组样本之间比较的信息 */
-	ArrayList<SnpGroupInfoFilter> lsSampleDetailCompare = new ArrayList<SnpGroupInfoFilter>();
+	ArrayList<SnpGroupFilterInfo> lsSampleDetailCompare = new ArrayList<SnpGroupFilterInfo>();
 	
 	public static void main(String[] args) {
 		String parentPath = "/media/winF/NBC/Project/Project_HXW/20120705/";
 		SNPGATKcope snpgatKcope = new SNPGATKcope();
 		snpgatKcope.setGffChrAbs(new GffChrAbs(9606));
 		
-//		snpgatKcope.addVcfFile("2A", parentPath + "2A_SNPrecal_IndelFiltered.vcf");
-//		snpgatKcope.addVcfFile("2B", parentPath + "2B_SNPrecal_IndelFiltered.vcf");
 		snpgatKcope.addVcfToLsSnpIndel("3A", parentPath + "3A_SNPrecal_IndelFiltered.vcf");
 		snpgatKcope.addVcfToLsSnpIndel("3B", parentPath + "3B_SNPrecal_IndelFiltered.vcf");
-//		snpgatKcope.addSampileupFile("2A", parentPath + "2A_piluptest.txt");
-//		snpgatKcope.addSampileupFile("2B", parentPath + "2B_piluptest.txt");
-//		snpgatKcope.addSampileupFile("2A", parentPath + "2A_detailmpileup.txt");
-//		snpgatKcope.addSampileupFile("2B", parentPath + "2B_detailmpileup.txt");
+		
 		snpgatKcope.addSampileupFile("3A", parentPath + "3A_detailmpileup.txt");
 		snpgatKcope.addSampileupFile("3B", parentPath + "3B_detailmpileup.txt");
 		
-		SnpGroupInfoFilter sampleDetail2A = new SnpGroupInfoFilter();
+		SnpGroupFilterInfo sampleDetail2A = new SnpGroupFilterInfo();
 		sampleDetail2A.addSampleName("3A");
 		sampleDetail2A.setSampleRefHomoNum(1, 1);
 		sampleDetail2A.setSampleSnpIndelHetoNum(0, 0);
 		sampleDetail2A.setSampleSnpIndelHomoNum(0, 0);
 		snpgatKcope.addFilterSample(sampleDetail2A);
 		
-		SnpGroupInfoFilter sampleDetail2B = new SnpGroupInfoFilter();
+		SnpGroupFilterInfo sampleDetail2B = new SnpGroupFilterInfo();
 		sampleDetail2B.addSampleName("3B");
 		sampleDetail2B.setSampleRefHomoNum(0, 0);
 		sampleDetail2B.setSampleSnpIndelNum(1, 1);
@@ -91,7 +87,7 @@ public class SNPGATKcope {
 		snpgatKcope.addFilterSample(sampleDetail2B);
 		
 		snpgatKcope.readSnpDetailFromPileUp();
-//		snpgatKcope.filterSnp();
+		snpgatKcope.filterSnp();
 		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_3Bvs3A.xls");
 		
 		snpgatKcope.filterSnp();
@@ -105,9 +101,13 @@ public class SNPGATKcope {
 	public void addSnpFromNBCfile(String sampleName, String nbcFile) {
 		lsSample2NBCfiles.add(new String[]{sampleName, nbcFile});
 	}
-	public void addSnpFromPileUpFile(String sampleName, SnpGroupInfoFilter snpGroupInfoFilter, String pileUpfile) {
-		setSample2SampleDetail.put(sampleName, snpGroupInfoFilter);
-		lsSample2PileUpFiles.add(new String[]{sampleName, pileUpfile});
+	public void addSnpFromPileUpFile(String sampleName, SnpGroupFilterInfo snpGroupInfoFilter, String pileUpfile) {
+		SnpCalling snpCalling = new SnpCalling();
+		snpCalling.setGffChrAbs(gffChrAbs);
+		snpCalling.setMapSiteInfo2MapInfoSnpIndel(mapSiteInfo2MapInfoSnpIndel);
+		snpCalling.setSampleDetail(snpGroupInfoFilter);
+		snpCalling.addSnpFromPileUpFile(sampleName, pileUpfile, "");
+		lsSample2PileUpFiles.add(snpCalling);
 	}
 	
 	/** 在这些pileUp的文件中找已有的snp的具体细节 */
@@ -119,8 +119,8 @@ public class SNPGATKcope {
 		lsSampleDetailCompare.clear();
 	}
 	/** 过滤样本的具体信息 */
-	public void addFilterSample(SnpGroupInfoFilter snpGroupInfoFilter) {
-		lsSampleDetailCompare.add(snpGroupInfoFilter);
+	public void addFilterSample(SnpGroupFilterInfo snpGroupFilterInfo) {
+		lsSampleDetailCompare.add(snpGroupFilterInfo);
 	}
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
@@ -166,40 +166,10 @@ public class SNPGATKcope {
 	 * @param sampleDetail 过滤器，设定过滤的状态
 	 * @param pileUpFile
 	 */
-	private void addPileupToLsSnpIndel(String sampleName, SnpGroupInfoFilter snpGroupInfoFilter, String pileUpFile) {
-		String outPutFile = FileOperate.changeFileSuffix(pileUpFile, "_SnpInfo", "txt");
-		TxtReadandWrite txtOut = new TxtReadandWrite(outPutFile, true);
-		
-		TxtReadandWrite txtReadPileUp = new TxtReadandWrite(pileUpFile, false);
-		snpGroupInfoFilter.clearSampleName();
-		snpGroupInfoFilter.addSampleName(sampleName);
-		sampleFilter.clearSampleFilterInfo();
-		sampleFilter.addSampleFilterInfo(snpGroupInfoFilter);
-		int snpNum = 0;
-		int allNum = 0;
-		for (String pileupLines : txtReadPileUp.readlines()) {
-			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
-			mapInfoSnpIndel.setSamToolsPilup(pileupLines);
-
-			if (sampleFilter.isFilterdSnp(mapInfoSnpIndel)) {
-				addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
-				
-				ArrayList<String[]> lsInfo = mapInfoSnpIndel.toStringLsSnp();
-				for (String[] strings : lsInfo) {
-					txtOut.writefileln(strings);
-				}
-				
-				snpNum++;
-				if (snpNum %100 == 0) {
-					logger.info("找到" + snpNum + "个snp");
-				}
-			}
-			allNum++;
-			if (allNum %100000 == 0) {
-				logger.info("扫描过" + allNum + "个snp");
-			}
+	private void addPileupToLsSnpIndel() {
+		for (SnpCalling snpCalling : lsSample2PileUpFiles) {
+			snpCalling.run();
 		}
-		txtOut.close();
 	}
 	
 	private void addSnp_2_mapSiteInfo2MapInfoSnpIndel(MapInfoSnpIndel mapInfoSnpIndel) {
@@ -222,10 +192,7 @@ public class SNPGATKcope {
 		for (String[] sample2NBCfile : lsSample2NBCfiles) {
 			addNBCToLsSnpIndel(sample2NBCfile[0], sample2NBCfile[1]);
 		}
-		for (String[] sample2PileupFile : lsSample2PileUpFiles) {
-			SnpGroupInfoFilter sampleDetail = setSample2SampleDetail.get(sample2PileupFile[0]);
-			addPileupToLsSnpIndel(sample2PileupFile[0], sampleDetail, sample2PileupFile[1]);
-		}
+		addPileupToLsSnpIndel();
 		HashMap<String, ArrayList<MapInfoSnpIndel>> mapInfoSnpIndel = MapInfoSnpIndel.sort_MapChrID2InfoSnpIndel(mapSiteInfo2MapInfoSnpIndel.values());
 		for (String[] sample2PileUp : lsSample2SamPileupFile) {
 			MapInfoSnpIndel.getSiteInfo_FromPileUp(sample2PileUp[0], mapInfoSnpIndel, sample2PileUp[1], gffChrAbs);
@@ -234,7 +201,7 @@ public class SNPGATKcope {
 	/** 必须在readSnpDetailFromPileUp之后执行 */
 	public void filterSnp() {
 		sampleFilter.clearSampleFilterInfo();
-		for (SnpGroupInfoFilter snpGroupInfoFilter : lsSampleDetailCompare) {
+		for (SnpGroupFilterInfo snpGroupInfoFilter : lsSampleDetailCompare) {
 			sampleFilter.addSampleFilterInfo(snpGroupInfoFilter);
 		}
 		
@@ -259,23 +226,21 @@ public class SNPGATKcope {
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
 		txtOut.writefileln(MapInfoSnpIndel.getTitleFromSampleName(setSample, true));
-		HashSet<String> setSnpSite = null;
+		ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfos = null;
 		for (int i = 0; i < lsFilteredSnp.size(); i++) {
 			if (lsFilteredSite != null && lsFilteredSite.size() > 0) {
-				setSnpSite = new HashSet<String>();
-				ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfos = lsFilteredSite.get(i);
-				for (SiteSnpIndelInfo siteSnpIndelInfo : lsSiteSnpIndelInfos) {
-					setSnpSite.add(siteSnpIndelInfo.getMismatchInfo());
-				}
+				lsSiteSnpIndelInfos = lsFilteredSite.get(i);
 			}
 			MapInfoSnpIndel mapInfoSnpIndel = lsFilteredSnp.get(i);
-			ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(setSample, false, setSnpSite);
+			ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(setSample, false, lsSiteSnpIndelInfos);
 			for (String[] strings : lsResult) {
 				txtOut.writefileln(strings);
 			}
 		}
 		txtOut.close();
 	}
+	
+	
 	
 	/**
 	 * 给定文本，和domain信息，获得具体domain的信息

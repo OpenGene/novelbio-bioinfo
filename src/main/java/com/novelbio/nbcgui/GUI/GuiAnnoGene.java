@@ -24,7 +24,7 @@ import javax.swing.JProgressBar;
  * @author zong0jie
  *
  */
-public class GuiAnnoGene extends JPanel {
+public class GuiAnnoGene extends JPanel implements GuiNeedOpenFile {
 	private static final long serialVersionUID = -4438216387830519443L;
 	
 	private JTextField txtColAccID;
@@ -138,6 +138,10 @@ public class GuiAnnoGene extends JPanel {
 		txtColAccID.setEditable(true);
 		chckbxBlastto.setEnabled(true);
 		cmbBlastSpecies.setEnabled(true);
+	}
+	
+	public void setGuiFileOpen(GUIFileOpen guiFileOpen) {
+		this.guiFileOpen = guiFileOpen;
 	}
 	
 	public JProgressBar getProcessBar() {

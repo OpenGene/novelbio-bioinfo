@@ -23,7 +23,7 @@ import com.novelbio.database.updatedb.database.BlastUp2DB;
 
 import javax.swing.JCheckBox;
 
-public class GuiBlast extends JPanel {
+public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 	private JTextField textQueryFasta;
 	private JTextField textSubjectFasta;
 	private JTextField textEvalue;
@@ -235,5 +235,8 @@ public class GuiBlast extends JPanel {
 		lblResulttype.setBounds(10, 414, 91, 14);
 		add(lblResulttype);
 
+	}
+	public void setGuiFileOpen(GUIFileOpen guiFileOpen) {
+		this.fileOpen = guiFileOpen;
 	}
 }

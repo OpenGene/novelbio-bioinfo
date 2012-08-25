@@ -13,11 +13,6 @@ import com.novelbio.database.domain.geneanno.SepSign;
 /** 单个pileup文件的snp calling */
 public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	private static Logger logger = Logger.getLogger(SNPGATKcope.class);
-	
-	public static final int Homo = 5;
-	public static final int HetoLess = 10;
-	public static final int Heto = 20;
-	public static final int HetoMore = 30;
 
 	/** 主要写snp的基因信息 */
 	GffChrAbs gffChrAbs;
@@ -33,8 +28,8 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	HashMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel;
 	
 	/** 用来过滤样本的 */
-	SnpFilter sampleFilter = new SnpFilter();
-	SnpGroupInfoFilter SnpGroupInfoFilter = new SnpGroupInfoFilter();
+	SnpFilter snpFilter = new SnpFilter();
+	SnpGroupFilterInfo snpGroupFilterInfo = new SnpGroupFilterInfo();
 	
 	long readLines;
 	long readByte;
@@ -46,29 +41,16 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	public void setMapSiteInfo2MapInfoSnpIndel(HashMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel) {
 		this.mapSiteInfo2MapInfoSnpIndel = mapSiteInfo2MapInfoSnpIndel;
 	}
-	/**
-	 * @param snpLevel Homo，HetoLess等
-	 */
-	public void setSnpLevel(int snpLevel) {
-		if (snpLevel == Homo) {
-			SnpGroupInfoFilter.setSampleRefHomoNum(1, 1);
-		}
-		else if (snpLevel == HetoLess) {
-			SnpGroupInfoFilter.setSampleSnpIndelNum(1, 1);
-		}
-		else if (snpLevel == Heto) {
-			SnpGroupInfoFilter.setSampleSnpIndelNum(1, 1);
-			SnpGroupInfoFilter.setSampleSnpIndelHetoLessNum(0, 0);
-		}
-		else if (snpLevel == HetoMore) {
-			SnpGroupInfoFilter.setSampleSnpIndelNum(1, 1);
-			SnpGroupInfoFilter.setSampleSnpIndelHetoLessNum(0, 0);
-			SnpGroupInfoFilter.setSampleSnpIndelHetoNum(0, 0);
-		}
+
+	/** 设定snpGroupInfoFilter, 不关心filter里面的样本信息，因为这是单个样本的过滤方案 */
+	public void setSampleDetail(SnpGroupFilterInfo snpGroupInfoFilter) {
+		this.snpGroupFilterInfo = snpGroupInfoFilter;
 	}
-	/** 也可以直接设定SampleDetail */
-	public void setSampleDetail(SnpGroupInfoFilter sampleDetail) {
-		this.SnpGroupInfoFilter = sampleDetail;
+	public void setSnp_Hete_Contain_SnpProp_Min(double setSnp_Hete_Contain_SnpProp_Min) {
+		snpFilter.setSnp_Hete_Contain_SnpProp_Min(setSnp_Hete_Contain_SnpProp_Min);
+	}
+	public void setSnp_HetoMore_Contain_SnpProp_Min(double snp_HetoMore_Contain_SnpProp_Min) {
+		snpFilter.setSnp_HetoMore_Contain_SnpProp_Min(snp_HetoMore_Contain_SnpProp_Min);
 	}
 	/**
 	 * 可以加入多个文件，只要这些文件有相同的过滤规则就行
@@ -76,8 +58,12 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	 * @param pileUpfile
 	 * @param outSnpFile 输出文件名，null则不输出，“”输出默认
 	 */
-	public void setSnpFromPileUpFile(String sampleName, String pileUpfile,String outSnpFile) {
+	public void addSnpFromPileUpFile(String sampleName, String pileUpfile,String outSnpFile) {
 		lsSample2PileUpFiles.add(new String[]{sampleName, pileUpfile, outSnpFile});
+	}
+	/** 清空 */
+	public void clearSnpFromPileUpFile() {
+		lsSample2PileUpFiles.clear();
 	}
 
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -91,6 +77,25 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		for (String[] sample2PileupFile : lsSample2PileUpFiles) {
 			String pileUpFile = sample2PileupFile[1];
 			allFileSize = FileOperate.getFileSize(pileUpFile);
+		} 
+		return allFileSize;
+	}
+	/**返回以K为单位的估计文件的总和，gz的文件就会加倍估计
+	 * @return
+	 */
+	public double getFileSizeEvaluateK() {
+		double allFileSize = 0;
+		for (String[] sample2PileupFile : lsSample2PileUpFiles) {
+			String pileUpFile = sample2PileupFile[1];
+			double size = FileOperate.getFileSize(pileUpFile);
+			//如果是压缩文件就假设源文件为6倍大 */
+			if (FileOperate.getFileNameSep(pileUpFile)[1].toLowerCase().equals("gz")) {
+				size = size * 6;
+			}
+			else {
+				size = size * 1.2;
+			}
+			allFileSize = allFileSize + size;
 		} 
 		return allFileSize;
 	}
@@ -119,7 +124,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	 * 将pileUp的snp信息加入mapSiteInfo2MapInfoSnpIndel中
 	 * 同时导出一份snp的信息表
 	 * @param sampleName
-	 * @param SnpGroupInfoFilter 过滤器，设定过滤的状态。本过滤器中的样本信息没有意义，会被清空
+	 * @param SnpGroupFilterInfo 过滤器，设定过滤的状态。本过滤器中的样本信息没有意义，会被清空
 	 * @param pileUpFile
 	 */
 	private void addPileupToLsSnpIndel(String sampleName, String pileUpFile, String outPutFile) {
@@ -144,9 +149,10 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
 			mapInfoSnpIndel.setSamToolsPilup(pileupLines);
 			
-			if (sampleFilter.isFilterdSnp(mapInfoSnpIndel)) {
+			ArrayList<SiteSnpIndelInfo> lsFilteredSnp = snpFilter.getFilterdSnp(mapInfoSnpIndel);
+			if (lsFilteredSnp.size() > 0) {
 				addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
-				writeInFile(mapInfoSnpIndel);
+				writeInFile(mapInfoSnpIndel, lsFilteredSnp);
 			}
 		}
 		
@@ -160,10 +166,10 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	}
 	/** 设定过滤器 */
 	private void setFilter(String sampleName) {
-		SnpGroupInfoFilter.clearSampleName();
-		SnpGroupInfoFilter.addSampleName(sampleName);
-		sampleFilter.clearSampleFilterInfo();
-		sampleFilter.addSampleFilterInfo(SnpGroupInfoFilter);
+		snpGroupFilterInfo.clearSampleName();
+		snpGroupFilterInfo.addSampleName(sampleName);
+		snpFilter.clearSampleFilterInfo();
+		snpFilter.addSampleFilterInfo(snpGroupFilterInfo);
 	}
 	/** 将结果装入哈希表里面 */
 	private void addSnp_2_mapSiteInfo2MapInfoSnpIndel(MapInfoSnpIndel mapInfoSnpIndel) {
@@ -181,11 +187,11 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		}
 	}
 	
-	private void writeInFile(MapInfoSnpIndel mapInfoSnpIndel) {
+	private void writeInFile(MapInfoSnpIndel mapInfoSnpIndel, ArrayList<SiteSnpIndelInfo> lsFilteredSnp) {
 		if (txtSnpOut == null) {
 			return;
 		}
-		ArrayList<String[]> lsInfo = mapInfoSnpIndel.toStringLsSnp();
+		ArrayList<String[]> lsInfo = mapInfoSnpIndel.toStringLsSnp(lsFilteredSnp);
 		for (String[] strings : lsInfo) {
 			txtSnpOut.writefileln(strings);
 		}
@@ -193,11 +199,4 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 
 }
 
-class SnpFilterDetailInfo {
-	/** 所有读取的字节 */
-	long allByte;
-	long allLines;
-	int findSnp;
-	/** 当不为null时表示完成了该样本的snp查找 */
-	String fileName;
-}
+

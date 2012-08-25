@@ -100,7 +100,7 @@ public class GuiCelNormJpanel extends JPanel {
 		
 		btnDelFastqLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPaneCelFile.removeSelRows();
+				scrollPaneCelFile.deleteSelRows();
 			}
 		});
 		add(btnDelFastqLeft);
@@ -127,7 +127,7 @@ public class GuiCelNormJpanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileLeft = guiFileOpen.openLsFileName("fastqFile","");
 				for (String string : lsFileLeft) {
-					scrollPaneCelFile.addRow(new String[]{string});
+					scrollPaneCelFile.addItem(new String[]{string});
 				}
 			}
 		});

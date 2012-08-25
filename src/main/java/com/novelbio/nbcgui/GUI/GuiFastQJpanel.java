@@ -220,7 +220,7 @@ public class GuiFastQJpanel extends JPanel {
 		
 		btnDelFastqLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPaneFastqLeft.removeSelRows();
+				scrollPaneFastqLeft.deleteSelRows();
 			}
 		});
 		add(btnDelFastqLeft);
@@ -298,7 +298,7 @@ public class GuiFastQJpanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileRigth = guiFileOpen.openLsFileName("fastqFile", "");
 				for (String string : lsFileRigth) {
-					scrollPaneFastqRight.addRow(new String[]{string});
+					scrollPaneFastqRight.addItem(new String[]{string});
 				}
 			}
 		});
@@ -308,7 +308,7 @@ public class GuiFastQJpanel extends JPanel {
 		btnDeleteFastQRight = new JButton("Delete");
 		btnDeleteFastQRight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPaneFastqRight.removeSelRows();
+				scrollPaneFastqRight.deleteSelRows();
 			}
 		});
 		btnDeleteFastQRight.setBounds(821, 74, 86, 24);
@@ -401,7 +401,7 @@ public class GuiFastQJpanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileLeft = guiFileOpen.openLsFileName("fastqFile", "");
 				for (String string : lsFileLeft) {
-					scrollPaneFastqLeft.addRow(new String[]{string, ""});
+					scrollPaneFastqLeft.addItem(new String[]{string, ""});
 				}
 			}
 		});

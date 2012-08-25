@@ -13,60 +13,59 @@ public class SnpFilter {
 	private static Logger logger = Logger.getLogger(SnpFilter.class);
 	
 	/** 判定为纯合snp的最少reads数 */
-	static int Snp_Homo_ReadsAllNumMin = 3;
+	int Snp_Homo_ReadsAllNumMin = 3;
 	/** 判定为Snp所含有的ref数量不得大于该数值 */
-	static int Snp_Homo_Contain_RefNumMax = 2;
+	int Snp_Homo_Contain_RefNumMax = 2;
 	/**判定为纯合snp所含有的ref比例不得大于该数值 */
-	static double Snp_Homo_Contain_RefProp_Max = 0.02;
+	double Snp_Homo_Contain_RefProp_Max = 0.02;
 	
 	/** 判定为杂合snp HetoMore的最少reads数 */
-	static int Snp_HetoMore_ReadsAllNumMin = 3;
+	int Snp_HetoMore_ReadsAllNumMin = 3;
 	/** 判定为Snp所含有的snp数量不得小于该数值 */
-	static int Snp_HetoMore_Contain_SnpNumMin = 2;
-	/**判定为纯合snp所含有的ref比例不得大于该数值 */
-	static double Snp_HetoMore_Contain_RefProp_Max = 0.1;
+	int Snp_HetoMore_Contain_SnpNumMin = 2;
+	/**判定为纯合snp所含有的snp比例不得小于于该数值 */
+	double Snp_HetoMore_Contain_SnpProp_Min = 0.7;
 	
 	/** 判定为Snp Heto的最少reads数 */
-	static int Snp_Heto_ReadsAllNumMin = 3;
+	int Snp_Heto_ReadsAllNumMin = 3;
 	/** 判定为 Snp Heto的最少 ref reads数，必须大于这个值 */
-	static int Snp_Hete_Contain_RefNumMin = 1;
+	int Snp_Hete_Contain_RefNumMin = 1;
 	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
-	static double Snp_Hete_Contain_SnpProp_Min = 0.1;
+	double Snp_Hete_Contain_SnpProp_Min = 0.1;
 	/** 判定为snp Heto所含有的ref比例不得小于该数值 */
-	static double Snp_Hete_Contain_RefProp_Min = 0.1;
+	double Snp_Hete_Contain_RefProp_Min = 0.1;
 	
 	
 	/** 判定为ref的最少reads数 */
-	static int Ref_ReadsAllNumMin = 10;
+	int Ref_ReadsAllNumMin = 10;
 	/** 判定为ref所含有的snp数量不得大于该数值 */
-	static int Ref_Contain_SnpNumMin = 2;
+	int Ref_Contain_SnpNumMin = 2;
 	/**判定为ref所含有的snp比例不得大于该数值 */
-	static double Ref_Contain_SnpProp_Max = 0.02;
+	double Ref_Contain_SnpProp_Max = 0.02;
 	
 	/** 判定为Snp HetoLess的最少reads数 */
-	static int Snp_HetoLess_ReadsAllNumMin = 3;
+	int Snp_HetoLess_ReadsAllNumMin = 3;
 	/** 判定为 Snp HetoLess的最少 ref reads数，必须大于这个值 */
-	static int Snp_HetoLess_Contain_RefNumMin = 2;
+	int Snp_HetoLess_Contain_RefNumMin = 2;
 	
 	//该数值同Snp_Hete_Contain_SnpProp_Min
 	/**判定为snp HetoLess所含有的ref比例不得大于该数值 */
 //	static double Snp_HetoLess_Contain_SnpProp_Max = 0.1;
 	
-	HashSet<SnpGroupInfoFilter> setSampleFilterInfo = new HashSet<SnpGroupInfoFilter>();
+	HashSet<SnpGroupFilterInfo> setSampleFilterInfo = new HashSet<SnpGroupFilterInfo>();
 
-	/** 判定为Snp HetoLess的最少reads数 */
-	public static void setSnp_HetoLess_ReadsAllNumMin(
-			int snp_HetoLess_ReadsAllNumMin) {
-		Snp_HetoLess_ReadsAllNumMin = snp_HetoLess_ReadsAllNumMin;
+	public void setSnp_HetoMore_Contain_SnpProp_Min(
+			double snp_HetoMore_Contain_SnpProp_Min) {
+		Snp_HetoMore_Contain_SnpProp_Min = snp_HetoMore_Contain_SnpProp_Min;
 	}
 	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
-	public static void setSnp_Hete_Contain_SnpProp_Min(
+	public void setSnp_Hete_Contain_SnpProp_Min(
 			double snp_Hete_Contain_SnpProp_Min) {
 		Snp_Hete_Contain_SnpProp_Min = snp_Hete_Contain_SnpProp_Min;
 	}
 	
 	/**添加样本过滤信息，注意大小写 */
-	public void addSampleFilterInfo(SnpGroupInfoFilter sampleDetail) {
+	public void addSampleFilterInfo(SnpGroupFilterInfo sampleDetail) {
 		this.setSampleFilterInfo.add(sampleDetail);
 	}
 	/** 重置样本信息 */
@@ -82,13 +81,13 @@ public class SnpFilter {
 	/** 
 	 * 该样本是否通过质检
 	 * 如果通过质检了，就返回通过质检的那个snp类型
-	 * 否则返回null
+	 * 否则返回空的list
 	 * */
 	public ArrayList<SiteSnpIndelInfo> getFilterdSnp(MapInfoSnpIndel mapInfoSnpIndel) {
 		ArrayList<SiteSnpIndelInfo> lsSnpFiltered = new ArrayList<SiteSnpIndelInfo>();
 		boolean isQualified = true;
 		for (SiteSnpIndelInfo siteSnpIndelInfo : mapInfoSnpIndel.getLsAllenInfoSortBig2Small()) {
-			for (SnpGroupInfoFilter sampleDetail : setSampleFilterInfo) {
+			for (SnpGroupFilterInfo sampleDetail : setSampleFilterInfo) {
 				sampleDetail.clearData();
 				for (String sampleName : sampleDetail.lsSampleName) {
 					siteSnpIndelInfo.setSampleName(sampleName);
@@ -132,7 +131,7 @@ public class SnpFilter {
 			}
 		}
 		else if (numSnpIndel >= Snp_HetoMore_Contain_SnpNumMin && numAll >= Snp_HetoMore_ReadsAllNumMin 
-				&& ((double)numRef/numAll <= Snp_HetoMore_Contain_RefProp_Max || numRef == 1) )//只有1条ref很难说明问题 
+				&& ((double)numSnpIndel/numAll >= Snp_HetoMore_Contain_SnpProp_Min || numRef == 1) )//只有1条ref很难说明问题 
 		{
 			if (siteSnpIndelInfo == SnpIndelType.INSERT || siteSnpIndelInfo == SnpIndelType.DELETION) {
 				return SnpIndelHomoHetoType.IndelHetoMore;

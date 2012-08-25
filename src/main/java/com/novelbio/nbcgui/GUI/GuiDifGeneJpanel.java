@@ -57,7 +57,7 @@ public class GuiDifGeneJpanel extends JPanel {
 		btnSetSample.setBounds(634, 231, 83, 20);
 		btnSetSample.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPaneSample.addRow(new String[]{"",""});
+				scrollPaneSample.addItem(new String[]{"",""});
 			}
 		});
 		btnSetSample.setMargin(new Insets(0, 0, 0, 0));
@@ -67,7 +67,7 @@ public class GuiDifGeneJpanel extends JPanel {
 		btnDelSample.setBounds(870, 231, 75, 20);
 		btnDelSample.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPaneSample.removeSelRows();
+				scrollPaneSample.deleteSelRows();
 			}
 		});
 		btnDelSample.setMargin(new Insets(0, 0, 0, 0));
@@ -82,7 +82,7 @@ public class GuiDifGeneJpanel extends JPanel {
 		btnSetDesign.setBounds(635, 431, 82, 20);
 		btnSetDesign.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPaneDesign.addRow(new String[]{"",""});
+				scrollPaneDesign.addItem(new String[]{"",""});
 			}
 		});
 		btnSetDesign.setMargin(new Insets(0, 0, 0, 0));
@@ -92,7 +92,7 @@ public class GuiDifGeneJpanel extends JPanel {
 		btnDelDesign.setBounds(858, 431, 87, 20);
 		btnDelDesign.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPaneDesign.removeSelRows();
+				scrollPaneDesign.deleteSelRows();
 			}
 		});
 		btnDelDesign.setMargin(new Insets(0, 0, 0, 0));

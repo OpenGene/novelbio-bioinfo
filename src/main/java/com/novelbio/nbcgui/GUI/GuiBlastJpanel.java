@@ -55,7 +55,7 @@ import javax.swing.SpringLayout;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class GuiBlastJpanel extends JPanel{
+public class GuiBlastJpanel extends JPanel {
 	/**
 	 * 
 	 */
@@ -703,4 +703,5 @@ public class GuiBlastJpanel extends JPanel{
 	}
 
 	NBCJDialog nbcjDialog;
+
 }

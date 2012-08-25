@@ -55,7 +55,7 @@ public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 	@Override
 	public void setRunningInfo(AnnoQueryDisplayInfo info) {
 		guiAnnoBatch.getProcessBar().setValue((int) info.getCountNum());
-		guiAnnoBatch.getJScrollPaneDataResult().addRow(info.getTmpInfo());
+		guiAnnoBatch.getJScrollPaneDataResult().addItem(info.getTmpInfo());
 	}
 	
 	@Override

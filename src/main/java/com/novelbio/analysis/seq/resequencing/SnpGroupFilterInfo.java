@@ -1,11 +1,17 @@
 package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /** 一组样本的过滤，可以设定一组样本，然后根据一组样本里面的信息，进行过滤
  * 包括最少多少杂合snp，最多多少杂合snp等等
  *  */
-public class SnpGroupInfoFilter {
+public class SnpGroupFilterInfo {
+	public static final int Homo = 5;
+	public static final int HetoLess = 10;
+	public static final int Heto = 20;
+	public static final int HetoMore = 30;
+	
 	ArrayList<String> lsSampleName = new ArrayList<String>();
 	int SnpIndelHomoNumMin = -1;
 	int SnpIndelHomoNumMax = -1;
@@ -35,8 +41,30 @@ public class SnpGroupInfoFilter {
 	double ThisUnKnownSite = 0;
 	int ThisSnpIndelAll = 0;
 	
-	
-	/** 设定样本名称 */
+	/**
+	 * 单个样本过滤时使用，直接设定这个，别的都不用设定了
+	 * @param snpLevel Homo，HetoLess等
+	 */
+	public void setSnpLevel(int snpLevel) {
+		if (snpLevel == Homo) {
+			setSampleRefHomoNum(1, 1);
+		}
+		else if (snpLevel == HetoLess) {
+			setSampleSnpIndelNum(1, 1);
+		}
+		else if (snpLevel == Heto) {
+			setSampleSnpIndelNum(1, 1);
+			setSampleSnpIndelHetoLessNum(0, 0);
+		}
+		else if (snpLevel == HetoMore) {
+			setSampleSnpIndelNum(1, 1);
+			setSampleSnpIndelHetoLessNum(0, 0);
+			setSampleSnpIndelHetoNum(0, 0);
+		}
+	}
+	/** 设定样本名称,也就是需要过滤哪些样本
+	 * 当过滤一组样本时使用
+	 *  */
 	public void addSampleName(String sampleName) {
 		this.lsSampleName.add(sampleName);
 	}
@@ -170,6 +198,15 @@ public class SnpGroupInfoFilter {
 			return thisNum > compareNum;
 		}
 		return false;
+	}
+	
+	public static HashMap<String, Integer> getMap_Str2SnpLevel() {
+		HashMap<String, Integer> mapStr2SnpLevel = new HashMap<String, Integer>();
+		mapStr2SnpLevel.put("Homo", Homo);
+		mapStr2SnpLevel.put("HetoLess", HetoLess);
+		mapStr2SnpLevel.put("Heto", Heto);
+		mapStr2SnpLevel.put("HetoMore", HetoMore);
+		return mapStr2SnpLevel;
 	}
 	
 	enum CompareType {

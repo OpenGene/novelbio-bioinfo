@@ -130,7 +130,7 @@ public class GuiToolsJpanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsfilename = guiFileOpenComb.openLsFileName("txt/excel2003", "txt","xls");
 				for (String strings : lsfilename) {
-					scrollPane.addRow(new String[]{strings,""});
+					scrollPane.addItem(new String[]{strings,""});
 				}
 			}
 		});
@@ -202,7 +202,7 @@ public class GuiToolsJpanel extends JPanel {
 		JButton btnDelfile = new JButton("DelFile");
 		btnDelfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPane.removeSelRows();
+				scrollPane.deleteSelRows();
 			}
 		});
 		springLayout.putConstraint(SpringLayout.NORTH, btnDelfile, 27, SpringLayout.SOUTH, btnAddlineCompare);

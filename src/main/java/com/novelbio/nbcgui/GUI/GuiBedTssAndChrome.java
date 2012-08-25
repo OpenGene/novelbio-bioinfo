@@ -34,7 +34,7 @@ import javax.swing.JSpinner;
  * @author zong0jie
  *
  */
-public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs {
+public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiNeedOpenFile {
 	private static final long serialVersionUID = -4438216387830519443L;
 	private JTextField txtColGene;
 	private JTextField txtColPeakStartMid;
@@ -421,7 +421,9 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs {
 		gffChrMap.plotAllChrDist(save);
 	}
 	
-	
+	public void setGuiFileOpen(GUIFileOpen guiFileOpen) {
+		this.guiFileOpen = guiFileOpen;
+	}
 	
 	
 	
