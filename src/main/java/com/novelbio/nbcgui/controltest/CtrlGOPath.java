@@ -161,7 +161,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	/**
 	 * 给定文件，和文件分割符，以及第几列，获得该列的基因ID
 	 * 
-	 * @param fileName
+	 * @param showMessage
 	 * @return
 	 * @throws Exception
 	 */

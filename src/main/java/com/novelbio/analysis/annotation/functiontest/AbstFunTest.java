@@ -193,7 +193,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	/**
 	 * 最好能第一时间设定
 	 * 读取背景文件，指定读取某一列
-	 * @param fileName
+	 * @param showMessage
 	 */
 	public void setLsBGCopedID(ArrayList<GeneID> lsBGaccID) {
 		lsTestResult = new ArrayList<String[]>();

@@ -62,9 +62,8 @@ public class CtrlSnpCalling implements RunGetInfo<SnpFilterDetailInfo> {
 	public void setRunningInfo(SnpFilterDetailInfo info) {
 		long kb = info.getAllByte()/1000;
 		guiSnpCalling.getProgressBar().setValue((int) kb);
-		if (info.getFileName() != null) {
-			String fileName = FileOperate.getFileName(info.getFileName());
-			guiSnpCalling.getLblInfo().setText("Finish Reading" + fileName);
+		if (info.getMessage() != null) {
+			guiSnpCalling.getLblInfo().setText(info.getMessage());
 		}
 	}
 	

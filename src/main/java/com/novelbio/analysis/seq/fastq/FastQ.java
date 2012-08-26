@@ -185,7 +185,7 @@ public class FastQ {
 	}
 	/**
 	 * 给定文件名，获得 文件名.fasta 和 文件名.
-	 * @param fileName
+	 * @param showMessage
 	 * @param illuminaOffset 是否为illumina的offset
 	 */
 	public static void convertSff2FastQ(String fastaFile, boolean illuminaOffset) {

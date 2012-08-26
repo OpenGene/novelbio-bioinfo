@@ -7,16 +7,16 @@ public class SnpFilterDetailInfo {
 	long allByte;
 	long allLines;
 	int findSnp;
-	/** 当不为null时表示完成了该样本的snp查找 */
-	String fileName;
+	/** 当不为null时表示需要输出的信息 */
+	String showMessage;
 	public long getAllByte() {
 		return allByte;
 	}
 	public long getAllLines() {
 		return allLines;
 	}
-	public String getFileName() {
-		return fileName;
+	public String getMessage() {
+		return showMessage;
 	}
 	public int getFindSnp() {
 		return findSnp;

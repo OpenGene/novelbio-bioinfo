@@ -79,6 +79,9 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		this.chrID = chrID;
 		this.refSnpIndelStart = refSnpIndelStart;
 	}
+	/** 这是当samPileup文件跳过某一行时设定的，表示已经查过这一行了只不过没找到东西
+	 * 然后各种值会设定为0
+	 *  */
 	protected void setSearchSamPileUpFileTrue() {
 		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
 		sampleRefReadsInfo.setSearchSampileupFile(true);
@@ -974,23 +977,13 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		logger.info("readOverFile:" + samToolsPleUpFile);
 	}
 	private static void addMapSiteInfo(GffChrAbs gffChrAbs, String sampleName, MapInfoSnpIndel mapInfoSnpIndel, String samtoolsLine) {
-//		if (mapInfoSnpIndel.isContainsSample(sampleName)) {
-//			return;
-//		}
-//		else {
-			mapInfoSnpIndel.setSampleName(sampleName);
-			mapInfoSnpIndel.setSamToolsPilup(samtoolsLine, gffChrAbs);
-//		}
+		mapInfoSnpIndel.setSampleName(sampleName);
+		mapInfoSnpIndel.setSamToolsPilup(samtoolsLine, gffChrAbs);
 	}
 
 }
 /** 某个样本在该位点的reference reads数量 */
 class SampleRefReadsInfo {
-	public SampleRefReadsInfo() { }
-	
-	public SampleRefReadsInfo(int readDepth) {
-		this.readDepth = readDepth;
-	}
 	/** AD
 	 * ref的reads数量
 	 */
@@ -1013,8 +1006,15 @@ class SampleRefReadsInfo {
 	 *  Higher SB values denote more bias (and therefore are more likely to indicate false positive calls).
 	 */
 	double Strand_Bias = 0;
-	
+	/** 意思就是在sampileup文件中查过了这一行 */
 	boolean searchSampileupFile = false;
+	
+	public SampleRefReadsInfo() { }
+	
+	public SampleRefReadsInfo(int readDepth) {
+		this.readDepth = readDepth;
+	}
+	
 	protected void setSearchSampileupFile(boolean searchSampileupFile) {
 		this.searchSampileupFile = searchSampileupFile;
 	}

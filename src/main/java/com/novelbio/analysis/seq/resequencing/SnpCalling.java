@@ -64,6 +64,9 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	/** 清空 */
 	public void clearSnpFromPileUpFile() {
 		lsSample2PileUpFiles.clear();
+		readLines = 0;
+		readByte = 0;
+		findSnp = 0;
 	}
 
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -89,12 +92,11 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			String pileUpFile = sample2PileupFile[1];
 			double size = FileOperate.getFileSize(pileUpFile);
 			//如果是压缩文件就假设源文件为6倍大 */
-			if (FileOperate.getFileNameSep(pileUpFile)[1].toLowerCase().equals("gz")) {
+			if (FileOperate.getFileNameSep(pileUpFile)[1].toLowerCase().equals("gz"))
 				size = size * 6;
-			}
-			else {
+			else
 				size = size * 1.2;
-			}
+			
 			allFileSize = allFileSize + size;
 		} 
 		return allFileSize;
@@ -116,6 +118,13 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			if (outPutFile != null && outPutFile.trim().equals("")) {
 				outPutFile = FileOperate.changeFileSuffix(sample2PileupFile[1], "_SnpInfo", "txt");
 			}
+			
+			SnpFilterDetailInfo snpFilterDetailInfo = new SnpFilterDetailInfo();
+			snpFilterDetailInfo.allLines = readLines;
+			snpFilterDetailInfo.allByte = readByte;
+			snpFilterDetailInfo.showMessage = "reading file " + FileOperate.getFileName(sample2PileupFile[1]);
+			setRunInfo(snpFilterDetailInfo);
+			
 			addPileupToLsSnpIndel(sample2PileupFile[0], sample2PileupFile[1], outPutFile);
 		}
 	}
@@ -127,14 +136,14 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	 * @param SnpGroupFilterInfo 过滤器，设定过滤的状态。本过滤器中的样本信息没有意义，会被清空
 	 * @param pileUpFile
 	 */
-	private void addPileupToLsSnpIndel(String sampleName, String pileUpFile, String outPutFile) {
+	private void addPileupToLsSnpIndel(String sampleName, String pileupFile, String outPutFile) {
 		txtSnpOut = new TxtReadandWrite(outPutFile, true);
-		TxtReadandWrite txtReadPileUp = new TxtReadandWrite(pileUpFile, false);
+		TxtReadandWrite txtReadPileUp = new TxtReadandWrite(pileupFile, false);
 		setFilter(sampleName);
 		
 		for (String pileupLines : txtReadPileUp.readlines()) {
 			readLines ++;
-			readByte += pileUpFile.length();
+			readByte += pileupFile.length();
 			////// 中间输出信息 /////////////////////
 			suspendCheck();
 			if (flagStop)
@@ -155,13 +164,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 				writeInFile(mapInfoSnpIndel, lsFilteredSnp);
 			}
 		}
-		
-		SnpFilterDetailInfo snpFilterDetailInfo = new SnpFilterDetailInfo();
-		snpFilterDetailInfo.allLines = readLines;
-		snpFilterDetailInfo.allByte = readByte;
-		snpFilterDetailInfo.fileName = pileUpFile;
-		setRunInfo(snpFilterDetailInfo);
-		
+
 		txtSnpOut.close();
 	}
 	/** 设定过滤器 */
