@@ -50,7 +50,7 @@ public class CtrlSnpCalling implements RunGetInfo<SnpFilterDetailInfo> {
 		snpCalling.setSnp_HetoMore_Contain_SnpProp_Min(snp_HetoMore_Contain_SnpProp_Min);
 	}
 	
-	public void running() {
+	public void runSnpCalling() {
 		Thread thread = new Thread(snpCalling);
 		thread.start();
 		

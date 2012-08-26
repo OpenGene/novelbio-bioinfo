@@ -16,6 +16,7 @@ import com.novelbio.nbcgui.controlseq.CtrlSnpCalling;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import javax.swing.JScrollPane;
 /** snpCallingµÄ½çÃæ */
 public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	private JTextField txtHetoSnpProp;
@@ -31,6 +32,9 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	private JLabel lblInfo;
 	
 	CtrlSnpCalling ctrlSnpCalling = new CtrlSnpCalling(this);
+	private JScrollPane scrollPane;
+	private JButton btnAddsnpfile;
+	private JButton btnDelete_1;
 	
 	/**
 	 * Create the panel.
@@ -39,7 +43,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		setLayout(null);
 		
 		sclInputFile = new JScrollPaneData();
-		sclInputFile.setBounds(14, 10, 757, 275);
+		sclInputFile.setBounds(14, 10, 757, 137);
 		add(sclInputFile);
 		
 		btnAddFile = new JButton("AddFile");
@@ -63,28 +67,28 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		add(btnDelete);
 		
 		combSnpLevel = new JComboBoxData<Integer>();
-		combSnpLevel.setBounds(14, 316, 190, 23);
+		combSnpLevel.setBounds(14, 185, 190, 23);
 		add(combSnpLevel);
 		
 		JLabel lblSnpfilterquality = new JLabel("SnpFilterQuality");
-		lblSnpfilterquality.setBounds(14, 297, 152, 14);
+		lblSnpfilterquality.setBounds(14, 159, 152, 14);
 		add(lblSnpfilterquality);
 		
 		JLabel lblHetolessinfo = new JLabel("Heto Contain Snp Reads Prop Min");
-		lblHetolessinfo.setBounds(296, 320, 279, 14);
+		lblHetolessinfo.setBounds(296, 159, 279, 14);
 		add(lblHetolessinfo);
 		
 		JLabel lblHetomorecontainreadsmin = new JLabel("Heto More Contain Snp Reads Prop Min");
-		lblHetomorecontainreadsmin.setBounds(296, 348, 324, 14);
+		lblHetomorecontainreadsmin.setBounds(296, 189, 324, 14);
 		add(lblHetomorecontainreadsmin);
 		
 		txtHetoSnpProp = new JTextField();
-		txtHetoSnpProp.setBounds(657, 318, 114, 18);
+		txtHetoSnpProp.setBounds(657, 157, 114, 18);
 		add(txtHetoSnpProp);
 		txtHetoSnpProp.setColumns(10);
 		
 		txtHetoMoreSnpProp = new JTextField();
-		txtHetoMoreSnpProp.setBounds(657, 346, 114, 18);
+		txtHetoMoreSnpProp.setBounds(657, 187, 114, 18);
 		add(txtHetoMoreSnpProp);
 		txtHetoMoreSnpProp.setColumns(10);
 		
@@ -110,7 +114,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 					ctrlSnpCalling.setSnp_HetoMore_Contain_SnpProp_Min(hetoMoreSnpProp);
 				} catch (Exception e2) { }
 				
-				ctrlSnpCalling.running();
+				ctrlSnpCalling.runSnpCalling();
 			}
 		});
 		btnRun.setBounds(793, 501, 118, 24);
@@ -119,6 +123,18 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		lblInfo = new JLabel("");
 		lblInfo.setBounds(12, 475, 383, 24);
 		add(lblInfo);
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(18, 273, 754, 115);
+		add(scrollPane);
+		
+		btnAddsnpfile = new JButton("AddSnpFile");
+		btnAddsnpfile.setBounds(798, 273, 118, 24);
+		add(btnAddsnpfile);
+		
+		btnDelete_1 = new JButton("Delete");
+		btnDelete_1.setBounds(798, 364, 118, 24);
+		add(btnDelete_1);
 
 		initial();
 	}

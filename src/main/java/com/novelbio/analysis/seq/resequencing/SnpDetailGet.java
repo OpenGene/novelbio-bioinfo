@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
@@ -13,6 +14,7 @@ import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.database.domain.geneanno.SepSign;
 
 /** 指定一系列的snp位点，以及多个pileup文件，获得这些位点的实际reads数量 */
 public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
@@ -24,6 +26,8 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	HashMap<String, ArrayList<MapInfoSnpIndel>> mapChrID2LsSnpSite = new HashMap<String, ArrayList<MapInfoSnpIndel>>();
 	/** 样本信息 */
 	LinkedHashMap<String, String> mapSample2PileupFile = new LinkedHashMap<String, String>();
+	/** 读取文件时去除重复snp位点 */
+	HashSet<String> setSnpSiteRemoveFromReading = new HashSet<String>();
 	String outFile;
 	
 	/** 统计数字 */
@@ -39,6 +43,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	public void clear() {
 		mapChrID2LsSnpSite.clear();
 		mapSample2PileupFile.clear();
+		setSnpSiteRemoveFromReading.clear();
 		readLines = 0;
 		readByte = 0;
 		findSnp = 0;
@@ -77,6 +82,8 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			try { snpSiteLoc = Integer.parseInt(ss[colSiteStart]); } catch (Exception e) {
 				continue;
 			}
+			if (isReplicateSnpSite(ss[colChrID], snpSiteLoc))
+				continue;
 			
 			MapInfoSnpIndel snpSiteSimple = new MapInfoSnpIndel(gffChrAbs, ss[colChrID], snpSiteLoc);
 			String snpChrID = snpSiteSimple.getRefID().toLowerCase();
@@ -88,6 +95,17 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			}
 			lsSnpSiteSimples.add(snpSiteSimple);
 		}
+	}
+	
+	/** 是否为重复snp */
+	private boolean isReplicateSnpSite(String chrID, int snpSite) {
+		String siteInfo = chrID.toLowerCase() + SepSign.SEP_ID + snpSite;
+		if (setSnpSiteRemoveFromReading.contains(siteInfo)) {
+			return true;
+		}
+		setSnpSiteRemoveFromReading.add(siteInfo);
+		return false;
+		
 	}
 	/** 将输入文件整理为<br>
 	 * chrID----List--MapInfo<br>
