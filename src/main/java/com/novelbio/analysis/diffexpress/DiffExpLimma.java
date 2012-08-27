@@ -46,7 +46,7 @@ public class DiffExpLimma extends DiffExpAbs{
 	}
 	public DiffExpLimma() {
 //		rawScript = "/media/winE/Bioinformatics/R/Protocol/Microarray/limmaSimpleJava.txt";
-		rawScript = NovelBioConst.getRworkspace() + "limmaSimpleJava.txt";
+		rawScript = PathDetail.getRworkspace() + "limmaSimpleJava.txt";
 	}
 	
 	@Override
@@ -208,7 +208,7 @@ public class DiffExpLimma extends DiffExpAbs{
 			String outFileName = lsFileName.get(i);
 			String[] pair = mapOutFileName2Compare.get(outFileName);
 			String coef = getCoef(pair);
-			result[i] = writeToFileScript.replace("{$Pair}", coef).replace("{$OutFileName}", outFileName);
+			result[i] = writeToFileScript.replace("{$Pair}", coef).replace("{$OutFileName}", outFileName.replace("\\", "/"));
 		}
 		return result;
 	}

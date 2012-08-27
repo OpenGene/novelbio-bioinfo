@@ -53,8 +53,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 	}
 	
 	public DiffExpDESeq() {
-//		rawScript = "/media/winE/Bioinformatics/R/Protocol/DESeqJava.txt";
-		rawScript = NovelBioConst.getRworkspace() + "DESeqJava.txt";
+		rawScript = PathDetail.getRworkspace() + "DESeqJava.txt";
 	}
 	
 	/** 仅供测试 */
@@ -140,7 +139,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 		String compareGroupWrite = "\"" + compareGroup[1] + "\", \"" + compareGroup[0] + "\"";//先输入control再输入treatment
 		String[] write = content.split(SepSign.SEP_ID);
 		writeFinal[0] = write[1].replace("{$CompareGroup}", compareGroupWrite);
-		writeFinal[1] = write[2].replace("{$OutFileName}", outFileName);
+		writeFinal[1] = write[2].replace("{$OutFileName}", outFileName.replace("\\", "/"));
 		return writeFinal;
 	}
 	

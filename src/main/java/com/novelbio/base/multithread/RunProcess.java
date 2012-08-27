@@ -68,7 +68,7 @@ public abstract class RunProcess<T> implements Runnable {
 			runGetInfo.done(this);
 		}
 	}
-	/** 运行模块写在这个里面，这样结束后自动会将flagFinish设定为true */
+	/** 给run方法调用。运行模块写在这个里面，这样结束后自动会将flagFinish设定为true */
 	protected abstract void running();
 	/**
 	 * 设定输入的信息，内部回调

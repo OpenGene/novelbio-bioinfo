@@ -14,20 +14,28 @@ import com.novelbio.nbcgui.GUI.GuiSnpCalling;
 
 /** 查找snp */
 public class CtrlSnpCalling implements RunGetInfo<SnpFilterDetailInfo> {
-	SnpCalling snpCalling = new SnpCalling();
-	GuiSnpCalling guiSnpCalling;
-	GffChrAbs gffChrAbs;
-	Species species;
+	SnpCalling snpCalling = new SnpCalling();	
 	SnpGroupFilterInfo snpGroupInfoFilter = new SnpGroupFilterInfo();
 	
+	GuiSnpCalling guiSnpCalling;
+		
 	public CtrlSnpCalling(GuiSnpCalling guiSnpCalling) {
 		this.guiSnpCalling = guiSnpCalling;
 		snpCalling.setSampleDetail(snpGroupInfoFilter);
+		snpCalling.setRunGetInfo(this);
+	}
+	/** true snpCalling
+	 * false snpFinding
+	 * @param snpCalling
+	 */
+	public void setSnpCallingOrFinding(SnpCalling snpCalling) {
+		this.snpCalling = snpCalling;
 	}
 	
-	public void setSpecies(Species species) {
-		gffChrAbs = new GffChrAbs(species);
+	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		snpCalling.setGffChrAbs(gffChrAbs);
 	}
+	
 	/** snp过滤等级 */
 	public void set(int snpLevel) {
 		snpGroupInfoFilter.setSnpLevel(snpLevel);
@@ -51,19 +59,21 @@ public class CtrlSnpCalling implements RunGetInfo<SnpFilterDetailInfo> {
 	}
 	
 	public void runSnpCalling() {
+		guiSnpCalling.getBtnAddPileupFile().setEnabled(false);
+		guiSnpCalling.getBtnDeletePileup().setEnabled(false);
+		guiSnpCalling.getBtnRun().setEnabled(false);
+		guiSnpCalling.getProgressBar().setMinimum(0);
+		guiSnpCalling.getProgressBar().setMaximum((int) snpCalling.getFileSizeEvaluateK());
+		
 		Thread thread = new Thread(snpCalling);
 		thread.start();
-		
-		guiSnpCalling.getBtnAddFile().setEnabled(false);
-		guiSnpCalling.getBtnDelete().setEnabled(false);
-		guiSnpCalling.getBtnRun().setEnabled(false);
 	}
 	@Override
 	public void setRunningInfo(SnpFilterDetailInfo info) {
 		long kb = info.getAllByte()/1000;
 		guiSnpCalling.getProgressBar().setValue((int) kb);
 		if (info.getMessage() != null) {
-			guiSnpCalling.getLblInfo().setText(info.getMessage());
+			guiSnpCalling.getTxtInfo().setText(info.getMessage());
 		}
 	}
 	
@@ -79,13 +89,13 @@ public class CtrlSnpCalling implements RunGetInfo<SnpFilterDetailInfo> {
 	
 	@Override
 	public void done(RunProcess<SnpFilterDetailInfo> runProcess) {
-		guiSnpCalling.getProgressBar().setValue(guiSnpCalling.getProgressBar().getMaximum());
-		guiSnpCalling.getLblInfo().setText("Snp Calling Complete");
+		guiSnpCalling.getTxtInfo().setText("Snp Calling Complete");
 		JOptionPane.showMessageDialog(guiSnpCalling, "Snp Calling Complete", "finish", JOptionPane.INFORMATION_MESSAGE);
 		
-		guiSnpCalling.getBtnAddFile().setEnabled(true);
-		guiSnpCalling.getBtnDelete().setEnabled(true);
+		guiSnpCalling.getBtnAddPileupFile().setEnabled(true);
+		guiSnpCalling.getBtnDeletePileup().setEnabled(true);
 		guiSnpCalling.getBtnRun().setEnabled(true);
+		guiSnpCalling.getProgressBar().setValue(guiSnpCalling.getProgressBar().getMaximum());
 	}
 
 	@Override

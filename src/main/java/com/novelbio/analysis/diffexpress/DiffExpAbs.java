@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -102,7 +103,7 @@ public abstract class DiffExpAbs {
 	protected abstract void setFileNameRawdata();
 	
 	protected void setRworkspace() {
-		workSpace = NovelBioConst.getRworkspaceTmp();
+		workSpace = PathDetail.getRworkspaceTmp();
 	}
 	/** ½ö¹©²âÊÔ */
 	public String getOutScript() {
@@ -157,12 +158,12 @@ public abstract class DiffExpAbs {
 	
 	protected String getWorkSpace(String content) {
 		String RworkSpace = content.split(SepSign.SEP_ID)[1];
-		RworkSpace = RworkSpace.replace("{$workspace}", workSpace);
+		RworkSpace = RworkSpace.replace("{$workspace}", workSpace.replace("\\", "/"));
 		return RworkSpace;
 	}
 	protected String getFileName(String content) {
 		String fileRawdata = content.split(SepSign.SEP_ID)[1];
-		fileRawdata = fileRawdata.replace("{$filename}", fileNameRawdata);
+		fileRawdata = fileRawdata.replace("{$filename}", fileNameRawdata.replace("\\", "/"));
 		return fileRawdata;
 	}
 	/**
@@ -172,8 +173,8 @@ public abstract class DiffExpAbs {
 	 */
 	protected abstract void run();
 	protected void Rrunning(String cmdName) {
-		String cmd = NovelBioConst.R_SCRIPT + outScript;
-		CmdOperate cmdOperate = new CmdOperate(cmd, cmdName);
+		String cmd = NovelBioConst.R_SCRIPT + outScript.replace("\\", "/");
+		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.run();
 	}
 	

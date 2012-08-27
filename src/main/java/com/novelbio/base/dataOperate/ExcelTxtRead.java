@@ -153,8 +153,7 @@ public class ExcelTxtRead {
 	 * @throws Exception
 	 */
 	@Deprecated 
-	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int rowStart, int rowEnd, int colStart, int colEnd)
-	{
+	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int rowStart, int rowEnd, int colStart, int colEnd) {
 		ArrayList<String[]> ls1=null;
 		if (ExcelOperate.isExcel(excelFile)) {
 			ExcelOperate excel = new ExcelOperate(excelFile);

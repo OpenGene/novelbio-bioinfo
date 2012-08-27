@@ -3,6 +3,7 @@ package com.novelbio.analysis.microarray;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -25,16 +26,16 @@ public class AffyNormalization {
 	ArrayList<String> lsRawCelFile = new ArrayList<String>();
 	
 	public AffyNormalization() {
-		rawScript = NovelBioConst.getRworkspace() + "Affymetirx–æ∆¨∑÷ŒˆJava.txt";
+		rawScript = PathDetail.getRworkspace() + "Affymetirx–æ∆¨∑÷ŒˆJava.txt";
 		setWorkSpace();
 		setOutScriptPath();
 	}
 
 	private void setWorkSpace() {
-		workSpace = NovelBioConst.getRworkspaceTmp();
+		workSpace = PathDetail.getRworkspaceTmp();
 	}
 	private void setOutScriptPath() {
-		outScript = NovelBioConst.getRworkspaceTmp() + "AffyNorm_" + DateTime.getDateAndRandom() + ".R";
+		outScript = PathDetail.getRworkspaceTmp() + "AffyNorm_" + DateTime.getDateAndRandom() + ".R";
 	}
 	public void setLsRawCelFile(ArrayList<String> lsRawCelFile) {
 		this.lsRawCelFile = lsRawCelFile;
@@ -72,12 +73,12 @@ public class AffyNormalization {
 
 	private String getWorkSpace(String content) {
 		String RworkSpace = content.split(SepSign.SEP_ID)[1];
-		RworkSpace = RworkSpace.replace("{$workspace}", workSpace);
+		RworkSpace = RworkSpace.replace("{$workspace}", workSpace.replace("\\", "/"));
 		return RworkSpace;
 	}
 	private String getFileName(String content) {
 		String fileRawdata = content.split(SepSign.SEP_ID)[1];
-		fileRawdata = fileRawdata.replace("{$filename}", outFileName);
+		fileRawdata = fileRawdata.replace("{$filename}", outFileName.replace("\\", "/"));
 		return fileRawdata;
 	}
 	private String getRawDataFile(String content) {
@@ -86,7 +87,7 @@ public class AffyNormalization {
 			celFileName = celFileName + ", \"" + lsRawCelFile.get(i) + "\"";
 		}
 		String fileRawdata = content.split(SepSign.SEP_ID)[1];
-		fileRawdata = fileRawdata.replace("{$RawCelFile}", celFileName);
+		fileRawdata = fileRawdata.replace("{$RawCelFile}", celFileName.replace("\\", "/"));
 		return fileRawdata;
 	}
 	private String getMethodType(String content) {
@@ -109,8 +110,8 @@ public class AffyNormalization {
 		clean();
 	}
 	protected void Rrunning(String cmdName) {
-		String cmd = NovelBioConst.R_SCRIPT + outScript;
-		CmdOperate cmdOperate = new CmdOperate(cmd, cmdName);
+		String cmd = NovelBioConst.R_SCRIPT + outScript.replace("\\", "/");
+		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.run();
 	}
 	

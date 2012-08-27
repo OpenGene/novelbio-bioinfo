@@ -115,6 +115,13 @@ public class GffChrAbs {
 	public void set(SeqHash seqHash) {
 		this.seqHash = seqHash;
 	}
+	/** 如果没有设定species，就返回一个全新的species，并且其taxID == 0 */
+	public Species getSpecies() {
+		if (species == null) {
+			return new Species();
+		}
+		return species;
+	}
 	public int getTaxID() {
 		if (species == null) {
 			return 0;

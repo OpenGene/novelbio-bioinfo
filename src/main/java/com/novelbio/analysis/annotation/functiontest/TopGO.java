@@ -3,6 +3,7 @@ package com.novelbio.analysis.annotation.functiontest;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -36,7 +37,7 @@ public class TopGO {
 	ArrayList<String[]> lsResult;
 	HashMap<String,ArrayList<String>> mapGOID2LsGeneID;
 	public TopGO() {
-		tmplateScript = NovelBioConst.getRworkspace() + "topGOJava.txt";
+		tmplateScript = PathDetail.getRworkspace() + "topGOJava.txt";
 		setWorkSpace();
 		setExeScriptPath();
 		setRawGoResultFile();
@@ -44,10 +45,10 @@ public class TopGO {
 		setCalGeneIDFilePath();
 	}
 	private void setWorkSpace() {
-		workSpace = NovelBioConst.getRworkspaceTmp();
+		workSpace = PathDetail.getRworkspaceTmp();
 	}
 	private void setExeScriptPath() {
-		exeScript = NovelBioConst.getRworkspaceTmp() + "TopGO_" + DateTime.getDateAndRandom() + ".R";
+		exeScript = PathDetail.getRworkspaceTmp() + "TopGO_" + DateTime.getDateAndRandom() + ".R";
 	}
 	/** 输入文件 */
 	private void setRawGoResultFile() {
@@ -59,7 +60,7 @@ public class TopGO {
 		this.BGGeneFile = workSpace + "TopGOBG_" + DateTime.getDateAndRandom() + ".txt";
 	}
 	private void setCalGeneIDFilePath() {
-		CalGeneIDFile = NovelBioConst.getRworkspaceTmp() + "TopGO_CalGeneIDFile" + DateTime.getDateAndRandom() + ".txt";
+		CalGeneIDFile = PathDetail.getRworkspaceTmp() + "TopGO_CalGeneIDFile" + DateTime.getDateAndRandom() + ".txt";
 	}
 	
 	/** 待检验的基因 */
@@ -117,7 +118,7 @@ public class TopGO {
 
 	private String getWorkSpace(String content) {
 		String RworkSpace = content.split(SepSign.SEP_ID)[1];
-		RworkSpace = RworkSpace.replace("{$workspace}", workSpace);
+		RworkSpace = RworkSpace.replace("{$workspace}", workSpace.replace("\\", "/"));
 		return RworkSpace;
 	}
 	private String getGOtype(String content) {
@@ -132,22 +133,22 @@ public class TopGO {
 	}
 	private String getGoResult(String content) {
 		String GoResultFile = content.split(SepSign.SEP_ID)[1];
-		GoResultFile = GoResultFile.replace("{$GoResultFile}", rawGoResultFile);
+		GoResultFile = GoResultFile.replace("{$GoResultFile}", rawGoResultFile.replace("\\", "/"));
 		return GoResultFile;
 	}
 	private String getGOInfoFile(String content) {
 		String GOInfo = content.split(SepSign.SEP_ID)[1];
-		GOInfo = GOInfo.replace("{$GOInfoFile}", GOInfoFile + "");
+		GOInfo = GOInfo.replace("{$GOInfoFile}", GOInfoFile.replace("\\", "/"));
 		return GOInfo;
 	}
 	private String getCalculateGeneID(String content) {
 		String GOInfo = content.split(SepSign.SEP_ID)[1];
-		GOInfo = GOInfo.replace("{$CalGeneIDFile}", CalGeneIDFile + "");
+		GOInfo = GOInfo.replace("{$CalGeneIDFile}", CalGeneIDFile.replace("\\", "/"));
 		return GOInfo;
 	}
 	private String getBGGeneFile(String content) {
 		String GOInfo = content.split(SepSign.SEP_ID)[1];
-		GOInfo = GOInfo.replace("{$BGGeneFile}", BGGeneFile + "");
+		GOInfo = GOInfo.replace("{$BGGeneFile}", BGGeneFile.replace("\\", "/"));
 		return GOInfo;
 	}
 	private void fillCalGeneID_And_BG_File() {
@@ -178,8 +179,8 @@ public class TopGO {
 		clean();
 	}
 	protected void Rrunning(String cmdName) {
-		String cmd = NovelBioConst.R_SCRIPT + exeScript;
-		CmdOperate cmdOperate = new CmdOperate(cmd, cmdName);
+		String cmd = NovelBioConst.R_SCRIPT + exeScript.replace("\\", "/");
+		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.run();
 	}
 	private void readResult() {

@@ -41,7 +41,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	}
 	public DiffExpDEGseq() {
 //		rawScript = "/media/winE/Bioinformatics/R/Protocol/DEGseqJava.txt";
-		rawScript = NovelBioConst.getRworkspace() + "DEGseqJava.txt";
+		rawScript = PathDetail.getRworkspace().replace("\\", "/") + "DEGseqJava.txt";
 
 	}
 	/** 基因标记列，实际列，用在R里面，所以不需要减1 */
@@ -83,7 +83,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 
 		String SampleScipt = content.split(SepSign.SEP_ID)[1];
 		for (Entry<String, ArrayList<Integer>> entry : mapSample2LsCol.entrySet()) {
-			String tmpScript = SampleScipt.replace("{$SampleName}", entry.getKey());
+			String tmpScript = SampleScipt.replace("{$SampleName}", entry.getKey().replace("\\", "/"));
 			tmpScript = tmpScript.replace("{$colGeneID}", colAccID + "");
 			tmpScript = tmpScript.replace("{$colvalueID}", getRformatSampleVector(entry.getValue()));
 			resultSample[resultSampleNum] = tmpScript;
@@ -134,7 +134,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 		
 		int compareNum = 0;
 		for (String fileName : lsFileName) {
-			String tmpScript = sampleScript.replace("{$OutDir}", fileName + outPutSuffix);
+			String tmpScript = sampleScript.replace("{$OutDir}", fileName.replace("\\", "/") + outPutSuffix);
 			String[] comparePair = mapOutFileName2Compare.get(fileName);
 			tmpScript = tmpScript.replace("{$SampleTreat}", comparePair[0]).replace("{$SampleTreatName}", comparePair[0]);
 			tmpScript = tmpScript.replace("{$SampleControl}", comparePair[1]).replace("{$SampleControlName}", comparePair[1]);

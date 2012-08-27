@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 /**
  * 读取几个GATK的vcf结果文件，然后获得并集snp，并标记每个snp的信息，所在基因等等
@@ -53,7 +55,6 @@ public class SNPGATKcope {
 	/**每个位点对应的causal snp
 	 * 一个位点可能存在多个snp，所以装在list里面  */
 	ArrayList<ArrayList<SiteSnpIndelInfo>> lsFilteredSite = new ArrayList<ArrayList<SiteSnpIndelInfo>>();
-	
 	
 	/** 用来过滤样本的 */
 	SnpFilter sampleFilter = new SnpFilter();
@@ -158,19 +159,6 @@ public class SNPGATKcope {
 			addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
 		}
 	}
-	/** 
-	 * 不从vcf，而是从pileUp中获取snp的方法
-	 * 将pileUp的snp信息加入mapSiteInfo2MapInfoSnpIndel中
-	 * 同时导出一份snp的信息表
-	 * @param sampleName
-	 * @param sampleDetail 过滤器，设定过滤的状态
-	 * @param pileUpFile
-	 */
-	private void addPileupToLsSnpIndel() {
-		for (SnpCalling snpCalling : lsSample2PileUpFiles) {
-			snpCalling.run();
-		}
-	}
 	
 	private void addSnp_2_mapSiteInfo2MapInfoSnpIndel(MapInfoSnpIndel mapInfoSnpIndel) {
 		String key = mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart();
@@ -193,10 +181,31 @@ public class SNPGATKcope {
 			addNBCToLsSnpIndel(sample2NBCfile[0], sample2NBCfile[1]);
 		}
 		addPileupToLsSnpIndel();
-		HashMap<String, ArrayList<MapInfoSnpIndel>> mapInfoSnpIndel = MapInfoSnpIndel.sort_MapChrID2InfoSnpIndel(mapSiteInfo2MapInfoSnpIndel.values());
-		for (String[] sample2PileUp : lsSample2SamPileupFile) {
-			MapInfoSnpIndel.getSiteInfo_FromPileUp(sample2PileUp[0], mapInfoSnpIndel, sample2PileUp[1], gffChrAbs);
+		getSnpDetail(mapSiteInfo2MapInfoSnpIndel.values());
+	}
+	
+	/** 
+	 * 不从vcf，而是从pileUp中获取snp的方法
+	 * 将pileUp的snp信息加入mapSiteInfo2MapInfoSnpIndel中
+	 * 同时导出一份snp的信息表
+	 * @param sampleName
+	 * @param sampleDetail 过滤器，设定过滤的状态
+	 * @param pileUpFile
+	 */
+	private void addPileupToLsSnpIndel() {
+		for (SnpCalling snpCalling : lsSample2PileUpFiles) {
+			snpCalling.run();
 		}
+	}
+	
+	private void getSnpDetail(Collection<MapInfoSnpIndel> colMapInfoSnpIndels) {
+		SnpDetailGet snpDetailGet = new SnpDetailGet();
+		snpDetailGet.setGffChrAbs(gffChrAbs);
+		snpDetailGet.setMapChrID2InfoSnpIndel(colMapInfoSnpIndels);
+		for (String[] sample2PileUp : lsSample2SamPileupFile) {
+			snpDetailGet.addSample2PileupFile(sample2PileUp[0], sample2PileUp[1]);
+		}
+		snpDetailGet.run();
 	}
 	/** 必须在readSnpDetailFromPileUp之后执行 */
 	public void filterSnp() {

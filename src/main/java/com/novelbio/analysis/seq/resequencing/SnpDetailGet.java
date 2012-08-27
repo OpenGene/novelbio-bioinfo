@@ -48,7 +48,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		readByte = 0;
 		findSnp = 0;
 	}
-	public void setSample2PileupFile(String sampleName, String pileupFileName) {
+	public void addSample2PileupFile(String sampleName, String pileupFileName) {
 		mapSample2PileupFile.put(sampleName, pileupFileName);
 	}
 	/** 输出文件 */
@@ -72,7 +72,11 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		} 
 		return allFileSize;
 	}
-	/** 将文件读入lsSnpSite */
+	/** 将文件读入lsSnpSite
+	 * @param snpFile
+	 * @param colChrID 实际列数
+	 * @param colSiteStart 实际列数
+	 */
 	public void readSnpSiteInfo(String snpFile, int colChrID, int colSiteStart) {
 		colChrID--; colSiteStart--;
 		TxtReadandWrite txtReadSnp = new TxtReadandWrite(snpFile, false);
@@ -126,7 +130,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		}
 	}
 	
-	public void running() {
+	protected void running() {
 		sortSnp();
 		for (Entry<String, String> entry : mapSample2PileupFile.entrySet()) {
 			String sampleName = entry.getKey();

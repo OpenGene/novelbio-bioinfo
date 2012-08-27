@@ -270,6 +270,7 @@ public class TxtReadandWrite {
 		try {
 			return readPerlines();
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -290,6 +291,7 @@ public class TxtReadandWrite {
 			}
 			return itContent;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
