@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -20,6 +22,7 @@ import com.novelbio.database.service.servgeneanno.ServTaxID;
  * @author zong0jie
  */
 public class Species {
+	private static Logger logger = Logger.getLogger(Species.class);
 	/** 全部物种 */
 	public static final int ALL_SPECIES = 10;
 	/** 有Kegg缩写名的物种 */
@@ -66,7 +69,9 @@ public class Species {
 		}
 		this.taxID = taxID;
 		querySpecies();
-		this.version = lsVersion.get(0)[0];
+		if (lsVersion.size() > 0) {
+			this.version = lsVersion.get(0)[0];
+		}
 	}
 	/**
 	 * 设定版本号，设定之前务必先设定taxID。如果不存在该版本号，则直接返回
@@ -114,7 +119,13 @@ public class Species {
 	 * 获得该物种的信息
 	 */
 	private void querySpecies() {
-		taxInfo = servTaxID.queryTaxInfo(taxID);
+		try {
+			taxInfo = servTaxID.queryTaxInfo(taxID);
+		} catch (Exception e) {
+			logger.error("数据库没连上");
+			e.printStackTrace();
+			return;
+		}
 		ArrayList<SpeciesFile> lsSpeciesFile = servSpeciesFile.queryLsSpeciesFile(taxID, null);
 		for (SpeciesFile speciesFile : lsSpeciesFile) {
 			lsVersion.add(new String[]{speciesFile.getVersion(), speciesFile.getPublishYear() + ""});

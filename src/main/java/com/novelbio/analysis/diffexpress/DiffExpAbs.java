@@ -4,22 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
-
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateTime;
-import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.generalConf.NovelBioConst;
-import com.novelbio.generalConf.TitleFormatNBC;
 
 public abstract class DiffExpAbs {
 	public static final int LIMMA = 10;
@@ -37,6 +32,11 @@ public abstract class DiffExpAbs {
 	 * 1: SampleGroupName
 	 */
 	ArrayList<String[]> lsSampleColumn2GroupName;
+	/** 基因名
+	 * 对应时期名
+	 * 对应平均表达值
+	 */
+	HashMap<String, HashMap<String, Double>> mapSample_2_time2value;
 	/**基因唯一ID，必须没有重复 */
 	int colAccID = 0;
 	/**
@@ -125,6 +125,7 @@ public abstract class DiffExpAbs {
 		}
 		calculate = true;
 		writeToGeneFile();
+		setMapSample_2_time2value();
 		generateScript();
 		run();
 		modifyResult();
@@ -154,6 +155,65 @@ public abstract class DiffExpAbs {
 		}
 		return lsResultGeneInfo;
 	}
+	private void setMapSample_2_time2value() {
+		mapSample_2_time2value = new HashMap<String, HashMap<String,Double>>();
+		for (String[] strings : lsGeneInfo) {
+			String sampleName = strings[colAccID];
+			try {
+				HashMap<String, Double> mapTime2value = mapTime2AvgValue(strings);
+				mapSample_2_time2value.put(sampleName, mapTime2value);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+	}
+	/** 返回是否为log过的值
+	 * 主要用于limma，其实就是判断最大的表达值是否大于40
+	 *  */
+	protected boolean isLogValue() {
+		ArrayList<Double> lsValue = new ArrayList<Double>();
+		for (String[] strings : lsGeneInfo) {
+			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(0)[0]) - 1;
+			try {
+				double tmpValue = Double.parseDouble(strings[colNum]);
+				lsValue.add(tmpValue);
+			} catch (Exception e) { }
+		}
+		double result = MathComput.median(lsValue, 90);
+		if (result < 30) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	private HashMap<String, Double> mapTime2AvgValue(String[] info) {
+		HashMap<String, ArrayList<Double>> mapTime2LsValue = new HashMap<String, ArrayList<Double>>();
+		
+		for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
+			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]) - 1;
+			double value = Double.parseDouble(info[colNum]);
+			String timeInfo = lsSampleColumn2GroupName.get(i)[1];//时期
+			ArrayList<Double> lsValue = getLsValue(timeInfo, mapTime2LsValue);
+			lsValue.add(value);
+		}
+		HashMap<String, Double> mapTime2AvgValue = new HashMap<String, Double>();
+		for (Entry<String, ArrayList<Double>> entry : mapTime2LsValue.entrySet()) {
+			Double avgValue = MathComput.mean(entry.getValue());
+			mapTime2AvgValue.put(entry.getKey(), avgValue);
+		}
+		return mapTime2AvgValue;
+	}
+	private ArrayList<Double> getLsValue(String timeInfo, HashMap<String, ArrayList<Double>> mapTime2value) {
+		ArrayList<Double> lsValue = mapTime2value.get(timeInfo);
+		if (lsValue == null) {
+			lsValue = new ArrayList<Double>();
+			mapTime2value.put(timeInfo, lsValue);
+		}
+		return lsValue;
+	}
+	
 	protected abstract void generateScript();
 	
 	protected String getWorkSpace(String content) {
@@ -173,7 +233,7 @@ public abstract class DiffExpAbs {
 	 */
 	protected abstract void run();
 	protected void Rrunning(String cmdName) {
-		String cmd = NovelBioConst.R_SCRIPT + outScript.replace("\\", "/");
+		String cmd = PathDetail.getRscript() + outScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.run();
 	}

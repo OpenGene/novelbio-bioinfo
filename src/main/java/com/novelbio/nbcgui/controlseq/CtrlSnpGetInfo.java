@@ -39,8 +39,10 @@ public class CtrlSnpGetInfo implements RunGetInfo<SnpFilterDetailInfo>{
 	public void setOutfile(String outFile) {
 		snpDetailGet.setOutFile(outFile);
 	}
-	
-	public void runSnpCalling() {
+	public void addPileupFile(String sampleName, String pileupFileName) {
+		snpDetailGet.addSample2PileupFile(sampleName, pileupFileName);
+	}
+	public void runSnpGetInfo() {
 		guiSnpCalling.getBtnAddPileupFile().setEnabled(false);
 		guiSnpCalling.getBtnDeletePileup().setEnabled(false);
 		guiSnpCalling.getBtnAddSnpFile().setEnabled(false);

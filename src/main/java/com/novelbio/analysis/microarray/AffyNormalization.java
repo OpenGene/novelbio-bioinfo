@@ -110,7 +110,7 @@ public class AffyNormalization {
 		clean();
 	}
 	protected void Rrunning(String cmdName) {
-		String cmd = NovelBioConst.R_SCRIPT + outScript.replace("\\", "/");
+		String cmd = PathDetail.getRscript() + outScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.run();
 	}

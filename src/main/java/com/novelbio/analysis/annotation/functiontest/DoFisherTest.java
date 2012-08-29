@@ -226,7 +226,7 @@ public class DoFisherTest {
 		ArrayList<Double> lsPvalue = new ArrayList<Double>();
 		for (int i = 0; i < lsGOinfo.size(); i++) {
 			String[] tmp = lsGOinfo.get(i);
-			String[] tmp2=new String[tmp.length+3];
+			String[] tmp2=new String[tmp.length+4];
 			
 			for (int j = 0; j < tmp.length; j++) {
 				if( j<tmp.length) {
@@ -241,12 +241,13 @@ public class DoFisherTest {
 			lsPvalue.add(pvalue);
 			tmp2[tmp.length] = pvalue + "";
 			tmp2[tmp.length + 2] = ((double)a/b)/((double)c/d) + "";
+			tmp2[tmp.length + 3] = -Math.log(pvalue)/Math.log(2) + "";
 			lsFisherResult.add(tmp2);
 		}
 		ArrayList<Double> lsFDR = MathComput.pvalue2Fdr(lsPvalue);
 		for (int i = 0; i < lsFisherResult.size(); i++) {
 			String[] strings = lsFisherResult.get(i);
-			strings[strings.length - 2] = lsFDR.get(i) + "";
+			strings[strings.length - 3] = lsFDR.get(i) + "";
 		}
 
 		//ÅÅÐò

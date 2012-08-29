@@ -20,14 +20,11 @@ import com.novelbio.nbcgui.controlseq.CtrlSnpGetInfo;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JRadioButton;
 import javax.swing.JTextPane;
-import java.awt.Color;
-import java.awt.SystemColor;
 import javax.swing.UIManager;
-import javax.swing.JComboBox;
+
 /** snpCalling的界面 */
 public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	private JTextField txtHetoSnpProp;
@@ -38,12 +35,13 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	JButton btnAddPileupFile;
 	JButton btnDeletePileupFile;
 	JButton btnRun;
-	JScrollPaneData sclInputFile;
 	JProgressBar progressBar;
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	
-	private JScrollPaneData sclSnpFile;
+	JScrollPaneData sclInputFile;
+	JScrollPaneData sclSnpFile;
+	
 	private JButton btnAddSnpfile;
 	private JButton btnDeleteSnpFile;
 	private JTextField txtOutput;
@@ -77,13 +75,16 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		btnAddPileupFile = new JButton("AddFile");
 		btnAddPileupFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.openFileName("PileUpFile", "");
-				String outSnpFileName = FileOperate.changeFileSuffix(fileName, "_SnpInfo", "txt");
-				if (rdbtnSnpcalling.isSelected()) {
-					sclInputFile.addItem(new String[]{fileName, outSnpFileName});
-				}
-				else {
-					sclInputFile.addItem(new String[]{fileName});
+				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("PileupFile", "");
+				for (String fileName : lsFileName) {
+					if (rdbtnSnpcalling.isSelected()) {
+						String outSnpFileName = FileOperate.changeFileSuffix(fileName, "_SnpInfo", "txt");
+						sclInputFile.addItem(new String[]{fileName, outSnpFileName});
+					}
+					else {
+						String sampleName = FileOperate.getFileNameSep(fileName)[0];
+						sclInputFile.addItem(new String[]{fileName, sampleName});
+					}
 				}
 			}
 		});
@@ -151,8 +152,10 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		btnAddSnpfile = new JButton("AddSnpFile");
 		btnAddSnpfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.openFileName("SnpFile", "");
-				sclSnpFile.addItem(new String[]{fileName});
+				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("SnpFile", "");
+				for (String fileName : lsFileName) {
+					sclSnpFile.addItem(new String[]{fileName});
+				}
 			}
 		});
 		btnAddSnpfile.setBounds(795, 301, 118, 24);
@@ -191,6 +194,12 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		txtOutput.setColumns(10);
 		
 		btnOutput = new JButton("OutPut");
+		btnOutput.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String fileName = guiFileOpen.saveFileName("snpDetail", "");
+				txtOutput.setText(fileName);
+			}
+		});
 		btnOutput.setBounds(613, 432, 118, 24);
 		add(btnOutput);
 		
@@ -270,7 +279,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	
 	/** 当为获得每个snp信息的时候的界面 */
 	private void setSnpGetInfo() {
-		sclInputFile.setTitle(new String[]{"Input PileUp File"});
+		sclInputFile.setTitle(new String[]{"Input PileUp File", "Sample Name"});
 		combSnpLevel.setEnabled(false);
 		txtHetoMoreSnpProp.setEnabled(false);
 		txtHetoSnpProp.setEnabled(false);
@@ -310,6 +319,10 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		setGffChrAbs(cmbSpecies.getSelectedValue());
 		
 		ctrlSnpGetInfo.setGffChrAbs(gffChrAbs);
+		ArrayList<String[]> lsPileupFile = sclInputFile.getLsDataInfo();
+		for (String[] strings : lsPileupFile) {
+			ctrlSnpGetInfo.addPileupFile(strings[1], strings[0]);
+		}
 		ArrayList<String> lsFiles = new ArrayList<String>();
 		for (String[] strings : sclSnpFile.getLsDataInfo()) {
 			lsFiles.add(strings[0]);
@@ -318,7 +331,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		int colSiteStart = (Integer) spinColSnpStartSite.getValue();
 		ctrlSnpGetInfo.setLsReadFile(lsFiles, colChrID, colSiteStart);
 		ctrlSnpGetInfo.setOutfile(txtOutput.getText());
-		ctrlSnpGetInfo.runSnpCalling();
+		ctrlSnpGetInfo.runSnpGetInfo();
 	}
 	
 	private void setGffChrAbs(Species species) {

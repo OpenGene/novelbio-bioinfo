@@ -1,11 +1,34 @@
 package com.novelbio.base;
 
-import com.novelbio.base.fileOperate.FileOperate;
+import java.io.File;
+import java.util.HashMap;
 
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 
 public class PathDetail {
 	public static void main(String[] args) {
-		System.out.println(getProjectPath());
+		File file = new File("");
+		System.out.println(file.getAbsolutePath());
+		System.out.println(getProjectPathInside());
+		
+		
+		System.out.println(getRscript());
+	}
+	static HashMap<String, String> mapID2Path = new HashMap<String, String>();
+	static {
+		TxtReadandWrite txtRead = new TxtReadandWrite(getRworkspace() + "NBCPath.txt", false);
+		for (String string : txtRead.readlines()) {
+			string = string.trim();
+			if (string.startsWith("#")) {
+				continue;
+			}
+			String[] ss = string.split("\t");
+			if (ss.length < 2) {
+				continue;
+			}
+			mapID2Path.put(ss[0], ss[1]);
+		}
 	}
 	/** 返回jar所在的路径 */
 	public static String getProjectPath() {
@@ -17,6 +40,17 @@ public class PathDetail {
 			e.printStackTrace();
 		}
 		filePath = FileOperate.getParentPathName(filePath);
+		return FileOperate.addSep(filePath);
+	}
+	/** 返回jar内部路径 */
+	public static String getProjectPathInside() {
+		java.net.URL url = PathDetail.class.getProtectionDomain().getCodeSource().getLocation();
+		String filePath = null;
+		try {
+			filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return FileOperate.addSep(filePath);
 	}
 	/** 返回jar所在的路径，路径分隔符都为"/" */
@@ -55,5 +89,7 @@ public class PathDetail {
 		return getRworkspace() + "tmp"  + FileOperate.getSepPath();
 	}
 	
-	
+	public static String getRscript() {
+		return mapID2Path.get("R_SCRIPT") + " ";
+	}
 }

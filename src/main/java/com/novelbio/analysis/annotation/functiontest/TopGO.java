@@ -179,7 +179,7 @@ public class TopGO {
 		clean();
 	}
 	protected void Rrunning(String cmdName) {
-		String cmd = NovelBioConst.R_SCRIPT + exeScript.replace("\\", "/");
+		String cmd = PathDetail.getRscript() + exeScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.run();
 	}

@@ -14,7 +14,6 @@ import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 public class DiffExpLimma extends DiffExpAbs{
-	boolean log2Transform = false;
 	/** 比较矩阵设计好后需要将每个ID对应到试验名上 <br>
 	 * 譬如：<br>
 	 * design = model.matrix(~ -1+factor (c(1,1,2,2,3,3))) <br>
@@ -58,9 +57,6 @@ public class DiffExpLimma extends DiffExpAbs{
 	protected void setFileNameRawdata() {
 		fileNameRawdata = workSpace + "LimmaGeneInfo_" + DateTime.getDateAndRandom() + ".txt";
 	}
-	public boolean isLog2Transform() {
-		return log2Transform;
-	}
 	@Override
 	protected void generateScript() {
 		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript, false);
@@ -97,10 +93,10 @@ public class DiffExpLimma extends DiffExpAbs{
 	 */
 	private String isLog2TransForm(String content) {
 		String logScript = content.split(SepSign.SEP_ID)[1];
-		if (log2Transform) {
-			return logScript;
+		if (isLogValue()) {
+			return "";
 		}
-		return "";
+		return logScript;
 	}
 	/**
 	 * 设计矩阵，并填充MapID2Sample<br>
@@ -221,17 +217,25 @@ public class DiffExpLimma extends DiffExpAbs{
 	protected void modifySingleResultFile(String outFileName, String treatName, String controlName) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		ArrayList<String[]> lsDifGene = ExcelTxtRead.readLsExcelTxt(outFileName, 1);
-		String[] title = new String[]{TitleFormatNBC.AccID.toString(), TitleFormatNBC.Log2FC.toString(), TitleFormatNBC.Pvalue.toString(), TitleFormatNBC.FDR.toString(), "Bvalue"};
+		String[] title = new String[]{TitleFormatNBC.AccID.toString(), treatName + "_logValue", controlName + "_logValue", TitleFormatNBC.Log2FC.toString(), TitleFormatNBC.Pvalue.toString(), TitleFormatNBC.FDR.toString(), "Bvalue"};
 		lsResult.add(title);
 
 		ArrayList<int[]> lsIndelItem = new ArrayList<int[]>();
+		lsIndelItem.add(new int[]{1, 2});//"treat" and control
 		lsIndelItem.add(new int[]{2, -1});//"AveExpr"
-		lsIndelItem.add(new int[]{3, -1});//"t"
+		if (lsDifGene.get(0).length == 7) {
+			lsIndelItem.add(new int[]{3, -1});//"t" 有时候不会有avg出现
+		}
 		for (int i = 1; i < lsDifGene.size(); i++) {
 			String[] tmpResult = ArrayOperate.indelElement(lsDifGene.get(i), lsIndelItem, "");
+			String geneID = tmpResult[0].replace("\"", "");
+			tmpResult[1] = mapSample_2_time2value.get(geneID).get(treatName) + "";
+			tmpResult[2] = mapSample_2_time2value.get(geneID).get(controlName) + "";
+
 			for (int j = 0; j < tmpResult.length; j++) {
 				tmpResult[j] = tmpResult[j].replace("\"", "");
 			}
+			
 			lsResult.add(tmpResult);
 		}
 		FileOperate.DeleteFileFolder(outFileName);

@@ -94,7 +94,7 @@ public class MathComput {
 		return avg;
 	}
 	
-	public double mean(List<? extends Number> lsNumbers) {
+	public static double mean(List<? extends Number> lsNumbers) {
 		double length=lsNumbers.size();
 		double sum=0;
 		for(int i=0;i<length;i++)
@@ -220,8 +220,7 @@ public class MathComput {
 	 * 用于获得每10个bp的tag堆积数的中位数
 	 * @return
 	 */
-	public static int median(int[] unsortNum)
-	{
+	public static int median(int[] unsortNum) {
 		int med=-100;
 		int length=unsortNum.length;
 		int[] unsortNew = copyArray(unsortNum);
@@ -238,8 +237,7 @@ public class MathComput {
 	 * 采用插入排序法，据说对于小规模数据效率还不错
 	 * @return
 	 */
-	public static double median(List<? extends Number> lsNumbers)
-	{
+	public static double median(List<? extends Number> lsNumbers) {
 		double[] mydouble = new double[lsNumbers.size()];
 		for (int i = 0; i < mydouble.length; i++) {
 			mydouble[i] = lsNumbers.get(i).doubleValue();
@@ -249,10 +247,11 @@ public class MathComput {
 	/**
 	 * 输入数据，获得中位数, 用于10
 	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * @param lsNumbers
+	 * @param percentage 乘以100的值
 	 * @return
 	 */
-	public static double median(List<? extends Number> lsNumbers, int percentage)
-	{
+	public static double median(List<? extends Number> lsNumbers, int percentage) {
 		double[] mydouble = new double[lsNumbers.size()];
 		for (int i = 0; i < mydouble.length; i++) {
 			mydouble[i] = lsNumbers.get(i).doubleValue();
@@ -265,13 +264,15 @@ public class MathComput {
 	 * 采用插入排序法，据说对于小规模数据效率还不错
 	 * @return
 	 */
-	public static double median(double[] unsortNum)
-	{
+	public static double median(double[] unsortNum) {
 		return median(unsortNum, 50);
 	}
 	/**
+	 * 
 	 * 输入数据，获得中位数, 用于10
 	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * @param unsortNum
+	 * @param percentage 乘以100的值
 	 * @return
 	 */
 	public static double median(double[] unsortNum, int percentage)

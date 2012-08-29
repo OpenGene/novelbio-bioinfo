@@ -108,13 +108,17 @@ public class ServTaxID extends AbsGetSpring  implements MapTaxID{
 		setHashTaxID();
 		return lsAllTaxID;
 	}
-	private void setHashTaxID()
-	{
+	private void setHashTaxID() {
 		if (hashNameTaxID.size()>0 && hashTaxIDName.size() > 0) {
 			return;
 		}
 		TaxInfo taxInfo = new TaxInfo();
-		ArrayList<TaxInfo> lsTaxID = mapTaxID.queryLsTaxInfo(taxInfo);
+		ArrayList<TaxInfo> lsTaxID = null;
+		try {
+			lsTaxID = mapTaxID.queryLsTaxInfo(taxInfo);
+		} catch (Exception e) {
+			return;
+		}
 		for (TaxInfo taxInfo2 : lsTaxID) {
 			if (taxInfo2.getAbbr() != null || !taxInfo2.getAbbr().trim().equals("")) {
 				hashNameTaxIDUsual.put(taxInfo2.getComName().trim(), taxInfo2.getTaxID());

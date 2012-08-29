@@ -343,7 +343,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * 同时设定setProp，cis5to3，和name，都用gffGeneIsoInfo的信息
 	 */
 	private void setGffIso() {
-		if (gffChrAbs == null || (gffGeneIsoInfo != null && prop >= 0))
+		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null || (gffGeneIsoInfo != null && prop >= 0))
 			return;
 
 		this.gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchLocation(chrID, refSnpIndelStart).getCodInExonIso();
@@ -692,8 +692,14 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @return
 	 */
 	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK) {
-		return toStringLsSnp(lsSampleNames, getGATK, null);
+		return toStringLsSnp(lsSampleNames, getGATK, new ArrayList<SiteSnpIndelInfo>());
 	}
+	/**
+	 * @param lsSampleNames
+	 * @param getGATK
+	 * @param lsMismatchInfo 仅选出指定的snp size为0则返回本位点全体snp和indel，如果为空表示获取全部，不能为null
+	 * @return
+	 */
 	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, ArrayList<SiteSnpIndelInfo> lsMismatchInfo) {
 		HashSet<String> setSnpSite = new HashSet<String>();
 		for (SiteSnpIndelInfo siteSnpIndelInfo : lsMismatchInfo) {
@@ -705,7 +711,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * 给定样本名，返回全部snp类型和样本的信息
 	 * @param lsSampleNames 样本名, 全部就选null
 	 * @param getGATK 是否仅将GATK认定的snp提取出来 没有GATK就选false
-	 * @param setMismatchInfo 仅选出指定的snp
+	 * @param setMismatchInfo 仅选出指定的snp size为0则返回本位点全体snp和indel
 	 * @return
 	 */
 	private ArrayList<String[]> getStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, Set<String> setMismatchInfo) {
@@ -780,8 +786,15 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		}
 		return lsResult;
 	}
+	/**
+	 * 在指定的，已经通过过滤的集合中，查找是否存在某个snp
+	 * 存在了返回true
+	 * @param setMismatchInfo 指定的通过筛选的snp集合 空集或者size为0直接返回true
+	 * @param siteSnpIndelInfo 本个待filter的snp信息
+	 * @return
+	 */
 	private boolean isFilteredSite(Set<String> setMismatchInfo, SiteSnpIndelInfo siteSnpIndelInfo) {
-		if (setMismatchInfo == null || setMismatchInfo.size() == 0) {
+		if (setMismatchInfo.size() == 0) {
 			return true;
 		}
 		else if (setMismatchInfo.contains(siteSnpIndelInfo.getMismatchInfo())) {
