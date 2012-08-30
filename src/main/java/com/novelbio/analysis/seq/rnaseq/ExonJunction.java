@@ -135,6 +135,8 @@ public class ExonJunction {
 		}
 		return false;
 	}
+	//TODO 这里就是需要修正的地方
+	
 	private ArrayList<ChisqTest> calGeneDifIso(GffDetailGene gffDetailGene) {
 		ArrayList<ExonCluster> lsExonClusters = gffDetailGene.getDifExonCluster();
 		if (lsExonClusters == null || lsExonClusters.size() == 0) {

@@ -295,7 +295,9 @@ class FastQReader extends MTRecoreReader<FastQRecord, FastqRecordInfoRead> {
 	}
 	
 	public void close() {
-		txtSeqFile.close();
+		try {
+			txtSeqFile.close();
+		} catch (Exception e) { }
 	}
 }
 
