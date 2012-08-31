@@ -233,11 +233,12 @@ public abstract class GeneIDabs implements GeneIDInt {
 			symbol = getGenName(getGenUniID(), getDatabaseTyep());
 		} else {
 			geneInfo.setTaxID(taxID);
-			symbol = geneInfo.getSymb().replace("@", "");
+			symbol = geneInfo.getSymb();
 		}
 		if (symbol == null || symbol.equals("")) {
 			symbol = getGenName(getGenUniID(), getDatabaseTyep());
 		}
+		symbol = symbol.replace("@", "");
 	}
 
 	/**

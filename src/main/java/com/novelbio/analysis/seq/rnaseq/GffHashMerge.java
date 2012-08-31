@@ -13,7 +13,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
-
+/** 重建转录本 */
 public class GffHashMerge {
 	public static void main(String[] args) {
 		mouse();

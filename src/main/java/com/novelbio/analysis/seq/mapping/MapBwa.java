@@ -256,7 +256,7 @@ public class MapBwa {
 			sai1 = sai1 + "_1.sai"; 
 		else
 			sai1 = sai1 + ".sai";
-		String cmd1 = cmd + chrFile + " " + leftFq + " > " + sai1;
+		String cmd1 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(leftFq) + " > " + CmdOperate.addQuot(sai1);
 		System.out.println(cmd1);
 		cmdOperate = new CmdOperate(cmd1,"bwaMapping1");
 		cmdOperate.run();
@@ -264,7 +264,7 @@ public class MapBwa {
 		String sai2 = "";
 		if (isPairend()) {
 			sai2 = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(outFileName)[0] + "_2.sai"; 
-			String cmd2 = cmd + chrFile + " " + rightFq + " > " + sai2;
+			String cmd2 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(rightFq) + " > " + CmdOperate.addQuot(sai2);
 			System.out.println(cmd2);
 			cmdOperate = new CmdOperate(cmd2,"bwaMapping2");
 			cmdOperate.run();
@@ -329,7 +329,7 @@ public class MapBwa {
 		String cmd = this.ExePath + "bwa index ";
 		cmd = cmd + getChrLen();//用哪种算法
 		//TODO :考虑是否自动判断为solid
-		cmd = cmd + chrFile;
+		cmd = cmd + CmdOperate.addQuot(chrFile);
 		logger.info(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMakeIndex");
 		cmdOperate.run();

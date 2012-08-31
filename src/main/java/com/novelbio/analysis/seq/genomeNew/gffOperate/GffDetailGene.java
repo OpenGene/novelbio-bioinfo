@@ -41,24 +41,12 @@ public class GffDetailGene extends ListDetailAbs {
 	private final static Logger logger = Logger.getLogger(GffDetailGene.class);
 	/** 两个转录本的交集必须大于0.6才算是一个基因 */
 	public final static double OVERLAP_RATIO = 0.6;
-//	public final static String INTRON = "intron";
-//	public final static String CDS = "cds";
-//	public final static String EXON = "exon";
-//	public final static String UTR5 = "5utr";
-//	public final static String UTR3 = "3utr";
-//	public final static String TSS = "tss";
-//	public final static String TES = "tes";
 	/** 顺序存储每个转录本的的坐标情况 */
 	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
 	ListGff listGff;
 	int taxID = 0;
 	
 	boolean removeDuplicateIso = false;
-	/**
-	 * 一个基因如果有不止一个的转录本，那么这些转录本的同一区域的exon就可以提取出来，并放入该list
-	 * 也就是每个exoncluster就是一个exon类，表示 
-	 */
-	ArrayList<ExonCluster> lsExonClusters = new ArrayList<ExonCluster>();
 	/**
 	 * @param chrID 内部小写
 	 * @param locString
@@ -416,7 +404,21 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @return
 	 */
 	public ArrayList<ExonCluster> getDifExonCluster() {
-		lsExonClusters = GffGeneIsoInfo.getExonCluster(isCis5to3(), lsGffGeneIsoInfos);
+		if (getNameSingle().contains("NM_001080977")) {
+			logger.error("stop");
+		}
+		ArrayList<GffGeneIsoInfo> lsSameGroupIso = getLsGffGeneIsoSameGroup();
+		/**
+		 * 一个基因如果有不止一个的转录本，那么这些转录本的同一区域的exon就可以提取出来，并放入该list
+		 * 也就是每个exoncluster就是一个exon类，表示 
+		 */
+		ArrayList<ExonCluster> lsExonClusters = null;
+		if (lsSameGroupIso.size() <= 1) {
+			return new ArrayList<ExonInfo.ExonCluster>();
+		}
+		boolean cis5to3 = lsSameGroupIso.get(0).isCis5to3();
+		lsExonClusters = GffGeneIsoInfo.getExonCluster(cis5to3, lsSameGroupIso);
+		
 		ArrayList<ExonCluster> lsDifExon = new ArrayList<ExonCluster>();
 		for (ExonCluster exonClusters : lsExonClusters) {
 			if (exonClusters.isSameExon()) {
@@ -426,6 +428,47 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		return lsDifExon;
 	}
+	/** 返回iso基本接近的一组做可变剪接分析
+	 * 只有当几个iso中只有少数几个exon的差距，才能做可变剪接的分析
+	 *  */
+	private ArrayList<GffGeneIsoInfo> getLsGffGeneIsoSameGroup() {
+		//存放lsiso组，每次输入的iso在组内查找最接近的组，然后放进去
+		ArrayList<ArrayList<GffGeneIsoInfo>> ls_lsIso = new ArrayList<ArrayList<GffGeneIsoInfo>>();
+		boolean flagGetNexIso = false;
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			flagGetNexIso = false;
+			for (ArrayList<GffGeneIsoInfo> lsIso : ls_lsIso) {
+				if (flagGetNexIso)
+					break;
+
+				for (GffGeneIsoInfo gffGeneIsoInfoExist : lsIso) {
+					if (GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist) >= 0.6) {
+						lsIso.add(gffGeneIsoInfo);
+						flagGetNexIso = true;
+						break;
+					}
+				}
+				
+			}
+			if (!flagGetNexIso) {
+				ArrayList<GffGeneIsoInfo> lsIsoNew = new ArrayList<GffGeneIsoInfo>();
+				lsIsoNew.add(gffGeneIsoInfo);
+				ls_lsIso.add(lsIsoNew);
+			}
+		}
+		//找出含有iso最多的组
+		int maxIsoIndex = 0; int maxNum = 0;
+		for (int i = 0; i < ls_lsIso.size(); i++) {
+			ArrayList<GffGeneIsoInfo> lsIso = ls_lsIso.get(i);
+			if (lsIso.size() > maxNum) {
+				maxIsoIndex = i;
+			}
+		}
+		
+		return ls_lsIso.get(maxIsoIndex);
+	}
+	
+	
 	/**
 	 * 给定一个转录本，返回与之最接近的转录本，相似度必须在指定范围内
 	 * 没有
@@ -455,9 +498,8 @@ public class GffDetailGene extends ListDetailAbs {
 			return null;
 		}
 		return mapCompInfo2GeneIso.get(lsCompInfo.get(0));
-		
-	}
-
+	}	
+	
 	public String getGTFformate(String title) {
 		String geneGTF = "";
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {

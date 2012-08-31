@@ -964,6 +964,14 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return gffGeneIsoInfo;
 	}
+	/** 返回两个iso比较的信息
+	 * 	double ratio = 有多少exon的边界是相同的 / Math.min(gffGeneIsoInfo1.Size, gffGeneIsoInfo2.Size);
+	 *  */
+	public static double compareIsoRatio(GffGeneIsoInfo gffGeneIsoInfo1, GffGeneIsoInfo gffGeneIsoInfo2) {
+		int[] compareInfo = compareIso(gffGeneIsoInfo1, gffGeneIsoInfo2);
+		double ratio = (double)compareInfo[0]/Math.min(compareInfo[2], compareInfo[3]);
+		return ratio;
+	}
 	/**
 	 * 返回两个iso比较的信息
 	 * 0说明完全不相同。方向不同或没有交集则直接返回0

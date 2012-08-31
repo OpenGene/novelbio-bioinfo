@@ -189,7 +189,10 @@ public class CmdOperate extends RunProcess<String>{
 	        throw new IllegalArgumentException("Needs to be a UNIXProcess");
 	    }
 	}
-
+	/** 添加引号，一般是文件路径需要添加引号 **/
+	public static String addQuot(String pathName) {
+		return "\"" + pathName + "\"";
+	}
 }
 class ProgressData
 {

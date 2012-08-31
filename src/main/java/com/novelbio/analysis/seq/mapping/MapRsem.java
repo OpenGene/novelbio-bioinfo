@@ -215,17 +215,17 @@ public class MapRsem {
 		String cmd = exePathRsem + "rsem-calculate-expression " + getBowtiePath();
 		cmd = cmd + getOffset() + getPairend() + getThreadNum();
 		
-		cmd = cmd + " " + lsLeftFq.get(0).getReadFileName();
+		cmd = cmd + " " + CmdOperate.addQuot(lsLeftFq.get(0).getReadFileName());
 		for (int i = 1; i < lsLeftFq.size(); i++) {
-			cmd = cmd + "," + lsLeftFq.get(i).getReadFileName();
+			cmd = cmd + "," + CmdOperate.addQuot(lsLeftFq.get(i).getReadFileName());
 		}
 		if (lsRightFq.size() > 0) {
-			cmd = cmd + " " + lsRightFq.get(0).getReadFileName();
+			cmd = cmd + " " + CmdOperate.addQuot(lsRightFq.get(0).getReadFileName()) ;
 			for (int i = 1; i < lsRightFq.size(); i++) {
-				cmd = cmd + "," + lsRightFq.get(i).getReadFileName();
+				cmd = cmd + "," + CmdOperate.addQuot(lsRightFq.get(i).getReadFileName());
 			}
 		}
-		cmd = cmd + " " + rsemIndex + " " + outPathPrefix;
+		cmd = cmd + " " + rsemIndex + " " + CmdOperate.addQuot(outPathPrefix);
 		logger.info(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMapping");
 		cmdOperate.run();

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
+import org.apache.commons.collections.functors.IfClosure;
 import org.apache.commons.math.stat.inference.TestUtils;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
@@ -26,13 +27,16 @@ import com.novelbio.generalConf.NovelBioConst;
 public class ExonJunction {
 	
 	public static void main(String[] args) {
-		mouse();
+		chicken();
 	}
 	static GffHashGene gffHashGene = null;
+
+	TophatJunction tophatJunction = new TophatJunction();
+	LinkedHashSet<String> hashCond = new LinkedHashSet<String>();
 	
 	public static void mouse() {
 		gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/mouseNovelbioRefGTF/novelbioModify_a15m1bf_All_highAll.GTF");
+				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf");
 		ExonJunction exonJunction = new ExonJunction();
 		String parentFile = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/";
 		exonJunction.setIsoJunFile(parentFile + "MEFK02da14m1_1/junctions.bed", "K0"); 
@@ -50,7 +54,7 @@ public class ExonJunction {
 	}
 	public static void mouseHeart() {
 		gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/mouseNovelbioRefGTF/novelbioModify_a15m1bf_All_highAll.GTF");
+				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf");
 		ExonJunction exonJunction = new ExonJunction();
 		String parentFile = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/";
 		exonJunction.setIsoJunFile(parentFile + "heartK0a14m1_1/junctions.bed", "K0");
@@ -68,15 +72,15 @@ public class ExonJunction {
 	}
 	public static void chicken() {
 		gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				"/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/new/novelbioModify_a15m1bf_All_highAll20111220.GTF");
+				"/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/finalTranscript.gtf");
 		ExonJunction exonJunction = new ExonJunction();
 		String parentFile = "/media/winF/NBC/Project/Project_FY/chicken/scripture/";
-		exonJunction.setIsoJunFile(parentFile + "tophatK0a15m1_1/junctions.bed", "K0");
-		exonJunction.setIsoJunFile(parentFile + "tophatK0a15m1_2/junctions.bed", "K0");
-		exonJunction.setIsoJunFile(parentFile + "tophatWT0a15m1_1/junctions.bed", "WT0");
-		exonJunction.setIsoJunFile(parentFile + "tophatWT0a15m1_2/junctions.bed", "WT0");
+		exonJunction.setIsoJunFile(parentFile + "tophatK5a15m1_1/junctions.bed", "K0");
+		exonJunction.setIsoJunFile(parentFile + "tophatK5a15m1_2/junctions.bed", "K0");
+		exonJunction.setIsoJunFile(parentFile + "tophatWT5a15m1_1/junctions.bed", "WT0");
+		exonJunction.setIsoJunFile(parentFile + "tophatWT5a15m1_2/junctions.bed", "WT0");
 		
-		String outResult = "/media/winF/NBC/Project/Project_FY/chicken/chickenK0vsWT0outDifResult.xls";
+		String outResult = "/media/winF/NBC/Project/Project_FY/chicken/chickenK5vsWT5outDifResult.xls";
 		ArrayList<ChisqTest> lsResult = exonJunction.getDifIsoGene();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outResult, true);
 		for (ChisqTest chisqTest : lsResult) {
@@ -85,8 +89,6 @@ public class ExonJunction {
 		txtOut.close();
 	}
 
-	TophatJunction tophatJunction = new TophatJunction();
-	HashSet<String> hashCond = new LinkedHashSet<String>();
 	/**
 	 * 设定junction文件以及所对应的时期
 	 * 目前只能做两个时期的比较
@@ -135,8 +137,7 @@ public class ExonJunction {
 		}
 		return false;
 	}
-	//TODO 这里就是需要修正的地方
-	
+
 	private ArrayList<ChisqTest> calGeneDifIso(GffDetailGene gffDetailGene) {
 		ArrayList<ExonCluster> lsExonClusters = gffDetailGene.getDifExonCluster();
 		if (lsExonClusters == null || lsExonClusters.size() == 0) {
@@ -165,6 +166,9 @@ public class ExonJunction {
 	/**
 	 * 输入有差异的exon的列表，计算每个时期的exon的差值
 	 * @param lsExonClusters
+	 * @param lsLocation 输入一个空的list，在里面填充差异exon的坐标
+	 * @return ls ExonCluster -- ls 每个时期 -- 所涉及到的exon的reads数
+	 * 所以最后检验每个时期的exon的分布即可
 	 */
 	private ArrayList<ArrayList<long[]>> calDifExonJun(GffDetailGene gffDetailGene, ArrayList<String> lsLocation) {
 		ArrayList<ExonCluster> lsExonClusters = gffDetailGene.getDifExonCluster();
@@ -235,8 +239,7 @@ class ChisqTest implements Comparable<ChisqTest> {
 		getPvalue();
 	}
 	
-	public Double getPvalue()
-	{
+	public Double getPvalue() {
 		if (pvalue < 1) {
 			return pvalue;
 		}
@@ -250,6 +253,8 @@ class ChisqTest implements Comparable<ChisqTest> {
 		for (int i = 0; i < cond2.length; i++) {
 			testcond2[i] = cond2[i] + mean2;
 		}
+		modifyInfo(testcond1);
+		modifyInfo(testcond2);
 		try {
 			pvalue = TestUtils.chiSquareTestDataSetsComparison(testcond1, testcond2);
 		} catch (Exception e) {
@@ -257,7 +262,20 @@ class ChisqTest implements Comparable<ChisqTest> {
 		}
 		return pvalue;
 	}
-
+	
+	private void modifyInfo(long[] condition) {
+		int value = 200;//大于该值就开始修正
+		long meanValue = MathComput.mean(condition);
+		if (meanValue < value) {
+			return;
+		}
+		else {
+			for (int i = 0; i < condition.length; i++) {
+				condition[i] = (long) ((double)condition[i]/meanValue * value);
+			}
+		}
+	}
+	
 	@Override
 	public int compareTo(ChisqTest o) {
 		return getPvalue().compareTo(o.getPvalue());
