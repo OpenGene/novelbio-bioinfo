@@ -11,7 +11,9 @@ import org.apache.commons.math.stat.descriptive.rank.Max;
 import org.apache.commons.math.stat.descriptive.rank.Min;
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.AlignSeqReader;
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -50,7 +52,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 
 	 Equations FormulatToCorrectReads;
 	 
-	 BedSeq bedSeq;
+	 AlignSeqReader alignSeqReader;
 	 
 	 int summeryType = SUM_TYPE_MEAN;
 	 
@@ -59,11 +61,15 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	  * @param mapFile mapping的结果文件，一般为bed格式
 	  */
 	 public MapReadsAbs() {}
+	 /**每隔多少位计数，如果设定为1，则算法会变化，然后会很精确*/
 	 public void setInvNum(int invNum) {
 		this.invNum = invNum;
 	}
 	 public void setBedSeq(String bedSeqFile) {
-		 bedSeq = new BedSeq(bedSeqFile);
+		 alignSeqReader = new BedSeq(bedSeqFile);
+	}
+	 public void setAlignSeqReader(AlignSeqReader alignSeqReader) {
+		 this.alignSeqReader = alignSeqReader;
 	}
 	 /**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的中位数或平均数<br>
 	  * SUM_TYPE_MEDIAN，SUM_TYPE_MEAN
@@ -282,7 +288,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param endLoc
 	 * @return double
 	 */
-	public double regionMean(String chrID, int startLoc, int endLoc) {
+	public double getRegionMean(String chrID, int startLoc, int endLoc) {
 		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
 		if (info == null) {
 			return -1;
@@ -346,7 +352,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param lsLoc 一个转录本的exon list
 	 * @return
 	 */
-	public double regionSD(String chrID, List<int[]> lsLoc) {
+	public double regionSD(String chrID, List<ExonInfo> lsLoc) {
 		return new StandardDeviation().evaluate(getRegionInfo(chrID, lsLoc));
 	}
 	/**
@@ -355,7 +361,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param lsLoc 一个转录本的exon list
 	 * @return
 	 */
-	public double regionMean(String chrID, List<int[]> lsLoc) {
+	public double regionMean(String chrID, List<ExonInfo> lsLoc) {
 		return new Mean().evaluate(getRegionInfo(chrID, lsLoc));
 	}
 	/**
@@ -364,12 +370,10 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param lsLoc 一个转录本的exon list
 	 * @return
 	 */
-	public double[] getRegionInfo(String chrID, List<int[]> lsLoc) {
+	public double[] getRegionInfo(String chrID, List<ExonInfo> lsLoc) {
 		ArrayList<double[]> lstmp = new ArrayList<double[]>();
-		for (int[] is : lsLoc) {
-			int min = Math.min(is[0], is[1]);
-			int max = Math.max(is[0], is[1]);
-			double[] info = getRengeInfo(invNum, chrID, min,max, 0);
+		for (ExonInfo is : lsLoc) {
+			double[] info = getRengeInfo(invNum, chrID, is.getStartAbs(), is.getEndAbs(), 0);
 			lstmp.add(info);
 		}
 		int len = 0;
@@ -592,8 +596,8 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param mapInfo
 	 */
 	public static void CmpMapReg(MapReads mapReads, MapReads mapReads2, MapInfo mapInfo) {
-		double value1 = mapReads.regionMean(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs());
-		double value2 = mapReads2.regionMean(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs());
+		double value1 = mapReads.getRegionMean(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs());
+		double value2 = mapReads2.getRegionMean(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs());
 		mapInfo.setScore(value1/value2);
 	}
 	public static class MapReadsProcessInfo {

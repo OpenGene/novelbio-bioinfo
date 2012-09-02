@@ -186,7 +186,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 		String out = FileOperate.changeFileSuffix(bedSeqInput.getFileName(), "_Potential_DenoveMirna", null);
 		BedSeq bedSeq = getBedReadsNotOnCDS(out);
 		TxtReadandWrite txtOut = new TxtReadandWrite(fastaOut, true);
-		for (BedRecord bedRecord : bedSeq.readlines()) {
+		for (BedRecord bedRecord : bedSeq.readLines()) {
 			txtOut.writefileln(bedRecord.getSeqFasta().toStringNRfasta());
 		}
 		txtOut.close();

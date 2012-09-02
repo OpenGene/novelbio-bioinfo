@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo.ExonCluster;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonCluster;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -404,9 +404,6 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @return
 	 */
 	public ArrayList<ExonCluster> getDifExonCluster() {
-		if (getNameSingle().contains("NM_001080977")) {
-			logger.error("stop");
-		}
 		ArrayList<GffGeneIsoInfo> lsSameGroupIso = getLsGffGeneIsoSameGroup();
 		/**
 		 * 一个基因如果有不止一个的转录本，那么这些转录本的同一区域的exon就可以提取出来，并放入该list
@@ -414,7 +411,7 @@ public class GffDetailGene extends ListDetailAbs {
 		 */
 		ArrayList<ExonCluster> lsExonClusters = null;
 		if (lsSameGroupIso.size() <= 1) {
-			return new ArrayList<ExonInfo.ExonCluster>();
+			return new ArrayList<ExonCluster>();
 		}
 		boolean cis5to3 = lsSameGroupIso.get(0).isCis5to3();
 		lsExonClusters = GffGeneIsoInfo.getExonCluster(cis5to3, lsSameGroupIso);

@@ -344,11 +344,42 @@ public class MathComput {
 	 * 用于获得每10个bp的tag堆积数的中位数
 	 * @return
 	 */
-	public static double max(ArrayList<? extends Number> lsNum)
-	{
+	public static double max(ArrayList<? extends Number> lsNum) {
 		double max = lsNum.get(0).doubleValue();
 		for (Number number : lsNum) {
 			double tmp = number.doubleValue();
+			if (tmp > max) {
+				max = tmp;
+			}
+		}
+		return max;
+	}
+	/**
+	 * 输入数据，获得平均数
+	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * 用于获得每10个bp的tag堆积数的中位数
+	 * @return
+	 */
+	public static double max(double[] num) {
+		double max = num[0];
+		for (double number : num) {
+			double tmp = number;
+			if (tmp > max) {
+				max = tmp;
+			}
+		}
+		return max;
+	}
+	/**
+	 * 输入数据，获得平均数
+	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * 用于获得每10个bp的tag堆积数的中位数
+	 * @return
+	 */
+	public static int max(int[] num) {
+		int max = num[0];
+		for (int number : num) {
+			int tmp = number;
 			if (tmp > max) {
 				max = tmp;
 			}

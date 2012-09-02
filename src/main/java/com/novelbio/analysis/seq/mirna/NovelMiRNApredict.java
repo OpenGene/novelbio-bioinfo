@@ -64,7 +64,7 @@ public abstract class NovelMiRNApredict {
 		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null) {
 			return new BedSeq(bedSeqInput.getFileName());
 		}
-		for (BedRecord bedRecord : bedSeqInput.readlines()) {
+		for (BedRecord bedRecord : bedSeqInput.readLines()) {
 			GffCodGene gffCod = gffChrAbs.getGffHashGene().searchLocation(bedRecord.getRefID(), bedRecord.getMidLoc());
 			if (readsNotOnCDS(gffCod, bedRecord.isCis5to3()))
 				bedResult.writeBedRecord(bedRecord);

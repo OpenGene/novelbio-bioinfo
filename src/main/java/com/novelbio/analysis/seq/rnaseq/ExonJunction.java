@@ -2,21 +2,20 @@ package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Map.Entry;
 
-import org.apache.commons.collections.functors.IfClosure;
-import org.apache.commons.math.stat.inference.TestUtils;
-
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo.ExonCluster;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
@@ -32,7 +31,9 @@ public class ExonJunction {
 	static GffHashGene gffHashGene = null;
 
 	TophatJunction tophatJunction = new TophatJunction();
-	LinkedHashSet<String> hashCond = new LinkedHashSet<String>();
+	LinkedHashSet<String> setCondition = new LinkedHashSet<String>();
+	
+	HashMap<String, MapReads> mapCondition2MapReads = new HashMap<String, MapReads>();
 	
 	public static void mouse() {
 		gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
@@ -43,11 +44,13 @@ public class ExonJunction {
 		exonJunction.setIsoJunFile(parentFile + "MEFK02da14m1_2/junctions.bed", "K0");
 		exonJunction.setIsoJunFile(parentFile + "MEFWT2da14m1_1/junctions.bed", "WT0");
 		exonJunction.setIsoJunFile(parentFile + "MEFWT2da14m1_2/junctions.bed", "WT0");
-		
-		String outResult = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/MEF_K2vsWT2outDifResult_test.xls";
-		ArrayList<ChisqTest> lsResult = exonJunction.getDifIsoGene();
+		exonJunction.addBamFile_Sorted("K0", parentFile + "MEFK02da14m1_1/accepted_hits.bam");
+		exonJunction.addBamFile_Sorted("WT0", parentFile + "MEFWT2da14m1_1/accepted_hits.bam");
+		exonJunction.loadingBamFile(new Species(10090));
+		String outResult = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/MEF_K2vsWT2outDifResult_test_bam.xls";
+		ArrayList<ExonSplicingTest> lsResult = exonJunction.getDifIsoGene();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outResult, true);
-		for (ChisqTest chisqTest : lsResult) {
+		for (ExonSplicingTest chisqTest : lsResult) {
 			txtOut.writefileln(chisqTest.toString());
 		}
 		txtOut.close();
@@ -63,9 +66,9 @@ public class ExonJunction {
 		exonJunction.setIsoJunFile(parentFile + "heartWTa14m1_2/junctions.bed", "WT0");
 		
 		String outResult = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/HeartK0vsWT0outDifResult.xls";
-		ArrayList<ChisqTest> lsResult = exonJunction.getDifIsoGene();
+		ArrayList<ExonSplicingTest> lsResult = exonJunction.getDifIsoGene();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outResult, true);
-		for (ChisqTest chisqTest : lsResult) {
+		for (ExonSplicingTest chisqTest : lsResult) {
 			txtOut.writefileln(chisqTest.toString());
 		}
 		txtOut.close();
@@ -80,10 +83,15 @@ public class ExonJunction {
 		exonJunction.setIsoJunFile(parentFile + "tophatWT5a15m1_1/junctions.bed", "WT0");
 		exonJunction.setIsoJunFile(parentFile + "tophatWT5a15m1_2/junctions.bed", "WT0");
 		
+		exonJunction.addBamFile_Sorted("K0", parentFile + "tophatK5a15m1_1/accepted_hits.bam");
+		exonJunction.addBamFile_Sorted("WT0", parentFile + "tophatWT5a15m1_1/accepted_hits.bam");
+		exonJunction.loadingBamFile(new Species(9013));
+		
 		String outResult = "/media/winF/NBC/Project/Project_FY/chicken/chickenK5vsWT5outDifResult.xls";
-		ArrayList<ChisqTest> lsResult = exonJunction.getDifIsoGene();
+		ArrayList<ExonSplicingTest> lsResult = exonJunction.getDifIsoGene();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outResult, true);
-		for (ChisqTest chisqTest : lsResult) {
+		txtOut.writefileln(ExonSplicingTest.getTitle("K0", "WT0"));
+		for (ExonSplicingTest chisqTest : lsResult) {
 			txtOut.writefileln(chisqTest.toString());
 		}
 		txtOut.close();
@@ -97,11 +105,24 @@ public class ExonJunction {
 	 */
 	public void setIsoJunFile(String junctionFile, String condition) {
 		tophatJunction.setJunFile(junctionFile, condition);
-		hashCond.add(condition);
+		setCondition.add(condition);
 	}
-	
-	public ArrayList<ChisqTest> getDifIsoGene() {
-		ArrayList<ChisqTest> lsChisqTests = new ArrayList<ChisqTest>();
+	public void addBamFile_Sorted(String condition, String sortedBamFile) {
+		MapReads mapReads = new MapReads();
+		SamFile samFile = new SamFile(sortedBamFile);
+		mapReads.setAlignSeqReader(samFile);
+		mapCondition2MapReads.put(condition, mapReads);
+	}
+	public void loadingBamFile(Species species) {
+		for (MapReads mapReads : mapCondition2MapReads.values()) {
+			mapReads.setInvNum(15);
+			mapReads.setMapChrID2Len(species.getMapChromInfo());
+			mapReads.run();
+			mapReads.setNormalType(MapReads.NORMALIZATION_NO);
+		}
+	}
+	public ArrayList<ExonSplicingTest> getDifIsoGene() {
+		ArrayList<ExonSplicingTest> lsChisqTests = new ArrayList<ExonSplicingTest>();
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			gffDetailGene.removeDupliIso();
@@ -111,11 +132,11 @@ public class ExonJunction {
 			if (isOnlyOneIso(gffDetailGene))
 				continue;
 			
-			ArrayList<ChisqTest> lsChisqTestTmp = calGeneDifIso(gffDetailGene);
-			if (lsChisqTestTmp.size() == 0) {
+			ArrayList<ExonSplicingTest> lsExonSplicingTest = calGeneDifIso(gffDetailGene);
+			if (lsExonSplicingTest.size() == 0) {
 				continue;
 			}
-			lsChisqTests.add(lsChisqTestTmp.get(0));
+			lsChisqTests.add(lsExonSplicingTest.get(0));
 		}
 		Collections.sort(lsChisqTests);
 		return lsChisqTests;
@@ -138,160 +159,39 @@ public class ExonJunction {
 		return false;
 	}
 
-	private ArrayList<ChisqTest> calGeneDifIso(GffDetailGene gffDetailGene) {
+	private ArrayList<ExonSplicingTest> calGeneDifIso(GffDetailGene gffDetailGene) {
+		//如果没有差异的exon，就返回
 		ArrayList<ExonCluster> lsExonClusters = gffDetailGene.getDifExonCluster();
 		if (lsExonClusters == null || lsExonClusters.size() == 0) {
-			return new ArrayList<ChisqTest>();
+			return new ArrayList<ExonSplicingTest>();
 		}
 		//外显子的具体坐标
 		ArrayList<String> lsLocation = new ArrayList<String>();
-		ArrayList<ArrayList<long[]>> lsExonInfo = calDifExonJun(gffDetailGene, lsLocation);
-		return calLsExonInfo(gffDetailGene.getNameSingle(),lsExonInfo, lsLocation);
+		return calDifExonJun(lsExonClusters, lsLocation);
 	}
-	/**
-	 * 给定转录本的分布情况，计算pvalue等指标
-	 * 结果按照pvalue结果排序
-	 * @param lsExonInfo
-	 */
-	private ArrayList<ChisqTest> calLsExonInfo(String geneID, ArrayList<ArrayList<long[]>> lsExonInfo, ArrayList<String> lsLocation) {
-		ArrayList<ChisqTest> lsResult = new ArrayList<ChisqTest>();
-		for (int i = 0; i < lsExonInfo.size(); i++) {
-			ArrayList<long[]> arrayList = lsExonInfo.get(i);
-			ChisqTest chisqTest = new ChisqTest(geneID, arrayList.get(0), arrayList.get(1), lsLocation.get(i));
-			lsResult.add(chisqTest);
-		}
-		Collections.sort(lsResult);
-		return lsResult;
-	}
+	
 	/**
 	 * 输入有差异的exon的列表，计算每个时期的exon的差值
 	 * @param lsExonClusters
 	 * @param lsLocation 输入一个空的list，在里面填充差异exon的坐标
-	 * @return ls ExonCluster -- ls 每个时期 -- 所涉及到的exon的reads数
-	 * 所以最后检验每个时期的exon的分布即可
+	 * @return ls ExonSplicingTest -- ls 每个时期 -- 所涉及到的exon的检验结果，按照pvalue从小到大排序
 	 */
-	private ArrayList<ArrayList<long[]>> calDifExonJun(GffDetailGene gffDetailGene, ArrayList<String> lsLocation) {
-		ArrayList<ExonCluster> lsExonClusters = gffDetailGene.getDifExonCluster();
-		//按照时期保存exon的剪接情况
-		ArrayList<ArrayList<long[]>> lsCondJun = new ArrayList<ArrayList<long[]>>();
-		
+	private ArrayList<ExonSplicingTest> calDifExonJun(ArrayList<ExonCluster> lsExonClusters, ArrayList<String> lsLocation) {
+		ArrayList<ExonSplicingTest> lsExonSplicingTest = new ArrayList<ExonSplicingTest>();
 		for (ExonCluster exonCluster : lsExonClusters) {
-			if (exonCluster.isSameExon()) {
-				continue;
-			}
-			ArrayList<ExonInfo> lsExon = exonCluster.getAllExons();
-			int junc = 0;//跨过该exon的iso是否存在，0不存在，1存在
-			if (exonCluster.getHashIsoName2ExonNum().size() > 0) {
-				junc = 1;
-			}
-			ArrayList<long[]> lsExonTmp = new ArrayList<long[]>();
-			for (String condition : hashCond) {
-				long[] counts = new long[lsExon.size() + junc];
-				for (int i = 0; i < lsExon.size(); i++) {
-					ExonInfo exon = lsExon.get(i);
-					counts[i] = tophatJunction.getJunctionSite(gffDetailGene.getParentName(), exon.getStartCis(), condition) + tophatJunction.getJunctionSite(gffDetailGene.getParentName(), exon.getEndCis(), 	condition);
-				}
-				if (junc == 1) {
-					counts[counts.length - 1] = getJunReadsNum(gffDetailGene, exonCluster, condition);
-				}
-				lsExonTmp.add(counts);
-			}
-			lsCondJun.add(lsExonTmp);
-			lsLocation.add(exonCluster.getLocInfo());
+			ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster, setCondition, tophatJunction);
+			exonSplicingTest.setMapCondition2MapReads(mapCondition2MapReads);
+			ArrayList<String> lsCondition = ArrayOperate.getArrayListValue(setCondition);
+			exonSplicingTest.setCondition(lsCondition.get(0), lsCondition.get(1));
+			lsExonSplicingTest.add(exonSplicingTest);
 		}
-		return lsCondJun;
-	}
-	/**
-	 * 获得跳过该exonCluster组的readsNum
-	 * @param gffDetailGene
-	 * @param exonCluster
-	 * @param condition
-	 * @return
-	 */
-	private long getJunReadsNum(GffDetailGene gffDetailGene, ExonCluster exonCluster, String condition) {
-		long result = 0;
-		HashMap<String, Integer> hashTmp = exonCluster.getHashIsoName2ExonNum();
-		for (Entry<String, Integer> entry : hashTmp.entrySet()) {
-			String isoName = entry.getKey();
-			int exonNum = entry.getValue();
-			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getIsolist(isoName);
-			if (exonNum >= gffGeneIsoInfo.size()-1) {
-				continue;
+		//按照pvalue从小到大排序
+		Collections.sort(lsExonSplicingTest, new Comparator<ExonSplicingTest>() {
+			public int compare(ExonSplicingTest o1, ExonSplicingTest o2) {
+				return o1.getPvalue().compareTo(o2.getPvalue());
 			}
-			//TODO 检查本步是否正确
-			result = result + tophatJunction.getJunctionSite(gffDetailGene.getParentName(), gffGeneIsoInfo.get(exonNum).getEndCis(), gffGeneIsoInfo.get(exonNum+1).getStartCis(), condition);
-		}
-		return result;
+		});
+		return lsExonSplicingTest;
 	}
-}
 
-class ChisqTest implements Comparable<ChisqTest> {
-	String location = "";
-	String geneID = "";
-	long[] cond1;
-	long[] cond2;
-	double pvalue= 100;
-	public ChisqTest(String geneID, long[] lsLong1, long[] lsLong2, String location) {
-		cond1 = lsLong1;
-		cond2 = lsLong2;
-		this.geneID = geneID;
-		this.location = location;
-		getPvalue();
-	}
-	
-	public Double getPvalue() {
-		if (pvalue < 1) {
-			return pvalue;
-		}
-		long mean1 = MathComput.mean(cond1);
-		long mean2 = MathComput.mean(cond2);
-		long[] testcond1 = new long[cond1.length];
-		for (int i = 0; i < cond1.length; i++) {
-			testcond1[i] = cond1[i] + mean1;
-		}
-		long[] testcond2 = new long[cond2.length];
-		for (int i = 0; i < cond2.length; i++) {
-			testcond2[i] = cond2[i] + mean2;
-		}
-		modifyInfo(testcond1);
-		modifyInfo(testcond2);
-		try {
-			pvalue = TestUtils.chiSquareTestDataSetsComparison(testcond1, testcond2);
-		} catch (Exception e) {
-			pvalue = 1;
-		}
-		return pvalue;
-	}
-	
-	private void modifyInfo(long[] condition) {
-		int value = 200;//大于该值就开始修正
-		long meanValue = MathComput.mean(condition);
-		if (meanValue < value) {
-			return;
-		}
-		else {
-			for (int i = 0; i < condition.length; i++) {
-				condition[i] = (long) ((double)condition[i]/meanValue * value);
-			}
-		}
-	}
-	
-	@Override
-	public int compareTo(ChisqTest o) {
-		return getPvalue().compareTo(o.getPvalue());
-	}
-	
-	public String toString() {
-		String result = geneID + "\t" + location +"\t"+ cond1[0]+ "";
-		for (int i = 1; i < cond1.length; i++) {
-			result = result + "::" + cond1[i];
-		}
-		result = result + "\t" + cond2[0];
-		for (int i = 1; i < cond2.length; i++) {
-			result = result + "::" + cond2[i];
-		}
-		result = result + "\t" + getPvalue();
-		return result;
-	}
 }
-

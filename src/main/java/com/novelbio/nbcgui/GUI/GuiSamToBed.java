@@ -126,7 +126,7 @@ public class GuiSamToBed extends JPanel {
 					
 					String bedFile = FileOperate.changeFileSuffix(txtBedFile.getText(), "_filtered", null);
 					BedSeq bedSeq2 = new BedSeq(bedFile, true);
-					for (BedRecord bedRecord : bedSeq.readlines()) {
+					for (BedRecord bedRecord : bedSeq.readLines()) {
 						if (strand != null && bedRecord.isCis5to3() != strand) {
 							continue;
 						}

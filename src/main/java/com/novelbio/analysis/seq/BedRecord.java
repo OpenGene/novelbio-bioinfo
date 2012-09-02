@@ -3,7 +3,6 @@ package com.novelbio.analysis.seq;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
-import org.omg.CosNaming._BindingIteratorImplBase;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
@@ -15,7 +14,7 @@ import com.novelbio.analysis.seq.mapping.Align;
   * @author zong0jie
   *
   */
-public class BedRecord extends SiteInfo {
+public class BedRecord extends SiteInfo implements AlignRecord{
 	static private Logger logger = Logger.getLogger(BedRecord.class);
 	
 	static final int COL_CHRID = 0;
@@ -170,6 +169,7 @@ public class BedRecord extends SiteInfo {
 		return lsStartEnd;
 	}
 	/**
+	 * 本位点的包含了几条overlap的序列
 	 * 如果没有这一项，则返回1
 	 * @return
 	 */

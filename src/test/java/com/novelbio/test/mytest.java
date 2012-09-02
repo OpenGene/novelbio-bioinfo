@@ -122,14 +122,21 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		LinkedHashMap<Integer, String> mapTest = new LinkedHashMap<Integer, String>();
-		for (int i = 0; i < 10000; i++) {
-			mapTest.put(i, i+"");
+		int[] aa = new int[3];
+		for (int i = 0; i < aa.length; i++) {
+			aa[i] = i;
 		}
-		String result = mapTest.get(10);
-		System.out.println(mapTest.get(10));
+		test(new int[]{aa[0], aa[1]});
+		for (int j = 0; j < aa.length; j++) {
+			System.out.println(aa[j]);
+		}
 	}
 	
+	private static void test(int[] mm) {
+		for (int i = 0; i < mm.length; i++) {
+			mm[i] = mm[i] + 100;
+		}
+	}
 	
 	
 	private static int getLineNumber(String fileName) {  

@@ -83,7 +83,7 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 		TxtReadandWrite txtOutMapInfo = new TxtReadandWrite(mapFile, true);
 		TxtReadandWrite txtOutSeq = new TxtReadandWrite(seqFile, true);
 		BedRecord bedRecordLast = bedSeq.readFirstLine();
-		for (BedRecord bedRecord : bedSeq.readlines(2)) {
+		for (BedRecord bedRecord : bedSeq.readLines(2)) {
 			if (bedRecordLast.equalsLoc(bedRecord)) {
 				bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
 			}

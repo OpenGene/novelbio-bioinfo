@@ -33,7 +33,7 @@ public class ReadsOnNCrna {
 		bedSeq = new BedSeq(bedseqFile);
 	}
 	public void searchNCrna() {
-		for (BedRecord bedRecord : bedSeq.readlines()) {
+		for (BedRecord bedRecord : bedSeq.readLines()) {
 			if (hashNCrna.containsKey(bedRecord.getRefID())) {
 				String[] info = hashNCrna.get(bedRecord.getRefID());
 				info[2] = ((double)1/bedRecord.getMappingNum() + Double.parseDouble(info[2])) + "";

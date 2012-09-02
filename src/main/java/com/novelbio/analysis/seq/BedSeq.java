@@ -31,7 +31,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 6: mappingNum. 1 means unique mapping
  * @author zong0jie
  */
-public class BedSeq extends SeqComb{
+public class BedSeq extends SeqComb implements AlignSeqReader{
 	private static Logger logger = Logger.getLogger(BedSeq.class);  
 	/**
 	 * mappingNum. 1 means unique mapping
@@ -80,14 +80,14 @@ public class BedSeq extends SeqComb{
 		closeWrite();
 	}
 	/**
-	 * 读取前几行，不影响{@link #readlines()}
+	 * 读取前几行，不影响{@link #readLines()}
 	 * @param num
 	 * @return
 	 */
 	public ArrayList<BedRecord> readHeadLines(int num) {
 		ArrayList<BedRecord> lsResult = new ArrayList<BedRecord>();
 		int i = 0;
-		for (BedRecord bedRecord : readlines()) {
+		for (BedRecord bedRecord : readLines()) {
 			if (i >= num) {
 				break;
 			}
@@ -96,16 +96,12 @@ public class BedSeq extends SeqComb{
 		return lsResult;
 	}
 	/**
-	 * 读取前几行，不影响{@link #readlines()}
+	 * 读取前几行，不影响{@link #readLines()}
 	 * @param num
 	 * @return
 	 */
 	public BedRecord readFirstLine() {
-		int i = 0;
-		for (BedRecord bedRecord : readlines()) {
-			return bedRecord;
-		}
-		return null;
+		return readLines().iterator().next();
 	}
 	/**
 	 * 写完后务必用此方法关闭
@@ -116,7 +112,7 @@ public class BedSeq extends SeqComb{
 		super.compressInType = super.compressOutType;
 		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
 	}
-	public Iterable<BedRecord> readlines() {
+	public Iterable<BedRecord> readLines() {
 		try {
 			return readPerlines();
 		} catch (Exception e) {
@@ -128,7 +124,7 @@ public class BedSeq extends SeqComb{
 	 * @param lines 如果lines小于1，则从头开始读取
 	 * @return
 	 */
-	public Iterable<BedRecord> readlines(int lines) {
+	public Iterable<BedRecord> readLines(int lines) {
 		lines = lines - 1;
 		try {
 			Iterable<BedRecord> itContent = readPerlines();
@@ -400,7 +396,7 @@ public class BedSeq extends SeqComb{
 	public FastQ getFastQ(String outFileName) {
 		FastQ fastQ = new FastQ(outFileName, true);
 		fastQ.setCompressType(compressOutType, compressOutType);
-		for (BedRecord bedRecord : readlines()) {
+		for (BedRecord bedRecord : readLines()) {
 			FastQRecord fastQRecord = new FastQRecord();
 			fastQRecord.setName(bedRecord.getName());
 			fastQRecord.setFastaQuality(getQuality(bedRecord.getSeqFasta().Length()));
@@ -812,7 +808,7 @@ public class BedSeq extends SeqComb{
 			readLines = 1;
 		}
 		BedRecord bedRecordLast = null;
-		for (BedRecord bedRecord : readlines(readLines)) {
+		for (BedRecord bedRecord : readLines(readLines)) {
 			if (bedRecordLast == null) {
 				bedRecordLast = new BedRecord();
 				bedRecordLast.setRefID(bedRecord.getRefID());
@@ -853,7 +849,7 @@ public class BedSeq extends SeqComb{
 				readLines = 1;
 			}
 			BedRecord bedRecordLast = null;
-			for (BedRecord bedRecord : readlines(readLines)) {
+			for (BedRecord bedRecord : readLines(readLines)) {
 				if (bedRecordLast == null) {
 					bedRecordLast = new BedRecord();
 					bedRecordLast.setRefID(bedRecord.getRefID());
@@ -896,7 +892,7 @@ public class BedSeq extends SeqComb{
 	public BedSeq removeDuplicat(String outFile) {
 		BedSeq bedSeqResult = new BedSeq(outFile, true);
 		BedRecord bedRecordLast = null;
-		for (BedRecord bedRecord : readlines()) {
+		for (BedRecord bedRecord : readLines()) {
 			if (bedRecordLast == null) {
 				bedRecordLast = bedRecord.clone();
 				continue;
@@ -925,7 +921,7 @@ public class BedSeq extends SeqComb{
 	
 	public ArrayList<String[]> getChrReadsNum() {
 		HashMap<String, int[]> hashChrID2ReadsNum = new HashMap<String, int[]>();
-		for (BedRecord bedRecord : readlines()) {
+		for (BedRecord bedRecord : readLines()) {
 			if (hashChrID2ReadsNum.containsKey(bedRecord.getRefID())) {
 				int[] ReadsNum = hashChrID2ReadsNum.get(bedRecord.getRefID());
 				ReadsNum[0] = ReadsNum[0] + bedRecord.getReadsNum();
@@ -953,7 +949,7 @@ public class BedSeq extends SeqComb{
 		BedSeq bedSeq = new BedSeq(outFile, true);
 		for (String string : bedSeqFile) {
 			BedSeq bedSeq2 = new BedSeq(string);
-			for (BedRecord bedRecord : bedSeq2.readlines()) {
+			for (BedRecord bedRecord : bedSeq2.readLines()) {
 				bedSeq.writeBedRecord(bedRecord);
 			}
 			bedSeq2.closeWrite();
@@ -970,7 +966,7 @@ public class BedSeq extends SeqComb{
 		BedSeq bedSeq = new BedSeq(outFile, true);
 		for (String string : lsbedSeqFile) {
 			BedSeq bedSeq2 = new BedSeq(string);
-			for (BedRecord bedRecord : bedSeq2.readlines()) {
+			for (BedRecord bedRecord : bedSeq2.readLines()) {
 				bedSeq.writeBedRecord(bedRecord);
 			}
 			bedSeq2.closeWrite();

@@ -22,7 +22,7 @@ import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
  */
 public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs>, Alignment {
 	/** 父树 */
-	ListAbs<? extends ListDetailAbs> listAbs;
+	protected ListAbs<? extends ListDetailAbs> listAbs;
 	
 	/** 根据cis在起点的上游多少bp，在此范围内则认为在tss区域  */
 	protected int upTss = 0;
@@ -80,14 +80,9 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs>, Alig
 	}
 	/**
 	 * 没有就设定为""或null
-	 * @param chrID 染色体编号，自动变成小写
-	 * @param locString 	 * LOCID，<br>
-	 * 水稻：LOC_Os01g01110<br>
-	 * 拟南芥：AT1G01110<br>
-	 * UCSC:XM_0101010/XM_032020<br>
-	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
-	 * peak: peak起点_peak终点
-	 * @param cis5to3 不确定就输入null
+	 * @param listAbs 父节点的信息
+	 * @param ItemName 本节点的名字
+	 * @param cis5to3 正反向 不确定就输入null
 	 */
 	public ListDetailAbs(ListAbs<? extends ListDetailAbs> listAbs, String ItemName, Boolean cis5to3) {
 		this.listAbs = listAbs;
@@ -97,6 +92,9 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs>, Alig
 	}
 	public void setParentListAbs(ListAbs<? extends ListDetailAbs> listAbs) {
 		this.listAbs = listAbs;
+	}
+	public ListAbs<? extends ListDetailAbs> getParent() {
+		return listAbs;
 	}
 	/**
 	 * 划定Tss范围上游为负数，下游为正数

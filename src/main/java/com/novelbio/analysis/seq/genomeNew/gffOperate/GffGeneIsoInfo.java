@@ -6,7 +6,7 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo.ExonCluster;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonCluster;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
@@ -112,7 +112,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public void setGffDetailGeneParent(GffDetailGene gffDetailGeneParent) {
 		this.gffDetailGeneParent = gffDetailGeneParent;
 	}
-	public GffDetailGene getGffDetailGeneParent() {
+	public GffDetailGene getParentGffDetailGene() {
 		return gffDetailGeneParent;
 	}
 	/**
@@ -1012,7 +1012,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			return 2;
 		}
 
-		ArrayList<ArrayList<ExonInfo>> lsExon = exonCluster.lsExonCluster;
+		ArrayList<ArrayList<ExonInfo>> lsExon = exonCluster.lsIsoExon;
 
 		ArrayList<ExonInfo> lsExon1 = lsExon.get(0);
 		ArrayList<ExonInfo> lsExon2 = lsExon.get(1);
@@ -1033,10 +1033,17 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	/** 按照分组好的边界exon，将每个转录本进行划分，划分好的ExonCluster里面每组的lsExon都是考虑了方向然后按照方向顺序装进去的 */
 	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3,  ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos) {
 		String chrID = lsGffGeneIsoInfos.get(0).getChrID();
-		ArrayList<ExonCluster> lsResult = new ArrayList<ExonInfo.ExonCluster>();
+		ArrayList<ExonCluster> lsResult = new ArrayList<ExonCluster>();
 		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(cis5To3, lsGffGeneIsoInfos);
+		ExonCluster exonClusterBefore = null;
 		for (int[] exonBound : lsExonBound) {
 			ExonCluster exonCluster = new ExonCluster(chrID, exonBound[0], exonBound[1]);
+			
+			exonCluster.setExonClusterBefore(exonClusterBefore);
+			if (exonClusterBefore != null) {
+				exonClusterBefore.setExonClusterAfter(exonCluster);
+			}
+			
 			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 				if (gffGeneIsoInfo.isCis5to3() != cis5To3) {
 					continue;
@@ -1079,10 +1086,11 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 
 				exonCluster.addExonCluster(gffGeneIsoInfo, lsExonClusterTmp);
 				if (junc && beforeExonNum < gffGeneIsoInfo.size()-1) {
-					exonCluster.setIso2JunctionStartExonNum(gffGeneIsoInfo.getName(), beforeExonNum);
+					exonCluster.setIso2ExonNumSkipTheCluster(gffGeneIsoInfo.getName(), beforeExonNum);
 				}
 			}
 			lsResult.add(exonCluster);
+			exonClusterBefore = exonCluster;
 		}
 		return lsResult;
 	}

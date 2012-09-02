@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
@@ -34,7 +35,7 @@ import net.sf.samtools.util.DateParser;
 import net.sf.samtools.util.Iso8601Date;
 import net.sf.samtools.util.StringUtil;
 
-public class SamRecord extends SiteInfo {
+public class SamRecord extends SiteInfo implements AlignRecord{
 	private static Logger logger = Logger.getLogger(SamRecord.class);
 	SAMRecord samRecord;
 	Boolean isJunctionReads;
@@ -92,6 +93,15 @@ public class SamRecord extends SiteInfo {
 		}
 		return isJunctionReads;
 	}
+	
+	@Override
+	public boolean isJunctionCovered() {
+		if (samRecord.getCigar().toString().contains("N")) {
+			return true;
+		}
+		return false;
+	}
+	
 	/** 当为junction reads的时候才会有意义 */
 	public ArrayList<Align> getAlignmentBlocks() {
 		if (samRecord.getCigar().toString().contains("N")) {
@@ -125,7 +135,7 @@ public class SamRecord extends SiteInfo {
 			if (!attrXT.equals('R'))
 				return true;
 			else {
-				if (getNumMappedReads() == 1) {
+				if (getMappingNum() == 1) {
 					return true;
 				}
 				return false;
@@ -142,7 +152,7 @@ public class SamRecord extends SiteInfo {
 		return true;
 	}
 
-	public int getMapQuality() {
+	public Integer getMapQuality() {
 		return samRecord.getMappingQuality();
 	}
 	/**
@@ -161,7 +171,7 @@ public class SamRecord extends SiteInfo {
 	/**
 	 * 本序列可以mapping至几个不同位置
 	 * */
-	public int getNumMappedReads() {
+	public Integer getMappingNum() {
 		if (numMappedReadsInFile > 0) {
 			return numMappedReadsInFile;
 		}
@@ -276,7 +286,7 @@ public class SamRecord extends SiteInfo {
 		bedRecord.setSeq(getSeqFasta());
 		bedRecord.setScore(getMapQuality());
 		// 计数，mapping到了几次
-		bedRecord.setMappingNum(getNumMappedReads());
+		bedRecord.setMappingNum(getMappingNum());
 		bedRecord.setName(samRecord.getReadName());
 		bedRecord.setAlignmentBlocks(getAlignmentBlocks());
 		return bedRecord;
@@ -318,7 +328,7 @@ public class SamRecord extends SiteInfo {
 			bedRecord.setStartEndLoc(start1, end1);
 			bedRecord.setCIGAR(info[2]);
 			bedRecord.setCis5to3(info[1].charAt(0));
-			bedRecord.setMappingNum(getNumMappedReads());
+			bedRecord.setMappingNum(getMappingNum());
 			bedRecord.setMapQuality(getMapQuality());
 			bedRecord.setScore(samRecord.getMappingQuality());
 			bedRecord.setSeq(new SeqFasta(samRecord.getReadString()), false);
@@ -339,5 +349,8 @@ public class SamRecord extends SiteInfo {
 	public String toString() {
 		return samRecord.getSAMString();
 	}
-
+	@Override
+	public String getRawStringInfo() {
+		return samRecord.getSAMString();
+	}
 }

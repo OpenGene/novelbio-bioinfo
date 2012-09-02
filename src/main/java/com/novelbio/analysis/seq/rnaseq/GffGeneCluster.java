@@ -3,10 +3,10 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo.ExonCluster;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
 public class GffGeneCluster {

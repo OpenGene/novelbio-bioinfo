@@ -7,4 +7,5 @@ public interface Alignment {
 	int getEndCis();
 	Boolean isCis5to3();
 	int Length();
+	String getRefID();
 }

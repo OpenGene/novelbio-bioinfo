@@ -64,7 +64,7 @@ public class ReadsOnRepeatGene {
 	}
 	public void countReadsInfo(String bedFile) {
 		BedSeq bedSeq = new BedSeq(bedFile);
-		for (BedRecord bedRecord : bedSeq.readlines()) {
+		for (BedRecord bedRecord : bedSeq.readLines()) {
 			String repeatInfo = null;
 			if (gffHashRepeat != null) {//如果没有读取repeat文件，则返回
 				repeatInfo = searchReadsRepeat(bedRecord.getRefID(), bedRecord.getStartAbs(), bedRecord.getEndAbs());

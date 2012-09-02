@@ -5,9 +5,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
+import javax.swing.plaf.BorderUIResource.TitledBorderUIResource;
+
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modkegg.KeggInfo;
+import com.novelbio.generalConf.TitleFormatNBC;
 
 public class KEGGPathwayFunTest extends AbstFunTest{
 
@@ -98,7 +101,7 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 		String[] title;
 		if (blast) {
 			title = new String[8];
-			title[0]="QueryID";title[1]="QuerySymbol";title[2]="Description";
+			title[0]=TitleFormatNBC.QueryID.toString(); title[1]="QuerySymbol";title[2]="Description";
 			title[3]="Evalue"; title[4]="subjectSymbol"; title[5]="Description";
 			title[6]="PathID"; title[7]="PathTerm";
 		}

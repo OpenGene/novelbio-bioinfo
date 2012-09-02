@@ -17,6 +17,8 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.AlignSeqReader;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
@@ -42,7 +44,7 @@ import net.sf.samtools.util.IOUtil;
  * @author zong0jie
  *
  */
-public class SamFile {
+public class SamFile implements AlignSeqReader {
 	public static void main(String[] args) {
 	}
 	
@@ -158,12 +160,36 @@ public class SamFile {
 		samFileStatistics.statistics();
 		return samFileStatistics;
 	}
-	
+
 	public Iterable<SamRecord> readLines() {
 		return samReader.readLines();
 	}
 	public Iterable<SamRecord> readLines(int num) {
 		return samReader.readLines(num);
+	}
+	/**
+	 * 读取前几行，不影响{@link #readLines()}
+	 * @param num
+	 * @return
+	 */
+	public ArrayList<SamRecord> readHeadLines(int num) {
+		ArrayList<SamRecord> lsResult = new ArrayList<SamRecord>();
+		int i = 0;
+		for (SamRecord samRecord : readLines()) {
+			if (i >= num) {
+				break;
+			}
+			lsResult.add(samRecord);
+		}
+		return lsResult;
+	}
+	/**
+	 * 读取前几行，不影响{@link #readLines()}
+	 * @param num
+	 * @return
+	 */
+	public SamRecord readFirstLine() {
+		return readLines().iterator().next();
 	}
 	/**
 	 * 注意大小写区分

@@ -157,7 +157,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 			return;
 		countMiRNA = true;
 		int countLoop = 0;
-		for (BedRecord bedRecord : bedSeqMiRNA.readlines()) {
+		for (BedRecord bedRecord : bedSeqMiRNA.readLines()) {
 			copeBedRecord(bedRecord);
 			
 			suspendCheck();

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.BedRecord;
+import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.model.species.Species;
@@ -100,17 +100,17 @@ public class MapReads extends MapReadsAbs{
 		if (mapChrID2Len.size() > 0)
 			return;
 		
-		String chrID = ""; BedRecord lastBedRecord = null;
-		for (BedRecord bedRecord : bedSeq.readlines()) {
-			if (!bedRecord.getRefID().equals(chrID)) {
-				if (lastBedRecord != null) {
-					mapChrID2Len.put(chrID.toLowerCase(), (long)lastBedRecord.getEndAbs());
+		String chrID = ""; AlignRecord lastAlignRecord = null;
+		for (AlignRecord alignRecord : alignSeqReader.readLines()) {
+			if (!alignRecord.getRefID().equals(chrID)) {
+				if (lastAlignRecord != null) {
+					mapChrID2Len.put(chrID.toLowerCase(), (long)lastAlignRecord.getEndAbs());
 				}
-				chrID = bedRecord.getRefID();
+				chrID = alignRecord.getRefID();
 			}
-			lastBedRecord = bedRecord;
+			lastAlignRecord = alignRecord;
 		}
-		mapChrID2Len.put(lastBedRecord.getRefID().toLowerCase(), (long)lastBedRecord.getEndAbs());
+		mapChrID2Len.put(lastAlignRecord.getRefID().toLowerCase(), (long)lastAlignRecord.getEndAbs());
 	}
 	/**
 	 * 经过标准化，和equations修正
@@ -141,8 +141,8 @@ public class MapReads extends MapReadsAbs{
 	 */
 	protected void ReadMapFileExp() throws Exception {
 		setChrLenFromReadBed();
-		BedRecord bedRecordFirst = bedSeq.readFirstLine();
-		if (startCod > 0 && bedRecordFirst.isCis5to3() == null) {
+		AlignRecord alignRecordFirst = alignSeqReader.readFirstLine();
+		if (startCod > 0 && alignRecordFirst.isCis5to3() == null) {
 			logger.error("不能设定startCod，因为没有设定方向列");
 			return;
 		}
@@ -155,10 +155,10 @@ public class MapReads extends MapReadsAbs{
 		
 		int readsNum = 0;
 		
-		for (BedRecord bedRecord : bedSeq.readlines()) {
+		for (AlignRecord alignRecord : alignSeqReader.readLines()) {
 			readsNum++;
 			
-			String tmpChrID = bedRecord.getRefID().toLowerCase();
+			String tmpChrID = alignRecord.getRefID().toLowerCase();
 			if (!tmpChrID.equals(lastChr)) {
 				tmpOld = new int[2];//更新 tmpOld
 				
@@ -182,13 +182,13 @@ public class MapReads extends MapReadsAbs{
 			}
 			if (flag == false) //没有该染色体则跳过
 				continue;
-			tmpOld = addLoc(bedRecord, uniqReads, tmpOld, startCod, FilteredStrand, chrBpReads,chrMapReadsInfo);
+			tmpOld = addLoc(alignRecord, uniqReads, tmpOld, startCod, FilteredStrand, chrBpReads,chrMapReadsInfo);
 			
 			suspendCheck();
 			if (flagStop) {
 				break;
 			}
-			readsSize = readsSize + bedRecord.getRawStringInfo().getBytes().length;
+			readsSize = readsSize + alignRecord.getRawStringInfo().getBytes().length;
 			if (readsNum%1000 == 0) {
 				MapReadsProcessInfo mapReadsProcessInfo = new MapReadsProcessInfo(readsSize);
 				setRunInfo(mapReadsProcessInfo);
@@ -213,17 +213,17 @@ public class MapReads extends MapReadsAbs{
 	 * @return
 	 * 本位点的信息，用于下一次判断是否是同一位点
 	 */
-	protected int[] addLoc(BedRecord bedRecord,boolean uniqReads,int[] tmpOld,int startCod, Boolean cis5to3, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
-		boolean cis5to3This = bedRecord.isCis5to3();
-		if ((cis5to3 != null && bedRecord.isCis5to3() != cis5to3)
-				|| (booUniqueMapping && bedRecord.getMappingNum() > 1)
+	protected int[] addLoc(AlignRecord alignRecord,boolean uniqReads,int[] tmpOld,int startCod, Boolean cis5to3, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
+		boolean cis5to3This = alignRecord.isCis5to3();
+		if ((cis5to3 != null && alignRecord.isCis5to3() != cis5to3)
+				|| (booUniqueMapping && alignRecord.getMappingNum() > 1)
 				) {
 			return tmpOld;
 		}
 		
 		int[] tmpStartEnd = new int[2];
-		tmpStartEnd[0] = bedRecord.getStartAbs();
-		tmpStartEnd[1] = bedRecord.getEndAbs();
+		tmpStartEnd[0] = alignRecord.getStartAbs();
+		tmpStartEnd[1] = alignRecord.getEndAbs();
 
 		//如果本reads和上一个reads相同，则认为是线性扩增，跳过
 		if (uniqReads && tmpStartEnd[0] == tmpOld[0] && tmpStartEnd[1] == tmpOld[1] ) {
@@ -232,7 +232,7 @@ public class MapReads extends MapReadsAbs{
 
 		ArrayList<? extends Alignment> lsadd = null;
 		//如果没有可变剪接
-		lsadd = bedRecord.getAlignmentBlocks();
+		lsadd = alignRecord.getAlignmentBlocks();
 		lsadd = setStartCod(lsadd, startCod, cis5to3This);
 
 		addChrLoc(chrBpReads, lsadd);

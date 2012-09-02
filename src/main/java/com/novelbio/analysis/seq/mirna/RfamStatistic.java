@@ -68,7 +68,7 @@ public class RfamStatistic {
 	 */
 	private void readRfamBed(String bedFile) {
 		BedSeq bedSeq = new BedSeq(bedFile);
-		for (BedRecord bedRecord : bedSeq.readlines()) {
+		for (BedRecord bedRecord : bedSeq.readLines()) {
 			String RfamID = bedRecord.getRefID().split("//")[0];
 			Double thisCount = (double)1/bedRecord.getMappingNum();
 			if (mapRfam2Counts.containsKey(RfamID)) {

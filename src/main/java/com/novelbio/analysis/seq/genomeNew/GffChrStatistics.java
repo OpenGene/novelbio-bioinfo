@@ -123,7 +123,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	private void readBedFile(String bedFile) {
 		BedSeq bedSeqFile = new BedSeq(bedFile);
 		int i = 0;
-		for (BedRecord bedRecord : bedSeqFile.readlines(firstLine)) {
+		for (BedRecord bedRecord : bedSeqFile.readLines(firstLine)) {
 			
 			ArrayList<SiteInfo> lsSiteInfos = getLsGetBedSiteInfo(bedRecord);
 			for (SiteInfo siteInfo : lsSiteInfos) {
