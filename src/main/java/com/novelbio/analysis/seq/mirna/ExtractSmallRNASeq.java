@@ -28,14 +28,14 @@ public class ExtractSmallRNASeq {
 	}
 	
 	String RNAdataFile = "";
+	/** 类似 hsa */
 	String RNAdataRegx = "";
 	
 	/** 提取ncRNA的正则表达式 */
 	String regxNCrna  = "NR_\\d+|XR_\\d+";
 	/** refseq的序列文件，要求是NCBI下载的文件 */
 	String refseqFile = "";
-	/** 从RefSeq中提取的ncRNA序列 */
-	String outNcRNA = "";
+
 
 	/** Rfam的正则 */
 	String regRfam = "";
@@ -43,22 +43,32 @@ public class ExtractSmallRNASeq {
 	String regxRfamWrite = "(?<=\\>)\\S+";
 	/** rfam的文件 */
 	String rfamFile = "";
-	/** rfam的文件 */
-	String outRfamFile = "";
 	
+	/** 提取的rfam的文件 */
+	String outRfamFile;
 	/** 提取到的目标文件夹和前缀 */
 	String outPathPrefix = "";
+	String outHairpinRNA;
+	String outMatureRNA;
+	/** 从RefSeq中提取的ncRNA序列 */
+	String outNcRNA;
+	
 	/**
-	 * 设定输出文件夹和前缀
+	 * 设定输出文件夹和前缀，这个设定了就不用设定别的了
 	 * @param outPathPrefix
 	 */
 	public void setOutPathPrefix(String outPathPrefix) {
 		this.outPathPrefix = outPathPrefix;
 	}
-	
+	public void setOutNcRNA(String outNcRNA) {
+		this.outNcRNA = outNcRNA;
+	}
+	public void setOutRfamFile(String outRfamFile) {
+		this.outRfamFile = outRfamFile;
+	}
 	public void setRNAdata(String rnaDataFile, String rnaDataRegx) {
 		this.RNAdataFile = rnaDataFile;
-		this.RNAdataRegx = rnaDataRegx;
+		this.RNAdataRegx = rnaDataRegx.toLowerCase();
 	}
 	/**
 	 * 待提取的NCBI上下载的refseq文件
@@ -74,25 +84,29 @@ public class ExtractSmallRNASeq {
 	 */
 	public void setRfamFile(String rfamFile, String regx) {
 		this.rfamFile = rfamFile;
-		this.regRfam = regx;
+		this.regRfam = regx.toLowerCase();//TODO 看这里是物种的什么名字
 	}
 	/**
 	 * 提取序列
 	 */
 	public void getSeq() {
 		if (FileOperate.isFileExist(refseqFile)) {
-			outNcRNA = outPathPrefix + "_ncRNA.fa";
+			if (outNcRNA == null)
+				outNcRNA = outPathPrefix + "_ncRNA.fa";
 			extractNCRNA(refseqFile, outNcRNA, regxNCrna);
 		}
 		
 		if (FileOperate.isFileExist(RNAdataFile)) {
-			String outHairpinRNA = outPathPrefix + "_hairpin.fa";
-			String outMatureRNA = outPathPrefix + "_mature.fa";
+			if (outHairpinRNA == null)
+				outHairpinRNA = outPathPrefix + "_hairpin.fa";
+			if (outMatureRNA == null)
+				outMatureRNA = outPathPrefix + "_mature.fa";
 			extractMiRNASeqFromRNAdata(RNAdataFile, RNAdataRegx, outHairpinRNA, outMatureRNA);
 		}
 		
 		if (FileOperate.isFileExist(rfamFile)) {
-			outRfamFile = outPathPrefix + "_rfam.fa"; 
+			if (outRfamFile == null)
+				outRfamFile = outPathPrefix + "_rfam.fa"; 
 			extractRfam(rfamFile, outRfamFile, regRfam);
 		}
 	}
@@ -142,7 +156,7 @@ public class ExtractSmallRNASeq {
 	/**
 	 * 给定RNAdata文件的一个block，将其中的序列提取出来
 	 * @param rnaDataBlock
-	 * @return list-seqfasta 0: 前体序列
+	 * @return regex 小写的kegg缩写，如hsa
 	 * 后面为成熟体序列
 	 */
 	private ArrayList<SeqFasta> getSeqFromRNAdata(String rnaDataBlock, String regex) {
@@ -150,7 +164,7 @@ public class ExtractSmallRNASeq {
 		
 		String[] ss = rnaDataBlock.split(TxtReadandWrite.ENTER_LINUX);
 		String[] ssID = ss[0].split(" +");
-		if (!ss[0].startsWith("ID") || !ssID[4].contains(regex)) {
+		if (!ss[0].startsWith("ID") || !ssID[4].toLowerCase().contains(regex)) {
 			return lSeqFastas;
 		}
 		String miRNAhairpinName = ssID[1]; //ID   cel-lin-4         standard; RNA; CEL; 94 BP.
