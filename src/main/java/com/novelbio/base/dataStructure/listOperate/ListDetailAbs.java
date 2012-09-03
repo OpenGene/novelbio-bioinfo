@@ -20,7 +20,7 @@ import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
  * @author zong0jie
  *
  */
-public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs>, Alignment {
+public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	/** ¸¸Ê÷ */
 	protected ListAbs<? extends ListDetailAbs> listAbs;
 	
@@ -496,4 +496,5 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs>, Alig
 				return result;
 			}
 	}
+
 }

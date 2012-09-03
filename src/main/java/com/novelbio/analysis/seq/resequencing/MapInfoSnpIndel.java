@@ -738,12 +738,10 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		//对于每个snp的样式
 		for (Entry<String, SiteSnpIndelInfo> entry : mapAllen2Num.entrySet()) {
 			SiteSnpIndelInfo siteSnpIndelInfo = entry.getValue();
-			if (getGATK && !isGATKfiltered(siteSnpIndelInfo)) {
+			if (getGATK && !isGATKfiltered(siteSnpIndelInfo))
 				continue;
-			}
-			if (!isFilteredSite(setMismatchInfo, siteSnpIndelInfo)) {
+			if (!isFilteredSite(setMismatchInfo, siteSnpIndelInfo))
 				continue;
-			}
 			
 			LinkedList<String> lsTmpInfo = copyList(lsResultTmp);
 			
@@ -785,6 +783,40 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			lsResult.add(infpoStrings);
 		}
 		return lsResult;
+	}
+
+	/** 
+	 * 根据给定的样本名，产生title
+	 * @param lsSampleNames
+	 * @return
+	 */
+	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames) {
+		LinkedList<String> lsTitle = new LinkedList<String>();
+		lsTitle.add("ChrID");
+		lsTitle.add("Loc");
+		lsTitle.add("GeneID");
+		lsTitle.add("GeneSymbol");
+		lsTitle.add("Description");
+		lsTitle.add("Distance2GeneStart");
+		lsTitle.add("RefSequence");
+		lsTitle.add("ThisSequence");
+		lsTitle.add("DBsnpID");
+		for (String sampleName : lsSampleNames) {
+			lsTitle.add(sampleName + "_ReadsDepth");
+			lsTitle.add(sampleName + "_ThisReadsNum");
+			lsTitle.add(sampleName + "_FilteredFlag");
+			lsTitle.add(sampleName + "_Quality");
+		}
+		lsTitle.add("OrfShift");
+		lsTitle.add("IsInExon");
+		lsTitle.add("RefAAnr");
+		lsTitle.add("RefAA");
+		lsTitle.add("ThisAAnr");
+		lsTitle.add("ThisAA");
+		lsTitle.add("Chemical Transform");
+		lsTitle.add("split info");
+		String[] infpoStrings = getStrArray(lsTitle);
+		return infpoStrings;
 	}
 	/**
 	 * 在指定的，已经通过过滤的集合中，查找是否存在某个snp
@@ -858,46 +890,6 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		}
 		logger.error("克隆出错");
 		return null;
-	}
-	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames) {
-		return getTitleFromSampleName(lsSampleNames, false);
-	}
-	/** 
-	 * 根据给定的样本名，产生title
-	 * @param lsSampleNames
-	 * @param setSiteSnpIndelInfo 结果中是否指定snp的类型，如果指定，那么在该snp'类型前就会添加标记true或false，表示该snp才是想找的 差异snp
-	 * @return
-	 */
-	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames, boolean setSiteSnpIndelInfo) {
-		LinkedList<String> lsTitle = new LinkedList<String>();
-		lsTitle.add("ChrID");
-		lsTitle.add("Loc");
-		lsTitle.add("GeneID");
-		lsTitle.add("GeneSymbol");
-		lsTitle.add("Description");
-		lsTitle.add("Distance2GeneStart");
-		if (setSiteSnpIndelInfo) {
-			lsTitle.add("isDifSnpIndel");
-		}
-		lsTitle.add("RefSequence");
-		lsTitle.add("ThisSequence");
-		lsTitle.add("DBsnpID");
-		for (String sampleName : lsSampleNames) {
-			lsTitle.add(sampleName + "_ReadsDepth");
-			lsTitle.add(sampleName + "_ThisReadsNum");
-			lsTitle.add(sampleName + "_FilteredFlag");
-			lsTitle.add(sampleName + "_Quality");
-		}
-		lsTitle.add("OrfShift");
-		lsTitle.add("IsInExon");
-		lsTitle.add("RefAAnr");
-		lsTitle.add("RefAA");
-		lsTitle.add("ThisAAnr");
-		lsTitle.add("ThisAA");
-		lsTitle.add("Chemical Transform");
-		lsTitle.add("split info");
-		String[] infpoStrings = getStrArray(lsTitle);
-		return infpoStrings;
 	}
 	
 }

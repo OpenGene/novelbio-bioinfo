@@ -67,28 +67,27 @@ public class SNPGATKcope {
 		SNPGATKcope snpgatKcope = new SNPGATKcope();
 		snpgatKcope.setGffChrAbs(new GffChrAbs(9606));
 		
-		snpgatKcope.addVcfToLsSnpIndel("3A", parentPath + "3A_SNPrecal_IndelFiltered.vcf");
-		snpgatKcope.addVcfToLsSnpIndel("3B", parentPath + "3B_SNPrecal_IndelFiltered.vcf");
+		snpgatKcope.addVcfToLsSnpIndel("2A", parentPath + "2A_SNPrecal_IndelFiltered.vcf");
+		snpgatKcope.addVcfToLsSnpIndel("2B", parentPath + "2B_SNPrecal_IndelFiltered.vcf");
 		
-		snpgatKcope.addSampileupFile("3A", parentPath + "3A_detailmpileup.txt");
-		snpgatKcope.addSampileupFile("3B", parentPath + "3B_detailmpileup.txt");
+		snpgatKcope.addSampileupFile("2A", parentPath + "2A_detailmpileup.txt");
+		snpgatKcope.addSampileupFile("2B", parentPath + "2B_detailmpileup.txt");
 		
 		SnpGroupFilterInfo sampleDetail2A = new SnpGroupFilterInfo();
-		sampleDetail2A.addSampleName("3A");
+		sampleDetail2A.addSampleName("2A");
 		sampleDetail2A.setSampleRefHomoNum(1, 1);
 		sampleDetail2A.setSampleSnpIndelHetoNum(0, 0);
 		sampleDetail2A.setSampleSnpIndelHomoNum(0, 0);
 		snpgatKcope.addFilterSample(sampleDetail2A);
 		
 		SnpGroupFilterInfo sampleDetail2B = new SnpGroupFilterInfo();
-		sampleDetail2B.addSampleName("3B");
+		sampleDetail2B.addSampleName("2B");
 		sampleDetail2B.setSampleRefHomoNum(0, 0);
 		sampleDetail2B.setSampleSnpIndelNum(1, 1);
 		sampleDetail2B.setSampleSnpIndelHetoLessNum(0, 0);
 		snpgatKcope.addFilterSample(sampleDetail2B);
 		
 		snpgatKcope.readSnpDetailFromPileUp();
-		snpgatKcope.filterSnp();
 		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_3Bvs3A.xls");
 		
 		snpgatKcope.filterSnp();
@@ -206,6 +205,7 @@ public class SNPGATKcope {
 			snpDetailGet.addSample2PileupFile(sample2PileUp[0], sample2PileUp[1]);
 		}
 		snpDetailGet.run();
+		lsFilteredSnp = ArrayOperate.getArrayListValue(mapSiteInfo2MapInfoSnpIndel);
 	}
 	/** 必须在readSnpDetailFromPileUp之后执行 */
 	public void filterSnp() {
@@ -234,8 +234,8 @@ public class SNPGATKcope {
 		}
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
-		txtOut.writefileln(MapInfoSnpIndel.getTitleFromSampleName(setSample, true));
-		ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfos = null;
+		txtOut.writefileln(MapInfoSnpIndel.getTitleFromSampleName(setSample));
+		ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfos = new ArrayList<SiteSnpIndelInfo>();
 		for (int i = 0; i < lsFilteredSnp.size(); i++) {
 			if (lsFilteredSite != null && lsFilteredSite.size() > 0) {
 				lsSiteSnpIndelInfos = lsFilteredSite.get(i);

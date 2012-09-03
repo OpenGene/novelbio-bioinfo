@@ -46,12 +46,15 @@ public class ExonCluster {
 	public String getLocInfo() {
 		return chrID + ":" + startLoc + "-" + endLoc;
 	}
-	
+	public int getLength() {
+		return Math.abs(endLoc - startLoc);
+	}
 	/** 返回其所在的GffGene */
 	public GffDetailGene getParentGene() {
-		for (ExonInfo exonInfo : lsCombExon) {
-			GffDetailGene gffDetailGene = exonInfo.getParent().getParentGffDetailGene();
-			return gffDetailGene;
+		for (ArrayList<ExonInfo> lsExonInfos : lsIsoExon) {
+			if (lsExonInfos.size() > 0) {
+				return lsExonInfos.get(0).getParent().getParentGffDetailGene();
+			}
 		}
 		return null;
 	}
@@ -67,6 +70,14 @@ public class ExonCluster {
 	}
 	public HashMap<GffGeneIsoInfo, ArrayList<ExonInfo>> getMapIso2LsExon() {
 		return mapIso2LsExon;
+	}
+	/**
+	 * list--所有isoform
+	 * list--每个isoform中该组的所有exon
+	 * 如果该iso跳过了这个exon，则里面装空的list
+	 */
+	public ArrayList<ArrayList<ExonInfo>> getLsIsoExon() {
+		return lsIsoExon;
 	}
 	/**
 	 * 本组中是否为相同的exon，如果相同了那么也就没有可变剪接的说法了
@@ -242,6 +253,7 @@ public class ExonCluster {
 		}
 		return lsExonTmp;
 	}
+	
 	/** 仅判断本位点的可变剪接情况
 	 * 也就是仅判断alt5，alt3
 	 */

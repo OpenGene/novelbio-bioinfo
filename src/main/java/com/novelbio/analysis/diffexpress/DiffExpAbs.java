@@ -179,8 +179,8 @@ public abstract class DiffExpAbs {
 				lsValue.add(tmpValue);
 			} catch (Exception e) { }
 		}
-		double result = MathComput.median(lsValue, 90);
-		if (result < 30) {
+		double result = MathComput.median(lsValue, 98);
+		if (result < 40) {
 			return true;
 		}
 		else {

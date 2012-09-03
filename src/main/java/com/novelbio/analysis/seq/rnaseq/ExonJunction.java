@@ -11,7 +11,6 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -28,7 +27,7 @@ public class ExonJunction {
 	public static void main(String[] args) {
 		chicken();
 	}
-	static GffHashGene gffHashGene = null;
+	GffHashGene gffHashGene = null;
 
 	TophatJunction tophatJunction = new TophatJunction();
 	LinkedHashSet<String> setCondition = new LinkedHashSet<String>();
@@ -36,9 +35,11 @@ public class ExonJunction {
 	HashMap<String, MapReads> mapCondition2MapReads = new HashMap<String, MapReads>();
 	
 	public static void mouse() {
-		gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
+		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf");
 		ExonJunction exonJunction = new ExonJunction();
+		exonJunction.setGffHashGene(gffHashGene);
+		
 		String parentFile = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/";
 		exonJunction.setIsoJunFile(parentFile + "MEFK02da14m1_1/junctions.bed", "K0"); 
 		exonJunction.setIsoJunFile(parentFile + "MEFK02da14m1_2/junctions.bed", "K0");
@@ -56,16 +57,22 @@ public class ExonJunction {
 		txtOut.close();
 	}
 	public static void mouseHeart() {
-		gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
+		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf");
 		ExonJunction exonJunction = new ExonJunction();
+		exonJunction.setGffHashGene(gffHashGene);
+
 		String parentFile = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/";
 		exonJunction.setIsoJunFile(parentFile + "heartK0a14m1_1/junctions.bed", "K0");
 		exonJunction.setIsoJunFile(parentFile + "heartK0a14m1_2/junctions.bed", "K0");
 		exonJunction.setIsoJunFile(parentFile + "heartWTa14m1_1/junctions.bed", "WT0");
 		exonJunction.setIsoJunFile(parentFile + "heartWTa14m1_2/junctions.bed", "WT0");
 		
-		String outResult = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/HeartK0vsWT0outDifResult.xls";
+		exonJunction.addBamFile_Sorted("K0", parentFile + "heartK0a14m1_1/accepted_hits.bam");
+		exonJunction.addBamFile_Sorted("WT0", parentFile + "heartWTa14m1_1/accepted_hits.bam");
+		exonJunction.loadingBamFile(new Species(10090));
+
+		String outResult = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/HeartK0vsWT0outDifResult_bam.xls";
 		ArrayList<ExonSplicingTest> lsResult = exonJunction.getDifIsoGene();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outResult, true);
 		for (ExonSplicingTest chisqTest : lsResult) {
@@ -74,9 +81,11 @@ public class ExonJunction {
 		txtOut.close();
 	}
 	public static void chicken() {
-		gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
+		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 				"/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/finalTranscript.gtf");
 		ExonJunction exonJunction = new ExonJunction();
+		exonJunction.setGffHashGene(gffHashGene);
+
 		String parentFile = "/media/winF/NBC/Project/Project_FY/chicken/scripture/";
 		exonJunction.setIsoJunFile(parentFile + "tophatK5a15m1_1/junctions.bed", "K0");
 		exonJunction.setIsoJunFile(parentFile + "tophatK5a15m1_2/junctions.bed", "K0");
@@ -87,7 +96,7 @@ public class ExonJunction {
 		exonJunction.addBamFile_Sorted("WT0", parentFile + "tophatWT5a15m1_1/accepted_hits.bam");
 		exonJunction.loadingBamFile(new Species(9013));
 		
-		String outResult = "/media/winF/NBC/Project/Project_FY/chicken/chickenK5vsWT5outDifResult.xls";
+		String outResult = "/media/winF/NBC/Project/Project_FY/chicken/chickenK5vsWT5outDifResult_No_modifyJunctionReads.xls";
 		ArrayList<ExonSplicingTest> lsResult = exonJunction.getDifIsoGene();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outResult, true);
 		txtOut.writefileln(ExonSplicingTest.getTitle("K0", "WT0"));
@@ -96,7 +105,9 @@ public class ExonJunction {
 		}
 		txtOut.close();
 	}
-
+	public void setGffHashGene(GffHashGene gffHashGene) {
+		this.gffHashGene = gffHashGene;
+	}
 	/**
 	 * 设定junction文件以及所对应的时期
 	 * 目前只能做两个时期的比较

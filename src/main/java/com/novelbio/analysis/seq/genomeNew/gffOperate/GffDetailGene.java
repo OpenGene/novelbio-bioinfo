@@ -45,6 +45,7 @@ public class GffDetailGene extends ListDetailAbs {
 	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
 	ListGff listGff;
 	int taxID = 0;
+	HashSet<GeneID> setGeneID;
 	
 	boolean removeDuplicateIso = false;
 	/**
@@ -94,12 +95,17 @@ public class GffDetailGene extends ListDetailAbs {
 	private int getIsoID(String isoName) {
 		for (int i = 0; i < lsGffGeneIsoInfos.size(); i++) {
 			GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(i);
-			String[] tmpName = gffGeneIsoInfo.getName().split(SepSign.SEP_ID);
-			for (String string : tmpName) {
-				string = GeneID.removeDot(string);
-				if(string.equalsIgnoreCase( GeneID.removeDot(isoName) )) {
+			if (gffGeneIsoInfo.getName().equalsIgnoreCase(isoName)) {
+				return i;
+			}
+		}
+		
+		for (int i = 0; i < lsGffGeneIsoInfos.size(); i++) {
+			GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(i);
+			String tmpName = gffGeneIsoInfo.getName();
+			tmpName = GeneID.removeDot(tmpName);
+				if(tmpName.equalsIgnoreCase( GeneID.removeDot(isoName) )) {
 					return i;
-				}
 			}
 		}
 		return -1;
@@ -282,6 +288,16 @@ public class GffDetailGene extends ListDetailAbs {
 	}
 	public void clearIso() {
 		lsGffGeneIsoInfos.clear();
+	}
+	public HashSet<GeneID> getSetGeneID() {
+		if (setGeneID != null) {
+			return setGeneID;
+		}
+		setGeneID = new HashSet<GeneID>();
+		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
+			setGeneID.add(gffGeneIsoInfo.getGeneID());
+		}
+		return setGeneID;
 	}
 	/**
 	 * 是否在该基因内，具体情况

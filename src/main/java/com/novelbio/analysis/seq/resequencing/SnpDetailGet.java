@@ -141,8 +141,9 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			//////////////////////////////////////
 			getSiteInfo_FromPileUp(sampleName, pileupFile);
 		}
-		
-		writeToFile(outFile);
+		if (outFile != null) {
+			writeToFile(outFile);
+		}
 	}
 	/**
 	 * 输出的中间结果
@@ -241,7 +242,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		setThreadInfo(readLines, readByte, "writeToFile");
 		
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
-		txtWrite.writefileln(MapInfoSnpIndel.getTitleFromSampleName(mapSample2PileupFile.keySet(), true));
+		txtWrite.writefileln(MapInfoSnpIndel.getTitleFromSampleName(mapSample2PileupFile.keySet()));
 		for (ArrayList<MapInfoSnpIndel> lsMapInfoSnpIndels : mapChrID2LsSnpSite.values()) {//每条染色体
 			for (MapInfoSnpIndel mapInfoSnpIndel : lsMapInfoSnpIndels) {//每个位点
 				ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(mapSample2PileupFile.keySet(), false);
