@@ -52,7 +52,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	HashMap<String, SampleRefReadsInfo> mapSample2NormReadsInfo = new HashMap<String, SampleRefReadsInfo>();
 	String sampleName = "";
 	/** 要是已经在sam pileUp里面搜索过了，那么就设定该样本的sample是可以找到的 */
-
+	
 	public MapInfoSnpIndel() {}
 	/** @param gffChrAbs */
 	public MapInfoSnpIndel(GffChrAbs gffChrAbs, String sampleName) {
@@ -78,6 +78,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	public void setRefSnpIndelStart(String chrID, int refSnpIndelStart) {
 		this.chrID = chrID;
 		this.refSnpIndelStart = refSnpIndelStart;
+		setGffIso();
 	}
 	/** 这是当samPileup文件跳过某一行时设定的，表示已经查过这一行了只不过没找到东西
 	 * 然后各种值会设定为0
@@ -218,6 +219,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		refSnpIndelStart = Integer.parseInt(inputLines[vcfCols.colSnpStart]); 
 		//TODO :chrID是否需要小写
 		chrID = inputLines[vcfCols.colChrID];
+		setGffIso();
 		SiteSnpIndelInfo siteSnpIndelInfo = addAllenInfo(inputLines[vcfCols.colRefsequence], inputLines[vcfCols.colThisSequence]);
 		if (vcfCols.colBaseInfo >= 0)
 			setBaseInfo(inputLines[vcfCols.colBaseInfo]);
@@ -234,6 +236,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				siteSnpIndelInfo.setDBSnpID(inputLines[vcfCols.colSnpDBID]);
 			}
 		}
+		
 	}
 	
 	/**
@@ -246,7 +249,9 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		//TODO :chrID是否需要小写
 		chrID = inputLines[0];
 		refSnpIndelStart = Integer.parseInt(inputLines[1]); 
+		setGffIso();
 		addAllenInfo(inputLines[7], inputLines[8]);
+		
 	}
 	
 	/**

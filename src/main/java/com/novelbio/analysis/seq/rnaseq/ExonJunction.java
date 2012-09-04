@@ -33,7 +33,7 @@ public class ExonJunction {
 	LinkedHashSet<String> setCondition = new LinkedHashSet<String>();
 	
 	HashMap<String, MapReads> mapCondition2MapReads = new HashMap<String, MapReads>();
-	
+	String condition1, condition2;
 	public static void mouse() {
 		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf");
@@ -108,6 +108,10 @@ public class ExonJunction {
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}
+	public void setCondition(String condition1, String condition2) {
+		this.condition1 = condition1;
+		this.condition2 = condition2;
+	}
 	/**
 	 * 设定junction文件以及所对应的时期
 	 * 目前只能做两个时期的比较
@@ -132,7 +136,18 @@ public class ExonJunction {
 			mapReads.setNormalType(MapReads.NORMALIZATION_NO);
 		}
 	}
+	public void writeToFile(String fileName) {
+		TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
+		ArrayList<ExonSplicingTest> lsSplicingTests = getDifIsoGene();
+		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2));
+		for (ExonSplicingTest chisqTest : lsSplicingTests) {
+			txtOut.writefileln(chisqTest.toString());
+		}
+		txtOut.close();
+	}
 	public ArrayList<ExonSplicingTest> getDifIsoGene() {
+		setConditionWhileConditionIsNull();
+
 		ArrayList<ExonSplicingTest> lsChisqTests = new ArrayList<ExonSplicingTest>();
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
@@ -187,13 +202,12 @@ public class ExonJunction {
 	 * @param lsLocation 输入一个空的list，在里面填充差异exon的坐标
 	 * @return ls ExonSplicingTest -- ls 每个时期 -- 所涉及到的exon的检验结果，按照pvalue从小到大排序
 	 */
-	private ArrayList<ExonSplicingTest> calDifExonJun(ArrayList<ExonCluster> lsExonClusters, ArrayList<String> lsLocation) {
+	private ArrayList<ExonSplicingTest> calDifExonJun(ArrayList<ExonCluster> lsExonClusters, ArrayList<String> lsLocation) {		
 		ArrayList<ExonSplicingTest> lsExonSplicingTest = new ArrayList<ExonSplicingTest>();
 		for (ExonCluster exonCluster : lsExonClusters) {
 			ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster, setCondition, tophatJunction);
 			exonSplicingTest.setMapCondition2MapReads(mapCondition2MapReads);
-			ArrayList<String> lsCondition = ArrayOperate.getArrayListValue(setCondition);
-			exonSplicingTest.setCondition(lsCondition.get(0), lsCondition.get(1));
+			exonSplicingTest.setCondition(condition1, condition2);
 			lsExonSplicingTest.add(exonSplicingTest);
 		}
 		//按照pvalue从小到大排序
@@ -204,5 +218,12 @@ public class ExonJunction {
 		});
 		return lsExonSplicingTest;
 	}
-
+	
+	private void setConditionWhileConditionIsNull() {
+		if (condition1 == null && condition2 == null) {
+			ArrayList<String> lsCondition = ArrayOperate.getArrayListValue(setCondition);
+			condition1 = lsCondition.get(0);
+			condition2 = lsCondition.get(1);
+		}
+	}
 }

@@ -24,7 +24,7 @@ public class BlastNBC {
 	public static final String BLAST_TBLASTX_NR2NR_WITH_AA = "tblastx ";
 	public static final String BLAST_BLASTN_NR2NR_WITH_NR = "blastn ";
 	public static final String BLAST_BLASTX_NR2AA_WITH_AA = "blastx ";
-	public static final String BLAST_BLASTP_AA2AA_WITH_AA = "blastp";
+	public static final String BLAST_BLASTP_AA2AA_WITH_AA = "blastp ";
 	private static Logger logger = Logger.getLogger(BlastNBC.class);
 	String blastAll = "blastall ";
 	String formatDB = "formatdb ";

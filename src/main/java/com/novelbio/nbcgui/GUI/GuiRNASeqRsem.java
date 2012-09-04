@@ -20,6 +20,8 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlseq.CtrlFastQMapping;
 
@@ -91,6 +93,14 @@ public class GuiRNASeqRsem extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				Species species = cmbSpecies.getSelectedValue();
 				cmbSpeciesVersion.setMapItem(species.getMapVersion());
+				if (species.getTaxID() == 0) {
+					btnMappingindex.setEnabled(true);
+					txtMappingIndex.setEnabled(true);
+				}
+				else {
+					btnMappingindex.setEnabled(false);
+					txtMappingIndex.setEditable(false);
+				}
 			}
 		});
 		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
@@ -176,6 +186,14 @@ public class GuiRNASeqRsem extends JPanel {
 					ArrayList<ArrayList<FastQ>> lsFastqFR = entry.getValue();
 					
 					mapRsem = new MapRsem(species);
+					if (species == null || species.getTaxID() == 0) {
+						mapRsem.setFileRef(txtMappingIndex.getText());
+					}
+					
+					SoftWareInfo softWareInfoBowtie = new SoftWareInfo(SoftWare.bowtie);
+					SoftWareInfo softWareInfoRsem = new SoftWareInfo(SoftWare.rsem);
+
+					mapRsem.setExePath(softWareInfoRsem.getExePath(), softWareInfoBowtie.getExePath());
 					mapRsem.setLeftFq(lsFastqFR.get(0));
 					mapRsem.setRightFq(lsFastqFR.get(1));
 					mapRsem.setThreadNum(threadNum);

@@ -27,22 +27,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
 
 /** 可变剪接的检验 */
 public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
-	public static void main(String[] args) {
-		try {
-			double pvalue = TestUtils.chiSquareTestDataSetsComparison(new long[]{1,9}, new long[]{1,1});
-			 FisherTest fisherTest = new FisherTest(20);
-			 double pvalueFisher = fisherTest.getTwoTailedP(1, 9, 1, 1);
-			System.out.println(pvalue);
-			System.out.println(pvalueFisher);
-
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MathException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	ExonCluster exonCluster;
 	TophatJunction tophatJunction;
 	
@@ -64,6 +48,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	public ExonSplicingTest(ExonCluster exonCluster, LinkedHashSet<String> setCondition, TophatJunction tophatJunction) {
 		this.exonCluster = exonCluster;
+		//初始化
 		for (String string : setCondition) {
 			mapCondition2Counts.put(string, new int[0]);
 		}
@@ -115,26 +100,27 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	private int[] getAlt5Reads(int junc, GffDetailGene gffDetailGene, String chrID, String condition) {
 		ArrayList<ExonInfo> lsExon = exonCluster.getExonInfoSingleLs();
-		int[] counts = new int[lsExon.size()];
+		int[] counts = new int[lsExon.size() + junc];
+		//第一位是跳过该exon的reads
 		if (junc == 1)
 			counts[0] = getJunReadsNum(gffDetailGene, exonCluster, condition);
 		
-		for (int i = 1; i <= lsExon.size(); i++) {
+		for (int i = 0; i < lsExon.size(); i++) {
 			ExonInfo exon = lsExon.get(i);
-			counts[i] = tophatJunction.getJunctionSite(chrID, exon.getEndCis(), condition);
+			counts[i+junc] = tophatJunction.getJunctionSite(chrID, exon.getEndCis(), condition);
 		}
 
 		return counts;
 	}
 	private int[] getAlt3Reads(int junc, GffDetailGene gffDetailGene, String chrID, String condition) {
 		ArrayList<ExonInfo> lsExon = exonCluster.getExonInfoSingleLs();
-		int[] counts = new int[lsExon.size()];
+		int[] counts = new int[lsExon.size() + junc];
 		if (junc == 1)
 			counts[0] = getJunReadsNum(gffDetailGene, exonCluster, condition);
 		
-		for (int i = 1; i <= lsExon.size(); i++) {
+		for (int i = 0; i < lsExon.size(); i++) {
 			ExonInfo exon = lsExon.get(i);
-			counts[i] = tophatJunction.getJunctionSite(chrID, exon.getStartCis(), condition);
+			counts[i+junc] = tophatJunction.getJunctionSite(chrID, exon.getStartCis(), condition);
 		}
 
 		return counts;
@@ -146,9 +132,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		if (junc == 1)
 			counts[0] = getJunReadsNum(gffDetailGene, exonCluster, condition);
 		
-		for (int i = 1; i <= lsExon.size(); i++) {
+		for (int i = 0; i < lsExon.size(); i++) {
 			ExonInfo exon = lsExon.get(i);
-			counts[i] = tophatJunction.getJunctionSite(chrID, exon.getStartCis(), condition) + tophatJunction.getJunctionSite(chrID, exon.getEndCis(), 	condition);
+			counts[i+junc] = tophatJunction.getJunctionSite(chrID, exon.getStartCis(), condition) + tophatJunction.getJunctionSite(chrID, exon.getEndCis(), 	condition);
 		}
 
 		return counts;
@@ -162,9 +148,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 */
 	private int getJunReadsNum(GffDetailGene gffDetailGene, ExonCluster exonCluster, String condition) {
 		int result = 0;
-		if (gffDetailGene.getName().contains("ENSGALT00000016147")) {
-			System.out.println("stop");
-		}
 		HashSet<String> setLocation = new HashSet<String>();
 		setLocation.addAll(getSkipExonLoc_From_IsoHaveExon());
 		setLocation.addAll(getSkipExonLoc_From_IsoWithoutExon(gffDetailGene));
@@ -217,9 +200,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	protected Double getPvalue() {
 		if (pvalue > 0) {
 			return pvalue;
-		}
-		if (exonCluster.getParentGene().getName().contains("ENSGALT00000016147") ) {
-			System.out.println("stop");
 		}
 		double pvalueExp = getPvalueReads();
 		double pvalueCounts = getPvalueJunctionCounts();
@@ -303,9 +283,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		FisherTest fisherTest = new FisherTest(sum + 3);
 		
 		double pvalue = fisherTest.getTwoTailedP(tmpExpCond1[0], tmpExpCond1[1], tmpExpCond2[0], tmpExpCond2[1]);
-		if (pvalue < 0.2) {
-			System.out.println("stop");
-		}
 		return pvalue;
 	}
 	/** Retain_Intron的pvalue比较奇怪，必须要exon才能计算的 */

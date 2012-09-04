@@ -10,13 +10,17 @@ import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
  */
 public class Align implements Alignment{
 	int start, end;
+	String chrID;
 	Boolean cis5to3;
-	public Align(int start, int end) {
+	public Align(String chrID, int start, int end) {
 		this.start = Math.min(start, end);
 		this.end = Math.max(start, end);
 	}
 	public void setCis5to3(Boolean cis5to3) {
 		this.cis5to3 = cis5to3;
+	}
+	public void setChrID(String chrID) {
+		this.chrID = chrID;
 	}
 	public void setStart(int start) {
 		this.start = start;
@@ -56,6 +60,10 @@ public class Align implements Alignment{
 			return Math.max(start, end);
 		}
 		return Math.min(start, end);
+	}
+	@Override
+	public String getRefID() {
+		return chrID;
 	}
 	
 }

@@ -37,8 +37,7 @@ public class BlastUp2DB extends ImportPerLine{
 	 * 设定blast到的ID的数据库
 	 * @param blastDBinfo
 	 */
-	public void setBlastDBinfo(String blastDBinfo)
-	{
+	public void setBlastDBinfo(String blastDBinfo) {
 		this.blastDBinfo = blastDBinfo;
 	}
 	

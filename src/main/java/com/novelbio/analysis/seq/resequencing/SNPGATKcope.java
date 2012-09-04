@@ -88,10 +88,10 @@ public class SNPGATKcope {
 		snpgatKcope.addFilterSample(sampleDetail2B);
 		
 		snpgatKcope.readSnpDetailFromPileUp();
-		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_3Bvs3A.xls");
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_2Bvs2A2.xls");
 		
 		snpgatKcope.filterSnp();
-		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_3Bvs3A_filter.xls");
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_2Bvs2A_filter2.xls");
 	}
 
 	
@@ -173,6 +173,7 @@ public class SNPGATKcope {
 	
 	/** 在设定snp的情况下，从pileup文件中获取snp信息 */
 	public void readSnpDetailFromPileUp() {
+		lsFilteredSnp = ArrayOperate.getArrayListValue(mapSiteInfo2MapInfoSnpIndel);
 		for (String[] sample2vcf : lsSample2VcfFiles) {
 			addVcfToLsSnpIndel(sample2vcf[0], sample2vcf[1]);
 		}
@@ -205,7 +206,6 @@ public class SNPGATKcope {
 			snpDetailGet.addSample2PileupFile(sample2PileUp[0], sample2PileUp[1]);
 		}
 		snpDetailGet.run();
-		lsFilteredSnp = ArrayOperate.getArrayListValue(mapSiteInfo2MapInfoSnpIndel);
 	}
 	/** 必须在readSnpDetailFromPileUp之后执行 */
 	public void filterSnp() {

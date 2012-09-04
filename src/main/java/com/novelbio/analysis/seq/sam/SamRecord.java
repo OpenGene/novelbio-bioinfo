@@ -108,14 +108,14 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 			List<AlignmentBlock> lsAlignmentBlocks = samRecord.getAlignmentBlocks();
 			ArrayList<Align> lsAligns = new ArrayList<Align>();
 			for (AlignmentBlock alignmentBlock : lsAlignmentBlocks) {
-				Align align = new Align(alignmentBlock.getReferenceStart(), alignmentBlock.getLength() + alignmentBlock.getReferenceStart() - 1);
+				Align align = new Align(getRefID(), alignmentBlock.getReferenceStart(), alignmentBlock.getLength() + alignmentBlock.getReferenceStart() - 1);
 				align.setCis5to3(isCis5to3());
 				lsAligns.add(align);
 			}
 			return lsAligns;
 		}
 		ArrayList<Align> lsAligns = new ArrayList<Align>();
-		Align align = new Align(getStartAbs(), getEndAbs());
+		Align align = new Align(getRefID(), getStartAbs(), getEndAbs());
 		align.setCis5to3(isCis5to3());
 		lsAligns.add(align);
 		return lsAligns;

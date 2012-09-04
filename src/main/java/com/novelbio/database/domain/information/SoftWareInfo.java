@@ -39,6 +39,9 @@ public class SoftWareInfo {
 	ServSoftWareInfo servSoftWareInfo = new ServSoftWareInfo();
 
 	public SoftWareInfo() { }
+	public SoftWareInfo(SoftWare softName) { 
+		setName(softName);
+	}
 	
 	public void setName(String softName) {
 		this.softName = softName.toLowerCase();

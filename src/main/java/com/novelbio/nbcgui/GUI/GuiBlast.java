@@ -134,6 +134,11 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 		textResultFile.setColumns(10);
 		
 		JButton btnResultfile = new JButton("ResultFile");
+		btnResultfile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textResultFile.setText(fileOpen.openFileName("OutFile", ""));
+			}
+		});
 		btnResultfile.setBounds(279, 365, 105, 24);
 		add(btnResultfile);
 		

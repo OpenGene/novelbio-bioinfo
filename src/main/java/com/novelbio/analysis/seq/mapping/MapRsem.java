@@ -6,15 +6,18 @@ import java.util.List;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
 import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 /**
  * 还没返回结果的bam文件
@@ -111,7 +114,11 @@ public class MapRsem {
 			this.threadNum = threadNum;
 		}
 	}
+	/** 产生全新的reference */
 	private void createGene2IsoAndRefSeq() {
+		String pathRsem = FileOperate.getParentPathName(refFile);
+		gene2isoFile = pathRsem +  "RefGene_gene2iso.txt";
+		
 		if (!FileOperate.isFileExist(refFile)) {
 			String pathRsemIndex = FileOperate.getParentPathName(gffChrAbs.getSeqHash().getChrFile()) + "rsemRef" + species.getVersion().replace(" ", "") + FileOperate.getSepPath();
 			FileOperate.createFolders(pathRsemIndex);
@@ -119,11 +126,19 @@ public class MapRsem {
 			refFile = pathRsemIndex +  "RefGene.fa";
 			if (!FileOperate.isFileExist(refFile))
 				gffChrSeq.writeIsoFasta(refFile);
-		}
-		String pathRsem = FileOperate.getParentPathName(refFile);
-		gene2isoFile = pathRsem +  "RefGene_gene2iso.txt";
-		if (!FileOperate.isFileExist(gene2isoFile)) {
+			
 			gffChrAbs.getGffHashGene().writeGene2Iso(gene2isoFile);
+		}
+
+		if (!FileOperate.isFileExist(gene2isoFile)) {
+			TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2isoFile, true);
+			SeqFastaHash seqFastaHash = new SeqFastaHash(refFile, null, false, false);
+			for (String geneIDstr : seqFastaHash.getLsSeqName()) {
+				GeneID geneID = new GeneID(geneIDstr, species.getTaxID());
+				String symbol = geneID.getSymbol();
+				txtGene2Iso.writefileln(symbol + "\t" + geneIDstr);
+			}
+			txtGene2Iso.close();
 		}
 	}
 	private String getThreadNum() {

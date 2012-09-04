@@ -105,6 +105,10 @@ public class GffChrAbs {
 		if (this.species != null && this.species.equals(species)) {
 			return;
 		}
+		if (species == null || species.getTaxID() == 0) {
+			return;
+		}
+		
 		this.species = species;
 		setGffFile(species.getTaxID(), species.getGffFile()[0], species.getGffFile()[1]);
 		setChrFile(species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0]);

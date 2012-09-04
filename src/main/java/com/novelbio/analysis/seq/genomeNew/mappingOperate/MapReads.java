@@ -256,13 +256,13 @@ public class MapReads extends MapReadsAbs{
 			for (int i = 0; i < lsStartEnd.size(); i++) {
 				Alignment alignment = lsStartEnd.get(i);
 				if (StartCodLen - lsStartEnd.get(i).Length() > 0) {
-					Align align = new Align(alignment.getStartAbs(), alignment.getEndAbs());
+					Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
 					align.setCis5to3(alignment.isCis5to3());
 					lsResult.add(align);
 					StartCodLen = StartCodLen - alignment.Length();
 				}
 				else {
-					Align lastAlign = new Align(alignment.getStartAbs(), alignment.getStartAbs() + StartCodLen - 1);
+					Align lastAlign = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getStartAbs() + StartCodLen - 1);
 					lsResult.add(lastAlign);
 					break;
 				}
@@ -272,14 +272,14 @@ public class MapReads extends MapReadsAbs{
 			for (int i = lsStartEnd.size() - 1; i >= 0; i--) {
 				Alignment alignment = lsStartEnd.get(i);
 				if (StartCodLen - alignment.Length() > 0) {
-					Align align = new Align(alignment.getStartAbs(), alignment.getEndAbs());
+					Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
 					align.setCis5to3(alignment.isCis5to3());
 					
 					lsResult.add(0,align);
 					StartCodLen = StartCodLen - alignment.Length();
 				}
 				else {
-					Align align = new Align(alignment.getEndAbs() - StartCodLen + 1, alignment.getEndAbs());
+					Align align = new Align(alignment.getRefID(), alignment.getEndAbs() - StartCodLen + 1, alignment.getEndAbs());
 					align.setCis5to3(alignment.isCis5to3());
 					lsResult.add(0,align);
 				}
