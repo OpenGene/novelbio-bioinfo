@@ -168,14 +168,15 @@ public class Species {
 		}
 		return len;
 	}
-	/**
-	 * 获得chr文件
-	 * @return
-	 * 0: regex 1: path
-	 */
-	public String[] getChrRegxAndPath() {
+	/** 获得chr文件的path */
+	public String getChromFaPath() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromFaPath();
+	}
+	/** 获得chr文件的regex */
+	public String getChromFaRegex() {
+		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		return speciesFile.getChromFaRegx();
 	}
 	/**
 	 * 指定version，和type，返回对应的gff文件，没有则返回null
@@ -189,12 +190,21 @@ public class Species {
 	 * 指定version，和type，返回对应的gff文件，没有则返回null，
 	 * 自动选择最优先的gfftype。
 	 * 优先级由GFFtype来决定
-	 * @param Type
-	 * @return string[2] 0: gffType 1:gffFilePath
+	 * @return gffFilePath
 	 */
-	public String[] getGffFile() {
+	public String getGffFile() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getGffFile();
+	}
+	/**
+	 * 指定version，和type，返回对应的gff文件，没有则返回null，
+	 * 自动选择最优先的gfftype。
+	 * 优先级由GFFtype来决定
+	 * @return gffType
+	 */
+	public String getGffFileType() {
+		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		return speciesFile.getGffFileType();
 	}
 	/**
 	 * 返回UCSC的gffRepeat
@@ -324,20 +334,11 @@ public class Species {
 			m = hashName2ColNum.get("gffrepeatfile");
 			speciesFile.setGffRepeatFile(info[m]);
 			
-			m = hashName2ColNum.get("rfamfile");
-			speciesFile.setRfamFile(info[m]);
-			
 			m = hashName2ColNum.get("refseqfile");
 			speciesFile.setRefseqFile(info[m]);
 			
 			m = hashName2ColNum.get("refseqncfile");
 			speciesFile.setRefseqNCfile(info[m]);
-			
-			m = hashName2ColNum.get("mirnafile");
-			speciesFile.setMiRNAfile(info[m]);
-			
-			m = hashName2ColNum.get("mirnahairpinfile");
-			speciesFile.setMiRNAhairpinFile(info[m]);
 			
 			speciesFile.getHashChrID2ChrLen();
 			//升级

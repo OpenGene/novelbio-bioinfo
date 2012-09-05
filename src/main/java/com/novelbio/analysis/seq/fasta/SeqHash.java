@@ -50,8 +50,6 @@ public class SeqHash implements SeqHashInt{
 	 * @param chrFile 序列文件或序列文件夹
 	 * @param regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，则用该正则表达式提取含有该文件名的文件
 	 * 单文件默认为"";文件夹默认为"\\bchr\\w*"；
-	 * @param TOLOWCASE 是否将最后结果的序列转化为小写 True：小写，False：大写，null不变 默认为null
-	 * 默认为false
 	 */
 	public SeqHash(String chrFile, String regx) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {

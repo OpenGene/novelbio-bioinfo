@@ -49,6 +49,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	ButtonGroup buttonGroupSnpCallingFinding;
 	JRadioButton rdbtnSnpcalling;
 	JRadioButton rdbtnGetSnpDetail;
+	JRadioButton rdbtnSnpAnnotation;
 	
 	JSpinner spinColChrID;
 	JSpinner spinColSnpStartSite;
@@ -176,7 +177,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 				setSnpCalling();
 			}
 		});
-		rdbtnSnpcalling.setBounds(14, 8, 151, 22);
+		rdbtnSnpcalling.setBounds(14, 8, 118, 22);
 		add(rdbtnSnpcalling);
 		
 		rdbtnGetSnpDetail = new JRadioButton("get snp detail");
@@ -185,7 +186,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 				setSnpGetInfo();
 			}
 		});
-		rdbtnGetSnpDetail.setBounds(185, 8, 151, 22);
+		rdbtnGetSnpDetail.setBounds(130, 8, 151, 22);
 		add(rdbtnGetSnpDetail);
 		
 		txtOutput = new JTextField();
@@ -204,7 +205,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		add(btnOutput);
 		
 		JLabel lblSnpsitefile = new JLabel("SnpSiteFile");
-		lblSnpsitefile.setBounds(16, 275, 107, 14);
+		lblSnpsitefile.setBounds(16, 275, 93, 14);
 		add(lblSnpsitefile);
 		
 		txtInformation = new JTextPane();
@@ -223,11 +224,11 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		add(spinColChrID);
 		
 		JLabel lblColSnpStart = new JLabel("Col Snp Start Site");
-		lblColSnpStart.setBounds(271, 275, 152, 14);
+		lblColSnpStart.setBounds(246, 275, 136, 14);
 		add(lblColSnpStart);
 		
 		spinColSnpStartSite = new JSpinner();
-		spinColSnpStartSite.setBounds(424, 271, 50, 23);
+		spinColSnpStartSite.setBounds(389, 271, 50, 23);
 		add(spinColSnpStartSite);
 		
 		cmbSpecies = new JComboBoxData<Species>();
@@ -236,12 +237,36 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 				cmbVersion.setMapItem(cmbSpecies.getSelectedValue().getMapVersion());
 			}
 		});
-		cmbSpecies.setBounds(367, 8, 189, 23);
+		cmbSpecies.setBounds(468, 8, 189, 23);
 		add(cmbSpecies);
 		
 		cmbVersion = new JComboBoxData<String>();
-		cmbVersion.setBounds(591, 8, 152, 23);
+		cmbVersion.setBounds(669, 8, 152, 23);
 		add(cmbVersion);
+		
+		rdbtnSnpAnnotation = new JRadioButton("Snp annotation");
+		rdbtnSnpAnnotation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		rdbtnSnpAnnotation.setBounds(288, 8, 151, 22);
+		add(rdbtnSnpAnnotation);
+		
+		JLabel lblColRefnr = new JLabel("Col RefNr");
+		lblColRefnr.setBounds(457, 275, 69, 14);
+		add(lblColRefnr);
+		
+		JSpinner spinColRefNr = new JSpinner();
+		spinColRefNr.setBounds(528, 273, 47, 21);
+		add(spinColRefNr);
+		
+		JLabel lblColThisnr = new JLabel("Col ThisNr");
+		lblColThisnr.setBounds(593, 275, 85, 14);
+		add(lblColThisnr);
+		
+		JSpinner spinColThisNr = new JSpinner();
+		spinColThisNr.setBounds(680, 273, 51, 21);
+		add(spinColThisNr);
 
 		initial();
 	}
@@ -251,6 +276,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		buttonGroupSnpCallingFinding = new ButtonGroup();
 		buttonGroupSnpCallingFinding.add(rdbtnGetSnpDetail);
 		buttonGroupSnpCallingFinding.add(rdbtnSnpcalling);
+		buttonGroupSnpCallingFinding.add(rdbtnSnpAnnotation);
 		rdbtnSnpcalling.setSelected(true);
 		
 		sclSnpFile.setTitle(new String[]{"Input Snp File"});
@@ -293,7 +319,22 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		btnOutput.setEnabled(true);
 		txtOutput.setEnabled(true);
 	}
-	
+	/** 当为获得每个snp信息的时候的界面 */
+	private void setSnpAnnotation() {
+		sclInputFile.setTitle(new String[]{"Input PileUp File", "Sample Name"});
+		combSnpLevel.setEnabled(false);
+		txtHetoMoreSnpProp.setEnabled(false);
+		txtHetoSnpProp.setEnabled(false);
+		
+		sclSnpFile.setEnabled(true);
+		spinColChrID.setEnabled(true);
+		spinColSnpStartSite.setEnabled(true);
+		sclSnpFile.setEnabled(true);
+		btnAddSnpfile.setEnabled(true);
+		btnDeleteSnpFile.setEnabled(true);
+		btnOutput.setEnabled(true);
+		txtOutput.setEnabled(true);
+	}
 	private void runSnpCalling() {
 		setGffChrAbs(cmbSpecies.getSelectedValue());
 		ctrlSnpCalling.setGffChrAbs(gffChrAbs);

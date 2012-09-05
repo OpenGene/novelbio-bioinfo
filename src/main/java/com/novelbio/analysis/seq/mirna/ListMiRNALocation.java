@@ -41,8 +41,8 @@ public class ListMiRNALocation extends ListHashBin{
 	 * 具体要检查RNA.data文件
 	 * @param species
 	 */
-	public void setSpecies(int taxID) {
-		species = new Species(taxID);
+	public void setSpecies(Species species) {
+		this.species = species;
 	}
 	int fileType = TYPE_RNA_DATA;
 	/**

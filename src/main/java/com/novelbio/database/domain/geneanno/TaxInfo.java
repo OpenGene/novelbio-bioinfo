@@ -7,7 +7,6 @@ import com.novelbio.database.service.servgeneanno.ServTaxID;
 /**
  * 有关taxID的表格
  * @author zong0jie
- *
  */
 public class TaxInfo {
 	ServTaxID servTaxID = new ServTaxID();

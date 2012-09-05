@@ -98,8 +98,8 @@ public class GffChrAbs {
 	}
 	public void setTaxID(int taxID) {
 		this.species = new Species(taxID);
-		setGffFile(species.getTaxID(), species.getGffFile()[0], species.getGffFile()[1]);
-		setChrFile(species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0]);
+		setGffFile(species.getTaxID(), species.getGffFileType(), species.getGffFile());
+		setChrFile(species.getChromFaPath(), species.getChromFaRegex());
 	}
 	public void setSpecies(Species species) {
 		if (this.species != null && this.species.equals(species)) {
@@ -110,8 +110,8 @@ public class GffChrAbs {
 		}
 		
 		this.species = species;
-		setGffFile(species.getTaxID(), species.getGffFile()[0], species.getGffFile()[1]);
-		setChrFile(species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0]);
+		setGffFile(species.getTaxID(), species.getGffFileType(), species.getGffFile());
+		setChrFile(species.getChromFaPath(), species.getChromFaRegex());
 	}
 	public void setGffHash(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;

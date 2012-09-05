@@ -33,9 +33,9 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	<insert id="insertSpeciesFile" parameterType="SpeciesFile">
 		insert into speciesfile (taxid,version,publishyear,chrompath,chromseq,indexchr,indexrefseq,gffgenefile,
-		gffrepeatfile,rfamfile,refsefile,refseqncfile,mirnafile,mirnahairpinfile,chrominfo)
+		gffrepeatfile,refsefile,refseqncfile,chrominfo)
 		values (#{taxID},#{version},#{publishYear},#{chromPath},#{chromSeq},#{indexChr},#{indexRefseq},#{gffGeneFile}
-		,#{gffRepeatFile},#{rfamFile},#{refseqFile},#{refseqNCfile},#{miRNAfile},#{miRNAhairpinFile},#{chromInfo})
+		,#{gffRepeatFile},#{refseqFile},#{refseqNCfile},#{chromInfo})
 	</insert>
 	<update id="updateSpeciesFile" parameterType="NCBIID">
 		update speciesfile
@@ -67,20 +67,11 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="gffRepeatFile !=null and gffRepeatFile != '' ">
 				gffrepeatfile = #{gffRepeatFile},
 			</if>
-			<if test="rfamFile !=null and rfamFile != '' ">
-				rfamfile = #{rfamFile},
-			</if>
 			<if test="refseqFile !=null and refseqFile != '' ">
 				refsefile = #{refseqFile},
 			</if>
 			<if test="refseqNCfile !=null and refseqNCfile != '' ">
 				refseqncfile = #{refseqNCfile},
-			</if>
-			<if test="miRNAfile !=null and miRNAfile != '' ">
-				mirnafile = #{miRNAfile},
-			</if>
-			<if test="miRNAhairpinFile !=null and miRNAhairpinFile != '' ">
-				mirnahairpinfile = #{miRNAhairpinFile},
 			</if>
 			<if test="chromInfo !=null and chromInfo != '' ">
 				chrominfo = #{chromInfo},

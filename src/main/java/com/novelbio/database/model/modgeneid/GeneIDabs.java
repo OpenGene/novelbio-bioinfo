@@ -324,6 +324,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	 * @return
 	 */
 	public AGeneInfo getGeneInfo() {
+		setGenInfo();
 		return geneInfo;
 	}
 	/**

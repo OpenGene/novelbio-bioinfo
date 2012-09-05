@@ -77,9 +77,9 @@ public class CtrlMiRNA {
 		this.rfamStatisticRfambed = rfamStatisticRfambed;
 		this.readsOnNCrnaBed = readsOnNCrnaBed;
 	}
-	public void setTaxID(int taxID) {
+	public void setSpecies(Species species) {
 		changeSpecies = true;
-		species.setTaxID(taxID);
+		this.species = species;
 	}
 	public ArrayList<String> getVersion() {
 		return species.getVersionAll();
@@ -119,8 +119,8 @@ public class CtrlMiRNA {
 	 * @param Species 为miRNA.dat中的物种名，如果文件不是miRNA.dat，那就不用写了
 	 * @param rnadatFile
 	 */
-	public void setMiRNAinfo(int fileType, int taxID, String rnadatFile) {
-		miRNACount.setMiRNAinfo(fileType, taxID, rnadatFile);
+	public void setMiRNAinfo(int fileType, String rnadatFile) {
+		miRNACount.setMiRNAinfo(fileType, species, rnadatFile);
 	}
 	public void setLsBedFile(ArrayList<String> lsBedFileNovelMiRNA) {
 		this.lsBedFileNovelMiRNA = lsBedFileNovelMiRNA;
@@ -166,7 +166,7 @@ public class CtrlMiRNA {
 	 */
 	public void runMiRNApredict() {
 		if (gffChrAbs != null) {
-			gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0], null, 0);
+			gffChrAbs = new GffChrAbs(species);
 		}
 		readGffInfo();
 		if (lsBedFileNovelMiRNA.size() <= 0) {
@@ -216,7 +216,7 @@ public class CtrlMiRNA {
 	/** 读取信息 */
 	private void readGffInfo() {
 		if (gffChrAbs != null) {
-			gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0], null, 0);
+			gffChrAbs = new GffChrAbs(species);
 		}
 		readsOnRepeatGene.readGffGene(gffChrAbs);
 		readsOnRepeatGene.readGffRepeat(species.getGffRepeat());

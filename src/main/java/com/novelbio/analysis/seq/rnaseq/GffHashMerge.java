@@ -26,7 +26,7 @@ public class GffHashMerge {
 		Species species = new Species(10090);
 		GffHashMerge gffHashMerge = new GffHashMerge();
 		gffHashMerge.setSpecies(species);
-		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFile()[0], species.getGffFile()[1]));
+		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFileType(), species.getGffFile()));
 		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffhashGeneCuf));
 		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
 		gffHashGene.removeDuplicateIso();
@@ -34,7 +34,7 @@ public class GffHashMerge {
 
 		gffHashMerge = new GffHashMerge();
 		gffHashMerge.setSpecies(species);
-		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFile()[0], species.getGffFile()[1]));
+		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFileType(), species.getGffFile()));
 		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffFinal));
 
 		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
@@ -235,7 +235,7 @@ public class GffHashMerge {
 		return transcriptomStatistics;
 	}
 	private void prepareStatistics(TranscriptomStatistics transcriptomStatistics) {
-		SeqHash seqFastaHash = new SeqHash(species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0]);
+		SeqHash seqFastaHash = new SeqHash(species.getChromFaPath(), species.getChromFaRegex());
 		transcriptomStatistics.setSeqFastaHash(seqFastaHash);
 	}
 	private void statisticsLsGffGeneCluster(TranscriptomStatistics transcriptomStatistics, ArrayList<GffGeneCluster> lsGeneCluster) {

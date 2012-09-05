@@ -100,12 +100,14 @@ import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.Rplot;
 import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modkegg.KeggInfo;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
 import com.novelbio.generalConf.NovelBioConst;
  import com.thoughtworks.xstream.XStream;
@@ -122,14 +124,9 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		int[] aa = new int[3];
-		for (int i = 0; i < aa.length; i++) {
-			aa[i] = i;
-		}
-		test(new int[]{aa[0], aa[1]});
-		for (int j = 0; j < aa.length; j++) {
-			System.out.println(aa[j]);
-		}
+		GeneID geneID = new GeneID("LOC_Os05g49540", 0);
+		AGeneInfo geneInfo = geneID.getGeneInfo();
+		System.out.println(geneID.getGeneInfo().getTypeOfGene());
 	}
 	
 	private static void test(int[] mm) {
@@ -138,43 +135,42 @@ public class mytest {
 		}
 	}
 	
-	
-	private static int getLineNumber(String fileName) {  
-		         long start = System.currentTimeMillis();  
-		         int lineNum = 0;  
-		         char[] buf = new char[100000];  
-		         LineNumberReader lnr = null;  
-		   
-		         try {  
-		             lnr = new LineNumberReader(new InputStreamReader(  
-		                     new FileInputStream(fileName)));  
-		   
-		             while (lnr.read(buf) != -1) {  
-		                 ;  
-		             }  
-		   
-		             lineNum = lnr.getLineNumber() + 1;  
-		         } catch (FileNotFoundException e) {  
-		             e.printStackTrace();  
-		         } catch (IOException e) {  
-		             e.printStackTrace();  
-		         } finally {  
-		             try {  
-		                 if (null != lnr) {  
-		                     lnr.close();  
-		                 }  
-		             } catch (IOException ex) {  
-		                 ex.printStackTrace();  
-		             }  
-		         }  
-		   
-		         long end = System.currentTimeMillis();  
-		   
-		         System.out.println("Use Time: " + (end - start) + " Line Num: "  
-		                 + lineNum);  
-		   
-		         return lineNum;  
-		     }  
+	private static int getLineNumber(String fileName) {
+		long start = System.currentTimeMillis();
+		int lineNum = 0;
+		char[] buf = new char[100000];
+		LineNumberReader lnr = null;
+
+		try {
+			lnr = new LineNumberReader(new InputStreamReader(
+					new FileInputStream(fileName)));
+
+			while (lnr.read(buf) != -1) {
+				;
+			}
+
+			lineNum = lnr.getLineNumber() + 1;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (null != lnr) {
+					lnr.close();
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		long end = System.currentTimeMillis();
+
+		System.out.println("Use Time: " + (end - start) + " Line Num: "
+				+ lineNum);
+
+		return lineNum;
+	}  
 	
 	private static int getAllPeakLen(String txtFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(txtFile, false);

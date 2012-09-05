@@ -14,6 +14,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.database.model.species.Species;
 
 /**
  * 计算每个miRNA的表达，无法获得总表达值，只能获得每个表达值
@@ -31,7 +32,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		MiRNACount miRNACount = new MiRNACount();
 		miRNACount.setBedSeqMiRNA(bedFile);
 		miRNACount.setMiRNAfile(hairpairMirna, matureMirna);
-		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_MIRDEEP, 9606, rnadatFile);
+		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_MIRDEEP, new Species(9606), rnadatFile);
 		miRNACount.writeResultToOut(outFilePrefix);
 	}
 	Logger logger = Logger.getLogger(MiRNACount.class);
@@ -72,8 +73,8 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	 * @param Species 为miRNA.dat中的物种名，如果文件不是miRNA.dat，那就不用写了
 	 * @param rnadatFile
 	 */
-	public void setMiRNAinfo(int fileType, int taxID, String rnadatFile) {
-		listMiRNALocation.setSpecies(taxID);
+	public void setMiRNAinfo(int fileType, Species species, String rnadatFile) {
+		listMiRNALocation.setSpecies(species);
 		listMiRNALocation.setReadFileType(fileType);
 		listMiRNALocation.ReadGffarray(rnadatFile);
 		countMiRNA = false;

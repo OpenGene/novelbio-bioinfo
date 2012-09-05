@@ -136,7 +136,7 @@ public class GuiMirnaTargetPredict  extends JPanel {
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				species.setTaxID(cmbSpecies.getSelectedValue());
-				GffChrAbs gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], species.getChrRegxAndPath()[0], null, 0);
+				GffChrAbs gffChrAbs = new GffChrAbs(species);
 				ctrlMiRNAtargetPredict.setMirTargetOverlap(txtOutput.getText());
 				
 				ctrlMiRNAtargetPredict.setGffChrAbs(gffChrAbs);

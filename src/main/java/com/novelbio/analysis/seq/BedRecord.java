@@ -152,7 +152,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 	public ArrayList<Align> getAlignmentBlocks() {
 		ArrayList<Align> lsStartEnd = new ArrayList<Align>();
 		if (splitLen == null || splitLen.equals("") || !splitLen.contains(",")) {
-			Align align = new Align(getStartCis(), getEndCis());
+			Align align = new Align(getRefID(), getStartCis(), getEndCis());
 			align.setCis5to3(isCis5to3());
 			lsStartEnd.add(align);
 			return lsStartEnd;
@@ -162,7 +162,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 		for (int i = 0; i < splitLenArray.length; i++) {
 			int start = getStartAbs() + Integer.parseInt(splitLocArray[i]);
 			int end = start + Integer.parseInt(splitLenArray[i]) - 1;
-			Align align = new Align(start, end);
+			Align align = new Align(getRefID(), start, end);
 			align.setCis5to3(isCis5to3());
 			lsStartEnd.add(align);
 		}
