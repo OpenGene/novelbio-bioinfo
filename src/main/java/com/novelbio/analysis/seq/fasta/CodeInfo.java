@@ -418,6 +418,9 @@ class CodeInfo {
 	 * 格式 polar --> nonpolar等 都一样则返回"";
 	 */
 	private static String compareAAquality(String AA1, String AA2) {
+		if (AA1 == null || AA2 == null) {
+			return "";
+		}
 		if (AA1.equals(AA2)) {
 			return "same Amio Acid";
 		}

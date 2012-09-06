@@ -56,12 +56,12 @@ public abstract class SiteSnpIndelInfo {
 	 * @param refBase
 	 * @param thisBase
 	 */
-	public SiteSnpIndelInfo(MapInfoSnpIndel mapInfoSnpIndel, GffChrAbs gffChrAbs, String refBase, String thisBase) {
+	public SiteSnpIndelInfo(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
 		mapinfoRefSeqIntactAA.setRefID(mapInfoSnpIndel.getRefID());
 		this.mapInfoSnpIndel = mapInfoSnpIndel;
 		this.thisSeq = thisBase;
 		this.referenceSeq = refBase;
-		setMapInfoRefSeqAA(gffChrAbs);
+		setMapInfoRefSeqAA(mapInfoSnpIndel.gffChrAbs);
 	}
 	
 	private void setMapInfoRefSeqAA(GffChrAbs gffChrAbs) {
@@ -172,8 +172,8 @@ public abstract class SiteSnpIndelInfo {
 	 */
 	public String getAAattrConvert() {
 		if (isCDS() && referenceSeq.length() == 1 && thisSeq.length() == 1) {
-			String refAA = getRefAAnr().toStringAA();
-			String thisAA = getThisAAnr().toStringAA();
+			String refAA = getRefAAnr().toStringAA1();
+			String thisAA = getThisAAnr().toStringAA1();
 			try {
 				return SeqFasta.cmpAAquality(refAA, thisAA);
 			} catch (Exception e) {
@@ -203,6 +203,11 @@ public abstract class SiteSnpIndelInfo {
 	
 	public SeqFasta getRefAAnr() {
 		return mapinfoRefSeqIntactAA.getSeqFasta();
+	}
+	public String getAAchamicalConvert() {
+		String refaa =  mapinfoRefSeqIntactAA.getSeqFasta().toStringAA(false);
+		String thisaa = getThisAAnr().toStringAA(false);
+		return SeqFasta.cmpAAquality(refaa, thisaa);
 	}
 	/**
 	 * 跟方向相关
@@ -386,8 +391,8 @@ public abstract class SiteSnpIndelInfo {
 class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 	private static Logger logger = Logger.getLogger(SiteSnpIndelInfoInsert.class);
 	
-	public SiteSnpIndelInfoInsert(MapInfoSnpIndel mapInfoSnpIndel, GffChrAbs gffChrAbs, String refBase, String thisBase) {
-		super(mapInfoSnpIndel, gffChrAbs, refBase, thisBase);
+	public SiteSnpIndelInfoInsert(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
+		super(mapInfoSnpIndel, refBase, thisBase);
 		if (refBase.length() > 1) {
 			logger.error("refBase 大于1，可能不是插入，请核对：" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
 		}
@@ -461,8 +466,8 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 }
 
 class SiteSnpIndelInfoSnp extends SiteSnpIndelInfoInsert {
-	public SiteSnpIndelInfoSnp(MapInfoSnpIndel mapInfoSnpIndel, GffChrAbs gffChrAbs, String refBase, String thisBase) {
-		super(mapInfoSnpIndel, gffChrAbs, refBase, thisBase);
+	public SiteSnpIndelInfoSnp(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
+		super(mapInfoSnpIndel, refBase, thisBase);
 		super.snpType = SnpIndelType.MISMATCH;
 	}
 	protected void setOrfShift() {
@@ -476,8 +481,8 @@ class SiteSnpIndelInfoSnp extends SiteSnpIndelInfoInsert {
  */
 class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	Logger logger = Logger.getLogger(SiteSnpIndelInfoInsert.class);
-	public SiteSnpIndelInfoDeletion(MapInfoSnpIndel mapInfoSnpIndel, GffChrAbs gffChrAbs, String refBase, String thisBase) {
-		super(mapInfoSnpIndel, gffChrAbs, refBase, thisBase);
+	public SiteSnpIndelInfoDeletion(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
+		super(mapInfoSnpIndel, refBase, thisBase);
 		if (refBase.length() <= 1 || thisBase.length() > 1) {
 			logger.error("本位点可能不是缺失，请核对：" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
 		}

@@ -10,6 +10,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
@@ -331,7 +332,17 @@ public class MapTophat {
 		}
 		return "";
 	}
-
+	private void setGTFfile() {
+		if (FileOperate.isFileExistAndBigThanSize(gtfFile, 100)) {
+			return;
+		}
+		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
+			String path = FileOperate.getParentPathName(lsLeftFq.get(0).getReadFileName());
+			String outGTF = path + gffChrAbs.getSpecies().getAbbrName() + DateTime.getDateAndRandom() + ".GTF";
+			gffChrAbs.getGffHashGene().writeToGTF(outGTF, "novelbio");
+			this.gtfFile = outGTF;
+		}
+	}
 	/**
 	 * STRAND_NULL等，貌似是设置RNA-Seq是否为链特异性测序的，吃不准
 	 * 
@@ -378,6 +389,8 @@ public class MapTophat {
 	 * 参数设定不能用于solid 还没加入gtf的选项，也就是默认没有gtf
 	 */
 	public SamFile mapReads() {
+		setIntronLen();
+		
 		mapBowtie.IndexMakeBowtie();
 		if (lsLeftFq.size() > 0 && lsRightFq.size() > 0)
 			pairend = true;

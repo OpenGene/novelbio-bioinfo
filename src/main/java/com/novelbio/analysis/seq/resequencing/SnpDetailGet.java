@@ -271,35 +271,3 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	}
 	
 }
-
-/** 简单的存储snp的类，目的是节省内存
- * 因为snp数量可能会非常多
- *  */
-class SnpSiteSimple implements Comparable<SnpSiteSimple> {
-	String chrID;
-	int startSite;
-	
-	public SnpSiteSimple(String chrID, int startSite) {
-		this.chrID = chrID;
-		this.startSite = startSite;
-	}
-	
-	public String getChrID() {
-		return chrID;
-	}
-	public int getRefSnpIndelStart() {
-		return startSite;
-	}
-
-	@Override
-	public int compareTo(SnpSiteSimple o) {
-		int result = chrID.compareTo(o.chrID);
-		if (result == 0) {
-			Integer start = startSite;
-			Integer start2 = o.startSite;
-			result = start.compareTo(start2);
-		}
-		return result;
-	}
-	
-}

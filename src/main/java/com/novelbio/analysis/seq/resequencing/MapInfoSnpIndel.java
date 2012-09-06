@@ -774,9 +774,9 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			lsTmpInfo.add(siteSnpIndelInfo.isExon() + "");
 			if (siteSnpIndelInfo.isCDS()) {
 				lsTmpInfo.add(siteSnpIndelInfo.getRefAAnr().toString());
-				lsTmpInfo.add(siteSnpIndelInfo.getRefAAnr().toStringAA());
+				lsTmpInfo.add(siteSnpIndelInfo.getRefAAnr().toStringAA1());
 				lsTmpInfo.add(siteSnpIndelInfo.getThisAAnr().toString());
-				lsTmpInfo.add(siteSnpIndelInfo.getThisAAnr().toStringAA());
+				lsTmpInfo.add(siteSnpIndelInfo.getThisAAnr().toStringAA1());
 				lsTmpInfo.add(siteSnpIndelInfo.getAAattrConvert());
 				lsTmpInfo.add(siteSnpIndelInfo.getSplitTypeEffected());
 			}

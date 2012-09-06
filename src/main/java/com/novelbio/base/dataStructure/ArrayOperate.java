@@ -36,6 +36,23 @@ public class ArrayOperate {
 		}
 		return result;
 	}
+	public static<T> ArrayList<T> converArray2List(T[] array) {
+		ArrayList<T> lsResult = new ArrayList<T>();
+		for (T t : array) {
+			lsResult.add(t);
+		}
+		return lsResult;
+	}
+	public static<T> T[] converList2Array(List<T> ls) {
+		@SuppressWarnings("unchecked")
+		T[]  result = (T[]) Array.newInstance(ls.get(0).getClass(),ls.size());
+		int index = 0;
+		for (T t : ls) {
+			result[index] = t;
+			index++;
+		}
+		return result;
+	}
 	/**
 	 * 给定lsString，将lsString看作ArrayList-String[]，纵向将其合并为String[][]，也就是类似cbind
 	 * @param lsStrings
@@ -383,8 +400,7 @@ public class ArrayOperate {
 	 * @param colNum
 	 * @return
 	 */
-	private static ArrayList<String[]> listCope(ArrayList<String[]> ls, int[] colNum) 
-	{
+	private static ArrayList<String[]> listCope(ArrayList<String[]> ls, int[] colNum) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (String[] strings : ls) {
 			String[] tmpString = new String[colNum.length];
@@ -454,8 +470,7 @@ public class ArrayOperate {
 	 * 颠倒数组，直接性将传入的数组倒置，不返回东西
 	 * @param array
 	 */
-	public static void convertArray(int[] array) 
-	{
+	public static void convertArray(int[] array) {
 		int tmpValue=0;
 		int arrayLength=array.length;
 		for (int i = 0; i < arrayLength/2; i++) {
@@ -469,8 +484,7 @@ public class ArrayOperate {
 	 * 颠倒数组，直接性将传入的数组倒置，不返回东西
 	 * @param array
 	 */
-	public static void convertArray(double[] array) 
-	{
+	public static void convertArray(double[] array) {
 		double tmpValue=0;
 		int arrayLength=array.length;
 		for (int i = 0; i < arrayLength/2; i++) {
@@ -484,8 +498,7 @@ public class ArrayOperate {
 	 * 颠倒数组，直接性将传入的数组倒置，不返回东西
 	 * @param array
 	 */
-	public static<T> void convertArray(T[] array) 
-	{
+	public static<T> void convertArray(T[] array) {
 		T tmpValue=null;
 		int arrayLength=array.length;
 		for (int i = 0; i < arrayLength/2; i++) {

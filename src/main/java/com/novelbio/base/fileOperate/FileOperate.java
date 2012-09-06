@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -110,6 +112,25 @@ public class FileOperate {
 	public static String getFileName(String fileName) {
 		File file = new File(fileName);
 		return file.getName();
+	}
+	/**返回以K为单位的估计文件的总和，压缩文件就会加倍估计<br>
+	 * 不准，只是估计而已
+	 * @return
+	 */
+	public static double getFileSizeEvaluateK(Collection<String> colFileName) {
+		double allFileSize = 0;
+		for (String fileName : colFileName) {
+			double size = FileOperate.getFileSize(fileName);
+			//如果是压缩文件就假设源文件为6倍大 */
+			String suffix = getFileNameSep(fileName)[1].toLowerCase();
+			if (suffix.equals("gz") || suffix.equals("zip") || suffix.equals("rar"))
+				size = size * 6;
+			else
+				size = size * 1.2;
+			
+			allFileSize = allFileSize + size;
+		} 
+		return allFileSize;
 	}
 	/**
 	 * <b>未经测试</b>

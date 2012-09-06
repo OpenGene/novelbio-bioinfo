@@ -15,15 +15,15 @@ public class SiteSnpIndelInfoFactory {
 			return null;
 		}
 		else if (referenceSeq.length() == 1 && thisSeq.length() == 1) {
-			SiteSnpIndelInfo siteSnpIndelInfo = new SiteSnpIndelInfoSnp(mapInfoSnpIndel, gffChrAbs, referenceSeq, thisSeq);
+			SiteSnpIndelInfo siteSnpIndelInfo = new SiteSnpIndelInfoSnp(mapInfoSnpIndel, referenceSeq, thisSeq);
 			return siteSnpIndelInfo;
 		}
 		else if (referenceSeq.length() == 1 && thisSeq.length() > 1) {
-			SiteSnpIndelInfo siteSnpIndelInfo = new SiteSnpIndelInfoInsert(mapInfoSnpIndel, gffChrAbs, referenceSeq, thisSeq);
+			SiteSnpIndelInfo siteSnpIndelInfo = new SiteSnpIndelInfoInsert(mapInfoSnpIndel, referenceSeq, thisSeq);
 			return siteSnpIndelInfo;
 		}
 		else if (referenceSeq.length() > 1 && thisSeq.length() == 1) {
-			SiteSnpIndelInfo siteSnpIndelInfo = new SiteSnpIndelInfoDeletion(mapInfoSnpIndel, gffChrAbs, referenceSeq, thisSeq);
+			SiteSnpIndelInfo siteSnpIndelInfo = new SiteSnpIndelInfoDeletion(mapInfoSnpIndel, referenceSeq, thisSeq);
 			return siteSnpIndelInfo;
 		}
 		logger.error("出现奇怪的位置，请确认：" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());

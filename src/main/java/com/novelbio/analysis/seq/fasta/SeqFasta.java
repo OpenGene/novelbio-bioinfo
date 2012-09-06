@@ -254,8 +254,12 @@ public class SeqFasta implements Cloneable {
 		return new StatisticSeqInfo(this);
 	}
 	/**@return 将nr序列转变为单字母aa序列，首先正反向之后，然后按照该顺序进行orf选择 */
-	public String toStringAA() {
+	public String toStringAA1() {
 		return toStringAA(true, 0, true);
+	}
+	/**@return 将nr序列转变为三字母aa序列，首先正反向之后，然后按照该顺序进行orf选择 */
+	public String toStringAA3() {
+		return toStringAA(true, 0, false);
 	}
 	/**
 	 * @param AAnum true 单字母AA，false 三字母AA

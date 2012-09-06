@@ -8,12 +8,14 @@ import javax.swing.JTextField;
 import javax.swing.JProgressBar;
 
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
 import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.nbcgui.controlseq.CtrlSnpAnnotation;
 import com.novelbio.nbcgui.controlseq.CtrlSnpCalling;
 import com.novelbio.nbcgui.controlseq.CtrlSnpGetInfo;
 
@@ -53,7 +55,9 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	
 	JSpinner spinColChrID;
 	JSpinner spinColSnpStartSite;
-
+	JSpinner spinColThisNr;
+	JSpinner spinColRefNr;
+	
 	JComboBoxData<Species> cmbSpecies;
 	JComboBoxData<String> cmbVersion;
 	
@@ -61,6 +65,8 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	
 	CtrlSnpCalling ctrlSnpCalling = new CtrlSnpCalling(this);
 	CtrlSnpGetInfo ctrlSnpGetInfo = new CtrlSnpGetInfo(this);
+	CtrlSnpAnnotation ctrlSnpAnnotation = new CtrlSnpAnnotation(this);
+	
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
 	/**
@@ -137,10 +143,12 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 				if (rdbtnSnpcalling.isSelected()) {
 					runSnpCalling();
 				}
-				else {
+				else if (rdbtnGetSnpDetail.isSelected()) {
 					runSnpGetInfo();
 				}
-				
+				else if (rdbtnSnpAnnotation.isSelected()) {
+					runSnpAnnotation();
+				}
 			}
 		});
 		btnRun.setBounds(793, 501, 118, 24);
@@ -155,7 +163,13 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("SnpFile", "");
 				for (String fileName : lsFileName) {
-					sclSnpFile.addItem(new String[]{fileName});
+					if (rdbtnSnpAnnotation.isSelected()) {
+						String outSnpFileName = FileOperate.changeFileSuffix(fileName, "_Anno", "txt");
+						sclSnpFile.addItem(new String[]{fileName, outSnpFileName});
+					}
+					else {
+						sclSnpFile.addItem(new String[]{fileName});
+					}
 				}
 			}
 		});
@@ -247,6 +261,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		rdbtnSnpAnnotation = new JRadioButton("Snp annotation");
 		rdbtnSnpAnnotation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				setSnpAnnotation();
 			}
 		});
 		rdbtnSnpAnnotation.setBounds(288, 8, 151, 22);
@@ -256,7 +271,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		lblColRefnr.setBounds(457, 275, 69, 14);
 		add(lblColRefnr);
 		
-		JSpinner spinColRefNr = new JSpinner();
+		spinColRefNr = new JSpinner();
 		spinColRefNr.setBounds(528, 273, 47, 21);
 		add(spinColRefNr);
 		
@@ -264,7 +279,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		lblColThisnr.setBounds(593, 275, 85, 14);
 		add(lblColThisnr);
 		
-		JSpinner spinColThisNr = new JSpinner();
+		spinColThisNr = new JSpinner();
 		spinColThisNr.setBounds(680, 273, 51, 21);
 		add(spinColThisNr);
 
@@ -296,11 +311,17 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		sclSnpFile.setEnabled(false);
 		spinColChrID.setEnabled(false);
 		spinColSnpStartSite.setEnabled(false);
+		spinColRefNr.setEnabled(false);
+		spinColThisNr.setEnabled(false);
+		
 		sclSnpFile.setEnabled(false);
+		sclInputFile.setTitle(new String[]{"Input PileUp File", "Sample Name"});
+
 		btnAddSnpfile.setEnabled(false);
 		btnDeleteSnpFile.setEnabled(false);
-		btnOutput.setEnabled(false);
-		txtOutput.setEnabled(false);
+		btnOutput.setVisible(false);
+		txtOutput.setVisible(false);
+		
 	}
 	
 	/** 当为获得每个snp信息的时候的界面 */
@@ -311,29 +332,43 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		txtHetoSnpProp.setEnabled(false);
 		
 		sclSnpFile.setEnabled(true);
+		sclSnpFile.setTitle(new String[]{"Input Snp File"});
 		spinColChrID.setEnabled(true);
 		spinColSnpStartSite.setEnabled(true);
+		spinColRefNr.setEnabled(false);
+		spinColThisNr.setEnabled(false);
+		
 		sclSnpFile.setEnabled(true);
 		btnAddSnpfile.setEnabled(true);
 		btnDeleteSnpFile.setEnabled(true);
-		btnOutput.setEnabled(true);
-		txtOutput.setEnabled(true);
+		btnOutput.setVisible(true);
+		txtOutput.setVisible(true);
 	}
 	/** 当为获得每个snp信息的时候的界面 */
 	private void setSnpAnnotation() {
-		sclInputFile.setTitle(new String[]{"Input PileUp File", "Sample Name"});
+		sclInputFile.setEnabled(false);
+		btnAddPileupFile.setEnabled(false);
+		btnDeletePileupFile.setEnabled(false);
+		
 		combSnpLevel.setEnabled(false);
 		txtHetoMoreSnpProp.setEnabled(false);
 		txtHetoSnpProp.setEnabled(false);
 		
+		txtOutput.setVisible(false);
+		btnOutput.setVisible(false);
+		
 		sclSnpFile.setEnabled(true);
+		sclSnpFile.setTitle(new String[]{"Input Snp File", "Output File"});
 		spinColChrID.setEnabled(true);
 		spinColSnpStartSite.setEnabled(true);
+		spinColRefNr.setEnabled(true);
+		spinColThisNr.setEnabled(true);
+
 		sclSnpFile.setEnabled(true);
 		btnAddSnpfile.setEnabled(true);
 		btnDeleteSnpFile.setEnabled(true);
-		btnOutput.setEnabled(true);
-		txtOutput.setEnabled(true);
+		btnOutput.setVisible(false);
+		txtOutput.setVisible(false);
 	}
 	private void runSnpCalling() {
 		setGffChrAbs(cmbSpecies.getSelectedValue());
@@ -374,7 +409,21 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		ctrlSnpGetInfo.setOutfile(txtOutput.getText());
 		ctrlSnpGetInfo.runSnpGetInfo();
 	}
-	
+	private void runSnpAnnotation() {
+		setGffChrAbs(cmbSpecies.getSelectedValue());
+		
+		ctrlSnpAnnotation.setGffChrAbs(gffChrAbs);
+		ArrayList<String[]> lsSnpFile = sclSnpFile.getLsDataInfo();
+		for (String[] strings : lsSnpFile) {
+			ctrlSnpAnnotation.addSnpFile(strings[0], strings[1]);
+		}
+		int colChrID = (Integer)spinColChrID.getValue();
+		int colRefStartSite = (Integer) spinColSnpStartSite.getValue();
+		int colRefNr = (Integer) spinColRefNr.getValue();
+		int colThisNr = (Integer) spinColThisNr.getValue();
+		ctrlSnpAnnotation.setCol(colChrID, colRefStartSite, colRefNr, colThisNr);
+		ctrlSnpAnnotation.runAnnotation();
+	}
 	private void setGffChrAbs(Species species) {
 		if (species.getTaxID() == 0) {
 			return;

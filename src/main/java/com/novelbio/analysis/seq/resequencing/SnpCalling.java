@@ -72,34 +72,15 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
-	/**返回以K为单位的
-	 * @return
-	 */
-	public double getFileSizeK() {
-		double allFileSize = 0;
-		for (String[] sample2PileupFile : lsSample2PileUpFiles) {
-			String pileUpFile = sample2PileupFile[1];
-			allFileSize = FileOperate.getFileSize(pileUpFile);
-		} 
-		return allFileSize;
-	}
 	/**返回以K为单位的估计文件的总和，gz的文件就会加倍估计
 	 * @return
 	 */
 	public double getFileSizeEvaluateK() {
-		double allFileSize = 0;
+		ArrayList<String> lsFileName = new ArrayList<String>();
 		for (String[] sample2PileupFile : lsSample2PileUpFiles) {
-			String pileUpFile = sample2PileupFile[1];
-			double size = FileOperate.getFileSize(pileUpFile);
-			//如果是压缩文件就假设源文件为6倍大 */
-			if (FileOperate.getFileNameSep(pileUpFile)[1].toLowerCase().equals("gz"))
-				size = size * 6;
-			else
-				size = size * 1.2;
-			
-			allFileSize = allFileSize + size;
+			lsFileName.add( sample2PileupFile[1]);
 		} 
-		return allFileSize;
+		return FileOperate.getFileSizeEvaluateK(lsFileName);
 	}
 	@Override
 	protected void running() {
@@ -109,6 +90,12 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	/** 在设定snp的情况下，从pileup文件中获取snp信息 */
 	public void filterSnp() {
 		for (String[] sample2PileupFile : lsSample2PileUpFiles) {
+			SnpFilterDetailInfo snpFilterDetailInfo = new SnpFilterDetailInfo();
+			snpFilterDetailInfo.allLines = readLines;
+			snpFilterDetailInfo.allByte = readByte;
+			snpFilterDetailInfo.showMessage = "reading file " + FileOperate.getFileName(sample2PileupFile[1]);
+			setRunInfo(snpFilterDetailInfo);
+			
 			suspendCheck();
 			if (flagStop) {
 				break;
@@ -119,11 +106,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 				outPutFile = FileOperate.changeFileSuffix(sample2PileupFile[1], "_SnpInfo", "txt");
 			}
 			
-			SnpFilterDetailInfo snpFilterDetailInfo = new SnpFilterDetailInfo();
-			snpFilterDetailInfo.allLines = readLines;
-			snpFilterDetailInfo.allByte = readByte;
-			snpFilterDetailInfo.showMessage = "reading file " + FileOperate.getFileName(sample2PileupFile[1]);
-			setRunInfo(snpFilterDetailInfo);
+
 			
 			addPileupToLsSnpIndel(sample2PileupFile[0], sample2PileupFile[1], outPutFile);
 		}
