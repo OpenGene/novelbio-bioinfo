@@ -24,7 +24,7 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  *
  */
-public class MapRsem {
+public class MapRsem implements MapRNA{
 	public static void main(String[] args) {
 		String fastqFile = "/media/winF/NBC/Project/RNA-Seq_HPWtest/FangLan/3_AGTTCC_L003_R1_001_filtered.fq";
 		String outFile = "/media/winF/NBC/Project/RNA-Seq_HPWtest/FangLan/rsem2/N";
@@ -42,7 +42,7 @@ public class MapRsem {
 	
 	Species species;
 	GffChrSeq gffChrSeq = null;
-	GffChrAnno gffChrAnno = null;
+//	GffChrAnno gffChrAnno = null;
 	GffChrAbs gffChrAbs = null;
 	/** 由GffFile自动生成 */
 	String gene2isoFile = "";
@@ -62,9 +62,8 @@ public class MapRsem {
 	/** 输出文件夹以及前缀 */
 	String outPathPrefix = "";
 	
-	public MapRsem() {
-		// TODO Auto-generated constructor stub
-	}
+	public MapRsem() { }
+	
 	/** 直接输入过滤好的fastq，线程和输出路径，就可以开始运行，其他啥也不用管了 */
 	public MapRsem(Species species) {
 		this.species = species;
@@ -114,6 +113,20 @@ public class MapRsem {
 			this.threadNum = threadNum;
 		}
 	}
+	/** 没用 */
+	public void setIndelLen(int indelLen) {}
+	/** 没用 */
+	public void setStrandSpecifictype(int strandSpecifictype) {}
+
+	/** 没用 */
+	public void setInsert(int insert) {}
+	/** 没用 */
+	public void setMismatch(int mismatch) {}
+	
+	public SoftWare getBowtieVersion() {
+		return SoftWare.bowtie;
+	}
+	
 	/** 产生全新的reference */
 	private void createGene2IsoAndRefSeq() {
 		String pathRsem = FileOperate.getParentPathName(refFile);
@@ -152,34 +165,13 @@ public class MapRsem {
 		this.lsLeftFq = lsLeftFastQs;
 	}
 	/**
-	 * 设置左端的序列，设置会把以前的清空
+	 * 设置右端的序列，设置会把以前的清空
 	 * @param fqFile
 	 */
 	public void setRightFq(List<FastQ> lsRightFastQs) {
 		this.lsRightFq = lsRightFastQs;
 	}
-	/**
-	 * 设置左端的序列，设置会把以前的清空
-	 * @param fqFile
-	 */
-	public void setLeftFq(String... fqFile) {
-		lsLeftFq = new ArrayList<FastQ>();
-		for (String string : fqFile) {
-			FastQ fastQ = new FastQ(string);
-			lsLeftFq.add(fastQ);
-		}
-	}
-	/**
-	 * 设置右端的序列，设置会把以前的清空
-	 * @param fqFile
-	 */
-	public void setRightFq(String... fqFile) {
-		lsRightFq = new ArrayList<FastQ>();
-		for (String string : fqFile) {
-			FastQ fastQ = new FastQ(string);
-			lsRightFq.add(fastQ);
-		}
-	}
+	
 	public void setOutPathPrefix(String outPathPrefix) {
 		this.outPathPrefix = outPathPrefix;
 	}
@@ -225,7 +217,7 @@ public class MapRsem {
 	 * 比对序列并计算表达
 	 * @return
 	 */
-	public SamFile mapReads() {
+	public void mapReads() {
 		IndexMakeBowtie();
 		String cmd = exePathRsem + "rsem-calculate-expression " + getBowtiePath();
 		cmd = cmd + getOffset() + getPairend() + getThreadNum();
@@ -244,6 +236,6 @@ public class MapRsem {
 		logger.info(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMapping");
 		cmdOperate.run();
-		return null;//最后考虑返回一个bam文件
 	}
+
 }

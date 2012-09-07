@@ -3,15 +3,11 @@ package com.novelbio.analysis.seq.mapping;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class MapBowtie {
-	/** 默认用bowtie2 */
-	public static final int VERSION_BOWTIE2 = 2;
-	public static final int VERSION_BOWTIE1 = 1;
-	private static final String BOWTIE1 = "bowtie";
-	private static final String BOWTIE2 = "bowtie2";
 	/** 默认bowtie2 */
-	int bowtieVersion = VERSION_BOWTIE2;
+	SoftWare bowtieVersion = SoftWare.bowtie2;
 	/** 待比对的染色体 */
 	String chrFile = "";
 	/** bowtie所在路径 */
@@ -19,8 +15,8 @@ public class MapBowtie {
 	public MapBowtie() {
 		// TODO Auto-generated constructor stub
 	}
-	public MapBowtie(int bowtieVersion) {
-		this.bowtieVersion = bowtieVersion;
+	public MapBowtie(SoftWare bowtieVersion) {
+		setBowtieVersion(bowtieVersion);
 	}
 	/**
 	 * 设定tophat所在的文件夹以及待比对的路径
@@ -35,7 +31,7 @@ public class MapBowtie {
 		this.chrFile = chrFile;
 	}
 	/** 设定是bowtie还是bowtie2 */
-	public void setBowtieVersion(int bowtieVersion) {
+	public void setBowtieVersion(SoftWare bowtieVersion) {
 		this.bowtieVersion = bowtieVersion;
 	}
 	/**
@@ -47,22 +43,22 @@ public class MapBowtie {
 //		linux命令如下 
 //	 	bwa index -p prefix -a algoType -c  chrFile
 //		-c 是solid用
-		if (bowtieVersion == VERSION_BOWTIE1) {
+		if (bowtieVersion == SoftWare.bowtie) {
 			if (FileOperate.isFileExist(chrFile + ".3.ebwt") == true)
 				return;
 		}
-		else if (bowtieVersion == VERSION_BOWTIE2) {
+		else if (bowtieVersion == SoftWare.bowtie2) {
 			if (FileOperate.isFileExist(chrFile + ".3.bt2") == true)
 				return;
 		}
 
 		String cmd = "";
-		if (bowtieVersion == VERSION_BOWTIE1) {
-			softWareInfo.setName(BOWTIE1);
+		softWareInfo.setName(bowtieVersion);
+		
+		if (bowtieVersion == SoftWare.bowtie) {
 			cmd = softWareInfo.getExePath() + "bowtie-build ";
 		}
-		else if (bowtieVersion == VERSION_BOWTIE2) {
-			softWareInfo.setName(BOWTIE2);
+		else if (bowtieVersion == SoftWare.bowtie2) {
 			cmd = softWareInfo.getExePath() + "bowtie2-build ";
 		}
 		

@@ -70,7 +70,7 @@ public class GuiTest2 {
             lineLower.setSetting(LineRenderer.COLOR, colorLower);
             plotLower.setLineRenderer(data, lineLower);
             plotLower.setInsets(new Insets2D.Double(20.0, 50.0, 40.0, 20.0));
-
+            
             DrawableContainer plots = new DrawableContainer(new TableLayout(1));
             plots.add(plotUpper);
 //            plots.add(plotLower);

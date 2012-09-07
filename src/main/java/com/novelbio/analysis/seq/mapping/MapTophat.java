@@ -1,6 +1,9 @@
 package com.novelbio.analysis.seq.mapping;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.lf5.LF5Appender;
@@ -33,7 +36,7 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  * 
  */
-public class MapTophat {
+public class MapTophat implements MapRNA{
 	public static void main(String[] args) {
 		String fastqFile = "/media/winF/NBC/Project/RNA-Seq_HPWtest/FangLan/3_AGTTCC_L003_R1_001_filtered.fq";
 		Species species = new Species(10090);
@@ -59,36 +62,38 @@ public class MapTophat {
 	/** 可能是表示有方向的测序，第二条链的方向 */
 	public static final int STRAND_SECONDSTRAND = 0;
 	int strandSpecifictype = STRAND_NULL;
-	ArrayList<FastQ> lsLeftFq = new ArrayList<FastQ>();
-	ArrayList<FastQ> lsRightFq = new ArrayList<FastQ>();
+	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
+	List<FastQ> lsRightFq = new ArrayList<FastQ>();
 	/** bowtie所在路径 */
-	String ExePathBowtie = "";
+	String ExePathTophat = "";
 	/** 待比对的染色体 */
 	String chrFile = "";
 	/** 默认用bowtie2 做mapping */
-	int bowtieVersion = MapBowtie.VERSION_BOWTIE2;
-	/** 是否为双端测序 */
+	SoftWare bpwtieVersion = SoftWare.bowtie;
+
 	boolean pairend = false;
+	
 	/** 在junction 的一头上至少要搭到多少bp的碱基 */
 	int anchorLength = 10;
 	/** anchor上的mismithch，默认为0 */
 	int anchorMismatch = 0;
-	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
+	
 	int intronLenMin = 50;
-	/** 内含子最长多少，默认500000，需根据不同物种进行设置 */
 	int intronLenMax = 500000;
 	/** indel的长度，默认为3 */
 	int indelLen = 3;
-	/** 线程数 */
+	
 	int threadNum = 4;
+	
 	/** 默认是solexa的最长插入 */
 	int maxInsert = 450;
-	/** 错配，这个走默认比较好，默认为2 */
 	int mismatch = 2;
+	
 	/** 给定GTF的文件 */
 	String gtfFile = "";
 	/** 输出文件 */
 	String outPathPrefix = "";
+	/** bowtie就是用来做索引的 */
 	MapBowtie mapBowtie = new MapBowtie();
 	GffChrAbs gffChrAbs;
 	boolean booSetIntronMin = false;
@@ -105,19 +110,92 @@ public class MapTophat {
 	 *            如果在根目录下则设置为""或null
 	 * @param chrFile
 	 */
-	public void setExePath(String exePathBowtie, String chrFile) {
-		if (exePathBowtie == null || exePathBowtie.trim().equals(""))
-			this.ExePathBowtie = "";
+	public void setExePath(String exePathTophat, String exePathBowtie) {
+		if (exePathTophat == null || exePathTophat.trim().equals(""))
+			this.ExePathTophat = "";
 		else
-			this.ExePathBowtie = FileOperate.addSep(exePathBowtie);
-		this.chrFile = chrFile;
+			this.ExePathTophat = FileOperate.addSep(exePathTophat);
 		mapBowtie.setExePath(exePathBowtie, chrFile);
 	}
-
+	public void setFileRef(String chrFile) {
+		this.chrFile = chrFile;
+	}
 	public void setOutPathPrefix(String outPathPrefix) {
 		this.outPathPrefix = outPathPrefix;
 	}
+	/** 在junction 的一头上至少要搭到多少bp的碱基，默认为10 */
+	public void setAnchorLength(int anchorLength) {
+		this.anchorLength = anchorLength;
+	}
+	/** 设定indel */
+	public void setIndelLen(int indelLen) {
+		this.indelLen = indelLen;
+	}
+	@Override
+	public SoftWare getBowtieVersion() {
+		return bpwtieVersion;
+	}
+	/**
+	 * 内含子最长多少，默认500000，需根据不同物种进行设置
+	 * 
+	 * @param intronLenMax
+	 */
+	public void setIntronLenMax(int intronLenMax) {
+		this.intronLenMax = intronLenMax;
+		booSetIntronMax = true;
+	}
+	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
+	public void setIntronLenMin(int intronLenMin) {
+		this.intronLenMin = intronLenMin;
+		booSetIntronMin = true;
+	}
+	/** anchor上的mismithch，默认为0，最多设置为1 */
+	public void setAnchorMismatch(int anchorMismatch) {
+		this.anchorMismatch = anchorMismatch;
+	}
+	/** 线程数量，默认4线程 */
+	public void setThreadNum(int threadNum) {
+		if (threadNum <= 0) {
+			threadNum = 1;
+		}
+		this.threadNum = threadNum;
+	}
+	/**
+	 * STRAND_NULL等，貌似是设置RNA-Seq是否为链特异性测序的，吃不准
+	 * 
+	 * @param strandSpecifictype
+	 * <br>
+	 *            <b>fr-unstranded</b> Standard Illumina Reads from the
+	 *            left-most end of the fragment (in transcript coordinates) map
+	 *            to the transcript strand, and the right-most end maps to the
+	 *            opposite strand.<br>
+	 *            <b>fr-firststrand</b> dUTP, NSR, NNSR Same as above except we
+	 *            enforce the rule that the right-most end of the fragment (in
+	 *            transcript coordinates) is the first sequenced (or only
+	 *            sequenced for single-end reads). Equivalently, it is assumed
+	 *            that only the strand generated during first strand synthesis
+	 *            is sequenced.<br>
+	 *            <b>fr-secondstrand</b> Ligation, Standard SOLiD Same as above
+	 *            except we enforce the rule that the left-most end of the
+	 *            fragment (in transcript coordinates) is the first sequenced
+	 *            (or only sequenced for single-end reads). Equivalently, it is
+	 *            assumed that only the strand generated during second strand
+	 *            synthesis is sequenced.
+	 */
+	public void setStrandSpecifictype(int strandSpecifictype) {
+		this.strandSpecifictype = strandSpecifictype;
+	}
 
+	/**
+	 * 是否使用bowtie2进行分析
+	 * 
+	 * @param bowtie2
+	 */
+	public void setBowtieVersion(SoftWare bowtieVersion) {
+		this.bpwtieVersion = bowtieVersion;
+		mapBowtie.setBowtieVersion(bowtieVersion);
+	}
+	
 	private String getOutPathPrefix() {
 		return "-o " + outPathPrefix + " ";
 	}
@@ -131,32 +209,20 @@ public class MapTophat {
 	}
 	/**
 	 * 设置左端的序列，设置会把以前的清空
-	 * 
 	 * @param fqFile
 	 */
-	public void setLeftFq(String... fqFile) {
-		lsLeftFq.clear();
-		for (String string : fqFile) {
-			FastQ fastQ = new FastQ(string);
-			lsLeftFq.add(fastQ);
-		}
+	public void setLeftFq(List<FastQ> lsLeftFastQs) {
+		this.lsLeftFq = lsLeftFastQs;
 	}
 	/**
 	 * 设置右端的序列，设置会把以前的清空
-	 * 
 	 * @param fqFile
 	 */
-	public void setRightFq(String... fqFile) {
-		lsRightFq.clear();
-		for (String string : fqFile) {
-			FastQ fastQ = new FastQ(string);
-			lsRightFq.add(fastQ);
-		}
+	public void setRightFq(List<FastQ> lsRightFastQs) {
+		this.lsRightFq = lsRightFastQs;
 	}
-
 	/**
 	 * -r 150等，表示pairend中间的长度
-	 * 
 	 * @return
 	 */
 	private String getInsert() {
@@ -165,21 +231,10 @@ public class MapTophat {
 		return "-r " + (maxInsert - len * 2) + " ";
 	}
 
-	/** 在junction 的一头上至少要搭到多少bp的碱基，默认为10 */
-	public void setAnchorLength(int anchorLength) {
-		this.anchorLength = anchorLength;
-	}
-
 	/** 在junction 的一头上至少要搭到多少bp的碱基 */
 	private String getAnchoLen() {
 		return "-a " + anchorLength + " ";
 	}
-
-	/** anchor上的mismithch，默认为0，最多设置为1 */
-	public void setAnchorMismatch(int anchorMismatch) {
-		this.anchorMismatch = anchorMismatch;
-	}
-
 	private String getAnchorMismatch() {
 		return "-m " + anchorMismatch + " ";
 	}
@@ -207,67 +262,25 @@ public class MapTophat {
 		return "-i " + intronLenMin + " ";
 	}
 
-	/**
-	 * 内含子最长多少，默认500000，需根据不同物种进行设置
-	 * 
-	 * @param intronLenMax
-	 */
-	public void setIntronLenMax(int intronLenMax) {
-		this.intronLenMax = intronLenMax;
-		booSetIntronMax = true;
-	}
-	/**
-	 * 内含子最短多少，默认50，需根据不同物种进行设置
-	 * 
-	 * @param intronLenMin
-	 */
-	public void setIntronLenMin(int intronLenMin) {
-		this.intronLenMin = intronLenMin;
-		booSetIntronMin = true;
-	}
 	/** 内含子最长多少，默认500000，需根据不同物种进行设置 */
 	private String getIntronLenMax() {
 		return "-I " + intronLenMax + " ";
 	}
-
-	/** 设定indel */
-	public void setIndelLen(int indelLen) {
-		this.indelLen = indelLen;
-	}
-
 	private String getIndelLen() {
 		return "--max-insertion-length " + indelLen + " --max-deletion-length "
 				+ indelLen + " ";
-	}
-
-	/** 线程数量，默认4线程 */
-	public void setThreadNum(int threadNum) {
-		if (threadNum <= 0) {
-			threadNum = 1;
-		}
-		this.threadNum = threadNum;
 	}
 
 	private String getThreadNum() {
 		return "-p " + threadNum + " ";
 	}
 
-	/**
-	 * 是否使用bowtie2进行分析
-	 * 
-	 * @param bowtie2
-	 */
-	public void setBowtieVersion(int bowtieVersion) {
-		this.bowtieVersion = bowtieVersion;
-		mapBowtie.setBowtieVersion(bowtieVersion);
-	}
-
 	/** 是否使用bowtie2进行分析 */
 	private String getBowtie() {
-		if (bowtieVersion == MapBowtie.VERSION_BOWTIE1) {
+		if (bpwtieVersion == SoftWare.bowtie) {
 			return " --bowtie1 ";
 		}
-		else if (bowtieVersion == MapBowtie.VERSION_BOWTIE2) {
+		else if (bpwtieVersion == SoftWare.bowtie2) {
 			return "";
 		}
 		return "";
@@ -344,34 +357,7 @@ public class MapTophat {
 		}
 	}
 	/**
-	 * STRAND_NULL等，貌似是设置RNA-Seq是否为链特异性测序的，吃不准
-	 * 
-	 * @param strandSpecifictype
-	 * <br>
-	 *            <b>fr-unstranded</b> Standard Illumina Reads from the
-	 *            left-most end of the fragment (in transcript coordinates) map
-	 *            to the transcript strand, and the right-most end maps to the
-	 *            opposite strand.<br>
-	 *            <b>fr-firststrand</b> dUTP, NSR, NNSR Same as above except we
-	 *            enforce the rule that the right-most end of the fragment (in
-	 *            transcript coordinates) is the first sequenced (or only
-	 *            sequenced for single-end reads). Equivalently, it is assumed
-	 *            that only the strand generated during first strand synthesis
-	 *            is sequenced.<br>
-	 *            <b>fr-secondstrand</b> Ligation, Standard SOLiD Same as above
-	 *            except we enforce the rule that the left-most end of the
-	 *            fragment (in transcript coordinates) is the first sequenced
-	 *            (or only sequenced for single-end reads). Equivalently, it is
-	 *            assumed that only the strand generated during second strand
-	 *            synthesis is sequenced.
-	 */
-	public void setStrandSpecifictype(int strandSpecifictype) {
-		this.strandSpecifictype = strandSpecifictype;
-	}
-
-	/**
 	 * 返回链的方向
-	 * 
 	 * @return
 	 */
 	private String getStrandSpecifictype() {
@@ -388,7 +374,7 @@ public class MapTophat {
 	/**
 	 * 参数设定不能用于solid 还没加入gtf的选项，也就是默认没有gtf
 	 */
-	public SamFile mapReads() {
+	public void mapReads() {
 		setIntronLen();
 		
 		mapBowtie.IndexMakeBowtie();
@@ -414,13 +400,13 @@ public class MapTophat {
 		 * /winE/NBC/Project/RNASeq_GF110614/rawdata/data/Col_L2_2.fq
 		 */
 		String cmd = "";
-		cmd = ExePathBowtie + "tophat " + getBowtie();
+		cmd = ExePathTophat + "tophat " + getBowtie();
 		if (pairend) {
 			cmd = cmd + getInsert(); // 插入长度
 		}
 		cmd = cmd + getAnchoLen() + getAnchorMismatch() + getIntronLenMin()
 				+ getIntronLenMax() + getIndelLen();
-		if (bowtieVersion == MapBowtie.VERSION_BOWTIE2) {
+		if (bpwtieVersion == SoftWare.bowtie2) {
 			cmd = cmd + getIndelLen();
 		}
 		cmd = cmd + getOffset() + getThreadNum();
@@ -443,6 +429,13 @@ public class MapTophat {
 		logger.info(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping");
 		cmdOperate.run();
-		return null;// 最后考虑返回一个bam文件
+	}
+	
+	public static HashMap<String, Integer> getMapStr2StrandType() {
+		LinkedHashMap<String, Integer> mapStr2StrandType = new LinkedHashMap<String, Integer>();
+		mapStr2StrandType.put("STRAND_NULL", STRAND_NULL);
+		mapStr2StrandType.put("STRAND_FIRSTSTRAND", STRAND_FIRSTSTRAND);
+		mapStr2StrandType.put("STRAND_SECONDSTRAND", STRAND_SECONDSTRAND);
+		return mapStr2StrandType;
 	}
 }

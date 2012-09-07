@@ -66,8 +66,7 @@ public class JpanelPlot extends JPanel{
 		super(new BorderLayout());
 	}
 
-	public void setPlotNBCInteractive(PlotNBCInteractive plotNBCInteractive)
-	{
+	public void setPlotNBCInteractive(PlotNBCInteractive plotNBCInteractive) {
 		if (plotNBCInteractive.isPlotareaAll()) {
 			setBackground(plotNBCInteractive.getBg());
 		}
@@ -82,7 +81,7 @@ public class JpanelPlot extends JPanel{
 			repaint();
 			return;
 		}
-		plots.setDrawable(plotNBCInteractive.getPlot());
+		plots.add(plotNBCInteractive.getPlot());
 		repaint();
 	}
 	/**

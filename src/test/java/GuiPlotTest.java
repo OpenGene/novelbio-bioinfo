@@ -85,7 +85,7 @@ public class GuiPlotTest {
 //				}
 //				plotBar.addXY(x, y, dotStyle);
 //				plotScatter.removeData(dotStyle);
-				plotBar.saveToFile("/media/winF/NBC/Project/Project_Invitrogen/peakMacs/test.jpg", 1000, 1000);
+				plotBar.saveToFile("/media/winF/NBC/Project/Project_Invitrogen/test.jpg", 1000, 1000);
 			}
 		});
 		springLayout.putConstraint(SpringLayout.NORTH, btnNewButton, 45, SpringLayout.NORTH, frame.getContentPane());

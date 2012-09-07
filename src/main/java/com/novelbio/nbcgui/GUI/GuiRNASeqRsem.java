@@ -14,7 +14,9 @@ import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.mapping.MapRsem;
+import com.novelbio.analysis.seq.mapping.MapTophat;
 import com.novelbio.analysis.seq.mirna.MiRNAtargetRNAhybrid;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -24,6 +26,7 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlseq.CtrlFastQMapping;
+import com.novelbio.nbcgui.controlseq.CtrlRNAmap;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -53,11 +56,24 @@ public class GuiRNASeqRsem extends JPanel {
 	JButton btnRun;
 	JButton btnOpenFastQRight;
 	JButton btnDeleteFastQRight;
+
 	
-	MapRsem mapRsem;
+	
+	JComboBoxData<Integer> cmbStrandType;
+	JComboBoxData<MapLibrary> cmbLibraryType;
+
+	
+	ButtonGroup buttonGroup = new ButtonGroup();
+	JRadioButton rdbtnRsem;
+	JRadioButton rdbtnTophat;
+
+
+	
+	CtrlRNAmap ctrlRNAmap = new CtrlRNAmap();
 	
 	ArrayList<Component> lsComponentsMapping = new ArrayList<Component>();
 	ArrayList<Component> lsComponentsFiltering = new ArrayList<Component>();
+	private JLabel lblLibraryType;
 	
 	public GuiRNASeqRsem() {
 		setLayout(null);
@@ -81,7 +97,7 @@ public class GuiRNASeqRsem extends JPanel {
 		add(btnOpenFastqLeft);
 		
 		cmbSpeciesVersion = new JComboBoxData<String>();
-		cmbSpeciesVersion.setBounds(173, 402, 207, 23);
+		cmbSpeciesVersion.setBounds(172, 261, 207, 23);
 		add(cmbSpeciesVersion);
 		
 		JLabel lblAlgrethm = new JLabel("algrethm");
@@ -104,14 +120,14 @@ public class GuiRNASeqRsem extends JPanel {
 			}
 		});
 		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
-		cmbSpecies.setBounds(10, 402, 147, 23);
+		cmbSpecies.setBounds(9, 261, 147, 23);
 		//≥ı ºªØcmbSpeciesVersion
 		try { cmbSpeciesVersion.setMapItem(cmbSpecies.getSelectedValue().getMapVersion()); 	} catch (Exception e) { }
 		
 		add(cmbSpecies);
 		
 		JLabel lblSpecies = new JLabel("Species");
-		lblSpecies.setBounds(12, 376, 56, 14);
+		lblSpecies.setBounds(11, 235, 56, 14);
 		add(lblSpecies);
 		
 		txtMappingIndex = new JTextField();
@@ -153,7 +169,7 @@ public class GuiRNASeqRsem extends JPanel {
 		add(btnDelFastqLeft);
 		
 		JLabel lblSpeciesVersio = new JLabel("SpeciesVersion");
-		lblSpeciesVersio.setBounds(173, 376, 134, 14);
+		lblSpeciesVersio.setBounds(172, 235, 134, 14);
 		add(lblSpeciesVersio);
 		
 		JLabel lblMappingToFile = new JLabel("Mapping To File");
@@ -180,25 +196,25 @@ public class GuiRNASeqRsem extends JPanel {
 				try { threadNum = Integer.parseInt(txtThreadNum.getText()); } catch (Exception e1) { }
 				String out = txtSavePathAndPrefix.getText();
 				
+				if (rdbtnRsem.isSelected()) {
+					ctrlRNAmap.setMapType(CtrlRNAmap.RSEM);
+				}
+				else if (rdbtnTophat.isSelected()) {
+					ctrlRNAmap.setMapType(CtrlRNAmap.TOP_HAT);
+				}
+				
 				HashMap<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq = getMapPrefix2LsFastq();
 				for (Entry<String, ArrayList<ArrayList<FastQ>>> entry : mapPrefix2LsFastq.entrySet()) {
 					String prefix = entry.getKey();
 					ArrayList<ArrayList<FastQ>> lsFastqFR = entry.getValue();
-					
-					mapRsem = new MapRsem(species);
-					if (species == null || species.getTaxID() == 0) {
-						mapRsem.setFileRef(txtMappingIndex.getText());
-					}
-					
-					SoftWareInfo softWareInfoBowtie = new SoftWareInfo(SoftWare.bowtie);
-					SoftWareInfo softWareInfoRsem = new SoftWareInfo(SoftWare.rsem);
-
-					mapRsem.setExePath(softWareInfoRsem.getExePath(), softWareInfoBowtie.getExePath());
-					mapRsem.setLeftFq(lsFastqFR.get(0));
-					mapRsem.setRightFq(lsFastqFR.get(1));
-					mapRsem.setThreadNum(threadNum);
-					mapRsem.setOutPathPrefix(out + prefix);
-					mapRsem.mapReads();
+					ctrlRNAmap.setSpecies(species);
+					ctrlRNAmap.setLeftFq(lsFastqFR.get(0));
+					ctrlRNAmap.setRightFq(lsFastqFR.get(1));
+					ctrlRNAmap.setMapLibrary(cmbLibraryType.getSelectedValue());
+					ctrlRNAmap.setStrandSpecifictype(cmbStrandType.getSelectedValue());
+					ctrlRNAmap.setThreadNum(threadNum);
+					ctrlRNAmap.setOutPathPrefix(out + prefix);
+					ctrlRNAmap.mapping();
 				}
 			}
 		});
@@ -233,6 +249,42 @@ public class GuiRNASeqRsem extends JPanel {
 		txtThreadNum.setBounds(614, 464, 114, 18);
 		add(txtThreadNum);
 		txtThreadNum.setColumns(10);
+		
+		rdbtnRsem = new JRadioButton("Rsem");
+		rdbtnRsem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cmbLibraryType.setEnabled(false);
+				cmbStrandType.setEditable(false);
+			}
+		});
+		rdbtnRsem.setBounds(418, 261, 88, 22);
+		add(rdbtnRsem);
+		
+		rdbtnTophat = new JRadioButton("Tophat");
+		rdbtnTophat.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cmbLibraryType.setEnabled(true);
+				cmbStrandType.setEnabled(true);
+			}
+		});
+		rdbtnTophat.setBounds(599, 261, 151, 22);
+		add(rdbtnTophat);
+		
+		JLabel lblStrandType = new JLabel("StrandType");
+		lblStrandType.setBounds(12, 339, 90, 14);
+		add(lblStrandType);
+		
+		cmbStrandType = new JComboBoxData<Integer>();
+		cmbStrandType.setBounds(10, 359, 145, 23);
+		add(cmbStrandType);
+		
+		lblLibraryType = new JLabel("Library Type");
+		lblLibraryType.setBounds(212, 341, 121, 14);
+		add(lblLibraryType);
+		
+		cmbLibraryType = new JComboBoxData<MapLibrary>();
+		cmbLibraryType.setBounds(212, 359, 124, 23);
+		add(cmbLibraryType);
 
 		
 		btnOpenFastqLeft.addActionListener(new ActionListener() {
@@ -257,6 +309,12 @@ public class GuiRNASeqRsem extends JPanel {
 		
 		txtMappingIndex.setEnabled(false);
 		btnMappingindex.setEnabled(false);
+		
+		buttonGroup.add(rdbtnRsem);
+		buttonGroup.add(rdbtnTophat);
+		
+		cmbStrandType.setMapItem(MapTophat.getMapStr2StrandType());
+		cmbLibraryType.setMapItem(MapLibrary.getMapLibrary());
 	}
 	
 	/**
@@ -300,5 +358,4 @@ public class GuiRNASeqRsem extends JPanel {
 		}
 		return lsFastqLR;
 	}
-	
 }

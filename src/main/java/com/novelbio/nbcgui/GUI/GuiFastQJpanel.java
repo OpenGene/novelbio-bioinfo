@@ -14,6 +14,7 @@ import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.mirna.MiRNAtargetRNAhybrid;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -46,7 +47,7 @@ public class GuiFastQJpanel extends JPanel {
 	JCheckBox chckbxMapping;
 	JComboBoxData<String> cmbSpeciesVersion;
 	JComboBoxData<Species> cmbSpecies;
-	JComboBoxData<Integer> cmbLibrary;
+	JComboBoxData<MapLibrary> cmbLibrary;
 	JCheckBox chckbxUniqMapping;
 	JButton btnSaveto;
 	JButton btnOpenFastqLeft;
@@ -379,8 +380,8 @@ public class GuiFastQJpanel extends JPanel {
 		chckbxLowcaseAdaptor.setBounds(614, 252, 196, 22);
 		add(chckbxLowcaseAdaptor);
 		
-		cmbLibrary = new JComboBoxData<Integer>();
-		cmbLibrary.setMapItem(CtrlFastQMapping.getMapLibrary());
+		cmbLibrary = new JComboBoxData<MapLibrary>();
+		cmbLibrary.setMapItem(MapLibrary.getMapLibrary());
 		cmbLibrary.setBounds(653, 402, 134, 23);
 		add(cmbLibrary);
 		

@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.analysis.seq.mapping.MapBwa;
+import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -33,7 +34,7 @@ public class CtrlFastQMapping {
 	int fastqQuality = FastQ.QUALITY_MIDIAN;
 	boolean uniqMapping = true;
 	int readsLenMin = 18;
-	int libraryType = LIBRARY_SINGLE_END;
+	MapLibrary libraryType = MapLibrary.SingleEnd;
 	String adaptorLeft = "";
 	String adaptorRight = "";
 	boolean adaptorLowercase =false;
@@ -79,7 +80,7 @@ public class CtrlFastQMapping {
 	public void setFilter(boolean filter) {
 		this.filter = filter;
 	}
-	public void setLibraryType(int libraryType) {
+	public void setLibraryType(MapLibrary libraryType) {
 		this.libraryType = libraryType;
 	}
 	public void setReadsLenMin(int readsLenMin) {
@@ -326,10 +327,10 @@ public class CtrlFastQMapping {
 			mapBwa.setGapLength(gapLen);
 			mapBwa.setMismatch(mismatch);
 			mapBwa.setSampleGroup(prefix, null, null, null);
-			if (libraryType == LIBRARY_MATE_PAIR) {
+			if (libraryType == MapLibrary.MatePair) {
 				mapBwa.setInsertSize(200, 4000);
 			}
-			else if (libraryType == LIBRARY_PAIR_END) {
+			else if (libraryType == MapLibrary.PairEnd) {
 				mapBwa.setInsertSize(150, 500);
 			}
 			mapBwa.setThreadNum(thread);
@@ -340,11 +341,5 @@ public class CtrlFastQMapping {
 			txtReport.ExcelWrite(samFileStatistics.getMappingInfo());
 		}
 	}
-	public static HashMap<String, Integer> getMapLibrary() {
-		HashMap<String, Integer> mapReadsQualtiy = new LinkedHashMap<String, Integer>();
-		mapReadsQualtiy.put("SingleEnd", LIBRARY_SINGLE_END);
-		mapReadsQualtiy.put("PairEnd", LIBRARY_PAIR_END);
-		mapReadsQualtiy.put("MatePair", LIBRARY_MATE_PAIR);
-		return mapReadsQualtiy;
-	}
+
 }
