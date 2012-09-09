@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
+
+import net.sf.picard.analysis.CollectRnaSeqMetrics.StrandSpecificity;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.lf5.LF5Appender;
@@ -14,6 +17,7 @@ import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
@@ -37,31 +41,9 @@ import com.novelbio.database.model.species.Species;
  * 
  */
 public class MapTophat implements MapRNA{
-	public static void main(String[] args) {
-		String fastqFile = "/media/winF/NBC/Project/RNA-Seq_HPWtest/FangLan/3_AGTTCC_L003_R1_001_filtered.fq";
-		Species species = new Species(10090);
-		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		MapTophat mapTophat = new MapTophat();
-		mapTophat.setAnchorLength(10);
-		mapTophat.setAnchorMismatch(0);
-		mapTophat.setBowtieVersion(MapBowtie.VERSION_BOWTIE1);
-		mapTophat.setExePath("", species.getIndexChr(SoftWare.bowtie));
-		mapTophat.setGffChrAbs(gffChrAbs);
-		mapTophat.setLeftFq(fastqFile);
-		mapTophat.setOutPathPrefix("/media/winF/NBC/Project/RNA-Seq_HPWtest/FangLan/tophatN");
-		mapTophat.setThreadNum(4);
-		mapTophat.mapReads();
-	}
-	
 	private static Logger logger = Logger.getLogger(MapTophat.class);
 
-	/** 可能是表示有方向的测序，无方向 */
-	public static final int STRAND_NULL = 0;
-	/** 可能是表示有方向的测序，第一条链的方向 */
-	public static final int STRAND_FIRSTSTRAND = 0;
-	/** 可能是表示有方向的测序，第二条链的方向 */
-	public static final int STRAND_SECONDSTRAND = 0;
-	int strandSpecifictype = STRAND_NULL;
+	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();
 	/** bowtie所在路径 */
@@ -69,7 +51,7 @@ public class MapTophat implements MapRNA{
 	/** 待比对的染色体 */
 	String chrFile = "";
 	/** 默认用bowtie2 做mapping */
-	SoftWare bpwtieVersion = SoftWare.bowtie;
+	SoftWare bowtieVersion = SoftWare.bowtie2;
 
 	boolean pairend = false;
 	
@@ -115,10 +97,11 @@ public class MapTophat implements MapRNA{
 			this.ExePathTophat = "";
 		else
 			this.ExePathTophat = FileOperate.addSep(exePathTophat);
-		mapBowtie.setExePath(exePathBowtie, chrFile);
+		mapBowtie.setExePathBowtie(exePathBowtie);
 	}
 	public void setFileRef(String chrFile) {
-		this.chrFile = chrFile;
+		this.chrFile = "\"" + chrFile + "\"";
+		mapBowtie.setChrFile(chrFile);
 	}
 	public void setOutPathPrefix(String outPathPrefix) {
 		this.outPathPrefix = outPathPrefix;
@@ -133,7 +116,7 @@ public class MapTophat implements MapRNA{
 	}
 	@Override
 	public SoftWare getBowtieVersion() {
-		return bpwtieVersion;
+		return bowtieVersion;
 	}
 	/**
 	 * 内含子最长多少，默认500000，需根据不同物种进行设置
@@ -182,7 +165,7 @@ public class MapTophat implements MapRNA{
 	 *            assumed that only the strand generated during second strand
 	 *            synthesis is sequenced.
 	 */
-	public void setStrandSpecifictype(int strandSpecifictype) {
+	public void setStrandSpecifictype(StrandSpecific strandSpecifictype) {
 		this.strandSpecifictype = strandSpecifictype;
 	}
 
@@ -192,12 +175,11 @@ public class MapTophat implements MapRNA{
 	 * @param bowtie2
 	 */
 	public void setBowtieVersion(SoftWare bowtieVersion) {
-		this.bpwtieVersion = bowtieVersion;
-		mapBowtie.setBowtieVersion(bowtieVersion);
+		this.bowtieVersion = bowtieVersion;
 	}
 	
 	private String getOutPathPrefix() {
-		return "-o " + outPathPrefix + " ";
+		return "-o \"" + outPathPrefix + "\" ";
 	}
 	/**
 	 * 插入长度，默认是illumina：450
@@ -221,6 +203,21 @@ public class MapTophat implements MapRNA{
 	public void setRightFq(List<FastQ> lsRightFastQs) {
 		this.lsRightFq = lsRightFastQs;
 	}
+	
+	private String getLsFqFile() {
+		String lsFileName =" \"" + lsLeftFq.get(0).getReadFileName() + "\"";
+		for (int i = 1; i < lsLeftFq.size(); i++) {
+			lsFileName = lsFileName + ",\"" + lsLeftFq.get(i).getReadFileName() + "\"";
+		}
+		if (lsRightFq.size() > 0) {
+			lsFileName = lsFileName + " \"" + lsRightFq.get(0).getReadFileName() + "\"";
+			for (int i = 1; i < lsRightFq.size(); i++) {
+				lsFileName = lsFileName + ",\"" + lsRightFq.get(i).getReadFileName() + "\"";
+			}
+		}
+		return lsFileName;
+	}
+	
 	/**
 	 * -r 150等，表示pairend中间的长度
 	 * @return
@@ -250,8 +247,11 @@ public class MapTophat implements MapRNA{
 				this.intronLenMin = intronLenMin;
 				booSetIntronMin = true;
 			}
-			if (intronLenMax < this.intronLenMax) {
-				this.intronLenMax = intronLenMax;
+			if (intronLenMin < 20) {
+				this.intronLenMin = 20;
+			}
+			if (intronLenMax*2 < this.intronLenMax) {
+				this.intronLenMax = intronLenMax*2;
 				booSetIntronMax = true;
 			}
 		}
@@ -277,10 +277,10 @@ public class MapTophat implements MapRNA{
 
 	/** 是否使用bowtie2进行分析 */
 	private String getBowtie() {
-		if (bpwtieVersion == SoftWare.bowtie) {
+		if (bowtieVersion == SoftWare.bowtie) {
 			return " --bowtie1 ";
 		}
-		else if (bpwtieVersion == SoftWare.bowtie2) {
+		else if (bowtieVersion == SoftWare.bowtie2) {
 			return "";
 		}
 		return "";
@@ -341,7 +341,7 @@ public class MapTophat implements MapRNA{
 	 */
 	private String getGtfFile() {
 		if (FileOperate.isFileExist(gtfFile)) {
-			return "-G " + gtfFile + " ";
+			return "-G \"" + gtfFile + "\" ";
 		}
 		return "";
 	}
@@ -361,12 +361,12 @@ public class MapTophat implements MapRNA{
 	 * @return
 	 */
 	private String getStrandSpecifictype() {
-		if (strandSpecifictype == STRAND_NULL) {
+		if (strandSpecifictype == StrandSpecific.NONE) {
 			return "";
-		} else if (strandSpecifictype == STRAND_FIRSTSTRAND) {
-			return "--library-type fr-firststrand";
-		} else if (strandSpecifictype == STRAND_SECONDSTRAND) {
-			return "--library-type fr-secondstrand";
+		} else if (strandSpecifictype == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
+			return "--library-type fr-firststrand ";
+		} else if (strandSpecifictype == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
+			return "--library-type fr-secondstrand ";
 		}
 		return "";
 	}
@@ -376,7 +376,8 @@ public class MapTophat implements MapRNA{
 	 */
 	public void mapReads() {
 		setIntronLen();
-		
+		setGTFfile();
+		mapBowtie.setBowtieVersion(bowtieVersion);
 		mapBowtie.IndexMakeBowtie();
 		if (lsLeftFq.size() > 0 && lsRightFq.size() > 0)
 			pairend = true;
@@ -404,9 +405,10 @@ public class MapTophat implements MapRNA{
 		if (pairend) {
 			cmd = cmd + getInsert(); // 插入长度
 		}
-		cmd = cmd + getAnchoLen() + getAnchorMismatch() + getIntronLenMin()
-				+ getIntronLenMax() + getIndelLen();
-		if (bpwtieVersion == SoftWare.bowtie2) {
+		cmd = cmd + getAnchoLen() + getAnchorMismatch() + getIntronLenMin() + getIntronLenMax() + getGtfFile();
+//		//本步很慢，一般不使用
+//		cmd = cmd + "--coverage-search ";
+		if (bowtieVersion == SoftWare.bowtie2) {
 			cmd = cmd + getIndelLen();
 		}
 		cmd = cmd + getOffset() + getThreadNum();
@@ -416,26 +418,10 @@ public class MapTophat implements MapRNA{
 		cmd = cmd + getOutPathPrefix();
 
 		cmd = cmd + " " + chrFile + " ";
-		cmd = cmd + " " + lsLeftFq.get(0).getReadFileName();
-		for (int i = 1; i < lsLeftFq.size(); i++) {
-			cmd = cmd + "," + lsLeftFq.get(i).getReadFileName();
-		}
-		if (lsRightFq.size() > 0) {
-			cmd = cmd + " " + lsRightFq.get(0).getReadFileName();
-			for (int i = 1; i < lsRightFq.size(); i++) {
-				cmd = cmd + "," + lsRightFq.get(i).getReadFileName();
-			}
-		}
+		cmd = cmd + " " + getLsFqFile();
+		
 		logger.info(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping");
 		cmdOperate.run();
-	}
-	
-	public static HashMap<String, Integer> getMapStr2StrandType() {
-		LinkedHashMap<String, Integer> mapStr2StrandType = new LinkedHashMap<String, Integer>();
-		mapStr2StrandType.put("STRAND_NULL", STRAND_NULL);
-		mapStr2StrandType.put("STRAND_FIRSTSTRAND", STRAND_FIRSTSTRAND);
-		mapStr2StrandType.put("STRAND_SECONDSTRAND", STRAND_SECONDSTRAND);
-		return mapStr2StrandType;
 	}
 }

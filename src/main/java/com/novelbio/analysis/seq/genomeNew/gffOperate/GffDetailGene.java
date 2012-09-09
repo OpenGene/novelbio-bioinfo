@@ -365,13 +365,14 @@ public class GffDetailGene extends ListDetailAbs {
 			return;
 		}
 		removeDuplicateIso = true;
-		HashMap<GffGeneIsoInfo, Integer> hashIso = new HashMap<GffGeneIsoInfo, Integer>();
+		HashSet<GffGeneIsoInfo> hashIso = new HashSet<GffGeneIsoInfo>();
 		ArrayList<GffGeneIsoInfo> lsResult = new ArrayList<GffGeneIsoInfo>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			if (hashIso.containsKey(gffGeneIsoInfo)) {
+			if (hashIso.contains(gffGeneIsoInfo)) {
 				continue;
 			}
 			lsResult.add(gffGeneIsoInfo);
+			hashIso.add(gffGeneIsoInfo);
 		}
 		this.lsGffGeneIsoInfos = lsResult;
 	}

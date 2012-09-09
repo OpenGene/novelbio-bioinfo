@@ -74,6 +74,7 @@ import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
+import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
@@ -124,9 +125,10 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		GeneID geneID = new GeneID("LOC_Os05g49540", 0);
-		AGeneInfo geneInfo = geneID.getGeneInfo();
-		System.out.println(geneID.getGeneInfo().getTypeOfGene());
+		GffChrAbs gffChrAbs = new GffChrAbs(10090);
+		gffChrAbs.getGffHashGene().writeToGTF("/home/zong0jie/Desktop/tophatTest/testGff", "novelbio");
+		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation("chrx", 3242048);
+		System.out.println(gffCodGene.getGffDetailThis().getName());
 	}
 	
 	private static void test(int[] mm) {

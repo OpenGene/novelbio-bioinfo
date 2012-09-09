@@ -43,7 +43,7 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 	/** 这里的GffFfileName就是mRNA序列 */
 	@Override
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
-		SeqFastaHash seqHashMRNA = new SeqFastaHash(gfffilename);
+		SeqFastaHash seqHashMRNA = new SeqFastaHash(gfffilename, null, false, false);
 		SeqFastaHash seqHashProtein = new SeqFastaHash(proteinSeq);
 
 		setTaxID(seqHashMRNA);
@@ -51,14 +51,11 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 		fillID(seqHashMRNA, seqHashProtein);
 		ArrayList<String> lsGeneID = seqHashMRNA.getLsSeqName();
 		for (String seqName : lsGeneID) {
-			if (seqName.equals("xm_003494920")) {
-				System.out.println("stop");
-			}
 			SeqFasta seqFasta = seqHashMRNA.getSeqFasta(seqName);
 			String proteinSeq = getProteinSeq(seqName, seqHashProtein);
 			ListGff listGff = seqFasta.getCDSfromProtein(proteinSeq).getGffDetailGene();
 		
-			mapChrID2ListGff.put(listGff.getName().toString(), listGff);
+			mapChrID2ListGff.put(listGff.getName().toString().toLowerCase(), listGff);
 		}
 	}
 
@@ -87,7 +84,7 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 			TxtReadandWrite txtReadMapRNAID2GeneID = new TxtReadandWrite(fileRNAID2GeneID, false);
 			for (String string : txtReadMapRNAID2GeneID.readlines()) {
 				String[] tmp = string.split("\t");
-				mapRNAID2GeneID.put(tmp[0], tmp[1]);
+				mapRNAID2GeneID.put(tmp[0].toLowerCase(), tmp[1]);
 			}
 			return;
 		}
@@ -96,7 +93,7 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 		for (String seqName : seqHashMRNA.getLsSeqName()) {
 			GeneID geneID = new GeneID(seqName, taxID);
 			String symbol = geneID.getSymbol();
-			mapRNAID2GeneID.put(seqName, symbol);
+			mapRNAID2GeneID.put(seqName.toLowerCase(), symbol);
 			txtOutMapRNAID2GeneID.writefileln(seqName + "\t" + symbol);
 		}
 		txtOutMapRNAID2GeneID.close();
@@ -107,7 +104,7 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 			TxtReadandWrite txtReadGeneID2ProteinID = new TxtReadandWrite(fileGeneID2ProteinID, false);
 			for (String string : txtReadGeneID2ProteinID.readlines()) {
 				String[] tmp = string.split("\t");
-				mapGeneID2ProteinID.put(tmp[0], tmp[1]);
+				mapGeneID2ProteinID.put(tmp[0].toLowerCase(), tmp[1]);
 			}
 			return;
 		}
@@ -117,17 +114,17 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 			GeneID geneID = new GeneID(seqName, taxID);
 			String symbol = geneID.getSymbol();
 			//如果重复的symobl，则选择长的那条序列的名字装入hash表
-			if (mapGeneID2ProteinID.containsKey(symbol)) {
-				String seqNameOld = mapGeneID2ProteinID.get(symbol);
+			if (mapGeneID2ProteinID.containsKey(symbol.toLowerCase())) {
+				String seqNameOld = mapGeneID2ProteinID.get(symbol.toLowerCase());
 				SeqFasta seqFastaOld = seqHashProtein.getSeqFasta(seqNameOld);
 				SeqFasta seqFastaNew = seqHashProtein.getSeqFasta(seqName);
 				if (seqFastaNew.Length() > seqFastaOld.Length()) {
-					mapGeneID2ProteinID.put(symbol, seqName);
+					mapGeneID2ProteinID.put(symbol.toLowerCase(), seqName);
 					txtOutMapGeneID2ProteinID.writefileln(symbol + "\t" + seqName);
 				}
 			}
 			else {
-				mapGeneID2ProteinID.put(symbol, seqName);
+				mapGeneID2ProteinID.put(symbol.toLowerCase(), seqName);
 				txtOutMapGeneID2ProteinID.writefileln(symbol + "\t" + seqName);
 			}
 		}
@@ -135,8 +132,8 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 	}
 	
 	private String getProteinSeq(String rnaLoc, SeqFastaHash seqHashProtein) {
-		String geneID = mapRNAID2GeneID.get(rnaLoc);
-		String proteinID = mapGeneID2ProteinID.get(geneID);
+		String geneID = mapRNAID2GeneID.get(rnaLoc.toLowerCase());
+		String proteinID = mapGeneID2ProteinID.get(geneID.toLowerCase());
 		if (proteinID == null) {
 			return null;
 		}

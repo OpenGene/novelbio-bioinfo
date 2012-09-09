@@ -28,7 +28,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import javax.swing.ButtonGroup;
 
-public class GuiCelNormJpanel extends JPanel {
+public class GuiAffyCelNormJpanel extends JPanel {
 	private JTextField txtSavePathAndPrefix;
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	private final ButtonGroup groupLibrary = new ButtonGroup();
@@ -40,7 +40,7 @@ public class GuiCelNormJpanel extends JPanel {
 	JButton btnRun;
 	AffyNormalization affyNormalization = new AffyNormalization();
 	
-	public GuiCelNormJpanel() {
+	public GuiAffyCelNormJpanel() {
 		setLayout(null);
 		
 		JLabel lblFastqfile = new JLabel("FastQFile");

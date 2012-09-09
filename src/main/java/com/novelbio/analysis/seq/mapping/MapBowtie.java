@@ -30,6 +30,12 @@ public class MapBowtie {
 			this.ExePathBowtie = FileOperate.addSep(exePathBowtie);
 		this.chrFile = chrFile;
 	}
+	public void setExePathBowtie(String exePathBowtie) {
+		ExePathBowtie = exePathBowtie;
+	}
+	public void setChrFile(String chrFile) {
+		this.chrFile = chrFile;
+	}
 	/** 设定是bowtie还是bowtie2 */
 	public void setBowtieVersion(SoftWare bowtieVersion) {
 		this.bowtieVersion = bowtieVersion;
@@ -63,7 +69,7 @@ public class MapBowtie {
 		}
 		
 		//TODO :考虑是否自动判断为solid
-		cmd = cmd + chrFile + " " + chrFile;
+		cmd = cmd + "\"" + chrFile + "\" " + "\"" + chrFile + "\"";
 		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMakeIndex");
 		cmdOperate.run();
 	}

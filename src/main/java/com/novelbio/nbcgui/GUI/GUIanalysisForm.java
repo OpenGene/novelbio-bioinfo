@@ -61,12 +61,12 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiPeakStatistics guiPeakStatistics;
 	private GuiGetSeq guiGetSeq;
 	private GuiBedTssAndChrome guiBedTssAndChrome;
-	private GuiRNASeqRsem guiRNASeqRsem;
+	private GuiRNASeqMapping guiRNASeqRsem;
 	private GuiLinesStatistics guiLinesStatistics;
-	private GuiCelNormJpanel guiCelNormJpanel;
+	private GuiAffyCelNormJpanel guiCelNormJpanel;
 	private GuiSamToBed guiSamToBed;
 	private GuiSnpCalling guiSnpCalling;
-	
+	private GuiTranscriptomeCufflinks guiTranscriptomeCufflinks;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -102,26 +102,34 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiAnnoGene = new GuiAnnoGene();
 				jTabbedPane1.addTab("GeneAnno", null, guiAnnoGene, null);
 				
-				guiAnnoPeak = new GuiAnnoPeak();
-				jTabbedPane1.addTab("PeakAnno", null, guiAnnoPeak, null);
-				
-				guiPeakStatistics = new GuiPeakStatistics();
-				jTabbedPane1.addTab("PeakStatistics", guiPeakStatistics);
-				
 				guiGoJPanel= new GuiGoJPanel();
 				jTabbedPane1.addTab("GO", null, guiGoJPanel, null);
 				
 				guiPathJpanel = new GuiPathJpanel();
 				jTabbedPane1.addTab("Path", null, guiPathJpanel, null);
 				
-				guiSrcToTrg = new GuiSrcToTrgJpanel();
-				jTabbedPane1.addTab("GeneAct", null, guiSrcToTrg, null);
-			
-				guiPearson = new GuiPearsonJpanel();
-				jTabbedPane1.addTab("CoExp", null, guiPearson, null);
+				guiCelNormJpanel = new GuiAffyCelNormJpanel();
+				jTabbedPane1.addTab("AffyCelNormalization", null, guiCelNormJpanel, null);
 				
-				guiDegreeAdd = new GuiDegreeAddJpanel();
-				jTabbedPane1.addTab("Degree", null, guiDegreeAdd, null);
+				guiDifGene = new GuiDifGeneJpanel();
+				jTabbedPane1.addTab("DifGene", null, guiDifGene, null);
+				
+				guiAnnoPeak = new GuiAnnoPeak();
+				jTabbedPane1.addTab("PeakAnno", null, guiAnnoPeak, null);
+				
+				guiPeakStatistics = new GuiPeakStatistics();
+				jTabbedPane1.addTab("PeakStatistics", guiPeakStatistics);
+				
+
+				
+//				guiSrcToTrg = new GuiSrcToTrgJpanel();
+//				jTabbedPane1.addTab("GeneAct", null, guiSrcToTrg, null);
+			
+//				guiPearson = new GuiPearsonJpanel();
+//				jTabbedPane1.addTab("CoExp", null, guiPearson, null);
+				
+//				guiDegreeAdd = new GuiDegreeAddJpanel();
+//				jTabbedPane1.addTab("Degree", null, guiDegreeAdd, null);
 				
 				guiTools = new GuiToolsJpanel();
 				jTabbedPane1.addTab("Tools", null, guiTools, null);
@@ -132,23 +140,23 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiSamToBed = new GuiSamToBed();
 				jTabbedPane1.addTab("SamToBed", null, guiSamToBed, null);
 				
-				guiRNASeqRsem = new GuiRNASeqRsem();
-				jTabbedPane1.addTab("RNArsem", guiRNASeqRsem);
+				guiRNASeqRsem = new GuiRNASeqMapping();
+				jTabbedPane1.addTab("RNAseqMap", guiRNASeqRsem);
 				
-				guiDifGene = new GuiDifGeneJpanel();
-				jTabbedPane1.addTab("DifGene", null, guiDifGene, null);
+//				guiTranscriptomeCufflinks = new GuiTranscriptomeCufflinks();
+//				jTabbedPane1.addTab("TranscriptomReconstruct", guiTranscriptomeCufflinks);
+
 				
-				guiCelNormJpanel = new GuiCelNormJpanel();
-				jTabbedPane1.addTab("Affymetrix", null, guiCelNormJpanel, null);
+
 				
-				guiBlast = new GuiBlast();
-				jTabbedPane1.addTab("Blast", null, guiBlast, null);
+//				guiBlast = new GuiBlast();
+//				jTabbedPane1.addTab("Blast", null, guiBlast, null);
 				
-				guiSeqMiRNA = new GuiSeqMiRNA();
-				jTabbedPane1.addTab("miRNA", null, guiSeqMiRNA, null);
+//				guiSeqMiRNA = new GuiSeqMiRNA();
+//				jTabbedPane1.addTab("miRNA", null, guiSeqMiRNA, null);
 				
-				guiMirnaTargetPredict = new GuiMirnaTargetPredict();
-				jTabbedPane1.addTab("miRNAtarget", null, guiMirnaTargetPredict, null);
+//				guiMirnaTargetPredict = new GuiMirnaTargetPredict();
+//				jTabbedPane1.addTab("miRNAtarget", null, guiMirnaTargetPredict, null);
 				
 				guiGetSeq = new GuiGetSeq();
 				jTabbedPane1.add("GetSeq", guiGetSeq);
@@ -159,8 +167,8 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiLinesStatistics = new GuiLinesStatistics();
 				jTabbedPane1.add("LinesStatistics", guiLinesStatistics);	
 				
-				guiSnpCalling = new GuiSnpCalling();
-				jTabbedPane1.add("SnpCalling", guiSnpCalling);
+//				guiSnpCalling = new GuiSnpCalling();
+//				jTabbedPane1.add("SnpCalling", guiSnpCalling);
 				
 			}
 			pack();

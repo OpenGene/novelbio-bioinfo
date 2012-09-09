@@ -33,7 +33,7 @@ public class MapRsem implements MapRNA{
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
 		mapRsem.setExePath("", "");
 		mapRsem.setThreadNum(4);
-		mapRsem.setLeftFq(fastqFile);
+//		mapRsem.setLeftFq(fastqFile);
 		mapRsem.setGffChrAbs(gffChrAbs);
 		mapRsem.setOutPathPrefix(outFile);
 		mapRsem.mapReads();
@@ -116,7 +116,7 @@ public class MapRsem implements MapRNA{
 	/** 没用 */
 	public void setIndelLen(int indelLen) {}
 	/** 没用 */
-	public void setStrandSpecifictype(int strandSpecifictype) {}
+	public void setStrandSpecifictype(StrandSpecific strandSpecifictype) {}
 
 	/** 没用 */
 	public void setInsert(int insert) {}

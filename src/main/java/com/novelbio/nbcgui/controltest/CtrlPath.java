@@ -14,6 +14,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.nbcgui.GUI.GuiGoJPanel;
 
 public class CtrlPath extends CtrlGOPath {
 
@@ -54,7 +55,7 @@ public class CtrlPath extends CtrlGOPath {
 	 * @param StaxID
 	 * @param evalue
 	 */
-	private CtrlPath( int QtaxID, boolean blast,
+	private CtrlPath(int QtaxID, boolean blast,
 			double evalue, int... StaxID) {
 		super(QtaxID, blast, evalue);
 		functionTest = new FunctionTest(FunctionTest.FUNCTION_PATHWAY_KEGG,

@@ -527,7 +527,11 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 			}
 			lsAll.addAll(listAbs);
 		}
-		Collections.sort(lsAll);
+		try {
+			Collections.sort(lsAll);
+		} catch (Exception e) {
+			Collections.sort(lsAll);
+		}
 		return lsAll;
 	}
 	/**

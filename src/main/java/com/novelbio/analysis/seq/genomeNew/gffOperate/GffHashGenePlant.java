@@ -24,6 +24,12 @@ import com.novelbio.generalConf.NovelBioConst;
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
 public class GffHashGenePlant extends GffHashGeneAbs{
+	public static void main(String[] args) {
+		GffHashGenePlant gffHashGenePlant = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_PLANT);
+		gffHashGenePlant.ReadGffarray("/media/winE/Bioinformatics/genome/rice/tigr7/all.gff3");
+		GffCodGene gffCodGene = gffHashGenePlant.searchLocation("chr1", 6790);
+		System.out.println(gffCodGene.getGffDetailThis().getLongestSplit().getATGsite());
+	}
 	/**
 	 * 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  "AT\\w{1}G\\d{5}"
 	 * 水稻是 "LOC_Os\\d{2}g\\d{5}";
@@ -113,14 +119,14 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	   //mRNA可变剪接的序号
 	   Pattern mRNApattern =Pattern.compile(splitmRNA, Pattern.CASE_INSENSITIVE);//to catch the LOC
 	   Matcher mRNAmatcher;
-	   String chrnametmpString=""; //染色体的临时名字
+	   String chrIDtmp=""; //染色体的临时名字
 	   boolean UTR5start = false; boolean UTR3start = false; boolean UTR5end = false; boolean UTR3end = false;
 	   boolean CDSstart = false; boolean CDSend = false; boolean mRNAsplit = false;//是否结束了一个mRNA
 	   int cdsStart = -100; int cdsEnd = -100; int mRNAstart = -100;  int mRNAend = -100; 
 	   boolean ncRNA = false;
 	   GffDetailGene gffDetailLOC= null;
 	   for (String content : txtgff.readlines()) {
-		   if(content.charAt(0)=='#')
+		   if(content.length() == 0 || content.charAt(0)=='#')
 			   continue;
 		   ////////////////// 需要进行替换的地方 /////////////////////////////////////////////////////////////
 		   if (ncRNA) {
@@ -128,13 +134,14 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   content = content.replace("exon", "CDS");
 		   }
 		   String[] ss = content.split("\t");//按照tab分开
-		   chrnametmpString=ss[0].toLowerCase();//小写的chrID
+		   chrIDtmp=ss[0];//小写的chrID
+		   String chrIDtmpLowCase = chrIDtmp.toLowerCase();
 		 //新的染色体
-			if (!mapChrID2ListGff.containsKey(chrnametmpString)) //新的染色体
+			if (!mapChrID2ListGff.containsKey(chrIDtmpLowCase)) //新的染色体
 			{
 				LOCList=new ListGff();//新建一个LOCList并放入Chrhash
-				LOCList.setName(chrnametmpString);
-				mapChrID2ListGff.put(chrnametmpString, LOCList);
+				LOCList.setName(chrIDtmp);
+				mapChrID2ListGff.put(chrIDtmpLowCase, LOCList);
 			}
 		   /**
 		    * 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中
@@ -165,7 +172,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			    */
 			   genematcher = genepattern.matcher(content);//查找基因名字
       		   if(genematcher.find()) {
-      			   gffDetailLOC=new GffDetailGene(chrnametmpString, genematcher.group(), ss[6].equals("+"));//新建一个基因类
+      			   gffDetailLOC=new GffDetailGene(LOCList, genematcher.group(), ss[6].equals("+"));//新建一个基因类
       			   gffDetailLOC.setTaxID(taxID);
       			   gffDetailLOC.setStartAbs(  Integer.parseInt(ss[3].toLowerCase()) ); gffDetailLOC.setEndAbs( Integer.parseInt(ss[4]));//基因起止      		
       			   LOCList.add(gffDetailLOC);//添加进入LOClist

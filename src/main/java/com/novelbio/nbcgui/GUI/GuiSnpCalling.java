@@ -321,7 +321,8 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		btnDeleteSnpFile.setEnabled(false);
 		btnOutput.setVisible(false);
 		txtOutput.setVisible(false);
-		
+		btnAddPileupFile.setEnabled(true);
+		btnDeletePileupFile.setEnabled(true);
 	}
 	
 	/** 当为获得每个snp信息的时候的界面 */
@@ -343,6 +344,8 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		btnDeleteSnpFile.setEnabled(true);
 		btnOutput.setVisible(true);
 		txtOutput.setVisible(true);
+		btnAddPileupFile.setEnabled(true);
+		btnDeletePileupFile.setEnabled(true);
 	}
 	/** 当为获得每个snp信息的时候的界面 */
 	private void setSnpAnnotation() {
@@ -371,7 +374,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		txtOutput.setVisible(false);
 	}
 	private void runSnpCalling() {
-		setGffChrAbs(cmbSpecies.getSelectedValue());
+		setGffChrAbs();
 		ctrlSnpCalling.setGffChrAbs(gffChrAbs);
 
 		ctrlSnpCalling.set(combSnpLevel.getSelectedValue());
@@ -392,7 +395,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		ctrlSnpCalling.runSnpCalling();
 	}
 	private void runSnpGetInfo() {
-		setGffChrAbs(cmbSpecies.getSelectedValue());
+		setGffChrAbs();
 		
 		ctrlSnpGetInfo.setGffChrAbs(gffChrAbs);
 		ArrayList<String[]> lsPileupFile = sclInputFile.getLsDataInfo();
@@ -410,7 +413,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		ctrlSnpGetInfo.runSnpGetInfo();
 	}
 	private void runSnpAnnotation() {
-		setGffChrAbs(cmbSpecies.getSelectedValue());
+		setGffChrAbs();
 		
 		ctrlSnpAnnotation.setGffChrAbs(gffChrAbs);
 		ArrayList<String[]> lsSnpFile = sclSnpFile.getLsDataInfo();
@@ -424,7 +427,9 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		ctrlSnpAnnotation.setCol(colChrID, colRefStartSite, colRefNr, colThisNr);
 		ctrlSnpAnnotation.runAnnotation();
 	}
-	private void setGffChrAbs(Species species) {
+	private void setGffChrAbs() {
+		Species species = cmbSpecies.getSelectedValue();
+		species.setVersion(cmbVersion.getSelectedValue());
 		if (species.getTaxID() == 0) {
 			return;
 		}

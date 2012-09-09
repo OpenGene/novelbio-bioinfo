@@ -15,6 +15,7 @@ import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.nbcgui.GUI.GuiGoJPanel;
 /**
  * 考虑添加进度条
  * @author zong0jie
@@ -22,7 +23,6 @@ import com.novelbio.generalConf.NovelBioConst;
  */
 public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
-	
 	FunctionTest functionTest = null;
 	/**  是否需要blast */
 	boolean blast = false;
@@ -46,6 +46,10 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	 */
 	LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>> hashResultGene = new LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>>();
 	
+	boolean isCluster = false;
+	
+	ArrayList<String[]> lsAccID2Value;
+	
 	/**
 	 * 结果,key： 时期等<br>
 	 * value：具体的结果<br>
@@ -66,7 +70,22 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 		this.evalue = evalue;
 	}
 	public void running() {
-		
+		if (isCluster) {
+			doInBackgroundCluster();
+		}
+		else {
+			doInBackgroundNorm();
+		}
+	}
+	/** lsAccID2Value  arraylist-string[] 如果 string[2],则第二个为上下调关系，判断上下调
+	 * 否则就做单个
+	 *  */
+	public void setLsAccID2Value(ArrayList<String[]> lsAccID2Value) {
+		this.lsAccID2Value = lsAccID2Value;
+	}
+	public void setUpDown(double up, double down) {
+		this.up = up;
+		this.down = down;
 	}
 	/**
 	 * 最好第一时间输入
@@ -110,6 +129,10 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 		}
 		return result;
 	}
+	
+	public void setIsCluster(boolean isCluster) {
+		this.isCluster = isCluster;
+	}
 	/**
 	 * 给定文件，和文件分割符，以及第几列，获得该列的基因ID
 	 * @param lsAccID2Value  arraylist-string[] 如果 string[2],则第二个为上下调关系，判断上下调
@@ -117,7 +140,8 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	 * @param up
 	 * @param down
 	 */
-	public void doInBackgroundNorm(ArrayList<String[]> lsAccID2Value, double up, double down) {
+	public void doInBackgroundNorm() {
+		isCluster = false;
 		hashResultGene.clear();
 		HashMap<String, ArrayList<GeneID>> hashCluster = new LinkedHashMap<String, ArrayList<GeneID>>();
 		//分上下调
@@ -165,7 +189,8 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	 * @return
 	 * @throws Exception
 	 */
-	public void doInBackgroundCluster(ArrayList<String[]> lsAccID2Value) {
+	public void doInBackgroundCluster() {
+		isCluster = true;
 		hashResultGene.clear();
 		HashMap<String, ArrayList<GeneID>> hashCluster = new HashMap<String, ArrayList<GeneID>>();
 		for (String[] strings : lsAccID2Value) {
@@ -216,6 +241,13 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	protected abstract LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<String[]> lsResultTest);
 
 	public void saveExcel(String excelPath) {
+		if (cluster)
+			saveExcelCluster(excelPath);
+		else
+			saveExcelNorm(excelPath);
+	}
+	
+	private void saveExcelNorm(String excelPath) {
 		ExcelOperate excelResult = new ExcelOperate();
 		excelResult.openExcel(excelPath);
 		for (Entry<String, LinkedHashMap<String, ArrayList<String[]>>> entry : hashResultGene.entrySet()) {
@@ -223,6 +255,22 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 			HashMap<String, ArrayList<String[]>> hashValue = entry.getValue();
 			for (Entry<String,ArrayList<String[]>> entry2 : hashValue.entrySet()) {
 				excelResult.WriteExcel(prix + entry2.getKey(), 1, 1, entry2.getValue());
+			}
+			copeFile(prix, excelPath);
+		}
+	}
+	
+	private void saveExcelCluster(String excelPath) {
+		for (Entry<String, LinkedHashMap<String, ArrayList<String[]>>> entry : hashResultGene.entrySet()) {
+			ExcelOperate excelResult = new ExcelOperate();
+			String prix = entry.getKey();
+
+			String excelPathOut = FileOperate.changeFileSuffix(excelPath, "_" + prix, null);
+			excelResult.openExcel(excelPathOut);
+			
+			HashMap<String, ArrayList<String[]>> hashValue = entry.getValue();
+			for (Entry<String,ArrayList<String[]>> entry2 : hashValue.entrySet()) {
+				excelResult.WriteExcel(entry2.getKey(), 1, 1, entry2.getValue());
 			}
 			copeFile(prix, excelPath);
 		}

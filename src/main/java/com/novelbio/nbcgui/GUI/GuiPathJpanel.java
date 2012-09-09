@@ -482,13 +482,15 @@ public class GuiPathJpanel extends JPanel{
 				up = Double.parseDouble(jTxtUpValuePath.getText());
 				down = Double.parseDouble(jTxtDownValuePath.getText());
 			}
-			ctrlPath.doInBackgroundNorm(lsAccID, up, down);
-			setNormalGo(ctrlPath);
+			ctrlPath.setUpDown(up, down);
+			ctrlPath.setIsCluster(false);
 		}
 		else {
-			ctrlPath.doInBackgroundCluster(lsAccID);
-			setNormalGo(ctrlPath);
+			ctrlPath.setIsCluster(false);
 		}
+		ctrlPath.setLsAccID2Value(lsAccID);
+		ctrlPath.run();
+		setNormalGo(ctrlPath);
 	}
 	
 	private void setNormalGo(CtrlPath ctrlPath) {

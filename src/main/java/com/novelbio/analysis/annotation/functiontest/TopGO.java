@@ -10,7 +10,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class TopGO {
 	String workSpace;
@@ -181,7 +180,13 @@ public class TopGO {
 	protected void Rrunning(String cmdName) {
 		String cmd = PathDetail.getRscript() + exeScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.run();
+		Thread threadCmd = new Thread(cmdOperate);
+		threadCmd.start();
+		while (!cmdOperate.isFinished()) {
+			try { Thread.sleep(100); } catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	private void readResult() {
 		TxtReadandWrite txtRGo2Gene = new TxtReadandWrite(rawGoResultFile, false);

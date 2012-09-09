@@ -61,7 +61,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 	}
 	Logger logger = Logger.getLogger(NovelMiRNADeep.class);
 	
-	MapBowtie mapBowtie = new MapBowtie(MapBowtie.VERSION_BOWTIE1);
+	MapBowtie mapBowtie = new MapBowtie(SoftWare.bowtie);
 	int miRNAminLen = 18;
 	String mirDeepPath = "";
 	/** 输入的fasta格式，从bed文件转变而来，也可直接设定 */
@@ -389,7 +389,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 		MiRNACount miRNACount = new MiRNACount();
 		miRNACount.setBedSeqMiRNA(bedSeqMiRNAnovel);
 		miRNACount.setMiRNAfile(novelMiRNAhairpin, novelMiRNAmature);
-		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_MIRDEEP, 0, novelMiRNAdeepMrdFile);
+		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_MIRDEEP, new Species(), novelMiRNAdeepMrdFile);
 		miRNACount.writeResultToOut(outPath + outPrefix);
 	}
 }

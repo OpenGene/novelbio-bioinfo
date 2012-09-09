@@ -2,12 +2,14 @@ package com.novelbio.database.domain.geneanno;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -57,13 +59,13 @@ public class SpeciesFile {
 	 */
 	private String chromInfo;
 	/** 从chrominfo转化而来 key: chrID，为小写    value: chrLen */
-	private HashMap<String, Integer> hashChrID2ChrLen = new HashMap<String, Integer>();
+	private HashMap<String, Integer> hashChrID2ChrLen = new LinkedHashMap<String, Integer>();
 	/** 从indexSeq转化而来, key: 软件名，为小写 value：路径 */
-	HashMap<String, String> hashSoftware2ChrIndexPath = new HashMap<String, String>();
+	HashMap<String, String> mapSoftware2ChrIndexPath = new LinkedHashMap<String, String>();
 	/** 从indexRefseq转化而来, key: 软件名，为小写 value：路径 */
-	HashMap<String, String> hashSoftware2RefseqIndexPath = new HashMap<String, String>();
+	HashMap<String, String> mapSoftware2RefseqIndexPath = new LinkedHashMap<String, String>();
 	/** 从gffGeneFile来，key：gffType  value：gffFile */
-	HashMap<String, String> hashGffType2GffFile = new HashMap<String, String>();
+	HashMap<String, String> hashGffType2GffFile = new LinkedHashMap<String, String>();
 	
 	/** 是否已经查找过 */
 	boolean searched = false;
@@ -171,16 +173,79 @@ public class SpeciesFile {
 		this.indexChr = indexSeq;
 	}
 	public String getIndexChromFa(SoftWare softMapping) {
-		filledHashIndexPath(indexChr, hashSoftware2ChrIndexPath);
-		return hashSoftware2ChrIndexPath.get(softMapping.toString());
+		filledHashIndexPath(indexChr, mapSoftware2ChrIndexPath);
+		String indexChromFa =  mapSoftware2ChrIndexPath.get(softMapping.toString());
+		if (!FileOperate.isFileExist(indexChromFa)) {
+			indexChromFa = creatAndGetSeqIndex(false, softMapping, getChromSeq(), mapSoftware2ChrIndexPath);
+			
+			String addIndex = SepSign.SEP_ID + softMapping.toString() + SepSign.SEP_INFO + indexChromFa;
+			if (!indexChr.contains(addIndex)) {
+				indexChr = indexChr + addIndex;
+				update();
+			}
+		}
+		return indexChromFa;
 	}
-
+	
 	public void setIndexRefseq(String indexRefseq) {
 		this.indexRefseq = indexRefseq;
 	}
-	public String getIndexRefseq() {
-		return indexRefseq;
+	public String getIndexRefseq(SoftWare softMapping) {
+		filledHashIndexPath(indexRefseq, mapSoftware2RefseqIndexPath);
+		String indexRefseqThis =  mapSoftware2RefseqIndexPath.get(softMapping.toString());
+		if (!FileOperate.isFileExist(indexRefseqThis)) {
+			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefseqFile(), mapSoftware2RefseqIndexPath);
+			
+			String addIndex = SepSign.SEP_ID + softMapping.toString() + SepSign.SEP_INFO + indexRefseqThis;
+			if (!indexRefseq.contains(addIndex)) {
+				indexRefseq = indexRefseq + addIndex;
+				update();
+			}
+		}
+		return indexRefseqThis;
 	}
+	/**
+	 * 如果不存在该index，那么就新创建一个index并且保存入数据库 
+	 * @param refseq 是否为refseq
+	 * @param softMapping mapping的软件
+	 * @param seqIndex 该index所对应的保存在数据库中的值，譬如indexChr
+	 * @param seqFile 该index所对应的序列，用getChromSeq()获得
+	 * @param mapSoftware2ChrIndexPath 该index所对应的hash表，如 mapSoftware2ChrIndexPath
+	 * @return
+	 */
+	private String creatAndGetSeqIndex(Boolean refseq, SoftWare softMapping, String seqFile, HashMap<String, String> mapSoftware2ChrIndexPath) {
+		String indexChromFinal = null;
+		String IndexPath = null;
+		String seqName = null;
+		String indexFinalPath = null;
+		if (mapSoftware2ChrIndexPath.size() > 0) {
+			//media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/Index/bwa_Index/mm9.fasta
+			String indexChromFaOther = mapSoftware2ChrIndexPath.entrySet().iterator().next().getValue();
+			seqName = FileOperate.getFileName(indexChromFaOther);
+			IndexPath = FileOperate.getParentPathName(FileOperate.getParentPathName(indexChromFaOther));
+		}
+		else {
+			///media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/ChromFa/all/mm9.fasta
+			seqName = FileOperate.getFileName(seqFile);
+			IndexPath = FileOperate.getParentPathName(FileOperate.getParentPathName(seqFile));
+		}
+		
+		if (refseq)
+			indexFinalPath = IndexPath + softMapping.toString() + "ref_Index/";
+		else
+			indexFinalPath = IndexPath + softMapping.toString() + "_Index/";
+		
+		FileOperate.createFolders(indexFinalPath);
+		indexChromFinal = indexFinalPath + seqName;
+		
+		String cmd = "ln -s " + "\"" + seqFile + "\" " + "\"" + indexChromFinal + "\""; 
+		CmdOperate cmdOperate = new CmdOperate(cmd, "lnSeq");
+		cmdOperate.run();
+		mapSoftware2ChrIndexPath.put(softMapping.toString(), indexChromFinal);
+		
+		return indexChromFinal;
+	}
+
 	public String getMiRNAmatureFile() {
 		return getMiRNAseq()[0];
 	}
@@ -250,9 +315,10 @@ public class SpeciesFile {
 			hashChrID2ChrLen.put(chrLenDetail[0].toLowerCase(), Integer.parseInt(chrLenDetail[1]));
 		}
 	}
+	
 	/** 用indexSeq填充mapping所需路径hash表 
 	 * @param indexSeq 输入的indexSeq文本
-	 * @param hashSoftware2ChrIndexPath 待填充的hashSoft2Index key：软件名  value：路径
+	 * @param mapSoftware2ChrIndexPath 待填充的hashSoft2Index key：软件名  value：路径
 	 * */
 	private void filledHashIndexPath(String indexSeq, HashMap<String, String> hashSoft2index) {
 		if (indexSeq == null) return;

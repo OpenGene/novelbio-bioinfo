@@ -10,12 +10,14 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.SwingWorker;
+import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.gui.GUIInfo;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.generalConf.NovelBioConst;
 /**
@@ -23,18 +25,39 @@ import com.novelbio.generalConf.NovelBioConst;
  * 如果只是随便用用，那么调用doInBackground方法就好
  * @author zong0jie
  */
-public class CmdOperate extends RunProcess<String>{
+public class CmdOperate extends RunProcess<String> {
+	public static void main(String[] args) {
+		try {
+			test();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void test() throws InterruptedException {
+		String cmd = "Rscript /media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/target/rscript/tmp/TopGO_2012-09-09040524123.R";
+		CmdOperate cmdOperate = new CmdOperate(cmd);
+		Thread thread = new Thread(cmdOperate);
+		thread.start();
+		while (!cmdOperate.isFinished()) {
+			Thread.sleep(100);
+		}
+		System.out.println("stop");
+	}
 	private static Logger logger = Logger.getLogger(CmdOperate.class);
 
 	/** 是否将pid加2，如果是写入文本然后sh执行，则需要加上2 */
 	boolean shPID = false;
-
+	
 	/** 进程 */
 	Process process = null;
 	/** 待运行的命令 */
 	String cmd = "";
-	
+	/** 临时文件在文件夹 */
 	String scriptFold = "";
+	
+	GUIInfo guIcmd;
+	
 	/**
 	 * 直接运行，不写入文本
 	 * @param cmd
@@ -42,6 +65,17 @@ public class CmdOperate extends RunProcess<String>{
 	public CmdOperate(String cmd) {
 		this.cmd = cmd;
 		shPID = false;
+	}
+	/** 
+	 * 是否展示GUI，默认不展示
+	 */
+	public void setDisplayGUI(boolean displayGUI) {
+		if (displayGUI) {
+			guIcmd = new GUIInfo(this);
+		}
+		else {
+			guIcmd = null;
+		}
 	}
 	/**
 	 * 初始化后直接开新线程即可
@@ -62,73 +96,11 @@ public class CmdOperate extends RunProcess<String>{
 		}
 		shPID = false;
 	}
-	
+
 	/** 设定需要运行的命令 */
 	public void setCmd(String cmd) {
 		this.cmd = cmd;
 		shPID = false;
-	}
-
-	/**
-	 * 直接运行cmd，可能会出错 返回两个arraylist-string 第一个是Info 第二个是error
-	 * 
-	 * @param fileName
-	 * @return
-	 * @throws Exception
-	 * @throws Exception
-	 */
-	private ArrayList<ArrayList<String>> doInBackgroundB() throws Exception {
-//		ProgressData progressDataIn = new ProgressData();
-		final ProgressData progressDataErr = new ProgressData();
-		ArrayList<String> lsIn = new ArrayList<String>();
-		final ArrayList<String> lsErr = new ArrayList<String>();
-		
-		Runtime runtime = Runtime.getRuntime();
-	        
-		process = runtime.exec(cmd);
-		final InputStream is1 = process.getErrorStream();
-		new Thread(new Runnable() {
-			public void run() {
-				BufferedReader br = new BufferedReader(new InputStreamReader(is1));
-				String info = "";
-				try {
-					while ((info = br.readLine()) != null) {
-						progressDataErr.strcmdInfo = info;
-						progressDataErr.info = false;
-						logger.error(info);
-						System.out.println(info);
-						lsErr.add(info);
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}).start(); // 启动单独的线程来清空process.getInputStream()的缓冲区
-		// InputStream is2 = process.getInputStream();
-		// BufferedReader br2 = new BufferedReader(new InputStreamReader(is2));
-		// String line = null;
-		// while((line = br2.readLine()) != null)
-		// {
-		// progressDataIn.strcmdInfo = line;
-		// progressDataIn.info = true;
-		// System.out.println(line);
-		// lsIn.add(line);
-		// }
-
-		BufferedReader bufferedReader = new BufferedReader(
-				new InputStreamReader(process.getInputStream()));
-		String ls_1 = "";
-		while ((ls_1 = bufferedReader.readLine()) != null) {
-			logger.info(ls_1);
-			System.out.println(ls_1);
-			lsIn.add(ls_1);
-		}		
-		process.waitFor();
-		
-		ArrayList<ArrayList<String>> lsResult = new ArrayList<ArrayList<String>>();
-		lsResult.add(lsIn);
-		lsResult.add(lsErr);
-		return lsResult;
 	}
 	/**
 	 * 将cmd写入哪个文本，然后执行，如果初始化输入了cmdWriteInFileName, 就不需要这个了
@@ -143,12 +115,54 @@ public class CmdOperate extends RunProcess<String>{
 		txtCmd1.close();
 		cmd = "sh " + cmd1SH;
 	}
+	/**
+	 * 直接运行cmd，可能会出错 返回两个arraylist-string 第一个是Info 第二个是error
+	 * @param fileName
+	 * @return
+	 * @throws Exception
+	 * @throws Exception
+	 */
+	private void doInBackgroundB() throws Exception {
+		try {
+			Thread thread = new Thread(guIcmd);
+			thread.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+		Runtime runtime = Runtime.getRuntime();
+		process = runtime.exec(cmd);	
+        // any error message?
+        StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR", guIcmd);            
+        // any output?
+        StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT", guIcmd);
+            
+        // kick them off
+        errorGobbler.start();
+        outputGobbler.start();
+        
+		int info = process.waitFor();
+		finishAndCloseCmd(info);
+	}
+	private void finishAndCloseCmd(int info) {
+		if (guIcmd != null) {
+			if (info == 0) {
+				guIcmd.closeWindow();
+			}
+			else {
+				guIcmd.appendTxtInfo("error");
+			}
+		}
+	}
+
 	@Override
 	protected void running() {
 		logger.info(cmd);
 		try {
 			doInBackgroundB();
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("cmd cannot executed correctly: " + cmd);
 		}
 	}
@@ -164,7 +178,6 @@ public class CmdOperate extends RunProcess<String>{
 	}
 	/** 终止线程，在循环中添加 */
 	public void threadStop() {
-//		process.destroy() 无法杀死线程
 		int pid = -10;
 		try {
 			pid = getUnixPID(process);
@@ -172,9 +185,13 @@ public class CmdOperate extends RunProcess<String>{
 				if (shPID) {
 					pid = pid + 2;
 				}
+				System.out.println(pid);
 				Runtime.getRuntime().exec("kill -9 " + pid).waitFor();
+				process.destroy();// 无法杀死线程
+				process = null;
 			}
 		} catch (Exception e) { e.printStackTrace(); }
+		
 	}
 	
 	private static int getUnixPID(Process process) throws Exception {
@@ -194,8 +211,37 @@ public class CmdOperate extends RunProcess<String>{
 		return "\"" + pathName + "\"";
 	}
 }
-class ProgressData
-{
+
+class StreamGobbler extends Thread {
+	Logger logger = Logger.getLogger(StreamGobbler.class);
+    InputStream is;
+    String type;
+    GUIInfo guiCmd;
+    StreamGobbler(InputStream is, String type, GUIInfo guicmd) {
+        this.is = is;
+        this.type = type;
+        this.guiCmd = guicmd;
+    }
+    
+	public void run() {
+		try {
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(isr);
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				logger.info(line);
+				if (guiCmd != null) {
+					guiCmd.appendTxtInfo(line);
+				}
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+	}
+}
+
+
+class ProgressData {
 	public String strcmdInfo;
 	/**
 	 * true : info

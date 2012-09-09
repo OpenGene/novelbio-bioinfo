@@ -71,7 +71,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public void setReadsLength(int readsLength) {
 		this.readsLength = readsLength;
 	}
-	private void prepare() {		
+	private void prepare() {
 		//跨过该exon的iso是否存在，0不存在，1存在
 		int junc = 0;
 		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0)
@@ -223,11 +223,12 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		int[] cond1 = mapCondition2Counts.get(condition1);
 		int[] cond2 = mapCondition2Counts.get(condition2);
 		
-//		cond1 = modifyInputValue(cond1);
-//		cond2 = modifyInputValue(cond2);
+		cond1 = modifyInputValue(cond1);
+		cond2 = modifyInputValue(cond2);
 		
 		normalizeToLowValue(cond1, normalizedNum);
 		normalizeToLowValue(cond2, normalizedNum);
+		
 		pvalue = chiSquareTestDataSetsComparison(cond1, cond2);
 		return pvalue;
 	}
@@ -291,6 +292,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			pvalue = pvalueExp;
 		else
 			pvalue = pvalueCounts;
+		
+		pvalue = pvalue * 1.5;
+		if (pvalue > 1) {
+			pvalue = 1.0;
+		}
 		return;
 	}
 	/** Retain_Intron的pvalue比较奇怪，必须要exon才能计算的
@@ -307,11 +313,15 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		double pvalueLog = Math.log10(pvalueExp) * expPro +  Math.log10(pvalueCounts) * (1 - expPro);
 		pvalue = Math.pow(10, pvalueLog);
-		
-		pvalue = pvalueExp * 0.6 + pvalueCounts *0.4;
+				
+		//对于cassette的pvalue缩小
+//		if (exonCluster.getExonSplicingType() == ExonSplicingType.cassette) {
+//			pvalue = pvalue * pvalue * 2;
+//		}
 		if (pvalue > 1) {
 			pvalue = 1.0;
 		}
+
 		return;
 	}
 	/** 获得表达所占有的pvalue的比例

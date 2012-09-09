@@ -118,14 +118,13 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   setHashName();
 	   setPattern();
 	   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);	   
-	   String tmpChrName="";
+	   String chrIDtmp="";
 	   
 	   for (String content : txtgff.readlines()) {
 		   if(content.charAt(0)=='#') continue;
 		   String[] ss = content.split("\t");//按照tab分开
 		   
-		   tmpChrName = ss[0].toLowerCase();//小写的chrID
-
+		   chrIDtmp = ss[0];
 		   /** 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中   */
 		   if (setIsGene.contains(ss[2])) {//when read the # and the line contains gene, it means the new LOC
 			   String genID = patID.getPatFirst(ss[8]);
@@ -133,7 +132,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			   mapGenID2GeneName.put(genID, geneName);
 			   GffDetailGene gffDetailLOC = getGffDetailGenID(patID.getPatFirst(ss[8]));
 			   if (gffDetailLOC == null) {
-				   gffDetailLOC=new GffDetailGene(tmpChrName, geneName, ss[6].equals("+"));//新建一个基因类
+				   gffDetailLOC=new GffDetailGene(chrIDtmp, geneName, ss[6].equals("+"));//新建一个基因类
 			   }
 			   gffDetailLOC.setTaxID(taxID);
 			   gffDetailLOC.setStartAbs( Integer.parseInt(ss[3])); gffDetailLOC.setEndAbs( Integer.parseInt(ss[4]));//基因起止      		
@@ -289,11 +288,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 	   ListGff LOCList = null;
 	   for (GffDetailGene gffDetailGene : hashGenID2GffDetail.values()) {
+		   String chrIDlowCase = gffDetailGene.getParentName().toLowerCase();
 			 //新的染色体
-		   if (!mapChrID2ListGff.containsKey(gffDetailGene.getParentName())) { //新的染色体 
+		   if (!mapChrID2ListGff.containsKey(chrIDlowCase)) { //新的染色体 
 			   LOCList = new ListGff();//新建一个LOCList并放入Chrhash
-			   LOCList.setName(gffDetailGene.getParentName());
-			   mapChrID2ListGff.put(gffDetailGene.getParentName(), LOCList);
+			   LOCList.setName(chrIDlowCase);
+			   mapChrID2ListGff.put(gffDetailGene.getParentName().toLowerCase(), LOCList);
 		   }
 		   LOCList.add(gffDetailGene);
 	   }

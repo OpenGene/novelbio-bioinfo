@@ -94,6 +94,7 @@ public class GuiGoJPanel extends JPanel{
 	static int StaxID = 9606;//blastŒÔ÷÷ID
 	String GoClass = "";
 	
+	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	
 	public GuiGoJPanel() {
 	
@@ -282,7 +283,6 @@ public class GuiGoJPanel extends JPanel{
 			jBtnFileOpenGo.setMargin(new java.awt.Insets(1, 1, 1, 1));
 			jBtnFileOpenGo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-					GUIFileOpen guiFileOpen = new GUIFileOpen();
 					String filename = guiFileOpen.openFileName("txt/excel2003", "txt","xls");
 					jTxtFilePathGo.setText(filename);
 					try {
@@ -340,7 +340,6 @@ public class GuiGoJPanel extends JPanel{
 			jBtnBGFileGo.setMargin(new java.awt.Insets(1, 0, 1, 0));
 			jBtnBGFileGo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-					GUIFileOpen guiFileOpen = new GUIFileOpen();
 					String filename = guiFileOpen.openFileName("txt/excel2003", "txt","xls");
 					jTxtBGGo.setText(filename);
 				}
@@ -390,7 +389,6 @@ public class GuiGoJPanel extends JPanel{
 			jBtbSaveGo.setMargin(new java.awt.Insets(1, 0, 1, 0));
 			jBtbSaveGo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-					GUIFileOpen guiFileOpen = new GUIFileOpen();
 					String savefilename = guiFileOpen.saveFileName("excel2007", "xls");
 					CtrlGO ctrlGO = CtrlGO.getInstance();
 					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
@@ -567,13 +565,15 @@ public class GuiGoJPanel extends JPanel{
 				up = Double.parseDouble(jTxtUpValueGo.getText());
 				down = Double.parseDouble(jTxtDownValueGo.getText());
 			}
-			ctrlGO.doInBackgroundNorm(lsAccID, up, down);
-			setNormalGo(ctrlGO);
+			ctrlGO.setUpDown(up, down);
+			ctrlGO.setIsCluster(false);
 		}
 		else {
-			ctrlGO.doInBackgroundCluster(lsAccID);
-			setNormalGo(ctrlGO);
+			ctrlGO.setIsCluster(true);
 		}
+		ctrlGO.setLsAccID2Value(lsAccID);
+		ctrlGO.run();
+		setNormalGo(ctrlGO);
 	}
 	
 	private void setNormalGo(CtrlGO ctrlGO) {

@@ -14,10 +14,14 @@ import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.mapping.MapRsem;
 import com.novelbio.analysis.seq.mapping.MapTophat;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.mirna.MiRNAtargetRNAhybrid;
+import com.novelbio.analysis.seq.resequencing.MapInfoSnpIndel;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
@@ -39,7 +43,7 @@ import javax.swing.ButtonGroup;
 
 import org.springframework.context.annotation.Primary;
 
-public class GuiRNASeqRsem extends JPanel {
+public class GuiRNASeqMapping extends JPanel {
 	private JTextField txtMappingIndex;
 	private JTextField txtSavePathAndPrefix;
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
@@ -56,10 +60,10 @@ public class GuiRNASeqRsem extends JPanel {
 	JButton btnRun;
 	JButton btnOpenFastQRight;
 	JButton btnDeleteFastQRight;
-
+	JLabel lblStrandType;
 	
 	
-	JComboBoxData<Integer> cmbStrandType;
+	JComboBoxData<StrandSpecific> cmbStrandType;
 	JComboBoxData<MapLibrary> cmbLibraryType;
 
 	
@@ -75,7 +79,7 @@ public class GuiRNASeqRsem extends JPanel {
 	ArrayList<Component> lsComponentsFiltering = new ArrayList<Component>();
 	private JLabel lblLibraryType;
 	
-	public GuiRNASeqRsem() {
+	public GuiRNASeqMapping() {
 		setLayout(null);
 		
 		JLabel lblFastqfile = new JLabel("FastQFile");
@@ -207,6 +211,7 @@ public class GuiRNASeqRsem extends JPanel {
 				for (Entry<String, ArrayList<ArrayList<FastQ>>> entry : mapPrefix2LsFastq.entrySet()) {
 					String prefix = entry.getKey();
 					ArrayList<ArrayList<FastQ>> lsFastqFR = entry.getValue();
+					ctrlRNAmap.setGffChrAbs(new GffChrAbs(species));
 					ctrlRNAmap.setSpecies(species);
 					ctrlRNAmap.setLeftFq(lsFastqFR.get(0));
 					ctrlRNAmap.setRightFq(lsFastqFR.get(1));
@@ -253,8 +258,10 @@ public class GuiRNASeqRsem extends JPanel {
 		rdbtnRsem = new JRadioButton("Rsem");
 		rdbtnRsem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				cmbLibraryType.setEnabled(false);
-				cmbStrandType.setEditable(false);
+				lblLibraryType.setVisible(false);
+				lblStrandType.setVisible(false);
+				cmbLibraryType.setVisible(false);
+				cmbStrandType.setVisible(false);
 			}
 		});
 		rdbtnRsem.setBounds(418, 261, 88, 22);
@@ -263,27 +270,29 @@ public class GuiRNASeqRsem extends JPanel {
 		rdbtnTophat = new JRadioButton("Tophat");
 		rdbtnTophat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				cmbLibraryType.setEnabled(true);
-				cmbStrandType.setEnabled(true);
+				lblLibraryType.setVisible(true);
+				lblStrandType.setVisible(true);
+				cmbLibraryType.setVisible(true);
+				cmbStrandType.setVisible(true);
 			}
 		});
 		rdbtnTophat.setBounds(599, 261, 151, 22);
 		add(rdbtnTophat);
 		
-		JLabel lblStrandType = new JLabel("StrandType");
+		lblStrandType = new JLabel("StrandType");
 		lblStrandType.setBounds(12, 339, 90, 14);
 		add(lblStrandType);
 		
-		cmbStrandType = new JComboBoxData<Integer>();
-		cmbStrandType.setBounds(10, 359, 145, 23);
+		cmbStrandType = new JComboBoxData<StrandSpecific>();
+		cmbStrandType.setBounds(10, 359, 197, 23);
 		add(cmbStrandType);
 		
 		lblLibraryType = new JLabel("Library Type");
-		lblLibraryType.setBounds(212, 341, 121, 14);
+		lblLibraryType.setBounds(238, 339, 121, 14);
 		add(lblLibraryType);
 		
 		cmbLibraryType = new JComboBoxData<MapLibrary>();
-		cmbLibraryType.setBounds(212, 359, 124, 23);
+		cmbLibraryType.setBounds(238, 359, 124, 23);
 		add(cmbLibraryType);
 
 		
@@ -313,8 +322,9 @@ public class GuiRNASeqRsem extends JPanel {
 		buttonGroup.add(rdbtnRsem);
 		buttonGroup.add(rdbtnTophat);
 		
-		cmbStrandType.setMapItem(MapTophat.getMapStr2StrandType());
+		cmbStrandType.setMapItem(StrandSpecific.getMapStrandLibrary());
 		cmbLibraryType.setMapItem(MapLibrary.getMapLibrary());
+		rdbtnTophat.setSelected(true);
 	}
 	
 	/**

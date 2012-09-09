@@ -73,7 +73,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	 */
 	public ListDetailAbs(String chrID, String ItemName, Boolean cis5to3) {
 		if (chrID != null) {
-			this.parentName = chrID.toLowerCase();
+			this.parentName = chrID;
 		}
 		this.lsItemName.add(ItemName);
 		this.cis5to3 = cis5to3;
@@ -86,7 +86,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	 */
 	public ListDetailAbs(ListAbs<? extends ListDetailAbs> listAbs, String ItemName, Boolean cis5to3) {
 		this.listAbs = listAbs;
-		this.parentName = listAbs.getName().toLowerCase();
+		this.parentName = listAbs.getName();
 		this.lsItemName.add(ItemName);
 		this.cis5to3 = cis5to3;
 	}

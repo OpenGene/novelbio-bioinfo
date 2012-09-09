@@ -178,6 +178,10 @@ public class Species {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromFaRegx();
 	}
+	public String getChromSeq() {
+		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		return speciesFile.getChromSeq();
+	}
 	/**
 	 * 指定version，和type，返回对应的gff文件，没有则返回null
 	 * @param Type

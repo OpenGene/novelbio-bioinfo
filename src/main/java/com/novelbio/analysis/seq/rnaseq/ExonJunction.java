@@ -10,6 +10,7 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonCluster.ExonSplicingType;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -141,6 +142,13 @@ public class ExonJunction {
 		ArrayList<ExonSplicingTest> lsSplicingTests = getDifIsoGene();
 		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2));
 		for (ExonSplicingTest chisqTest : lsSplicingTests) {
+			//TODO 一般是15::5	13::0	这种形式
+			//但有时候会出现15	13 这种明显不是转录本的
+			//所以在这里检查该值并且删除，但是这时治标不治本的做法，搞清楚为啥发生
+			if (chisqTest.exonCluster.getExonSplicingType() == ExonSplicingType.cassette 
+					&& chisqTest.mapCondition2Counts.entrySet().iterator().next().getValue().length <=1) {
+				continue;
+			}
 			txtOut.writefileln(chisqTest.toString());
 		}
 		txtOut.close();

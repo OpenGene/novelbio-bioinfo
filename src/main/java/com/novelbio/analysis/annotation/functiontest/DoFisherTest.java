@@ -71,10 +71,6 @@ public class DoFisherTest {
 		 ArrayList<String[]> lsFiserResult = doFisherTest(lsFiserInput);
 		 return lsFiserResult;
 	}
-	
-	
-	
-	
 	/**
 	 * 
 	 * 给定两个HashMap，

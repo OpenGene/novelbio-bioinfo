@@ -2,17 +2,12 @@ package com.novelbio.nbcgui.GUI;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SpringLayout;
-import javax.swing.JScrollPane;
 import javax.swing.JButton;
 
 import com.novelbio.analysis.diffexpress.DiffExpAbs;
-import com.novelbio.analysis.microarray.AffyNormalization;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.GUIMessage;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 
@@ -20,12 +15,8 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
-
-import org.apache.commons.httpclient.methods.multipart.FilePart;
 
 public class GuiDifGeneJpanel extends JPanel {
 	JScrollPaneData scrollPaneNormData;

@@ -1,14 +1,10 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
-import java.io.BufferedReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
-import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 
@@ -50,25 +46,26 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 		
 		TxtReadandWrite txtGffRead = new TxtReadandWrite(gfffilename, false);
 		ListGff lsChromGene = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
-		String chrnametmpString = "";
+		String chrIDtmp = "";
 		// int mm=0;//计数的东西
 		for (String content : txtGffRead.readlines(2)) {
 			content = content.replace("\"", "");
 			String[] geneInfo = content.split("\t");
 			String[] exonStarts = geneInfo[8].split(",");
 			String[] exonEnds = geneInfo[9].split(",");
-			chrnametmpString = geneInfo[1].toLowerCase();// 小写的chrID
+			chrIDtmp = geneInfo[1];// 小写的chrID
+			String chrIDtmpLowCase = chrIDtmp.toLowerCase();
 			// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			// 新的染色体
-			if (!mapChrID2ListGff.containsKey(chrnametmpString)) // 新的染色体
+			if (!mapChrID2ListGff.containsKey(chrIDtmpLowCase)) // 新的染色体
 			{
 				if (lsChromGene != null)// 如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
 				{
 					lsChromGene.trimToSize();
 				}
 				lsChromGene = new ListGff();// 新建一个LOCList并放入Chrhash
-				lsChromGene.setName(chrnametmpString);
-				mapChrID2ListGff.put(chrnametmpString, lsChromGene);
+				lsChromGene.setName(chrIDtmp);
+				mapChrID2ListGff.put(chrIDtmpLowCase, lsChromGene);
 			}
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			// 添加转录本
