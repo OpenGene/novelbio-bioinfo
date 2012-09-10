@@ -145,7 +145,7 @@ public class MapRsem implements MapRNA{
 
 		if (!FileOperate.isFileExist(gene2isoFile)) {
 			TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2isoFile, true);
-			SeqFastaHash seqFastaHash = new SeqFastaHash(refFile, null, false, false);
+			SeqFastaHash seqFastaHash = new SeqFastaHash(refFile, null, false);
 			for (String geneIDstr : seqFastaHash.getLsSeqName()) {
 				GeneID geneID = new GeneID(geneIDstr, species.getTaxID());
 				String symbol = geneID.getSymbol();

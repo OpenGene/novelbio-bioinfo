@@ -48,10 +48,6 @@ public class ExonInfo extends ListDetailAbs {
 			numberstart = endLoc;
 		}
 	}
-	public int getItemNum() {
-		GffGeneIsoInfo gffGeneIsoInfo = getParent();
-		return gffGeneIsoInfo.indexOf(this);
-	}
 	public ExonInfo clone() {
 		ExonInfo result = null;
 		result = (ExonInfo) super.clone();

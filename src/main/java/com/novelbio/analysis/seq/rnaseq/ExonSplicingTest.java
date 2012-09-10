@@ -201,15 +201,36 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		if (pvalue > 0) {
 			return pvalue;
 		}
+		if (isZeroCounts()) {
+			pvalue = 1.0;
+			return pvalue;
+		}
+		
 		double pvalueExp = getPvalueReads();
 		double pvalueCounts = getPvalueJunctionCounts();
-		if (exonCluster.getExonSplicingType() == ExonSplicingType.retain_intron) {
-			getPvalueRetain_Intron(pvalueExp, pvalueCounts);
-		}
-		else {
+//		if (exonCluster.getExonSplicingType() == ExonSplicingType.retain_intron) {
+//			getPvalueRetain_Intron(pvalueExp, pvalueCounts);
+//		}
+//		else {
 			getPvalueOther(pvalueExp, pvalueCounts);
-		}
+//		}
 		return pvalue;
+	}
+	private boolean isZeroCounts() {
+		int[] cond1 = mapCondition2Counts.get(condition1);
+		int[] cond2 = mapCondition2Counts.get(condition2);
+		boolean isZero = true;
+		for (int i : cond1) {
+			if (i > 3) {
+				isZero = false;
+			}
+		}
+		for (int i : cond2) {
+			if (i > 3) {
+				isZero = false;
+			}
+		}
+		return isZero;
 	}
 	/** 比较junction reads
 	 * 在这之前务必设定condition
@@ -314,10 +335,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		double pvalueLog = Math.log10(pvalueExp) * expPro +  Math.log10(pvalueCounts) * (1 - expPro);
 		pvalue = Math.pow(10, pvalueLog);
 				
-		//对于cassette的pvalue缩小
-//		if (exonCluster.getExonSplicingType() == ExonSplicingType.cassette) {
-//			pvalue = pvalue * pvalue * 2;
-//		}
+//		对于cassette的pvalue缩小
+		if (exonCluster.getExonSplicingType() == ExonSplicingType.cassette) {
+			pvalue = pvalue * pvalue * 2;
+		}
 		if (pvalue > 1) {
 			pvalue = 1.0;
 		}

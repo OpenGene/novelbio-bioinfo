@@ -125,10 +125,10 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		GffChrAbs gffChrAbs = new GffChrAbs(10090);
-		gffChrAbs.getGffHashGene().writeToGTF("/home/zong0jie/Desktop/tophatTest/testGff", "novelbio");
-		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation("chrx", 3242048);
-		System.out.println(gffCodGene.getGffDetailThis().getName());
+		SeqHash seqHash = new SeqHash("/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice7/ChromFa",  "\\bChr\\w*");
+		SeqFasta seqFasta = seqHash.getSeq("Chr1", 2345, 2678);
+		System.out.println(seqFasta.toString());
+ 
 	}
 	
 	private static void test(int[] mm) {

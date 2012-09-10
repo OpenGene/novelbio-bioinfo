@@ -33,10 +33,10 @@ public class SeqHash implements SeqHashInt{
 	 */
 	public SeqHash(String chrFile) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
-			seqHashAbs =new SeqFastaHash(chrFile, "", true, false);
+			seqHashAbs =new SeqFastaHash(chrFile, "", true);
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {
-			seqHashAbs = new ChrStringHash(chrFile, "\\bchr\\w*", true);
+			seqHashAbs = new ChrStringHash(chrFile, "\\bchr\\w*");
 		}
 	}
 	/**
@@ -53,10 +53,10 @@ public class SeqHash implements SeqHashInt{
 	 */
 	public SeqHash(String chrFile, String regx) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
-			seqHashAbs =new SeqFastaHash(chrFile, regx, true, false);
+			seqHashAbs =new SeqFastaHash(chrFile, regx, true);
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {
-			seqHashAbs = new ChrStringHash(chrFile, regx, true);
+			seqHashAbs = new ChrStringHash(chrFile, regx);
 		}
 	}
 	
@@ -69,10 +69,10 @@ public class SeqHash implements SeqHashInt{
 	 */
 	public SeqHash(String chrFile, String regx,Boolean TOLOWCASE) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
-			seqHashAbs =new SeqFastaHash(chrFile, regx, true, false);
+			seqHashAbs =new SeqFastaHash(chrFile, regx, true);
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {
-			seqHashAbs = new ChrStringHash(chrFile, regx, true);
+			seqHashAbs = new ChrStringHash(chrFile, regx);
 		}
 		this.TOLOWCASE = TOLOWCASE;
 	}
@@ -87,12 +87,12 @@ public class SeqHash implements SeqHashInt{
 	 * true：如果出现重名序列，则在第二条名字后加上"<"作为标记 false：如果出现重名序列，则用长的序列去替换短的序列
 	 * 默认为false
 	 */
-	public SeqHash(String chrFile, String regx, boolean CaseChange,Boolean TOLOWCASE, boolean append) {
+	public SeqHash(String chrFile, String regx,Boolean TOLOWCASE, boolean append) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
-			seqHashAbs =new SeqFastaHash(chrFile, regx, CaseChange, append);
+			seqHashAbs =new SeqFastaHash(chrFile, regx, append);
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {
-			seqHashAbs = new ChrStringHash(chrFile, regx, CaseChange);
+			seqHashAbs = new ChrStringHash(chrFile, regx);
 		}
 		this.TOLOWCASE = TOLOWCASE;
 	}

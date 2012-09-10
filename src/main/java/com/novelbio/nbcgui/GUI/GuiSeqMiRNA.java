@@ -89,14 +89,10 @@ public class GuiSeqMiRNA extends JPanel{
 	 */
 	public GuiSeqMiRNA() {
 		setLayout(null);
-		
-		JLabel lblSettingGenomeIndex = new JLabel("Setting Genome Index");
-		lblSettingGenomeIndex.setBounds(17, 337, 159, 14);
-		add(lblSettingGenomeIndex);
 
 		//是否将全部的bed文件mapping至基因组上，用于看基因组上的reads分布
 		chkMapAllBedFileToGenome = new JCheckBox("mapping all bedFile to Genome");
-		chkMapAllBedFileToGenome.setBounds(17, 359, 245, 22);
+		chkMapAllBedFileToGenome.setBounds(23, 310, 245, 22);
 		add(chkMapAllBedFileToGenome);
 		
 		combFileType = new JComboBoxData<Integer>();

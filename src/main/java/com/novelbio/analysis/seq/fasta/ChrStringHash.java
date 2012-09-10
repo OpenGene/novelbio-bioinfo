@@ -22,7 +22,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class ChrStringHash extends SeqHashAbs{
 	public static void main(String[] args) {
-		ChrStringHash chrStringHash = new ChrStringHash("/home/zong0jie/Desktop/test/bam", null, true);
+		ChrStringHash chrStringHash = new ChrStringHash("/home/zong0jie/Desktop/test/bam", null);
 		for (Character base : chrStringHash.readBase("chr22")) {
 			System.out.println(base);
 		}
@@ -48,8 +48,8 @@ public class ChrStringHash extends SeqHashAbs{
 	 * @param regx null走默认，默认为"\\bchr\\w*"， 用该正则表达式去查找文件名中含有Chr的文件，每一个文件就认为是一个染色体
 	 * @param CaseChange 是否将序列名转化为小写，一般转为小写
 	 */
-	public ChrStringHash(String chrFilePath,String regx, boolean CaseChange) {
-		super(chrFilePath, regx, CaseChange);
+	public ChrStringHash(String chrFilePath,String regx) {
+		super(chrFilePath, regx);
 		setFile();
 	}
 
@@ -81,7 +81,7 @@ public class ChrStringHash extends SeqHashAbs{
 				String seqRow = txtChrTmp.readFirstLines(3).get(2);
 				lengthRow = seqRow.length();// 每行几个碱基
 			}
-			String chrID = getChrIDisLowCase(chrFileName[0]);
+			String chrID = chrFileName[0].toLowerCase();
 			mapChrID2RandomFile.put(chrID, chrRAseq);
 			mapChrID2BufReader.put(chrID, bufChrSeq);
 			mapChrID2Txt.put(chrID, txtChrTmp);
@@ -128,7 +128,7 @@ public class ChrStringHash extends SeqHashAbs{
 	 */
 	protected SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation) throws IOException {
 		startlocation--;
-		chrID = getChrIDisLowCase(chrID);
+		chrID = chrID.toLowerCase();
 		RandomAccessFile chrRASeqFile = mapChrID2RandomFile.get(chrID);// 判断文件是否存在
 		if (chrRASeqFile == null) {
 			logger.error( "无该染色体: "+ chrID);
@@ -222,7 +222,7 @@ public class ChrStringHash extends SeqHashAbs{
 	}
 	@Override
 	public Iterable<Character> readBase(String refID) {
-		final String myRefID = getChrIDisLowCase(refID);;
+		final String myRefID = refID.toLowerCase();
 		return new Iterable<Character>() {
 			@Override
 			public Iterator<Character> iterator() {

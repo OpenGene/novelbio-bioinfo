@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
 
 /**
@@ -170,10 +171,10 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 		this.itemNum = itemNum;
 	}
 	/** 
-	 * <b>好像没用</b>
+	 * <b>从0开始计算</b>
 	 * 该条目在List-GffDetail中的具体位置 */
 	public int getItemNum() {
-		return this.itemNum;
+		return getParent().indexOf(this);
 	}
     /**
      * Item的名字，返回第一个
@@ -415,7 +416,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 		numberend == otherObj.numberend && 
 		numberstart == otherObj.numberstart &&
 		parentName.equals(otherObj.parentName) &&
-		getItemNum() == otherObj.getItemNum() &&
+//		getItemNum() == otherObj.getItemNum() &&
 		cis5to3 == otherObj.cis5to3;
 	}
 	/** 重写hashcode */
@@ -451,7 +452,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 			result.downGeneEnd3UTR = downGeneEnd3UTR;
 			result.downTss = downTss;
 			result.lsItemName = (ArrayList<String>) lsItemName.clone();
-			result.itemNum = itemNum;
+//			result.itemNum = itemNum;
 			result.readsInElementNumber = readsInElementNumber;
 			result.numberend = numberend;
 			result.numberstart = numberstart;

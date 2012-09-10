@@ -43,7 +43,7 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 	/** 这里的GffFfileName就是mRNA序列 */
 	@Override
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
-		SeqFastaHash seqHashMRNA = new SeqFastaHash(gfffilename, null, false, false);
+		SeqFastaHash seqHashMRNA = new SeqFastaHash(gfffilename, null, false);
 		SeqFastaHash seqHashProtein = new SeqFastaHash(proteinSeq);
 
 		setTaxID(seqHashMRNA);

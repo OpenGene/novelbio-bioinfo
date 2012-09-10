@@ -60,7 +60,6 @@ public class GffChrAbs {
 	int tssDownBp = 2000;
 	int geneEnd3UTR = 100;
 	
-	String chrRegx = null;
 	String equationsFile = "";
 
 	public GffChrAbs() {}
@@ -208,7 +207,7 @@ public class GffChrAbs {
 	 */
 	public void setChrFile(String chrFile, String regx) {
 		if (FileOperate.isFileExist(chrFile) || FileOperate.isFileDirectory(chrFile)) {
-			 seqHash = new SeqHash(chrFile, chrRegx);
+			 seqHash = new SeqHash(chrFile, regx);
 		}
 	}
 	/** 输入已经配置好的mapReads对象，但是标准化和校正都由GffChrAbs提供 */

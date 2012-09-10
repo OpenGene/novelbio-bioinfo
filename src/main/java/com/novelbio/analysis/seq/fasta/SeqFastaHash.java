@@ -28,7 +28,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	Boolean TOLOWCASE = null;
 	/**
 	 * 将序列信息读入哈希表并返回<br>
-	 * 哈希表的键是序列名，根据情况不改变大小写或改为小写<br>
+	 * 哈希表的键是序列名，小写
 	 * 哈希表的值是序列，其中无空格<br>
 	 */
 	public HashMap<String,SeqFasta> hashSeq;
@@ -42,7 +42,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * false：如果出现重名序列，则用长的序列去替换短的序列，默认为false
 	 */
 	public SeqFastaHash(String chrFile) {
-		super(chrFile, "", true);
+		super(chrFile, "");
 		setFile();
 	}
 	/**
@@ -51,9 +51,9 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * @param append 对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
 	 * false：如果出现重名序列，则用长的序列去替换短的序列，默认为false
 	 */
-	public SeqFastaHash(String chrFile, String regx, boolean CaseChange,
+	public SeqFastaHash(String chrFile, String regx,
 			boolean append) {
-		super(chrFile, regx, CaseChange);
+		super(chrFile, regx);
 		this.append = append;
 		setFile();
 	}
@@ -67,7 +67,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	 */
 	public SeqFastaHash(String chrFile, String regx, boolean CaseChange,
 			boolean append,Boolean TOLOWCASE) {
-		super(chrFile, regx, CaseChange);
+		super(chrFile, regx);
 		this.append = append;
 		this.TOLOWCASE = TOLOWCASE;
 		setFile();
@@ -111,11 +111,7 @@ public class SeqFastaHash extends SeqHashAbs {
 					SeqStringBuilder = new StringBuilder();// 清空
 				}
 				Seq = new SeqFasta();
-				String tmpSeqName = "";
-				// //////////////是否改变序列名字的大小写//////////////////////////////////////////////
-				tmpSeqName = content.trim().substring(1).trim();
-				tmpSeqName = getChrIDisLowCase(tmpSeqName);
-				
+				String tmpSeqName = content.trim().substring(1).trim();
 				// ///////////////用正则表达式抓取序列名中的特定字符////////////////////////////////////////////////
 				if (regx == null || regx.trim().equals("")) {
 					Seq.setName(tmpSeqName);
@@ -145,31 +141,32 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * @param append
 	 */
 	private void putSeqFastaInHash(SeqFasta seqFasta, String seq, boolean append) {
+		String seqNameLow = seqFasta.getSeqName().toLowerCase();
 		if (TOLOWCASE != null) {
 			seq = (TOLOWCASE == true ? seq.toLowerCase() : seq.toUpperCase());
 		}
 		seqFasta.setSeq(seq);
-		SeqFasta tmpSeq = hashSeq.get(seqFasta.getSeqName());// 看是否有同名的序列出现
+		SeqFasta tmpSeq = hashSeq.get(seqNameLow);// 看是否有同名的序列出现
 		// 如果没有同名序列，直接装入hash表
 		if (tmpSeq == null) {
-			hashSeq.put(seqFasta.getSeqName(), seqFasta);
-			lsSeqName.add(seqFasta.getSeqName());
-			hashChrLength.put(seqFasta.getSeqName(), (long) seq.length());
+			hashSeq.put(seqNameLow, seqFasta);
+			lsSeqName.add(seqNameLow);
+			hashChrLength.put(seqNameLow, (long) seq.length());
 		} else {// 对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
 			if (append)
 			 { //连续向后加上"<"直到hash中没有这条名字为止，然后装入hash表
-				 while (hashSeq.containsKey(seqFasta.getSeqName())) {
+				 while (hashSeq.containsKey(seqNameLow)) {
 					 seqFasta.setName(seqFasta.getSeqName()+"<");
 				 }
-				 hashSeq.put(seqFasta.getSeqName(), seqFasta);
-				 lsSeqName.add(seqFasta.getSeqName());
-				 hashChrLength.put(seqFasta.getSeqName(), (long) seq.length());
+				 hashSeq.put(seqNameLow, seqFasta);
+				 lsSeqName.add(seqNameLow);
+				 hashChrLength.put(seqNameLow, (long) seq.length());
 			 }
 			 else {
 				if (tmpSeq.Length()<seqFasta.Length()) 
 				{
-					hashSeq.put(seqFasta.getSeqName(), seqFasta);
-					hashChrLength.put(seqFasta.getSeqName(), (long) seq.length());
+					hashSeq.put(seqNameLow, seqFasta);
+					hashChrLength.put(seqNameLow, (long) seq.length());
 					//因为已经有了同名的序列，所以 lsSeqName 中不需要添加新的名字
 				}
 			}
@@ -184,7 +181,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * 如果没有序列则返回null
 	 */
 	public String getSeqAll(String SeqID,boolean cisseq) {
-		SeqID = getChrIDisLowCase(SeqID);
+		SeqID.toLowerCase();
 		if (hashSeq.containsKey(SeqID)) {
 			if (cisseq) {
 				return hashSeq.get(SeqID).toString();
@@ -200,6 +197,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * 返回序列
 	 */
 	protected SeqFasta getSeqInfo(String seqID, long startlocation, long endlocation) throws IOException {
+		seqID = seqID.toLowerCase();
 		SeqFasta targetChr=hashSeq.get(seqID);
 		if (targetChr == null) {
 			logger.error("没有该序列 " +seqID);
@@ -213,7 +211,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * 返回序列
 	 */
 	public SeqFasta getSeqFasta(String seqID) {
-		seqID = getChrIDisLowCase(seqID);
+		seqID = seqID.toLowerCase();
 		SeqFasta seqFasta = hashSeq.get(seqID);
 		if (seqFasta == null) {
 			logger.error("没有该ID：" + seqID);
@@ -352,7 +350,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	}
 	@Override
 	public Iterable<Character> readBase(String refID) {
-		refID = getChrIDisLowCase(refID);
+		refID = refID.toLowerCase();
 		SeqFasta seqFasta = hashSeq.get(refID);
 		return seqFasta.readBase();
 	}

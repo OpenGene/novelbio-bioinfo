@@ -67,6 +67,8 @@ public class GuiAnnoPeak extends JPanel implements GuiNeedOpenFile {
 				String excelFile = guiFileOpen.openFileName("excel/txt", "");
 				lsGeneInfo = ExcelTxtRead.readLsExcelTxt(excelFile, 1);
 				scrollPaneData.setItemLs(lsGeneInfo);
+				btnRun.setEnabled(true);
+				btnSave.setEnabled(true);
 			}
 		});
 		btnOpenfile.setBounds(717, 30, 118, 24);

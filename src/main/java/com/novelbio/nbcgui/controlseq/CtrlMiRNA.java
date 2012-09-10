@@ -60,7 +60,7 @@ public class CtrlMiRNA {
 	MiRNACount miRNACount = new MiRNACount();
 	RfamStatistic rfamStatistic = new RfamStatistic();
 	ReadsOnRepeatGene readsOnRepeatGene = new ReadsOnRepeatGene();
-	ReadsOnNCrna readsOnNCrna = new ReadsOnNCrna();
+//	ReadsOnNCrna readsOnNCrna = new ReadsOnNCrna();
 	/**新的miRNA预测   未来考虑用list来放置多个如mireap和mirdeep等预测方法  */
 	NovelMiRNAReap novelMiRNAReap = new NovelMiRNAReap();
 	NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
@@ -253,20 +253,20 @@ public class CtrlMiRNA {
 			rfamStatistic.countRfamInfo(rfamFile, rfamStatisticRfambed);
 		}
 	}
-	/** 读取rfam信息并计数
+	/** 读取ncRNA的信息并计数
 	 * @param solo 单独计数
 	 *  */
-	private void countNCrna(boolean solo) {
-		if (!solo && FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutNCRNAbed(), 10)) {
-			readsOnNCrna.setBedSed(miRNAmappingPipline.getOutNCRNAbed());
-		}
-		else if (solo && FileOperate.isFileExist(readsOnNCrnaBed) && FileOperate.getFileSize(readsOnNCrnaBed) > 1000) {
-			readsOnNCrna.setBedSed(readsOnNCrnaBed);
-		}
-		else {
-			return;
-		}
-		readsOnNCrna.searchNCrna();
-		readsOnNCrna.writeToFile(outPath + outputPrefix + "_NCrnaStatistics.txt");
-	}
+//	private void countNCrna(boolean solo) {
+//		if (!solo && FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutNCRNAbed(), 10)) {
+//			readsOnNCrna.setBedSed(miRNAmappingPipline.getOutNCRNAbed());
+//		}
+//		else if (solo && FileOperate.isFileExist(readsOnNCrnaBed) && FileOperate.getFileSize(readsOnNCrnaBed) > 1000) {
+//			readsOnNCrna.setBedSed(readsOnNCrnaBed);
+//		}
+//		else {
+//			return;
+//		}
+//		readsOnNCrna.searchNCrna();
+//		readsOnNCrna.writeToFile(outPath + outputPrefix + "_NCrnaStatistics.txt");
+//	}
 }

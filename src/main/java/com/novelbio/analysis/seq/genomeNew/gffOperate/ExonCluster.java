@@ -213,7 +213,7 @@ public class ExonCluster {
 			}
 		}
 		if (setSplicingTypes.size() == 0) {
-			setSplicingTypes.add(ExonSplicingType.cassette);
+			setSplicingTypes.add(ExonSplicingType.unknown);
 		}
 		return setSplicingTypes;
 	}
@@ -265,10 +265,10 @@ public class ExonCluster {
 		int start = lsExonInfo.get(0).getStartCis(), end = lsExonInfo.get(0).getEndCis();
 		for (int i = 1; i < lsExonInfo.size(); i++) {
 			ExonInfo exonInfo = lsExonInfo.get(i);
-			if (start != exonInfo.getStartCis()) {
+			if (exonInfo.getItemNum() != 0 && start != exonInfo.getStartCis()) {
 				setSplicingTypes.add(ExonSplicingType.alt3);
 			}
-			if (end != exonInfo.getEndCis()) {
+			if (exonInfo.getItemNum() != exonInfo.getParent().size() - 1 && end != exonInfo.getEndCis()) {
 				setSplicingTypes.add(ExonSplicingType.alt5);
 			}
 		}

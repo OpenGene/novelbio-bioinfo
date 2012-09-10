@@ -21,7 +21,9 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public abstract class SeqHashAbs implements SeqHashInt{
 	private static Logger logger = Logger.getLogger(SeqHashAbs.class);
-	/** 保存chrID和chrLength的对应关系 */
+	/** 保存chrID和chrLength的对应关系
+	 * key小写
+	 *  */
 	LinkedHashMap<String, Long> hashChrLength = new LinkedHashMap<String, Long>();
 	/** 从小到大排列chrLength的list */
 	ArrayList<String[]> lsChrLen = null;
@@ -30,8 +32,6 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	/** 抓取chrID的正则表达式 */
 	String regx = null;	
 	String chrFile = "";
-	/** 是否将序列名改为小写 */
-	boolean CaseChange = true;
 	/** 将序列名称按顺序读入list */
 	public ArrayList<String> lsSeqName;
 	/** 外显子之间用什么来分割，默认为"" */
@@ -40,15 +40,13 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	/**
 	 * @param chrFile
 	 * @param regx 序列名的正则表达式，null和"   "都不设定
-	 * @param CaseChange 是否将序列名改为小写
 	 * @param TOLOWCASE 是否将序列结果改为小写 True：小写，False：大写，null不变
 	 */
-	public SeqHashAbs(String chrFile, String regx,boolean CaseChange) {
+	public SeqHashAbs(String chrFile, String regx) {
 		this.chrFile = chrFile;
 		if (regx != null && !regx.trim().equals("")) {
 			this.regx = regx;
 		}
-		this.CaseChange = CaseChange;
 	}
 	public String getChrFile() {
 		return chrFile;
@@ -68,13 +66,6 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	@Override
 	public void setSep(String sep) {
 		this.sep = sep;
-	}
-	/** 根据是否大小写进行改名 */
-	protected String getChrIDisLowCase(String chrID) {
-		if (CaseChange) {
-			return chrID.toLowerCase();
-		}
-		return chrID;
 	}
 	/**
 	 * 获得所有序列的名字
@@ -149,6 +140,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @param maxresolution
 	 */
 	public int[] getChrRes(String chrID, int maxresolution) throws Exception {
+		chrID = chrID.toLowerCase();
 		ArrayList<String[]> chrLengthArrayList = getChrLengthInfo();
 		int binLen = Integer.parseInt(chrLengthArrayList.get(chrLengthArrayList.size() - 1)[1]) / maxresolution;
 		int resolution = (int) (hashChrLength.get(chrID) / binLen);
@@ -203,6 +195,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @return 返回序列，出错就返回null
 	 */
 	public SeqFasta getSeq(String chrID, long startlocation, long endlocation) {
+		chrID = chrID.toLowerCase();
 		try {
 			SeqFasta seqFasta = getSeqInfo(chrID, startlocation, endlocation);
 			seqFasta.setDNA(isDNAseq);
@@ -247,9 +240,6 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @param cisseq true:正向链 false：反向互补链
 	 */
 	public SeqFasta getSeq(String chr, int peaklocation, int region, boolean cisseq) {
-		if (CaseChange)
-			chr = chr.toLowerCase();
-
 		int startnum = peaklocation - region;
 		int endnum = peaklocation + region;
 		return getSeq(cisseq, chr, startnum, endnum);
@@ -264,13 +254,11 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
-	private SeqFasta getSeq(boolean cisseq, String chrID,List<ExonInfo> lsInfo, String sep, boolean getIntron) {
+	private SeqFasta getSeq(boolean cisseq, String chrID, List<ExonInfo> lsInfo, String sep, boolean getIntron) {
 		SeqFasta seqFasta = new SeqFasta();
 		seqFasta.setName(chrID + "_" + lsInfo.get(0).getName() + "_");
-		String myChrID = chrID;
-		if (CaseChange) {
-			myChrID = chrID.toLowerCase();
-		}
+		String myChrID = chrID.toLowerCase();
+		
 		if (!hashChrLength.containsKey(myChrID)) {
 			logger.error("没有该染色体： "+chrID);
 			return null;
@@ -366,9 +354,8 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		ArrayList<SeqFasta> lsSeqfasta = new ArrayList<SeqFasta>();
 		for (LocInfo locInfo : lsLocInfos) {
 			String myChrID = locInfo.getChrID();
-			if (CaseChange) {
-				myChrID = myChrID.toLowerCase();
-			}
+			myChrID = myChrID.toLowerCase();
+			
 			if (!hashChrLength.containsKey(myChrID)) {
 				logger.error("没有该染色体： "+ locInfo.getChrID());
 				return null;
