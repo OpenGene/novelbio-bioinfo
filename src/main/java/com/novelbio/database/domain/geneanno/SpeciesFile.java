@@ -513,7 +513,7 @@ public class SpeciesFile {
 		 * @param regx ¿‡À∆ "NR_\\d+|XR_\\d+";
 		 */
 		private void extractNCRNA(String refseqFile, String outNCRNA, String regx) {
-			 SeqFastaHash seqFastaHash = new SeqFastaHash(refseqFile,regx,false, false);
+			 SeqFastaHash seqFastaHash = new SeqFastaHash(refseqFile,regx,false);
 			 seqFastaHash.writeToFile( regx ,outNCRNA );
 		}
 		/**
@@ -625,7 +625,7 @@ public class SpeciesFile {
 		 */
 		private void extractRfam(String rfamFile, String outRfam, int taxIDquery) {
 			TxtReadandWrite txtOut = new TxtReadandWrite(outRfam, true);
-			 SeqFastaHash seqFastaHash = new SeqFastaHash(rfamFile,null,false, false);
+			 SeqFastaHash seqFastaHash = new SeqFastaHash(rfamFile,null,false);
 			 seqFastaHash.setDNAseq(true);
 			 ArrayList<SeqFasta> lsSeqfasta = seqFastaHash.getSeqFastaAll();
 			 for (SeqFasta seqFasta : lsSeqfasta) {

@@ -1,4 +1,6 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +14,7 @@ import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.test.testextend.a;
 
 /**
  * 应该是标准的gff3格式，仅用于NCBI的gff3文件
@@ -35,7 +38,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  NCBI的ID  */
 	protected String regGeneName = "(?<=gene\\=)\\w+";
 	/**  可变剪接mRNA的正则，默认 NCBI的ID */
-	protected String regSplitmRNA = "(?<=transcript_id\\=)\\w+";
+	protected String regSplitmRNA = "(?<=transcript_id\\=)[\\w,\\-]+";
+	/**  可变剪接mRNA的产物的正则，默认 NCBI的symbol */
+	protected String regProduct = "(?<=product\\=)[\\w\\-%]+";
 	/** geneID的正则 */
 	protected String regGeneID = "(?<=Dbxref\\=GeneID\\:)\\d+";
 	/** ID的正则 */
@@ -48,6 +53,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 
 	/** gene类似名 */
 	private static HashSet<String> setIsGene = new HashSet<String>();
+	private static String enc="utf8";//文件中含有%20C等符号，用url解码
 	/** "(?<=gene\\=)\\w+" */
 	PatternOperate patGeneName = null;
 	/**  "(?<=transcript_id\\=)\\w+" */
@@ -58,7 +64,20 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	PatternOperate patID = null;
 	/** "(?<=Parent\\=)\\w+" */
 	PatternOperate patParentID = null;
+	/** "(?<=product\\=)\\w+" */
+	PatternOperate patProduct = null;
 	
+	public static void main(String[] args) throws UnsupportedEncodingException {
+		
+		GffHashGeneNCBI gffHashGeneNCBI = new GffHashGeneNCBI();
+		gffHashGeneNCBI.ReadGffarray("/media/winE/Bioinformatics/genome/human/hg19/ref_GRCh37.p9_top_level_modify.gff3");
+		GffGeneIsoInfo gffGeneIsoInfo = gffHashGeneNCBI.searchISO("NP_002446");		
+		System.out.println(gffGeneIsoInfo.getName());
+		gffGeneIsoInfo = gffHashGeneNCBI.searchISO("NM_002455");
+		System.out.println(gffGeneIsoInfo.getName());
+
+	}
+
 	private HashMap<String, String> mapGenID2GeneName = new HashMap<String, String>();
 	private HashMap<String, String> hashRnaID2GeneID = new HashMap<String, String>();
 	private HashMap<String, String> hashRnaID2RnaName = new HashMap<String, String>();
@@ -71,17 +90,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	 */
 	private void setHashName() {
 		if (mapMRNA2GeneType.isEmpty()) {
-			mapMRNA2GeneType.put("mRNA_TE_gene",GeneType.mRNA_TE);
-			mapMRNA2GeneType.put("mRNA",GeneType.mRNA);
-			mapMRNA2GeneType.put("miRNA",GeneType.miRNA);
-//			hashmRNA.put("tRNA",GffGeneIsoInfo.TYPE_GENE_TRNA);
-			mapMRNA2GeneType.put("pseudogenic_transcript", GeneType.PSEU_TRANSCRIPT);
-			mapMRNA2GeneType.put("snoRNA", GeneType.snoRNA);
-			mapMRNA2GeneType.put("snRNA", GeneType.snRNA);
-			mapMRNA2GeneType.put("rRNA", GeneType.rRNA);
-			mapMRNA2GeneType.put("ncRNA", GeneType.ncRNA);
-			mapMRNA2GeneType.put("transcript",GeneType.miscRNA);
-			mapMRNA2GeneType.put("miscRNA",GeneType.miscRNA);
+			mapMRNA2GeneType = GeneType.getMapMRNA2GeneType();
+			mapMRNA2GeneType.remove("tRNA");//tRNA当作gene处理
 		}
 		if (setIsGene.isEmpty()) {
 			setIsGene.add("gene");
@@ -93,6 +103,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	private void setPattern() {
 		patGeneName = new PatternOperate(regGeneName, false);
 		patmRNAName = new PatternOperate(regSplitmRNA, false);
+		patProduct = new PatternOperate(regProduct, false);
+		
 		patGeneID = new PatternOperate(regGeneID, false);
 		patID = new PatternOperate(regID, false);
 		patParentID = new PatternOperate(regParentID, false);
@@ -130,7 +142,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			   String genID = patID.getPatFirst(ss[8]);
 			   String geneName = getGeneName(ss[8]); setTaxID(ss, geneName);
 			   mapGenID2GeneName.put(genID, geneName);
-			   GffDetailGene gffDetailLOC = getGffDetailGenID(patID.getPatFirst(ss[8]));
+			   GffDetailGene gffDetailLOC = getGffDetailGenID(genID);
 			   if (gffDetailLOC == null) {
 				   gffDetailLOC=new GffDetailGene(chrIDtmp, geneName, ss[6].equals("+"));//新建一个基因类
 			   }
@@ -145,10 +157,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
       	    */
 		   else if (mapMRNA2GeneType.containsKey(ss[2])) {
 			   String rnaID = patID.getPatFirst(ss[8]);
-			   hashRnaID2RnaName.put(rnaID, patmRNAName.getPatFirst(ss[8]));
-			   hashRnaID2GeneID.put(rnaID, patParentID.getPatFirst(ss[8]));
-			   GffDetailGene gffDetailGene = null;
-			   gffDetailGene = getGffDetailRnaID(rnaID);
+			   addMap_RnaID2RnaName_RnaID2GeneID(rnaID, ss);
+			   GffDetailGene gffDetailGene = getGffDetailRnaID(rnaID);
 			  
 			   String[] mRNAname = getMrnaName(ss);
 			   try {
@@ -165,8 +175,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			   try {
 				   gffGeneIsoInfo = getGffIso(patParentID.getPatFirst(ss[8]));
 			} catch (Exception e) {
-				 gffGeneIsoInfo = getGffIso(patParentID.getPatFirst(ss[8]));
-				 logger.error("出现未知exon：" + ss[2]);
+				 logger.error("出现未知exon：" + content);
+				 continue;
 			}
 			  
 			   gffGeneIsoInfo.addExon(Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
@@ -180,6 +190,24 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   }
 	   setGffList();
 	   txtgff.close();
+   }
+   private void addMap_RnaID2RnaName_RnaID2GeneID(String rnaID, String[] ss) {
+	   String rnaName = patmRNAName.getPatFirst(ss[8]);
+	   if (rnaName == null) {
+		   rnaName = getProductName(ss[8]);
+	   }
+	   hashRnaID2RnaName.put(rnaID, rnaName);
+	   hashRnaID2GeneID.put(rnaID, patParentID.getPatFirst(ss[8]));
+   }
+   /** 需要解码 */
+   private String getProductName(String ss8) {
+	   String rnaName = patProduct.getPatFirst(ss8);
+	   try {
+		   rnaName = URLDecoder.decode(rnaName, enc);
+	   } catch (UnsupportedEncodingException e) {
+		   e.printStackTrace();
+	   }
+	   return rnaName;
    }
    private String getGeneName(String content) {
 	   String geneName = patGeneName.getPatFirst(content);//查找基因名字
@@ -206,6 +234,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
    private String[] getMrnaName(String[] content) {
 	   String[] result = new String[2];
 	   String mRNAname = patmRNAName.getPatFirst(content[8]);//mRNApattern.matcher(content);
+	   if (mRNAname == null) {
+		   mRNAname = getProductName(content[8]);
+	   }
 	   if(mRNAname != null) {
 		   result[0] = mRNAname;
 		   result[1] = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
@@ -245,6 +276,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   }
    }
    /**
+    * 从hashGenID2GffDetail中获得该GffDetailGene
     * 这里的genID不是我们数据库里面的geneID，而是NCBI gff所特有的ID
     * @param genID
     * @return null 表示没有找到相应的GffDetail信息
@@ -253,6 +285,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   return hashGenID2GffDetail.get(genID);
    }
    /**
+    * 从hashRnaID2GeneID中获得该GffDetailGene
     * 这里的genID不是我们数据库里面的geneID，而是NCBI gff所特有的ID
     * @param genID
     * @return null 表示没有找到相应的GffDetail信息
@@ -262,6 +295,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   return getGffDetailGenID(genID);
    }
    /**
+    * 从hashRnaID2RnaName中获得该RNA的GffGeneIsoInfo
     * 这里的genID不是我们数据库里面的geneID，而是NCBI gff所特有的ID
     * @param genID
     * @return null 表示没有找到相应的GffDetail信息
@@ -299,6 +333,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   }
 
    }
+
    /**
     * 将NCBIgff中的chrID转换为标准ChrID，然后将其中的scaffold删除
     * 同时修正tRNA的问题
@@ -315,7 +350,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			continue;
 		   }
 		   String[] ss = string.split("\t");
-		   if (ss[2].equals("match") || ss[0].startsWith("NW_")) {
+		   if (ss[2].equals("match") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
 			   continue;
 		   }
 		   if (ss[2].equals("region")) {
@@ -329,7 +364,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 				   chrID = "chrc";
 			   }
 			   else {
-				   chrID = "chr" + PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];
+				   try {
+					   chrID = "chr" + PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];
+				} catch (Exception e) {
+					logger.error("本位置出错，错误的region，本来一个region应该是一个染色体，这里不知道是什么 " + string);
+				}
 			   }
 		   }
 		   ss[0] = chrID;

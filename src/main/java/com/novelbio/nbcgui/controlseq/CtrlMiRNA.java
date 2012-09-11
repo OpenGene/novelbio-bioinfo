@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.ibatis.migration.commands.NewCommand;
 
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mirna.MiRNAmapPipline;
@@ -27,6 +28,10 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  */
 public class CtrlMiRNA {
+	public static void main(String[] args) {
+		SeqFastaHash seqFastaHash = new SeqFastaHash("/media/winE/Bioinformatics/GenomeData/CriGri/rna_Cope.fa");
+		seqFastaHash.writeToFile("/media/winE/Bioinformatics/GenomeData/CriGri/rna_CopeNew.fa");
+	}
 	Species species = new Species();
 	SoftWareInfo softWareInfo = new SoftWareInfo();
 	/** 输入的待比对序列 */
@@ -60,7 +65,7 @@ public class CtrlMiRNA {
 	MiRNACount miRNACount = new MiRNACount();
 	RfamStatistic rfamStatistic = new RfamStatistic();
 	ReadsOnRepeatGene readsOnRepeatGene = new ReadsOnRepeatGene();
-//	ReadsOnNCrna readsOnNCrna = new ReadsOnNCrna();
+	ReadsOnNCrna readsOnNCrna = new ReadsOnNCrna();
 	/**新的miRNA预测   未来考虑用list来放置多个如mireap和mirdeep等预测方法  */
 	NovelMiRNAReap novelMiRNAReap = new NovelMiRNAReap();
 	NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
@@ -256,17 +261,17 @@ public class CtrlMiRNA {
 	/** 读取ncRNA的信息并计数
 	 * @param solo 单独计数
 	 *  */
-//	private void countNCrna(boolean solo) {
-//		if (!solo && FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutNCRNAbed(), 10)) {
-//			readsOnNCrna.setBedSed(miRNAmappingPipline.getOutNCRNAbed());
-//		}
-//		else if (solo && FileOperate.isFileExist(readsOnNCrnaBed) && FileOperate.getFileSize(readsOnNCrnaBed) > 1000) {
-//			readsOnNCrna.setBedSed(readsOnNCrnaBed);
-//		}
-//		else {
-//			return;
-//		}
-//		readsOnNCrna.searchNCrna();
-//		readsOnNCrna.writeToFile(outPath + outputPrefix + "_NCrnaStatistics.txt");
-//	}
+	private void countNCrna(boolean solo) {
+		if (!solo && FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutNCRNAbed(), 10)) {
+			readsOnNCrna.setBedSed(miRNAmappingPipline.getOutNCRNAbed());
+		}
+		else if (solo && FileOperate.isFileExist(readsOnNCrnaBed) && FileOperate.getFileSize(readsOnNCrnaBed) > 1000) {
+			readsOnNCrna.setBedSed(readsOnNCrnaBed);
+		}
+		else {
+			return;
+		}
+		readsOnNCrna.searchNCrna();
+		readsOnNCrna.writeToFile(outPath + outputPrefix + "_NCrnaStatistics.txt");
+	}
 }

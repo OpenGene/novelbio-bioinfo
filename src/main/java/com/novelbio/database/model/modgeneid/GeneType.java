@@ -10,8 +10,7 @@ public enum GeneType {
 	 mRNA, miRNA, PSEU_TRANSCRIPT, mRNA_TE,
 	 tRNA, snoRNA, snRNA,
 	 rRNA, ncRNA, miscRNA;
-	 
-	static HashMap<String, GeneType> mapMRNA2GeneType = new HashMap<String, GeneType>();
+	 static HashMap<String, GeneType> mapMRNA2GeneType = new HashMap<String, GeneType>();
 	/**
 	 * 设定mRNA和gene的类似名，在gff文件里面出现的
 	 */
@@ -30,5 +29,10 @@ public enum GeneType {
 			mapMRNA2GeneType.put("miscRNA",miscRNA);
 		}
 	}
-	 
+	public static HashMap<String, GeneType> getMapMRNA2GeneType() {
+		if (mapMRNA2GeneType.size() == 0) {
+			setMapName2GeneType();
+		}
+		return mapMRNA2GeneType;
+	}
 }

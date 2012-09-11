@@ -368,7 +368,9 @@ public class SeqFasta implements Cloneable {
 	public String toStringNRfasta() {
 		return ">" + SeqName + TxtReadandWrite.ENTER_LINUX + toString();
 	}
-	/** 返回Nr的fasta序列 */
+	/** 返回Nr的fasta序列
+	 * @param basePerLine 每多少个bp换行
+	 *  */
 	public String toStringNRfasta(int basePerLine) {
 		String result = ">" + SeqName;
 		char[] tmpAll = toString().toCharArray();
