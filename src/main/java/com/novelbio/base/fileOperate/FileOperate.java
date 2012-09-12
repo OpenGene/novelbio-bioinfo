@@ -21,11 +21,12 @@ import org.apache.log4j.Logger;
 import org.omg.CosNaming._BindingIteratorImplBase;
 
 import com.novelbio.analysis.tools.compare.runCompSimple;
+import com.novelbio.base.dataStructure.PatternOperate;
 
 public class FileOperate {
 	private static Logger logger = Logger.getLogger(FileOperate.class);
 	public static void main(String[] args) {
-		System.out.println(FileOperate.isFileExistAndBigThanSize("/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/expression/targetGene/miranda_LFJ_3UTR.fasta", 1));
+		System.out.println(getFileNameSep("/sfe/gsre/afsfs.")[0]);
 	}
 	/**
 	 * 读取文本文件内容
@@ -277,12 +278,31 @@ public class FileOperate {
 	 * @return 返回包含目标文件名的ArrayList。里面是string[2] 1:文件名 2：后缀
 	 */
 	public static ArrayList<String[]> getFoldFileName(String filePath, String filename, String suffix) {
-		// 匹配文件名与后缀名
-		Pattern pattern = Pattern.compile("(.*)\\.(\\w*)", Pattern.CASE_INSENSITIVE);
-		Matcher matcher;
-		String name = ""; // 文件名
-		String houzhuiming = ""; // 后缀名
-		String[] filenamefinal;
+		ArrayList<String> lsFileName = getFoldFileNameLs(filePath, filename, suffix);
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		for (String fileName : lsFileName) {
+			String[] fileNameSep = getFileNameSep(fileName);
+			lsResult.add(fileNameSep);
+		}
+		return lsResult;
+	}
+	/**
+	 * 获取文件夹下包含指定文件名与后缀的所有文件名,等待增加功能子文件夹下的文件。也就是循环获得文件<br>
+	 * 如果文件不存在则返回null<br>
+	 * 如果不是文件夹，则返回该文件名<br>
+	 * 
+	 * @param filePath
+	 *            目录路径,最后不要加\\或/
+	 * @param filename
+	 *            指定包含的文件名，是正则表达式 ，如 "*",正则表达式无视大小写
+	 * @param suffix
+	 *            指定包含的后缀名，是正则表达式<br>
+	 *            文件 wfese.fse.fe认作 "wfese.fse"和"fe"<br>
+	 *            文件 wfese.fse.认作 "wfese.fse."和""<br>
+	 *            文件 wfese 认作 "wfese"和""<br>
+	 * @return 返回包含目标文件名的ArrayList。里面是string[2] 1:文件名 2：后缀
+	 */
+	public static ArrayList<String> getFoldFileNameLs(String filePath, String filename, String suffix) {
 		filePath = removeSep(filePath);
 		if (filename == null || filename.equals("*") ) {//|| filename.equals(""))
 			filename = ".*";
@@ -291,7 +311,7 @@ public class FileOperate {
 			suffix = ".*";
 		}
 		// ================================================================//
-		ArrayList<String[]> ListFilename = new ArrayList<String[]>();
+		ArrayList<String> ListFilename = new ArrayList<String>();
 		File file = new File(filePath);
 		if (!file.exists()) {// 没有文件，则返回空
 			return null;
@@ -299,49 +319,42 @@ public class FileOperate {
 		// 如果只是文件则返回文件名
 		if (!file.isDirectory()) { // 获取文件名与后缀名
 			String fileName = file.getName();
-			if (!fileName.contains(".") || fileName.endsWith(".")) {
-				name = fileName;
-				houzhuiming = "";
-			} else {
-				matcher = pattern.matcher(fileName);
-				if (matcher.find()) {
-					name = matcher.group(1);
-					houzhuiming = matcher.group(2);
-				}
-			}
-			if (name.matches(filename) && houzhuiming.matches(suffix)) {
-				filenamefinal = new String[2];
-				filenamefinal[0] = name;
-				filenamefinal[1] = suffix;
-				ListFilename.add(filenamefinal);
+			if (isNeedFile(filename, filename, suffix)) {
+				ListFilename.add(fileName);
 				return ListFilename;
 			}
-			return null;
 		}
 		// 如果是文件夹
 		String[] filenameraw = file.list();
 		for (int i = 0; i < filenameraw.length; i++) {
-			if (!filenameraw[i].contains(".") || filenameraw[i].endsWith(".")) {
-				name = filenameraw[i];
-				houzhuiming = "";
-			} else {
-				matcher = pattern.matcher(filenameraw[i]);
-				if (matcher.find()) {
-					name = matcher.group(1);
-					houzhuiming = matcher.group(2);
-				}
-			}
-			// 开始判断
-			if (name.matches(filename) && houzhuiming.matches(suffix)) {
-				filenamefinal = new String[2];
-				filenamefinal[0] = name;
-				filenamefinal[1] = houzhuiming;
-				ListFilename.add(filenamefinal);
+			if (isNeedFile(filenameraw[i], filename, suffix)) {
+				ListFilename.add(filenameraw[i]);
 			}
 		}
 		return ListFilename;
 	}
-
+	/**
+	 *  是符合条件的文件名
+	 * @param pattern 用来分割文件名的正则 Pattern pattern = Pattern.compile("(.*)\\.(\\w*)", Pattern.CASE_INSENSITIVE);
+	 * @param matcher
+	 * @param fileName 输入的文件名
+	 * @param regxFilename 指定包含的文件名，是正则表达式 ，如 "*",正则表达式无视大小写
+	 * @param regxSuffix  
+	 * 指定包含的后缀名，是正则表达式<br>
+	 *            文件 wfese.fse.fe认作 "wfese.fse"和"fe"<br>
+	 *            文件 wfese.fse.认作 "wfese.fse."和""<br>
+	 *            文件 wfese 认作 "wfese"和""<br>
+	 * @return
+	 */
+	private static boolean isNeedFile(String fileName, String regxFilename, String regxSuffix) {
+		String[] fileNameSep = getFileNameSep(fileName);
+		// 开始判断
+		if (fileNameSep[0].matches(regxFilename) && fileNameSep[1].matches(regxSuffix)) {
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * 新建目录,如果新文件夹存在也返回ture
 	 * 

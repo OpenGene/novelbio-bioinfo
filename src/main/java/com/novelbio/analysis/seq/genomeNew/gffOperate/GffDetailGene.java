@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonCluster;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
@@ -109,6 +110,17 @@ public class GffDetailGene extends ListDetailAbs {
 			}
 		}
 		return -1;
+	}
+	/** 全体item的名字 */
+	public ArrayList<String > getName() {
+		HashSet<String> setIsoName = new HashSet<String>();
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			setIsoName.add(gffGeneIsoInfo.getName());
+		}
+		for (String string : this.lsItemName) {
+			setIsoName.add(string);
+		}
+		return ArrayOperate.getArrayListValue(setIsoName);
 	}
 	/**
 	 * 划定Tss范围上游为负数，下游为正数

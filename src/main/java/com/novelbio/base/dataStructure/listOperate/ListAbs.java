@@ -12,6 +12,7 @@ import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceIns
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.database.domain.geneanno.SepSign;
+import com.novelbio.database.model.modgeneid.GeneID;
 /**
  * 考虑将其拆分成为三个不同的list，一个cis，一个trans，一个null
  * @author zong0jie
@@ -313,6 +314,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 			ArrayList<String> ss = ele.getName();
 			for (String string : ss) {
 				mapName2DetailAbs.put(string.toLowerCase(), ele);
+				mapName2DetailAbs.put(GeneID.removeDot(string.toLowerCase()), ele);
 			}
 		}
 		return mapName2DetailAbs;

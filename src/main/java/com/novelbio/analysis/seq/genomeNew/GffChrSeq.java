@@ -27,8 +27,6 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
 	GeneStructure geneStructure = GeneStructure.ALLLENGTH;
-	/** true,提取该转录本，false，提取该gene下的最长转录本 */
-	boolean absIso;
 	/** 是否提取内含子 */
 	boolean getIntron;
 	/** 提取全基因组序列的时候，是每个LOC提取一条序列还是提取全部 */
@@ -56,19 +54,16 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	public void setSpecies(Species species) {
 		gffChrAbs.setSpecies(species);
 	}
-	/** 默认是ture */
+	/** 默认是ture，表示存入output文件
+	 * 否则结果保存在lsResult中
+	 */
 	public void setSaveToFile(boolean saveToFile) {
 		this.saveToFile = saveToFile;
 	}
-	/** 提取单个基因的时候<br>
+	/** 提取全基因组序列的时候，是每个Gene提取一条Iso还是提取全部Iso <br>
 	 * true：提取该基因对应的转录本<br>
 	 * false 提取该基因所在基因的最长转录本<br>
-	 * @param absIso
 	 */
-	public void setAbsIso(boolean absIso) {
-		this.absIso = absIso;
-	}
-	/** 提取全基因组序列的时候，是每个Gene提取一条Iso还是提取全部Iso */
 	public void setGetAllIso(boolean getAllIso) {
 		this.getAllIso = getAllIso;
 	}
@@ -249,7 +244,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 	
 	private GffGeneIsoInfo getIso(String IsoName) {
-		if (absIso)
+		if (getAllIso)
 			return gffChrAbs.getGffHashGene().searchISO(IsoName);
 		else
 			return gffChrAbs.getGffHashGene().searchLOC(IsoName).getLongestSplit();

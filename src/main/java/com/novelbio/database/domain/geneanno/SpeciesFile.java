@@ -172,6 +172,11 @@ public class SpeciesFile {
 	public void setIndexSeq(String indexSeq) {
 		this.indexChr = indexSeq;
 	}
+	/** 返回该mapping软件所对应的index的文件
+	 * 没有就新建一个
+	 * 格式如下：
+	 * softMapping.toString() + "_Chr_Index/"
+	 */
 	public String getIndexChromFa(SoftWare softMapping) {
 		filledHashIndexPath(indexChr, mapSoftware2ChrIndexPath);
 		String indexChromFa =  mapSoftware2ChrIndexPath.get(softMapping.toString());
@@ -190,6 +195,10 @@ public class SpeciesFile {
 	public void setIndexRefseq(String indexRefseq) {
 		this.indexRefseq = indexRefseq;
 	}
+	/** 返回该mapping软件所对应的index的文件
+	 * 没有就新建一个
+	 * 格式如下：softMapping.toString() + "_Ref_Index/"
+	 */
 	public String getIndexRefseq(SoftWare softMapping) {
 		filledHashIndexPath(indexRefseq, mapSoftware2RefseqIndexPath);
 		String indexRefseqThis =  mapSoftware2RefseqIndexPath.get(softMapping.toString());
@@ -211,7 +220,7 @@ public class SpeciesFile {
 	 * @param seqIndex 该index所对应的保存在数据库中的值，譬如indexChr
 	 * @param seqFile 该index所对应的序列，用getChromSeq()获得
 	 * @param mapSoftware2ChrIndexPath 该index所对应的hash表，如 mapSoftware2ChrIndexPath
-	 * @return
+	 * @return softMapping.toString() + "_Ref_Index/" 或 softMapping.toString() + "_Chr_Index/"
 	 */
 	private String creatAndGetSeqIndex(Boolean refseq, SoftWare softMapping, String seqFile, HashMap<String, String> mapSoftware2ChrIndexPath) {
 		String indexChromFinal = null;
@@ -227,13 +236,13 @@ public class SpeciesFile {
 		else {
 			///media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/ChromFa/all/mm9.fasta
 			seqName = FileOperate.getFileName(seqFile);
-			IndexPath = FileOperate.getParentPathName(FileOperate.getParentPathName(seqFile));
+			IndexPath = FileOperate.getParentPathName(getChromFaPath()) + "index/";
 		}
 		
 		if (refseq)
-			indexFinalPath = IndexPath + softMapping.toString() + "ref_Index/";
+			indexFinalPath = IndexPath + softMapping.toString() + "_Ref_Index/";
 		else
-			indexFinalPath = IndexPath + softMapping.toString() + "_Index/";
+			indexFinalPath = IndexPath + softMapping.toString() + "_Chr_Index/";
 		
 		FileOperate.createFolders(indexFinalPath);
 		indexChromFinal = indexFinalPath + seqName;

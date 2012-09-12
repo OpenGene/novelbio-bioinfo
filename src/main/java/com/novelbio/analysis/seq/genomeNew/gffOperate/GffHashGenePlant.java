@@ -30,13 +30,11 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		GffCodGene gffCodGene = gffHashGenePlant.searchLocation("chr1", 6790);
 		System.out.println(gffCodGene.getGffDetailThis().getLongestSplit().getATGsite());
 	}
-	/**
-	 * 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  "AT\\w{1}G\\d{5}"
-	 * 水稻是 "LOC_Os\\d{2}g\\d{5}";
-	 */
-	protected String GeneName="AT\\w{1}G\\d{5}";
-	/** 可变剪接mRNA的正则，水稻是："(?<=LOC_Os\\d{2}g\\d{5}\\.)\\d";，默认拟南芥" (?<=AT\\w{1}G\\d{5}\\.)\\d" */
-	protected String splitmRNA="(?<=AT\\w{1}G\\d{5}\\.)\\d";
+	/** 基因名字的正则 */
+	protected String GeneName="";
+	/** 可变剪接mRNA的正则 */
+	protected String splitmRNA="";
+	
 	/** mRNA类似名 */
 	private static HashMap<String, GeneType> mapMRNA2GeneType = new HashMap<String, GeneType>();
 	/** gene类似名 */
@@ -54,12 +52,12 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	
 	private void setDB(String DB) {
 		if (DB.equals(NovelBioConst.GENOME_GFF_TYPE_PLANT)) {
-			GeneName= "(?<=Name\\=)\\w+";
-			splitmRNA= "(?<=Name\\=)\\w+";
+			GeneName= "(?<=Name\\=)[\\w\\.]+";
+			splitmRNA= "(?<=Name\\=)[\\w\\.]+";
 		}
 		else if (DB.equals(NovelBioConst.GENOME_GFF_TYPE_TIGR)) {
-			GeneName = "(?<=Alias\\=)\\w+";
-			splitmRNA = "(?<=Alias\\=)\\w+";
+			GeneName = "(?<=Alias\\=)[\\w\\.]+";
+			splitmRNA = "(?<=Alias\\=)[\\w\\.]+";
 		}
 	}
 	/** 设定mRNA和gene的类似名，在gff文件里面出现的 */

@@ -244,10 +244,21 @@ public class Species {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefseqFile();
 	}
-	/** 指定mapping的软件，获得该软件所对应的索引文件 */
+	/** 指定mapping的软件，获得该软件所对应的索引文件
+	 * 没有就新建一个，格式<br>
+	 * softMapping.toString() + "_Chr_Index/"
+	 *  */
 	public String getIndexChr(SoftWare softMapping) {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getIndexChromFa(softMapping);
+	}
+	/** 指定mapping的软件，获得该软件所对应的索引文件
+	 * 没有就新建一个，格式<br>
+	 * softMapping.toString() + "_Ref_Index/" 
+	 *  */
+	public String getIndexRef(SoftWare softMapping) {
+		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		return speciesFile.getIndexRefseq(softMapping);
 	}
 	////////////////////////    升级   //////////////////////////////////////////////////////////////////////////////////////
 	/** 输入taxinfo的文本 */

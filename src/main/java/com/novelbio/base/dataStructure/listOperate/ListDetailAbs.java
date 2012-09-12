@@ -41,7 +41,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	 * CpG：107_chr1_CpG_36568608: 27 其中107是CpG gff文件中的索引,36568608是该CpG在染色体上的起点
 	 * peak: peak起点_peak终点
 	 */
-	private ArrayList<String> lsItemName = new ArrayList<String>(); //loc name
+	protected ArrayList<String> lsItemName = new ArrayList<String>(); //loc name
 	/**  染色体编号，都小写 */
 	protected String parentName="";
 	/** 转录方向，假设同一基因不管多少转录本都同一转录方向 */

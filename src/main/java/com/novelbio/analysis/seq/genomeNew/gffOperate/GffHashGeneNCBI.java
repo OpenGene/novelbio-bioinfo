@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -68,12 +69,14 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	PatternOperate patProduct = null;
 	
 	public static void main(String[] args) throws UnsupportedEncodingException {
+//		GffHashGeneNCBI.modifyNCBIgffFile("/media/winE/Bioinformatics/genome/checken/gal4_UCSC/gff/ref_Gallus_gallus-4.0_top_level.gff3");
+		
 		
 		GffHashGeneNCBI gffHashGeneNCBI = new GffHashGeneNCBI();
-		gffHashGeneNCBI.ReadGffarray("/media/winE/Bioinformatics/genome/human/hg19/ref_GRCh37.p9_top_level_modify.gff3");
-		GffGeneIsoInfo gffGeneIsoInfo = gffHashGeneNCBI.searchISO("NP_002446");		
+		gffHashGeneNCBI.ReadGffarray("/media/winE/Bioinformatics/genome/checken/gal4_UCSC/gff/ref_Gallus_gallus-4.0_top_level_modify.gff3");
+		GffGeneIsoInfo gffGeneIsoInfo = gffHashGeneNCBI.searchISO("NM_001031401");		
 		System.out.println(gffGeneIsoInfo.getName());
-		gffGeneIsoInfo = gffHashGeneNCBI.searchISO("NM_002455");
+		gffGeneIsoInfo = gffHashGeneNCBI.searchISO("XM_003640325");
 		System.out.println(gffGeneIsoInfo.getName());
 
 	}
@@ -215,8 +218,13 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   String geneID = patGeneID.getPatFirst(content);
 		   if (geneID == null) {
 			System.out.println("stop");
+		   }
+		   GeneID copedID = null;
+		   try {
+			   copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
+		} catch (Exception e) {
+			   copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
 		}
-		   GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
 		   geneName = copedID.getAccID();
 	   }
 	   if (geneName == null) {
@@ -343,6 +351,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   String regxChrID = "(?<=chromosome\\=)\\w+";
 	   TxtReadandWrite txtGff = new TxtReadandWrite(NCBIgff, false);
 	   TxtReadandWrite txtGffOut = new TxtReadandWrite(FileOperate.changeFileSuffix(NCBIgff, "_modify", null), true);
+	   /** 将不同的chrID表也写入对照表中 */
+	   HashMap<String, String> mapAccID2ChrID = new HashMap<String, String>();
+	   TxtReadandWrite txtGffOutConvertTab = new TxtReadandWrite(FileOperate.changeFileSuffix(NCBIgff, "_modify_ChrID_Tab", null), true);
+	   
 	   String chrID = "";
 	   boolean tRNAflag = false; String[] tRNAtmp = null;
 	   for (String string : txtGff.readlines()) {
@@ -353,12 +365,13 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   if (ss[2].equals("match") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
 			   continue;
 		   }
+		   
 		   if (ss[2].equals("region")) {
 			   if (ss[8].contains("genome=genomic")) {
 				continue;
 			   }
 			   else if (ss[8].contains("genome=mitochondrion")) {
-				   chrID = "chrm";
+				   chrID = "chrM";
 			   }
 			   else if (ss[8].contains("genome=chloroplast")) {
 				   chrID = "chrc";
@@ -366,13 +379,17 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			   else {
 				   try {
 					   chrID = "chr" + PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];
-				} catch (Exception e) {
-					logger.error("本位置出错，错误的region，本来一个region应该是一个染色体，这里不知道是什么 " + string);
-				}
+				   } catch (Exception e) {
+					   logger.error("本位置出错，错误的region，本来一个region应该是一个染色体，这里不知道是什么 " + string);
+					   chrID = "unkonwn";
+				   }
 			   }
+			   mapAccID2ChrID.put(ss[0], chrID);
 		   }
 		   ss[0] = chrID;
-		   
+		   if (chrID.equals("unknown")) {
+			continue;
+		   }
 		   if (tRNAflag) {
 			   if (!ss[2].equals("tRNA")) {
 				   txtGffOut.writefileln(tRNAtmp);
@@ -398,8 +415,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   txtGffOut.writefileln(ss);
 		   
 	   }
+	   for (Entry<String, String> entry : mapAccID2ChrID.entrySet()) {
+		   txtGffOutConvertTab.writefileln(entry.getKey() + "\t" + entry.getValue());
+	   }
 	   txtGff.close();
 	   txtGffOut.close();
+	   txtGffOutConvertTab.close();
    }
    /**
     * 获得tRNA的两行的最小和最大值，作为tRNA的起点和终点

@@ -22,10 +22,8 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class ChrStringHash extends SeqHashAbs{
 	public static void main(String[] args) {
-		ChrStringHash chrStringHash = new ChrStringHash("/home/zong0jie/Desktop/test/bam", null);
-		for (Character base : chrStringHash.readBase("chr22")) {
-			System.out.println(base);
-		}
+		ChrStringHash chrStringHash = new ChrStringHash("/media/winE/Bioinformatics/genome/human/hg19_GRCh37/ChromFa", null);
+		System.out.println(chrStringHash.getSeq("chrY", 69, 77));
 	}
 	private static Logger logger = Logger.getLogger(ChrStringHash.class);
 	
@@ -58,20 +56,15 @@ public class ChrStringHash extends SeqHashAbs{
 	 * @throws FileNotFoundException 
 	 */
 	protected void setChrFile() throws Exception {
-		ArrayList<String[]> lsChrFile = initialAndGetFileList();
+		ArrayList<String> lsChrFile = initialAndGetFileList();
 		RandomAccessFile chrRAseq = null;
 		TxtReadandWrite txtChrTmp = null;
 		BufferedReader bufChrSeq = null;
 		
 		for (int i = 0; i < lsChrFile.size(); i++) {
-
-			String[] chrFileName = lsChrFile.get(i);
-			String fileNam = "";
+			String fileNam = lsChrFile.get(i);
+			String[] chrFileName = FileOperate.getFileNameSep(fileNam);
 			lsSeqName.add(chrFileName[0]);
-			if (chrFileName[1].equals(""))
-				fileNam = chrFile + chrFileName[0];
-			else
-				fileNam = chrFile + chrFileName[0] + "." + chrFileName[1];
 
 			chrRAseq = new RandomAccessFile(fileNam, "r");
 			txtChrTmp = new TxtReadandWrite(fileNam, false);
@@ -90,7 +83,7 @@ public class ChrStringHash extends SeqHashAbs{
 	}
 	
 	/** 初始化并返回文件夹中的所有符合正则表达式的文本名 */
-	private ArrayList<String[]> initialAndGetFileList() {
+	private ArrayList<String> initialAndGetFileList() {
 		chrFile = FileOperate.addSep(chrFile);
 		if (regx == null)
 			regx = "\\bchr\\w*";
@@ -99,9 +92,8 @@ public class ChrStringHash extends SeqHashAbs{
 		mapChrID2BufReader = new HashMap<String, BufferedReader>();
 		mapChrID2Txt = new HashMap<String, TxtReadandWrite>();
 		lsSeqName = new ArrayList<String>();
-		return FileOperate.getFoldFileName(chrFile,regx, "*");
+		return FileOperate.getFoldFileNameLs(chrFile,regx, "*");
 	}
-	
 	/** 设定染色体长度 */
 	private void setChrLength() throws IOException {
 		for (Entry<String, RandomAccessFile> entry : mapChrID2RandomFile.entrySet()) {

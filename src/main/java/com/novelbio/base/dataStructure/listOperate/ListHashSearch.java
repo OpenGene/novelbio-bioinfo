@@ -321,9 +321,9 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 */
 	public String[] getLOCNum(String LOCID) {
 		String[] result = new String[2];
-		T ele = getMapName2Detail().get(LOCID);
+		T ele = getMapName2Detail().get(LOCID.toLowerCase());
 		result[0] = ele.getParentName();
-		result[1] = getMapName2DetailNum().get(LOCID) + "";
+		result[1] = getMapName2DetailNum().get(LOCID.toLowerCase()) + "";
 		return result;
 	}
 	/**

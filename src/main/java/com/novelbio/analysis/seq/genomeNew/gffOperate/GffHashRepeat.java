@@ -1,8 +1,5 @@
 package com.novelbio.analysis.seq.genomeNew.gffOperate;
 
-import java.io.BufferedReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 
@@ -36,49 +33,35 @@ ListCodAbsDu<GffDetailRepeat, ListCodAbs<GffDetailRepeat>>, ListBin<GffDetailRep
 	@Override
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 		   mapChrID2ListGff=new LinkedHashMap<String, ListBin<GffDetailRepeat>>();//一个哈希表来存储每条染色体
-		   //为读文件做准备
 		   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename,false);
-		   BufferedReader reader=txtgff.readfile();//open gff file
-	       
-		   String[] ss = null;//存储分割数组的临时变量
-		   String content="";
-		   //临时变量
 		   ListBin<GffDetailRepeat> LOCList=null ;//顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
-		   String chrnametmpString=""; //染色体的临时名字
 		   
-		   reader.readLine();//跳过第一行
-		   while((content=reader.readLine())!=null)//读到结尾
-		   {
-			   ss=content.split("\t");
-			   chrnametmpString=ss[5].toLowerCase();//小写
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			    //新的染色体
-			   if (!mapChrID2ListGff.containsKey(chrnametmpString)) //新的染色体
-			   {
+		  for( String content : txtgff.readlines()) {
+			  if (content.startsWith("#"))
+				continue;
+			
+			  String[] ss=content.split("\t");
+			  String chrID=ss[5];
+			  //新的染色体
+			   if (!mapChrID2ListGff.containsKey(chrID.toLowerCase()))  {
 				   if(LOCList!=null)//如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
-				   {
 					   LOCList.trimToSize();
-				   }
+				   
 				   LOCList=new ListBin<GffDetailRepeat>();//新建一个LOCList并放入Chrhash
-				   mapChrID2ListGff.put(chrnametmpString, LOCList);
+				   mapChrID2ListGff.put(chrID.toLowerCase(), LOCList);
 			   }
-			  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			   //每一行就是一个repeat
-			   GffDetailRepeat gffRepeatmpDetail=new GffDetailRepeat(chrnametmpString, ss[5]+"_"+ss[6]+"_"+ss[9], ss[9].equals("+"));
+			   GffDetailRepeat gffRepeatmpDetail=new GffDetailRepeat(chrID, ss[5]+"_"+ss[6]+"_"+ss[9], ss[9].equals("+"));
 			   gffRepeatmpDetail.setStartAbs(Integer.parseInt(ss[6]));
-			   gffRepeatmpDetail.setEndAbs(Integer.parseInt(ss[7]));
-			   //装入LOCList和locHashtable
-			   
+			   gffRepeatmpDetail.setEndAbs(Integer.parseInt(ss[7]));			   
 			   gffRepeatmpDetail.repeatFamily=ss[12];
 			   gffRepeatmpDetail.repeatClass=ss[11];
 			   gffRepeatmpDetail.repeatName=ss[10];
 			   LOCList.add(gffRepeatmpDetail);  
 		   }
-		   /////////////////////////////////////////////////////////////////////////////////////////////
-		   LOCList.trimToSize();
 
+		  LOCList.trimToSize();
 		   txtgff.close();
-		 /////////////////////////////////////////////////////////////////////////////////////////////////
 	}
 	
 	/**

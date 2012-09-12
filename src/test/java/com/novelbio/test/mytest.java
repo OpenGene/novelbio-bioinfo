@@ -75,9 +75,11 @@ import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
@@ -125,10 +127,8 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		SeqHash seqHash = new SeqHash("/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice7/ChromFa",  "\\bChr\\w*");
-		SeqFasta seqFasta = seqHash.getSeq("Chr1", 2345, 2678);
-		System.out.println(seqFasta.toString());
- 
+		
+		
 	}
 	
 	private static void test(int[] mm) {

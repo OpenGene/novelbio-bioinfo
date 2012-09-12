@@ -360,20 +360,38 @@ public class SeqFasta implements Cloneable {
 			return TOLOWCASE.equals(true) ?  SeqSequence.toLowerCase() :  SeqSequence.toUpperCase();
 		}
 	}
-	/** 返回AA的fasta序列 */
+	/** 返回AA的fasta序列
+	 *  每行60个AA
+	 *  */
 	public String toStringAAfasta() {
-		return ">" + SeqName + TxtReadandWrite.ENTER_LINUX + toStringAA(true, 0);
+		return toStringAAfasta(60);
 	}
-	/** 返回Nr的fasta序列 */
+	/** 返回AA的fasta序列
+	 * @param basePerLine 每多少个AA换行
+	 *  */
+	public String toStringAAfasta(int basePerLine) {
+		return getMultiLineSeq(SeqName, toStringAA(true, 0), basePerLine);
+	}
+	/** 返回Nr的fasta序列
+	 * 每隔60个碱基换行
+	 */
 	public String toStringNRfasta() {
-		return ">" + SeqName + TxtReadandWrite.ENTER_LINUX + toString();
+		return toStringNRfasta(60);
 	}
 	/** 返回Nr的fasta序列
 	 * @param basePerLine 每多少个bp换行
 	 *  */
 	public String toStringNRfasta(int basePerLine) {
-		String result = ">" + SeqName;
-		char[] tmpAll = toString().toCharArray();
+		return getMultiLineSeq(SeqName, toString(), basePerLine);
+	}
+	/** 返回Nr的fasta序列
+	 * @param seqName 序列名
+	 * @param seq 具体的序列
+	 * @param basePerLine 每多少个bp换行
+	 *  */
+	private String getMultiLineSeq(String seqName, String seq, int basePerLine) {
+		String result = ">" + seqName;
+		char[] tmpAll = seq.toCharArray();
 		char[] tmpLines = new char[basePerLine];
 		int m = 0;
 		for (int i = 0; i < tmpAll.length; i++) {
@@ -390,6 +408,7 @@ public class SeqFasta implements Cloneable {
 		result = result + TxtReadandWrite.ENTER_LINUX + tmpline;
 		return result;
 	}
+	
 	/** 克隆序列 */
 	public SeqFasta clone() {
 		SeqFasta seqFasta = null;
