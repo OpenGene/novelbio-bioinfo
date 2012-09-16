@@ -245,10 +245,15 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	 * @param reservecom 是否根据cis5to3进行反向序列
 	 */
 	public void setSeq(SeqFasta seqFasta, boolean reservecom) {
+		if (seqFasta == null) {
+			return;
+		}
 		if (reservecom && cis5to3 != null && cis5to3 == false) {
 			seqFasta = seqFasta.reservecom();
 		}
-		seqFasta.setName(getName());
+		if (getName() != null && !getName().trim().equals("")) {
+			seqFasta.setName(getName());
+		}
 		this.seqFasta = seqFasta;
 	}
 	/**

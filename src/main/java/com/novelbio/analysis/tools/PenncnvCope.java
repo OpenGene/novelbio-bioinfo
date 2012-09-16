@@ -62,7 +62,7 @@ public class PenncnvCope {
 		penncnvCope.readTxt(txtFile);
 		ArrayList<String[]> lsResult = penncnvCope.writeResult();
 		TxtReadandWrite txtResult = new TxtReadandWrite(outFile, true);
-		txtResult.ExcelWrite(lsResult, "\t", 1, 1);
+		txtResult.ExcelWrite(lsResult);
 	}
 	
 	

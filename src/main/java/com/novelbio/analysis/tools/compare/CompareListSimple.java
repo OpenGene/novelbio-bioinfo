@@ -11,15 +11,8 @@ import java.util.List;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
- 
 
-
-
-
-
-public class CompareListSimple 
-{
-	static String sep="\t";
+public class CompareListSimple {
 	/**
 	 * 从文件的第几行开始读取
 	 */
@@ -186,7 +179,7 @@ public class CompareListSimple
 		
 		if (ls1 == null || ls1.size()<1) {
 			txt.setParameter(filePath+FileA, false,true);
-			ls1=txt.ExcelRead(sep, firstlinels1, 1, txt.ExcelRows(), -1, 1);//从目标行读取
+			ls1=txt.ExcelRead(firstlinels1, 1, txt.ExcelRows(), -1, 1);//从目标行读取
 		}
 			
 		try {
@@ -198,20 +191,20 @@ public class CompareListSimple
 		}
 		if (ls2 == null || ls2.size()<1) {
 			txt.setParameter(filePath+FileB, false,true);
-			ls2=txt.ExcelRead(sep, firstlinels2, 1, txt.ExcelRows(), -1, 1);
+			ls2=txt.ExcelRead(firstlinels2, 1, txt.ExcelRows(), -1, 1);
 		}
 
 		ArrayList<ArrayList<String[]>> compareResult=compareList(ls1, ls2,considerCase);
 		String intersectionResultFilePath=filePath+resultFold+"/";
 
 		txt.setParameter(intersectionResultFilePath+FileAonly, true,false);
-		txt.ExcelWrite(compareResult.get(0), sep, 1, 1);
+		txt.ExcelWrite(compareResult.get(0), 1, 1);
 		
 		txt.setParameter(intersectionResultFilePath+FileBonly, true,false);
-		txt.ExcelWrite(compareResult.get(1), sep, 1, 1);
+		txt.ExcelWrite(compareResult.get(1), 1, 1);
 	
 		txt.setParameter(intersectionResultFilePath+FileIntersection, true,false);
-		txt.ExcelWrite(compareResult.get(2), sep, 1, 1);
+		txt.ExcelWrite(compareResult.get(2), 1, 1);
 	 
 	}
 	

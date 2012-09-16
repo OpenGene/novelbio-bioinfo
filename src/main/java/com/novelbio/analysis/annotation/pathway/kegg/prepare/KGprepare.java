@@ -10,6 +10,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniProtID;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ServNCBIID;
 import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
@@ -38,7 +39,7 @@ public class KGprepare {
 		String[][] geneID=txtReadandWrite.ExcelRead("\t", rowStartNum, colNum,txtReadandWrite.ExcelRows(),colNum);
 		String[] geneID2=new String[geneID.length];
 		for (int i = 0; i < geneID.length; i++) {
-			geneID2[i]=removeDot(geneID[i][0]);
+			geneID2[i] = GeneID.removeDot(geneID[i][0]);
 		}
 		return geneID2;
 	}
@@ -51,34 +52,15 @@ public class KGprepare {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String[] getAccID(int rowStartNum,int colNum,String accIDFile) throws Exception 
-	{
+	public static String[] getAccID(int rowStartNum,int colNum,String accIDFile) throws Exception {
 		ExcelOperate excelOperate = new ExcelOperate();
 		excelOperate.openExcel(accIDFile);
-		String[][] geneID = excelOperate.ReadExcel(rowStartNum, colNum, excelOperate.getRowCount(), colNum);
-		String[] geneID2=new String[geneID.length];
-		for (int i = 0; i < geneID.length; i++) {
-			geneID2[i]=removeDot(geneID[i][0]);
+		ArrayList<String[]> lsGeneID = excelOperate.ReadLsExcel(rowStartNum, colNum, excelOperate.getRowCount(), colNum);
+		String[] geneID2=new String[lsGeneID.size()];
+		for (int i = 0; i < lsGeneID.size(); i++) {
+			geneID2[i]=GeneID.removeDot(lsGeneID.get(i)[0]);
 		}
 		return geneID2;
-	}
-	/**
-	 * @deprecated
-	 * 用 CopeID的removeDot方法代替
-	 *  首先除去空格
-	 * 如果类似XM_002121.1类型，那么将.1去除
-	 * @param accID
-	 * @return accID without .1
-	 */
-	public static String removeDot(String accID)
-	{
-		String tmpGeneID = accID.trim();
-		int dotIndex = tmpGeneID.lastIndexOf(".");
-		//如果类似XM_002121.1类型
-		if (dotIndex>0 && tmpGeneID.length() - dotIndex == 2) {
-			tmpGeneID = tmpGeneID.substring(0,dotIndex);
-		}
-		return tmpGeneID;
 	}
 	/**
 	 * 读取gene信息并返回GeneID信息，有geneID的返回geneID，没有的返回UniProtID, 如果类似XM_002121.1类型，那么将.1去除
@@ -100,7 +82,7 @@ public class KGprepare {
 		for (int i = 0; i < geneID.length; i++) {
 			///////////////////如果类似XM_002121.1类型，那么将.1去除////////////////////////////////////
 			NCBIID ncbiid=new NCBIID();UniProtID uniProtID=new UniProtID();
-			String accID = removeDot(geneID[i]);
+			String accID = GeneID.removeDot(geneID[i]);
 			ncbiid.setAccID(accID);ncbiid.setTaxID(taxID);
 			uniProtID.setAccID(accID);uniProtID.setTaxID(taxID);
 			ArrayList<NCBIID> lsNcbiids=servNCBIID.queryLsNCBIID(ncbiid);

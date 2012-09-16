@@ -29,6 +29,7 @@ import com.novelbio.analysis.coexp.simpCoExp.SimpCoExp;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controltest.CtrlPath;
@@ -60,7 +61,7 @@ public class GuiDegreeAddJpanel extends JPanel{
 	private ButtonGroup btnGroupPathClass;
 	private JComboBox jCombSelSpePath;
 	private JLabel jLabPathQtaxID;
-	private JScrollPane jScrollPaneInputPath;
+	private JScrollPaneData jScrollPaneInputPath;
 	////////////
 	static int QtaxID = 0;//查询物种ID
 	static int StaxID = 9606;//blast物种ID
@@ -124,7 +125,7 @@ public class GuiDegreeAddJpanel extends JPanel{
 		}
 
 		{
-			jScrollPaneInputPath = new JScrollPane();
+			jScrollPaneInputPath = new JScrollPaneData();
 		}
 		{
 			jLabInputReviewPath = new JLabel();
@@ -261,20 +262,11 @@ public class GuiDegreeAddJpanel extends JPanel{
 	/**
 	 * 查看文件的鼠标或键盘事件响应时调用
 	 */
-	private void setPathProview(String filePath)
-	{
+	private void setPathProview(String filePath) {
 		ExcelOperate excelOperate = new ExcelOperate();
 		excelOperate.openExcel(filePath);
-		String[][] PathRawData = excelOperate.ReadExcel(1, 1, excelOperate.getRowCount(), excelOperate.getColCount());
-		String[][] tableValue = null;
-		DefaultTableModel jTabInputPath = new DefaultTableModel(tableValue,PathRawData[0]);
-		JTable jTabFInputPath = new JTable();
-		jScrollPaneInputPath.setViewportView(jTabFInputPath);
-		jTabFInputPath.setModel(jTabInputPath);
-		for (int i = 1; i < PathRawData.length; i++) {
-			jTabInputPath.addRow(PathRawData[i]);
-		}
-		
+		ArrayList<String[]> PathRawData = excelOperate.ReadLsExcel(1, 1, excelOperate.getRowCount(), excelOperate.getColCount());
+		jScrollPaneInputPath.setItemLs(PathRawData);
 	}
 	
 }

@@ -415,6 +415,9 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		
 		isInCDS = true;
 		int LocStart = gffGeneIsoInfo.getLocAAbefore(mapInfoSnpIndel.getRefSnpIndelStart());//该位点所在AA的第一个loc
+		if (LocStart == 17202221) {
+			logger.error("stop");
+		}
 		int LocEnd = gffGeneIsoInfo.getLocAAend(mapInfoSnpIndel.getRefSnpIndelStart());
 		if (LocEnd <0) {//如果不在转录本中
 			if (gffGeneIsoInfo.isCis5to3()) {

@@ -323,6 +323,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   }
 	   return gffDetailGene.getIsolist(rnaName);		
 	}
+   
+   //TODO 考虑将该方法放到超类中
    /**
     * 将locGff中的信息整理然后装入ChrHash中
     */
@@ -336,6 +338,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 			   LOCList = new ListGff();//新建一个LOCList并放入Chrhash
 			   LOCList.setName(chrIDlowCase);
 			   mapChrID2ListGff.put(gffDetailGene.getParentName().toLowerCase(), LOCList);
+		   }
+		   if (gffDetailGene.getLsCodSplit().size() == 0) {
+			   gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), GeneType.ncRNA);
+			   gffDetailGene.addExon(gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs());
 		   }
 		   LOCList.add(gffDetailGene);
 	   }

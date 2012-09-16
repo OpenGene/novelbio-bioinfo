@@ -91,7 +91,7 @@ public class NormAffy extends ImportPerLine
 	 */
 	public void toTargetFastaFile(String fastaFile) {
 		String regx = "(?<=target:\\w{0,100}:).+?(?=;)";
-		SeqFastaHash seqFastaHash = new SeqFastaHash(fastaFile, regx, false, false);
+		SeqFastaHash seqFastaHash = new SeqFastaHash(fastaFile, regx, false);
 		seqFastaHash.writeToFile(FileOperate.changeFileSuffix(fastaFile, "_modified", null));
 	}
 }

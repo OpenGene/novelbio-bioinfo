@@ -132,7 +132,7 @@ public class MeDIParrayGFF {
 		}
 		txtOut.close();
 	}
-	
+	//TODO 可能会有问题，就是文件是用" "来分割
 	public static void combAMSfile(String filePath, String pathOut)
 	{
 		TxtReadandWrite txtOut = new TxtReadandWrite(pathOut, true);
@@ -159,7 +159,7 @@ public class MeDIParrayGFF {
 			String file = hashPrix2Txt.get(string);
 			//第一个文件需要将前几列都读入，其他的就只要读入比值即可
 			if (i == 0) {
-				ArrayList<String[]> lsTmpResult = ExcelTxtRead.readLsExcelTxt(file, new int[]{1, 3, 4, 5, 6}, 2, 0, " ");
+				ArrayList<String[]> lsTmpResult = ExcelTxtRead.readLsExcelTxt(file, new int[]{1, 3, 4, 5, 6}, 2, 0);
 				for (String[] strings : lsTmpResult) {
 					String[] content = new String[title.length];
 					for (int j = 0; j < strings.length; j++) {
@@ -169,7 +169,7 @@ public class MeDIParrayGFF {
 				}
 			}
 			else {
-				ArrayList<String[]> lsTmpResult = ExcelTxtRead.readLsExcelTxt(file, new int[]{6}, 2, 0, " ");
+				ArrayList<String[]> lsTmpResult = ExcelTxtRead.readLsExcelTxt(file, new int[]{6}, 2, 0);
 				for (int j = 0; j < lsTmpResult.size(); j++) {
 					//i一定大于1，这时候从第5列开始写入文件
 					lsResult.get(j)[i + 4] = lsTmpResult.get(j)[0];
@@ -177,7 +177,7 @@ public class MeDIParrayGFF {
 			}
 		}
 		lsResult.add(0, title);
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOut.ExcelWrite(lsResult);
 	}
 	
 	/**
@@ -226,7 +226,7 @@ public class MeDIParrayGFF {
 			) {
 				if (lsTmpResult.size() >= probNum) {
 					for (String[] strings : lsTmpResult) {
-						txtOut.ExcelWrite(strings, true, "\t");
+						txtOut.ExcelWrite(strings, true);
 					}
 				}
 				lsTmpResult = new ArrayList<String[]>();
@@ -272,7 +272,7 @@ public class MeDIParrayGFF {
 		}
 		lsResult.add(getMedProb(lsTmp));
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOut.ExcelWrite(lsResult);
 	}
 	
 	private static String[] getMedProb(ArrayList<String[]> lsProbs)
@@ -328,10 +328,8 @@ public class MeDIParrayGFF {
 				try {
 					pvalue = TestUtils.tTest(sample1, sample2);
 				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (MathException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

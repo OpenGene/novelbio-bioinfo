@@ -136,7 +136,7 @@ public abstract class DiffExpAbs {
 	 */
 	protected void writeToGeneFile() {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
-		txtWrite.ExcelWrite(getAnalysisGeneInfo(), "\t", 1, 1);
+		txtWrite.ExcelWrite(getAnalysisGeneInfo());
 	}
 	/**
 	 * 将选定的基因ID和具体值写入文本

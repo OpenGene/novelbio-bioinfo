@@ -152,7 +152,7 @@ public class CtrlFastQMapping {
 		}
 		combineAllFastqFile();
 		if (mapping) {
-			txtReport.writefileln("Sample");
+			txtReport.writefileln("Sample Mapping Infomation");
 			txtReport.writefile("", true);
 			mapping();
 		}
@@ -173,29 +173,32 @@ public class CtrlFastQMapping {
 				mapCondition2LsFastQLR.put(prefix, lsPrefixFastQLR);
 			}
 			FastQ[] tmpFastQLR = new FastQ[2];
-			setFastqLR(tmpFastQLR, lsFastQfileLeft, lsFastQfileRight, i);
+			String fastqL = getFastqFile(lsFastQfileLeft, i);
+			String fastqR = getFastqFile(lsFastQfileRight, i);
+			setFastqLR(tmpFastQLR, fastqL, fastqR);
 			lsPrefixFastQLR.add(tmpFastQLR);
 		}
 	}
-	private void setFastqLR(FastQ[] tmpFastQLR, ArrayList<String> lsFastqL, ArrayList<String> lsFastqR, int num) {
-		String fastqL = "", fastqR = "";
-		String compressType = TxtReadandWrite.TXT;
-		if (lsFastqL.size() > num) {
-			fastqL = lsFastqL.get(num);
+	/**
+	 * 主要是怕lsFastqRight可能没东西
+	 * @param lsFastq
+	 * @param num
+	 * @return
+	 */
+	private String getFastqFile(ArrayList<String> lsFastq, int num) {
+		if (lsFastq.size() > num) {
+			return lsFastq.get(num);
 		}
-		if (lsFastqR.size() > num) {
-			fastqR = lsFastqR.get(num);
-		}
-		if (FileOperate.isFileExistAndBigThanSize(fastqL, 10)) {
-			if (fastqL.endsWith(".gz")) {
-				compressType = TxtReadandWrite.GZIP;
-			}
-		}
-		else if (FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
-			if (fastqR.endsWith(".gz")) {
-				compressType = TxtReadandWrite.GZIP;
-			}
-		}
+		return null;
+	}
+	/**
+	 * @param tmpFastQLR
+	 * @param lsFastqL
+	 * @param lsFastqR
+	 * @param num lsCondition的编号
+	 */
+	private void setFastqLR(FastQ[] tmpFastQLR, String fastqL, String fastqR) {
+		String compressType = getCompressType(fastqL, fastqR);
 		if (FileOperate.isFileExistAndBigThanSize(fastqL, 10) && FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
 			tmpFastQLR[0] = new FastQ(fastqL);
 			tmpFastQLR[1] = new FastQ(fastqR);;
@@ -209,6 +212,20 @@ public class CtrlFastQMapping {
 			tmpFastQLR[0] = new FastQ(fastqR);
 			setFastQParameter(tmpFastQLR[0], compressType);
 		}
+	}
+	private String getCompressType(String fastqL, String fastqR) {
+		String compressType = TxtReadandWrite.TXT;
+		if (FileOperate.isFileExistAndBigThanSize(fastqL, 10)) {
+			if (fastqL.endsWith(".gz")) {
+				compressType = TxtReadandWrite.GZIP;
+			}
+		}
+		else if (FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
+			if (fastqR.endsWith(".gz")) {
+				compressType = TxtReadandWrite.GZIP;
+			}
+		}
+		return compressType;
 	}
 	private void filteredReads() {
 		HashSet<String> setPrefix = new HashSet<String>();
@@ -314,12 +331,10 @@ public class CtrlFastQMapping {
 				mapBwa.setExePath(softWareInfo.getExePath(), chrIndexFile);
 			}
 			else {
-				if (booChromOrRef) {
+				if (booChromOrRef)
 					mapBwa.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bwa));
-				}
-				else {
-					mapBwa.setExePath(softWareInfo.getExePath(), species.getRefseqFile());
-				}
+				else
+					mapBwa.setExePath(softWareInfo.getExePath(), species.getIndexRef(SoftWare.bwa));
 			}
 
 			mapBwa.setFqFile(fastQs[0], fastQs[1]);

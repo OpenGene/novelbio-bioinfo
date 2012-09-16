@@ -72,9 +72,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="ver != null  and ver != '' ">
 				version = #{ver},
 			</if>
-			<if test="isPath != null  and isPath != '' ">
-				ispath = #{isPath},
-			</if>
+				ispath = #{isPath}
 		</set>
 		<where>
 			<if test="softName !=null and softName != '' ">

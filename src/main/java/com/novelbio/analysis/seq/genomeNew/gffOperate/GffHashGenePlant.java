@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.generalConf.NovelBioConst;
@@ -24,6 +26,7 @@ import com.novelbio.generalConf.NovelBioConst;
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
 public class GffHashGenePlant extends GffHashGeneAbs{
+	private static Logger logger = Logger.getLogger(GffHashGenePlant.class);
 	public static void main(String[] args) {
 		GffHashGenePlant gffHashGenePlant = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_PLANT);
 		gffHashGenePlant.ReadGffarray("/media/winE/Bioinformatics/genome/rice/tigr7/all.gff3");
@@ -144,8 +147,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   /**
 		    * 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中
 		    */
-		   if (hashgene.contains(ss[2])) //when read the # and the line contains gene, it means the new LOC
-			{
+		   if (hashgene.contains(ss[2])) {//when read the # and the line contains gene, it means the new LOC
 				if (mRNAsplit) {
 					// 将上一组mRNA的信息装入
 					// 如果上一组mRNA没有CDS，那么CDS的长度实际上就是0，那么CDS的起点和终点就是一样的，都是mRNA的end位点
@@ -155,7 +157,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 					}
 					gffDetailLOC.setATGUAG(cdsStart, cdsEnd);
 					if (cdsStart < 0 || cdsEnd < 0 || cdsStart > cdsEnd) {
-						System.out.println("GffHashPlantGeneError: 文件  " + gfffilename + "  本组或上组基因有问题，cdsStart或cdsEnd出错  " + gffDetailLOC.getName());
+						logger.error("GffHashPlantGeneError: 文件  " + gfffilename + "  本组或上组基因有问题，cdsStart或cdsEnd出错  " + gffDetailLOC.getName());
 					}
 					mRNAsplit = false;// 全新的基因，将其归位false\
 					if (!ss[2].equals("gene")) {
@@ -164,6 +166,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 						ncRNA = false;
 					}
 				}
+				gffDetailLOC = null;//清空
 			   /**
 			    * 每当出现一个新的Chr，那么就将这个Chr加入哈希表
 			    * chr格式，全部小写 chr1,chr2,chr11
@@ -182,13 +185,16 @@ public class GffHashGenePlant extends GffHashGeneAbs{
       		   UTR5start = true; 
       		   CDSstart = true;
       	   }
+		   else if (gffDetailLOC == null) {
+			continue;
+		   }
 		   /**
       	    * 当读取到mRNA时，就是说是可变剪接时，添加一个新的可变剪接list
       	    * 不管怎么加都是从第一个cds开始加到最后一个cds，正向的话就是从小加到大，反向就是从大加到小。
       	    * 一旦出现了mRNA，就要开始指定5UTR，3UTR，CDS的起点和终止
       	    */
-		   else if (mapMRNA2GeneType.containsKey(ss[2])) 
-		   {
+		   else if (mapMRNA2GeneType.containsKey(ss[2])) {
+			   
 			   if (!ss[2].equals("mRNA")) {
 				ncRNA = true;
 			   }
@@ -206,8 +212,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 				   mRNAsplit =false;
 			   }
 			   mRNAmatcher = mRNApattern.matcher(content);
-			   if(mRNAmatcher.find())
-			   {
+			   if(mRNAmatcher.find()) {
 				   //每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 				   gffDetailLOC.addsplitlist(mRNAmatcher.group(), mapMRNA2GeneType.get(ss[2]));	   
 				   //仿照UCSC的做法，如果是一个非编码的mRNA，那么cdsStart = cdsEnd = mRNAend
@@ -220,11 +225,10 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   //重置标签，表示在5UTR和CDS的前面了，那么在后面 if 遇到的就是第一个UTR或第一个CDS
       		   UTR5start = true; 
       		   CDSstart = true;
-    	   }
+		   }
 		   
 		   //遇到5UTR
-		   else if (ss[2].equals("five_prime_UTR")) 
-		   {
+		   else if (ss[2].equals("five_prime_UTR")) {
 			   gffDetailLOC.addExon(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 			   //5UTR过去了
 			   UTR5start = false;

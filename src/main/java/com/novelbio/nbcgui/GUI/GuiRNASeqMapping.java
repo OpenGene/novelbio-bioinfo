@@ -199,6 +199,8 @@ public class GuiRNASeqMapping extends JPanel {
 				int threadNum = 4;
 				try { threadNum = Integer.parseInt(txtThreadNum.getText()); } catch (Exception e1) { }
 				String out = txtSavePathAndPrefix.getText();
+				out = FileOperate.addSep(out);
+				FileOperate.createFolders(out);
 				
 				if (rdbtnRsem.isSelected()) {
 					ctrlRNAmap.setMapType(CtrlRNAmap.RSEM);
@@ -207,19 +209,16 @@ public class GuiRNASeqMapping extends JPanel {
 					ctrlRNAmap.setMapType(CtrlRNAmap.TOP_HAT);
 				}
 				
-				HashMap<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq = getMapPrefix2LsFastq();
-				for (Entry<String, ArrayList<ArrayList<FastQ>>> entry : mapPrefix2LsFastq.entrySet()) {
-					String prefix = entry.getKey();
-					ArrayList<ArrayList<FastQ>> lsFastqFR = entry.getValue();
-					ctrlRNAmap.setGffChrAbs(new GffChrAbs(species));
-					ctrlRNAmap.setSpecies(species);
-					ctrlRNAmap.setLeftFq(lsFastqFR.get(0));
-					ctrlRNAmap.setRightFq(lsFastqFR.get(1));
-					ctrlRNAmap.setMapLibrary(cmbLibraryType.getSelectedValue());
-					ctrlRNAmap.setStrandSpecifictype(cmbStrandType.getSelectedValue());
-					ctrlRNAmap.setThreadNum(threadNum);
-					ctrlRNAmap.setOutPathPrefix(out + prefix);
-					ctrlRNAmap.mapping();
+				ctrlRNAmap.setMapPrefix2LsFastq(getMapPrefix2LsFastq());
+				ctrlRNAmap.setGffChrAbs(new GffChrAbs(species));
+				ctrlRNAmap.setLibrary(cmbLibraryType.getSelectedValue());
+				ctrlRNAmap.setStrandSpecifictype(cmbStrandType.getSelectedValue());
+				ctrlRNAmap.setThreadNum(threadNum);
+				ctrlRNAmap.setOutPathPrefix(out);
+				ctrlRNAmap.mapping();
+				if (rdbtnRsem.isSelected()) {
+					TxtReadandWrite txtWrite = new TxtReadandWrite(out + "ResultExp.txt", true);
+					txtWrite.ExcelWrite(ctrlRNAmap.getLsExpRsem());
 				}
 			}
 		});

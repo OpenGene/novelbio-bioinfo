@@ -16,9 +16,9 @@ public class GffCompareUCSCandNCBI {
 	GffHashGeneUCSC gffHashGeneUCSC = new GffHashGeneUCSC();
 	
 	public static void main(String[] args) {
-		String gffNCBI = "/media/winE/Bioinformatics/genome/mouse/mm10_GRCm38/gff/ref_GRCm38_top_level_modify.gff3";
-		String gffUCSC = "/media/winE/Bioinformatics/genome/mouse/mm10_UCSC/gff/mm10_refgff";
-		String out = "/media/winE/Bioinformatics/genome/mouse/mm10_GRCm38/gff/out";
+		String gffNCBI = "/media/winE/Bioinformatics/genome/human/hg19_GRCh37/gff/ref_GRCh37.p9_top_level_modify.gff3";
+		String gffUCSC = "/media/winE/Bioinformatics/genome/human/hg19_UCSC/gff/hg19_refSeqSortUsingNoChrM.txt";
+		String out = "/media/winE/Bioinformatics/genome/human/hg19_GRCh37/gff/out";
 		GffCompareUCSCandNCBI gffCompareUCSCandNCBI = new GffCompareUCSCandNCBI();
 		gffCompareUCSCandNCBI.setGff(gffNCBI, gffUCSC, out);
 		gffCompareUCSCandNCBI.compare();
@@ -50,7 +50,7 @@ public class GffCompareUCSCandNCBI {
 			if (gffGeneIsoInfoNCBI == null) {
 				continue;
 			}
-			if (gffGeneIsoInfoUCSC.getATGsite() == gffGeneIsoInfoNCBI.getATGsite() && gffGeneIsoInfoUCSC.getUAGsite() == gffGeneIsoInfoNCBI.getUAGsite()) {
+			if (gffGeneIsoInfoUCSC.getName().startsWith("NR_") || gffGeneIsoInfoUCSC.getATGsite() == gffGeneIsoInfoNCBI.getATGsite() || gffGeneIsoInfoUCSC.getUAGsite() == gffGeneIsoInfoNCBI.getUAGsite()) {
 				continue;
 			}
 			else {

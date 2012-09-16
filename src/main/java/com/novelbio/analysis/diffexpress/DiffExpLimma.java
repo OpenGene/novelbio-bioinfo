@@ -243,7 +243,7 @@ public class DiffExpLimma extends DiffExpAbs{
 		try { Thread.sleep(50); } catch (Exception e) { }
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
-		txtOutFinal.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOutFinal.ExcelWrite(lsResult);
 	}
 
 }

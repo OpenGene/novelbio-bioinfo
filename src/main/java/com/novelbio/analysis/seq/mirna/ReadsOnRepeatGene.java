@@ -28,18 +28,6 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class ReadsOnRepeatGene {
-	public static void main(String[] args) {
-		Species species = new Species(9913);
-		GffChrAbs gffChrAbs = new GffChrAbs(species.getGffFile()[0], species.getGffFile()[1], species.getChrRegxAndPath()[1], null, 0);
-		ReadsOnRepeatGene readsOnRepeatGene = new ReadsOnRepeatGene();
-		
-		readsOnRepeatGene.readGffGene(gffChrAbs);
-//		readsOnRepeatGene.readGffRepeat("/media/winE/Bioinformatics/GenomeData/Cow/cow_repeat_201110");
-		readsOnRepeatGene.countReadsInfo("/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/tmpBed/LFJ2BW1_CGATGT_L002_R1_001_filtered_Genome.bed");
-//		readsOnRepeatGene.writeToFileRepeatFamily("/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/repeatFamily");
-//		readsOnRepeatGene.writeToFileRepeatName("/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/repeatName");
-		readsOnRepeatGene.writeToFileGeneProp("/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/GeneName");
-	}
 	GffHashRepeat gffHashRepeat = null;
 	GffChrAbs gffChrAbs = null;
 	HashMap<String, Double> hashRepeatName = new HashMap<String, Double>();
@@ -95,7 +83,7 @@ public class ReadsOnRepeatGene {
 		for (String string : lsKey) {
 			lsResult.add(new String[]{string, hashRepeatName.get(string).intValue() + ""});
 		}
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOut.ExcelWrite(lsResult);
 	}
 	public void writeToFileRepeatFamily(String outFile) {
 		if (hashRepeatFamily.size() == 0) {
@@ -109,7 +97,7 @@ public class ReadsOnRepeatGene {
 		for (String string : lsKey) {
 			lsResult.add(new String[]{string, hashRepeatFamily.get(string).intValue() + ""});
 		}
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOut.ExcelWrite(lsResult);
 	}
 	public void writeToFileGeneProp(String outFile) {
 		if (hashGeneInfo.size() == 0) {
@@ -123,7 +111,7 @@ public class ReadsOnRepeatGene {
 		for (String string : lsKey) {
 			lsResult.add(new String[]{string, hashGeneInfo.get(string).intValue() + ""});
 		}
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOut.ExcelWrite(lsResult);
 	}
 	/**
 	 * 将searchReadsRepeat获得的结果导入hashRepeatName和hashRepeatFamily表中

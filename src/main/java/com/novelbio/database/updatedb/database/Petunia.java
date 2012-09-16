@@ -24,14 +24,14 @@ public class Petunia {
 		String seqIn = "/home/zong0jie/×ÀÃæ/°«Ç£Å£/Petunia_x_hybrida.mRNA.PUT.fasta";
 		String regx = "PUT-159a-Petunia_x_hybrida-\\d+";
 		String seqOut = FileOperate.changeFileSuffix(seqIn, "_Coped", null);
-		SeqFastaHash seqFastaHash = new SeqFastaHash(seqIn,regx, false, false);
+		SeqFastaHash seqFastaHash = new SeqFastaHash(seqIn,regx, false);
 		seqFastaHash.writeToFile(seqOut);
 	}
 	
 	public static void upDateInfo() {
 		String seqIn = "/media/winE/Bioinformatics/GenomeData/petunia/Petunia_x_hybrida.mRNA.PUT_Coped.fasta";
 		String regx = "PUT-159a-Petunia_x_hybrida-\\d+";
-		SeqFastaHash seqFastaHash = new SeqFastaHash(seqIn,regx, false, false);
+		SeqFastaHash seqFastaHash = new SeqFastaHash(seqIn,regx, false);
 		ArrayList<SeqFasta> lsSeqFastas = seqFastaHash.getSeqFastaAll();
 		for (SeqFasta seqFasta : lsSeqFastas) {
 			GeneID copedID = new GeneID(seqFasta.getSeqName(), 4102);

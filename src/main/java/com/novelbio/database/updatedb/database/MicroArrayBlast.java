@@ -67,7 +67,7 @@ public class MicroArrayBlast {
 		else 
 			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 
-		ArrayList<String[]> lsInfo = txtGene2Acc.ExcelRead("\t", 1, 1, -1, -1, 1);
+		ArrayList<String[]> lsInfo = txtGene2Acc.ExcelRead(1, 1, -1, -1, 1);
 		//≈≈∏ˆ–Ú£¨∞¥’’evalue∫Õidentity≈≈–Ú
 		Collections.sort(lsInfo, new Comparator<String[]>() {
 			/**

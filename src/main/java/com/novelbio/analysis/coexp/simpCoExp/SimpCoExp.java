@@ -32,7 +32,7 @@ public class SimpCoExp {
 	 */
 	public static void getCoExpInfo(String inFile,int[] columnID,int taxID,double pvalueCutOff,String outFile, boolean filterNoDB) throws Exception
 	{
-		String[][] info = ExcelTxtRead.readExcel(inFile, columnID, 1, 0);
+		ArrayList<String[]> info = ExcelTxtRead.readLsExcelTxt(inFile, columnID, 1, -1);
 		getData(info, taxID, pvalueCutOff, outFile,filterNoDB);
 	}
 	
@@ -55,8 +55,8 @@ public class SimpCoExp {
 	{
 		ExcelOperate excelOperate = new ExcelOperate();
 		excelOperate.openExcel(inFile);
-		String[][] info = excelOperate.ReadExcel(2, 1, excelOperate.getRowCount(), excelOperate.getColCount(1));
-		Object[] obj = annotationScr2Trg(info, taxID);
+		ArrayList<String[]> lsinfo = excelOperate.ReadLsExcel(2, 1, excelOperate.getRowCount(), excelOperate.getColCount(1));
+		Object[] obj = annotationScr2Trg(lsinfo, taxID);
 		ArrayList<String[]> lsScr2Trg = (ArrayList<String[]>) obj[0];
 		ArrayList<String[]> lsResult = (ArrayList<String[]>) obj[1];
 		String[] anoTitle = new String[6];
@@ -91,8 +91,8 @@ public class SimpCoExp {
 	{
 		ExcelOperate excelOperate = new ExcelOperate();
 		excelOperate.openExcel(inFile);
-		String[][] info = excelOperate.ReadExcel(2, 1, excelOperate.getRowCount(), excelOperate.getColCount(1));
-		Object[] obj = annotationScr2Trg(info, taxID);
+		ArrayList<String[]> lsinfo = excelOperate.ReadLsExcel(2, 1, excelOperate.getRowCount(), excelOperate.getColCount(1));
+		Object[] obj = annotationScr2Trg(lsinfo, taxID);
 		 ArrayList<String[]> lsScr2Trg = (ArrayList<String[]>) obj[0];
 		 ArrayList<String[]> lsResult = (ArrayList<String[]>) obj[1];
 		String[] anoTitle = new String[6];
@@ -123,16 +123,16 @@ public class SimpCoExp {
 	 * @param filterNoDB 是否将没有db的过滤掉
 	 * @throws Exception
 	 */
-	private static void getData(String[][] rawData,int taxID,double pvalueCutOff,String outFile, boolean filterNoDB) throws Exception 
+	private static void getData(ArrayList<String[]> rawData,int taxID,double pvalueCutOff,String outFile, boolean filterNoDB) throws Exception 
 	{
 		ArrayList<CoexpGenInfo> lsCoexpInfo = new ArrayList<CoexpGenInfo>();
 		//将rawData注释上，没有symbol和description的通通去除，结果保存在lsRawData中
-		for (int i = 1; i < rawData.length; i++) {
-			double[] dou = new double[rawData[0].length - 1]; //获得每一行的表达值
+		for (int i = 1; i < rawData.size(); i++) {
+			double[] dou = new double[rawData.get(0).length - 1]; //获得每一行的表达值
 			for (int j = 0; j < dou.length; j++) {
-				dou[j] = Double.parseDouble(rawData[i][j+1]);
+				dou[j] = Double.parseDouble(rawData.get(i)[j+1]);
 			}
-			CoexpGenInfo coexpGenInfo = new CoexpGenInfo(rawData[i][0], taxID, dou);
+			CoexpGenInfo coexpGenInfo = new CoexpGenInfo(rawData.get(i)[0], taxID, dou);
 			if (filterNoDB && coexpGenInfo.getCopedID().getAccID().equals(GeneID.IDTYPE_ACCID)) {
 				continue;
 			}
@@ -270,46 +270,46 @@ public class SimpCoExp {
 	 * 5: Degree
 	 * @throws Exception 
 	 */
-	private static Object[] annotationScr2Trg(String[][] result,int taxID) throws Exception {
+	private static Object[] annotationScr2Trg(ArrayList<String[]> result,int taxID) throws Exception {
 		/**
 		 * key accID
 		 * value 0:accID 1:symbol 2: Description 3:InDegree 4:OutDegree 5:AllDegree
 		 */
 		Hashtable<String,String[]> hashAccID = new Hashtable<String, String[]>();
-		for (int i = 0; i < result.length; i++) {
+		for (int i = 0; i < result.size(); i++) {
 			//将geneID1装入hash，并计算degree
-			if (hashAccID.containsKey(result[i][0])) {
-				String[] tmpResult = hashAccID.get(result[i][0]);
+			if (hashAccID.containsKey(result.get(i)[0])) {
+				String[] tmpResult = hashAccID.get(result.get(i)[0]);
 				tmpResult[4] = Integer.parseInt(tmpResult[4]) +1 +"";
 				tmpResult[5] = Integer.parseInt(tmpResult[5]) +1 +"";
 			}
 			else {
-				GeneID copedID = new GeneID(result[i][0], taxID);
+				GeneID copedID = new GeneID(result.get(i)[0], taxID);
 				String[] tmpResult = new String[6];
 				///////////////////////////////////////////////////////////////////////////////////
 				//这一段放if里：只有当数据库中有时才计数
 				//放在if外：不管数据库中是否含有都计数
-				tmpResult[0] = result[i][0];tmpResult[1] = copedID.getSymbol(); tmpResult[2] = copedID.getDescription();
+				tmpResult[0] = result.get(i)[0];tmpResult[1] = copedID.getSymbol(); tmpResult[2] = copedID.getDescription();
 				tmpResult[3] = 0+"";tmpResult[4] = 1+"";tmpResult[5] = 1+"";
-				hashAccID.put(result[i][0], tmpResult);//这一段放if里：只有当数据库中有时才计数
+				hashAccID.put(result.get(i)[0], tmpResult);//这一段放if里：只有当数据库中有时才计数
 				////////////////////////////////////////////////////////////////////////////////
 			}
 			
 			//将geneID2装入hash，并计算degree
-			if (hashAccID.containsKey(result[i][1])) {
-				String[] tmpResult = hashAccID.get(result[i][1]);
+			if (hashAccID.containsKey(result.get(i)[1])) {
+				String[] tmpResult = hashAccID.get(result.get(i)[1]);
 				tmpResult[3] = Integer.parseInt(tmpResult[3]) +1 +"";
 				tmpResult[5] = Integer.parseInt(tmpResult[5]) +1 +"";
 			}
 			else {
-				GeneID copedID = new GeneID(result[i][1], taxID, false);
+				GeneID copedID = new GeneID(result.get(i)[1], taxID, false);
 				///////////////////////////////////////////////////////////////////////////////////
 				//这一段放if里：只有当数据库中有时才计数
 				//放在if外：不管数据库中是否含有都计数
 				String[] tmpResult = new String[6];
-				tmpResult[0] = result[i][1];tmpResult[1] = copedID.getSymbol(); tmpResult[2] = copedID.getDescription();
+				tmpResult[0] = result.get(i)[1];tmpResult[1] = copedID.getSymbol(); tmpResult[2] = copedID.getDescription();
 				tmpResult[3] = 1+"";tmpResult[4] = 0+"";tmpResult[5] = 1+"";
-				hashAccID.put(result[i][1], tmpResult);
+				hashAccID.put(result.get(i)[1], tmpResult);
 			}
 		}
 

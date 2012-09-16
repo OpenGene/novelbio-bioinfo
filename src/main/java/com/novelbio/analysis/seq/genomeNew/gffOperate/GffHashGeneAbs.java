@@ -38,7 +38,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		super.ReadGffarray(gfffilename);
 		for (ListGff listGff : mapChrID2ListGff.values()) {
 			listGff.sort();
-			for (GffDetailGene gffDetailGene : listGff) {
+			for (int i = 0; i < listGff.size(); i++) {
+				GffDetailGene gffDetailGene = listGff.get(i);
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 					gffGeneIsoInfo.sort();
 					try {
@@ -155,7 +156,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 */
 	private void writeAccID2GeneID(String txtaccID2GeneID) {
 		TxtReadandWrite txtAccID2GeneID = new TxtReadandWrite(txtaccID2GeneID, true);
-		txtAccID2GeneID.ExcelWrite(getGene2ID(), "\t", 1, 1);
+		txtAccID2GeneID.ExcelWrite(getGene2ID());
 	}
 	private HashMap<String, String> hashGeneID2Acc = null;
 	/**

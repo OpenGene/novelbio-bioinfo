@@ -64,7 +64,7 @@ public class DavidFatchID
 				}
 			}
 		}
-		davidrReadandWriteurl.ExcelWrite(lsAffIDtoEND, "\t", 1, 1);
+		davidrReadandWriteurl.ExcelWrite(lsAffIDtoEND);
 	}
 	
 	/**

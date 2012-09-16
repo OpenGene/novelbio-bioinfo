@@ -183,9 +183,9 @@ public class SpeciesFile {
 		if (!FileOperate.isFileExist(indexChromFa)) {
 			indexChromFa = creatAndGetSeqIndex(false, softMapping, getChromSeq(), mapSoftware2ChrIndexPath);
 			
-			String addIndex = SepSign.SEP_ID + softMapping.toString() + SepSign.SEP_INFO + indexChromFa;
-			if (!indexChr.contains(addIndex)) {
-				indexChr = indexChr + addIndex;
+			String indexNew = addIndex(indexChr, softMapping, indexChromFa);
+			if (!indexChr.equals(indexNew)) {
+				indexChr = indexNew;
 				update();
 			}
 		}
@@ -204,14 +204,26 @@ public class SpeciesFile {
 		String indexRefseqThis =  mapSoftware2RefseqIndexPath.get(softMapping.toString());
 		if (!FileOperate.isFileExist(indexRefseqThis)) {
 			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefseqFile(), mapSoftware2RefseqIndexPath);
-			
-			String addIndex = SepSign.SEP_ID + softMapping.toString() + SepSign.SEP_INFO + indexRefseqThis;
-			if (!indexRefseq.contains(addIndex)) {
-				indexRefseq = indexRefseq + addIndex;
+		
+			String indexNew = addIndex(indexRefseq, softMapping, indexRefseqThis);
+			if (indexRefseq.equals(indexNew)) {
+				indexRefseq = indexNew;
 				update();
 			}
 		}
 		return indexRefseqThis;
+	}
+	private String addIndex(String indexOld, SoftWare softMapping, String indexThis) {
+		String addIndex = softMapping.toString() + SepSign.SEP_INFO + indexThis;
+		if (!indexOld.contains(addIndex)) {
+			if (indexOld.trim().equals("")) {
+				indexOld = addIndex;
+			}
+			else {
+				indexOld = indexOld + SepSign.SEP_ID + addIndex;
+			}
+		}
+		return indexOld;
 	}
 	/**
 	 * 如果不存在该index，那么就新创建一个index并且保存入数据库 
@@ -330,13 +342,16 @@ public class SpeciesFile {
 	 * @param mapSoftware2ChrIndexPath 待填充的hashSoft2Index key：软件名  value：路径
 	 * */
 	private void filledHashIndexPath(String indexSeq, HashMap<String, String> hashSoft2index) {
-		if (indexSeq == null) return;
+		if (indexSeq == null || indexSeq.trim().equals("")) return;
 		if (hashSoft2index.size() > 0) {
 			return;
 		}
 		String[] indexInfo = indexSeq.split(SepSign.SEP_ID);
 		for (String string : indexInfo) {
 			String[] indexDetail = string.split(SepSign.SEP_INFO);
+			//简单的错误判断，就怕indexDetail是空的
+			if (indexDetail.length < 2) continue;
+			
 			hashSoft2index.put(indexDetail[0].toLowerCase(), indexDetail[1]);
 		}
 	}
@@ -370,7 +385,13 @@ public class SpeciesFile {
 		}
 		SeqHash seqHash = new SeqHash(getChromFaPath(), getChromFaRegx());
 		ArrayList<String[]> lsChrLen = seqHash.getChrLengthInfo();
-		chromInfo = lsChrLen.get(0)[0] + SepSign.SEP_INFO + lsChrLen.get(0)[1];
+		try {
+			chromInfo = lsChrLen.get(0)[0] + SepSign.SEP_INFO + lsChrLen.get(0)[1];
+		} catch (Exception e) {
+			chromInfo = lsChrLen.get(0)[0] + SepSign.SEP_INFO + lsChrLen.get(0)[1];
+			chromInfo = null;
+		}
+	
 		for (int i = 0; i < lsChrLen.size(); i++) {
 			String[] tmpLen = lsChrLen.get(i);
 			chromInfo = chromInfo + SepSign.SEP_ID + tmpLen[0] + SepSign.SEP_INFO + tmpLen[1];

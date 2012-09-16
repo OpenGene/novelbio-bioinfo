@@ -169,7 +169,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	@Override
 	protected void writeToGeneFile() {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
-		txtWrite.ExcelWrite(lsGeneInfo, "\t", 1, 1);
+		txtWrite.ExcelWrite(lsGeneInfo);
 	}
 
 	@Override
@@ -202,7 +202,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 		try { Thread.sleep(50); } catch (Exception e) { }
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
-		txtOutFinal.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOutFinal.ExcelWrite(lsResult);
 	}
 	private String division(String A, String B) {
 		if (A.equals("NA") && B.equals("NA")) {

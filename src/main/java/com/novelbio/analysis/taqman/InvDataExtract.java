@@ -58,7 +58,7 @@ public class InvDataExtract {
 		ArrayList<Integer> lsDeltaCTcol = getCT_AvgCT_col(lsAllData.get(1), flagAvgCT);
 		ArrayList<String[]> lsResult = filterData(lsAllData, startRow, lsCTcol, lsDeltaCTcol);
 		TxtReadandWrite txtOut = new TxtReadandWrite(OutData, true);
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOut.ExcelWrite(lsResult);
 	}
 	
 	

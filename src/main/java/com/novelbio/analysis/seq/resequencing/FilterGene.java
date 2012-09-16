@@ -69,7 +69,7 @@ public class FilterGene {
 		ArrayList<String> lsGeneID = getOverlapGene(lsHashGene);
 		ArrayList<String[]> lsGeneInfo = getLsInfo(lsGeneID);
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
-		txtOut.ExcelWrite(lsGeneInfo, "\t", 1, 1);
+		txtOut.ExcelWrite(lsGeneInfo);
 	}
 	/**
 	 * 根据给定列，判断该列是否为true，如果为true，则提取相应的gene

@@ -162,14 +162,14 @@ public class GuiFastQJpanel extends JPanel {
 				if (species.getTaxID() == 0) {
 					txtMappingIndex.setEnabled(true);
 					btnMappingindex.setEnabled(true);
-					rdbtnMaptochrom.setEnabled(true);
-					rdbtnMaptorefseq.setEnabled(true);
+					rdbtnMaptochrom.setEnabled(false);
+					rdbtnMaptorefseq.setEnabled(false);
 				}
 				else {
 					txtMappingIndex.setEnabled(false);
 					btnMappingindex.setEnabled(false);
-					rdbtnMaptochrom.setEnabled(false);
-					rdbtnMaptorefseq.setEnabled(false);
+					rdbtnMaptochrom.setEnabled(true);
+					rdbtnMaptorefseq.setEnabled(true);
 				}
 			}
 		});
@@ -437,5 +437,9 @@ public class GuiFastQJpanel extends JPanel {
 		buttonGroupMappingTo.add(rdbtnMaptochrom);
 		buttonGroupMappingTo.add(rdbtnMaptorefseq);
 		rdbtnMaptochrom.setSelected(true);
+		if (cmbSpecies.getSelectedValue().getTaxID() == 0) {
+			rdbtnMaptochrom.setEnabled(false);
+			rdbtnMaptorefseq.setEnabled(false);
+		}
 	}
 }

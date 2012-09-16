@@ -363,7 +363,7 @@ public class Scr2Target {
 		lsScr2Target.add(0, title);
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
 		txtReadandWrite.setParameter(ResultFIleScr2Target, true, false);
-		txtReadandWrite.ExcelWrite(lsScr2Target, "\t", 1, 1);
+		txtReadandWrite.ExcelWrite(lsScr2Target, 1, 1);
 		
 		
 		Enumeration<String> keys=hashEntryInfoResult.keys();
@@ -381,7 +381,7 @@ public class Scr2Target {
 		title2[7] = "pathWay";
 		lsAttribute.add(0,title2);
 		txtReadandWrite.setParameter(resultFIleAttribute, true, false);
-		txtReadandWrite.ExcelWrite(lsAttribute, "\t", 1, 1);
+		txtReadandWrite.ExcelWrite(lsAttribute, 1, 1);
 	}
 	
 	/**

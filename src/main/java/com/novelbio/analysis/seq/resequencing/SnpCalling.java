@@ -106,8 +106,6 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 				outPutFile = FileOperate.changeFileSuffix(sample2PileupFile[1], "_SnpInfo", "txt");
 			}
 			
-
-			
 			addPileupToLsSnpIndel(sample2PileupFile[0], sample2PileupFile[1], outPutFile);
 		}
 	}

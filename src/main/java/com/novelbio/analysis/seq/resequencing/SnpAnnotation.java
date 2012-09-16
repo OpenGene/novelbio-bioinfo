@@ -87,15 +87,15 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 				}
 				//////
 				String tmpResult = snpInfo;
-				try { tmpResult = annoSnp(snpInfo); } catch (Exception e) {}
+				try { tmpResult = annoSnp(snpInfo); } catch (Exception e) {
+					e.printStackTrace();
+				}
 				txtWrite.writefileln(tmpResult);
 				readLines ++;
 				readByte = readByte + snpInfo.getBytes().length;
 			}
 			txtRead.close();
 			txtWrite.close();
-			
-
 		}
 	}
 	/** ×¢ÊÍ½á¹û */

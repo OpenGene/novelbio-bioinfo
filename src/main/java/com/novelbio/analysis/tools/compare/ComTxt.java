@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-
 
 /**
  * 有的时候待比较的项目有这样的特点，每一个项目用“: \ ”等符号隔开，
@@ -42,120 +42,90 @@ public class ComTxt {
 	 * @param outInfo
 	 * @throws Exception
 	 */
-	public static void getCompFile(String file1,int file1FirstLine,String file2,int file2FirstLine,int file1ColNum,int file2ColNum,String sepReg,String outPutFile) throws Exception 
-	{
+	public static void getCompFile(String file1,int file1FirstLine,String file2,int file2FirstLine,int file1ColNum,int file2ColNum,String sepReg,String outPutFile) throws Exception {
 		file1ColNum--; file2ColNum--;
 		
-		String[][] strFile1 = null;
-		String[][] strFile2 = null;
-		try {
-			ExcelOperate excel = new ExcelOperate();
-			excel.openExcel(file1);
-			strFile1 = excel.ReadExcel(file1FirstLine, 1, excel.getRowCount(), excel.getColCount(2));
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		TxtReadandWrite txt = new TxtReadandWrite();
-		if (strFile1 == null || strFile1.length<1) {
-			txt.setParameter(file1, false,true);
-			strFile1 = txt.ExcelRead("\t", file1FirstLine, 1, txt.ExcelRows(), txt.ExcelColumns("\t"));//从目标行读取
-		}
+		ArrayList<String[]> strFile1 = ExcelTxtRead.readLsExcelTxt(file1, file1FirstLine);
+		ArrayList<String[]> strFile2 = ExcelTxtRead.readLsExcelTxt(file2, file2FirstLine);
 		
-		try {
-			ExcelOperate excel = new ExcelOperate();
-			excel.openExcel(file2);
-			strFile2 = excel.ReadExcel(file2FirstLine, 1, excel.getRowCount(), excel.getColCount(2));
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		if (strFile2 == null || strFile2.length<1) {
-			txt.setParameter(file2, false,true);
-			strFile2 = txt.ExcelRead("\t", file2FirstLine, 1, txt.ExcelRows(), txt.ExcelColumns("\t"));//从目标行读取
-		}
-		Hashtable<String, String[]> hashCompFile1 = new Hashtable<String, String[]>();				
-		Hashtable<String, String[]> hashCompFile2 = new Hashtable<String, String[]>();		
-		for (int i = 1; i < strFile1.length; i++)
-		{
+		Hashtable<String, String[]> hashCompFile1 = new Hashtable<String, String[]>();	
+		Hashtable<String, String[]> hashCompFile2 = new Hashtable<String, String[]>();
+		for (String[] strings : strFile1) {
 			String[] file1Key = null;
 			if (sepReg.equals("")) {
 				file1Key = new String[1];
-				file1Key[0] = strFile1[i][file1ColNum].trim();
+				file1Key[0] = strings[file1ColNum].trim();
 			}
 			else {
-				file1Key= strFile1[i][file1ColNum].trim().split(sepReg);
+				file1Key= strings[file1ColNum].trim().split(sepReg);
 			}
 			
-			for (int j = 0; j < file1Key.length; j++) 
-			{
+			for (int j = 0; j < file1Key.length; j++) {
 				if (file1Key[j].trim().equals("")) 
 				{
 					continue;
 				}
-				hashCompFile1.put(file1Key[j].trim(), strFile1[i]);
+				hashCompFile1.put(file1Key[j].trim(), strings);
 			}
 		}
-		
-		for (int i = 1; i < strFile2.length; i++)
-		{
+		for (String[] strings : strFile2) {
 			String[] file2Key = null;
 			if (sepReg.equals("")) {
 				file2Key = new String[1];
-				file2Key[0] = strFile2[i][file2ColNum].trim();
+				file2Key[0] = strings[file2ColNum].trim();
 			}
 			else {
-				file2Key=strFile2[i][file2ColNum].trim().split(sepReg);
+				file2Key=strings[file2ColNum].trim().split(sepReg);
 			}
  
-			for (int j = 0; j < file2Key.length; j++) 
-			{
+			for (int j = 0; j < file2Key.length; j++) {
 				if (file2Key[j].trim().equals("")) 
 				{
 					continue;
 				}
-				hashCompFile2.put(file2Key[j].trim(), strFile2[i]);
+				hashCompFile2.put(file2Key[j].trim(), strings);
 			}
 		}
 		
 		ArrayList<String[]> lsInteract = new ArrayList<String[]>();
 		ArrayList<String[]> lsonly1 = new ArrayList<String[]>();
 		ArrayList<String[]> lsonly2 = new ArrayList<String[]>();
-		for (int i = 1; i < strFile1.length; i++)
-		{
+		for (String[] strings : strFile1) {
+
 			boolean flagFind = false;//看是否找到
 			String[] file1Key = null;
 			if (sepReg.equals("")) {
 				file1Key = new String[1];
-				file1Key[0] = strFile1[i][file1ColNum].trim();
+				file1Key[0] = strings[file1ColNum].trim();
 			}
 			else {
-				file1Key= strFile1[i][file1ColNum].trim().split(sepReg);
+				file1Key= strings[file1ColNum].trim().split(sepReg);
 			}
 			for (int j = 0; j < file1Key.length; j++) 
 			{
 				String[] tmpFile2 = hashCompFile2.get(file1Key[j].trim());
 				if (tmpFile2 != null) 
 				{
-					String[] tmpOut = ArrayOperate.combArray( strFile1[i], tmpFile2,0);
+					String[] tmpOut = ArrayOperate.combArray(strings, tmpFile2,0);
 					lsInteract.add(tmpOut);
 					flagFind = true;
 					break;
 				}
 			}
 			if (!flagFind) {
-				lsonly1.add(strFile1[i]);
+				lsonly1.add(strings);
 			}
 		}
-		
-		for (int i = 1; i < strFile2.length; i++)
-		{
+		for (String[] strings : strFile2) {
+
 			boolean flagFind = false;//看是否找到
 			String[] file2Key = null;
 			if (sepReg.equals("")) {
 				file2Key = new String[1];
-				file2Key[0] = strFile2[i][file2ColNum].trim();
+				file2Key[0] = strings[file2ColNum].trim();
 			}
 			else {
-				file2Key=strFile2[i][file2ColNum].trim().split(sepReg);
+				file2Key=strings[file2ColNum].trim().split(sepReg);
 			}
 			for (int j = 0; j < file2Key.length; j++) 
 			{
@@ -167,10 +137,9 @@ public class ComTxt {
 				}
 			}
 			if (!flagFind) {
-				lsonly2.add(strFile2[i]);
+				lsonly2.add(strings);
 			}
 		}
-		
 		///////////////////////写入文本//////////////////////////////////////////////////////
 		TxtReadandWrite txtOutFile=new TxtReadandWrite();
 		String file1Name = new File(file1).getName();
@@ -185,7 +154,7 @@ public class ComTxt {
 		txtOutFile.writefile(file2Name+"\t"+Bonly+"\t"+(double)interactNum/(Bonly+interactNum)+"\n");
 		
 		
-		String[] title1 = strFile1[0];String[] title2 = strFile2[0];
+		String[] title1 = strFile1.get(0);String[] title2 = strFile2.get(0);
 		String[] title = ArrayOperate.combArray(title1, title2, 0);
 		lsInteract.add(0,title);
 		lsonly1.add(0,title1);
@@ -193,13 +162,13 @@ public class ComTxt {
 		
 
 		txtOutFile.setParameter(outPutFile+"interaction.xls", true, false);
-		txtOutFile.ExcelWrite(lsInteract, "\t", 1, 1);
+		txtOutFile.ExcelWrite(lsInteract);
 		
 
 		txtOutFile.setParameter(outPutFile+"Only"+file1Name, true, false);
-		txtOutFile.ExcelWrite(lsonly1, "\t", 1, 1);
+		txtOutFile.ExcelWrite(lsonly1);
 		txtOutFile.setParameter(outPutFile+"Only"+file2Name, true, false);
-		txtOutFile.ExcelWrite(lsonly2, "\t", 1, 1);
+		txtOutFile.ExcelWrite(lsonly2);
 		
 	}
 }

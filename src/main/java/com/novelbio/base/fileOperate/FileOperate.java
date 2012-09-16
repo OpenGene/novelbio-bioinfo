@@ -300,7 +300,7 @@ public class FileOperate {
 	 *            文件 wfese.fse.fe认作 "wfese.fse"和"fe"<br>
 	 *            文件 wfese.fse.认作 "wfese.fse."和""<br>
 	 *            文件 wfese 认作 "wfese"和""<br>
-	 * @return 返回包含目标文件名的ArrayList。里面是string[2] 1:文件名 2：后缀
+	 * @return 返回包含目标文件全名的ArrayList
 	 */
 	public static ArrayList<String> getFoldFileNameLs(String filePath, String filename, String suffix) {
 		filePath = removeSep(filePath);
@@ -326,9 +326,12 @@ public class FileOperate {
 		}
 		// 如果是文件夹
 		String[] filenameraw = file.list();
+		if (filenameraw.length == 0) {
+			 System.out.println("stop");
+		}
 		for (int i = 0; i < filenameraw.length; i++) {
 			if (isNeedFile(filenameraw[i], filename, suffix)) {
-				ListFilename.add(filenameraw[i]);
+				ListFilename.add(addSep(filePath) + filenameraw[i]);
 			}
 		}
 		return ListFilename;

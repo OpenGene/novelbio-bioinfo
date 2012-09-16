@@ -196,7 +196,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * 输入序列坐标，起点和终点
 	 * 返回序列
 	 */
-	protected SeqFasta getSeqInfo(String seqID, long startlocation, long endlocation) throws IOException {
+	protected SeqFasta getSeqInfo(String seqID, long startlocation, long endlocation) {
 		seqID = seqID.toLowerCase();
 		SeqFasta targetChr=hashSeq.get(seqID);
 		if (targetChr == null) {

@@ -45,7 +45,7 @@ public class MapBwa {
 	/** 含有几个gap */
 	int gapNum = 1;
 	/** gap的长度 */
-	int gapLength = 3;
+	int gapLength = 6;
 	/** 线程数量 */
 	int threadNum = 4;
 	/**
@@ -53,7 +53,7 @@ public class MapBwa {
 	 *  base error rate if FLOAT. In the latter case, the maximum edit distance is automatically chosen 
 	 *  for different read lengths. [0.04]
 	 */
-	String mismatch = "2";
+	String mismatch = "0.04";
 
 	/** 是否将index读入内存，仅对双端有效 */
 	boolean readInMemory = false;
@@ -209,14 +209,14 @@ public class MapBwa {
 			sampleGroup = sampleGroup + "\\tPL:Illumina" + "\" ";
 	}
 	/**
-	 * 默认gap为3，如果是indel查找的话，设置到5或者6比较合适
+	 * 默认gap为4，如果是indel查找的话，设置到5或者6比较合适
 	 * @param gapLength
 	 */
 	public void setGapLength(int gapLength) {
 		this.gapLength = gapLength;
 	}
 	/**
-	 * 默认gap为3，如果是indel查找的话，设置到5或者6比较合适
+	 * 默认gap为4，如果是indel查找的话，设置到5或者6比较合适
 	 * @param gapLength
 	 */
 	private String getGapLen() {
@@ -265,7 +265,6 @@ public class MapBwa {
 		if (isPairend()) {
 			sai2 = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(outFileName)[0] + "_2.sai"; 
 			String cmd2 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(rightFq) + " > " + CmdOperate.addQuot(sai2);
-			System.out.println(cmd2);
 			cmdOperate = new CmdOperate(cmd2,"bwaMapping2");
 			cmdOperate.run();
 		}
@@ -289,7 +288,6 @@ public class MapBwa {
 			cmd = cmd + chrFile + " " + sai1 + " "  + leftFq;
 			cmd = cmd + " > " + outFileName;
 		}
-		System.out.println(cmd);
 		cmdOperate = new CmdOperate(cmd,"bwaMappingSAI");
 		cmdOperate.run();
 		SamFile samFile = new SamFile(outFileName);

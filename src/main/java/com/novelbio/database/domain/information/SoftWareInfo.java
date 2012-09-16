@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servinformation.ServSoftWareInfo;
@@ -117,12 +118,16 @@ public class SoftWareInfo {
 		else
 			return false;
 	}
+	/**
+	 * 根据是否在系统路径，返回""或者locationPath，最后加上/
+	 * @return
+	 */
 	public String getExePath() {
 		querySoftWareInfo();
 		if (isPath==1) {
 			return "";
 		}
-		return installPath;
+		return locationPath + FileOperate.getSepPath();
 	}
 	////////////////////////////////////////////////////充血模型 ///////////////////////////////////////////////////////////
 	/**
@@ -243,6 +248,7 @@ public class SoftWareInfo {
 		}
 	}
 	public static enum SoftWare {
-		bwa, bowtie, bowtie2, tophat, rsem,miranada, RNAhybrid, mirDeep, miReap
+		bwa, bowtie, bowtie2, tophat, rsem,miranada, RNAhybrid, mirDeep, miReap,
+		samtools, picard, GATK
 	}
 }

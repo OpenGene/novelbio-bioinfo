@@ -55,7 +55,7 @@ public class SoyBean {
 	
 	
 	public void getAffyIDseq(String affTargetFile) {
-		SeqFastaHash seqFastaHash = new SeqFastaHash(affTargetFile, "(?<=target:Soybean:).+?(?=;)", false, false);
+		SeqFastaHash seqFastaHash = new SeqFastaHash(affTargetFile, "(?<=target:Soybean:).+?(?=;)", false);
 		seqFastaHash.writeToFile(FileOperate.changeFileSuffix(affTargetFile, "_seq", "fa"));
 	}
 }

@@ -42,6 +42,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -60,25 +61,52 @@ public class TxtReadandWrite {
 	private String filetype = TXT;
 	public final static String ENTER_LINUX = "\n";
 	public final static String ENTER_WINDOWS = "\r\n";
+	
+	static int bufferLen = 10000;
+
+	String sep = "\t";
+	
+	File txtfile;
+	BufferedInputStream inputStream;
+	BufferedOutputStream outputStream;
+	BufferedReader bufread;
+	BufferedWriter bufwriter;
+	boolean createNew = false;
+	boolean append = true;
+	/**
+	 * 仅仅为了最后关闭zip用
+	 */
+	ArchiveOutputStream zipOutputStream;
+	
+	/** 抓取文件中特殊的信息 */
+	String grepContent = "";
+	/**
+	 * 设定缓冲长度，默认为10000
+	 * @param bufferLen
+	 */
+	public static void setBufferLen(int bufferLen) {
+		TxtReadandWrite.bufferLen = bufferLen;
+	}
+	
+	public String getFileName() {
+		return txtfile.getAbsolutePath();
+	}
+	
 	public TxtReadandWrite () {
 		
 	}
 	public TxtReadandWrite (String fileType, String filepath, boolean createNew) {
-		if (createNew) {
+		if (createNew)
 			setParameter(fileType, filepath, createNew, false);
-		}
-		else {
+		else
 			setParameter(fileType, filepath, createNew, true);
-		}
 	}
 	
 	public TxtReadandWrite (String filepath, boolean createNew) {
-		if (createNew) {
+		if (createNew)
 			setParameter(filepath, createNew, false);
-		}
-		else {
+		else
 			setParameter(filepath, createNew, true);
-		}
 	}
 	/**
 	 * 待测试
@@ -90,32 +118,8 @@ public class TxtReadandWrite {
 		this.filetype = fileType;
 		setParameter(fileType, filePath, false, true);
 	}
-	
-	
-	File txtfile;
-	BufferedInputStream inputStream;
-	FileReader fileread;
-	BufferedOutputStream outputStream;
-	BufferedReader bufread;
-	BufferedWriter bufwriter;
-	boolean createNew = false;
-	boolean append = true;
-	/**
-	 * 仅仅为了最后关闭zip用
-	 */
-	ArchiveOutputStream zipOutputStream;
-	
-	static int bufferLen = 10000;
-	/**
-	 * 设定缓冲长度，默认为10000
-	 * @param bufferLen
-	 */
-	public static void setBufferLen(int bufferLen) {
-		TxtReadandWrite.bufferLen = bufferLen;
-	}
-	
-	public String getFileName() {
-		return txtfile.getAbsolutePath();
+	public void setSep(String sep) {
+		this.sep = sep;
 	}
 	/**
 	 * 默认产生txt文本
@@ -130,7 +134,15 @@ public class TxtReadandWrite {
 	 */
 	public boolean setParameter(String filepath, boolean createNew,
 			boolean append) {
-		return setParameter(TXT, filepath, createNew, append);
+		if (filepath.toLowerCase().endsWith("gz")) {
+			return setParameter(GZIP, filepath, createNew, append);
+		}
+		else if (filepath.toLowerCase().endsWith("bz2")) {
+			return setParameter(BZIP2, filepath, createNew, append);
+		}
+		else {
+			return setParameter(TXT, filepath, createNew, append);
+		}
 	}
 	/**
 	 * 按照最初的设定，重新设定各类信息，类似setParameter()
@@ -179,22 +191,18 @@ public class TxtReadandWrite {
 		try {
 			setReadFile(filetype);
 		} catch (Exception e) {
-			// TODO: handle exception
 		}
 	}
 	
-	private void createFile(String fileType, String fileName, boolean append) throws Exception
-	{
+	private void createFile(String fileType, String fileName, boolean append) throws Exception {
 		outputStream = new BufferedOutputStream(new FileOutputStream(txtfile,append));
-		if (fileType.equals(TXT)) {
+		if (fileType.equals(TXT))
 			return;
-		}
 		
 		else if (fileType.equals(ZIP)) {
 			zipOutputStream = new ZipArchiveOutputStream(txtfile);
 			ZipArchiveEntry entry = new ZipArchiveEntry(FileOperate.getFileNameSep(fileName)[0]);
 			zipOutputStream.putArchiveEntry(entry);
-//			filewriterzip.createArchiveEntry(txtfile, FileOperate.getFileNameSep(fileName)[0]+".txt");
 			outputStream = new BufferedOutputStream(zipOutputStream, bufferLen);
 		}
 		else if (fileType.equals(GZIP)) {
@@ -202,30 +210,6 @@ public class TxtReadandWrite {
 		}
 		else if (fileType.equals(BZIP2)) {
 			outputStream = new BufferedOutputStream(new BZip2CompressorOutputStream(outputStream), bufferLen);
-		}
-	}
-	
-	private void setReadFile(String fileType) throws Exception {
-		inputStream = new BufferedInputStream(new FileInputStream(txtfile), bufferLen);
-		fileread = new FileReader(txtfile);
-		if (fileType.equals(TXT)) {
-			return;
-		}
-		if (fileType.equals(ZIP)) {
-			ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(inputStream);
-			ArchiveEntry zipEntry = null;
-			while ((zipEntry = zipArchiveInputStream.getNextEntry()) != null) {
-				if (!zipEntry.isDirectory() && zipEntry.getSize() > 0) {
-					break;
-				}
-			}
-			inputStream = new BufferedInputStream(zipArchiveInputStream, bufferLen);
-		}
-		else if (fileType.equals(GZIP)) {
-			inputStream = new BufferedInputStream(new GZIPInputStream(inputStream), bufferLen);
-		}
-		else if (fileType.equals(BZIP2)) {
-			inputStream = new BufferedInputStream(new BZip2CompressorInputStream(inputStream), bufferLen);
 		}
 	}
 	
@@ -243,9 +227,18 @@ public class TxtReadandWrite {
 		if (bufread != null) {
 			bufread.close();
 		}
-		
+		setReadFile(filetype);
+
+		bufread = new BufferedReader(new   InputStreamReader(inputStream));
+		return bufread;
+	}
+	
+	private void setReadFile(String fileType) throws Exception {
 		inputStream = new BufferedInputStream(new FileInputStream(txtfile), bufferLen);
-		if (filetype.equals(ZIP)) {
+		if (fileType.equals(TXT)) {
+			return;
+		}
+		if (fileType.equals(ZIP)) {
 			ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(inputStream);
 			ArchiveEntry zipEntry = null;
 			while ((zipEntry = zipArchiveInputStream.getNextEntry()) != null) {
@@ -255,15 +248,10 @@ public class TxtReadandWrite {
 			}
 			inputStream = new BufferedInputStream(zipArchiveInputStream, bufferLen);
 		}
-		else if (filetype.equals(GZIP)) {
+		else if (fileType.equals(GZIP))
 			inputStream = new BufferedInputStream(new GZIPInputStream(inputStream), bufferLen);
-		}
-		else if (filetype.equals(BZIP2)) {
+		else if (fileType.equals(BZIP2))
 			inputStream = new BufferedInputStream(new BZip2CompressorInputStream(inputStream), bufferLen);
-		}
-
-		bufread = new BufferedReader(new   InputStreamReader(inputStream));
-		return bufread;
 	}
 	
 	public Iterable<String> readlines() {
@@ -279,8 +267,7 @@ public class TxtReadandWrite {
 	 * @param lines 如果lines小于1，则从头开始读取
 	 * @return
 	 */
-	public Iterable<String> readlines(int lines)
-	{
+	public Iterable<String> readlines(int lines) {
 		lines = lines - 1;
 		try {
 			Iterable<String> itContent = readPerlines();
@@ -310,17 +297,14 @@ public class TxtReadandWrite {
 					public boolean hasNext() {
 						return line != null;
 					}
-
 					public String next() {
 						String retval = line;
 						line = getLine();
 						return retval;
 					}
-
 					public void remove() {
 						throw new UnsupportedOperationException();
 					}
-
 					String getLine() {
 						String line = null;
 						try {
@@ -341,22 +325,15 @@ public class TxtReadandWrite {
 
 	/**
 	 * @param path输入文件名
-	 * @return 返回List<String>，读完不用关闭Buffer流
+	 * @return 返回List<String>，读完关闭
 	 * @throws Exception
 	 */
-	public ArrayList<String> readfileLs(){
-
+	public ArrayList<String> readfileLs() {
 		ArrayList<String> lsResult = new ArrayList<String>();
-		String content = "";
-		try {
-			BufferedReader read = readfile();
-			// 先跳过前面的好多行
-			while ((content = read.readLine()) != null) {
-				lsResult.add(content);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (String string : readlines()) {
+			lsResult.add(string);
 		}
+		close();
 		return lsResult;
 	}
 	
@@ -366,37 +343,21 @@ public class TxtReadandWrite {
 	 */
 	public long getTxtLen() {
 		int Result = 0;
-		String content = "";
-		// 先跳过前面的好多行
-		try {
-			BufferedReader read = readfile();
-			while ((content = read.readLine()) != null) {
-				Result = Result + content.trim().length();
-			}
-		} catch (Exception e) {
-			logger.error("读取出错");
-			e.printStackTrace();
+		for (String content : readlines()) {
+			Result = Result + content.trim().length();
 		}
 		return Result;
 	}
 
 	/**
 	 * @return 返回 String，读完不用关闭Buffer流
-	 * 
 	 */
 	public String readFirstLine() {
-		BufferedReader read;
+		String firstLine = "";
 		try {
-			read = readfile();
-			String str = read.readLine();
-			close();
-			return str;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		// 先跳过前面的好多行
-		
+			firstLine = readlines().iterator().next();
+		} catch (Exception e) { }
+		return firstLine;
 	}
 	
 	/**
@@ -406,42 +367,19 @@ public class TxtReadandWrite {
 	 */
 	public ArrayList<String> readFirstLines(int Num) {
 		ArrayList<String> lsResult = new ArrayList<String>();
-		try {
-			BufferedReader read = readfile();
-			String content = ""; int rownum = 1;
-			// 先跳过前面的好多行
-			while ((content = read.readLine()) != null) {
-				if (rownum > Num) {
-					break;
-				}
-				lsResult.add(content);
-				rownum ++;
+		int rowNum = 1;
+		for (String string : readlines()) {
+			if (rowNum > Num ) {
+				break;
 			}
-			close();
-		} catch (Exception e) {
-			e.printStackTrace();
+			lsResult.add(string);
+			rowNum ++;
 		}
-		
 		return lsResult;
 	}
-	
 	/**
-	 * 关闭buffer流
-	 * 
-	 * @throws IOException
-	 */
-	public void closeBufferRead() {
-		try {
-			bufread.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * @param content
-	 *            ，要写入文件内容
+	 * 写完自动flush
+	 * @param content 要写入文件内容
 	 * @throws Exception
 	 */
 	public void writefile(String content) {
@@ -449,11 +387,10 @@ public class TxtReadandWrite {
 			outputStream.write(content.getBytes());
 			outputStream.flush();
 		} catch (Exception e) {
-			// TODO: handle exception
 		}
 	}
 	/**
-	 * 写入并换行，通通没有flush
+	 * 写入并换行，没有flush
 	 * @param content
 	 *            ，要写入文件内容
 	 * @throws Exception
@@ -461,12 +398,10 @@ public class TxtReadandWrite {
 	public void writefileln(String content) {
 		try {
 			outputStream.write((content+ENTER_LINUX).getBytes());
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+		} catch (Exception e) { }
 	}
 	/**
-	 * 写入一行数组并换行，用"\t"隔开
+	 * 写入一行数组并换行，用sep隔开
 	 * @param content
 	 *            ，要写入文件内容
 	 * @throws Exception
@@ -474,19 +409,17 @@ public class TxtReadandWrite {
 	public void writefileln(String[] content) {
 		String content2 = content[0];
 		for (int i = 1; i < content.length; i++) {
-			content2 = content2 + "\t" + content[i];
+			content2 = content2 + sep + content[i];
 		}
 		try {
 			outputStream.write((content2+ENTER_LINUX).getBytes());
 		} catch (Exception e) {
-			// TODO: handle exception
 		}
 	}
 	
 	/**
 	 * 写入并换行
-	 * @param content
-	 *            ，要写入文件内容
+	 * @param content 要写入文件内容
 	 * @throws Exception
 	 */
 	public void writefileln() {
@@ -538,35 +471,25 @@ public class TxtReadandWrite {
 	 * @param regx
 	 */
 	public void delLines(String regx, boolean isregx) {
-		String tmpFileName = txtfile.getAbsolutePath()+"TmpOfZJJAVA";
+		String tmpFileName = txtfile.getAbsolutePath() + DateTime.getDateAndRandom();
 		TxtReadandWrite txtNewFile = new TxtReadandWrite(tmpFileName,true);
-		Pattern pattern =Pattern.compile(regx, Pattern.CASE_INSENSITIVE);  //flags - 匹配标志，可能包括 CASE_INSENSITIVE、MULTILINE、DOTALL、UNICODE_CASE、 CANON_EQ、UNIX_LINES、LITERAL 和 COMMENTS 的位掩码  // CASE_INSENSITIVE,大小写不敏感，MULTILINE 多行
-		Matcher matcher;//matcher.groupCount() 返回此匹配器模式中的捕获组数。
-		try {
-			String content = "";
-			readfile();
-			while ((content = bufread.readLine()) != null) {
-				if (isregx) {
-					matcher = pattern.matcher(content);
-					if (matcher.find()) {
-						continue;
-					}
-				}
-				else {
-					if (content.contains(regx)) {
-						continue;
-					}
-				}
-				txtNewFile.writefileln(content);
+		PatternOperate patternOperate = new PatternOperate(regx, false);
+		for (String content : readlines()) {
+			if (isregx) {
+				String result = patternOperate.getPatFirst(content);
+				if (result != null)
+					continue;
 			}
-			txtNewFile.close();
-			FileOperate.delFile(txtfile.getAbsolutePath());
-			FileOperate.changeFileName(tmpFileName, FileOperate.getFileName(txtfile.getAbsolutePath()),true);	
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			else {
+				if (content.contains(regx)) {
+					continue;
+				}
+			}
+			txtNewFile.writefileln(content);
 		}
-		
+		txtNewFile.close();
+		FileOperate.delFile(txtfile.getAbsolutePath());
+		FileOperate.changeFileName(tmpFileName, FileOperate.getFileName(txtfile.getAbsolutePath()),true);	
 		close();
 	}
 	/**
@@ -577,9 +500,7 @@ public class TxtReadandWrite {
 	public void Rwritefile(double[] content) {
 		try {
 			Rwritefile(content, 20, " ");
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+		} catch (Exception e) { }
 	}
 	/**
 	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取,默认每行20个元素，用空格隔开
@@ -589,7 +510,6 @@ public class TxtReadandWrite {
 	public void Rwritefile(int[] content) {
 		Rwritefile(content, 20, " ");
 	}
-
 	/**
 	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取,默认每行20个元素，用空格隔开
 	 * 内部close
@@ -600,7 +520,6 @@ public class TxtReadandWrite {
 	}
 	/**
 	 * 给定内容，写入文本，这个写入的东西可以给R语言用scan读取
-	 * 
 	 * @param content
 	 * @param colLen
 	 * @param sep
@@ -879,46 +798,58 @@ public class TxtReadandWrite {
 	 * @return 返回ArrayList<String[]> 数组,数组中null项用""替换
 	 * @throws Exception
 	 */
-	public ArrayList<String[]> ExcelRead(String sep, int rowStartNum,
-			int columnStartNum, int rowEndNum, int columnEndNum, int colNotNone)
-	{
-		ArrayList<String[]> result = new ArrayList<String[]>();
+	public ArrayList<String[]> ExcelRead(int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum, int colNotNone) {
 		if (columnEndNum <= 0) {
-			columnEndNum =	ExcelColumns(sep);
+			columnEndNum = ExcelColumns(sep);
 		}
+		int[] colRead = new int[columnEndNum - columnStartNum + 1];
+		for (int i = 0; i < colRead.length; i++) {
+			colRead[i] = columnStartNum + i;
+		}
+		return ExcelRead(rowStartNum, rowEndNum, colRead, colNotNone);
+	}
+	/**
+	 * 内部close
+	 * 将规则的txt文本按照excel的方法读取,自动跳过空行
+	 * 最后一行为空行的话会保留
+	 * @param sep txt文本的分割符,为正则表达式，tab是"\t"
+	 * @param rowStartNum 实际读取起始行
+	 * @param rowEndNum 实际读取终止行 ,当该项=-1时，读取所有行
+	 * @param column 实际读取的列
+	 * @param colNotNone 主键列，该列不能为""，否则把该列为""的行删除，如果本项<=0，则不考虑
+	 * @return 返回ArrayList<String[]> 数组,数组中null项用""替换
+	 * @throws Exception
+	 */
+	public ArrayList<String[]> ExcelRead(int rowStartNum, int rowEndNum, int[] column, int colNotNone) {
+		colNotNone--;
+		if (rowEndNum <= 0)
+			rowEndNum = ExcelRows();
 		
+		ArrayList<String[]> result = new ArrayList<String[]>();
 		int readlines = rowEndNum - rowStartNum + 1;
-		int countRows = 0;
+		int countRows = 1;
 				
-		String[] tmp;// 两个临时变量
 		for (String content : readlines(rowStartNum)) {
-			if (rowEndNum > 0 && countRows > readlines ) {
+			if (rowEndNum > 0 && countRows > readlines)
 				break;
-			}
 			
 			if (content.trim().equals("")) {
 				continue;
 			}
-			tmp = content.split(sep);
-			int tmpLength = tmp.length;
-			if (colNotNone > 0 && (tmp[colNotNone - 1] == null || tmp[colNotNone - 1].trim().equals(""))) {
+			String[] tmp = content.split(sep);
+			if (colNotNone > 0 && (tmp.length < colNotNone + 1 || tmp[colNotNone] == null || tmp[colNotNone].trim().equals(""))) {
 				continue;
 			}
-			String[] tmpResult = null;
-			if (columnEndNum > tmpLength) {
-				tmpResult = new String[tmpLength - columnStartNum + 1];
-			} else {
-				tmpResult = new String[columnEndNum - columnStartNum + 1];
+			String[] tmpResult = new String[column.length];
+			for (int i = 0; i < tmpResult.length; i++) {
+				tmpResult[i] = "";
 			}
-			for (int j = 0; j < tmpResult.length; j++) {
-				tmpResult[j] = "";
-			}
-			for (int j = 0; j < tmpResult.length; j++) {
-				int colNum = columnStartNum - 1 + j;
-				if (tmp[colNum] == null) {
-					tmpResult[j] = "";
+			for (int i = 0; i < column.length; i++) {
+				int colNum = column[i] - 1;
+				if (tmp.length <= colNum || tmp[colNum] == null) {
+					tmpResult[i] = "";
 				} else {
-					tmpResult[j] = tmp[colNum];
+					tmpResult[i] = tmp[colNum];
 				}
 			}
 			result.add(tmpResult);
@@ -927,10 +858,6 @@ public class TxtReadandWrite {
 		close();
 		return result;
 	}
-
-	
-	
-	
 	/**
 	 * 给定一个两列文件，将其中的结果按照Key-value导出
 	 * 如果一列为空，如为很多空格，则跳过，如果有重复列，选择后出现的列
@@ -1000,7 +927,7 @@ public class TxtReadandWrite {
 	 *            txt文本的分割符,为正则表达式，tab是"\t"
 	 * @throws Exception
 	 */
-	public<T> void ExcelWrite(T[][] content, String sep) throws Exception {
+	public<T> void ExcelWrite(T[][] content) throws Exception {
 		String tmp = "";
 		for (int i = 0; i < content.length; i++) {
 			for (int j = 0; j < content[0].length; j++) {
@@ -1027,8 +954,7 @@ public class TxtReadandWrite {
 	 *            txt文本的分割符,为正则表达式，tab是"\t"
 	 * @throws Exception
 	 */
-	public void ExcelWrite(String[][] content, String sep, int rowStart,
-			int colStart) throws Exception {
+	public void ExcelWrite(String[][] content, int rowStart, int colStart) throws Exception {
 
 		for (int i = 0; i < content.length; i++) {
 			for (int j = 0; j < content[0].length; j++) {
@@ -1054,8 +980,7 @@ public class TxtReadandWrite {
 	 *            true时按行写入
 	 * @throws Exception
 	 */
-	public void ExcelWrite(String[] content, boolean row, String sep)
-			throws Exception {
+	public void ExcelWrite(String[] content, boolean row) throws Exception {
 		if (row == true)// 横着写入
 		{
 			for (int i = 0; i < content.length; i++) {
@@ -1089,7 +1014,7 @@ public class TxtReadandWrite {
 	 * @throws Exception
 	 */
 	public void ExcelWrite(List<String[]> content) {
-		ExcelWrite(content, "\t", 1, 1);
+		ExcelWrite(content, 1, 1);
 	}
 	/**
 	 * 效率太低，待修正
@@ -1103,8 +1028,7 @@ public class TxtReadandWrite {
 	 *            实际写入起始列
 	 * @throws Exception
 	 */
-	public void ExcelWrite(List<String[]> content, String sep,
-			int rowStartNum, int columnStartNum) {
+	public void ExcelWrite(List<String[]> content, int rowStartNum, int columnStartNum) {
 		if (content == null || content.size() == 0) {
 			return;
 		}
@@ -1143,8 +1067,7 @@ public class TxtReadandWrite {
 	 *            实际写入起始列
 	 * @throws Exception
 	 */
-	public void ExcelWrite(List<String[]> content, String sep,
-			int[] column, boolean include, int rowStartNum, int columnStartNum)
+	public void ExcelWrite(List<String[]> content, int[] column, boolean include, int rowStartNum, int columnStartNum)
 			throws Exception {
 		if (include) {
 			for (int i = 0; i < content.size(); i++) {
@@ -1200,10 +1123,7 @@ public class TxtReadandWrite {
 		close();
 		txtOut.close();
 	}
-	
-	String grepContent = "";
-	Pattern pattern = null;
-	Matcher matcher = null;
+
 	/**
 	 * 设定待抓取本文件中的特定文字
 	 * @param grepContent
@@ -1212,6 +1132,13 @@ public class TxtReadandWrite {
 		this.grepContent = grepContent;
 	}
 	
+	public ArrayList<String> grepInfo(int range, boolean caseSensitive, boolean regx) {
+		try {
+			return grepInfoExp(range, caseSensitive, regx);
+		} catch (Exception e) {
+			return new ArrayList<String>();
+		}
+	}
 	/**
 	 * 获取抓取信息以及其前后几行的信息
 	 * @param txtFile
@@ -1220,63 +1147,53 @@ public class TxtReadandWrite {
 	 * @param range
 	 * @param regx 是否是正则表达式，如果是正则表达式那么速度会慢
 	 * @return
+	 * @throws Exception 
 	 */
-	public ArrayList<String> grepInfo(int range, boolean caseSensitive, boolean regx)
-	{
-		//如果是正则表达式，那么就先初始化正则表达式
-		if (regx) {
-			if (caseSensitive) {
-				pattern = Pattern.compile(grepContent);
-			}
-			else {
-				pattern = Pattern.compile(grepContent, Pattern.CASE_INSENSITIVE);
-			}
-		}
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+	private ArrayList<String> grepInfoExp(int range, boolean caseSensitive, boolean regx) throws Exception {
+		PatternOperate patternOperate = new PatternOperate(this.grepContent, caseSensitive);
 		/**
-		 * 存储获得string上面的string
-		 * 本来想用list存储的，但是考虑效率问题，所以用string数组来存储
+		 * 存储获得string上面的string 本来想用list存储的，但是考虑效率问题，所以用string数组来存储
 		 * 依次保存上面的几行信息，循环保存
 		 */
-		String[] tmpContent = new String[range]; int i = 0;
-		//保存最后的结果
+		String[] tmpContent = new String[range];
+		int i = 0;
+		// 保存最后的结果
 		ArrayList<String> lsResult = new ArrayList<String>();
-		try {
-			String content = "";
-			BufferedReader reader = readfile();
-			while ((content = reader.readLine()) != null) {
-				if (grepInfo(content, caseSensitive, regx)) {
-					int num = 0;//计数器，将前面的几行全部加入list
-					//加入前面保存的文字
-					while (num < range) {
-						if (i >= range) {
-							i = 0;
-						}
-						lsResult.add(tmpContent[i]);
-						num ++; i++;
+		String content = "";
+		BufferedReader reader = readfile();
+		while ((content = reader.readLine()) != null) {
+			if (grepInfo(patternOperate, content, caseSensitive, regx)) {
+				int num = 0;// 计数器，将前面的几行全部加入list
+				// 加入前面保存的文字
+				while (num < range) {
+					if (i >= range) {
+						i = 0;
 					}
-					//加入本行文字
+					lsResult.add(tmpContent[i]);
+					num++;
+					i++;
+				}
+				// 加入本行文字
+				lsResult.add(content);
+				// 将后几行加入list，然后结束
+				int rest = 0;
+				while ((content = reader.readLine()) != null) {
+					if (rest >= range) {
+						close();
+						return lsResult;
+					}
 					lsResult.add(content);
-					//将后几行加入list，然后结束
-					int rest = 0;
-					while ((content = reader.readLine()) != null) {
-						if (rest >= range) {
-							close();
-							return lsResult;
-						}
-						lsResult.add(content);
-						rest++;
-					}
-					close();
-					return lsResult;
+					rest++;
 				}
-				tmpContent[i] = content; i++;
-				if (i >= range) {
-					i = 0;
-				}
+				close();
+				return lsResult;
 			}
-		} catch (Exception e) { e.printStackTrace(); 	}
+			tmpContent[i] = content;
+			i++;
+			if (i >= range) {
+				i = 0;
+			}
+		}
 		close();
 		return null;
 	}
@@ -1287,7 +1204,7 @@ public class TxtReadandWrite {
 	 * @param regx
 	 * @return
 	 */
-	private boolean grepInfo(String content, boolean caseSensitive, boolean regx)
+	private boolean grepInfo(PatternOperate patternOperate, String content, boolean caseSensitive, boolean regx)
 	{
 		if (!regx) {
 			if (!caseSensitive)
@@ -1298,8 +1215,8 @@ public class TxtReadandWrite {
 					return true;
 		}
 		else {
-			matcher = pattern.matcher(content);
-			if (matcher.find()) {
+			String getStr = patternOperate.getPatFirst(content);
+			if (getStr != null) {
 				return true;
 			}
 		}
@@ -1312,7 +1229,6 @@ public class TxtReadandWrite {
 	 */
 	public void close() {
 		try { outputStream.flush(); } catch (Exception e) {}
-		try { fileread.close(); } catch (Exception e) {}
 		try { bufread.close(); } catch (Exception e) {}
 		try { bufwriter.close(); } catch (Exception e) {}
 		try { inputStream.close(); } catch (Exception e) {}

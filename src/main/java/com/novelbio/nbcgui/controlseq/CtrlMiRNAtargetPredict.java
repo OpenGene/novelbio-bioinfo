@@ -95,7 +95,7 @@ public class CtrlMiRNAtargetPredict {
 		
 		ArrayList<String[]> lsOverlapTarget = overLap(miranda.getPredictResultFinal(), miRNAtargetRNAhybrid.getPredictResultFinal());
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtMirTargetOverlap, true);
-		txtOut.ExcelWrite(lsOverlapTarget, "\t", 1, 1);
+		txtOut.ExcelWrite(lsOverlapTarget);
 	}
 	
 	private ArrayList<String[]> overLap(String txtInputFileMiranda, String txtInputFileMiRNAhybrid) {

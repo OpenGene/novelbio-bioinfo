@@ -182,7 +182,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		}
 		TxtReadandWrite txtChrLength = new TxtReadandWrite(outFile, true);
 		try {
-			txtChrLength.ExcelWrite(lsResult, "\t", 1, 1);
+			txtChrLength.ExcelWrite(lsResult);
 		} catch (Exception e) {
 			logger.error("输出文件出错："+outFile);
 			e.printStackTrace();
@@ -196,17 +196,16 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 */
 	public SeqFasta getSeq(String chrID, long startlocation, long endlocation) {
 		chrID = chrID.toLowerCase();
-		try {
-			SeqFasta seqFasta = getSeqInfo(chrID, startlocation, endlocation);
-			seqFasta.setDNA(isDNAseq);
-			return seqFasta;
-		} catch (Exception e) {
-			logger.error("提取出错："+chrID + startlocation + "_" + endlocation);
+		SeqFasta seqFasta = getSeqInfo(chrID, startlocation, endlocation);
+		if (seqFasta == null) {
+			logger.error("提取出错："+chrID + " " + startlocation + "_" + endlocation);
 			return null;
 		}
+		seqFasta.setDNA(isDNAseq);
+		return seqFasta;
 	}
 	/** 提取序列 */
-	protected abstract SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation) throws IOException;
+	protected abstract SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation);
 	/**
 	 * * 输入染色体list信息 输入序列坐标以及是否为反向互补,其中ChrID为 chr1，chr2，chr10类型 返回序列
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
@@ -368,7 +367,6 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	@Override
 	public void getSeq(SiteInfo mapInfo) {
 		SeqFasta seqFasta = getSeq(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs());
-		seqFasta.setName(mapInfo.getName());
 		mapInfo.setSeq(seqFasta, true);
 	}
 }

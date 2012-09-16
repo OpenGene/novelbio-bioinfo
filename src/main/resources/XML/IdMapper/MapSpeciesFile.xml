@@ -33,7 +33,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	</select>
 	<insert id="insertSpeciesFile" parameterType="SpeciesFile">
 		insert into speciesfile (taxid,version,publishyear,chrompath,chromseq,indexchr,indexrefseq,gffgenefile,
-		gffrepeatfile,refsefile,refseqncfile,chrominfo)
+		gffrepeatfile,refseqfile,refseqncfile,chrominfo)
 		values (#{taxID},#{version},#{publishYear},#{chromPath},#{chromSeq},#{indexChr},#{indexRefseq},#{gffGeneFile}
 		,#{gffRepeatFile},#{refseqFile},#{refseqNCfile},#{chromInfo})
 	</insert>
@@ -68,7 +68,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				gffrepeatfile = #{gffRepeatFile},
 			</if>
 			<if test="refseqFile !=null and refseqFile != '' ">
-				refsefile = #{refseqFile},
+				refseqfile = #{refseqFile},
 			</if>
 			<if test="refseqNCfile !=null and refseqNCfile != '' ">
 				refseqncfile = #{refseqNCfile},

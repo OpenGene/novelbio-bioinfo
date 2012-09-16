@@ -12,9 +12,9 @@ public class XiaoBai {
 		overlap();
 	}
 	public static void overlap() {
-		String queryFile = "/media/winE/NBC/Project/Project_ZHY_Lab/张宏宇2012/miRNA/miRNA-Target.xls";
-		String excelFile = "/media/winE/NBC/Project/Project_ZHY_Lab/张宏宇2012/miRNA/ZHYNvs3N.xls";
-		String outFile = "/media/winE/NBC/Project/Project_ZHY_Lab/张宏宇2012/miRNA/ZHYNvs3N_Target.xls";
+		String queryFile = "/home/zong0jie/桌面/7月汇总表生产厂商.xlsx";
+		String excelFile = "/home/zong0jie/桌面/原料及编码表.xlsx";
+		String outFile = "/home/zong0jie/桌面/7yue.xls";
 		
 		HashMap<String, String[]> mapSub_ID2Line = new HashMap<String, String[]>();
 		ArrayList<String[]> lsExcel = ExcelTxtRead.readLsExcelTxt(excelFile, 1);
@@ -29,6 +29,7 @@ public class XiaoBai {
 			String ID = strings[0].trim();
 			String[] resultQuery = mapSub_ID2Line.get(ID.toLowerCase());
 			if (resultQuery == null) {
+				txtOut.writefileln(strings);
 				continue;
 			}
 			String[] result = ArrayOperate.combArray(strings, resultQuery, 0);

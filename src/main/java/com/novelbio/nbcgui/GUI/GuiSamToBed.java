@@ -21,17 +21,22 @@ public class GuiSamToBed extends JPanel {
 	private JTextField txtSamFile;
 	private JTextField txtBedFile;
 	private JTextField txtExtend;
-	JRadioButton rdbtnExtend;
-	JRadioButton rdbtnFilterstrand;
-	JRadioButton rdbtnSort;
 	
 	ButtonGroup buttonGroup = new ButtonGroup();
 	ButtonGroup buttonGroupCisTrans = new ButtonGroup();
-	
+	JCheckBox chckbxExtend;
+	JCheckBox chckbxFilterreads;
+	JCheckBox chckbxCis;
+	JCheckBox chckbxTrans;
+	JCheckBox chckbxSortBed;
+	JCheckBox chckbxSortBam;
+	JCheckBox chckbxIndex;
+	JCheckBox chckbxRealign;
+	JButton btnSamtobed;
+	JCheckBox chckbxTobam;
+
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
-	private JRadioButton rdbtnCis;
-	private JRadioButton rdbtnTrans;
 	private JTextField txtMappingNumSmall;
 	private JLabel lblTo;
 	private JTextField txtMappingNumBig;
@@ -56,28 +61,35 @@ public class GuiSamToBed extends JPanel {
 		btnNewButton.setBounds(351, 44, 183, 24);
 		add(btnNewButton);
 		
-		JButton btnConverttobedfile = new JButton("ConvertToBedFile");
-		btnConverttobedfile.addActionListener(new ActionListener() {
+		JButton btnConvertSam = new JButton("ConvertSam");
+		btnConvertSam.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SamFile samFile = new SamFile(txtSamFile.getText());
-				if (chckbxNonUniqueMapping.isSelected()) {
-					samFile.setUniqueRandomSelectOneRead(true);
+				if (chckbxRealign.isSelected()) {
+					samFile.copeSamFile2Snp();
+					return;
 				}
-				else {
-					samFile.setUniqueRandomSelectOneRead(false);
+				
+				if (chckbxTobam.isSelected()) {
+					samFile = samFile.convertToBam();
 				}
-				samFile.toBedSingleEnd();
+				if (chckbxSortBam.isSelected()) {
+					samFile = samFile.sort();
+				}
+				if (chckbxIndex.isSelected()) {
+					samFile.index();
+				}
 			}
 		});
-		btnConverttobedfile.setBounds(12, 77, 194, 24);
-		add(btnConverttobedfile);
+		btnConvertSam.setBounds(351, 128, 194, 24);
+		add(btnConvertSam);
 		
 		JLabel lblSamfile = new JLabel("SamFile");
 		lblSamfile.setBounds(12, 21, 69, 14);
 		add(lblSamfile);
 		
 		txtBedFile = new JTextField();
-		txtBedFile.setBounds(12, 162, 316, 18);
+		txtBedFile.setBounds(12, 284, 316, 18);
 		add(txtBedFile);
 		txtBedFile.setColumns(10);
 		
@@ -87,111 +99,122 @@ public class GuiSamToBed extends JPanel {
 				txtBedFile.setText(guiFileOpen.openFileName("", ""));
 			}
 		});
-		btnNewButton_1.setBounds(351, 159, 183, 24);
+		btnNewButton_1.setBounds(351, 281, 183, 24);
 		add(btnNewButton_1);
 		
 		JLabel lblBedfile = new JLabel("BedFile");
-		lblBedfile.setBounds(12, 143, 69, 14);
+		lblBedfile.setBounds(12, 265, 69, 14);
 		add(lblBedfile);
 		
 		txtExtend = new JTextField();
-		txtExtend.setBounds(164, 198, 114, 18);
+		txtExtend.setBounds(137, 322, 114, 18);
 		add(txtExtend);
 		txtExtend.setColumns(10);
 		
-		JButton btnConvert = new JButton("Convert");
-		btnConvert.addActionListener(new ActionListener() {
+		JButton btnConvertBed = new JButton("ConvertBed");
+		btnConvertBed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				BedSeq bedSeq = new BedSeq(txtBedFile.getText());
-				if (rdbtnExtend.isSelected()) {
-					int extendTo = Integer.parseInt(txtExtend.getText());
-					bedSeq.extend(extendTo);
+				if (chckbxExtend.isSelected()) {
+					int extendLen = 250;
+					try { extendLen = Integer.parseInt(txtExtend.getText()); } catch (Exception e2) { }
+					bedSeq = bedSeq.extend(extendLen);
 				}
-				else if (rdbtnSort.isSelected()) {
-					bedSeq.sortBedFile();
-				}
-				else if (rdbtnFilterstrand.isSelected()) {
-					int mappingNumSmall = 1; int mappingNumBig = 1;
-					try { mappingNumSmall = Integer.parseInt(txtMappingNumSmall.getText().trim()); 
-					mappingNumBig = Integer.parseInt(txtMappingNumBig.getText().trim()); 
-					} catch (Exception e2) { 	}
-					
+				if (chckbxFilterreads.isSelected()) {
 					Boolean strand = null;
-					if (rdbtnCis.isSelected()) {
+					if (chckbxCis.isSelected()) {
 						strand = true;
 					}
-					else if (rdbtnTrans.isSelected()) {
+					else if (chckbxTrans.isSelected()) {
 						strand = false;
 					}
-					
-					String bedFile = FileOperate.changeFileSuffix(txtBedFile.getText(), "_filtered", null);
-					BedSeq bedSeq2 = new BedSeq(bedFile, true);
-					for (BedRecord bedRecord : bedSeq.readLines()) {
-						if (strand != null && bedRecord.isCis5to3() != strand) {
-							continue;
-						}
-						if (bedRecord.getMappingNum() >= mappingNumSmall && bedRecord.getMappingNum() <= mappingNumBig) {
-							bedSeq2.writeBedRecord(bedRecord);
-						}
-					}
-					bedSeq2.closeWrite();
+					int small = 1;
+					try { small = Integer.getInteger(txtMappingNumSmall.getText()); } catch (Exception e2) { }
+					int big = 1;
+					try { big = Integer.getInteger(txtMappingNumBig.getText()); } catch (Exception e2) { }
+					bedSeq = bedSeq.filterSeq(small, big, strand);
+				}
+				if (chckbxSortBed.isSelected()) {
+					bedSeq.sortBedFile();
 				}
 			}
 		});
-		btnConvert.setBounds(393, 273, 118, 24);
-		add(btnConvert);
-		
-		rdbtnExtend = new JRadioButton("Extend");
-		rdbtnExtend.setBounds(12, 196, 98, 22);
-		add(rdbtnExtend);
-		
-		rdbtnFilterstrand = new JRadioButton("FilterStrand");
-		rdbtnFilterstrand.setBounds(12, 233, 131, 22);
-		add(rdbtnFilterstrand);
-		
-		rdbtnSort = new JRadioButton("Sort");
-		rdbtnSort.setBounds(12, 274, 98, 22);
-		add(rdbtnSort);
-		
-		rdbtnCis = new JRadioButton("Cis");
-		rdbtnCis.setBounds(163, 233, 46, 22);
-		add(rdbtnCis);
-		
-		rdbtnTrans = new JRadioButton("Trans");
-		rdbtnTrans.setBounds(223, 233, 80, 22);
-		add(rdbtnTrans);
+		btnConvertBed.setBounds(370, 397, 147, 24);
+		add(btnConvertBed);
 		initial();
-		buttonGroupCisTrans.add(rdbtnCis);
-		buttonGroupCisTrans.add(rdbtnTrans);
 		
 		txtMappingNumSmall = new JTextField();
 		txtMappingNumSmall.setText("1");
-		txtMappingNumSmall.setBounds(413, 235, 30, 18);
+		txtMappingNumSmall.setBounds(399, 352, 30, 18);
 		add(txtMappingNumSmall);
 		txtMappingNumSmall.setColumns(10);
 		
 		JLabel lblMappingnum = new JLabel("MappingNum");
-		lblMappingnum.setBounds(306, 237, 114, 14);
+		lblMappingnum.setBounds(297, 352, 114, 14);
 		add(lblMappingnum);
 		
 		lblTo = new JLabel("To");
-		lblTo.setBounds(447, 237, 30, 14);
+		lblTo.setBounds(433, 354, 30, 14);
 		add(lblTo);
 		
 		txtMappingNumBig = new JTextField();
 		txtMappingNumBig.setText("1");
-		txtMappingNumBig.setBounds(486, 235, 36, 18);
+		txtMappingNumBig.setBounds(472, 352, 36, 18);
 		add(txtMappingNumBig);
 		txtMappingNumBig.setColumns(10);
 		
 		chckbxNonUniqueMapping = new JCheckBox("Non Unique Mapping Get Random Reads");
-		chckbxNonUniqueMapping.setBounds(214, 78, 320, 22);
+		chckbxNonUniqueMapping.setBounds(12, 204, 320, 22);
 		add(chckbxNonUniqueMapping);
+		
+		chckbxExtend = new JCheckBox("Extend");
+		chckbxExtend.setBounds(12, 320, 131, 22);
+		add(chckbxExtend);
+		
+		chckbxFilterreads = new JCheckBox("FilterReads");
+		chckbxFilterreads.setBounds(12, 348, 131, 22);
+		add(chckbxFilterreads);
+		
+		chckbxCis = new JCheckBox("Cis");
+		chckbxCis.setBounds(147, 348, 53, 22);
+		add(chckbxCis);
+		
+		chckbxTrans = new JCheckBox("Trans");
+		chckbxTrans.setBounds(214, 348, 69, 22);
+		add(chckbxTrans);
+		
+		chckbxSortBed = new JCheckBox("SortBed");
+		chckbxSortBed.setBounds(12, 382, 131, 22);
+		add(chckbxSortBed);
+		
+		chckbxSortBam = new JCheckBox("sortBam");
+		chckbxSortBam.setBounds(96, 73, 91, 22);
+		add(chckbxSortBam);
+		
+		chckbxIndex = new JCheckBox("index");
+		chckbxIndex.setBounds(191, 73, 69, 22);
+		add(chckbxIndex);
+		
+		chckbxRealign = new JCheckBox("realignRemoveDupRecalibrate");
+		chckbxRealign.setBounds(12, 103, 256, 22);
+		add(chckbxRealign);
+		
+		btnSamtobed = new JButton("SamtoBed");
+		btnSamtobed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SamFile samFile = new SamFile(txtSamFile.getText());
+				samFile.setUniqueRandomSelectOneRead(chckbxNonUniqueMapping.isSelected());
+				samFile.toBedSingleEnd();
+			}
+		});
+		btnSamtobed.setBounds(351, 203, 118, 24);
+		add(btnSamtobed);
+		
+		chckbxTobam = new JCheckBox("toBam");
+		chckbxTobam.setBounds(12, 73, 81, 22);
+		add(chckbxTobam);
 	}
 	
 	private void initial() {
-		buttonGroup.add(rdbtnExtend);
-		buttonGroup.add(rdbtnFilterstrand);
-		buttonGroup.add(rdbtnSort);
 	}
 }

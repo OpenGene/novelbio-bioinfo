@@ -114,7 +114,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo>{
 		this.lsGeneInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 1);
 		ArrayList<String[]> lsResult = getAnno();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outTxtFile, true);
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOut.ExcelWrite(lsResult);
 	}
 	
 	@Override

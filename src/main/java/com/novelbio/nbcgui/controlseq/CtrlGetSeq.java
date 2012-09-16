@@ -40,15 +40,6 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 	public void setSaveToFile(boolean saveToFile) {
 		gffChrSeq.setSaveToFile(saveToFile);
 	}
-	
-	/** 提取单个基因的时候<br>
-	 * true：提取该基因对应的转录本<br>
-	 * false 提取该基因所在基因的最长转录本<br>
-	 * @param absIso
-	 */
-	public void setAbsIso(boolean absIso) {
-		gffChrSeq.setAbsIso(absIso);
-	}
 	/** 提取全基因组序列的时候，是每个LOC提取一条序列还是提取全部 */
 	public void setGetAllIso(boolean getAllIso) {
 		gffChrSeq.setGetAllIso(getAllIso);

@@ -103,6 +103,9 @@ public class BedSeq extends SeqComb implements AlignSeqReader{
 	public BedRecord readFirstLine() {
 		return readLines().iterator().next();
 	}
+	public void close() {
+		txtSeqFile.close();
+	}
 	/**
 	 * 写完后务必用此方法关闭
 	 * 关闭输入流，并将bedseq写入转化为bedseq读取
@@ -197,7 +200,7 @@ public class BedSeq extends SeqComb implements AlignSeqReader{
 			tmpTxt = FileOperate.changeFileSuffix(seqFile, "_unzip", "txt");
 			txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
 			txtSeqFile.unZipFile(tmpTxt);
-		}
+		} 
 		else {
 			tmpTxt = seqFile;
 		}
@@ -415,36 +418,28 @@ public class BedSeq extends SeqComb implements AlignSeqReader{
 		}
 		return String.copyValueOf(qualityChar);
 	}
-	/**
-	 * 从含有序列的bed文件获得fastQ文件
-	 * @param colSeqNum 序列文件在第几列，实际列
-	 * @param outFileName fastQ文件全名（包括路径）
-	 * @throws Exception
-	 */
-	@Deprecated
-	public void getFastQ(int colSeqNum, String outFileName) {
-		colSeqNum--;
-		txtSeqFile.setParameter(compressInType, seqFile, false, true);
-		BufferedReader reader;
-		try {
-			reader = txtSeqFile.readfile();
-			TxtReadandWrite txtOut = new TxtReadandWrite();
-			txtOut.setParameter(compressOutType, outFileName, true, false);
-			String content = "";
-			//质量列,一百个
-			String qstring = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-			qstring = qstring + qstring + qstring + qstring + qstring;
-			while ((content = reader.readLine()) != null) {
-				String[] ss = content.split("\t");
-				txtOut.writefileln("@A80TF3ABXX:6:1:1223:2180#/1");
-				txtOut.writefileln(ss[colSeqNum]);
-				txtOut.writefileln("+");
-				txtOut.writefileln(qstring.substring(0,ss[colSeqNum].length()));
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	/** 过滤reads */
+	public BedSeq filterSeq(int mappingNumSmall, int mappingNumBig, Boolean strand) {
+		if (mappingNumSmall < 1) {
+			mappingNumSmall = 1;
 		}
+		if (mappingNumBig < mappingNumSmall) {
+			mappingNumBig = mappingNumSmall;
+		}
+		
+		String bedFileFiltered = FileOperate.changeFileSuffix(getFileName(), "_filtered", null);		
+		BedSeq bedSeqFiltered = new BedSeq(bedFileFiltered, true);
+		for (BedRecord bedRecord : readLines()) {
+			if (strand != null && bedRecord.isCis5to3() != strand) {
+				continue;
+			}
+			if (bedRecord.getMappingNum() >= mappingNumSmall && bedRecord.getMappingNum() <= mappingNumBig) {
+				bedSeqFiltered.writeBedRecord(bedRecord);
+			}
+		}
+		close();
+		bedSeqFiltered.closeWrite();
+		return bedSeqFiltered;
 	}
 	/**
 	 * calDestribution方法和calCoverage方法里面用到

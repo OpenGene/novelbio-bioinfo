@@ -76,7 +76,7 @@ public class GuiAnnoGene extends JPanel implements GuiNeedOpenFile {
 			public void actionPerformed(ActionEvent e) {
 				String fileName = guiFileOpen.saveFileName("txt", "");
 				TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
-				txtOut.ExcelWrite(ctrlBatchAnno.getResult(), "\t", 1, 1);
+				txtOut.ExcelWrite(ctrlBatchAnno.getResult());
 			}
 		});
 		btnSave.setBounds(717, 561, 118, 24);

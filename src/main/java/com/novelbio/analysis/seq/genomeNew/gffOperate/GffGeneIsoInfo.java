@@ -249,14 +249,15 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	/**
 	 * <b>必须先设定exon</b>
-	 * 如果是非编码RNA，则将atg和uag设置为最后一位
+	 * 如果ATGsite < 0 && UAGsite < 0，则认为是非编吗RNA
+	 * 则将atg和uag设置为最后一位
 	 */
 	public void setATGUAGncRNA() {
 		if (ATGsite < 0 && UAGsite <0) {
 			ATGsite = get(size() - 1).getEndCis();
 			UAGsite = get(size() - 1).getEndCis();
 		}
-	}	
+	}
 	/**
 	 * 该转录本的ATG的第一个字符坐标，从1开始计数，是闭区间
 	 * @return

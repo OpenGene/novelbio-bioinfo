@@ -531,7 +531,7 @@ public class GuiBlastJpanel extends JPanel {
 	private ArrayList<String> getFirstCol(String filePath) {
 		ArrayList<String[]> lstmp = null;
 		try {
-			lstmp = ExcelTxtRead.getFileToList(filePath, 1, "\t");
+			lstmp = ExcelTxtRead.readLsExcelTxt(filePath, 1);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "input file formate is not correct.\n Only accept excel2003 or txt file", "Error", JOptionPane.ERROR_MESSAGE); 
 			e.printStackTrace();

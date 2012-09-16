@@ -112,13 +112,20 @@ public class ChrStringHash extends SeqHashAbs{
 			hashChrLength.put(chrID, tmpChrLength);
 		}
 	}
+	protected SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation) {
+		try {
+			return getSeqInfoExp(chrID, startlocation, endlocation);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 	/**
 	 * 给定chrID,chrID会自动转换为小写，和读取的起点以及终点，返回读取的序列
 	 * startNum=204;从第几个碱基开始读取，从1开始记数，注意234的话，实际为从234开始读取，类似substring方法 long
 	 * endNum=254;//读到第几个碱基，从1开始记数，实际读到第endNum个碱基。 快速提取序列
 	 * @throws IOException
 	 */
-	protected SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation) throws IOException {
+	private SeqFasta getSeqInfoExp(String chrID, long startlocation, long endlocation) throws IOException {
 		startlocation--;
 		chrID = chrID.toLowerCase();
 		RandomAccessFile chrRASeqFile = mapChrID2RandomFile.get(chrID);// 判断文件是否存在
@@ -146,7 +153,7 @@ public class ChrStringHash extends SeqHashAbs{
 		long startRealCod = (lengthChrID + 1) + (lengthRow + 1) * rowstartNum + startrowBias;
 		long endRealCod = (lengthChrID + 1) + (lengthRow + 1) * rowendNum + endrowBias;
 		//如果位点超过了范围，那么修正位点
-		if (startlocation < 0 || startRealCod >= lengthChrSeq || endlocation < 1 || endRealCod >= lengthChrSeq || endlocation <= startlocation) {
+		if (startlocation < 0 || startRealCod >= lengthChrSeq || endlocation < 1 || endRealCod >= lengthChrSeq || endlocation < startlocation) {
 			logger.error(chrID + " " + startlocation + " " + endlocation + " 染色体坐标错误");
 			return null;
 		}

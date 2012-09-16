@@ -70,7 +70,7 @@ public class AgilentIDmodify {
 			}
 		}
 		
-		txtAgilent.ExcelWrite(result, "\t", 1, 1);
+		txtAgilent.ExcelWrite(result);
 		
 	}
 	

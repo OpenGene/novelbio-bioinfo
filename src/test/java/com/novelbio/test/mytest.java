@@ -74,6 +74,7 @@ import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
+import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
 import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
@@ -83,9 +84,11 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructur
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGenePlant;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.reseq.LastzAlign;
 import com.novelbio.analysis.seq.reseq.ModifySeq;
+import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.analysis.tools.Mas3.getProbID;
@@ -127,8 +130,17 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		
-		
+		String gffFile = "/home/zong0jie/下载/all.gff3";
+		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_TIGR, gffFile);
+		SeqHash seqHash = new SeqHash("/home/zong0jie/下载/all.con");
+		GffChrAbs gffChrAbs = new GffChrAbs();
+		gffChrAbs.setGffHash(gffHashGene);
+		gffChrAbs.setSeqHash(seqHash);
+		SnpAnnotation snpAnnotation = new SnpAnnotation();
+		snpAnnotation.setGffChrAbs(gffChrAbs);
+		snpAnnotation.addTxtSnpFile("/home/zong0jie/桌面/WThomo_snp.txt", "/home/zong0jie/桌面/WThomo_snp_anno.txt");
+		snpAnnotation.setCol(1, 2, 3, 4);
+		snpAnnotation.run();
 	}
 	
 	private static void test(int[] mm) {

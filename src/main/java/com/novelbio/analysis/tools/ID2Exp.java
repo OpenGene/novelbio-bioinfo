@@ -28,6 +28,7 @@ public class ID2Exp {
 	ArrayList<String[]> lsMethyInfo = new ArrayList<String[]>();
 	ArrayList<String[]> lsMicroarrayInfo = new ArrayList<String[]>();
 	int taxID = 10090;
+	int range = 2000;
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
@@ -52,7 +53,7 @@ public class ID2Exp {
 		readGeneExpTxt(geneExpFile, colCondition);
 		ArrayList<String[]> lsResult = addTssInfo();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOut.ExcelWrite(lsResult);
 	}
 	public void combInfo() {
 		String methyFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/allAnnotation/XLYall_table.txt";
@@ -63,7 +64,7 @@ public class ID2Exp {
 		readGeneExpTxt(geneExpFile, colCondition);
 		ArrayList<String[]> lsResult = mergeInfo();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOut.ExcelWrite(lsResult);
 	}
 	/**
 	 * 将给定的信息merge在一起
@@ -94,7 +95,6 @@ public class ID2Exp {
 		}
 		return lsResult;
 	}
-	int range = 2000;
 	private ArrayList<String[]> addTssInfo() {
 		ArrayList<String[]> lsInfo = new ArrayList<String[]>();
 		for (String[] strings : lsMethyInfo) {

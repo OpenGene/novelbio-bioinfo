@@ -125,7 +125,7 @@ public class SeqFasta implements Cloneable {
 	 */
 	public SeqFasta getSubSeq(int startlocation, int endlocation, boolean cisseq) {
 		String sequence = getsequence(startlocation, endlocation);
-		SeqFasta seqFasta = new SeqFasta(SeqName, sequence, cisseq);
+		SeqFasta seqFasta = new SeqFasta(SeqName+"_" + startlocation + "_" + endlocation, sequence, cisseq);
 		seqFasta.TOLOWCASE = TOLOWCASE;
 		seqFasta.AA3Len = AA3Len;
 		return seqFasta;
@@ -143,7 +143,7 @@ public class SeqFasta implements Cloneable {
 			return "序列坐标错误 "+SeqName+" "+startlocation+" "+endlocation;
 		}
 
-		if (endlocation <= startlocation) {
+		if (endlocation < startlocation) {
 			logger.error("序列坐标错误 "+SeqName+" "+startlocation+" "+endlocation);
 			return "序列坐标错误 "+SeqName+" "+startlocation+" "+endlocation;
 		}
@@ -404,7 +404,14 @@ public class SeqFasta implements Cloneable {
 			tmpLines[m] = tmpAll[i];
 			m++;
 		}
-		String tmpline = String.copyValueOf(tmpLines);
+		/** 最后一个tmpLines也是一个长度为basePerLine的数组，
+		 * 但是其实际序列长度可能并没有basePerLine长，所以多出来的地方就会用null填充，那么我们要把这些null删掉，否则会出错
+		 */
+		char[] tmpFinal = new char[m];
+		for (int i = 0; i < tmpFinal.length; i++) {
+			tmpFinal[i] = tmpLines[i];
+		}
+		String tmpline = String.copyValueOf(tmpFinal);
 		result = result + TxtReadandWrite.ENTER_LINUX + tmpline;
 		return result;
 	}

@@ -115,7 +115,7 @@ public class GffChrAbs {
 	public void setGffHash(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}
-	public void set(SeqHash seqHash) {
+	public void setSeqHash(SeqHash seqHash) {
 		this.seqHash = seqHash;
 	}
 	/** 如果没有设定species，就返回一个全新的species，并且其taxID == 0 */

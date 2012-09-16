@@ -77,7 +77,7 @@ public class FunctionTest implements FunTestInt {
 		funTest.setLsBGAccID(fileName, colNum);
 		ArrayList<String[]> lsBG = funTest.getLsBG();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outLsItem, true);
-		txtOut.ExcelWrite(lsBG, "\t", 1, 1);
+		txtOut.ExcelWrite(lsBG, 1, 1);
 	}
 	@Override
 	public void setLsBGCopedID(ArrayList<GeneID> lsBGaccID) {

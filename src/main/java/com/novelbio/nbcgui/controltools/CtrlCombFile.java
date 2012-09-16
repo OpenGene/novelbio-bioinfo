@@ -58,7 +58,7 @@ public class CtrlCombFile {
 //		if (lsOut.size() > 60000) {
 //			JOptionPane.showMessageDialog(null, "Result num is bigger than 60000, so save to txt file", "alert", JOptionPane.INFORMATION_MESSAGE);
 			TxtReadandWrite txtWrite = new TxtReadandWrite(oufFile, true);
-			txtWrite.ExcelWrite(lsOut, "\t", 1, 1);
+			txtWrite.ExcelWrite(lsOut);
 			return;
 //		}
 //		ExcelOperate excelOperate = new ExcelOperate();

@@ -201,6 +201,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			for (GffGeneIsoInfo gffGeneIsoInfo : setIsoToGetSeq) {
 				num++;
 				SeqFasta seqFasta = getSeq(gffGeneIsoInfo);
+
 				isGetSeq = copeSeqFasta(seqFasta);
 				
 				suspendCheck();
@@ -215,7 +216,6 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 				num++;
 				getSeq(siteInfo);
 				SeqFasta seqFasta = siteInfo.getSeqFasta();
-				seqFasta.setName(siteInfo.getRefID() + "_" + siteInfo.getStartAbs() + "_" + siteInfo.getEndAbs() + "_" + siteInfo.getFlagSite());
 				isGetSeq = copeSeqFasta(seqFasta);
 				
 				suspendCheck();

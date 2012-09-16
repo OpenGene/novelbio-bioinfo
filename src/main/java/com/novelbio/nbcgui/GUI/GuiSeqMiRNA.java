@@ -25,6 +25,7 @@ import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.domain.geneanno.SpeciesFile.ExtractSmallRNASeq;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlseq.CtrlMiRNA;
+import javax.swing.JComboBox;
 
 public class GuiSeqMiRNA extends JPanel{
 	private static final long serialVersionUID = -5940420720636777182L;
@@ -37,6 +38,8 @@ public class GuiSeqMiRNA extends JPanel{
 	JCheckBox chkMapAllBedFileToGenome;
 	JComboBoxData<Integer> combFileType;
 	JComboBoxData<Species> combSpecies;
+	JComboBoxData<String> comboVersion;
+	
 	JButton btnRunning;
 	JCheckBox chkMapping;
 	JButton btnMirnabed;
@@ -98,10 +101,7 @@ public class GuiSeqMiRNA extends JPanel{
 		combFileType = new JComboBoxData<Integer>();
 		combFileType.setBounds(23, 496, 173, 23);
 		add(combFileType);
-		
-		combSpecies = new JComboBoxData<Species>();
-		combSpecies.setBounds(23, 439, 173, 23);
-		add(combSpecies);
+
 		
 		btnRunning = new JButton("Running");
 		btnRunning.addActionListener(new ActionListener() {
@@ -301,7 +301,7 @@ public class GuiSeqMiRNA extends JPanel{
 		add(lblFiletype);
 		
 		JLabel lblSpecies = new JLabel("Species");
-		lblSpecies.setBounds(23, 413, 69, 14);
+		lblSpecies.setBounds(23, 350, 69, 14);
 		add(lblSpecies);
 		
 		txtGenomeBed = new JTextField();
@@ -318,6 +318,25 @@ public class GuiSeqMiRNA extends JPanel{
 		});
 		btnGenomeBed.setBounds(846, 108, 138, 24);
 		add(btnGenomeBed);
+		
+		JLabel lblVersion = new JLabel("Version");
+		lblVersion.setBounds(23, 401, 69, 14);
+		add(lblVersion);
+		
+		combSpecies = new JComboBoxData<Species>();
+		combSpecies.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Species species = combSpecies.getSelectedValue();
+				comboVersion.setMapItem(species.getMapVersion());
+			}
+		});
+		combSpecies.setBounds(23, 366, 195, 23);
+		add(combSpecies);
+		
+		
+		comboVersion = new JComboBoxData<String>();
+		comboVersion.setBounds(23, 421, 195, 23);
+		add(comboVersion);
 		initialize();
 	}
 	
@@ -452,6 +471,8 @@ public class GuiSeqMiRNA extends JPanel{
 	
 	
 	private void running() {
+		Species species = combSpecies.getSelectedValue();
+		species.setVersion(comboVersion.getSelectedValue());
 		if (chkMapping.isSelected()) {
 			ArrayList<String> lsPredictBed = new ArrayList<String>();
 			ArrayList<String[]> lsFile = sclpanFastq.getLsDataInfo();
@@ -459,36 +480,36 @@ public class GuiSeqMiRNA extends JPanel{
 				if (!FileOperate.isFileExist(strings[0])) {
 					continue;
 				}
-				runMapping(strings[0]);
+				runMapping(species, strings[0]);
 				String bedFile = ctrlMiRNA.getGenomeBed();
 				if (FileOperate.isFileExist(bedFile) && FileOperate.getFileSize(bedFile) > 1000) {
 					lsPredictBed.add(bedFile);
 				}
 				if (chkAnalysis.isSelected()) {
-					runCount(false);
+					runCount(species, false);
 				}
 			}
 			if (chkPredictMiRNA.isSelected()) {
 				ctrlMiRNA.setLsBedFile(lsPredictBed);
-				runPredict(false);
+				runPredict(species, false);
 			}
 		}
 		else if (!chkMapping.isSelected() && chkAnalysis.isSelected()) {
-			runCount(true);
+			runCount(species, true);
 		}
 		else if (!chkMapping.isSelected() && chkPredictMiRNA.isSelected()) {
-			runPredict(true);
+			runPredict(species, true);
 		}
 		else if (chkbxExtractSeq.isSelected()) {
 			runExtractSeq();
 		}
 	}
 	
-	private void runMapping(String fastqFile) {
+	private void runMapping(Species species, String fastqFile) {
 		String[] outPrefix = getTxtOutPathAndPrefix();
 
 		ctrlMiRNA = new CtrlMiRNA();
-		ctrlMiRNA.setSpecies(combSpecies.getSelectedValue());
+		ctrlMiRNA.setSpecies(species);
 		ctrlMiRNA.setOutPath(outPrefix[0] + FileOperate.getFileNameSep(fastqFile)[0] , outPrefix[1]);
 		ctrlMiRNA.setFastqFile(fastqFile);
 		ctrlMiRNA.setGenome(chkMapAllBedFileToGenome.isSelected());
@@ -496,11 +517,11 @@ public class GuiSeqMiRNA extends JPanel{
 		ctrlMiRNA.mapping();
 	}
 	
-	private void runPredict(boolean solo) {
+	private void runPredict(Species species, boolean solo) {
 		String[] outPrefix = getTxtOutPathAndPrefix();
 		if (solo) {
 			ctrlMiRNA = new CtrlMiRNA();
-			ctrlMiRNA.setSpecies(combSpecies.getSelectedValue());
+			ctrlMiRNA.setSpecies(species);
 			ArrayList<String[]> lsBedFileArray = sclNovelMiRNAbed.getLsDataInfo();
 			ArrayList<String> lsBedFile = new ArrayList<String>();
 			for (String[] strings : lsBedFileArray) {
@@ -517,13 +538,14 @@ public class GuiSeqMiRNA extends JPanel{
 	}
 	/**
 	 * 是否单独运行，就是前面是否有mapping
+	 * @param species
 	 * @param solo 前面是否有mapping
 	 */
-	private void runCount(boolean solo) {
+	private void runCount(Species species, boolean solo) {
 		if (solo) {
 			String[] outPrefix = getTxtOutPathAndPrefix();
 			ctrlMiRNA = new CtrlMiRNA();
-			ctrlMiRNA.setSpecies(combSpecies.getSelectedValue());
+			ctrlMiRNA.setSpecies(species);
 			ctrlMiRNA.setOutPath(outPrefix[0], outPrefix[1]);
 		}
 		ctrlMiRNA.setMiRNAinfo(combFileType.getSelectedValue(), PathDetail.getMiRNADat());
@@ -559,5 +581,4 @@ public class GuiSeqMiRNA extends JPanel{
 		extractSmallRNASeq.setOutPathPrefix(txtOutPathPrefix.getText());
 		extractSmallRNASeq.getSeq();
 	}
-	
 }

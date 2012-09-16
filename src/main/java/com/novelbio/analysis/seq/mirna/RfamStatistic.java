@@ -40,7 +40,7 @@ public class RfamStatistic {
 		readRfamBed(mapBedFile);
 		ArrayList<String[]> lsResult = getInfo();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outputFile, true);
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOut.ExcelWrite(lsResult);
 	}
 	/**
 	 * 输入rfam文件，读取Rfam的信息进入hash表

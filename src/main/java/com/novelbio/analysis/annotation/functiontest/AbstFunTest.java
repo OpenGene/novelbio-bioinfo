@@ -387,7 +387,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 */
 	public void saveLsBGItem(String txtBGItem) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtBGItem, true);
-		txtOut.ExcelWrite(lsBG, "\t", 1, 1);
+		txtOut.ExcelWrite(lsBG, 1, 1);
 		txtOut.close();
 	}
 	/**
