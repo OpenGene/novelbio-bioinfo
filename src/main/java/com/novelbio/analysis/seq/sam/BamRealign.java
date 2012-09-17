@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.sam;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -22,7 +23,6 @@ public class BamRealign {
 	String ExePath = "";
 	String refSequenceFile;
 	String bamSortedFile;
-	String tmpPath = "/home/tmp";
 	/**
 	 * 设定samtools所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -68,7 +68,7 @@ public class BamRealign {
 	}
 
 	private String getTmpPath() {
-		return "-Djava.io.tmpdir=" + "\""+tmpPath +"\" ";
+		return "-Djava.io.tmpdir=" + "\""+PathDetail.getTmpPath() +"\" ";
 	}
 	private String getInIntervalFile() {
 		return "-targetIntervals " + "\"" + FileOperate.changeFileSuffix(bamSortedFile, "", "intervals") + "\" ";

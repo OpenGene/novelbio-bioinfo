@@ -44,7 +44,6 @@ public class ValidGoParam {
 		if (name.trim().length()>20) {
 			errors.rejectValue("name", "invalid.name", "用户名长度小于20");
 		}
-
 	}
 
 }

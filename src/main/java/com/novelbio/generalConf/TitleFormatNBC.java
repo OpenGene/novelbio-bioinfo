@@ -5,7 +5,7 @@ public enum TitleFormatNBC {
 	
 	FDR("FDR"), FoldChange("FoldChange"), Log2FC("Log2FC"),
 	Log10FC("Log10FC"), ChrID("ChrID"), LocStart("LocStart"), LocEnd("LocEnd"),
-	Location("Location");
+	Location("Location"), Description("Description");
 	String item;
 	TitleFormatNBC(String item) {
 		this.item = item;

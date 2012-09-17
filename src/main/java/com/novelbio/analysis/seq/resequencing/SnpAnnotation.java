@@ -9,6 +9,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.generalConf.TitleFormatNBC;
 
 /** 
  * snp annotation的类，一般用不到，因为其他已经集成了该功能<br>
@@ -73,8 +74,8 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 			
 			TxtReadandWrite txtRead = new TxtReadandWrite(txtfile[0], false);
 			TxtReadandWrite txtWrite = new TxtReadandWrite(txtfile[1], true);
-			
-			for (String snpInfo : txtRead.readlines()) {
+			txtWrite.writefileln(txtRead.readFirstLine() + "\t" + ArrayOperate.cmbString(ArrayOperate.converList2Array(getTitleLs()), "\t"));
+			for (String snpInfo : txtRead.readlines(1)) {
 				//////
 				suspendCheck();
 				if (flagStop)
@@ -109,6 +110,9 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, lsInfo.get(colChrID), refStartSite);
 		SiteSnpIndelInfo siteSnpIndelInfo = mapInfoSnpIndel.addAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
 		GffGeneIsoInfo gffGeneIsoInfo = mapInfoSnpIndel.getGffIso();
+		if (gffGeneIsoInfo == null) {
+			return input;
+		}
 		GeneID geneID = gffGeneIsoInfo.getGeneID();
 		lsInfo.add(geneID.getSymbol());
 		lsInfo.add(geneID.getDescription());
@@ -121,5 +125,19 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		lsInfo.add(siteSnpIndelInfo.getAAchamicalConvert());
 		String[] result = ArrayOperate.converList2Array(lsInfo);
 		return ArrayOperate.cmbString(result, "\t");
+	}
+	
+	public static ArrayList<String> getTitleLs() {
+		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.Symbol.toString());
+		lsTitle.add(TitleFormatNBC.Description.toString());
+		lsTitle.add("PropToGeneStart");
+		lsTitle.add("RefNr");
+		lsTitle.add("RefAA");
+		lsTitle.add("ThisNr");
+		lsTitle.add("ThisAA");
+		lsTitle.add("SplitType");
+		lsTitle.add("ChamicalConvert");
+		return lsTitle;
 	}
 }

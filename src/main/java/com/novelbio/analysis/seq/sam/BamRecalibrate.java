@@ -32,7 +32,6 @@ public class BamRecalibrate {
 	String ExePath = "";
 	String refSequenceFile;
 	String bamSortedFile;
-	String tmpPath = "/home/tmp";
 	int threadNum = 4;
 	/**
 	 * 设定samtools所在的文件夹以及待比对的路径

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.omg.CosNaming._BindingIteratorImplBase;
 
 import antlr.debug.TraceAdapter;
 
@@ -29,17 +30,17 @@ import com.novelbio.generalConf.NovelBioConst;
  * @author zong0jie
  *
  */
-public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo>{
+public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	private static final Logger logger = Logger.getLogger(GffChrAnno.class);
 	
 	public static void main(String[] args) {
-		String txtFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/WE.clean.fq/result/annotation/WE_peaks_summit.xls";
-		GffChrAnno gffChrAnno = new GffChrAnno(new GffChrAbs(10090));
+		Species species = new Species(39947);
+		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		gffChrAbs.setFilterTssTes(new int[]{-2000, -1000}, null);
+		GffChrAnno gffChrAnno = new GffChrAnno(gffChrAbs);
 		gffChrAnno.setColChrID(1);
 		gffChrAnno.setColStartEnd(2, 3);
-		gffChrAnno.setColSummit(6);
-		gffChrAnno.setSearchSummit(false);
-		gffChrAnno.annoFile(txtFile, FileOperate.changeFileSuffix(txtFile, "_anno_summit", null));
+		gffChrAnno.annoFile("/home/zong0jie/Desktop/PApeak_peaks_filtered1.txt", "/home/zong0jie/Desktop/PApeak_peaks_filteredannoates.txt");
 	}
 	
 	
@@ -213,7 +214,11 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo>{
 	 * 3：两端是具体信息，中间是covered
 	 */
 	private ArrayList<String[]> getGenInfoFilterPeakSingle(String chrID, int startCod, int endCod) {
+		if (startCod == 5943970) {
+			logger.error("stop");
+		}
 		GffCodGeneDU gffCodGeneDu = gffChrAbs.getGffHashGene().searchLocation(chrID, startCod, endCod);
+
 		if (gffCodGeneDu == null) {
 			return null;
 		}
@@ -225,7 +230,12 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo>{
 		gffCodGeneDu.setTss(gffChrAbs.tss);
 		gffCodGeneDu.setUTR3(gffChrAbs.UTR3);
 		gffCodGeneDu.setUTR5(gffChrAbs.UTR5);
-		lsAnno = gffCodGeneDu.getAnno();
+		try {
+			lsAnno = gffCodGeneDu.getAnno();
+
+		} catch (Exception e) {
+			logger.error(chrID + " " + startCod);
+		}
 		return lsAnno;
 	}
 	/**
@@ -243,13 +253,13 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo>{
 		}
 		//在上一个gene内
 		if (gffCodGene.getGffDetailUp() != null) {
-			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailUp().getLongestSplit(), summit);
+			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailUp(), summit);
 		}
 		if (gffCodGene.getGffDetailThis() != null) {
-			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailThis().getLongestSplit(), summit);
+			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailThis(), summit);
 		}
 		if (gffCodGene.getGffDetailDown() != null) {
-			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailDown().getLongestSplit(), summit);
+			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailDown(), summit);
 		}
 		return lsResultAnno;
 	}
@@ -262,8 +272,11 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo>{
 	 * blast ：2 evalue 3 symol 4 description
 	 * location
 	 */
-	private void getAnnoLocSumit(ArrayList<String[]> lsAnno, GffGeneIsoInfo gffGeneIsoInfo, int coord) {
-		if (gffGeneIsoInfo.isCodLocFilter(coord, gffChrAbs.filtertss, gffChrAbs.filtertes, gffChrAbs.genebody, gffChrAbs.UTR5, gffChrAbs.UTR3, gffChrAbs.exonFilter, gffChrAbs.intronFilter)) {
+	private void getAnnoLocSumit(ArrayList<String[]> lsAnno, GffDetailGene gffDetailGene, int coord) {
+		gffDetailGene.setTssRegion(gffChrAbs.tss);
+		gffDetailGene.setTesRegion(gffChrAbs.tes);
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		if (!gffGeneIsoInfo.isCodLocFilter(coord, gffChrAbs.filtertss, gffChrAbs.filtertes, gffChrAbs.genebody, gffChrAbs.UTR5, gffChrAbs.UTR3, gffChrAbs.exonFilter, gffChrAbs.intronFilter)) {
 			return;
 		}
 		
@@ -286,39 +299,22 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo>{
  * @author zong0jie
  *
  */
-class siteLocInfo
-{
-	/**
-	 * 是否在不包含promoter的外显子中
-	 */
+class siteLocInfo {
+	/** 是否在不包含promoter的外显子中 */
 	int ExonWithOutPromoter = 0;
-	/**
-	 * 是否在不包含promoter的内含子中
-	 */
+	/** 是否在不包含promoter的内含子中 */
 	int IntronWithOutPromoter = 0;
-	/**
-	 * 是否在genebody中
-	 */
+	/** 是否在genebody中 */
 	int geneBody = 0;
-	/**
-	 * 是否在基因外的Promoter中
-	 */
+	/** 是否在基因外的Promoter中 */
 	int PromoterOutGene = 0;
-	/**
-	 * 是否在基因内的Promoter中
-	 */
+	/** 是否在基因内的Promoter中 */
 	int PromoterInGene = 0;
-	/**
-	 * 是否在不包含promoter的外显子中
-	 */
+	/** 是否在不包含promoter的外显子中 */
 	int InterGenic = 0;
-	/**
-	 * 是否在5‘UTR中
-	 */
+	/** 是否在5‘UTR中 */
 	int UTR5 = 0;
-	/**
-	 * 是否在3‘UTR中
-	 */
+	/** 是否在3‘UTR中 */
 	int UTR3 = 0;
 }
 

@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.sam;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -16,7 +17,6 @@ public class BamRemoveDuplicate {
 	
 	String ExePath = "";
 	String bamSortedFile;
-	String tmpPath = "/home/tmp";
 	/**
 	 * 设定samtools所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -50,11 +50,11 @@ public class BamRemoveDuplicate {
 		return "REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=LENIENT  AS=true ";
 	}
 	private String getTmpPath() {
-		return "-Djava.io.tmpdir=" + "\""+tmpPath +"\" ";
+		return "-Djava.io.tmpdir=" + "\""+PathDetail.getTmpPath() +"\" ";
 	}
 	/** duplicate的矩阵 */
 	private String getMETRICS() {
-		return "METRICS_FILE=" + "\"" + FileOperate.changeFilePrefix(bamSortedFile, "_duplicate", "txt") + "\" ";
+		return "METRICS_FILE=" + "\"" + FileOperate.changeFileSuffix(bamSortedFile, "_duplicate", "txt") + "\" ";
 	}
 	private String getOutFile(String outFile) {
 		return "OUTPUT=" + "\"" + FileOperate.changeFileSuffix(outFile, "", "bam") + "\" ";

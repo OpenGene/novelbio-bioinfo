@@ -259,6 +259,9 @@ public class GffDetailGene extends ListDetailAbs {
 			else
 				lslength.add(gffGeneIsoInfo.getLen());
 		}
+		if (lslength.size() == 0) {
+			logger.error("没有长度的iso");
+		}
 		int max = lslength.get(0);
 		int id = 0;
 		

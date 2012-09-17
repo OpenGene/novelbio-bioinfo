@@ -399,7 +399,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	
 /////////////////////////////  重写equals等  ////////////////////////////////////
 	/**
-	 * 只比较locString、numberstart、numberend、ChrID、cis5to3
+	 * 只比较numberstart、numberend、ChrID、cis5to3
 	 * 不比较coord
 	 * 	@Override
 	 */
@@ -412,7 +412,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 		
 		ListDetailAbs otherObj = (ListDetailAbs)obj;
 		
-		return lsItemName.equals(otherObj.lsItemName) && 
+		return
 		numberend == otherObj.numberend && 
 		numberstart == otherObj.numberstart &&
 		parentName.equals(otherObj.parentName) &&
@@ -422,7 +422,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	/** 重写hashcode */
 	public int hashCode(){
 		String hash = "";
-		hash = parentName + "//" + getName().hashCode() + "//" + numberstart + "//" + numberstart;
+		hash = parentName + "//" + numberstart + "//" + numberstart;
 		return hash.hashCode();
 	}
 	/** 没有方向则返回startAbs */

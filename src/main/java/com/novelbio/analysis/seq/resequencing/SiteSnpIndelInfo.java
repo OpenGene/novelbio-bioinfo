@@ -402,7 +402,7 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 	protected void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs) {
 		GffGeneIsoInfo gffGeneIsoInfo = mapInfoSnpIndel.getGffIso();
 		codLocInfo = gffGeneIsoInfo.getCodLoc(mapInfoSnpIndel.getRefSnpIndelStart());
-		if (codLocInfo == GffGeneIsoInfo.COD_LOC_EXON) {
+		if (codLocInfo != GffGeneIsoInfo.COD_LOC_OUT) {
 			setEffectSplitType(gffGeneIsoInfo, mapInfoSnpIndel.getRefSnpIndelStart());
 		}
 		//mRNA≤„√Ê
@@ -454,10 +454,12 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		}
 		else {
 			int locNum = gffGeneIsoInfo.getNumCodInEle(codLoc);
-			if (locNum != 1 && gffGeneIsoInfo.getCod2ExInStart(codLoc) <= 1) {
+			if ((locNum > 1 && gffGeneIsoInfo.getCod2ExInStart(codLoc) <= 1) ||
+					(locNum < 0 && gffGeneIsoInfo.getCod2ExInEnd(codLoc) <= 1)) {
 				splitType = SplitType.EXON_START;
 			}
-			else if (locNum != gffGeneIsoInfo.size() && gffGeneIsoInfo.getCod2ExInEnd(codLoc) <= 1) {
+			else if ((locNum > 0 && locNum < gffGeneIsoInfo.size() && gffGeneIsoInfo.getCod2ExInEnd(codLoc) <= 1) ||
+					(locNum < 0 && gffGeneIsoInfo.getCod2ExInStart(codLoc) <= 1) ) {
 				splitType = SplitType.EXON_END;
 			}
 		}
