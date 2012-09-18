@@ -130,15 +130,16 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		String gffFile = "/home/zong0jie/下载/all.gff3";
+		String gffFile = "/media/winE/Bioinformatics/genome/rice/tigr6.0/all.gff3";
 		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_TIGR, gffFile);
 		SeqHash seqHash = new SeqHash("/home/zong0jie/下载/all.con");
+		String snpFile = "/home/zong0jie/桌面/special/twospecialSNPs_allchromosomes.txt";
 		GffChrAbs gffChrAbs = new GffChrAbs();
 		gffChrAbs.setGffHash(gffHashGene);
 		gffChrAbs.setSeqHash(seqHash);
 		SnpAnnotation snpAnnotation = new SnpAnnotation();
 		snpAnnotation.setGffChrAbs(gffChrAbs);
-		snpAnnotation.addTxtSnpFile("/home/zong0jie/桌面/WThomo_snp.txt", "/home/zong0jie/桌面/WThomo_snp_anno.txt");
+		snpAnnotation.addTxtSnpFile(snpFile, FileOperate.changeFileSuffix(snpFile, "_anno", null));
 		snpAnnotation.setCol(1, 2, 3, 4);
 		snpAnnotation.run();
 	}

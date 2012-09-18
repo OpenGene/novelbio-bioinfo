@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JRadioButton;
 import javax.swing.JCheckBox;
+import javax.swing.JSpinner;
 
 public class GuiSamToBed extends JPanel {
 	private JTextField txtSamFile;
@@ -35,11 +36,11 @@ public class GuiSamToBed extends JPanel {
 	JButton btnSamtobed;
 	JCheckBox chckbxTobam;
 
+	JSpinner spinMapNumSmall;
+	JSpinner spinMapNumBig;
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
-	private JTextField txtMappingNumSmall;
 	private JLabel lblTo;
-	private JTextField txtMappingNumBig;
 	private JCheckBox chckbxNonUniqueMapping;
 	/**
 	 * Create the panel.
@@ -129,9 +130,9 @@ public class GuiSamToBed extends JPanel {
 						strand = false;
 					}
 					int small = 1;
-					try { small = Integer.getInteger(txtMappingNumSmall.getText()); } catch (Exception e2) { }
+					try { small = (Integer)spinMapNumSmall.getValue(); } catch (Exception e2) { e2.printStackTrace();}
 					int big = 1;
-					try { big = Integer.getInteger(txtMappingNumBig.getText()); } catch (Exception e2) { }
+					try { big =  (Integer)spinMapNumBig.getValue(); } catch (Exception e2) { }
 					bedSeq = bedSeq.filterSeq(small, big, strand);
 				}
 				if (chckbxSortBed.isSelected()) {
@@ -143,32 +144,20 @@ public class GuiSamToBed extends JPanel {
 		add(btnConvertBed);
 		initial();
 		
-		txtMappingNumSmall = new JTextField();
-		txtMappingNumSmall.setText("1");
-		txtMappingNumSmall.setBounds(399, 352, 30, 18);
-		add(txtMappingNumSmall);
-		txtMappingNumSmall.setColumns(10);
-		
 		JLabel lblMappingnum = new JLabel("MappingNum");
-		lblMappingnum.setBounds(297, 352, 114, 14);
+		lblMappingnum.setBounds(297, 352, 99, 14);
 		add(lblMappingnum);
 		
 		lblTo = new JLabel("To");
-		lblTo.setBounds(433, 354, 30, 14);
+		lblTo.setBounds(453, 352, 30, 14);
 		add(lblTo);
-		
-		txtMappingNumBig = new JTextField();
-		txtMappingNumBig.setText("1");
-		txtMappingNumBig.setBounds(472, 352, 36, 18);
-		add(txtMappingNumBig);
-		txtMappingNumBig.setColumns(10);
 		
 		chckbxNonUniqueMapping = new JCheckBox("Non Unique Mapping Get Random Reads");
 		chckbxNonUniqueMapping.setBounds(12, 204, 320, 22);
 		add(chckbxNonUniqueMapping);
 		
 		chckbxExtend = new JCheckBox("Extend");
-		chckbxExtend.setBounds(12, 320, 131, 22);
+		chckbxExtend.setBounds(12, 320, 99, 22);
 		add(chckbxExtend);
 		
 		chckbxFilterreads = new JCheckBox("FilterReads");
@@ -213,6 +202,14 @@ public class GuiSamToBed extends JPanel {
 		chckbxTobam = new JCheckBox("toBam");
 		chckbxTobam.setBounds(12, 73, 81, 22);
 		add(chckbxTobam);
+		
+		spinMapNumSmall = new JSpinner();
+		spinMapNumSmall.setBounds(401, 350, 49, 18);
+		add(spinMapNumSmall);
+		
+		spinMapNumBig = new JSpinner();
+		spinMapNumBig.setBounds(485, 350, 49, 18);
+		add(spinMapNumBig);
 	}
 	
 	private void initial() {

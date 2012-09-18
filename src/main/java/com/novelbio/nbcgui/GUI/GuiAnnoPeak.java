@@ -150,10 +150,10 @@ public class GuiAnnoPeak extends JPanel implements GuiNeedOpenFile {
 				}
 				int[] tss = new int[]{0,0};
 				int[] tes = new int[]{0,0};
-				try { tss[0] = Integer.parseInt(txtTssUp.getText()); } catch (Exception e2) { }
-				try { tss[1] = Integer.parseInt(txtTssDown.getText()); } catch (Exception e2) { }
-				try { tes[0] = Integer.parseInt(txtTesUp.getText()); } catch (Exception e2) { }
-				try { tes[1] = Integer.parseInt(txtTesDown.getText()); } catch (Exception e2) { }
+				try { tss[0] = Integer.parseInt(txtTssUp.getText()); } catch (Exception e2) { tss = null;}
+				try { tss[1] = Integer.parseInt(txtTssDown.getText()); } catch (Exception e2) {tss = null; }
+				try { tes[0] = Integer.parseInt(txtTesUp.getText()); } catch (Exception e2) { tes = null;}
+				try { tes[1] = Integer.parseInt(txtTesDown.getText()); } catch (Exception e2) { tes = null;}
 				
 				ctrlBatchAnno.setTssRange(tss);
 				ctrlBatchAnno.setTesRange(tes);

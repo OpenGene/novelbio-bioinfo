@@ -164,9 +164,11 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	private ArrayList<String[] > getGeneInfoAnno(String[] geneLocInfo) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		String chrID = geneLocInfo[colChrID];
-		int start =  (int)Double.parseDouble(geneLocInfo[colStart]);
-		int end =  (int)Double.parseDouble(geneLocInfo[colEnd]);
-		int summit = 0;
+		int start = 0, end = 0, summit = 0;
+		try {
+			start =  (int)Double.parseDouble(geneLocInfo[colStart]);
+			end =  (int)Double.parseDouble(geneLocInfo[colEnd]);
+		} catch (Exception e) { 	}
 		try {
 			summit =  (int)Double.parseDouble(geneLocInfo[colSummit]);
 		} catch (Exception e) {

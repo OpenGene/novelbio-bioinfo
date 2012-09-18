@@ -16,14 +16,20 @@ import javax.swing.JRadioButton;
 import com.novelbio.analysis.microarray.AffyNormalization;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.mirna.MiRNAtargetRNAhybrid;
 import com.novelbio.analysis.seq.rnaseq.CufflinksGTF;
+import com.novelbio.analysis.seq.rnaseq.GffHashMerge;
+import com.novelbio.analysis.seq.rnaseq.TranscriptomStatistics;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.nbcgui.controlseq.CtrlCufflinksTranscriptome;
 import com.novelbio.nbcgui.controlseq.CtrlFastQMapping;
 
 import java.awt.event.ActionListener;
@@ -42,9 +48,10 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 	JButton btnOpenFastqLeft;
 	JButton btnDelFastqLeft;
 	JButton btnRun;
-	CufflinksGTF cufflinksGTF = new CufflinksGTF();
+	CtrlCufflinksTranscriptome cufflinksGTF = new CtrlCufflinksTranscriptome();
 	private JComboBoxData<StrandSpecific> cmbStrandSpecific;
 	private JLabel lblStrandtype;
+	JCheckBox chckbxReconstructtrancsriptome;
 	
 	public GuiTranscriptomeCufflinks() {
 		setLayout(null);
@@ -126,17 +133,16 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 				for (String[] samFile : lsSamFileName) {
 					lsSamFile.add(samFile[0]);
 				}
-				cufflinksGTF.setBam(lsSamFile);
+				cufflinksGTF.setBamFile(lsSamFile);
 				Species species = cmbSpecies.getSelectedValue();
 				species.setVersion(cmbVersion.getSelectedValue());
 				GffChrAbs gffChrAbs = new GffChrAbs(species);
 				
 				cufflinksGTF.setGffChrAbs(gffChrAbs);
 				cufflinksGTF.setStrandSpecifictype(cmbStrandSpecific.getSelectedValue());
-				cufflinksGTF.setExePath("", species.getChromSeq());
 				cufflinksGTF.setOutPathPrefix(txtSavePathAndPrefix.getText());
-
-				cufflinksGTF.runCufflinks();
+				cufflinksGTF.setReconstructTranscriptome(chckbxReconstructtrancsriptome.isSelected());
+				cufflinksGTF.run();
 			}
 		});
 		add(btnRun);
@@ -156,6 +162,10 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 		lblStrandtype = new JLabel("StrandType");
 		lblStrandtype.setBounds(10, 298, 118, 14);
 		add(lblStrandtype);
+		
+		chckbxReconstructtrancsriptome = new JCheckBox("reconstructTrancsriptome");
+		chckbxReconstructtrancsriptome.setBounds(293, 319, 231, 22);
+		add(chckbxReconstructtrancsriptome);
 
 		
 		btnOpenFastqLeft.addActionListener(new ActionListener() {
@@ -174,5 +184,31 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 	private void initialize() {
 		cmbSpecies.setSelectedIndex(0);
 		cmbStrandSpecific.setMapItem(StrandSpecific.getMapStrandLibrary());
+	}
+	
+	private void reconstructTranscriptome() {
+
+		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcripts.gtf";
+		String gffFinal = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf";
+		String gffFinalStatistics = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcriptomeStatistics.txt";
+		Species species = new Species(10090);
+		GffHashMerge gffHashMerge = new GffHashMerge();
+		gffHashMerge.setSpecies(species);
+		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFileType(), species.getGffFile()));
+		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffhashGeneCuf));
+		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
+		gffHashGene.removeDuplicateIso();
+		gffHashGene.writeToGTF(gffFinal, "novelbio");
+
+		gffHashMerge = new GffHashMerge();
+		gffHashMerge.setSpecies(species);
+		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFileType(), species.getGffFile()));
+		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffFinal));
+
+		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
+		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
+
+		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
+	
 	}
 }

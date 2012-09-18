@@ -53,7 +53,7 @@ public class CufflinksGTF {
 	int mismatch = 2;
 	/** 给定GTF的文件 */
 	String gtfFile = "";
-	/** 输出文件 */
+	/** 输出文件路径 */
 	String outPathPrefix = "";
 
 	GffChrAbs gffChrAbs;
@@ -291,5 +291,7 @@ public class CufflinksGTF {
 //		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping");
 //		cmdOperate.run();
 	}
-
+	public String getCufflinksGTFPath() {
+		return FileOperate.addSep(outPathPrefix) + "transcripts.gtf";
+	}
 }

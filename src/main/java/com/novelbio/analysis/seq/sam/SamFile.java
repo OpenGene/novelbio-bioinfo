@@ -491,12 +491,14 @@ public class SamFile implements AlignSeqReader {
 //		FileOperate.delFile(samFileRealign.getFileName());
 		
 		samFileRemoveDuplicate.index();
-		SamFile samFileRecalibrate = samFileRemoveDuplicate.recalibrate();
-//		FileOperate.delFile(samFileRemoveDuplicate.getFileName());
-//		FileOperate.delFile(samFileRemoveDuplicate.getFileName()+".bai");
 		
-		samFileRecalibrate.index();
-		return samFileRecalibrate;
+		//recalibrate在没有snpdb的表的情况下做不了，那就不做了
+//		SamFile samFileRecalibrate = samFileRemoveDuplicate.recalibrate();
+////		FileOperate.delFile(samFileRemoveDuplicate.getFileName());
+////		FileOperate.delFile(samFileRemoveDuplicate.getFileName()+".bai");
+//		
+//		samFileRecalibrate.index();
+		return samFileRemoveDuplicate;
 	}
 	public void pileup() {
 		String pileupFile = FileOperate.changeFileSuffix(getFileName(), "_pileup", "gz");
