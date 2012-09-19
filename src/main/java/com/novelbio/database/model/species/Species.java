@@ -79,6 +79,9 @@ public class Species {
 	 * @param version
 	 */
 	public void setVersion(String version) {
+		if (version == null) {
+			return;
+		}
 		version = version.split(sepVersionAndYear)[0].toLowerCase();
 		if (!hashVersion2Species.containsKey(version)) {
 			return;

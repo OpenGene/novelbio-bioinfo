@@ -28,6 +28,7 @@ public class GuiRNAautoSplice extends JPanel {
 	private JTextField txtGff;
 	JScrollPaneData scrlJunction;
 	JScrollPaneData scrlBam;
+	JScrollPaneData scrlCompare;
 	JComboBoxData<Species> combSpecies;
 	JComboBoxData<String> combVersion;
 	
@@ -40,7 +41,6 @@ public class GuiRNAautoSplice extends JPanel {
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	private JTextField txtSaveTo;
-	
 	/**
 	 * Create the panel.
 	 */
@@ -53,15 +53,15 @@ public class GuiRNAautoSplice extends JPanel {
 				selectSpecies();
 			}
 		});
-		combSpecies.setBounds(31, 376, 223, 23);
+		combSpecies.setBounds(637, 262, 223, 23);
 		add(combSpecies);
 		
 		combVersion = new JComboBoxData<String>();
-		combVersion.setBounds(370, 376, 197, 23);
+		combVersion.setBounds(637, 323, 197, 23);
 		add(combVersion);
 		
 		scrlJunction = new JScrollPaneData();
-		scrlJunction.setBounds(31, 23, 691, 146);
+		scrlJunction.setBounds(31, 23, 691, 124);
 		add(scrlJunction);
 		
 		btnOpenjunction = new JButton("openJunction");
@@ -86,11 +86,11 @@ public class GuiRNAautoSplice extends JPanel {
 				scrlJunction.deleteSelRows();
 			}
 		});
-		btnDeljunction.setBounds(747, 145, 129, 24);
+		btnDeljunction.setBounds(747, 123, 129, 24);
 		add(btnDeljunction);
 		
 		scrlBam = new JScrollPaneData();
-		scrlBam.setBounds(31, 202, 691, 142);
+		scrlBam.setBounds(31, 178, 594, 142);
 		add(scrlBam);
 		
 		btnOpeanbam = new JButton("OpeanBam");
@@ -106,7 +106,7 @@ public class GuiRNAautoSplice extends JPanel {
 				scrlBam.addItemLs(lsInfo);
 			}
 		});
-		btnOpeanbam.setBounds(747, 202, 118, 24);
+		btnOpeanbam.setBounds(637, 174, 118, 24);
 		add(btnOpeanbam);
 		
 		btnDelbam = new JButton("DelBam");
@@ -115,18 +115,18 @@ public class GuiRNAautoSplice extends JPanel {
 				scrlBam.deleteSelRows();
 			}
 		});
-		btnDelbam.setBounds(747, 320, 118, 24);
+		btnDelbam.setBounds(637, 202, 118, 24);
 		add(btnDelbam);
 		
 		txtGff = new JTextField();
-		txtGff.setBounds(31, 417, 536, 18);
+		txtGff.setBounds(31, 432, 536, 18);
 		add(txtGff);
 		txtGff.setColumns(10);
 		
 		btnRun = new JButton("run");
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				run();
 			}
 		});
 		btnRun.setBounds(747, 465, 118, 24);
@@ -138,19 +138,19 @@ public class GuiRNAautoSplice extends JPanel {
 				txtGff.setText(guiFileOpen.openFileName("GTFfile", ""));
 			}
 		});
-		btnOpengtf.setBounds(605, 410, 118, 24);
+		btnOpengtf.setBounds(604, 429, 118, 24);
 		add(btnOpengtf);
 		
 		JLabel lblSpecies = new JLabel("Species");
-		lblSpecies.setBounds(31, 356, 69, 14);
+		lblSpecies.setBounds(637, 238, 69, 14);
 		add(lblSpecies);
 		
 		JLabel lblVersion = new JLabel("Version");
-		lblVersion.setBounds(370, 356, 69, 14);
+		lblVersion.setBounds(637, 297, 69, 14);
 		add(lblVersion);
 		
 		JLabel lblAddbamfile = new JLabel("AddBamFile");
-		lblAddbamfile.setBounds(31, 181, 129, 14);
+		lblAddbamfile.setBounds(31, 159, 129, 14);
 		add(lblAddbamfile);
 		
 		JLabel lblAddjunctionfile = new JLabel("AddJunctionFile");
@@ -171,6 +171,32 @@ public class GuiRNAautoSplice extends JPanel {
 		btnSaveto.setBounds(604, 465, 118, 24);
 		add(btnSaveto);
 		
+		scrlCompare = new JScrollPaneData();
+		scrlCompare.setBounds(31, 344, 594, 76);
+		add(scrlCompare);
+		
+		JLabel lblCompare = new JLabel("Compare");
+		lblCompare.setBounds(30, 327, 69, 14);
+		add(lblCompare);
+		
+		JButton btnAddCompare = new JButton("AddCompare");
+		btnAddCompare.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				scrlCompare.addItem(new String[]{"",""});
+			}
+		});
+		btnAddCompare.setBounds(637, 356, 155, 24);
+		add(btnAddCompare);
+		
+		JButton btnDeleteCompare = new JButton("DeleteCompare");
+		btnDeleteCompare.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				scrlCompare.deleteSelRows();
+			}
+		});
+		btnDeleteCompare.setBounds(637, 393, 155, 24);
+		add(btnDeleteCompare);
+		
 		initial();
 	}
 	private void initial() {
@@ -178,7 +204,7 @@ public class GuiRNAautoSplice extends JPanel {
 		selectSpecies();
 		scrlBam.setTitle(new String[]{"BamFile", "Prefix"});
 		scrlJunction.setTitle(new String[]{"JunctionFile", "Prefix"});
-		
+		scrlCompare.setTitle(new String[] {"group1", "group2"});
 	}
 	private void selectSpecies() {
 		Species species = combSpecies.getSelectedValue();
@@ -209,13 +235,20 @@ public class GuiRNAautoSplice extends JPanel {
 	private void run() {
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(getGffhashGene());
+		String outFile = txtSaveTo.getText();
+		if (FileOperate.isFileDirectory(outFile)) {
+			outFile = FileOperate.addSep(outFile);
+		}
 		for (String[] strings : scrlJunction.getLsDataInfo()) {
-			exonJunction.setIsoJunFile(strings[0], strings[1]); 
+			exonJunction.setIsoJunFile(strings[1], strings[0]); 
 		}
 		for (String[] strings : scrlBam.getLsDataInfo()) {
 			exonJunction.addBamFile_Sorted(strings[1], strings[0]);
 		}
 		exonJunction.loadingBamFile(getSpecies());
-		exonJunction.writeToFile(txtSaveTo.getText());
+		for (String[] compareGroups : scrlCompare.getLsDataInfo()) {
+			exonJunction.setCompareGroups(compareGroups[0], compareGroups[1]);
+			exonJunction.writeToFile(outFile + compareGroups[0] + "vs" +compareGroups[1] + ".xls");
+		}
 	}
 }

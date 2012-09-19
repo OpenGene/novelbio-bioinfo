@@ -35,10 +35,11 @@ public class TophatJunction {
 		return mapCond_To_JunLoc2ReadsNum.get(condition).size();
 	}
 	/**
-	 * 读取junction文件，文件中每个剪接位点只能出现一次
+	 * 读取junction文件，文件中每个剪接位点只能出现一次\
+	 * @param condition
 	 * @param junctionFile
 	 */
-	public void setJunFile(String junctionFile, String condition) {
+	public void setJunFile(String condition, String junctionFile) {
 		HashMapLsValue<String,  int[]> tmpMapJun1toLsJun2AndReadsNum = getTmpMapJun1toLsJun2AndReadsNum(condition);
 		HashMap<String,Integer> tmpHashJunctionBoth = getTmpMapJun1Jun2_To_Num(condition);
 		

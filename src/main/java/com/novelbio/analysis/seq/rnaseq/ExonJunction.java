@@ -26,16 +26,10 @@ import com.novelbio.generalConf.NovelBioConst;
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异
  * @author zong0jie
- *
  */
 public class ExonJunction {
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	public static void main(String[] args) {
-		mouse();
-//		mouse2();
-//		mouseHeart();
-//		chicken();
-	}
+
 	GffHashGene gffHashGene = null;
 	/** 全体差异基因的外显子
 	 * ls--
@@ -50,91 +44,13 @@ public class ExonJunction {
 	HashMapLsValue<String, MapReads> mapCondition2MapReads = new HashMapLsValue<String, MapReads>();
 	String condition1, condition2;
 	
-	public static void mouse() {
-		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf");
-		ExonJunction exonJunction = new ExonJunction();
-		exonJunction.setGffHashGene(gffHashGene);
-		
-		String parentFile = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/";
-		exonJunction.setIsoJunFile(parentFile + "MEFK02da14m1_1/junctions.bed", "K2"); 
-		exonJunction.setIsoJunFile(parentFile + "MEFK02da14m1_2/junctions.bed", "K2");
-		exonJunction.setIsoJunFile(parentFile + "MEFWT2da14m1_1/junctions.bed", "WT2");
-		exonJunction.setIsoJunFile(parentFile + "MEFWT2da14m1_2/junctions.bed", "WT2");
-		exonJunction.addBamFile_Sorted("K2", parentFile + "MEFK02da14m1_1/accepted_hits.bam");
-		exonJunction.addBamFile_Sorted("K2", parentFile + "MEFK02da14m1_2/accepted_hits.bam");
-		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_1/accepted_hits.bam");
-		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_2/accepted_hits.bam");
-		Species species = new Species(10090);
-		System.out.println(species.getVersionAll().get(1));
-		species.setVersion(species.getVersionAll().get(1));
-		exonJunction.loadingBamFile(species);
-		String outResult = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/MEF_K2vsWT2outDifResult_test_bamNew.xls";
-		exonJunction.writeToFile(outResult);
-	}
-	public static void mouse2() {
-		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf");
-		ExonJunction exonJunction = new ExonJunction();
-		exonJunction.setGffHashGene(gffHashGene);
-		
-		String parentFile = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/";
-		exonJunction.setIsoJunFile(parentFile + "MEFK00da14m1_1/junctions.bed", "K0"); 
-		exonJunction.setIsoJunFile(parentFile + "MEFK00da14m1_2/junctions.bed", "K0");
-		exonJunction.setIsoJunFile(parentFile + "MEFWT0da14m1_1/junctions.bed", "WT0");
-		exonJunction.setIsoJunFile(parentFile + "MEFWT0da14m1_2/junctions.bed", "WT0");
-		exonJunction.addBamFile_Sorted("K0", parentFile + "MEFK00da14m1_1/accepted_hits.bam");
-		exonJunction.addBamFile_Sorted("WT0", parentFile + "MEFWT0da14m1_1/accepted_hits.bam");
-		Species species = new Species(10090);
-		species.setVersion(species.getVersionAll().get(1));
-		exonJunction.loadingBamFile(species);
-		String outResult = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/MEF_K0vsWT0outDifResult_test_bam.xls";
-		exonJunction.writeToFile(outResult);
-	}
-	public static void mouseHeart() {
-		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				"/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf");
-		ExonJunction exonJunction = new ExonJunction();
-		exonJunction.setGffHashGene(gffHashGene);
 
-		String parentFile = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/";
-		exonJunction.setIsoJunFile(parentFile + "heartK0a14m1_1/junctions.bed", "K0");
-		exonJunction.setIsoJunFile(parentFile + "heartK0a14m1_2/junctions.bed", "K0");
-		exonJunction.setIsoJunFile(parentFile + "heartWTa14m1_1/junctions.bed", "WT0");
-		exonJunction.setIsoJunFile(parentFile + "heartWTa14m1_2/junctions.bed", "WT0");
-		
-		exonJunction.addBamFile_Sorted("K0", parentFile + "heartK0a14m1_1/accepted_hits.bam");
-		exonJunction.addBamFile_Sorted("WT0", parentFile + "heartWTa14m1_1/accepted_hits.bam");
-		exonJunction.loadingBamFile(new Species(10090));
-
-		String outResult = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/HeartK0vsWT0outDifResult_bam.xls";
-		exonJunction.writeToFile(outResult);
-	}
-	public static void chicken() {
-		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				"/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/finalTranscript.gtf");
-		ExonJunction exonJunction = new ExonJunction();
-		exonJunction.setGffHashGene(gffHashGene);
-
-		String parentFile = "/media/winF/NBC/Project/Project_FY/chicken/scripture/";
-		exonJunction.setIsoJunFile(parentFile + "tophatK5a15m1_1/junctions.bed", "K0");
-		exonJunction.setIsoJunFile(parentFile + "tophatK5a15m1_2/junctions.bed", "K0");
-		exonJunction.setIsoJunFile(parentFile + "tophatWT5a15m1_1/junctions.bed", "WT0");
-		exonJunction.setIsoJunFile(parentFile + "tophatWT5a15m1_2/junctions.bed", "WT0");
-		
-		exonJunction.addBamFile_Sorted("K0", parentFile + "tophatK5a15m1_1/accepted_hits.bam");
-		exonJunction.addBamFile_Sorted("WT0", parentFile + "tophatWT5a15m1_1/accepted_hits.bam");
-		exonJunction.loadingBamFile(new Species(9013));
-		
-		String outResult = "/media/winF/NBC/Project/Project_FY/chicken/chickenK5vsWT5outDifResult_No_modifyJunctionReads.xls";
-		exonJunction.writeToFile(outResult);
-	}
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;
 		lsSplicingTests = new ArrayList<ArrayList<ExonSplicingTest>>();
-		setLsAll_Dif_Iso_Exon();
+		fillLsAll_Dif_Iso_Exon();
 	}
-	public void setLsAll_Dif_Iso_Exon() {
+	private void fillLsAll_Dif_Iso_Exon() {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			gffDetailGene.removeDupliIso();
@@ -183,18 +99,18 @@ public class ExonJunction {
 		return lsExonSplicingTestResult;
 	}
 	
-	public void setCondition(String condition1, String condition2) {
+	public void setCompareGroups(String condition1, String condition2) {
 		this.condition1 = condition1;
 		this.condition2 = condition2;
 	}
 	/**
 	 * 设定junction文件以及所对应的时期
 	 * 目前只能做两个时期的比较
-	 * @param junctionFile
 	 * @param condition
+	 * @param junctionFile
 	 */
-	public void setIsoJunFile(String junctionFile, String condition) {
-		tophatJunction.setJunFile(junctionFile, condition);
+	public void setIsoJunFile(String condition,String junctionFile) {
+		tophatJunction.setJunFile(condition,junctionFile);
 		setCondition.add(condition);
 		
 	}
