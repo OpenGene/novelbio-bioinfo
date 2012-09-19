@@ -66,8 +66,8 @@ public class GffCodGene extends ListCodAbs<GffDetailGene> {
 				|| gffGeneIsoInfo.getCod2UAG(coord) > 0 ) {
 			for (GffGeneIsoInfo gffGeneIsoInfo2 : gffDetailGene.getLsCodSplit()) {
 				if (gffGeneIsoInfo2.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_EXON 
-						&& gffGeneIsoInfo2.getCod2ATGmRNA(coord) >= 0 
-						&& gffGeneIsoInfo2.getCod2UAG(coord) <= 0)  {
+						|| gffGeneIsoInfo2.getCod2ATGmRNA(coord) >= 0 
+						|| gffGeneIsoInfo2.getCod2UAG(coord) <= 0)  {
 					gffGeneIsoInfo = gffGeneIsoInfo2;
 					break;
 				}

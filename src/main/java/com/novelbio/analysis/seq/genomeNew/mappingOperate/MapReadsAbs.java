@@ -262,10 +262,13 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param chrID
 	 * @param startLoc
 	 * @param endLoc
-	 * @return double
+	 * @return double -1表示出错
 	 */
 	public double regionMin(String chrID, int startLoc, int endLoc) {
 		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
+		if (info == null) {
+			return -1;
+		}
 		return new Min().evaluate(info);
 	}
 	
@@ -274,10 +277,13 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param chrID
 	 * @param startLoc
 	 * @param endLoc
-	 * @return double
+	 * @return double -1表示出错
 	 */
 	public double regionMax(String chrID, int startLoc, int endLoc) {
 		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
+		if (info == null) {
+			return -1;
+		}
 		return new Max().evaluate(info);
 	}
 	/**
@@ -286,7 +292,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param chrID
 	 * @param startLoc
 	 * @param endLoc
-	 * @return double
+	 * @return double -1表示出错
 	 */
 	public double getRegionMean(String chrID, int startLoc, int endLoc) {
 		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
@@ -302,7 +308,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param startLoc 无所谓哪个在前，绝对坐标从1开始
 	 * @param endLoc
 	 * @return arrayList[]:0区域的绝对坐标区间
-	 * 
+	 *  null表示出错
 	 */
 	public ArrayList<int[]> region0Info(String chrID, int startLocT, int endLocT) {
 		int startLoc = Math.min(startLocT, endLocT);
@@ -339,10 +345,13 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param chrID
 	 * @param startLoc
 	 * @param endLoc
-	 * @return double
+	 * @return double  -1表示出错
 	 */
 	public double regionSD(String chrID, int startLoc, int endLoc) {
 		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
+		if (info == null) {
+			return -1;
+		}
 		return new StandardDeviation().evaluate(info);
 	}
 	/**
@@ -350,30 +359,41 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * 给定坐标范围，返回该区间内标准差
 	 * @param chrID 染色体编号
 	 * @param lsLoc 一个转录本的exon list
-	 * @return
+	 * @return -1表示出错
 	 */
 	public double regionSD(String chrID, List<ExonInfo> lsLoc) {
+		double[] info = getRegionInfo(chrID, lsLoc);
+		if (info == null) {
+			return -1;
+		}
 		return new StandardDeviation().evaluate(getRegionInfo(chrID, lsLoc));
 	}
 	/**
 	 * 给定坐标范围，返回该区间内平均值
 	 * @param chrID
 	 * @param lsLoc 一个转录本的exon list
-	 * @return
+	 * @return  -1表示出错
 	 */
 	public double regionMean(String chrID, List<ExonInfo> lsLoc) {
-		return new Mean().evaluate(getRegionInfo(chrID, lsLoc));
+		double[] info = getRegionInfo(chrID, lsLoc);
+		if (info == null) {
+			return -1;
+		}
+		return new Mean().evaluate(info);
 	}
 	/**
 	 * 给定坐标范围，返回该区间内的信息
 	 * @param chrID
 	 * @param lsLoc 一个转录本的exon list
-	 * @return
+	 * @return null表示出错
 	 */
 	public double[] getRegionInfo(String chrID, List<ExonInfo> lsLoc) {
 		ArrayList<double[]> lstmp = new ArrayList<double[]>();
 		for (ExonInfo is : lsLoc) {
 			double[] info = getRengeInfo(invNum, chrID, is.getStartAbs(), is.getEndAbs(), 0);
+			if (info == null) {
+				return null;
+			}
 			lstmp.add(info);
 		}
 		int len = 0;

@@ -88,6 +88,8 @@ import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGenePlant;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.reseq.LastzAlign;
 import com.novelbio.analysis.seq.reseq.ModifySeq;
+import com.novelbio.analysis.seq.resequencing.MapInfoSnpIndel;
+import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
@@ -139,9 +141,12 @@ public class mytest {
 		gffChrAbs.setSeqHash(seqHash);
 		SnpAnnotation snpAnnotation = new SnpAnnotation();
 		snpAnnotation.setGffChrAbs(gffChrAbs);
-		snpAnnotation.addTxtSnpFile(snpFile, FileOperate.changeFileSuffix(snpFile, "_anno", null));
-		snpAnnotation.setCol(1, 2, 3, 4);
-		snpAnnotation.run();
+		MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 1509931);
+		SiteSnpIndelInfo siteSnpIndelInfo = mapInfoSnpIndel.addAllenInfo("G", "A");
+		System.out.println(siteSnpIndelInfo.isExon());
+//		snpAnnotation.addTxtSnpFile(snpFile, FileOperate.changeFileSuffix(snpFile, "_anno", null));
+//		snpAnnotation.setCol(1, 2, 3, 4);
+//		snpAnnotation.run();
 	}
 	
 	private static void test(int[] mm) {

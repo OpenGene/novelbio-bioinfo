@@ -44,6 +44,7 @@ public class Species {
 	
 	String updateTaxInfoFile = "";
 	String updateSpeciesFile = "";
+	String sepVersionAndYear = "_year_";
 	public Species() {}
 	public Species(int taxID) {
 		this.taxID = taxID;
@@ -78,6 +79,7 @@ public class Species {
 	 * @param version
 	 */
 	public void setVersion(String version) {
+		version = version.split(sepVersionAndYear)[0].toLowerCase();
 		if (!hashVersion2Species.containsKey(version)) {
 			return;
 		}
@@ -99,7 +101,7 @@ public class Species {
 	public ArrayList<String> getVersionAll() {
 		ArrayList<String> lsVersionOut = new ArrayList<String>();
 		for (String[] string : lsVersion) {
-			lsVersionOut.add(string[0] + "_year_" +string[1]);
+			lsVersionOut.add(string[0] + sepVersionAndYear +string[1]);
 		}
 		return lsVersionOut;
 	}
@@ -111,7 +113,7 @@ public class Species {
 	public HashMap<String, String> getMapVersion() {
 		LinkedHashMap<String, String> mapVersion = new LinkedHashMap<String, String>();
 		for (String[] string : lsVersion) {
-			mapVersion.put(string[0] + "_year_" +string[1], string[0]);
+			mapVersion.put(string[0] + sepVersionAndYear +string[1], string[0]);
 		}
 		return mapVersion;
 	}

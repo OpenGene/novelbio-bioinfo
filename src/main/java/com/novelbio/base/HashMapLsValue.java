@@ -15,7 +15,11 @@ import java.util.Set;
 public class HashMapLsValue<K, V> {
 	HashMap<K, ArrayList<V>> mapK2V = new HashMap<K, ArrayList<V>>();
 	private static final long serialVersionUID = -6427548618773494477L;
-	
+	/**
+	 * 如果含有该Key，就在list后面添加，如果不含有该key，就新建一个list然后加入
+	 * @param key
+	 * @param value
+	 */
 	public void put(K key, V value) {
 		ArrayList<V> lsValue = null;
 		if (mapK2V.containsKey(key)) {

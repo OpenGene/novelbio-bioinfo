@@ -41,8 +41,6 @@ public class GuiRNAautoSplice extends JPanel {
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	private JTextField txtSaveTo;
 	
-	
-	
 	/**
 	 * Create the panel.
 	 */

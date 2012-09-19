@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.stat.inference.TestUtils;
+import org.apache.poi.hssf.record.cont.ContinuableRecord;
 
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
@@ -32,11 +33,12 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	/** 每个exonCluster组中condition以及其对应的exon的junction reads counts */
 	LinkedHashMap<String, int[]> mapCondition2Counts = new LinkedHashMap<String, int[]>();
-	/** 每个condition以及其对应的reads堆积 */
-	HashMap<String, MapReads> mapCondition2MapReads;
 	
 	//TODO 表达可以放在这个hash表中
-	/** 每个exonCluster组中condition以及其对应的exon的junction reads counts */
+	/** 每个exonCluster组中condition以及其对应的exon的expression reads counts
+	 * TODO 可以作成LinkedHashMap<String, ArrayList<int[]>> 
+	 * list里面就是每个chrID
+	 *  */
 	LinkedHashMap<String, int[]> mapCondition2Exp = new LinkedHashMap<String, int[]>();
 	
 	String condition1;
@@ -46,32 +48,46 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	int readsLength = 100;
 	
-	public ExonSplicingTest(ExonCluster exonCluster, LinkedHashSet<String> setCondition, TophatJunction tophatJunction) {
+	public ExonSplicingTest(ExonCluster exonCluster) {
 		this.exonCluster = exonCluster;
+	}
+	
+	public void setConditionsetAndJunction(LinkedHashSet<String> setCondition, TophatJunction tophatJunction) {
 		//初始化
 		for (String string : setCondition) {
 			mapCondition2Counts.put(string, new int[0]);
 		}
 		this.tophatJunction = tophatJunction;
-		prepare();
+		fillJunctionReadsData();
 	}
-	/** 必须设定
-	 * 设定好了就自动计算pvalues
-	 */
-	public void setCondition(String condition1, String condition2) {
+	/** 必须设定 */
+	public void setCompareCondition(String condition1, String condition2) {
 		this.condition1 = condition1;
 		this.condition2 = condition2;
-		getPvalue();
 	}
 	/** 设定每个condition以及其对应的reads堆积 */
-	public void setMapCondition2MapReads(HashMap<String, MapReads> mapCondition2MapReads) {
-		this.mapCondition2MapReads = mapCondition2MapReads;
+	public void setMapCondition2MapReads(String condition, MapReads mapReads) {
+		SiteInfo siteInfo = exonCluster.getDifSite();
+		int[] tmpExpCond = new int[2];
+		tmpExpCond[0] = (int) mapReads.getRegionMean(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs()) + 1;
+		tmpExpCond[1] = (int) mapReads.regionMean(siteInfo.getRefID(), exonCluster.getParentGene().getLongestSplit()) + 1;
+		if (tmpExpCond[0] <= 0 || tmpExpCond[1] <=0) {
+			return;
+		}
+		if (mapCondition2Exp.containsKey(condition)) {
+			int[] expCond = mapCondition2Exp.get(condition);
+			expCond[0] = expCond[0] + tmpExpCond[0];
+			expCond[1] = expCond[1] + tmpExpCond[1];
+		}
+		else {
+			mapCondition2Exp.put(condition, tmpExpCond);
+		}
 	}
 	/** 测序长度，根据这个长度来判定pvalue的比例 */
 	public void setReadsLength(int readsLength) {
 		this.readsLength = readsLength;
 	}
-	private void prepare() {
+	private void fillJunctionReadsData() {
 		//跨过该exon的iso是否存在，0不存在，1存在
 		int junc = 0;
 		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0)
@@ -197,7 +213,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		return setLocation;
 	}
-	protected Double getPvalue() {
+	protected Double getAndCalculatePvalue() {
 		if (pvalue > 0) {
 			return pvalue;
 		}
@@ -281,21 +297,14 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * 在这之前务必设定condition
 	 */
 	private Double getPvalueReadsExp() {
-
 		//表达水平超过该值就标准化
 		int normalizedValue = 50;
 		
-		SiteInfo siteInfo = exonCluster.getDifSite();
-		MapReads mapReadsCond1 = mapCondition2MapReads.get(condition1);
-		MapReads mapReadsCond2 = mapCondition2MapReads.get(condition2);
-
-		int[] tmpExpCond1 = new int[2];
-		int[] tmpExpCond2 = new int[2];
-		tmpExpCond1[0] = (int) mapReadsCond1.getRegionMean(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs()) + 1;
-		tmpExpCond1[1]= (int) mapReadsCond1.regionMean(siteInfo.getRefID(), exonCluster.getParentGene().getLongestSplit()) + 1;
-		
-		tmpExpCond2[0] = (int) mapReadsCond2.getRegionMean(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs()) + 1;
-		tmpExpCond2[1] = (int) mapReadsCond2.regionMean(siteInfo.getRefID(), exonCluster.getParentGene().getLongestSplit()) + 1;
+		if (!mapCondition2Exp.containsKey(condition1) || !mapCondition2Exp.containsKey(condition2)) {
+			return 1.0;
+		}
+		int[] tmpExpCond1 = mapCondition2Exp.get(condition1);
+		int[] tmpExpCond2 = mapCondition2Exp.get(condition2);
 		
 //		long[] tmpExpCond1long = modifyInputValue(tmpExpCond1);
 //		long[] tmpExpCond2long = modifyInputValue(tmpExpCond2);
@@ -412,7 +421,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		for (int i = 1; i < cond2.length; i++) {
 			result = result + "::" + cond2[i];
 		}
-		result = result + "\t" + getPvalue() + "\t" + exonCluster.getExonSplicingType().toString() + "\t" + geneID.getSymbol() + "\t" + geneID.getDescription();
+		result = result + "\t" + getAndCalculatePvalue() + "\t" + exonCluster.getExonSplicingType().toString() + "\t" + geneID.getSymbol() + "\t" + geneID.getDescription();
 		return result;
 	}
 	/** 获得标题 */
