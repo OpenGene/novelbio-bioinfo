@@ -18,12 +18,14 @@ public class JScrollPaneData extends JScrollPane{
 	
 	DefaultTableModel defaultTableModel = null;
 	JTable jTabFInputGo = null;
+	String[] title;
 	/**
 	 * 往jScrollPane中添加表格，第一行为title
 	 */
 	public void setItemLs( List<String[]> lsInfo) {
 		String[][] tableValue = null;
-		defaultTableModel = new DefaultTableModel(tableValue, lsInfo.get(0));
+		title = lsInfo.get(0);
+		defaultTableModel = new DefaultTableModel(tableValue, title);
 		jTabFInputGo = new JTable();
 		setViewportView(jTabFInputGo);
 		jTabFInputGo.setModel(defaultTableModel);
@@ -36,6 +38,7 @@ public class JScrollPaneData extends JScrollPane{
 	 */
 	public void setTitle( String[] title) {
 		String[][] tableValue = null;
+		this.title = title;
 		defaultTableModel = new DefaultTableModel(tableValue, title);
 		jTabFInputGo = new JTable();
 		setViewportView(jTabFInputGo);
@@ -125,10 +128,11 @@ public class JScrollPaneData extends JScrollPane{
 	}
 	/** 不稳定 */
 	public void clean() {
-//		String[][] tableValue = null;
+		String[][] tableValue = null;
+		defaultTableModel = new DefaultTableModel(tableValue, title);
 		jTabFInputGo = new JTable();
 		setViewportView(jTabFInputGo);
-		jTabFInputGo.setModel(null);
+		jTabFInputGo.setModel(defaultTableModel);
 	}
 }
 

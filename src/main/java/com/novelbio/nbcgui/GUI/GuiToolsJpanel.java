@@ -13,6 +13,9 @@ import javax.swing.SpringLayout;
 import java.awt.CardLayout;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+
+import com.novelbio.base.MD5generate;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -42,22 +45,22 @@ public class GuiToolsJpanel extends JPanel {
 	GUIFileOpen guiFileOpenComb = new GUIFileOpen();
 	GUIFileOpen guiFileOpenMed = new GUIFileOpen();
 	JScrollPaneData scrollPane;
+	
+	JScrollPaneData scrlFileName;
+	JScrollPaneData scrlMD5result;
 	/**
 	 * Create the panel.
 	 */
 	public GuiToolsJpanel() {
-		SpringLayout springLayout = new SpringLayout();
-		setLayout(springLayout);
+		setLayout(null);
 		
 		jtxtFileNameMedian = new JTextField();
-		springLayout.putConstraint(SpringLayout.NORTH, jtxtFileNameMedian, 36, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jtxtFileNameMedian, 9, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jtxtFileNameMedian, 62, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jtxtFileNameMedian, 373, SpringLayout.WEST, this);
+		jtxtFileNameMedian.setBounds(9, 36, 364, 26);
 		add(jtxtFileNameMedian);
 		jtxtFileNameMedian.setColumns(10);
 		
 		JButton btnOpenfileMedian = new JButton("OpenFile");
+		btnOpenfileMedian.setBounds(385, 37, 97, 24);
 		//选择待取中位数的文件
 		btnOpenfileMedian.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -66,43 +69,33 @@ public class GuiToolsJpanel extends JPanel {
 				jtxtFileNameMedian.setText(filename);
 			}
 		});
-		springLayout.putConstraint(SpringLayout.NORTH, btnOpenfileMedian, 1, SpringLayout.NORTH, jtxtFileNameMedian);
 		add(btnOpenfileMedian);
 		
 		jtxtAccID = new JTextFieldData();
+		jtxtAccID.setBounds(9, 94, 96, 26);
 		jtxtAccID.setNumOnly();
-		springLayout.putConstraint(SpringLayout.NORTH, jtxtAccID, 94, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jtxtAccID, 9, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jtxtAccID, 120, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jtxtAccID, 105, SpringLayout.WEST, this);
 		add(jtxtAccID);
 		jtxtAccID.setColumns(10);
 		
 		JLabel lblAccidcol = new JLabel("AccIDCol");
-		springLayout.putConstraint(SpringLayout.NORTH, lblAccidcol, 73, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, lblAccidcol, 9, SpringLayout.WEST, this);
+		lblAccidcol.setBounds(9, 73, 61, 14);
 		add(lblAccidcol);
 		
 		JLabel lblFilename = new JLabel("FileName");
-		springLayout.putConstraint(SpringLayout.NORTH, lblFilename, 15, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, lblFilename, 9, SpringLayout.WEST, this);
+		lblFilename.setBounds(9, 15, 65, 14);
 		add(lblFilename);
 		
 		jtxtColNum = new JTextField();
-		springLayout.putConstraint(SpringLayout.NORTH, jtxtColNum, 94, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jtxtColNum, 145, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jtxtColNum, 120, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jtxtColNum, 373, SpringLayout.WEST, this);
+		jtxtColNum.setBounds(117, 94, 228, 26);
 		add(jtxtColNum);
 		jtxtColNum.setColumns(10);
 		
 		JLabel lblColnum = new JLabel("ColNum");
-		springLayout.putConstraint(SpringLayout.NORTH, lblColnum, 73, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, lblColnum, 145, SpringLayout.WEST, this);
+		lblColnum.setBounds(118, 74, 53, 13);
 		add(lblColnum);
 		
 		JButton btnSaveasMedian = new JButton("SaveAs");
-		springLayout.putConstraint(SpringLayout.WEST, btnSaveasMedian, 117, SpringLayout.EAST, jtxtColNum);
+		btnSaveasMedian.setBounds(385, 95, 97, 24);
 		btnSaveasMedian.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String filename = guiFileOpenMed.saveFileName("txt/excel2003", "txt","xls");
@@ -112,19 +105,14 @@ public class GuiToolsJpanel extends JPanel {
 				getMedian(inFile, txtAccID, txtColID, filename);
 			}
 		});
-		springLayout.putConstraint(SpringLayout.WEST, btnOpenfileMedian, 0, SpringLayout.WEST, btnSaveasMedian);
-		springLayout.putConstraint(SpringLayout.NORTH, btnSaveasMedian, 1, SpringLayout.NORTH, jtxtAccID);
 		add(btnSaveasMedian);
 		
 		scrollPane = new JScrollPaneData();
-		springLayout.putConstraint(SpringLayout.WEST, scrollPane, 0, SpringLayout.WEST, jtxtFileNameMedian);
-		springLayout.putConstraint(SpringLayout.SOUTH, scrollPane, -83, SpringLayout.SOUTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, scrollPane, 456, SpringLayout.WEST, jtxtFileNameMedian);
+		scrollPane.setBounds(9, 208, 456, 252);
 		add(scrollPane);
 		
 		JButton btnAddlineCompare = new JButton("AddFile");
-		springLayout.putConstraint(SpringLayout.NORTH, btnAddlineCompare, 110, SpringLayout.SOUTH, btnSaveasMedian);
-		springLayout.putConstraint(SpringLayout.WEST, btnAddlineCompare, 0, SpringLayout.WEST, btnOpenfileMedian);
+		btnAddlineCompare.setBounds(10, 465, 86, 24);
 		scrollPane.setTitle(new String[]{"FileName","FilePrix","CombCol"});
 		btnAddlineCompare.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -137,12 +125,9 @@ public class GuiToolsJpanel extends JPanel {
 		add(btnAddlineCompare);
 		
 		JButton btnSaveasCompare = new JButton("SaveAs");
-		springLayout.putConstraint(SpringLayout.WEST, btnSaveasCompare, 25, SpringLayout.EAST, scrollPane);
-		springLayout.putConstraint(SpringLayout.EAST, btnSaveasCompare, 111, SpringLayout.EAST, scrollPane);
+		btnSaveasCompare.setBounds(378, 465, 86, 24);
 		btnSaveasCompare.setVerticalAlignment(SwingConstants.TOP);
 		btnSaveasCompare.setHorizontalAlignment(SwingConstants.LEFT);
-		springLayout.putConstraint(SpringLayout.NORTH, btnSaveasCompare, 128, SpringLayout.SOUTH, btnAddlineCompare);
-		springLayout.putConstraint(SpringLayout.SOUTH, btnSaveasCompare, 152, SpringLayout.SOUTH, btnAddlineCompare);
 		btnSaveasCompare.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				GUIFileOpen guiFileOpen = new GUIFileOpen();
@@ -170,46 +155,33 @@ public class GuiToolsJpanel extends JPanel {
 		add(btnSaveasCompare);
 		
 		jtxtAccIDComp = new JTextField();
-		springLayout.putConstraint(SpringLayout.NORTH, scrollPane, 27, SpringLayout.SOUTH, jtxtAccIDComp);
-		springLayout.putConstraint(SpringLayout.EAST, jtxtAccIDComp, 349, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jtxtAccIDComp, 43, SpringLayout.SOUTH, jtxtColNum);
-		springLayout.putConstraint(SpringLayout.WEST, jtxtAccIDComp, 281, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jtxtAccIDComp, 61, SpringLayout.SOUTH, jtxtColNum);
+		jtxtAccIDComp.setBounds(281, 163, 68, 18);
 		add(jtxtAccIDComp);
 		jtxtAccIDComp.setColumns(10);
 		
 		JLabel lblCompareid = new JLabel("compareID");
-		springLayout.putConstraint(SpringLayout.NORTH, lblCompareid, 45, SpringLayout.SOUTH, jtxtColNum);
-		springLayout.putConstraint(SpringLayout.SOUTH, lblCompareid, -29, SpringLayout.NORTH, scrollPane);
-		springLayout.putConstraint(SpringLayout.EAST, lblCompareid, -28, SpringLayout.WEST, jtxtAccIDComp);
+		lblCompareid.setBounds(167, 165, 86, 14);
 		add(lblCompareid);
 		
 		JLabel lblFile = new JLabel("File");
-		springLayout.putConstraint(SpringLayout.NORTH, lblFile, 45, SpringLayout.SOUTH, jtxtAccID);
-		springLayout.putConstraint(SpringLayout.SOUTH, lblFile, -29, SpringLayout.NORTH, scrollPane);
-		springLayout.putConstraint(SpringLayout.WEST, lblCompareid, 111, SpringLayout.EAST, lblFile);
-		springLayout.putConstraint(SpringLayout.WEST, lblFile, 10, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.EAST, lblFile, 56, SpringLayout.WEST, this);
+		lblFile.setBounds(10, 165, 46, 14);
 		add(lblFile);
 		
 		JSeparator separator = new JSeparator();
-		springLayout.putConstraint(SpringLayout.NORTH, separator, 159, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, separator, -23, SpringLayout.EAST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, separator, -330, SpringLayout.SOUTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, separator, -23, SpringLayout.EAST, this);
+		separator.setBounds(917, 159, 0, 77);
 		add(separator);
 		
 		JButton btnDelfile = new JButton("DelFile");
+		btnDelfile.setBounds(148, 467, 82, 24);
 		btnDelfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				scrollPane.deleteSelRows();
 			}
 		});
-		springLayout.putConstraint(SpringLayout.NORTH, btnDelfile, 27, SpringLayout.SOUTH, btnAddlineCompare);
-		springLayout.putConstraint(SpringLayout.WEST, btnDelfile, 29, SpringLayout.EAST, scrollPane);
 		add(btnDelfile);
 		
 		JButton btnImportspeciesinfo = new JButton("ImportSpeciesInfo");
+		btnImportspeciesinfo.setBounds(89, 532, 246, 24);
 		btnImportspeciesinfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String speciesFile = guiFileOpenComb.openFileName("txt/xls", "");
@@ -220,12 +192,10 @@ public class GuiToolsJpanel extends JPanel {
 				}
 			}
 		});
-		springLayout.putConstraint(SpringLayout.WEST, btnImportspeciesinfo, 89, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, btnImportspeciesinfo, -10, SpringLayout.SOUTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, btnImportspeciesinfo, 335, SpringLayout.WEST, this);
 		add(btnImportspeciesinfo);
 		
 		JButton btnImportSoftwareInfo = new JButton("ImportSoftwareInfo");
+		btnImportSoftwareInfo.setBounds(368, 532, 253, 24);
 		btnImportSoftwareInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String softToolsFile = guiFileOpenComb.openFileName("txt/xls", "");
@@ -234,15 +204,72 @@ public class GuiToolsJpanel extends JPanel {
 				}
 			}
 		});
-		springLayout.putConstraint(SpringLayout.WEST, btnImportSoftwareInfo, 33, SpringLayout.EAST, btnImportspeciesinfo);
-		springLayout.putConstraint(SpringLayout.SOUTH, btnImportSoftwareInfo, -10, SpringLayout.SOUTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, btnImportSoftwareInfo, 286, SpringLayout.EAST, btnImportspeciesinfo);
 		add(btnImportSoftwareInfo);
 		
+		scrlFileName = new JScrollPaneData();
+		scrlFileName.setBounds(509, 40, 413, 114);
+		add(scrlFileName);
 		
+		JLabel lblGetmd = new JLabel("GetMD5");
+		lblGetmd.setBounds(507, 14, 69, 14);
+		add(lblGetmd);
 		
+		JButton btnOpenfile = new JButton("OpenFile");
+		btnOpenfile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<String> lsFileName = guiFileOpenComb.openLsFileName("", "");
+				ArrayList<String[]> lsFile = new ArrayList<String[]>();
+				for (String string : lsFileName) {
+					String[] strings = new String[]{string};
+					lsFile.add(strings);
+				}
+				scrlFileName.addItemLs(lsFile);
+			}
+		});
+		btnOpenfile.setBounds(509, 160, 118, 24);
+		add(btnOpenfile);
+		
+		JButton btnDelete = new JButton("Delete");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				scrlFileName.deleteSelRows();
+			}
+		});
+		btnDelete.setBounds(799, 160, 118, 24);
+		add(btnDelete);
+		
+		scrlMD5result = new JScrollPaneData();
+		scrlMD5result.setBounds(509, 233, 413, 103);
+		add(scrlMD5result);
+		
+		JLabel lblMdresult = new JLabel("MD5Result");
+		lblMdresult.setBounds(509, 209, 97, 14);
+		add(lblMdresult);
+		
+		JButton btnRungetmd = new JButton("RunGetMD5");
+		btnRungetmd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<String[]> lsFileName = scrlFileName.getLsDataInfo();
+				ArrayList<String[]> lsResultMD5 = new ArrayList<String[]>();
+				for (String[] strings : lsFileName) {
+					String[] tmpResult = new String[1];
+					tmpResult[0] = MD5generate.getFileMD5String(strings[0]);
+					lsResultMD5.add(tmpResult);
+				}
+				scrlMD5result.clean();
+				scrlMD5result.addItemLs(lsResultMD5);
+			}
+		});
+		btnRungetmd.setBounds(799, 196, 118, 24);
+		add(btnRungetmd);
+		
+		initial();
 	}
 	
+	private void initial() {
+		scrlFileName.setTitle(new String[]{"FileName"});
+		scrlMD5result.setTitle(new String[]{"MD5 Result"});
+	}
 	
 	private void getMedian(String inFile, String txtAccID, String txtColID, String outFile) {
 		CtrlMedian ctrlMedian = new CtrlMedian();

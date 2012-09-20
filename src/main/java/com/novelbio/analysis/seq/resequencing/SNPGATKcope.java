@@ -171,7 +171,9 @@ public class SNPGATKcope {
 		}
 	}
 	
-	/** 在设定snp的情况下，从pileup文件中获取snp信息 */
+	/** 在设定snp文件的情况下，从pileup文件中获取snp信息
+	 * 只要设定好snp文件即可，内部自动做snp calling
+	 *  */
 	public void readSnpDetailFromPileUp() {
 		lsFilteredSnp = ArrayOperate.getArrayListValue(mapSiteInfo2MapInfoSnpIndel);
 		for (String[] sample2vcf : lsSample2VcfFiles) {
@@ -188,9 +190,6 @@ public class SNPGATKcope {
 	 * 不从vcf，而是从pileUp中获取snp的方法
 	 * 将pileUp的snp信息加入mapSiteInfo2MapInfoSnpIndel中
 	 * 同时导出一份snp的信息表
-	 * @param sampleName
-	 * @param sampleDetail 过滤器，设定过滤的状态
-	 * @param pileUpFile
 	 */
 	private void addPileupToLsSnpIndel() {
 		for (SnpCalling snpCalling : lsSample2PileUpFiles) {

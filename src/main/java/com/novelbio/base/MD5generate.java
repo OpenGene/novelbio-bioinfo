@@ -35,18 +35,23 @@ public class MD5generate {
 			nsaex.printStackTrace();  
 		}
 	}
-   
-	public static void main(String[] args) throws IOException {
-		long begin = System.currentTimeMillis();  
-		
-		File big = new File("/media/winF/NBC/Project/Project_FY/20120920/RKO-con_L1_1.fq.gz");  
-		String md5 = getFileMD5String(big);  
-		//String md5 = getMD5String("a");  
-		long end = System.currentTimeMillis();  
-		System.out.println("md5:" + md5 + " time:" + ((end - begin) / 1000) + "s");  
+	/**
+	 * 返回""表示出错
+	 * @param fileName
+	 * @return
+	 */
+	public static String getFileMD5String(String fileName) {
+		String result = "";
+		try {
+			result = getFileMD5StringExp(fileName);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return result;
 	}
-   
-	public static String getFileMD5String(File file) throws IOException {
+	
+	private static String getFileMD5StringExp(String fileName) throws IOException {
+		File file = new File(fileName);
 		FileInputStream in = new FileInputStream(file);  
 		FileChannel ch = in.getChannel();  
 		
