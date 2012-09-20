@@ -84,7 +84,7 @@ public class JComboBoxData<T> extends JComboBox{
 	
 	public T getSelectedValue() {
 		String key = (String) getSelectedItem();
-		if (hashInfo.get(key) == null) {
+		if (hashInfo == null || hashInfo.get(key) == null) {
 			return null;
 		}
 		else return hashInfo.get(key);

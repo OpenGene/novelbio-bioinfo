@@ -8,6 +8,7 @@ class SamToBam {
 //	samtools view -bt /media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa.fai $SAMFile  > "$SAMPrix".bam
 	
 	String ExePath = "";
+	String seqFai = "";
 	String samBamFile;
 	/**
 	 * 设定samtools所在的文件夹以及待比对的路径
@@ -22,6 +23,9 @@ class SamToBam {
 	public void setSamFile(String samFile) {
 		this.samBamFile = samFile;
 	}
+	public void setSeqFai(String seqFai) {
+		this.seqFai = seqFai;
+	}
 	public String convertToBam() {
 		String bamFile = FileOperate.changeFileSuffix(samBamFile, "", "bam");
 		return convertToBam(bamFile);
@@ -31,7 +35,13 @@ class SamToBam {
 			outFile = FileOperate.changeFileSuffix(samBamFile, "", "bam");
 		}
 		String bamFile = FileOperate.changeFileSuffix(outFile, "", "bam");
-		String cmd = ExePath + "samtools view -Sb " + "\"" + samBamFile + "\"" + " > " + "\"" + bamFile + "\"";
+		String cmd = "";
+		if (!FileOperate.isFileExist(seqFai)) {
+			cmd = ExePath + "samtools view -Sb " + "\"" + samBamFile + "\"" + " > " + "\"" + bamFile + "\"";
+		}
+		else {
+			cmd = ExePath + "samtools view -bt " +"\"" + seqFai + "\" " + "\"" + samBamFile + "\"" + " > " + "\"" + bamFile + "\"";
+		}
 		CmdOperate cmdOperate = new CmdOperate(cmd,"samToBam");
 		cmdOperate.run();
 		return bamFile;

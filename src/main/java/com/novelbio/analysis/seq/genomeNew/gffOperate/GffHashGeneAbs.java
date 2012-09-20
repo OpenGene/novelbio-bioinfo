@@ -48,7 +48,11 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 						gffGeneIsoInfo.setATGUAGncRNA();
 					}
 				}
-				gffDetailGene.removeDupliIso();
+				try {
+					gffDetailGene.removeDupliIso();
+				} catch (Exception e) {
+					gffDetailGene.removeDupliIso();
+				}
 			}
 		}
 	}

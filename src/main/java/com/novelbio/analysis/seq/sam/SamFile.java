@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
+import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignRecord;
@@ -96,6 +97,7 @@ public class SamFile implements AlignSeqReader {
 	/** 比对到的reference的文件名 */
 	public void setReferenceFileName(String referenceFileName) {
 		this.referenceFileName = referenceFileName;
+		faidxRefsequence();
 	}
 	/** 
 	 * 创建新的sam文件
@@ -327,8 +329,9 @@ public class SamFile implements AlignSeqReader {
     	return bytesRead;
     }
     public SamFile sort() {
+    	SamFile samFile = convertToBam();
     	String outName = FileOperate.changeFileSuffix(getFileName(), "_sorted", "bam");
-    	return sort(outName);
+    	return samFile.sort(outName);
     }
 	 /**
 	  * 排序，输出为bam形式
@@ -384,8 +387,10 @@ public class SamFile implements AlignSeqReader {
 		softWareInfo.setName(SoftWare.samtools);
 		samToBam.setExePath(softWareInfo.getExePath());
 		samToBam.setSamFile(fileName);
+		samToBam.setSeqFai(faidxRefsequence());
 		String fileOutName = samToBam.convertToBam(outFile);
 		SamFile samFile = new SamFile(fileOutName);
+
 		setParamSamFile(samFile);
 		return samFile;
 	}
@@ -393,6 +398,9 @@ public class SamFile implements AlignSeqReader {
 	 * 待检查
 	 */
 	public void index() {
+		if (FileOperate.isFileExist(getFileName() + ".bai")) {
+			return;
+		}
 		BamIndex bamIndex = new BamIndex();
 		SoftWareInfo softWareInfo = new SoftWareInfo();
 		softWareInfo.setName(SoftWare.samtools);
@@ -516,7 +524,21 @@ public class SamFile implements AlignSeqReader {
 		bamPileup.setExePath(softWareInfo.getExePath());
 		bamPileup.pileup(outPileUpFile);
 	}
-	
+	private String faidxRefsequence() {
+		if (FileOperate.isFileExist(referenceFileName) && !FileOperate.isFileExist(referenceFileName+".fai")) {
+			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
+			SoftWareInfo softWareInfo = new SoftWareInfo();
+			softWareInfo.setName(SoftWare.samtools);
+			samIndexRefsequence.setExePath(softWareInfo.getExePath());
+			samIndexRefsequence.setRefsequence(referenceFileName);
+			samIndexRefsequence.indexSequence();
+			return referenceFileName+".fai";
+		}
+		if (FileOperate.isFileExist(referenceFileName+".fai")) {
+			return referenceFileName+".fai";
+		}
+		return "";
+	}
 	public BedSeq toBedSingleEnd() {
 		return toBedSingleEnd(TxtReadandWrite.TXT, FileOperate.changeFileSuffix(getFileName(), "", "bed"));
 	}

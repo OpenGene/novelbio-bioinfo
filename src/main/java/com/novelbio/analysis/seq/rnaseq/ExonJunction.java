@@ -43,8 +43,21 @@ public class ExonJunction {
 	
 	HashMapLsValue<String, MapReads> mapCondition2MapReads = new HashMapLsValue<String, MapReads>();
 	String condition1, condition2;
-	
-
+	/** 
+	 * 一个基因可能有多个可变剪接事件，但是我们可以只挑选其中最显著的那个可变剪接事件
+	 * 也可以输出全部的可变剪接事件
+	 * 每个基因只有一个可变剪接事件
+	 */
+	boolean oneGeneOneSpliceEvent = true;
+	/** 
+	 * 一个基因可能有多个可变剪接事件，但是我们可以只挑选其中最显著的那个可变剪接事件
+	 * 也可以输出全部的可变剪接事件
+	 * @param oneGeneOneSpliceEvent true:  每个基因只有一个可变剪接事件
+	 * false: 每个基因输出全部可变剪接事件
+	 */
+	public void setOneGeneOneSpliceEvent(boolean oneGeneOneSpliceEvent) {
+		this.oneGeneOneSpliceEvent = oneGeneOneSpliceEvent;
+	}
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;
 		lsSplicingTests = new ArrayList<ArrayList<ExonSplicingTest>>();
@@ -148,7 +161,12 @@ public class ExonJunction {
 		ArrayList<ExonSplicingTest> lsResult = new ArrayList<ExonSplicingTest>();
 		for (ArrayList<ExonSplicingTest> lsIsoExonSplicingTests : lsSplicingTests) {
 			doTest(lsIsoExonSplicingTests);
-			lsResult.add(lsIsoExonSplicingTests.get(0));
+			if (oneGeneOneSpliceEvent) {
+				lsResult.add(lsIsoExonSplicingTests.get(0));
+			} else {
+				lsResult.addAll(lsIsoExonSplicingTests);
+			}
+			
 		}
 		sortLsExonTest_Use_Pvalue(lsResult);
 		return lsResult;

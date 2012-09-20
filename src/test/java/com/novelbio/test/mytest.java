@@ -132,21 +132,8 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		String gffFile = "/media/winE/Bioinformatics/genome/rice/tigr6.0/all.gff3";
-		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_TIGR, gffFile);
-		SeqHash seqHash = new SeqHash("/home/zong0jie/ÏÂÔØ/all.con");
-		String snpFile = "/home/zong0jie/×ÀÃæ/special/twospecialSNPs_allchromosomes.txt";
-		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setGffHash(gffHashGene);
-		gffChrAbs.setSeqHash(seqHash);
-		SnpAnnotation snpAnnotation = new SnpAnnotation();
-		snpAnnotation.setGffChrAbs(gffChrAbs);
-		MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 1509931);
-		SiteSnpIndelInfo siteSnpIndelInfo = mapInfoSnpIndel.addAllenInfo("G", "A");
-		System.out.println(siteSnpIndelInfo.isExon());
-//		snpAnnotation.addTxtSnpFile(snpFile, FileOperate.changeFileSuffix(snpFile, "_anno", null));
-//		snpAnnotation.setCol(1, 2, 3, 4);
-//		snpAnnotation.run();
+		SeqFastaHash seqFastaHash = new SeqFastaHash("/media/winE/Bioinformatics/GenomeData/CriGri/sequence/rna.fa");
+		seqFastaHash.writeToFile("/media/winE/Bioinformatics/GenomeData/CriGri/sequence/rna_cope.fa");
 	}
 	
 	private static void test(int[] mm) {
