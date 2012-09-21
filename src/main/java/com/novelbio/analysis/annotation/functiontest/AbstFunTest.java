@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -38,7 +40,8 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * 专门用于去冗余
 	 */
 	HashMap<String, ArrayList<GeneID>> hashgene2CopedID = new HashMap<String, ArrayList<GeneID>>();
-	
+	ArrayList<String[]> lsTestResult = new ArrayList<String[]>();
+
 	public AbstFunTest(ArrayList<GeneID> lsCopedIDsTest, ArrayList<GeneID> lsCopedIDsBG, boolean blast) {
 		this.lsCopedIDsTest = lsCopedIDsTest;
 		this.lsCopedIDsBG = lsCopedIDsBG;
@@ -234,15 +237,36 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		ArrayList<String[]> lsAnno = getGene2Item();
 		ArrayList<String[]> lsResult = null;
 		if (blast) {
-			 lsResult = ArrayOperate.combArrayListHash(lsTestResult, lsAnno, 0, 6);
+			lsResult = combArrayListHash(lsTestResult, lsAnno, 0, 6);
 		}
 		else {
-			 lsResult = ArrayOperate.combArrayListHash(lsTestResult, lsAnno, 0, 3);
+			lsResult = combArrayListHash(lsTestResult, lsAnno, 0, 3);
 		}
 		return lsResult;
 	}
-	ArrayList<String[]> lsTestResult = new ArrayList<String[]>();
-	
+	/**
+	 * 合并testResult表和anno表
+	 * */
+	private static ArrayList<String[]> combArrayListHash(List<String[]> lsTestResult ,List<String[]> lsAnno, int AcolNum, int BcolNum) {
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		Hashtable<String, String[]> hashLsA = new Hashtable<String, String[]>();
+		for (String[] strings : lsTestResult) {
+			String tmpKey = strings[AcolNum];
+			hashLsA.put(tmpKey.trim(), strings);
+		}
+		for (String[] strings : lsAnno) {
+			String tmpKeyB = strings[BcolNum];
+			String[] tmpA = hashLsA.get(tmpKeyB.trim());
+			if (tmpA == null) {
+				logger.error("no lsA element equals lsB: "+tmpKeyB);
+				continue;
+			}
+			tmpA = ArrayOperate.deletElement(tmpA, new int[]{0, 1});
+			String[] tmpResult = ArrayOperate.combArray(strings, tmpA, 0);
+			lsResult.add(tmpResult);
+		}
+		return lsResult;
+	}
 	/**
 	 * booRun 新跑一次 返回最后的结果，ElimGO需要覆盖该方法 对结果排个序
 	 * 返回最后的结果，ElimGO需要覆盖该方法

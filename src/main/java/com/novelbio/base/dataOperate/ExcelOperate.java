@@ -390,7 +390,7 @@ public class ExcelOperate {
 		if (rowStartNum < 0)
 			rowStartNum = 0;
 	
-		int[] readColumn = new int[readColNum.length - 1];
+		int[] readColumn = new int[readColNum.length];
 		for (int i = 0; i < readColumn.length; i++) {
 			readColumn[i] = readColNum[i] - 1;
 		}

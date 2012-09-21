@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,6 +34,8 @@ import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -132,8 +135,21 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		SeqFastaHash seqFastaHash = new SeqFastaHash("/media/winE/Bioinformatics/GenomeData/CriGri/sequence/rna.fa");
-		seqFastaHash.writeToFile("/media/winE/Bioinformatics/GenomeData/CriGri/sequence/rna_cope.fa");
+		File file=new File("/media/winF/NBC/Project/Project_ZDB_Lab/HY/BZ_20120521/mappingNew/BZ269_sorted.intervals");//源文件位置
+		FileReader fr=new FileReader(file);//创建文件输入流
+		BufferedReader in=new BufferedReader(fr);//包装文件输入流，可整行读取
+		String line;
+		String regex = "";
+		while((line=in.readLine()) != null) {
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(line);
+			if (matcher.find()) {
+				System.out.println(matcher.group());
+			}
+			
+			System.out.println(line);
+		}
+		
 	}
 	
 	private static void test(int[] mm) {

@@ -1,7 +1,7 @@
 package com.novelbio.test.analysis.seq.resequencing;
 
 import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
-import com.novelbio.analysis.seq.resequencing.SnpFilter.SnpIndelHomoHetoType;
+import com.novelbio.analysis.seq.resequencing.SnpIndelHomoHetoType;
 
 import junit.framework.TestCase;
 

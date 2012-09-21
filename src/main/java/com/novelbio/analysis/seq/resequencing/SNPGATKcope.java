@@ -106,7 +106,7 @@ public class SNPGATKcope {
 		snpCalling.setGffChrAbs(gffChrAbs);
 		snpCalling.setMapSiteInfo2MapInfoSnpIndel(mapSiteInfo2MapInfoSnpIndel);
 		snpCalling.setSampleDetail(snpGroupInfoFilter);
-		snpCalling.addSnpFromPileUpFile(sampleName, pileUpfile, "");
+		snpCalling.addSnpFromPileUpFile(sampleName, pileUpfile, FileOperate.changeFileSuffix(pileUpfile, "_outSnp", "txt"));
 		lsSample2PileUpFiles.add(snpCalling);
 	}
 	

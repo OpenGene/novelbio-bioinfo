@@ -134,6 +134,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 				snpFilterDetailInfo.allLines = readLines;
 				snpFilterDetailInfo.allByte = readByte;
 				setRunInfo(snpFilterDetailInfo);
+				logger.info("readLines:" + readLines);
 			}
 			////////////////////////////////////////////////
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);

@@ -87,6 +87,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public void setReadsLength(int readsLength) {
 		this.readsLength = readsLength;
 	}
+	public ExonCluster getExonCluster() {
+		return exonCluster;
+	}
 	private void fillJunctionReadsData() {
 		//跨过该exon的iso是否存在，0不存在，1存在
 		int junc = 0;

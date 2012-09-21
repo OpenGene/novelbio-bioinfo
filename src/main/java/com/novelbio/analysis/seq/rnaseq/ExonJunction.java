@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
@@ -20,6 +21,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.HashMapLsValue;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
@@ -43,16 +45,33 @@ public class ExonJunction {
 	
 	HashMapLsValue<String, MapReads> mapCondition2MapReads = new HashMapLsValue<String, MapReads>();
 	String condition1, condition2;
+	
+	/** 统计可变剪接事件的map
+	 * key：可变剪接类型
+	 * value：int[2]
+	 * 0： 差异可变剪接数量
+	 * 1： 全体可变剪接数量
+	 *  */
+	HashMap<ExonSplicingType, int[]> mapSplicingType2Num = new LinkedHashMap<ExonSplicingType, int[]>();
+	double pvalue = 0.05;//表示差异可变剪接的事件的pvalue阈值
+	
 	/** 
 	 * 一个基因可能有多个可变剪接事件，但是我们可以只挑选其中最显著的那个可变剪接事件
 	 * 也可以输出全部的可变剪接事件
 	 * 每个基因只有一个可变剪接事件
 	 */
 	boolean oneGeneOneSpliceEvent = true;
+	/**
+	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
+	 * @param pvalue
+	 */
+	public void setPvalue(double pvalue) {
+		this.pvalue = pvalue;
+	}
 	/** 
 	 * 一个基因可能有多个可变剪接事件，但是我们可以只挑选其中最显著的那个可变剪接事件
 	 * 也可以输出全部的可变剪接事件
-	 * @param oneGeneOneSpliceEvent true:  每个基因只有一个可变剪接事件
+	 * @param oneGeneOneSpliceEvent true:  每个基因只有一个可变剪接事件, 默认为true
 	 * false: 每个基因输出全部可变剪接事件
 	 */
 	public void setOneGeneOneSpliceEvent(boolean oneGeneOneSpliceEvent) {
@@ -155,22 +174,49 @@ public class ExonJunction {
 	 * 获得检验完毕的test
 	 * @return
 	 */
-	public ArrayList<ExonSplicingTest> getTestResult_OneExonPerIso() {
+	public ArrayList<ExonSplicingTest> getTestResult_FromIso() {
+		initialMapSplicingType2Num();
 		setConditionWhileConditionIsNull();
 
 		ArrayList<ExonSplicingTest> lsResult = new ArrayList<ExonSplicingTest>();
 		for (ArrayList<ExonSplicingTest> lsIsoExonSplicingTests : lsSplicingTests) {
-			doTest(lsIsoExonSplicingTests);
+			lsIsoExonSplicingTests = filterExon(lsIsoExonSplicingTests);
+			doTest_And_StatisticSplicingEvent(lsIsoExonSplicingTests);
 			if (oneGeneOneSpliceEvent) {
 				lsResult.add(lsIsoExonSplicingTests.get(0));
 			} else {
 				lsResult.addAll(lsIsoExonSplicingTests);
 			}
-			
 		}
 		sortLsExonTest_Use_Pvalue(lsResult);
 		return lsResult;
 	}
+	private void initialMapSplicingType2Num() {
+		mapSplicingType2Num.clear();
+		for (ExonSplicingType exonSplicingType : ExonSplicingType.getMapName2SplicingEvents().values()) {
+			mapSplicingType2Num.put(exonSplicingType, new int[2]);
+		}
+	}
+	
+	/**
+	 *  一般是15::5	13::0	这种形式
+	 * 但有时候会出现15	13 这种明显不是转录本的
+	 * 所以在这里检查该值并且删除，但是这是治标不治本的做法，搞清楚为啥发生
+	 * @param lsIsoExonSplicingTests
+	 * @return
+	 */
+	private ArrayList<ExonSplicingTest> filterExon(ArrayList<ExonSplicingTest> lsIsoExonSplicingTests) {
+		ArrayList<ExonSplicingTest> lsResult = new ArrayList<ExonSplicingTest>();
+		for (ExonSplicingTest exonSplicingTest : lsIsoExonSplicingTests) {
+			if (exonSplicingTest.getExonCluster().getExonSplicingType() == ExonSplicingType.cassette 
+					&& exonSplicingTest.mapCondition2Counts.entrySet().iterator().next().getValue().length <=1) {
+				continue;
+			}
+			lsResult.add(exonSplicingTest);
+		}
+		return lsResult;
+	}
+
 	private void setConditionWhileConditionIsNull() {
 		if (condition1 == null && condition2 == null) {
 			ArrayList<String> lsCondition = ArrayOperate.getArrayListValue(setCondition);
@@ -183,30 +229,52 @@ public class ExonJunction {
 	 * @param lsExonClusters
 	 * @return ls ExonSplicingTest -- ls 每个时期 -- 所涉及到的exon的检验结果，按照pvalue从小到大排序
 	 */
-	private void doTest(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
+	private void doTest_And_StatisticSplicingEvent(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTest) {
 			exonSplicingTest.setConditionsetAndJunction(setCondition, tophatJunction);
 			exonSplicingTest.setCompareCondition(condition1, condition2);
 		}
 		//按照pvalue从小到大排序
 		sortLsExonTest_Use_Pvalue(lsExonSplicingTest);
+		statisticsSplicingEvent(lsExonSplicingTest);
+	}
+	/**
+	 * 统计可变剪接事件
+	 * @param lsExonSplicingTest
+	 */
+	private void statisticsSplicingEvent(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
+		ExonSplicingType exonSplicingType = null;
+		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTest) {
+			exonSplicingType = exonSplicingTest.getExonCluster().getExonSplicingType();
+			int[] tmpInfo = new int[]{0, 0};
+			if (mapSplicingType2Num.containsKey(exonSplicingType)) {
+				tmpInfo = mapSplicingType2Num.get(exonSplicingType);
+			} else {
+				mapSplicingType2Num.put(exonSplicingType, tmpInfo);
+			}
+			tmpInfo[1] ++;
+			if (exonSplicingTest.getAndCalculatePvalue() <= pvalue) {
+				tmpInfo[0] ++;
+			}
+		}
 	}
 	/** 写入文本 */
 	public void writeToFile(String fileName) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
-		ArrayList<ExonSplicingTest> lsSplicingTests = getTestResult_OneExonPerIso();
+		ArrayList<ExonSplicingTest> lsSplicingTests = getTestResult_FromIso();
 		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2));
-		for (ExonSplicingTest chisqTest : lsSplicingTests) {
-			//TODO 一般是15::5	13::0	这种形式
-			//但有时候会出现15	13 这种明显不是转录本的
-			//所以在这里检查该值并且删除，但是这时治标不治本的做法，搞清楚为啥发生
-			if (chisqTest.exonCluster.getExonSplicingType() == ExonSplicingType.cassette 
-					&& chisqTest.mapCondition2Counts.entrySet().iterator().next().getValue().length <=1) {
-				continue;
-			}
+		for (ExonSplicingTest chisqTest : lsSplicingTests) {			
 			txtOut.writefileln(chisqTest.toString());
 		}
 		txtOut.close();
+		
+		TxtReadandWrite txtStatistics = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, "_statistics", "txt"), true);
+		txtStatistics.writefileln("SplicingEvent\tSignificantNum\tAllNum");
+		for (Entry<ExonSplicingType, int[]> exonSplicingInfo : mapSplicingType2Num.entrySet()) {
+			String tmpResult = exonSplicingInfo.getKey() + "\t" + exonSplicingInfo.getValue()[0] + "\t" +  exonSplicingInfo.getValue()[1];
+			txtStatistics.writefileln(tmpResult);
+		}
+		txtStatistics.close();
 	}
 	
 	private void sortLsExonTest_Use_Pvalue(ArrayList<ExonSplicingTest> lsExonSplicingTest) {

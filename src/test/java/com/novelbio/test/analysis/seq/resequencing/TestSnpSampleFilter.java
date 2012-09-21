@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 import com.novelbio.analysis.seq.resequencing.SnpFilter;
-import com.novelbio.analysis.seq.resequencing.SnpFilter.SnpIndelHomoHetoType;
+import com.novelbio.analysis.seq.resequencing.SnpIndelHomoHetoType;
 
 public class TestSnpSampleFilter extends TestCase{
 	SnpFilter snpSampleFilter = new SnpFilter();
@@ -16,39 +16,15 @@ public class TestSnpSampleFilter extends TestCase{
 	protected void tearDown() throws Exception {
 				super.tearDown();
 	}
-	
-	public void testIndelHetoLess() {
+	public void testSnpHetoLess() {
 		SnpIndelHomoHetoType snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.DELETION, 3, 100, 103);
 		assertEquals(SnpIndelHomoHetoType.IndelHetoLess, snpIndelHomoHetoType);
-		int numSnp = 3;
-		int numRef = 100;
+		int numSnp = 1;
+		int numRef = 44;
 		int numAll = numSnp + numRef;
-		snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.DELETION, numSnp, numRef, numAll);
-		assertEquals(SnpIndelHomoHetoType.IndelHetoLess, snpIndelHomoHetoType);
+		snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.MISMATCH, numSnp, numRef, numAll);
+		assertEquals(SnpIndelHomoHetoType.SnpHetoLess, snpIndelHomoHetoType);
 		
-		numSnp = 10;
-		numRef = 100;
-		numAll = numSnp + numRef;
-		snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.DELETION, numSnp, numRef, numAll);
-		assertEquals(SnpIndelHomoHetoType.IndelHetoLess, snpIndelHomoHetoType);
-	
-		numSnp = 1;
-		numRef = 10;
-		numAll = numSnp + numRef;
-		snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.DELETION, numSnp, numRef, numAll);
-		assertEquals(SnpIndelHomoHetoType.IndelHetoLess, snpIndelHomoHetoType);
-		
-		numSnp = 1;
-		numRef = 3;
-		numAll = numSnp + numRef;
-		snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.DELETION, numSnp, numRef, numAll);
-		assertEquals(SnpIndelHomoHetoType.IndelHetoLess, snpIndelHomoHetoType);
-		
-		numSnp = 1;
-		numRef = 30;
-		numAll = numSnp + numRef;
-		snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.DELETION, numSnp, numRef, numAll);
-		assertEquals(SnpIndelHomoHetoType.IndelHetoLess, snpIndelHomoHetoType);
 	}
 	
 	public void testIndelHeto() {

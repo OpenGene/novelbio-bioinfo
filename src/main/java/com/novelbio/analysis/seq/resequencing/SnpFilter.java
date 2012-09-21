@@ -17,7 +17,7 @@ public class SnpFilter {
 	/** 判定为Snp所含有的ref数量不得大于该数值 */
 	int Snp_Homo_Contain_RefNumMax = 2;
 	/**判定为纯合snp所含有的ref比例不得大于该数值 */
-	double Snp_Homo_Contain_RefProp_Max = 0.02;
+	double Snp_Homo_Contain_RefProp_Max = 0.04;
 	
 	/** 判定为杂合snp HetoMore的最少reads数 */
 	int Snp_HetoMore_ReadsAllNumMin = 3;
@@ -41,7 +41,7 @@ public class SnpFilter {
 	/** 判定为ref所含有的snp数量不得大于该数值 */
 	int Ref_Contain_SnpNumMin = 2;
 	/**判定为ref所含有的snp比例不得大于该数值 */
-	double Ref_Contain_SnpProp_Max = 0.02;
+	double Ref_Contain_SnpProp_Max = 0.04;
 	
 	/** 判定为Snp HetoLess的最少reads数 */
 	int Snp_HetoLess_ReadsAllNumMin = 3;
@@ -170,8 +170,4 @@ public class SnpFilter {
 
 		return SnpIndelHomoHetoType.UnKnown;
 	}
-}
-/** 该样本中SnpIndel的杂合情况，未知，snp杂合，snp纯合，indel杂合，indel纯合 这几种*/
-enum SnpIndelHomoHetoType {
-	SnpHomo, SnpHetoMore, SnpHeto, SnpHetoLess, IndelHomo, IndelHetoMore, IndelHeto, IndelHetoLess, RefHomo, UnKnown;
 }

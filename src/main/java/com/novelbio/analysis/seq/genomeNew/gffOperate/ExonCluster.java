@@ -5,8 +5,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.velocity.runtime.directive.Foreach;
 
 import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
 
@@ -386,7 +389,22 @@ public class ExonCluster {
 		return null;
 	}
 	public static enum ExonSplicingType {
-		cassette, alt5, alt3, altend, altstart, mutually_exon, retain_intron, unknown
+		cassette, alt5, alt3, altend, altstart, mutually_exon, retain_intron, unknown;
+		
+		static HashMap<String, ExonSplicingType> mapName2Events = new LinkedHashMap<String, ExonCluster.ExonSplicingType>();
+		public static HashMap<String, ExonSplicingType> getMapName2SplicingEvents() {
+			if (mapName2Events.size() == 0) {
+				mapName2Events.put("cassette", cassette);
+				mapName2Events.put("alt5", alt5);
+				mapName2Events.put("alt3", alt3);
+				mapName2Events.put("altend", altend);
+				mapName2Events.put("altstart", altstart);
+				mapName2Events.put("mutually_exon", mutually_exon);
+				mapName2Events.put("retain_intron", retain_intron);
+				mapName2Events.put("unknown", unknown);
+			}
+			return mapName2Events;
+		}
 	}
 }
 
