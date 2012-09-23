@@ -63,5 +63,10 @@ public interface MapRNA {
 	/** 参数设定不能用于solid 还没加入gtf的选项，也就是默认没有gtf */
 	public void mapReads();
 	SoftWare getBowtieVersion();
-	
+	/**
+	 * 仅tophat使用，gtf文件辅助mapping
+	 * 如果设定为null，则表示不使用gtf文件
+	 * @param gtfFile
+	 */
+	public void setGtfFile(String gtfFile);
 }

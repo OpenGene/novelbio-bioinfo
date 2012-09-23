@@ -24,7 +24,6 @@ public class CodeCounter {
 //		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/seq/blast", "/media/winD/fedora/codestatistics/blastCodeLines.txt");
 //		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/seq/blastZJ", "/media/winD/fedora/codestatistics/blastZJCodeLines.txt");
 //		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/seq/chipseq", "/media/winD/fedora/codestatistics/chipseqCodeLines.txt");
-		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/seq/genome", "/media/winD/fedora/codestatistics/genomeCodeLines.txt");
 //		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/seq/genomeNew", "/media/winD/fedora/codestatistics/genomeNewCodeLines.txt");
 //		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/seq/HanYanRebsome", "/media/winD/fedora/codestatistics/HanYanRebsomeCodeLines.txt");
 //		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/seq/mapping", "/media/winD/fedora/codestatistics/mappingCodeLines.txt");

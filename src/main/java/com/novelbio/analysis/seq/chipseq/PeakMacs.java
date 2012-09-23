@@ -120,7 +120,7 @@ public class PeakMacs extends PeakCalling {
 			lsResult.add(ss2);
 		}
 		TxtReadandWrite txtOut = new TxtReadandWrite(outPut, true);
-		txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+		txtOut.ExcelWrite(lsResult);
 	}
 
 

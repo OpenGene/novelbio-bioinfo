@@ -35,20 +35,29 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		super(IsoName, geneType);
 		super.setCis5to3(true);
 	}
-	
 	public GffGeneIsoCis(String IsoName, GffDetailGene gffDetailGene, GeneType geneType) {
 		super(IsoName, gffDetailGene, geneType);
 		super.setCis5to3(true);
 	}
-
+	
 	@Override
 	public int getStartAbs() {
 		return get(0).getStartCis();
 	}
-
 	@Override
 	public int getEndAbs() {
 		return get(size() - 1).getEndCis();
+	}
+	
+	@Override
+	protected String getGTFformatExon(String geneID, String title, String strand) {
+		String geneExon = "";
+		for (ExonInfo exons : this) {
+			
+			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" + exons.getStartAbs()  + "\t" + exons.getEndAbs() 
+		         + "\t" + "." + "\t" + strand + "\t.\t" + "gene_id \"" + geneID + "\"; transcript_id " + "\"" + getName()+"\"; " + TxtReadandWrite.ENTER_LINUX;
+		}
+		return geneExon;
 	}
 	@Override
 	protected String getGFFformatExonMISO(String geneID, String title,
@@ -58,15 +67,6 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 			ExonInfo exons = get(i);
 			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" + exons.getStartAbs() + "\t" + exons.getEndAbs()
 		     + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=exon:" + getName()  + ":" + (i+1) +";Parent=" + getName() + " "+TxtReadandWrite.ENTER_LINUX;
-		}
-		return geneExon;
-	}
-	@Override
-	protected String getGTFformatExon(String geneID, String title, String strand) {
-		String geneExon = "";
-		for (ExonInfo exons : this) {
-			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" + exons.getStartAbs()  + "\t" + exons.getEndAbs() 
-		     + "\t"+"."+"\t" +strand+"\t.\t"+ "gene_id \""+geneID+"\"; transcript_id \""+getName()+"\"; "+TxtReadandWrite.ENTER_LINUX;
 		}
 		return geneExon;
 	}

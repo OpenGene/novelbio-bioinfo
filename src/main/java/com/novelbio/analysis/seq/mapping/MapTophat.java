@@ -168,7 +168,6 @@ public class MapTophat implements MapRNA{
 	public void setStrandSpecifictype(StrandSpecific strandSpecifictype) {
 		this.strandSpecifictype = strandSpecifictype;
 	}
-
 	/**
 	 * 是否使用bowtie2进行分析
 	 * 
@@ -242,7 +241,7 @@ public class MapTophat implements MapRNA{
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
 			ArrayList<Integer> lsIntronSortedS2M = gffChrAbs.getGffHashGene().getLsIntronSortedS2M();
 			int intronLenMin = lsIntronSortedS2M.get(50);
-			int intronLenMax = lsIntronSortedS2M.get(lsIntronSortedS2M.size() - 50);
+			int intronLenMax = lsIntronSortedS2M.get(lsIntronSortedS2M.size() - 10);
 			if (intronLenMin < this.intronLenMin) {
 				this.intronLenMin = intronLenMin;
 				booSetIntronMin = true;
@@ -267,8 +266,7 @@ public class MapTophat implements MapRNA{
 		return "-I " + intronLenMax + " ";
 	}
 	private String getIndelLen() {
-		return "--max-insertion-length " + indelLen + " --max-deletion-length "
-				+ indelLen + " ";
+		return "--max-insertion-length " + indelLen + " --max-deletion-length " + indelLen + " ";
 	}
 
 	private String getThreadNum() {
@@ -329,6 +327,7 @@ public class MapTophat implements MapRNA{
 	}
 	/**
 	 * 用gtf文件辅助mapping
+	 * 如果设定为null，则表示不使用gtf文件
 	 * @param gtfFile
 	 */
 	public void setGtfFile(String gtfFile) {
@@ -346,7 +345,7 @@ public class MapTophat implements MapRNA{
 		return "";
 	}
 	private void setGTFfile() {
-		if (FileOperate.isFileExistAndBigThanSize(gtfFile, 100)) {
+		if (gtfFile == null || FileOperate.isFileExistAndBigThanSize(gtfFile, 100)) {
 			return;
 		}
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
@@ -409,7 +408,7 @@ public class MapTophat implements MapRNA{
 //		//本步很慢，一般不使用
 //		cmd = cmd + "--coverage-search ";
 		if (bowtieVersion == SoftWare.bowtie2) {
-			cmd = cmd + getIndelLen();
+			cmd = cmd + getMismatch() + getIndelLen();
 		}
 		cmd = cmd + getOffset() + getThreadNum();
 		cmd = cmd + getStrandSpecifictype();
@@ -424,4 +423,5 @@ public class MapTophat implements MapRNA{
 		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping");
 		cmdOperate.run();
 	}
+
 }

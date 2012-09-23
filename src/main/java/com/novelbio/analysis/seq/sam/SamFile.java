@@ -62,6 +62,10 @@ public class SamFile implements AlignSeqReader {
 	public static final int MAPPING_UNIQUE = 16;
 	public static final int MAPPING_REPEAT = 32;
 	
+	static SoftWareInfo softWareInfoSamtools = new SoftWareInfo();
+	static SoftWareInfo softWareInfoGATK = new SoftWareInfo();
+	static SoftWareInfo softWareInfoPicard = new SoftWareInfo();
+	
 	Logger logger = Logger.getLogger(SamFile.class);
 	String fileName = "";
 	/**
@@ -89,10 +93,24 @@ public class SamFile implements AlignSeqReader {
 	
 	String referenceFileName;
 	
-	public SamFile() {}
+	public SamFile() {
+		initialSoftWare();
+	}
 	/**读取已有文件 */
 	public SamFile(String samBamFile) {
 		setSamFileRead(samBamFile);
+		initialSoftWare();
+	}
+	private static void initialSoftWare() {
+		if (softWareInfoSamtools.getName() == null) {
+			softWareInfoSamtools.setName(SoftWare.samtools);
+		}
+		if (softWareInfoGATK.getName() == null) {
+			softWareInfoGATK.setName(SoftWare.GATK);
+		}
+		if (softWareInfoPicard.getName() == null) {
+			softWareInfoPicard.setName(SoftWare.picard);
+		}
 	}
 	/** 比对到的reference的文件名 */
 	public void setReferenceFileName(String referenceFileName) {
@@ -348,9 +366,7 @@ public class SamFile implements AlignSeqReader {
 		}
 		
 		BamSort bamSort = new BamSort();
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.samtools);
-		bamSort.setExePath(softWareInfo.getExePath());
+		bamSort.setExePath(softWareInfoSamtools.getExePath());
 		bamSort.setBamFile(bamFileName);
 		String outSortedBamName = bamSort.sort(outFile);
 		SamFile samFile = new SamFile(outSortedBamName);
@@ -383,9 +399,7 @@ public class SamFile implements AlignSeqReader {
 			return this;
 		}
 		SamToBam samToBam = new SamToBam();
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.samtools);
-		samToBam.setExePath(softWareInfo.getExePath());
+		samToBam.setExePath(softWareInfoSamtools.getExePath());
 		samToBam.setSamFile(fileName);
 		samToBam.setSeqFai(faidxRefsequence());
 		String fileOutName = samToBam.convertToBam(outFile);
@@ -402,9 +416,7 @@ public class SamFile implements AlignSeqReader {
 			return;
 		}
 		BamIndex bamIndex = new BamIndex();
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.samtools);
-		bamIndex.setExePath(softWareInfo.getExePath());
+		bamIndex.setExePath(softWareInfoSamtools.getExePath());
 		bamIndex.setBamFile(getFileName());
 		bamIndex.index();
 	}
@@ -417,9 +429,7 @@ public class SamFile implements AlignSeqReader {
 	 */
 	public SamFile realign(String outFile) {
 		BamRealign bamRealign = new BamRealign();
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.GATK);
-		bamRealign.setExePath(softWareInfo.getExePath());
+		bamRealign.setExePath(softWareInfoGATK.getExePath());
 		bamRealign.setBamFile(getFileName());
 		bamRealign.setRefSequenceFile(referenceFileName);
 		String outSamFile = bamRealign.realign(outFile);
@@ -438,9 +448,7 @@ public class SamFile implements AlignSeqReader {
 	 */
 	public SamFile recalibrate(String outFile) {
 		BamRecalibrate bamRecalibrate = new BamRecalibrate();
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.GATK);
-		bamRecalibrate.setExePath(softWareInfo.getExePath());
+		bamRecalibrate.setExePath(softWareInfoGATK.getExePath());
 		bamRecalibrate.setBamFile(getFileName());
 		bamRecalibrate.setRefSequenceFile(referenceFileName);
 		String outSamFile = bamRecalibrate.reCalibrate(outFile);
@@ -457,9 +465,7 @@ public class SamFile implements AlignSeqReader {
 	 */
 	public SamFile removeDuplicate(String outFile) {
 		BamRemoveDuplicate bamRemoveDuplicate = new BamRemoveDuplicate();
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.picard);
-		bamRemoveDuplicate.setExePath(softWareInfo.getExePath());
+		bamRemoveDuplicate.setExePath(softWareInfoPicard.getExePath());
 		bamRemoveDuplicate.setBamFile(getFileName());
 		String outSamFile = bamRemoveDuplicate.removeDuplicate(outFile);
 		SamFile samFile = new SamFile(outSamFile);
@@ -519,17 +525,13 @@ public class SamFile implements AlignSeqReader {
 		bamPileup.setMapQuality(mapQualityFilter);
 		bamPileup.setReferenceFile(referenceFileName);
 		bamPileup.setRealign(!isRealigned);
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.samtools);
-		bamPileup.setExePath(softWareInfo.getExePath());
+		bamPileup.setExePath(softWareInfoSamtools.getExePath());
 		bamPileup.pileup(outPileUpFile);
 	}
 	private String faidxRefsequence() {
 		if (FileOperate.isFileExist(referenceFileName) && !FileOperate.isFileExist(referenceFileName+".fai")) {
 			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
-			SoftWareInfo softWareInfo = new SoftWareInfo();
-			softWareInfo.setName(SoftWare.samtools);
-			samIndexRefsequence.setExePath(softWareInfo.getExePath());
+			samIndexRefsequence.setExePath(softWareInfoSamtools.getExePath());
 			samIndexRefsequence.setRefsequence(referenceFileName);
 			samIndexRefsequence.indexSequence();
 			return referenceFileName+".fai";
@@ -595,7 +597,18 @@ public class SamFile implements AlignSeqReader {
 		samReader.close();
 		try { samFileWriter.close(); } catch (Exception e) { }
 	}
-	
+	public static String mergeBamFile(String outBamFile, ArrayList<SamFile> lsBamFile) {
+		BamMerge bamMerge = new BamMerge();
+		ArrayList<String> lsBamFileName = new ArrayList<String>();
+		for (SamFile samFile : lsBamFile) {
+			lsBamFileName.add(samFile.getFileName());
+		}
+		initialSoftWare();
+		bamMerge.setExePath(softWareInfoSamtools.getExePath());
+		bamMerge.setOutFileName(outBamFile);
+		bamMerge.setLsBamFile(lsBamFileName);
+		return bamMerge.merge();
+	}
 }
 /**
  * Constants used in reading & writing BAM files

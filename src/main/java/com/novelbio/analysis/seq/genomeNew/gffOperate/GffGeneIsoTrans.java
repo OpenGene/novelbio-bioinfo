@@ -24,13 +24,10 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		super(IsoName, gffDetailGene, geneType);
 		super.setCis5to3(false);
 	}
-	
 	@Override
 	public int getStartAbs() {
 		return get(size() - 1).getEndCis();
-		
 	}
-
 	@Override
 	public int getEndAbs() {
 		return get(0).getStartCis();
@@ -41,8 +38,8 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 		String geneExon = "";
 		for (int i = size() - 1; i >= 0; i--) {
 			ExonInfo exons = get(i);
-			geneExon = geneExon + getChrID() + "\t" + title + "\texon\t" + exons.getEndCis() + "\t" + exons.getStartCis() + "\t" + "." + "\t"
-					+ strand + "\t.\t" + "gene_id \"" + geneID + "\"; transcript_id " + getName() + "\"; \r\n";
+			geneExon = geneExon + getChrID() + "\t" + title + "\texon\t" + exons.getEndCis() + "\t" + exons.getStartCis()
+			     + "\t" + "." + "\t" + strand + "\t.\t" + "gene_id \"" + geneID + "\"; transcript_id " + "\"" + getName() + "\"; \r\n";
 		}
 		return geneExon;
 	}

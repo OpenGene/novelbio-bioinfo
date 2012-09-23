@@ -16,20 +16,6 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class CufflinksGTF {
 	private static Logger logger = Logger.getLogger(MapTophat.class);
 
-	public static void main(String[] args) {
-		CufflinksGTF cufflinksGTF = new CufflinksGTF();
-		ArrayList<String> lsSamFile = new ArrayList<String>();
-		lsSamFile.add("/media/winF/NBC/Project/Project_HXW/20120705/2B_recal.bam");
-		lsSamFile.add("/media/winF/NBC/Project/Project_HXW/20120705/2B_recal2.bam");
-		cufflinksGTF.setBam(lsSamFile);
-		cufflinksGTF.setExePath("", "/chr/fa");
-		GffChrAbs gffChrAbs = new GffChrAbs(9606);
-		cufflinksGTF.setGffChrAbs(gffChrAbs);
-		cufflinksGTF.setOutPathPrefix("/out/path");
-		cufflinksGTF.setStrandSpecifictype(StrandSpecific.NONE);
-		cufflinksGTF.runCufflinks();
-	}
-
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	ArrayList<SamFile> lsSamFiles = new ArrayList<SamFile>();
 	/** cufflinks所在路径 */
@@ -44,7 +30,7 @@ public class CufflinksGTF {
 	/** 内含子最长多少，默认500000，需根据不同物种进行设置 */
 	int intronLenMax = 500000;
 	/** indel的长度，默认为3 */
-	int indelLen = 3;
+	int indelLen = 6;
 	/** 线程数 */
 	int threadNum = 4;
 	/** 默认是solexa的最长插入 */
@@ -55,7 +41,10 @@ public class CufflinksGTF {
 	String gtfFile = "";
 	/** 输出文件路径 */
 	String outPathPrefix = "";
-
+	
+	/** 如果输入多个bam文件，则将他们合并为一个 */
+	String mergeSamFile;
+	
 	GffChrAbs gffChrAbs;
 	boolean booSetIntronMin = false;
 	boolean booSetIntronMax = false;
@@ -123,17 +112,18 @@ public class CufflinksGTF {
 			return;
 		}
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
-			ArrayList<Integer> lsIntronSortedS2M = gffChrAbs.getGffHashGene()
-					.getLsIntronSortedS2M();
+			ArrayList<Integer> lsIntronSortedS2M = gffChrAbs.getGffHashGene().getLsIntronSortedS2M();
 			int intronLenMin = lsIntronSortedS2M.get(50);
-			int intronLenMax = lsIntronSortedS2M
-					.get(lsIntronSortedS2M.size() - 50);
+			int intronLenMax = lsIntronSortedS2M.get(lsIntronSortedS2M.size() - 10);
 			if (intronLenMin < this.intronLenMin) {
 				this.intronLenMin = intronLenMin;
 				booSetIntronMin = true;
 			}
-			if (intronLenMax < this.intronLenMax) {
-				this.intronLenMax = intronLenMax;
+			if (intronLenMin < 20) {
+				this.intronLenMin = 20;
+			}
+			if (intronLenMax*2 < this.intronLenMax) {
+				this.intronLenMax = intronLenMax*2;
 				booSetIntronMax = true;
 			}
 		}
@@ -162,12 +152,16 @@ public class CufflinksGTF {
 	}
 
 	private String getSamFile() {
-		String samfile = "\"" + lsSamFiles.get(0).getFileName() + "\"";
-		for (int i = 1; i < lsSamFiles.size(); i++) {
-			SamFile samFile = lsSamFiles.get(i);
-			samfile = samfile +  ", \"" + samFile.getFileName() + "\"";
+		String samFile;
+		if (lsSamFiles.size() == 1) {
+			samFile = "\"" + lsSamFiles.get(0).getFileName() + "\"";
 		}
-		return samfile;
+		else {
+			mergeSamFile = outPathPrefix + "merge" + DateTime.getDateAndRandom() + ".bam";
+			mergeSamFile = SamFile.mergeBamFile(mergeSamFile, lsSamFiles);
+			samFile = "\"" + mergeSamFile + "\"";
+		}
+		return samFile;
 	}
 
 	/** 线程数量，默认4线程 */
@@ -288,8 +282,16 @@ public class CufflinksGTF {
 		cmd = cmd + getSamFile();
 
 		logger.info(cmd);
-//		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping");
-//		cmdOperate.run();
+		CmdOperate cmdOperate = new CmdOperate(cmd, "cufflinks");
+		cmdOperate.run();
+		
+		//TODO 运行结束后考虑删除merge的bam文件
+//		deleteMergeFile();
+	}
+	private void deleteMergeFile() {
+		if (lsSamFiles.size() > 0) {
+			FileOperate.delFile(mergeSamFile);
+		}
 	}
 	public String getCufflinksGTFPath() {
 		return FileOperate.addSep(outPathPrefix) + "transcripts.gtf";

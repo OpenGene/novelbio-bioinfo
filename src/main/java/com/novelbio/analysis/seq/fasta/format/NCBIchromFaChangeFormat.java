@@ -12,9 +12,12 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class NCBIchromFaChangeFormat {
 	public static void main(String[] args) {
+		String file = "/media/winE/Bioinformatics/genome/checken/gal4_NCBI/ChromFa";
+		String out = file + "/all/chrAll.fa";
+		FileOperate.createFolders(FileOperate.getParentPathName(out));
 		NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
-		ncbIchromFaChangeFormat.setChromFaPath("/media/winE/Bioinformatics/genome/pig/sus10_NCBI/ChromFa", "");
-		ncbIchromFaChangeFormat.writeToSingleFile("/media/winE/Bioinformatics/genome/pig/sus10_NCBI/ChromFa/all/chrAll.fa");
+		ncbIchromFaChangeFormat.setChromFaPath(file, "");
+		ncbIchromFaChangeFormat.writeToSingleFile(out);
 	}
 	
 	String chrFile = ""; String regx = null;

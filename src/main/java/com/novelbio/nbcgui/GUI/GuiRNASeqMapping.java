@@ -61,7 +61,7 @@ public class GuiRNASeqMapping extends JPanel {
 	JButton btnOpenFastQRight;
 	JButton btnDeleteFastQRight;
 	JLabel lblStrandType;
-	
+	JCheckBox chckbxUseGtf;
 	
 	JComboBoxData<StrandSpecific> cmbStrandType;
 	JComboBoxData<MapLibrary> cmbLibraryType;
@@ -180,6 +180,10 @@ public class GuiRNASeqMapping extends JPanel {
 		lblMappingToFile.setBounds(10, 437, 121, 14);
 		add(lblMappingToFile);
 		
+		chckbxUseGtf = new JCheckBox("Use GTF");
+		chckbxUseGtf.setBounds(391, 358, 131, 22);
+		add(chckbxUseGtf);
+		
 		btnMappingindex = new JButton("MappingIndex");
 		btnMappingindex.setBounds(387, 461, 134, 24);
 		btnMappingindex.addActionListener(new ActionListener() {
@@ -214,6 +218,7 @@ public class GuiRNASeqMapping extends JPanel {
 				ctrlRNAmap.setLibrary(cmbLibraryType.getSelectedValue());
 				ctrlRNAmap.setStrandSpecifictype(cmbStrandType.getSelectedValue());
 				ctrlRNAmap.setThreadNum(threadNum);
+				ctrlRNAmap.setIsUseGTF(chckbxUseGtf.isSelected());
 				ctrlRNAmap.setOutPathPrefix(out);
 				ctrlRNAmap.mapping();
 				if (rdbtnRsem.isSelected()) {
@@ -261,6 +266,7 @@ public class GuiRNASeqMapping extends JPanel {
 				lblStrandType.setVisible(false);
 				cmbLibraryType.setVisible(false);
 				cmbStrandType.setVisible(false);
+				chckbxUseGtf.setVisible(false);
 			}
 		});
 		rdbtnRsem.setBounds(418, 261, 88, 22);
@@ -273,6 +279,7 @@ public class GuiRNASeqMapping extends JPanel {
 				lblStrandType.setVisible(true);
 				cmbLibraryType.setVisible(true);
 				cmbStrandType.setVisible(true);
+				chckbxUseGtf.setVisible(true);
 			}
 		});
 		rdbtnTophat.setBounds(599, 261, 151, 22);
@@ -293,6 +300,7 @@ public class GuiRNASeqMapping extends JPanel {
 		cmbLibraryType = new JComboBoxData<MapLibrary>();
 		cmbLibraryType.setBounds(238, 359, 124, 23);
 		add(cmbLibraryType);
+
 
 		
 		btnOpenFastqLeft.addActionListener(new ActionListener() {
@@ -324,6 +332,8 @@ public class GuiRNASeqMapping extends JPanel {
 		cmbStrandType.setMapItem(StrandSpecific.getMapStrandLibrary());
 		cmbLibraryType.setMapItem(MapLibrary.getMapLibrary());
 		rdbtnTophat.setSelected(true);
+		
+		chckbxUseGtf.setSelected(true);
 	}
 	
 	/**

@@ -264,4 +264,8 @@ public class MapRsem implements MapRNA{
 		}
 	}
 	
+	/** 没用，给tophat用的 */
+	@Override
+	public void setGtfFile(String gtfFile) { }
+	
 }

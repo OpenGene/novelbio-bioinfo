@@ -180,8 +180,8 @@ public class ExonJunction {
 
 		ArrayList<ExonSplicingTest> lsResult = new ArrayList<ExonSplicingTest>();
 		for (ArrayList<ExonSplicingTest> lsIsoExonSplicingTests : lsSplicingTests) {
-			lsIsoExonSplicingTests = filterExon(lsIsoExonSplicingTests);
 			doTest_And_StatisticSplicingEvent(lsIsoExonSplicingTests);
+			lsIsoExonSplicingTests = filterExon(lsIsoExonSplicingTests);
 			if (oneGeneOneSpliceEvent) {
 				lsResult.add(lsIsoExonSplicingTests.get(0));
 			} else {
@@ -196,25 +196,6 @@ public class ExonJunction {
 		for (ExonSplicingType exonSplicingType : ExonSplicingType.getMapName2SplicingEvents().values()) {
 			mapSplicingType2Num.put(exonSplicingType, new int[2]);
 		}
-	}
-	
-	/**
-	 *  一般是15::5	13::0	这种形式
-	 * 但有时候会出现15	13 这种明显不是转录本的
-	 * 所以在这里检查该值并且删除，但是这是治标不治本的做法，搞清楚为啥发生
-	 * @param lsIsoExonSplicingTests
-	 * @return
-	 */
-	private ArrayList<ExonSplicingTest> filterExon(ArrayList<ExonSplicingTest> lsIsoExonSplicingTests) {
-		ArrayList<ExonSplicingTest> lsResult = new ArrayList<ExonSplicingTest>();
-		for (ExonSplicingTest exonSplicingTest : lsIsoExonSplicingTests) {
-			if (exonSplicingTest.getExonCluster().getExonSplicingType() == ExonSplicingType.cassette 
-					&& exonSplicingTest.mapCondition2Counts.entrySet().iterator().next().getValue().length <=1) {
-				continue;
-			}
-			lsResult.add(exonSplicingTest);
-		}
-		return lsResult;
 	}
 
 	private void setConditionWhileConditionIsNull() {
@@ -238,6 +219,26 @@ public class ExonJunction {
 		sortLsExonTest_Use_Pvalue(lsExonSplicingTest);
 		statisticsSplicingEvent(lsExonSplicingTest);
 	}
+	
+	/**
+	 *  一般是15::5	13::0	这种形式
+	 * 但有时候会出现15	13 这种明显不是转录本的
+	 * 所以在这里检查该值并且删除，但是这是治标不治本的做法，搞清楚为啥发生
+	 * @param lsIsoExonSplicingTests
+	 * @return
+	 */
+	private ArrayList<ExonSplicingTest> filterExon(ArrayList<ExonSplicingTest> lsIsoExonSplicingTests) {
+		ArrayList<ExonSplicingTest> lsResult = new ArrayList<ExonSplicingTest>();
+		for (ExonSplicingTest exonSplicingTest : lsIsoExonSplicingTests) {
+			if (exonSplicingTest.getExonCluster().getExonSplicingType() == ExonSplicingType.cassette 
+					&& exonSplicingTest.mapCondition2Counts.entrySet().iterator().next().getValue().length <=1) {
+				continue;
+			}
+			lsResult.add(exonSplicingTest);
+		}
+		return lsResult;
+	}
+
 	/**
 	 * 统计可变剪接事件
 	 * @param lsExonSplicingTest

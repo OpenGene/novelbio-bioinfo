@@ -9,6 +9,7 @@ import com.novelbio.analysis.seq.rnaseq.CufflinksGTF;
 import com.novelbio.analysis.seq.rnaseq.GffHashMerge;
 import com.novelbio.analysis.seq.rnaseq.TranscriptomStatistics;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.generalConf.NovelBioConst;
@@ -26,7 +27,9 @@ public class CtrlCufflinksTranscriptome {
 	public void setBamFile(ArrayList<String> lsBamFile) {
 		cufflinksGTF.setBam(lsBamFile);
 	}
-	
+	public void setThreadNum(int threadNum) {
+		cufflinksGTF.setThreadNum(threadNum);
+	}
 	public void setStrandSpecifictype(StrandSpecific strandSpecific) {
 		cufflinksGTF.setStrandSpecifictype(strandSpecific);
 	}
@@ -71,5 +74,4 @@ public class CtrlCufflinksTranscriptome {
 
 		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
-	
 }

@@ -25,9 +25,10 @@ public class CtrlRNAmap {
 	int threadNum = 4;
 	HashMap<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq;
 	
-	MapRNA mapRNA;	
+	MapRNA mapRNA;
 	GffChrAbs gffChrAbs;
-	
+	/** tophat是否用GTF文件进行校正，默认为true，如果出错就要考虑不用GTF */
+	boolean useGTF = true;
 	String outPrefix;
 	/** 保存最终结果，只有rsem才会有 */
 	ArrayList<ArrayList<String>> lsExpResultRsem = new ArrayList<ArrayList<String>>();
@@ -63,6 +64,9 @@ public class CtrlRNAmap {
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
 	}
+	public void setIsUseGTF(boolean useGTF) {
+		this.useGTF= useGTF;
+	}
 	public void mapping() {
 		for (Entry<String, ArrayList<ArrayList<FastQ>>> entry : mapPrefix2LsFastq.entrySet()) {
 			if (!creatMapRNA()) {
@@ -79,6 +83,9 @@ public class CtrlRNAmap {
 			mapRNA.setThreadNum(threadNum);
 			mapRNA.setOutPathPrefix(outPrefix + prefix);
 			mapRNA.mapReads();
+			if (!useGTF) {
+				mapRNA.setGtfFile(null);
+			}
 			setExpResult(prefix, mapRNA);
 		}
 	}
