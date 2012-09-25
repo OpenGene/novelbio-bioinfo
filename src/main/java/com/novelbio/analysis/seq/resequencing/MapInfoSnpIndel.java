@@ -9,13 +9,15 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
@@ -33,7 +35,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * 该位置可能有不止一种的插入缺失或是碱基替换类型，那么就用该hash表来存储这么多种信息<br>
 	 *Key: referenceSeq + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + snpType <br>
 	 * value: 数量，用数组仅仅为了能够传递地址  */
-	HashMap<String, SiteSnpIndelInfo> mapAllen2Num = new HashMap<String, SiteSnpIndelInfo>();
+	TreeMap<String, SiteSnpIndelInfo> mapAllen2Num = new TreeMap<String, SiteSnpIndelInfo>();
 
 	String chrID;
 	String refBase = "";
@@ -49,7 +51,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	GffGeneIsoInfo gffGeneIsoInfo;
 	GffChrAbs gffChrAbs;
 	/** 样本和正常reads之间的关系 */
-	HashMap<String, SampleRefReadsInfo> mapSample2NormReadsInfo = new HashMap<String, SampleRefReadsInfo>();
+	TreeMap<String, SampleRefReadsInfo> mapSample2NormReadsInfo = new TreeMap<String, SampleRefReadsInfo>();
 	String sampleName = "";
 	/** 要是已经在sam pileUp里面搜索过了，那么就设定该样本的sample是可以找到的 */
 	
@@ -250,7 +252,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		chrID = inputLines[0];
 		refSnpIndelStart = Integer.parseInt(inputLines[1]); 
 		setGffIso();
-		addAllenInfo(inputLines[7], inputLines[8]);
+		addAllenInfo(inputLines[6], inputLines[7]);
 		
 	}
 	
@@ -842,7 +844,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	
 	private boolean isGATKfiltered(SiteSnpIndelInfo siteSnpIndelInfo) {
 		boolean result = false;
-		HashMap<String, SampleSnpReadsQuality> mapSample2Snp = siteSnpIndelInfo.mapSample2thisBaseNum;
+		Map<String, SampleSnpReadsQuality> mapSample2Snp = siteSnpIndelInfo.mapSample2thisBaseNum;
 		for (SampleSnpReadsQuality sampleSnpReadsQuality : mapSample2Snp.values()) {
 			if (sampleSnpReadsQuality.quality != null && !sampleSnpReadsQuality.quality.equals("")) {
 				return true;

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.mapping.MapRNA;
 import com.novelbio.analysis.seq.mapping.MapRsem;
@@ -68,6 +68,7 @@ public class CtrlRNAmap {
 		this.useGTF= useGTF;
 	}
 	public void mapping() {
+		lsExpResultRsem.clear();
 		for (Entry<String, ArrayList<ArrayList<FastQ>>> entry : mapPrefix2LsFastq.entrySet()) {
 			if (!creatMapRNA()) {
 				return;
@@ -82,10 +83,10 @@ public class CtrlRNAmap {
 			mapRNA.setStrandSpecifictype(strandSpecific);
 			mapRNA.setThreadNum(threadNum);
 			mapRNA.setOutPathPrefix(outPrefix + prefix);
-			mapRNA.mapReads();
 			if (!useGTF) {
 				mapRNA.setGtfFile(null);
 			}
+			mapRNA.mapReads();
 			setExpResult(prefix, mapRNA);
 		}
 	}
@@ -138,6 +139,7 @@ public class CtrlRNAmap {
 				ArrayList<String> lsDetail = new ArrayList<String>();
 				lsDetail.add(entry.getKey());
 				lsDetail.add(MathComput.mean(entry.getValue()) + "" );//获得平均数
+				lsExpResultRsem.add(lsDetail);
 			}
 		}
 		//后面的就在hash表里面查

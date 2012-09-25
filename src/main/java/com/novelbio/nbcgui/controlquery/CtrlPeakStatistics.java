@@ -2,8 +2,8 @@ package com.novelbio.nbcgui.controlquery;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.genomeNew.GffChrStatistics;
-import com.novelbio.analysis.seq.genomeNew.GffChrStatistics.GffChrStatiscticsProcessInfo;
+import com.novelbio.analysis.seq.genome.GffChrStatistics;
+import com.novelbio.analysis.seq.genome.GffChrStatistics.GffChrStatiscticsProcessInfo;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;

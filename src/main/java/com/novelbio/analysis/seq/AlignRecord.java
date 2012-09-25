@@ -2,7 +2,7 @@ package com.novelbio.analysis.seq;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
+import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.mapping.Align;
 
 public interface AlignRecord extends Alignment{

@@ -2,15 +2,17 @@ package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.domain.geneanno.SnpIndelRs;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -49,7 +51,7 @@ public abstract class SiteSnpIndelInfo {
 	/** 样本名对应该样本这类型snp的reads数量
 	 * value为int[1]，仅仅用来保存snp数量
 	 *  */
-	HashMap<String, SampleSnpReadsQuality> mapSample2thisBaseNum = new HashMap<String, SampleSnpReadsQuality>();
+	TreeMap<String, SampleSnpReadsQuality> mapSample2thisBaseNum = new TreeMap<String, SampleSnpReadsQuality>();
 	/**
 	 * @param mapInfoSnpIndel 必须含有 GffIso 信息
 	 * @param gffChrAbs
@@ -354,7 +356,7 @@ public abstract class SiteSnpIndelInfo {
 		if (!getMismatchInfo().equals(siteSnpIndelInfo.getMismatchInfo())) {
 			return;
 		}
-		HashMap<String, SampleSnpReadsQuality> mapSample2SnpInfo = siteSnpIndelInfo.mapSample2thisBaseNum;
+		Map<String, SampleSnpReadsQuality> mapSample2SnpInfo = siteSnpIndelInfo.mapSample2thisBaseNum;
 		for (Entry<String, SampleSnpReadsQuality> entry : mapSample2SnpInfo.entrySet()) {
 			if (mapSample2thisBaseNum.containsKey(entry.getKey())) {
 				continue;

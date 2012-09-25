@@ -6,8 +6,8 @@ import java.util.LinkedHashMap;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
+import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListBin;

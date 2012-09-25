@@ -5,10 +5,10 @@ import java.util.HashMap;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListGff;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.species.Species;
@@ -16,8 +16,8 @@ import com.novelbio.generalConf.NovelBioConst;
 /** 重建转录本 */
 public class GffHashMerge {
 	public static void main(String[] args) {
-		mouse();
-		checken();
+//		mouse();
+//		checken();
 	}
 	public static void mouse() {
 		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcripts.gtf";
@@ -145,10 +145,10 @@ public class GffHashMerge {
 			for (int i = 0; i < lsGffHashGenes.size(); i++) {
 				GffHashGene gffHashGene = lsGffHashGenes.get(i);
 				GffCodGene gffCodGeneStart = gffHashGene.searchLocation(chrID, geneBound[0]);
-				int startID = getGffGeneNum(true, gffCodGeneStart);
+				int startID = getGffGeneIndexNum(true, gffCodGeneStart);
 				
 				GffCodGene gffCodGeneEnd = gffHashGene.searchLocation(chrID, geneBound[1]);
-				int endID = getGffGeneNum(false, gffCodGeneEnd);
+				int endID = getGffGeneIndexNum(false, gffCodGeneEnd);
 				//起点大于终点说明在该位置区间里面，本GffHashGene中没有找到基因
 				if (startID > endID || startID < 0 || endID < 0) {
 					if (i == 0) {
@@ -162,19 +162,24 @@ public class GffHashMerge {
 		}
 		return lsGffGeneClusters;
 	}
-	
-	private int getGffGeneNum(boolean start, GffCodGene gffCodGene) {
+	/**
+	 * 	看gffCodGene上，头部基因的indexNum和尾部基因的indexNum
+	 * @param start 是否看
+	 * @param gffCodGene
+	 * @return
+	 */
+	private int getGffGeneIndexNum(boolean start, GffCodGene gffCodGene) {
 		if (gffCodGene == null) {
 			return -1;
 		}
+		
 		if (gffCodGene.isInsideLoc()) {
 			return gffCodGene.getItemNumThis();
 		}
-		//头部的位点就看后面一个ID，尾部的位点就看前面一个ID
+		
 		if (start) {
 			return gffCodGene.getItemNumDown();
-		}
-		else {
+		} else {
 			return gffCodGene.getItemNumUp();
 		}
 	}

@@ -6,11 +6,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
@@ -23,7 +24,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	GffChrAbs gffChrAbs;
 
 	/** key为小写 */
-	HashMap<String, ArrayList<MapInfoSnpIndel>> mapChrID2LsSnpSite = new HashMap<String, ArrayList<MapInfoSnpIndel>>();
+	Map<String, ArrayList<MapInfoSnpIndel>> mapChrID2LsSnpSite = new HashMap<String, ArrayList<MapInfoSnpIndel>>();
 	/** 样本信息 */
 	LinkedHashMap<String, String> mapSample2PileupFile = new LinkedHashMap<String, String>();
 	/** 读取文件时去除重复snp位点 */
@@ -124,7 +125,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			ArrayList<MapInfoSnpIndel> lsMap = mapChrID2LsSnpSite.get(mapInfoSnpIndel.getRefID());
 			if (lsMap == null) {
 				lsMap = new ArrayList<MapInfoSnpIndel>();
-				mapChrID2LsSnpSite.put(mapInfoSnpIndel.getRefID(), lsMap);
+				mapChrID2LsSnpSite.put(mapInfoSnpIndel.getRefID().toLowerCase(), lsMap);
 			}
 			lsMap.add(mapInfoSnpIndel);
 		}
@@ -202,12 +203,12 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 
 			String[] ss = samtoolsLine.split("\t");
 			int loc = Integer.parseInt(ss[1]);
-			if (!ss[0].equals(tmpChrID)) {
-				tmpChrID = ss[0];
+			if (!ss[0].equalsIgnoreCase(tmpChrID)) {
+				tmpChrID = ss[0].toLowerCase();
 				lsMapInfos = mapChrID2LsSnpSite.get(tmpChrID);
 				mapInfoIndex = 0;
 				if (lsMapInfos == null) {
-					logger.info("出现未知 chrID：" + tmpChrID);
+//					logger.info("出现未知 chrID：" + tmpChrID);
 					continue;
 				}
 			}
@@ -215,9 +216,9 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			if (lsMapInfos == null || mapInfoIndex >= lsMapInfos.size()) continue;
 
 			//一行一行找下去，直到找到所需要的位点
-			if (loc < lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart())
+			if (loc < lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart()) {
 				continue;
-			else {
+			} else {
 				if (addMapSiteInfo(loc, lsMapInfos, mapInfoIndex, sampleName, samtoolsLine)) {
 					mapInfoIndex++;
 				}

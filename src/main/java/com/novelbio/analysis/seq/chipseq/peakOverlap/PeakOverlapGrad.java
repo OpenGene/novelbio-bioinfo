@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeakDU;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
+import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 
 /**
  * 限定A文件，让B文件慢慢增加，梯度计算覆盖度
@@ -78,7 +80,7 @@ public class PeakOverlapGrad {
 			lsStepPeak.add(lsPeak.get(i));
 	     }
 	     TxtReadandWrite txtOut = new TxtReadandWrite(txtPeakOverlapFile, true);
-	     txtOut.ExcelWrite(lsResult, "\t", 1, 1);
+	     txtOut.ExcelWrite(lsResult);
 	}
 	
 	
@@ -97,7 +99,7 @@ public class PeakOverlapGrad {
 		gffHashPeak.ReadGff(lsPeak);
 		for (String[] strings : lsSearch) {
 			String chrID = strings[0]; int start = Integer.parseInt(strings[1]); int end = Integer.parseInt(strings[2]);
-			GffCodPeakDU gffCodPeakDU = gffHashPeak.searchLocation(chrID, start, end);
+			ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> gffCodPeakDU = gffHashPeak.searchLocation(chrID, start, end);
 			if (gffCodPeakDU == null) {
 				continue;
 			}

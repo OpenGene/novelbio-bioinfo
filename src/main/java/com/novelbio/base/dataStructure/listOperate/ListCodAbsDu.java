@@ -7,7 +7,7 @@ import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.ibatis.migration.commands.NewCommand;
 
 import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 
 /**
  * Ë«×ø±ê

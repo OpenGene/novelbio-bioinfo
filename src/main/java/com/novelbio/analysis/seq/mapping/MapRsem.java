@@ -9,9 +9,9 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
-import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
-import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrAnno;
+import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.HashMapLsValue;
 import com.novelbio.base.cmd.CmdOperate;
@@ -28,17 +28,12 @@ import com.novelbio.database.model.species.Species;
  */
 public class MapRsem implements MapRNA{
 	public static void main(String[] args) {
-		String fastqFile = "/media/winF/NBC/Project/RNA-Seq_HPWtest/FangLan/3_AGTTCC_L003_R1_001_filtered.fq";
-		String outFile = "/media/winF/NBC/Project/RNA-Seq_HPWtest/FangLan/rsem2/N";
 		MapRsem mapRsem = new MapRsem();
-		Species species = new Species(10090);
+		Species species = new Species(9606);
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
 		mapRsem.setExePath("", "");
-		mapRsem.setThreadNum(4);
-//		mapRsem.setLeftFq(fastqFile);
 		mapRsem.setGffChrAbs(gffChrAbs);
-		mapRsem.setOutPathPrefix(outFile);
-		mapRsem.mapReads();
+		mapRsem.createGene2IsoAndRefSeq();
 	}
 	private static Logger logger = Logger.getLogger(MapRsem.class);
 	
@@ -87,6 +82,7 @@ public class MapRsem implements MapRNA{
 		this.gffChrAbs = gffChrAbs;
 		gffChrSeq = new GffChrSeq(gffChrAbs);
 		this.species = gffChrAbs.getSpecies();
+		setFileRef(species.getRefseqFile());
 	}
 	/**
 	 * 设定bwa所在的文件夹以及待比对的路径
@@ -137,18 +133,18 @@ public class MapRsem implements MapRNA{
 	}
 	/** 产生全新的reference */
 	private void createGene2IsoAndRefSeq() {
-		String pathRsemIndex = FileOperate.getParentPathName(gffChrAbs.getSeqHash().getChrFile()) + "rsemRef_Index_" + species.getVersion().replace(" ", "") + FileOperate.getSepPath();
+		String pathRsemIndex = FileOperate.getParentPathName(gffChrAbs.getSeqHash().getChrFile()) + "index/rsemRef_Index_" + species.getVersion().replace(" ", "") + FileOperate.getSepPath();
 		String refFileRsem = pathRsemIndex +  "RefGene.fa";
 		gene2isoFile = pathRsemIndex +  "RefGene_gene2iso.txt";
 
 		if (!FileOperate.isFileExist(refFileRsem)) {
 			FileOperate.createFolders(pathRsemIndex);
-			if (!FileOperate.isFileExist(refFile))
+			if (!FileOperate.isFileExist(refFile)) {
 				gffChrSeq.writeIsoFasta(refFileRsem);
-			else {
+				gffChrAbs.getGffHashGene().writeGene2Iso(gene2isoFile);
+			} else {
 				FileOperate.copyFile(refFile, refFileRsem, true);
 			}
-			gffChrAbs.getGffHashGene().writeGene2Iso(gene2isoFile);
 		}
 		refFile = refFileRsem;//将rsem的reffile替换给reffile，因为后面都是用reffile来做索引
 		
@@ -158,6 +154,9 @@ public class MapRsem implements MapRNA{
 			for (String geneIDstr : seqFastaHash.getLsSeqName()) {
 				GeneID geneID = new GeneID(geneIDstr, species.getTaxID());
 				String symbol = geneID.getSymbol();
+				if (symbol == null || symbol.equals("")) {
+					symbol = geneIDstr;
+				}
 				txtGene2Iso.writefileln(symbol + "\t" + geneIDstr);
 			}
 			txtGene2Iso.close();

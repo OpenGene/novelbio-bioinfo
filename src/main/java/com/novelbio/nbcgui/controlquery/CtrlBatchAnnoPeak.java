@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
-import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
+import com.novelbio.analysis.seq.genome.GffChrAnno;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;

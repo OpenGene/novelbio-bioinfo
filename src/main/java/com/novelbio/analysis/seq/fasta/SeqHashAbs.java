@@ -13,10 +13,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public abstract class SeqHashAbs implements SeqHashInt{
@@ -312,7 +312,11 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	@Override
 	public SeqFasta getSeq(String chrID,List<ExonInfo> lsInfo, boolean getIntron) {
 		 ExonInfo exon1 = lsInfo.get(0);
-		 return this.getSeq(exon1.isCis5to3(), chrID, lsInfo, sep,getIntron);
+		 try {
+			 return this.getSeq(exon1.isCis5to3(), chrID, lsInfo, sep,getIntron);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>

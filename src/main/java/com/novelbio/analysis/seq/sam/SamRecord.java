@@ -16,7 +16,7 @@ import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 
 import net.sf.samtools.AlignmentBlock;

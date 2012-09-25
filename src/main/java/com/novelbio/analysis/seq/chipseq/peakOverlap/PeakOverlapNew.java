@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.chipseq.peakOverlap;
 import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.chipseq.repeatMask.RepeatMask;
-import com.novelbio.analysis.seq.genomeNew.GffPeakOverLap;
+import com.novelbio.analysis.seq.genome.GffPeakOverLap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class PeakOverlapNew {
@@ -42,7 +42,7 @@ public class PeakOverlapNew {
 		TxtReadandWrite txtPeakOverlap=new TxtReadandWrite();
 		txtPeakOverlap.setParameter(txtPeakOverlapFile, true,false);
 		try {
-			txtPeakOverlap.ExcelWrite(resultexcel, "\t", 1, 1);
+			txtPeakOverlap.ExcelWrite(resultexcel);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -128,7 +128,7 @@ public class PeakOverlapNew {
 		
 		txtPeakOverlap.setParameter(txtPeakOverlapStatisticFile, true,false);
 		try {
-			txtPeakOverlap.ExcelWrite(resultexcel, "\t", 1, 1);
+			txtPeakOverlap.ExcelWrite(resultexcel);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

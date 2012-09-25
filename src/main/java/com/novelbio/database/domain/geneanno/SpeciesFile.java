@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -385,14 +385,9 @@ public class SpeciesFile {
 		}
 		SeqHash seqHash = new SeqHash(getChromFaPath(), getChromFaRegx());
 		ArrayList<String[]> lsChrLen = seqHash.getChrLengthInfo();
-		try {
-			chromInfo = lsChrLen.get(0)[0] + SepSign.SEP_INFO + lsChrLen.get(0)[1];
-		} catch (Exception e) {
-			chromInfo = lsChrLen.get(0)[0] + SepSign.SEP_INFO + lsChrLen.get(0)[1];
-			chromInfo = null;
-		}
+		chromInfo = lsChrLen.get(0)[0] + SepSign.SEP_INFO + lsChrLen.get(0)[1];
 	
-		for (int i = 0; i < lsChrLen.size(); i++) {
+		for (int i = 1; i < lsChrLen.size(); i++) {
 			String[] tmpLen = lsChrLen.get(i);
 			chromInfo = chromInfo + SepSign.SEP_ID + tmpLen[0] + SepSign.SEP_INFO + tmpLen[1];
 		}

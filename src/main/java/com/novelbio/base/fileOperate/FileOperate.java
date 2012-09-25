@@ -400,7 +400,7 @@ public class FileOperate {
 		}
 		foldUpper = addSep(foldUpper);
 		String subFold = "";
-		String[] sepID = creatPath.split(File.separator);
+		String[] sepID = creatPath.split(getSep());
 		String firstPath = foldUpper + sepID[0];
 		for (int i = 0; i < sepID.length; i++) {
 			subFold = subFold + sepID[i] + File.separator;
@@ -411,6 +411,13 @@ public class FileOperate {
 			}
 		}
 		return true;
+	}
+	private static String getSep() {
+		if (File.separator.equals("\\")) {
+			return "\\\\";
+		} else {
+			return File.separator;
+		}
 	}
 	/**
 	 * 新建文件

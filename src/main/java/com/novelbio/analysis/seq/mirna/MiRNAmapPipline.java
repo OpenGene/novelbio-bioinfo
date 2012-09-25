@@ -1,13 +1,9 @@
 package com.novelbio.analysis.seq.mirna;
 
-import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.chipseq.pipeline.Pipline;
 import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 小RNA比对流水线

@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.chipseq;
 import java.util.HashMap;
 
 import com.novelbio.analysis.seq.FormatSeq;
-import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
+import com.novelbio.analysis.seq.genome.GffChrAnno;
 import com.novelbio.database.model.species.Species;
 
 public abstract class PeakCalling {

@@ -2,7 +2,7 @@ package com.novelbio.nbcgui.controlseq;
 
 import javax.swing.JOptionPane;
 
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
 import com.novelbio.analysis.seq.resequencing.SnpFilterDetailInfo;
 import com.novelbio.base.multithread.RunGetInfo;

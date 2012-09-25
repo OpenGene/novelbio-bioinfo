@@ -412,7 +412,7 @@ public class GuiSamToBed extends JPanel {
 			bedSeq = bedSeq.filterSeq(small, big, strand);
 		}
 		if (chckbxSortBed.isSelected()) {
-			bedSeq.sortBedFile();
+			bedSeq.sort();
 		}
 	
 	}

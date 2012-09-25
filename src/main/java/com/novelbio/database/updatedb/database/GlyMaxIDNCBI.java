@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGeneDU;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGenePlant;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGenePlant;
+import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.NovelBioConst;

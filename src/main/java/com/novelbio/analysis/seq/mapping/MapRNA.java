@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public interface MapRNA {

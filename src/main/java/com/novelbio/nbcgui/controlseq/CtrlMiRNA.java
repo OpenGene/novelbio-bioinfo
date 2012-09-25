@@ -8,8 +8,8 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.ibatis.migration.commands.NewCommand;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mirna.MiRNAmapPipline;
 import com.novelbio.analysis.seq.mirna.MiRNACount;
 import com.novelbio.analysis.seq.mirna.NovelMiRNADeep;

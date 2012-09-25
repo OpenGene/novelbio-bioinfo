@@ -6,12 +6,12 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoTrans;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListGff;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoCis;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoTrans;
+import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 
 public class GffGeneIsoTest extends TestCase {

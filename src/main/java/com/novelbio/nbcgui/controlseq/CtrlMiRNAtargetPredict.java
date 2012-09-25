@@ -2,7 +2,7 @@ package com.novelbio.nbcgui.controlseq;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mirna.MiRNAtargetMiranda;
 import com.novelbio.analysis.seq.mirna.MiRNAtargetRNAhybrid;
 import com.novelbio.analysis.seq.mirna.MiRNAtargetRNAhybrid.RNAhybridClass;

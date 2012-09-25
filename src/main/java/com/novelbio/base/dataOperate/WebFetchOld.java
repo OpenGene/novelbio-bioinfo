@@ -413,8 +413,9 @@ public class WebFetchOld {
 	 *            是否装载新的cookies
 	 * @param saveFilePath
 	 *            待保存的文件夹，默认最后加上"/"，如"/media/"之类
+	 * @return 返回结果是否下载成功 
 	 */
-	public void getDownLoad(String url, String saveFilePath,
+	public boolean getDownLoad(String url, String saveFilePath,
 			boolean changCookies, String lastURL) {
 		// 提取url中的文件名，为最后"/"后的所有名字
 		String[] stUrlSplit = url.split("/");
@@ -441,6 +442,7 @@ public class WebFetchOld {
 			while ((len = instream.read(b)) != -1) {
 				out.write(b, 0, len);
 			}
+			return true;
 		}
 		/**
 		 * 有问题的话，就尝试释放连接
@@ -451,6 +453,7 @@ public class WebFetchOld {
 				get.abort();
 			} catch (Exception e2) {
 			}
+			return false;
 		}
 
 	}

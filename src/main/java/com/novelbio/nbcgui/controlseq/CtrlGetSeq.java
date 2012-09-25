@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
-import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
-import com.novelbio.analysis.seq.genomeNew.GffChrSeq.GffChrSeqProcessInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrSeq;
+import com.novelbio.analysis.seq.genome.GffChrSeq.GffChrSeqProcessInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;

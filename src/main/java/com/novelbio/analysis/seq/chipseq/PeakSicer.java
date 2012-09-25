@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FormatSeq;
-import com.novelbio.analysis.seq.genomeNew.GffChrAnno;
+import com.novelbio.analysis.seq.genome.GffChrAnno;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;

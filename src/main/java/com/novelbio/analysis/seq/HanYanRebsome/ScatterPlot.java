@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genomeNew.GffChrMap;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.GffChrMap;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;

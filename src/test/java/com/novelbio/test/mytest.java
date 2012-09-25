@@ -78,17 +78,17 @@ import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
-import com.novelbio.analysis.seq.genomeNew.GffChrSeq;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoCis;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGenePlant;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrSeq;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoCis;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGenePlant;
+import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.reseq.LastzAlign;
 import com.novelbio.analysis.seq.reseq.ModifySeq;
 import com.novelbio.analysis.seq.resequencing.MapInfoSnpIndel;
@@ -336,7 +336,7 @@ public class mytest {
 			
 			BedSeq bedSeq = fastQ.getBedFileSE("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/2.bwa_all.bed");
 //			bedSeq = new BedSeq("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/1.bwa_all.bed");
-			bedSeq.sortBedFile("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/2.bwa_all_sort.bed");
+			bedSeq.sort("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/2.bwa_all_sort.bed");
 			System.out.println(bedSeq.getSeqNum());
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -359,7 +359,7 @@ public class mytest {
 			
 			BedSeq bedSeq = fastQ.getBedFileSE("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/3.bwa_all.bed");
 //			bedSeq = new BedSeq("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/1.bwa_all.bed");
-			bedSeq.sortBedFile("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/3.bwa_all_sort.bed");
+			bedSeq.sort("/media/winE/NBC/Project/Project_ZHY_Lab/mRNA/mapping/3.bwa_all_sort.bed");
 			System.out.println(bedSeq.getSeqNum());
 		} catch (Exception e) {
 			// TODO: handle exception

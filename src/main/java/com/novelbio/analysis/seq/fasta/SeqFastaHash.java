@@ -150,7 +150,7 @@ public class SeqFastaHash extends SeqHashAbs {
 		// 如果没有同名序列，直接装入hash表
 		if (tmpSeq == null) {
 			hashSeq.put(seqNameLow, seqFasta);
-			lsSeqName.add(seqNameLow);
+			lsSeqName.add(seqFasta.getSeqName());
 			hashChrLength.put(seqNameLow, (long) seq.length());
 		} else {// 对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
 			if (append)
@@ -159,7 +159,7 @@ public class SeqFastaHash extends SeqHashAbs {
 					 seqFasta.setName(seqFasta.getSeqName()+"<");
 				 }
 				 hashSeq.put(seqNameLow, seqFasta);
-				 lsSeqName.add(seqNameLow);
+				 lsSeqName.add(seqFasta.getSeqName());
 				 hashChrLength.put(seqNameLow, (long) seq.length());
 			 }
 			 else {

@@ -10,15 +10,16 @@ import java.util.Set;
 
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.stat.inference.TestUtils;
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.record.cont.ContinuableRecord;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonCluster;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ExonCluster.ExonSplicingType;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.ExonSplicingType;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.MathComput;
@@ -28,6 +29,8 @@ import com.novelbio.generalConf.TitleFormatNBC;
 
 /** 可变剪接的检验 */
 public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
+	private static Logger logger = Logger.getLogger(ExonSplicingTest.class);
+	
 	ExonCluster exonCluster;
 	TophatJunction tophatJunction;
 	
@@ -100,6 +103,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		String chrID = gffDetailGene.getParentName();
 		//一般 setCondition 里面只有两项，也就是仅比较两个时期的可变剪接
 		ArrayList<String> lsCondition = ArrayOperate.getArrayListKey(mapCondition2Counts);
+		if (exonCluster.getParentGene().getName().contains("NM_004723")) {
+			logger.error("stop");
+		}
 		Set<ExonSplicingType> setexExonSplicingTypes = exonCluster.getExonSplicingTypeSet();
 		for (String condition : lsCondition) {
 			int[] counts = null;

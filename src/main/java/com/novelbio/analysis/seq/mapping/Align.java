@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.mapping;
 
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
+import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 
 
 /**

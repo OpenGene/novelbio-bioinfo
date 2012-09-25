@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import org.apache.xmlbeans.impl.xb.xsdschema.impl.ExplicitGroupImpl;
 
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
@@ -131,8 +131,8 @@ public class Exp2Location {
 		}
 		TxtReadandWrite txtTss = new TxtReadandWrite(txtOutTss, true);
 		TxtReadandWrite txtGeneBody = new TxtReadandWrite(txtOutGeneBody, true);
-		txtTss.ExcelWrite(lsOutTss, "\t", 1, 1);
-		txtGeneBody.ExcelWrite(lsOutGeneBody, "\t", 1, 1);
+		txtTss.ExcelWrite(lsOutTss);
+		txtGeneBody.ExcelWrite(lsOutGeneBody);
 		txtTss.close();
 		txtGeneBody.close();
 	}

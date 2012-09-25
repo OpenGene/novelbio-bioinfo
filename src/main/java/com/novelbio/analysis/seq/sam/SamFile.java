@@ -19,7 +19,7 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignRecord;
-import com.novelbio.analysis.seq.AlignSeqReader;
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
@@ -48,7 +48,7 @@ import net.sf.samtools.util.IOUtil;
  * @author zong0jie
  *
  */
-public class SamFile implements AlignSeqReader {
+public class SamFile implements AlignSeq {
 	public static void main(String[] args) {
 		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_HXW/20120705/aaa.sam");
 		samFile.setReferenceFileName("/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa");

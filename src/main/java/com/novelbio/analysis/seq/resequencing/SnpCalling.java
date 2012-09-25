@@ -2,10 +2,12 @@ package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
@@ -25,7 +27,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	ArrayList<String[]> lsSample2PileUpFiles = new ArrayList<String[]>();
 	
 	/** 用于多个样本的snp去冗余的，其中key表示该snp所在的起点信息，value就是该位点具体的snp情况 */
-	HashMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel;
+	TreeMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel = null;
 	
 	/** 用来过滤样本的 */
 	SnpFilter snpFilter = new SnpFilter();
@@ -38,7 +40,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	TxtReadandWrite txtSnpOut;
 	
 	/** 找到的snp与名字会装到这个里面 */
-	public void setMapSiteInfo2MapInfoSnpIndel(HashMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel) {
+	public void setMapSiteInfo2MapInfoSnpIndel(TreeMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel) {
 		this.mapSiteInfo2MapInfoSnpIndel = mapSiteInfo2MapInfoSnpIndel;
 	}
 
@@ -121,7 +123,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		txtSnpOut = new TxtReadandWrite(outPutFile, true);
 		TxtReadandWrite txtReadPileUp = new TxtReadandWrite(pileupFile, false);
 		setFilter(sampleName);
-		
+		int snpNum = 0;
 		for (String pileupLines : txtReadPileUp.readlines()) {
 			readLines ++;
 			readByte += pileupFile.length();
@@ -136,14 +138,20 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 				setRunInfo(snpFilterDetailInfo);
 				logger.info("readLines:" + readLines);
 			}
+			if (snpNum %5000 == 0) {
+				System.gc();
+				snpNum++;//为了防止snp数量连续好多循环都没增加，然后可能连续的调用gc
+			}
 			////////////////////////////////////////////////
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
 			mapInfoSnpIndel.setSamToolsPilup(pileupLines);
 			
 			ArrayList<SiteSnpIndelInfo> lsFilteredSnp = snpFilter.getFilterdSnp(mapInfoSnpIndel);
 			if (lsFilteredSnp.size() > 0) {
+				snpNum++;
 				addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
 				writeInFile(mapInfoSnpIndel, lsFilteredSnp);
+				mapInfoSnpIndel = null;
 			}
 		}
 

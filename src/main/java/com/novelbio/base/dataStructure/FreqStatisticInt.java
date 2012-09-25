@@ -6,9 +6,9 @@ import java.util.LinkedHashMap;
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.ibatis.migration.commands.NewCommand;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffCodPeak;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffDetailPeak;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodPeak;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailPeak;
+import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
 import com.novelbio.base.dataStructure.listOperate.ElementAbsDouble;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListAbsDouble;

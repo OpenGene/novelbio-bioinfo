@@ -14,7 +14,7 @@ import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.mapping.MapRsem;
 import com.novelbio.analysis.seq.mapping.MapTophat;
@@ -222,7 +222,7 @@ public class GuiRNASeqMapping extends JPanel {
 				ctrlRNAmap.setOutPathPrefix(out);
 				ctrlRNAmap.mapping();
 				if (rdbtnRsem.isSelected()) {
-					TxtReadandWrite txtWrite = new TxtReadandWrite(out + "ResultExp.txt", true);
+					TxtReadandWrite txtWrite = new TxtReadandWrite(out + "ResultExp.xls", true);
 					txtWrite.ExcelWrite(ctrlRNAmap.getLsExpRsem());
 				}
 			}

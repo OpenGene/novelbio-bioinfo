@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.nbcgui.GUI.GuiSnpCalling;
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.SnpDetailGet;
 import com.novelbio.analysis.seq.resequencing.SnpFilterDetailInfo;
 import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;

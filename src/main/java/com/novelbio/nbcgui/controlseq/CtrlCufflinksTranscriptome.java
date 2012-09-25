@@ -2,8 +2,8 @@ package com.novelbio.nbcgui.controlseq;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.CufflinksGTF;
 import com.novelbio.analysis.seq.rnaseq.GffHashMerge;

@@ -8,12 +8,13 @@ import org.apache.log4j.Logger;
 import org.apache.xmlbeans.impl.xb.xsdschema.impl.ExplicitGroupImpl;
 
 import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListDetailBin;
-import com.novelbio.analysis.seq.genomeNew.gffOperate.ListHashBin;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapInfo;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
@@ -38,7 +39,6 @@ public class DifLoc2DifLoc {
 	public static void main(String[] args) {
 		DifLoc2DifLoc difLoc2DifLoc = new DifLoc2DifLoc();
 		Species species = new Species(39947);
-		difLoc2DifLoc.setSpecies(species);
 		String bedMethy1 = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/mappingFile/2Nextend_sort.bed";
 		String bedMethy2 = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/mappingFile/3Nextend_sort.bed";
 		
@@ -56,7 +56,7 @@ public class DifLoc2DifLoc {
 	double min = 0.1;
 	/**找不到的信号值用什么来取代 */
 	double nullValue = 0;
-	GffHashGene gffHashGene = new GffHashGene();
+	GffChrAbs gffChrAbs;
 
 	public static int typeTss = 2;
 	public static int typeGeneAll = 4;
@@ -76,9 +76,8 @@ public class DifLoc2DifLoc {
 	
 	ArrayList<String> lsGeneID;
 	
-	public void setSpecies(Species species) {
-		this.species = species;
-		gffHashGene = new GffHashGene(species.getGffFile()[0], species.getGffFile()[1]);
+	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
 	}
 	
 	public void setTssRegion(int[] tssRegion) {
@@ -100,7 +99,7 @@ public class DifLoc2DifLoc {
 		this.lsGeneID = lsGeneID;
 	}
 	public void setGenomeWide() {
-		this.lsGeneID = gffHashGene.getLsNameNoRedundent();
+		this.lsGeneID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
 	}
 	public void compare(String outFile, String prefix1, String prefix2) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
@@ -319,7 +318,7 @@ public class DifLoc2DifLoc {
 	 * @param txtOutInfo
 	 */
 	public void compareDifAllGene(int type, String prefix1, String prefix2,  String txtOutInfo) {
-		ArrayList<String> lsGeneID = gffHashGene.getLsNameNoRedundent();
+		ArrayList<String> lsGeneID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
 		compareDifInfoGene(type, prefix1, prefix2, lsGeneID, txtOutInfo);
 	}
 	/**
@@ -351,7 +350,7 @@ public class DifLoc2DifLoc {
 			}
 		}
 		TxtReadandWrite txtInfo = new TxtReadandWrite(txtOutInfo, true);
-		txtInfo.ExcelWrite(lsOutGeneInfo, "\t", 1, 1);
+		txtInfo.ExcelWrite(lsOutGeneInfo);
 		txtInfo.close();
 	}
 	
@@ -362,7 +361,7 @@ public class DifLoc2DifLoc {
 	 * @return 所有包含该基因tss区域甲基化均值
 	 */
 	private Double getGeneFullLengthPeakSicerDifScore(String prefix, String geneID) {
-		GffGeneIsoInfo gffGeneIsoInfo = gffHashGene.searchISO(geneID);
+		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
 		if (gffGeneIsoInfo == null) {
 			return null;
 		}
@@ -395,7 +394,7 @@ public class DifLoc2DifLoc {
 	 * @return 所有包含该基因tss区域甲基化均值
 	 */
 	private Double getGeneBodyPeakSicerDifScore(String prefix, String geneID) {
-		GffGeneIsoInfo gffGeneIsoInfo = gffHashGene.searchISO(geneID);
+		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
 		if (gffGeneIsoInfo == null) {
 			return null;
 		}
@@ -425,7 +424,7 @@ public class DifLoc2DifLoc {
 	 * @return 所有包含该基因tss区域甲基化均值
 	 */
 	private Double getGeneTssPeakSicerDifScore(String prefix, String geneID) {
-		GffGeneIsoInfo gffGeneIsoInfo = gffHashGene.searchISO(geneID);
+		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
 		if (gffGeneIsoInfo == null) {
 			return null;
 		}
@@ -455,7 +454,7 @@ public class DifLoc2DifLoc {
 	 * @return 所有包含该基因tss区域甲基化均值
 	 */
 	private Double getGeneBodyMapRatio(String prefix, String geneID) {
-		GffGeneIsoInfo gffGeneIsoInfo = gffHashGene.searchISO(geneID);
+		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
 		if (gffGeneIsoInfo == null) {
 			return null;
 		}
@@ -479,7 +478,7 @@ public class DifLoc2DifLoc {
 	 * @return 所有包含该基因tss区域甲基化均值
 	 */
 	private Double getGeneTssMapRatio(String prefix, String geneID) {
-		GffGeneIsoInfo gffGeneIsoInfo = gffHashGene.searchISO(geneID);
+		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
 		if (gffGeneIsoInfo == null) {
 			return null;
 		}
@@ -503,7 +502,7 @@ public class DifLoc2DifLoc {
 	 * @return 所有包含该基因tss区域甲基化均值
 	 */
 	private Double getGeneFullLengthMapRatio(String prefix, String geneID) {
-		GffGeneIsoInfo gffGeneIsoInfo = gffHashGene.searchISO(geneID);
+		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
 		if (gffGeneIsoInfo == null) {
 			return null;
 		}

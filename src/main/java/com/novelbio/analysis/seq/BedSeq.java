@@ -31,7 +31,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 6: mappingNum. 1 means unique mapping
  * @author zong0jie
  */
-public class BedSeq extends SeqComb implements AlignSeqReader{
+public class BedSeq extends SeqComb implements AlignSeq{
 	private static Logger logger = Logger.getLogger(BedSeq.class);  
 	/**
 	 * mappingNum. 1 means unique mapping
@@ -238,7 +238,7 @@ public class BedSeq extends SeqComb implements AlignSeqReader{
 	 * 指定bed文件，按照chrID和坐标进行排序
 	 * @param sortBedFile 排序后的文件全名
 	 */
-	public BedSeq sortBedFile(String sortBedFile)  {
+	public BedSeq sort(String sortBedFile)  {
 		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
 		return sortBedFile(1, sortBedFile, 2,3);
 	}
@@ -247,7 +247,7 @@ public class BedSeq extends SeqComb implements AlignSeqReader{
 	 * @param sortBedFile 排序后的文件全名<br>
 	 * 返回名字为FileOperate.changeFileSuffix(getFileName(), "_sorted", null);
 	 */
-	public BedSeq sortBedFile()  {
+	public BedSeq sort()  {
 		String outFile = null;
 		if (!compressInType.equals(TxtReadandWrite.TXT)) {
 			if (getFileName().endsWith("gz") || getFileName().endsWith("bz") || getFileName().endsWith("zip")) {
@@ -259,7 +259,7 @@ public class BedSeq extends SeqComb implements AlignSeqReader{
 			outFile = FileOperate.changeFileSuffix(getFileName(), "_sorted", null);
 		}
 		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
-		return sortBedFile(outFile);
+		return sort(outFile);
 	}
 	/**
 	 * 专门给徐龙勇的GSM307618过滤的文件，
@@ -602,7 +602,7 @@ public class BedSeq extends SeqComb implements AlignSeqReader{
 	public HashMap<String, Integer> getDGEnum(boolean sort, boolean allTags) {
 		BedSeq bedseq = null;
 		if (sort) {
-			bedseq = sortBedFile(FileOperate.changeFileSuffix(getFileName(), "_DGESort", null));
+			bedseq = sort(FileOperate.changeFileSuffix(getFileName(), "_DGESort", null));
 		}
 		else {
 			bedseq = this;
@@ -622,8 +622,7 @@ public class BedSeq extends SeqComb implements AlignSeqReader{
 	 * bed文件必须排序
 	 * @throws Exception
 	 */
-	private HashMap<String, Integer> getGeneExpress(boolean Alltags) throws Exception
-	{
+	private HashMap<String, Integer> getGeneExpress(boolean Alltags) throws Exception {
 		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
 		BufferedReader reader = txtSeqFile.readfile();
 		String content = "";

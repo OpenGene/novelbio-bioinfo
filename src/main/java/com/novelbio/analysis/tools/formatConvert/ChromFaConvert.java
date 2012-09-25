@@ -2,13 +2,8 @@ package com.novelbio.analysis.tools.formatConvert;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.RandomAccessFile;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
 
-import com.novelbio.analysis.seq.genome.getChrSequence.ChrStringHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 

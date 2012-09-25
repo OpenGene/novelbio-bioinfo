@@ -68,6 +68,8 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiSnpCalling guiSnpCalling;
 	private GuiTranscriptomeCufflinks guiTranscriptomeCufflinks;
 	private GuiRNAautoSplice guiRNAautoSplice;
+	private GuiDGEgetvalue guiDGEgetvalue;
+	
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -138,6 +140,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiSamToBed = new GuiSamToBed();
 				jTabbedPane1.addTab("SamToBed", null, guiSamToBed, null);
+				
+				guiDGEgetvalue = new GuiDGEgetvalue();
+				jTabbedPane1.addTab("DGEgetValue", null, guiDGEgetvalue, null);
 				
 				guiRNASeqRsem = new GuiRNASeqMapping();
 				jTabbedPane1.addTab("RNAseqMap", guiRNASeqRsem);

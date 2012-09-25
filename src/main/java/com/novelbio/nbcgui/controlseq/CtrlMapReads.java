@@ -1,8 +1,8 @@
 package com.novelbio.nbcgui.controlseq;
 
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsAbs;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.MapReadsAbs.MapReadsProcessInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs.MapReadsProcessInfo;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunGetInfo;

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genomeNew.mappingOperate.Alignment;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 
 /**
  * compare的比较取决于父节点的方向，如果父节点的方向为null，则按照绝对值排序，如果是cis，那么就按cis的排序，如果为trans就按照trans的方式排序
@@ -474,7 +474,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 		Integer o1startAbs = getStartAbs(); Integer o1endAbs = getEndAbs();
 		Integer o2startAbs = o.getStartAbs(); Integer o2endAbs = o.getEndAbs();
 		
-		if (listAbs.isCis5to3() == null) {
+		if (listAbs == null || listAbs.isCis5to3() == null) {
 			int result = o1startAbs.compareTo(o2startAbs);
 			if (result == 0) {
 				return o1endAbs.compareTo(o2endAbs);

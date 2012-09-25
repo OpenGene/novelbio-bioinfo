@@ -158,7 +158,7 @@ public class ChrStringHash extends SeqHashAbs{
 			return null;
 		}
 		if (endlocation - startlocation > 200000) {
-			logger.error(chrID + " " + startlocation + " " + endlocation + " 最多提取20000bp");
+			logger.error(chrID + " " + startlocation + " " + endlocation + " 最多提取200000bp");
 			return null;
 		}
 

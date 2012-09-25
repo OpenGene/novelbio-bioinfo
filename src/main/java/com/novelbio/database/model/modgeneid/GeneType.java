@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.springframework.context.expression.MapAccessor;
 
-import com.novelbio.analysis.seq.genomeNew.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 
 public enum GeneType {
 	 mRNA, miRNA, PSEU_TRANSCRIPT, mRNA_TE,

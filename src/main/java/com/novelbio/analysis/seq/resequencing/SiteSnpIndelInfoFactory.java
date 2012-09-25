@@ -2,7 +2,7 @@ package com.novelbio.analysis.seq.resequencing;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genomeNew.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 
 public class SiteSnpIndelInfoFactory {
 	private static Logger logger = Logger.getLogger(SiteSnpIndelInfoFactory.class);
