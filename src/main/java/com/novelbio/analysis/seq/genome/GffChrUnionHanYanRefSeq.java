@@ -14,6 +14,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -34,15 +35,8 @@ public class GffChrUnionHanYanRefSeq extends GffChrHanYan{
 	 * @return
 	 * double[] 0: atg位点,绝对位点，1-结束 从tss到tes的每个位点的reads数目
 	 */
-	protected double[] getReadsInfo(String geneID, GffGeneIsoInfo gffGeneIsoSearch) {
-		int geneLength = 0;
-		try {
-			geneLength = seqFastaHash.getHashChrLength().get(geneID.toLowerCase()).intValue();
-		} catch (Exception e) {
-			return null;
-		}
-		
-		double[] iso = mapReads.getRengeInfo(1, geneID.toLowerCase(), 1, geneLength, 0);
+	protected double[] getReadsInfo(String geneID, GffGeneIsoInfo gffGeneIsoSearch) {		
+		double[] iso = mapReads.getRengeInfo(1, geneID.toLowerCase(), 0, 0, 0);
 		if (iso == null) {
 			return null;
 		}
@@ -56,17 +50,15 @@ public class GffChrUnionHanYanRefSeq extends GffChrHanYan{
 	}
 	/////////////////////////////////////   韩燕的项目   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public void loadMap(String mapFile, int invNum, int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping) {
-		mapReads = new MapReads(invNum, chrFilePath, mapFile, "");
-		mapReads = new MapReads();
-		
-		mapReads.setstartRegion(startRegion);
-		try {
-			if (tagLength > 20) {
-				mapReads.setTagLength(tagLength);
-			}
-			readsNum = mapReads.ReadMapFile(uniqReads, startCod, colUnique, uniqMapping, cis5To3);
-		} catch (Exception e) {	e.printStackTrace();	}
+	public void loadMap(String mapFile, int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping) {
+		mapReads = new MapReadsHanyanChrom();
+		mapReads.setBedSeq(mapFile);
+		mapReads.setInvNum(1);
+		mapReads.setFilter(uniqReads, startCod, uniqMapping, cis5To3);
+		if (tagLength > 20) {
+			mapReads.setTagLength(tagLength);
+		}
+		mapReads.run();
 	}
 
 }

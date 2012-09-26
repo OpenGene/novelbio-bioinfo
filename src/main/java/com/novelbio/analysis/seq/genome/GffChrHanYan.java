@@ -31,35 +31,79 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	GffChrAbs gffChrAbs;
 	MapReads mapReads;
 	
+	int atgAlign = 0;
+	
+	int atgUp = 0;
+	int atgDown = 0;
+	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
 	public void setNormType(int normalType) {
 		mapReads.setNormalType(normalType);
 	}
+	public void setAtgUp(int atgUp) {
+		this.atgUp = atgUp;
+	}
+	public void setAtgDown(int atgDown) {
+		this.atgDown = atgDown;
+	}
 	/**
 	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。
 	 * @param mapFile mapping的结果文件，一般为bed格式
-	 * @param invNum 每隔多少位计数
 	 * @param tagLength 设定双端readsTag拼起来后长度的估算值，大于20才会进行设置。目前solexa双端送样长度大概是200-400bp，不用太精确 ,默认是400
 	 * @param uniqReads 同一位点的重复是否仅保留一个
+	 * @param startCod 开头保留几位，韩燕是3位
 	 * @param cis5To3 是否挑选某一个方向的reads
 	 * @param uniqMapping 是否挑选唯一比对的 
 	 */
-	public abstract void loadMap(String mapFile,int invNum,int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping);
+	public abstract void loadMap(String mapFile,int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping);
 	
-	
-	/////////////////////////////////////   韩燕的项目   //////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public void drawHeatMap(String resultFilePath, String prefix, int AtgUp, int AtgDown) throws Exception {
+	public void drawAtgPlot(String resultFilePath, String prefix) {
 		resultFilePath = FileOperate.addSep(resultFilePath);
 		ArrayList<String> lsgenID = gffChrAbs.getGffHashGene().getLsNameAll();
 		ArrayList<String> lsgeneIDresult = new ArrayList<String>();
 		for (String string : lsgenID) {
 			lsgeneIDresult.add(string.split("/")[0]);
 		}
-		ArrayList<SeqInfo> lsResult = getATGDensity(lsgeneIDresult, AtgUp,  AtgDown, -1);
-		if (AtgUp <= 0) {
-			AtgUp = atgAlign;
+		ArrayList<SeqInfo> lsResult = getATGDensity(lsgeneIDresult, -1);
+		if (atgUp <= 0) {
+			atgUp = atgAlign;
+		}
+		//带基因名字
+		String[][] GeneEndDensity = new String[lsResult.size()][lsResult.get(0).atg.length+1];
+		for (int i = 0; i < GeneEndDensity.length; i++) {
+			for (int j = 1; j < GeneEndDensity[0].length; j++) {
+				GeneEndDensity[i][j] = lsResult.get(i).atg[j-1] + "";
+			}
+		}
+		for (int i = 0; i < GeneEndDensity.length; i++) {
+			GeneEndDensity[i][0] = lsResult.get(i).seqName;
+		}
+		//不带基因名字
+		double[][] GeneEndDensity2 = new double[lsResult.size()][lsResult.get(0).atg.length];
+		for (int i = 0; i < GeneEndDensity2.length; i++) {
+			for (int j = 0; j < GeneEndDensity2[0].length; j++) {
+				GeneEndDensity2[i][j] = lsResult.get(i).atg[j];
+			}
+		}
+		
+		ArrayList<double[]> lsAxisX2AxisY = new ArrayList<double[]>();
+		for (SeqInfo seqInfo : lsResult) {
+			
+		}
+	}
+	/////////////////////////////////////   韩燕的项目   //////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public void drawHeatMap(String resultFilePath, String prefix) throws Exception {
+		resultFilePath = FileOperate.addSep(resultFilePath);
+		ArrayList<String> lsgenID = gffChrAbs.getGffHashGene().getLsNameAll();
+		ArrayList<String> lsgeneIDresult = new ArrayList<String>();
+		for (String string : lsgenID) {
+			lsgeneIDresult.add(string.split("/")[0]);
+		}
+		ArrayList<SeqInfo> lsResult = getATGDensity(lsgeneIDresult, -1);
+		if (atgUp <= 0) {
+			atgUp = atgAlign;
 		}
 		
 		
@@ -81,7 +125,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		}
 		System.out.println("进行分析的基因数目：" + GeneEndDensity.length);
 		HeatChart map = new HeatChart(GeneEndDensity2,0,200);
-		map.setTitle("ATGsit: "+ (AtgUp/3 +1) );
+		map.setTitle("ATGsit: "+ (atgUp/3 +1) );
 		map.setXAxisLabel("X Axis");
 		map.setYAxisLabel("Y Axis");
 		map.setXValues(-20, 1);
@@ -111,14 +155,13 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		txtReadandWrite.setParameter(resultFilePath+prefix+"Atgmatrix.txt", true, false);
 		txtReadandWrite.ExcelWrite(GeneEndDensity);
 	}
-	
-	int atgAlign = 0;
-	int maxUTR5 = 0;
 	/**
 	 * @param lsGeneID
+	 * @param AtgUp 选取ATG上游多少bp，不包括ATG位点 -1为全选 最后对齐位点的上游多少bp，不包括对起位点
+	 * @param AtgDown 选取ATG下游多少bp，不包括ATG位点 -1为全选 最后对齐位点的上游多少bp，不包括对起位点
 	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0
 	 */
-	private ArrayList<SeqInfo> getATGDensity(ArrayList<String> lsGeneID,int AtgUp, int AtgDown, int filled) {
+	private ArrayList<SeqInfo> getATGDensity(ArrayList<String> lsGeneID, int filled) {
 		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();;
 		ArrayList<SeqInfo> lsAtg = new ArrayList<SeqInfo>();
 		for (String string : lsGeneID) {
@@ -136,7 +179,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 				lsAtg.add(seqInfo);
 			}
 		}
-		return setMatrix(lsAtg, AtgUp, AtgDown, filled);
+		return setMatrix(lsAtg, filled);
 	}
 	/**
 	 * 仅仅针对韩燕做的分析，按照5UTR的长度进行排序，从小到大排列，然后
@@ -145,7 +188,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	 * @param AtgDown 选取ATG下游多少bp,不包括ATG位点。 -1为全选 选取对齐位点的下游多少bp，不包括对齐位点
 	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0
 	 */
-	protected ArrayList<SeqInfo> setMatrix(ArrayList<SeqInfo> lsAtg, int AtgUp, int AtgDown, int filled) {
+	protected ArrayList<SeqInfo> setMatrix(ArrayList<SeqInfo> lsAtg, int filled) {
 		int maxGeneBody = 0;
 		//获得最长的UTR长度
 		atgAlign = getAtgAlign(lsAtg);//要用atg做alignment的，内部还进行了排序
@@ -158,11 +201,11 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		ArrayList<SeqInfo> lsdouble = new ArrayList<SeqInfo>();
 		for (SeqInfo ds : lsAtg) {
 			//此时的SeqInfo第一位就是实际的第一位，不是atgsite了
-			SeqInfo tmpResult = setDouble(ds, atgAlign, maxGeneBody, AtgUp, AtgDown, filled);
+			SeqInfo tmpResult = setDouble(ds, atgAlign, maxGeneBody, filled);
 			lsdouble.add(tmpResult);
 		}
 		//////////////////////
-		combineLoc(lsdouble, AtgUp,atgAlign);
+		combineLoc(lsdouble,atgAlign);
 		//////////////////////
 		return lsdouble;
 	}
@@ -171,17 +214,17 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	 * @param AtgUp 选取ATG上游多少bp，不包括ATG位点 -1为全选 最后对齐位点的上游多少bo，不包括对起位点
 	 * @param AlignATGSite 最长ATG的位点的绝对位置，需要对齐位点前面的长度
 	 */
-	private  void combineLoc(ArrayList<SeqInfo> lsdouble, int AtgUp, int AlignATGSite) {
+	private  void combineLoc(ArrayList<SeqInfo> lsdouble, int AlignATGSite) {
 		for (SeqInfo seqInfo : lsdouble) {
-			if (AtgUp > 0) {
-				seqInfo.atg = MathComput.mySpline(seqInfo.atg, 3, AtgUp%3 + 1, 3);
+			if (atgUp > 0) {
+				seqInfo.atg = MathComput.mySpline(seqInfo.atg, 3, atgUp%3 + 1, 3);
 			} else {
 				seqInfo.atg = MathComput.mySpline(seqInfo.atg, 3, (AlignATGSite-1)%3, 3);
 			}
 		}
 	}
 	/**
-	 * 获得最大atg位点的值
+	 * 获得全基因祖上，atg距离UTR5起点的最远距离
 	 * @param lsAtg value，总共序列的长度，第一位为atg绝对位点
 	 * @return
 	 */
@@ -202,26 +245,25 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		return (int) lsAtg.get(0).atg[0];
 	}
 	
-	
 	/**
 	 * 将输入的数组重排列
 	 * @param input 输入数组，第一位为atg绝对位点,也就是需要对齐的位点
 	 * @param alignATGSite 最长ATG的位点的绝对位置，需要对齐位点前面的长度
 	 * @param ATGbody Atg下游总共多长，不包括Atg位点,需要对齐位点的下游有多长
 	 * @param atgUp 选取ATG上游多少bp，不包括ATG位点 -1为全选 最后对齐位点的上游多少bo，不包括对起位点
-	 * @param alignDown 选取ATG下游多少bp,不包括ATG位点。 -1为全选 选取对齐位点的下游多少bp，不包括对齐位点
+	 * @param atgDown 选取ATG下游多少bp,不包括ATG位点。 -1为全选 选取对齐位点的下游多少bp，不包括对齐位点
 	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0 空位用什么填充
 	 * @return
 	 */
-	private static SeqInfo setDouble(SeqInfo input, int alignATGSite, int ATGbody ,int atgUp, int alignDown,int filled ) {
+	private SeqInfo setDouble(SeqInfo input, int alignATGSite, int ATGbody, int filled ) {
 		int atgOld = (int)input.atg[0];
 		int bias = alignATGSite - atgOld;
 		double[] tmpresult = null;
-		if (alignDown > 0) {
+		if (atgDown > 0) {
 			if (atgUp > 0) {
-				tmpresult = new double[atgUp+alignDown+1];
+				tmpresult = new double[atgUp+atgDown+1];
 			} else { 
-				tmpresult = new double[alignATGSite+alignDown];
+				tmpresult = new double[alignATGSite+atgDown];
 			}
 		} else {
 			if (atgUp > 0) {
@@ -276,19 +318,19 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	 * @param alignATGSite 最长ATG的位点的绝对位置，需要对齐位点前面的长度
 	 * @param ATGbody Atg下游总共多长，不包括Atg位点,需要对齐位点的下游有多长
 	 * @param atgUp 选取ATG上游多少bp，不包括ATG位点 -1为全选 最后对齐位点的上游多少bo，不包括对起位点
-	 * @param alignDown 选取ATG下游多少bp,不包括ATG位点。 -1为全选 选取对齐位点的下游多少bp，不包括对齐位点
+	 * @param atgDown 选取ATG下游多少bp,不包括ATG位点。 -1为全选 选取对齐位点的下游多少bp，不包括对齐位点
 	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0 空位用什么填充
 	 * @return
 	 */
-	public static double[] setDouble(double[] atg, int alignATGSite, int ATGbody ,int atgUp, int alignDown,int filled ) {
+	public double[] setDouble(double[] atg, int alignATGSite, int ATGbody ,int filled ) {
 		int atgOld = (int)atg[0];
 		int bias = alignATGSite - atgOld;
 		double[] tmpresult = null;
-		if (alignDown > 0) {
+		if (atgDown > 0) {
 			if (atgUp > 0) 
-				tmpresult = new double[atgUp+alignDown+1];
+				tmpresult = new double[atgUp+atgDown+1];
 			else 
-				tmpresult = new double[alignATGSite+alignDown];
+				tmpresult = new double[alignATGSite+atgDown];
 		}
 		else {
 			if (atgUp > 0) 

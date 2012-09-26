@@ -29,26 +29,26 @@ public class MapReadsHanyanChrom extends MapReads{
 	 * @return
 	 * 本位点的信息，用于下一次判断是否是同一位点
 	 */
-	protected int[] addLoc(AlignRecord bedRecord ,boolean uniqReads,int[] tmpOld,int startCod, Boolean cis5to3, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
+	protected int[] addLoc(AlignRecord alignRecord ,boolean uniqReads,int[] tmpOld,int startCod, Boolean cis5to3, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
 		//需要根据方向来筛选reads
 		if (cis5to3 != null) {
-			GffCodGene gffCodGene = gffHashGene.searchLocation(bedRecord.getRefID(), bedRecord.getStartAbs());
+			GffCodGene gffCodGene = gffHashGene.searchLocation(alignRecord.getRefID(), alignRecord.getStartAbs());
 			//如果位点一在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
-			if (gffCodGene.isInsideLoc() && cis5to3 == (gffCodGene.getGffDetailThis().isCis5to3() == bedRecord.isCis5to3() ) ) {
-				return super.addLoc(bedRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
+			if (gffCodGene.isInsideLoc() && cis5to3 == (gffCodGene.getGffDetailThis().isCis5to3() == alignRecord.isCis5to3() ) ) {
+				return super.addLoc(alignRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
 			}
-			GffCodGene gffCodGene2 = gffHashGene.searchLocation(bedRecord.getRefID(), bedRecord.getEndAbs());
+			GffCodGene gffCodGene2 = gffHashGene.searchLocation(alignRecord.getRefID(), alignRecord.getEndAbs());
 			//如果位点二在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
-			if (gffCodGene2.isInsideLoc() && cis5to3 == (gffCodGene2.getGffDetailThis().isCis5to3() == bedRecord.isCis5to3() ) ) {
-				return super.addLoc(bedRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
+			if (gffCodGene2.isInsideLoc() && cis5to3 == (gffCodGene2.getGffDetailThis().isCis5to3() == alignRecord.isCis5to3() ) ) {
+				return super.addLoc(alignRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
 			}
 			
 			if (!gffCodGene.isInsideLoc() && !gffCodGene2.isInsideLoc()) {
-				return super.addLoc(bedRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
+				return super.addLoc(alignRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
 			}
 			return tmpOld;
 		} else {
-			return super.addLoc(bedRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
+			return super.addLoc(alignRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
 		}
 	}
 	

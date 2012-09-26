@@ -18,7 +18,6 @@ import com.novelbio.base.dataStructure.ArrayOperate;
  */
 public class GffChrHanYanChrom extends GffChrHanYan{
 	private static Logger logger = Logger.getLogger(GffChrHanYanChrom.class);
-
 	
 	/**
 	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。
@@ -29,10 +28,10 @@ public class GffChrHanYanChrom extends GffChrHanYan{
 	 * @param cis5To3 是否挑选某一个方向的reads
 	 * @param uniqMapping 是否挑选唯一比对的 
 	 */
-	public void loadMap(String mapFile,int invNum,int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping) {
+	public void loadMap(String mapFile,int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping) {
 		mapReads=new MapReadsHanyanChrom();
 		mapReads.setBedSeq(mapFile);
-		mapReads.setInvNum(invNum);
+		mapReads.setInvNum(1);
 		mapReads.setMapChrID2Len(gffChrAbs.getSpecies().getMapChromInfo());
 		mapReads.setFilter(uniqReads, startCod, uniqMapping, cis5To3);
 		if (tagLength > 20) {
