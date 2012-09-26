@@ -87,7 +87,10 @@ public class JScrollPaneData extends JScrollPane{
 		
 		defaultTableModel.addRow(info);
 	}
-	
+	/**
+	 * 没有就返回空的list
+	 * @return
+	 */
 	public ArrayList<String[]> getLsDataInfo() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (int i = 0; i < defaultTableModel.getRowCount(); i++) {

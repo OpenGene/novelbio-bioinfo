@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -20,7 +21,13 @@ public class JComboBoxData<T> extends JComboBox{
 	/**
 	 * 保存key和value的map
 	 */
-	HashMap<String, T> hashInfo = null;
+	HashMap<String, T> mapString2Value = null;
+	/**
+	 * 保存key和value的map
+	 */
+	HashMap<T, String> mapValue2String = null;
+	/** 安顺序排列的key值 */
+	ArrayList<String> lsInfo = new ArrayList<String>();
 	/**
 	 * null不排序
 	 * true：正序
@@ -28,25 +35,30 @@ public class JComboBoxData<T> extends JComboBox{
 	 */
 	Boolean resultSort = null;
 	/**
+	 * <b>注意要在setMapItem方法之前设定</b>
 	 * null不排序
 	 * true：正序
 	 * false：倒序
 	 */
-	public void setResultSort(Boolean resultSort) {
+	public void sortValue(Boolean resultSort) {
 		this.resultSort = resultSort;
 	}
 	/**
 	 * 装载hash表
 	 * @param hashInfo
 	 */
-	public void setMapItem(HashMap<String, T> hashInfo) {
-		this.hashInfo = hashInfo;
+	public void setMapItem(HashMap<String, T> mapString2Value) {
+		this.mapString2Value = mapString2Value;
+		mapValue2String = new HashMap<T, String>();
+		for (Entry<String, T> entry : mapString2Value.entrySet()) {
+			mapValue2String.put(entry.getValue(), entry.getKey());
+		}
 		setCombBox();
 	}
 	
 	private void setCombBox() {
-		ArrayList<String> lsInfo = new ArrayList<String>();
-		for (String string : hashInfo.keySet()) {
+		lsInfo = new ArrayList<String>();
+		for (String string : mapString2Value.keySet()) {
 			if (string != null) {
 				lsInfo.add(string);
 			}
@@ -81,12 +93,21 @@ public class JComboBoxData<T> extends JComboBox{
 			}
 		}
 	}
-	
+	/** 设定展示的值 */
+	public void setSelectVaule(String key) {
+		int index = lsInfo.indexOf(key);
+		setSelectedIndex(index);
+	}
+	/** 设定展示的值 */
+	public void setSelectVaule(T key) {
+		String keyString = mapValue2String.get(key);
+		setSelectVaule(keyString);
+	}
 	public T getSelectedValue() {
 		String key = (String) getSelectedItem();
-		if (hashInfo == null || hashInfo.get(key) == null) {
+		if (mapString2Value == null || mapString2Value.get(key) == null) {
 			return null;
 		}
-		else return hashInfo.get(key);
+		else return mapString2Value.get(key);
 	}
 }

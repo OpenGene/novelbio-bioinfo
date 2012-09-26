@@ -7,6 +7,9 @@ import java.util.LinkedHashMap;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrSeq;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
@@ -205,18 +208,15 @@ public class SpeciesFile {
 		if (!FileOperate.isFileExist(indexRefseqThis)) {
 			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefseqFile(), mapSoftware2RefseqIndexPath);
 		
-			String indexNew = addIndex(indexRefseq, softMapping, indexRefseqThis);
-			if (indexRefseq.equals(indexNew)) {
-				indexRefseq = indexNew;
-				update();
-			}
+			indexRefseq = addIndex(indexRefseq, softMapping, indexRefseqThis);
+			update();
 		}
 		return indexRefseqThis;
 	}
 	private String addIndex(String indexOld, SoftWare softMapping, String indexThis) {
 		String addIndex = softMapping.toString() + SepSign.SEP_INFO + indexThis;
-		if (!indexOld.contains(addIndex)) {
-			if (indexOld.trim().equals("")) {
+		if (indexOld == null ||  !indexOld.contains(addIndex)) {
+			if (indexOld == null || indexOld.trim().equals("")) {
 				indexOld = addIndex;
 			}
 			else {
@@ -311,6 +311,30 @@ public class SpeciesFile {
 	}
 	public String getRefseqNCfile() {
 		return refseqNCfile;
+	}
+	/** 获取仅含有最长转录本的refseq文件，是核酸序列，没有就返回null */
+	public String getRefseqLongestIsoNrFile() {
+		String chromFaPath = getChromFaPath();
+		String refseqLongestIsoFile = FileOperate.getParentPathName(chromFaPath) + "refseqLongestIso/refseqLongestIsoNr.fa";
+		if (!FileOperate.isFileExistAndBigThanSize(refseqLongestIsoFile,10)) {
+			FileOperate.createFolders(FileOperate.getParentPathName(refseqLongestIsoFile));
+			try {
+				Species species = new Species(taxID);
+				species.setVersion(version);
+				GffChrSeq gffChrSeq = new GffChrSeq();
+				gffChrSeq.setSpecies(species);
+				gffChrSeq.setGeneStructure(GeneStructure.ALLLENGTH);
+				gffChrSeq.setGetIntron(false);
+				gffChrSeq.setGetAAseq(false);
+				gffChrSeq.setGetAllIso(false);
+				gffChrSeq.setGetSeqIsoGenomWide();
+				gffChrSeq.setOutPutFile(refseqLongestIsoFile);
+				gffChrSeq.run();
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		return refseqLongestIsoFile;
 	}
 	public String getRfamFile() {
 		String chromFaPath = getChromFaPath();

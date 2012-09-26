@@ -1,24 +1,10 @@
 package com.novelbio.analysis.seq.genome.mappingOperate;
 
-
-import java.io.BufferedReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
-
-import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignRecord;
-import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.fasta.ChrStringHash;
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.MathComput;
 
 /**
  * 根据reads是否与基因的方向相一致而进行过滤工作，这个是专门针对韩燕的项目做的分析，
@@ -61,8 +47,7 @@ public class MapReadsHanyanChrom extends MapReads{
 				return super.addLoc(bedRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
 			}
 			return tmpOld;
-		}
-		else {
+		} else {
 			return super.addLoc(bedRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
 		}
 	}

@@ -1,4 +1,4 @@
-package com.novelbio.test.analysis.seq.genomeNew.getChrSequence;
+package com.novelbio.test.analysis.seq.genome.getChrSequence;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqfastaStatisticsCDS;

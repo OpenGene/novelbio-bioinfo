@@ -479,6 +479,7 @@ public class GffDetailGene extends ListDetailAbs {
 				}
 				
 			}
+			//没找到最接近的iso，就新建一个list把这个iso加进去
 			if (!flagGetNexIso) {
 				ArrayList<GffGeneIsoInfo> lsIsoNew = new ArrayList<GffGeneIsoInfo>();
 				lsIsoNew.add(gffGeneIsoInfo);

@@ -42,7 +42,6 @@ public class GffChrHanYanChrom extends GffChrHanYan{
 	}
 
 //////////////////////////////////////////////////参数设定/////////////////////////////////////////////////////////
-	@Override
 	protected double[] getReadsInfo(String geneID, GffGeneIsoInfo gffGeneIsoInfo) {
 		double[] iso = mapReads.getRegionInfo(gffGeneIsoInfo.getParentGffDetailGene().getParentName(), gffGeneIsoInfo);
 		if (iso == null) {

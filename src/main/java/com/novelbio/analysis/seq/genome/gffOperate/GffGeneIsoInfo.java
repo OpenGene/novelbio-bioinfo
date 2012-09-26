@@ -1035,7 +1035,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3,  ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos) {
 		String chrID = lsGffGeneIsoInfos.get(0).getChrID();
 		ArrayList<ExonCluster> lsResult = new ArrayList<ExonCluster>();
-		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(cis5To3, lsGffGeneIsoInfos);
+		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(cis5To3, lsGffGeneIsoInfos, false);
 		ExonCluster exonClusterBefore = null;
 		for (int[] exonBound : lsExonBound) {
 			ExonCluster exonCluster = new ExonCluster(chrID, exonBound[0], exonBound[1]);
@@ -1056,30 +1056,30 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 				for (int i = 0; i < gffGeneIsoInfo.size(); i++) {
 					ExonInfo exon = gffGeneIsoInfo.get(i);
 					if (cis5To3) {
-						if (exon.getEndCis() < exonBound[0]) {
+						if (exon.getEndAbs() < exonBound[0]) {
 							junc = true;
 							beforeExonNum = i;
 							continue;
 						}
-						else if (exon.getStartCis() >= exonBound[0] && exon.getEndCis() <= exonBound[1]) {
+						else if (exon.getStartAbs() >= exonBound[0] && exon.getEndAbs() <= exonBound[1]) {
 							lsExonClusterTmp.add(exon);
 							junc = false;
 						}
-						else if (exon.getStartCis() > exonBound[1]) {
+						else if (exon.getStartAbs() > exonBound[1]) {
 							break;
 						}
 					}
 					else {
-						if (exon.getEndCis() > exonBound[0]) {
+						if (exon.getStartAbs() > exonBound[1]) {
 							junc = true;
 							beforeExonNum = i;
 							continue;
 						}
-						else if (exon.getStartCis() <= exonBound[0] && exon.getEndCis() >= exonBound[1]) {
+						else if (exon.getEndAbs() <= exonBound[1] && exon.getStartAbs() >= exonBound[0]) {
 							lsExonClusterTmp.add(exon);
 							junc = false;
 						}
-						else if (exon.getStartCis() < exonBound[1]) {
+						else if (exon.getEndAbs() < exonBound[0]) {
 							break;
 						}
 					}
@@ -1087,7 +1087,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 
 				exonCluster.addExonCluster(gffGeneIsoInfo, lsExonClusterTmp);
 				if (junc && beforeExonNum < gffGeneIsoInfo.size()-1) {
-					exonCluster.setIso2ExonNumSkipTheCluster(gffGeneIsoInfo.getName(), beforeExonNum);
+					exonCluster.setIso2ExonNumSkipTheCluster(gffGeneIsoInfo, beforeExonNum);
 				}
 			}
 			lsResult.add(exonCluster);

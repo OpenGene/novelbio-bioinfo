@@ -209,11 +209,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	private HashSet<String> getSkipExonLoc_From_IsoWithoutExon(GffDetailGene gffDetailGene) {
 		HashSet<String> setLocation = new HashSet<String>();
 		
-		HashMap<String, Integer> hashTmp = exonCluster.getMapIso2ExonIndexSkipTheCluster();
-		for (Entry<String, Integer> entry : hashTmp.entrySet()) {
-			String isoName = entry.getKey();
+		HashMap<GffGeneIsoInfo, Integer> hashTmp = exonCluster.getMapIso2ExonIndexSkipTheCluster();
+		for (Entry<GffGeneIsoInfo, Integer> entry : hashTmp.entrySet()) {
+			GffGeneIsoInfo gffGeneIsoInfo = entry.getKey();
 			int exonNum = entry.getValue();
-			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getIsolist(isoName);
 			if (exonNum >= gffGeneIsoInfo.size()-1) {
 				continue;
 			}

@@ -1,4 +1,4 @@
-package com.novelbio.test.analysis.seq.genomeNew.getChrSequence;
+package com.novelbio.test.analysis.seq.genome.getChrSequence;
 
 import junit.framework.TestCase;
 

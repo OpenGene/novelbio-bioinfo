@@ -34,6 +34,9 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
+	public void setNormType(int normalType) {
+		mapReads.setNormalType(normalType);
+	}
 	/**
 	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。
 	 * @param mapFile mapping的结果文件，一般为bed格式
@@ -47,14 +50,14 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	
 	
 	/////////////////////////////////////   韩燕的项目   //////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public void drawHeatMap(String resultFilePath, String prefix, int AtgUp, int AtgDown,int normalizedType) throws Exception {
+	public void drawHeatMap(String resultFilePath, String prefix, int AtgUp, int AtgDown) throws Exception {
 		resultFilePath = FileOperate.addSep(resultFilePath);
 		ArrayList<String> lsgenID = gffChrAbs.getGffHashGene().getLsNameAll();
 		ArrayList<String> lsgeneIDresult = new ArrayList<String>();
 		for (String string : lsgenID) {
 			lsgeneIDresult.add(string.split("/")[0]);
 		}
-		ArrayList<SeqInfo> lsResult = getATGDensity(lsgeneIDresult, AtgUp,  AtgDown, -1, normalizedType);
+		ArrayList<SeqInfo> lsResult = getATGDensity(lsgeneIDresult, AtgUp,  AtgDown, -1);
 		if (AtgUp <= 0) {
 			AtgUp = atgAlign;
 		}
@@ -115,7 +118,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	 * @param lsGeneID
 	 * @param filled 空位用什么填充，如果是heatmap，考虑-1，如果是叠加，考虑0
 	 */
-	private ArrayList<SeqInfo> getATGDensity(ArrayList<String> lsGeneID,int AtgUp, int AtgDown, int filled, int normlizType) {
+	private ArrayList<SeqInfo> getATGDensity(ArrayList<String> lsGeneID,int AtgUp, int AtgDown, int filled) {
 		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();;
 		ArrayList<SeqInfo> lsAtg = new ArrayList<SeqInfo>();
 		for (String string : lsGeneID) {
@@ -123,7 +126,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 			GffDetailGene gffDetailGene = gffHashGene.searchLOC(string);
 			GffGeneIsoInfo gffGeneIsoSearch = gffDetailGene.getLongestSplit();
 			if (gffGeneIsoSearch.ismRNA()) {
-				seqInfo.atg = getReadsInfo(string,gffGeneIsoSearch,normlizType);
+				seqInfo.atg = getReadsInfo(string,gffGeneIsoSearch);
 				if (seqInfo.atg == null) {
 					logger.error("本基因没有相应的信息："+gffGeneIsoSearch.getParentGffDetailGene().getName()+" "+ 
 							gffGeneIsoSearch.getTSSsite() +"  " +gffGeneIsoSearch.getTESsite() +"  "+gffGeneIsoSearch.getName());
@@ -339,7 +342,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	 * @return
 	 * double[] 0: atg位点,绝对位点，1-结束 从tss到tes的每个位点的reads数目
 	 */
-	protected abstract double[] getReadsInfo(String geneID, GffGeneIsoInfo gffGeneIsoInfo, int normalizeType);
+	protected abstract double[] getReadsInfo(String geneID, GffGeneIsoInfo gffGeneIsoInfo);
 	/////////////////////////////////////   韩燕的项目   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 

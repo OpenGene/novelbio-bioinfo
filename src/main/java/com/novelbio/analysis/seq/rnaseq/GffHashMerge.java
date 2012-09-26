@@ -126,7 +126,7 @@ public class GffHashMerge {
 				}
 				lsGffAll.add(listGff);
 			}
-			ArrayList<int[]> lsGeneBound = ListAbs.getCombSep(null, lsGffAll);
+			ArrayList<int[]> lsGeneBound = ListAbs.getCombSep(null, lsGffAll, true);
 			ArrayList<GffGeneCluster> lsGff = getListGeneCluster(chrID, lsGeneBound, lsGffHashGenes);
 			mapChrID2LsGffCluster.put(chrID.toLowerCase(), lsGff);
 		}

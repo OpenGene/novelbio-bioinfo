@@ -8,13 +8,16 @@ import java.util.LinkedHashMap;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
 import com.novelbio.database.service.servgeneanno.ServTaxID;
 /**
@@ -249,6 +252,11 @@ public class Species {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefseqFile();
 	}
+	/** 获取仅含有最长转录本的refseq文件，是核酸序列，没有就返回null */
+	public String getRefseqLongestIsoNrFile() {
+		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		return speciesFile.getRefseqLongestIsoNrFile();
+	}
 	/** 指定mapping的软件，获得该软件所对应的索引文件
 	 * 没有就新建一个，格式<br>
 	 * softMapping.toString() + "_Chr_Index/"
@@ -365,7 +373,24 @@ public class Species {
 			speciesFile.update();
 		}
 	}
-	
+	/** 用数据库查找的方式，遍历refseq文件，然后获得gene2iso的表 */
+	public String getGene2IsoFileFromDB() {
+		String gene2IsoFile = FileOperate.changeFileSuffix(getRefseqFile(), "_Gene2Iso", "txt");
+		if (!FileOperate.isFileExist(gene2IsoFile)) {
+			TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2IsoFile, true);
+			SeqFastaHash seqFastaHash = new SeqFastaHash(getRefseqFile(), null, false);
+			for (String geneIDstr : seqFastaHash.getLsSeqName()) {
+				GeneID geneID = new GeneID(geneIDstr, getTaxID());
+				String symbol = geneID.getSymbol();
+				if (symbol == null || symbol.equals("")) {
+					symbol = geneIDstr;
+				}
+				txtGene2Iso.writefileln(symbol + "\t" + geneIDstr);
+			}
+			txtGene2Iso.close();
+		}
+		return gene2IsoFile;
+	}
 	/**
 	 * 返回常用名对taxID
 	 * @param allID true返回全部ID， false返回常用ID--也就是有缩写的ID

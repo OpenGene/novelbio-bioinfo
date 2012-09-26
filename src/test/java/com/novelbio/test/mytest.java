@@ -117,6 +117,7 @@ import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
@@ -135,21 +136,8 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		File file=new File("/media/winF/NBC/Project/Project_ZDB_Lab/HY/BZ_20120521/mappingNew/BZ269_sorted.intervals");//源文件位置
-		FileReader fr=new FileReader(file);//创建文件输入流
-		BufferedReader in=new BufferedReader(fr);//包装文件输入流，可整行读取
-		String line;
-		String regex = "";
-		while((line=in.readLine()) != null) {
-			Pattern pattern = Pattern.compile(regex);
-			Matcher matcher = pattern.matcher(line);
-			if (matcher.find()) {
-				System.out.println(matcher.group());
-			}
-			
-			System.out.println(line);
-		}
-		
+		char c = 'M' + 32;
+		System.out.println(c);
 	}
 	
 	private static void test(int[] mm) {

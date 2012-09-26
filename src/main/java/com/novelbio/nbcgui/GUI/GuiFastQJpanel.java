@@ -43,11 +43,17 @@ public class GuiFastQJpanel extends JPanel {
 	private JTextField txtThreadNum;
 	JCheckBox chckbxFilterreads;
 	JCheckBox chckbxTrimEnd;
-	JComboBoxData<Integer> cmbReadsQuality;
+	
 	JCheckBox chckbxMapping;
+	
+	JComboBoxData<Integer> cmbReadsQuality;
 	JComboBoxData<String> cmbSpeciesVersion;
 	JComboBoxData<Species> cmbSpecies;
+	JComboBoxData<Integer> cmbMaptoIndex;
 	JComboBoxData<MapLibrary> cmbLibrary;
+	
+	
+	
 	JCheckBox chckbxUniqMapping;
 	JButton btnSaveto;
 	JButton btnOpenFastqLeft;
@@ -58,8 +64,6 @@ public class GuiFastQJpanel extends JPanel {
 	JButton btnDeleteFastQRight;
 	
 	ButtonGroup buttonGroupMappingTo = new ButtonGroup();
-	JRadioButton rdbtnMaptochrom;
-	JRadioButton rdbtnMaptorefseq;
 	
 	JCheckBox chckbxLowcaseAdaptor;
 	CtrlFastQMapping ctrlFastQMapping = new CtrlFastQMapping();
@@ -162,14 +166,12 @@ public class GuiFastQJpanel extends JPanel {
 				if (species.getTaxID() == 0) {
 					txtMappingIndex.setEnabled(true);
 					btnMappingindex.setEnabled(true);
-					rdbtnMaptochrom.setEnabled(false);
-					rdbtnMaptorefseq.setEnabled(false);
+					cmbMaptoIndex.setEnabled(false);
 				}
 				else {
 					txtMappingIndex.setEnabled(false);
 					btnMappingindex.setEnabled(false);
-					rdbtnMaptochrom.setEnabled(true);
-					rdbtnMaptorefseq.setEnabled(true);
+					cmbMaptoIndex.setEnabled(true);
 				}
 			}
 		});
@@ -285,7 +287,7 @@ public class GuiFastQJpanel extends JPanel {
 					ctrlFastQMapping.setLibraryType(cmbLibrary.getSelectedValue());
 					Species species = cmbSpecies.getSelectedValue();
 					species.setVersion(cmbSpeciesVersion.getSelectedValue());
-					ctrlFastQMapping.setSpecies(species, rdbtnMaptochrom.isSelected());
+					ctrlFastQMapping.setSpecies(species, cmbMaptoIndex.getSelectedValue());
 					ctrlFastQMapping.setUniqMapping(chckbxUniqMapping.isSelected());
 				}
 				ctrlFastQMapping.setOutFilePrefix(txtSavePathAndPrefix.getText());
@@ -301,6 +303,7 @@ public class GuiFastQJpanel extends JPanel {
 				for (String string : lsFileRigth) {
 					scrollPaneFastqRight.addItem(new String[]{string});
 				}
+				cmbLibrary.setSelectVaule(MapLibrary.PairEnd);
 			}
 		});
 		btnOpenFastQRight.setBounds(821, 38, 86, 24);
@@ -310,6 +313,9 @@ public class GuiFastQJpanel extends JPanel {
 		btnDeleteFastQRight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				scrollPaneFastqRight.deleteSelRows();
+				if (scrollPaneFastqRight.getLsDataInfo().size() == 0) {
+					cmbLibrary.setSelectVaule(MapLibrary.SingleEnd);
+				}
 			}
 		});
 		btnDeleteFastQRight.setBounds(821, 74, 86, 24);
@@ -382,20 +388,22 @@ public class GuiFastQJpanel extends JPanel {
 		
 		cmbLibrary = new JComboBoxData<MapLibrary>();
 		cmbLibrary.setMapItem(MapLibrary.getMapLibrary());
-		cmbLibrary.setBounds(653, 402, 134, 23);
+		cmbLibrary.setBounds(773, 402, 134, 23);
 		add(cmbLibrary);
 		
 		JLabel lblLibrary = new JLabel("Library");
-		lblLibrary.setBounds(568, 406, 69, 14);
+		lblLibrary.setBounds(773, 376, 69, 14);
 		add(lblLibrary);
 		
-		rdbtnMaptochrom = new JRadioButton("MapToChrom");
-		rdbtnMaptochrom.setBounds(393, 376, 151, 22);
-		add(rdbtnMaptochrom);
+		cmbMaptoIndex = new JComboBoxData<Integer>();
+		cmbMaptoIndex.sortValue(true);
+		cmbMaptoIndex.setMapItem(CtrlFastQMapping.getMapStr2Index());
+		cmbMaptoIndex.setBounds(448, 402, 161, 23);
+		add(cmbMaptoIndex);
 		
-		rdbtnMaptorefseq = new JRadioButton("MapToRefSeq");
-		rdbtnMaptorefseq.setBounds(393, 406, 151, 22);
-		add(rdbtnMaptorefseq);
+		JLabel lblMappingTo = new JLabel("Mapping To");
+		lblMappingTo.setBounds(448, 378, 95, 14);
+		add(lblMappingTo);
 
 		
 		btnOpenFastqLeft.addActionListener(new ActionListener() {
@@ -434,12 +442,8 @@ public class GuiFastQJpanel extends JPanel {
 		chckbxFilterreads.setSelected(true);
 		txtMappingIndex.setEnabled(false);
 		btnMappingindex.setEnabled(false);
-		buttonGroupMappingTo.add(rdbtnMaptochrom);
-		buttonGroupMappingTo.add(rdbtnMaptorefseq);
-		rdbtnMaptochrom.setSelected(true);
 		if (cmbSpecies.getSelectedValue().getTaxID() == 0) {
-			rdbtnMaptochrom.setEnabled(false);
-			rdbtnMaptorefseq.setEnabled(false);
+			cmbMaptoIndex.setEnabled(false);
 		}
 	}
 }

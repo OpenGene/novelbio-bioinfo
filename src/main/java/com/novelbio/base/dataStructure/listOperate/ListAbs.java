@@ -500,16 +500,23 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * 将相同方向的ListElement提取出来，然后合并，然后找出这些element的共同边界
 	 * @param cis5to3 null,不考虑方向
 	 * @param lsIso
+	 * @param sepSingle 遇到这种情况怎么分割：<br>
+	 * 	 * ---m-m-------------a--a---------b--b------------n-n----<br>
+	 *    ---m-m---------------------------------------------n-n----<br>
+	 *    true aa 和 bb 分开
+	 *    false aa 和 bb合在一起
 	 * @return
+	 * 返回一个list，按照cis5to3排序，如果cis5to3为true，从小到大排列
+	 * 如果cis5to3为false，从大到小排列
+	 * 内部的int[] 0: startAbs 1: endAbs
 	 */
-	public static ArrayList<int[]> getCombSep(Boolean cis5to3, ArrayList<? extends ListAbs<? extends ListDetailAbs>> lsIso) {
+	public static ArrayList<int[]> getCombSep(Boolean cis5to3, ArrayList<? extends ListAbs<? extends ListDetailAbs>> lsIso, boolean sepSingle) {
 		ArrayList<? extends ListDetailAbs> lsAllelement = combListAbs(cis5to3, lsIso);
 		ArrayList<int[]> lsSep = null;
-		if (cis5to3 != null) {
+		if (sepSingle) {
 			lsSep = getLsElementSep(cis5to3, lsAllelement);
-		}
-		else {
-			lsSep = getLsElementSep(lsAllelement);
+		} else {
+			lsSep = getLsElementSepComb(cis5to3, lsAllelement);
 		}
 		return lsSep;
 	}
@@ -529,68 +536,119 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 			}
 			lsAll.addAll(listAbs);
 		}
-		try {
-			Collections.sort(lsAll);
-		} catch (Exception e) {
-			Collections.sort(lsAll);
-		}
+		Collections.sort(lsAll);
 		return lsAll;
 	}
-	/**
-	 * 将经过排序的exonlist合并，获得几个连续的exon，用于分段
-	 */
-	private static ArrayList<int[]> getLsElementSep(boolean cis5to3, ArrayList<? extends ListDetailAbs> lsAll) {
-		ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
-		int[] exonOld = new int[]{lsAll.get(0).getStartCis(), lsAll.get(0).getEndCis()};
-		lsExonBounder.add(exonOld);
-		for (int i = 1; i < lsAll.size(); i++) {
-			int[] exon = new int[]{lsAll.get(i).getStartCis(), lsAll.get(i).getEndCis()};
-			if (cis5to3) {
-				if (exon[0] <= exonOld[1]) {
-					if (exon[1] > exonOld[1]) {
-						exonOld[1] = exon[1];
-					}
-				}
-				else {
-					exonOld = exon.clone();
-					lsExonBounder.add(exonOld);
-				}
-			}
-			else {
-				if (exon[0] >= exonOld[1]) {
-					if (exon[1] < exonOld[1]) {
-						exonOld[1] = exon[1];
-					}
-				}
-				else {
-					exonOld = exon.clone();
-					lsExonBounder.add(exonOld);
-				}
-			}
-		}
-		return lsExonBounder;
-	}
-	/**
-	 * 将经过排序的exonlist合并，获得几个连续的exon，用于分段
-	 */
-	private static ArrayList<int[]> getLsElementSep(ArrayList<? extends ListDetailAbs> lsAll) {
+	/** 将经过排序的exonlist合并，获得几个连续的exon，用于分段
+	 * 返回的int[] 0: startAbs    1: endAbs
+	 *  
+	 *  */
+	private static ArrayList<int[]> getLsElementSep(Boolean cis5to3, ArrayList<? extends ListDetailAbs> lsAll) {
 		ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
 		int[] exonOld = new int[]{lsAll.get(0).getStartAbs(), lsAll.get(0).getEndAbs()};
 		lsExonBounder.add(exonOld);
 		for (int i = 1; i < lsAll.size(); i++) {
 			int[] exon = new int[]{lsAll.get(i).getStartAbs(), lsAll.get(i).getEndAbs()};
-			if (exon[0] <= exonOld[1]) {
-				if (exon[1] > exonOld[1]) {
-					exonOld[1] = exon[1];
+			if (cis5to3 == null || cis5to3) {
+				if (exon[0] <= exonOld[1]) {
+					if (exon[1] > exonOld[1]) {
+						exonOld[1] = exon[1];
+					}
+				} else {
+					exonOld = exon.clone();
+					lsExonBounder.add(exonOld);
 				}
 			}
 			else {
-				exonOld = exon.clone();
-				lsExonBounder.add(exonOld);
+				if (exon[1] >= exonOld[0]) {
+					if (exon[0] < exonOld[0]) {
+						exonOld[0] = exon[0];
+					}
+				}
+				else {
+					exonOld = exon.clone();
+					lsExonBounder.add(exonOld);
+				}
 			}
 		}
 		return lsExonBounder;
 	}
+	
+	/** 将经过排序的exonlist合并，获得几个连续的exon，用于分段<br>
+	 * 如果有两个exon连续并且单独出现，类似<br>
+	 * ---m-m-------------a--a---------b--b------------n-n----<br>
+	 * ---m-m---------------------------------------------n-n----<br>
+	 * <br>
+	 * 那么a-a和b-b放在一起<br>
+	 *  */
+	@SuppressWarnings("unused")
+	private static ArrayList<int[]> getLsElementSepComb(Boolean cis5to3, ArrayList<? extends ListDetailAbs> lsAll) {
+		ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
+		int[] exonOld = new int[]{lsAll.get(0).getStartAbs(), lsAll.get(0).getEndAbs()};
+		lsExonBounder.add(exonOld);
+		//一堆flag标签
+		
+		// 上一个exon的父类，判断是否为同一个父类基因
+		ListAbs lastExonParent = lsAll.get(0).getParent(); 
+		
+		//上一个exon是否来自于单一父类，就是说没有跟来自另一个父类的exon混合，以下mm和kk是混合的，aa是单独的
+		//* -------m-----------m-------------a--a---------b--b------------n-n----<br>
+		 //* ---k---------k--------------------------------------n-n----<br>
+		boolean lastParentIsSingle = true; 
+		
+		for (int i = 1; i < lsAll.size(); i++) {
+			int[] exon = new int[]{lsAll.get(i).getStartAbs(), lsAll.get(i).getEndAbs()};
+			if (cis5to3 == null || cis5to3) {
+				if (exon[0] <= exonOld[1]) {
+					lastParentIsSingle = false;
+					if (exon[1] > exonOld[1]) {
+						exonOld[1] = exon[1];
+					}
+				}
+				else {
+					//如果是这种情况：
+					//* ---m-m-------------a--a---------b--b------------n-n----<br>
+					//* ---m-m---------------------------------------------n-n----<br>
+					if (lastParentIsSingle == true && lastExonParent == lsAll.get(i).getParent() 
+							&&
+							(i == lsAll.size() - 1 || lsAll.get(i+1).getStartAbs() >= lsAll.get(i).getEndAbs())
+					) {
+						exonOld[1] = exon[1];
+					}
+					else {
+						exonOld = exon.clone();
+						lsExonBounder.add(exonOld);
+						lastParentIsSingle = true;
+						lastExonParent = lsAll.get(i).getParent();
+					}
+				}
+			}
+			else {
+				if (exon[1] >= exonOld[0]) {
+					lastParentIsSingle = false;
+					if (exon[0] < exonOld[0]) {
+						exonOld[0] = exon[0];
+					}
+				}
+				else {
+					if (lastParentIsSingle == true && lastExonParent == lsAll.get(i).getParent() 
+							&&
+							(i == lsAll.size() - 1 || lsAll.get(i+1).getStartCis() <= lsAll.get(i).getEndCis())
+					) {
+						exonOld[0] = exon[0];
+					}
+					else {
+						exonOld = exon.clone();
+						lsExonBounder.add(exonOld);
+						lastParentIsSingle = true;
+						lastExonParent = lsAll.get(i).getParent();
+					}
+				}
+			}
+		}
+		return lsExonBounder;
+	}
+	
 }
 /**
  * 内建的二分法查找类，专门用于ListAbs查找

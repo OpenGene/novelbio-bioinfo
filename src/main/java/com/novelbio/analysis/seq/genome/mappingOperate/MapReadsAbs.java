@@ -21,6 +21,7 @@ import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
  * 不考虑内存限制的编
@@ -432,46 +433,60 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @return 如果没有找到该染色体位点，则返回null
 	 */
 	public double[] getRengeInfo(int thisInvNum,String chrID,int startNum,int endNum,int type) {
-		if (startNum <=0 && endNum <=0) {
-			startNum = 1; endNum = (int)getChrLen(chrID);
-		}
-		if (startNum > endNum) {
-			logger.error("起点不能比终点大: "+chrID+" "+startNum+" "+endNum);
-		}
+		double[] result;
 		////////////////////////不需要分割了////////////////////////////////////////
 		if (invNum == 1 && thisInvNum == 1) {
-			double[] result = new double[endNum - startNum + 1];
-			startNum--; endNum--;
-			int[] invNumReads = mapChrID2ReadsInfo.get(chrID.toLowerCase()).getSumChrBpReads();
-			if (invNumReads == null) {
-				logger.info("没有该染色体： " + chrID);
-				return null;
-			}
-			int k = 0;
-			for (int i = startNum; i <= endNum; i++) {
-				result[k] = invNumReads[i];
-				k++;
-			}
-			//标准化
-			normDouble(result);
-			if (FormulatToCorrectReads != null) {
-				result = FormulatToCorrectReads.getYinfo(result);
-			}
-			return result;
+			result = getRengeInfoInv1(chrID, startNum, endNum);
+		} else {
+			result = getRengeInfoNorm(chrID, thisInvNum, startNum, endNum, type);
 		}
-		///////////////////////////////////////////////////////////////////////////////
+		return result;
+	}
+	/** 间断为1的精确版本，经过标准化，和equations修正
+	 * @param chrID 染色体ID
+	 * @param startNum
+	 * @param endNum
+	 *  */
+	private double[] getRengeInfoInv1(String chrID, int startNum, int endNum) {
+		int[] startEnd = correctStartEnd(chrID, startNum, endNum);
+		double[] result = new double[startEnd[1] - startEnd[0] + 1];
+		
+		int[] invNumReads = mapChrID2ReadsInfo.get(chrID.toLowerCase()).getSumChrBpReads();
+		if (invNumReads == null) {
+			logger.info("没有该染色体： " + chrID);
+			return null;
+		}
+		int k = 0;
+		for (int i = startEnd[0]; i <= startEnd[1]; i++) {
+			result[k] = invNumReads[i];
+			k++;
+		}
+		//标准化
+		normDouble(result);
+		result = equationsCorrect(result);
+		return result;
+	}
+	/** 常规的版本，经过标准化，和equations修正
+	 * @param chrID 染色体ID
+	 * @param thisInvNum 每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数
+	 * @param startNum
+	 * @param endNum
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 *  */
+	private double[] getRengeInfoNorm(String chrID, int thisInvNum, int startNum, int endNum, int type) {
 		double binNum = (double)(endNum - startNum + 1) / thisInvNum;
 		int binNumFinal = 0;
 		if (binNum - (int)binNum >= 0.7) {
 			binNumFinal = (int)binNum + 1;
-		}
-		else {
+		} else {
 			binNumFinal = (int)binNum;
 		}
 		//内部经过标准化了
 		double[] tmp = getRengeInfo( chrID, startNum, endNum, binNumFinal,type);
+		
 		return tmp;
 	}
+	
 	/**
 	 * 经过标准化，和equations修正
 	 * 输入坐标区间，需要划分的块数，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
@@ -483,12 +498,10 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 * @return 如果没有找到该染色体位点，则返回null
 	 */
-	public  double[] getRengeInfo(String chrID,int startNum,int endNum,int binNum,int type) {
-		if (startNum <=0 && endNum <=0) {
-			startNum = 1; endNum = (int)getChrLen(chrID);
-		}
-		if (startNum > endNum) {
-			logger.error("起点不能比终点大: "+chrID+" "+startNum+" "+endNum);
+	public double[] getRengeInfo(String chrID,int startNum,int endNum,int binNum,int type) {
+		int[] startEnd = correctStartEnd(chrID, startNum, endNum);
+		if (startEnd == null) {
+			return null;
 		}
 		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
 		if (chrMapReadsInfo == null) {
@@ -499,37 +512,66 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		if (invNumReads == null) {
 			return null;
 		}
-		startNum--; endNum--;
-		////////////////确定要提取区域的左端点和右端点/////////////////////////////////
+		try {
+			return getRengeInfoExp(invNumReads, startEnd[0], startEnd[1], binNum, type);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	/**
+	 * 校正输入的start 和 end
+	 * @param chrID
+	 * @param startNum
+	 * @param endNum
+	 * @return null 表示没有通过校正
+	 */
+	private int[] correctStartEnd(String chrID, int startNum, int endNum) {
+		if (startNum <=0) {
+			startNum = 1; 
+		}
+		if (endNum <= 0 || endNum > (int)getChrLen(chrID) ) {
+			endNum = (int)getChrLen(chrID);
+		}
+		if (startNum > endNum) {
+			logger.error("起点不能比终点大: "+chrID+" "+startNum+" "+endNum);
+			return null;
+		}
+		startNum --; endNum --;
+		return new int[]{startNum, endNum};
+	}
+	/**
+	 * @param invNumReads 某条染色体上面的reads堆叠情况
+	 * @param startNum
+	 * @param endNum
+	 * @param binNum
+	 * @param type
+	 * @return
+	 */
+	private double[] getRengeInfoExp(int[] invNumReads, int startNum,int endNum,int binNum,int type) {
 		int leftNum = 0;//在invNumReads中的实际起点
 		int rightNum = 0;//在invNumReads中的实际终点
 
 		leftNum = startNum/invNum;
 		double leftBias = (double)startNum/invNum-leftNum;//最左边分隔到起点的距离比值
 		double rightBias = 0;
-		if (endNum%invNum==0) 
-			rightNum = endNum/invNum-1;//前提是java小数转成int通通直接去掉小数点
-		else 
-		{
-			rightNum = endNum/invNum;//前提是java小数转成int通通直接去掉小数点
+		if (endNum%invNum==0) {
+			rightNum = endNum/invNum - 1;//java小数转成int 为直接去掉小数点
+		} else  {
+			rightNum = endNum/invNum;
 			rightBias = rightNum + 1 - (double)endNum/invNum;//最右边分隔到终点的距离比值
 		}
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		double[] tmpRegReads=new double[rightNum - leftNum + 1];
 		int k=0;
-		try {
-			for (int i = leftNum; i <= rightNum; i++) {
-				if (i >= invNumReads.length) {
-					break;
-				}
-				if (i < 0) {
-					continue;
-				}
-				tmpRegReads[k] = invNumReads[i];
-				k++;
+		for (int i = leftNum; i <= rightNum; i++) {
+			if (i >= invNumReads.length || k >= tmpRegReads.length) {
+				break;
 			}
-		} catch (Exception e) {
-			logger.error("下标越界"+e.toString());
+			if (i < 0) {
+				continue;
+			}
+			tmpRegReads[k] = invNumReads[i];
+			k++;
 		}
 		normDouble(tmpRegReads);
 		double[] tmp = null;
@@ -538,10 +580,24 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		} catch (Exception e) {
 			return null;
 		}
-		if (FormulatToCorrectReads != null) {
-			tmp = FormulatToCorrectReads.getYinfo(tmp);
-		}
+		tmp = equationsCorrect(tmp);
 		return tmp;
+	}
+	
+	
+	/**
+	 * 用输入的公式进行修正
+	 * @param input
+	 * @return
+	 */
+	private double[] equationsCorrect(double[] input) {
+		double[] result = null;
+		if (FormulatToCorrectReads != null) {
+			result = FormulatToCorrectReads.getYinfo(input);
+		} else {
+			result = input;
+		}
+		return result;
 	}
 	 /**
 	  * 从这里得到的实际某条染色体的长度

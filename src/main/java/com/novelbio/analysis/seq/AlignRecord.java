@@ -11,6 +11,7 @@ public interface AlignRecord extends Alignment{
 	public Integer getMapQuality();
 	/** 该bed文件是否被割成了一段一段的 */
 	public boolean isJunctionCovered();
+	public boolean isMapped();
 	/** 如果是mapping到junction上去，一条bed文件记录会被切成被切成的几块的样子保存在这里。
 	 * 也就是一段一段的bed，那么返回每一段的信息，
 	 * 都是绝对坐标，从1开始

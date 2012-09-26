@@ -301,6 +301,7 @@ public class FastQRecord implements Cloneable {
 		BlastSeqFasta blastSeqFasta = new BlastSeqFasta(seqSeq, seqAdaptor);
 		blastSeqFasta.setSpaceScore(-2);
 		blastSeqFasta.blast();
+		blastSeqFasta.blast();
 		if ((double)blastSeqFasta.getMatchNum()/seqAdaptor.length() < (1-((double)perMm/100)) || blastSeqFasta.getGapNumQuery() + blastSeqFasta.getGapNumSubject() > numMM
 			|| blastSeqFasta.getMisMathchNum() > numMM 
 			|| (float)(blastSeqFasta.getGapNumQuery() + blastSeqFasta.getGapNumSubject() + blastSeqFasta.getMisMathchNum())/seqAdaptor.length() > perMm/100

@@ -72,10 +72,26 @@ public class BlastSeqFasta {
 		
 		Cell cellStart = smithWaterman.getTracebackEndingCell();
 		Cell cellEnd = smithWaterman.getTracebackStartingCell();
-		score = cellEnd.getScore();
+		if (cellStart == null) {
+			startQuery = 0;
+			startSubject = 0;
+		} else {
+			startQuery = cellStart.getCol();
+			startSubject = cellStart.getRow();
+		}
 		
-		startQuery = cellStart.getCol(); startSubject = cellStart.getRow();
-		endQuery = cellEnd.getCol(); endSubject = cellEnd.getRow();
+		if (cellEnd == null) {
+			endQuery = 0;
+			endSubject = 0;
+			score = 0;
+		} else {
+			endQuery = cellEnd.getCol();
+			endSubject = cellEnd.getRow();
+			score = cellEnd.getScore();
+		}
+		
+	
+
 		setInfo();
 	}
 	private void setBlastparam(SmithWaterman smithWaterman) {

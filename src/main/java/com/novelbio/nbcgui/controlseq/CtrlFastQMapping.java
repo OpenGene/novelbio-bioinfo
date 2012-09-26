@@ -29,6 +29,10 @@ public class CtrlFastQMapping {
 	public static final int LIBRARY_PAIR_END = 256;
 	public static final int LIBRARY_MATE_PAIR = 512;
 	
+	public static final int MAP_TO_CHROM = 8;
+	public static final int MAP_TO_REFSEQ = 4;
+	public static final int MAP_TO_REFSEQ_LONGEST_ISO = 2;
+	
 	boolean filter = true;
 	boolean trimNNN = false;
 	int fastqQuality = FastQ.QUALITY_MIDIAN;
@@ -59,7 +63,7 @@ public class CtrlFastQMapping {
 	
 	String chrIndexFile;
 	Species species;
-	boolean booChromOrRef = true;
+	int map2Index = MAP_TO_CHROM;
 	
 	
 	SoftWareInfo softWareInfo = new SoftWareInfo();
@@ -88,11 +92,11 @@ public class CtrlFastQMapping {
 	}
 	/** 
 	 * @param species
-	 * @param booChromOrRef true mapping chromosome false mapping refseq
+	 * @param map2Index mapping到什么上面去，有chrom，refseq和refseqLongestIso三种
 	 */
-	public void setSpecies(Species species, boolean booChromOrRef) {
+	public void setSpecies(Species species, int map2Index) {
 		this.species = species;
-		this.booChromOrRef = booChromOrRef;
+		this.map2Index = map2Index;
 	}
 	public void setTrimNNN(boolean trimNNN) {
 		this.trimNNN = trimNNN;
@@ -331,10 +335,13 @@ public class CtrlFastQMapping {
 				mapBwa.setExePath(softWareInfo.getExePath(), chrIndexFile);
 			}
 			else {
-				if (booChromOrRef)
+				if (map2Index == MAP_TO_CHROM) {
 					mapBwa.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bwa));
-				else
+				} else if (map2Index == MAP_TO_REFSEQ) {
 					mapBwa.setExePath(softWareInfo.getExePath(), species.getIndexRef(SoftWare.bwa));
+				} else if (map2Index == MAP_TO_REFSEQ_LONGEST_ISO) {
+					mapBwa.setExePath(softWareInfo.getExePath(), species.getRefseqLongestIsoNrFile());
+				}
 			}
 
 			mapBwa.setFqFile(fastQs[0], fastQs[1]);
@@ -356,5 +363,12 @@ public class CtrlFastQMapping {
 			txtReport.ExcelWrite(samFileStatistics.getMappingInfo());
 		}
 	}
-
+	
+	public static HashMap<String, Integer> getMapStr2Index() {
+		HashMap<String, Integer> mapStr2Index = new HashMap<String, Integer>();
+		mapStr2Index.put("chromosome", MAP_TO_CHROM);
+		mapStr2Index.put("refseq", MAP_TO_REFSEQ);
+		mapStr2Index.put("refseq Longest Iso", MAP_TO_REFSEQ_LONGEST_ISO);
+		return mapStr2Index;
+	}
 }

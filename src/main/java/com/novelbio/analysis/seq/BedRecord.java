@@ -290,4 +290,8 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 		bedRecord.readsNum = readsNum;
 		return bedRecord;
 	}
+	@Override
+	public boolean isMapped() {
+		return true;
+	}
 }

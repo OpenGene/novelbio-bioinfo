@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class ExonCluster {
 	/**
 	 * 记录跳过该exoncluster的Iso，和跨过该exoncluster的那对exon的，前一个exon的编号<br>
 	 */
-	HashMap<String, Integer> mapIso2ExonNumSkipTheCluster = new HashMap<String, Integer>();
+	HashMap<GffGeneIsoInfo, Integer> mapIso2ExonNumSkipTheCluster = new HashMap<GffGeneIsoInfo, Integer>();
 	
 	public ExonCluster(String chrID, int start, int end) {
 		this.chrID = chrID;
@@ -143,13 +144,13 @@ public class ExonCluster {
 	 * @param Isoname
 	 * @param exonNumStart
 	 */
-	public void setIso2ExonNumSkipTheCluster(String Isoname, int exonNumStart) {
-		mapIso2ExonNumSkipTheCluster.put(Isoname, exonNumStart);
+	public void setIso2ExonNumSkipTheCluster(GffGeneIsoInfo gffGeneIsoInfo, int exonNumStart) {
+		mapIso2ExonNumSkipTheCluster.put(gffGeneIsoInfo, exonNumStart);
 	}
 	/**
 	 * 记录跳过该exoncluster的Iso，和跨过该exoncluster的那对exon的，前一个exon的编号<br>
 	 */
-	public HashMap<String, Integer> getMapIso2ExonIndexSkipTheCluster() {
+	public HashMap<GffGeneIsoInfo, Integer> getMapIso2ExonIndexSkipTheCluster() {
 		return mapIso2ExonNumSkipTheCluster;
 	}
 	
@@ -169,8 +170,7 @@ public class ExonCluster {
 			return setSplicingTypes;
 		}
 		
-		ArrayList<ExonInfo> lsSingleExonInfo = getExonInfoSingleLs();
-		if (isRetainExon()) {
+		if (isRetainIntron()) {
 			setSplicingTypes.add(ExonSplicingType.retain_intron);
 		}
 		
@@ -180,9 +180,11 @@ public class ExonCluster {
 				) 
 		{
 			if (mapIso2ExonNumSkipTheCluster.size() > 0) {
-				setSplicingTypes.add(ExonSplicingType.cassette);
+				setCassette(setSplicingTypes);
 			}
 		}
+		
+		ArrayList<ExonInfo> lsSingleExonInfo = getExonInfoSingleLs();
 		//前面的exon不一样
 		if (exonClusterBefore != null && !exonClusterBefore.isSameExon()) {
 			if (isAltStart(lsSingleExonInfo)) {
@@ -222,13 +224,73 @@ public class ExonCluster {
 		return setSplicingTypes;
 	}
 	
-	private boolean isRetainExon() {
+	private boolean isRetainIntron() {
+		//retainIntron有两个条件：1：存在一个长的exon，2：存在两个短的exon
+		boolean twoExon = false;
+		boolean oneExon = false;
 		for (ArrayList<ExonInfo> lsExon : lsIsoExon) {
 			if (lsExon.size() > 1) {
-				return true;
+				twoExon = true;
+			}
+			else if (lsExon.size() == 1) {
+				oneExon = true;
 			}
 		}
-		return false;
+		return twoExon && oneExon;
+	}
+	/**
+	 * 当为Cassette时，设定为单个Cassette还是多个
+	 */
+	private void setCassette(HashSet<ExonSplicingType> setSplicingTypes) {
+		//有跳过该exon的iso
+		if (mapIso2ExonNumSkipTheCluster.size() == 0 || exonClusterBefore == null || exonClusterAfter == null) {
+			return;
+		}
+		
+		//获得本位点存在有exon的iso
+		ArrayList<GffGeneIsoInfo> lsIso_ExonExist = new ArrayList<GffGeneIsoInfo>();
+		for (ArrayList<ExonInfo> lsExonInfos : lsIsoExon) {
+			if (lsExonInfos.size() > 0) {
+				lsIso_ExonExist.add(lsExonInfos.get(0).getParent());
+			}
+		}
+		//看跳过和存在的Iso在前后位置里面是否都存在
+		//也就是说本位点跳过的iso在前后必须都有exon
+		//本位点有exon的iso在前后也必须都有exon
+		//这样才是casstte的类型
+		if (!isIsoExistBeforeAndAfter(lsIso_ExonExist) || !isIsoExistBeforeAndAfter(mapIso2ExonNumSkipTheCluster.keySet())) {
+			return;
+		}
+		
+		boolean casstteMulti = false;
+		for (ArrayList<ExonInfo> lsExon : lsIsoExon) {
+			if (lsExon.size() > 1) {
+				casstteMulti = true;
+				break;
+			}
+		}
+		if (casstteMulti) {
+			setSplicingTypes.add(ExonSplicingType.cassette_multi);
+		} else {
+			setSplicingTypes.add(ExonSplicingType.cassette);
+		}
+	}
+	/**
+	 * 这个exon所对应的iso在前后的exoncluster中是否也存在
+	 * 主要是用来判定casstte的
+	 * @return
+	 */
+	private boolean isIsoExistBeforeAndAfter(Collection<GffGeneIsoInfo> lsIso_ExonExist) {
+		boolean beforeAndAfterContainHaveIso = false;
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsIso_ExonExist) {
+			if (exonClusterBefore.getMapIso2LsExon().containsKey(gffGeneIsoInfo)
+					&&
+					exonClusterAfter.getMapIso2LsExon().containsKey(gffGeneIsoInfo)
+					) {
+				beforeAndAfterContainHaveIso = true;
+			}
+		}
+		return beforeAndAfterContainHaveIso;
 	}
 	
 	/** 获得本exoncluster中存在的单个exon
@@ -240,24 +302,74 @@ public class ExonCluster {
 		ArrayList<ExonInfo> lsExonTmp = new ArrayList<ExonInfo>();
 		HashSet<ExonInfo> setRemoveSameExon = new HashSet<ExonInfo>();
 		for (ArrayList<ExonInfo> lsExon : lsIsoExon) {
-			if (lsExon.size() == 0)
+			if (lsExon.size() == 0) {
 				continue;
-			
+			}
 			ExonInfo exonInfo = lsExon.get(0).clone();
+			//将该exon扩展为一个大的exon
 			if (lsExon.size() > 1) {
 				exonInfo.setEndCis(lsExon.get(lsExon.size() - 1).getEndCis());
 			}
 			
-			if (setRemoveSameExon.contains(exonInfo))
+			if (setRemoveSameExon.contains(exonInfo)) {
 				continue;
-			else
+			} else {
 				setRemoveSameExon.add(exonInfo);
-
+			}
 			lsExonTmp.add(exonInfo);
 		}
 		return lsExonTmp;
 	}
-	
+	/**
+	 * 输入由getExonInfoSingleLs合并后的lsExonInfo，其中每个ExonInfo来源于不同的Iso
+	 * @param lsExonInfo
+	 * @return
+	 */
+	private boolean isAltStart(List<ExonInfo> lsExonInfo) {
+		if (lsExonInfo.size() == 1) {
+			ExonInfo exonInfo = lsExonInfo.get(0);
+			if (exonInfo.getItemNum() == 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	/**
+	 * 输入由getExonInfoSingleLs合并后的lsExonInfo，其中每个ExonInfo来源于不同的Iso
+	 * @param lsExonInfo
+	 * @return
+	 */
+	private boolean isAltEnd(List<ExonInfo> lsExonInfo) {
+		if (lsExonInfo.size() == 1) {
+			ExonInfo exonInfo = lsExonInfo.get(0);
+			if (exonInfo.getItemNum() == exonInfo.getParent().size() - 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+	/** 查看前一个exoncluster的信息 */
+	private LinkedList<ExonSplicingType> searchBeforeExon(List<ExonInfo> lsExonInfo) {
+		LinkedList<ExonSplicingType> setSplicingTypes = new LinkedList<ExonSplicingType>();
+
+		for (ExonInfo exonInfo : lsExonInfo) {
+			if (!exonClusterBefore.getMapIso2LsExon().containsKey(exonInfo.getParent())) {
+				setSplicingTypes.add(ExonSplicingType.mutually_exon); 
+			}
+		}
+		return setSplicingTypes;
+	}
+	/** 查看前一个exoncluster的信息 */
+	private LinkedList<ExonSplicingType> searchAfterExon(List<ExonInfo> lsExonInfo) {
+		LinkedList<ExonSplicingType> setSplicingTypes = new LinkedList<ExonSplicingType>();
+
+		for (ExonInfo exonInfo : lsExonInfo) {
+			if (!exonClusterAfter.getMapIso2LsExon().containsKey(exonInfo.getParent())) {
+				setSplicingTypes.add(ExonSplicingType.mutually_exon);
+			}
+		}
+		return setSplicingTypes;
+	}
 	/** 仅判断本位点的可变剪接情况
 	 * 也就是仅判断alt5，alt3
 	 */
@@ -278,52 +390,6 @@ public class ExonCluster {
 		}
 		return setSplicingTypes;
 	}
-	private boolean isAltStart(List<ExonInfo> lsExonInfo) {
-		if (lsExonInfo.size() == 1) {
-			ExonInfo exonInfo = lsExonInfo.get(0);
-			if (exonInfo.getItemNum() == 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-	/** 查看前一个exoncluster的信息 */
-	private LinkedList<ExonSplicingType> searchBeforeExon(List<ExonInfo> lsExonInfo) {
-		LinkedList<ExonSplicingType> setSplicingTypes = new LinkedList<ExonSplicingType>();
-
-		for (ExonInfo exonInfo : lsExonInfo) {
-			if (!exonClusterBefore.getMapIso2LsExon().containsKey(exonInfo.getParent())) {
-				setSplicingTypes.add(ExonSplicingType.mutually_exon); 
-			}
-			else {
-				setSplicingTypes.add(ExonSplicingType.cassette);
-			}
-		}
-		
-		return setSplicingTypes;
-	}
-	
-	private boolean isAltEnd(List<ExonInfo> lsExonInfo) {
-		if (lsExonInfo.size() == 1) {
-			ExonInfo exonInfo = lsExonInfo.get(0);
-			if (exonInfo.getItemNum() == exonInfo.getParent().size() - 1) {
-				return true;
-			}
-		}
-		return false;
-	}
-	/** 查看前一个exoncluster的信息 */
-	private LinkedList<ExonSplicingType> searchAfterExon(List<ExonInfo> lsExonInfo) {
-		LinkedList<ExonSplicingType> setSplicingTypes = new LinkedList<ExonSplicingType>();
-
-		for (ExonInfo exonInfo : lsExonInfo) {
-			if (!exonClusterAfter.getMapIso2LsExon().containsKey(exonInfo.getParent())) {
-				setSplicingTypes.add(ExonSplicingType.mutually_exon);
-			}
-		}
-		return setSplicingTypes;
-	}
-	
 	/** 获取有变化的区域，用于提取该区域的表达值，计算是否为差异的可变剪接
 	 * 譬如cassttet就直接提取整个exon
 	 * 而alt5等就提取差异的哪个片段 
@@ -390,12 +456,13 @@ public class ExonCluster {
 		return null;
 	}
 	public static enum ExonSplicingType {
-		cassette, alt5, alt3, altend, altstart, mutually_exon, retain_intron, unknown, sam_exon;
+		cassette, cassette_multi, alt5, alt3, altend, altstart, mutually_exon, retain_intron, unknown, sam_exon;
 		
 		static HashMap<String, ExonSplicingType> mapName2Events = new LinkedHashMap<String, ExonCluster.ExonSplicingType>();
 		public static HashMap<String, ExonSplicingType> getMapName2SplicingEvents() {
 			if (mapName2Events.size() == 0) {
 				mapName2Events.put("cassette", cassette);
+				mapName2Events.put("cassette_multi", cassette_multi);
 				mapName2Events.put("alt5", alt5);
 				mapName2Events.put("alt3", alt3);
 				mapName2Events.put("altend", altend);
