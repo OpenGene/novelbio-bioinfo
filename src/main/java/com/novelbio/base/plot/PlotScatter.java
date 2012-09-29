@@ -425,6 +425,7 @@ public class PlotScatter extends PlotNBCInteractive{
     }
     /**
      * set the marge size of a figure, the bigger the marge be, the font of the tile will also bigger
+     * 设定各个地方的字体，包括x，y轴的字体和刻度字体
      * @param int size 
      */
     public void setInsets(int size) {

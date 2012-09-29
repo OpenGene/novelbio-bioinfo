@@ -1,12 +1,11 @@
 package com.novelbio.analysis.seq.genome;
+
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
@@ -17,6 +16,15 @@ import com.novelbio.base.dataStructure.ArrayOperate;
  *
  */
 public class GffChrHanYanChrom extends GffChrHanYan{
+	public static void main(String[] args) {
+		GffChrAbs gffChrAbs = new GffChrAbs(9606);
+		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO("NM_006036");
+		System.out.println(gffGeneIsoInfo.getATGsite());
+		System.out.println(gffGeneIsoInfo.getUAGsite());
+		for (ExonInfo exonInfo : gffGeneIsoInfo) {
+			System.out.println(exonInfo.getStartAbs() + "\t" + exonInfo.getEndAbs());
+		}
+	}
 	private static Logger logger = Logger.getLogger(GffChrHanYanChrom.class);
 	
 	/**
@@ -50,11 +58,16 @@ public class GffChrHanYanChrom extends GffChrHanYan{
 			ArrayOperate.convertArray(iso);
 		}
 		double[] isoResult = new double[iso.length+1];
-		isoResult[0] = gffGeneIsoInfo.getLocDistmRNA(gffGeneIsoInfo.getATGsite(), gffGeneIsoInfo.getTSSsite());
+		isoResult[0] = gffGeneIsoInfo.getLocDistmRNA(gffGeneIsoInfo.getTSSsite(), gffGeneIsoInfo.getATGsite());
 		for (int i = 0; i < iso.length; i++) {
 			isoResult[i+1] = iso[i];
 		}
 		return isoResult;
+	}
+
+	@Override
+	protected ArrayList<String> getAllGeneName() {
+		return gffChrAbs.getGffHashGene().getLsNameAll();
 	}
 	
 	/////////////////////////////////////   º«ÑàµÄÏîÄ¿   //////////////////////////////////////////////////////////////////////////////////////////////////////////

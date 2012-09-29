@@ -448,14 +448,16 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param endNum
 	 *  */
 	private double[] getRengeInfoInv1(String chrID, int startNum, int endNum) {
-		int[] startEnd = correctStartEnd(chrID, startNum, endNum);
-		double[] result = new double[startEnd[1] - startEnd[0] + 1];
-		
-		int[] invNumReads = mapChrID2ReadsInfo.get(chrID.toLowerCase()).getSumChrBpReads();
-		if (invNumReads == null) {
+		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
+		if (chrMapReadsInfo == null) {
 			logger.info("没有该染色体： " + chrID);
 			return null;
 		}
+		int[] startEnd = correctStartEnd(chrID, startNum, endNum);
+		double[] result = new double[startEnd[1] - startEnd[0] + 1];
+		
+		int[] invNumReads = chrMapReadsInfo.getSumChrBpReads();
+		
 		int k = 0;
 		for (int i = startEnd[0]; i <= startEnd[1]; i++) {
 			result[k] = invNumReads[i];
@@ -474,7 +476,13 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 *  */
 	private double[] getRengeInfoNorm(String chrID, int thisInvNum, int startNum, int endNum, int type) {
-		double binNum = (double)(endNum - startNum + 1) / thisInvNum;
+		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
+		if (chrMapReadsInfo == null) {
+			logger.error("没有该染色体：" + chrID);
+			return null;
+		}
+		int[] startEndLoc = correctStartEnd(chrID, startNum, endNum);
+		double binNum = (double)(startEndLoc[1] - startEndLoc[0] + 1) / thisInvNum;
 		int binNumFinal = 0;
 		if (binNum - (int)binNum >= 0.7) {
 			binNumFinal = (int)binNum + 1;
@@ -499,13 +507,13 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @return 如果没有找到该染色体位点，则返回null
 	 */
 	public double[] getRengeInfo(String chrID,int startNum,int endNum,int binNum,int type) {
-		int[] startEnd = correctStartEnd(chrID, startNum, endNum);
-		if (startEnd == null) {
-			return null;
-		}
 		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
 		if (chrMapReadsInfo == null) {
 			logger.error("没有该染色体：" + chrID);
+			return null;
+		}
+		int[] startEnd = correctStartEnd(chrID, startNum, endNum);
+		if (startEnd == null) {
 			return null;
 		}
 		int[] invNumReads = chrMapReadsInfo.getSumChrBpReads();

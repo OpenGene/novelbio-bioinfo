@@ -10,6 +10,7 @@ import java.util.Comparator;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
@@ -26,7 +27,12 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class GffChrUnionHanYanRefSeq extends GffChrHanYan{
 	private static Logger logger = Logger.getLogger(GffChrUnionHanYanRefSeq.class);
-
+	
+	SeqFastaHash seqFastaHash;
+	
+	public void setRefSeq(String seqfasta) {
+		seqFastaHash = new SeqFastaHash(seqfasta);
+	}
 	/**
 	 *	给定转录本，返回该转录本的mRNA水平坐标
 	 *@param geneID
@@ -40,9 +46,8 @@ public class GffChrUnionHanYanRefSeq extends GffChrHanYan{
 		if (iso == null) {
 			return null;
 		}
-		mapReads.normDouble(iso);
 		double[] isoResult = new double[iso.length+1];
-		isoResult[0] = gffGeneIsoSearch.getLocDistmRNA(gffGeneIsoSearch.getATGsite(), gffGeneIsoSearch.getTSSsite());
+		isoResult[0] = gffGeneIsoSearch.getLocDistmRNA(gffGeneIsoSearch.getTSSsite(), gffGeneIsoSearch.getATGsite());
 		for (int i = 0; i < iso.length; i++) {
 			isoResult[i+1] = iso[i];
 		}
@@ -51,14 +56,20 @@ public class GffChrUnionHanYanRefSeq extends GffChrHanYan{
 	/////////////////////////////////////   韩燕的项目   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public void loadMap(String mapFile, int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping) {
-		mapReads = new MapReadsHanyanChrom();
+		mapReads = new MapReads();
+		mapReads.setMapChrID2Len(seqFastaHash.getHashChrLength());
 		mapReads.setBedSeq(mapFile);
 		mapReads.setInvNum(1);
+		mapReads.setNormalType(MapReads.NORMALIZATION_PER_GENE);
 		mapReads.setFilter(uniqReads, startCod, uniqMapping, cis5To3);
 		if (tagLength > 20) {
 			mapReads.setTagLength(tagLength);
 		}
 		mapReads.run();
+	}
+	@Override
+	protected ArrayList<String> getAllGeneName() {
+		return mapReads.getChrIDLs();
 	}
 
 }

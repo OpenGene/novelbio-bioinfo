@@ -629,7 +629,7 @@ public class MathComput {
 	 * 用于将500或更多份的基因中tag累计数缩小到100份内
 	 * @param treatNum invNum里面的bp具体值
 	 * @param invBpNum 每一块里面的bp数，比方韩燕的要求是3个bp一个coding这么划分
-	 * @param startBp 从起点的第几个Bp开始，因为序列不一定是3的倍数，那么我们指定从起点的第几个bp开始，从该Bp(<b>包括该Bp</b>)进行划分
+	 * @param startBp 从起点的第几个Bp开始，实际起点，从1开始记数。因为序列不一定是3的倍数，那么我们指定从起点的第几个bp开始，从该Bp(<b>包括该Bp</b>)进行划分
 	 * ，这个值最好小于invBpNum
 	 * @param Num 选择该invBp中，也就是3个bp中第几个作为最后的结果，从1开始计数。那么韩燕的话，应该选择最后一个--也就是第三个bp的结果作为划分的结果
 	 * 也就是说韩燕的设置应该为3
@@ -640,6 +640,7 @@ public class MathComput {
 		//四舍五入获得长度
 		int length = (int)((double)(treatNum.length - startBp + 1)/invBpNum + 0.5);
 		double[] result = new double[length]; int k = 0; int m = 0;
+		//startBp - 2 startbp是实际位置，向前退一位是从0开始的本位点，在向前退一位是前一位点，然后加上Num偏移
 		for (int i = startBp - 2 + Num; i < treatNum.length; i++) {
 			if (m%invBpNum == 0) {
 				result[k] = treatNum[i];

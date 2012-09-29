@@ -40,6 +40,8 @@ public class MapBowtie {
 	public void setBowtieVersion(SoftWare bowtieVersion) {
 		this.bowtieVersion = bowtieVersion;
 	}
+	
+	
 	/**
 	 * 制作索引
 	 * 这个暴露出来是给MirDeep用的

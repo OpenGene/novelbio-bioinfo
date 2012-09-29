@@ -33,7 +33,10 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	boolean getAllIso;
 	/** 是否提取氨基酸 */
 	boolean getAAseq = false;
+	/** 是否仅提取mRNA序列 */
+	boolean getOnlyMRNA = false;
 	
+	boolean getGenomWide = false;
 	
 	/** 是提取位点还是提取基因 */
 	boolean booGetIsoSeq = false;
@@ -67,6 +70,10 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	public void setGetAllIso(boolean getAllIso) {
 		this.getAllIso = getAllIso;
 	}
+	/** 是否仅提取mRNA，也就是有编码的RNA */
+	public void setIsGetOnlyMRNA(boolean getOnlyMRNA) {
+		this.getOnlyMRNA = getOnlyMRNA;
+	}
 	/**
 	 * 提取基因的时候遇到内含子，是提取出来还是跳过去
 	 * @param getIntron
@@ -99,22 +106,31 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		setIsoToGetSeq.clear();
 		for (String string : lsIsoName) {
 			GffGeneIsoInfo gffGeneIsoInfo = getIso(string);
+			if (getOnlyMRNA && !gffGeneIsoInfo.ismRNA()) {
+				continue;
+			}
 			if (gffGeneIsoInfo != null) {
 				setIsoToGetSeq.add(gffGeneIsoInfo);
 			}
 		}
 		booGetIsoSeq = true;
 	}
+	public void setGetSeqIsoGenomWide() {
+		getGenomWide = true;
+	}
 	/**
 	 * 输入名字提取序列，内部会去除重复基因
 	 * @param lsListGffName
 	 */
-	public void setGetSeqIsoGenomWide() {
+	private void getSeqIsoGenomWide() {
 		setIsoToGetSeq.clear();
 		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
 		GffDetailGene gffDetailGene = null;
 		for (String geneID : lsID) {
 			gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
+			if (getOnlyMRNA && !gffDetailGene.isMRNA()) {
+				continue;
+			}
 			if (getAllIso) {
 				setIsoToGetSeq.addAll(getGeneSeqAllIso(gffDetailGene));
 			}
@@ -127,8 +143,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	public int getNumOfQuerySeq() {
 		if (booGetIsoSeq) {
 			return setIsoToGetSeq.size();
-		}
-		else {
+		} else {
 			return lsSiteInfos.size();
 		}
 	}
@@ -192,6 +207,9 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * @return
 	 */
 	public void getSeq() {
+		if (getGenomWide) {
+			getSeqIsoGenomWide();
+		}
 		if (saveToFile)
 			txtOutFile = new TxtReadandWrite(outFile, true);
 		

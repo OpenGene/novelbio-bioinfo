@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
@@ -76,8 +77,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	protected int UAGsite = ListCodAbs.LOC_ORIGINAL;
 	/** 该转录本的长度 */
 	protected int lengthIso = ListCodAbs.LOC_ORIGINAL;
-
-	protected boolean ismRNA = true;
 
 	GffDetailGene gffDetailGeneParent;
 	
@@ -190,7 +189,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public boolean ismRNA() {
-		return ismRNA;
+		return Math.abs(ATGsite - UAGsite) > 10 ?  true : false;
 	}
 	/**
 	 * 只能用于排序好的水稻和拟南芥GFF文件中
@@ -227,7 +226,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 */
 	public void setATGUAG(int atg, int uag) {
 		if (Math.abs(atg - uag)<=1) {
-			ismRNA = false;
 			atg = Math.min(atg, uag);
 			uag = Math.min(atg, uag);
 		}
@@ -550,7 +548,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public ArrayList<ExonInfo> getIsoInfoCDS() {
-		if (ATGsite == UAGsite) {
+		if (Math.abs(ATGsite - UAGsite) <= 1) {
 			return new ArrayList<ExonInfo>();
 		}
 		return getRangeIso(ATGsite, UAGsite);
@@ -925,7 +923,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		result.downTss = downTss;
 		result.flagTypeGene = flagTypeGene;
 		result.lengthIso = lengthIso;
-		result.ismRNA = ismRNA;
 		result.UAGsite = UAGsite;
 		result.upTes = upTes;
 		result.upTss = upTss;
@@ -949,8 +946,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (cis5to3) {
 			gffGeneIsoInfo = new GffGeneIsoCis(isoName, gffDetailGene, geneType);
-		}
-		else {
+		} else {
 			gffGeneIsoInfo = new GffGeneIsoTrans(isoName, gffDetailGene, geneType);
 		}
 		return gffGeneIsoInfo;
@@ -959,8 +955,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (cis5to3) {
 			gffGeneIsoInfo = new GffGeneIsoCis(isoName, geneType);
-		}
-		else {
+		} else {
 			gffGeneIsoInfo = new GffGeneIsoTrans(isoName, geneType);
 		}
 		return gffGeneIsoInfo;

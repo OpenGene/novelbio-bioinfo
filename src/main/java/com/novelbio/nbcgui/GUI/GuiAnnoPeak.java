@@ -11,6 +11,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
+import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlquery.CtrlBatchAnnoPeak;
 
@@ -19,6 +20,8 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 import javax.swing.JProgressBar;
+import javax.swing.JComboBox;
+import javax.swing.JLayeredPane;
 /**
  * 批量注释，各种注释
  * @author zong0jie
@@ -42,15 +45,13 @@ public class GuiAnnoPeak extends JPanel implements GuiNeedOpenFile {
 	CtrlBatchAnnoPeak ctrlBatchAnno;
 	private JButton btnRun;
 	
-	JComboBoxData<Species> cmbSpecies;
-	JComboBoxData<String> cmbSpeciesVersion;
-	
 	ArrayList<String[]> lsGeneInfo;
 	private JTextField txtTssUp;
 	private JTextField txtTssDown;
 	private JTextField txtTesUp;
 	private JTextField txtTesDown;
 	private JCheckBox chckbxGenebody;
+	private GuiLayeredPaneSpeciesVersionGff layeredPaneSpecies;
 	/**
 	 * Create the panel.
 	 */
@@ -80,40 +81,35 @@ public class GuiAnnoPeak extends JPanel implements GuiNeedOpenFile {
 				selectChckPeakRangeAnno(chckPeakRange.isSelected());
 			}
 		});
-		chckPeakRange.setBounds(717, 147, 131, 22);
+		chckPeakRange.setBounds(717, 238, 131, 22);
 		add(chckPeakRange);
 		
 		txtColChrID = new JTextField();
-		txtColChrID.setBounds(717, 204, 114, 18);
+		txtColChrID.setBounds(717, 291, 114, 18);
 		add(txtColChrID);
 		txtColChrID.setColumns(10);
 		
 		JLabel lblChridcolumn = new JLabel("ChrIDColumn");
-		lblChridcolumn.setBounds(717, 178, 114, 14);
+		lblChridcolumn.setBounds(717, 269, 114, 14);
 		add(lblChridcolumn);
 		
 		txtColPeakStartMid = new JTextField();
-		txtColPeakStartMid.setBounds(717, 253, 114, 18);
+		txtColPeakStartMid.setBounds(717, 331, 114, 18);
 		add(txtColPeakStartMid);
 		txtColPeakStartMid.setColumns(10);
 		
 		lblPeakstartcolumn = new JLabel("PeakStartColumn");
-		lblPeakstartcolumn.setBounds(717, 236, 157, 14);
+		lblPeakstartcolumn.setBounds(717, 318, 157, 14);
 		add(lblPeakstartcolumn);
 		
 		txtColPeakEnd = new JTextField();
-		txtColPeakEnd.setBounds(721, 299, 114, 18);
+		txtColPeakEnd.setBounds(717, 374, 114, 18);
 		add(txtColPeakEnd);
 		txtColPeakEnd.setColumns(10);
 		
 		lblPeakendcolumn = new JLabel("PeakEndColumn");
-		lblPeakendcolumn.setBounds(717, 283, 131, 14);
+		lblPeakendcolumn.setBounds(717, 356, 131, 14);
 		add(lblPeakendcolumn);
-		
-		cmbSpeciesVersion = new JComboBoxData<String>();
-		
-		cmbSpeciesVersion.setBounds(717, 101, 118, 23);
-		add(cmbSpeciesVersion);
 		
 		btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
@@ -160,9 +156,7 @@ public class GuiAnnoPeak extends JPanel implements GuiNeedOpenFile {
 				ctrlBatchAnno.setFilterGeneBody(chckbxGenebody.isSelected());
 				
 				ctrlBatchAnno.setIsSummitSearch(!chckPeakRange.isSelected());
-				Species species = cmbSpecies.getSelectedValue();
-				species.setVersion(cmbSpeciesVersion.getSelectedValue());
-				
+				Species species = layeredPaneSpecies.getSelectSpecies();
 				ctrlBatchAnno.setSpecies(species);
 				ctrlBatchAnno.execute();
 				btnSave.setEnabled(false);
@@ -171,63 +165,57 @@ public class GuiAnnoPeak extends JPanel implements GuiNeedOpenFile {
 		btnRun.setBounds(717, 525, 118, 24);
 		add(btnRun);
 		
-		cmbSpecies = new JComboBoxData<Species>();
-		cmbSpecies.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Species species = cmbSpecies.getSelectedValue();
-				cmbSpeciesVersion.setMapItem(species.getMapVersion());
-			}
-		});
-		cmbSpecies.setBounds(717, 66, 118, 23);
-		add(cmbSpecies);
-		
 		txtTssUp = new JTextField();
-		txtTssUp.setBounds(720, 355, 52, 18);
+		txtTssUp.setBounds(717, 427, 52, 18);
 		add(txtTssUp);
 		txtTssUp.setColumns(10);
 		
 		txtTssDown = new JTextField();
-		txtTssDown.setBounds(784, 355, 52, 18);
+		txtTssDown.setBounds(781, 427, 52, 18);
 		add(txtTssDown);
 		txtTssDown.setColumns(10);
 		
 		JLabel lblTss = new JLabel("Tss");
-		lblTss.setBounds(717, 329, 69, 14);
+		lblTss.setBounds(719, 404, 69, 14);
 		add(lblTss);
 		
 		JLabel lblUp = new JLabel("Up");
-		lblUp.setBounds(717, 338, 69, 14);
+		lblUp.setBounds(719, 413, 69, 14);
 		add(lblUp);
 		
 		JLabel lblDown = new JLabel("Down");
-		lblDown.setBounds(779, 338, 69, 14);
+		lblDown.setBounds(781, 413, 69, 14);
 		add(lblDown);
 		
 		txtTesUp = new JTextField();
-		txtTesUp.setBounds(721, 411, 52, 18);
+		txtTesUp.setBounds(720, 472, 52, 18);
 		add(txtTesUp);
 		txtTesUp.setColumns(10);
 		
 		JLabel lblUp_1 = new JLabel("Up");
-		lblUp_1.setBounds(717, 396, 69, 14);
+		lblUp_1.setBounds(716, 457, 69, 14);
 		add(lblUp_1);
 		
 		txtTesDown = new JTextField();
-		txtTesDown.setBounds(784, 411, 52, 18);
+		txtTesDown.setBounds(783, 472, 52, 18);
 		add(txtTesDown);
 		txtTesDown.setColumns(10);
 		
 		JLabel lblDown_1 = new JLabel("Down");
-		lblDown_1.setBounds(784, 396, 69, 14);
+		lblDown_1.setBounds(783, 457, 69, 14);
 		add(lblDown_1);
 		
 		JLabel lblTes = new JLabel("Tes");
-		lblTes.setBounds(717, 385, 69, 14);
+		lblTes.setBounds(716, 446, 69, 14);
 		add(lblTes);
 		
 		chckbxGenebody = new JCheckBox("GeneBody");
-		chckbxGenebody.setBounds(717, 447, 131, 22);
+		chckbxGenebody.setBounds(717, 498, 131, 22);
 		add(chckbxGenebody);
+		
+		layeredPaneSpecies = new GuiLayeredPaneSpeciesVersionGff();
+		layeredPaneSpecies.setBounds(717, 58, 213, 164);
+		add(layeredPaneSpecies);
 		
 		initial();
 
@@ -237,11 +225,9 @@ public class GuiAnnoPeak extends JPanel implements GuiNeedOpenFile {
 		ctrlBatchAnno = new CtrlBatchAnnoPeak(this);
 		chckPeakRange.setSelected(true);
 		selectChckPeakRangeAnno(chckPeakRange.isSelected());
-		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
-		Species species = cmbSpecies.getSelectedValue();
-		cmbSpeciesVersion.setMapItem(species.getMapVersion());
 		btnSave.setEnabled(false);
 	}
+
 	private void selectChckPeakRangeAnno(boolean isSelected) {
 		if (isSelected) {
 			lblPeakstartcolumn.setText("PeakStartColumn");

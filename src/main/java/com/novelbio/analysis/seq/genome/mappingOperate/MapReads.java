@@ -43,13 +43,17 @@ public class MapReads extends MapReadsAbs{
 	 
 	 long readsSize = 0;
 	 
+	 long allReadsNum = 0;
+	 
 	 public void setSpecies(Species species) {
 		mapChrID2Len = species.getMapChromInfo();
 	}
 	
 	 /** 总共有多少reads参与了mapping，这个从ReadMapFile才能得到。 */
 	public long getAllReadsNum() {
-		long allReadsNum = 0;
+		if (allReadsNum > 0) {
+			return allReadsNum;
+		}
 		for (ChrMapReadsInfo chrMapReadsInfo : mapChrID2ReadsInfo.values()) {
 			allReadsNum = allReadsNum + chrMapReadsInfo.getReadsChrNum();
 		}
@@ -140,6 +144,7 @@ public class MapReads extends MapReadsAbs{
 	 * @throws Exception
 	 */
 	protected void ReadMapFileExp() throws Exception {
+		allReadsNum = 0;
 		setChrLenFromReadBed();
 		AlignRecord alignRecordFirst = alignSeqReader.readFirstLine();
 		if (startCod > 0 && alignRecordFirst.isCis5to3() == null) {
@@ -178,7 +183,7 @@ public class MapReads extends MapReadsAbs{
 				chrBpReads = new int[(int) (chrLength + 1)];// 同样为方便，0位记录总长度。这样实际bp就是实际长度
 				chrBpReads[0] = chrLength.intValue();
 				chrMapReadsInfo = new ChrMapReadsInfo(lastChr, getChrLen(lastChr), invNum, summeryType, FormulatToCorrectReads);
-				mapChrID2ReadsInfo.put(lastChr, chrMapReadsInfo);
+				mapChrID2ReadsInfo.put(lastChr.toLowerCase(), chrMapReadsInfo);
 			}
 			if (flag == false) //没有该染色体则跳过
 				continue;
@@ -203,7 +208,7 @@ public class MapReads extends MapReadsAbs{
 	 * 具体加和的处理方法
 	 * 给定一行信息，将具体内容加到对应的坐标上
 	 * @param tmp 本行分割后的信息
-	 * @param uniqReads 同一位点叠加后是否读取
+	 * @param uniqReads 同一位点叠加后是否读取, true不读取，false读取
 	 * @param tmpOld 上一组的起点终点，用于判断是否是在同一位点叠加
 	 * @param startCod 只截取前面一段的长度
 	 * @param cis5to3 是否只选取某一个方向的序列，也就是其他方向的序列会被过滤，不参与叠加

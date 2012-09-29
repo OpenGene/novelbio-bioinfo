@@ -25,6 +25,10 @@ import com.novelbio.database.service.servgeneanno.ServTaxID;
  * @author zong0jie
  */
 public class Species {
+	public static void main(String[] args) {
+		Species species = new Species(10090);
+		species.getMapGffTypeAll();
+	}
 	private static Logger logger = Logger.getLogger(Species.class);
 	/** 全部物种 */
 	public static final int ALL_SPECIES = 10;
@@ -48,6 +52,10 @@ public class Species {
 	String updateTaxInfoFile = "";
 	String updateSpeciesFile = "";
 	String sepVersionAndYear = "_year_";
+	
+	/** 需要获得哪一种gffType */
+	GFFtype gfftype;
+	
 	public Species() {}
 	public Species(int taxID) {
 		this.taxID = taxID;
@@ -190,6 +198,24 @@ public class Species {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromSeq();
 	}
+	/** 获得这个species在本version下的全体GffType */
+	public HashMap<String, GFFtype> getMapGffTypeAll() {
+		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		return speciesFile.getMapGffType();
+	}
+	/** 设定需要获取哪一种gff文件的注释 */
+	public void setGfftype(GFFtype gfftype) {
+		this.gfftype = gfftype;
+	}
+	/**
+	 * 指定version，和type，返回对应的gff文件，没有则返回null，
+	 * 根据设定的gfftype选择，如果没有设定gfftype，则选择最优先的gfftype。
+	 * 优先级由GFFtype来决定
+	 * @return gffFilePath
+	 */
+	public String getGffFile() {
+		return getGffFile(gfftype);
+	}
 	/**
 	 * 指定version，和type，返回对应的gff文件，没有则返回null
 	 * @param Type
@@ -198,16 +224,7 @@ public class Species {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getGffFile(gffType);
 	}
-	/**
-	 * 指定version，和type，返回对应的gff文件，没有则返回null，
-	 * 自动选择最优先的gfftype。
-	 * 优先级由GFFtype来决定
-	 * @return gffFilePath
-	 */
-	public String getGffFile() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
-		return speciesFile.getGffFile();
-	}
+
 	/**
 	 * 指定version，和type，返回对应的gff文件，没有则返回null，
 	 * 自动选择最优先的gfftype。
@@ -215,8 +232,11 @@ public class Species {
 	 * @return gffType
 	 */
 	public String getGffFileType() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
-		return speciesFile.getGffFileType();
+		if (gfftype == null) {
+			SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+			gfftype = GFFtype.getMapString2GffType().get(speciesFile.getGffFileType());
+		}
+		return gfftype.toString();
 	}
 	/**
 	 * 返回UCSC的gffRepeat

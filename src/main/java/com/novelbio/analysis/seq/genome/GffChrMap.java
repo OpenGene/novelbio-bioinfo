@@ -13,7 +13,11 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashCG;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsHanyanChrom;
@@ -26,6 +30,7 @@ import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.PlotHeatMap;
 import com.novelbio.base.plot.java.HeatChart;
+import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
@@ -42,18 +47,18 @@ import de.erichseifert.gral.util.GraphicsUtils;
 public class GffChrMap {
 	
 	public static void main(String[] args) {
-		int taxID = 4932;
-		String bedFile = "/media/winF/NBC/Project/Project_Invitrogen/WHB_yeast/mapping/WHB_nonUnique.bed";
-		BedSeq bedSeq = new BedSeq(bedFile);
-		bedSeq = bedSeq.sort();
-		bedSeq = bedSeq.extend(250);
-		GffChrAbs gffChrAbs = new GffChrAbs(taxID);
-		gffChrAbs.setMapReads(bedSeq.getFileName(), 1);
-		gffChrAbs.loadMapReads();
-		gffChrAbs.setPlotRegion(2000, 2000);
+		GffChrAbs gffChrAbs = new GffChrAbs();
+		Species species = new Species(10090);
+		species.setGfftype(GFFtype.GFF_UCSC);
+		MapReads mapReads = new MapReads();
+		mapReads.setBedSeq("/media/winF/NBC/Project/ChIP-Seq_LXW/mappingc007_filtered_extend_sorted.bed");
+		mapReads.setMapChrID2Len(species.getMapChromInfo());
+		mapReads.run();
+		gffChrAbs.setSpecies(species);
+		gffChrAbs.setMapReads(mapReads);
 		GffChrMap gffChrMap = new GffChrMap(gffChrAbs);
-		gffChrMap.plotAllChrDist("/media/winF/NBC/Project/Project_Invitrogen/WHB_yeast/mapping/readsChrDensity_NoneUnique/WHB_nonUniqueMapping");		
-//		gffChrMap.plotTssAllGene(1000, "/media/winF/NBC/Project/Project_Invitrogen/WHB_yeast/mapping/tss", GffDetailGene.TSS);
+		String resultFile = "/media/winF/NBC/Project/ChIP-Seq_LXW/tss";
+		gffChrMap.plotTssAllGene(1000, resultFile, GeneStructure.TSS);
 	}
 	
 	GffChrAbs gffChrAbs = new GffChrAbs();
@@ -122,7 +127,6 @@ public class GffChrMap {
 	 */
 	public double[] getChrInfo(String chrID, int thisInvNum, int type) {
 		double[] tmpResult = gffChrAbs.getMapReads().getRengeInfo(thisInvNum, chrID, 0, 0, type);
-		gffChrAbs.getMapReads().normDouble(tmpResult);
 		return tmpResult;
 	}
 	/**
@@ -134,7 +138,7 @@ public class GffChrMap {
 	public void plotAllChrDist(String outPathPrefix) {
 		ArrayList<String[]> chrlengthInfo = gffChrAbs.getSeqHash().getChrLengthInfo();
 		//find the longest chromosome's density
-		double[] chrReads = getChrDensity(gffChrAbs.getSeqHash().getChrLengthInfo().get(gffChrAbs.getSeqHash().getChrLengthInfo().size() - 1)[0], maxresolution);
+		double[] chrReads = getChrDensity(chrlengthInfo.get(chrlengthInfo.size() - 1)[0], maxresolution);
 		double axisY = MathComput.median(chrReads, 95)*4;
 		for (int i = chrlengthInfo.size() - 1; i >= 0; i--) {
 			try {
@@ -224,7 +228,6 @@ public class GffChrMap {
 	 */
 	private double[] getChrDensity(String chrID, int binNum) {
 		double[] tmpResult = gffChrAbs.getMapReads().getReadsDensity(chrID, 0, 0, binNum);
-		gffChrAbs.getMapReads().normDouble(tmpResult);
 		return tmpResult;
 	}
 	/**

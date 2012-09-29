@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 import javax.swing.JProgressBar;
+import javax.swing.JLayeredPane;
 
 /**
  * 批量注释，各种注释
@@ -41,9 +42,6 @@ public class GuiPeakStatistics extends JPanel {
 	CtrlPeakStatistics ctrlPeakStatistics;
 	private JButton btnRun;
 	
-	JComboBoxData<Species> cmbSpecies;
-	JComboBoxData<String> cmbSpeciesVersion;
-	
 	ArrayList<String[]> lsGeneInfo;
 	private JTextField txtTssUp;
 	private JTextField txtTssDown;
@@ -52,6 +50,7 @@ public class GuiPeakStatistics extends JPanel {
 	
 	String readFile = "";
 	
+	GuiLayeredPaneSpeciesVersionGff layeredPane;
 	/**
 	 * Create the panel.
 	 */
@@ -81,31 +80,26 @@ public class GuiPeakStatistics extends JPanel {
 				selectChckPeakRangeAnno(chckSetColSummit.isSelected());
 			}
 		});
-		chckSetColSummit.setBounds(717, 147, 131, 22);
+		chckSetColSummit.setBounds(723, 262, 131, 22);
 		add(chckSetColSummit);
 		
 		txtColChrID = new JTextField();
-		txtColChrID.setBounds(717, 204, 114, 18);
+		txtColChrID.setBounds(723, 319, 114, 18);
 		add(txtColChrID);
 		txtColChrID.setColumns(10);
 		
 		JLabel lblChridcolumn = new JLabel("ChrIDColumn");
-		lblChridcolumn.setBounds(717, 178, 114, 14);
+		lblChridcolumn.setBounds(723, 293, 114, 14);
 		add(lblChridcolumn);
 		
 		txtColPeakStartMid = new JTextField();
-		txtColPeakStartMid.setBounds(717, 253, 114, 18);
+		txtColPeakStartMid.setBounds(723, 368, 114, 18);
 		add(txtColPeakStartMid);
 		txtColPeakStartMid.setColumns(10);
 		
 		lblPeakstartcolumn = new JLabel("PeakSummitColumn");
-		lblPeakstartcolumn.setBounds(717, 236, 157, 14);
+		lblPeakstartcolumn.setBounds(723, 351, 157, 14);
 		add(lblPeakstartcolumn);
-		
-		cmbSpeciesVersion = new JComboBoxData<String>();
-		
-		cmbSpeciesVersion.setBounds(717, 101, 118, 23);
-		add(cmbSpeciesVersion);
 		
 		btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
@@ -150,8 +144,7 @@ public class GuiPeakStatistics extends JPanel {
 				ctrlPeakStatistics.setTssRange(tss);
 				ctrlPeakStatistics.setTesRange(tes);
 				
-				Species species = cmbSpecies.getSelectedValue();
-				species.setVersion(cmbSpeciesVersion.getSelectedValue());
+				Species species = layeredPane.getSelectSpecies();
 				
 				ctrlPeakStatistics.setSpecies(species);
 				ctrlPeakStatistics.execute();
@@ -161,59 +154,53 @@ public class GuiPeakStatistics extends JPanel {
 		btnRun.setBounds(717, 525, 118, 24);
 		add(btnRun);
 		
-		cmbSpecies = new JComboBoxData<Species>();
-		cmbSpecies.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Species species = cmbSpecies.getSelectedValue();
-				cmbSpeciesVersion.setMapItem(species.getMapVersion());
-			}
-		});
-		cmbSpecies.setBounds(717, 66, 118, 23);
-		add(cmbSpecies);
-		
 		txtTssUp = new JTextField();
-		txtTssUp.setBounds(720, 355, 52, 18);
+		txtTssUp.setBounds(720, 420, 52, 18);
 		add(txtTssUp);
 		txtTssUp.setColumns(10);
 		
 		txtTssDown = new JTextField();
-		txtTssDown.setBounds(784, 355, 52, 18);
+		txtTssDown.setBounds(784, 420, 52, 18);
 		add(txtTssDown);
 		txtTssDown.setColumns(10);
 		
 		JLabel lblTss = new JLabel("Tss");
-		lblTss.setBounds(717, 329, 69, 14);
+		lblTss.setBounds(717, 394, 69, 14);
 		add(lblTss);
 		
 		JLabel lblUp = new JLabel("Up");
-		lblUp.setBounds(717, 338, 69, 14);
+		lblUp.setBounds(717, 403, 69, 14);
 		add(lblUp);
 		
 		JLabel lblDown = new JLabel("Down");
-		lblDown.setBounds(779, 338, 69, 14);
+		lblDown.setBounds(779, 403, 69, 14);
 		add(lblDown);
 		
 		txtTesUp = new JTextField();
-		txtTesUp.setBounds(721, 411, 52, 18);
+		txtTesUp.setBounds(721, 476, 52, 18);
 		add(txtTesUp);
 		txtTesUp.setColumns(10);
 		
 		JLabel lblUp_1 = new JLabel("Up");
-		lblUp_1.setBounds(717, 396, 69, 14);
+		lblUp_1.setBounds(717, 461, 69, 14);
 		add(lblUp_1);
 		
 		txtTesDown = new JTextField();
-		txtTesDown.setBounds(784, 411, 52, 18);
+		txtTesDown.setBounds(784, 476, 52, 18);
 		add(txtTesDown);
 		txtTesDown.setColumns(10);
 		
 		JLabel lblDown_1 = new JLabel("Down");
-		lblDown_1.setBounds(784, 396, 69, 14);
+		lblDown_1.setBounds(784, 461, 69, 14);
 		add(lblDown_1);
 		
 		JLabel lblTes = new JLabel("Tes");
-		lblTes.setBounds(717, 385, 69, 14);
+		lblTes.setBounds(717, 450, 69, 14);
 		add(lblTes);
+		
+		layeredPane = new GuiLayeredPaneSpeciesVersionGff();
+		layeredPane.setBounds(717, 66, 152, 154);
+		add(layeredPane);
 		
 		initial();
 	}
@@ -222,9 +209,6 @@ public class GuiPeakStatistics extends JPanel {
 		ctrlPeakStatistics = new CtrlPeakStatistics(this);
 		chckSetColSummit.setSelected(true);
 		selectChckPeakRangeAnno(chckSetColSummit.isSelected());
-		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
-		Species species = cmbSpecies.getSelectedValue();
-		cmbSpeciesVersion.setMapItem(species.getMapVersion());
 		btnSave.setEnabled(false);
 	}
 	private void selectChckPeakRangeAnno(boolean isSelected) {

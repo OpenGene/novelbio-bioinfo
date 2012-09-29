@@ -49,6 +49,7 @@ public class GffDetailGene extends ListDetailAbs {
 	HashSet<GeneID> setGeneID;
 	
 	boolean removeDuplicateIso = false;
+	Boolean ismRNA = null;
 	/**
 	 * @param chrID 内部小写
 	 * @param locString
@@ -253,11 +254,14 @@ public class GffDetailGene extends ListDetailAbs {
 			return 0;
 		}
 		ArrayList<Integer> lslength = new ArrayList<Integer>();
+		//判定是否为mRNA
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			if (gffGeneIsoInfo.size() == 0)
+			
+			if (gffGeneIsoInfo.size() == 0 || (isMRNA() && !gffGeneIsoInfo.ismRNA()) ) {
 				lslength.add(0);
-			else
+			} else {
 				lslength.add(gffGeneIsoInfo.getLen());
+			}
 		}
 		if (lslength.size() == 0) {
 			logger.error("没有长度的iso");
@@ -273,6 +277,21 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		return id;
 	}
+    /** 本基因是否编码蛋白 */
+    public boolean isMRNA() {
+    	if (ismRNA != null) {
+			return ismRNA;
+		}
+		//判定是否为mRNA
+    	ismRNA = false;
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			if (gffGeneIsoInfo.ismRNA()) {
+				ismRNA = true;
+				break;
+			}
+		}
+		return ismRNA;
+    }
     /**
      * 获得该基因中最长的一条转录本的部分区域的信息。已经考虑过开闭区间问题
      * @param type 指定为INTRON,EXON,UTR5,UTR3
@@ -381,15 +400,13 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		removeDuplicateIso = true;
 		HashSet<GffGeneIsoInfo> hashIso = new HashSet<GffGeneIsoInfo>();
-		ArrayList<GffGeneIsoInfo> lsResult = new ArrayList<GffGeneIsoInfo>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			if (hashIso.contains(gffGeneIsoInfo)) {
+			if (hashIso.contains(gffGeneIsoInfo) && !gffGeneIsoInfo.ismRNA()) {
 				continue;
 			}
-			lsResult.add(gffGeneIsoInfo);
 			hashIso.add(gffGeneIsoInfo);
 		}
-		this.lsGffGeneIsoInfos = lsResult;
+		this.lsGffGeneIsoInfos = ArrayOperate.getArrayListValue(hashIso);
 	}
 	
 	/**

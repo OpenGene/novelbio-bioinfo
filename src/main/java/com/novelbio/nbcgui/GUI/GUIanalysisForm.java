@@ -27,8 +27,6 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
 
-
-
 /**
 * This code was edited or generated using CloudGarden's Jigloo
 * SWT/Swing GUI Builder, which is free for non-commercial
@@ -173,6 +171,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiSnpCalling = new GuiSnpCalling();
 				jTabbedPane1.add("SnpCalling", guiSnpCalling);
+				
+				GuiReadsAndExpInfo guiReadsAndExpInfo = new GuiReadsAndExpInfo();
+				jTabbedPane1.add("guiReadsAndExpInfo", guiReadsAndExpInfo);
 			}
 			pack();
 			this.setSize(1050, 699);

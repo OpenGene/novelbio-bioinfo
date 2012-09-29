@@ -279,20 +279,21 @@ public class MapBwa {
 				cmd = cmd + " -P ";//将基因组读入内存
 			}
 			cmd = cmd + " -n 10 -N 10 ";
-			cmd = cmd + chrFile + " " + sai1 + " "  + sai2 + " "  + leftFq + " "  + rightFq;
-			cmd = cmd + " > " + outFileName;
+			cmd = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(sai1) + " "  + CmdOperate.addQuot(sai2) + " "  + CmdOperate.addQuot(leftFq) + " "  + CmdOperate.addQuot(rightFq);
+			cmd = cmd + " > " + CmdOperate.addQuot(outFileName);
 		}
 		//这里可能不需要，unique mapping不是在sam文件中设定的
 		else {
 			cmd = this.ExePath + "bwa samse " + sampleGroup + "-n 100 ";
-			cmd = cmd + chrFile + " " + sai1 + " "  + leftFq;
-			cmd = cmd + " > " + outFileName;
+			cmd = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(sai1) + " "  + CmdOperate.addQuot(leftFq);
+			cmd = cmd + " > " +  CmdOperate.addQuot(outFileName);
 		}
 		cmdOperate = new CmdOperate(cmd,"bwaMappingSAI");
 		cmdOperate.run();
 		SamFile samFile = new SamFile(outFileName);
 		return samFile;
 	}
+	
 	private String addSamToFileName(String outFileName) {
 		if (outFileName.endsWith(".sam"))
 			return outFileName;

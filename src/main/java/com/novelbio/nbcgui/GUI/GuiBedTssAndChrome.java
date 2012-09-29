@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
+import javax.swing.JLayeredPane;
 
 /**
  * 批量注释，各种注释
@@ -47,9 +48,6 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	GffChrMap gffChrMap = new GffChrMap(gffChrAbs);
 	private JButton btnRunTss;
-	
-	JComboBoxData<Species> cmbSpecies;
-	JComboBoxData<String> cmbSpeciesVersion;
 	
 	ArrayList<String[]> lsGeneInfo;
 	private JTextField txtTssUp;
@@ -84,6 +82,7 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 	JRadioButton rdbtnAllgene;
 	JRadioButton rdbtnPeakcovered;
 	JRadioButton rdbtnReadgene;
+	private GuiLayeredPaneSpeciesVersionGff layeredPaneSpecies;
 
 	
 	/**
@@ -93,7 +92,7 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		setLayout(null);
 		
 		scrollPaneData = new JScrollPaneData();
-		scrollPaneData.setBounds(12, 64, 693, 207);
+		scrollPaneData.setBounds(12, 55, 693, 236);
 		add(scrollPaneData);
 		
 		btnOpenfile = new JButton("OpenGeneFile");
@@ -104,31 +103,26 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 				scrollPaneData.setItemLs(lsGeneInfo);
 			}
 		});
-		btnOpenfile.setBounds(717, 157, 157, 24);
+		btnOpenfile.setBounds(717, 224, 157, 24);
 		add(btnOpenfile);
 		
 		txtColGene = new JTextField();
-		txtColGene.setBounds(717, 312, 114, 18);
+		txtColGene.setBounds(717, 355, 114, 18);
 		add(txtColGene);
 		txtColGene.setColumns(10);
 		
 		JLabel lblColGene = new JLabel("colGene ColChrID");
-		lblColGene.setBounds(717, 295, 136, 14);
+		lblColGene.setBounds(717, 338, 136, 14);
 		add(lblColGene);
 		
 		txtColPeakStartMid = new JTextField();
-		txtColPeakStartMid.setBounds(717, 358, 114, 18);
+		txtColPeakStartMid.setBounds(717, 400, 114, 18);
 		add(txtColPeakStartMid);
 		txtColPeakStartMid.setColumns(10);
 		
 		lblColValue = new JLabel("ColValue ColStart");
-		lblColValue.setBounds(717, 342, 157, 14);
+		lblColValue.setBounds(717, 385, 157, 14);
 		add(lblColValue);
-		
-		cmbSpeciesVersion = new JComboBoxData<String>();
-		
-		cmbSpeciesVersion.setBounds(717, 101, 118, 23);
-		add(cmbSpeciesVersion);
 		
 		btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
@@ -163,16 +157,6 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		});
 		btnRunTss.setBounds(730, 542, 118, 24);
 		add(btnRunTss);
-		
-		cmbSpecies = new JComboBoxData<Species>();
-		cmbSpecies.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Species species = cmbSpecies.getSelectedValue();
-				cmbSpeciesVersion.setMapItem(species.getMapVersion());
-			}
-		});
-		cmbSpecies.setBounds(717, 66, 118, 23);
-		add(cmbSpecies);
 		
 		txtTssUp = new JTextField();
 		txtTssUp.setBounds(720, 515, 52, 18);
@@ -210,9 +194,7 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		btnLoading = new JButton("Loading");
 		btnLoading.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Species species = cmbSpecies.getSelectedValue();
-				species.setVersion(cmbSpeciesVersion.getSelectedValue());
-				gffChrAbs.setSpecies(species);
+				gffChrAbs.setSpecies(layeredPaneSpecies.getSelectSpecies());
 				
 				ctrlMapReads.setBedFile(txtBedFile.getText());
 				Boolean FilteredStrand = null;
@@ -233,7 +215,7 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		add(btnLoading);
 		
 		chckSortBig2Small = new JCheckBox("SortBig2Small");
-		chckSortBig2Small.setBounds(717, 450, 131, 22);
+		chckSortBig2Small.setBounds(717, 468, 131, 22);
 		add(chckSortBig2Small);
 		
 		txtSaveTo = new JTextField();
@@ -246,7 +228,7 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		add(lblJustRead);
 		
 		JLabel lblAdvancedSetup = new JLabel("Advanced Setup");
-		lblAdvancedSetup.setBounds(12, 284, 164, 14);
+		lblAdvancedSetup.setBounds(12, 295, 164, 14);
 		add(lblAdvancedSetup);
 		
 		chckUniqueMapping = new JCheckBox("UniqeMapping");
@@ -303,24 +285,24 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		add(lblResultbinnum);
 		
 		rdbtnAllgene = new JRadioButton("AllGene");
-		rdbtnAllgene.setBounds(713, 201, 151, 22);
+		rdbtnAllgene.setBounds(713, 256, 151, 22);
 		add(rdbtnAllgene);
 		
 		rdbtnPeakcovered = new JRadioButton("PeakCovered");
-		rdbtnPeakcovered.setBounds(713, 225, 151, 22);
+		rdbtnPeakcovered.setBounds(713, 282, 151, 22);
 		add(rdbtnPeakcovered);
 		
 		rdbtnReadgene = new JRadioButton("ReadGene");
-		rdbtnReadgene.setBounds(713, 251, 151, 22);
+		rdbtnReadgene.setBounds(713, 308, 151, 22);
 		add(rdbtnReadgene);
 		
 		txtColEnd = new JTextField();
-		txtColEnd.setBounds(717, 415, 114, 18);
+		txtColEnd.setBounds(717, 442, 114, 18);
 		add(txtColEnd);
 		txtColEnd.setColumns(10);
 		
 		JLabel lblColend = new JLabel("ColEnd");
-		lblColend.setBounds(717, 393, 69, 14);
+		lblColend.setBounds(717, 421, 69, 14);
 		add(lblColend);
 		
 		txtHeatMapSmall = new JTextField();
@@ -329,11 +311,11 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		txtHeatMapSmall.setColumns(10);
 		
 		lblHeatmapsmall = new JLabel("heatmapSmall");
-		lblHeatmapsmall.setBounds(499, 328, 102, 14);
+		lblHeatmapsmall.setBounds(499, 338, 102, 14);
 		add(lblHeatmapsmall);
 		
 		lblHeatmapbig = new JLabel("heatmapBig");
-		lblHeatmapbig.setBounds(498, 417, 87, 14);
+		lblHeatmapbig.setBounds(499, 431, 87, 14);
 		add(lblHeatmapbig);
 		
 		txtHeatmapBig = new JTextField();
@@ -350,13 +332,14 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		btnRunchrome.setBounds(730, 590, 118, 24);
 		add(btnRunchrome);
 		
+		layeredPaneSpecies = new GuiLayeredPaneSpeciesVersionGff();
+		layeredPaneSpecies.setBounds(713, 54, 198, 158);
+		add(layeredPaneSpecies);
+		
 		initial();
 	}
 	
 	private void initial() {
-		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
-		Species species = cmbSpecies.getSelectedValue();
-		cmbSpeciesVersion.setMapItem(species.getMapVersion());
 		chckbxOnlycisreads.setSelected(false);
 		chckbxOnlytransreads.setSelected(false);
 		chckOneSiteOneReads.setSelected(false);

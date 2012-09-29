@@ -50,6 +50,7 @@ public interface GffHashGeneInf  {
 	GffDetailGene searchLOC(GeneID copedID);
 	/**
 	 * 给定LOCID，返回所对应的转录本
+	 * 没有就返回最长转录本
 	 * @param LOCID
 	 * @return
 	 */

@@ -79,6 +79,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrAnno;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
@@ -136,8 +137,26 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		char c = 'M' + 32;
-		System.out.println(c);
+		SnpAnnotation snpAnnotation = new SnpAnnotation();
+		GffChrAbs gffChrAbs = new GffChrAbs();
+		gffChrAbs.setChrFile("/media/winE/Bioinformatics/genome/human/hg18_UCSC/ChromFa", null);
+		gffChrAbs.setGffFile(9606, NovelBioConst.GENOME_GFF_TYPE_UCSC, "/media/winE/Bioinformatics/genome/human/hg18_UCSC/human_hg18_refseq_UCSC");
+		
+		gffChrAbs.setFilterGeneBody(true, false, false);
+		gffChrAbs.setFilterTssTes(new int[]{-2000,2000}, new int[]{-100,100});
+		GffChrAnno gffChrAnno = new GffChrAnno(gffChrAbs);
+		gffChrAnno.setColChrID(2);
+		gffChrAnno.setSearchSummit(true);
+		gffChrAnno.setColSummit(3);
+		gffChrAnno.annoFile("/home/zong0jie/桌面/allels_for_jie.txt", "/home/zong0jie/桌面/allels_for_jie_anno_location.txt");
+		gffChrAnno.run();
+		
+//		snpAnnotation.setGffChrAbs(gffChrAbs);
+//		snpAnnotation.addTxtSnpFile("/home/zong0jie/桌面/allels_for_jie.txt", "/home/zong0jie/桌面/allels_for_jie_anno.txt");
+//		snpAnnotation.setCol(2, 3, 4, 5);
+//		snpAnnotation.run();
+//		
+		
 	}
 	
 	private static void test(int[] mm) {

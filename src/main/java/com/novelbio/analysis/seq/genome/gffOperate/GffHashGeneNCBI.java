@@ -74,7 +74,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		
 		
 		GffHashGeneNCBI gffHashGeneNCBI = new GffHashGeneNCBI();
-		gffHashGeneNCBI.ReadGffarray("/media/winE/Bioinformatics/genome/pig/sus10_NCBI/gff/ref_Sscrofa10.2_top_level_modify.gff3");
+		gffHashGeneNCBI.ReadGffarray("/media/winE/Bioinformatics/genome/human/hg19_GRCh37/gff/ref_GRCh37.p9_top_level_modify.gff3");
 		GffGeneIsoInfo gffGeneIsoInfo = gffHashGeneNCBI.searchISO("XM_003481161");		
 		System.out.println(gffGeneIsoInfo.getName());
 		gffGeneIsoInfo = gffHashGeneNCBI.searchISO("IGKV");
@@ -157,6 +157,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   
 	   for (String content : txtgff.readlines()) {
 		   if(content.charAt(0)=='#') continue;
+		   
 		   String[] ss = content.split("\t");//按照tab分开
 		   //当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中
 		   if (setIsGene.contains(ss[2])) {
