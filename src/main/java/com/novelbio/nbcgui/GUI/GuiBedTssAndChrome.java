@@ -141,7 +141,8 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		btnRunTss = new JButton("RunTss");
 		btnRunTss.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				gffChrAbs.setPlotRegion(Integer.parseInt(txtTssUp.getText()), Integer.parseInt(txtTssDown.getText()));
+				gffChrAbs.setSpecies(layeredPaneSpecies.getSelectSpecies());
+				gffChrMap.setPlotRange(new int[]{Integer.parseInt(txtTssUp.getText()), Integer.parseInt(txtTssDown.getText())});
 				gffChrMap.setGffChrAbs(gffChrAbs);
 				if (rdbtnAllgene.isSelected()) {
 					plotAllTssTes();
@@ -194,8 +195,6 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		btnLoading = new JButton("Loading");
 		btnLoading.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				gffChrAbs.setSpecies(layeredPaneSpecies.getSelectSpecies());
-				
 				ctrlMapReads.setBedFile(txtBedFile.getText());
 				Boolean FilteredStrand = null;
 				if (chckbxOnlycisreads.isSelected()) {
@@ -207,7 +206,8 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 				ctrlMapReads.setFilter(chckOneSiteOneReads.isSelected(), (Integer)spinLoadFirstBp.getValue(), chckUniqueMapping.isSelected(), FilteredStrand);
 				ctrlMapReads.setInvNum((Integer)spinInvNum.getValue());
 				ctrlMapReads.setNormalType(MapReadsAbs.SUM_TYPE_MEAN);
-				gffChrAbs.setMapReads(ctrlMapReads.getMapReads());
+				ctrlMapReads.setSpecies(layeredPaneSpecies.getSelectSpecies());
+				gffChrMap.setMapReads(ctrlMapReads.getMapReads());
 				ctrlMapReads.execute();
 			}
 		});
@@ -407,11 +407,6 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 	public void setGuiFileOpen(GUIFileOpen guiFileOpen) {
 		this.guiFileOpen = guiFileOpen;
 	}
-	
-	
-	
-	
-	
 	public JProgressBar getProcessBar() {
 		return progressBar;
 	}

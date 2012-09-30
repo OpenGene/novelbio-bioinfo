@@ -49,10 +49,19 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	TxtReadandWrite txtOutFile;
 	String outFile = "";
 	
+	int[] tssRange;
+	int[] tesRange; 
+	
 	public GffChrSeq() {}
 	
 	public GffChrSeq(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
+	}
+	public void setTssRange(int[] tssRange) {
+		this.tssRange = tssRange;
+	}
+	public void setTesRange(int[] tesRange) {
+		this.tesRange = tesRange;
 	}
 	public void setSpecies(Species species) {
 		gffChrAbs.setSpecies(species);
@@ -355,10 +364,10 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			lsExonInfos = gffGeneIsoInfo.getUTR5seq();
 		}
 		else if (geneStructure.equals(GeneStructure.TSS)) {
-			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),gffChrAbs.tss[0], gffChrAbs.tss[1]);
+			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),tssRange[0], tssRange[1]);
 		}
 		else if (geneStructure.equals(GeneStructure.TES)) {
-			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),gffChrAbs.tes[0], gffChrAbs.tes[1]);
+			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),tesRange[0], tesRange[1]);
 		}
 		if (lsExonInfos.size() == 0) {
 			return null;

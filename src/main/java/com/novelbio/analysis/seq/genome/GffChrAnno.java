@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genome;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +16,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -36,7 +38,6 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	public static void main(String[] args) {
 		Species species = new Species(39947);
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		gffChrAbs.setFilterTssTes(new int[]{-2000, -1000}, null);
 		GffChrAnno gffChrAnno = new GffChrAnno(gffChrAbs);
 		gffChrAnno.setColChrID(1);
 		gffChrAnno.setColStartEnd(2, 3);
@@ -55,6 +56,16 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	int colStart = 0;
 	int colEnd = 0;
 	int colSummit = -1;
+	
+	int[] tss = new int[]{-1500, 1500};
+	int[] tes = null;
+	boolean genebody = false;
+	boolean UTR5 = false;
+	boolean UTR3 = false;
+	boolean exonFilter = false;
+	boolean intronFilter = false;
+	boolean filtertss = false;
+	boolean filtertes = false;
 	
 	ArrayList<String[]> lsGeneInfo = new ArrayList<String[]>();
 	ArrayList<String[]> lsResult = new ArrayList<String[]>();
@@ -225,13 +236,13 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 			return null;
 		}
 		ArrayList<String[]> lsAnno = null;
-		gffCodGeneDu.setExon(gffChrAbs.exonFilter);
-		gffCodGeneDu.setGeneBody(gffChrAbs.genebody);
-		gffCodGeneDu.setIntron(gffChrAbs.intronFilter);
-		gffCodGeneDu.setTes(gffChrAbs.tes);
-		gffCodGeneDu.setTss(gffChrAbs.tss);
-		gffCodGeneDu.setUTR3(gffChrAbs.UTR3);
-		gffCodGeneDu.setUTR5(gffChrAbs.UTR5);
+		gffCodGeneDu.setExon(exonFilter);
+		gffCodGeneDu.setGeneBody(genebody);
+		gffCodGeneDu.setIntron(intronFilter);
+		gffCodGeneDu.setTes(tes);
+		gffCodGeneDu.setTss(tss);
+		gffCodGeneDu.setUTR3(UTR3);
+		gffCodGeneDu.setUTR5(UTR5);
 		try {
 			lsAnno = gffCodGeneDu.getAnno();
 
@@ -275,10 +286,10 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	 * location
 	 */
 	private void getAnnoLocSumit(ArrayList<String[]> lsAnno, GffDetailGene gffDetailGene, int coord) {
-		gffDetailGene.setTssRegion(gffChrAbs.tss);
-		gffDetailGene.setTesRegion(gffChrAbs.tes);
+		gffDetailGene.setTssRegion(tss);
+		gffDetailGene.setTesRegion(tes);
 		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
-		if (!gffGeneIsoInfo.isCodLocFilter(coord, gffChrAbs.filtertss, gffChrAbs.filtertes, gffChrAbs.genebody, gffChrAbs.UTR5, gffChrAbs.UTR3, gffChrAbs.exonFilter, gffChrAbs.intronFilter)) {
+		if (!gffGeneIsoInfo.isCodLocFilter(coord, filtertss, filtertes, genebody, UTR5, UTR3, exonFilter, intronFilter)) {
 			return;
 		}
 		

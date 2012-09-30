@@ -7,6 +7,7 @@ import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiRunningBarAbs;
 
 public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>{
@@ -29,6 +30,9 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>
 	}
 	public MapReads getMapReads() {
 		return mapReads;
+	}
+	public void setSpecies(Species species) {
+		mapReads.setMapChrID2Len(species.getMapChromInfo());
 	}
 	/**
 	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
