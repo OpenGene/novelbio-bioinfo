@@ -102,7 +102,6 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		this.colSummit = colSummit - 1;
 		searchSummit = true;
 	}
-
 	/** true查找peak的最高点，也就是找单个点，
 	 * false查找peak两端，看夹住了什么基因
 	 * 默认false
@@ -113,6 +112,30 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	public void setLsGeneInfo(ArrayList<String[]> lsGeneInfo) {
 		this.lsGeneInfo = lsGeneInfo;
 	}
+	public void setTss(int[] tss) {
+		this.filtertss = true;
+		this.tss = tss;
+	}
+	public void setTes(int[] tes) {
+		this.filtertes = true;
+		this.tes = tes;
+	}
+	public void setFilterGeneBody(boolean genebody, boolean exonFilter, boolean intronFilter) {
+		this.genebody = genebody;
+		this.exonFilter = exonFilter;
+		this.intronFilter = intronFilter;
+	}
+	public void setFilterUTR(boolean utr5, boolean utr3) {
+		this.UTR5 = utr5;
+		this.UTR3 = utr3;
+	}
+	public void setFiltertss(boolean filtertss) {
+		this.filtertss = filtertss;
+	}
+	public void setFiltertes(boolean filtertes) {
+		this.filtertes = filtertes;
+	}
+	
 	/**
 	 * 首先设定需要注释的区域，如tss，tes，genebody等
 	 * 给定txt的文件，和染色体编号，染色体起点终点，和输出文件，将peak覆盖到的区域注释出来

@@ -58,9 +58,10 @@ public class CtrlBatchAnnoPeak implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 		this.filterGeneBody = filterGeneBody;
 	}
 	public void execute() {
-		gffChrAnno.getGffChrAbs().setFilterTssTes(filterTss, filterTes);
-		gffChrAnno.getGffChrAbs().setFilterGeneBody(filterGeneBody, filterExon, filterIntron);
-		gffChrAnno.getGffChrAbs().setFilterUTR(filter5UTR, filter3UTR);
+		gffChrAnno.setTss(filterTss);
+		gffChrAnno.setTes(filterTes);
+		gffChrAnno.setFilterGeneBody(filterGeneBody, filterExon, filterIntron);
+		gffChrAnno.setFilterUTR(filter5UTR, filter3UTR);
 		Thread thread = new Thread(gffChrAnno);
 		thread.start();
 	}
