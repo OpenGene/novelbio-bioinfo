@@ -539,8 +539,7 @@ public class ArrayOperate {
 		}
 		ArrayList<V> lsResult = new ArrayList<V>();
 		Collection<V> values = hashMap.values();
-		for(V value:values)
-		{
+		for(V value:values) {
 			lsResult.add(value);
 		}
 		return lsResult;

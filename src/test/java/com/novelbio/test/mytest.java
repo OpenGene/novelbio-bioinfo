@@ -34,6 +34,8 @@ import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -93,6 +95,7 @@ import com.novelbio.analysis.seq.reseq.ModifySeq;
 import com.novelbio.analysis.seq.resequencing.MapInfoSnpIndel;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
+import com.novelbio.analysis.seq.resequencing.SnpFilter;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.analysis.tools.Mas3.getProbID;
@@ -133,12 +136,12 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		ArrayList<String> lStrings = new ArrayList<String>();
-		lStrings.add("11"); lStrings.add("22");
-		String[] aa = lStrings.toArray(new String[1]);
-		for (String string : aa) {
-			System.out.println(string);
+		ArrayList<Integer> lssort = new ArrayList<Integer>();
+		Collections.sort(lssort);
+		for (Integer integer : lssort) {
+			System.out.println(integer);
 		}
+		System.out.println("stop");
 	}
 	
 	private void HG18() {

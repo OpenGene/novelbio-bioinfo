@@ -553,7 +553,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * 返回该种形式错配以及相应序列所含有的reads堆叠数
 	 * 从hash表中获得
 	 * @param mapInfoSnpIndel 正常的别的样本的信息
-	 * @return 出错返回-1
+	 * @return 如果输入的mapInfoSnpIndelQuery中没有错配的信息，则返回null
 	 */
 	public SiteSnpIndelInfo getSnpIndelNum(MapInfoSnpIndel mapInfoSnpIndelQuery) {
 		if (mapInfoSnpIndelQuery.getRefSnpIndelStart() != getRefSnpIndelStart()) {
@@ -573,6 +573,10 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @return
 	 */
 	public SiteSnpIndelInfo getSnpIndel(SiteSnpIndelInfo siteSnpIndelInfo) {
+		if (siteSnpIndelInfo == null) {
+			logger.error("输入的查找位点没有错配信息，本位点：" + getRefSnpIndelStart());
+			return null;
+		}
 		return getSnpIndel(siteSnpIndelInfo.referenceSeq, siteSnpIndelInfo.thisSeq);
 	}
 	/**
@@ -608,16 +612,10 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	/**
 	 * 返回所有的非ref的基因以及对应的种类和数量
 	 * 每个都设定sampleName
+	 * 如果没有SiteSnp，则返回本项
 	 */
 	public ArrayList<SiteSnpIndelInfo> getLsAllenInfoSortBig2Small() {
 		ArrayList<SiteSnpIndelInfo> lsAllenInfo = ArrayOperate.getArrayListValue(mapAllen2Num);
-		if (lsAllenInfo.size() == 0) {
-			SiteSnpIndelInfo siteSnpIndelInfo = getSiteSnpIndelInfoNone(refBase, refBase);
-			if (siteSnpIndelInfo != null) {
-				lsAllenInfo.add(siteSnpIndelInfo);
-			}
-			return lsAllenInfo;
-		}
 		for (SiteSnpIndelInfo siteSnpIndelInfo : lsAllenInfo) {
 			siteSnpIndelInfo.setSampleName(sampleName);
 		}
