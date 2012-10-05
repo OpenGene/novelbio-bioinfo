@@ -4,53 +4,114 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.htmlparser.Node;
+import org.htmlparser.NodeFilter;
+import org.htmlparser.Parser;
+import org.htmlparser.filters.AndFilter;
+import org.htmlparser.filters.HasAttributeFilter;
+import org.htmlparser.filters.NodeClassFilter;
+import org.htmlparser.filters.StringFilter;
+import org.htmlparser.filters.TagNameFilter;
+import org.htmlparser.util.NodeList;
+import org.htmlparser.util.ParserException;
+import org.htmlparser.util.SimpleNodeIterator;
+
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.dataOperate.WebFetchOld;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 
-public class PixivOperate 
-{
+public class PixivOperate {
+	public static void main(String[] args) throws ParserException {
+		
+		PixivOperate pixivOperate = new PixivOperate();
+		pixivOperate.setUrlAuther(338118);
+		System.out.println(pixivOperate.getPageNum());
+	}
+	WebFetch webFetchPixiv=new WebFetch();
+	String urlAuther;
 	
-	WebFetchOld pixiv=new WebFetchOld();
+	String name = "facemun";
+	String password = "f12344321n";
+	
+	/** 本作者有多少图片 */
+	int allPictureNum = 0;
+	/** 保存读取的图片队列 */
+	ConcurrentLinkedQueue<PixivPicture> queuePixivPictures = new ConcurrentLinkedQueue<PixivPicture>();
+	
+	PixivOperate() {
+		getcookies();
+	}
 	/**
 	 * 获得pixiv的cookies
 	 */
-    public void getcookies()
-    {
-	   String[][] postContent=new String[3][2];
-	   postContent[0][0]="mode";postContent[0][1]="login";
-		   postContent[1][0]="pixiv_id";postContent[1][1]="facemun";
-			   postContent[2][0]="pass";postContent[2][1]="f12344321n";
-	  BufferedReader aaa= pixiv.PostFetch(postContent,"http://www.pixiv.net/index.php",true);
-	  
-	  
-	   //pixiv.releaseConnection();	   
-	/**
-	  String content="";
-	  try {
-		while((content=aaa.readLine())!=null)
-		   {
-			 System.out.println(content);
-		
-			 if(content.contains("<title>"))
-			 {
-				name=catchID(content);
-				pixiv.releaseConnection();
-				return name;
-			 }
-			 
-		   }
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	*/
+    private void getcookies() {
+    		if (webFetchPixiv.getCookies() != null) {
+    			return;
+    		}
+    		Map<String, String> mapPostKey2Value = new HashMap<String, String>();
+    		mapPostKey2Value.put("mode", "login");
+    		mapPostKey2Value.put("pixiv_id", name);
+    		mapPostKey2Value.put("pass", password);
+    		webFetchPixiv.setPostParam(mapPostKey2Value);
+    		webFetchPixiv.setUrl("http://www.pixiv.net/index.php");
+    		webFetchPixiv.query();
    }
-
+    /**
+     * @param urlAuther 的id
+     */
+	public void setUrlAuther(int urlAutherid) {
+		this.urlAuther = "http://www.pixiv.net/member_illust.php?id=" + urlAutherid;
+	}
+	/**
+	 * 获得总共几页
+	 * @return
+	 * @throws ParserException 
+	 */
+	private int getPageNum() throws ParserException {
+		webFetchPixiv.setUrl(urlAuther);
+		webFetchPixiv.query();
+		
+		String aa = webFetchPixiv.getResponse();
+		Parser parser = new Parser(aa);
+		NodeFilter filterPage = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "pages"));
+		NodeList nodeListPage = parser.parse(filterPage);
+		return getNodeAllPage(nodeListPage);
+	}
+	private int getNodeAllPage(NodeList nodePage) {
+		int pageNum = 1;
+		//获得pages的子元素
+        SimpleNodeIterator iteratorPages = nodePage.elements();
+        NodeList nodePage1 = null;
+        if (iteratorPages.hasMoreNodes()) {
+        		nodePage1 = iteratorPages.nextNode().getChildren();
+		}
+        //提取具体的page
+		NodeFilter filterPage = new TagNameFilter("a");
+        NodeList nodeListPages = nodePage1.extractAllNodesThatMatch(filterPage, true);
+        SimpleNodeIterator iterator = nodeListPages.elements();  
+        while (iterator.hasMoreNodes()) {  
+            Node node = iterator.nextNode();
+            String result = node.toPlainTextString();
+            if (result.contains("下一个")) {
+				break;
+			}
+            pageNum = Integer.parseInt(result);
+        }
+        return pageNum;
+	}
+	
+	private void getAll() {
+		
+	}
     /**
      * 抓取网页中的作者和图片信息，返回二维数组
      * 0：图片
@@ -58,13 +119,13 @@ public class PixivOperate
      * 如果没抓成功，返回null
      * @param ID
      */
-    private String[] execute(String ID)
-    {  
-    	String url="http://www.pixiv.net/member_illust.php?mode=medium&illust_id="+ID;
-    	pixiv.GET_CONTENT_CHARSET="UTF-8";
- 	   BufferedReader test=pixiv.GetFetch(url,true);
- 	   String content;
- 	  String[] name;
+	private String[] execute(String ID) {
+		for (String content : webFetchPixiv.readResponse()) {
+			
+		}
+		BufferedReader test=pixiv.GetFetch(url,true);
+		String content;
+		String[] name;
  	   try {
  		while((content=test.readLine())!=null)
  		   {
@@ -89,8 +150,7 @@ public class PixivOperate
      * @param title
      * @return
      */
-    private String[] catchID(String title) 
-    {
+    private String[] catchID(String title) {
     	    String[] result=new String[2];
     	    Pattern pattern =Pattern.compile("「(.*?)」", Pattern.CASE_INSENSITIVE);  //flags - 匹配标志，可能包括 CASE_INSENSITIVE、MULTILINE、DOTALL、UNICODE_CASE、 CANON_EQ、UNIX_LINES、LITERAL 和 COMMENTS 的位掩码  // CASE_INSENSITIVE,大小写不敏感，MULTILINE 多行
     	    Matcher matcher;//matcher.groupCount() 返回此匹配器模式中的捕获组数。
@@ -108,8 +168,7 @@ public class PixivOperate
      * @param filepath
      * @param newPath
      */
-    public void readfile(String filepath,String newPath)
-    {
+    public void readfile(String filepath,String newPath) {
     	 File a=new File(filepath);
          String[] file=a.list();
          //匹配文件名与后缀名
@@ -161,14 +220,14 @@ public class PixivOperate
 			   continue;
 		   }
 		   
-		   filename[0]=filename[0].replace("\\", "");
-		   filename[0]=filename[0].replace("/", "");
-		   filename[0]=filename[0].replace("\"", "");
-		   filename[0]=filename[0].replace("*", "");
-		   filename[0]=filename[0].replace("?", "");
-		   filename[0]=filename[0].replace("<", "");
-		   filename[0]=filename[0].replace(">", "");
-		   filename[0]=filename[0].replace("|", "");
+		   outName = name.replace("\\", "");
+		   outName = name.replace("/", "");
+		   outName = name.replace("\"", "");
+		   outName = name.replace("*", "");
+		   outName = name.replace("?", "");
+		   outName = name.replace("<", "");
+		   outName = name.replace(">", "");
+		   outName = name.replace("|", "");
 		   
 		   
 		   filename[1]=filename[1].replace("\\", "");
@@ -181,7 +240,7 @@ public class PixivOperate
 		   filename[1]=filename[1].replace("|", "");
 		   
 		   String oldfilename=filepath+"/"+oldFile;
-		   /////String newfilename=filename[0]+namep+"."+houzhuiming;
+		   /////String newfilename= name+namep+"."+houzhuiming;
 		   //FileOperate.changeFileName(oldfilename, newfilename);//文件改名
 		   //FileOperate.moveFile(filepath+"/"+newfilename, newPath+"/"+filename[1]);//移动文件
 		   
@@ -198,8 +257,7 @@ public class PixivOperate
      * @param AuthorUrl pixiv某个作者的网址
      * @param SavePath 保存txt文本
      */
-    public void downloadPicture(String AuthorUrl,String SavetxtPath) 
-    {
+    public void downloadPicture(String AuthorUrl,String SavetxtPath) {
     	
     	BufferedReader pixivauther=pixiv.GetFetch(AuthorUrl,true);
     	
@@ -245,11 +303,92 @@ public class PixivOperate
 //		}
     	pixiv.getDownLoad("http://i2.pixiv.net/img50/img/banri620/28353378.jpg", "/media/winF/NBC/Project/Project_ZDB_Lab/HY/BZ_20120521/mappingresult/", true, "http://www.pixiv.net/member_illust.php?mode=big&illust_id=28353378");
 	}
-    
-    
-    
-    
-    
+}
+
+class PixivPicture {
+	/** 我们给每个pixiv的编号，从大到小排列，为了是浏览图片的时候可以方便按照顺序显示图片 */
+	int pictureNum;
+	/** pixiv的图片ID */
+	int pictureID;
+	/** 是否是连环画，有子图片 */
+	boolean subPicture;
+	/** 如果是连环画，子图片的ID*/
+	int subID;
+	
+	String pictureUrl;
+	String refUrl;
+	
+	String savePath;
+
+	String name;
+	String auther;
+	
+	public void setPictureUrl(String pictureUrl) {
+		this.pictureUrl = pictureUrl;
+	}
+	public void setRefUrl(String refUrl) {
+		this.refUrl = refUrl;
+	}
+	public void setAuther(String auther) {
+		this.auther = auther;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	/** pixiv的图片ID */
+	public void setPictureID(int pictureID) {
+		this.pictureID = pictureID;
+	}
+	/** 是否是连环画，有子图片 */
+	public void setSubPicture(boolean subPicture) {
+		this.subPicture = subPicture;
+	}
+	/** 我们给每个pixiv的编号，从大到小排列，为了是浏览图片的时候可以方便按照顺序显示图片 */
+	public void setPictureNum(int pictureNum) {
+		this.pictureNum = pictureNum;
+	}
+	/** 如果是连环画，子图片的ID*/
+	public void setSubID(int subID) {
+		this.subID = subID;
+	}
+	
+	 /**
+	  * 因为pixiv中的作者名或文件名里面总是有各种奇怪的字符，有些不能成为文件夹名，所以要将他们替换掉
+     * 输入旧文件名，将其转变为新文件名
+     * @param filepath
+     * @param newPath
+     */
+    private String generateoutName(String name) {
+    		String outName;
+    		outName = name.replace("\\", "");
+    		outName = outName.replace("/", "");
+    		outName= outName.replace("\"", "");
+    		outName = outName.replace("*", "");
+    		outName = outName.replace("?", "");
+    		outName = outName.replace("<", "");
+    		outName = outName.replace(">", "");
+    		outName = outName.replace("|", "");
+    		return outName;
+    }
+    private String getSavePath() {
+		String downLoadPath = FileOperate.addSep(savePath) + generateoutName(auther) + FileOperate.getSepPath();
+		FileOperate.createFolders(downLoadPath);
+		return downLoadPath;
+    }
+    private String getSaveName() {
+    		String saveName = pictureNum + "_" + name + "_" + pictureID;
+    		if (subPicture) {
+    			saveName = saveName + "_" + subID;
+    		}
+    		return getSavePath() + saveName;
+    }
+    public boolean downloadPicture(WebFetch webFetch) {
+    		webFetch.setUrl(pictureUrl);
+    		webFetch.setRefUrl(refUrl);
+    		boolean sucessQuery = webFetch.query();
+    		boolean sucessSave = webFetch.download(getSaveName());
+    		return sucessQuery && sucessSave;
+    }
     
     
 }

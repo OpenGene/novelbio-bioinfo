@@ -434,8 +434,7 @@ public class WebFetchOld {
 			 */
 			get = (GetMethod) MethodReady(get, changCookies,lastURL);
 			InputStream instream = get.getResponseBodyAsStream();
-			FileOutputStream out = new FileOutputStream(new File(saveFilePath
-					+ stFileName));
+			FileOutputStream out = new FileOutputStream(new File(saveFilePath + stFileName));
 
 			byte[] b = new byte[BUFFER];
 			int len = 0;

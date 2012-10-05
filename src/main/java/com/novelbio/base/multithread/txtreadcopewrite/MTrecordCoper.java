@@ -7,7 +7,7 @@ import com.novelbio.base.multithread.RunProcess;
 public abstract class MTrecordCoper<T extends MTRecordCope> extends RunProcess<MTRecordCope>{
 	
 	protected MTRecoreReader<?, ? extends MTRecordRead> mtOneThreadReader;
-	/** 读取得到的内容久保存在这里面 */
+	/** 读取得到的内容就保存在这里面 */
 	protected AbstractQueue<? extends MTRecordRead> absQueue;
 	
 	/** 主要是看读取是否完毕 */
