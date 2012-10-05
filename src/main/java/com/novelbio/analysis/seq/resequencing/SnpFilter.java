@@ -147,7 +147,7 @@ public class SnpFilter {
 			return SnpIndelHomoHetoType.RefHomo;
 		}
 		else if (numRef >= Snp_HetoLess_Contain_RefNumMin && numAll >= Snp_HetoLess_ReadsAllNumMin
-				&& ((double)numSnpIndel/numAll < Snp_Hete_Contain_SnpProp_Min || numSnpIndel == 1 )//只有1条snp很难说明问题 
+				&& ((double)numSnpIndel/numAll < Snp_Hete_Contain_SnpProp_Min && numSnpIndel >= 1 )//只有1条snp很难说明问题 
 				) {
 			if (siteSnpIndelInfo == SnpIndelType.INSERT || siteSnpIndelInfo == SnpIndelType.DELETION) {
 				return SnpIndelHomoHetoType.IndelHetoLess;

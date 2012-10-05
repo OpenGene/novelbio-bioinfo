@@ -14,7 +14,7 @@ import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.domain.geneanno.SepSign;
 /** 单个pileup文件的snp calling */
 public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
-	private static Logger logger = Logger.getLogger(SNPGATKcope.class);
+	private static Logger logger = Logger.getLogger(SnpCalling.class);
 
 	/** 主要写snp的基因信息 */
 	GffChrAbs gffChrAbs;
@@ -136,7 +136,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 				snpFilterDetailInfo.allLines = readLines;
 				snpFilterDetailInfo.allByte = readByte;
 				setRunInfo(snpFilterDetailInfo);
-				logger.info("readLines:" + readLines);
+				//logger.info("readLines:" + readLines);
 			}
 			if (snpNum %5000 == 0) {
 				System.gc();
@@ -150,7 +150,10 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			if (lsFilteredSnp.size() > 0) {
 				snpNum++;
 				addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
-				writeInFile(mapInfoSnpIndel, lsFilteredSnp);
+				boolean writeIn = writeInFile(mapInfoSnpIndel, lsFilteredSnp);
+				if (!writeIn) {
+					 snpFilter.getFilterdSnp(mapInfoSnpIndel);
+				}
 				mapInfoSnpIndel = null;
 			}
 		}
@@ -164,6 +167,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		snpFilter.clearSampleFilterInfo();
 		snpFilter.addSampleFilterInfo(snpGroupFilterInfo);
 	}
+	private static int count =0;
 	/** 将结果装入哈希表里面 */
 	private void addSnp_2_mapSiteInfo2MapInfoSnpIndel(MapInfoSnpIndel mapInfoSnpIndel) {
 		if (mapSiteInfo2MapInfoSnpIndel == null)
@@ -171,6 +175,8 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 
 		String key = mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart();
 		if (mapSiteInfo2MapInfoSnpIndel.containsKey(key)) {
+			count++;
+			logger.error(count);
 			MapInfoSnpIndel maInfoSnpIndelExist = mapSiteInfo2MapInfoSnpIndel.get(key);
 			maInfoSnpIndelExist.addAllenInfo(mapInfoSnpIndel);
 			return;
@@ -178,16 +184,24 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		else {
 			mapSiteInfo2MapInfoSnpIndel.put(key, mapInfoSnpIndel);
 		}
+		logger.error("tree map size: "+mapSiteInfo2MapInfoSnpIndel.size());
 	}
 	
-	private void writeInFile(MapInfoSnpIndel mapInfoSnpIndel, ArrayList<SiteSnpIndelInfo> lsFilteredSnp) {
+	private boolean writeInFile(MapInfoSnpIndel mapInfoSnpIndel, ArrayList<SiteSnpIndelInfo> lsFilteredSnp) {
 		if (txtSnpOut == null) {
-			return;
+			return false;
 		}
 		ArrayList<String[]> lsInfo = mapInfoSnpIndel.toStringLsSnp(lsFilteredSnp);
+		if (lsInfo.size() == 0) {
+			logger.error("error");
+			ArrayList<String[]> lsInfo2 = mapInfoSnpIndel.toStringLsSnp(lsFilteredSnp);
+		}
 		for (String[] strings : lsInfo) {
 			txtSnpOut.writefileln(strings);
+			return true;
 		}
+		
+		return false;
 	}
 
 }

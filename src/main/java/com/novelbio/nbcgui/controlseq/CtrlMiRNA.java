@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.ibatis.migration.commands.NewCommand;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;

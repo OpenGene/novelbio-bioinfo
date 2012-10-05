@@ -260,18 +260,19 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		int exIntronNum = getNumCodInEle(location);
 		int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
 		if (exIntronNum > 0) {
-			if (cis5to3 != null)
+			if (cis5to3 != null) {
 				loc2ExInEnd = Math.abs(get(NumExon).getEndCis() - location);//距离本外显子终止  Cnnnnnnn
-			else
+			} else {
 				loc2ExInEnd = Math.abs(get(NumExon).getEndAbs() - location);//距离本外显子终止  Cnnnnnnn
+			}
 		}
 		//0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
 		else if(exIntronNum < 0) {
-			if (cis5to3 != null) 
+			if (cis5to3 != null) {
 				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartCis() - location) - 1;// 距后一个外显子 nnCnnnnN
-			else
+			} else {
 				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartAbs() - location) - 1;// 距后一个外显子 nnCnnnnN
-			
+			}
 		}
 		hashLocExInEnd.put(location, loc2ExInEnd);
 		return loc2ExInEnd;

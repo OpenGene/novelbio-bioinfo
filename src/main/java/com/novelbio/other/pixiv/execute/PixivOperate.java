@@ -44,6 +44,9 @@ public class PixivOperate {
 	
 	/** 本作者有多少图片 */
 	int allPictureNum = 0;
+	/** 总共几页 */
+	int allPages = 0;
+	
 	/** 保存读取的图片队列 */
 	ConcurrentLinkedQueue<PixivPicture> queuePixivPictures = new ConcurrentLinkedQueue<PixivPicture>();
 	
@@ -76,15 +79,35 @@ public class PixivOperate {
 	 * @return
 	 * @throws ParserException 
 	 */
-	private int getPageNum() throws ParserException {
+	private void setPictureNum_And_PageNum() throws ParserException {
 		webFetchPixiv.setUrl(urlAuther);
 		webFetchPixiv.query();
 		
-		String aa = webFetchPixiv.getResponse();
-		Parser parser = new Parser(aa);
+		String pixivAutherInfo = webFetchPixiv.getResponse();
+		Parser parser = new Parser(pixivAutherInfo);
+		
+		NodeFilter filterNum = new AndFilter(new TagNameFilter("a"), new HasAttributeFilter("class", "active_gray"));
+		NodeList nodeListNum = parser.parse(filterNum);
+		allPictureNum = getNodeAllPicture(nodeListNum);
+		
 		NodeFilter filterPage = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "pages"));
 		NodeList nodeListPage = parser.parse(filterPage);
-		return getNodeAllPage(nodeListPage);
+		allPages = getNodeAllPage(nodeListPage);
+	}
+	/**
+	 * 待测试
+	 * @param nodeNumLsBefore
+	 * @return
+	 */
+	private int getNodeAllPicture(NodeList nodeNumLsBefore) {
+        SimpleNodeIterator iteratorPages = nodeNumLsBefore.elements();
+        Node nodeNumBefore = null;
+        if (iteratorPages.hasMoreNodes()) {
+        	nodeNumBefore = iteratorPages.nextNode();
+		}
+        Node nodeNum = nodeNumBefore.getNextSibling();
+        return Integer.parseInt(nodeNum.toPlainTextString());
+	
 	}
 	private int getNodeAllPage(NodeList nodePage) {
 		int pageNum = 1;
@@ -92,7 +115,10 @@ public class PixivOperate {
         SimpleNodeIterator iteratorPages = nodePage.elements();
         NodeList nodePage1 = null;
         if (iteratorPages.hasMoreNodes()) {
-        		nodePage1 = iteratorPages.nextNode().getChildren();
+        	nodePage1 = iteratorPages.nextNode().getChildren();
+		}
+        else {
+			return 1;
 		}
         //提取具体的page
 		NodeFilter filterPage = new TagNameFilter("a");
@@ -108,6 +134,7 @@ public class PixivOperate {
         }
         return pageNum;
 	}
+	
 	
 	private void getAll() {
 		
