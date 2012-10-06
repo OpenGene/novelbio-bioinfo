@@ -51,8 +51,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * @param append 对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
 	 * false：如果出现重名序列，则用长的序列去替换短的序列，默认为false
 	 */
-	public SeqFastaHash(String chrFile, String regx,
-			boolean append) {
+	public SeqFastaHash(String chrFile, String regx, boolean append) {
 		super(chrFile, regx);
 		this.append = append;
 		setFile();

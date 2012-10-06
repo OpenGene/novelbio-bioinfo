@@ -177,7 +177,6 @@ public class SNPGATKcope {
 	 * 只要设定好snp文件即可，内部自动做snp calling
 	 *  */
 	public void readSnpDetailFromPileUp() {
-		lsFilteredSnp = ArrayOperate.getArrayListValue(mapSiteInfo2MapInfoSnpIndel);
 		for (String[] sample2vcf : lsSample2VcfFiles) {
 			addVcfToLsSnpIndel(sample2vcf[0], sample2vcf[1]);
 		}
@@ -186,6 +185,7 @@ public class SNPGATKcope {
 		}
 		addPileupToLsSnpIndel();
 		getSnpDetail(mapSiteInfo2MapInfoSnpIndel.values());
+		lsFilteredSnp = ArrayOperate.getArrayListValue(mapSiteInfo2MapInfoSnpIndel);
 	}
 	
 	/** 
@@ -218,6 +218,9 @@ public class SNPGATKcope {
 		lsFilteredSite.clear();
 		lsFilteredSnp.clear();
 		for (MapInfoSnpIndel mapInfoSnpIndel : mapSiteInfo2MapInfoSnpIndel.values()) {
+			if (mapInfoSnpIndel.getRefID().equals("XM_003500889") && mapInfoSnpIndel.getRefSnpIndelStart() == 2736) {
+				logger.error("stop");
+			}
 			ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfo = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
 			if (lsSiteSnpIndelInfo.size() > 0) {
 				lsFilteredSnp.add(mapInfoSnpIndel);

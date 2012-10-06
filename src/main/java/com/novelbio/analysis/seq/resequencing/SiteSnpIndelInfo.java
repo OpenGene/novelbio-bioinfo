@@ -380,10 +380,14 @@ public abstract class SiteSnpIndelInfo {
 		return (chrID + SepSign.SEP_ID + Loc + SepSign.SEP_ID + referenceSeq 
 				+ SepSign.SEP_ID + thisSeq).toLowerCase();
 	}
-	
+	public void clean() {
+		mapinfoRefSeqIntactAA.clear();
+		mapSample2thisBaseNum.clear();
+	}
 	public static enum SnpIndelType {
 		INSERT, DELETION, MISMATCH, CORRECT
 	}
+
 }
 /**
  * 貌似与SiteSnpIndelInfoSnp一模一样
@@ -438,7 +442,11 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 			return;
 		}
 		else {
-			NR = gffChrAbs.getSeqHash().getSeq(mapInfoSnpIndel.getRefID(), lsTmp, false);
+			try {
+				NR = gffChrAbs.getSeqHash().getSeq(mapInfoSnpIndel.getRefID(), lsTmp, false);
+			} catch (Exception e) {
+				NR = gffChrAbs.getSeqHash().getSeq(mapInfoSnpIndel.getRefID(), lsTmp, false);
+			}
 		}
 		mapinfoRefSeqIntactAA.setCis5to3(gffGeneIsoInfo.isCis5to3());
 		mapinfoRefSeqIntactAA.setSeq(NR,false);

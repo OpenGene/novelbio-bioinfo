@@ -7,7 +7,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 public class SiteSnpIndelInfoFactory {
 	private static Logger logger = Logger.getLogger(SiteSnpIndelInfoFactory.class);
 	
-	public static SiteSnpIndelInfo creatSiteSnpIndelInfo(MapInfoSnpIndel mapInfoSnpIndel, GffChrAbs gffChrAbs, String referenceSeq, String thisSeq) {
+	public static SiteSnpIndelInfo creatSiteSnpIndelInfo(MapInfoSnpIndel mapInfoSnpIndel, String referenceSeq, String thisSeq) {
 		 referenceSeq = referenceSeq.toUpperCase(); thisSeq = thisSeq.toUpperCase();
 		 
 		if (referenceSeq.length() > 1 && thisSeq.length() > 1) {

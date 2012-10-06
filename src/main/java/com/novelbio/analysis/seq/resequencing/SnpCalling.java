@@ -123,7 +123,6 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		txtSnpOut = new TxtReadandWrite(outPutFile, true);
 		TxtReadandWrite txtReadPileUp = new TxtReadandWrite(pileupFile, false);
 		setFilter(sampleName);
-		int snpNum = 0;
 		for (String pileupLines : txtReadPileUp.readlines()) {
 			readLines ++;
 			readByte += pileupFile.length();
@@ -136,11 +135,11 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 				snpFilterDetailInfo.allLines = readLines;
 				snpFilterDetailInfo.allByte = readByte;
 				setRunInfo(snpFilterDetailInfo);
-				//logger.info("readLines:" + readLines);
+				logger.info("readLines:" + readLines);
 			}
-			if (snpNum %5000 == 0) {
-				System.gc();
-				snpNum++;//为了防止snp数量连续好多循环都没增加，然后可能连续的调用gc
+			if (readLines % 100000 == 0) {
+//				System.gc();
+
 			}
 			////////////////////////////////////////////////
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
@@ -148,14 +147,20 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			
 			ArrayList<SiteSnpIndelInfo> lsFilteredSnp = snpFilter.getFilterdSnp(mapInfoSnpIndel);
 			if (lsFilteredSnp.size() > 0) {
-				snpNum++;
-				addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
 				boolean writeIn = writeInFile(mapInfoSnpIndel, lsFilteredSnp);
-				if (!writeIn) {
-					 snpFilter.getFilterdSnp(mapInfoSnpIndel);
+				if (mapSiteInfo2MapInfoSnpIndel != null) {
+					addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
 				}
-				mapInfoSnpIndel = null;
+				else {
+					mapInfoSnpIndel.clear();
+				}
+				if (!writeIn) {
+					logger.error("出现错误");
+				}
+			} else {
+				mapInfoSnpIndel.clear();
 			}
+			mapInfoSnpIndel = null;
 		}
 
 		txtSnpOut.close();
@@ -167,24 +172,22 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		snpFilter.clearSampleFilterInfo();
 		snpFilter.addSampleFilterInfo(snpGroupFilterInfo);
 	}
-	private static int count =0;
 	/** 将结果装入哈希表里面 */
 	private void addSnp_2_mapSiteInfo2MapInfoSnpIndel(MapInfoSnpIndel mapInfoSnpIndel) {
-		if (mapSiteInfo2MapInfoSnpIndel == null)
-			return;
-
 		String key = mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart();
 		if (mapSiteInfo2MapInfoSnpIndel.containsKey(key)) {
-			count++;
-			logger.error(count);
 			MapInfoSnpIndel maInfoSnpIndelExist = mapSiteInfo2MapInfoSnpIndel.get(key);
 			maInfoSnpIndelExist.addAllenInfo(mapInfoSnpIndel);
 			return;
 		}
 		else {
 			mapSiteInfo2MapInfoSnpIndel.put(key, mapInfoSnpIndel);
+			
+			int snpNum = mapSiteInfo2MapInfoSnpIndel.size();
+			if (snpNum % 10000 == 0) {
+				logger.info("tree map size: "+ snpNum);
+			}
 		}
-		logger.error("tree map size: "+mapSiteInfo2MapInfoSnpIndel.size());
 	}
 	
 	private boolean writeInFile(MapInfoSnpIndel mapInfoSnpIndel, ArrayList<SiteSnpIndelInfo> lsFilteredSnp) {
@@ -194,7 +197,6 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		ArrayList<String[]> lsInfo = mapInfoSnpIndel.toStringLsSnp(lsFilteredSnp);
 		if (lsInfo.size() == 0) {
 			logger.error("error");
-			ArrayList<String[]> lsInfo2 = mapInfoSnpIndel.toStringLsSnp(lsFilteredSnp);
 		}
 		for (String[] strings : lsInfo) {
 			txtSnpOut.writefileln(strings);

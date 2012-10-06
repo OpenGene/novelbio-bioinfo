@@ -14,11 +14,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLHandshakeException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -28,6 +30,7 @@ import org.apache.http.ParseException;
 import org.apache.http.ProtocolException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -36,14 +39,23 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParamBean;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
@@ -61,9 +73,14 @@ import org.apache.http.util.EntityUtils;
 public class WebFetch {
 	public static void main(String[] args) {
 		WebFetch webFetch = new WebFetch();
-		webFetch.setUrl("http://www.baidu.com/img/baidu_jgylogo3.gif");
-		webFetch.download("/Volumes/DATA/aaaa.gif");
+		GetThread getThread1 = new GetThread(webFetch, "http://www.baidu.com/img/baidu_jgylogo3.gif", "/media/winF/NBC/Project/RNASeq_Snp_WJ120725/1.gif");
+		GetThread getThread2 = new GetThread(webFetch, "http://www.baidu.com/img/baidu_jgylogo3.gif", "/media/winF/NBC/Project/RNASeq_Snp_WJ120725/2.gif");
+		Thread thread = new Thread(getThread1);
+		Thread thread2 = new Thread(getThread2);
+		thread.start();
+		thread2.start();
 	}
+	
 	public static final int HTTPTYPE_POST = 2;
 	public static final int HTTPTYPE_GET = 4;
 	public static final int HTTPTYPE_DOWNLOAD = 12;
@@ -72,19 +89,32 @@ public class WebFetch {
 	 */
 	private final static int BUFFER = 1024;
 	
+	static PoolingClientConnectionManager cm;
+	static {
+		SchemeRegistry schemeRegistry = new SchemeRegistry();
+		schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
+		schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
+		cm = new PoolingClientConnectionManager(schemeRegistry);
+		// Increase max total connection to 200
+		cm.setMaxTotal(12);//setMaxTotalConnections(200);
+		// Increase default max connection per route to 20
+		cm.setDefaultMaxPerRoute(12);
+		// Increase max connections for localhost:80 to 50
+		HttpHost localhost = new HttpHost("locahost", 80);
+		cm.setMaxPerRoute(new HttpRoute(localhost), 50);
+	}
+	
 	String url;
-	DefaultHttpClient httpclient = new DefaultHttpClient();
-	HttpParams httpParams;
+	DefaultHttpClient httpclient;
 	ArrayList<BasicHeader> lsHeaders = new ArrayList<BasicHeader>();
 	
 	HttpRequestBase httpRequest;
 	UrlEncodedFormEntity postEntity;
 	
-	//返回的东西
-	HttpResponse response;
 	/** 好像httpclient会自动保存cookie */
 	CookieStore cookieStore;
-	InputStream instream;
+
+//	InputStream instream;
 	
 	int methodType = HTTPTYPE_GET;
 	private Charset charset;
@@ -94,10 +124,11 @@ public class WebFetch {
 		setHeader();
 	}
 	private void initial() {
+		httpclient = new DefaultHttpClient(cm);
 		//设定重试
 		httpclient.setHttpRequestRetryHandler(new MyRetryHandler());
 		//设定http query的参数等
-		httpParams = new BasicHttpParams();
+		HttpParams httpParams = new BasicHttpParams();
 		HttpProtocolParamBean paramsBean = new HttpProtocolParamBean(httpParams); 
 		paramsBean.setVersion(HttpVersion.HTTP_1_1);
 		paramsBean.setContentCharset("UTF8");
@@ -210,8 +241,8 @@ public class WebFetch {
 	 * @throws Exception 
 	 * @throws IOException
 	 */
-	private Iterable<String> readResponseExp() throws Exception {
-		 final BufferedReader bufread =  getResponseReader();
+	private Iterable<String> readResponseExp(InputStream inputStream) throws Exception {
+		 final BufferedReader bufread =  getResponseReader(inputStream);
 		return new Iterable<String>() {
 			public Iterator<String> iterator() {
 				return new Iterator<String>() {
@@ -246,7 +277,7 @@ public class WebFetch {
 	/** 获得返回的bufferReader类
 	 * 貌似会自动重定向，如果不会的话，可以解析HttpResponse的头文件，获得重定向的url，然后再次get或者post
 	 *  */	
-	private BufferedReader getResponseReader() throws ClientProtocolException, IOException {
+	private BufferedReader getResponseReader(InputStream instream) throws ClientProtocolException, IOException {
 		if (instream == null) {
 			return null;
 		}
@@ -303,7 +334,9 @@ public class WebFetch {
 		closeStream();
 		HttpResponse httpResponse = httpclient.execute(getQuery());
 		int httpstatus = httpResponse.getStatusLine().getStatusCode();
-		cookieStore = httpclient.getCookieStore();
+		synchronized (this) {
+			cookieStore = httpclient.getCookieStore();
+		}
 		HttpEntity entity = httpResponse.getEntity();
         ContentType contentType = ContentType.getOrDefault(entity);
         charset = contentType.getCharset();
@@ -337,6 +370,24 @@ public class WebFetch {
 		closeStream();
 		try { httpclient.getConnectionManager().shutdown(); } catch (Exception e) { }
 	}
+	
+	
+	static class GetThread extends Thread {
+		WebFetch webFetch;
+		String url;
+		String download;
+		public GetThread(WebFetch webFetch, String url, String download) { 
+			this.webFetch = webFetch; 
+			this.url = url; 
+			this.download = download;
+		} 
+		@Override 
+		public void run() {
+			webFetch.setUrl(url);
+			webFetch.query();
+			webFetch.download(download);
+		} 
+	} 
 }
 /**
  * 请求重试处理
@@ -371,4 +422,38 @@ class MyRetryHandler implements HttpRequestRetryHandler {
 		return false;
 	}
 	
+}
+
+class WebFetchIdleConnectionMonitorThread extends Thread {
+	private final ClientConnectionManager connMgr;
+	private volatile boolean shutdown;
+
+	public WebFetchIdleConnectionMonitorThread(ClientConnectionManager connMgr) {
+		super();
+		this.connMgr = connMgr;
+	}
+
+	@Override
+	public void run() {
+		try {
+			while (!shutdown) {
+				synchronized (this) {
+					wait(5000);
+					// 关闭过期连接
+					connMgr.closeExpiredConnections();
+					// 可选地，关闭空闲超过30秒的连接
+					connMgr.closeIdleConnections(30, TimeUnit.SECONDS);
+				}
+			}
+		} catch (InterruptedException ex) {
+			// 终止
+		}
+	}
+
+	public void shutdown() {
+		shutdown = true;
+		synchronized (this) {
+			notifyAll();
+		}
+	}
 }

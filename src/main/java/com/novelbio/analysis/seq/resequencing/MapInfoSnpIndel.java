@@ -206,8 +206,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	public boolean isSameIso(MapInfoSnpIndel mapInfoSnpIndel) {
 		if (gffGeneIsoInfo != null && gffGeneIsoInfo.equals(mapInfoSnpIndel.getGffIso())) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -451,24 +450,11 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		String indel = String.copyValueOf(tmpSeq);
 		if (indelSymbol == '+') {
 			thisSeq = thisSeq + indel;
-		}
-		else {
+		} else {
 			referenceSeq = referenceSeq + indel;
 		}
-		SiteSnpIndelInfo siteSnpIndelInfo = null;
-		String indelInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
 		
-		if (mapAllen2Num.containsKey(indelInfo)) {
-			siteSnpIndelInfo = mapAllen2Num.get(indelInfo);
-			siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
-			siteSnpIndelInfo.addThisBaseNum();
-		}
-		else {
-			siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, referenceSeq, thisSeq);
-			siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
-			siteSnpIndelInfo.setThisReadsNum(1);
-			mapAllen2Num.put(indelInfo, siteSnpIndelInfo);
-		}
+		setSnpIndel(referenceSeq, thisSeq);
 		return index;
 	}
 	
@@ -482,23 +468,28 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 */
 	private String setMisMatchAndGetRefBase(char[] pipInfo, int thisIndex) {
 		String thisSeq = pipInfo[thisIndex] + "";
-		if (isNextSiteIndel(pipInfo, thisIndex))
+		if (isNextSiteIndel(pipInfo, thisIndex)) {
 			return thisSeq;
-		
+		}
+		setSnpIndel(refBase, thisSeq);
+		return refBase;
+	}
+	/** 给定snp的refsequence和thisSeq，将错配信息加入mapAllen2Num中 */
+	private void setSnpIndel(String referenceSeq, String thisSeq) {
+		String snpIndelInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
 		SiteSnpIndelInfo siteSnpIndelInfo = null;
-		String mismatchInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, refBase, thisSeq);
-		if (mapAllen2Num.containsKey(mismatchInfo)) {
-			siteSnpIndelInfo = mapAllen2Num.get(mismatchInfo);
+		
+		if (mapAllen2Num.containsKey(snpIndelInfo)) {
+			siteSnpIndelInfo = mapAllen2Num.get(snpIndelInfo);
 			siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
 			siteSnpIndelInfo.addThisBaseNum();
 		}
 		else {
-			siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, refBase, thisSeq);
+			siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, referenceSeq, thisSeq);
 			siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
 			siteSnpIndelInfo.setThisReadsNum(1);
-			mapAllen2Num.put(mismatchInfo, siteSnpIndelInfo);
+			mapAllen2Num.put(snpIndelInfo, siteSnpIndelInfo);
 		}
-		return refBase;
 	}
 	/** 有些已经在vcf里面查过的snp会有该snp的depth信息，所以这里先清空本样本所有snp数值 */
 	private void clearSampleReadsNum() {
@@ -512,7 +503,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	}
 	/** 返回加入的siteSnpIndelInfo */
 	public SiteSnpIndelInfo addAllenInfo(String referenceSeq, String thisSeq) {
-		SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, referenceSeq, thisSeq);
+		SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, referenceSeq, thisSeq);
 		siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
 		mapAllen2Num.put(SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq), siteSnpIndelInfo);
 		return siteSnpIndelInfo;
@@ -589,7 +580,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 */
 	public SiteSnpIndelInfo getSnpIndel(String referenceSeq, String thisSeq) {
 		String tmpInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
-		SiteSnpIndelInfo siteSnpIndelInfo =  mapAllen2Num.get(tmpInfo);
+		SiteSnpIndelInfo siteSnpIndelInfo = mapAllen2Num.get(tmpInfo);
 		if (siteSnpIndelInfo == null) {
 			siteSnpIndelInfo = getSiteSnpIndelInfoNone(referenceSeq, thisSeq);
 		}
@@ -630,7 +621,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			return null;
 		}
 		if (sampleRefReadsInfo.isSearchSampileupFile() == true) {
-			SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, gffChrAbs, refSequence, thisSequence);
+			SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, refSequence, thisSequence);
 			siteSnpIndelInfo.setSampleName(sampleName);
 			siteSnpIndelInfo.setThisReadsNum(0);
 			return siteSnpIndelInfo;
@@ -896,7 +887,12 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		logger.error("克隆出错");
 		return null;
 	}
-	
+	public void clear() {
+		gffChrAbs = null;
+		gffGeneIsoInfo = null;
+		mapAllen2Num.clear();
+		mapSample2NormReadsInfo.clear();
+	}
 }
 /** 某个样本在该位点的reference reads数量 */
 class SampleRefReadsInfo {

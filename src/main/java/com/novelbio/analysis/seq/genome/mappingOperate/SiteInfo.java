@@ -518,7 +518,9 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		}
 		return false;
 	}
-
 	
+	public void clear() {
+		seqFasta = null;
+	}
 
 }

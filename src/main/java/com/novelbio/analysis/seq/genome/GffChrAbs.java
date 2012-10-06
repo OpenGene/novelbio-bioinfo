@@ -100,7 +100,7 @@ public class GffChrAbs {
 	 * 则用该正则表达式提取含有该文件名的文件 单文件默认为"";文件夹默认为"\\bchr\\w*"；
 	 * 
 	 * @param chrFile
-	 * @param regx
+	 * @param regx null和""都走默认
 	 */
 	public void setChrFile(String chrFile, String regx) {
 		if (FileOperate.isFileExist(chrFile)
