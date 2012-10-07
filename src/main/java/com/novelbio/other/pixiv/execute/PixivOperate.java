@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
@@ -22,13 +22,13 @@ import org.htmlparser.util.SimpleNodeIterator;
 
 import com.novelbio.base.dataOperate.WebFetch;
 
-
+/** 并发下载pixiv的图片 */
 public class PixivOperate {
 	public static void main(String[] args) throws ParserException, InterruptedException, ExecutionException {
 		
 		PixivOperate pixivOperate = new PixivOperate();
 		pixivOperate.setUrlAuther(1196643);
-		pixivOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/pixivTest");
+		pixivOperate.setSavePath("/Users/zongjie/Downloads/test");
 		pixivOperate.running();
 	}
 	WebFetch webFetchPixiv = WebFetch.getInstance();
@@ -74,36 +74,56 @@ public class PixivOperate {
 		this.urlAuther = "http://www.pixiv.net/member_illust.php?id=" + urlAutherid;
 	}
 	public void setSavePath(String savePath) {
-		this.savePath = savePath;
+		this.savePath = savePath.trim();
 	}
 	public void running() throws InterruptedException, ExecutionException {
 		ArrayList<PixivGetPictureUrlToDownload> lsPrepareDownloads = getLsPrepareDownload();
 		//等待要获得下载url的序列
-		ExecutorService executorGetUrlPrepToDownload = Executors.newFixedThreadPool(3);
-		
+		ThreadPoolExecutor executorGetUrlPrepToDownload = new ThreadPoolExecutor(1, 3, 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
 		//等待下载的类
-		ExecutorService executorDownload = Executors.newFixedThreadPool(3);
-		
-		LinkedList<Future<ArrayList<PixivUrlDownLoad>>> lsUrlPrepToDownLoad = new LinkedList<Future<ArrayList<PixivUrlDownLoad>>>();
-		
-		LinkedList<Future<PixivUrlDownLoad>> lsFailToDownLoad = new LinkedList<Future<PixivUrlDownLoad>>();
-		
-		
-		
+		ThreadPoolExecutor executorDownload = new ThreadPoolExecutor(1, 3, 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
+
+		LinkedList<Future<PixivGetPictureUrlToDownload>> lsUrlPrepToDownLoad = new LinkedList<Future<PixivGetPictureUrlToDownload>>();
+		LinkedList<Future<PixivUrlDownLoad>> lsFutureDownLoad = new LinkedList<Future<PixivUrlDownLoad>>();
+
 		for (PixivGetPictureUrlToDownload pixivGetPictureUrlToDownload : lsPrepareDownloads) {
-			Future<ArrayList<PixivUrlDownLoad>> lsResult = executorGetUrlPrepToDownload.submit(pixivGetPictureUrlToDownload);
-			lsUrlPrepToDownLoad.add(lsResult);
+			Future<PixivGetPictureUrlToDownload> result = executorGetUrlPrepToDownload.submit(pixivGetPictureUrlToDownload);
+			lsUrlPrepToDownLoad.add(result);
 		}
-		while (!lsUrlPrepToDownLoad.isEmpty()) {
-			Future<ArrayList<PixivUrlDownLoad>> futureLsToDownload = lsUrlPrepToDownLoad.poll();
-			if (futureLsToDownload.isDone()) {
-				ArrayList<PixivUrlDownLoad> lsPixivUrlDownLoads = futureLsToDownload.get();
-				for (PixivUrlDownLoad pixivUrlDownLoad : lsPixivUrlDownLoads) {
-					lsFailToDownLoad.add(executorDownload.submit(pixivUrlDownLoad));
+		
+		while (executorGetUrlPrepToDownload.getActiveCount() > 0 || lsUrlPrepToDownLoad.size() > 0) {
+			Future<PixivGetPictureUrlToDownload> futureToDownload = lsUrlPrepToDownLoad.poll();
+			if (futureToDownload.isDone()) {
+				PixivGetPictureUrlToDownload pictureUrlToDownload = futureToDownload.get();
+				//失败了就放回去继续执行
+				if (pictureUrlToDownload.getLsResult() == null) {
+					Future<PixivGetPictureUrlToDownload> result = executorGetUrlPrepToDownload.submit(pictureUrlToDownload);
+					lsUrlPrepToDownLoad.add(result);
+				} else {//成功了就去下载
+					for (PixivUrlDownLoad pixivUrlDownLoad : pictureUrlToDownload.getLsResult()) {
+						Future<PixivUrlDownLoad> futureDownload = executorDownload.submit(pixivUrlDownLoad);
+						lsFutureDownLoad.add(futureDownload);
+					}
 				}
-			} else {
-				lsUrlPrepToDownLoad.add(futureLsToDownload);
+			} else {//没执行成功就接着执行
+				lsUrlPrepToDownLoad.add(futureToDownload);
 			}
+			Thread.sleep(100);
+		}
+		
+		while (executorDownload.getActiveCount() > 0 || lsFutureDownLoad.size() > 0) {
+			Future<PixivUrlDownLoad> futureDownload = lsFutureDownLoad.poll();
+			if (futureDownload.isDone()) {
+				PixivUrlDownLoad pixivUrlDownLoad = futureDownload.get();
+				//失败了就放回去继续执行
+				if (!pixivUrlDownLoad.isSaveSucess()) {
+					Future<PixivUrlDownLoad> result = executorDownload.submit(pixivUrlDownLoad);
+					lsFutureDownLoad.add(result);
+				}
+			} else {//没执行成功就接着执行
+				lsFutureDownLoad.add(futureDownload);
+			}
+			Thread.sleep(100);
 		}
 		
 		executorDownload.shutdown();

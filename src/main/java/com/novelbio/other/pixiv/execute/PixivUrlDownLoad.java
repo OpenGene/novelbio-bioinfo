@@ -4,9 +4,8 @@ import java.util.concurrent.Callable;
 
 import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.sun.xml.internal.rngom.util.Uri;
 
-public class PixivUrlDownLoad implements Callable<PixivUrlDownLoad>{
+public class PixivUrlDownLoad implements Callable<PixivUrlDownLoad> {
 	WebFetch webFetch;
 	/** 我们给每个pixiv的编号，从小到大排列，为了是浏览图片的时候可以方便按照顺序显示图片 */
 	int pictureNum;
@@ -20,7 +19,7 @@ public class PixivUrlDownLoad implements Callable<PixivUrlDownLoad>{
 
 	String name;
 	String auther;
-		
+	boolean saveSucess = false;
 	public void setWebFetch(WebFetch webFetch) {
 		this.webFetch = webFetch;
 	}
@@ -36,6 +35,9 @@ public class PixivUrlDownLoad implements Callable<PixivUrlDownLoad>{
 	public void setName(String name) {
 		this.name = name;
 	}
+	public boolean isSaveSucess() {
+		return saveSucess;
+	}
 	/** pixiv的图片ID */
 	public void setPictureID(String pictureID) {
 		this.pictureID = pictureID;
@@ -47,19 +49,21 @@ public class PixivUrlDownLoad implements Callable<PixivUrlDownLoad>{
 	public void setPictureNum(int pictureNum) {
 		this.pictureNum = pictureNum;
 	}
-	/** 下载成功就什么都不返回，失败就返回自身 */
-	@Override
-	public PixivUrlDownLoad call() throws Exception {
-		return downloadPicture();
+
+	public PixivUrlDownLoad call() {
+		downloadPicture();
+		return this;
 	}
 	/** 成功就返回null */
-    public PixivUrlDownLoad downloadPicture() {
-    	webFetch.setUrl(pictureUrl);
-    	webFetch.setRefUrl(refUrl);
-    	if(webFetch.download(getSaveName())) {
-    		return null;
-    	}
-    	return this;
+    public void downloadPicture() {
+    		webFetch.setUrl(pictureUrl);
+    		webFetch.setRefUrl(refUrl);
+    		if(webFetch.download(getSaveName())) {
+    			saveSucess = true;
+    		} else {
+    			saveSucess = false;
+    		}
+    		
     }
 
 

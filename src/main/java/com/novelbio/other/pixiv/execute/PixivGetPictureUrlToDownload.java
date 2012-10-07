@@ -19,7 +19,7 @@ import org.htmlparser.util.SimpleNodeIterator;
 import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.dataStructure.PatternOperate;
 /** 找到每个midUrl所对应的页面，然后通过本类获得bigurl的download类*/
-public class PixivGetPictureUrlToDownload implements Callable<ArrayList<PixivUrlDownLoad>>{
+public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrlToDownload> {
 	String pixivUrl = "http://www.pixiv.net/";
 		
 	int retryNum = 10;
@@ -30,6 +30,8 @@ public class PixivGetPictureUrlToDownload implements Callable<ArrayList<PixivUrl
 	String name;
 	String savePath;
 	int pictureNum;
+	/** null说明执行失败，需要重新执行 */
+	ArrayList<PixivUrlDownLoad> lsResult;
 	
 	public void setAuther(String auther) {
 		this.auther = auther;
@@ -49,19 +51,21 @@ public class PixivGetPictureUrlToDownload implements Callable<ArrayList<PixivUrl
 	public void setSavePath(String savePath) {
 		this.savePath = savePath;
 	}
-	
+	public ArrayList<PixivUrlDownLoad> getLsResult() {
+		return lsResult;
+	}
 	/** 返回null表示失败，就需要重跑
 	 * @throws ParserException */
-	public ArrayList<PixivUrlDownLoad> getLsPicture() throws ParserException {
+	private void getLsPicture() throws ParserException {
 		webFetch.setUrl(midUrl);
 		String pageInfo = WebFetch.getResponseRetry(retryNum, webFetch);
 		if (pageInfo == null) {
-			return null;
+			lsResult = null;
 		}
 		Parser parser = new Parser(pageInfo);
 		NodeFilter filterPicture = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "works_display"));
 		Node nodePicture = parser.parse(filterPicture).elementAt(0);
-		return getLsDownloads(nodePicture);
+		lsResult = getLsDownloads(nodePicture);
 	}
 	
 	private ArrayList<PixivUrlDownLoad> getLsDownloads(Node nodePicture) throws ParserException {
@@ -169,8 +173,13 @@ public class PixivGetPictureUrlToDownload implements Callable<ArrayList<PixivUrl
 		return outUrl;
 	}
 	@Override
-	public ArrayList<PixivUrlDownLoad> call() throws Exception {
-		return getLsPicture();
+	public PixivGetPictureUrlToDownload call() {
+		try {
+			getLsPicture();
+		} catch (ParserException e) {
+			lsResult = null;
+		}
+		return this;
 	}
 
 	
