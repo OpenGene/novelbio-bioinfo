@@ -105,9 +105,10 @@ public class PixivOperate {
 				lsUrlPrepToDownLoad.add(futureLsToDownload);
 			}
 		}
-		while (!executorDownload.isShutdown() || !executorGetUrlPrepToDownload.isShutdown()) {
-			Thread.sleep(1000);
-		}
+		
+		executorDownload.shutdown();
+		executorGetUrlPrepToDownload.shutdown();
+		
 		webFetchPixiv.close();
 		
 		return;
