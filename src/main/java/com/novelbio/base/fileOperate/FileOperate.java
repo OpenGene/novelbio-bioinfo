@@ -1082,23 +1082,4 @@ public class FileOperate {
 		}
 		return path;
 	}
-	/**
-	 * 返回本软件所在路径，务必返回绝对路径，后面带上"/"符号
-	 * @return
-	 */
-	 public static String getProjectPath() {
-		 return "/media/winD/fedora/gitnbc/";
-//		 java.net.URL url = FileOperate.class.getProtectionDomain().getCodeSource().getLocation();
-//		 String filePath = null;
-//		 try {
-//			 filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
-//		 } catch (Exception e) {
-//			 e.printStackTrace();
-//		 }
-//		 if (filePath.endsWith(".jar"))
-//			 filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
-//		 java.io.File file = new java.io.File(filePath);
-//		 filePath = file.getAbsolutePath();
-//		 return addSep(filePath);
-	 }
 }

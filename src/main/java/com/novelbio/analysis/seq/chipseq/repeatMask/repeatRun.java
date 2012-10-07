@@ -115,7 +115,7 @@ public class repeatRun {
 			ArrayList<String[]> result=RepeatMask.getStaticInfo(repeatFile);
 			TxtReadandWrite repeatbackGround=new TxtReadandWrite();
 			repeatbackGround.setParameter(repeakBackGround, true,false);
-			repeatbackGround.ExcelWrite(result, "\t", 1, 1);
+			repeatbackGround.ExcelWrite(result);
 		} catch (Exception e) {	e.printStackTrace(); }
 		System.out.println("ok");
 	}

@@ -323,6 +323,8 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		txtOutput.setVisible(false);
 		btnAddPileupFile.setEnabled(true);
 		btnDeletePileupFile.setEnabled(true);
+		cmbSpecies.setVisible(false);
+		cmbVersion.setVisible(false);
 	}
 	
 	/** 当为获得每个snp信息的时候的界面 */
@@ -346,6 +348,9 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		txtOutput.setVisible(true);
 		btnAddPileupFile.setEnabled(true);
 		btnDeletePileupFile.setEnabled(true);
+		
+		cmbSpecies.setVisible(false);
+		cmbVersion.setVisible(false);
 	}
 	/** 当为获得每个snp信息的时候的界面 */
 	private void setSnpAnnotation() {
@@ -372,10 +377,13 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		btnDeleteSnpFile.setEnabled(true);
 		btnOutput.setVisible(false);
 		txtOutput.setVisible(false);
+		
+		cmbSpecies.setVisible(true);
+		cmbVersion.setVisible(true);
 	}
 	private void runSnpCalling() {
-		setGffChrAbs();
-		ctrlSnpCalling.setGffChrAbs(gffChrAbs);
+//		setGffChrAbs();
+//		ctrlSnpCalling.setGffChrAbs(gffChrAbs);
 
 		ctrlSnpCalling.set(combSnpLevel.getSelectedValue());
 		ArrayList<String[]> lsFile = sclInputFile.getLsDataInfo();
@@ -395,9 +403,9 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		ctrlSnpCalling.runSnpCalling();
 	}
 	private void runSnpGetInfo() {
-		setGffChrAbs();
+//		setGffChrAbs();
 		
-		ctrlSnpGetInfo.setGffChrAbs(gffChrAbs);
+//		ctrlSnpGetInfo.setGffChrAbs(gffChrAbs);
 		ArrayList<String[]> lsPileupFile = sclInputFile.getLsDataInfo();
 		for (String[] strings : lsPileupFile) {
 			ctrlSnpGetInfo.addPileupFile(strings[1], strings[0]);

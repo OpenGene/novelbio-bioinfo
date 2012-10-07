@@ -75,7 +75,8 @@ public abstract class SiteSnpIndelInfo {
 
 		setMapInfoRefSeqAAabs(gffChrAbs);
 	}
-	/** 如果snp位点在exon上，那么就设置ref序列的氨基酸的信息 */
+	/** 如果Iso不存在，该方法不会被调用。
+	 * 如果Iso存在，并且snp位点在exon上，那么就设置ref序列的氨基酸的信息 */
 	protected abstract void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs);
 	/**
 	 * 设定样本名，那么后面获取的都是该样本的信息

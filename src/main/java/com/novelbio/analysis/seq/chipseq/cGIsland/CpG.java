@@ -63,7 +63,7 @@ public class CpG
 
 		TxtReadandWrite txtresult=new TxtReadandWrite();
 		txtresult.setParameter(resultFile, true,false);
-		txtresult.ExcelWrite(result, "\t", 1, 1);
+		txtresult.ExcelWrite(result);
 	}
 
 	
@@ -97,7 +97,7 @@ public class CpG
 		
 		TxtReadandWrite txtresult=new TxtReadandWrite();
 		txtresult.setParameter(resultFile,true,false);
-		txtresult.ExcelWrite(result, "\t", 1, 1);
+		txtresult.ExcelWrite(result);
 	}
 	
 	/**

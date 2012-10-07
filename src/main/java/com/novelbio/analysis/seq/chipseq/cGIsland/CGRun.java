@@ -69,7 +69,7 @@ public class CGRun {
 			ArrayList<String[]> result=CpG.getStaticInfo(CGFile);
 			TxtReadandWrite CGbackGround=new TxtReadandWrite();
 			CGbackGround.setParameter(CGBackGround, true,false);
-			CGbackGround.ExcelWrite(result, "\t", 1, 1);
+			CGbackGround.ExcelWrite(result);
 		} catch (Exception e) {	e.printStackTrace(); }
 		System.out.println("ok");
 	}

@@ -3,6 +3,7 @@ package com.novelbio.analysis.tools.compare;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class runCompSimple {
@@ -38,15 +39,11 @@ public class runCompSimple {
 	 public static String getProjectPath() {
 		 java.net.URL url = runCompSimple.class.getProtectionDomain().getCodeSource().getLocation();
 		 String filePath = null;
-		 try {
-		 filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
-		 } catch (Exception e) {
-		 e.printStackTrace();
-		 }
+		 filePath = WebFetch.decode(url.getPath());
 		 if (filePath.endsWith(".jar"))
 		 filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
 		 java.io.File file = new java.io.File(filePath);
 		 filePath = file.getAbsolutePath();
 		 return filePath;
-		 }
+	 }
 }

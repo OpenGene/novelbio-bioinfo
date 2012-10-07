@@ -9,7 +9,6 @@ import java.util.Map;
 
 import com.novelbio.analysis.seq.genome.GffToRepeat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashRepeat;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashUCSCgene;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 

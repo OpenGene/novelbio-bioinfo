@@ -92,7 +92,7 @@ public class DoFisherTest {
 	 * n+3:allInItemNum
 	 * n+4:AllNum
 	 */
-	public static<T> ArrayList<String[]> cope2HashForPvalue(HashMap<String, ArrayList<T>> hashDif,int NumDif,HashMap<String, ArrayList<T>> hashAll ,int NumAll,ItemInfo itemInfo) {
+	private static<T> ArrayList<String[]> cope2HashForPvalue(HashMap<String, ArrayList<T>> hashDif,int NumDif,HashMap<String, ArrayList<T>> hashAll ,int NumAll,ItemInfo itemInfo) {
 		ArrayList<String[]> lsResult=new ArrayList<String[]>();
 		//////////////////
 		for(Entry<String, ArrayList<T>> entry:hashDif.entrySet()) {

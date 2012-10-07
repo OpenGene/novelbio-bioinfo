@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,6 +56,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParamBean;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.log4j.Logger;
 
 /**
  * 一次只能选择一项，要么post，要么get
@@ -67,6 +69,7 @@ import org.apache.http.protocol.HttpContext;
  *
  */
 public class WebFetch {
+	private static Logger logger = Logger.getLogger(WebFetch.class);
 	public static void main(String[] args) {
 		ArrayList<WebFetch> lswebFetch = WebFetch.getInstanceLs(3);
 		GetThread getThread2 = new GetThread(lswebFetch.get(0), "http://pic4.bbzhi.com/mingxingbizhi/gaoqingtaiwankuanpingmeinvbizhi/gaoqingtaiwankuanpingmeinvbizhi_351979_12.jpg", "/Users/zongjie/Downloads/test/1.jpg");
@@ -99,7 +102,7 @@ public class WebFetch {
 		// Increase max total connection to 200
 		cm.setMaxTotal(12);//setMaxTotalConnections(200);
 		// Increase default max connection per route to 20
-		cm.setDefaultMaxPerRoute(12);
+		cm.setDefaultMaxPerRoute(6);
 		// Increase max connections for localhost:80 to 50
 		HttpHost localhost = new HttpHost("locahost", 80);
 		cm.setMaxPerRoute(new HttpRoute(localhost), 50);
@@ -258,6 +261,7 @@ public class WebFetch {
 		for (String content : itString) {
 			result = result + content + "\n";
 		}
+		closeStream();
 		return result;
 	}
 	/** 最好能先判断一下是否为null
@@ -413,7 +417,29 @@ public class WebFetch {
 		try { httpclient.getConnectionManager().shutdown(); } catch (Exception e) { }
 	}
 	
-
+	public static String getResponseRetry(int retryNum, WebFetch webFetch) {
+		String pageInfo = null;
+		for (int i = 0; i < retryNum; i++) {
+			pageInfo = webFetch.getResponse();
+			if (pageInfo != null) {
+				break;
+			}
+		}
+		return pageInfo;
+	}
+	/** html解码还很薄弱 */
+	public static String decode(String inputUrl) {
+		String result = "";
+		try {
+			result = URLDecoder.decode(inputUrl, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			logger.error("解码出错：" + inputUrl);
+		}
+		result = inputUrl.replace("&amp;", "&");
+		result = result.replace("&nbsp;", " ");
+		return result;
+	}
 	static class GetThread extends Thread {
 		WebFetch webFetch;
 		String url;
@@ -428,7 +454,7 @@ public class WebFetch {
 			webFetch.setUrl(url);
 			webFetch.download(download);
 		} 
-	} 
+	}
 }
 /**
  * 请求重试处理

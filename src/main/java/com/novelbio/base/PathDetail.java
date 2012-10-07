@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class PathDetail {
@@ -35,7 +36,7 @@ public class PathDetail {
 		java.net.URL url = PathDetail.class.getProtectionDomain().getCodeSource().getLocation();
 		String filePath = null;
 		try {
-			filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
+			filePath = WebFetch.decode(url.getPath());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -47,7 +48,7 @@ public class PathDetail {
 		java.net.URL url = PathDetail.class.getProtectionDomain().getCodeSource().getLocation();
 		String filePath = null;
 		try {
-			filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
+			filePath = WebFetch.decode(url.getPath());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -58,7 +59,7 @@ public class PathDetail {
 		java.net.URL url = PathDetail.class.getProtectionDomain().getCodeSource().getLocation();
 		String filePath = null;
 		try {
-			filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
+			filePath = WebFetch.decode(url.getPath());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

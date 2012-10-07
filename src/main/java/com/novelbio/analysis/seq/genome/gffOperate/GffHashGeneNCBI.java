@@ -1,6 +1,5 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,13 +9,13 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
-import com.novelbio.test.testextend.a;
 
 /**
  * 应该是标准的gff3格式，仅用于NCBI的gff3文件
@@ -258,11 +257,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
    /** 需要解码 */
    private String getProductName(String ss8) {
 	   String rnaName = patProduct.getPatFirst(ss8);
-	   try {
-		   rnaName = URLDecoder.decode(rnaName, enc);
-	   } catch (UnsupportedEncodingException e) {
-		   e.printStackTrace();
-	   }
+	   rnaName = WebFetch.decode(rnaName);
 	   return rnaName;
    }
    private String getGeneName(String content) {

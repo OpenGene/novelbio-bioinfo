@@ -1,13 +1,12 @@
 package com.novelbio.database.updatedb.database;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -99,7 +98,6 @@ class RiceRapDBID extends ImportPerLine
 	public void setInsertAccID(boolean insertAccID) {
 		this.insertAccID = insertAccID;
 	}
-	String enc="utf8";//文件中含有%20C等符号，用url解码
 	private static Logger logger = Logger.getLogger(RiceRapDBID.class);
 	public void importInfoPerLine(String rapdbGFF, boolean gzip) {
 		setReadFromLine();
@@ -146,12 +144,8 @@ class RiceRapDBID extends ImportPerLine
 		ArrayList<String> lsRefID = new ArrayList<String>(); //保存查找的信息，就是说譬如DBINFO_NIAS_FLCDNA等不用来查找
 		for (int i = 0; i < tmpID.length; i++) 
 		{
-			try {
-				tmpID[i] = URLDecoder.decode(tmpID[i], enc);
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-				return false;
-			}
+		
+			tmpID[i] = WebFetch.decode(tmpID[i]);
 			if (tmpID[i].contains("ID=")){
 				String tmp = tmpID[i].split("=")[1];
 				String[] tmpAcc = tmp.split(",");
@@ -327,13 +321,7 @@ class RapDBGO extends ImportPerLine
 			ArrayList<String> lsRefID = new ArrayList<String>();
  			//先搜NCBIID看有没有
 			for (int i = 0; i < tmpID.length; i++) {
-				try {
-					tmpID[i] = URLDecoder.decode(tmpID[i], enc);
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return false;
-				}//文件中含有%20C等符号，用url解码
+				tmpID[i] = WebFetch.decode(tmpID[i]);
 				if (tmpID[i].contains("ID=")||tmpID[i].contains("Name=")||tmpID[i].contains("Alias=")||tmpID[i].contains("Gene_symbols=")||tmpID[i].contains("Locus_id="))
 				{
 					String tmp = tmpID[i].split("=")[1];
@@ -409,7 +397,6 @@ class RiceRapDBInfo extends ImportPerLine
 	{
 		this.readFromLine = 1;
 	}
-	String enc = "utf8";// 文件中含有%20C等符号，用url解码
 	@Override
 	boolean impPerLine(String lineContent) {
 		String symbol = "";
@@ -425,7 +412,7 @@ class RiceRapDBInfo extends ImportPerLine
 		}
 		String tmpInfo = lineContent.split("\t")[8];
 		// 文件中含有%20C等符号，用url解码
-		try { tmpInfo = URLDecoder.decode(tmpInfo, enc); } catch (UnsupportedEncodingException e) { return false; 	}
+		tmpInfo = WebFetch.decode(tmpInfo); 
 		
 		String[] tmpID = tmpInfo.split(";");
 		// 装载accID与相应数据库的list
@@ -530,7 +517,6 @@ class RiceRapDBInfo extends ImportPerLine
  */
 class RiceTIGRInfo extends ImportPerLine
 {
-	String enc="utf8";//文件中含有%20C等符号，用url解码
 	@Override
 	boolean impPerLine(String lineContent) {
 		if (lineContent.startsWith("#")) {
@@ -547,13 +533,8 @@ class RiceTIGRInfo extends ImportPerLine
 		}
 		String LOCID = ssLOC[2].split("=")[1];
 		String description;
-		try {
-			description = URLDecoder.decode(ssLOC[1].split("=")[1], enc);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}//文件中含有%20C等符号，用url解码
+
+		description = WebFetch.decode(ssLOC[1].split("=")[1]);
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setSymb(LOCID); geneInfo.setDescrp(description);
 		geneInfo.setDBinfo(NovelBioConst.DBINFO_RICE_TIGR);

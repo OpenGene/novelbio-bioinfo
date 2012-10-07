@@ -4,17 +4,14 @@ import java.util.concurrent.Callable;
 
 import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.sun.xml.internal.rngom.util.Uri;
 
-public class PixivUrlDownLoad implements Callable<Boolean>{
+public class PixivUrlDownLoad implements Callable<PixivUrlDownLoad>{
 	WebFetch webFetch;
-	/** 我们给每个pixiv的编号，从大到小排列，为了是浏览图片的时候可以方便按照顺序显示图片 */
+	/** 我们给每个pixiv的编号，从小到大排列，为了是浏览图片的时候可以方便按照顺序显示图片 */
 	int pictureNum;
 	/** pixiv的图片ID */
-	int pictureID;
-	/** 是否是连环画，有子图片 */
-	boolean subPicture;
-	/** 如果是连环画，子图片的ID*/
-	int subID;
+	String pictureID;
 	
 	String pictureUrl;
 	String refUrl;
@@ -40,22 +37,43 @@ public class PixivUrlDownLoad implements Callable<Boolean>{
 		this.name = name;
 	}
 	/** pixiv的图片ID */
-	public void setPictureID(int pictureID) {
+	public void setPictureID(String pictureID) {
 		this.pictureID = pictureID;
 	}
-	/** 是否是连环画，有子图片 */
-	public void setSubPicture(boolean subPicture) {
-		this.subPicture = subPicture;
+	public void setSavePath(String savePath) {
+		this.savePath = savePath;
 	}
-	/** 我们给每个pixiv的编号，从大到小排列，为了是浏览图片的时候可以方便按照顺序显示图片 */
+	/** 我们给每个pixiv的编号，从小到大排列，为了是浏览图片的时候可以方便按照顺序显示图片 */
 	public void setPictureNum(int pictureNum) {
 		this.pictureNum = pictureNum;
 	}
-	/** 如果是连环画，子图片的ID*/
-	public void setSubID(int subID) {
-		this.subID = subID;
+	/** 下载成功就什么都不返回，失败就返回自身 */
+	@Override
+	public PixivUrlDownLoad call() throws Exception {
+		return downloadPicture();
 	}
-	
+	/** 成功就返回null */
+    public PixivUrlDownLoad downloadPicture() {
+    	webFetch.setUrl(pictureUrl);
+    	webFetch.setRefUrl(refUrl);
+    	if(webFetch.download(getSaveName())) {
+    		return null;
+    	}
+    	return this;
+    }
+
+
+    private String getSaveName() {
+    	String[] ss = pictureUrl.split("/");
+    	String suffix = ss[ss.length - 1];
+		String saveName = pictureNum + "_" + name + "_" + suffix;
+		return getSavePath() + saveName;
+    }
+    private String getSavePath() {
+		String downLoadPath = FileOperate.addSep(savePath) + generateoutName(auther) + FileOperate.getSepPath();
+		FileOperate.createFolders(downLoadPath);
+		return downLoadPath;
+    }
 	 /**
 	  * 因为pixiv中的作者名或文件名里面总是有各种奇怪的字符，有些不能成为文件夹名，所以要将他们替换掉
      * 输入旧文件名，将其转变为新文件名
@@ -74,26 +92,5 @@ public class PixivUrlDownLoad implements Callable<Boolean>{
     		outName = outName.replace("|", "");
     		return outName;
     }
-    private String getSavePath() {
-		String downLoadPath = FileOperate.addSep(savePath) + generateoutName(auther) + FileOperate.getSepPath();
-		FileOperate.createFolders(downLoadPath);
-		return downLoadPath;
-    }
-    private String getSaveName() {
-    		String saveName = pictureNum + "_" + name + "_" + pictureID;
-    		if (subPicture) {
-    			saveName = saveName + "_" + subID;
-    		}
-    		return getSavePath() + saveName;
-    }
-    public Boolean downloadPicture() {
-    		webFetch.setUrl(pictureUrl);
-    		webFetch.setRefUrl(refUrl);
-    		return webFetch.download(getSaveName());
-    }
 
-	@Override
-	public Boolean call() throws Exception {
-		return downloadPicture();
-	}
 }
