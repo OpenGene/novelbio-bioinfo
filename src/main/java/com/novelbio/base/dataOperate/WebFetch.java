@@ -26,14 +26,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.NoHttpResponseException;
-import org.apache.http.ParseException;
 import org.apache.http.ProtocolException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -49,16 +48,13 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParamBean;
-import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 
 /**
  * 一次只能选择一项，要么post，要么get
@@ -72,18 +68,23 @@ import org.apache.http.util.EntityUtils;
  */
 public class WebFetch {
 	public static void main(String[] args) {
-		WebFetch webFetch = new WebFetch();
-		GetThread getThread1 = new GetThread(webFetch, "http://www.baidu.com/img/baidu_jgylogo3.gif", "/media/winF/NBC/Project/RNASeq_Snp_WJ120725/1.gif");
-		GetThread getThread2 = new GetThread(webFetch, "http://www.baidu.com/img/baidu_jgylogo3.gif", "/media/winF/NBC/Project/RNASeq_Snp_WJ120725/2.gif");
+		ArrayList<WebFetch> lswebFetch = WebFetch.getInstanceLs(3);
+		GetThread getThread2 = new GetThread(lswebFetch.get(0), "http://pic4.bbzhi.com/mingxingbizhi/gaoqingtaiwankuanpingmeinvbizhi/gaoqingtaiwankuanpingmeinvbizhi_351979_12.jpg", "/Users/zongjie/Downloads/test/1.jpg");
+		WebFetch webFetch2 = new WebFetch();
+		GetThread getThread1 = new GetThread(lswebFetch.get(1), "http://pic4.bbzhi.com/mingxingbizhi/gaoqingtaiwankuanpingmeinvbizhi/gaoqingtaiwankuanpingmeinvbizhi_351979_12.jpg", "/Users/zongjie/Downloads/test/2.jpg");
+		WebFetch webFetch3 = new WebFetch();
+		GetThread getThread3 = new GetThread(lswebFetch.get(2), "http://pic4.bbzhi.com/mingxingbizhi/gaoqingtaiwankuanpingmeinvbizhi/gaoqingtaiwankuanpingmeinvbizhi_351979_12.jpg", "/Users/zongjie/Downloads/test/3.jpg");
 		Thread thread = new Thread(getThread1);
 		Thread thread2 = new Thread(getThread2);
+		Thread thread3=  new Thread(getThread3);
 		thread.start();
 		thread2.start();
+		thread3.start();
 	}
 	
 	public static final int HTTPTYPE_POST = 2;
 	public static final int HTTPTYPE_GET = 4;
-	public static final int HTTPTYPE_DOWNLOAD = 12;
+	public static final int HTTPTYPE_HEAD = 12;
 	/**
 	 * 下载缓冲
 	 */
@@ -104,9 +105,10 @@ public class WebFetch {
 		cm.setMaxPerRoute(new HttpRoute(localhost), 50);
 	}
 	
+	ArrayList<BasicHeader> lsHeaders = new ArrayList<BasicHeader>();
+	
 	String url;
 	DefaultHttpClient httpclient;
-	ArrayList<BasicHeader> lsHeaders = new ArrayList<BasicHeader>();
 	
 	HttpRequestBase httpRequest;
 	UrlEncodedFormEntity postEntity;
@@ -119,11 +121,39 @@ public class WebFetch {
 	int methodType = HTTPTYPE_GET;
 	private Charset charset;
 	
-	public WebFetch() {
-		initial();
+	public static WebFetch getInstance() {
+		return new WebFetch();
+	}
+	/** 返回共用一个连接池的webFetch
+	 * @param num 值必须大于等于1
+	 *  */
+	public static ArrayList<WebFetch> getInstanceLs(int num) {
+		ArrayList<WebFetch> lsResult = new ArrayList<WebFetch>();
+		WebFetch webFetch = new WebFetch();
+		lsResult.add(webFetch);
+		for (int i = 0; i < num - 1; i++) {
+			WebFetch webFetch2 = new WebFetch(webFetch.httpclient);
+			lsResult.add(webFetch2);
+		}
+		return lsResult;
+	}
+	/** 返回与输入的webFetch共用同一个连接池的webFetch */
+	public static WebFetch getInstance(WebFetch webFetch) {
+		return new WebFetch(webFetch.httpclient);
+	}
+	private WebFetch() {
+		initial(null);
 		setHeader();
 	}
-	private void initial() {
+	private WebFetch(DefaultHttpClient httpClient) {
+		initial(httpClient);
+		setHeader();
+	}
+	private void initial(DefaultHttpClient httpClient) {
+		if (httpClient != null) {
+			this.httpclient = httpClient;
+			return;
+		}
 		httpclient = new DefaultHttpClient(cm);
 		//设定重试
 		httpclient.setHttpRequestRetryHandler(new MyRetryHandler());
@@ -138,24 +168,23 @@ public class WebFetch {
 		httpclient.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, true);
 		//重定向的策略，遇到301或者302也继续重定向
 		 httpclient.setRedirectStrategy(new DefaultRedirectStrategy() {                
-		        public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context)  {
-		            boolean isRedirect=false;
-		            try {
-		                isRedirect = super.isRedirected(request, response, context);
-		            } catch (ProtocolException e) {
-		                // TODO Auto-generated catch block
-		                e.printStackTrace();
-		            }
-		            if (!isRedirect) {
-		                int responseCode = response.getStatusLine().getStatusCode();
-		                if (responseCode == 301 || responseCode == 302) {
-		                    return true;
-		                }
-		            }
-		            return isRedirect;
-		        }
-		    });
-
+			 public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context)  {
+				 boolean isRedirect=false;
+				 try {
+					 isRedirect = super.isRedirected(request, response, context);
+				 } catch (ProtocolException e) {
+					 // TODO Auto-generated catch block
+					 e.printStackTrace();
+				 }
+				 if (!isRedirect) {
+					 int responseCode = response.getStatusLine().getStatusCode();
+					 if (responseCode == 301 || responseCode == 302) {
+						 return true;
+					 }
+				 }
+				 return isRedirect;
+			 }
+		 });
 	}
 	private void setHeader() {
 		lsHeaders.clear();
@@ -163,10 +192,11 @@ public class WebFetch {
 		lsHeaders.add(new BasicHeader("Accept-Language", "zh-cn,zh;q=0.5"));
 		lsHeaders.add(new BasicHeader("Connection", "Keep-Alive"));
 		lsHeaders.add(new BasicHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 2.0.50727)"));
-		lsHeaders.add(new BasicHeader("Accept", "text/html"));
+		lsHeaders.add(new BasicHeader("Accept", "text/html, Accept:image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/x-shockwave-flash, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/msword, application/x-silverlight, */* "));
 		lsHeaders.add(new BasicHeader("Accept-Charset", "gb2312,utf-8,ISO-8859-1;q=0.7,*;q=0.7"));
 		lsHeaders.add(new BasicHeader("UA-CPU", "x86"));
 	}
+	/** 应该不需要设置，内部会自动判断 */
 	public void setHttpType(int httpType) {
 		this.methodType = httpType;
 	}
@@ -218,21 +248,34 @@ public class WebFetch {
 	public CookieStore getCookies() {
 		return cookieStore;
 	}
-	/** 读取的网页的string格式，没有就返回"" */
+	/** 读取的网页的string格式，读取出错则返回null */
 	public String getResponse() {
 		String result = "";
-		for (String content : readResponse()) {
+		Iterable<String> itString = readResponse();
+		if (itString == null) {
+			return null;
+		}
+		for (String content : itString) {
 			result = result + content + "\n";
 		}
 		return result;
 	}
+	/** 最好能先判断一下是否为null
+	 * 如果为null表示没有读取成功
+	 * @return
+	 */
 	public Iterable<String> readResponse() {
+		InputStream inputStream = null;
 		try {
-			return readResponseExp();
+			inputStream = getResponseExp();
+			if (inputStream == null) {
+				return null;
+			}
+			return readResponseExp(inputStream);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 	/**
 	 * 迭代读取返回的结果
@@ -300,7 +343,7 @@ public class WebFetch {
 	 * @throws IOException 
 	 * @throws ClientProtocolException */
 	private boolean downloadExp(String fileName) throws ClientProtocolException, IOException {
-		//httpstatus codes 为4XX或者5XX就表示出错
+		InputStream instream = getResponseExp();
 		if (instream == null) {
 			return false;
 		}
@@ -310,30 +353,28 @@ public class WebFetch {
 		while ((len = instream.read(b)) != -1) {
 			out.write(b, 0, len);
 		}
+		instream.close();
 		return true;
 	}
-	/** 读取网页，并返回是否成功获得结果 */
-	public boolean query() {
-		int httpStatus = 404;
-		try {
-			httpStatus = getResponseExp();
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (httpStatus/100 == 4 || httpStatus/100 == 5) {
-			return false;
-		}
-		return true;
-	}
-
-	private int getResponseExp() throws ClientProtocolException, IOException {
+	/**
+	 * 返回null 表示没有成功
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	private InputStream getResponseExp() throws ClientProtocolException, IOException {
 		closeStream();
+		InputStream instream = null;
 		HttpResponse httpResponse = httpclient.execute(getQuery());
-		int httpstatus = httpResponse.getStatusLine().getStatusCode();
+		int httpStatus = httpResponse.getStatusLine().getStatusCode();
+//		if (httpStatus == 405 && methodType == HTTPTYPE_GET) {
+//			methodType = HTTPTYPE_HEAD;
+//			httpResponse = httpclient.execute(getQuery());
+//			httpStatus = httpResponse.getStatusLine().getStatusCode();
+//		}
+		if (httpStatus/100 == 4 || httpStatus/100 == 5) {
+			return null;
+		}
 		synchronized (this) {
 			cookieStore = httpclient.getCookieStore();
 		}
@@ -343,7 +384,7 @@ public class WebFetch {
 		if (entity != null) {
 			instream = entity.getContent();
 		}
-		return httpstatus;
+		return instream;
 	}
 	private HttpUriRequest getQuery() {
 		if (methodType == HTTPTYPE_GET) {
@@ -353,15 +394,16 @@ public class WebFetch {
 			((HttpPost)httpRequest).setEntity(postEntity);
 			methodType = HTTPTYPE_GET;
 			postEntity = null;
+		} else if (methodType == HTTPTYPE_HEAD) {
+			httpRequest = new HttpHead(url);
 		}
+		
 		httpRequest.setHeaders(lsHeaders.toArray(new BasicHeader[1]));
-		httpRequest.setParams(httpParams);
 		return httpRequest;
 	}
 	
 	/** 除了httpclient 其他都关掉 */
 	private void closeStream() {
-		try { instream.close(); } catch (Exception e) { }
 		try { httpRequest.releaseConnection(); } catch (Exception e) { }
 		try { httpRequest.abort(); } catch (Exception e) { }
 	}
@@ -371,7 +413,7 @@ public class WebFetch {
 		try { httpclient.getConnectionManager().shutdown(); } catch (Exception e) { }
 	}
 	
-	
+
 	static class GetThread extends Thread {
 		WebFetch webFetch;
 		String url;
@@ -384,7 +426,6 @@ public class WebFetch {
 		@Override 
 		public void run() {
 			webFetch.setUrl(url);
-			webFetch.query();
 			webFetch.download(download);
 		} 
 	} 

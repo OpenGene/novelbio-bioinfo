@@ -66,7 +66,7 @@ public class PixivOperate {
     		mapPostKey2Value.put("pass", password);
     		webFetchPixiv.setPostParam(mapPostKey2Value);
     		webFetchPixiv.setUrl("http://www.pixiv.net/index.php");
-    		webFetchPixiv.query();
+    		webFetchPixiv.readResponse();
    }
     /**
      * @param urlAuther µÄid

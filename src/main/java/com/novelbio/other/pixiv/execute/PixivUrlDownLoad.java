@@ -1,11 +1,11 @@
 package com.novelbio.other.pixiv.execute;
 
-import java.util.AbstractQueue;
+import java.util.concurrent.Callable;
 
 import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class PixivUrlDownLoad {
+public class PixivUrlDownLoad implements Callable<Boolean>{
 	WebFetch webFetch;
 	/** 我们给每个pixiv的编号，从大到小排列，为了是浏览图片的时候可以方便按照顺序显示图片 */
 	int pictureNum;
@@ -23,7 +23,10 @@ public class PixivUrlDownLoad {
 
 	String name;
 	String auther;
-	
+		
+	public void setWebFetch(WebFetch webFetch) {
+		this.webFetch = webFetch;
+	}
 	public void setPictureUrl(String pictureUrl) {
 		this.pictureUrl = pictureUrl;
 	}
@@ -83,14 +86,14 @@ public class PixivUrlDownLoad {
     		}
     		return getSavePath() + saveName;
     }
-    public boolean downloadPicture(WebFetch webFetch) {
+    public Boolean downloadPicture() {
     		webFetch.setUrl(pictureUrl);
     		webFetch.setRefUrl(refUrl);
-    		boolean sucessQuery = webFetch.query();
-    		boolean sucessSave = webFetch.download(getSaveName());
-    		return sucessQuery && sucessSave;
+    		return webFetch.download(getSaveName());
     }
-    
-    
 
+	@Override
+	public Boolean call() throws Exception {
+		return downloadPicture();
+	}
 }
