@@ -18,7 +18,6 @@ public class PixivUrlDownLoad implements Callable<PixivUrlDownLoad> {
 	String savePath;
 
 	String name;
-	String auther;
 	boolean saveSucess = false;
 	public void setWebFetch(WebFetch webFetch) {
 		this.webFetch = webFetch;
@@ -28,9 +27,6 @@ public class PixivUrlDownLoad implements Callable<PixivUrlDownLoad> {
 	}
 	public void setRefUrl(String refUrl) {
 		this.refUrl = refUrl;
-	}
-	public void setAuther(String auther) {
-		this.auther = auther;
 	}
 	public void setName(String name) {
 		this.name = name;
@@ -42,6 +38,7 @@ public class PixivUrlDownLoad implements Callable<PixivUrlDownLoad> {
 	public void setPictureID(String pictureID) {
 		this.pictureID = pictureID;
 	}
+	/** savePath里面包含作者 */
 	public void setSavePath(String savePath) {
 		this.savePath = savePath;
 	}
@@ -56,45 +53,34 @@ public class PixivUrlDownLoad implements Callable<PixivUrlDownLoad> {
 	}
 	/** 成功就返回null */
     public void downloadPicture() {
-    		webFetch.setUrl(pictureUrl);
-    		webFetch.setRefUrl(refUrl);
-    		if(webFetch.download(getSaveName())) {
-    			saveSucess = true;
-    		} else {
-    			saveSucess = false;
-    		}
-    		
+    	if (pictureUrl == null) {
+			saveSucess = true;
+			return;
+		}
+    	webFetch.setUrl(pictureUrl);
+    	webFetch.setRefUrl(refUrl);
+    	webFetch.query();
+    	if(webFetch.download(getSaveName())) {
+    		saveSucess = true;
+    	} else {
+    		saveSucess = false;
+    	}
     }
-
 
     private String getSaveName() {
     	String[] ss = pictureUrl.split("/");
     	String suffix = ss[ss.length - 1];
-		String saveName = pictureNum + "_" + name + "_" + suffix;
+    	if (suffix.contains("?")) {
+			suffix = suffix.split("?")[0];
+		}
+		String saveName = pictureNum + "_" + PixivOperate.generateoutName(name) + "_" + suffix;
 		return getSavePath() + saveName;
     }
     private String getSavePath() {
-		String downLoadPath = FileOperate.addSep(savePath) + generateoutName(auther) + FileOperate.getSepPath();
+		String downLoadPath = FileOperate.addSep(savePath) + FileOperate.getSepPath();
 		FileOperate.createFolders(downLoadPath);
 		return downLoadPath;
     }
-	 /**
-	  * 因为pixiv中的作者名或文件名里面总是有各种奇怪的字符，有些不能成为文件夹名，所以要将他们替换掉
-     * 输入旧文件名，将其转变为新文件名
-     * @param filepath
-     * @param newPath
-     */
-    private String generateoutName(String name) {
-    		String outName;
-    		outName = name.replace("\\", "");
-    		outName = outName.replace("/", "");
-    		outName= outName.replace("\"", "");
-    		outName = outName.replace("*", "");
-    		outName = outName.replace("?", "");
-    		outName = outName.replace("<", "");
-    		outName = outName.replace(">", "");
-    		outName = outName.replace("|", "");
-    		return outName;
-    }
+
 
 }

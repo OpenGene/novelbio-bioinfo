@@ -10,6 +10,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -21,19 +22,23 @@ import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /** 并发下载pixiv的图片 */
 public class PixivOperate {
+	private static Logger logger = Logger.getLogger(PixivOperate.class);
+	
 	public static void main(String[] args) throws ParserException, InterruptedException, ExecutionException {
 		
 		PixivOperate pixivOperate = new PixivOperate();
-		pixivOperate.setUrlAuther(1196643);
-		pixivOperate.setSavePath("/Users/zongjie/Downloads/test");
+		pixivOperate.setUrlAuther(648014);
+		pixivOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/pixivTest");
 		pixivOperate.running();
 	}
-	WebFetch webFetchPixiv = WebFetch.getInstance();
+	WebFetch webFetchPixiv;
 	String urlAuther;
 	String autherName;
+	String autherID;
 	
 	String name = "facemun";
 	String password = "f12344321n";
@@ -46,6 +51,8 @@ public class PixivOperate {
 	/** 总共几页 */
 	int allPages = 0;
 	
+	PixivGetPathExistPic pixivGetPathExistPic = new PixivGetPathExistPic();
+	
 	PixivOperate() {
 		getcookies();
 	}
@@ -53,6 +60,9 @@ public class PixivOperate {
 	 * 获得pixiv的cookies
 	 */
     private void getcookies() {
+    	if (webFetchPixiv == null) {
+			webFetchPixiv = WebFetch.getInstance();
+		}
     	if (webFetchPixiv.getCookies() != null) {
     		return;
     	}
@@ -62,26 +72,34 @@ public class PixivOperate {
     	mapPostKey2Value.put("pass", password);
     	webFetchPixiv.setPostParam(mapPostKey2Value);
     	webFetchPixiv.setUrl("http://www.pixiv.net/index.php");
-    	Iterable<String> itResult = webFetchPixiv.readResponse();
-    	if (itResult == null) {
+    	if (!webFetchPixiv.query()) {
 			getcookies();
 		}
    }
+    public void setWebFetchPixiv(WebFetch webFetchPixiv) {
+		this.webFetchPixiv = webFetchPixiv;
+	}
+    public WebFetch getWebFetchPixiv() {
+		return webFetchPixiv;
+	}
     /**
      * @param urlAuther 的id
      */
 	public void setUrlAuther(int urlAutherid) {
 		this.urlAuther = "http://www.pixiv.net/member_illust.php?id=" + urlAutherid;
+		autherID = urlAutherid + "";
 	}
 	public void setSavePath(String savePath) {
 		this.savePath = savePath.trim();
 	}
 	public void running() throws InterruptedException, ExecutionException {
 		ArrayList<PixivGetPictureUrlToDownload> lsPrepareDownloads = getLsPrepareDownload();
+		ArrayList<PixivUrlDownLoad> lsDownLoads = new ArrayList<PixivUrlDownLoad>();
+		logger.info("获得待下载全部midurl连接");
 		//等待要获得下载url的序列
-		ThreadPoolExecutor executorGetUrlPrepToDownload = new ThreadPoolExecutor(1, 3, 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
+		ThreadPoolExecutor executorGetUrlPrepToDownload = new ThreadPoolExecutor(3, 4, 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
 		//等待下载的类
-		ThreadPoolExecutor executorDownload = new ThreadPoolExecutor(1, 3, 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
+		ThreadPoolExecutor executorDownload = new ThreadPoolExecutor(3, 4, 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
 
 		LinkedList<Future<PixivGetPictureUrlToDownload>> lsUrlPrepToDownLoad = new LinkedList<Future<PixivGetPictureUrlToDownload>>();
 		LinkedList<Future<PixivUrlDownLoad>> lsFutureDownLoad = new LinkedList<Future<PixivUrlDownLoad>>();
@@ -90,7 +108,7 @@ public class PixivOperate {
 			Future<PixivGetPictureUrlToDownload> result = executorGetUrlPrepToDownload.submit(pixivGetPictureUrlToDownload);
 			lsUrlPrepToDownLoad.add(result);
 		}
-		
+		//将executorGetUrlPrepToDownload中间的内容运行直到完毕
 		while (executorGetUrlPrepToDownload.getActiveCount() > 0 || lsUrlPrepToDownLoad.size() > 0) {
 			Future<PixivGetPictureUrlToDownload> futureToDownload = lsUrlPrepToDownLoad.poll();
 			if (futureToDownload.isDone()) {
@@ -100,10 +118,7 @@ public class PixivOperate {
 					Future<PixivGetPictureUrlToDownload> result = executorGetUrlPrepToDownload.submit(pictureUrlToDownload);
 					lsUrlPrepToDownLoad.add(result);
 				} else {//成功了就去下载
-					for (PixivUrlDownLoad pixivUrlDownLoad : pictureUrlToDownload.getLsResult()) {
-						Future<PixivUrlDownLoad> futureDownload = executorDownload.submit(pixivUrlDownLoad);
-						lsFutureDownLoad.add(futureDownload);
-					}
+					lsDownLoads.addAll(pictureUrlToDownload.getLsResult());
 				}
 			} else {//没执行成功就接着执行
 				lsUrlPrepToDownLoad.add(futureToDownload);
@@ -111,6 +126,12 @@ public class PixivOperate {
 			Thread.sleep(100);
 		}
 		
+		for (PixivUrlDownLoad pixivUrlDownLoad : lsDownLoads) {
+			Future<PixivUrlDownLoad> futureDownload = executorDownload.submit(pixivUrlDownLoad);
+			lsFutureDownLoad.add(futureDownload);
+		}
+		logger.info("获得待下载全部bigurl连接");
+		//将executorDownload中间的内容运行直到完毕
 		while (executorDownload.getActiveCount() > 0 || lsFutureDownLoad.size() > 0) {
 			Future<PixivUrlDownLoad> futureDownload = lsFutureDownLoad.poll();
 			if (futureDownload.isDone()) {
@@ -135,7 +156,6 @@ public class PixivOperate {
 	}
 	
 	
-	
 	private ArrayList<PixivGetPictureUrlToDownload> getLsPrepareDownload() {
 		ArrayList<PixivGetPictureUrlToDownload> lsResult = new ArrayList<PixivGetPictureUrlToDownload>();
 		try {
@@ -147,16 +167,20 @@ public class PixivOperate {
 			e.printStackTrace();
 			return null;
 		}
+		savePath = FileOperate.addSep(savePath) + generateoutName(autherName) + FileOperate.getSepPath();
+		pixivGetPathExistPic.setSavePath(savePath);
+
+		
 		for (int i = 1; i <= allPages; i++) {
 			String urlPage = urlAuther + "&p=" + i;
 			PixivGetPageMidUrl pixivGetPageMidUrl = new PixivGetPageMidUrl();
 			pixivGetPageMidUrl.setAllPageNum(allPages);
-			pixivGetPageMidUrl.setAutherName(autherName);
 			pixivGetPageMidUrl.setPageUrl(urlPage);
 			pixivGetPageMidUrl.setThisPageNum(i);
 			pixivGetPageMidUrl.setSavePath(savePath);
 			pixivGetPageMidUrl.setWebFetch(webFetchPixiv);
 			pixivGetPageMidUrl.setAllPictureNum(allPictureNum);
+			pixivGetPageMidUrl.setPixivGetPathExistPic(pixivGetPathExistPic);
 			ArrayList<PixivGetPictureUrlToDownload> lsPixivGetPictureUrlToDownloads = pixivGetPageMidUrl.getLsToDownloadUrl();
 			while (true) {
 				if (lsPixivGetPictureUrlToDownloads != null) {
@@ -164,8 +188,12 @@ public class PixivOperate {
 				}
 				lsPixivGetPictureUrlToDownloads = pixivGetPageMidUrl.getLsToDownloadUrl();
 			}
-			
 			lsResult.addAll(lsPixivGetPictureUrlToDownloads);
+			logger.error("总共" + allPages + "页，已经读取完第" + i + "页" );
+			//如果文件夹里面已经有该图片了，那么就返回，实际上有第一张图片，基本上后面的图都会有了，所以判断第一张图片就行了
+//			if (pixivGetPageMidUrl.isAlreadyHaveFile()) {
+//				break;
+//			}
 		}
 		return lsResult;
 	}
@@ -176,11 +204,11 @@ public class PixivOperate {
 	 * @throws ParserException 
 	 */
 	private boolean setPictureNum_And_PageNum_Auther() throws ParserException {
-		webFetchPixiv.setUrl(urlAuther);		
-		String pixivAutherInfo = WebFetch.getResponseRetry(retryGetPageNum, webFetchPixiv);
-		if (pixivAutherInfo == null) {
+		webFetchPixiv.setUrl(urlAuther);
+		if (!webFetchPixiv.query(retryGetPageNum)) {
 			return false;
 		}
+		String pixivAutherInfo = webFetchPixiv.getResponse();
 		Parser parser = new Parser(pixivAutherInfo);
 		
 		NodeFilter filterNum = new AndFilter(new TagNameFilter("a"), new HasAttributeFilter("class", "active_gray"));
@@ -190,12 +218,9 @@ public class PixivOperate {
 		parser = new Parser(pixivAutherInfo);
 		NodeFilter filterName = new AndFilter(new TagNameFilter("a"), new HasAttributeFilter("class", "avatar_m"));
 		NodeList nodeAutherName = parser.parse(filterName);
-		autherName = getAuterName(nodeAutherName);
-
-		parser = new Parser(pixivAutherInfo);
-		NodeFilter filterPage = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "pages"));
-		NodeList nodeListPage = parser.parse(filterPage);
-		allPages = getNodeAllPage(nodeListPage);
+		autherName = getAuterName(nodeAutherName) + "_" + autherID;
+		
+		allPages = (int) Math.ceil((double)allPictureNum/20);
 		return true;
 	}
 	/**
@@ -257,6 +282,24 @@ public class PixivOperate {
 	}
 
 
-
+	
+	 /**
+	  * 因为pixiv中的作者名或文件名里面总是有各种奇怪的字符，有些不能成为文件夹名，所以要将他们替换掉
+   * 输入旧文件名，将其转变为新文件名
+   * @param filepath
+   * @param newPath
+   */
+  protected static String generateoutName(String name) {
+  		String outName;
+  		outName = name.replace("\\", "");
+  		outName = outName.replace("/", "");
+  		outName= outName.replace("\"", "");
+  		outName = outName.replace("*", "");
+  		outName = outName.replace("?", "");
+  		outName = outName.replace("<", "");
+  		outName = outName.replace(">", "");
+  		outName = outName.replace("|", "");
+  		return outName;
+  }
 
 }

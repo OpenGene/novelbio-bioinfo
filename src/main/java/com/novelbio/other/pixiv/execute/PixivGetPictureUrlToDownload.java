@@ -5,6 +5,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
+import org.apache.log4j.Logger;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -20,22 +21,19 @@ import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.dataStructure.PatternOperate;
 /** 找到每个midUrl所对应的页面，然后通过本类获得bigurl的download类*/
 public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrlToDownload> {
+	private static Logger logger = Logger.getLogger(PixivGetPictureUrlToDownload.class);
 	String pixivUrl = "http://www.pixiv.net/";
 		
 	int retryNum = 10;
 	String midUrl;
 	WebFetch webFetch;
 	
-	String auther;
 	String name;
 	String savePath;
 	int pictureNum;
 	/** null说明执行失败，需要重新执行 */
 	ArrayList<PixivUrlDownLoad> lsResult;
 	
-	public void setAuther(String auther) {
-		this.auther = auther;
-	}
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -48,6 +46,7 @@ public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrl
 	public void setWebFetch(WebFetch webFetch) {
 		this.webFetch = webFetch;
 	}
+	/** 保存的路径里面应该要包含作者名 */
 	public void setSavePath(String savePath) {
 		this.savePath = savePath;
 	}
@@ -58,11 +57,17 @@ public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrl
 	 * @throws ParserException */
 	private void getLsPicture() throws ParserException {
 		webFetch.setUrl(midUrl);
-		String pageInfo = WebFetch.getResponseRetry(retryNum, webFetch);
-		if (pageInfo == null) {
+		if (!webFetch.query(retryNum)) {
 			lsResult = null;
+			return;
 		}
-		Parser parser = new Parser(pageInfo);
+		String info = webFetch.getResponse();
+		if (info == null) {
+			logger.error("没抓到东西：" + midUrl);
+			lsResult = new ArrayList<PixivUrlDownLoad>();
+			return;
+		}
+		Parser parser = new Parser(info);
 		NodeFilter filterPicture = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "works_display"));
 		Node nodePicture = parser.parse(filterPicture).elementAt(0);
 		lsResult = getLsDownloads(nodePicture);
@@ -85,7 +90,6 @@ public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrl
 		}
 		for (String pictureUrl : lsResultUrl) {
 			PixivUrlDownLoad pixivUrlDownLoad = new PixivUrlDownLoad();
-			pixivUrlDownLoad.setAuther(auther);
 			pixivUrlDownLoad.setName(name);
 			String[] ss = urlBig.split("=");
 			pixivUrlDownLoad.setPictureID(ss[ss.length - 1]);
@@ -117,11 +121,10 @@ public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrl
 		String resultUrl = "";
 		webFetch.setRefUrl(midUrl);
 		webFetch.setUrl(bigUrl);
-		String pageInfo = WebFetch.getResponseRetry(retryNum, webFetch);
-		if (pageInfo == null) {
+		if (!webFetch.query(retryNum)) {
 			return null;
 		}
-		Parser parser = new Parser(pageInfo);
+		Parser parser = new Parser(webFetch.getResponse());
 		NodeFilter filterPicture = new TagNameFilter("img");
 		Node nodePictureManga = parser.parse(filterPicture).elementAt(0);
 		String rawUrl = nodePictureManga.toHtml();
@@ -139,12 +142,11 @@ public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrl
 	private ArrayList<String> getPictureUrlManga(String mangaUrl) throws ParserException {
 		webFetch.setRefUrl(midUrl);
 		webFetch.setUrl(mangaUrl);
-		String pageInfo = WebFetch.getResponseRetry(retryNum, webFetch);
-		if (pageInfo == null) {
+		if (!webFetch.query(retryNum)) {
 			return null;
 		}
 
-		return getLsPictureUrlManga(pageInfo);
+		return getLsPictureUrlManga(webFetch.getResponse());
 	}
 	
 	private ArrayList<String> getLsPictureUrlManga(String pageInfo) throws ParserException {
@@ -176,7 +178,7 @@ public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrl
 	public PixivGetPictureUrlToDownload call() {
 		try {
 			getLsPicture();
-		} catch (ParserException e) {
+		} catch (Exception e) {
 			lsResult = null;
 		}
 		return this;

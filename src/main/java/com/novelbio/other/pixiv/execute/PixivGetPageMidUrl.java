@@ -14,9 +14,13 @@ import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.novelbio.base.dataOperate.WebFetch;
+import com.sun.tools.doclets.formats.html.resources.standard;
 
 public class PixivGetPageMidUrl {
 	WebFetch webFetch;
+	/** 判断该文件是否已经存在了，存在了就不下载了 */
+	PixivGetPathExistPic pixivGetPathExistPic;
+	
 	String pixivUrl = "http://www.pixiv.net/";
 	String pageUrl;
 	int allPictureNum;
@@ -25,11 +29,12 @@ public class PixivGetPageMidUrl {
 	/** 本页有多少图片 */
 	int thisPagePictureNum;
 	int retryNum = 100;
-	String autherName;
 	
 	String savePath;
 	
 	ArrayList<String[]> lsNameAndUrl;
+	
+	boolean isAlreadyHaveFile = false;
 	
 	public void setWebFetch(WebFetch webFetch) {
 		this.webFetch = webFetch;
@@ -40,9 +45,6 @@ public class PixivGetPageMidUrl {
 	public void setAllPageNum(int allPageNum) {
 		this.allPageNum = allPageNum;
 	}
-	public void setAutherName(String autherName) {
-		this.autherName = autherName;
-	}
 	public void setThisPageNum(int thisPageNum) {
 		this.thisPageNum = thisPageNum;
 	}
@@ -51,6 +53,13 @@ public class PixivGetPageMidUrl {
 	}
 	public void setSavePath(String savePath) {
 		this.savePath = savePath;
+	}
+	public void setPixivGetPathExistPic(PixivGetPathExistPic pixivGetPathExistPic) {
+		this.pixivGetPathExistPic = pixivGetPathExistPic;
+	}
+	
+	public boolean isAlreadyHaveFile() {
+		return isAlreadyHaveFile;
 	}
 	/** 返回null 表示没有成功 */
 	public ArrayList<PixivGetPictureUrlToDownload> getLsToDownloadUrl() {
@@ -71,11 +80,10 @@ public class PixivGetPageMidUrl {
 	 */
 	private boolean getPictures() throws ParserException {
 		webFetch.setUrl(pageUrl);
-		String pageInfo = WebFetch.getResponseRetry(retryNum, webFetch);
-		if (pageInfo == null) {
+		if (!webFetch.query(retryNum)) {
 			return false;
 		}
-		Parser parser = new Parser(pageInfo);
+		Parser parser = new Parser(webFetch.getResponse());
 		NodeFilter filterPicture = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "display_works linkStyleWorks"));
 		NodeList nodeListPicture = parser.parse(filterPicture);
 		lsNameAndUrl = getPictureMidUrl(nodeListPicture);
@@ -88,12 +96,17 @@ public class PixivGetPageMidUrl {
 		//包含有全部图片的nodelist
 		NodeList nodeLsPicture = nodeListPicture.extractAllNodesThatMatch(filterPicture, true);
 		thisPagePictureNum = nodeListPicture.size();
+		
 		SimpleNodeIterator iterator = nodeLsPicture.elements();
         while (iterator.hasMoreNodes()) {
         	//每个图片的node
             Node nodePicture = iterator.nextNode();
             String name = getPictureName(nodePicture);
             String url = getPictureUrl(nodePicture);
+            if (pixivGetPathExistPic.isPicAlreadyHave(url)) {
+				isAlreadyHaveFile = true;
+				continue;
+			}
             lsResult.add(new String[]{name, url});
         }
         return lsResult;
@@ -132,7 +145,6 @@ public class PixivGetPageMidUrl {
 		int i = 0;
 		for (String[] nameAndUrl : lsNameAndUrl) {
 			PixivGetPictureUrlToDownload pictureUrlToDownload = new PixivGetPictureUrlToDownload();
-			pictureUrlToDownload.setAuther(autherName);
 			pictureUrlToDownload.setMidUrl(pixivUrl + nameAndUrl[1]);
 			pictureUrlToDownload.setName(nameAndUrl[0]);
 			//每页20张图
@@ -145,4 +157,5 @@ public class PixivGetPageMidUrl {
 		}
 		return lsResult;
 	}
+
 }

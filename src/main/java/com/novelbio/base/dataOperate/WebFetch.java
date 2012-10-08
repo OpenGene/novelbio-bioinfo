@@ -70,20 +70,6 @@ import org.apache.log4j.Logger;
  */
 public class WebFetch {
 	private static Logger logger = Logger.getLogger(WebFetch.class);
-	public static void main(String[] args) {
-		ArrayList<WebFetch> lswebFetch = WebFetch.getInstanceLs(3);
-		GetThread getThread2 = new GetThread(lswebFetch.get(0), "http://pic4.bbzhi.com/mingxingbizhi/gaoqingtaiwankuanpingmeinvbizhi/gaoqingtaiwankuanpingmeinvbizhi_351979_12.jpg", "/Users/zongjie/Downloads/test/1.jpg");
-		WebFetch webFetch2 = new WebFetch();
-		GetThread getThread1 = new GetThread(lswebFetch.get(1), "http://pic4.bbzhi.com/mingxingbizhi/gaoqingtaiwankuanpingmeinvbizhi/gaoqingtaiwankuanpingmeinvbizhi_351979_12.jpg", "/Users/zongjie/Downloads/test/2.jpg");
-		WebFetch webFetch3 = new WebFetch();
-		GetThread getThread3 = new GetThread(lswebFetch.get(2), "http://pic4.bbzhi.com/mingxingbizhi/gaoqingtaiwankuanpingmeinvbizhi/gaoqingtaiwankuanpingmeinvbizhi_351979_12.jpg", "/Users/zongjie/Downloads/test/3.jpg");
-		Thread thread = new Thread(getThread1);
-		Thread thread2 = new Thread(getThread2);
-		Thread thread3=  new Thread(getThread3);
-		thread.start();
-		thread2.start();
-		thread3.start();
-	}
 	
 	public static final int HTTPTYPE_POST = 2;
 	public static final int HTTPTYPE_GET = 4;
@@ -100,9 +86,9 @@ public class WebFetch {
 		schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
 		cm = new PoolingClientConnectionManager(schemeRegistry);
 		// Increase max total connection to 200
-		cm.setMaxTotal(12);//setMaxTotalConnections(200);
+		cm.setMaxTotal(20);//setMaxTotalConnections(200);
 		// Increase default max connection per route to 20
-		cm.setDefaultMaxPerRoute(6);
+		cm.setDefaultMaxPerRoute(10);
 		// Increase max connections for localhost:80 to 50
 		HttpHost localhost = new HttpHost("locahost", 80);
 		cm.setMaxPerRoute(new HttpRoute(localhost), 50);
@@ -119,7 +105,9 @@ public class WebFetch {
 	/** 好像httpclient会自动保存cookie */
 	CookieStore cookieStore;
 
-//	InputStream instream;
+	InputStream instream;
+	
+	boolean querySucess;
 	
 	int methodType = HTTPTYPE_GET;
 	private Charset charset;
@@ -209,6 +197,9 @@ public class WebFetch {
 	}
 	/** 输入网址，开头可以不加http:// */
 	public void setUrl(String url) {
+		if (url == null) {
+			return;
+		}
 		if (url.startsWith("//")) {
 			url = "http:" + url;
 		} else if (url.startsWith("/")) {
@@ -219,6 +210,7 @@ public class WebFetch {
 			url = "http://" + url;
 		}
 		this.url = url;
+		querySucess = false;
 	}
 	/** 设定post提交的参数，设定后默认改为post method */
 	public void setPostParam(List<String[]> lsKey2Value) {
@@ -251,14 +243,17 @@ public class WebFetch {
 	public CookieStore getCookies() {
 		return cookieStore;
 	}
+	/** 是否成功query */
+	public boolean isQuerySucess() {
+		return querySucess;
+	}
 	/** 读取的网页的string格式，读取出错则返回null */
 	public String getResponse() {
 		String result = "";
-		Iterable<String> itString = readResponse();
-		if (itString == null) {
+		if (!querySucess) {
 			return null;
 		}
-		for (String content : itString) {
+		for (String content : readResponse()) {
 			result = result + content + "\n";
 		}
 		closeStream();
@@ -269,13 +264,8 @@ public class WebFetch {
 	 * @return
 	 */
 	public Iterable<String> readResponse() {
-		InputStream inputStream = null;
 		try {
-			inputStream = getResponseExp();
-			if (inputStream == null) {
-				return null;
-			}
-			return readResponseExp(inputStream);
+			return readResponseExp();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -288,8 +278,8 @@ public class WebFetch {
 	 * @throws Exception 
 	 * @throws IOException
 	 */
-	private Iterable<String> readResponseExp(InputStream inputStream) throws Exception {
-		 final BufferedReader bufread =  getResponseReader(inputStream);
+	private Iterable<String> readResponseExp() throws Exception {
+		 final BufferedReader bufread =  getResponseReader();
 		return new Iterable<String>() {
 			public Iterator<String> iterator() {
 				return new Iterator<String>() {
@@ -324,8 +314,8 @@ public class WebFetch {
 	/** 获得返回的bufferReader类
 	 * 貌似会自动重定向，如果不会的话，可以解析HttpResponse的头文件，获得重定向的url，然后再次get或者post
 	 *  */	
-	private BufferedReader getResponseReader(InputStream instream) throws ClientProtocolException, IOException {
-		if (instream == null) {
+	private BufferedReader getResponseReader() throws ClientProtocolException, IOException {
+		if (!querySucess) {
 			return null;
 		}
 		BufferedReader reader = new BufferedReader(new InputStreamReader(instream, charset));
@@ -347,8 +337,7 @@ public class WebFetch {
 	 * @throws IOException 
 	 * @throws ClientProtocolException */
 	private boolean downloadExp(String fileName) throws ClientProtocolException, IOException {
-		InputStream instream = getResponseExp();
-		if (instream == null) {
+		if (!querySucess) {
 			return false;
 		}
 		FileOutputStream out = new FileOutputStream(new File(fileName));
@@ -360,24 +349,48 @@ public class WebFetch {
 		instream.close();
 		return true;
 	}
+	/** 默认重试2次的query */
+	public boolean query() {
+		return query(2);
+	}
+	/** 重试若干次,在0-100之间 */
+	public boolean query(int retryNum) {
+		if (retryNum <= 0 || retryNum > 100) {
+			retryNum = 2;
+		}
+		try {
+			int queryNum = 0;
+			while (!querySucess) {
+				getResponseExp();
+				queryNum ++;
+				if (queryNum > retryNum) {
+					break;
+				}
+			}
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return querySucess;
+	}
 	/**
 	 * 返回null 表示没有成功
 	 * @return
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	private InputStream getResponseExp() throws ClientProtocolException, IOException {
+	private void getResponseExp() throws ClientProtocolException, IOException {
+		querySucess = false;
 		closeStream();
-		InputStream instream = null;
+		instream = null;
 		HttpResponse httpResponse = httpclient.execute(getQuery());
 		int httpStatus = httpResponse.getStatusLine().getStatusCode();
-//		if (httpStatus == 405 && methodType == HTTPTYPE_GET) {
-//			methodType = HTTPTYPE_HEAD;
-//			httpResponse = httpclient.execute(getQuery());
-//			httpStatus = httpResponse.getStatusLine().getStatusCode();
-//		}
+		
 		if (httpStatus/100 == 4 || httpStatus/100 == 5) {
-			return null;
+			querySucess = false;
 		}
 		synchronized (this) {
 			cookieStore = httpclient.getCookieStore();
@@ -388,7 +401,7 @@ public class WebFetch {
 		if (entity != null) {
 			instream = entity.getContent();
 		}
-		return instream;
+		querySucess = true;
 	}
 	private HttpUriRequest getQuery() {
 		if (methodType == HTTPTYPE_GET) {
@@ -408,6 +421,7 @@ public class WebFetch {
 	
 	/** 除了httpclient 其他都关掉 */
 	private void closeStream() {
+		try { instream.close(); } catch (Exception e) { }
 		try { httpRequest.releaseConnection(); } catch (Exception e) { }
 		try { httpRequest.abort(); } catch (Exception e) { }
 	}
@@ -415,17 +429,6 @@ public class WebFetch {
 	public void close() {
 		closeStream();
 		try { httpclient.getConnectionManager().shutdown(); } catch (Exception e) { }
-	}
-	
-	public static String getResponseRetry(int retryNum, WebFetch webFetch) {
-		String pageInfo = null;
-		for (int i = 0; i < retryNum; i++) {
-			pageInfo = webFetch.getResponse();
-			if (pageInfo != null) {
-				break;
-			}
-		}
-		return pageInfo;
 	}
 	/** html解码还很薄弱 */
 	public static String decode(String inputUrl) {
@@ -439,21 +442,6 @@ public class WebFetch {
 		result = inputUrl.replace("&amp;", "&");
 		result = result.replace("&nbsp;", " ");
 		return result;
-	}
-	static class GetThread extends Thread {
-		WebFetch webFetch;
-		String url;
-		String download;
-		public GetThread(WebFetch webFetch, String url, String download) { 
-			this.webFetch = webFetch; 
-			this.url = url; 
-			this.download = download;
-		} 
-		@Override 
-		public void run() {
-			webFetch.setUrl(url);
-			webFetch.download(download);
-		} 
 	}
 }
 /**
@@ -509,7 +497,7 @@ class WebFetchIdleConnectionMonitorThread extends Thread {
 					// 关闭过期连接
 					connMgr.closeExpiredConnections();
 					// 可选地，关闭空闲超过30秒的连接
-					connMgr.closeIdleConnections(30, TimeUnit.SECONDS);
+					connMgr.closeIdleConnections(300, TimeUnit.SECONDS);
 				}
 			}
 		} catch (InterruptedException ex) {
