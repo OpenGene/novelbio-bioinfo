@@ -39,7 +39,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiPeakStatistics guiPeakStatistics;
 	private GuiGetSeq guiGetSeq;
 	private GuiBedTssAndChrome guiBedTssAndChrome;
-	private GuiRNASeqMapping guiRNASeqRsem;
+	private GuiRNASeqMapping guiRNASeqMapping;
 	private GuiLinesStatistics guiLinesStatistics;
 	private GuiAffyCelNormJpanel guiCelNormJpanel;
 	private GuiSamToBed guiSamToBed;
@@ -122,8 +122,8 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiDGEgetvalue = new GuiDGEgetvalue();
 				jTabbedPane1.addTab("DGEgetValue", null, guiDGEgetvalue, null);
 				
-				guiRNASeqRsem = new GuiRNASeqMapping();
-				jTabbedPane1.addTab("RNAseqMap", guiRNASeqRsem);
+				guiRNASeqMapping = new GuiRNASeqMapping();
+				jTabbedPane1.addTab("RNAseqMap", guiRNASeqMapping);
 				
 				guiTranscriptomeCufflinks = new GuiTranscriptomeCufflinks();
 				jTabbedPane1.addTab("TranscriptomReconstruct", guiTranscriptomeCufflinks);

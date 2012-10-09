@@ -71,7 +71,7 @@ public class PixivUrlDownLoad implements Callable<PixivUrlDownLoad> {
     	String[] ss = pictureUrl.split("/");
     	String suffix = ss[ss.length - 1];
     	if (suffix.contains("?")) {
-			suffix = suffix.split("?")[0];
+			suffix = suffix.split("\\?")[0];
 		}
 		String saveName = pictureNum + "_" + PixivOperate.generateoutName(name) + "_" + suffix;
 		return getSavePath() + saveName;

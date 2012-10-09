@@ -44,6 +44,11 @@ import javax.swing.ButtonGroup;
 import org.springframework.context.annotation.Primary;
 
 public class GuiRNASeqMapping extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1230501723563806334L;
+	
 	private JTextField txtMappingIndex;
 	private JTextField txtSavePathAndPrefix;
 	GUIFileOpen guiFileOpen = new GUIFileOpen();

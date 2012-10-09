@@ -205,7 +205,7 @@ public class SpeciesFile {
 			indexChromFa = creatAndGetSeqIndex(false, softMapping, getChromSeq(), mapSoftware2ChrIndexPath);
 			
 			String indexNew = addIndex(indexChr, softMapping, indexChromFa);
-			if (!indexChr.equals(indexNew)) {
+			if (indexChr == null || !indexChr.equals(indexNew)) {
 				indexChr = indexNew;
 				update();
 			}

@@ -2,8 +2,11 @@ package com.novelbio.other.pixiv.execute;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -21,6 +24,7 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -29,11 +33,25 @@ public class PixivOperate {
 	private static Logger logger = Logger.getLogger(PixivOperate.class);
 	
 	public static void main(String[] args) throws ParserException, InterruptedException, ExecutionException {
-		
-		PixivOperate pixivOperate = new PixivOperate();
-		pixivOperate.setUrlAuther(648014);
-		pixivOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/pixivTest");
-		pixivOperate.running();
+		PixivOperate pixivOperate;
+		Set<String> setUrl = new LinkedHashSet<String>();
+		TxtReadandWrite txtReadUrl = new TxtReadandWrite("/home/zong0jie/图片/My Pictures/picture/pixivurl.txt", false);
+		for (String urlID : txtReadUrl.readlines()) {
+			urlID = urlID.trim();
+			if (urlID.equals("")) {
+				continue;
+			}
+			setUrl.add(urlID);
+		}
+		for (String urlID : setUrl) {
+			 pixivOperate = new PixivOperate();
+			pixivOperate.setUrlAuther(urlID);
+			pixivOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/pixivTest");
+			pixivOperate.running();
+			Thread.sleep(100);
+			logger.error("finished url:" + urlID);
+		}
+
 	}
 	WebFetch webFetchPixiv;
 	String urlAuther;
@@ -85,7 +103,7 @@ public class PixivOperate {
     /**
      * @param urlAuther 的id
      */
-	public void setUrlAuther(int urlAutherid) {
+	public void setUrlAuther(String urlAutherid) {
 		this.urlAuther = "http://www.pixiv.net/member_illust.php?id=" + urlAutherid;
 		autherID = urlAutherid + "";
 	}
@@ -95,7 +113,7 @@ public class PixivOperate {
 	public void running() throws InterruptedException, ExecutionException {
 		ArrayList<PixivGetPictureUrlToDownload> lsPrepareDownloads = getLsPrepareDownload();
 		ArrayList<PixivUrlDownLoad> lsDownLoads = new ArrayList<PixivUrlDownLoad>();
-		logger.info("获得待下载全部midurl连接");
+		logger.error("获得待下载全部midurl连接");
 		//等待要获得下载url的序列
 		ThreadPoolExecutor executorGetUrlPrepToDownload = new ThreadPoolExecutor(3, 4, 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
 		//等待下载的类
@@ -130,7 +148,7 @@ public class PixivOperate {
 			Future<PixivUrlDownLoad> futureDownload = executorDownload.submit(pixivUrlDownLoad);
 			lsFutureDownLoad.add(futureDownload);
 		}
-		logger.info("获得待下载全部bigurl连接");
+		logger.error("获得待下载全部bigurl连接");
 		//将executorDownload中间的内容运行直到完毕
 		while (executorDownload.getActiveCount() > 0 || lsFutureDownLoad.size() > 0) {
 			Future<PixivUrlDownLoad> futureDownload = lsFutureDownLoad.poll();

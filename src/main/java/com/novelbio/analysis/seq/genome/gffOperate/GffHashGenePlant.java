@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.generalConf.NovelBioConst;
@@ -28,10 +29,10 @@ import com.novelbio.generalConf.NovelBioConst;
 public class GffHashGenePlant extends GffHashGeneAbs{
 	private static Logger logger = Logger.getLogger(GffHashGenePlant.class);
 	public static void main(String[] args) {
-		GffHashGenePlant gffHashGenePlant = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_PLANT);
-		gffHashGenePlant.ReadGffarray("/media/winE/Bioinformatics/genome/rice/tigr7/all.gff3");
-		GffCodGene gffCodGene = gffHashGenePlant.searchLocation("chr1", 6790);
-		System.out.println(gffCodGene.getGffDetailThis().getLongestSplit().getATGsite());
+		GffChrAbs gffChrAbs = new GffChrAbs(3702);
+		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();
+		GffCodGene gffCodGene = gffHashGene.searchLocation("chr1", 433031);
+		System.out.println(gffCodGene.getGffDetailThis().getCod2Start(433031));
 	}
 	/** 基因名字的正则 */
 	protected String GeneName="";
