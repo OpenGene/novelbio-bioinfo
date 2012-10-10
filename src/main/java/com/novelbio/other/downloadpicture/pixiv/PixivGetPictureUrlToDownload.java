@@ -1,4 +1,4 @@
-package com.novelbio.other.pixiv.execute;
+package com.novelbio.other.downloadpicture.pixiv;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -19,8 +19,10 @@ import org.htmlparser.util.SimpleNodeIterator;
 
 import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.dataStructure.PatternOperate;
+import com.novelbio.other.downloadpicture.GetPictureUrl;
+import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
 /** 找到每个midUrl所对应的页面，然后通过本类获得bigurl的download类*/
-public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrlToDownload> {
+public class PixivGetPictureUrlToDownload implements GetPictureUrl {
 	private static Logger logger = Logger.getLogger(PixivGetPictureUrlToDownload.class);
 	String pixivUrl = "http://www.pixiv.net/";
 		
@@ -32,7 +34,7 @@ public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrl
 	String savePath;
 	int pictureNum;
 	/** null说明执行失败，需要重新执行 */
-	ArrayList<PixivUrlDownLoad> lsResult;
+	ArrayList<UrlPictureDownLoad> lsResult;
 	
 	public void setName(String name) {
 		this.name = name;
@@ -50,7 +52,7 @@ public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrl
 	public void setSavePath(String savePath) {
 		this.savePath = savePath;
 	}
-	public ArrayList<PixivUrlDownLoad> getLsResult() {
+	public ArrayList<UrlPictureDownLoad> getLsResult() {
 		return lsResult;
 	}
 	/** 返回null表示失败，就需要重跑
@@ -64,7 +66,7 @@ public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrl
 		String info = webFetch.getResponse();
 		if (info == null) {
 			logger.error("没抓到东西：" + midUrl);
-			lsResult = new ArrayList<PixivUrlDownLoad>();
+			lsResult = new ArrayList<UrlPictureDownLoad>();
 			return;
 		}
 		Parser parser = new Parser(info);
@@ -73,8 +75,8 @@ public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrl
 		lsResult = getLsDownloads(nodePicture);
 	}
 	
-	private ArrayList<PixivUrlDownLoad> getLsDownloads(Node nodePicture) throws ParserException {
-		ArrayList<PixivUrlDownLoad> lsPixivUrlDownLoads = new ArrayList<PixivUrlDownLoad>();
+	private ArrayList<UrlPictureDownLoad> getLsDownloads(Node nodePicture) throws ParserException {
+		ArrayList<UrlPictureDownLoad> lsPixivUrlDownLoads = new ArrayList<UrlPictureDownLoad>();
 		
 		ArrayList<String> lsResultUrl = new ArrayList<String>();
 		String urlBig = getPictureUrlBig(nodePicture);
@@ -84,15 +86,12 @@ public class PixivGetPictureUrlToDownload implements Callable<PixivGetPictureUrl
 			if (lsResultUrl == null) {
 				return null;
 			}
-		}
-		else {
+		} else {
 			lsResultUrl.add(getPictureUrlBigAbs(urlBig));
 		}
 		for (String pictureUrl : lsResultUrl) {
-			PixivUrlDownLoad pixivUrlDownLoad = new PixivUrlDownLoad();
+			UrlPictureDownLoad pixivUrlDownLoad = new UrlPictureDownLoad();
 			pixivUrlDownLoad.setName(name);
-			String[] ss = urlBig.split("=");
-			pixivUrlDownLoad.setPictureID(ss[ss.length - 1]);
 			pixivUrlDownLoad.setPictureNum(pictureNum);
 			pixivUrlDownLoad.setPictureUrl(pictureUrl);
 			pixivUrlDownLoad.setRefUrl(midUrl);

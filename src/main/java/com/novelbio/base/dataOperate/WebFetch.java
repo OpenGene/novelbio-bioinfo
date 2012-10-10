@@ -182,7 +182,7 @@ public class WebFetch {
 		lsHeaders.add(new BasicHeader("ContentType", "application/x-www-form-urlencoded"));
 		lsHeaders.add(new BasicHeader("Accept-Language", "zh-cn,zh;q=0.5"));
 		lsHeaders.add(new BasicHeader("Connection", "Keep-Alive"));
-		lsHeaders.add(new BasicHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 2.0.50727)"));
+		lsHeaders.add(new BasicHeader("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:15.0) Gecko/20100101 Firefox/15.0.1"));
 		lsHeaders.add(new BasicHeader("Accept", "text/html, Accept:image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, application/x-shockwave-flash, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/msword, application/x-silverlight, */* "));
 		lsHeaders.add(new BasicHeader("Accept-Charset", "gb2312,utf-8,ISO-8859-1;q=0.7,*;q=0.7"));
 		lsHeaders.add(new BasicHeader("UA-CPU", "x86"));
@@ -193,6 +193,9 @@ public class WebFetch {
 	}
 	/** 有些网站譬如pixiv，在下载图片时需要浏览器提供最近访问的链接，而且必须是其指定的链接才能下载 */
 	public void setRefUrl(String refUrl) {
+		if (refUrl == null) {
+			return;
+		}
 		lsHeaders.add(new BasicHeader("Referer", refUrl));
 	}
 	/** 输入网址，开头可以不加http:// */

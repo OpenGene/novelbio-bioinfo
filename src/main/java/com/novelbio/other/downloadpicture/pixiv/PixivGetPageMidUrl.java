@@ -1,4 +1,4 @@
-package com.novelbio.other.pixiv.execute;
+package com.novelbio.other.downloadpicture.pixiv;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;

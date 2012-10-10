@@ -12,6 +12,8 @@ import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.SepSign;
 
 public class TopGO {
+	public final static int ELIMGO = 2;
+	public final static int NORMALGO = 4;
 	String workSpace;
 	String tmplateScript = "";
 	String exeScript = "";
@@ -89,7 +91,9 @@ public class TopGO {
 		fillCalGeneID_And_BG_File();
 		return exeScript;
 	}
-
+	public void setGoAlgorithm() {
+		
+	}
 	protected void generateScript() {
 		TxtReadandWrite txtReadScript = new TxtReadandWrite(tmplateScript, false);
 		TxtReadandWrite txtOutScript = new TxtReadandWrite(exeScript, true);
