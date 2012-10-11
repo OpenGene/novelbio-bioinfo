@@ -1,7 +1,6 @@
 package com.novelbio.other.downloadpicture.pixiv;
 
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
 
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
@@ -14,7 +13,6 @@ import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.novelbio.base.dataOperate.WebFetch;
-import com.sun.tools.doclets.formats.html.resources.standard;
 
 public class PixivGetPageMidUrl {
 	WebFetch webFetch;

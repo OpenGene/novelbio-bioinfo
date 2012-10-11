@@ -389,7 +389,13 @@ public class WebFetch {
 		querySucess = false;
 		closeStream();
 		instream = null;
-		HttpResponse httpResponse = httpclient.execute(getQuery());
+		HttpResponse httpResponse = null;
+		try {
+			httpResponse = httpclient.execute(getQuery());
+		} catch (Exception e) {
+			logger.error("query³ö´í£º" + url);
+			return;
+		}
 		int httpStatus = httpResponse.getStatusLine().getStatusCode();
 		
 		if (httpStatus/100 == 4 || httpStatus/100 == 5) {

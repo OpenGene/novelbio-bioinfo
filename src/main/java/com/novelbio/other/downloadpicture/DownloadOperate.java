@@ -30,7 +30,7 @@ public abstract class DownloadOperate {
 	/** 总共几页 */
 	protected int allPages = 0;
 	
-	protected PixivGetPathExistPic pixivGetPathExistPic = new PixivGetPathExistPic();
+	protected PixivGetPathExistPic pixivGetPathExistPic;
 	
 	/** 获得某个网站的cookies */
     protected abstract void getcookies();
@@ -54,7 +54,7 @@ public abstract class DownloadOperate {
 		}
 		ArrayList<? extends GetPictureUrl> lsPrepareDownloads = getLsPrepareDownload();
 		ArrayList<UrlPictureDownLoad> lsDownLoads = new ArrayList<UrlPictureDownLoad>();
-		logger.error("获得待下载全部midurl连接");
+		logger.info("获得待下载全部midurl连接");
 		//等待要获得下载url的序列
 		ThreadPoolExecutor executorGetUrlPrepToDownload = new ThreadPoolExecutor(3, 4, 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
 		//等待下载的类
@@ -67,6 +67,7 @@ public abstract class DownloadOperate {
 			Future<GetPictureUrl> result = executorGetUrlPrepToDownload.submit(pixivGetPictureUrlToDownload);
 			lsUrlPrepToDownLoad.add(result);
 		}
+		int mm = 1;
 		//将executorGetUrlPrepToDownload中间的内容运行直到完毕
 		while (executorGetUrlPrepToDownload.getActiveCount() > 0 || lsUrlPrepToDownLoad.size() > 0) {
 			Future<GetPictureUrl> futureToDownload = lsUrlPrepToDownLoad.poll();
@@ -83,13 +84,17 @@ public abstract class DownloadOperate {
 				lsUrlPrepToDownLoad.add(futureToDownload);
 			}
 			Thread.sleep(100);
+			if (mm % 20 == 0) {
+				logger.error(executorGetUrlPrepToDownload.getQueue().size());
+			}
+			mm ++;
 		}
 		
 		for (UrlPictureDownLoad pixivUrlDownLoad : lsDownLoads) {
 			Future<UrlPictureDownLoad> futureDownload = executorDownload.submit(pixivUrlDownLoad);
 			lsFutureDownLoad.add(futureDownload);
 		}
-		logger.error("获得待下载全部bigurl连接");
+		logger.info("获得待下载全部bigurl连接");
 		//将executorDownload中间的内容运行直到完毕
 		while (executorDownload.getActiveCount() > 0 || lsFutureDownLoad.size() > 0) {
 			Future<UrlPictureDownLoad> futureDownload = lsFutureDownLoad.poll();

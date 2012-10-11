@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.record.cont.ContinuableRecord;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
@@ -20,18 +21,23 @@ import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.other.downloadpicture.DownloadOperate;
 import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
+import com.novelbio.other.downloadpicture.pixiv.PixivGetPageMidUrl;
+import com.novelbio.other.downloadpicture.pixiv.PixivGetPathExistPic;
 import com.novelbio.other.downloadpicture.pixiv.PixivGetPictureUrlToDownload;
 import com.novelbio.other.downloadpicture.pixiv.PixivOperate;
 
 public class DonmaiOperate extends DownloadOperate {
-	
+	private static Logger logger = Logger.getLogger(DonmaiOperate.class);
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		DonmaiOperate donmaiOperate = new DonmaiOperate();
 		donmaiOperate.getcookies();
-		donmaiOperate.setUrlAuther("kantoku");
+		donmaiOperate.setUrlAuther("buriki");
 		donmaiOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/donmai");
 		donmaiOperate.running();
 		
+	}
+	DonmaiOperate() {
+		pixivGetPathExistPic = new PixivGetPathExistPic(PixivGetPathExistPic.SITE_DONMAI);
 	}
 	/** 不需要获得cookies */
 	@Override
@@ -103,26 +109,33 @@ public class DonmaiOperate extends DownloadOperate {
 		DonmaiGetPictureUrl donmaiGetPictureUrl = new DonmaiGetPictureUrl();
 		donmaiGetPictureUrl.setUrlPage(urlAuther, allPageNum);
 		donmaiGetPictureUrl.setWebFetch(webFetch);
-		while (true) {
-			donmaiGetPictureUrl.call();
-			 ArrayList<UrlPictureDownLoad> lsResult = donmaiGetPictureUrl.getLsResult();
-			 if (lsResult != null && lsResult.size() > 0) {
-				allPictureNum = 20 * (allPageNum - 1) + lsResult.size();
-				break;
-			}
+		while (!donmaiGetPictureUrl.query()) { }
+		 ArrayList<DonmaiGetDownloadUrl> lsResult = donmaiGetPictureUrl.getLsResult();
+		 if (lsResult != null && lsResult.size() > 0) {
+			allPictureNum = 20 * (allPageNum - 1) + lsResult.size();
 		}
 		return allPictureNum;
 	}
 	
 	@Override
-	protected ArrayList<DonmaiGetPictureUrl> getLsPrepareDownload() {
-		ArrayList<DonmaiGetPictureUrl> lsResult = new ArrayList<DonmaiGetPictureUrl>();
-		for (int i = 1; i < allPages; i++) {
+	protected ArrayList<DonmaiGetDownloadUrl> getLsPrepareDownload() {
+		ArrayList<DonmaiGetDownloadUrl> lsResult = new ArrayList<DonmaiGetDownloadUrl>();
+		pixivGetPathExistPic.setSavePath(savePath);
+		for (int i = 1; i <= allPages; i++) {
 			DonmaiGetPictureUrl donmaiGetPictureUrl = new DonmaiGetPictureUrl();
 			donmaiGetPictureUrl.setUrlPage(urlAuther, i);
 			donmaiGetPictureUrl.setSavePath(savePath);
+			donmaiGetPictureUrl .setAllPictureNum(allPictureNum);
 			donmaiGetPictureUrl.setWebFetch(WebFetch.getInstance(webFetch));
-			lsResult.add(donmaiGetPictureUrl);
+			donmaiGetPictureUrl.setPixivGetPathExistPic(pixivGetPathExistPic);
+			while (!donmaiGetPictureUrl.query()) { }
+			ArrayList<DonmaiGetDownloadUrl> lsPixivGetPictureUrlToDownloads = donmaiGetPictureUrl.getLsResult();
+			lsResult.addAll(lsPixivGetPictureUrlToDownloads);
+			logger.info("总共" + allPages + "页，已经读取完第" + i + "页" );
+			//如果文件夹里面已经有该图片了，那么就返回，实际上有第一张图片，基本上后面的图都会有了，所以判断第一张图片就行了
+//			if (pixivGetPageMidUrl.isAlreadyHaveFile()) {
+//				break;
+//			}
 		}
 		return lsResult;
 	}

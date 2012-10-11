@@ -9,10 +9,25 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 方便以后如果看到该ID就可以不下载该图片了
  *  */
 public class PixivGetPathExistPic {
-	static PatternOperate patternOperate = new PatternOperate("\\d+", false);
+	public final static int SITE_PIXIV = 2;
+	public final static int SITE_DONMAI = 4;
+	
+	PatternOperate patternOperate;
 	
 	HashSet<String> setExistPictureID = new HashSet<String>();
 	String savePath = "";
+	/**
+	 * SITE_PIXIV等
+	 * @param siteType
+	 */
+	public PixivGetPathExistPic(int siteType) {
+		if (siteType == SITE_PIXIV) {
+			patternOperate = new PatternOperate("\\d+", false);
+		} else if (siteType == SITE_DONMAI) {
+			patternOperate = new PatternOperate("\\w+", false);
+		}
+		
+	}
 	
 	public void setSavePath(String savePath) {
 		if (this.savePath.equalsIgnoreCase(savePath)) {

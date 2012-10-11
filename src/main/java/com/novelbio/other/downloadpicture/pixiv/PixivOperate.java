@@ -61,6 +61,7 @@ public class PixivOperate extends DownloadOperate{
  
 	
 	PixivOperate() {
+		pixivGetPathExistPic = new PixivGetPathExistPic(PixivGetPathExistPic.SITE_PIXIV);
 		getcookies();
 	}
 	/**
