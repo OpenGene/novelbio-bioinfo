@@ -24,7 +24,7 @@ public class PixivGetPathExistPic {
 		if (siteType == SITE_PIXIV) {
 			patternOperate = new PatternOperate("\\d+", false);
 		} else if (siteType == SITE_DONMAI) {
-			patternOperate = new PatternOperate("\\w+", false);
+			patternOperate = new PatternOperate("[a-z0-9A-Z]+", false);
 		}
 		
 	}

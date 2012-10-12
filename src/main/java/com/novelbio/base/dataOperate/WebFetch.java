@@ -58,6 +58,8 @@ import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
+import com.sun.xml.internal.xsom.impl.WildcardImpl.Other;
+
 /**
  * 一次只能选择一项，要么post，要么get
  * 
@@ -343,13 +345,17 @@ public class WebFetch {
 		if (!querySucess) {
 			return false;
 		}
-		FileOutputStream out = new FileOutputStream(new File(fileName));
+		File file = new File(fileName);
+		FileOutputStream out = new FileOutputStream(file);
 		byte[] b = new byte[BUFFER];
 		int len = 0;
 		while ((len = instream.read(b)) != -1) {
 			out.write(b, 0, len);
 		}
 		instream.close();
+		out.flush();
+		out.close();
+		out = null;
 		return true;
 	}
 	/** 默认重试2次的query */

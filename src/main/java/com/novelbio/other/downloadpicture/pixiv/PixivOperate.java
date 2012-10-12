@@ -36,24 +36,30 @@ public class PixivOperate extends DownloadOperate{
 	private static Logger logger = Logger.getLogger(PixivOperate.class);
 	
 	public static void main(String[] args) throws ParserException, InterruptedException, ExecutionException {
+//		PixivOperate pixivOperate = new PixivOperate();
+//		pixivOperate.getcookies();
+//		Set<String> setUrl = new LinkedHashSet<String>();
+//		TxtReadandWrite txtReadUrl = new TxtReadandWrite("/home/zong0jie/图片/My Pictures/picture/pixivurl.txt", false);
+//		for (String urlID : txtReadUrl.readlines()) {
+//			urlID = urlID.trim();
+//			if (urlID.equals("")) {
+//				continue;
+//			}
+//			setUrl.add(urlID);
+//		}
+//		for (String urlID : setUrl) {			
+//			pixivOperate.setUrlAuther(urlID);
+//			pixivOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/pixivTest");
+//			pixivOperate.running();
+//			Thread.sleep(100);
+//			logger.error("finished url:" + urlID);
+//		}
+		
 		PixivOperate pixivOperate = new PixivOperate();
-		pixivOperate.getcookies();
-		Set<String> setUrl = new LinkedHashSet<String>();
-		TxtReadandWrite txtReadUrl = new TxtReadandWrite("/home/zong0jie/图片/My Pictures/picture/pixivurl.txt", false);
-		for (String urlID : txtReadUrl.readlines()) {
-			urlID = urlID.trim();
-			if (urlID.equals("")) {
-				continue;
-			}
-			setUrl.add(urlID);
-		}
-		for (String urlID : setUrl) {			
-			pixivOperate.setUrlAuther(urlID);
-			pixivOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/pixivTest");
-			pixivOperate.running();
-			Thread.sleep(100);
-			logger.error("finished url:" + urlID);
-		}
+		pixivOperate.setUrlAuther("4065724");
+		pixivOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/pixivTest");
+		pixivOperate.running();
+		Thread.sleep(100);
 	}
 	
 	String name = "facemun";
@@ -97,7 +103,7 @@ public class PixivOperate extends DownloadOperate{
 	 * 获得总共几页
 	 * @return 返回是否设置成功
 	 */
-	protected boolean setPictureNum_And_PageNum_Auther() {
+	protected boolean setPictureNum_And_PageNum_Auther_And_PixivGetPath() {
 		try {
 			webFetch.setUrl(urlAuther);
 			if (!webFetch.query(retryGetPageNum)) {

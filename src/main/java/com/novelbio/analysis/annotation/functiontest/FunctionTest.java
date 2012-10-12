@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -46,7 +47,16 @@ public class FunctionTest implements FunTestInt {
 	public void setGOtype(String goType) {
 		funTest.setGoType(goType);
 	}
-	
+	/**
+	 * 只能用于GO分析中
+	 */
+	public void setGOAlgorithm(GoAlgorithm goAlgorithm) {
+		try {
+			((ElimGOFunTest)funTest).setAlgorithm(goAlgorithm);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
 	
 	@Override
 	public void setLsTestAccID(ArrayList<String> lsCopedID) {

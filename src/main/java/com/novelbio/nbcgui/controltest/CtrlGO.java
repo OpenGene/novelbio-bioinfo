@@ -1,19 +1,13 @@
 package com.novelbio.nbcgui.controltest;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
-import com.novelbio.base.dataOperate.ExcelOperate;
-import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class CtrlGO extends CtrlGOPath{
@@ -23,7 +17,7 @@ public class CtrlGO extends CtrlGOPath{
 	private static CtrlGO ctrlGO = null;
 
 	String GOClass = Go2Term.GO_BP;
-	boolean elimGo = true;
+	GoAlgorithm goAlgorithm = GoAlgorithm.classic;
 
 	/**
 	 * @param elimGo
@@ -34,8 +28,8 @@ public class CtrlGO extends CtrlGOPath{
 	 * @param StaxID
 	 * @return
 	 */
-	public static CtrlGO getInstance(boolean elimGo, String GOClass, int QtaxID, boolean blast, double evalue, int... StaxID) {
-		ctrlGO = new CtrlGO(elimGo, GOClass, QtaxID, blast, evalue, StaxID);
+	public static CtrlGO getInstance(GoAlgorithm goAlgorithm, String GOClass, int QtaxID, boolean blast, double evalue, int... StaxID) {
+		ctrlGO = new CtrlGO(goAlgorithm, GOClass, QtaxID, blast, evalue, StaxID);
 		return ctrlGO;
 	}
 	/**
@@ -57,12 +51,12 @@ public class CtrlGO extends CtrlGOPath{
 	 * @param StaxID
 	 * @param evalue
 	 */
-	private CtrlGO(boolean elimGo, String GOClass, int QtaxID, boolean blast,
+	private CtrlGO(GoAlgorithm goAlgorithm, String GOClass, int QtaxID, boolean blast,
 			double evalue, int... StaxID) {
 		super(QtaxID, blast, evalue);
-		this.elimGo = elimGo;
+		this.goAlgorithm = goAlgorithm;
 		this.GOClass = GOClass;
-		if (elimGo) {
+		if (goAlgorithm != GoAlgorithm.novelgo) {
 			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_ELIM,
 					QtaxID, blast, evalue, StaxID);
 		} else {
@@ -71,10 +65,14 @@ public class CtrlGO extends CtrlGOPath{
 		}
 		functionTest.setGOtype(GOClass);
 	}
-
+	public void setGOalgorithm(GoAlgorithm goAlgorithm) {
+		if (goAlgorithm != GoAlgorithm.novelgo) {
+			ctrlGO.setGOalgorithm(goAlgorithm);
+		}
+	}
 	@Override
 	protected void copeFile(String prix, String excelPath) {
-		if (elimGo) {
+		if (goAlgorithm != GoAlgorithm.novelgo) {
 			FileOperate.moveFile(FileOperate.changeFileSuffix(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, "_"+prix, null),
 					FileOperate.getParentPathName(excelPath), FileOperate.getFileNameSep(excelPath)[0] + prix + "GoMap.pdf", true);
 		}
@@ -83,7 +81,7 @@ public class CtrlGO extends CtrlGOPath{
 	protected LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<String[]> lsResultTest) {
 			LinkedHashMap<String, ArrayList<String[]>> hashResult = new LinkedHashMap<String, ArrayList<String[]>>();
 			hashResult.put("GO_Result", lsResultTest);
-			if (elimGo) {
+			if (goAlgorithm != GoAlgorithm.novelgo) {
 				FileOperate.changeFileSuffixReal(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, "_"+prix, null);
 				ArrayList<String[]> lsGene2GO = functionTest.getGene2Item();
 				hashResult.put("Gene2GO", lsGene2GO);

@@ -2,6 +2,7 @@ package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
@@ -12,14 +13,16 @@ import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.SepSign;
 
 public class TopGO {
-	public final static int ELIMGO = 2;
-	public final static int NORMALGO = 4;
+
+	
 	String workSpace;
 	String tmplateScript = "";
 	String exeScript = "";
 	
 	/** topgo的信息 */
 	String GoType = "BP";
+	GoAlgorithm goAlgorithm;
+
 	String CalGeneIDFile;
 	String BGGeneFile;
 	
@@ -84,15 +87,15 @@ public class TopGO {
 		else if (GoType.equals(Go2Term.GO_CC)) 
 			this.GoType = "CC";
 	}
+	public void setGoAlgrithm(GoAlgorithm goAlgorithm) {
+		this.goAlgorithm = goAlgorithm;
+	}
 	/** 仅供测试 */
 	public String getOutScript() {
 		generateScript();
 		//将待分析的基因写入文本
 		fillCalGeneID_And_BG_File();
 		return exeScript;
-	}
-	public void setGoAlgorithm() {
-		
 	}
 	protected void generateScript() {
 		TxtReadandWrite txtReadScript = new TxtReadandWrite(tmplateScript, false);
@@ -112,6 +115,8 @@ public class TopGO {
 				txtOutScript.writefileln(getCalculateGeneID(content));
 			else if (content.startsWith("#BGGeneID"))
 				txtOutScript.writefileln(getBGGeneFile(content));
+			else if (content.startsWith("#Algorithm"))
+				txtOutScript.writefileln(getAlgrithm(content));
 			else {
 				txtOutScript.writefileln(content);
 			}
@@ -152,6 +157,15 @@ public class TopGO {
 	private String getBGGeneFile(String content) {
 		String GOInfo = content.split(SepSign.SEP_ID)[1];
 		GOInfo = GOInfo.replace("{$BGGeneFile}", BGGeneFile.replace("\\", "/"));
+		return GOInfo;
+	}
+	private String getAlgrithm(String content) {
+		String GOInfo = content.split(SepSign.SEP_ID)[1];
+		if (goAlgorithm == null) {
+			GOInfo = GOInfo.replace("{$GOAlgorithm}", GoAlgorithm.elim.toString());
+		} else {
+			GOInfo = GOInfo.replace("{$GOAlgorithm}", goAlgorithm.toString());
+		}
 		return GOInfo;
 	}
 	private void fillCalGeneID_And_BG_File() {
@@ -256,4 +270,19 @@ public class TopGO {
 		return mapGOID2LsGeneID;
 	}
 	
+	public static enum GoAlgorithm {
+		elim, classic, weight, weight01, parentchild, novelgo;
+		static HashMap<String, GoAlgorithm> mapStr2GoAlgrithm = new LinkedHashMap<String, GoAlgorithm>();
+		static {
+			mapStr2GoAlgrithm.put("novelgo", novelgo);
+			mapStr2GoAlgrithm.put("parentchild", parentchild);
+			mapStr2GoAlgrithm.put("classic", classic);
+			mapStr2GoAlgrithm.put("weight", weight);
+			mapStr2GoAlgrithm.put("weight01", weight01);
+			mapStr2GoAlgrithm.put("elim", elim);
+		}
+		public static HashMap<String, GoAlgorithm> getMapStr2GoAlgrithm() {
+			return mapStr2GoAlgrithm;
+		}
+	}
 }

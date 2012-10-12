@@ -10,14 +10,17 @@ import org.htmlparser.filters.AndFilter;
 import org.htmlparser.filters.HasAttributeFilter;
 import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeList;
-import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
+import net.sf.picard.annotation.Gene.Transcript.Exon;
+
 import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.other.downloadpicture.GetPictureUrl;
+import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
 import com.novelbio.other.downloadpicture.pixiv.PixivGetPathExistPic;
 
-/** 给定一个图片链接，返回该图片的大图链接，有问题 */
-public class DonmaiGetPictureUrl {
+/** 给定一个图片链接，返回该图片的大图链接 */
+public class DonmaiGetPictureUrl implements GetPictureUrl {
 	private static Logger logger = Logger.getLogger(DonmaiGetPictureUrl.class);
 	protected WebFetch webFetch;
 	int retryNum = 10;
@@ -26,13 +29,16 @@ public class DonmaiGetPictureUrl {
 	String savePath;
 	
 	int allPictureNum;
-	/** 判断有没有类似文件名的 */
+	
 	PixivGetPathExistPic pixivGetPathExistPic;
 	
-	ArrayList<DonmaiGetDownloadUrl> lsResult;
-
+	ArrayList<UrlPictureDownLoad> lsResult;
+	@Override
 	public void setWebFetch(WebFetch webFetch) {
 		this.webFetch = webFetch;
+	}
+	public void setPixivGetPathExistPic(PixivGetPathExistPic pixivGetPathExistPic) {
+		this.pixivGetPathExistPic = pixivGetPathExistPic;
 	}
 	public void setUrlPage(String url, int pageNum) {
 		this.page = pageNum;
@@ -40,96 +46,66 @@ public class DonmaiGetPictureUrl {
 			this.urlpage = url;
 			return;
 		}
-		this.urlpage = url + "&page=" + pageNum;
-	}
-	public void setSavePath(String savePath) {
-		this.savePath = savePath;
+		else {
+			this.urlpage = url + "&page=" + pageNum;
+		}
 	}
 	public void setAllPictureNum(int allPictureNum) {
 		this.allPictureNum = allPictureNum;
 	}
-	/** false 表示失败 */
-	public boolean query() {
-		try {
-			return getLsDownloads();
-		} catch (ParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return false;
+	public void setSavePath(String savePath) {
+		this.savePath = savePath;
 	}
-	private boolean getLsDownloads() throws ParserException {
+	@Override
+	public GetPictureUrl call() throws Exception {
 		webFetch.setUrl(urlpage);
 		if (!webFetch.query(retryNum)) {
 			lsResult = null;
-			return false;
+			return this;
 		}
 		String info = webFetch.getResponse();
 		if (info == null) {
-			logger.info("没抓到东西：" + urlpage);
-			lsResult = new ArrayList<DonmaiGetDownloadUrl>();
-			return true;
+			logger.error("没抓到东西：" + urlpage);
+			lsResult = new ArrayList<UrlPictureDownLoad>();
+			return this;
 		}
 		Parser parser = new Parser(info);
 		NodeFilter filterPicture = new AndFilter(new TagNameFilter("img"), new HasAttributeFilter("class"));
 		NodeList nodeLsPicture = parser.parse(filterPicture);
 		lsResult = getLsDownloads(nodeLsPicture);
-		return true;
+		return this;
 	}
-	
-	private ArrayList<DonmaiGetDownloadUrl> getLsDownloads(NodeList nodeLsPicture) {
-		ArrayList<DonmaiGetDownloadUrl> lsResult = new ArrayList<DonmaiGetDownloadUrl>();
+	private ArrayList<UrlPictureDownLoad> getLsDownloads(NodeList nodeLsPicture) {
+		ArrayList<UrlPictureDownLoad> lsResult = new ArrayList<UrlPictureDownLoad>();
 		SimpleNodeIterator nodelist = nodeLsPicture.elements();
 		int i = 0;
 	    while (nodelist.hasMoreNodes()) {
-	    	Node nodeUrl = nodelist.nextNode();
-	    	if (isPictureExist(nodeUrl)) {
-				continue;
-			}
-	    	
-	    	String info = nodeUrl.getParent().toHtml();
+	    	String info = nodelist.nextNode().toHtml();
 	    	String[] ss = info.split(" ");
 	    	for (String string : ss) {
-				if (string.contains("href=")) {
-					String ss2 = string.replace("href=", "").replace("\"", "").replace(">", "").trim();
-					String pictureUrl = "http://www.donmai.us" + ss2;
-					DonmaiGetDownloadUrl donmaiGetDownloadUrl = new DonmaiGetDownloadUrl();
+				if (string.contains("src=")) {
+					String[] ss2 = string.replace("src=", "").replace("\"", "").trim().split("/");
+					String pictureUrl = "http://hijiribe.donmai.us/data/" + ss2[ss2.length - 1];
+					if (pixivGetPathExistPic != null && pixivGetPathExistPic.isPicAlreadyHave(pictureUrl)) {
+						continue;
+					}
+					UrlPictureDownLoad urlPictureDownLoad = new UrlPictureDownLoad();
 					int thisPictureNum = allPictureNum - (page - 1) * 20 - i;
-					donmaiGetDownloadUrl.setSavePath(savePath);
-					donmaiGetDownloadUrl.setUrl(pictureUrl, page, thisPictureNum);
-					donmaiGetDownloadUrl.setWebFetch(WebFetch.getInstance(webFetch));
-					lsResult.add(donmaiGetDownloadUrl);
+					urlPictureDownLoad.setPictureNum(thisPictureNum);
+					urlPictureDownLoad.setPictureUrl(pictureUrl);
+					urlPictureDownLoad.setSavePath(savePath);
+					urlPictureDownLoad.setWebFetch(WebFetch.getInstance(webFetch));
+					lsResult.add(urlPictureDownLoad);
 				}
 			}
 	    	i ++;
         }
-
+	    logger.info("查找完毕：" + urlpage);
 	    return lsResult;
 	}
-	private boolean isPictureExist(Node nodeUrl) {
-		String info = nodeUrl.toHtml();
-    	String[] ss = info.split(" ");
-    	for (String string : ss) {
-			if (string.contains("src=")) {
-				String[] ss2 = string.replace("src=", "").replace("\"", "").trim().split("/");
-				String pictureUrl = "http://hijiribe.donmai.us/data/" + ss2[ss2.length - 1];
-				if (pixivGetPathExistPic != null) {
-					return pixivGetPathExistPic.isPicAlreadyHave(pictureUrl);
-				} else {
-					return false;
-				}
-				
-			}
-		}
-    	return false;
-	}
-	public ArrayList<DonmaiGetDownloadUrl> getLsResult() {
+	@Override
+	public ArrayList<UrlPictureDownLoad> getLsResult() {
 		return lsResult;
-	}
-	public void setPixivGetPathExistPic(
-			PixivGetPathExistPic pixivGetPathExistPic) {
-		this.pixivGetPathExistPic = pixivGetPathExistPic;
-		
 	}
 
 }

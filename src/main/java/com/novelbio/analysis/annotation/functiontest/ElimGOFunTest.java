@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 
@@ -24,7 +25,9 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		super(blast, GoType, evalue, blastTaxID);
 		this.GoType = GoType;
 	}
-
+	public void setAlgorithm(GoAlgorithm goAlgorithm) {
+		topGO.setGoAlgrithm(goAlgorithm);
+	}
 	/** 设定展示多少个GO */
 	public void setDisplayGoNum(int NumGOID) {
 		topGO.setDisplayGoNum(NumGOID);

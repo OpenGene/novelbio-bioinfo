@@ -27,10 +27,10 @@ public class runSepFile {
 //		String excelFile=lsFileName.get(0)[0]+"."+lsFileName.get(0)[1];
 //		System.out.println(lsFileName.get(0)[0]+"."+lsFileName.get(0)[1]);
 		
-		String thisFilePath = "/home/zong0jie/桌面/DifGene/";
-		String excelFile = "Mus表达谱（Affymentrix）-2.xls";
+		String thisFilePath = "/home/zong0jie/桌面/";
+		String excelFile = "信号值.xls";
 		try {
-			ArrayTools.seperateFile(thisFilePath,excelFile,"MusArrayToolsInput");
+			ArrayTools.seperateFile(thisFilePath,excelFile,"ArrayToolsInput");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

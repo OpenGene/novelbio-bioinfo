@@ -56,13 +56,55 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
     	webFetch.setUrl(pictureUrl);
     	webFetch.setRefUrl(refUrl);
     	webFetch.query();
-    	if(webFetch.download(getSaveName())) {
+    	String savePath = getSaveName();
+    	
+    	if(download(webFetch, savePath)) {
     		saveSucess = true;
     	} else {
     		saveSucess = false;
     	}
     }
-
+    /** ÏÂÔØÍ¼Æ¬ */
+    private boolean download(WebFetch webFetch, String savePath) {
+    	while (webFetch.download(savePath)) {
+    		if (FileOperate.getFileSize(savePath) > 2) {
+    			return true;
+			} else {
+				FileOperate.delFile(savePath);;
+				pictureUrl = FileOperate.changeFileSuffix(pictureUrl, "", "png").replace("http:/", "http://");
+				webFetch.setUrl(pictureUrl);
+				webFetch.query();
+				savePath = FileOperate.changeFileSuffix(savePath, "", "png");
+				while (webFetch.download(savePath)) {
+					if (FileOperate.getFileSize(savePath) > 2) {
+						return true;
+					} else {
+						FileOperate.delFile(savePath);
+						pictureUrl = FileOperate.changeFileSuffix(pictureUrl, "", "gif").replace("http:/", "http://");;
+						webFetch.setUrl(pictureUrl);
+						webFetch.query();
+						savePath = FileOperate.changeFileSuffix(savePath, "", "gif");
+						while (webFetch.download(savePath)) {
+							if (FileOperate.getFileSize(savePath) > 2) {
+								return true;
+							} else {
+								FileOperate.delFile(savePath);
+								pictureUrl = FileOperate.changeFileSuffix(pictureUrl, "", "jpeg").replace("http:/", "http://");;
+								webFetch.setUrl(pictureUrl);
+								webFetch.query();
+								savePath = FileOperate.changeFileSuffix(savePath, "", "jpeg");
+								while (webFetch.download(savePath)) {
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+    	return false;
+    }
+    
     private String getSaveName() {
     	String[] ss = pictureUrl.split("/");
     	String suffix = ss[ss.length - 1];

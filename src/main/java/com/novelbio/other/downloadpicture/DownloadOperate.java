@@ -49,7 +49,7 @@ public abstract class DownloadOperate {
 		this.savePath = savePath.trim();
 	}
 	public void running() throws InterruptedException, ExecutionException {
-		if(!setPictureNum_And_PageNum_Auther()) {
+		if(!setPictureNum_And_PageNum_Auther_And_PixivGetPath()) {
 			return;
 		}
 		ArrayList<? extends GetPictureUrl> lsPrepareDownloads = getLsPrepareDownload();
@@ -67,7 +67,6 @@ public abstract class DownloadOperate {
 			Future<GetPictureUrl> result = executorGetUrlPrepToDownload.submit(pixivGetPictureUrlToDownload);
 			lsUrlPrepToDownLoad.add(result);
 		}
-		int mm = 1;
 		//将executorGetUrlPrepToDownload中间的内容运行直到完毕
 		while (executorGetUrlPrepToDownload.getActiveCount() > 0 || lsUrlPrepToDownLoad.size() > 0) {
 			Future<GetPictureUrl> futureToDownload = lsUrlPrepToDownLoad.poll();
@@ -84,10 +83,6 @@ public abstract class DownloadOperate {
 				lsUrlPrepToDownLoad.add(futureToDownload);
 			}
 			Thread.sleep(100);
-			if (mm % 20 == 0) {
-				logger.error(executorGetUrlPrepToDownload.getQueue().size());
-			}
-			mm ++;
 		}
 		
 		for (UrlPictureDownLoad pixivUrlDownLoad : lsDownLoads) {
@@ -118,7 +113,7 @@ public abstract class DownloadOperate {
 		
 		return;
 	}
-	 protected abstract boolean setPictureNum_And_PageNum_Auther();
+	 protected abstract boolean setPictureNum_And_PageNum_Auther_And_PixivGetPath();
 	/** 返回一系列可以获得最终下载连接的对象、
 	 * 实际上因为不可能直接获得最后下载的url，所以都要经过几次跳转，那么这个中间跳转过程都可以写在该方法里面
 	 */
