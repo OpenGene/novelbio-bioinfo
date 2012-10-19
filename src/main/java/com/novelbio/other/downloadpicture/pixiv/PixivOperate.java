@@ -34,46 +34,18 @@ import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
 /** 并发下载pixiv的图片 */
 public class PixivOperate extends DownloadOperate{
 	private static Logger logger = Logger.getLogger(PixivOperate.class);
-	
-	public static void main(String[] args) throws ParserException, InterruptedException, ExecutionException {
-//		PixivOperate pixivOperate = new PixivOperate();
-//		pixivOperate.getcookies();
-//		Set<String> setUrl = new LinkedHashSet<String>();
-//		TxtReadandWrite txtReadUrl = new TxtReadandWrite("/home/zong0jie/图片/My Pictures/picture/pixivurl.txt", false);
-//		for (String urlID : txtReadUrl.readlines()) {
-//			urlID = urlID.trim();
-//			if (urlID.equals("")) {
-//				continue;
-//			}
-//			setUrl.add(urlID);
-//		}
-//		for (String urlID : setUrl) {			
-//			pixivOperate.setUrlAuther(urlID);
-//			pixivOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/pixivTest");
-//			pixivOperate.running();
-//			Thread.sleep(100);
-//			logger.error("finished url:" + urlID);
-//		}
-		
-		PixivOperate pixivOperate = new PixivOperate();
-		pixivOperate.setUrlAuther("4065724");
-		pixivOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/pixivTest");
-		pixivOperate.running();
-		Thread.sleep(100);
-	}
-	
+
 	String name = "facemun";
 	String password = "f12344321n";
- 
 	
-	PixivOperate() {
+	public PixivOperate() {
 		pixivGetPathExistPic = new PixivGetPathExistPic(PixivGetPathExistPic.SITE_PIXIV);
 		getcookies();
 	}
 	/**
 	 * 获得pixiv的cookies
 	 */
-    protected void getcookies() {
+    public void getcookies() {
     	if (webFetch == null) {
 			webFetch = WebFetch.getInstance();
 		}

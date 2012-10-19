@@ -99,6 +99,23 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 			try { splitStart = ss[COL_SPLIT_READS_START]; } catch (Exception e) {  }
 		}
 	}
+	/** 判定是否为bed文件，只需要判定chrID，start，end即可 */
+	public static boolean isBedRecord(String bedline) {
+		if (bedline == null) {
+			return false;
+		}
+		String[] ss = bedline.split("\t");
+		if (ss[COL_CHRID].trim().equals("")) {
+			return false;
+		}
+		try {
+			Integer.parseInt(ss[COL_START]);
+			Integer.parseInt(ss[COL_END]);
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
 	/** 是否为unique mapping，不是的话mapping到了几个不同的位点上去 */
 	public void setMappingNum(int mappingNum) {
 		this.mappingNum = mappingNum;

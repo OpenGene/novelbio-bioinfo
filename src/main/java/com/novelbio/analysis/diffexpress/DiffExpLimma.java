@@ -229,8 +229,8 @@ public class DiffExpLimma extends DiffExpAbs{
 		for (int i = 1; i < lsDifGene.size(); i++) {
 			String[] tmpResult = ArrayOperate.indelElement(lsDifGene.get(i), lsIndelItem, "");
 			String geneID = tmpResult[0].replace("\"", "");
-			tmpResult[1] = mapSample_2_time2value.get(geneID).get(treatName) + "";
-			tmpResult[2] = mapSample_2_time2value.get(geneID).get(controlName) + "";
+			tmpResult[1] = mapGeneID_2_Sample2MeanValue.get(geneID).get(treatName) + "";
+			tmpResult[2] = mapGeneID_2_Sample2MeanValue.get(geneID).get(controlName) + "";
 
 			for (int j = 0; j < tmpResult.length; j++) {
 				tmpResult[j] = tmpResult[j].replace("\"", "");

@@ -33,25 +33,6 @@ public class DiffExpDESeq extends DiffExpAbs {
 	/** 实验是否有重复，貌似有一次重复就算有重复了 */
 	boolean isRepeatExp = false;
 	
-	public static void main(String[] args) {
-		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt("/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/miRNA并集Deseq.txt", 1);
-		DiffExpDESeq deSeq = new DiffExpDESeq();
-		ArrayList<String[]> lsSampleColumn2GroupName = new ArrayList<String[]>();
-		lsSampleColumn2GroupName.add(new String[] {"2","A"});
-		lsSampleColumn2GroupName.add(new String[] {"3","A"});
-		lsSampleColumn2GroupName.add(new String[] {"4","B"});
-		lsSampleColumn2GroupName.add(new String[] {"5","B"});
-		lsSampleColumn2GroupName.add(new String[] {"6","C"});
-		lsSampleColumn2GroupName.add(new String[] {"7","C"});
-		deSeq.setCol2Sample(lsSampleColumn2GroupName);
-		deSeq.setColID(1);
-		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
-		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
-		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
-		deSeq.setGeneInfo(lsInfo);
-		deSeq.getResultFileName();
-	}
-	
 	public DiffExpDESeq() {
 		rawScript = PathDetail.getRworkspace() + "DESeqJava.txt";
 	}

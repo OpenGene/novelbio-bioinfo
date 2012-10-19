@@ -61,7 +61,7 @@ public class GuiPeakStatistics extends JPanel {
 		scrollPaneData.setBounds(12, 30, 693, 207);
 		add(scrollPaneData);
 		
-		JButton btnOpenfile = new JButton("OpenBedFile");
+		JButton btnOpenfile = new JButton("BamSamBedFile");
 		btnOpenfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				readFile = guiFileOpen.openFileName("excel/txt", "");
@@ -199,7 +199,7 @@ public class GuiPeakStatistics extends JPanel {
 		add(lblTes);
 		
 		layeredPane = new GuiLayeredPaneSpeciesVersionGff();
-		layeredPane.setBounds(717, 66, 152, 154);
+		layeredPane.setBounds(717, 66, 221, 154);
 		add(layeredPane);
 		
 		initial();

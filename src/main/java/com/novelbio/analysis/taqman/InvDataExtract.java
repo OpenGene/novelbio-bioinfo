@@ -5,28 +5,19 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class InvDataExtract {
 	/**
-	 * 如果一个miRNA有超过0.6的没有被检出，那么就删除该miRNA
-	 */
-	double filterProp = 0.6;
-	/**
 	 * 遇到CT为该单词的就记为没有检出，如果一列里面超过filterProp比例的的CT含有该数字，就删除该miRNA<br>
 	 * 暂时设定为 Undetermined
 	 */
-	String flagFilter = "Undetermined";
-	/**
-	 * CT
-	 */
-	String flagCT = "Ct";
-	/**
-	 * average delta ct
-	 */
-	String flagAvgCT = "Avg Delta Ct";
-	
-	
+	static String flagFilter = "Undetermined";
+	/** CT */
+	static String flagCT = "Ct";
+	/** average delta ct */
+	static String flagAvgCT = "Avg Delta Ct";
 	
 	
 	public static void main(String[] args) {
@@ -34,15 +25,19 @@ public class InvDataExtract {
 		String parentPath = "/media/winE/NBC/Project/TaqMan_CXD_111230/";
 		String excelTaqman = parentPath + "Human MicroRNA Array CT值统计报告.xls";
 		String out = parentPath + "deltaCT.txt";
-		invDataExtract.getInfo(excelTaqman, out, 2);
+		invDataExtract.loadExcelTxt(excelTaqman);
+		invDataExtract.getInfo(out);
 	}
 	
+	/** 如果一个miRNA有超过0.6的没有被检出，那么就删除该miRNA */
+	double filterProp = 0.6;
+	int titleRow = 1;
+	int startRow = 2;
+	ArrayList<String[]> lsInuptData;
 	
-	
-	
-	
-	
-	
+	public void loadExcelTxt(String excelTxtFile) {
+		lsInuptData = ExcelTxtRead.readLsExcelTxt(excelTxtFile, 1);
+	}
 	/**
 	 * 给定英骏的taqman探针文件，将CT提取出来
 	 * 遇到CT为 Undetermined单词的就记为没有检出，如果一列里面超过filterProp比例的的CT含有该数字，就删除该miRNA<br>
@@ -50,40 +45,30 @@ public class InvDataExtract {
 	 * @param OutData
 	 * @param startRow
 	 */
-	public void getInfo(String excelFile, String OutData, int startRow)
-	{
-		ExcelOperate excelOperate = new ExcelOperate(excelFile);
-		ArrayList<String[]> lsAllData = excelOperate.ReadLsExcel(1, 1, -1, -1);
-		ArrayList<Integer> lsCTcol = getCT_AvgCT_col(lsAllData.get(1), flagCT);
-		ArrayList<Integer> lsDeltaCTcol = getCT_AvgCT_col(lsAllData.get(1), flagAvgCT);
-		ArrayList<String[]> lsResult = filterData(lsAllData, startRow, lsCTcol, lsDeltaCTcol);
+	public void getInfo(String OutData) {
+		ArrayList<Integer> lsCTcol = getCT_AvgCT_col(lsInuptData.get(titleRow), flagCT);
+		ArrayList<Integer> lsDeltaCTcol = getCT_AvgCT_col(lsInuptData.get(titleRow), flagAvgCT);
+		ArrayList<String[]> lsResult = filterData(lsCTcol, lsDeltaCTcol);
 		TxtReadandWrite txtOut = new TxtReadandWrite(OutData, true);
 		txtOut.ExcelWrite(lsResult);
 	}
-	
-	
-	
-	
-	
-	
 	/**
 	 * 输入Invitrogen的tapman文件得到的list，进行初步筛选，返回CT检出的基因 <br>
 	 * @param lsData 读取得到的数据list
 	 * @param startRow 从第几行开始读，实际行
 	 * @param lsCTcol 读取哪几列，也就是CT列
 	 */
-	private ArrayList<String[]> filterData(ArrayList<String[]> lsData, int startRow,List<Integer> lsCTcol, List<Integer> lsDeltaCTcol)
-	{
+	private ArrayList<String[]> filterData(List<Integer> lsCTcol, List<Integer> lsDeltaCTcol) {
 		int filterNum = (int)(filterProp * lsDeltaCTcol.size()+0.5); 
 		startRow-- ; 
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		/**
 		 * 标题去冗余用的，同样的标题后面加上_1标记
 		 */
-		HashSet<String> hashRowName = new HashSet<String>();
+		HashSet<String> mapRowName = new HashSet<String>();
 		
-		for (int i = startRow; i < lsData.size(); i ++) {
-			String[] tmpValue = lsData.get(i);
+		for (int i = startRow; i < lsInuptData.size(); i ++) {
+			String[] tmpValue = lsInuptData.get(i);
 			int filterNumThis = 0;
 			for (Integer integer : lsCTcol) {
 				if (tmpValue[integer].equals(flagFilter))
@@ -98,8 +83,8 @@ public class InvDataExtract {
 			int id = 1; String tmpName2 = tmpName;
 			boolean flag = true;
 			while (flag) {
-				if (! hashRowName.contains(tmpName2)) {
-					hashRowName.add(tmpName2);
+				if (! mapRowName.contains(tmpName2)) {
+					mapRowName.add(tmpName2);
 					flag = false;
 				}
 				else {
@@ -124,8 +109,7 @@ public class InvDataExtract {
 	 * @param flagStr 用equal该字符的列来检测是否检出,可以为 Ct 或者 Avg Delta Ct
 	 * @return
 	 */
-	private ArrayList<Integer> getCT_AvgCT_col(String[] strTitle, String flagStr)
-	{
+	private ArrayList<Integer> getCT_AvgCT_col(String[] strTitle, String flagStr) {
 		/**
 		 * 含有CT的列
 		 */

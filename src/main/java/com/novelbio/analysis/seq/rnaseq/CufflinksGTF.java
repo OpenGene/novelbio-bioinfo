@@ -81,7 +81,7 @@ public class CufflinksGTF {
 
 	/**
 	 * 设置左端的序列，设置会把以前的清空
-	 * 
+	 * 输入的多个bam文件会merge成为一个然后做cufflinks的重建转录本
 	 * @param fqFile
 	 */
 	public void setBam(ArrayList<String> lsSamBamFile) {

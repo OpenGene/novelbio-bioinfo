@@ -70,7 +70,7 @@ public class ExcelTxtRead {
 	 * 内部close
 	 * 给定文件，xls2003/2007/txt，获得它们的信息，用arraylist-string[]保存
 	 * @param File 文件名
-	 * @param firstlinels1 从第几行开始读去
+	 * @param firstlinels1 从第几行开始读去，实际行数
 	 * @param sep 如果是txt的话，间隔是什么
 	 * @return
 	 * @throws Exception

@@ -58,7 +58,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 */
 	protected ArrayList<String> lsNameNoRedundent;
 	
-	String gfffilename = "";
+	protected String gfffilename = "";
 	
 	public String getGffFilename() {
 		return gfffilename;
@@ -329,7 +329,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	/**
 	 * 设定每个GffDetail的tss2UpGene和tes2DownGene
 	 */
-	private void setItemDistance() {
+	protected void setItemDistance() {
 		for (M lsGffDetail : mapChrID2ListGff.values()) {
 			for (int i = 0; i < lsGffDetail.size(); i++) {
 				T gffDetail = lsGffDetail.get(i);

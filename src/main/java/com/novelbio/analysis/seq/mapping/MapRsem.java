@@ -1,7 +1,5 @@
 package com.novelbio.analysis.seq.mapping;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -9,9 +7,8 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.GffChrAnno;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.base.HashMapLsValue;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -28,7 +25,7 @@ import com.novelbio.database.model.species.Species;
 public class MapRsem implements MapRNA{
 	public static void main(String[] args) {
 		MapRsem mapRsem = new MapRsem();
-		Species species = new Species(9606);
+		Species species = new Species(3702);
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
 		mapRsem.setExePath("", "");
 		mapRsem.setGffChrAbs(gffChrAbs);
@@ -150,11 +147,21 @@ public class MapRsem implements MapRNA{
 		if (!FileOperate.isFileExist(gene2isoFile)) {
 			TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2isoFile, true);
 			SeqFastaHash seqFastaHash = new SeqFastaHash(refFile, null, false);
+			//先找gff文件里面有没有对应的geneName，没有再找数据库，再没有就直接贴上基因名
 			for (String geneIDstr : seqFastaHash.getLsSeqName()) {
-				GeneID geneID = new GeneID(geneIDstr, species.getTaxID());
-				String symbol = geneID.getSymbol();
+				if (geneIDstr.contains("16860")) {
+					logger.error("stop");
+				}
+				GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneIDstr);
+				String symbol = null;
+				if (gffDetailGene != null) {
+					symbol = GeneID.removeDot(gffDetailGene.getNameSingle());
+				} else {
+					GeneID geneID = new GeneID(geneIDstr, species.getTaxID());
+					symbol = GeneID.removeDot(geneID.getSymbol());
+				}
 				if (symbol == null || symbol.equals("")) {
-					symbol = geneIDstr;
+					symbol = GeneID.removeDot(geneIDstr);
 				}
 				txtGene2Iso.writefileln(symbol + "\t" + geneIDstr);
 			}

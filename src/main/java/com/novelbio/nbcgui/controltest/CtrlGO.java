@@ -6,9 +6,11 @@ import java.util.LinkedHashMap;
 import org.apache.log4j.Logger;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.generalConf.NovelBioConst;
+import com.sun.tools.doclets.formats.html.resources.standard;
 
 public class CtrlGO extends CtrlGOPath{
 
@@ -18,7 +20,7 @@ public class CtrlGO extends CtrlGOPath{
 
 	String GOClass = Go2Term.GO_BP;
 	GoAlgorithm goAlgorithm = GoAlgorithm.classic;
-
+	int[] staxID;
 	/**
 	 * @param elimGo
 	 * @param GOClass GOInfoAbs.GO_BP
@@ -54,6 +56,7 @@ public class CtrlGO extends CtrlGOPath{
 	private CtrlGO(GoAlgorithm goAlgorithm, String GOClass, int QtaxID, boolean blast,
 			double evalue, int... StaxID) {
 		super(QtaxID, blast, evalue);
+		this.staxID = StaxID;
 		this.goAlgorithm = goAlgorithm;
 		this.GOClass = GOClass;
 		if (goAlgorithm != GoAlgorithm.novelgo) {
@@ -98,7 +101,24 @@ public class CtrlGO extends CtrlGOPath{
 	}
 	@Override
 	String getGene2ItemFileName(String fileName) {
-		return FileOperate.changeFileSuffix(fileName, "_GO_Item", "txt");
+		String suffix = "_GO_Item";
+		if (blast) {
+			suffix = suffix + "_blast";
+			MathComput.sort(staxID, true);//ÅÅ¸öÐò
+			for (int i : staxID) {
+				suffix = suffix + "_" + i;
+			}
+		}
+		if (GOClass.equals(Go2Term.GO_BP)) {
+			suffix = suffix + "_" + Go2Term.FUN_SHORT_BIO_P;
+		} else if (GOClass.equals(Go2Term.GO_CC)) {
+			suffix = suffix + "_" + Go2Term.FUN_SHORT_CEL_C;
+		} else if (GOClass.equals(Go2Term.GO_MF)) {
+			suffix = suffix + "_" + Go2Term.FUN_SHORT_MOL_F;
+		} else if (GOClass.equals(Go2Term.GO_ALL)) {
+			suffix = suffix + "_ALL";
+		}
+		return FileOperate.changeFileSuffix(fileName, suffix, "txt");
 	}
 	
 	@Override

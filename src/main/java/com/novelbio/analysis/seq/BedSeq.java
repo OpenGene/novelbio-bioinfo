@@ -968,4 +968,32 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		bedSeq.closeWrite();
 		return bedSeq;
 	}
+	
+	/** 假设文件存在，判断其是否为novelbio所定义的bed文件 */
+	public static boolean isBedFile(String bedFile) {
+		final int allReadLines = 100;
+		final int maxBedLines = 50;
+		String fileType = TxtReadandWrite.TXT;
+		if (bedFile.endsWith(".gz")) {
+			fileType = TxtReadandWrite.GZIP;
+		}
+		TxtReadandWrite txtSeqFile = new TxtReadandWrite(bedFile, false);
+		txtSeqFile.setFiletype(fileType);
+		int readLines = 0;
+		int bedLines = 0;
+		for (String content : txtSeqFile.readlines()) {
+			if (readLines > allReadLines) {
+				break;
+			}
+			if (BedRecord.isBedRecord(content)) {
+				bedLines ++;
+			}
+			readLines++;
+		}
+		txtSeqFile.close();
+		if (bedLines > maxBedLines || (double)bedLines/readLines > 0.5) {
+			return true;
+		}
+		return false;
+	}
 }

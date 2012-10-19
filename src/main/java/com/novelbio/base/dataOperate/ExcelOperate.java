@@ -350,11 +350,10 @@ public class ExcelOperate {
 	  * 读取指定块的内容,同时将焦点放到该sheet上,返回arrayList如果中间有空行，则跳过<br/>
 	  *指定待读取sheet名称，标准的行数和列数，从1开始计数，不用从0起<br/>
 	  *但是最后获得的数组计数是从0开始的，不同于C#<br/>
-	  * @param sheetName：待读取sheet名字<br/> 
-	  * @param rowStartNum：起点实际行数<br/> 
-	  * @param columnStartNum：起点实际列数<br/> 
-	  * @param rowEndNum：终点实际行数，小于等于0则读取到尾部<br/> 
-	  * @param columnEndNum：终点实际列数，小于等于0则读取到尾部<br/>
+	  * @param rowStartNum 起点实际行数<br/> 
+	  * @param columnStartNum 起点实际列数<br/> 
+	  * @param rowEndNum 终点实际行数，小于等于0则读取到尾部<br/> 
+	  * @param columnEndNum 终点实际列数，小于等于0则读取到尾部<br/>
 	  * 如果行数超过文件实际行数，则多出来的数组设置为null<br/>
 	  * @return String[][]<br/>
 	  */

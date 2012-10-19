@@ -19,21 +19,13 @@ import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
 import com.novelbio.other.downloadpicture.pixiv.PixivGetPathExistPic;
 
 public class DonmaiOperate extends DownloadOperate {
-	
-	public static void main(String[] args) throws InterruptedException, ExecutionException {
-		DonmaiOperate donmaiOperate = new DonmaiOperate();
-		donmaiOperate.getcookies();
-		donmaiOperate.setUrlAuther("lolita_channel");
-		donmaiOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/donmai");
-		donmaiOperate.running();
-		
-	}
-	DonmaiOperate() {
+
+	public DonmaiOperate() {
 		pixivGetPathExistPic = new PixivGetPathExistPic(PixivGetPathExistPic.SITE_DONMAI);
 	}
 	/** 不需要获得cookies */
 	@Override
-	protected void getcookies() {
+	public void getcookies() {
 		if (webFetch == null) {
 			webFetch = WebFetch.getInstance();
 		}

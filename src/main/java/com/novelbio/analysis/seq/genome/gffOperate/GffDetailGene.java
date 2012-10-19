@@ -381,15 +381,7 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		return anno;
 	}
-	/**
-	 * 将gffDetailGene中含有新的名字的iso添加入本类
-	 * @param gffDetailGene
-	 */
-	public void addIsoSimple(GffDetailGene gffDetailGene) {
-		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			addIso(gffGeneIsoInfo);
-		}
-	}
+
 	
 	/**
 	 * 去除重复Isoform
@@ -408,10 +400,20 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		this.lsGffGeneIsoInfos = ArrayOperate.getArrayListValue(hashIso);
 	}
-	
+	/**
+	 * 将gffDetailGene中含有新的名字的iso添加入本类
+	 * 没有删除重复的iso
+	 * @param gffDetailGene
+	 */
+	public void addIsoSimple(GffDetailGene gffDetailGene) {
+		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+			addIso(gffGeneIsoInfo);
+		}
+	}
 	/**
 	 * 效率低下，等待优化
 	 * 添加新的转录本
+	 * 没有删除重复的iso
 	 * 同时重新设定该基因的numberstart和numberend
 	 * @param gffDetailGeneParent
 	 */
@@ -425,8 +427,9 @@ public class GffDetailGene extends ListDetailAbs {
 		if (cis5to3 != null && gffGeneIsoInfo.isCis5to3() != cis5to3) {
 			cis5to3 = null;
 		}
+		
 		for (GffGeneIsoInfo gffGeneIsoInfoOld : lsGffGeneIsoInfos) {
-			if (gffGeneIsoInfoOld.equalsIso(gffGeneIsoInfo)) {//比较两个list是否一致，exon的equals只比较起点终点
+			if (gffGeneIsoInfoOld.equalsIso(gffGeneIsoInfo) && gffGeneIsoInfoOld.getName().equals(gffGeneIsoInfo.getName())) {//比较两个list是否一致，exon的equals只比较起点终点
 				return;
 			}
 		}

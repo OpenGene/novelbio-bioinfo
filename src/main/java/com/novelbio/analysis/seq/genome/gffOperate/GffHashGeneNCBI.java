@@ -37,17 +37,17 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	private static Logger logger = Logger.getLogger(GffHashGeneNCBI.class);
 	
 	/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  NCBI的ID  */
-	protected String regGeneName = "(?<=gene\\=)[\\w\\-%]+";
+	protected static String regGeneName = "(?<=gene\\=)[\\w\\-%]+";
 	/**  可变剪接mRNA的正则，默认 NCBI的ID */
-	protected String regSplitmRNA = "(?<=transcript_id\\=)[\\w,\\-]+";
+	protected static String regSplitmRNA = "(?<=transcript_id\\=)[\\w,\\-]+";
 	/**  可变剪接mRNA的产物的正则，默认 NCBI的symbol */
-	protected String regProduct = "(?<=product\\=)[\\w\\-%]+";
+	protected static String regProduct = "(?<=product\\=)[\\w\\-%]+";
 	/** geneID的正则 */
-	protected String regGeneID = "(?<=Dbxref\\=GeneID\\:)\\d+";
+	protected static String regGeneID = "(?<=Dbxref\\=GeneID\\:)\\d+";
 	/** ID的正则 */
-	protected String regID = "(?<=ID\\=)\\w+";
+	protected static String regID = "(?<=ID\\=)\\w+";
 	/** parentID的正则 */
-	protected String regParentID = "(?<=Parent\\=)[\\w\\-%]+";
+	protected static String regParentID = "(?<=Parent\\=)[\\w\\-%]+";
 	/** mRNA类似名 */
 	//TODO 考虑用enum的map来实现
 	private static HashMap<String, GeneType> mapMRNA2GeneType = new HashMap<String, GeneType>();
@@ -55,22 +55,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	/** gene类似名 */
 	private static HashSet<String> setIsGene = new HashSet<String>();
 	private static String enc="utf8";//文件中含有%20C等符号，用url解码
-	/** "(?<=gene\\=)\\w+" */
-	PatternOperate patGeneName = null;
-	/**  "(?<=transcript_id\\=)\\w+" */
-	PatternOperate patmRNAName = null;
-	/** "(?<=Dbxref\\=GeneID\\:)\\d+" */
-	PatternOperate patGeneID = null;
-	/** "(?<=ID\\=)\\w+" */
-	PatternOperate patID = null;
-	/** "(?<=Parent\\=)\\w+" */
-	PatternOperate patParentID = null;
-	/** "(?<=product\\=)\\w+" */
-	PatternOperate patProduct = null;
 	
-	public static void main(String[] args) throws UnsupportedEncodingException {
+	
+	public static void main(String[] args) {
 //		GffHashGeneNCBI.modifyNCBIgffFile("/media/winE/Bioinformatics/genome/checken/gal4_UCSC/gff/ref_Gallus_gallus-4.0_top_level.gff3");
-		
 		
 		GffHashGeneNCBI gffHashGeneNCBI = new GffHashGeneNCBI();
 		gffHashGeneNCBI.ReadGffarray("/media/winE/Bioinformatics/genome/human/hg19_GRCh37/gff/ref_GRCh37.p9_top_level_modify.gff3");
@@ -83,6 +71,20 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		System.out.println(gffGeneIsoInfo.get(0).getStartCis());
 		System.out.println(gffGeneIsoInfo.get(1).getEndCis());
 	}
+	
+	/** "(?<=gene\\=)\\w+" */
+	PatternOperate patGeneName = null;
+	/**  "(?<=transcript_id\\=)\\w+" */
+	PatternOperate patmRNAName = null;
+	/** "(?<=Dbxref\\=GeneID\\:)\\d+" */
+	PatternOperate patGeneID = null;
+	/** "(?<=ID\\=)\\w+" */
+	PatternOperate patID = null;
+	/** "(?<=Parent\\=)\\w+" */
+	PatternOperate patParentID = null;
+	/** "(?<=product\\=)\\w+" */
+	PatternOperate patProduct = null;
+
 
 	private HashMap<String, String> mapGenID2GeneName = new HashMap<String, String>();
 	private HashMap<String, String> hashRnaID2GeneID = new HashMap<String, String>();
@@ -149,7 +151,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起： NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
-   protected void ReadGffarrayExcep(String gfffilename) throws Exception {
+   protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
 	   setHashName();
 	   setPattern();
 	   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);	   
@@ -183,6 +185,17 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   }
 	   setGffList();
 	   txtgff.close();
+	   
+	   patGeneName = null;
+	   patmRNAName = null;
+	   patGeneID = null;
+	   patID = null;
+	   patParentID = null;
+	   patProduct = null;
+	   mapGenID2GeneName = null;
+	   hashRnaID2GeneID = null;
+	   hashRnaID2RnaName = null;
+	   hashGenID2GffDetail = null;
    }
    /** 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中   */
    private void addNewGene(String[] ss) {

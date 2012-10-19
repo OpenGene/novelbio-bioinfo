@@ -96,7 +96,12 @@ public class JScrollPaneData extends JScrollPane{
 		for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
 			String[] tmpResult = new String[defaultTableModel.getColumnCount()];
 			for (int j = 0; j < defaultTableModel.getColumnCount(); j++) {
-				tmpResult[j] = defaultTableModel.getValueAt(i, j).toString();
+				try {
+					tmpResult[j] = defaultTableModel.getValueAt(i, j).toString();
+				} catch (Exception e) {
+					tmpResult[j] = "";
+				}
+			
 			}
 			lsResult.add(tmpResult);
 		}

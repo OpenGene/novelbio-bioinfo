@@ -24,7 +24,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	
 	String transcript = "transcript";
 	@Override
-	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
+	protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 		HashMap<String, ArrayList<GffGeneIsoInfo>> mapChrID2LsIso = new HashMap<String, ArrayList<GffGeneIsoInfo>>();
 		

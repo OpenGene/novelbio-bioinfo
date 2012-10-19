@@ -20,6 +20,7 @@ public abstract class DiffExpAbs {
 	public static final int LIMMA = 10;
 	public static final int DESEQ = 20;
 	public static final int DEGSEQ = 30;
+	public static final int TTest = 40;
 	
 	String workSpace;
 	String fileNameRawdata = "";
@@ -33,10 +34,10 @@ public abstract class DiffExpAbs {
 	 */
 	ArrayList<String[]> lsSampleColumn2GroupName;
 	/** 基因名
-	 * 对应时期名
+	 * 对应样本名
 	 * 对应平均表达值
 	 */
-	HashMap<String, HashMap<String, Double>> mapSample_2_time2value;
+	HashMap<String, HashMap<String, Double>> mapGeneID_2_Sample2MeanValue;
 	/**基因唯一ID，必须没有重复 */
 	int colAccID = 0;
 	/**
@@ -99,7 +100,7 @@ public abstract class DiffExpAbs {
 		calculate = false;
 	}
 	protected abstract void setOutScriptPath();
-	
+	/** 设定原始数据的文件名 */
 	protected abstract void setFileNameRawdata();
 	
 	protected void setRworkspace() {
@@ -139,10 +140,13 @@ public abstract class DiffExpAbs {
 		txtWrite.ExcelWrite(getAnalysisGeneInfo());
 	}
 	/**
-	 * 将选定的基因ID和具体值写入文本
+	 * 获得选定的基因ID和具体值
+	 * 排序方式按照输入的lsSampleColumn2GroupName进行排序，不做调整
 	 * @return
+	 * 0： geneID
+	 * 1-n：value
 	 */
-	private ArrayList<String[]> getAnalysisGeneInfo() {
+	protected  ArrayList<String[]> getAnalysisGeneInfo() {
 		ArrayList<String[]> lsResultGeneInfo = new ArrayList<String[]>();
 		for (String[] strings : lsGeneInfo) {
 			String[] tmpResult = new String[lsSampleColumn2GroupName.size() + 1];
@@ -156,12 +160,12 @@ public abstract class DiffExpAbs {
 		return lsResultGeneInfo;
 	}
 	private void setMapSample_2_time2value() {
-		mapSample_2_time2value = new HashMap<String, HashMap<String,Double>>();
+		mapGeneID_2_Sample2MeanValue = new HashMap<String, HashMap<String,Double>>();
 		for (String[] strings : lsGeneInfo) {
-			String sampleName = strings[colAccID];
+			String geneName = strings[colAccID];
 			try {
 				HashMap<String, Double> mapTime2value = mapTime2AvgValue(strings);
-				mapSample_2_time2value.put(sampleName, mapTime2value);
+				mapGeneID_2_Sample2MeanValue.put(geneName, mapTime2value);
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -195,7 +199,7 @@ public abstract class DiffExpAbs {
 			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]) - 1;
 			double value = Double.parseDouble(info[colNum]);
 			String timeInfo = lsSampleColumn2GroupName.get(i)[1];//时期
-			ArrayList<Double> lsValue = getLsValue(timeInfo, mapTime2LsValue);
+			ArrayList<Double> lsValue = add_and_get_LsValue(timeInfo, mapTime2LsValue);
 			lsValue.add(value);
 		}
 		HashMap<String, Double> mapTime2AvgValue = new HashMap<String, Double>();
@@ -205,7 +209,8 @@ public abstract class DiffExpAbs {
 		}
 		return mapTime2AvgValue;
 	}
-	private ArrayList<Double> getLsValue(String timeInfo, HashMap<String, ArrayList<Double>> mapTime2value) {
+	/** 没有该timeInfo就产生个新的list，有的话就获得原来的list */
+	private ArrayList<Double> add_and_get_LsValue(String timeInfo, HashMap<String, ArrayList<Double>> mapTime2value) {
 		ArrayList<Double> lsValue = mapTime2value.get(timeInfo);
 		if (lsValue == null) {
 			lsValue = new ArrayList<Double>();
@@ -261,6 +266,7 @@ public abstract class DiffExpAbs {
 		mapMethod2ID.put("Limma--Microarray", LIMMA);
 		mapMethod2ID.put("DESeq--Counts", DESEQ);
 		mapMethod2ID.put("DEGseq--RNAseq", DEGSEQ);
+		mapMethod2ID.put("Ttest", TTest);
 		return mapMethod2ID;
 	}
 	
@@ -273,6 +279,9 @@ public abstract class DiffExpAbs {
 		}
 		else if (DiffExpID == DEGSEQ) {
 			return new DiffExpDEGseq();
+		}
+		else if (DiffExpID == TTest) {
+			return new DiffExpTtest();
 		}
 		else {
 			return null;

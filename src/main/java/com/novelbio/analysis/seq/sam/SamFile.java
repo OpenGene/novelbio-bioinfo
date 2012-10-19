@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -36,11 +37,13 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  */
 public class SamFile implements AlignSeq {
 	public static void main(String[] args) {
-		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_HXW/20120705/aaa.sam");
-		samFile.setReferenceFileName("/media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa");
-		samFile.copeSamFile2Snp();
+		System.out.println(SamFile.isSamBamFile("aaa_sorted_realign_duplicate.txt"));
+//		SamFile samFile = new SamFile("aaa_sorted_realign_duplicate.txt");
+//		for (SamRecord samRecord : samFile.readLines()) {
+//			System.out.println(samRecord.toString());
+//			break;
+//		}
 	}
-	
 	
 	public static final int MAPPING_ALLREADS = 2;
 	public static final int MAPPING_ALLMAPPEDREADS = 4;
@@ -116,17 +119,12 @@ public class SamFile implements AlignSeq {
 	}
 	public void setSamFileRead(String samFileExist) {
 		this.fileName = samFileExist;
-		File file = new File(samFileExist);
-		
-		final BufferedInputStream bufferedStream;
-		if (file != null) {
-			try {
-				bufferedStream = new BufferedInputStream(new FileInputStream(file));
-				this.bamFile = isBAMFile(bufferedStream);
-				bufferedStream.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		FormatSeq formatSeq = isSamBamFile(samFileExist);
+		if (formatSeq == FormatSeq.UNKNOWN) {
+			return;
+		}
+		if (formatSeq == FormatSeq.BAM) {
+			bamFile = true;
 		}
 		samReader.setFileName(samFileExist);
 	}
@@ -301,37 +299,7 @@ public class SamFile implements AlignSeq {
 			mapName2Record.remove(recordName);
 		}
 	}
-    /**
-     * @param stream stream.markSupported() must be true
-     * @return true if this looks like a BAM file.
-     */
-    private boolean isBAMFile(final InputStream stream)
-            throws IOException {
-        if (!BlockCompressedInputStream.isValidFile(stream)) {
-          return false;
-        }
-        final int buffSize = BlockCompressedStreamConstants.MAX_COMPRESSED_BLOCK_SIZE;
-        stream.mark(buffSize);
-        final byte[] buffer = new byte[buffSize];
-        readBytes(stream, buffer, 0, buffSize);
-        stream.reset();
-        final byte[] magicBuf = new byte[4];
-        final int magicLength = readBytes(new BlockCompressedInputStream(new ByteArrayInputStream(buffer)), magicBuf, 0, 4);
-        return magicLength == BAMFileConstants.BAM_MAGIC.length && Arrays.equals(BAMFileConstants.BAM_MAGIC, magicBuf);
-    }
-    
-    private static int readBytes(final InputStream stream, final byte[] buffer, final int offset, final int length)
-    		throws IOException {
-    	int bytesRead = 0;
-    	while (bytesRead < length) {
-    		final int count = stream.read(buffer, offset + bytesRead, length - bytesRead);
-    		if (count <= 0) {
-    			break;
-    		}
-    		bytesRead += count;
-    	}
-    	return bytesRead;
-    }
+
     public SamFile sort() {
     	SamFile samFile = convertToBam();
     	String outName = FileOperate.changeFileSuffix(getFileName(), "_sorted", "bam");
@@ -595,6 +563,69 @@ public class SamFile implements AlignSeq {
 		bamMerge.setLsBamFile(lsBamFileName);
 		return bamMerge.merge();
 	}
+	
+	/** 返回是sam文件，bam文件还是未知文件 */
+	public static FormatSeq isSamBamFile(String samBamFile) {
+		FormatSeq thisFormate = FormatSeq.UNKNOWN;
+		if (!FileOperate.isFileExist(samBamFile)) {
+			return thisFormate;
+		}
+		SamReader samReader = new SamReader();
+		samReader.setFileName(samBamFile);
+		if (samReader.readLines().iterator().next() == null ) {
+			return thisFormate;
+		}
+		samReader.close();
+		thisFormate = FormatSeq.SAM;
+		File file = new File(samBamFile);
+		BufferedInputStream bufferedStream = null;
+		InputStream instream = null;
+		if (file != null) {
+			try {
+				instream = new FileInputStream(file);
+				bufferedStream = new BufferedInputStream(instream);
+				if(isBAMFile(bufferedStream)) {
+					thisFormate = FormatSeq.BAM;
+				}
+				bufferedStream.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		try { instream.close(); } catch (IOException e) { }
+		try { bufferedStream.close(); } catch (IOException e) { }
+		return thisFormate;
+	}
+    /**
+     * @param stream stream.markSupported() must be true
+     * @return true if this looks like a BAM file.
+     */
+    private static boolean isBAMFile(final InputStream stream) throws IOException {
+        if (!BlockCompressedInputStream.isValidFile(stream)) {
+          return false;
+        }
+        final int buffSize = BlockCompressedStreamConstants.MAX_COMPRESSED_BLOCK_SIZE;
+        stream.mark(buffSize);
+        final byte[] buffer = new byte[buffSize];
+        readBytes(stream, buffer, 0, buffSize);
+        stream.reset();
+        final byte[] magicBuf = new byte[4];
+        final int magicLength = readBytes(new BlockCompressedInputStream(new ByteArrayInputStream(buffer)), magicBuf, 0, 4);
+        return magicLength == BAMFileConstants.BAM_MAGIC.length && Arrays.equals(BAMFileConstants.BAM_MAGIC, magicBuf);
+    }
+    
+    private static int readBytes(final InputStream stream, final byte[] buffer, final int offset, final int length)
+    		throws IOException {
+    	int bytesRead = 0;
+    	while (bytesRead < length) {
+    		final int count = stream.read(buffer, offset + bytesRead, length - bytesRead);
+    		if (count <= 0) {
+    			break;
+    		}
+    		bytesRead += count;
+    	}
+    	return bytesRead;
+    }
 }
 /**
  * Constants used in reading & writing BAM files

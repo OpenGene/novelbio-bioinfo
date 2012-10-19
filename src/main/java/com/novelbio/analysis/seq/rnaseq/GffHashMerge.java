@@ -96,6 +96,7 @@ public class GffHashMerge {
 	public void setSpecies(Species species) {
 		this.species = species;
 	}
+	/** 内部包含有重复的iso */
 	public GffHashGene getGffHashGeneModifyResult() {
 		if (!calculate) {
 			fillGffHashGeneResult();

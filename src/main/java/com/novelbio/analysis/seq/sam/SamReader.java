@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileReader;
+import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 
@@ -91,6 +92,8 @@ public class SamReader {
 	public Iterable<SamRecord> readLines() {
 		final SAMRecordIterator samRecordIterator = getSamFileReader().iterator();
 		return new Iterable<SamRecord>() {
+			int errorFormateLineNum = 0;
+			int correctLineNum = 0;
 			public Iterator<SamRecord> iterator() {
 				return new Iterator<SamRecord>() {
 					@Override
@@ -103,9 +106,21 @@ public class SamReader {
 						SAMRecord samRecord = null;
 						try {
 							samRecord = samRecordIterator.next();
+							if (correctLineNum < 100000) {
+								correctLineNum ++;
+							}
+						} catch (SAMFormatException e) {
+							logger.error(e);
+							if (e.toString().contains("Error parsing text SAM file. Non-numeric value in POS column")) {
+								errorFormateLineNum++;
+							}
+							if (errorFormateLineNum > 10 && correctLineNum < 5) {
+								return null;
+							}
+							System.out.println(e.toString());
+							return next();
 						} catch (Exception e) {
 							logger.error(e);
-							return next();
 						}
 						
 						SamRecord samRecordThis = new SamRecord(samRecord);

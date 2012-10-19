@@ -330,10 +330,8 @@ public class WebFetch {
 		try {
 			return downloadExp(fileName);
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
@@ -368,6 +366,7 @@ public class WebFetch {
 			retryNum = 2;
 		}
 		try {
+			//重试好多次
 			int queryNum = 0;
 			while (!querySucess) {
 				getResponseExp();
@@ -377,10 +376,8 @@ public class WebFetch {
 				}
 			}
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return querySucess;
@@ -402,9 +399,9 @@ public class WebFetch {
 			logger.error("query出错：" + url);
 			return;
 		}
-		int httpStatus = httpResponse.getStatusLine().getStatusCode();
+		int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
 		
-		if (httpStatus/100 == 4 || httpStatus/100 == 5) {
+		if (httpStatusCode/100 == 4 || httpStatusCode/100 == 5) {
 			querySucess = false;
 		}
 		synchronized (this) {
@@ -418,6 +415,7 @@ public class WebFetch {
 		}
 		querySucess = true;
 	}
+	
 	private HttpUriRequest getQuery() {
 		if (methodType == HTTPTYPE_GET) {
 			httpRequest = new HttpGet(url);

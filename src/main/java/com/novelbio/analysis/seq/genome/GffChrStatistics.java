@@ -6,8 +6,11 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.w3c.dom.ls.LSSerializer;
 
+import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -15,6 +18,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
@@ -26,7 +30,6 @@ import com.novelbio.database.model.species.Species;
  *
  */
 public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatiscticsProcessInfo> implements Cloneable{
-	
 	private static final Logger logger = Logger.getLogger(GffChrAnno.class);
 	
 	GffChrAbs gffChrAbs;
@@ -47,7 +50,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	int colChrID = 0;
 	int colSummit = -1;
 	/** 是否为bed文件 */
-	boolean bedFile = true;
+	boolean isAlignFile = true;
 	
 	int firstLine = 1;
 	String fileName = "";
@@ -77,11 +80,11 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	}
 	public void setColSummit(int colSummit) {
 		this.colSummit = colSummit - 1;
-		bedFile = false;
+		isAlignFile = false;
 	}
 	public void setColChrID(int colChrID) {
 		this.colChrID = colChrID - 1;
-		bedFile = false;
+		isAlignFile = false;
 	}
 	/**
 	 * 从第几行开始读取，默认为1
@@ -115,15 +118,25 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	 */
 	private void getSummitStatistic() {
 		allnumber = 0;
-		if (bedFile)
-			readBedFile(fileName);
-		else
+		if (isAlignFile) {
+			readAlignFile(fileName);
+		} else {
 			readNormFile(fileName);
-	}	
-	private void readBedFile(String bedFile) {
-		BedSeq bedSeqFile = new BedSeq(bedFile);
+		}
+	}
+	/** 可以读取sam/bam文件和bed文件 */
+	private void readAlignFile(String alignFile) {
+		FormatSeq formatSeq = FormatSeq.getFileType(alignFile);
+		AlignSeq seqFile = null;
+		if (formatSeq == FormatSeq.BED) {
+			seqFile = new BedSeq(alignFile);
+		}
+		else if (formatSeq == FormatSeq.SAM || formatSeq == FormatSeq.BAM) {
+			seqFile = new SamFile(alignFile);
+		}
+		
 		int i = 0;
-		for (BedRecord bedRecord : bedSeqFile.readLines(firstLine)) {
+		for (AlignRecord bedRecord : seqFile.readLines(firstLine)) {
 			
 			ArrayList<SiteInfo> lsSiteInfos = getLsGetBedSiteInfo(bedRecord);
 			for (SiteInfo siteInfo : lsSiteInfos) {
@@ -139,13 +152,13 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			if (flagStop) break;
 		}
 	}
-	private ArrayList<SiteInfo> getLsGetBedSiteInfo(BedRecord bedRecord) {
+	private ArrayList<SiteInfo> getLsGetBedSiteInfo(AlignRecord bedRecord) {
 		ArrayList<SiteInfo> lSiteInfos = new ArrayList<SiteInfo>();
 		ArrayList<Align> lsAligns = bedRecord.getAlignmentBlocks();
 		for (Align align : lsAligns) {
 			SiteInfo siteInfo = new SiteInfo(bedRecord.getRefID(), align.getStartCis(), align.getEndCis());
 			siteInfo.setFlagLoc( (align.getStartCis() + align.getEndCis())/2);
-			lSiteInfos.add(bedRecord);
+			lSiteInfos.add(siteInfo);
 		}
 		return lSiteInfos;
 	}
@@ -387,7 +400,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			e.printStackTrace();
 			return null;
 		}
-		gffChrStatisticsResult.bedFile = bedFile;
+		gffChrStatisticsResult.isAlignFile = isAlignFile;
 		gffChrStatisticsResult.colChrID = colChrID;
 		gffChrStatisticsResult.colSummit = colSummit;
 		gffChrStatisticsResult.exonNum = exonNum;

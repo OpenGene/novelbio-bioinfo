@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.apache.commons.collections.functors.IfClosure;
+import org.apache.log4j.Logger;
 import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -21,7 +22,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
  */
 public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements Cloneable {
 	private static final long serialVersionUID = -3356076601369239937L;
-	
+	private static Logger logger = Logger.getLogger(ListAbs.class);
 	/**保存某个坐标到所在的内含子/外显子起点的距离 */
 	HashMap<Integer, Integer> hashLocExInStart;
 	/** 保存某个坐标到所在的内含子/外显子终点的距离 */
@@ -314,6 +315,9 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		for (E ele : this) {
 			ArrayList<String> ss = ele.getName();
 			for (String string : ss) {
+				if (string.contains("AT1G168")) {
+					logger.error("error");
+				}
 				mapName2DetailAbs.put(string.toLowerCase(), ele);
 				mapName2DetailAbs.put(GeneID.removeDot(string.toLowerCase()), ele);
 			}

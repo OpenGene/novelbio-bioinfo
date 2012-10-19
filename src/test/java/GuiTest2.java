@@ -11,6 +11,8 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.novelbio.base.plot.DotStyle;
+
 import de.erichseifert.gral.data.DataTable;
 import de.erichseifert.gral.graphics.DrawableContainer;
 import de.erichseifert.gral.graphics.TableLayout;
@@ -52,8 +54,8 @@ public class GuiTest2 {
 //            lineUpper.setSetting(LineRenderer.COLOR, colorUpper);
 //            plotUpper.setLineRenderer(data, lineUpper);
             AreaRenderer areaUpper = new DefaultAreaRenderer2D();
-//            areaUpper.setSetting(AreaRenderer.COLOR, GraphicsUtils.deriveWithAlpha(colorUpper, 64));
-            areaUpper.setSetting(AreaRenderer.COLOR, Color.blue);
+            areaUpper.setSetting(AreaRenderer.COLOR, DotStyle.getGridentColor(Color.green, GraphicsUtils.deriveBrighter(Color.red)));
+//            areaUpper.setSetting(AreaRenderer.COLOR, Color.blue);
 
             plotUpper.setAreaRenderer(data, areaUpper);
             plotUpper.setInsets(new Insets2D.Double(20.0, 50.0, 40.0, 20.0));

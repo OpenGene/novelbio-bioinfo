@@ -205,8 +205,8 @@ public class BlastNBC {
 			}
 		}
 		String cmd = "perl " + NovelBioConst.BLAST_NCBI_SCRIPT + blastAll + blastInputType + blastType
-				+ "-i " + queryFasta + " -d " + databaseSeq  + " -o " + resultFile
-				+ " -a " + cpuNum +" -F F " + " -e " + evalue + " -m " + resultType + " -v "+resultSeqNum + " -b " + resultAlignNum + " --path " + NovelBioConst.BLAST_NCBI_PATH;
+				+ "-i " + CmdOperate.addQuot(queryFasta) + " -d " + CmdOperate.addQuot(databaseSeq) + " -o " + CmdOperate.addQuot(resultFile)
+				+ " -a " + cpuNum + getFilter() + " -e " + evalue + " -m " + resultType + " -v "+resultSeqNum + " -b " + resultAlignNum + " --path " + NovelBioConst.BLAST_NCBI_PATH;
 		CmdOperate cmdOperate = new CmdOperate(cmd,"blast");
 		cmdOperate.run();
 		return true;
@@ -266,6 +266,18 @@ public class BlastNBC {
 			return null;
 		}
 		return indexExist;
+	}
+	/**
+	 * 用来屏蔽简单重复和低复杂度序列的参数，有T和F两个选项，选择“T”，则
+		程序在比对过程中会屏蔽掉query序列中的简单重复和低复杂度序列；选择
+		“F”则不会屏蔽。NCBI的blast程序默认值是“T”，我们默认是F，也就是返回 -F F
+	 *但是RNA的tblastx走NCBI默认，也就是返回"",否则会报错
+	 */
+	private String getFilter() {
+		if (this.blastType == BLAST_TBLASTX_NR2NR_WITH_AA) {
+			return " ";
+		}
+		return " -F F ";
 	}
 	/**
 	 * 给定fasta格式的文件，设定NCBI的ID为正则表达式，将Fasta格式的ID挑选出来

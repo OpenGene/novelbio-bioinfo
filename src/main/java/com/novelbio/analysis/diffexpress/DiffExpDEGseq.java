@@ -21,24 +21,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
  */
 public class DiffExpDEGseq extends DiffExpAbs {
 	String outPutSuffix = "_Path";
-	public static void main(String[] args) {
-		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt("/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/miRNA²¢¼¯Deseq.txt", 1);
-		DiffExpDEGseq deSeq = new DiffExpDEGseq();
-		ArrayList<String[]> lsSampleColumn2GroupName = new ArrayList<String[]>();
-		lsSampleColumn2GroupName.add(new String[] {"2","A"});
-		lsSampleColumn2GroupName.add(new String[] {"3","B"});
-		lsSampleColumn2GroupName.add(new String[] {"4","C"});
-		lsSampleColumn2GroupName.add(new String[] {"5","D"});
-		lsSampleColumn2GroupName.add(new String[] {"6","E"});
-		lsSampleColumn2GroupName.add(new String[] {"7","F"});
-		deSeq.setCol2Sample(lsSampleColumn2GroupName);
-		deSeq.setColID(1);
-		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
-		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
-		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
-		deSeq.setGeneInfo(lsInfo);
-		deSeq.getResultFileName();
-	}
 	public DiffExpDEGseq() {
 //		rawScript = "/media/winE/Bioinformatics/R/Protocol/DEGseqJava.txt";
 		rawScript = PathDetail.getRworkspace().replace("\\", "/") + "DEGseqJava.txt";

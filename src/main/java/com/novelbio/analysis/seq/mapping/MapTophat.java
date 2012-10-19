@@ -368,10 +368,11 @@ public class MapTophat implements MapRNA{
 		setGTFfile();
 		mapBowtie.setBowtieVersion(bowtieVersion);
 		mapBowtie.IndexMakeBowtie();
-		if (lsLeftFq.size() > 0 && lsRightFq.size() > 0)
+		if (lsLeftFq.size() > 0 && lsRightFq.size() > 0) {
 			pairend = true;
-		else
+		} else {
 			pairend = false;
+		}
 		// linuxÃüÁîÈçÏÂ
 		/**
 		 * tophat -r 120 -a 10 -m 1 -i 20 -I 6000 --solexa1.3-quals -F 0.15 -p 4

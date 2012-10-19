@@ -106,7 +106,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起： NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
-   protected void ReadGffarrayExcep(String gfffilename) throws Exception {
+   protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
 	   setHashName();
 		// 实例化四个表
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();// 一个哈希表来存储每条染色体

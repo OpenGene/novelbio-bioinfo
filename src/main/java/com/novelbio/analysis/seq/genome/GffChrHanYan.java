@@ -51,56 +51,56 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	HashMap<String, SeqInfo> mapAccID2SeqInfo;
 	
 	public static void main(String[] args) {
-		String mapFile = "/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/RAP3h_filtered_sorted.bed";
+		String mapFile = "/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/RAP3h_filtered_sorted.bed";
 		String resultFileOut = FileOperate.changeFileSuffix(mapFile, "_info", "txt");
 		GffChrUnionHanYanRefSeq gffChrHanYan = new GffChrUnionHanYanRefSeq();
 		GffChrAbs gffChrAbs = new GffChrAbs(10090);
 		gffChrHanYan.setGffChrAbs(gffChrAbs);
-		gffChrHanYan.setRefSeq("/home/zong0jie/Desktop/TSC2_2nd_Seq/refseq/refMRNA.fa");
+		gffChrHanYan.setRefSeq("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/refseq/refMRNA.fa");
 		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, true, false);
 		gffChrHanYan.drawAtgPlot(resultFileOut);
-		FileOperate.createFolders("/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/plotRAP3h_300-3000");
-		gffChrHanYan.drawGeneAll("/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/plotRAP3h_300-3000/RAP3h_");
+		FileOperate.createFolders("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotRAP3h_300-3000");
+		gffChrHanYan.drawGeneAll("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotRAP3h_300-3000/RAP3h_");
 
-		mapFile = "/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/20PBS_filtered_sorted.bed";
+		mapFile = "/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/20PBS_filtered_sorted.bed";
 		resultFileOut = FileOperate.changeFileSuffix(mapFile, "_info", "txt");
 		gffChrHanYan = new GffChrUnionHanYanRefSeq();
 		gffChrHanYan.setGffChrAbs(gffChrAbs);
-		gffChrHanYan.setRefSeq("/home/zong0jie/Desktop/TSC2_2nd_Seq/refseq/refMRNA.fa");
+		gffChrHanYan.setRefSeq("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/refseq/refMRNA.fa");
 		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, true, false);
 		gffChrHanYan.drawAtgPlot(resultFileOut);
-		FileOperate.createFolders("/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/plot20PBS_300-3000");
-		gffChrHanYan.drawGeneAll("/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/plot20PBS_300-3000/20PBS_");
+		FileOperate.createFolders("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plot20PBS_300-3000");
+		gffChrHanYan.drawGeneAll("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plot20PBS_300-3000/20PBS_");
 		
-		mapFile = "/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/LY3h_filtered_sorted.bed";
+		mapFile = "/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/LY3h_filtered_sorted.bed";
 		resultFileOut = FileOperate.changeFileSuffix(mapFile, "_info", "txt");
 		gffChrHanYan = new GffChrUnionHanYanRefSeq();
 		gffChrHanYan.setGffChrAbs(gffChrAbs);
-		gffChrHanYan.setRefSeq("/home/zong0jie/Desktop/TSC2_2nd_Seq/refseq/refMRNA.fa");
+		gffChrHanYan.setRefSeq("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/refseq/refMRNA.fa");
 		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, true, false);
 		gffChrHanYan.drawAtgPlot(resultFileOut);
-		FileOperate.createFolders("/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/plotLY3h_300-3000");
-		gffChrHanYan.drawGeneAll("/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/plotLY3h_300-3000/LY3h_");
+		FileOperate.createFolders("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotLY3h_300-3000");
+		gffChrHanYan.drawGeneAll("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotLY3h_300-3000/LY3h_");
 		
-		mapFile = "/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/TSC2_KO_filtered_sorted.bed";
+		mapFile = "/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/TSC2_KO_filtered_sorted.bed";
 		resultFileOut = FileOperate.changeFileSuffix(mapFile, "_info", "txt");
 		gffChrHanYan = new GffChrUnionHanYanRefSeq();
 		gffChrHanYan.setGffChrAbs(gffChrAbs);
-		gffChrHanYan.setRefSeq("/home/zong0jie/Desktop/TSC2_2nd_Seq/refseq/refMRNA.fa");
+		gffChrHanYan.setRefSeq("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/refseq/refMRNA.fa");
 		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, true, false);
 		gffChrHanYan.drawAtgPlot(resultFileOut);
-		FileOperate.createFolders("/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/plotTSC2_KO_300-3000");
-		gffChrHanYan.drawGeneAll("/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/plotTSC2_KO_300-3000/TSC2_KO_");
+		FileOperate.createFolders("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotTSC2_KO_300-3000");
+		gffChrHanYan.drawGeneAll("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotTSC2_KO_300-3000/TSC2_KO_");
 		
-		mapFile = "/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/TSC2_WT_filtered_sorted.bed";
+		mapFile = "/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/TSC2_WT_filtered_sorted.bed";
 		resultFileOut = FileOperate.changeFileSuffix(mapFile, "_info", "txt");
 		gffChrHanYan = new GffChrUnionHanYanRefSeq();
 		gffChrHanYan.setGffChrAbs(gffChrAbs);
-		gffChrHanYan.setRefSeq("/home/zong0jie/Desktop/TSC2_2nd_Seq/refseq/refMRNA.fa");
+		gffChrHanYan.setRefSeq("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/refseq/refMRNA.fa");
 		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, true, false);
 		gffChrHanYan.drawAtgPlot(resultFileOut);
-		FileOperate.createFolders("/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/plotTSC2_WT_300-3000");
-		gffChrHanYan.drawGeneAll("/home/zong0jie/Desktop/TSC2_2nd_Seq/mapping/plotTSC2_WT_300-3000/TSC2_WT_");
+		FileOperate.createFolders("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotTSC2_WT_300-3000");
+		gffChrHanYan.drawGeneAll("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotTSC2_WT_300-3000/TSC2_WT_");
 		
 		
 //		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO("NM_001017429");
@@ -116,7 +116,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 //		gffChrSeq.setGetAllIso(false);
 //		gffChrSeq.setIsGetOnlyMRNA(true);
 //		gffChrSeq.setGetSeqIsoGenomWide();
-//		gffChrSeq.setOutPutFile("/home/zong0jie/Desktop/TSC2_2nd_Seq/refseq/refMRNA.fa");
+//		gffChrSeq.setOutPutFile("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/refseq/refMRNA.fa");
 //		gffChrSeq.run();
 	}
 	
@@ -126,10 +126,11 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	public void setNormType(int normalType) {
 		mapReads.setNormalType(normalType);
 	}
-	/** 默认获取atg上游100bp的位点 */
+	/** 默认获取atg上游300bp的位点 */
 	public void setAtgUp(int atgUp) {
 		this.atgUp = atgUp;
 	}
+	/** 默认获取atg下游3000bp的位点 */
 	public void setAtgDown(int atgDown) {
 		this.atgDown = atgDown;
 	}
@@ -406,9 +407,6 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();;
 		ArrayList<SeqInfo> lsAtg = new ArrayList<SeqInfo>();
 		for (String string : lsGeneID) {
-			if (string.equalsIgnoreCase("NM_001013369")) {
-				logger.error("stop");
-			}
 			SeqInfo seqInfo = new SeqInfo();
 			GffGeneIsoInfo gffGeneIsoSearch = gffHashGene.searchISO(string);
 			if (gffGeneIsoSearch.ismRNA()) {

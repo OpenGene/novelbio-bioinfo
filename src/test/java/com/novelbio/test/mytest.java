@@ -136,12 +136,10 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		ArrayList<Integer> lssort = new ArrayList<Integer>();
-		Collections.sort(lssort);
-		for (Integer integer : lssort) {
-			System.out.println(integer);
-		}
-		System.out.println("stop");
+		GffChrAbs gffChrAbs = new GffChrAbs(3702);
+		System.out.println(gffChrAbs.getGffHashGene().getGffFilename());
+		gffChrAbs.getGffHashGene().writeGene2Iso("/home/zong0jie/×ÀÃæ/testgene2iso");
+		
 	}
 	
 	private void HG18() {

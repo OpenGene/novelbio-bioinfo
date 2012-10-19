@@ -47,6 +47,8 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiTranscriptomeCufflinks guiTranscriptomeCufflinks;
 	private GuiRNAautoSplice guiRNAautoSplice;
 	private GuiDGEgetvalue guiDGEgetvalue;
+	private GuiFilterDifGene guiFilterDifGene;
+	
 	
 	/**
 	* Auto-generated main method to display this JFrame
@@ -110,9 +112,6 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiDegreeAdd = new GuiDegreeAddJpanel();
 				jTabbedPane1.addTab("Degree", null, guiDegreeAdd, null);
 				
-				guiTools = new GuiToolsJpanel();
-				jTabbedPane1.addTab("Tools", null, guiTools, null);
-				
 				guiFastQ = new GuiFastQJpanel();
 				jTabbedPane1.addTab("FastQ", null, guiFastQ, null);
 				
@@ -152,8 +151,11 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiSnpCalling = new GuiSnpCalling();
 				jTabbedPane1.add("SnpCalling", guiSnpCalling);
 				
-				GuiReadsAndExpInfo guiReadsAndExpInfo = new GuiReadsAndExpInfo();
-				jTabbedPane1.add("guiReadsAndExpInfo", guiReadsAndExpInfo);
+				guiTools = new GuiToolsJpanel();
+				jTabbedPane1.addTab("Tools", null, guiTools, null);
+				
+				guiFilterDifGene = new GuiFilterDifGene();
+				jTabbedPane1.addTab("filterGene", null, guiFilterDifGene, null);
 			}
 			pack();
 			this.setSize(1050, 699);
