@@ -39,10 +39,10 @@ public class GffAddAnno {
 		for (String content : txtReadSubjectDescription.readlines()) {
 			String[] ss = content.split("\t");
 			String geneID = ss[0];
-			String product = ss[1];
+			String product = ss[2];
 			String note = "";
 			try {
-				note = ss[2];
+				note = ss[3];
 			} catch (Exception e) {
 				note = "";
 			}

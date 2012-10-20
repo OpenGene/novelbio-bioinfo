@@ -89,8 +89,7 @@ public class SeqFastaHash extends SeqHashAbs {
 		Pattern pattern = null;
 		if (regx == null) {
 			pattern = Pattern.compile("", Pattern.CASE_INSENSITIVE); // flags
-		}
-		else {
+		} else {
 			pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE); // flags
 		}
 		
@@ -98,13 +97,11 @@ public class SeqFastaHash extends SeqHashAbs {
 		hashSeq = new HashMap<String, SeqFasta>();// 本list用来存储染色体
 		TxtReadandWrite txtSeqFile = new TxtReadandWrite(chrFile,false);
 		StringBuilder SeqStringBuilder = new StringBuilder();
-		String content = "";
-		BufferedReader reader = txtSeqFile.readfile();// open gff file
 		SeqFasta Seq = null;
 		lsSeqName = new ArrayList<String>();
-		while ((content = reader.readLine()) != null) {
-			if (content.trim().startsWith(">"))// 当读到一条序列时，给序列起名字
-			{
+		for (String content : txtSeqFile.readlines()) {
+			// 当读到一条序列时，给序列起名字
+			if (content.trim().startsWith(">")) {
 				if (Seq != null) {
 					putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append);
 					SeqStringBuilder = new StringBuilder();// 清空
@@ -125,7 +122,13 @@ public class SeqFastaHash extends SeqHashAbs {
 				}
 				continue;
 			}
-			SeqStringBuilder.append(content.replace(" ", ""));
+			//删除所有非字母的符号
+			String tmpSeq = content.replace(" ", "");
+			for (char c : tmpSeq.toCharArray()) {
+				if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122) ) {
+					SeqStringBuilder.append(c);
+				}
+			}
 		}
 		// /////////离开循环后，再做一次总结/////////////////////
 		putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append);
