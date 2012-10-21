@@ -87,7 +87,7 @@ public class GffAddAnno {
 	private String replaceGeneDescripAll(String ss8) {
 		String geneID = ss8.split(";")[0].replace("ID=", "");
 		String[] gene2Descirp = mapGeneID_2_subjectIdProductNote.get(geneID);
-		if (gene2Descirp == null) {
+		if (gene2Descirp == null || gene2Descirp[1].contains("hypothetical protein")) {
 			return ss8;
 		}
 		String result = "ID=" + geneID + "; Name=" + gene2Descirp[0] + " Product=" + gene2Descirp[1];

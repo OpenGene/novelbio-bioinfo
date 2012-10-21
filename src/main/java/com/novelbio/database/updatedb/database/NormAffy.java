@@ -23,23 +23,8 @@ import com.novelbio.generalConf.NovelBioConst;
  * @author zong0jie
  *
  */
-public class NormAffy extends ImportPerLine
-{
-	public static void main(String[] args) {
-		String queryFasta = "/media/winE/Bioinformatics/Affymetrix/rice/Rice_target_modified.fa";
-		String subFasta = "/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/blast/GeneRefSeq.fa";
-		String outFile = "/media/winE/Bioinformatics/Affymetrix/rice/Affy2Loc.txt";
-		BlastNBC blastNBC = new BlastNBC();
-		blastNBC.setBlastType(BlastNBC.BLAST_BLASTN_NR2NR_WITH_NR);
-		blastNBC.setDatabaseSeq(subFasta);
-		blastNBC.setEvalue(0.001);
-		blastNBC.setQueryFastaFile(queryFasta);
-		blastNBC.setResultAlignNum(1);
-		blastNBC.setResultFile(outFile);
-		blastNBC.setResultSeqNum(2);
-		blastNBC.setResultType(8);
-		blastNBC.blast();
-	}
+public class NormAffy extends ImportPerLine {
+
 	String dbInfo = "";
 	/**
 	 * 设定芯片来源，

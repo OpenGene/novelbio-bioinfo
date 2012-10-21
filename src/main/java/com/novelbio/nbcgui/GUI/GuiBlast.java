@@ -10,6 +10,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
 import com.novelbio.analysis.annotation.blast.BlastNBC;
+import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
@@ -39,14 +40,14 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 	JCheckBox chbRefStyle = null;
 	JComboBoxData cmbQSpecies = null;
 	JComboBoxData cmbSSpecies = null;
-	JComboBoxData combBlastType = null;
+	JComboBoxData<BlastType> combBlastType = null;
 	JComboBoxData combResultType = null;
 	
 	int queryType = SeqFasta.SEQ_UNKNOWN;
 	int subjectType = SeqFasta.SEQ_UNKNOWN;
 	
 	private void setCombBlastType() {
-		combBlastType.setMapItem(BlastNBC.getHashBlast(queryType, subjectType));
+		combBlastType.setMapItem(BlastType.getMapBlastType(queryType, subjectType));
 	}
 	
 	
@@ -94,7 +95,7 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 		btnSubjectDB.setBounds(279, 95, 130, 24);
 		add(btnSubjectDB);
 		
-		combBlastType = new JComboBoxData();
+		combBlastType = new JComboBoxData<BlastType>();
 		combBlastType.setBounds(10, 175, 209, 23);
 		add(combBlastType);
 		
@@ -146,7 +147,7 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 		btnRunblast.setBounds(279, 439, 98, 24);
 		btnRunblast.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				blastNBC.setBlastType((String) combBlastType.getSelectedValue());
+				blastNBC.setBlastType(combBlastType.getSelectedValue());
 				blastNBC.setCpuNum(2);
 				blastNBC.setDatabaseSeq(textSubjectFasta.getText());
 				blastNBC.setQueryFastaFile(textQueryFasta.getText());

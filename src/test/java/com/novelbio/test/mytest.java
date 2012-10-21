@@ -136,10 +136,9 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		GffChrAbs gffChrAbs = new GffChrAbs(3702);
-		System.out.println(gffChrAbs.getGffHashGene().getGffFilename());
-		gffChrAbs.getGffHashGene().writeGene2Iso("/home/zong0jie/桌面/testgene2iso");
-		
+		SeqHash seqHash = new SeqHash("/media/winF/NBC/Project/Project_WZF/最终交流并成环/吴宗福最终成环.txt");
+		SeqFasta seqFasta = seqHash.getSeq("SC070731", 15979, 16434);
+		System.out.println(seqFasta.toStringNRfasta());
 	}
 	
 	private void HG18() {

@@ -3,6 +3,8 @@ package com.novelbio.analysis.tools.ncbisubmit;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.apache.poi.ss.util.SSCellRange;
+
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -45,6 +47,42 @@ public class GenerateSequinGeneInfo {
 		GenerateSequinGeneInfo generateSequinGeneInfo = new GenerateSequinGeneInfo();
 		generateSequinGeneInfo.setGffBactriumFile(gffBactriaFile);
 		generateSequinGeneInfo.copeFile();
+		
+//		String gffBactriaFile = "/media/winF/NBC/Project/Project_WZF/annotation/finalBacterium.Gene.Prediction.anno_out_All.gff";
+//		TxtReadandWrite txtRead = new TxtReadandWrite(gffBactriaFile, false);
+//		TxtReadandWrite txtWriteNull = new TxtReadandWrite(gffBactriaFile + "tmpNull", true);
+//		TxtReadandWrite txtWriteNorm = new TxtReadandWrite(gffBactriaFile + "tmpNorm", true);
+//		TxtReadandWrite txtWriteNoProduct = new TxtReadandWrite(gffBactriaFile + "tmpNoProduct", true);
+//		for (String string : txtRead.readlines()) {
+//			if (string.contains("Product=")) {
+//				txtWriteNorm.writefileln(string);
+//			} else if (string.contains("NULL")) {
+//				txtWriteNull.writefileln(string);
+//			} else {
+//				txtWriteNoProduct.writefileln(string);
+//			}
+//		
+//		}
+//		txtRead.close();
+//		txtWriteNull.close();
+//		txtWriteNorm.close();
+//		txtWriteNoProduct.close();
+		
+		
+		
+//		TxtReadandWrite txtReadandWrite = new TxtReadandWrite("/media/winF/NBC/Project/Project_WZF/annotation/finalBacterium.Gene.Prediction.anno_out_All.gfftmpNoProduct", false);
+//		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winF/NBC/Project/Project_WZF/annotation/finalBacterium.Gene.Prediction.anno_out_All.gfftmpNoProductModify", true);
+//		for (String string : txtReadandWrite.readlines()) {
+//			String[] ss = string.split("\t");
+//			ss[8] = ss[8].split("OS=")[0];
+//			txtWrite.writefileln(ss);
+//		}
+//		txtReadandWrite.close();
+//		txtWrite.close();
+		
+		
+		
+		
 	}
 	
 	public void setGffBactriumFile(String gffBactriumFile) {
@@ -83,6 +121,7 @@ class SequinGene {
 	static String prefix = "NAUSS";
 	int start;
 	int end;
+
 	/** gene名 */
 	String geneName;
 	/** locus名 */
@@ -177,5 +216,13 @@ class SequinGene {
 		}
 		return locationLine;
 	}
+	
+	/** 写入文本，不包含换行 */
+	public String toTitle() {
+		String locationLine = locus_tag + " " +  product;
+		return locationLine;
+	}
+	
+	
 	
 }

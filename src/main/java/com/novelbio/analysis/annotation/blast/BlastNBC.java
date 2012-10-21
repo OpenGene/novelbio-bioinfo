@@ -20,11 +20,6 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class BlastNBC {
-	public static final String BLAST_TBLASTN_AA2NR_WITH_AA = "tblasn ";
-	public static final String BLAST_TBLASTX_NR2NR_WITH_AA = "tblastx ";
-	public static final String BLAST_BLASTN_NR2NR_WITH_NR = "blastn ";
-	public static final String BLAST_BLASTX_NR2AA_WITH_AA = "blastx ";
-	public static final String BLAST_BLASTP_AA2AA_WITH_AA = "blastp ";
 	private static Logger logger = Logger.getLogger(BlastNBC.class);
 	String blastAll = "blastall ";
 	String formatDB = "formatdb ";
@@ -32,62 +27,8 @@ public class BlastNBC {
 	String queryFasta = "";
 	/**待比对的数据库，如果是fasta文件，则会自动建索引*/
 	String databaseSeq = "";
-	String blastType = BLAST_TBLASTN_AA2NR_WITH_AA;
-	/**
-	 * @param QfastaType 输入的fasta类型，是核酸还是蛋白
-	 * @param SfastaType 输出的fasta类型，是核酸还是蛋白
-	 * @return blast类型的哈希表
-	 * key：说明
-	 * value：具体的blast类型，如BLAST_TBLASTN_AA2NR_WITH_AA等，可直接用于设置本类的参数
-	 */
-	public static HashMap<String, String> getHashBlast(int QfastaType, int SfastaType) {
-		HashMap<String, String> hashBlastType = new HashMap<String, String>();
-		if (QfastaType == SeqFasta.SEQ_PRO) {
-			if (SfastaType == SeqFasta.SEQ_PRO) {
-				hashBlastType.put("BLASTP_AA2AA_WITH_AA", BLAST_BLASTP_AA2AA_WITH_AA);
-			}
-			else if (SfastaType == SeqFasta.SEQ_DNA || SfastaType == SeqFasta.SEQ_RNA) {
-				hashBlastType.put("TBLASTN_AA2NR_WITH_AA", BLAST_TBLASTN_AA2NR_WITH_AA);
-			}
-			else if (SfastaType == SeqFasta.SEQ_UNKNOWN) {
-				hashBlastType.put("TBLASTN_AA2NR_WITH_AA", BLAST_TBLASTN_AA2NR_WITH_AA);
-				hashBlastType.put("BLASTP_AA2AA_WITH_AA", BLAST_BLASTP_AA2AA_WITH_AA);
-			}
-		}
-		else if (QfastaType == SeqFasta.SEQ_DNA || QfastaType == SeqFasta.SEQ_RNA) {
-			if (SfastaType == SeqFasta.SEQ_PRO) {
-				hashBlastType.put("BLASTX_NR2AA_WITH_AA", BLAST_BLASTX_NR2AA_WITH_AA);
-			}
-			else if (SfastaType == SeqFasta.SEQ_DNA || SfastaType == SeqFasta.SEQ_RNA) {
-				hashBlastType.put("TBLASTX_NR2NR_WITH_AA", BLAST_TBLASTX_NR2NR_WITH_AA);
-				hashBlastType.put("BLASTN_NR2NR_WITH_NR", BLAST_BLASTN_NR2NR_WITH_NR);
-			}
-			else if (SfastaType == SeqFasta.SEQ_UNKNOWN) {
-				hashBlastType.put("TBLASTX_NR2NR_WITH_AA", BLAST_TBLASTX_NR2NR_WITH_AA);
-				hashBlastType.put("BLASTN_NR2NR_WITH_NR", BLAST_BLASTN_NR2NR_WITH_NR);
-				hashBlastType.put("BLASTX_NR2AA_WITH_AA", BLAST_BLASTX_NR2AA_WITH_AA);
-			}
-		}
-		else if (QfastaType == SeqFasta.SEQ_UNKNOWN) {
-			if (SfastaType == SeqFasta.SEQ_PRO) {
-				hashBlastType.put("BLASTX_NR2AA_WITH_AA", BLAST_BLASTX_NR2AA_WITH_AA);
-				hashBlastType.put("BLASTP_AA2AA_WITH_AA", BLAST_BLASTP_AA2AA_WITH_AA);
-			}
-			else if (SfastaType == SeqFasta.SEQ_DNA || SfastaType == SeqFasta.SEQ_RNA) {
-				hashBlastType.put("TBLASTN_AA2NR_WITH_AA", BLAST_TBLASTN_AA2NR_WITH_AA);
-				hashBlastType.put("TBLASTX_NR2NR_WITH_AA", BLAST_TBLASTX_NR2NR_WITH_AA);
-				hashBlastType.put("BLASTN_NR2NR_WITH_NR", BLAST_BLASTN_NR2NR_WITH_NR);
-			}
-			else if (SfastaType == SeqFasta.SEQ_UNKNOWN) {
-				hashBlastType.put("TBLASTN_AA2NR_WITH_AA", BLAST_TBLASTN_AA2NR_WITH_AA);
-				hashBlastType.put("TBLASTX_NR2NR_WITH_AA", BLAST_TBLASTX_NR2NR_WITH_AA);
-				hashBlastType.put("BLASTN_NR2NR_WITH_NR", BLAST_BLASTN_NR2NR_WITH_NR);
-				hashBlastType.put("BLASTX_NR2AA_WITH_AA", BLAST_BLASTX_NR2AA_WITH_AA);
-				hashBlastType.put("BLASTP_AA2AA_WITH_AA", BLAST_BLASTP_AA2AA_WITH_AA);
-			}
-		}
-		return hashBlastType;
-	}
+	BlastType blastType = BlastType.tblastn;
+
 	/**
 	 * @return blast输出结果的哈希表
 	 * key：说明
@@ -99,25 +40,13 @@ public class BlastNBC {
 		hashBlastType.put("Simple Table", 8);
 		return hashBlastType;
 	}	
-	public static void main(String[] args) {
-		String databaseSeq = "/media/winE/Bioinformatics/BLAST/DataBase/hsaProtein/protein.fa";
-		String queryFasta = "/media/winE/Bioinformatics/GenomeData/Cow/Cow_refRNA.seq";
-		BlastNBC blastNBC = new BlastNBC();
-		blastNBC.setBlastType(BLAST_BLASTX_NR2AA_WITH_AA);
-		blastNBC.setDatabaseSeq(databaseSeq);
-		blastNBC.setQueryFastaFile(queryFasta);
-		blastNBC.setResultFile(FileOperate.changeFileSuffix(queryFasta, "_Blast2Hum", null));
-		blastNBC.setCpuNum(4);
-		blastNBC.setResultSeqNum(1);
-		blastNBC.setResultAlignNum(1);
-		blastNBC.blast();
-	}
+	
 	/**
 	 * 设定blast的模式
 	 * @param blastType
 	 * BLAST_TBLASTN等
 	 */
-	public void setBlastType(String blastType) {
+	public void setBlastType(BlastType blastType) {
 		this.blastType = blastType;
 	}
 	/**
@@ -204,7 +133,7 @@ public class BlastNBC {
 				return false;
 			}
 		}
-		String cmd = "perl " + NovelBioConst.BLAST_NCBI_SCRIPT + blastAll + blastInputType + blastType
+		String cmd = "perl " + NovelBioConst.BLAST_NCBI_SCRIPT + blastAll + blastInputType + blastType.toString()
 				+ "-i " + CmdOperate.addQuot(queryFasta) + " -d " + CmdOperate.addQuot(databaseSeq) + " -o " + CmdOperate.addQuot(resultFile)
 				+ " -a " + cpuNum + getFilter() + " -e " + evalue + " -m " + resultType + " -v "+resultSeqNum + " -b " + resultAlignNum + " --path " + NovelBioConst.BLAST_NCBI_PATH;
 		CmdOperate cmdOperate = new CmdOperate(cmd,"blast");
@@ -274,7 +203,7 @@ public class BlastNBC {
 	 *但是RNA的tblastx走NCBI默认，也就是返回"",否则会报错
 	 */
 	private String getFilter() {
-		if (this.blastType == BLAST_TBLASTX_NR2NR_WITH_AA) {
+		if (this.blastType == BlastType.tblastx) {
 			return " ";
 		}
 		return " -F F ";
@@ -286,5 +215,6 @@ public class BlastNBC {
 	public static void getFasta(String fastaFile) {
 		SeqFastaHash seqFastaHash = new SeqFastaHash(fastaFile, "\\w+_\\d+", false, false, false);
 		seqFastaHash.writeToFile(FileOperate.changeFileSuffix(fastaFile, "_cleanID", null));
-	}
+	}	
+	
 }
