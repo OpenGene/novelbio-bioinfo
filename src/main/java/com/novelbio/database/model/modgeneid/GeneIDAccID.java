@@ -19,20 +19,23 @@ public class GeneIDAccID extends GeneIDabs{
 	 * @param taxID
 	 *            ŒÔ÷÷ID
 	 */
-	public GeneIDAccID(String accID, String idType, String genUniID, int taxID) {
+	public GeneIDAccID(String accID, String genUniID, int taxID) {
 		if (accID != null) {
 			this.accID = accID;
 		}
 		if (genUniID != null) {
 			this.genUniID = genUniID;
 		}
-		this.idType = idType;
+		this.idType = GeneID.IDTYPE_ACCID;
 		this.taxID = taxID;
 	}
 	public int getTaxID() {
-		if (taxID <= 0)
-			taxID = Integer.parseInt(getNCBIUniTax(accID, 0).get(1));
-		
+		if (taxID <= 0) {
+			ArrayList<AgeneUniID> lsGeneUniID = getNCBIUniTax(accID, 0);
+			if (lsGeneUniID.size() > 0) {
+				taxID = lsGeneUniID.get(0).getTaxID();
+			}
+		}
 		return taxID;
 	}
 	@Override

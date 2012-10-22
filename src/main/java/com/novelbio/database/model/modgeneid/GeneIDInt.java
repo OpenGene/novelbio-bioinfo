@@ -168,7 +168,7 @@ GO_REF:0000004<br>
 	 * 如果新的ID不加入UniID，那么就返回false
 	 * 如果升级不成功，也返回false
 	 * 文件需要最开始用set指定
-	 * @param updateUniID
+	 * @param updateUniID 新的ID是否加入UniID
 	 */
 	boolean update(boolean updateUniID);
 	/**

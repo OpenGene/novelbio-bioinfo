@@ -1,5 +1,7 @@
 package com.novelbio.database.domain.geneanno;
 
+import com.novelbio.database.model.modgeneid.GeneID;
+
 /**
  * 重写了equal，只要两个NCBIID初始化，并且他们的geneID都不为0，就比较geneID，一样的就认为两个一样
  * @author zong0jie
@@ -47,6 +49,11 @@ public class NCBIID extends AgeneUniID{
 	@Override
 	public void setGenUniID(String genUniID) {
 		setGeneId(Long.parseLong(genUniID));
+	}
+	@Override
+	public String getGeneIDtype() {
+		// TODO Auto-generated method stub
+		return GeneID.IDTYPE_GENEID;
 	}
 	
 }

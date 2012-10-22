@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
+import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
@@ -49,13 +50,13 @@ public class GeneID implements GeneIDInt{
 			genUniID = null;
 		}
 		if (idType.equals(IDTYPE_UNIID)) {
-			geneID = new GeneIDUni(null,idType, genUniID, taxID);
+			geneID = new GeneIDUni(null, genUniID, taxID);
 		}
 		else if (idType.equals(IDTYPE_GENEID)) {
-			geneID = new GeneIDNcbi(null,idType, genUniID, taxID);
+			geneID = new GeneIDNcbi(null, genUniID, taxID);
 		}
 		else if (idType.equals(IDTYPE_ACCID)) {
-			geneID = new GeneIDAccID(null,idType, genUniID, taxID);
+			geneID = new GeneIDAccID(null, genUniID, taxID);
 		}
 	}
 
@@ -76,40 +77,13 @@ public class GeneID implements GeneIDInt{
 			}
 		}
 		if (idType.equals(IDTYPE_UNIID)) {
-			geneID = new GeneIDUni(accID,idType, genUniID, taxID);
+			geneID = new GeneIDUni(accID, genUniID, taxID);
 		}
 		else if (idType.equals(IDTYPE_GENEID)) {
-			geneID = new GeneIDNcbi(accID,idType, genUniID, taxID);
+			geneID = new GeneIDNcbi(accID, genUniID, taxID);
 		}
 		else if (idType.equals(IDTYPE_ACCID)) {
-			geneID = new GeneIDAccID(accID,idType, genUniID, taxID);
-		}
-	}
-	
-	/**
-	 * 设定初始值，会自动去数据库查找accID并，完成填充本类。
-	 * <b>如果基因的IDtype是accID，那么该基因很可能不存在，那么看下blast的相关信息，如果blast也没有，那么就不存在了</b>
-	 * 不过只能产生一个CopedID，如果觉得一个accID要产生多个geneID，那么可以选择getLsCopedID方法
-	 * @param accID 除去引号，然后如果类似XM_002121.1类型，那么将.1去除
-	 * @param taxID
-	 * @param blastType 具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
-	 */
-	public GeneID(String accID,int taxID,boolean blastType) {
-		if (blastType)
-			accID = getBlastAccID(accID);
-		else
-			accID = removeDot(accID);
-		ArrayList<String> lsaccID = GeneIDabs.getNCBIUniTax(accID, taxID);
-		String idType = lsaccID.get(0); taxID = Integer.parseInt(lsaccID.get(1));
-		String tmpGenID = lsaccID.get(2);
-		if (idType.equals(IDTYPE_UNIID)) {
-			geneID = new GeneIDUni(accID, idType, tmpGenID, taxID);
-		}
-		else if (idType.equals(IDTYPE_GENEID)) {
-			geneID = new GeneIDNcbi(accID,idType, tmpGenID, taxID);
-		}
-		else if (idType.equals(IDTYPE_ACCID)) {
-			geneID = new GeneIDAccID(accID,idType, tmpGenID, taxID);
+			geneID = new GeneIDAccID(accID, genUniID, taxID);
 		}
 	}
 	
@@ -122,19 +96,42 @@ public class GeneID implements GeneIDInt{
 	 * @param taxID
 	 */
 	public GeneID(String accID,int taxID) {
-		accID = removeDot(accID);
-		ArrayList<String> lsaccID = GeneIDabs.getNCBIUniTax(accID, taxID);
-		String idType = lsaccID.get(0); taxID = Integer.parseInt(lsaccID.get(1));
-		String tmpGenID = lsaccID.get(2);
-		if (idType.equals(IDTYPE_UNIID)) {
-			geneID = new GeneIDUni(accID, idType, tmpGenID, taxID);
+		this(accID,taxID, false);
+	}
+	/**
+	 * 设定初始值，会自动去数据库查找accID并，完成填充本类。
+	 * <b>如果基因的IDtype是accID，那么该基因很可能不存在，那么看下blast的相关信息，如果blast也没有，那么就不存在了</b>
+	 * 不过只能产生一个CopedID，如果觉得一个accID要产生多个geneID，那么可以选择getLsCopedID方法
+	 * @param accID 除去引号，然后如果类似XM_002121.1类型，那么将.1去除
+	 * @param taxID
+	 * @param blastType 具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
+	 */
+	public GeneID(String accID,int taxID,boolean blastType) {
+		if (blastType) {
+			accID = getBlastAccID(accID);
+		} else {
+			accID = removeDot(accID);
 		}
-		else if (idType.equals(IDTYPE_GENEID)) {
-			geneID = new GeneIDNcbi(accID,idType, tmpGenID, taxID);
+		ArrayList<AgeneUniID> lsaccID = GeneIDabs.getNCBIUniTax(accID, taxID);
+		if (lsaccID.size() == 0) {
+			geneID = new GeneIDAccID(accID, "0", taxID);
+			return;
 		}
-		else if (idType.equals(IDTYPE_ACCID)) {
-			geneID = new GeneIDAccID(accID,idType, tmpGenID, taxID);
+		AgeneUniID geneUniID = lsaccID.get(0);
+		if (geneUniID.getGeneIDtype().equals(IDTYPE_UNIID)) {
+			geneID = new GeneIDUni(accID, geneUniID.getGenUniID(), taxID);
 		}
+		else if (geneUniID.getGeneIDtype().equals(IDTYPE_GENEID)) {
+			geneID = new GeneIDNcbi(accID, geneUniID.getGenUniID(), taxID);
+		}
+	}
+	/**
+	 * 设定初始值，会自动去数据库查找accID并完成填充本类。
+	 * @param accID 如果类似XM_002121.1类型，那么将.1去除
+	 * @param taxID
+	 */
+	public static ArrayList<GeneID> createLsCopedID(String accID,int taxID) {
+		return createLsCopedID(accID, taxID, false);
 	}
 	/**
 	 * 设定初始值，会自动去数据库查找accID并完成填充本类。
@@ -148,14 +145,12 @@ public class GeneID implements GeneIDInt{
 			accID = accID.split("\\|")[1];
 		accID = removeDot(accID);
 		
-		ArrayList<String> lsaccID = GeneIDabs.getNCBIUniTax(accID, taxID);
-		String idType = lsaccID.get(0); taxID = Integer.parseInt(lsaccID.get(1));
-		 for (int i = 2 ; i < lsaccID.size(); i++) {
-			 String tmpGenID = lsaccID.get(i);
-			 GeneID copedID = new GeneID(accID, idType, tmpGenID, taxID);
+		ArrayList<AgeneUniID> lsaccID = GeneIDabs.getNCBIUniTax(accID, taxID);
+		for (AgeneUniID ageneUniID : lsaccID) {
+			 GeneID copedID = new GeneID(accID, ageneUniID.getGeneIDtype(), ageneUniID.getGenUniID(), taxID);
 			 lsCopedIDs.add(copedID);
-		 }
-		 return lsCopedIDs;
+		}
+		return lsCopedIDs;
 	}
 	
 	

@@ -21,10 +21,10 @@ public class GeneIDNcbi extends GeneIDabs{
 	 * @param taxID
 	 *            ŒÔ÷÷ID
 	 */
-	public GeneIDNcbi(String accID, String idType, String genUniID, int taxID) {
+	public GeneIDNcbi(String accID, String genUniID, int taxID) {
 		super.accID = accID;
 		super.genUniID = genUniID;
-		super.idType = idType;
+		super.idType = GeneID.IDTYPE_GENEID;
 		this.taxID = taxID;
 		if (taxID == 0 || accID != null) {
 			NCBIID ncbiid = new NCBIID();

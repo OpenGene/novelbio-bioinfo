@@ -20,10 +20,10 @@ public class GeneIDUni extends GeneIDabs{
 	 * @param taxID
 	 *            ŒÔ÷÷ID
 	 */
-	public GeneIDUni(String accID,String idType, String genUniID, int taxID) {
+	public GeneIDUni(String accID, String genUniID, int taxID) {
 		this.accID = accID;
 		this.genUniID = genUniID;
-		this.idType = idType;
+		this.idType = GeneID.IDTYPE_UNIID;
 		this.taxID = taxID;
 		if (taxID == 0 || accID != null) {
 			UniProtID uniProtID = new UniProtID();

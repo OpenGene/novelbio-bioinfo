@@ -117,6 +117,7 @@ public class NovelBioConst {
 	
 	public final static String DBINFO_NIAS_FLCDNA = "NIAS_FLcDNA";
 	public final static String DBINFO_ENSEMBL ="Ensembl";
+	public final static String DBINFO_NOVELBIO ="Novelbio";
 	public final static String DBINFO_ENSEMBL_TRS ="Ensembl_TRS";
 	public final static String DBINFO_ENSEMBL_PRO ="Ensembl_PRO";
 	public final static String DBINFO_ENSEMBL_GENE ="Ensembl_Gene";

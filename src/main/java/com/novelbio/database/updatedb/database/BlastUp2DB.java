@@ -63,7 +63,7 @@ public class BlastUp2DB extends ImportPerLine{
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = null;
 		if (!queryIDType.equals(GeneID.IDTYPE_ACCID)) {
-				copedID = new GeneID(queryIDType, ss[0], taxID);
+			copedID = new GeneID(queryIDType, ss[0], taxID);
 		}
 		else {
 			copedID = new GeneID(ss[0], taxID);

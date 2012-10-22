@@ -15,7 +15,8 @@ public abstract class AgeneUniID {
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
-
+	/** ·µ»ØGeneID.NCBIIDµÈ */
+	public abstract String getGeneIDtype();
 	public abstract String getGenUniID();
 	public abstract void setGenUniID(String genUniID);
 	/**

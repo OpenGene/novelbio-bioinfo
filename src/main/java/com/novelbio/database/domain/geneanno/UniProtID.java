@@ -1,4 +1,7 @@
 package com.novelbio.database.domain.geneanno;
+
+import com.novelbio.database.model.modgeneid.GeneID;
+
 /**
  * 重写了equal，只要两个UniProtID初始化，并且他们的UniID都不为null或""，就比较UniID，一样的就认为两个一样
  * @author zong0jie
@@ -47,5 +50,8 @@ public class UniProtID extends AgeneUniID{
 		public void setGenUniID(String genUniID) {
 			setUniID(genUniID);
 		}
-		
+		@Override
+		public String getGeneIDtype() {
+			return GeneID.IDTYPE_UNIID;
+		}
 }

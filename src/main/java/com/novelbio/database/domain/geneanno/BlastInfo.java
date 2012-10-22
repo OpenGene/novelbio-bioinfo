@@ -13,16 +13,18 @@ import com.novelbio.database.model.modgeneid.GeneID;
 public class BlastInfo implements Comparable<BlastInfo>{
 	GeneID copedIDQ = null;
 	GeneID copedIDS = null;
-	private String blastDate;
 
-	private String subjectDB;
-	private double identities=0;
-	private double evalue = 100;
-	private int subjectTax;
-	private String subjectID;
-	private String queryDB;
-	private int queryTax;
-	private String queryID;
+	protected String queryID;
+	protected String subjectID;
+	
+	protected String blastDate;
+	protected String subjectDB;
+	protected double identities=0;
+	protected double evalue = 100;
+	protected int subjectTax;
+	
+	protected String queryDB;
+	protected int queryTax;
 	
 	private void setDate() {
 		SimpleDateFormat formatDate= new SimpleDateFormat( "yyyy-MM-dd");

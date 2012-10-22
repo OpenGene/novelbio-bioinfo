@@ -136,9 +136,10 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		SeqHash seqHash = new SeqHash("/media/winF/NBC/Project/Project_WZF/最终交流并成环/吴宗福最终成环.txt");
-		SeqFasta seqFasta = seqHash.getSeq("SC070731", 15979, 16434);
-		System.out.println(seqFasta.toStringNRfasta());
+		ArrayList<GeneID> lsGeneIDs = GeneID.createLsCopedID("tp53", 0, false);
+		for (GeneID geneID : lsGeneIDs) {
+			System.out.println(geneID.getSymbol() + "\t" + geneID.getDescription() + "\t" + geneID.getTaxID());
+		}		
 	}
 	
 	private void HG18() {

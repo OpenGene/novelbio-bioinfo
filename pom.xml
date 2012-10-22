@@ -75,13 +75,6 @@
   		<scope>compile</scope>
   	</dependency>
   	<dependency>
-  		<groupId>com.google.guava</groupId>
-  		<artifactId>guava</artifactId>
-  		<version>r09</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
   		<groupId>mysql</groupId>
   		<artifactId>mysql-connector-java</artifactId>
   		<version>5.1.16</version>
@@ -349,6 +342,13 @@
   		<groupId>org.htmlparser</groupId>
   		<artifactId>htmlparser</artifactId>
   		<version>1.6</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.google.guava</groupId>
+  		<artifactId>guava</artifactId>
+  		<version>13.0.1</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>

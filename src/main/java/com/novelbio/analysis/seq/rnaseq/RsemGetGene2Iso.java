@@ -28,7 +28,9 @@ public class RsemGetGene2Iso {
 			result = FileOperate.changeFileSuffix(rsemGeneResult, "_iso2gene", "tab");
 		}
 	}
-	
+	public String getGeneName(String iso) {
+		return mapIso2Gene.get(iso);
+	}
 	public void calculateResult() {
 		TxtReadandWrite txtRead = new TxtReadandWrite(rsemGeneResult, false);
 		for (String content : txtRead.readlines()) {

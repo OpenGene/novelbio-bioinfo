@@ -49,7 +49,7 @@ public abstract class DownloadOperate {
 		
 		DonmaiOperate donmaiOperate = new DonmaiOperate();
 		donmaiOperate.getcookies();
-		donmaiOperate.setUrlAuther("deepthroat");
+		donmaiOperate.setUrlAuther("bare_legs");
 		donmaiOperate.setSavePath("/home/zong0jie/ͼƬ/My Pictures/picture/donmai");
 		donmaiOperate.run();
 	}
