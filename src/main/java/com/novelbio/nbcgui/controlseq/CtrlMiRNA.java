@@ -108,9 +108,7 @@ public class CtrlMiRNA {
 		this.outputPrefix = outputPrefix;
 		this.outPath = FileOperate.addSep(outPath);
 		this.outPathTmpMapping = FileOperate.addSep(outPath) + "tmpMapping";
-		FileOperate.createFolders(outPathTmpMapping);
 		this.outPathTmpBed = FileOperate.addSep(outPath) + "tmpBed";
-		FileOperate.createFolders(outPathTmpBed);
 	}
 	/** rfam的信息比较文件，类似一个键值表 */
 	public void setRfamFile(String rfamFile) {
@@ -131,6 +129,9 @@ public class CtrlMiRNA {
 	}
 	/** 开始比对 */
 	public void mapping() {
+		FileOperate.createFolders(outPathTmpMapping);
+		FileOperate.createFolders(outPathTmpBed);
+
 		setConfigFile();
 		miRNAmappingPipline.setSample(outputPrefix, fastqFile);
 		miRNAmappingPipline.setOutPath(outPath, outPathTmpMapping, outPathTmpBed);
@@ -157,53 +158,19 @@ public class CtrlMiRNA {
 	public String getGenomeBed() {
 		return miRNAmappingPipline.getOutGenomebed();
 	}
-	/** 计算miRNA表达 */
+	/** 计算miRNA表达
+	 * @param solo 前面是否有mapping
+	 */
 	public void exeRunning(boolean solo) {
 		countMiRNA(solo);
 		countRfam(solo);
 		countNCrna(solo);
 		countRepeatGene(solo);
 	}
-	/**
-	 * 将指定的bed文件输入
-	 * @param bedSeqFile
+
+	/** 计算miRNA表达
+	 * @param solo 前面是否没有mapping过
 	 */
-	public void runMiRNApredict() {
-		if (gffChrAbs != null) {
-			gffChrAbs = new GffChrAbs(species);
-		}
-		readGffInfo();
-		if (lsBedFileNovelMiRNA.size() <= 0) {
-			return;
-		}
-		//////////新建文件夹
-		String novelMiRNAPathReap = outPath + outputPrefix + "miRNApredictReap/";
-		if (!FileOperate.createFolders(novelMiRNAPathReap)) {
-			JOptionPane.showMessageDialog(null, "cannot create fold: " + novelMiRNAPathReap, "fold create error",JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		String novelMiRNAPathDeep = outPath + outputPrefix + "miRNApredictDeep/";
-		if (!FileOperate.createFolders(novelMiRNAPathDeep)) {
-			JOptionPane.showMessageDialog(null, "cannot create fold: " + novelMiRNAPathDeep, "fold create error",JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		//////////
-		novelMiRNAReap.setBedSeqInput(novelMiRNAPathReap + "allSample.bed", lsBedFileNovelMiRNA);
-		novelMiRNAReap.setGffChrAbs(gffChrAbs);
-		novelMiRNAReap.setNovelMiRNAMiReapInputFile(novelMiRNAPathReap + "mireapSeq.fa", novelMiRNAPathReap + "mireapMap.txt");
-		novelMiRNAReap.runBedFile();
-		
-		novelMiRNADeep.setBedSeqInput(novelMiRNAPathReap + "allSample.bed", lsBedFileNovelMiRNA);
-		softWareInfo.setName(SoftWare.mirDeep);
-		novelMiRNADeep.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bowtie));
-		novelMiRNADeep.setGffChrAbs(gffChrAbs);
-		novelMiRNADeep.setMiRNASeq(species.getMiRNAmatureFile(), null, species.getMiRNAhairpinFile());
-		novelMiRNADeep.setSpecies(species.getCommonName());
-		novelMiRNADeep.setOutPath(novelMiRNAPathDeep);
-		novelMiRNADeep.predict();
-		novelMiRNADeep.getMirCount();
-	}
-	/** 计算miRNA表达 */
 	private void countMiRNA(boolean solo) {
 		miRNACount.setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
 		if (!solo && FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutMiRNAbed(),1)) {
@@ -217,12 +184,11 @@ public class CtrlMiRNA {
 			miRNACount.writeResultToOut(outPath + outputPrefix);
 		}
 	}
-	/** 读取信息 */
-	private void readGffInfo() {
+	private void readRepeatGff() {
 		if (gffChrAbs != null) {
 			gffChrAbs = new GffChrAbs(species);
 		}
-		readsOnRepeatGene.readGffGene(gffChrAbs);
+		readsOnRepeatGene.setGffGene(gffChrAbs);
 		readsOnRepeatGene.readGffRepeat(species.getGffRepeat());
 	}
 	/** 读取repeat和gene信息并计数
@@ -231,14 +197,14 @@ public class CtrlMiRNA {
 	private void countRepeatGene(boolean solo) {
 		String outFinal = outPath + outputPrefix;
 		if (!solo && FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutGenomebed(), 10) ) {
-			readGffInfo();
+			readRepeatGff();
 			readsOnRepeatGene.countReadsInfo(miRNAmappingPipline.getOutGenomebed());
 			readsOnRepeatGene.writeToFileGeneProp(outFinal + "_geneProp.txt");
 			readsOnRepeatGene.writeToFileRepeatFamily(outFinal + "_RepeatFamily.txt");
 			readsOnRepeatGene.writeToFileRepeatName(outFinal + "_RepeatName.txt");
 		}
 		else if (solo && FileOperate.isFileExistAndBigThanSize(readsOnRepeatGeneGenomebed, 10)) {
-			readGffInfo();
+			readRepeatGff();
 			readsOnRepeatGene.countReadsInfo(readsOnRepeatGeneGenomebed);
 			readsOnRepeatGene.writeToFileGeneProp(outFinal + "_geneProp.txt");
 			readsOnRepeatGene.writeToFileRepeatFamily(outFinal + "_RepeatFamily.txt");
@@ -272,5 +238,48 @@ public class CtrlMiRNA {
 		}
 		readsOnNCrna.searchNCrna();
 		readsOnNCrna.writeToFile(outPath + outputPrefix + "_NCrnaStatistics.txt");
+	}
+	
+	/**
+	 * 将指定的bed文件输入
+	 * @param bedSeqFile
+	 */
+	public void runMiRNApredict() {
+		if (gffChrAbs == null) {
+			gffChrAbs = new GffChrAbs(species);
+		}
+		if (lsBedFileNovelMiRNA.size() <= 0) {
+			return;
+		}
+		//////////新建文件夹
+//		String novelMiRNAPathReap = outPath + outputPrefix + "miRNApredictReap/";
+//		if (!FileOperate.createFolders(novelMiRNAPathReap)) {
+//			JOptionPane.showMessageDialog(null, "cannot create fold: " + novelMiRNAPathReap, "fold create error",JOptionPane.ERROR_MESSAGE);
+//			return;
+//		}
+		String novelMiRNAPathDeep = outPath + outputPrefix + "miRNApredictDeep/";
+		if (!FileOperate.createFolders(novelMiRNAPathDeep)) {
+			JOptionPane.showMessageDialog(null, "cannot create fold: " + novelMiRNAPathDeep, "fold create error",JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		//////////
+//		novelMiRNAReap.setBedSeqInput(outPath + outputPrefix + "allSample.bed", lsBedFileNovelMiRNA);
+//		novelMiRNAReap.setGffChrAbs(gffChrAbs);
+//		novelMiRNAReap.setNovelMiRNAMiReapInputFile(novelMiRNAPathReap + "mireapSeq.fa", novelMiRNAPathReap + "mireapMap.txt");
+//		novelMiRNAReap.runBedFile();
+		
+		novelMiRNADeep.setBedSeqInput(outPath + outputPrefix + "allSample.bed", lsBedFileNovelMiRNA);
+		softWareInfo.setName(SoftWare.mirDeep);
+		novelMiRNADeep.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bowtie));
+		novelMiRNADeep.setGffChrAbs(gffChrAbs);
+		novelMiRNADeep.setMiRNASeq(species.getMiRNAmatureFile(), null, species.getMiRNAhairpinFile());
+		novelMiRNADeep.setSpecies(species.getCommonName());
+		novelMiRNADeep.setOutPath(novelMiRNAPathDeep);
+		novelMiRNADeep.predict();
+		novelMiRNADeep.getMirCount();
+	}
+	
+	private void countMiRNApredict() {
+		
 	}
 }

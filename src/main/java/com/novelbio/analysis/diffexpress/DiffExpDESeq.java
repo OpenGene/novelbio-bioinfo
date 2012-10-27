@@ -101,6 +101,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 		}
 		return result;
 	}
+	
 	/**
 	 * 根据是否重复，选择不同的代码
 	 * @param content
@@ -110,11 +111,11 @@ public class DiffExpDESeq extends DiffExpAbs {
 		String[] tmpResult = content.split(SepSign.SEP_ID);
 		if (isRepeatExp) {
 			return tmpResult[1];
-		}
-		else {
+		} else {
 			return tmpResult[3];
 		}
 	}
+	
 	private String[] getCompareAndWriteToFile(String content, String[] compareGroup, String outFileName) {
 		String[] writeFinal = new String[2];
 		String compareGroupWrite = "\"" + compareGroup[1] + "\", \"" + compareGroup[0] + "\"";//先输入control再输入treatment
@@ -123,7 +124,41 @@ public class DiffExpDESeq extends DiffExpAbs {
 		writeFinal[1] = write[2].replace("{$OutFileName}", outFileName.replace("\\", "/"));
 		return writeFinal;
 	}
-	
+	/**
+	 * 获得选定的基因ID和具体值
+	 * 排序方式按照输入的lsSampleColumn2GroupName进行排序，不做调整
+	 * @return
+	 * 0： geneID
+	 * 1-n：value value都为整数
+	 */
+	protected  ArrayList<String[]> getAnalysisGeneInfo() {
+		ArrayList<String[]> lsResultGeneInfo = new ArrayList<String[]>();
+		for (int m = 0; m < lsGeneInfo.size(); m++) {
+			String[] strings = lsGeneInfo.get(m);
+
+			String[] tmpResult = new String[lsSampleColumn2GroupName.size() + 1];
+			tmpResult[0] = strings[colAccID];
+			for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
+				int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]) - 1;
+				//title
+				if (m == 0) {
+					tmpResult[i + 1] = strings[colNum];
+					continue;
+				}
+				
+				if (strings[colNum].equalsIgnoreCase("NA")) {
+					tmpResult[i + 1] = 1 + "";
+					continue;
+				}
+				
+				double value = Double.parseDouble(strings[colNum]);
+				int valueInt = (int)(value + 1);
+				tmpResult[i + 1] = valueInt + "";
+			}
+			lsResultGeneInfo.add(tmpResult);
+		}
+		return lsResultGeneInfo;
+	}
 	@Override
 	protected void run() {
 		Rrunning("DEseq");

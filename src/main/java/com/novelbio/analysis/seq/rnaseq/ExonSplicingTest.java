@@ -63,11 +63,13 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		this.tophatJunction = tophatJunction;
 		fillJunctionReadsData();
 	}
+	
 	/** 必须设定 */
 	public void setCompareCondition(String condition1, String condition2) {
 		this.condition1 = condition1;
 		this.condition2 = condition2;
 	}
+	
 	/** 设定每个condition以及其对应的reads堆积 */
 	public void setMapCondition2MapReads(String condition, MapReads mapReads) {
 		SiteInfo siteInfo = exonCluster.getDifSite();
@@ -86,13 +88,16 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			mapCondition2Exp.put(condition, tmpExpCond);
 		}
 	}
+	
 	/** 测序长度，根据这个长度来判定pvalue的比例 */
 	public void setReadsLength(int readsLength) {
 		this.readsLength = readsLength;
 	}
+	
 	public ExonCluster getExonCluster() {
 		return exonCluster;
 	}
+	
 	private void fillJunctionReadsData() {
 		//跨过该exon的iso是否存在，0不存在，1存在
 		int junc = 0;
@@ -137,6 +142,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 
 		return counts;
 	}
+	
 	private int[] getAlt3Reads(int junc, GffDetailGene gffDetailGene, String chrID, String condition) {
 		ArrayList<ExonInfo> lsExon = exonCluster.getExonInfoSingleLs();
 		int[] counts = new int[lsExon.size() + junc];
@@ -150,6 +156,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 
 		return counts;
 	}
+	
 	private int[] getNorm(int junc, GffDetailGene gffDetailGene, String chrID, String condition) {
 		ArrayList<ExonInfo> lsExon = exonCluster.getAllExons();
 		int[] counts = new int[lsExon.size() + junc];
@@ -204,6 +211,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		return setLocation;
 	}
+	
 	/**查找不含该exon的转录本， 
 	 * 获得跨过该外显子的坐标 */
 	private HashSet<String> getSkipExonLoc_From_IsoWithoutExon(GffDetailGene gffDetailGene) {
@@ -221,6 +229,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		return setLocation;
 	}
+	
+	/** 计算并获得pvalue */
 	protected Double getAndCalculatePvalue() {
 		if (pvalue > 0) {
 			return pvalue;
@@ -240,6 +250,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //		}
 		return pvalue;
 	}
+	
+	/** reads的条目是否为 0
+	 * 为0则无法计算pvalue ，那么就需要直接设定为1
+	 */
 	private boolean isZeroCounts() {
 		int[] cond1 = mapCondition2Counts.get(condition1);
 		int[] cond2 = mapCondition2Counts.get(condition2);
@@ -256,6 +270,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		return isZero;
 	}
+	
 	/** 比较junction reads
 	 * 在这之前务必设定condition
 	 */
@@ -277,6 +292,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		pvalue = chiSquareTestDataSetsComparison(cond1, cond2);
 		return pvalue;
 	}
+	
 	private double chiSquareTestDataSetsComparison(int[] cond1, int[] cond2) {
 		long[] cond1Long = new long[cond1.length];
 		long[] cond2Long = new long[cond2.length];
@@ -292,6 +308,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			return 1.0;
 		}
 	}
+	
 	/** 出错就返回-1 */
 	protected Double getPvalueReads() {
 		try {
@@ -324,6 +341,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		double pvalue = fisherTest.getTwoTailedP(tmpExpCond1[0], tmpExpCond1[1], tmpExpCond2[0], tmpExpCond2[1]);
 		return pvalue;
 	}
+	
 	/** Retain_Intron的pvalue比较奇怪，必须要exon才能计算的 */
 	private void getPvalueRetain_Intron(double pvalueExp, double pvalueCounts) {
 		if (pvalueExp > 0)
@@ -337,6 +355,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		return;
 	}
+	
 	/** Retain_Intron的pvalue比较奇怪，必须要exon才能计算的
 	 * 
 	 *  公式：2^((log2(0.8)*0.5 + log2(0.1)*0.5))

@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.mirna;
 
+import java.lang.annotation.Retention;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -27,24 +28,23 @@ public class ReadsOnNCrna {
 	 * 1: ncrnaDescription
 	 * 2: num
 	 */
-	HashMap<String, String[]> hashNCrna = new HashMap<String, String[]>();
+	HashMap<String, Double> mapNCrnaID_2_nameDescripValue = new HashMap<String, Double>();
 	BedSeq bedSeq;
+	
 	public void setBedSed(String bedseqFile) {
 		bedSeq = new BedSeq(bedseqFile);
 	}
+	
 	public void searchNCrna() {
+		mapNCrnaID_2_nameDescripValue.clear();
 		for (BedRecord bedRecord : bedSeq.readLines()) {
-			if (hashNCrna.containsKey(bedRecord.getRefID())) {
-				String[] info = hashNCrna.get(bedRecord.getRefID());
-				info[2] = ((double)1/bedRecord.getMappingNum() + Double.parseDouble(info[2])) + "";
+			if (mapNCrnaID_2_nameDescripValue.containsKey(bedRecord.getRefID())) {
+				double info = mapNCrnaID_2_nameDescripValue.get(bedRecord.getRefID());
+				info = (double)1/bedRecord.getMappingNum() + info;
+				mapNCrnaID_2_nameDescripValue.put(bedRecord.getRefID(), info);
 			}
 			else {
-				String[] info = new String[3];
-				GeneID copedID = new GeneID(bedRecord.getRefID(), 0);
-				info[0] = copedID.getSymbol();
-				info[1] = copedID.getDescription();
-				info[2] = (double)1/bedRecord.getMappingNum() + "";
-				hashNCrna.put(bedRecord.getRefID(), info);
+				mapNCrnaID_2_nameDescripValue.put(bedRecord.getRefID(), (double)1/bedRecord.getMappingNum() );
 			}
 		}
 	}
@@ -54,15 +54,20 @@ public class ReadsOnNCrna {
 	 */
 	public void writeToFile(String outTxt) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(outTxt, true);
-		for (Entry<String, String[]> entry : hashNCrna.entrySet()) {
-			String[] value = entry.getValue();
-			String[] result = new String[value.length + 1];
+		for (Entry<String, Double> entry : mapNCrnaID_2_nameDescripValue.entrySet()) {
+			GeneID geneID = new GeneID(entry.getKey(), 0);
+			String[] result = new String[3];
 			result[0] = entry.getKey();
-			for (int i = 1; i < result.length; i++) {
-				result[i] = value[i-1];
-			}
+			result[1] = geneID.getSymbol();
+			result[2] = geneID.getDescription();
+			result[3] = entry.getValue().intValue() + "";
 			txtOut.writefileln(result);
 		}
 		txtOut.close();
 	}
+	
+	public HashMap<String, Double> getMapNCrnaID_2_nameDescripValue() {
+		return mapNCrnaID_2_nameDescripValue;
+	}
+	
 }

@@ -371,25 +371,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 		this.novelMiRNAmature = novelMiRNAmature;
 		this.novelMiRNAdeepMrdFile = novelMiRNAdeepMrdFile;
 	}
-	public void getMirCount() {
-		FastQ fastQ = bedSeqInput.getFastQ();
-		
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.bwa);
-		MiRNAmapPipline miRNAmapPipline = new MiRNAmapPipline();
-		
-		miRNAmapPipline.setExePath(softWareInfo.getExePath());
-		miRNAmapPipline.setMiRNApreSeq(novelMiRNAhairpin);
-		miRNAmapPipline.setOutPath(outPath, outPath +"novelMiRNAmapping", outPath + "novelMiRNAbed");
-		
-		miRNAmapPipline.setSample(outPrefix, fastQ.getReadFileName());
-		miRNAmapPipline.mappingMiRNA();
-		String bedSeqMiRNAnovel = miRNAmapPipline.getOutMiRNAbed();
-		
-		MiRNACount miRNACount = new MiRNACount();
-		miRNACount.setBedSeqMiRNA(bedSeqMiRNAnovel);
-		miRNACount.setMiRNAfile(novelMiRNAhairpin, novelMiRNAmature);
-		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_MIRDEEP, new Species(), novelMiRNAdeepMrdFile);
-		miRNACount.writeResultToOut(outPath + outPrefix);
-	}
+
+	
+	
+	
 }

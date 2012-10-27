@@ -144,14 +144,15 @@ public class ExonJunction {
 	public void setIsoJunFile(String condition,String junctionFile) {
 		tophatJunction.setJunFile(condition,junctionFile);
 		setCondition.add(condition);
-		
 	}
+	
 	public void addBamFile_Sorted(String condition, String sortedBamFile) {
 		MapReads mapReads = new MapReads();
 		SamFile samFile = new SamFile(sortedBamFile);
 		mapReads.setAlignSeqReader(samFile);
 		mapCondition2MapReads.put(condition, mapReads);
 	}
+	
 	public void loadingBamFile(Species species) {
 		for (Entry<String, ArrayList<MapReads>> cond2MapReads : mapCondition2MapReads.entrySet()) {
 			String condition = cond2MapReads.getKey();
@@ -191,6 +192,7 @@ public class ExonJunction {
 		sortLsExonTest_Use_Pvalue(lsResult);
 		return lsResult;
 	}
+	
 	private void initialMapSplicingType2Num() {
 		mapSplicingType2Num.clear();
 		for (ExonSplicingType exonSplicingType : ExonSplicingType.getMapName2SplicingEvents().values()) {
@@ -259,6 +261,7 @@ public class ExonJunction {
 			}
 		}
 	}
+	
 	/** Ð´ÈëÎÄ±¾ */
 	public void writeToFile(String fileName) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);

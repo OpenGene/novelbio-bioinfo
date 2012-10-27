@@ -43,7 +43,7 @@ public class GenerateSequinGeneInfo {
 	String outFile;
 	
 	public static void main(String[] args) {
-		String gffBactriaFile = "/media/winF/NBC/Project/Project_WZF/annotation/finalBacterium.Gene.Prediction.anno_out_All_final.gff";
+		String gffBactriaFile = "/media/winF/NBC/Project/Project_WZF/annotation/finalBacterium.Gene.Prediction.anno_out_All_final_2.gff";
 		GenerateSequinGeneInfo generateSequinGeneInfo = new GenerateSequinGeneInfo();
 		generateSequinGeneInfo.setGffBactriumFile(gffBactriaFile);
 		generateSequinGeneInfo.copeFile();
@@ -118,7 +118,8 @@ public class GenerateSequinGeneInfo {
  */
 class SequinGene {
 	static int geneNum = 1;
-	static String prefix = "NAUSS";
+	static String prefix = "NJAUSS";
+	static String labName = "LuLabNJAU";
 	int start;
 	int end;
 
@@ -131,13 +132,20 @@ class SequinGene {
 	
 	String product;
 	String note;
-	
+	boolean isPseudo = false;
+	boolean isMisc = false;
 	public SequinGene(String gffLines) {
 		String[] ss = gffLines.split("\t");
 		if (ss[2].equalsIgnoreCase("tRNA")) {
 			type = "tRNA";
 		} else if (ss[2].equalsIgnoreCase("rRNA")) {
 			type = "rRNA";
+		} else if (ss[2].equalsIgnoreCase("pseudo")) {
+			setIsPseudo(true);
+			type = "CDS";
+		} else if (ss[2].equalsIgnoreCase("misc_feature")) {
+			isMisc = true;
+			type = "misc_feature";
 		} else {
 			type = "CDS";
 		}
@@ -153,7 +161,9 @@ class SequinGene {
 		setLocus_tag(getLOC(geneNum));
 		geneNum ++;
 	}
-	
+	private void setIsPseudo(boolean pseudo) {
+		this.isPseudo = pseudo;
+	}
 	/**
 	 * 默认补齐到4位
 	 * 输入10，100等
@@ -204,6 +214,9 @@ class SequinGene {
 			locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + "\t\t\tgene\t" + geneName; 
 		}
 		locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + "\t\t\tlocus_tag\t" + locus_tag;
+		if (isPseudo) {
+			locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + "\t\t\tpseudo";
+		}
 		locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + start + "\t" + end + "\t" + type;
 		if (product != null && !product.equals("")) {
 			locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + "\t\t\tproduct\t" + product;
@@ -212,7 +225,10 @@ class SequinGene {
 			locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + "\t\t\tproduct\t" + note;
 		}
 		if (type.equals("CDS")) {
-			locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + "\t\t\tprotein_id\t" + "gnl|ncbi|" + locus_tag;
+			locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + "\t\t\tprotein_id\t" + "gnl|" +labName+"|" + locus_tag;
+		}
+		if (isPseudo) {
+			locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + "\t\t\tpseudo";
 		}
 		return locationLine;
 	}

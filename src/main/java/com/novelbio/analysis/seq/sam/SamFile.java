@@ -63,7 +63,7 @@ public class SamFile implements AlignSeq {
 	 */
 	boolean uniqueRandomSelectReads = true;
 	/** mapping质量为0 */
-	int mapQualityFilter = 13;
+	int mapQualityFilter = 10;
 	/**
 	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
 	 */

@@ -14,7 +14,8 @@ public class DifGeneFilter {
 	String outTxtFile;
 	/** 从第几行开始筛选，因为前面可能是title */
 	int readFromLines = 1;
-	/** key: 列数，从0开始
+	/**
+	 *  key: 列数，从0开始
 	 * value：过滤器
 	 */
 	HashMap<Integer, FilterValue> mapColNum2Filter = new HashMap<Integer, FilterValue>();

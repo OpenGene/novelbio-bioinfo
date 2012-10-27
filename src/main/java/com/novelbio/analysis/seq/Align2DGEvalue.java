@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -22,6 +23,8 @@ public class Align2DGEvalue {
 	List<String> lsTitle;
 	String resultFile;
 	boolean allTags = true;
+	/** dge的最短长度 */
+	int dgeMinLength = 18;
 	
 	HashMap<String, String> mapAccID2GeneID;
 	
@@ -126,7 +129,7 @@ public class Align2DGEvalue {
 	 * @throws Exception
 	 */
 	private HashMap<String, Integer> getGeneExpress(AlignSeq alignSeq) throws Exception {
-		HashMap<String, Integer> mapGene2Exp = new HashMap<String, Integer>();
+		HashMap<String, Integer> mapGene2Exp = new LinkedHashMap<String, Integer>();
 		ArrayList<double[]> lsTmpExpValue = new ArrayList<double[]>();
 		double[] tmpCount = new double[]{0};
 		lsTmpExpValue.add(tmpCount);
@@ -134,7 +137,7 @@ public class Align2DGEvalue {
 		
 		for (AlignRecord alignRecord : alignSeq.readLines()) {
 			//mapping到互补链上的，是假的信号
-			if (!alignRecord.isMapped() || alignRecord.isCis5to3() != null && !alignRecord.isCis5to3()) {
+			if (!alignRecord.isMapped() || alignRecord.isCis5to3() != null && !alignRecord.isCis5to3() || alignRecord.Length() < dgeMinLength) {
 				continue;
 			}
 			//出现新基因

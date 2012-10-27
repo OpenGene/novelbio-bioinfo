@@ -162,7 +162,11 @@ public class ExonCluster {
 		return setSplicingTypes.iterator().next();
 	}
 	
-	
+	/**
+	 * 获得本exoncluster的剪接类型
+	 * TODO 还有一些识别不出来
+	 * @return
+	 */
 	public HashSet<ExonSplicingType> getExonSplicingTypeSet() {
 		HashSet<ExonSplicingType> setSplicingTypes = new HashSet<ExonSplicingType>();
 		if (isSameExon()) {
@@ -177,7 +181,7 @@ public class ExonCluster {
 		//前后的exon一样
 		if (exonClusterBefore != null && exonClusterBefore.isSameExon()
 				&& exonClusterAfter != null && exonClusterAfter.isSameExon()
-				) 
+				)
 		{
 			if (mapIso2ExonNumSkipTheCluster.size() > 0) {
 				setCassette(setSplicingTypes);

@@ -127,6 +127,10 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		return ArrayOperate.cmbString(result, "\t");
 	}
 	
+	public MapInfoSnpIndel getSnpSite(String chrID, int site) {
+		return new MapInfoSnpIndel(gffChrAbs, chrID, site);
+	}
+	
 	public static ArrayList<String> getTitleLs() {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.Symbol.toString());

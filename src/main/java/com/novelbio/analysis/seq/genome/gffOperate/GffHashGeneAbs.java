@@ -288,7 +288,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	private void writeToGTF(TxtReadandWrite txtWrite, ArrayList<GffDetailGene> lsGffDetailGenes, String title) {
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			gffDetailGene.removeDupliIso();
-			String geneGTF = gffDetailGene.getGTFformate(title);
+			String geneGTF = gffDetailGene.toGTFformate(title);
 			txtWrite.writefileln(geneGTF.trim());
 		}
 	}
@@ -327,7 +327,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			if (gffDetailGene.getLsCodSplit().size() <= 1) {
 				continue;
 			}
-			String geneGFF = gffDetailGene.getGFFformate(title);
+			String geneGFF = gffDetailGene.toGFFformate(title);
 			txtWrite.writefileln(geneGFF.trim());
 		}
 	}

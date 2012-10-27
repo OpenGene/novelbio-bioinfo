@@ -37,7 +37,7 @@ public class ReadsOnRepeatGene {
 	 * ¶ÁÈ¡repeatÎÄ¼þ
 	 * @param repeatGffFile
 	 */
-	public void readGffGene(GffChrAbs gffChrAbs) {
+	public void setGffGene(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
 	/**
@@ -51,6 +51,11 @@ public class ReadsOnRepeatGene {
 		}
 	}
 	public void countReadsInfo(String bedFile) {
+		hashRepeatName.clear();
+		hashRepeatFamily.clear();
+		hashGeneInfo.clear();
+		
+		
 		BedSeq bedSeq = new BedSeq(bedFile);
 		for (BedRecord bedRecord : bedSeq.readLines()) {
 			String repeatInfo = null;

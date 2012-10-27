@@ -260,33 +260,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		anno[3] = "Covered";
 		return anno;
 	}
-	/** 将两个位点间覆盖到的基因提取出来，保存至hashGffDetailGene */
-	private void setHashCoveredGenInfo() {
-		if (flagSearchHash && hashGffDetailGene != null) {
-			return;
-		}
-		flagSearchHash = true;
-		hashGffDetailGene = new LinkedHashSet<GffDetailGene>();
-		//TODO: 这里修改tss和tes后，gffDetailgene要修改tss和tes，gffiso也要修改tss和tes
-		setStructureGene_And_Remove_IsoNotBeFiltered();
-		for (GffDetailGene gffDetailGene : setGffDetailGenesLeft) {
-			hashGffDetailGene.add(gffDetailGene);
-		}
-		if (lsgffDetailsMid != null) {
-			for (GffDetailGene gffDetailGene : lsgffDetailsMid) {
-				if (hashGffDetailGene.contains(gffDetailGene)) {
-//					logger.error("lsmid出现与第一个点一样的iso，建议复查");
-					continue;
-				}
-				hashGffDetailGene.add(gffDetailGene);
-			}
-		}
-		for (GffDetailGene gffDetailGene : setGffDetailGenesRight) {
-			if (hashGffDetailGene.contains(gffDetailGene))
-				continue;
-			hashGffDetailGene.add(gffDetailGene);
-		}
-	}
+
 	
 	public HashSet<GffDetailGene> getCoveredGffGene() {
 		setHashCoveredGenInfo();
@@ -316,7 +290,33 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		}
 		return lsCopedIDs;
 	}
-	
+	/** 将两个位点间覆盖到的基因提取出来，保存至hashGffDetailGene */
+	private void setHashCoveredGenInfo() {
+		if (flagSearchHash && hashGffDetailGene != null) {
+			return;
+		}
+		flagSearchHash = true;
+		hashGffDetailGene = new LinkedHashSet<GffDetailGene>();
+		//TODO: 这里修改tss和tes后，gffDetailgene要修改tss和tes，gffiso也要修改tss和tes
+		setStructureGene_And_Remove_IsoNotBeFiltered();
+		for (GffDetailGene gffDetailGene : setGffDetailGenesLeft) {
+			hashGffDetailGene.add(gffDetailGene);
+		}
+		if (lsgffDetailsMid != null) {
+			for (GffDetailGene gffDetailGene : lsgffDetailsMid) {
+				if (hashGffDetailGene.contains(gffDetailGene)) {
+//					logger.error("lsmid出现与第一个点一样的iso，建议复查");
+					continue;
+				}
+				hashGffDetailGene.add(gffDetailGene);
+			}
+		}
+		for (GffDetailGene gffDetailGene : setGffDetailGenesRight) {
+			if (hashGffDetailGene.contains(gffDetailGene))
+				continue;
+			hashGffDetailGene.add(gffDetailGene);
+		}
+	}
 	/**
 	 * 将覆盖到指定区域的基因全部提取出来并保存至setGffDetailGenesLeft和setGffDetailGenesRight
 	 * 
@@ -448,9 +448,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		// 一个是起点，一个是终点
 		int coordStart = 0;
 		int coordEnd = 0;
-		/**
-		 * 标记，0表示需要去除，1表示保留
-		 */
+		/** 标记，0表示需要去除，1表示保留 */
 		int[] flag = new int[gffDetailGene.getLsCodSplit().size()];
 		for (int i = 0; i < gffDetailGene.getLsCodSplit().size(); i++) {
 			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLsCodSplit().get(i);
@@ -548,7 +546,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 						      && (gffGeneIsoInfo.getNumCodInEle(coordStart) <= gffGeneIsoInfo.getExonNum() - 1 
 						          || gffGeneIsoInfo.getCodLoc(coordStart) == GffGeneIsoInfo.COD_LOC_INTRON))
 			   )
-		) {
+			) {
 					flag[i] = 1;
 				}
 			}

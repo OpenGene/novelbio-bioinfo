@@ -550,7 +550,7 @@ public class GffDetailGene extends ListDetailAbs {
 		return mapCompInfo2GeneIso.get(lsCompInfo.get(0));
 	}	
 	
-	public String getGTFformate(String title) {
+	public String toGTFformate(String title) {
 		String geneGTF = "";
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
 			gffGeneIsoInfo.sort();
@@ -563,7 +563,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @param title 公司名等信息
 	 * @return
 	 */
-	public String getGFFformate(String title) {
+	public String toGFFformate(String title) {
 		if (title == null || title.trim().equals("")) {
 			title = NovelBioConst.COMPANY_NAME_ABBR;
 		}

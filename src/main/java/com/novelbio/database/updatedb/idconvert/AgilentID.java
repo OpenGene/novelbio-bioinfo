@@ -4,27 +4,16 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-
-/**
- * 将从Agilent下载的txt格式excel转化成为导入数据库的格式
- * 格式如下
- * 物种 \t  NCBIGeneID \t  accessID \t  DataBaseInfo \n
- * 注意affy芯片需要给出芯片型号
- * @author zong0jie
- *
- */
-public class AgilentIDmodify {
+public class AgilentID {
 	/**
-	 * 将从agilent下载的cvs格式excel转化成为导入数据库的格式
+	 * convert cvs download from Agilent to the database format 
 	 * 格式如下
-	 * 物种 \t  NCBIGeneID \t  accessID \t  DataBaseInfo \n
-	 * 注意agilent芯片需要给出芯片型号
+	 *taxID \t  NCBIGeneID \t  accessID \t  DataBaseInfo \n
 	 * @param taxID 物种编号ncbi的taxID
-	 * @param rowstart 实际行数
-	 * @param agilentDBID agilent芯片型号,最后写入数据库的
+	 * @param rowstart count from 1
+	 * @param agilentDBID agilent microarray ID
 	 * @author zong0jie
 	 *
 	 */

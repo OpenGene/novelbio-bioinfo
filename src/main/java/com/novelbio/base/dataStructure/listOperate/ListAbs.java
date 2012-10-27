@@ -85,8 +85,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		else {
 			if (size() == 1) {
 				return get(0).Length();
-			}
-			else {
+			} else {
 				if (get(0).getStartAbs() < get(1).getStartAbs()) {
 					return get(size()-1).getEndAbs() - get(0).getStartAbs();
 				}
@@ -104,8 +103,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	protected int getLoc2Start(int loc) {
 		if (isLocDownStart(loc)) {
 			return Math.abs(loc - getStart());
-		}
-		else {
+		} else {
 			return -Math.abs(loc - getStart());
 		}
 	}
@@ -117,8 +115,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	protected int getLoc2End(int loc) {
 		if (isLocDownEnd(loc)) {
 			return Math.abs(loc - getEnd());
-		}
-		else {
+		} else {
 			return -Math.abs(loc - getEnd());
 		}
 	}
@@ -181,8 +178,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * @param loc1 第一个坐标
 	 * @param loc2 第二个坐标
 	 */
-	public int getLocDistmRNA(int loc1, int loc2)
-	{
+	public int getLocDistmRNA(int loc1, int loc2) {
 		int locSmall = 0; int locBig = 0;
 		if (isCis5to3()) {
 			locSmall = Math.min(loc1, loc2);  locBig = Math.max(loc1, loc2);
@@ -201,8 +197,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		locSmallExInNum--; locBigExInNum--;
 		if (locSmallExInNum == locBigExInNum) {
 			distance = locBig - locSmall;
-		}
-		else {
+		} else {
 			distance = getCod2ExInEnd(locSmall) + getCod2ExInStart(locBig) + 1;
 			for (int i = locSmallExInNum + 1; i <= locBigExInNum - 1; i++) {
 				distance = distance + get(i).Length();
@@ -369,7 +364,6 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	public int getNumCodInEle(int location) {
 		return LocPosition(location).getElementNumThisAbs();
 	}
-
 
 	/**
 	 * TO BE CHECKED
@@ -563,14 +557,12 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 					exonOld = exon.clone();
 					lsExonBounder.add(exonOld);
 				}
-			}
-			else {
+			} else {
 				if (exon[1] >= exonOld[0]) {
 					if (exon[0] < exonOld[0]) {
 						exonOld[0] = exon[0];
 					}
-				}
-				else {
+				} else {
 					exonOld = exon.clone();
 					lsExonBounder.add(exonOld);
 				}
@@ -586,7 +578,6 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	 * <br>
 	 * 那么a-a和b-b放在一起<br>
 	 *  */
-	@SuppressWarnings("unused")
 	private static ArrayList<int[]> getLsElementSepComb(Boolean cis5to3, ArrayList<? extends ListDetailAbs> lsAll) {
 		ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
 		int[] exonOld = new int[]{lsAll.get(0).getStartAbs(), lsAll.get(0).getEndAbs()};
@@ -609,8 +600,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 					if (exon[1] > exonOld[1]) {
 						exonOld[1] = exon[1];
 					}
-				}
-				else {
+				} else {
 					//如果是这种情况：
 					//* ---m-m-------------a--a---------b--b------------n-n----<br>
 					//* ---m-m---------------------------------------------n-n----<br>
@@ -619,30 +609,26 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 							(i == lsAll.size() - 1 || lsAll.get(i+1).getStartAbs() >= lsAll.get(i).getEndAbs())
 					) {
 						exonOld[1] = exon[1];
-					}
-					else {
+					} else {
 						exonOld = exon.clone();
 						lsExonBounder.add(exonOld);
 						lastParentIsSingle = true;
 						lastExonParent = lsAll.get(i).getParent();
 					}
 				}
-			}
-			else {
+			} else {
 				if (exon[1] >= exonOld[0]) {
 					lastParentIsSingle = false;
 					if (exon[0] < exonOld[0]) {
 						exonOld[0] = exon[0];
 					}
-				}
-				else {
+				} else {
 					if (lastParentIsSingle == true && lastExonParent == lsAll.get(i).getParent() 
 							&&
 							(i == lsAll.size() - 1 || lsAll.get(i+1).getStartCis() <= lsAll.get(i).getEndCis())
 					) {
 						exonOld[0] = exon[0];
-					}
-					else {
+					} else {
 						exonOld = exon.clone();
 						lsExonBounder.add(exonOld);
 						lastParentIsSingle = true;

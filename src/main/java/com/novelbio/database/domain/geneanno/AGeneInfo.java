@@ -25,32 +25,10 @@ public abstract class AGeneInfo {
 		lsDBinfo.add(NovelBioConst.DBINFO_NCBI_ACC_GenralID);
 		lsDBinfo.add(NovelBioConst.DBINFO_UNIPROT_GenralID);
 	}
-	//////////////////////////////////////////////////
-//	public static final String FROMDB_NCBI = "NCBI";
-//	public static final String FROMDB_UNIPROT = "UniProt";
-//	public static final String FROMDB_TAIR = "tair";
-//	public static final String FROMDB_TIGR = "tigr";
 	/**
 	 * 特定的物种对应特定的数据库
 	 */
 	static HashMap<Integer, String> hashDBtype = new HashMap<Integer, String>();
-
-	/**
-	 * 特定的物种使用特定数据库的信息
-	 * 譬如水稻就用TIGR
-	 * 拟南芥就用TAIR
-	 * @return
-	 */
-	private String getDatabaseType() {
-		if (hashDBtype.size() == 0) {
-			hashDBtype.put(39947, NovelBioConst.DBINFO_RICE_TIGR);
-			hashDBtype.put(3702, NovelBioConst.DBINFO_ATH_TAIR);
-			hashDBtype.put(3847, NovelBioConst.DBINFO_GLYMAX_SOYBASE);
-			hashDBtype.put(4102, NovelBioConst.DBINFO_PLANTGDB_ACC);
-		}
-		return hashDBtype.get(taxID);
-	}
-	
 	
 	private String symbol;
 	private String locusTag;
@@ -73,10 +51,25 @@ public abstract class AGeneInfo {
 	public abstract String getGeneUniID();
 	public abstract void setGeneUniID(String geneUniID);
 	
-	
 	private int taxID = 0;
 	
 	private String sep = null;
+	
+	/**
+	 * 特定的物种使用特定数据库的信息
+	 * 譬如水稻就用TIGR
+	 * 拟南芥就用TAIR
+	 * @return
+	 */
+	private String getDatabaseType() {
+		if (hashDBtype.size() == 0) {
+			hashDBtype.put(39947, NovelBioConst.DBINFO_RICE_TIGR);
+			hashDBtype.put(3702, NovelBioConst.DBINFO_ATH_TAIR);
+			hashDBtype.put(3847, NovelBioConst.DBINFO_GLYMAX_SOYBASE);
+			hashDBtype.put(4102, NovelBioConst.DBINFO_PLANTGDB_ACC);
+		}
+		return hashDBtype.get(taxID);
+	}
 	/**
 	 * 设定synonams等可能存在的分割符，譬如从NCBI下载的ID导入数据库的时候可能存在有 | 作为多个synonams的分割符
 	 * 设定后，提取synonams和symbol等都是用synonams进行
@@ -466,18 +459,12 @@ public abstract class AGeneInfo {
 			}
 		}
 	}
-
-	/**
-	 * 将NCBIID等表中的dbinfo转化成geneInfo中的dbinfo
-	 */
-	static HashMap<Integer, String> hashDBinfo = new HashMap<Integer, String>();
 	
 	/**
 	 * 拷贝信息，将信息全部复制过来
 	 * @param geneInfo
 	 */
-	public void copeyInfo(AGeneInfo geneInfo)
-	{
+	public void copeyInfo(AGeneInfo geneInfo) {
 		chromosome = geneInfo.chromosome;
 		taxID = geneInfo.taxID;
 		dbXrefs = geneInfo.dbXrefs;
@@ -505,8 +492,7 @@ public abstract class AGeneInfo {
 	 * @param geneInfo
 	 * @param infoDBfrom AGeneInfo.FROMDB_NCBI等
 	 */
-	public boolean addInfo(AGeneInfo geneInfo)
-	{
+	public boolean addInfo(AGeneInfo geneInfo) {
 		if (!validateUpdate(chromosome, geneInfo.chromosome)
 			&&
 			!validateUpdate(dbXrefs, geneInfo.dbXrefs)
@@ -544,7 +530,6 @@ public abstract class AGeneInfo {
 		addDescription(geneInfo.getDbInfo(), geneInfo.getDescrp());
 		addFullName(geneInfo.getDbInfo(), geneInfo.getFullName());
 		addLocusTag(geneInfo.getDbInfo(), geneInfo.getLocTag());
-//		setGeneUniID(geneInfo.getGeneUniID());
 		setIDType(geneInfo.getIDType());
 		addMapLocation(geneInfo.getDbInfo(), geneInfo.getMapLoc());
 		setModDate(geneInfo.getModDate());
@@ -566,8 +551,7 @@ public abstract class AGeneInfo {
 	 * false不需要升级
 	 * true 需要升级
 	 */
-	private boolean validateUpdate(String thisField, String inputField)
-	{
+	private boolean validateUpdate(String thisField, String inputField) {
 		if (thisField == null) {
 			thisField = "";
 		}
@@ -590,7 +574,6 @@ public abstract class AGeneInfo {
 		}
 		return true;
 	}
-	
 	/**
 	 * 给定输出的symbol等，将其按照指定的数据库将信息提取出来
 	 * @param info
@@ -604,9 +587,7 @@ public abstract class AGeneInfo {
 		if (ss.length == 1) {
 			return ss[0].split(SepSign.SEP_INFO)[1];
 		}
-		/**
-		 * 用来保存具体的信息
-		 */
+		/** 用来保存具体的信息 */
 		HashMap<String, String> hashInfo = new HashMap<String, String>();
 		for (String string : ss) {
 			String[] ss2 = string.split(SepSign.SEP_INFO);

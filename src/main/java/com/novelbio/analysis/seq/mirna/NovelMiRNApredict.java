@@ -18,6 +18,8 @@ public abstract class NovelMiRNApredict {
 	GffChrAbs gffChrAbs = null;
 	/** 输入的一个bedseq文件 */
 	BedSeq bedSeqInput = null;
+	/** 输入的多个bed文件，最后要用这个来计算表达的 */
+	ArrayList<String> lsBedSeqInputFile;
 	
 	public abstract void setOutPath(String outPath);
 	
@@ -45,6 +47,7 @@ public abstract class NovelMiRNApredict {
 	 */
 	public void setBedSeqInput(String outFile, ArrayList<String> lsBedSeqFile) {
 		BedSeq bedSeq = BedSeq.combBedFile(outFile, lsBedSeqFile);
+		this.lsBedSeqInputFile = lsBedSeqFile;
 		setBedSeqInput(bedSeq.getFileName());
 	}
 	/**

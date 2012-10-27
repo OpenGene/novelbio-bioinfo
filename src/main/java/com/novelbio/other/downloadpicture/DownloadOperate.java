@@ -10,7 +10,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.other.downloadpicture.donmai.DonmaiOperate;
 import com.novelbio.other.downloadpicture.pixiv.PixivGetPathExistPic;
 import com.novelbio.other.downloadpicture.pixiv.PixivGetPictureUrlToDownload;
@@ -49,9 +51,10 @@ public abstract class DownloadOperate {
 		
 		DonmaiOperate donmaiOperate = new DonmaiOperate();
 		donmaiOperate.getcookies();
-		donmaiOperate.setUrlAuther("bare_legs");
+		donmaiOperate.setUrlAuther("azazel1944");
 		donmaiOperate.setSavePath("/home/zong0jie/ͼƬ/My Pictures/picture/donmai");
 		donmaiOperate.run();
+		
 	}
 	
 	protected WebFetch webFetch;

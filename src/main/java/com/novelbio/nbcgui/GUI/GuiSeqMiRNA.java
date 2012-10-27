@@ -290,7 +290,6 @@ public class GuiSeqMiRNA extends JPanel{
 					chkAnalysis.setSelected(false);
 				}
 				chkSelected(chkMapping.isSelected(), chkAnalysis.isSelected(), chkPredictMiRNA.isSelected(), false);
-				
 			}
 		});
 		chkPredictMiRNA.setBounds(369, 527, 131, 22);
@@ -435,7 +434,9 @@ public class GuiSeqMiRNA extends JPanel{
 		lsComponentsPredictMiRNA.add(btnDelNovelMiRNAbedFileRow);
 		lsComponentsPredictMiRNA.add(btnNovelmirnabed);
 		lsComponentsPredictMiRNA.add(sclNovelMiRNAbed);
-		
+		lsComponentsPredictMiRNA.add(combSpecies);
+		lsComponentsPredictMiRNA.add(comboVersion);
+				
 		lsComponentsMappingAndAnalysis.add(combFileType);
 		lsComponentsMappingAndAnalysis.add(combSpecies);
 		

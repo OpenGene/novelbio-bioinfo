@@ -709,7 +709,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 				ncbiid.setGenUniID(geneUniID.getGenUniID());
 				ncbiid.setTaxID(geneUniID.getTaxID());
 				servNCBIID.updateNCBIID(ncbiid, overrideUpdateDBinfo);
-			} else if (geneUniID.equals(GeneID.IDTYPE_UNIID)) {
+			} else if (geneUniID.getGeneIDtype().equals(GeneID.IDTYPE_UNIID)) {
 				UniProtID uniProtID = new UniProtID();
 				uniProtID.setAccID(accID);
 				uniProtID.setDBInfo(this.geneIDDBinfo);

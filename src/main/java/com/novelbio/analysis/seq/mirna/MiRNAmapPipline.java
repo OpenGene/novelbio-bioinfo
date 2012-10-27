@@ -13,8 +13,6 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class MiRNAmapPipline {
 	/** 序列文件 */
 	String seqFile = "";
-	/** 输出文件夹，主要是bed文件 */
-	String outPath;
 	/** 输出的临时文件夹，主要保存mapping的中间文件 */
 	String outPathTmpMapping;
 	/** 输出的临时文件夹，主要保存mapping的中间文件 */
@@ -78,8 +76,7 @@ public class MiRNAmapPipline {
 		this.seqFile = fastqFile;
 	}
 	/** 设定输出临时文件夹，必须是文件夹 */
-	public void setOutPath(String outPath, String outPathTmpMapping, String outPathTmpBed) {
-		this.outPath = FileOperate.addSep(outPath);
+	public void setOutPathTmp(String outPathTmpMapping, String outPathTmpBed) {
 		this.outPathTmpMapping = FileOperate.addSep(outPathTmpMapping);
 		this.outPathTmpBed = FileOperate.addSep(outPathTmpBed);
 	}
