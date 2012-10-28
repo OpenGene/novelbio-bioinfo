@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -18,36 +20,33 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zong0jie
  */
 public class RfamStatistic {
-	public static void main(String[] args) {
-		RfamStatistic rfamHash = new RfamStatistic();
-		String rfamFile = "/media/winE/Bioinformatics/DataBase/sRNA/rfam/rfam.txt";
-		String mapBedFile = "/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/s_6_IDX8/H36_rfam.bed";
-		String outFile = FileOperate.changeFileSuffix(mapBedFile, "_statistics", "txt");
-		rfamHash.countRfamInfo(rfamFile, mapBedFile);
-	}
-	
+	Logger logger = Logger.getLogger(RfamStatistic.class);
 	/** RfamID2Info的信息
-	 * value 有
-	 * 0
-	 * 1
-	 * 2
-	 * 3
+	 * key: RfamID
+	 * value 有 <br>
+	 * 0 rfamType<br>
+	 * 1 rfamAnno<br>
+	 * 2 rfam description<br>
+	 * 3 rfam class<br>
 	 *  
 	 *  */
 	HashMap<String, String[]> mapRfamID2Info = new HashMap<String, String[]>();	
 	/** 具体看每个RfamID的counts */
-	HashMap<String, Double> mapRfam2Counts = new HashMap<String, Double>();
+	HashMap<String, Double> mapRfamID2Counts;
 	String outputFile = "";
 	public void setOutputFile(String outputFile) {
 		this.outputFile = outputFile;
+	}
+	public void readRfamTab(String rfamFile) {
+		readRfamFile(rfamFile);
 	}
 	/**
 	 * @param rfamFile rfam的数据库
 	 * @param mapBedFile mapping至Rfam序列的bed文件
 	 * @param outFile 输出文件
 	 */
-	public void countRfamInfo(String rfamFile, String mapBedFile) {
-		readRfamFile(rfamFile);
+	public void countRfamInfo(String mapBedFile) {
+		mapRfamID2Counts = new HashMap<String, Double>();
 		readRfamBed(mapBedFile);
 		ArrayList<String[]> lsResult = getInfo();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outputFile, true);
@@ -58,6 +57,10 @@ public class RfamStatistic {
 	 * @param rfamFile
 	 */
 	private void readRfamFile(String rfamFile) {
+		if (mapRfamID2Info.size() > 0) {
+			return;
+		}
+		
 		TxtReadandWrite txtRead = new TxtReadandWrite(rfamFile, false);
 		for (String string : txtRead.readlines()) {
 			String[] ss = string.split("\t");
@@ -82,12 +85,12 @@ public class RfamStatistic {
 		for (BedRecord bedRecord : bedSeq.readLines()) {
 			String RfamID = bedRecord.getRefID().split("//")[0];
 			Double thisCount = (double)1/bedRecord.getMappingNum();
-			if (mapRfam2Counts.containsKey(RfamID)) {
-				double newCounts = mapRfam2Counts.get(RfamID) + thisCount;
-				mapRfam2Counts.put(RfamID, newCounts);
+			if (mapRfamID2Counts.containsKey(RfamID)) {
+				double newCounts = mapRfamID2Counts.get(RfamID) + thisCount;
+				mapRfamID2Counts.put(RfamID, newCounts);
 				continue;
 			}
-			mapRfam2Counts.put(RfamID, thisCount);
+			mapRfamID2Counts.put(RfamID, thisCount);
 		}
 	}
 	
@@ -97,7 +100,7 @@ public class RfamStatistic {
 	 */
 	private ArrayList<String[]> getInfo() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		for (Entry<String, Double> entry : mapRfam2Counts.entrySet()) {
+		for (Entry<String, Double> entry : mapRfamID2Counts.entrySet()) {
 			String[] rfamInfo = mapRfamID2Info.get(entry.getKey());
 			String[] tmpResult = new String[rfamInfo.length + 2];
 			tmpResult[0] = entry.getKey();
@@ -111,58 +114,45 @@ public class RfamStatistic {
 	}
 	
 	public HashMap<String, Double> getMapRfam2Counts() {
-		return mapRfam2Counts;
+		return mapRfamID2Counts;
 	}
 	
 	/** 将给定的几组miRNA的值合并起来 */
-	public ArrayList<String[]> combValue(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		String[] title = getTitlePre(mapPrefix2_mapMiRNAMature2Value);
-		lsResult.add(title);
-		
-		HashSet<String> setMirNameAll = getAllName(mapPrefix2_mapMiRNAMature2Value);
-		
-		for (String mirName : setMirNameAll) {
-			ArrayList<String> lsTmpResult = new ArrayList<String>();
-			String[] miRNAinfo = new String[title.length + 2];
-			miRNAinfo[0] = mirName;
-			for (int i = 2; i < title.length; i++) {
-				HashMap<String, Double> mapMirna2Value = mapPrefix2_mapMiRNAMature2Value.get(title[i]);
-				Double value = mapMirna2Value.get(mirName);
-				if (value == null) {
-					miRNAinfo[i] = 0 + "";
-				} else {
-					miRNAinfo[i] = value.intValue() + "";
-				}
-			}
-			String[] seqName = mirName.split(SepSign.SEP_ID);
-			miRNAinfo[miRNAinfo.length - 1] = getSeq(seqName[0], seqName[1]);
-			lsResult.add(miRNAinfo);
-		}
-		return lsResult;
+	public ArrayList<String[]> combValue(HashMap<String, HashMap<String, Double>> mapPrefix2_RfamID2Value) {
+		CombRfamMap combRfamMap = new CombRfamMap(mapRfamID2Info);
+		return combRfamMap.combValue(mapPrefix2_RfamID2Value);
 	}
 	
-	/** 返回涉及到的所有miRNA的名字 */
-	private String[] getTitlePre(HashMap<String, ? extends Object> mapPrefix2Info) {
-		String[] title = new String[mapPrefix2Info.size() + 2];
-		title[0] = TitleFormatNBC.RfamID.toString();
-		int i = 1;
-		for (String prefix : mapPrefix2Info.keySet()) {
-			title[i] = prefix;
-			i ++;
-		}
-		title[title.length - 1] = TitleFormatNBC.mirPreSequence.toString();
-		return title;
+}
+
+class CombRfamMap extends MirCombMapGetValueAbs {
+	/** RfamID2Info的信息
+	 * key: RfamID
+	 * value 有 <br>
+	 * 0 rfamType<br>
+	 * 1 rfamAnno<br>
+	 * 2 rfam description<br>
+	 * 3 rfam class<br>
+	 *  */
+	HashMap<String, String[]> mapRfamID2Info;
+	public CombRfamMap(HashMap<String, String[]> mapRfamID2Info) {
+		this.mapRfamID2Info = mapRfamID2Info;
+	}
+	@Override
+	protected String[] getTitleIDAndInfo() {
+		String[] titleStart = new String[3];
+		titleStart[0] = TitleFormatNBC.RfamID.toString();
+		titleStart[1] = TitleFormatNBC.RfamType.toString();
+		titleStart[2] = TitleFormatNBC.RfamClass.toString();
+		return titleStart;
+	}
+
+	@Override
+	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
+		String[] rfamInfo = mapRfamID2Info.get(id);
+		lsTmpResult.add(id);
+		lsTmpResult.add(rfamInfo[0].replace("\\N", ""));
+		lsTmpResult.add(rfamInfo[3].replace("\\N", ""));
 	}
 	
-	/** 返回涉及到的所有miRNA的名字 */
-	private HashSet<String> getAllName(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNA2Value) {
-		LinkedHashSet<String> setMirNameAll = new LinkedHashSet<String>();
-		for (HashMap<String, Double> mapMiRNA2Value : mapPrefix2_mapMiRNA2Value.values()) {
-			for (String miRNAname : mapMiRNA2Value.keySet()) {
-				setMirNameAll.add(miRNAname);
-			}
-		}
-		return setMirNameAll;
-	}
 }

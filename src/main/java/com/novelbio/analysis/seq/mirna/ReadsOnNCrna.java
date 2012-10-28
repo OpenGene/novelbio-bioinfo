@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.mirna;
 
-import java.lang.annotation.Retention;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -8,27 +8,20 @@ import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.generalConf.TitleFormatNBC;
 /**
  * 比对到RefSeq上的ncRNA，看其具体情况
  * @author zong0jie
  *
  */
 public class ReadsOnNCrna {
-	public static void main(String[] args) {
-		String bedFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/TG_RefNcRNA.bed";
-		String outFile = "/media/winF/NBC/Project/Project_Invitrogen/sRNA/resultNcRNA/TG_NCrna.txt";
-		ReadsOnNCrna readsOnNCrna = new ReadsOnNCrna();
-		readsOnNCrna.setBedSed(bedFile);
-		readsOnNCrna.searchNCrna();
-		readsOnNCrna.writeToFile(outFile);
-	}
 	/**
 	 * key: ncrnaID
 	 * value 0: ncrnaID
 	 * 1: ncrnaDescription
 	 * 2: num
 	 */
-	HashMap<String, Double> mapNCrnaID_2_nameDescripValue = new HashMap<String, Double>();
+	HashMap<String, Double> mapNCrnaID_2_nameDescripValue;
 	BedSeq bedSeq;
 	
 	public void setBedSed(String bedseqFile) {
@@ -36,7 +29,7 @@ public class ReadsOnNCrna {
 	}
 	
 	public void searchNCrna() {
-		mapNCrnaID_2_nameDescripValue.clear();
+		mapNCrnaID_2_nameDescripValue = new HashMap<String, Double>();
 		for (BedRecord bedRecord : bedSeq.readLines()) {
 			if (mapNCrnaID_2_nameDescripValue.containsKey(bedRecord.getRefID())) {
 				double info = mapNCrnaID_2_nameDescripValue.get(bedRecord.getRefID());
@@ -68,6 +61,32 @@ public class ReadsOnNCrna {
 	
 	public HashMap<String, Double> getMapNCrnaID_2_nameDescripValue() {
 		return mapNCrnaID_2_nameDescripValue;
+	}
+	
+	/** 将给定的几组miRNA的值合并起来 */
+	public ArrayList<String[]> combValue(HashMap<String, HashMap<String, Double>> mapPrefix2NcRNAValue) {
+		CombMapNcRNA combMapNcRNA = new CombMapNcRNA();
+		return combMapNcRNA.combValue(mapPrefix2NcRNAValue);
+	}
+}
+
+class CombMapNcRNA extends MirCombMapGetValueAbs {
+
+	@Override
+	protected String[] getTitleIDAndInfo() {
+		String[] title = new String[3];
+		title[0] = TitleFormatNBC.NCRNAID.toString();
+		title[1] = TitleFormatNBC.Symbol.toString();
+		title[2] = TitleFormatNBC.Description.toString();
+		return title;
+	}
+
+	@Override
+	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
+		GeneID geneID = new GeneID(id, 0);
+		lsTmpResult.add(id);
+		lsTmpResult.add(geneID.getSymbol());
+		lsTmpResult.add(geneID.getDescription());
 	}
 	
 }

@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.mirna;
 
+import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -185,7 +186,8 @@ public class MiRNAmapPipline {
 		samFile.setUniqMapping(uniqueMapping);
 		samFile.setUniqueRandomSelectOneRead(uniqueMappedReadsRandomSelectOne);
 		try { Thread.sleep(1000); } catch (Exception e) { }
-		samFile.toBedSingleEnd(TxtReadandWrite.TXT,  bedFile);
+		BedSeq bedSeq = samFile.toBedSingleEnd(TxtReadandWrite.TXT,  bedFile);
+		bedSeq.close();
 		if (unMappedFq != null && !unMappedFq.equals("")) {
 			samFile.getUnMappedReads(false, unMappedFq);
 		}

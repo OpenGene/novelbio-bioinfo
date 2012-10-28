@@ -20,8 +20,10 @@ import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.generalConf.TitleFormatNBC;
 /**
  * bed文件在repeat和gene上的分布情况，可以单独设定repeat或者是gene
  * @author zong0jie
@@ -30,9 +32,9 @@ import com.novelbio.generalConf.NovelBioConst;
 public class ReadsOnRepeatGene {
 	GffHashRepeat gffHashRepeat = null;
 	GffChrAbs gffChrAbs = null;
-	HashMap<String, Double> hashRepeatName = new HashMap<String, Double>();
-	HashMap<String, Double> hashRepeatFamily = new HashMap<String, Double>();
-	HashMap<String, Double> hashGeneInfo = new HashMap<String, Double>();
+	HashMap<String, Double> mapRepeatName2Value;
+	HashMap<String, Double> mapRepeatFamily2Value;
+	HashMap<String, Double> mapGeneStructure2Value;
 	/**
 	 * 读取repeat文件
 	 * @param repeatGffFile
@@ -45,15 +47,15 @@ public class ReadsOnRepeatGene {
 	 * @param repeatGffFile
 	 */
 	public void readGffRepeat(String repeatGffFile) {
-		if (FileOperate.isFileExistAndBigThanSize(repeatGffFile, 10)) {
+		if (FileOperate.isFileExistAndBigThanSize(repeatGffFile, 10) && (gffHashRepeat == null || !gffHashRepeat.getGffFilename().equals(repeatGffFile)) ) {
 			gffHashRepeat = new GffHashRepeat();
 			gffHashRepeat.ReadGffarray(repeatGffFile);
 		}
 	}
 	public void countReadsInfo(String bedFile) {
-		hashRepeatName.clear();
-		hashRepeatFamily.clear();
-		hashGeneInfo.clear();
+		mapRepeatName2Value = new HashMap<String, Double>();
+		mapRepeatFamily2Value = new HashMap<String, Double>();
+		mapGeneStructure2Value = new HashMap<String, Double>();
 		
 		
 		BedSeq bedSeq = new BedSeq(bedFile);
@@ -77,44 +79,44 @@ public class ReadsOnRepeatGene {
 	
 
 	public void writeToFileRepeatName(String outFile) {
-		if (hashRepeatName.size() == 0) {
+		if (mapRepeatName2Value.size() == 0) {
 			return;
 		}
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
-		ArrayList<String> lsKey = ArrayOperate.getArrayListKey(hashRepeatName);
+		ArrayList<String> lsKey = ArrayOperate.getArrayListKey(mapRepeatName2Value);
 		Collections.sort(lsKey);
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (String string : lsKey) {
-			lsResult.add(new String[]{string, hashRepeatName.get(string).intValue() + ""});
+			lsResult.add(new String[]{string, mapRepeatName2Value.get(string).intValue() + ""});
 		}
 		txtOut.ExcelWrite(lsResult);
 	}
 	public void writeToFileRepeatFamily(String outFile) {
-		if (hashRepeatFamily.size() == 0) {
+		if (mapRepeatFamily2Value.size() == 0) {
 			return;
 		}
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
-		ArrayList<String> lsKey = ArrayOperate.getArrayListKey(hashRepeatFamily);
+		ArrayList<String> lsKey = ArrayOperate.getArrayListKey(mapRepeatFamily2Value);
 		Collections.sort(lsKey);
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (String string : lsKey) {
-			lsResult.add(new String[]{string, hashRepeatFamily.get(string).intValue() + ""});
+			lsResult.add(new String[]{string, mapRepeatFamily2Value.get(string).intValue() + ""});
 		}
 		txtOut.ExcelWrite(lsResult);
 	}
 	public void writeToFileGeneProp(String outFile) {
-		if (hashGeneInfo.size() == 0) {
+		if (mapGeneStructure2Value.size() == 0) {
 			return;
 		}
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
-		ArrayList<String> lsKey = ArrayOperate.getArrayListKey(hashGeneInfo);
+		ArrayList<String> lsKey = ArrayOperate.getArrayListKey(mapGeneStructure2Value);
 		Collections.sort(lsKey);
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (String string : lsKey) {
-			lsResult.add(new String[]{string, hashGeneInfo.get(string).intValue() + ""});
+			lsResult.add(new String[]{string, mapGeneStructure2Value.get(string).intValue() + ""});
 		}
 		txtOut.ExcelWrite(lsResult);
 	}
@@ -124,19 +126,19 @@ public class ReadsOnRepeatGene {
 	private void addHashRepeat(String repeatInfo, int mapNum) {
 		//RepeatName\\\RepeatFamily,
 		String[] repeat = repeatInfo.split("///");
-		if (hashRepeatName.containsKey(repeat[0])) {
-			double num = hashRepeatName.get(repeat[0]);
-			hashRepeatName.put(repeat[0], (double)1/mapNum + num);
+		if (mapRepeatName2Value.containsKey(repeat[0])) {
+			double num = mapRepeatName2Value.get(repeat[0]);
+			mapRepeatName2Value.put(repeat[0], (double)1/mapNum + num);
 		}
 		else {
-			hashRepeatName.put(repeat[0], (double)1/mapNum);
+			mapRepeatName2Value.put(repeat[0], (double)1/mapNum);
 		}
-		if (hashRepeatFamily.containsKey(repeat[1])) {
-			double num = hashRepeatFamily.get(repeat[1]);
-			hashRepeatFamily.put(repeat[1], (double)1/mapNum + num);
+		if (mapRepeatFamily2Value.containsKey(repeat[1])) {
+			double num = mapRepeatFamily2Value.get(repeat[1]);
+			mapRepeatFamily2Value.put(repeat[1], (double)1/mapNum + num);
 		}
 		else {
-			hashRepeatFamily.put(repeat[1], (double)1/mapNum);
+			mapRepeatFamily2Value.put(repeat[1], (double)1/mapNum);
 		}
 		
 	}
@@ -164,12 +166,12 @@ public class ReadsOnRepeatGene {
 		else if (geneLocType == GffGeneIsoInfo.COD_LOC_OUT) {
 			key = "Intergenic";
 		}
-		if (hashGeneInfo.containsKey(key)) {
-			double num = hashGeneInfo.get(key);
-			hashGeneInfo.put(key, (double)1/mapNum + num);
+		if (mapGeneStructure2Value.containsKey(key)) {
+			double num = mapGeneStructure2Value.get(key);
+			mapGeneStructure2Value.put(key, (double)1/mapNum + num);
 		}
 		else {
-			hashGeneInfo.put(key, (double)1/mapNum);
+			mapGeneStructure2Value.put(key, (double)1/mapNum);
 		}
 	}
 	/**
@@ -213,5 +215,79 @@ public class ReadsOnRepeatGene {
 		}
 		return new int[]{locationInfo, ori};
 	}
-
+	
+	public HashMap<String, Double> getMapGeneStructure2Value() {
+		return mapGeneStructure2Value;
+	}
+	public HashMap<String, Double> getMapRepeatFamily2Value() {
+		return mapRepeatFamily2Value;
+	}
+	public HashMap<String, Double> getMapRepeatName2Value() {
+		return mapRepeatName2Value;
+	}
+	
+	/** 将给定的几组MapGeneStructure2Value的值合并起来 */
+	public ArrayList<String[]> combMapGeneStructure2Value(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNA2Value) {
+		CombMapGeneInfo combMapGeneInfo = new CombMapGeneInfo();
+		return combMapGeneInfo.combValue(mapPrefix2_mapMiRNA2Value);
+	}
+	/** 将给定的几组MapRepatName的值合并起来 */
+	public ArrayList<String[]> combMapRepatName(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
+		CombMapRepeatName combMapRepeatName = new CombMapRepeatName();
+		return combMapRepeatName.combValue(mapPrefix2_mapMiRNAMature2Value);
+	}
+	/** 将给定的几组MapRepatFamily的值合并起来 */
+	public ArrayList<String[]> combMapRepatFamily(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
+		CombMapRepeatFamily combMapRepeatFamily = new CombMapRepeatFamily();
+		return combMapRepeatFamily.combValue(mapPrefix2_mapMiRNAMature2Value);
+	}
+	
 }
+
+class CombMapGeneInfo extends MirCombMapGetValueAbs {
+	
+	@Override
+	protected String[] getTitleIDAndInfo() {	/** 返回涉及到的所有miRNA的名字 */
+		String[] titleStart = new String[1];
+		titleStart[0] = TitleFormatNBC.GeneStructure.toString();
+		return titleStart;
+	}
+
+	@Override
+	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
+		lsTmpResult.add(id);
+	}
+}
+
+class CombMapRepeatName extends MirCombMapGetValueAbs {
+	
+	@Override
+	protected String[] getTitleIDAndInfo() {	/** 返回涉及到的所有miRNA的名字 */
+		String[] titleStart = new String[1];
+		titleStart[0] = TitleFormatNBC.RepeatName.toString();
+		return titleStart;
+	}
+
+	@Override
+	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
+		lsTmpResult.add(id);
+	}
+}
+
+class CombMapRepeatFamily extends MirCombMapGetValueAbs {
+	
+	@Override
+	protected String[] getTitleIDAndInfo() {	/** 返回涉及到的所有miRNA的名字 */
+		String[] titleStart = new String[1];
+		titleStart[0] = TitleFormatNBC.RepeatFamily.toString();
+		return titleStart;
+	}
+
+	@Override
+	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
+		lsTmpResult.add(id);
+	}
+}
+
+
+

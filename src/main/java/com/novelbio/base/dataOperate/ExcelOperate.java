@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -77,7 +78,7 @@ public class ExcelOperate {
 	  * EXCEL2003 EXCEL2007 EXCEL_NOT EXCEL_NO_FILE
 	 * @throws FileNotFoundException 
 	  */
-	 private static int isExcelVersion(String filename) {
+	 private static int isExcelVersion(String filename) throws Exception {
 		 if (!FileOperate.isFileExist(filename))
 			return EXCEL_NO_FILE;
 		 File f = new File(filename);
@@ -88,17 +89,27 @@ public class ExcelOperate {
 			e.printStackTrace();
 			return EXCEL_NO_FILE;
 		}
-		 if (isExcel2003(fos))
-			return EXCEL2003;
-		 else if (isExcel2007(fos))
-			return EXCEL2007;
+		fos = new FileInputStream(f);
+		 if (isExcel2003(fos)) {
+			 try { fos.close(); } catch (Exception e) { }
+			 return EXCEL2003;
+		 }
+		 fos = new FileInputStream(f);
+		 if (isExcel2007(fos)) {
+			 try { fos.close(); } catch (Exception e) { }
+			 return EXCEL2007;
+		 }
 		return EXCEL_NOT;
 	 }
 	  private static boolean isExcel2003(FileInputStream fos) {
 		  Workbook wb = null;
 		  try {
 			  wb = new HSSFWorkbook(fos);
-		  } catch (Exception e) {  }
+		  } catch (Exception e) {  
+			  try {
+				fos.close();
+			} catch (IOException e1) { }
+		  }
 		  if (wb != null) 
 			  return true;
 		  return false;
@@ -107,7 +118,11 @@ public class ExcelOperate {
 		 Workbook wb = null;
 		try {
 			wb = new XSSFWorkbook(fos);
-		} catch (Exception e) {  }
+		} catch (Exception e) { 
+			try {
+				fos.close();
+			} catch (IOException e1) { }
+		}
 		if (wb != null) 
 			 return true;
 		return false;
@@ -125,7 +140,11 @@ public class ExcelOperate {
 		 if (!FileOperate.isFileExist(imputfilename)) {
 			 return newExcelOpen(imputfilename, excel2007);
 		 }
-		 versionXls = isExcelVersion(filename);
+		 try {
+			versionXls = isExcelVersion(filename);
+		} catch (Exception e) {
+			versionXls = EXCEL_NO_FILE;
+		}
 		 return initialExcel();
 	 }
 	 
@@ -133,6 +152,7 @@ public class ExcelOperate {
 		try {
 			return resetExcelExp();
 		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 	 }
@@ -146,7 +166,7 @@ public class ExcelOperate {
 		 if (versionXls == EXCEL2003)
 			  wb= new HSSFWorkbook(fos);
 		 else if (versionXls == EXCEL2007)
-			  wb= new HSSFWorkbook(fos);
+			  wb= new XSSFWorkbook(fos);
 		 
 		  sheet = wb.getSheetAt(0);
 		  sheetNum = 0;

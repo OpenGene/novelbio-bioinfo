@@ -262,6 +262,7 @@ public class MathComput {
 	/**
 	 * 输入数据，获得中位数, 用于10
 	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * 不会对输入数据排序
 	 * @return
 	 */
 	public static double median(double[] unsortNum) {
@@ -271,7 +272,7 @@ public class MathComput {
 	 * 
 	 * 输入数据，获得中位数, 用于10
 	 * 采用插入排序法，据说对于小规模数据效率还不错
-	 * @param unsortNum
+	 * @param unsortNum 输入数据，不会对其排序
 	 * @param percentage 乘以100的值
 	 * @return
 	 */

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-public abstract class MirCountGetValueAbs {
+public abstract class MirCombMapGetValueAbs {
 	
 	/** 将给定的几组miRNA的值合并起来 */
 	public ArrayList<String[]> combValue(HashMap<String, HashMap<String, Double>> mapPrefix_2_ID2Value) {
@@ -20,7 +20,8 @@ public abstract class MirCountGetValueAbs {
 			ArrayList<String> lsTmpResult = new ArrayList<String>();
 			fillMataInfo(id, lsTmpResult);
 			for (int i = getTitleIDAndInfo().length; i < lstitle.size(); i++) {
-				HashMap<String, Double> mapMirna2Value = mapPrefix_2_ID2Value.get(lstitle.get(i));
+				String prefix = lstitle.get(i);
+				HashMap<String, Double> mapMirna2Value = mapPrefix_2_ID2Value.get(prefix);
 				Double value = mapMirna2Value.get(id);
 				if (value == null) {
 					lsTmpResult.add(0 + "");

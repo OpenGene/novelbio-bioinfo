@@ -63,6 +63,7 @@ import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValue
 import org.w3c.dom.ls.LSSerializer;
 
 
+import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.SeqComb;
 import com.novelbio.analysis.seq.blastZJ.Cell;
@@ -136,10 +137,11 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		ArrayList<GeneID> lsGeneIDs = GeneID.createLsCopedID("tp53", 0, false);
-		for (GeneID geneID : lsGeneIDs) {
-			System.out.println(geneID.getSymbol() + "\t" + geneID.getDescription() + "\t" + geneID.getTaxID());
-		}		
+		String aa = "/home/zong0jie/Desktop/smallRNAtest/aa";
+		BedSeq bedSeq = new BedSeq(aa, true);
+		bedSeq.writeBedRecord(new BedRecord("Chr23\t234\t456"));
+		bedSeq.closeWrite();
+		System.out.println("close");
 	}
 	
 	private void HG18() {

@@ -9,12 +9,19 @@ public enum TitleFormatNBC {
 	
 	miRNAName("miRNAName"), miRNApreName("miRNApreName"),
 	mirSequence("mirSequence"), mirPreSequence("mirPreSequence"),
-	RfamID("RfamID");
+	
+	RfamID("RfamID"), RfamType("RfamType"), RfamAnnotaion("RfamAnnotaion"), RfamDescription("RfamDescription"), RfamClass("RfamClass"),
+	NCRNAID("NCRNAID"),
+	
+	GeneStructure("GeneStructure"),
+	
+	RepeatName("RepeatName"), RepeatFamily("RepeatFamily");
 	
 	String item;
 	TitleFormatNBC(String item) {
 		this.item = item;
 	}
+	
 	@Override
 	public String toString() {
 		return item;

@@ -3,8 +3,10 @@ package com.novelbio.analysis.seq.mirna;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.omg.CosNaming._BindingIteratorImplBase;
 
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
@@ -25,40 +27,7 @@ import com.novelbio.database.model.species.Species;
  * 注意bowtie必须在系统变量下。可以通过修改mapper.pl文件来设置bowtie的文件夹路径
  * @author zong0jie
  */
-public class NovelMiRNADeep extends NovelMiRNApredict{
-	public static void main(String[] args) {
-		String parent = "/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/tmpBed/";
-		calNovelMiRNAexp(parent + "LFJ2BW1_CGATGT_L002_R1_001_filtered_Genome.bed", "2BW1");
-		calNovelMiRNAexp(parent + "LFJ2BW2_TTAGGC_L002_R1_001_filtered_Genome.bed", "2BW2");
-		calNovelMiRNAexp(parent + "LFJA3_ATCACG_L002_R1_001_filtered_Genome.bed", "A3");
-		calNovelMiRNAexp(parent + "LFJmjj_TGACCA_L002_R1_001_filtered_Genome.bed", "mjj");
-
-	}
-	public static void calNovelMiRNAexp(String bedFile, String prefix) {		
-		NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
-		novelMiRNADeep.setBedSeqInput(bedFile);
-		novelMiRNADeep.setOutPath("/home/zong0jie/Desktop/platformtest/output/testmiRNApredictDeep/");
-		novelMiRNADeep.setOutPrefix(prefix);
-		novelMiRNADeep.setCalNovelMiRNACountNovelMiRNASeq("/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/LFJmiRNApredictDeep/novelMiRNA/hairpin.fa", 
-				"/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/LFJmiRNApredictDeep/novelMiRNA/mature.fa", 
-				"/media/winF/NBC/Project/Project_LFJ_Lab/miRNA/result/LFJmiRNApredictDeep/run/output.mrd");
-		novelMiRNADeep.getMirCount();
-	}
-	public static void pipeline(String[] args) {
-		Species species = new Species(9606);
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.bowtie);
-		String bedFile = "/home/zong0jie/Desktop/platformtest/testCR_miRNA_Filtered_Genome_Tmp.bed";
-		NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
-		novelMiRNADeep.setBedSeqInput(bedFile);
-		novelMiRNADeep.setOutPath("/home/zong0jie/Desktop/platformtest/output/testmiRNApredictDeep/");
-		novelMiRNADeep.setFastaOut("/home/zong0jie/Desktop/platformtest/output/testmiRNApredictDeep/CR_predict_Tmp.fa");
-		novelMiRNADeep.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bowtie));
-		novelMiRNADeep.setMiRNASeq(species.getMiRNAmatureFile(), null, species.getMiRNAhairpinFile());
-		novelMiRNADeep.setOutPrefix("LFJ");
-		novelMiRNADeep.predict();
-		novelMiRNADeep.getMirCount();
-	}
+public class NovelMiRNADeep extends NovelMiRNApredict {
 	Logger logger = Logger.getLogger(NovelMiRNADeep.class);
 	
 	MapBowtie mapBowtie = new MapBowtie(SoftWare.bowtie);
@@ -76,6 +45,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 	/** 输出报告文件，通过生成随机的该文件名，来找到本次mirDeep所在的路径 */
 	String reportFile;
 	boolean createReportFile = true;
+	/** 已经加过/了 */
 	String outPath = null;
 	String outPrefix = "";
 	
@@ -168,10 +138,13 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 	private String getChromFaSeq() {
 		return chromFaIndexBowtie + " ";
 	}
-	/** 输入的reads文件 */
-	private String getFastaMappingFile() {
+	/** 产生输入的reads文件
+	 * 会将输入的bed文件比对基因组，获得没有mapping至正向exon的序列，然后写入文本并转化为fastq文件
+	 *  */
+	private String creatFastaMappingFile() {
 		if (fastaInput == null || fastaInput.trim().equals("")) {
 			fastaInput = FileOperate.changeFileSuffix(bedSeqInput.getFileName(), "_Potential_DenoveMirna", "fasta");
+			fastaInput = outPath + FileOperate.getFileName(fastaInput);
 		}
 		if (!FileOperate.isFileExist(fastaInput)) {
 			convertNoCDSbed2Fasta(fastaInput);
@@ -179,11 +152,13 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 		return fastaInput + " ";
 	}
 	/**
-	 * 将比对获得的bed文件转化为fasta文件
+	 * 将输入的bed文件比对基因组，获得没有mapping至正向exon的序列，然后写入文本并转化为fastq文件
+	 * 然后转化为fastq文件以便进行后续分析
 	 * @param fastaOut
 	 */
 	private void convertNoCDSbed2Fasta(String fastaOut) {
 		String out = FileOperate.changeFileSuffix(bedSeqInput.getFileName(), "_Potential_DenoveMirna", null);
+		out = outPath + FileOperate.getFileName(out);
 		BedSeq bedSeq = getBedReadsNotOnCDS(out);
 		TxtReadandWrite txtOut = new TxtReadandWrite(fastaOut, true);
 		for (BedRecord bedRecord : bedSeq.readLines()) {
@@ -193,11 +168,15 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 	}
 	/** 好像是输出的压缩的reads信息 */
 	private String getCollapseReadsFa() {
-		return FileOperate.changeFileSuffix(fastaInput, "_collapsed", "fasta") + " ";
+		String fileName = FileOperate.changeFileSuffix(fastaInput, "_collapsed", "fasta");
+		String resultName = outPath + FileOperate.getFileName(fileName);
+		return resultName + " ";
 	}
 	/** 好像是输出的压缩的reads信息 */
 	private String getMappingArf() {
-		return FileOperate.changeFileSuffix(fastaInput, "_collapsed_mapping", "arf") + " ";
+		String fileName = FileOperate.changeFileSuffix(fastaInput, "_collapsed_mapping", "arf");
+		String resultName = outPath + FileOperate.getFileName(fileName);
+		return resultName + " ";
 	}
 
 	private String getReadsMinLen() {
@@ -213,11 +192,11 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 	public void predict() {
 		mapping();
 		predictNovelMiRNA();
-		moveFile();
+		moveAndCopeFile();
 	}
 	private void mapping() {
 		mapBowtie.IndexMakeBowtie();
-		String cmdMapping = mirDeepPath + "mapper.pl " + getFastaMappingFile() +"-c -j " + getReadsMinLen();
+		String cmdMapping = mirDeepPath + "mapper.pl " + creatFastaMappingFile() +"-c -j " + getReadsMinLen();
 		cmdMapping = cmdMapping + "-m -p " + getChromFaSeq() + "-s " + getCollapseReadsFa() + "-t " + getMappingArf() + "-v";
 		CmdOperate cmdOperate = new CmdOperate(cmdMapping, "mirDeepMapping_" + species);
 		cmdOperate.run();
@@ -232,25 +211,12 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 		
 		createReportFile = false;
 	}
-	/** 查看reportlog，返回结果的后缀 */
-	private String getResultFileSuffixFromReportLog() {
-		String suffix = null;
-		TxtReadandWrite txtReport = new TxtReadandWrite(getReportFileRandom(), false);
-		for (String string : txtReport.readlines()) {
-			string = string.trim();
-			if (string.startsWith("mkdir")) {
-				suffix = string.replace("mkdir mirdeep_runs/run_", "");
-				break;
-			}
-		}
-		txtReport.close();
-		if (suffix == null) {
-			logger.error("没有找到report里面的文件名:" + getReportFileRandom());
-		}
-		return suffix;		
-	}
-	/** 将结果文件移动到指定位置 */
-	private void moveFile() {
+
+	/**
+	 * 将结果文件移动到指定位置
+	 * 同时处理结果文件为指定格式
+	 */
+	private void moveAndCopeFile() {
 		ArrayList<String> lsFileName = new ArrayList<String>();
 		String suffix = getResultFileSuffixFromReportLog();
 		
@@ -284,19 +250,34 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 		novelMiRNAdeepMrdFile = outFinal + "run" + "/output.mrd";
 		novelMiRNAhairpin = outFinal + "novelMiRNA/hairpin.fa";
 		novelMiRNAmature = outFinal + "novelMiRNA/mature.fa";
-		
-		extractHairpinSeqMatureSeq(novelMiRNAdeepMrdFile, outFinal + "result.csv", novelMiRNAmature, novelMiRNAhairpin);
+		HashSet<String> setMirPredictName = getSetMirPredictName(outFinal + "result.csv");
+		extractHairpinSeqMatureSeq(setMirPredictName, novelMiRNAdeepMrdFile, novelMiRNAmature, novelMiRNAhairpin);
 	}
-	private void extractHairpinSeqMatureSeq(String run_output_mrd, String result_csv, String outMatureSeq, String outPreSeq) {
-		FileOperate.createFolders(FileOperate.getParentPathName(outMatureSeq));
-		FileOperate.createFolders(FileOperate.getParentPathName(outPreSeq));
-		
-		TxtReadandWrite txtReadResult = new TxtReadandWrite(result_csv, false);
-		TxtReadandWrite txtReadMrd = new TxtReadandWrite(run_output_mrd, false);
-		
-		TxtReadandWrite txtWriteMature = new TxtReadandWrite(outMatureSeq, true);
-		TxtReadandWrite txtWritePre = new TxtReadandWrite(outPreSeq, true);
-		
+	
+	/** 查看reportlog，返回结果的后缀 */
+	private String getResultFileSuffixFromReportLog() {
+		String suffix = null;
+		TxtReadandWrite txtReport = new TxtReadandWrite(getReportFileRandom(), false);
+		for (String string : txtReport.readlines()) {
+			string = string.trim();
+			if (string.startsWith("mkdir")) {
+				suffix = string.replace("mkdir mirdeep_runs/run_", "");
+				break;
+			}
+		}
+		txtReport.close();
+		if (suffix == null) {
+			logger.error("没有找到report里面的文件名:" + getReportFileRandom());
+		}
+		return suffix;		
+	}
+	/**
+	 * 从mirDeep的结果文件中获得新miRNA的名字
+	 * @param mirDeepResultCvs
+	 * @return
+	 */
+	private HashSet<String> getSetMirPredictName(String mirDeepResultCvs) {
+		TxtReadandWrite txtReadResult = new TxtReadandWrite(mirDeepResultCvs, false);
 		HashSet<String> setMirPredictName = new HashSet<String>();
 		boolean flagGetPredictMiRNA = false;
 		for (String string : txtReadResult.readlines()) {
@@ -311,6 +292,24 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 				setMirPredictName.add(ss[0]);
 			}
 		}
+		txtReadResult.close();
+		return setMirPredictName;
+	}
+	
+	/**
+	 * @param setMirPredictName 新miRNA的名字
+	 * @param run_output_mrd 待提取的文件
+	 * @param outMatureSeq 输出
+	 * @param outPreSeq 输出
+	 */
+	private void extractHairpinSeqMatureSeq(Set<String> setMirPredictName, String run_output_mrd, String outMatureSeq, String outPreSeq) {
+		FileOperate.createFolders(FileOperate.getParentPathName(outMatureSeq));
+		FileOperate.createFolders(FileOperate.getParentPathName(outPreSeq));
+		
+		TxtReadandWrite txtReadMrd = new TxtReadandWrite(run_output_mrd, false);
+		TxtReadandWrite txtWriteMature = new TxtReadandWrite(outMatureSeq, true);
+		TxtReadandWrite txtWritePre = new TxtReadandWrite(outPreSeq, true);
+		
 		boolean flagFindMiRNA = false;
 		String mirName ="", mirSeq = "", mirModel = "";
 		for (String string : txtReadMrd.readlines()) {
@@ -333,10 +332,10 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 			}
 		}
 		txtReadMrd.close();
-		txtReadResult.close();
 		txtWriteMature.close();
 		txtWritePre.close();
 	}
+
 	/**
 	 * 给定RNAdeep的结果文件，从里面提取序列
 	 * @param seqName
@@ -366,13 +365,28 @@ public class NovelMiRNADeep extends NovelMiRNApredict{
 		lsResult.add(seqFastaStar);
 		return lsResult;
 	}
+	
+	public String getNovelMiRNAhairpin() {
+		return novelMiRNAhairpin;
+	}
+	public String getNovelMiRNAmature() {
+		return novelMiRNAmature;
+	}
+	/** mrd文件是mirDeep的新miRNA序列信息 */
+	public String getNovelMiRNAdeepMrdFile() {
+		return novelMiRNAdeepMrdFile;
+	}
+	/**
+	 * 测试用
+	 * @param novelMiRNAhairpin
+	 * @param novelMiRNAmature
+	 * @param novelMiRNAdeepMrdFile
+	 */
+	@Deprecated
 	public void setCalNovelMiRNACountNovelMiRNASeq(String novelMiRNAhairpin, String novelMiRNAmature, String novelMiRNAdeepMrdFile) {
 		this.novelMiRNAhairpin = novelMiRNAhairpin;
 		this.novelMiRNAmature = novelMiRNAmature;
 		this.novelMiRNAdeepMrdFile = novelMiRNAdeepMrdFile;
 	}
 
-	
-	
-	
 }
