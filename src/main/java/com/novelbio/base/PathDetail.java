@@ -3,6 +3,8 @@ package com.novelbio.base;
 import java.io.File;
 import java.util.HashMap;
 
+import org.apache.poi.hssf.record.FilePassRecord;
+
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataOperate.WebFetch;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -18,7 +20,14 @@ public class PathDetail {
 	}
 	static HashMap<String, String> mapID2Path = new HashMap<String, String>();
 	static {
-		TxtReadandWrite txtRead = new TxtReadandWrite(getRworkspace() + "NBCPath.txt", false);
+		initial();
+	}
+	private static void initial() {
+		String pathFile = getRworkspace() + "NBCPath.txt";
+		if (!FileOperate.isFileExist(pathFile)) {
+			return;
+		}
+		TxtReadandWrite txtRead = new TxtReadandWrite(getRworkspace() + "NBCPath.txt", false);		
 		for (String string : txtRead.readlines()) {
 			string = string.trim();
 			if (string.startsWith("#")) {
