@@ -100,7 +100,9 @@ public class CtrlMiRNApredict {
 		miRNACount.setBedSeqMiRNA(bedSeqMiRNAnovel);
 		miRNACount.setMiRNAfile(novelMiRNADeep.getNovelMiRNAhairpin(), novelMiRNADeep.getNovelMiRNAmature());
 		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_MIRDEEP, new Species(), novelMiRNADeep.getNovelMiRNAdeepMrdFile());
-		miRNACount.writeResultToOut(outPath + prefix);
+		String outPathNovel = outPath + prefix + FileOperate.getSepPath();
+		FileOperate.createFolders(outPathNovel);
+		miRNACount.writeResultToOut(outPathNovel + "NovelmiRNA");
 		
 		mapPrefix2MapMature.put(prefix, miRNACount.getMapMirMature2Value());
 		mapPrefix2MapPre.put(prefix, miRNACount.getMapMiRNApre2Value());
