@@ -45,6 +45,9 @@ import javax.imageio.ImageIO;
 import javax.servlet.jsp.tagext.TryCatchFinally;
 import javax.swing.tree.ExpandVetoException;
 
+import net.sf.samtools.SAMFileHeader;
+import net.sf.samtools.SAMRecord;
+
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
@@ -65,6 +68,7 @@ import org.w3c.dom.ls.LSSerializer;
 
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.SeqComb;
 import com.novelbio.analysis.seq.blastZJ.Cell;
 import com.novelbio.analysis.seq.blastZJ.LongestCommonSubsequence;
@@ -109,6 +113,7 @@ import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.base.plot.PlotScatter;
@@ -119,6 +124,7 @@ import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.kegg.noUseKGCentry2Ko2Gen;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.modkegg.KeggInfo;
@@ -137,11 +143,9 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		String aa = "/home/zong0jie/Desktop/smallRNAtest/aa";
-		BedSeq bedSeq = new BedSeq(aa, true);
-		bedSeq.writeBedRecord(new BedRecord("Chr23\t234\t456"));
-		bedSeq.closeWrite();
-		System.out.println("close");
+		GUIFileOpen guiFileOpen = new GUIFileOpen();
+		guiFileOpen.saveFileName(description, extensions);
+		
 	}
 	
 	private void HG18() {

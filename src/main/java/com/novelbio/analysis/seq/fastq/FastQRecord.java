@@ -10,6 +10,9 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class FastQRecord implements Cloneable {
 	private static Logger logger = Logger.getLogger(FastQRecord.class);
+	
+	static String SEQNAME = "Novelbio";
+	static long i = 0;
 	/** fastQ里面asc||码的指标与个数 */
 	HashMap<Integer, Integer> mapFastQFilter = new HashMap<Integer, Integer>();
 	
@@ -27,6 +30,25 @@ public class FastQRecord implements Cloneable {
 		seqFasta = new SeqFasta();
 		seqFasta.setTOLOWCASE(null);
 	}
+	/**
+	 * 每四行一个记录，将这四行用linux回车隔开，然后输入
+	 * @param fastqlines
+	 */
+	public FastQRecord(String fastqlines) {
+		String[] ss = fastqlines.split(TxtReadandWrite.ENTER_LINUX);
+		if (ss.length == 1) {
+			ss = fastqlines.split(TxtReadandWrite.ENTER_WINDOWS);
+		}
+		String seqName = ss[0].substring(1).trim();
+		if (seqName == null || seqName.equals("")) {
+			seqName = SEQNAME + i;
+			i ++;
+		}
+		seqFasta.setName(seqName);
+		seqFasta.setSeq(ss[1]);
+		setFastaQuality(ss[3]);
+	}
+	
 	protected void setMapFastqFilter(HashMap<Integer, Integer> mapFastQFilter) {
 		this.mapFastQFilter = mapFastQFilter;
 	}
@@ -39,19 +61,7 @@ public class FastQRecord implements Cloneable {
 	public SeqFasta getSeqFasta() {
 		return seqFasta;
 	}
-	/**
-	 * 每四行一个记录，将这四行用linux回车隔开，然后输入
-	 * @param fastqlines
-	 */
-	public FastQRecord(String fastqlines) {
-		String[] ss = fastqlines.split(TxtReadandWrite.ENTER_LINUX);
-		if (ss.length == 1) {
-			ss = fastqlines.split(TxtReadandWrite.ENTER_WINDOWS);
-		}
-		seqFasta.setName(ss[0].substring(1));
-		seqFasta.setSeq(ss[1]);
-		setFastaQuality(ss[3]);
-	}
+
 	
 	/** 裁剪序列时最短为多少， 默认为22
 	 */

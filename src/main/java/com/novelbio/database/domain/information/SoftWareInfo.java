@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+
+import org.apache.velocity.runtime.directive.Foreach;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -249,6 +252,17 @@ public class SoftWareInfo {
 	}
 	public static enum SoftWare {
 		bwa, bowtie, bowtie2, tophat, rsem,miranada, RNAhybrid, mirDeep, miReap,
-		samtools, picard, GATK, cufflinks
+		samtools, picard, GATK, cufflinks;
+		
+		static HashMap<String, SoftWare> mapStr2MapSoftware = new LinkedHashMap<String, SoftWareInfo.SoftWare>();
+		public static HashMap<String, SoftWare> getMapStr2MappingSoftware() {
+			if (mapStr2MapSoftware.size() == 0) {
+				mapStr2MapSoftware.put("BWA", bwa);
+				mapStr2MapSoftware.put("BOWTIE2", bowtie2);
+			}
+			return mapStr2MapSoftware;
+		}
+		
+		
 	}
 }

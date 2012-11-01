@@ -37,12 +37,11 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  */
 public class SamFile implements AlignSeq {
 	public static void main(String[] args) {
-		System.out.println(SamFile.isSamBamFile("aaa_sorted_realign_duplicate.txt"));
-//		SamFile samFile = new SamFile("aaa_sorted_realign_duplicate.txt");
-//		for (SamRecord samRecord : samFile.readLines()) {
-//			System.out.println(samRecord.toString());
-//			break;
-//		}
+		SamFile samFile = new SamFile("/home/zong0jie/Desktop/smallRNAtest/test6/tmpMapping/Nmda6_filtered_miRNA.sam");
+//		samFile.toBedSingleEnd();
+		for (SamRecord samRecord : samFile.readLines()) {
+			System.out.println(samRecord.toString());
+		}
 	}
 	
 	public static final int MAPPING_ALLREADS = 2;
@@ -63,7 +62,7 @@ public class SamFile implements AlignSeq {
 	 */
 	boolean uniqueRandomSelectReads = true;
 	/** mapping质量为0 */
-	int mapQualityFilter = 10;
+	int mapQualityFilter = 0;
 	/**
 	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
 	 */
@@ -222,7 +221,7 @@ public class SamFile implements AlignSeq {
 		return samReader.getReads(ReadName);
 	}
 	public SAMFileHeader getHeader() {
-		return samReader.getsamfilehead();
+		return samReader.getSamFileHead();
 	}
 	/**
 	 * 提取sam文件中没有mapping上的reads，将其保存为单个fastq文件，序列质量默认为中等
@@ -253,7 +252,7 @@ public class SamFile implements AlignSeq {
 			return null;
 		}
 		SamFile samFile = new SamFile();
-		SAMFileHeader samFileHeader = samReader.getsamfilehead();
+		SAMFileHeader samFileHeader = samReader.getSamFileHead();
 		samFile.setSamFileNew(samFileHeader, outSamFile, true);
 		
 		LinkedHashMap<String, SamRecord> mapName2Record = new LinkedHashMap<String, SamRecord>();
@@ -454,7 +453,6 @@ public class SamFile implements AlignSeq {
 		samFileSort.index();
 		SamFile samFileRealign = samFileSort.realign();
 //		FileOperate.delFile(samFileSort.getFileName());
-		
 		SamFile samFileRemoveDuplicate = samFileRealign.removeDuplicate();
 //		FileOperate.delFile(samFileRealign.getFileName());
 		
@@ -472,6 +470,7 @@ public class SamFile implements AlignSeq {
 		String pileupFile = FileOperate.changeFileSuffix(getFileName(), "_pileup", "gz");
 		pileup(pileupFile);
 	}
+	
 	public void pileup(String outPileUpFile) {
 		SamFile bamFile = convertToBam();
 		BamPileup bamPileup = new BamPileup();
@@ -482,6 +481,7 @@ public class SamFile implements AlignSeq {
 		bamPileup.setExePath(softWareInfoSamtools.getExePath());
 		bamPileup.pileup(outPileUpFile);
 	}
+	
 	private String faidxRefsequence() {
 		if (FileOperate.isFileExist(referenceFileName) && !FileOperate.isFileExist(referenceFileName+".fai")) {
 			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
@@ -513,6 +513,9 @@ public class SamFile implements AlignSeq {
 		BedSeq bedSeq = new BedSeq(bedFile, true);
 		bedSeq.setCompressType(null, bedFileCompType);
 		for (SamRecord samRecord : samReader.readLines()) {
+			if (samRecord.samRecord == null) {
+				System.out.println("stop");
+			}
 			if (!samRecord.isMapped() || samRecord.getMapQuality() < mapQualityFilter
 					|| (uniqMapping && !samRecord.isUniqueMapping()) ) {
 				continue;
@@ -572,7 +575,7 @@ public class SamFile implements AlignSeq {
 		}
 		SamReader samReader = new SamReader();
 		samReader.setFileName(samBamFile);
-		if (samReader.readLines().iterator().next() == null ) {
+		if (!samReader.isSamBamFile()) {
 			return thisFormate;
 		}
 		samReader.close();

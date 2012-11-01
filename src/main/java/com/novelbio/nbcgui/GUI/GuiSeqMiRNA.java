@@ -27,7 +27,6 @@ import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.domain.geneanno.SpeciesFile.ExtractSmallRNASeq;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.nbcgui.controlseq.CtrlMiRNA;
 import javax.swing.JComboBox;
 
 public class GuiSeqMiRNA extends JPanel{

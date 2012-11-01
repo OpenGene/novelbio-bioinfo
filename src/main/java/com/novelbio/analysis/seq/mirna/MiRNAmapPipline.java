@@ -181,7 +181,8 @@ public class MiRNAmapPipline {
 	 */
 	private void mapping(String fqFile, String chrFile, String samFileName, String bedFile, boolean uniqueMapping, boolean uniqueMappedReadsRandomSelectOne,String unMappedFq) {
 		MapBwa mapBwa = new MapBwa(fqFile, samFileName);
-		mapBwa.setExePath(exePath, chrFile);
+		mapBwa.setChrFile(chrFile);
+		mapBwa.setExePath(exePath);
 		SamFile samFile = mapBwa.mapReads();
 		samFile.setUniqMapping(uniqueMapping);
 		samFile.setUniqueRandomSelectOneRead(uniqueMappedReadsRandomSelectOne);

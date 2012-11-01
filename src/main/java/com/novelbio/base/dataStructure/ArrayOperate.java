@@ -32,7 +32,7 @@ public class ArrayOperate {
 		}
 		result = ss[0];
 		for (int i = 1; i < ss.length; i++) {
-			result = result + "\t" + ss[i];
+			result = result + sep + ss[i];
 		}
 		return result;
 	}

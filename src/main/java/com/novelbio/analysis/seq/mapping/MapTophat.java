@@ -194,14 +194,14 @@ public class MapTophat implements MapRNA{
 	}
 	
 	private String getLsFqFile() {
-		String lsFileName =" \"" + lsLeftFq.get(0).getReadFileName() + "\"";
+		String lsFileName = CmdOperate.addQuot(lsLeftFq.get(0).getReadFileName());
 		for (int i = 1; i < lsLeftFq.size(); i++) {
-			lsFileName = lsFileName + ",\"" + lsLeftFq.get(i).getReadFileName() + "\"";
+			lsFileName = lsFileName + "," + CmdOperate.addQuot(lsLeftFq.get(i).getReadFileName());
 		}
 		if (lsRightFq.size() > 0) {
-			lsFileName = lsFileName + " \"" + lsRightFq.get(0).getReadFileName() + "\"";
+			lsFileName = lsFileName + " " + CmdOperate.addQuot(lsRightFq.get(0).getReadFileName());
 			for (int i = 1; i < lsRightFq.size(); i++) {
-				lsFileName = lsFileName + ",\"" + lsRightFq.get(i).getReadFileName() + "\"";
+				lsFileName = lsFileName + "," + CmdOperate.addQuot(lsRightFq.get(i).getReadFileName());
 			}
 		}
 		return lsFileName;

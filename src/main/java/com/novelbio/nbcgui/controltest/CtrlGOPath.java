@@ -223,7 +223,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	 * 没有就返回null
 	 */
 	private void getResult(String prix,ArrayList<GeneID>lsCopedIDs) {
-		functionTest.setLsTest(lsCopedIDs);
+		functionTest.setLsTestGeneID(lsCopedIDs);
 		ArrayList<String[]> lsResultTest = functionTest.getTestResult();
 		if (lsResultTest == null) {
 			return;

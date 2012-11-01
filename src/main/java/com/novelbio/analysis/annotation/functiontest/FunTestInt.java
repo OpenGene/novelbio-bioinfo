@@ -26,7 +26,7 @@ public interface FunTestInt {
 	 * 给定accID的copedID，设定待检验的样本
 	 * @param lsCopedID
 	 */
-	public void setLsTest(ArrayList<GeneID> lsCopedIDs);
+	public void setLsTestGeneID(ArrayList<GeneID> lsCopedIDs);
 	/**
 	 * 最好能第一时间设定
 	 * 读取genUniID item,item格式的表
@@ -46,10 +46,6 @@ public interface FunTestInt {
 	 * @param fileName
 	 */
 	public void setLsBGCopedID(ArrayList<GeneID> lsBGaccID);
-	/**
-	 * 每次设置新的LsCopedTest后必须重置
-	 */
-	ArrayList<String[]> lsAnno = null;
 	/**
 	 * 待修正
 	 * 返回Gene2ItemPvalue

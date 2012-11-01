@@ -62,16 +62,12 @@ public class CtrlGO extends CtrlGOPath{
 		if (goAlgorithm != GoAlgorithm.novelgo) {
 			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_ELIM,
 					QtaxID, blast, evalue, StaxID);
+			functionTest.setGOAlgorithm(goAlgorithm);
 		} else {
 			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_NOVELBIO,
 					QtaxID, blast, evalue, StaxID);
 		}
 		functionTest.setGOtype(GOClass);
-	}
-	public void setGOalgorithm(GoAlgorithm goAlgorithm) {
-		if (goAlgorithm != GoAlgorithm.novelgo) {
-			ctrlGO.setGOalgorithm(goAlgorithm);
-		}
 	}
 	@Override
 	protected void copeFile(String prix, String excelPath) {

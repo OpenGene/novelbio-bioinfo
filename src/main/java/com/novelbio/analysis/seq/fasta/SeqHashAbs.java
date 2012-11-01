@@ -371,8 +371,8 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		return lsSeqfasta;
 	}
 	@Override
-	public void getSeq(SiteInfo mapInfo) {
-		SeqFasta seqFasta = getSeq(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs());
-		mapInfo.setSeq(seqFasta, true);
+	public void getSeq(SiteInfo siteInfo) {
+		SeqFasta seqFasta = getSeq(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs());
+		siteInfo.setSeq(seqFasta, true);
 	}
 }

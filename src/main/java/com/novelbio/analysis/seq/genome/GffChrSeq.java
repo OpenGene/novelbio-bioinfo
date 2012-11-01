@@ -142,8 +142,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			}
 			if (getAllIso) {
 				setIsoToGetSeq.addAll(getGeneSeqAllIso(gffDetailGene));
-			}
-			else {
+			} else {
 				setIsoToGetSeq.addAll(getGeneSeqLongestIso(gffDetailGene));
 			}
 		}
@@ -229,7 +228,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 				num++;
 				SeqFasta seqFasta = getSeq(gffGeneIsoInfo);
 
-				isGetSeq = copeSeqFasta(seqFasta);
+				isGetSeq = isSeqFastaAndWriteToFile(seqFasta);
 				
 				suspendCheck();
 				if (flagStop) {
@@ -243,7 +242,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 				num++;
 				getSeq(siteInfo);
 				SeqFasta seqFasta = siteInfo.getSeqFasta();
-				isGetSeq = copeSeqFasta(seqFasta);
+				isGetSeq = isSeqFastaAndWriteToFile(seqFasta);
 				
 				suspendCheck();
 				if (flagStop) {
@@ -278,8 +277,8 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 	
 	
-	/** 返回是否获取本序列 */
-	private boolean copeSeqFasta(SeqFasta seqFasta) {
+	/** 判定序列是否存在并且够长，同时根据需要写入output */
+	private boolean isSeqFastaAndWriteToFile(SeqFasta seqFasta) {
 		if (seqFasta == null || seqFasta.Length() < 3) {
 			return false;
 		}
@@ -297,11 +296,11 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		return true;
 	}
 	/**
-	 * 给定坐标，获得该坐标所对应的序列
+	 * 给定坐标，获得该坐标所对应的序列,会根据输入的方向进行反向
 	 * @return
 	 */
-	public void getSeq(SiteInfo mapInfo) {
-		gffChrAbs.getSeqHash().getSeq(mapInfo);
+	public void getSeq(SiteInfo siteInfo) {
+		gffChrAbs.getSeqHash().getSeq(siteInfo);
 	}
 	/**
 	 * 给定坐标，提取序列

@@ -116,7 +116,7 @@ public class GUIFileOpen  extends JFrame {
 		int returnVal = chooser.showSaveDialog(getParent());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			currendDir = chooser.getSelectedFile().getParentFile();
-			return FileOperate.addSuffix(chooser.getSelectedFile().getAbsolutePath(),extensions[0]);
+			return FileOperate.addSuffix(chooser.getSelectedFile().getAbsolutePath(), extensions[0]);
 		}
 		return null;
 	}

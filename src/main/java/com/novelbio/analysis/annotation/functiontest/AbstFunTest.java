@@ -25,12 +25,13 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	boolean blast = false;
 	int[] blastTaxID = null;
 	double blastEvalue = 1e-10;
+	
 	ArrayList<GeneID> lsCopedIDsTest = null;
 	ArrayList<GeneID> lsCopedIDsBG = null;
 	/** genUniID item,item格式  */
 	ArrayList<String[]> lsTest = null;
 	/** genUniID item,item格式 */
-	ArrayList<String[]> lsBG = null;
+	ArrayList<String[]> lsBGGeneID2Items = null;
 	String BGfile = "";
 	/**
 	 * gene2CopedID的对照表，多个accID对应同一个geneID的时候就用这个hash来处理
@@ -39,8 +40,14 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * 但是很可能value里面的copedID有相同的accID，这时候为了避免这种情况，我新建了一个hashAcc2CopedID
 	 * 专门用于去冗余
 	 */
-	HashMap<String, ArrayList<GeneID>> hashgene2CopedID = new HashMap<String, ArrayList<GeneID>>();
+	HashMap<String, ArrayList<GeneID>> mapAccID2LsGeneID = new HashMap<String, ArrayList<GeneID>>();
 	ArrayList<String[]> lsTestResult = new ArrayList<String[]>();
+	
+	/**
+	 * Gene2GO或者Gene2Path的信息
+	 * 每次设置新的LsCopedTest后必须重置
+	 */
+	ArrayList<String[]> lsGene2GOPath = null;
 
 	public AbstFunTest(ArrayList<GeneID> lsCopedIDsTest, ArrayList<GeneID> lsCopedIDsBG, boolean blast) {
 		this.lsCopedIDsTest = lsCopedIDsTest;
@@ -59,9 +66,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	public void setBlastTaxID(int... taxID) {
 		this.blastTaxID = taxID;
 	}
-	
 
-	
 	/**
 	 * 设定物种
 	 * @param taxID
@@ -78,57 +83,56 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	}
 	/**
 	 * 用copedID的geneUniID先查找lsBG，找不到再从头查找
+	 * 如果lsTest中有一些新的gene，也添加入lsBGGeneID2Items中
 	 * @param lsTest
 	 * @return
 	 */
 	private ArrayList<String[]> getLsTestFromLsBG(ArrayList<GeneID> lsTest) {
 		//去冗余用的
-		HashSet<GeneID> hashCopedIDs = new HashSet<GeneID>();
-		for (GeneID copedID : lsTest) {
-			hashCopedIDs.add(copedID);
+		HashSet<GeneID> setGeneIDs = new HashSet<GeneID>();
+		for (GeneID geneID : lsTest) {
+			setGeneIDs.add(geneID);
 		}
 		if (blast) {
-			for (GeneID copedID : hashCopedIDs) {
+			for (GeneID copedID : setGeneIDs) {
 				copedID.setBlastInfo(blastEvalue, blastTaxID);
 			}
 		}
-		
-		if (lsBG == null || lsBG.size() < 1) {
-			return convert2Item(hashCopedIDs);
+		//如果没有lsBG，就查找数据库，否则查找lsBG
+		if (lsBGGeneID2Items == null || lsBGGeneID2Items.size() < 1) {
+			return convert2Item(setGeneIDs);
 		}
-		HashMap<String, String>  hashBG = new HashMap<String, String>();
-		for (String[] strings : lsBG) {
-			hashBG.put(strings[0], strings[1]);
+		
+		HashMap<String, String>  mapBGGeneID2Items = new HashMap<String, String>();
+		for (String[] strings : lsBGGeneID2Items) {
+			mapBGGeneID2Items.put(strings[0], strings[1]);
 		}
 		ArrayList<String[]> lsout = new ArrayList<String[]>();
-		ArrayList<GeneID> lsNo = new ArrayList<GeneID>();
-		for (GeneID copedID : hashCopedIDs) {
-			String tmpresult = hashBG.get(copedID.getGenUniID());
+		
+		//输入的lsTest基因，如果在背景中找不到对应的信息，则保存进入该list
+		ArrayList<GeneID> lsInputNotFindGene = new ArrayList<GeneID>();
+		for (GeneID copedID : setGeneIDs) {
+			String tmpresult = mapBGGeneID2Items.get(copedID.getGenUniID());
 			if (tmpresult == null) {
-				lsNo.add(copedID);
+				lsInputNotFindGene.add(copedID);
 				continue;
 			}
 			String[] result = new String[]{copedID.getGenUniID(), tmpresult};
 			lsout.add(result);
 		}
-		if (lsNo.size() > 0) {
-			ArrayList<String[]> lsnew = convert2Item(lsNo);
+		if (lsInputNotFindGene.size() > 0) {
+			ArrayList<String[]> lsnew = convert2Item(lsInputNotFindGene);
 			lsout.addAll(lsnew);
-			lsBG.addAll(lsnew);
+			lsBGGeneID2Items.addAll(lsnew);
 		}
 		return lsout;
 	}
-	/**
-	 * 要先读取AccID文件
-	 * @return
-	 */
-	public ArrayList<String[]> getLsBG() {
-		return lsBG;
-	}
+
+	
 	public void setLsTestAccID(ArrayList<String> lsCopedID) {
 		lsCopedIDsTest = new ArrayList<GeneID>();
 		lsTestResult = new ArrayList<String[]>();
-		lsAnno = null;
+		lsGene2GOPath = null;
 		
 		for (String string : lsCopedID) {
 			GeneID copedID = new GeneID(string, taxID, false);
@@ -141,9 +145,9 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		lsTest = getLsTestFromLsBG( lsCopedIDsTest);
 	}
 	
-	public void setLsTest(ArrayList<GeneID> lsCopedIDs) {
+	public void setLsTestGeneID(ArrayList<GeneID> lsCopedIDs) {
 		this.lsCopedIDsTest = lsCopedIDs;
-		lsAnno = null;
+		lsGene2GOPath = null;
 		fillCopedIDInfo(lsCopedIDsTest);
 		lsTest = getLsTestFromLsBG(lsCopedIDsTest);
 		lsTestResult = new ArrayList<String[]>();
@@ -158,9 +162,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		if (!FileOperate.isFileExist(fileName)) {
 			logger.error("no FIle exist: "+ fileName);
 		}
-		lsBG = ExcelTxtRead.readLsExcelTxt(fileName, new int[]{1,2}, 1, -1, true);
-//		TxtReadandWrite txtReadBG = new TxtReadandWrite(fileName, false);
-//		lsBG = txtReadBG.ExcelRead("\t", 1, 1, txtReadBG.ExcelRows(), 2, 1);
+		lsBGGeneID2Items = ExcelTxtRead.readLsExcelTxt(fileName, new int[]{1,2}, 1, -1, true);
 	}
 	
 	/**
@@ -191,7 +193,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 			}
 			lsCopedIDsBG.add(copedID);
 		}
-		lsBG = convert2Item(lsCopedIDsBG);
+		lsBGGeneID2Items = convert2Item(lsCopedIDsBG);
 	}
 	/**
 	 * 最好能第一时间设定
@@ -204,12 +206,15 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 			copedID.setBlastInfo(blastEvalue, blastTaxID);
 		}
 		this.lsCopedIDsBG = lsBGaccID;
-		lsBG = convert2Item(lsCopedIDsBG);
+		lsBGGeneID2Items = convert2Item(lsCopedIDsBG);
 	}
 	/**
-	 * 每次设置新的LsCopedTest后必须重置
+	 * 要先读取AccID文件
+	 * @return
 	 */
-	ArrayList<String[]> lsAnno = null;
+	protected ArrayList<String[]> getLsBG() {
+		return lsBGGeneID2Items;
+	}
 	/**
 	 * 待修正
 	 * 返回Gene2ItemPvalue
@@ -238,8 +243,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 		ArrayList<String[]> lsResult = null;
 		if (blast) {
 			lsResult = combArrayListHash(lsTestResult, lsAnno, 0, 6);
-		}
-		else {
+		} else {
 			lsResult = combArrayListHash(lsTestResult, lsAnno, 0, 3);
 		}
 		return lsResult;
@@ -322,13 +326,12 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 				return null;
 			}
 			ArrayList<String[]> lsbg = new ArrayList<String[]>();
-			for (String[] strings : lsBG) {
+			for (String[] strings : lsBGGeneID2Items) {
 				if (strings[1] == null || strings[1].trim().equals("")) {
 					continue;
 				}
 				lsbg.add(strings);
 			}
-	
 			lsTestResult = DoFisherTest.getFisherResult(lstest, lsbg, this);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -351,7 +354,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	{
 		//////////////  先 清 空  ////////////////////////
 		HashSet<String> hashAccID = new HashSet<String>();
-		hashgene2CopedID.clear();
+		mapAccID2LsGeneID.clear();
 		////////////////////////////////////////////
 		for (GeneID copedID : lsCopedIDs) {
 			//去冗余，accID相同去掉
@@ -359,13 +362,13 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 				continue;
 			}
 			hashAccID.add(copedID.getAccID());
-			if (hashgene2CopedID.containsKey(copedID.getGenUniID())) {
-				hashgene2CopedID.get(copedID.getGenUniID()).add(copedID);
+			if (mapAccID2LsGeneID.containsKey(copedID.getGenUniID())) {
+				mapAccID2LsGeneID.get(copedID.getGenUniID()).add(copedID);
 			}
 			else {
 				ArrayList<GeneID> lstmp = new ArrayList<GeneID>();
 				lstmp.add(copedID);
-				hashgene2CopedID.put(copedID.getGenUniID(), lstmp);
+				mapAccID2LsGeneID.put(copedID.getGenUniID(), lstmp);
 			}
 		}
 	}
@@ -382,10 +385,10 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 * @return
 	 */
 	public ArrayList<String[]> getGene2Item() {
-		if (lsAnno == null) {
-			lsAnno = setGene2Item();
+		if (lsGene2GOPath == null) {
+			lsGene2GOPath = setGene2Item();
 		}
-		return lsAnno;
+		return lsGene2GOPath;
 	}
 	/**
 	 * 根据不同的Test有不同的情况，填充lsAnno
@@ -411,7 +414,7 @@ public abstract class AbstFunTest implements ItemInfo, FunTestInt{
 	 */
 	public void saveLsBGItem(String txtBGItem) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtBGItem, true);
-		txtOut.ExcelWrite(lsBG, 1, 1);
+		txtOut.ExcelWrite(lsBGGeneID2Items, 1, 1);
 		txtOut.close();
 	}
 	/**

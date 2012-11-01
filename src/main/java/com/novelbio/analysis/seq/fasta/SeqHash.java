@@ -164,7 +164,7 @@ public class SeqHash implements SeqHashInt{
 		return seqFasta;
 	}
 	/**
-	 * 根据给定的mapInfo，获得序列，注意序列并没有根据cis5to3进行反向
+	 * 根据给定的mapInfo，获得序列，注意序列会根据cis5to3进行反向
 	 * 自动给seqfasta添加名字
 	 * @param mapInfo
 	 */
@@ -173,7 +173,7 @@ public class SeqHash implements SeqHashInt{
 		seqHashAbs.getSeq(mapInfo);
 	}
 	/**
-	 * 根据给定的mapInfo，获得序列，注意序列并没有根据cis5to3进行反向，只是标记了cis5to3
+	 * 根据给定的mapInfo，获得序列，注意序列会根据cis5to3进行反向
 	 * @param mapinfoRefSeqIntactAA
 	 */
 	public void getSeq(ArrayList<? extends SiteInfo> lsMapInfos) {

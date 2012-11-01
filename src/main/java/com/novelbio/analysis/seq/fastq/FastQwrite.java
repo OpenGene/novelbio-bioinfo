@@ -59,6 +59,9 @@ class FastQwrite {
 	 * @param bedRecord
 	 */
 	protected void writeFastQRecord(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
+		if (fastQRecord1.getSeqQuality()) {
+			
+		}
 		creatTxt();
 		txtSeqFile.writefileln(fastQRecord1.toString());
 		if (fastQwriteMate != null) {

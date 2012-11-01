@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.analysis.seq.mapping.MapBwa;
+import com.novelbio.analysis.seq.mapping.MapDNA;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
@@ -36,7 +37,6 @@ public class CtrlFastQMapping {
 	boolean filter = true;
 	boolean trimNNN = false;
 	int fastqQuality = FastQ.QUALITY_MIDIAN;
-	boolean uniqMapping = true;
 	int readsLenMin = 18;
 	MapLibrary libraryType = MapLibrary.SingleEnd;
 	String adaptorLeft = "";
@@ -65,6 +65,7 @@ public class CtrlFastQMapping {
 	Species species;
 	int map2Index = MAP_TO_CHROM;
 	
+	SoftWare softMapping = SoftWare.bwa;
 	
 	SoftWareInfo softWareInfo = new SoftWareInfo();
 	
@@ -101,9 +102,6 @@ public class CtrlFastQMapping {
 	public void setTrimNNN(boolean trimNNN) {
 		this.trimNNN = trimNNN;
 	}
-	public void setUniqMapping(boolean uniqMapping) {
-		this.uniqMapping = uniqMapping;
-	}
 	public void setChrIndexFile(String chrIndexFile) {
 		if (FileOperate.isFileExistAndBigThanSize(chrIndexFile, 10)) {
 			this.chrIndexFile = chrIndexFile;
@@ -123,6 +121,9 @@ public class CtrlFastQMapping {
 	}
 	public void setMismatch(Double mismatch) {
 		this.mismatch = mismatch;
+	}
+	public void setSoftMapping(SoftWare softMapping) {
+		this.softMapping = softMapping;
 	}
 	public void setThread(int thread) {
 		this.thread = thread;
@@ -325,22 +326,26 @@ public class CtrlFastQMapping {
 	}
 	
 	private void mapping() {
-		softWareInfo.setName(SoftWare.bwa);
+		softWareInfo.setName(softMapping);
 		for (Entry<String, FastQ[]> entry : mapCondition2CombFastQLRFiltered.entrySet()) {
 			String prefix = entry.getKey();
 			FastQ[] fastQs = entry.getValue();
-			MapBwa mapBwa = new MapBwa();
+			MapDNA mapBwa = new MapBwa();
 			
 			if (species.getTaxID() == 0) {
-				mapBwa.setExePath(softWareInfo.getExePath(), chrIndexFile);
+				mapBwa.setExePath(softWareInfo.getExePath());
+				mapBwa.setChrFile(chrIndexFile);
 			}
 			else {
 				if (map2Index == MAP_TO_CHROM) {
-					mapBwa.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bwa));
+					mapBwa.setExePath(softWareInfo.getExePath());
+					mapBwa.setChrFile(species.getIndexChr(softMapping));
 				} else if (map2Index == MAP_TO_REFSEQ) {
-					mapBwa.setExePath(softWareInfo.getExePath(), species.getIndexRef(SoftWare.bwa));
+					mapBwa.setExePath(softWareInfo.getExePath());
+					mapBwa.setChrFile(species.getIndexRef(softMapping));
 				} else if (map2Index == MAP_TO_REFSEQ_LONGEST_ISO) {
-					mapBwa.setExePath(softWareInfo.getExePath(), species.getRefseqLongestIsoNrFile());
+					mapBwa.setExePath(softWareInfo.getExePath());
+					mapBwa.setChrFile(species.getRefseqLongestIsoNrFile());
 				}
 			}
 
@@ -349,12 +354,8 @@ public class CtrlFastQMapping {
 			mapBwa.setGapLength(gapLen);
 			mapBwa.setMismatch(mismatch);
 			mapBwa.setSampleGroup(prefix, null, null, null);
-			if (libraryType == MapLibrary.MatePair) {
-				mapBwa.setInsertSize(200, 4000);
-			}
-			else if (libraryType == MapLibrary.PairEnd) {
-				mapBwa.setInsertSize(150, 500);
-			}
+			mapBwa.setMapLibrary(libraryType);
+			
 			mapBwa.setThreadNum(thread);
 			SamFile samFile = mapBwa.mapReads();
 			SamFileStatistics samFileStatistics = samFile.getStatistics();

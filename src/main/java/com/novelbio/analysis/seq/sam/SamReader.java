@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.sam;
 import java.io.File;
 import java.util.Iterator;
 
+import org.apache.commons.math.optimization.univariate.BracketFinder;
 import org.apache.log4j.Logger;
 
 import net.sf.samtools.SAMFileHeader;
@@ -17,6 +18,7 @@ public class SamReader {
 	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
 	 */
 	SAMFileReader samFileReader;
+	SAMFileHeader samFileHeader;
 	String fileName;
 	
 	Boolean pairend;
@@ -54,8 +56,11 @@ public class SamReader {
 		}
 		return pairend;
 	}
-	protected SAMFileHeader getsamfilehead() {
-		return getSamFileReader().getFileHeader();
+	protected SAMFileHeader getSamFileHead() {
+		if (samFileHeader == null) {
+			getSamFileReader();
+		}
+		return samFileHeader;
 	}
 	/**
 	 * 注意大小写区分
@@ -86,6 +91,25 @@ public class SamReader {
 		}
 		return itContent;
 	}
+	protected boolean isSamBamFile() {
+		int num = 0;
+		int allNum = 100;
+		boolean isSamBamFile = false;
+		for (SamRecord samRecord : readLines()) {
+			if (samRecord.getName() == null || samRecord.getName().equals("")) {
+				num ++;
+			}
+			else {
+				isSamBamFile = true;
+				break;
+			}
+			if (num > allNum) {
+				break;
+			}
+		}
+		close();
+		return isSamBamFile;
+	}
 	/**
 	 * 迭代读取文件
 	 */
@@ -114,17 +138,26 @@ public class SamReader {
 							if (e.toString().contains("Error parsing text SAM file. Non-numeric value in POS column")) {
 								errorFormateLineNum++;
 							}
-							if (errorFormateLineNum > 10 && correctLineNum < 5) {
+							if (errorFormateLineNum > 100 && correctLineNum < 5) {
 								return null;
 							}
-							System.out.println(e.toString());
-							return next();
+							logger.error(e.toString());
+							return getErrorSamRecord();
 						} catch (Exception e) {
+							e.printStackTrace();
 							logger.error(e);
+							return getErrorSamRecord();
 						}
-						
 						SamRecord samRecordThis = new SamRecord(samRecord);
 						return samRecordThis;
+					}
+					
+					private SamRecord getErrorSamRecord() {
+						SAMRecord samRecorderror = new SAMRecord(getSamFileHead());
+						samRecorderror.setMappingQuality(0);
+						samRecorderror.setFlags(4);
+						SamRecord samRecordError = new SamRecord(samRecorderror);
+						return samRecordError;
 					}
 					@Override
 					public void remove() {
@@ -139,6 +172,7 @@ public class SamReader {
 		close();
 		File file = new File(fileName);
 		samFileReader = new SAMFileReader(file);
+		samFileHeader = samFileReader.getFileHeader();
 		return samFileReader;
 	}
 	public void close() {

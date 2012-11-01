@@ -15,7 +15,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class MediaNormalization {
 	public static void main(String[] args) {
-		String excelFile = "/home/zong0jie/桌面/宗杰归一化.xlsx";
+		String excelFile = "/home/zong0jie/桌面/宗杰归一化2.xlsx";
 		String out = FileOperate.changeFileSuffix(excelFile, "_normalization", null);
 		MediaNormalization mediaNormalization = new MediaNormalization();
 		mediaNormalization.readFile(excelFile);

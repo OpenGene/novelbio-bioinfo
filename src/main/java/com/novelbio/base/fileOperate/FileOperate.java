@@ -70,7 +70,7 @@ public class FileOperate {
 		return File.separator;
 	}
 	/**
-	 * 给定路径名，返回其上一层路径，带"/" 如给定 /wer/fw4e/sr/frw/s3er.txt 返回 /wer/fw4e/sr/frw/
+	 * 给定路径名，返回其上一层路径，带"/" 如给定 /wer/fw4e/sr/frw/s3er.txt 返回 /wer/fw4e/sr/frw/<br>
 	 * 如果为相对路径的最上层，譬如给定的是soap 则返回“”
 	 * 可以给定不存在的路径
 	 * 
@@ -91,10 +91,13 @@ public class FileOperate {
 	 * 给定文件名，加上后缀
 	 * @param fileName 可以包含路径，如果包含路径，则返回全部路径名和后缀。
 	 * 如果已有后缀，则不添加。
-	 * @suffix 待添加的后缀名
+	 * @suffix 待添加的后缀名，如果为""，则不添加
 	 * @return
 	 */
 	public static String addSuffix(String fileName,String suffix) {
+		if (suffix == null || suffix.trim().equals("")) {
+			return fileName;
+		}
 		String[] thisFileName = getFileNameSep(fileName);
 		if (thisFileName[1].equals(suffix)) {
 			return fileName;

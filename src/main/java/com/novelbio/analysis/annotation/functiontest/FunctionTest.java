@@ -64,8 +64,8 @@ public class FunctionTest implements FunTestInt {
 	}
 
 	@Override
-	public void setLsTest(ArrayList<GeneID> lsCopedIDs) {
-		funTest.setLsTest(lsCopedIDs);
+	public void setLsTestGeneID(ArrayList<GeneID> lsCopedIDs) {
+		funTest.setLsTestGeneID(lsCopedIDs);
 	}
 
 	@Override

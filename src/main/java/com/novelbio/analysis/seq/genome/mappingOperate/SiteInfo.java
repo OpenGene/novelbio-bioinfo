@@ -31,7 +31,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	protected Double score = null; // 比较的标签，可以是表达等
 
 	
-	protected String name = "";
+	protected String name;
 	protected String description = "";
 	protected int flagLoc = ListCodAbs.LOC_ORIGINAL;
 	/** null表示没有方向 */
@@ -227,25 +227,17 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	 * @param aaSeq
 	 */
 	public void setSeq(SeqFasta seqFasta) {
-		if (seqFasta == null) {
-			this.seqFasta = null;
-			return;
-		}
-		if (cis5to3 != null && cis5to3 == false) {
-			seqFasta = seqFasta.reservecom();
-		}
-		seqFasta.setName(getName());
-		this.seqFasta = seqFasta;
+		setSeq(seqFasta, true);
 	}
 	/**
 	 * 该区域的核酸序列
 	 * seqfasta的name 用map的name去设定
 	 * @param seqFasta
-	 * @param setName 
 	 * @param reservecom 是否根据cis5to3进行反向序列
 	 */
 	public void setSeq(SeqFasta seqFasta, boolean reservecom) {
 		if (seqFasta == null) {
+			this.seqFasta = null;
 			return;
 		}
 		if (reservecom && cis5to3 != null && cis5to3 == false) {

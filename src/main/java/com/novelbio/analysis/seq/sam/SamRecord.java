@@ -72,12 +72,11 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 		return samRecord;
 	}
 	private void setSiteInfo(SAMRecord samRecord) {
-		super.setCis5to3(!samRecord.getReadNegativeStrandFlag());
-		super.setName(samRecord.getReadName());
-		super.setRefID(samRecord.getReferenceName());
-		super.setSeq(new SeqFasta(samRecord.getReadString()), false);
-		super.setStartEndLoc(samRecord.getAlignmentStart(),
-				samRecord.getAlignmentEnd());
+		try { super.setCis5to3(!samRecord.getReadNegativeStrandFlag()); } catch (Exception e) { }
+		try { super.setRefID(samRecord.getReferenceName()); } catch (Exception e) { }
+		try { super.setSeq(new SeqFasta(samRecord.getReadString()), false); } catch (Exception e) { }
+		try { super.setStartEndLoc(samRecord.getAlignmentStart(), samRecord.getAlignmentEnd()); } catch (Exception e) { }
+		try { super.setName(samRecord.getReadName());} catch (Exception e) { }
 	}
 	public String getDescription() {
 		return samRecord.toString();

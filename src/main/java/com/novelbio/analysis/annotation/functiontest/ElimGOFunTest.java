@@ -109,7 +109,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	
 	protected ArrayList<String[]> doTest() {
 		topGO.setGoType(GoType);
-		topGO.setLsBG(lsBG);
+		topGO.setLsBG(lsBGGeneID2Items);
 		topGO.setLsGene(lsGeneID);
 		topGO.run();
 		return topGO.getLsTestResult();
@@ -138,7 +138,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 			ArrayList<String> lsGO2GeneID = ArrayOperate.getCoLs(lsTmpGeneID, lsGeneID); //获得某个GO中所含有的所有差异基因
 			
 			for (String string : lsGO2GeneID) {
-				ArrayList<GeneID> lscopedIDs = hashgene2CopedID.get(string);
+				ArrayList<GeneID> lscopedIDs = mapAccID2LsGeneID.get(string);
 				//每一个基因所含有的多个copedID，也就是多个不同的accID
 				for (GeneID copedID : lscopedIDs) {
 					String[] tmpresultRaw = copedID.getAnno(blast);

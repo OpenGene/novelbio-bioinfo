@@ -1,5 +1,7 @@
 package com.novelbio.analysis.seq.mapping;
 
+import java.util.HashMap;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
@@ -13,7 +15,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  *
  */
-public class MapBwa {
+public class MapBwa implements MapDNA {
 	public static void main(String[] args) {
 		MapBwa mapBwa = new MapBwa();
 		mapBwa.setSampleGroup("asa", null, null, null);
@@ -38,10 +40,9 @@ public class MapBwa {
 	String leftFq = "";
 	String rightFq = "";
 	boolean pairend = false;
-	/** 默认是solexa的最短插入  */
-	int minInsert = 0;
-	/**  默认是solexa的最长插入  */
-	int maxInsert = 500;
+
+	MapLibrary mapLibrary = MapLibrary.PairEnd;
+	
 	/** 含有几个gap */
 	int gapNum = 1;
 	/** gap的长度 */
@@ -143,18 +144,20 @@ public class MapBwa {
 	private String getMismatch() {
 		return "-n " + mismatch + " ";
 	}
+	public void setChrFile(String chrFile) {
+		this.chrFile = chrFile;
+	}
 	/**
 	 * 设定bwa所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
 	 * @param chrFile
 	 */
-	public void setExePath(String exePath, String chrFile) {
-		if (exePath == null || exePath.trim().equals(""))
+	public void setExePath(String exePath) {
+		if (exePath == null || exePath.trim().equals("")) {
 			this.ExePath = "";
-		else
+		} else {
 			this.ExePath = FileOperate.addSep(exePath);
-	
-		this.chrFile = chrFile;
+		}
 	}
 	/** 是否为双端 */
 	private boolean isPairend() {
@@ -173,13 +176,9 @@ public class MapBwa {
 	public void setReadInMemory(boolean readInMemory) {
 		this.readInMemory = readInMemory;
 	}
-	/**
-	 * bwa中不考虑minInsertLen
-	 * 设定插入片段长度，默认是solexa的长度，150-500
-	 */
-	public void setInsertSize(int minInsertLen, int maxInsertLen) {
-		this.minInsert = minInsertLen;
-		this.maxInsert = maxInsertLen;
+	
+	public void setMapLibrary(MapLibrary mapLibrary) {
+		this.mapLibrary = mapLibrary;
 	}
 	/**
 	 * 本次mapping的组，所有参数都不能有空格
@@ -234,6 +233,26 @@ public class MapBwa {
 		FastQ fastQ = new FastQ(leftFq);
 		return fastQ.getOffset();
 	}
+	private String getInsertSize() {
+		int insertMax = 500;
+		if (isPairEnd()) {
+			if (mapLibrary == MapLibrary.SingleEnd || mapLibrary == MapLibrary.PairEnd) {
+				insertMax = 500;
+			} else if (mapLibrary == MapLibrary.MatePair) {
+				insertMax = 10000;
+			} else if (mapLibrary == MapLibrary.MatePairLong) {
+				insertMax = 25000;
+			}
+			return " -a " + insertMax + " ";
+		}
+		return "";
+	}
+	private boolean isPairEnd() {
+		if (!FileOperate.isFileExist(leftFq) || FileOperate.isFileExist(rightFq)) {
+			return false;
+		}
+		return true;
+	}
 	/**
 	 * 参数设定不能用于solid
 	 */
@@ -274,7 +293,7 @@ public class MapBwa {
 //		bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai 
 //		TGACT2.sai barcod_TGACT.fastq barcod_TGACT2.fastq > TGACT.sam
 		if (isPairend()) {
-			cmd = this.ExePath + "bwa sampe " + sampleGroup + "-a " + maxInsert;
+			cmd = this.ExePath + "bwa sampe " + sampleGroup + getInsertSize();
 			if (FileOperate.getFileSize(chrFile) < GENOME_SIZE_IN_MEMORY || readInMemory) {
 				cmd = cmd + " -P ";//将基因组读入内存
 			}
@@ -294,7 +313,7 @@ public class MapBwa {
 		return samFile;
 	}
 	
-	private String addSamToFileName(String outFileName) {
+	protected static String addSamToFileName(String outFileName) {
 		if (outFileName.endsWith(".sam"))
 			return outFileName;
 		else if (outFileName.endsWith("."))

@@ -20,13 +20,18 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.nbcgui.GUI.GuiLayeredPanSpeciesVersion.SpeciesSelect;
 import com.novelbio.nbcgui.controlseq.CtrlFastQMapping;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import javax.swing.ButtonGroup;
+import javax.swing.JLayeredPane;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class GuiFastQJpanel extends JPanel {
 	private JTextField txtMinReadsLen;
@@ -47,14 +52,8 @@ public class GuiFastQJpanel extends JPanel {
 	JCheckBox chckbxMapping;
 	
 	JComboBoxData<Integer> cmbReadsQuality;
-	JComboBoxData<String> cmbSpeciesVersion;
-	JComboBoxData<Species> cmbSpecies;
 	JComboBoxData<Integer> cmbMaptoIndex;
 	JComboBoxData<MapLibrary> cmbLibrary;
-	
-	
-	
-	JCheckBox chckbxUniqMapping;
 	JButton btnSaveto;
 	JButton btnOpenFastqLeft;
 	JButton btnDelFastqLeft;
@@ -62,12 +61,13 @@ public class GuiFastQJpanel extends JPanel {
 	JButton btnRun;
 	JButton btnOpenFastQRight;
 	JButton btnDeleteFastQRight;
+	GuiLayeredPanSpeciesVersion speciesLayOut;
 	
 	ButtonGroup buttonGroupMappingTo = new ButtonGroup();
 	
 	JCheckBox chckbxLowcaseAdaptor;
 	CtrlFastQMapping ctrlFastQMapping = new CtrlFastQMapping();
-	
+	JComboBoxData<SoftWare> cmbMappingSoftware;
 	ArrayList<Component> lsComponentsMapping = new ArrayList<Component>();
 	ArrayList<Component> lsComponentsFiltering = new ArrayList<Component>();
 	
@@ -150,48 +150,14 @@ public class GuiFastQJpanel extends JPanel {
 		chckbxMapping.setBounds(8, 346, 86, 22);
 		add(chckbxMapping);
 		
-		cmbSpeciesVersion = new JComboBoxData<String>();
-		cmbSpeciesVersion.setBounds(173, 402, 207, 23);
-		add(cmbSpeciesVersion);
-		
 		JLabel lblAlgrethm = new JLabel("algrethm");
 		lblAlgrethm.setBounds(12, 187, 66, 14);
 		add(lblAlgrethm);
-		
-		cmbSpecies = new JComboBoxData<Species>();
-		cmbSpecies.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Species species = cmbSpecies.getSelectedValue();
-				cmbSpeciesVersion.setMapItem(species.getMapVersion());
-				if (species.getTaxID() == 0) {
-					txtMappingIndex.setEnabled(true);
-					btnMappingindex.setEnabled(true);
-					cmbMaptoIndex.setEnabled(false);
-				}
-				else {
-					txtMappingIndex.setEnabled(false);
-					btnMappingindex.setEnabled(false);
-					cmbMaptoIndex.setEnabled(true);
-				}
-			}
-		});
-		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
-		cmbSpecies.setBounds(10, 402, 147, 23);
 		//≥ı ºªØcmbSpeciesVersion
-		try { cmbSpeciesVersion.setMapItem(cmbSpecies.getSelectedValue().getMapVersion()); 	} catch (Exception e) { }
-		
-		add(cmbSpecies);
-		
-		JLabel lblSpecies = new JLabel("Species");
-		lblSpecies.setBounds(12, 376, 56, 14);
-		add(lblSpecies);
-		
-		chckbxUniqMapping = new JCheckBox("Uniq Mapping");
-		chckbxUniqMapping.setBounds(173, 346, 121, 22);
-		add(chckbxUniqMapping);
+		try {} catch (Exception e) { }
 		
 		txtMappingIndex = new JTextField();
-		txtMappingIndex.setBounds(10, 461, 337, 24);
+		txtMappingIndex.setBounds(10, 505, 337, 24);
 		add(txtMappingIndex);
 		txtMappingIndex.setColumns(10);
 		
@@ -200,7 +166,7 @@ public class GuiFastQJpanel extends JPanel {
 		add(lblExtendto);
 		
 		txtSavePathAndPrefix = new JTextField();
-		txtSavePathAndPrefix.setBounds(10, 512, 337, 24);
+		txtSavePathAndPrefix.setBounds(10, 556, 337, 24);
 		add(txtSavePathAndPrefix);
 		txtSavePathAndPrefix.setColumns(10);
 		
@@ -209,7 +175,7 @@ public class GuiFastQJpanel extends JPanel {
 		add(lblResultpath);
 		
 		btnSaveto = new JButton("SaveTo");
-		btnSaveto.setBounds(387, 512, 88, 24);
+		btnSaveto.setBounds(387, 556, 88, 24);
 		btnSaveto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String filePathName = guiFileOpen.openFilePathName("", "");
@@ -228,16 +194,12 @@ public class GuiFastQJpanel extends JPanel {
 		});
 		add(btnDelFastqLeft);
 		
-		JLabel lblSpeciesVersio = new JLabel("SpeciesVersion");
-		lblSpeciesVersio.setBounds(173, 376, 134, 14);
-		add(lblSpeciesVersio);
-		
 		JLabel lblMappingToFile = new JLabel("Mapping To File");
-		lblMappingToFile.setBounds(10, 437, 121, 14);
+		lblMappingToFile.setBounds(10, 541, 121, 14);
 		add(lblMappingToFile);
 		
 		btnMappingindex = new JButton("MappingIndex");
-		btnMappingindex.setBounds(387, 461, 134, 24);
+		btnMappingindex.setBounds(387, 505, 134, 24);
 		btnMappingindex.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				txtMappingIndex.setText(guiFileOpen.openFileName("fasta file", ""));
@@ -246,7 +208,7 @@ public class GuiFastQJpanel extends JPanel {
 		add(btnMappingindex);
 		
 		btnRun = new JButton("Run");
-		btnRun.setBounds(653, 512, 118, 24);
+		btnRun.setBounds(653, 556, 118, 24);
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ctrlFastQMapping = new CtrlFastQMapping();
@@ -285,10 +247,9 @@ public class GuiFastQJpanel extends JPanel {
 					ctrlFastQMapping.setChrIndexFile(txtMappingIndex.getText());
 					//TODO
 					ctrlFastQMapping.setLibraryType(cmbLibrary.getSelectedValue());
-					Species species = cmbSpecies.getSelectedValue();
-					species.setVersion(cmbSpeciesVersion.getSelectedValue());
+					ctrlFastQMapping.setSoftMapping(cmbMappingSoftware.getSelectedValue());
+					Species species = speciesLayOut.getSelectSpecies();
 					ctrlFastQMapping.setSpecies(species, cmbMaptoIndex.getSelectedValue());
-					ctrlFastQMapping.setUniqMapping(chckbxUniqMapping.isSelected());
 				}
 				ctrlFastQMapping.setOutFilePrefix(txtSavePathAndPrefix.getText());
 				ctrlFastQMapping.running();
@@ -358,11 +319,11 @@ public class GuiFastQJpanel extends JPanel {
 		txtGapLength.setColumns(10);
 		
 		JLabel lblThread = new JLabel("Thread");
-		lblThread.setBounds(555, 466, 69, 14);
+		lblThread.setBounds(555, 510, 69, 14);
 		add(lblThread);
 		
 		txtThreadNum = new JTextField();
-		txtThreadNum.setBounds(614, 464, 114, 18);
+		txtThreadNum.setBounds(614, 508, 114, 18);
 		add(txtThreadNum);
 		txtThreadNum.setColumns(10);
 		
@@ -388,23 +349,32 @@ public class GuiFastQJpanel extends JPanel {
 		
 		cmbLibrary = new JComboBoxData<MapLibrary>();
 		cmbLibrary.setMapItem(MapLibrary.getMapLibrary());
-		cmbLibrary.setBounds(773, 402, 134, 23);
+		cmbLibrary.setBounds(773, 446, 134, 23);
 		add(cmbLibrary);
 		
 		JLabel lblLibrary = new JLabel("Library");
-		lblLibrary.setBounds(773, 376, 69, 14);
+		lblLibrary.setBounds(773, 420, 69, 14);
 		add(lblLibrary);
 		
 		cmbMaptoIndex = new JComboBoxData<Integer>();
 		cmbMaptoIndex.sortValue(true);
 		cmbMaptoIndex.setMapItem(CtrlFastQMapping.getMapStr2Index());
-		cmbMaptoIndex.setBounds(448, 402, 161, 23);
+		cmbMaptoIndex.setBounds(448, 446, 161, 23);
 		add(cmbMaptoIndex);
 		
 		JLabel lblMappingTo = new JLabel("Mapping To");
-		lblMappingTo.setBounds(448, 378, 95, 14);
+		lblMappingTo.setBounds(448, 422, 95, 14);
 		add(lblMappingTo);
-
+		
+		speciesLayOut = new GuiLayeredPanSpeciesVersion();
+		speciesLayOut.setSelectSpecies(new Select());
+		speciesLayOut.setBounds(175, 376, 232, 101);
+		add(speciesLayOut);
+		
+		cmbMappingSoftware = new JComboBoxData<SoftWare>();
+		cmbMappingSoftware.setBounds(10, 390, 153, 23);
+		add(cmbMappingSoftware);
+		
 		
 		btnOpenFastqLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -415,6 +385,20 @@ public class GuiFastQJpanel extends JPanel {
 			}
 		});
 		initialize();
+	}
+	
+	class Select implements SpeciesSelect{
+		@Override
+		public void selectSpecies() {
+			if (speciesLayOut.getSelectSpecies().getTaxID() == 0) {
+				txtMappingIndex.setEnabled(false);
+				btnMappingindex.setEnabled(false);
+			} else {
+				txtMappingIndex.setEnabled(true);
+				btnMappingindex.setEnabled(true);
+			}
+		}
+		
 	}
 	/**
 	 * Initialize the contents of the frame.
@@ -432,9 +416,6 @@ public class GuiFastQJpanel extends JPanel {
 		lsComponentsMapping.add(txtMisMatch);
 		lsComponentsMapping.add(txtThreadNum);
 		lsComponentsMapping.add(txtGapLength);
-		lsComponentsMapping.add(cmbSpecies);
-		lsComponentsMapping.add(cmbSpeciesVersion);
-		lsComponentsMapping.add(chckbxUniqMapping);
 		lsComponentsMapping.add(btnMappingindex);
 		lsComponentsMapping.add(cmbLibrary);
 		
@@ -442,8 +423,9 @@ public class GuiFastQJpanel extends JPanel {
 		chckbxFilterreads.setSelected(true);
 		txtMappingIndex.setEnabled(false);
 		btnMappingindex.setEnabled(false);
-		if (cmbSpecies.getSelectedValue().getTaxID() == 0) {
+		if (speciesLayOut.getSelectSpecies().getTaxID() == 0) {
 			cmbMaptoIndex.setEnabled(false);
 		}
+		cmbMappingSoftware.setMapItem(SoftWare.getMapStr2MappingSoftware());
 	}
 }

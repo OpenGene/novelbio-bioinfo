@@ -216,6 +216,13 @@ class SequinGene {
 		locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + "\t\t\tlocus_tag\t" + locus_tag;
 		if (isPseudo) {
 			locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + "\t\t\tpseudo";
+			if (product != null && !product.equals("")) {
+				locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + "\t\t\tproduct\t" + product;
+			}
+			if (note != null && !note.equals("")) {
+				locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + "\t\t\tproduct\t" + note;
+			}
+			return locationLine;
 		}
 		locationLine = locationLine + TxtReadandWrite.ENTER_LINUX + start + "\t" + end + "\t" + type;
 		if (product != null && !product.equals("")) {
