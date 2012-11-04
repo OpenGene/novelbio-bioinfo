@@ -18,8 +18,7 @@ import com.novelbio.database.model.species.Species;
  */
 public class GffChrAbs {
 
-	private static final Logger logger = Logger
-			.getLogger(CopyOfGffChrAbs.class);
+	private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	private int distanceMapInfo = 3000;
 	GffHashGene gffHashGene = null;
 	SeqHash seqHash = null;
