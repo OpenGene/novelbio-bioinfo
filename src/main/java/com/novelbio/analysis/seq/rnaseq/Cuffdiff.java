@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import javax.print.attribute.SetOfIntegerSyntax;
 
+import net.sf.picard.sam.SamAlignmentMerger;
+
+import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
@@ -17,10 +20,8 @@ public class Cuffdiff {
 		cuffdiff.setOutPath("/media/winF/NBC/Project/Project_FY/20120920/cufflinks/");
 		cuffdiff.getModifiedGtf();
 	}
-	//cuffcompare 的参数
-	String ExePathCuffCompare = "";
 	
-	String seqFasta = "";
+	String seqFastaPath = "";
 	String gtfFile = "";
 	
 	String outPath = "";
@@ -28,47 +29,39 @@ public class Cuffdiff {
 	boolean clearFile = false;
 	
 	//cuffdiff的参数
-	String exePathCuffDiff = "";
+	String exePath = "";
 	int threadNum = 4;
 	/** 
 	 * 装载输入样本Sam的文件
 	 * 每个子类listSam表示一系列的重复
 	 *  */
-	ArrayList<ArrayList<String>> lsSampleSamFile;
+	ArrayList<ArrayList<String>> lsSample2lsSamFile;
 	/** 样本名 */
 	ArrayList<String> lsSampleName;
+	
+	MapLibrary mapLibrary;
 	
 	/** 是否删除一些未知文件 */
 	public void setClearFile(boolean clearFile) {
 		this.clearFile = clearFile;
 	}
+	
 	/**
-	 * 设定samtools所在的文件夹以及待比对的路径
+	 * 设定cuffdiff所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
 	 */
-	public void setExePathCuffCompare(String exePath) {
+	public void setExePath(String exePath) {
 		if (exePath == null || exePath.trim().equals("")) {
-			this.ExePathCuffCompare = "";
+			this.exePath = "";
 		} else {
-			this.ExePathCuffCompare = FileOperate.addSep(ExePathCuffCompare);
+			this.exePath = FileOperate.addSep(exePath);
 		}
 	}
 	
-	/**
-	 * 设定samtools所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 */
-	public void setExePathCuffDiff(String exePath) {
-		if (exePath == null || exePath.trim().equals("")) {
-			this.ExePathCuffCompare = "";
-		} else {
-			this.ExePathCuffCompare = FileOperate.addSep(ExePathCuffCompare);
-		}
+	public void setSeqFasta(String seqFastaPath) {
+		this.seqFastaPath = seqFastaPath;
 	}
-	
-	public void setSeqFasta(String seqFasta) {
-		this.seqFasta = seqFasta;
-	}
+	/** 必须是cuffcompare处理过的gtf文件 */
 	public void setGtfFile(String gtfFile) {
 		this.gtfFile = gtfFile;
 	}
@@ -77,52 +70,49 @@ public class Cuffdiff {
 		this.outPath = outPath;
 	}
 	
-	private String getOutPath() {
-		return " -o " + outPath;
-	}
-	private String getInputGtf() {
-		return " -r " + CmdOperate.addQuot(gtfFile) + " " + CmdOperate.addQuot(gtfFile);
-	}
-	public String getSeqFasta() {
-		return " -s " + CmdOperate.addQuot(seqFasta);
+	private String getThreadNum() {
+		return " -p " + threadNum + " ";
 	}
 	
+	private String getPathAndOtherParam() {
+		return " -N -b " + seqFastaPath + " ";
+	}
+
+	private String getMapLibrary() {
+		//TODO 考虑返回建库方式
+		return "";
+	}
+	
+	private String getGtfFile() {
+		return CmdOperate.addQuot(gtfFile);
+	}
+	/** 获得样本名称 */
+	private String getSampleName() {
+		String out = " -L " + CmdOperate.addQuot(lsSampleName.get(0));
+		for (int i = 1; i < lsSampleName.size(); i++) {
+			out = out + "," + CmdOperate.addQuot(lsSampleName.get(i));
+		}
+		return out;
+	}
+	
+	private String getSamleFile() {
+		String sampleFile = "";
+		for (ArrayList<String> lsFile : lsSample2lsSamFile) {
+			sampleFile = sampleFile + " " + CmdOperate.addQuot(lsFile.get(0));
+			for (int i = 1; i < lsFile.size(); i++) {
+				sampleFile = sampleFile + "," + CmdOperate.addQuot(lsFile.get(i));
+			}
+		}
+		return sampleFile;
+	}
 	/**
 	 * 获得修改的gtf文件名
 	 */
-	private String getModifiedGtf() {
-		String cmd = ExePathCuffCompare + "cuffcompare " + getSeqFasta() + getOutPath() + " -CG " + getInputGtf();
-		CmdOperate cmdOperate = new CmdOperate(cmd, "cuffcompare");
+	public String runCompareGtf() {
+		String cmd = exePath + "cuffdiff " + getMapLibrary() + getPathAndOtherParam() + getThreadNum() + getSampleName();
+		cmd = cmd + getGtfFile() + getSamleFile();
+		CmdOperate cmdOperate = new CmdOperate(cmd, "cuffdiff");
 		cmdOperate.run();
-		if (clearFile) {
-			clearUnknownFile();
-		}
-		return changeGtfFileName();
-	}
-	
-	/** 删除一些未知文件 */
-	private void clearUnknownFile() {
-		String fileRefmap = outPath + ".finalTranscript.gtf.refmap";
-		String fileTmap = outPath + ".finalTranscript.gtf.tmap";
-		String fileLoci = outPath + ".loci";
-		String fileStats = outPath + ".stats";
-		String fileTracking = outPath + ".tracking";
-		
-		FileOperate.delFile(fileRefmap);
-		FileOperate.delFile(fileTmap);
-		FileOperate.delFile(fileLoci);
-		FileOperate.delFile(fileStats);
-		FileOperate.delFile(fileTracking);		
-	}
-	
-	/**
-	 * 修改cuffcompare产生的gtf文件名，同时返回修改后的文件名
-	 * @return
-	 */
-	private String changeGtfFileName() {
-		String fileName = outPath + ".combined.gtf";
-		String newFileName = FileOperate.changeFileSuffix(fileName, "", ".gtf");
-		FileOperate.changeFileName(fileName, outPath + ".gtf", true);
-		return newFileName;
+		//TODO 获得返回的结果
 	}
 }
