@@ -1,68 +1,115 @@
 package com.novelbio.analysis.seq.fastq;
 
-import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.base.multithread.txtreadcopewrite.MTmulitCopeInfo;
-import com.novelbio.base.multithread.txtreadcopewrite.MTrecordCoper;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-class FastQfilter extends MTmulitCopeInfo<FastQRecordFilter, FastqRecordInfoFilter> {
-	FastQ fastQ;
-	FastQwrite fastqWrite;
-	boolean isPairEnd = false;
-	int allRawReadsNum, allFilteredReadsNum;
+import com.novelbio.base.multithread.RunProcess;
+
+class FastQfilter extends RunProcess<FastQrecordFilterRun> {
+	FastQReader fastQReader;
+	FastQthreadWrite fastQthreadWrite = new FastQthreadWrite();
+	
+	int allReadsNum, allFilteredReadsNum;
 	
 	/** 用作参数设定的 */
-	FastQRecordFilter fastQfilterRecordParam;
+	FastQRecordFilter fastQRecordFilter;
 	
-	public FastQfilter(FastQ fastQ) {
-		this.fastQ = fastQ;
+	/** 队列最大数量 */
+	int maxNumReadInLs = 5000;
+	ThreadPoolExecutor executorPool;
+	ArrayBlockingQueue<Future<FastQrecordFilterRun>> queueResult;
+	
+	public FastQfilter(FastQReader fastQReader, FastQwrite fastqWrite) {
+		this.fastQReader = fastQReader;
+		fastQthreadWrite.setFastQwrite(fastqWrite);
 	}
-	public void setFastqWrite(FastQwrite fastqWrite) {
-		this.fastqWrite = fastqWrite;
+	
+	public void setFilter(FastQRecordFilter fastQRecordFilter) {
+		this.fastQRecordFilter = fastQRecordFilter;
 	}
-	public void setFilterParam(FastQRecordFilter fastQfilterRecord) {
-		this.fastQfilterRecordParam = fastQfilterRecord;
+	
+	public void setThreadNum(int threadFilterNum) {
+		if (threadFilterNum > 5) {
+			threadFilterNum = 5;
+		}
+		if (threadFilterNum <= 0) {
+			threadFilterNum = 1;
+		}
+		executorPool = new ThreadPoolExecutor(threadFilterNum, (int)(threadFilterNum*1.5), 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(maxNumReadInLs));
+		queueResult = new ArrayBlockingQueue<Future<FastQrecordFilterRun>>(maxNumReadInLs);
+		fastQthreadWrite.setQueue(queueResult);
 	}
-	public void setIsPairEnd(boolean isPairEnd) {
-		this.isPairEnd = isPairEnd;
+	
+	public void filtering() {
+		fastQRecordFilter.setPhredOffset(fastQReader.getOffset());
+		fastQthreadWrite.setFinishedRead(false);
+		Thread thread = new Thread(fastQthreadWrite);
+		thread.start();
+		if (fastQReader.isPairEnd()) {
+			readPE();
+		} else {
+			readSE();
+		}
+		fastQthreadWrite.setFinishedRead(true);
+		while (!fastQthreadWrite.isFinished()) {
+			try { Thread.sleep(100); 	} catch (InterruptedException e) { e.printStackTrace(); }
+		}
+		allFilteredReadsNum = fastQthreadWrite.getFilteredNum();
 	}
-	public void setFilterThreadNum(int threadFilterNum) {
-		for (int i = 0; i < threadFilterNum; i++) {
-			FastQRecordFilter fastqFilterRecord = new FastQRecordFilter();
-			//TODO 设定过滤参数
-			fastqFilterRecord.phredOffset = fastQ.getOffset();
-			addMTcopedRecord(fastqFilterRecord);
+	
+	private void readSE() {
+		allReadsNum = 0;
+		for (FastQRecord fastQRecord : fastQReader.readlines(false)) {
+			allReadsNum++;
+			wait_To_Cope_AbsQueue();
+			if (flagStop) {
+				break;
+			}
+			FastQrecordFilterRun fastQrecordFilterRun = new FastQrecordFilterRun();
+			fastQrecordFilterRun.setFastQRecordFilter(fastQRecordFilter);
+			fastQrecordFilterRun.setFastQRecordSE(fastQRecord);
+			Future<FastQrecordFilterRun> future = executorPool.submit(fastQrecordFilterRun);
+			queueResult.add(future);
+			
+			if (allReadsNum % 50000 == 0) {
+				setRunInfo(fastQrecordFilterRun);
+			}
 		}
 	}
-
-	@Override
-	protected void copeReadInfo(FastqRecordInfoFilter info) {
-		if (info.singleEnd) {
-			fastqWrite.writeFastQRecord(info.fastQRecord1);
-		}
-		else {
-			fastqWrite.writeFastQRecord(info.fastQRecord1, info.fastQRecord2);
-		}
-	}
-	@Override
-	protected void doneOneThread(RunProcess<FastqRecordInfoFilter> runProcess) {
-		MTrecordCoper<FastqRecordInfoFilter> fastQRecordCope  = (MTrecordCoper)runProcess;
-		FastQRecordFilter fastQfilterRecord = (FastQRecordFilter)fastQRecordCope;
-		allRawReadsNum = allRawReadsNum + fastQfilterRecord.getAllReadsNum();
-		allFilteredReadsNum = allFilteredReadsNum + fastQfilterRecord.getFilteredReadsNum();
-	}
-	@Override
-	protected void doneAllThread() {
-		fastqWrite.close();
-	}
-
-	@Override
-	public void beforeExecute() {
-		for (FastQRecordFilter fastQfilterRecord : lsCopeRecorders) {
-			fastQfilterRecord.setParam(fastQfilterRecordParam);
-			fastQfilterRecord.setIsPairEnd(isPairEnd);
+	private void readPE() {
+		allReadsNum = 0;
+		for (FastQRecord[] fastQRecord : fastQReader.readlinesPE(false)) {
+			allReadsNum++;
+			wait_To_Cope_AbsQueue();
+			if (flagStop) {
+				break;
+			}
+			FastQrecordFilterRun fastQrecordFilterRun = new FastQrecordFilterRun();
+			fastQrecordFilterRun.setFastQRecordFilter(fastQRecordFilter);
+			fastQrecordFilterRun.setFastQRecordPE(fastQRecord[0], fastQRecord[1]);
+			Future<FastQrecordFilterRun> future = executorPool.submit(fastQrecordFilterRun);
+			queueResult.add(future);
+			
+			if (allReadsNum % 50000 == 0) {
+				setRunInfo(fastQrecordFilterRun);
+			}
 		}
 	}
-
-
+	
+	/** 等待处理线程将AbsQueue队列中的记录处理掉 */
+	protected void wait_To_Cope_AbsQueue() {
+		suspendCheck();
+		while (executorPool.getQueue().size() == maxNumReadInLs || queueResult.size() == maxNumReadInLs) {
+			try { Thread.sleep(50); } catch (InterruptedException e) { }
+		}
+	}
+	
+	@Override
+	protected void running() {
+		filtering();
+	}
+	
 }
 

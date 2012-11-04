@@ -30,8 +30,16 @@ public class CtrlRNAmap {
 	/** tophat是否用GTF文件进行校正，默认为true，如果出错就要考虑不用GTF */
 	boolean useGTF = true;
 	String outPrefix;
-	/** 保存最终结果，只有rsem才会有 */
-	ArrayList<ArrayList<String>> lsExpResultRsem = new ArrayList<ArrayList<String>>();
+	/** 保存最终结果，只有rsem才会有
+	 * 第一行为标题
+	 * 之后每一行为基因表达情况
+	 *  */
+	ArrayList<ArrayList<String>> lsExpResultRsemRPKM = new ArrayList<ArrayList<String>>();
+	/** 保存最终结果，只有rsem才会有
+	 * 第一行为标题
+	 * 之后每一行为基因表达情况
+	 *  */
+	ArrayList<ArrayList<String>> lsExpResultRsemCounts = new ArrayList<ArrayList<String>>();
 	
 	/** 本项目务必第一个设定 */
 	public void setMapType(int mapType) {
@@ -68,7 +76,8 @@ public class CtrlRNAmap {
 		this.useGTF= useGTF;
 	}
 	public void mapping() {
-		lsExpResultRsem.clear();
+		lsExpResultRsemRPKM = new ArrayList<ArrayList<String>>();
+		lsExpResultRsemCounts = new ArrayList<ArrayList<String>>();
 		for (Entry<String, ArrayList<ArrayList<FastQ>>> entry : mapPrefix2LsFastq.entrySet()) {
 			if (!creatMapRNA()) {
 				return;
@@ -87,7 +96,8 @@ public class CtrlRNAmap {
 				mapRNA.setGtfFile(null);
 			}
 			mapRNA.mapReads();
-			setExpResult(prefix, mapRNA);
+			setExpResultCounts(prefix, mapRNA);
+			setExpResultRPKM(prefix, mapRNA);
 		}
 	}
 	
@@ -124,37 +134,81 @@ public class CtrlRNAmap {
 		}
 	}
 	/** 获得基因表达 */
-	private void setExpResult(String prefix, MapRNA mapRNA) {
+	private void setExpResultRPKM(String prefix, MapRNA mapRNA) {
 		if (mapType != RSEM) {
 			return;
 		}
 		MapRsem mapRsem = (MapRsem) mapRNA;
 		HashMapLsValue<String, Double> mapGeneID2LsExp = mapRsem.getMapGeneID2LsExp();
 		//第一组结果直接装进去
-		if (lsExpResultRsem.size() == 0) {
-			ArrayList<String> lsTitle = new ArrayList<String>();
-			lsTitle.add("GeneID"); lsTitle.add(prefix + "_RPKM");
-			lsExpResultRsem.add(lsTitle);
+		if (lsExpResultRsemRPKM.size() == 0) {
+			ArrayList<String> lsTitleRPKM = new ArrayList<String>();
+			lsTitleRPKM.add("GeneID"); lsTitleRPKM.add(prefix + "_RPKM");
+			lsExpResultRsemRPKM.add(lsTitleRPKM);
+			
 			for (Entry<String, ArrayList<Double>> entry : mapGeneID2LsExp.entrySet()) {
 				ArrayList<String> lsDetail = new ArrayList<String>();
-				lsDetail.add(entry.getKey());
+				lsDetail.add(entry.getKey());//获得基因名
 				lsDetail.add(MathComput.mean(entry.getValue()) + "" );//获得平均数
-				lsExpResultRsem.add(lsDetail);
+				lsExpResultRsemRPKM.add(lsDetail);
 			}
 		}
 		//后面的就在hash表里面查
 		else {
-			lsExpResultRsem.get(0).add(prefix + "_RPKM");
-			for (int i = 1; i < lsExpResultRsem.size(); i++) {
-				ArrayList<String> lsDetail = lsExpResultRsem.get(i);
+			lsExpResultRsemRPKM.get(0).add(prefix + "_RPKM");
+			for (int i = 1; i < lsExpResultRsemRPKM.size(); i++) {
+				ArrayList<String> lsDetail = lsExpResultRsemRPKM.get(i);
 				ArrayList<Double> lsValue = mapGeneID2LsExp.get(lsDetail.get(0));
 				lsDetail.add(MathComput.mean(lsValue) + "");
 			}
 		}
 	}
-	public ArrayList<String[]> getLsExpRsem() {
+	/** 获得基因表达 */
+	private void setExpResultCounts(String prefix, MapRNA mapRNA) {
+		if (mapType != RSEM) {
+			return;
+		}
+		MapRsem mapRsem = (MapRsem) mapRNA;
+		HashMapLsValue<String, Integer> mapGeneID2LsCounts = mapRsem.getMapGeneID2LsCounts();
+		//第一组结果直接装进去
+		if (lsExpResultRsemCounts.size() == 0) {
+			ArrayList<String> lsTitleCounts = new ArrayList<String>();
+			lsTitleCounts.add("GeneID"); lsTitleCounts.add(prefix + "_Counts");
+			lsExpResultRsemCounts.add(lsTitleCounts);
+			
+			for (Entry<String, ArrayList<Integer>> entry : mapGeneID2LsCounts.entrySet()) {
+				ArrayList<String> lsDetail = new ArrayList<String>();
+				lsDetail.add(entry.getKey());//获得基因名
+				lsDetail.add((int)MathComput.mean(entry.getValue()) + "" );//获得平均数
+				lsExpResultRsemCounts.add(lsDetail);
+			}
+		}
+		//后面的就在hash表里面查
+		else {
+			lsExpResultRsemCounts.get(0).add(prefix + "_Counts");
+			for (int i = 1; i < lsExpResultRsemCounts.size(); i++) {
+				ArrayList<String> lsDetail = lsExpResultRsemCounts.get(i);
+				ArrayList<Integer> lsValue = mapGeneID2LsCounts.get(lsDetail.get(0));
+				lsDetail.add((int)MathComput.mean(lsValue) + "");
+			}
+		}
+	}
+	
+	public ArrayList<String[]> getLsExpRsemRPKM() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		for (ArrayList<String> lsTmpResult : lsExpResultRsem) {
+		for (ArrayList<String> lsTmpResult : lsExpResultRsemRPKM) {
+			String[] tmpResult = new String[lsTmpResult.size()];
+			for (int i = 0; i < tmpResult.length; i++) {
+				tmpResult[i] = lsTmpResult.get(i);
+			}
+			lsResult.add(tmpResult);
+		}
+		return lsResult;
+	}
+	
+	public ArrayList<String[]> getLsExpRsemCounts() {
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		for (ArrayList<String> lsTmpResult : lsExpResultRsemCounts) {
 			String[] tmpResult = new String[lsTmpResult.size()];
 			for (int i = 0; i < tmpResult.length; i++) {
 				tmpResult[i] = lsTmpResult.get(i);

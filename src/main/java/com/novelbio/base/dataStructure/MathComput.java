@@ -207,6 +207,18 @@ public class MathComput {
 	 * @param Num
 	 * @return
 	 */
+	public static	double sum(ArrayList<? extends Number> lsNum) {
+		double sum = 0;
+		for (Number d : lsNum) {
+			sum = sum + d.doubleValue();
+		}
+		return sum;
+	}
+	/**
+	 * 输入数据，获得和
+	 * @param Num
+	 * @return
+	 */
 	public static	int sum(int[] Num) {
 		int sum = 0;
 		for (int d : Num) {

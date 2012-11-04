@@ -54,19 +54,27 @@ class FastQwrite {
 	}
 	
 	/**
+	 * 写入文本
 	 * <b>写完后务必用 {@link #closeWrite} 方法关闭</b>
 	 * 创建的时候要设定为creat模式
 	 * @param bedRecord
 	 */
-	protected void writeFastQRecord(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
-		if (fastQRecord1.getSeqQuality()) {
-			
-		}
+	protected void writeFastQRecordString(String fastQRecord1, String fastQRecord2) {
 		creatTxt();
-		txtSeqFile.writefileln(fastQRecord1.toString());
+		txtSeqFile.writefileln(fastQRecord1);
 		if (fastQwriteMate != null) {
-			fastQwriteMate.writeFastQRecord(fastQRecord2);
+			fastQwriteMate.writeFastQRecordString(fastQRecord2);
 		}
+	}
+	/**
+	 * 写入文本
+	 * <b>写完后务必用 {@link #closeWrite} 方法关闭</b>
+	 * 创建的时候要设定为creat模式
+	 * @param bedRecord
+	 */
+	public void writeFastQRecordString(String fastQRecord) {
+		creatTxt();
+		txtSeqFile.writefileln(fastQRecord);
 	}
 	
 	/**

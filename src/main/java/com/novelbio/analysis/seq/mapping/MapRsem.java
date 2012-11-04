@@ -58,7 +58,10 @@ public class MapRsem implements MapRNA{
 	String outPathPrefix = "";
 	
 	/**跑完之后的gene表达值保存在这个里面 */
-	HashMapLsValue<String, Double> mapGeneID2LsExp; 
+	HashMapLsValue<String, Double> mapGeneID2LsExp;
+	/**跑完之后的gene表达值保存在这个里面 */
+	HashMapLsValue<String, Integer> mapGeneID2LsCounts; 
+	
 	/** rsem 到 rpkm是增加了10^6 倍 */
 	int foldRsem2RPKM = 1000000;
 	
@@ -121,11 +124,17 @@ public class MapRsem implements MapRNA{
 	public SoftWare getBowtieVersion() {
 		return SoftWare.bowtie;
 	}
-	/** mapping完后获得结果
+	/** mapping完后获得结果，为RPKM
 	 * 为防止一个geneID对应多个exp的value，所以用list来报存value
 	 *  */
 	public HashMapLsValue<String, Double> getMapGeneID2LsExp() {
 		return mapGeneID2LsExp;
+	}
+	/** mapping完后获得结果，为Counts
+	 * 为防止一个geneID对应多个exp的value，所以用list来报存value
+	 *  */
+	public HashMapLsValue<String, Integer> getMapGeneID2LsCounts() {
+		return mapGeneID2LsCounts;
 	}
 	/** 产生全新的reference */
 	private void createGene2IsoAndRefSeq() {
@@ -256,16 +265,20 @@ public class MapRsem implements MapRNA{
 	/** 整理结果文件，主要是整理gene.result,整理成gene list */
 	private void copeResult() {
 		mapGeneID2LsExp = new HashMapLsValue<String, Double>();
+		mapGeneID2LsCounts = new HashMapLsValue<String, Integer>();
 		TxtReadandWrite txtReadGeneExp = new TxtReadandWrite(outPathPrefix+".genes.results", false);
 		for (String geneInfo : txtReadGeneExp.readlines()) {
 			String[] ss = geneInfo.split("\t");
-			double value = 0;
+			double valueRPKM = 0;
+			int valueCounts = 0;
 			try {
-				value = Double.parseDouble(ss[2]);
+				valueRPKM = Double.parseDouble(ss[2]);
+				valueCounts = Integer.parseInt(ss[1]);
 			} catch (Exception e) {
 				continue;
 			}
-			mapGeneID2LsExp.put(ss[0], value * foldRsem2RPKM);
+			mapGeneID2LsExp.put(ss[0], valueRPKM * foldRsem2RPKM);
+			mapGeneID2LsCounts.put(ss[1], valueCounts);
 		}
 	}
 	

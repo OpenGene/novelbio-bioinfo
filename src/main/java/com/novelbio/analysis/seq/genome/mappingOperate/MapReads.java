@@ -214,7 +214,7 @@ public class MapReads extends MapReadsAbs{
 	 * @param cis5to3 是否只选取某一个方向的序列，也就是其他方向的序列会被过滤，不参与叠加
 	 * null表示不进行方向过滤
 	 * @param chrBpReads 具体需要叠加的染色体信息
-	 * @param readsNum 记录总共mapping的reads数量，为了能够传递下去，采用数组方式
+	 * @param allReadsNum 记录总共mapping的reads数量，为了能够传递下去，采用数组方式
 	 * @return
 	 * 本位点的信息，用于下一次判断是否是同一位点
 	 */

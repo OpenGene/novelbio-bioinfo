@@ -227,8 +227,10 @@ public class GuiRNASeqMapping extends JPanel {
 				ctrlRNAmap.setOutPathPrefix(out);
 				ctrlRNAmap.mapping();
 				if (rdbtnRsem.isSelected()) {
-					TxtReadandWrite txtWrite = new TxtReadandWrite(out + "ResultExp.xls", true);
-					txtWrite.ExcelWrite(ctrlRNAmap.getLsExpRsem());
+					TxtReadandWrite txtWriteRpkm = new TxtReadandWrite(out + "ResultRPKM.xls", true);
+					TxtReadandWrite txtWriteCounts = new TxtReadandWrite(out + "ResultCounts.xls", true);
+					txtWriteRpkm.ExcelWrite(ctrlRNAmap.getLsExpRsemRPKM());
+					txtWriteCounts.ExcelWrite(ctrlRNAmap.getLsExpRsemCounts());
 				}
 			}
 		});

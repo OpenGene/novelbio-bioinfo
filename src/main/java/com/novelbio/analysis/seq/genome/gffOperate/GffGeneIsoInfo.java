@@ -699,6 +699,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public abstract int getEndAbs();
 	/**
 	 * 返回该基因的GTF格式文件，末尾有换行符
+	 * @param geneID 该基因的名字
 	 * @param title 该GTF文件的名称
 	 * @return
 	 */
@@ -758,11 +759,18 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 */
 	public ArrayList<ExonInfo> getLsIntron() {
 		ArrayList<ExonInfo> lsresult = new ArrayList<ExonInfo>();
+		if (size() == 1) {
+			return lsresult;
+		}
 		ExonInfo intronInfo = null;
 		for (int i = 0; i < size(); i++) {
 			ExonInfo exonInfo = get(i);
 			if (i > 0) {
-				intronInfo.setEndCis(exonInfo.getStartCis());
+				if (exonInfo.isCis5to3()) {
+					intronInfo.setEndCis(exonInfo.getStartCis() - 1);
+				} else {
+					intronInfo.setEndCis(exonInfo.getStartCis() + 1);
+				}
 			}
 			if (i == size() - 1) {
 				break;
@@ -772,7 +780,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			intronInfo.setParentListAbs(this);
 			intronInfo.setCis5to3(exonInfo.isCis5to3());
 			intronInfo.addItemName(exonInfo.getNameSingle());
-			intronInfo.setStartCis(exonInfo.getEndCis());
+			
+			if (exonInfo.isCis5to3()) {
+				intronInfo.setStartCis(exonInfo.getEndCis() + 1);
+			} else {
+				intronInfo.setStartCis(exonInfo.getEndCis() - 1);
+			}
 		}
 		return lsresult;
 	}

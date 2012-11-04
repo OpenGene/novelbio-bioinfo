@@ -10,12 +10,16 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class FastQRecord implements Cloneable {
 	private static Logger logger = Logger.getLogger(FastQRecord.class);
-	
+	/** 万一fastq没有名字，就给它随机加个名字 */
 	static String SEQNAME = "Novelbio";
 	static long i = 0;
-	/** fastQ里面asc||码的指标与个数 */
-	HashMap<Integer, Integer> mapFastQFilter = new HashMap<Integer, Integer>();
 	
+	/** fastQ里面asc||码的指标与个数 */
+	HashMap<Integer, Integer> mapFastQFilter;
+	
+	/** 读入的文本，仅仅用于初始化 */
+	String fastqStringReadIn;
+
 	private SeqFasta seqFasta = new SeqFasta();
 	protected int fastqOffset = FastQ.FASTQ_SANGER_OFFSET;
 	protected String seqQuality = "";
@@ -35,9 +39,25 @@ public class FastQRecord implements Cloneable {
 	 * @param fastqlines
 	 */
 	public FastQRecord(String fastqlines) {
-		String[] ss = fastqlines.split(TxtReadandWrite.ENTER_LINUX);
+		this(fastqlines, true);
+	}
+	/** 读入fastq文件但根据需要进行初始化
+	 * 用在fastq过滤的时候，可以先不初始化，然后在多线程的时候进行初始化
+	 *  */
+	protected FastQRecord(String fastqlines, boolean initial) {
+		fastqStringReadIn = fastqlines;
+		if (initial) {
+			initialReadRecord();
+		}
+	}
+	/**初始化读入的数据 */
+	protected void initialReadRecord() {
+		if (seqFasta.getSeqName() != null) {
+			return;
+		}
+		String[] ss = fastqStringReadIn.split(TxtReadandWrite.ENTER_LINUX);
 		if (ss.length == 1) {
-			ss = fastqlines.split(TxtReadandWrite.ENTER_WINDOWS);
+			ss = fastqStringReadIn.split(TxtReadandWrite.ENTER_WINDOWS);
 		}
 		String seqName = ss[0].substring(1).trim();
 		if (seqName == null || seqName.equals("")) {
@@ -402,8 +422,7 @@ public class FastQRecord implements Cloneable {
 			if ((int)chrIn[i] - fastqOffset > cutOff && chrSeq[i] != 'N' && chrSeq[i] != 'n') {
 				numMismatch++;
 				con++;
-			}
-			else {
+			} else {
 				con = -1;
 			}
 			if (numMismatch > numMM) {
@@ -456,7 +475,13 @@ public class FastQRecord implements Cloneable {
 			return true;
 		}
 		seqFasta = seqFasta.trimSeq(start, end);
-		seqQuality = seqQuality.substring(start, end);
+		try {
+			seqQuality = seqQuality.substring(start, end);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("stop");
+		}
+		
 		return true;
 	}
 	/**

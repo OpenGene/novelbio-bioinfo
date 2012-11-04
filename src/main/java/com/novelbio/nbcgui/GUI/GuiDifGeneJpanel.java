@@ -102,7 +102,7 @@ public class GuiDifGeneJpanel extends JPanel {
 		add(btnSave);
 		
 		cmbMethod = new JComboBoxData<Integer>();
-		cmbMethod.setBounds(635, 463, 186, 23);
+		cmbMethod.setBounds(635, 463, 239, 23);
 		add(cmbMethod);
 		
 		txtSave = new JTextField();

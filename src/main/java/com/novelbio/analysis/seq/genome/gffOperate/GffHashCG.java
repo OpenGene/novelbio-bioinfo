@@ -32,7 +32,7 @@ import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
  * 
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
-public class GffHashCG extends ListHashSearch<GffDetailCG, gffc<T>, gffc<T,E>, ListAbsSearch<T,E,K>> {
+public class GffHashCG extends ListHashSearch<ListDetailAbs, ListCodAbs<T>, ListCodAbsDu<T,E>, ListAbsSearch<T,E,K>> {
 
 	/**
 	 * 最底层读取gff的方法<br>

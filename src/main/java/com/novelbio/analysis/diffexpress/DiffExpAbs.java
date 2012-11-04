@@ -20,7 +20,8 @@ public abstract class DiffExpAbs {
 	public static final int LIMMA = 10;
 	public static final int DESEQ = 20;
 	public static final int DEGSEQ = 30;
-	public static final int TTest = 40;
+	public static final int EDEGR = 40;
+	public static final int TTest = 50;
 	
 	String workSpace;
 	String fileNameRawdata = "";
@@ -115,12 +116,37 @@ public abstract class DiffExpAbs {
 	public String getFileNameRawdata() {
 		return fileNameRawdata;
 	}
+	
+	/** 返回是否为log过的值
+	 * 主要用于limma，其实就是判断最大的表达值是否大于40
+	 *  */
+	protected boolean isLogValue() {
+		ArrayList<Double> lsValue = new ArrayList<Double>();
+		for (String[] strings : lsGeneInfo) {
+			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(0)[0]) - 1;
+			try {
+				double tmpValue = Double.parseDouble(strings[colNum]);
+				lsValue.add(tmpValue);
+			} catch (Exception e) { }
+		}
+		double result = MathComput.median(lsValue, 98);
+		if (result < 40) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 	public ArrayList<String> getResultFileName() {
+		for (String fileName : mapOutFileName2Compare.keySet()) {
+			FileOperate.DeleteFileFolder(fileName);
+		}
 		calculateResult();
 		return ArrayOperate.getArrayListKey(mapOutFileName2Compare);
 	}
 	/** 计算差异 */
-	private void calculateResult() {
+	protected void calculateResult() {
 		if (calculate) {
 			return;
 		}
@@ -161,38 +187,25 @@ public abstract class DiffExpAbs {
 	}
 	private void setMapSample_2_time2value() {
 		mapGeneID_2_Sample2MeanValue = new HashMap<String, HashMap<String,Double>>();
-		for (String[] strings : lsGeneInfo) {
-			String geneName = strings[colAccID];
+		for (String[] geneID2Info : lsGeneInfo) {
+			String geneName = geneID2Info[colAccID];
 			try {
-				HashMap<String, Double> mapTime2value = mapTime2AvgValue(strings);
+				HashMap<String, Double> mapTime2value = mapTime2AvgValue(geneID2Info);
 				mapGeneID_2_Sample2MeanValue.put(geneName, mapTime2value);
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
 		}
 	}
-	/** 返回是否为log过的值
-	 * 主要用于limma，其实就是判断最大的表达值是否大于40
-	 *  */
-	protected boolean isLogValue() {
-		ArrayList<Double> lsValue = new ArrayList<Double>();
-		for (String[] strings : lsGeneInfo) {
-			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(0)[0]) - 1;
-			try {
-				double tmpValue = Double.parseDouble(strings[colNum]);
-				lsValue.add(tmpValue);
-			} catch (Exception e) { }
-		}
-		double result = MathComput.median(lsValue, 98);
-		if (result < 40) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	
-	private HashMap<String, Double> mapTime2AvgValue(String[] info) {
+
+	/**
+	 * 获得 
+	 * 样本时期--该时期内平均值
+	 * 的map
+	 * @param info
+	 * @return
+	 */
+	protected HashMap<String, Double> mapTime2AvgValue(String[] info) {
 		HashMap<String, ArrayList<Double>> mapTime2LsValue = new HashMap<String, ArrayList<Double>>();
 		
 		for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
@@ -209,8 +222,11 @@ public abstract class DiffExpAbs {
 		}
 		return mapTime2AvgValue;
 	}
-	/** 没有该timeInfo就产生个新的list，有的话就获得原来的list */
-	private ArrayList<Double> add_and_get_LsValue(String timeInfo, HashMap<String, ArrayList<Double>> mapTime2value) {
+	/** 
+	 * 设定样本时期到具体值的信息。
+	 * 没有该timeInfo就产生个新的list，有的话就获得原来的list 
+	 */
+	protected ArrayList<Double> add_and_get_LsValue(String timeInfo, HashMap<String, ArrayList<Double>> mapTime2value) {
 		ArrayList<Double> lsValue = mapTime2value.get(timeInfo);
 		if (lsValue == null) {
 			lsValue = new ArrayList<Double>();
@@ -262,10 +278,11 @@ public abstract class DiffExpAbs {
 	 * ID就是本类的常量
 	 */
 	public static HashMap<String, Integer> getMapMethod2ID() {
-		HashMap<String, Integer> mapMethod2ID = new HashMap<String, Integer>();
+		HashMap<String, Integer> mapMethod2ID = new LinkedHashMap<String, Integer>();
 		mapMethod2ID.put("Limma--Microarray", LIMMA);
-		mapMethod2ID.put("DESeq--Counts", DESEQ);
-		mapMethod2ID.put("DEGseq--RNAseq", DEGSEQ);
+		mapMethod2ID.put("DEGseq--RPKM/Counts(recommand)", DEGSEQ);
+		mapMethod2ID.put("EdegR--Counts(Needs Replication)", EDEGR);
+		mapMethod2ID.put("DESeq--Counts(Needs Replication)", DESEQ);
 		mapMethod2ID.put("Ttest", TTest);
 		return mapMethod2ID;
 	}
@@ -273,17 +290,15 @@ public abstract class DiffExpAbs {
 	public static DiffExpAbs createDiffExp(int DiffExpID) {
 		if (DiffExpID == LIMMA) {
 			return new DiffExpLimma();
-		}
-		else if (DiffExpID == DESEQ) {
+		} else if (DiffExpID == DESEQ) {
 			return new DiffExpDESeq();
-		}
-		else if (DiffExpID == DEGSEQ) {
+		} else if (DiffExpID == DEGSEQ) {
 			return new DiffExpDEGseq();
-		}
-		else if (DiffExpID == TTest) {
+		} else if (DiffExpID == TTest) {
 			return new DiffExpTtest();
-		}
-		else {
+		} else if (DiffExpID == EDEGR) {
+			return new DiffExpEdgeR();
+		} else {
 			return null;
 		}
 	}

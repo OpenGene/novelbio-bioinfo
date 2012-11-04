@@ -319,9 +319,9 @@ public class CtrlFastQMapping {
 		fastQfilterRecord.setFilterParamAdaptorRight(adaptorRight.trim());
 		fastQfilterRecord.setFilterParamAdaptorLowercase(adaptorLowercase);
 		fastQfilterRecord.setFilterParamReadsLenMin(readsLenMin);
-		fastQfilterRecord.setFilterParamQuality(this.fastqQuality);
+		fastQfilterRecord.setQualityFilter(this.fastqQuality);
 		fastQfilterRecord.setFilterParamTrimNNN(trimNNN);
-		fastQ.setFilterParam(fastQfilterRecord);
+		fastQ.setFilter(fastQfilterRecord);
 		fastQ.setCompressType(compressType, TxtReadandWrite.TXT);
 	}
 	

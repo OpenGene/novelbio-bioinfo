@@ -19,7 +19,7 @@ public enum GeneType {
 			mapMRNA2GeneType.put("mRNA_TE_gene",mRNA_TE);
 			mapMRNA2GeneType.put("mRNA",mRNA);
 			mapMRNA2GeneType.put("miRNA",miRNA);
-			mapMRNA2GeneType.put("tRNA",GeneType.tRNA);
+			mapMRNA2GeneType.put("tRNA",tRNA);
 			mapMRNA2GeneType.put("pseudogenic_transcript", PSEU_TRANSCRIPT);
 			mapMRNA2GeneType.put("snoRNA", snoRNA);
 			mapMRNA2GeneType.put("snRNA", snRNA);

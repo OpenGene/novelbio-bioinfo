@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 /**
- * 包装了一个hashmap<K, arraylist<V>>
+ * 包装了一个hashmap < K, arraylist < V > >
  * @author zong0jie
  *
  * @param <K>

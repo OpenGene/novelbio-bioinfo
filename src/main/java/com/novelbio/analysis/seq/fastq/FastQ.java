@@ -25,11 +25,11 @@ public class FastQ {
 	public static int QUALITY_HIGM = 50;
 	public static int QUALITY_LOW_454 = 10454;
 	
-	private int threadNum_FilterFastqRecord = 5;
+	private int threadNum_FilterFastqRecord = 10;
 	
 	FastQReader fastQRead = new FastQReader();
 	FastQwrite fastQwrite = new FastQwrite();
-	FastQfilter fastQfilter = new FastQfilter(this);
+	FastQfilter fastQfilter = new FastQfilter(fastQRead, fastQwrite);
 	
 	public static void main(String[] args) {
 //		FastQ fastQfile = new FastQ("/home/zong0jie/Desktop/FHE.clean.fq");
@@ -38,7 +38,7 @@ public class FastQ {
 //		fastQfile.setFastqWrite("/home/zong0jie/Desktop/aaa_filter.fq");
 		FastQRecordFilter fastQfilterRecordParam = new FastQRecordFilter();
 		fastQfilterRecordParam.setFilterParamTrimNNN(true);
-		fastQfile.setFilterParam(fastQfilterRecordParam);
+		fastQfile.setFilter(fastQfilterRecordParam);
 //		fastQfile.filterReads(fastqQfile2);
 		fastQfile.filterReads();
 	}
@@ -61,8 +61,8 @@ public class FastQ {
 		fastQRead.setCompressType(compressInType);
 		fastQwrite.setCompressType(compressOutType);
 	}
-	public void setFilterParam(FastQRecordFilter fastQfilterRecordParam) {
-		fastQfilter.setFilterParam(fastQfilterRecordParam);
+	public void setFilter(FastQRecordFilter fastQfilterRecord) {
+		fastQfilter.setFilter(fastQfilterRecord);
 	}
 	public void setFastqRead(String fileName) {
 		fastQRead.setFastqFile(fileName);
@@ -71,7 +71,13 @@ public class FastQ {
 		fastQwrite.setFastqFile(fileName);
 	}
 	public Iterable<FastQRecord> readlines() {
-		return fastQRead.readlines();
+		return fastQRead.readlines(true);
+	}
+	/** 读取fastq的时候是否初始化
+	 * 主要用在多线程过滤reads的时候，可以在过滤reads的时候才进行初始化
+	 *  */
+	public Iterable<FastQRecord> readlines(boolean initial) {
+		return fastQRead.readlines(initial);
 	}
 	public Iterable<FastQRecord> readlines(int startLines) {
 		return fastQRead.readlines(startLines);
@@ -95,10 +101,7 @@ public class FastQ {
 	public FastQ filterReads() {
 		setFilterReadsOutName(true, getOutFileName());
 		filterReadsRun();
-		
-		if (!fastQfilter.isFinished(500)) {
-			return null;
-		}
+
 		FastQ fastQfileOut1 = new FastQ(fastQwrite.getFileName());
 		fastQfileOut1.fastQRead.readsNum = fastQfilter.allFilteredReadsNum;
 		return fastQfileOut1;
@@ -109,12 +112,7 @@ public class FastQ {
 		fastQwrite.setFastQwriteMate(fastQfile2.fastQwrite);
 		
 		setFilterReadsOutName(false, getOutFileName());
-		fastQfilter.setIsPairEnd(true);
 		filterReadsRun();
-		
-		if (!fastQfilter.isFinished(500)) {
-			return null;
-		}
 		
 		FastQ fastQfileOut1 = new FastQ(fastQwrite.getFileName());
 		fastQfileOut1.fastQRead.readsNum = fastQfilter.allFilteredReadsNum;
@@ -147,10 +145,9 @@ public class FastQ {
 	}
 	
 	private void filterReadsRun() {
-		fastQfilter.setReader(fastQRead);
-		fastQfilter.setFastqWrite(fastQwrite);
-		fastQfilter.setFilterThreadNum(threadNum_FilterFastqRecord);
-		fastQfilter.execute();
+		fastQfilter.setThreadNum(threadNum_FilterFastqRecord);
+		Thread thread = new Thread(fastQfilter);
+		thread.start();
 	}
 	
 	/** 在进行filter的时候也可以导入gui进行操作吧 */
@@ -179,7 +176,7 @@ public class FastQ {
 	 */
 	public void convertToFasta(String fastaFile) {
 		TxtReadandWrite txtFasta = new TxtReadandWrite(fastaFile, true);
-		for (FastQRecord fastQRecord : fastQRead.readlines()) {
+		for (FastQRecord fastQRecord : fastQRead.readlines(true)) {
 			txtFasta.writefile(fastQRecord.getSeqFasta().toStringNRfasta());
 		}
 		txtFasta.close();

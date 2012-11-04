@@ -308,11 +308,11 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	public HashMap<String, E> getMapName2DetailAbs() {
 		HashMap<String, E> mapName2DetailAbs = new HashMap<String, E>();
 		for (E ele : this) {
+			if (ele.getParentName().equals("chr10") && Math.abs(ele.getStartAbs() - 695888) < 50000) {
+				System.out.println("stop");
+			}
 			ArrayList<String> ss = ele.getName();
 			for (String string : ss) {
-				if (string.contains("AT1G168")) {
-					logger.error("error");
-				}
 				mapName2DetailAbs.put(string.toLowerCase(), ele);
 				mapName2DetailAbs.put(GeneID.removeDot(string.toLowerCase()), ele);
 			}
@@ -327,9 +327,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	public ArrayList<String> getLsNameAll() {
 		ArrayList<String> lsLocID = new ArrayList<String>();
 		for (E ele : this) {
-			for (String name : ele.getName()) {
-				lsLocID.add(name);
-			}
+			lsLocID.addAll(ele.getName());
 		}
 		return lsLocID;
 	}

@@ -59,7 +59,11 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				GffDetailGene gffDetailGene = listGff.get(i);
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 					gffGeneIsoInfo.sort();
-					gffGeneIsoInfo.setATGUAGncRNA();
+					try {
+						gffGeneIsoInfo.setATGUAGncRNA();
+					} catch (Exception e) {
+						gffGeneIsoInfo.setATGUAGncRNA();
+					}
 				}
 				gffDetailGene.removeDupliIso();
 			}
@@ -79,6 +83,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				GffDetailGene gffDetailGeneLast = null;
 				//合并两个重叠的基因
 				for (GffDetailGene gffDetailGene : listGff) {
+					if (gffDetailGene.getName().contains("NR_027789")) {
+						logger.error("stop");
+					}
 					if (gffDetailGeneLast != null && gffDetailGene.getParentName().equals(gffDetailGeneLast.getParentName())) {
 						double[] regionLast = new double[]{gffDetailGeneLast.getStartAbs(), gffDetailGeneLast.getEndAbs()};
 						double[] regionThis = new double[]{gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs() };
@@ -122,7 +129,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			GeneID copedID = new GeneID(accID, taxID, false);
 			String locID = null;
 			try {
-				locID = getHashGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
+				locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
 			} catch (Exception e) {
 				logger.error("没有该accID："+accID);
 				return null;
@@ -131,16 +138,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		return gffDetailGene;
 	}
-	/**
-	 * 输入CopedID，返回基因的坐标信息等
-	 * @param copedID 
-	 * @return
-	 * 没有就返回null
-	 */
-	public GffDetailGene searchLOC(GeneID copedID) {
-		String locID = getHashGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
-		return super.searchLOC(locID);
-	}
+
 	
 	/**
 	 * 输入基因名，返回基因的具体转录本，主要用在UCSC上
@@ -190,42 +188,37 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		return lsIntronLen;
 	}
 	/**
-	 * 获得Gene2GeneID在数据库中的信息，并且写入文本，一般不用
+	 * 输入CopedID，返回基因的坐标信息等
+	 * @param copedID 
+	 * @return
+	 * 没有就返回null
 	 */
-	private ArrayList<String[]> getGene2ID() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		
-		ArrayList<String> lsAccID = getLsNameNoRedundent();
-		for (String accID : lsAccID) {
-			GeneID copedID = new GeneID(accID, taxID, false);
-			String[] tmpAccID = new String[2];
-			tmpAccID[0] = copedID.getAccID();
-			tmpAccID[1] = copedID.getGenUniID();
-			lsResult.add(tmpAccID);
+	public GffDetailGene searchLOC(GeneID copedID) {
+		GffDetailGene gffDetailGene = super.searchLOC(copedID.getAccID());
+		if (gffDetailGene != null) {
+			return gffDetailGene;
 		}
-		return lsResult;
+		
+		GffGeneIsoInfo gffGeneIsoInfo = searchISO(copedID.getAccID());
+		if (gffGeneIsoInfo != null) {
+			return gffGeneIsoInfo.getParentGffDetailGene();
+		}
+		
+		String locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
+		return super.searchLOC(locID);
 	}
-	/**
-	 * 一个Gff文件只跑一次就好
-	 * 将读取的Gff文件中的AccID转化为GeneID并且保存在文本中，下次直接读取该文本即可获得AccID与GeneID的对照表，快速查找
-	 * @param txtAccID2GeneID
-	 */
-	private void writeAccID2GeneID(String txtaccID2GeneID) {
-		TxtReadandWrite txtAccID2GeneID = new TxtReadandWrite(txtaccID2GeneID, true);
-		txtAccID2GeneID.ExcelWrite(getGene2ID());
-	}
-
+	
 	/**
 	 * 输入
 	 * @param txtaccID2GeneID
 	 * @return
 	 * hashGeneID2Acc，一个geneID对应多个accID的时候，accID用“//”隔开
 	 */
-	private HashMap<String, String> getHashGeneID2Acc(String txtaccID2GeneID) {
+	private HashMap<String, String> getMapGeneID2Acc(String txtaccID2GeneID) {
 		if (mapGeneID2AccID != null && mapGeneID2AccID.size() > 0) {
 			return mapGeneID2AccID;
 		}
-		if (!FileOperate.isFileExist(txtaccID2GeneID)) {
+		if (!FileOperate.isFileExistAndBigThanSize(txtaccID2GeneID, 3)) {
 			writeAccID2GeneID(txtaccID2GeneID);
 		}
 		mapGeneID2AccID = new HashMap<String, String>();
@@ -245,6 +238,32 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		return mapGeneID2AccID;
 	}
+	/**
+	 * 一个Gff文件只跑一次就好
+	 * 将读取的Gff文件中的AccID转化为GeneID并且保存在文本中，下次直接读取该文本即可获得AccID与GeneID的对照表，快速查找
+	 * @param txtAccID2GeneID
+	 */
+	private void writeAccID2GeneID(String txtaccID2GeneID) {
+		TxtReadandWrite txtAccID2GeneID = new TxtReadandWrite(txtaccID2GeneID, true);
+		txtAccID2GeneID.ExcelWrite(getGene2ID());
+	}
+	/**
+	 * 获得Gene2GeneID在数据库中的信息，并且写入文本，一般不用
+	 */
+	private ArrayList<String[]> getGene2ID() {
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		
+		ArrayList<String> lsAccID = getLsNameAll();
+		for (String accID : lsAccID) {
+			GeneID copedID = new GeneID(accID, taxID, false);
+			String[] tmpAccID = new String[2];
+			tmpAccID[0] = copedID.getAccID();
+			tmpAccID[1] = copedID.getGenUniID();
+			lsResult.add(tmpAccID);
+		}
+		return lsResult;
+	}
+	
 	/**
 	 * 将基因装入GffHash中
 	 * @param chrID
@@ -274,24 +293,29 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		for (String string : lsChrID) {
 			treeSet.add(string);
 		}
+		//基因名字去重复，因为一个基因只能有一个名字
+		//所以如果发现一样的基因名，就在其后面加上.1，.2等
+		HashSet<String> setGeneName = new HashSet<String>();
 		for (String string : treeSet) {
 			ArrayList<GffDetailGene> lsGffDetailGenes = mapChrID2ListGff.get(string);
-			writeToGTF(txtGtf, lsGffDetailGenes, title);
+			for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
+				String geneID = gffDetailGene.getNameSingle();
+				String geneIDinput = geneID;
+				int num = 1;
+				while (setGeneName.contains(geneIDinput)) {
+					geneIDinput = geneID + "." + num;
+					num ++;
+				}
+				setGeneName.add(geneIDinput);
+				
+				gffDetailGene.removeDupliIso();
+				String geneGTF = gffDetailGene.toGTFformate(geneIDinput, title);
+				txtGtf.writefileln(geneGTF.trim());
+			}
 		}
 		txtGtf.close();
 	}
-	/**
-	 * 将一个染色体中的信息写入文本，按照GTF格式
-	 * @param txtWrite
-	 * @param lsGffDetailGenes
-	 */
-	private void writeToGTF(TxtReadandWrite txtWrite, ArrayList<GffDetailGene> lsGffDetailGenes, String title) {
-		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
-			gffDetailGene.removeDupliIso();
-			String geneGTF = gffDetailGene.toGTFformate(title);
-			txtWrite.writefileln(geneGTF.trim());
-		}
-	}
+	
 	/**
 	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GTF格式
 	 * 也就是说，仅含有一个转录本的基因就不写入文本了
@@ -314,6 +338,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		txtGtf.close();
 	}
+	
 	/**
 	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GTF格式
 	 * 也就是说，仅含有一个转录本的基因就不写入文本了

@@ -143,9 +143,20 @@ public class mytest {
 	 */
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		GUIFileOpen guiFileOpen = new GUIFileOpen();
-		guiFileOpen.saveFileName(description, extensions);
+		GffChrAbs gffChrAbs = new GffChrAbs(9606);
+		GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
+		gffChrSeq.setGeneStructure(GeneStructure.INTRON);
 		
+		GffDetailGene gffGene = gffChrAbs.getGffHashGene().searchLOC(new GeneID("C10orf108", 9606));		
+		
+		
+		System.out.println(gffGene.getLsCodSplit().size());
+		for (GffGeneIsoInfo gffGeneIsoInfo : gffGene.getLsCodSplit()) {
+			if (gffGeneIsoInfo.getGeneType() == GeneType.tRNA) {
+				continue;
+			}
+			System.out.println(gffGeneIsoInfo.getGeneType());
+		}
 	}
 	
 	private void HG18() {
@@ -168,7 +179,6 @@ public class mytest {
 //		snpAnnotation.setCol(2, 3, 4, 5);
 //		snpAnnotation.run();
 //		
-		
 	}
 
 }

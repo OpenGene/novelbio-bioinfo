@@ -23,9 +23,8 @@ import com.novelbio.base.multithread.txtreadcopewrite.MTRecoreReader;
  * 2010年 Illumina HiSeq2000测序仪，双端50bp Q30>90% 双端100bp Q30>85%
  * 
  * @author zong0jie
- * 
  */
-class FastQReader extends MTRecoreReader<FastQRecord, FastqRecordInfoRead> {
+class FastQReader {
 	private static Logger logger = Logger.getLogger(FastQReader.class);
 	public static int FASTQ_SANGER_OFFSET = 33;
 	public static int FASTQ_ILLUMINA_OFFSET = 64;
@@ -87,6 +86,29 @@ class FastQReader extends MTRecoreReader<FastQRecord, FastqRecordInfoRead> {
 	protected void setFastQReadMate(FastQReader fastQReadMate) {
 		this.fastQReadMate = fastQReadMate;
 	}
+	
+	protected boolean isPairEnd() {
+		if (fastQReadMate != null && fastQReadMate.txtSeqFile != null) {
+			return true;
+		}
+		return false;
+	}
+	/**
+	 * 读取前几行，不影响{@link #readlines()}
+	 * @param num
+	 * @return
+	 */
+	public ArrayList<FastQRecord> readHeadLines(int num) {
+		ArrayList<FastQRecord> lsResult = new ArrayList<FastQRecord>();
+		int i = 0;
+		for (FastQRecord info : readlines(true)) {
+			if (i >= num) {
+				break;
+			}
+			lsResult.add(info);
+		}
+		return lsResult;
+	}
 	/**
 	 * 从第几行开始读，是实际行
 	 * @param lines 如果lines小于1，则从头开始读取
@@ -95,7 +117,7 @@ class FastQReader extends MTRecoreReader<FastQRecord, FastqRecordInfoRead> {
 	public Iterable<FastQRecord> readlines(int lines) {
 		lines = lines - 1;
 		try {
-			Iterable<FastQRecord> itContent = readPerlines();
+			Iterable<FastQRecord> itContent = readPerlines(true);
 			if (lines > 0) {
 				for (int i = 0; i < lines; i++) {
 					itContent.iterator().hasNext();
@@ -106,15 +128,29 @@ class FastQReader extends MTRecoreReader<FastQRecord, FastqRecordInfoRead> {
 			return null;
 		}
 	}
-
+	
+	/**
+	 * 从第几行开始读，是实际行
+	 * @param lines 如果lines小于1，则从头开始读取
+	 * @return
+	 */
+	public Iterable<FastQRecord> readlines(boolean initial) {
+		try {
+			Iterable<FastQRecord> itContent = readPerlines(initial);
+			return itContent;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
 	/**
 	 * 迭代读取文件
-	 * @param filename
+	 * @param initial 是否进行初始化，主要用在多线程过滤reads的时候可以先不初始化，在多线程时候才初始化
 	 * @return
 	 * @throws Exception 
 	 * @throws IOException
 	 */
-	private Iterable<FastQRecord> readPerlines() throws Exception {
+	private Iterable<FastQRecord> readPerlines(final boolean initial) throws Exception {
 		final BufferedReader bufread =  txtSeqFile.readfile(); 
 		return new Iterable<FastQRecord>() {
 			public Iterator<FastQRecord> iterator() {
@@ -142,7 +178,7 @@ class FastQReader extends MTRecoreReader<FastQRecord, FastqRecordInfoRead> {
 								}
 								linestr = linestr + TxtReadandWrite.ENTER_LINUX + lineTmp;
 							}
-							fastQRecord = new FastQRecord(linestr);
+							fastQRecord = new FastQRecord(linestr, initial);
 							fastQRecord.setFastqOffset(offset);
 						} catch (IOException ioEx) {
 							fastQRecord = null;
@@ -153,46 +189,93 @@ class FastQReader extends MTRecoreReader<FastQRecord, FastqRecordInfoRead> {
 			}
 		};
 	}
-	@Override
-	protected void running() {
-		setFastQFormatLen();
-		if (fastQReadMate == null) {
-			readSE();
+	
+	/**
+	 * 从第几行开始读，是实际行
+	 * @param lines 如果lines小于1，则从头开始读取
+	 * @return
+	 */
+	public Iterable<FastQRecord[]> readlinesPE(int lines) {
+		lines = lines - 1;
+		try {
+			Iterable<FastQRecord[]> itContent = readPerlinesPE(true);
+			if (lines > 0) {
+				for (int i = 0; i < lines; i++) {
+					itContent.iterator().hasNext();
+				}
+			}
+			return itContent;
+		} catch (Exception e) {
+			return null;
 		}
-		else {
-			readPE();
-		}
-		logger.info("finishedRead");
 	}
 	
-	private void readSE() {
-		readsNum = 0;
-		for (FastQRecord fastQRecord : readlines()) {
-			readsNum++;
-			wait_To_Cope_AbsQueue();
-			if (flagStop) {
-				break;
-			}
-			FastqRecordInfoRead fastqRecordInfoRead = new FastqRecordInfoRead(readsNum, new FastQRecord[]{fastQRecord});
-			setRunInfo(fastqRecordInfoRead);
-			absQueue.add(fastqRecordInfoRead);
+	/**
+	 * 从第几行开始读，是实际行
+	 * @param lines 如果lines小于1，则从头开始读取
+	 * @return
+	 */
+	public Iterable<FastQRecord[]> readlinesPE(boolean initial) {
+		try {
+			Iterable<FastQRecord[]> itContent = readPerlinesPE(initial);
+			return itContent;
+		} catch (Exception e) {
+			return null;
 		}
 	}
-	private void readPE() {
-		readsNum = 0;
-		Iterator<FastQRecord> itMateFastqRecord = fastQReadMate.readlines().iterator();
-		for (FastQRecord fastQRecord : readlines()) {
-			FastQRecord fastQRecord2 = itMateFastqRecord.next();
-			readsNum++;
-			wait_To_Cope_AbsQueue();
-			if (flagStop) {
-				break;
+	/**
+	 * 迭代读取文件
+	 * @param initial 是否进行初始化，主要用在多线程过滤reads的时候可以先不初始化，在多线程时候才初始化
+	 * @return
+	 * @throws Exception 
+	 * @throws IOException
+	 */
+	private Iterable<FastQRecord[]> readPerlinesPE(final boolean initial) throws Exception {
+		final BufferedReader bufread1 =  txtSeqFile.readfile();
+		final BufferedReader bufread2 = fastQReadMate.txtSeqFile.readfile();
+		return new Iterable<FastQRecord[]>() {
+			public Iterator<FastQRecord[]> iterator() {
+				return new Iterator<FastQRecord[]>() {
+					FastQRecord[] fastQRecords = getLine();
+					public boolean hasNext() {
+						return fastQRecords != null;
+					}
+					public FastQRecord[] next() {
+						FastQRecord[] retval = fastQRecords;
+						fastQRecords = getLine();
+						return retval;
+					}
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+					FastQRecord[] getLine() {
+						FastQRecord[] fastQRecord = new FastQRecord[2];
+						try {
+							String linestr1 = bufread1.readLine();
+							String linestr2 = bufread2.readLine();
+							for (int i = 0; i < 3; i++) {
+								String lineTmp1 = bufread1.readLine();
+								String lineTmp2 = bufread2.readLine();
+								if (linestr1 == null || linestr2 == null) {
+									return null;
+								}
+								linestr1 = linestr1 + TxtReadandWrite.ENTER_LINUX + lineTmp1;
+								linestr2 = linestr2 + TxtReadandWrite.ENTER_LINUX + lineTmp2;
+							}
+							fastQRecord[0] = new FastQRecord(linestr1, initial);
+							fastQRecord[1] = new FastQRecord(linestr2, initial);
+							fastQRecord[0].setFastqOffset(offset);
+							fastQRecord[0].setFastqOffset(offset);
+						} catch (IOException ioEx) {
+							fastQRecord = null;
+						}
+						return fastQRecord;
+					}
+				};
 			}
-			FastqRecordInfoRead fastqRecordInfoRead = new FastqRecordInfoRead(readsNum, new FastQRecord[]{fastQRecord, fastQRecord2});
-			setRunInfo(fastqRecordInfoRead);
-			absQueue.add(fastqRecordInfoRead);
-		}
+		};
 	}
+	
 	/**
 	 * 获得第一条reads的长度，返回负数说明出错
 	 * @return
@@ -233,7 +316,7 @@ class FastQReader extends MTRecoreReader<FastQRecord, FastqRecordInfoRead> {
 	private ArrayList<FastQRecord> getLsFastQSeq(int Num) {
 		ArrayList<FastQRecord> lsFastqRecord = new ArrayList<FastQRecord>();
 		int thisnum = 0;
-		for (FastQRecord fastQRecord : readlines()) {
+		for (FastQRecord fastQRecord : readlines(true)) {
 			if (thisnum > Num) break;
 			if (fastQRecord.getSeqQuality().contains("BBB")) {
 				continue;
@@ -297,6 +380,9 @@ class FastQReader extends MTRecoreReader<FastQRecord, FastqRecordInfoRead> {
 	public void close() {
 		try {
 			txtSeqFile.close();
+			if (fastQReadMate != null) {
+				fastQReadMate.close();
+			}
 		} catch (Exception e) { }
 	}
 }

@@ -17,8 +17,10 @@
 	<classpathentry kind="lib" path="lib/jnlp.jar"/>
 	<classpathentry kind="con" path="com.soyatec.uml.CONTAINER"/>
 	<classpathentry kind="lib" path="lib/miglayout-3.5.5.jar"/>
+	<classpathentry kind="lib" path="/media/winD/fedora/workspace/lib/sam-1.79.jar"/>
 	<classpathentry kind="lib" path="/media/winD/fedora/workspace/lib/picard-1.63.jar"/>
-	<classpathentry kind="lib" path="/media/winD/fedora/workspace/lib/sam-1.63.jar"/>
+	<classpathentry kind="lib" path="/media/winD/fedora/workspace/lib/picard/trunk/lib/snappy-java-1.0.3-rc3.jar"/>
+	<classpathentry kind="lib" path="/media/winD/fedora/workspace/lib/picard/trunk/lib/apache-ant-1.8.2-bzip2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 	<referencedentry kind="lib" path="/ExternalJar/jgrapht-0.8.2/lib/jgraph.jar" sourcepath="/ExternalJar/jgrapht-0.8.2/src"/>
 </classpath>

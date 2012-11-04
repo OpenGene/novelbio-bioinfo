@@ -54,12 +54,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 
 	/** gene类似名 */
 	private static HashSet<String> setIsGene = new HashSet<String>();
-	private static String enc="utf8";//文件中含有%20C等符号，用url解码
-	
 	
 	public static void main(String[] args) {
 //		GffHashGeneNCBI.modifyNCBIgffFile("/media/winE/Bioinformatics/genome/checken/gal4_UCSC/gff/ref_Gallus_gallus-4.0_top_level.gff3");
-		
 		GffHashGeneNCBI gffHashGeneNCBI = new GffHashGeneNCBI();
 		gffHashGeneNCBI.ReadGffarray("/media/winE/Bioinformatics/genome/human/hg19_GRCh37/gff/ref_GRCh37.p9_top_level_modify.gff3");
 		GffGeneIsoInfo gffGeneIsoInfo = gffHashGeneNCBI.searchISO("XM_003481161");		
@@ -85,12 +82,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	/** "(?<=product\\=)\\w+" */
 	PatternOperate patProduct = null;
 
-
-	private HashMap<String, String> mapGenID2GeneName = new HashMap<String, String>();
 	private HashMap<String, String> hashRnaID2GeneID = new HashMap<String, String>();
-	private HashMap<String, String> hashRnaID2RnaName = new HashMap<String, String>();
 	private LinkedHashMap<String, GffDetailGene> hashGenID2GffDetail = new LinkedHashMap<String, GffDetailGene>();
-	
+	private LinkedHashMap<String, GffGeneIsoInfo> hashRnaID2Iso = new LinkedHashMap<String, GffGeneIsoInfo>();
 	/** 
 	 * 一般的转录本都会先出现exon，然后出现CDS，如下<br>
 	 * hr3	RefSeq	mRNA	59958839	59959481<br>
@@ -116,13 +110,13 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	private void setHashName() {
 		if (mapMRNA2GeneType.isEmpty()) {
 			mapMRNA2GeneType = GeneType.getMapMRNA2GeneType();
-			mapMRNA2GeneType.remove("tRNA");//tRNA当作gene处理
+//			mapMRNA2GeneType.remove("tRNA");//tRNA当作gene处理
 		}
 		if (setIsGene.isEmpty()) {
 			setIsGene.add("gene");
 			setIsGene.add("transposable_element_gene");
 			setIsGene.add("pseudogene");
-			setIsGene.add("tRNA");
+//			setIsGene.add("tRNA");
 		}
 	}
 	private void setPattern() {
@@ -154,15 +148,24 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
    protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
 	   setHashName();
 	   setPattern();
-	   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);	   
+	   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);
+	   
+	   //当前的geneID，主要是给tRNA和miRNA用的，因为别的mRNA都有parent geneID可以通过这个ID回溯geneName
+	   //但是tRNA和miRNA就没有这个parent geneID，所以就记载下来给他们用
+	   String[] thisGeneIDandName = null;
 	   
 	   for (String content : txtgff.readlines()) {
 		   if(content.charAt(0)=='#') continue;
 		   
+		   if (content.contains("C10orf108")) {
+			   System.out.println("stop");
+		   }
+		   
+		   
 		   String[] ss = content.split("\t");//按照tab分开
 		   //当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中
 		   if (setIsGene.contains(ss[2])) {
-			   addNewGene(ss);
+			   thisGeneIDandName = addNewGene(ss);
 		   }
 		   /**
       	    * 当读取到mRNA时，就是说是可变剪接时，添加一个新的可变剪接list
@@ -170,7 +173,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
       	    * 一旦出现了mRNA，就要开始指定5UTR，3UTR，CDS的起点和终止
       	    */
 		   else if (mapMRNA2GeneType.containsKey(ss[2])) {
-			   addMiRNA(ss);
+			   addMRNA(thisGeneIDandName, ss);
 		   }
 		   else if (ss[2].contains("exon")) {
 			   if (!addExon(ss)) {
@@ -185,59 +188,65 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   }
 	   setGffList();
 	   txtgff.close();
-	   
-	   patGeneName = null;
-	   patmRNAName = null;
-	   patGeneID = null;
-	   patID = null;
-	   patParentID = null;
-	   patProduct = null;
-	   mapGenID2GeneName = null;
-	   hashRnaID2GeneID = null;
-	   hashRnaID2RnaName = null;
-	   hashGenID2GffDetail = null;
    }
-   /** 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中   */
-   private void addNewGene(String[] ss) {
+   /** 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中
+    * 并且返回该geneID和geneName
+    *    */
+   private String[] addNewGene(String[] ss) {
 	 //when read the # and the line contains gene, it means the new LOC
-	   String genID = patID.getPatFirst(ss[8]);
+	   String geneID = patID.getPatFirst(ss[8]);
 	   String geneName = getGeneName(ss[8]); setTaxID(ss, geneName);
-	   mapGenID2GeneName.put(genID, geneName);
-	   GffDetailGene gffDetailLOC = getGffDetailGenID(genID);
+	   GffDetailGene gffDetailLOC = getGffDetailGenID(geneID);
 	   if (gffDetailLOC == null) {
 		   gffDetailLOC=new GffDetailGene(ss[0], geneName, ss[6].equals("+"));//新建一个基因类
 	   }
 	   gffDetailLOC.setTaxID(taxID);
-	   gffDetailLOC.setStartAbs( Integer.parseInt(ss[3])); gffDetailLOC.setEndAbs( Integer.parseInt(ss[4]));//基因起止      		
-	   hashGenID2GffDetail.put(genID, gffDetailLOC);
-	   mapGeneName2IsHaveExon.put(genID, false);
+	   gffDetailLOC.setStartAbs( Integer.parseInt(ss[3])); gffDetailLOC.setEndAbs( Integer.parseInt(ss[4]));//基因起止
+	   hashGenID2GffDetail.put(geneID, gffDetailLOC);
+	   mapGeneName2IsHaveExon.put(geneID, false);
+	   String[] geneIDandName = new String[2];
+	   geneIDandName[0] = geneID;
+	   geneIDandName[1] = geneName;
+	   return geneIDandName;
    }
    /**
     * 当读取到mRNA时，就是说是可变剪接时，添加一个新的可变剪接list
     * 不管怎么加都是从第一个cds开始加到最后一个cds，正向的话就是从小加到大，反向就是从大加到小。
     * 一旦出现了mRNA，就要开始指定5UTR，3UTR，CDS的起点和终止
     */
-   private void addMiRNA(String[] ss) {
+   private void addMRNA(String[] lastGeneIDandName, String[] ss) {
 	   String rnaID = patID.getPatFirst(ss[8]);
-	   add_MapRnaID2RnaName_And_MapRnaID2GeneID(rnaID, ss);
+	   String rnaName = add_MapRnaID2RnaName_And_MapRnaID2GeneID(lastGeneIDandName, rnaID, ss);
 	   GffDetailGene gffDetailGene = getGffDetailRnaID(rnaID);
 	   
-	   String[] mRNAname = getMrnaName(ss);
+	   String[] mRNAname = getMrnaName(rnaName, ss);
 	   try {
-		   gffDetailGene.addsplitlist(mRNAname[0], mapMRNA2GeneType.get(mRNAname[1]));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(mRNAname[0], mapMRNA2GeneType.get(mRNAname[1]));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+		   hashRnaID2Iso.put(rnaID, gffGeneIsoInfo);
 	   } catch (Exception e) {
 //		   gffDetailGene = getGffDetailRnaID(rnaID);
 //		   gffDetailGene.addsplitlist(mRNAname[0], mapMRNA2GeneType.get(mRNAname[1]));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   logger.error("错误，需要检查：" + mRNAname[0] + " " + mRNAname[1]);
 	   }
    }
-   private void add_MapRnaID2RnaName_And_MapRnaID2GeneID(String rnaID, String[] ss) {
+   /**
+    * @param lastGeneIDandName
+    * @param rnaID
+    * @param ss
+    * @return  返回加入的rna名字
+    */
+   private String add_MapRnaID2RnaName_And_MapRnaID2GeneID(String[] lastGeneIDandName, String rnaID, String[] ss) {
 	   String rnaName = patmRNAName.getPatFirst(ss[8]);
 	   if (rnaName == null) {
-		   rnaName = getProductName(ss[8]);
+		   rnaName = lastGeneIDandName[1];
 	   }
-	   hashRnaID2RnaName.put(rnaID, rnaName);
-	   hashRnaID2GeneID.put(rnaID, patParentID.getPatFirst(ss[8]));
+	   //tRNA这种里面是没有parentID的，所以就将其上一行的geneID抓过来就行了
+	   String geneID = patParentID.getPatFirst(ss[8]);
+	   if (geneID == null) {
+		   geneID = lastGeneIDandName[0];
+	   }
+	   hashRnaID2GeneID.put(rnaID, geneID);
+	   return rnaName;
    }
    
    private boolean addExon(String[] ss) {
@@ -251,6 +260,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   }
 	   String geneID = getGeneID(rnaID);
 	   mapGeneName2IsHaveExon.put(geneID, true);
+	   if (gffGeneIsoInfo == null) {
+		System.out.println("stop");
+		gffGeneIsoInfo = getGffIso(rnaID);
+	}
 	   gffGeneIsoInfo.addExon(Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 	   return true;
    }
@@ -267,19 +280,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   gffGeneIsoInfo.addExon(Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 	   }
    }
-   /** 需要解码 */
-   private String getProductName(String ss8) {
-	   String rnaName = patProduct.getPatFirst(ss8);
-	   rnaName = WebFetch.decode(rnaName);
-	   return rnaName;
-   }
    private String getGeneName(String content) {
 	   String geneName = patGeneName.getPatFirst(content);//查找基因名字
 	   if (geneName == null) {
 		   String geneID = patGeneID.getPatFirst(content);
-		   if (geneID == null) {
-			   logger.error("stop");
-		   }
 		   GeneID copedID = null;
 		   try {
 			   copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
@@ -300,28 +304,32 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     * 0: geneName
     * 1: NCBI读取的type
     */
-   private String[] getMrnaName(String[] content) {
+   private String[] getMrnaName(String thisMRNAname, String[] content) {
 	   String[] result = new String[2];
-	   String mRNAname = patmRNAName.getPatFirst(content[8]);//mRNApattern.matcher(content);
-	   if (mRNAname == null) {
-		   mRNAname = getProductName(content[8]);
-	   }
-	   if(mRNAname != null) {
-		   result[0] = mRNAname;
-		   result[1] = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
-	   }
-	   else {
-		   try {
-			   String geneID = patGeneID.getPatFirst(content[8]);
-			   GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
-			   result[0] = copedID.getAccID();//这里有问题
-			   result[1] = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
-		   } catch (Exception e) {
-			   System.out.println("GffHashPlantGeneError: 文件  "+getGffFilename()+"  在本行可能没有指定的基因ID  " +content);
-			   return null;
-		   }
-	   }
+	   result[0] = thisMRNAname;
+	   result[1] = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 	   return result;
+//	   
+//	   String mRNAname = patmRNAName.getPatFirst(content[8]);//mRNApattern.matcher(content);
+//	   if (mRNAname == null) {
+//		   mRNAname = thisMRNAname;
+//	   }
+//	   if(mRNAname != null) {
+//		   result[0] = mRNAname;
+//		   result[1] = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+//	   }
+//	   else {
+//		   try {
+//			   String geneID = patGeneID.getPatFirst(content[8]);
+//			   GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
+//			   result[0] = copedID.getSymbol();//这里有问题
+//			   result[1] = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+//		   } catch (Exception e) {
+//			   System.out.println("GffHashPlantGeneError: 文件  "+getGffFilename()+"  在本行可能没有指定的基因ID  " +content);
+//			   return null;
+//		   }
+//	   }
+//	   return result;
    }
    /**
     * 设定taxID
@@ -378,19 +386,14 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     * @return null 表示没有找到相应的GffDetail信息
     */
    private GffGeneIsoInfo getGffIso(String rnaID) {
-	   String rnaName = hashRnaID2RnaName.get(rnaID);
-	   GffDetailGene gffDetailGene = null;
-	   if (rnaName == null) {
+	   GffGeneIsoInfo gffGeneIsoInfo = hashRnaID2Iso.get(rnaID);
+	   if (gffGeneIsoInfo == null) {
 		   hashRnaID2GeneID.put(rnaID, rnaID);
-		   gffDetailGene = getGffDetailGenID(rnaID);
-		   hashRnaID2RnaName.put(rnaID, gffDetailGene.getNameSingle());
-		   rnaName = gffDetailGene.getNameSingle();
-		   gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), GeneType.ncRNA);
+		   GffDetailGene gffDetailGene = getGffDetailGenID(rnaID);
+		   gffGeneIsoInfo = gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), GeneType.ncRNA);
+		   hashRnaID2Iso.put(rnaID, gffGeneIsoInfo);
 	   }
-	   else {
-		   gffDetailGene = getGffDetailRnaID(rnaID);
-	   }
-	   return gffDetailGene.getIsolist(rnaName);		
+	   return gffGeneIsoInfo;
 	}
    
    //TODO 考虑将该方法放到超类中
@@ -414,7 +417,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   }
 		   LOCList.add(gffDetailGene);
 	   }
-
    }
 
    /**
@@ -444,14 +446,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   if (ss[2].equals("region")) {
 			   if (ss[8].contains("genome=genomic")) {
 				continue;
-			   }
-			   else if (ss[8].contains("genome=mitochondrion")) {
+			   } else if (ss[8].contains("genome=mitochondrion")) {
 				   chrID = "chrM";
-			   }
-			   else if (ss[8].contains("genome=chloroplast")) {
+			   } else if (ss[8].contains("genome=chloroplast")) {
 				   chrID = "chrc";
-			   }
-			   else {
+			   } else {
 				   try {
 					   chrID = "chr" + PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];
 				   } catch (Exception e) {
@@ -463,7 +462,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   }
 		   ss[0] = chrID;
 		   if (chrID.equals("unknown")) {
-			continue;
+			   continue;
 		   }
 		   if (tRNAflag) {
 			   if (!ss[2].equals("tRNA")) {

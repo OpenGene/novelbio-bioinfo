@@ -194,12 +194,14 @@ public class GffDetailGene extends ListDetailAbs {
 	}
 	/**
 	 * 直接添加转录本，根据genedetail的信息设置cis5to3。之后用addcds()方法给该转录本添加exon
+	 * @return 返回添加的转录本 
 	 */
-	protected void addsplitlist(String splitName, GeneType geneTpye) {
+	protected GffGeneIsoInfo addsplitlist(String splitName, GeneType geneTpye) {
 		removeDuplicateIso = false;
 		
 		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(splitName, this, geneTpye, cis5to3);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
+		return gffGeneIsoInfo;
 	}
 	/**
 	 * 直接添加转录本，之后用addcds()方法给该转录本添加exon
@@ -406,6 +408,12 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @param gffDetailGene
 	 */
 	public void addIsoSimple(GffDetailGene gffDetailGene) {
+		for (String geneName : gffDetailGene.getName()) {
+			if (lsItemName.contains(geneName)) {
+				continue;
+			}
+			lsItemName.add(geneName);
+		}
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			addIso(gffGeneIsoInfo);
 		}
@@ -548,16 +556,31 @@ public class GffDetailGene extends ListDetailAbs {
 			return null;
 		}
 		return mapCompInfo2GeneIso.get(lsCompInfo.get(0));
-	}	
-	
+	}
+	/**
+	 * 将本基因输出为gtf文件，就这个基因的几行
+	 * 基因名为getNameSingle()
+	 * @param title
+	 * @return
+	 */
 	public String toGTFformate(String title) {
+		return toGTFformate(getNameSingle(), title);
+	}
+	/**
+	 * 将本基因输出为gtf文件，就这个基因的几行
+	 * @param geneID 自定义基因名字
+	 * @param title
+	 * @return
+	 */
+	public String toGTFformate(String geneID, String title) {
 		String geneGTF = "";
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
 			gffGeneIsoInfo.sort();
-			geneGTF = geneGTF + gffGeneIsoInfo.getGTFformat(getNameSingle(), title);
+			geneGTF = geneGTF + gffGeneIsoInfo.getGTFformat(geneID, title);
 		}
 		return geneGTF;
 	}
+
 	/**
 	 * 返回gff格式的信息
 	 * @param title 公司名等信息

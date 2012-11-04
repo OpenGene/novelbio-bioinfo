@@ -50,7 +50,7 @@ public class DiffExpLimma extends DiffExpAbs{
 	
 	@Override
 	protected void setOutScriptPath() {
-		outScript = workSpace + "Limma_" + DateTime.getDateAndRandom() + ".R";		
+		outScript = workSpace + "Limma_" + DateTime.getDateAndRandom() + ".R";
 	}
 
 	@Override

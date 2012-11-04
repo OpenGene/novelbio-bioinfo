@@ -26,8 +26,7 @@ public class ServGo2Term  extends AbsGetSpring implements MapGo2Term{
 	 */
 	static HashMap<String, Go2Term> hashGo2Term = new HashMap<String, Go2Term>();
 	
-	public ServGo2Term()  
-	{
+	public ServGo2Term() {
 		mapGo2Term = (MapGo2Term) factory.getBean("mapGo2Term");
 		mapGoIDconvert = (MapGoIDconvert) factory.getBean("mapGoIDconvert");
 	}

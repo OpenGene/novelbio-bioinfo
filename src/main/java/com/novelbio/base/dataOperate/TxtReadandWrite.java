@@ -62,7 +62,7 @@ public class TxtReadandWrite {
 	public final static String ENTER_LINUX = "\n";
 	public final static String ENTER_WINDOWS = "\r\n";
 	
-	static int bufferLen = 10000;
+	static int bufferLen = 100000;
 
 	String sep = "\t";
 	
@@ -249,7 +249,7 @@ public class TxtReadandWrite {
 			inputStream = new BufferedInputStream(zipArchiveInputStream, bufferLen);
 		}
 		else if (fileType.equals(GZIP))
-			inputStream = new BufferedInputStream(new GZIPInputStream(inputStream), bufferLen);
+			inputStream = new BufferedInputStream(new GZIPInputStream(inputStream, bufferLen), bufferLen);
 		else if (fileType.equals(BZIP2))
 			inputStream = new BufferedInputStream(new BZip2CompressorInputStream(inputStream), bufferLen);
 	}

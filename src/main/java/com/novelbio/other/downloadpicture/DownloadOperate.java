@@ -51,7 +51,7 @@ public abstract class DownloadOperate {
 		
 		DonmaiOperate donmaiOperate = new DonmaiOperate();
 		donmaiOperate.getcookies();
-		donmaiOperate.setUrlAuther("azazel1944");
+		donmaiOperate.setUrlAuther("gangbang");
 		donmaiOperate.setSavePath("/home/zong0jie/ͼƬ/My Pictures/picture/donmai");
 		donmaiOperate.run();
 		
