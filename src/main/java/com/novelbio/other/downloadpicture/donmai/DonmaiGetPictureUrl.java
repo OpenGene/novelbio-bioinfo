@@ -14,7 +14,7 @@ import org.htmlparser.util.SimpleNodeIterator;
 
 import net.sf.picard.annotation.Gene.Transcript.Exon;
 
-import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.other.downloadpicture.GetPictureUrl;
 import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
 import com.novelbio.other.downloadpicture.pixiv.PixivGetPathExistPic;
@@ -22,7 +22,7 @@ import com.novelbio.other.downloadpicture.pixiv.PixivGetPathExistPic;
 /** 给定一个图片链接，返回该图片的大图链接 */
 public class DonmaiGetPictureUrl implements GetPictureUrl {
 	private static Logger logger = Logger.getLogger(DonmaiGetPictureUrl.class);
-	protected WebFetch webFetch;
+	protected HttpFetch webFetch;
 	int retryNum = 10;
 	String urlpage;
 	int page;
@@ -34,7 +34,7 @@ public class DonmaiGetPictureUrl implements GetPictureUrl {
 	
 	ArrayList<UrlPictureDownLoad> lsResult;
 	@Override
-	public void setWebFetch(WebFetch webFetch) {
+	public void setWebFetch(HttpFetch webFetch) {
 		this.webFetch = webFetch;
 	}
 	public void setPixivGetPathExistPic(PixivGetPathExistPic pixivGetPathExistPic) {
@@ -94,7 +94,7 @@ public class DonmaiGetPictureUrl implements GetPictureUrl {
 					urlPictureDownLoad.setPictureNum(thisPictureNum);
 					urlPictureDownLoad.setPictureUrl(pictureUrl);
 					urlPictureDownLoad.setSavePath(savePath);
-					urlPictureDownLoad.setWebFetch(WebFetch.getInstance(webFetch));
+					urlPictureDownLoad.setWebFetch(HttpFetch.getInstance(webFetch));
 					lsResult.add(urlPictureDownLoad);
 				}
 			}

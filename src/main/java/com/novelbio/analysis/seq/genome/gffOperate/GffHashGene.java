@@ -178,6 +178,10 @@ public class GffHashGene implements GffHashGeneInf{
 	public void addGffDetailGene(String chrID, GffDetailGene gffDetailGene) {
 		gffHashGene.addGffDetailGene(chrID, gffDetailGene);
 	}
+
+	public void writeToGTF(String GTFfile) {
+		gffHashGene.writeToGTF(GTFfile, "novelbio");
+	}
 	@Override
 	public void writeToGTF(String GTFfile, String title) {
 		gffHashGene.writeToGTF(GTFfile, title);

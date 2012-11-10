@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.generalConf.NovelBioConst;
 /**
  * ibatis在操作数据库时会自动使用类中的setter和getter给属性赋值
@@ -19,6 +20,12 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public abstract class AGeneInfo {
+	public static void main(String[] args) {
+		AGeneInfo aGeneInfo = new GeneInfo();
+		System.out.println("sfesf");
+		System.out.println(aGeneInfo.validateField("ncbi", "NCBI@@CisiCp070", "fsefsefe", true).trim());
+	}
+	
 	private static Logger logger = Logger.getLogger(AGeneInfo.class);
 	static ArrayList<String> lsDBinfo = new ArrayList<String>();
 	static{
@@ -346,118 +353,65 @@ public abstract class AGeneInfo {
 		this.modDate = modDate;
 	}
 	
-	
-	
-	/////////////// add /////////////////////////////////////////////
-	private void addSymbol(String dbInfo, String symbol) {
-		this.symbol = validateField(dbInfo, this.symbol, symbol,true);
-	}
-	private void addSynonyms(String dbInfo, String synonyms) {
-		this.synonyms = validateField(dbInfo, this.synonyms, synonyms,true);
-	}
-	private void addTaxID(int taxID) {
-		if (taxID == 0) {
-			return;
-		}
-		if (this.taxID == 0) {
-			this.taxID = taxID;
-			return;
-		}
-		if (this.taxID != taxID) {
-			logger.error("待拷贝的两个geneInfo中的taxID不一致，原taxID："+this.taxID + " 新taxID：" + taxID );
-		}
-	}
-	private void addOtherDesign(String dbInfo, String otherDesign) {
-		this.otherDesign = validateField(dbInfo, this.otherDesign,otherDesign,true);
-	}
-	private void addFullName(String dbInfo, String fullNameFromNomenclature) {
-		this.fullNameNome =  validateField(dbInfo, this.fullNameNome,fullNameFromNomenclature,true);
-	}
-	private void addSymNome(String dbInfo, String symNome) {
-		this.symNome = validateField(dbInfo, this.symNome,symNome,true);
-	}
-	private void addNomStat(String dbInfo, String nomStat) {
-		this.nomStat = validateField(dbInfo, this.nomStat, nomStat, true);
-	}
-	private void addDescription(String dbInfo, String description) {
-		this.description = validateField(dbInfo, this.description,description,true);
-	}
-	private void addMapLocation(String dbInfo, String mapLocation) {
-		this.mapLocation = validateField(dbInfo, this.mapLocation, mapLocation,true);
-	}
-	private void addChromosome(String dbInfo, String chromosome) {
-		this.chromosome = validateField(dbInfo, this.chromosome, chromosome,true);
-	}
-	private void addDbXrefs(String dbInfo, String dbXrefs) {
-		this.dbXrefs = validateField(dbInfo, this.dbXrefs, dbXrefs,true);
-	}
-	private void addLocusTag(String dbInfo, String locusTag) {
-		this.locusTag = validateField(dbInfo, this.locusTag, locusTag,true);
-	}
-	
-	private void addPubmedIDs(String pubmedIDs) {
-		if (this.pubmedID == null || this.pubmedID.equals("")) {
-			this.pubmedID = pubmedIDs;
-		}
-		else if (pubmedIDs == null || pubmedIDs.trim().equals("-")) {
-			return;
-		}
-		else {
-			this.pubmedID = this.pubmedID + SepSign.SEP_ID + pubmedIDs;
-		}
-		
-	}
-	///////////////////////////////////////////////////////////////////
 	/**
+	 * 
 	 * 验证输入项，将输入项按照需求修正，并返回修正后的结果
 	 * 如果输入项为"-", ""等，直接返回thisField
 	 * 如果输入在已有的数据中找不到，则添加上 类似NCBI@@ffwefsef@//@NEW_DB@@NEW_DESCRIP
-	 * 如果输入的数据库和已有的记载重叠，则补上类似
-	 * NCBI@@NEW_DESCRIP//ffwefsef@//@UniProt@@sfesfe
+	 * 如果输入的数据库和已有的记载重叠，则覆盖
+	 * @param dbInfo
 	 * @param thisField 已有的项
 	 * @param inputField 待输入项
+	 * @param sepWithDBinfo 是否需要在input信息前面添加数据库信息，即为 dbinfo@@inputField
 	 * @return
 	 */
-	private String validateField(String dbInfo, String thisField, String inputField, boolean sepWithDBinfo)
-	{
+	private String validateField(String dbInfo, String thisField, String inputField, boolean sepWithDBinfo) {
 		String inputFieldFinal = "";
 		if (inputField == null) {
 			return thisField;
 		}
+		
 		inputField = inputField.trim();
-		if (inputField.equals("-") || inputField.equals("")) {
+		if (inputField.equals("-") || inputField.equals("") || (thisField != null && thisField.toLowerCase().contains(inputField.toLowerCase()))) {
 			return thisField;
-		}
-		else {
+		} else {
 			if (sepWithDBinfo) {
 				inputFieldFinal = dbInfo + SepSign.SEP_INFO + inputField;
-			}
-			else {
+			} else {
 				inputFieldFinal = inputField;
 			}
 		}
+		
 		if (thisField == null || thisField.equals("")) {
 			return inputFieldFinal;
 		}
-		else {
-			if (inputFieldFinal.equals("") || thisField.contains(inputField)) {
-				return thisField;
-			}
-			//如果数据库已经存在了
-			else if (thisField.contains(dbInfo)) {
-				if (sepWithDBinfo) {
-					String result = thisField.replace(dbInfo+SepSign.SEP_INFO, inputFieldFinal + SepSign.SEP_INFO_SAMEDB);
-					logger.error("出现相同数据库但是不同的注释："+ result);
-					return result;
+		
+		// 数据库中已经有了该数据
+		if (inputFieldFinal.equals("")) {
+			return thisField;
+		}
+		// 有了该数据库
+		else if (thisField.toLowerCase().contains(dbInfo.toLowerCase())) {
+			if (sepWithDBinfo) {
+				String[] dbInfoDetail = thisField.split(SepSign.SEP_ID);
+				for (int i = 0; i < dbInfoDetail.length; i++) {
+					String[] dbinfo2Detail = dbInfoDetail[i].split(SepSign.SEP_INFO);
+					if (dbinfo2Detail[0].equalsIgnoreCase(dbInfo)) {
+						dbinfo2Detail[1] = inputField;
+						dbInfoDetail[i] = dbinfo2Detail[0] + SepSign.SEP_INFO + dbinfo2Detail[1];
+						break;
+					}
 				}
-				else {
-					return thisField + SepSign.SEP_ID + inputFieldFinal;
-				}
-			}
-			else {
+				String result = ArrayOperate.cmbString(dbInfoDetail, SepSign.SEP_ID);
+				logger.error("出现相同数据库但是不同的注释：" + result);
+				return result;
+			} else {
 				return thisField + SepSign.SEP_ID + inputFieldFinal;
 			}
+		} else {
+			return thisField + SepSign.SEP_ID + inputFieldFinal;
 		}
+
 	}
 	
 	/**
@@ -543,6 +497,66 @@ public abstract class AGeneInfo {
 		addTaxID(geneInfo.getTaxID());
 		return true;
 	}
+	/////////////// add /////////////////////////////////////////////
+	private void addSymbol(String dbInfo, String symbol) {
+		this.symbol = validateField(dbInfo, this.symbol, symbol,true);
+	}
+	private void addSynonyms(String dbInfo, String synonyms) {
+		this.synonyms = validateField(dbInfo, this.synonyms, synonyms,true);
+	}
+	private void addTaxID(int taxID) {
+		if (taxID == 0) {
+			return;
+		}
+		if (this.taxID == 0) {
+			this.taxID = taxID;
+			return;
+		}
+		if (this.taxID != taxID) {
+			logger.error("待拷贝的两个geneInfo中的taxID不一致，原taxID："+this.taxID + " 新taxID：" + taxID );
+		}
+	}
+	private void addOtherDesign(String dbInfo, String otherDesign) {
+		this.otherDesign = validateField(dbInfo, this.otherDesign,otherDesign,true);
+	}
+	private void addFullName(String dbInfo, String fullNameFromNomenclature) {
+		this.fullNameNome =  validateField(dbInfo, this.fullNameNome,fullNameFromNomenclature,true);
+	}
+	private void addSymNome(String dbInfo, String symNome) {
+		this.symNome = validateField(dbInfo, this.symNome,symNome,true);
+	}
+	private void addNomStat(String dbInfo, String nomStat) {
+		this.nomStat = validateField(dbInfo, this.nomStat, nomStat, true);
+	}
+	private void addDescription(String dbInfo, String description) {
+		this.description = validateField(dbInfo, this.description,description,true);
+	}
+	private void addMapLocation(String dbInfo, String mapLocation) {
+		this.mapLocation = validateField(dbInfo, this.mapLocation, mapLocation,true);
+	}
+	private void addChromosome(String dbInfo, String chromosome) {
+		this.chromosome = validateField(dbInfo, this.chromosome, chromosome,true);
+	}
+	private void addDbXrefs(String dbInfo, String dbXrefs) {
+		this.dbXrefs = validateField(dbInfo, this.dbXrefs, dbXrefs,true);
+	}
+	private void addLocusTag(String dbInfo, String locusTag) {
+		this.locusTag = validateField(dbInfo, this.locusTag, locusTag,true);
+	}
+	
+	private void addPubmedIDs(String pubmedIDs) {
+		if (this.pubmedID == null || this.pubmedID.equals("")) {
+			this.pubmedID = pubmedIDs;
+		}
+		else if (pubmedIDs == null || pubmedIDs.trim().equals("-")) {
+			return;
+		}
+		else {
+			this.pubmedID = this.pubmedID + SepSign.SEP_ID + pubmedIDs;
+		}
+		
+	}
+	///////////////////////////////////////////////////////////////////
 	/**
 	 * 是否需要升级
 	 * @param thisField

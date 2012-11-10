@@ -34,7 +34,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		insert into goidconvert (querygoid,goid)
 		values (#{queryGoID},#{GoID})
 	</insert>
-	<update id="updateGoIDconvert" parameterType="Go2Term">
+	<update id="updateGoIDconvertWhereGOID" parameterType="Go2Term">
 		update goidconvert 
 		<set>
 			<if test="queryGoID !=null">
@@ -44,13 +44,18 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				goid = #{GoID},
 			</if>
 		</set>
-		<where>
+		where goid = #{GoID} 
+	</update>
+	<update id="updateGoIDconvertWhereQueryGOID" parameterType="Go2Term">
+		update goidconvert 
+		<set>
 			<if test="queryGoID !=null">
-				querygoid = #{queryGoID} 
+				querygoid = #{queryGoID},
 			</if>
 			<if test="GoID !=null">
-				and goid = #{GoID} 
+				goid = #{GoID},
 			</if>
-	    </where> 
+		</set>
+		where querygoid = #{queryGoID} 
 	</update>	
 </mapper>

@@ -49,18 +49,10 @@ public class ServGo2Term  extends AbsGetSpring implements MapGo2Term{
 				&& (go2Term.getGoIDQuery() == null || go2Term.getGoIDQuery().equals(""))) {
 			return true;
 		}
-		//如果没有QueryID，那么将QueryID用GOID补上
 		if (go2Term.getGoID() != null && !go2Term.getGoID().equals("")) {
-			if (go2Term.getGoIDQuery() == null || go2Term.getGoIDQuery().equals("")) {
-				go2Term.setGoIDQuery(go2Term.getGoID());
-			}
-			//补上后，然后插入convert表中
-			Go2Term go2Term2 = mapGoIDconvert.queryGoIDconvert(go2Term);
-			if (go2Term2 == null) {
-				mapGoIDconvert.insertGoIDconvert(go2Term);
-			}
+			updateGoIDconvert(go2Term);
 		}
-		//如果只有queryID，那么将GOID补上
+		//如果只有queryID，那么查找Convert数据库将GOID补上
 		if (go2Term.getGoID() == null || go2Term.getGoID().equals("")) {
 			Go2Term go2Term2 = mapGoIDconvert.queryGoIDconvert(go2Term);
 			if (go2Term2 == null) {
@@ -81,6 +73,27 @@ public class ServGo2Term  extends AbsGetSpring implements MapGo2Term{
 			}
 		}
 		return true;
+	}
+	/**
+	 * 用queryID搜索QueryID2GOID数据库，如果返回的GOID与go2Term中一致，则跳过，否则升级数据库的GOID项目
+	 * @param go2Term
+	 */
+	private void updateGoIDconvert(Go2Term go2Term) {
+		// 如果没有QueryID，那么将QueryID用GOID补上
+		if (go2Term.getGoIDQuery() == null || go2Term.getGoIDQuery().equals("")) {
+			go2Term.setGoIDQuery(go2Term.getGoID());
+		}
+
+		Go2Term go2TermQuery = new Go2Term();
+		go2TermQuery.setGoIDQuery(go2Term.getGoIDQuery());
+		Go2Term go2Term2 = mapGoIDconvert.queryGoIDconvert(go2TermQuery);
+		if (go2Term2 == null) {
+			mapGoIDconvert.insertGoIDconvert(go2Term);
+		} 
+		else if (!go2Term2.getGoID().equals(go2Term.getGoID())) {
+			//升级数据库的GOID项目
+			mapGoIDconvert.updateGoIDconvertWhereQueryGOID(go2Term);
+		}
 	}
 	/**
 	 * 通过访问数据库查询，效率相对低

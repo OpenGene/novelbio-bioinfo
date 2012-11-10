@@ -5,9 +5,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.multithread.RunProcess;
 
 class FastQfilter extends RunProcess<FastQrecordFilterRun> {
+	Logger logger = Logger.getLogger(FastQfilter.class);
+	
 	FastQReader fastQReader;
 	FastQthreadWrite fastQthreadWrite = new FastQthreadWrite();
 	
@@ -57,6 +61,9 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 			try { Thread.sleep(100); 	} catch (InterruptedException e) { e.printStackTrace(); }
 		}
 		allFilteredReadsNum = fastQthreadWrite.getFilteredNum();
+		executorPool.shutdown();
+		logger.error(executorPool.getPoolSize());
+		logger.error(executorPool.getQueue().size());
 	}
 	
 	private void readSE() {

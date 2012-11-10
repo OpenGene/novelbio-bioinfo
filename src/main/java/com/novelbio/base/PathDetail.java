@@ -6,7 +6,7 @@ import java.util.HashMap;
 import org.apache.poi.hssf.record.FilePassRecord;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class PathDetail {
@@ -45,7 +45,7 @@ public class PathDetail {
 		java.net.URL url = PathDetail.class.getProtectionDomain().getCodeSource().getLocation();
 		String filePath = null;
 		try {
-			filePath = WebFetch.decode(url.getPath());
+			filePath = HttpFetch.decode(url.getPath());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -57,7 +57,7 @@ public class PathDetail {
 		java.net.URL url = PathDetail.class.getProtectionDomain().getCodeSource().getLocation();
 		String filePath = null;
 		try {
-			filePath = WebFetch.decode(url.getPath());
+			filePath = HttpFetch.decode(url.getPath());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -68,7 +68,7 @@ public class PathDetail {
 		java.net.URL url = PathDetail.class.getProtectionDomain().getCodeSource().getLocation();
 		String filePath = null;
 		try {
-			filePath = WebFetch.decode(url.getPath());
+			filePath = HttpFetch.decode(url.getPath());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

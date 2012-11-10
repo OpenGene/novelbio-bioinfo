@@ -120,7 +120,7 @@ public abstract class DiffExpAbs {
 	/** 返回是否为log过的值
 	 * 主要用于limma，其实就是判断最大的表达值是否大于40
 	 *  */
-	protected boolean isLogValue() {
+	public boolean isLogValue() {
 		ArrayList<Double> lsValue = new ArrayList<Double>();
 		for (String[] strings : lsGeneInfo) {
 			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(0)[0]) - 1;

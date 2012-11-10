@@ -13,7 +13,10 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class ImportDB {
-
+	static String databasePath = "/media/winE/Bioinformatics/DataBaseUpdate/";
+	static String taxIDFile = databasePath + "常见物种IDKEGGAll.txt";
+	static String GOPath = databasePath;
+	
 	public static void main(String[] args) {
 //		updateSoftInfo();
 //		updateSpecies();
@@ -25,7 +28,7 @@ public class ImportDB {
 //		 updateZB();
 //		updateEnsembl();
 //		updateYeast();
-		
+//		
 //		updateMicroarray();
 //		updateSoyBean();
 //		updateZeaMaize();
@@ -36,17 +39,17 @@ public class ImportDB {
 	 * 升级从NCBI下载的信息
 	 */
 	private static void updateNCBIID() {
-		String taxIDFile = "/media/winE/Bioinformatics/UpDateDB/常见物种IDKEGG.txt";
-		String NCBIDBPath = "/media/winE/Bioinformatics/DataBase/";
-		String GOPath = "/media/winE/Bioinformatics/DataBase/GO/";
-		String gene2Acc = NCBIDBPath + "gene2accession.gz";
-		String gene2Ref = NCBIDBPath + "gene2refseq.gz";
-		String gene2ensembl = NCBIDBPath + "gene2ensembl.gz";
-		String geneRef2UniID = NCBIDBPath + "gene_refseq_uniprotkb_collab.gz";
-		String gene2Info = NCBIDBPath + "gene_info.gz";
-		String gene2Pub = NCBIDBPath + "gene2pubmed.gz";
+	
+		String gene2Acc = databasePath + "gene2accession.gz";
+		String gene2Ref = databasePath + "gene2refseq.gz";
+		String gene2ensembl = databasePath + "gene2ensembl.gz";
+		String geneRef2UniID = databasePath + "gene_refseq_uniprotkb_collab.gz";
+		String gene2Info = databasePath + "gene_info.gz";
+		String gene2Pub = databasePath + "gene2pubmed.gz";
 		String goExtObo = GOPath + "gene_ontology_ext.obo";
-		String gene2GO = NCBIDBPath + "gene2go.gz";
+		String gene2GO = databasePath + "gene2go.gz";
+		
+		
 		NCBI ncbi = new NCBI();
 		ncbi.setTaxID(taxIDFile);
 		ncbi.setGene2AccFile(gene2Acc, gene2Ref);
@@ -62,11 +65,9 @@ public class ImportDB {
 	 * 升级从UniProt下载的信息
 	 */
 	private static void updateUniprotID() {
-		String taxIDFile = "/media/winE/Bioinformatics/UpDateDB/常见物种IDKEGG.txt";
-		String NCBIDBPath = "/media/winE/Bioinformatics/DataBase/";
-		String outUniIDFile = NCBIDBPath + "outIdmap.txt";
-		String idmappingSelectedFile = NCBIDBPath + "idmapping_selected.tab_sub.gz";
-		String impgene_associationgoa_uniprotFile = NCBIDBPath + "GO/gene_association.goa_uniprot.gz";
+		String idmappingSelectedFile = databasePath + "idmapping_selected.tab.gz";
+		String impgene_associationgoa_uniprotFile = GOPath + "gene_association.goa_uniprot.gz";
+		String outUniIDFile = databasePath + "outIdmap.txt";
 		UniProt uniProt = new UniProt();
 		uniProt.setIdmappingSelectedFile(idmappingSelectedFile);
 		uniProt.setTaxIDFile(taxIDFile);

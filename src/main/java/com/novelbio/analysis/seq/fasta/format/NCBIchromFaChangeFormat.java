@@ -2,8 +2,11 @@ package com.novelbio.analysis.seq.fasta.format;
 
 import java.util.ArrayList;
 
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 修正从NCBI上下载的序列，将fasta格式中的序列名改为文件名
@@ -12,12 +15,16 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class NCBIchromFaChangeFormat {
 	public static void main(String[] args) {
-		String file = "/media/winE/Bioinformatics/genome/checken/gal4_NCBI/ChromFa";
-		String out = file + "/all/chrAll.fa";
-		FileOperate.createFolders(FileOperate.getParentPathName(out));
-		NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
-		ncbIchromFaChangeFormat.setChromFaPath(file, "");
-		ncbIchromFaChangeFormat.writeToSingleFile(out);
+//		String file = "/media/winE/Bioinformatics/genome/rat/rnor5/ChromFa";
+//		String out = file + "/all/chrAll.fa";
+//		FileOperate.createFolders(FileOperate.getParentPathName(out));
+//		NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
+//		ncbIchromFaChangeFormat.setChromFaPath(file, "");
+//		ncbIchromFaChangeFormat.writeToSingleFile(out);
+//		GffHashGeneNCBI.modifyNCBIgffFile("/media/winE/Bioinformatics/genome/rat/rnor5/gff/ref_Rnor_5.0_top_level.gff3");
+		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_NCBI, "/media/winE/Bioinformatics/genome/rat/rnor5/gff/ref_Rnor_5.0_top_level_modify.gff3");
+		System.out.println(gffHashGene.searchISO("Ttn").getATGsite());
+	
 	}
 	
 	String chrFile = ""; String regx = null;

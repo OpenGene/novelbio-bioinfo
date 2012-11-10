@@ -11,13 +11,13 @@ import org.htmlparser.filters.HasAttributeFilter;
 import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeList;
 
-import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.other.downloadpicture.GetPictureUrl;
 import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
 
 public class DonmaiGetDownloadUrl  implements GetPictureUrl {
 	private static Logger logger = Logger.getLogger(DonmaiGetPictureUrl.class);
-	protected WebFetch webFetch;
+	protected HttpFetch webFetch;
 	int retryNum = 10;
 	String url;
 	String savePath;
@@ -26,7 +26,7 @@ public class DonmaiGetDownloadUrl  implements GetPictureUrl {
 	
 	ArrayList<UrlPictureDownLoad> lsResult;
 	@Override
-	public void setWebFetch(WebFetch webFetch) {
+	public void setWebFetch(HttpFetch webFetch) {
 		this.webFetch = webFetch;
 	}
 	public void setUrl(String url, int page, int thisPictureNum) {
@@ -70,7 +70,7 @@ public class DonmaiGetDownloadUrl  implements GetPictureUrl {
 				urlPictureDownLoad.setPictureNum(thisPictureNum);
 				urlPictureDownLoad.setPictureUrl(pictureUrl);
 				urlPictureDownLoad.setSavePath(savePath);
-				urlPictureDownLoad.setWebFetch(WebFetch.getInstance(webFetch));
+				urlPictureDownLoad.setWebFetch(HttpFetch.getInstance(webFetch));
 				lsResult.add(urlPictureDownLoad);
 				break;
 			}

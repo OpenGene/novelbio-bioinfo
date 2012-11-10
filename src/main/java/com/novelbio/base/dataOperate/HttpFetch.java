@@ -70,8 +70,8 @@ import com.sun.xml.internal.xsom.impl.WildcardImpl.Other;
  * @author zongjie
  *
  */
-public class WebFetch {
-	private static Logger logger = Logger.getLogger(WebFetch.class);
+public class HttpFetch {
+	private static Logger logger = Logger.getLogger(HttpFetch.class);
 	
 	public static final int HTTPTYPE_POST = 2;
 	public static final int HTTPTYPE_GET = 4;
@@ -114,31 +114,31 @@ public class WebFetch {
 	int methodType = HTTPTYPE_GET;
 	private Charset charset;
 	
-	public static WebFetch getInstance() {
-		return new WebFetch();
+	public static HttpFetch getInstance() {
+		return new HttpFetch();
 	}
 	/** 返回共用一个连接池的webFetch
 	 * @param num 值必须大于等于1
 	 *  */
-	public static ArrayList<WebFetch> getInstanceLs(int num) {
-		ArrayList<WebFetch> lsResult = new ArrayList<WebFetch>();
-		WebFetch webFetch = new WebFetch();
+	public static ArrayList<HttpFetch> getInstanceLs(int num) {
+		ArrayList<HttpFetch> lsResult = new ArrayList<HttpFetch>();
+		HttpFetch webFetch = new HttpFetch();
 		lsResult.add(webFetch);
 		for (int i = 0; i < num - 1; i++) {
-			WebFetch webFetch2 = new WebFetch(webFetch.httpclient);
+			HttpFetch webFetch2 = new HttpFetch(webFetch.httpclient);
 			lsResult.add(webFetch2);
 		}
 		return lsResult;
 	}
 	/** 返回与输入的webFetch共用同一个连接池的webFetch */
-	public static WebFetch getInstance(WebFetch webFetch) {
-		return new WebFetch(webFetch.httpclient);
+	public static HttpFetch getInstance(HttpFetch webFetch) {
+		return new HttpFetch(webFetch.httpclient);
 	}
-	private WebFetch() {
+	private HttpFetch() {
 		initial(null);
 		setHeader();
 	}
-	private WebFetch(DefaultHttpClient httpClient) {
+	private HttpFetch(DefaultHttpClient httpClient) {
 		initial(httpClient);
 		setHeader();
 	}
@@ -209,7 +209,7 @@ public class WebFetch {
 			url = "http:" + url;
 		} else if (url.startsWith("/")) {
 			url = "http:/" + url;
-		} else if (url.startsWith("http://")) {
+		} else if (url.startsWith("http://") || url.startsWith("ftp://")) {
 			//Nothing will be do
 		} else {
 			url = "http://" + url;

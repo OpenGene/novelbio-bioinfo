@@ -48,7 +48,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiRNAautoSplice guiRNAautoSplice;
 	private GuiDGEgetvalue guiDGEgetvalue;
 	private GuiFilterDifGene guiFilterDifGene;
-	
+	private GuiCuffdiff guiCuffdiff;
 	
 	/**
 	* Auto-generated main method to display this JFrame
@@ -146,7 +146,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				jTabbedPane1.add("Tss", guiBedTssAndChrome);
 				
 				guiLinesStatistics = new GuiLinesStatistics();
-				jTabbedPane1.add("LinesStatistics", guiLinesStatistics);	
+				jTabbedPane1.add("LinesStatistics", guiLinesStatistics);
 				
 				guiSnpCalling = new GuiSnpCalling();
 				jTabbedPane1.add("SnpCalling", guiSnpCalling);
@@ -156,6 +156,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiFilterDifGene = new GuiFilterDifGene();
 				jTabbedPane1.addTab("filterGene", null, guiFilterDifGene, null);
+				
+				guiCuffdiff = new GuiCuffdiff();
+				jTabbedPane1.addTab("CuffDiff", null, guiCuffdiff, null);
 			}
 			pack();
 			this.setSize(1050, 699);

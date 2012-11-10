@@ -2,7 +2,9 @@ package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.HashMapLsValue;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.SepSign;
@@ -16,7 +18,7 @@ public class TophatJunction {
 	 * 一个junction1 对应多个junction2，也就是junction是横跨两个exon的，那么左端为junction1，右端为junction2.
 	 * 由于可变剪接存在，所以一个jun1可能对应多个jun2，也就是不同的exon连接在一起。
 	 */
-	HashMap<String, HashMapLsValue<String, int[]>> mapCond_To_Jun1toLsJun2LocAndReadsNum = new HashMap<String, HashMapLsValue<String,int[]>>();
+	HashMap<String, ArrayListMultimap<String, int[]>> mapCond_To_Jun1toLsJun2LocAndReadsNum = new HashMap<String, ArrayListMultimap<String,int[]>>();
 	/**
 	 * condition--junction 对和具体的reads数
 	 */
@@ -40,7 +42,7 @@ public class TophatJunction {
 	 * @param junctionFile
 	 */
 	public void setJunFile(String condition, String junctionFile) {
-		HashMapLsValue<String,  int[]> tmpMapJun1toLsJun2AndReadsNum = getTmpMapJun1toLsJun2AndReadsNum(condition);
+		ArrayListMultimap<String,  int[]> tmpMapJun1toLsJun2AndReadsNum = getTmpMapJun1toLsJun2AndReadsNum(condition);
 		HashMap<String,Integer> tmpHashJunctionBoth = getTmpMapJun1Jun2_To_Num(condition);
 		
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(junctionFile, false);
@@ -70,13 +72,13 @@ public class TophatJunction {
 	}
 	/** 获得剪接位点1所对应的剪接位点2的坐标
 	 * 以及该组剪接位点的junction reads数量 */
-	private HashMapLsValue<String,  int[]> getTmpMapJun1toLsJun2AndReadsNum(String condition) {
+	private ArrayListMultimap<String,  int[]> getTmpMapJun1toLsJun2AndReadsNum(String condition) {
 		//获得对应的hash表
-		HashMapLsValue<String,  int[]> tmpMapJun1toLsJun2AndReadsNum = null;
+		ArrayListMultimap<String,  int[]> tmpMapJun1toLsJun2AndReadsNum = null;
 		if (mapCond_To_Jun1toLsJun2LocAndReadsNum.containsKey(condition)) {
 			tmpMapJun1toLsJun2AndReadsNum = mapCond_To_Jun1toLsJun2LocAndReadsNum.get(condition);
 		} else {
-			tmpMapJun1toLsJun2AndReadsNum = new HashMapLsValue<String, int[]>();
+			tmpMapJun1toLsJun2AndReadsNum = ArrayListMultimap.create();
 			mapCond_To_Jun1toLsJun2LocAndReadsNum.put(condition, tmpMapJun1toLsJun2AndReadsNum);
 		}
 		return tmpMapJun1toLsJun2AndReadsNum;
@@ -110,12 +112,12 @@ public class TophatJunction {
 	 * @return
 	 */
 	public int getJunctionSite(String chrID, int locSite,String condition) {
-		HashMapLsValue<String, int[]> tmpHashLsJunction = mapCond_To_Jun1toLsJun2LocAndReadsNum.get(condition);
+		ArrayListMultimap<String, int[]> tmpHashLsJunction = mapCond_To_Jun1toLsJun2LocAndReadsNum.get(condition);
 		if (tmpHashLsJunction == null) {
 			return 0;
 		}
 		if (tmpHashLsJunction.containsKey(chrID.toLowerCase()+SepSign.SEP_INFO_SAMEDB+locSite) ) {
-			ArrayList<int[]> lsJun2 = tmpHashLsJunction.get(chrID.toLowerCase()+SepSign.SEP_INFO_SAMEDB+locSite);
+			List<int[]> lsJun2 = tmpHashLsJunction.get(chrID.toLowerCase()+SepSign.SEP_INFO_SAMEDB+locSite);
 			int junAll = 0;
 			for (int[] is : lsJun2) {
 				junAll = junAll + is[1];

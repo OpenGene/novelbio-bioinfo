@@ -12,7 +12,7 @@ import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.SimpleNodeIterator;
 
-import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.other.downloadpicture.DownloadOperate;
 import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
@@ -27,7 +27,7 @@ public class DonmaiOperate extends DownloadOperate {
 	@Override
 	public void getcookies() {
 		if (webFetch == null) {
-			webFetch = WebFetch.getInstance();
+			webFetch = HttpFetch.getInstance();
 		}
 		return;
 	}
@@ -119,7 +119,7 @@ public class DonmaiOperate extends DownloadOperate {
 			donmaiGetPictureUrl.setAllPictureNum(allPictureNum);
 			donmaiGetPictureUrl.setSavePath(savePath);
 			donmaiGetPictureUrl.setPixivGetPathExistPic(pixivGetPathExistPic);
-			donmaiGetPictureUrl.setWebFetch(WebFetch.getInstance(webFetch));
+			donmaiGetPictureUrl.setWebFetch(HttpFetch.getInstance(webFetch));
 			lsResult.add(donmaiGetPictureUrl);
 		}
 		return lsResult;

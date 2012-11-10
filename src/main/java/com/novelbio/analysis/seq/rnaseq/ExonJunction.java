@@ -6,11 +6,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -43,7 +45,7 @@ public class ExonJunction {
 	TophatJunction tophatJunction = new TophatJunction();
 	LinkedHashSet<String> setCondition = new LinkedHashSet<String>();
 	
-	HashMapLsValue<String, MapReads> mapCondition2MapReads = new HashMapLsValue<String, MapReads>();
+	ArrayListMultimap<String, MapReads> mapCondition2MapReads = ArrayListMultimap.create();
 	String condition1, condition2;
 	
 	/** 统计可变剪接事件的map
@@ -154,9 +156,8 @@ public class ExonJunction {
 	}
 	
 	public void loadingBamFile(Species species) {
-		for (Entry<String, ArrayList<MapReads>> cond2MapReads : mapCondition2MapReads.entrySet()) {
-			String condition = cond2MapReads.getKey();
-			ArrayList<MapReads> lsMapReads = cond2MapReads.getValue();
+		for (String condition : mapCondition2MapReads.keySet()) {
+			List<MapReads> lsMapReads = mapCondition2MapReads.get(condition);
 			for (MapReads mapReads : lsMapReads) {
 				mapReads.setInvNum(15);
 				mapReads.setMapChrID2Len(species.getMapChromInfo());

@@ -10,7 +10,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class NCBIrefseqChangeFormat {
 	public static void main(String[] args) {
 		NCBIrefseqChangeFormat ncbIrefseqChangeFormat = new NCBIrefseqChangeFormat();
-		ncbIrefseqChangeFormat.setTxtRef("/media/winE/Bioinformatics/genome/pig/sus9_UCSC/refrna/rna.fa");
+		ncbIrefseqChangeFormat.setTxtRef("/media/winE/Bioinformatics/genome/rat/rnor5/refprotein/protein.fa");
 		ncbIrefseqChangeFormat.writeOut();
 	}
 	String txtRef = "";

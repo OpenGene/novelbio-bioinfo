@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedHashMultimap;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
@@ -58,9 +60,9 @@ public class MapRsem implements MapRNA{
 	String outPathPrefix = "";
 	
 	/**跑完之后的gene表达值保存在这个里面 */
-	HashMapLsValue<String, Double> mapGeneID2LsExp;
+	ArrayListMultimap<String, Double> mapGeneID2LsExp;
 	/**跑完之后的gene表达值保存在这个里面 */
-	HashMapLsValue<String, Integer> mapGeneID2LsCounts; 
+	ArrayListMultimap<String, Integer> mapGeneID2LsCounts; 
 	
 	/** rsem 到 rpkm是增加了10^6 倍 */
 	int foldRsem2RPKM = 1000000;
@@ -127,13 +129,13 @@ public class MapRsem implements MapRNA{
 	/** mapping完后获得结果，为RPKM
 	 * 为防止一个geneID对应多个exp的value，所以用list来报存value
 	 *  */
-	public HashMapLsValue<String, Double> getMapGeneID2LsExp() {
+	public ArrayListMultimap<String, Double> getMapGeneID2LsExp() {
 		return mapGeneID2LsExp;
 	}
 	/** mapping完后获得结果，为Counts
 	 * 为防止一个geneID对应多个exp的value，所以用list来报存value
 	 *  */
-	public HashMapLsValue<String, Integer> getMapGeneID2LsCounts() {
+	public ArrayListMultimap<String, Integer> getMapGeneID2LsCounts() {
 		return mapGeneID2LsCounts;
 	}
 	/** 产生全新的reference */
@@ -264,8 +266,8 @@ public class MapRsem implements MapRNA{
 	
 	/** 整理结果文件，主要是整理gene.result,整理成gene list */
 	private void copeResult() {
-		mapGeneID2LsExp = new HashMapLsValue<String, Double>();
-		mapGeneID2LsCounts = new HashMapLsValue<String, Integer>();
+		mapGeneID2LsExp = ArrayListMultimap.create();
+		mapGeneID2LsCounts = ArrayListMultimap.create();
 		TxtReadandWrite txtReadGeneExp = new TxtReadandWrite(outPathPrefix+".genes.results", false);
 		for (String geneInfo : txtReadGeneExp.readlines()) {
 			String[] ss = geneInfo.split("\t");

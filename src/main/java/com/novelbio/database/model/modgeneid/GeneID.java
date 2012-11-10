@@ -338,8 +338,12 @@ public class GeneID implements GeneIDInt{
 		}
 		int dotIndex = tmpGeneID.lastIndexOf(".");
 		//如果类似XM_002121.1类型
-		if (dotIndex>0 && tmpGeneID.length() - dotIndex == 2) {
-			tmpGeneID = tmpGeneID.substring(0,dotIndex);
+		if (dotIndex>0 && tmpGeneID.length() - dotIndex <= 3) {
+			String subIndex = tmpGeneID.substring(dotIndex + 1, tmpGeneID.length());
+			try {
+				int num = Integer.parseInt(subIndex);
+				tmpGeneID = tmpGeneID.substring(0,dotIndex);
+			} catch (Exception e) { }
 		}
 		return tmpGeneID;
 	}

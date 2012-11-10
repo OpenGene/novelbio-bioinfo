@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.FormatSeq;
-import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.other.downloadpicture.donmai.DonmaiOperate;
 import com.novelbio.other.downloadpicture.pixiv.PixivGetPathExistPic;
@@ -57,7 +57,7 @@ public abstract class DownloadOperate {
 		
 	}
 	
-	protected WebFetch webFetch;
+	protected HttpFetch webFetch;
 	protected String urlAuther;
 	protected String autherName;
 	protected String autherID;
@@ -75,10 +75,10 @@ public abstract class DownloadOperate {
 	/** 获得某个网站的cookies */
     protected abstract void getcookies();
     
-    public void setWebFetchPixiv(WebFetch webFetchPixiv) {
+    public void setWebFetchPixiv(HttpFetch webFetchPixiv) {
 		this.webFetch = webFetchPixiv;
 	}
-    public WebFetch getWebFetchPixiv() {
+    public HttpFetch getWebFetchPixiv() {
 		return webFetch;
 	}
     /** @param urlAuther 的id 

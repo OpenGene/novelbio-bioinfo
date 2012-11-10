@@ -2,6 +2,7 @@ package com.novelbio.database.domain.geneanno;
 
 import java.util.HashSet;
 
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
 public class Go2Term {
@@ -17,8 +18,7 @@ public class Go2Term {
 	public static final String GO_MF = "molecular function";
 	public static final String GO_BP = "biological process";
 	public static final String GO_ALL = "all gene ontology";
-	private static final String SEP_ID = "@//@";
-	private static final String SEP_INFO = "@@";
+	
 	private ServGo2Term servGo2Term = new ServGo2Term();
     private String queryGoID;
 	private String GoID;
@@ -69,51 +69,61 @@ public class Go2Term {
 	 * @param go2Term
 	 * @param relation 必须是RELATION中的一类
 	 */
-	public void setParent(Go2Term go2Term, String relation ) {
-		if (Parent == null) {
-			Parent = relation + SEP_INFO + go2Term.getGoID();
-		}
-		else {
-			Parent = Parent + SEP_ID + relation + SEP_INFO + go2Term.getGoID();
-		}
+	public void addParent(Go2Term go2Term, String relation ) {
+		Parent = getUpdateParentChild(Parent, go2Term.getGoID(), relation);
 	}
 	/**
 	 * 设定其上游父类GO的信息，可以连续设定，新设定的会追加而不是覆盖
 	 * @param go2Term
 	 * @param relation 必须是RELATION中的一类
 	 */
-	public void setParent(String goid, String relation ) {
-		if (Parent == null) {
-			Parent = relation + SEP_INFO + goid;
-		}
-		else {
-			Parent = Parent + SEP_ID + relation + SEP_INFO + goid;
-		}
+	public void addParent(String goid, String relation ) {
+		Parent = getUpdateParentChild(Parent, goid, relation);
 	}
 	/**
 	 * 设定其下游子类GO的信息，可以连续设定，新设定的会追加而不是覆盖
 	 * @param go2Term
 	 * @param relation 必须是RELATION中的一类
 	 */
-	public void setChild(Go2Term go2Term, String relation ) {
-		if (Child == null) {
-			Child = relation + SEP_INFO + go2Term.getGoID();
-		}
-		else {
-			Child = Child + SEP_ID + relation + SEP_INFO + go2Term.getGoID();
-		}
+	public void addChild(Go2Term go2Term, String relation ) {
+		Child = getUpdateParentChild(Child, go2Term.getGoID(), relation);
 	}
 	/**
 	 * 设定其下游子类GO的信息
+	 * 后设定的会覆盖前设定的
 	 * @param go2Term
 	 * @param relation 必须是RELATION中的一类
 	 */
-	public void setChild(String goid, String relation ) {
-		if (Child == null) {
-			Child = relation + SEP_INFO + goid;
-		}
-		else {
-			Child = Child + SEP_ID + relation + SEP_INFO + goid;
+	public void addChild(String goid, String relation ) {
+		Child = getUpdateParentChild(Child, goid, relation);
+	}
+	/**
+	 * 仅供测试使用
+	 * 给定goID和relation，然后在parentchild中找，找到重复的就返回，不重复的就升级
+	 * @param parentChile
+	 * @param goID
+	 * @param relation
+	 */
+	public static String getUpdateParentChild(String parentChild, String goID, String relation) {
+		String update = relation + SepSign.SEP_INFO + goID;
+		if (parentChild == null) {
+			return update;
+		} else if (!parentChild.toLowerCase().contains(goID.toLowerCase())) {
+			return parentChild + SepSign.SEP_ID + update;
+		} else if (parentChild.toLowerCase().contains(update.toLowerCase())) {
+			return parentChild;
+		} else {
+			String[] sepGOID = parentChild.split(SepSign.SEP_ID);
+			for (int i = 0; i < sepGOID.length; i++) {
+				String[] sepRelate2GOID = sepGOID[i].split(SepSign.SEP_INFO);
+				if (sepRelate2GOID[1].equalsIgnoreCase(goID)) {
+					sepRelate2GOID[0] = relation;
+					sepGOID[i] = sepRelate2GOID[0] + SepSign.SEP_INFO + sepRelate2GOID[1];
+					break;
+				}
+			}
+			parentChild = ArrayOperate.cmbString(sepGOID, SepSign.SEP_ID);
+			return parentChild;
 		}
 	}
 	
@@ -122,6 +132,14 @@ public class Go2Term {
 	}
 	public HashSet<Go2Term> getChild() {
 		return getParentChild(Child);
+	}
+	/** 仅供test */
+	public String getParentTest() {
+		return Parent;
+	}
+	/** 仅供test */
+	public String getChildTest() {
+		return Child;
 	}
 	/**
 	 * 返回父类
@@ -132,9 +150,9 @@ public class Go2Term {
 		if (ParentChild == null) {
 			return hashResult;
 		}
-		String[] ss = ParentChild.split(SEP_ID);
+		String[] ss = ParentChild.split(SepSign.SEP_ID);
 		for (String string : ss) {
-			String[] ssInfo = string.split(SEP_INFO);
+			String[] ssInfo = string.split(SepSign.SEP_INFO);
 			Go2Term go2Term = servGo2Term.queryGo2Term(ssInfo[1]);
 			go2Term.setFlag(ssInfo[0]);
 			hashResult.add(go2Term);
@@ -262,8 +280,7 @@ public class Go2Term {
 		return false;
 	}
 	
-	private boolean cmpString(String a, String b)
-	{
+	private boolean cmpString(String a, String b) {
 		if (a == b) {
 			return true;
 		}

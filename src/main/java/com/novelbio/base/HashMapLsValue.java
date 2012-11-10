@@ -3,6 +3,7 @@ package com.novelbio.base;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 /**
@@ -13,7 +14,7 @@ import java.util.Set;
  * @param <V>
  */
 public class HashMapLsValue<K, V> {
-	HashMap<K, ArrayList<V>> mapK2V = new HashMap<K, ArrayList<V>>();
+	LinkedHashMap<K, ArrayList<V>> mapK2V = new LinkedHashMap<K, ArrayList<V>>();
 	private static final long serialVersionUID = -6427548618773494477L;
 	/**
 	 * 如果含有该Key，就在list后面添加，如果不含有该key，就新建一个list然后加入

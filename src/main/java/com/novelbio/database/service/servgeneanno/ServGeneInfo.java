@@ -47,8 +47,7 @@ public class ServGeneInfo extends AbsGetSpring implements MapGeneInfo {
 	 * @param genUniID
 	 * @param gene2Go
 	 */
-	public void updateGenInfo(String genUniID, int taxID, AGeneInfo geneInfo)
-	{
+	public void updateGenInfo(String genUniID, int taxID, AGeneInfo geneInfo) {
 		if (taxID != 0 && geneInfo.getTaxID() != 0 && taxID != geneInfo.getTaxID()) {
 			logger.error("输入taxID和自带taxID不一致,输入taxID："+taxID + " 自带taxID：" + geneInfo.getTaxID());
 		}

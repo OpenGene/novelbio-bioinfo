@@ -411,6 +411,7 @@ public class Species {
 		}
 		return gene2IsoFile;
 	}
+	
 	/**
 	 * 返回常用名对taxID
 	 * @param allID true返回全部ID， false返回常用ID--也就是有缩写的ID

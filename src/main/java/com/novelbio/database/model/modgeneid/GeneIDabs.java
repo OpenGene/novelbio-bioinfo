@@ -180,22 +180,32 @@ public abstract class GeneIDabs implements GeneIDInt {
 		if (accID == null) {
 			accID = getAccIDDBinfo(getDatabaseTyep());
 		}
-		if (accID == null) {
-			accID = getAccIDDBinfo(null);
-		}
 		return this.accID;
 	}
+	
 	/**
 	 * 具体的accID，根据数据库情况抓一个出来
 	 */
 	public String getAccIDDBinfo() {
 		 String accID = getAccIDDBinfo(getDatabaseTyep());
 		 if (accID == null) {
-			 accID = getAccIDDBinfo(null);
+			 accID = getAccID();
 		 }
 		 return accID;
 	}
 	
+	/**
+	 * * 指定一个dbInfo，返回该dbInfo所对应的accID，没有则返回null
+	 * @param dbInfo 为null表示不指定dbinfo
+	 * @return
+	 */
+	public String getAccIDDBinfo(String dbInfo) {
+		AgeneUniID genuniID = getGenUniID(getGenUniID(), dbInfo);
+		if (genuniID != null) {
+			return genuniID.getAccID();
+		}
+		return null;
+	}
 	public String getGenUniID() {
 		return this.genUniID;
 	}
@@ -258,24 +268,15 @@ public abstract class GeneIDabs implements GeneIDInt {
 			return ageneUniID.getAccID();
 		}
 	}
+
 	/**
-	 * * 指定一个dbInfo，返回该dbInfo所对应的accID，没有则返回null
-	 * @param dbInfo
-	 * @return
-	 */
-	public String getAccIDDBinfo(String dbInfo) {
-		AgeneUniID genuniID = getGenUniID(getGenUniID(), dbInfo);
-		if (genuniID != null) {
-			return genuniID.getAccID();
-		}
-		return null;
-	}
-	/**
-	 * * 指定一个dbInfo，返回该dbInfo所对应的AgeneUniID，没有则返回null
+	 * * 指定一个dbInfo，返回该dbInfo所对应的AgeneUniID，并且该AgeneUniID也仅对应一个geneUniID。
+	 * 如果该dbinfo没有，则随便返回一个。
 	 * @param dbInfo
 	 * @return
 	 */
 	protected abstract AgeneUniID getGenUniID(String genUniID, String dbInfo);
+	
 	/**
 	 * 先设定blast的情况 如果blast * 0:symbol 1:description  2:subjectSpecies 3:evalue
 	 * 4:symbol 5:description 如果不blast 0:symbol 1:description
@@ -294,8 +295,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 					&& getLsBlastInfos().size() > 0) {
 				for (int i = 0; i < getLsBlastInfos().size(); i++) {
 					if (tmpAnno[2] == null || tmpAnno[2].trim().equals("")) {
-						tmpAnno[2] = Species.getSpeciesTaxIDName().get(
-								getLsBlastInfos().get(i).getSubjectTax());
+						tmpAnno[2] = Species.getSpeciesTaxIDName().get(getLsBlastInfos().get(i).getSubjectTax());
 						tmpAnno[3] = getLsBlastInfos().get(i).getEvalue() + "";
 						tmpAnno[4] = getLsBlastGeneID().get(i).getSymbol();
 						tmpAnno[5] = getLsBlastGeneID().get(i).getDescription();
@@ -625,6 +625,9 @@ public abstract class GeneIDabs implements GeneIDInt {
 	@Override
 	public boolean update(boolean updateUniID) {
 		AgeneUniID geneUniID = getUpdateGenUniID();
+		if (geneUniID.getGeneIDtype().equals(GeneID.IDTYPE_GENEID) && geneUniID.getGenUniID().equals("0")) {
+			logger.error("geneID为0，请check");
+		}
 		boolean flag1 = false;
 		try {
 			flag1 =updateGeneID(geneUniID, updateUniID);
@@ -695,8 +698,8 @@ public abstract class GeneIDabs implements GeneIDInt {
 			geneIDDBinfo = NovelBioConst.DBINFO_NCBI_ACC_GENEAC;
 		}
 		// 只升级第一个获得的geneID
-		if (geneUniID != null && !geneUniID.getDBInfo().equals(GeneID.IDTYPE_ACCID)) {
-			this.idType = geneUniID.getDBInfo();
+		if (geneUniID != null && !geneUniID.getGeneIDtype().equals(GeneID.IDTYPE_ACCID)) {
+			this.idType = geneUniID.getGeneIDtype();
 			//refAccID可能会查到超过不止一个ID，不同的情况，用不同的方法处理
 			if (uniqID == null) {
 				
@@ -903,7 +906,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		ArrayList<ArrayList<AgeneUniID>> lsgeneID = new ArrayList<ArrayList<AgeneUniID>>();
 		for (String string : lsRefAccID) {
 			ArrayList<AgeneUniID> lsTmpGenUniID = getNCBIUniTax(string, taxID);
-			if (lsTmpGenUniID.get(0).equals(GeneID.IDTYPE_ACCID)) {
+			if (lsTmpGenUniID.size() == 0 || lsTmpGenUniID.get(0).equals(GeneID.IDTYPE_ACCID)) {
 				continue;
 			} else if (lsTmpGenUniID.size() == 1 && lsTmpGenUniID.get(0).getDBInfo().equals(GeneID.IDTYPE_GENEID)) {
 				genUniID = lsTmpGenUniID.get(0).getGenUniID();

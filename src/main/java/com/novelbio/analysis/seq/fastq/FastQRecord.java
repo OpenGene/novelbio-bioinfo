@@ -480,6 +480,7 @@ public class FastQRecord implements Cloneable {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("stop");
+			return false;
 		}
 		
 		return true;

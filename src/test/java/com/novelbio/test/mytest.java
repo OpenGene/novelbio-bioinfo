@@ -1,5 +1,8 @@
 package com.novelbio.test;
 
+import it.sauronsoftware.ftp4j.FTPClient;
+import it.sauronsoftware.ftp4j.FTPFile;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -30,6 +33,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -66,6 +70,9 @@ import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValue
 import org.w3c.dom.ls.LSSerializer;
 
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FormatSeq;
@@ -84,31 +91,19 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.GffChrAnno;
-import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoCis;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGenePlant;
-import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.reseq.LastzAlign;
-import com.novelbio.analysis.seq.reseq.ModifySeq;
-import com.novelbio.analysis.seq.resequencing.MapInfoSnpIndel;
-import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
+import com.novelbio.analysis.seq.mirna.ListMiRNALocation;
+import com.novelbio.analysis.seq.mirna.MiRNACount;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
-import com.novelbio.analysis.seq.resequencing.SnpFilter;
-import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.analysis.tools.Mas3.getProbID;
+import com.novelbio.base.HashMapLsValue;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
+import com.novelbio.base.dataOperate.FtpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
@@ -137,50 +132,23 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
 public class mytest {
 
 	private static Logger logger = Logger.getLogger(mytest.class);
-	/**
-	 * @param args
-	 * @throws Exception
-	 */
-	@SuppressWarnings("unused")
-	public static void main(String[] args) throws Exception {
-		GffChrAbs gffChrAbs = new GffChrAbs(9606);
-		GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
-		gffChrSeq.setGeneStructure(GeneStructure.INTRON);
-		
-		GffDetailGene gffGene = gffChrAbs.getGffHashGene().searchLOC(new GeneID("C10orf108", 9606));		
-		
-		
-		System.out.println(gffGene.getLsCodSplit().size());
-		for (GffGeneIsoInfo gffGeneIsoInfo : gffGene.getLsCodSplit()) {
-			if (gffGeneIsoInfo.getGeneType() == GeneType.tRNA) {
-				continue;
-			}
-			System.out.println(gffGeneIsoInfo.getGeneType());
-		}
+	
+	public static void main(String[] args) {
+		MiRNACount miRNACount = new MiRNACount();
+		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_RNA_DATA, new Species(10090), "/media/winE/Bioinformatics/genome/sRNA/miRNA.dat");
 	}
 	
-	private void HG18() {
+	private static void HG18() {
 		SnpAnnotation snpAnnotation = new SnpAnnotation();
 		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setChrFile("/media/winE/Bioinformatics/genome/human/hg18_UCSC/ChromFa", null);
-		gffChrAbs.setGffFile(9606, NovelBioConst.GENOME_GFF_TYPE_UCSC, "/media/winE/Bioinformatics/genome/human/hg18_UCSC/human_hg18_refseq_UCSC");
+		gffChrAbs.setChrFile("/media/winE/Bioinformatics/genome/rice/tigr6.0/all.con", null);
+		gffChrAbs.setGffFile(39947, NovelBioConst.GENOME_GFF_TYPE_TIGR, "/media/winE/Bioinformatics/genome/rice/tigr6.0/all.gff3");
 		
-		gffChrAbs.setFilterGeneBody(true, false, false);
-		gffChrAbs.setFilterTssTes(new int[]{-2000,2000}, new int[]{-100,100});
-		GffChrAnno gffChrAnno = new GffChrAnno(gffChrAbs);
-		gffChrAnno.setColChrID(2);
-		gffChrAnno.setSearchSummit(true);
-		gffChrAnno.setColSummit(3);
-		gffChrAnno.annoFile("/home/zong0jie/桌面/allels_for_jie.txt", "/home/zong0jie/桌面/allels_for_jie_anno_location.txt");
-		gffChrAnno.run();
-		
-//		snpAnnotation.setGffChrAbs(gffChrAbs);
-//		snpAnnotation.addTxtSnpFile("/home/zong0jie/桌面/allels_for_jie.txt", "/home/zong0jie/桌面/allels_for_jie_anno.txt");
-//		snpAnnotation.setCol(2, 3, 4, 5);
-//		snpAnnotation.run();
+
+		snpAnnotation.setGffChrAbs(gffChrAbs);
+		snpAnnotation.addTxtSnpFile("/home/zong0jie/桌面/geneID.txt", "/home/zong0jie/桌面/geneID_Anno");
+		snpAnnotation.setCol(1, 2, 3, 4);
+		snpAnnotation.run();
 //		
 	}
-
 }
-
-

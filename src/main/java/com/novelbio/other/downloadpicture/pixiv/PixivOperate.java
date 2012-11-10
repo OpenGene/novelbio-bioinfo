@@ -25,7 +25,7 @@ import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.other.downloadpicture.DownloadOperate;
 import com.novelbio.other.downloadpicture.GetPictureUrl;
@@ -47,7 +47,7 @@ public class PixivOperate extends DownloadOperate{
 	 */
     public void getcookies() {
     	if (webFetch == null) {
-			webFetch = WebFetch.getInstance();
+			webFetch = HttpFetch.getInstance();
 		}
     	if (webFetch.getCookies() != null) {
     		return;

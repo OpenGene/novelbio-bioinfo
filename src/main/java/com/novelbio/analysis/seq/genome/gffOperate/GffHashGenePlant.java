@@ -28,12 +28,7 @@ import com.novelbio.generalConf.NovelBioConst;
  */
 public class GffHashGenePlant extends GffHashGeneAbs{
 	private static Logger logger = Logger.getLogger(GffHashGenePlant.class);
-	public static void main(String[] args) {
-		GffChrAbs gffChrAbs = new GffChrAbs(3702);
-		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();
-		GffCodGene gffCodGene = gffHashGene.searchLocation("chr1", 433031);
-		System.out.println(gffCodGene.getGffDetailThis().getCod2Start(433031));
-	}
+
 	/** 基因名字的正则 */
 	protected String GeneName="";
 	/** 可变剪接mRNA的正则 */
@@ -67,8 +62,6 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	/** 设定mRNA和gene的类似名，在gff文件里面出现的 */
 	private void setHashName() {
 		if (mapMRNA2GeneType.isEmpty()) {
-			
-
 			mapMRNA2GeneType.put("mRNA_TE_gene",GeneType.mRNA_TE);
 			mapMRNA2GeneType.put("mRNA",GeneType.mRNA);
 			mapMRNA2GeneType.put("miRNA",GeneType.miRNA);
@@ -126,10 +119,14 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	   boolean CDSstart = false; boolean CDSend = false; boolean mRNAsplit = false;//是否结束了一个mRNA
 	   int cdsStart = -100; int cdsEnd = -100; int mRNAstart = -100;  int mRNAend = -100; 
 	   boolean ncRNA = false;
+	   boolean TEgene = false;//是否为transposon element
 	   GffDetailGene gffDetailLOC= null;
 	   for (String content : txtgff.readlines()) {
 		   if(content.length() == 0 || content.charAt(0)=='#')
 			   continue;
+		   if (content.contains("AT1G02228")) {
+			logger.error("stop");
+		}
 		   ////////////////// 需要进行替换的地方 /////////////////////////////////////////////////////////////
 		   if (ncRNA) {
 			   content = content.replace("pseudogenic_exon", "CDS");
@@ -149,7 +146,13 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		    * 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中
 		    */
 		   if (hashgene.contains(ss[2])) {//when read the # and the line contains gene, it means the new LOC
-				if (mRNAsplit) {
+			   if (ss[2].equals("transposable_element_gene")) {
+				   TEgene = true;
+			   } else {
+				   TEgene = false;
+			   }
+			   
+			   if (mRNAsplit) {
 					// 将上一组mRNA的信息装入
 					// 如果上一组mRNA没有CDS，那么CDS的长度实际上就是0，那么CDS的起点和终点就是一样的，都是mRNA的end位点
 					if (cdsStart < 0 && cdsEnd < 0) {
@@ -180,7 +183,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
       			   LOCList.add(gffDetailLOC);//添加进入LOClist
       		   }
       		   else {
-      			   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  在本行可能没有指定的基因ID  "+ splitmRNA + " " +content);
+      			   logger.error("GffHashPlantGeneError: 文件  "+gfffilename+"  在本行可能没有指定的基因ID  "+ splitmRNA + " " +content);
       		   }
       		   //重置标签，表示在5UTR和CDS的前面了，那么在后面 if 遇到的的就是第一个UTR或第一个CDS
       		   UTR5start = true; 
@@ -197,7 +200,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   else if (mapMRNA2GeneType.containsKey(ss[2])) {
 			   
 			   if (!ss[2].equals("mRNA")) {
-				ncRNA = true;
+				   ncRNA = true;
 			   }
 			   //如果刚刚读取的是一个mRNA的话
 			   if (mRNAsplit) {
@@ -208,20 +211,25 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 				   }
 				   gffDetailLOC.setATGUAG(cdsStart, cdsEnd);
 				   if (cdsStart <0 || cdsEnd<0 || cdsStart >= cdsEnd) {
-					   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.getName());
+					   logger.error("GffHashPlantGeneError: 文件  "+gfffilename+"  本组或上组基因有问题，cdsStart或cdsEnd出错  " +gffDetailLOC.getName());
 				   }
 				   mRNAsplit =false;
 			   }
 			   mRNAmatcher = mRNApattern.matcher(content);
 			   if(mRNAmatcher.find()) {
 				   //每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
-				   gffDetailLOC.addsplitlist(mRNAmatcher.group(), mapMRNA2GeneType.get(ss[2]));	   
+				   if (TEgene) {
+					   gffDetailLOC.addsplitlist(mRNAmatcher.group(), GeneType.mRNA_TE);
+				   } else {
+					   gffDetailLOC.addsplitlist(mRNAmatcher.group(), mapMRNA2GeneType.get(ss[2]));
+				   }
+				 
 				   //仿照UCSC的做法，如果是一个非编码的mRNA，那么cdsStart = cdsEnd = mRNAend
 				   mRNAstart = Integer.parseInt(ss[3]); mRNAend = Integer.parseInt(ss[4]); 
 				   cdsStart = -100; cdsEnd = -100;
 			   }
 			   else {
-				   System.out.println("GffHashPlantGeneError: 文件  "+gfffilename+"  在本行可能没有指定的基因ID  " +content);
+				   logger.error("GffHashPlantGeneError: 文件  "+gfffilename+"  在本行可能没有指定的基因ID  " +content);
 			   }
 			   //重置标签，表示在5UTR和CDS的前面了，那么在后面 if 遇到的就是第一个UTR或第一个CDS
       		   UTR5start = true; 
@@ -238,8 +246,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   CDSstart = true; 
 			   ncRNA = false;
 		   }
-		   else if (ss[2].equals("CDS"))
-		   {
+		   else if (ss[2].equals("CDS")) {
 			   if (CDSstart)
 			   {
 				   if (UTR5end) 
@@ -266,8 +273,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   }
 			   mRNAsplit = true;//该转录本最后需要总结
 		   }
-		   else if (ss[2].equals("three_prime_UTR")) 
-		   {
+		   else if (ss[2].equals("three_prime_UTR")) {
 			   if (UTR5end || CDSend) {//紧跟着最后一个CDS了
 				   gffDetailLOC.addExonGFFCDSUTR(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 				   UTR5end = false; 
@@ -283,7 +289,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   ncRNA = false;
 		   }
 		   else if (!ss[2].equals("protein") && !ss[2].equals("exon")) {
-			   System.out.println(ss[2]);
+			   logger.error(ss[2]);
 		   }
 	   }
 	   if (mRNAsplit) {

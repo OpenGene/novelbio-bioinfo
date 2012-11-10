@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -352,7 +353,11 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null || (gffGeneIsoInfo != null && prop >= 0))
 			return;
 
-		this.gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchLocation(chrID, refSnpIndelStart).getCodInExonIso();
+		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrID, refSnpIndelStart);
+		this.gffGeneIsoInfo = gffCodGene.getCodInExonIso();
+		if (gffGeneIsoInfo == null && gffCodGene.isInsideLoc()) {
+			gffGeneIsoInfo = gffCodGene.getGffDetailThis().getLongestSplit();
+		}
 		if (gffGeneIsoInfo == null) {
 			return;
 		}

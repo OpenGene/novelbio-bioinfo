@@ -50,9 +50,9 @@ public class NCBI {
 		this.gene2GO = gene2GO;
 	}
 	public void importFile() {
+		ImportPerLine.setTaxIDFile(taxID);
 		ImportPerLine impFile = null;
 		impFile = new ImpGen2Acc();
-		impFile.setTaxIDFile(taxID);
 		impFile.updateFile(gene2Acc, true);
 		impFile.updateFile(gene2Ref, true);
 		impFile = new ImpGen2Ensembl();
@@ -98,20 +98,20 @@ class ImpGen2Acc extends ImportPerLine {
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
 
 		copedID.setUpdateAccID(ss[3]);
-		if (ss[3].startsWith("NM_") || ss[3].startsWith("NR_"))
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_RNA,
-					false);
-		else
+		if (ss[3].startsWith("NM_") || ss[3].startsWith("NR_")) {
+			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_RNA, false);
+		} else {
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_RNAAC, false);
+		}
 		copedID.update(false);
 
 		copedID.setUpdateAccID(ss[5]);
 		if (ss[5].startsWith("NP_") || ss[5].startsWith("XP_")
-				|| ss[5].startsWith("YP_"))
-			copedID.setUpdateDBinfo(
-					NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_PROTEIN, false);
-		else
+				|| ss[5].startsWith("YP_")) {
+			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_PROTEIN, false);
+		} else {
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_PROAC, false);
+		}
 		copedID.update(false);
 
 		copedID.setUpdateAccID(ss[6]);
@@ -133,8 +133,7 @@ class ImpGen2Acc extends ImportPerLine {
    7227	30970	FBgn0040373	NM_166834.1	FBtr0070107	NP_726658.1	FBpp0070102
  * @param content
  */
-class ImpGen2Ensembl extends ImportPerLine
-{
+class ImpGen2Ensembl extends ImportPerLine {
 	/**
 	 * 将gene2ensembl.gz这个文件导入数据库，每行的格式如下
 	 * tax_id GeneID Ensembl_gene_id RNA_ID Ensembl_rna_id protein_ID Ensembl_protein_id
@@ -157,10 +156,11 @@ class ImpGen2Ensembl extends ImportPerLine
 		copedID.update(false);
 		
 		copedID.setUpdateAccID(ss[3]);
-		if (ss[3].startsWith("NM_") || ss[3].startsWith("NR_"))
+		if (ss[3].startsWith("NM_") || ss[3].startsWith("NR_")) {
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_RNA, true);
-		else 
+		} else {
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_RNAAC, false);
+		}
 		copedID.update(false);
 		
 		copedID.setUpdateAccID(ss[4]);
@@ -168,10 +168,11 @@ class ImpGen2Ensembl extends ImportPerLine
 		copedID.update(false);
 		
 		copedID.setUpdateAccID(ss[5]);
-		if (ss[5].startsWith("NP_") || ss[5].startsWith("XP_") || ss[5].startsWith("YP_"))
+		if (ss[5].startsWith("NP_") || ss[5].startsWith("XP_") || ss[5].startsWith("YP_")) {
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_PROTEIN, true);
-		else 
+		} else {
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_PROAC, false);
+		}
 		copedID.update(false);
 		
 		copedID.setUpdateAccID(ss[6]);
@@ -191,8 +192,7 @@ AP_000048	P68968
 AP_000048	P68969
  * @param content
  */
-class ImpGeneRef2UniID extends ImportPerLine
-{
+class ImpGeneRef2UniID extends ImportPerLine {
 	static GeneID copedID;
 	@Override
 	protected boolean impPerLine(String content) {
@@ -214,8 +214,7 @@ class ImpGeneRef2UniID extends ImportPerLine
  * 将geneInfo.gz这个文件导入数据库
  * @param content
  */
-class ImpGene2Info extends ImportPerLine
-{
+class ImpGene2Info extends ImportPerLine {
 	@Override
 	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
@@ -251,8 +250,7 @@ class ImpGene2Info extends ImportPerLine
 9	1246502	9873079
  * @param content
  */
-class ImpGene2Pub extends ImportPerLine
-{
+class ImpGene2Pub extends ImportPerLine {
 	@Override
 	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
@@ -274,8 +272,7 @@ class ImpGene2Pub extends ImportPerLine
  * @author zong0jie
  *
  */
-class ImpGene2GO extends ImportPerLine
-{
+class ImpGene2GO extends ImportPerLine {
 	@Override
 	protected boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");

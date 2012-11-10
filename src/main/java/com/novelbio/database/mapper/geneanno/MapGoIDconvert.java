@@ -28,27 +28,13 @@ public interface MapGoIDconvert extends MapperSql{
 	public void insertGoIDconvert(Go2Term Go2Term);
 	
 	/**
-	 * 目前的升级方式是
-		update goidconvert 
-		set
-			if test="GoIDquery !=null"
-				querygoid = #{GoIDquery},
-			/if
-			if test="GoID !=null"
-				goid = #{GoID},
-			/if
-		/set
-		where
-			if test="GoIDquery !=null"
-				querygoid = #{GoIDQuery} 
-			/if
-			if test="GoID !=null"
-				and goid = #{GoID} 
-			/if
-	    /where>
-	 * @param geneInfo
+	 * 用 GOID去query
+	 * @param Go2Term
 	 */
-	public void updateGoIDconvert(Go2Term Go2Term);
-
-
+	public void updateGoIDconvertWhereGOID(Go2Term Go2Term);
+	/**
+	 * 用Query GOID去query
+	 * @param Go2Term
+	 */
+	public void updateGoIDconvertWhereQueryGOID(Go2Term Go2Term);
 }

@@ -2,6 +2,8 @@ package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -17,6 +19,8 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zong0jie
  */
 public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
+	Logger logger = Logger.getLogger(SnpAnnotation.class);
+	
 	GffChrAbs gffChrAbs;
 	
 	int colChrID;
@@ -106,7 +110,10 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 			return input;
 		}
 		ArrayList<String> lsInfo = ArrayOperate.converArray2List(input.split("\t"));
-		int refStartSite = Integer.parseInt(lsInfo.get(colRefStartSite));	
+		int refStartSite = Integer.parseInt(lsInfo.get(colRefStartSite));
+		if (refStartSite == 212267) {
+			logger.error("stop");
+		}
 		MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, lsInfo.get(colChrID), refStartSite);
 		SiteSnpIndelInfo siteSnpIndelInfo = mapInfoSnpIndel.addAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
 		GffGeneIsoInfo gffGeneIsoInfo = mapInfoSnpIndel.getGffIso();
@@ -116,7 +123,16 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		GeneID geneID = gffGeneIsoInfo.getGeneID();
 		lsInfo.add(geneID.getSymbol());
 		lsInfo.add(geneID.getDescription());
-		lsInfo.add(mapInfoSnpIndel.getProp() + "");
+		lsInfo.add(gffGeneIsoInfo.toStringCodLocStr(refStartSite));
+		
+		//如果snp落在了intron里面，本项目就不计数了
+		double prop = mapInfoSnpIndel.getProp();
+		if (prop >= 0) {
+			lsInfo.add(mapInfoSnpIndel.getProp() + "");
+		} else {
+			lsInfo.add("");
+		}
+	
 		lsInfo.add(siteSnpIndelInfo.getRefAAnr().toString());
 		lsInfo.add(siteSnpIndelInfo.getRefAAnr().toStringAA3());
 		lsInfo.add(siteSnpIndelInfo.getThisAAnr().toString());
@@ -130,11 +146,12 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 	public MapInfoSnpIndel getSnpSite(String chrID, int site) {
 		return new MapInfoSnpIndel(gffChrAbs, chrID, site);
 	}
-	
+	/** tilte和annoSnp方法中一致 */
 	public static ArrayList<String> getTitleLs() {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.Symbol.toString());
 		lsTitle.add(TitleFormatNBC.Description.toString());
+		lsTitle.add("LocationDescription");
 		lsTitle.add("PropToGeneStart");
 		lsTitle.add("RefNr");
 		lsTitle.add("RefAA");

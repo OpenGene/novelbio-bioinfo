@@ -17,7 +17,7 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
-import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.other.downloadpicture.GetPictureUrl;
 import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
@@ -28,7 +28,7 @@ public class PixivGetPictureUrlToDownload implements GetPictureUrl {
 		
 	int retryNum = 10;
 	String midUrl;
-	WebFetch webFetch;
+	HttpFetch webFetch;
 	
 	String name;
 	String savePath;
@@ -45,7 +45,7 @@ public class PixivGetPictureUrlToDownload implements GetPictureUrl {
 	public void setPictureNum(int pictureNum) {
 		this.pictureNum = pictureNum;
 	}
-	public void setWebFetch(WebFetch webFetch) {
+	public void setWebFetch(HttpFetch webFetch) {
 		this.webFetch = webFetch;
 	}
 	/** 保存的路径里面应该要包含作者名 */
@@ -95,7 +95,7 @@ public class PixivGetPictureUrlToDownload implements GetPictureUrl {
 			pixivUrlDownLoad.setPictureNum(pictureNum);
 			pixivUrlDownLoad.setPictureUrl(pictureUrl);
 			pixivUrlDownLoad.setRefUrl(midUrl);
-			pixivUrlDownLoad.setWebFetch(WebFetch.getInstance(webFetch));
+			pixivUrlDownLoad.setWebFetch(HttpFetch.getInstance(webFetch));
 			pixivUrlDownLoad.setSavePath(savePath);
 			lsPixivUrlDownLoads.add(pixivUrlDownLoad);
 		}
@@ -114,7 +114,7 @@ public class PixivGetPictureUrlToDownload implements GetPictureUrl {
 				break;
 			}
 		}
-		return WebFetch.decode(resultUrl);
+		return HttpFetch.decode(resultUrl);
 	}
 	private String getPictureUrlBigAbs(String bigUrl) throws ParserException {
 		String resultUrl = "";
@@ -133,7 +133,7 @@ public class PixivGetPictureUrlToDownload implements GetPictureUrl {
 				resultUrl = string.replace("src=", "").replace("\"", "").trim();
 			}
 		}
-		resultUrl = WebFetch.decode(resultUrl);
+		resultUrl = HttpFetch.decode(resultUrl);
 		return resultUrl;
 	}
 	/** 获取连环画的url 

@@ -87,6 +87,14 @@ public class ServUniProtID extends AbsGetSpring implements MapUniProtID{
 	 * @param override
 	 */
 	public boolean updateUniProtID(UniProtID uniProtID, boolean override) {
+		if (uniProtID.getAccID().length() > 30) {
+			logger.error("accID太长：" + uniProtID.getAccID() + "\t" + uniProtID.getDBInfo());
+			if (uniProtID.getAccID().contains("GO:")) {
+				logger.error("stop");
+			}
+			return false;
+		}
+		
 		String db = uniProtID.getDBInfo();
 		//查询的时候为了防止查不到，先除去dbinfo的信息
 		uniProtID.setDBInfo("");

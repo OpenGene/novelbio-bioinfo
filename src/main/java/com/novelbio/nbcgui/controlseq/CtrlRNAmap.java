@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
@@ -139,17 +140,19 @@ public class CtrlRNAmap {
 			return;
 		}
 		MapRsem mapRsem = (MapRsem) mapRNA;
-		HashMapLsValue<String, Double> mapGeneID2LsExp = mapRsem.getMapGeneID2LsExp();
+		ArrayListMultimap<String, Double> mapGeneID2LsExp = mapRsem.getMapGeneID2LsExp();
 		//第一组结果直接装进去
 		if (lsExpResultRsemRPKM.size() == 0) {
 			ArrayList<String> lsTitleRPKM = new ArrayList<String>();
 			lsTitleRPKM.add("GeneID"); lsTitleRPKM.add(prefix + "_RPKM");
 			lsExpResultRsemRPKM.add(lsTitleRPKM);
 			
-			for (Entry<String, ArrayList<Double>> entry : mapGeneID2LsExp.entrySet()) {
+			for (String geneID : mapGeneID2LsExp.keySet()) {
 				ArrayList<String> lsDetail = new ArrayList<String>();
-				lsDetail.add(entry.getKey());//获得基因名
-				lsDetail.add(MathComput.mean(entry.getValue()) + "" );//获得平均数
+				
+				List<Double> lsValue = mapGeneID2LsExp.get(geneID);
+				lsDetail.add(geneID);//获得基因名
+				lsDetail.add(MathComput.mean(lsValue) + "" );//获得平均数
 				lsExpResultRsemRPKM.add(lsDetail);
 			}
 		}
@@ -158,7 +161,7 @@ public class CtrlRNAmap {
 			lsExpResultRsemRPKM.get(0).add(prefix + "_RPKM");
 			for (int i = 1; i < lsExpResultRsemRPKM.size(); i++) {
 				ArrayList<String> lsDetail = lsExpResultRsemRPKM.get(i);
-				ArrayList<Double> lsValue = mapGeneID2LsExp.get(lsDetail.get(0));
+				List<Double> lsValue = mapGeneID2LsExp.get(lsDetail.get(0));
 				lsDetail.add(MathComput.mean(lsValue) + "");
 			}
 		}
@@ -169,17 +172,18 @@ public class CtrlRNAmap {
 			return;
 		}
 		MapRsem mapRsem = (MapRsem) mapRNA;
-		HashMapLsValue<String, Integer> mapGeneID2LsCounts = mapRsem.getMapGeneID2LsCounts();
+		ArrayListMultimap<String, Integer> mapGeneID2LsCounts = mapRsem.getMapGeneID2LsCounts();
 		//第一组结果直接装进去
 		if (lsExpResultRsemCounts.size() == 0) {
 			ArrayList<String> lsTitleCounts = new ArrayList<String>();
 			lsTitleCounts.add("GeneID"); lsTitleCounts.add(prefix + "_Counts");
 			lsExpResultRsemCounts.add(lsTitleCounts);
-			
-			for (Entry<String, ArrayList<Integer>> entry : mapGeneID2LsCounts.entrySet()) {
+			for (String geneID : mapGeneID2LsCounts.keySet()) {
+				List<Integer> lsValue = mapGeneID2LsCounts.get(geneID);
+
 				ArrayList<String> lsDetail = new ArrayList<String>();
-				lsDetail.add(entry.getKey());//获得基因名
-				lsDetail.add((int)MathComput.mean(entry.getValue()) + "" );//获得平均数
+				lsDetail.add(geneID);//获得基因名
+				lsDetail.add((int)MathComput.mean(lsValue) + "" );//获得平均数
 				lsExpResultRsemCounts.add(lsDetail);
 			}
 		}
@@ -188,7 +192,7 @@ public class CtrlRNAmap {
 			lsExpResultRsemCounts.get(0).add(prefix + "_Counts");
 			for (int i = 1; i < lsExpResultRsemCounts.size(); i++) {
 				ArrayList<String> lsDetail = lsExpResultRsemCounts.get(i);
-				ArrayList<Integer> lsValue = mapGeneID2LsCounts.get(lsDetail.get(0));
+				List<Integer> lsValue = mapGeneID2LsCounts.get(lsDetail.get(0));
 				lsDetail.add((int)MathComput.mean(lsValue) + "");
 			}
 		}

@@ -59,11 +59,18 @@ abstract class ImportPerLine
 		//从第二行开始读取
 		int num = 0;
 		for (String content : txtGene2Acc.readlines(readFromLine)) {
-			if (!impPerLine(content)) {
-				if (txtWriteExcep != null) {
-					txtWriteExcep.writefileln(content);
+			try {
+				if (!impPerLine(content)) {
+					if (txtWriteExcep != null) {
+						txtWriteExcep.writefileln(content);
+					}
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("stop");
+				impPerLine(content);
 			}
+	
 			num++;
 			if (num%10000 == 0) {
 				logger.info("import line number:" + num);
@@ -83,13 +90,16 @@ abstract class ImportPerLine
 	 * 仅读取一次
 	 * @param taxIDfile
 	 */
-	public void setTaxIDFile(String taxIDfile) {
+	public static void setTaxIDFile(String taxIDfile) {
 		if (ImportPerLine.taxIDfile.equals(taxIDfile)) {
 			return;
 		}
 		hashTaxID = new HashSet<Integer>();
 		TxtReadandWrite txtTaxID=new TxtReadandWrite(taxIDfile, false);
 		for (String string : txtTaxID.readlines()) {
+			if (string.startsWith("#")) {
+				continue;
+			}
 			if (string.trim().equals("")) {
 				continue;
 			}

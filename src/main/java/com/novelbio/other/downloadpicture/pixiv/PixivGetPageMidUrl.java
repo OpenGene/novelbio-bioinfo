@@ -12,10 +12,10 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
-import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.HttpFetch;
 
 public class PixivGetPageMidUrl {
-	WebFetch webFetch;
+	HttpFetch webFetch;
 	/** 判断该文件是否已经存在了，存在了就不下载了 */
 	PixivGetPathExistPic pixivGetPathExistPic;
 	
@@ -34,7 +34,7 @@ public class PixivGetPageMidUrl {
 	
 	boolean isAlreadyHaveFile = false;
 	
-	public void setWebFetch(WebFetch webFetch) {
+	public void setWebFetch(HttpFetch webFetch) {
 		this.webFetch = webFetch;
 	}
 	public void setPageUrl(String pageUrl) {
@@ -113,7 +113,7 @@ public class PixivGetPageMidUrl {
 	private String getPictureUrl(Node nodePicture) {
 		String urlAll = nodePicture.getText();
 		 urlAll = urlAll.replace("a", "").replace("href=", "").replace("\"", "").trim();
-		 urlAll = WebFetch.decode(urlAll);
+		 urlAll = HttpFetch.decode(urlAll);
 		return urlAll;
 	}
 	/** 获得每个图片的名字 */
@@ -148,7 +148,7 @@ public class PixivGetPageMidUrl {
 			//每页20张图
 			int pictureNum = allPictureNum - (thisPageNum - 1) * 20 - i;
 			pictureUrlToDownload.setPictureNum(pictureNum);
-			pictureUrlToDownload.setWebFetch(WebFetch.getInstance(webFetch));
+			pictureUrlToDownload.setWebFetch(HttpFetch.getInstance(webFetch));
 			pictureUrlToDownload.setSavePath(savePath);
 			lsResult.add(pictureUrlToDownload);
 			i ++;

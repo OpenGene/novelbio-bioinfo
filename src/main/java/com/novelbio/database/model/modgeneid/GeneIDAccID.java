@@ -63,4 +63,5 @@ public class GeneIDAccID extends GeneIDabs{
 		}
 		isBlastedFlag = false;
 	}
+
 }

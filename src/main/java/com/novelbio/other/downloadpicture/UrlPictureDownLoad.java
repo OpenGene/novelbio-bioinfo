@@ -2,12 +2,12 @@ package com.novelbio.other.downloadpicture;
 
 import java.util.concurrent.Callable;
 
-import com.novelbio.base.dataOperate.WebFetch;
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.other.downloadpicture.pixiv.PixivOperate;
 
 public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
-	WebFetch webFetch;
+	HttpFetch webFetch;
 	/** 我们给每个pixiv的编号，从小到大排列，为了是浏览图片的时候可以方便按照顺序显示图片 */
 	int pictureNum;
 	
@@ -18,7 +18,7 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
 
 	String name;
 	boolean saveSucess = false;
-	public void setWebFetch(WebFetch webFetch) {
+	public void setWebFetch(HttpFetch webFetch) {
 		this.webFetch = webFetch;
 	}
 	public void setPictureUrl(String pictureUrl) {
@@ -65,7 +65,7 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
     	}
     }
     /** 下载图片 */
-    private boolean download(WebFetch webFetch, String savePath) {
+    private boolean download(HttpFetch webFetch, String savePath) {
     	while (webFetch.download(savePath)) {
     		if (FileOperate.getFileSize(savePath) > 2) {
     			return true;

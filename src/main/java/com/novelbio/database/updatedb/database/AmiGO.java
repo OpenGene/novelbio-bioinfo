@@ -123,7 +123,7 @@ class ImpGOExtObo extends ImportPerLine
 					logger.error("is_a 中没有对应的GOID：" + string);
 				}
 				else {
-					go2Term.setParent(parentGOID, Go2Term.RELATION_IS);
+					go2Term.addParent(parentGOID, Go2Term.RELATION_IS);
 				}
 			}
 			if (string.startsWith("is_a:")) {
@@ -132,7 +132,7 @@ class ImpGOExtObo extends ImportPerLine
 					logger.error("is_a 中没有对应的GOID：" + string);
 				}
 				else {
-					go2Term.setParent(parentGOID, Go2Term.RELATION_IS);
+					go2Term.addParent(parentGOID, Go2Term.RELATION_IS);
 				}
 			}
 			if (string.startsWith("relationship:")) {
@@ -142,16 +142,16 @@ class ImpGOExtObo extends ImportPerLine
 					return false;
 				}
 				if (string.contains("part_of")) {
-					go2Term.setParent(parentGOID, Go2Term.RELATION_PARTOF);
+					go2Term.addParent(parentGOID, Go2Term.RELATION_PARTOF);
 				}
 				else if (string.contains("negatively_regulates")) {
-					go2Term.setParent(parentGOID, Go2Term.RELATION_REGULATE_NEG);
+					go2Term.addParent(parentGOID, Go2Term.RELATION_REGULATE_NEG);
 				}
 				else if (string.contains("regulates")) {
-					go2Term.setParent(parentGOID, Go2Term.RELATION_REGULATE);
+					go2Term.addParent(parentGOID, Go2Term.RELATION_REGULATE);
 				}
 				else if (string.contains("positively_regulates")) {
-					go2Term.setParent(parentGOID, Go2Term.RELATION_REGULATE_POS);
+					go2Term.addParent(parentGOID, Go2Term.RELATION_REGULATE_POS);
 				}
 			}
 			if (string.startsWith("alt_id:")) {
@@ -252,7 +252,7 @@ class ImpGOExtObo extends ImportPerLine
 				}
 				else {
 					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
-					go2Term.setChild(childID, Go2Term.RELATION_IS);
+					go2Term.addChild(childID, Go2Term.RELATION_IS);
 					go2Term.update();
 				}
 			}
@@ -264,22 +264,22 @@ class ImpGOExtObo extends ImportPerLine
 				}
 				if (string.contains("part_of")) {
 					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
-					go2Term.setChild(childID, Go2Term.RELATION_PARTOF);
+					go2Term.addChild(childID, Go2Term.RELATION_PARTOF);
 					go2Term.update();
 				}
 				else if (string.contains("negatively_regulates")) {
 					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
-					go2Term.setChild(childID, Go2Term.RELATION_REGULATE_NEG);
+					go2Term.addChild(childID, Go2Term.RELATION_REGULATE_NEG);
 					go2Term.update();
 				}
 				else if (string.contains("relationship: regulates")) {
 					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
-					go2Term.setChild(childID, Go2Term.RELATION_REGULATE);
+					go2Term.addChild(childID, Go2Term.RELATION_REGULATE);
 					go2Term.update();
 				}
 				else if (string.contains("positively_regulates")) {
 					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
-					go2Term.setChild(childID, Go2Term.RELATION_REGULATE_POS);
+					go2Term.addChild(childID, Go2Term.RELATION_REGULATE_POS);
 					go2Term.update();
 				}
 			}
@@ -303,8 +303,7 @@ class ImpGOExtObo extends ImportPerLine
  * @author zong0jie
  *
  */
-class Impgene_associationgoa_uniprot extends ImportPerLine
-{
+class Impgene_associationgoa_uniprot extends ImportPerLine {
 	private static Logger logger = Logger.getLogger(Impgene_associationgoa_uniprot.class);
 	/**
 	 * 从第5行开始读取

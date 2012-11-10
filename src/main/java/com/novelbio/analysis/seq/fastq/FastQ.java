@@ -146,8 +146,7 @@ public class FastQ {
 	
 	private void filterReadsRun() {
 		fastQfilter.setThreadNum(threadNum_FilterFastqRecord);
-		Thread thread = new Thread(fastQfilter);
-		thread.start();
+		fastQfilter.run();
 	}
 	
 	/** 在进行filter的时候也可以导入gui进行操作吧 */

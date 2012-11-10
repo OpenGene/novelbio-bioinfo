@@ -9,8 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.novelbio.analysis.diffexpress.DiffExpLimma;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
 
 public class TestDiffExpLimma extends TestCase{
 	DiffExpLimma limma;
@@ -36,22 +36,22 @@ public class TestDiffExpLimma extends TestCase{
 		lsSampleColumn2GroupName.add(new String[] {"7","C"});
 		limma.setCol2Sample(lsSampleColumn2GroupName);
 		limma.setColID(1);
-		limma.addFileName2Compare(FileOperate.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
-		limma.addFileName2Compare(FileOperate.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
-		limma.addFileName2Compare(FileOperate.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
+		limma.addFileName2Compare(PathDetail.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
+		limma.addFileName2Compare(PathDetail.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
+		limma.addFileName2Compare(PathDetail.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
 		String DEseqScript = limma.getOutScript();
 		txtScript = new TxtReadandWrite(DEseqScript, false);
 		return txtScript.readfileLs();
 	}
 	private void assertScriptDuplicate(ArrayList<String> lsScript) {
 		int i = 0;
-		assertEquals("filePath = \"" + FileOperate.getProjectPath() + "Tmp/\"", lsScript.get(i++));
+		assertEquals("filePath = \"" + PathDetail.getProjectPath() + "Tmp/\"", lsScript.get(i++));
 		assertEquals("fileName = \"" + limma.getFileNameRawdata() + "\"", lsScript.get(i++));
 		assertEquals("setwd(filePath)", lsScript.get(i++));
 		assertEquals("library(limma)", lsScript.get(i++));
 		assertEquals("eset=read.table(file=fileName,he=T,sep=\"\\t\",row.names=1)", lsScript.get(i++));
 		
-		if (limma.isLog2Transform())
+		if (limma.isLogValue())
 			assertEquals("eset = log2(eset))", lsScript.get(i++));
 		else
 			assertEquals("", lsScript.get(i++));
@@ -66,11 +66,11 @@ public class TestDiffExpLimma extends TestCase{
 		assertEquals("fit2.eBayes = eBayes(fit2)", lsScript.get(i++));
 		
 		assertEquals("write.table(topTable(fit2.eBayes, coef=\"A_vs_B\", adjust=\"fdr\", sort.by=\"B\", number=50000),  " +
-				"file=\""+FileOperate.getProjectPath() + "AvsB.xls\", row.names=F, sep=\"\\t\")", lsScript.get(i++));
+				"file=\""+PathDetail.getProjectPath() + "AvsB.xls\", row.names=F, sep=\"\\t\")", lsScript.get(i++));
 		assertEquals("write.table(topTable(fit2.eBayes, coef=\"A_vs_C\", adjust=\"fdr\", sort.by=\"B\", number=50000),  " +
-				"file=\""+FileOperate.getProjectPath() + "AvsC.xls\", row.names=F, sep=\"\\t\")", lsScript.get(i++));
+				"file=\""+PathDetail.getProjectPath() + "AvsC.xls\", row.names=F, sep=\"\\t\")", lsScript.get(i++));
 		assertEquals("write.table(topTable(fit2.eBayes, coef=\"C_vs_B\", adjust=\"fdr\", sort.by=\"B\", number=50000),  " +
-				"file=\""+FileOperate.getProjectPath() + "CvsB.xls\", row.names=F, sep=\"\\t\")", lsScript.get(i++));
+				"file=\""+PathDetail.getProjectPath() + "CvsB.xls\", row.names=F, sep=\"\\t\")", lsScript.get(i++));
 		
 	}
 	@After

@@ -75,7 +75,7 @@ public class IDconvertGFF {
 		GeneID copedIDUp = new GeneID(gffGeneIsoInfo.getName(), taxID);
 		ArrayList<GeneID> lsCoveredCopedID = new ArrayList<GeneID>();
 		if (gffCodGeneDU != null) {
-			lsCoveredCopedID = gffCodGeneDU.getAllCoveredGenes();
+			lsCoveredCopedID = gffCodGeneDU.getCoveredGene();
 			if (lsCoveredCopedID != null && lsCoveredCopedID.size() > 0) {
 				GeneID copedIDmid = lsCoveredCopedID.get(lsCoveredCopedID.size()/2);
 				copedIDUp.setUpdateRefAccID(copedIDmid.getAccID());

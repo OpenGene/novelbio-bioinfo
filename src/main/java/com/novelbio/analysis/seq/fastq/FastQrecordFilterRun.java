@@ -28,18 +28,23 @@ public class FastQrecordFilterRun implements Callable<FastQrecordFilterRun> {
 	/** 内部会对fastqRecord进行初始化 */
 	@Override
 	public FastQrecordFilterRun call() throws Exception {
-		fastQRecord1.initialReadRecord();
-		if (fastQRecord2 == null) {
-			filterSucess = fastQRecordFilter.filterFastQRecordSE(fastQRecord1);
-		} else {
-			filterSucess = fastQRecordFilter.filterFastQRecordPE(fastQRecord1, fastQRecord2);
-		}
-		if (filterSucess) {
-			fastqResult1 = fastQRecord1.toString();
-			if (fastQRecord2 != null) {
-				fastqResult2 = fastQRecord2.toString();
+		try {
+			fastQRecord1.initialReadRecord();
+			if (fastQRecord2 == null) {
+				filterSucess = fastQRecordFilter.filterFastQRecordSE(fastQRecord1);
+			} else {
+				filterSucess = fastQRecordFilter.filterFastQRecordPE(fastQRecord1, fastQRecord2);
 			}
+			if (filterSucess) {
+				fastqResult1 = fastQRecord1.toString();
+				if (fastQRecord2 != null) {
+					fastqResult2 = fastQRecord2.toString();
+				}
+			}
+		} catch (Exception e) {
+			filterSucess = false;
 		}
+		
 		return this;
 	}
 	

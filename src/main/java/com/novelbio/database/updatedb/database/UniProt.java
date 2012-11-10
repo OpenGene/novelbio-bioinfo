@@ -21,8 +21,7 @@ public class UniProt {
 	String idmappingSelectedFile = "";
 	String taxIDFile = "";
 	String impgene_associationgoa_uniprotFile = "";
-	public void setImpgene_associationgoa_uniprotFile(
-			String impgene_associationgoa_uniprotFile) {
+	public void setImpgene_associationgoa_uniprotFile(String impgene_associationgoa_uniprotFile) {
 		this.impgene_associationgoa_uniprotFile = impgene_associationgoa_uniprotFile;
 	}
 	public void setTaxIDFile(String taxIDFile) {
@@ -36,15 +35,15 @@ public class UniProt {
 	}
 	public void update() {
 		IdmappingSelected idmappingSelected = new IdmappingSelected();
-		idmappingSelected.setTaxIDFile(taxIDFile);
-//		idmappingSelected.setTxtWriteExcep(outUniIDFile);
-//		idmappingSelected.importInfoPerLine(idmappingSelectedFile, true);
+		IdmappingSelected.setTaxIDFile(taxIDFile);
+		idmappingSelected.setTxtWriteExcep(outUniIDFile);
+		idmappingSelected.updateFile(idmappingSelectedFile, true);
 		
-//		Impgene_associationgoa_uniprot impgene_associationgoa_uniprot = new Impgene_associationgoa_uniprot();
-//		impgene_associationgoa_uniprot.importInfoPerLine(impgene_associationgoa_uniprotFile, true);
-//		idmappingSelected.setUpdateUniprotID(true);
-//		idmappingSelected.setTxtWriteExcep(outUniIDFile+"_2");
-//		idmappingSelected.importInfoPerLine(outUniIDFile, false);
+		Impgene_associationgoa_uniprot impgene_associationgoa_uniprot = new Impgene_associationgoa_uniprot();
+		impgene_associationgoa_uniprot.updateFile(impgene_associationgoa_uniprotFile, true);
+		idmappingSelected.setUpdateUniprotID(true);
+		idmappingSelected.setTxtWriteExcep(outUniIDFile+"_2");
+		idmappingSelected.updateFile(outUniIDFile, false);
 		
 		IdmappingSelectedGOPubmed idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
 		idmappingSelectedGOPubmed.updateFile(idmappingSelectedFile, true);
@@ -79,8 +78,7 @@ public class UniProt {
 22. Ensembl_PRO
 23. Additional PubMed
 */
-class IdmappingSelected extends ImportPerLine
- {
+class IdmappingSelected extends ImportPerLine {
 	/**
 	 * 搜索不到的ID是否导入uniID表中
 	 */
@@ -189,7 +187,11 @@ class IdmappingSelected extends ImportPerLine
 		updateInfo(ss[21], copedID, NovelBioConst.DBINFO_ENSEMBL_PRO);
 		return true;
 	}
-	
+	/**
+	 * 将tmpAccID装入lsRefAccID中
+	 * @param tmpAccID
+	 * @param lsRefAccID
+	 */
 	private void addListAccID(String tmpAccID, ArrayList<String> lsRefAccID) {
 		if (tmpAccID == null || tmpAccID.equals("")) {
 			return;
@@ -202,15 +204,14 @@ class IdmappingSelected extends ImportPerLine
 		}
 	}
 	/**
-	 * 
+	 * 升级ssID到geneID中
 	 * @param ssID
 	 * @param copedID
 	 * @param dbInfo
 	 * @param updateUniprotID 搜索不到的ID是否导入uniID表中
 	 * @return
 	 */
-	private boolean updateInfo(String ssID, GeneID copedID, String dbInfo)
-	{
+	private boolean updateInfo(String ssID, GeneID copedID, String dbInfo) {
 		if (ssID == null || ssID.equals("")) {
 			return true;
 		}

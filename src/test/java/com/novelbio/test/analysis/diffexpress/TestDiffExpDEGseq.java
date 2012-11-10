@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.novelbio.analysis.diffexpress.DiffExpDEGseq;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -41,15 +42,15 @@ public class TestDiffExpDEGseq extends TestCase {
 		lsSampleColumn2GroupName.add(new String[] {"7","C"});
 		degSeq.setCol2Sample(lsSampleColumn2GroupName);
 		degSeq.setColID(1);
-		degSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
-		degSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
-		degSeq.addFileName2Compare(FileOperate.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
+		degSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
+		degSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
+		degSeq.addFileName2Compare(PathDetail.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
 		String DEseqScript = degSeq.getOutScript();
 		txtScript = new TxtReadandWrite(DEseqScript, false);
 		return txtScript.readfileLs();
 	}
 	private void assertScriptDuplicate(ArrayList<String> lsScript) {
-		assertEquals("filePath = \"" + FileOperate.getProjectPath() + "Tmp/\"", lsScript.get(0));
+		assertEquals("filePath = \"" + PathDetail.getProjectPath() + "Tmp/\"", lsScript.get(0));
 		assertEquals("fileName = \"" + degSeq.getFileNameRawdata() + "\"", lsScript.get(1));
 		assertEquals("setwd(filePath)", lsScript.get(2));
 		assertEquals("library(DEGseq)", lsScript.get(3));
@@ -60,17 +61,17 @@ public class TestDiffExpDEGseq extends TestCase {
 		assertEquals("DEGexp(geneExpMatrix1 = A, geneCol1 = 1, " +
 				"expCol1 = c(2, 3), groupLabel1 = 'A', " +
 				"geneExpMatrix2 = B, geneCol2 = 1, expCol2 = c(2, 3), " +
-				"groupLabel2 = 'B', method = 'MARS', outputDir='"+FileOperate.getProjectPath() + "AvsB.xls_Path"+"')", lsScript.get(7));
+				"groupLabel2 = 'B', method = 'MARS', outputDir='"+PathDetail.getProjectPath() + "AvsB.xls_Path"+"')", lsScript.get(7));
 		
 		assertEquals("DEGexp(geneExpMatrix1 = A, geneCol1 = 1, " +
 				"expCol1 = c(2, 3), groupLabel1 = 'A', " +
 				"geneExpMatrix2 = C, geneCol2 = 1, expCol2 = c(2, 3), " +
-				"groupLabel2 = 'C', method = 'MARS', outputDir='"+FileOperate.getProjectPath() + "AvsC.xls_Path"+"')", lsScript.get(8));
+				"groupLabel2 = 'C', method = 'MARS', outputDir='"+PathDetail.getProjectPath() + "AvsC.xls_Path"+"')", lsScript.get(8));
 		
 		assertEquals("DEGexp(geneExpMatrix1 = C, geneCol1 = 1, " +
 				"expCol1 = c(2, 3), groupLabel1 = 'C', " +
 				"geneExpMatrix2 = B, geneCol2 = 1, expCol2 = c(2, 3), " +
-				"groupLabel2 = 'B', method = 'MARS', outputDir='"+FileOperate.getProjectPath() + "CvsB.xls_Path"+"')", lsScript.get(9));
+				"groupLabel2 = 'B', method = 'MARS', outputDir='"+PathDetail.getProjectPath() + "CvsB.xls_Path"+"')", lsScript.get(9));
 	}
 	
 	private ArrayList<String> setNoDuplicate() {
@@ -80,15 +81,15 @@ public class TestDiffExpDEGseq extends TestCase {
 		lsSampleColumn2GroupName.add(new String[] {"4","C"});
 		degSeq.setCol2Sample(lsSampleColumn2GroupName);
 		degSeq.setColID(1);
-		degSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
-		degSeq.addFileName2Compare(FileOperate.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
-		degSeq.addFileName2Compare(FileOperate.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
+		degSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
+		degSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
+		degSeq.addFileName2Compare(PathDetail.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
 		String DEseqScript = degSeq.getOutScript();
 		txtScript = new TxtReadandWrite(DEseqScript, false);
 		return txtScript.readfileLs();
 	}
 	private void assertScriptNoDuplicate(ArrayList<String> lsScript) {
-		assertEquals("filePath = \"" + FileOperate.getProjectPath() + "Tmp/\"", lsScript.get(0));
+		assertEquals("filePath = \"" + PathDetail.getProjectPath() + "Tmp/\"", lsScript.get(0));
 		assertEquals("fileName = \"" + degSeq.getFileNameRawdata() + "\"", lsScript.get(1));
 		assertEquals("setwd(filePath)", lsScript.get(2));
 		assertEquals("library(DEGseq)", lsScript.get(3));
@@ -99,17 +100,17 @@ public class TestDiffExpDEGseq extends TestCase {
 		assertEquals("DEGexp(geneExpMatrix1 = A, geneCol1 = 1, " +
 				"expCol1 = c(2), groupLabel1 = 'A', " +
 				"geneExpMatrix2 = B, geneCol2 = 1, expCol2 = c(2), " +
-				"groupLabel2 = 'B', method = 'MARS', outputDir='"+FileOperate.getProjectPath() + "AvsB.xls_Path"+"')", lsScript.get(7));
+				"groupLabel2 = 'B', method = 'MARS', outputDir='"+PathDetail.getProjectPath() + "AvsB.xls_Path"+"')", lsScript.get(7));
 		
 		assertEquals("DEGexp(geneExpMatrix1 = A, geneCol1 = 1, " +
 				"expCol1 = c(2), groupLabel1 = 'A', " +
 				"geneExpMatrix2 = C, geneCol2 = 1, expCol2 = c(2), " +
-				"groupLabel2 = 'C', method = 'MARS', outputDir='"+FileOperate.getProjectPath() + "AvsC.xls_Path"+"')", lsScript.get(8));
+				"groupLabel2 = 'C', method = 'MARS', outputDir='"+PathDetail.getProjectPath() + "AvsC.xls_Path"+"')", lsScript.get(8));
 		
 		assertEquals("DEGexp(geneExpMatrix1 = C, geneCol1 = 1, " +
 				"expCol1 = c(2), groupLabel1 = 'C', " +
 				"geneExpMatrix2 = B, geneCol2 = 1, expCol2 = c(2), " +
-				"groupLabel2 = 'B', method = 'MARS', outputDir='"+FileOperate.getProjectPath() + "CvsB.xls_Path"+"')", lsScript.get(9));
+				"groupLabel2 = 'B', method = 'MARS', outputDir='"+PathDetail.getProjectPath() + "CvsB.xls_Path"+"')", lsScript.get(9));
 	}
 	@After
 	public void tearDown() {

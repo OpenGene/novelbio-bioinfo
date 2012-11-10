@@ -23,21 +23,27 @@ public class Cuffcompare {
 	 * 设定samtools所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
 	 */
-	public void setExePathCuff(String exePath) {
+	public void setExePath(String exePath) {
 		if (exePath == null || exePath.trim().equals("")) {
 			this.ExePath = "";
 		} else {
 			this.ExePath = FileOperate.addSep(ExePath);
 		}
 	}
-
+	public void setClearFile(boolean clearFile) {
+		this.clearFile = clearFile;
+	}
 	public void setSeqFasta(String seqFasta) {
 		this.seqFasta = seqFasta;
 	}
 	public void setRefGtfFile(String refGtfFile) {
-		this.refGtfFile = refGtfFile;
+		if (FileOperate.isFileExistAndBigThanSize(refGtfFile, 10)) {
+			this.refGtfFile = refGtfFile;
+		}
 	}
-	
+	public void setLsInputGtfFile(ArrayList<String> lsInputGtfFile) {
+		this.lsInputGtfFile = lsInputGtfFile;
+	}
 	public void setOutPath(String outPath) {
 		this.outPath = outPath;
 	}
@@ -105,7 +111,7 @@ public class Cuffcompare {
 	 */
 	private String changeGtfFileName() {
 		String fileName = outPath + ".combined.gtf";
-		String newFileName = FileOperate.changeFileSuffix(fileName, "", ".gtf");
+		String newFileName = FileOperate.changeFileSuffix(fileName, "", "gtf");
 		FileOperate.changeFileName(fileName, outPath + ".gtf", true);
 		return newFileName;
 	}
