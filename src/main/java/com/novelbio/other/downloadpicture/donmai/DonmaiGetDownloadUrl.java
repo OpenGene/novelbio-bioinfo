@@ -15,7 +15,7 @@ import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.other.downloadpicture.GetPictureUrl;
 import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
 
-public class DonmaiGetDownloadUrl  implements GetPictureUrl {
+public class DonmaiGetDownloadUrl  extends GetPictureUrl {
 	private static Logger logger = Logger.getLogger(DonmaiGetPictureUrl.class);
 	protected HttpFetch webFetch;
 	int retryNum = 10;

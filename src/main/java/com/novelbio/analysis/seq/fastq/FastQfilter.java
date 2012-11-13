@@ -10,6 +10,15 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.multithread.RunProcess;
 
 class FastQfilter extends RunProcess<FastQrecordFilterRun> {
+	public static void main(String[] args) {
+		FastQ fastQ1 = new FastQ("/media/winF/NBC/Project/Project_HXW/20121018/中山医院 蒋家好/10A 10B/test/10B_1.fq");
+		FastQ fastQ2 = new FastQ("/media/winF/NBC/Project/Project_HXW/20121018/中山医院 蒋家好/10A 10B/test/10B_2.fq");
+		FastQRecordFilter fastQfilterRecord = new FastQRecordFilter();
+		fastQfilterRecord.setFilterParamTrimNNN(true);
+		fastQfilterRecord.setFilterParamReadsLenMin(50);
+		fastQ1.setFilter(fastQfilterRecord);
+		fastQ1.filterReads(fastQ2);
+	}
 	Logger logger = Logger.getLogger(FastQfilter.class);
 	
 	FastQReader fastQReader;
@@ -98,7 +107,6 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 			fastQrecordFilterRun.setFastQRecordPE(fastQRecord[0], fastQRecord[1]);
 			Future<FastQrecordFilterRun> future = executorPool.submit(fastQrecordFilterRun);
 			queueResult.add(future);
-			
 			if (allReadsNum % 50000 == 0) {
 				setRunInfo(fastQrecordFilterRun);
 			}

@@ -17,7 +17,7 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
-public class MapBowtie implements MapDNA {
+public class MapBowtie extends MapDNA {
 	/** 默认bowtie2 */
 	SoftWare bowtieVersion = SoftWare.bowtie2;
 	/** 待比对的染色体 */

@@ -21,20 +21,23 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class MeDIParrayGFF {
 
 	public static void main(String[] args) {
-		String parent = "/media/winF/NBC/Project/MeDIP_Array_ZW/GFF/Ams/";
-		String pathIn = parent + "ZWout.txt";
-		String pathOut = FileOperate.changeFileSuffix(pathIn, "_Ttest", null);
-		Ttest();
+//		String parent = "/media/winF/NBC/Project/MeDIP_Array_ZW/GFF/Ams/";
+//		String pathIn = parent + "ZWout.txt";
+//		String pathOut = FileOperate.changeFileSuffix(pathIn, "_Ttest", null);
+//		Ttest();
 		
-//		combAMSfile(parent, pathIn);
+////		combAMSfile(parent, pathIn);
 //		getPvalueT(pathIn, 2, new int[]{11,12,13,5,6,7}, new int[]{14,15,16,8,9,10}, 100, pathOut);
-//		String out = FileOperate.changeFileSuffix(pathOut, "_Filtered", null);
-		try {
-			getConstentProb();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+////		String out = FileOperate.changeFileSuffix(pathOut, "_Filtered", null);
+//		try {
+//			getConstentProb();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+//		combAMSfile("/media/winF/NBC/Project/Methy_ZGJ_20121112/GFF Files/Scaled log2-ratio Data/ams", "/media/winF/NBC/Project/Methy_ZGJ_20121112/GFF Files/Scaled log2-ratio Data/ams/amsAll");
+		getConstentProb();
 	}
 	
 	
@@ -43,47 +46,30 @@ public class MeDIParrayGFF {
 	 * @param args
 	 */
 	public static void getConstentProb() {
-		String Gff1 = "/media/winF/NBC/Project/MeDIP_Array_ZW/charm/Tlbl_vs_Hyperplasia";
-		String Gff2 = "/media/winF/NBC/Project/MeDIP_Array_ZW/charm/Ptcl_vs_Hyperplasia";
+		String Gff1 = "/media/winF/NBC/Project/Methy_ZGJ_20121112/GFF Files/Scaled log2-ratio Data/ams/amsPNDvsPOSITIV";
 		try {
-			getCombProbe(Gff1, FileOperate.changeFileSuffix(Gff1, "_Filtered", null), "\t", 3, 4, 27, 2, 0.5, 28, 0.05, 3);
-			getCombProbe(Gff2, FileOperate.changeFileSuffix(Gff2, "_Filtered", null), "\t", 3, 4, 27, 2, 0.5, 28, 0.05, 3);
+			getCombProbe(Gff1, FileOperate.changeFileSuffix(Gff1, "_Filtered", null), "\t", 3, 4, 11, 2, 0.5, 12, 0.05, 3);
 		} catch (Exception e) {
 						e.printStackTrace();
 		}
-		
-		
 //		formatPath("/media/winE/NBC/Project/Methylation_PH_120110/长征医院-彭浒/GFF Files（长征医院彭浒 QQ52901159）/Scaled log2-ratio Data");
 	}
 	/**
 	 * 对探针做t检验
 	 */
 	public static void Ttest() {
-		String excelTxtFile = "/media/winF/NBC/Project/MeDIP_Array_ZW/charm/MethyPercent/combat_estimatedMethylation_withProbes_sort.txt";
-		String outFile1 = "/media/winF/NBC/Project/MeDIP_Array_ZW/charm/Ptcl_vs_Hyperplasia";
-		String outFile2 = "/media/winF/NBC/Project/MeDIP_Array_ZW/charm/Tlbl_vs_Hyperplasia";
+		String excelTxtFile = "/media/winF/NBC/Project/Methy_ZGJ_20121112/GFF Files/Scaled log2-ratio Data/ams/amsAll";
+		String outFile1 = "/media/winF/NBC/Project/Methy_ZGJ_20121112/GFF Files/Scaled log2-ratio Data/ams/amsPNDvsPOSITIV";
 
-		int[] colSample1 = new int[]{5, 6, 7, 8, 9, 10};
-		int[] colSample2 = new int[]{17,18,19,20,21,22};
+		int[] colSample1 = new int[]{5, 6};
+		int[] colSample2 = new int[]{7, 8};
 		try {
-			getPvalueT(excelTxtFile, 1, colSample1, colSample2, 100, outFile1);
+			getPvalueT(excelTxtFile, 2, colSample1, colSample2, 100, outFile1);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		try {
-			colSample1 = new int[]{11,12,13,14,15,16};
-			colSample2 = new int[]{17,18,19,20,21,22};
-			getPvalueT(excelTxtFile, 1, colSample1, colSample2, 100, outFile2);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
 	}
 	
-
-	
-
-
 /**
  * 将一个文件夹中所有的Gff文件整理为MEME可识别的文件
  * @param ratiogff
@@ -110,15 +96,13 @@ public class MeDIParrayGFF {
 	 * @param outFile
 	 * @throws Exception
 	 */
-	public static void format(String ratiogff, String outFile) throws Exception
-	{
+	public static void format(String ratiogff, String outFile) throws Exception {
 		TxtReadandWrite txtGff = new TxtReadandWrite(ratiogff, false);
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
-		BufferedReader reader = txtGff.readfile();
-		String content = "";
+
 		txtOut.writefileln("chrID\tMATCH_INDEX\tprobID\tstart\tstop\tscore");
 		HashSet<String> hashUniq = new HashSet<String>();//去冗余用
-		while ((content = reader.readLine()) != null) {
+		for (String content : txtGff.readlines()) {
 			if (content.startsWith("#")) {
 				continue;
 			}
@@ -133,9 +117,7 @@ public class MeDIParrayGFF {
 		txtOut.close();
 	}
 	//TODO 可能会有问题，就是文件是用" "来分割
-	public static void combAMSfile(String filePath, String pathOut)
-	{
-		TxtReadandWrite txtOut = new TxtReadandWrite(pathOut, true);
+	public static void combAMSfile(String filePath, String pathOut) {
 		ArrayList<String[]> lsFileName = FileOperate.getFoldFileName(filePath, "*", "gff");
 		//每个文件一个hash表
 		HashMap<String, String> hashPrix2Txt = new HashMap<String, String>();
@@ -159,24 +141,37 @@ public class MeDIParrayGFF {
 			String file = hashPrix2Txt.get(string);
 			//第一个文件需要将前几列都读入，其他的就只要读入比值即可
 			if (i == 0) {
-				ArrayList<String[]> lsTmpResult = ExcelTxtRead.readLsExcelTxt(file, new int[]{1, 3, 4, 5, 6}, 2, 0);
-				for (String[] strings : lsTmpResult) {
+				TxtReadandWrite txtRead = new TxtReadandWrite(file, false);
+				for (String info : txtRead.readlines(2)) {
+					String[] strings = info.split(" ");
 					String[] content = new String[title.length];
+					int m = 0;
 					for (int j = 0; j < strings.length; j++) {
-						content[j] = strings[j];
+						if (j == 1) {
+							continue;
+						}
+						content[m] = strings[j];
+						m++;
 					}
 					lsResult.add(content);
 				}
+				txtRead.close();
 			}
 			else {
-				ArrayList<String[]> lsTmpResult = ExcelTxtRead.readLsExcelTxt(file, new int[]{6}, 2, 0);
-				for (int j = 0; j < lsTmpResult.size(); j++) {
+				TxtReadandWrite txtRead = new TxtReadandWrite(file, false);
+				int j = 0;
+				for (String info : txtRead.readlines(2)) {
+					String[] strings = info.split(" ");
 					//i一定大于1，这时候从第5列开始写入文件
-					lsResult.get(j)[i + 4] = lsTmpResult.get(j)[0];
+					lsResult.get(j)[i + 4] = strings[5];
+					j++;
 				}
+				txtRead.close();
 			}
 		}
 		lsResult.add(0, title);
+		
+		TxtReadandWrite txtOut = new TxtReadandWrite(pathOut, true);
 		txtOut.ExcelWrite(lsResult);
 	}
 	

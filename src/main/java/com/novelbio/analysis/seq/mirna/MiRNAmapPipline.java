@@ -173,11 +173,11 @@ public class MiRNAmapPipline {
 	/**
 	 * @param fqFile
 	 * @param chrFile
-	 * @param samFileName
-	 * @param bedFile
-	 * @param uniqueMapping
-	 * @param uniqueMappedReadsRandomSelectOne
-	 * @param unMappedFq
+	 * @param samFileName 输出sam文件名
+	 * @param bedFile 输出bed文件名
+	 * @param uniqueMapping 是否为uniqueMapping
+	 * @param uniqueMappedReadsRandomSelectOne 非unique mapping的序列是否只随机抽取一条
+	 * @param unMappedFq 没有mapping上的文件输出为fq
 	 */
 	private void mapping(String fqFile, String chrFile, String samFileName, String bedFile, boolean uniqueMapping, boolean uniqueMappedReadsRandomSelectOne,String unMappedFq) {
 		MapBwa mapBwa = new MapBwa(fqFile, samFileName);

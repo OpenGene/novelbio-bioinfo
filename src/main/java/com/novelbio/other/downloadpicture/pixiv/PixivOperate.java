@@ -78,13 +78,14 @@ public class PixivOperate extends DownloadOperate{
 	protected boolean setPictureNum_And_PageNum_Auther_And_PixivGetPath() {
 		try {
 			webFetch.setUrl(urlAuther);
-			if (!webFetch.query(retryGetPageNum)) {
-				return false;
+			while (!webFetch.query(retryGetPageNum)) {
+				Thread.sleep(500);
 			}
+
 			String pixivAutherInfo = webFetch.getResponse();
 			Parser parser = new Parser(pixivAutherInfo);
 			
-			NodeFilter filterNum = new AndFilter(new TagNameFilter("a"), new HasAttributeFilter("class", "active_gray"));
+			NodeFilter filterNum = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "count-badge"));
 			NodeList nodeListNum = parser.parse(filterNum);
 			allPictureNum = getNodeAllPicture(nodeListNum);
 			
@@ -111,8 +112,7 @@ public class PixivOperate extends DownloadOperate{
         if (iteratorPages.hasMoreNodes()) {
         	nodeNumBefore = iteratorPages.nextNode();
 		}
-        Node nodeNum = nodeNumBefore.getNextSibling().getNextSibling();
-        String pageRaw = nodeNum.toPlainTextString();
+        String pageRaw = nodeNumBefore.toPlainTextString();
         String pageNum = pageRaw.replace("¼þ", "").trim();
         return Integer.parseInt(pageNum);
 	}

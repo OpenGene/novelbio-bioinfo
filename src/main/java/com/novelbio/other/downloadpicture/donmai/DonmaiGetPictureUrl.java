@@ -20,7 +20,7 @@ import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
 import com.novelbio.other.downloadpicture.pixiv.PixivGetPathExistPic;
 
 /** 给定一个图片链接，返回该图片的大图链接 */
-public class DonmaiGetPictureUrl implements GetPictureUrl {
+public class DonmaiGetPictureUrl extends GetPictureUrl {
 	private static Logger logger = Logger.getLogger(DonmaiGetPictureUrl.class);
 	protected HttpFetch webFetch;
 	int retryNum = 10;

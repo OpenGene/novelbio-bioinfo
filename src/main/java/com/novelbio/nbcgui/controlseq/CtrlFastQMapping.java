@@ -3,7 +3,6 @@ package com.novelbio.nbcgui.controlseq;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -11,7 +10,6 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
-import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.mapping.MapDNA;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -330,40 +328,53 @@ public class CtrlFastQMapping {
 		for (Entry<String, FastQ[]> entry : mapCondition2CombFastQLRFiltered.entrySet()) {
 			String prefix = entry.getKey();
 			FastQ[] fastQs = entry.getValue();
-			MapDNA mapBwa = new MapBwa();
+			MapDNA mapSoftware = MapDNA.creatMapDNA(softMapping);
 			
 			if (species.getTaxID() == 0) {
-				mapBwa.setExePath(softWareInfo.getExePath());
-				mapBwa.setChrFile(chrIndexFile);
+				mapSoftware.setExePath(softWareInfo.getExePath());
+				mapSoftware.setChrFile(chrIndexFile);
 			}
 			else {
 				if (map2Index == MAP_TO_CHROM) {
-					mapBwa.setExePath(softWareInfo.getExePath());
-					mapBwa.setChrFile(species.getIndexChr(softMapping));
+					mapSoftware.setExePath(softWareInfo.getExePath());
+					mapSoftware.setChrFile(species.getIndexChr(softMapping));
 				} else if (map2Index == MAP_TO_REFSEQ) {
-					mapBwa.setExePath(softWareInfo.getExePath());
-					mapBwa.setChrFile(species.getIndexRef(softMapping));
+					mapSoftware.setExePath(softWareInfo.getExePath());
+					mapSoftware.setChrFile(species.getIndexRef(softMapping));
 				} else if (map2Index == MAP_TO_REFSEQ_LONGEST_ISO) {
-					mapBwa.setExePath(softWareInfo.getExePath());
-					mapBwa.setChrFile(species.getRefseqLongestIsoNrFile());
+					mapSoftware.setExePath(softWareInfo.getExePath());
+					mapSoftware.setChrFile(species.getRefseqLongestIsoNrFile());
 				}
 			}
 
-			mapBwa.setFqFile(fastQs[0], fastQs[1]);
-			mapBwa.setOutFileName(outFilePrefix + prefix);
-			mapBwa.setGapLength(gapLen);
-			mapBwa.setMismatch(mismatch);
-			mapBwa.setSampleGroup(prefix, null, null, null);
-			mapBwa.setMapLibrary(libraryType);
+			mapSoftware.setFqFile(fastQs[0], fastQs[1]);
+			mapSoftware.setOutFileName(outFilePrefix + prefix);
+			mapSoftware.setGapLength(gapLen);
+			mapSoftware.setMismatch(mismatch);
+			mapSoftware.setSampleGroup(prefix, null, null, null);
+			mapSoftware.setMapLibrary(libraryType);
 			
-			mapBwa.setThreadNum(thread);
-			SamFile samFile = mapBwa.mapReads();
-			SamFileStatistics samFileStatistics = samFile.getStatistics();
-			
+			mapSoftware.setThreadNum(thread);
+			ArrayList<String[]> lsStatistics = getLsMapStatistics(mapSoftware);
 			txtReport.writefileln(prefix);
-			txtReport.ExcelWrite(samFileStatistics.getMappingInfo());
+			for (String[] strings : lsStatistics) {
+				txtReport.writefileln(strings);
+			}
 		}
 	}
+	
+	private ArrayList<String[]> getLsMapStatistics(MapDNA mapSoftware) {
+		ArrayList<String[]> lsStatistics = new ArrayList<String[]>();
+		try {
+			SamFile samFile = mapSoftware.mapReads();
+			SamFileStatistics samFileStatistics = samFile.getStatistics();
+			lsStatistics = samFileStatistics.getMappingInfo();
+		} catch (Exception e) {
+			logger.error(e.toString());
+		}
+		return lsStatistics;
+	}
+	
 	
 	public static HashMap<String, Integer> getMapStr2Index() {
 		HashMap<String, Integer> mapStr2Index = new HashMap<String, Integer>();

@@ -15,7 +15,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  *
  */
-public class MapBwa implements MapDNA {
+public class MapBwa extends MapDNA {
 	public static void main(String[] args) {
 		MapBwa mapBwa = new MapBwa();
 		mapBwa.setSampleGroup("asa", null, null, null);

@@ -314,7 +314,8 @@ public class GuiRNASeqMapping extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileLeft = guiFileOpen.openLsFileName("fastqFile", "");
 				for (String string : lsFileLeft) {
-					scrollPaneFastqLeft.addItem(new String[]{string, ""});
+					String prefix = FileOperate.getFileNameSep(string)[0].split("_")[0];
+					scrollPaneFastqLeft.addItem(new String[]{string, prefix});
 				}
 			}
 		});

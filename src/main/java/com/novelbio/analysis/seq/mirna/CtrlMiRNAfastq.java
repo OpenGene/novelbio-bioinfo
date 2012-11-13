@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -17,7 +18,20 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  */
 public class CtrlMiRNAfastq {
-	Logger logger = Logger.getLogger(CtrlMiRNAfastq.class);
+	public static void main(String[] args) {
+		Species species = new Species(10090);
+		MiRNACount miRNACount = new MiRNACount();
+		
+		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_RNA_DATA, species, PathDetail.getMiRNADat());
+		
+		miRNACount.setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
+		miRNACount.setBedSeqMiRNA("/media/winF/NBC/Project/MiRNA_Test_20121112/test/tmpBed/CSC24hA_filtered_miRNA.bed");
+		miRNACount.run();
+		miRNACount.writeResultToOut("/media/winF/NBC/Project/MiRNA_Test_20121112/test");
+		miRNACount.getMapMirMature2Value();
+		miRNACount.getMapMiRNApre2Value();
+	}
+	private static Logger logger = Logger.getLogger(CtrlMiRNAfastq.class);
 	
 	Species species;
 	/** 设定gff和chrome */
@@ -89,6 +103,7 @@ public class CtrlMiRNAfastq {
 	 * @param rnadatFile miRNA.dat文件
 	 */
 	public void setMiRNAinfo(String rnadatFile) {
+		logger.error("读取的文件为：" + rnadatFile);
 		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_RNA_DATA, species, rnadatFile);
 	}
 	

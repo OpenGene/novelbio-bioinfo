@@ -53,6 +53,7 @@ class FastQReader {
 		}
 		this.seqFile = seqFile;
 		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
+		readsNum = 0;
 	}
 	/** 不设定就会自动判定 */
 	public void setOffset(int offset) {
@@ -180,6 +181,7 @@ class FastQReader {
 							}
 							fastQRecord = new FastQRecord(linestr, initial);
 							fastQRecord.setFastqOffset(offset);
+							readsNum++;
 						} catch (IOException ioEx) {
 							fastQRecord = null;
 						}

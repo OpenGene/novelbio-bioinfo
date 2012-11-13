@@ -22,7 +22,7 @@ import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.other.downloadpicture.GetPictureUrl;
 import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
 /** 找到每个midUrl所对应的页面，然后通过本类获得bigurl的download类*/
-public class PixivGetPictureUrlToDownload implements GetPictureUrl {
+public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 	private static Logger logger = Logger.getLogger(PixivGetPictureUrlToDownload.class);
 	String pixivUrl = "http://www.pixiv.net/";
 		

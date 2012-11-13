@@ -32,7 +32,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiFastQJpanel guiFastQ;
 	private GuiDifGeneJpanel guiDifGene;
 	private GuiBlast guiBlast;
-	private GuiSeqMiRNA guiSeqMiRNA;
+	private GuiMiRNASeq guiMiRNASeq;
 	private GuiMirnaTargetPredict guiMirnaTargetPredict;
 	private GuiAnnoGene guiAnnoGene;
 	private GuiAnnoPeak guiAnnoPeak;
@@ -133,8 +133,8 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiBlast = new GuiBlast();
 				jTabbedPane1.addTab("Blast", null, guiBlast, null);
 				
-				guiSeqMiRNA = new GuiSeqMiRNA();
-				jTabbedPane1.addTab("miRNA", null, guiSeqMiRNA, null);
+				guiMiRNASeq = new GuiMiRNASeq();
+				jTabbedPane1.addTab("miRNA", null, guiMiRNASeq, null);
 				
 				guiMirnaTargetPredict = new GuiMirnaTargetPredict();
 				jTabbedPane1.addTab("miRNAtarget", null, guiMirnaTargetPredict, null);

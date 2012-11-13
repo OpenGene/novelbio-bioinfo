@@ -94,7 +94,7 @@ public class GuiCuffdiff extends JPanel {
 				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("", "");
 				ArrayList<String[]> lsFileInput = new ArrayList<String[]>();
 				for (String fileName : lsFileName) {
-					lsFileInput.add(new String[]{fileName, FileOperate.getFileNameSep(fileName)[0]});
+					lsFileInput.add(new String[]{fileName, FileOperate.getFileNameSep(fileName)[0].split("_")[0]});
 				}
 				sclFileName.addItemLs(lsFileInput);
 			}

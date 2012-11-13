@@ -36,14 +36,8 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  *
  */
 public class SamFile implements AlignSeq {
-	public static void main(String[] args) {
-		SamFile samFile = new SamFile("/home/zong0jie/Desktop/smallRNAtest/test6/tmpMapping/Nmda6_filtered_miRNA.sam");
-//		samFile.toBedSingleEnd();
-		for (SamRecord samRecord : samFile.readLines()) {
-			System.out.println(samRecord.toString());
-		}
-	}
-	
+	private static Logger logger = Logger.getLogger(SamFile.class);
+
 	public static final int MAPPING_ALLREADS = 2;
 	public static final int MAPPING_ALLMAPPEDREADS = 4;
 	public static final int MAPPING_UNMAPPED = 8;
@@ -54,7 +48,6 @@ public class SamFile implements AlignSeq {
 	static SoftWareInfo softWareInfoGATK = new SoftWareInfo();
 	static SoftWareInfo softWareInfoPicard = new SoftWareInfo();
 	
-	Logger logger = Logger.getLogger(SamFile.class);
 	String fileName = "";
 	/**
 	 * 非unique mapping的序列是否只随机抽取一条
@@ -234,6 +227,7 @@ public class SamFile implements AlignSeq {
 			if (!samRecord.isMapped() || (getNonUniq && !samRecord.isUniqueMapping())) {
 				FastQRecord fastQRecord = samRecord.toFastQRecord();
 				fastQ.writeFastQRecord(fastQRecord);
+				fastQRecord = null;
 			}
 		}
 		fastQ.close();
@@ -513,9 +507,6 @@ public class SamFile implements AlignSeq {
 		BedSeq bedSeq = new BedSeq(bedFile, true);
 		bedSeq.setCompressType(null, bedFileCompType);
 		for (SamRecord samRecord : samReader.readLines()) {
-			if (samRecord.samRecord == null) {
-				System.out.println("stop");
-			}
 			if (!samRecord.isMapped() || samRecord.getMapQuality() < mapQualityFilter
 					|| (uniqMapping && !samRecord.isUniqueMapping()) ) {
 				continue;
@@ -523,13 +514,15 @@ public class SamFile implements AlignSeq {
 			if (uniqueRandomSelectReads) {
 				BedRecord bedRecord = samRecord.toBedRecordSE();
 				bedSeq.writeBedRecord(bedRecord);
-			}
-			else {
+				bedRecord = null;
+			} else {
 				ArrayList<BedRecord> lsBedRecord = samRecord.toBedRecordSELs();
 				for (BedRecord bedRecord : lsBedRecord) {
 					bedSeq.writeBedRecord(bedRecord);
 				}
+				lsBedRecord = null;
 			}
+			samRecord = null;
 		}
 		bedSeq.closeWrite();
 		close();

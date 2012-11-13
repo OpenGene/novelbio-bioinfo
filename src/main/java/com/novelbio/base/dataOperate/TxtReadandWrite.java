@@ -215,6 +215,7 @@ public class TxtReadandWrite {
 	
 	/**
 	 * 这个内部使用，外部用@readlines代替
+	 * 有时间改成private方法
 	 * @param path输入文件名
 	 * @return 返回BufferedReader，记得读完后要关闭Buffer流
 	 * @throws Exception

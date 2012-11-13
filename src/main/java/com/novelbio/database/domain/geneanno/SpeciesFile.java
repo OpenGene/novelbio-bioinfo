@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
@@ -26,6 +28,7 @@ import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
  *
  */
 public class SpeciesFile {
+	private static Logger logger = Logger.getLogger(SpeciesFile.class);
 	int taxID = 0;
 	/** 文件版本 */
 	String version = "";
@@ -717,9 +720,9 @@ public class SpeciesFile {
 				 int taxID = 0;
 				 try {
 					 taxID = Integer.parseInt(seqFasta.getSeqName().trim().split(" +")[1].split(":")[0]);
-				} catch (Exception e) {
-					System.out.println(seqFasta.getSeqName());
-				}
+				 } catch (Exception e) {
+					 logger.error("本序列中找不到taxID：" + seqFasta.getSeqName());
+				 }
 				 
 				 if (taxID == taxIDquery) {
 					 SeqFasta seqFastaNew = seqFasta.clone();

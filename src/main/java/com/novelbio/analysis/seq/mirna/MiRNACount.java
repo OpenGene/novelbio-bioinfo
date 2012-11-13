@@ -27,7 +27,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  *
  */
 public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
-	Logger logger = Logger.getLogger(MiRNACount.class);
+	private static Logger logger = Logger.getLogger(MiRNACount.class);
 	
 	/** 获得miRNA定位信息 */
 	ListMiRNALocation listMiRNALocation = new ListMiRNALocation();
@@ -168,13 +168,13 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 			suspendCheck();
 			if (flagStop) break;
 			countLoop++;
-			if (countLoop % 500 == 0) {
-				MiRNAcountProcess miRNAcountProcess = new MiRNAcountProcess();
-				miRNAcountProcess.setReadsNum(countLoop);
-				if (runGetInfo != null) {
-					runGetInfo.setRunningInfo(miRNAcountProcess);
-				}
-			}
+//			if (countLoop % 1000 == 0) {
+//				MiRNAcountProcess miRNAcountProcess = new MiRNAcountProcess();
+//				miRNAcountProcess.setReadsNum(countLoop);
+//				if (runGetInfo != null) {
+//					runGetInfo.setRunningInfo(miRNAcountProcess);
+//				}
+//			}
 		}
 		for (Entry<String, ArrayList<String[]>> entry : mapMiRNAname2LsMatureName_Value.entrySet()) {
 			ArrayList<String[]> lsvalue = entry.getValue();
@@ -203,39 +203,39 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	/**
 	 * 给定miRNA的名字，和值，累加起来
 	 * @param miRNAname
-	 * @param value
+	 * @param thisMiRNAcount 本次需要累计的miRNAcount，因为一条reads可能mapping至多个miRNA，那么每个miRNA的数量即为1/count
 	 */
-	private void addMiRNACount(String miRNAname, double value) {
+	private void addMiRNACount(String miRNAname, double thisMiRNAcount) {
 		if (mapMiRNApre2Value.containsKey(miRNAname)) {
 			double tmpValue = mapMiRNApre2Value.get(miRNAname);
-			mapMiRNApre2Value.put(miRNAname, value + tmpValue);
+			mapMiRNApre2Value.put(miRNAname, thisMiRNAcount + tmpValue);
 		} else {
-			mapMiRNApre2Value.put(miRNAname, value);
+			mapMiRNApre2Value.put(miRNAname, thisMiRNAcount);
 		}
 	}
 	/**
 	 * 给定miRNA的名字，和值，累加起来
 	 * @param miRNAname miRNA的名字
 	 * @param miRNADetailname miRNA成熟体的名字
-	 * @param value
+	 * @param thisMiRNAcount 本次需要累计的miRNAcount，因为一条reads可能mapping至多个miRNA，那么每个miRNA的数量即为1/count
 	 */
-	private void addMiRNAMatureCount(String miRNAname,String miRNADetailname, double value) {
+	private void addMiRNAMatureCount(String miRNAname,String miRNADetailname, double thisMiRNAcount) {
 		if (mapMiRNAname2LsMatureName_Value.containsKey(miRNAname)) {
 			//获得具体成熟miRNA的信息
 			ArrayList<String[]> lsTmpResult = mapMiRNAname2LsMatureName_Value.get(miRNAname);
 			for (String[] strings : lsTmpResult) {
 				if (strings[0].equals(miRNADetailname)) {
 					//累加表达数值，加完就跳出
-					strings[1] = (Double.parseDouble(strings[1]) + value) + "";
+					strings[1] = (Double.parseDouble(strings[1]) + thisMiRNAcount) + "";
 					return;
 				}
 			}
 			//如果没有跳出说明是第一次找到该miRNA
-			lsTmpResult.add(new String[]{miRNADetailname, value+""});
+			lsTmpResult.add(new String[]{miRNADetailname, thisMiRNAcount+""});
 		}
 		else {
 			ArrayList<String[]> lsTmpResult = new ArrayList<String[]>();
-			lsTmpResult.add(new String[]{miRNADetailname, value + ""});
+			lsTmpResult.add(new String[]{miRNADetailname, thisMiRNAcount + ""});
 			mapMiRNAname2LsMatureName_Value.put(miRNAname, lsTmpResult);
 		}
 	}

@@ -29,7 +29,7 @@ import com.novelbio.database.domain.geneanno.SpeciesFile.ExtractSmallRNASeq;
 import com.novelbio.database.model.species.Species;
 import javax.swing.JComboBox;
 
-public class GuiSeqMiRNA extends JPanel{
+public class GuiMiRNASeq extends JPanel{
 	private static final long serialVersionUID = -5940420720636777182L;
 	private JFrame frame;
 	private JTextField txtRefseqFile;
@@ -70,7 +70,7 @@ public class GuiSeqMiRNA extends JPanel{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					GuiSeqMiRNA window = new GuiSeqMiRNA();
+					GuiMiRNASeq window = new GuiMiRNASeq();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -82,7 +82,7 @@ public class GuiSeqMiRNA extends JPanel{
 	/**
 	 * Create the application.
 	 */
-	public GuiSeqMiRNA() {
+	public GuiMiRNASeq() {
 		setLayout(null);
 
 		//是否将全部的bed文件mapping至基因组上，用于看基因组上的reads分布
@@ -164,7 +164,8 @@ public class GuiSeqMiRNA extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("fastq", "");
 				for (String string : lsFileName) {
-					sclpanFastq.addItem(new String[]{string, FileOperate.getFileNameSep(string)[0]});
+					String prefix = FileOperate.getFileNameSep(string)[0].split("_")[0];
+					sclpanFastq.addItem(new String[]{string, prefix});
 				}
 			}
 		});

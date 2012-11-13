@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.fastq;
 
 import java.util.Queue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.novelbio.base.multithread.RunProcess;
@@ -53,7 +52,9 @@ public class FastQthreadWrite extends RunProcess<Integer>{
 				filteredNum++;
 				setRunInfo(filteredNum);
 				writeInFile(fastQrecordFilterRun);
+				fastQrecordFilterRun = null;
 			}
+			future = null;
 		}
 	}
 	

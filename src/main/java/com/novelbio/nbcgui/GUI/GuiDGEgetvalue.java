@@ -9,9 +9,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 
+import org.apache.poi.hssf.record.FilePassRecord;
 import org.apache.poi.hssf.record.SCLRecord;
 
 import com.novelbio.analysis.seq.FormatSeq;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
@@ -58,7 +60,14 @@ public class GuiDGEgetvalue extends JPanel {
 		btnAddAlignSeq.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("Sam/Bam/Bed", "");
-				scrlAlignSeqFile.addItemLsSingle(lsFileName);
+				ArrayList<String[]> lsFile2Prefix = new ArrayList<String[]>();
+				for (String fileName : lsFileName) {
+					String[] tmp = new String[2];
+					tmp[0] = fileName;
+					tmp[1] = FileOperate.getFileNameSep(fileName)[0].split("_")[0];
+					lsFile2Prefix.add(tmp);
+				}
+				scrlAlignSeqFile.addItemLs(lsFile2Prefix);
 			}
 		});
 		btnAddAlignSeq.setBounds(591, 30, 118, 24);

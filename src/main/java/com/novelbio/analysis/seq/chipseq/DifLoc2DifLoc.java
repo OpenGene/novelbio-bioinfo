@@ -58,9 +58,9 @@ public class DifLoc2DifLoc {
 	double nullValue = 0;
 	GffChrAbs gffChrAbs;
 
-	public static int typeTss = 2;
-	public static int typeGeneAll = 4;
-	public static int typeGeneBody = 8;
+	public static final int typeTss = 2;
+	public static final int typeGeneAll = 4;
+	public static final int typeGeneBody = 8;
 	
 	int binNum = 20;
 	/** 保存Bed文件的信息 */
@@ -98,10 +98,65 @@ public class DifLoc2DifLoc {
 	public void setLsGeneID(ArrayList<String> lsGeneID) {
 		this.lsGeneID = lsGeneID;
 	}
+	/** 默认就是这个，全基因组的比较 */
 	public void setGenomeWide() {
 		this.lsGeneID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
 	}
+	/**
+	 * 全体基因作分析, prefix1的ratio 与 prefix2的ratio
+	 * @param type 类型，是tss还是geneEnd
+	 * @param prefix1 第一个类型，如sRNA
+	 * @param prefix2 第二个类型，如methylation
+	 * @param lsAccID 
+	 * @param txtOutInfo
+	 */
+	public void compareDifAllGene(int type, String prefix1, String prefix2,  String txtOutInfo) {
+		ArrayList<String> lsGeneID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
+		compareDifInfoGene(type, prefix1, prefix2, lsGeneID, txtOutInfo);
+	}
+	/**
+	 * @param type 类型，是tss还是geneEnd
+	 * @param prefix1 第一个类型，如sRNA
+	 * @param prefix2 第二个类型，如methylation
+	 * @param lsGeneID 
+	 * @param txtOutInfo
+	 */
+	public void compareDifInfoGene(int type, String prefix1, String prefix2, ArrayList<String> lsGeneID, String txtOutInfo) {
+		ArrayList<String[]> lsOutGeneInfo = new ArrayList<String[]>();
+		for (String strings : lsGeneID) {
+			Double tssInfo1 = null,tssInfo2 = null;
+			if (type == typeTss) {
+				tssInfo1 = getGeneTssMapRatio(prefix1, strings);
+				tssInfo2 = getGeneTssMapRatio(prefix2, strings);
+			}
+			else if (type == typeGeneBody) {
+				tssInfo1 = getGeneBodyMapRatio(prefix1, strings);
+				tssInfo2 = getGeneBodyMapRatio(prefix2, strings);
+			}
+			else if (type == typeGeneAll) {
+				tssInfo1 = getGeneFullLengthMapRatio(prefix1, strings);
+				tssInfo2 = getGeneFullLengthMapRatio(prefix2, strings);
+			}
+			if (tssInfo1 != null && tssInfo2 != null) {
+				String[] strTss = new String[]{strings, tssInfo1 + "", tssInfo2 + ""};
+				lsOutGeneInfo.add(strTss);
+			}
+		}
+		TxtReadandWrite txtInfo = new TxtReadandWrite(txtOutInfo, true);
+		txtInfo.ExcelWrite(lsOutGeneInfo);
+		txtInfo.close();
+	}
+	
+	/**
+	 * 执行比较
+	 * @param outFile
+	 * @param prefix1
+	 * @param prefix2
+	 */
 	public void compare(String outFile, String prefix1, String prefix2) {
+		if (lsGeneID == null) {
+			setGenomeWide();
+		}
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 		txtOut.writefileln("GeneID\t" + prefix1 + "\t" + prefix2);
 		String[] tmpResult = new String[3];
@@ -147,11 +202,11 @@ public class DifLoc2DifLoc {
 		return result;
 	}
 	/**
-	 * 按照顺序加入，两组
+	 * 按照顺序加入bed文件
 	 * 最后是mapFile1除以mapFile2
 	 * @param prefix
 	 * @param mapFile1
-	 * @param mapFile2
+	 * @param mapFile2 留空表示只读取mapFile1
 	 */
 	public void addMapInfo(String prefix, String mapFile1, String mapFile2) {
 		ArrayList<MapReads> lsMapReads = new ArrayList<MapReads>();
@@ -189,24 +244,57 @@ public class DifLoc2DifLoc {
 		listHashBin.ReadGffarray(sicerFile);
 		mapPrefix2listHashBin.put(prefix, listHashBin);
 	}
+	
 	/**
 	 * 获得excelTxtFile1除以excelTxtFile2的比值，某个基因只有一个有，则填写1。
 	 * 如果只有一个excelTxtFile，则填写该excelTxtFile的值
-	 * @param excelTxtFile1
-	 * @param excelTxtFile2
-	 * @param colGeneID
-	 * @param colDifExp
+	 * @param excelTxtFile1 第一个基因文本
+	 * @param excelTxtFile2 第二个基因文本，填写了表示获得1除以2的ratio。不填写表示获得值
+	 * @param colGeneID 第几列，实际列
+	 * @param colValue 数值所在的行
 	 */
-	public void addGeneExp(String prefix, String excelTxtFile1, String excelTxtFile2, int colGeneID, int colDifExp) {
-		HashMap<String, Double> mapGeneID2Exp1 = null, mapGeneID2Exp2 = null;
+	public void addGeneExp(String prefix, String excelTxtFile1, String excelTxtFile2, int colGeneID, int colValue) {
+		ArrayList<String[]> lsGene2Exp1 = null;
+		ArrayList<String[]> lsGene2Exp2 = null;
 		if (FileOperate.isFileExistAndBigThanSize(excelTxtFile1, 100)) {
-			ArrayList<String[]> lsGene2Exp = ExcelTxtRead.readLsExcelTxt(excelTxtFile1, new int[]{colGeneID, colDifExp}, 1, -1);
-			mapGeneID2Exp1 = getMapGene2Exp(lsGene2Exp);
+			lsGene2Exp1 = ExcelTxtRead.readLsExcelTxt(excelTxtFile1, new int[]{colGeneID, colValue}, 1, -1);
 		}
 		if (FileOperate.isFileExistAndBigThanSize(excelTxtFile2, 100)) {
-			ArrayList<String[]> lsGene2Exp = ExcelTxtRead.readLsExcelTxt(excelTxtFile2, new int[]{colGeneID, colDifExp}, 1, -1);
-			mapGeneID2Exp2 = getMapGene2Exp(lsGene2Exp);
+			lsGene2Exp2 = ExcelTxtRead.readLsExcelTxt(excelTxtFile2, new int[]{colGeneID, colValue}, 1, -1);
 		}
+		setGeneExp(prefix, lsGene2Exp1, lsGene2Exp2);
+	}
+	/**
+	 * 获得excelTxtFile1除以excelTxtFile2的比值，某个基因只有一个有，则填写1。
+	 * @param prefix
+	 * @param excelTxtFile
+	 * @param colGeneID
+	 * @param colValue1
+	 * @param colValue2 如果小于0则该仅获得1的值
+	 */
+	public void addGeneExp(String prefix, String excelTxtFile, int colGeneID, int colValue1, int colValue2) {
+		ArrayList<String[]> lsGene2Exp1 = null;
+		ArrayList<String[]> lsGene2Exp2 = null;
+		if (FileOperate.isFileExistAndBigThanSize(excelTxtFile, 100)) {
+			if (colValue1 > 0) {
+				lsGene2Exp1 = ExcelTxtRead.readLsExcelTxt(excelTxtFile, new int[]{colGeneID, colValue1}, 1, -1);
+			}
+			if (colValue2 > 0) {
+				lsGene2Exp2 = ExcelTxtRead.readLsExcelTxt(excelTxtFile, new int[]{colGeneID, colValue2}, 1, -1);
+			}
+		}
+		setGeneExp(prefix, lsGene2Exp1, lsGene2Exp2);
+	}
+	
+	private void setGeneExp(String prefix, ArrayList<String[]> lsGene2Exp1, ArrayList<String[]> lsGene2Exp2) {
+		HashMap<String, Double> mapGeneID2Exp1 = null, mapGeneID2Exp2 = null;
+		if (lsGene2Exp1 != null && lsGene2Exp1.size() > 0) {
+			mapGeneID2Exp1 = getMapGene2Exp(lsGene2Exp1);
+		}
+		if (lsGene2Exp2 != null && lsGene2Exp2.size() > 0) {
+			mapGeneID2Exp2 = getMapGene2Exp(lsGene2Exp2);
+		}
+		
 		if (mapGeneID2Exp1 == null && mapGeneID2Exp2 != null) {
 			mapPrefix2_MapGeneID2Exp.put(prefix, mapGeneID2Exp2);
 		}
@@ -309,51 +397,7 @@ public class DifLoc2DifLoc {
 //		txt.ExcelWrite(lsOut, "\t", 1, 1);
 //		txt.close();
 //	}
-	/**
-	 * 全体基因作分析, prefix1的ratio 与 prefix2的ratio
-	 * @param type 类型，是tss还是geneEnd
-	 * @param prefix1 第一个类型，如sRNA
-	 * @param prefix2 第二个类型，如methylation
-	 * @param lsAccID 
-	 * @param txtOutInfo
-	 */
-	public void compareDifAllGene(int type, String prefix1, String prefix2,  String txtOutInfo) {
-		ArrayList<String> lsGeneID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
-		compareDifInfoGene(type, prefix1, prefix2, lsGeneID, txtOutInfo);
-	}
-	/**
-	 * @param type 类型，是tss还是geneEnd
-	 * @param prefix1 第一个类型，如sRNA
-	 * @param prefix2 第二个类型，如methylation
-	 * @param lsGeneID 
-	 * @param txtOutInfo
-	 */
-	public void compareDifInfoGene(int type, String prefix1, String prefix2, ArrayList<String> lsGeneID, String txtOutInfo) {
-		ArrayList<String[]> lsOutGeneInfo = new ArrayList<String[]>();
-		for (String strings : lsGeneID) {
-			Double tssInfo1 = null,tssInfo2 = null;
-			if (type == typeTss) {
-				tssInfo1 = getGeneTssMapRatio(prefix1, strings);
-				tssInfo2 = getGeneTssMapRatio(prefix2, strings);
-			}
-			else if (type == typeGeneBody) {
-				tssInfo1 = getGeneBodyMapRatio(prefix1, strings);
-				tssInfo2 = getGeneBodyMapRatio(prefix2, strings);
-			}
-			else if (type == typeGeneAll) {
-				tssInfo1 = getGeneFullLengthMapRatio(prefix1, strings);
-				tssInfo2 = getGeneFullLengthMapRatio(prefix2, strings);
-			}
-			if (tssInfo1 != null && tssInfo2 != null) {
-				String[] strTss = new String[]{strings, tssInfo1 + "", tssInfo2 + ""};
-				lsOutGeneInfo.add(strTss);
-			}
-		}
-		TxtReadandWrite txtInfo = new TxtReadandWrite(txtOutInfo, true);
-		txtInfo.ExcelWrite(lsOutGeneInfo);
-		txtInfo.close();
-	}
-	
+
 	/**
 	 * 给定基因，获得该基因全部区域的分数
 	 * @param prefix
@@ -517,7 +561,12 @@ public class DifLoc2DifLoc {
 		ArrayList<MapReads> lsMapReads = mapPrefix2MapReads.get(prefix);
 		return getRatio(mapInfo, lsMapReads);
 	}
-	
+	/** 如果输入的是一对MapReads 返回相除的结果。
+	 * 如果输入单个MapReads 返回单个数值的结果
+	 * @param mapInfo
+	 * @param lsMapReads
+	 * @return
+	 */
 	private Double getRatio(MapInfo mapInfo, ArrayList<MapReads> lsMapReads) {
 		lsMapReads.get(0).getRegion(mapInfo, 20, 0);
 		if (mapInfo.getDouble() == null) {

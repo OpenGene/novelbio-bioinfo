@@ -33,6 +33,7 @@ public class FastQrecordFilterRun implements Callable<FastQrecordFilterRun> {
 			if (fastQRecord2 == null) {
 				filterSucess = fastQRecordFilter.filterFastQRecordSE(fastQRecord1);
 			} else {
+				fastQRecord2.initialReadRecord();
 				filterSucess = fastQRecordFilter.filterFastQRecordPE(fastQRecord1, fastQRecord2);
 			}
 			if (filterSucess) {
