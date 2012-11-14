@@ -31,12 +31,13 @@ public class ChrStringHash extends SeqHashAbs{
 	HashMap<String, RandomAccessFile> mapChrID2RandomFile;
 	HashMap<String, BufferedReader> mapChrID2BufReader;
 	HashMap<String, TxtReadandWrite> mapChrID2Txt;
-
+	HashMap<String, Integer> mapChrID2EnterType;
 	/**
 	 * Seq文件第二行的长度，也就是每行序列的长度+1，1是回车 现在是假设Seq文件第一行都是>ChrID,第二行开始都是Seq序列信息
 	 * 并且每一行的序列都等长
 	 */
 	int lengthRow = 0;
+		
 	/**
 	 * 随机硬盘读取染色体文件的方法，貌似很伤硬盘，考虑用固态硬盘 注意
 	 * 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
@@ -68,6 +69,7 @@ public class ChrStringHash extends SeqHashAbs{
 
 			chrRAseq = new RandomAccessFile(fileNam, "r");
 			txtChrTmp = new TxtReadandWrite(fileNam, false);
+			String enterType = txtChrTmp.getEnterType();
 			bufChrSeq = txtChrTmp.readfile();
 			// 假设每一个文件的每一行Seq都相等
 			if (i == 0) {
@@ -78,6 +80,12 @@ public class ChrStringHash extends SeqHashAbs{
 			mapChrID2RandomFile.put(chrID, chrRAseq);
 			mapChrID2BufReader.put(chrID, bufChrSeq);
 			mapChrID2Txt.put(chrID, txtChrTmp);
+			if (enterType.equals(TxtReadandWrite.ENTER_LINUX)) {
+				mapChrID2EnterType.put(chrID, 1);
+			} else if (enterType.equals(TxtReadandWrite.ENTER_WINDOWS)) {
+				mapChrID2EnterType.put(chrID, 2);
+			}
+			
 		}
 		setChrLength();
 	}
@@ -91,6 +99,7 @@ public class ChrStringHash extends SeqHashAbs{
 		mapChrID2RandomFile = new HashMap<String, RandomAccessFile>();
 		mapChrID2BufReader = new HashMap<String, BufferedReader>();
 		mapChrID2Txt = new HashMap<String, TxtReadandWrite>();
+		mapChrID2EnterType = new HashMap<String, Integer>();
 		lsSeqName = new ArrayList<String>();
 		return FileOperate.getFoldFileNameLs(chrFile,regx, "*");
 	}
@@ -129,6 +138,7 @@ public class ChrStringHash extends SeqHashAbs{
 		startlocation--;
 		chrID = chrID.toLowerCase();
 		RandomAccessFile chrRASeqFile = mapChrID2RandomFile.get(chrID);// 判断文件是否存在
+		int entryNum = mapChrID2EnterType.get(chrID);
 		if (chrRASeqFile == null) {
 			logger.error( "无该染色体: "+ chrID);
 			return null;
@@ -150,8 +160,8 @@ public class ChrStringHash extends SeqHashAbs{
 		startrowBias = (int) (startlocation % lengthRow);
 		endrowBias = (int) (endlocation % lengthRow);
 		// 实际序列在文件中的起点
-		long startRealCod = (lengthChrID + 1) + (lengthRow + 1) * rowstartNum + startrowBias;
-		long endRealCod = (lengthChrID + 1) + (lengthRow + 1) * rowendNum + endrowBias;
+		long startRealCod = (lengthChrID + entryNum) + (lengthRow + entryNum) * rowstartNum + startrowBias;
+		long endRealCod = (lengthChrID + entryNum) + (lengthRow + entryNum) * rowendNum + endrowBias;
 		//如果位点超过了范围，那么修正位点
 		if (startlocation < 0 || startRealCod >= lengthChrSeq || endlocation < 1 || endRealCod >= lengthChrSeq || endlocation < startlocation) {
 			logger.error(chrID + " " + startlocation + " " + endlocation + " 染色体坐标错误");

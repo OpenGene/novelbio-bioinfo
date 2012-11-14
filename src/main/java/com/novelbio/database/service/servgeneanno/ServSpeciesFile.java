@@ -16,8 +16,7 @@ public class ServSpeciesFile extends AbsGetSpring implements MapSpeciesFile{
 
 	@Inject
 	private MapSpeciesFile mapSpeciesFile;
-	public ServSpeciesFile()  
-	{
+	public ServSpeciesFile() {
 		mapSpeciesFile = (MapSpeciesFile) factory.getBean("mapSpeciesFile");
 	}
 	@Override

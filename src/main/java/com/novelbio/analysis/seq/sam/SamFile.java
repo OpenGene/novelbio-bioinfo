@@ -437,11 +437,11 @@ public class SamFile implements AlignSeq {
 //		FileOperate.delFile(getFileName());
 		
 		SamFile samFileSort = null;
-		if (samFile.getFileName().endsWith("sorted.bam"))
+		if (samFile.getFileName().contains("sort")) {
 			samFileSort = samFile;
-		else
+		} else {
 			samFileSort = samFile.sort();
-		
+		}
 //		FileOperate.delFile(samFile.getFileName());
 		
 		samFileSort.index();

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
@@ -120,6 +121,13 @@ public class SpeciesFile {
 		this.chromSeq = chromSeq;
 	}
 	public String getChromSeq() {
+		if (!FileOperate.isFileExistAndBigThanSize(chromSeq, 10)) {
+			String path = getChromFaPath();
+			FileOperate.createFolders(FileOperate.getParentPathName(chromSeq));
+			NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
+			ncbIchromFaChangeFormat.setChromFaPath(path, getChromFaRegx());
+			ncbIchromFaChangeFormat.writeToSingleFile(chromSeq);
+		}
 		return chromSeq;
 	}
 

@@ -44,14 +44,15 @@ public abstract class DownloadOperate {
 		
 //		PixivOperate pixivOperate = new PixivOperate();
 //		pixivOperate.getcookies();
-//		pixivOperate.setUrlAuther("213435");
+//		pixivOperate.setUrlAuther("27517");
+//		pixivOperate.setDownloadFast(true);
 //		pixivOperate.setSavePath("/home/zong0jie/ͼƬ/My Pictures/picture/pixivTest");
 //		pixivOperate.run();
 		
 		
 		DonmaiOperate donmaiOperate = new DonmaiOperate();
 		donmaiOperate.getcookies();
-		donmaiOperate.setUrlAuther("3d");
+		donmaiOperate.setUrlAuther("gangbang");
 		donmaiOperate.setDownloadFast(true);
 		donmaiOperate.setSavePath("/home/zong0jie/ͼƬ/My Pictures/picture/donmai");
 		donmaiOperate.run();

@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -52,6 +53,10 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 
  */
 public class TxtReadandWrite {
+	public static void main(String[] args) throws Exception {
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite("/media/winE/NBCplatform/genome/rice/tigr6.0/ChromFa/chr1.txt", false);
+		txtReadandWrite.getEnterType();
+	}
 	private static Logger logger = Logger.getLogger(TxtReadandWrite.class);
 	
 	public final static String GZIP = "gz";
@@ -213,6 +218,36 @@ public class TxtReadandWrite {
 		}
 	}
 	
+	public String getEnterType() {
+		String result = "";
+		try {
+			result = getEnterTypeExp();
+		} catch (Exception e) {
+			result = ENTER_LINUX;
+		}
+		close();
+		return result;
+	}
+	
+	private String getEnterTypeExp() throws Exception {
+		int firstLineNum = readFirstLine().getBytes().length;
+		//获得第一行的btye长度
+		byte[] mybyte = new byte[firstLineNum + 2];
+		initialReading();
+		inputStream.read(mybyte);
+		Charset cs = Charset.forName("UTF-8");
+		ByteBuffer bb = ByteBuffer.allocate (mybyte.length);
+		bb.put(mybyte);
+		bb.flip();
+		CharBuffer cb = cs.decode (bb);
+	  
+		char[] mychar = cb.array();
+		if (mychar[mychar.length - 2] == 13 && mychar[mychar.length - 1] == 10) {
+			return ENTER_WINDOWS;
+		} else {
+			return ENTER_LINUX;
+		}
+	}
 	/**
 	 * 这个内部使用，外部用@readlines代替
 	 * 有时间改成private方法
@@ -222,6 +257,15 @@ public class TxtReadandWrite {
 	 */
 	@Deprecated
 	public BufferedReader readfile() throws Exception {
+		initialReading();
+		bufread = new BufferedReader(new   InputStreamReader(inputStream));
+		return bufread;
+	}
+	/**
+	 * 初始化读取文本
+	 * @throws Exception
+	 */
+	private void initialReading() throws Exception {
 		if (inputStream != null) {
 			inputStream.close();
 		}
@@ -229,9 +273,6 @@ public class TxtReadandWrite {
 			bufread.close();
 		}
 		setReadFile(filetype);
-
-		bufread = new BufferedReader(new   InputStreamReader(inputStream));
-		return bufread;
 	}
 	
 	private void setReadFile(String fileType) throws Exception {
@@ -1250,6 +1291,78 @@ public class TxtReadandWrite {
 		}
 
        }
+	   
+       
+       
+       /**
+        * 根据文件得到该文件中文本内容的编码
+        * 
+        * @param file 要分析的文件
+        */
+       public static String getCharset(File file) {
+               String charset = "GBK"; // 默认编码
+               byte[] first3Bytes = new byte[3];
+               try {
+                   boolean checked = false;
+                   BufferedInputStream bis = new BufferedInputStream(
+                         new FileInputStream(file));
+                   bis.mark(0);
+                   int read = bis.read(first3Bytes, 0, 3);
+                   if (read == -1)
+                       return charset;
+                   if (first3Bytes[0] == (byte) 0xFF && first3Bytes[1] == (byte) 0xFE) {
+                       charset = "UTF-16LE";
+                       checked = true;
+                   } else if (first3Bytes[0] == (byte) 0xFE && first3Bytes[1]
+                       == (byte) 0xFF) {
+                       charset = "UTF-16BE";
+                       checked = true;
+                   } else if (first3Bytes[0] == (byte) 0xEF && first3Bytes[1]
+                           == (byte) 0xBB
+                           && first3Bytes[2] == (byte) 0xBF) {
+                       charset = "UTF-8";
+                       checked = true;
+                   }
+                   bis.reset();
+                   if (!checked) {
+                       int loc = 0;
+                       while ((read = bis.read()) != -1) {
+                           loc++;
+                           if (read >= 0xF0)
+                               break;
+                           //单独出现BF以下的，也算是GBK
+                           if (0x80 <= read && read <= 0xBF)
+                               break;
+                           if (0xC0 <= read && read <= 0xDF) {
+                               read = bis.read();
+                               if (0x80 <= read && read <= 0xBF)// 双字节 (0xC0 - 0xDF)
+                                   // (0x80 -
+                                   // 0xBF),也可能在GB编码内
+                                   continue;
+                               else
+                                   break;
+                            // 也有可能出错，但是几率较小
+                           } else if (0xE0 <= read && read <= 0xEF) {
+                               read = bis.read();
+                               if (0x80 <= read && read <= 0xBF) {
+                                   read = bis.read();
+                                   if (0x80 <= read && read <= 0xBF) {
+                                       charset = "UTF-8";
+                                       break;
+                                   } else
+                                       break;
+                               } else
+                                   break;
+                           }
+                       }
+                       System.out.println(loc + " " + Integer.toHexString(read));
+                   }
+                   bis.close();
+               } catch (Exception e) {
+                   e.printStackTrace();
+               }
+               return charset;
+       }
 }
 ////大文件排
  class TestCountWords {  
@@ -1310,7 +1423,7 @@ public class TxtReadandWrite {
                e.printStackTrace();  
            }  
        }  
-   }  
+   }
      
    class CountWords implements Runnable {  
          
