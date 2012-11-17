@@ -70,16 +70,32 @@ public class DifLoc2DifLoc {
 	/**	保存表达谱的信息 */
 	HashMap<String, HashMap<String, Double>> mapPrefix2_MapGeneID2Exp = new HashMap<String, HashMap<String,Double>>();
 	Species species;
-	int compareType = typeGeneAll;
+
 	/** 默认读取bed文件的结果, false则读取peak文件的结果 */
 	boolean readPeak = false;
 	
 	ArrayList<String> lsGeneID;
 	
+	
+	int compareType1 = typeGeneAll;
+	int compareType2 = typeGeneAll;
+	String comparePrefix1;
+	String comparePrefix2;
+	
+	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
-	
+	/**
+	 * 读取的时候每个bin多少长度
+	 * @param binNum
+	 */
+	public void setBinNum(int binNum) {
+		this.binNum = binNum;
+	}
+	public void setSpecies(Species species) {
+		this.species = species;
+	}
 	public void setTssRegion(int[] tssRegion) {
 		this.tssRegion = tssRegion;
 	}
@@ -87,8 +103,17 @@ public class DifLoc2DifLoc {
 	 * 如果待比较的是peak或者 mapping 结果，那么就比较该位置的分数
 	 * @param compareType
 	 */
-	public void setCompareType(int compareType) {
-		this.compareType = compareType;
+	public void setCompare1(int compareType1, String comparePrefx1) {
+		this.compareType1 = compareType1;
+		this.comparePrefix1 = comparePrefx1;
+	}
+	/**
+	 * 如果待比较的是peak或者 mapping 结果，那么就比较该位置的分数
+	 * @param compareType
+	 */
+	public void setCompare2(int compareType2, String comparePrefx2) {
+		this.compareType2 = compareType2;
+		this.comparePrefix2 = comparePrefx2;
 	}
 	public void setMinAndNullValue(double min, double nullValue) {
 		this.min = min;
@@ -110,6 +135,7 @@ public class DifLoc2DifLoc {
 	 * @param lsAccID 
 	 * @param txtOutInfo
 	 */
+	@Deprecated
 	public void compareDifAllGene(int type, String prefix1, String prefix2,  String txtOutInfo) {
 		ArrayList<String> lsGeneID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
 		compareDifInfoGene(type, prefix1, prefix2, lsGeneID, txtOutInfo);
@@ -121,6 +147,7 @@ public class DifLoc2DifLoc {
 	 * @param lsGeneID 
 	 * @param txtOutInfo
 	 */
+	@Deprecated
 	public void compareDifInfoGene(int type, String prefix1, String prefix2, ArrayList<String> lsGeneID, String txtOutInfo) {
 		ArrayList<String[]> lsOutGeneInfo = new ArrayList<String[]>();
 		for (String strings : lsGeneID) {
@@ -153,23 +180,23 @@ public class DifLoc2DifLoc {
 	 * @param prefix1
 	 * @param prefix2
 	 */
-	public void compare(String outFile, String prefix1, String prefix2) {
+	public void compare(String outFile) {
 		if (lsGeneID == null) {
 			setGenomeWide();
 		}
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
-		txtOut.writefileln("GeneID\t" + prefix1 + "\t" + prefix2);
+		txtOut.writefileln("GeneID\t" + comparePrefix1 + "\t" + comparePrefix2);
 		String[] tmpResult = new String[3];
 		for (String geneID : lsGeneID) {
 			tmpResult[0] = geneID;
-			tmpResult[1] = getInfo(geneID, prefix1) + "";
-			tmpResult[2] = getInfo(geneID, prefix2) + "";
+			tmpResult[1] = getInfo(compareType1, geneID, comparePrefix1) + "";
+			tmpResult[2] = getInfo(compareType2, geneID, comparePrefix2) + "";
 			txtOut.writefileln(tmpResult);
 		}
 		txtOut.close();
 	}
 	
-	private Double getInfo(String geneID, String prefix) {
+	private Double getInfo(int compareType, String geneID, String prefix) {
 		Double result = null;
 		if (mapPrefix2listHashBin.containsKey(prefix)) {
 			if (compareType == typeGeneAll) {
@@ -198,6 +225,35 @@ public class DifLoc2DifLoc {
 		}
 		if (result == null) {
 			result = nullValue;
+		}
+		if (result.equals(Double.NaN)) {
+			logger.error(compareType + " " + prefix + " " + geneID );
+			
+			if (mapPrefix2listHashBin.containsKey(prefix)) {
+				if (compareType == typeGeneAll) {
+					result = getGeneFullLengthPeakSicerDifScore(prefix, geneID);
+				}
+				else if (compareType == typeGeneBody) {
+					result = getGeneBodyPeakSicerDifScore(prefix, geneID);
+				}
+				else if (compareType == typeTss) {
+					result = getGeneTssPeakSicerDifScore(prefix, geneID);
+				}
+			}
+			else if (mapPrefix2MapReads.containsKey(prefix)) {
+				if (compareType == typeGeneAll) {
+					result = getGeneFullLengthMapRatio(prefix, geneID);
+				}
+				else if (compareType == typeGeneBody) {
+					result = getGeneBodyMapRatio(prefix, geneID);
+				}
+				else if (compareType == typeTss) {
+					result = getGeneTssMapRatio(prefix, geneID);
+				}
+			}
+			else if (mapPrefix2_MapGeneID2Exp.containsKey(prefix)) {
+				result = mapPrefix2_MapGeneID2Exp.get(prefix).get(geneID);
+			}
 		}
 		return result;
 	}
@@ -552,12 +608,11 @@ public class DifLoc2DifLoc {
 		}
 		int start = 0;
 		if (gffGeneIsoInfo.isCis5to3()) {
-			start = gffGeneIsoInfo.getTSSsite() - tssRegion[0];
+			start = gffGeneIsoInfo.getStart() - tssRegion[0];
+		} else {
+			start = gffGeneIsoInfo.getStart() + tssRegion[0];
 		}
-		else {
-			start = gffGeneIsoInfo.getTSSsite() + tssRegion[0];
-		}
-		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getChrID(),start, gffGeneIsoInfo.getTESsite());
+		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getChrID(),start, gffGeneIsoInfo.getEnd());
 		ArrayList<MapReads> lsMapReads = mapPrefix2MapReads.get(prefix);
 		return getRatio(mapInfo, lsMapReads);
 	}

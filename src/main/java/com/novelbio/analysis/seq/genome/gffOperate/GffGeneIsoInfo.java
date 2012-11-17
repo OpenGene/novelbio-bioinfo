@@ -41,7 +41,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	/**  标记codInExon处在3UTR中 */
 	public static final int COD_LOCUTR_3UTR = 3000;
 	/** 标记codInExon不在UTR中 */
-	public static final int COD_LOCUTR_OUT = 0;	
+	public static final int COD_LOCUTR_OUT = 0;
+	/** 标记codInExon在CDS中 */
+	public static final int COD_LOCUTR_CDS = 7000;
+	
 	/** 哺乳动物基因间为Tss上游5000bp */
 	public static int PROMOTER_INTERGENIC_MAMMUM = 5000;
 	/**  哺乳动物为Distal Promoter Tss上游1000bp，以内的就为Proximal Promoter */
@@ -348,6 +351,22 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	/**
 	 * 在转录本的哪个位置
+	 * 有COD_LOC_EXON，COD_LOC_INTRON，COD_LOC_OUT三种
+	 * @return
+	 */
+	public int getCodLoc(int coord) {
+		return getCodLocInfo(coord)[0];
+	}
+	/**
+	 * 在转录本的哪个位置
+	 * 有COD_LOCUTR_5UTR，COD_LOCUTR_3UTR，COD_LOCUTR_CDS等
+	 * @return
+	 */
+	public int getCodLocUTRCDS(int coord) {
+		return getCodLocInfo(coord)[1];
+	}
+	/**
+	 * 在转录本的哪个位置
 	 * 0: 有COD_LOC_EXON，COD_LOC_INTRON，COD_LOC_OUT三种
 	 * 1: 有COD_LOCUTR_5UTR，COD_LOCUTR_3UTR，两种
 	 * @return
@@ -365,6 +384,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			} 
 			else if((coord > UAGsite && isCis5to3()) || (coord < UAGsite && !isCis5to3())){       //大于cds起始区，在3‘UTR中
 				codLoc[1] = COD_LOCUTR_3UTR; 
+			} else {
+				codLoc[1] = COD_LOCUTR_CDS; 
 			}
 		} 
 		else {
@@ -372,22 +393,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return codLoc;
 	}
-	/**
-	 * 在转录本的哪个位置
-	 * 有COD_LOC_EXON，COD_LOC_INTRON，COD_LOC_OUT三种
-	 * @return
-	 */
-	public int getCodLoc(int coord) {
-		return getCodLocInfo(coord)[0];
-	}
-	/**
-	 * 在转录本的哪个位置
-	 * 有COD_LOCUTR_5UTR，COD_LOCUTR_3UTR，两种
-	 * @return
-	 */
-	public int getCodLocUTR(int coord) {
-		return getCodLocInfo(coord)[1];
-	}
+
 	/**
 	 * 坐标到该转录本起点的距离，考虑正反向
 	 * 坐标在终点上游为负数，下游为正数
@@ -445,7 +451,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 如果坐标在UTR中，坐标距离UTR的起点，注意这个会去除内含子 <br>
 	 */
 	public int getCod2UTRstartmRNA(int coord) {
-		int location = getCodLocUTR(coord);
+		int location = getCodLocUTRCDS(coord);
 		if (location == COD_LOCUTR_5UTR) {
 			return getLocDistmRNA(getTSSsite(), coord);
 		} 
@@ -460,7 +466,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 如果坐标在UTR中，坐标距离UTR的终点，注意这个会去除内含子<br>
 	 */
 	public int getCod2UTRendmRNA(int coord) {
-		int location = getCodLocUTR(coord);
+		int location = getCodLocUTRCDS(coord);
 		if (location == COD_LOCUTR_5UTR) {
 			return getLocDistmRNA(coord, getATGsite());
 		}
@@ -643,10 +649,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (filterGeneBody && getCodLoc(coord) != COD_LOC_OUT) {
 			filter = true;
 		}
-		else if (filter5UTR && getCodLocUTR(coord) == COD_LOCUTR_5UTR) {
+		else if (filter5UTR && getCodLocUTRCDS(coord) == COD_LOCUTR_5UTR) {
 			filter = true;
 		}
-		else if (filter3UTR && getCodLocUTR(coord) == COD_LOCUTR_3UTR) {
+		else if (filter3UTR && getCodLocUTRCDS(coord) == COD_LOCUTR_3UTR) {
 			filter = true;
 		}
 		else if (filterExon && getCodLoc(coord) == COD_LOC_EXON) {
@@ -874,10 +880,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		
 		result = result + "Distance_to_Tss_is:" + Math.abs(getCod2Tss(coord)) + " ";
 		//UTR
-		if (getCodLocUTR(coord) == COD_LOCUTR_5UTR) {
+		if (getCodLocUTRCDS(coord) == COD_LOCUTR_5UTR) {
 			result = result + "5UTR_";
 		}
-		else if (getCodLocUTR(coord) == COD_LOCUTR_3UTR) {
+		else if (getCodLocUTRCDS(coord) == COD_LOCUTR_3UTR) {
 			result = result + "3UTR_";
 		}
 		//exon intron

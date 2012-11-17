@@ -45,7 +45,7 @@ public class SeqFastaMotifSearch {
 	 */
 	public ArrayList<String[]> getMotifScanResult(String regex, int site) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		ArrayList<String[]> lsTmpResultFor = PatternOperate.getPatLoc(toString(), regex, false);
+		ArrayList<String[]> lsTmpResultFor = PatternOperate.getPatLoc(seqFasta.toString(), regex, false);
 		ArrayList<String[]> lsTmpResultRev = PatternOperate.getPatLoc(seqFasta.reservecom().toString(), regex, false);
 
 		copeMotifResultToList(true, lsTmpResultFor, site, lsResult);
@@ -67,17 +67,24 @@ public class SeqFastaMotifSearch {
 			for (String[] strings : lsTmpResultRev) {
 				String[] tmpResult = new String[4];
 				tmpResult[0] = seqFasta.getSeqName();
-				if (strand)
+				if (strand) {
 					tmpResult[1] = "+";
-				else
+				} else {
 					tmpResult[1] = "-";
-
+				}
+				
 				tmpResult[2] = strings[0];//具体的motif序列
 				
-				if (site != 0)
-					tmpResult[3] = (Integer.parseInt(strings[1]) + site) * -1 + "";
-				else
-					tmpResult[3] = strings[1];
+				String toEndSite = strings[2];
+				if (!strand) {
+					toEndSite = strings[1];
+				}
+				
+				if (site != 0) {
+					tmpResult[3] = (Integer.parseInt(toEndSite) + site) * -1 + "";
+				} else {
+					tmpResult[3] = toEndSite;
+				}
 				
 				lsResult.add(tmpResult);
 			}

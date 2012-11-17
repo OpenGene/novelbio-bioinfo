@@ -328,7 +328,7 @@ public class SamFile implements AlignSeq {
     	samFile.isRealigned = isRealigned;
     }
 	/**
-	 * 还没实现
+	 * 用samtools实现了
 	 * 将sam文件压缩为bam文件
 	 * 如果是bam文件，则返回
 	 */
@@ -337,7 +337,7 @@ public class SamFile implements AlignSeq {
 		return convertToBam(outName);
 	}
 	/**
-	 * 还没实现
+	 * 用samtools实现了
 	 * 将sam文件压缩为bam文件
 	 * 如果是bam文件，则返回
 	 */
@@ -412,7 +412,7 @@ public class SamFile implements AlignSeq {
 	 */
 	public SamFile removeDuplicate(String outFile) {
 		BamRemoveDuplicate bamRemoveDuplicate = new BamRemoveDuplicate();
-		bamRemoveDuplicate.setExePath(softWareInfoPicard.getExePath());
+		bamRemoveDuplicate.setExePath(softWareInfoSamtools.getExePath());
 		bamRemoveDuplicate.setBamFile(getFileName());
 		String outSamFile = bamRemoveDuplicate.removeDuplicate(outFile);
 		SamFile samFile = new SamFile(outSamFile);

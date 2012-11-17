@@ -5,11 +5,11 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * 用samtools来去除pcr duplicate
+ * 用picard来去除pcr duplicate
  * @author zong0jie
- *
  */
-public class BamRemoveDuplicate {
+public class BamRemoveDuplicatePicard {
+
 
 //	java -Xmx4g -Djava.io.tmpdir=$TMPDIR \
 //		     -jar "$PICARD_DIR"/MarkDuplicates.jar \
@@ -40,19 +40,29 @@ public class BamRemoveDuplicate {
 		return removeDuplicate(bamNoDuplicateFile);
 	}
 	public String removeDuplicate(String outFile) {
-		String cmdInertval = ExePath + "samtools rmdup " + getInputBam() + getOutFile(outFile);
-		CmdOperate cmdOperate = new CmdOperate(cmdInertval,"removePcrDuplicate");
+		String cmdInertval ="java -Xmx6g -jar " + getTmpPath() + ExePath + "MarkDuplicates.jar "
+				+ getInputBam() + getParam() + getMETRICS() + getOutFile(outFile);
+		CmdOperate cmdOperate = new CmdOperate(cmdInertval,"samToBam");
 		cmdOperate.run();
 		
-		return  getOutFile(outFile);
+		return FileOperate.changeFileSuffix(outFile, "", "bam");
 	}
 	
 	private String getInputBam() {
-		return  " " + CmdOperate.addQuot(bamSortedFile) + " ";
+		return  "INPUT=" + "\"" + bamSortedFile + "\" ";
 	}
-
+	private String getParam() {
+		return "REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=LENIENT  AS=true ";
+	}
+	private String getTmpPath() {
+		return "-Djava.io.tmpdir=" + "\""+PathDetail.getTmpPath() +"\" ";
+	}
+	/** duplicate的矩阵 */
+	private String getMETRICS() {
+		return "METRICS_FILE=" + "\"" + FileOperate.changeFileSuffix(bamSortedFile, "_duplicate", "txt") + "\" ";
+	}
 	private String getOutFile(String outFile) {
-		return  FileOperate.changeFileSuffix(outFile, "", "bam");
+		return "OUTPUT=" + "\"" + FileOperate.changeFileSuffix(outFile, "", "bam") + "\" ";
 	}
 
 }

@@ -67,6 +67,7 @@ public class Species {
 	public Species(int taxID, String version) {
 		this.taxID = taxID;
 		querySpecies();
+		setVersion(version);
 	}
 	public int getTaxID() {
 		return taxID;

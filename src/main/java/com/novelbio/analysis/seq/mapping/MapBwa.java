@@ -1,13 +1,10 @@
 package com.novelbio.analysis.seq.mapping;
 
-import java.util.HashMap;
-
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -39,7 +36,6 @@ public class MapBwa extends MapDNA {
 	String outFileName = "";
 	String leftFq = "";
 	String rightFq = "";
-	boolean pairend = false;
 
 	MapLibrary mapLibrary = MapLibrary.PairEnd;
 	
@@ -68,7 +64,6 @@ public class MapBwa extends MapDNA {
 	public MapBwa(FastQ fastQ, String outFileName) {
 		this.outFileName = outFileName;
 		leftFq = fastQ.getReadFileName();
-		pairend = false;
 	}
 	/**
 	 * 双端只做unique mapping
@@ -80,7 +75,6 @@ public class MapBwa extends MapDNA {
 		leftFq = seqFile1;
 		rightFq = seqFile2;
 		this.outFileName = outFileName;
-		pairend = true;
 	}
 	/**
 	 * @param seqFile1
@@ -90,22 +84,18 @@ public class MapBwa extends MapDNA {
 	public MapBwa(String seqFile,String outFileName) {
 		leftFq = seqFile;
 		this.outFileName = outFileName;
-		pairend = false;
 	}
 	/** 输入已经过滤好的fastq文件 */
 	public void setFqFile(String leftFq, String rightFq) {
 		if (FileOperate.isFileExistAndBigThanSize(leftFq, 10) && FileOperate.isFileExistAndBigThanSize(rightFq, 10)) {
 			this.leftFq = leftFq;
 			this.rightFq = rightFq;
-			pairend = true;
 		}
 		else if (FileOperate.isFileExistAndBigThanSize(leftFq, 10)) {
 			this.leftFq = leftFq;
-			pairend = false;
 		}
 		else if (FileOperate.isFileExistAndBigThanSize(rightFq, 10)) {
 			this.leftFq = rightFq;
-			pairend = false;
 		}
 	}
 	/** 输入已经过滤好的fastq文件 */
@@ -159,10 +149,6 @@ public class MapBwa extends MapDNA {
 			this.ExePath = FileOperate.addSep(exePath);
 		}
 	}
-	/** 是否为双端 */
-	private boolean isPairend() {
-		return pairend;
-	}
 	/** 线程数量，默认4线程 */
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
@@ -192,20 +178,23 @@ public class MapBwa extends MapDNA {
 			sampleGroup = "";
 			return;
 		}
-		this.sampleGroup = " -r " + "\""+"@RG\\tID:" + sampleID;
+		this.sampleGroup = "@RG\\tID:" + sampleID;
 		if (LibraryName != null && !LibraryName.trim().equals("")) {
 			sampleGroup = sampleGroup + "\\tLB:" + LibraryName.trim();
 		}
 		
-		if (SampleName != null && !SampleName.trim().equals(""))
+		if (SampleName != null && !SampleName.trim().equals("")) {
 			sampleGroup = sampleGroup + "\\tSM:" + SampleName.trim();
-		else
+		} else {
 			sampleGroup = sampleGroup + "\\tSM:" + sampleID.trim();
+		}
 		
-		if (Platform != null && !Platform.trim().equals(""))
+		if (Platform != null && !Platform.trim().equals("")) {
 			sampleGroup = sampleGroup + "\\tPL:" + Platform + "\" ";
-		else
-			sampleGroup = sampleGroup + "\\tPL:Illumina" + "\" ";
+		} else {
+			sampleGroup = sampleGroup + "\\tPL:Illumina";
+		}
+		sampleGroup = " -r " + CmdOperate.addQuot(sampleGroup) + " ";
 	}
 	/**
 	 * 默认gap为4，如果是indel查找的话，设置到5或者6比较合适
@@ -229,10 +218,6 @@ public class MapBwa extends MapDNA {
 	private String getGapNum() {
 		return "-o " + gapNum + " ";
 	}
-	private int getOffset() {
-		FastQ fastQ = new FastQ(leftFq);
-		return fastQ.getOffset();
-	}
 	private String getInsertSize() {
 		int insertMax = 500;
 		if (isPairEnd()) {
@@ -248,10 +233,62 @@ public class MapBwa extends MapDNA {
 		return "";
 	}
 	private boolean isPairEnd() {
-		if (!FileOperate.isFileExist(leftFq) || FileOperate.isFileExist(rightFq)) {
+		if (!FileOperate.isFileExist(leftFq) || !FileOperate.isFileExist(rightFq)) {
 			return false;
 		}
 		return true;
+	}
+	/** 种子长度 */
+	private String getSeedSize() {
+		return " -I 25 ";
+	}
+	/**
+	 * gap罚分
+	 * @return
+	 */
+	private String getOpenPanalty() {
+		return " -O 10 ";
+	}
+	/**
+	 * 是illumina32标准还是64标准
+	 * @return
+	 */
+	private String getFastQoffset() {
+		FastQ fastQ = new FastQ(leftFq);
+		int offset = fastQ.getOffset();
+		if (offset == FastQ.FASTQ_ILLUMINA_OFFSET) {
+			return  " -I";
+		}
+		return "";
+	}
+	/**
+	 * 返回sai的信息, <b>不加引号</b>
+	 * @param Sai1orSai2 双端的话，sai1就输入1，sai2就输入2。单端sai也输入1
+	 * @return
+	 */
+	private String getSai(int Sai1orSai2) {
+		String sai = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(outFileName)[0];
+		if (Sai1orSai2 == 1) {
+			if (isPairEnd()) {
+				sai = sai + "_1.sai"; 
+			} else {
+				sai = sai + ".sai";
+			}
+		} else if (Sai1orSai2 ==2) {
+			sai = sai + "_2.sai"; 
+		}
+		return sai;
+	}
+	
+	/**
+	 * 根据基因组大小，考虑将基因组读入内存
+	 * @return
+	 */
+	private String readInMemory() {
+		if (FileOperate.getFileSize(chrFile) < GENOME_SIZE_IN_MEMORY || readInMemory) {
+			return " -P ";
+		}
+		return "";
 	}
 	/**
 	 * 参数设定不能用于solid
@@ -264,26 +301,14 @@ public class MapBwa extends MapDNA {
 //		bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT2.fastq > TGACT2.sai
 //		bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai TGACT2.sai barcod_TGACT.fastq 
 		String cmd = ""; cmd = ExePath + "bwa aln ";
-		cmd = cmd + getMismatch() + getGapNum() + getGapLen() + getThreadNum(); //5%的错误率
-		cmd = cmd + "-l 25 "; //种子长度
-		cmd = cmd + "-O 10 "; //Gap open penalty. gap罚分
-		if (getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
-			cmd = cmd + "-I "; //Illumina 的偏移
-		}
-		String sai1 = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(outFileName)[0];
-		if (isPairend())
-			sai1 = sai1 + "_1.sai"; 
-		else
-			sai1 = sai1 + ".sai";
-		String cmd1 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(leftFq) + " > " + CmdOperate.addQuot(sai1);
-		System.out.println(cmd1);
+		cmd = cmd + getMismatch() + getGapNum() + getGapLen() + getThreadNum() + getSeedSize() + getOpenPanalty() + getFastQoffset();
+		
+		String cmd1 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(leftFq) + " > " + CmdOperate.addQuot(getSai(1));
 		cmdOperate = new CmdOperate(cmd1,"bwaMapping1");
 		cmdOperate.run();
 		
-		String sai2 = "";
-		if (isPairend()) {
-			sai2 = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(outFileName)[0] + "_2.sai"; 
-			String cmd2 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(rightFq) + " > " + CmdOperate.addQuot(sai2);
+		if (isPairEnd()) {
+			String cmd2 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(rightFq) + " > " + CmdOperate.addQuot(getSai(2));
 			cmdOperate = new CmdOperate(cmd2,"bwaMapping2");
 			cmdOperate.run();
 		}
@@ -292,34 +317,64 @@ public class MapBwa extends MapDNA {
 //		双端
 //		bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai 
 //		TGACT2.sai barcod_TGACT.fastq barcod_TGACT2.fastq > TGACT.sam
-		if (isPairend()) {
-			cmd = this.ExePath + "bwa sampe " + sampleGroup + getInsertSize();
-			if (FileOperate.getFileSize(chrFile) < GENOME_SIZE_IN_MEMORY || readInMemory) {
-				cmd = cmd + " -P ";//将基因组读入内存
-			}
+		if (isPairEnd()) {
+			cmd = this.ExePath + "bwa sampe " + sampleGroup + getInsertSize() + readInMemory();
 			cmd = cmd + " -n 10 -N 10 ";
-			cmd = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(sai1) + " "  + CmdOperate.addQuot(sai2) + " "  + CmdOperate.addQuot(leftFq) + " "  + CmdOperate.addQuot(rightFq);
+			cmd = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(getSai(1)) + " "  + CmdOperate.addQuot(getSai(2)) + " "  + CmdOperate.addQuot(leftFq) + " "  + CmdOperate.addQuot(rightFq);
 			cmd = cmd + " > " + CmdOperate.addQuot(outFileName);
 		}
 		//这里可能不需要，unique mapping不是在sam文件中设定的
 		else {
-			cmd = this.ExePath + "bwa samse " + sampleGroup + "-n 100 ";
-			cmd = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(sai1) + " "  + CmdOperate.addQuot(leftFq);
+			cmd = this.ExePath + "bwa samse " + sampleGroup + "-n 50 ";
+			cmd = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(getSai(1)) + " "  + CmdOperate.addQuot(leftFq);
 			cmd = cmd + " > " +  CmdOperate.addQuot(outFileName);
 		}
 		cmdOperate = new CmdOperate(cmd,"bwaMappingSAI");
 		cmdOperate.run();
 		SamFile samFile = new SamFile(outFileName);
+		SamFile bamFile = samFile.convertToBam();
+		deleteFile(samFile, bamFile);
 		return samFile;
 	}
 	
 	protected static String addSamToFileName(String outFileName) {
-		if (outFileName.endsWith(".sam"))
+		if (outFileName.endsWith(".sam")) {
 			return outFileName;
-		else if (outFileName.endsWith("."))
+		} else if (outFileName.endsWith(".")) {
 			return outFileName + "sam";
-		else
+		} else {
 			return outFileName + ".sam";
+		}
+	}
+	/**
+	 * 删除sai文件
+	 * @param samFileName
+	 */
+	private void deleteFile(SamFile samFile, SamFile bamFile) {
+		FileOperate.DeleteFileFolder(getSai(1));
+		if (isPairEnd()) {
+			FileOperate.DeleteFileFolder(getSai(2));
+		}
+		double samFileSize = FileOperate.getFileSize(samFile.getFileName());
+		if (FileOperate.isFileExistAndBigThanSize(bamFile.getFileName(), samFileSize/10)) {
+			FileOperate.delFile(samFile.getFileName());
+		}
+	}
+	
+	protected void IndexMake() {
+//		linux命令如下 
+//	 	bwa index -p prefix -a algoType -c  chrFile
+//		-c 是solid用
+		if (FileOperate.isFileExist(chrFile + ".bwt") == true) {
+			return;
+		}
+		String cmd = this.ExePath + "bwa index ";
+		cmd = cmd + getChrLen();//用哪种算法
+		//TODO :考虑是否自动判断为solid
+		cmd = cmd + CmdOperate.addQuot(chrFile);
+		logger.info(cmd);
+		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMakeIndex");
+		cmdOperate.run();
 	}
 	/**
 	 * 根据基因组大小判断采用哪种编码方式
@@ -336,23 +391,6 @@ public class MapBwa extends MapDNA {
 			return " -a is ";
 		}
 	}
-
-	protected void IndexMake() {
-//		linux命令如下 
-//	 	bwa index -p prefix -a algoType -c  chrFile
-//		-c 是solid用
-		if (FileOperate.isFileExist(chrFile + ".bwt") == true) {
-			return;
-		}
-		String cmd = this.ExePath + "bwa index ";
-		cmd = cmd + getChrLen();//用哪种算法
-		//TODO :考虑是否自动判断为solid
-		cmd = cmd + CmdOperate.addQuot(chrFile);
-		logger.info(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMakeIndex");
-		cmdOperate.run();
-	}
-	
 	public void suspend() {
 		
 	}

@@ -1,6 +1,8 @@
 package com.novelbio.nbcgui.GUI;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -80,6 +82,11 @@ public class GuiSamToBed extends JPanel {
 		JButton btnConvertSam = new JButton("ConvertSam");
 		btnConvertSam.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (chckbxRealign.isSelected() && cmbSpecies.getSelectedValue().getTaxID() == 0) {
+					JOptionPane.showConfirmDialog(null, "ReAlign Need the Species Info", "Warning", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
 				ArrayList<String[]> lsInfo = scrlSamFile.getLsDataInfo();
 				for (String[] strings : lsInfo) {
 					if (FileOperate.isFileExist(strings[0])) {
@@ -358,6 +365,7 @@ public class GuiSamToBed extends JPanel {
 	private void convertSamFile(String samFilestr) {
 		String refFile = "";
 		Species species = cmbSpecies.getSelectedValue();
+		
 		if (species.getTaxID() == 0) {
 			refFile = txtReferenceSequence.getText();
 		}

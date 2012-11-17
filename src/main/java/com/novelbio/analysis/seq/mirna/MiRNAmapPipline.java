@@ -139,14 +139,14 @@ public class MiRNAmapPipline {
 		if (FileOperate.isFileExist(genome)) {
 			samFile = outputTmpFinal + "Genome.sam";
 			unMappedFq = outputTmpFinal + "unMapped.fq";
-			mapping(fqFile, genome, samFile, bedFileGenome, false, false, unMappedFq);
+			mapping(fqFile, genome, samFile, bedFileGenome, false, true, unMappedFq);
 		}
 		
 		if (mappingAll2Genome && FileOperate.isFileExist(genome)) {
 			fqFile = seqFile;
 			samFile = outputTmpFinal + "GenomeAll.sam";
 			unMappedFq = outputTmpFinal + "unMapped.fq";
-			mapping(fqFile, genome, samFile, bedFileGenomeAll, true, false, unMappedFq);
+			mapping(fqFile, genome, samFile, bedFileGenomeAll, true, true, unMappedFq);
 		}
 	}
 	/** Ωˆmapping÷¡MiRNA…œ */

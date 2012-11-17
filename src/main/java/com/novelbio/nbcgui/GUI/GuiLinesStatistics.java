@@ -7,76 +7,79 @@ import javax.swing.JButton;
 
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.nbcgui.controlseq.CtrlSamStatistics;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+
+import javax.swing.JScrollPane;
 
 public class GuiLinesStatistics extends JPanel {
-	private JTextField txtOpenFile;
-	private JTextField txtOutFile;
 	CtrlSamStatistics ctrlSamStatistics = new CtrlSamStatistics();
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	JCheckBox chckbxSambamfile;
+	JScrollPaneData sclBamSamFile;
 	/**
 	 * Create the panel.
 	 */
 	public GuiLinesStatistics() {
 		setLayout(null);
 		
-		txtOpenFile = new JTextField();
-		txtOpenFile.setBounds(42, 37, 251, 18);
-		add(txtOpenFile);
-		txtOpenFile.setColumns(10);
-		
 		chckbxSambamfile = new JCheckBox("SamBamFile");
-		chckbxSambamfile.setBounds(42, 74, 131, 22);
+		chckbxSambamfile.setBounds(22, 349, 131, 22);
 		add(chckbxSambamfile);
+		
+		sclBamSamFile = new JScrollPaneData();
+		sclBamSamFile.setBounds(22, 12, 588, 329);
+		sclBamSamFile.setTitle(new String[]{"FileName", "OutFileName"});
+		add(sclBamSamFile);
 		
 		JButton btnOpen = new JButton("OpenFile");
 		btnOpen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				txtOpenFile.setText(guiFileOpen.openFileName("", ""));
+				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("", "");
+				sclBamSamFile.addItemLs(JScrollPaneData.getLsFileName2Out(lsFileName,"report",null));;
 			}
 		});
-		btnOpen.setBounds(323, 34, 131, 24);
+		btnOpen.setBounds(620, 12, 131, 24);
 		add(btnOpen);
 		
-		txtOutFile = new JTextField();
-		txtOutFile.setBounds(42, 143, 251, 18);
-		add(txtOutFile);
-		txtOutFile.setColumns(10);
-		
-		JButton btnNewButton_1 = new JButton("btnSavePath");
-		btnNewButton_1.addActionListener(new ActionListener() {
+		JButton btnDelSelectRow = new JButton("DelSelectRow");
+		btnDelSelectRow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				txtOutFile.setText(guiFileOpen.openFileName("", ""));
+				sclBamSamFile.deleteSelRows();
 			}
 		});
-		btnNewButton_1.setBounds(323, 140, 131, 24);
-		add(btnNewButton_1);
+		btnDelSelectRow.setBounds(620, 48, 131, 24);
+		add(btnDelSelectRow);
 		
 		JButton btnRun = new JButton("Run");
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (chckbxSambamfile.isSelected()) {
-					ctrlSamStatistics.setSamFile(txtOpenFile.getText());
-				}
-				else {
-					ctrlSamStatistics.setTxtFile(txtOpenFile.getText());
-				}
-				ctrlSamStatistics.setPrefix(FileOperate.getFileNameSep(txtOpenFile.getText())[0]);
-				ctrlSamStatistics.setOutFile(txtOutFile.getText());
-				if (chckbxSambamfile.isSelected()) {
-					ctrlSamStatistics.writeSamStatistics();
-				}
-				else {
-					ctrlSamStatistics.writeTxtStatistics();
+				ArrayList<String[]> lsFileName2Out = sclBamSamFile.getLsDataInfo();
+				for (String[] fileName2Out : lsFileName2Out) {
+					if (chckbxSambamfile.isSelected()) {
+						ctrlSamStatistics.setSamFile(fileName2Out[0]);
+					} else {
+						ctrlSamStatistics.setTxtFile(fileName2Out[0]);
+					}
+					ctrlSamStatistics.setPrefix(FileOperate.getFileNameSep(fileName2Out[0])[0]);
+					ctrlSamStatistics.setOutFile(fileName2Out[1]);
+					if (chckbxSambamfile.isSelected()) {
+						ctrlSamStatistics.writeSamStatistics();
+					}
+					else {
+						ctrlSamStatistics.writeTxtStatistics();
+					}
 				}
 			}
 		});
-		btnRun.setBounds(323, 222, 118, 24);
+		btnRun.setBounds(632, 469, 118, 24);
 		add(btnRun);
+		
+	
 
 	}
 }

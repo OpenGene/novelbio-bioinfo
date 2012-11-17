@@ -354,7 +354,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			return;
 
 		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrID, refSnpIndelStart);
-		this.gffGeneIsoInfo = gffCodGene.getCodInExonIso();
+		this.gffGeneIsoInfo = gffCodGene.getCodInCDSIso();
 		if (gffGeneIsoInfo == null && gffCodGene.isInsideLoc()) {
 			gffGeneIsoInfo = gffCodGene.getGffDetailThis().getLongestSplit();
 		}

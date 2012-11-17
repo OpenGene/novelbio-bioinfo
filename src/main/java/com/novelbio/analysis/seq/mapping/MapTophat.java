@@ -38,8 +38,6 @@ public class MapTophat implements MapRNA{
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();
 	/** bowtie所在路径 */
 	String ExePathTophat = "";
-	/** 待比对的染色体 */
-	String chrFile = "";
 	/** 默认用bowtie2 做mapping */
 	SoftWare bowtieVersion = SoftWare.bowtie2;
 
@@ -63,6 +61,9 @@ public class MapTophat implements MapRNA{
 	
 	/** 给定GTF的文件 */
 	String gtfFile = "";
+	/** 是否自动产生GTF，如果产生了，最后要删除的 */
+	boolean generateGtfFile = false;
+	
 	/** 输出文件 */
 	String outPathPrefix = "";
 	/** bowtie就是用来做索引的 */
@@ -90,7 +91,6 @@ public class MapTophat implements MapRNA{
 		mapBowtie.setExePathBowtie(exePathBowtie);
 	}
 	public void setFileRef(String chrFile) {
-		this.chrFile = "\"" + chrFile + "\"";
 		mapBowtie.setChrFile(chrFile);
 	}
 	public void setOutPathPrefix(String outPathPrefix) {
@@ -336,6 +336,7 @@ public class MapTophat implements MapRNA{
 	}
 	private void setGTFfile() {
 		if (gtfFile == null || FileOperate.isFileExistAndBigThanSize(gtfFile, 100)) {
+			generateGtfFile = false;
 			return;
 		}
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
@@ -343,6 +344,7 @@ public class MapTophat implements MapRNA{
 			String outGTF = path + gffChrAbs.getSpecies().getAbbrName() + DateTime.getDateAndRandom() + ".GTF";
 			gffChrAbs.getGffHashGene().writeToGTF(outGTF, "novelbio");
 			this.gtfFile = outGTF;
+			generateGtfFile = true;
 		}
 	}
 	/**
@@ -407,12 +409,16 @@ public class MapTophat implements MapRNA{
 				+ getMaxSegmentIntron();
 		cmd = cmd + getOutPathPrefix();
 
-		cmd = cmd + " " + chrFile + " ";
+		cmd = cmd + " " + mapBowtie.getChrNameWithoutSuffix() + " ";
 		cmd = cmd + " " + getLsFqFile();
 		
 		logger.info(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping");
 		cmdOperate.run();
+		
+		if (generateGtfFile) {
+			FileOperate.delFile(gtfFile);
+		}
 	}
 
 }

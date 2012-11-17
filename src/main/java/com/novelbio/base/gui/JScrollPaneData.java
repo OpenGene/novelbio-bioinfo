@@ -8,6 +8,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileOperate;
 /**
  * JScrollPane的扩展，方便添加和删除行
  * @author zong0jie
@@ -156,6 +157,33 @@ public class JScrollPaneData extends JScrollPane{
 		jTabFInputGo = new JTable();
 		setViewportView(jTabFInputGo);
 		jTabFInputGo.setModel(defaultTableModel);
+	}
+	/**
+	 * 从文件名获得文件的prefix并返回
+	 * @param lsFileName
+	 * @return
+	 */
+	public static ArrayList<String[]> getLsFileName2Prefix(ArrayList<String> lsFileName) {
+		ArrayList<String[]> lsFileName2Prefix = new ArrayList<String[]>();
+		for (String fileName : lsFileName) {
+			String prefix = FileOperate.getFileNameSep(fileName)[0].split("_")[0];
+			lsFileName2Prefix.add(new String[]{fileName, prefix});
+		}
+		return lsFileName2Prefix;
+	}
+	
+	/**
+	 * 将输入的每个文件名后面都加上一个suffix，然后返回
+	 * @param lsFileName
+	 * @return
+	 */
+	public static ArrayList<String[]> getLsFileName2Out(ArrayList<String> lsFileName, String append, String houzhuiming) {
+		ArrayList<String[]> lsFileName2Prefix = new ArrayList<String[]>();
+		for (String fileName : lsFileName) {
+			String outFileName = FileOperate.changeFileSuffix(fileName, append, houzhuiming);
+			lsFileName2Prefix.add(new String[]{fileName, outFileName});
+		}
+		return lsFileName2Prefix;
 	}
 }
 

@@ -15,7 +15,9 @@ public enum TitleFormatNBC {
 	
 	GeneStructure("GeneStructure"),
 	
-	RepeatName("RepeatName"), RepeatFamily("RepeatFamily");
+	RepeatName("RepeatName"), RepeatFamily("RepeatFamily"),
+	
+	Score("Score");
 	
 	String item;
 	TitleFormatNBC(String item) {

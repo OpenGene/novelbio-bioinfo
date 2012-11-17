@@ -266,10 +266,10 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		}
 		
 		//UTR
-		if (gffGeneIsoInfo.getCodLocUTR(coord) == GffGeneIsoInfo.COD_LOCUTR_5UTR) {
+		if (gffGeneIsoInfo.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_5UTR) {
 			UTR5num++;
 		}
-		if (gffGeneIsoInfo.getCodLocUTR(coord) == GffGeneIsoInfo.COD_LOCUTR_3UTR) {
+		if (gffGeneIsoInfo.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_3UTR) {
 			UTR3num++;
 		}
 		return flagIntraGenic;

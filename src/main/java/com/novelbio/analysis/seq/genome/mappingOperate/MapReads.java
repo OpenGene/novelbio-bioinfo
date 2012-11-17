@@ -171,7 +171,7 @@ public class MapReads extends MapReadsAbs{
 					chrMapReadsInfo.sumChrBp(chrBpReads);
 				}
 				lastChr = tmpChrID;// 实际这是新出现的ChrID
-				logger.info(lastChr);
+				logger.error(lastChr);
 				
 				Long chrLength = mapChrID2Len.get(lastChr.toLowerCase());
 				flag = true;

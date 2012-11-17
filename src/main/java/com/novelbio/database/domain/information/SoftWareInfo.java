@@ -252,7 +252,8 @@ public class SoftWareInfo {
 	}
 	public static enum SoftWare {
 		bwa, bowtie, bowtie2, tophat, rsem,miranada, RNAhybrid, mirDeep, miReap,
-		samtools, picard, GATK, cufflinks;
+		samtools, picard, GATK, cufflinks,
+		macs, sicer;
 		
 		static HashMap<String, SoftWare> mapStr2MapSoftware = new LinkedHashMap<String, SoftWareInfo.SoftWare>();
 		public static HashMap<String, SoftWare> getMapStr2MappingSoftware() {

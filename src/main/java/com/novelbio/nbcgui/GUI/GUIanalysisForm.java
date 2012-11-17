@@ -49,7 +49,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiDGEgetvalue guiDGEgetvalue;
 	private GuiFilterDifGene guiFilterDifGene;
 	private GuiCuffdiff guiCuffdiff;
-	
+	private GuiPeakCalling guiPeakCalling;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -159,6 +159,10 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiCuffdiff = new GuiCuffdiff();
 				jTabbedPane1.addTab("CuffDiff", null, guiCuffdiff, null);
+				
+				guiPeakCalling = new GuiPeakCalling();
+				jTabbedPane1.addTab("PeakCalling", guiPeakCalling);
+
 			}
 			pack();
 			this.setSize(1050, 699);
