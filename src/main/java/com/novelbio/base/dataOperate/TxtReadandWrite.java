@@ -420,15 +420,38 @@ public class TxtReadandWrite {
 		return lsResult;
 	}
 	/**
+	 * 写入并换行，没有flush
+	 * @param content
+	 *            ，要写入文件内容
+	 * @throws Exception
+	 */
+	public void flash() {
+		try {
+			outputStream.flush();
+		} catch (Exception e) { }
+	}
+	/**
 	 * 写完自动flush
 	 * @param content 要写入文件内容
 	 * @throws Exception
 	 */
 	public void writefile(String content) {
+		writefile(content, true);
+	}
+	/**
+	 * @param content
+	 *            ，要写入文件内容,并考虑是否刷新--也就是直接写入文件而不是进入缓存
+	 * @throws Exception
+	 */
+	public void writefile(String content, boolean flush) {
 		try {
 			outputStream.write(content.getBytes());
-			outputStream.flush();
-		} catch (Exception e) {
+			if (flush) {
+				outputStream.flush();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	/**
@@ -491,23 +514,6 @@ public class TxtReadandWrite {
 		}
 	}
 	
-	/**
-	 * @param content
-	 *            ，要写入文件内容,并考虑是否刷新--也就是直接写入文件而不是进入缓存
-	 * @throws Exception
-	 */
-	public void writefile(String content, boolean flush) {
-		try {
-			outputStream.write(content.getBytes());
-			if (flush) {
-				outputStream.flush();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
 	/**
 	 * 指定正则表达式，将文本中含有该正则表达式的行全部删除
 	 * @param regx

@@ -11,9 +11,9 @@ import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.mapper.geneanno.MapGo2Term;
 import com.novelbio.database.mapper.geneanno.MapGoIDconvert;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 @Service
-public class ServGo2Term  extends AbsGetSpring implements MapGo2Term{
+public class ServGo2Term implements MapGo2Term{
 	@Inject
 	private MapGo2Term mapGo2Term;
 	@Inject
@@ -27,8 +27,8 @@ public class ServGo2Term  extends AbsGetSpring implements MapGo2Term{
 	static HashMap<String, Go2Term> hashGo2Term = new HashMap<String, Go2Term>();
 	
 	public ServGo2Term() {
-		mapGo2Term = (MapGo2Term) factory.getBean("mapGo2Term");
-		mapGoIDconvert = (MapGoIDconvert) factory.getBean("mapGoIDconvert");
+		mapGo2Term = (MapGo2Term) SpringFactory.getFactory().getBean("mapGo2Term");
+		mapGoIDconvert = (MapGoIDconvert) SpringFactory.getFactory().getBean("mapGoIDconvert");
 	}
 	/**
 	 * 全部读入内存后，hash访问。第一次速度慢，后面效率很高

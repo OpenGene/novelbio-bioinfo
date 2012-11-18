@@ -9,11 +9,10 @@ import org.springframework.stereotype.Component;
 
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.mapper.geneanno.MapTaxID;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
 @Component
-//public class ServTaxID extends AbsGetSpring implements MapTaxID{
-public class ServTaxID extends AbsGetSpring  implements MapTaxID{
+public class ServTaxID implements MapTaxID{
 	/**
 	 * 全体物种ID
 	 */
@@ -30,7 +29,7 @@ public class ServTaxID extends AbsGetSpring  implements MapTaxID{
 
 	public ServTaxID()
 	{
-		mapTaxID = (MapTaxID) factory.getBean("mapTaxID");
+		mapTaxID = (MapTaxID)SpringFactory.getFactory().getBean("mapTaxID");
 	}
 	@Override
 	public TaxInfo queryTaxInfo(TaxInfo taxInfo) {

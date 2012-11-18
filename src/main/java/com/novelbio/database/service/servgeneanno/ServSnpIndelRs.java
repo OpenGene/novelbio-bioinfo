@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.SnpIndelRs;
 import com.novelbio.database.mapper.geneanno.MapSnpIndelRs;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
 @Component
-public class ServSnpIndelRs extends AbsGetSpring implements MapSnpIndelRs{
+public class ServSnpIndelRs implements MapSnpIndelRs{
 	public static void main(String[] args) {
 		ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
     	SnpIndelRs re = new SnpIndelRs();
@@ -25,7 +25,7 @@ public class ServSnpIndelRs extends AbsGetSpring implements MapSnpIndelRs{
 	@Autowired
 	private MapSnpIndelRs mapSnpIndelRs;
 	public ServSnpIndelRs() {
-		mapSnpIndelRs = (MapSnpIndelRs) factory.getBean("mapSnpIndelRs");
+		mapSnpIndelRs = (MapSnpIndelRs)SpringFactory.getFactory().getBean("mapSnpIndelRs");
 	}	
 	@Override
 	public SnpIndelRs querySnpIndelRs(SnpIndelRs snpIndelRs) {

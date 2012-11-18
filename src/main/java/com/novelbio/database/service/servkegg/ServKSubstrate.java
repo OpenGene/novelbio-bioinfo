@@ -6,14 +6,14 @@ import javax.inject.Inject;
 
 import com.novelbio.database.domain.kegg.KGsubstrate;
 import com.novelbio.database.mapper.kegg.MapKSubstrate;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
-public class ServKSubstrate extends AbsGetSpring implements MapKSubstrate{
+public class ServKSubstrate implements MapKSubstrate{
 	@Inject
 	MapKSubstrate mapKSubstrate;
 	public ServKSubstrate() {
 		// TODO Auto-generated constructor stub
-		mapKSubstrate = (MapKSubstrate)factory.getBean("mapKSubstrate");
+		mapKSubstrate = (MapKSubstrate)SpringFactory.getFactory().getBean("mapKSubstrate");
 	}
 	@Override
 	public ArrayList<KGsubstrate> queryLskgKGsubstrates(KGsubstrate kGsubstrate) {

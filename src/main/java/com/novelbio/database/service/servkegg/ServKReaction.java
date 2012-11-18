@@ -6,15 +6,15 @@ import javax.inject.Inject;
 
 import com.novelbio.database.domain.kegg.KGreaction;
 import com.novelbio.database.mapper.kegg.MapKReaction;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
-public class ServKReaction extends AbsGetSpring implements MapKReaction{
+public class ServKReaction implements MapKReaction{
 	@Inject
 	MapKReaction mapKReaction;
 	
 	public ServKReaction() {
 		// TODO Auto-generated constructor stub
-		mapKReaction = (MapKReaction)factory.getBean("mapKReaction");
+		mapKReaction = (MapKReaction)SpringFactory.getFactory().getBean("mapKReaction");
 	}
 
 	@Override

@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 @Service
-public class ServKIDKeg2Ko extends AbsGetSpring implements MapKIDKeg2Ko{
+public class ServKIDKeg2Ko implements MapKIDKeg2Ko{
 	@Inject
 	MapKIDKeg2Ko mapKIDKeg2Ko;
 	public ServKIDKeg2Ko() {
-		mapKIDKeg2Ko = (MapKIDKeg2Ko)factory.getBean("mapKIDKeg2Ko");
+		mapKIDKeg2Ko = (MapKIDKeg2Ko)SpringFactory.getFactory().getBean("mapKIDKeg2Ko");
 	}
 	@Override
 	public ArrayList<KGIDkeg2Ko> queryLsKGIDkeg2Ko(KGIDkeg2Ko kgiDkeg2Ko) {

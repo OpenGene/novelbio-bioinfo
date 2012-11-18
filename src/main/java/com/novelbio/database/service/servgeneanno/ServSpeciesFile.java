@@ -9,15 +9,15 @@ import org.apache.log4j.Logger;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.mapper.geneanno.MapSpeciesFile;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
-public class ServSpeciesFile extends AbsGetSpring implements MapSpeciesFile{
+public class ServSpeciesFile implements MapSpeciesFile{
 	private static Logger logger = Logger.getLogger(ServSpeciesFile.class);
 
 	@Inject
 	private MapSpeciesFile mapSpeciesFile;
 	public ServSpeciesFile() {
-		mapSpeciesFile = (MapSpeciesFile) factory.getBean("mapSpeciesFile");
+		mapSpeciesFile = (MapSpeciesFile)SpringFactory.getFactory().getBean("mapSpeciesFile");
 	}
 	@Override
 	public SpeciesFile querySpeciesFile(SpeciesFile speciesFile) {

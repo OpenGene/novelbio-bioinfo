@@ -6,18 +6,18 @@ import javax.inject.Inject;
 
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.mapper.kegg.MapKNIdKeg;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
 /**
  * 将不是基因的ID--也就是一些化合物等转换为KeggID
  * @author zong0jie
  *
  */
-public class ServKNIdKeg extends AbsGetSpring implements MapKNIdKeg {
+public class ServKNIdKeg implements MapKNIdKeg {
 	@Inject
 	MapKNIdKeg mapKNIdKeg;
 	public ServKNIdKeg() {
-		mapKNIdKeg = (MapKNIdKeg)factory.getBean("mapKNIdKeg");
+		mapKNIdKeg = (MapKNIdKeg)SpringFactory.getFactory().getBean("mapKNIdKeg");
 	}
 	@Override
 	public ArrayList<KGNIdKeg> queryLsKGNIdKeg(KGNIdKeg kgnIdKeg) {

@@ -6,14 +6,14 @@ import javax.inject.Inject;
 
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.mapper.kegg.MapKPathway;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
-public class ServKPathway extends AbsGetSpring implements MapKPathway {
+public class ServKPathway implements MapKPathway {
 	@Inject
 	MapKPathway mapKPathway;
 	public ServKPathway() {
 		// TODO Auto-generated constructor stub
-		mapKPathway = (MapKPathway)factory.getBean("mapKPathway");
+		mapKPathway = (MapKPathway)SpringFactory.getFactory().getBean("mapKPathway");
 	}
 	@Override
 	public ArrayList<KGpathway> queryLsKGpathways(KGpathway kGpathway) {

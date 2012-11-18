@@ -80,12 +80,12 @@
    <tx:annotation-driven transaction-manager="transactionManager"/>
    -->
 
-    <!-- 通过扫描的模式，扫描目录在com/hoo/mapper目录下，所有的mapper都继承SqlMapper接口的接口， 这样一个bean就可以了  -->
+    <!-- 通过扫描的模式，扫描目录在com/hoo/mapper目录下，所有的mapper都继承SqlMapper接口， 这样一个bean就可以了  -->
  	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="com.novelbio.database.mapper"/>
 		<property name="markerInterface" value="com.novelbio.database.mapper.MapperSql"/>
     </bean> 
     
-      <!-- 自动探测 enable component scanning (beware that this does not enable mapper scanning!)     --> 
-    <context:component-scan base-package="com.novelbio.mvtest" />
+      <!-- 自动探测 enable component scanning (beware that this does not enable mapper scanning!)     
+    <context:component-scan base-package="com.novelbio.mvtest" />--> 
 </beans>

@@ -9,17 +9,17 @@ import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapUniGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapUniProtID;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
 @Service
-public class ServUniGeneInfo extends AbsGetSpring implements MapUniGeneInfo{
+public class ServUniGeneInfo implements MapUniGeneInfo{
 	private static Logger logger = Logger.getLogger(ServUniGeneInfo.class);
 	@Inject
 	private MapUniGeneInfo mapUniGeneInfo;
 	
 	public ServUniGeneInfo()
 	{
-		mapUniGeneInfo = (MapUniGeneInfo) factory.getBean("mapUniGeneInfo");
+		mapUniGeneInfo = (MapUniGeneInfo)SpringFactory.getFactory().getBean("mapUniGeneInfo");
 	}
 	
 	@Override

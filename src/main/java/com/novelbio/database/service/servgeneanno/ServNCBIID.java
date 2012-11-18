@@ -11,14 +11,14 @@ import org.springframework.stereotype.Service;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 @Service
-public class ServNCBIID extends AbsGetSpring implements MapNCBIID{
+public class ServNCBIID implements MapNCBIID{
 	private static Logger logger = Logger.getLogger(ServNCBIID.class);
 	@Inject
 	private MapNCBIID mapNCBIID;
 	public ServNCBIID() {
-		mapNCBIID = (MapNCBIID) factory.getBean("mapNCBIID");
+		mapNCBIID = (MapNCBIID) SpringFactory.getFactory().getBean("mapNCBIID");
 	}
 	//TODO Õý¹æÐ´·¨
 //	@Inject

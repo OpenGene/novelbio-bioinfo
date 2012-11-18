@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.novelbio.database.domain.react.RctInteract;
 
-public class ServRctIntact extends AbsGetSpring{
+public class ServRctIntact {
 	
 	MapRctIneract mapRctIneract;
 	/**

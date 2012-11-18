@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.mapper.kegg.MapKNCompInfo;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
 /**
  * keggID化合物的具体信息
@@ -17,12 +17,12 @@ import com.novelbio.database.service.AbsGetSpring;
  *
  */
 @Service
-public class ServKNCompInfo extends AbsGetSpring implements MapKNCompInfo{
+public class ServKNCompInfo implements MapKNCompInfo{
 	@Inject
 	MapKNCompInfo mapKNCompInfo;
 	public ServKNCompInfo() {
 		// TODO Auto-generated constructor stub
-		mapKNCompInfo = (MapKNCompInfo)factory.getBean("mapKNCompInfo");
+		mapKNCompInfo = (MapKNCompInfo)SpringFactory.getFactory().getBean("mapKNCompInfo");
 	}
 	@Override
 	public ArrayList<KGNCompInfo> queryLsKGNCompInfo(KGNIdKeg kgnIdKeg) {

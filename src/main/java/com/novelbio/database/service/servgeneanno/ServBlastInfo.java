@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.mapper.geneanno.MapBlastInfo;
 import com.novelbio.database.mapper.geneanno.MapGene2Go;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 @Service
-public class ServBlastInfo extends AbsGetSpring implements MapBlastInfo {
+public class ServBlastInfo implements MapBlastInfo {
 	@Inject
 	MapBlastInfo mapBlastInfo;
 	
 	public ServBlastInfo() {
-		mapBlastInfo = (MapBlastInfo)factory.getBean("mapBlastInfo");
+		mapBlastInfo = (MapBlastInfo)SpringFactory.getFactory().getBean("mapBlastInfo");
 	}
 	@Override
 	public BlastInfo queryBlastInfo(BlastInfo qBlastInfo) {

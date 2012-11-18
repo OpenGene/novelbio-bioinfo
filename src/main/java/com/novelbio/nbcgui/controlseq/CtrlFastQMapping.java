@@ -248,11 +248,12 @@ public class CtrlFastQMapping {
 			}
 			mapCondition2LsFastQLR.put(prefix, lsFiltered);
 			
-			if (lsFastQLR.get(0)[1] != null)
+			if (lsFastQLR.get(0)[1] != null) {
 				txtReport.writefileln(prefix + "\t" + allReads*2 + "\t" + filteredReads*2);
-			else
+			} else {
 				txtReport.writefileln(prefix + "\t" + allReads + "\t" + filteredReads);
-
+			}
+			txtReport.flash();
 		}
 		txtReport.writefileln();
 	}
@@ -360,6 +361,7 @@ public class CtrlFastQMapping {
 			for (String[] strings : lsStatistics) {
 				txtReport.writefileln(strings);
 			}
+			txtReport.flash();
 		}
 	}
 	

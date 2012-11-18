@@ -12,14 +12,14 @@ import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.mapper.geneanno.MapGene2Go;
 import com.novelbio.database.mapper.geneanno.MapGeneInfo;
 import com.novelbio.database.mapper.geneanno.MapGo2Term;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 @Service
-public class ServGene2Go extends AbsGetSpring implements MapGene2Go {
+public class ServGene2Go implements MapGene2Go {
 	private static Logger logger = Logger.getLogger(ServGene2Go.class);
 	@Inject
 	private MapGene2Go mapGene2Go;
 	public ServGene2Go() {
-		mapGene2Go = (MapGene2Go) factory.getBean("mapGene2Go");
+		mapGene2Go = (MapGene2Go)SpringFactory.getFactory().getBean("mapGene2Go");
 	}
 	
 	public ArrayList<Gene2Go> queryLsGene2Go(int geneID, int taxID) {

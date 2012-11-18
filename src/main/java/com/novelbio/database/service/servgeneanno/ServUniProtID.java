@@ -7,21 +7,18 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import com.novelbio.database.domain.geneanno.AgeneUniID;
-import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniProtID;
-import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
 import com.novelbio.database.mapper.geneanno.MapUniProtID;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
 @Service
-public class ServUniProtID extends AbsGetSpring implements MapUniProtID{
+public class ServUniProtID implements MapUniProtID{
 	Logger logger = Logger.getLogger(ServUniProtID.class);
 	@Inject
 	MapUniProtID mapUniProtID;
 	
 	public ServUniProtID() {
-		mapUniProtID = (MapUniProtID) factory.getBean("mapUniProtID");
+		mapUniProtID = (MapUniProtID)SpringFactory.getFactory().getBean("mapUniProtID");
 	}
 	
 	@Override
@@ -37,13 +34,11 @@ public class ServUniProtID extends AbsGetSpring implements MapUniProtID{
 	@Override
 	public void insertUniProtID(UniProtID UniProtID) {
 		mapUniProtID.insertUniProtID(UniProtID);
-		
 	}
 
 	@Override
 	public void updateUniProtID(UniProtID UniProtID) {
 		mapUniProtID.updateUniProtID(UniProtID);
-		
 	}
 	
 	/**

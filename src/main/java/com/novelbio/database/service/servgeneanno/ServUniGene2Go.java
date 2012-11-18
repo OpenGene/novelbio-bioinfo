@@ -9,16 +9,16 @@ import org.springframework.stereotype.Service;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.UniGene2Go;
 import com.novelbio.database.mapper.geneanno.MapUniGene2Go;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
 @Service
-public class ServUniGene2Go extends AbsGetSpring implements MapUniGene2Go{
+public class ServUniGene2Go implements MapUniGene2Go{
 	private static Logger logger = Logger.getLogger(ServUniGene2Go.class);
 	@Inject
 	private MapUniGene2Go mapUniGene2Go;
 	public ServUniGene2Go()  
 	{
-		mapUniGene2Go = (MapUniGene2Go) factory.getBean("mapUniGene2Go");
+		mapUniGene2Go = (MapUniGene2Go)SpringFactory.getFactory().getBean("mapUniGene2Go");
 	}
 	
 	

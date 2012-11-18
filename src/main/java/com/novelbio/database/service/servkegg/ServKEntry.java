@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.mapper.kegg.MapKEntry;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 @Service
-public class ServKEntry extends AbsGetSpring implements MapKEntry{
+public class ServKEntry implements MapKEntry{
 	@Inject
 	MapKEntry mapKEntry;
 	public ServKEntry() {
-		mapKEntry = (MapKEntry)factory.getBean("mapKEntry");
+		mapKEntry = (MapKEntry)SpringFactory.getFactory().getBean("mapKEntry");
 	}
 	@Override
 	public ArrayList<KGentry> queryLsKGentries(KGentry kGentry) {

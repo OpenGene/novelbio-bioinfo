@@ -5,12 +5,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
-public class AbsGetSpring {
+public class SpringFactory {
 	static ApplicationContext ctx;
 	static protected BeanFactory factory;
-	static
-	{
-		ctx = new ClassPathXmlApplicationContext("spring.xml");
-		factory = (BeanFactory) ctx;
+	public static BeanFactory getFactory() {
+		if (factory == null) {
+			ctx = new ClassPathXmlApplicationContext("spring.xml");
+			factory = (BeanFactory) ctx;
+		}
+		return factory;
 	}
 }

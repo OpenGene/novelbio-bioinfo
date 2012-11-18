@@ -8,19 +8,19 @@ import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
 import com.novelbio.database.mapper.kegg.MapKIDgen2Keg;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
 /**
  * geneID到KeggID的转换表
  * @author zong0jie
  */
 @Service
-public class ServKIDgen2Keg extends AbsGetSpring implements MapKIDgen2Keg{
+public class ServKIDgen2Keg implements MapKIDgen2Keg{
 	@Inject
 	MapKIDgen2Keg mapKIDgen2Keg;
 	public ServKIDgen2Keg() {
 		// TODO Auto-generated constructor stub
-		mapKIDgen2Keg = (MapKIDgen2Keg)factory.getBean("mapKIDgen2Keg");
+		mapKIDgen2Keg = (MapKIDgen2Keg)SpringFactory.getFactory().getBean("mapKIDgen2Keg");
 	}
 	
 	@Override

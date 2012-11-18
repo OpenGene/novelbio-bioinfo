@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.mapper.geneanno.MapGeneInfo;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 @Service
-public class ServGeneInfo extends AbsGetSpring implements MapGeneInfo {
+public class ServGeneInfo implements MapGeneInfo {
 	private static Logger logger = Logger.getLogger(ServGeneInfo.class);
 	@Inject
 	private MapGeneInfo mapGeneInfo;
 	public ServGeneInfo() {
-		mapGeneInfo = (MapGeneInfo) factory.getBean("mapGeneInfo");
+		mapGeneInfo = (MapGeneInfo)SpringFactory.getFactory().getBean("mapGeneInfo");
 	}
 	@Override
 	public GeneInfo queryGeneInfo(GeneInfo geneInfo) {

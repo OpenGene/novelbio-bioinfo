@@ -6,13 +6,13 @@ import javax.inject.Inject;
 
 import com.novelbio.database.domain.kegg.KGpathRelation;
 import com.novelbio.database.mapper.kegg.MapKPathRelation;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 
-public class ServKPathRelation extends AbsGetSpring implements MapKPathRelation{
+public class ServKPathRelation implements MapKPathRelation{
 	@Inject
 	MapKPathRelation mapKPathRelation;
 	public ServKPathRelation() {
-		mapKPathRelation = (MapKPathRelation)factory.getBean("mapKPathRelation");
+		mapKPathRelation = (MapKPathRelation)SpringFactory.getFactory().getBean("mapKPathRelation");
 	}
 	@Override
 	public ArrayList<KGpathRelation> queryLskGpathRelations(

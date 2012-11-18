@@ -240,7 +240,7 @@ public class MapBwa extends MapDNA {
 	}
 	/** 种子长度 */
 	private String getSeedSize() {
-		return " -I 25 ";
+		return " -l 25 ";
 	}
 	/**
 	 * gap罚分
@@ -257,7 +257,7 @@ public class MapBwa extends MapDNA {
 		FastQ fastQ = new FastQ(leftFq);
 		int offset = fastQ.getOffset();
 		if (offset == FastQ.FASTQ_ILLUMINA_OFFSET) {
-			return  " -I";
+			return  " -I ";
 		}
 		return "";
 	}
@@ -331,10 +331,8 @@ public class MapBwa extends MapDNA {
 		}
 		cmdOperate = new CmdOperate(cmd,"bwaMappingSAI");
 		cmdOperate.run();
-		SamFile samFile = new SamFile(outFileName);
-		SamFile bamFile = samFile.convertToBam();
-		deleteFile(samFile, bamFile);
-		return samFile;
+
+		return copeAfterMapping(outFileName);
 	}
 	
 	protected static String addSamToFileName(String outFileName) {
@@ -345,6 +343,16 @@ public class MapBwa extends MapDNA {
 		} else {
 			return outFileName + ".sam";
 		}
+	}
+	private SamFile copeAfterMapping(String outSamFile) {
+		if (!FileOperate.isFileExistAndBigThanSize(outSamFile, 1)) {
+			return null;
+		}
+		SamFile samFile = new SamFile(outFileName);
+		SamFile bamFile = samFile.convertToBam();
+		samFile.close();
+		deleteFile(samFile, bamFile);
+		return bamFile;
 	}
 	/**
 	 * 删除sai文件

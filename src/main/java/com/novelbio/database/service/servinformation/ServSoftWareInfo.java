@@ -7,17 +7,17 @@ import javax.inject.Inject;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.mapper.information.MapSoftWareInfo;
-import com.novelbio.database.service.AbsGetSpring;
+import com.novelbio.database.service.SpringFactory;
 /**
  * 待修正，就是自动化的update工作，参照servGeneInfo
  * @author zong0jie
  *
  */
-public class ServSoftWareInfo extends AbsGetSpring implements MapSoftWareInfo{
+public class ServSoftWareInfo implements MapSoftWareInfo{
 	@Inject
 	MapSoftWareInfo mapSoftWareInfo;
 	public ServSoftWareInfo() {
-		mapSoftWareInfo = (MapSoftWareInfo)factory.getBean("mapSoftWareInfo");
+		mapSoftWareInfo = (MapSoftWareInfo)SpringFactory.getFactory().getBean("mapSoftWareInfo");
 	}
 	@Override
 	public SoftWareInfo querySoftWareInfo(SoftWareInfo softWareInfo) {
