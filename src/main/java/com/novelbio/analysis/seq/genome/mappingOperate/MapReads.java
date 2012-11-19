@@ -202,7 +202,6 @@ public class MapReads extends MapReadsAbs{
 		if (flag) {
 			chrMapReadsInfo.sumChrBp(chrBpReads);
 		}		
-		return;
 	}
 	/**
 	 * 具体加和的处理方法

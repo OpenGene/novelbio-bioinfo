@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -199,4 +200,22 @@ public class GffHashGene implements GffHashGeneInf{
 		String chrID = listGff.getName();
 		gffHashGene.getMapChrID2LsGff().put(chrID.toLowerCase(), listGff);
 	}
+	
+	/**
+	 * 返回全体iso的set，用于做背景，这个是比较全面的背景
+	 * @return
+	 */
+	public HashSet<String> getSetIsoID() {
+		HashSet<String> setGeneID = new HashSet<String>();
+		HashMap<String, ListGff> mapChrID2LsGff = getMapChrID2LsGff();
+		for (ListGff listGff : mapChrID2LsGff.values()) {
+			for (GffDetailGene gffDetailGene : listGff) {
+				for (GffGeneIsoInfo geneIsoInfo : gffDetailGene.getLsCodSplit()) {
+					setGeneID.add(GeneID.removeDot(geneIsoInfo.getName()));
+				}
+			}
+		}
+		return setGeneID;
+	}
+
 }
