@@ -151,9 +151,9 @@ public class FastQRecord implements Cloneable {
 	 * @param numMM 几个好的序列，就是说NNNCNNN这种，坏的中间夹一个好的 一般为1
 	 * @return
 	 */
-	public boolean trimNNN( int numMM) {
-		int numStart = trimNNNLeft(seqQuality, 10, numMM);
-		int numEnd = trimNNNRight(seqQuality, 10, numMM);
+	public boolean trimNNN( int numMM, int filterNum) {
+		int numStart = trimNNNLeft(seqQuality, filterNum, numMM);
+		int numEnd = trimNNNRight(seqQuality, filterNum, numMM);
 		return trimSeq(numStart, numEnd);
 	}
 	/**

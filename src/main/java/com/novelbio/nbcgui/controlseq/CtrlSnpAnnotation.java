@@ -19,7 +19,6 @@ public class CtrlSnpAnnotation implements RunGetInfo<SnpFilterDetailInfo>{
 		snpAnnotation.setRunGetInfo(this);
 	}
 	
-
 	public void setProcessBar() {
 		guiSnpCalling.getProgressBar().setMaximum((int) snpAnnotation.getFileSizeEvaluateK());
 	}

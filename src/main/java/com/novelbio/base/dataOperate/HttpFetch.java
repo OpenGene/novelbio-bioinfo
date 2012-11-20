@@ -205,11 +205,12 @@ public class HttpFetch {
 		if (url == null) {
 			return;
 		}
+		url = url.trim().toLowerCase();
 		if (url.startsWith("//")) {
 			url = "http:" + url;
 		} else if (url.startsWith("/")) {
 			url = "http:/" + url;
-		} else if (url.startsWith("http://") || url.startsWith("ftp://")) {
+		} else if (url.startsWith("http") || url.startsWith("ftp")) {
 			//Nothing will be do
 		} else {
 			url = "http://" + url;
@@ -410,6 +411,9 @@ public class HttpFetch {
 		HttpEntity entity = httpResponse.getEntity();
         ContentType contentType = ContentType.getOrDefault(entity);
         charset = contentType.getCharset();
+        if (charset == null) {
+			charset = Charset.defaultCharset();
+		}
 		if (entity != null) {
 			instream = entity.getContent();
 		}
@@ -452,7 +456,7 @@ public class HttpFetch {
 			e.printStackTrace();
 			logger.error("½âÂë³ö´í£º" + inputUrl);
 		}
-		result = inputUrl.replace("&amp;", "&");
+		result = result.replace("&amp;", "&");
 		result = result.replace("&nbsp;", " ");
 		return result;
 	}

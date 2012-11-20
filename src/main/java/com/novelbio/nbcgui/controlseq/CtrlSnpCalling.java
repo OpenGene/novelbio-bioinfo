@@ -90,12 +90,13 @@ public class CtrlSnpCalling implements RunGetInfo<SnpFilterDetailInfo> {
 	@Override
 	public void done(RunProcess<SnpFilterDetailInfo> runProcess) {
 		guiSnpCalling.getTxtInfo().setText("Snp Calling Complete");
-		JOptionPane.showMessageDialog(guiSnpCalling, "Snp Calling Complete", "finish", JOptionPane.INFORMATION_MESSAGE);
 		
 		guiSnpCalling.getBtnAddPileupFile().setEnabled(true);
 		guiSnpCalling.getBtnDeletePileup().setEnabled(true);
 		guiSnpCalling.getBtnRun().setEnabled(true);
 		guiSnpCalling.getProgressBar().setValue(guiSnpCalling.getProgressBar().getMaximum());
+		
+		JOptionPane.showMessageDialog(guiSnpCalling, "Snp Calling Complete", "finish", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	@Override

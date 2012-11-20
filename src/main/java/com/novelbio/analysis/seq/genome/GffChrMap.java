@@ -264,8 +264,7 @@ public class GffChrMap {
 	 * @param outFile
 	 * @return 返回最大值和最小值的设定
 	 */
-	public double[] plotTssHeatMap(Color color, boolean SortS2M,
-			String txtExcel, int colGeneID, int colScore, int rowStart,
+	public double[] plotTssHeatMap(Color color, boolean SortS2M, String txtExcel, int colGeneID, int colScore, int rowStart,
 			double heapMapSmall, double heapMapBig,
 			GeneStructure structure, int binNum, String outFile) {
 		ArrayList<MapInfo> lsMapInfos = null;
@@ -565,9 +564,8 @@ public class GffChrMap {
 		double[] siteInfo = mapReads.getRengeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
 		return MathComput.sum(siteInfo);
 	}
-	// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * 专为韩燕设计<br>
 	 * 当为refseq时，获得的某个基因的分布情况，按照3个barcode划分
@@ -796,8 +794,7 @@ public class GffChrMap {
 						if (hashGene2Value.get(gffDetailGene) < score) {
 							hashGene2Value.put(gffDetailGene, score);
 						}
-					}
-					else {
+					} else {
 						if (hashGene2Value.get(gffDetailGene) > score) {
 							hashGene2Value.put(gffDetailGene, score);
 						}
@@ -825,13 +822,13 @@ public class GffChrMap {
 	 * 根据前面设定upBp和downBp
 	 * 给定一系列gffDetailGene，以及想要的部分，返回对应区域的LsMapInfo
 	 * <b>注意里面没有填充reads的double[] value</b>
-	 * @param setgffDetailGenes
+	 * @param mapGffDetailGenes
 	 * @param structure
 	 * @return
 	 */
-	private ArrayList<MapInfo> getMapInfoFromGffGene(HashMap<GffDetailGene,Double> setgffDetailGenes, GeneStructure structure) {
+	private ArrayList<MapInfo> getMapInfoFromGffGene(HashMap<GffDetailGene, Double> mapGffDetailGenes, GeneStructure structure) {
 		ArrayList<MapInfo> lsMapInfos = new ArrayList<MapInfo>();
-		for (Entry<GffDetailGene, Double> gffDetailValue : setgffDetailGenes.entrySet()) {
+		for (Entry<GffDetailGene, Double> gffDetailValue : mapGffDetailGenes.entrySet()) {
 			lsMapInfos.add(getStructureLoc(gffDetailValue.getKey(),gffDetailValue.getValue(), structure));
 		}
 		return lsMapInfos;

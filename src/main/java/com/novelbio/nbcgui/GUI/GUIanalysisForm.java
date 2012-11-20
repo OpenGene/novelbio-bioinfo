@@ -23,6 +23,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private static final long serialVersionUID = 6809702573230604814L;
 	private JTabbedPane jTabbedPane1;
 	private GuiGoJPanel guiGoJPanel;
+	private GuiKegArrayDownload guiKegArrayDownload;
 	private GuiPathJpanel guiPathJpanel;
 	private GuiBlastJpanel guiBlastJpanel;
 	private GuiSrcToTrgJpanel guiSrcToTrg;
@@ -90,6 +91,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiPathJpanel = new GuiPathJpanel();
 				jTabbedPane1.addTab("Path", null, guiPathJpanel, null);
+				
+				guiKegArrayDownload = new GuiKegArrayDownload();
+				jTabbedPane1.addTab("KegArrayDownload", guiKegArrayDownload);
 				
 				guiCelNormJpanel = new GuiAffyCelNormJpanel();
 				jTabbedPane1.addTab("AffyCelNormalization", null, guiCelNormJpanel, null);

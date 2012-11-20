@@ -23,25 +23,14 @@ public class FastQ {
 	 */
 	public static int QUALITY_MIDIAN_PAIREND = 40;
 	public static int QUALITY_HIGM = 50;
-	public static int QUALITY_LOW_454 = 10454;
+	public static int QUALITY_LOW_454 = 60;
+	public static int QUALITY_LOW_PGM = 70;
 	
 	private int threadNum_FilterFastqRecord = 10;
 	
 	FastQReader fastQRead = new FastQReader();
 	FastQwrite fastQwrite = new FastQwrite();
 	FastQfilter fastQfilter = new FastQfilter(fastQRead, fastQwrite);
-	
-	public static void main(String[] args) {
-//		FastQ fastQfile = new FastQ("/home/zong0jie/Desktop/FHE.clean.fq");
-		FastQ fastQfile = new FastQ("/media/winF/NBC/Project/RNASeq_Snp_WJ120725/rawdata/s_WT_sequence.txt.gz");
-//		FastQ fastqQfile2 = new FastQ("/home/zong0jie/Desktop/aaa_2.fq.gz");
-//		fastQfile.setFastqWrite("/home/zong0jie/Desktop/aaa_filter.fq");
-		FastQRecordFilter fastQfilterRecordParam = new FastQRecordFilter();
-		fastQfilterRecordParam.setFilterParamTrimNNN(true);
-		fastQfile.setFilter(fastQfilterRecordParam);
-//		fastQfile.filterReads(fastqQfile2);
-		fastQfile.filterReads();
-	}
 	
 	/** ƒ¨»œ «∂¡»° */
 	public FastQ(String fastqFile) {
@@ -245,6 +234,43 @@ public class FastQ {
 		mapReadsQualtiy.put("HigtQuality", QUALITY_HIGM);
 		mapReadsQualtiy.put("LowQuality", QUALITY_LOW);
 		mapReadsQualtiy.put("LowQuality454", QUALITY_LOW_454);
+		mapReadsQualtiy.put("LowQualityPGM", QUALITY_LOW_PGM);
 		return mapReadsQualtiy;
+	}
+	
+	public static HashMap<Integer, Integer> getMapFastQFilter(int QUALITY) {
+		HashMap<Integer, Integer> mapFastQFilter = new HashMap<Integer, Integer>();
+		if (QUALITY == FastQ.QUALITY_HIGM) {
+			mapFastQFilter.put(10, 1);
+			mapFastQFilter.put(13, 3);
+			mapFastQFilter.put(20, 5);
+		} else if (QUALITY == FastQ.QUALITY_LOW) {
+			// hashFastQFilter.put(2, 1);
+			mapFastQFilter.put(10, 4);
+			mapFastQFilter.put(13, 10);
+			mapFastQFilter.put(20, 20);
+		} else if (QUALITY == FastQ.QUALITY_MIDIAN
+				|| QUALITY == FastQ.QUALITY_MIDIAN_PAIREND) {
+			// hashFastQFilter.put(2, 1);
+			mapFastQFilter.put(10, 2);
+			mapFastQFilter.put(13, 6);
+			mapFastQFilter.put(20, 10);
+		} else if (QUALITY == FastQ.QUALITY_LOW_454) {
+			// hashFastQFilter.put(2, 1);
+			mapFastQFilter.put(10, 6);
+			mapFastQFilter.put(13, 15);
+			mapFastQFilter.put(20, 40);
+		} else if (QUALITY == FastQ.QUALITY_LOW_PGM) {
+			// hashFastQFilter.put(2, 1);
+			mapFastQFilter.put(10, 6);
+			mapFastQFilter.put(13, 15);
+			mapFastQFilter.put(20, 80);
+		} else {
+			// hashFastQFilter.put(2, 1);
+			mapFastQFilter.put(10, 2);
+			mapFastQFilter.put(13, 6);
+			mapFastQFilter.put(20, 10);
+		}
+		return mapFastQFilter;
 	}
 }

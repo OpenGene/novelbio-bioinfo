@@ -5,6 +5,8 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
+import sun.tools.tree.AddExpression;
+
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 
 
@@ -169,5 +171,105 @@ public class SnpFilter {
 		}
 
 		return SnpIndelHomoHetoType.UnKnown;
+	}
+}
+
+/**
+ * 所有条件，负数都表示不参考，忽略该项
+ * 所有条件，如果是下界，则为大于等于
+ * 如果是上界，则为小于
+ * @author zong0jie
+ *
+ */
+class FilterUnit {
+	ArrayList<FilterSmallRegion> lsCompareInfo = new ArrayList<FilterSmallRegion>();
+	String UnitName;
+	
+	/**
+	 * 设定比较的区间
+	 * @param filterSmallRegion
+	 */
+	public void addRegionInfo(FilterSmallRegion filterSmallRegion) {
+		lsCompareInfo.add(filterSmallRegion);
+	}
+	
+	/** 判定是否落在该区间内 */
+	public boolean isInThisUnit(int numSnpIndel, int numRef, int numAll) {
+		if (Ref_Num_Max > 0 ) {
+			
+		}
+		
+		return false;
+	}
+	
+}
+/** 比较的最小单元 */
+class FilterSmallRegion {
+	String info;
+	/**
+	 * 下边界<br>
+	 *  true: 表示遇到最小值是>=<br>
+	 * false: 表示遇到最小值是 >
+	 *  */
+	boolean minBound = true;
+	/**
+	 * 上边界<br>
+	 *  true: 表示遇到最大值是< = <br>
+	 * false: 表示遇到最大值是 <
+	 *  */
+	boolean maxBound = false;
+	/**小于0表示不考虑 */
+	double min = -1;
+	/**小于0表示不考虑 */
+	double max = -1;
+	
+	/**
+	 * 设定区间
+	 * @param min -1表示不考虑该方向
+	 * @param max -1表示不考虑该方向
+	 */
+	public FilterSmallRegion(double min, double max) {
+		this.min = min;
+		this.max = max;
+	}
+	
+	/** 设定比较的内容，譬如heto_more之类的 */
+	public void setInfo(String info) {
+		this.info = info;
+	}
+	
+	/**
+	 * 设定上下边界<br>
+	 * 对于下边界：<br>
+	 *  true: 表示遇到最小值是>=<br>
+	 * false: 表示遇到最小值是 ><br>
+	 * <br>
+	 * 对于上边界<br>
+	 * true: 表示遇到最大值是<= <br>
+	 * false: 表示遇到最大值是 <
+	 *  */
+	public void setBound(boolean minBound, boolean maxBound) {
+		this.minBound = minBound;
+		this.maxBound = maxBound;
+	}
+	
+	public boolean isInRegion(double info) {
+		boolean result = true;
+		if (min >= 0) {
+			if (minBound) {
+				result = result && (info >= min);
+			} else {
+				result = result && (info > min);
+			}
+		}
+		
+		if (max >= 0) {
+			if (minBound) {
+				result = result && (info <= max);
+			} else {
+				result = result && (info < max);
+			}
+		}
+		return result;
 	}
 }

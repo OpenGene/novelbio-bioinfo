@@ -41,6 +41,7 @@ import com.novelbio.nbcgui.controlquery.CtrlBlastAnno;
 import com.novelbio.nbcgui.controlquery.CtrlBlastGo;
 import com.novelbio.nbcgui.controlquery.CtrlBlastPath;
 import javax.swing.SpringLayout;
+import java.awt.Dimension;
 
 
 /**
@@ -101,7 +102,7 @@ public class GuiBlastJpanel extends JPanel {
 	public GuiBlastJpanel() {
 		
 
-			this.setPreferredSize(new java.awt.Dimension(1046, 630));
+			this.setPreferredSize(new Dimension(1046, 652));
 			setAlignmentX(0.0f);
 			setComponent();
 			setLayout(null);
@@ -201,7 +202,7 @@ public class GuiBlastJpanel extends JPanel {
 	private JScrollPane getJScrlGOTable() {
 		if(jScrlGOTable == null) {
 			jScrlGOTable = new JScrollPane();
-			jScrlGOTable.setBounds(7, 343, 1027, 266);
+			jScrlGOTable.setBounds(7, 343, 1027, 236);
 		}
 		return jScrlGOTable;
 	}
@@ -232,7 +233,7 @@ public class GuiBlastJpanel extends JPanel {
 	public JProgressBar getJProgressBar1() {
 		if(jProgressBar1 == null) {
 			jProgressBar1 = new JProgressBar();
-			jProgressBar1.setBounds(7, 615, 1027, 8);
+			jProgressBar1.setBounds(0, 614, 1027, 13);
 		}
 		return jProgressBar1;
 	}
@@ -284,9 +285,8 @@ public class GuiBlastJpanel extends JPanel {
 	public JButton getJBtnAnno() {
 		if(jBtnAnno == null) {
 			jBtnAnno = new JButton();
-			jBtnAnno.setLocation(524, 268);
+			jBtnAnno.setBounds(524, 268, 96, 24);
 			jBtnAnno.setText("Query");
-			jBtnAnno.setSize(96, 24);
 			jBtnAnno.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					

@@ -643,7 +643,11 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 	}
 }
-
+/**
+ * 单条染色体信息
+ * @author zong0jie
+ *
+ */
 class ChrMapReadsInfo {
 	String chrID;
 	int invNum = 10;
@@ -656,7 +660,16 @@ class ChrMapReadsInfo {
 	long readsAllNum;
 	/** 本条染色体上的reads的堆叠数之和 */
 	long readsAllPipNum;
+	/** 用于校正数据 */
 	Equations FormulatToCorrectReads; 
+	
+	/**
+	 * @param chrID
+	 * @param chrLen 染色体长度
+	 * @param invNumm 分割份数
+	 * @param sumType 总结类型
+	 * @param FormulatToCorrectReads 校正使用的公式，没有就输入null
+	 */
 	public ChrMapReadsInfo(String chrID, long chrLen, int invNumm, int sumType, Equations FormulatToCorrectReads) {
 		this.chrID = chrID;
 		this.chrLength = chrLen;

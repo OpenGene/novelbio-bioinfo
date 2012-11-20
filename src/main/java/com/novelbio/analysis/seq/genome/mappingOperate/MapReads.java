@@ -2,11 +2,17 @@ package com.novelbio.analysis.seq.genome.mappingOperate;
 
 import java.util.ArrayList;
 
+import net.sf.picard.annotation.Gene.Transcript.Exon;
+
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.ListableBeanFactory;
 
 import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.species.Species;
 /**
  * 输入的mapping结果已经排序好，并且染色体已经分开好。
@@ -125,7 +131,7 @@ public class MapReads extends MapReadsAbs{
 	 * @param binNum 待分割的块数
 	 * @return
 	 */
-	public  double[] getReadsDensity(String chrID,int startLoc,int endLoc,int binNum ) {
+	public  double[] getReadsDensity(String chrID, int startLoc, int endLoc, int binNum ) {
 		//首先将reads标准化为一个400-500bp宽的大块，每一块里面应该是该区域里面tags的总数，所以求该区域里面的最大值
 		//然后再在大块上面统计，
 		//大概估算了一下，基本上宽度在一个tag的1.5倍的时候计数会比较合理
@@ -137,6 +143,24 @@ public class MapReads extends MapReadsAbs{
 		double[] resultTagDensityNum=MathComput.mySpline(tmpReadsNum, binNum, 0, 0, 2);
 		return resultTagDensityNum;
 	}
+	
+	/**
+	 * 给定需要计算的区域，装在ArrayList-ExonInfo里面，返回仅仅考虑这些区域的基因组分布密度图
+	 * 给马红那边的杨红星开发的。他提出想看全基因组上tss区域的甲基化分布情况，exon区域的甲基化分布情况。
+	 * 他的思路是用一定长度的slide window划过基因组然后看该位点内有甲基化的基因的表达情况。
+	 * @param lsExonInfos
+	 * @param chrID
+	 * @param startLoc
+	 * @param endLoc
+	 * @param binNum
+	 * @return
+	 */
+	public  double[] getReadsDensity(ListAbs<ExonInfo> lsExonInfos, String chrID, int startLoc, int endLoc, int binNum ) {
+		
+		
+		return null;
+	}
+	
 	/**
 	 * 当输入为macs的bed文件时，自动<b>跳过chrm项目</b><br>
 	 * 所有chr项目都小写
