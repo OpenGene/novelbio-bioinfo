@@ -54,7 +54,7 @@ public class GffCompareUCSCandNCBI {
 				continue;
 			}
 			else {
-				txtOut.writefileln("出现不一致的Iso\t" +gffGeneIsoInfoNCBI.getParentGffDetailGene().getParentName() + "\t" + gffGeneIsoInfoNCBI.getName());
+				txtOut.writefileln("出现不一致的Iso\t" +gffGeneIsoInfoNCBI.getParentGffDetailGene().getRefID() + "\t" + gffGeneIsoInfoNCBI.getName());
 				logger.error("出现不一致的Iso " + gffGeneIsoInfoNCBI.getName());
 			}
 		}

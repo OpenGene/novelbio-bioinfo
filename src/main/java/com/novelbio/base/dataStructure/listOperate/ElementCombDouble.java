@@ -122,7 +122,7 @@ public class ElementCombDouble<T extends ElementAbsDouble> implements ElementAbs
 		return name;
 	}
 	@Override
-	public String getParentName() {
+	public String getRefID() {
 		String name = lsElement.get(0).get(0).getName();
 		for (int i = 1; i < lsElement.size(); i++) {
 			name = name + SEP + lsElement.get(i).get(0).getName();

@@ -184,7 +184,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (gffDetailGeneParent == null) {
 			return "";
 		}
-		return gffDetailGeneParent.getParentName();
+		return gffDetailGeneParent.getRefID();
 	}
 	/**
 	 * 是否是mRNA有atg和uag，

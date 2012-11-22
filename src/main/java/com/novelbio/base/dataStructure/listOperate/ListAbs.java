@@ -38,7 +38,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	public String getName() {
 		if (listName == null) {
 			if (size() > 0) {
-				listName = get(0).getParentName();
+				listName = get(0).getRefID();
 			}
 			else {
 				listName = "";
@@ -308,7 +308,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	public HashMap<String, E> getMapName2DetailAbs() {
 		HashMap<String, E> mapName2DetailAbs = new HashMap<String, E>();
 		for (E ele : this) {
-			if (ele.getParentName().equals("chr10") && Math.abs(ele.getStartAbs() - 695888) < 50000) {
+			if (ele.getRefID().equals("chr10") && Math.abs(ele.getStartAbs() - 695888) < 50000) {
 				System.out.println("stop");
 			}
 			ArrayList<String> ss = ele.getName();

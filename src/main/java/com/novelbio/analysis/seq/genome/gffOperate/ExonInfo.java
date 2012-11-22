@@ -6,6 +6,8 @@ import java.util.HashSet;
 
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 
+import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 
 public class ExonInfo extends ListDetailAbs {
@@ -84,8 +86,5 @@ public class ExonInfo extends ListDetailAbs {
 		}
 		return numberstart * 100000 + numberend * i;
 	}
-	
-
-
 }
 

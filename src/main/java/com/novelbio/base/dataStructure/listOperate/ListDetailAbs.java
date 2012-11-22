@@ -21,7 +21,7 @@ import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
  * @author zong0jie
  *
  */
-public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
+public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetailAbs> {
 	/** ¸¸Ê÷ */
 	protected ListAbs<? extends ListDetailAbs> listAbs;
 	
@@ -330,7 +330,7 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 	/**
 	 * ËùÊôlistAbs±àºÅ£¬¶¼Ð¡Ð´
 	 */
-	public String getParentName() {
+	public String getRefID() {
 		return this.parentName;
 	}
 
@@ -497,5 +497,5 @@ public class ListDetailAbs implements Cloneable, Comparable<ListDetailAbs> {
 				return result;
 			}
 	}
-
+	
 }

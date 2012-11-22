@@ -385,7 +385,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 //		setGffChrAbs();
 //		ctrlSnpCalling.setGffChrAbs(gffChrAbs);
 
-		ctrlSnpCalling.set(combSnpLevel.getSelectedValue());
+		ctrlSnpCalling.setSnpFilterLevel(combSnpLevel.getSelectedValue());
 		ArrayList<String[]> lsFile = sclInputFile.getLsDataInfo();
 		for (String[] strings : lsFile) {
 			ctrlSnpCalling.addSnpFromPileUpFile(strings[0], strings[1]);

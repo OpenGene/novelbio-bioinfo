@@ -594,7 +594,7 @@ public class GffDetailGene extends ListDetailAbs {
 		if (!isCis5to3()) {
 			strand = "-";
 		}
-		String geneGFF = getParentName() + "\t" +title + "\tgene\t" + getStartAbs()+ "\t" + getEndAbs()
+		String geneGFF = getRefID() + "\t" +title + "\tgene\t" + getStartAbs()+ "\t" + getEndAbs()
         + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=" + getNameSingle()
         +";Name=" + getNameSingle() + ";Name=" + getNameSingle() + " " + TxtReadandWrite.ENTER_LINUX;
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
@@ -602,7 +602,7 @@ public class GffDetailGene extends ListDetailAbs {
 			if (!gffGeneIsoInfo.isCis5to3()) {
 				strandmRNA = "-";
 			}
-			geneGFF = geneGFF + getParentName() + "\t" +title + "\tmRNA\t" +gffGeneIsoInfo.getStartAbs()+ "\t" + gffGeneIsoInfo.getEndAbs()
+			geneGFF = geneGFF + getRefID() + "\t" +title + "\tmRNA\t" +gffGeneIsoInfo.getStartAbs()+ "\t" + gffGeneIsoInfo.getEndAbs()
 	        + "\t"+"."+"\t" +strandmRNA+"\t.\t"+ "ID=" + gffGeneIsoInfo.getName() 
 	        +";Name="+gffGeneIsoInfo.getName()+ ";Parent="+ getNameSingle() + " " + TxtReadandWrite.ENTER_LINUX;
 			gffGeneIsoInfo.sort();

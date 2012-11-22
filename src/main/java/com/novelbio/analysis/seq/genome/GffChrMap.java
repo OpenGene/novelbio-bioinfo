@@ -905,7 +905,7 @@ public class GffChrMap {
 		int plotUpstream = 0;
 		int plotDownstream = 0;
 		MapInfo mapInfoResult = null;
-		String chrID = gffDetailGene.getParentName(); String geneName = gffDetailGene.getLongestSplit().getName();
+		String chrID = gffDetailGene.getRefID(); String geneName = gffDetailGene.getLongestSplit().getName();
 		if (gffDetailGene.isCis5to3()) {
 			plotUpstream = Math.abs(plotRange[0]);
 			plotDownstream = Math.abs(plotRange[1]);

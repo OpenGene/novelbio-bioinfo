@@ -120,7 +120,9 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	 * @param pileUpFile
 	 */
 	private void addPileupToLsSnpIndel(String sampleName, String pileupFile, String outPutFile) {
-		txtSnpOut = new TxtReadandWrite(outPutFile, true);
+		if (FileOperate.isFileDirectory(FileOperate.getParentPathName(outPutFile))) {
+			txtSnpOut = new TxtReadandWrite(outPutFile, true);
+		}
 		TxtReadandWrite txtReadPileUp = new TxtReadandWrite(pileupFile, false);
 		setFilter(sampleName);
 		for (String pileupLines : txtReadPileUp.readlines()) {
@@ -128,18 +130,13 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			readByte += pileupFile.length();
 			////// 中间输出信息 /////////////////////
 			suspendCheck();
-			if (flagStop)
-				break;
+			if (flagStop) break;
 			if (readLines%10000 == 0 ) {
 				SnpFilterDetailInfo snpFilterDetailInfo = new SnpFilterDetailInfo();
 				snpFilterDetailInfo.allLines = readLines;
 				snpFilterDetailInfo.allByte = readByte;
 				setRunInfo(snpFilterDetailInfo);
 				logger.info("readLines:" + readLines);
-			}
-			if (readLines % 100000 == 0) {
-//				System.gc();
-
 			}
 			////////////////////////////////////////////////
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
@@ -150,8 +147,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 				boolean writeIn = writeInFile(mapInfoSnpIndel, lsFilteredSnp);
 				if (mapSiteInfo2MapInfoSnpIndel != null) {
 					addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
-				}
-				else {
+				} else {
 					mapInfoSnpIndel.clear();
 				}
 				if (!writeIn) {
@@ -162,8 +158,10 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			}
 			mapInfoSnpIndel = null;
 		}
-
-		txtSnpOut.close();
+		
+		if (txtSnpOut != null) {
+			txtSnpOut.close();
+		}
 	}
 	/** 设定过滤器 */
 	private void setFilter(String sampleName) {
@@ -192,7 +190,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	
 	private boolean writeInFile(MapInfoSnpIndel mapInfoSnpIndel, ArrayList<SiteSnpIndelInfo> lsFilteredSnp) {
 		if (txtSnpOut == null) {
-			return false;
+			return true;
 		}
 		ArrayList<String[]> lsInfo = mapInfoSnpIndel.toStringLsSnp(lsFilteredSnp);
 		if (lsInfo.size() == 0) {

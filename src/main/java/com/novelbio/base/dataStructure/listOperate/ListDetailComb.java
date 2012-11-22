@@ -49,7 +49,7 @@ public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 		lsElement.add(element);
 		/// 这个可以不设置 ////////////////
 		for (T t : element) {
-			this.parentName = t.getParentName();
+			this.parentName = t.getRefID();
 			break;
 		}
 		//如果比较的element里面有相反的cis，那么就设定为null
@@ -137,8 +137,8 @@ public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 	}
 	/** 假定几个转录本的来源一致 */
 	@Override
-	public String getParentName() {
-		String name = lsElement.get(0).get(0).getParentName();
+	public String getRefID() {
+		String name = lsElement.get(0).get(0).getRefID();
 		return name;
 	}
 	@Override

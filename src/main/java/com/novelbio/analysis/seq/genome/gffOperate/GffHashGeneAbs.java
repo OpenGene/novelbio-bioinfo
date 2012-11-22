@@ -86,7 +86,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 					if (gffDetailGene.getName().contains("NR_027789")) {
 						logger.error("stop");
 					}
-					if (gffDetailGeneLast != null && gffDetailGene.getParentName().equals(gffDetailGeneLast.getParentName())) {
+					if (gffDetailGeneLast != null && gffDetailGene.getRefID().equals(gffDetailGeneLast.getRefID())) {
 						double[] regionLast = new double[]{gffDetailGeneLast.getStartAbs(), gffDetailGeneLast.getEndAbs()};
 						double[] regionThis = new double[]{gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs() };
 						double[]  overlapInfo = ArrayOperate.cmpArray(regionLast, regionThis);

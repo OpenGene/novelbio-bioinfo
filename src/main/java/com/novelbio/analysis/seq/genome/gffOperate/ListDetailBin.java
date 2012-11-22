@@ -6,17 +6,17 @@ import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
  * @author zong0jie
  *
  */
-public class ListDetailBin extends ListDetailAbs{
+public class ListDetailBin extends ListDetailAbs {
+	String description = "";
+	double score = 0;
 
 	public ListDetailBin(String chrID, String ItemName, Boolean cis5to3) {
 		super(chrID, ItemName, cis5to3);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public ListDetailBin()
 	{}
 	
-	double score = 0;
 	/**
 	 * 设定分数，根据需要保存double值
 	 * @param score
@@ -31,7 +31,6 @@ public class ListDetailBin extends ListDetailAbs{
 	public double getScore() {
 		return score;
 	}
-	String description = "";
 	/**
 	 * 设定描述，根据需要保存string值
 	 * @param score

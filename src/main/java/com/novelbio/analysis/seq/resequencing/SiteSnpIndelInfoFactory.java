@@ -10,9 +10,13 @@ public class SiteSnpIndelInfoFactory {
 	public static SiteSnpIndelInfo creatSiteSnpIndelInfo(MapInfoSnpIndel mapInfoSnpIndel, String referenceSeq, String thisSeq) {
 		 referenceSeq = referenceSeq.toUpperCase(); thisSeq = thisSeq.toUpperCase();
 		 
-		if (referenceSeq.length() > 1 && thisSeq.length() > 1) {
+		 if (referenceSeq.length() > 1 && thisSeq.length() > 1) {
 			logger.error("出现奇怪的位置，请确认：" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
 			return null;
+		}
+		 else if (referenceSeq.equals(thisSeq)) {
+			 SiteSnpIndelInfo siteSnpIndelInfo = new SiteSnpIndelInfoNoSnp(mapInfoSnpIndel, referenceSeq, thisSeq);
+			 return siteSnpIndelInfo;
 		}
 		else if (referenceSeq.length() == 1 && thisSeq.length() == 1) {
 			SiteSnpIndelInfo siteSnpIndelInfo = new SiteSnpIndelInfoSnp(mapInfoSnpIndel, referenceSeq, thisSeq);

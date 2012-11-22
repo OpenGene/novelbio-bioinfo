@@ -105,7 +105,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			junc = 1;
 
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		String chrID = gffDetailGene.getParentName();
+		String chrID = gffDetailGene.getRefID();
 		//一般 setCondition 里面只有两项，也就是仅比较两个时期的可变剪接
 		ArrayList<String> lsCondition = ArrayOperate.getArrayListKey(mapCondition2Counts);
 		if (exonCluster.getParentGene().getName().contains("NM_004723")) {
@@ -186,7 +186,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
-			result = result + tophatJunction.getJunctionSite(gffDetailGene.getParentName(), Integer.parseInt(ss[0]), Integer.parseInt(ss[1]), condition);
+			result = result + tophatJunction.getJunctionSite(gffDetailGene.getRefID(), Integer.parseInt(ss[0]), Integer.parseInt(ss[1]), condition);
 		}
 		
 		return result;

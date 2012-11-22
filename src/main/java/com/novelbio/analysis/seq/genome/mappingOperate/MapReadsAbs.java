@@ -396,7 +396,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	public void getRegionLs(int binNum, List<MapInfo> lsmapInfo, int type) {
 		for (int i = 0; i < lsmapInfo.size(); i++) {
 			MapInfo mapInfo = lsmapInfo.get(i);
-			double[] Info = getRengeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
+			double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
 			if (Info == null) {
 				lsmapInfo.remove(i); i--;
 				logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
@@ -413,7 +413,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
 	public void getRegion(int binNum, MapInfo mapInfo, int type) {
-		double[] Info = getRengeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
+		double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
 		if (Info == null) {
 			logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
 		}
@@ -433,7 +433,11 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @return 如果没有找到该染色体位点，则返回null
 	 */
 	public double[] getRengeInfo(int thisInvNum,String chrID,int startNum,int endNum,int type) {
-		double[] result;
+		double[] result = null;
+		if (!mapChrID2ReadsInfo.containsKey(chrID.toLowerCase())) {
+			logger.error("没有该染色体：" + chrID);
+			return result;
+		}
 		////////////////////////不需要分割了////////////////////////////////////////
 		if (invNum == 1 && thisInvNum == 1) {
 			result = getRengeInfoInv1(chrID, startNum, endNum);
@@ -442,11 +446,12 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 		return result;
 	}
-	/** 间断为1的精确版本，经过标准化，和equations修正
+	/**
+	 * 间断为1的精确版本，经过标准化，和equations修正
 	 * @param chrID 染色体ID
 	 * @param startNum
 	 * @param endNum
-	 *  */
+	 */
 	private double[] getRengeInfoInv1(String chrID, int startNum, int endNum) {
 		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
 		if (chrMapReadsInfo == null) {
@@ -476,11 +481,6 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 *  */
 	private double[] getRengeInfoNorm(String chrID, int thisInvNum, int startNum, int endNum, int type) {
-		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
-		if (chrMapReadsInfo == null) {
-			logger.error("没有该染色体：" + chrID);
-			return null;
-		}
 		int[] startEndLoc = correctStartEnd(chrID, startNum, endNum);
 		double binNum = (double)(startEndLoc[1] - startEndLoc[0] + 1) / thisInvNum;
 		int binNumFinal = 0;
@@ -490,8 +490,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			binNumFinal = (int)binNum;
 		}
 		//内部经过标准化了
-		double[] tmp = getRengeInfo( chrID, startNum, endNum, binNumFinal,type);
-		
+		double[] tmp = getRangeInfo( chrID, startNum, endNum, binNumFinal,type);
 		return tmp;
 	}
 	
@@ -506,7 +505,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 * @return 如果没有找到该染色体位点，则返回null
 	 */
-	public double[] getRengeInfo(String chrID,int startNum,int endNum,int binNum,int type) {
+	public double[] getRangeInfo(String chrID,int startNum,int endNum,int binNum,int type) {
 		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
 		if (chrMapReadsInfo == null) {
 			logger.error("没有该染色体：" + chrID);
@@ -526,11 +525,65 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			return null;
 		}
 	}
+	
 	/**
-	 * 校正输入的start 和 end
+	 * 
+	 * 经过标准化，和equations修正
+	 * 输入坐标区间，需要划分的块数，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
+	 * 定位到两个端点所在的 读取invNum区间，然后计算新的invNum区间
+	 * @param lsAlignments 将不属于指定区段内的数值全部清空
+	 * @param chrID 一定要小写
+	 * @param startNum 起点坐标，为实际起点 如果startNum<=0 并且endNum<=0，则返回全长信息
+	 * @param endNum 终点坐标，为实际终点
+	 * @param binNum 待分割的区域数目
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 * @return 如果没有找到该染色体位点，则返回null
+	 * @return
+	 */
+	private double[] getRangeInfo(ArrayList<? extends Alignment> lsAlignments, String chrID, int startNum, int endNum, int binNum, int type) {
+		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
+		if (chrMapReadsInfo == null) {
+			logger.error("没有该染色体：" + chrID);
+			return null;
+		}
+		int[] startEnd = correctStartEnd(chrID, startNum, endNum);
+		if (startEnd == null) {
+			return null;
+		}
+		int[] invNumReads = chrMapReadsInfo.getSumChrBpReads();
+		if (invNumReads == null) {
+			return null;
+		}
+		if (lsAlignments != null) {
+			
+		}
+		
+		try {
+			return getRengeInfoExp(invNumReads, startEnd[0], startEnd[1], binNum, type);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * 给定list区段，和全基因组的信息，将没有被list区段覆盖到的信息全部删除
+	 * @param lsAlignments
+	 * @param invNumReads
+	 * @param binNum
+	 * @return
+	 */
+	private static int[] cleanInfoNotInAlignment(ArrayList<? extends Alignment> lsAlignments, int[] invNumReads, int binNum) {
+		
+	}
+	
+	
+	
+	
+	/**
+	 * 检查输入的start 和 end是否在指定区间范围内，
 	 * @param chrID
-	 * @param startNum
-	 * @param endNum
+	 * @param startNum 小于0则设置为0
+	 * @param endNum 小于0则设置为最长范围
 	 * @return null 表示没有通过校正
 	 */
 	private int[] correctStartEnd(String chrID, int startNum, int endNum) {

@@ -404,12 +404,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 	   ListGff LOCList = null;
 	   for (GffDetailGene gffDetailGene : hashGenID2GffDetail.values()) {
-		   String chrIDlowCase = gffDetailGene.getParentName().toLowerCase();
+		   String chrIDlowCase = gffDetailGene.getRefID().toLowerCase();
 			 //新的染色体
 		   if (!mapChrID2ListGff.containsKey(chrIDlowCase)) { //新的染色体 
 			   LOCList = new ListGff();//新建一个LOCList并放入Chrhash
 			   LOCList.setName(chrIDlowCase);
-			   mapChrID2ListGff.put(gffDetailGene.getParentName().toLowerCase(), LOCList);
+			   mapChrID2ListGff.put(gffDetailGene.getRefID().toLowerCase(), LOCList);
 		   }
 		   if (gffDetailGene.getLsCodSplit().size() == 0) {
 			   gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), GeneType.ncRNA);

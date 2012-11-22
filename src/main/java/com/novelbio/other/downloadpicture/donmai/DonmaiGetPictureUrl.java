@@ -12,8 +12,6 @@ import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.SimpleNodeIterator;
 
-import net.sf.picard.annotation.Gene.Transcript.Exon;
-
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.other.downloadpicture.GetPictureUrl;
 import com.novelbio.other.downloadpicture.UrlPictureDownLoad;

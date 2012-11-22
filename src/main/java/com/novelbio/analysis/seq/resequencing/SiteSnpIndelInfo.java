@@ -487,6 +487,20 @@ class SiteSnpIndelInfoSnp extends SiteSnpIndelInfoInsert {
 	}
 }
 /**
+ * 没有snp的位点，就是只返回ref了
+ * @author zongjie
+ *
+ */
+class SiteSnpIndelInfoNoSnp extends SiteSnpIndelInfoInsert {
+	public SiteSnpIndelInfoNoSnp(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
+		super(mapInfoSnpIndel, refBase, thisBase);
+		super.snpType = SnpIndelType.CORRECT;
+	}
+	protected void setOrfShift() {
+		orfShift = 0;
+	}
+}
+/**
  * 必须很短的deletion，譬如在20bp以内的deletion
  * @author zong0jie
  *
@@ -512,7 +526,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		if (!gffGeneIsoInfo.isCis5to3()) {
 			refStartCis = refEnd; refEndCis = refStart;
 		}
-		setLocationInfo(gffGeneIsoInfo, refStartCis, refEndCis);
+		codLocInfo = setLocationInfo(gffGeneIsoInfo, refStartCis, refEndCis);
 		
 		if (codLocInfo != GffGeneIsoInfo.COD_LOC_EXON) {
 			return;
@@ -521,7 +535,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		int[] bound = getLocOutOfExonToNearistExonBounder(gffGeneIsoInfo, refStartCis, refEndCis);
 		refStartCis = bound[0]; refEndCis = bound[1];
 		
-		setEffectSplitType(gffGeneIsoInfo, refStartCis, refEndCis);
+		splitType = setEffectSplitType(gffGeneIsoInfo, refStartCis, refEndCis);
 		isInCDS = false;
 		if (gffGeneIsoInfo.isCodInAAregion(refStartCis) || gffGeneIsoInfo.isCodInAAregion(refEndCis)) {
 			isInCDS = true;
@@ -566,7 +580,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	 * @param refEndCis
 	 * @return
 	 */
-	private int[] getLocOutOfExonToNearistExonBounder(GffGeneIsoInfo gffGeneIsoInfo, int refStartCis, int refEndCis) {
+	private static int[] getLocOutOfExonToNearistExonBounder(GffGeneIsoInfo gffGeneIsoInfo, int refStartCis, int refEndCis) {
 		int[] bounder = new int[]{refStartCis, refEndCis};
 		//将起点和终点转换到距离最近的exon上去
 		if (gffGeneIsoInfo.getCodLoc(refStartCis) != GffGeneIsoInfo.COD_LOC_EXON) {
@@ -592,8 +606,8 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	 * @param refStartCis 必须在exon中
 	 * @param refEndCis 必须在exon中
 	 */
-	private void setEffectSplitType(GffGeneIsoInfo gffGeneIsoInfo, int refStartCis, int refEndCis) {
-		splitType = SplitType.NONE;
+	private static SplitType setEffectSplitType(GffGeneIsoInfo gffGeneIsoInfo, int refStartCis, int refEndCis) {
+		SplitType splitType = SplitType.NONE;
 		int codStart2ATGmRNA = gffGeneIsoInfo.getCod2ATGmRNA(refStartCis);
 		int codEnd2ATGmRNA = gffGeneIsoInfo.getCod2ATGmRNA(refEndCis);
 		int codStart2UAGmRNA = gffGeneIsoInfo.getCod2UAGmRNA(refStartCis);
@@ -626,6 +640,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 				}
 			}
 		}
+		return splitType;
 	}
 	/**
 	 * 设定该deletion处在哪个位置 ，或者说是否覆盖了exon
@@ -633,7 +648,8 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	 * @param startCis
 	 * @param endCis
 	 */
-	private void setLocationInfo(GffGeneIsoInfo gffGeneIsoInfo, int startCis, int endCis) {
+	private static int setLocationInfo(GffGeneIsoInfo gffGeneIsoInfo, int startCis, int endCis) {
+		int codLocInfo = GffGeneIsoInfo.COD_LOC_OUT;
 		if (gffGeneIsoInfo.getCodLoc(startCis) == GffGeneIsoInfo.COD_LOC_EXON || gffGeneIsoInfo.getCodLoc(endCis) == GffGeneIsoInfo.COD_LOC_EXON
 				|| gffGeneIsoInfo.getNumCodInEle(startCis) != gffGeneIsoInfo.getNumCodInEle(endCis)
 				) {
@@ -648,12 +664,19 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 				) {
 			codLocInfo = GffGeneIsoInfo.COD_LOC_INTRON;
 		}
+		return codLocInfo;
 	}
-	/** 需要测试 */
+	/** 需要测试
+	 * 这段代码的前提假设是ref很长，然后thisSeq一定为1
+	 * 这个形式是deletion的一般形式。
+	 * 那么这就排除了某段序列被完全不同的序列替换的情况
+	 *  譬如  ref为 ATCG TC GT    this为 ATCG AACTG GT 这种情况会被拆分成两个错配和一个插入
+	 *  那么这段代码就处理不了
+	 *  */
 	protected void setOrfShiftAndReplaceSite(GffGeneIsoInfo gffGeneIsoInfo, int refStartCis, int refEndCis) {
 		int deletionLen = gffGeneIsoInfo.getLocDistmRNA(refStartCis, refEndCis) + 1 - thisSeq.length();
 		orfShift = deletionLen%3;
-
+		//TODO 这里有问题，如果一个deletion横跨了一整个intron，那么就会有错误
 		snpOnReplaceLocStart = -gffGeneIsoInfo.getLocAAbeforeBias(refStartCis) + 1;
 		snpOnReplaceLocEnd = snpOnReplaceLocStart + deletionLen;
 	}

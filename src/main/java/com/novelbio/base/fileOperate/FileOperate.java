@@ -138,7 +138,7 @@ public class FileOperate {
 			String suffix = getFileNameSep(fileName)[1].toLowerCase();
 			if (suffix.equals("gz") || suffix.equals("zip")
 					|| suffix.equals("rar"))
-				size = size * 6;
+				size = size * 10;
 			else
 				size = size * 1.2;
 

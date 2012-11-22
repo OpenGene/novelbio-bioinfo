@@ -98,7 +98,7 @@ public class GlyMaxIDNCBI {
 		gffHashGene.ReadGffarray(gffFile);
 		for (ArrayList<ListDetailBin> lsGffGene : hashLsGffGene.values()) {
 			for (ListDetailBin gffDetailGene : lsGffGene) {
-				GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(gffDetailGene.getParentName(), (int)gffDetailGene.getStartAbs(), (int)gffDetailGene.getEndAbs());
+				GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(gffDetailGene.getRefID(), (int)gffDetailGene.getStartAbs(), (int)gffDetailGene.getEndAbs());
 				ArrayList<GffDetailGene> lsOverlapGffGene = gffCodGeneDU.getAllGffDetail();
 				if (lsOverlapGffGene.size() > 3) {
 					lsOverlapGffGene = gffCodGeneDU.getLsGffDetailMid();

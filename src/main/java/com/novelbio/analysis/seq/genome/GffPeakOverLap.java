@@ -177,7 +177,7 @@ public class GffPeakOverLap
 				String tmpResult[ ] = new String[3];
 				String tmpPeakID = lspeakMinusCope.get(i).split("/")[0];
 				ListDetailBin gffMinusPeakDetial = gffMinusLocHash.get(tmpPeakID);
-				String ChrID = gffMinusPeakDetial.getParentName();
+				String ChrID = gffMinusPeakDetial.getRefID();
 				int overlapLength = twoSiteLocation(gffMinusPeakDetial,gffHashPeakPlus);
 				tmpResult[0] = ChrID;
 				tmpResult[1] = tmpPeakID;
@@ -192,7 +192,7 @@ public class GffPeakOverLap
 				String tmpResult[] = new String[3];
 				String tmpPeakID = lspeakMinusID.get(i);
 				ListDetailBin gffMinusPeakDetial = gffMinusLocHash.get(tmpPeakID);
-				String ChrID = gffMinusPeakDetial.getParentName();
+				String ChrID = gffMinusPeakDetial.getRefID();
 				int overlapLength = twoSiteLocation(gffMinusPeakDetial,gffHashPeakPlus);
 				tmpResult[0] = ChrID;
 				tmpResult[1] = tmpPeakID;
@@ -225,7 +225,7 @@ public class GffPeakOverLap
 				String tmpResult[]=new String[3];
 				String tmpPeakID=lspeakPlusCope.get(i).split("/")[0];
 				ListDetailBin gffPlusPeakDetial=gffPlusLocHash.get(tmpPeakID);
-				String ChrID=gffPlusPeakDetial.getParentName();
+				String ChrID=gffPlusPeakDetial.getRefID();
 				int overlapLength=twoSiteLocation(gffPlusPeakDetial,gffHashPeakMinus);
 				tmpResult[0]=ChrID;
 				tmpResult[1]=tmpPeakID;
@@ -241,7 +241,7 @@ public class GffPeakOverLap
 				String tmpResult[]=new String[3];
 				String tmpPeakID=lspeakPlusID.get(i);
 				ListDetailBin gffPlusPeakDetial=gffPlusLocHash.get(tmpPeakID);
-				String ChrID=gffPlusPeakDetial.getParentName();
+				String ChrID=gffPlusPeakDetial.getRefID();
 				int overlapLength=twoSiteLocation(gffPlusPeakDetial,gffHashPeakMinus);
 				tmpResult[0]=ChrID;
 				tmpResult[1]=tmpPeakID;
@@ -261,7 +261,7 @@ public class GffPeakOverLap
 	 * @param endLoc
 	 */
 	private int twoSiteLocation(ListDetailBin gffMPeakDetial,ListHashBin gffHashplusPeak) {
-		String ChrID=gffMPeakDetial.getParentName();
+		String ChrID=gffMPeakDetial.getRefID();
 		int start=gffMPeakDetial.getStartAbs();
 		int end=gffMPeakDetial.getEndAbs();
 		

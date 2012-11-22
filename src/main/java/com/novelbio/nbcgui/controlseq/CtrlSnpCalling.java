@@ -37,7 +37,7 @@ public class CtrlSnpCalling implements RunGetInfo<SnpFilterDetailInfo> {
 	}
 	
 	/** snp¹ýÂËµÈ¼¶ */
-	public void set(int snpLevel) {
+	public void setSnpFilterLevel(int snpLevel) {
 		snpGroupInfoFilter.setSnpLevel(snpLevel);
 	}
 	public void addSnpFromPileUpFile(String pileUpFile, String outSnpFile) {

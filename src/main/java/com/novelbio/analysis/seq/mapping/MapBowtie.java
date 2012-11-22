@@ -3,19 +3,12 @@ package com.novelbio.analysis.seq.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMReadGroupRecord;
-
-import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
 
 public class MapBowtie extends MapDNA {
 	/** Ä¬ÈÏbowtie2 */
