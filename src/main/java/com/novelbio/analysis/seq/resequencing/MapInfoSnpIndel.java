@@ -755,8 +755,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			for (String sampleName : lsSampleNames) {
 				SampleRefReadsInfo sampleRefReadsInfo = mapSample2NormReadsInfo.get(sampleName);
 				if (sampleRefReadsInfo == null) {
-					for (int i = 0; i < 4; i++)
-						lsTmpInfo.add("");
+//					for (int i = 0; i < 4; i++)
+//						lsTmpInfo.add("");
 					continue;
 				}
 				siteSnpIndelInfo.setSampleName(sampleName);
@@ -777,8 +777,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				lsTmpInfo.add(siteSnpIndelInfo.getSplitTypeEffected());
 			}
 			else {
-				for (int i = 0; i < 6; i++)
-					lsTmpInfo.add("");
+//				for (int i = 0; i < 6; i++)
+//					lsTmpInfo.add("");
 			}
 			String[] infpoStrings = getStrArray(lsTmpInfo);
 			lsResult.add(infpoStrings);

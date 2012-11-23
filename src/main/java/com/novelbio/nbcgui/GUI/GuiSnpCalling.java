@@ -140,6 +140,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		btnRun = new JButton("Run");
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				progressBar.setValue(progressBar.getMinimum());
 				if (rdbtnSnpcalling.isSelected()) {
 					runSnpCalling();
 				}

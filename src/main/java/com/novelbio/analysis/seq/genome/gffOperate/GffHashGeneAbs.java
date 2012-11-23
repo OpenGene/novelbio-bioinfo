@@ -79,24 +79,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			for (Entry<String, ListGff> entry : mapChrID2ListGff.entrySet()) {
 				String chrID = entry.getKey();
 				ListGff listGff = entry.getValue();
-				ListGff listGffNew = new ListGff();
-				GffDetailGene gffDetailGeneLast = null;
+				ListGff listGffNew = listGff.combineOverlapGene();
 				//合并两个重叠的基因
 				for (GffDetailGene gffDetailGene : listGff) {
-					if (gffDetailGene.getName().contains("NR_027789")) {
-						logger.error("stop");
-					}
-					if (gffDetailGeneLast != null && gffDetailGene.getRefID().equals(gffDetailGeneLast.getRefID())) {
-						double[] regionLast = new double[]{gffDetailGeneLast.getStartAbs(), gffDetailGeneLast.getEndAbs()};
-						double[] regionThis = new double[]{gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs() };
-						double[]  overlapInfo = ArrayOperate.cmpArray(regionLast, regionThis);
-						if ((overlapInfo[2] > 0.5 || overlapInfo[3] > 0.5)) {
-							gffDetailGeneLast.addIsoSimple(gffDetailGene);
-							continue;
-						}
-					}
-					listGffNew.add(gffDetailGene);
-					gffDetailGeneLast = gffDetailGene;
 					for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 						mapName2Iso.put(GeneID.removeDot(gffGeneIsoInfo.getName().toLowerCase()), gffGeneIsoInfo);
 						mapName2Iso.put(gffGeneIsoInfo.getName().toLowerCase(), gffGeneIsoInfo);
@@ -105,7 +90,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				mapChrID2ListGff.put(chrID, listGffNew);
 				listGff = null;
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

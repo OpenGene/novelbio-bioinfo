@@ -144,7 +144,7 @@ public class TranscriptomStatistics {
 			if (gffDetailGeneRef.getLsCodSplit().size() == gffDetailGeneThis.getLsCodSplit().size()) {
 				for (GffGeneIsoInfo gffIsoThis : gffDetailGeneThis.getLsCodSplit()) {
 					GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getSimilarIso(gffIsoThis, gffGeneCluster.likelyhood);
-					if (!gffIsoRef.equalsIso(gffIsoThis)) {
+					if (gffIsoRef != null && !gffIsoRef.equalsIso(gffIsoThis)) {
 						sameGene = false;
 						break;
 					}

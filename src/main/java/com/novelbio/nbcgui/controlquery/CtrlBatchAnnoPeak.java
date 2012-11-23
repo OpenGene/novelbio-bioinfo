@@ -39,6 +39,9 @@ public class CtrlBatchAnnoPeak implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 		guiAnnoPeak.getProcessBar().setMaximum(lsGeneInfo.size() - 1);
 		gffChrAnno.setLsGeneInfo(lsGeneInfo);
 	}
+	public void setColChrID(int colChrID) {
+		gffChrAnno.setColChrID(colChrID);
+	}
 	public void setColPeakSummit(int colSummit) {
 		gffChrAnno.setColSummit(colSummit);
 	}

@@ -28,8 +28,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
+
 /**
  * 读取几个GATK的vcf结果文件，然后获得并集snp，并标记每个snp的信息，所在基因等等
  * @author zong0jie
@@ -64,35 +63,105 @@ public class SNPGATKcope {
 	ArrayList<SnpGroupFilterInfo> lsSampleDetailCompare = new ArrayList<SnpGroupFilterInfo>();
 	
 	public static void main(String[] args) {
-		String parentPath = "/media/winF/NBC/Project/Project_HXW/20120705/";
 		SNPGATKcope snpgatKcope = new SNPGATKcope();
 		snpgatKcope.setGffChrAbs(new GffChrAbs(9606));
 		
-		snpgatKcope.addVcfToLsSnpIndel("2A", parentPath + "2A_SNPrecal_IndelFiltered.vcf");
-		snpgatKcope.addVcfToLsSnpIndel("2B", parentPath + "2B_SNPrecal_IndelFiltered.vcf");
+//		snpgatKcope.addVcfToLsSnpIndel("2A", parentPath + "2A_SNPrecal_IndelFiltered.vcf");
+//		snpgatKcope.addVcfToLsSnpIndel("2B", parentPath + "2B_SNPrecal_IndelFiltered.vcf");
 		
-		snpgatKcope.addSampileupFile("2A", parentPath + "2A_detailmpileup.txt");
-		snpgatKcope.addSampileupFile("2B", parentPath + "2B_detailmpileup.txt");
+		String parentFile = "/media/winF/NBC/Project/Project_HXW/20121018/mapping/";
+		snpgatKcope.addSnpFromNBCfile("10A", parentFile + "10A_sorted_realign_removeDuplicate_pileup_SnpInfo.txt");
+		snpgatKcope.addSnpFromNBCfile("10A", parentFile + "10B_sorted_realign_removeDuplicate_pileup_SnpInfo.txt");
+
+		snpgatKcope.addSampileupFile("10A", parentFile + "10A_sorted_realign_removeDuplicate_pileup.gz");
+		snpgatKcope.addSampileupFile("10B", parentFile + "10B_sorted_realign_removeDuplicate_pileup.gz");
 		
-		SnpGroupFilterInfo sampleDetail2A = new SnpGroupFilterInfo();
-		sampleDetail2A.addSampleName("2A");
-		sampleDetail2A.setSampleRefHomoNum(1, 1);
-		sampleDetail2A.setSampleSnpIndelHetoNum(0, 0);
-		sampleDetail2A.setSampleSnpIndelHomoNum(0, 0);
-		snpgatKcope.addFilterSample(sampleDetail2A);
+		SnpGroupFilterInfo sampleDetail10A = new SnpGroupFilterInfo();
+		sampleDetail10A.addSampleName("10A");
+		sampleDetail10A.setSampleRefHomoNum(1, 1);
+		sampleDetail10A.setSampleSnpIndelHetoNum(0, 0);
+		sampleDetail10A.setSampleSnpIndelHomoNum(0, 0);
+		snpgatKcope.addFilterSample(sampleDetail10A);
 		
-		SnpGroupFilterInfo sampleDetail2B = new SnpGroupFilterInfo();
-		sampleDetail2B.addSampleName("2B");
-		sampleDetail2B.setSampleRefHomoNum(0, 0);
-		sampleDetail2B.setSampleSnpIndelNum(1, 1);
-		sampleDetail2B.setSampleSnpIndelHetoLessNum(0, 0);
-		snpgatKcope.addFilterSample(sampleDetail2B);
+		SnpGroupFilterInfo sampleDetail10B = new SnpGroupFilterInfo();
+		sampleDetail10B.addSampleName("10B");
+		sampleDetail10B.setSampleRefHomoNum(0, 0);
+		sampleDetail10B.setSampleSnpIndelNum(1, 1);
+		sampleDetail10B.setSampleSnpIndelHetoLessNum(0, 0);
+		snpgatKcope.addFilterSample(sampleDetail10B);
 		
-		snpgatKcope.readSnpDetailFromPileUp();
-		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_2Bvs2A2.xls");
+		snpgatKcope.readSnpDetailFromFile();
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/10Avs10B.xls");
 		
 		snpgatKcope.filterSnp();
-		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/result_withSampileup_2Bvs2A_filter2.xls");
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/10Avs10B_filter.xls");
+		snpgatKcope = null;		
+		
+		snpgatKcope = new SNPGATKcope();
+		
+		snpgatKcope.addSnpFromNBCfile("5A", parentFile + "5A_sorted_realign_removeDuplicate_pileup_SnpInfo.txt");
+		snpgatKcope.addSnpFromNBCfile("5A", parentFile + "5B_sorted_realign_removeDuplicate_pileup_SnpInfo.txt");
+
+		snpgatKcope.addSampileupFile("5A", parentFile + "5A_sorted_realign_removeDuplicate_pileup.gz");
+		snpgatKcope.addSampileupFile("5B", parentFile + "5B_sorted_realign_removeDuplicate_pileup.gz");
+		
+		SnpGroupFilterInfo sampleDetail5A = new SnpGroupFilterInfo();
+		sampleDetail5A.addSampleName("5A");
+		sampleDetail5A.setSampleRefHomoNum(1, 1);
+		sampleDetail5A.setSampleSnpIndelHetoNum(0, 0);
+		sampleDetail5A.setSampleSnpIndelHomoNum(0, 0);
+		snpgatKcope.addFilterSample(sampleDetail5A);
+		
+		SnpGroupFilterInfo sampleDetail5B = new SnpGroupFilterInfo();
+		sampleDetail5B.addSampleName("5B");
+		sampleDetail5B.setSampleRefHomoNum(0, 0);
+		sampleDetail5B.setSampleSnpIndelNum(1, 1);
+		sampleDetail5B.setSampleSnpIndelHetoLessNum(0, 0);
+		snpgatKcope.addFilterSample(sampleDetail5B);
+		
+		snpgatKcope.readSnpDetailFromFile();
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/5Avs5B.xls");
+		
+		snpgatKcope.filterSnp();
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/5Avs5B_filter.xls");
+		snpgatKcope = null;		
+		
+		
+		
+		
+		snpgatKcope = new SNPGATKcope();
+
+		snpgatKcope.addSnpFromNBCfile("7A", parentFile + "7A_sorted_realign_removeDuplicate_pileup_SnpInfo.txt");
+		snpgatKcope.addSnpFromNBCfile("7A", parentFile + "7B_sorted_realign_removeDuplicate_pileup_SnpInfo.txt");
+
+		snpgatKcope.addSampileupFile("7A", parentFile + "7A_sorted_realign_removeDuplicate_pileup.gz");
+		snpgatKcope.addSampileupFile("7B", parentFile + "7B_sorted_realign_removeDuplicate_pileup.gz");
+		
+		SnpGroupFilterInfo sampleDetail7A = new SnpGroupFilterInfo();
+		sampleDetail7A.addSampleName("7A");
+		sampleDetail7A.setSampleRefHomoNum(1, 1);
+		sampleDetail7A.setSampleSnpIndelHetoNum(0, 0);
+		sampleDetail7A.setSampleSnpIndelHomoNum(0, 0);
+		snpgatKcope.addFilterSample(sampleDetail7A);
+		
+		SnpGroupFilterInfo sampleDetail7B = new SnpGroupFilterInfo();
+		sampleDetail7B.addSampleName("7B");
+		sampleDetail7B.setSampleRefHomoNum(0, 0);
+		sampleDetail7B.setSampleSnpIndelNum(1, 1);
+		sampleDetail7B.setSampleSnpIndelHetoLessNum(0, 0);
+		snpgatKcope.addFilterSample(sampleDetail7B);
+		
+		snpgatKcope.readSnpDetailFromFile();
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/7Avs7B.xls");
+		
+		snpgatKcope.filterSnp();
+		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/7Avs7B_filter.xls");
+		snpgatKcope = null;		
+		
+		
+		
+		
+		
 	}
 
 	
@@ -170,13 +239,13 @@ public class SNPGATKcope {
 		else {
 			mapSiteInfo2MapInfoSnpIndel.put(key, mapInfoSnpIndel);
 		}
-		logger.error("tree map size: " +mapSiteInfo2MapInfoSnpIndel.size());
+//		logger.error("tree map size: " +mapSiteInfo2MapInfoSnpIndel.size());
 	}
 	
 	/** 在设定snp文件的情况下，从pileup文件中获取snp信息
 	 * 只要设定好snp文件即可，内部自动做snp calling
 	 *  */
-	public void readSnpDetailFromPileUp() {
+	public void readSnpDetailFromFile() {
 		for (String[] sample2vcf : lsSample2VcfFiles) {
 			addVcfToLsSnpIndel(sample2vcf[0], sample2vcf[1]);
 		}
@@ -261,35 +330,35 @@ public class SNPGATKcope {
 	 * @param domainFile
 	 * @param outFile
 	 */
-	public void setDomainInfo(String txtExcelSNP, String domainFile, String outFile) {
-		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
-		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, 
-				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
-		DomainPfam.readDomain(domainFile);
-		ArrayList<String[]> lsSnp = ExcelTxtRead.readLsExcelTxt(txtExcelSNP, 1);
-		for (int i = 1; i < lsSnp.size(); i++) {
-			String[] ss = lsSnp.get(i);
-			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, chrID, refSnpIndelStart)//(0, ss[0], Integer.parseInt(ss[1]), ss[3], ss[4]);
-			GffCodGene gffcod = gffHashGene.searchLocation(mapInfoSnpIndel.getRefID(), mapInfoSnpIndel.getRefSnpIndelStart());
-			String tmp = "";
-			if (gffcod.isInsideLoc()) {
-				GffDetailGene gffDetailGene = gffcod.getGffDetailThis();
-				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-					DomainPfam domainPfam = DomainPfam.getDomainPfam(gffGeneIsoInfo.getName());
-					if (domainPfam == null) {
-						continue;
-					}
-					domainPfam.setAALoc(gffGeneIsoInfo.getCod2ATGmRNA(gffcod.getCoord())/3);
-					tmp = domainPfam.toString();
-					break;
-				}
-				
-			}
-			String result = ArrayOperate.cmbString(ss, "\t");
-			result = result + "\t" + tmp;
-			txtOut.writefileln(result);
-		}
-		txtOut.close();
-	}
-	
+//	public void setDomainInfo(String txtExcelSNP, String domainFile, String outFile) {
+//		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
+//		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, 
+//				NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+//		DomainPfam.readDomain(domainFile);
+//		ArrayList<String[]> lsSnp = ExcelTxtRead.readLsExcelTxt(txtExcelSNP, 1);
+//		for (int i = 1; i < lsSnp.size(); i++) {
+//			String[] ss = lsSnp.get(i);
+//			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, chrID, refSnpIndelStart)//(0, ss[0], Integer.parseInt(ss[1]), ss[3], ss[4]);
+//			GffCodGene gffcod = gffHashGene.searchLocation(mapInfoSnpIndel.getRefID(), mapInfoSnpIndel.getRefSnpIndelStart());
+//			String tmp = "";
+//			if (gffcod.isInsideLoc()) {
+//				GffDetailGene gffDetailGene = gffcod.getGffDetailThis();
+//				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+//					DomainPfam domainPfam = DomainPfam.getDomainPfam(gffGeneIsoInfo.getName());
+//					if (domainPfam == null) {
+//						continue;
+//					}
+//					domainPfam.setAALoc(gffGeneIsoInfo.getCod2ATGmRNA(gffcod.getCoord())/3);
+//					tmp = domainPfam.toString();
+//					break;
+//				}
+//				
+//			}
+//			String result = ArrayOperate.cmbString(ss, "\t");
+//			result = result + "\t" + tmp;
+//			txtOut.writefileln(result);
+//		}
+//		txtOut.close();
+//	}
+//	
 }

@@ -3,6 +3,8 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
@@ -15,6 +17,8 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 /** 重建转录本 */
 public class GffHashMerge {
+	private static Logger logger = Logger.getLogger(GffHashMerge.class);
+	
 	public static void main(String[] args) {
 //		mouse();
 //		checken();
@@ -212,6 +216,9 @@ public class GffHashMerge {
 	private void modifyAndAddChrIDlist( ArrayList<GffGeneCluster> lsGeneCluster) {
 		ListGff listGff = new ListGff();
 		for (GffGeneCluster gffGeneCluster : lsGeneCluster) {
+			if (gffGeneCluster.getRefGffGene() != null && gffGeneCluster.getRefGffGene().size() > 0 && gffGeneCluster.getRefGffGene().get(0).getName().contains("PARK2")) {
+				logger.error("stop");
+			}
 			ArrayList<GffDetailGene> lsGene = gffGeneCluster.getCombinedGffGene();
 	
 			boolean shortGene = true;

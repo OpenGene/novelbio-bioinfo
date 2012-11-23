@@ -3,13 +3,19 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 
 public class GffGeneCluster {
+	private static Logger logger = Logger.getLogger(GffGeneCluster.class);
 	/** 是否含有reference的GffDetailGene */
 	boolean isContainsRef = true;
 	Boolean sameExon = null;
@@ -92,16 +98,6 @@ public class GffGeneCluster {
 		}
 	}
 	
-	/** 获得修饰好的GffDetailGene
-	 * @return
-	 */
-	public ArrayList<GffDetailGene> getCombinedGffGene() {
-		if (lsCombGenesResult == null) {
-			setRefGffGene();
-			lsCombGenesResult = compareAndModify_GffGene();
-		}
-		return lsCombGenesResult;
-	}
 	/**
 	 * 当ref和this的exon都在边界时，如果两个外显子的边界差距在指定bp以内(譬如10bp以内)，就修正为靠近内侧的
 	 * 如下<br>
@@ -119,7 +115,16 @@ public class GffGeneCluster {
 		}
 		this.boundMaxFalseGapBp = boundMaxFalseGapBp;
 	}
-	
+	/** 获得修饰好的GffDetailGene
+	 * @return
+	 */
+	public ArrayList<GffDetailGene> getCombinedGffGene() {
+		if (lsCombGenesResult == null) {
+			setRefGffGene();
+			lsCombGenesResult = compareAndModify_GffGene();
+		}
+		return lsCombGenesResult;
+	}
 	/** 设定lsGenesRef，同时将lsGeneCluster中对应项目删除
 	 * 为合并做好准备
 	 */
@@ -138,6 +143,7 @@ public class GffGeneCluster {
 			lsGeneCluster.remove(longestGffGene);
 		}
 	}
+	
 	private int getLongestGffGene_In_LsGeneCluster() {
 		int lengthGffGene = 0;
 		int index = 0;
@@ -156,8 +162,11 @@ public class GffGeneCluster {
 	}
 
 	private ArrayList<GffDetailGene> compareAndModify_GffGene() {
-		ArrayList<GffDetailGene> lsGffDetailGenes = new ArrayList<GffDetailGene>();
+		ListGff lsGffDetailGenes = new ListGff();
 		for (GffDetailGene gffDetailGeneRefRaw : lsGenesRef) {//遍历每个GffDetail
+			if (gffDetailGeneRefRaw.getName().contains("NM_001044603")) {
+				logger.error("stop");
+			}
 			GffDetailGene gffDetailGeneRef = gffDetailGeneRefRaw.clone();
 			GffDetailGene gffDetailGeneResult = gffDetailGeneRefRaw.clone();
 			gffDetailGeneResult.clearIso();
@@ -185,6 +194,7 @@ public class GffGeneCluster {
 			gffDetailGeneResult.addIsoSimple(gffDetailGeneRef);
 			lsGffDetailGenes.add(gffDetailGeneResult);
 		}
+		lsGffDetailGenes = lsGffDetailGenes.combineOverlapGene();
 		return lsGffDetailGenes;
 	}
 	/**

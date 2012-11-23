@@ -7,11 +7,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modgeneid.GeneType;
 
 public class GffHashCufflinkGTF extends GffHashGeneAbs{
+	private static Logger logger = Logger.getLogger(GffHashCufflinkGTF.class);
 	GffHashGene gffHashRef;
 	double likelyhood = 0.4;//相似度在0.4以内的转录本都算为同一个基因
 	/**
@@ -36,9 +39,9 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		String tmpChrID = "";
 		String tmpTranscriptName = "";
 		for (String content : txtgff.readlines() ) {
-			if (content.charAt(0) == '#')
+			if (content.charAt(0) == '#') {
 				continue;
-
+			}
 			String[] ss = content.split("\t");// 按照tab分开
 			
 			// 新的染色体

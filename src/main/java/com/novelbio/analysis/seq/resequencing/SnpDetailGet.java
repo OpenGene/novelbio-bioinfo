@@ -122,10 +122,6 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		/** 每个chrID对应一组mapinfo，也就是一个list */
 		// 按照chr位置装入hash表
 		for (MapInfoSnpIndel mapInfoSnpIndel : lsSite) {
-			if (mapInfoSnpIndel.getRefID().equals("NM_001243990")) {
-				logger.error("stop");
-			}
-			logger.error(mapInfoSnpIndel.getRefID());
 			ArrayList<MapInfoSnpIndel> lsMap = mapChrID2LsSnpSite.get(mapInfoSnpIndel.getRefID().toLowerCase());
 			if (lsMap == null) {
 				lsMap = new ArrayList<MapInfoSnpIndel>();
@@ -216,12 +212,6 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 //					logger.info("出现未知 chrID：" + tmpChrID);
 					continue;
 				}
-			}
-			if (ss[0].equalsIgnoreCase("NM_001243990")) {
-				logger.error("stop");
-			}
-			if (ss[0].equalsIgnoreCase("NM_001243990") && loc == 1591) {
-				logger.error("stop");
 			}
 			//所有lsMapInfos中的信息都查找完毕了
 			if (lsMapInfos == null || mapInfoIndex >= lsMapInfos.size()) continue;

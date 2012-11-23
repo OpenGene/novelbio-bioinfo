@@ -26,7 +26,7 @@ public class SnpFilter {
 	/** 判定为Snp所含有的snp数量不得小于该数值 */
 	int Snp_HetoMore_Contain_SnpNumMin = 2;
 	/**判定为纯合snp所含有的snp比例不得小于于该数值 */
-	double Snp_HetoMore_Contain_SnpProp_Min = 0.7;
+	double Snp_HetoMore_Contain_SnpProp_Min = 0.4;
 	
 	/** 判定为Snp Heto的最少reads数 */
 	int Snp_Heto_ReadsAllNumMin = 3;
@@ -195,9 +195,6 @@ class FilterUnit {
 	
 	/** 判定是否落在该区间内 */
 	public boolean isInThisUnit(int numSnpIndel, int numRef, int numAll) {
-		if (Ref_Num_Max > 0 ) {
-			
-		}
 		
 		return false;
 	}
