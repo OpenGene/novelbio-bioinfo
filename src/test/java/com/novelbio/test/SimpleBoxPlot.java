@@ -76,20 +76,19 @@ public class SimpleBoxPlot extends ExamplePanel {
 		// Format boxes
 		Stroke stroke = new BasicStroke(2f);
 		ScaledContinuousColorMapper colors = new LinearGradient(
-				GraphicsUtils.deriveBrighter(COLOR1), Color.WHITE);
+				GraphicsUtils.deriveBrighter(COLOR1), GraphicsUtils.deriveDarker(COLOR1));
 		colors.setRange(1.0, 3.0);
 		plot.getPointRenderer(boxData).setSetting(
 				BoxWhiskerRenderer.WHISKER_STROKE, stroke);
 		plot.getPointRenderer(boxData).setSetting(
 				BoxWhiskerRenderer.BOX_BORDER, stroke);
 		plot.getPointRenderer(boxData).setSetting(
-				BoxWhiskerRenderer.BOX_BACKGROUND, colors);
-		plot.getPointRenderer(boxData).setSetting(BoxWhiskerRenderer.BOX_COLOR,
-				COLOR1);
+				BoxWhiskerRenderer.BOX_BACKGROUND, Color.yellow);
+		plot.getPointRenderer(boxData).setSetting(BoxWhiskerRenderer.BOX_COLOR, Color.black);
 		plot.getPointRenderer(boxData).setSetting(
-				BoxWhiskerRenderer.WHISKER_COLOR, COLOR1);
+				BoxWhiskerRenderer.WHISKER_COLOR, Color.red);
 		plot.getPointRenderer(boxData).setSetting(
-				BoxWhiskerRenderer.BAR_CENTER_COLOR, COLOR1);
+				BoxWhiskerRenderer.BAR_CENTER_COLOR, Color.green);
 
 		plot.getNavigator().setDirection(XYNavigationDirection.HORIZONTAL);
 

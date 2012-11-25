@@ -3,7 +3,7 @@ package com.novelbio.base.plot;
 import java.awt.BasicStroke;
 import java.awt.Paint;
 
-public class BarStyle extends DotStyle{
+public class BarStyle extends DotStyle {
 	Paint barEdgeColor = null;
 	/**
 	 *  paint the outline of the point shape.
@@ -20,6 +20,14 @@ public class BarStyle extends DotStyle{
 		return STYLE_BAR;
 	}
 	
+	/**
+	 * 连了边框一起设定宽度
+	 */
+	public void setBarAndStrokeWidth(double barWidth) {
+		this.barWidth = barWidth;
+		this.basicStroke = new BasicStroke(3f);
+	}
+
 	/**
 	 * if the style is bar, set the bar width info
 	 * @param barWidth
@@ -38,9 +46,10 @@ public class BarStyle extends DotStyle{
 	/**
 	 *  paint the outline of the point shape.
 	 */
-	public void setBasicStroke(BasicStroke basicStroke) {
-		this.basicStroke = basicStroke;
+	public void setBasicStroke(float width) {
+		this.basicStroke = new BasicStroke(width);
 	}
+	
 	/**
 	 *  paint the outline of the point shape.
 	 */

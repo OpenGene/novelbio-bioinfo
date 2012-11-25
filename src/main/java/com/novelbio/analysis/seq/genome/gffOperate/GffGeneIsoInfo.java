@@ -560,7 +560,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return getRangeIso(ATGsite, UAGsite);
 	}
 	/**
-	 * 获得3UTR的序列
+	 * 获得3UTR的信息
 	 * @param startLoc
 	 * @param endLoc
 	 * @return
@@ -569,7 +569,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return getRangeIso(UAGsite, getTESsite());
 	}
 	/**
-	 * 获得5UTR的序列
+	 * 获得5UTR的信息
 	 * @return
 	 */
 	public ArrayList<ExonInfo> getUTR5seq() {

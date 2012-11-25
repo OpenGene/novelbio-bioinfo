@@ -42,7 +42,7 @@ public class GffChrUnionHanYanRefSeq extends GffChrHanYan{
 	 * double[] 0: atg位点,绝对位点，1-结束 从tss到tes的每个位点的reads数目
 	 */
 	protected double[] getReadsInfo(String geneID, GffGeneIsoInfo gffGeneIsoSearch) {		
-		double[] iso = mapReads.getRengeInfo(1, geneID.toLowerCase(), 0, 0, 0);
+		double[] iso = mapReads.getRangeInfo(1, geneID.toLowerCase(), 0, 0, 0);
 		if (iso == null) {
 			return null;
 		}

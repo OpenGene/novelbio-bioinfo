@@ -38,7 +38,7 @@ public class HistBin extends ListDetailAbs {
 	 * 设定描述，根据需要保存string值
 	 * @param score
 	 */
-	public void setDescription(String description) {
+	public void setName(String description) {
 		this.description = description;
 	}
 	/**

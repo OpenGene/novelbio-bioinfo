@@ -399,6 +399,60 @@ public class MathComput {
 		}
 		return max;
 	}
+	
+	
+	
+	
+	
+	/**
+	 * 输入数据，获得平均数
+	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * 用于获得每10个bp的tag堆积数的中位数
+	 * @return
+	 */
+	public static double min(ArrayList<? extends Number> lsNum) {
+		double min = lsNum.get(0).doubleValue();
+		for (Number number : lsNum) {
+			double tmp = number.doubleValue();
+			if (tmp < min) {
+				min = tmp;
+			}
+		}
+		return min;
+	}
+	/**
+	 * 输入数据，获得平均数
+	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * 用于获得每10个bp的tag堆积数的中位数
+	 * @return
+	 */
+	public static double min(double[] num) {
+		double min = num[0];
+		for (double number : num) {
+			double tmp = number;
+			if (tmp < min) {
+				min = tmp;
+			}
+		}
+		return min;
+	}
+	/**
+	 * 输入数据，获得平均数
+	 * 采用插入排序法，据说对于小规模数据效率还不错
+	 * 用于获得每10个bp的tag堆积数的中位数
+	 * @return
+	 */
+	public static int min(int[] num) {
+		int min = num[0];
+		for (int number : num) {
+			int tmp = number;
+			if (tmp < min) {
+				min = tmp;
+			}
+		}
+		return min;
+	}
+	
 	/**
 	 * 输入数据进行排序，
 	 * @param unsortNum 待排序的数组
@@ -554,9 +608,6 @@ public class MathComput {
 		return resultBinValue;
 	}
 	
-	
-	
-	
 	/**
 	 * 给定一组数(有顺序的排列)，根据给定的分割数，指定获得加权平均，最后获得指定分割数量的数组
 	 * 譬如现在有int[20]的一组数，我想要把这组数缩小到int[10]里面并且保持其比例大体吻合，这时候我采用加权平均的方法
@@ -569,9 +620,8 @@ public class MathComput {
 	 * @param type 0：加权平均 1：取最高值，2：加和
 	 * @return
 	 */
-	public static double[] mySpline(double[] treatNum, int binNum,double startBias,double endBias,int type)
-	{
-		double rawlength=treatNum.length-startBias-endBias;
+	public static double[] mySpline(double[] treatNum, int binNum,double startBias,double endBias,int type) {
+		double rawlength=treatNum.length - startBias - endBias;
 		double binlength=rawlength/binNum; //将每一个分隔的长度标准化为一个比值，基准为invNum为1 
 		double[] resultBinValue=new double[binNum];
 		for (int i = 1; i <= binNum; i++) 

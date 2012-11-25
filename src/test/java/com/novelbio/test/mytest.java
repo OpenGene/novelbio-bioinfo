@@ -1,12 +1,22 @@
 package com.novelbio.test;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
+import com.novelbio.analysis.seq.rnaseq.GffHashMerge;
+import com.novelbio.analysis.seq.rnaseq.TranscriptomStatistics;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.listOperate.HistBin;
+import com.novelbio.base.dataStructure.listOperate.HistList;
+import com.novelbio.base.plot.BarStyle;
+import com.novelbio.base.plot.DotStyle;
+import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
@@ -16,18 +26,25 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) {
-//		MiRNACount miRNACount = new MiRNACount();
-//		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_RNA_DATA, new Species(10090), "/media/winE/Bioinformatics/genome/sRNA/miRNA.dat");
-		
-		Species species = new Species(3702);
-//		species.setVersion("rnor4");
-		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		HashSet<String> setGeneID = gffChrAbs.getGffHashGene().getSetIsoID();
-		TxtReadandWrite txtOut = new TxtReadandWrite("/home/zong0jie/×ÀÃæ/atBG.txt", true);
-		for (String geneID : setGeneID) {
-			txtOut.writefileln(geneID);
+		HistList histList = HistList.creatHistList(true);
+		histList.setStartBin("", 0, 1);
+		for (int i = 2; i < 10; i++) {
+			histList.addHistBin("",i);
 		}
-		txtOut.close();
+		
+		histList.addNum(5, 50);
+		histList.addNum(6, 55);
+		histList.addNum(7, 34);
+		histList.addNum(8, 28);
+		histList.addNum(9, 10);
+		BarStyle dotStyle = new BarStyle();
+		dotStyle.setColor(DotStyle.getGridentColorBrighter(Color.red));
+		dotStyle.setColorEdge(DotStyle.getGridentColorBrighterTrans(Color.red));
+//		dotStyle.setBasicStroke(new BasicStroke(5f));
+		
+		PlotScatter plotScatter = histList.getPlotHistBar(dotStyle, 20);
+		plotScatter.setBg(Color.white);
+		plotScatter.saveToFile("/home/zong0jie/Desktop/test/aaa.png", 1000, 1000);
 	}
 	
 	private static void HG18() {

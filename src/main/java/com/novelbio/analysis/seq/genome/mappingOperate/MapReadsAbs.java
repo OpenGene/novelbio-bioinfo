@@ -2,8 +2,11 @@ package com.novelbio.analysis.seq.genome.mappingOperate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 
 import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
@@ -56,6 +59,11 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 AlignSeq alignSeqReader;
 	 
 	 int summeryType = SUM_TYPE_MEAN;
+	 /**
+	  * key：chrID必须小写
+	  * value： 染色体过滤信息，马红想要只看tss，只看exon等表达
+	  */
+	 Map<String, List<? extends Alignment>> mapChrID2LsAlignmentFilter;
 	 
 	 /**
 	  * @param invNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
@@ -71,6 +79,13 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	}
 	 public void setAlignSeqReader(AlignSeq alignSeqReader) {
 		 this.alignSeqReader = alignSeqReader;
+	}
+	 /**
+	  * 设定保留的区域，譬如马红想看全基因组上tss的分布，那么就将tss的区域装到该ls中间
+	  * @param lsAlignments
+	  */
+	 public void setMapChrID2LsAlignments(Map<String, List<? extends Alignment>> mapChrID2LsAlignmentFilter) {
+		this.mapChrID2LsAlignmentFilter = mapChrID2LsAlignmentFilter;
 	}
 	 /**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的中位数或平均数<br>
 	  * SUM_TYPE_MEDIAN，SUM_TYPE_MEAN
@@ -184,136 +199,65 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @throws Exception
 	 */
 	protected abstract void ReadMapFileExp() throws Exception;
-	
-	/**
-	 * 经过标准化，和equations修正
-	 * 给定坐标范围，返回该区间内最小值
-	 * @param chrID
-	 * @param startLoc
-	 * @param endLoc
-	 * @return double -1表示出错
-	 */
-	public double regionMin(String chrID, int startLoc, int endLoc) {
-		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
-		if (info == null) {
-			return -1;
-		}
-		return new Min().evaluate(info);
-	}
-	
-	/**
-	 * 经过标准化，和equations修正<br>
-	 * 给定坐标范围，返回该区间内最大值
-	 * @param chrID
-	 * @param startLoc
-	 * @param endLoc
-	 * @return double -1表示出错
-	 */
-	public double regionMax(String chrID, int startLoc, int endLoc) {
-		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
-		if (info == null) {
-			return -1;
-		}
-		return new Max().evaluate(info);
-	}
-	/**
-	 * 经过标准化，和equations修正
-	 * 给定坐标范围，返回该区间内平均值
-	 * @param chrID
-	 * @param startLoc
-	 * @param endLoc
-	 * @return double -1表示出错
-	 */
-	public double getRegionMean(String chrID, int startLoc, int endLoc) {
-		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
-		if (info == null) {
-			return -1;
-		}
-		return new Mean().evaluate(info);
-	}
-	/**
-	 * 如果invNum不为1，则可能不精确
-	 * 给定坐标范围，看该区域内有多少0区域
-	 * @param chrID
-	 * @param startLoc 无所谓哪个在前，绝对坐标从1开始
-	 * @param endLoc
-	 * @return arrayList[]:0区域的绝对坐标区间
-	 *  null表示出错
-	 */
-	public ArrayList<int[]> region0Info(String chrID, int startLocT, int endLocT) {
-		int startLoc = Math.min(startLocT, endLocT);
-		int endLoc = Math.max(startLocT, endLocT);
-		startLoc--; endLoc--;
-		int[] invNumReads = mapChrID2ReadsInfo.get(chrID.toLowerCase()).getSumChrBpReads();
-		if (startLoc < 0 || endLoc >= invNumReads.length) {
-			logger.error("越界了："+ chrID + " " + startLoc + " " + endLoc);
-			return null;
-		}
-		ArrayList<int[]> lsResult = new ArrayList<int[]>();
-		
-		boolean flag0 = false;
-		int[] region = null;
-		for (int i = startLoc; i < endLoc; i++) {
-			if (invNumReads[i] == 0 && !flag0) {
-				region = new int[2];
-				region[0] = i+1;
-				region[1] = i + 1;
-				lsResult.add(region);
-				flag0 = true;
-			}
-			else if (invNumReads[i] == 0 && flag0) {
-				region[1] = i+1;
-			}
-			else if (invNumReads[i] != 0) {
-				flag0 = false;
-			}
-		}
-		return lsResult;
-	}
-	/**
-	 * 经过标准化，和equations修正
-	 * 给定坐标范围，返回该区间内标准差
-	 * @param chrID
-	 * @param startLoc
-	 * @param endLoc
-	 * @return double  -1表示出错
-	 */
-	public double regionSD(String chrID, int startLoc, int endLoc) {
-		double[] info = getRengeInfo(invNum, chrID, startLoc, endLoc, 0);
-		if (info == null) {
-			return -1;
-		}
-		return new StandardDeviation().evaluate(info);
-	}
-	/**
-	 * 经过标准化，和equations修正
-	 * 给定坐标范围，返回该区间内标准差
-	 * @param chrID 染色体编号
-	 * @param lsLoc 一个转录本的exon list
-	 * @return -1表示出错
-	 */
-	public double regionSD(String chrID, List<ExonInfo> lsLoc) {
-		double[] info = getRegionInfo(chrID, lsLoc);
-		if (info == null) {
-			return -1;
-		}
-		return new StandardDeviation().evaluate(getRegionInfo(chrID, lsLoc));
-	}
-	/**
-	 * 经过标准化，和equations修正
-	 * 给定坐标范围，返回该区间内平均值
-	 * @param chrID
-	 * @param lsLoc 一个转录本的exon list
-	 * @return  -1表示出错
-	 */
-	public double regionMean(String chrID, List<ExonInfo> lsLoc) {
-		double[] info = getRegionInfo(chrID, lsLoc);
-		if (info == null) {
-			return -1;
-		}
-		return new Mean().evaluate(info);
-	}
 
+	/**
+	 * 填充每个MapInfo，如果没有找到该染色体位点，则填充null
+
+	 * 经过标准化，和equations修正
+	 * @param lsmapInfo
+	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 */
+	public void getRange(MapInfo mapInfo, int thisInvNum, int type) {
+		double[] Info = getRangeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
+		mapInfo.setDouble(Info);
+	}
+	/**
+	 * 经过标准化
+	 * 将MapInfo中的double填充上相应的reads信息
+	 * @param binNum 待分割的区域数目
+	 * @param lsmapInfo
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 */
+	public void getRange(int binNum, MapInfo mapInfo, int type) {
+		double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
+		if (Info == null) {
+			logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
+		}
+		mapInfo.setDouble(Info);
+	}
+	/**
+	 * 填充每个MapInfo
+	 * 经过标准化，和equations修正
+	 * @param lsmapInfo
+	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 */
+	public void getRangeLs(List<MapInfo> lsmapInfo, int thisInvNum, int type) {
+		for (MapInfo mapInfo : lsmapInfo) {
+			double[] Info = getRangeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
+			mapInfo.setDouble(Info);
+		}
+	}
+	/**
+	 * 经过标准化
+	 * 将MapInfo中的double填充上相应的reads信息
+	 * @param binNum 待分割的区域数目
+	 * @param lsmapInfo
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 */
+	public void getRangeLs(int binNum, List<MapInfo> lsmapInfo, int type) {
+		for (int i = 0; i < lsmapInfo.size(); i++) {
+			MapInfo mapInfo = lsmapInfo.get(i);
+			double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
+			if (Info == null) {
+				lsmapInfo.remove(i); i--;
+				logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
+				continue;
+			}
+			mapInfo.setDouble(Info);
+		}
+	}
 	/**
 	 * 经过标准化，和equations修正
 	 * 给定坐标范围，返回该区间内的信息，取点为加权平均
@@ -321,8 +265,8 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param lsLoc 一个转录本的exon list
 	 * @return null表示出错
 	 */
-	public double[] getRegionInfo(String chrID, List<ExonInfo> lsLoc) {
-		return getRegionInfo(chrID, lsLoc, -1 , 0);
+	public double[] getRangeInfo(String chrID, List<ExonInfo> lsLoc) {
+		return getRangeInfo(chrID, lsLoc, -1 , 0);
 	}
 	/**
 	 *  用于mRNA的计算，经过标准化，和equations修正
@@ -334,10 +278,10 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param type  0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 * @return
 	 */
-	public double[] getRegionInfo(String chrID, List<ExonInfo> lsLoc, int binNum, int type) {
+	private double[] getRangeInfo(String chrID, List<ExonInfo> lsLoc, int binNum, int type) {
 		ArrayList<double[]> lstmp = new ArrayList<double[]>();
 		for (ExonInfo is : lsLoc) {
-			double[] info = getRengeInfo(invNum, chrID, is.getStartAbs(), is.getEndAbs(), type);
+			double[] info = getRangeInfo(invNum, chrID, is.getStartAbs(), is.getEndAbs(), type);
 			if (info == null) {
 				return null;
 			}
@@ -362,62 +306,19 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		return finalReads;
 	}
 	/**
-	 * 填充每个MapInfo
 	 * 经过标准化，和equations修正
-	 * @param lsmapInfo
-	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
+	 * 输入坐标区间，默认每个区间的bp数为invNum，返回该段区域内reads的数组
+	 * 如果该染色体在mapping时候不存在，则返回null
+	 * 如果invNum ==1 && thisInvNum == 1，结果会很精确
+	 * @param chrID 一定要小写
+	 * @param startNum 起点坐标，为实际起点，如果startNum<=0 并且endNum<=0，则返回全长信息
+	 * @param endNum 终点坐标，为实际终点
+	 * 如果(endNum - startNum + 1) / thisInvNum >0.7，则将binNum设置为1
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 * @return 如果没有找到该染色体位点，则返回null
 	 */
-	public void getRegionLs(List<MapInfo> lsmapInfo, int thisInvNum, int type) {
-		for (MapInfo mapInfo : lsmapInfo) {
-			double[] Info = getRengeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
-			mapInfo.setDouble(Info);
-		}
-	}
-	/**
-	 * 填充每个MapInfo，如果没有找到该染色体位点，则填充null
-
-	 * 经过标准化，和equations修正
-	 * @param lsmapInfo
-	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
-	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
-	 */
-	public void getRegion(MapInfo mapInfo, int thisInvNum, int type) {
-		double[] Info = getRengeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
-		mapInfo.setDouble(Info);
-	}
-	/**
-	 * 经过标准化
-	 * 将MapInfo中的double填充上相应的reads信息
-	 * @param binNum 待分割的区域数目
-	 * @param lsmapInfo
-	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
-	 */
-	public void getRegionLs(int binNum, List<MapInfo> lsmapInfo, int type) {
-		for (int i = 0; i < lsmapInfo.size(); i++) {
-			MapInfo mapInfo = lsmapInfo.get(i);
-			double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
-			if (Info == null) {
-				lsmapInfo.remove(i); i--;
-				logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
-				continue;
-			}
-			mapInfo.setDouble(Info);
-		}
-	}
-	/**
-	 * 经过标准化
-	 * 将MapInfo中的double填充上相应的reads信息
-	 * @param binNum 待分割的区域数目
-	 * @param lsmapInfo
-	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
-	 */
-	public void getRegion(int binNum, MapInfo mapInfo, int type) {
-		double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
-		if (Info == null) {
-			logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
-		}
-		mapInfo.setDouble(Info);
+	public double[] getRangeInfo(String chrID,int startNum,int endNum,int type) {
+		return getRangeInfo(invNum, chrID, startNum, endNum, type);
 	}
 	/**
 	 * 经过标准化，和equations修正
@@ -432,7 +333,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 * @return 如果没有找到该染色体位点，则返回null
 	 */
-	public double[] getRengeInfo(int thisInvNum,String chrID,int startNum,int endNum,int type) {
+	public double[] getRangeInfo(int thisInvNum,String chrID,int startNum,int endNum,int type) {
 		double[] result = null;
 		if (!mapChrID2ReadsInfo.containsKey(chrID.toLowerCase())) {
 			logger.error("没有该染色体：" + chrID);
@@ -440,9 +341,9 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 		////////////////////////不需要分割了////////////////////////////////////////
 		if (invNum == 1 && thisInvNum == 1) {
-			result = getRengeInfoInv1(chrID, startNum, endNum);
+			result = getRangeInfoInv1(chrID, startNum, endNum);
 		} else {
-			result = getRengeInfoNorm(chrID, thisInvNum, startNum, endNum, type);
+			result = getRangeInfoNorm(chrID, thisInvNum, startNum, endNum, type);
 		}
 		return result;
 	}
@@ -452,7 +353,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param startNum
 	 * @param endNum
 	 */
-	private double[] getRengeInfoInv1(String chrID, int startNum, int endNum) {
+	private double[] getRangeInfoInv1(String chrID, int startNum, int endNum) {
 		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
 		if (chrMapReadsInfo == null) {
 			logger.info("没有该染色体： " + chrID);
@@ -462,7 +363,10 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		double[] result = new double[startEnd[1] - startEnd[0] + 1];
 		
 		int[] invNumReads = chrMapReadsInfo.getSumChrBpReads();
-		
+		if (mapChrID2LsAlignmentFilter != null && mapChrID2LsAlignmentFilter.containsKey(chrID.toLowerCase())) {
+			List<? extends Alignment> lsAlignments = mapChrID2LsAlignmentFilter.get(chrID.toLowerCase());
+			invNumReads = cleanInfoNotInAlignment(lsAlignments, invNumReads, 1);
+		}
 		int k = 0;
 		for (int i = startEnd[0]; i <= startEnd[1]; i++) {
 			result[k] = invNumReads[i];
@@ -474,13 +378,14 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		return result;
 	}
 	/** 常规的版本，经过标准化，和equations修正
+	 * @param lsAlignments 是否仅绘制lsAlignments范围内的信息
 	 * @param chrID 染色体ID
 	 * @param thisInvNum 每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数
 	 * @param startNum
 	 * @param endNum
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 *  */
-	private double[] getRengeInfoNorm(String chrID, int thisInvNum, int startNum, int endNum, int type) {
+	private double[] getRangeInfoNorm(String chrID, int thisInvNum, int startNum, int endNum, int type) {
 		int[] startEndLoc = correctStartEnd(chrID, startNum, endNum);
 		double binNum = (double)(startEndLoc[1] - startEndLoc[0] + 1) / thisInvNum;
 		int binNumFinal = 0;
@@ -490,48 +395,15 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			binNumFinal = (int)binNum;
 		}
 		//内部经过标准化了
-		double[] tmp = getRangeInfo( chrID, startNum, endNum, binNumFinal,type);
+		double[] tmp = getRangeInfo(chrID, startNum, endNum, binNumFinal,type);
 		return tmp;
 	}
-	
-	/**
-	 * 经过标准化，和equations修正
-	 * 输入坐标区间，需要划分的块数，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
-	 * 定位到两个端点所在的 读取invNum区间，然后计算新的invNum区间
-	 * @param chrID 一定要小写
-	 * @param startNum 起点坐标，为实际起点 如果startNum<=0 并且endNum<=0，则返回全长信息
-	 * @param endNum 终点坐标，为实际终点
-	 * @param binNum 待分割的区域数目
-	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
-	 * @return 如果没有找到该染色体位点，则返回null
-	 */
-	public double[] getRangeInfo(String chrID,int startNum,int endNum,int binNum,int type) {
-		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
-		if (chrMapReadsInfo == null) {
-			logger.error("没有该染色体：" + chrID);
-			return null;
-		}
-		int[] startEnd = correctStartEnd(chrID, startNum, endNum);
-		if (startEnd == null) {
-			return null;
-		}
-		int[] invNumReads = chrMapReadsInfo.getSumChrBpReads();
-		if (invNumReads == null) {
-			return null;
-		}
-		try {
-			return getRengeInfoExp(invNumReads, startEnd[0], startEnd[1], binNum, type);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
 	/**
 	 * 
 	 * 经过标准化，和equations修正
 	 * 输入坐标区间，需要划分的块数，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
 	 * 定位到两个端点所在的 读取invNum区间，然后计算新的invNum区间
-	 * @param lsAlignments 将不属于指定区段内的数值全部清空
+	 * @param lsAlignments 将不属于指定区段内的数值全部清空，最好是linkedlist
 	 * @param chrID 一定要小写
 	 * @param startNum 起点坐标，为实际起点 如果startNum<=0 并且endNum<=0，则返回全长信息
 	 * @param endNum 终点坐标，为实际终点
@@ -540,9 +412,8 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @return 如果没有找到该染色体位点，则返回null
 	 * @return
 	 */
-	private double[] getRangeInfo(ArrayList<? extends Alignment> lsAlignments, String chrID, int startNum, int endNum, int binNum, int type) {
-		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
-		if (chrMapReadsInfo == null) {
+	private double[] getRangeInfo(String chrID, int startNum, int endNum, int binNum, int type) {
+		if (!mapChrID2ReadsInfo.containsKey(chrID.toLowerCase())) {
 			logger.error("没有该染色体：" + chrID);
 			return null;
 		}
@@ -550,12 +421,14 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		if (startEnd == null) {
 			return null;
 		}
+		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
 		int[] invNumReads = chrMapReadsInfo.getSumChrBpReads();
 		if (invNumReads == null) {
 			return null;
 		}
-		if (lsAlignments != null) {
-			
+		if (mapChrID2LsAlignmentFilter != null && mapChrID2LsAlignmentFilter.containsKey(chrID.toLowerCase())) {
+			List<? extends Alignment> lsAlignments = mapChrID2LsAlignmentFilter.get(chrID.toLowerCase());
+			invNumReads = cleanInfoNotInAlignment(lsAlignments, invNumReads, binNum);
 		}
 		
 		try {
@@ -567,17 +440,31 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	
 	/**
 	 * 给定list区段，和全基因组的信息，将没有被list区段覆盖到的信息全部删除
-	 * @param lsAlignments
-	 * @param invNumReads
+	 * @param lsAlignments 里面的alignment是实际数目
+	 * @param invNumReads 从0开始计数，每个单元表示一个invNum，所以计数的时候要加上1
 	 * @param binNum
 	 * @return
 	 */
-	private static int[] cleanInfoNotInAlignment(ArrayList<? extends Alignment> lsAlignments, int[] invNumReads, int binNum) {
-		
+	private static int[] cleanInfoNotInAlignment(List<? extends Alignment> lsAlignments, int[] invNumReads, int binNum) {
+		Queue<Alignment> lsAlignmentThis = new LinkedList<Alignment>();
+		for (Alignment alignment : lsAlignmentThis) {
+			lsAlignmentThis.add(alignment);
+		}
+		int[] result = new int[invNumReads.length];
+		int i = 0;
+		Alignment alignment = lsAlignmentThis.poll();
+		while (!lsAlignments.isEmpty() && i < invNumReads.length) {
+			if((i+1) * binNum < alignment.getStartAbs()) {
+				i++;
+			} else if ((i+1) * binNum > alignment.getEndAbs()) {
+				alignment = lsAlignmentThis.poll();
+			} else {
+				result[i] = invNumReads[i];
+				i++;
+			}
+		}
+		return result;
 	}
-	
-	
-	
 	
 	/**
 	 * 检查输入的start 和 end是否在指定区间范围内，
@@ -645,7 +532,6 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		return tmp;
 	}
 	
-	
 	/**
 	 * 用输入的公式进行修正
 	 * @param input
@@ -682,10 +568,22 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param mapInfo
 	 */
 	public static void CmpMapReg(MapReads mapReads, MapReads mapReads2, MapInfo mapInfo) {
-		double value1 = mapReads.getRegionMean(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs());
-		double value2 = mapReads2.getRegionMean(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs());
+		double[] info1 = mapReads.getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), 0);
+		double[] info2 = mapReads.getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), 0);
+		
+		double value1 = getMean(info1);
+		double value2 = getMean(info2);
+		
 		mapInfo.setScore(value1/value2);
 	}
+	
+	private static double getMean(double[] info) {
+		if (info == null) {
+			return -1;
+		}
+		return new Mean().evaluate(info);
+	}
+	
 	public static class MapReadsProcessInfo {
 		long readsize;
 		public MapReadsProcessInfo(long readsize) {
@@ -707,7 +605,7 @@ class ChrMapReadsInfo {
 	int type;
 	long chrLength;
 	
-	/** 最后总结的信息 */
+	/** 直接从0开始记录，1代表第二个invNum,也和实际相同 */
 	int[] SumChrBpReads;
 	/** 本条染色体上的reads数量 */
 	long readsAllNum;
@@ -740,6 +638,10 @@ class ChrMapReadsInfo {
 	public long getReadsPipNum() {
 		return readsAllPipNum;
 	}
+	/**
+	 * 直接从0开始记录，1代表第二个invNum,也和实际相同
+	 * @return
+	 */
 	public int[] getSumChrBpReads() {
 		return SumChrBpReads;
 	}

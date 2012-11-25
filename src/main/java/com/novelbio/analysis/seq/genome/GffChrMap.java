@@ -9,23 +9,28 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashCG;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
+import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsHanyanChrom;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
@@ -72,6 +77,7 @@ public class GffChrMap {
 	Logger logger = Logger.getLogger(GffChrMap.class);
 	String fileName = "";
 	int maxresolution = 10000;
+	/** 绘图区域，也用于tss和tes的范围 */
 	int[] plotRange;
 	MapReads mapReads;
 	int mapNormType = MapReads.NORMALIZATION_ALL_READS;
@@ -96,6 +102,7 @@ public class GffChrMap {
 	public void setSpecies(Species species) {
 		gffChrAbs.setSpecies(species);
 	}
+	
 	public void setMapReads(MapReads mapReads) {
 		this.mapReads = mapReads;
 	}
@@ -109,7 +116,6 @@ public class GffChrMap {
 	/**
 	 * 按照染色体数，统计每个染色体上总位点数，每个位点数， string[4] 0: chrID 1: readsNum 2: readsPipNum
 	 * 3: readsPipMean
-	 * 
 	 * @return
 	 */
 	public ArrayList<String[]> getChrLenInfo() {
@@ -134,6 +140,108 @@ public class GffChrMap {
 	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean cis5to3) {
 		mapReads.setFilter(uniqReads, startCod, booUniqueMapping, cis5to3);
 	}
+	
+	/**
+	 * 主要用于全基因组做图的，所以结果不按照基因方向进行颠倒
+	 * @param geneStructure
+	 * @param gffDetailGene
+	 * @param num 具体第几个，譬如马红就想看第一个内含子或者第一个外显子 小于等于0表示看全体
+	 * @return
+	 */
+	public void setFilterChrDistInfo(GeneStructure geneStructure, int num) {
+		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();
+		HashMap<String, List<? extends Alignment>> mapChrID2LsAlignment = new HashMap<String, List<? extends Alignment>>();
+		for (String chrID : gffHashGene.getMapChrID2LsGff().keySet()) {
+			ArrayList<SiteInfo> lsAlignment = new ArrayList<SiteInfo>();
+			ListGff listGff = gffHashGene.getMapChrID2LsGff().get(chrID.toLowerCase());
+			for (GffDetailGene gffDetailGene : listGff) {
+				lsAlignment.addAll(getGeneStructureRangeForChrPlot(geneStructure, gffDetailGene, num));
+			}
+			SiteInfo.setCompareType(SiteInfo.COMPARE_LOCSITE);
+			Collections.sort(lsAlignment);
+			mapChrID2LsAlignment.put(chrID.toLowerCase(), lsAlignment);
+		}
+		mapReads.setMapChrID2LsAlignments(mapChrID2LsAlignment);
+	}
+	/**
+	 * 主要用于全基因组做图的，所以结果不按照基因方向进行颠倒
+	 * @param geneStructure
+	 * @param gffDetailGene
+	 * @param num 具体第几个，譬如马红就想看第一个内含子或者第一个外显子 小于等于0表示看全体
+	 * @return
+	 */
+	private ArrayList<SiteInfo> getGeneStructureRangeForChrPlot(GeneStructure geneStructure, GffDetailGene gffDetailGene, int num) {
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		ArrayList<SiteInfo> lsResult = new ArrayList<SiteInfo>();
+		
+		if (geneStructure == GeneStructure.TSS) {
+			SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+			if (gffGeneIsoInfo.isCis5to3()) {
+				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() - plotRange[0], gffGeneIsoInfo.getTSSsite() + plotRange[1]);
+			} else {
+				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() - plotRange[1], gffGeneIsoInfo.getTSSsite() + plotRange[0]);
+			}
+			lsResult.add(siteInfo);
+		}
+		
+		else if (geneStructure == GeneStructure.TES) {
+			SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+			if (gffGeneIsoInfo.isCis5to3()) {
+				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() - plotRange[0], gffGeneIsoInfo.getTESsite() + plotRange[1]);
+			} else {
+				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() - plotRange[1], gffGeneIsoInfo.getTESsite() + plotRange[0]);
+			}
+			lsResult.add(siteInfo);
+		}
+		
+		else if (geneStructure == GeneStructure.EXON) {
+			if (num <= 0) {
+				for (ExonInfo exonInfo : gffGeneIsoInfo) {
+					SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+					siteInfo.setStartEndLoc(exonInfo.getStartAbs(), exonInfo.getEndAbs());
+					lsResult.add(siteInfo);
+				}
+			} else {
+				if (gffGeneIsoInfo.size() > num) {
+					SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+					siteInfo.setStartEndLoc(gffGeneIsoInfo.get(num - 1).getStartAbs(), gffGeneIsoInfo.get(num - 1).getEndAbs());
+					lsResult.add(siteInfo);
+				}
+			}
+		}
+		
+		else if (geneStructure == GeneStructure.INTRON) {
+			if (num <= 0) {
+				for (ExonInfo exonInfo : gffGeneIsoInfo.getLsIntron()) {
+					SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+					siteInfo.setStartEndLoc(exonInfo.getStartAbs(), exonInfo.getEndAbs());
+					lsResult.add(siteInfo);
+				}
+			} else {
+				ArrayList<ExonInfo> lsIntron = gffGeneIsoInfo.getLsIntron();
+				if (lsIntron.size() >= num) {
+					SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+					siteInfo.setStartEndLoc(lsIntron.get(num - 1).getStartAbs(), lsIntron.get(num - 1).getEndAbs());
+					lsResult.add(siteInfo);
+				}
+			}
+			
+		} else if (geneStructure == GeneStructure.UTR5) {
+			for (ExonInfo exonInfo : gffGeneIsoInfo.getUTR5seq()) {
+				SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+				siteInfo.setStartEndLoc(exonInfo.getStartAbs(), exonInfo.getEndAbs());
+				lsResult.add(siteInfo);
+			}
+		} else if (geneStructure == GeneStructure.UTR3) {
+			for (ExonInfo exonInfo : gffGeneIsoInfo.getUTR3seq()) {
+				SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+				siteInfo.setStartEndLoc(exonInfo.getStartAbs(), exonInfo.getEndAbs());
+				lsResult.add(siteInfo);
+			}
+		}
+		return lsResult;
+	}
+	
 	/**
 	 * 返回某条染色体上的reads情况，不是密度图，只是简单的计算reads在一个染色体上的情况 主要用于RefSeq时，一个基因上的reads情况
 	 * @param chrID
@@ -142,7 +250,7 @@ public class GffChrMap {
 	 * @return 没有的话就返回null
 	 */
 	public double[] getChrInfo(String chrID, int thisInvNum, int type) {
-		double[] tmpResult = mapReads.getRengeInfo(thisInvNum, chrID, 0, 0, type);
+		double[] tmpResult = mapReads.getRangeInfo(thisInvNum, chrID, 0, 0, type);
 		return tmpResult;
 	}
 	/**
@@ -264,8 +372,8 @@ public class GffChrMap {
 	 * @param outFile
 	 * @return 返回最大值和最小值的设定
 	 */
-	public double[] plotTssHeatMap(Color color, boolean SortS2M, String txtExcel, int colGeneID, int colScore, int rowStart,
-			double heapMapSmall, double heapMapBig,
+	public double[] plotTssHeatMap(Color color, boolean SortS2M, String txtExcel, int colGeneID, 
+			int colScore, int rowStart, double heapMapSmall, double heapMapBig,
 			GeneStructure structure, int binNum, String outFile) {
 		ArrayList<MapInfo> lsMapInfos = null;
 		if (txtExcel != null && !txtExcel.trim().equals("")) {
@@ -305,7 +413,7 @@ public class GffChrMap {
 				colRegion, colChrID, colSummit, colScore, rowStart);
 		MapInfo.sortPath(SortS2M);
 		Collections.sort(lsMapInfos);
-		mapReads.getRegionLs(binNum, lsMapInfos, 0);
+		mapReads.getRangeLs(binNum, lsMapInfos, 0);
 		return plotHeatMap(lsMapInfos, Color.BLUE, heapMapSmall, heapMapBig,
 				 FileOperate.changeFileSuffix(outFile, null, null));
 	}
@@ -538,7 +646,7 @@ public class GffChrMap {
 		}
 		int tssStart = Math.min(tssStartR, tssEndR);
 		int tssEnd = Math.max(tssStartR, tssEndR);
-		double[] siteInfo = mapReads.getRengeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
+		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
 		if (siteInfo == null) {
 //			System.out.println("stop");
 			return -1;
@@ -561,7 +669,7 @@ public class GffChrMap {
 		int tesSite = gffGeneIsoInfo.getTESsite();
 		int tssStart = Math.min(tssSite, tesSite);
 		int tssEnd = Math.max(tssSite, tesSite);
-		double[] siteInfo = mapReads.getRengeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
+		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
 		return MathComput.sum(siteInfo);
 	}
 	
@@ -645,11 +753,9 @@ public class GffChrMap {
 				continue;
 			}
 
-			double[] tmp = mapReads.getRengeInfo(mapReads.getBinNum(), string,
-					0, 0, 0);
+			double[] tmp = mapReads.getRangeInfo(mapReads.getBinNum(), string, 0, 0, 0);
 			mapReads.setNormalType(mapNormType);
-			double[] tmp2 = mapReads.getRengeInfo(mapReads.getBinNum(), string,
-					0, 0, 0);
+			double[] tmp2 = mapReads.getRangeInfo(mapReads.getBinNum(), string, 0, 0, 0);
 			// ///////////////// 异 常 处 理
 			// /////////////////////////////////////////////////////////////////////
 			if (tmp == null && tmp2 == null) {
@@ -686,7 +792,7 @@ public class GffChrMap {
 	 *            0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
 	public void getRegionLs(int binNum, ArrayList<MapInfo> lsmapInfo, int type) {
-		mapReads.getRegionLs(binNum, lsmapInfo, type);
+		mapReads.getRangeLs(binNum, lsmapInfo, type);
 	}
 	/**
 	 * 经过标准化 将MapInfo中的double填充上相应的reads信息
@@ -698,7 +804,7 @@ public class GffChrMap {
 	 *            0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
 	public void getRegion(int binNum, MapInfo mapInfo, int type) {
-		mapReads.getRegion(binNum, mapInfo, type);
+		mapReads.getRange(binNum, mapInfo, type);
 	}
 	
 	/**
@@ -708,7 +814,7 @@ public class GffChrMap {
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
 	public void getRegion(MapInfo mapInfo, int thisInvNum, int type) {
-		mapReads.getRegion(mapInfo, thisInvNum, type);
+		mapReads.getRange(mapInfo, thisInvNum, type);
 	}
 
 	/**
@@ -745,7 +851,7 @@ public class GffChrMap {
 	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(ArrayList<? extends MapInfo> lsMapInfos, GeneStructure structure, int binNum) {
 		HashMap<GffDetailGene,Double>  hashGffDetailGenes = getPeakGeneStructure( lsMapInfos, structure);
 		 ArrayList<MapInfo> lsResult = getMapInfoFromGffGene(hashGffDetailGenes, structure);
-		 mapReads.getRegionLs(binNum, lsResult, 0);
+		 mapReads.getRangeLs(binNum, lsResult, 0);
 		 return lsResult;
 	}
 	
@@ -809,7 +915,7 @@ public class GffChrMap {
 			}
 		}
 		ArrayList<MapInfo> lsMapInfoGene = getMapInfoFromGffGene(hashGene2Value, Structure);
-		mapReads.getRegionLs(binNum, lsMapInfoGene, 0);
+		mapReads.getRangeLs(binNum, lsMapInfoGene, 0);
 		if (lsGeneValue.get(0).length <= 1) {
 			for (MapInfo mapInfo : lsMapInfoGene) {
 				mapInfo.setScore(MathComput.mean(mapInfo.getDouble()));

@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Random;
 
 import com.novelbio.base.dataStructure.Equations;
-import com.novelbio.base.plot.java.BarInfo;
 
 import de.erichseifert.gral.data.DataSeries;
 import de.erichseifert.gral.data.DataSource;
@@ -82,12 +81,8 @@ public class PlotScatter extends PlotNBCInteractive{
 		
 //		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
 		plotScatter.saveToFile("/media/winF/NBC/Project/Project_Invitrogen/peakMacs/test.png", 1000, 1000);
-	
 	}
-	
-	
-	
-	
+
 	HashMap<DotStyle, DataTable> hashDataTable = new HashMap<DotStyle, DataTable>();
 	
 	XYPlot plot;
@@ -114,19 +109,21 @@ public class PlotScatter extends PlotNBCInteractive{
      * add point
      * @param x
      * @param y
-     * @param dotStyle 如果是不同名字的点，需要创建新的dotStyle
+     * @param dotStyle 如果是不同名字的点，需要创建新的dotStyle，dotStyle仅按地址保存
      */
     public void addXY(double x, double y, DotStyle dotStyle) {
     	DataTable dataTable = getDataTable(dotStyle);
-    	if (dotStyle.getName() != null)
+    	if (dotStyle.getName() != null) {
     		dataTable.add(x,y,dotStyle.getName());
-    	else
+    	} else {
 			dataTable.add(x,y);
+    	}
     }
     /**
      * add point array, x.length must equals y.length
      * @param x
      * @param y
+     * @param dotStyle 如果是不同名字的点，需要创建新的dotStyle，dotStyle仅按地址保存
      */
     public void addXY(double[] x, double[] y, DotStyle dotStyle) {
     	if (x.length != y.length) {
@@ -134,10 +131,11 @@ public class PlotScatter extends PlotNBCInteractive{
 		}
     	DataTable dataTable = getDataTable(dotStyle);
     	for (int i = 0; i < x.length; i++) {
-    		if (dotStyle.getName() != null)
+    		if (dotStyle.getName() != null) {
     			dataTable.add(x[i],y[i], dotStyle.getName());
-    		else
+    		} else {
     			dataTable.add(x[i],y[i]);
+    		}
 		}
     }
     /**
@@ -148,10 +146,11 @@ public class PlotScatter extends PlotNBCInteractive{
     public void addXY(Collection<double[]> lsXY, DotStyle dotStyle) {
     	DataTable dataTable = getDataTable(dotStyle);
     	for (double[] ds : lsXY) {
-    		if (dotStyle.getName() != null)
+    		if (dotStyle.getName() != null) {
     			dataTable.add(ds[0], ds[1], dotStyle.getName());
-    		else
+    		} else {
     			dataTable.add(ds[0], ds[1]);
+    		}
 		}
     }
     /**
@@ -189,19 +188,20 @@ public class PlotScatter extends PlotNBCInteractive{
      * @return
      */
     protected DataTable getDataTable(DotStyle dotStyle) {
-    	DataTable dataTable = null; DataSeries dataSeries = null;
+    	DataTable dataTable = null;
     	if (!hashDataTable.containsKey(dotStyle)) {
     		if (dotStyle.getName() != null) {
     			dataTable = new DataTable(Double.class, Double.class, String.class);
-//    			dataSeries = new DataSeries( dataTable,0,1,2);
-			}
-    		else {
+			} else {
     			dataTable = new DataTable(Double.class, Double.class);
-//    			dataSeries = new DataSeries( dataTable,0,1);
 			}
 			hashDataTable.put(dotStyle, dataTable);
 			if (plot == null) {
-				plot = new XYPlot(dataTable);
+				if (dotStyle.getStyle() == DotStyle.STYLE_BAR) {
+					plot = new BarPlot(dataTable);
+				} else {
+					plot = new XYPlot(dataTable);
+				}
 			}
 			else {
 				plot.add(dataTable);
@@ -215,6 +215,11 @@ public class PlotScatter extends PlotNBCInteractive{
     }
    
     ////////////////////////////////////////////////////////////////
+    /**
+     * 以前用某个dotStyle设定的输入值(譬如一条曲线)，
+     * 如果想要换显示方式，譬如颜色等，只需要将dotStyle的设置换一下，然后输入进来即可
+     * @param dotStyle
+     */
     public void changeDotStyle(DotStyle dotStyle) {
 		DataTable dataTable = hashDataTable.get(dotStyle);
 		setPointStyle(dataTable, dotStyle);
@@ -239,8 +244,7 @@ public class PlotScatter extends PlotNBCInteractive{
      * @param breakNum Number of subdivisions for analysis.
      * @param dotStyle
      */
-    public void addHistData(double[] lsNum, int breakNum, BarStyle dotStyle)
-    {
+    public void addHistData(double[] lsNum, int breakNum, BarStyle dotStyle) {
     	DataTable dataTable = new DataTable(Double.class);
     	for (Number number : lsNum) {
 			dataTable.add(number.doubleValue());//(number.doubleValue());
@@ -260,17 +264,17 @@ public class PlotScatter extends PlotNBCInteractive{
     	double max = dataTable.getStatistics().get(Statistics.MAX);
     	double step = (max - min)/breakNum;
     	int allNum = dataTable.getRowCount();
-        DataSource histogram2d = new EnumeratedData(histogram, (min + min - step)/2.0, step);
+    	DataSource histogram2d = new EnumeratedData(histogram, (min + min - step)/2.0, step);
         
     	if (barStyle.getBarWidth() == 0) {
     		barStyle.setBarWidth(step*0.95);
     	}
     	barStyle.setStyle(DotStyle.STYLE_BAR);
-        DataTable dataTable2 = null;
-        dataTable2 = new DataTable(Double.class, Double.class, Double.class);
-        
-        double xmin = Double.MAX_VALUE, xmax = Double.MIN_VALUE, ymin = Double.MAX_VALUE, ymax = Double.MIN_VALUE;
-        
+    	DataTable dataTable2 = null;
+    	dataTable2 = new DataTable(Double.class, Double.class, Double.class);
+    	
+    	double xmin = Double.MAX_VALUE, xmax = Double.MIN_VALUE, ymin = Double.MAX_VALUE, ymax = Double.MIN_VALUE;
+    	
     	for (int i = 0; i < histogram2d.getRowCount(); i++) {
     		double x = Double.parseDouble(histogram2d.get(0, i).toString());
     		double yValue = Double.parseDouble(histogram2d.get(1, i).toString());
@@ -292,26 +296,14 @@ public class PlotScatter extends PlotNBCInteractive{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     	if (plot == null) {
 			plot = new BarPlot(dataTable2);
-		}
-    	else {
+		} else {
 			plot.add(dataTable2);
 		}
     	
-    	if (barStyle.getBarWidth() != 0) {
-				plot.setSetting(BarPlot.BAR_WIDTH, barStyle.getBarWidth());
-			}
-			PointRenderer pointRenderer = plot.getPointRenderer(dataTable2);
-			pointRenderer.setSetting(PointRenderer.COLOR, barStyle.getColor());
-			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE, barStyle.getBasicStroke());
-			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE_COLOR, barStyle.getEdgeColor());
-		//规定，dotname在第3列，dotvalue也就是常规value在第二列
-			//the third column is the name column
-			pointRenderer.setSetting(PointRenderer.VALUE_COLUMN, 2);
-			pointRenderer.setSetting(PointRenderer.VALUE_DISPLAYED, barStyle.isValueVisible());
+    	setPointStyle(dataTable2, barStyle);
     }
     
-    private void setAxis(double min, double max, boolean X, double extendRangeMin, double extendRangeMax)
-    {
+    private void setAxis(double min, double max, boolean X, double extendRangeMin, double extendRangeMax) {
     	Axis axis = null;
     	double range = Math.abs(max - min);
     	if (X)
@@ -380,25 +372,27 @@ public class PlotScatter extends PlotNBCInteractive{
     		this.spaceY = spaceY;
     }
     
-    public void setAxisTicksX(Map<Double, String> mapTicks, Font fontTicks) {
+    public void setAxisTicksXMap(Map<Double, String> mapTicks) {
     	if (mapTicks != null) {
     		this.mapAxisX = mapTicks;
 		}
+	}
+    public void setAxisTicksXFont(Font fontTicks) {
 		if (fontTicks != null) {
 			this.fontTicksX = fontTicks;
 		}
-		
-	}
-    public void setAxisTicksY(Map<Double, String> mapTicks, Font fontTicks) {
+	}    
+    
+    public void setAxisTicksYMap(Map<Double, String> mapTicks) {
     	if (mapTicks != null) {
     		this.mapAxisY = mapTicks;
 		}
+	}
+    public void setAxisTicksYFont(Font fontTicks) {
 		if (fontTicks != null) {
 			this.fontTicksY = fontTicks;
 		}
 	}
-
- 
     /**
      * 设定坐标轴边界
      * @param y1
@@ -484,28 +478,6 @@ public class PlotScatter extends PlotNBCInteractive{
 	 * @param heigh
 	 */
 	protected void drawPlot() {
-//		for (Entry<DotStyle, DataTable> entry : hashDataTable.entrySet()) {
-//			DotStyle dotStyle = entry.getKey();
-//			DataTable dataTable = entry.getValue();
-//			DataSeries dataSeries = null;
-//			if (dotStyle.isDotName()) {
-//				dataSeries = new DataSeries(dotStyle.getGroup(), dataTable,0,1,2);
-//			}
-//			else {
-//				dataSeries = new DataSeries(dotStyle.getGroup(), dataTable,0,1);
-//			}
-//			if (plot == null) {
-//				plot = new XYPlot(dataSeries);
-//			}
-//			else {
-//				plot.add(dataSeries);
-//			}
-//			setPointStyle(dataSeries, dotStyle);
-//		}
-        // Style the plot area
-//        plot.getPlotArea().setSetting(PlotArea.BORDER, new BasicStroke(2f));
-    
-		// set the distance between the figure and picture edge, 设定图片坐标轴到图片边缘的距离
 		plot.setInsets(new Insets2D.Double( insetsTop, insetsLeft, insetsBottom, insetsRight));
 		Axis axisxthis = axisXMy, axisythis = axisYMy;
 		if (axisX != null)
@@ -537,8 +509,7 @@ public class PlotScatter extends PlotNBCInteractive{
 	 * @param dataSeries
 	 * @param dotStyle
 	 */
-	void setPointStyle(DataSource dataSeries, DotStyle dotStyle)
-	{
+	void setPointStyle(DataSource dataSeries, DotStyle dotStyle) {
 		if (dotStyle.getStyle() == DotStyle.STYLE_AREA) {
             AreaRenderer area = new DefaultAreaRenderer2D();
             area.setSetting(AreaRenderer.COLOR, dotStyle.getColor());
@@ -570,6 +541,12 @@ public class PlotScatter extends PlotNBCInteractive{
 			pointRenderer.setSetting(PointRenderer.COLOR, barStyle.getColor());
 			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE, barStyle.getBasicStroke());
 			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE_COLOR, barStyle.getEdgeColor());		
+			
+			//规定，dotname在第3列，dotvalue也就是常规value在第二列
+			//the third column is the name column
+			pointRenderer.setSetting(PointRenderer.VALUE_COLUMN, 2);
+			pointRenderer.setSetting(PointRenderer.VALUE_DISPLAYED, barStyle.isValueVisible());
+			
 		} else {
 			// Style data series
 	        PointRenderer points = new DefaultPointRenderer2D();
@@ -597,8 +574,7 @@ public class PlotScatter extends PlotNBCInteractive{
 		}
 	}
 	
-	private void setAxisAndTitle()
-	{
+	private void setAxisAndTitle() {
 		// Style axes
 		if (titleX != null) {
 			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.LABEL, titleX);
@@ -650,25 +626,15 @@ public class PlotScatter extends PlotNBCInteractive{
 		else {
 			 plot.getPlotArea().setSetting(PlotArea.BACKGROUND, new Color(0, 0, 0, 0));
 		}
-		///以下是我修改gral的源码添加的方法，不过后来发现他似乎有更好的
-//		if (lsAxisNotMove.size() == 0) {
-//			plot.setAxisNotMove(null);
-//			plot.setAxisNotZoom(null);
-//		}
-//		else {
-//			for (String string : lsAxisNotMove) {
-//				plot.setAxisNotMove(string);
-//				plot.setAxisNotZoom(string);
-//			}
-//		}
 		///////////////他自己提供的方法，限定一个方向的放大或者缩小//////////////////////
 		///////////////以下没写完全
-		if (Xnavigator && Ynavigator)
+		if (Xnavigator && Ynavigator) {
 			plot.getNavigator().setDirection(XYNavigationDirection.ARBITRARY);
-		else if (Xnavigator && !Ynavigator)
+		} else if (Xnavigator && !Ynavigator) {
 			plot.getNavigator().setDirection(XYNavigationDirection.HORIZONTAL);
-		else if (!Xnavigator && Ynavigator)
+		} else if (!Xnavigator && Ynavigator) {
 			plot.getNavigator().setDirection(XYNavigationDirection.VERTICAL);
+		}
 	}
 	/**
 	 * fill the insets with BG color, means fill the marginal area between the frame and the plot border.<br>
@@ -684,25 +650,28 @@ public class PlotScatter extends PlotNBCInteractive{
 		}
 	}
 	/**
+	 * 映射数字，就是将1-100映射成1000-1000000这种
 	 * map the ticks number to actual axis, using the linear transformation 
 	 * @return
 	 */
-	public void setMapNum2ChangeX(double startTick, double startResult, double endTick, double endResult, double intervalNumResult) {
+	public void setMapNum2ChangeX(double startTick, double startResult, 
+			double endTick, double endResult, double intervalNumResult) {
 		mapAxisX = mapNum2Change(startTick, startResult, endTick, endResult, intervalNumResult);
 	}
 	/**
 	 * map the ticks number to actual axis, using the linear transformation 
 	 * @return
 	 */
-	public void setMapNum2ChangeY(double startTick, double startResult, double endTick, double endResult, double intervalNumResult) {
+	public void setMapNum2ChangeY(double startTick, double startResult, 
+			double endTick, double endResult, double intervalNumResult) {
 		mapAxisY = mapNum2Change(startTick, startResult, endTick, endResult, intervalNumResult);
 	}
 	/**
 	 * map the ticks number to actual axis, using the linear transformation 
 	 * @return
 	 */
-	private Map<Double, String> mapNum2Change(double startTick, double startResult, double endTick, double endResult, double intervalNumResult)
-	{
+	private Map<Double, String> mapNum2Change(double startTick, double startResult, 
+			double endTick, double endResult, double intervalNumResult) {
 		HashMap<Double, String> mapAxis = new HashMap<Double, String>();
 		Equations equations = new Equations();
 		ArrayList<double[]> lsXY = new ArrayList<double[]>();

@@ -28,7 +28,9 @@ public class DotStyle implements Cloneable{
 	public static final int STYLE_RECTANGLE = 8;
 	public static final int STYLE_TRIANGLE = 16;
 	public static final int STYLE_LINE = 32;
-	protected static final int STYLE_BAR = 64;
+	public static final int STYLE_BAR = 64;
+	public static final int STYLE_BOX = 128;
+	
 	
 	public static final int SIZE_S = 128;
 	public static final int SIZE_SM = 256;
@@ -270,23 +272,29 @@ public class DotStyle implements Cloneable{
 		}
 		return false;
 	}
-//	/**
-//	 * ÷ÿ–¥hash
-//	 */
-//	public int hashCode()
-//	{
-//		return size + style + group.hashCode() + color.hashCode()*100;
-//	}
+	
 	public static Paint getGridentColorBrighter(Color color) {
 		return new LinearGradientPaint(0f,0f, 0f,1f,
 			                                        new float[] { 0.0f, 1.0f },
 				                                      new Color[] { color, GraphicsUtils.deriveBrighter(color) }
 			                      );
 	}
+	public static Paint getGridentColorBrighterTrans(Color color) {
+		return new LinearGradientPaint(0f,0f, 0f,1f,
+			                                        new float[] { 0.0f, 1.0f },
+				                                      new Color[] { GraphicsUtils.deriveBrighter(color), color }
+			                      );
+	}
 	public static Paint getGridentColorDarker(Color color) {
 		return new LinearGradientPaint(0f,0f, 0f,1f,
 			                                        new float[] { 0.0f, 1.0f },
 				                                      new Color[] { color, GraphicsUtils.deriveDarker(color) }
+			                      );
+	}
+	public static Paint getGridentColorDarkerTrans(Color color) {
+		return new LinearGradientPaint(0f,0f, 0f,1f,
+			                                        new float[] { 0.0f, 1.0f },
+				                                      new Color[] { GraphicsUtils.deriveDarker(color) ,color}
 			                      );
 	}
 	public static Paint getGridentColor(Color color1, Color color2) {

@@ -130,7 +130,7 @@ public class MapReads extends MapReadsAbs{
 	public  double[] getReadsDensity(String chrID, int startLoc, int endLoc, int binNum ) {
 		//TODO
 		int tagBinLength=(int)(tagLength*1.5);
-		double[] tmpReadsNum = getRengeInfo(tagBinLength, chrID, startLoc, endLoc,1);
+		double[] tmpReadsNum = getRangeInfo(tagBinLength, chrID, startLoc, endLoc,1);
 		if (tmpReadsNum==null) {
 			return null;
 		}
@@ -155,14 +155,12 @@ public class MapReads extends MapReadsAbs{
 		//然后再在大块上面统计，
 		//大概估算了一下，基本上宽度在一个tag的1.5倍的时候计数会比较合理
 		int tagBinLength=(int)(tagLength*1.5);
-		double[] tmpReadsNum = getRengeInfo(tagBinLength, chrID, startLoc, endLoc,1);
+		double[] tmpReadsNum = getRangeInfo(tagBinLength, chrID, startLoc, endLoc,1);
 		if (tmpReadsNum==null) {
 			return null;
 		}
 		double[] resultTagDensityNum=MathComput.mySpline(tmpReadsNum, binNum, 0, 0, 2);
 		return resultTagDensityNum;
-		
-		return null;
 	}
 	
 	/**

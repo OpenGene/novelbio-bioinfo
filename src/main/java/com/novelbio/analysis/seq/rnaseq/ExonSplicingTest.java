@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.math.MathException;
+import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.apache.commons.math.stat.inference.TestUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.record.cont.ContinuableRecord;
@@ -74,8 +75,13 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public void setMapCondition2MapReads(String condition, MapReads mapReads) {
 		SiteInfo siteInfo = exonCluster.getDifSite();
 		int[] tmpExpCond = new int[2];
-		tmpExpCond[0] = (int) mapReads.getRegionMean(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs()) + 1;
-		tmpExpCond[1] = (int) mapReads.regionMean(siteInfo.getRefID(), exonCluster.getParentGene().getLongestSplit()) + 1;
+		
+		double[] info = mapReads.getRangeInfo(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs(), 0);
+		tmpExpCond[0] = getMean(info) + 1;
+		
+		double[] info2 = mapReads.getRangeInfo(siteInfo.getRefID(), exonCluster.getParentGene().getLongestSplit());
+		tmpExpCond[1] = getMean(info2) + 1;
+		
 		if (tmpExpCond[0] <= 0 || tmpExpCond[1] <=0) {
 			return;
 		}
@@ -87,6 +93,13 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		else {
 			mapCondition2Exp.put(condition, tmpExpCond);
 		}
+	}
+	
+	private static int getMean(double[] info) {
+		if (info == null) {
+			return -1;
+		}
+		return (int)new Mean().evaluate(info);
 	}
 	
 	/** 测序长度，根据这个长度来判定pvalue的比例 */
