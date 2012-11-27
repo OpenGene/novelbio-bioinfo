@@ -77,12 +77,12 @@ public class NCBIchromFaChangeFormat {
 	}
 	
 	/**
-	 * 将chr合并起来，并且将第一行的名字改为chrID
+	 * 将chr合并起来，并且将第一行的名字改为chrID，并且小写
 	 * @param txtRead
 	 * @param txtWrite
 	 */
 	private void writeToFile(String chrID, TxtReadandWrite txtRead, TxtReadandWrite txtWrite) {
-		txtWrite.writefileln(">" + chrID);
+		txtWrite.writefileln(">" + chrID.toLowerCase());
 		for (String seq : txtRead.readlines(2)) {
 			txtWrite.writefileln(seq);
 		}

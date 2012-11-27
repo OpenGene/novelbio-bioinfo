@@ -43,7 +43,7 @@ public abstract class SiteSnpIndelInfo {
 	int codLocInfo = 0;
 	boolean isInCDS = false;
 	/** 用MapInfoSnpIndel的type */
-	SnpIndelType snpType = SnpIndelType.CORRECT;
+//	SnpIndelType snpType = SnpIndelType.CORRECT;
 
 	SplitType splitType = SplitType.NONE;
 	SnpIndelRs snpIndelRs;
@@ -108,9 +108,8 @@ public abstract class SiteSnpIndelInfo {
 	public String getReferenceSeq() {
 		return referenceSeq;
 	}
-	public SnpIndelType getSnpIndelType() {
-		return snpType;
-	}
+	public abstract SnpIndelType getSnpIndelType();
+	
 	public void setThisReadsNum(int readsNum) {
 		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
 		if (sampleSnpReadsQuality == null) {
@@ -305,7 +304,6 @@ public abstract class SiteSnpIndelInfo {
 				&& thisSeq.equals(otherObj.thisSeq)
 				&& mapInfoSnpIndel.getRefID().equals(otherObj.mapInfoSnpIndel.getRefID())
 				&& mapInfoSnpIndel.getRefSnpIndelStart() == otherObj.mapInfoSnpIndel.getRefSnpIndelStart()
-				&& snpType == otherObj.snpType
 			)
 		{
 			return true;
@@ -403,7 +401,6 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		if (refBase.length() > 1) {
 			logger.error("refBase 大于1，可能不是插入，请核对：" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
 		}
-		super.snpType = SnpIndelType.INSERT;
 	}
 	@Override
 	protected void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs) {
@@ -474,16 +471,23 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 	protected void setOrfShift() {
 		orfShift = (3 - (thisSeq.length() - referenceSeq.length())%3) % 3;//待检查
 	}
+	@Override
+	public SnpIndelType getSnpIndelType() {
+		return SnpIndelType.INSERT;
+	}
 	
 }
 
 class SiteSnpIndelInfoSnp extends SiteSnpIndelInfoInsert {
 	public SiteSnpIndelInfoSnp(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
 		super(mapInfoSnpIndel, refBase, thisBase);
-		super.snpType = SnpIndelType.MISMATCH;
 	}
 	protected void setOrfShift() {
 		orfShift = 0;
+	}
+	@Override
+	public SnpIndelType getSnpIndelType() {
+		return SnpIndelType.MISMATCH;
 	}
 }
 /**
@@ -494,10 +498,13 @@ class SiteSnpIndelInfoSnp extends SiteSnpIndelInfoInsert {
 class SiteSnpIndelInfoNoSnp extends SiteSnpIndelInfoInsert {
 	public SiteSnpIndelInfoNoSnp(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
 		super(mapInfoSnpIndel, refBase, thisBase);
-		super.snpType = SnpIndelType.CORRECT;
 	}
 	protected void setOrfShift() {
 		orfShift = 0;
+	}
+	@Override
+	public SnpIndelType getSnpIndelType() {
+		return SnpIndelType.CORRECT;
 	}
 }
 /**
@@ -512,7 +519,6 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		if (refBase.length() <= 1 || thisBase.length() > 1) {
 			logger.error("本位点可能不是缺失，请核对：" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
 		}
-		super.snpType = SnpIndelType.DELETION;
 	}
 
 	@Override
@@ -679,6 +685,11 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		//TODO 这里有问题，如果一个deletion横跨了一整个intron，那么就会有错误
 		snpOnReplaceLocStart = -gffGeneIsoInfo.getLocAAbeforeBias(refStartCis) + 1;
 		snpOnReplaceLocEnd = snpOnReplaceLocStart + deletionLen;
+	}
+
+	@Override
+	public SnpIndelType getSnpIndelType() {
+		return SnpIndelType.DELETION;
 	}
 }
 

@@ -395,7 +395,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			binNumFinal = (int)binNum;
 		}
 		//内部经过标准化了
-		double[] tmp = getRangeInfo(chrID, startNum, endNum, binNumFinal,type);
+		double[] tmp = getRangeInfo(chrID, startNum, endNum, binNumFinal, type);
 		return tmp;
 	}
 	/**
@@ -428,7 +428,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 		if (mapChrID2LsAlignmentFilter != null && mapChrID2LsAlignmentFilter.containsKey(chrID.toLowerCase())) {
 			List<? extends Alignment> lsAlignments = mapChrID2LsAlignmentFilter.get(chrID.toLowerCase());
-			invNumReads = cleanInfoNotInAlignment(lsAlignments, invNumReads, binNum);
+			invNumReads = cleanInfoNotInAlignment(lsAlignments, invNumReads, invNum);
 		}
 		
 		try {
@@ -445,18 +445,18 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param binNum
 	 * @return
 	 */
-	private static int[] cleanInfoNotInAlignment(List<? extends Alignment> lsAlignments, int[] invNumReads, int binNum) {
+	private static int[] cleanInfoNotInAlignment(List<? extends Alignment> lsAlignments, int[] invNumReads, int invNum) {
 		Queue<Alignment> lsAlignmentThis = new LinkedList<Alignment>();
-		for (Alignment alignment : lsAlignmentThis) {
+		for (Alignment alignment : lsAlignments) {
 			lsAlignmentThis.add(alignment);
 		}
 		int[] result = new int[invNumReads.length];
 		int i = 0;
 		Alignment alignment = lsAlignmentThis.poll();
-		while (!lsAlignments.isEmpty() && i < invNumReads.length) {
-			if((i+1) * binNum < alignment.getStartAbs()) {
+		while (!lsAlignmentThis.isEmpty() && i < invNumReads.length) {
+			if((i+1) * invNum < alignment.getStartAbs()) {
 				i++;
-			} else if ((i+1) * binNum > alignment.getEndAbs()) {
+			} else if ((i+1) * invNum > alignment.getEndAbs()) {
 				alignment = lsAlignmentThis.poll();
 			} else {
 				result[i] = invNumReads[i];

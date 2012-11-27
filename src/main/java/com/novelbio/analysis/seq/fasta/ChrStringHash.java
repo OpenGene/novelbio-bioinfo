@@ -305,6 +305,10 @@ class IteratorBase implements Iterator<Character> {
 		}
 
 		base = tmpSeq[index];
+		while (base==' ' || base == '\t' || base == '\r' || base == '\n') {
+			index ++;
+			base = tmpSeq[index];
+		}
 		index++;
 		return base;
 	}

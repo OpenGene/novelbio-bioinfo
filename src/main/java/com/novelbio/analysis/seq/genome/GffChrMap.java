@@ -57,7 +57,6 @@ import de.erichseifert.gral.util.GraphicsUtils;
  * 
  */
 public class GffChrMap {
-	
 	public static void main(String[] args) {
 		GffChrAbs gffChrAbs = new GffChrAbs();
 		Species species = new Species(10090);
@@ -149,6 +148,11 @@ public class GffChrMap {
 	 * @return
 	 */
 	public void setFilterChrDistInfo(GeneStructure geneStructure, int num) {
+		if (geneStructure == GeneStructure.ALL) {
+			mapReads.setMapChrID2LsAlignments(null);
+			return;
+		}
+		
 		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();
 		HashMap<String, List<? extends Alignment>> mapChrID2LsAlignment = new HashMap<String, List<? extends Alignment>>();
 		for (String chrID : gffHashGene.getMapChrID2LsGff().keySet()) {
@@ -177,9 +181,9 @@ public class GffChrMap {
 		if (geneStructure == GeneStructure.TSS) {
 			SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
 			if (gffGeneIsoInfo.isCis5to3()) {
-				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() - plotRange[0], gffGeneIsoInfo.getTSSsite() + plotRange[1]);
+				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() + plotRange[0], gffGeneIsoInfo.getTSSsite() + plotRange[1]);
 			} else {
-				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() - plotRange[1], gffGeneIsoInfo.getTSSsite() + plotRange[0]);
+				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() - plotRange[1], gffGeneIsoInfo.getTSSsite() - plotRange[0]);
 			}
 			lsResult.add(siteInfo);
 		}
@@ -187,9 +191,9 @@ public class GffChrMap {
 		else if (geneStructure == GeneStructure.TES) {
 			SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
 			if (gffGeneIsoInfo.isCis5to3()) {
-				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() - plotRange[0], gffGeneIsoInfo.getTESsite() + plotRange[1]);
+				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() + plotRange[0], gffGeneIsoInfo.getTESsite() + plotRange[1]);
 			} else {
-				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() - plotRange[1], gffGeneIsoInfo.getTESsite() + plotRange[0]);
+				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() - plotRange[1], gffGeneIsoInfo.getTESsite() - plotRange[0]);
 			}
 			lsResult.add(siteInfo);
 		}

@@ -29,16 +29,38 @@ public class PlotBox extends PlotScatter {
 			stats.add(
 				c + 1,
 				boxInfo.info50,
-				boxInfo.info1,
+				boxInfo.getInfoBoxDefMin(),
 				boxInfo.info25,
 				boxInfo.info75,
-				boxInfo.info99
+				boxInfo.getInfoBoxDefMax()
 			);
 			mapInfo2Name.put((double) (c + 1), boxInfo.getBoxName());
 		}
 		plot = new BoxPlot(stats);
-		setRender(stats, boxStyle);
 		setAxisTicksXMap(mapInfo2Name);
+		setRender(stats, boxStyle);
+    }
+    /**
+     * 测试用
+     * @param lsBoxInfo
+     * @return
+     */
+    public DataSource getDataSource(List<BoxInfo> lsBoxInfo) {
+		DataTable stats = new DataTable(Integer.class, Double.class,
+				Double.class, Double.class, Double.class, Double.class);
+			// Generate statistical values for each column
+		for (int c = 0; c < lsBoxInfo.size(); c++) {
+			BoxInfo boxInfo = lsBoxInfo.get(c);
+			stats.add(
+					c + 1,
+					boxInfo.info50,
+					boxInfo.getInfoBoxDefMin(),
+					boxInfo.info25,
+					boxInfo.info75,
+					boxInfo.getInfoBoxDefMax()
+					);
+		}
+		return stats;
     }
     
     private void setRender(DataSource boxData, BoxStyle boxStyle) {
@@ -86,6 +108,46 @@ public class PlotBox extends PlotScatter {
     	public void setInfoMinAndMax(double info1, double info99) {
 			this.info1 = info1;
 			this.info99 = info99;
+		}
+    	
+    	public void setInfo5And95(double info5, double info95) {
+			this.info5 = info5;
+			this.info95 = info95;
+		}
+    	public double getInfo1() {
+			return info1;
+		}
+    	public double getInfo25() {
+			return info25;
+		}
+    	public double getInfo5() {
+			return info5;
+		}
+    	/**
+    	 * Boxplot设定的min，实际可以为info1或info5
+    	 * @return
+    	 */
+    	public double getInfoBoxDefMin() {
+			return info1;
+		}
+    	/**
+    	 * Boxplot设定的max，实际可以为info95或info99
+    	 * @return
+    	 */
+    	public double getInfoBoxDefMax() {
+			return info99;
+		}
+    	public double getInfo50() {
+			return info50;
+		}
+    	public double getInfo75() {
+			return info75;
+		}
+    	public double getInfo95() {
+			return info95;
+		}
+    	public double getInfo99() {
+			return info99;
 		}
     }
 }

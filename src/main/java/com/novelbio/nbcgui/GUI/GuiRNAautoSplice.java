@@ -101,7 +101,7 @@ public class GuiRNAautoSplice extends JPanel {
 				ArrayList<String[]> lsInfo = new ArrayList<String[]>();
 				for (String string : lsFile) {
 					String[] tmResult = new String[2];
-					tmResult[0] = string; tmResult[1] = "";
+					tmResult[0] = string; tmResult[1] = FileOperate.getFileNameSep(string)[0].split("_")[0];
 					lsInfo.add(tmResult);
 				}
 				scrlBam.addItemLs(lsInfo);

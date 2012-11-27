@@ -615,8 +615,8 @@ public class MathComput {
 	 * 用于将500或更多份的基因中tag累计数缩小到100份内
 	 * @param treatNum invNum里面的bp具体值
 	 * @param binNum 后面要生成的分割的块数
-	 * @param startBias 从起点的多少开始
-	 * @param endBias 到终点的多少结束
+	 * @param startBias 从起点的多少开始 最左边分隔到起点的距离比值
+	 * @param endBias 到终点的多少结束 最右边分隔到终点的距离比值
 	 * @param type 0：加权平均 1：取最高值，2：加和
 	 * @return
 	 */

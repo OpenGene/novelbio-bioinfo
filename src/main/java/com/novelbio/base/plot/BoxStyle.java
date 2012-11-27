@@ -11,9 +11,12 @@ public class BoxStyle extends DotStyle {
 	/**
 	 *  paint the outline of the point shape.
 	 */
-	BasicStroke basicStroke = null;
+	BasicStroke basicStroke = new BasicStroke(2f);
 	
-	
+	@Override
+	public BasicStroke getBasicStroke() {
+		return basicStroke;
+	}
 	
 	/** always return BOXs */
 	public int getStyle() {

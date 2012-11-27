@@ -1,16 +1,11 @@
 package com.novelbio.base.plot;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import de.erichseifert.gral.data.DataTable;
-import de.erichseifert.gral.graphics.Drawable;
 import de.erichseifert.gral.plots.BarPlot;
-import de.erichseifert.gral.plots.axes.Axis;
 import de.erichseifert.gral.plots.points.PointRenderer;
 
 public class PlotBar extends PlotScatter{
@@ -22,7 +17,7 @@ public class PlotBar extends PlotScatter{
 		lsBarInfos.add(barInfo); lsBarInfos.add(barInfo2);
 		BarStyle barStyle = new BarStyle();
 		barStyle.setBarWidth(1);
-		barStyle.setBasicStroke(new BasicStroke(0.2f));
+		barStyle.setBasicStroke(0.2f);
 		barStyle.setColor(BarStyle.getGridentColorBrighter(Color.BLUE));
 		barStyle.setColorEdge(BarStyle.getGridentColorDarker(Color.BLUE));
 		plotBar.addBarPlot(lsBarInfos, barStyle);

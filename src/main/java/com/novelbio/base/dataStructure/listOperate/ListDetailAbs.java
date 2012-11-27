@@ -186,6 +186,9 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 	 * peak: peak起点_peak终点
      */
 	public String getNameSingle() {
+		if (lsItemName.size() == 0) {
+			return null;
+		}
 		return this.lsItemName.get(0);
 	}
 	/** 全体item的名字 */

@@ -7,7 +7,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class PeakCallingMacs {
 	private String pathInput;
 	private String pathInputCol;
-	private String pathOutput;
+	private String outFileName;
 	private int  tsize = 50;
 	private double pvalue = 0.01;
 	private long genomeLength;
@@ -44,7 +44,7 @@ public class PeakCallingMacs {
 	}
 	
 	public void setPathoutput(String pathoutput) {
-		this.pathOutput = pathoutput;
+		this.outFileName = pathoutput;
 	}
 
 	public void setGenomeLength(long genomeLength) {
@@ -52,8 +52,8 @@ public class PeakCallingMacs {
 	}
 	/** 获得结果文件，如果结果文件不存在，就进行peakcalling*/
 	public String getResultPeakFile() {
-		String resultFile = FileOperate.changeFileSuffix(pathOutput, "_peaks", "xls");
-		if (!FileOperate.isFileExist(pathOutput)) {
+		String resultFile = FileOperate.changeFileSuffix(outFileName, "_peaks", "xls");
+		if (!FileOperate.isFileExist(resultFile)) {
 			runPeakCalling();
 		}
 		return resultFile;
@@ -85,7 +85,7 @@ public class PeakCallingMacs {
 		return " -t " + CmdOperate.addQuot(pathInput);
 	}
 	private String getPathoutput() {
-		return " -n " + CmdOperate.addQuot(pathOutput);
+		return " -n " + CmdOperate.addQuot(outFileName);
 	}
 	private String getPvalue() {
 		return " -p " + pvalue;
@@ -116,7 +116,7 @@ public class PeakCallingMacs {
 	public void clear() {
 		pathInput = null;
 		pathInputCol = null;
-		pathOutput = null;
+		outFileName = null;
 		tsize = 50;
 		pvalue = 0.01;
 		genomeLength = 0;

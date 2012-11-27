@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +17,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
 /**
@@ -569,7 +567,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @return
 	 */
 	public SiteSnpIndelInfo getSnpIndel(SiteSnpIndelInfo siteSnpIndelInfo) {
-		if (siteSnpIndelInfo == null) {
+		if (siteSnpIndelInfo.getSnpIndelType() == SnpIndelType.CORRECT) {
 			logger.error("输入的查找位点没有错配信息，本位点：" + getRefSnpIndelStart());
 			return null;
 		}
@@ -603,7 +601,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		if (lsAllenInfo.size() > 0) {
 			return lsAllenInfo.get(0);
 		}
-		return null;
+		return SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, refBase, refBase);
 	}
 	/**
 	 * 返回所有的非ref的基因以及对应的种类和数量
@@ -664,7 +662,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 */
 	public String getSeqTypeNumStr(SiteSnpIndelInfo siteSnpIndelInfoQuery) {
 		SiteSnpIndelInfo siteSnpIndelInfo = getSnpIndel(siteSnpIndelInfoQuery);
-		if (siteSnpIndelInfo == null) {
+		if (siteSnpIndelInfo.getSnpIndelType() == SnpIndelType.CORRECT) {
 			return "";
 		}
 		String tmpResult = getRefID()+"\t"+getRefSnpIndelStart()+"\t" + siteSnpIndelInfoQuery.getReferenceSeq()+"\t" +getReadsNumRef();

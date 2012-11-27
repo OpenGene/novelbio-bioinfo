@@ -1,18 +1,10 @@
 package com.novelbio.analysis.seq.genome.mappingOperate;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs.MapReadsProcessInfo;
-import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.base.dataStructure.PatternOperate;
 
 /**
  * 给马红那边，杨红星生成的
@@ -22,6 +14,7 @@ import com.novelbio.database.model.species.Species;
 public class MapReadsChangFang extends MapReads {
 	private static Logger logger = Logger.getLogger(MapReadsChangFang.class);
 	
+	PatternOperate patternOperate = new PatternOperate("EviCode \"(.+?)\"", false);
 	String GTFyanghongxing;
 	
 	@Deprecated
@@ -32,9 +25,12 @@ public class MapReadsChangFang extends MapReads {
 	public void setGTFyanghongxing(String gTFyanghongxing) {
 		GTFyanghongxing = gTFyanghongxing;
 	}
-	
+	private void setTagLength() {
+		tagLength = 1;//由ReadMapFile方法赋值
+	}
 	@Override
 	protected void ReadMapFileExp() throws Exception {
+		setTagLength();
 		allReadsNum = 0;
 		int[] chrBpReads = null;//保存每个bp的reads累计数
 		String lastChr="";
@@ -46,9 +42,9 @@ public class MapReadsChangFang extends MapReads {
 			if (gtfLines.split("\t")[2].equals("chromosome")) {
 				continue;
 			}
-			GtfHongXingMethy gtfHongXingMethy = new GtfHongXingMethy(gtfLines);						
+			GtfHongXingMethy gtfHongXingMethy = new GtfHongXingMethy(gtfLines, patternOperate);
 			String tmpChrID = gtfHongXingMethy.getRefID();
-			if (!tmpChrID.equals(lastChr)) {				
+			if (!tmpChrID.equals(lastChr)) {
 				if (!lastChr.equals("") && flag) { // 前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
 					chrMapReadsInfo.sumChrBp(chrBpReads);
 				}
@@ -73,7 +69,7 @@ public class MapReadsChangFang extends MapReads {
 			}
 			
 			addLoc(gtfHongXingMethy, chrBpReads);
-			
+			allReadsNum = allReadsNum + gtfHongXingMethy.getReadsNum();
 			suspendCheck();
 			if (flagStop) {
 				break;
@@ -83,7 +79,6 @@ public class MapReadsChangFang extends MapReads {
 		if (flag) {
 			chrMapReadsInfo.sumChrBp(chrBpReads);
 		}
-		
 	}
 	
 	/**
@@ -115,36 +110,61 @@ class GtfHongXingMethy implements Alignment{
 	int start = 0;
 	int end = 0;
 	String cpgType = "";
-	
-	/** 
-	 * int 0:甲基化level (0-6之间)
-	 * int 1:甲基化长度
-	 */
-	ArrayList<int[]> lsMethyLevel2Num = new ArrayList<int[]>();
+	int readsNum = 0;
+	int methyScore = 0;
 
-	public GtfHongXingMethy(String gtfLines) {
+	PatternOperate patternOperate;
+
+	/**
+	 * @param gtfLines
+	 * @param patternOperate 一般是设定为
+	 * patterOperate = new PatternOperate("EviCode \"(.+?)\"", false);
+	 */
+	public GtfHongXingMethy(String gtfLines, PatternOperate patternOperate) {
 		String[] ss = gtfLines.split("\t");
 		chrID = ss[0];
 		start = Integer.parseInt(ss[3]);
+		end = start;
 		cis5to3 = ss[6].equals("+");
-		//TODO
+		this.patternOperate = patternOperate;
+		setEvidenceAndReadsNum(ss[8]);
 	}
-
-	public int[] getMethyInfo() {
-		int methLen = 0;
-		for (int[] methyLevel2Num : lsMethyLevel2Num) {
-			methLen = methLen + methyLevel2Num[1];
-		}
-		int[] result = new int[methLen];
-		int m = 0;//result的计数器
-		for (int i = 0; i < lsMethyLevel2Num.size(); i++) {
-			int[] methyLevel2Num = lsMethyLevel2Num.get(i);
-			for (int j = 0; j < methyLevel2Num[1]; j++) {
-				result[m] = methyLevel2Num[0];
-				m++;
+	/**
+	 * 一般是设定为
+	 * patterOperate = new PatternOperate("EviCode \"(.+?)\"", false);
+	 * @param patternOperate
+	 */
+	public void setPatternOperate(PatternOperate patternOperate) {
+		this.patternOperate = patternOperate;
+	}
+	/**
+	 * 给定这种：Gene "AT1G01040"; GenePosition "-4691"; Site "CNNG(14):9,CNNG(15):7"; EviCode "6:16";
+	 * @param evidenceStr
+	 * @return
+	 * 6：16这种
+	 */
+	private void setEvidenceAndReadsNum(String evidenceStr) {
+		String methyInfo = patternOperate.getPatFirst(evidenceStr, 1);
+		String[] methyNum = methyInfo.split(",");
+		for (String string : methyNum) {
+			if (!string.contains(":")) {
+				continue;
 			}
+			String[] methyEvidence2Num = string.split(":");
+			int methyLevel = Integer.parseInt(methyEvidence2Num[0]);
+			int readsNum = Integer.parseInt(methyEvidence2Num[1]);
+			this.readsNum = this.readsNum + readsNum;
+			this.methyScore = methyScore + methyLevel * readsNum;
 		}
+	}
+	
+	public int[] getMethyInfo() {
+		int[] result = new int[1];
+		result[0] = methyScore;
 		return result;
+	}
+	public int getReadsNum() {
+		return readsNum;
 	}
 	@Override
 	public int getStartAbs() {

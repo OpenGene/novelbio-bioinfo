@@ -1,18 +1,13 @@
 package com.novelbio.base.dataStructure.listOperate;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.plot.BarStyle;
-import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
-import com.novelbio.database.updatedb.database.Arabidopsis;
+import com.novelbio.base.plot.PlotBox.BoxInfo;
 
 public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin>, ListCodAbsDu<HistBin,ListCodAbs<HistBin>>> {
 	private static final Logger logger = Logger.getLogger(HistList.class);
@@ -76,24 +71,55 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	public void setPlotScatter(PlotScatter plotScatter) {
 		this.plotScatter = plotScatter;
 	}
-	/** 设定起点 */
-	public void setStartBin(String name, int start, int end) {
-		HistBin histBinThis = new HistBin();
+	/**
+	 * 设置起点
+	 * @param number 本bin所代表的数值，null就用终点和起点的平均值
+	 * @param name
+	 * @param start
+	 * @param end
+	 */
+	public void setStartBin(Integer number, String name, int start, int end) {
+		setStartBin(number.doubleValue(), name, start, end);
+	}
+	/**
+	 * 设置起点
+	 * @param number 本bin所代表的数值，null就用终点和起点的平均值
+	 * @param name
+	 * @param start
+	 * @param end
+	 */
+	public void setStartBin(Double number, String name, int start, int end) {
+		HistBin histBinThis = new HistBin(number);
 		histBinThis.setStartCis(start);
 		histBinThis.setEndCis(end);
-		histBinThis.setName(name);
+		histBinThis.addItemName(name);
 		add(histBinThis);
+	}
+
+	/**
+	 * 在此之前必须先设定起点{@link #setStartBin}
+	 * 添加hist区间，必须是紧挨着设定，
+	 * 意思本区间为上一个num和本num之间
+	 * @param number 本bin所代表的数值，null就用终点和起点的平均值
+	 * @param name
+	 * @param thisNum
+	 */
+	public void addHistBin(Integer number, String name, int thisNum) {
+		addHistBin(number.doubleValue(), name, thisNum);
 	}
 	/**
 	 * 在此之前必须先设定起点{@link #setStartBin}
 	 * 添加hist区间，必须是紧挨着设定，
 	 * 意思本区间为上一个num和本num之间
+	 * @param number 本bin所代表的数值，null就用终点和起点的平均值
+	 * @param name
+	 * @param thisNum
 	 */
-	public void addHistBin(String name, int thisNum) {
+	public void addHistBin(Double number, String name, int thisNum) {
 		HistBin histBinLast = get(size() - 1);
 		histBinLast.getEndCis();
-		HistBin histBinThis = new HistBin();
-		histBinThis.setName(name);
+		HistBin histBinThis = new HistBin(number);
+		histBinThis.addItemName(name);
 		histBinThis.setStartCis(histBinLast.getEndCis());
 		histBinThis.setEndCis(thisNum);
 		add(histBinThis);
@@ -123,23 +149,16 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	}
 	
 	/**
-	 * 从大到小依次返回
-	 * 返回<br>
-	 * 上99，95，75<br>
-	 * 中50<br>
-	 * 下25, 5, 1<br>
+	 * 返回BoxInfo<br>
 	 * @return
 	 */
-	public ArrayList<Long> getLsPercentInfo() {
-		ArrayList<Long> lsResult = new ArrayList<Long>();
-		lsResult.add(getPercentInfo(99).getCountNumber());
-		lsResult.add(getPercentInfo(95).getCountNumber());
-		lsResult.add(getPercentInfo(75).getCountNumber());
-		lsResult.add(getPercentInfo(50).getCountNumber());
-		lsResult.add(getPercentInfo(25).getCountNumber());
-		lsResult.add(getPercentInfo(5).getCountNumber());
-		lsResult.add(getPercentInfo(1).getCountNumber());
-		return lsResult;
+	public BoxInfo getBoxInfo() {
+		BoxInfo boxInfo = new BoxInfo(getName());
+		boxInfo.setInfo25And75(getPercentInfo(25).getThisNumber(), getPercentInfo(75).getThisNumber());
+		boxInfo.setInfoMedian(getPercentInfo(50).getThisNumber());
+		boxInfo.setInfoMinAndMax(getPercentInfo(1).getThisNumber(), getPercentInfo(99).getThisNumber());
+		boxInfo.setInfo5And95(getPercentInfo(5).getThisNumber(), getPercentInfo(95).getThisNumber());
+		return boxInfo;
 	}
 	/** 指定percentage乘以100
 	 * 返回该比例所对应的值
@@ -165,12 +184,17 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	 * @return
 	 */
 	public PlotScatter getPlotHistBar(BarStyle dotStyle) {
-		double[] Ycount = getYnumber();
+		double[] Ycount = getYnumber(0);
 		double[] Xrange = getX();
 		String[] xName = getRangeX();
 		HashMap<Double, String> mapX2Name = new HashMap<Double, String>();
 		for (int i = 0; i < xName.length; i++) {
-			mapX2Name.put(Xrange[i], xName[i]);
+			HistBin histBin = get(i);
+			if (histBin.getNameSingle() == null || histBin.getNameSingle().trim().equals("")) {
+				mapX2Name.put(Xrange[i], xName[i]);
+			} else {
+				mapX2Name.put(Xrange[i], histBin.getNameSingle());
+			}
 		}
 		
 		if (plotScatter == null) {
@@ -193,7 +217,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	 * 返回x的数值，从0开始
 	 * @return
 	 */
-	public double[] getX() {
+	private double[] getX() {
 		double[] lengthX = new double[size()];
 		for (int j = 0; j < lengthX.length; j++) {
 			lengthX[j] = j;
@@ -201,23 +225,33 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		return lengthX;
 	}
 	/**
-	 * 返回y的数值
+	 * 返回y的数值，注意初始的HistBin必须为等分，否则会出错
+	 * @binNum 分割的份数，小于等于0表示分割为histlist的份数
 	 * @return
 	 */
-	public double[] getYnumber() {
+	private double[] getYnumber(int binNum) {
+		if (binNum <= 0) {
+			binNum = size();
+		}
+		
 		double[] numberY = new double[size()];
 		int i = 0;
 		for (HistBin histBin : this) {
 			numberY[i] = histBin.getCountNumber();;
 			i++;
 		}
+		
+		if (binNum != size()) {
+			numberY = MathComput.mySpline(numberY, binNum, 0, 0, 0);
+		}
+		
 		return numberY;
 	}
 	/**
 	 * 返回x的区间的名字
 	 * @return
 	 */
-	public String[] getRangeX() {
+	private String[] getRangeX() {
 		String[] rangeX = new String[size()];
 		int i = 0;
 		for (HistBin histBin : this) {
@@ -229,14 +263,15 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	
 	
 	/**
+	 * @param name hist的名字，务必不能重复，否则hash表会有冲突
 	 * @param cisList true 从小到大排序的list。 false 从大到小排序的list
 	 * @return
 	 */
-	public static HistList creatHistList(boolean cisList){
+	public static HistList creatHistList(String name, boolean cisList){
 		if (cisList) {
-			return new HistListCis();
+			return new HistListCis(name);
 		} else {
-			return new HistListTrans();
+			return new HistListTrans(name);
 		}
 	}
 	
@@ -249,6 +284,10 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 class HistListCis extends HistList {
 	private static final Logger logger = Logger.getLogger(HistListCis.class);
 	private static final long serialVersionUID = -4966352009491903291L;
+	
+	public HistListCis(String histName) {
+		setName(histName);
+	}
 	
 	/**
 	 * 查找 coordinate，根据 HistBinType 返回相应的histbin
@@ -287,7 +326,10 @@ class HistListCis extends HistList {
 class HistListTrans extends HistList {
 	private static final Logger logger = Logger.getLogger(HistListTrans.class);
 	private static final long serialVersionUID = -5310222125261004172L;
-
+	
+	public HistListTrans(String name) {
+		setName(name);
+	}
 	/**
 	 * 查找 coordinate，根据 HistBinType 返回相应的histbin
 	 * @param coordinate

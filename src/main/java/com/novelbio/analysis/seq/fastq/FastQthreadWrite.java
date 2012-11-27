@@ -67,4 +67,10 @@ public class FastQthreadWrite extends RunProcess<Integer>{
 			}
 		}
 	}
+	public void close() {
+		try {
+			fastQwrite.close();
+		} catch (Exception e) {
+		}
+	}
 }

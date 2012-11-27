@@ -87,14 +87,14 @@ public class MapBwa extends MapDNA {
 	}
 	/** 输入已经过滤好的fastq文件 */
 	public void setFqFile(String leftFq, String rightFq) {
-		if (FileOperate.isFileExistAndBigThanSize(leftFq, 10) && FileOperate.isFileExistAndBigThanSize(rightFq, 10)) {
+		if (FileOperate.isFileExistAndBigThanSize(leftFq, 1) && FileOperate.isFileExistAndBigThanSize(rightFq, 1)) {
 			this.leftFq = leftFq;
 			this.rightFq = rightFq;
 		}
-		else if (FileOperate.isFileExistAndBigThanSize(leftFq, 10)) {
+		else if (FileOperate.isFileExistAndBigThanSize(leftFq, 1)) {
 			this.leftFq = leftFq;
 		}
-		else if (FileOperate.isFileExistAndBigThanSize(rightFq, 10)) {
+		else if (FileOperate.isFileExistAndBigThanSize(rightFq, 1)) {
 			this.leftFq = rightFq;
 		}
 	}

@@ -667,7 +667,7 @@ public class GffDetailGene extends ListDetailAbs {
 	}
 	
 	public static enum GeneStructure {
-		ALLLENGTH,INTRON, CDS, EXON, UTR5, UTR3, TSS, TES;
+		ALL, ALLLENGTH,INTRON, CDS, EXON, UTR5, UTR3, TSS, TES;
 		/**
 		 * 返回文字对应的GeneStructure
 		 * @return

@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.chipseq.peakcalling;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,6 @@ public class Macs14control {
 	PeakCallingMacs macs14 = new PeakCallingMacs();
 	FormatSeq formatSeq;
 	String resultFile;
-	String resultFileRaw;
 	private Species species;
 	private double effectiveGemoneSize = 0.85;
 	
@@ -45,7 +45,10 @@ public class Macs14control {
 		macs14.setPathinput(pathInput);
 	}
 	public void setPathoutput(String pathoutput) {
-		this.resultFile = pathoutput;
+		if (FileOperate.isFileDirectory(pathoutput) && (pathoutput.endsWith("\\") || pathoutput.endsWith("/"))) {
+			pathoutput = pathoutput + "result";
+		}
+		this.resultFile = FileOperate.changeFileSuffix(pathoutput, "_peak_modify", "xls");
 		macs14.setPathoutput(pathoutput);
 	}
 	public void setpathinputColl(String pathinputCol) {
@@ -89,10 +92,11 @@ public class Macs14control {
 		macs14.setGenomeLength((long) (species.getChromLenAll() * effectiveGemoneSize));
 		macs14.setFileType(formatSeq);
 		macs14.runPeakCalling();
+		writePeaks();
 	}
 	/**
-	 * 锟斤拷锟斤拷锟斤拷锟斤拷	 */
-	public void writePeaks() {
+	 * 修正结果文件	 */
+	private void writePeaks() {
 		ArrayList<String[]> lsResult = modifyMacs14Result();
 		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
 		for (String[] string : lsResult ) {
@@ -104,7 +108,7 @@ public class Macs14control {
 	 * 修正结果文件，添加summit位点为老的summit位点+length
 	 */
 	private ArrayList<String[]> modifyMacs14Result() {
-		ArrayList<String[]> lsPeaksRaw = ExcelTxtRead.readLsExcelTxt(resultFileRaw, 20);
+		ArrayList<String[]> lsPeaksRaw = ExcelTxtRead.readLsExcelTxt(macs14.getResultPeakFile(), 20);
 
 		ArrayList<String[]> lsPeakResult = new ArrayList<String[]>();
 		String[] title = lsPeaksRaw.get(0);

@@ -38,7 +38,7 @@ import javax.swing.SpinnerNumberModel;
 public class GuiPeakCalling extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
-	private JTextField savetextField;
+	private JTextField txtSavePath;
 	private static ButtonGroup buttonGroup = new ButtonGroup();
 	private JTextField txtControlFileMacs;
 	private JTextField txtInFileMacs;
@@ -62,7 +62,6 @@ public class GuiPeakCalling extends JPanel {
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	GuiLayeredPanSpeciesVersion guiLayeredPanSpeciesVersion;
 
-	String outFileString; 
 	Macs14control macs14control = new Macs14control();
 	JSpinner mfoldminspinner;
 	int speciesID;
@@ -120,17 +119,20 @@ public class GuiPeakCalling extends JPanel {
 		JButton saveButton = new JButton("SAVE");
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				outFileString = FileOperate.getParentPathName(guiFileOpen.openFileName("", ""));
-				savetextField.setText(outFileString);
+				String outPath = guiFileOpen.saveFileNameAndPath("", "");
+				if (FileOperate.isFileDirectory(outPath)) {
+					outPath = FileOperate.addSep(outPath);
+				}
+				txtSavePath.setText(outPath);
 			}
 		});
 		saveButton.setBounds(276, 25, 118, 25);
 		add(saveButton);
 		
-		savetextField = new JTextField();
-		savetextField.setBounds(429, 25, 292, 25);
-		add(savetextField);
-		savetextField.setColumns(10);
+		txtSavePath = new JTextField();
+		txtSavePath.setBounds(429, 25, 292, 25);
+		add(txtSavePath);
+		txtSavePath.setColumns(10);
 		
 		macs14Panel = new JPanel();
 		macs14Panel.setLayout(null);
@@ -409,14 +411,11 @@ public class GuiPeakCalling extends JPanel {
 		macs14control.setMfoldMin(mfoldMin);
 		macs14control.setPathinput(txtInFileMacs.getText());
 		macs14control.setpathinputColl(txtControlFileMacs.getText());
-		macs14control.setPathoutput(outFileString);
+		macs14control.setPathoutput(txtSavePath.getText());
 		macs14control.setPvalue(pvalue);
 		speciesID = species.getTaxID();
 		macs14control.setSpecies(new Species(speciesID));
 		macs14control.peakCalling();
-		System.out.println(pvalue);
-	
-	
 	}
 	
 	private void runSicer() {
@@ -430,7 +429,7 @@ public class GuiPeakCalling extends JPanel {
 		sicerControl.setSpecies(guiLayeredPanSpeciesVersion.getSelectSpecies());
 		sicerControl.setSicerType(cmbSICERtype.getSelectedValue());
 		
-		sicerControl.setOutputDir(outFileString);
+		sicerControl.setOutputDir(txtSavePath.getText());
 
 		methylationType = cmbMethyTypeSicer.getSelectedValue();
 		sicerControl.setMethylationType(methylationType);

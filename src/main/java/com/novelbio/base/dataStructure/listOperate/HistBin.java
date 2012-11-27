@@ -7,24 +7,42 @@ import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
  * @author zongjie
  */
 public class HistBin extends ListDetailAbs {
-	String description = "";
 	/** 计数器 */
-	long number = 0;
+	long countNumber = 0;
+	double binNum = -Double.MAX_VALUE;
+	
+	
 	protected HistBin() {
 		super("", "", true);
+	}
+	protected HistBin(Double binNum) {
+		super("", "", true);
+		if (binNum != null) {
+			this.binNum = binNum;
+		}
 	}
 	/**
 	 * 设定分数，根据需要保存double值
 	 * @param score
 	 */
 	public void setNumber(long number) {
-		this.number = number;
+		this.countNumber = number;
 	}
 	public void addNumber() {
-		this.number++;
+		this.countNumber++;
 	}
 	public void addNumber(int addNum) {
-		this.number = this.number + addNum;
+		this.countNumber = this.countNumber + addNum;
+	}
+	/**
+	 * 如果设定了binNum则返回binNum，没设定的话bin的头减去尾，所以注意是否要四舍五入
+	 * @return
+	 */
+	public double getThisNumber() {
+		if (binNum > -Double.MAX_VALUE) {
+			return binNum;
+		}
+		return (getEndAbs() + getStartAbs())/2;
 	}
 	
 	/**
@@ -32,26 +50,11 @@ public class HistBin extends ListDetailAbs {
 	 * @return
 	 */
 	public long getCountNumber() {
-		return number;
-	}
-	/**
-	 * 设定描述，根据需要保存string值
-	 * @param score
-	 */
-	public void setName(String description) {
-		this.description = description;
-	}
-	/**
-	 * 获得描述，根据需要保存的string值
-	 * @param description
-	 */
-	public String getDescription() {
-		return description;
+		return countNumber;
 	}
 	public HistBin clone() {
 		HistBin result = (HistBin) super.clone();
-		result.number = number;
-		result.description = description;
+		result.countNumber = countNumber;
 		return result;
 	}
 

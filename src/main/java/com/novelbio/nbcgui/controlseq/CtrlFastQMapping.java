@@ -202,16 +202,16 @@ public class CtrlFastQMapping {
 	 */
 	private void setFastqLR(FastQ[] tmpFastQLR, String fastqL, String fastqR) {
 		String compressType = getCompressType(fastqL, fastqR);
-		if (FileOperate.isFileExistAndBigThanSize(fastqL, 10) && FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
+		if (FileOperate.isFileExistAndBigThanSize(fastqL, 1) && FileOperate.isFileExistAndBigThanSize(fastqR, 1)) {
 			tmpFastQLR[0] = new FastQ(fastqL);
 			tmpFastQLR[1] = new FastQ(fastqR);;
 			setFastQParameter(tmpFastQLR[0], compressType);
 		}
-		else if (FileOperate.isFileExistAndBigThanSize(fastqL, 10)) {
+		else if (FileOperate.isFileExistAndBigThanSize(fastqL, 1)) {
 			tmpFastQLR[0] = new FastQ(fastqL);
 			setFastQParameter(tmpFastQLR[0], compressType);
 		}
-		else if (FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
+		else if (FileOperate.isFileExistAndBigThanSize(fastqR, 1)) {
 			tmpFastQLR[0] = new FastQ(fastqR);
 			setFastQParameter(tmpFastQLR[0], compressType);
 		}
