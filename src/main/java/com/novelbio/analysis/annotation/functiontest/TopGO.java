@@ -1,9 +1,12 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateTime;
@@ -34,12 +37,12 @@ public class TopGO {
 	int displayGoNum = 300;
 
 	/** 需要做分析的基因 */
-	ArrayList<String> lsGeneID;
-	ArrayList<String[]> lsBG;
+	Collection<String> lsGeneID;
+	ArrayList<String> lsBG;
 	
 	
 	ArrayList<String[]> lsResult;
-	HashMap<String,ArrayList<String>> mapGOID2LsGeneID;
+	ArrayListMultimap<String, String> mapGOID2LsGeneID;
 	public TopGO() {
 		tmplateScript = PathDetail.getRworkspace() + "topGOJava.txt";
 		setWorkSpace();
@@ -68,14 +71,14 @@ public class TopGO {
 	}
 	
 	/** 待检验的基因 */
-	public void setLsGene(ArrayList<String> lsGeneID) {
+	public void setLsGene(Collection<String> lsGeneID) {
 		this.lsGeneID = lsGeneID;
 	}
 	public void setDisplayGoNum(int displayGoNum) {
 		this.displayGoNum = displayGoNum;
 	}
 	/** 背景 */
-	public void setLsBG(ArrayList<String[]> lsBG) {
+	public void setLsBG(ArrayList<String> lsBG) {
 		this.lsBG = lsBG;
 	}
 	/** Go2Term.GO_BP 等 */
@@ -101,23 +104,23 @@ public class TopGO {
 		TxtReadandWrite txtReadScript = new TxtReadandWrite(tmplateScript, false);
 		TxtReadandWrite txtOutScript = new TxtReadandWrite(exeScript, true);
 		for (String content : txtReadScript.readlines()) {
-			if (content.startsWith("#workspace"))
+			if (content.startsWith("#workspace")) {
 				txtOutScript.writefileln(getWorkSpace(content));
-			else if (content.startsWith("#GOtype"))
+			} else if (content.startsWith("#GOtype")) {
 				txtOutScript.writefileln(getGOtype(content));
-			else if (content.startsWith("#GONum"))
+			} else if (content.startsWith("#GONum")) {
 				txtOutScript.writefileln(getGONum(content));
-			else if (content.startsWith("#GoResult"))
+			} else if (content.startsWith("#GoResult")) {
 				txtOutScript.writefileln(getGoResult(content));
-			else if (content.startsWith("#GOInfoFile"))
+			} else if (content.startsWith("#GOInfoFile")) {
 				txtOutScript.writefileln(getGOInfoFile(content));
-			else if (content.startsWith("#CalculateGeneID"))
+			} else if (content.startsWith("#CalculateGeneID")) {
 				txtOutScript.writefileln(getCalculateGeneID(content));
-			else if (content.startsWith("#BGGeneID"))
+			} else if (content.startsWith("#BGGeneID")) {
 				txtOutScript.writefileln(getBGGeneFile(content));
-			else if (content.startsWith("#Algorithm"))
+			} else if (content.startsWith("#Algorithm")) {
 				txtOutScript.writefileln(getAlgrithm(content));
-			else {
+			} else {
 				txtOutScript.writefileln(content);
 			}
 		}
@@ -129,6 +132,7 @@ public class TopGO {
 		RworkSpace = RworkSpace.replace("{$workspace}", workSpace.replace("\\", "/"));
 		return RworkSpace;
 	}
+	
 	private String getGOtype(String content) {
 		String gotype = content.split(SepSign.SEP_ID)[1];
 		gotype = gotype.replace("{$GOType}", GoType);
@@ -139,26 +143,31 @@ public class TopGO {
 		GONum = GONum.replace("{$GONum}", displayGoNum + "");
 		return GONum;
 	}
+	
 	private String getGoResult(String content) {
 		String GoResultFile = content.split(SepSign.SEP_ID)[1];
 		GoResultFile = GoResultFile.replace("{$GoResultFile}", rawGoResultFile.replace("\\", "/"));
 		return GoResultFile;
 	}
+	
 	private String getGOInfoFile(String content) {
 		String GOInfo = content.split(SepSign.SEP_ID)[1];
 		GOInfo = GOInfo.replace("{$GOInfoFile}", GOInfoFile.replace("\\", "/"));
 		return GOInfo;
 	}
+	
 	private String getCalculateGeneID(String content) {
 		String GOInfo = content.split(SepSign.SEP_ID)[1];
 		GOInfo = GOInfo.replace("{$CalGeneIDFile}", CalGeneIDFile.replace("\\", "/"));
 		return GOInfo;
 	}
+	
 	private String getBGGeneFile(String content) {
 		String GOInfo = content.split(SepSign.SEP_ID)[1];
 		GOInfo = GOInfo.replace("{$BGGeneFile}", BGGeneFile.replace("\\", "/"));
 		return GOInfo;
 	}
+	
 	private String getAlgrithm(String content) {
 		String GOInfo = content.split(SepSign.SEP_ID)[1];
 		if (goAlgorithm == null) {
@@ -168,6 +177,7 @@ public class TopGO {
 		}
 		return GOInfo;
 	}
+	
 	private void fillCalGeneID_And_BG_File() {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(CalGeneIDFile, true);
 		String[] tmpOut = new String[lsGeneID.size()];
@@ -179,7 +189,10 @@ public class TopGO {
 		txtWrite.Rwritefile(tmpOut);
 		
 		TxtReadandWrite txtTopGoBG = new TxtReadandWrite(BGGeneFile, true);
-		txtTopGoBG.ExcelWrite(lsBG);
+		for (String string : lsBG) {
+			txtTopGoBG.writefileln(string);
+		}
+		txtTopGoBG.close();
 	}
 	
 	/**
@@ -238,18 +251,19 @@ public class TopGO {
 	 */
 	private void getGo2GeneAllTry() {
 		TxtReadandWrite txtRGo2Gene = new TxtReadandWrite(GOInfoFile, false);
-		mapGOID2LsGeneID = new HashMap<String, ArrayList<String>>();
-		ArrayList<String> lsGOGene = null;
+		mapGOID2LsGeneID = ArrayListMultimap.create();
+		String goID = "";
 		for (String content : txtRGo2Gene.readlines()) {
+			content = content.trim();
 			if (content.startsWith("#")) {
-				lsGOGene = new ArrayList<String>();
-				mapGOID2LsGeneID.put(content.replace("#", "").trim(), lsGOGene);
+				goID = content.replace("#", "").trim();
+				mapGOID2LsGeneID.put(content.replace("#", "").trim(), content.trim());
 				continue;
 			}
-			if (content.trim().equals("")) {
+			if (content.equals("")) {
 				continue;
 			}
-			lsGOGene.add(content.trim());
+			mapGOID2LsGeneID.put(goID, content);
 		}
 	}
 	/** 删除中间文件 */
@@ -266,7 +280,7 @@ public class TopGO {
 		return lsResult;
 	}
 	/** 返回获得的Go2Gene列表 */
-	public HashMap<String,ArrayList<String>> getGo2GeneAll() {
+	public ArrayListMultimap<String, String> getGo2GeneUniIDAll() {
 		return mapGOID2LsGeneID;
 	}
 	

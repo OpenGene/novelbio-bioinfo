@@ -111,6 +111,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		GffDetailGene gffDetailGene = super.searchLOC(accID);
 		if (gffDetailGene == null) {
 			GeneID copedID = new GeneID(accID, taxID, false);
+			if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+				return null;
+			}
 			String locID = null;
 			try {
 				locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];

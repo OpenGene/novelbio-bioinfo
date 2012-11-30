@@ -157,11 +157,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   for (String content : txtgff.readlines()) {
 		   if(content.charAt(0)=='#') continue;
 		   
-		   if (content.contains("C10orf108")) {
-			   System.out.println("stop");
-		   }
-		   
-		   
 		   String[] ss = content.split("\t");//按照tab分开
 		   //当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中
 		   if (setIsGene.contains(ss[2])) {

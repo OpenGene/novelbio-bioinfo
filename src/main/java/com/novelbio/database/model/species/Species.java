@@ -388,8 +388,12 @@ public class Species {
 			
 			m = hashName2ColNum.get("refseqncfile");
 			speciesFile.setRefseqNCfile(info[m]);
-			
-			speciesFile.getHashChrID2ChrLen();
+			try {
+				speciesFile.getHashChrID2ChrLen();
+			} catch (Exception e) {
+				logger.error("条目出错：" + ArrayOperate.cmbString(info, "\t"));
+			}
+		
 			//升级
 			speciesFile.update();
 		}

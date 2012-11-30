@@ -85,9 +85,12 @@ public class FunctionTest implements FunTestInt {
 	 */
 	public void setLsBGAccID(String fileName, int colNum, String outLsItem) {
 		funTest.setLsBGAccID(fileName, colNum);
-		ArrayList<String[]> lsBG = funTest.getLsBG();
+		ArrayList<GeneID2LsItem> lsBG = funTest.getLsBG();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outLsItem, true);
-		txtOut.ExcelWrite(lsBG, 1, 1);
+		for (GeneID2LsItem geneID2LsGO : lsBG) {
+			txtOut.writefileln(geneID2LsGO.toString());
+		}
+		txtOut.close();
 	}
 	@Override
 	public void setLsBGCopedID(ArrayList<GeneID> lsBGaccID) {
@@ -95,18 +98,13 @@ public class FunctionTest implements FunTestInt {
 	}
 
 	@Override
-	public ArrayList<String[]> getGene2ItemPvalue() {
+	public ArrayList<StatisticTestGene2Item> getGene2ItemPvalue() {
 		return funTest.getGene2ItemPvalue();
 	}
 
 	@Override
-	public ArrayList<String[]> getTestResult() {
+	public ArrayList<StatisticTestResult> getTestResult() {
 		return funTest.getTestResult();
-	}
-
-	@Override
-	public ArrayList<String[]> getGene2Item() {
-		return funTest.getGene2Item();
 	}
 
 	@Override
@@ -125,7 +123,7 @@ public class FunctionTest implements FunTestInt {
 	}
 
 	@Override
-	public ArrayList<String[]> getItem2GenePvalue() {
+	public ArrayList<StatisticTestItem2GeneElimGo> getItem2GenePvalue() {
 		return funTest.getItem2GenePvalue();
 	}
 

@@ -203,11 +203,11 @@ public class GuiCuffdiff extends JPanel {
 		cuffdiff.setOutPath(outFile);
 		String gtfFile = txtGtfCuffdiff.getText();
 		Species species = guiLayeredPaneSpeciesVersionGff.getSelectSpecies();
-		if (!FileOperate.isFileExistAndBigThanSize(gtfFile, 10)) {
+		if (!FileOperate.isFileExistAndBigThanSize(gtfFile, 1)) {
 			gtfFile = getSpeciesGtf(outFile);
 		}
 		
-		if (!FileOperate.isFileExistAndBigThanSize(gtfFile, 10) || species.getTaxID() == 0) {
+		if (!FileOperate.isFileExistAndBigThanSize(gtfFile, 1) || species.getTaxID() == 0) {
 			JOptionPane.showConfirmDialog(null, "Error", "No useful Gtf Or No Species Selected", JOptionPane.CLOSED_OPTION);
 			return;
 		}
@@ -228,25 +228,35 @@ public class GuiCuffdiff extends JPanel {
 	}
 	
 	private void runCuffcompare(String outFile) {
+		Species species = guiLayeredPaneSpeciesVersionGff.getSelectSpecies();
+
 		ArrayList<String[]> lsFileName = sclFileName.getLsDataInfo();
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cufflinks);
 		cuffcompare.setExePath(softWareInfo.getExePath());
 		cuffcompare.setOutPath(outFile);
-		String gtfSpecies = getSpeciesGtf(outFile);
 		
+		if (species.getTaxID() != 0) {
+			String gtfSpecies = getSpeciesGtf(outFile);
+			cuffcompare.setRefGtfFile(gtfSpecies);
+			cuffcompare.setSeqFasta(species.getChromFaPath());
+		}
 		ArrayList<String> lsGtfFile = new ArrayList<String>();
 		for (String[] strings : lsFileName) {
 			lsGtfFile.add(strings[0]);
 		}
-		cuffcompare.setRefGtfFile(gtfSpecies);
-		cuffcompare.setLsInputGtfFile(lsGtfFile);
+		
+		if (species.getTaxID() == 0 && lsGtfFile.size() == 1) {
+			cuffcompare.setRefGtfFile(lsGtfFile.get(0));
+		} else {
+			cuffcompare.setLsInputGtfFile(lsGtfFile);
+		}
+		
 		cuffcompare.runCompareGtf();
 	}
 	/** 从物种生成的GTF文件 */
 	private String getSpeciesGtf(String outFile) {
 		Species species = guiLayeredPaneSpeciesVersionGff.getSelectSpecies();
 		if (species.getTaxID() != 0) {
-			
 			GffChrAbs gffChrAbs = new GffChrAbs(species);
 			String outGtf = FileOperate.changeFileSuffix(outFile, "_NovelGtf_Tmp", "gtf");
 			gffChrAbs.getGffHashGene().writeToGTF(FileOperate.changeFileSuffix(outFile, "_NovelGtf_Tmp", "gtf"));

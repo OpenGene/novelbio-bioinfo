@@ -135,13 +135,12 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   String[] ss = content.split("\t");//按照tab分开
 		   chrIDtmp=ss[0];//小写的chrID
 		   String chrIDtmpLowCase = chrIDtmp.toLowerCase();
-		 //新的染色体
-			if (!mapChrID2ListGff.containsKey(chrIDtmpLowCase)) //新的染色体
-			{
-				LOCList=new ListGff();//新建一个LOCList并放入Chrhash
-				LOCList.setName(chrIDtmp);
-				mapChrID2ListGff.put(chrIDtmpLowCase, LOCList);
-			}
+		   //新的染色体
+		   if (!mapChrID2ListGff.containsKey(chrIDtmpLowCase)) {
+			   LOCList=new ListGff();//新建一个LOCList并放入Chrhash
+			   LOCList.setName(chrIDtmp);
+			   mapChrID2ListGff.put(chrIDtmpLowCase, LOCList);
+		   }
 		   /**
 		    * 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中
 		    */
@@ -288,7 +287,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   mRNAsplit = true;//全新的基因，将其归位false
 			   ncRNA = false;
 		   }
-		   else if (!ss[2].equals("protein") && !ss[2].equals("exon")) {
+		   else if (!ss[2].equals("protein") && !ss[2].equals("exon") && !ss[2].equals("intron")) {
 			   logger.error(ss[2]);
 		   }
 	   }

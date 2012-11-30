@@ -404,6 +404,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	/**
 	 * blast多个物种 首先设定blast的物种 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 获得经过blast的KegPath
+	 * 没有就返回空的list
 	 */
 	@Override
 	public ArrayList<KGpathway> getKegPath(boolean blast) {

@@ -25,5 +25,5 @@ public class SepSign {
 	 * 分割同一个数据库的两个不同的注释信息
 	 * "{/}"
 	 */
-	public static final String SEP_INFO_SAMEDB = "{&}";
+	public static final String SEP_INFO_SAMEDB = "#/#";
 }

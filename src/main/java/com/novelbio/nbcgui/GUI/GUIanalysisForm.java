@@ -180,5 +180,4 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 		}
 	}
 	
-
 }

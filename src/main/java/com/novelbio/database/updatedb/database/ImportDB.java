@@ -23,7 +23,7 @@ public class ImportDB {
 		
 		updateNCBIID();
 		updateUniprotID();
-//		updateRiceID();//只导了前两个
+		updateRiceID();//只导了前两个
 //		updateTAIR();
 //		 updateZB();
 //		updateEnsembl();

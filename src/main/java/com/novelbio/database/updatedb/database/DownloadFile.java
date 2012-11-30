@@ -45,7 +45,7 @@ public class DownloadFile {
 		
 		lsGO = new ArrayList<String>();
 		lsGO.add("http://www.geneontology.org/ontology/obo_format_1_2/gene_ontology_ext.obo");
-//		lsGO.add("http://www.geneontology.org/gene-associations/submission/gene_association.goa_uniprot.gz");
+		lsGO.add("http://www.geneontology.org/gene-associations/submission/gene_association.goa_uniprot.gz");
 		
 		lsUniprot = new ArrayList<String>();
 		lsUniprot.add("ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/idmapping_selected.tab.gz");
@@ -55,18 +55,18 @@ public class DownloadFile {
 	}
 	
 	public void download() {
-//		for (String ftpFile : lsDownloadNCBI) {
-//			FtpFetch fetch = new FtpFetch();
-//			fetch.setDownLoadUrl(ftpFile);
-//			fetch.setSavePath(saveto);
-//			fetch.downloadFile();
-//		}
-//		for (String ftpFile : lsUniprot) {
-//			FtpFetch fetch = new FtpFetch();
-//			fetch.setDownLoadUrl(ftpFile);
-//			fetch.setSavePath(saveto);
-//			fetch.downloadFile();
-//		}
+		for (String ftpFile : lsDownloadNCBI) {
+			FtpFetch fetch = new FtpFetch();
+			fetch.setDownLoadUrl(ftpFile);
+			fetch.setSavePath(saveto);
+			fetch.downloadFile();
+		}
+		for (String ftpFile : lsUniprot) {
+			FtpFetch fetch = new FtpFetch();
+			fetch.setDownLoadUrl(ftpFile);
+			fetch.setSavePath(saveto);
+			fetch.downloadFile();
+		}
 		for (String gourl : lsGO) {
 			String fileName = FileOperate.getFileName(gourl);
 			HttpFetch httpFetch = HttpFetch.getInstance();

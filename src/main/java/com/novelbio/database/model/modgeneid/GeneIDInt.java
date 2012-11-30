@@ -25,6 +25,7 @@ public interface GeneIDInt{
 
 	/**
 	 * 获得geneID
+	 * 如果是accID就返回-1
 	 * @return
 	 */
 	public String getGenUniID();

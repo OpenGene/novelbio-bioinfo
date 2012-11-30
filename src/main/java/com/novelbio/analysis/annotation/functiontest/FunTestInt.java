@@ -52,39 +52,16 @@ public interface FunTestInt {
 	 * @param Type
 	 * @return
 	 */
-	public ArrayList<String[]> getGene2ItemPvalue();
+	public ArrayList<StatisticTestGene2Item> getGene2ItemPvalue();
 	
 	/**
 	 * 返回最后的结果，ElimGO需要覆盖该方法
 	 * 对结果排个序
 	 * @return 结果没加标题<br>
-	 * arrayList-string[6] 
-	 * 0:itemID <br>
-	 * 1到n:item信息 <br>  
-	 * n+1:difGene <br>
-	 * n+2:AllDifGene<br>
-	 * n+3:GeneInGoID <br>
-	 * n+4:AllGene <br>
-	 * n+5:Pvalue<br>
-	 * n+6:FDR <br>
-	 * n+7:enrichment n+8:(-log2P) <br>
 	 * @throws Exception 
 	 */
-	public ArrayList<String[]> getTestResult();
+	public ArrayList<StatisticTestResult> getTestResult();
 
-	/**
-	 * 根据不同的Test有不同的情况
-	 * 一般如下
-	 * Go富集分析的gene2Go表格<br>
-	 * blast：<br>
-	 * 			title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";title2[3]="Evalue";title2[4]="subjectSymbol";<br>
-			title2[5]="Description";title2[6]="PathID";title2[7]="PathTerm";<br>
-			不blast：<br>
-						title2[0]="QueryID";title2[1]="QuerySymbol";title2[2]="Description";title2[3]="PathID";<br>
-			title2[4]="PathTerm";<br>
-	 * @return
-	 */
-	public ArrayList<String[]> getGene2Item();
 	/**
 	 * 目前只能设定GO的type
 	 */
@@ -93,7 +70,7 @@ public interface FunTestInt {
 	 * GO2GeneID，目前只有elimGO才有
 	 * @return
 	 */
-	public ArrayList<String[]> getItem2GenePvalue();
+	public ArrayList<StatisticTestItem2GeneElimGo> getItem2GenePvalue();
 	/**
 	 * 保存本LsBG的信息
 	 * @param txtBGItem

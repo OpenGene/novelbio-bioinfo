@@ -223,6 +223,9 @@ public class GeneID implements GeneIDInt{
 	}
 	@Override
 	public String getGenUniID() {
+		if (getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+			return "-1";
+		}
 		return geneID.getGenUniID();
 	}
 	@Override

@@ -52,7 +52,10 @@ public class Cuffcompare {
 		return " -o " + outPath;
 	}
 	public String getSeqFasta() {
-		return " -s " + CmdOperate.addQuot(seqFasta);
+		if (FileOperate.isFileExist(seqFasta)) {
+			return " -s " + CmdOperate.addQuot(seqFasta);
+		}
+		return " ";
 	}
 	
 	/** 只有gtf文件，就是想生成cuffdiff的输入文件 */
@@ -61,7 +64,10 @@ public class Cuffcompare {
 		return " -CG -r " + CmdOperate.addQuot(refGtfFile) + " " + CmdOperate.addQuot(refGtfFile);
 	}
 	private String getRefGtf() {
-		return " -r " + CmdOperate.addQuot(refGtfFile) + " ";
+		if (FileOperate.isFileExistAndBigThanSize(refGtfFile, 1)) {
+			return " -r " + CmdOperate.addQuot(refGtfFile) + " ";
+		}
+		return " ";
 	}
 	
 	private String getLsInputGtf() {

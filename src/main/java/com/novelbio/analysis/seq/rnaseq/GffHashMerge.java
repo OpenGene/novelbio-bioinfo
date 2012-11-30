@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -20,6 +21,7 @@ public class GffHashMerge {
 	private static Logger logger = Logger.getLogger(GffHashMerge.class);
 	
 	public static void main(String[] args) {
+		human();
 //		mouse();
 //		checken();
 	}
@@ -46,7 +48,22 @@ public class GffHashMerge {
 
 		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
-	
+	public static void human() {
+		String gffhashGeneCuf = "/home/zong0jie/×ÀÃæ/finalTranscript.gtf";
+		String gffFinalStatistics = "/home/zong0jie/×ÀÃæ/transcriptomeStatistics.txt";
+		Species species = new Species(9606);
+		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		GffHashMerge gffHashMerge = new GffHashMerge();
+		gffHashMerge.setSpecies(species);
+		gffHashMerge.setGffHashGeneRef(gffChrAbs.getGffHashGene());
+		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffhashGeneCuf));
+ 
+
+		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
+		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
+
+		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
+	}
 	public static void checken() {
 		String gffHashGeneRef = "/media/winF/NBC/Project/Project_FY/chicken/chicken_ensembl_Gtf";
 		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/transcripts.gtf";
@@ -71,6 +88,10 @@ public class GffHashMerge {
 		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
 		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
+	
+	
+	
+	
 	GffHashGene gffHashGeneRef = new GffHashGene();
 	ArrayList<GffHashGene> lsGffHashGenes = new ArrayList<GffHashGene>();
 	/** keyÐ¡Ð´ */

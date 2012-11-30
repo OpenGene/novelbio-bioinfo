@@ -1074,21 +1074,25 @@ public class MathComput {
 	/**
 	 * 给定pvaule，获得相应的fdr，用java来计算的<br>
 	 * @param lsPvalue
-	 * @return
+	 * @return 返回跟输入一致顺序的fdrlist
 	 * @throws Exception 
 	 */
-	public static ArrayList<Double> pvalue2Fdr(ArrayList<Double> lsPvalue) {
+	public static ArrayList<Double> pvalue2Fdr(Collection<Double> lsPvalue) {
 		ArrayList<Double[]> lsPvalueInfo = new ArrayList<Double[]>();
-		for (int i = 0; i < lsPvalue.size(); i++) {
+		int i = 0;
+		for (Double doubles : lsPvalue) {
 			Double[] dou = new Double[2];
 			dou[0] = (double) i;
-			dou[1] = lsPvalue.get(i);
+			dou[1] = doubles;
 			lsPvalueInfo.add(dou);
+			i ++;
 		}
+		
 		HashMap<Integer, Double> hashResult = getFDR(lsPvalueInfo);
 		ArrayList<Double> lsResult = new ArrayList<Double>();
-		for (int i = 0; i < lsPvalue.size(); i++) {
-			lsResult.add(hashResult.get(i));
+		int resultSize = lsPvalue.size();
+		for (int m = 0; m < resultSize; i++) {
+			lsResult.add(hashResult.get(m));
 		}
 		return lsResult;
 	}

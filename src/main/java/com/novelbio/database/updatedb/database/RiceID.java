@@ -13,12 +13,21 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class RiceID{
+	/** 下载的东西保存在哪里 */
+	String downLoadPath = "";
+	
+	/** 具体下载的文件名 */
 	String gffRapDB = "";
 	String gffTIGR = "";
 	String rapDBoutID = "";
 	String tigrDBoutID = "";
-	String rap2MSU = "";
+	String                                                                                                                                                              = "";
 	String tigrGoSlim = "";
+	
+	public void setDownLoadPath(String downLoadPath) {
+		this.downLoadPath = downLoadPath;
+	}
+	
 	public void setRiceRap2MSU(String rap2MSU) {
 		this.rap2MSU = rap2MSU;
 	}
@@ -43,8 +52,7 @@ public class RiceID{
 	 * @param outFIle
 	 * @throws Exception
 	 */
-	public void update()
-	{
+	public void update() {
 		RiceTIGRGFFID riceTIGRGFFID = new RiceTIGRGFFID();
 		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID);
 		riceTIGRGFFID.setInsertAccID(false);
@@ -77,14 +85,18 @@ public class RiceID{
 		RiceTIGRGO riceTIGRGO = new RiceTIGRGO();
 		riceTIGRGO.updateFile(tigrGoSlim, false);
 	}
+	
+	
+	
+	
+	
 }
 /**
  * 导入repdb的信息，需要设定outtxt，也就是查不到的写入另一个文本
  * @author zong0jie
  *
  */
-class RiceRapDBID extends ImportPerLine
-{	
+class RiceRapDBID extends ImportPerLine {	
 	protected void setReadFromLine()
 	{
 		this.readFromLine = 1;
