@@ -48,9 +48,13 @@ public class FastaGetCDSFromProtein {
 	SeqFasta seqFasta;
 	String proteinSeq;
 	boolean getBlastIso = false;
-	protected FastaGetCDSFromProtein(SeqFasta seqFasta, String protein) {
+	public FastaGetCDSFromProtein(SeqFasta seqFasta, String protein) {
 		this.seqFasta = seqFasta;
 		setProtein(protein);
+	}
+	/** 是否采用blast的方法来比对序列并获得atg和uag信息 */
+	public void setGetBlastIso(boolean getBlastIso) {
+		this.getBlastIso = getBlastIso;
 	}
 	/** 是否通过blast的方法来获取序列
 	public void setGetBlastIso(boolean getBlastIso) {
@@ -221,11 +225,23 @@ public class FastaGetCDSFromProtein {
 		return compareInfo;
 	}
 	
+	/**
+	 * 获得序列的前30个氨基酸去扫描序列
+	 * @return
+	 */
 	private CompareInfo getStartEndSite () {
 		boolean cis5to3 = true;
 		CompareInfo compareInfo = null;
-		String proteinStartSite = proteinSeq.substring(0, 30);
-		String proteinEndSite = proteinSeq.substring(proteinSeq.length() - 30, proteinSeq.length());
+		String proteinStartSite = "";
+		String proteinEndSite = "";
+		if (proteinSeq.length() <= 30) {
+			proteinStartSite = proteinSeq;
+			proteinEndSite = proteinSeq;
+		} else {
+			proteinStartSite = proteinSeq.substring(0, 30);
+			proteinEndSite = proteinSeq.substring(proteinSeq.length() - 30, proteinSeq.length());
+		}
+
 		String proteinSeqTranslate = null;
 		int atgsite = 0;
 		for (int orf = 0; orf < 3; orf++) {
@@ -292,6 +308,11 @@ class BlastSeqFastaCompare extends BlastSeqFasta {
 	int orf;
 }
 
+/**
+ * 比较的结果，包含atg位点，uag位点等
+ * @author zong0jie
+ *
+ */
 class CompareInfo {
 	/** 从1开始记数 */
 	int atgAASite;

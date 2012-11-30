@@ -47,7 +47,7 @@ public class Go2Term {
 	 * @param definition
 	 */
 	public void setDefinition(String definition) {
-		Definition = definition;
+		Definition = definition.replace("\"", "");
 	}
 	/**
 	 * go信息的具体定义

@@ -9,6 +9,9 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 public class CodeCounter {
 	public static void main(String[] args) {
 		CodeCounter codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio", "/media/winD/fedora/codestatistics/allCodeLines.txt");
+		
+		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/annotation/functiontest", "/media/winD/fedora/codestatistics/functiontestCodeLines.txt");
+
 		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/project", "/media/winD/fedora/codestatistics/projectMinusCodeLines.txt");
 		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/test/java", "/media/winD/fedora/codestatistics/testCodeLines.txt");
 		

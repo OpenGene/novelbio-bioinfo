@@ -1,8 +1,10 @@
 package com.novelbio.analysis.annotation.functiontest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
  * ElimGo ÌØÓÐµÄGO2Gene
@@ -31,10 +33,37 @@ public class StatisticTestItem2GeneElimGo {
 		this.blast = blast;
 	}
 	
+	public ArrayList<String[]> toStringsLs() {
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		for (GeneID geneID : lsGeneIDs) {
+			ArrayList<String> lsTmpResult = new ArrayList<String>();
+			lsTmpResult.add(statisticTestResult.getItemName());
+			lsTmpResult.add(statisticTestResult.getItemTerm());
+			lsTmpResult.add(geneID.getAccID());
+			lsTmpResult.add(geneID.getSymbol());
+			lsTmpResult.add(geneID.getDescription());
+			lsTmpResult.add(statisticTestResult.getPvalue() + "");
+			lsTmpResult.add(statisticTestResult.getFdr() + "");
+			lsTmpResult.add(statisticTestResult.getEnrichment() + "");
+			lsTmpResult.add(statisticTestResult.getLog2Pnegative() + "");
+			lsResult.add(lsTmpResult.toArray(new String[0]));
+		}
+		
+		return lsResult;
+	}
+	
 	public static String[] getTitle() {
-		String[] title = new String[9];
-		title[0]="GOID";title[1]="GOTerm";title[2]="QueryID";title[3]="GeneSymbol";title[4]="Description";
-		title[5]="P-Value";title[6]="FDR";title[7]="Enrichment";title[8]="(-log2P)";
-		return title;
+		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.GOID.toString());
+		lsTitle.add(TitleFormatNBC.GOTerm.toString());
+		lsTitle.add(TitleFormatNBC.QueryID.toString());
+		lsTitle.add(TitleFormatNBC.Symbol.toString());
+		lsTitle.add(TitleFormatNBC.Description.toString());
+		lsTitle.add(TitleFormatNBC.Pvalue.toString());
+		lsTitle.add(TitleFormatNBC.FDR.toString());
+		lsTitle.add(TitleFormatNBC.Enrichment.toString());
+		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
+		
+		return lsTitle.toArray(new String[0]);
 	}
 }

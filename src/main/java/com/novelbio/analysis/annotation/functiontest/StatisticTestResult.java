@@ -2,18 +2,11 @@ package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
 
-import org.omg.CosNaming._BindingIteratorImplBase;
-
-import com.google.common.collect.HashMultimap;
-import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.StatisticsTest;
 import com.novelbio.base.dataStructure.StatisticsTest.StatisticsPvalueType;
+import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
  * 检验的结果
@@ -29,6 +22,8 @@ import com.novelbio.base.dataStructure.StatisticsTest.StatisticsPvalueType;
  *         n+7:enrichment n+8:(-log2P) <br>
  */
 public class StatisticTestResult {
+	static int logBaseNum = 2;
+	
 	String itemName;
 	String itemTerm;
 	
@@ -43,6 +38,7 @@ public class StatisticTestResult {
 	
 	StatisticsPvalueType statisticsPvalueType = StatisticsPvalueType.TwoTail;
 	StatisticsTest statisticsTest;
+	
 	
 	public StatisticTestResult(String itemName) {
 		this.itemName = itemName;
@@ -78,11 +74,15 @@ public class StatisticTestResult {
 	public String getItemName() {
 		return itemName;
 	}
-	
+	public String getItemTerm() {
+		return itemTerm;
+	}
 	public double getPvalue() {
 		return pvalue;
 	}
-	
+	public double getFdr() {
+		return fdr;
+	}
 	public double getEnrichment() {
 		return ((double)difGeneInItemNum/allDifGeneNum)
 				/
@@ -93,8 +93,8 @@ public class StatisticTestResult {
 	 * @param num 底数譬如-log2P，或者-log10P
 	 * @return
 	 */
-	public double getLog2Pnegative(int num) {
-		return -Math.log(pvalue)/Math.log(num);
+	public double getLog2Pnegative() {
+		return -Math.log(pvalue)/Math.log(logBaseNum);
 	}
 	private void setFDR(double fdr) {
 		this.fdr = fdr;
@@ -117,6 +117,21 @@ public class StatisticTestResult {
 		}
 	}
 	
+	public String[] toStringArray() {
+		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(itemName);
+		lsTitle.add(itemTerm);
+		lsTitle.add(difGeneInItemNum + "");
+		lsTitle.add(allDifGeneNum + "");
+		lsTitle.add(GeneInItemIDNum + "");
+		lsTitle.add(AllGeneNum + "");
+		lsTitle.add(getPvalue() + "");
+		lsTitle.add(fdr + "");
+		lsTitle.add(getEnrichment() + "");
+		lsTitle.add(getLog2Pnegative() + "");
+		return lsTitle.toArray(new String[0]);
+	}
+	
 	/**
 	 * 根据pvalue，将输入的colTestResult添加上fdr
 	 * @param colTestResult
@@ -132,5 +147,37 @@ public class StatisticTestResult {
 			statisticTestResult.setFDR(lsFDR.get(i));
 			i++;
 		}
+	}
+	
+	public static String[] getTitleGo() {
+		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.GOID.toString());
+		lsTitle.add(TitleFormatNBC.GOTerm.toString());
+		lsTitle.add("DifGene");
+		lsTitle.add("AllDifGene");
+		lsTitle.add("GeneInGOID");
+		lsTitle.add("AllGene");
+		
+		addTitle(lsTitle);
+		return lsTitle.toArray(new String[0]);
+	}
+	public static String[] getTitilePath() {
+		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.PathwayID.toString());
+		lsTitle.add(TitleFormatNBC.PathwayTerm.toString());
+		lsTitle.add("DifGene");
+		lsTitle.add("AllDifGene");
+		lsTitle.add("GeneInPathwayID");
+		lsTitle.add("AllGene");
+		
+		addTitle(lsTitle);
+		return lsTitle.toArray(new String[0]);
+	}
+	
+	private static void addTitle(ArrayList<String> lsTitle) {
+		lsTitle.add(TitleFormatNBC.Pvalue.toString());
+		lsTitle.add(TitleFormatNBC.FDR.toString());
+		lsTitle.add(TitleFormatNBC.Enrichment.toString());
+		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());		
 	}
 }

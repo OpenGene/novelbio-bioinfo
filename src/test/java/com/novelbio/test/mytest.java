@@ -2,6 +2,7 @@ package com.novelbio.test;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
@@ -9,6 +10,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
@@ -24,6 +26,9 @@ import com.novelbio.base.plot.BoxStyle;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotBox;
 import com.novelbio.base.plot.PlotScatter;
+import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.Go2Term;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
@@ -35,11 +40,12 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) {
-		FastQ fastQ1 = new FastQ("/home/zong0jie/Desktop/fastq/10b1_filtered_1_test.fastq");
-		FastQ fastQ2 = new FastQ("/home/zong0jie/Desktop/fastq/10b1_filtered_2_test.fastq");
-		FastQRecordFilter fastQRecordFilter = new FastQRecordFilter();
-		fastQ1.setFilter(fastQRecordFilter);
-		fastQ1.filterReads(fastQ2);
+		GeneID geneID = new GeneID("F1T0I5", 9606);
+		ArrayList<AGene2Go> ls = geneID.getGene2GO(Go2Term.GO_ALL);
+		for (AGene2Go aGene2Go : ls) {
+			System.out.println(aGene2Go.getGOID());
+		}
+		
 	}
 	
 	private void plotHist() {

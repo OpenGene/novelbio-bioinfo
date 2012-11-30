@@ -11,11 +11,13 @@ import com.google.common.collect.HashMultimap;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.StatisticsTest;
 import com.novelbio.base.dataStructure.StatisticsTest.StatisticsPvalueType;
+import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 public abstract class GeneID2LsItem {
 	String geneUniID;
-	HashSet<String> setItemID;
+	HashSet<String> setItemID = new HashSet<String>();
 	GeneID geneID;
 	boolean blast;
 	
@@ -168,3 +170,37 @@ public abstract class GeneID2LsItem {
 		statisticsTest.setMaxSize(max);
 	}
 }
+
+class GeneID2LsGo extends GeneID2LsItem {
+	String GOtype;
+	public void setGOtype(String gOtype) {
+		GOtype = gOtype;
+	}
+	@Override
+	public void setGeneID(GeneID geneID, boolean blast) {
+		this.geneID = geneID;
+		this.geneUniID = geneID.getGenUniID();
+		ArrayList<AGene2Go> lsGo = null;
+		if (blast) {
+			lsGo = geneID.getGene2GOBlast(GOtype);
+		} else {
+			lsGo = geneID.getGene2GO(GOtype);
+		}
+		for (AGene2Go aGene2Go : lsGo) {
+			setItemID.add(aGene2Go.getGOID());
+		}
+	}
+
+}
+
+class GeneID2LsPath extends GeneID2LsItem {
+	public void setGeneID(GeneID geneID, boolean blast) {
+		this.geneID = geneID;
+		this.geneUniID = geneID.getGenUniID();
+		ArrayList<KGpathway> lsPath = geneID.getKegPath(blast);
+		for (KGpathway kGpathway : lsPath) {
+			setItemID.add(kGpathway.getPathName());
+		}
+	}
+}
+

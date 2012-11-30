@@ -22,8 +22,9 @@ public class ImportDB {
 //		updateSpecies();
 		
 		updateNCBIID();
-		updateUniprotID();
-		updateRiceID();//只导了前两个
+//		updateUniprotID();
+		
+//		updateRiceID();//只导了前两个
 //		updateTAIR();
 //		 updateZB();
 //		updateEnsembl();

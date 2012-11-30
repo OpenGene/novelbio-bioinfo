@@ -124,6 +124,7 @@ public abstract class AGene2Go {
 		try {
 			return servGo2Term.getHashGo2Term().get(myGoID).getGoFunction();
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

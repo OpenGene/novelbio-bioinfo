@@ -210,10 +210,12 @@ class ImpGOExtObo extends ImportPerLine
 	 * @param lsReplaceAndConsider
 	 * @param GOID
 	 */
-	private void importReplaceAndConsider(ArrayList<String> lsReplaceAndConsider, String GOID)
-	{
+	private void importReplaceAndConsider(ArrayList<String> lsReplaceAndConsider, String GOID) {
 		for (int i = lsReplaceAndConsider.size() - 1; i >= 0; i--) {
 			Go2Term go2Term = Go2Term.queryGo2Term(lsReplaceAndConsider.get(i));
+			if (go2Term == null) {
+				logger.error("stop");
+			}
 			if (go2Term.getGoFunction().equals(Go2Term.FUN_SHORT_BIO_P)) {
 				go2Term.setGoIDQuery(GOID);
 				go2Term.update();

@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
+import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -224,21 +225,19 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	 */
 	private void getResult(String prix,ArrayList<GeneID>lsCopedIDs) {
 		functionTest.setLsTestGeneID(lsCopedIDs);
-		ArrayList<String[]> lsResultTest = functionTest.getTestResult();
-		if (lsResultTest == null) {
+		ArrayList<StatisticTestResult> lsResultTest = functionTest.getTestResult();
+		if (lsResultTest == null || lsResultTest.size() == 0) {
 			return;
 		}
-		lsResultTest.add(0,getResultTitle());
 		LinkedHashMap<String, ArrayList<String[]>> hashResult = calItem2GenePvalue(prix, lsResultTest);
 		hashResultGene.put(prix, hashResult);
 	}
-	abstract String[] getResultTitle();
 	/**
 	 * 返回该检验所对应返回的几个时期的信息，也就是几个sheet
 	 * @param lsResultTest 将检验结果装入hash表
 	 * @return
 	 */
-	protected abstract LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<String[]> lsResultTest);
+	protected abstract LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<StatisticTestResult> lsResultTest);
 
 	public void saveExcel(String excelPath) {
 		if (cluster)

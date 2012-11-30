@@ -5,6 +5,9 @@ import java.util.LinkedHashMap;
 
 import org.apache.log4j.Logger;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
+import com.novelbio.analysis.annotation.functiontest.StatisticTestGene2Item;
+import com.novelbio.analysis.annotation.functiontest.StatisticTestItem2GeneElimGo;
+import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -13,8 +16,8 @@ import com.novelbio.generalConf.NovelBioConst;
 import com.sun.tools.doclets.formats.html.resources.standard;
 
 public class CtrlGO extends CtrlGOPath{
-
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
+	
 	/** 用单例模式 */
 	private static CtrlGO ctrlGO = null;
 
@@ -60,12 +63,10 @@ public class CtrlGO extends CtrlGOPath{
 		this.goAlgorithm = goAlgorithm;
 		this.GOClass = GOClass;
 		if (goAlgorithm != GoAlgorithm.novelgo) {
-			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_ELIM,
-					QtaxID, blast, evalue, StaxID);
+			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_ELIM, QtaxID, blast, evalue, StaxID);
 			functionTest.setGOAlgorithm(goAlgorithm);
 		} else {
-			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_NOVELBIO,
-					QtaxID, blast, evalue, StaxID);
+			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_NOVELBIO, QtaxID, blast, evalue, StaxID);
 		}
 		functionTest.setGOtype(GOClass);
 	}
@@ -77,22 +78,36 @@ public class CtrlGO extends CtrlGOPath{
 		}
 	}
 	@Override
-	protected LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<String[]> lsResultTest) {
+	protected LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<StatisticTestResult> lsResultTest) {
 			LinkedHashMap<String, ArrayList<String[]>> hashResult = new LinkedHashMap<String, ArrayList<String[]>>();
-			hashResult.put("GO_Result", lsResultTest);
+			////////////////////////
+			ArrayList<String[]> lsResult = new ArrayList<String[]>();
+			lsResult.add(StatisticTestResult.getTitleGo());
+			for (StatisticTestResult statisticTestResult : lsResultTest) {
+				lsResult.add(statisticTestResult.toStringArray());
+			}
+			hashResult.put("GO_Result", lsResult);
+			////////////////////////
+			ArrayList<StatisticTestGene2Item> lsGene2GO = functionTest.getGene2ItemPvalue();
+			ArrayList<String[]> lsGene2GoInfo = new ArrayList<String[]>();
+			lsGene2GoInfo.add(lsGene2GO.get(0).getTitle());
+			for (StatisticTestGene2Item statisticTestGene2Item : lsGene2GO) {
+				lsGene2GoInfo.addAll(statisticTestGene2Item.toStringLs());
+			}
+			hashResult.put("Gene2GO", lsGene2GoInfo);
+			
 			if (goAlgorithm != GoAlgorithm.novelgo) {
 				FileOperate.changeFileSuffixReal(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, "_"+prix, null);
-				ArrayList<String[]> lsGene2GO = functionTest.getGene2Item();
-				hashResult.put("Gene2GO", lsGene2GO);
+				ArrayList<StatisticTestItem2GeneElimGo> lsGO2Gene = functionTest.getItem2GenePvalue();
+				ArrayList<String[]> lsGo2GeneResult = new ArrayList<String[]>();
+				lsGo2GeneResult.add(StatisticTestItem2GeneElimGo.getTitle());
+				for (StatisticTestItem2GeneElimGo statisticTestItem2GeneElimGo : lsGO2Gene) {
+					lsGo2GeneResult.addAll(statisticTestItem2GeneElimGo.toStringsLs());
+				}
 				
-				ArrayList<String[]> lsGO2Gene = functionTest.getItem2GenePvalue();
-				hashResult.put("GO2Gene", lsGO2Gene);
-				
+				hashResult.put("GO2Gene", lsGo2GeneResult);
 			}
-			else {
-				ArrayList<String[]> lsGene2GOPvalue = functionTest.getGene2ItemPvalue();
-				hashResult.put("Gene2GO", lsGene2GOPvalue);
-			}
+			
 		return hashResult;
 	}
 	@Override
@@ -117,12 +132,4 @@ public class CtrlGO extends CtrlGOPath{
 		return FileOperate.changeFileSuffix(fileName, suffix, "txt");
 	}
 	
-	@Override
-	String[] getResultTitle() {
-		String[] title = new String[10];
-		title[0] = "GOID"; title[1] = "GOTerm";
-		title[2] = "DifGene"; title[3] = "AllDifGene"; title[4] = "GeneInGOID"; title[5] = "AllGene";
-		title[6] = "P-Value"; title[7] = "FDR"; title[8] = "Enrichment"; title[9] = "(-log2P)";
-		return title;
-	}
 }
