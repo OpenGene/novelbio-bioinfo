@@ -2,6 +2,7 @@ package com.novelbio.nbcgui.controltest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
@@ -147,18 +148,23 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 		HashMap<String, ArrayList<GeneID>> hashCluster = new LinkedHashMap<String, ArrayList<GeneID>>();
 		//分上下调
 		if (lsAccID2Value.get(0).length == 1) {
+			HashSet<String> setGene = new HashSet<String>();
 			ArrayList<GeneID> lsAll = new ArrayList<GeneID>();
 			for (String[] strings : lsAccID2Value) {
-				if (strings[0] == null || strings[0].trim().equals("")) {
+				if (strings[0] == null || strings[0].trim().equals("") || setGene.contains(strings[0])) {
 					continue;
 				}
+				setGene.add(strings[0]);
 				GeneID copedID = new GeneID(strings[0], QtaxID, false);
 				lsAll.add(copedID);
 			}
 			hashCluster.put("All", lsAll);
 		}
 		else {
-			ArrayList<GeneID> lsUp = new ArrayList<GeneID>();
+			//hashset用来去重复的
+			HashSet<String> setUp = new HashSet<String>();
+			HashSet<String> setDown = new HashSet<String>();
+ 			ArrayList<GeneID> lsUp = new ArrayList<GeneID>();
 			ArrayList<GeneID> lsDown = new ArrayList<GeneID>();
 			for (String[] strings : lsAccID2Value) {
 				if (strings[0] == null || strings[0].trim().equals("")) {
@@ -166,11 +172,13 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 				}
 				GeneID copedID = new GeneID(strings[0], QtaxID, false);
 				try {
-					if (Double.parseDouble(strings[1]) <= down) {
+					if (Double.parseDouble(strings[1]) <= down && !setDown.contains(GeneID.removeDot(strings[0]).toLowerCase())) {
 						lsDown.add(copedID);
+						setDown.add(GeneID.removeDot(strings[0]).toLowerCase());
 					}
-					else if (Double.parseDouble(strings[1]) >= up) {
+					else if (Double.parseDouble(strings[1]) >= up && !setUp.contains(GeneID.removeDot(strings[0]).toLowerCase())) {
 						lsUp.add(copedID);
+						setUp.add(GeneID.removeDot(strings[0]).toLowerCase());
 					}
 				} catch (Exception e) { }
 			}
@@ -193,6 +201,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	public void doInBackgroundCluster() {
 		isCluster = true;
 		hashResultGene.clear();
+		HashMap<String, HashSet<String>> mapCluster2GeneID = new HashMap<String, HashSet<String>>();
 		HashMap<String, ArrayList<GeneID>> hashCluster = new HashMap<String, ArrayList<GeneID>>();
 		for (String[] strings : lsAccID2Value) {
 			if (strings[0] == null || strings[0].trim().equals("")) {
@@ -201,12 +210,20 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 			GeneID copedID = new GeneID(strings[0], QtaxID, false);
 			if (hashCluster.containsKey(strings[1].trim())) {
 				ArrayList<GeneID> lsTmp = hashCluster.get(strings[1].trim());
+				HashSet<String> setGeneID = mapCluster2GeneID.get(strings[1].trim());
+				if (setGeneID.contains(GeneID.removeDot(strings[0]).toLowerCase())) {
+					continue;
+				}
+				setGeneID.add(GeneID.removeDot(strings[0]).toLowerCase());
 				lsTmp.add(copedID);
 			}
 			else {
 				ArrayList<GeneID> lsTmp = new ArrayList<GeneID>();
 				lsTmp.add(copedID);
 				hashCluster.put(strings[1].trim(), lsTmp);
+				HashSet<String> setGeneID = new HashSet<String>();
+				setGeneID.add(GeneID.removeDot(strings[0]).toLowerCase());
+				mapCluster2GeneID.put(strings[1].trim(), setGeneID);
 			}
 		}
 		

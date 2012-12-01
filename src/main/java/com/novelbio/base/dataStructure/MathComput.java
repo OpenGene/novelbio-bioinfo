@@ -1091,7 +1091,7 @@ public class MathComput {
 		HashMap<Integer, Double> hashResult = getFDR(lsPvalueInfo);
 		ArrayList<Double> lsResult = new ArrayList<Double>();
 		int resultSize = lsPvalue.size();
-		for (int m = 0; m < resultSize; i++) {
+		for (int m = 0; m < resultSize; m++) {
 			lsResult.add(hashResult.get(m));
 		}
 		return lsResult;

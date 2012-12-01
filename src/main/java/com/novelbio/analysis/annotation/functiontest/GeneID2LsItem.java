@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.collect.HashMultimap;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.StatisticsTest;
@@ -16,6 +18,8 @@ import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 public abstract class GeneID2LsItem {
+	private static final Logger logger = Logger.getLogger(GeneID2LsItem.class);
+	
 	String geneUniID;
 	HashSet<String> setItemID = new HashSet<String>();
 	GeneID geneID;
@@ -23,7 +27,7 @@ public abstract class GeneID2LsItem {
 	
 	public abstract void setGeneID(GeneID geneID, boolean blast);
 	
-	public void setGeneUniID(String geneName) {
+	public void setGeneUniID(String geneUniID) {
 		if (geneUniID == null) {
 			return;
 		}
@@ -66,6 +70,7 @@ public abstract class GeneID2LsItem {
 			} else {
 				result = result + "," + itemID;
 			}
+			i++;
 		}
 		return result;
 	}
@@ -128,9 +133,11 @@ public abstract class GeneID2LsItem {
 				continue;
 			}
 			Set<String> setGeneID = mapItemID2SetGeneID.get(itemID);
+			Set<String> setGeneIDBG = mapItemID2SetGeneIDBG.get(itemID);
 			StatisticTestResult statisticTestResult = new StatisticTestResult(itemID);
 			statisticTestResult.setDifGeneNum(setGeneID.size(), NumDif);
-			statisticTestResult.setGeneNum(mapItemID2SetGeneIDBG.get(itemID).size(), NumAll);
+			statisticTestResult.setGeneNum(setGeneIDBG.size(), NumAll);
+			lsResult.add(statisticTestResult);
 		}
 		return lsResult;
 	}

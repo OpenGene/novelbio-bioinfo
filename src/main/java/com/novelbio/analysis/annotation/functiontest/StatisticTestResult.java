@@ -58,7 +58,7 @@ public class StatisticTestResult {
 	
 	public void setGeneNum(int geneInItemIDNum, int AllGeneNum) {
 		this.GeneInItemIDNum = geneInItemIDNum;
-		this.AllGeneNum = allDifGeneNum;
+		this.AllGeneNum = AllGeneNum;
 	}
 	
 	/** 只有elimGo才用 */

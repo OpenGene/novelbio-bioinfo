@@ -52,21 +52,21 @@ public class NCBI {
 	public void importFile() {
 		ImportPerLine.setTaxIDFile(taxID);
 		ImportPerLine impFile = null;
-		impFile = new ImpGen2Acc();
-		impFile.updateFile(gene2Acc, true);
-		impFile.updateFile(gene2Ref, true);
-		impFile = new ImpGen2Ensembl();
-		impFile.updateFile(gene2ensembl, true);
-		impFile = new ImpGeneRef2UniID();
-		impFile.updateFile(geneRef2UniID, true);
-		impFile = new ImpGene2Info();
-		impFile.updateFile(gene2Info, true);
-		impFile = new ImpGene2Pub();
-		impFile.updateFile(gene2Pub, true);
+//		impFile = new ImpGen2Acc();
+//		impFile.updateFile(gene2Acc, true);
+//		impFile.updateFile(gene2Ref, true);
+//		impFile = new ImpGen2Ensembl();
+//		impFile.updateFile(gene2ensembl, true);
+//		impFile = new ImpGeneRef2UniID();
+//		impFile.updateFile(geneRef2UniID, true);
+//		impFile = new ImpGene2Info();
+//		impFile.updateFile(gene2Info, true);
+//		impFile = new ImpGene2Pub();
+//		impFile.updateFile(gene2Pub, true);
 		impFile = new ImpGOExtObo();
 		impFile.updateFile(goExtObo, false);
-		impFile = new ImpGene2GO();
-		impFile.updateFile(gene2GO, true);
+//		impFile = new ImpGene2GO();
+//		impFile.updateFile(gene2GO, true);
 	}
 }
 

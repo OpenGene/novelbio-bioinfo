@@ -1,9 +1,11 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 
 import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -49,10 +51,6 @@ public abstract class StatisticTestGene2Item {
 }
 
 class StatisticTestGene2GO extends StatisticTestGene2Item {
-	String GOtype;
-	public void setGOtype(String gOtype) {
-		this.GOtype = gOtype;
-	}
 	
 	@Override
 	protected ArrayList<ArrayList<String>> getInfo() {
@@ -70,18 +68,21 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 		}
 		ArrayList<AGene2Go> lsGO = null;
 		if (blast) {
-			lsGO = geneID.getGene2GOBlast(GOtype);				
+			lsGO = geneID.getGene2GOBlast(Go2Term.GO_ALL);				
 		} else {
-			lsGO = geneID.getGene2GO(GOtype);
+			lsGO = geneID.getGene2GO(Go2Term.GO_ALL);
 		}
 		if (lsGO == null || lsGO.size() == 0) {
 			return lsFinal;
 		}
+		//用来去冗余的
+		HashSet<String> setGO = new HashSet<String>();
 		for (AGene2Go aGene2Go : lsGO) {
 			ArrayList<String> lsTmpFinalNew = (ArrayList<String>) lsTmpFinal.clone();
-			if (!mapItem2StatisticTestResult.containsKey(aGene2Go.getGOID().toLowerCase())) {
+			if (!mapItem2StatisticTestResult.containsKey(aGene2Go.getGOID().toLowerCase()) || setGO.contains(aGene2Go.getGOID())) {
 				continue;
 			}
+			setGO.add(aGene2Go.getGOID());
 			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(aGene2Go.getGOID().toLowerCase());
 			
 			lsTmpFinalNew.add(aGene2Go.getGOID());
@@ -101,20 +102,31 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 	}
 	
 	public String[] getTitle() {
-		//TODO 改成list的形式更好
-		String[] title;
+
+		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.QueryID.toString());
+		lsTitle.add("QuerySymbol");
+		lsTitle.add(TitleFormatNBC.Description.toString());
+		
 		if (blast) {
-			title = new String[9];
-			title[0]="QueryID";title[1]="QuerySymbol";title[2]="Description";
-			title[3]="Evalue"; title[4]="subjectSymbol"; title[5]="Description";
-			title[6]="GOID"; title[7]="GOTerm"; title[8]="Evidence";
+			lsTitle.add(TitleFormatNBC.Evalue.toString());
+			lsTitle.add("SubjectSymbol");
+			lsTitle.add(TitleFormatNBC.Description.toString());
 		}
-		else {
-			title = new String[6];
-			title[0]="QueryID";title[1]="QuerySymbol";title[2]="Description";
-			title[3]="GOID"; title[4]="GOTerm"; title[5]="Evidence";
-		}
-		return title;
+		
+		lsTitle.add(TitleFormatNBC.GOID.toString());
+		lsTitle.add(TitleFormatNBC.GOTerm.toString());
+		
+		lsTitle.add("DifGene");
+		lsTitle.add("AllDifGene");
+		lsTitle.add("GeneInGOID");
+		lsTitle.add("AllGene");
+		
+		lsTitle.add(TitleFormatNBC.Pvalue.toString());
+		lsTitle.add(TitleFormatNBC.Enrichment.toString());
+		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
+		
+		return lsTitle.toArray(new String[0]);
 	}
 }
 
@@ -177,6 +189,15 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 		
 		lsTitle.add(TitleFormatNBC.PathwayID.toString());
 		lsTitle.add(TitleFormatNBC.PathwayTerm.toString());
+		
+		lsTitle.add("DifGene");
+		lsTitle.add("AllDifGene");
+		lsTitle.add("GeneInGOID");
+		lsTitle.add("AllGene");
+		
+		lsTitle.add(TitleFormatNBC.Pvalue.toString());
+		lsTitle.add(TitleFormatNBC.Enrichment.toString());
+		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
 		
 		return lsTitle.toArray(new String[0]);
 	}

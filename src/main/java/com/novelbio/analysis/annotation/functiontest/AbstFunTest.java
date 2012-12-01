@@ -15,6 +15,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.StatisticsTest;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -194,14 +195,15 @@ public abstract class AbstFunTest implements FunTestInt{
 	 */
 	private void fillCopedIDInfo(ArrayList<GeneID> lsCopedIDs) {
 		//////////////  先 清 空  ////////////////////////
-		HashSet<String> hashAccID = new HashSet<String>();
+		HashSet<String> setAccID = new HashSet<String>();
 		mapGeneUniID2LsGeneID.clear();
 		////////////////////////////////////////////
 		for (GeneID geneID : lsCopedIDs) {
 			//去冗余，accID相同去掉
-			if (hashAccID.contains(geneID.getAccID())) {
+			if (setAccID.contains(geneID.getAccID())) {
 				continue;
 			}
+			setAccID.add(geneID.getAccID());
 			mapGeneUniID2LsGeneID.put(geneID.getGenUniID(), geneID);
 		}
 	}
@@ -299,6 +301,9 @@ public abstract class AbstFunTest implements FunTestInt{
 	 * 没有就返回null
 	 */
 	public ArrayList<StatisticTestResult> getTestResult() {
+		if (statisticsTest == null) {
+			statisticsTest = new FisherTest();
+		}
 		if (lsTestResult != null && lsTestResult.size() > 10) {
 			return lsTestResult;
 		}

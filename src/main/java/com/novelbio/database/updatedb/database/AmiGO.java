@@ -1,6 +1,7 @@
 package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
@@ -27,9 +28,12 @@ public class AmiGO {
 }
 
 
-class ImpGOExtObo extends ImportPerLine
-{
+class ImpGOExtObo extends ImportPerLine {
 	private static Logger logger = Logger.getLogger(ImpGOExtObo.class);
+	
+	/** queryID和实际ID */
+	HashMap<String, String> mapGOquery2GOID = new HashMap<String, String>();
+	
 	/**
 	 * 因为需要多行的导入
 	 * 所以覆盖方法
@@ -37,13 +41,19 @@ class ImpGOExtObo extends ImportPerLine
 	@Override
 	public void updateFile(String gene2AccFile, boolean gzip) {
 		TxtReadandWrite txtGene2Acc;
-		if (gzip)
+		if (gzip) {
 			txtGene2Acc = new TxtReadandWrite(TxtReadandWrite.GZIP, gene2AccFile);
-		else 
+		} else {
 			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
+		}
+		
 		//从第二行开始读取，第一次导入
 		String tmpContent = null;
 		for (String content : txtGene2Acc.readlines(2)) {
+			if (content.contains("GO:0030530")) {
+				logger.error("stop");
+			}
+			
 			if (content.startsWith("[Term]")) {
 				tmpContent = content;
 				continue;
@@ -64,6 +74,21 @@ class ImpGOExtObo extends ImportPerLine
 			}
 			if (content.equals("")) {
 				impPerLineObsolete(tmpContent);
+				tmpContent = null;
+			}
+			if (tmpContent != null) {
+				tmpContent = tmpContent + "\r\n" + content;
+			}
+		}
+		copeMapGOquery2GOID();
+		updateConvertID();
+		//从第二行开始读取，第三次导入
+		for (String content : txtGene2Acc.readlines(2)) {
+			if (content.startsWith("[Term]")) {
+				tmpContent = content;
+				continue;
+			}
+			if (content.equals("")) {
 				impPerLineChild(tmpContent);
 				tmpContent = null;
 			}
@@ -78,7 +103,7 @@ class ImpGOExtObo extends ImportPerLine
 	}
 	
 	/**
-	 * 第一次先倒入已有的信息。
+	 * 第一次倒入已有的信息。
 	 */
 	@Override
 	public boolean impPerLine(String lineContent) {
@@ -159,9 +184,10 @@ class ImpGOExtObo extends ImportPerLine
 			}
 		}
 		go2Term.update();
+		
+		mapGOquery2GOID.put(go2Term.getGoID(), go2Term.getGoID());
 		for (String string2 : lsQueryID) {
-			go2Term.setGoIDQuery(string2);
-			go2Term.update();
+			mapGOquery2GOID.put(string2, go2Term.getGoID());
 		}
 		return true;
 	}
@@ -197,6 +223,7 @@ class ImpGOExtObo extends ImportPerLine
 				lsGOIDReplace.add(string.replace("replaced_by:", "").trim());
 			}
 		}
+		
 		if (lsGOIDReplace.size() > 0) {
 			importReplaceAndConsider(lsGOIDReplace, GOID);			
 		}
@@ -214,22 +241,45 @@ class ImpGOExtObo extends ImportPerLine
 		for (int i = lsReplaceAndConsider.size() - 1; i >= 0; i--) {
 			Go2Term go2Term = Go2Term.queryGo2Term(lsReplaceAndConsider.get(i));
 			if (go2Term == null) {
-				logger.error("stop");
+				continue;
 			}
-			if (go2Term.getGoFunction().equals(Go2Term.FUN_SHORT_BIO_P)) {
-				go2Term.setGoIDQuery(GOID);
-				go2Term.update();
+			else if (go2Term.getGoFunction().equals(Go2Term.FUN_SHORT_BIO_P)) {
+				mapGOquery2GOID.put(GOID, lsReplaceAndConsider.get(i));
 				return;
 			}
 		}
-		Go2Term go2Term = Go2Term.queryGo2Term(lsReplaceAndConsider.get(lsReplaceAndConsider.size() - 1));
-		go2Term.setGoIDQuery(GOID);
-		go2Term.update();
+		mapGOquery2GOID.put(GOID, lsReplaceAndConsider.get(lsReplaceAndConsider.size() - 1));
 		return;
-	
 	}
+	
 	/**
-	 * 第二次才导入  子类信息
+	 * 整理 mapGOquery2GOID
+	 * 因为有些queryID--GOID，其中GOID也过时了，所以要继续查找queryID才行
+	 */
+	private void copeMapGOquery2GOID() {
+		HashMap<String, String> mapGOquery2GOIDFinal = new HashMap<String, String>();
+		for (String queryGOID : mapGOquery2GOID.keySet()) {
+			String goIDsubject = mapGOquery2GOID.get(queryGOID);
+			while (goIDsubject != mapGOquery2GOID.get(goIDsubject)) {
+				goIDsubject = mapGOquery2GOID.get(goIDsubject);
+			}
+			mapGOquery2GOIDFinal.put(queryGOID, goIDsubject);
+		}
+		mapGOquery2GOID = mapGOquery2GOIDFinal;
+	}
+	
+	private void updateConvertID() {
+		for (String queryGOid : mapGOquery2GOID.keySet()) {
+			String subjectGOid = mapGOquery2GOID.get(queryGOid);
+			Go2Term go2Term = new Go2Term();
+			go2Term.setGoIDQuery(queryGOid);
+			go2Term.setGoID(subjectGOid);
+			go2Term.update();
+		}
+	}
+	
+	/**
+	 * 第三次才导入  子类信息
 	 */
 	void impPerLineChild(String lineContent) {
 		if (lineContent == null) {

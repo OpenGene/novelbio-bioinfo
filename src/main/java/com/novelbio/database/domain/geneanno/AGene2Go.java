@@ -31,9 +31,6 @@ public abstract class AGene2Go {
 			return null;
 		}
 		String goID = go2Term.getGoID();
-		if (!goID.equals(myGoID)) {
-			System.out.println("stop");
-		}
 		return goID;
 	}
 //	/**
@@ -124,7 +121,7 @@ public abstract class AGene2Go {
 		try {
 			return servGo2Term.getHashGo2Term().get(myGoID).getGoFunction();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("³öÏÖÎ´ÖªGOID£º" + myGoID);
 			return null;
 		}
 	}
