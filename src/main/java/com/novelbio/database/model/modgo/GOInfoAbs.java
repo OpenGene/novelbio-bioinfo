@@ -2,6 +2,7 @@ package com.novelbio.database.model.modgo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -59,8 +60,9 @@ public abstract class GOInfoAbs{
 		if (lsGoInfo != null && lsGoInfo.size() > 0) {
 			for (GOInfoAbs goInfoAbs : lsGoInfo) {
 				for (AGene2Go aGene2Go : goInfoAbs.getLsGene2Go(GOType)) {
-					if (hashGene2Gos.containsKey(aGene2Go.getGOID()))
+					if (hashGene2Gos.containsKey(aGene2Go.getGOID())) {
 						continue;
+					}
 					hashGene2Gos.put(aGene2Go.getGOID(), aGene2Go);
 				}
 			}
@@ -112,13 +114,16 @@ public abstract class GOInfoAbs{
 	 */
 	private ArrayList<AGene2Go> getLsGoType(String GoType) {
 		ArrayList<AGene2Go> lsResult = new ArrayList<AGene2Go>();
+		HashSet<String> setGOID = new HashSet<String>();
 		if (lsAGene2Gos == null) {
 			return new ArrayList<AGene2Go>();
 		}
 		for (AGene2Go aGene2Go : lsAGene2Gos) {
-			if (aGene2Go.getFunction().equals(GoType)) {
-				lsResult.add(aGene2Go);
+			if (!aGene2Go.getFunction().equals(GoType) || setGOID.contains(aGene2Go.getGOID())) {
+				continue;
 			}
+			setGOID.add(aGene2Go.getGOID());
+			lsResult.add(aGene2Go);
 		}
 		return lsResult;
 	}

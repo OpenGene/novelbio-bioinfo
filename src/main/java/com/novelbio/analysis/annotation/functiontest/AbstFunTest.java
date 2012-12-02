@@ -21,8 +21,8 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 public abstract class AbstFunTest implements FunTestInt{
-
 	private static final Logger logger = Logger.getLogger(AbstFunTest.class);
+	
 	public static final String TEST_GO = "go";
 	public static final String TEST_KEGGPATH = "KEGGpathway";
 	

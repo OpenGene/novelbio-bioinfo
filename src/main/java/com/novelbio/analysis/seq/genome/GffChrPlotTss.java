@@ -57,6 +57,7 @@ public class GffChrPlotTss {
 	public GffChrPlotTss(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
+	
 	/**
 	 * 将GffChrAbs导入
 	 * @param gffChrAbs
@@ -64,10 +65,15 @@ public class GffChrPlotTss {
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
+	
+	/**
+	 * 如果是Tss或Tes
+	 * 绘制正负多少bp的区域
+	 * @param plotRange
+	 */
 	public void setPlotRange(int[] plotRange) {
 		this.plotRange = plotRange;
 	}
-	
 	
 	public void setSpecies(Species species) {
 		gffChrAbs.setSpecies(species);
@@ -80,8 +86,8 @@ public class GffChrPlotTss {
 	 * 每隔多少位取样,如果设定为1，则算法会变化，然后会很精确
 	 * @return
 	 */
-	public int getThisInv() {
-		return mapReads.getBinNum();
+	public MapReads getMapReads() {
+		return mapReads;
 	}
 	/**
 	 * 按照染色体数，统计每个染色体上总位点数，每个位点数， string[4] 0: chrID 1: readsNum 2: readsPipNum
@@ -217,86 +223,9 @@ public class GffChrPlotTss {
 		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfo,  customGradient);
 		heatMap.setRange(mindata, maxdata);
 		heatMap.saveToFile(outFile, 2000, 1000);
-		
-		
-		
-//		HeatChart heatChart = new HeatChart(lsMapInfo,mindata,maxdata);
-//		Dimension bb = new Dimension();
-//		bb.setSize(1, 0.01);
-//		heatChart.setCellSize(bb );
-//		//Output the chart to a file.
-//		Color colorblue = Color.BLUE;
-//		Color colorRed = Color.WHITE;
-//		//map.setBackgroundColour(color);
-//		heatChart.setHighValueColour(colorblue);
-//		heatChart.setLowValueColour(colorRed);
-//		try {
-//			heatChart.saveToFile(new File(outFile));
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		return new double[]{mindata, maxdata};
 	}
-	/**
-	 * @param lsMapInfo
-	 *            基因信息
-	 * @param structure
-	 *            基因结构，目前只有 GffDetailGene.TSS 和 GffDetailGene.TES
-	 * @param color
-	 * @param small
-	 *            最小
-	 * @param big
-	 *            最大
-	 * @param scale
-	 *            scale次方，大于1则稀疏高表达，小于1则稀疏低表达
-	 * @param outFile
-	 */
-	public static void plotHeatMap2(ArrayList<MapInfo> lsMapInfo,
-			ArrayList<MapInfo> lsMapInfo2, String outFile, double mindata1,
-			double maxdata1, double mindata2, double maxdata2) {
-		Color colorred = new Color(255, 0, 0, 255);
-		Color colorwhite = new Color(0, 0, 0, 0);
-		Color colorgreen = new Color(0, 255, 0, 255);
 
-		Color[] gradientColors = new Color[] { colorwhite, colorred };
-		Color[] customGradient = Gradient.createMultiGradient(gradientColors,
-				250);
-
-		Color[] gradientColors2 = new Color[] { colorwhite, colorgreen };
-		Color[] customGradient2 = Gradient.createMultiGradient(gradientColors2,
-				250);
-		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfo, lsMapInfo2, false,
-				customGradient, customGradient2);
-		heatMap.setRange(mindata1, maxdata1, mindata2, maxdata2);
-		heatMap.saveToFile(outFile, 4000, 1000);
-
-	}
-
-	/**
-	 * @param lsMapInfo1
-	 * @param lsMapInfo2
-	 * @param outFile
-	 * @param mindata1 热图上的所能显示最深颜色的最小值
-	 * @param maxdata1 热图上的所能显示最深颜色的最大值
-	 */
-	public static void plotHeatMapMinus(ArrayList<MapInfo> lsMapInfo1,
-			ArrayList<MapInfo> lsMapInfo2, String outFile, double mindata1,
-			double maxdata1) {
-		ArrayList<MapInfo> lsMapInfoFinal = MapInfo.minusListMapInfo(
-				lsMapInfo1, lsMapInfo2);
-		Color colorgreen = new Color(0, 255, 0, 255);
-		Color colorwhite = new Color(255, 255, 255, 255);
-		Color colorred = new Color(255, 0, 0, 255);
-
-		Color[] gradientColors = new Color[] { colorgreen, colorwhite, colorred };
-		Color[] customGradient = Gradient.createMultiGradient(gradientColors,
-				250);
-
-		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfoFinal, false, customGradient);
-		heatMap.setRange(mindata1, maxdata1);
-		heatMap.saveToFile(outFile, 6000, 1000);
-	}
 
 	/**
 	 * 根据前面设定upBp和downBp 根据Peak所覆盖的基因做出TSS图
@@ -376,6 +305,30 @@ public class GffChrPlotTss {
 		}
 		txtWrite.close();		
 	}
+	
+
+	/**
+	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
+	 * 如果没有权重，就按照reads的密度进行排序
+	 * 一般用于根据gene express 画heapmap图
+	 * @param txtExcel
+	 * @param colGeneID
+	 * @param colScore
+	 * @param rowStart
+	 * @param Structure 基因的哪个部分的结构 
+	 * @param binNum 最后结果分成几块
+	 */
+	private ArrayList<MapInfo> readFileGeneMapInfo(String txtExcel,int colGeneID, int colScore, int rowStart, GeneStructure Structure, int binNum) {
+		////////////////////     读 文 件   ////////////////////////////////////////////
+		int[] columnID = null;
+		if (colScore <= 0 || colScore == colGeneID) {
+			 columnID = new int[]{colGeneID};
+		} else {
+			columnID = new int[]{colGeneID, colScore};
+		}	
+		ArrayList<String[]> lstmp = ExcelTxtRead.readLsExcelTxt(txtExcel, columnID, rowStart, 0);
+		return getLsGeneMapInfo(lstmp, Structure, binNum);
+	}
 	/**
 	 * 给定基因的symbol，返回该基因在tss附近区域的mapreads的平均数
 	 * @param geneID 基因名字
@@ -428,174 +381,7 @@ public class GffChrPlotTss {
 		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
 		return MathComput.sum(siteInfo);
 	}
-	
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * 专为韩燕设计<br>
-	 * 当为refseq时，获得的某个基因的分布情况，按照3个barcode划分
-	 * 
-	 * @return 没有该基因则返回null
-	 */
-	public double[] getGeneReadsHYRefseq(String geneID) {
-		double[] tmpResult = getChrInfo(geneID, 1, 0);
-		if (tmpResult == null) {
-			return null;
-		}
-		// 获得具体转录本的信息
-		GffGeneIsoInfo gffGeneIsoInfoOut = gffChrAbs.getGffHashGene().searchISO(geneID);
-		return combineLoc(tmpResult, gffGeneIsoInfoOut.getLenUTR5() + 1);
-	}
 
-	/**
-	 * 给定atg位点，获得该atg位点在合并后的序列中应该是第几个，从1开始
-	 * 
-	 * @param atgAASite
-	 * @return
-	 */
-	public int getCombAtgSite(String geneID) {
-		GffGeneIsoInfo gffGeneIsoInfoOut = gffChrAbs.getGffHashGene().searchISO(geneID);
-		int atgSite = gffGeneIsoInfoOut.getLenUTR5() + 1;
-		// 除以3是指3个碱基
-		return (int) Math.ceil((double) (atgSite - 1) / 3);
-	}
-
-	/**
-	 * 给定基因名，获得该基因的atg位点在mRNA中应该是第几个位点，从1开始
-	 * @param atgAASite
-	 * @return
-	 */
-	public int getAtgSite(String geneID) {
-		GffGeneIsoInfo gffGeneIsoInfoOut = gffChrAbs.getGffHashGene().searchISO(geneID);
-		return gffGeneIsoInfoOut.getLenUTR5() + 1;
-		// 除以3是指3个碱基
-	}
-	/**
-	 * 设定peak的bed文件，第一列为chrID，第二列为起点，第三列为终点， 返回去除peak后，每条染色体的bg情况
-	 * @param peakFile
-	 * @param firstlinls1
-	 * @return
-	 */
-	public ArrayList<String[]> getBG(String peakFile, int firstlinls1) {
-		return mapReads.getChIPBG(peakFile, firstlinls1);
-	}
-	/**
-	 * 专为韩燕设计 将三个碱基合并为1个coding，取3个的最后一个碱基对应的reads数
-	 * 
-	 * @param geneReads
-	 *            该基因的reads信息，必须是单碱基精度
-	 * @param AtgSite
-	 *            该基因的atg位点，从1开始计算
-	 * @return 返回经过合并的结果，譬如 {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; atg位点为6
-	 *         结果{ 2,5,8,11,14,17};
-	 */
-	private double[] combineLoc(double[] geneReads, int AtgSite) {
-		// 此时的SeqInfo第一位就是实际的第一位，不是atgsite了
-		return MathComput.mySplineHY(geneReads, 3, AtgSite, 3);
-	}
-
-	/**
-	 * 仅给<b>韩燕</b>使用<br>
-	 * 获得基因的信息，然后排序，可以从里面挑选出含reads最多的几个然后画图
-	 * 返回经过排序的mapinfo的list，每一个mapInfo包含了该基因的核糖体信息
-	 */
-	public ArrayList<MapInfo> getChrInfo() {
-		ArrayList<String> lsChrID = mapReads.getChrIDLs();
-		ArrayList<MapInfo> lsMapInfo = new ArrayList<MapInfo>();
-		for (String string : lsChrID) {
-			mapReads.setNormalType(MapReads.NORMALIZATION_NO);
-			GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(string);
-			if (gffGeneIsoInfo.getGeneType() != GeneType.mRNA
-					&& gffGeneIsoInfo.getGeneType() != GeneType.mRNA_TE) {
-				continue;
-			}
-
-			double[] tmp = mapReads.getRangeInfo(mapReads.getBinNum(), string, 0, 0, 0);
-			mapReads.setNormalType(mapNormType);
-			double[] tmp2 = mapReads.getRangeInfo(mapReads.getBinNum(), string, 0, 0, 0);
-			// ///////////////// 异 常 处 理
-			// /////////////////////////////////////////////////////////////////////
-			if (tmp == null && tmp2 == null) {
-				continue;
-			} else if (tmp == null) {
-				tmp = new double[tmp2.length];
-			} else if (tmp2 == null) {
-				tmp2 = new double[tmp.length];
-			}
-			// //////////////////////////////////////////////////////////////////////////////////////
-			int combatgSite = getCombAtgSite(string);
-			tmp2 = combineLoc(tmp2, getAtgSite(string));
-
-			double weight = MathComput.sum(tmp);
-			MapInfo mapInfo = new MapInfo(string);
-			mapInfo.setScore(weight);
-			mapInfo.setDouble(tmp2);
-			mapInfo.setFlagLoc(combatgSite);
-			GeneID copedID = new GeneID(string, 0, false);
-			mapInfo.setName(copedID.getSymbol());
-			lsMapInfo.add(mapInfo);
-		}
-		Collections.sort(lsMapInfo);
-		return lsMapInfo;
-	}
-
-	/**
-	 * 经过标准化 将MapInfo中的double填充上相应的reads信息
-	 * 
-	 * @param binNum
-	 *            待分割的区域数目
-	 * @param lsmapInfo
-	 * @param type
-	 *            0：加权平均 1：取最高值，2：加权但不平均--也就是加和
-	 */
-	public void getRegionLs(int binNum, ArrayList<MapInfo> lsmapInfo, int type) {
-		mapReads.getRangeLs(binNum, lsmapInfo, type);
-	}
-	/**
-	 * 经过标准化 将MapInfo中的double填充上相应的reads信息
-	 * 
-	 * @param binNum
-	 *            待分割的区域数目
-	 * @param lsmapInfo
-	 * @param type
-	 *            0：加权平均 1：取最高值，2：加权但不平均--也就是加和
-	 */
-	public void getRegion(int binNum, MapInfo mapInfo, int type) {
-		mapReads.getRange(binNum, mapInfo, type);
-	}
-	
-	/**
-	 * 经过标准化，和equations修正
-	 * @param lsmapInfo
-	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
-	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
-	 */
-	public void getRegion(MapInfo mapInfo, int thisInvNum, int type) {
-		mapReads.getRange(mapInfo, thisInvNum, type);
-	}
-
-	/**
-	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
-	 * 如果没有权重，就按照reads的密度进行排序
-	 * 一般用于根据gene express 画heapmap图
-	 * @param txtExcel
-	 * @param colGeneID
-	 * @param colScore
-	 * @param rowStart
-	 * @param Structure 基因的哪个部分的结构 
-	 * @param binNum 最后结果分成几块
-	 */
-	public ArrayList<MapInfo> readFileGeneMapInfo(String txtExcel,int colGeneID, int colScore, int rowStart, GeneStructure Structure, int binNum) {
-		////////////////////     读 文 件   ////////////////////////////////////////////
-		int[] columnID = null;
-		if (colScore <= 0 || colScore == colGeneID) {
-			 columnID = new int[]{colGeneID};
-		}
-		else {
-			columnID = new int[]{colGeneID, colScore};
-		}	
-		ArrayList<String[]> lstmp = ExcelTxtRead.readLsExcelTxt(txtExcel, columnID, rowStart, 0);
-		return getLsGeneMapInfo(lstmp, Structure, binNum);
-	}
 	/**
 	 * 给定区域，自动获得基因
 	 * 根据前面设定upBp和downBp
@@ -794,5 +580,63 @@ public class GffChrPlotTss {
 		return mapInfoResult;
 	}
 
+	/**
+	 * @param lsMapInfo1
+	 * @param lsMapInfo2
+	 * @param outFile
+	 * @param mindata1 热图上的所能显示最深颜色的最小值
+	 * @param maxdata1 热图上的所能显示最深颜色的最大值
+	 */
+	public static void plotHeatMapMinus(ArrayList<MapInfo> lsMapInfo1,
+			ArrayList<MapInfo> lsMapInfo2, String outFile, double mindata1,
+			double maxdata1) {
+		ArrayList<MapInfo> lsMapInfoFinal = MapInfo.minusListMapInfo(
+				lsMapInfo1, lsMapInfo2);
+		Color colorgreen = new Color(0, 255, 0, 255);
+		Color colorwhite = new Color(255, 255, 255, 255);
+		Color colorred = new Color(255, 0, 0, 255);
 
+		Color[] gradientColors = new Color[] { colorgreen, colorwhite, colorred };
+		Color[] customGradient = Gradient.createMultiGradient(gradientColors,
+				250);
+
+		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfoFinal, false, customGradient);
+		heatMap.setRange(mindata1, maxdata1);
+		heatMap.saveToFile(outFile, 6000, 1000);
+	}
+	
+	/**
+	 * @param lsMapInfo
+	 *            基因信息
+	 * @param structure
+	 *            基因结构，目前只有 GffDetailGene.TSS 和 GffDetailGene.TES
+	 * @param color
+	 * @param small
+	 *            最小
+	 * @param big
+	 *            最大
+	 * @param scale
+	 *            scale次方，大于1则稀疏高表达，小于1则稀疏低表达
+	 * @param outFile
+	 */
+	public static void plotHeatMap2(ArrayList<MapInfo> lsMapInfo,
+			ArrayList<MapInfo> lsMapInfo2, String outFile, double mindata1,
+			double maxdata1, double mindata2, double maxdata2) {
+		Color colorred = new Color(255, 0, 0, 255);
+		Color colorwhite = new Color(0, 0, 0, 0);
+		Color colorgreen = new Color(0, 255, 0, 255);
+
+		Color[] gradientColors = new Color[] { colorwhite, colorred };
+		Color[] customGradient = Gradient.createMultiGradient(gradientColors,
+				250);
+
+		Color[] gradientColors2 = new Color[] { colorwhite, colorgreen };
+		Color[] customGradient2 = Gradient.createMultiGradient(gradientColors2,
+				250);
+		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfo, lsMapInfo2, false,
+				customGradient, customGradient2);
+		heatMap.setRange(mindata1, maxdata1, mindata2, maxdata2);
+		heatMap.saveToFile(outFile, 4000, 1000);
+
+	}
 }

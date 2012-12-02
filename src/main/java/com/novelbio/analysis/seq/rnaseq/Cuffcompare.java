@@ -100,6 +100,11 @@ public class Cuffcompare {
 	private void clearUnknownFile() {
 		String fileRefmap = outPath + ".finalTranscript.gtf.refmap";
 		String fileTmap = outPath + ".finalTranscript.gtf.tmap";
+		if (!FileOperate.isFileExist(fileRefmap)) {
+			fileRefmap = FileOperate.getParentPathName( FileOperate.getParentPathName(fileRefmap)) + ".finalTranscript.gtf.refmap";
+			fileTmap = FileOperate.getParentPathName( FileOperate.getParentPathName(fileRefmap)) + ".finalTranscript.gtf.tmap";
+		}
+		
 		String fileLoci = outPath + ".loci";
 		String fileStats = outPath + ".stats";
 		String fileTracking = outPath + ".tracking";
@@ -108,7 +113,7 @@ public class Cuffcompare {
 		FileOperate.delFile(fileTmap);
 		FileOperate.delFile(fileLoci);
 		FileOperate.delFile(fileStats);
-		FileOperate.delFile(fileTracking);		
+		FileOperate.delFile(fileTracking);
 	}
 	
 	/**
@@ -117,8 +122,12 @@ public class Cuffcompare {
 	 */
 	private String changeGtfFileName() {
 		String fileName = outPath + ".combined.gtf";
-		String newFileName = FileOperate.changeFileSuffix(fileName, "", "gtf");
-		FileOperate.changeFileName(fileName, outPath + ".gtf", true);
+		String newFileName = fileName;
+		if (outPath.endsWith("/") || outPath.endsWith("\\")) {
+			newFileName = outPath + "combined.gtf";
+		}
+		
+		FileOperate.changeFileName(fileName, FileOperate.getFileName(newFileName), true);
 		return newFileName;
 	}
 

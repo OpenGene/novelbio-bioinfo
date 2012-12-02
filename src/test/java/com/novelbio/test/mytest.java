@@ -21,6 +21,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.BoxPlotList;
 import com.novelbio.base.dataStructure.listOperate.HistBin;
 import com.novelbio.base.dataStructure.listOperate.HistList;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.BarStyle;
 import com.novelbio.base.plot.BoxStyle;
 import com.novelbio.base.plot.DotStyle;
@@ -40,11 +41,7 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) {
-		GeneID geneID = new GeneID("F1T0I5", 9606);
-		ArrayList<AGene2Go> ls = geneID.getGene2GO(Go2Term.GO_ALL);
-		for (AGene2Go aGene2Go : ls) {
-			System.out.println(aGene2Go.getGOID());
-		}
+		FileOperate.changeFileName("/media/winF/NBC/Project/Project_FY/20120920/cufflinks/diff/combined.gtf", "fsefe");
 		
 	}
 	

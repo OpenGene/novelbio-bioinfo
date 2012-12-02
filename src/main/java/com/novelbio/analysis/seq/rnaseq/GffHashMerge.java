@@ -48,17 +48,25 @@ public class GffHashMerge {
 
 		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
+	//TODO 这个运行了会出错，等待修正
 	public static void human() {
-		String gffhashGeneCuf = "/home/zong0jie/桌面/finalTranscript.gtf";
-		String gffFinalStatistics = "/home/zong0jie/桌面/transcriptomeStatistics.txt";
-		Species species = new Species(9606);
-		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcripts.gtf";
+		String gffFinal = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf";
+		String gffFinalStatistics = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcriptomeStatistics.txt";
+		Species species = new Species(10090);
 		GffHashMerge gffHashMerge = new GffHashMerge();
-		gffHashMerge.setSpecies(species);
-		gffHashMerge.setGffHashGeneRef(gffChrAbs.getGffHashGene());
-		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffhashGeneCuf));
- 
+//		gffHashMerge.setSpecies(species);
+//		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFileType(), species.getGffFile()));
+//		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffhashGeneCuf));
+//		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
+//		gffHashGene.removeDuplicateIso();
+//		gffHashGene.writeToGTF(gffFinal, "novelbio");
 
+		gffHashMerge = new GffHashMerge();
+		gffHashMerge.setSpecies(species);
+		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFileType(), species.getGffFile()));
+		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffFinal));
+	
 		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
 		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
 

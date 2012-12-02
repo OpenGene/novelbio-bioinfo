@@ -283,15 +283,16 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		//基因名字去重复，因为一个基因只能有一个名字
 		//所以如果发现一样的基因名，就在其后面加上.1，.2等
 		HashSet<String> setGeneName = new HashSet<String>();
+		HashSet<String> setTranscriptName = new HashSet<String>();
 		for (String string : treeSet) {
 			ArrayList<GffDetailGene> lsGffDetailGenes = mapChrID2ListGff.get(string);
 			for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 				String geneID = gffDetailGene.getNameSingle();
-				String geneIDinput = geneID;
-				int num = 1;
-				while (setGeneName.contains(geneIDinput)) {
-					geneIDinput = geneID + "." + num;
-					num ++;
+				String geneIDinput = getNoReplicateName(setGeneName, geneID);
+				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+					String gffIsoName = getNoReplicateName(setTranscriptName, gffGeneIsoInfo.getName());
+					gffGeneIsoInfo.setName(gffIsoName);
+					setTranscriptName.add(gffIsoName);
 				}
 				setGeneName.add(geneIDinput);
 				
@@ -303,6 +304,15 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		txtGtf.close();
 	}
 	
+	private String getNoReplicateName(HashSet<String> setGeneName, String thisName) {
+		String geneIDinput = thisName;
+		int num = 1;
+		while (setGeneName.contains(geneIDinput)) {
+			geneIDinput = thisName + "." + num;
+			num ++;
+		}
+		return geneIDinput;
+	}
 	/**
 	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GTF格式
 	 * 也就是说，仅含有一个转录本的基因就不写入文本了

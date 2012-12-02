@@ -1,13 +1,10 @@
 package com.novelbio.nbcgui.GUI;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JRadioButton;
 import javax.swing.JButton;
-import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 
@@ -26,6 +23,8 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 public class GuiCuffdiff extends JPanel {
+	private static final long serialVersionUID = 54835174459034502L;
+	
 	private JTextField txtGtfCuffdiff;
 	GuiLayeredPaneSpeciesVersionGff guiLayeredPaneSpeciesVersionGff;
 	ButtonGroup buttonGroup = new ButtonGroup();
@@ -142,7 +141,7 @@ public class GuiCuffdiff extends JPanel {
 		btnSaveto = new JButton("SaveTo");
 		btnSaveto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String txtFile = guiFileOpen.openFileName("", "");
+				String txtFile = guiFileOpen.saveFileNameAndPath("", "");
 				txtSaveTo.setText(txtFile);
 			}
 		});
@@ -224,6 +223,7 @@ public class GuiCuffdiff extends JPanel {
 		cuffdiff.setSeqFasta(species.getChromSeq());
 		cuffdiff.setOutPath(outFile);
 		cuffdiff.setLsSample2Prefix(lsFileName2Prefix);
+		cuffdiff.setCompare(sclCompare.getLsDataInfo());
 		cuffdiff.runCuffDiff();
 	}
 	

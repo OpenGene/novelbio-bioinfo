@@ -803,20 +803,19 @@ public class FileOperate {
 	 *            要修改的文件名,不包含路径
 	 * @return
 	 */
-	public static void changeFileName(String oldName, String newName,
+	public static boolean changeFileName(String oldName, String newName,
 			boolean cover) {
 		// 文件原地址
 		File oldFile = new File(oldName);
 		// 文件新（目标）地址
 		File fnew = new File(oldFile.getParentFile() + File.separator + newName);
-		if (fnew.exists() && !cover) // 如果有文件存在，则不变
-		{
-			return;
-			// fnew.delete();
+		if (fnew.exists() && !cover) {
+			return false;
 		} else {
 			fnew.delete();
 		}
-		oldFile.renameTo(fnew);
+		fnew = new File(oldFile.getParentFile() + File.separator + newName);
+		return oldFile.renameTo(fnew);
 	}
 
 	/**

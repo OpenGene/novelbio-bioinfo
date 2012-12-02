@@ -1,6 +1,7 @@
 package com.novelbio.database.model.modgo;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
@@ -21,7 +22,7 @@ public class GOInfoGenID extends GOInfoAbs{
 			return;
 		}
 		lsAGene2Gos = new ArrayList<AGene2Go>();
-		
+		HashSet<String> setGOID = new HashSet<String>();
 		ArrayList<Gene2Go>  lstmp = servGene2Go.queryLsGene2Go(Integer.parseInt(genUniAccID), taxID);
 		if (lstmp == null || lstmp.size() == 0) {
 			return;
@@ -34,6 +35,10 @@ public class GOInfoGenID extends GOInfoAbs{
 				}
 				continue;
 			}
+			if (setGOID.contains(gene2Go.getGOID())) {
+				continue;
+			}
+			setGOID.add(gene2Go.getGOID());
 			lsAGene2Gos.add(gene2Go);
 		}
 	}

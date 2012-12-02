@@ -75,14 +75,11 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 		if (lsGO == null || lsGO.size() == 0) {
 			return lsFinal;
 		}
-		//用来去冗余的
-		HashSet<String> setGO = new HashSet<String>();
 		for (AGene2Go aGene2Go : lsGO) {
 			ArrayList<String> lsTmpFinalNew = (ArrayList<String>) lsTmpFinal.clone();
-			if (!mapItem2StatisticTestResult.containsKey(aGene2Go.getGOID().toLowerCase()) || setGO.contains(aGene2Go.getGOID())) {
+			if (!mapItem2StatisticTestResult.containsKey(aGene2Go.getGOID().toLowerCase()) ) {
 				continue;
 			}
-			setGO.add(aGene2Go.getGOID());
 			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(aGene2Go.getGOID().toLowerCase());
 			
 			lsTmpFinalNew.add(aGene2Go.getGOID());
