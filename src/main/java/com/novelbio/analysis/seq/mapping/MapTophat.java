@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.mapping;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,6 +94,11 @@ public class MapTophat implements MapRNA{
 	public void setFileRef(String chrFile) {
 		mapBowtie.setChrFile(chrFile);
 	}
+	
+	/**
+	 * 以 / 结尾表示是输入到文件夹，就不做修饰
+	 * 如果以名字结尾表示输入到文件，最后把bam文件和junction文件改名并提取到上层文件夹下
+	 */
 	public void setOutPathPrefix(String outPathPrefix) {
 		this.outPathPrefix = outPathPrefix;
 	}
@@ -168,7 +174,7 @@ public class MapTophat implements MapRNA{
 	}
 	
 	private String getOutPathPrefix() {
-		return "-o \"" + outPathPrefix + "\" ";
+		return "-o " + CmdOperate.addQuot(outPathPrefix) + " ";
 	}
 	/**
 	 * 插入长度，默认是illumina：450
@@ -405,8 +411,7 @@ public class MapTophat implements MapRNA{
 		}
 		cmd = cmd + getOffset() + getThreadNum();
 		cmd = cmd + getStrandSpecifictype();
-		cmd = cmd + getMinCoverageIntron() + getMaxCoverageIntron()
-				+ getMaxSegmentIntron();
+		cmd = cmd + getMinCoverageIntron() + getMaxCoverageIntron() + getMaxSegmentIntron();
 		cmd = cmd + getOutPathPrefix();
 
 		cmd = cmd + " " + mapBowtie.getChrNameWithoutSuffix() + " ";
@@ -419,6 +424,16 @@ public class MapTophat implements MapRNA{
 		if (generateGtfFile) {
 			FileOperate.delFile(gtfFile);
 		}
+		changeFileName();
 	}
-
+	
+	private void changeFileName() {
+		if (outPathPrefix.endsWith("/") || outPathPrefix.endsWith("\\")) {
+			return;
+		}
+		String prefix = FileOperate.getFileName(outPathPrefix);
+		String parentPath = FileOperate.getParentPathName(outPathPrefix);
+		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "accepted_hits.bam", parentPath, prefix + "_accepted_hits.bam",false);
+		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "junctions.bed", parentPath, prefix + "_junctions.bed",false);
+	}
 }
