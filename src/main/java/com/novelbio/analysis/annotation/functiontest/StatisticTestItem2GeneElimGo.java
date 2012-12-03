@@ -45,7 +45,7 @@ public class StatisticTestItem2GeneElimGo {
 			lsTmpResult.add(statisticTestResult.getPvalue() + "");
 			lsTmpResult.add(statisticTestResult.getFdr() + "");
 			lsTmpResult.add(statisticTestResult.getEnrichment() + "");
-			lsTmpResult.add(statisticTestResult.getLog2Pnegative() + "");
+//			lsTmpResult.add(statisticTestResult.getLog2Pnegative() + "");
 			lsResult.add(lsTmpResult.toArray(new String[0]));
 		}
 		
@@ -62,7 +62,7 @@ public class StatisticTestItem2GeneElimGo {
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.FDR.toString());
 		lsTitle.add(TitleFormatNBC.Enrichment.toString());
-		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
+//		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
 		
 		return lsTitle.toArray(new String[0]);
 	}

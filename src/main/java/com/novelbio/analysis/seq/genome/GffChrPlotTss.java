@@ -43,14 +43,17 @@ public class GffChrPlotTss {
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
 	private static final Logger logger = Logger.getLogger(GffChrMap.class);
-	String fileName = "";
+	
 	int maxresolution = 10000;
 	/** 绘图区域，也用于tss和tes的范围 */
 	int[] plotRange;
 	MapReads mapReads;
 	int mapNormType = MapReads.NORMALIZATION_ALL_READS;
 	
-	
+	/** 绘制图片的区域 */
+	ArrayList<MapInfo> lsMapInfos;
+	/** 绘制图片的gene */
+	ArrayList<Gene2Value> lsGeneID2Value;
 	public GffChrPlotTss() {
 	}
 	
@@ -117,39 +120,32 @@ public class GffChrPlotTss {
 		mapReads.setFilter(uniqReads, startCod, booUniqueMapping, cis5to3);
 	}
 	
-	/**
-	 * @param color
-	 * @param SortS2M
-	 *            是否从小到大排序
-	 * @param txtExcel
-	 * @param colGeneID
-	 * @param colScore 如果小于0或等于colGeneID，那么就用指定区域的reads当作score
-	 * @param rowStart
-	 * @param heapMapSmall
-	 * @param heapMapBig
-	 * @param scale
-	 * @param structure
-	 *            基因结构，目前只有 GffDetailGene.TSS 和 GffDetailGene.TES
-	 * @param binNum
-	 *            最后分成几块
-	 * @param outFile
-	 * @return 返回最大值和最小值的设定
-	 */
-	public double[] plotTssHeatMap(Color color, boolean SortS2M, String txtExcel, int colGeneID, 
-			int colScore, int rowStart, double heapMapSmall, double heapMapBig,
-			GeneStructure structure, int binNum, String outFile) {
-		ArrayList<MapInfo> lsMapInfos = null;
-		if (txtExcel != null && !txtExcel.trim().equals("")) {
-			lsMapInfos = readFileGeneMapInfo(txtExcel, colGeneID, colScore, rowStart, structure, binNum);
+	public void readGeneID2Value(String txtExcel, int colGeneID, int colScore, int rowStart) {
+		int[] colNum;
+		if (colScore > 0) {
+			colNum = new int[]{colGeneID, colScore};
+		} else {
+			colNum = new int[]{colGeneID};
 		}
-		else {
-			lsMapInfos = readGeneMapInfoAll(structure, binNum);
+		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtExcel, colNum, rowStart, -1);
+		lsGeneID2Value = new ArrayList<Gene2Value>();
+		
+		for (String[] strings : lsInfo) {
+			Gene2Value gene2Value = new Gene2Value();
+			gene2Value.setGeneName(strings[0]);
+			try {
+				gene2Value.setValue(Double.parseDouble(strings[1]));
+			} catch (Exception e) {
+				continue;
+			}
+			lsGeneID2Value.add(gene2Value);
 		}
-		MapInfo.sortPath(SortS2M);
-		Collections.sort(lsMapInfos);
-		return plotHeatMap(lsMapInfos, color, heapMapSmall, heapMapBig, FileOperate.changeFileSuffix(outFile, "_HeatMap", "png"));
 	}
-
+	
+	public void readSiteInfo(String txtExcel, int colChrID, int colStart, int colEnd, int colvalue) {
+		int[] colNum;
+		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtExcel, colNum, rowStart, -1);
+	}
 	/**
 	 * 获得summit位点，画summit位点附近的reads图
 	 * @param SortS2M
@@ -638,5 +634,18 @@ public class GffChrPlotTss {
 		heatMap.setRange(mindata1, maxdata1, mindata2, maxdata2);
 		heatMap.saveToFile(outFile, 4000, 1000);
 
+	}
+}
+
+class Gene2Value {
+	String geneName;
+	double value;
+	
+	public void setGeneName(String geneName) {
+		this.geneName = geneName;
+	}
+	
+	public void setValue(double value) {
+		this.value = value;
 	}
 }

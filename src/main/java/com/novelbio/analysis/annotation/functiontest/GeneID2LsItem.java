@@ -145,24 +145,24 @@ public abstract class GeneID2LsItem {
 	/**
 	 * 给定fisher需要的信息， 做检验并获得fdr
 	 */
-	private static void doFisherTest(StatisticsTest statisticsTest, List<StatisticTestResult> lsGOinfo) {
+	private static void doFisherTest(StatisticsTest statisticsTest, List<StatisticTestResult> lsTestResult) {
 		if (statisticsTest instanceof FisherTest) {
-			setFisherTestMaxSize((FisherTest) statisticsTest, lsGOinfo);
+			setFisherTestMaxSize((FisherTest) statisticsTest, lsTestResult);
 		}
-		for (StatisticTestResult statisticTestResult : lsGOinfo) {
+		for (StatisticTestResult statisticTestResult : lsTestResult) {
 			statisticTestResult.setStatisticsTest(statisticsTest, StatisticsPvalueType.RightTail);
 			statisticTestResult.calculatePvalue();
 		}
 		
 		//排序
-        Collections.sort(lsGOinfo,new Comparator<StatisticTestResult>(){
+        Collections.sort(lsTestResult,new Comparator<StatisticTestResult>(){
             public int compare(StatisticTestResult arg0, StatisticTestResult arg1) {
             	Double a = arg0.getPvalue();
             	Double b = arg1.getPvalue();
                 return a.compareTo(b);
             }
         });
-        StatisticTestResult.setFDR(lsGOinfo);
+        StatisticTestResult.setFDR(lsTestResult);
 	}
 	
 	private static void setFisherTestMaxSize(FisherTest statisticsTest, List<StatisticTestResult> lsGOinfo) {

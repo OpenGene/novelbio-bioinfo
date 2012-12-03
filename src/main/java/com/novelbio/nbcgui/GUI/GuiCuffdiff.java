@@ -21,6 +21,8 @@ import com.novelbio.database.model.species.Species;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import javax.swing.JSpinner;
+import javax.swing.JCheckBox;
 
 public class GuiCuffdiff extends JPanel {
 	private static final long serialVersionUID = 54835174459034502L;
@@ -44,7 +46,8 @@ public class GuiCuffdiff extends JPanel {
 	private JButton btnAddcompare;
 	private JButton btnDelCompare;
 	
-	
+	JSpinner spinThreadCuffDiff;
+	JLabel lblThread;
 	/**
 	 * Create the panel.
 	 */
@@ -58,8 +61,8 @@ public class GuiCuffdiff extends JPanel {
 		rdbtnCuffcompare = new JRadioButton("CuffCompare");
 		rdbtnCuffcompare.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				txtGtfCuffdiff.setVisible(false);
-				btnGtffile.setVisible(false);
+				btnGtffile.setText("ReferenceGTF");
+
 				btnAddcompare.setVisible(false);
 				btnDelCompare.setVisible(false);
 				sclCompare.setVisible(false);
@@ -74,8 +77,8 @@ public class GuiCuffdiff extends JPanel {
 		rdbtnCuffdiff = new JRadioButton("CuffDiff");
 		rdbtnCuffdiff.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				txtGtfCuffdiff.setVisible(true);
-				btnGtffile.setVisible(true);
+				btnGtffile.setText("CalculateGTF");
+				
 				btnAddcompare.setVisible(true);
 				btnDelCompare.setVisible(true);
 				sclCompare.setVisible(true);
@@ -184,6 +187,15 @@ public class GuiCuffdiff extends JPanel {
 		btnDelCompare.setBounds(861, 444, 59, 24);
 		add(btnDelCompare);
 		
+		spinThreadCuffDiff = new JSpinner();
+		spinThreadCuffDiff.setBounds(98, 425, 59, 18);
+		add(spinThreadCuffDiff);
+		spinThreadCuffDiff.setValue(4);
+		
+		lblThread = new JLabel("Thread");
+		lblThread.setBounds(22, 427, 69, 14);
+		add(lblThread);
+		
 		initial();
 	}
 	
@@ -224,13 +236,12 @@ public class GuiCuffdiff extends JPanel {
 		cuffdiff.setOutPath(outFile);
 		cuffdiff.setLsSample2Prefix(lsFileName2Prefix);
 		cuffdiff.setCompare(sclCompare.getLsDataInfo());
+		cuffdiff.setThreadNum((Integer) spinThreadCuffDiff.getValue());
 		cuffdiff.runCuffDiff();
 	}
 	
 	private void runCuffcompare(String outFile) {
 		Species species = guiLayeredPaneSpeciesVersionGff.getSelectSpecies();
-
-		ArrayList<String[]> lsFileName = sclFileName.getLsDataInfo();
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cufflinks);
 		cuffcompare.setExePath(softWareInfo.getExePath());
 		cuffcompare.setOutPath(outFile);
@@ -240,16 +251,17 @@ public class GuiCuffdiff extends JPanel {
 			cuffcompare.setRefGtfFile(gtfSpecies);
 			cuffcompare.setSeqFasta(species.getChromFaPath());
 		}
+		String refGTF = txtGtfCuffdiff.getText();
+		if (FileOperate.isFileExist(refGTF)) {
+			cuffcompare.setRefGtfFile(refGTF);
+		}
+		
+		ArrayList<String[]> lsFileName = sclFileName.getLsDataInfo();
 		ArrayList<String> lsGtfFile = new ArrayList<String>();
 		for (String[] strings : lsFileName) {
 			lsGtfFile.add(strings[0]);
 		}
-		
-		if (species.getTaxID() == 0 && lsGtfFile.size() == 1) {
-			cuffcompare.setRefGtfFile(lsGtfFile.get(0));
-		} else {
-			cuffcompare.setLsInputGtfFile(lsGtfFile);
-		}
+		cuffcompare.setLsInputGtfFile(lsGtfFile);
 		
 		cuffcompare.runCompareGtf();
 	}

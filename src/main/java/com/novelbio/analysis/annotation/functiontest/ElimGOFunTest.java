@@ -55,6 +55,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 			statisticTestResult.setPvalue(Double.parseDouble(strings[6]));
 			lsTestResult.add(statisticTestResult);
 		}
+		StatisticTestResult.setFDR(lsTestResult);
 		return lsTestResult;
 	}
 	/**

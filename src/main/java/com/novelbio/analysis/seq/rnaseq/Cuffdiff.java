@@ -62,7 +62,9 @@ public class Cuffdiff {
 			lsmapPrefix2SetSample.put(strings[1], strings[0]);
 		}
 	}
-	
+	public void setThreadNum(int threadNum) {
+		this.threadNum = threadNum;
+	}
 	/**
 	 * 设定比较
 	 * @param mapPrefix2Prefix

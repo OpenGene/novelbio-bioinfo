@@ -208,6 +208,27 @@ public class ArrayOperate {
 	}
 	
 	/**
+	 * 将数组中小于smallNum的项目全部删除
+	 * @param column
+	 * @param smallNum
+	 * @return
+	 */
+	public static int[] removeSmallValue(int[] column, int smallNum) {
+		 ArrayList<Integer> lsReadColNum = new ArrayList<Integer>();
+		 for (int i : column) {
+			if (i < smallNum) {
+				continue;
+			}
+			lsReadColNum.add(i);
+		 }
+		 int[] column2 = new int[lsReadColNum.size()];
+		 for (int i = 0; i < lsReadColNum.size(); i++) {
+			 column2[i] = lsReadColNum.get(i);
+		 }
+		 return column2;
+	}
+	
+	/**
 	 * String[]的合并，给定Astring[]和Bstring[]
 	 * 将Astring[]和Bstring[]合并，可以指定Bstring插入在Astring的哪一列后
 	 * <b>注意，Astring和Bstring的类型必须相等</b>

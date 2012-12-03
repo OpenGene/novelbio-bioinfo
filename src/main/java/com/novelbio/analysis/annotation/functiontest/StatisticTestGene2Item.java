@@ -85,13 +85,14 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 			lsTmpFinalNew.add(aGene2Go.getGOID());
 			lsTmpFinalNew.add(aGene2Go.getGOTerm());
 			
-			lsTmpFinalNew.add(statisticTestResult.difGeneInItemNum + "");
-			lsTmpFinalNew.add(statisticTestResult.allDifGeneNum + "");
-			lsTmpFinalNew.add(statisticTestResult.GeneInItemIDNum + "");
-			lsTmpFinalNew.add(statisticTestResult.AllGeneNum + "");
+//			lsTmpFinalNew.add(statisticTestResult.difGeneInItemNum + "");
+//			lsTmpFinalNew.add(statisticTestResult.allDifGeneNum + "");
+//			lsTmpFinalNew.add(statisticTestResult.GeneInItemIDNum + "");
+//			lsTmpFinalNew.add(statisticTestResult.AllGeneNum + "");
+			
 			lsTmpFinalNew.add(statisticTestResult.getPvalue() + "");
 			lsTmpFinalNew.add(statisticTestResult.getEnrichment() + "");
-			lsTmpFinalNew.add(statisticTestResult.getLog2Pnegative() + "");
+//			lsTmpFinalNew.add(statisticTestResult.getLog2Pnegative() + "");
 			lsFinal.add(lsTmpFinalNew);
 		}
 
@@ -114,14 +115,14 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 		lsTitle.add(TitleFormatNBC.GOID.toString());
 		lsTitle.add(TitleFormatNBC.GOTerm.toString());
 		
-		lsTitle.add("DifGene");
-		lsTitle.add("AllDifGene");
-		lsTitle.add("GeneInGOID");
-		lsTitle.add("AllGene");
+//		lsTitle.add("DifGene");
+//		lsTitle.add("AllDifGene");
+//		lsTitle.add("GeneInGOID");
+//		lsTitle.add("AllGene");
 		
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.Enrichment.toString());
-		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
+//		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
 		
 		return lsTitle.toArray(new String[0]);
 	}
@@ -159,13 +160,14 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 			lsTmpFinalNew.add(kGpathway.getTitle());
 			lsTmpFinalNew.add(kGpathway.getPathName());
 			
-			lsTmpFinalNew.add(statisticTestResult.difGeneInItemNum + "");
-			lsTmpFinalNew.add(statisticTestResult.allDifGeneNum + "");
-			lsTmpFinalNew.add(statisticTestResult.GeneInItemIDNum + "");
-			lsTmpFinalNew.add(statisticTestResult.AllGeneNum + "");
+//			lsTmpFinalNew.add(statisticTestResult.difGeneInItemNum + "");
+//			lsTmpFinalNew.add(statisticTestResult.allDifGeneNum + "");
+//			lsTmpFinalNew.add(statisticTestResult.GeneInItemIDNum + "");
+//			lsTmpFinalNew.add(statisticTestResult.AllGeneNum + "");
+			
 			lsTmpFinalNew.add(statisticTestResult.getPvalue() + "");
 			lsTmpFinalNew.add(statisticTestResult.getEnrichment() + "");
-			lsTmpFinalNew.add(statisticTestResult.getLog2Pnegative() + "");
+//			lsTmpFinalNew.add(statisticTestResult.getLog2Pnegative() + "");
 			lsFinal.add(lsTmpFinalNew);
 		}
 
@@ -187,14 +189,14 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 		lsTitle.add(TitleFormatNBC.PathwayID.toString());
 		lsTitle.add(TitleFormatNBC.PathwayTerm.toString());
 		
-		lsTitle.add("DifGene");
-		lsTitle.add("AllDifGene");
-		lsTitle.add("GeneInGOID");
-		lsTitle.add("AllGene");
+//		lsTitle.add("DifGene");
+//		lsTitle.add("AllDifGene");
+//		lsTitle.add("GeneInGOID");
+//		lsTitle.add("AllGene");
 		
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.Enrichment.toString());
-		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
+//		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
 		
 		return lsTitle.toArray(new String[0]);
 	}

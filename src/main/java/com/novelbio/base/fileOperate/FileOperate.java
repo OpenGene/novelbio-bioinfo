@@ -809,6 +809,9 @@ public class FileOperate {
 		File oldFile = new File(oldName);
 		// 文件新（目标）地址
 		File fnew = new File(oldFile.getParentFile() + File.separator + newName);
+		if (oldFile.getAbsolutePath().equals(fnew.getAbsolutePath())) {
+			return true;
+		}
 		if (fnew.exists() && !cover) {
 			return false;
 		} else {
@@ -845,11 +848,15 @@ public class FileOperate {
 			String NewName, boolean cover) {
 		newPath = addSep(newPath);
 		boolean okFlag = false;
-
+		
 		if (NewName == null || NewName.trim().equals("")) {
 			NewName = getFileName(oldPath);
 		}
-
+		String newPathName = newPath + NewName;
+		if (oldPath.equals(newPathName)) {
+			return true;
+		}
+		
 		if (isFileExist(oldPath)) {
 			okFlag = moveSingleFile(oldPath, newPath, NewName, cover);
 		} else if (isFileDirectory(oldPath)) {

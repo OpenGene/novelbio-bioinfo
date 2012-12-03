@@ -40,7 +40,6 @@ public class GuiLinesStatistics extends JPanel {
 		btnOpen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("", "");
-				ArrayList<String> lsPrefix = new ArrayList<String>();
 				sclBamSamFile.addItemLs(JScrollPaneData.getLsFileName2Out(lsFileName,"_report","txt"));
 			}
 		});

@@ -98,12 +98,13 @@ public class Cuffcompare {
 	
 	/** 删除一些未知文件 */
 	private void clearUnknownFile() {
-		String fileRefmap = outPath + ".finalTranscript.gtf.refmap";
-		String fileTmap = outPath + ".finalTranscript.gtf.tmap";
-		if (!FileOperate.isFileExist(fileRefmap)) {
-			fileRefmap = FileOperate.getParentPathName( FileOperate.getParentPathName(fileRefmap)) + ".finalTranscript.gtf.refmap";
-			fileTmap = FileOperate.getParentPathName( FileOperate.getParentPathName(fileRefmap)) + ".finalTranscript.gtf.tmap";
+		String prefix = "";
+		if (!outPath.endsWith("/") && !outPath.endsWith("\\")) {
+			prefix = FileOperate.getFileName(outPath);
 		}
+		
+		String fileRefmap = FileOperate.changeFilePrefix(refGtfFile, prefix + ".", null) + ".refmap";
+		String fileTmap = FileOperate.changeFilePrefix(refGtfFile, prefix + ".", null) + ".tmap";
 		
 		String fileLoci = outPath + ".loci";
 		String fileStats = outPath + ".stats";

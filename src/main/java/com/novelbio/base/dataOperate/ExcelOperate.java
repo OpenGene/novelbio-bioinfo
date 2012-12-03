@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -416,12 +417,20 @@ public class ExcelOperate {
 		
 		return ReadLsExcelDetail(sheetNum, rowStartNum, rowEndNum, readColumn);
 	 }
-	 
+	 /**
+	  * @param sheetNum
+	  * @param rowStartNum
+	  * @param rowEndNum
+	  * @param readColNum 如果出现负数的colNum，则跳过
+	  * @return
+	  */
 	 private ArrayList<String[]> ReadLsExcelDetail(int sheetNum, int rowStartNum, int rowEndNum, int[] readColNum) {
 		 ArrayList<String[]> LsExcelLine = new ArrayList<String[]>();
 		 sheet = wb.getSheetAt(sheetNum);
 		 Row row = sheet.getRow(rowStartNum);
-
+		 
+		 readColNum = ArrayOperate.removeSmallValue(readColNum, 0);
+		 
 		 for (int readLines = rowStartNum; readLines <= rowEndNum; readLines++) {
 			 row = sheet.getRow(readLines);
 			 String[] tmpLine = new String[readColNum.length];

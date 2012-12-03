@@ -43,6 +43,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -888,20 +889,23 @@ public class TxtReadandWrite {
 			if (colNotNone > 0 && (tmp.length < colNotNone + 1 || tmp[colNotNone] == null || tmp[colNotNone].trim().equals(""))) {
 				continue;
 			}
-			String[] tmpResult = new String[column.length];
-			for (int i = 0; i < tmpResult.length; i++) {
-				tmpResult[i] = "";
-			}
-			for (int i = 0; i < column.length; i++) {
-				int colNum = column[i] - 1;
-				if (tmp.length <= colNum || tmp[colNum] == null) {
-					tmpResult[i] = "";
-				} else {
-					tmpResult[i] = tmp[colNum];
-				}
-			}
-			result.add(tmpResult);
-			countRows ++;
+			
+			column = ArrayOperate.removeSmallValue(column, 0);
+			 
+			 String[] tmpResult = new String[column.length];
+			 for (int i = 0; i < tmpResult.length; i++) {
+				 tmpResult[i] = "";
+			 }
+			 for (int i = 0; i < column.length; i++) {
+				 int colNum = column[i] - 1;
+				 if (tmp.length <= colNum || tmp[colNum] == null) {
+					 tmpResult[i] = "";
+				 } else {
+					 tmpResult[i] = tmp[colNum];
+				 }
+			 }
+			 result.add(tmpResult);
+			 countRows ++;
 		}
 		close();
 		return result;
