@@ -45,7 +45,7 @@ public class GffCompareUCSCandNCBI {
 	private void compare(String outFile) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 		for (GffDetailGene gffDetailGeneUCSC : gffHashGeneUCSC.getGffDetailAll()) {
-			GffGeneIsoInfo gffGeneIsoInfoUCSC = gffDetailGeneUCSC.getLongestSplit();
+			GffGeneIsoInfo gffGeneIsoInfoUCSC = gffDetailGeneUCSC.getLongestSplitMrna();
 			GffGeneIsoInfo gffGeneIsoInfoNCBI = gffHashGeneNCBI.searchISO(gffGeneIsoInfoUCSC.getName());
 			if (gffGeneIsoInfoNCBI == null) {
 				continue;

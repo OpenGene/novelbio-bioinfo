@@ -207,8 +207,8 @@ public class ReadsOnRepeatGene {
 			int[] result = new int[]{GffGeneIsoInfo.COD_LOC_OUT, 0};
 			return result;
 		}
-		int locationInfo = gffCodGene.getGffDetailThis().getLongestSplit().getCodLoc(gffCodGene.getCoord());
-		boolean cisFinal = (gffCodGene.getGffDetailThis().getLongestSplit().isCis5to3() == cis5to3);
+		int locationInfo = gffCodGene.getGffDetailThis().getLongestSplitMrna().getCodLoc(gffCodGene.getCoord());
+		boolean cisFinal = (gffCodGene.getGffDetailThis().getLongestSplitMrna().isCis5to3() == cis5to3);
 		int ori = 0;//·½Ïò
 		if (cisFinal) {
 			ori = 1;

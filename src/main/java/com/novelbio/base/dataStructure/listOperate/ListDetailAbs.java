@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
+import com.novelbio.database.domain.geneanno.SepSign;
 
 /**
  * compare的比较取决于父节点的方向，如果父节点的方向为null，则按照绝对值排序，如果是cis，那么就按cis的排序，如果为trans就按照trans的方式排序
@@ -425,7 +426,7 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 	/** 重写hashcode */
 	public int hashCode(){
 		String hash = "";
-		hash = parentName + "//" + numberstart + "//" + numberstart;
+		hash = parentName + SepSign.SEP_ID + numberstart + SepSign.SEP_ID + numberstart;
 		return hash.hashCode();
 	}
 	/** 没有方向则返回startAbs */

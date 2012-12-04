@@ -311,7 +311,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	private void getAnnoLocSumit(ArrayList<String[]> lsAnno, GffDetailGene gffDetailGene, int coord) {
 		gffDetailGene.setTssRegion(tss);
 		gffDetailGene.setTesRegion(tes);
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		if (!gffGeneIsoInfo.isCodLocFilter(coord, filtertss, filtertes, genebody, UTR5, UTR3, exonFilter, intronFilter)) {
 			return;
 		}

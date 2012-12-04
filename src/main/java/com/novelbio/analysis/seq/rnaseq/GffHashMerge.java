@@ -253,7 +253,7 @@ public class GffHashMerge {
 			boolean shortGene = true;
 			for (GffDetailGene gffDetailGene : lsGene) {
 				//长度大于指定长度，或者最长转录本含有内含子，就可以认为不是假基因
-				if (gffDetailGene.Length() > minGeneLen || gffDetailGene.getLongestSplit().size() > 1) {
+				if (gffDetailGene.Length() > minGeneLen || gffDetailGene.getLongestSplitMrna().size() > 1) {
 					shortGene = false;
 					break;
 				}

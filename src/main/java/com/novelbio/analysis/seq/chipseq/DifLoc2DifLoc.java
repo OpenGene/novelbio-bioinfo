@@ -188,6 +188,10 @@ public class DifLoc2DifLoc {
 		txtOut.writefileln("GeneID\t" + comparePrefix1 + "\t" + comparePrefix2);
 		String[] tmpResult = new String[3];
 		for (String geneID : lsGeneID) {
+			if (gffChrAbs.getGffHashGene().searchISO(geneID) == null && gffChrAbs.getGffHashGene().searchLOC(geneID) == null) {
+				continue;
+			}
+			
 			tmpResult[0] = geneID;
 			tmpResult[1] = getInfo(compareType1, geneID, comparePrefix1) + "";
 			tmpResult[2] = getInfo(compareType2, geneID, comparePrefix2) + "";

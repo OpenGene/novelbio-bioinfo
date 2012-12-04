@@ -164,7 +164,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 	private LinkedList<GffGeneIsoInfo> getGeneSeqLongestIso(GffDetailGene gffDetailGene) {
 		LinkedList<GffGeneIsoInfo> lsResult = new LinkedList<GffGeneIsoInfo>();
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		lsResult.add(gffGeneIsoInfo);
 		return lsResult;
 	}
@@ -273,7 +273,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (getAllIso)
 			return gffChrAbs.getGffHashGene().searchISO(IsoName);
 		else
-			return gffChrAbs.getGffHashGene().searchLOC(IsoName).getLongestSplit();
+			return gffChrAbs.getGffHashGene().searchLOC(IsoName).getLongestSplitMrna();
 	}
 	
 	

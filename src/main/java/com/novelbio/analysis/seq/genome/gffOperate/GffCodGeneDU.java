@@ -48,6 +48,8 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 * 里面保存的GffDetailGene都是clone的
 	 */
 	LinkedHashSet<GffDetailGene> setGffDetailGenesRight = null;
+	
+	/** 将过滤标签清空 */
 	public void cleanFilter() {
 		tss = null;
 		tes = null;
@@ -224,7 +226,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		anno[0] = anno[0].replaceFirst("///", "");
 		anno[1] = anno[1].replaceFirst("///", "");
 		anno[2] = anno[2].replaceFirst("///", "");
-		anno[3] = peakPointInfo + gffDetailGene.getLongestSplit().toStringCodLocStr(coord);
+		anno[3] = peakPointInfo + gffDetailGene.getLongestSplitMrna().toStringCodLocStr(coord);
 		return anno;
 	}
 

@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genome;
 import java.awt.Color;
 import java.awt.Paint;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,18 +45,29 @@ public class GffChrPlotTss {
 	
 	private static final Logger logger = Logger.getLogger(GffChrMap.class);
 	
-	int maxresolution = 10000;
 	/** 绘图区域，也用于tss和tes的范围 */
 	int[] plotRange;
 	MapReads mapReads;
+	
 	int mapNormType = MapReads.NORMALIZATION_ALL_READS;
 	
 	/** 绘制图片的区域 */
 	ArrayList<MapInfo> lsMapInfos;
 	/** 绘制图片的gene */
 	ArrayList<Gene2Value> lsGeneID2Value;
-	public GffChrPlotTss() {
-	}
+	
+	/** heatmap最浅颜色的值 */
+	double heatmapMin = 0;
+	/** heatmap最深颜色的值 */
+	double heatmapMax = 20;
+	
+	Color heatmapColorMin = Color.white;
+	Color heatmapColorMax = Color.blue;
+	
+	boolean heatmapSortS2M = true;
+	
+	
+	public GffChrPlotTss() { }
 	
 	public GffChrPlotTss(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
@@ -85,6 +97,36 @@ public class GffChrPlotTss {
 	public void setMapReads(MapReads mapReads) {
 		this.mapReads = mapReads;
 	}
+	
+	/**
+	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
+	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
+	 * @param booUniqueMapping 重复的reads是否只选择一条
+	 * @param cis5to3 是否仅选取某一方向的reads，null不考虑
+	 */
+	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean cis5to3) {
+		mapReads.setFilter(uniqReads, startCod, booUniqueMapping, cis5to3);
+	}
+	
+	/** 设定heatmap最浅颜色以及最深颜色所对应的值 */
+	public void setHeatmapBoundValue(double heatmapMin, double heatmapMax) {
+		this.heatmapMin = heatmapMin;
+		this.heatmapMax = heatmapMax;
+	}
+	
+	/** 设定heatmap最浅颜色以及最深颜色 */
+	public void setHeatmapColor(Color heatmapColorMin, Color heatmapColorMax) {
+		this.heatmapColorMin = heatmapColorMin;
+		this.heatmapColorMax = heatmapColorMax;
+	}
+	/**
+	 * heatmap是否按照mapinfo的score从小到大排序
+	 * @param heatmapSortS2M false 从大到小排序
+	 */
+	public void setHeatmapSortS2M(boolean heatmapSortS2M) {
+		this.heatmapSortS2M = heatmapSortS2M;
+	}
+	
 	/**
 	 * 每隔多少位取样,如果设定为1，则算法会变化，然后会很精确
 	 * @return
@@ -92,6 +134,7 @@ public class GffChrPlotTss {
 	public MapReads getMapReads() {
 		return mapReads;
 	}
+	
 	/**
 	 * 按照染色体数，统计每个染色体上总位点数，每个位点数， string[4] 0: chrID 1: readsNum 2: readsPipNum
 	 * 3: readsPipMean
@@ -110,16 +153,14 @@ public class GffChrPlotTss {
 		}
 		return lsResult;
 	}
-	/**
-	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
-	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
-	 * @param booUniqueMapping 重复的reads是否只选择一条
-	 * @param cis5to3 是否仅选取某一方向的reads，null不考虑
-	 */
-	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean cis5to3) {
-		mapReads.setFilter(uniqReads, startCod, booUniqueMapping, cis5to3);
-	}
 	
+	/**
+	 * 读取gene和value信息，一般用来做tss的曲线图和heatmap图
+	 * @param txtExcel
+	 * @param colGeneID
+	 * @param colScore
+	 * @param rowStart
+	 */
 	public void readGeneID2Value(String txtExcel, int colGeneID, int colScore, int rowStart) {
 		int[] colNum;
 		if (colScore > 0) {
@@ -142,87 +183,84 @@ public class GffChrPlotTss {
 		}
 	}
 	
-	public void readSiteInfo(String txtExcel, int colChrID, int colStart, int colEnd, int colvalue) {
-		int[] colNum;
-		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtExcel, colNum, rowStart, -1);
-	}
 	/**
-	 * 获得summit位点，画summit位点附近的reads图
-	 * @param SortS2M
-	 *            是否从小到大排序
+	 * 读取坐标位点图，一般用来做给定区域的图
+	 * @param txtExcel
+	 * @param colChrID
+	 * @param colStart
+	 * @param colEnd
+	 * @param colvalue 如果没有value值，本项就填负数
+	 * @param rowStart
+	 */
+	public void readSiteRegion(String txtExcel, int colChrID, int colStart, int colEnd, int colvalue, int rowStart) {
+		int[] colNum = new int[]{colChrID, colStart, colEnd, colvalue};
+		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtExcel, colNum, rowStart, -1);
+		for (String[] strings : lsInfo) {
+			MapInfo mapInfo = new MapInfo(strings[0], Integer.parseInt(strings[1]), Integer.parseInt(strings[2]));
+			if (colvalue > 0) {
+				mapInfo.setScore(Double.parseDouble(strings[3]));
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * 读取坐标位点图，一般用来做给定区域的图
 	 * @param txtExcel
 	 * @param colChrID
 	 * @param colSummit
-	 * @param colRegion
-	 * @param colScore
+	 * @param range summit左右两边的区域
+	 * @param colvalue
 	 * @param rowStart
-	 * @param heapMapSmall
-	 * @param heapMapBig
-	 * @param scale
-	 * @param binNum
-	 * @param outFile
-	 * @return 返回最大值和最小值的设定
 	 */
-	public double[] plotSummitHeatMap(boolean SortS2M, String txtExcel,
-			int colChrID, int colSummit, int colRegion, int colScore,
-			int rowStart, double heapMapSmall, double heapMapBig, double scale,
-			int binNum, String outFile) {
-		ArrayList<MapInfo> lsMapInfos = gffChrAbs.readFileSiteMapInfo(txtExcel,
-				colRegion, colChrID, colSummit, colScore, rowStart);
-		MapInfo.sortPath(SortS2M);
-		Collections.sort(lsMapInfos);
-		mapReads.getRangeLs(binNum, lsMapInfos, 0);
-		return plotHeatMap(lsMapInfos, Color.BLUE, heapMapSmall, heapMapBig,
-				 FileOperate.changeFileSuffix(outFile, null, null));
-	}
-	/**
-	 * @param lsMapInfo
-	 *            基因信息
-	 * @param color
-	 * @param small
-	 *            最小
-	 * @param big 
-	 *            最大 如果最大小于最小，则选择上95分位点为最高点
-	 * @param scale
-	 *            scale次方，大于1则稀疏高表达，小于1则稀疏低表达
-	 * @param outFile
-	 * @return 返回最大值和最小值的设定
-	 */
-	private static double[] plotHeatMap(ArrayList<MapInfo> lsMapInfo, Color color,double mindata, double maxdata, String outFile) {
-		if (maxdata <= mindata) {
-			ArrayList<Double> lsDouble = new ArrayList<Double>();
-			for (int i = 0; i < 20; i++) {
-				if (i >= lsMapInfo.size()) {
-					break;
-				}
-				MapInfo mapInfo = lsMapInfo.get(i);
-				double[] info = mapInfo.getDouble();
-				for (Double double1 : info) {
-					lsDouble.add(double1);
-				}
+	public void readSiteSummit(String txtExcel, int colChrID, int colSummit, int range, int colvalue, int rowStart) {
+		int[] colNum = new int[]{colChrID, colSummit, colvalue};
+		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtExcel, colNum, rowStart, -1);
+		for (String[] strings : lsInfo) {
+			int summit = Integer.parseInt(strings[1]);			
+			MapInfo mapInfo = new MapInfo(strings[0], summit - range, summit + range);
+			if (colvalue > 0) {
+				mapInfo.setScore(Double.parseDouble(strings[3]));
 			}
-			for (int i = lsMapInfo.size() - 1; i > lsMapInfo.size() - 21; i--) {
-				if (i < 0) {
-					break;
-				}
-				MapInfo mapInfo = lsMapInfo.get(i);
-				double[] info = mapInfo.getDouble();
-				for (Double double1 : info) {
-					lsDouble.add(double1);
-				}
-			}
-			maxdata = MathComput.median(lsDouble, 99);
 		}
-		Color colorwhite = new Color(255, 255, 255, 255);
-		Color[] gradientColors = new Color[] { colorwhite, color};
-		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
-		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfo,  customGradient);
-		heatMap.setRange(mindata, maxdata);
-		heatMap.saveToFile(outFile, 2000, 1000);
-		return new double[]{mindata, maxdata};
 	}
 
-
+	/**
+	 * 
+	 * @return
+	 */
+	private PlotHeatMap plotHeatMap() {
+		if (heatmapMax <= heatmapMin) {
+			heatmapMax = getMaxData(lsMapInfos, 99);
+		}
+		
+		MapInfo.sortPath(heatmapSortS2M);
+		Collections.sort(lsMapInfos);
+		
+		Color[] gradientColors = new Color[] { heatmapColorMin, heatmapColorMax};
+		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
+		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfos,  customGradient);
+		heatMap.setRange(heatmapMin, heatmapMax);
+		return heatMap;
+	}
+	
+	/**
+	 * 根据输入的 lsMapInfos，获得指定分位点的值
+	 * @param lsMapInfos
+	 * @param percentage 分为点，譬如99表示最大的99%分位点
+	 * @return
+	 */
+	private double getMaxData(List<MapInfo> lsMapInfos, int percentage) {
+		ArrayList<Double> lsDouble = new ArrayList<Double>();
+		for (MapInfo mapInfo : lsMapInfos) {
+			double[] info = mapInfo.getDouble();
+			for (double d : info) {
+				lsDouble.add(d);
+			}
+		}
+		return MathComput.median(lsDouble, percentage);
+	}
+	
 	/**
 	 * 根据前面设定upBp和downBp 根据Peak所覆盖的基因做出TSS图
 	 * @param fileName Peak文件
@@ -337,7 +375,7 @@ public class GffChrPlotTss {
 		if (gffDetailGene == null) {
 			return -1;
 		}
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		int tssSite = gffGeneIsoInfo.getTSSsite();
 		int tssStartR = 0; int tssEndR = 0;
 		//方向不同，区域也不同
@@ -369,7 +407,7 @@ public class GffChrPlotTss {
 		if (gffDetailGene == null) {
 			return -1;
 		}
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		int tssSite = gffGeneIsoInfo.getTSSsite();
 		int tesSite = gffGeneIsoInfo.getTESsite();
 		int tssStart = Math.min(tssSite, tesSite);
@@ -549,7 +587,7 @@ public class GffChrPlotTss {
 		int plotUpstream = 0;
 		int plotDownstream = 0;
 		MapInfo mapInfoResult = null;
-		String chrID = gffDetailGene.getRefID(); String geneName = gffDetailGene.getLongestSplit().getName();
+		String chrID = gffDetailGene.getRefID(); String geneName = gffDetailGene.getLongestSplitMrna().getName();
 		if (gffDetailGene.isCis5to3()) {
 			plotUpstream = Math.abs(plotRange[0]);
 			plotDownstream = Math.abs(plotRange[1]);
@@ -559,13 +597,13 @@ public class GffChrPlotTss {
 		}
 		
 		if (structure.equals(GeneStructure.TSS)) {
-			int tss = gffDetailGene.getLongestSplit().getTSSsite();
+			int tss = gffDetailGene.getLongestSplitMrna().getTSSsite();
 			mapInfoResult = new MapInfo(chrID, tss - plotUpstream, tss + plotDownstream, tss,0, geneName);
 			mapInfoResult.setCis5to3(gffDetailGene.isCis5to3());
 			mapInfoResult.setScore(value);
 		}
 		else if (structure.equals(GeneStructure.TES)) {
-			int tes = gffDetailGene.getLongestSplit().getTESsite();
+			int tes = gffDetailGene.getLongestSplitMrna().getTESsite();
 			mapInfoResult = new MapInfo(chrID, tes - plotUpstream, tes + plotDownstream, tes, 0, geneName);
 			mapInfoResult.setCis5to3(gffDetailGene.isCis5to3());
 			mapInfoResult.setScore(value);
@@ -633,19 +671,93 @@ public class GffChrPlotTss {
 				customGradient, customGradient2);
 		heatMap.setRange(mindata1, maxdata1, mindata2, maxdata2);
 		heatMap.saveToFile(outFile, 4000, 1000);
-
 	}
 }
 
 class Gene2Value {
-	String geneName;
+	private static final Logger logger = Logger.getLogger(Gene2Value.class);
+	
+	GffChrAbs gffChrAbs;
+	
+	GffGeneIsoInfo gffGeneIsoInfo;
 	double value;
 	
+	public Gene2Value(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
+	}
+	
 	public void setGeneName(String geneName) {
-		this.geneName = geneName;
+		gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneName);
+	}
+	
+	public void setGffGeneIsoInfo(GffGeneIsoInfo gffGeneIsoInfo) {
+		this.gffGeneIsoInfo = gffGeneIsoInfo;
 	}
 	
 	public void setValue(double value) {
 		this.value = value;
+	}
+	
+	/**
+	 * 根据输入的坐标信息获得全体被覆盖到的gene2value
+	 * @param colSiteInfo 有chrID，start，end 位置
+	 */
+	public static ArrayList<Gene2Value> getLsGene2Vale(int[] tssTesRange, GffChrAbs gffChrAbs, Collection<MapInfo> colSiteInfo, GeneStructure geneStructure) {
+		//存储最后的基因和权重
+		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
+		for (MapInfo mapInfo : colSiteInfo) {
+			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene(tssTesRange, gffChrAbs, mapInfo, geneStructure );
+			for (GffDetailGene gffDetailGene : setGffDetailGene) {
+				if (hashGffDetailGenes.containsKey(gffDetailGene)) {
+					if (MapInfo.isMin2max()) {
+						if (mapInfo.getScore() < hashGffDetailGenes.get(gffDetailGene)) {
+							hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
+						}
+					} else {
+						if (mapInfo.getScore() > hashGffDetailGenes.get(gffDetailGene)) {
+							hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
+						}
+					}
+				} else {
+					hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
+				}
+			}
+		}
+		ArrayList<Gene2Value> lsGene2Values = new ArrayList<Gene2Value>();
+		for (GffDetailGene gffDetailGene : hashGffDetailGenes.keySet()) {
+			Gene2Value gene2Value = new Gene2Value(gffChrAbs);
+			gene2Value.setGffGeneIsoInfo(gffDetailGene.getLongestSplitMrna());
+			gene2Value.setValue(hashGffDetailGenes.get(gffDetailGene));
+			lsGene2Values.add(gene2Value);
+		}
+		return lsGene2Values;
+	}
+	
+	/**
+	 * 给定坐标区域，返回该peak所覆盖的GffDetailGene
+	 * @param tsstesRange 覆盖度，tss或tes的范围
+	 * @param chrID
+	 * @param startLoc
+	 * @param endLoc
+	 * @param structure GffDetailGene.TSS等。如果是gene body区域，就返回整个基因
+	 * @return
+	 */
+	private static Set<GffDetailGene> getPeakStructureGene(int[] tssTesRange, GffChrAbs gffChrAbs, SiteInfo siteInfo, GeneStructure structure) {
+		GffCodGeneDU gffCodGeneDU = gffChrAbs.getGffHashGene().searchLocation(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs());
+		if (gffCodGeneDU == null) {
+			return new HashSet<GffDetailGene>();
+		}
+		gffCodGeneDU.cleanFilter();
+		if (structure.equals(GeneStructure.TSS)) {
+			gffCodGeneDU.setTss(tssTesRange);
+			return gffCodGeneDU.getCoveredGffGene();
+		}
+		else if (structure.equals(GeneStructure.TES)) {
+			gffCodGeneDU.setTes(tssTesRange);
+			return gffCodGeneDU.getCoveredGffGene();
+		}
+		else {
+			return gffCodGeneDU.getCoveredGffGene();
+		}
 	}
 }

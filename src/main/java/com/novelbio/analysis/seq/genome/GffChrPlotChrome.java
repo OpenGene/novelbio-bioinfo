@@ -134,7 +134,7 @@ public class GffChrPlotChrome {
 	 * @return
 	 */
 	private ArrayList<SiteInfo> getGeneStructureRangeForChrPlot(GeneStructure geneStructure, GffDetailGene gffDetailGene, int num) {
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		ArrayList<SiteInfo> lsResult = new ArrayList<SiteInfo>();
 		
 		if (geneStructure == GeneStructure.TSS) {

@@ -224,7 +224,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 */
 	public Boolean isCis5to3() {
 		if (cis5to3 == null) {
-			return getLongestSplit().isCis5to3();
+			return getLongestSplitMrna().isCis5to3();
 		}
 		return this.cis5to3;
 	}
@@ -246,12 +246,15 @@ public class GffDetailGene extends ListDetailAbs {
 		}
     	return lsGffGeneIsoInfos.get(index);//include one special loc start number to end number	
     }
-	/** 获得该基因中最长的一条转录本的信息 */
-	public GffGeneIsoInfo getLongestSplit() {
-		int id = getLongestSplitID();
+	/** 获得该基因中最长的一条转录本的信息
+	 * 如果本位点同时存在lnc和mRNA，优先返回mRNA
+	 *  否则也能返回lnc
+	 */
+	public GffGeneIsoInfo getLongestSplitMrna() {
+		int id = getLongestSplitIDMrna();
 		return lsGffGeneIsoInfos.get(id);
 	}
-    private int getLongestSplitID() {
+    private int getLongestSplitIDMrna() {
     	if (lsGffGeneIsoInfos.size() == 1) {
 			return 0;
 		}
@@ -304,7 +307,7 @@ public class GffDetailGene extends ListDetailAbs {
      * @return 
      */
 	public int getTypeLength(GeneStructure geneStructure,int num) {
-		GffGeneIsoInfo gffGeneIsoInfo = getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = getLongestSplitMrna();
 		if (num > gffGeneIsoInfo.size()) {
 			return 0;
 		}
@@ -369,8 +372,8 @@ public class GffDetailGene extends ListDetailAbs {
 					anno[2] = anno[2]+"//"+copedID.getDescription();
 				}
 			}
-			if (getLongestSplit().isCodInIsoExtend(coord)) {
-				anno[4] = getLongestSplit().toStringCodLocStr(coord);
+			if (getLongestSplitMrna().isCodInIsoExtend(coord)) {
+				anno[4] = getLongestSplitMrna().toStringCodLocStr(coord);
 			}
 			else {
 				for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
@@ -623,7 +626,7 @@ public class GffDetailGene extends ListDetailAbs {
 		if (cis5to3 != null) {
 			return super.getCod2End(coord);
 		}
-		return getLongestSplit().getCod2Tes(coord);
+		return getLongestSplitMrna().getCod2Tes(coord);
 	}
 	
 	/**
@@ -640,7 +643,7 @@ public class GffDetailGene extends ListDetailAbs {
 		if (cis5to3 != null) {
 			return super.getCod2Start(coord);
 		}
-		return getLongestSplit().getCod2Tss(coord);
+		return getLongestSplitMrna().getCod2Tss(coord);
 	}
 	/**
 	 * 判断是否存在该名字的转录本

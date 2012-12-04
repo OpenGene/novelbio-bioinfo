@@ -91,13 +91,13 @@ public abstract class NovelMiRNApredict {
 		GffDetailGene gffDetailGene = gffCodGene.getGffDetailThis();
 		int locInfo = 0;
 		try {
-			locInfo = gffDetailGene.getLongestSplit().getCodLoc(gffCodGene.getCoord());
+			locInfo = gffDetailGene.getLongestSplitMrna().getCodLoc(gffCodGene.getCoord());
 		} catch (Exception e) {
-			locInfo = gffDetailGene.getLongestSplit().getCodLoc(gffCodGene.getCoord());
+			locInfo = gffDetailGene.getLongestSplitMrna().getCodLoc(gffCodGene.getCoord());
 		}
 		if (locInfo == GffGeneIsoInfo.COD_LOC_INTRON 
 				|| locInfo == GffGeneIsoInfo.COD_LOC_OUT
-				|| bedCis != gffDetailGene.getLongestSplit().isCis5to3()
+				|| bedCis != gffDetailGene.getLongestSplitMrna().isCis5to3()
 				) {
 			return true;
 		}

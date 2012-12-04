@@ -68,13 +68,6 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 		super(chrID, startLoc, endLoc);
 	}
 	/**
-	 * 是否从小到大排序
-	 * @return
-	 */
-	public static boolean isMin2max() {
-		return min2max;
-	}
-	/**
 	 * @param chrID
 	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
 	 * @param endLoc 从0开始
@@ -84,6 +77,14 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	public MapInfo(String chrID) {
 		this.refID = chrID;
 	}
+	/**
+	 * 是否从小到大排序
+	 * @return
+	 */
+	public static boolean isMin2max() {
+		return min2max;
+	}
+
 	/**
 	 * 选择COMPARE_LOCSITE等
 	 * 默认COMPARE_WEIGHT

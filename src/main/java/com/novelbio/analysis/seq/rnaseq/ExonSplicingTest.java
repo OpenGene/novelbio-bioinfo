@@ -79,7 +79,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		double[] info = mapReads.getRangeInfo(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs(), 0);
 		tmpExpCond[0] = getMean(info) + 1;
 		
-		double[] info2 = mapReads.getRangeInfo(siteInfo.getRefID(), exonCluster.getParentGene().getLongestSplit());
+		double[] info2 = mapReads.getRangeInfo(siteInfo.getRefID(), exonCluster.getParentGene().getLongestSplitMrna());
 		tmpExpCond[1] = getMean(info2) + 1;
 		
 		if (tmpExpCond[0] <= 0 || tmpExpCond[1] <=0) {

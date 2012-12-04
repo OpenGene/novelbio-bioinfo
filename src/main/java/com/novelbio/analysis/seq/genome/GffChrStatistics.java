@@ -239,7 +239,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	private boolean setStatisticsNum(GffDetailGene gffDetailGene, int coord) {
 		gffDetailGene.setTssRegion(tssRegion);
 		gffDetailGene.setTesRegion(tesRegion);
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		boolean flagIntraGenic = true;
 		//Tss Tes
 		if (gffGeneIsoInfo.isCodInIsoTss(coord) ) {
@@ -287,10 +287,10 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		}
 		GffGeneIsoInfo gffGeneIsoInfoUp = null, gffGeneIsoInfoDown = null;
 		if (gffDetailGeneUp != null) {
-			gffGeneIsoInfoUp = gffDetailGeneUp.getLongestSplit();
+			gffGeneIsoInfoUp = gffDetailGeneUp.getLongestSplitMrna();
 		}
 		if (gffDetailGeneDown != null) {
-			gffGeneIsoInfoDown = gffDetailGeneDown.getLongestSplit();
+			gffGeneIsoInfoDown = gffDetailGeneDown.getLongestSplitMrna();
 		}
 		
 		//Tss Tes
@@ -337,7 +337,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			// 一条一条染色体的去检查内含子和外显子的长度
 			for (int i = 0; i < chrLOCNum; i++) {
 				GffDetailGene tmpUCSCgene = listGff.get(i);
-				GffGeneIsoInfo gffGeneIsoInfoLong = tmpUCSCgene.getLongestSplit();
+				GffGeneIsoInfo gffGeneIsoInfoLong = tmpUCSCgene.getLongestSplitMrna();
 				gffChrStatistics.intraGenic = gffChrStatistics.intraGenic + gffGeneIsoInfoLong.getLen();
 				// /////////////////////看UCSC中有多少基因的TSS不是最长转录本的起点//////////////////////////
 				if ((tmpUCSCgene.isCis5to3() && gffGeneIsoInfoLong.getTSSsite() > tmpUCSCgene.getStartAbs())
@@ -350,7 +350,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 				gffChrStatistics.intronNum = gffChrStatistics.intronNum + gffGeneIsoInfoLong.getLenIntron(0);
 				
 				if (i > 0) {
-					gffChrStatistics.interGenic = gffChrStatistics.interGenic + getIntergenic(gffGeneIsoInfoLong, listGff.get(i - 1).getLongestSplit());
+					gffChrStatistics.interGenic = gffChrStatistics.interGenic + getIntergenic(gffGeneIsoInfoLong, listGff.get(i - 1).getLongestSplitMrna());
 				}
 				gffChrStatistics.tssNum = gffChrStatistics.tssNum + tssRegion[1] - tssRegion[0];
 				gffChrStatistics.tesNum = gffChrStatistics.tesNum + tesRegion[1] - tesRegion[0];

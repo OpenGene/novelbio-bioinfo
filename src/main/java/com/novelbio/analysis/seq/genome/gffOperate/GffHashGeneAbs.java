@@ -147,7 +147,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(accID);
 		if (gffGeneIsoInfoOut == null) {
-			gffGeneIsoInfoOut = gffdetail.getLongestSplit();
+			gffGeneIsoInfoOut = gffdetail.getLongestSplitMrna();
 		}
 		return gffGeneIsoInfoOut;
 	}
@@ -164,7 +164,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		    //一条一条染色体的去检查内含子和外显子的长度
 		    for (int i = 0; i < chrLOCNum; i++) {
 				GffDetailGene tmpUCSCgene=value.get(i);
-				GffGeneIsoInfo gffGeneIsoInfoLong = tmpUCSCgene.getLongestSplit();
+				GffGeneIsoInfo gffGeneIsoInfoLong = tmpUCSCgene.getLongestSplitMrna();
 				gffGeneIsoInfoLong.getLsIntron();
 				for (ExonInfo intronInfo : gffGeneIsoInfoLong) {
 					lsIntronLen.add(intronInfo.Length());
@@ -370,7 +370,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		txtGtf.close();
 	}
 	private String getGeneSymbol(GffDetailGene gffDetailGene) {
-		GeneID copedID = gffDetailGene.getLongestSplit().getGeneID();
+		GeneID copedID = gffDetailGene.getLongestSplitMrna().getGeneID();
 		String symbol = null;
 		if (copedID.getIDtype() != GeneID.IDTYPE_ACCID || copedID.getSymbol() == null || copedID.getSymbol().equals("")) {
 			symbol = copedID.getSymbol();

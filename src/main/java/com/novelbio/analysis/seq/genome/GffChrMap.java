@@ -175,7 +175,7 @@ public class GffChrMap {
 	 * @return
 	 */
 	private ArrayList<SiteInfo> getGeneStructureRangeForChrPlot(GeneStructure geneStructure, GffDetailGene gffDetailGene, int num) {
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		ArrayList<SiteInfo> lsResult = new ArrayList<SiteInfo>();
 		
 		if (geneStructure == GeneStructure.TSS) {
@@ -636,7 +636,7 @@ public class GffChrMap {
 		if (gffDetailGene == null) {
 			return -1;
 		}
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		int tssSite = gffGeneIsoInfo.getTSSsite();
 		int tssStartR = 0; int tssEndR = 0;
 		//方向不同，区域也不同
@@ -668,7 +668,7 @@ public class GffChrMap {
 		if (gffDetailGene == null) {
 			return -1;
 		}
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		int tssSite = gffGeneIsoInfo.getTSSsite();
 		int tesSite = gffGeneIsoInfo.getTESsite();
 		int tssStart = Math.min(tssSite, tesSite);
@@ -1015,7 +1015,7 @@ public class GffChrMap {
 		int plotUpstream = 0;
 		int plotDownstream = 0;
 		MapInfo mapInfoResult = null;
-		String chrID = gffDetailGene.getRefID(); String geneName = gffDetailGene.getLongestSplit().getName();
+		String chrID = gffDetailGene.getRefID(); String geneName = gffDetailGene.getLongestSplitMrna().getName();
 		if (gffDetailGene.isCis5to3()) {
 			plotUpstream = Math.abs(plotRange[0]);
 			plotDownstream = Math.abs(plotRange[1]);
@@ -1025,13 +1025,13 @@ public class GffChrMap {
 		}
 		
 		if (structure.equals(GeneStructure.TSS)) {
-			int tss = gffDetailGene.getLongestSplit().getTSSsite();
+			int tss = gffDetailGene.getLongestSplitMrna().getTSSsite();
 			mapInfoResult = new MapInfo(chrID, tss - plotUpstream, tss + plotDownstream, tss,0, geneName);
 			mapInfoResult.setCis5to3(gffDetailGene.isCis5to3());
 			mapInfoResult.setScore(value);
 		}
 		else if (structure.equals(GeneStructure.TES)) {
-			int tes = gffDetailGene.getLongestSplit().getTESsite();
+			int tes = gffDetailGene.getLongestSplitMrna().getTESsite();
 			mapInfoResult = new MapInfo(chrID, tes - plotUpstream, tes + plotDownstream, tes, 0, geneName);
 			mapInfoResult.setCis5to3(gffDetailGene.isCis5to3());
 			mapInfoResult.setScore(value);

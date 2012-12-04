@@ -64,7 +64,7 @@ public class GffCodGene extends ListCodAbs<GffDetailGene> {
 	 */
 	private GffGeneIsoInfo getCodInCDS(GffDetailGene gffDetailGene, int coord) {
 		//先找最长转录本，看snp是否在该转录本的exon中，不在的话，找其他所有转录本,看是否在基因的表达区中
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		//如果最长转录本是在CDS区，直接返回
 		if (gffGeneIsoInfo.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_CDS) {
 			return gffGeneIsoInfo;

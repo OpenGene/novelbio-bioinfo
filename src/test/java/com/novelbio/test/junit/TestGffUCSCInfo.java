@@ -47,11 +47,11 @@ public class TestGffUCSCInfo extends TestCase{
 		assertEquals(aa,gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().isCis5to3());
 		assertEquals(aa,gffCodInfoUCSCgenechr1_1385068.getGffDetailDown().isCis5to3());
 		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.isInsideLoc());
-		assertEquals(-995, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplit().getCod2ATG(1385069));
-		assertEquals(-18841, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplit().getCod2UAG(1385069));
-		assertEquals(-20469, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplit().getCod2Tes(1385069));
-		assertEquals(0, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplit().getCod2Tss(1385069));
-		assertEquals(GffGeneIsoInfo.COD_LOC_EXON, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplit().getCodLoc(1385069));
+		assertEquals(-995, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplitMrna().getCod2ATG(1385069));
+		assertEquals(-18841, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplitMrna().getCod2UAG(1385069));
+		assertEquals(-20469, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplitMrna().getCod2Tes(1385069));
+		assertEquals(0, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplitMrna().getCod2Tss(1385069));
+		assertEquals(GffGeneIsoInfo.COD_LOC_EXON, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplitMrna().getCodLoc(1385069));
 	}
 	
 	@Test
@@ -59,13 +59,13 @@ public class TestGffUCSCInfo extends TestCase{
 	{
 		for (String loc : lsAllLoc) {
 			GffDetailGene gffDetailGene= gffHashUCSC.searchLOC(loc);
-			int atgsite = gffDetailGene.getLongestSplit().getATGsite();
-			int tsssite = gffDetailGene.getLongestSplit().getTSSsite();
-			int tessite = gffDetailGene.getLongestSplit().getTESsite();
-			int uagsite = gffDetailGene.getLongestSplit().getUAGsite();
-			GffGeneIsoInfo gffGeneIsoSearch = gffDetailGene.getLongestSplit();
+			int atgsite = gffDetailGene.getLongestSplitMrna().getATGsite();
+			int tsssite = gffDetailGene.getLongestSplitMrna().getTSSsite();
+			int tessite = gffDetailGene.getLongestSplitMrna().getTESsite();
+			int uagsite = gffDetailGene.getLongestSplitMrna().getUAGsite();
+			GffGeneIsoInfo gffGeneIsoSearch = gffDetailGene.getLongestSplitMrna();
 			
-			if ( gffDetailGene.getLongestSplit().ismRNA()) {
+			if ( gffDetailGene.getLongestSplitMrna().ismRNA()) {
 				if (gffGeneIsoSearch.getLocDistmRNA(tsssite, atgsite) == 0 && gffGeneIsoSearch.getLenUTR5() == 1) {
 					System.out.println("stop");
 				}
@@ -87,7 +87,7 @@ public class TestGffUCSCInfo extends TestCase{
 			int cod2uag = gffGeneIsoSearch.getCod2UAGmRNA(atgsite);
 			if (atg2uag == 918) {
 				System.out.println("ok");
-				GffGeneIsoInfo gffGeneIsoSearchtest = gffDetailGene.getLongestSplit();
+				GffGeneIsoInfo gffGeneIsoSearchtest = gffDetailGene.getLongestSplitMrna();
 				System.out.println(gffGeneIsoSearchtest.getCod2UAGmRNA(atgsite+1));
 				
 			}
@@ -133,7 +133,7 @@ public class TestGffUCSCInfo extends TestCase{
 	}
 	
 	private void testAAsite(GffDetailGene gffDetailGene) {
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		int atgsite = gffGeneIsoInfo.getATGsite();
 		if (atgsite == 7831444) {
 			System.out.println("stop");
@@ -164,11 +164,11 @@ public class TestGffUCSCInfo extends TestCase{
 	}
 	private void getCod2Site(GffDetailGene gffDetailGene, int coord, int atgsite, int uagsite, int tsssite, int tessite) {
 		
-		if (gffDetailGene.getLongestSplit().getName().equals("NM_020710")) {
+		if (gffDetailGene.getLongestSplitMrna().getName().equals("NM_020710")) {
 			System.out.println("ss");
 		}
 
-		GffGeneIsoInfo gffGeneIsoSearchCod = gffDetailGene.getLongestSplit();
+		GffGeneIsoInfo gffGeneIsoSearchCod = gffDetailGene.getLongestSplitMrna();
 //		if (gffGeneIsoSearchCod.getCod2ATGmRNA() == 528) {
 //			System.out.println("stop");
 //		}
