@@ -343,8 +343,8 @@ public class PlotScatter extends PlotNBCInteractive{
      * 
      * 设置标题
      * @param titleX tile on axis x
-     * @param fontX font of the title
-     * @param spaceX ticks interval, 0 means not set the space
+     * @param fontX font of the title 可以设定为null
+     * @param spaceX ticks interval, 0 means not set the space 可以设定为0
      */
     public void setTitleX(String titleX, Font fontX, double spaceX)  {
     	if (titleX != null)

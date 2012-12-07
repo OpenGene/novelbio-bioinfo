@@ -883,8 +883,7 @@ public class MathComput {
 	 * 排序数量不要太大，别超过了内存限制
 	 * @return
 	 */
-	public static double[] getMediaByCol(List<? extends Number []> lsNum) 
-	{
+	public static double[] getMediaByCol(List<? extends Number []> lsNum) {
 		int length = lsNum.get(0).length;
 		double[] result = new double[length];
 		for (int i = 0; i< length ; i++) {
@@ -997,8 +996,7 @@ public class MathComput {
 	 * @param max true 选择权重最大的，min选择权重最小的
 	 * @return
 	 */
-	public static ArrayList<double[]>  combLs(List<double[]> lsNum, double distance, boolean max) 
-	{
+	public static ArrayList<double[]>  combLs(List<double[]> lsNum, double distance, boolean max) {
 		Collections.sort(lsNum, new Comparator<double[]>() {
 			//从小到大排序
 			public int compare(double[] o1, double[] o2) {

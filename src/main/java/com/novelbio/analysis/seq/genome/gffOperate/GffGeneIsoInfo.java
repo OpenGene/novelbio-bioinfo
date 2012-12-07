@@ -188,7 +188,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	/**
 	 * 是否是mRNA有atg和uag，
-	 * 暂时只能使用UCSCgene
 	 * @return
 	 */
 	public boolean ismRNA() {

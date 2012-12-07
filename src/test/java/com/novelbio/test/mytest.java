@@ -2,6 +2,11 @@ package com.novelbio.test;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -41,7 +46,10 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) {
-		FileOperate.changeFileName("/media/winF/NBC/Project/Project_FY/20120920/cufflinks/diff/combined.gtf", "fsefe");
+		TxtReadandWrite txtRead = new TxtReadandWrite("filename", false);
+		for (String string : txtRead.readlines()) {
+			System.out.println(string);
+		}
 		
 	}
 	

@@ -227,7 +227,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		mapInfo.setDouble(Info);
 	}
 	/**
-	 * 填充每个MapInfo
+	 * 填充每个MapInfo，直接设定，不考虑方向
 	 * 经过标准化，和equations修正
 	 * @param lsmapInfo
 	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
@@ -241,7 +241,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	}
 	/**
 	 * 经过标准化
-	 * 将MapInfo中的double填充上相应的reads信息
+	 * 将MapInfo中的double填充上相应的reads信息，直接设定，不考虑方向
 	 * @param binNum 待分割的区域数目
 	 * @param lsmapInfo
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
@@ -265,7 +265,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param lsLoc 一个转录本的exon list
 	 * @return null表示出错
 	 */
-	public double[] getRangeInfo(String chrID, List<ExonInfo> lsLoc) {
+	public double[] getRangeInfo(String chrID, List<? extends Alignment> lsLoc) {
 		return getRangeInfo(chrID, lsLoc, -1 , 0);
 	}
 	/**
@@ -278,9 +278,9 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param type  0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 * @return
 	 */
-	private double[] getRangeInfo(String chrID, List<ExonInfo> lsLoc, int binNum, int type) {
+	private double[] getRangeInfo(String chrID, List<? extends Alignment> lsLoc, int binNum, int type) {
 		ArrayList<double[]> lstmp = new ArrayList<double[]>();
-		for (ExonInfo is : lsLoc) {
+		for (Alignment is : lsLoc) {
 			double[] info = getRangeInfo(invNum, chrID, is.getStartAbs(), is.getEndAbs(), type);
 			if (info == null) {
 				return null;

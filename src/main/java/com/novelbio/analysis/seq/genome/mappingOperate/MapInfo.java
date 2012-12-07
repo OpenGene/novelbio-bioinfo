@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -120,8 +121,7 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 		return MathComput.median(value);
 	}
 	/**
-	 * 这个在设定的时候，会根据mapinfo的方向进行，也就是说如果该mapInfo为正向，则直接赋值
-	 * 反向的话就颠倒一下然后再赋值
+	 * 这个在设定的时候，不会根据mapinfo的方向进行，而是直接赋值
 	 * @param value
 	 */
 	public void setDouble(double[] value) {
@@ -130,7 +130,7 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	
 	/**
 	 * 会根据cis5to3以及correct的信息来返回value的值
-	 * 如果既反向，又标记了修正，则将value颠倒
+	 * 如果标记了修正并且是反向的，则将value颠倒
 	 */
 	@Override
 	public double[] getDouble() {
@@ -273,6 +273,9 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 		double[] result = new double[lsmapinfo.get(0).getDouble().length];
 		for (MapInfo mapInfo : lsmapinfo) {
 			double[] tmp = mapInfo.getDouble();
+			if (tmp == null) {
+				continue;
+			}
 			for (int i = 0; i < result.length; i++) {
 				result[i] = result[i] + tmp[i];
 			}
@@ -282,6 +285,43 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 		}
 		return result;
 	}
-
+	
+	/**
+	 * 将靠的太近的mapInfo删掉一些只保留一个score最大的
+	 * @param lsMapInfo
+	 * @param distance 距离多少算近，建议2000
+	 * @param max 保留score大的还是小的
+	 * @return
+	 */
+	public static ArrayList<MapInfo> getCombLsMapInfoBigScore(ArrayList<MapInfo> lsMapInfo, int distance, boolean max) {
+		ArrayList<MapInfo> lsMapInfoResult = new ArrayList<MapInfo>();
+		//装入hashmap
+		HashMap<Integer, MapInfo> mapSummitSite2MapInfo = new LinkedHashMap<Integer, MapInfo>();
+		for (MapInfo mapInfo : lsMapInfo) {
+			if (mapSummitSite2MapInfo.containsKey(mapInfo.getFlagSite())) {
+				MapInfo mapInfo2 = mapSummitSite2MapInfo.get(mapInfo.getFlagSite());
+				if ((max && mapInfo2.getScore() >= mapInfo.getScore()) || (!max && mapInfo2.getScore() <= mapInfo.getScore())) {
+					continue;
+				}
+			}
+			mapSummitSite2MapInfo.put(mapInfo.getFlagSite(), mapInfo);
+		}
+		//整理格式
+		ArrayList<double[]> lsSummitSite2Score = new ArrayList<double[]>();
+		for (int summitsite : mapSummitSite2MapInfo.keySet()) {
+			double[] info = new double[]{summitsite, mapSummitSite2MapInfo.get(summitsite).getScore()};
+			lsSummitSite2Score.add(info);
+		}
+		
+		//调用方法过滤合并
+		ArrayList<double[]> lsCombine = MathComput.combLs(lsSummitSite2Score, distance, max);
+		
+		//输出
+		for (double[] ds : lsCombine) {
+			MapInfo mapInfo = mapSummitSite2MapInfo.get(ds[0]);
+			lsMapInfoResult.add(mapInfo);
+		}
+		return lsMapInfoResult;
+	}
 	
 }

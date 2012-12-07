@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.genome;
 
 import java.awt.Color;
-import java.awt.Paint;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,46 +8,38 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Map.Entry;
+
+import javax.security.auth.x500.X500Principal;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
-import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.PlotHeatMap;
-import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgeneid.GeneType;
-import com.novelbio.database.model.species.Species;
-
-import de.erichseifert.gral.util.GraphicsUtils;
-
+/**
+ * setTsstesRange 和 setPlotTssTesRange这两个方法要第一时间设定
+ * @author zong0jie
+ *
+ */
 public class GffChrPlotTss {
-	GffChrAbs gffChrAbs = new GffChrAbs();
-	
 	private static final Logger logger = Logger.getLogger(GffChrMap.class);
+
+	GffChrAbs gffChrAbs;
 	
-	/** 绘图区域，也用于tss和tes的范围 */
-	int[] plotRange;
+	int[] tsstesRange = new int[]{-2000, 2000};
+	GeneStructure geneStructure = GeneStructure.TSS;
+
 	MapReads mapReads;
-	
 	int mapNormType = MapReads.NORMALIZATION_ALL_READS;
 	
 	/** 绘制图片的区域 */
@@ -56,15 +47,25 @@ public class GffChrPlotTss {
 	/** 绘制图片的gene */
 	ArrayList<Gene2Value> lsGeneID2Value;
 	
+	/** 结果图片分割为1000份 */
+	int splitNum = 1001;
+	/**  tss或tes的扩展绘图区域，默认哺乳动物为 -5000到5000 */
+	int[] plotTssTesRange = new int[]{-5000, 5000};
 	/** heatmap最浅颜色的值 */
 	double heatmapMin = 0;
 	/** heatmap最深颜色的值 */
 	double heatmapMax = 20;
-	
 	Color heatmapColorMin = Color.white;
 	Color heatmapColorMax = Color.blue;
-	
 	boolean heatmapSortS2M = true;
+	
+	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体 */
+	boolean pileupExonIntron = false;
+	/** 设定需要提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron
+	 * null 就不分析
+	 * 为实际数量
+	 *  */
+	ArrayList<Integer> lsExonIntronNum;
 	
 	
 	public GffChrPlotTss() { }
@@ -81,19 +82,30 @@ public class GffChrPlotTss {
 		this.gffChrAbs = gffChrAbs;
 	}
 	
+	/** 设定切割分数，默认为1000 */
+	public void setSplitNum(int splitNum) {
+		//因为是从0开始计数，所以要+1
+		this.splitNum = splitNum + 1;
+	}
 	/**
-	 * 如果是Tss或Tes
-	 * 绘制正负多少bp的区域
-	 * @param plotRange
+	 * 务必最早设定，在查看peak是否覆盖某个基因的tss时使用
+	 * 默认 -2000 2000
+	 * @param tsstesRange
 	 */
-	public void setPlotRange(int[] plotRange) {
-		this.plotRange = plotRange;
+	public void setTsstesRange(int[] tsstesRange) {
+		this.tsstesRange = tsstesRange;
+	}
+	/**
+	 * @param plotTssTesRange tss或tes的扩展区域，默认是哺乳动物为 -5000到5000
+	 */
+	public void setPlotTssTesRange(int[] plotTssTesRange) {
+		this.plotTssTesRange = plotTssTesRange;
 	}
 	
-	public void setSpecies(Species species) {
-		gffChrAbs.setSpecies(species);
+	public void setGeneStructure(GeneStructure geneStructure) {
+		this.geneStructure = geneStructure;
 	}
-	
+
 	public void setMapReads(MapReads mapReads) {
 		this.mapReads = mapReads;
 	}
@@ -135,331 +147,33 @@ public class GffChrPlotTss {
 		return mapReads;
 	}
 	
-	/**
-	 * 按照染色体数，统计每个染色体上总位点数，每个位点数， string[4] 0: chrID 1: readsNum 2: readsPipNum
-	 * 3: readsPipMean
-	 * @return
-	 */
-	public ArrayList<String[]> getChrLenInfo() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		ArrayList<String> lsChrID = mapReads.getChrIDLs();
-		for (String string : lsChrID) {
-			String[] chrInfoTmp = new String[4];
-			chrInfoTmp[0] = string;
-			chrInfoTmp[1] = mapReads.getChrReadsNum(string) + "";
-			chrInfoTmp[2] = mapReads.getChrReadsPipNum(string) + "";
-			chrInfoTmp[3] = mapReads.getChrReadsPipMean(string) + "";
-			lsResult.add(chrInfoTmp);
-		}
-		return lsResult;
+	/** 用来做给定区域的图。mapinfo中设定坐标位点和value
+	 * 这个和输入gene，2选1。谁先设定选谁
+	 *  */
+	public void setSiteRegion(ArrayList<MapInfo> lsMapInfos) {
+		this.lsMapInfos = MapInfo.getCombLsMapInfoBigScore(lsMapInfos, 1000, true);
+		//清空
+		this.lsGeneID2Value = new ArrayList<Gene2Value>();
 	}
-	
-	/**
-	 * 读取gene和value信息，一般用来做tss的曲线图和heatmap图
-	 * @param txtExcel
-	 * @param colGeneID
-	 * @param colScore
-	 * @param rowStart
-	 */
-	public void readGeneID2Value(String txtExcel, int colGeneID, int colScore, int rowStart) {
-		int[] colNum;
-		if (colScore > 0) {
-			colNum = new int[]{colGeneID, colScore};
-		} else {
-			colNum = new int[]{colGeneID};
-		}
-		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtExcel, colNum, rowStart, -1);
-		lsGeneID2Value = new ArrayList<Gene2Value>();
-		
-		for (String[] strings : lsInfo) {
-			Gene2Value gene2Value = new Gene2Value();
-			gene2Value.setGeneName(strings[0]);
-			try {
-				gene2Value.setValue(Double.parseDouble(strings[1]));
-			} catch (Exception e) {
-				continue;
-			}
-			lsGeneID2Value.add(gene2Value);
-		}
-	}
-	
-	/**
-	 * 读取坐标位点图，一般用来做给定区域的图
-	 * @param txtExcel
-	 * @param colChrID
-	 * @param colStart
-	 * @param colEnd
-	 * @param colvalue 如果没有value值，本项就填负数
-	 * @param rowStart
-	 */
-	public void readSiteRegion(String txtExcel, int colChrID, int colStart, int colEnd, int colvalue, int rowStart) {
-		int[] colNum = new int[]{colChrID, colStart, colEnd, colvalue};
-		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtExcel, colNum, rowStart, -1);
-		for (String[] strings : lsInfo) {
-			MapInfo mapInfo = new MapInfo(strings[0], Integer.parseInt(strings[1]), Integer.parseInt(strings[2]));
-			if (colvalue > 0) {
-				mapInfo.setScore(Double.parseDouble(strings[3]));
-			}
-		}
-	}
-	
-	/**
-	 * 
-	 * 读取坐标位点图，一般用来做给定区域的图
-	 * @param txtExcel
-	 * @param colChrID
-	 * @param colSummit
-	 * @param range summit左右两边的区域
-	 * @param colvalue
-	 * @param rowStart
-	 */
-	public void readSiteSummit(String txtExcel, int colChrID, int colSummit, int range, int colvalue, int rowStart) {
-		int[] colNum = new int[]{colChrID, colSummit, colvalue};
-		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtExcel, colNum, rowStart, -1);
-		for (String[] strings : lsInfo) {
-			int summit = Integer.parseInt(strings[1]);			
-			MapInfo mapInfo = new MapInfo(strings[0], summit - range, summit + range);
-			if (colvalue > 0) {
-				mapInfo.setScore(Double.parseDouble(strings[3]));
-			}
-		}
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	private PlotHeatMap plotHeatMap() {
-		if (heatmapMax <= heatmapMin) {
-			heatmapMax = getMaxData(lsMapInfos, 99);
-		}
-		
-		MapInfo.sortPath(heatmapSortS2M);
-		Collections.sort(lsMapInfos);
-		
-		Color[] gradientColors = new Color[] { heatmapColorMin, heatmapColorMax};
-		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
-		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfos,  customGradient);
-		heatMap.setRange(heatmapMin, heatmapMax);
-		return heatMap;
-	}
-	
-	/**
-	 * 根据输入的 lsMapInfos，获得指定分位点的值
-	 * @param lsMapInfos
-	 * @param percentage 分为点，譬如99表示最大的99%分位点
-	 * @return
-	 */
-	private double getMaxData(List<MapInfo> lsMapInfos, int percentage) {
-		ArrayList<Double> lsDouble = new ArrayList<Double>();
-		for (MapInfo mapInfo : lsMapInfos) {
-			double[] info = mapInfo.getDouble();
-			for (double d : info) {
-				lsDouble.add(d);
-			}
-		}
-		return MathComput.median(lsDouble, percentage);
-	}
-	
-	/**
-	 * 根据前面设定upBp和downBp 根据Peak所覆盖的基因做出TSS图
-	 * @param fileName Peak文件
-	 * @param rowStart 从第几行开始读
-	 * @param binNum 分成几份
-	 * @param resultFile 输出文件
-	 * @param geneStructure GffDetailGene.TSS
-	 */
-	public void plotTssPeak(String fileName, int rowStart, int binNum, String resultFile, GeneStructure geneStructure) {
-		ArrayList<MapInfo> lsMapInfo = gffChrAbs.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
-		ArrayList<MapInfo> lsMapTssInfo = getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
-		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
-		for (double d : TssDensity) {
-			txtWrite.writefileln(d+"");
-		}
-		txtWrite.close();
+	/** 设定为全基因组 */
+	public void setGeneIDGenome() {
+		//清空
+		lsMapInfos = new ArrayList<MapInfo>();
+		lsGeneID2Value = Gene2Value.readGeneMapInfoAll(gffChrAbs);
 	}
 	/**
-	 * @param color
-	 * @param SortS2M
-	 *            是否从小到大排序
-	 * @param txtExcel
-	 * @param colGeneID
-	 * @param colScore 如果小于0或等于colGeneID，那么就用指定区域的reads当作score
-	 * @param rowStart
-	 * @param heapMapSmall
-	 * @param heapMapBig
-	 * @param scale
-	 * @param structure
-	 *            基因结构，目前只有 GffDetailGene.TSS 和 GffDetailGene.TES
-	 * @param binNum
-	 *            最后分成几块
-	 * @param mirandaResultOut
-	 * @return 返回最大值和最小值的设定
-	 */
-	public double[] plotTssPeakHeatMap(Color color, String fileName,int heatMapSmall, int heatMapBig, int rowStart, int binNum, String resultFile, GeneStructure geneStructure, boolean SortS2M) {
-		ArrayList<MapInfo> lsMapInfo = gffChrAbs.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
-		ArrayList<MapInfo> lsMapTssInfo = getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
-		MapInfo.sortPath(SortS2M);
-		for (MapInfo mapInfo : lsMapTssInfo) {
-			mapInfo.setScore(MathComput.mean(mapInfo.getDouble()));
-		}
-		Collections.sort(lsMapTssInfo);
-		return plotHeatMap(lsMapTssInfo, color, heatMapSmall, heatMapBig,
-				FileOperate.changeFileSuffix(resultFile, "_HeatMap", "png"));
-	}
-	/**
-	 * 根据全部基因做出TSS图
-	 * @param binNum 分成几份
-	 * @param resultFile 输出文件
-	 * @param geneStructure GffDetailGene.TSS
-	 */
-	public void plotTssAllGene(int binNum, String resultFile, GeneStructure geneStructure) {
-		plotTssGene(null, 0, binNum, resultFile, geneStructure);
-	}
-	/**
-	 * 根据前面设定upBp和downBp 根据指定的基因做出TSS图
-	 * @param fileName 基因文件，必须第一列为geneID，内部去重复, 如果没有文件，则返回全体基因
-	 * @param rowStart 从第几行开始读
-	 * @param binNum 分成几份
-	 * @param resultFile 输出文件
-	 * @param geneStructure GffDetailGene.TSS
-	 */
-	public void plotTssGene(String fileName, int rowStart, int binNum, String resultFile, GeneStructure geneStructure) {
-		ArrayList<MapInfo> lsMapInfo = null;
-		if (fileName == null || fileName.trim().equals("")) {
-			lsMapInfo = readGeneMapInfoAll(geneStructure, binNum);
-		} else {
-			lsMapInfo = readFileGeneMapInfo(fileName, 1, 0, rowStart, geneStructure, binNum);
-		}
-		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapInfo);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
-		for (double d : TssDensity) {
-			txtWrite.writefileln(d+"");
-		}
-		txtWrite.close();		
-	}
-	
-
-	/**
-	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
-	 * 如果没有权重，就按照reads的密度进行排序
-	 * 一般用于根据gene express 画heapmap图
-	 * @param txtExcel
-	 * @param colGeneID
-	 * @param colScore
-	 * @param rowStart
-	 * @param Structure 基因的哪个部分的结构 
-	 * @param binNum 最后结果分成几块
-	 */
-	private ArrayList<MapInfo> readFileGeneMapInfo(String txtExcel,int colGeneID, int colScore, int rowStart, GeneStructure Structure, int binNum) {
-		////////////////////     读 文 件   ////////////////////////////////////////////
-		int[] columnID = null;
-		if (colScore <= 0 || colScore == colGeneID) {
-			 columnID = new int[]{colGeneID};
-		} else {
-			columnID = new int[]{colGeneID, colScore};
-		}	
-		ArrayList<String[]> lstmp = ExcelTxtRead.readLsExcelTxt(txtExcel, columnID, rowStart, 0);
-		return getLsGeneMapInfo(lstmp, Structure, binNum);
-	}
-	/**
-	 * 给定基因的symbol，返回该基因在tss附近区域的mapreads的平均数
-	 * @param geneID 基因名字
-	 * @param tssUp tss上游多少bp 负数在上游正数在下游
-	 * @param tssDown tss下游多少bp 负数在上游正数在下游
-	 * @return 如果没有则返回-1
-	 */
-	public double getGeneTss(String geneID, int tssUp, int tssDown) {
-		GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
-		if (gffDetailGene == null) {
-			return -1;
-		}
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
-		int tssSite = gffGeneIsoInfo.getTSSsite();
-		int tssStartR = 0; int tssEndR = 0;
-		//方向不同，区域也不同
-		if (gffGeneIsoInfo.isCis5to3()) {
-			tssStartR = tssSite + tssUp;
-			tssEndR = tssSite + tssDown;
-		}
-		else {
-			tssStartR = tssSite - tssUp;
-			tssEndR = tssSite - tssDown;
-		}
-		int tssStart = Math.min(tssStartR, tssEndR);
-		int tssEnd = Math.max(tssStartR, tssEndR);
-		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
-		if (siteInfo == null) {
-//			System.out.println("stop");
-			return -1;
-		}
-		return MathComput.mean(siteInfo);
-	}
-	/**
-	 * 给定基因的symbol，返回该基因在tss附近区域的mapreads的平均数
-	 * @param geneID 基因名字
-	 * @param tssUp tss上游多少bp 负数在上游正数在下游
-	 * @param tssDown tss下游多少bp 负数在上游正数在下游
-	 */
-	public double getGeneBodySum(String geneID) {
-		GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
-		if (gffDetailGene == null) {
-			return -1;
-		}
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
-		int tssSite = gffGeneIsoInfo.getTSSsite();
-		int tesSite = gffGeneIsoInfo.getTESsite();
-		int tssStart = Math.min(tssSite, tesSite);
-		int tssEnd = Math.max(tssSite, tesSite);
-		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
-		return MathComput.sum(siteInfo);
-	}
-
-	/**
-	 * 给定区域，自动获得基因
-	 * 根据前面设定upBp和downBp
-	 * @param lsMapInfos
-	 * @param structure GffDetailGene.TSS等
-	 * @param binNum 分成几块
-	 * @return
-	 */
-	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(ArrayList<? extends MapInfo> lsMapInfos, GeneStructure structure, int binNum) {
-		HashMap<GffDetailGene,Double>  hashGffDetailGenes = getPeakGeneStructure( lsMapInfos, structure);
-		 ArrayList<MapInfo> lsResult = getMapInfoFromGffGene(hashGffDetailGenes, structure);
-		 mapReads.getRangeLs(binNum, lsResult, 0);
-		 return lsResult;
-	}
-	
-	/**
-	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
-	 * 如果没有权重，就按照reads的密度进行排序
-	 * 一般用于根据gene express 画heapmap图
-	 * @param txtExcel
-	 * @param colGeneID
-	 * @param colScore
-	 * @param rowStart
-	 * @param Structure 基因的哪个部分的结构 
-	 * @param binNum 最后结果分成几块
-	 */
-	public ArrayList<MapInfo> readGeneMapInfoAll(GeneStructure Structure, int binNum) {
-		ArrayList<String> lsGeneID = gffChrAbs.getGffHashGene().getLsNameAll();
-		ArrayList<String[]> lstmp = new ArrayList<String[]>();
-		for (String string : lsGeneID) {
-			lstmp.add(new String[]{string.split(SepSign.SEP_ID)[0]});
-		}
-		return getLsGeneMapInfo(lstmp, Structure, binNum);
-	}
-	/**
+	 * 给定要画tss图的基因list
+	 * 内部去重复
+	 * 会根据MapInfo.isMin2max()标签确定遇到重复项是取value大的还是小的
 	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
 	 * 一般用于根据gene express 画heapmap图
 	 * @param lsGeneValue string[2] 0:geneID 1:value 其中1 可以没有，那么就是string[1] 0:geneID
-	 * @param rowStart
-	 * @param Structure 基因的哪个部分的结构
-	 * @param binNum 最后结果分成几块
 	 * @return
 	 */
-	public ArrayList<MapInfo> getLsGeneMapInfo(ArrayList<String[]> lsGeneValue, GeneStructure Structure, int binNum) {
+	public void setGeneID2ValueLs(ArrayList<String[]> lsGeneValue) {
+		//清空
+		lsMapInfos = new ArrayList<MapInfo>();
+		
 		//有权重的就使用这个hash
  		HashMap<GffDetailGene, Double> hashGene2Value = new HashMap<GffDetailGene, Double>();
 
@@ -490,128 +204,140 @@ public class GffChrPlotTss {
 				hashGene2Value.put(gffDetailGene, 0.0);
 			}
 		}
-		ArrayList<MapInfo> lsMapInfoGene = getMapInfoFromGffGene(hashGene2Value, Structure);
-		mapReads.getRangeLs(binNum, lsMapInfoGene, 0);
-		if (lsGeneValue.get(0).length <= 1) {
-			for (MapInfo mapInfo : lsMapInfoGene) {
-				mapInfo.setScore(MathComput.mean(mapInfo.getDouble()));
+		
+		lsGeneID2Value = new ArrayList<Gene2Value>();
+		for (GffDetailGene gffDetailGene : hashGene2Value.keySet()) {
+			Gene2Value gene2Value = new Gene2Value(gffChrAbs);
+			gene2Value.setGffGeneIsoInfo(gffDetailGene.getLongestSplitMrna());
+			gene2Value.setValue(hashGene2Value.get(gffDetailGene));
+			lsGeneID2Value.add(gene2Value);
+		}
+	}
+
+	/** <b>如果genestructure设定为tss或tes，那么务必首先设定tsstesRange</b><br>
+	 * 给定区域，获得被该区域覆盖的基因然后再做图。mapinfo中设定坐标位点和value */
+	public void setSiteCoveredGene(ArrayList<MapInfo> lsMapInfos, GeneStructure geneStructure) {
+		this.lsGeneID2Value = Gene2Value.getLsGene2Vale(tsstesRange, gffChrAbs, lsMapInfos, geneStructure);
+		//清空
+		this.lsMapInfos = new ArrayList<MapInfo>();
+	}
+	
+	public PlotScatter plotLine(DotStyle dotStyle) {
+		ArrayList<double[]> lsXY = getLsXYtsstes();
+		double[] yInfo = new double[lsXY.size()];
+		for (int i = 0; i < yInfo.length; i++) {
+			yInfo[i] = lsXY.get(i)[1];
+		}
+		double ymax = MathComput.max(yInfo);
+		
+		PlotScatter plotScatter = new PlotScatter();
+		plotScatter.addXY(lsXY, dotStyle);
+		double xLen = plotTssTesRange[1] - plotTssTesRange[0];
+		plotScatter.setAxisX((double)plotTssTesRange[0] - xLen * 0.005, (double)plotTssTesRange[1] + xLen * 0.005);
+
+		plotScatter.setAxisY(0, ymax * 1.1);
+		
+		double xmin = lsXY.get(0)[0]; double xmax = lsXY.get(lsXY.size() - 1)[0];
+		double length = (xmax - xmin)/8;
+		
+		plotScatter.setTitleX("Site Near " + geneStructure.toString(), null, length);
+		plotScatter.setTitleY("Normalized Reads Counts", null, 0);
+		plotScatter.setTitle(geneStructure.toString() + " Reads Destribution", null);
+		
+		return plotScatter;
+	}
+	
+	public ArrayList<double[]> getLsXYtsstes() {
+		setLsMapInfos();
+		
+		ArrayList<double[]> lsResult = new ArrayList<double[]>();
+		double[] yvalue = MapInfo.getCombLsMapInfo(lsMapInfos);
+		double[] xvalue = getXvalue();
+		if (xvalue.length != yvalue.length) {
+			logger.error("xvalue和yvalue的长度不一致，请检查");
+		}
+		for (int i = 0; i < xvalue.length; i++) {
+			double[] tmpResult= new double[2];
+			tmpResult[0] = xvalue[i];
+			tmpResult[1] = yvalue[i];
+			lsResult.add(tmpResult);
+		}
+		return lsResult;
+	}
+	/**
+	 * 根据设定的yvalue值和画出两边的边界，设定x的value值
+	 * @return
+	 */
+	private double[] getXvalue() {
+		double[] xResult = null;
+		xResult = new double[splitNum];
+		//Gene2Value里面对于tss和tes会加上1，因为有0点
+		if (geneStructure == GeneStructure.TSS || geneStructure == GeneStructure.TES) {
+			xResult[0] = plotTssTesRange[0];
+			double intervalNum = (double)(plotTssTesRange[1] - plotTssTesRange[0] )/(splitNum - 1);
+			for (int i = 1; i < xResult.length; i++) {
+				xResult[i] = xResult[i-1] + intervalNum;
+			}
+			for (int i = 0; i < xResult.length; i++) {
+				xResult[i] = (int)xResult[i];
+			}
+		} else {
+			for (int i = 0; i < xResult.length; i++) {
+				xResult[i] = (double)i/splitNum; 
 			}
 		}
-		return lsMapInfoGene;
+		return xResult;
+	}
+	
+	/** 首先要设定好lsMapInfos */
+	public PlotHeatMap plotHeatMap() {
+		setLsMapInfos();
+		if (heatmapMax <= heatmapMin) {
+			heatmapMax = getMaxData(lsMapInfos, 99);
+		}
+		
+		MapInfo.sortPath(heatmapSortS2M);
+		Collections.sort(lsMapInfos);
+		
+		Color[] gradientColors = new Color[] {heatmapColorMin, heatmapColorMax};
+		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
+		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfos,  customGradient);
+		heatMap.setRange(heatmapMin, heatmapMax);
+		return heatMap;
+	}
+	
+	/** 将lsGeneID2Value中的信息填充到lsMapInfos中去 */
+	private void setLsMapInfos() {
+		if (lsMapInfos.size() > 0 && lsGeneID2Value.size() == 0) {
+			return;
+		}
+		for (Gene2Value gene2Value : lsGeneID2Value) {
+			gene2Value.setPlotTssTesRegion(plotTssTesRange);
+			gene2Value.setExonIntronPileUp(pileupExonIntron);
+			gene2Value.setGetNum(lsExonIntronNum);
+			gene2Value.setSplitNum(splitNum);
+			MapInfo mapInfo = gene2Value.getMapInfo(mapReads, geneStructure);
+			if (mapInfo != null) {
+				lsMapInfos.add(mapInfo);
+			}
+		}
 	}
 	
 	/**
-	 * 根据前面设定upBp和downBp
-	 * 给定一系列gffDetailGene，以及想要的部分，返回对应区域的LsMapInfo
-	 * <b>注意里面没有填充reads的double[] value</b>
-	 * @param mapGffDetailGenes
-	 * @param structure
+	 * 根据输入的 lsMapInfos，获得指定分位点的值
+	 * @param lsMapInfos
+	 * @param percentage 分为点，譬如99表示最大的99%分位点
 	 * @return
 	 */
-	private ArrayList<MapInfo> getMapInfoFromGffGene(HashMap<GffDetailGene, Double> mapGffDetailGenes, GeneStructure structure) {
-		ArrayList<MapInfo> lsMapInfos = new ArrayList<MapInfo>();
-		for (Entry<GffDetailGene, Double> gffDetailValue : mapGffDetailGenes.entrySet()) {
-			lsMapInfos.add(getStructureLoc(gffDetailValue.getKey(),gffDetailValue.getValue(), structure));
-		}
-		return lsMapInfos;
-	}
-	/**
-	 * 给定peak的信息，chrID和起点终点，返回被peak覆盖到Tss的基因名和覆盖情况，用于做Tss图
-	 * 自动去冗余基因
-	 * @param lsPeakInfo mapInfo必须有 chrID 和 startLoc 和 endLoc 三项 
-	 * @param structure GffDetailGene.TSS等
-	 * @return
-	 * 基因和权重的hash表
-	 */
-	private HashMap<GffDetailGene,Double> getPeakGeneStructure(ArrayList<? extends MapInfo> lsMapInfos, GeneStructure structure) {
-		//存储最后的基因和权重
-		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
+	private double getMaxData(List<MapInfo> lsMapInfos, int percentage) {
+		ArrayList<Double> lsDouble = new ArrayList<Double>();
 		for (MapInfo mapInfo : lsMapInfos) {
-			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene( mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), structure );
-			for (GffDetailGene gffDetailGene : setGffDetailGene) {
-				if (hashGffDetailGenes.containsKey(gffDetailGene)) {
-					if (MapInfo.isMin2max()) {
-						if (mapInfo.getScore() < hashGffDetailGenes.get(gffDetailGene)) {
-							hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
-						}
-					} else {
-						if (mapInfo.getScore() > hashGffDetailGenes.get(gffDetailGene)) {
-							hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
-						}
-					}
-				} else {
-					hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
-				}
+			double[] info = mapInfo.getDouble();
+			for (double d : info) {
+				lsDouble.add(d);
 			}
 		}
-		return hashGffDetailGenes;
-	}
-	/**
-	 * 给定坐标区域，返回该peak所覆盖的GffDetailGene
-	 * @param tsstesRange 覆盖度，tss或tes的范围
-	 * @param chrID
-	 * @param startLoc
-	 * @param endLoc
-	 * @param structure GffDetailGene.TSS等
-	 * @return
-	 */
-	private Set<GffDetailGene> getPeakStructureGene(String chrID, int startLoc, int endLoc, GeneStructure structure) {
-		GffCodGeneDU gffCodGeneDU = gffChrAbs.getGffHashGene().searchLocation(chrID, startLoc, endLoc);
-		if (gffCodGeneDU == null) {
-			return new HashSet<GffDetailGene>();
-		}
-		gffCodGeneDU.cleanFilter();
-		if (structure.equals(GeneStructure.TSS)) {
-			gffCodGeneDU.setTss(plotRange);
-			return gffCodGeneDU.getCoveredGffGene();
-		}
-		else if (structure.equals(GeneStructure.TES)) {
-			gffCodGeneDU.setTes(plotRange);
-			return gffCodGeneDU.getCoveredGffGene();
-		}
-		else {
-			logger.error("暂时没有除Tss和Tes之外的基因结构");
-			return null;
-		}
-	}
-	/**
-	 * 前面设定upBp和downBp
-	 * 给定gffDetailGene，以及想要的部分，返回对应区域的MapInfo
-	 * <b>注意里面没有填充reads的double[] value</b>
-	 * @param gffDetailGene
-	 * @param value 该基因所对应的权重
-	 * @param structure GffDetailGene.TSS等
-	 * @return
-	 */
-	private MapInfo getStructureLoc(GffDetailGene gffDetailGene, Double value,GeneStructure structure) {
-		int plotUpstream = 0;
-		int plotDownstream = 0;
-		MapInfo mapInfoResult = null;
-		String chrID = gffDetailGene.getRefID(); String geneName = gffDetailGene.getLongestSplitMrna().getName();
-		if (gffDetailGene.isCis5to3()) {
-			plotUpstream = Math.abs(plotRange[0]);
-			plotDownstream = Math.abs(plotRange[1]);
-		} else {
-			plotUpstream = Math.abs(plotRange[1]);
-			plotDownstream = Math.abs(plotRange[0]);
-		}
-		
-		if (structure.equals(GeneStructure.TSS)) {
-			int tss = gffDetailGene.getLongestSplitMrna().getTSSsite();
-			mapInfoResult = new MapInfo(chrID, tss - plotUpstream, tss + plotDownstream, tss,0, geneName);
-			mapInfoResult.setCis5to3(gffDetailGene.isCis5to3());
-			mapInfoResult.setScore(value);
-		}
-		else if (structure.equals(GeneStructure.TES)) {
-			int tes = gffDetailGene.getLongestSplitMrna().getTESsite();
-			mapInfoResult = new MapInfo(chrID, tes - plotUpstream, tes + plotDownstream, tes, 0, geneName);
-			mapInfoResult.setCis5to3(gffDetailGene.isCis5to3());
-			mapInfoResult.setScore(value);
-		}
-		else {
-			logger.error("还没添加该种类型的structure");
-		}
-		return mapInfoResult;
+		return MathComput.median(lsDouble, percentage);
 	}
 
 	/**
@@ -631,26 +357,20 @@ public class GffChrPlotTss {
 		Color colorred = new Color(255, 0, 0, 255);
 
 		Color[] gradientColors = new Color[] { colorgreen, colorwhite, colorred };
-		Color[] customGradient = Gradient.createMultiGradient(gradientColors,
-				250);
+		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
 
-		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfoFinal, false, customGradient);
+		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfoFinal, customGradient);
 		heatMap.setRange(mindata1, maxdata1);
 		heatMap.saveToFile(outFile, 6000, 1000);
 	}
 	
 	/**
-	 * @param lsMapInfo
-	 *            基因信息
-	 * @param structure
-	 *            基因结构，目前只有 GffDetailGene.TSS 和 GffDetailGene.TES
+	 * @param lsMapInfo  基因信息
+	 * @param structure 基因结构，目前只有 GffDetailGene.TSS 和 GffDetailGene.TES
 	 * @param color
-	 * @param small
-	 *            最小
-	 * @param big
-	 *            最大
-	 * @param scale
-	 *            scale次方，大于1则稀疏高表达，小于1则稀疏低表达
+	 * @param small 最小
+	 * @param big 最大
+	 * @param scale scale次方，大于1则稀疏高表达，小于1则稀疏低表达
 	 * @param outFile
 	 */
 	public static void plotHeatMap2(ArrayList<MapInfo> lsMapInfo,
@@ -682,10 +402,42 @@ class Gene2Value {
 	GffGeneIsoInfo gffGeneIsoInfo;
 	double value;
 	
+	/** tss或tes的扩展区域，一般哺乳动物为 -5000到5000 */
+	int[] plotTssTesRegion = new int[]{-5000, 5000};
+	
+	int splitNum = 1000;
+	
+	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体 */
+	boolean pileupExonIntron = false;
+	/** 设定需要提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron
+	 * null 就不分析
+	 * 为实际数量
+	 *  */
+	ArrayList<Integer> lsExonIntronNum;
+	
+	
 	public Gene2Value(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
-	
+	/**
+	 * @param plotTssTesRegion tss或tes的扩展区域，一般哺乳动物为 -5000到5000
+	 */
+	public void setPlotTssTesRegion(int[] plotTssTesRegion) {
+		this.plotTssTesRegion = plotTssTesRegion;
+	}
+	/**
+	 * 如果提取的是exon或者intron的区域，因为exon和intron每个基因都不是等长的，所以要设定划分的分数.
+	 * 如果是tss和tes区域，也需要划分成指定的份数
+	 * @param splitNumExonIntron 默认为500份
+	 */
+	public void setSplitNum(int splitNum) {
+		this.splitNum = splitNum;
+	}
+	/**
+	 * 如果只知道gene名字，就用这个来设定。
+	 * 最好能直接设定GffGeneIso
+	 * @param geneName
+	 */
 	public void setGeneName(String geneName) {
 		gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneName);
 	}
@@ -698,9 +450,126 @@ class Gene2Value {
 		this.value = value;
 	}
 	
+	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体 */
+	public void setExonIntronPileUp(boolean pileupExonIntron) {
+		this.pileupExonIntron = pileupExonIntron;
+	}
+	/** 设定需要提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron 
+	 * 输入的是实际数量，譬如1表示第一个exon或intron
+	 * */
+	public void setGetNum(ArrayList<Integer> lsExonIntronNum) {
+		this.lsExonIntronNum = lsExonIntronNum;
+		if (lsExonIntronNum != null) {
+			Collections.sort(lsExonIntronNum);
+		}
+	}
 	/**
-	 * 根据输入的坐标信息获得全体被覆盖到的gene2value
-	 * @param colSiteInfo 有chrID，start，end 位置
+	 * 如果没有，譬如没有intron，那么就返回一个null
+	 * 如果是tss，tes这种带0点的，splitNum会加上1
+	 * @param mapReads
+	 * @param geneStructure
+	 * @return
+	 */
+	public MapInfo getMapInfo(MapReads mapReads, GeneStructure geneStructure) {
+		boolean sucess = true;
+		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getChrID(), value, gffGeneIsoInfo.getName());
+		mapInfo.setCis5to3(gffGeneIsoInfo.isCis5to3());
+		int upstream = plotTssTesRegion[0]; int downstream = plotTssTesRegion[1];
+		if (!gffGeneIsoInfo.isCis5to3()) {
+			upstream = -upstream; downstream = -downstream;
+		}
+		
+		if (geneStructure == GeneStructure.TSS) {
+			mapInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() + upstream, gffGeneIsoInfo.getTSSsite() + downstream);
+			mapReads.getRange(splitNum, mapInfo, 0);
+		} else if (geneStructure == GeneStructure.TES) {
+			mapInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() + upstream, gffGeneIsoInfo.getTESsite() + downstream);
+			mapReads.getRange(splitNum, mapInfo, 0);
+		} else if (geneStructure == GeneStructure.EXON) {
+			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo);
+		} else if (geneStructure == GeneStructure.INTRON) {
+			if (gffGeneIsoInfo.getLsIntron().size() == 0) {
+				return null;
+			}
+			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getLsIntron());
+		} else if (geneStructure == GeneStructure.ALLLENGTH) {
+			mapInfo.setStartEndLoc(gffGeneIsoInfo.getStartAbs(), gffGeneIsoInfo.getEndAbs());
+			mapReads.getRange(splitNum, mapInfo, 0);
+		} else if (geneStructure == GeneStructure.CDS) {
+			if (!gffGeneIsoInfo.ismRNA()) {
+				return null;
+			}
+			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getIsoInfoCDS());
+		} else if (geneStructure == GeneStructure.UTR3) {
+			if (gffGeneIsoInfo.getLenUTR3() < 20) {
+				return null;
+			}
+			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getUTR3seq());
+		} else if (geneStructure == GeneStructure.UTR5) {
+			if (gffGeneIsoInfo.getLenUTR5() < 20) {
+				return null;
+			}
+			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getUTR5seq());
+		} else {
+			return null;
+		}
+		
+		if (!sucess || mapInfo.getDouble() == null) {
+			return null;
+		}
+		return mapInfo;
+	}
+	
+	private boolean setMapInfo(MapInfo mapInfo, MapReads mapReads, String chrID, List<? extends Alignment> lsExonInfos) {
+		double[] result = new double[splitNum];
+		List<Alignment> lsNew = new ArrayList<Alignment>();
+		if (lsExonIntronNum == null || lsExonIntronNum.size() == 0) {
+			for (Alignment alignment : lsExonInfos) {
+				lsNew.add(alignment);
+			}
+		} else {
+			for (Integer i : lsExonIntronNum) {
+				i = i - 1;
+				if (i < lsExonInfos.size()) {
+					lsNew.add(lsExonInfos.get(i));
+				}
+			}
+		}
+		
+		if (lsNew.size() == 0) {
+			return false;
+		}
+		
+		
+		if (pileupExonIntron) {
+			ArrayList<double[]> lsResult = new ArrayList<double[]>();
+			for (Alignment alignment : lsNew) {
+				double[] info = mapReads.getRangeInfo(chrID, alignment.getStartAbs(), alignment.getEndAbs(), 0);
+				info = MathComput.mySpline(info, splitNum, 0, 0, 0);
+				lsResult.add(info);
+			}
+			for (double[] ds : lsResult) {
+				for (int i = 0; i < ds.length; i++) {
+					result[i] = result[i] + ds[i];
+				}
+			}
+		} else {
+			double[] info = mapReads.getRangeInfo(chrID, lsNew);
+			result = MathComput.mySpline(info, splitNum, 0, 0, 0);
+		}
+		mapInfo.setDouble(result);
+		return true;
+	}
+	
+	
+	/**
+	 * 根据输入的坐标和权重，返回Gene2Value的list
+	 * 会根据MapInfo.isMin2max()的标签来确定遇到重复项选择大的还是小的
+	 * @param tssTesRange
+	 * @param gffChrAbs
+	 * @param colSiteInfo
+	 * @param geneStructure
+	 * @return
 	 */
 	public static ArrayList<Gene2Value> getLsGene2Vale(int[] tssTesRange, GffChrAbs gffChrAbs, Collection<MapInfo> colSiteInfo, GeneStructure geneStructure) {
 		//存储最后的基因和权重
@@ -759,5 +628,20 @@ class Gene2Value {
 		else {
 			return gffCodGeneDU.getCoveredGffGene();
 		}
+	}
+	/**
+	 * 读取全基因组
+	 * @param gffChrAbs
+	 * @return
+	 */
+	public static ArrayList<Gene2Value> readGeneMapInfoAll(GffChrAbs gffChrAbs) {
+		ArrayList<Gene2Value> lsGene2Value = new ArrayList<Gene2Value>();
+		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getGffDetailAll()) {
+			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
+			Gene2Value gene2Value = new Gene2Value(gffChrAbs);
+			gene2Value.setGffGeneIsoInfo(gffGeneIsoInfo);
+			lsGene2Value.add(gene2Value);
+		}
+		return lsGene2Value;
 	}
 }

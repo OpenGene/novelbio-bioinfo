@@ -92,8 +92,7 @@ public class PeakOverlapGrad {
 	 * 0: chrID 1:start 2:end
 	 * @return 0: Num of lsPeak   1:Num of lsSearchOverlap
 	 */
-	private String[] getOverlapInfo(ArrayList<String[]> lsPeak, ArrayList<String[]> lsSearch)
-	{
+	private String[] getOverlapInfo(ArrayList<String[]> lsPeak, ArrayList<String[]> lsSearch) {
 		int overlapPeakNum = 0;
 		ListHashBin gffHashPeak = new ListHashBin();
 		gffHashPeak.ReadGff(lsPeak);

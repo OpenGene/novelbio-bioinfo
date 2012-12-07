@@ -78,8 +78,7 @@ import com.novelbio.base.plot.java.HeatChartDataInt;
  * @version 1.6
  */
 
-public class PlotHeatMap extends PlotNBC
-{
+public class PlotHeatMap extends PlotNBC {
     /**
 	 * 
 	 */
@@ -164,8 +163,7 @@ public class PlotHeatMap extends PlotNBC
 //        drawData();
 	}
 
-	private double[][] copeHeatChartDataInt(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts)
-	{
+	private double[][] copeHeatChartDataInt(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts) {
 		double[][] data = new double[lsHeatChartDataInts.size()][lsHeatChartDataInts.get(0).getDouble().length];
 		for (int i = 0; i < lsHeatChartDataInts.size(); i++) {
 			HeatChartDataInt heatChartDataInt = lsHeatChartDataInts.get(i);
@@ -402,8 +400,7 @@ public class PlotHeatMap extends PlotNBC
      * @param data The data to display, must be a complete array (non-ragged)
      * @param useGraphicsYAxis If true, the data will be displayed with the y=0 row at the top of the screen. If false, the data will be displayed with the y=0 row at the bottom of the screen.
      */
-    public void updateGradient(Color[] colors, double[][] data, boolean useGraphicsYAxis)
-    {
+    public void updateGradient(Color[] colors, double[][] data, boolean useGraphicsYAxis) {
     	this.data = updateDataPr(data, useGraphicsYAxis);
         this.colors = (Color[]) colors.clone();
 

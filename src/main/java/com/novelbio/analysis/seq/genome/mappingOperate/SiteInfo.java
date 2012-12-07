@@ -12,8 +12,8 @@ import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 
 public class SiteInfo implements Comparable<SiteInfo>, Alignment {
-
 	Logger logger = Logger.getLogger(MapInfo.class);
+	
 	/** 比较mapinfo的起点终点 */
 	public static final int COMPARE_LOCSITE = 100;
 	/** 比较mapinfo的flag site */
