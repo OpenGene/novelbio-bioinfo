@@ -36,51 +36,12 @@ import de.erichseifert.gral.util.Insets2D;
 import de.erichseifert.gral.util.Orientation;
 
 public class PlotScatter extends PlotNBCInteractive{
-	public static void main(String[] args) {
-		PlotScatter plotScatter = new PlotScatter();
-        Random random = new Random();
-		int num = 100;
-		double[] x = new double[num];
-		double[] y = new double[num];
-		for (int i = 0; i < x.length; i++) {
-			x[i] = random.nextGaussian();
-			y[i] = i;
-		}
-        // Create example data
-        ArrayList<Double> data = new  ArrayList<Double>();
-        for (int i = 0; i < 100; i++) {
-                data.add(random.nextGaussian());
-        }
-        
-        plotScatter = new PlotScatter();
-		plotScatter.setAxisX(-5, 5);
-		plotScatter.setAxisY(0, 0.3);
-		BarStyle dotStyle2 = new BarStyle();
-//		dotStyle2.setBasicStroke(new BasicStroke(2f));
-//		dotStyle2.setColor(DotStyle.getGridentColor(Color.red, GraphicsUtils.deriveBrighter(Color.red)));
-//		dotStyle2.setEdgeColor(DotStyle.getGridentColor( GraphicsUtils.deriveBrighter(Color.red),Color.red));
-//		dotStyle2.setValueVisible(true);
-//		dotStyle2.setBarWidth(10);
-//		plotScatter.addHistData(data, 15, dotStyle2);
-//		plotScatter.mapNum2ChangeX(0, 0, resolution.length, chrLength, interval);
-		DotStyle dotStyle = new DotStyle();
-		dotStyle.setValueVisible(true);
-		dotStyle.setColor(new Color(0, 0, 255, 255));
-		dotStyle.setStyle(DotStyle.STYLE_AREA);
-		plotScatter.addXY(x, y, dotStyle);
-		plotScatter.setAxisX(-10, 10);
-		plotScatter.setAxisY(-10, 10);
-		plotScatter.setBg(Color.WHITE);
-		plotScatter.setTitle( " Reads Density", null);
-		plotScatter.setTitleX("Chromosome Length", null, 2);
-		plotScatter.setTitleY("Normalized Reads Counts", null, 0.2);
-		plotScatter.setPlotareaAll(false);
-//		plotScatter.setAxisNotMove(XYPlot.AXIS_Y);
-		
-//		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
-		plotScatter.saveToFile("/media/winF/NBC/Project/Project_Invitrogen/peakMacs/test.png", 1000, 1000);
-	}
-
+    public static final int INSETS_SIZE_S = 100;
+    public static final int INSETS_SIZE_SM = 200;
+    public static final int INSETS_SIZE_M = 300;
+    public static final int INSETS_SIZE_ML = 400;
+    public static final int INSETS_SIZE_L = 500;
+    
 	HashMap<DotStyle, DataTable> hashDataTable = new HashMap<DotStyle, DataTable>();
 	
 	XYPlot plot;
@@ -88,11 +49,7 @@ public class PlotScatter extends PlotNBCInteractive{
 	Double spaceX = null, spaceY = null;
     Font fontTitle = new Font(Font.SANS_SERIF, Font.PLAIN, 15), fontX = null, fontY = null;
     int InsetsSize = 200;
-    public static final int INSETS_SIZE_S = 100;
-    public static final int INSETS_SIZE_SM = 200;
-    public static final int INSETS_SIZE_M = 300;
-    public static final int INSETS_SIZE_ML = 400;
-    public static final int INSETS_SIZE_L = 500;
+
     /** custom axis X's ticks */
     Map<Double, String> mapAxisX = null;
     Font fontTicksX = null;
@@ -103,6 +60,14 @@ public class PlotScatter extends PlotNBCInteractive{
     Axis axisX = null, axisY = null;
     /**内部坐标轴边界，如果外部没有设定坐标轴边界，就用内部的 */
     Axis axisXMy = new Axis(Double.MAX_VALUE, Double.MIN_VALUE), axisYMy = new Axis(Double.MAX_VALUE, Double.MIN_VALUE);
+    
+    /**
+     * 图片坐标轴到图片边缘的距离
+     */
+    double insetsTop = 30, insetsLeft = 90, insetsBottom = 70, insetsRight = 40;
+    /** 坐标轴的title到坐标轴的距离 */
+    double insetsX = 5, insetsY = 5;
+    
     /**
      * add point
      * @param x
@@ -325,6 +290,7 @@ public class PlotScatter extends PlotNBCInteractive{
      */
     public void setAxisX(double x1, double x2) {
     	axisX = new Axis(x1, x2);
+    	painted = false;
     }
     /**
      * 设置标题
@@ -337,6 +303,8 @@ public class PlotScatter extends PlotNBCInteractive{
     		this.title = title;
     	if (fontTitle != null)
     		this.fontTitle =fontTitle;
+    	
+    	painted = false;
     }
     
     /**
@@ -353,6 +321,8 @@ public class PlotScatter extends PlotNBCInteractive{
     		this.fontX = fontX;
     	if (spaceX != 0)
     		this.spaceX = spaceX;
+    	
+    	painted = false;
     }
     
     /**
@@ -374,22 +344,26 @@ public class PlotScatter extends PlotNBCInteractive{
     	if (mapTicks != null) {
     		this.mapAxisX = mapTicks;
 		}
+    	painted = false;
 	}
     public void setAxisTicksXFont(Font fontTicks) {
 		if (fontTicks != null) {
 			this.fontTicksX = fontTicks;
 		}
+		painted = false;
 	}    
     
     public void setAxisTicksYMap(Map<Double, String> mapTicks) {
     	if (mapTicks != null) {
     		this.mapAxisY = mapTicks;
 		}
+    	painted = false;
 	}
     public void setAxisTicksYFont(Font fontTicks) {
 		if (fontTicks != null) {
 			this.fontTicksY = fontTicks;
 		}
+		painted = false;
 	}
     /**
      * 设定坐标轴边界
@@ -398,12 +372,9 @@ public class PlotScatter extends PlotNBCInteractive{
      */
     public void setAxisY(double y1, double y2) {
     	axisY = new Axis(y1, y2);
+    	painted = false;
     }
     
-    /**
-     * 图片坐标轴到图片边缘的距离
-     */
-    int insetsTop = 30, insetsLeft = 60, insetsBottom = 60, insetsRight = 40;
     /**
      * 设定图片坐标轴到图片边缘的距离,这个一般走默认就好
      * @param left
@@ -414,6 +385,7 @@ public class PlotScatter extends PlotNBCInteractive{
     public void setInsets(int left, int top, int right, int bottom) {
     	this.insetsTop = top; this.insetsLeft = left;
     	this.insetsBottom = bottom; this.insetsRight = right;
+    	painted = false;
     }
     /**
      * set the marge size of a figure, the bigger the marge be, the font of the tile will also bigger
@@ -421,7 +393,8 @@ public class PlotScatter extends PlotNBCInteractive{
      * @param int size 
      */
     public void setInsets(int size) {
-    	int insetsTop = 20, insetsLeft = 60, insetsBottom = 60, insetsRight = 40;
+    	double insetsTop = 20, insetsLeft = 83, insetsBottom = 68, insetsRight = 40;
+    	double insetsX = 5, insetsY = 2;
     	double scaleInsets = 1; double scaleFont = 1;
     	if (size == INSETS_SIZE_S) {
     		scaleInsets = 0.8;
@@ -432,24 +405,26 @@ public class PlotScatter extends PlotNBCInteractive{
     		scaleFont = 0.8;
 		}
     	else if (size == INSETS_SIZE_M) {
-    		scaleInsets = 1.5;
+    		scaleInsets = 1.4;
     		scaleFont = 1.2;
 		}
     	else if (size == INSETS_SIZE_ML) {
-    		scaleInsets = 2;
+    		scaleInsets = 1.7;
     		scaleFont = 1.5;
 		}
     	else if (size == INSETS_SIZE_L) {
-    		scaleInsets = 3;
-    		scaleFont = 2;
+    		scaleInsets = 2;
+    		scaleFont = 1.8;
 		}
-    	this.insetsTop = (int) (insetsTop * scaleInsets); this.insetsLeft = (int) (insetsLeft * scaleInsets);
-		this.insetsBottom = (int) (insetsBottom * scaleInsets); this.insetsRight = (int) (insetsRight * scaleInsets);		
+    	this.insetsTop = (insetsTop * scaleInsets); this.insetsLeft = (insetsLeft * scaleInsets);
+		this.insetsBottom = (insetsBottom * scaleInsets); this.insetsRight = (insetsRight * scaleInsets);	
+		this.insetsX = 2; this.insetsY =  2;
     	this.fontX = new Font(Font.SANS_SERIF, Font.PLAIN, (int)(20*scaleFont));
     	this.fontY = new Font(Font.SANS_SERIF, Font.PLAIN, (int)(20*scaleFont));
 		this.fontTicksX = new Font(Font.SANS_SERIF, Font.PLAIN, (int)(15*scaleFont));
 		this.fontTicksY = new Font(Font.SANS_SERIF, Font.PLAIN, (int)(15*scaleFont));
 		this.fontTitle =  new Font(Font.SANS_SERIF, Font.PLAIN, (int)(25*scaleFont));
+		painted = false;
     }
     
 //	@Override
@@ -576,9 +551,11 @@ public class PlotScatter extends PlotNBCInteractive{
 		// Style axes
 		if (titleX != null) {
 			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.LABEL, titleX);
+			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.LABEL_DISTANCE, insetsX);
 		}
 		if (titleY != null) {
 			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.LABEL, titleY);
+			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.LABEL_DISTANCE, insetsY);
 		}
 		if (title != null) {
 			plot.setSetting(BarPlot.TITLE, title);
@@ -655,6 +632,7 @@ public class PlotScatter extends PlotNBCInteractive{
 	public void setMapNum2ChangeX(double startTick, double startResult, 
 			double endTick, double endResult, double intervalNumResult) {
 		mapAxisX = mapNum2Change(startTick, startResult, endTick, endResult, intervalNumResult);
+		painted = false;
 	}
 	/**
 	 * map the ticks number to actual axis, using the linear transformation 
@@ -663,6 +641,7 @@ public class PlotScatter extends PlotNBCInteractive{
 	public void setMapNum2ChangeY(double startTick, double startResult, 
 			double endTick, double endResult, double intervalNumResult) {
 		mapAxisY = mapNum2Change(startTick, startResult, endTick, endResult, intervalNumResult);
+		painted = false;
 	}
 	/**
 	 * map the ticks number to actual axis, using the linear transformation 

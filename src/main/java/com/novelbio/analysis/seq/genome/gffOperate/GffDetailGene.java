@@ -670,7 +670,16 @@ public class GffDetailGene extends ListDetailAbs {
 	}
 	
 	public static enum GeneStructure {
-		ALL, ALLLENGTH,INTRON, CDS, EXON, UTR5, UTR3, TSS, TES;
+		All("All"), ALLLENGTH("AllLength"),
+		INTRON("Intron"), CDS("CDS"), EXON("Exon"), UTR5("5-UTR"), UTR3("3-UTR"), 
+		TSS("Tss"), TES("Tes");
+		String name;
+		private GeneStructure(String name) {
+			this.name = name;
+		}
+		public String toString() {
+			return name;
+		}
 		/**
 		 * 返回文字对应的GeneStructure
 		 * @return

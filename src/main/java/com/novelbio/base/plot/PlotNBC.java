@@ -32,6 +32,8 @@ import de.erichseifert.gral.graphics.DrawingContext;
 public abstract  class PlotNBC{
 
 	Logger logger = Logger.getLogger(PlotNBC.class);
+	boolean painted = false;
+	
 	/**
 	 *	最后生成的bufferedImage
 	 */
@@ -44,6 +46,7 @@ public abstract  class PlotNBC{
 
     public void setFg(Color fg) {
 		this.fg = fg;
+		painted = false;
 	}
     /**
      * set the back ground color
@@ -51,6 +54,7 @@ public abstract  class PlotNBC{
      */
     public void setBg(Color bg) {
 		this.bg = bg;
+		painted = false;
 	}
     public Color getFg() {
 		return fg;
@@ -58,7 +62,7 @@ public abstract  class PlotNBC{
     public Color getBg() {
 		return bg;
 	}
-	boolean painted = false;
+
     /**
      * 画图，必须调用了该方法后才能保存图片
      */
@@ -76,6 +80,7 @@ public abstract  class PlotNBC{
 	 */
 	public void setAlpha(boolean alpha) {
 		this.alpha = alpha;
+		painted = false;
 	}
 	/**
 	 * 将bufferedImage填充完毕

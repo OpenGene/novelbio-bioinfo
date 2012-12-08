@@ -107,7 +107,7 @@ public class GffChrPlotChrome {
 	 * @return
 	 */
 	public void setFilterChrDistInfo(GeneStructure geneStructure, int num) {
-		if (geneStructure == GeneStructure.ALL) {
+		if (geneStructure == GeneStructure.All) {
 			mapReads.setMapChrID2LsAlignments(null);
 			return;
 		}

@@ -1,6 +1,8 @@
 package com.novelbio.analysis.seq.genome.mappingOperate;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -259,7 +261,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 	}
 	/**
-	 * 经过标准化，和equations修正
+	 * 经过标准化，和equations修正，<b>注意返回的值一直都是按照坐标从小到大，不会根据方向而改变方向</b>
 	 * 给定坐标范围，返回该区间内的信息，取点为加权平均
 	 * @param chrID
 	 * @param lsLoc 一个转录本的exon list
@@ -280,6 +282,10 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 */
 	private double[] getRangeInfo(String chrID, List<? extends Alignment> lsLoc, int binNum, int type) {
 		ArrayList<double[]> lstmp = new ArrayList<double[]>();
+		if (lsLoc.size() > 1 && !lsLoc.get(0).isCis5to3()) {
+			lsLoc = sortLsLoc(lsLoc);
+		}
+	
 		for (Alignment is : lsLoc) {
 			double[] info = getRangeInfo(invNum, chrID, is.getStartAbs(), is.getEndAbs(), type);
 			if (info == null) {
@@ -304,6 +310,21 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			finalReads =MathComput.mySpline(finalReads, binNum, 0, 0, 0);
 		}
 		return finalReads;
+	}
+	/** 将输入的loc从小到大排序，但是并不改变输入的loc */
+	private ArrayList<Alignment> sortLsLoc(List<? extends Alignment> lsLoc) {
+		ArrayList<Alignment> lsLocNew = new ArrayList<Alignment>();
+		for (Alignment alignment : lsLoc) {
+			lsLocNew.add(alignment);
+		}
+		Collections.sort(lsLocNew, new Comparator<Alignment>() {
+			public int compare(Alignment o1, Alignment o2) {
+				Integer o1Int = o1.getStartAbs();
+				Integer o2Int = o2.getStartAbs();
+				return o1Int.compareTo(o2Int);
+			}
+		});
+		return lsLocNew;
 	}
 	/**
 	 * 经过标准化，和equations修正
@@ -393,6 +414,9 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			binNumFinal = (int)binNum + 1;
 		} else {
 			binNumFinal = (int)binNum;
+		}
+		if (binNumFinal == 0) {
+			binNumFinal = 1;
 		}
 		//内部经过标准化了
 		double[] tmp = getRangeInfo(chrID, startNum, endNum, binNumFinal, type);

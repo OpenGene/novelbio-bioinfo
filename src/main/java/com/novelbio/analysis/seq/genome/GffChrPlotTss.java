@@ -13,6 +13,7 @@ import javax.security.auth.x500.X500Principal;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -41,7 +42,7 @@ public class GffChrPlotTss {
 
 	MapReads mapReads;
 	int mapNormType = MapReads.NORMALIZATION_ALL_READS;
-	
+
 	/** 绘制图片的区域 */
 	ArrayList<MapInfo> lsMapInfos;
 	/** 绘制图片的gene */
@@ -79,6 +80,12 @@ public class GffChrPlotTss {
 	 * @param gffChrAbs
 	 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		if (gffChrAbs == null || 
+				(this.gffChrAbs != null 
+				&& this.gffChrAbs.getSpecies() != null
+				&& this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies()))) {
+			return;
+		}
 		this.gffChrAbs = gffChrAbs;
 	}
 	
@@ -229,11 +236,11 @@ public class GffChrPlotTss {
 			yInfo[i] = lsXY.get(i)[1];
 		}
 		double ymax = MathComput.max(yInfo);
-		
+		double xStart = lsXY.get(0)[0]; double xEnd = lsXY.get(lsXY.size() - 1)[0];
 		PlotScatter plotScatter = new PlotScatter();
 		plotScatter.addXY(lsXY, dotStyle);
-		double xLen = plotTssTesRange[1] - plotTssTesRange[0];
-		plotScatter.setAxisX((double)plotTssTesRange[0] - xLen * 0.005, (double)plotTssTesRange[1] + xLen * 0.005);
+		double xLen = xEnd - xStart;
+		plotScatter.setAxisX(xStart - xLen * 0.001, (double)xEnd + xLen * 0.001);
 
 		plotScatter.setAxisY(0, ymax * 1.1);
 		
@@ -254,7 +261,7 @@ public class GffChrPlotTss {
 		double[] yvalue = MapInfo.getCombLsMapInfo(lsMapInfos);
 		double[] xvalue = getXvalue();
 		if (xvalue.length != yvalue.length) {
-			logger.error("xvalue和yvalue的长度不一致，请检查");
+			logger.error("xvalue 和 yvalue 的长度不一致，请检查");
 		}
 		for (int i = 0; i < xvalue.length; i++) {
 			double[] tmpResult= new double[2];
@@ -283,7 +290,7 @@ public class GffChrPlotTss {
 			}
 		} else {
 			for (int i = 0; i < xResult.length; i++) {
-				xResult[i] = (double)i/splitNum; 
+				xResult[i] = (double)i/(splitNum - 1); 
 			}
 		}
 		return xResult;
@@ -308,9 +315,11 @@ public class GffChrPlotTss {
 	
 	/** 将lsGeneID2Value中的信息填充到lsMapInfos中去 */
 	private void setLsMapInfos() {
+		//TODO 应该改成 每次设定新的lsMapInfo，GeneID，和GeneStructure就重新跑
 		if (lsMapInfos.size() > 0 && lsGeneID2Value.size() == 0) {
 			return;
 		}
+		lsMapInfos = new ArrayList<MapInfo>();
 		for (Gene2Value gene2Value : lsGeneID2Value) {
 			gene2Value.setPlotTssTesRegion(plotTssTesRange);
 			gene2Value.setExonIntronPileUp(pileupExonIntron);
@@ -321,6 +330,7 @@ public class GffChrPlotTss {
 				lsMapInfos.add(mapInfo);
 			}
 		}
+		logger.debug("finished reading");
 	}
 	
 	/**
@@ -520,13 +530,11 @@ class Gene2Value {
 		return mapInfo;
 	}
 	
-	private boolean setMapInfo(MapInfo mapInfo, MapReads mapReads, String chrID, List<? extends Alignment> lsExonInfos) {
+	private boolean setMapInfo(MapInfo mapInfo, MapReads mapReads, String chrID, List<ExonInfo> lsExonInfos) {
 		double[] result = new double[splitNum];
-		List<Alignment> lsNew = new ArrayList<Alignment>();
+		List<ExonInfo> lsNew = new ArrayList<ExonInfo>();
 		if (lsExonIntronNum == null || lsExonIntronNum.size() == 0) {
-			for (Alignment alignment : lsExonInfos) {
-				lsNew.add(alignment);
-			}
+			lsNew = lsExonInfos;
 		} else {
 			for (Integer i : lsExonIntronNum) {
 				i = i - 1;
@@ -545,6 +553,9 @@ class Gene2Value {
 			ArrayList<double[]> lsResult = new ArrayList<double[]>();
 			for (Alignment alignment : lsNew) {
 				double[] info = mapReads.getRangeInfo(chrID, alignment.getStartAbs(), alignment.getEndAbs(), 0);
+				if (info.length < 5) {
+					continue;
+				}
 				info = MathComput.mySpline(info, splitNum, 0, 0, 0);
 				lsResult.add(info);
 			}
@@ -554,9 +565,17 @@ class Gene2Value {
 				}
 			}
 		} else {
-			double[] info = mapReads.getRangeInfo(chrID, lsNew);
-			result = MathComput.mySpline(info, splitNum, 0, 0, 0);
+			try {
+				result = mapReads.getRangeInfo(chrID, lsNew);
+			} catch (Exception e) {
+				result = mapReads.getRangeInfo(chrID, lsNew);
+			}
+			if (result == null || result.length < 10) {
+				return false;
+			}
+			result = MathComput.mySpline(result, splitNum, 0, 0, 0);
 		}
+		
 		mapInfo.setDouble(result);
 		return true;
 	}
