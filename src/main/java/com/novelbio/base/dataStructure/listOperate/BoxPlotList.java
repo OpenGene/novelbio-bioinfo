@@ -18,10 +18,10 @@ public class BoxPlotList {
 	public void addHistList(HistList histList) {
 		mapName2HistList.put(histList.getName().toLowerCase(), histList);
 	}
+	
 	public HistList getHistList(String histListName) {
 		return mapName2HistList.get(histListName.toLowerCase());
 	}
-	
 	public void setPlotBox(PlotBox plotBox) {
 		this.plotBox = plotBox;
 	}

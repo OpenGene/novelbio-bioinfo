@@ -36,14 +36,14 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * value: 数量，用数组仅仅为了能够传递地址  */
 	TreeMap<String, SiteSnpIndelInfo> mapAllen2Num = new TreeMap<String, SiteSnpIndelInfo>();
 
-	String chrID;
+	protected String chrID;
 	String refBase = "";
 	/** snp在基因中的位置，0-1之间，0.1表示snp在基因长度*0.1的位置处  
 	 * -1表示没有该项目
 	 * */
 	double prop = -1;
 	/** 本snp或indel所在的起点 */
-	int refSnpIndelStart = 0;
+	protected int refSnpIndelStart = 0;
 	/**
 	 * snp或indel所在的转录本
 	 */
