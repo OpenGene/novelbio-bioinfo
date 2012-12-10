@@ -71,6 +71,27 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	public void setPlotScatter(PlotScatter plotScatter) {
 		this.plotScatter = plotScatter;
 	}
+	
+	/**
+	 * 自动设置histlist的bin，每隔interval设置一位，名字就起interval
+	 * @param histList
+	 * @param binNum bin的个数
+	 * @param interval 间隔
+	 * @param maxSize 最大值，如果最后一位bin都没到最大值，接下来一个bin就和最大值合并
+	 */
+	public void setBinAndInterval(int binNum, int interval,int maxSize) {
+		clear();
+		setStartBin(interval, interval + "", 0, interval);
+		int binNext = interval*2;
+		for (int i = 1; i < binNum; i++) {
+			addHistBin(binNext, binNext + "", binNext);
+			binNext = binNext + interval;
+		}
+		if (binNext < maxSize) {
+			addHistBin(binNext, binNext + "", maxSize);
+		}
+	}
+	
 	/**
 	 * 设置起点
 	 * @param number 本bin所代表的数值，null就用终点和起点的平均值

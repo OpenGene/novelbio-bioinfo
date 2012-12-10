@@ -8,42 +8,37 @@ import com.novelbio.base.dataStructure.listOperate.BoxPlotList;
 import com.novelbio.base.dataStructure.listOperate.HistList;
 import com.novelbio.base.dataStructure.listOperate.HistList.HistBinType;
 
-public class StatisticsContinueATorCG {
-	private static Logger logger = Logger.getLogger(StatisticsContinueATorCG.class);
+public class StatisticsCoverage {
+	private static Logger logger = Logger.getLogger(StatisticsCoverage.class);
 		
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
 	/** 间隔最大区间，大于该距离就不进行统计，等于依然统计 */
 	private int gapMaxNum;
+	/** reads 覆盖的百分比统计 */
+	HistList histListCoverPercentage;
+	/** reads 覆盖的数量统计 */
+	HistList histListCoverNum;
 	
-	/** 绘制1CG，2CG，3CG....的reads覆盖度 */
-	BoxPlotList boxPlotList = new BoxPlotList();
-	/** 最长连续AT或CG的数量 */
-	int maxContinueATorCG = 80;
-	
-	SeqType seqType = SeqType.AT;
-	
-	/** 每隔2个cg统计一下，意思就是2CG，4CG的reads覆盖度 */
-	int cgInterval = 2;
-	
-	
+	int maxCoverageNum = 1000;
+	/** 每隔2个coverage统计一下，意思就是2reads覆盖，4reads覆盖的数量 */
+	int coverageInterval = 2;
+	int binNum = 100;
 	/**
 	 * @param statisticAT true: 统计AT 
 	 * false: 统计CG
 	 */
-	public StatisticsContinueATorCG(boolean statisticAT) {
-		if (statisticAT) {
-			seqType = SeqType.AT;
-		} else {
-			seqType = SeqType.CG;
-		}
+	public StatisticsCoverage(String histName) {
+		histListCoverPercentage = HistList.creatHistList(histName + "CoverPercentage", true);
 	}
 	/**
-	 * 每隔2个cg统计一下，意思就是统计2CG，4CG的reads覆盖度
-	 * @param cgInterval
+	 * 划分多少区域，每个区域多少interval
+	 * @param binNum
+	 * @param interval 等于2的话，就是每隔2个coverage统计一下，意思就是2reads覆盖，4reads覆盖的数量
+	 * @param maxCoverageNum
 	 */
-	public void setCgInterval(int cgInterval) {
-		this.cgInterval = cgInterval;
+	public void setBinNum(int binNum, int interval, int maxCoverageNum) {
+		histListCoverNum.setBinAndInterval(binNum, interval, maxCoverageNum);
 	}
 	/**
 	 * 大于该距离就不进行统计
@@ -56,26 +51,15 @@ public class StatisticsContinueATorCG {
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
-	/** 设定最长连续CG的数量，超过这个就不统计了 */
-	public void setMaxContinueATorCG(int maxContinueCG) {
-		this.maxContinueATorCG = maxContinueCG;
-	}
-
-	public BoxPlotList getBoxPlotList() {
-		return boxPlotList;
-	}
 	
 	/**
 	 * 获取CGBoxPlotList 具体统计： 1个A上reads覆盖深度 ... n个AT上reads覆盖深度
 	 * @return
 	 */
-	public void setCGBoxPlotList() {
-		for (int i = 0; i < maxContinueATorCG; i = i + cgInterval) {
-			HistList histList = HistList.creatHistList(i + "", true);
-			histList.setBinAndInterval(1000, 1, 2000);
-			boxPlotList.addHistList(histList);
-		}
+	public void setHistList() {
+		
 	}
+	
 
 	/**
 	 * 记录AT或者CG的数量
@@ -167,5 +151,6 @@ public class StatisticsContinueATorCG {
 		num = num + 0.5;
 		return num.intValue();
 	}
+
 
 }
