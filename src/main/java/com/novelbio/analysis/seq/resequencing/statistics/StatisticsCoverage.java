@@ -59,13 +59,12 @@ public class StatisticsCoverage {
 	public void setHistList() {
 		
 	}
-	
 
 	/**
 	 * 记录AT或者CG的数量
 	 * @param oneSeqInfo
 	 */
-	public void countOneCGAndATCover(OneSeqInfo oneSeqInfo) {
+	public void countCoverage(OneSeqInfo oneSeqInfo) {
 		if (!oneSeqInfo.isSameSiteType_And_Not_N()) {
 			recordCG_rawsLength2Num(oneSeqInfo);
 			return;
@@ -76,8 +75,10 @@ public class StatisticsCoverage {
 				recordCG_rawsLength2Num(oneSeqInfo);
 				return;
 			}
-			getNextSeqInfoInGap_And_Statistics(oneSeqInfo);
+			getNextSeqInfoInGap_And_Statistics(seqFastaGap, oneSeqInfo);
 		}
+	
+		histListCoverNum.addNum(oneSeqInfo.getReadsNumAll());
 	}
 	
 	/**

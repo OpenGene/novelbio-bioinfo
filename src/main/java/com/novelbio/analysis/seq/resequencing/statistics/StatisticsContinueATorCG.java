@@ -79,9 +79,11 @@ public class StatisticsContinueATorCG {
 
 	/**
 	 * 记录AT或者CG的数量
+	 * @param seqFastaGap 如果连续就输入null 		SeqFasta seqFastaGap = gffChrAbs.getSeqHash().getSeq(oneSeqInfo.getRefID(), 
+				oneSeqInfo.getOneSeqInfoLast().getRefSnpIndelStart() + 1, oneSeqInfo.getRefSnpIndelStart() - 1);
 	 * @param oneSeqInfo
 	 */
-	public void countOneCGAndATCover(OneSeqInfo oneSeqInfo) {
+	public void countOneCGAndATCover(SeqFasta seqFastaGap, OneSeqInfo oneSeqInfo) {
 		if (!oneSeqInfo.isSameSiteType_And_Not_N()) {
 			recordCG_rawsLength2Num(oneSeqInfo);
 			return;
@@ -92,7 +94,7 @@ public class StatisticsContinueATorCG {
 				recordCG_rawsLength2Num(oneSeqInfo);
 				return;
 			}
-			getNextSeqInfoInGap_And_Statistics(oneSeqInfo);
+			getNextSeqInfoInGap_And_Statistics(seqFastaGap, oneSeqInfo);
 		}
 	}
 	
@@ -102,9 +104,7 @@ public class StatisticsContinueATorCG {
 	 * @param seqGap gap序列
 	 * @return 返回Gap的最后一位site
 	 */
-	private void getNextSeqInfoInGap_And_Statistics(OneSeqInfo oneSeqInfo) {
-		SeqFasta seqFastaGap = gffChrAbs.getSeqHash().getSeq(oneSeqInfo.getRefID(), 
-				oneSeqInfo.getOneSeqInfoLast().getRefSnpIndelStart() + 1, oneSeqInfo.getRefSnpIndelStart() - 1);
+	private void getNextSeqInfoInGap_And_Statistics(SeqFasta seqFastaGap, OneSeqInfo oneSeqInfo) {
 		if (seqFastaGap == null) {
 			recordCG_rawsLength2Num(oneSeqInfo);
 			return;

@@ -38,8 +38,6 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
-import de.erichseifert.gral.plots.BoxPlot;
-
 
 public class mytest {
 
