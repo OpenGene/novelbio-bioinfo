@@ -848,8 +848,7 @@ public class MathComput {
 	 * 排序数量不要太大，别超过了内存限制
 	 * @return
 	 */
-	public static double[] getMediaByRow(List<? extends Number []> lsNum) 
-	{
+	public static double[] getMediaByRow(List<? extends Number []> lsNum) {
 		double[] result = new double[lsNum.size()];
 		for (int i = 0; i< lsNum.size() ; i++) {
 			Number[] numbers = lsNum.get(i);
@@ -888,8 +887,7 @@ public class MathComput {
 		double[] result = new double[length];
 		for (int i = 0; i< length ; i++) {
 			double[] tmpMedia = new double[lsNum.size()];
-			for (int j = 0; j < lsNum.size(); j++)
-			{
+			for (int j = 0; j < lsNum.size(); j++) {
 				Number[] number = lsNum.get(j);
 				tmpMedia[j] = (Double) number[i];			
 			}

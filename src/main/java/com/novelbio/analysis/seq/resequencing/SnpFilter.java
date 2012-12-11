@@ -55,14 +55,14 @@ public class SnpFilter {
 //	static double Snp_HetoLess_Contain_SnpProp_Max = 0.1;
 	
 	HashSet<SnpGroupFilterInfo> setSampleFilterInfo = new HashSet<SnpGroupFilterInfo>();
-
-	public void setSnp_HetoMore_Contain_SnpProp_Min(
-			double snp_HetoMore_Contain_SnpProp_Min) {
+	
+	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
+	public void setSnp_HetoMore_Contain_SnpProp_Min(double snp_HetoMore_Contain_SnpProp_Min) {
 		Snp_HetoMore_Contain_SnpProp_Min = snp_HetoMore_Contain_SnpProp_Min;
 	}
+	
 	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
-	public void setSnp_Hete_Contain_SnpProp_Min(
-			double snp_Hete_Contain_SnpProp_Min) {
+	public void setSnp_Hete_Contain_SnpProp_Min(double snp_Hete_Contain_SnpProp_Min) {
 		Snp_Hete_Contain_SnpProp_Min = snp_Hete_Contain_SnpProp_Min;
 	}
 	

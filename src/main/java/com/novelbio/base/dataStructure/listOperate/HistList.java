@@ -1,11 +1,13 @@
 package com.novelbio.base.dataStructure.listOperate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.plot.BarStyle;
+import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.PlotBox.BoxInfo;
 
@@ -282,7 +284,46 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		return rangeX;
 	}
 	
+	public PlotScatter getIntegral(boolean cis, DotStyle dotStyle) {
+		ArrayList<double[]> lsXY = getIntegral(cis);
+		PlotScatter plotScatter = new PlotScatter();
+		plotScatter.addXY(lsXY, dotStyle);
+		plotScatter.setAxisX(get(0).getStartAbs(), get(size() - 1).getEndAbs());
+		plotScatter.setAxisY(0, 1);
+		return plotScatter;
+	}
 	
+	/**
+	 * 积分图
+	 * @param cis true：从前往后，就是最前面是10%，越往后越高
+	 * false：从后往前，就是最前面是100%，越往后越低
+	 */
+	public ArrayList<double[]> getIntegral(boolean cis) {
+		ArrayList<double[]> lsXY = new ArrayList<double[]>();
+		double thisNum = 0;
+		double[] x = new double[size()];
+		double[] y = new double[size()];
+		if (cis) {
+			for (int count = 0; count < size(); count++) {
+				HistBin histBin = get(count);
+				thisNum = thisNum + histBin.getCountNumber();
+				x[count] = histBin.getThisNumber();
+				y[count] = thisNum/allNum;
+			}
+		} else {
+			for (int count = size() - 1; count >= 0; count--) {
+				HistBin histBin = get(count);
+				thisNum = thisNum + histBin.getCountNumber();
+				x[count] = histBin.getThisNumber();
+				y[count] = thisNum/allNum;
+			}
+		}
+
+ 		lsXY.add(x);
+ 		lsXY.add(y);
+ 		return lsXY;
+	}
+
 	/**
 	 * @param name hist的名字，务必不能重复，否则hash表会有冲突
 	 * @param cisList true 从小到大排序的list。 false 从大到小排序的list

@@ -8,13 +8,12 @@ import com.novelbio.base.dataStructure.listOperate.BoxPlotList;
 import com.novelbio.base.dataStructure.listOperate.HistList;
 import com.novelbio.base.dataStructure.listOperate.HistList.HistBinType;
 
-public class StatisticsContinueATorCG {
-	private static Logger logger = Logger.getLogger(StatisticsContinueATorCG.class);
-		
-	GffChrAbs gffChrAbs = new GffChrAbs();
-	
-	/** 间隔最大区间，大于该距离就不进行统计，等于依然统计 */
-	private int gapMaxNum;
+/**
+ * 连续AT或CG的覆盖度
+ * @author zong0jie
+ */
+public class StatisticsContinueATorCGCoverge {
+	private static Logger logger = Logger.getLogger(StatisticsContinueATorCGCoverge.class);
 	
 	/** 绘制1CG，2CG，3CG....的reads覆盖度 */
 	BoxPlotList boxPlotList = new BoxPlotList();
@@ -31,7 +30,7 @@ public class StatisticsContinueATorCG {
 	 * @param statisticAT true: 统计AT 
 	 * false: 统计CG
 	 */
-	public StatisticsContinueATorCG(boolean statisticAT) {
+	public StatisticsContinueATorCGCoverge(boolean statisticAT) {
 		if (statisticAT) {
 			seqType = SeqType.AT;
 		} else {
@@ -45,17 +44,7 @@ public class StatisticsContinueATorCG {
 	public void setCgInterval(int cgInterval) {
 		this.cgInterval = cgInterval;
 	}
-	/**
-	 * 大于该距离就不进行统计
-	 * @param gapMaxNum
-	 */
-	public void setGapMaxNum(int gapMaxNum) {
-		this.gapMaxNum = gapMaxNum;
-	}
 
-	public void setGffChrAbs(GffChrAbs gffChrAbs) {
-		this.gffChrAbs = gffChrAbs;
-	}
 	/** 设定最长连续CG的数量，超过这个就不统计了 */
 	public void setMaxContinueATorCG(int maxContinueCG) {
 		this.maxContinueATorCG = maxContinueCG;
@@ -76,63 +65,56 @@ public class StatisticsContinueATorCG {
 			boxPlotList.addHistList(histList);
 		}
 	}
-
-	/**
-	 * 记录AT或者CG的数量
-	 * @param seqFastaGap 如果连续就输入null 		SeqFasta seqFastaGap = gffChrAbs.getSeqHash().getSeq(oneSeqInfo.getRefID(), 
-				oneSeqInfo.getOneSeqInfoLast().getRefSnpIndelStart() + 1, oneSeqInfo.getRefSnpIndelStart() - 1);
-	 * @param oneSeqInfo
-	 */
-	public void countOneCGAndATCover(SeqFasta seqFastaGap, OneSeqInfo oneSeqInfo) {
-		if (!oneSeqInfo.isSameSiteType_And_Not_N()) {
-			recordCG_rawsLength2Num(oneSeqInfo);
-			return;
-		}
-		//有gap
-		if (oneSeqInfo.isGapWithOneSeqLast()) {
-			if (oneSeqInfo.getGapLengthWithLastSeq() > gapMaxNum) {
-				recordCG_rawsLength2Num(oneSeqInfo);
-				return;
-			}
-			getNextSeqInfoInGap_And_Statistics(seqFastaGap, oneSeqInfo);
-		}
-	}
 	
-	/**
-	 * 考虑中间断开的情况，Gap的第一个位置起，顺序获得下一个OneSeqInfo，然后做分析 最后返回Gap末尾的那个OneSeqInfo
-	 * @param oneSeqInfoGapEdge  gap上边缘的那个site
-	 * @param seqGap gap序列
-	 * @return 返回Gap的最后一位site
-	 */
-	private void getNextSeqInfoInGap_And_Statistics(SeqFasta seqFastaGap, OneSeqInfo oneSeqInfo) {
-		if (seqFastaGap == null) {
-			recordCG_rawsLength2Num(oneSeqInfo);
-			return;
-		}
-		String seqGap = seqFastaGap.toString();
-		// 考虑中间断开的情况，从Gap的第一个位置起，顺序获得下一个OneSeqInfo，然后做分析
-		// gap前面的那个位点
-		OneSeqInfo oneSeqInfoGapEdgeUp = oneSeqInfo.getOneSeqInfoLast();
-		OneSeqInfo oneSeqInfoGapEdgeNext = null;
-		char[] chrGapSeq = seqGap.toCharArray();
-		for (int i = 0; i < chrGapSeq.length; i++) {
-			String oneSeq = chrGapSeq[i] + "";
-			oneSeqInfoGapEdgeNext = oneSeqInfoGapEdgeUp.getOneSeqInfoNext(oneSeq);
-			oneSeqInfoGapEdgeUp.clearOneSeqInfoLast();
-			
-			recordCG_rawsLength2Num(oneSeqInfoGapEdgeNext);
-			oneSeqInfoGapEdgeUp = oneSeqInfoGapEdgeNext;
-		}
-		// 测试一下提取的序列有没有完全提取出来
-		if (oneSeqInfoGapEdgeNext.getRefSnpIndelStart() + 1 != oneSeqInfo.getRefSnpIndelStart() ) {
-			logger.error("Gap 出错");
-		}
-	}
+//	/**
+//	 * 大于该距离就不进行统计
+//	 * @param gapMaxNum
+//	 */
+//	public void setGapMaxNum(int gapMaxNum) {
+//		this.gapMaxNum = gapMaxNum;
+//	}
+//
+//	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+//		this.gffChrAbs = gffChrAbs;
+//	}
+//	
+//	/**
+//	 * 记录AT或者CG的数量
+//	 * 考虑中间断开的情况，Gap的第一个位置起，顺序获得下一个OneSeqInfo，然后做分析
+//	 * @param seqFastaGap SeqFasta seqFastaGap = gffChrAbs.getSeqHash().getSeq(oneSeqInfo.getRefID(), 
+//				oneSeqInfo.getOneSeqInfoLast().getRefSnpIndelStart() + 1, oneSeqInfo.getRefSnpIndelStart() - 1);
+//	 * @param oneSeqInfoGapEdge  gap上边缘的那个site
+//	 * @return 返回Gap的最后一位site
+//	 */
+//	public void countOneSeqInfoGap(SeqFasta seqFastaGap, OneSeqInfo oneSeqInfo) {
+//		if (seqFastaGap == null) {
+//			countOneSeqInfo(oneSeqInfo);
+//			return;
+//		}
+//		String seqGap = seqFastaGap.toString();
+//		// 考虑中间断开的情况，从Gap的第一个位置起，顺序获得下一个OneSeqInfo，然后做分析
+//		// gap前面的那个位点
+//		OneSeqInfo oneSeqInfoGapEdgeUp = oneSeqInfo.getOneSeqInfoLast();
+//		OneSeqInfo oneSeqInfoGapEdgeNext = null;
+//		char[] chrGapSeq = seqGap.toCharArray();
+//		for (int i = 0; i < chrGapSeq.length; i++) {
+//			String oneSeq = chrGapSeq[i] + "";
+//			oneSeqInfoGapEdgeNext = oneSeqInfoGapEdgeUp.getOneSeqInfoNext(oneSeq);
+//			oneSeqInfoGapEdgeUp.clearOneSeqInfoLast();
+//			
+//			countOneSeqInfo(oneSeqInfoGapEdgeNext);
+//			oneSeqInfoGapEdgeUp = oneSeqInfoGapEdgeNext;
+//		}
+//		// 测试一下提取的序列有没有完全提取出来
+//		if (oneSeqInfoGapEdgeNext.getRefSnpIndelStart() + 1 != oneSeqInfo.getRefSnpIndelStart() ) {
+//			logger.error("Gap 出错");
+//		}
+//	}
 
 	/** 
 	 * 前一个是C当前一个是A，记录前面连续C的raws平均数的数量 形式例如key是4C_10，value是num数量例如3
 	 */
-	private void recordCG_rawsLength2Num(OneSeqInfo oneSeqInfo) {
+	public void countOneSeqInfo(OneSeqInfo oneSeqInfo) {
 		OneSeqInfo oneSeqInfoLast = oneSeqInfo.getOneSeqInfoLast();
 		if (oneSeqInfoLast == null) {
 			return;

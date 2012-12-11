@@ -47,6 +47,11 @@ public class SNPGATKcope {
 	ArrayList<SnpGroupFilterInfo> lsSampleDetailCompare = new ArrayList<SnpGroupFilterInfo>();
 	
 	public static void main(String[] args) {
+		snpCalling();
+		snpCalling2();
+	}
+	
+	public static void snpFilter() {
 		SNPGATKcope snpgatKcope = new SNPGATKcope();
 		snpgatKcope.setGffChrAbs(new GffChrAbs(9606));
 		
@@ -124,14 +129,13 @@ public class SNPGATKcope {
 		SnpGroupFilterInfo sampleDetail7A = new SnpGroupFilterInfo();
 		sampleDetail7A.addSampleName("7A");
 		sampleDetail7A.setSampleRefHomoNum(1, 1);
-		sampleDetail7A.setSampleSnpIndelHetoNum(0, 0);
-		sampleDetail7A.setSampleSnpIndelHomoNum(0, 0);
 		snpgatKcope.addFilterSample(sampleDetail7A);
 		
 		SnpGroupFilterInfo sampleDetail7B = new SnpGroupFilterInfo();
 		sampleDetail7B.addSampleName("7B");
 		sampleDetail7B.setSampleRefHomoNum(0, 0);
 		sampleDetail7B.setSampleSnpIndelNum(1, 1);
+		sampleDetail7B.setSampleSnpIndelHetoLessNum(0, 0);
 		sampleDetail7B.setSampleSnpIndelHetoLessNum(0, 0);
 		snpgatKcope.addFilterSample(sampleDetail7B);
 		
@@ -141,13 +145,82 @@ public class SNPGATKcope {
 		snpgatKcope.filterSnp();
 		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/7Avs7B_filter.xls");
 		snpgatKcope = null;		
-		
-		
-		
-		
-		
 	}
 
+	
+	public static void snpCalling() {
+		SNPGATKcope snpgatKcope = new SNPGATKcope();
+		snpgatKcope.setGffChrAbs(new GffChrAbs(39947));
+		
+		snpgatKcope.setSnp_HetoMore_Contain_SnpProp_Min(0.4);
+		
+		String parentFile = "/media/winE/NBC/Project/PGM/";
+		snpgatKcope.addSampileupFile("ILM", parentFile + "BZ9522_sorted_realign_removeDuplicate_pileup.gz");
+		snpgatKcope.addSampileupFile("PGM", parentFile + "CombineAlignments_CA_yuli-all_yuli1-10_001_sorted_pileup.gz");
+		
+		SnpGroupFilterInfo sampleDetailILM = new SnpGroupFilterInfo();
+		sampleDetailILM.addSampleName("ILM");
+		sampleDetailILM.setSampleRefHomoNum(1, 1);
+		sampleDetailILM.setSampleSnpIndelHetoNum(0, 0);
+		sampleDetailILM.setSampleSnpIndelHomoNum(0, 0);
+		snpgatKcope.addFilterSample(sampleDetailILM);
+		
+		SnpGroupFilterInfo sampleDetailPGM = new SnpGroupFilterInfo();
+		sampleDetailPGM.addSampleName("PGM");
+		sampleDetailPGM.setSampleRefHomoNum(0, 0);
+		sampleDetailPGM.setSampleSnpIndelNum(1, 1);
+		sampleDetailPGM.setSampleSnpIndelHetoLessNum(0, 0);
+		sampleDetailPGM.setSampleSnpIndelHetoNum(0, 0);
+		snpgatKcope.addFilterSample(sampleDetailPGM);
+		
+		snpgatKcope.readSnpDetailFromFile();
+		snpgatKcope.writeToFile(parentFile + "PGMsnpvsILM.xls");
+		
+		snpgatKcope.filterSnp();
+		snpgatKcope.writeToFile(parentFile + "PGMsnpvsILM_Filtered.xls");
+	}
+	
+	public static void snpCalling2() {
+		SNPGATKcope snpgatKcope = new SNPGATKcope();
+		snpgatKcope.setGffChrAbs(new GffChrAbs(39947));
+		
+		snpgatKcope.setSnp_HetoMore_Contain_SnpProp_Min(0.4);
+		
+		String parentFile = "/media/winE/NBC/Project/PGM/";
+		snpgatKcope.addSampileupFile("ILM", parentFile + "BZ9522_sorted_realign_removeDuplicate_pileup.gz");
+		snpgatKcope.addSampileupFile("PGM", parentFile + "CombineAlignments_CA_yuli-all_yuli1-10_001_sorted_pileup.gz");
+		
+		SnpGroupFilterInfo sampleDetailPGM = new SnpGroupFilterInfo();
+		sampleDetailPGM.addSampleName("PGM");
+		sampleDetailPGM.setSampleRefHomoNum(1, 1);
+		sampleDetailPGM.setSampleSnpIndelHetoNum(0, 0);
+		sampleDetailPGM.setSampleSnpIndelHomoNum(0, 0);
+		snpgatKcope.addFilterSample(sampleDetailPGM);
+		
+		SnpGroupFilterInfo sampleDetailILM = new SnpGroupFilterInfo();
+		sampleDetailILM.addSampleName("ILM");
+		sampleDetailILM.setSampleRefHomoNum(0, 0);
+		sampleDetailILM.setSampleSnpIndelNum(1, 1);
+		sampleDetailILM.setSampleSnpIndelHetoLessNum(0, 0);
+		sampleDetailILM.setSampleSnpIndelHetoNum(0, 0);
+		snpgatKcope.addFilterSample(sampleDetailILM);
+		
+		snpgatKcope.readSnpDetailFromFile();
+		snpgatKcope.writeToFile(parentFile + "ILMsnpvsPGM.xls");
+		
+		snpgatKcope.filterSnp();
+		snpgatKcope.writeToFile(parentFile + "ILMsnpvsPGM_Filtered.xls");
+	}
+	
+	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
+	public void setSnp_Hete_Contain_SnpProp_Min(double snp_Hete_Contain_SnpProp_Min) {
+		sampleFilter.setSnp_Hete_Contain_SnpProp_Min(snp_Hete_Contain_SnpProp_Min);
+	}
+	
+	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
+	public void setSnp_HetoMore_Contain_SnpProp_Min(double snp_HetoMore_Contain_SnpProp_Min) {
+		sampleFilter.setSnp_HetoMore_Contain_SnpProp_Min(snp_HetoMore_Contain_SnpProp_Min);
+	}
 	
 	public void addSnpFromVcfFile(String sampleName, String vcfFile) {
 		lsSample2VcfFiles.add(new String[]{sampleName, vcfFile});
@@ -271,9 +344,6 @@ public class SNPGATKcope {
 		lsFilteredSite.clear();
 		lsFilteredSnp.clear();
 		for (MapInfoSnpIndel mapInfoSnpIndel : mapSiteInfo2MapInfoSnpIndel.values()) {
-			if (mapInfoSnpIndel.getRefID().equals("XM_003500889") && mapInfoSnpIndel.getRefSnpIndelStart() == 2736) {
-				logger.error("stop");
-			}
 			ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfo = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
 			if (lsSiteSnpIndelInfo.size() > 0) {
 				lsFilteredSnp.add(mapInfoSnpIndel);
