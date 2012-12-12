@@ -9,13 +9,6 @@ public class OneSeqInfo extends MapInfoSnpIndel {
 	private SnpIndelType snpIndelType;
 	private int indelReadsNum;
 	
-	int snpThresholdReadsNum = 5;
-	/**
-	 * percentage snp数量大于该百分比的位点认为是存在snp
-	 * 输入为 百分比 * 100
-	 */
-	int snpThresholdPercentage = 10;
-	
 	/** 记录连续的at或GC数量 */
 	int sameTypeNum = 0;
 	/** 周边连续相同AT 或 相同CG 的reads覆盖度累加，方便最后取平均值 */
@@ -37,10 +30,7 @@ public class OneSeqInfo extends MapInfoSnpIndel {
 	 * @param oneSeqInfoUp 上一行的信息
 	 * @param snpThresholdReadsNum  得失位点的最小值，snpThresholdPercentage
 	 */
-	public OneSeqInfo(String pileupLines, OneSeqInfo oneSeqInfoLast, int snpThresholdReadsNum, int snpThresholdPercentage) {
-		this.snpThresholdPercentage = snpThresholdPercentage;
-		this.snpThresholdReadsNum = snpThresholdReadsNum;
-
+	public OneSeqInfo(String pileupLines, OneSeqInfo oneSeqInfoLast) {
 		setSamToolsPilup(pileupLines);
 		SiteSnpIndelInfo siteSnpIndelInfo = getSiteSnpInfoBigAllen();
 		SnpIndelType snpIndelType = siteSnpIndelInfo.getSnpIndelType();
@@ -101,8 +91,6 @@ public class OneSeqInfo extends MapInfoSnpIndel {
 		oneSeqInfoNext.oneSeqInfoLast = this;
 		oneSeqInfoNext.setRefBase(refNextBase);
 		oneSeqInfoNext.refSnpIndelStart = getRefSnpIndelStart() + 1;
-		oneSeqInfoNext.snpThresholdPercentage = snpThresholdPercentage;
-		oneSeqInfoNext.snpThresholdReadsNum = snpThresholdReadsNum;
 		
 		if (oneSeqInfoNext.isSameSiteType_And_Not_N()) {
 			oneSeqInfoNext.sameTypeNum = this.sameTypeNum + 1;
@@ -168,25 +156,7 @@ public class OneSeqInfo extends MapInfoSnpIndel {
 	public int getSameSiteNum() {
 		return sameTypeNum;
 	}
-	
-	/**
-	 * 判断是不是insert
-	 * @param oneSeqInfo
-	 * @return
-	 */
-	public boolean isInsert() {
-		boolean isInsert = (getSnpIndelType() == SnpIndelType.INSERT) 
-									&& (getIndelReadsNum() >= snpThresholdReadsNum)
-									&& (getIndelReadsNum()*100/getReadsNumCumulation() > snpThresholdPercentage);
-		return isInsert;
-	}
 
-	public boolean isDeletion() {
-		boolean isDeletion = (getSnpIndelType() == SnpIndelType.DELETION) 
-									&& (getIndelReadsNum() >= snpThresholdReadsNum)
-									&& (getIndelReadsNum()*100/getReadsNumCumulation() > snpThresholdPercentage);
-		return isDeletion;
-	}
 	/** 获得该位点的类型，譬如是CG，还是AT，还是N */
 	public SeqType getSiteSeqType() {
 		if(getRefBase().equals("A") || getRefBase().equals("T")) {

@@ -8,7 +8,7 @@ import com.novelbio.base.dataStructure.listOperate.BoxPlotList;
 import com.novelbio.base.dataStructure.listOperate.HistList;
 import com.novelbio.base.dataStructure.listOperate.HistList.HistBinType;
 
-public class StatisticsCoverage {
+public class StatisticsCoverage implements StatisticsUnit {
 	private static Logger logger = Logger.getLogger(StatisticsCoverage.class);
 
 	/** reads 覆盖的数量统计 */

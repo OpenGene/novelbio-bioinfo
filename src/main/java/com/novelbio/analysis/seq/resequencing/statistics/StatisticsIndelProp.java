@@ -10,9 +10,9 @@ import com.novelbio.analysis.seq.resequencing.SnpFilter;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 import com.novelbio.base.dataStructure.listOperate.HistList;
 
-public class StatisticsIndelNum {
+public class StatisticsIndelProp implements StatisticsUnit {
 	private static Logger logger = Logger.getLogger(StatisticsContinueATorCGdestribution.class);
-	/** 1的多少倍，肯定要把1 * fold再统计 */
+	/** 1的多少倍，因为histList里面只能放入int，所以要把1 * fold再统计 */
 	int fold = 1000;
 	/** 绘制0.1个indel，0.2个indel，0.3个indel....的分布 */
 	HistList histList;
@@ -20,9 +20,7 @@ public class StatisticsIndelNum {
 	/**
 	 * <b>必须设定</b>
 	 * 划分多少区域，每个区域多少interval
-	 * @param binNum
-	 * @param interval 等于2的话，就是每隔2个CG统计一下，意思就是2CG的数量，4CG的数量
-	 * @param maxCoverageNum  最大值，如果最后一位bin都没到最大值，接下来一个bin就和最大值合并，所以可以往高里设定
+	 * @param binNum 建议设置为100
 	 */
 	public void setBinNum(int binNum) {
 		double interval = (double)fold/binNum;
@@ -42,9 +40,7 @@ public class StatisticsIndelNum {
 		snpFilter.setSampleFilterInfoSingle(sampleName, snpLevel);
 	}
 	
-	/** 
-	 * 前一个是C当前一个是A，记录前面连续C的raws平均数的数量 形式例如key是4C_10，value是num数量例如3
-	 */
+	/**  前一个是C当前一个是A，记录前面连续C的raws平均数的数量 形式例如key是4C_10，value是num数量例如3 */
 	public void countOneSeqInfo(OneSeqInfo oneSeqInfo) {
 		OneSeqInfo oneSeqInfoLast = oneSeqInfo.getOneSeqInfoLast();
 		if (oneSeqInfoLast == null) {

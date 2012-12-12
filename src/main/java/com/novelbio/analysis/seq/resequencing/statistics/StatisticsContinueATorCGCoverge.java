@@ -12,7 +12,7 @@ import com.novelbio.base.dataStructure.listOperate.HistList.HistBinType;
  * 连续AT或CG的覆盖度
  * @author zong0jie
  */
-public class StatisticsContinueATorCGCoverge {
+public class StatisticsContinueATorCGCoverge implements StatisticsUnit {
 	private static Logger logger = Logger.getLogger(StatisticsContinueATorCGCoverge.class);
 	
 	/** 绘制1CG，2CG，3CG....的reads覆盖度 */
@@ -66,51 +66,6 @@ public class StatisticsContinueATorCGCoverge {
 		}
 	}
 	
-//	/**
-//	 * 大于该距离就不进行统计
-//	 * @param gapMaxNum
-//	 */
-//	public void setGapMaxNum(int gapMaxNum) {
-//		this.gapMaxNum = gapMaxNum;
-//	}
-//
-//	public void setGffChrAbs(GffChrAbs gffChrAbs) {
-//		this.gffChrAbs = gffChrAbs;
-//	}
-//	
-//	/**
-//	 * 记录AT或者CG的数量
-//	 * 考虑中间断开的情况，Gap的第一个位置起，顺序获得下一个OneSeqInfo，然后做分析
-//	 * @param seqFastaGap SeqFasta seqFastaGap = gffChrAbs.getSeqHash().getSeq(oneSeqInfo.getRefID(), 
-//				oneSeqInfo.getOneSeqInfoLast().getRefSnpIndelStart() + 1, oneSeqInfo.getRefSnpIndelStart() - 1);
-//	 * @param oneSeqInfoGapEdge  gap上边缘的那个site
-//	 * @return 返回Gap的最后一位site
-//	 */
-//	public void countOneSeqInfoGap(SeqFasta seqFastaGap, OneSeqInfo oneSeqInfo) {
-//		if (seqFastaGap == null) {
-//			countOneSeqInfo(oneSeqInfo);
-//			return;
-//		}
-//		String seqGap = seqFastaGap.toString();
-//		// 考虑中间断开的情况，从Gap的第一个位置起，顺序获得下一个OneSeqInfo，然后做分析
-//		// gap前面的那个位点
-//		OneSeqInfo oneSeqInfoGapEdgeUp = oneSeqInfo.getOneSeqInfoLast();
-//		OneSeqInfo oneSeqInfoGapEdgeNext = null;
-//		char[] chrGapSeq = seqGap.toCharArray();
-//		for (int i = 0; i < chrGapSeq.length; i++) {
-//			String oneSeq = chrGapSeq[i] + "";
-//			oneSeqInfoGapEdgeNext = oneSeqInfoGapEdgeUp.getOneSeqInfoNext(oneSeq);
-//			oneSeqInfoGapEdgeUp.clearOneSeqInfoLast();
-//			
-//			countOneSeqInfo(oneSeqInfoGapEdgeNext);
-//			oneSeqInfoGapEdgeUp = oneSeqInfoGapEdgeNext;
-//		}
-//		// 测试一下提取的序列有没有完全提取出来
-//		if (oneSeqInfoGapEdgeNext.getRefSnpIndelStart() + 1 != oneSeqInfo.getRefSnpIndelStart() ) {
-//			logger.error("Gap 出错");
-//		}
-//	}
-
 	/** 
 	 * 前一个是C当前一个是A，记录前面连续C的raws平均数的数量 形式例如key是4C_10，value是num数量例如3
 	 */

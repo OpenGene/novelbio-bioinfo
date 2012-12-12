@@ -8,7 +8,7 @@ import com.novelbio.base.dataStructure.listOperate.HistList;
  * 连续AT或CG的分布
  * @author zong0jie
  */
-public class StatisticsContinueATorCGdestribution {
+public class StatisticsContinueATorCGdestribution implements StatisticsUnit {
 	private static Logger logger = Logger.getLogger(StatisticsContinueATorCGdestribution.class);
 	
 	/** 绘制1CG，2CG，3CG....的分布 */
