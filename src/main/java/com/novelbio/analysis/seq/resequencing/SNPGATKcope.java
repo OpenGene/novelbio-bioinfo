@@ -155,6 +155,11 @@ public class SNPGATKcope {
 		snpgatKcope.setSnp_HetoMore_Contain_SnpProp_Min(0.4);
 		
 		String parentFile = "/media/winE/NBC/Project/PGM/";
+		
+		snpgatKcope.addSnpFromVcfFile("PGM", parentFile + "variants_call/TSVC_variants.vcf");
+		snpgatKcope.addSnpFromNBCfile("ILM", parentFile + "BZ9522_sorted_realign_removeDuplicate_pileup_outSnp.txt");
+		
+		
 		snpgatKcope.addSampileupFile("ILM", parentFile + "BZ9522_sorted_realign_removeDuplicate_pileup.gz");
 		snpgatKcope.addSampileupFile("PGM", parentFile + "CombineAlignments_CA_yuli-all_yuli1-10_001_sorted_pileup.gz");
 		
@@ -187,6 +192,10 @@ public class SNPGATKcope {
 		snpgatKcope.setSnp_HetoMore_Contain_SnpProp_Min(0.4);
 		
 		String parentFile = "/media/winE/NBC/Project/PGM/";
+		snpgatKcope.addSnpFromVcfFile("PGM", parentFile + "variants_call/TSVC_variants.vcf");
+		snpgatKcope.addSnpFromNBCfile("ILM", parentFile + "BZ9522_sorted_realign_removeDuplicate_pileup_outSnp.txt");
+		
+		
 		snpgatKcope.addSampileupFile("ILM", parentFile + "BZ9522_sorted_realign_removeDuplicate_pileup.gz");
 		snpgatKcope.addSampileupFile("PGM", parentFile + "CombineAlignments_CA_yuli-all_yuli1-10_001_sorted_pileup.gz");
 		
@@ -228,11 +237,11 @@ public class SNPGATKcope {
 	public void addSnpFromNBCfile(String sampleName, String nbcFile) {
 		lsSample2NBCfiles.add(new String[]{sampleName, nbcFile});
 	}
-	public void addSnpFromPileUpFile(String sampleName, SnpGroupFilterInfo snpGroupInfoFilter, String pileUpfile) {
+	public void addSnpFromPileUpFile(String sampleName, int snpLevel, String pileUpfile) {
 		SnpCalling snpCalling = new SnpCalling();
 		snpCalling.setGffChrAbs(gffChrAbs);
 		snpCalling.setMapSiteInfo2MapInfoSnpIndel(mapSiteInfo2MapInfoSnpIndel);
-		snpCalling.setSampleDetail(snpGroupInfoFilter);
+		snpCalling.setSnpLevel(snpLevel);
 		snpCalling.addSnpFromPileUpFile(sampleName, pileUpfile, FileOperate.changeFileSuffix(pileUpfile, "_outSnp", "txt"));
 		lsSample2PileUpFiles.add(snpCalling);
 	}

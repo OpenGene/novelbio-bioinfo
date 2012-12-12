@@ -29,11 +29,12 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	
 	/** 用来过滤样本的 */
 	SnpFilter snpFilter = new SnpFilter();
-	SnpGroupFilterInfo snpGroupFilterInfo = new SnpGroupFilterInfo();
 	
-	long readLines;
-	long readByte;
+	long readLines, readByte;
+	/** 找到的snp数量 */
 	int findSnp;
+	
+	int snpLevel = SnpGroupFilterInfo.Heto;
 	
 	TxtReadandWrite txtSnpOut;
 	
@@ -41,11 +42,12 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	public void setMapSiteInfo2MapInfoSnpIndel(TreeMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel) {
 		this.mapSiteInfo2MapInfoSnpIndel = mapSiteInfo2MapInfoSnpIndel;
 	}
-
-	/** 设定snpGroupInfoFilter, 不关心filter里面的样本信息，因为这是单个样本的过滤方案 */
-	public void setSampleDetail(SnpGroupFilterInfo snpGroupInfoFilter) {
-		this.snpGroupFilterInfo = snpGroupInfoFilter;
+	
+	/** snp过滤等级 */
+	public void setSnpLevel(int snpLevel) {
+		this.snpLevel = snpLevel;
 	}
+	
 	public void setSnp_Hete_Contain_SnpProp_Min(double setSnp_Hete_Contain_SnpProp_Min) {
 		snpFilter.setSnp_Hete_Contain_SnpProp_Min(setSnp_Hete_Contain_SnpProp_Min);
 	}
@@ -122,7 +124,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			txtSnpOut = new TxtReadandWrite(outPutFile, true);
 		}
 		TxtReadandWrite txtReadPileUp = new TxtReadandWrite(pileupFile, false);
-		setFilter(sampleName);
+		snpFilter.setSampleFilterInfoSingle(sampleName, snpLevel);
 		for (String pileupLines : txtReadPileUp.readlines()) {
 			readLines ++;
 			readByte += pileupFile.length();
@@ -130,11 +132,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			suspendCheck();
 			if (flagStop) break;
 			if (readLines%10000 == 0 ) {
-				SnpFilterDetailInfo snpFilterDetailInfo = new SnpFilterDetailInfo();
-				snpFilterDetailInfo.allLines = readLines;
-				snpFilterDetailInfo.allByte = readByte;
-				setRunInfo(snpFilterDetailInfo);
-				logger.info("readLines:" + readLines);
+				notifyGUI(readLines, readByte);
 			}
 			////////////////////////////////////////////////
 			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
@@ -142,14 +140,14 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			
 			ArrayList<SiteSnpIndelInfo> lsFilteredSnp = snpFilter.getFilterdSnp(mapInfoSnpIndel);
 			if (lsFilteredSnp.size() > 0) {
-				boolean writeIn = writeInFile(mapInfoSnpIndel, lsFilteredSnp);
+				if(!writeInFile(mapInfoSnpIndel, lsFilteredSnp)) {
+					logger.error("出现错误");
+				}
+				
 				if (mapSiteInfo2MapInfoSnpIndel != null) {
 					addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
 				} else {
 					mapInfoSnpIndel.clear();
-				}
-				if (!writeIn) {
-					logger.error("出现错误");
 				}
 			} else {
 				mapInfoSnpIndel.clear();
@@ -161,13 +159,15 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			txtSnpOut.close();
 		}
 	}
-	/** 设定过滤器 */
-	private void setFilter(String sampleName) {
-		snpGroupFilterInfo.clearSampleName();
-		snpGroupFilterInfo.addSampleName(sampleName);
-		snpFilter.clearSampleFilterInfo();
-		snpFilter.addSampleFilterInfo(snpGroupFilterInfo);
+	
+	private void notifyGUI(long readLines, long readByte) {
+		SnpFilterDetailInfo snpFilterDetailInfo = new SnpFilterDetailInfo();
+		snpFilterDetailInfo.allLines = readLines;
+		snpFilterDetailInfo.allByte = readByte;
+		setRunInfo(snpFilterDetailInfo);
+		logger.info("readLines:" + readLines);
 	}
+	
 	/** 将结果装入哈希表里面 */
 	private void addSnp_2_mapSiteInfo2MapInfoSnpIndel(MapInfoSnpIndel mapInfoSnpIndel) {
 		String key = mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart();

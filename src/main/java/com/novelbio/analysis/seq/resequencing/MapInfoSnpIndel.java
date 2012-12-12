@@ -28,7 +28,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
  */
 public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	private static Logger logger = Logger.getLogger(MapInfoSnpIndel.class);
-
+	protected static final String SampleDefaultName = "sample";
 	/** 
 	 * <b>里面都是正向的序列</b>
 	 * 该位置可能有不止一种的插入缺失或是碱基替换类型，那么就用该hash表来存储这么多种信息<br>
@@ -51,7 +51,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	GffChrAbs gffChrAbs;
 	/** 样本和正常reads之间的关系 */
 	TreeMap<String, SampleRefReadsInfo> mapSample2NormReadsInfo = new TreeMap<String, SampleRefReadsInfo>();
-	String sampleName = "";
+	String sampleName = SampleDefaultName;
 	/** 要是已经在sam pileUp里面搜索过了，那么就设定该样本的sample是可以找到的 */
 	
 	public MapInfoSnpIndel() {}
@@ -106,9 +106,12 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	}
 	/**
 	 * 设定样本名，必须在最早的时候设定，这样所有后期的信息都会添加到该sample中
-	 * @param sampleName
+	 * @param sampleName null就不设定
 	 */
 	public void setSampleName(String sampleName) {
+		if (sampleName == null) {
+			return;
+		}
 		this.sampleName = sampleName;
 	}
 	public boolean isContainsSample(String sampleName) {

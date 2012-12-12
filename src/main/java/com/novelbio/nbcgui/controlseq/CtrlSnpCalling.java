@@ -15,13 +15,11 @@ import com.novelbio.nbcgui.GUI.GuiSnpCalling;
 /** 查找snp */
 public class CtrlSnpCalling implements RunGetInfo<SnpFilterDetailInfo> {
 	SnpCalling snpCalling = new SnpCalling();	
-	SnpGroupFilterInfo snpGroupInfoFilter = new SnpGroupFilterInfo();
 	
 	GuiSnpCalling guiSnpCalling;
 		
 	public CtrlSnpCalling(GuiSnpCalling guiSnpCalling) {
 		this.guiSnpCalling = guiSnpCalling;
-		snpCalling.setSampleDetail(snpGroupInfoFilter);
 		snpCalling.setRunGetInfo(this);
 	}
 	/** true snpCalling
@@ -38,7 +36,7 @@ public class CtrlSnpCalling implements RunGetInfo<SnpFilterDetailInfo> {
 	
 	/** snp过滤等级 */
 	public void setSnpFilterLevel(int snpLevel) {
-		snpGroupInfoFilter.setSnpLevel(snpLevel);
+		snpCalling.setSnpLevel(snpLevel);
 	}
 	public void addSnpFromPileUpFile(String pileUpFile, String outSnpFile) {
 		String sampleName = FileOperate.getFileNameSep(pileUpFile)[0];

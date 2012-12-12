@@ -70,6 +70,34 @@ public class SnpFilter {
 	public void addSampleFilterInfo(SnpGroupFilterInfo sampleDetail) {
 		this.setSampleFilterInfo.add(sampleDetail);
 	}
+	
+	/**
+	 *  单个样本过滤
+	 * @param sampleName 样本名，null表示走默认
+	 * @param snpLevel SnpGroupFilterInfo.HetoLess 等
+	 */
+	public void setSampleFilterInfoSingle(int snpLevel) {
+		setSampleFilterInfoSingle(null, snpLevel);
+	}
+	
+	/**
+	 *  单个样本过滤
+	 * @param sampleName 样本名，null表示走默认
+	 * @param snpLevel SnpGroupFilterInfo.HetoLess 等
+	 */
+	public void setSampleFilterInfoSingle(String sampleName, int snpLevel) {
+		this.setSampleFilterInfo.clear();
+		SnpGroupFilterInfo snpGroupFilterInfo = new SnpGroupFilterInfo();
+		if (sampleName == null) {
+			snpGroupFilterInfo.addSampleName(MapInfoSnpIndel.SampleDefaultName);
+		} else {
+			snpGroupFilterInfo.addSampleName(sampleName);
+		}
+		
+		snpGroupFilterInfo.setSnpLevel(snpLevel);
+		this.setSampleFilterInfo.add(snpGroupFilterInfo);
+	}
+	
 	/** 重置样本信息 */
 	public void clearSampleFilterInfo() {
 		setSampleFilterInfo.clear();

@@ -83,6 +83,9 @@ public abstract class SiteSnpIndelInfo {
 	 * @param sampleName
 	 */
 	public void setSampleName(String sampleName) {
+		if (sampleName == null) {
+			return;
+		}
 		this.sampleName = sampleName;
 	}
 	public boolean isContainSample(String sampleName) {

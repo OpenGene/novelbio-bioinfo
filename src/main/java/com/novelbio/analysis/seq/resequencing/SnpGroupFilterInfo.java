@@ -64,7 +64,8 @@ public class SnpGroupFilterInfo {
 	}
 	/** 设定样本名称,也就是需要过滤哪些样本
 	 * 当过滤一组样本时使用
-	 *  */
+	 * @param sampleName 默认是 MapInfoSnpIndel.SampleDefaultName
+	 */
 	public void addSampleName(String sampleName) {
 		this.lsSampleName.add(sampleName);
 	}
