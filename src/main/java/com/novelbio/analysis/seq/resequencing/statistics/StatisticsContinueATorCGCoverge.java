@@ -55,7 +55,8 @@ public class StatisticsContinueATorCGCoverge implements StatisticsUnit {
 	}
 	
 	/**
-	 * 获取CGBoxPlotList 具体统计： 1个A上reads覆盖深度 ... n个AT上reads覆盖深度
+	 * 必须先设定setCgInterval 和 setMaxContinueATorCG
+	 * 设定CGBoxPlotList 具体统计： 1个A上reads覆盖深度 ... n个AT上reads覆盖深度
 	 * @return
 	 */
 	public void setCGBoxPlotList() {

@@ -92,11 +92,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	/** 在设定snp的情况下，从pileup文件中获取snp信息 */
 	public void filterSnp() {
 		for (String[] sample2PileupFile : lsSample2PileUpFiles) {
-			SnpFilterDetailInfo snpFilterDetailInfo = new SnpFilterDetailInfo();
-			snpFilterDetailInfo.allLines = readLines;
-			snpFilterDetailInfo.allByte = readByte;
-			snpFilterDetailInfo.showMessage = "reading file " + FileOperate.getFileName(sample2PileupFile[1]);
-			setRunInfo(snpFilterDetailInfo);
+			 notifyGUI(sample2PileupFile[1]);
 			
 			suspendCheck();
 			if (flagStop) {
@@ -110,6 +106,13 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			
 			addPileupToLsSnpIndel(sample2PileupFile[0], sample2PileupFile[1], outPutFile);
 		}
+	}
+	private void notifyGUI(String pileupFileName) {
+		SnpFilterDetailInfo snpFilterDetailInfo = new SnpFilterDetailInfo();
+		snpFilterDetailInfo.allLines = readLines;
+		snpFilterDetailInfo.allByte = readByte;
+		snpFilterDetailInfo.showMessage = "reading file " + FileOperate.getFileName(pileupFileName);
+		setRunInfo(snpFilterDetailInfo);
 	}
 	/** 
 	 * 不从vcf，而是从pileUp中获取snp的方法
@@ -174,7 +177,6 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		if (mapSiteInfo2MapInfoSnpIndel.containsKey(key)) {
 			MapInfoSnpIndel maInfoSnpIndelExist = mapSiteInfo2MapInfoSnpIndel.get(key);
 			maInfoSnpIndelExist.addAllenInfo(mapInfoSnpIndel);
-			return;
 		}
 		else {
 			mapSiteInfo2MapInfoSnpIndel.put(key, mapInfoSnpIndel);

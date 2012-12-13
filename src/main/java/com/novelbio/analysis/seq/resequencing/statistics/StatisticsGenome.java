@@ -3,13 +3,22 @@ package com.novelbio.analysis.seq.resequencing.statistics;
 import java.awt.Color;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
@@ -25,12 +34,20 @@ public class StatisticsGenome {
 			
 		/** 记录Exon位点信息的list，Start_end; 
 	 * 外显子测序用到，因为外显子测序仅统计外显子区域的覆盖度。
+	 * chrID 小写
 	 */
-	Queue<? extends Alignment> queueExonStartAndEnd;
-	
+	HashMap<String, Queue<? extends Alignment>> mapChrID2QueueExonStartAndEnd;
 	ArrayList<StatisticsUnit> lsStatisticsUnits = new ArrayList<StatisticsUnit>();
 
 	OneSeqInfo oneSeqInfoLast;
+	
+	String pileupFile = "";
+	
+	/** 设定pileup文件 */
+	public void setPileupFile(String pileupFile) {
+		this.pileupFile = pileupFile;
+	}
+	
 	/**
 	 * 大于该距离就不进行统计
 	 * @param gapMaxNum 0 表示不管多少都统计
@@ -42,6 +59,60 @@ public class StatisticsGenome {
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
+	/** 是否只统计exon区域，在外显子测序时用到
+	 * <b>务必先设定setGffChrAbs()</b>
+	 *  */
+	public void setExonOnly(boolean isExonOnly) {
+		if (isExonOnly == false) {
+			mapChrID2QueueExonStartAndEnd = null;
+			return;
+		}
+		
+		//chrID小写
+		HashMultimap<String, ExonInfo> mapChrID2SetExonInfo = getMapChrID2SetExonInfo();
+		if (mapChrID2SetExonInfo == null) {
+			mapChrID2QueueExonStartAndEnd = null;
+			return;
+		}
+		for (String chrID : mapChrID2SetExonInfo.keySet()) {
+			Set<ExonInfo> setExonInfo = mapChrID2SetExonInfo.get(chrID);
+			ArrayList<ExonInfo> lsExonInfos = new ArrayList<ExonInfo>();
+			for (ExonInfo exonInfo : setExonInfo) {
+				lsExonInfos.add(exonInfo);
+			}
+			Collections.sort(lsExonInfos, new Comparator<ExonInfo>() {
+				@Override
+				public int compare(ExonInfo o1, ExonInfo o2) {
+					Integer start1 = o1.getStartAbs();
+					Integer start2 = o2.getStartAbs();
+					return start1.compareTo(start2);
+				}
+			});
+			mapChrID2QueueExonStartAndEnd.put(chrID.toLowerCase(), new LinkedList<ExonInfo>(lsExonInfos));
+		}
+	}
+	
+	/**
+	 * 获得
+	 * key：chrID
+	 * value：无重复的exoninfo 的set
+	 */
+	private HashMultimap<String, ExonInfo> getMapChrID2SetExonInfo() {
+		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null) {
+			return null;
+		}
+		//chrID小写
+		HashMultimap<String, ExonInfo> mapChrID2SetExonInfo = HashMultimap.create();
+		ArrayList<GffDetailGene> lsGffDetailGene = gffChrAbs.getGffHashGene().getGffDetailAll();
+		for (GffDetailGene gffDetailGene : lsGffDetailGene) {
+			for (ExonInfo exonInfo : gffDetailGene.getLongestSplitMrna()) {
+				Set<ExonInfo> setExonInfos = mapChrID2SetExonInfo.get(gffDetailGene.getRefID().toLowerCase());
+				setExonInfos.add(exonInfo);
+			}
+		}
+		return mapChrID2SetExonInfo;
+	}
+	
 	/** 添加要统计的模块 */
 	public void addStatisticUnits(StatisticsUnit statisticsUnit) {
 		lsStatisticsUnits.add(statisticsUnit);
@@ -55,13 +126,13 @@ public class StatisticsGenome {
 	 * 设置当前物种Exon的位置信息
 	 * @param lsExonStartAndEnd
 	 */
-	public void setQueueExonStartAndEnd(Queue<? extends Alignment> queueExonStartAndEnd) {
-		this.queueExonStartAndEnd = queueExonStartAndEnd;
+	public void setMapChrID2QueueExonStartAndEnd(HashMap<String, Queue<? extends Alignment>> mapChrID2QueueExonStartAndEnd) {
+		this.mapChrID2QueueExonStartAndEnd = mapChrID2QueueExonStartAndEnd;
 	}
 	
 	/** 读取文件并进行统计 */
-	public void readAndRecord(String loadingFile) {
-		TxtReadandWrite txtWrite = new TxtReadandWrite(loadingFile, false);
+	public void readAndRecord() {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(pileupFile, false);
 		for (String tmpline : txtWrite.readlines()) {
 			OneSeqInfo oneSeqInfo = new OneSeqInfo(tmpline, oneSeqInfoLast);
 			if (!isExon(oneSeqInfo)) {
@@ -78,6 +149,7 @@ public class StatisticsGenome {
 			recorderNum++;
 		}
 	}
+	
 	// TODO 检查一下
 	/**
 	 * 判定位点是否落在queueExonStartAndEnd的区域内
@@ -85,9 +157,14 @@ public class StatisticsGenome {
 	 * @return
 	 */
 	private boolean isExon(OneSeqInfo oneSeqInfo) {
+		if (mapChrID2QueueExonStartAndEnd == null) {
+			return true;
+		}
+		Queue<? extends Alignment> queueExonStartAndEnd = mapChrID2QueueExonStartAndEnd.get(oneSeqInfo.getRefID().toLowerCase());
 		if (queueExonStartAndEnd == null) {
 			return true;
 		}
+		
 		Alignment alignment = queueExonStartAndEnd.poll();
 		while (oneSeqInfo.getRefSnpIndelStart() > alignment.getEndAbs() && !queueExonStartAndEnd.isEmpty()) {
 			alignment = queueExonStartAndEnd.poll();
@@ -122,7 +199,7 @@ public class StatisticsGenome {
 	 * @param oneSeqInfoGapEdge  gap上边缘的那个site
 	 * @return 返回Gap的最后一位site
 	 */
-	public void countOneSeqInfoGap(SeqFasta seqFastaGap, OneSeqInfo oneSeqInfo) {
+	private void countOneSeqInfoGap(SeqFasta seqFastaGap, OneSeqInfo oneSeqInfo) {
 		if (seqFastaGap == null) {
 			countOneSeqInfo(oneSeqInfo);
 			return;

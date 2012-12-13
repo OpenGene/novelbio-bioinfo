@@ -12,15 +12,8 @@ public class StatisticsCoverage implements StatisticsUnit {
 	private static Logger logger = Logger.getLogger(StatisticsCoverage.class);
 
 	/** reads 覆盖的数量统计 */
-	HistList histListCoverNum;
+	HistList histListCoverNum = HistList.creatHistList("Coverage", true);;
 	
-	/**
-	 * @param statisticAT true: 统计AT 
-	 * false: 统计CG
-	 */
-	public StatisticsCoverage(String histName) {
-		histListCoverNum = HistList.creatHistList(histName + "Coverage", true);
-	}
 	/**
 	 * <b>必须设定</b>
 	 * 划分多少区域，每个区域多少interval
