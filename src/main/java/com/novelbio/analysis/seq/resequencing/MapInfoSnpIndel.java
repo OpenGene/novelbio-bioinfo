@@ -33,8 +33,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * <b>里面都是正向的序列</b>
 	 * 该位置可能有不止一种的插入缺失或是碱基替换类型，那么就用该hash表来存储这么多种信息<br>
 	 *Key: referenceSeq + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + snpType <br>
-	 * value: 数量，用数组仅仅为了能够传递地址  */
-	TreeMap<String, SiteSnpIndelInfo> mapAllen2Num = new TreeMap<String, SiteSnpIndelInfo>();
+	 * value: SiteSnpIndelInfo 类  */
+	Map<String, SiteSnpIndelInfo> mapAllen2Num = new TreeMap<String, SiteSnpIndelInfo>();
 
 	protected String chrID;
 	String refBase = "";
@@ -52,13 +52,15 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	/** 样本和正常reads之间的关系 */
 	TreeMap<String, SampleRefReadsInfo> mapSample2NormReadsInfo = new TreeMap<String, SampleRefReadsInfo>();
 	String sampleName = SampleDefaultName;
-	/** 要是已经在sam pileUp里面搜索过了，那么就设定该样本的sample是可以找到的 */
 	
 	public MapInfoSnpIndel() {}
-	/** @param gffChrAbs */
+	/**
+	 * @param gffChrAbs
+	 * @param sampleName
+	 */
 	public MapInfoSnpIndel(GffChrAbs gffChrAbs, String sampleName) {
 		this.gffChrAbs = gffChrAbs;
-		this.sampleName = sampleName;
+		setSampleName(sampleName);
 	}
 	/**
 	 * @param gffChrAbs
@@ -81,13 +83,6 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		this.refSnpIndelStart = refSnpIndelStart;
 		setGffIso();
 	}
-	/** 这是当samPileup文件跳过某一行时设定的，表示已经查过这一行了只不过没找到东西
-	 * 然后各种值会设定为0
-	 *  */
-	protected void setSearchSamPileUpFileTrue() {
-		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
-		sampleRefReadsInfo.setSearchSampileupFile(true);
-	}
 
 	/**
 	 * 设定样本名，必须在最早的时候设定，这样所有后期的信息都会添加到该sample中
@@ -99,6 +94,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		}
 		this.sampleName = sampleName;
 	}
+	
 	public boolean isContainsSample(String sampleName) {
 		return mapSample2NormReadsInfo.containsKey(sampleName);
 	}
@@ -176,7 +172,13 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	public String getRefBase() {
 		return refBase;
 	}
-
+	/**
+	 * 获得snp或indel在ref上的起点，实际位点
+	 * @return
+	 */
+	public int getRefSnpIndelStart() {
+		return refSnpIndelStart;
+	}
 	/**
 	 * 获得所在的转录本
 	 * @return
@@ -280,6 +282,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			}
 		}
 	}
+	
 	/**
 	 * 这里我删除了一个Allelic_depths_Alt的项目，考虑如何很好的添加进去
 	 * 设置<br>
@@ -306,6 +309,14 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				
 			}
 		}
+	}
+	
+	/** 这是当samPileup文件跳过某一行时设定的，表示已经查过这一行了只不过没找到东西
+	 * 然后各种值会设定为0
+	 *  */
+	public void setSearchSamPileUpFileTrue() {
+		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
+		sampleRefReadsInfo.setSearchSampileupFile(true);
 	}
 	
 	/**
@@ -353,9 +364,11 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				/ 
 				(gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart())  - gffGeneIsoInfo.getCod2TESmRNA(getRefSnpIndelStart()));
 	}
+	
 	public String getRefID() {
 		return chrID;
 	}
+	
 	/**
 	 * 重新设定Allelic_depths_Ref，和hashAlle信息
 	 *  给定samtools产生的pile up那个pileup信息，计算该位点的堆叠情况<br>
@@ -409,6 +422,17 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			}
 		}
 	}
+	
+	/** 有些已经在vcf里面查过的snp会有该snp的depth信息，所以这里先清空本样本所有snp数值 */
+	private void clearSampleReadsNum() {
+		for (SiteSnpIndelInfo siteSnpIndelInfo : mapAllen2Num.values()) {
+			siteSnpIndelInfo.setSampleName(sampleName);
+			siteSnpIndelInfo.setThisReadsNum(0);
+		}
+		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
+		sampleRefReadsInfo.readDepth = 0;
+		sampleRefReadsInfo.Allelic_depths_Ref = 0;
+	}
 	private boolean isNextSiteIndel(char[] pipInfo, int thisIndex) {
 		int nextIndex = thisIndex + 1;
 		if (nextIndex < pipInfo.length && (pipInfo[nextIndex] == '+' || pipInfo[nextIndex] == '-'))
@@ -452,7 +476,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			referenceSeq = referenceSeq + indel;
 		}
 		
-		setSnpIndel(referenceSeq, thisSeq);
+		addSnpIndel2Map(referenceSeq, thisSeq);
 		return index;
 	}
 	
@@ -469,11 +493,12 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		if (isNextSiteIndel(pipInfo, thisIndex)) {
 			return thisSeq;
 		}
-		setSnpIndel(refBase, thisSeq);
+		addSnpIndel2Map(refBase, thisSeq);
 		return refBase;
 	}
+	
 	/** 给定snp的refsequence和thisSeq，将错配信息加入mapAllen2Num中 */
-	private void setSnpIndel(String referenceSeq, String thisSeq) {
+	private void addSnpIndel2Map(String referenceSeq, String thisSeq) {
 		String snpIndelInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
 		SiteSnpIndelInfo siteSnpIndelInfo = null;
 		
@@ -489,16 +514,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			mapAllen2Num.put(snpIndelInfo, siteSnpIndelInfo);
 		}
 	}
-	/** 有些已经在vcf里面查过的snp会有该snp的depth信息，所以这里先清空本样本所有snp数值 */
-	private void clearSampleReadsNum() {
-		for (SiteSnpIndelInfo siteSnpIndelInfo : mapAllen2Num.values()) {
-			siteSnpIndelInfo.setSampleName(sampleName);
-			siteSnpIndelInfo.setThisReadsNum(0);
-		}
-		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
-		sampleRefReadsInfo.readDepth = 0;
-		sampleRefReadsInfo.Allelic_depths_Ref = 0;
-	}
+
 	/** 返回加入的siteSnpIndelInfo */
 	public SiteSnpIndelInfo addAllenInfo(String referenceSeq, String thisSeq) {
 		SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, referenceSeq, thisSeq);
@@ -528,13 +544,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			mapSample2NormReadsInfo.put(entry.getKey(), entry.getValue());
 		}
 	}
-	/**
-	 * 获得snp或indel在ref上的起点，实际位点
-	 * @return
-	 */
-	public int getRefSnpIndelStart() {
-		return refSnpIndelStart;
-	}
+
 	/**
 	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
 	 * 注意，输入的mapInfoSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>

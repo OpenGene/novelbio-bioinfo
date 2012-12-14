@@ -1,12 +1,9 @@
 package com.novelbio.analysis.seq.resequencing.statistics;
 
-import java.awt.Color;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
@@ -18,7 +15,6 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 

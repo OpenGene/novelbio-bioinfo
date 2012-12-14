@@ -33,8 +33,6 @@ public abstract class SiteSnpIndelInfo {
 	/** snp所在refnr上的位置 */
 	int snpOnReplaceLocStart = 0;
 	int snpOnReplaceLocEnd = 0;
-	/** 移码，0，1，2三种 */
-	int orfShift = 0; 
 	/** 如果snp落在了exon上，则该类来保存ref所影响到的氨基酸的序列 */
 	SiteInfo mapinfoRefSeqIntactAA = new SiteInfo();
 	String referenceSeq;
@@ -42,16 +40,14 @@ public abstract class SiteSnpIndelInfo {
 	/** 位点处在内含子还是外显子还是基因外，如果是deletion，那么优先看是否覆盖了exon */
 	int codLocInfo = 0;
 	boolean isInCDS = false;
-	/** 用MapInfoSnpIndel的type */
-//	SnpIndelType snpType = SnpIndelType.CORRECT;
 
 	SplitType splitType = SplitType.NONE;
 	SnpIndelRs snpIndelRs;
 	ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
 	/** 样本名对应该样本这类型snp的reads数量
 	 * value为int[1]，仅仅用来保存snp数量
-	 *  */
-	TreeMap<String, SampleSnpReadsQuality> mapSample2thisBaseNum = new TreeMap<String, SampleSnpReadsQuality>();
+	 */
+	Map<String, SampleSnpReadsQuality> mapSample2thisBaseNum = new HashMap<String, SampleSnpReadsQuality>();
 	/**
 	 * @param mapInfoSnpIndel 必须含有 GffIso 信息
 	 * @param gffChrAbs
@@ -98,9 +94,8 @@ public abstract class SiteSnpIndelInfo {
 	 * 移码突变
 	 * @param orfShift
 	 */
-	public int getOrfShift() {
-		return orfShift;
-	}
+	public abstract int getOrfShift();
+	
 	public String getThisSeq() {
 		return thisSeq;
 	}
@@ -314,6 +309,7 @@ public abstract class SiteSnpIndelInfo {
 		return false;
 	}
 	public String toString() {
+		//TODO 改装为list的方式来返回string数组
 		String refnr =  mapinfoRefSeqIntactAA.getSeqFasta().toString();
 		String refaa =  mapinfoRefSeqIntactAA.getSeqFasta().toStringAA(false);
 		String thisnr =  getThisAAnr().toString();
@@ -418,7 +414,6 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 			isInCDS = false;
 			return;
 		}
-		setOrfShift();
 		
 		isInCDS = true;
 		int LocStart = gffGeneIsoInfo.getLocAAbefore(mapInfoSnpIndel.getRefSnpIndelStart());//该位点所在AA的第一个loc
@@ -471,8 +466,8 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 			}
 		}
 	}
-	protected void setOrfShift() {
-		orfShift = (3 - (thisSeq.length() - referenceSeq.length())%3) % 3;//待检查
+	public int getOrfShift() {
+		return (3 - (thisSeq.length() - referenceSeq.length())%3) % 3;//待检查
 	}
 	@Override
 	public SnpIndelType getSnpIndelType() {
@@ -485,8 +480,8 @@ class SiteSnpIndelInfoSnp extends SiteSnpIndelInfoInsert {
 	public SiteSnpIndelInfoSnp(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
 		super(mapInfoSnpIndel, refBase, thisBase);
 	}
-	protected void setOrfShift() {
-		orfShift = 0;
+	public int getOrfShift() {
+		return 0;
 	}
 	@Override
 	public SnpIndelType getSnpIndelType() {
@@ -502,8 +497,8 @@ class SiteSnpIndelInfoNoSnp extends SiteSnpIndelInfoInsert {
 	public SiteSnpIndelInfoNoSnp(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
 		super(mapInfoSnpIndel, refBase, thisBase);
 	}
-	protected void setOrfShift() {
-		orfShift = 0;
+	public int setOrfShift() {
+		return 0;
 	}
 	@Override
 	public SnpIndelType getSnpIndelType() {
@@ -517,6 +512,7 @@ class SiteSnpIndelInfoNoSnp extends SiteSnpIndelInfoInsert {
  */
 class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	Logger logger = Logger.getLogger(SiteSnpIndelInfoInsert.class);
+	int orfShift = 0;
 	public SiteSnpIndelInfoDeletion(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
 		super(mapInfoSnpIndel, refBase, thisBase);
 		if (refBase.length() <= 1 || thisBase.length() > 1) {
@@ -693,6 +689,10 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	@Override
 	public SnpIndelType getSnpIndelType() {
 		return SnpIndelType.DELETION;
+	}
+	
+	public int getOrfShift() {
+		return orfShift;
 	}
 }
 
