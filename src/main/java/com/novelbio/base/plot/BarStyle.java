@@ -2,7 +2,11 @@ package com.novelbio.base.plot;
 
 import java.awt.BasicStroke;
 import java.awt.Paint;
-
+/**
+ * 最好是clone了使用
+ * @author zong0jie
+ *
+ */
 public class BarStyle extends DotStyle {
 	Paint barEdgeColor = null;
 	/**
@@ -50,6 +54,13 @@ public class BarStyle extends DotStyle {
 		this.basicStroke = new BasicStroke(width);
 	}
 	
+	public BarStyle clone() {
+		BarStyle barStyle = (BarStyle) super.clone();
+		barStyle.barEdgeColor = barEdgeColor;
+		barStyle.basicStroke = basicStroke;
+		barStyle.barWidth = barWidth;
+		return barStyle;
+	}
 	/**
 	 *  paint the outline of the point shape.
 	 */

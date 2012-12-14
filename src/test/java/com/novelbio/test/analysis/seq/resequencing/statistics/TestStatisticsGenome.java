@@ -26,7 +26,7 @@ public class TestStatisticsGenome extends TestCase {
 		statisticsGenome.setSameNumSet(3);
 		statisticsGenome.setATBoxPlotList();
 		
-		statisticsGenome.setCGBoxPlotList();
+		statisticsGenome.setBoxPlotList();
 		
 		HistList InserthistList = statisticsGenome.getInsertHistList();
 		statisticsGenome.setHistListStyle(InserthistList, 15, 1, 1500);

@@ -15,6 +15,7 @@ import de.erichseifert.gral.util.GraphicsUtils;
 /**
  * 将数据的点分成几块，每一块都标记不同的颜色和点的样式
  * 重写了equal但是没有重写hash
+ * 最好是clone了使用
  * @author zong0jie
  *
  */
@@ -115,6 +116,9 @@ public class DotStyle implements Cloneable{
 	 * @return
 	 */
 	public String getName() {
+		if (dotname == null) {
+			return "";
+		}
 		return dotname;
 	}
 	/**

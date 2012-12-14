@@ -124,7 +124,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	 * 添加hist区间，必须是紧挨着设定，
 	 * 意思本区间为上一个num和本num之间
 	 * @param number 本bin所代表的数值，null就用终点和起点的平均值
-	 * @param name
+	 * @param name 填写的话，就用该名字做坐标名字
 	 * @param thisNum
 	 */
 	public void addHistBin(Integer number, String name, int thisNum) {
@@ -219,13 +219,12 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 				mapX2Name.put(Xrange[i], histBin.getNameSingle());
 			}
 		}
-		
 		if (plotScatter == null) {
 			plotScatter = new PlotScatter();
 		}
 		double minY = MathComput.min(Ycount);
 		double maxY = MathComput.max(Ycount);
-		
+
 		if (dotStyle.getBarWidth() == 0 && Xrange.length > 1) {
 			dotStyle.setBarAndStrokeWidth(Xrange[1] - Xrange[0]);
 		}
@@ -233,7 +232,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		plotScatter.setAxisX(Xrange[0] - 1, Xrange[Xrange.length - 1] + 1);
 		plotScatter.setAxisY(minY, maxY * 1.2);
 		plotScatter.addXY(Xrange, Ycount, dotStyle);
-		plotScatter.setAxisTicksXMap(mapX2Name);
+//		plotScatter.setAxisTicksXMap(mapX2Name);
 		return plotScatter;
 	}
 	/**
@@ -284,11 +283,11 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		return rangeX;
 	}
 	
-	public PlotScatter getIntegral(boolean cis, DotStyle dotStyle) {
+	public PlotScatter getIntegralPlot(boolean cis, DotStyle dotStyle) {
 		ArrayList<double[]> lsXY = getIntegral(cis);
 		PlotScatter plotScatter = new PlotScatter();
 		plotScatter.addXY(lsXY, dotStyle);
-		plotScatter.setAxisX(get(0).getStartAbs(), get(size() - 1).getEndAbs());
+		plotScatter.setAxisX(get(0).getStartAbs(), get(size() - 1).getStartAbs());
 		plotScatter.setAxisY(0, 1);
 		return plotScatter;
 	}
@@ -318,9 +317,12 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 				y[count] = thisNum/allNum;
 			}
 		}
-
- 		lsXY.add(x);
- 		lsXY.add(y);
+		for (int i = 0; i < x.length; i++) {
+			double[] xy = new double[2];
+			xy[0] = x[i];
+			xy[1] = y[i];
+			lsXY.add(xy);
+		}
  		return lsXY;
 	}
 
@@ -363,8 +365,24 @@ class HistListCis extends HistList {
 		HistBin histNext = lsHistBin.getGffDetailDown();
 		
 		HistBin resultBin = histThis;
+		
+		if (histThis == null) {
+			HistBin histbin = null;
+			if (histLast != null) {
+				histbin = histLast;
+			} else if (histNext != null) {
+				histbin = histNext;
+			}
+			return histbin;
+		}
+		
 		if (histBinType == HistBinType.LcloseRopen) {
-			if (coordinate >= histThis.getStartCis() && coordinate < histThis.getEndCis()) {
+			if ((coordinate >= histThis.getStartCis() && coordinate < histThis.getEndCis())
+					||
+				(histLast == null && coordinate < histThis.getStartCis() )
+					||
+				(histNext == null && coordinate >= histThis.getEndCis() )
+			) {
 				resultBin = histThis;
 			} else if (coordinate < histThis.getStartCis() && coordinate >= histLast.getEndCis()) {
 				resultBin = histLast;
@@ -372,7 +390,12 @@ class HistListCis extends HistList {
 				resultBin = histNext;
 			}
 		} else if (histBinType == HistBinType.LopenRclose) {
-			if (coordinate > histThis.getStartCis() && coordinate <= histThis.getEndCis()) {
+			if ((coordinate > histThis.getStartCis() && coordinate <= histThis.getEndCis())
+				||
+			(histLast == null && coordinate <= histThis.getStartCis())
+				||
+			(histNext == null && coordinate > histThis.getEndCis())	
+					) {
 				resultBin = histThis;
 			} else if (coordinate <= histThis.getStartCis() && coordinate >= histLast.getEndCis()) {
 				resultBin = histLast;

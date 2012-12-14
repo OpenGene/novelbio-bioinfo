@@ -267,8 +267,9 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		if (loc != lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart())
 			return false;
 		MapInfoSnpIndel mapInfoSnpIndel = lsMapInfos.get(mapInfoIndex);
+		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		mapInfoSnpIndel.setSampleName(sampleName);
-		mapInfoSnpIndel.setSamToolsPilup(samtoolsLine, gffChrAbs);
+		mapInfoSnpIndel.setSamToolsPilup(samtoolsLine);
 		return true;
 	}
 	

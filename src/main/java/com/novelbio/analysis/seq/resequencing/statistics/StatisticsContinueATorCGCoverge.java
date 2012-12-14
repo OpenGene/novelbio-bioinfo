@@ -59,17 +59,14 @@ public class StatisticsContinueATorCGCoverge implements StatisticsUnit {
 	 * 设定CGBoxPlotList 具体统计： 1个A上reads覆盖深度 ... n个AT上reads覆盖深度
 	 * @return
 	 */
-	public void setCGBoxPlotList() {
-		for (int i = 0; i < maxContinueATorCG; i = i + cgInterval) {
+	public void setBoxPlotList() {
+		for (int i = cgInterval; i <= maxContinueATorCG; i = i + cgInterval) {
 			HistList histList = HistList.creatHistList(i + "", true);
 			histList.setBinAndInterval(1000, 1, 2000);
 			boxPlotList.addHistList(histList);
 		}
 	}
 	
-	/** 
-	 * 前一个是C当前一个是A，记录前面连续C的raws平均数的数量 形式例如key是4C_10，value是num数量例如3
-	 */
 	public void countOneSeqInfo(OneSeqInfo oneSeqInfo) {
 		OneSeqInfo oneSeqInfoLast = oneSeqInfo.getOneSeqInfoLast();
 		if (oneSeqInfoLast == null) {
@@ -80,6 +77,11 @@ public class StatisticsContinueATorCGCoverge implements StatisticsUnit {
 		
 		double coverageAvg = oneSeqInfoLast.getSameSiteNumAvg();
 		if (oneSeqInfoLast.getSiteSeqType() == seqType) {
+			if (histList == null) {
+				logger.error("stop");
+				String a = getKeyCGnum(cgNum);
+				System.out.println(a);
+			}
 			histList.addNum(norm4To5(coverageAvg));
 		}
 	}
@@ -93,8 +95,8 @@ public class StatisticsContinueATorCGCoverge implements StatisticsUnit {
 			cgNum = maxContinueATorCG;
 		}
 		double intervalNum = (double)cgNum/cgInterval;
-		int num = (int)Math.ceil(intervalNum);		
-		return num + "";
+		int num = (int)Math.ceil(intervalNum);
+		return num*cgInterval + "";
 	}
 	/**
 	 * 四舍五入

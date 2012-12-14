@@ -119,13 +119,16 @@ public abstract  class PlotNBC{
 		if (!painted) {
 			drawData(Width, Height);
 		}
+		logger.error("p1");
 		String filename = FileOperate.getFileNameSep(outputFileName)[1];
 		if (filename.equals("")) {
-			outputFileName = FileOperate.changeFileSuffix(outputFileName, null, ".jpg");
+			outputFileName = FileOperate.changeFileSuffix(outputFileName, null, "png");
 		}
-    	
+		logger.error("p2");
     	BufferedImage bufferedImageResult = paintGraphicOut(bufferedImage, fg, alpha, Width, Height);
+    	logger.error("p3");
     	saveGraphic(bufferedImageResult, outputFileName, 1.0f);
+    	logger.error("p4");
 	}
     
     protected static void saveGraphic(BufferedImage chart, String outputFile, float quality) {
@@ -138,8 +141,6 @@ public abstract  class PlotNBC{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
-
 		} else {
 			try {
 				FileOutputStream fileOutputStream = new FileOutputStream(fileOut);

@@ -31,6 +31,7 @@ public class StatisticsContinueATorCGdestribution implements StatisticsUnit {
 			histList = HistList.creatHistList("ATdestribution", true);
 		} else {
 			seqType = SeqType.CG;
+			histList = HistList.creatHistList("CGdestribution", true);
 		}
 	}
 	

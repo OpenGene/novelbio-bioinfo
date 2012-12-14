@@ -23,6 +23,8 @@ public class CodeCounter {
 		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/annotation", "/media/winD/fedora/codestatistics/annotationCodeLines.txt");
 		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/diffexpress", "/media/winD/fedora/codestatistics/diffexpressCodeLines.txt");
 		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/tools", "/media/winD/fedora/codestatistics/toolsCodeLines.txt");
+		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/seq/resequencing", "/media/winD/fedora/codestatistics/resequencingCodeLines.txt");
+		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/seq/resequencing/statistics", "/media/winD/fedora/codestatistics/resequencingstatisticsCodeLines.txt");
 
 //		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/seq/blast", "/media/winD/fedora/codestatistics/blastCodeLines.txt");
 //		codeCounter = new CodeCounter("/media/winD/fedora/gitNovelbio/Novelbio-Bioinformatics-Analysis-Platform/src/main/java/com/novelbio/analysis/seq/blastZJ", "/media/winD/fedora/codestatistics/blastZJCodeLines.txt");
@@ -113,8 +115,8 @@ public class CodeCounter {
 			while((line=br.readLine())!=null){
 				line=line.trim();//È¥³ý¿Õ¸ñ
 				if(line.matches("^[\\s&&[^\\n]]*$")
-						|| line.equals("{") || line.equals("}")
-						|| line.equals("});")
+//						|| line.equals("{") || line.equals("}")
+//						|| line.equals("});")
 						|| line.startsWith("import") || line.startsWith("package")
 					)
 				{

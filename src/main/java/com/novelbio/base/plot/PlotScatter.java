@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.dataStructure.Equations;
 
 import de.erichseifert.gral.data.DataSource;
@@ -42,9 +44,11 @@ public class PlotScatter extends PlotNBCInteractive{
     public static final int INSETS_SIZE_ML = 400;
     public static final int INSETS_SIZE_L = 500;
     
+    private static final Logger logger = Logger.getLogger(PlotScatter.class);
+    
 	HashMap<DotStyle, DataTable> hashDataTable = new HashMap<DotStyle, DataTable>();
 	
-	XYPlot plot;
+	XYPlot plot = new BarPlot(new DataTable(Double.class, Double.class));
 	String title = null, titleX = null, titleY = null;
 	Double spaceX = null, spaceY = null;
     Font fontTitle = new Font(Font.SANS_SERIF, Font.PLAIN, 15), fontX = null, fontY = null;
@@ -68,6 +72,7 @@ public class PlotScatter extends PlotNBCInteractive{
     /** 坐标轴的title到坐标轴的距离 */
     double insetsX = 5, insetsY = 5;
     
+    DataTable dataTable;
     /**
      * add point
      * @param x
@@ -75,12 +80,14 @@ public class PlotScatter extends PlotNBCInteractive{
      * @param dotStyle 如果是不同名字的点，需要创建新的dotStyle，dotStyle仅按地址保存
      */
     public void addXY(double x, double y, DotStyle dotStyle) {
-    	DataTable dataTable = getDataTable(dotStyle);
-    	if (dotStyle.getName() != null) {
-    		dataTable.add(x,y,dotStyle.getName());
-    	} else {
-			dataTable.add(x,y);
-    	}
+    	dataTable = new DataTable(Double.class, Double.class, String.class);
+    	logger.error("get1");
+    	if (!hashDataTable.containsKey(dotStyle)) {
+    		addPlot(dotStyle, dataTable);
+		} else {
+			dataTable = hashDataTable.get(dotStyle);
+		}
+    	dataTable.add(x,y,dotStyle.getName());
     }
     /**
      * add point array, x.length must equals y.length
@@ -92,14 +99,19 @@ public class PlotScatter extends PlotNBCInteractive{
     	if (x.length != y.length) {
 			return;
 		}
-    	DataTable dataTable = getDataTable(dotStyle);
-    	for (int i = 0; i < x.length; i++) {
-    		if (dotStyle.getName() != null) {
-    			dataTable.add(x[i],y[i], dotStyle.getName());
-    		} else {
-    			dataTable.add(x[i],y[i]);
-    		}
+    	dataTable = new DataTable(Double.class, Double.class, String.class);
+    	logger.error("get1");
+    	if (!hashDataTable.containsKey(dotStyle)) {
+    		addPlot(dotStyle, dataTable);
+		} else {
+			dataTable = hashDataTable.get(dotStyle);
 		}
+    	logger.error("add1");
+    	for (int i = 0; i < x.length; i++) {
+    		dataTable.add(x[i],y[i], dotStyle.getName());
+    	  	logger.error("addName" + i);
+		}
+    	logger.error("add2");
     }
     /**
      * add lsXY, double[0]: x  double[1]: y
@@ -107,13 +119,17 @@ public class PlotScatter extends PlotNBCInteractive{
      * @param y
      */
     public void addXY(Collection<double[]> lsXY, DotStyle dotStyle) {
-    	DataTable dataTable = getDataTable(dotStyle);
+    	dataTable = new DataTable(Double.class, Double.class, String.class);
+    	logger.error("get1");
+    	if (!hashDataTable.containsKey(dotStyle)) {
+    		addPlot(dotStyle, dataTable);
+		} else {
+			dataTable = hashDataTable.get(dotStyle);
+		}
+    	logger.error("a");
     	for (double[] ds : lsXY) {
-    		if (dotStyle.getName() != null) {
-    			dataTable.add(ds[0], ds[1], dotStyle.getName());
-    		} else {
-    			dataTable.add(ds[0], ds[1]);
-    		}
+    		dataTable.add(ds[0], ds[1], dotStyle.getName());
+    		logger.error("b");
 		}
     }
     /**
@@ -126,13 +142,16 @@ public class PlotScatter extends PlotNBCInteractive{
     	if (lsX.size() != lsY.size()) {
 			return;
 		}
-    	DataTable dataTable = getDataTable(dotStyle);
+    	dataTable = new DataTable(Double.class, Double.class, String.class);
+    	logger.error("get1");
+    	if (!hashDataTable.containsKey(dotStyle)) {
+    		addPlot(dotStyle, dataTable);
+		} else {
+			dataTable = hashDataTable.get(dotStyle);
+		}
     	for (Number numberX : lsX) {
 			Number numberY = lsY.iterator().next();
-    		if (dotStyle.getName() != null)
-    			dataTable.add(numberX.doubleValue(), numberY.doubleValue(), dotStyle.getName());
-    		else
-    			dataTable.add(numberX.doubleValue(), numberY.doubleValue());
+			dataTable.add(numberX.doubleValue(), numberY.doubleValue(), dotStyle.getName());
     	}
     }
     /**
@@ -140,7 +159,13 @@ public class PlotScatter extends PlotNBCInteractive{
      * @param dotStyle
      */
     public void removeData(DotStyle dotStyle) {
-    	DataTable dataTable = getDataTable(dotStyle);
+    	dataTable = new DataTable(Double.class, Double.class, String.class);
+    	logger.error("get1");
+    	if (!hashDataTable.containsKey(dotStyle)) {
+    		addPlot(dotStyle, dataTable);
+		} else {
+			dataTable = hashDataTable.get(dotStyle);
+		}
     	plot.remove(dataTable);
     }
     //////////////////////////////////////////
@@ -151,32 +176,33 @@ public class PlotScatter extends PlotNBCInteractive{
      * @return
      */
     protected DataTable getDataTable(DotStyle dotStyle) {
-    	DataTable dataTable = null;
+    	dataTable = new DataTable(Double.class, Double.class, String.class);
+    	logger.error("get1");
     	if (!hashDataTable.containsKey(dotStyle)) {
-    		if (dotStyle.getName() != null) {
-    			dataTable = new DataTable(Double.class, Double.class, String.class);
-			} else {
-    			dataTable = new DataTable(Double.class, Double.class);
-			}
-			hashDataTable.put(dotStyle, dataTable);
-			if (plot == null) {
-				if (dotStyle.getStyle() == DotStyle.STYLE_BAR) {
-					plot = new BarPlot(dataTable);
-				} else {
-					plot = new XYPlot(dataTable);
-				}
-			}
-			else {
-				plot.add(dataTable);
-			}
-			setPointStyle(dataTable, dotStyle);
+    		addPlot(dotStyle, dataTable);
 		}
     	else {
 			dataTable = hashDataTable.get(dotStyle);
 		}
+    	logger.error("get3");
     	return dataTable;
     }
    
+    private void addPlot(DotStyle dotStyle, DataTable dataTable) {
+		hashDataTable.put(dotStyle, dataTable);
+		logger.error("get2");
+		if (plot == null) {
+			if (dotStyle.getStyle() == DotStyle.STYLE_BAR) {
+				plot = new BarPlot(dataTable);
+			} else {
+				plot = new XYPlot(dataTable);
+			}
+		}
+		else {
+			plot.add(dataTable);
+		}
+		setPointStyle(dataTable, dotStyle);
+    }
     ////////////////////////////////////////////////////////////////
     /**
      * 以前用某个dotStyle设定的输入值(譬如一条曲线)，
@@ -233,8 +259,7 @@ public class PlotScatter extends PlotNBCInteractive{
     		barStyle.setBarWidth(step*0.95);
     	}
     	barStyle.setStyle(DotStyle.STYLE_BAR);
-    	DataTable dataTable2 = null;
-    	dataTable2 = new DataTable(Double.class, Double.class, Double.class);
+    	DataTable dataTable2 = new DataTable(Double.class, Double.class, Double.class);
     	
     	double xmin = Double.MAX_VALUE, xmax = Double.MIN_VALUE, ymin = Double.MAX_VALUE, ymax = Double.MIN_VALUE;
     	
@@ -469,7 +494,8 @@ public class PlotScatter extends PlotNBCInteractive{
 	
 	protected void toImage(int width, int heigh) {
 		int imageType = (alpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
-    	bufferedImage = new BufferedImage(width, heigh, imageType);
+		//TODO 一直都是 不透明
+    	bufferedImage = new BufferedImage(width, heigh, BufferedImage.TYPE_3BYTE_BGR);
     	if (bg != null && !bg.equals(new Color(0,0,0,0))) {
 			setBG(width, heigh);
 		}
@@ -540,7 +566,7 @@ public class PlotScatter extends PlotNBCInteractive{
 			pointRenderer.setSetting(PointRenderer.VALUE_DISPLAYED, dotStyle.isValueVisible());
 		}
 		//规定，dotname在第3列，dotvalue也就是常规value在第二列
-		if (dotStyle.getName() != null) {
+		if (!dotStyle.getName().equals("")) {
 			PointRenderer pointRenderer = plot.getPointRenderer(dataSeries);
 			//the third column is the name column，从0开始计数的
 			pointRenderer.setSetting(PointRenderer.VALUE_COLUMN, 2);

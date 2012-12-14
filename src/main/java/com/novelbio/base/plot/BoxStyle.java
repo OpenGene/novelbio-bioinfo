@@ -3,6 +3,11 @@ package com.novelbio.base.plot;
 import java.awt.BasicStroke;
 import java.awt.Paint;
 
+/**
+ * 最好是clone了使用
+ * @author zong0jie
+ *
+ */
 public class BoxStyle extends DotStyle {
 	
 	Paint colorBoxEdge;
@@ -52,6 +57,15 @@ public class BoxStyle extends DotStyle {
 	 */
 	public void setBasicStroke(float width) {
 		this.basicStroke = new BasicStroke(width);
+	}
+	
+	public BoxStyle clone() {
+		BoxStyle boxStyle = (BoxStyle) super.clone();
+		boxStyle.basicStroke = basicStroke;
+		boxStyle.colorBoxCenter = colorBoxCenter;
+		boxStyle.colorBoxEdge = colorBoxEdge;
+		boxStyle.colorBoxWhisker = colorBoxWhisker;
+		return boxStyle;
 	}
 	
 }

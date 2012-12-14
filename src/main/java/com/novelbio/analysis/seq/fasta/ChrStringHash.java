@@ -21,10 +21,6 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 作者：宗杰 20090617
  */
 public class ChrStringHash extends SeqHashAbs{
-	public static void main(String[] args) {
-		ChrStringHash chrStringHash = new ChrStringHash("/media/winE/Bioinformatics/genome/human/hg19_GRCh37/ChromFa", null);
-		System.out.println(chrStringHash.getSeq("chrY", 69, 77));
-	}
 	private static Logger logger = Logger.getLogger(ChrStringHash.class);
 	
 	/** 以下哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10 */
@@ -37,7 +33,8 @@ public class ChrStringHash extends SeqHashAbs{
 	 * 并且每一行的序列都等长
 	 */
 	int lengthRow = 0;
-		
+	
+	int maxExtractSeqLength = 2000000;
 	/**
 	 * 随机硬盘读取染色体文件的方法，貌似很伤硬盘，考虑用固态硬盘 注意
 	 * 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
@@ -167,8 +164,8 @@ public class ChrStringHash extends SeqHashAbs{
 			logger.error(chrID + " " + startlocation + " " + endlocation + " 染色体坐标错误");
 			return null;
 		}
-		if (endlocation - startlocation > 200000) {
-			logger.error(chrID + " " + startlocation + " " + endlocation + " 最多提取200000bp");
+		if (endlocation - startlocation > maxExtractSeqLength) {
+			logger.error(chrID + " " + startlocation + " " + endlocation + " 最多提取" + maxExtractSeqLength + "bp");
 			return null;
 		}
 

@@ -72,10 +72,10 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	    setGffIso();
 	}
 	
-	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
+	
 	public void setRefSnpIndelStart(String chrID, int refSnpIndelStart) {
 		this.chrID = chrID;
 		this.refSnpIndelStart = refSnpIndelStart;
@@ -88,22 +88,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
 		sampleRefReadsInfo.setSearchSampileupFile(true);
 	}
-	/**
-	 * refBase在基因中的位置，0-1之间，0.1表示snp在基因长度*0.1的位置处
-	 * 越小越靠近头部
-	 * 0-1之间
-	 */
-	private void setProp() {
-		if (gffGeneIsoInfo.getCodLoc(getRefSnpIndelStart()) != GffGeneIsoInfo.COD_LOC_EXON) {
-			return;
-		}
-		this.prop = (double)gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart())
-				/ 
-				(gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart())  - gffGeneIsoInfo.getCod2TESmRNA(getRefSnpIndelStart()));
-	}
-	public String getRefID() {
-		return chrID;
-	}
+
 	/**
 	 * 设定样本名，必须在最早的时候设定，这样所有后期的信息都会添加到该sample中
 	 * @param sampleName null就不设定
@@ -212,6 +197,21 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			return false;
 		}
 	}
+	
+	/**
+	 * 根据设定的列信息，填充mapinfosnpindel信息
+	 * 仅仅读取snp信息，不读取多少snp信息
+	 */
+	public void setNBCLines(String sampleName, String novelBioLine) {
+		setSampleName(sampleName);
+		String[] inputLines = novelBioLine.split("\t");
+		//TODO :chrID是否需要小写
+		chrID = inputLines[0];
+		refSnpIndelStart = Integer.parseInt(inputLines[1]); 
+		setGffIso();
+		addAllenInfo(inputLines[6], inputLines[7]);
+		
+	}
 
 	/**
 	 * 根据设定的列信息，填充mapinfosnpindel信息
@@ -239,24 +239,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				siteSnpIndelInfo.setDBSnpID(inputLines[vcfCols.colSnpDBID]);
 			}
 		}
-		
 	}
-	
-	/**
-	 * 根据设定的列信息，填充mapinfosnpindel信息
-	 * 仅仅读取snp信息，不读取多少snp信息
-	 */
-	public void setNBCLines(String sampleName, String novelBioLine) {
-		setSampleName(sampleName);
-		String[] inputLines = novelBioLine.split("\t");
-		//TODO :chrID是否需要小写
-		chrID = inputLines[0];
-		refSnpIndelStart = Integer.parseInt(inputLines[1]); 
-		setGffIso();
-		addAllenInfo(inputLines[6], inputLines[7]);
-		
-	}
-	
 	/**
 	 * 就看这三项：AF,AN,SB
 	 *  AB=0.841;AC=1;AF=0.50;AN=2;BaseQRankSum=0.097;DP=63;Dels=0.00;FS=0.000;HRun=0;HaplotypeScore=0.0000;
@@ -281,6 +264,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		}
 		return sampleRefReadsInfo;
 	}
+	
 	/** 设定vcf中的reads depth那个列，主要是设定从vcf中读取的reads depth信息<br>
 	 * "GT:AD:DP:GQ:PL", <br>
 	 * "0/1:119,100:315:99:3214,0,3784"<br>
@@ -323,15 +307,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			}
 		}
 	}
-	/**
-	 *  在已有refbase信息的基础上，查找该refSnpIndelStart位点有哪些indel或snp
-	 *  找到的indel所对应的refbase可能和原来的refbase不一样
-	 * @param samString
-	 */
-	public void setSamToolsPilup(String samString, GffChrAbs gffChrAbs) {
-		this.gffChrAbs = gffChrAbs;
-		setSamToolsPilup(samString);
-	}
+	
 	/**
 	 *  在已有refbase信息的基础上，查找该refSnpIndelStart位点有哪些indel或snp
 	 *  找到的indel所对应的refbase可能和原来的refbase不一样
@@ -363,6 +339,22 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			return;
 		}
 		setProp();
+	}
+	/**
+	 * refBase在基因中的位置，0-1之间，0.1表示snp在基因长度*0.1的位置处
+	 * 越小越靠近头部
+	 * 0-1之间
+	 */
+	private void setProp() {
+		if (gffGeneIsoInfo.getCodLoc(getRefSnpIndelStart()) != GffGeneIsoInfo.COD_LOC_EXON) {
+			return;
+		}
+		this.prop = (double)gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart())
+				/ 
+				(gffGeneIsoInfo.getCod2TSSmRNA(getRefSnpIndelStart())  - gffGeneIsoInfo.getCod2TESmRNA(getRefSnpIndelStart()));
+	}
+	public String getRefID() {
+		return chrID;
 	}
 	/**
 	 * 重新设定Allelic_depths_Ref，和hashAlle信息
@@ -781,7 +773,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 //				for (int i = 0; i < 6; i++)
 //					lsTmpInfo.add("");
 			}
-			String[] infpoStrings = getStrArray(lsTmpInfo);
+			String[] infpoStrings = lsTmpInfo.toArray(new String[0]);
 			lsResult.add(infpoStrings);
 		}
 		return lsResult;
@@ -817,7 +809,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		lsTitle.add("ThisAA");
 		lsTitle.add("Chemical Transform");
 		lsTitle.add("split info");
-		String[] infpoStrings = getStrArray(lsTitle);
+		String[] infpoStrings = lsTitle.toArray(new String[0]);
 		return infpoStrings;
 	}
 	/**
@@ -855,15 +847,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		}
 		return lsResult;
 	}
-	private static String[] getStrArray(List<String> lsInfo) {
-		String[] strarray = new String[lsInfo.size()];
-		int i = 0;
-		for (String string : lsInfo) {
-			strarray[i] = string;
-			i ++;
-		}
-		return strarray;
-	}
+
 	/**
 	 * 用于比较的，从小到大比
 	 * 先比refID，然后比start，end，或者比flag或者比score

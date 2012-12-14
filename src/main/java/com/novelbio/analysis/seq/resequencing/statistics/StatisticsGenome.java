@@ -26,9 +26,6 @@ public class StatisticsGenome {
 	private static Logger logger = Logger.getLogger(StatisticsGenome.class);
 	
 	GffChrAbs gffChrAbs;
-
-	/** 记录总数，为下面百分比做准备 */
-	int recorderNum = 0;
 	/** 最大多少gap就不统计了，0表示不管多少都统计 */
 	int gapMaxNum = 0;
 			
@@ -59,6 +56,15 @@ public class StatisticsGenome {
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
+	
+	/**
+	 * 设置当前物种Exon的位置信息
+	 * @param lsExonStartAndEnd
+	 */
+	public void setMapChrID2QueueExonStartAndEnd(HashMap<String, Queue<? extends Alignment>> mapChrID2QueueExonStartAndEnd) {
+		this.mapChrID2QueueExonStartAndEnd = mapChrID2QueueExonStartAndEnd;
+	}
+	
 	/** 是否只统计exon区域，在外显子测序时用到
 	 * <b>务必先设定setGffChrAbs()</b>
 	 *  */
@@ -121,17 +127,11 @@ public class StatisticsGenome {
 	public void clearStatisticUnits() {
 		lsStatisticsUnits.clear();
 	}
-	
-	/**
-	 * 设置当前物种Exon的位置信息
-	 * @param lsExonStartAndEnd
-	 */
-	public void setMapChrID2QueueExonStartAndEnd(HashMap<String, Queue<? extends Alignment>> mapChrID2QueueExonStartAndEnd) {
-		this.mapChrID2QueueExonStartAndEnd = mapChrID2QueueExonStartAndEnd;
-	}
+
 	
 	/** 读取文件并进行统计 */
 	public void readAndRecord() {
+		int recorderNum = 0;
 		TxtReadandWrite txtWrite = new TxtReadandWrite(pileupFile, false);
 		for (String tmpline : txtWrite.readlines()) {
 			OneSeqInfo oneSeqInfo = new OneSeqInfo(tmpline, oneSeqInfoLast);
@@ -145,6 +145,9 @@ public class StatisticsGenome {
 			
 			if (recorderNum % 100000 == 0) {
 				logger.debug(recorderNum);
+			}
+			if (recorderNum == 300000) {
+				break;
 			}
 			recorderNum++;
 		}
