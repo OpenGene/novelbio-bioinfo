@@ -24,7 +24,8 @@ public class SeqfastaStatisticsCDS {
 	
 	SeqFasta seqFasta;
 	
-	protected SeqfastaStatisticsCDS(SeqFasta seqFasta) {
+	/** 暴露出来仅供单元测试 */
+	public SeqfastaStatisticsCDS(SeqFasta seqFasta) {
 		this.seqFasta = seqFasta;
 		calculateAAseqInfo();
 	}

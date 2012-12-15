@@ -142,9 +142,9 @@ public class StatisticsGenome {
 			if (recorderNum % 100000 == 0) {
 				logger.debug(recorderNum);
 			}
-			if (recorderNum == 300000) {
-				break;
-			}
+//			if (recorderNum == 300000) {
+//				break;
+//			}
 			recorderNum++;
 		}
 	}

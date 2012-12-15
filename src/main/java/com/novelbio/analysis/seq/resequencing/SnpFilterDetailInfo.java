@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.resequencing;
 
-import com.novelbio.analysis.tools.Mas3.getProbID;
-
+/** 给GUI显示的东西 */
 public class SnpFilterDetailInfo {
 	/** 所有读取的字节 */
 	long allByte;

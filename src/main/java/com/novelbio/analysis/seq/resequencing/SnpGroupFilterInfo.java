@@ -3,8 +3,9 @@ package com.novelbio.analysis.seq.resequencing;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/** 一组样本的过滤，可以设定一组样本，然后根据一组样本里面的信息，进行过滤
- * 包括最少多少杂合snp，最多多少杂合snp等等
+/** 
+ * 一组样本的过滤，可以设定一组样本，然后根据一组样本里面的信息，进行过滤
+ * 譬如本组样本中，该位点最少多少杂合snp，最多多少杂合snp等等
  *  */
 public class SnpGroupFilterInfo {
 	public static final int Homo = 5;

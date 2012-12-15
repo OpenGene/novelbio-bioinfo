@@ -19,7 +19,7 @@ import de.erichseifert.gral.util.GraphicsUtils;
  * @author zong0jie
  *
  */
-public class DotStyle implements Cloneable{
+public class DotStyle implements Cloneable {
 	/**
 	 * 画面积图，在基因组上测试过了，效果不错
 	 * Area没有线

@@ -21,7 +21,6 @@ public class CtrlPileupStatistics {
 		ctrlPileupStatistics.plot("/media/winE/NBC/Project/PGM/plot/PGM");
 	}
 
-	
 	StatisticsGenome statisticsGenome = new StatisticsGenome();
 	//连续AT统计
 	StatisticsContinueATorCGCoverge statisticsContinueATcoverge = new StatisticsContinueATorCGCoverge(true);
@@ -36,7 +35,6 @@ public class CtrlPileupStatistics {
 	
 	public void setMaxGapSize(int gapMaxNum) {
 		statisticsGenome.setGapMaxNum(gapMaxNum);
-	
 	}
 	
 	public void setPileupFile(String pileUpFile) {

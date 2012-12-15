@@ -4,19 +4,17 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
 import com.novelbio.analysis.seq.resequencing.SnpFilter;
-import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 import com.novelbio.base.dataStructure.listOperate.HistList;
 
 /**
  * indel 出现后的比例分布，譬如 0.1的占多少，0.2的占多少这种
  * @author zong0jie
- *
  */
 public class StatisticsIndelProp implements StatisticsUnit {
 	private static Logger logger = Logger.getLogger(StatisticsContinueATorCGdestribution.class);
+	
 	/** 1的多少倍，因为histList里面只能放入int，所以要把1 * fold再统计 */
 	int fold = 1000;
 	/** 绘制0.1个indel，0.2个indel，0.3个indel....的分布 */

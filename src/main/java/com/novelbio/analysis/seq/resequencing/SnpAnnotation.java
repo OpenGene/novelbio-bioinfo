@@ -115,7 +115,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 			logger.error("stop");
 		}
 		MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, lsInfo.get(colChrID), refStartSite);
-		SiteSnpIndelInfo siteSnpIndelInfo = mapInfoSnpIndel.addAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
+		SiteSnpIndelInfo siteSnpIndelInfo = mapInfoSnpIndel.getAndAddAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
 		GffGeneIsoInfo gffGeneIsoInfo = mapInfoSnpIndel.getGffIso();
 		if (gffGeneIsoInfo == null) {
 			return input;

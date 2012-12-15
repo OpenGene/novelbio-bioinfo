@@ -66,6 +66,15 @@ public class SnpFilter {
 		Snp_Hete_Contain_SnpProp_Min = snp_Hete_Contain_SnpProp_Min;
 	}
 	
+	/** 判定为reference的最少reads覆盖
+	 * 也就是说认为该位点不存在snp，必须有10条reads支持。
+	 * 如果只有4条没有snp的reads覆盖，则认为不通过
+	 * 
+	 * ，默认为10 */
+	public void setRef_ReadsAllNumMin(int ref_ReadsAllNumMin) {
+		Ref_ReadsAllNumMin = ref_ReadsAllNumMin;
+	}
+	
 	/**添加样本过滤信息，注意大小写 */
 	public void addSampleFilterInfo(SnpGroupFilterInfo sampleDetail) {
 		this.setSampleFilterInfo.add(sampleDetail);
@@ -141,6 +150,7 @@ public class SnpFilter {
 		int numSnpIndel = siteSnpIndelInfo.getReadsNum();
 		int numAll = mapInfoSnpIndel.getReadsNumAll();
 		
+		//TODO 这种合适吗？
 		//因为可能有别的基因型，所以用这种方式，将所有非本snp的位点都忽略为ref位点。
 		int numRef = numAll - numSnpIndel;//mapInfoSnpIndel.getReadsNumRef();
 		return getSnpIndelType(siteSnpIndelInfo.getSnpIndelType(), numSnpIndel, numRef, numAll);

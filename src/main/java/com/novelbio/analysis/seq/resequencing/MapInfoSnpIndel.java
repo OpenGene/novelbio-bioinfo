@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * 该位置可能有不止一种的插入缺失或是碱基替换类型，那么就用该hash表来存储这么多种信息<br>
 	 *Key: referenceSeq + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + snpType <br>
 	 * value: SiteSnpIndelInfo 类  */
-	Map<String, SiteSnpIndelInfo> mapAllen2Num = new TreeMap<String, SiteSnpIndelInfo>();
+	Map<String, SiteSnpIndelInfo> mapAllen2Num = new HashMap<String, SiteSnpIndelInfo>();
 
 	protected String chrID;
 	String refBase = "";
@@ -50,7 +51,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	GffGeneIsoInfo gffGeneIsoInfo;
 	GffChrAbs gffChrAbs;
 	/** 样本和正常reads之间的关系 */
-	TreeMap<String, SampleRefReadsInfo> mapSample2NormReadsInfo = new TreeMap<String, SampleRefReadsInfo>();
+	Map<String, SampleRefReadsInfo> mapSample2NormReadsInfo = new HashMap<String, SampleRefReadsInfo>();
 	String sampleName = SampleDefaultName;
 	
 	public MapInfoSnpIndel() {}
@@ -75,6 +76,12 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	}
 	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		if (gffChrAbs == null) {
+			return;
+		}
+		if (this.gffChrAbs != null && this.gffChrAbs.getSpecies() != null && this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies())) {
+			return;
+		}
 		this.gffChrAbs = gffChrAbs;
 	}
 	
@@ -184,6 +191,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @return
 	 */
 	public GffGeneIsoInfo getGffIso() {
+		setGffIso();
 		return gffGeneIsoInfo;
 	}
 	/**
@@ -211,7 +219,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		chrID = inputLines[0];
 		refSnpIndelStart = Integer.parseInt(inputLines[1]); 
 		setGffIso();
-		addAllenInfo(inputLines[6], inputLines[7]);
+		getAndAddAllenInfo(inputLines[6], inputLines[7]);
 		
 	}
 
@@ -225,7 +233,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		//TODO :chrID是否需要小写
 		chrID = inputLines[vcfCols.colChrID];
 		setGffIso();
-		SiteSnpIndelInfo siteSnpIndelInfo = addAllenInfo(inputLines[vcfCols.colRefsequence], inputLines[vcfCols.colThisSequence]);
+		SiteSnpIndelInfo siteSnpIndelInfo = getAndAddAllenInfo(inputLines[vcfCols.colRefsequence], inputLines[vcfCols.colThisSequence]);
 		if (vcfCols.colBaseInfo >= 0)
 			setBaseInfo(inputLines[vcfCols.colBaseInfo]);
 		if (vcfCols.colQuality >= 0)
@@ -476,7 +484,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 			referenceSeq = referenceSeq + indel;
 		}
 		
-		addSnpIndel2Map(referenceSeq, thisSeq);
+		addSnpIndel2Map(referenceSeq, thisSeq, 1);
 		return index;
 	}
 	
@@ -493,34 +501,36 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		if (isNextSiteIndel(pipInfo, thisIndex)) {
 			return thisSeq;
 		}
-		addSnpIndel2Map(refBase, thisSeq);
+		addSnpIndel2Map(refBase, thisSeq, 1);
 		return refBase;
 	}
 	
 	/** 给定snp的refsequence和thisSeq，将错配信息加入mapAllen2Num中 */
-	private void addSnpIndel2Map(String referenceSeq, String thisSeq) {
+	private SiteSnpIndelInfo addSnpIndel2Map(String referenceSeq, String thisSeq, int snpNum) {
 		String snpIndelInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
 		SiteSnpIndelInfo siteSnpIndelInfo = null;
 		
 		if (mapAllen2Num.containsKey(snpIndelInfo)) {
 			siteSnpIndelInfo = mapAllen2Num.get(snpIndelInfo);
 			siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
-			siteSnpIndelInfo.addThisBaseNum();
+			siteSnpIndelInfo.addThisBaseNum(snpNum);
 		}
 		else {
 			siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, referenceSeq, thisSeq);
 			siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
-			siteSnpIndelInfo.setThisReadsNum(1);
-			mapAllen2Num.put(snpIndelInfo, siteSnpIndelInfo);
+			siteSnpIndelInfo.setThisReadsNum(snpNum);
+			if (siteSnpIndelInfo.getSnpIndelType() != SnpIndelType.CORRECT) {
+				mapAllen2Num.put(snpIndelInfo, siteSnpIndelInfo);
+			}
 		}
+		return siteSnpIndelInfo;
 	}
 
-	/** 返回加入的siteSnpIndelInfo */
-	public SiteSnpIndelInfo addAllenInfo(String referenceSeq, String thisSeq) {
-		SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, referenceSeq, thisSeq);
-		siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
-		mapAllen2Num.put(SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq), siteSnpIndelInfo);
-		return siteSnpIndelInfo;
+	/** 将错配类型位点加入mapAllen2Num，同时返回产生的siteSnpIndelInfo
+	 * <b>如果没有错配，则不加入mapAllen2Num</b>
+	 *  */
+	public SiteSnpIndelInfo getAndAddAllenInfo(String referenceSeq, String thisSeq) {
+		return addSnpIndel2Map(referenceSeq, thisSeq, 0);
 	}
 	/**
 	 * 将另一个mapInfoSnpIndel的所有snpIndel信息装入本类，那么如果遇到相同的snpIndel就仅记载该样本这个snp的数量信息
@@ -939,6 +949,7 @@ class SampleRefReadsInfo {
 	public void setRefDepth(int allelic_depths_Ref) {
 		this.Allelic_depths_Ref = allelic_depths_Ref;
 	}
+	/** 加上与ref相符的reads数量 */
 	public void addRefDepth(int num) {
 		this.Allelic_depths_Ref = Allelic_depths_Ref + num;
 	}

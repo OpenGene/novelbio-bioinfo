@@ -151,10 +151,10 @@ public abstract class SiteSnpIndelInfo {
 		}
 		return sampleSnpReadsQuality.vcfFilterInfo;
 	}
-	/**计数加一 */
-	protected void addThisBaseNum() {
+	/** snp计数添加addNum */
+	protected void addThisBaseNum(int addNum) {
 		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
-		sampleSnpReadsQuality.addThisReadsNum();
+		sampleSnpReadsQuality.addThisReadsNum(addNum);
 	}
 	protected void setOrAddSampleInfo(String sampleName) {
 		if (!mapSample2thisBaseNum.containsKey(sampleName)) {
@@ -706,8 +706,12 @@ class SampleSnpReadsQuality {
 	public SampleSnpReadsQuality(int thisReadsNum) {
 		this.thisReadsNum = thisReadsNum;
 	}
-	public void addThisReadsNum() {
-		thisReadsNum = thisReadsNum + 1;
+	/**
+	 * 添加snp位点的数量
+	 * @param addNum
+	 */
+	public void addThisReadsNum(int addNum) {
+		thisReadsNum = thisReadsNum + addNum;
 	}
 }
 

@@ -30,10 +30,12 @@ public class TestMapInfoSnpIndel extends TestCase {
 		assertReadsSiteWith3GeneType2();
 		assertReadsSiteWith2GeneType3();
 		assertReadsSiteWith2GeneType4Write();
+		assertReadsSiteMultiSample();
+		assertReadsSiteMultiSample2();
 	}
 	private void assertReadVcfAndSamPileUpLines() {
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs);
-
+		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		VcfCols vcfCols = new VcfCols();
 		SiteSnpIndelInfo siteSnpIndelInfoA;
 		SiteSnpIndelInfo siteSnpIndelInfoC;
@@ -60,7 +62,8 @@ public class TestMapInfoSnpIndel extends TestCase {
 		assertEquals(176, siteSnpIndelInfoC.getReadsNum());
 	}
 	private void assertRawReadSamPileUpLines() {
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs);
+		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		mapInfoSnpIndel.setRefSnpIndelStart("chr6", 57512711);
 		mapInfoSnpIndel.setSampleName("2A");
 		mapInfoSnpIndel.setSamToolsPilup("chr6	57512711	G	591	C$c$c$Caa$aa$c$.CCCCaaaacaaacc,cC.CCCaaC,aaCCCCaccaacca,c,A.Ac.,$a,cAC$cacc,,aaC.,cc,c,,,,A..A.ACCaC..CAacc,a.C,,c,,a,,aCC,a.aacaacacacacaca,A...ca,,.A..cac,,a.CCCaAA,aa,,Aa,caaca,,a,acca.....,,,,,ca,,,c,,aa,,caa,a,,cccC...,,,,.CA.Cc,,,caca,,a,A...,,.ca,a...a,aaa.c,c,,acc,accaccc,,,,,,,,ac,,,c,cca,AC,,a,a..cC.Cac,A,ac,aCa,,,,c.ca,ac,,aaCAcc,,,,cc,,ca,,c,cac,a,ca,c,,,,cACCC,ccac,aaca,C,,,A.AaaA,,,aaaaacc,,ac,a.,aaacCCc,,caaa,aacca,ccc,c,cca,,ccaaa,aac,aaca,ac,,,a,aca,,aaa,a,ccaaaa,ca,,,aaa,,,a,a,,ac,,c,a,,aaaccac,c,ca,ca,,ca,ca,cc,c,,c,cc,ca,c,c,,,ccac,accccac,,,aaaaacaaaacaaa,,acc,,,ac,,,,,,^],	'!!+.#,!!D30=+===@>==,@,C,=DDD=FFDFFFEEECFFFF.FFFFFFD>EFECFFF*!-HDD?HDFECFF,FFFFEHFEEFBD@FFFFFFDHHHHGFFHHDHHFHHDD3DFEJHHHJFHJJJGJJGJIHFFFJHJJ>HHGHHIJIDHHHHHHHJGJCHHJGHHJJJJBJJIJHGAH>EAHHJIJHJHJJJJHJJGJIIIIJII>HJHIJ6JJJGIIIEGIJJGJJJJIJGJJIJHJIJJJJHHJJHIIJJJJJJJJIJI?EJJJJJIJJJJIJJJIJIJJJJJJGGJIJJHJI6JJIFJJIFIHJJJGJIBJIIJBJIIJHJIJJJIIJJIJJIIJFIHDIJJJJDIJHJ@JJGIIFGIJJJIIGBGII?JHIJIJJHICIIJJJIIIJJJHJIHIJIJJIIIJEJEICHJJJJIHIJIHGGD9IHIJJAJIIIJII@HIIJJ;@@<HJG@JHHHAEHHHHJHHHHHFJFIBHIEFDIFFCFDFFGFFFFHDFCADEHHEFDEEFHFBAFBDFFHGEFEE8DDFEEBEB(FCDCFCFDEEDB>;DDBEDBDDDCCCDDC>DC@DDA,DDDDDDADCD==CD@:@D>");
@@ -75,7 +78,8 @@ public class TestMapInfoSnpIndel extends TestCase {
 	}
 	/** 有三个基因型的位点 */
 	private void assertReadsSiteWith3GeneType() {
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs);
+		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		VcfCols vcfCols = new VcfCols();
 		
 		String vcfLine2A = "chr1	158580921	rs66981873	G	GCA	309.80	GATKStandard	AC=2;AF=1.00;AN=2;DB;DP=14;FS=0.000;HRun=0;HaplotypeScore=51.3672;MQ=63.75;MQ0=0;QD=22.13;SB=-0.00;set=FilteredInAll	GT:AD:DP:GQ:PL	1/1:6,8:14:24.08:352,24,0";
@@ -107,15 +111,16 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2B.setSampleSnpIndelNum(1, 1);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
-		SiteSnpIndelInfo result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
-		result.setSampleName("2B");
-		System.out.println(result.getMismatchInfo());
-		assertEquals(6, result.getReadsNum());
+		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		result.get(0).setSampleName("2B");
+		System.out.println(result.get(0).getMismatchInfo());
+		assertEquals(6, result.get(0).getReadsNum());
 	}
 	//TODO 再测试仪个
 	/** 有三个基因型的位点 */
 	private void assertReadsSiteWith3GeneType2() {
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs);
+		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel();
 		VcfCols vcfCols = new VcfCols();
 		String vcfLine2A = "chr1	69270	.	A	G	597.49	TruthSensitivityTranche99.90to100.00	AC=2;AF=1.00;AN=2;DP=488;DS;Dels=0.00;FS=0.000;HRun=0;HaplotypeScore=0.0000;MQ=6.30;MQ0=416;QD=1.22;SB=-0.01;VQSLOD=-22.2566;culprit=MQ;set=FilteredInAll	GT:AD:DP:GQ:PL	1/1:249,237:488:71.90:630,72,0";
@@ -153,13 +158,14 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2B.setSampleSnpIndelHetoLessNum(0, 0);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
-		SiteSnpIndelInfo result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
-		assertEquals(null, result);
+		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		assertEquals(0, result.size());
 	}
 	
 	/** 有两个基因型的位点 */
 	private void assertReadsSiteWith2GeneType3() {
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs);
+		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		VcfCols vcfCols = new VcfCols();
 		String vcfLine2A = "chr1	100671866	rs34229137	T	A	932.62	TruthSensitivityTranche99.00to99.90	AB=0.602;AC=1;AF=0.50;AN=2;BaseQRankSum=1.363;DB;DP=83;Dels=0.00;FS=0.884;HRun=13;HaplotypeScore=9.7086;MQ=58.73;MQ0=0;MQRankSum=2.098;QD=11.24;ReadPosRankSum=0.293;SB=-337.54;VQSLOD=0.0292;culprit=MQ;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:50,33:83:99:963,0,1528";
 		String vcfLine2B = "chr1	100671866	rs34229137	T	A	1557.72	TruthSensitivityTranche99.00to99.90	AB=0.540;AC=1;AF=0.50;AN=2;BaseQRankSum=-0.597;DB;DP=124;Dels=0.00;FS=7.108;HRun=13;HaplotypeScore=14.6854;MQ=58.49;MQ0=0;MQRankSum=1.028;QD=12.56;ReadPosRankSum=0.256;SB=-793.21;VQSLOD=0.1711;culprit=HaplotypeScore;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:67,57:124:99:1588,0,1923";
@@ -196,13 +202,14 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2B.setSampleSnpIndelHetoLessNum(0, 0);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
-		SiteSnpIndelInfo result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
-		assertEquals(null, result);
+		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		assertEquals(0, result.size());
 	}
 	
 	/** 有三个基因型的位点 */
 	private void assertReadsSiteWith2GeneType4Write() {
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs);
+		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		VcfCols vcfCols = new VcfCols();
 		String vcfLine2A = "chr1	165370367	rs3215856	T	TA	152.81	PASS	AB=0.762;AC=1;AF=0.50;AN=2;BaseQRankSum=-0.680;DB;DP=16;FS=0.000;HRun=0;HaplotypeScore=38.0502;MQ=60.00;MQ0=0;MQRankSum=-0.906;QD=9.55;ReadPosRankSum=0.680;SB=-0.00;set=Intersection	GT:AD:DP:GQ:PL	0/1:11,5:16:99:192,0,414";
 		String vcfLine2B = "chr1	165370367	rs3215856	T	TA	380.77	PASS	AB=0.583;AC=1;AF=0.50;AN=2;BaseQRankSum=-2.899;DB;DP=14;FS=0.000;HRun=0;HaplotypeScore=27.8516;MQ=61.53;MQ0=0;MQRankSum=0.636;QD=27.20;ReadPosRankSum=-0.778;SB=-96.01;set=Intersection	GT:AD:DP:GQ:PL	0/1:4,10:14:99:420,0,126";
@@ -239,9 +246,9 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2B.setSampleSnpIndelHetoLessNum(0, 0);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
-		SiteSnpIndelInfo result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
-		result.setSampleName("2B");
-		assertEquals(3, result.getReadsNum());
+		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		result.get(0).setSampleName("2B");
+		assertEquals(3, result.get(0).getReadsNum());
 		ArrayList<String> lsSample = new ArrayList<String>();
 		lsSample.add("2A"); lsSample.add("2B");
 		ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(lsSample, true);
@@ -251,5 +258,120 @@ public class TestMapInfoSnpIndel extends TestCase {
 			}
 			System.out.println();
 		}
+	}
+	
+	
+	/** 多个样本 */
+	private void assertReadsSiteMultiSample() {
+		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
+		VcfCols vcfCols = new VcfCols();
+		String vcfLine2A = "chr1	100671866	rs34229137	T	A	932.62	TruthSensitivityTranche99.00to99.90	AB=0.602;AC=1;AF=0.50;AN=2;BaseQRankSum=1.363;DB;DP=83;Dels=0.00;FS=0.884;HRun=13;HaplotypeScore=9.7086;MQ=58.73;MQ0=0;MQRankSum=2.098;QD=11.24;ReadPosRankSum=0.293;SB=-337.54;VQSLOD=0.0292;culprit=MQ;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:50,33:83:99:963,0,1528";
+		String vcfLine2B = "chr1	100671866	rs34229137	T	T	1557.72	TruthSensitivityTranche99.00to99.90	AB=0.540;AC=1;AF=0.50;AN=2;BaseQRankSum=-0.597;DB;DP=124;Dels=0.00;FS=7.108;HRun=13;HaplotypeScore=14.6854;MQ=58.49;MQ0=0;MQRankSum=1.028;QD=12.56;ReadPosRankSum=0.256;SB=-793.21;VQSLOD=0.1711;culprit=HaplotypeScore;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:67,57:124:99:1588,0,1923";
+		String vcfLine2C = "chr1	100671866	rs34229137	T	T	1557.72	TruthSensitivityTranche99.00to99.90	AB=0.540;AC=1;AF=0.50;AN=2;BaseQRankSum=-0.597;DB;DP=124;Dels=0.00;FS=7.108;HRun=13;HaplotypeScore=14.6854;MQ=58.49;MQ0=0;MQRankSum=1.028;QD=12.56;ReadPosRankSum=0.256;SB=-793.21;VQSLOD=0.1711;culprit=HaplotypeScore;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:67,57:124:99:1588,0,1923";
+		String vcfLine2D = "chr1	100671866	rs34229137	T	T	1557.72	TruthSensitivityTranche99.00to99.90	AB=0.540;AC=1;AF=0.50;AN=2;BaseQRankSum=-0.597;DB;DP=124;Dels=0.00;FS=7.108;HRun=13;HaplotypeScore=14.6854;MQ=58.49;MQ0=0;MQRankSum=1.028;QD=12.56;ReadPosRankSum=0.256;SB=-793.21;VQSLOD=0.1711;culprit=HaplotypeScore;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:67,57:124:99:1588,0,1923";
+
+		mapInfoSnpIndel.setVcfLines("2A", vcfCols, vcfLine2A);
+		mapInfoSnpIndel.setVcfLines("2B", vcfCols, vcfLine2B);
+		mapInfoSnpIndel.setVcfLines("2C", vcfCols, vcfLine2C);
+		mapInfoSnpIndel.setVcfLines("2D", vcfCols, vcfLine2D);
+		
+		String samPileUpLine2A = "chr1	100671866	t	93	.$,$a,A.A,..,aa.,a.A,+1aaaaa,,,-1aa,aa,.aAA,,,a,,,,.,,.,a,,a,aAa.AAA,,,.a..a.-1A....aA,,aA..AAa.,,,,,,Aa	;>!@!D!DDDJEIDIGA!;FJHGGG2FD!DBJD!!DDBDD=BGJDBJ@D@D!E6!!J!JJC?DHDJI:HGHHH!3DD!!EE!!!4>>*989!'";
+		String samPileUpLine2B = "chr1	100671866	t	138	.$.$AA,a.A..,,,A,,A,A,.A,a,aa.,,,a,,,,aa.,A,..+1AaA..a,-1aA,,A.a,,aaA,,AaaAA,.a,,,,aa.+1A,..A,,aa.A,,A.A.-2AAAA,A.aA..,,aa.AaaaaaaaAA,,,,,,,,a,aAaa.,,,a,	>;!!C!B!BDFFF!HH4JBFB!GEGEADD=DECHFC@4HHIHJJDEJJ!G=CCJJB'BDD,BD!DBIJ;J!AD(B<9IDJJ!BBB5JJB2HHHGHH@$D93FF))96F!!(!(!!!!!985(;<>!!>!!!!>=2>!>";
+		
+		//CD都是纯合
+		String samPileUpLine2C = "chr1	100671866	t	4	.$.$..	>;!!";
+		String samPileUpLine2D = "chr1	100671866	t	4	.$.$..	>;!!";
+		
+		mapInfoSnpIndel.setSampleName("2A");
+		mapInfoSnpIndel.setSamToolsPilup(samPileUpLine2A);
+		mapInfoSnpIndel.setSampleName("2B");
+		mapInfoSnpIndel.setSamToolsPilup(samPileUpLine2B);
+		
+		mapInfoSnpIndel.setSampleName("2C");
+		mapInfoSnpIndel.setSamToolsPilup(samPileUpLine2C);
+		mapInfoSnpIndel.setSampleName("2D");
+		mapInfoSnpIndel.setSamToolsPilup(samPileUpLine2D);
+		
+		SnpFilter sampleFilter = new SnpFilter();
+		sampleFilter.setRef_ReadsAllNumMin(4);
+		SnpGroupFilterInfo sampleDetail2AB = new SnpGroupFilterInfo();
+		sampleDetail2AB.addSampleName("2A");
+		sampleDetail2AB.addSampleName("2B");
+		sampleDetail2AB.setSampleRefHomoNum(0, 0);
+		sampleDetail2AB.setSampleSnpIndelNum(1, 10);
+		sampleDetail2AB.setSampleSnpIndelHetoLessNum(0, 0);
+		
+		sampleFilter.addSampleFilterInfo(sampleDetail2AB);
+		
+		SnpGroupFilterInfo sampleDetail2CD = new SnpGroupFilterInfo();
+		sampleDetail2CD.addSampleName("2C");
+		sampleDetail2CD.addSampleName("2D");
+		sampleDetail2CD.setSampleRefHomoNum(1, 10);
+		sampleDetail2CD.setSampleSnpIndelNum(0, 0);
+		
+		sampleFilter.addSampleFilterInfo(sampleDetail2CD);
+		
+		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		assertEquals(1, result.size());
+		mapInfoSnpIndel.setSampleName("2B");
+		assertEquals(4, mapInfoSnpIndel.getLsAllenInfoSortBig2Small().size());
+	}
+	
+	/** 多个样本2 */
+	private void assertReadsSiteMultiSample2() {
+		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
+		VcfCols vcfCols = new VcfCols();
+		String vcfLine2A = "chr1	100671866	rs34229137	T	A	932.62	TruthSensitivityTranche99.00to99.90	AB=0.602;AC=1;AF=0.50;AN=2;BaseQRankSum=1.363;DB;DP=83;Dels=0.00;FS=0.884;HRun=13;HaplotypeScore=9.7086;MQ=58.73;MQ0=0;MQRankSum=2.098;QD=11.24;ReadPosRankSum=0.293;SB=-337.54;VQSLOD=0.0292;culprit=MQ;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:50,33:83:99:963,0,1528";
+		String vcfLine2B = "chr1	100671866	rs34229137	T	T	1557.72	TruthSensitivityTranche99.00to99.90	AB=0.540;AC=1;AF=0.50;AN=2;BaseQRankSum=-0.597;DB;DP=124;Dels=0.00;FS=7.108;HRun=13;HaplotypeScore=14.6854;MQ=58.49;MQ0=0;MQRankSum=1.028;QD=12.56;ReadPosRankSum=0.256;SB=-793.21;VQSLOD=0.1711;culprit=HaplotypeScore;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:67,57:124:99:1588,0,1923";
+		String vcfLine2C = "chr1	100671866	rs34229137	T	T	1557.72	TruthSensitivityTranche99.00to99.90	AB=0.540;AC=1;AF=0.50;AN=2;BaseQRankSum=-0.597;DB;DP=124;Dels=0.00;FS=7.108;HRun=13;HaplotypeScore=14.6854;MQ=58.49;MQ0=0;MQRankSum=1.028;QD=12.56;ReadPosRankSum=0.256;SB=-793.21;VQSLOD=0.1711;culprit=HaplotypeScore;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:67,57:124:99:1588,0,1923";
+		String vcfLine2D = "chr1	100671866	rs34229137	T	T	1557.72	TruthSensitivityTranche99.00to99.90	AB=0.540;AC=1;AF=0.50;AN=2;BaseQRankSum=-0.597;DB;DP=124;Dels=0.00;FS=7.108;HRun=13;HaplotypeScore=14.6854;MQ=58.49;MQ0=0;MQRankSum=1.028;QD=12.56;ReadPosRankSum=0.256;SB=-793.21;VQSLOD=0.1711;culprit=HaplotypeScore;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:67,57:124:99:1588,0,1923";
+
+		mapInfoSnpIndel.setVcfLines("2A", vcfCols, vcfLine2A);
+		mapInfoSnpIndel.setVcfLines("2B", vcfCols, vcfLine2B);
+		mapInfoSnpIndel.setVcfLines("2C", vcfCols, vcfLine2C);
+		mapInfoSnpIndel.setVcfLines("2D", vcfCols, vcfLine2D);
+		
+		String samPileUpLine2A = "chr1	100671866	t	93	.$,$a,A.A,..,aa.,a.A,+1aaaaa,,,-1aa,aa,.aAA,,,a,,,,.,,.,a,,a,aAa.AAA,,,.a..a.-1A....aA,,aA..AAa.,,,,,,Aa	;>!@!D!DDDJEIDIGA!;FJHGGG2FD!DBJD!!DDBDD=BGJDBJ@D@D!E6!!J!JJC?DHDJI:HGHHH!3DD!!EE!!!4>>*989!'";
+		String samPileUpLine2B = "chr1	100671866	t	138	.$.$AA,a.A..,,,A,,A,A,.A,a,aa.,,,a,,,,aa.,A,..+1AaA..a,-1aA,,A.a,,aaA,,AaaAA,.a,,,,aa.+1A,..A,,aa.A,,A.A.-2AAAA,A.aA..,,aa.AaaaaaaaAA,,,,,,,,a,aAaa.,,,a,	>;!!C!B!BDFFF!HH4JBFB!GEGEADD=DECHFC@4HHIHJJDEJJ!G=CCJJB'BDD,BD!DBIJ;J!AD(B<9IDJJ!BBB5JJB2HHHGHH@$D93FF))96F!!(!(!!!!!985(;<>!!>!!!!>=2>!>";
+		
+		//C有一个snp，D没有
+		String samPileUpLine2C = "chr1	100671866	t	4	.$.$A.	>;!!";
+		String samPileUpLine2D = "chr1	100671866	t	4	.$.$..	>;!!";
+		
+		mapInfoSnpIndel.setSampleName("2A");
+		mapInfoSnpIndel.setSamToolsPilup(samPileUpLine2A);
+		mapInfoSnpIndel.setSampleName("2B");
+		mapInfoSnpIndel.setSamToolsPilup(samPileUpLine2B);
+		
+		mapInfoSnpIndel.setSampleName("2C");
+		mapInfoSnpIndel.setSamToolsPilup(samPileUpLine2C);
+		mapInfoSnpIndel.setSampleName("2D");
+		mapInfoSnpIndel.setSamToolsPilup(samPileUpLine2D);
+		
+		SnpFilter sampleFilter = new SnpFilter();
+		sampleFilter.setRef_ReadsAllNumMin(4);
+		SnpGroupFilterInfo sampleDetail2AB = new SnpGroupFilterInfo();
+		sampleDetail2AB.addSampleName("2A");
+		sampleDetail2AB.addSampleName("2B");
+		sampleDetail2AB.setSampleRefHomoNum(0, 0);
+		sampleDetail2AB.setSampleSnpIndelNum(1, 10);
+		sampleDetail2AB.setSampleSnpIndelHetoLessNum(0, 0);
+		
+		sampleFilter.addSampleFilterInfo(sampleDetail2AB);
+		
+		SnpGroupFilterInfo sampleDetail2CD = new SnpGroupFilterInfo();
+		sampleDetail2CD.addSampleName("2C");
+		sampleDetail2CD.addSampleName("2D");
+		sampleDetail2CD.setSampleRefHomoNum(0, 10);
+		sampleDetail2CD.setSampleSnpIndelNum(0, 1);
+		
+		sampleFilter.addSampleFilterInfo(sampleDetail2CD);
+		
+		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		assertEquals(1, result.size());
+		mapInfoSnpIndel.setSampleName("2B");
+		assertEquals(4, mapInfoSnpIndel.getLsAllenInfoSortBig2Small().size());
 	}
 }

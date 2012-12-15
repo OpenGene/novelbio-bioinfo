@@ -8,6 +8,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoTrans;
 import com.novelbio.analysis.seq.rnaseq.GffGeneCluster;
+import com.novelbio.database.model.modgeneid.GeneType;
 
 import junit.framework.TestCase;
 /**
@@ -25,11 +26,11 @@ public class TestGffGeneCluster extends TestCase{
 	GffDetailGene gffDetailGeneCis = new GffDetailGene("chr1", "test", true);
 	GffDetailGene gffDetailGeneTrans = new GffDetailGene("chr1", "test", false);
 	
-	GffGeneIsoInfo gffGeneIsoInfoRefCis = new GffGeneIsoCis("CisRef", gffDetailGeneCis, GffGeneIsoInfo.TYPE_GENE_MRNA);
-	GffGeneIsoInfo gffGeneIsoInfoThisCis = new GffGeneIsoCis("CisThis", gffDetailGeneCis, GffGeneIsoInfo.TYPE_GENE_MRNA);
+	GffGeneIsoInfo gffGeneIsoInfoRefCis = new GffGeneIsoCis("CisRef", gffDetailGeneCis, GeneType.mRNA);
+	GffGeneIsoInfo gffGeneIsoInfoThisCis = new GffGeneIsoCis("CisThis", gffDetailGeneCis, GeneType.mRNA);
 	
-	GffGeneIsoInfo gffGeneIsoInfoRefTrans = new GffGeneIsoTrans("TransRef", gffDetailGeneTrans, GffGeneIsoInfo.TYPE_GENE_MRNA);
-	GffGeneIsoInfo gffGeneIsoInfoThisTrans = new GffGeneIsoTrans("TransThis", gffDetailGeneTrans, GffGeneIsoInfo.TYPE_GENE_MRNA);
+	GffGeneIsoInfo gffGeneIsoInfoRefTrans = new GffGeneIsoTrans("TransRef", gffDetailGeneTrans, GeneType.mRNA);
+	GffGeneIsoInfo gffGeneIsoInfoThisTrans = new GffGeneIsoTrans("TransThis", gffDetailGeneTrans, GeneType.mRNA);
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -89,7 +90,7 @@ public class TestGffGeneCluster extends TestCase{
 		boolean cis = true;
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
-		gffGeneIsoInfoThisCis = new GffGeneIsoCis("CisThis", gffDetailGeneCis, GffGeneIsoInfo.TYPE_GENE_MRNA);
+		gffGeneIsoInfoThisCis = new GffGeneIsoCis("CisThis", gffDetailGeneCis, GeneType.mRNA);
 		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));

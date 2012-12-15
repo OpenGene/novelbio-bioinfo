@@ -33,7 +33,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		thisSeq = "T";
 		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152759777);
 		mapInfoSnpIndel.setSampleName("test");
-		mapInfoSnpIndel.addAllenInfo(referenceSeq, thisSeq);
+		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
 		assertEquals("ATGTCC", siteSnpIndelInfo.getRefAAnr().toString());
 		assertEquals("ATC", siteSnpIndelInfo.getThisAAnr().toString());
@@ -43,7 +43,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		thisSeq = "A";
 		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152759776);
 		mapInfoSnpIndel.setSampleName("test");
-		mapInfoSnpIndel.addAllenInfo(referenceSeq, thisSeq);
+		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
 		assertEquals("ATGTCC", siteSnpIndelInfo.getRefAAnr().toString());
 		assertEquals("AC", siteSnpIndelInfo.getThisAAnr().toString());
@@ -53,7 +53,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		thisSeq = "T";
 		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152759776);
 		mapInfoSnpIndel.setSampleName("test");
-		mapInfoSnpIndel.addAllenInfo(referenceSeq, thisSeq);
+		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
 		assertEquals("ATG", siteSnpIndelInfo.getRefAAnr().toString());
 		assertEquals("TTG", siteSnpIndelInfo.getThisAAnr().toString());
@@ -63,7 +63,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		thisSeq = "G";
 		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152759777);
 		mapInfoSnpIndel.setSampleName("test");
-		mapInfoSnpIndel.addAllenInfo(referenceSeq, thisSeq);
+		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
 		assertEquals("ATG", siteSnpIndelInfo.getRefAAnr().toString());
 		assertEquals("AGG", siteSnpIndelInfo.getThisAAnr().toString());
@@ -73,7 +73,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		thisSeq = "G";
 		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152759773);
 		mapInfoSnpIndel.setSampleName("test");
-		mapInfoSnpIndel.addAllenInfo(referenceSeq, thisSeq);
+		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
 		assertEquals("ATG", siteSnpIndelInfo.getRefAAnr().toString());
 		assertEquals("GTG", siteSnpIndelInfo.getThisAAnr().toString());
@@ -83,7 +83,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		thisSeq = "G";
 		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152759773);
 		mapInfoSnpIndel.setSampleName("test");
-		mapInfoSnpIndel.addAllenInfo(referenceSeq, thisSeq);
+		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
 		assertEquals("ATGTCC", siteSnpIndelInfo.getRefAAnr().toString());
 		assertEquals("GCC", siteSnpIndelInfo.getThisAAnr().toString());
@@ -95,7 +95,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		thisSeq = "T";
 		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 153270435);
 		mapInfoSnpIndel.setSampleName("test");
-		mapInfoSnpIndel.addAllenInfo(referenceSeq, thisSeq);
+		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
 		assertEquals("TTCAAGCACTGA", siteSnpIndelInfo.getRefAAnr().toString());
 		assertEquals("T", siteSnpIndelInfo.getThisAAnr().toString());
@@ -105,7 +105,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		thisSeq = "T";
 		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 153270435);
 		mapInfoSnpIndel.setSampleName("test");
-		mapInfoSnpIndel.addAllenInfo(referenceSeq, thisSeq);
+		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
 		assertEquals("AAGCACTGA", siteSnpIndelInfo.getRefAAnr().toString());
 		assertEquals("AA", siteSnpIndelInfo.getThisAAnr().toString());
@@ -115,7 +115,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		thisSeq = "T";
 		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 153270436);
 		mapInfoSnpIndel.setSampleName("test");
-		mapInfoSnpIndel.addAllenInfo(referenceSeq, thisSeq);
+		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
 		assertEquals("CACTGA", siteSnpIndelInfo.getRefAAnr().toString());
 		assertEquals("CAA", siteSnpIndelInfo.getThisAAnr().toString());
@@ -127,7 +127,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		thisSeq = "G";
 		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152749002);
 		mapInfoSnpIndel.setSampleName("test");
-		mapInfoSnpIndel.addAllenInfo(referenceSeq, thisSeq);
+		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
 		assertEquals("TGTGGCTCC", siteSnpIndelInfo.getRefAAnr().toString());
 		assertEquals("TGC", siteSnpIndelInfo.getThisAAnr().toString());
@@ -137,7 +137,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		thisSeq = "G";
 		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152749002);
 		mapInfoSnpIndel.setSampleName("test");
-		mapInfoSnpIndel.addAllenInfo(referenceSeq, thisSeq);
+		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
 		assertEquals("TGT", siteSnpIndelInfo.getRefAAnr().toString());
 		assertEquals("TG", siteSnpIndelInfo.getThisAAnr().toString());
@@ -147,7 +147,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		thisSeq = "T";
 		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152749002);
 		mapInfoSnpIndel.setSampleName("test");
-		mapInfoSnpIndel.addAllenInfo(referenceSeq, thisSeq);
+		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
 		assertEquals("TGT", siteSnpIndelInfo.getRefAAnr().toString());
 		assertEquals("TT", siteSnpIndelInfo.getThisAAnr().toString());
