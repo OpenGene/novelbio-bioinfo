@@ -334,7 +334,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	 * 返回该基因所对应的GOInfo信息，不包含Blast
 	 * @return
 	 */
-	protected GOInfoAbs getGOInfo() {
+	public GOInfoAbs getGOInfo() {
 		if (goInfoAbs == null) {
 			setGoInfo();
 		}

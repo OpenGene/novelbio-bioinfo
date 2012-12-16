@@ -24,7 +24,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	GffChrAbs gffChrAbs;
 
 	/** key为小写 */
-	Map<String, ArrayList<MapInfoSnpIndel>> mapChrID2LsSnpSite = new HashMap<String, ArrayList<MapInfoSnpIndel>>();
+	Map<String, ArrayList<RefSiteSnpIndel>> mapChrID2LsSnpSite = new HashMap<String, ArrayList<RefSiteSnpIndel>>();
 	/** 样本信息 */
 	LinkedHashMap<String, String> mapSample2PileupFile = new LinkedHashMap<String, String>();
 	/** 读取文件时去除重复snp位点 */
@@ -90,12 +90,12 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			if (isReplicateSnpSite(ss[colChrID], snpSiteLoc))
 				continue;
 			
-			MapInfoSnpIndel snpSiteSimple = new MapInfoSnpIndel(gffChrAbs, ss[colChrID], snpSiteLoc);
+			RefSiteSnpIndel snpSiteSimple = new RefSiteSnpIndel(gffChrAbs, ss[colChrID], snpSiteLoc);
 			String snpChrID = snpSiteSimple.getRefID().toLowerCase();
 			
-			ArrayList<MapInfoSnpIndel> lsSnpSiteSimples = mapChrID2LsSnpSite.get(snpChrID);
+			ArrayList<RefSiteSnpIndel> lsSnpSiteSimples = mapChrID2LsSnpSite.get(snpChrID);
 			if (lsSnpSiteSimples == null) {
-				lsSnpSiteSimples = new ArrayList<MapInfoSnpIndel>();
+				lsSnpSiteSimples = new ArrayList<RefSiteSnpIndel>();
 				mapChrID2LsSnpSite.put(snpChrID, lsSnpSiteSimples);
 			}
 			lsSnpSiteSimples.add(snpSiteSimple);
@@ -118,16 +118,16 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	 * @param lsSite
 	 * @return
 	 */
-	public void setMapChrID2InfoSnpIndel(Collection<MapInfoSnpIndel> lsSite) {
+	public void setMapChrID2InfoSnpIndel(Collection<RefSiteSnpIndel> lsSite) {
 		/** 每个chrID对应一组mapinfo，也就是一个list */
 		// 按照chr位置装入hash表
-		for (MapInfoSnpIndel mapInfoSnpIndel : lsSite) {
-			ArrayList<MapInfoSnpIndel> lsMap = mapChrID2LsSnpSite.get(mapInfoSnpIndel.getRefID().toLowerCase());
+		for (RefSiteSnpIndel refSiteSnpIndel : lsSite) {
+			ArrayList<RefSiteSnpIndel> lsMap = mapChrID2LsSnpSite.get(refSiteSnpIndel.getRefID().toLowerCase());
 			if (lsMap == null) {
-				lsMap = new ArrayList<MapInfoSnpIndel>();
-				mapChrID2LsSnpSite.put(mapInfoSnpIndel.getRefID().toLowerCase(), lsMap);
+				lsMap = new ArrayList<RefSiteSnpIndel>();
+				mapChrID2LsSnpSite.put(refSiteSnpIndel.getRefID().toLowerCase(), lsMap);
 			}
-			lsMap.add(mapInfoSnpIndel);
+			lsMap.add(refSiteSnpIndel);
 		}
 	}
 	
@@ -164,7 +164,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	private void sortSnp() {
 		setThreadInfo(0, 0, "sorting snps");
 		
-		for (ArrayList<MapInfoSnpIndel> lsSnpSiteSimples : mapChrID2LsSnpSite.values()) {
+		for (ArrayList<RefSiteSnpIndel> lsSnpSiteSimples : mapChrID2LsSnpSite.values()) {
 			///////////////多线程使用 ///////////////////////
 			suspendCheck();
 			if (flagStop) {
@@ -186,7 +186,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	private void getSiteInfo_FromPileUp(String sampleName, String samToolsPleUpFile) {
 		/** 每个chrID对应一组mapinfo，也就是一个list */
 		TxtReadandWrite txtReadSam = new TxtReadandWrite(samToolsPleUpFile, false);
-		String tmpChrID = ""; ArrayList<MapInfoSnpIndel> lsMapInfos = null;
+		String tmpChrID = ""; ArrayList<RefSiteSnpIndel> lsMapInfos = null;
 		int mapInfoIndex = 0;// 依次进行下去
 		for (String samtoolsLine : txtReadSam.readlines()) {
 			/////////////////////多线程使用 /////////////////////////////////////////
@@ -244,10 +244,10 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		setThreadInfo(readLines, readByte, "writeToFile");
 		
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
-		txtWrite.writefileln(MapInfoSnpIndel.getTitleFromSampleName(mapSample2PileupFile.keySet()));
-		for (ArrayList<MapInfoSnpIndel> lsMapInfoSnpIndels : mapChrID2LsSnpSite.values()) {//每条染色体
-			for (MapInfoSnpIndel mapInfoSnpIndel : lsMapInfoSnpIndels) {//每个位点
-				ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(mapSample2PileupFile.keySet(), false);
+		txtWrite.writefileln(RefSiteSnpIndel.getTitleFromSampleName(mapSample2PileupFile.keySet()));
+		for (ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndel : mapChrID2LsSnpSite.values()) {//每条染色体
+			for (RefSiteSnpIndel refSiteSnpIndel : lsRefSiteSnpIndel) {//每个位点
+				ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(mapSample2PileupFile.keySet(), false);
 				for (String[] strings : lsResult) {//每个位点所存在的snp
 					txtWrite.writefileln(strings);
 				}
@@ -257,19 +257,19 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	}
 	
 	/** 扫描了但是没有reads的pileupline */
-	private void setPassedSnp(String sampleName, ArrayList<MapInfoSnpIndel> lsMapInfos, int mapInfoIndex) {
-		MapInfoSnpIndel mapInfoSnpIndel = lsMapInfos.get(mapInfoIndex);
-		mapInfoSnpIndel.setSampleName(sampleName);
-		mapInfoSnpIndel.setSearchSamPileUpFileTrue();
+	private void setPassedSnp(String sampleName, ArrayList<RefSiteSnpIndel> lsMapInfos, int mapInfoIndex) {
+		RefSiteSnpIndel refSiteSnpIndel = lsMapInfos.get(mapInfoIndex);
+		refSiteSnpIndel.setSampleName(sampleName);
+		refSiteSnpIndel.setSearchSamPileUpFileTrue();
 	}
-	/** 会首先判断 loc是否与当前的MapInfoSnpIndel位点一致 */
-	private boolean addMapSiteInfo(int loc, ArrayList<MapInfoSnpIndel> lsMapInfos, int mapInfoIndex, String sampleName, String samtoolsLine) {
+	/** 会首先判断 loc是否与当前的refSiteSnpIndel位点一致 */
+	private boolean addMapSiteInfo(int loc, ArrayList<RefSiteSnpIndel> lsMapInfos, int mapInfoIndex, String sampleName, String samtoolsLine) {
 		if (loc != lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart())
 			return false;
-		MapInfoSnpIndel mapInfoSnpIndel = lsMapInfos.get(mapInfoIndex);
-		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
-		mapInfoSnpIndel.setSampleName(sampleName);
-		mapInfoSnpIndel.setSamToolsPilup(samtoolsLine);
+		RefSiteSnpIndel refSiteSnpIndel = lsMapInfos.get(mapInfoIndex);
+		refSiteSnpIndel.setGffChrAbs(gffChrAbs);
+		refSiteSnpIndel.setSampleName(sampleName);
+		refSiteSnpIndel.setSamToolsPilup(samtoolsLine);
 		return true;
 	}
 	

@@ -20,7 +20,7 @@ import com.novelbio.analysis.seq.mapping.MapRsem;
 import com.novelbio.analysis.seq.mapping.MapTophat;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.mirna.MiRNAtargetRNAhybrid;
-import com.novelbio.analysis.seq.resequencing.MapInfoSnpIndel;
+import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;

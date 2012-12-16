@@ -37,11 +37,10 @@ public class StatisticsIndelProp implements StatisticsUnit {
 	
 	/**
 	 * 设定样本名和要过滤的snpLevel
-	 * @param sampleName 样本名和主程序中设定的样本名一致，如果主程序没有设定样本名，这里就输入null
 	 * @param snpLevel 待查找的snp级别 SnpGroupFilterInfo.HetoLess 等
 	 */
-	public void setSnpSampleInfo(String sampleName, int snpLevel) {
-		snpFilter.setSampleFilterInfoSingle(sampleName, snpLevel);
+	public void setSnpSampleInfo(int snpLevel) {
+		snpFilter.setSampleFilterInfoSingle(snpLevel);
 	}
 	
 	/**  前一个是C当前一个是A，记录前面连续C的raws平均数的数量 形式例如key是4C_10，value是num数量例如3 */

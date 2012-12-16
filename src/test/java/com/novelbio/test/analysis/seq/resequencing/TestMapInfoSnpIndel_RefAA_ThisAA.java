@@ -3,13 +3,13 @@ package com.novelbio.test.analysis.seq.resequencing;
 import org.junit.Test;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.resequencing.MapInfoSnpIndel;
+import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
 
 import junit.framework.TestCase;
 
 public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
-	MapInfoSnpIndel mapInfoSnpIndel;
+	RefSiteSnpIndel mapInfoSnpIndel;
 	SiteSnpIndelInfo siteSnpIndelInfo;
 	GffChrAbs gffChrAbs;
 	String referenceSeq = "GTGGCTC";
@@ -31,7 +31,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 	public void assertAtgSiteForword() {
 		referenceSeq = "TGTC";
 		thisSeq = "T";
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152759777);
+		mapInfoSnpIndel = new RefSiteSnpIndel(gffChrAbs, "chr1", 152759777);
 		mapInfoSnpIndel.setSampleName("test");
 		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
@@ -41,7 +41,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		
 		referenceSeq = "ATGTC";
 		thisSeq = "A";
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152759776);
+		mapInfoSnpIndel = new RefSiteSnpIndel(gffChrAbs, "chr1", 152759776);
 		mapInfoSnpIndel.setSampleName("test");
 		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
@@ -51,7 +51,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		
 		referenceSeq = "A";
 		thisSeq = "T";
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152759776);
+		mapInfoSnpIndel = new RefSiteSnpIndel(gffChrAbs, "chr1", 152759776);
 		mapInfoSnpIndel.setSampleName("test");
 		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
@@ -61,7 +61,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		
 		referenceSeq = "T";
 		thisSeq = "G";
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152759777);
+		mapInfoSnpIndel = new RefSiteSnpIndel(gffChrAbs, "chr1", 152759777);
 		mapInfoSnpIndel.setSampleName("test");
 		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
@@ -71,7 +71,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		
 		referenceSeq = "GAGA";
 		thisSeq = "G";
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152759773);
+		mapInfoSnpIndel = new RefSiteSnpIndel(gffChrAbs, "chr1", 152759773);
 		mapInfoSnpIndel.setSampleName("test");
 		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
@@ -81,7 +81,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		
 		referenceSeq = "GAGATGT";
 		thisSeq = "G";
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152759773);
+		mapInfoSnpIndel = new RefSiteSnpIndel(gffChrAbs, "chr1", 152759773);
 		mapInfoSnpIndel.setSampleName("test");
 		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
@@ -93,7 +93,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 	public void assertUagSiteBackrword() {
 		referenceSeq = "TCAGTGCTTGAA";
 		thisSeq = "T";
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 153270435);
+		mapInfoSnpIndel = new RefSiteSnpIndel(gffChrAbs, "chr1", 153270435);
 		mapInfoSnpIndel.setSampleName("test");
 		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
@@ -103,7 +103,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		
 		referenceSeq = "TCAGTGCT";
 		thisSeq = "T";
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 153270435);
+		mapInfoSnpIndel = new RefSiteSnpIndel(gffChrAbs, "chr1", 153270435);
 		mapInfoSnpIndel.setSampleName("test");
 		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
@@ -113,7 +113,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		
 		referenceSeq = "TCAG";
 		thisSeq = "T";
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 153270436);
+		mapInfoSnpIndel = new RefSiteSnpIndel(gffChrAbs, "chr1", 153270436);
 		mapInfoSnpIndel.setSampleName("test");
 		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
@@ -125,7 +125,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 	public void assertNormForword() {
 		referenceSeq = "GTGGCTC";
 		thisSeq = "G";
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152749002);
+		mapInfoSnpIndel = new RefSiteSnpIndel(gffChrAbs, "chr1", 152749002);
 		mapInfoSnpIndel.setSampleName("test");
 		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
@@ -135,7 +135,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		
 		referenceSeq = "GT";
 		thisSeq = "G";
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152749002);
+		mapInfoSnpIndel = new RefSiteSnpIndel(gffChrAbs, "chr1", 152749002);
 		mapInfoSnpIndel.setSampleName("test");
 		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);
@@ -145,7 +145,7 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 		
 		referenceSeq = "TG";
 		thisSeq = "T";
-		mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, "chr1", 152749002);
+		mapInfoSnpIndel = new RefSiteSnpIndel(gffChrAbs, "chr1", 152749002);
 		mapInfoSnpIndel.setSampleName("test");
 		mapInfoSnpIndel.getAndAddAllenInfo(referenceSeq, thisSeq);
 		siteSnpIndelInfo = mapInfoSnpIndel.getSnpIndel(referenceSeq, thisSeq);

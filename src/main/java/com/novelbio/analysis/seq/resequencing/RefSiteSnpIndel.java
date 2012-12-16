@@ -27,8 +27,8 @@ import com.novelbio.base.dataStructure.ArrayOperate;
  * @author zong0jie
  *
  */
-public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
-	private static Logger logger = Logger.getLogger(MapInfoSnpIndel.class);
+public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
+	private static Logger logger = Logger.getLogger(RefSiteSnpIndel.class);
 	protected static final String SampleDefaultName = "sample";
 	/** 
 	 * <b>里面都是正向的序列</b>
@@ -36,6 +36,8 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 *Key: referenceSeq + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + snpType <br>
 	 * value: SiteSnpIndelInfo 类  */
 	Map<String, SiteSnpIndelInfo> mapAllen2Num = new HashMap<String, SiteSnpIndelInfo>();
+	/** 样本和正常reads之间的关系 */
+	Map<String, SampleRefReadsInfo> mapSample2NormReadsInfo = new HashMap<String, SampleRefReadsInfo>();
 
 	protected String chrID;
 	String refBase = "";
@@ -50,16 +52,14 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 */
 	GffGeneIsoInfo gffGeneIsoInfo;
 	GffChrAbs gffChrAbs;
-	/** 样本和正常reads之间的关系 */
-	Map<String, SampleRefReadsInfo> mapSample2NormReadsInfo = new HashMap<String, SampleRefReadsInfo>();
-	String sampleName = SampleDefaultName;
+		String sampleName = SampleDefaultName;
 	
-	public MapInfoSnpIndel() {}
+	public RefSiteSnpIndel() {}
 	/**
 	 * @param gffChrAbs
 	 * @param sampleName
 	 */
-	public MapInfoSnpIndel(GffChrAbs gffChrAbs, String sampleName) {
+	public RefSiteSnpIndel(GffChrAbs gffChrAbs, String sampleName) {
 		this.gffChrAbs = gffChrAbs;
 		setSampleName(sampleName);
 	}
@@ -68,7 +68,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * @param chrID
 	 * @param refSnpIndelStart
 	 */
-	public MapInfoSnpIndel(GffChrAbs gffChrAbs,String chrID, int refSnpIndelStart) {
+	public RefSiteSnpIndel(GffChrAbs gffChrAbs,String chrID, int refSnpIndelStart) {
 		this.gffChrAbs = gffChrAbs;
 		this.chrID = chrID;
 		this.refSnpIndelStart = refSnpIndelStart;
@@ -196,12 +196,12 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	}
 	/**
 	 * 判断另一个snp或者indel是不是与本mapInfo在同一个转录本中
-	 * 两个mapInfoSnpIndel都必须有gffGeneIsoInfo设置好
-	 * @param mapInfoSnpIndel
+	 * 两个refSiteSnpIndel都必须有gffGeneIsoInfo设置好
+	 * @param refSiteSnpIndel
 	 * @return
 	 */
-	public boolean isSameIso(MapInfoSnpIndel mapInfoSnpIndel) {
-		if (gffGeneIsoInfo != null && gffGeneIsoInfo.equals(mapInfoSnpIndel.getGffIso())) {
+	public boolean isSameIso(RefSiteSnpIndel RefSiteSnpIndel) {
+		if (gffGeneIsoInfo != null && gffGeneIsoInfo.equals(RefSiteSnpIndel.getGffIso())) {
 			return true;
 		} else {
 			return false;
@@ -209,7 +209,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	}
 	
 	/**
-	 * 根据设定的列信息，填充mapinfosnpindel信息
+	 * 根据设定的列信息，填充refSiteSnpIndel信息
 	 * 仅仅读取snp信息，不读取多少snp信息
 	 */
 	public void setNBCLines(String sampleName, String novelBioLine) {
@@ -224,7 +224,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	}
 
 	/**
-	 * 根据设定的列信息，填充mapinfosnpindel信息
+	 * 根据设定的列信息，填充refSiteSnpIndel信息
 	 */
 	public void setVcfLines(String sampleName, VcfCols vcfCols, String vcfLines) {
 		setSampleName(sampleName);
@@ -533,11 +533,11 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		return addSnpIndel2Map(referenceSeq, thisSeq, 0);
 	}
 	/**
-	 * 将另一个mapInfoSnpIndel的所有snpIndel信息装入本类，那么如果遇到相同的snpIndel就仅记载该样本这个snp的数量信息
-	 * @param mapInfoSnpIndel
+	 * 将另一个refSiteSnpIndel的所有snpIndel信息装入本类，那么如果遇到相同的snpIndel就仅记载该样本这个snp的数量信息
+	 * @param refSiteSnpIndel
 	 */
-	public void addAllenInfo(MapInfoSnpIndel mapInfoSnpIndel) {
-		Collection<SiteSnpIndelInfo> colSiteSnpIndelInfosInput = mapInfoSnpIndel.mapAllen2Num.values();
+	public void addAllenInfo(RefSiteSnpIndel refSiteSnpIndel) {
+		Collection<SiteSnpIndelInfo> colSiteSnpIndelInfosInput = refSiteSnpIndel.mapAllen2Num.values();
 		for (SiteSnpIndelInfo siteSnpIndelInfoInput : colSiteSnpIndelInfosInput) {
 			SiteSnpIndelInfo siteSnpIndelInfoThis = mapAllen2Num.get(siteSnpIndelInfoInput.getMismatchInfo());
 			if (siteSnpIndelInfoThis == null) {
@@ -547,7 +547,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 				siteSnpIndelInfoThis.addSiteSnpIndelInfo(siteSnpIndelInfoInput);
 			}
 		}
-		for (Entry<String, SampleRefReadsInfo> entry : mapInfoSnpIndel.mapSample2NormReadsInfo.entrySet()) {
+		for (Entry<String, SampleRefReadsInfo> entry : refSiteSnpIndel.mapSample2NormReadsInfo.entrySet()) {
 			if (mapSample2NormReadsInfo.containsKey(entry.getKey())) {
 				continue;
 			}
@@ -556,20 +556,20 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	}
 
 	/**
-	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
-	 * 注意，输入的mapInfoSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>
+	 * 给定refSiteSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
+	 * 注意，输入的refSiteSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>
 	 * 此外输入的indel在查找的时候会将第一位删除，因为GATK出来的第一位是indel的前一位<br>
 	 * 返回该种形式错配以及相应序列所含有的reads堆叠数
 	 * 从hash表中获得
-	 * @param mapInfoSnpIndel 正常的别的样本的信息
-	 * @return 如果输入的mapInfoSnpIndelQuery中没有错配的信息，则返回null
+	 * @param refSiteSnpIndelParent 正常的别的样本的信息
+	 * @return 如果输入的refSiteSnpIndelQuery中没有错配的信息，则返回null
 	 */
-	public SiteSnpIndelInfo getSnpIndelNum(MapInfoSnpIndel mapInfoSnpIndelQuery) {
-		if (mapInfoSnpIndelQuery.getRefSnpIndelStart() != getRefSnpIndelStart()) {
-			logger.error("输入的查找位点不是同一个，本位点：" + getRefSnpIndelStart() + "查找位点：" + mapInfoSnpIndelQuery.getRefSnpIndelStart());
+	public SiteSnpIndelInfo getSnpIndelNum(RefSiteSnpIndel refSiteSnpIndelQuery) {
+		if (refSiteSnpIndelQuery.getRefSnpIndelStart() != getRefSnpIndelStart()) {
+			logger.error("输入的查找位点不是同一个，本位点：" + getRefSnpIndelStart() + "查找位点：" + refSiteSnpIndelQuery.getRefSnpIndelStart());
 			return null;
 		}
-		SiteSnpIndelInfo siteSnpIndelInfoQuery = mapInfoSnpIndelQuery.getSiteSnpInfoBigAllen();
+		SiteSnpIndelInfo siteSnpIndelInfoQuery = refSiteSnpIndelQuery.getSiteSnpInfoBigAllen();
 		return getSnpIndel(siteSnpIndelInfoQuery);
 	}
 	/**
@@ -628,7 +628,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		for (SiteSnpIndelInfo siteSnpIndelInfo : lsAllenInfo) {
 			siteSnpIndelInfo.setSampleName(sampleName);
 		}
-		Collections.sort(lsAllenInfo, new compMapInfoSnpIndelBig2Small(sampleName));
+		Collections.sort(lsAllenInfo, new compRefSiteSnpIndelBig2Small(sampleName));
 		return lsAllenInfo;
 	}
 	//TODO check
@@ -649,23 +649,23 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 		}
 	}
 	/**
-	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
-	 * 注意，输入的mapInfoSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>
+	 * 给定refSiteSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
+	 * 注意，输入的refSiteSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>
 	 * 此外输入的indel在查找的时候会将第一位删除，因为GATK出来的第一位是indel的前一位<br>
 	 * 返回该种形式错配以及相应序列所含有的reads堆叠数
 	 * 从hash表中获得
-	 * @param mapInfoSnpIndel 正常的别的样本的信息
+	 * @param refSiteSnpIndel 正常的别的样本的信息
 	 * @return 返回描述性的话:<br>
 	 * refID \t  refStart \t refBase  \t  depth \t indelBase  \t indelNum   <br>
 	 * 出错返回"";
 	 */
-	public String getSeqTypeNumStr(MapInfoSnpIndel mapInfoSnpIndel) {
-		SiteSnpIndelInfo siteSnpIndelInfoQuery = mapInfoSnpIndel.getSiteSnpInfoBigAllen();
+	public String getSeqTypeNumStr(RefSiteSnpIndel refSiteSnpIndel) {
+		SiteSnpIndelInfo siteSnpIndelInfoQuery = refSiteSnpIndel.getSiteSnpInfoBigAllen();
 		return getSeqTypeNumStr(siteSnpIndelInfoQuery);
 	}
 	/**
-	 * 给定mapInfoSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
-	 * 注意，输入的mapInfoSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>
+	 * 给定refSiteSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
+	 * 注意，输入的refSiteSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>
 	 * 此外输入的indel在查找的时候会将第一位删除，因为GATK出来的第一位是indel的前一位<br>
 	 * 返回该种形式错配以及相应序列所含有的reads堆叠数
 	 * 从hash表中获得
@@ -873,7 +873,7 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	 * 先比refID，然后比start，end，或者比flag或者比score
 	 * 比score的时候就不考虑refID了
 	 */
-	public int compareTo(MapInfoSnpIndel mapInfoOther) {
+	public int compareTo(RefSiteSnpIndel mapInfoOther) {
 		int i = chrID.compareTo(mapInfoOther.chrID);
 		if (i != 0) {
 			return i;
@@ -885,12 +885,12 @@ public class MapInfoSnpIndel implements Comparable<MapInfoSnpIndel>, Cloneable{
 	/**
 	 * 尚未实现
 	 */
-	public MapInfoSnpIndel clone() {
-		MapInfoSnpIndel mapInfoSnpIndel;
+	public RefSiteSnpIndel clone() {
+		RefSiteSnpIndel refSiteSnpIndel;
 		try {
 			//TODO
-			mapInfoSnpIndel = (MapInfoSnpIndel) super.clone();
-			return mapInfoSnpIndel;
+			refSiteSnpIndel = (RefSiteSnpIndel) super.clone();
+			return refSiteSnpIndel;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
@@ -975,9 +975,9 @@ class SampleRefReadsInfo {
 	}
 }
 /** 设定需要排序的样本，也就是输入的名字，然后根据该样本的信息进行排序 */
-class compMapInfoSnpIndelBig2Small implements Comparator<SiteSnpIndelInfo> {
+class compRefSiteSnpIndelBig2Small implements Comparator<SiteSnpIndelInfo> {
 	String sampleName;
-	public compMapInfoSnpIndelBig2Small(String sampleName) {
+	public compRefSiteSnpIndelBig2Small(String sampleName) {
 		this.sampleName = sampleName;
 	}
 	//倒序排列

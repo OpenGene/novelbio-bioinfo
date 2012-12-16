@@ -114,9 +114,9 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		if (refStartSite == 212267) {
 			logger.error("stop");
 		}
-		MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, lsInfo.get(colChrID), refStartSite);
-		SiteSnpIndelInfo siteSnpIndelInfo = mapInfoSnpIndel.getAndAddAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
-		GffGeneIsoInfo gffGeneIsoInfo = mapInfoSnpIndel.getGffIso();
+		RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, lsInfo.get(colChrID), refStartSite);
+		SiteSnpIndelInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
+		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
 		if (gffGeneIsoInfo == null) {
 			return input;
 		}
@@ -126,9 +126,9 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		lsInfo.add(gffGeneIsoInfo.toStringCodLocStr(refStartSite));
 		
 		//如果snp落在了intron里面，本项目就不计数了
-		double prop = mapInfoSnpIndel.getProp();
+		double prop = refSiteSnpIndel.getProp();
 		if (prop >= 0) {
-			lsInfo.add(mapInfoSnpIndel.getProp() + "");
+			lsInfo.add(refSiteSnpIndel.getProp() + "");
 		} else {
 			lsInfo.add("");
 		}
@@ -143,8 +143,8 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		return ArrayOperate.cmbString(result, "\t");
 	}
 	
-	public MapInfoSnpIndel getSnpSite(String chrID, int site) {
-		return new MapInfoSnpIndel(gffChrAbs, chrID, site);
+	public RefSiteSnpIndel getSnpSite(String chrID, int site) {
+		return new RefSiteSnpIndel(gffChrAbs, chrID, site);
 	}
 	/** tilte和annoSnp方法中一致 */
 	public static ArrayList<String> getTitleLs() {

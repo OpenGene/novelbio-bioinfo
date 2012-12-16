@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -25,7 +26,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	ArrayList<String[]> lsSample2PileUpFiles = new ArrayList<String[]>();
 	
 	/** 用于多个样本的snp去冗余的，其中key表示该snp所在的起点信息，value就是该位点具体的snp情况 */
-	TreeMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel = null;
+	Map<String, RefSiteSnpIndel> mapSiteInfo2RefSiteSnpIndel = null;
 	
 	/** 用来过滤样本的 */
 	SnpFilter snpFilter = new SnpFilter();
@@ -39,8 +40,8 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	TxtReadandWrite txtSnpOut;
 	
 	/** 找到的snp与名字会装到这个里面 */
-	public void setMapSiteInfo2MapInfoSnpIndel(TreeMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel) {
-		this.mapSiteInfo2MapInfoSnpIndel = mapSiteInfo2MapInfoSnpIndel;
+	public void setMapSiteInfo2RefSiteSnpIndel(Map<String, RefSiteSnpIndel> mapSiteInfo2RefSiteSnpIndel) {
+		this.mapSiteInfo2RefSiteSnpIndel = mapSiteInfo2RefSiteSnpIndel;
 	}
 	
 	/** snp过滤等级 */
@@ -116,7 +117,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	}
 	/** 
 	 * 不从vcf，而是从pileUp中获取snp的方法
-	 * 将pileUp的snp信息加入mapSiteInfo2MapInfoSnpIndel中
+	 * 将pileUp的snp信息加入mapSiteInfo2RefSiteSnpIndel中
 	 * 同时导出一份snp的信息表
 	 * @param sampleName
 	 * @param SnpGroupFilterInfo 过滤器，设定过滤的状态。本过滤器中的样本信息没有意义，会被清空
@@ -127,7 +128,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			txtSnpOut = new TxtReadandWrite(outPutFile, true);
 		}
 		TxtReadandWrite txtReadPileUp = new TxtReadandWrite(pileupFile, false);
-		snpFilter.setSampleFilterInfoSingle(sampleName, snpLevel);
+		snpFilter.setSampleFilterInfoSingle(snpLevel);
 		for (String pileupLines : txtReadPileUp.readlines()) {
 			readLines ++;
 			readByte += pileupFile.length();
@@ -138,24 +139,24 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 				notifyGUI(readLines, readByte);
 			}
 			////////////////////////////////////////////////
-			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
-			mapInfoSnpIndel.setSamToolsPilup(pileupLines);
+			RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, sampleName);
+			refSiteSnpIndel.setSamToolsPilup(pileupLines);
 			
-			ArrayList<SiteSnpIndelInfo> lsFilteredSnp = snpFilter.getFilterdSnp(mapInfoSnpIndel);
+			ArrayList<SiteSnpIndelInfo> lsFilteredSnp = snpFilter.getFilterdSnp(refSiteSnpIndel);
 			if (lsFilteredSnp.size() > 0) {
-				if(!writeInFile(mapInfoSnpIndel, lsFilteredSnp)) {
+				if(!writeInFile(refSiteSnpIndel, lsFilteredSnp)) {
 					logger.error("出现错误");
 				}
 				
-				if (mapSiteInfo2MapInfoSnpIndel != null) {
-					addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
+				if (mapSiteInfo2RefSiteSnpIndel != null) {
+					addSnp_2_mapSiteInfo2RefSiteSnpIndel(refSiteSnpIndel);
 				} else {
-					mapInfoSnpIndel.clear();
+					refSiteSnpIndel.clear();
 				}
 			} else {
-				mapInfoSnpIndel.clear();
+				refSiteSnpIndel.clear();
 			}
-			mapInfoSnpIndel = null;
+			refSiteSnpIndel = null;
 		}
 		
 		if (txtSnpOut != null) {
@@ -172,27 +173,27 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	}
 	
 	/** 将结果装入哈希表里面 */
-	private void addSnp_2_mapSiteInfo2MapInfoSnpIndel(MapInfoSnpIndel mapInfoSnpIndel) {
-		String key = mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart();
-		if (mapSiteInfo2MapInfoSnpIndel.containsKey(key)) {
-			MapInfoSnpIndel maInfoSnpIndelExist = mapSiteInfo2MapInfoSnpIndel.get(key);
-			maInfoSnpIndelExist.addAllenInfo(mapInfoSnpIndel);
+	private void addSnp_2_mapSiteInfo2RefSiteSnpIndel(RefSiteSnpIndel refSiteSnpIndel) {
+		String key = refSiteSnpIndel.getRefID() + SepSign.SEP_ID + refSiteSnpIndel.getRefSnpIndelStart();
+		if (mapSiteInfo2RefSiteSnpIndel.containsKey(key)) {
+			RefSiteSnpIndel maInfoSnpIndelExist = mapSiteInfo2RefSiteSnpIndel.get(key);
+			maInfoSnpIndelExist.addAllenInfo(refSiteSnpIndel);
 		}
 		else {
-			mapSiteInfo2MapInfoSnpIndel.put(key, mapInfoSnpIndel);
+			mapSiteInfo2RefSiteSnpIndel.put(key, refSiteSnpIndel);
 			
-			int snpNum = mapSiteInfo2MapInfoSnpIndel.size();
+			int snpNum = mapSiteInfo2RefSiteSnpIndel.size();
 			if (snpNum % 10000 == 0) {
 				logger.info("tree map size: "+ snpNum);
 			}
 		}
 	}
 	
-	private boolean writeInFile(MapInfoSnpIndel mapInfoSnpIndel, ArrayList<SiteSnpIndelInfo> lsFilteredSnp) {
+	private boolean writeInFile(RefSiteSnpIndel refSiteSnpIndel, ArrayList<SiteSnpIndelInfo> lsFilteredSnp) {
 		if (txtSnpOut == null) {
 			return true;
 		}
-		ArrayList<String[]> lsInfo = mapInfoSnpIndel.toStringLsSnp(lsFilteredSnp);
+		ArrayList<String[]> lsInfo = refSiteSnpIndel.toStringLsSnp(lsFilteredSnp);
 		if (lsInfo.size() == 0) {
 			logger.error("error");
 		}

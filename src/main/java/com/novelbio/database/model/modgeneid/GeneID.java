@@ -13,6 +13,7 @@ import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
@@ -37,7 +38,14 @@ public class GeneID implements GeneIDInt{
 	public final static String IDTYPE_GENEID = "NCBIID";
 	public final static String IDTYPE_UNIID = "UniprotID";
 	
-	private GeneIDabs geneID;
+	private GeneIDInt geneID;
+	
+	GeneIDfactoryInt geneIDfactoryInt = new GeneIDfactory();
+	
+	public void setGeneIDfactoryInt(GeneIDfactoryInt geneIDfactoryInt) {
+		this.geneIDfactoryInt = geneIDfactoryInt;
+	}
+	
 	/**
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
 	 * @param idType  必须是IDTYPE中的一种
@@ -45,19 +53,7 @@ public class GeneID implements GeneIDInt{
 	 * @param taxID 物种ID
 	 */
 	public GeneID(String idType, String genUniID, int taxID) {
-		genUniID = genUniID.trim();
-		if (genUniID.equals("")) {
-			genUniID = null;
-		}
-		if (idType.equals(IDTYPE_UNIID)) {
-			geneID = new GeneIDUni(null, genUniID, taxID);
-		}
-		else if (idType.equals(IDTYPE_GENEID)) {
-			geneID = new GeneIDNcbi(null, genUniID, taxID);
-		}
-		else if (idType.equals(IDTYPE_ACCID)) {
-			geneID = new GeneIDAccID(null, genUniID, taxID);
-		}
+		geneID = geneIDfactoryInt.createGeneID(idType, genUniID, taxID);
 	}
 
 	/**
@@ -70,21 +66,7 @@ public class GeneID implements GeneIDInt{
 	 *            物种ID
 	 */
 	public GeneID(String accID,String idType, String genUniID, int taxID) {
-		if (accID != null) {
-			accID = accID.replace("\"", "").trim();
-			if (accID.equals("")) {
-				accID = null;
-			}
-		}
-		if (idType.equals(IDTYPE_UNIID)) {
-			geneID = new GeneIDUni(accID, genUniID, taxID);
-		}
-		else if (idType.equals(IDTYPE_GENEID)) {
-			geneID = new GeneIDNcbi(accID, genUniID, taxID);
-		}
-		else if (idType.equals(IDTYPE_ACCID)) {
-			geneID = new GeneIDAccID(accID, genUniID, taxID);
-		}
+		geneID = geneIDfactoryInt.createGeneID(accID, idType, genUniID, taxID);
 	}
 	
 	
@@ -304,7 +286,7 @@ public class GeneID implements GeneIDInt{
 	public ArrayList<AGene2Go> getGene2GO(String GOType) {
 		return geneID.getGene2GO(GOType);
  	}
-	protected GOInfoAbs getGOInfo() {
+	public GOInfoAbs getGOInfo() {
 		return geneID.getGOInfo();
 	}
 	@Override
@@ -500,26 +482,19 @@ public class GeneID implements GeneIDInt{
 		GeneID otherObj = (GeneID)obj;
 		if (
 				//geneID相同且都不为“”，可以认为两个基因相同
-				(!geneID.genUniID.trim().equals("")
-				&& !otherObj.getGenUniID().trim().equals("") 
-				&& geneID.genUniID.trim().equals(otherObj.getGenUniID().trim())	
-				&& geneID.idType.equals(otherObj.getIDtype())
-				&& geneID.taxID == otherObj.getTaxID()
+				(!getIDtype().equals(GeneID.IDTYPE_ACCID) && !otherObj.getIDtype().equals(GeneID.IDTYPE_ACCID)
+				&& getGenUniID().trim().equals(otherObj.getGenUniID().trim())	
+				&& getIDtype().equals(otherObj.getIDtype())
+				&& getTaxID() == otherObj.getTaxID()
 				)
 				||//geneID都为""，那么如果两个accID相同且不为""，也可认为两个基因相同
-				(geneID.genUniID.trim().equals("")
-				&& otherObj.getGenUniID().trim().equals("") 
-				&& ( !geneID.accID.equals("") && !otherObj.getAccID().equals("") )
-				&& geneID.accID.equals(otherObj.getAccID())
-				&& geneID.idType.equals(otherObj.getIDtype())
-				&& geneID.taxID == otherObj.getTaxID()
-				)
-				||
-				//或者geneID和accID都为""也可以认为两个基因相同
-				(geneID.genUniID.trim().equals("")
-				&& otherObj.getGenUniID().trim().equals("") 
-				&& geneID.accID.equals("") 
-				&& otherObj.getAccID().equals("")						
+				(getIDtype().equals(GeneID.IDTYPE_ACCID) && otherObj.getIDtype().equals(GeneID.IDTYPE_ACCID)
+				&&
+				   ( !getAccID().equals("") && !otherObj.getAccID().equals("")
+				      && getAccID().equals(otherObj.getAccID())
+				      && getTaxID() == otherObj.getTaxID() )
+				      ||
+				      (getAccID().equals("") && otherObj.getAccID().equals(""))
 				)
 		)
 		{
@@ -532,13 +507,13 @@ public class GeneID implements GeneIDInt{
 	 */
 	public int hashCode(){
 		String hash = "";
-		if (geneID.genUniID != null && !geneID.genUniID.trim().equals("")) {
-			hash = geneID.genUniID.trim() + "sep_@@_genUni_" + geneID.idType.trim() + "@@" + geneID.taxID;
+		if (!getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+			hash = geneID.getGenUniID().trim() + SepSign.SEP_ID + getIDtype() + SepSign.SEP_INFO_SAMEDB + getTaxID();
 		}
-		else if ( geneID.genUniID.trim().equals("") && !geneID.accID.trim().equals("")) {
-			hash = geneID.accID.trim()+"@@accID"+geneID.idType.trim()+"@@"+geneID.taxID;
+		else if ( getIDtype().equals(GeneID.IDTYPE_ACCID) && !getAccID().trim().equals("")) {
+			hash = getAccID().trim() + "@@accID" + getIDtype() + "@@" + getTaxID();
 		}
-		else if ( geneID.genUniID.trim().equals("") && geneID.accID.trim().equals("")) {
+		else if ( getGenUniID().trim().equals("") && getAccID().trim().equals("")) {
 			hash = "";
 		}
 		return hash.hashCode();

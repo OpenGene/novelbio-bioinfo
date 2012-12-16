@@ -1,10 +1,10 @@
 package com.novelbio.analysis.seq.resequencing.statistics;
 
-import com.novelbio.analysis.seq.resequencing.MapInfoSnpIndel;
+import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 
-public class OneSeqInfo extends MapInfoSnpIndel {
+public class OneSeqInfo extends RefSiteSnpIndel {
 	/** 本位点最多snp的类型 */
 	private SnpIndelType snpIndelType;
 	private int indelReadsNum;

@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import junit.framework.TestCase;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.resequencing.MapInfoSnpIndel;
+import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
 import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
 import com.novelbio.analysis.seq.resequencing.SnpFilter;
 import com.novelbio.analysis.seq.resequencing.VcfCols;
 
 public class TestMapInfoSnpIndel extends TestCase {
-	MapInfoSnpIndel mapInfoSnpIndel;
+	RefSiteSnpIndel mapInfoSnpIndel;
 	GffChrAbs gffChrAbs = new GffChrAbs(9606);
 	@Override
 	protected void setUp() throws Exception {
@@ -34,7 +34,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		assertReadsSiteMultiSample2();
 	}
 	private void assertReadVcfAndSamPileUpLines() {
-		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		VcfCols vcfCols = new VcfCols();
 		SiteSnpIndelInfo siteSnpIndelInfoA;
@@ -62,7 +62,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		assertEquals(176, siteSnpIndelInfoC.getReadsNum());
 	}
 	private void assertRawReadSamPileUpLines() {
-		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		mapInfoSnpIndel.setRefSnpIndelStart("chr6", 57512711);
 		mapInfoSnpIndel.setSampleName("2A");
@@ -78,7 +78,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 	}
 	/** 有三个基因型的位点 */
 	private void assertReadsSiteWith3GeneType() {
-		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		VcfCols vcfCols = new VcfCols();
 		
@@ -119,9 +119,9 @@ public class TestMapInfoSnpIndel extends TestCase {
 	//TODO 再测试仪个
 	/** 有三个基因型的位点 */
 	private void assertReadsSiteWith3GeneType2() {
-		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
-		MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel();
+		RefSiteSnpIndel mapInfoSnpIndel = new RefSiteSnpIndel();
 		VcfCols vcfCols = new VcfCols();
 		String vcfLine2A = "chr1	69270	.	A	G	597.49	TruthSensitivityTranche99.90to100.00	AC=2;AF=1.00;AN=2;DP=488;DS;Dels=0.00;FS=0.000;HRun=0;HaplotypeScore=0.0000;MQ=6.30;MQ0=416;QD=1.22;SB=-0.01;VQSLOD=-22.2566;culprit=MQ;set=FilteredInAll	GT:AD:DP:GQ:PL	1/1:249,237:488:71.90:630,72,0";
 		String vcfLine2B = "chr1	69270	.	A	G	585.45	TruthSensitivityTranche99.90to100.00	AC=2;AF=1.00;AN=2;DP=500;DS;Dels=0.00;FS=0.000;HRun=0;HaplotypeScore=0.0000;MQ=5.62;MQ0=441;QD=1.17;SB=-0.01;VQSLOD=-22.4439;culprit=MQ;set=FilteredInAll	GT:AD:DP:GQ:PL	1/1:297,199:500:74.84:618,75,0";
@@ -164,7 +164,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 	
 	/** 有两个基因型的位点 */
 	private void assertReadsSiteWith2GeneType3() {
-		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		VcfCols vcfCols = new VcfCols();
 		String vcfLine2A = "chr1	100671866	rs34229137	T	A	932.62	TruthSensitivityTranche99.00to99.90	AB=0.602;AC=1;AF=0.50;AN=2;BaseQRankSum=1.363;DB;DP=83;Dels=0.00;FS=0.884;HRun=13;HaplotypeScore=9.7086;MQ=58.73;MQ0=0;MQRankSum=2.098;QD=11.24;ReadPosRankSum=0.293;SB=-337.54;VQSLOD=0.0292;culprit=MQ;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:50,33:83:99:963,0,1528";
@@ -208,7 +208,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 	
 	/** 有三个基因型的位点 */
 	private void assertReadsSiteWith2GeneType4Write() {
-		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		VcfCols vcfCols = new VcfCols();
 		String vcfLine2A = "chr1	165370367	rs3215856	T	TA	152.81	PASS	AB=0.762;AC=1;AF=0.50;AN=2;BaseQRankSum=-0.680;DB;DP=16;FS=0.000;HRun=0;HaplotypeScore=38.0502;MQ=60.00;MQ0=0;MQRankSum=-0.906;QD=9.55;ReadPosRankSum=0.680;SB=-0.00;set=Intersection	GT:AD:DP:GQ:PL	0/1:11,5:16:99:192,0,414";
@@ -263,7 +263,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 	
 	/** 多个样本 */
 	private void assertReadsSiteMultiSample() {
-		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		VcfCols vcfCols = new VcfCols();
 		String vcfLine2A = "chr1	100671866	rs34229137	T	A	932.62	TruthSensitivityTranche99.00to99.90	AB=0.602;AC=1;AF=0.50;AN=2;BaseQRankSum=1.363;DB;DP=83;Dels=0.00;FS=0.884;HRun=13;HaplotypeScore=9.7086;MQ=58.73;MQ0=0;MQRankSum=2.098;QD=11.24;ReadPosRankSum=0.293;SB=-337.54;VQSLOD=0.0292;culprit=MQ;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:50,33:83:99:963,0,1528";
@@ -320,7 +320,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 	
 	/** 多个样本2 */
 	private void assertReadsSiteMultiSample2() {
-		mapInfoSnpIndel = new MapInfoSnpIndel();
+		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		VcfCols vcfCols = new VcfCols();
 		String vcfLine2A = "chr1	100671866	rs34229137	T	A	932.62	TruthSensitivityTranche99.00to99.90	AB=0.602;AC=1;AF=0.50;AN=2;BaseQRankSum=1.363;DB;DP=83;Dels=0.00;FS=0.884;HRun=13;HaplotypeScore=9.7086;MQ=58.73;MQ0=0;MQRankSum=2.098;QD=11.24;ReadPosRankSum=0.293;SB=-337.54;VQSLOD=0.0292;culprit=MQ;set=FilteredInAll	GT:AD:DP:GQ:PL	0/1:50,33:83:99:963,0,1528";

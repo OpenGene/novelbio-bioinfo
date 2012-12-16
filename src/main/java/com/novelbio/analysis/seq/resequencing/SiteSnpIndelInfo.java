@@ -29,14 +29,17 @@ public abstract class SiteSnpIndelInfo {
 	
 	String sampleName;
 	
-	MapInfoSnpIndel mapInfoSnpIndel;
+	RefSiteSnpIndel refSiteSnpIndelParent;
 	/** snp所在refnr上的位置 */
 	int snpOnReplaceLocStart = 0;
 	int snpOnReplaceLocEnd = 0;
-	/** 如果snp落在了exon上，则该类来保存ref所影响到的氨基酸的序列 */
-	SiteInfo mapinfoRefSeqIntactAA = new SiteInfo();
+
 	String referenceSeq;
+	/** 如果snp落在了exon上，则该类来保存ref所影响到的氨基酸的序列 */
+	SiteInfo refSeqIntactAA = new SiteInfo();
+	
 	String thisSeq;
+	
 	/** 位点处在内含子还是外显子还是基因外，如果是deletion，那么优先看是否覆盖了exon */
 	int codLocInfo = 0;
 	boolean isInCDS = false;
@@ -44,29 +47,27 @@ public abstract class SiteSnpIndelInfo {
 	SplitType splitType = SplitType.NONE;
 	SnpIndelRs snpIndelRs;
 	ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
-	/** 样本名对应该样本这类型snp的reads数量
-	 * value为int[1]，仅仅用来保存snp数量
-	 */
+	/** 样本名对应该样本这类型snp的reads数量*/
 	Map<String, SampleSnpReadsQuality> mapSample2thisBaseNum = new HashMap<String, SampleSnpReadsQuality>();
 	/**
-	 * @param mapInfoSnpIndel 必须含有 GffIso 信息
+	 * @param refSiteSnpIndel 必须含有 GffIso 信息
 	 * @param gffChrAbs
 	 * @param refBase
 	 * @param thisBase
 	 */
-	public SiteSnpIndelInfo(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
-		mapinfoRefSeqIntactAA.setRefID(mapInfoSnpIndel.getRefID());
-		this.mapInfoSnpIndel = mapInfoSnpIndel;
+	public SiteSnpIndelInfo(RefSiteSnpIndel refSiteSnpIndel, String refBase, String thisBase) {
+		refSeqIntactAA.setRefID(refSiteSnpIndel.getRefID());
+		this.refSiteSnpIndelParent = refSiteSnpIndel;
 		this.thisSeq = thisBase;
 		this.referenceSeq = refBase;
-		setMapInfoRefSeqAA(mapInfoSnpIndel.gffChrAbs);
+		setMapInfoRefSeqAA(refSiteSnpIndel.gffChrAbs);
 	}
 	
 	private void setMapInfoRefSeqAA(GffChrAbs gffChrAbs) {
 		if (gffChrAbs == null)
 			return;
 		
-		if (mapInfoSnpIndel.getGffIso() == null)
+		if (refSiteSnpIndelParent.getGffIso() == null)
 			return;
 
 		setMapInfoRefSeqAAabs(gffChrAbs);
@@ -83,6 +84,20 @@ public abstract class SiteSnpIndelInfo {
 			return;
 		}
 		this.sampleName = sampleName;
+	}
+	
+	/** 样本名对应该样本这类型snp的reads数量*/
+	public Map<String, SampleSnpReadsQuality> getMapSample2thisBaseNum() {
+		return mapSample2thisBaseNum;
+	}
+	
+	/** 获得其父节点
+	 * 父节点的SampleName会被设置成与该site一样的名字
+	 *  
+	 *  */
+	public RefSiteSnpIndel getRefSiteSnpIndelParent() {
+		refSiteSnpIndelParent.setSampleName(sampleName);
+		return refSiteSnpIndelParent;
 	}
 	public boolean isContainSample(String sampleName) {
 		return mapSample2thisBaseNum.containsKey(sampleName);
@@ -164,7 +179,7 @@ public abstract class SiteSnpIndelInfo {
 	}
 	/** 本snp占总reads的比例 */
 	public double getThisBasePropss() {
-		return (double)getReadsNum()/mapInfoSnpIndel.getReadsNumAll();
+		return (double)getReadsNum()/refSiteSnpIndelParent.getReadsNumAll();
 	}
 	/**
 	 * 返回变化的AA的化学性质改变形式，不在cds中则返回""；
@@ -192,20 +207,20 @@ public abstract class SiteSnpIndelInfo {
 	 */
 	public SeqFasta getThisAAnr() {
 		String seq = thisSeq;
-		if ( mapinfoRefSeqIntactAA.isCis5to3() != null && !mapinfoRefSeqIntactAA.isCis5to3()) {
+		if ( refSeqIntactAA.isCis5to3() != null && !refSeqIntactAA.isCis5to3()) {
 			seq = SeqFasta.reservecom(seq);
 		}
-		if (mapInfoSnpIndel.getGffIso() == null)
+		if (refSiteSnpIndelParent.getGffIso() == null)
 			return new SeqFasta();
 	
 		return replaceSnpIndel(seq, snpOnReplaceLocStart, snpOnReplaceLocEnd);
 	}
 	
 	public SeqFasta getRefAAnr() {
-		return mapinfoRefSeqIntactAA.getSeqFasta();
+		return refSeqIntactAA.getSeqFasta();
 	}
 	public String getAAchamicalConvert() {
-		String refaa =  mapinfoRefSeqIntactAA.getSeqFasta().toStringAA(false);
+		String refaa =  refSeqIntactAA.getSeqFasta().toStringAA(false);
 		String thisaa = getThisAAnr().toStringAA(false);
 		return SeqFasta.cmpAAquality(refaa, thisaa);
 	}
@@ -220,7 +235,7 @@ public abstract class SiteSnpIndelInfo {
 	 * @return
 	 */
 	private SeqFasta replaceSnpIndel(String replace, int startLoc, int endLoc) {
-		SeqFasta seqFasta = mapinfoRefSeqIntactAA.getSeqFasta().clone();
+		SeqFasta seqFasta = refSeqIntactAA.getSeqFasta().clone();
 		if (seqFasta.toString().equals("")) {
 			return new SeqFasta();
 		}
@@ -249,9 +264,9 @@ public abstract class SiteSnpIndelInfo {
 	 */
 	private void setSnpIndelRs() {
 		SnpIndelRs snpIndelRs = new SnpIndelRs();
-		snpIndelRs.setChrID(mapinfoRefSeqIntactAA.getRefID());
-		snpIndelRs.setTaxID(mapInfoSnpIndel.getTaxID());
-		snpIndelRs.setLocStart(mapInfoSnpIndel.getRefSnpIndelStart());
+		snpIndelRs.setChrID(refSeqIntactAA.getRefID());
+		snpIndelRs.setTaxID(refSiteSnpIndelParent.getTaxID());
+		snpIndelRs.setLocStart(refSiteSnpIndelParent.getRefSnpIndelStart());
 		//TODO 输入待查询的序列
 //		snpIndelRs.setObserved(observed);
 //		this.snpIndelRs = servSnpIndelRs.querySnpIndelRs(snpIndelRs);
@@ -298,10 +313,10 @@ public abstract class SiteSnpIndelInfo {
 		if (getClass() != obj.getClass()) return false;
 		SiteSnpIndelInfo otherObj = (SiteSnpIndelInfo)obj;
 		if (
-				mapinfoRefSeqIntactAA.equals(otherObj.mapinfoRefSeqIntactAA)
+				refSeqIntactAA.equals(otherObj.refSeqIntactAA)
 				&& thisSeq.equals(otherObj.thisSeq)
-				&& mapInfoSnpIndel.getRefID().equals(otherObj.mapInfoSnpIndel.getRefID())
-				&& mapInfoSnpIndel.getRefSnpIndelStart() == otherObj.mapInfoSnpIndel.getRefSnpIndelStart()
+				&& refSiteSnpIndelParent.getRefID().equals(otherObj.refSiteSnpIndelParent.getRefID())
+				&& refSiteSnpIndelParent.getRefSnpIndelStart() == otherObj.refSiteSnpIndelParent.getRefSnpIndelStart()
 			)
 		{
 			return true;
@@ -310,13 +325,13 @@ public abstract class SiteSnpIndelInfo {
 	}
 	public String toString() {
 		//TODO 改装为list的方式来返回string数组
-		String refnr =  mapinfoRefSeqIntactAA.getSeqFasta().toString();
-		String refaa =  mapinfoRefSeqIntactAA.getSeqFasta().toStringAA(false);
+		String refnr =  refSeqIntactAA.getSeqFasta().toString();
+		String refaa =  refSeqIntactAA.getSeqFasta().toStringAA(false);
 		String thisnr =  getThisAAnr().toString();
 		String thisaa = getThisAAnr().toStringAA(false);
 		
-		String result =  mapinfoRefSeqIntactAA.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart() + "\t" + referenceSeq + "\t" + mapInfoSnpIndel.getReadsNumRef() + "\t" + thisSeq + "\t" + 
-		getReadsNum() + "\t" + getQuality() + "\t" + getVcfInfoFilter() + "\t" + isExon()+"\t" + mapInfoSnpIndel.getProp() +"\t"+
+		String result =  refSeqIntactAA.getRefID() + "\t" + refSiteSnpIndelParent.getRefSnpIndelStart() + "\t" + referenceSeq + "\t" + refSiteSnpIndelParent.getReadsNumRef() + "\t" + thisSeq + "\t" + 
+		getReadsNum() + "\t" + getQuality() + "\t" + getVcfInfoFilter() + "\t" + isExon()+"\t" + refSiteSnpIndelParent.getProp() +"\t"+
 		refnr +"\t"+refaa + "\t" + thisnr +"\t"+thisaa;
 		if (refaa.length() ==3  && thisaa.length() == 3) {
 			result = result + "\t" + SeqFasta.cmpAAquality(refaa, thisaa);
@@ -326,9 +341,9 @@ public abstract class SiteSnpIndelInfo {
 		}
 		result = result + "\t" + this.getOrfShift();
 		result = result + "\t" + snpIndelRs.getSnpRsID();
-		if (mapInfoSnpIndel.getGffIso() != null) {
-			result = result + "\t" + mapInfoSnpIndel.getGffIso().getName();
-			GeneID copedID = new GeneID(mapInfoSnpIndel.getGffIso().getName(), mapInfoSnpIndel.getTaxID(), false);
+		if (refSiteSnpIndelParent.getGffIso() != null) {
+			result = result + "\t" + refSiteSnpIndelParent.getGffIso().getName();
+			GeneID copedID = new GeneID(refSiteSnpIndelParent.getGffIso().getName(), refSiteSnpIndelParent.getTaxID(), false);
 			result = result + "\t" + copedID.getSymbol() +"\t"+copedID.getDescription();
 		}
 		else
@@ -342,7 +357,7 @@ public abstract class SiteSnpIndelInfo {
 	 * @return
 	 */
 	public String getMismatchInfo() {
-		return (mapInfoSnpIndel.getRefID() + SepSign.SEP_ID+ mapInfoSnpIndel.getRefSnpIndelStart() 
+		return (refSiteSnpIndelParent.getRefID() + SepSign.SEP_ID+ refSiteSnpIndelParent.getRefSnpIndelStart() 
 				+ SepSign.SEP_ID + referenceSeq + SepSign.SEP_ID + thisSeq).toLowerCase();
 	}
 	/**
@@ -379,7 +394,7 @@ public abstract class SiteSnpIndelInfo {
 				+ SepSign.SEP_ID + thisSeq).toLowerCase();
 	}
 	public void clean() {
-		mapinfoRefSeqIntactAA.clear();
+		refSeqIntactAA.clear();
 		mapSample2thisBaseNum.clear();
 	}
 	public static enum SnpIndelType {
@@ -395,7 +410,7 @@ public abstract class SiteSnpIndelInfo {
 class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 	private static Logger logger = Logger.getLogger(SiteSnpIndelInfoInsert.class);
 	
-	public SiteSnpIndelInfoInsert(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
+	public SiteSnpIndelInfoInsert(RefSiteSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
 		super(mapInfoSnpIndel, refBase, thisBase);
 		if (refBase.length() > 1) {
 			logger.error("refBase 大于1，可能不是插入，请核对：" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
@@ -403,21 +418,21 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 	}
 	@Override
 	protected void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs) {
-		GffGeneIsoInfo gffGeneIsoInfo = mapInfoSnpIndel.getGffIso();
-		codLocInfo = gffGeneIsoInfo.getCodLoc(mapInfoSnpIndel.getRefSnpIndelStart());
+		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndelParent.getGffIso();
+		codLocInfo = gffGeneIsoInfo.getCodLoc(refSiteSnpIndelParent.getRefSnpIndelStart());
 		if (codLocInfo != GffGeneIsoInfo.COD_LOC_OUT) {
-			setEffectSplitType(gffGeneIsoInfo, mapInfoSnpIndel.getRefSnpIndelStart());
+			setEffectSplitType(gffGeneIsoInfo, refSiteSnpIndelParent.getRefSnpIndelStart());
 		}
 		//mRNA层面
 		//就算在外显子中，但是如果是非编码rna，或者在UTR区域中，也返回
-		if (!gffGeneIsoInfo.isCodInAAregion(mapInfoSnpIndel.getRefSnpIndelStart())) {
+		if (!gffGeneIsoInfo.isCodInAAregion(refSiteSnpIndelParent.getRefSnpIndelStart())) {
 			isInCDS = false;
 			return;
 		}
 		
 		isInCDS = true;
-		int LocStart = gffGeneIsoInfo.getLocAAbefore(mapInfoSnpIndel.getRefSnpIndelStart());//该位点所在AA的第一个loc
-		int LocEnd = gffGeneIsoInfo.getLocAAend(mapInfoSnpIndel.getRefSnpIndelStart());
+		int LocStart = gffGeneIsoInfo.getLocAAbefore(refSiteSnpIndelParent.getRefSnpIndelStart());//该位点所在AA的第一个loc
+		int LocEnd = gffGeneIsoInfo.getLocAAend(refSiteSnpIndelParent.getRefSnpIndelStart());
 		if (LocEnd <0) {//如果不在转录本中
 			if (gffGeneIsoInfo.isCis5to3()) {
 				LocEnd = LocStart + 2;
@@ -428,21 +443,21 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		SeqFasta NR = null;
 		ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
 		if (lsTmp == null) {
-			NR = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), mapInfoSnpIndel.getRefID(), LocStart, LocEnd);
+			NR = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), refSiteSnpIndelParent.getRefID(), LocStart, LocEnd);
 		}
 		else if (lsTmp.size() == 0) {
 			return;
 		}
 		else {
 			try {
-				NR = gffChrAbs.getSeqHash().getSeq(mapInfoSnpIndel.getRefID(), lsTmp, false);
+				NR = gffChrAbs.getSeqHash().getSeq(refSiteSnpIndelParent.getRefID(), lsTmp, false);
 			} catch (Exception e) {
-				NR = gffChrAbs.getSeqHash().getSeq(mapInfoSnpIndel.getRefID(), lsTmp, false);
+				NR = gffChrAbs.getSeqHash().getSeq(refSiteSnpIndelParent.getRefID(), lsTmp, false);
 			}
 		}
-		mapinfoRefSeqIntactAA.setCis5to3(gffGeneIsoInfo.isCis5to3());
-		mapinfoRefSeqIntactAA.setSeq(NR,false);
-		snpOnReplaceLocStart = -gffGeneIsoInfo.getLocAAbeforeBias(mapInfoSnpIndel.getRefSnpIndelStart()) + 1;
+		refSeqIntactAA.setCis5to3(gffGeneIsoInfo.isCis5to3());
+		refSeqIntactAA.setSeq(NR,false);
+		snpOnReplaceLocStart = -gffGeneIsoInfo.getLocAAbeforeBias(refSiteSnpIndelParent.getRefSnpIndelStart()) + 1;
 		snpOnReplaceLocEnd = snpOnReplaceLocStart;
 	}
 	private void setEffectSplitType(GffGeneIsoInfo gffGeneIsoInfo, int codLoc) {
@@ -477,7 +492,7 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 }
 
 class SiteSnpIndelInfoSnp extends SiteSnpIndelInfoInsert {
-	public SiteSnpIndelInfoSnp(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
+	public SiteSnpIndelInfoSnp(RefSiteSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
 		super(mapInfoSnpIndel, refBase, thisBase);
 	}
 	public int getOrfShift() {
@@ -494,8 +509,8 @@ class SiteSnpIndelInfoSnp extends SiteSnpIndelInfoInsert {
  *
  */
 class SiteSnpIndelInfoNoSnp extends SiteSnpIndelInfoInsert {
-	public SiteSnpIndelInfoNoSnp(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
-		super(mapInfoSnpIndel, refBase, thisBase);
+	public SiteSnpIndelInfoNoSnp(RefSiteSnpIndel refSiteSnpIndel, String refBase, String thisBase) {
+		super(refSiteSnpIndel, refBase, thisBase);
 	}
 	public int setOrfShift() {
 		return 0;
@@ -513,21 +528,21 @@ class SiteSnpIndelInfoNoSnp extends SiteSnpIndelInfoInsert {
 class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	Logger logger = Logger.getLogger(SiteSnpIndelInfoInsert.class);
 	int orfShift = 0;
-	public SiteSnpIndelInfoDeletion(MapInfoSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
-		super(mapInfoSnpIndel, refBase, thisBase);
+	public SiteSnpIndelInfoDeletion(RefSiteSnpIndel refSiteSnpIndel, String refBase, String thisBase) {
+		super(refSiteSnpIndel, refBase, thisBase);
 		if (refBase.length() <= 1 || thisBase.length() > 1) {
-			logger.error("本位点可能不是缺失，请核对：" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
+			logger.error("本位点可能不是缺失，请核对：" + refSiteSnpIndel.getRefID() + "\t" + refSiteSnpIndel.getRefSnpIndelStart());
 		}
 	}
 
 	@Override
 	protected void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs) {
-		int refStart = mapInfoSnpIndel.getRefSnpIndelStart();
+		int refStart = refSiteSnpIndelParent.getRefSnpIndelStart();
 		
 		int refEnd = refStart + referenceSeq.length() - 1;
 		int refStartCis = refStart; int refEndCis = refEnd;
 		
-		GffGeneIsoInfo gffGeneIsoInfo = mapInfoSnpIndel.getGffIso();
+		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndelParent.getGffIso();
 		if (!gffGeneIsoInfo.isCis5to3()) {
 			refStartCis = refEnd; refEndCis = refStart;
 		}
@@ -554,19 +569,19 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		if (isInCDS) {
 			int LocStart = gffGeneIsoInfo.getLocAAbefore(refStartCis);
 			int LocEnd =gffGeneIsoInfo.getLocAAend(refEndCis);
-			mapinfoRefSeqIntactAA.setStartEndLoc(LocStart, LocEnd);
+			refSeqIntactAA.setStartEndLoc(LocStart, LocEnd);
 			ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
 			if (lsTmp == null) {
-				logger.error("检查一下：" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
+				logger.error("检查一下：" + refSiteSnpIndelParent.getRefID() + "\t" + refSiteSnpIndelParent.getRefSnpIndelStart());
 				return;
 			}
 			setOrfShiftAndReplaceSite(gffGeneIsoInfo, refStartCis, refEndCis);
-			SeqFasta NR = gffChrAbs.getSeqHash().getSeq(mapinfoRefSeqIntactAA.getRefID(), lsTmp, false);
-			mapinfoRefSeqIntactAA.setSeq(NR,false);//因为上面已经反向过了
+			SeqFasta NR = gffChrAbs.getSeqHash().getSeq(refSeqIntactAA.getRefID(), lsTmp, false);
+			refSeqIntactAA.setSeq(NR,false);//因为上面已经反向过了
 		}
 		
 		else if (!isInCDS && gffGeneIsoInfo.getNumCodInEle(refStartCis) != gffGeneIsoInfo.getNumCodInEle(refEndCis)) {
-			logger.error("缺失外显子："  + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
+			logger.error("缺失外显子："  + refSiteSnpIndelParent.getRefID() + "\t" + refSiteSnpIndelParent.getRefSnpIndelStart());
 			isInCDS = true;
 			return;
 		}

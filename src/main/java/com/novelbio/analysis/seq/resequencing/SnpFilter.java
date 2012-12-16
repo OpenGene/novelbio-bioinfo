@@ -70,18 +70,21 @@ public class SnpFilter {
 	 * 也就是说认为该位点不存在snp，必须有10条reads支持。
 	 * 如果只有4条没有snp的reads覆盖，则认为不通过
 	 * 
-	 * ，默认为10 */
+	 * 默认为10 */
 	public void setRef_ReadsAllNumMin(int ref_ReadsAllNumMin) {
 		Ref_ReadsAllNumMin = ref_ReadsAllNumMin;
 	}
 	
-	/**添加样本过滤信息，注意大小写 */
+	/**
+	 * 添加样本过滤信息，注意大小写，用于过滤多个样本时采用
+	 * @param sampleDetail
+	 */
 	public void addSampleFilterInfo(SnpGroupFilterInfo sampleDetail) {
 		this.setSampleFilterInfo.add(sampleDetail);
 	}
 	
 	/**
-	 *  单个样本过滤
+	 *  单个样本过滤，仅过滤refSiteSnpIndel设定的样本名
 	 * @param sampleName 样本名，null表示走默认
 	 * @param snpLevel SnpGroupFilterInfo.HetoLess 等
 	 */
@@ -90,18 +93,14 @@ public class SnpFilter {
 	}
 	
 	/**
-	 *  单个样本过滤
-	 * @param sampleName 样本名，null表示走默认
+	 *  单个样本过滤，仅过滤输入的样本名
+	 * @param sampleName 样本名，null表示走默认，也就是仅过滤refSiteSnpIndel设定的样本名
 	 * @param snpLevel SnpGroupFilterInfo.HetoLess 等
 	 */
 	public void setSampleFilterInfoSingle(String sampleName, int snpLevel) {
 		this.setSampleFilterInfo.clear();
 		SnpGroupFilterInfo snpGroupFilterInfo = new SnpGroupFilterInfo();
-		if (sampleName == null) {
-			snpGroupFilterInfo.addSampleName(MapInfoSnpIndel.SampleDefaultName);
-		} else {
-			snpGroupFilterInfo.addSampleName(sampleName);
-		}
+		snpGroupFilterInfo.addSampleName(sampleName);
 		
 		snpGroupFilterInfo.setSnpLevel(snpLevel);
 		this.setSampleFilterInfo.add(snpGroupFilterInfo);
@@ -111,48 +110,64 @@ public class SnpFilter {
 	public void clearSampleFilterInfo() {
 		setSampleFilterInfo.clear();
 	}
-	public boolean isFilterdSnp(MapInfoSnpIndel mapInfoSnpIndel) {
-		if (getFilterdSnp(mapInfoSnpIndel).size() > 0) {
+		
+	public boolean isFilterdSnp(RefSiteSnpIndel refSiteSnpIndel) {
+		if (getFilterdSnp(refSiteSnpIndel).size() > 0) {
 			return true;
 		}
 		return false;
 	}
+
 	/** 
-	 * 该样本是否通过质检
+	 * 该位点是否通过质检，位点中包含了多个样本
 	 * 如果通过质检了，就返回通过质检的那个snp类型
 	 * 否则返回空的list
 	 * */
-	public ArrayList<SiteSnpIndelInfo> getFilterdSnp(MapInfoSnpIndel mapInfoSnpIndel) {
+	public ArrayList<SiteSnpIndelInfo> getFilterdSnp(RefSiteSnpIndel refSiteSnpIndel) {
 		ArrayList<SiteSnpIndelInfo> lsSnpFiltered = new ArrayList<SiteSnpIndelInfo>();
 		boolean isQualified = true;
-		for (SiteSnpIndelInfo siteSnpIndelInfo : mapInfoSnpIndel.getLsAllenInfoSortBig2Small()) {
-			for (SnpGroupFilterInfo sampleDetail : setSampleFilterInfo) {
-				sampleDetail.clearData();
-				for (String sampleName : sampleDetail.lsSampleName) {
-					siteSnpIndelInfo.setSampleName(sampleName);
-					mapInfoSnpIndel.setSampleName(sampleName);
-					sampleDetail.addSnpIndelHomoHetoType(getSnpIndelType(mapInfoSnpIndel, siteSnpIndelInfo));
-				}
-				//只要有一组样本没有通过检验，就跳出
-				isQualified = sampleDetail.isQualified();
-				if (!isQualified) 
-					break;
-			}
-			if (isQualified) {
+		for (SiteSnpIndelInfo siteSnpIndelInfo : refSiteSnpIndel.getLsAllenInfoSortBig2Small()) {
+			if (isFilterdSnp(siteSnpIndelInfo)) {
 				lsSnpFiltered.add(siteSnpIndelInfo);
 			}
 		}
 		return lsSnpFiltered;
 	}
+	
+	/**
+	 * 输入的snp位点是否通过检验
+	 * 采用给定的SnpGroupFilterInfo来对结果进行检验。输入几组SnpGroupFilterInfo就做几个检验。
+	 * 检验结果取and，也就是说只要有一个SnpGroupFilterInfo没有通过，就返回false。
+	 * @param siteSnpIndelInfo
+	 * @return
+	 */
+	public boolean isFilterdSnp(SiteSnpIndelInfo siteSnpIndelInfo) {
+		//TODO 考虑根据情况返回并集或者其他
+		boolean isQualified = true;
+		for (SnpGroupFilterInfo snpGroupFilterInfo : setSampleFilterInfo) {
+			snpGroupFilterInfo.clearData();
+			for (String sampleName : snpGroupFilterInfo.getSetSampleName()) {
+				siteSnpIndelInfo.setSampleName(sampleName);
+				snpGroupFilterInfo.addSnpIndelHomoHetoType(getSnpIndelType(siteSnpIndelInfo));
+			}
+			//只要有一组样本没有通过检验，就跳出
+			isQualified = snpGroupFilterInfo.isQualified();
+			if (!isQualified) 
+				break;
+		}
+		return isQualified;
+		
+	}
+	
 	/** 输入之前要指定样本名，
 	 * 返回指定的snpindel的信息 */
-	private SnpIndelHomoHetoType getSnpIndelType(MapInfoSnpIndel mapInfoSnpIndel, SiteSnpIndelInfo siteSnpIndelInfo) {
+	private SnpIndelHomoHetoType getSnpIndelType(SiteSnpIndelInfo siteSnpIndelInfo) {
 		int numSnpIndel = siteSnpIndelInfo.getReadsNum();
-		int numAll = mapInfoSnpIndel.getReadsNumAll();
+		int numAll = siteSnpIndelInfo.getRefSiteSnpIndelParent().getReadsNumAll();
 		
 		//TODO 这种合适吗？
 		//因为可能有别的基因型，所以用这种方式，将所有非本snp的位点都忽略为ref位点。
-		int numRef = numAll - numSnpIndel;//mapInfoSnpIndel.getReadsNumRef();
+		int numRef = numAll - numSnpIndel;//refSiteSnpIndel.getReadsNumRef();
 		return getSnpIndelType(siteSnpIndelInfo.getSnpIndelType(), numSnpIndel, numRef, numAll);
 	}
 	/**
@@ -207,7 +222,6 @@ public class SnpFilter {
 					return SnpIndelHomoHetoType.SnpHeto;
 				}
 		}
-
 		return SnpIndelHomoHetoType.UnKnown;
 	}
 }

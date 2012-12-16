@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.resequencing;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -33,9 +34,9 @@ public class SNPGATKcope {
 	ArrayList<String[]> lsSample2SamPileupFile = new ArrayList<String[]>();
 
 	/** 用于多个样本的snp去冗余的，其中key表示该snp所在的起点信息，value就是该位点具体的snp情况 */
-	TreeMap<String, MapInfoSnpIndel> mapSiteInfo2MapInfoSnpIndel = new TreeMap<String, MapInfoSnpIndel>();
+	Map<String, RefSiteSnpIndel> mapSiteInfo2RefSiteSnpIndel = new TreeMap<String, RefSiteSnpIndel>();
 	/**过滤后的snp */
-	ArrayList<MapInfoSnpIndel> lsFilteredSnp = new ArrayList<MapInfoSnpIndel>();
+	ArrayList<RefSiteSnpIndel> lsFilteredSnp = new ArrayList<RefSiteSnpIndel>();
 	/**每个位点对应的causal snp
 	 * 一个位点可能存在多个snp，所以装在list里面  */
 	ArrayList<ArrayList<SiteSnpIndelInfo>> lsFilteredSite = new ArrayList<ArrayList<SiteSnpIndelInfo>>();
@@ -65,7 +66,7 @@ public class SNPGATKcope {
 	public void addSnpFromPileUpFile(String sampleName, int snpLevel, String pileUpfile) {
 		SnpCalling snpCalling = new SnpCalling();
 		snpCalling.setGffChrAbs(gffChrAbs);
-		snpCalling.setMapSiteInfo2MapInfoSnpIndel(mapSiteInfo2MapInfoSnpIndel);
+		snpCalling.setMapSiteInfo2RefSiteSnpIndel(mapSiteInfo2RefSiteSnpIndel);
 		snpCalling.setSnpLevel(snpLevel);
 		snpCalling.addSnpFromPileUpFile(sampleName, pileUpfile, FileOperate.changeFileSuffix(pileUpfile, "_outSnp", "txt"));
 		lsSample2PileUpFiles.add(snpCalling);
@@ -87,7 +88,7 @@ public class SNPGATKcope {
 		this.gffChrAbs = gffChrAbs;
 	}
 	/**
-	 * 将gatk里面vcf文件中的snp信息加入mapSiteInfo2MapInfoSnpIndel中
+	 * 将gatk里面vcf文件中的snp信息加入mapSiteInfo2RefSiteSnpIndel中
 	 */
 	private void addVcfToLsSnpIndel(String sampleName, String vcfFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(vcfFile, false);
@@ -97,14 +98,14 @@ public class SNPGATKcope {
 			
 			try {Integer.parseInt(ss[vcfCols.colSnpStart]); } catch (Exception e) { continue; }
 			
-			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
-			mapInfoSnpIndel.setVcfLines(sampleName, vcfCols, vcfLines);
+			RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, sampleName);
+			refSiteSnpIndel.setVcfLines(sampleName, vcfCols, vcfLines);
 			
-			addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
+			addSnp_2_mapSiteInfo2RefSiteSnpIndel(refSiteSnpIndel);
 		}
 	}
 	/**
-	 * 将gatk里面vcf文件中的snp信息加入mapSiteInfo2MapInfoSnpIndel中
+	 * 将gatk里面vcf文件中的snp信息加入mapSiteInfo2RefSiteSnpIndel中
 	 */
 	private void addNBCToLsSnpIndel(String sampleName, String novelbioFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(novelbioFile, false);
@@ -114,21 +115,21 @@ public class SNPGATKcope {
 			
 			try {Integer.parseInt(ss[vcfCols.colSnpStart]); } catch (Exception e) { continue; }
 			
-			MapInfoSnpIndel mapInfoSnpIndel = new MapInfoSnpIndel(gffChrAbs, sampleName);
-			mapInfoSnpIndel.setNBCLines(sampleName, vcfLines);
-			addSnp_2_mapSiteInfo2MapInfoSnpIndel(mapInfoSnpIndel);
+			RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, sampleName);
+			refSiteSnpIndel.setNBCLines(sampleName, vcfLines);
+			addSnp_2_mapSiteInfo2RefSiteSnpIndel(refSiteSnpIndel);
 		}
 	}
 	
-	private void addSnp_2_mapSiteInfo2MapInfoSnpIndel(MapInfoSnpIndel mapInfoSnpIndel) {
-		String key = mapInfoSnpIndel.getRefID() + SepSign.SEP_ID + mapInfoSnpIndel.getRefSnpIndelStart();
-		if (mapSiteInfo2MapInfoSnpIndel.containsKey(key)) {
-			MapInfoSnpIndel maInfoSnpIndelExist = mapSiteInfo2MapInfoSnpIndel.get(key);
-			maInfoSnpIndelExist.addAllenInfo(mapInfoSnpIndel);
+	private void addSnp_2_mapSiteInfo2RefSiteSnpIndel(RefSiteSnpIndel refSiteSnpIndel) {
+		String key = refSiteSnpIndel.getRefID() + SepSign.SEP_ID + refSiteSnpIndel.getRefSnpIndelStart();
+		if (mapSiteInfo2RefSiteSnpIndel.containsKey(key)) {
+			RefSiteSnpIndel maInfoSnpIndelExist = mapSiteInfo2RefSiteSnpIndel.get(key);
+			maInfoSnpIndelExist.addAllenInfo(refSiteSnpIndel);
 			return;
 		}
 		else {
-			mapSiteInfo2MapInfoSnpIndel.put(key, mapInfoSnpIndel);
+			mapSiteInfo2RefSiteSnpIndel.put(key, refSiteSnpIndel);
 		}
 	}
 	
@@ -143,13 +144,13 @@ public class SNPGATKcope {
 			addNBCToLsSnpIndel(sample2NBCfile[0], sample2NBCfile[1]);
 		}
 		addPileupToLsSnpIndel();
-		getSnpDetail(mapSiteInfo2MapInfoSnpIndel.values());
-		lsFilteredSnp = ArrayOperate.getArrayListValue(mapSiteInfo2MapInfoSnpIndel);
+		getSnpDetail(mapSiteInfo2RefSiteSnpIndel.values());
+		lsFilteredSnp = ArrayOperate.getArrayListValue(mapSiteInfo2RefSiteSnpIndel);
 	}
 	
 	/** 
 	 * 不从vcf，而是从pileUp中获取snp的方法
-	 * 将pileUp的snp信息加入mapSiteInfo2MapInfoSnpIndel中
+	 * 将pileUp的snp信息加入mapSiteInfo2RefSiteSnpIndel中
 	 * 同时导出一份snp的信息表
 	 */
 	private void addPileupToLsSnpIndel() {
@@ -158,10 +159,10 @@ public class SNPGATKcope {
 		}
 	}
 	
-	private void getSnpDetail(Collection<MapInfoSnpIndel> colMapInfoSnpIndels) {
+	private void getSnpDetail(Collection<RefSiteSnpIndel> colRefSiteSnpIndels) {
 		SnpDetailGet snpDetailGet = new SnpDetailGet();
 		snpDetailGet.setGffChrAbs(gffChrAbs);
-		snpDetailGet.setMapChrID2InfoSnpIndel(colMapInfoSnpIndels);
+		snpDetailGet.setMapChrID2InfoSnpIndel(colRefSiteSnpIndels);
 		for (String[] sample2PileUp : lsSample2SamPileupFile) {
 			snpDetailGet.addSample2PileupFile(sample2PileUp[0], sample2PileUp[1]);
 		}
@@ -176,10 +177,10 @@ public class SNPGATKcope {
 		
 		lsFilteredSite.clear();
 		lsFilteredSnp.clear();
-		for (MapInfoSnpIndel mapInfoSnpIndel : mapSiteInfo2MapInfoSnpIndel.values()) {
-			ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfo = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		for (RefSiteSnpIndel refSiteSnpIndel : mapSiteInfo2RefSiteSnpIndel.values()) {
+			ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfo = sampleFilter.getFilterdSnp(refSiteSnpIndel);
 			if (lsSiteSnpIndelInfo.size() > 0) {
-				lsFilteredSnp.add(mapInfoSnpIndel);
+				lsFilteredSnp.add(refSiteSnpIndel);
 				lsFilteredSite.add(lsSiteSnpIndelInfo);
 			}
 		}
@@ -194,14 +195,14 @@ public class SNPGATKcope {
 		}
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
-		txtOut.writefileln(MapInfoSnpIndel.getTitleFromSampleName(setSample));
+		txtOut.writefileln(RefSiteSnpIndel.getTitleFromSampleName(setSample));
 		ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfos = new ArrayList<SiteSnpIndelInfo>();
 		for (int i = 0; i < lsFilteredSnp.size(); i++) {
 			if (lsFilteredSite != null && lsFilteredSite.size() > 0) {
 				lsSiteSnpIndelInfos = lsFilteredSite.get(i);
 			}
-			MapInfoSnpIndel mapInfoSnpIndel = lsFilteredSnp.get(i);
-			ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(setSample, false, lsSiteSnpIndelInfos);
+			RefSiteSnpIndel refSiteSnpIndel = lsFilteredSnp.get(i);
+			ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(setSample, false, lsSiteSnpIndelInfos);
 			for (String[] strings : lsResult) {
 				txtOut.writefileln(strings);
 			}

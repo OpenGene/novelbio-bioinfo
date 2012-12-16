@@ -257,6 +257,8 @@ GO_REF:0000004<br>
 	 */
 	String getAccIDDBinfo();
 
+	public GOInfoAbs getGOInfo();
+
 
 
 

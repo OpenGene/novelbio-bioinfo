@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /** 
  * 一组样本的过滤，可以设定一组样本，然后根据一组样本里面的信息，进行过滤
@@ -13,7 +14,7 @@ public class SnpGroupFilterInfo {
 	public static final int Heto = 20;
 	public static final int HetoMore = 30;
 	
-	ArrayList<String> lsSampleName = new ArrayList<String>();
+	HashSet<String> setSampleName = new HashSet<String>();
 	int SnpIndelHomoNumMin = -1;
 	int SnpIndelHomoNumMax = -1;
 	
@@ -31,8 +32,8 @@ public class SnpGroupFilterInfo {
 	
 	int SnpIndelAllMin = -1;
 	int snpIndelAllMax = -1;
-	/** 未知基因型的样本不得超过该比例 */
-	double unKnownProp = 0.3;
+	/** 未知基因型的样本不得超过该比例，默认0.5 */
+	double unKnownProp = 0.5;
 	
 	int ThisSnpIndelHomoNum = 0;
 	int ThisSnpIndelHetoLessNum = 0;
@@ -65,10 +66,13 @@ public class SnpGroupFilterInfo {
 	}
 	/** 设定样本名称,也就是需要过滤哪些样本
 	 * 当过滤一组样本时使用
-	 * @param sampleName 默认是 MapInfoSnpIndel.SampleDefaultName
+	 * @param sampleName 可以输入null，这样就会使用refSiteSnpIndel自带的名字
 	 */
 	public void addSampleName(String sampleName) {
-		this.lsSampleName.add(sampleName);
+		this.setSampleName.add(sampleName);
+	}
+	public HashSet<String> getSetSampleName() {
+		return setSampleName;
 	}
 	/** 位点为纯合位点的样本，其数量区间 */
 	public void setSampleRefHomoNum(int refHomoMin, int refHomoMax) {
@@ -100,16 +104,16 @@ public class SnpGroupFilterInfo {
 		this.SnpIndelAllMin = Math.min(SnpIndelAllMin, snpIndelAllMax);
 		this.snpIndelAllMax = Math.max(SnpIndelAllMin, snpIndelAllMax);
 	}
-	/** 未知基因型的样本不得超过该比例，默认0.3 */
+	/** 未知基因型的样本不得超过该比例，默认0.5 */
 	public void setSampleUnKnownProp(double unKnownProp) {
 		this.unKnownProp = unKnownProp;
 	}
 	public void clearSampleName() {
-		lsSampleName.clear();
+		setSampleName.clear();
 	}
 	/** 暴露出来仅供测试，数值清零，包括样本名也会被清空 */
 	public void clearAll() {
-		lsSampleName.clear();
+		setSampleName.clear();
 		ThisSnpIndelHomoNum = 0;
 		ThisSnpIndelHetoLessNum = 0;
 		ThisSnpIndelHetoNum = 0;
@@ -151,7 +155,7 @@ public class SnpGroupFilterInfo {
 	}
 	/** 暴露出来仅供测试，是否合格 */
 	public boolean isQualified() {
-		if (ThisUnKnownSite/lsSampleName.size() >= unKnownProp) {
+		if (ThisUnKnownSite/setSampleName.size() >= unKnownProp) {
 			return false;
 		}
 		
