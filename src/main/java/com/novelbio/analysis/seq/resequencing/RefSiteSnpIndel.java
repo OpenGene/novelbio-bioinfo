@@ -525,7 +525,24 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		}
 		return siteSnpIndelInfo;
 	}
-
+	
+	/**
+	 * 给定一系列siteSnpIndel位点，将其设定到本RefSite中。
+	 * <b>本对象中的mapAllen2Num会完全被替换掉</b>
+	 * <br>
+	 * <br>
+	 * 用途:<br>
+	 * 当用snpFilter过滤一个refSiteSnpIndel对象后，可以获得一系列的位点。
+	 * 可以将这些位点设置到该refSiteSnpIndel的clone中去
+	 * @param lsSiteSnpIndelInfo
+	 */
+	public void setLsSiteSnpIndelInfo(ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfo) {
+		mapAllen2Num.clear();
+		for (SiteSnpIndelInfo siteSnpIndelInfo : lsSiteSnpIndelInfo) {
+			siteSnpIndelInfo.refSiteSnpIndelParent = this;
+			mapAllen2Num.put(siteSnpIndelInfo.getMismatchInfo(), siteSnpIndelInfo);
+		}
+	}
 	/** 将错配类型位点加入mapAllen2Num，同时返回产生的siteSnpIndelInfo
 	 * <b>如果没有错配，则不加入mapAllen2Num</b>
 	 *  */
@@ -882,14 +899,41 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		Integer site2 = mapInfoOther.refSnpIndelStart;
 		return site1.compareTo(site2);
 	}
+	
 	/**
-	 * 尚未实现
+	 * 浅层clone <br>
+	 * gffChrAbs和gffGeneIsoInfo
+	 * 这两个仅仅传递地址<br><br>
+	 * mapAllen2Num和mapSample2NormReadsInfo
+	 * 这两个clone了，但是内部元素都是一样的引用。<br>
+	 * 也就是说<b>删除</b>mapAllen2Num里面的元素，老的RefSiteSnpIndel<b>不变</b><br>
+	 * 但是<b>修改</b>mapAllen2Num里面的元素，老的RefSiteSnpIndel<b>会变</b><br>
 	 */
 	public RefSiteSnpIndel clone() {
 		RefSiteSnpIndel refSiteSnpIndel;
 		try {
 			//TODO
 			refSiteSnpIndel = (RefSiteSnpIndel) super.clone();
+			refSiteSnpIndel.gffChrAbs = gffChrAbs;
+			refSiteSnpIndel.gffGeneIsoInfo = gffGeneIsoInfo;
+			refSiteSnpIndel.chrID = chrID;
+			refSiteSnpIndel.prop = prop;
+			refSiteSnpIndel.refBase = refBase;
+			refSiteSnpIndel.refSnpIndelStart = refSnpIndelStart;
+			refSiteSnpIndel.sampleName = sampleName;
+			
+			refSiteSnpIndel.mapAllen2Num = new HashMap<String, SiteSnpIndelInfo>();
+			for (String allen : mapAllen2Num.keySet()) {
+				SiteSnpIndelInfo siteSnpIndelInfo = mapAllen2Num.get(allen);
+				refSiteSnpIndel.mapAllen2Num.put(allen, siteSnpIndelInfo);
+			}
+			
+			refSiteSnpIndel.mapSample2NormReadsInfo = new HashMap<String, SampleRefReadsInfo>();
+			for (String sampleName : mapSample2NormReadsInfo.keySet()) {
+				SampleRefReadsInfo sampleRefReadsInfo = mapSample2NormReadsInfo.get(sampleName);
+				refSiteSnpIndel.mapSample2NormReadsInfo.put(sampleName, sampleRefReadsInfo);
+			}
+			
 			return refSiteSnpIndel;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();

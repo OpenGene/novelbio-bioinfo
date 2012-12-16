@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -35,34 +36,37 @@ public class SNPGATKcope {
 
 	/** 用于多个样本的snp去冗余的，其中key表示该snp所在的起点信息，value就是该位点具体的snp情况 */
 	Map<String, RefSiteSnpIndel> mapSiteInfo2RefSiteSnpIndel = new TreeMap<String, RefSiteSnpIndel>();
-	/**过滤后的snp */
-	ArrayList<RefSiteSnpIndel> lsFilteredSnp = new ArrayList<RefSiteSnpIndel>();
+	
+	/** 过滤后的snpSite，包含某个位点的所有信息 */
+	ArrayList<RefSiteSnpIndel> lsFilteredRefSite = new ArrayList<RefSiteSnpIndel>();
 	/**每个位点对应的causal snp
-	 * 一个位点可能存在多个snp，所以装在list里面  */
-	ArrayList<ArrayList<SiteSnpIndelInfo>> lsFilteredSite = new ArrayList<ArrayList<SiteSnpIndelInfo>>();
+	 * 某个位点仅包含通过过滤的snp位点  */
+	ArrayList<RefSiteSnpIndel> lsFilteredRefSnp = new ArrayList<RefSiteSnpIndel>();
 	
 	/** 用来过滤样本的 */
-	SnpFilter sampleFilter = new SnpFilter();
+	SnpFilter snpFilterSamples = new SnpFilter();
 
 	/** 多组样本之间比较的信息 */
 	ArrayList<SnpGroupFilterInfo> lsSampleDetailCompare = new ArrayList<SnpGroupFilterInfo>();
 	
 	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
 	public void setSnp_Hete_Contain_SnpProp_Min(double snp_Hete_Contain_SnpProp_Min) {
-		sampleFilter.setSnp_Hete_Contain_SnpProp_Min(snp_Hete_Contain_SnpProp_Min);
+		snpFilterSamples.setSnp_Hete_Contain_SnpProp_Min(snp_Hete_Contain_SnpProp_Min);
 	}
 	
 	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
 	public void setSnp_HetoMore_Contain_SnpProp_Min(double snp_HetoMore_Contain_SnpProp_Min) {
-		sampleFilter.setSnp_HetoMore_Contain_SnpProp_Min(snp_HetoMore_Contain_SnpProp_Min);
+		snpFilterSamples.setSnp_HetoMore_Contain_SnpProp_Min(snp_HetoMore_Contain_SnpProp_Min);
 	}
 	
 	public void addSnpFromVcfFile(String sampleName, String vcfFile) {
 		lsSample2VcfFiles.add(new String[]{sampleName, vcfFile});
 	}
+	
 	public void addSnpFromNBCfile(String sampleName, String nbcFile) {
 		lsSample2NBCfiles.add(new String[]{sampleName, nbcFile});
 	}
+	
 	public void addSnpFromPileUpFile(String sampleName, int snpLevel, String pileUpfile) {
 		SnpCalling snpCalling = new SnpCalling();
 		snpCalling.setGffChrAbs(gffChrAbs);
@@ -76,21 +80,48 @@ public class SNPGATKcope {
 	public void addSampileupFile(String sampleName, String sampileupFile) {
 		lsSample2SamPileupFile.add(new String[]{sampleName, sampileupFile});
 	}
+	
 	/** 重置过滤的样本信息 */
 	public void clearSampleFilterInfo() {
 		lsSampleDetailCompare.clear();
 	}
+	
 	/** 过滤样本的具体信息 */
 	public void addFilterSample(SnpGroupFilterInfo snpGroupFilterInfo) {
 		lsSampleDetailCompare.add(snpGroupFilterInfo);
 	}
+	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
+	
+	/** 在设定snp文件的情况下，从pileup文件中获取snp信息
+	 * 只要设定好snp文件即可，内部自动做snp calling
+	 *  */
+	public void readSnpDetailFromFile() {
+		readSnpFromFile_To_MapSiteInfo2RefSiteSnpIndel();
+		getSnpDetail(mapSiteInfo2RefSiteSnpIndel.values());
+		lsFilteredRefSite = ArrayOperate.getArrayListValue(mapSiteInfo2RefSiteSnpIndel);
+	}
+	private void readSnpFromFile_To_MapSiteInfo2RefSiteSnpIndel() {
+		mapSiteInfo2RefSiteSnpIndel.clear();
+		for (String[] sample2vcf : lsSample2VcfFiles) {
+			addVcf_To_MapSiteInfo2RefSiteSnpIndel(sample2vcf[0], sample2vcf[1]);
+		}
+		for (String[] sample2NBCfile : lsSample2NBCfiles) {
+			addNBC_To_MapSiteInfo2RefSiteSnpIndel(sample2NBCfile[0], sample2NBCfile[1]);
+		}
+		for (SnpCalling snpCalling : lsSample2PileUpFiles) {
+			//从pileUp中获取snp的方法
+			//将pileUp的snp信息加入mapSiteInfo2RefSiteSnpIndel中
+			snpCalling.run();
+		}
+	}
+	
 	/**
 	 * 将gatk里面vcf文件中的snp信息加入mapSiteInfo2RefSiteSnpIndel中
 	 */
-	private void addVcfToLsSnpIndel(String sampleName, String vcfFile) {
+	private void addVcf_To_MapSiteInfo2RefSiteSnpIndel(String sampleName, String vcfFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(vcfFile, false);
 		for (String vcfLines : txtRead.readlines()) {
 			if (vcfLines.startsWith("#")) continue;
@@ -104,10 +135,11 @@ public class SNPGATKcope {
 			addSnp_2_mapSiteInfo2RefSiteSnpIndel(refSiteSnpIndel);
 		}
 	}
+	
 	/**
 	 * 将gatk里面vcf文件中的snp信息加入mapSiteInfo2RefSiteSnpIndel中
 	 */
-	private void addNBCToLsSnpIndel(String sampleName, String novelbioFile) {
+	private void addNBC_To_MapSiteInfo2RefSiteSnpIndel(String sampleName, String novelbioFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(novelbioFile, false);
 		for (String vcfLines : txtRead.readlines()) {
 			if (vcfLines.startsWith("#")) continue;
@@ -133,32 +165,6 @@ public class SNPGATKcope {
 		}
 	}
 	
-	/** 在设定snp文件的情况下，从pileup文件中获取snp信息
-	 * 只要设定好snp文件即可，内部自动做snp calling
-	 *  */
-	public void readSnpDetailFromFile() {
-		for (String[] sample2vcf : lsSample2VcfFiles) {
-			addVcfToLsSnpIndel(sample2vcf[0], sample2vcf[1]);
-		}
-		for (String[] sample2NBCfile : lsSample2NBCfiles) {
-			addNBCToLsSnpIndel(sample2NBCfile[0], sample2NBCfile[1]);
-		}
-		addPileupToLsSnpIndel();
-		getSnpDetail(mapSiteInfo2RefSiteSnpIndel.values());
-		lsFilteredSnp = ArrayOperate.getArrayListValue(mapSiteInfo2RefSiteSnpIndel);
-	}
-	
-	/** 
-	 * 不从vcf，而是从pileUp中获取snp的方法
-	 * 将pileUp的snp信息加入mapSiteInfo2RefSiteSnpIndel中
-	 * 同时导出一份snp的信息表
-	 */
-	private void addPileupToLsSnpIndel() {
-		for (SnpCalling snpCalling : lsSample2PileUpFiles) {
-			snpCalling.run();
-		}
-	}
-	
 	private void getSnpDetail(Collection<RefSiteSnpIndel> colRefSiteSnpIndels) {
 		SnpDetailGet snpDetailGet = new SnpDetailGet();
 		snpDetailGet.setGffChrAbs(gffChrAbs);
@@ -168,49 +174,88 @@ public class SNPGATKcope {
 		}
 		snpDetailGet.run();
 	}
+	
+	
 	/** 必须在readSnpDetailFromPileUp之后执行 */
 	public void filterSnp() {
-		sampleFilter.clearSampleFilterInfo();
+		snpFilterSamples.clearSampleFilterInfo();
 		for (SnpGroupFilterInfo snpGroupInfoFilter : lsSampleDetailCompare) {
-			sampleFilter.addSampleFilterInfo(snpGroupInfoFilter);
+			snpFilterSamples.addSampleFilterInfo(snpGroupInfoFilter);
 		}
 		
-		lsFilteredSite.clear();
-		lsFilteredSnp.clear();
+		lsFilteredRefSite.clear();
+		lsFilteredRefSnp.clear();
 		for (RefSiteSnpIndel refSiteSnpIndel : mapSiteInfo2RefSiteSnpIndel.values()) {
-			ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfo = sampleFilter.getFilterdSnp(refSiteSnpIndel);
+			ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfo = snpFilterSamples.getFilterdSnp(refSiteSnpIndel);
 			if (lsSiteSnpIndelInfo.size() > 0) {
-				lsFilteredSnp.add(refSiteSnpIndel);
-				lsFilteredSite.add(lsSiteSnpIndelInfo);
+				lsFilteredRefSite.add(refSiteSnpIndel);
+				RefSiteSnpIndel reSiteSnpIndelFiltered = refSiteSnpIndel.clone();
+				reSiteSnpIndelFiltered.setLsSiteSnpIndelInfo(lsSiteSnpIndelInfo);
+				lsFilteredRefSnp.add(reSiteSnpIndelFiltered);
 			}
 		}
 	}
-	public void writeToFile(String txtFile) {
+	
+	/**
+	 * 返回筛选过的site位点
+	 * 没有用fiterSnp方法，返回全体call出来的位点
+	 * 用fiterSnp方法，返回通过质检的位点，位点中含有全部snp情况
+	 * @return
+	 */
+	public ArrayList<RefSiteSnpIndel> getLsFilteredSite() {
+		return lsFilteredRefSite;
+	}
+	/**
+	 * 返回筛选过的snp位点
+	 * 没有用fiterSnp方法，为空
+	 * 用fiterSnp方法，返回通过质检的位点，位点中仅含有causal snp情况
+	 * @return
+	 */
+	public ArrayList<RefSiteSnpIndel> getLsFilteredRefSnp() {
+		return lsFilteredRefSnp;
+	}
+	/**
+	 * 返回本次筛选中涉及到的样本名
+	 * @return
+	 */
+	public LinkedHashSet<String> getSetSampleName() {
 		LinkedHashSet<String> setSample = new LinkedHashSet<String>();
 		for (String[] strings : lsSample2VcfFiles) {
+			setSample.add(strings[0]);
+		}
+		for (String[] strings : lsSample2NBCfiles) {
 			setSample.add(strings[0]);
 		}
 		for (String[] strings : lsSample2SamPileupFile) {
 			setSample.add(strings[0]);
 		}
+		return setSample;
+	}
+	
+	/**
+	 * 讲过滤后的结果写入文本。
+	 * 如果没有过滤只运行了readSnpDetailFromFile，那就将读取的detail写入文本
+	 * @param txtFile
+	 */
+	public void writeToFile(String txtFile) {
+		LinkedHashSet<String> setSample = getSetSampleName();
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
 		txtOut.writefileln(RefSiteSnpIndel.getTitleFromSampleName(setSample));
-		ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfos = new ArrayList<SiteSnpIndelInfo>();
-		for (int i = 0; i < lsFilteredSnp.size(); i++) {
-			if (lsFilteredSite != null && lsFilteredSite.size() > 0) {
-				lsSiteSnpIndelInfos = lsFilteredSite.get(i);
-			}
-			RefSiteSnpIndel refSiteSnpIndel = lsFilteredSnp.get(i);
-			ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(setSample, false, lsSiteSnpIndelInfos);
+		//优先写入过滤后的snp位点
+		ArrayList<RefSiteSnpIndel> lsWriteIn = lsFilteredRefSnp;
+		if (lsFilteredRefSnp == null || lsFilteredRefSnp.size() == 0) {
+			lsWriteIn = lsFilteredRefSite;
+		}
+		for (int i = 0; i < lsWriteIn.size(); i++) {
+			RefSiteSnpIndel refSiteSnpIndel = lsFilteredRefSite.get(i);
+			ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(setSample, false);
 			for (String[] strings : lsResult) {
 				txtOut.writefileln(strings);
 			}
 		}
 		txtOut.close();
 	}
-	
-	
 	
 	/**
 	 * 给定文本，和domain信息，获得具体domain的信息

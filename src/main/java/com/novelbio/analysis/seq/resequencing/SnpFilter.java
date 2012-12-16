@@ -5,8 +5,6 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
-import sun.tools.tree.AddExpression;
-
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 
 

@@ -48,20 +48,10 @@ public class GeneFilter {
 	/** 过滤单个snpSite位点的过滤器 */
 	SnpFilter snpFilterSingleSite = new SnpFilter();
 	
-	//	TODO 如果添加的refsitesnpindel中仅包含过滤好的site的map，那么本过滤器就可以省略
-	/** 前面用来过滤RefSiteInfo所用到的过滤器，需要外部设定 */
-	SnpFilter snpFilterRefSiteInfo;
-	
 	int snpLevel = SnpGroupFilterInfo.Heto;
 	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
-		mapNum2LsMapSnpIndelInfo = null;
-	}
-	
-	/** 前面用来过滤RefSiteInfo所用到的过滤器，需要外部设定 */
-	public void setSnpFilterMapSiteInfo(SnpFilter snpFilterMapSiteInfo) {
-		this.snpFilterRefSiteInfo = snpFilterMapSiteInfo;
 		mapNum2LsMapSnpIndelInfo = null;
 	}
 	
@@ -76,7 +66,7 @@ public class GeneFilter {
 	
 	/**
 	 * 不要重复添加
-	 * 添加要过滤的refSiteSnpIndel，按照样本过滤
+	 * 添加已经经过筛选的refSiteSnpIndel，里面只保留有通过过滤的snp。按照样本过滤
 	 * @param refSiteSnpIndel 重复添加的话，后面的会覆盖前面的
 	 */
 	public void addRefSiteSnpIndel(RefSiteSnpIndel refSiteSnpIndel) {
@@ -143,6 +133,7 @@ public class GeneFilter {
 		return mapNum2LsMapSnpIndelInfo;
 	}
 	
+	/** 输入的必须是过滤后只剩下causal snp的RefSiteSnpIndel */
 	private int getTreatNum(List<RefSiteSnpIndel> lsSnpIndels) {
 		HashSet<String> setTreatName = new HashSet<String>();
 		for (RefSiteSnpIndel refSiteSnpIndel : lsSnpIndels) {
@@ -150,10 +141,7 @@ public class GeneFilter {
 			//第一 我们只能找哪些筛选出来的snp，没有筛选出来的就不要考虑。
 			//第二 对于筛选出来的snp，我们依然要遍历每一个样本，看该snp是否超过阈值
 			//获得前面筛选通过的snp类型
-			
-			//	TODO 如果添加的refsitesnpindel中仅包含过滤好的site的map，那么本部过滤就可以省略
-			ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfos = snpFilterRefSiteInfo.getFilterdSnp(refSiteSnpIndel);
-			for (SiteSnpIndelInfo siteSnpIndelInfo : lsSiteSnpIndelInfos) {
+			for (SiteSnpIndelInfo siteSnpIndelInfo : refSiteSnpIndel.mapAllen2Num.values()) {
 				for (String treatName : setTreatName) {
 					siteSnpIndelInfo.setSampleName(treatName);
 					if (snpFilterSingleSite.isFilterdSnp(siteSnpIndelInfo)) {
