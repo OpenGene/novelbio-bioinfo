@@ -356,7 +356,8 @@ public class CtrlFastQMapping {
 			mapSoftware.setMapLibrary(libraryType);
 			
 			mapSoftware.setThreadNum(thread);
-			ArrayList<String[]> lsStatistics = getLsMapStatistics(mapSoftware);
+			SamFile samFile = mapSoftware.mapReads();
+			ArrayList<String[]> lsStatistics = getLsMapStatistics(samFile);
 			txtReport.writefileln(prefix);
 			for (String[] strings : lsStatistics) {
 				txtReport.writefileln(strings);
@@ -365,10 +366,9 @@ public class CtrlFastQMapping {
 		}
 	}
 	
-	private ArrayList<String[]> getLsMapStatistics(MapDNA mapSoftware) {
+	private ArrayList<String[]> getLsMapStatistics(SamFile samFile) {
 		ArrayList<String[]> lsStatistics = new ArrayList<String[]>();
 		try {
-			SamFile samFile = mapSoftware.mapReads();
 			SamFileStatistics samFileStatistics = samFile.getStatistics();
 			lsStatistics = samFileStatistics.getMappingInfo();
 		} catch (Exception e) {

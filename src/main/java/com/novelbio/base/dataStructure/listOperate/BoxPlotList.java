@@ -22,10 +22,7 @@ public class BoxPlotList {
 	public HistList getHistList(String histListName) {
 		return mapName2HistList.get(histListName.toLowerCase());
 	}
-	public void setPlotBox(PlotBox plotBox) {
-		this.plotBox = plotBox;
-	}
-	
+
 	public PlotBox getPlotBox(BoxStyle boxStyle) {
 		if (plotBox == null) {
 			plotBox = new PlotBox();
@@ -60,6 +57,11 @@ public class BoxPlotList {
 			lsBoxInfos.add(histList.getBoxInfo());
 		}
 		return lsBoxInfos;
+	}
+	
+	public void clean() {
+		mapName2HistList.clear();
+		plotBox = null;
 	}
 	
 }

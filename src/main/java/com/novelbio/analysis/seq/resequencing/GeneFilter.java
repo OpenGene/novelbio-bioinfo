@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.database.domain.geneanno.SepSign;
@@ -20,7 +22,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
  * @author zong0jie
  */
 public class GeneFilter {
-	
+	private final static Logger logger = Logger.getLogger(GeneFilter.class);
 	GffChrAbs gffChrAbs;
 	
 	/**
@@ -63,7 +65,15 @@ public class GeneFilter {
 		snpFilterSingleSite.setSampleFilterInfoSingle(snpLevel);
 		mapNum2LsMapSnpIndelInfo = null;
 	}
-	
+	/**
+	 * 添加已经经过筛选的refSiteSnpIndel，里面只保留有通过过滤的snp。按照样本过滤
+	 * @param refSiteSnpIndel 重复添加的话，后面的会覆盖前面的
+	 */
+	public void addLsRefSiteSnpIndel(Collection<RefSiteSnpIndel> colRefSiteSnpIndels) {
+		for (RefSiteSnpIndel refSiteSnpIndel : colRefSiteSnpIndels) {
+			addRefSiteSnpIndel(refSiteSnpIndel);
+		}
+	}
 	/**
 	 * 不要重复添加
 	 * 添加已经经过筛选的refSiteSnpIndel，里面只保留有通过过滤的snp。按照样本过滤
@@ -76,10 +86,12 @@ public class GeneFilter {
 		mapNum2LsMapSnpIndelInfo = null;
 	}
 	
+	/** 检验哪些样本名，样本名要和snp过滤的样本名一致 */
 	public void addTreatName(String treatName) {
 		setTreat.add(treatName);
 		mapNum2LsMapSnpIndelInfo = null;
 	}
+	/** 检验哪些样本名，样本名要和snp过滤的样本名一致 */
 	public void addTreatName(Collection<String> colTreatName) {
 		setTreat.addAll(colTreatName);
 		mapNum2LsMapSnpIndelInfo = null;
@@ -142,7 +154,7 @@ public class GeneFilter {
 			//第二 对于筛选出来的snp，我们依然要遍历每一个样本，看该snp是否超过阈值
 			//获得前面筛选通过的snp类型
 			for (SiteSnpIndelInfo siteSnpIndelInfo : refSiteSnpIndel.mapAllen2Num.values()) {
-				for (String treatName : setTreatName) {
+				for (String treatName : setTreat) {
 					siteSnpIndelInfo.setSampleName(treatName);
 					if (snpFilterSingleSite.isFilterdSnp(siteSnpIndelInfo)) {
 						setTreatName.add(treatName);

@@ -22,6 +22,13 @@ public abstract class PlotNBCInteractive extends PlotNBC{
      * false: cannot move and zoom Y axis
      */
     boolean Ynavigator = true;
+    
+    /** 能否放大缩小 */
+    boolean zoom = true;
+    /** 能否移动 */
+    boolean pannable = true;
+    /** check whether just figure the figure or all the picture area(include the axis margn)  */
+	boolean plotareaAll = true;
     /**
      * set whether axis can be moved when moving or zooming
      * @param move true: can move and zoom X axis
@@ -38,14 +45,7 @@ public abstract class PlotNBCInteractive extends PlotNBC{
     public void setAxisYNavigator(boolean move) {
     	this.Ynavigator = move;
 	}
-    /**
-     * 能否放大缩小
-     */
-    boolean zoom = true;
-    /**
-     * 能否移动
-     */
-    boolean pannable = true;
+
     /**
      * 默认为true
      * @return
@@ -74,10 +74,7 @@ public abstract class PlotNBCInteractive extends PlotNBC{
     public boolean isPannable() {
 		return pannable;
 	}
-    /**
-     * check whether just figure the figure or all the picture area(include the axis margn)
-     */
-	boolean plotareaAll = true;
+
 	/**
 	 * check whether just figure the figure or all the picture area(include the axis margn)
 	 * @param plotareaAll default true

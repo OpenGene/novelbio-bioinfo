@@ -73,8 +73,16 @@ public class GuiTest2 {
             plotLower.setLineRenderer(data, lineLower);
             plotLower.setInsets(new Insets2D.Double(20.0, 50.0, 40.0, 20.0));
             
+            plotLower.getPlotArea().setSetting(XYPlot.XYPlotArea2D.BORDER, new BasicStroke(1f));        // Remove border of plot area
+            plotLower.getPlotArea().setSetting(XYPlot.XYPlotArea2D.GRID_MAJOR_X, true);
+            plotLower.getPlotArea().setSetting(XYPlot.XYPlotArea2D.GRID_MAJOR_Y, true);
+//            plotLower.getPlotArea().setSetting(XYPlot.XYPlotArea2D.CLIPPING, null);      // Disable clipping
+
+            plotLower.getPlotArea().setSetting(XYPlot.XYPlotArea2D.GRID_MAJOR_COLOR, Color.yellow);
+            plotLower.getPlotArea().setSetting(XYPlot.XYPlotArea2D.GRID_MINOR_COLOR, Color.green);
+            
             DrawableContainer plots = new DrawableContainer(new TableLayout(1));
-            plots.add(plotUpper);
+            plots.add(plotLower);
 //            plots.add(plotLower);
 
             // Connect the two plots, i.e. user (mouse) actions affect both plots

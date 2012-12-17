@@ -1,5 +1,6 @@
 package com.novelbio.base.plot;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -73,6 +74,19 @@ public class PlotScatter extends PlotNBCInteractive{
     double insetsX = 5, insetsY = 5;
     
     DataTable dataTable;
+    //背景是否画成格子的
+    boolean isBGgrid = true;
+    Color colorBGgridMajor;
+    Color colorBGgridMinor;
+    /**
+     * 设定背景的格子颜色，默认无色
+     * @param BGgridColorMajor
+     * @param BGgridColorMinor
+     */
+   public void setColorBGgrid( Color colorBGgridMajor, Color colorBGgridMinor) {
+    	this.colorBGgridMajor = colorBGgridMajor;
+    	this.colorBGgridMinor = colorBGgridMinor;
+    }
     /**
      * add point
      * @param x
@@ -649,6 +663,22 @@ public class PlotScatter extends PlotNBCInteractive{
 			graphics.setColor(bg);
 			graphics.fillRect(0, 0, width, heigh);
 		}
+		//TODO 设置格子颜色
+//		if (isBGgrid) {
+//			 plot.getPlotArea().setSetting(XYPlot.XYPlotArea2D.BORDER, null);        // Remove border of plot area
+//			 plot.getPlotArea().setSetting(XYPlot.XYPlotArea2D.GRID_MAJOR_X, false); // Disable vertical grid
+//			 plot.getPlotArea().setSetting(XYPlot.XYPlotArea2D.GRID_MAJOR_Y, false); // Disable horizontal grid
+//		} else {
+//			 plot.getPlotArea().setSetting(XYPlot.XYPlotArea2D.BORDER, new BasicStroke(1f));        // Remove border of plot area
+//			 plot.getPlotArea().setSetting(XYPlot.XYPlotArea2D.GRID_MAJOR_X, true);
+//			 plot.getPlotArea().setSetting(XYPlot.XYPlotArea2D.GRID_MAJOR_Y, true);
+//		}
+//		if (colorBGgridMajor != null) {
+//			plot.getPlotArea().setSetting(XYPlot.XYPlotArea2D.GRID_MAJOR_COLOR, colorBGgridMajor);
+//		}
+//		if (colorBGgridMinor != null) {
+//			plot.getPlotArea().setSetting(XYPlot.XYPlotArea2D.GRID_MINOR_COLOR, colorBGgridMajor);
+//		}
 	}
 	/**
 	 * 映射数字，就是将1-100映射成1000-1000000这种

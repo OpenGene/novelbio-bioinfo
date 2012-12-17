@@ -37,6 +37,11 @@ public class StatisticsContinueATorCGCoverge implements StatisticsUnit {
 			seqType = SeqType.CG;
 		}
 	}
+	/** 清空画图元素 */
+	public void clean() {
+		boxPlotList.clean();
+	}
+	
 	/**
 	 * 每隔2个cg统计一下，意思就是统计2CG，4CG的reads覆盖度
 	 * @param cgInterval

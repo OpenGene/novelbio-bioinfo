@@ -17,7 +17,6 @@ import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.JpanelPlot;
 import com.novelbio.base.plot.PlotBar;
 import com.novelbio.base.plot.PlotScatter;
-import com.novelbio.base.plot.java.BarInfo;
 
 import de.erichseifert.gral.data.DataTable;
 import de.erichseifert.gral.plots.XYPlot;

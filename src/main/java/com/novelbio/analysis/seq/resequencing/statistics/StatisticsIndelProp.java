@@ -46,7 +46,7 @@ public class StatisticsIndelProp implements StatisticsUnit {
 	/**  前一个是C当前一个是A，记录前面连续C的raws平均数的数量 形式例如key是4C_10，value是num数量例如3 */
 	public void countOneSeqInfo(OneSeqInfo oneSeqInfo) {
 		OneSeqInfo oneSeqInfoLast = oneSeqInfo.getOneSeqInfoLast();
-		if (oneSeqInfoLast == null) {
+		if (oneSeqInfoLast == null || oneSeqInfoLast.getReadsNumAll() == 0) {
 			return;
 		}
 		ArrayList<SiteSnpIndelInfo> lsSnpSites = snpFilter.getFilterdSnp(oneSeqInfoLast);

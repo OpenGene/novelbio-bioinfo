@@ -296,10 +296,19 @@ public class MapBwa extends MapDNA {
 	public SamFile mapReads() {
 		outFileName = addSamToFileName(outFileName);
 		IndexMake();
-//		linux命令如下
-//		bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT.fastq > TGACT.sai
-//		bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT2.fastq > TGACT2.sai
-//		bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai TGACT2.sai barcod_TGACT.fastq 
+		bwaAln();
+		bwaSamPeSe();
+
+		return copeAfterMapping(outFileName);
+	}
+	
+	/**
+	 * linux命令如下<br>
+	 * bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT.fastq > TGACT.sai<br>
+	 * bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT2.fastq > TGACT2.sai<br>
+	 * bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai TGACT2.sai barcod_TGACT.fastq
+	 */
+	private void bwaAln() {
 		String cmd = ""; cmd = ExePath + "bwa aln ";
 		cmd = cmd + getMismatch() + getGapNum() + getGapLen() + getThreadNum() + getSeedSize() + getOpenPanalty() + getFastQoffset();
 		
@@ -312,11 +321,14 @@ public class MapBwa extends MapDNA {
 			cmdOperate = new CmdOperate(cmd2,"bwaMapping2");
 			cmdOperate.run();
 		}
-	
-		////////////////////////这里设定了将基因组读入内存的限制///////////////////////////////////////////////////////////////////
-//		双端
-//		bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai 
-//		TGACT2.sai barcod_TGACT.fastq barcod_TGACT2.fastq > TGACT.sam
+	}
+	/**
+	 * 这里设定了将基因组读入内存的限制
+	 * bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai 
+	 * TGACT2.sai barcod_TGACT.fastq barcod_TGACT2.fastq > TGACT.sam
+	 */
+	private void bwaSamPeSe() {
+		String cmd = "";
 		if (isPairEnd()) {
 			cmd = this.ExePath + "bwa sampe " + sampleGroup + getInsertSize() + readInMemory();
 			cmd = cmd + " -n 10 -N 10 ";
@@ -331,8 +343,6 @@ public class MapBwa extends MapDNA {
 		}
 		cmdOperate = new CmdOperate(cmd,"bwaMappingSAI");
 		cmdOperate.run();
-
-		return copeAfterMapping(outFileName);
 	}
 	
 	protected static String addSamToFileName(String outFileName) {
@@ -354,6 +364,7 @@ public class MapBwa extends MapDNA {
 		deleteFile(samFile, bamFile);
 		return bamFile;
 	}
+	
 	/**
 	 * 删除sai文件
 	 * @param samFileName
@@ -364,7 +375,7 @@ public class MapBwa extends MapDNA {
 			FileOperate.DeleteFileFolder(getSai(2));
 		}
 		double samFileSize = FileOperate.getFileSize(samFile.getFileName());
-		if (FileOperate.isFileExistAndBigThanSize(bamFile.getFileName(), samFileSize/10)) {
+		if (FileOperate.isFileExistAndBigThanSize(bamFile.getFileName(), samFileSize/15)) {
 			FileOperate.delFile(samFile.getFileName());
 		}
 	}

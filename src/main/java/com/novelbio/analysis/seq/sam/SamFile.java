@@ -371,6 +371,7 @@ public class SamFile implements AlignSeq {
 		String outFile = FileOperate.changeFileSuffix(fileName, "_realign", "bam");
 		return realign(outFile);
 	}
+	
 	/**
 	 * ´ý¼ì²é
 	 */

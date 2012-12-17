@@ -177,10 +177,16 @@ public class StatisticsGenome {
 	
 	/** 统计该位点的情况 */
 	private void countOneSeq(OneSeqInfo oneSeqInfo) {
-		if (oneSeqInfo.isGapWithOneSeqLast() && oneSeqInfo.getGapLengthWithLastSeq() <= gapMaxNum) {
+		if (oneSeqInfo.isGapWithOneSeqLast() &&
+				( gapMaxNum <= 0 || oneSeqInfo.getGapLengthWithLastSeq() <= gapMaxNum )) 
+		{
 			SeqFasta seqFastaGap = gffChrAbs.getSeqHash().getSeq(oneSeqInfo.getRefID(), 
 					oneSeqInfoLast.getRefSnpIndelStart() + 1, oneSeqInfo.getRefSnpIndelStart() - 1);
-			countOneSeqInfoGap(seqFastaGap, oneSeqInfo);
+			if (seqFastaGap != null) {
+				countOneSeqInfoGap(seqFastaGap, oneSeqInfo);
+			} else {
+				countOneSeqInfoGap( oneSeqInfo.getRefSnpIndelStart() - oneSeqInfoLast.getRefSnpIndelStart() - 1, oneSeqInfo);
+			}
 		} else {
 			countOneSeqInfo(oneSeqInfo);
 		}
@@ -207,20 +213,41 @@ public class StatisticsGenome {
 		// 考虑中间断开的情况，从Gap的第一个位置起，顺序获得下一个OneSeqInfo，然后做分析
 		// gap前面的那个位点
 		OneSeqInfo oneSeqInfoGapEdgeUp = oneSeqInfo.getOneSeqInfoLast();
-		OneSeqInfo oneSeqInfoGapEdgeNext = null;
 		char[] chrGapSeq = seqGap.toCharArray();
 		for (int i = 0; i < chrGapSeq.length; i++) {
-			String oneSeq = chrGapSeq[i] + "";
-			oneSeqInfoGapEdgeNext = oneSeqInfoGapEdgeUp.getOneSeqInfoNext(oneSeq);
-			oneSeqInfoGapEdgeUp.clearOneSeqInfoLast();
-			
-			countOneSeqInfo(oneSeqInfoGapEdgeNext);
-			oneSeqInfoGapEdgeUp = oneSeqInfoGapEdgeNext;
+			oneSeqInfoGapEdgeUp = get_And_Statistic_OneSeqGapNext(chrGapSeq[i], oneSeqInfoGapEdgeUp);
 		}
 		// 测试一下提取的序列有没有完全提取出来
-		if (oneSeqInfoGapEdgeNext.getRefSnpIndelStart() + 1 != oneSeqInfo.getRefSnpIndelStart() ) {
+		if (oneSeqInfoGapEdgeUp.getRefSnpIndelStart() + 1 != oneSeqInfo.getRefSnpIndelStart() ) {
 			logger.error("Gap 出错");
 		}
 	}
-
+	/**
+	 * 考虑中间断开的情况，Gap的第一个位置起，顺序获得下一个OneSeqInfo，然后做分析
+	 * @param seqFastaGap
+	 * @param oneSeqInfoGapEdge  gap上边缘的那个site
+	 * @return 返回Gap的最后一位site
+	 */
+	private void countOneSeqInfoGap(int gapLength, OneSeqInfo oneSeqInfo) {
+		OneSeqInfo oneSeqInfoGapEdgeUp = oneSeqInfo.getOneSeqInfoLast();
+		for (int i = 0; i < gapLength; i++) {
+			oneSeqInfoGapEdgeUp = get_And_Statistic_OneSeqGapNext('N', oneSeqInfoGapEdgeUp);
+		}
+		// 测试一下提取的序列有没有完全提取出来
+		if (oneSeqInfoGapEdgeUp.getRefSnpIndelStart() + 1 != oneSeqInfo.getRefSnpIndelStart() ) {
+			logger.error("Gap 出错");
+		}
+	}
+	/**
+	 * @param oneSeqNext 下一个碱基
+	 * @param oneSeqInfoGapEdgeUp
+	 * @return
+	 */
+	private OneSeqInfo get_And_Statistic_OneSeqGapNext(char oneSeqNext, OneSeqInfo oneSeqInfoGapEdgeUp) {
+		OneSeqInfo oneSeqInfoGapEdgeNext = oneSeqInfoGapEdgeUp.getOneSeqInfoNext(oneSeqNext + "");
+		oneSeqInfoGapEdgeUp.clearOneSeqInfoLast();
+		
+		countOneSeqInfo(oneSeqInfoGapEdgeNext);
+		return oneSeqInfoGapEdgeNext;
+	}
 }

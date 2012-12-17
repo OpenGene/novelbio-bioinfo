@@ -10,15 +10,24 @@ import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotBox;
 import com.novelbio.base.plot.PlotScatter;
 
+//TODO 没有做清空StatisticUnit的工作
 public class CtrlPileupStatistics {
 	public static void main(String[] args) {
 		CtrlPileupStatistics ctrlPileupStatistics = new CtrlPileupStatistics();
 		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
 		ctrlPileupStatistics.setGffChrAbs(new GffChrAbs(39947));
-		ctrlPileupStatistics.setMaxGapSize(200000);
+		ctrlPileupStatistics.setMaxGapSize(0);
 		ctrlPileupStatistics.setPileupFile("/media/winE/NBC/Project/PGM/CombineAlignments_CA_yuli-all_yuli1-10_001_sorted_pileup.gz");
 		ctrlPileupStatistics.startStatistics();
 		ctrlPileupStatistics.plot("/media/winE/NBC/Project/PGM/plot/PGM");
+		
+		ctrlPileupStatistics = new CtrlPileupStatistics();
+		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
+		ctrlPileupStatistics.setGffChrAbs(new GffChrAbs(39947));
+		ctrlPileupStatistics.setMaxGapSize(0);
+		ctrlPileupStatistics.setPileupFile("/media/winE/NBC/Project/PGM/BZ9522_sorted_realign_removeDuplicate_pileup.gz");
+		ctrlPileupStatistics.startStatistics();
+		ctrlPileupStatistics.plot("/media/winE/NBC/Project/PGM/plot/ILM");
 	}
 
 	StatisticsGenome statisticsGenome = new StatisticsGenome();
@@ -61,9 +70,26 @@ public class CtrlPileupStatistics {
 		statisticsCoverage.setBinNum(binNum, interval, maxCoverage);
 	}
 	
+
+	
+	public void startStatistics() {
+		setStatisticUnits();
+		addStatisticUnits();
+		statisticsGenome.readAndRecord();
+	}
 	private void setStatisticUnits() {
 		int ATorCGInterval = 2;
 		int ATorCGcontinueMax = 50;
+		
+		//清空
+//		statisticsContinueATcoverge = new StatisticsContinueATorCGCoverge(true);
+//		statisticsContinueATdestribution = new StatisticsContinueATorCGdestribution(true);
+//		statisticsContinueCGcoverge = new StatisticsContinueATorCGCoverge(false);
+//		statisticsContinueCGdestribution = new StatisticsContinueATorCGdestribution(false);
+//		statisticsCoverage = new StatisticsCoverage();
+//		statisticsIndelProp = new StatisticsIndelProp();
+		
+		//设置
 		statisticsContinueATcoverge.setCgInterval(ATorCGInterval);
 		statisticsContinueATcoverge.setMaxContinueATorCG(ATorCGcontinueMax);
 		statisticsContinueATcoverge.setBoxPlotList();
@@ -94,12 +120,6 @@ public class CtrlPileupStatistics {
 		statisticsGenome.addStatisticUnits(statisticsIndelProp);
 	}
 	
-	public void startStatistics() {
-		setStatisticUnits();
-		addStatisticUnits();
-		statisticsGenome.readAndRecord();
-	}
-	
 	public void plot(String outPathAndPrefix) {
 		try {
 			plotExp(outPathAndPrefix);
@@ -113,12 +133,13 @@ public class CtrlPileupStatistics {
 		}
 		System.out.println(1);
 		BoxStyle boxStyle = new BoxStyle();
-		boxStyle.setBasicStroke(0.3f);
+		boxStyle.setBasicStroke(2f);
 		boxStyle.setColor(Color.blue);
 		boxStyle.setColorBoxCenter(Color.red);
 		boxStyle.setColorBoxEdge(Color.BLACK);
-		boxStyle.setColorBoxWhisker(Color.black);
+		boxStyle.setColorBoxWhisker(Color.BLACK);
 		boxStyle.setSize(DotStyle.SIZE_M);
+		
 		System.out.println(2);
 		BarStyle barStyle = new BarStyle();
 		barStyle.setColor(Color.blue);

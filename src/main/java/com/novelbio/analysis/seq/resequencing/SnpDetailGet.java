@@ -200,9 +200,14 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 				setThreadInfo(readLines, readByte, null);
 			}
 			///////////////////////////////////////////////////////////////////////////////
-
+			
 			String[] ss = samtoolsLine.split("\t");
 			int loc = Integer.parseInt(ss[1]);
+			if (loc == 13438401 && ss[0].equalsIgnoreCase("chr12")) {
+				logger.error("stop");
+			}
+			
+			
 			if (!ss[0].equalsIgnoreCase(tmpChrID)) {
 				
 				tmpChrID = ss[0].toLowerCase();

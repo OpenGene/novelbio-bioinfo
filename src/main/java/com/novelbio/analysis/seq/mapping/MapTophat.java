@@ -51,14 +51,15 @@ public class MapTophat implements MapRNA{
 	
 	int intronLenMin = 50;
 	int intronLenMax = 500000;
-	/** indel的长度，默认为3 */
-	int indelLen = 3;
+	/** 序列中包含的全部indel长度，默认为3 */
+	int indelLen = 15;
+	int mismatch = 15;
 	
 	int threadNum = 4;
 	
 	/** 默认是solexa的最长插入 */
 	int maxInsert = 450;
-	int mismatch = 2;
+	
 	
 	/** 给定GTF的文件 */
 	String gtfFile = "";
@@ -262,7 +263,9 @@ public class MapTophat implements MapRNA{
 		return "-I " + intronLenMax + " ";
 	}
 	private String getIndelLen() {
-		return "--max-insertion-length " + indelLen + " --max-deletion-length " + indelLen + " ";
+		String param = "--max-insertion-length " + indelLen + " --max-deletion-length " + 
+				indelLen + " " + "--read-gap-length " + indelLen * 2 + " --read-edit-dist " + (indelLen*2 + mismatch) + " ";
+		return param;
 	}
 
 	private String getThreadNum() {

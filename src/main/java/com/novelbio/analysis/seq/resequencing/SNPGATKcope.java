@@ -20,7 +20,7 @@ import com.novelbio.database.domain.geneanno.SepSign;
  * @author zong0jie
  */
 public class SNPGATKcope {
-	Logger logger = Logger.getLogger(SNPGATKcope.class);
+	private static final Logger logger = Logger.getLogger(SNPGATKcope.class);
 	GffChrAbs gffChrAbs;
 
 	/** vcf的列 */
@@ -79,11 +79,6 @@ public class SNPGATKcope {
 	/** 在这些pileUp的文件中找已有的snp的具体细节 */
 	public void addSampileupFile(String sampleName, String sampileupFile) {
 		lsSample2SamPileupFile.add(new String[]{sampleName, sampileupFile});
-	}
-	
-	/** 重置过滤的样本信息 */
-	public void clearSampleFilterInfo() {
-		lsSampleDetailCompare.clear();
 	}
 	
 	/** 过滤样本的具体信息 */
@@ -211,7 +206,7 @@ public class SNPGATKcope {
 	 * 用fiterSnp方法，返回通过质检的位点，位点中仅含有causal snp情况
 	 * @return
 	 */
-	public ArrayList<RefSiteSnpIndel> getLsFilteredRefSnp() {
+	public ArrayList<RefSiteSnpIndel> getLsFilteredSnp() {
 		return lsFilteredRefSnp;
 	}
 	/**
@@ -257,6 +252,11 @@ public class SNPGATKcope {
 		txtOut.close();
 	}
 	
+	/** 重置过滤的样本信息 */
+	public void clearSampleFilterInfo() {
+		lsSampleDetailCompare.clear();
+	}
+	
 	/**
 	 * 给定文本，和domain信息，获得具体domain的信息
 	 * @param txtExcelSNP
@@ -293,5 +293,5 @@ public class SNPGATKcope {
 //		}
 //		txtOut.close();
 //	}
-//	
+
 }
