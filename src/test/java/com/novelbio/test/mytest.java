@@ -13,6 +13,7 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -40,15 +41,12 @@ import com.novelbio.generalConf.NovelBioConst;
 
 
 public class mytest {
-
+	
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) {
-		TxtReadandWrite txtRead = new TxtReadandWrite("filename", false);
-		for (String string : txtRead.readlines()) {
-			System.out.println(string);
-		}
-		
+		GffChrAbs gffChrAbs = new GffChrAbs(39947);
+		gffChrAbs.getGffHashGene().writeToGTF("/home/zong0jie/×ÀÃæ/rice.gtf");
 	}
 	
 	private void plotHist() {

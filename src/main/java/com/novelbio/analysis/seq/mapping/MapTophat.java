@@ -53,7 +53,7 @@ public class MapTophat implements MapRNA{
 	int intronLenMax = 500000;
 	/** 序列中包含的全部indel长度，默认为3 */
 	int indelLen = 15;
-	int mismatch = 15;
+	int mismatch = 8;
 	
 	int threadNum = 4;
 	
@@ -264,7 +264,7 @@ public class MapTophat implements MapRNA{
 	}
 	private String getIndelLen() {
 		String param = "--max-insertion-length " + indelLen + " --max-deletion-length " + 
-				indelLen + " " + "--read-gap-length " + indelLen * 2 + " --read-edit-dist " + (indelLen*2 + mismatch) + " ";
+				indelLen + " " + "--read-gap-length " + (int)(indelLen * 1.5) + " --read-edit-dist " + (indelLen*2 + mismatch) + " ";
 		return param;
 	}
 

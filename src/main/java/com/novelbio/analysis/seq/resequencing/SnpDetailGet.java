@@ -203,7 +203,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			
 			String[] ss = samtoolsLine.split("\t");
 			int loc = Integer.parseInt(ss[1]);
-			if (loc == 13438401 && ss[0].equalsIgnoreCase("chr12")) {
+			if (loc == 7535269 && ss[0].equalsIgnoreCase("c")) {
 				logger.error("stop");
 			}
 			

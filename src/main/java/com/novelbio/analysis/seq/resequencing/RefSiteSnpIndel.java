@@ -736,7 +736,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		for (SiteSnpIndelInfo siteSnpIndelInfo : lsMismatchInfo) {
 			setSnpSite.add(siteSnpIndelInfo.getMismatchInfo());
 		}
-		return getStringLsSnp(null,false, setSnpSite);
+		return getStringLsSnp(lsSampleNames,false, setSnpSite);
 	}
 	/**
 	 * 给定样本名，返回全部snp类型和样本的信息
