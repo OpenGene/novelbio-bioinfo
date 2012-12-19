@@ -19,6 +19,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
 /**
@@ -707,23 +708,33 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * @return
 	 */
 	public ArrayList<String[]> toStringLsSnp() {
-		return toStringLsSnp(null,false);
+		return toStringLsSnp(null, false);
 	}
 	/**
 	 * 返回挑选出的snp类型和样本的信息
 	 * @return
 	 */
 	public ArrayList<String[]> toStringLsSnp(ArrayList<SiteSnpIndelInfo> lsMismatchInfo) {
-		return toStringLsSnp(null,false, lsMismatchInfo);
+		return toStringLsSnp(null,false, false, lsMismatchInfo);
+	}
+	/**
+	 * 给定样本名，返回全部snp类型和样本的信息
+	 * @param lsSampleNames 样本名
+	 * @param getVCFflag 结果中是否包含vcf的flag
+	 * @return
+	 */
+	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getVCFflag) {
+		return toStringLsSnp(lsSampleNames, false, getVCFflag, new ArrayList<SiteSnpIndelInfo>());
 	}
 	/**
 	 * 给定样本名，返回全部snp类型和样本的信息
 	 * @param lsSampleNames 样本名
 	 * @param getGATK 是否仅将GATK认定的snp提取出来
+	 * @param getVCFflag 结果中是否包含vcf的flag
 	 * @return
 	 */
-	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK) {
-		return toStringLsSnp(lsSampleNames, getGATK, new ArrayList<SiteSnpIndelInfo>());
+	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, boolean getVCFflag) {
+		return toStringLsSnp(lsSampleNames, getGATK, getVCFflag, new ArrayList<SiteSnpIndelInfo>());
 	}
 	/**
 	 * @param lsSampleNames
@@ -731,12 +742,12 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * @param lsMismatchInfo 仅选出指定的snp size为0则返回本位点全体snp和indel，如果为空表示获取全部，不能为null
 	 * @return
 	 */
-	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, ArrayList<SiteSnpIndelInfo> lsMismatchInfo) {
+	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, boolean getGATKflag, ArrayList<SiteSnpIndelInfo> lsMismatchInfo) {
 		HashSet<String> setSnpSite = new HashSet<String>();
 		for (SiteSnpIndelInfo siteSnpIndelInfo : lsMismatchInfo) {
 			setSnpSite.add(siteSnpIndelInfo.getMismatchInfo());
 		}
-		return getStringLsSnp(lsSampleNames,false, setSnpSite);
+		return getStringLsSnp(lsSampleNames,false, getGATKflag, setSnpSite);
 	}
 	/**
 	 * 给定样本名，返回全部snp类型和样本的信息
@@ -745,7 +756,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * @param setMismatchInfo 仅选出指定的snp size为0则返回本位点全体snp和indel
 	 * @return
 	 */
-	private ArrayList<String[]> getStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, Set<String> setMismatchInfo) {
+	private ArrayList<String[]> getStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, boolean getGATKflag, Set<String> setMismatchInfo) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		LinkedList<String> lsResultTmp = new LinkedList<String>();
 		lsResultTmp.add(chrID);//0
@@ -792,8 +803,10 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 				siteSnpIndelInfo.setSampleName(sampleName);
 				lsTmpInfo.add(sampleRefReadsInfo.getReadsDepth() + "");
 				lsTmpInfo.add(siteSnpIndelInfo.getReadsNum() + "");
-				lsTmpInfo.add(siteSnpIndelInfo.getVcfInfoFilter());
-				lsTmpInfo.add(siteSnpIndelInfo.getQuality());
+				if (getGATKflag) {
+					lsTmpInfo.add(siteSnpIndelInfo.getVcfInfoFilter());
+					lsTmpInfo.add(siteSnpIndelInfo.getQuality());
+				}
 			}
 			
 			lsTmpInfo.add(siteSnpIndelInfo.getOrfShift() + "");
@@ -946,6 +959,20 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		gffGeneIsoInfo = null;
 		mapAllen2Num.clear();
 		mapSample2NormReadsInfo.clear();
+	}
+	
+	public static void writeToFile(String outFileName, ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndels, 
+			Collection<String> lsSampleNames, boolean getGATKflag) {
+		TxtReadandWrite txtOutput = new TxtReadandWrite(outFileName, true);
+		String[] title = RefSiteSnpIndel.getTitleFromSampleName(lsSampleNames);
+		txtOutput.writefileln(title);
+		for (RefSiteSnpIndel refSiteSnpIndel : lsRefSiteSnpIndels) {
+			ArrayList<String[]> lsTmpResult = refSiteSnpIndel.toStringLsSnp(lsSampleNames, getGATKflag);
+			for (String[] strings : lsTmpResult) {
+				txtOutput.writefileln(strings);
+			}
+		}
+		txtOutput.close();
 	}
 }
 /** 某个样本在该位点的reference reads数量 */

@@ -24,7 +24,7 @@ public class SnpFilter {
 	/** 判定为Snp所含有的snp数量不得小于该数值 */
 	int Snp_HetoMore_Contain_SnpNumMin = 2;
 	/**判定为纯合snp所含有的snp比例不得小于于该数值 */
-	double Snp_HetoMore_Contain_SnpProp_Min = 0.4;
+	double Snp_HetoMore_Contain_SnpProp_Min = 0.2;
 	
 	/** 判定为Snp Heto的最少reads数 */
 	int Snp_Heto_ReadsAllNumMin = 3;

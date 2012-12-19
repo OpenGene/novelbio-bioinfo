@@ -30,25 +30,23 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	/** 读取文件时去除重复snp位点 */
 	HashSet<String> setSnpSiteRemoveFromReading = new HashSet<String>();
 	String outFile;
+	/** 是否获得vcf的标签 */
+	boolean getVCFflag;
 	
 	/** 统计数字 */
 	long readLines;
 	long readByte;
 	int findSnp;
 	
+	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
-	
-	/** 清空所有snp和输入文件 */
-	public void clear() {
-		mapChrID2LsSnpSite.clear();
-		mapSample2PileupFile.clear();
-		setSnpSiteRemoveFromReading.clear();
-		readLines = 0;
-		readByte = 0;
-		findSnp = 0;
+	/** 是否需要获取vcf的flag */
+	public void setGetVCFflag(boolean getVCFflag) {
+		this.getVCFflag = getVCFflag;
 	}
+	
 	public void addSample2PileupFile(String sampleName, String pileupFileName) {
 		mapSample2PileupFile.put(sampleName, pileupFileName);
 	}
@@ -252,7 +250,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		txtWrite.writefileln(RefSiteSnpIndel.getTitleFromSampleName(mapSample2PileupFile.keySet()));
 		for (ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndel : mapChrID2LsSnpSite.values()) {//每条染色体
 			for (RefSiteSnpIndel refSiteSnpIndel : lsRefSiteSnpIndel) {//每个位点
-				ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(mapSample2PileupFile.keySet(), false);
+				ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(mapSample2PileupFile.keySet(), false, getVCFflag);
 				for (String[] strings : lsResult) {//每个位点所存在的snp
 					txtWrite.writefileln(strings);
 				}
@@ -276,6 +274,17 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		refSiteSnpIndel.setSampleName(sampleName);
 		refSiteSnpIndel.setSamToolsPilup(samtoolsLine);
 		return true;
+	}
+	
+	
+	/** 清空所有snp和输入文件 */
+	public void clear() {
+		mapChrID2LsSnpSite.clear();
+		mapSample2PileupFile.clear();
+		setSnpSiteRemoveFromReading.clear();
+		readLines = 0;
+		readByte = 0;
+		findSnp = 0;
 	}
 	
 }

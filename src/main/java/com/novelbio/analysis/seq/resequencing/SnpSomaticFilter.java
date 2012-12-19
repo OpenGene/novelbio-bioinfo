@@ -19,8 +19,8 @@ import com.novelbio.database.domain.geneanno.SepSign;
  * 读取几个GATK的vcf结果文件，然后获得并集snp，并标记每个snp的信息，所在基因等等
  * @author zong0jie
  */
-public class SNPGATKcope {
-	private static final Logger logger = Logger.getLogger(SNPGATKcope.class);
+public class SnpSomaticFilter {
+	private static final Logger logger = Logger.getLogger(SnpSomaticFilter.class);
 	GffChrAbs gffChrAbs;
 
 	/** vcf的列 */
@@ -48,6 +48,8 @@ public class SNPGATKcope {
 
 	/** 多组样本之间比较的信息 */
 	ArrayList<SnpGroupFilterInfo> lsSampleDetailCompare = new ArrayList<SnpGroupFilterInfo>();
+	
+	boolean getVCFflag = false;
 	
 	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
 	public void setSnp_Hete_Contain_SnpProp_Min(double snp_Hete_Contain_SnpProp_Min) {
@@ -98,8 +100,18 @@ public class SNPGATKcope {
 		getSnpDetail(mapSiteInfo2RefSiteSnpIndel.values());
 		lsFilteredRefSite = ArrayOperate.getArrayListValue(mapSiteInfo2RefSiteSnpIndel);
 	}
+	
+	/** 看一下这个有没有设定vcf的flag */
+	public boolean getVCFflag() {
+		return getVCFflag;
+	}
+	
 	private void readSnpFromFile_To_MapSiteInfo2RefSiteSnpIndel() {
 		mapSiteInfo2RefSiteSnpIndel.clear();
+		if (lsSample2VcfFiles.size() > 0) {
+			getVCFflag = true;
+		}
+		
 		for (String[] sample2vcf : lsSample2VcfFiles) {
 			addVcf_To_MapSiteInfo2RefSiteSnpIndel(sample2vcf[0], sample2vcf[1]);
 		}
@@ -244,7 +256,7 @@ public class SNPGATKcope {
 		}
 		for (int i = 0; i < lsWriteIn.size(); i++) {
 			RefSiteSnpIndel refSiteSnpIndel = lsFilteredRefSite.get(i);
-			ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(setSample, false);
+			ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(setSample, false, getVCFflag);
 			for (String[] strings : lsResult) {
 				txtOut.writefileln(strings);
 			}

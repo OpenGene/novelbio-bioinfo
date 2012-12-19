@@ -101,7 +101,10 @@ public class GeneFilter {
 	public void setTreatFilteredNum(int treatFilteredNum) {
 		this.treatFilteredMinNum = treatFilteredNum;
 	}
-	
+	/** 获得设定的treatmentName */
+	public Set<String> getSetTreat() {
+		return setTreat;
+	}
 	public ArrayList<RefSiteSnpIndel> filterSnpInGene() {
 		ArrayList<RefSiteSnpIndel> lsResult = new ArrayList<RefSiteSnpIndel>();
 		if (mapNum2LsMapSnpIndelInfo == null) {

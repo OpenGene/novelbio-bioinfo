@@ -13,21 +13,72 @@ import com.novelbio.base.plot.PlotScatter;
 //TODO 没有做清空StatisticUnit的工作
 public class CtrlPileupStatistics {
 	public static void main(String[] args) {
+//		CtrlPileupStatistics ctrlPileupStatistics = new CtrlPileupStatistics();
+//		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
+//		ctrlPileupStatistics.setGffChrAbs(new GffChrAbs(39947));
+//		ctrlPileupStatistics.setMaxGapSize(0);
+//		ctrlPileupStatistics.setPileupFile("/media/winE/NBC/Project/PGM/CombineAlignments_CA_yuli-all_yuli1-10_001_sorted_pileup.gz");
+//		ctrlPileupStatistics.startStatistics();
+//		ctrlPileupStatistics.plot("/media/winE/NBC/Project/PGM/plot/PGM");
+		
+		GffChrAbs gffChrAbs = new GffChrAbs(39947);
+		String parentPath = "/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/pileup/";
+		
 		CtrlPileupStatistics ctrlPileupStatistics = new CtrlPileupStatistics();
 		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
-		ctrlPileupStatistics.setGffChrAbs(new GffChrAbs(39947));
+		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
 		ctrlPileupStatistics.setMaxGapSize(0);
-		ctrlPileupStatistics.setPileupFile("/media/winE/NBC/Project/PGM/CombineAlignments_CA_yuli-all_yuli1-10_001_sorted_pileup.gz");
+		ctrlPileupStatistics.setPileupFile(parentPath+"ZDB9522-E_sorted_realign_removeDuplicate_pileup.gz");
 		ctrlPileupStatistics.startStatistics();
-		ctrlPileupStatistics.plot("/media/winE/NBC/Project/PGM/plot/PGM");
+		ctrlPileupStatistics.plot(parentPath, "ZDB9522-E");
 		
 		ctrlPileupStatistics = new CtrlPileupStatistics();
 		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
-		ctrlPileupStatistics.setGffChrAbs(new GffChrAbs(39947));
+		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
 		ctrlPileupStatistics.setMaxGapSize(0);
-		ctrlPileupStatistics.setPileupFile("/media/winE/NBC/Project/PGM/BZ9522_sorted_realign_removeDuplicate_pileup.gz");
+		ctrlPileupStatistics.setPileupFile(parentPath+"ZDBQ60-1_sorted_sorted_realign_removeDuplicate_pileup.gz");
 		ctrlPileupStatistics.startStatistics();
-		ctrlPileupStatistics.plot("/media/winE/NBC/Project/PGM/plot/ILM");
+		ctrlPileupStatistics.plot(parentPath, "ZDBQ60-1");
+		
+		ctrlPileupStatistics = new CtrlPileupStatistics();
+		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
+		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
+		ctrlPileupStatistics.setMaxGapSize(0);
+		ctrlPileupStatistics.setPileupFile(parentPath+"ZDBTF142-3_sorted_realign_removeDuplicate_pileup.gz");
+		ctrlPileupStatistics.startStatistics();
+		ctrlPileupStatistics.plot(parentPath, "ZDBTF142-3");
+		
+		ctrlPileupStatistics = new CtrlPileupStatistics();
+		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
+		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
+		ctrlPileupStatistics.setMaxGapSize(0);
+		ctrlPileupStatistics.setPileupFile(parentPath+"ZDBTF182-1_sorted_realign_removeDuplicate_pileup.gz");
+		ctrlPileupStatistics.startStatistics();
+		ctrlPileupStatistics.plot(parentPath, "ZDBTF182-1");
+		
+		ctrlPileupStatistics = new CtrlPileupStatistics();
+		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
+		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
+		ctrlPileupStatistics.setMaxGapSize(0);
+		ctrlPileupStatistics.setPileupFile(parentPath+"ZDBTF57-1_sorted_realign_removeDuplicate_pileup.gz");
+		ctrlPileupStatistics.startStatistics();
+		ctrlPileupStatistics.plot(parentPath, "ZDBTF57-1");
+		
+		ctrlPileupStatistics = new CtrlPileupStatistics();
+		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
+		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
+		ctrlPileupStatistics.setMaxGapSize(0);
+		ctrlPileupStatistics.setPileupFile(parentPath+"ZDBTF75-4_sorted_realign_removeDuplicate_pileup.gz");
+		ctrlPileupStatistics.startStatistics();
+		ctrlPileupStatistics.plot(parentPath, "ZDBTF75-4");
+		
+		ctrlPileupStatistics = new CtrlPileupStatistics();
+		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
+		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
+		ctrlPileupStatistics.setMaxGapSize(0);
+		ctrlPileupStatistics.setPileupFile(parentPath+"ZDBTF81-2_sorted_realign_removeDuplicate_pileup.gz");
+		ctrlPileupStatistics.startStatistics();
+		ctrlPileupStatistics.plot(parentPath, "ZDBTF81-2");
 	}
 
 	StatisticsGenome statisticsGenome = new StatisticsGenome();
@@ -120,21 +171,24 @@ public class CtrlPileupStatistics {
 		statisticsGenome.addStatisticUnits(statisticsIndelProp);
 	}
 	
-	public void plot(String outPathAndPrefix) {
+	public void plot(String outPathAndPrefix, String suffix) {
 		try {
-			plotExp(outPathAndPrefix);
+			plotExp(outPathAndPrefix, suffix);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
-	private void plotExp(String outPathAndPrefix) throws InterruptedException {
+	private void plotExp(String outPathAndPrefix, String suffix) throws InterruptedException {
 		if (!outPathAndPrefix.endsWith("/") && !outPathAndPrefix.endsWith("\\")) {
 			outPathAndPrefix = outPathAndPrefix + "_";
+		}
+		if (suffix != null && suffix.trim().equals("")) {
+			suffix = "_" + suffix.trim();
 		}
 		System.out.println(1);
 		BoxStyle boxStyle = new BoxStyle();
 		boxStyle.setBasicStroke(2f);
-		boxStyle.setColor(Color.blue);
+		boxStyle.setColor(DotStyle.getGridentColorBrighter(Color.BLUE));
 		boxStyle.setColorBoxCenter(Color.red);
 		boxStyle.setColorBoxEdge(Color.BLACK);
 		boxStyle.setColorBoxWhisker(Color.BLACK);
@@ -142,11 +196,11 @@ public class CtrlPileupStatistics {
 		
 		System.out.println(2);
 		BarStyle barStyle = new BarStyle();
-		barStyle.setColor(Color.blue);
+		barStyle.setColor(DotStyle.getGridentColorBrighter(Color.BLUE));
 		HistList histListCoverage = statisticsCoverage.getResultHistList();
 		PlotScatter plotScatterCoverage = histListCoverage.getPlotHistBar(barStyle.clone());
 		plotScatterCoverage.setBg(Color.white);
-		plotScatterCoverage.saveToFile(outPathAndPrefix + "Coverage", 2000, 1000);
+		plotScatterCoverage.saveToFile(outPathAndPrefix + "Coverage" + suffix, 2000, 1000);
 		Thread.sleep(100);
 		System.out.println(7);
 
@@ -154,34 +208,34 @@ public class CtrlPileupStatistics {
 		DotStyle dotStyle = new DotStyle();
 		dotStyle.setSize(DotStyle.SIZE_M);
 		dotStyle.setStyle(DotStyle.STYLE_LINE);
-		dotStyle.setColor(Color.blue);
+		dotStyle.setColor(DotStyle.getGridentColorBrighter(Color.BLUE));
 		PlotScatter plotScatterIntegralCoverage = histListCoverage.getIntegralPlot(false, dotStyle.clone());
 		Thread.sleep(100);
 		System.out.println(8);
 		
 		plotScatterIntegralCoverage.setBg(Color.white);
-		plotScatterIntegralCoverage.saveToFile(outPathAndPrefix + "Integral_Coverage", 2000, 1000);
+		plotScatterIntegralCoverage.saveToFile(outPathAndPrefix + "Integral_Coverage" + suffix, 2000, 1000);
 		Thread.sleep(100);
 		System.out.println(9);
 		
 		HistList histListIndelProp = statisticsIndelProp.getHistList();
 		PlotScatter plotScatterIndelProp = histListIndelProp.getPlotHistBar(barStyle.clone());
 		plotScatterIndelProp.setBg(Color.white);
-		plotScatterIndelProp.saveToFile(outPathAndPrefix + "Indel_Prop", 2000, 1000);
+		plotScatterIndelProp.saveToFile(outPathAndPrefix + "Indel_Prop" + suffix, 2000, 1000);
 		
 		
 	
 		HistList histListATdestribution = statisticsContinueATdestribution.getHistList();
 		PlotScatter plotScatterAT = histListATdestribution.getPlotHistBar(barStyle.clone());
 		plotScatterAT.setBg(Color.white);
-		plotScatterAT.saveToFile(outPathAndPrefix + "AT_Destribution", 2000, 1000);
+		plotScatterAT.saveToFile(outPathAndPrefix + "AT_Destribution" + suffix, 2000, 1000);
 		Thread.sleep(100);
 		System.out.println(5);
 		
 		HistList histListCGdestribution = statisticsContinueCGdestribution.getHistList();
 		PlotScatter plotScatterCG = histListCGdestribution.getPlotHistBar(barStyle.clone());
 		plotScatterCG.setBg(Color.white);
-		plotScatterCG.saveToFile(outPathAndPrefix + "CG_Destribution", 2000, 1000);
+		plotScatterCG.saveToFile(outPathAndPrefix + "CG_Destribution" + suffix, 2000, 1000);
 		Thread.sleep(100);
 		System.out.println(6);
 		
@@ -189,13 +243,13 @@ public class CtrlPileupStatistics {
 		
 		PlotBox plotBoxAT = statisticsContinueATcoverge.getBoxPlotList().getPlotBox(boxStyle.clone());
 		plotBoxAT.setBg(Color.white);
-		plotBoxAT.saveToFile(outPathAndPrefix + "AT_coverage", 2000, 1000);
+		plotBoxAT.saveToFile(outPathAndPrefix + "AT_coverage" + suffix, 2000, 1000);
 		Thread.sleep(100);
 		
 		
 		PlotBox plotBoxCG = statisticsContinueCGcoverge.getBoxPlotList().getPlotBox(boxStyle.clone());
 		plotBoxCG.setBg(Color.white);
-		plotBoxCG.saveToFile(outPathAndPrefix + "CG_coverage", 2000, 1000);
+		plotBoxCG.saveToFile(outPathAndPrefix + "CG_coverage" + suffix, 2000, 1000);
 		Thread.sleep(100);
 		System.out.println(4);
 
