@@ -9,6 +9,9 @@ import de.erichseifert.gral.plots.BarPlot;
 import de.erichseifert.gral.plots.points.PointRenderer;
 
 public class PlotBar extends PlotScatter{
+	public PlotBar() {
+		super(PlotScatter.PLOT_TYPE_BARPLOT);
+	}
 	public static void main(String[] args) {
 		BarInfo barInfo = new BarInfo(1, 10, "aaa");
 		BarInfo barInfo2 = new BarInfo(2, 12, "bbb");
@@ -37,12 +40,8 @@ public class PlotBar extends PlotScatter{
     	for (BarInfo barInfo : lsBarInfos) {
 			data.add(barInfo.getX(), barInfo.getHeigth(), barInfo.getBarName());
 		}    	
-    	if (plot == null) {
-    		plot = new BarPlot(data);
-		}
-    	else {
-    		plot.add(data);
-		}
+    	plot.add(data);
+		
     	
     	
     	if (barStyle.getBarWidth() != 0) {

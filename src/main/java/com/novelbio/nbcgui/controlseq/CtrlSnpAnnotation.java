@@ -68,13 +68,14 @@ public class CtrlSnpAnnotation implements RunGetInfo<SnpFilterDetailInfo>{
 	
 	@Override
 	public void done(RunProcess<SnpFilterDetailInfo> runProcess) {
+		guiSnpCalling.getProgressBar().setValue(guiSnpCalling.getProgressBar().getMaximum());
 		guiSnpCalling.getTxtInfo().setText("Snp Annotation Complete");
+		
 		JOptionPane.showMessageDialog(guiSnpCalling, "Snp Annotation Complete", "finish", JOptionPane.INFORMATION_MESSAGE);
 		
 		guiSnpCalling.getBtnAddPileupFile().setEnabled(true);
 		guiSnpCalling.getBtnDeletePileup().setEnabled(true);
 		guiSnpCalling.getBtnRun().setEnabled(true);
-		guiSnpCalling.getProgressBar().setValue(guiSnpCalling.getProgressBar().getMaximum());
 	}
 
 	@Override

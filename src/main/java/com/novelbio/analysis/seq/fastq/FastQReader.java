@@ -214,7 +214,7 @@ class FastQReader {
 	
 	/**
 	 * 从第几行开始读，是实际行
-	 * @param lines 如果lines小于1，则从头开始读取
+	 * @param initial 是否进行初始化，主要用在多线程过滤reads的时候，在装入队列时可以先不初始化，在多线程时候才初始化
 	 * @return
 	 */
 	public Iterable<FastQRecord[]> readlinesPE(boolean initial) {

@@ -116,7 +116,7 @@ public class SnpSomaticFinder {
 	
 	public void writeToFile(String fileName) {
 		TxtReadandWrite txtOutput = new TxtReadandWrite(fileName, true);
-		String[] title = RefSiteSnpIndel.getTitleFromSampleName(geneFilter.getSetTreat());
+		String[] title = RefSiteSnpIndel.getTitleFromSampleName(geneFilter.getSetTreat(), snpgatKcope.getVCFflag());
 		txtOutput.writefileln(title);
 		for (RefSiteSnpIndel refSiteSnpIndel : lsRefSiteSnpIndelsResult) {
 			ArrayList<String[]> lsTmpResult = refSiteSnpIndel.toStringLsSnp(geneFilter.getSetTreat(), snpgatKcope.getVCFflag());

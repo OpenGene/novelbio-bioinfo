@@ -73,7 +73,6 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		this.gffChrAbs = gffChrAbs;
 		this.chrID = chrID;
 		this.refSnpIndelStart = refSnpIndelStart;
-	    setGffIso();
 	}
 	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -89,7 +88,6 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	public void setRefSnpIndelStart(String chrID, int refSnpIndelStart) {
 		this.chrID = chrID;
 		this.refSnpIndelStart = refSnpIndelStart;
-		setGffIso();
 	}
 
 	/**
@@ -171,6 +169,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * -1表示没有该项目
 	 */
 	public double getProp() {
+		setGffIso();
 		return prop;
 	}
 	/**
@@ -202,7 +201,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * @return
 	 */
 	public boolean isSameIso(RefSiteSnpIndel RefSiteSnpIndel) {
-		if (gffGeneIsoInfo != null && gffGeneIsoInfo.equals(RefSiteSnpIndel.getGffIso())) {
+		if (getGffIso() != null && getGffIso().equals(RefSiteSnpIndel.getGffIso())) {
 			return true;
 		} else {
 			return false;
@@ -219,7 +218,6 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		//TODO :chrID是否需要小写
 		chrID = inputLines[0];
 		refSnpIndelStart = Integer.parseInt(inputLines[1]); 
-		setGffIso();
 		getAndAddAllenInfo(inputLines[6], inputLines[7]);
 		
 	}
@@ -233,7 +231,6 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		refSnpIndelStart = Integer.parseInt(inputLines[vcfCols.colSnpStart]); 
 		//TODO :chrID是否需要小写
 		chrID = inputLines[vcfCols.colChrID];
-		setGffIso();
 		SiteSnpIndelInfo siteSnpIndelInfo = getAndAddAllenInfo(inputLines[vcfCols.colRefsequence], inputLines[vcfCols.colThisSequence]);
 		if (vcfCols.colBaseInfo >= 0)
 			setBaseInfo(inputLines[vcfCols.colBaseInfo]);
@@ -338,7 +335,6 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		this.chrID = ss[0];
 		this.refSnpIndelStart = Integer.parseInt(ss[1]);//本行舍不设定都无所谓，因为输入的时候就是要求相同的ID
 		this.refBase = ss[2];
-		setGffIso();
 		setAllenInfo(Integer.parseInt(ss[3]), ss[4]);
 	}
 
@@ -347,7 +343,10 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * 同时设定setProp，cis5to3，和name，都用gffGeneIsoInfo的信息
 	 */
 	private void setGffIso() {
-		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null || (gffGeneIsoInfo != null && prop >= 0))
+		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null || (gffGeneIsoInfo != null && prop >= 0)
+				||
+				chrID == null || chrID.trim().equals("") || refSnpIndelStart <= 0
+				)
 			return;
 
 		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrID, refSnpIndelStart);
@@ -518,13 +517,24 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		}
 		else {
 			siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, referenceSeq, thisSeq);
+			if (siteSnpIndelInfo == null) {
+				return null;
+			}
 			siteSnpIndelInfo.setOrAddSampleInfo(sampleName);
 			siteSnpIndelInfo.setThisReadsNum(snpNum);
 			if (siteSnpIndelInfo.getSnpIndelType() != SnpIndelType.CORRECT) {
 				mapAllen2Num.put(snpIndelInfo, siteSnpIndelInfo);
 			}
 		}
+		siteSnpIndelInfo.setSitGffChrAbs();
 		return siteSnpIndelInfo;
+	}
+	
+	/** 将错配类型位点加入mapAllen2Num，同时返回产生的siteSnpIndelInfo
+	 * <b>如果没有错配，则不加入mapAllen2Num</b>
+	 *  */
+	public SiteSnpIndelInfo getAndAddAllenInfo(String referenceSeq, String thisSeq) {
+		return addSnpIndel2Map(referenceSeq, thisSeq, 0);
 	}
 	
 	/**
@@ -544,12 +554,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 			mapAllen2Num.put(siteSnpIndelInfo.getMismatchInfo(), siteSnpIndelInfo);
 		}
 	}
-	/** 将错配类型位点加入mapAllen2Num，同时返回产生的siteSnpIndelInfo
-	 * <b>如果没有错配，则不加入mapAllen2Num</b>
-	 *  */
-	public SiteSnpIndelInfo getAndAddAllenInfo(String referenceSeq, String thisSeq) {
-		return addSnpIndel2Map(referenceSeq, thisSeq, 0);
-	}
+
 	/**
 	 * 将另一个refSiteSnpIndel的所有snpIndel信息装入本类，那么如果遇到相同的snpIndel就仅记载该样本这个snp的数量信息
 	 * @param refSiteSnpIndel
@@ -606,6 +611,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		}
 		return getSnpIndel(siteSnpIndelInfo.referenceSeq, siteSnpIndelInfo.thisSeq);
 	}
+	
 	/**
 	 * 给定序列和错配方式，返回所含有的reads堆叠数
 	 * 因为本位点可能有多种错配，所以给定一个然后查找，看能找到几个
@@ -623,8 +629,10 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		if (siteSnpIndelInfo != null) {
 			siteSnpIndelInfo.setSampleName(sampleName);
 		}
+		siteSnpIndelInfo.setSitGffChrAbs();
 		return siteSnpIndelInfo;
 	}
+	
 	/**
 	 * 返回数量最大的snp位点
 	 * 已经设定了sampleName
@@ -634,8 +642,11 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		if (lsAllenInfo.size() > 0) {
 			return lsAllenInfo.get(0);
 		}
-		return SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, refBase, refBase);
+		SiteSnpIndelInfo siteSnpIndelInfo = SiteSnpIndelInfoFactory.creatSiteSnpIndelInfo(this, refBase, refBase);
+		siteSnpIndelInfo.setSitGffChrAbs();
+		return siteSnpIndelInfo;
 	}
+	
 	/**
 	 * 返回所有的非ref的基因以及对应的种类和数量
 	 * 每个都设定sampleName
@@ -645,10 +656,12 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		ArrayList<SiteSnpIndelInfo> lsAllenInfo = ArrayOperate.getArrayListValue(mapAllen2Num);
 		for (SiteSnpIndelInfo siteSnpIndelInfo : lsAllenInfo) {
 			siteSnpIndelInfo.setSampleName(sampleName);
+			siteSnpIndelInfo.setSitGffChrAbs();
 		}
 		Collections.sort(lsAllenInfo, new compRefSiteSnpIndelBig2Small(sampleName));
 		return lsAllenInfo;
 	}
+	
 	//TODO check
 	/** 根据是否查找过samPileUp文件，返回空值或是设定为0的SiteSnpIndelInfo */
 	private SiteSnpIndelInfo getSiteSnpIndelInfoNone(String refSequence, String thisSequence) {
@@ -666,6 +679,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 			return null;
 		}
 	}
+	
 	/**
 	 * 给定refSiteSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
 	 * 注意，输入的refSiteSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>
@@ -681,6 +695,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		SiteSnpIndelInfo siteSnpIndelInfoQuery = refSiteSnpIndel.getSiteSnpInfoBigAllen();
 		return getSeqTypeNumStr(siteSnpIndelInfoQuery);
 	}
+	
 	/**
 	 * 给定refSiteSnpIndel，根据其<b>ref</b>,<b>refbase</b>，<b>thisbase</b>和<b>indel</b>的type，查找本位置某种type indel的数量。<br>
 	 * 注意，输入的refSiteSnpIndel必须只能有一种type。也就是只能指定一种形式的错配，<br>
@@ -757,6 +772,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * @return
 	 */
 	private ArrayList<String[]> getStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, boolean getGATKflag, Set<String> setMismatchInfo) {
+		setGffIso();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		LinkedList<String> lsResultTmp = new LinkedList<String>();
 		lsResultTmp.add(chrID);//0
@@ -828,13 +844,17 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		}
 		return lsResult;
 	}
-
+	
+	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames) {
+		return getTitleFromSampleName(lsSampleNames, false);
+	}
+	
 	/** 
 	 * 根据给定的样本名，产生title
 	 * @param lsSampleNames
 	 * @return
 	 */
-	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames) {
+	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames, boolean getGATKflag) {
 		LinkedList<String> lsTitle = new LinkedList<String>();
 		lsTitle.add("ChrID");
 		lsTitle.add("Loc");
@@ -848,8 +868,11 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		for (String sampleName : lsSampleNames) {
 			lsTitle.add(sampleName + "_ReadsDepth");
 			lsTitle.add(sampleName + "_ThisReadsNum");
-			lsTitle.add(sampleName + "_FilteredFlag");
-			lsTitle.add(sampleName + "_Quality");
+			if (getGATKflag) {
+				lsTitle.add(sampleName + "_FilteredFlag");
+				lsTitle.add(sampleName + "_Quality");
+			}
+
 		}
 		lsTitle.add("OrfShift");
 		lsTitle.add("IsInExon");

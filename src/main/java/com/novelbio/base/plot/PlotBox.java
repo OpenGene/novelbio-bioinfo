@@ -13,6 +13,9 @@ import de.erichseifert.gral.plots.BoxPlot.BoxWhiskerRenderer;
  *
  */
 public class PlotBox extends PlotScatter {
+	public PlotBox() {
+		super(PlotScatter.PLOT_TYPE_BOXPLOT);
+	}
 	   /**
      * using data to plot the Bar figure, 直接加入plot，不进入hash表
      * @param lsNum data 
@@ -36,7 +39,7 @@ public class PlotBox extends PlotScatter {
 			);
 			mapInfo2Name.put((double) (c + 1), boxInfo.getBoxName());
 		}
-		plot = new BoxPlot(stats);
+		plot.add(stats);
 		setAxisTicksXMap(mapInfo2Name);
 		setRender(stats, boxStyle);
     }

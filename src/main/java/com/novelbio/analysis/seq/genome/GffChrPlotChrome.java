@@ -258,7 +258,7 @@ public class GffChrPlotChrome {
 			return;
 		}
 		
-		PlotScatter plotScatter = new PlotScatter();
+		PlotScatter plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_SCATTERPLOT);
 		plotScatter.setAxisX(0, maxresolution);
 		plotScatter.setAxisY(0, axisY);
 		plotScatter.setMapNum2ChangeX(0, 0, resolution.length, chrLength, interval);

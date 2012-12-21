@@ -81,10 +81,11 @@ public abstract class GeneID2LsItem {
 	 * 结果排过序了
 	 * @param lsGene2Item 差异基因的 gene2item的list
 	 * @param lsGene2ItemBG
+	 * @param BGnum
 	 * @return 结果没加标题<br>
 	 * @throws Exception 
 	 */
-	public static ArrayList<StatisticTestResult> getFisherResult(StatisticsTest statisticsTest, List<GeneID2LsItem> lsGene2Item,List<GeneID2LsItem> lsGene2ItemBG) {
+	public static ArrayList<StatisticTestResult> getFisherResult(StatisticsTest statisticsTest, List<GeneID2LsItem> lsGene2Item,List<GeneID2LsItem> lsGene2ItemBG, int bgNum) {
 		HashMultimap<String, String> mapItemID2SetGeneID = getHashItem2Gen(lsGene2Item);
 		HashMultimap<String, String> mapItemID2SetGeneIDBG = getHashItem2Gen(lsGene2ItemBG);
 		int numDif = lsGene2Item.size();

@@ -38,6 +38,7 @@ public abstract class AbstFunTest implements FunTestInt{
 	/** genUniID item,item格式 */
 	ArrayList<GeneID2LsItem> lsBGGeneID2Items = null;
 	String BGfile = "";
+	int BGnum = 0;
 	/**
 	 * gene2CopedID的对照表，多个accID对应同一个geneID的时候就用这个hash来处理
 	 * 用途，当做elimFisher的时候，最后会得到一系列的geneID，而每个geneID可能对应了多个accID
@@ -93,7 +94,6 @@ public abstract class AbstFunTest implements FunTestInt{
 		return taxID;
 	}
 	
-	
 	/**
 	 * 最好能第一时间设定
 	 * 读取genUniID item,item格式的表
@@ -109,6 +109,7 @@ public abstract class AbstFunTest implements FunTestInt{
 		
 		ArrayList<String[]> lsTmpGeneID2LsItem = ExcelTxtRead.readLsExcelTxt(fileName, new int[]{1,2}, 1, -1, true);
 		lsBGGeneID2Items = readFromBGfile(lsTmpGeneID2LsItem);
+		BGnum = lsBGGeneID2Items.size();
 	}
 	/**
 	 * 将输入的geneID item,item list
@@ -147,6 +148,7 @@ public abstract class AbstFunTest implements FunTestInt{
 			lsCopedIDsBG.add(copedID);
 		}
 		lsBGGeneID2Items = convert2Item(lsCopedIDsBG);
+		BGnum = lsBGGeneID2Items.size();
 	}
 	/**
 	 * 第一时间设定
@@ -160,6 +162,7 @@ public abstract class AbstFunTest implements FunTestInt{
 		}
 		this.lsCopedIDsBG = lsBGaccID;
 		lsBGGeneID2Items = convert2Item(lsCopedIDsBG);
+		BGnum = lsBGGeneID2Items.size();
 	}
 	/**
 	 * 要先读取AccID文件
@@ -324,7 +327,7 @@ public abstract class AbstFunTest implements FunTestInt{
 			}
 			lsbg.add(geneID2LsGO);
 		}
-		lsTestResult = GeneID2LsItem.getFisherResult(statisticsTest, lstest, lsbg);
+		lsTestResult = GeneID2LsItem.getFisherResult(statisticsTest, lstest, lsbg,BGnum);
 		for (StatisticTestResult statisticTestResult : lsTestResult) {
 			statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemName()));
 		}

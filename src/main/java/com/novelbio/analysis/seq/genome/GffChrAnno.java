@@ -301,7 +301,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	}
 	/**
 	 * ×¢ÊÍ
-	 * @param gffGeneIsoInfo
+	 * @param gffGeneIsoInfoCis
 	 * @param coord
 	 * @return 0£ºsymbol
 	 * 1£ºdescription

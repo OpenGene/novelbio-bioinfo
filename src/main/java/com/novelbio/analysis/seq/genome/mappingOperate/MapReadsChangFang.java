@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genome.mappingOperate;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsChangFang.CGmethyType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 
@@ -12,10 +13,16 @@ import com.novelbio.base.dataStructure.PatternOperate;
  *
  */
 public class MapReadsChangFang extends MapReads {
+	public static void main(String[] args) {
+		logger.debug("a");
+		logger.info("a");
+	}
 	private static Logger logger = Logger.getLogger(MapReadsChangFang.class);
 	
 	PatternOperate patternOperate = new PatternOperate("EviCode \"(.+?)\"", false);
 	String GTFyanghongxing;
+	
+	 CGmethyType cGmethyType = CGmethyType.ALL;
 	
 	@Deprecated
 	public void setBedSeq(String bedSeqFile) { }
@@ -28,6 +35,12 @@ public class MapReadsChangFang extends MapReads {
 	private void setTagLength() {
 		tagLength = 1;//由ReadMapFile方法赋值
 	}
+	
+	/** 设定要统计的CG类型 */
+	public void setcGmethyType(CGmethyType cGmethyType) {
+		this.cGmethyType = cGmethyType;
+	}
+	
 	@Override
 	protected void ReadMapFileExp() throws Exception {
 		setTagLength();
@@ -43,13 +56,16 @@ public class MapReadsChangFang extends MapReads {
 				continue;
 			}
 			GtfHongXingMethy gtfHongXingMethy = new GtfHongXingMethy(gtfLines, patternOperate);
+			if (cGmethyType != CGmethyType.ALL && cGmethyType != gtfHongXingMethy.cgGmethyType) {
+				continue;
+			}
 			String tmpChrID = gtfHongXingMethy.getRefID();
 			if (!tmpChrID.equals(lastChr)) {
 				if (!lastChr.equals("") && flag) { // 前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
 					chrMapReadsInfo.sumChrBp(chrBpReads);
 				}
 				lastChr = tmpChrID;// 实际这是新出现的ChrID
-				logger.error(lastChr);
+				logger.debug(lastChr);
 				
 				Long chrLength = mapChrID2Len.get(lastChr.toLowerCase());
 				flag = true;
@@ -102,9 +118,14 @@ public class MapReadsChangFang extends MapReads {
 			m++;
 		}
 	}
+	
+	public static enum CGmethyType {
+		CHG, CG, CHH, ALL
+	}
 }
 
 class GtfHongXingMethy implements Alignment{
+	private static Logger logger = Logger.getLogger(GtfHongXingMethy.class);
 	boolean cis5to3;
 	String chrID = "";
 	int start = 0;
@@ -112,7 +133,7 @@ class GtfHongXingMethy implements Alignment{
 	String cpgType = "";
 	int readsNum = 0;
 	int methyScore = 0;
-
+	CGmethyType cgGmethyType;
 	PatternOperate patternOperate;
 
 	/**
@@ -128,6 +149,15 @@ class GtfHongXingMethy implements Alignment{
 		cis5to3 = ss[6].equals("+");
 		this.patternOperate = patternOperate;
 		setEvidenceAndReadsNum(ss[8]);
+		if (ss[7].equalsIgnoreCase("CG")) {
+			cgGmethyType = CGmethyType.CG;
+		} else if (ss[7].equalsIgnoreCase("CHG")) {
+			cgGmethyType = CGmethyType.CHG;
+		} else if (ss[7].equalsIgnoreCase("CHH")) {
+			cgGmethyType = CGmethyType.CHH;
+		} else {
+			logger.error("出现未知CG类型：" + ss[7]);
+		}
 	}
 	/**
 	 * 一般是设定为
@@ -205,4 +235,5 @@ class GtfHongXingMethy implements Alignment{
 	public String getRefID() {
 		return chrID.toLowerCase();
 	}
+	
 }

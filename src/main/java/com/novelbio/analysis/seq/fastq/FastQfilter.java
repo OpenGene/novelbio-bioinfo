@@ -24,7 +24,7 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 	FastQReader fastQReader;
 	FastQthreadWrite fastQthreadWrite = new FastQthreadWrite();
 	
-	int allReadsNum, allFilteredReadsNum;
+	int allFilteredReadsNum;
 	
 	/** 用作参数设定的 */
 	FastQRecordFilter fastQRecordFilter;
@@ -78,9 +78,9 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 	}
 	
 	private void readSE() {
-		allReadsNum = 0;
+		fastQReader.readsNum = 0;
 		for (FastQRecord fastQRecord : fastQReader.readlines(false)) {
-			allReadsNum++;
+			fastQReader.readsNum ++;
 			wait_To_Cope_AbsQueue();
 			if (flagStop) {
 				break;
@@ -91,15 +91,19 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 			Future<FastQrecordFilterRun> future = executorPool.submit(fastQrecordFilterRun);
 			queueResult.add(future);
 			
-			if (allReadsNum % 50000 == 0) {
+			if (fastQReader.readsNum % 50000 == 0) {
 				setRunInfo(fastQrecordFilterRun);
 			}
 		}
 	}
 	private void readPE() {
-		allReadsNum = 0;
+		fastQReader.readsNum = 0;
+		try { fastQReader.fastQReadMate.readsNum = 0; } catch (Exception e) { }
+	
 		for (FastQRecord[] fastQRecord : fastQReader.readlinesPE(false)) {
-			allReadsNum++;
+			fastQReader.readsNum ++;
+			try { fastQReader.fastQReadMate.readsNum++; } catch (Exception e) { }
+			
 			wait_To_Cope_AbsQueue();
 			if (flagStop) {
 				break;
@@ -109,7 +113,7 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 			fastQrecordFilterRun.setFastQRecordPE(fastQRecord[0], fastQRecord[1]);
 			Future<FastQrecordFilterRun> future = executorPool.submit(fastQrecordFilterRun);
 			queueResult.add(future);
-			if (allReadsNum % 50000 == 0) {
+			if (fastQReader.readsNum % 50000 == 0) {
 				setRunInfo(fastQrecordFilterRun);
 			}
 		}

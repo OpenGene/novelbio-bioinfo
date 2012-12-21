@@ -24,6 +24,7 @@ public class CtrlGO extends CtrlGOPath{
 	String GOClass = Go2Term.GO_BP;
 	GoAlgorithm goAlgorithm = GoAlgorithm.classic;
 	int[] staxID;
+	
 	/**
 	 * @param elimGo
 	 * @param GOClass GOInfoAbs.GO_BP

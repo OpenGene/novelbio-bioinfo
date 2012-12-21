@@ -9,9 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -25,6 +23,7 @@ import de.erichseifert.gral.data.statistics.Statistics;
 import de.erichseifert.gral.graphics.Drawable;
 import de.erichseifert.gral.graphics.DrawingContext;
 import de.erichseifert.gral.plots.BarPlot;
+import de.erichseifert.gral.plots.BoxPlot;
 import de.erichseifert.gral.plots.PlotArea;
 import de.erichseifert.gral.plots.XYPlot;
 import de.erichseifert.gral.plots.XYPlot.XYNavigationDirection;
@@ -39,6 +38,10 @@ import de.erichseifert.gral.util.Insets2D;
 import de.erichseifert.gral.util.Orientation;
 
 public class PlotScatter extends PlotNBCInteractive{
+	public static final int PLOT_TYPE_BARPLOT = 1;
+	public static final int PLOT_TYPE_BOXPLOT = 2;
+	public static final int PLOT_TYPE_SCATTERPLOT = 3;
+	
     public static final int INSETS_SIZE_S = 100;
     public static final int INSETS_SIZE_SM = 200;
     public static final int INSETS_SIZE_M = 300;
@@ -49,7 +52,7 @@ public class PlotScatter extends PlotNBCInteractive{
     
 	HashMap<DotStyle, DataTable> hashDataTable = new HashMap<DotStyle, DataTable>();
 	
-	XYPlot plot = new BarPlot(new DataTable(Double.class, Double.class));
+	XYPlot plot;
 	String title = null, titleX = null, titleY = null;
 	Double spaceX = null, spaceY = null;
     Font fontTitle = new Font(Font.SANS_SERIF, Font.PLAIN, 15), fontX = null, fontY = null;
@@ -78,6 +81,21 @@ public class PlotScatter extends PlotNBCInteractive{
     boolean isBGgrid = true;
     Color colorBGgridMajor;
     Color colorBGgridMinor;
+    
+    /** 
+     * 哪一种图，是scatter还是盒图还是bar图
+     */
+    public PlotScatter(int PLOT_TYPE) {
+    	if (PLOT_TYPE == PLOT_TYPE_BARPLOT) {
+    		plot = new BarPlot(new DataTable(Double.class, Double.class));
+		} else if (PLOT_TYPE == PLOT_TYPE_BOXPLOT) {
+			plot = new BoxPlot(new DataTable(Double.class, Double.class));
+		} else if (PLOT_TYPE == PLOT_TYPE_SCATTERPLOT) {
+			plot = new XYPlot(new DataTable(Double.class, Double.class));
+		}
+    	
+    }
+    
     /**
      * 设定背景的格子颜色，默认无色
      * @param BGgridColorMajor

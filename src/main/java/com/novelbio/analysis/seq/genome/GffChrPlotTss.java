@@ -2,26 +2,16 @@ package com.novelbio.analysis.seq.genome;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import javax.security.auth.x500.X500Principal;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
@@ -62,11 +52,16 @@ public class GffChrPlotTss {
 	
 	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体 */
 	boolean pileupExonIntron = false;
-	/** 设定需要提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron
+	
+	/** 设定需要提取，或不提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron
 	 * null 就不分析
 	 * 为实际数量
-	 *  */
-	ArrayList<Integer> lsExonIntronNum;
+	 * -1为倒数第一个
+	 * -2为倒数第二个
+	 */
+	ArrayList<Integer> lsExonIntronNumGetOrExclude;
+	/** 对于lsExonIntronNumGetOrExclude选择get还是exclude，true为get，false为exclude */
+	boolean getOrExclude = true;
 	
 	
 	public GffChrPlotTss() { }
@@ -87,6 +82,20 @@ public class GffChrPlotTss {
 			return;
 		}
 		this.gffChrAbs = gffChrAbs;
+	}
+	/** 设定需要提取，或不提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron
+	 * null 就不分析
+	 * 为实际数量
+	 * -1为倒数第一个
+	 * -2为倒数第二个
+	 */
+	public void setLsExonIntronNumGetOrExclude(
+			ArrayList<Integer> lsExonIntronNumGetOrExclude) {
+		this.lsExonIntronNumGetOrExclude = lsExonIntronNumGetOrExclude;
+	}
+	/** 对于lsExonIntronNumGetOrExclude选择get还是exclude，true为get，false为exclude */
+	public void setGetOrExclude(boolean getOrExclude) {
+		this.getOrExclude = getOrExclude;
 	}
 	
 	/** 设定切割分数，默认为1000 */
@@ -159,22 +168,22 @@ public class GffChrPlotTss {
 	 *  */
 	public void setSiteRegion(ArrayList<MapInfo> lsMapInfos) {
 		this.lsMapInfos = MapInfo.getCombLsMapInfoBigScore(lsMapInfos, 1000, true);
-		//清空
-		this.lsGeneID2Value = new ArrayList<Gene2Value>();
 	}
+	
 	/** 设定为全基因组 */
 	public void setGeneIDGenome() {
-		//清空
-		lsMapInfos = new ArrayList<MapInfo>();
 		lsGeneID2Value = Gene2Value.readGeneMapInfoAll(gffChrAbs);
 	}
+	
 	/**
 	 * 给定要画tss图的基因list
 	 * 内部去重复
 	 * 会根据MapInfo.isMin2max()标签确定遇到重复项是取value大的还是小的
 	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
 	 * 一般用于根据gene express 画heapmap图
-	 * @param lsGeneValue string[2] 0:geneID 1:value 其中1 可以没有，那么就是string[1] 0:geneID
+	 * @param lsGeneValue string[2] 
+	 * 0:geneID 
+	 * 1:value 其中1 可以没有，那么就是string[1] 0:geneID
 	 * @return
 	 */
 	public void setGeneID2ValueLs(ArrayList<String[]> lsGeneValue) {
@@ -214,7 +223,7 @@ public class GffChrPlotTss {
 		
 		lsGeneID2Value = new ArrayList<Gene2Value>();
 		for (GffDetailGene gffDetailGene : hashGene2Value.keySet()) {
-			Gene2Value gene2Value = new Gene2Value(gffChrAbs);
+			Gene2Value gene2Value = new Gene2Value();
 			gene2Value.setGffGeneIsoInfo(gffDetailGene.getLongestSplitMrna());
 			gene2Value.setValue(hashGene2Value.get(gffDetailGene));
 			lsGeneID2Value.add(gene2Value);
@@ -225,8 +234,6 @@ public class GffChrPlotTss {
 	 * 给定区域，获得被该区域覆盖的基因然后再做图。mapinfo中设定坐标位点和value */
 	public void setSiteCoveredGene(ArrayList<MapInfo> lsMapInfos, GeneStructure geneStructure) {
 		this.lsGeneID2Value = Gene2Value.getLsGene2Vale(tsstesRange, gffChrAbs, lsMapInfos, geneStructure);
-		//清空
-		this.lsMapInfos = new ArrayList<MapInfo>();
 	}
 	
 	public PlotScatter plotLine(DotStyle dotStyle) {
@@ -237,7 +244,7 @@ public class GffChrPlotTss {
 		}
 		double ymax = MathComput.max(yInfo);
 		double xStart = lsXY.get(0)[0]; double xEnd = lsXY.get(lsXY.size() - 1)[0];
-		PlotScatter plotScatter = new PlotScatter();
+		PlotScatter plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_SCATTERPLOT);
 		plotScatter.addXY(lsXY, dotStyle);
 		double xLen = xEnd - xStart;
 		plotScatter.setAxisX(xStart - xLen * 0.001, (double)xEnd + xLen * 0.001);
@@ -271,6 +278,9 @@ public class GffChrPlotTss {
 		}
 		return lsResult;
 	}
+	
+	
+	
 	/**
 	 * 根据设定的yvalue值和画出两边的边界，设定x的value值
 	 * @return
@@ -316,14 +326,15 @@ public class GffChrPlotTss {
 	/** 将lsGeneID2Value中的信息填充到lsMapInfos中去 */
 	private void setLsMapInfos() {
 		//TODO 应该改成 每次设定新的lsMapInfo，GeneID，和GeneStructure就重新跑
-		if (lsMapInfos.size() > 0 && lsGeneID2Value.size() == 0) {
+		if (lsMapInfos != null && lsMapInfos.size() > 0 && (lsGeneID2Value == null || lsGeneID2Value.size() == 0)) {
+			mapReads.getRangeLs(this.splitNum, lsMapInfos, 0);
 			return;
 		}
 		lsMapInfos = new ArrayList<MapInfo>();
 		for (Gene2Value gene2Value : lsGeneID2Value) {
 			gene2Value.setPlotTssTesRegion(plotTssTesRange);
 			gene2Value.setExonIntronPileUp(pileupExonIntron);
-			gene2Value.setGetNum(lsExonIntronNum);
+			gene2Value.setGetNum(lsExonIntronNumGetOrExclude, getOrExclude);
 			gene2Value.setSplitNum(splitNum);
 			MapInfo mapInfo = gene2Value.getMapInfo(mapReads, geneStructure);
 			if (mapInfo != null) {
@@ -349,7 +360,23 @@ public class GffChrPlotTss {
 		}
 		return MathComput.median(lsDouble, percentage);
 	}
-
+	
+	/**
+	 * 清空那种list的信息，主要是
+	 * 绘制图片的区域<br>
+	   ArrayList< MapInfo > lsMapInfos;<br>
+	绘制图片的gene<br>
+	  ArrayList< Gene2Value > lsGeneID2Value;<br>
+	 设定需要提取，或不提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron<br>
+		ArrayList<Integer> lsExonIntronNumGetOrExclude<br><br>
+		
+		<b>所以需要重新设定 {@link  #setGeneIDGenome()} 等方法</b>
+	 */
+	public void clearCollectionInfo() {
+		try { lsMapInfos.clear(); } catch (Exception e) { }
+		try { lsGeneID2Value.clear(); } catch (Exception e) { }
+		try { lsExonIntronNumGetOrExclude.clear(); } catch (Exception e) { }
+	}
 	/**
 	 * @param lsMapInfo1
 	 * @param lsMapInfo2
@@ -404,263 +431,3 @@ public class GffChrPlotTss {
 	}
 }
 
-class Gene2Value {
-	private static final Logger logger = Logger.getLogger(Gene2Value.class);
-	
-	GffChrAbs gffChrAbs;
-	
-	GffGeneIsoInfo gffGeneIsoInfo;
-	double value;
-	
-	/** tss或tes的扩展区域，一般哺乳动物为 -5000到5000 */
-	int[] plotTssTesRegion = new int[]{-5000, 5000};
-	
-	int splitNum = 1000;
-	
-	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体 */
-	boolean pileupExonIntron = false;
-	/** 设定需要提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron
-	 * null 就不分析
-	 * 为实际数量
-	 *  */
-	ArrayList<Integer> lsExonIntronNum;
-	
-	
-	public Gene2Value(GffChrAbs gffChrAbs) {
-		this.gffChrAbs = gffChrAbs;
-	}
-	/**
-	 * @param plotTssTesRegion tss或tes的扩展区域，一般哺乳动物为 -5000到5000
-	 */
-	public void setPlotTssTesRegion(int[] plotTssTesRegion) {
-		this.plotTssTesRegion = plotTssTesRegion;
-	}
-	/**
-	 * 如果提取的是exon或者intron的区域，因为exon和intron每个基因都不是等长的，所以要设定划分的分数.
-	 * 如果是tss和tes区域，也需要划分成指定的份数
-	 * @param splitNumExonIntron 默认为500份
-	 */
-	public void setSplitNum(int splitNum) {
-		this.splitNum = splitNum;
-	}
-	/**
-	 * 如果只知道gene名字，就用这个来设定。
-	 * 最好能直接设定GffGeneIso
-	 * @param geneName
-	 */
-	public void setGeneName(String geneName) {
-		gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneName);
-	}
-	
-	public void setGffGeneIsoInfo(GffGeneIsoInfo gffGeneIsoInfo) {
-		this.gffGeneIsoInfo = gffGeneIsoInfo;
-	}
-	
-	public void setValue(double value) {
-		this.value = value;
-	}
-	
-	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体 */
-	public void setExonIntronPileUp(boolean pileupExonIntron) {
-		this.pileupExonIntron = pileupExonIntron;
-	}
-	/** 设定需要提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron 
-	 * 输入的是实际数量，譬如1表示第一个exon或intron
-	 * */
-	public void setGetNum(ArrayList<Integer> lsExonIntronNum) {
-		this.lsExonIntronNum = lsExonIntronNum;
-		if (lsExonIntronNum != null) {
-			Collections.sort(lsExonIntronNum);
-		}
-	}
-	/**
-	 * 如果没有，譬如没有intron，那么就返回一个null
-	 * 如果是tss，tes这种带0点的，splitNum会加上1
-	 * @param mapReads
-	 * @param geneStructure
-	 * @return
-	 */
-	public MapInfo getMapInfo(MapReads mapReads, GeneStructure geneStructure) {
-		boolean sucess = true;
-		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getChrID(), value, gffGeneIsoInfo.getName());
-		mapInfo.setCis5to3(gffGeneIsoInfo.isCis5to3());
-		int upstream = plotTssTesRegion[0]; int downstream = plotTssTesRegion[1];
-		if (!gffGeneIsoInfo.isCis5to3()) {
-			upstream = -upstream; downstream = -downstream;
-		}
-		
-		if (geneStructure == GeneStructure.TSS) {
-			mapInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() + upstream, gffGeneIsoInfo.getTSSsite() + downstream);
-			mapReads.getRange(splitNum, mapInfo, 0);
-		} else if (geneStructure == GeneStructure.TES) {
-			mapInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() + upstream, gffGeneIsoInfo.getTESsite() + downstream);
-			mapReads.getRange(splitNum, mapInfo, 0);
-		} else if (geneStructure == GeneStructure.EXON) {
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo);
-		} else if (geneStructure == GeneStructure.INTRON) {
-			if (gffGeneIsoInfo.getLsIntron().size() == 0) {
-				return null;
-			}
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getLsIntron());
-		} else if (geneStructure == GeneStructure.ALLLENGTH) {
-			mapInfo.setStartEndLoc(gffGeneIsoInfo.getStartAbs(), gffGeneIsoInfo.getEndAbs());
-			mapReads.getRange(splitNum, mapInfo, 0);
-		} else if (geneStructure == GeneStructure.CDS) {
-			if (!gffGeneIsoInfo.ismRNA()) {
-				return null;
-			}
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getIsoInfoCDS());
-		} else if (geneStructure == GeneStructure.UTR3) {
-			if (gffGeneIsoInfo.getLenUTR3() < 20) {
-				return null;
-			}
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getUTR3seq());
-		} else if (geneStructure == GeneStructure.UTR5) {
-			if (gffGeneIsoInfo.getLenUTR5() < 20) {
-				return null;
-			}
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getUTR5seq());
-		} else {
-			return null;
-		}
-		
-		if (!sucess || mapInfo.getDouble() == null) {
-			return null;
-		}
-		return mapInfo;
-	}
-	
-	private boolean setMapInfo(MapInfo mapInfo, MapReads mapReads, String chrID, List<ExonInfo> lsExonInfos) {
-		double[] result = new double[splitNum];
-		List<ExonInfo> lsNew = new ArrayList<ExonInfo>();
-		if (lsExonIntronNum == null || lsExonIntronNum.size() == 0) {
-			lsNew = lsExonInfos;
-		} else {
-			for (Integer i : lsExonIntronNum) {
-				i = i - 1;
-				if (i < lsExonInfos.size()) {
-					lsNew.add(lsExonInfos.get(i));
-				}
-			}
-		}
-		
-		if (lsNew.size() == 0) {
-			return false;
-		}
-		
-		
-		if (pileupExonIntron) {
-			ArrayList<double[]> lsResult = new ArrayList<double[]>();
-			for (Alignment alignment : lsNew) {
-				double[] info = mapReads.getRangeInfo(chrID, alignment.getStartAbs(), alignment.getEndAbs(), 0);
-				if (info.length < 5) {
-					continue;
-				}
-				info = MathComput.mySpline(info, splitNum, 0, 0, 0);
-				lsResult.add(info);
-			}
-			for (double[] ds : lsResult) {
-				for (int i = 0; i < ds.length; i++) {
-					result[i] = result[i] + ds[i];
-				}
-			}
-		} else {
-			try {
-				result = mapReads.getRangeInfo(chrID, lsNew);
-			} catch (Exception e) {
-				result = mapReads.getRangeInfo(chrID, lsNew);
-			}
-			if (result == null || result.length < 10) {
-				return false;
-			}
-			result = MathComput.mySpline(result, splitNum, 0, 0, 0);
-		}
-		
-		mapInfo.setDouble(result);
-		return true;
-	}
-	
-	
-	/**
-	 * 根据输入的坐标和权重，返回Gene2Value的list
-	 * 会根据MapInfo.isMin2max()的标签来确定遇到重复项选择大的还是小的
-	 * @param tssTesRange
-	 * @param gffChrAbs
-	 * @param colSiteInfo
-	 * @param geneStructure
-	 * @return
-	 */
-	public static ArrayList<Gene2Value> getLsGene2Vale(int[] tssTesRange, GffChrAbs gffChrAbs, Collection<MapInfo> colSiteInfo, GeneStructure geneStructure) {
-		//存储最后的基因和权重
-		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
-		for (MapInfo mapInfo : colSiteInfo) {
-			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene(tssTesRange, gffChrAbs, mapInfo, geneStructure );
-			for (GffDetailGene gffDetailGene : setGffDetailGene) {
-				if (hashGffDetailGenes.containsKey(gffDetailGene)) {
-					if (MapInfo.isMin2max()) {
-						if (mapInfo.getScore() < hashGffDetailGenes.get(gffDetailGene)) {
-							hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
-						}
-					} else {
-						if (mapInfo.getScore() > hashGffDetailGenes.get(gffDetailGene)) {
-							hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
-						}
-					}
-				} else {
-					hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
-				}
-			}
-		}
-		ArrayList<Gene2Value> lsGene2Values = new ArrayList<Gene2Value>();
-		for (GffDetailGene gffDetailGene : hashGffDetailGenes.keySet()) {
-			Gene2Value gene2Value = new Gene2Value(gffChrAbs);
-			gene2Value.setGffGeneIsoInfo(gffDetailGene.getLongestSplitMrna());
-			gene2Value.setValue(hashGffDetailGenes.get(gffDetailGene));
-			lsGene2Values.add(gene2Value);
-		}
-		return lsGene2Values;
-	}
-	
-	/**
-	 * 给定坐标区域，返回该peak所覆盖的GffDetailGene
-	 * @param tsstesRange 覆盖度，tss或tes的范围
-	 * @param chrID
-	 * @param startLoc
-	 * @param endLoc
-	 * @param structure GffDetailGene.TSS等。如果是gene body区域，就返回整个基因
-	 * @return
-	 */
-	private static Set<GffDetailGene> getPeakStructureGene(int[] tssTesRange, GffChrAbs gffChrAbs, SiteInfo siteInfo, GeneStructure structure) {
-		GffCodGeneDU gffCodGeneDU = gffChrAbs.getGffHashGene().searchLocation(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs());
-		if (gffCodGeneDU == null) {
-			return new HashSet<GffDetailGene>();
-		}
-		gffCodGeneDU.cleanFilter();
-		if (structure.equals(GeneStructure.TSS)) {
-			gffCodGeneDU.setTss(tssTesRange);
-			return gffCodGeneDU.getCoveredGffGene();
-		}
-		else if (structure.equals(GeneStructure.TES)) {
-			gffCodGeneDU.setTes(tssTesRange);
-			return gffCodGeneDU.getCoveredGffGene();
-		}
-		else {
-			return gffCodGeneDU.getCoveredGffGene();
-		}
-	}
-	/**
-	 * 读取全基因组
-	 * @param gffChrAbs
-	 * @return
-	 */
-	public static ArrayList<Gene2Value> readGeneMapInfoAll(GffChrAbs gffChrAbs) {
-		ArrayList<Gene2Value> lsGene2Value = new ArrayList<Gene2Value>();
-		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getGffDetailAll()) {
-			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
-			Gene2Value gene2Value = new Gene2Value(gffChrAbs);
-			gene2Value.setGffGeneIsoInfo(gffGeneIsoInfo);
-			lsGene2Value.add(gene2Value);
-		}
-		return lsGene2Value;
-	}
-}

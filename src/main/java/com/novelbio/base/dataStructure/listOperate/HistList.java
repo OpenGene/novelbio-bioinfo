@@ -220,7 +220,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 			}
 		}
 		if (plotScatter == null) {
-			plotScatter = new PlotScatter();
+			plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_BARPLOT);
 		}
 		double minY = MathComput.min(Ycount);
 		double maxY = MathComput.max(Ycount);
@@ -285,7 +285,13 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	
 	public PlotScatter getIntegralPlot(boolean cis, DotStyle dotStyle) {
 		ArrayList<double[]> lsXY = getIntegral(cis);
-		PlotScatter plotScatter = new PlotScatter();
+		PlotScatter plotScatter = null;
+		if (dotStyle.getStyle() == DotStyle.STYLE_BAR || dotStyle.getStyle() == DotStyle.STYLE_BOX) {
+			plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_BARPLOT);
+		} else {
+			plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_SCATTERPLOT);
+		}
+		
 		plotScatter.addXY(lsXY, dotStyle);
 		plotScatter.setAxisX(get(0).getStartAbs(), get(size() - 1).getStartAbs());
 		plotScatter.setAxisY(0, 1);

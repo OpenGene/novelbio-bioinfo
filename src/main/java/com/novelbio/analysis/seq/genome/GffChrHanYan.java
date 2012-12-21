@@ -178,7 +178,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		double xMin = x[0];
 		double xMax = x[x.length - 1];
 		
-		PlotScatter plotScatter = new PlotScatter();
+		PlotScatter plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_SCATTERPLOT);
 		plotScatter.setAxisX(xMin, xMax);
 		plotScatter.setAxisY(0, yMax);
 

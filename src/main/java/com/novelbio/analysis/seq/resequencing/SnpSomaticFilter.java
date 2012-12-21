@@ -248,7 +248,7 @@ public class SnpSomaticFilter {
 		LinkedHashSet<String> setSample = getSetSampleName();
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
-		txtOut.writefileln(RefSiteSnpIndel.getTitleFromSampleName(setSample));
+		txtOut.writefileln(RefSiteSnpIndel.getTitleFromSampleName(setSample, getVCFflag));
 		//优先写入过滤后的snp位点
 		ArrayList<RefSiteSnpIndel> lsWriteIn = lsFilteredRefSnp;
 		if (lsFilteredRefSnp == null || lsFilteredRefSnp.size() == 0) {

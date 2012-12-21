@@ -60,17 +60,17 @@ public abstract class SiteSnpIndelInfo {
 		this.refSiteSnpIndelParent = refSiteSnpIndel;
 		this.thisSeq = thisBase;
 		this.referenceSeq = refBase;
-		setMapInfoRefSeqAA(refSiteSnpIndel.gffChrAbs);
 	}
 	
-	private void setMapInfoRefSeqAA(GffChrAbs gffChrAbs) {
-		if (gffChrAbs == null)
+	/** 根据parent，设定GffChrAbs */
+	protected void setSitGffChrAbs() {
+		if (refSiteSnpIndelParent == null || refSiteSnpIndelParent.gffChrAbs == null)
 			return;
 		
 		if (refSiteSnpIndelParent.getGffIso() == null)
 			return;
 
-		setMapInfoRefSeqAAabs(gffChrAbs);
+		setMapInfoRefSeqAAabs(refSiteSnpIndelParent.gffChrAbs);
 	}
 	/** 如果Iso不存在，该方法不会被调用。
 	 * 如果Iso存在，并且snp位点在exon上，那么就设置ref序列的氨基酸的信息 */
@@ -105,6 +105,7 @@ public abstract class SiteSnpIndelInfo {
 	public String getSampleName() {
 		return sampleName;
 	}
+	
 	/**
 	 * 移码突变
 	 * @param orfShift
@@ -541,7 +542,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		
 		int refEnd = refStart + referenceSeq.length() - 1;
 		int refStartCis = refStart; int refEndCis = refEnd;
-		
+
 		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndelParent.getGffIso();
 		if (!gffGeneIsoInfo.isCis5to3()) {
 			refStartCis = refEnd; refEndCis = refStart;
