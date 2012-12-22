@@ -75,11 +75,10 @@ public class Profit {
 		}
 	}
 	
-	public String scaning(String outFile) {
+	public void scaning(String outFile) {
 		String cmd = ExePath + "profit -slower2 " + getInProfit() + getSeqFile() + getSeqType();
-		CmdOperate cmdOperate = new CmdOperate(cmd,"sortBam");
+		CmdOperate cmdOperate = new CmdOperate(cmd,"emboss_profit");
 		cmdOperate.run();
-		return FileOperate.changeFileSuffix(outFile, "", "") + ".bam";
 	}
 
 }
