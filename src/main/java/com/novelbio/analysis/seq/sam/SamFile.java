@@ -60,7 +60,8 @@ public class SamFile implements AlignSeq {
 	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
 	 */
 	SamReader samReader = new SamReader();
-	SAMFileWriter samFileWriter;
+//	SAMFileWriter samFileWriter;
+	SamWriter samWriter;
 	
 	public SAMFileHeader.SortOrder SORT_ORDER;
 	
@@ -74,12 +75,14 @@ public class SamFile implements AlignSeq {
 	
 	String referenceFileName;
 	
-	public SamFile() {
-		initialSoftWare();
-	}
 	/**读取已有文件 */
 	public SamFile(String samBamFile) {
 		setSamFileRead(samBamFile);
+		initialSoftWare();
+	}
+	/** 创建新的sambam文件，根据文件名 */
+	public SamFile(String samBamFile, SAMFileHeader samFileHeader) {
+		setSamFileNew(samFileHeader, samBamFile);
 		initialSoftWare();
 	}
 	private static void initialSoftWare() {
@@ -104,12 +107,11 @@ public class SamFile implements AlignSeq {
 	 * @param samFileCreate
 	 * @param sorted 输入的文件是否经过排序
 	 */
-	public void setSamFileNew(SAMFileHeader samFileHeader, String samFileCreate, boolean sorted) {
+	public void setSamFileNew(SAMFileHeader samFileHeader, String samFileCreate) {
 		this.fileName = samFileCreate;
-		SAMFileWriterFactory samFileWriterFactory = new SAMFileWriterFactory();
-		samFileWriter = samFileWriterFactory.makeSAMOrBAMWriter(samFileHeader, sorted, new File(samFileCreate));
+		samWriter = new SamWriter(samFileHeader, samFileCreate);
 	}
-	public void setSamFileRead(String samFileExist) {
+	private void setSamFileRead(String samFileExist) {
 		this.fileName = samFileExist;
 		FormatSeq formatSeq = isSamBamFile(samFileExist);
 		if (formatSeq == FormatSeq.UNKNOWN) {
@@ -245,10 +247,9 @@ public class SamFile implements AlignSeq {
 		if (!isPairend()) {
 			return null;
 		}
-		SamFile samFile = new SamFile();
+	
 		SAMFileHeader samFileHeader = samReader.getSamFileHead();
-		samFile.setSamFileNew(samFileHeader, outSamFile, true);
-		
+		SamFile samFile = new SamFile(outSamFile, samFileHeader);
 		LinkedHashMap<String, SamRecord> mapName2Record = new LinkedHashMap<String, SamRecord>();
 		for (SamRecord samRecord : samReader.readLines()) {
 			if (!samRecord.isHavePairEnd()) {
@@ -345,14 +346,25 @@ public class SamFile implements AlignSeq {
 		if (bamFile) {
 			return this;
 		}
-		SamToBam samToBam = new SamToBam();
-		samToBam.setExePath(softWareInfoSamtools.getExePath());
-		samToBam.setSamFile(fileName);
-		samToBam.setSeqFai(faidxRefsequence());
-		String fileOutName = samToBam.convertToBam(outFile);
-		SamFile samFile = new SamFile(fileOutName);
-
-		setParamSamFile(samFile);
+		if (!outFile.endsWith(".bam")) {
+			FileOperate.changeFileSuffix(outFile, "", ".bam");
+		}
+		
+		SamFile samFile = new SamFile(outFile, getHeader());
+		for (SamRecord samRecord : readLines()) {
+			samFile.writeSamRecord(samRecord);
+		}
+		close();
+		samFile.close();
+		
+//		SamToBam samToBam = new SamToBam();
+//		samToBam.setExePath(softWareInfoSamtools.getExePath());
+//		samToBam.setSamFile(fileName);
+//		samToBam.setSeqFai(faidxRefsequence());
+//		String fileOutName = samToBam.convertToBam(outFile);
+//		SamFile samFile = new SamFile(fileOutName);
+//
+//		setParamSamFile(samFile);
 		return samFile;
 	}
 	/**
@@ -539,14 +551,13 @@ public class SamFile implements AlignSeq {
 		return null;
 	}
 	public void writeSamRecord(SamRecord samRecord) {
-		if (samRecord == null) {
-			return;
-		}
-		samFileWriter.addAlignment(samRecord.getSamRecord());
+		samWriter.writeToSamFileln(samRecord);
 	}
 	public void close() {
 		samReader.close();
-		try { samFileWriter.close(); } catch (Exception e) { }
+		if (samWriter != null) {
+			samWriter.close();
+		}
 	}
 	public static String mergeBamFile(String outBamFile, ArrayList<SamFile> lsBamFile) {
 		BamMerge bamMerge = new BamMerge();
