@@ -32,7 +32,7 @@ public class SeqHash implements SeqHashInt{
 	 * 默认为false
 	 */
 	public SeqHash(String chrFile) {
-		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
+		if (FileOperate.isFileExistAndBigThanSize(chrFile,0.001)) {
 			seqHashAbs =new SeqFastaHash(chrFile, "", true);
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {
@@ -137,6 +137,11 @@ public class SeqHash implements SeqHashInt{
 		return seqHashAbs.getLsSeqName();
 	}
 	/////////////////////  提 取 序 列  /////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	public SeqFasta getSeq(String seqName) {
+		return seqHashAbs.getSeq(seqName, 0 , 0);
+	}
+	
 	@Override
 	public SeqFasta getSeq(String chrID, long startlocation, long endlocation) {
 		SeqFasta seqFasta = seqHashAbs.getSeq(chrID, startlocation, endlocation);

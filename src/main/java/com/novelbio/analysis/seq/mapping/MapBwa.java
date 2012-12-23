@@ -26,7 +26,7 @@ public class MapBwa extends MapDNA {
 	 * 单位，KB
 	 * 似乎该值双端才有用
 	 */
-	private static final int GENOME_SIZE_IN_MEMORY = 500000;
+	private static final int GENOME_SIZE_IN_MEMORY = 5000000;
 	
 	CmdOperate cmdOperate = null;
 	/** bwa所在路径 */
@@ -53,7 +53,7 @@ public class MapBwa extends MapDNA {
 	String mismatch = "0.04";
 
 	/** 是否将index读入内存，仅对双端有效 */
-	boolean readInMemory = false;
+	boolean readInMemory = true;
 	
 	public MapBwa() {}
 	/**
@@ -310,7 +310,8 @@ public class MapBwa extends MapDNA {
 	 */
 	private void bwaAln() {
 		String cmd = ""; cmd = ExePath + "bwa aln ";
-		cmd = cmd + getMismatch() + getGapNum() + getGapLen() + getThreadNum() + getSeedSize() + getOpenPanalty() + getFastQoffset();
+		cmd = cmd + getMismatch() + getGapNum() + getGapLen() + getThreadNum()
+				+ getSeedSize() + getOpenPanalty() + getFastQoffset();
 		
 		String cmd1 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(leftFq) + " > " + CmdOperate.addQuot(getSai(1));
 		cmdOperate = new CmdOperate(cmd1,"bwaMapping1");

@@ -200,12 +200,21 @@ public class SeqFastaHash extends SeqHashAbs {
 	 */
 	protected SeqFasta getSeqInfo(String seqID, long startlocation, long endlocation) {
 		seqID = seqID.toLowerCase();
-		SeqFasta targetChr=hashSeq.get(seqID);
-		if (targetChr == null) {
+		SeqFasta seqfasta=hashSeq.get(seqID);
+		if (startlocation <= 0) {
+			startlocation = 1;
+		}
+		if (endlocation <= 0) {
+			endlocation = seqfasta.Length();
+		}
+		if (startlocation == 1 && endlocation == seqfasta.Length()) {
+			return seqfasta;
+		}
+		if (seqfasta == null) {
 			logger.error("没有该序列 " +seqID);
 			return null;
 		}
-		return targetChr.getSubSeq((int)startlocation, (int)endlocation, true);
+		return seqfasta.getSubSeq((int)startlocation, (int)endlocation, true);
 	}
 	/**
 	 * 输入序列名，自动转变为小写

@@ -263,8 +263,8 @@ public class FastQ {
 		} else if (QUALITY == FastQ.QUALITY_LOW_PGM) {
 			// hashFastQFilter.put(2, 1);
 			mapFastQFilter.put(10, 6);
-			mapFastQFilter.put(13, 15);
-			mapFastQFilter.put(20, 80);
+			mapFastQFilter.put(15, 20);
+//			mapFastQFilter.put(20, 80);
 		} else {
 			// hashFastQFilter.put(2, 1);
 			mapFastQFilter.put(10, 2);

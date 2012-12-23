@@ -163,7 +163,8 @@ public class FileOperate {
 			FileInputStream fis = null;
 			try {
 				fis = new FileInputStream(file);
-				return (double) fis.available() / 1024;
+				double size = (double) fis.available() / 1024;
+				return size;
 			} catch (Exception e1) {
 				logger.error("IO³ö´í£¡");
 				return -1000000000;

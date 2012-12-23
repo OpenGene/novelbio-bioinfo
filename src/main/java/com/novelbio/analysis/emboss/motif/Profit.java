@@ -1,6 +1,5 @@
 package com.novelbio.analysis.emboss.motif;
 
-import com.novelbio.analysis.seq.sam.SamToBed;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -17,7 +16,6 @@ import com.novelbio.base.fileOperate.FileOperate;
  *
  */
 public class Profit {
-
 //	profit  -infile $infile -sequence $sequence -outfile $outfile -sreverse2  -snucleotide2  -sprotein2 -slower2	
 	
 	String ExePath = "";
@@ -69,14 +67,14 @@ public class Profit {
 	/** ÊÇºËËá»¹ÊÇµ°°× */
 	private String getSeqType() {
 		if (isNr) {
-			return " -sreverse2  -snucleotide2 ";
+			return " -snucleotide2 ";
 		} else {
 			return " -sprotein2 ";
 		}
 	}
 	
 	public void scaning(String outFile) {
-		String cmd = ExePath + "profit -slower2 " + getInProfit() + getSeqFile() + getSeqType();
+		String cmd = ExePath + "profit -slower2 " + getInProfit() + getSeqFile() + getSeqType() + " -outfile " + CmdOperate.addQuot(outFile);
 		CmdOperate cmdOperate = new CmdOperate(cmd,"emboss_profit");
 		cmdOperate.run();
 	}

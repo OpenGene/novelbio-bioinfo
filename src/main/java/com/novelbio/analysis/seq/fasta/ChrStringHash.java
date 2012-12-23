@@ -127,11 +127,22 @@ public class ChrStringHash extends SeqHashAbs{
 	}
 	/**
 	 * 给定chrID,chrID会自动转换为小写，和读取的起点以及终点，返回读取的序列
-	 * startNum=204;从第几个碱基开始读取，从1开始记数，注意234的话，实际为从234开始读取，类似substring方法 long
-	 * endNum=254;//读到第几个碱基，从1开始记数，实际读到第endNum个碱基。 快速提取序列
+	 * @param chrID
+	 * @param startlocation 从第几个碱基开始读取，从1开始记数，注意234的话，实际为从234开始读取，类似substring方法 long
+	 * 小于0表示从头开始读取
+	 * @param endlocation 读到第几个碱基，从1开始记数，实际读到第endNum个碱基。 快速提取序列
+	 * 小于0表示读到末尾
+	 * @return
 	 * @throws IOException
 	 */
 	private SeqFasta getSeqInfoExp(String chrID, long startlocation, long endlocation) throws IOException {
+		if (startlocation <= 0) {
+			startlocation = 1;
+		}
+		if (endlocation <= 0) {
+			endlocation = getChrLength(chrID);
+		}
+		
 		startlocation--;
 		chrID = chrID.toLowerCase();
 		RandomAccessFile chrRASeqFile = mapChrID2RandomFile.get(chrID);// 判断文件是否存在

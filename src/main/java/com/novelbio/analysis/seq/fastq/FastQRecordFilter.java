@@ -23,7 +23,7 @@ public class FastQRecordFilter {
 	boolean adaptorLowercase = false;
 	
 	/** 从reads两边切的base quality阈值，小于这个值就会被切掉 */
-	int trimEndFilterQuality = 15;
+	int trimEndFilterQuality = 14;
 	
 	int mapNumLeft = -1, mapNumRight = -1;
 	/** fastQ里面asc||码的指标与个数 */

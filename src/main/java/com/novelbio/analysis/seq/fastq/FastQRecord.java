@@ -278,9 +278,12 @@ public class FastQRecord implements Cloneable {
 	 * -1说明没有adaptor
 	 */
 	public static int trimAdaptorL(String seqIn, String seqAdaptor, int mapNum, int conNum, int numMM, float perMm) {
-		if (seqAdaptor.equals("")) {
+		if (seqAdaptor == null || seqAdaptor.equals("")) {
 			return 0;
 		}
+		seqIn = seqIn.toUpperCase();
+		seqAdaptor = seqAdaptor.toUpperCase();
+		
 		mapNum--;
 		if (mapNum >= seqIn.length() || mapNum < 0) {
 			mapNum = seqIn.length() - 1;
@@ -297,7 +300,7 @@ public class FastQRecord implements Cloneable {
 			for (int j = chrAdaptor.length-1; j >= 0; j--) {
 				if (i+j-lenA+1 < 0)
 					break;
-				if (chrIn[i+j-lenA+1] == chrAdaptor[j] || chrIn[i+j-lenA+1] == 'N') {
+				if (chrAdaptor[j] == 'N' || chrIn[i+j-lenA+1] == chrAdaptor[j] || chrIn[i+j-lenA+1] == 'N') {
 					pm++; con = 0;
 				}
 				else {
@@ -317,7 +320,7 @@ public class FastQRecord implements Cloneable {
 		}
 		return 0;
 	}
-	
+	/** 判定是否通过质检 */
 	private static boolean isMatch(int pm, int mm, int seqAdaptorLen,int maxMMnum, float perMm) {
 		int lenAdaptor = pm + mm;
 		if (pm >= ((double)seqAdaptorLen * (1 - perMm/100)) 
@@ -327,6 +330,7 @@ public class FastQRecord implements Cloneable {
 		}
 		return false;
 	}
+	/** 用blast的方法来找接头 */
 	private static int blastSeq(boolean leftAdaptor, String seqSeq, String seqAdaptor, int numMM, float perMm) {
 		BlastSeqFasta blastSeqFasta = new BlastSeqFasta(seqSeq, seqAdaptor);
 		blastSeqFasta.setSpaceScore(-2);
@@ -535,7 +539,7 @@ public class FastQRecord implements Cloneable {
 		if (seqFasta.toString().length() < readsMinLen) {
 			return false;
 		}
-		if (this.fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET && seqQuality.endsWith("BBBBBBB") ) {
+		if (this.fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET && seqQuality.endsWith("BBBBBBBBBB") ) {
 			return false;
 		}
 		/** 就看Q10，Q13和Q20就行了 */

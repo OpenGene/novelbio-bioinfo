@@ -1,6 +1,7 @@
 package com.novelbio.analysis.annotation.blast;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
@@ -35,9 +36,9 @@ public class BlastNBC {
 	 * value：输出结果的数字，如0为正常，8为简写。可直接用于设置本类的参数
 	 */
 	public static HashMap<String, Integer> getHashResultType() {
-		HashMap<String, Integer> hashBlastType = new HashMap<String, Integer>();
-		hashBlastType.put("Normal Type With Alignment", 0);
+		HashMap<String, Integer> hashBlastType = new LinkedHashMap<String, Integer>();
 		hashBlastType.put("Simple Table", 8);
+		hashBlastType.put("Normal Type With Alignment", 0);
 		return hashBlastType;
 	}	
 	

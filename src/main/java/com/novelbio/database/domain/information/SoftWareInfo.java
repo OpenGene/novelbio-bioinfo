@@ -108,10 +108,11 @@ public class SoftWareInfo {
 	}
 	/** 是否处于环境变量中 */
 	public void setInPath(boolean isPath) {
-		if (isPath)
+		if (isPath) {
 			this.isPath = 1;
-		else
+		} else {
 			this.isPath = 0;
+		}
 	}
 	public boolean isInPath() {
 		querySoftWareInfo();
@@ -253,7 +254,8 @@ public class SoftWareInfo {
 	public static enum SoftWare {
 		bwa, bowtie, bowtie2, tophat, rsem,miranada, RNAhybrid, mirDeep, miReap,
 		samtools, picard, GATK, cufflinks,
-		macs, sicer;
+		macs, sicer,
+		emboss;
 		
 		static HashMap<String, SoftWare> mapStr2MapSoftware = new LinkedHashMap<String, SoftWareInfo.SoftWare>();
 		public static HashMap<String, SoftWare> getMapStr2MappingSoftware() {
