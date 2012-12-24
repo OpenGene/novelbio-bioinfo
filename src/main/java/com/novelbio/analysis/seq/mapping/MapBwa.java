@@ -26,7 +26,7 @@ public class MapBwa extends MapDNA {
 	 * 单位，KB
 	 * 似乎该值双端才有用
 	 */
-	private static final int GENOME_SIZE_IN_MEMORY = 5000000;
+	private static final int GENOME_SIZE_IN_MEMORY = 500000;
 	
 	CmdOperate cmdOperate = null;
 	/** bwa所在路径 */
@@ -42,7 +42,7 @@ public class MapBwa extends MapDNA {
 	/** 含有几个gap */
 	int gapNum = 1;
 	/** gap的长度 */
-	int gapLength = 6;
+	int gapLength = 20;
 	/** 线程数量 */
 	int threadNum = 4;
 	/**

@@ -52,10 +52,12 @@ abstract class ImportPerLine
 	public void updateFile(String gene2AccFile, boolean gzip) {
 		setReadFromLine();
 		TxtReadandWrite txtGene2Acc;
-		if (gzip)
+		if (gzip) {
 			txtGene2Acc = new TxtReadandWrite(TxtReadandWrite.GZIP, gene2AccFile);
-		else 
+		} else { 
 			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
+		}
+		
 		//从第二行开始读取
 		int num = 0;
 		for (String content : txtGene2Acc.readlines(readFromLine)) {

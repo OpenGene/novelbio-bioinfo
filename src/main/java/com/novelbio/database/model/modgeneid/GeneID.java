@@ -105,6 +105,8 @@ public class GeneID implements GeneIDInt{
 		}
 		else if (geneUniID.getGeneIDtype().equals(IDTYPE_GENEID)) {
 			geneID = new GeneIDNcbi(accID, geneUniID.getGenUniID(), taxID);
+		} else {
+			geneID = new GeneIDAccID(accID, "0", taxID);
 		}
 	}
 	/**

@@ -21,19 +21,19 @@ public class ImportDB {
 //		updateSoftInfo();
 //		updateSpecies();
 		
-		updateNCBIID();
+//		updateNCBIID();
 //		updateUniprotID();
 		
 //		updateRiceID();//只导了前两个
 //		updateTAIR();
-//		 updateZB();
+//		updateZB();
 //		updateEnsembl();
 //		updateYeast();
 //		
 //		updateMicroarray();
 //		updateSoyBean();
 //		updateZeaMaize();
-//		updateBlast();
+		updateBlast();
 //		updateAffy();
 	}
 	/**
@@ -226,6 +226,21 @@ public class ImportDB {
 		blast.setTaxID(queryTaxID);
 		blast.setTxtWriteExcep(outFIle);
 		blast.setIDisBlastType(true);
+//		blast.updateFile(blastFile, false);
+		
+		////////////////////  Maize ////////////////////////////////////
+		blastFile = "/media/winE/NBCplatform/genome/maize/blast/zmb73_p_To_athTair10_p";
+		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+		queryTaxID = 4577;
+		blast = new BlastUp2DB();
+		blast.setQueryID(GeneID.IDTYPE_ACCID);
+		blast.setBlastID(GeneID.IDTYPE_ACCID);
+		blast.setQueryDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
+		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
+		blast.setSubTaxID(3702);
+		blast.setTaxID(queryTaxID);
+		blast.setTxtWriteExcep(outFIle);
+		blast.setIDisBlastType(false);
 		blast.updateFile(blastFile, false);
 	}
 	
@@ -410,7 +425,7 @@ public class ImportDB {
 		yeast.setPpa_ncbi_geneidFile(ppa_ncbi_geneidFile);
 		yeast.update();
 	}
-	
+
 	private static void updateSoyBean() {
 		String soyDbxref = "/media/winE/Bioinformatics/GenomeData/soybean/dbxref";
 		String soyAnno = "/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_annotation_info.txt";
@@ -421,10 +436,11 @@ public class ImportDB {
 	}
 	
 	private static void updateZeaMaize() {
-		String soyDbxref = "/media/winE/Bioinformatics/GenomeData/maize/ZmB73_5a_xref.txt";
-		String maizeGeneInfo = "/media/winE/Bioinformatics/GenomeData/maize/ZmB73_5a_gene_descriptors.txt/ZmB73_5a_gene_descriptors.txt";
+		String zeamaizeDbxref = "/media/winE/Bioinformatics/GenomeData/maize/ZmB73_5a_xref.txt";
+		String maizeGeneInfo =
+				"/media/winE/Bioinformatics/GenomeData/maize/ZmB73_5a_gene_descriptors.txt/ZmB73_5a_gene_descriptors.txt";
 		MaizeGDB maizeGDB = new MaizeGDB();
-		maizeGDB.setMaizeDbxref(soyDbxref);
+		maizeGDB.setMaizeDbxref(zeamaizeDbxref);
 		maizeGDB.setMaizeGeneInfo(maizeGeneInfo);
 		maizeGDB.update();
 	}

@@ -70,29 +70,11 @@ public class GeneIDUni extends GeneIDabs{
 			}
 		}
 		if (dbInfo != null && !dbInfo.trim().equals("")) {
-			return getGenUniID(null);	
+			return getGenUniID(genUniID, null);	
 		}
 		return null;
 	}
 
-	
-	protected AgeneUniID getGenUniID(String genUniID) {
-		UniProtID uniProtID = new UniProtID();
-		uniProtID.setUniID(genUniID);
-		uniProtID.setTaxID(taxID);
-		servUniProtID = new ServUniProtID();
-		ArrayList<UniProtID> lsSubject = servUniProtID.queryLsUniProtID(uniProtID);
-		for (UniProtID uniProtID2 : lsSubject) {
-			UniProtID uniProtIDQueryAccID = new UniProtID();
-			uniProtIDQueryAccID.setAccID(uniProtID2.getAccID());
-			uniProtIDQueryAccID.setTaxID(taxID);
-			ArrayList<UniProtID> lsuniprotIDs = servUniProtID.queryLsUniProtID(uniProtIDQueryAccID);
-			if (lsuniprotIDs.size() == 1) {
-				return uniProtID2;
-			}
-		}
-		return null;
-	}
 	@Override
 	protected void setGoInfo() {
 		goInfoAbs = new GOInfoUniID(genUniID, taxID);

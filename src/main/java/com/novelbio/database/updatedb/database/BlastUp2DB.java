@@ -11,6 +11,7 @@ public class BlastUp2DB extends ImportPerLine{
 	String queryDBinfo = "";
 	public void setQueryDBinfo(String queryDBinfo) {
 		this.queryDBinfo = queryDBinfo;
+		setReadFromLine(1);
 	}
 	/**
 	 * ref|NP_002932| 这种类型的，就会用正则表达式去抓里面的ID
@@ -77,6 +78,8 @@ public class BlastUp2DB extends ImportPerLine{
 			String accID = ss[1];
 			if (idtypeBlast) {
 				accID = GeneID.getBlastAccID(ss[1]);
+			} else {
+				accID = GeneID.removeDot(accID); 
 			}
 			//如果没有blastDBinfo，就用已有的accID去获得该blastDBinfo
 			if (blastDBinfo == null || blastDBinfo.equals("")) {

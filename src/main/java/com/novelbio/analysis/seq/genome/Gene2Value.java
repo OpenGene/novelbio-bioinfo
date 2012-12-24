@@ -170,7 +170,7 @@ public class Gene2Value {
 			ArrayList<double[]> lsResult = new ArrayList<double[]>();
 			for (Alignment alignment : lsNew) {
 				double[] info = mapReads.getRangeInfo(chrID, alignment.getStartAbs(), alignment.getEndAbs(), 0);
-				if (info.length < 5) {
+				if (info == null || info.length < 5) {
 					continue;
 				}
 				info = MathComput.mySpline(info, splitNum, 0, 0, 0);

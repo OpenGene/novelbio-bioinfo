@@ -626,8 +626,12 @@ public abstract class GeneIDabs implements GeneIDInt {
 	@Override
 	public boolean update(boolean updateUniID) {
 		AgeneUniID geneUniID = getUpdateGenUniID();
+		if (geneUniID == null) {
+			return false;
+		}
 		if (geneUniID.getGeneIDtype().equals(GeneID.IDTYPE_GENEID) && geneUniID.getGenUniID().equals("0")) {
 			logger.error("geneID为0，请check");
+			return false;
 		}
 		boolean flag1 = false;
 		try {
@@ -649,9 +653,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return flag1&&flag2&&flag3&&flag4;
 	}
 
-	/**
-	 * 升级GO数据库
-	 */
+	/** 升级GO数据库 */
 	private boolean updateGene2Go() {
 		boolean flag = true;
 		if (genUniID == null || genUniID.equals("")) {
@@ -761,7 +763,11 @@ public abstract class GeneIDabs implements GeneIDInt {
 			servUniGeneInfo.updateUniGenInfo(genUniID, taxID, geneInfo);
 			updateUniGeneInfoSymbolAndSynonyms(geneInfo);
 		} else if (idType.equals(GeneID.IDTYPE_GENEID)) {
-			servGeneInfo.updateGenInfo(genUniID, taxID, geneInfo);
+			try {
+				servGeneInfo.updateGenInfo(genUniID, taxID, geneInfo);
+			} catch (Exception e) {
+				servGeneInfo.updateGenInfo(genUniID, taxID, geneInfo);
+			}
 			updateGeneInfoSymbolAndSynonyms(geneInfo);
 		}
 		else {
@@ -932,7 +938,17 @@ public abstract class GeneIDabs implements GeneIDInt {
 			}
 		});
 		if (lsgeneID.size() == 0) {
-			return null;
+			if (accID != null && !accID.equals("")) {
+				if (genUniID == null || genUniID.equals("") || genUniID.equals("0")) {
+					genUniID = accID;
+				}
+				AgeneUniID geneUniID = new UniProtID();
+				geneUniID.setTaxID(taxID);
+				geneUniID.setGenUniID(genUniID);
+				geneUniID.setAccID(accID);
+				geneUniID.setDBInfo(geneIDDBinfo);
+				return geneUniID;
+			}
 		}
 		AgeneUniID ageneUniID = lsgeneID.get(0).get(0);
 		return ageneUniID;

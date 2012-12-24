@@ -30,15 +30,14 @@ public class MaizeGDB {
 	 * @param outFIle
 	 * @throws Exception
 	 */
-	public void update()
-	{
+	public void update() {
 		MaizeAccID maizeAccID = new MaizeAccID();
 		maizeAccID.setTaxID(taxID);
 		maizeAccID.setReadFromLine(2);
 		String outfile = FileOperate.changeFileSuffix(maizeDbxref, "_out", null);
 		maizeAccID.setTxtWriteExcep(FileOperate.changeFileSuffix(maizeDbxref, "_out", null));
 		maizeAccID.setUniProtID(false);
-//		maizeAccID.updateFile(maizeDbxref, false);
+		maizeAccID.updateFile(maizeDbxref, false);
 		
 		maizeAccID = new MaizeAccID();
 		maizeAccID.setTaxID(taxID);
@@ -46,7 +45,7 @@ public class MaizeGDB {
 		maizeAccID.setReadFromLine(1);
 		maizeAccID.setTxtWriteExcep(FileOperate.changeFileSuffix(outfile, "_out2", null));
 		maizeAccID.setUniProtID(true);
-//		maizeAccID.updateFile(outfile, false);
+		maizeAccID.updateFile(outfile, false);
 		
 		MaizeGeneInfo maizeGeneInfo = new MaizeGeneInfo();
 		maizeGeneInfo.setReadFromLine(2);
@@ -66,8 +65,8 @@ public class MaizeGDB {
  * 上的ZmB73_5a_xref.txt
  * 从第二行开始读
  */
-class MaizeAccID extends ImportPerLine
-{
+class MaizeAccID extends ImportPerLine {
+	private static Logger logger = Logger.getLogger(MaizeAccID.class);
 	boolean uniProtID = false;
 	/**
 	 * 是否将没有查到的ID导入uniProtID
@@ -79,43 +78,87 @@ class MaizeAccID extends ImportPerLine
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
-		if (ss[1].equals("GO"))
-			return true;
-		
+		if (ss[0].contains("GRMZM2G353867")) {
+			logger.debug("stop");
+		}
 		GeneID copedID = null;
-		if (ss[0].startsWith("AC"))
+		if (ss[0].startsWith("AC")) {
 			copedID = new GeneID(ss[0], taxID);
-		else
+		} else {
 			copedID = new GeneID(ss[0].split("_")[0], taxID);
+		}
 		
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB, true);
 		//是否成功升级的标志。因为后面要升级两次
 		boolean flag = false;
-		//如果是geneID
 		if (ss[1].equals("EntrezGene")) {
 			copedID.setUpdateGeneID(ss[2], GeneID.IDTYPE_GENEID);
+			if (ss.length >= 4) {
+				GeneInfo geneInfo = new GeneInfo();
+				geneInfo.setDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
+				geneInfo.setDescrp(ss[3]);
+				copedID.setUpdateGeneInfo(geneInfo);
+			}
 			//geneID的话就不是其他的数据库ID，就不需要再导入一次了
-			return copedID.update(uniProtID);
+			flag = copedID.update(uniProtID);
+			updateMaizeACID(ss, copedID);
+			return flag;
 		}
 		//否则的话就常规导入
-		else {
+		else if (!ss[1].equalsIgnoreCase("GO")) {
 			copedID.setUpdateRefAccID(ss[2]);
+			if (ss.length >= 4) {
+				GeneInfo geneInfo = new GeneInfo();
+				geneInfo.setDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
+				geneInfo.setDescrp(ss[3]);
+				copedID.setUpdateGeneInfo(geneInfo);
+			}
+
+			flag = copedID.update(uniProtID);
+		} else {
+			copedID.setUpdateRefAccID(copedID.getAccID());
 			flag = copedID.update(uniProtID);
 		}
-		//常规导入后还需要将本ID再导入一次
-		 copedID.setUpdateAccID(ss[2]);
-		String dbInfo = null;
-		 if (ss[1].equals("RefSeq_dna"))
-			 dbInfo = NovelBioConst.DBINFO_NCBI_ACC_REFSEQ;
-		else if (ss[1].equals("RefSeq_peptide"))
-			dbInfo = NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_PROTEIN;
-		else if (ss[1].equals("UniGene"))
-			dbInfo = NovelBioConst.DBINFO_UNIPROT_UNIGENE;
-		 if (dbInfo != null) {
-			 copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ, false);
-			 copedID.update(uniProtID);
-		 }
+		 
+		updateMaizeACID(ss, copedID);
+		updateDbxrefID(ss, copedID);
 		 return flag;
+	}
+	
+	/** 玉米的ACID很奇怪，譬如
+	 * AC148152.3_FGT005可以为
+	 * AC148152.3_FG005
+	 * AC148152.3_FGP005
+	 * 三种
+	 */
+	private void updateMaizeACID(String[] ss, GeneID geneID) {
+		 if (ss[0].startsWith("AC")) {
+			 geneID.setUpdateAccID(ss[0].replace("FGT", "FG"));
+			 geneID.update(uniProtID);
+			 geneID.setUpdateAccID(ss[0].replace("FGT", "FGP"));
+			 geneID.update(uniProtID);
+		}
+	}
+	
+	private void updateDbxrefID(String[] ss, GeneID geneID) {
+		if (ss[1].equalsIgnoreCase("GO")) {
+			return;
+		}
+		//常规导入后还需要将本ID再导入一次
+		geneID.setUpdateAccID(ss[2]);
+		String dbInfo = null;
+		 if (ss[1].equals("RefSeq_dna")) {
+			 dbInfo = NovelBioConst.DBINFO_NCBI_ACC_REFSEQ;
+		 } else if (ss[1].equals("RefSeq_peptide")) {
+			 dbInfo = NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_PROTEIN;
+		 } else if (ss[1].equals("UniGene")) {
+			dbInfo = NovelBioConst.DBINFO_UNIPROT_UNIGENE;
+		 }
+		 
+		 if (dbInfo != null) {
+			 geneID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ, false);
+			 geneID.update(uniProtID);
+		 }
 	}
 }
 
@@ -133,6 +176,10 @@ class MaizeGeneInfo extends ImportPerLine
 		if (ss.length < 4)
 			return true;
 		
+		if (ss[0].equals("AC194389.3_FG001")) {
+			System.out.println("stop");
+		}
+		
 		GeneID copedID = new GeneID(ss[0], taxID);
 		AGeneInfo geneInfo = new GeneInfo();
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB, false);
@@ -141,6 +188,7 @@ class MaizeGeneInfo extends ImportPerLine
 		geneInfo.setDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
 		copedID.setUpdateGeneInfo(geneInfo);
 		return copedID.update(false);
+	
 	}
 }
 /**

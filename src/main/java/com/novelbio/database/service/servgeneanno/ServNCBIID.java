@@ -112,7 +112,11 @@ public class ServNCBIID implements MapNCBIID{
 				return true;
 			} catch (Exception e) {
 				logger.error("cannot insert into database: " + ncbiid.getAccID());
-				e.printStackTrace();
+				try {
+					mapNCBIID.updateNCBIID(ncbiid);
+				} catch (Exception e2) {
+					e.printStackTrace();
+				}
 				return false;
 			}
 		}

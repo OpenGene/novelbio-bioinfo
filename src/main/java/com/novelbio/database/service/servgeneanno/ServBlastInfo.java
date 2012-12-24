@@ -75,9 +75,9 @@ public class ServBlastInfo implements MapBlastInfo {
 			mapBlastInfo.insertBlastInfo(blastInfo);
 		}
 		//evalue小于等于blastinfo 或者evalue相同但是identity更大
-		else if (blastInfo2.getEvalue() < blastInfo.getEvalue()
-				|| (blastInfo2.getEvalue() == blastInfo.getEvalue()
-				    && blastInfo2.getIdentities() > blastInfo.getIdentities()  )) {
+		else if (blastInfo.getEvalue() < blastInfo2.getEvalue()
+				|| (blastInfo.getEvalue() == blastInfo2.getEvalue()
+				    && blastInfo.getIdentities() > blastInfo2.getIdentities()  )) {
 			mapBlastInfo.updateBlastInfo(blastInfo);
 		}
 	}

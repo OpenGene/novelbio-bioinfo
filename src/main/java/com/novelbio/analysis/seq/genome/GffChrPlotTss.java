@@ -93,6 +93,10 @@ public class GffChrPlotTss {
 			ArrayList<Integer> lsExonIntronNumGetOrExclude) {
 		this.lsExonIntronNumGetOrExclude = lsExonIntronNumGetOrExclude;
 	}
+	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体 */
+	public void setPileupExonIntron(boolean pileupExonIntron) {
+		this.pileupExonIntron = pileupExonIntron;
+	}
 	/** 对于lsExonIntronNumGetOrExclude选择get还是exclude，true为get，false为exclude */
 	public void setGetOrExclude(boolean getOrExclude) {
 		this.getOrExclude = getOrExclude;
@@ -279,8 +283,6 @@ public class GffChrPlotTss {
 		return lsResult;
 	}
 	
-	
-	
 	/**
 	 * 根据设定的yvalue值和画出两边的边界，设定x的value值
 	 * @return
@@ -369,7 +371,6 @@ public class GffChrPlotTss {
 	  ArrayList< Gene2Value > lsGeneID2Value;<br>
 	 设定需要提取，或不提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron<br>
 		ArrayList<Integer> lsExonIntronNumGetOrExclude<br><br>
-		
 		<b>所以需要重新设定 {@link  #setGeneIDGenome()} 等方法</b>
 	 */
 	public void clearCollectionInfo() {

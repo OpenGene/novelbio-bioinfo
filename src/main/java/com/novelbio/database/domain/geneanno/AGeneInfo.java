@@ -397,7 +397,10 @@ public abstract class AGeneInfo {
 				for (int i = 0; i < dbInfoDetail.length; i++) {
 					String[] dbinfo2Detail = dbInfoDetail[i].split(SepSign.SEP_INFO);
 					if (dbinfo2Detail[0].equalsIgnoreCase(dbInfo)) {
-						dbinfo2Detail[1] = inputField;
+						if (dbinfo2Detail[1].contains("uncharacterized protein") && !inputField.contains("uncharacterized protein")) {
+							dbinfo2Detail[1] = inputField;
+						}
+						
 						dbInfoDetail[i] = dbinfo2Detail[0] + SepSign.SEP_INFO + dbinfo2Detail[1];
 						break;
 					}

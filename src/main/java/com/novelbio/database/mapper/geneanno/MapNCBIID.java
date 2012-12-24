@@ -70,9 +70,6 @@ public interface MapNCBIID extends MapperSql{
 			if test="accessID !=null"<br>
 				and accessID = #{accessID} <br>
 			/if<br>
-			if test="taxID !=0 and taxID !=null"<br>
-				and TaxID = #{taxID} <br>
-			/if<br>
 	    /where <br>
 	 * @param NCBIID
 	 */
