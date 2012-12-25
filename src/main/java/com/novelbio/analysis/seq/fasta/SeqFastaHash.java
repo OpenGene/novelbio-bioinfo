@@ -155,18 +155,17 @@ public class SeqFastaHash extends SeqHashAbs {
 			lsSeqName.add(seqFasta.getSeqName());
 			hashChrLength.put(seqNameLow, (long) seq.length());
 		} else {// 对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
-			if (append)
-			 { //连续向后加上"<"直到hash中没有这条名字为止，然后装入hash表
-				 while (hashSeq.containsKey(seqNameLow)) {
+			//连续向后加上"<"直到hash中没有这条名字为止，然后装入hash表
+			if (append) {
+				 while (hashSeq.containsKey(seqFasta.getSeqName().toLowerCase())) {
 					 seqFasta.setName(seqFasta.getSeqName()+"<");
 				 }
-				 hashSeq.put(seqNameLow, seqFasta);
+				 hashSeq.put(seqFasta.getSeqName().toLowerCase(), seqFasta);
 				 lsSeqName.add(seqFasta.getSeqName());
-				 hashChrLength.put(seqNameLow, (long) seq.length());
+				 hashChrLength.put(seqFasta.getSeqName().toLowerCase(), (long) seq.length());
 			 }
 			 else {
-				if (tmpSeq.Length()<seqFasta.Length()) 
-				{
+				if (tmpSeq.Length()<seqFasta.Length()) {
 					hashSeq.put(seqNameLow, seqFasta);
 					hashChrLength.put(seqNameLow, (long) seq.length());
 					//因为已经有了同名的序列，所以 lsSeqName 中不需要添加新的名字

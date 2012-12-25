@@ -89,13 +89,15 @@ public class Prophecy {
 		String cmd = ExePath + "prophecy -slower1 " + getInAlignment() + getMatrixAlgorithm()
 				+ getSeqType() + getName() + getThreshold() + " -outfile " + CmdOperate.addQuot(outFile);
 		CmdOperate cmdOperate = new CmdOperate(cmd,"emboss_profit");
+		cmdOperate.run();
 		if (isNr) {
-			result[1] = FileOperate.changeFilePrefixReal(outFile, "_reverse", null);
+			result[1] = FileOperate.changeFileSuffix(outFile, "_reverse", null);
 			cmd = ExePath + "prophecy -slower1 -sreverse1 " + getInAlignment() + getMatrixAlgorithm() + getSeqType()
 					+ getName() + getThreshold() + " -outfile " + CmdOperate.addQuot(result[1]);
 			cmdOperate = new CmdOperate(cmd,"emboss_profit_reverce");
+			cmdOperate.run();
 		}
-		cmdOperate.run();
+	
 		
 		return result;
 	}

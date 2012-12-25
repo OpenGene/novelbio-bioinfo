@@ -26,6 +26,9 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	}
 	@Override
 	public int getStartAbs() {
+		if (size() == 0) {
+			logger.error(getName() + "Ã»ÓÐÔªËØ");
+		}
 		return get(size() - 1).getEndCis();
 	}
 	@Override

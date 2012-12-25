@@ -85,7 +85,7 @@ public class MapReadsChangFang extends MapReads {
 			}
 			
 			addLoc(gtfHongXingMethy, chrBpReads);
-			allReadsNum = allReadsNum + gtfHongXingMethy.getReadsNum();
+			chrMapReadsInfo.addReadsAllNum(gtfHongXingMethy.getReadsNum());
 			suspendCheck();
 			if (flagStop) {
 				break;

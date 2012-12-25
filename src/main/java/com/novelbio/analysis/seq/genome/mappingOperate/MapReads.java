@@ -51,6 +51,13 @@ public class MapReads extends MapReadsAbs{
 		mapChrID2Len = species.getMapChromInfo();
 	}
 	
+	 /** 有时候需要用测序量最大的一个样本的reads数来做标准化
+	  * <b>在读取结束后设定</b>
+	  * @param allReadsNum
+	  */
+	 public void setAllReadsNum(long allReadsNum) {
+		this.allReadsNum = allReadsNum;
+	}
 	 /** 总共有多少reads参与了mapping，这个从ReadMapFile才能得到。 */
 	public long getAllReadsNum() {
 		if (allReadsNum > 0) {
@@ -220,6 +227,7 @@ public class MapReads extends MapReadsAbs{
 				break;
 			}
 			readsSize = readsSize + alignRecord.getRawStringInfo().getBytes().length;
+			chrMapReadsInfo.addReadsAllNum(1);
 			if (readsNum%1000 == 0) {
 				MapReadsProcessInfo mapReadsProcessInfo = new MapReadsProcessInfo(readsSize);
 				setRunInfo(mapReadsProcessInfo);

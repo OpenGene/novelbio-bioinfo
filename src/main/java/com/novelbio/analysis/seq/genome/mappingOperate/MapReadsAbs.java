@@ -659,6 +659,9 @@ class ChrMapReadsInfo {
 	public long getReadsChrNum() {
 		return readsAllNum;
 	}
+	public void addReadsAllNum(long readsAllNum) {
+		this.readsAllNum = this.readsAllNum + readsAllNum;
+	}
 	public long getReadsPipNum() {
 		return readsAllPipNum;
 	}

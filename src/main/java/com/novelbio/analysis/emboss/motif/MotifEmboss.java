@@ -21,15 +21,17 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  */
 public class MotifEmboss {
 	public static void main(String[] args) {
-		SeqHash seqHashMotif = new SeqHash("/home/zong0jie/Desktop/test/motif.txt");
-		SeqHash seqHash = new SeqHash("/home/zong0jie/Desktop/test/seq.txt");
+		String fileName = "TSS_36_UP.fasta";
+		SeqHash seqHashMotif = new SeqHash("/home/zong0jie/桌面/20121224/motif.fasta");
+		SeqHash seqHash = new SeqHash("/home/zong0jie/桌面/20121224/Tss/" + fileName);
 		MotifEmboss motifEmboss = new MotifEmboss();
 		motifEmboss.motifPath = "/home/zong0jie/Desktop/test/";
 		motifEmboss.setAlignedMotifSeqHash(seqHashMotif);
 		motifEmboss.setSeqHash(seqHash);
 		motifEmboss.setMotifEmbossScanAlgorithm(MotifEmbossScanAlgorithm.Frequency);
-		motifEmboss.scanMotif();
-		
+		String[] result = motifEmboss.scanMotif();
+		FileOperate.moveFile(result[0], "/home/zong0jie/桌面/20121224/motifResult", fileName + "motif.txt", true);
+		FileOperate.moveFile(result[1], "/home/zong0jie/桌面/20121224/motifResult", fileName + "motif_reverse.txt", true);
 	}
 	
 	
@@ -90,7 +92,7 @@ public class MotifEmboss {
 		String[] resultMotif = new String[weightMatrixFile.length];
 		resultMotif[0] = scanAndGetResult(weightMatrixFile[0], seqfastaNeedScan, suffix);
 		if (resultMotif.length > 1) {
-			resultMotif[1] = scanAndGetResult(weightMatrixFile[0], seqfastaNeedScan, "_reserve" + suffix);
+			resultMotif[1] = scanAndGetResult(weightMatrixFile[1], seqfastaNeedScan, "_reserve" + suffix);
 		}
 		return resultMotif;
 	}
