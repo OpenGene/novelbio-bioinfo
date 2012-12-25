@@ -62,7 +62,7 @@ public class GuiPeakCalling extends JPanel {
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	GuiLayeredPanSpeciesVersion guiLayeredPanSpeciesVersion;
 
-	Macs14control macs14control = new Macs14control();
+	Macs14control macs14control;
 	JSpinner mfoldminspinner;
 	int speciesID;
 	int methylationType;
@@ -72,7 +72,7 @@ public class GuiPeakCalling extends JPanel {
 	 */
 	JSpinner mfoldMaxspinner;
 	GuiWinAndGsize dialog = new GuiWinAndGsize();
-	SicerControl sicerControl = new SicerControl();
+	SicerControl sicerControl;
 	
 	private JTextField txtKoPrefixSICER;
 	private JTextField txtWtPrefixSICER;
@@ -403,6 +403,7 @@ public class GuiPeakCalling extends JPanel {
 	}
 	
 	private void runMacs() {
+		macs14control = new Macs14control();
 		Species species = guiLayeredPanSpeciesVersion.getSelectSpecies();
 		Double pvalue =Double.parseDouble(txtPvalue.getText()) ;
 		int mfoldMax =  (Integer) mfoldMaxspinner.getValue();
@@ -419,6 +420,7 @@ public class GuiPeakCalling extends JPanel {
 	}
 	
 	private void runSicer() {
+		sicerControl = new SicerControl();
 		sicerControl.setKoBedFile(txtKobedFileSICER.getText(), txtKoPrefixSICER.getText());
 		sicerControl.setWtBedFile(txtWtBedFileSICER.getText(), txtWtPrefixSICER.getText());
 		sicerControl.setKoControlFile(txtKoColFileSICER.getText());

@@ -86,15 +86,18 @@ public class SamFile implements AlignSeq {
 		initialSoftWare();
 	}
 	private static void initialSoftWare() {
-		if (softWareInfoSamtools.getName() == null) {
-			softWareInfoSamtools.setName(SoftWare.samtools);
-		}
-		if (softWareInfoGATK.getName() == null) {
-			softWareInfoGATK.setName(SoftWare.GATK);
-		}
-		if (softWareInfoPicard.getName() == null) {
-			softWareInfoPicard.setName(SoftWare.picard);
-		}
+		try {
+			if (softWareInfoSamtools.getName() == null) {
+				softWareInfoSamtools.setName(SoftWare.samtools);
+			}
+			if (softWareInfoGATK.getName() == null) {
+				softWareInfoGATK.setName(SoftWare.GATK);
+			}
+			if (softWareInfoPicard.getName() == null) {
+				softWareInfoPicard.setName(SoftWare.picard);
+			}
+		} catch (Exception e) {}
+
 	}
 	/** 比对到的reference的文件名 */
 	public void setReferenceFileName(String referenceFileName) {

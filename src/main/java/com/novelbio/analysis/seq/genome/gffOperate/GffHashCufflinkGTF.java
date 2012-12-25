@@ -17,6 +17,9 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	private static Logger logger = Logger.getLogger(GffHashCufflinkGTF.class);
 	GffHashGene gffHashRef;
 	double likelyhood = 0.4;//相似度在0.4以内的转录本都算为同一个基因
+	String transcript = "transcript";
+
+	HashMap<String, GffGeneIsoInfo> mapID2Iso = new HashMap<String, GffGeneIsoInfo>();
 	/**
 	 * 设定参考基因的Gff文件
 	 * @param gffHashRef
@@ -25,7 +28,6 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		this.gffHashRef = gffHashRef;
 	}
 	
-	String transcript = "transcript";
 	@Override
 	protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
@@ -37,11 +39,16 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		String tmpChrID = "";
-		String tmpTranscriptName = "";
+		String tmpTranscriptNameLast = "";
 		for (String content : txtgff.readlines() ) {
 			if (content.charAt(0) == '#') {
 				continue;
 			}
+			
+			if (content.contains("NM_001122678_3")) {
+				logger.debug("stop");
+			}
+			
 			String[] ss = content.split("\t");// 按照tab分开
 			
 			// 新的染色体
@@ -49,24 +56,32 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 				tmpChrID = ss[0].toLowerCase();
 				lsGeneIsoInfos = getChrID2LsGffGeneIso(tmpChrID, mapChrID2LsIso);
 			}
+			
+			String tmpTranscriptName = ss[8].split(";")[1].replace("transcript_id", "").replace("\"", "").trim();
+
 			if (ss[2].equals(transcript) 
-				|| !ss[8].split(";")[1].replace("transcript_id", "").replace("\"", "").trim().equals(tmpTranscriptName)) 
+				||
+				(!tmpTranscriptName.equals(tmpTranscriptNameLast) 
+						&& !mapID2Iso.containsKey(tmpTranscriptName) )
+					) 
 			{
-				tmpTranscriptName = ss[8].split(";")[1].replace("transcript_id", "").replace("\"", "").trim();
-				
 				boolean cis = getLocCis(ss[6], tmpChrID, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 				gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(tmpTranscriptName, GeneType.mRNA, cis);
+				mapID2Iso.put(tmpTranscriptName, gffGeneIsoInfo);
 				lsGeneIsoInfos.add(gffGeneIsoInfo);
 				if (ss[2].equals(transcript)) {
 					continue;
 				}
+				tmpTranscriptNameLast = tmpTranscriptName;
 			}
 			if (ss[2].equals("exon")) {
+				gffGeneIsoInfo = mapID2Iso.get(tmpTranscriptName);
 				gffGeneIsoInfo.addExon( Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 			}
 		}
 		CopeChrIso(mapChrID2LsIso);
 		txtgff.close();
+		mapID2Iso = null;
 	}
 	
 	private ArrayList<GffGeneIsoInfo> getChrID2LsGffGeneIso(String chrID, HashMap<String, ArrayList<GffGeneIsoInfo>> mapChrID2LsIso) {

@@ -26,15 +26,11 @@ public class ListMiRNALocation extends ListHashBin{
 	public static int TYPE_RNA_DATA = 10;
 	public static int TYPE_MIREAP = 15;
 	public static int TYPE_MIRDEEP = 25;
-	public static void main(String[] args) {
-		ListMiRNALocation tmpMiRNALocation = new ListMiRNALocation();
-		tmpMiRNALocation.ReadGffarray("/media/winE/Bioinformatics/DataBase/sRNA/miRNA.dat");
-		System.out.println(tmpMiRNALocation.searchMirName("hsa-mir-16-2", 50, 65));
-	}
+
 	/** taxID对应RNA.data中的String */
 	HashMap<Integer, String> hashSpecies = new HashMap<Integer, String>();
 	String species2 = "HSA";
-	Species species = new Species(9606);
+	Species species;
 	/**
 	 * 为miRNA.dat中的物种名
 	 * 设定物种，默认为人类：HSA

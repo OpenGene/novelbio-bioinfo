@@ -159,9 +159,12 @@ public class ExonJunction {
 		for (String condition : mapCondition2MapReads.keySet()) {
 			List<MapReads> lsMapReads = mapCondition2MapReads.get(condition);
 			for (MapReads mapReads : lsMapReads) {
-				mapReads.setInvNum(15);
-				mapReads.setMapChrID2Len(species.getMapChromInfo());
+				mapReads.setInvNum(20);
+				if (species != null) {
+					mapReads.setMapChrID2Len(species.getMapChromInfo());
+				}
 				mapReads.run();
+				logger.error("finished reading bamFile" );
 				mapReads.setNormalType(MapReads.NORMALIZATION_NO);
 				for (ArrayList<ExonSplicingTest> lsExonTest : lsSplicingTests) {
 					for (ExonSplicingTest exonSplicingTest : lsExonTest) {

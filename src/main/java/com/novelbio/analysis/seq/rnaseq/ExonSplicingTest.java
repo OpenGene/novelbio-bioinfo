@@ -453,7 +453,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		int[] cond2 = mapCondition2Counts.get(condition2);
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		String result = gffDetailGene.getName().get(0) + "\t" + exonCluster.getLocInfo() +"\t"+ cond1[0]+ "";
-		GeneID geneID = gffDetailGene.getSetGeneID().iterator().next();
+		
+//		GeneID geneID = gffDetailGene.getSetGeneID().iterator().next();
 		for (int i = 1; i < cond1.length; i++) {
 			result = result + "::" + cond1[i];
 		}
@@ -461,7 +462,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		for (int i = 1; i < cond2.length; i++) {
 			result = result + "::" + cond2[i];
 		}
-		result = result + "\t" + getAndCalculatePvalue() + "\t" + exonCluster.getExonSplicingType().toString() + "\t" + geneID.getSymbol() + "\t" + geneID.getDescription();
+//		result = result + "\t" + getAndCalculatePvalue() + "\t" + exonCluster.getExonSplicingType().toString() + "\t" + geneID.getSymbol() + "\t" + geneID.getDescription();
+		result = result + "\t" + getAndCalculatePvalue() + "\t" + exonCluster.getExonSplicingType().toString() + "\t" + gffDetailGene.getLongestSplitMrna().getName();
+
 		return result;
 	}
 	/** 获得标题 */

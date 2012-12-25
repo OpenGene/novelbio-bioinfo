@@ -66,7 +66,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				inst.setTitle("NovelBio Data Analysis Platform");
 				Image im = Toolkit.getDefaultToolkit().getImage("/media/winE/NBC/advertise/Ðû´«/LOGO/favicon.png");
 				inst.setIconImage(im);
-				inst.setResizable(false);
+				inst.setResizable(false); 
 			}
 		});
 	}
