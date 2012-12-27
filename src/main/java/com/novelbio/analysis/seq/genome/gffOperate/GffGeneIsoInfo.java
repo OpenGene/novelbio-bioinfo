@@ -1027,7 +1027,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 
 		ArrayList<ArrayList<ExonInfo>> lsExon = exonCluster.lsIsoExon;
-
+		if (lsExon.size() < 2) {
+			return 0;
+		}
 		ArrayList<ExonInfo> lsExon1 = lsExon.get(0);
 		ArrayList<ExonInfo> lsExon2 = lsExon.get(1);
 		if (lsExon1.size() == 0 || lsExon2.size() == 0) {
@@ -1059,7 +1061,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			}
 			
 			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-				if (gffGeneIsoInfo.isCis5to3() != cis5To3) {
+				if (gffGeneIsoInfo.isCis5to3() != cis5To3
+						|| gffGeneIsoInfo.getEndAbs() <= Math.min(exonBound[0], exonBound[1])
+						|| gffGeneIsoInfo.getStartAbs() >= Math.max(exonBound[0], exonBound[1])
+					) {
 					continue;
 				}
 				

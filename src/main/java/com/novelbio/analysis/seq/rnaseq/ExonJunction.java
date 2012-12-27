@@ -126,6 +126,9 @@ public class ExonJunction {
 		ArrayList<ExonCluster> lsExonClusters = gffDetailGene.getDifExonCluster();
 		if (lsExonClusters != null && lsExonClusters.size() != 0) {
 			for (ExonCluster exonCluster : lsExonClusters) {
+				if (exonCluster.isAtEdge() || exonCluster.isNotSameTss_But_SameEnd()) {
+					continue;
+				}
 				ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster);
 				lsExonSplicingTestResult.add(exonSplicingTest);
 			}
@@ -158,12 +161,22 @@ public class ExonJunction {
 	public void loadingBamFile(Species species) {
 		for (String condition : mapCondition2MapReads.keySet()) {
 			List<MapReads> lsMapReads = mapCondition2MapReads.get(condition);
+			HashMap<String, Long> mapChrID2ChrLength = null;
+			if (species != null) {
+				mapChrID2ChrLength = species.getMapChromInfo();
+			}
+			
 			for (MapReads mapReads : lsMapReads) {
-				mapReads.setInvNum(20);
-				if (species != null) {
-					mapReads.setMapChrID2Len(species.getMapChromInfo());
+				mapReads.setInvNum(30);
+				if (mapChrID2ChrLength != null) {
+					mapReads.setMapChrID2Len(mapChrID2ChrLength);
 				}
 				mapReads.run();
+				//如果没有设定species，就通过mapreads获得染色体长度信息，用于在内存中构建染色体模型
+				if (mapChrID2ChrLength == null) {
+					mapChrID2ChrLength = mapReads.getMapChrID2Len();
+				}
+				
 				logger.error("finished reading bamFile" );
 				mapReads.setNormalType(MapReads.NORMALIZATION_NO);
 				for (ArrayList<ExonSplicingTest> lsExonTest : lsSplicingTests) {
@@ -171,7 +184,7 @@ public class ExonJunction {
 						exonSplicingTest.setMapCondition2MapReads(condition, mapReads);
 					}
 				}
-				mapReads = new MapReads();
+				mapReads = null;
 			}
 		}
 	}

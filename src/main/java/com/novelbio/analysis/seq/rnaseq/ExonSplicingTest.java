@@ -8,11 +8,9 @@ import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.math.MathException;
 import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.apache.commons.math.stat.inference.TestUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.record.cont.ContinuableRecord;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -25,7 +23,6 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /** 可变剪接的检验 */
@@ -47,7 +44,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	String condition1;
 	String condition2;
-	/** 设置一个大于1的初始值 */
+	/** 设置一个负数的初始值 */
 	Double pvalue= -1.0;
 	
 	int readsLength = 100;
@@ -121,9 +118,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		String chrID = gffDetailGene.getRefID();
 		//一般 setCondition 里面只有两项，也就是仅比较两个时期的可变剪接
 		ArrayList<String> lsCondition = ArrayOperate.getArrayListKey(mapCondition2Counts);
-		if (exonCluster.getParentGene().getName().contains("NM_004723")) {
-			logger.error("stop");
-		}
+
 		Set<ExonSplicingType> setexExonSplicingTypes = exonCluster.getExonSplicingTypeSet();
 		for (String condition : lsCondition) {
 			int[] counts = null;
@@ -140,13 +135,19 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			mapCondition2Counts.put(condition, counts);
 		}
 	}
-	
+	/**
+	 * @param junc 跨过该exon的iso是否存在，0不存在，1存在
+	 * @param gffDetailGene
+	 * @param chrID
+	 * @param condition
+	 * @return
+	 */
 	private int[] getAlt5Reads(int junc, GffDetailGene gffDetailGene, String chrID, String condition) {
 		ArrayList<ExonInfo> lsExon = exonCluster.getExonInfoSingleLs();
 		int[] counts = new int[lsExon.size() + junc];
 		//第一位是跳过该exon的reads
 		if (junc == 1)
-			counts[0] = getJunReadsNum(gffDetailGene, exonCluster, condition);
+			counts[0] = getJunReadsNum(gffDetailGene, condition);
 		
 		for (int i = 0; i < lsExon.size(); i++) {
 			ExonInfo exon = lsExon.get(i);
@@ -156,11 +157,18 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return counts;
 	}
 	
+	/**
+	 * @param junc 跨过该exon的iso是否存在，0不存在，1存在
+	 * @param gffDetailGene
+	 * @param chrID
+	 * @param condition
+	 * @return
+	 */
 	private int[] getAlt3Reads(int junc, GffDetailGene gffDetailGene, String chrID, String condition) {
 		ArrayList<ExonInfo> lsExon = exonCluster.getExonInfoSingleLs();
 		int[] counts = new int[lsExon.size() + junc];
 		if (junc == 1)
-			counts[0] = getJunReadsNum(gffDetailGene, exonCluster, condition);
+			counts[0] = getJunReadsNum(gffDetailGene, condition);
 		
 		for (int i = 0; i < lsExon.size(); i++) {
 			ExonInfo exon = lsExon.get(i);
@@ -170,12 +178,19 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return counts;
 	}
 	
+	/**
+	 * @param junc 跨过该exon的iso是否存在，0不存在，1存在
+	 * @param gffDetailGene
+	 * @param chrID
+	 * @param condition
+	 * @return
+	 */
 	private int[] getNorm(int junc, GffDetailGene gffDetailGene, String chrID, String condition) {
 		ArrayList<ExonInfo> lsExon = exonCluster.getAllExons();
 		int[] counts = new int[lsExon.size() + junc];
 		
 		if (junc == 1)
-			counts[0] = getJunReadsNum(gffDetailGene, exonCluster, condition);
+			counts[0] = getJunReadsNum(gffDetailGene, condition);
 		
 		for (int i = 0; i < lsExon.size(); i++) {
 			ExonInfo exon = lsExon.get(i);
@@ -191,7 +206,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * @param condition
 	 * @return
 	 */
-	private int getJunReadsNum(GffDetailGene gffDetailGene, ExonCluster exonCluster, String condition) {
+	private int getJunReadsNum(GffDetailGene gffDetailGene,  String condition) {
 		int result = 0;
 		HashSet<String> setLocation = new HashSet<String>();
 		setLocation.addAll(getSkipExonLoc_From_IsoHaveExon());
@@ -199,7 +214,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
-			result = result + tophatJunction.getJunctionSite(gffDetailGene.getRefID(), Integer.parseInt(ss[0]), Integer.parseInt(ss[1]), condition);
+			result = result + tophatJunction.getJunctionSite(gffDetailGene.getRefID(), Integer.parseInt(ss[0]),
+					Integer.parseInt(ss[1]), condition);
 		}
 		
 		return result;
@@ -369,8 +385,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return;
 	}
 	
-	/** Retain_Intron的pvalue比较奇怪，必须要exon才能计算的
-	 * 
+	/** 
+	 * Retain_Intron的pvalue比较奇怪，必须要exon才能计算的
 	 *  公式：2^((log2(0.8)*0.5 + log2(0.1)*0.5))
 	 *  */
 	private void getPvalueOther(double pvalueExp, double pvalueCounts) {
@@ -380,7 +396,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		
 		double expPro = getPvaluePropExp();
-		
 		double pvalueLog = Math.log10(pvalueExp) * expPro +  Math.log10(pvalueCounts) * (1 - expPro);
 		pvalue = Math.pow(10, pvalueLog);
 				
@@ -391,7 +406,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		if (pvalue > 1) {
 			pvalue = 1.0;
 		}
-
 		return;
 	}
 	/** 获得表达所占有的pvalue的比例
@@ -416,9 +430,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 
 	
-	/** 当可变剪接的形式为cassette时，修正输入的值
+	/** 
+	 * 当可变剪接的形式为cassette时，修正输入的值
 	 * 就是将值加上他们的平均数
-	 *  */
+	 */
 	private int[] modifyInputValue(int[] conditionInfo) {
 		int mean = (int) MathComput.mean(conditionInfo);
 		int[] modifiedCondition = new int[conditionInfo.length];
@@ -428,18 +443,17 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return modifiedCondition;
 	}
 	
-	/** 如果count数量太大，就将其标准化至一个比较低的值
+	/** 
+	 * 如果count数量太大，就将其标准化至一个比较低的值
 	 * @param normalizedValue 大于该值就开始修正
-	 *  */
+	 */
 	private void normalizeToLowValue(int[] condition, int normalizedValue) {
 		int meanValue = (int) MathComput.mean(condition);
 		if (meanValue < normalizedValue) {
 			return;
 		}
-		else {
-			for (int i = 0; i < condition.length; i++) {
-				condition[i] = (int) ((double)condition[i]/meanValue * normalizedValue);
-			}
+		for (int i = 0; i < condition.length; i++) {
+			condition[i] = (int) ((double)condition[i]/meanValue * normalizedValue);
 		}
 	}
 

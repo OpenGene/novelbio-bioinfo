@@ -202,6 +202,7 @@ public class MapReads extends MapReadsAbs{
 				
 				if (!lastChr.equals("") && flag) { // 前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
 					chrMapReadsInfo.sumChrBp(chrBpReads);
+					chrBpReads = null;
 				}
 				lastChr = tmpChrID;// 实际这是新出现的ChrID
 				logger.error(lastChr);
@@ -251,7 +252,8 @@ public class MapReads extends MapReadsAbs{
 	 * @return
 	 * 本位点的信息，用于下一次判断是否是同一位点
 	 */
-	protected int[] addLoc(AlignRecord alignRecord,boolean uniqReads,int[] tmpOld,int startCod, Boolean cis5to3, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
+	protected int[] addLoc(AlignRecord alignRecord,boolean uniqReads,int[] tmpOld,int startCod, 
+			Boolean cis5to3, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
 		boolean cis5to3This = alignRecord.isCis5to3();
 		if ((cis5to3 != null && alignRecord.isCis5to3() != cis5to3)
 				|| (booUniqueMapping && alignRecord.getMappingNum() > 1)

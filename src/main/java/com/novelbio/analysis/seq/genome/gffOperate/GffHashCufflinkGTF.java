@@ -44,11 +44,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			if (content.charAt(0) == '#') {
 				continue;
 			}
-			
-			if (content.contains("NM_001122678_3")) {
-				logger.debug("stop");
-			}
-			
+
 			String[] ss = content.split("\t");// 按照tab分开
 			
 			// 新的染色体

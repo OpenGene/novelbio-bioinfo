@@ -102,6 +102,9 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 public void setMapChrID2Len(HashMap<String, Long> mapChrID2Len) {
 		 this.mapChrID2Len = mapChrID2Len;
 	 }
+	 public HashMap<String, Long> getMapChrID2Len() {
+		return mapChrID2Len;
+	}
 	 /**
 	  * 返回所有chrID的list
 	  * @return
