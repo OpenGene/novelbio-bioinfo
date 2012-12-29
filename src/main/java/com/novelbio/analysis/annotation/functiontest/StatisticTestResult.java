@@ -10,16 +10,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
  * 检验的结果
- * 
- * @author zong0jie 0:itemID <br>
- *         1到n:item信息 <br>
- *         n+1:difGene <br>
- *         n+2:AllDifGene<br>
- *         n+3:GeneInGoID <br>
- *         n+4:AllGene <br>
- *         n+5:Pvalue<br>
- *         n+6:FDR <br>
- *         n+7:enrichment n+8:(-log2P) <br>
  */
 public class StatisticTestResult {
 	static int logBaseNum = 2;

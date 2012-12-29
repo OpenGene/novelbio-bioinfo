@@ -51,11 +51,49 @@ public class ExonCluster {
 		this.startLoc = Math.min(start, end);
 		this.endLoc = Math.max(start, end);
 	}
+	public String getChrID() {
+		return chrID;
+	}
+	public int getStartLocAbs() {
+		return startLoc;
+	}
+	public int getEndLocAbs() {
+		return endLoc;
+	}
+	public int getStartCis() {
+		if (isCis5To3()) {
+			return startLoc;
+		} else {
+			return endLoc;
+		}
+	}
+	public int getEndCis() {
+		if (isCis5To3()) {
+			return endLoc;
+		} else {
+			return startLoc;
+		}
+	}
+	public boolean isCis5To3() {
+		for (ArrayList<ExonInfo> lsExonInfos : lsIsoExon) {
+			if (lsExonInfos.size() > 0) {
+				return lsExonInfos.get(0).isCis5to3();
+			}
+		}
+		logger.error("±¾exonclusterÎª¿Õ");
+		return true;
+	}
 	public void setExonClusterBefore(ExonCluster exonClusterBefore) {
 		this.exonClusterBefore = exonClusterBefore;
 	}
 	public void setExonClusterAfter(ExonCluster exonClusterAfter) {
 		this.exonClusterAfter = exonClusterAfter;
+	}
+	public ExonCluster getExonClusterAfter() {
+		return exonClusterAfter;
+	}
+	public ExonCluster getExonClusterBefore() {
+		return exonClusterBefore;
 	}
 	public String getLocInfo() {
 		return chrID + ":" + startLoc + "-" + endLoc;

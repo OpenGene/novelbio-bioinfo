@@ -1,3 +1,4 @@
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.rnaseq.ExonJunction;
 import com.novelbio.analysis.seq.rnaseq.GffHashMerge;
@@ -16,12 +17,14 @@ public class FengYing {
 	
 	public static void mouse() {
 		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				"C:/Users/jie/Desktop/paper/mm10_from_cufflinks.gtf");
+				"/media/winF/NBC/Project/Project_FY/paper/mm10_from_cufflinks.gtf");
 		System.out.println("finished reading GTF file");
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffHashGene);
-		
-		String parentFile = "C:/Users/jie/Desktop/paper/";
+		Species species = new Species(10090, "mm10_NCBI");
+		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		exonJunction.setSeqHash(gffChrAbs.getSeqHash());
+		String parentFile = "/media/winF/NBC/Project/Project_FY/paper/";
 		exonJunction.setIsoJunFile("KO", parentFile + "KOjunctions.bed"); 
 		exonJunction.setIsoJunFile("WT",parentFile + "WTjunctions.bed");
 		System.out.println("finished reading junction reads");
@@ -29,14 +32,13 @@ public class FengYing {
 //		exonJunction.addBamFile_Sorted("WT", parentFile + "WT0d.bam");
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_1/accepted_hits.bam");
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_2/accepted_hits.bam");
-		Species species = null;
 //		System.out.println(species.getVersionAll().get(1));
 //		species.setVersion(species.getVersionAll().get(1));
 		exonJunction.loadingBamFile(species);
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String outResult = parentFile +  "KO_vs_WT7.xls";
+		String outResult = parentFile +  "KO_vs_WT7_NoBam_With_Seq.xls";
 		exonJunction.writeToFile(outResult);
 	}
 

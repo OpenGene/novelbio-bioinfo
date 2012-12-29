@@ -25,60 +25,21 @@ public class CtrlPileupStatistics {
 		String parentPath = "/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/pileup/";
 		
 		CtrlPileupStatistics ctrlPileupStatistics = new CtrlPileupStatistics();
-		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
-		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
-		ctrlPileupStatistics.setMaxGapSize(0);
-		ctrlPileupStatistics.setPileupFile(parentPath+"ZDB9522-E_sorted_realign_removeDuplicate_pileup.gz");
-		ctrlPileupStatistics.startStatistics();
-		ctrlPileupStatistics.plot(parentPath, "ZDB9522-E");
+//		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
+//		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
+//		ctrlPileupStatistics.setMaxGapSize(0);
+//		ctrlPileupStatistics.setPileupFile(parentPath+"Q60-1_sorted_realign_removeDuplicate_pileup.gz");
+//		ctrlPileupStatistics.startStatistics();
+//		ctrlPileupStatistics.plot(parentPath, "Q60-1");
 		
 		ctrlPileupStatistics = new CtrlPileupStatistics();
 		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
 		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
 		ctrlPileupStatistics.setMaxGapSize(0);
-		ctrlPileupStatistics.setPileupFile(parentPath+"ZDBQ60-1_sorted_sorted_realign_removeDuplicate_pileup.gz");
+		ctrlPileupStatistics.setPileupFile(parentPath+"a9522_sorted_realign_removeDuplicate_pileup.gz");
 		ctrlPileupStatistics.startStatistics();
-		ctrlPileupStatistics.plot(parentPath, "ZDBQ60-1");
-		
-		ctrlPileupStatistics = new CtrlPileupStatistics();
-		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
-		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
-		ctrlPileupStatistics.setMaxGapSize(0);
-		ctrlPileupStatistics.setPileupFile(parentPath+"ZDBTF142-3_sorted_realign_removeDuplicate_pileup.gz");
-		ctrlPileupStatistics.startStatistics();
-		ctrlPileupStatistics.plot(parentPath, "ZDBTF142-3");
-		
-		ctrlPileupStatistics = new CtrlPileupStatistics();
-		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
-		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
-		ctrlPileupStatistics.setMaxGapSize(0);
-		ctrlPileupStatistics.setPileupFile(parentPath+"ZDBTF182-1_sorted_realign_removeDuplicate_pileup.gz");
-		ctrlPileupStatistics.startStatistics();
-		ctrlPileupStatistics.plot(parentPath, "ZDBTF182-1");
-		
-		ctrlPileupStatistics = new CtrlPileupStatistics();
-		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
-		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
-		ctrlPileupStatistics.setMaxGapSize(0);
-		ctrlPileupStatistics.setPileupFile(parentPath+"ZDBTF57-1_sorted_realign_removeDuplicate_pileup.gz");
-		ctrlPileupStatistics.startStatistics();
-		ctrlPileupStatistics.plot(parentPath, "ZDBTF57-1");
-		
-		ctrlPileupStatistics = new CtrlPileupStatistics();
-		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
-		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
-		ctrlPileupStatistics.setMaxGapSize(0);
-		ctrlPileupStatistics.setPileupFile(parentPath+"ZDBTF75-4_sorted_realign_removeDuplicate_pileup.gz");
-		ctrlPileupStatistics.startStatistics();
-		ctrlPileupStatistics.plot(parentPath, "ZDBTF75-4");
-		
-		ctrlPileupStatistics = new CtrlPileupStatistics();
-		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
-		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
-		ctrlPileupStatistics.setMaxGapSize(0);
-		ctrlPileupStatistics.setPileupFile(parentPath+"ZDBTF81-2_sorted_realign_removeDuplicate_pileup.gz");
-		ctrlPileupStatistics.startStatistics();
-		ctrlPileupStatistics.plot(parentPath, "ZDBTF81-2");
+		ctrlPileupStatistics.plot(parentPath, "a9522");
+	
 	}
 
 	StatisticsGenome statisticsGenome = new StatisticsGenome();

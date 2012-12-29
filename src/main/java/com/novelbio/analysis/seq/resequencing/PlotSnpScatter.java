@@ -12,10 +12,10 @@ import com.novelbio.base.plot.PlotScatter;
 
 public class PlotSnpScatter {
 	public static void main(String[] args) {
-		String excelTxt = "/home/zong0jie/×ÀÃæ/9522snpvsZDBQ60-1_filtered.xls";
+		String excelTxt = "/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/pileup/9522snpvsZDBQ60-1_filtered.xls";
 		PlotSnpScatter plotSnpScatter = new PlotSnpScatter();
 		plotSnpScatter.readInfo(excelTxt, 1, 2, 9);
-		plotSnpScatter.plot("/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/plot/QXL");
+		plotSnpScatter.plot("/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/pileup/Q60/");
 	}
 	//12 52 29
 	ArrayList<String[]> lsInfo;

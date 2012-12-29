@@ -13,6 +13,7 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -63,6 +64,8 @@ public class ExonJunction {
 	 * 每个基因只有一个可变剪接事件
 	 */
 	boolean oneGeneOneSpliceEvent = true;
+	
+	SeqHash seqHash;
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
 	 * @param pvalue
@@ -83,6 +86,9 @@ public class ExonJunction {
 		this.gffHashGene = gffHashGene;
 		lsSplicingTests = new ArrayList<ArrayList<ExonSplicingTest>>();
 		fillLsAll_Dif_Iso_Exon();
+	}
+	public void setSeqHash(SeqHash seqHash) {
+		this.seqHash = seqHash;
 	}
 	private void fillLsAll_Dif_Iso_Exon() {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
@@ -167,7 +173,7 @@ public class ExonJunction {
 			}
 			
 			for (MapReads mapReads : lsMapReads) {
-				mapReads.setInvNum(30);
+				mapReads.setInvNum(15);
 				if (mapChrID2ChrLength != null) {
 					mapReads.setMapChrID2Len(mapChrID2ChrLength);
 				}
@@ -283,9 +289,10 @@ public class ExonJunction {
 	public void writeToFile(String fileName) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
 		ArrayList<ExonSplicingTest> lsSplicingTests = getTestResult_FromIso();
-		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2));
-		for (ExonSplicingTest chisqTest : lsSplicingTests) {			
-			txtOut.writefileln(chisqTest.toString());
+		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2,true));
+		for (ExonSplicingTest chisqTest : lsSplicingTests) {
+			chisqTest.setGetSeq(seqHash);
+			txtOut.writefileln(chisqTest.toStringArray());
 		}
 		txtOut.close();
 		
