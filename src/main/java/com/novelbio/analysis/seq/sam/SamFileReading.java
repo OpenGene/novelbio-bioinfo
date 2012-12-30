@@ -15,7 +15,7 @@ public class SamFileReading extends RunProcess<Double>{
 	ArrayList<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
 	SamFile samFile;
 	
-	public void setSamFile(SamFile samFile) {
+	public SamFileReading(SamFile samFile) {
 		this.samFile = samFile;
 	}
 	

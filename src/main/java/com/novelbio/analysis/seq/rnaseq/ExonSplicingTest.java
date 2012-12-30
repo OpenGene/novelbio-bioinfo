@@ -11,13 +11,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.math.stat.descriptive.moment.Mean;
-import org.apache.commons.math.stat.descriptive.rank.Max;
 import org.apache.commons.math.stat.inference.TestUtils;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
@@ -30,7 +28,6 @@ import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /** 可变剪接的检验 */
@@ -82,8 +79,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		this.condition2 = condition2;
 	}
 	
-	/** 设定每个condition以及其对应的reads堆积 */
-	public void setMapCondition2MapReads(String condition, MapReads mapReads) {
+	/** 
+	 * 添加每个condition以及其对应的reads堆积
+	 * 如果是相同的condition，则累加上去
+	 */
+	public void addMapCondition2MapReads(String condition, MapReads mapReads) {
 		SiteInfo siteInfo = exonCluster.getDifSite();
 		int[] tmpExpCond = new int[2];
 		
@@ -93,6 +93,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		double[] info2 = mapReads.getRangeInfo(siteInfo.getRefID(), exonCluster.getParentGene().getLongestSplitMrna());
 		tmpExpCond[1] = getMean(info2) + 1;
 		
+		//不可能会出现这种情况
 		if (tmpExpCond[0] <= 0 || tmpExpCond[1] <=0) {
 			return;
 		}

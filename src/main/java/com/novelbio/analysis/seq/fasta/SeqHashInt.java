@@ -15,7 +15,7 @@ public interface SeqHashInt {
 	 * chrID通通小写
 	 * @return
 	 */
-	public HashMap<String, Long> getHashChrLength();
+	public HashMap<String, Long> getMapChrLength();
 	/**
 	 * 在读取chr长度文件后，可以通过此获得所有chr的长度信息
 	 * 

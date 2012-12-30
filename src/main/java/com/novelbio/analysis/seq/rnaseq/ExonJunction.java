@@ -9,7 +9,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -21,18 +20,17 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.ExonSplicingType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.base.HashMapLsValue;
+import com.novelbio.analysis.seq.sam.SamFileReading;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.base.multithread.RunProcess;
 
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异
  * @author zong0jie
  */
-public class ExonJunction {
+public class ExonJunction extends RunProcess<ExonJunctionGuiInfo> {
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
 
 	GffHashGene gffHashGene = null;
@@ -46,8 +44,10 @@ public class ExonJunction {
 	TophatJunction tophatJunction = new TophatJunction();
 	LinkedHashSet<String> setCondition = new LinkedHashSet<String>();
 	
-	ArrayListMultimap<String, MapReads> mapCondition2MapReads = ArrayListMultimap.create();
 	String condition1, condition2;
+	
+	ArrayListMultimap<String, SamFileReading> mapCond2SamReader = ArrayListMultimap.create();
+	
 	
 	/** 统计可变剪接事件的map
 	 * key：可变剪接类型
@@ -66,6 +66,8 @@ public class ExonJunction {
 	boolean oneGeneOneSpliceEvent = true;
 	
 	SeqHash seqHash;
+	
+	
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
 	 * @param pvalue
@@ -94,12 +96,9 @@ public class ExonJunction {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			gffDetailGene.removeDupliIso();
-			
-			if (gffDetailGene.getLsCodSplit().size() <= 1)
+			if (gffDetailGene.getLsCodSplit().size() <= 1 || isOnlyOneIso(gffDetailGene)) {
 				continue;
-			if (isOnlyOneIso(gffDetailGene))
-				continue;
-			
+			}
 			ArrayList<ExonSplicingTest> lsExonSplicingTest = getGeneDifExon(gffDetailGene);
 			if (lsExonSplicingTest.size() == 0) {
 				continue;
@@ -107,6 +106,7 @@ public class ExonJunction {
 			lsSplicingTests.add(lsExonSplicingTest);
 		}
 	}
+	
 	/**
 	 * 计数，看有多少iso与gffDetailGene同方向，如果只有一个，则跳过该基因
 	 * @param gffDetailGene
@@ -121,6 +121,7 @@ public class ExonJunction {
 		}
 		return tmpIso <=1 ? true : false;
 	}
+	
 	/**
 	 * 获得每个 gffDetailGene中的所有差异exon，包装成 LsExonSplicingTest 并返回
 	 * @param gffDetailGene
@@ -141,7 +142,7 @@ public class ExonJunction {
 		}
 		return lsExonSplicingTestResult;
 	}
-	
+
 	public void setCompareGroups(String condition1, String condition2) {
 		this.condition1 = condition1;
 		this.condition2 = condition2;
@@ -157,47 +158,55 @@ public class ExonJunction {
 		setCondition.add(condition);
 	}
 	
-	public void addBamFile_Sorted(String condition, String sortedBamFile) {
-		MapReads mapReads = new MapReads();
-		SamFile samFile = new SamFile(sortedBamFile);
-		mapReads.setAlignSeqReader(samFile);
-		mapCondition2MapReads.put(condition, mapReads);
+	public void addBamSorted(String condition, String sortedBamFile) {
+		SamFileReading samFileReading = new SamFileReading(new SamFile(sortedBamFile));
+		mapCond2SamReader.put(condition, samFileReading);
 	}
 	
-	public void loadingBamFile(Species species) {
-		for (String condition : mapCondition2MapReads.keySet()) {
-			List<MapReads> lsMapReads = mapCondition2MapReads.get(condition);
-			HashMap<String, Long> mapChrID2ChrLength = null;
-			if (species != null) {
-				mapChrID2ChrLength = species.getMapChromInfo();
-			}
-			
-			for (MapReads mapReads : lsMapReads) {
+	public void running() {
+		loadBamFile();
+		getTestResult_FromIso();
+	}
+	
+	public void loadBamFile() {
+		TophatJunction tophatJunction = new TophatJunction();
+		for (String condition : mapCond2SamReader.keySet()) {
+			tophatJunction.setCondition(condition);
+			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			for (SamFileReading samFileReading : lsSamFileReadings) {
+				MapReads mapReads = new MapReads();
 				mapReads.setInvNum(15);
-				if (mapChrID2ChrLength != null) {
-					mapReads.setMapChrID2Len(mapChrID2ChrLength);
-				}
-				mapReads.run();
-				//如果没有设定species，就通过mapreads获得染色体长度信息，用于在内存中构建染色体模型
-				if (mapChrID2ChrLength == null) {
-					mapChrID2ChrLength = mapReads.getMapChrID2Len();
-				}
-				
-				logger.error("finished reading bamFile" );
 				mapReads.setNormalType(MapReads.NORMALIZATION_NO);
-				for (ArrayList<ExonSplicingTest> lsExonTest : lsSplicingTests) {
-					for (ExonSplicingTest exonSplicingTest : lsExonTest) {
-						exonSplicingTest.setMapCondition2MapReads(condition, mapReads);
-					}
+
+				//TODO 可以考虑从gtf文件中获取基因组长度然后给MapReads使用
+				if (seqHash != null) {
+					mapReads.setMapChrID2Len(seqHash.getMapChrLength());
 				}
+				samFileReading.addAlignmentRecorder(tophatJunction);
+				samFileReading.addAlignmentRecorder(mapReads);
+				
+				samFileReading.setRunGetInfo(runGetInfo);
+				samFileReading.run();
+				addMapReadsInfo(condition, mapReads);
 				mapReads = null;
+				
+				ExonJunctionGuiInfo exonJunctionGuiInfo = new ExonJunctionGuiInfo();
+				//TODO
+				setRunInfo(exonJunctionGuiInfo);
 			}
 		}
 	}
-	/**
-	 * 获得检验完毕的test
-	 * @return
-	 */
+	
+	/** 将表达信息加入统计 */
+	private void addMapReadsInfo(String condition, MapReads mapReads) {
+		for (ArrayList<ExonSplicingTest> lsExonTest : lsSplicingTests) {
+			for (ExonSplicingTest exonSplicingTest : lsExonTest) {
+				exonSplicingTest.addMapCondition2MapReads(condition, mapReads);
+			}
+		}
+	}
+
+	/** 获得检验完毕的test */
 	public ArrayList<ExonSplicingTest> getTestResult_FromIso() {
 		initialMapSplicingType2Num();
 		setConditionWhileConditionIsNull();
@@ -313,4 +322,9 @@ public class ExonJunction {
 			}
 		});
 	}
+}
+
+class ExonJunctionGuiInfo {
+	String labInfo;
+	double readInfo;
 }

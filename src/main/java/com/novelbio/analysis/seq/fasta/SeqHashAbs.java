@@ -79,7 +79,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * chrID通通小写
 	 * @return
 	 */
-	public LinkedHashMap<String, Long> getHashChrLength() {
+	public LinkedHashMap<String, Long> getMapChrLength() {
 		return hashChrLength;
 	}
 	/**
@@ -88,7 +88,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @return
 	 */
 	public long getChrLength(String chrID) {
-		return getHashChrLength().get(chrID.toLowerCase());
+		return getMapChrLength().get(chrID.toLowerCase());
 	}
 	/**
 	 * 在读取chr长度文件后，可以通过此获得每条chr的长度

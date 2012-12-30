@@ -98,8 +98,8 @@ public class SeqHash implements SeqHashInt{
 	}
 
 	@Override
-	public LinkedHashMap<String, Long> getHashChrLength() {
-		return seqHashAbs.getHashChrLength();
+	public LinkedHashMap<String, Long> getMapChrLength() {
+		return seqHashAbs.getMapChrLength();
 	}
 	
 	@Override
