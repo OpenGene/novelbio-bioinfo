@@ -21,6 +21,7 @@ import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
@@ -40,7 +41,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
  * @author zong0jie
  * 
  */
-public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcessInfo> {
+public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcessInfo> implements AlignmentRecorder {
 	private static Logger logger = Logger.getLogger(MapReadsAbs.class);
 	/**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的中位数 */
 	public static final int SUM_TYPE_MEDIAN = 2;
@@ -643,17 +644,14 @@ class ChrMapReadsInfo {
 	
 	/**
 	 * @param chrID
-	 * @param chrLen 染色体长度
-	 * @param invNumm 分割份数
-	 * @param sumType 总结类型
-	 * @param FormulatToCorrectReads 校正使用的公式，没有就输入null
+	 * @param mapReadsAbs
 	 */
-	public ChrMapReadsInfo(String chrID, long chrLen, int invNumm, int sumType, Equations FormulatToCorrectReads) {
+	public ChrMapReadsInfo(String chrID, MapReadsAbs mapReadsAbs) {
 		this.chrID = chrID;
-		this.chrLength = chrLen;
-		this.invNum = invNumm;
-		this.type = sumType;
-		this.FormulatToCorrectReads = FormulatToCorrectReads;
+		this.chrLength = mapReadsAbs.getChrLen(chrID);
+		this.invNum = mapReadsAbs.invNum;
+		this.type = mapReadsAbs.summeryType;
+		this.FormulatToCorrectReads = mapReadsAbs.FormulatToCorrectReads;
 	}
 	
 	public String getChrID() {

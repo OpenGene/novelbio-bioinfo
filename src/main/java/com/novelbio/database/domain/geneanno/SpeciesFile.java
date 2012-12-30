@@ -120,7 +120,7 @@ public class SpeciesFile {
 	public void setChromSeq(String chromSeq) {
 		this.chromSeq = chromSeq;
 	}
-	public String getChromSeq() {
+	public String getChromSeqFile() {
 		if (!FileOperate.isFileExistAndBigThanSize(chromSeq, 10)) {
 			String path = getChromFaPath();
 			FileOperate.createFolders(FileOperate.getParentPathName(chromSeq));
@@ -212,7 +212,7 @@ public class SpeciesFile {
 		filledHashIndexPath(indexChr, mapSoftware2ChrIndexPath);
 		String indexChromFa =  mapSoftware2ChrIndexPath.get(softMapping.toString());
 		if (!FileOperate.isFileExist(indexChromFa)) {
-			indexChromFa = creatAndGetSeqIndex(false, softMapping, getChromSeq(), mapSoftware2ChrIndexPath);
+			indexChromFa = creatAndGetSeqIndex(false, softMapping, getChromSeqFile(), mapSoftware2ChrIndexPath);
 			
 			String indexNew = addIndex(indexChr, softMapping, indexChromFa);
 			if (indexChr == null || !indexChr.equals(indexNew)) {

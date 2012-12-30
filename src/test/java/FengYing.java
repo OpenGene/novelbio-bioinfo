@@ -17,16 +17,15 @@ public class FengYing {
 	
 	public static void mouse() {
 		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				"C:/Users/jie/Desktop/paper/mm10_from_cufflinks.gtf");
+				"/media/winF/NBC/Project/Project_FY/paper/mm10_from_cufflinks.gtf");
 		System.out.println("finished reading GTF file");
-		GffGeneIsoInfo gffGeneIsoInfo = gffHashGene.searchISO("NM_010160");
-		System.out.println(gffGeneIsoInfo.getParentGffDetailGene().getNameSingle());
+
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffHashGene);
 //		Species species = new Species(10090, "mm10_NCBI");
 //		GffChrAbs gffChrAbs = new GffChrAbs(species);
 //		exonJunction.setSeqHash(gffChrAbs.getSeqHash());
-		String parentFile = "C:/Users/jie/Desktop/paper/";
+		String parentFile = "/media/winF/NBC/Project/Project_FY/paper/";
 		exonJunction.setIsoJunFile("KO", parentFile + "KOjunctions.bed"); 
 		exonJunction.setIsoJunFile("WT",parentFile + "WTjunctions.bed");
 		System.out.println("finished reading junction reads");
@@ -40,7 +39,7 @@ public class FengYing {
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String outResult = parentFile +  "KO_vs_WT7_NoBam_test.xls";
+		String outResult = parentFile +  "KO_vs_WT8_Bam_test.xls";
 		exonJunction.writeToFile(outResult);
 	}
 

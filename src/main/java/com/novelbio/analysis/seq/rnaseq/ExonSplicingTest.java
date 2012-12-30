@@ -127,7 +127,16 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		int junc = 0;
 		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0)
 			junc = 1;
+		
+		try {
+			if (exonCluster.getAllExons().get(0).getParent().getParentGffDetailGene().getName().contains("NM_172512")) {
+				logger.error("stop");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 
+		
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		String chrID = gffDetailGene.getRefID();
 		//一般 setCondition 里面只有两项，也就是仅比较两个时期的可变剪接
@@ -165,7 +174,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		for (int i = 0; i < lsExon.size(); i++) {
 			ExonInfo exon = lsExon.get(i);
-			counts[i+junc] = tophatJunction.getJunctionSite(chrID, exon.getEndCis(), condition);
+			counts[i+junc] = tophatJunction.getJunctionSite(condition, chrID, exon.getEndCis());
 		}
 
 		return counts;
@@ -186,7 +195,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		for (int i = 0; i < lsExon.size(); i++) {
 			ExonInfo exon = lsExon.get(i);
-			counts[i+junc] = tophatJunction.getJunctionSite(chrID, exon.getStartCis(), condition);
+			counts[i+junc] = tophatJunction.getJunctionSite(condition, chrID, exon.getStartCis());
 		}
 
 		return counts;
@@ -208,7 +217,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		for (int i = 0; i < lsExon.size(); i++) {
 			ExonInfo exon = lsExon.get(i);
-			counts[i+junc] = tophatJunction.getJunctionSite(chrID, exon.getStartCis(), condition) + tophatJunction.getJunctionSite(chrID, exon.getEndCis(), 	condition);
+			counts[i+junc] = tophatJunction.getJunctionSite(condition, chrID, exon.getStartCis()) 
+					+ tophatJunction.getJunctionSite(condition, chrID, exon.getEndCis());
 		}
 
 		return counts;
@@ -228,8 +238,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
-			result = result + tophatJunction.getJunctionSite(gffDetailGene.getRefID(), Integer.parseInt(ss[0]),
-					Integer.parseInt(ss[1]), condition);
+			result = result + tophatJunction.getJunctionSite(condition, gffDetailGene.getRefID(),
+					Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
 		}
 		
 		return result;

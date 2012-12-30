@@ -36,6 +36,10 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  *
  */
 public class SamFile implements AlignSeq {
+	public static void main(String[] args) {
+		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_FY/paper/KOod.bam");
+		samFile.index();
+	}
 	private static Logger logger = Logger.getLogger(SamFile.class);
 
 	public static final int MAPPING_ALLREADS = 2;
@@ -243,6 +247,7 @@ public class SamFile implements AlignSeq {
 		String out = FileOperate.changeFileSuffix(fileName, "_SingleFile", null);
 		return getSingleUnMappedReads(out);
 	}
+
 	/**
 	 * 将那种一头mapping上，一头没有mapping上的序列，两头都提取出来写入一个sam文件
 	 */
@@ -377,10 +382,10 @@ public class SamFile implements AlignSeq {
 		if (FileOperate.isFileExist(getFileName() + ".bai")) {
 			return;
 		}
-		BamIndex bamIndex = new BamIndex();
-		bamIndex.setExePath(softWareInfoSamtools.getExePath());
+		BamIndex bamIndex = new BamIndex(this);
 		bamIndex.setBamFile(getFileName());
 		bamIndex.index();
+		bamIndex = null;
 	}
 	public SamFile realign() {
 		String outFile = FileOperate.changeFileSuffix(fileName, "_realign", "bam");

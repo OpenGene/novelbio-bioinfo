@@ -197,7 +197,7 @@ public class Species {
 	}
 	public String getChromSeq() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
-		return speciesFile.getChromSeq();
+		return speciesFile.getChromSeqFile();
 	}
 	/** 获得这个species在本version下的全体GffType */
 	public HashMap<String, GFFtype> getMapGffTypeAll() {

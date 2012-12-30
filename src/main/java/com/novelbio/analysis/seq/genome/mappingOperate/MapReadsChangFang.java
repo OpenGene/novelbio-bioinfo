@@ -76,7 +76,7 @@ public class MapReadsChangFang extends MapReads {
 
 				chrBpReads = new int[(int) (chrLength + 1)];// 同样为方便，0位记录总长度。这样实际bp就是实际长度
 				chrBpReads[0] = chrLength.intValue();
-				chrMapReadsInfo = new ChrMapReadsInfo(lastChr, getChrLen(lastChr), invNum, summeryType, FormulatToCorrectReads);
+				chrMapReadsInfo = new ChrMapReadsInfo(lastChr, this);
 				mapChrID2ReadsInfo.put(lastChr.toLowerCase(), chrMapReadsInfo);
 			}
 			

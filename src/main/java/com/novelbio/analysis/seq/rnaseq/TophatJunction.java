@@ -7,151 +7,163 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
+import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.HashMapLsValue;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.SepSign;
 
-public class TophatJunction {
-	///////////////////// 读取 junction  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+public class TophatJunction implements AlignmentRecorder {
 	/**
-	 * key condition--
-	 * key：junction: 
-	 * value：int[2]；分别是对应的junction坐标和reads数
-	 * 一个junction1 对应多个junction2，也就是junction是横跨两个exon的，那么左端为junction1，右端为junction2.
-	 * 由于可变剪接存在，所以一个jun1可能对应多个jun2，也就是不同的exon连接在一起。
+	 * key condition
+	 * value: 某个junction与别的junction之间的对应关系
 	 */
-	HashMap<String, ArrayListMultimap<String, int[]>> mapCond_To_Jun1toLsJun2LocAndReadsNum = new HashMap<String, ArrayListMultimap<String,int[]>>();
-	
-	HashMap<String, HashMultimap<String, Integer>> mapCond_To_mapJun1ToLsJun2 = new HashMap<String, HashMultimap<String,Integer>>();
+	HashMap<String, HashMultimap<String, String>> mapCond_To_mapJun1ToSetJun2 = new HashMap<String, HashMultimap<String,String>>();
+	HashMultimap<String, String> mapJun1ToSetJun2;
 	/**
 	 * key condition--
-	 * key：junction: 
+	 * key：junction
 	 * value：该junction所对应的总reads数
 	 */
-	HashMap<String, HashMap<String, Integer>> mapCond_To_Jun2AllNum = new HashMap<String, HashMap<String,Integer>>();
-	
+	HashMap<String, HashMap<String, Integer>> mapCond_To_JuncOne2AllNum = new HashMap<String, HashMap<String,Integer>>();
+	HashMap<String, Integer> mapJuncOne2AllNum;
 	/**
-	 * condition--junction 对和具体的reads数
+	 * key condition
+	 * value: 某一对junction与其对应的reads总数
 	 */
-	HashMap<String, HashMap<String,Integer>>  mapCond_To_JunLoc2ReadsNum = new HashMap<String, HashMap<String,Integer>>();
-	String condition = "oneJunFile";
+	HashMap<String, HashMap<String,Integer>>  mapCond_To_JuncPair2ReadsNum = new HashMap<String, HashMap<String,Integer>>();
+	HashMap<String,Integer> mapJuncPair2ReadsNum;	
 	
 	/** 设定当前时期 */
 	public void setCondition(String condition) {
-		this.condition = condition;
+		mapJun1ToSetJun2 = getMapJunc1ToJunc2(condition);
+		mapJuncOne2AllNum = getMapJuncOneToAllNum(condition);
+		mapJuncPair2ReadsNum = getMapJuncPair2ReadsNum(condition);
 	}
-	public void setSamBamReads(SamRecord samRecord) {
-		ArrayList<Align> lsAlign = samRecord.getAlignmentBlocks();
+	
+	/**
+	 * 获得剪接位点1对应的所有剪接位点2的map
+	 * @param condition
+	 * @return
+	 */
+	private HashMultimap<String, String> getMapJunc1ToJunc2(String condition) {
+		//获得对应的hash表
+		HashMultimap<String, String> tmpMapJunc1ToJunc2 = null;
+		if (mapCond_To_mapJun1ToSetJun2.containsKey(condition)) {
+			tmpMapJunc1ToJunc2 = mapCond_To_mapJun1ToSetJun2.get(condition);
+		} else {
+			tmpMapJunc1ToJunc2 = HashMultimap.create();
+			mapCond_To_mapJun1ToSetJun2.put(condition, tmpMapJunc1ToJunc2);
+		}
+		return tmpMapJunc1ToJunc2;
+	}
+	
+	/**	 * @param locEndSite
+
+	 * 获得剪接位点1对应的全部readsnum
+	 * @param condition
+	 * @return
+	 */
+	private HashMap<String, Integer> getMapJuncOneToAllNum(String condition) {
+		//获得对应的hash表
+		HashMap<String, Integer> tmpMapJuncOne2AllNum = null;
+		if (mapCond_To_JuncOne2AllNum.containsKey(condition)) {
+			tmpMapJuncOne2AllNum = mapCond_To_JuncOne2AllNum.get(condition);
+		} else {
+			tmpMapJuncOne2AllNum = new HashMap<String, Integer>();
+			mapCond_To_JuncOne2AllNum.put(condition, tmpMapJuncOne2AllNum);
+		}
+		return tmpMapJuncOne2AllNum;
+	}
+	
+	/**
+	 * 获得一对剪接位点所对应的全部readsnum
+	 * @param condition
+	 * @return
+	 */
+	private HashMap<String, Integer> getMapJuncPair2ReadsNum(String condition) {
+		//获得对应的hash表
+		HashMap<String, Integer> tmpMapJuncPair2ReadsNum = null;
+		if (mapCond_To_JuncPair2ReadsNum.containsKey(condition)) {
+			tmpMapJuncPair2ReadsNum = mapCond_To_JuncPair2ReadsNum.get(condition);
+		} else {
+			tmpMapJuncPair2ReadsNum = new HashMap<String, Integer>();
+			mapCond_To_JuncPair2ReadsNum.put(condition, tmpMapJuncPair2ReadsNum);
+		}
+		return tmpMapJuncPair2ReadsNum;
+	}
+	
+	/**添加samBam的文件用来获得信息 */
+	public void addAlignRecord(AlignRecord alignRecord) {
+		ArrayList<Align> lsAlign = alignRecord.getAlignmentBlocks();
 		if (lsAlign.size() <= 1) {
 			return;
 		}
 		int size = lsAlign.size();
-		for (int i = 0; i < size - 1; i++) {
-			
+		String chrID = alignRecord.getRefID();
+		for (int i = 0; i < size - 2; i++) {
+			Align alignThis = lsAlign.get(i);
+			Align alignNext = lsAlign.get(i + 1);
+			int junStart = alignThis.getEndAbs();
+			int junEnd = alignNext.getStartAbs();
+			addJunctionInfo(chrID, junStart, junEnd, 1);
 		}
-		
 	}
-	/**
-	 * 不加条件的和不加条件的搭配
-	 * 读取juction文件
-	 * @param junctionFile
-	 */
-	public void setJunFile(String junctionFile) {
-		setJunFile(condition, junctionFile);
-	}
-	
-	public int getJunNum(String condition) {
-		return mapCond_To_JunLoc2ReadsNum.get(condition).size();
-	}
+
 	/**
 	 * 读取junction文件，文件中每个剪接位点只能出现一次\
 	 * @param condition
 	 * @param junctionFile
 	 */
 	public void setJunFile(String condition, String junctionFile) {
-		ArrayListMultimap<String,  int[]> tmpMapJun1toLsJun2AndReadsNum = getTmpMapJun1toLsJun2AndReadsNum(condition);
-		HashMap<String,Integer> tmpHashJunctionBoth = getTmpMapJun1Jun2_To_Num(condition);
-		
+		setCondition(condition);
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(junctionFile, false);
 		for (String string : txtReadandWrite.readfileLs()) {
 			if (string.startsWith("track")) {
 				continue;
 			}
 			String[] ss = string.split("\t");
+			String chrID = ss[0];
+			
 			//junction位点都设定在exon上
 			int junct1 = Integer.parseInt(ss[1]) + Integer.parseInt(ss[10].split(",")[0]);
 			int junct2 = Integer.parseInt(ss[2]) - Integer.parseInt(ss[10].split(",")[1]) + 1;
-			String strjunct1 = ss[0].toLowerCase()  + SepSign.SEP_INFO_SAMEDB + junct1;
-			String strjunct2 = ss[0].toLowerCase() + SepSign.SEP_INFO_SAMEDB + junct2;
-			String strJunBoth = strjunct1 + SepSign.SEP_INFO + strjunct2;
-			
-			if (tmpHashJunctionBoth.containsKey(strJunBoth)) {
-				int junNum = tmpHashJunctionBoth.get(strJunBoth);
-				junNum = junNum + Integer.parseInt(ss[4]);
-				tmpHashJunctionBoth.put(strJunBoth, junNum);
-			}
-			else {
-				tmpHashJunctionBoth.put(strJunBoth, Integer.parseInt(ss[4]));
-			}
-			tmpMapJun1toLsJun2AndReadsNum.put(strjunct1, new int[]{junct2, Integer.parseInt(ss[4])});
-			tmpMapJun1toLsJun2AndReadsNum.put(strjunct2, new int[]{junct1, Integer.parseInt(ss[4])});
+			int junctionNum = Integer.parseInt(ss[4]);
+			addJunctionInfo(chrID, junct1, junct2, junctionNum);
 		}
 	}
-	private void setJunctionInfo(ArrayListMultimap<String,  int[]> tmpMapJun1toLsJun2AndReadsNum, 
-			HashMap<String,Integer> tmpHashJunctionBoth , String chrID, int junctionStart, int junctionEnd, int junctionNum) {
-		String strjunct1 = chrID.toLowerCase()  + SepSign.SEP_INFO_SAMEDB + junctionStart;
-		String strjunct2 = chrID.toLowerCase() + SepSign.SEP_INFO_SAMEDB + junctionEnd;
+	/** 
+	 * 添加单个剪接位点reads
+	 * @param chrID 染色体
+	 * @param junctionStart 剪接起点
+	 * @param junctionEnd 剪接终点
+	 * @param junctionNum 剪接reads的数量
+	 */
+	private void addJunctionInfo(String chrID, int junctionStart, int junctionEnd, int junctionNum) {
+		chrID = chrID.toLowerCase();
+		int junctionStartmin = Math.min(junctionStart, junctionEnd);
+		int junctionEndmax = Math.max(junctionStart, junctionEnd);
+		String strjunct1 = chrID + SepSign.SEP_INFO_SAMEDB + junctionStartmin;
+		String strjunct2 = chrID + SepSign.SEP_INFO_SAMEDB + junctionEndmax;
 		String strJunBoth = strjunct1 + SepSign.SEP_INFO + strjunct2;
 		
-		if (tmpHashJunctionBoth.containsKey(strJunBoth)) {
-			int junNum = tmpHashJunctionBoth.get(strJunBoth);
-			junNum = junNum + junctionNum;
-			tmpHashJunctionBoth.put(strJunBoth, junNum);
-		}
-		else {
-			tmpHashJunctionBoth.put(strJunBoth, junctionNum);
-		}
-		
-		tmpMapJun1toLsJun2AndReadsNum.put(strjunct2, new int[]{junctionStart, junctionNum});
-
-		
-		
+		mapJun1ToSetJun2.put(strjunct1, strjunct2);
+		addJunctionNum(mapJuncOne2AllNum, strjunct1, junctionNum);
+		addJunctionNum(mapJuncOne2AllNum, strjunct2, junctionNum);
+		addJunctionNum(mapJuncPair2ReadsNum, strJunBoth, junctionNum);
 	}
-	/** 获得剪接位点1所对应的剪接位点2的坐标
-	 * 以及该组剪接位点的junction reads数量 */
-	private ArrayListMultimap<String,  int[]> getTmpMapJun1toLsJun2AndReadsNum(String condition) {
-		//获得对应的hash表
-		ArrayListMultimap<String,  int[]> tmpMapJun1toLsJun2AndReadsNum = null;
-		if (mapCond_To_Jun1toLsJun2LocAndReadsNum.containsKey(condition)) {
-			tmpMapJun1toLsJun2AndReadsNum = mapCond_To_Jun1toLsJun2LocAndReadsNum.get(condition);
+	
+	/** 向指定的map中添加junction reads */
+	private void addJunctionNum(HashMap<String, Integer> mapJunc2Num, String junc, int junctionNum) {
+		if (mapJunc2Num.containsKey(junc)) {
+			int juncAllNum = mapJunc2Num.get(junc);
+			juncAllNum = juncAllNum + junctionNum;
+			mapJunc2Num.put(junc, juncAllNum);
 		} else {
-			tmpMapJun1toLsJun2AndReadsNum = ArrayListMultimap.create();
-			mapCond_To_Jun1toLsJun2LocAndReadsNum.put(condition, tmpMapJun1toLsJun2AndReadsNum);
+			mapJunc2Num.put(junc, junctionNum);;
 		}
-		return tmpMapJun1toLsJun2AndReadsNum;
-
-	}
-	/** 获得剪接位点1 和剪接位点2 所对应的junction reads */
-	private HashMap<String,Integer> getTmpMapJun1Jun2_To_Num(String condition) {
-		HashMap<String,Integer> tmpHashJunctionBoth = null;
-		if (mapCond_To_JunLoc2ReadsNum.containsKey(condition)) {
-			tmpHashJunctionBoth = mapCond_To_JunLoc2ReadsNum.get(condition);
-		} else {
-			tmpHashJunctionBoth = new HashMap<String, Integer>();
-			mapCond_To_JunLoc2ReadsNum.put(condition, tmpHashJunctionBoth);
-		}
-		return tmpHashJunctionBoth;
-	}
-	/**
-	 * 不加条件的查找剪接位点
-	 * @param chrID
-	 * @param locSite
-	 * @return
-	 */
-	public int getJunctionSite(String chrID, int locSite) {
-		return getJunctionSite(chrID, locSite, cond);
 	}
 	/**
 	 * 给定坐标和位点，找出locsite,以及总共有多少reads支持
@@ -160,26 +172,33 @@ public class TophatJunction {
 	 * @param locSite
 	 * @return
 	 */
-	public int getJunctionSite(String chrID, int locSite,String condition) {
-		ArrayListMultimap<String, int[]> tmpHashLsJunction = mapCond_To_Jun1toLsJun2LocAndReadsNum.get(condition);
-		if (tmpHashLsJunction == null) {
-			return 0;
+	public int getJunctionSite(String condition, String chrID, int locSite) {
+		setCondition(condition);
+		String junc = chrID.toLowerCase() + SepSign.SEP_INFO_SAMEDB + locSite;
+		Integer num = mapJuncOne2AllNum.get(junc);
+		if (num == null) {
+			num = 0;
 		}
-		if (tmpHashLsJunction.containsKey(chrID.toLowerCase()+SepSign.SEP_INFO_SAMEDB+locSite) ) {
-			List<int[]> lsJun2 = tmpHashLsJunction.get(chrID.toLowerCase()+SepSign.SEP_INFO_SAMEDB+locSite);
-			int junAll = 0;
-			for (int[] is : lsJun2) {
-				junAll = junAll + is[1];
-			}
-			return junAll;
-		}
-		else {
-			return 0;
-		}
+		return num;
 	}
-	
-	public int getJunctionSite(String chrID, int locStartSite, int locEndSite) {
-		return getJunctionSite(chrID, locStartSite, locEndSite, cond);
+	/**
+	 * 给定坐标和位点，找出locsite
+	 * @param chrID
+	 * @param locStartSite 无所谓前后，内部自动判断
+	 * @param locEndSite
+	 * @return
+	 */
+	public int getJunctionSite(String condition, String chrID, int locStartSite, int locEndSite) {
+		setCondition(condition);
+		chrID = chrID.toLowerCase();
+		int locS = Math.min(locStartSite, locEndSite);
+		int locE = Math.max(locStartSite, locEndSite);
+		String key = chrID + SepSign.SEP_INFO_SAMEDB + locS + SepSign.SEP_INFO +chrID + SepSign.SEP_INFO_SAMEDB + locE;
+		int resultNum = 0;
+		if (mapJuncPair2ReadsNum.containsKey(key)) {
+			resultNum = mapJuncPair2ReadsNum.get(key);
+		}
+		return resultNum;
 	}
 	
 	/**
@@ -190,12 +209,12 @@ public class TophatJunction {
 	 * @return
 	 */
 	public int getJunctionSite(String chrID, int locStartSite, int locEndSite, String condition) {
-		HashMap<String, Integer> tmpHashJunctionBoth = mapCond_To_JunLoc2ReadsNum.get(condition);
+		setCondition(condition);
 		int locS = Math.min(locStartSite, locEndSite);
 		int locE = Math.max(locStartSite, locEndSite);
 		String key = chrID.toLowerCase() + SepSign.SEP_INFO_SAMEDB + locS + SepSign.SEP_INFO +chrID.toLowerCase() + SepSign.SEP_INFO_SAMEDB + locE;
-		if (tmpHashJunctionBoth.containsKey(key) ) {
-			return tmpHashJunctionBoth.get(key);
+		if (mapJuncPair2ReadsNum.containsKey(key) ) {
+			return mapJuncPair2ReadsNum.get(key);
 		}
 		else {
 			return 0;

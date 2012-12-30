@@ -167,7 +167,7 @@ public class SamReader {
 			}
 		};
 	}
-
+	
 	private SAMFileReader getSamFileReader() {
 		close();
 		File file = new File(fileName);
@@ -175,6 +175,13 @@ public class SamReader {
 		samFileHeader = samFileReader.getFileHeader();
 		return samFileReader;
 	}
+	
+	
+	public boolean isBinary() {
+		getSamFileReader();
+		return samFileReader.isBinary();
+	}
+	
 	public void close() {
 		try {
 			samFileReader.close();

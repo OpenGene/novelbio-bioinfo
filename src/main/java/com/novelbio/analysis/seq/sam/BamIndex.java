@@ -1,35 +1,75 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.io.File;
+import java.net.URL;
+
+import org.apache.log4j.Logger;
+
+import net.sf.picard.io.IoUtil;
+import net.sf.samtools.BAMIndex;
+import net.sf.samtools.BAMIndexer;
+import net.sf.samtools.SAMException;
+import net.sf.samtools.SAMFileHeader;
+import net.sf.samtools.SAMFileReader;
+import net.sf.samtools.SAMRecord;
+import net.sf.samtools.util.CloserUtil;
+
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class BamIndex {
-
-//	samtools view -bt /media/winE/Bioinformatics/GenomeData/human/ucsc_hg19/Index/bwa_chromFa/UCSC_hg19.fa.fai $SAMFile  > "$SAMPrix".bam
-	
-	String ExePath = "";
+	private static Logger logger = Logger.getLogger(BamIndex.class);
+	SamFile samFile;
 	String bamFile;
-	/**
-	 * 设定samtools所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 */
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals(""))
-			this.ExePath = "";
-		else
-			this.ExePath = FileOperate.addSep(exePath);
+
+	public BamIndex(SamFile samFile) {
+		this.samFile = samFile;
 	}
 	public void setBamFile(String bamFile) {
 		this.bamFile = bamFile;
 	}
 	public String index() {
-		if (FileOperate.isFileExistAndBigThanSize(bamFile + ".bai", 1000)) {
-			return bamFile;
+		if (!FileOperate.isFileExistAndBigThanSize(bamFile + ".bai", 1000)) {
+			makeIndex();
 		}
-		String cmd = ExePath + "samtools index " + "\"" + bamFile + "\"";
-		CmdOperate cmdOperate = new CmdOperate(cmd,"samIndex");
-		cmdOperate.run();
+		samFile.close();
 		return bamFile;
 	}
+	
+	private String getIndexFileName() {
+		return bamFile + ".bai";
+	}
+	
+    private void makeIndex() {
+    	String outFile = getIndexFileName();
+        if (!samFile.samReader.isBinary()) {
+            throw new SAMException("Input file must be bam file, not sam file.");
+        }
+
+        if (!samFile.getHeader().getSortOrder().equals(SAMFileHeader.SortOrder.coordinate)) {
+            throw new SAMException("Input bam file must be sorted by coordinates");
+        }
+
+        makeIndex(samFile.samReader, outFile);
+        logger.info("Finished Make Index " + outFile);
+    }
+    
+    private static void makeIndex(SamReader reader, String output) {
+    	SAMFileReader samFileReader = reader.samFileReader;
+    	File fileOut = new File(output);
+        BAMIndexer indexer = new BAMIndexer(fileOut, samFileReader.getFileHeader());
+
+        samFileReader.enableFileSource(true);
+        int allRecordsNum = 0;
+
+        for (SAMRecord rec : samFileReader) {
+            if (allRecordsNum % 1000000 == 0) {
+            	logger.info(allRecordsNum + " reads processed ...");
+            }
+            indexer.processAlignment(rec);
+            allRecordsNum ++;
+        }
+        indexer.finish();
+    }
 
 }

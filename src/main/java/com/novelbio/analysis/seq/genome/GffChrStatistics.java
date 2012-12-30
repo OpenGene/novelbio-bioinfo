@@ -18,6 +18,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
@@ -29,7 +30,7 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  *
  */
-public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatiscticsProcessInfo> implements Cloneable{
+public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatiscticsProcessInfo> implements Cloneable, AlignmentRecorder{
 	private static final Logger logger = Logger.getLogger(GffChrAnno.class);
 	
 	GffChrAbs gffChrAbs;
@@ -136,14 +137,9 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		}
 		
 		int i = 0;
-		for (AlignRecord bedRecord : seqFile.readLines(firstLine)) {
-			
-			ArrayList<SiteInfo> lsSiteInfos = getLsGetBedSiteInfo(bedRecord);
-			for (SiteInfo siteInfo : lsSiteInfos) {
-				searchSite(siteInfo);
-			}
-			
-			allnumber = allnumber + bedRecord.getRawStringInfo().getBytes().length;
+		for (AlignRecord alignRecord : seqFile.readLines(firstLine)) {
+			addAlignRecord(alignRecord);
+			allnumber = allnumber + alignRecord.getRawStringInfo().getBytes().length;
 			if (i%1000 == 0) {
 				GffChrStatiscticsProcessInfo anno = new GffChrStatiscticsProcessInfo((int)(allnumber/1000000));
 				setRunInfo(anno);
@@ -152,16 +148,25 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			if (flagStop) break;
 		}
 	}
-	private ArrayList<SiteInfo> getLsGetBedSiteInfo(AlignRecord bedRecord) {
+	
+	public void addAlignRecord(AlignRecord alignRecord) {
+		ArrayList<SiteInfo> lsSiteInfos = getLsGetBedSiteInfo(alignRecord);
+		for (SiteInfo siteInfo : lsSiteInfos) {
+			searchSite(siteInfo);
+		}
+	}
+	
+	private ArrayList<SiteInfo> getLsGetBedSiteInfo(AlignRecord alignRecord) {
 		ArrayList<SiteInfo> lSiteInfos = new ArrayList<SiteInfo>();
-		ArrayList<Align> lsAligns = bedRecord.getAlignmentBlocks();
+		ArrayList<Align> lsAligns = alignRecord.getAlignmentBlocks();
 		for (Align align : lsAligns) {
-			SiteInfo siteInfo = new SiteInfo(bedRecord.getRefID(), align.getStartCis(), align.getEndCis());
+			SiteInfo siteInfo = new SiteInfo(alignRecord.getRefID(), align.getStartCis(), align.getEndCis());
 			siteInfo.setFlagLoc( (align.getStartCis() + align.getEndCis())/2);
 			lSiteInfos.add(siteInfo);
 		}
 		return lSiteInfos;
 	}
+	
 	private void readNormFile(String peakFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(peakFile, false);
 		int i = 0;

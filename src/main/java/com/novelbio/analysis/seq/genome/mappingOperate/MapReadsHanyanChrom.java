@@ -14,7 +14,39 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
  */
 public class MapReadsHanyanChrom extends MapReads{
 	private static Logger logger = Logger.getLogger(MapReadsHanyanChrom.class);
+	GffHashGeneAbs gffHashGene;
+	public void setGffHashGene(GffHashGeneAbs gffHashGene) {
+		this.gffHashGene = gffHashGene;
+	}
+	
+	/**
+	 * 准备添加reads信息。主要是初始化mapReadsAddAlignRecord
+	 * 此外就是判定一下startCod是否能用
+	 * @param alignRecordFirst
+	 * @return 如果设setFilter中定了 startCod > 0 并且reads没有方向
+	 * 则返回false
+	 */
+	public boolean prepareAlignRecord(AlignRecord alignRecordFirst) {
+		mapReadsAddAlignRecord = new MapReadsAddAlignRecordHanyan(this, gffHashGene);
+		if (startCod > 0 && alignRecordFirst.isCis5to3() == null) {
+			logger.error("不能设定startCod，因为没有设定方向列");
+			return false;
+		}
+		return true;
+	}
+	
+
+	
+}
+
+class MapReadsAddAlignRecordHanyan extends MapReadsAddAlignRecord {
 	GffHashGeneAbs gffHashGene = null;
+	
+	public MapReadsAddAlignRecordHanyan(MapReads mapReads, GffHashGeneAbs gffHashGene) {
+		super(mapReads);
+		this.gffHashGene = gffHashGene;
+	}
+	
 	/**
 	 * 根据reads是否与基因的方向相一致而进行过滤工作，这个是专门针对韩燕的项目做的分析，
 	 * 用于当reads mapping至genome上时，仅保留reads与基因方向相同的reads
@@ -29,27 +61,28 @@ public class MapReadsHanyanChrom extends MapReads{
 	 * @return
 	 * 本位点的信息，用于下一次判断是否是同一位点
 	 */
-	protected int[] addLoc(AlignRecord alignRecord ,boolean uniqReads,int[] tmpOld,int startCod, Boolean cis5to3, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
+	protected int[] addLoc(AlignRecord alignRecord ,int[] tmpOld, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
 		//需要根据方向来筛选reads
-		if (cis5to3 != null) {
+		if (mapReads.FilteredStrand != null) {
 			GffCodGene gffCodGene = gffHashGene.searchLocation(alignRecord.getRefID(), alignRecord.getStartAbs());
 			//如果位点一在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
-			if (gffCodGene.isInsideLoc() && cis5to3 == (gffCodGene.getGffDetailThis().isCis5to3() == alignRecord.isCis5to3() ) ) {
-				return super.addLoc(alignRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
+			if (gffCodGene.isInsideLoc() 
+					&& mapReads.FilteredStrand == (gffCodGene.getGffDetailThis().isCis5to3() == alignRecord.isCis5to3() ) ) {
+				return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
 			}
 			GffCodGene gffCodGene2 = gffHashGene.searchLocation(alignRecord.getRefID(), alignRecord.getEndAbs());
 			//如果位点二在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
-			if (gffCodGene2.isInsideLoc() && cis5to3 == (gffCodGene2.getGffDetailThis().isCis5to3() == alignRecord.isCis5to3() ) ) {
-				return super.addLoc(alignRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
+			if (gffCodGene2.isInsideLoc() 
+					&& mapReads.FilteredStrand == (gffCodGene2.getGffDetailThis().isCis5to3() == alignRecord.isCis5to3() ) ) {
+				return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
 			}
 			
 			if (!gffCodGene.isInsideLoc() && !gffCodGene2.isInsideLoc()) {
-				return super.addLoc(alignRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
+				return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
 			}
 			return tmpOld;
 		} else {
-			return super.addLoc(alignRecord, uniqReads, tmpOld, startCod, null, chrBpReads, chrMapReadsInfo);
+			return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
 		}
 	}
-	
 }
