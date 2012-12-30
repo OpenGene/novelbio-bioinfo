@@ -523,6 +523,7 @@ public class GffDetailGene extends ListDetailAbs {
 			ArrayList<GffGeneIsoInfo> lsIso = ls_lsIso.get(i);
 			if (lsIso.size() > maxNum) {
 				maxIsoIndex = i;
+				maxNum = lsIso.size();
 			}
 		}
 		

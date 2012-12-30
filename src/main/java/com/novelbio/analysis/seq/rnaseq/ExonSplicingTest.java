@@ -520,7 +520,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-
+		if (gffDetailGene.getName().contains("NM_001160292")) {
+			logger.error("stop");
+		}
 		lsResult.add(gffDetailGene.getName().get(0));
 		lsResult.add(exonCluster.getLocInfo());
 		lsResult.add(getCondition(cond1));
@@ -528,9 +530,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsResult.add(getAndCalculatePvalue() + "");
 		lsResult.add(fdr + "");
 		lsResult.add(exonCluster.getExonSplicingType().toString());
-		GeneID geneID = gffDetailGene.getSetGeneID().iterator().next();
-		lsResult.add(geneID.getSymbol());
-		lsResult.add(geneID.getDescription());
+//		GeneID geneID = gffDetailGene.getSetGeneID().iterator().next();
+//		lsResult.add(geneID.getSymbol());
+//		lsResult.add(geneID.getDescription());
 		if (seqHash != null) {
 			SeqFasta seqFasta = getSeq(seqHash);
 			if (seqFasta != null) {

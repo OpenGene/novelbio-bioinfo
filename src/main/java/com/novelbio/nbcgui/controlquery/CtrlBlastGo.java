@@ -14,36 +14,24 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 
 
-public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo>
-{
-
-	/**
-	 * 是否需要blast
-	 */
+public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo> {
+	/** 是否需要blast */
 	boolean blast = false;
-	/**
-	 * 查找物种
-	 */
+	/** 查找物种 */
 	int taxID = 0;
-	/**
-	 * blast物种
-	 */
+	/** blast物种 */
 	int StaxID = 0;
-	/**
-	 * blast的evalue
-	 */
+	/** blast的evalue */
 	double evalue = 100;
 	
-	/**
-	 * Go的类型
-	 */
+	/** Go的类型 */
 	String GoClass = Go2Term.GO_BP;
-	/**
-	 * 界面对象
-	 */
+	/** 界面对象 */
 	GuiBlastJpanel guiBlast;
+	
+	List<String> lsGeneID = null;
+	
 	/**
-	 * 
 	 * @param blast
 	 * @param taxID
 	 * @param StaxID
@@ -59,9 +47,6 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 		this.GoClass = GOclass;
 	}
 
-	List<String> lsGeneID = null;
- 
-	
 	/**
 	 * 准备工作，将geneID读入内存同时准备查找，同时返回总共查找的数量，给进度条计数
 	 * @return
@@ -78,18 +63,16 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	 * @return
 	 * @throws Exception 
 	 */
-	public ArrayList<String[]> doInBackground() throws Exception 
-	{
-		System.out.println("run");
+	public ArrayList<String[]> doInBackground() throws Exception {
 		ArrayList<String[]> lsDesp = new ArrayList<String[]>();
 		int length = 0;
-		if (blast) 
+		if (blast) {
 			length = 13;
-		else 
+		} else {
 			length = 5; 
+		}
 		
-		for (int i = 0; i<lsGeneID.size(); i++)
-		{
+		for (int i = 0; i<lsGeneID.size(); i++) {
 			String geneID = lsGeneID.get(i).trim();
 			ArrayList<String[]> lsTmpInfo = new ArrayList<String[]>();
 			try {

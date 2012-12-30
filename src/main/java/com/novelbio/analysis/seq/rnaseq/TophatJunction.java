@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.SetMultimap;
+import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.HashMapLsValue;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.SepSign;
@@ -19,18 +23,43 @@ public class TophatJunction {
 	 * 由于可变剪接存在，所以一个jun1可能对应多个jun2，也就是不同的exon连接在一起。
 	 */
 	HashMap<String, ArrayListMultimap<String, int[]>> mapCond_To_Jun1toLsJun2LocAndReadsNum = new HashMap<String, ArrayListMultimap<String,int[]>>();
+	
+	HashMap<String, HashMultimap<String, Integer>> mapCond_To_mapJun1ToLsJun2 = new HashMap<String, HashMultimap<String,Integer>>();
+	/**
+	 * key condition--
+	 * key：junction: 
+	 * value：该junction所对应的总reads数
+	 */
+	HashMap<String, HashMap<String, Integer>> mapCond_To_Jun2AllNum = new HashMap<String, HashMap<String,Integer>>();
+	
 	/**
 	 * condition--junction 对和具体的reads数
 	 */
 	HashMap<String, HashMap<String,Integer>>  mapCond_To_JunLoc2ReadsNum = new HashMap<String, HashMap<String,Integer>>();
-	String cond = "oneJunFile";
+	String condition = "oneJunFile";
+	
+	/** 设定当前时期 */
+	public void setCondition(String condition) {
+		this.condition = condition;
+	}
+	public void setSamBamReads(SamRecord samRecord) {
+		ArrayList<Align> lsAlign = samRecord.getAlignmentBlocks();
+		if (lsAlign.size() <= 1) {
+			return;
+		}
+		int size = lsAlign.size();
+		for (int i = 0; i < size - 1; i++) {
+			
+		}
+		
+	}
 	/**
 	 * 不加条件的和不加条件的搭配
 	 * 读取juction文件
 	 * @param junctionFile
 	 */
 	public void setJunFile(String junctionFile) {
-		setJunFile(junctionFile, cond);
+		setJunFile(condition, junctionFile);
 	}
 	
 	public int getJunNum(String condition) {
@@ -69,6 +98,26 @@ public class TophatJunction {
 			tmpMapJun1toLsJun2AndReadsNum.put(strjunct1, new int[]{junct2, Integer.parseInt(ss[4])});
 			tmpMapJun1toLsJun2AndReadsNum.put(strjunct2, new int[]{junct1, Integer.parseInt(ss[4])});
 		}
+	}
+	private void setJunctionInfo(ArrayListMultimap<String,  int[]> tmpMapJun1toLsJun2AndReadsNum, 
+			HashMap<String,Integer> tmpHashJunctionBoth , String chrID, int junctionStart, int junctionEnd, int junctionNum) {
+		String strjunct1 = chrID.toLowerCase()  + SepSign.SEP_INFO_SAMEDB + junctionStart;
+		String strjunct2 = chrID.toLowerCase() + SepSign.SEP_INFO_SAMEDB + junctionEnd;
+		String strJunBoth = strjunct1 + SepSign.SEP_INFO + strjunct2;
+		
+		if (tmpHashJunctionBoth.containsKey(strJunBoth)) {
+			int junNum = tmpHashJunctionBoth.get(strJunBoth);
+			junNum = junNum + junctionNum;
+			tmpHashJunctionBoth.put(strJunBoth, junNum);
+		}
+		else {
+			tmpHashJunctionBoth.put(strJunBoth, junctionNum);
+		}
+		
+		tmpMapJun1toLsJun2AndReadsNum.put(strjunct2, new int[]{junctionStart, junctionNum});
+
+		
+		
 	}
 	/** 获得剪接位点1所对应的剪接位点2的坐标
 	 * 以及该组剪接位点的junction reads数量 */

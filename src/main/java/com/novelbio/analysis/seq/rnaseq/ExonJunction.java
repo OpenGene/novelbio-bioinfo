@@ -93,6 +93,9 @@ public class ExonJunction {
 	private void fillLsAll_Dif_Iso_Exon() {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
+			if (gffDetailGene.getName().contains("NM_001160292")) {
+				logger.error("stop");
+			}
 			gffDetailGene.removeDupliIso();
 			
 			if (gffDetailGene.getLsCodSplit().size() <= 1)
