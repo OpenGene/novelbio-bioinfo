@@ -28,7 +28,10 @@ public class SamFileReading extends RunProcess<Double>{
 	public void addColAlignmentRecorder(Collection<AlignmentRecorder> colAlignmentRecorders) {
 		lsAlignmentRecorders.addAll(colAlignmentRecorders);
 	}
-
+	
+	public SamFile getSamFile() {
+		return samFile;
+	}
 	@Override
 	protected void running() {
 		double readByte = 0;

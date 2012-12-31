@@ -2,6 +2,7 @@ package com.novelbio.analysis.microarray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
@@ -9,12 +10,17 @@ import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class AffyNormalization {
 	public static final int NORM_RMA = 10;
 	public static final int NORM_GCRMA = 20;
 	public static final int NORM_MAS5 =30;
+	
+	/** 常规芯片譬如表达谱芯片 */
+	public static final String arrayType_normAffy = "normaffy";
+	/** 外显子芯片等 */
+	public static final String arrayType_exonAffy = "exonaffy";
+	
 	
 	String workSpace;
 	String rawScript = "";
@@ -22,6 +28,7 @@ public class AffyNormalization {
 	/** 标准化后的数据 */
 	String outFileName = "";
 	int normalizedType = NORM_RMA;
+	String arrayType = arrayType_normAffy;
 	String readFile = "";
 	ArrayList<String> lsRawCelFile = new ArrayList<String>();
 	
@@ -46,6 +53,10 @@ public class AffyNormalization {
 	/** NORM_RMA 等 */
 	public void setNormalizedType(int normalizedType) {
 		this.normalizedType = normalizedType;
+	}
+	/** arrayType_exonAffy 等 */
+	public void setArrayType(String arrayType) {
+		this.arrayType = arrayType;
 	}
 	/** 仅供测试 */
 	public String getOutScript() {
@@ -82,21 +93,28 @@ public class AffyNormalization {
 		return fileRawdata;
 	}
 	private String getRawDataFile(String content) {
-		String celFileName = "\"" + lsRawCelFile.get(0) + "\"";
+		String celFileName = CmdOperate.addQuot(lsRawCelFile.get(0));
 		for (int i = 1; i < lsRawCelFile.size(); i++) {
-			celFileName = celFileName + ", \"" + lsRawCelFile.get(i) + "\"";
+			celFileName = celFileName + "," + CmdOperate.addQuot(lsRawCelFile.get(i));
 		}
-		String fileRawdata = content.split(SepSign.SEP_ID)[1];
+		
+		String[] arrayType = content.split(SepSign.SEP_ID)[1].split(SepSign.SEP_INFO);
+		HashMap<String, String> mapAffayType2Script = new HashMap<String, String>();
+		for (String string : arrayType) {
+			String[] tmpArray = string.split(SepSign.SEP_INFO_SAMEDB);
+			mapAffayType2Script.put(tmpArray[0], tmpArray[1]);
+		}		
+		String fileRawdata = mapAffayType2Script.get(this.arrayType);
 		fileRawdata = fileRawdata.replace("{$RawCelFile}", celFileName.replace("\\", "/"));
 		return fileRawdata;
 	}
 	private String getMethodType(String content) {
-		String methodType[] = content.split(SepSign.SEP_ID)[1].split(SepSign.SEP_INFO);
+		String[] methodType = content.split(SepSign.SEP_ID)[1].split(SepSign.SEP_INFO);
 		HashMap<Integer, String> mapMethodID2Script = new HashMap<Integer, String>();
 		for (String string : methodType) {
 			String[] tmpMethod = string.split(SepSign.SEP_INFO_SAMEDB);
 			mapMethodID2Script.put(Integer.parseInt(tmpMethod[0]), tmpMethod[1]);
-		}		
+		}
 		return mapMethodID2Script.get(normalizedType);
 	}
 	/**
@@ -116,13 +134,18 @@ public class AffyNormalization {
 	}
 	
 	public static HashMap<String, Integer> getMapNormStr2ID() {
-		HashMap<String, Integer> mapNormStr2ID = new HashMap<String, Integer>();
+		HashMap<String, Integer> mapNormStr2ID = new LinkedHashMap<String, Integer>();
 		mapNormStr2ID.put("RMA--Log2", NORM_RMA);
 		mapNormStr2ID.put("GCRMA--Log2", NORM_GCRMA);
 		mapNormStr2ID.put("MAS5--NoLog2", NORM_MAS5);
 		return mapNormStr2ID;
 	}
-	
+	public static HashMap<String, String> getMapArrayTpye() {
+		HashMap<String, String> mapArrayType = new LinkedHashMap<String, String>();
+		mapArrayType.put("Normal Array", arrayType_normAffy);
+		mapArrayType.put("Exon Array", arrayType_normAffy);
+		return mapArrayType;
+	}
 	/** 删除中间文件 */
 	private void clean() {
 		FileOperate.DeleteFileFolder(outScript);

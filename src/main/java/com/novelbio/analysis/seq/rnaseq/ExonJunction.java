@@ -162,6 +162,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	public void addBamSorted(String condition, String sortedBamFile) {
+		setCondition.add(condition);
 		SamFileReading samFileReading = new SamFileReading(new SamFile(sortedBamFile));
 		mapCond2SamReader.put(condition, samFileReading);
 	}
@@ -173,7 +174,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	//TODO 考虑将其独立出来，成为一个读取类，然后往里面添加各种信息譬如获得表达值，获得差异可变剪接等
 	public void loadBamFile() {
-		TophatJunction tophatJunction = new TophatJunction();
+		tophatJunction = new TophatJunction();
 		for (String condition : mapCond2SamReader.keySet()) {
 			tophatJunction.setCondition(condition);
 			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
@@ -181,7 +182,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				MapReads mapReads = new MapReads();
 				mapReads.setInvNum(15);
 				mapReads.setNormalType(MapReads.NORMALIZATION_NO);
-
+				mapReads.prepareAlignRecord(samFileReading.getSamFile().readFirstLine());
 				//TODO 可以考虑从gtf文件中获取基因组长度然后给MapReads使用
 				mapReads.setMapChrID2Len(gffHashGene.getChrID2LengthForRNAseq());
 				samFileReading.addAlignmentRecorder(tophatJunction);

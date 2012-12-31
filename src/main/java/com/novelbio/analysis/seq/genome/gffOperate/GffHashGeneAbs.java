@@ -80,7 +80,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				String chrID = entry.getKey();
 				ListGff listGff = entry.getValue();
 				ListGff listGffNew = listGff.combineOverlapGene();
-				//合并两个重叠的基因
+				//装入hash表
 				for (GffDetailGene gffDetailGene : listGff) {
 					for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 						mapName2Iso.put(GeneID.removeDot(gffGeneIsoInfo.getName().toLowerCase()), gffGeneIsoInfo);

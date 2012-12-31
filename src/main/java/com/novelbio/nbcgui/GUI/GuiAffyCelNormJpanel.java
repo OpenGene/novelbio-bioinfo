@@ -34,6 +34,7 @@ public class GuiAffyCelNormJpanel extends JPanel {
 	private final ButtonGroup groupLibrary = new ButtonGroup();
 	JScrollPaneData scrollPaneCelFile;
 	JComboBoxData<Integer> cmbNormalizedType;
+	JComboBoxData<String> cmbArrayType;
 	JButton btnSaveto;
 	JButton btnOpenFastqLeft;
 	JButton btnDelFastqLeft;
@@ -117,10 +118,20 @@ public class GuiAffyCelNormJpanel extends JPanel {
 				affyNormalization.setLsRawCelFile(lsCelFile);
 				affyNormalization.setNormalizedType(cmbNormalizedType.getSelectedValue());
 				affyNormalization.setOutFileName(txtSavePathAndPrefix.getText());
+				affyNormalization.setArrayType(cmbArrayType.getSelectedValue());
 				affyNormalization.run();
 			}
 		});
 		add(btnRun);
+		
+		JLabel lblArraytype = new JLabel("ArrayType");
+		lblArraytype.setBounds(10, 298, 118, 14);
+		add(lblArraytype);
+		
+		cmbArrayType = new JComboBoxData<String>();
+		cmbArrayType.setBounds(175, 294, 194, 23);
+		cmbArrayType.setMapItem(AffyNormalization.getMapArrayTpye());
+		add(cmbArrayType);
 
 		
 		btnOpenFastqLeft.addActionListener(new ActionListener() {
@@ -138,5 +149,6 @@ public class GuiAffyCelNormJpanel extends JPanel {
 	 */
 	private void initialize() {
 		cmbNormalizedType.setSelectedIndex(0);
+		cmbArrayType.setSelectedIndex(0);
 	}
 }

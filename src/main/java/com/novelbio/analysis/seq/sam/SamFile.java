@@ -212,7 +212,9 @@ public class SamFile implements AlignSeq {
 	 * @return
 	 */
 	public SamRecord readFirstLine() {
-		return readLines().iterator().next();
+		SamRecord samRecord = readLines().iterator().next();
+		close();
+		return samRecord;
 	}
 	/**
 	 * 注意大小写区分
@@ -312,19 +314,15 @@ public class SamFile implements AlignSeq {
 	  * @param outFile
 	  */
     public SamFile sort(String outFile) {
-    	String bamFileName = "";
+		BamSort bamSort = new BamSort();
     	if (!bamFile) {
     		SamFile bamFile = convertToBam();
-    		bamFileName = bamFile.getFileName();
+    		bamSort.setSamFile(bamFile);
+    	} else {
+    		bamSort.setSamFile(this);
 		}
-		else {
-			bamFileName = getFileName();
-		}
-		
-		BamSort bamSort = new BamSort();
-		bamSort.setExePath(softWareInfoSamtools.getExePath());
-		bamSort.setBamFile(bamFileName);
-		String outSortedBamName = bamSort.sort(outFile);
+
+    	String outSortedBamName = bamSort.sortSamtools(outFile);
 		SamFile samFile = new SamFile(outSortedBamName);
 		setParamSamFile(samFile);
 		return samFile;

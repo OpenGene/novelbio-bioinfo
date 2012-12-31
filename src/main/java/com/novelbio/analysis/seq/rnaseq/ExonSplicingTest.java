@@ -531,7 +531,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		if (gffDetailGene.getName().contains("NM_001160292")) {
+		if (gffDetailGene.getName().contains("NM_001253689")) {
 			logger.error("stop");
 		}
 		lsResult.add(gffDetailGene.getName().get(0));

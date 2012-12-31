@@ -23,8 +23,13 @@ public class SamReader {
 	
 	Boolean pairend;
 	
+	boolean isOpen = false;
+	
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+		close();
+		samFileReader = null;
+		samFileHeader = null;
 	}
 	
 	public String getName() {
@@ -57,11 +62,26 @@ public class SamReader {
 		return pairend;
 	}
 	protected SAMFileHeader getSamFileHead() {
-		if (samFileHeader == null) {
-			getSamFileReader();
-		}
+		initialSamHeadAndReader();
 		return samFileHeader;
 	}
+	
+	protected SAMFileReader getSamFileReader() {
+		initialSamHeadAndReader();
+		return samFileReader;
+	}
+	
+	private void initialSamHeadAndReader() {
+		if (samFileHeader != null && samFileReader != null && isOpen == true) {
+			return;
+		}
+		close();
+		isOpen = true;
+		File file = new File(fileName);
+		samFileReader = new SAMFileReader(file);
+		samFileHeader = samFileReader.getFileHeader();
+	}
+	
 	/**
 	 * 注意大小写区分
 	 * @param ReadName reads的名字，只要写关键词就行了
@@ -167,22 +187,15 @@ public class SamReader {
 			}
 		};
 	}
-	
-	private SAMFileReader getSamFileReader() {
-		close();
-		File file = new File(fileName);
-		samFileReader = new SAMFileReader(file);
-		samFileHeader = samFileReader.getFileHeader();
-		return samFileReader;
-	}
-	
+
 	
 	public boolean isBinary() {
-		getSamFileReader();
+		initialSamHeadAndReader();
 		return samFileReader.isBinary();
 	}
 	
 	public void close() {
+		isOpen = false;
 		try {
 			samFileReader.close();
 		} catch (Exception e) {  }

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -114,13 +115,14 @@ public class GffDetailGene extends ListDetailAbs {
 	}
 	/** 全体item的名字 */
 	public ArrayList<String > getName() {
-		HashSet<String> setIsoName = new HashSet<String>();
-		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			setIsoName.add(gffGeneIsoInfo.getName());
-		}
+		HashSet<String> setIsoName = new LinkedHashSet<String>();
 		for (String string : this.lsItemName) {
 			setIsoName.add(string);
 		}
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			setIsoName.add(gffGeneIsoInfo.getName());
+		}
+
 		return ArrayOperate.getArrayListValue(setIsoName);
 	}
 	/**

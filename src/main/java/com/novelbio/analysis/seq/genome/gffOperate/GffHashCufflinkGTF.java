@@ -50,7 +50,9 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			if (content.charAt(0) == '#') {
 				continue;
 			}
-
+			if (content.contains("NM_001253689")) {
+				logger.error("stop");
+			}
 			String[] ss = content.split("\t");// 按照tab分开
 			
 			// 新的染色体
@@ -169,6 +171,9 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 				String geneName = mapIsoName2GeneName.get(gffGeneIsoInfo.getName().toLowerCase());
 				if (geneName == null) {
 					geneName = gffGeneIsoInfo.getName();
+				}
+				if (gffGeneIsoInfo.getName().equals("NM_001253689")) {
+					logger.error("stop");
 				}
 				gffDetailGene = new GffDetailGene(lsResult, geneName, gffGeneIsoInfo.isCis5to3());
 				gffDetailGene.addIso(gffGeneIsoInfo);
