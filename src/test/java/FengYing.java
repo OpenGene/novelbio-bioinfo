@@ -35,7 +35,7 @@ public class FengYing {
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_2/accepted_hits.bam");
 //		System.out.println(species.getVersionAll().get(1));
 //		species.setVersion(species.getVersionAll().get(1));
-		exonJunction.loadingBamFile();
+		exonJunction.loadBamFile();
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);

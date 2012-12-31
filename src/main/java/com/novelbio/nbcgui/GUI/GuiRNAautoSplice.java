@@ -249,9 +249,9 @@ public class GuiRNAautoSplice extends JPanel {
 			exonJunction.setIsoJunFile(strings[1], strings[0]); 
 		}
 		for (String[] strings : scrlBam.getLsDataInfo()) {
-			exonJunction.addBamFile_Sorted(strings[1], strings[0]);
+			exonJunction.addBamSorted(strings[1], strings[0]);
 		}
-		exonJunction.loadingBamFile(getSpecies());
+		exonJunction.loadBamFile();
 		for (String[] compareGroups : scrlCompare.getLsDataInfo()) {
 			exonJunction.setCompareGroups(compareGroups[0], compareGroups[1]);
 			exonJunction.writeToFile(outFile + compareGroups[0] + "vs" +compareGroups[1] + ".xls");

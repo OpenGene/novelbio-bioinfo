@@ -25,12 +25,13 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
 
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异
  * @author zong0jie
  */
-public class ExonJunction extends RunProcess<ExonJunctionGuiInfo> {
+public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
 
 	GffHashGene gffHashGene = null;
@@ -92,6 +93,8 @@ public class ExonJunction extends RunProcess<ExonJunctionGuiInfo> {
 	public void setSeqHash(SeqHash seqHash) {
 		this.seqHash = seqHash;
 	}
+	
+	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */
 	private void fillLsAll_Dif_Iso_Exon() {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
@@ -168,6 +171,7 @@ public class ExonJunction extends RunProcess<ExonJunctionGuiInfo> {
 		getTestResult_FromIso();
 	}
 	
+	//TODO 考虑将其独立出来，成为一个读取类，然后往里面添加各种信息譬如获得表达值，获得差异可变剪接等
 	public void loadBamFile() {
 		TophatJunction tophatJunction = new TophatJunction();
 		for (String condition : mapCond2SamReader.keySet()) {
@@ -179,9 +183,7 @@ public class ExonJunction extends RunProcess<ExonJunctionGuiInfo> {
 				mapReads.setNormalType(MapReads.NORMALIZATION_NO);
 
 				//TODO 可以考虑从gtf文件中获取基因组长度然后给MapReads使用
-				if (seqHash != null) {
-					mapReads.setMapChrID2Len(seqHash.getMapChrLength());
-				}
+				mapReads.setMapChrID2Len(gffHashGene.getChrID2LengthForRNAseq());
 				samFileReading.addAlignmentRecorder(tophatJunction);
 				samFileReading.addAlignmentRecorder(mapReads);
 				
@@ -190,7 +192,7 @@ public class ExonJunction extends RunProcess<ExonJunctionGuiInfo> {
 				addMapReadsInfo(condition, mapReads);
 				mapReads = null;
 				
-				ExonJunctionGuiInfo exonJunctionGuiInfo = new ExonJunctionGuiInfo();
+				GuiAnnoInfo exonJunctionGuiInfo = new GuiAnnoInfo();
 				//TODO
 				setRunInfo(exonJunctionGuiInfo);
 			}
@@ -322,9 +324,4 @@ public class ExonJunction extends RunProcess<ExonJunctionGuiInfo> {
 			}
 		});
 	}
-}
-
-class ExonJunctionGuiInfo {
-	String labInfo;
-	double readInfo;
 }

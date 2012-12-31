@@ -20,6 +20,12 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	String transcript = "transcript";
 
 	HashMap<String, GffGeneIsoInfo> mapID2Iso = new HashMap<String, GffGeneIsoInfo>();
+	
+	/** 记录转录本名字和基因名字的对照表，用于最后将GffDetailGene的名字换位基因名字
+	 * key为小写
+	 */
+	HashMap<String, String> mapIsoName2GeneName = new HashMap<String, String>();
+	
 	/**
 	 * 设定参考基因的Gff文件
 	 * @param gffHashRef
@@ -53,8 +59,10 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 				lsGeneIsoInfos = getChrID2LsGffGeneIso(tmpChrID, mapChrID2LsIso);
 			}
 			
-			String tmpTranscriptName = ss[8].split(";")[1].replace("transcript_id", "").replace("\"", "").trim();
-
+			String[] isoName2GeneName = getIsoName2GeneName(ss[8]);
+			String tmpTranscriptName = isoName2GeneName[0];
+			mapIsoName2GeneName.put(tmpTranscriptName.toLowerCase(), isoName2GeneName[1]);
+			
 			if (ss[2].equals(transcript) 
 				||
 				(!tmpTranscriptName.equals(tmpTranscriptNameLast) 
@@ -92,6 +100,19 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		return lsGeneIsoInfos;
 	}
 	
+	private String[] getIsoName2GeneName(String ss8) {
+		String[] iso2geneName = new String[2];
+		 String[] info = ss8.split(";");
+		 for (String name : info) {
+			if (name.contains("transcript_id")) {
+				iso2geneName[0] = name.replace("transcript_id", "").replace("\"", "").trim();
+			} else if (name.contains("gene_id")) {
+				iso2geneName[1] = name.replace("gene_id", "").replace("\"", "").trim();
+			}
+		}
+		 return iso2geneName;
+	}
+	
 	private void CopeChrIso(HashMap<String, ArrayList<GffGeneIsoInfo>> hashChrIso) {
 		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(hashChrIso);
 		for (String chrID : lsChrID) {
@@ -104,7 +125,6 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			
 		}
 	}
-	
 	
 	/**
 	 * 整理某条染色体的信息
@@ -146,7 +166,11 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 				gffDetailGene.addIso(gffGeneIsoInfo);
 			}
 			else {
-				gffDetailGene = new GffDetailGene(lsResult, gffGeneIsoInfo.getName(), gffGeneIsoInfo.isCis5to3());
+				String geneName = mapIsoName2GeneName.get(gffGeneIsoInfo.getName().toLowerCase());
+				if (geneName == null) {
+					geneName = gffGeneIsoInfo.getName();
+				}
+				gffDetailGene = new GffDetailGene(lsResult, geneName, gffGeneIsoInfo.isCis5to3());
 				gffDetailGene.addIso(gffGeneIsoInfo);
 				lsResult.add(gffDetailGene);
 				continue;
@@ -198,6 +222,5 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			}
 		}
 	}
-	
 	
 }

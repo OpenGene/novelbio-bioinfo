@@ -217,5 +217,18 @@ public class GffHashGene implements GffHashGeneInf{
 		}
 		return setGeneID;
 	}
-
+	
+	/** 从GFF中获得的染色体长度信息，不准，主要用在RNAseq的时候 */
+	public HashMap<String, Long> getChrID2LengthForRNAseq() {
+		HashMap<String, Long> mapChrID2Length = new HashMap<String, Long>();
+		
+		HashMap<String, ListGff> mapChrID2LsGff = getMapChrID2LsGff();
+		for (String chrID : mapChrID2LsGff.keySet()) {
+			ListGff lsGff = mapChrID2LsGff.get(chrID);
+			long end = lsGff.get(lsGff.size() - 1).getEndAbs() + 5000;
+			mapChrID2Length.put(chrID, end);
+		}
+		return mapChrID2Length;
+	}
+	
 }
