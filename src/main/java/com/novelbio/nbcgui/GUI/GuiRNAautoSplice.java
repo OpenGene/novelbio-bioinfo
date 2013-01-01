@@ -27,14 +27,10 @@ import javax.swing.JCheckBox;
 
 public class GuiRNAautoSplice extends JPanel {
 	private JTextField txtGff;
-	JScrollPaneData scrlJunction;
 	JScrollPaneData scrlBam;
 	JScrollPaneData scrlCompare;
 	JComboBoxData<Species> combSpecies;
 	JComboBoxData<String> combVersion;
-	
-	JButton btnOpenjunction;
-	JButton btnDeljunction;
 	JButton btnOpeanbam;
 	JButton btnDelbam;
 	JButton btnRun;
@@ -61,37 +57,8 @@ public class GuiRNAautoSplice extends JPanel {
 		combVersion.setBounds(642, 110, 223, 23);
 		add(combVersion);
 		
-		scrlJunction = new JScrollPaneData();
-		scrlJunction.setBounds(31, 23, 599, 124);
-		add(scrlJunction);
-		
-		btnOpenjunction = new JButton("openJunction");
-		btnOpenjunction.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ArrayList<String> lsFile = guiFileOpen.openLsFileName("JunctionFile", "");
-				ArrayList<String[]> lsInfo = new ArrayList<String[]>();
-				for (String string : lsFile) {
-					String[] tmResult = new String[2];
-					tmResult[0] = string; tmResult[1] = FileOperate.getFileNameSep(string)[0].split("_")[0];
-					lsInfo.add(tmResult);
-				}
-				scrlJunction.addItemLs(lsInfo);
-			}
-		});
-		btnOpenjunction.setBounds(31, 159, 129, 24);
-		add(btnOpenjunction);
-		
-		btnDeljunction = new JButton("DelJunction");
-		btnDeljunction.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				scrlJunction.deleteSelRows();
-			}
-		});
-		btnDeljunction.setBounds(358, 159, 129, 24);
-		add(btnDeljunction);
-		
 		scrlBam = new JScrollPaneData();
-		scrlBam.setBounds(31, 213, 599, 124);
+		scrlBam.setBounds(20, 34, 610, 303);
 		add(scrlBam);
 		
 		btnOpeanbam = new JButton("OpeanBam");
@@ -100,8 +67,10 @@ public class GuiRNAautoSplice extends JPanel {
 				ArrayList<String> lsFile = guiFileOpen.openLsFileName("BamFile", "");
 				ArrayList<String[]> lsInfo = new ArrayList<String[]>();
 				for (String string : lsFile) {
-					String[] tmResult = new String[2];
+					//0: fileName   1: sampleName 2:group
+					String[] tmResult = new String[3];
 					tmResult[0] = string; tmResult[1] = FileOperate.getFileNameSep(string)[0].split("_")[0];
+					tmResult[2] = tmResult[1];
 					lsInfo.add(tmResult);
 				}
 				scrlBam.addItemLs(lsInfo);
@@ -151,12 +120,8 @@ public class GuiRNAautoSplice extends JPanel {
 		add(lblVersion);
 		
 		JLabel lblAddbamfile = new JLabel("AddBamFile");
-		lblAddbamfile.setBounds(32, 195, 129, 14);
+		lblAddbamfile.setBounds(20, 12, 129, 14);
 		add(lblAddbamfile);
-		
-		JLabel lblAddjunctionfile = new JLabel("AddJunctionFile");
-		lblAddjunctionfile.setBounds(31, 5, 118, 14);
-		add(lblAddjunctionfile);
 		
 		txtSaveTo = new JTextField();
 		txtSaveTo.setBounds(34, 462, 532, 18);
@@ -186,7 +151,7 @@ public class GuiRNAautoSplice extends JPanel {
 				scrlCompare.addItem(new String[]{"",""});
 			}
 		});
-		btnAddCompare.setBounds(642, 327, 80, 24);
+		btnAddCompare.setBounds(642, 327, 96, 24);
 		add(btnAddCompare);
 		
 		JButton btnDeleteCompare = new JButton("DeleteCompare");
@@ -195,7 +160,7 @@ public class GuiRNAautoSplice extends JPanel {
 				scrlCompare.deleteSelRows();
 			}
 		});
-		btnDeleteCompare.setBounds(785, 327, 80, 24);
+		btnDeleteCompare.setBounds(769, 327, 96, 24);
 		add(btnDeleteCompare);
 		
 		chckbxDisplayAllSplicing = new JCheckBox("Display All Splicing Events");
@@ -207,8 +172,7 @@ public class GuiRNAautoSplice extends JPanel {
 	private void initial() {
 		combSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
 		selectSpecies();
-		scrlBam.setTitle(new String[]{"BamFile", "Prefix"});
-		scrlJunction.setTitle(new String[]{"JunctionFile", "Prefix"});
+		scrlBam.setTitle(new String[]{"BamFile", "Prefix", "group"});
 		scrlCompare.setTitle(new String[] {"group1", "group2"});
 	}
 	private void selectSpecies() {
@@ -244,9 +208,6 @@ public class GuiRNAautoSplice extends JPanel {
 		String outFile = txtSaveTo.getText();
 		if (FileOperate.isFileDirectory(outFile)) {
 			outFile = FileOperate.addSep(outFile);
-		}
-		for (String[] strings : scrlJunction.getLsDataInfo()) {
-			exonJunction.setIsoJunFile(strings[1], strings[0]); 
 		}
 		for (String[] strings : scrlBam.getLsDataInfo()) {
 			exonJunction.addBamSorted(strings[1], strings[0]);
