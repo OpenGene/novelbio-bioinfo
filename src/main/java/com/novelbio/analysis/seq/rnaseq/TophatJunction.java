@@ -2,6 +2,8 @@ package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
@@ -15,21 +17,21 @@ public class TophatJunction implements AlignmentRecorder {
 	 * key condition
 	 * value: 某个junction与别的junction之间的对应关系
 	 */
-	HashMap<String, HashMultimap<String, String>> mapCond_To_mapJun1ToSetJun2 = new HashMap<String, HashMultimap<String,String>>();
+	HashMap<String, HashMultimap<String, String>> mapCond_To_mapJun1ToSetJun2 = new LinkedHashMap<String, HashMultimap<String,String>>();
 	HashMultimap<String, String> mapJun1ToSetJun2;
 	/**
 	 * key condition--
 	 * key：junction
 	 * value：该junction所对应的总reads数
 	 */
-	HashMap<String, HashMap<String, Integer>> mapCond_To_JuncOne2AllNum = new HashMap<String, HashMap<String,Integer>>();
-	HashMap<String, Integer> mapJuncOne2AllNum;
+	HashMap<String, LinkedHashMap<String, Integer>> mapCond_To_JuncOne2AllNum = new LinkedHashMap<String, LinkedHashMap<String,Integer>>();
+	LinkedHashMap<String, Integer> mapJuncOne2AllNum;
 	/**
 	 * key condition
 	 * value: 某一对junction与其对应的reads总数
 	 */
-	HashMap<String, HashMap<String,Integer>>  mapCond_To_JuncPair2ReadsNum = new HashMap<String, HashMap<String,Integer>>();
-	HashMap<String,Integer> mapJuncPair2ReadsNum;	
+	HashMap<String, LinkedHashMap<String,Integer>>  mapCond_To_JuncPair2ReadsNum = new LinkedHashMap<String, LinkedHashMap<String,Integer>>();
+	LinkedHashMap<String, Integer> mapJuncPair2ReadsNum;	
 	
 	/** 设定当前时期 */
 	public void setCondition(String condition) {
@@ -61,13 +63,13 @@ public class TophatJunction implements AlignmentRecorder {
 	 * @param condition
 	 * @return
 	 */
-	private HashMap<String, Integer> getMapJuncOneToAllNum(String condition) {
+	private LinkedHashMap<String, Integer> getMapJuncOneToAllNum(String condition) {
 		//获得对应的hash表
-		HashMap<String, Integer> tmpMapJuncOne2AllNum = null;
+		LinkedHashMap<String, Integer> tmpMapJuncOne2AllNum = null;
 		if (mapCond_To_JuncOne2AllNum.containsKey(condition)) {
 			tmpMapJuncOne2AllNum = mapCond_To_JuncOne2AllNum.get(condition);
 		} else {
-			tmpMapJuncOne2AllNum = new HashMap<String, Integer>();
+			tmpMapJuncOne2AllNum = new LinkedHashMap<String, Integer>();
 			mapCond_To_JuncOne2AllNum.put(condition, tmpMapJuncOne2AllNum);
 		}
 		return tmpMapJuncOne2AllNum;
@@ -78,13 +80,13 @@ public class TophatJunction implements AlignmentRecorder {
 	 * @param condition
 	 * @return
 	 */
-	private HashMap<String, Integer> getMapJuncPair2ReadsNum(String condition) {
+	private LinkedHashMap<String, Integer> getMapJuncPair2ReadsNum(String condition) {
 		//获得对应的hash表
-		HashMap<String, Integer> tmpMapJuncPair2ReadsNum = null;
+		LinkedHashMap<String, Integer> tmpMapJuncPair2ReadsNum = null;
 		if (mapCond_To_JuncPair2ReadsNum.containsKey(condition)) {
 			tmpMapJuncPair2ReadsNum = mapCond_To_JuncPair2ReadsNum.get(condition);
 		} else {
-			tmpMapJuncPair2ReadsNum = new HashMap<String, Integer>();
+			tmpMapJuncPair2ReadsNum = new LinkedHashMap<String, Integer>();
 			mapCond_To_JuncPair2ReadsNum.put(condition, tmpMapJuncPair2ReadsNum);
 		}
 		return tmpMapJuncPair2ReadsNum;
@@ -98,7 +100,7 @@ public class TophatJunction implements AlignmentRecorder {
 		}
 		int size = lsAlign.size();
 		String chrID = alignRecord.getRefID();
-		for (int i = 0; i < size - 2; i++) {
+		for (int i = 0; i < size - 1; i++) {
 			Align alignThis = lsAlign.get(i);
 			Align alignNext = lsAlign.get(i + 1);
 			int junStart = alignThis.getEndAbs();
@@ -157,7 +159,7 @@ public class TophatJunction implements AlignmentRecorder {
 			juncAllNum = juncAllNum + junctionNum;
 			mapJunc2Num.put(junc, juncAllNum);
 		} else {
-			mapJunc2Num.put(junc, junctionNum);;
+			mapJunc2Num.put(junc, junctionNum);
 		}
 	}
 	/**
@@ -214,5 +216,32 @@ public class TophatJunction implements AlignmentRecorder {
 		else {
 			return 0;
 		}
+	}
+	
+	public void writeTo(String condition, String outPathPrefix) {
+		setCondition(condition);
+		TxtReadandWrite txtJuncPair = new TxtReadandWrite(outPathPrefix+"junctionPair.txt", true);
+		TxtReadandWrite txtJunc2Num = new TxtReadandWrite(outPathPrefix + "Junc2Num", true);
+		TxtReadandWrite txtJuncPair2Num = new TxtReadandWrite(outPathPrefix + "JuncPair2Num", true);
+
+		
+		for (String string : mapJun1ToSetJun2.keySet()) {
+			Set<String> setJunc2 = mapJun1ToSetJun2.get(string);
+			for (String string2 : setJunc2) {
+				txtJuncPair.writefile(string + "\t" + string2);
+			}
+		}
+		
+		for (String junc : mapJuncOne2AllNum.keySet()) {
+			txtJunc2Num.writefileln(junc + "\t" + mapJuncOne2AllNum.get(junc));
+		}
+		
+		for (String juncPair : mapJuncPair2ReadsNum.keySet()) {
+			txtJuncPair2Num.writefileln(juncPair + "\t" + mapJuncPair2ReadsNum.get(juncPair));
+		}
+		
+		txtJunc2Num.close();
+		txtJuncPair.close();
+		txtJuncPair2Num.close();
 	}
 }

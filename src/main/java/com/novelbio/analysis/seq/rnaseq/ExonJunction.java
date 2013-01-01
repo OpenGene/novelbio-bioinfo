@@ -68,6 +68,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	SeqHash seqHash;
 	
+	/** 
+	 * mapreads读取bam文件的最小分辨率 ，分辨率越小精度越高但是内存消耗越大
+	 * 在这里高分辨率没有意义，15就行了
+	 */
+	int mapreadsBin = 15;
 	
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
@@ -75,6 +80,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	public void setPvalue(double pvalue) {
 		this.pvalue = pvalue;
+	}
+	/** 
+	 * mapreads读取bam文件的最小分辨率 ，分辨率越小精度越高但是内存消耗越大
+	 * 在这里高分辨率没有意义，15就行了
+	 */
+	public void setMapreadsBin(int mapreadsBin) {
+		this.mapreadsBin = mapreadsBin;
 	}
 	/** 
 	 * 一个基因可能有多个可变剪接事件，但是我们可以只挑选其中最显著的那个可变剪接事件

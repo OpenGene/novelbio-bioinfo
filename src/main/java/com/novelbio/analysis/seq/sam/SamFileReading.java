@@ -45,6 +45,7 @@ public class SamFileReading extends RunProcess<Double>{
 			}
 			readByte = readByte + samRecord.toString().getBytes().length;
 			setRunInfo(readByte);
+			samRecord = null;
 		}
 	}
 	
