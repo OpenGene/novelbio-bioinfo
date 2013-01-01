@@ -1,16 +1,21 @@
 package com.novelbio.analysis.seq.sam;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.math.optimization.univariate.BracketFinder;
 import org.apache.log4j.Logger;
+
+import com.novelbio.base.fileOperate.FileOperate;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
+import net.sf.samtools.SAMSequenceRecord;
 
 public class SamReader {
 	private static Logger logger = Logger.getLogger(SamReader.class);
@@ -19,8 +24,11 @@ public class SamReader {
 	 */
 	SAMFileReader samFileReader;
 	SAMFileHeader samFileHeader;
-	String fileName;
 	
+	/** 小写的chrID与samFileHeader中的chrID的对照表 */
+	HashMap<String, String> mapChrIDlowCase2ChrID = new HashMap<String, String>();
+	String fileName;
+	String fileIndex;
 	Boolean pairend;
 	
 	boolean isOpen = false;
@@ -30,6 +38,11 @@ public class SamReader {
 		close();
 		samFileReader = null;
 		samFileHeader = null;
+	}
+	public void setFileIndex(String fileIndex) {
+		if (FileOperate.isFileExistAndBigThanSize(fileIndex, 0)) {
+			this.fileIndex = fileIndex;
+		}
 	}
 	
 	public String getName() {
@@ -72,16 +85,32 @@ public class SamReader {
 	}
 	
 	private void initialSamHeadAndReader() {
-		if (samFileHeader != null && samFileReader != null && isOpen == true) {
+		if (samFileHeader != null && samFileReader != null && isOpen == true 
+				&& 
+				(
+						(fileIndex == null && !samFileReader.hasIndex())
+						|| 
+						samFileReader.hasIndex()
+						)
+				) {
 			return;
 		}
 		close();
 		isOpen = true;
 		File file = new File(fileName);
-		samFileReader = new SAMFileReader(file);
+		File index = null;
+		if (fileIndex != null) {
+			index = new File(fileIndex);
+		}
+		samFileReader = new SAMFileReader(file, index);
 		samFileHeader = samFileReader.getFileHeader();
+		mapChrIDlowCase2ChrID = new HashMap<String, String>();
+		//获得reference的序列信息
+		List<SAMSequenceRecord> lsSamSequenceRecords = samFileHeader.getSequenceDictionary().getSequences();
+		for (SAMSequenceRecord samSequenceRecord : lsSamSequenceRecords) {
+			mapChrIDlowCase2ChrID.put(samSequenceRecord.getSequenceName().toLowerCase(), samSequenceRecord.getSequenceName());
+		}
 	}
-	
 	/**
 	 * 注意大小写区分
 	 * @param ReadName reads的名字，只要写关键词就行了
@@ -130,64 +159,47 @@ public class SamReader {
 		close();
 		return isSamBamFile;
 	}
-	/**
-	 * 迭代读取文件
-	 */
+	/** 迭代读取文件 */
 	public Iterable<SamRecord> readLines() {
-		final SAMRecordIterator samRecordIterator = getSamFileReader().iterator();
-		return new Iterable<SamRecord>() {
-			int errorFormateLineNum = 0;
-			int correctLineNum = 0;
-			public Iterator<SamRecord> iterator() {
-				return new Iterator<SamRecord>() {
-					@Override
-					public boolean hasNext() {
-						return samRecordIterator.hasNext();
-					}
-
-					@Override
-					public SamRecord next() {
-						SAMRecord samRecord = null;
-						try {
-							samRecord = samRecordIterator.next();
-							if (correctLineNum < 100000) {
-								correctLineNum ++;
-							}
-						} catch (SAMFormatException e) {
-							logger.error(e);
-							if (e.toString().contains("Error parsing text SAM file. Non-numeric value in POS column")) {
-								errorFormateLineNum++;
-							}
-							if (errorFormateLineNum > 100 && correctLineNum < 5) {
-								return null;
-							}
-							logger.error(e.toString());
-							return getErrorSamRecord();
-						} catch (Exception e) {
-							e.printStackTrace();
-							logger.error(e);
-							return getErrorSamRecord();
-						}
-						SamRecord samRecordThis = new SamRecord(samRecord);
-						return samRecordThis;
-					}
-					
-					private SamRecord getErrorSamRecord() {
-						SAMRecord samRecorderror = new SAMRecord(getSamFileHead());
-						samRecorderror.setMappingQuality(0);
-						samRecorderror.setFlags(4);
-						SamRecord samRecordError = new SamRecord(samRecorderror);
-						return samRecordError;
-					}
-					@Override
-					public void remove() {
-						samRecordIterator.remove();
-					}
-				};
-			}
-		};
+		SAMRecordIterator samRecordIterator = getSamFileReader().iterator();
+		return new ReadSamIterable(samRecordIterator, samFileHeader);
 	}
-
+	
+	/**
+	 * each SAMRecord returned is will have its alignment completely contained in the interval of interest. 
+	 * @param chrID
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public Iterable<SamRecord> readLinesContained(String chrID, int start, int end) {
+		getSamFileReader();
+		chrID = chrID.toLowerCase();
+		if (!mapChrIDlowCase2ChrID.containsKey(chrID)) {
+			logger.error("出现未知reference");
+			return null;
+		}
+		SAMRecordIterator samRecordIterator = samFileReader.queryContained(mapChrIDlowCase2ChrID.get(chrID), start, end);
+		return new ReadSamIterable(samRecordIterator, samFileHeader);
+	}
+	
+	/**
+	 * the alignment of the returned SAMRecords need only overlap the interval of interest.
+	 * @param chrID
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public Iterable<SamRecord> readLinesOverlap(String chrID, int start, int end) {
+		getSamFileReader();
+		chrID = chrID.toLowerCase();
+		if (!mapChrIDlowCase2ChrID.containsKey(chrID)) {
+			logger.error("出现未知reference");
+			return null;
+		}
+		SAMRecordIterator samRecordIterator = samFileReader.queryOverlapping(mapChrIDlowCase2ChrID.get(chrID), start, end);
+		return new ReadSamIterable(samRecordIterator, samFileHeader);
+	}
 	
 	public boolean isBinary() {
 		initialSamHeadAndReader();
@@ -200,4 +212,74 @@ public class SamReader {
 			samFileReader.close();
 		} catch (Exception e) {  }
 	}
+}
+
+class ReadSamIterable implements Iterable<SamRecord> {
+	ReadSamIterator readSamIterator;
+	public ReadSamIterable(SAMRecordIterator samRecordIterator, SAMFileHeader samFileHeader) {
+		readSamIterator = new ReadSamIterator(samRecordIterator, samFileHeader);
+	}
+	@Override
+	public Iterator<SamRecord> iterator() {
+		return readSamIterator;
+	}
+}
+
+class ReadSamIterator implements Iterator<SamRecord> {
+	private static Logger logger = Logger.getLogger(ReadSamIterable.class);
+	
+	SAMRecordIterator samRecordIterator;
+	SAMFileHeader samFileHeader;
+	int correctLineNum = 0;
+	int errorFormateLineNum = 0;
+	
+	public ReadSamIterator(SAMRecordIterator samRecordIterator, SAMFileHeader samFileHeader) {
+		this.samRecordIterator = samRecordIterator;
+		this.samFileHeader = samFileHeader;
+	}
+	
+	@Override
+	public boolean hasNext() {
+		return samRecordIterator.hasNext();
+	}
+
+	@Override
+	public SamRecord next() {
+		SAMRecord samRecord = null;
+		try {
+			samRecord = samRecordIterator.next();
+			if (correctLineNum < 100000) {
+				correctLineNum ++;
+			}
+		} catch (SAMFormatException e) {
+			logger.error(e);
+			if (e.toString().contains("Error parsing text SAM file. Non-numeric value in POS column")) {
+				errorFormateLineNum++;
+			}
+			if (errorFormateLineNum > 100 && correctLineNum < 5) {
+				return null;
+			}
+			logger.error(e.toString());
+			return getErrorSamRecord();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			return getErrorSamRecord();
+		}
+		SamRecord samRecordThis = new SamRecord(samRecord);
+		return samRecordThis;
+	}
+	
+	private SamRecord getErrorSamRecord() {
+		SAMRecord samRecorderror = new SAMRecord(samFileHeader);
+		samRecorderror.setMappingQuality(0);
+		samRecorderror.setFlags(4);
+		SamRecord samRecordError = new SamRecord(samRecorderror);
+		return samRecordError;
+	}
+	@Override
+	public void remove() {
+		samRecordIterator.remove();
+	}
+
 }

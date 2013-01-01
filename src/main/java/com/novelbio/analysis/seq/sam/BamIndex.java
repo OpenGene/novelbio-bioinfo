@@ -28,12 +28,15 @@ public class BamIndex {
 	public void setBamFile(String bamFile) {
 		this.bamFile = bamFile;
 	}
+	/**
+	 * 返回建好的索引名字
+	 * @return
+	 */
 	public String index() {
-		if (!FileOperate.isFileExistAndBigThanSize(bamFile + ".bai", 1000)) {
+		if (!FileOperate.isFileExistAndBigThanSize(getIndexFileName(), 1000)) {
 			makeIndex();
 		}
-		samFile.close();
-		return bamFile;
+		return getIndexFileName();
 	}
 	
 	private String getIndexFileName() {

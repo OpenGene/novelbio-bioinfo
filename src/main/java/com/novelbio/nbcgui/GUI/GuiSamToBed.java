@@ -389,7 +389,7 @@ public class GuiSamToBed extends JPanel {
 			samFile = samFile.sort();
 		}
 		if (chckbxIndex.isSelected()) {
-			samFile.index();
+			samFile.indexMake();
 		}
 		if (chckbxRealign.isSelected()) {
 			try { samFile = samFile.copeSamFile2Snp(); } catch (Exception e) { }

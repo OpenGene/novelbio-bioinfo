@@ -38,7 +38,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 public class SamFile implements AlignSeq {
 	public static void main(String[] args) {
 		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_FY/paper/KOod.bam");
-		samFile.index();
+		samFile.indexMake();
 	}
 	private static Logger logger = Logger.getLogger(SamFile.class);
 
@@ -79,9 +79,15 @@ public class SamFile implements AlignSeq {
 	
 	String referenceFileName;
 	
-	/**读取已有文件 */
+	/**读取已有文件
+	 * 如果有索引会自动读取索引
+	 */
 	public SamFile(String samBamFile) {
-		setSamFileRead(samBamFile);
+		String bamindex = samBamFile + ".bai";
+		if (!FileOperate.isFileExistAndBigThanSize(samBamFile, 0)) {
+			bamindex = null;
+		}
+		setSamFileRead(samBamFile, bamindex);
 		initialSoftWare();
 	}
 	/** 创建新的sambam文件，根据文件名 */
@@ -118,7 +124,7 @@ public class SamFile implements AlignSeq {
 		this.fileName = samFileCreate;
 		samWriter = new SamWriter(samFileHeader, samFileCreate);
 	}
-	private void setSamFileRead(String samFileExist) {
+	private void setSamFileRead(String samFileExist, String fileIndex) {
 		this.fileName = samFileExist;
 		FormatSeq formatSeq = isSamBamFile(samFileExist);
 		if (formatSeq == FormatSeq.UNKNOWN) {
@@ -128,6 +134,7 @@ public class SamFile implements AlignSeq {
 			bamFile = true;
 		}
 		samReader.setFileName(samFileExist);
+		samReader.setFileIndex(fileIndex);
 	}
 	public String getFileName() {
 		return fileName;
@@ -183,7 +190,28 @@ public class SamFile implements AlignSeq {
 		samFileStatistics.statistics();
 		return samFileStatistics;
 	}
-
+	
+	/** 
+	 * the alignment of the returned SAMRecords need only overlap the interval of interest.
+	 * @param chrID 无所谓大小写
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public Iterable<SamRecord> readLinesOverlap(String chrID, int start, int end) {
+		return samReader.readLinesOverlap(chrID, start, end);
+	}
+	/**
+	 * each SAMRecord returned is will have its alignment completely contained in the interval of interest. 
+	 * @param chrID 无所谓大小写
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public Iterable<SamRecord> readLinesContained(String chrID, int start, int end) {
+		return samReader.readLinesContained(chrID, start, end);
+	}
+	
 	public Iterable<SamRecord> readLines() {
 		return samReader.readLines();
 	}
@@ -376,13 +404,14 @@ public class SamFile implements AlignSeq {
 	/**
 	 * 待检查
 	 */
-	public void index() {
+	public void indexMake() {
 		if (FileOperate.isFileExist(getFileName() + ".bai")) {
 			return;
 		}
 		BamIndex bamIndex = new BamIndex(this);
 		bamIndex.setBamFile(getFileName());
-		bamIndex.index();
+		String index = bamIndex.index();
+		samReader.setFileIndex(index);
 		bamIndex = null;
 	}
 	public SamFile realign() {
@@ -463,13 +492,13 @@ public class SamFile implements AlignSeq {
 		}
 //		FileOperate.delFile(samFile.getFileName());
 		
-		samFileSort.index();
+		samFileSort.indexMake();
 		SamFile samFileRealign = samFileSort.realign();
 //		FileOperate.delFile(samFileSort.getFileName());
 		SamFile samFileRemoveDuplicate = samFileRealign.removeDuplicate();
 //		FileOperate.delFile(samFileRealign.getFileName());
 		
-		samFileRemoveDuplicate.index();
+		samFileRemoveDuplicate.indexMake();
 		
 		//recalibrate在没有snpdb的表的情况下做不了，那就不做了
 //		SamFile samFileRecalibrate = samFileRemoveDuplicate.recalibrate();

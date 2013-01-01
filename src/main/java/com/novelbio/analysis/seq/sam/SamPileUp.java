@@ -20,13 +20,11 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class SamPileUp {
 	public static void main(String[] args) {
-		SeqFasta seqFasta1 = new SeqFasta("NAAGAGAAATCTTTAGTATATGGTCCGTTGGTCAAGGGGTTAAGACACCGCCTTTTCACGGCGGTAACACGGGTTCGAATCNTATTCCGCCATAGCTCAGTTGGTAGAGCGCATGACTGTTAATCATGATGTCACAGGTTCGAGCCCTGNTAAGCGGGTGTAGTTTAGTGGTAAAACTACAGCCTTCCAAGCTGTTGTCGCGAGTTCGATTCTCGTCACCCGCTTTGAACATAGTTCATACCCAAACTTGGTTTGGGCGCGTAGCTCAGATGGTTAGAGCGCACGCCTGATAAGCGTGAGGTCGGTGGTTCGATTCCN");
-		SeqFasta seqFasta2 = new SeqFasta("TATTCCGCCATAGCTCAGTTGGTAGAGCGCATGACTGTTAATCATGATGTCACAGGTTCGAGCCCTGTTGGCGGAGTAAAGAGAAATCTTTAGTATATGGTCCGTTGGTCAAGGGGTTAAGACACCGCCTTTTCACGGCGGTAACACGGGTTCGAATCCCGTACGGACTATATT");
-		BlastSeqFasta blastSeqFasta = new BlastSeqFasta(seqFasta1, seqFasta2);
-		blastSeqFasta.blast();
-		System.out.println(blastSeqFasta.getAlignmentQuery());
-		System.out.println(blastSeqFasta.getAlignmentSubject());
-	
+		SamFile samFile = new SamFile("C:\\Users\\jie\\Desktop\\paper\\KOod.bam");
+//		samFile.indexMake();chr3:81,944,867-c
+		for (SamRecord samRecord : samFile.readLinesContained("chr3", 81944867, 81955050)) {
+			System.out.println(samRecord.toString());
+		}
 	}
 	/** 最多可能插入的碱基 */
 	int maxBaseNum = 100;
