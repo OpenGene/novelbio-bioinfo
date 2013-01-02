@@ -20,8 +20,7 @@ import com.novelbio.database.domain.geneanno.SepSign;
  * @locHashtable hash（LOCID）--GeneInforlist
  * @LOCIDList 顺序存储每个基因号或条目号
  */
-public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCodAbs<T>, K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>>
-{
+public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCodAbs<T>, K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 	Logger logger = Logger.getLogger(ListHashSearch.class);
 	/**
 	 * 哈希表LOC--LOC细节<br>

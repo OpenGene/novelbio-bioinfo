@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.sam;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.math.optimization.univariate.BracketFinder;
@@ -26,7 +27,8 @@ public class SamReader {
 	SAMFileHeader samFileHeader;
 	
 	/** 小写的chrID与samFileHeader中的chrID的对照表 */
-	HashMap<String, String> mapChrIDlowCase2ChrID = new HashMap<String, String>();
+	HashMap<String, String> mapChrIDlowCase2ChrID = new LinkedHashMap<String, String>();
+	HashMap<String, Long> mapChrIDlowCase2Length = new LinkedHashMap<String, Long>();
 	String fileName;
 	String fileIndex;
 	Boolean pairend;
@@ -105,11 +107,21 @@ public class SamReader {
 		samFileReader = new SAMFileReader(file, index);
 		samFileHeader = samFileReader.getFileHeader();
 		mapChrIDlowCase2ChrID = new HashMap<String, String>();
+		mapChrIDlowCase2Length = new HashMap<String, Long>();
 		//获得reference的序列信息
 		List<SAMSequenceRecord> lsSamSequenceRecords = samFileHeader.getSequenceDictionary().getSequences();
 		for (SAMSequenceRecord samSequenceRecord : lsSamSequenceRecords) {
 			mapChrIDlowCase2ChrID.put(samSequenceRecord.getSequenceName().toLowerCase(), samSequenceRecord.getSequenceName());
+			mapChrIDlowCase2Length.put(samSequenceRecord.getSequenceName().toLowerCase(), (long) samSequenceRecord.getSequenceLength());
 		}
+	}
+	/**
+	 * 获得该bam文件中染色体的长度信息，注意key都为小写
+	 * @return
+	 */
+	public HashMap<String, Long> getMapChrIDlowCase2Length() {
+		initialSamHeadAndReader();
+		return mapChrIDlowCase2Length;
 	}
 	/**
 	 * 注意大小写区分
@@ -147,12 +159,10 @@ public class SamReader {
 		for (SamRecord samRecord : readLines()) {
 			if (samRecord.getName() == null || samRecord.getName().equals("")) {
 				num ++;
-			}
-			else {
+			} else {
 				isSamBamFile = true;
 				break;
-			}
-			if (num > allNum) {
+			} if (num > allNum) {
 				break;
 			}
 		}

@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.sam;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -16,6 +17,9 @@ import net.sf.samtools.CigarOperator;
 
 import com.novelbio.analysis.seq.blastZJ.BlastSeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class SamPileUp {
@@ -35,11 +39,30 @@ public class SamPileUp {
 	/** 对于某个位点来说，是否已经准备好相应的序列集 */
 	boolean prepareForBase = false;
 	
-	private void name() {
-		queueSamRecord.
+	Map<String, Long> mapChrIDlowcase2Length;
+	
+	/**
+	 * 设定染色体名称与长度的对照表，注意key为小写
+	 * @param mapChrIDlowcase2Length
+	 */
+	public void setMapChrIDlowcase2Length(
+			Map<String, Long> mapChrIDlowcase2Length) {
+		this.mapChrIDlowcase2Length = mapChrIDlowcase2Length;
 	}
 	
-	
+	private double[] getRangeInfo(String chrID, int startNum, int endNum, int binNum, int type) {
+		int[] startEnd = MapReadsAbs.correctStartEnd(mapChrIDlowcase2Length, chrID, startNum, endNum);
+		if (startEnd == null) {
+			return null;
+		}
+		
+		for (SamRecord samRecord : queueSamRecord) {
+			ArrayList<Align> lsAlign = samRecord.getAlignmentBlocks();
+		}
+		
+		
+		return null;
+	}
 	
 }
 

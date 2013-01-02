@@ -8,11 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileWriter;
 import net.sf.samtools.SAMFileWriterFactory;
+import net.sf.samtools.SAMSequenceRecord;
 import net.sf.samtools.util.BlockCompressedInputStream;
 import net.sf.samtools.util.BlockCompressedStreamConstants;
 
@@ -83,6 +86,15 @@ public class SamFile implements AlignSeq {
 	 * 如果有索引会自动读取索引
 	 */
 	public SamFile(String samBamFile) {
+		setSamFileRead(samBamFile);
+	}
+	/** 创建新的sambam文件，根据文件名 */
+	public SamFile(String samBamFile, SAMFileHeader samFileHeader) {
+		setSamFileNew(samFileHeader, samBamFile);
+		initialSoftWare();
+	}
+	
+	private void setSamFileRead(String samBamFile) {
 		String bamindex = samBamFile + ".bai";
 		if (!FileOperate.isFileExistAndBigThanSize(samBamFile, 0)) {
 			bamindex = null;
@@ -90,11 +102,30 @@ public class SamFile implements AlignSeq {
 		setSamFileRead(samBamFile, bamindex);
 		initialSoftWare();
 	}
-	/** 创建新的sambam文件，根据文件名 */
-	public SamFile(String samBamFile, SAMFileHeader samFileHeader) {
-		setSamFileNew(samFileHeader, samBamFile);
-		initialSoftWare();
+	
+	private void setSamFileRead(String samFileExist, String fileIndex) {
+		this.fileName = samFileExist;
+		FormatSeq formatSeq = isSamBamFile(samFileExist);
+		if (formatSeq == FormatSeq.UNKNOWN) {
+			return;
+		}
+		if (formatSeq == FormatSeq.BAM) {
+			bamFile = true;
+		}
+		samReader.setFileName(samFileExist);
+		samReader.setFileIndex(fileIndex);
 	}
+	/** 
+	 * 创建新的sam文件
+	 * @param samFileHeader
+	 * @param samFileCreate
+	 * @param sorted 输入的文件是否经过排序
+	 */
+	private void setSamFileNew(SAMFileHeader samFileHeader, String samFileCreate) {
+		this.fileName = samFileCreate;
+		samWriter = new SamWriter(samFileHeader, samFileCreate);
+	}
+	
 	private static void initialSoftWare() {
 		try {
 			if (softWareInfoSamtools.getName() == null) {
@@ -114,34 +145,25 @@ public class SamFile implements AlignSeq {
 		this.referenceFileName = referenceFileName;
 		faidxRefsequence();
 	}
-	/** 
-	 * 创建新的sam文件
-	 * @param samFileHeader
-	 * @param samFileCreate
-	 * @param sorted 输入的文件是否经过排序
-	 */
-	public void setSamFileNew(SAMFileHeader samFileHeader, String samFileCreate) {
-		this.fileName = samFileCreate;
-		samWriter = new SamWriter(samFileHeader, samFileCreate);
-	}
-	private void setSamFileRead(String samFileExist, String fileIndex) {
-		this.fileName = samFileExist;
-		FormatSeq formatSeq = isSamBamFile(samFileExist);
-		if (formatSeq == FormatSeq.UNKNOWN) {
-			return;
+	
+	private String faidxRefsequence() {
+		if (FileOperate.isFileExist(referenceFileName) && !FileOperate.isFileExist(referenceFileName+".fai")) {
+			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
+			samIndexRefsequence.setExePath(softWareInfoSamtools.getExePath());
+			samIndexRefsequence.setRefsequence(referenceFileName);
+			samIndexRefsequence.indexSequence();
+			return referenceFileName+".fai";
 		}
-		if (formatSeq == FormatSeq.BAM) {
-			bamFile = true;
+		if (FileOperate.isFileExist(referenceFileName+".fai")) {
+			return referenceFileName+".fai";
 		}
-		samReader.setFileName(samFileExist);
-		samReader.setFileIndex(fileIndex);
+		return "";
 	}
+
 	public String getFileName() {
 		return fileName;
 	}
-	public String getName() {
-		return samReader.getName();
-	}
+	
 	/**
 	 * 是否为uniqMapping，默认为true
 	 * @param uniqMapping
@@ -355,6 +377,7 @@ public class SamFile implements AlignSeq {
 		setParamSamFile(samFile);
 		return samFile;
 	}
+    
     private void setParamSamFile(SamFile samFile) {
     	samFile.mapQualityFilter = mapQualityFilter;
     	samFile.referenceFileName = referenceFileName;
@@ -389,8 +412,9 @@ public class SamFile implements AlignSeq {
 			samFile.writeSamRecord(samRecord);
 		}
 		close();
+		samFile.setSamFileRead(samFile.fileName);
 		samFile.close();
-		
+
 //		SamToBam samToBam = new SamToBam();
 //		samToBam.setExePath(softWareInfoSamtools.getExePath());
 //		samToBam.setSamFile(fileName);
@@ -523,20 +547,7 @@ public class SamFile implements AlignSeq {
 		bamPileup.setExePath(softWareInfoSamtools.getExePath());
 		bamPileup.pileup(outPileUpFile);
 	}
-	
-	private String faidxRefsequence() {
-		if (FileOperate.isFileExist(referenceFileName) && !FileOperate.isFileExist(referenceFileName+".fai")) {
-			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
-			samIndexRefsequence.setExePath(softWareInfoSamtools.getExePath());
-			samIndexRefsequence.setRefsequence(referenceFileName);
-			samIndexRefsequence.indexSequence();
-			return referenceFileName+".fai";
-		}
-		if (FileOperate.isFileExist(referenceFileName+".fai")) {
-			return referenceFileName+".fai";
-		}
-		return "";
-	}
+
 	public BedSeq toBedSingleEnd() {
 		return toBedSingleEnd(TxtReadandWrite.TXT, FileOperate.changeFileSuffix(getFileName(), "", "bed"));
 	}
@@ -554,7 +565,7 @@ public class SamFile implements AlignSeq {
 	public BedSeq toBedSingleEnd(String bedFileCompType, String bedFile) {
 		BedSeq bedSeq = new BedSeq(bedFile, true);
 		bedSeq.setCompressType(null, bedFileCompType);
-		for (SamRecord samRecord : samReader.readLines()) {
+		for (SamRecord samRecord : readLines()) {
 			if (!samRecord.isMapped() || samRecord.getMapQuality() < mapQualityFilter
 					|| (uniqMapping && !samRecord.isUniqueMapping()) ) {
 				continue;
@@ -575,6 +586,14 @@ public class SamFile implements AlignSeq {
 		bedSeq.closeWrite();
 		close();
 		return bedSeq;
+	}
+	
+	/**
+	 * 获得该bam文件中染色体的长度信息，注意key都为小写
+	 * @return
+	 */
+	public HashMap<String, Long> getChrID2LengthMap() {
+		return samReader.getMapChrIDlowCase2Length();
 	}
 	/**
 	 * tobe checked

@@ -124,6 +124,9 @@ public class GeneFilter {
 	/** 把输入的refInfoSnpIndel按照基因名字整理起来 */
 	private void setMapGeneID2LsRefSiteSnpIndel() {
 		for (RefSiteSnpIndel refInfoSnpIndel : mapSiteInfo2SnpIndel.values()) {
+			if (refInfoSnpIndel.getGffIso() == null) {
+				continue;
+			}
 			GeneID geneID = refInfoSnpIndel.getGffIso().getGeneID();
 			mapGeneID2LsRefSiteSnpIndel.put(geneID, refInfoSnpIndel);
 		}

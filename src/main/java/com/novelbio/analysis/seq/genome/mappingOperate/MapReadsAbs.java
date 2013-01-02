@@ -48,6 +48,16 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	/**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的平均数 */
 	public static final int SUM_TYPE_MEAN = 3;
 	
+	/** 将每个double[]求和/double.length 也就是将每个点除以该gene的平均测序深度 */
+	public static final int NORMALIZATION_PER_GENE = 128;
+	/** 将每个double[]*1million/AllReadsNum 也就是将每个点除以测序深度 */
+	public static final int NORMALIZATION_ALL_READS = 256;
+	/** 不标准化 */
+	public static final int NORMALIZATION_NO = 64;
+
+	/** 对于结果的标准化方法 */
+	int NormalType = NORMALIZATION_ALL_READS;
+ 
 	 HashMap<String, ChrMapReadsInfo> mapChrID2ReadsInfo = new HashMap<String, ChrMapReadsInfo>();
  
 	 /**每隔多少位计数，如果设定为1，则算法会变化，然后会很精确*/
@@ -384,7 +394,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			logger.info("没有该染色体： " + chrID);
 			return null;
 		}
-		int[] startEnd = correctStartEnd(chrID, startNum, endNum);
+		int[] startEnd = correctStartEnd(mapChrID2Len, chrID, startNum, endNum);
 		double[] result = new double[startEnd[1] - startEnd[0] + 1];
 		
 		int[] invNumReads = chrMapReadsInfo.getSumChrBpReads();
@@ -398,7 +408,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			k++;
 		}
 		//标准化
-		normDouble(result);
+		normDouble(NormalType, result, getAllReadsNum());
 		result = equationsCorrect(result);
 		return result;
 	}
@@ -411,7 +421,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 *  */
 	private double[] getRangeInfoNorm(String chrID, int thisInvNum, int startNum, int endNum, int type) {
-		int[] startEndLoc = correctStartEnd(chrID, startNum, endNum);
+		int[] startEndLoc = correctStartEnd(mapChrID2Len, chrID, startNum, endNum);
 		double binNum = (double)(startEndLoc[1] - startEndLoc[0] + 1) / thisInvNum;
 		int binNumFinal = 0;
 		if (binNum - (int)binNum >= 0.7) {
@@ -445,7 +455,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			logger.error("没有该染色体：" + chrID);
 			return null;
 		}
-		int[] startEnd = correctStartEnd(chrID, startNum, endNum);
+		int[] startEnd = correctStartEnd(mapChrID2Len, chrID, startNum, endNum);
 		if (startEnd == null) {
 			return null;
 		}
@@ -493,28 +503,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 		return result;
 	}
-	
-	/**
-	 * 检查输入的start 和 end是否在指定区间范围内，
-	 * @param chrID
-	 * @param startNum 小于0则设置为0
-	 * @param endNum 小于0则设置为最长范围
-	 * @return null 表示没有通过校正
-	 */
-	private int[] correctStartEnd(String chrID, int startNum, int endNum) {
-		if (startNum <=0) {
-			startNum = 1; 
-		}
-		if (endNum <= 0 || endNum > (int)getChrLen(chrID) ) {
-			endNum = (int)getChrLen(chrID);
-		}
-		if (startNum > endNum) {
-			logger.error("起点不能比终点大: "+chrID+" "+startNum+" "+endNum);
-			return null;
-		}
-		startNum --; endNum --;
-		return new int[]{startNum, endNum};
-	}
+
 	/**
 	 * @param invNumReads 某条染色体上面的reads堆叠情况
 	 * @param startNum
@@ -549,7 +538,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			tmpRegReads[k] = invNumReads[i];
 			k++;
 		}
-		normDouble(tmpRegReads);
+		normDouble(NormalType, tmpRegReads, getAllReadsNum());
 		double[] tmp = null;
 		try {
 			tmp =  MathComput.mySpline(tmpRegReads, binNum,leftBias,rightBias,type);
@@ -580,14 +569,37 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 protected long getChrLen(String chrID) {
 		 return mapChrID2Len.get(chrID.toLowerCase());
 	 }
+	 
+	 /** 总共有多少reads参与了mapping，这个从ReadMapFile才能得到。 */
+	protected abstract long getAllReadsNum();
+	
 	/**
-	 * 提取的原始数据需要经过标准化再输出。
-	 * 本方法进行标准化
-	 * 输入的double直接修改，不返回。<br>
-	 * @param doubleInfo 提取得到的原始value
-	 * @return 
+	 * 检查输入的start 和 end是否在指定区间范围内，
+	 * @param mapChrID2Length key为小写
+	 * @param chrID 输入的大小写无所谓
+	 * @param startNum 小于0则设置为0
+	 * @param endNum 小于0则设置为最长范围
+	 * @return
 	 */
-	protected abstract void normDouble(double[] readsInfo);
+	public static int[] correctStartEnd(Map<String, ? extends Number> mapChrID2Length, String chrID, int startNum, int endNum) {
+		if (startNum <=0) {
+			startNum = 1; 
+		}
+		
+		if (!mapChrID2Length.containsKey(chrID.toLowerCase())) {
+			logger.error("不存在该染色体：" + chrID);
+			return null;
+		}
+		if (endNum <= 0 || endNum > mapChrID2Length.get(chrID.toLowerCase()).intValue() ) {
+			endNum = mapChrID2Length.get(chrID.toLowerCase()).intValue();
+		}
+		if (startNum > endNum) {
+			logger.error("起点不能比终点大: "+chrID+" "+startNum+" "+endNum);
+			return null;
+		}
+		startNum --; endNum --;
+		return new int[]{startNum, endNum};
+	}
 	/**
 	 * 给定坐标信息，将比较的比值，也就是均值相除，放入mapInfo的weight内
 	 * 内部标准化
@@ -610,6 +622,38 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			return -1;
 		}
 		return new Mean().evaluate(info);
+	}
+	
+	/**
+	 * 提取的原始数据需要经过标准化再输出。
+	 * 本方法进行标准化
+	 * 输入的double直接修改，不返回。<br>
+	 * 最后得到的结果都要求均值
+	 * 给定double数组，按照reads总数进行标准化,reads总数由读取的mapping文件自动获得<br>
+	 * 最后先乘以1million然后再除以每个double的值<br>
+	 * @param doubleInfo 提取得到的原始value
+	 * @return 
+	 */
+	public static void normDouble(int NormalType, double[] doubleInfo, long allReadsNum) {
+		if (doubleInfo == null) {
+			return;
+		}
+		if (NormalType == NORMALIZATION_NO) {
+			return;
+		}
+		else if (NormalType == NORMALIZATION_ALL_READS) {
+			for (int i = 0; i < doubleInfo.length; i++) {
+				doubleInfo[i] = doubleInfo[i]*1000000/allReadsNum;
+			}
+		}
+		else if (NormalType == NORMALIZATION_PER_GENE) {
+			double avgSite = MathComput.mean(doubleInfo);
+			if (avgSite != 0) {
+				for (int i = 0; i < doubleInfo.length; i++) {
+					doubleInfo[i] = doubleInfo[i]/avgSite;
+				}
+			}
+		}
 	}
 	
 	public static class MapReadsProcessInfo {

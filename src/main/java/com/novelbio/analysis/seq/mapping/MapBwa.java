@@ -362,7 +362,7 @@ public class MapBwa extends MapDNA {
 		SamFile samFile = new SamFile(outFileName);
 		SamFile bamFile = samFile.convertToBam();
 		samFile.close();
-		deleteFile(samFile, bamFile);
+		deleteFile(samFile.getFileName(), bamFile.getFileName());
 		return bamFile;
 	}
 	
@@ -370,14 +370,14 @@ public class MapBwa extends MapDNA {
 	 * É¾³ýsaiÎÄ¼þ
 	 * @param samFileName
 	 */
-	private void deleteFile(SamFile samFile, SamFile bamFile) {
+	private void deleteFile(String samFile, String bamFile) {
 		FileOperate.DeleteFileFolder(getSai(1));
 		if (isPairEnd()) {
 			FileOperate.DeleteFileFolder(getSai(2));
 		}
-		double samFileSize = FileOperate.getFileSize(samFile.getFileName());
-		if (FileOperate.isFileExistAndBigThanSize(bamFile.getFileName(), samFileSize/15)) {
-			FileOperate.delFile(samFile.getFileName());
+		double samFileSize = FileOperate.getFileSize(samFile);
+		if (FileOperate.isFileExistAndBigThanSize(bamFile, samFileSize/15)) {
+			FileOperate.delFile(samFile);
 		}
 	}
 	

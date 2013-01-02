@@ -27,6 +27,16 @@ import com.novelbio.generalConf.TitleFormatNBC;
  *
  */
 public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
+	public static void main(String[] args) {
+		ListMiRNALocation listMiRNALocation = new ListMiRNALocation();
+		listMiRNALocation.setSpecies(new Species(10090));
+		listMiRNALocation.setReadFileType(ListMiRNALocation.TYPE_RNA_DATA);
+		listMiRNALocation.ReadGffarray("/media/winE/Bioinformatics/genome/sRNA/miRNA.dat");
+ 
+		System.out.println(listMiRNALocation.searchMirName("mmu-mir-16-2", 50, 65));
+	
+		System.out.println("ok");
+	}
 	private static Logger logger = Logger.getLogger(MiRNACount.class);
 	
 	/** 获得miRNA定位信息 */

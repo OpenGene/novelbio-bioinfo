@@ -20,21 +20,7 @@ import com.novelbio.database.model.species.Species;
  */
 public class MapReads extends MapReadsAbs{
 	private static Logger logger = Logger.getLogger(MapReads.class);
-		/**
-	 * 将每个double[]求和/double.length
-	 * 也就是将每个点除以该gene的平均测序深度
-	 */
-	public static final int NORMALIZATION_PER_GENE = 128;
-	/**
-	 * 将每个double[]*1million/AllReadsNum
-	 * 也就是将每个点除以测序深度
-	 */
-	public static final int NORMALIZATION_ALL_READS = 256;
-	/** 不标准化 */
-	public static final int NORMALIZATION_NO = 64;
 
-	 /** 对于结果的标准化方法 */
-	 int NormalType = NORMALIZATION_ALL_READS;
 	 boolean uniqReads = false;
 	 int startCod = -1;
 	 boolean booUniqueMapping = true;
@@ -228,38 +214,6 @@ public class MapReads extends MapReadsAbs{
 	 */
 	public void addAlignRecord(AlignRecord alignRecord) {
 		mapReadsAddAlignRecord.addAlignRecord(alignRecord);
-	}
-
-	/**
-	 * 提取的原始数据需要经过标准化再输出。
-	 * 本方法进行标准化
-	 * 输入的double直接修改，不返回。<br>
-	 * 最后得到的结果都要求均值
-	 * 给定double数组，按照reads总数进行标准化,reads总数由读取的mapping文件自动获得<br>
-	 * 最后先乘以1million然后再除以每个double的值<br>
-	 * @param doubleInfo 提取得到的原始value
-	 * @return 
-	 */
-	public void normDouble(double[] doubleInfo) {
-		if (doubleInfo == null) {
-			return;
-		}
-		if (NormalType == NORMALIZATION_NO) {
-			return;
-		}
-		else if (NormalType == NORMALIZATION_ALL_READS) {
-			for (int i = 0; i < doubleInfo.length; i++) {
-				doubleInfo[i] = doubleInfo[i]*1000000/getAllReadsNum();
-			}
-		}
-		else if (NormalType == NORMALIZATION_PER_GENE) {
-			double avgSite = MathComput.mean(doubleInfo);
-			if (avgSite != 0) {
-				for (int i = 0; i < doubleInfo.length; i++) {
-					doubleInfo[i] = doubleInfo[i]/avgSite;
-				}
-			}
-		}
 	}
 }
 
