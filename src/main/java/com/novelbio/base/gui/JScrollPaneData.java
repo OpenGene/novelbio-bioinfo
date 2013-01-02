@@ -5,7 +5,10 @@ import java.util.List;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -34,6 +37,15 @@ public class JScrollPaneData extends JScrollPane{
 			defaultTableModel.addRow(lsInfo.get(i));
 		}
 	}
+	//不能用
+//	public void setColumn(int... width) {
+//		TableColumnModel tableColumnModel = new DefaultTableColumnModel();
+//		for (int i = 0; i < width.length; i++) {
+//			TableColumn tableColumn = new TableColumn(i, width[i]);
+//			tableColumnModel.addColumn(tableColumn);
+//		}
+//		jTabFInputGo.setColumnModel(tableColumnModel);
+//	}
 	/**
 	 * 往jScrollPane中添加表格，第一列为表头
 	 */
@@ -44,6 +56,7 @@ public class JScrollPaneData extends JScrollPane{
 		jTabFInputGo = new JTable();
 		setViewportView(jTabFInputGo);
 		jTabFInputGo.setModel(defaultTableModel);
+
 	}
 	/**
 	 * 往jScrollPane中添加表格，如果没有title，则第一行为title

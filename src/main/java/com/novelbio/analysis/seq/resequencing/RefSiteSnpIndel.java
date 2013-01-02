@@ -983,6 +983,13 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		mapAllen2Num.clear();
 		mapSample2NormReadsInfo.clear();
 	}
+	public static void writeToFile(String outFileName, ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndels) {
+		Set<String> setSampleName = lsRefSiteSnpIndels.get(0).mapSample2NormReadsInfo.keySet();
+		writeToFile(outFileName, lsRefSiteSnpIndels, setSampleName);
+	}
+	public static void writeToFile(String outFileName, ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndels, Collection<String> lsSampleNames) {
+		writeToFile(outFileName, lsRefSiteSnpIndels, lsSampleNames, false);
+	}
 	
 	public static void writeToFile(String outFileName, ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndels, 
 			Collection<String> lsSampleNames, boolean getGATKflag) {

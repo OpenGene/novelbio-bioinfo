@@ -14,24 +14,24 @@ import com.novelbio.generalConf.NovelBioConst;
 
 public class FengYing {
 	public static void main(String[] args) {
-//		mouse();
-		String parentFile = "C:/Users/jie/Desktop/paper/";
-		
-		
-		TophatJunction tophatJunction = new TophatJunction();
-		tophatJunction.setCondition("KO");
-		tophatJunction.setJunFile("KO", parentFile + "KOjunctions.bed");
-//		SamFile samFile = new SamFile( parentFile + "KOod.bam");
-//		SamFileReading samFileReading = new SamFileReading(samFile);
-//		samFileReading.addAlignmentRecorder(tophatJunction);
-//		samFileReading.run();
-		tophatJunction.writeTo("KO", parentFile + "KOod_jun_junc.txt");
+		mouse();
+//		String parentFile = "C:/Users/jie/Desktop/paper/";
+//		
+//		
+//		TophatJunction tophatJunction = new TophatJunction();
+//		tophatJunction.setCondition("KO");
+//		tophatJunction.setJunFile("KO", parentFile + "KOjunctions.bed");
+////		SamFile samFile = new SamFile( parentFile + "KOod.bam");
+////		SamFileReading samFileReading = new SamFileReading(samFile);
+////		samFileReading.addAlignmentRecorder(tophatJunction);
+////		samFileReading.run();
+//		tophatJunction.writeTo("KO", parentFile + "KOod_jun_junc.txt");
 		
 	}
 	
 	public static void mouse() {
-//		String parentFile = "/media/winF/NBC/Project/Project_FY/paper/";
-		String parentFile = "C:/Users/jie/Desktop/paper/";
+		String parentFile = "/media/winF/NBC/Project/Project_FY/paper/";
+//		String parentFile = "C:/Users/jie/Desktop/paper/";
 
 		
 		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
@@ -48,7 +48,7 @@ public class FengYing {
 //		System.out.println("finished reading junction reads");
 		exonJunction.addBamSorted("KO", parentFile + "KOod.bam");
 		exonJunction.addBamSorted("WT", parentFile + "WT0d.bam");
-		exonJunction.setMapreadsBin(30);
+		exonJunction.setMapreadsBin(15);
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_1/accepted_hits.bam");
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_2/accepted_hits.bam");
 //		System.out.println(species.getVersionAll().get(1));
@@ -57,7 +57,7 @@ public class FengYing {
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String outResult = parentFile +  "KO_vs_WT9_Bam_test.xls";
+		String outResult = parentFile +  "KO_vs_WT9_Bam_Jun.xls";
 		exonJunction.writeToFile(outResult);
 	}
 

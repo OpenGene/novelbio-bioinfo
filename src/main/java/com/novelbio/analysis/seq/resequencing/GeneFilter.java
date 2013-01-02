@@ -113,7 +113,7 @@ public class GeneFilter {
 		}
 		for (Integer filteredTreatNum : mapNum2LsMapSnpIndelInfo.keySet()) {
 			if (filteredTreatNum < treatFilteredMinNum) {
-				break;
+				continue;
 			}
 			lsResult.addAll(mapNum2LsMapSnpIndelInfo.get(filteredTreatNum));
 		}
