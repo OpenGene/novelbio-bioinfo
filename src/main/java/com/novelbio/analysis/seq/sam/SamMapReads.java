@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.xml.stream.events.EndDocument;
 
+import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -21,7 +22,7 @@ import com.novelbio.base.dataStructure.MathComput;
  * @author zong0jie
  *
  */
-public class SamMapReads {
+public class SamMapReads extends MapReadsAbs {
 	/** 最多可能插入的碱基 */
 	int maxBaseNum = 100;
 	int allReadsNum;
@@ -47,11 +48,30 @@ public class SamMapReads {
 		this.allReadsNum = allReadsNum;
 	}
 
-	
-	public double[] getRangeInfo(String chrID, int startNum, int endNum, int normalType) {
-		
+	@Override
+	protected long getAllReadsNum() {
+		return allReadsNum;
 	}
-	
+
+	@Override
+	protected void ReadMapFileExp() throws Exception {
+		//TODO 可以考虑通过这个来获得bam文件的reads数量
+	}
+
+	@Override
+	public double[] getRangeInfo(int thisInvNum, String chrID, int startNum,
+			int endNum, int type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected double[] getRangeInfo(String chrID, int startNum, int endNum,
+			int binNum, int type) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	private double[] getRangeInfo(String chrID, int startNum, int endNum) {
 		int[] startEnd = MapReadsAbs.correctStartEnd(mapChrIDlowcase2Length, chrID, startNum, endNum);
 		if (startEnd == null) {
@@ -139,5 +159,5 @@ public class SamMapReads {
 		}
 		return new int[]{alignStart, alignEnd};
 	}
-	
+
 }
