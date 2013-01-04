@@ -32,13 +32,45 @@ public class CtrlPileupStatistics {
 //		ctrlPileupStatistics.startStatistics();
 //		ctrlPileupStatistics.plot(parentPath, "Q60-1");
 		
+//		ctrlPileupStatistics = new CtrlPileupStatistics();
+//		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
+//		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
+//		ctrlPileupStatistics.setMaxGapSize(0);
+//		ctrlPileupStatistics.setPileupFile(parentPath+"TF142-3_sorted_realign_removeDuplicate_pileup.gz");
+//		ctrlPileupStatistics.startStatistics();
+//		ctrlPileupStatistics.plot(parentPath, "TF142-3");
+		
 		ctrlPileupStatistics = new CtrlPileupStatistics();
 		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
 		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
 		ctrlPileupStatistics.setMaxGapSize(0);
-		ctrlPileupStatistics.setPileupFile(parentPath+"a9522_sorted_realign_removeDuplicate_pileup.gz");
+		ctrlPileupStatistics.setPileupFile(parentPath+"TF75-4_sorted_realign_removeDuplicate_pileup.gz");
 		ctrlPileupStatistics.startStatistics();
-		ctrlPileupStatistics.plot(parentPath, "a9522");
+		ctrlPileupStatistics.plot(parentPath, "TF75-4");
+		
+		ctrlPileupStatistics = new CtrlPileupStatistics();
+		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
+		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
+		ctrlPileupStatistics.setMaxGapSize(0);
+		ctrlPileupStatistics.setPileupFile(parentPath+"TF182-1_sorted_realign_removeDuplicate_pileup.gz");
+		ctrlPileupStatistics.startStatistics();
+		ctrlPileupStatistics.plot(parentPath, "TF182-1");
+		
+		ctrlPileupStatistics = new CtrlPileupStatistics();
+		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
+		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
+		ctrlPileupStatistics.setMaxGapSize(0);
+		ctrlPileupStatistics.setPileupFile(parentPath+"TF57-1_sorted_realign_removeDuplicate_pileup.gz");
+		ctrlPileupStatistics.startStatistics();
+		ctrlPileupStatistics.plot(parentPath, "TF57-1");
+		
+		ctrlPileupStatistics = new CtrlPileupStatistics();
+		ctrlPileupStatistics.setCoverageBin(100, 1, 1000);
+		ctrlPileupStatistics.setGffChrAbs(gffChrAbs);
+		ctrlPileupStatistics.setMaxGapSize(0);
+		ctrlPileupStatistics.setPileupFile(parentPath+"TF81-2_sorted_realign_removeDuplicate_pileup.gz");
+		ctrlPileupStatistics.startStatistics();
+		ctrlPileupStatistics.plot(parentPath, "TF81-2");
 	
 	}
 
@@ -200,19 +232,23 @@ public class CtrlPileupStatistics {
 		Thread.sleep(100);
 		System.out.println(6);
 		
+		//TODO boxplot”–Œ Ã‚
+		try {
+			PlotBox plotBoxAT = statisticsContinueATcoverge.getBoxPlotList().getPlotBox(boxStyle.clone());
+			plotBoxAT.setBg(Color.white);
+			plotBoxAT.saveToFile(outPathAndPrefix + "AT_coverage" + suffix, 2000, 1000);
+			Thread.sleep(100);
+			
+			
+			PlotBox plotBoxCG = statisticsContinueCGcoverge.getBoxPlotList().getPlotBox(boxStyle.clone());
+			plotBoxCG.setBg(Color.white);
+			plotBoxCG.saveToFile(outPathAndPrefix + "CG_coverage" + suffix, 2000, 1000);
+			Thread.sleep(100);
+			System.out.println(4);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 
-		
-		PlotBox plotBoxAT = statisticsContinueATcoverge.getBoxPlotList().getPlotBox(boxStyle.clone());
-		plotBoxAT.setBg(Color.white);
-		plotBoxAT.saveToFile(outPathAndPrefix + "AT_coverage" + suffix, 2000, 1000);
-		Thread.sleep(100);
-		
-		
-		PlotBox plotBoxCG = statisticsContinueCGcoverge.getBoxPlotList().getPlotBox(boxStyle.clone());
-		plotBoxCG.setBg(Color.white);
-		plotBoxCG.saveToFile(outPathAndPrefix + "CG_coverage" + suffix, 2000, 1000);
-		Thread.sleep(100);
-		System.out.println(4);
 
 	}
 }

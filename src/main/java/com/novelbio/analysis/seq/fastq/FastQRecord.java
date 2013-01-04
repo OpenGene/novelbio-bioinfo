@@ -324,7 +324,7 @@ public class FastQRecord implements Cloneable {
 	private static boolean isMatch(int pm, int mm, int seqAdaptorLen,int maxMMnum, float perMm) {
 		int lenAdaptor = pm + mm;
 		if (pm >= ((double)seqAdaptorLen * (1 - perMm/100)) 
-				&&  mm <= maxMMnum && ((float)mm/seqAdaptorLen) <= perMm/100 && lenAdaptor > 4) 
+				&&  mm <= maxMMnum && ((float)mm/seqAdaptorLen) <= perMm/100 ) 
 		{
 			return true;
 		}

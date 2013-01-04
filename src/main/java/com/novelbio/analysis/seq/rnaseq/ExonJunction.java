@@ -19,8 +19,10 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.ExonSplicingType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileReading;
+import com.novelbio.analysis.seq.sam.SamMapReads;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -74,12 +76,22 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	int mapreadsBin = 15;
 	
+	boolean isLessMemory = true;
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
 	 * @param pvalue
 	 */
 	public void setPvalue(double pvalue) {
 		this.pvalue = pvalue;
+	}
+	/**
+	 * 是否采用节省内存模式
+	 * 如果节省内存就用SamMapReads 速度慢
+	 * 如果耗内存就用MapReads 速度快
+	 * @param isLessMemory
+	 */
+	public void setIsLessMemory(boolean isLessMemory) {
+		this.isLessMemory = isLessMemory;
 	}
 	/** 
 	 * mapreads读取bam文件的最小分辨率 ，分辨率越小精度越高但是内存消耗越大
@@ -186,25 +198,23 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	//TODO 考虑将其独立出来，成为一个读取类，然后往里面添加各种信息譬如获得表达值，获得差异可变剪接等
 	public void loadBamFile() {
-		tophatJunction = new TophatJunction();
+		TophatJunction tophatJunction = new TophatJunction();
 		for (String condition : mapCond2SamReader.keySet()) {
 			tophatJunction.setCondition(condition);
 			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (SamFileReading samFileReading : lsSamFileReadings) {
-				MapReads mapReads = new MapReads();
-				mapReads.setInvNum(15);
-				mapReads.setNormalType(MapReads.NORMALIZATION_NO);
-				mapReads.prepareAlignRecord(samFileReading.getSamFile().readFirstLine());
-				//TODO 可以考虑从gtf文件中获取基因组长度然后给MapReads使用
-				mapReads.setMapChrID2Len(gffHashGene.getChrID2LengthForRNAseq());
 				samFileReading.addAlignmentRecorder(tophatJunction);
-				samFileReading.addAlignmentRecorder(mapReads);
-				
 				samFileReading.setRunGetInfo(runGetInfo);
+				MapReadsAbs mapReadsAbs = null;
+				if (isLessMemory) {
+					mapReadsAbs = getSamMapReads(samFileReading);
+				} else {
+					mapReadsAbs = getMapReads(samFileReading);
+				}
 				samFileReading.run();
-				addMapReadsInfo(condition, mapReads);
-				mapReads = null;
 				
+				addMapReadsInfo(condition, mapReadsAbs);
+
 				GuiAnnoInfo exonJunctionGuiInfo = new GuiAnnoInfo();
 				//TODO
 				setRunInfo(exonJunctionGuiInfo);
@@ -212,12 +222,37 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 	}
 	
+	private MapReadsAbs getMapReads(SamFileReading samFileReading) {
+		MapReads mapReads = new MapReads();
+		mapReads.setInvNum(15);
+		mapReads.setNormalType(MapReads.NORMALIZATION_NO);
+		mapReads.setisUniqueMapping(true);
+		mapReads.prepareAlignRecord(samFileReading.getSamFile().readFirstLine());
+		//TODO 可以考虑从gtf文件中获取基因组长度然后给MapReads使用
+		mapReads.setMapChrID2Len(gffHashGene.getChrID2LengthForRNAseq());
+		samFileReading.addAlignmentRecorder(mapReads);
+		return mapReads;
+	}
+	
+	private MapReadsAbs getSamMapReads(SamFileReading samFileReading) {
+		SamMapReads samMapReads = new SamMapReads(samFileReading.getSamFile());
+		samMapReads.setisUniqueMapping(true);
+		samMapReads.setNormalType(MapReadsAbs.NORMALIZATION_NO);
+		return samMapReads;
+	}
+	
 	/** 将表达信息加入统计 */
-	private void addMapReadsInfo(String condition, MapReads mapReads) {
+	private void addMapReadsInfo(String condition, MapReadsAbs mapReads) {
+		int num = 0;
 		for (ArrayList<ExonSplicingTest> lsExonTest : lsSplicingTests) {
 			for (ExonSplicingTest exonSplicingTest : lsExonTest) {
 				exonSplicingTest.addMapCondition2MapReads(condition, mapReads);
 			}
+			
+			if (num % 100 == 0) {
+				logger.error(num);
+			}
+			num ++;
 		}
 	}
 

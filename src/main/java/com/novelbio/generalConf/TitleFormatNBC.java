@@ -1,5 +1,7 @@
 package com.novelbio.generalConf;
 
+import java.util.HashMap;
+
 public enum TitleFormatNBC {
 	QueryID("QueryID"), AccID("AccID"), Symbol("Symbol"), Pvalue("P-Value"), Log2Pnegative("(-log2P)"),
 	
@@ -34,4 +36,7 @@ public enum TitleFormatNBC {
 	public String toString() {
 		return item;
 	}
+	
+//	public HashMap<String, String>
+	
 }

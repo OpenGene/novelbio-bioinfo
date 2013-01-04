@@ -89,7 +89,7 @@ public class PlotScatter extends PlotNBCInteractive{
     	if (PLOT_TYPE == PLOT_TYPE_BARPLOT) {
     		plot = new BarPlot(new DataTable(Double.class, Double.class));
 		} else if (PLOT_TYPE == PLOT_TYPE_BOXPLOT) {
-			plot = new BoxPlot(new DataTable(Double.class, Double.class));
+			plot = new BoxPlot(new DataTable(Double.class, Double.class, Double.class, Double.class, Double.class));
 		} else if (PLOT_TYPE == PLOT_TYPE_SCATTERPLOT) {
 			plot = new XYPlot(new DataTable(Double.class, Double.class));
 		}

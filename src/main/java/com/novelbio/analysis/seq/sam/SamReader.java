@@ -25,7 +25,7 @@ public class SamReader {
 	 */
 	SAMFileReader samFileReader;
 	SAMFileHeader samFileHeader;
-	
+	SAMRecordIterator samRecordIterator;
 	/** 小写的chrID与samFileHeader中的chrID的对照表 */
 	HashMap<String, String> mapChrIDlowCase2ChrID = new LinkedHashMap<String, String>();
 	HashMap<String, Long> mapChrIDlowCase2Length = new LinkedHashMap<String, Long>();
@@ -169,13 +169,18 @@ public class SamReader {
 		close();
 		return isSamBamFile;
 	}
-	/** 迭代读取文件 */
+	/** 迭代读取文件
+	 * 单线程，不能同时开启两个读写线程
+	 */
 	public Iterable<SamRecord> readLines() {
-		SAMRecordIterator samRecordIterator = getSamFileReader().iterator();
+		closeIterate();
+		
+		samRecordIterator = getSamFileReader().iterator();
 		return new ReadSamIterable(samRecordIterator, samFileHeader);
 	}
 	
 	/**
+	 * 单线程，不能同时开启两个读写线程
 	 * each SAMRecord returned is will have its alignment completely contained in the interval of interest. 
 	 * @param chrID
 	 * @param start
@@ -183,17 +188,20 @@ public class SamReader {
 	 * @return
 	 */
 	public Iterable<SamRecord> readLinesContained(String chrID, int start, int end) {
+		closeIterate();
+		
 		getSamFileReader();
 		chrID = chrID.toLowerCase();
 		if (!mapChrIDlowCase2ChrID.containsKey(chrID)) {
 			logger.error("出现未知reference");
 			return null;
 		}
-		SAMRecordIterator samRecordIterator = samFileReader.queryContained(mapChrIDlowCase2ChrID.get(chrID), start, end);
+		samRecordIterator = samFileReader.queryContained(mapChrIDlowCase2ChrID.get(chrID), start, end);
 		return new ReadSamIterable(samRecordIterator, samFileHeader);
 	}
 	
 	/**
+	 * 单线程，不能同时开启两个读写线程
 	 * the alignment of the returned SAMRecords need only overlap the interval of interest.
 	 * @param chrID
 	 * @param start
@@ -201,16 +209,24 @@ public class SamReader {
 	 * @return
 	 */
 	public Iterable<SamRecord> readLinesOverlap(String chrID, int start, int end) {
+		closeIterate();
+		
 		getSamFileReader();
 		chrID = chrID.toLowerCase();
 		if (!mapChrIDlowCase2ChrID.containsKey(chrID)) {
 			logger.error("出现未知reference");
 			return null;
 		}
-		SAMRecordIterator samRecordIterator = samFileReader.queryOverlapping(mapChrIDlowCase2ChrID.get(chrID), start, end);
+		samRecordIterator = samFileReader.queryOverlapping(mapChrIDlowCase2ChrID.get(chrID), start, end);
 		return new ReadSamIterable(samRecordIterator, samFileHeader);
 	}
 	
+	private void closeIterate() {
+		try {
+			samRecordIterator.close();
+		} catch (Exception e) {
+		}
+	}
 	public boolean isBinary() {
 		initialSamHeadAndReader();
 		return samFileReader.isBinary();

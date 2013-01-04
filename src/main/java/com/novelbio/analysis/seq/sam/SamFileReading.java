@@ -47,6 +47,9 @@ public class SamFileReading extends RunProcess<Double>{
 			setRunInfo(readByte);
 			samRecord = null;
 		}
+		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
+			alignmentRecorder.summary();
+		}
 	}
 	
 }

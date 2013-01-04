@@ -22,6 +22,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.ExonSplicingType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.FisherTest;
@@ -83,7 +84,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * 添加每个condition以及其对应的reads堆积
 	 * 如果是相同的condition，则累加上去
 	 */
-	public void addMapCondition2MapReads(String condition, MapReads mapReads) {
+	public void addMapCondition2MapReads(String condition, MapReadsAbs mapReads) {
 		SiteInfo siteInfo = exonCluster.getDifSite();
 		int[] tmpExpCond = new int[2];
 		

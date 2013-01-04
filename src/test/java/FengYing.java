@@ -8,13 +8,17 @@ import com.novelbio.analysis.seq.rnaseq.TranscriptomStatistics;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileReading;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class FengYing {
 	public static void main(String[] args) {
+		DateTime dateTime = new DateTime();
+		dateTime.setStartTime();
 		mouse();
+		System.out.println(dateTime.getEclipseTime());
 //		String parentFile = "C:/Users/jie/Desktop/paper/";
 //		
 //		
@@ -40,11 +44,12 @@ public class FengYing {
 
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffHashGene);
+		exonJunction.setIsLessMemory(false);
 //		Species species = new Species(10090, "mm10_NCBI");
 //		GffChrAbs gffChrAbs = new GffChrAbs(species);
 //		exonJunction.setSeqHash(gffChrAbs.getSeqHash());
-//		exonJunction.setIsoJunFile("KO", parentFile + "KOjunctions.bed"); 
-//		exonJunction.setIsoJunFile("WT",parentFile + "WTjunctions.bed");
+		exonJunction.setIsoJunFile("KO", parentFile + "KOjunctions.bed");
+		exonJunction.setIsoJunFile("WT",parentFile + "WTjunctions.bed");
 //		System.out.println("finished reading junction reads");
 		exonJunction.addBamSorted("KO", parentFile + "KOod.bam");
 		exonJunction.addBamSorted("WT", parentFile + "WT0d.bam");
@@ -57,7 +62,7 @@ public class FengYing {
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String outResult = parentFile +  "KO_vs_WT9_Bam_Jun.xls";
+		String outResult = parentFile +  "KO_vs_WT10_Bam_Jun_UseMemory.xls";
 		exonJunction.writeToFile(outResult);
 	}
 

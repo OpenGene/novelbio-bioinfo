@@ -244,4 +244,9 @@ public class TophatJunction implements AlignmentRecorder {
 		txtJuncPair.close();
 		txtJuncPair2Num.close();
 	}
+
+	@Override
+	public void summary() {
+		//NOTHING TO DO
+	}
 }

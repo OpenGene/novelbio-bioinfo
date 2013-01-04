@@ -4,30 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Queue;
 
+import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.math.stat.descriptive.moment.Mean;
-import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
-import org.apache.commons.math.stat.descriptive.rank.Max;
-import org.apache.commons.math.stat.descriptive.rank.Min;
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.BedSeq;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
-import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
-import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 
 /**
@@ -57,19 +44,19 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	public static final int NORMALIZATION_NO = 64;
 
 	/** 对于结果的标准化方法 */
-	int NormalType = NORMALIZATION_ALL_READS;
+	protected int NormalType = NORMALIZATION_ALL_READS;
 
 	 /** 序列信息,名字都为小写 */
 	 HashMap<String, Long> mapChrID2Len = new HashMap<String, Long>();
 	 
 	 Equations FormulatToCorrectReads;
-
+	 protected boolean booUniqueMapping = true;
 	 /**
 	  * key：chrID必须小写
 	  * value： 染色体过滤信息，马红想要只看tss，只看exon等表达
 	  */
 	 Map<String, List<? extends Alignment>> mapChrID2LsAlignmentFilter;
-	 
+	 protected long allReadsNum = 0;
 	 /**
 	  * @param invNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
 	  * @param mapFile mapping的结果文件，一般为bed格式
@@ -79,6 +66,17 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 public void setSpecies(Species species) {
 		 mapChrID2Len = species.getMapChromInfo();
 	 }
+	 public void setisUniqueMapping(boolean booUniqueMapping) {
+		this.booUniqueMapping = booUniqueMapping;
+	}
+	 /**
+	  * 设定标准化方法，可以随时设定，不一定要在读取文件前
+	  * 默认是NORMALIZATION_ALL_READS
+	  * @param normalType
+	  */
+	 public void setNormalType(int normalType) {
+		NormalType = normalType;
+	}
 	 /**
 	  * 设定保留的区域，譬如马红想看全基因组上tss的分布，那么就将tss的区域装到该ls中间
 	  * @param lsAlignments
@@ -283,6 +281,19 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @return 如果没有找到该染色体位点，则返回null
 	 */
 	public abstract double[] getRangeInfo(int thisInvNum,String chrID,int startNum,int endNum,int type);
+	/**
+	 * 经过标准化，和equations修正
+	 * 输入坐标区间，需要划分的块数，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
+	 * 定位到两个端点所在的 读取invNum区间，然后计算新的invNum区间
+	 * @param lsAlignments 将不属于指定区段内的数值全部清空，最好是linkedlist
+	 * @param chrID 一定要小写
+	 * @param startNum 起点坐标，为实际起点 如果startNum<=0 并且endNum<=0，则返回全长信息
+	 * @param endNum 终点坐标，为实际终点
+	 * @param binNum 待分割的区域数目
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 * @return 如果没有找到该染色体位点，则返回null
+	 * @return
+	 */
 	protected abstract double[] getRangeInfo(String chrID, int startNum, int endNum, int binNum, int type);
 	
 	/**
@@ -305,6 +316,13 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 protected long getChrLen(String chrID) {
 		 return mapChrID2Len.get(chrID.toLowerCase());
 	 }
+	 /** 有时候需要用测序量最大的一个样本的reads数来做标准化
+	  * <b>在读取结束后设定</b>
+	  * @param allReadsNum
+	  */
+	 public void setAllReadsNum(long allReadsNum) {
+		this.allReadsNum = allReadsNum;
+	}
 	 
 	 /** 总共有多少reads参与了mapping，这个从ReadMapFile才能得到。 */
 	protected abstract long getAllReadsNum();
@@ -333,7 +351,6 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			logger.error("起点不能比终点大: "+chrID+" "+startNum+" "+endNum);
 			return null;
 		}
-		startNum --; endNum --;
 		return new int[]{startNum, endNum};
 	}
 	/**
@@ -361,6 +378,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	}
 	
 	/**
+	 * <b>如果 allReadsNum == 0 && NormalType != NORMALIZATION_ALL_READS，则不进行标准化</b><br>
 	 * 提取的原始数据需要经过标准化再输出。
 	 * 本方法进行标准化
 	 * 输入的double直接修改，不返回。<br>
@@ -374,7 +392,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		if (doubleInfo == null) {
 			return;
 		}
-		if (NormalType == NORMALIZATION_NO) {
+		if ((allReadsNum == 0 && NormalType != NORMALIZATION_ALL_READS)|| NormalType == NORMALIZATION_NO) {
 			return;
 		}
 		else if (NormalType == NORMALIZATION_ALL_READS) {

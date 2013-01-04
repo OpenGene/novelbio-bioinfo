@@ -111,7 +111,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		}
 		ArrayList<String> lsInfo = ArrayOperate.converArray2List(input.split("\t"));
 		int refStartSite = Integer.parseInt(lsInfo.get(colRefStartSite));
-		if (refStartSite == 212267) {
+		if (refStartSite == 13789674) {
 			logger.error("stop");
 		}
 		RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, lsInfo.get(colChrID), refStartSite);

@@ -2,13 +2,7 @@ package com.novelbio.analysis.seq.sam;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
-import javax.xml.stream.events.EndDocument;
-
-import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -23,16 +17,27 @@ import com.novelbio.base.dataStructure.MathComput;
  *
  */
 public class SamMapReads extends MapReadsAbs {
-	/** 最多可能插入的碱基 */
-	int maxBaseNum = 100;
-	int allReadsNum;
-	private Queue<SamRecord> queueSamRecord = new ConcurrentLinkedQueue<SamRecord>();
-	/** 不能并发 */
-	private Queue<Character> queueBase = new ArrayBlockingQueue<Character>(maxBaseNum);
-	/** 对于某个位点来说，是否已经准备好相应的序列集 */
-	boolean prepareForBase = false;
+	public static void main(String[] args) {
+		SamMapReads samMapReads = new SamMapReads(new SamFile("/media/winF/NBC/Project/Project_FY/paper/KOod.bam"));
+		double[] info = samMapReads.getRangeInfo("chr4", 108013084, 108013173);
+		for (int i = 0; i < info.length; i++) {
+			if (i%10 == 0) {
+				System.out.println();
+			}
+			System.out.print(info[i] + "\t");
+		}
+	}
+	
 	
 	Map<String, Long> mapChrIDlowcase2Length;
+	
+	SamFile samFile;
+	
+	/** 输入的samFile必须是排序并且有索引的 */
+	public SamMapReads(SamFile samFile) {
+		this.samFile = samFile;
+		mapChrIDlowcase2Length = samFile.getChrID2LengthMap();
+	}
 	
 	/**
 	 * 设定染色体名称与长度的对照表，注意key为小写
@@ -41,11 +46,6 @@ public class SamMapReads extends MapReadsAbs {
 	public void setMapChrIDlowcase2Length(
 			Map<String, Long> mapChrIDlowcase2Length) {
 		this.mapChrIDlowcase2Length = mapChrIDlowcase2Length;
-	}
-	
-	/** 设定全体有效序列的数量 */
-	public void setAllReadsNum(int allReadsNum) {
-		this.allReadsNum = allReadsNum;
 	}
 
 	@Override
@@ -59,17 +59,41 @@ public class SamMapReads extends MapReadsAbs {
 	}
 
 	@Override
-	public double[] getRangeInfo(int thisInvNum, String chrID, int startNum,
-			int endNum, int type) {
-		// TODO Auto-generated method stub
-		return null;
+	public double[] getRangeInfo(int thisInvNum, String chrID, int startNum, int endNum, int type) {
+		int[] startEndLoc = MapReadsAbs.correctStartEnd(mapChrIDlowcase2Length, chrID, startNum, endNum);
+		if (startEndLoc == null) {
+			return null;
+		}
+		if (thisInvNum <= 0) {
+			thisInvNum = 1;
+		}
+		double binNum = (double)(startEndLoc[1] - startEndLoc[0] + 1) / thisInvNum;
+		int binNumFinal = 0;
+		if (binNum - (int)binNum >= 0.7) {
+			binNumFinal = (int)binNum + 1;
+		} else {
+			binNumFinal = (int)binNum;
+		}
+		if (binNumFinal == 0) {
+			binNumFinal = 1;
+		}
+		return getRangeInfo(chrID, startNum, endNum, binNumFinal, type);
 	}
 
 	@Override
-	protected double[] getRangeInfo(String chrID, int startNum, int endNum,
-			int binNum, int type) {
-		// TODO Auto-generated method stub
-		return null;
+	protected double[] getRangeInfo(String chrID, int startNum, int endNum, int binNum, int type) {
+		double[] value = getRangeInfo(chrID, startNum, endNum);
+		if (value == null) {
+			return null;
+		}
+		double[] result = null;
+		try {
+			result = MathComput.mySpline(value, binNum, 0, 0, type);
+		} catch (Exception e) {
+			result = MathComput.mySpline(value, binNum, 0, 0, type);
+		}
+		normDouble(NormalType, result, allReadsNum);
+		return result;
 	}
 
 	private double[] getRangeInfo(String chrID, int startNum, int endNum) {
@@ -79,22 +103,31 @@ public class SamMapReads extends MapReadsAbs {
 		}
 		double[] result = new double[startEnd[1] - startEnd[0] + 1];
 
-		for (SamRecord samRecord : queueSamRecord) {
-			ArrayList<Align> lsAlign = samRecord.getAlignmentBlocks();
-			for (Align align : lsAlign) {
-				if (isInRegion(startEnd, align) == 1) {
-					continue;
-				} else if (isInRegion(startEnd, align) == 2) {
-					break;
-				}
-				int[] startEndRegion = getStartEndLoc(startEnd, align);
-				for (int i = startEndRegion[0]; i <= startEndRegion[1]; i++) {
-					result[i] = result[i] + 1/samRecord.getMappingNum();
-				}
-			}
+		for (SamRecord samRecord : samFile.readLinesOverlap(chrID, startEnd[0], startEnd[1])) {
+			try {
+				addReadsInfo(samRecord, startEnd, result);
+			} catch (Exception e) { }
 		}
 		
 		return result;
+	}
+	/** 将samRecord的信息添加至 result上 */
+	private void addReadsInfo(SamRecord samRecord, int[] startEnd, double[] result) {
+		if (booUniqueMapping && samRecord.getMappingNum() > 1) {
+			return;
+		}
+		ArrayList<Align> lsAlign = samRecord.getAlignmentBlocks();
+		for (Align align : lsAlign) {
+			if (isInRegion(startEnd, align) == 1) {
+				continue;
+			} else if (isInRegion(startEnd, align) == 2) {
+				break;
+			}
+			int[] startEndRegion = getStartEndLoc(startEnd, align);
+			for (int i = startEndRegion[0]; i <= startEndRegion[1]; i++) {
+				result[i] = result[i] + (double)1/samRecord.getMappingNum();
+			}
+		}
 	}
 	
 	/**

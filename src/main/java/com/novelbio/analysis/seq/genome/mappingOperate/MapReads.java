@@ -15,7 +15,6 @@ import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs.MapReadsProcessInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.base.dataStructure.Equations;
@@ -35,15 +34,13 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 
 	 boolean uniqReads = false;
 	 int startCod = -1;
-	 boolean booUniqueMapping = true;
+
 	 /** 仅选取某个方向的reads */
 	 Boolean FilteredStrand = null;
 	 Species species;
 	 
 	 long readsSize = 0;
-	 
-	 long allReadsNum = 0;
-	 
+
 	 AlignSeq alignSeqReader;
 	 
 	 HashMap<String, ChrMapReadsInfo> mapChrID2ReadsInfo = new HashMap<String, ChrMapReadsInfo>();
@@ -55,7 +52,8 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 
 	 /**每隔多少位计数，如果设定为1，则算法会变化，然后会很精确*/
 	 int invNum = 10;
-		
+	 /** 因为想加入小数，但是double比较占内存，所以就将数据乘以fold，然后最后除掉它就好 */
+	 int fold = 1000;
 	 /**添加samBam的文件用来获得信息
 	  * 注意在添加之前要先执行{@link #prepareAlignRecord(AlignRecord)}
 	  */
@@ -89,13 +87,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 public void setAlignSeqReader(AlignSeq alignSeqReader) {
 		 this.alignSeqReader = alignSeqReader;
 	}
-	 /** 有时候需要用测序量最大的一个样本的reads数来做标准化
-	  * <b>在读取结束后设定</b>
-	  * @param allReadsNum
-	  */
-	 public void setAllReadsNum(long allReadsNum) {
-		this.allReadsNum = allReadsNum;
-	}
+
 	 /** 总共有多少reads参与了mapping，这个从ReadMapFile才能得到。 */
 	public long getAllReadsNum() {
 		if (allReadsNum > 0) {
@@ -108,11 +100,10 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	}
 	
 	/**
-	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
-	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
-	 * @param colUnique  Unique的reads在哪一列 novelbio的标记在第七列，从1开始计算
-	 * @param booUniqueMapping 重复的reads是否只选择一条
-	 * @param FilteredStrand 是否仅选取某一方向的reads，null不考虑
+	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads 默认false
+	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数，默认-1
+	 * @param booUniqueMapping 重复的reads是否只选择一条 默认为true
+	 * @param FilteredStrand 是否仅选取某一方向的reads，null不考虑 默认为null
 	 */
 	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean FilteredStrand) {
 		this.uniqReads = uniqReads;
@@ -152,14 +143,6 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	
 	protected boolean isUniqueMapping() {
 		return booUniqueMapping;
-	}
-	 /**
-	  * 设定标准化方法，可以随时设定，不一定要在读取文件前
-	  * 默认是NORMALIZATION_ALL_READS
-	  * @param normalType
-	  */
-	 public void setNormalType(int normalType) {
-		NormalType = normalType;
 	}
 	 
 	private void setChrLenFromReadBed() {
@@ -310,8 +293,8 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	/**
 	 * 间断为1的精确版本，经过标准化，和equations修正
 	 * @param chrID 染色体ID
-	 * @param startNum
-	 * @param endNum
+	 * @param startNum 实际起点，从1开始记数
+	 * @param endNum 实际终点，从1开始记数
 	 */
 	private double[] getRangeInfoInv1(String chrID, int startNum, int endNum) {
 		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
@@ -320,6 +303,11 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 			return null;
 		}
 		int[] startEnd = correctStartEnd(mapChrID2Len, chrID, startNum, endNum);
+		if (startEnd == null) {
+			return null;
+		}
+		startEnd[0] = startEnd[0] - 1;
+		startEnd[1] = startEnd[1] - 1;
 		double[] result = new double[startEnd[1] - startEnd[0] + 1];
 		
 		int[] invNumReads = chrMapReadsInfo.getSumChrBpReads();
@@ -347,6 +335,9 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 *  */
 	private double[] getRangeInfoNorm(String chrID, int thisInvNum, int startNum, int endNum, int type) {
 		int[] startEndLoc = correctStartEnd(mapChrID2Len, chrID, startNum, endNum);
+		if (startEndLoc == null) {
+			return null;
+		}
 		double binNum = (double)(startEndLoc[1] - startEndLoc[0] + 1) / thisInvNum;
 		int binNumFinal = 0;
 		if (binNum - (int)binNum >= 0.7) {
@@ -358,11 +349,10 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 			binNumFinal = 1;
 		}
 		//内部经过标准化了
-		double[] tmp = getRangeInfo(chrID, startNum, endNum, binNumFinal, type);
+		double[] tmp = getRangeInfo(chrID, startEndLoc[0], startEndLoc[1], binNumFinal, type);
 		return tmp;
 	}
 	/**
-	 * 
 	 * 经过标准化，和equations修正
 	 * 输入坐标区间，需要划分的块数，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
 	 * 定位到两个端点所在的 读取invNum区间，然后计算新的invNum区间
@@ -401,6 +391,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		}
 	}
 	
+	//TODO check
 	/**
 	 * 给定list区段，和全基因组的信息，将没有被list区段覆盖到的信息全部删除
 	 * @param lsAlignments 里面的alignment是实际数目
@@ -431,13 +422,14 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 
 	/**
 	 * @param invNumReads 某条染色体上面的reads堆叠情况
-	 * @param startNum
-	 * @param endNum
+	 * @param startNum 实际num
+	 * @param endNum 实际num
 	 * @param binNum
 	 * @param type
 	 * @return
 	 */
 	protected double[] getRengeInfoExp(int[] invNumReads, int startNum,int endNum,int binNum,int type) {
+		startNum--; endNum--;
 		int leftNum = 0;//在invNumReads中的实际起点
 		int rightNum = 0;//在invNumReads中的实际终点
 
@@ -473,7 +465,6 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		tmp = equationsCorrect(tmp);
 		return tmp;
 	}
-	
 
 	/**
 	 * 当输入为macs的bed文件时，自动<b>跳过chrm项目</b><br>
@@ -514,12 +505,16 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 * 则返回false
 	 */
 	public boolean prepareAlignRecord(AlignRecord alignRecordFirst) {
-		mapReadsAddAlignRecord = new MapReadsAddAlignRecord(this);
+		mapReadsAddAlignRecord = new MapReadsAddAlignRecord(this, fold);
 		if (startCod > 0 && alignRecordFirst.isCis5to3() == null) {
 			logger.error("不能设定startCod，因为没有设定方向列");
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public void summary() {
+		mapReadsAddAlignRecord.summary();
 	}
 
 }
@@ -538,9 +533,10 @@ class MapReadsAddAlignRecord {
 	boolean flag = true;// 当没有该染色体时标记为false并且跳过所有该染色体上的坐标
 	ChrMapReadsInfo chrMapReadsInfo = null;
 	int[] tmpOld = new int[2];//更新 tmpOld
-	
-	public MapReadsAddAlignRecord(MapReads mapReads) {
+	int fold;
+	public MapReadsAddAlignRecord(MapReads mapReads, int fold) {
 		this.mapReads = mapReads;
+		this.fold = fold;
 	}
 	
 	public void addAlignRecord(AlignRecord alignRecord) {
@@ -571,7 +567,7 @@ class MapReadsAddAlignRecord {
 	
 	public void summary() {
 		if (!lastChr.equals("") && flag) {
-			chrMapReadsInfo.sumChrBp(chrBpReads);
+			chrMapReadsInfo.sumChrBp(chrBpReads, fold);
 			chrBpReads = null;
 		}
 	}
@@ -601,13 +597,13 @@ class MapReadsAddAlignRecord {
 		if (mapReads.uniqReads && tmpStartEnd[0] == tmpOld[0] && tmpStartEnd[1] == tmpOld[1] ) {
 			return tmpOld;
 		}
-
+		
 		ArrayList<? extends Alignment> lsadd = null;
 		//如果没有可变剪接
 		lsadd = alignRecord.getAlignmentBlocks();
 		lsadd = setStartCod(lsadd, mapReads.startCod, cis5to3This);
-
-		addChrLoc(chrBpReads, lsadd);
+		int addNum = (int) ((double)1*fold/alignRecord.getMappingNum());
+		addChrLoc(chrBpReads, lsadd, addNum);
 		chrMapReadsInfo.readsAllNum = chrMapReadsInfo.readsAllNum + 1;
 		return tmpStartEnd;
 	}
@@ -665,7 +661,7 @@ class MapReadsAddAlignRecord {
 	 * @param chrLoc 坐标位点，0为坐标长度，1开始为具体坐标，所以chrLoc[123] 就是实际123位的坐标
 	 * @param lsAddLoc 间断的坐标区域，为int[2] 的list，譬如 100-250，280-300这样子，注意提供的坐标都是闭区间，所以首位两端都要加上
 	 */
-	private void addChrLoc(int[] chrLoc, ArrayList<? extends Alignment> lsAddLoc) {
+	private void addChrLoc(int[] chrLoc, ArrayList<? extends Alignment> lsAddLoc, int addNum) {
 		for (Alignment is : lsAddLoc) {
 			for (int i = is.getStartAbs(); i <=is.getEndAbs(); i++) {
 				if (i >= chrLoc.length) {
@@ -676,7 +672,7 @@ class MapReadsAddAlignRecord {
 					logger.info("超出范围："+ i);
 					continue;
 				}
-				chrLoc[i]++;
+				chrLoc[i] = chrLoc[i] + addNum;
 			}
 		}
 	}
@@ -743,7 +739,7 @@ class ChrMapReadsInfo {
 	 * @param type 取值类型，中位数或平均值，0中位数，1均值 其他的默认中位数
 	 * @param SumChrBpReads 将每个区间内的
 	 */
-	protected void sumChrBp(int[] chrBpReads) {
+	protected void sumChrBp(int[] chrBpReads, int fold) {
 		// //////////SumChrBpReads设定//////////////////////////////////
 		// 这个不是很精确，最后一位可能不准，但是实际应用中无所谓了,为方便，0位记录总长度。这样实际bp就是实际长度
 		int SumLength = chrBpReads.length / invNum + 1;// 保证不会溢出，这里是要让SumChrBpReads长一点
@@ -751,8 +747,8 @@ class ChrMapReadsInfo {
 		
 		if (invNum == 1) {
 			for (int i = 0; i < SumLength - 2; i++) {
-				SumChrBpReads[i] = chrBpReads[i+1];
-				readsAllPipNum = readsAllPipNum + chrBpReads[i+1];
+				SumChrBpReads[i] = chrBpReads[i+1]/fold;
+				readsAllPipNum = readsAllPipNum + chrBpReads[i+1]/fold;
 			}
 			return;
 		 }
@@ -760,40 +756,9 @@ class ChrMapReadsInfo {
 			 int[] tmpSumReads=new int[invNum];//将总的chrBpReads里的每一段提取出来
 			 int sumStart=i*invNum + 1; int k=0;//k是里面tmpSumReads的下标，实际下标就行，不用-1
 			 for (int j = sumStart; j < sumStart + invNum; j++) {
-				 tmpSumReads[k] = chrBpReads[j];
-				 readsAllPipNum = readsAllPipNum + chrBpReads[j];
-				 k++;
-			 }
-			 samplingSite(i, tmpSumReads);
-		 }
-	}
-	/**
-	 * 
-	 * 总结double类型的chrBpReads，double的可以考虑将非unique mapping的reads进行减分处理
-	 * 给定chrBpReads，将chrBpReads里面的值按照invNum区间放到SumChrBpReads里面
-	 * 因为是引用传递，里面修改了SumChrBpReads后，外面会变掉
-	 * @param chrBpReads 每个碱基的reads累计值
-	 * @param invNum 区间
-	 * @param type 取值类型，中位数或平均值，0中位数，1均值 其他的默认中位数
-	 * @param SumChrBpReads 将每个区间内的
-	 */
-	protected void sumChrBp(double[] chrBpReads, long[] chrReadsPipNum) {
-		int SumLength = chrBpReads.length / invNum + 1;// 保证不会溢出，这里是要让SumChrBpReads长一点
-		SumChrBpReads = new int[SumLength];// 直接从0开始记录，1代表第二个invNum,也和实际相同
-		
-		if (invNum == 1) {
-			for (int i = 0; i < SumLength - 2; i++) {
-				SumChrBpReads[i] = (int) Math.round(chrBpReads[i+1]);
-				chrReadsPipNum[0] = chrReadsPipNum[0] + (int) Math.round(chrBpReads[i+1]);
-			}
-			return;
-		}
-		 for (int i = 0; i < SumLength - 2; i++) {
-			 int[] tmpSumReads=new int[invNum];//将总的chrBpReads里的每一段提取出来
-			 int sumStart=i*invNum + 1; int k=0;//k是里面tmpSumReads的下标，实际下标就行，不用-1
-			 for (int j = sumStart; j < sumStart + invNum; j++)  {
-				 tmpSumReads[k] = (int) Math.round(chrBpReads[j]);
-				 chrReadsPipNum[0] = chrReadsPipNum[0] + (int) Math.round(chrBpReads[j]);
+				 int thisNum = chrBpReads[j]/fold;
+				 tmpSumReads[k] = thisNum;
+				 readsAllPipNum = readsAllPipNum + thisNum;
 				 k++;
 			 }
 			 samplingSite(i, tmpSumReads);

@@ -36,6 +36,11 @@ public abstract class NovelMiRNApredict {
 	 * @param bedSeqFile
 	 */
 	public void setBedSeq(String outFile, String... bedSeqFile) {
+		if (bedSeqFile.length == 1) {
+			FileOperate.moveFile(true, bedSeqFile[0], outFile);
+			return;
+		}
+		
 		BedSeq bedSeq = BedSeq.combBedFile(outFile, bedSeqFile);
 		setBedSeqInput(bedSeq.getFileName());
 	}
@@ -46,6 +51,11 @@ public abstract class NovelMiRNApredict {
 	 * @param lsBedSeqFile 一系列的bed文件
 	 */
 	public void setBedSeqInput(String outFile, ArrayList<String> lsBedSeqFile) {
+		if (lsBedSeqFile.size() == 1) {
+			FileOperate.moveFile(true, lsBedSeqFile.get(0), outFile);
+			return;
+		}
+		
 		BedSeq bedSeq = BedSeq.combBedFile(outFile, lsBedSeqFile);
 		this.lsBedSeqInputFile = lsBedSeqFile;
 		setBedSeqInput(bedSeq.getFileName());

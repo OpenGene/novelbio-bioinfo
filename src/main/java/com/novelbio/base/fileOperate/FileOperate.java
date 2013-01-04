@@ -836,7 +836,6 @@ public class FileOperate {
 	public static boolean moveFile(String oldPath, String newPath, boolean cover) {
 		return moveFile(oldPath, newPath, cover, "");
 	}
-
 	/**
 	 * @param oldPath
 	 * @param newPath
@@ -845,26 +844,41 @@ public class FileOperate {
 	 * @param cover
 	 * @return
 	 */
-	public static boolean moveFile(String oldPath, String newPath,
+	public static boolean moveFile(boolean cover, String oldFileName, String newFileName) {
+		String newPath = FileOperate.getParentPathName(newFileName);
+		String newName = FileOperate.getFileName(newFileName);
+		return moveFile(oldFileName, newPath, newName, cover);
+		
+	}
+
+	/**
+	 * @param oldFileName
+	 * @param newPath
+	 * @param NewName
+	 *            新文件或文件夹名
+	 * @param cover
+	 * @return
+	 */
+	public static boolean moveFile(String oldFileName, String newPath,
 			String NewName, boolean cover) {
 		newPath = addSep(newPath);
 		boolean okFlag = false;
 		
 		if (NewName == null || NewName.trim().equals("")) {
-			NewName = getFileName(oldPath);
+			NewName = getFileName(oldFileName);
 		}
 		String newPathName = newPath + NewName;
-		if (oldPath.equals(newPathName)) {
+		if (oldFileName.equals(newPathName)) {
 			return true;
 		}
 		
-		if (isFileExist(oldPath)) {
-			okFlag = moveSingleFile(oldPath, newPath, NewName, cover);
-		} else if (isFileDirectory(oldPath)) {
+		if (isFileExist(oldFileName)) {
+			okFlag = moveSingleFile(oldFileName, newPath, NewName, cover);
+		} else if (isFileDirectory(oldFileName)) {
 			newPath = newPath + NewName;
-			okFlag = moveFoldFile(oldPath, newPath, "", cover);
+			okFlag = moveFoldFile(oldFileName, newPath, "", cover);
 		}
-		deleteDirectory(oldPath);
+		deleteDirectory(oldFileName);
 		return okFlag;
 	}
 
@@ -873,29 +887,28 @@ public class FileOperate {
 	 * 
 	 * @param oldPath
 	 *            老文件的路径
-	 * @param newPath
-	 *            新文件夹
+	 * @param newPath 新文件夹
 	 * @param cover
 	 *            是否覆盖
 	 * @param NewNameOrPrefix
 	 *            如果移动的是文件，则为新文件名。如果移动的是文件夹，则为新文件夹的前缀
 	 * @return
 	 */
-	public static boolean moveFile(String oldPath, String newPath,
+	public static boolean moveFile(String oldFilePath, String newPath,
 			boolean cover, String NewNameOrPrefix) {
 		newPath = addSep(newPath);
 		boolean okFlag = false;
 
-		if (isFileExist(oldPath)) {
+		if (isFileExist(oldFilePath)) {
 			if (NewNameOrPrefix == null || NewNameOrPrefix.trim().equals("")) {
-				NewNameOrPrefix = FileOperate.getFileName(oldPath);
+				NewNameOrPrefix = FileOperate.getFileName(oldFilePath);
 			}
-			okFlag = moveSingleFile(oldPath, newPath, NewNameOrPrefix, cover);
-		} else if (isFileDirectory(oldPath)) {
-			newPath = newPath + getFileName(oldPath);
-			okFlag = moveFoldFile(oldPath, newPath, NewNameOrPrefix, cover);
+			okFlag = moveSingleFile(oldFilePath, newPath, NewNameOrPrefix, cover);
+		} else if (isFileDirectory(oldFilePath)) {
+			newPath = newPath + getFileName(oldFilePath);
+			okFlag = moveFoldFile(oldFilePath, newPath, NewNameOrPrefix, cover);
 		}
-		deleteDirectory(oldPath);
+		deleteDirectory(oldFilePath);
 		return okFlag;
 	}
 

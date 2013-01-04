@@ -10,4 +10,5 @@ import com.novelbio.analysis.seq.AlignRecord;
  */
 public interface AlignmentRecorder {
 	public void addAlignRecord(AlignRecord alignRecord);
+	public void summary();
 }

@@ -13,6 +13,9 @@ import de.erichseifert.gral.plots.BoxPlot.BoxWhiskerRenderer;
  *
  */
 public class PlotBox extends PlotScatter {
+	public static void main(String[] args) {
+		PlotBox plotBox = new PlotBox();
+	}
 	public PlotBox() {
 		super(PlotScatter.PLOT_TYPE_BOXPLOT);
 	}

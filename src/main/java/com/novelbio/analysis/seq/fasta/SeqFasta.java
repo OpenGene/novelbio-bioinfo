@@ -114,7 +114,7 @@ public class SeqFasta implements Cloneable {
 			seqFasta.SeqSequence = SeqSequence;
 			return seqFasta;
 		}
-		seqFasta.SeqSequence = SeqSequence.substring(start, end);
+		seqFasta.SeqSequence = SeqSequence.substring(start, end-1);
 		return seqFasta;
 	}
 	/**

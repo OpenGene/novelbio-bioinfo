@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mapping.MapBowtie;
 import com.novelbio.analysis.tools.compare.runCompSimple;
 import com.novelbio.base.cmd.CmdOperate;
@@ -28,6 +29,22 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  */
 public class NovelMiRNADeep extends NovelMiRNApredict {
+	public static void main(String[] args) {
+		NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
+		String outPath = "/media/winF/NBC/Project/MethyArray_QZL110907/QZL_Fifth/Filted/result/";
+		novelMiRNADeep.setBedSeqInput(outPath + "SampleAll_To_Predict.bed");
+		Species species = new Species(10090);
+		SoftWareInfo softWareInfo = new SoftWareInfo();
+		softWareInfo.setName(SoftWare.mirDeep);
+		novelMiRNADeep.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bowtie));
+		
+		novelMiRNADeep.setGffChrAbs(new GffChrAbs(species));
+		novelMiRNADeep.setMiRNASeq(species.getMiRNAmatureFile(), null, species.getMiRNAhairpinFile());
+		
+		novelMiRNADeep.setSpecies(species.getCommonName());
+		novelMiRNADeep.setOutPath("/media/winF/NBC/Project/MethyArray_QZL110907/QZL_Fifth/Filted/result/test");
+		novelMiRNADeep.predict();
+	}
 	Logger logger = Logger.getLogger(NovelMiRNADeep.class);
 	
 	MapBowtie mapBowtie = new MapBowtie(SoftWare.bowtie);
@@ -244,7 +261,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		for (String string : lsFileName) {
 			String fileName = FileOperate.getFileName(string);
 			FileOperate.moveFile(string, outPath, outPrefix +fileName.replace("_" + suffix, ""), true);
-			System.out.println("move:" + string + "     to:" + outPrefix +fileName.replace("_" + suffix, ""));
+			logger.info("move:" + string + "\tto:" + outPrefix +fileName.replace("_" + suffix, ""));
 		}
 		String outFinal = outPath + outPrefix;
 		

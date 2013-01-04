@@ -62,7 +62,7 @@ public class MapReadsChangFang extends MapReads {
 			String tmpChrID = gtfHongXingMethy.getRefID();
 			if (!tmpChrID.equals(lastChr)) {
 				if (!lastChr.equals("") && flag) { // 前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
-					chrMapReadsInfo.sumChrBp(chrBpReads);
+					chrMapReadsInfo.sumChrBp(chrBpReads, fold);
 				}
 				lastChr = tmpChrID;// 实际这是新出现的ChrID
 				logger.debug(lastChr);
@@ -93,7 +93,7 @@ public class MapReadsChangFang extends MapReads {
 		}
 		
 		if (flag) {
-			chrMapReadsInfo.sumChrBp(chrBpReads);
+			chrMapReadsInfo.sumChrBp(chrBpReads, fold);
 		}
 	}
 	
