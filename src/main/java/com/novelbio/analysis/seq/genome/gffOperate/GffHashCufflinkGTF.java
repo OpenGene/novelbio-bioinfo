@@ -119,12 +119,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(hashChrIso);
 		for (String chrID : lsChrID) {
 			ArrayList<GffGeneIsoInfo> arrayList = hashChrIso.get(chrID);
-			try {
-				copeChrInfo(chrID, arrayList);
-			} catch (Exception e) {
-				copeChrInfo(chrID, arrayList);
-			}
-			
+			copeChrInfo(chrID, arrayList);
 		}
 	}
 	

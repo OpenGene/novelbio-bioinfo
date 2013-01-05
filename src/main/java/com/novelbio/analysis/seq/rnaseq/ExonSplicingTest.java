@@ -486,21 +486,40 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 	}
 	
-	/** 获得前一个和后一个exon和intron的序列 */
-	protected SeqFasta getSeq(SeqHash seqHash) {
-		int start = exonCluster.getStartCis();
-		int end = exonCluster.getEndCis();
-		if (exonCluster.getExonClusterBefore() != null) {
-			start = exonCluster.getExonClusterBefore().getStartCis();
-		}
-		if (exonCluster.getExonClusterAfter() != null) {
-			end = exonCluster.getExonClusterAfter().getEndCis();
-		}
-		SeqFasta seqFasta = seqHash.getSeq(exonCluster.getChrID(), Math.min(start, end), Math.max(start, end));
-		if (seqFasta != null && !exonCluster.isCis5To3()) {
-			seqFasta = seqFasta.reservecom();
-		}
-		return seqFasta;
+	/** 
+	 * 获得一系列序列：
+	 * 1.前一个和后一个exon和intron的序列
+	 * 2. 当前exon
+	 * 3. 当前exon左右扩展300bp
+	 */
+	protected ArrayList<SeqFasta> getSeq(SeqHash seqHash) {
+		ArrayList<SeqFasta> lsSeqFastas = new ArrayList<SeqFasta>();
+		
+//		ArrayList<ExonInfo> lsGetExon = new ArrayList<ExonInfo>();
+//		if (exonCluster.getExonClusterBefore() != null) {
+//			ExonCluster exonClusterBefore = exonCluster.getExonClusterBefore();
+//			lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5To3(), exonClusterBefore.getStartCis(), exonClusterBefore.getEndCis()));
+//		}
+//		lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5To3(), exonCluster.getStartCis(), exonCluster.getEndCis()));
+//		if (exonCluster.getExonClusterAfter() != null) {
+//			ExonCluster exonClusterAfter = exonCluster.getExonClusterAfter();
+//			lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5To3(), exonClusterAfter.getStartCis(), exonClusterAfter.getEndCis()));
+//		}
+//		
+//		SeqFasta seqFasta = seqHash.getSeq(exonCluster.getChrID(), lsGetExon, true);
+//		if (seqFasta != null && !exonCluster.isCis5To3()) {
+//			seqFasta = seqFasta.reservecom();
+//		}
+		
+		SeqFasta seqFasta = seqHash.getSeq(exonCluster.isCis5To3(), exonCluster.getChrID(), 
+				exonCluster.getStartLocAbs(), exonCluster.getEndLocAbs());
+		lsSeqFastas.add(seqFasta);
+		
+		SeqFasta seqFasta2 = seqHash.getSeq(exonCluster.isCis5To3(), exonCluster.getChrID(),
+				exonCluster.getStartLocAbs() - 300, exonCluster.getEndLocAbs() + 300);
+		lsSeqFastas.add(seqFasta2);
+		
+		return lsSeqFastas;
 	}
 	@Override
 	public int compareTo(ExonSplicingTest o) {
@@ -546,9 +565,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //		lsResult.add(geneID.getSymbol());
 //		lsResult.add(geneID.getDescription());
 		if (seqHash != null) {
-			SeqFasta seqFasta = getSeq(seqHash);
-			if (seqFasta != null) {
-				lsResult.add(getSeq(seqHash).toString());	
+			ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
+			for (SeqFasta seqFasta : lsSeqFasta) {
+				lsResult.add(seqFasta.toString());
 			}
 		}
 		return lsResult.toArray(new String[0]);

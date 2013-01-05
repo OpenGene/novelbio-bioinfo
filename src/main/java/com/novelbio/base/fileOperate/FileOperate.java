@@ -25,11 +25,14 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 
 public class FileOperate {
-	private static Logger logger = Logger.getLogger(FileOperate.class);
-
 	public static void main(String[] args) {
-		System.out.println(getFileNameSep("/sfe/gsre/afsfs.")[0]);
+		ArrayList<String> lsFileName = FileOperate.getFoldFileNameLs("/media/winF/NBC/Project/MethyArray_QZL110907/QZL_Fifth/FastQ/result/",
+				"mir.+All", "txt");
+		for (String string : lsFileName) {
+			System.out.println(string);
+		}
 	}
+	private static Logger logger = Logger.getLogger(FileOperate.class);
 
 	/**
 	 * 读取文本文件内容
@@ -333,7 +336,7 @@ public class FileOperate {
 		// 如果只是文件则返回文件名
 		if (!file.isDirectory()) { // 获取文件名与后缀名
 			String fileName = file.getName();
-			if (isNeedFile(filename, filename, suffix)) {
+			if (isNeedFile(fileName, filename, suffix)) {
 				ListFilename.add(fileName);
 				return ListFilename;
 			}

@@ -51,7 +51,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	ArrayListMultimap<String, SamFileReading> mapCond2SamReader = ArrayListMultimap.create();
 	
-	
 	/** 统计可变剪接事件的map
 	 * key：可变剪接类型
 	 * value：int[2]

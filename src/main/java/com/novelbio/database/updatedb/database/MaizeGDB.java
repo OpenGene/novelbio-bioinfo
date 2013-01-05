@@ -176,10 +176,6 @@ class MaizeGeneInfo extends ImportPerLine
 		if (ss.length < 4)
 			return true;
 		
-		if (ss[0].equals("AC194389.3_FG001")) {
-			System.out.println("stop");
-		}
-		
 		GeneID copedID = new GeneID(ss[0], taxID);
 		AGeneInfo geneInfo = new GeneInfo();
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB, false);

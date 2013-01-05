@@ -44,7 +44,7 @@ public class CtrlMiRNAfastq {
 	RfamStatistic rfamStatistic = new RfamStatistic();
 	ReadsOnRepeatGene readsOnRepeatGene = new ReadsOnRepeatGene();
 	ReadsOnNCrna readsOnNCrna = new ReadsOnNCrna();
-	
+
 	/** fastqFile--prefix */
 	ArrayList<String[]> lsFastqFile2Prefix;
 	
@@ -234,6 +234,9 @@ public class CtrlMiRNAfastq {
 		
 		ArrayList<String[]> lsNcRNA = readsOnNCrna.combValue(mapPrefix2MiRNAncrna);
 		writeFile(outPath + "NCRNAAll.txt", lsNcRNA);
+		
+		ArrayList<String[]> lsRfamRNA = rfamStatistic.combValue(mapPrefix2MiRNArfam);
+		writeFile(outPath + "RfamAll.txt", lsRfamRNA);
 	}
 	
 	private void writeFile(String fileName, ArrayList<String[]> lsInfo) {

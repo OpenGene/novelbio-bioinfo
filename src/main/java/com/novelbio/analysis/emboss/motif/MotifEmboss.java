@@ -34,7 +34,6 @@ public class MotifEmboss {
 		FileOperate.moveFile(result[1], "/home/zong0jie/桌面/20121224/motifResult", fileName + "motif_reverse.txt", true);
 	}
 	
-	
 	SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.emboss);
 	
 	/** 连配好的motif */
