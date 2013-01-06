@@ -303,7 +303,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //			getPvalueRetain_Intron(pvalueExp, pvalueCounts);
 //		}
 //		else {
-			getPvalueOther(pvalueExp, pvalueCounts);
+			getPvalueCombine(pvalueExp, pvalueCounts);
 //		}
 		return pvalue;
 	}
@@ -417,7 +417,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * Retain_Intron的pvalue比较奇怪，必须要exon才能计算的
 	 *  公式：2^((log2(0.8)*0.5 + log2(0.1)*0.5))
 	 *  */
-	private void getPvalueOther(double pvalueExp, double pvalueCounts) {
+	private void getPvalueCombine(double pvalueExp, double pvalueCounts) {
 		if (pvalueExp < 0) {
 			pvalue = pvalueCounts;
 			return;
