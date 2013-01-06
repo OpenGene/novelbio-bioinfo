@@ -591,7 +591,13 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		boolean lastParentIsSingle = true; 
 		
 		for (int i = 1; i < lsAll.size(); i++) {
-			int[] exon = new int[]{lsAll.get(i).getStartAbs(), lsAll.get(i).getEndAbs()};
+			ListDetailAbs listDetailAbs = lsAll.get(i);
+			ListDetailAbs listDetailAbsNext = null;
+			if (i < lsAll.size() - 1) {
+				listDetailAbsNext = lsAll.get(i+1);
+			}
+			
+			int[] exon = new int[]{listDetailAbs.getStartAbs(), listDetailAbs.getEndAbs()};
 			if (cis5to3 == null || cis5to3) {
 				if (exon[0] <= exonOld[1]) {
 					lastParentIsSingle = false;
@@ -602,16 +608,16 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 					//如果是这种情况：
 					//* ---m-m-------------a--a---------b--b------------n-n----<br>
 					//* ---m-m---------------------------------------------n-n----<br>
-					if (lastParentIsSingle == true && lastExonParent == lsAll.get(i).getParent() 
+					if (lastParentIsSingle == true && lastExonParent == listDetailAbs.getParent() 
 							&&
-							(i == lsAll.size() - 1 || lsAll.get(i+1).getStartAbs() >= lsAll.get(i).getEndAbs())
+							(i == lsAll.size() - 1 || listDetailAbsNext.getStartAbs() >= listDetailAbs.getEndAbs())
 					) {
 						exonOld[1] = exon[1];
 					} else {
 						exonOld = exon.clone();
 						lsExonBounder.add(exonOld);
 						lastParentIsSingle = true;
-						lastExonParent = lsAll.get(i).getParent();
+						lastExonParent = listDetailAbs.getParent();
 					}
 				}
 			} else {
@@ -621,9 +627,9 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 						exonOld[0] = exon[0];
 					}
 				} else {
-					if (lastParentIsSingle == true && lastExonParent == lsAll.get(i).getParent() 
+					if (lastParentIsSingle == true && lastExonParent == listDetailAbs.getParent() 
 							&&
-							(i == lsAll.size() - 1 || lsAll.get(i+1).getStartCis() <= lsAll.get(i).getEndCis())
+							(i == lsAll.size() - 1 || listDetailAbsNext.getStartCis() <= listDetailAbs.getEndCis())
 					) {
 						exonOld[0] = exon[0];
 					} else {

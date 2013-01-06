@@ -3,7 +3,9 @@ package com.novelbio.analysis.annotation.functiontest;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.kegg.KGpathway;
@@ -23,8 +25,9 @@ public abstract class StatisticTestGene2Item {
 	 * blast什么属性都要设定好再传递进来
 	 * @param geneID
 	 */
-	public void setGeneID(GeneID geneID) {
+	public void setGeneID(GeneID geneID, boolean blast) {
 		this.geneID = geneID;
+		this.blast = blast;
 	}
 	/**
 	 * 输入全体有pvalue的item信息
@@ -39,6 +42,10 @@ public abstract class StatisticTestGene2Item {
 	
 	public ArrayList<String[]> toStringLs() {
 		ArrayList<ArrayList<String>> lsInfo = getInfo();
+		if (lsInfo.size() == 0) {
+			getInfo();
+		}
+		
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (ArrayList<String> lsTmpInfo : lsInfo) {
 			String[] tmp = lsTmpInfo.toArray(new String[1]);
@@ -62,9 +69,15 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 		lsTmpFinal.add(geneID.getSymbol());
 		lsTmpFinal.add(geneID.getDescription());
 		if (blast) {
-			lsTmpFinal.add(geneID.getLsBlastInfos().get(0).getEvalue() + "");
-			lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getSymbol());
-			lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getDescription());
+			if (geneID.getLsBlastInfos().size() > 0) {
+				lsTmpFinal.add(geneID.getLsBlastInfos().get(0).getEvalue() + "");
+				lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getSymbol());
+				lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getDescription());
+			} else {
+				lsTmpFinal.add("");
+				lsTmpFinal.add("");
+				lsTmpFinal.add("");
+			}
 		}
 		ArrayList<AGene2Go> lsGO = null;
 		if (blast) {

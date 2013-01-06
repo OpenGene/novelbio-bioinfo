@@ -163,6 +163,9 @@ public class ExcelOperate {
 			 return false; 
 		 
 		 File f = new File(filename);
+		 if (!FileOperate.isFileExist(filename)) {
+			return false;
+		}
 		 FileInputStream fos = new FileInputStream(f);
 		 if (versionXls == EXCEL2003)
 			  wb= new HSSFWorkbook(fos);

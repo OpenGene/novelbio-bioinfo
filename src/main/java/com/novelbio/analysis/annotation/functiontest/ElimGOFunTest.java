@@ -95,9 +95,9 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	 * @return
 	 * Go富集分析的Go2Gene表格<br>
 	 */
-	public ArrayList<StatisticTestItem2GeneElimGo> getItem2GenePvalue() {
+	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
 		ArrayList<StatisticTestResult> lsTestResult = getTestResult();
-		ArrayList<StatisticTestItem2GeneElimGo> lStatisticTestItem2GeneElimGos = new ArrayList<StatisticTestItem2GeneElimGo>();
+		ArrayList<StatisticTestItem2Gene> lStatisticTestItem2GeneElimGos = new ArrayList<StatisticTestItem2Gene>();
 		
 		ArrayListMultimap<String, String> hashGo2LsGene = topGO.getGo2GeneUniIDAll();
 		
@@ -109,7 +109,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 				}
 				//同一个geneUniID对应的不同accID
 				List<GeneID> lscopedIDs = mapGeneUniID2LsGeneID.get(geneUniID);
-				StatisticTestItem2GeneElimGo statisticTestItem2GeneElimGo = new StatisticTestItem2GeneElimGo();
+				StatisticTestItem2Gene statisticTestItem2GeneElimGo = new StatisticTestItem2Gene();
 				statisticTestItem2GeneElimGo.setStatisticTestResult(statisticTestResult);
 				statisticTestItem2GeneElimGo.setLsGeneIDs(lscopedIDs);
 				statisticTestItem2GeneElimGo.setBlast(blast);

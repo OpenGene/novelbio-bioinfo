@@ -53,7 +53,7 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 	 * ²»·µ»Ø
 	 */
 	@Override
-	public ArrayList<StatisticTestItem2GeneElimGo> getItem2GenePvalue() {
+	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
 		return null;
 	}
 

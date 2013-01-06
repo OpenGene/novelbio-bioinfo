@@ -125,7 +125,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			if (gffDetailGene.getLsCodSplit().size() <= 1 || isOnlyOneIso(gffDetailGene)) {
 				continue;
 			}
-			ArrayList<ExonSplicingTest> lsExonSplicingTest = getGeneDifExon(gffDetailGene);
+			ArrayList<ExonSplicingTest> lsExonSplicingTest = null;
+			try {
+				lsExonSplicingTest = getGeneDifExon(gffDetailGene);
+			} catch (Exception e) {
+				lsExonSplicingTest = getGeneDifExon(gffDetailGene);
+			}
+			
 			if (lsExonSplicingTest.size() == 0) {
 				continue;
 			}

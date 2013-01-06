@@ -504,6 +504,11 @@ public class GffDetailGene extends ListDetailAbs {
 					break;
 
 				for (GffGeneIsoInfo gffGeneIsoInfoExist : lsIso) {
+					try {
+						GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist);
+					} catch (Exception e) {
+						GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist);
+					}
 					if (GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist) >= 0.6) {
 						lsIso.add(gffGeneIsoInfo);
 						flagGetNexIso = true;

@@ -103,13 +103,17 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	}
 	
 	private String[] getIsoName2GeneName(String ss8) {
+		String geneNameFlag = "gene_name";
+		if (!ss8.contains(geneNameFlag) && ss8.contains("gene_id")) {
+			geneNameFlag = "gene_id";
+		}
 		String[] iso2geneName = new String[2];
 		 String[] info = ss8.split(";");
 		 for (String name : info) {
 			if (name.contains("transcript_id")) {
 				iso2geneName[0] = name.replace("transcript_id", "").replace("\"", "").trim();
-			} else if (name.contains("gene_id")) {
-				iso2geneName[1] = name.replace("gene_id", "").replace("\"", "").trim();
+			} else if (name.contains("gene_name")) {
+				iso2geneName[1] = name.replace(geneNameFlag, "").replace("\"", "").trim();
 			}
 		}
 		 return iso2geneName;

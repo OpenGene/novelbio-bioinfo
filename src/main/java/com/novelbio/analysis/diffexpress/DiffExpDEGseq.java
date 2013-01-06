@@ -179,13 +179,14 @@ public class DiffExpDEGseq extends DiffExpAbs {
 			tmpResult[3] = division(tmpResult[1], tmpResult[2]);
 			lsResult.add(tmpResult);
 		}
-		FileOperate.DeleteFileFolder(outFileName + outPutSuffix);
+//		FileOperate.DeleteFileFolder(outFileName + outPutSuffix);
 		//防止R还没输出结果就去读取
 		try { Thread.sleep(50); } catch (Exception e) { }
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
 		txtOutFinal.ExcelWrite(lsResult);
 	}
+	/** A除以B，中间处理了一些异常 */
 	private String division(String A, String B) {
 		if (A.equals("NA") && B.equals("NA")) {
 			return "NA";

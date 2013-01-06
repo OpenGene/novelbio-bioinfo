@@ -123,7 +123,7 @@ public class FunctionTest implements FunTestInt {
 	}
 
 	@Override
-	public ArrayList<StatisticTestItem2GeneElimGo> getItem2GenePvalue() {
+	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
 		return funTest.getItem2GenePvalue();
 	}
 

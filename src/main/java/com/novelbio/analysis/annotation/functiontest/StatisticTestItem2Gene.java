@@ -1,6 +1,7 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -11,7 +12,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zong0jie
  *
  */
-public class StatisticTestItem2GeneElimGo {
+public class StatisticTestItem2Gene {
 	StatisticTestResult statisticTestResult;
 	List<GeneID> lsGeneIDs;
 	
@@ -35,7 +36,12 @@ public class StatisticTestItem2GeneElimGo {
 	
 	public ArrayList<String[]> toStringsLs() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		HashSet<String> setGeneAccID = new HashSet<String>();
 		for (GeneID geneID : lsGeneIDs) {
+			if (setGeneAccID.contains(geneID.getAccID())) {
+				continue;
+			}
+			setGeneAccID.add(geneID.getAccID());
 			ArrayList<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(statisticTestResult.getItemName());
 			lsTmpResult.add(statisticTestResult.getItemTerm());
@@ -52,10 +58,25 @@ public class StatisticTestItem2GeneElimGo {
 		return lsResult;
 	}
 	
-	public static String[] getTitle() {
+	public static String[] getTitleGO() {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.GOID.toString());
 		lsTitle.add(TitleFormatNBC.GOTerm.toString());
+		lsTitle.add(TitleFormatNBC.QueryID.toString());
+		lsTitle.add(TitleFormatNBC.Symbol.toString());
+		lsTitle.add(TitleFormatNBC.Description.toString());
+		lsTitle.add(TitleFormatNBC.Pvalue.toString());
+		lsTitle.add(TitleFormatNBC.FDR.toString());
+		lsTitle.add(TitleFormatNBC.Enrichment.toString());
+//		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
+		
+		return lsTitle.toArray(new String[0]);
+	}
+	
+	public static String[] getTitlePath() {
+		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.PathwayID.toString());
+		lsTitle.add(TitleFormatNBC.PathwayTerm.toString());
 		lsTitle.add(TitleFormatNBC.QueryID.toString());
 		lsTitle.add(TitleFormatNBC.Symbol.toString());
 		lsTitle.add(TitleFormatNBC.Description.toString());

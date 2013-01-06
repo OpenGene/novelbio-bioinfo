@@ -275,7 +275,7 @@ public abstract class AbstFunTest implements FunTestInt{
 		Map<String, StatisticTestResult> mapItem2StatictResult = getMapItemID2StatisticsResult();
 		for (GeneID geneID : lsCopedIDsTest) {
 			StatisticTestGene2Item statisticTestGene2Item = creatStatisticTestGene2Item();
-			statisticTestGene2Item.setGeneID(geneID);
+			statisticTestGene2Item.setGeneID(geneID, blast);
 			statisticTestGene2Item.setStatisticTestResult(mapItem2StatictResult);
 			lsTestResult.add(statisticTestGene2Item);
 		}

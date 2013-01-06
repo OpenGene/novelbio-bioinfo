@@ -567,7 +567,12 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		if (seqHash != null) {
 			ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
 			for (SeqFasta seqFasta : lsSeqFasta) {
-				lsResult.add(seqFasta.toString());
+				try {
+					lsResult.add(seqFasta.toString());
+				} catch (Exception e) {
+					lsResult.add("");
+				}
+		
 			}
 		}
 		return lsResult.toArray(new String[0]);

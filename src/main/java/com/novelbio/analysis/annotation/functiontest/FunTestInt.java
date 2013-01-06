@@ -70,7 +70,7 @@ public interface FunTestInt {
 	 * GO2GeneID，目前只有elimGO才有
 	 * @return
 	 */
-	public ArrayList<StatisticTestItem2GeneElimGo> getItem2GenePvalue();
+	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue();
 	/**
 	 * 保存本LsBG的信息
 	 * @param txtBGItem

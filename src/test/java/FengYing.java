@@ -30,16 +30,14 @@ public class FengYing {
 ////		samFileReading.addAlignmentRecorder(tophatJunction);
 ////		samFileReading.run();
 //		tophatJunction.writeTo("KO", parentFile + "KOod_jun_junc.txt");
-		
 	}
 	
 	public static void mouse() {
 		String parentFile = "/media/winF/NBC/Project/Project_FY/paper/";
 //		String parentFile = "C:/Users/jie/Desktop/paper/";
-
 		
 		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				parentFile + "mm10_from_cufflinks.gtf");
+				parentFile + "mm10-ensemble-modified.gtf");
 		System.out.println("finished reading GTF file");
 
 		ExonJunction exonJunction = new ExonJunction();

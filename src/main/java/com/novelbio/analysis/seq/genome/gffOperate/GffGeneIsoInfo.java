@@ -1062,8 +1062,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			
 			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 				if (gffGeneIsoInfo.isCis5to3() != cis5To3
-						|| gffGeneIsoInfo.getEndAbs() <= Math.min(exonBound[0], exonBound[1])
-						|| gffGeneIsoInfo.getStartAbs() >= Math.max(exonBound[0], exonBound[1])
+						|| gffGeneIsoInfo.getEndAbs() < Math.min(exonBound[0], exonBound[1])
+						|| gffGeneIsoInfo.getStartAbs() > Math.max(exonBound[0], exonBound[1])
 					) {
 					continue;
 				}

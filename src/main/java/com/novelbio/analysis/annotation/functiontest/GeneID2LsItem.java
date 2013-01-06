@@ -90,10 +90,9 @@ public abstract class GeneID2LsItem {
 		HashMultimap<String, String> mapItemID2SetGeneIDBG = getHashItem2Gen(lsGene2ItemBG);
 		int numDif = lsGene2Item.size();
 		int numBG = lsGene2ItemBG.size();
-		ArrayList<StatisticTestResult> lsFiserInput = cope2HashForPvalue(mapItemID2SetGeneID, numDif, mapItemID2SetGeneIDBG, numBG);
+		ArrayList<StatisticTestResult> lsFiserInput = cope2HashForPvalue(mapItemID2SetGeneID, numDif, mapItemID2SetGeneIDBG, numBG);		
 		doFisherTest(statisticsTest, lsFiserInput);
 		return lsFiserInput;
-		
 	}
 	
 	/**

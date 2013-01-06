@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import org.apache.log4j.Logger;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestGene2Item;
-import com.novelbio.analysis.annotation.functiontest.StatisticTestItem2GeneElimGo;
+import com.novelbio.analysis.annotation.functiontest.StatisticTestItem2Gene;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.dataStructure.MathComput;
@@ -95,19 +95,21 @@ public class CtrlGO extends CtrlGOPath{
 			for (StatisticTestGene2Item statisticTestGene2Item : lsGene2GO) {
 				lsGene2GoInfo.addAll(statisticTestGene2Item.toStringLs());
 			}
-			hashResult.put("Gene2GO", lsGene2GoInfo);
+			
+//			if (goAlgorithm != GoAlgorithm.novelgo) {
+				hashResult.put("Gene2GO", lsGene2GoInfo);
+//			}
 			
 			if (goAlgorithm != GoAlgorithm.novelgo) {
 				FileOperate.changeFileSuffixReal(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, "_"+prix, null);
-				ArrayList<StatisticTestItem2GeneElimGo> lsGO2Gene = functionTest.getItem2GenePvalue();
-				ArrayList<String[]> lsGo2GeneResult = new ArrayList<String[]>();
-				lsGo2GeneResult.add(StatisticTestItem2GeneElimGo.getTitle());
-				for (StatisticTestItem2GeneElimGo statisticTestItem2GeneElimGo : lsGO2Gene) {
-					lsGo2GeneResult.addAll(statisticTestItem2GeneElimGo.toStringsLs());
-				}
-				
-				hashResult.put("GO2Gene", lsGo2GeneResult);
 			}
+			ArrayList<StatisticTestItem2Gene> lsGO2Gene = functionTest.getItem2GenePvalue();
+			ArrayList<String[]> lsGo2GeneResult = new ArrayList<String[]>();
+			lsGo2GeneResult.add(StatisticTestItem2Gene.getTitleGO());
+			for (StatisticTestItem2Gene statisticTestItem2GeneElimGo : lsGO2Gene) {
+				lsGo2GeneResult.addAll(statisticTestItem2GeneElimGo.toStringsLs());
+			}
+			hashResult.put("GO2Gene", lsGo2GeneResult);
 			
 		return hashResult;
 	}

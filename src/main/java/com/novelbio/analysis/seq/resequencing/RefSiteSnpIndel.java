@@ -812,8 +812,12 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 			for (String sampleName : lsSampleNames) {
 				SampleRefReadsInfo sampleRefReadsInfo = mapSample2NormReadsInfo.get(sampleName);
 				if (sampleRefReadsInfo == null) {
-//					for (int i = 0; i < 4; i++)
-//						lsTmpInfo.add("");
+					lsTmpInfo.add(0 + "");
+					lsTmpInfo.add(0 + "");
+					if (getGATKflag) {
+						lsTmpInfo.add("");
+						lsTmpInfo.add("");
+					}
 					continue;
 				}
 				siteSnpIndelInfo.setSampleName(sampleName);
