@@ -133,6 +133,10 @@ public class SoftWareInfo {
 		}
 		return locationPath + FileOperate.getSepPath();
 	}
+	public String getInstallPath() {
+		querySoftWareInfo();
+		return installPath;
+	}
 	////////////////////////////////////////////////////充血模型 ///////////////////////////////////////////////////////////
 	/**
 	 * 升级本信息，没有就插入，有就升级
@@ -252,6 +256,7 @@ public class SoftWareInfo {
 		}
 	}
 	public static enum SoftWare {
+		blast,
 		bwa, bowtie, bowtie2, tophat, rsem,miranada, RNAhybrid, mirDeep, miReap,
 		samtools, picard, GATK, cufflinks,
 		macs, sicer,

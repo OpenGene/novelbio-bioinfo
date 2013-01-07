@@ -11,6 +11,8 @@ import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
@@ -29,7 +31,12 @@ public class BlastNBC {
 	/**待比对的数据库，如果是fasta文件，则会自动建索引*/
 	String databaseSeq = "";
 	BlastType blastType = BlastType.tblastn;
-
+	
+	SoftWareInfo softWareInfo;
+	
+	public BlastNBC() {
+		softWareInfo = new SoftWareInfo(SoftWare.blast);
+	}
 	/**
 	 * @return blast输出结果的哈希表
 	 * key：说明
@@ -134,9 +141,10 @@ public class BlastNBC {
 				return false;
 			}
 		}
-		String cmd = "perl " + NovelBioConst.BLAST_NCBI_SCRIPT + blastAll + blastInputType + blastType.toString()
+		String cmd = "perl " + FileOperate.addSep(softWareInfo.getInstallPath()) + "legacy_blast.pl " + blastAll + blastInputType + blastType.toString()
 				+ " -i " + CmdOperate.addQuot(queryFasta) + " -d " + CmdOperate.addQuot(databaseSeq) + " -o " + CmdOperate.addQuot(resultFile)
-				+ " -a " + cpuNum + getFilter() + " -e " + evalue + " -m " + resultType + " -v "+resultSeqNum + " -b " + resultAlignNum + " --path " + NovelBioConst.BLAST_NCBI_PATH;
+				+ " -a " + cpuNum + getFilter() + " -e " + evalue + " -m " + resultType + " -v "+resultSeqNum 
+				+ " -b " + resultAlignNum + " --path " + FileOperate.addSep(softWareInfo.getInstallPath());
 		CmdOperate cmdOperate = new CmdOperate(cmd,"blast");
 		cmdOperate.run();
 		return true;
@@ -168,8 +176,8 @@ public class BlastNBC {
 		if (seqTypePro == null) {
 			return false;
 		}
-		String cmd = "perl " + NovelBioConst.BLAST_NCBI_SCRIPT + formatDB + " -i " + databaseSeq + " -p "+ seqTypePro + " -o T " 
-				+ "--path " + NovelBioConst.BLAST_NCBI_PATH;
+		String cmd = "perl " + FileOperate.addSep(softWareInfo.getInstallPath()) + "legacy_blast.pl " + formatDB + " -i " + databaseSeq + " -p "+ seqTypePro + " -o T " 
+				+ "--path " + FileOperate.addSep(softWareInfo.getInstallPath());
 		CmdOperate cmdOperate = new CmdOperate(cmd,"blastFormatDB");
 		cmdOperate.run();
 		return true;

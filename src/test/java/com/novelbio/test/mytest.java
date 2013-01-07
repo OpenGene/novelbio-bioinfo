@@ -45,9 +45,8 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) {
-		GeneID geneID = new GeneID("GRMZM2G314832", 4577);
-		geneID.setBlastInfo(1e-10, 3702);
-		System.out.println(geneID.getGeneIDBlast().getSymbol());
+		GffChrAbs gffChrAbs = new GffChrAbs(39947);
+		gffChrAbs.getGffHashGene().writeToGTF("/home/zong0jie/×ÀÃæ/riceTigr7.GTF");
 	}
 	
 	private void plotHist() {

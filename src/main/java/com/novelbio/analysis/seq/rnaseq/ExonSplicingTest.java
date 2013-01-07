@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -21,19 +20,19 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.ExonSplicingType;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /** 可变剪接的检验 */
 public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	private static Logger logger = Logger.getLogger(ExonSplicingTest.class);
+	/** 实验组和对照组的junction reads数量加起来小于这个数，就返回1 */
+	static int junctionReadsMinNum = 10;
 	
 	ExonCluster exonCluster;
 	TophatJunction tophatJunction;
@@ -71,13 +70,21 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			mapCondition2Counts.put(string, new int[0]);
 		}
 		this.tophatJunction = tophatJunction;
-		fillJunctionReadsData();
 	}
 	
 	/** 必须设定 */
 	public void setCompareCondition(String condition1, String condition2) {
 		this.condition1 = condition1;
 		this.condition2 = condition2;
+	}
+	
+	/** 测序长度，根据这个长度来判定pvalue的比例 */
+	public void setReadsLength(int readsLength) {
+		this.readsLength = readsLength;
+	}
+
+	public ExonCluster getExonCluster() {
+		return exonCluster;
 	}
 	
 	/** 
@@ -114,52 +121,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		return (int)new Mean().evaluate(info);
 	}
-	
-	/** 测序长度，根据这个长度来判定pvalue的比例 */
-	public void setReadsLength(int readsLength) {
-		this.readsLength = readsLength;
-	}
-	
-	public ExonCluster getExonCluster() {
-		return exonCluster;
-	}
-	
-	private void fillJunctionReadsData() {
-		//跨过该exon的iso是否存在，0不存在，1存在
-		int junc = 0;
-		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0)
-			junc = 1;
-		
-		try {
-			if (exonCluster.getAllExons().get(0).getParent().getParentGffDetailGene().getName().contains("NM_172512")) {
-				logger.error("stop");
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
 
-		
-		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		String chrID = gffDetailGene.getRefID();
-		//一般 setCondition 里面只有两项，也就是仅比较两个时期的可变剪接
-		ArrayList<String> lsCondition = ArrayOperate.getArrayListKey(mapCondition2Counts);
-
-		Set<ExonSplicingType> setexExonSplicingTypes = exonCluster.getExonSplicingTypeSet();
-		for (String condition : lsCondition) {
-			int[] counts = null;
-			if (setexExonSplicingTypes.contains(ExonSplicingType.alt5)) {
-				counts = getAlt5Reads(junc, gffDetailGene, chrID, condition);
-			}
-			else if (setexExonSplicingTypes.contains(ExonSplicingType.alt3)) {
-				counts = getAlt3Reads(junc, gffDetailGene, chrID, condition);
-			}
-			else {
-				counts = getNorm(junc, gffDetailGene, chrID, condition);
-			}
-			
-			mapCondition2Counts.put(condition, counts);
-		}
-	}
 	/**
 	 * @param junc 跨过该exon的iso是否存在，0不存在，1存在
 	 * @param gffDetailGene
@@ -296,7 +258,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			pvalue = 1.0;
 			return pvalue;
 		}
-		
+		fillJunctionReadsData();
 		double pvalueExp = getPvalueReads();
 		double pvalueCounts = getPvalueJunctionCounts();
 //		if (exonCluster.getExonSplicingType() == ExonSplicingType.retain_intron) {
@@ -328,43 +290,34 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return isZero;
 	}
 	
-	/** 比较junction reads
-	 * 在这之前务必设定condition
-	 */
-	protected Double getPvalueJunctionCounts() {
-		//如果count数超过该值，就标准化
-		int normalizedNum = 200;
-		if (pvalue > 0) {
-			return pvalue;
-		}
-		int[] cond1 = mapCondition2Counts.get(condition1);
-		int[] cond2 = mapCondition2Counts.get(condition2);
-		
-		cond1 = modifyInputValue(cond1);
-		cond2 = modifyInputValue(cond2);
-		
-		normalizeToLowValue(cond1, normalizedNum);
-		normalizeToLowValue(cond2, normalizedNum);
-		
-		pvalue = chiSquareTestDataSetsComparison(cond1, cond2);
-		return pvalue;
-	}
-	
-	private double chiSquareTestDataSetsComparison(int[] cond1, int[] cond2) {
-		long[] cond1Long = new long[cond1.length];
-		long[] cond2Long = new long[cond2.length];
-		for (int i = 0; i < cond1.length; i++) {
-			cond1Long[i] = cond1[i] + 1;
-		}
-		for (int i = 0; i < cond2.length; i++) {
-			cond2Long[i] = cond2[i] + 1;
-		}
-		try {
-			return TestUtils.chiSquareTestDataSetsComparison(cond1Long, cond2Long);
-		} catch (Exception e) {
-			return 1.0;
+	private void fillJunctionReadsData() {
+		//跨过该exon的iso是否存在，0不存在，1存在
+		int junc = 0;
+		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0)
+			junc = 1;
+ 
+		GffDetailGene gffDetailGene = exonCluster.getParentGene();
+		String chrID = gffDetailGene.getRefID();
+		//一般 setCondition 里面只有两项，也就是仅比较两个时期的可变剪接
+		ArrayList<String> lsCondition = ArrayOperate.getArrayListKey(mapCondition2Counts);
+
+		Set<ExonSplicingType> setexExonSplicingTypes = exonCluster.getExonSplicingTypeSet();
+		for (String condition : lsCondition) {
+			int[] counts = null;
+			if (setexExonSplicingTypes.contains(ExonSplicingType.alt5)) {
+				counts = getAlt5Reads(junc, gffDetailGene, chrID, condition);
+			}
+			else if (setexExonSplicingTypes.contains(ExonSplicingType.alt3)) {
+				counts = getAlt3Reads(junc, gffDetailGene, chrID, condition);
+			}
+			else {
+				counts = getNorm(junc, gffDetailGene, chrID, condition);
+			}
+			
+			mapCondition2Counts.put(condition, counts);
 		}
 	}
+
 	
 	/** 出错就返回-1 */
 	protected Double getPvalueReads() {
@@ -398,6 +351,50 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		double pvalue = fisherTest.getTwoTailedP(tmpExpCond1[0], tmpExpCond1[1], tmpExpCond2[0], tmpExpCond2[1]);
 		return pvalue;
 	}
+	/** 比较junction reads
+	 * 在这之前务必设定condition
+	 */
+	protected Double getPvalueJunctionCounts() {
+		//如果count数超过该值，就标准化
+		int normalizedNum = 200;
+		if (pvalue > 0) {
+			return pvalue;
+		}
+		int[] cond1 = mapCondition2Counts.get(condition1);
+		int[] cond2 = mapCondition2Counts.get(condition2);
+		
+		if (MathComput.sum(cond1) + MathComput.sum(cond1) < junctionReadsMinNum) {
+			pvalue = (double) 1;
+			return pvalue;
+		}
+		
+		cond1 = modifyInputValue(cond1);
+		cond2 = modifyInputValue(cond2);
+		
+		normalizeToLowValue(cond1, normalizedNum);
+		normalizeToLowValue(cond2, normalizedNum);
+		
+		pvalue = chiSquareTestDataSetsComparison(cond1, cond2);
+		return pvalue;
+	}
+	
+	private double chiSquareTestDataSetsComparison(int[] cond1, int[] cond2) {
+		long[] cond1Long = new long[cond1.length];
+		long[] cond2Long = new long[cond2.length];
+		for (int i = 0; i < cond1.length; i++) {
+			cond1Long[i] = cond1[i] + 1;
+		}
+		for (int i = 0; i < cond2.length; i++) {
+			cond2Long[i] = cond2[i] + 1;
+		}
+		try {
+			return TestUtils.chiSquareTestDataSetsComparison(cond1Long, cond2Long);
+		} catch (Exception e) {
+			return 1.0;
+		}
+	}
+
+
 	
 	/** Retain_Intron的pvalue比较奇怪，必须要exon才能计算的 */
 	private void getPvalueRetain_Intron(double pvalueExp, double pvalueCounts) {
@@ -428,9 +425,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		pvalue = Math.pow(10, pvalueLog);
 				
 //		对于cassette的pvalue缩小
-		if (exonCluster.getExonSplicingType() == ExonSplicingType.cassette) {
-			pvalue = pvalue * pvalue * 2;
-		}
+//		if (exonCluster.getExonSplicingType() == ExonSplicingType.cassette) {
+//			pvalue = pvalue * pvalue * 2;
+//		}
 		if (pvalue > 1) {
 			pvalue = 1.0;
 		}
@@ -541,6 +538,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	public String[] toStringArray() {
+		getAndCalculatePvalue();
 		ArrayList<String> lsResult = new ArrayList<String>();
 		int[] cond1 = mapCondition2Counts.get(condition1);
 		int[] cond2 = mapCondition2Counts.get(condition2);

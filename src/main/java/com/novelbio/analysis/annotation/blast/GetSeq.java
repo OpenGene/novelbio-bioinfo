@@ -18,9 +18,6 @@ import com.novelbio.database.model.modgeneid.GeneID;
  *
  */
 public class GetSeq {
-	
-
-	
 	/**
 	 * 给定nr数据库的标题列，例如：
 	 * >gi|71002820|ref|XP_756091.1| conidial pigment biosynthesis 1,3,6,8-tetrahydroxynaphthalene reductase Arp

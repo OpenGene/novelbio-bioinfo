@@ -37,15 +37,15 @@ public class FengYing {
 //		String parentFile = "C:/Users/jie/Desktop/paper/";
 		
 		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				parentFile + "mm10-ensemble-modified.gtf");
+				parentFile + "mm10_from_cufflinks.gtf");
 		System.out.println("finished reading GTF file");
 
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffHashGene);
 		exonJunction.setIsLessMemory(false);
-		Species species = new Species(10090, "mm10_NCBI");
-		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		exonJunction.setSeqHash(gffChrAbs.getSeqHash());
+//		Species species = new Species(10090, "mm10_NCBI");
+//		GffChrAbs gffChrAbs = new GffChrAbs(species);
+//		exonJunction.setSeqHash(gffChrAbs.getSeqHash());
 		exonJunction.setIsoJunFile("KO", parentFile + "KOjunctions.bed");
 		exonJunction.setIsoJunFile("WT",parentFile + "WTjunctions.bed");
 //		System.out.println("finished reading junction reads");
@@ -60,7 +60,7 @@ public class FengYing {
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String outResult = parentFile +  "KO_vs_WT10_Bam_Jun_UseMemory_Seq_2.xls";
+		String outResult = parentFile +  "KO_vs_WT_WWWGTF_Modiry.xls";
 		exonJunction.writeToFile(outResult);
 	}
 
